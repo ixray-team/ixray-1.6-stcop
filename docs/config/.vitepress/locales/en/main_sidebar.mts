@@ -111,6 +111,7 @@ export const mainSidebar: DefaultTheme.Sidebar = [
       { text: 'Physically based rendering (PBR)', link: '/en/graphics/pbr' },
       { text: 'Dynamic wallmarks (Dynamic Wallmark)', link: '/en/graphics/dynamic-wallmark' },
       { text: 'Shader constants', link: '/en/graphics/shader-constants' },
+      { text: 'Hairs', link: '/en/graphics/hairs' },
       { text: 'Weather', link: '/en/graphics/weather/main' },
       {
         items: [

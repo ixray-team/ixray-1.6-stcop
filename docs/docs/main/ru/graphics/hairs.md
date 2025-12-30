@@ -14,5 +14,5 @@
 * * __0 - не симулируем данный участок, 255 - полная симуляция__.
 ![image](https://sun9-46.userapi.com/s/v1/ig2/LSjoofHrreQx7g9ZyIanT8RCIrtXUqdw7LzTzAMmaX2mbcQibv6ohvSOR__mVoWZlGAvuMjTjp5Qg7jNz-Dk0f6q.jpg?quality=95&as=32x31,48x46,72x69,108x104,160x154,240x230,360x345,480x461,540x518,640x614,720x691,963x924&from=bu&cs=963x0)
 > Пример самой простой маски
-* После чего стоит только назначить нужный шейдер (`hair_mask`) на геометрию волос. Можно воспользоваться __OGF Editor__
-![image](https://sun9-42.userapi.com/s/v1/ig2/1Rq-X3iblkXM3e_uyj2MJIqqGOolrle2Y377HGC8kBDcu4-9hkrvDRDrLewRiuMVwL8KKXSggxv1FRPTBKvIrliO.jpg?quality=95&as=32x24,48x36,72x54,108x82,160x121,240x181,360x272,480x362,522x394&from=bu&cs=522x0)
+
+* Проверить результат в игре

@@ -1,0 +1,43 @@
+﻿{
+  "eyebrow": "Аддоны · Погода",
+  "title": "Погодные аддоны",
+  "subtitle": "Пример данных для аддонов. Замените на реальные звуковые пакеты.",
+  "labels": {
+    "view": "Скачать / открыть",
+    "soon": "Скоро"
+  },
+  "mods": [
+    {
+      "id": "pwu",
+      "title": "PARADOX WEATHER UNIT: IX-RAY",
+      "description": "Модификация мягко преображает оригинальную игру, обновляя её графическую и звуковую составляющую. В игре представлены около 10 погодных циклов, периодичность каждого цикла варьируется в зависимости от локации, что обеспечивает разнообразие и естественность смены атмосферных условий.",
+      "author": "OSWALD, IX-Ray Team",
+      "link": "https://example.com/addons/pwu",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Weathers_addons/PWU.png"
+    },
+    {
+      "id": "swtc",
+      "title": "Stalker Weather Total Conversion",
+      "description": "Этот графический мод помимо таких достоинств, как невероятное разнообразие, отличается тем, что являет собой целостную художественную структуру и проработанную концепцию. Автор хотел придать игре неповторимый, атмосферный вид, и дать ей новое дыхание и взгляд с другого угла.",
+      "author": "Vincent_Vega, IX-Ray Team",
+      "link": "https://example.com/addons/swtc",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Weathers_addons/SWTC.png"
+    },
+    {
+      "id": "af3",
+      "title": "AtmosFear 3",
+      "description": "Официальная адаптация Atmosfear 3 под платформу IX-Ray. Atmosfear изменяет и расширяет стандартную систему погоды, делая ее более реалистичной и разнообразной. Дальность видимости на погодных циклах разная, так что в ясный день можно разглядеть буквально всю локацию.",
+      "author": "CrommCruac, IX-Ray Team",
+      "link": "https://example.com/addons/af3",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Weathers_addons/AF3.png"
+    },
+    {
+      "id": "cgim2",
+      "title": "CGIM2 Weathers",
+      "description": "Это официальная адаптация погодного мода CGIM2 под платформу IX-Ray. Пак добавляет несколько полностью новых погодных циклов и создаёт в игре летнюю атмосферу.",
+      "author": "zhoracementov, IX-Ray Team",
+      "link": "https://example.com/addons/cgim2",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Weathers_addons/CGIM2.png"
+    }
+  ]
+}

@@ -13,7 +13,8 @@ export const modsSidebar: DefaultTheme.Sidebar = [
     text: 'Аддоны',
     collapsed: false,
     items: [
-      { text: 'Звуки', link: '/mods/addons/sound' }
+      { text: 'Погода', link: '/mods/addons/weather' },
+      { text: 'UI/UX', link: '/mods/addons/ui-ux' }
     ]
   }
 ]

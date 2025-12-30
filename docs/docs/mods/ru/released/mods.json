@@ -8,14 +8,6 @@
   },
   "mods": [
     {
-      "id": "dreamcatcher",
-      "title": "Ловец Снов",
-      "description": "Сюжетный мод с уклоном в исследование Зоны и мистические аномалии.",
-      "author": "Vivient Team",
-      "link": "https://ap-pro.ru/forums/topic/5764-lovec-snov/",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%BB%D0%BE%D0%B2%D0%B5%D1%86.png"
-    },
-    {
       "id": "awakening-2055",
       "title": "Пробуждение. 2055",
       "description": "Поздний таймлайн: новые технологии и выживание в изменённой Зоне.",
@@ -24,12 +16,44 @@
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/2055.png"
     },
     {
+      "id": "dreamcatcher2r",
+      "title": "Ловец Снов 2.0: Ремастер",
+      "description": "Сюжетный мод с уклоном в исследование Зоны и мистические аномалии.",
+      "author": "Vivient Team",
+      "link": "https://ap-pro.ru/forums/topic/5764-lovec-snov/",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/dreamcatcher2r.png"
+    },
+    {
+      "id": "script_ny2026",
+      "title": "Кто Украл Праздник?",
+      "description": "По следам Гринча",
+      "author": "ScR1pt",
+      "link": "https://ap-pro.ru/forums/topic/13767-kto-ukral-prazdnik/",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/ктоукралпраздник.png"
+    },
+    {
       "id": "lastnewyear",
       "title": "Чужой среди Чужих: Последний Новый год",
       "description": "Главный герой — обычный сталкер по прозвищу Винт, который отправился в Лиманск",
       "author": "It's Boomer",
-      "link": "https://vk.com/wall-15844953_951638",
+      "link": "https://ap-pro.ru/stuff/zov_pripjati/chuzhoy-sredi-chuzhih-posledniy-novyy-god-r489/",
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/last_ny.png"
+    },
+    {
+      "id": "project2",
+      "title": "[Проект №2] (Бета | Проект закрыт)",
+      "description": "Попытка перенести сюжет игры S.T.A.L.K.E.R. Mobile",
+      "author": "Graff46",
+      "link": "https://ap-pro.ru/forums/topic/2029-proekt-%E2%84%962/?do=findComment&comment=501744",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%822.png"
+    },
+    {
+      "id": "dreamcatcher",
+      "title": "Ловец Снов",
+      "description": "Сюжетный мод с уклоном в исследование Зоны и мистические аномалии.",
+      "author": "Vivient Team",
+      "link": "https://ap-pro.ru/forums/topic/5764-lovec-snov/",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%BB%D0%BE%D0%B2%D0%B5%D1%86.png"
     },
     {
       "id": "one-way-ticket",
