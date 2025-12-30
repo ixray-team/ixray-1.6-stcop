@@ -42,7 +42,7 @@
 // -Pi/2 to  Pi/2 (quadrants IV,I)
 inline float asin1(float x)
 {
-    if (_abs(x) > 1.0f)
+    if (std::abs(x) > 1.0f)
     {
 //	printf("Domain error in asin1 %lf\n", x);
 	x = (x > 0.f) ? 1.0f : -1.0f;
@@ -53,7 +53,7 @@ inline float asin1(float x)
 //  Pi/2 to -Pi/2 (quadrants II,III)
 inline float asin2(float x)
 {   
-    if (_abs(x) > 1.0f)
+    if (std::abs(x) > 1.0f)
     {
 //	printf("Domain error in asin2 %lf\n", x);
 	x = (x > 0) ? 1.0f : -1.0f;
@@ -65,7 +65,7 @@ inline float asin2(float x)
 //  0 to Pi   (quadrants I,II)
 inline float acos1(float x)
 {
-    if (_abs(x) > 1.0f)
+    if (std::abs(x) > 1.0f)
     {
 //	printf("Domain error in acos1 %lf\n", x);
 	x = (x > 0) ? 1.0f : -1.0f;
@@ -76,7 +76,7 @@ inline float acos1(float x)
 //  Pi to 2Pi (quadrants III,IV)
 inline float acos2(float x)
 {
-    if (_abs(x) > 1.0f)
+    if (std::abs(x) > 1.0f)
     {
 //	printf("Domain error in acos2 %lf\n", x);
 	x = (x > 0) ? 1.0f : -1.0f;

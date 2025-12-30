@@ -59,7 +59,7 @@ float angle_distance(float x, float y)
     unsigned int signy = y > 0.0;
     float dist; 
 
-    dist = _abs(x-y);
+    dist = std::abs(x-y);
 
     // If angles are of opposite signs check whether clockwise
     // or anticlockwise distances are closer 
@@ -86,7 +86,7 @@ int solve_trig1(float a, float b, float c, float theta[2])
     {
 	// temp is practically zero
  
-	if (_abs(temp / (_abs(a*a) + _abs(b*b) + _abs(c*c))) < 1e-6)
+	if (std::abs(temp / (std::abs(a*a) + std::abs(b*b) + std::abs(c*c))) < 1e-6)
 	{
 	    // printf("Special case\n");
 	    theta[0] = (float) (2*atan(-b/(-a-c)));
@@ -133,7 +133,7 @@ float solve_trig2(float a, float b, float c, float d)
 //
 int myacos(float x, float solns[2])
 {
-    if (_abs(x) > 1)
+    if (std::abs(x) > 1)
 	return 0;
 
     solns[0] = angle_normalize_signed(acos(x));
@@ -151,7 +151,7 @@ int myacos(float x, float solns[2])
 //
 int myasin(float x, float solns[2])
 {
-    if (_abs(x) > 1)
+    if (std::abs(x) > 1)
 	return 0;
 
     solns[0] = (float)angle_normalize_signed(asin(x));

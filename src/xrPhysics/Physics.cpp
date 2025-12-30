@@ -194,8 +194,8 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2,dJointGroupID jointGroup,C
 		if(flags_1.test(SGameMtl::flBounceable)&&flags_2.test(SGameMtl::flBounceable))
 		{
 			surface.mode		|=	dContactBounce;
-			surface.bounce_vel	=	_max(material_1->fPHBounceStartVelocity,material_2->fPHBounceStartVelocity);
-			surface.bounce		=	_min(material_1->fPHBouncing,material_2->fPHBouncing);
+			surface.bounce_vel	= std::max(material_1->fPHBounceStartVelocity,material_2->fPHBounceStartVelocity);
+			surface.bounce		= std::min(material_1->fPHBouncing,material_2->fPHBouncing);
 		}
 		/////////////////////////////////////////////////////////////////////////////////////////////////
 		if(usr_data_2&&usr_data_2->object_callbacks){

@@ -128,7 +128,7 @@ void CFrustum::SimplifyPoly_AABB(sPoly* poly, Fplane& plane)
 	Fvector		from,up,right,y;
 	from.set	((*poly)[0]);
 	y.set		(0,1,0);
-	if (_abs(plane.n.y)>0.99f) y.set(1,0,0);
+	if (std::abs(plane.n.y)>0.99f) y.set(1,0,0);
 	right.crossproduct		(y,plane.n);
 	up.crossproduct			(plane.n,right);
 	mView.build_camera_dir	(from,plane.n,up);
@@ -170,7 +170,7 @@ void CFrustum::CreateOccluder(Fvector* p, int count, Fvector& vBase, CFrustum& c
 	{
 		// classify all points relative to plane #i
 		fplane &P = clip.planes[i];
-		for (int j=0; j<count; j++) cls[j]=_abs(P.classify(p[j]));
+		for (int j=0; j<count; j++) cls[j]= std::abs(P.classify(p[j]));
 
 		// test edges to see which lies directly on plane
 		for (int j=0; j<count; j++) {

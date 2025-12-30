@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "compiler.h"
-#include "cl_intersect.h"
+#include "../../xrCore/Collision/cl_intersect.h"
 #include "../xrForms/xrThread.h"
 #include <mmsystem.h>
 
@@ -24,33 +24,6 @@ typedef xr_vector<CCoverPoint*>	COVERS;
 
 // -------------------------------- Ray pick
 typedef Fvector	RayCache[3];
-
-/*
-IC bool RayPick(CDB::COLLIDER* DB, Fvector& P, Fvector& D, float r, RayCache& C)
-{
-	// 1. Check cached polygon
-	float _u,_v,range;
-	if (CDB::TestRayTri(P,D,&C[0],_u,_v,range,true)) 
-	{
-		if (range>0 && range<r) return true;
-	}
-
-	// 2. Polygon doesn't pick - real database query
-	try { DB->ray_query	(&Level,P,D,r); } catch (...) { Msg("* ERROR: Failed to trace ray"); }
-	if (0==DB->r_count()) {
-		return false;
-	} else {
-		// cache polygon
-		CDB::RESULT&	rp	= *DB->r_begin();
-//		CDB::TRI&		T	= 
-			Level.get_tris()[rp.id];
-		C[0].set		(rp.verts[0]);
-		C[1].set		(rp.verts[1]);
-		C[2].set		(rp.verts[2]);
-		return true;
-	}
-}
-*/
 
 IC float getLastRP_Scale(CDB::COLLIDER* DB, RayCache& C)
 {
@@ -148,7 +121,8 @@ IC int	calcSphereSector(Fvector& dir)
 	flat.norm			();
 
 	// analyze
-	if (_abs(flat.x)>_abs(flat.y))	{
+	if (std::abs(flat.x)>std::abs(flat.y))
+	{
 		// sector 0,7,3,4
 		if (flat.x<0)	{
 			// sector 3,4

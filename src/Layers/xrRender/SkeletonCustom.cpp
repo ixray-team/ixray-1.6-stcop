@@ -552,7 +552,7 @@ void BuildMatrix		(Fmatrix &mView, float invsz, const Fvector norm, const Fvecto
 	Fvector				at,up,right,y;
 	at.sub				(from,norm);
 	y.set				(0,1,0);
-	if (_abs(norm.y)>.99f) y.set(1,0,0);
+	if (std::abs(norm.y)>.99f) y.set(1,0,0);
 	right.crossproduct	(y,norm);
 	up.crossproduct		(norm,right);
 	mView.build_camera	(from,at,up);

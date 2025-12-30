@@ -117,6 +117,6 @@ void UIMapLegendItem::init_from_xml( CUIXml& xml, int index )
 	m_text->AdjustHeightToText();
 	
 	float h = m_text->GetWndPos().y + m_text->GetHeight();
-	h = _max( h, GetHeight() );
+	h = std::max( h, GetHeight() );
 	SetHeight( h );
 }

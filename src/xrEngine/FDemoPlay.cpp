@@ -101,8 +101,8 @@ void CDemoPlay::stat_Stop	()
 	rfps_middlepoint		= 0;
 
 	//	Filtered FPS
-	const u32 iAvgFPS		=	_max((u32)rfps_average,10);
-	const u32 WindowSize	=	_max(16, iAvgFPS/2);
+	const u32 iAvgFPS		= std::max((u32)rfps_average,10u);
+	const u32 WindowSize	= std::max(16u, iAvgFPS/2);
 
 	if ( stat_table.size() > WindowSize*4 )
 	{

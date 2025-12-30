@@ -239,7 +239,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 				// split energy/color
 				float			_e		=	(L.diffuse.r+L.diffuse.g+L.diffuse.b)/3.f;
 				Fvector			_c		=	{L.diffuse.r,L.diffuse.g,L.diffuse.b};
-				if (_abs(_e)>EPS_S)		_c.div	(_e);
+				if (std::abs(_e)>EPS_S)		_c.div	(_e);
 				else					{ _c.set(0,0,0); _e=0; }
 
 				// generic properties
