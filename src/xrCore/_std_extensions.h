@@ -1,24 +1,6 @@
 #pragma once
 
-#ifdef abs
-#undef abs
-#endif
-
-#ifdef _MIN
-#undef _MIN
-#endif
-
-#ifdef _MAX
-#undef _MAX
-#endif
-
-#ifdef min
-#undef min
-#endif
-
-#ifdef max
-#undef max
-#endif
+#include "_std_c_undefs.h"
 
 // token type definition
 struct XRCORE_API xr_token

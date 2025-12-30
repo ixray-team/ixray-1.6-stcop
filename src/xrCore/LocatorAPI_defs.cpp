@@ -86,6 +86,16 @@ LPCSTR FS_Path::_update(string_path& dest, LPCSTR src)const
 	return xr_strlwr	(dest);
 }
 
+LPCSTR FS_Path::_update(xr_stack_string_path& dest, LPCSTR src) const
+{
+    R_ASSERT(src);
+	dest = "";
+	dest.append(m_Path);
+	dest.append(src);
+	xr_strlwr(dest);
+	return dest.c_str();
+}
+
 void FS_Path::rescan_path_cb	()
 {
 	m_Flags.set(flNeedRescan,TRUE);
