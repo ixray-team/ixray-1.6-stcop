@@ -93,7 +93,7 @@ void	light::xform_calc() {
 	}
 	else {
 		// auto find 'up' and 'right' vectors
-		L_up.set(0, 1, 0);				if(_abs(L_up.dotproduct(L_dir)) > .99f)	L_up.set(0, 0, 1);
+		L_up.set(0, 1, 0);				if(std::abs(L_up.dotproduct(L_dir)) > .99f)	L_up.set(0, 0, 1);
 		L_right.crossproduct(L_up, L_dir);			L_right.normalize();
 		L_up.crossproduct(L_dir, L_right);		L_up.normalize();
 	}

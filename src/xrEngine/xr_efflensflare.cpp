@@ -130,8 +130,8 @@ void CLensFlareDescriptor::load(CInifile* pIni, LPCSTR sect)
 		float o = pIni->r_float		( sect,"gradient_opacity" );
 		SetGradient(r,o,T,S);
 	}
-	m_StateBlendUpSpeed	= 1.f/(_max(pIni->r_float( sect,"blend_rise_time" ),0.f)+EPS_S);
-	m_StateBlendDnSpeed	= 1.f/(_max(pIni->r_float( sect,"blend_down_time" ),0.f)+EPS_S);
+	m_StateBlendUpSpeed	= 1.f/(std::max(pIni->r_float( sect,"blend_rise_time" ),0.f)+EPS_S);
+	m_StateBlendDnSpeed	= 1.f/(std::max(pIni->r_float( sect,"blend_down_time" ),0.f)+EPS_S);
 
 	OnDeviceCreate();
 }
@@ -237,7 +237,7 @@ IC BOOL material_callback(collide::rq_result& result, LPVOID params)
 IC void	blend_lerp	(float& cur, float tgt, float speed, float dt)
 {
 	float diff		= tgt - cur;
-	float diff_a	= _abs(diff);
+	float diff_a	= std::abs(diff);
 	if (diff_a<EPS_S)	return;
 	float mot		= speed*dt;
 	if (mot>diff_a) mot=diff_a;
@@ -423,10 +423,10 @@ void CLensFlare::OnFrame(shared_str id)
 		float sun_max		= 2.5f;
 		scr_pos.y			*= -1;
 
-		if (_abs(scr_pos.x) > sun_blend)	kx = ((sun_max - (float)_abs(scr_pos.x))) / (sun_max - sun_blend);
-		if (_abs(scr_pos.y) > sun_blend)	ky = ((sun_max - (float)_abs(scr_pos.y))) / (sun_max - sun_blend);
+		if (std::abs(scr_pos.x) > sun_blend)	kx = ((sun_max - (float)std::abs(scr_pos.x))) / (sun_max - sun_blend);
+		if (std::abs(scr_pos.y) > sun_blend)	ky = ((sun_max - (float)std::abs(scr_pos.y))) / (sun_max - sun_blend);
 
-		if (!((_abs(scr_pos.x) > sun_max) || (_abs(scr_pos.y) > sun_max))){
+		if (!((std::abs(scr_pos.x) > sun_max) || (std::abs(scr_pos.y) > sun_max))){
 			float op		= m_StateBlend*m_Current->m_Gradient.fOpacity;
 			fGradientValue	= kx * ky *  op * fBlend;
 		}else

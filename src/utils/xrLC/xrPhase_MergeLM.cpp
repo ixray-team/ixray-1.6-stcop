@@ -262,7 +262,7 @@ void CBuild::xrPhase_MergeLM(size_t begin, size_t end)
 		for (u32 it = 0; it < Layer.size(); it++)
 		{
 			CDeflector* D = Layer[it];
-			materials()[D->GetBaseMaterial()].internal_max_area = _max(D->layer.Area(), materials()[D->GetBaseMaterial()].internal_max_area);
+			materials()[D->GetBaseMaterial()].internal_max_area = std::max(D->layer.Area(), materials()[D->GetBaseMaterial()].internal_max_area);
 		}
 
 		if (gCompilerMode.LC_LmapsAlternative)

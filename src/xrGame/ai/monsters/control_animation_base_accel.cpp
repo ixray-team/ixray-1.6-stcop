@@ -46,7 +46,7 @@ void CControlAnimationBase::accel_chain_add(EMotionAnim anim1, EMotionAnim anim2
 
 bool CControlAnimationBase::accel_chain_get(float cur_speed, EMotionAnim target_anim, EMotionAnim &new_anim, float &a_speed)
 {
-	VERIFY2(_abs(cur_speed)<1000, "CControlAnimationBase cur_speed too big");
+	VERIFY2(std::abs(cur_speed)<1000, "CControlAnimationBase cur_speed too big");
 
 	VELOCITY_CHAIN_VEC_IT B = m_accel.chain.begin(), I;
 	VELOCITY_CHAIN_VEC_IT E = m_accel.chain.end();
@@ -87,9 +87,9 @@ bool CControlAnimationBase::accel_chain_get(float cur_speed, EMotionAnim target_
 		// calc anim_speed
 		new_anim	= *best_anim;
 		float tmp	= GetAnimSpeed(new_anim);
-		VERIFY2(_abs(tmp)<1000, "CControlAnimationBase GetAnimSpeed returns too big speed");
+		VERIFY2(std::abs(tmp)<1000, "CControlAnimationBase GetAnimSpeed returns too big speed");
 		a_speed		=  tmp * cur_speed / best_param->velocity.linear;
-		VERIFY2(_abs(a_speed)<1000, "CControlAnimationBase a_speed too big");
+		VERIFY2(std::abs(a_speed)<1000, "CControlAnimationBase a_speed too big");
 		return true;
 	}
 	return false;

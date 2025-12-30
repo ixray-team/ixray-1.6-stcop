@@ -29,9 +29,9 @@ SPPInfo& SPPInfo::add (const SPPInfo &ppi)
 	duality.h		+= ppi.duality.h; 
 	duality.v		+= ppi.duality.v;
 	
-	noise.intensity	= _max(noise.intensity, ppi.noise.intensity);
-	noise.grain		= _max(noise.grain, ppi.noise.grain);
-	noise.fps		= _max(noise.fps, ppi.noise.fps);
+	noise.intensity	= std::max(noise.intensity, ppi.noise.intensity);
+	noise.grain		= std::max(noise.grain, ppi.noise.grain);
+	noise.fps		= std::max(noise.fps, ppi.noise.fps);
 	color_base		+= ppi.color_base;
 	color_gray		+= ppi.color_gray;
 	color_add		+= ppi.color_add;
@@ -48,7 +48,7 @@ SPPInfo& SPPInfo::add (const SPPInfo &ppi)
 			cm_influence	= ppi.cm_influence;
 			cm_interpolate	= 0.0f;
 		}
-		cm_influence		= _max(cm_influence, ppi.cm_influence);
+		cm_influence		= std::max(cm_influence, ppi.cm_influence);
 	}
 	return			*this;
 }

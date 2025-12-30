@@ -46,7 +46,7 @@ void	CFireDispertionController::Update()
 			tmp_inertion = tmp_weapon->GetCrosshairInertion();
 		}
 	}
-	float diff_time		= tmp_inertion * _abs(end_disp - start_disp);
+	float diff_time		= tmp_inertion * std::abs(end_disp - start_disp);
 	float end_time		= start_time + diff_time;
 	float current_time = Device.fTimeGlobal;
 	if (end_time == start_time)

@@ -61,13 +61,13 @@ public:
 	IC	SelfRef	invert()								{ x=-x; y=-y; z=-z;						return *this;	}
 	IC	SelfRef	invert(const Self &a)					{ x=-a.x; y=-a.y; z=-a.z;				return *this;	}
 
-	IC	SelfRef	min(const Self &v1,const Self &v2)		{ x = _min(v1.x,v2.x); y = _min(v1.y,v2.y); z = _min(v1.z,v2.z);	return *this;	}
-	IC	SelfRef	min(const Self &v)						{ x = _min(x,v.x);	y = _min(y,v.y);	z = _min(z,v.z);			return *this;	}
-	IC	SelfRef	max(const Self &v1,const Self &v2)		{ x = _max(v1.x,v2.x); y = _max(v1.y,v2.y);	z = _max(v1.z,v2.z);	return *this;	}
-	IC	SelfRef	max(const Self &v)						{ x = _max(x,v.x);	y = _max(y,v.y);	z = _max(z,v.z);			return *this;	}
+	IC	SelfRef	min(const Self &v1,const Self &v2)		{ x = std::min(v1.x,v2.x); y = std::min(v1.y,v2.y); z = std::min(v1.z,v2.z);	return *this;	}
+	IC	SelfRef	min(const Self &v)						{ x = std::min(x,v.x);	y = std::min(y,v.y);	z = std::min(z,v.z);			return *this;	}
+	IC	SelfRef	max(const Self &v1,const Self &v2)		{ x = std::max(v1.x,v2.x); y = std::max(v1.y,v2.y);	z = std::max(v1.z,v2.z);	return *this;	}
+	IC	SelfRef	max(const Self &v)						{ x = std::max(x,v.x);	y = std::max(y,v.y);	z = std::max(z,v.z);			return *this;	}
 
-	IC	SelfRef	abs(const Self &v)						{ x = _abs(v.x); y=_abs(v.y); z=_abs(v.z);							return *this;	}
-	ICF BOOL	similar(const Self &v, T E=EPS_L) const	{ return _abs(x-v.x)<E && _abs(y-v.y)<E && _abs(z-v.z)<E;};
+	IC	SelfRef	abs(const Self &v)						{ x = std::abs(v.x); y=std::abs(v.y); z=std::abs(v.z);							return *this;	}
+	ICF BOOL	similar(const Self &v, T E=EPS_L) const	{ return std::abs(x-v.x)<E && std::abs(y-v.y)<E && std::abs(z-v.z)<E;};
 
 	IC	SelfRef	set_length(T l)
 	{
@@ -79,17 +79,17 @@ public:
 	IC	SelfRef	align() 
 	{
 		y = 0;
-		if (_abs(z)>=_abs(x))	{ z /= _abs(z?z:1);	x = 0; }
-		else					{ x /= _abs(x);		z = 0; }
+		if (std::abs(z)>=std::abs(x))	{ z /= std::abs(z?z:1);	x = 0; }
+		else					{ x /= std::abs(x);		z = 0; }
 		return *this;	
 	}
 
 	// Squeeze
 	IC SelfRef	squeeze(T Epsilon)
 	{
-		if (_abs(x) < Epsilon) x = 0;
-		if (_abs(y) < Epsilon) y = 0;
-		if (_abs(z) < Epsilon) z = 0;
+		if (std::abs(x) < Epsilon) x = 0;
+		if (std::abs(y) < Epsilon) y = 0;
+		if (std::abs(z) < Epsilon) z = 0;
 		return *this;	
 	}
 
@@ -104,7 +104,7 @@ public:
 
 	IC	SelfRef	clamp(const Self &_v) 
 	{
-		Self v;	v.x = _abs(_v.x);	v.y = _abs(_v.y);	v.z = _abs(_v.z);
+		Self v;	v.x = std::abs(_v.x);	v.y = std::abs(_v.y);	v.z = std::abs(_v.z);
 		::clamp(x,-v.x,v.x);
 		::clamp(y,-v.y,v.y);
 		::clamp(z,-v.z,v.z);
@@ -386,11 +386,11 @@ public:
 	IC SelfRef	random_dir		(CRandom& R = ::Random)
 	{
 		//z	= R.randF(-1,1);
-		z	= _cos(R.randF(PI));
+		z	= std::cos(R.randF(PI));
 		T a = R.randF(PI_MUL_2);
-		T r = _sqrt(1-z*z);
-		T sa= _sin (a);
-		T ca= _cos (a);
+		T r = std::sqrt(1-z*z);
+		T sa= std::sin (a);
+		T ca= std::cos (a);
 		x	= r * ca;
 		y	= r * sa;
 		return *this;	
@@ -482,7 +482,7 @@ public:
     };
 	IC	SelfRef	setHP	(T h, T p)
 	{
-        T _ch=_cos(h), _cp=_cos(p), _sh=_sin(h), _sp=_sin(p);
+        T _ch= std::cos(h), _cp= std::cos(p), _sh= std::sin(h), _sp= std::sin(p);
         x = -_cp*_sh;
         y = _sp;
         z = _cp*_ch;
@@ -538,7 +538,7 @@ public:
     {
         T fInvLength;
 
-        if ( _abs(dir.x) >= _abs(dir.y) ){
+        if ( std::abs(dir.x) >= std::abs(dir.y) ){
             // W.x or W.z is the largest magnitude component, swap them
             fInvLength = 1.f/_sqrt(dir.x*dir.x+dir.z*dir.z);
             up.x = -dir.z*fInvLength;
@@ -638,9 +638,9 @@ IC		BOOL	exact_normalize (float* a)
 	a0 = a[0];
 	a1 = a[1];
 	a2 = a[2];
-	aa0 = _abs(a0);
-	aa1 = _abs(a1);
-	aa2 = _abs(a2);
+	aa0 = std::abs(a0);
+	aa1 = std::abs(a1);
+	aa2 = std::abs(a2);
 	if (aa1 > aa0) {
 		if (aa2 > aa1) {
 			goto aa2_largest;

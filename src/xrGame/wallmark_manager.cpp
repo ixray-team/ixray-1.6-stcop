@@ -190,7 +190,7 @@ float Distance (const Fvector& rkPoint, const Fvector rkTri[3], float& pfSParam,
 //.    float fC = kDiff.SquaredLength();
     float fC = kDiff.square_magnitude();
 
-    float fDet = _abs(fA00*fA11-fA01*fA01);
+    float fDet = std::abs(fA00*fA11-fA01*fA01);
 
     float fS = fA01*fB1-fA11*fB0;
     float fT = fA01*fB0-fA00*fB1;
@@ -409,5 +409,5 @@ float Distance (const Fvector& rkPoint, const Fvector rkTri[3], float& pfSParam,
 	
 	dir.sub				(closest, rkPoint);
 	dir.normalize_safe	();
-    return _sqrt		(_abs(fSqrDist));
+    return _sqrt		(std::abs(fSqrDist));
 }

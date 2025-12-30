@@ -126,9 +126,9 @@ void CCustomRocket::create_physic_shell()
 	Fvector ax = zero_vel;
 	float radius = 0.0f;
 	CHOOSE_MAX(
-		obb.m_halfsize.x, ax.set(obb.m_rotate.i); ax.mul(obb.m_halfsize.x); radius = _min(obb.m_halfsize.y, obb.m_halfsize.z); obb.m_halfsize.y /= 2.0f; obb.m_halfsize.z /= 2.0f,
-		obb.m_halfsize.y, ax.set(obb.m_rotate.j); ax.mul(obb.m_halfsize.y); radius = _min(obb.m_halfsize.x, obb.m_halfsize.z); obb.m_halfsize.x /= 2.0f; obb.m_halfsize.z /= 2.0f,
-		obb.m_halfsize.z, ax.set(obb.m_rotate.k); ax.mul(obb.m_halfsize.z); radius = _min(obb.m_halfsize.y, obb.m_halfsize.x); obb.m_halfsize.y /= 2.0f; obb.m_halfsize.x /= 2.0f
+		obb.m_halfsize.x, ax.set(obb.m_rotate.i); ax.mul(obb.m_halfsize.x); radius = std::min(obb.m_halfsize.y, obb.m_halfsize.z); obb.m_halfsize.y /= 2.0f; obb.m_halfsize.z /= 2.0f,
+		obb.m_halfsize.y, ax.set(obb.m_rotate.j); ax.mul(obb.m_halfsize.y); radius = std::min(obb.m_halfsize.x, obb.m_halfsize.z); obb.m_halfsize.x /= 2.0f; obb.m_halfsize.z /= 2.0f,
+		obb.m_halfsize.z, ax.set(obb.m_rotate.k); ax.mul(obb.m_halfsize.z); radius = std::min(obb.m_halfsize.y, obb.m_halfsize.x); obb.m_halfsize.y /= 2.0f; obb.m_halfsize.x /= 2.0f
 	)
 
 	Fsphere	sphere1, sphere2;

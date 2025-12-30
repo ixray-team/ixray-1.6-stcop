@@ -45,7 +45,7 @@ Fsphere CalculateSphere(xr_vector<Fvector>& V, Fbox &bbox)
 			S2.R = d;
 	}
 
-	S2.R = _sqrt(_abs(S2.R));
+	S2.R = _sqrt(std::abs(S2.R));
 	return S2;
 }
 

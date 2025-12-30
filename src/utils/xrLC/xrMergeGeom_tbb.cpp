@@ -149,13 +149,12 @@ struct SplitInfo
 #include <tbb/combinable.h>
 #include <tbb/parallel_for.h>
 
-// ForserX Не трогай то что и так работает :)
 void xrPhase_MergeGeometry_Tbb()
 {
 	xr_vector<SplitInfo> info(g_XSplit.size());
 
 	tbb::combinable<SplitMap> tempMappings;
-	auto grain = _max(size_t(1), g_XSplit.size() / tbb::task_arena().max_concurrency() / 10);
+	auto grain = std::max(size_t(1), g_XSplit.size() / tbb::task_arena().max_concurrency() / 10);
 	tbb::parallel_for(tbb::blocked_range<u32>(0, g_XSplit.size(), grain), [&](const auto& r)
 	{
 		auto& local = tempMappings.local();

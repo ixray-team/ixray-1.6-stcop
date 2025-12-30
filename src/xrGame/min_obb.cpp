@@ -18,8 +18,8 @@ public:
 
 static void FromAxisAngle(Fmatrix &self, const Fvector& rkAxis, float fRadians)
 {
-    float fCos = _cos(fRadians);
-    float fSin = _sin(fRadians);
+    float fCos = std::cos(fRadians);
+    float fSin = std::sin(fRadians);
     float fOneMinusCos = 1.0f-fCos;
     float fX2 = rkAxis.x*rkAxis.x;
     float fY2 = rkAxis.y*rkAxis.y;
@@ -62,10 +62,10 @@ static float Volume (const float* afAngle, void* pvUserData)
     int iQuantity = ((PointArray*)pvUserData)->m_iQuantity;
     const Fvector* akPoint = ((PointArray*)pvUserData)->m_akPoint;
 
-    float fCos0 = _cos(afAngle[0]);
-    float fSin0 = _sin(afAngle[0]);
-    float fCos1 = _cos(afAngle[1]);
-    float fSin1 = _sin(afAngle[1]);
+    float fCos0 = std::cos(afAngle[0]);
+    float fSin0 = std::sin(afAngle[0]);
+    float fCos1 = std::cos(afAngle[1]);
+    float fSin1 = std::sin(afAngle[1]);
     Fvector kAxis = Fvector().set(fCos0*fSin1,fSin0*fSin1,fCos1);
     Fmatrix kRot;
     FromAxisAngle(kRot,kAxis,afAngle[2]);
@@ -101,10 +101,10 @@ static float Volume (const float* afAngle, void* pvUserData)
 static void MinimalBoxForAngles (int iQuantity, const Fvector* akPoint,
     float afAngle[3], MagicBox3& rkBox)
 {
-    float		fCos0 = _cos(afAngle[0]);
-    float		fSin0 = _sin(afAngle[0]);
-    float		fCos1 = _cos(afAngle[1]);
-    float		fSin1 = _sin(afAngle[1]);
+    float		fCos0 = std::cos(afAngle[0]);
+    float		fSin0 = std::sin(afAngle[0]);
+    float		fCos1 = std::cos(afAngle[1]);
+    float		fSin1 = std::sin(afAngle[1]);
     Fvector		kAxis = Fvector().set(fCos0*fSin1,fSin0*fSin1,fCos1);
     Fmatrix		kRot;
     FromAxisAngle(kRot,kAxis,afAngle[2]);

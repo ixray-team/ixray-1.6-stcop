@@ -24,7 +24,7 @@ void vfComputeLinearRegression(xr_vector<T>& A, xr_vector<T>& B, T2& C, T2& D)
 	C = T2(0);
 	D = T2(0);
 
-	if (_abs(l_tDenominator) > EPS_S)
+	if (std::abs(l_tDenominator) > EPS_S)
 	{
 		C = T2((T(N) * sxy - sx * sy) / l_tDenominator);
 	}
@@ -63,7 +63,7 @@ T simple_optimize(xr_vector<T>& A, xr_vector<T>& B, T2& _scale, T2& _bias)
 		//1. scale
 		u32 _ok = 0;
 		for (accum = 0, it = 0; it < A.size(); it++)
-			if (_abs(A[it]) > EPS_L)
+			if (std::abs(A[it]) > EPS_L)
 			{
 				accum += (B[it] - bias) / A[it];
 				_ok += 1;
@@ -72,7 +72,7 @@ T simple_optimize(xr_vector<T>& A, xr_vector<T>& B, T2& _scale, T2& _bias)
 
 		//2. bias
 		T b = bias;
-		if (_abs(scale) > EPS)
+		if (std::abs(scale) > EPS)
 		{
 			for (accum = 0, it = 0; it < A.size(); it++)
 				accum += B[it] - A[it] / scale;

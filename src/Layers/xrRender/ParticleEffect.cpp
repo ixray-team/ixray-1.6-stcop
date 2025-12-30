@@ -495,8 +495,8 @@ void CParticleEffect::Render(float)
 				if (angle != m.rotI.x)
 				{
 				    angle = m.rotI.x;
-				    sina = _sin(angle);
-				    cosa = _cos(angle);
+				    sina = std::sin(angle);
+				    cosa = std::cos(angle);
 				}
 
 				if (m_Def->m_Flags.is(CPEDef::dfFramed))
@@ -529,7 +529,7 @@ void CParticleEffect::Render(float)
                     }else if ((speed>=EPS_S)&&m_Def->m_Flags.is(CPEDef::dfFaceAlign)){
                     	Fmatrix	M;  		M.identity();
                         M.k.div				(m.velI,speed);            
-                        M.j.set 			(0,1,0);	if (_abs(M.j.dotproduct(M.k))>.99f)  M.j.set(0,0,1);
+                        M.j.set 			(0,1,0);	if (std::abs(M.j.dotproduct(M.k))>.99f)  M.j.set(0,0,1);
                         M.i.crossproduct	(M.j,M.k);	M.i.normalize	();
                         M.j.crossproduct   	(M.k,M.i);	M.j.normalize  ();
 						if (m_RT_Flags.is(CParticleEffect::flRT_XFORM)){
@@ -603,8 +603,8 @@ void CParticleEffect::Render(float)
 //----------------------------------------------------
 IC void FillSprite	(FVF::LIT*& pv, const Fvector& T, const Fvector& R, const Fvector& pos, const Fvector2& lt, const Fvector2& rb, float r1, float r2, u32 clr, float angle)
 {
-	float sa	= _sin(angle);  
-	float ca	= _cos(angle);  
+	float sa	= std::sin(angle);  
+	float ca	= std::cos(angle);  
 	Fvector Vr, Vt;
 	Vr.x 		= T.x*r1*sa+R.x*r1*ca;
 	Vr.y 		= T.y*r1*sa+R.y*r1*ca;
@@ -626,8 +626,8 @@ IC void FillSprite	(FVF::LIT*& pv, const Fvector& T, const Fvector& R, const Fve
 
 IC void FillSprite	(FVF::LIT*& pv, const Fvector& pos, const Fvector& dir, const Fvector2& lt, const Fvector2& rb, float r1, float r2, u32 clr, float angle)
 {
-	float sa	= _sin(angle);  
-	float ca	= _cos(angle);  
+	float sa	= std::sin(angle);  
+	float ca	= std::cos(angle);  
 	const Fvector& T 	= dir;
 	Fvector R; 	R.crossproduct(T,RDEVICE.vCameraDirection).normalize_safe();
 	Fvector Vr, Vt;
@@ -693,7 +693,7 @@ void CParticleEffect::Render(float )
                     }else if ((speed>=EPS_S)&&m_Def->m_Flags.is(CPEDef::dfFaceAlign)){
                     	Fmatrix	M;  		M.identity();
                         M.k.div				(m.vel,speed);            
-                        M.j.set 			(0,1,0);	if (_abs(M.j.dotproduct(M.k))>.99f)  M.j.set(0,0,1);
+                        M.j.set 			(0,1,0);	if (std::abs(M.j.dotproduct(M.k))>.99f)  M.j.set(0,0,1);
                         M.i.crossproduct	(M.j,M.k);	M.i.normalize	();
                         M.j.crossproduct   	(M.k,M.i);	M.j.normalize  ();
                         if (m_RT_Flags.is(flRT_XFORM)){

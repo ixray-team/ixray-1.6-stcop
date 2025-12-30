@@ -235,7 +235,7 @@ class cl_times		: public R_constant_setup {
 	virtual void setup(R_constant* C)
 	{
 		float 		t	= RDEVICE.fTimeGlobal;
-		RCache.set_c	(C,t,t*10,t/10,_sin(t))	;
+		RCache.set_c	(C,t,t*10,t/10, std::sin(t))	;
 	}
 };
 static cl_times		binder_times;

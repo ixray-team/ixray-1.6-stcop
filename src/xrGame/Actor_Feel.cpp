@@ -341,7 +341,7 @@ void CActor::feel_sound_new(CObject* who, int type, CSound_UserDataPtr user_data
 {
 	if (who == this)
 	{
-		m_snd_noise = _max(m_snd_noise, power);
+		m_snd_noise = std::max(m_snd_noise, power);
 	}
 }
 

@@ -76,7 +76,7 @@ void CActor::camUpdateLadder(float dt)
 		cameras[eacFirstEye]->lim_yaw[1]	= hi;
 		cameras[eacFirstEye]->bClampYaw		= true;
 	}else{
-		cam_yaw								+= delta * _min(dt*10.f,1.f) ;
+		cam_yaw								+= delta * std::min(dt*10.f,1.f) ;
 	}
 
 	IElevatorState* es = character_physics_support()->movement()->ElevatorState();
@@ -86,7 +86,7 @@ void CActor::camUpdateLadder(float dt)
 		const float ldown_pitch				= cameras[eacFirstEye]->lim_pitch.y;
 		float delta_							= angle_difference_signed(ldown_pitch,cam_pitch);
 		if(delta_>0.f)
-			cam_pitch						+= delta_* _min(dt*10.f,1.f) ;
+			cam_pitch						+= delta_* std::min(dt*10.f,1.f) ;
 	}
 }
 
@@ -214,13 +214,13 @@ IC float viewport_near(float& w, float& h)
 	w = 2.f* Device.fViewportNear*tan(deg2rad(Device.fFOV)/2.f);
 	h = w*Device.fASPECT;
 	float	c	= _sqrt					(w*w + h*h);
-	return	_max(_max(Device.fViewportNear,_max(w,h)),c);
+	return	std::max(std::max(Device.fViewportNear, std::max(w,h)),c);
 }
 
 ICF void calc_point(Fvector& pt, float radius, float depth, float alpha)
 {
-	pt.x	= radius*_sin(alpha);
-	pt.y	= radius+radius*_cos(alpha);
+	pt.x	= radius* std::sin(alpha);
+	pt.y	= radius+radius* std::cos(alpha);
 	pt.z	= depth;
 }
 ICF void calc_gl_point(Fvector& pt, const Fmatrix& xform, float radius, float angle )
@@ -347,9 +347,9 @@ void	CActor::cam_Lookout	( const Fmatrix &xform, float camera_height )
 				{
 					da			= PI/1000.f;
 					if (!fis_zero(r_torso.roll))
-						da		*= r_torso.roll/_abs(r_torso.roll);
+						da		*= r_torso.roll/ std::abs(r_torso.roll);
 					float angle = 0.f;
-					for (; _abs(angle)<_abs(alpha); angle+=da)
+					for (; std::abs(angle)< std::abs(alpha); angle+=da)
 					{
 						Fvector				pt_;
 						calc_gl_point( pt_, xform, radius, angle );
@@ -422,14 +422,12 @@ void CActor::cam_Update(float dt, float fFOV)
 	{
 		y_shift = character_physics_support()->ik_controller()->Shift();
 		float cam_smooth_k = 1.f;
-		if(_abs(y_shift-current_ik_cam_shift)>ik_cam_shift_tolerance)
+		if(std::abs(y_shift-current_ik_cam_shift)>ik_cam_shift_tolerance)
 		{
-
 			cam_smooth_k = 1.f - ik_cam_shift_speed * dt/0.01f;
-
 		}
 
-		if(_abs(y_shift)<ik_cam_shift_tolerance/2.f)
+		if(std::abs(y_shift)<ik_cam_shift_tolerance/2.f)
 			cam_smooth_k = 1.f - ik_cam_shift_speed * 1.f/0.01f * dt;
 		clamp( cam_smooth_k, 0.f, 1.f );
 		current_ik_cam_shift = cam_smooth_k * current_ik_cam_shift + y_shift * ( 1.f - cam_smooth_k );
