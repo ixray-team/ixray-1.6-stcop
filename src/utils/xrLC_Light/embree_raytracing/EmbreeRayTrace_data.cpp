@@ -208,7 +208,7 @@ void EmbreeData::BuildRcast()
 
 	// Header
 	hdrCFORM hdr;
-	hdr.version		= CFORM_CURRENT_VERSION;
+	hdr.version		= CFormVersions::Vanilla;
 	hdr.vertcount	= (u32) container.vertex_cnt();
 	hdr.facecount	= (u32) container.faces_cnt();
 	hdr.aabb		= pBuild->scene_bb;

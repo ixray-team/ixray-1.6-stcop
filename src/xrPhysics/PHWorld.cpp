@@ -45,21 +45,22 @@ void  destroy_physics_world()
 
 CObjectSpace*  create_object_space()
 {
-	CFileReader* fr = new CFileReader("ActorEditorLevel.cform");
+	//CFileReader* fr = new CFileReader("ActorEditorLevel.cform");
 	CObjectSpace* os = new CObjectSpace();
 	g_SpatialSpace = new ISpatial_DB();
 	g_SpatialSpacePhysic = new ISpatial_DB();
-	os->Load(fr, 0);
+	os->Load(nullptr, "ActorEditorLevel", nullptr);
+	//os->Load(fr, 0);
 
 	return os;
 }
 
-CObjectSpace*  mesh_create_object_space(Fvector* verts, CDB::TRI* tris, const hdrCFORM &H, CDB::build_callback build_callback)
+CObjectSpace* mesh_create_object_space(const XRay::CForm::IFormat& CForm, CDB::build_callback build_callback)
 {
 	CObjectSpace* os = new CObjectSpace();
 	g_SpatialSpace				= new ISpatial_DB	();
 	g_SpatialSpacePhysic		= new ISpatial_DB	();
-	os->Create( verts, tris, H, build_callback, nullptr, false);
+	os->Create( CForm, build_callback, nullptr, false);
 	return os;
 }
 
