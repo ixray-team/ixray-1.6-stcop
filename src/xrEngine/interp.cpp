@@ -88,7 +88,7 @@ static float bez2_time( float x0, float x1, float x2, float x3, float time, floa
 
    t = *t0 + ( *t1 - *t0 ) * 0.5f;
    v = bezier( x0, x1, x2, x3, t );
-   if ( _abs( time - v ) > .0001f ) {
+   if (std::abs( time - v ) > .0001f ) {
       if ( v > time )
          *t1 = t;
       else
@@ -167,7 +167,7 @@ static float outgoing( st_Key *key0p, st_Key *key0, st_Key *key1 ){
 
       case SHAPE_BEZ2:
          out = key0->param[ 3 ] * ( key1->time - key0->time );
-         if ( _abs( key0->param[ 2 ] ) > 1e-5f )
+         if (std::abs( key0->param[ 2 ] ) > 1e-5f )
             out /= key0->param[ 2 ];
          else
             out *= 1e5f;
@@ -224,7 +224,7 @@ static float incoming( st_Key *key0, st_Key *key1, st_Key *key1n ){
 
       case SHAPE_BEZ2:
          in = key1->param[ 1 ] * ( key1->time - key0->time );
-         if ( _abs( key1->param[ 0 ] ) > 1e-5f )
+         if (std::abs( key1->param[ 0 ] ) > 1e-5f )
             in /= key1->param[ 0 ];
          else
             in *= 1e5f;

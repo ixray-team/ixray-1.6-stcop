@@ -91,7 +91,7 @@ public:
 				Fvector tmp_point = view_frustum_rays[i].P;
 					
 				tmp_dist = light_cuboid_polys[align_planes[p]].plane.classify( tmp_point );
-				min_dist = _min( tmp_dist, min_dist );
+				min_dist = std::min( tmp_dist, min_dist );
 			}
 
 			Fvector shift = light_cuboid_polys[align_planes[p]].plane.n;
@@ -179,7 +179,7 @@ public:
 	
 			float max_dist = -1000;
 			for( u32 i = 0; i< view_frustum_rays.size(); ++i )
-				max_dist = _max( plane.classify( view_frustum_rays[i].P ), max_dist);
+				max_dist = std::max( plane.classify( view_frustum_rays[i].P ), max_dist);
 
 			for( u32 i = 0; i< view_frustum_rays.size(); ++i )
 			{

@@ -471,7 +471,7 @@ void CSkeletonX::_Load	(const char* N, IReader *data, u32& dwVertCount)
 				if(bids.end() == std::find(bids.begin(),bids.end(),mid))	
 					bids.push_back	(mid);
 
-				sw_bones_cnt		= _max(sw_bones_cnt, mid);
+				sw_bones_cnt		= std::max(sw_bones_cnt, mid);
 			}
 #ifdef _EDITOR
 			// software
@@ -511,8 +511,8 @@ void CSkeletonX::_Load	(const char* N, IReader *data, u32& dwVertCount)
 			for(it=0; it<dwVertCount; ++it)
 			{
 				const vertBoned2W& VB			= pVO[it];
-				sw_bones_cnt					= _max(sw_bones_cnt, VB.matrix0);
-				sw_bones_cnt					= _max(sw_bones_cnt, VB.matrix1);
+				sw_bones_cnt					= std::max(sw_bones_cnt, VB.matrix0);
+				sw_bones_cnt					= std::max(sw_bones_cnt, VB.matrix1);
 
 				if(bids.end() == std::find(bids.begin(),bids.end(),VB.matrix0))	
 					bids.push_back(VB.matrix0);
@@ -547,7 +547,7 @@ void CSkeletonX::_Load	(const char* N, IReader *data, u32& dwVertCount)
 				const vertBoned3W& VB			= pVO[it];
 				for(int i=0; i<3; ++i)
 				{
-					sw_bones_cnt				= _max(sw_bones_cnt, VB.m[i]);
+					sw_bones_cnt				= std::max(sw_bones_cnt, VB.m[i]);
 
 					if(bids.end() == std::find(bids.begin(),bids.end(),VB.m[i]))	
 						bids.push_back(VB.m[i]);
@@ -579,7 +579,7 @@ void CSkeletonX::_Load	(const char* N, IReader *data, u32& dwVertCount)
 
 				for(int i=0; i<4; ++i)
 				{
-					sw_bones_cnt				= _max(sw_bones_cnt, VB.m[i]);
+					sw_bones_cnt				= std::max(sw_bones_cnt, VB.m[i]);
 
 					if(bids.end() == std::find(bids.begin(),bids.end(),VB.m[i]))	
 						bids.push_back(VB.m[i]);

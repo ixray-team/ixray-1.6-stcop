@@ -189,10 +189,10 @@ float get_circle_equation(const float ee[3],
 	return 0;
 
     // center of circle (origin is location of first S joint)
-    vecscalarmult(c, n, _cos(alpha) * upper_len);
+    vecscalarmult(c, n, std::cos(alpha) * upper_len);
 
     
-    radius = _sin(alpha) * upper_len;
+    radius = std::sin(alpha) * upper_len;
 
     float temp[3];
 
@@ -389,9 +389,9 @@ inline void evalcircle(const float c[3],
     float temp[3];
 
     cpvector(p, c);
-    vecscalarmult(temp, (float*)u, radius*_cos(angle));
+    vecscalarmult(temp, (float*)u, radius* std::cos(angle));
     vecadd(p, p, temp);
-    vecscalarmult(temp, (float*)v, radius*_sin(angle));
+    vecscalarmult(temp, (float*)v, radius* std::sin(angle));
     vecadd(p, p, temp);
 }
 
@@ -729,12 +729,12 @@ static void get_aim_circle_equation(const float g[3],
     float L4 = _sqrt(DOT(g,g));
     float beta = M_PI - alpha;
 
-    float delta = asin(_sin(beta)*L3/L4);
+    float delta = asin(std::sin(beta)*L3/L4);
     if (delta < 0)
 	delta = - delta;
     float gamma = M_PI - delta - beta;
 
-    float c_gamma = _cos(gamma);
+    float c_gamma = std::cos(gamma);
     float n[3]; 
     cpvector(n, g);
     unitize(n);

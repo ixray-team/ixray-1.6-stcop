@@ -15,7 +15,7 @@ void bonesBone::Set(CBoneInstance *b, u8 a, float ty, float cy, float r_s)
 	params.target_yaw	= ty; 
 	params.cur_yaw	= cy; 
 	params.r_speed	= r_s;
-	params.dist_yaw	= _abs(ty-cy);
+	params.dist_yaw	= std::abs(ty-cy);
 }
 
 
@@ -30,12 +30,12 @@ void bonesBone::Turn(u32 dt)
 	float PI_DIV_2m		= 8 * PI_DIV_6 / 3;		
 	float PIm			= PI_DIV_2m * 2;
 
-	float cur_speed = params.r_speed * _cos(PI_DIV_2m - PIm * _abs(params.target_yaw - params.cur_yaw) / params.dist_yaw);
+	float cur_speed = params.r_speed * std::cos(PI_DIV_2m - PIm * std::abs(params.target_yaw - params.cur_yaw) / params.dist_yaw);
 
 	float dy;
 	dy =  cur_speed * dt / 1000;  // учитываем милисек и радианную меры
 
-	if (_abs(params.target_yaw - params.cur_yaw) < dy) params.cur_yaw = params.target_yaw;
+	if (std::abs(params.target_yaw - params.cur_yaw) < dy) params.cur_yaw = params.target_yaw;
 	else params.cur_yaw += ((params.target_yaw > params.cur_yaw) ? dy : -dy);
 
 }
@@ -144,7 +144,7 @@ void bonesManipulation::Update(CBoneInstance *bone, u32 cur_time)
 			// установить у всех костей в m_Bone таргеты в 0
 			for (u32 i = 0; i<m_Bones.size(); ++i) {
 				m_Bones[i].params.target_yaw	= 0.f;
-				m_Bones[i].params.dist_yaw		= _abs(m_Bones[i].params.target_yaw - m_Bones[i].params.cur_yaw);
+				m_Bones[i].params.dist_yaw		= std::abs(m_Bones[i].params.target_yaw - m_Bones[i].params.cur_yaw);
 			}
 			bActive = false;
 		} 

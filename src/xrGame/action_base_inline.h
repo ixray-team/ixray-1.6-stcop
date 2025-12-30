@@ -168,7 +168,7 @@ IC	const typename CBaseAction::_value_type	&CBaseAction::property	(const _condit
 TEMPLATE_SPECIALIZATION
 IC	void CBaseAction::set_weight	(const _edge_value_type &weight)
 {
-	m_weight				= _max(min_weight(),weight);
+	m_weight				= std::max(min_weight(),weight);
 }
 
 TEMPLATE_SPECIALIZATION

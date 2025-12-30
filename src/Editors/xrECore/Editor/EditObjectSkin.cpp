@@ -260,7 +260,7 @@ void ComputeSphere(Fsphere &B, FvectorVec& V)
 		float d = S2.P.distance_to_sqr(*I);
 		if (d>S2.R) S2.R=d;
 	}
-	S2.R = _sqrt (_abs(S2.R));
+	S2.R = _sqrt (std::abs(S2.R));
 	BOOL B2				= SphereValid(V,S2);
 
 	// 3: calc magic-fm
@@ -314,22 +314,22 @@ void ComputeCylinder(Fcylinder& C, Fobb& B, FvectorVec& V)
     	Fvector pt_c;	pt_c.sub(pt,c);
 
     	float pI		= axisI.dotproduct(pt);
-        min_hI			= _min(min_hI,pI);
-        max_hI			= _max(max_hI,pI);
+        min_hI			= std::min(min_hI,pI);
+        max_hI			= std::max(max_hI,pI);
         tmp.mad			(c,axisI,axisI.dotproduct(pt_c));
-        max_rI			= _max(max_rI,tmp.distance_to(pt));
+        max_rI			= std::max(max_rI,tmp.distance_to(pt));
         
     	float pJ		= axisJ.dotproduct(pt);
-        min_hJ			= _min(min_hJ,pJ);
-        max_hJ			= _max(max_hJ,pJ);
+        min_hJ			= std::min(min_hJ,pJ);
+        max_hJ			= std::max(max_hJ,pJ);
         tmp.mad			(c,axisJ,axisJ.dotproduct(pt_c));
-        max_rJ			= _max(max_rJ,tmp.distance_to(pt));
+        max_rJ			= std::max(max_rJ,tmp.distance_to(pt));
 
     	float pK		= axisK.dotproduct(pt);
-        min_hK			= _min(min_hK,pK);
-        max_hK			= _max(max_hK,pK);
+        min_hK			= std::min(min_hK,pK);
+        max_hK			= std::max(max_hK,pK);
         tmp.mad			(c,axisK,axisK.dotproduct(pt_c));
-        max_rK			= _max(max_rK,tmp.distance_to(pt));
+        max_rK			= std::max(max_rK,tmp.distance_to(pt));
     }
 
     float hI			= (max_hI-min_hI);
@@ -338,12 +338,7 @@ void ComputeCylinder(Fcylinder& C, Fobb& B, FvectorVec& V)
     float vI			= hI*M_PI*_sqr(max_rI);
     float vJ			= hJ*M_PI*_sqr(max_rJ);
     float vK			= hK*M_PI*_sqr(max_rK);
-//    vI					= pow(2*M_PI*max_rI*hI+2*M_PI*_sqr(max_rI),3/2)/vI;
-//    vJ					= pow(2*M_PI*max_rJ*hJ+2*M_PI*_sqr(max_rJ),3/2)/vJ;
-//    vK					= pow(2*M_PI*max_rK*hK+2*M_PI*_sqr(max_rK),3/2)/vK;
-    // pow(area,(3/2))/volume
-    // 2*Pi*R*H+2*Pi*R*R
-    
+
     if (vI<vJ){
     	if (vI<vK){
         	//vI;

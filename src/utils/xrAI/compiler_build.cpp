@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "compiler.h"
 
-#include "cl_intersect.h"
+#include "../../xrCore/Collision/cl_intersect.h"
 #include "motion_simulator.h"
 
 IC void SnapXZ	(Fvector&	V)
@@ -146,7 +146,7 @@ BOOL CreateNode(Fvector& vAt, vertex& N)
 
 	// *** Validate results
 	vNorm.set(0,1,0);
-	if (vNorm.dotproduct(N.Plane.n)<_cos(deg2rad(60.f)))  return FALSE;
+	if (vNorm.dotproduct(N.Plane.n)<std::cos(deg2rad(60.f)))  return FALSE;
 
 	float y_old = vAt.y;
 	float y_new = N.Pos.y;

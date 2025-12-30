@@ -239,7 +239,7 @@ void CRenderDevice::on_idle		()
 	{
 		float factor = float(dwPrecacheFrame) / float(dwPrecacheTotal);
 		float angle = PI_MUL_2 * factor;
-		vCameraDirection.set(_sin(angle), 0, _cos(angle));	vCameraDirection.normalize();
+		vCameraDirection.set(std::sin(angle), 0, std::cos(angle));	vCameraDirection.normalize();
 		vCameraTop.set(0, 1, 0);
 		vCameraRight.crossproduct(vCameraTop, vCameraDirection);
 

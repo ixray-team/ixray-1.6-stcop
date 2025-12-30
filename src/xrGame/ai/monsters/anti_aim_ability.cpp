@@ -189,7 +189,7 @@ void   anti_aim_ability::start_camera_effector ()
 	cam_eff->Start						(fn);
 
 	m_camera_effector_end_tick		=	Device.dwTimeGlobal + (TTime)(cam_eff->GetAnimatorLength()*1000);
-	m_camera_effector_end_tick		=	_max(m_camera_effector_end_tick, m_animation_end_tick);
+	m_camera_effector_end_tick		= std::max(m_camera_effector_end_tick, m_animation_end_tick);
 
 	Actor()->Cameras().AddCamEffector	(cam_eff);
 	
@@ -257,7 +257,7 @@ float   anti_aim_ability::calculate_angle () const
 	float	const max_deviation		=	angle_between_vectors(to_monster_center, to_monster_head);
 	float	const deviation			=	angle_between_vectors(to_monster_center, self_dir);
 
-	return _max							(0.f, deviation - max_deviation);
+	return std::max(0.f, deviation - max_deviation);
 }
 
 #include "../../level_debug.h"
@@ -344,7 +344,7 @@ void   anti_aim_ability::update_schedule ()
 	m_last_detection_tick			=	Device.dwTimeGlobal;
 
 	float const angle				=	calculate_angle();
-	float const average_angle		=	_min(m_max_angle, (angle + m_last_angle) / 2);
+	float const average_angle		= std::min(m_max_angle, (angle + m_last_angle) / 2);
 	float const relative_angle		=	(m_max_angle-average_angle) / m_max_angle; 
 	float const detect_speed		=	can_detect() ? _sqr(relative_angle) * m_detection_gain_speed : 0;
 

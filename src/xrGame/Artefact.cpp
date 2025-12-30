@@ -640,7 +640,7 @@ void SArtefactDetectorsSupport::UpdateOnFrame()
 				m_destPoint			= m_currPatrolVertex->data().position();
 			}	
 		}
-		float		cos_et	= _cos(deg2rad(45.f));
+		float		cos_et	= std::cos(deg2rad(45.f));
 		Fvector		dir;
 		dir.sub		(m_destPoint, m_parent->Position()).normalize_safe();
 

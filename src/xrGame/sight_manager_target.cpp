@@ -174,7 +174,7 @@ void CSightManager::SetLessCoverLook(const ILevelGraph::CVertex *tpNode, float f
 					(fSquare1 - fSquare0 > fMaxSquare) || 
 					(
 						fsimilar(fSquare1 - fSquare0,fMaxSquare,EPS_L) && 
-						(_abs(fIncrement - object().movement().m_body.target.yaw) < _abs(fBestAngle - object().movement().m_body.target.yaw))
+						(std::abs(fIncrement - object().movement().m_body.target.yaw) < std::abs(fBestAngle - object().movement().m_body.target.yaw))
 					)
 				)
 			{

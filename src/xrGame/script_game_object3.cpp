@@ -1076,7 +1076,7 @@ void CScriptGameObject::set_sight(SightManager::ESightType sight_type, Fvector* 
 {
 	if (CAI_Stalker* stalker = object().cast_stalker())
 	{
-		if ((sight_type == SightManager::eSightTypeDirection) && vector3d && (_abs(vector3d->magnitude() - 1.f) > .01f))
+		if ((sight_type == SightManager::eSightTypeDirection) && vector3d && (std::abs(vector3d->magnitude() - 1.f) > .01f))
 		{
 			VERIFY2(false, make_string<const char*>("non-normalized direction passed [%f][%f][%f]", VPUSH(*vector3d)));
 			vector3d->normalize();
@@ -1106,7 +1106,7 @@ void CScriptGameObject::set_sight(SightManager::ESightType sight_type, Fvector& 
 {
 	if (CAI_Stalker* stalker = object().cast_stalker())
 	{
-		if ((sight_type == SightManager::eSightTypeDirection) && (_abs(vector3d.magnitude() - 1.f) > .01f))
+		if ((sight_type == SightManager::eSightTypeDirection) && (std::abs(vector3d.magnitude() - 1.f) > .01f))
 		{
 			VERIFY2(false, make_string<const char*>("non-normalized direction passed [%f][%f][%f]", VPUSH(vector3d)));
 			vector3d.normalize();
@@ -1124,7 +1124,7 @@ void CScriptGameObject::set_sight(SightManager::ESightType sight_type, Fvector* 
 {
 	if (CAI_Stalker* stalker = object().cast_stalker())
 	{
-		if ((sight_type == SightManager::eSightTypeDirection) && vector3d && (_abs(vector3d->magnitude() - 1.f) > .01f))
+		if ((sight_type == SightManager::eSightTypeDirection) && vector3d && (std::abs(vector3d->magnitude() - 1.f) > .01f))
 		{
 			VERIFY2(false, make_string<const char*>("non-normalized direction passed [%f][%f][%f]", VPUSH(*vector3d)));
 			vector3d->normalize();

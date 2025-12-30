@@ -174,7 +174,7 @@ pDomain::pDomain(PDomainEnum dtype, float a0, float a1,
 			
 			// Find a vector3 orthogonal to n.
 			Fvector basis(1.0f, 0.0f, 0.0f);
-			if(_abs(basis * n) > 0.999)
+			if(std::abs(basis * n) > 0.999)
 				basis = Fvector(0.0f, 1.0f, 0.0f);
 			
 			// Project away N component, normalize and cross to get
@@ -210,7 +210,7 @@ pDomain::pDomain(PDomainEnum dtype, float a0, float a1,
 			
 			// Find a vector3 orthogonal to n.
 			Fvector basis(1.0f, 0.0f, 0.0f);
-			if(_abs(basis * p2) > 0.999)
+			if(std::abs(basis * p2) > 0.999)
 				basis = Fvector(0.0f, 1.0f, 0.0f);
 			
 			// Project away N component, normalize and cross to get
@@ -346,8 +346,8 @@ void pDomain::Generate(Fvector &pos) const
 			// Distance from axis
 			float r = radius2 + drand48() * (radius1 - radius2);
 			
-			float x = r * _cos(theta); // Weighting of each frame vector3
-			float y = r * _sin(theta);
+			float x = r * std::cos(theta); // Weighting of each frame vector3
+			float y = r * std::sin(theta);
 			
 			// Scale radius along axis for cones
 			if(type == PDCone)
@@ -371,8 +371,8 @@ void pDomain::Generate(Fvector &pos) const
 			// Distance from center
 			float r = radius2 + drand48() * (radius1 - radius2);
 			
-			float x = r * _cos(theta); // Weighting of each frame vector3
-			float y = r * _sin(theta);
+			float x = r * std::cos(theta); // Weighting of each frame vector3
+			float y = r * std::sin(theta);
 			
 			pos = p1 + u * x + v * y;
 		}

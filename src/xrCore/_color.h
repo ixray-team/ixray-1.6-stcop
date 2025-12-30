@@ -327,11 +327,11 @@ public:
     }
 
     inline bool similar_rgba(const _color& v, float E = EPS_L) const {
-        return _abs(r - v.r) < E && _abs(g - v.g) < E && _abs(b - v.b) < E && _abs(a - v.a) < E;
+        return std::abs(r - v.r) < E && std::abs(g - v.g) < E && std::abs(b - v.b) < E && std::abs(a - v.a) < E;
     };
 
     inline bool similar_rgb(const _color& v, float E = EPS_L) const {
-        return _abs(r - v.r) < E && _abs(g - v.g) < E && _abs(b - v.b) < E;
+        return std::abs(r - v.r) < E && std::abs(g - v.g) < E && std::abs(b - v.b) < E;
     };
 };
 

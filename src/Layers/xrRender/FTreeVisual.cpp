@@ -110,7 +110,7 @@ struct	FTreeVisual_setup
 
 		// Calc wind-vector3, scale
 		float	tm_rot			= PI_MUL_2 * Device.fTimeGlobal / currentEnv->trees_rotation;
-		wind.set				(_sin(tm_rot),0,_cos(tm_rot),0);	wind.normalize	();	wind.mul(currentEnv->trees_amplitude);	// dir1*amplitude
+		wind.set				(std::sin(tm_rot),0, std::cos(tm_rot),0);	wind.normalize	();	wind.mul(currentEnv->trees_amplitude);	// dir1*amplitude
 		scale					= 1.f/float(FTreeVisual_quant);
 
 		// setup constants

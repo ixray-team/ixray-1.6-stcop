@@ -714,7 +714,7 @@ bool FRbmkGoapPlanner::Search()
 				CurrentParameters.Add(Path.back()->Effects,this);
 				NextNode = TempCameFrom[NextNode];
 			}
-			IteratorsMaxCount = _max(IteratorsMaxCount,IteratorsCount);
+			IteratorsMaxCount = std::max(IteratorsMaxCount,IteratorsCount);
 			return true;
 		}
 		

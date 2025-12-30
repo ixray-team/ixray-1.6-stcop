@@ -142,7 +142,7 @@ public:
 			if (test_mask & bit) {
 				float cls = planes[i].classify(c);
 				if (cls > r) { test_mask = 0; return fcvNone; }	// none  - return
-				if (_abs(cls) >= r) test_mask &= ~bit;			// fully - no need to test this plane
+				if (std::abs(cls) >= r) test_mask &= ~bit;			// fully - no need to test this plane
 			}
 		}
 		return test_mask ? fcvPartial : fcvFully;
@@ -189,10 +189,11 @@ public:
 		u32	bit = 1;
 		for (int i = 0; i < p_count; i++, bit <<= 1)
 		{
-			if (test_mask & bit) {
+			if (test_mask & bit)
+			{
 				float cls = planes[i].classify(c);
 				if (cls > r) { test_mask = 0; return fcvNone; }	// none  - return
-				if (_abs(cls) >= r) test_mask &= ~bit;			// fully - no need to test this plane
+				if (std::abs(cls) >= r) test_mask &= ~bit;			// fully - no need to test this plane
 				else {
 					EFC_Visible	r_ = AABB_OverlapPlane(planes[i], mM);
 					if (fcvFully == r_)	test_mask &= ~bit;					// fully - no need to test this plane

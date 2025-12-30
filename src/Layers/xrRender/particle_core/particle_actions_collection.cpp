@@ -2300,13 +2300,13 @@ void PATargetRotate::Execute(ParticleHolder *pHolder, const float dt, float& tm_
 {
 	float scaleFac = scale * dt;
 
-	float r = _abs(rot.x);
+	float r = std::abs(rot.x);
 
 	for(u32 i = 0; i < pHolder->p_count; i++)
 	{
 		Particle &m = pHolder->particles[i];
 		float sign = m.rot.x >= 0.f ? scaleFac : -scaleFac;
-		float dif = ( r - _abs( m.rot.x ) ) * sign;
+		float dif = ( r - std::abs( m.rot.x ) ) * sign;
 		m.rot.x	+= dif;
 	}
 }
@@ -2412,8 +2412,8 @@ void PAVortex::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 			// Figure amount of rotation
 			// Resultant is (cos theta) u + (sin theta) v
 			float theta = magdt / (rSqr + epsilon);
-			float s = _sin(theta);
-			float c = _cos(theta);
+			float s = std::sin(theta);
+			float c = std::cos(theta);
 			
 			offset = (u * c + v * s + w) * r;
 			
@@ -2452,8 +2452,8 @@ void PAVortex::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 			// Figure amount of rotation
 			// Resultant is (cos theta) u + (sin theta) v
 			float theta = magdt / (rSqr + epsilon);
-			float s = _sin(theta);
-			float c = _cos(theta);
+			float s = std::sin(theta);
+			float c = std::cos(theta);
 			
 			offset = (u * c + v * s + w) * r;
 			

@@ -260,7 +260,7 @@ void CControlAnimationBase::SelectVelocities()
 		} 
 
 		const CDetailPathManager::STravelParams &current_velocity = m_object->movement().detail().velocity(cur_point_velocity_index);
-		path_vel.set(_abs(current_velocity.linear_velocity), current_velocity.real_angular_velocity);
+		path_vel.set(std::abs(current_velocity.linear_velocity), current_velocity.real_angular_velocity);
 	}
 
 	SAnimItem *item_it = m_anim_storage[cur_anim_info().get_motion()];
@@ -276,14 +276,14 @@ void CControlAnimationBase::SelectVelocities()
 	// установка линейной скорости	
 	if (m_object->state_invisible) {
 		// если невидимый, то установить скорость из пути
-		m_object->move().set_velocity(_abs(path_vel.linear));
+		m_object->move().set_velocity(std::abs(path_vel.linear));
 	} else {
 		
-		if (fis_zero(_abs(anim_vel.linear))) stop_now();
+		if (fis_zero(std::abs(anim_vel.linear))) stop_now();
 		else {
 			// - проверить на возможность торможения
-			if (!accel_check_braking(-2.f, _abs(anim_vel.linear))) {
-				m_object->move().set_velocity(_abs(anim_vel.linear));
+			if (!accel_check_braking(-2.f, std::abs(anim_vel.linear))) {
+				m_object->move().set_velocity(std::abs(anim_vel.linear));
 				//no braking mode
 			} else {
 				m_object->move().stop_accel();

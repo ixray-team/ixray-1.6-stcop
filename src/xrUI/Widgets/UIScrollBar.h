@@ -37,7 +37,7 @@ protected:
 	bool			ScrollDec			(bool by_scrollbox=false);
 	virtual void	UpdateScrollBar		();
 
-	u32				ScrollSize			(){return _max( 1, m_iMaxPos - m_iMinPos - m_iPageSize + 1 );}
+	u32				ScrollSize			(){return std::max( 1, m_iMaxPos - m_iMinPos - m_iPageSize + 1 );}
 	virtual void	ClampByViewRect		();
 	virtual void	SetPosScrollFromView(float view_pos, float view_width, float view_offs);
 	int				PosViewFromScroll	(int view_size, int view_offs);
@@ -74,11 +74,11 @@ public:
 	int 			GetMaxRange			() {return m_iMaxPos;}
 	int 			GetMinRange			() {return m_iMinPos;}
 
-	void			SetPageSize			(int iPage) { m_iPageSize = _max(0,iPage); UpdateScrollBar();}
+	void			SetPageSize			(int iPage) { m_iPageSize = std::max(0,iPage); UpdateScrollBar();}
 	int				GetPageSize			() {return m_iPageSize;}
 
 	void			SetScrollPos		(int iPos) { SetScrollPosClamped(iPos); UpdateScrollBar();}
-	int				GetScrollPos		() {return _max(m_iMinPos,m_iScrollPos);}
+	int				GetScrollPos		() {return std::max(m_iMinPos,m_iScrollPos);}
 	
 	void			TryScrollInc		(bool by_scrollbox=false);
 	void			TryScrollDec		(bool by_scrollbox=false);

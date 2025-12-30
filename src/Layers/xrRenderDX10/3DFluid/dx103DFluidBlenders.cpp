@@ -70,7 +70,7 @@ class cl_maxDim		: public RHIShaderConstant::Setup
 		int tW = FluidManager.GetTextureWidth();
 		int tH = FluidManager.GetTextureHeight();
 		int tD = FluidManager.GetTextureDepth();
-		float tMax = (float)_max(tW, _max(tH, tD));
+		float tMax = (float)std::max(tW, std::max(tH, tD));
 		RCache.set_c( C, (float)tMax);
 	}
 };

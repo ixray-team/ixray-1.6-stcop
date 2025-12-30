@@ -531,7 +531,7 @@ void CUIHudStatesWnd::UpdateHealth( CActor* actor )
 	{
 		float cur_health = actor->GetfHealth();
 		m_ui_health_bar->SetProgressPos(iCeil(cur_health * 100.0f * 35.f) / 35.f);
-		if (_abs(cur_health - m_last_health) > m_health_blink)
+		if (std::abs(cur_health - m_last_health) > m_health_blink)
 		{
 			m_last_health = cur_health;
 			m_ui_health_bar->m_UIProgressItem.ResetColorAnimation();

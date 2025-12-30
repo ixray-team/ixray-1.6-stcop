@@ -265,8 +265,8 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 			BOOL	bAccelerated		= isActorAccelerated(mstate_real, IsZoomAimingMode())&&CanAccelerate();
 
 			// correct "mstate_real" if opposite keys pressed
-			if (_abs(vControlAccel.z)<EPS)	mstate_real &= ~(mcFwd + mcBack + mcSprint);
-			if (_abs(vControlAccel.x)<EPS)	mstate_real &= ~(mcLStrafe+mcRStrafe);
+			if (std::abs(vControlAccel.z)<EPS)	mstate_real &= ~(mcFwd + mcBack + mcSprint);
+			if (std::abs(vControlAccel.x)<EPS)	mstate_real &= ~(mcLStrafe+mcRStrafe);
 
 			// normalize and analyze crouch and run
 			float	scale			= vControlAccel.magnitude();
@@ -534,7 +534,7 @@ bool CActor::g_LadderOrient()
 {
 	Fvector leader_norm;
 	character_physics_support()->movement()->GroundNormal(leader_norm);
-	if(_abs(leader_norm.y)>M_SQRT1_2) return false;
+	if(std::abs(leader_norm.y)>M_SQRT1_2) return false;
 	//leader_norm.y=0.f;
 	float mag=leader_norm.magnitude();
 	if(mag<EPS_L) return false;
@@ -545,25 +545,7 @@ bool CActor::g_LadderOrient()
 	M.j.set(0.f,1.f,0.f);
 	generate_orthonormal_basis1(M.k,M.j,M.i);
 	M.i.invert();
-	//M.j.invert();
 
-
-	//Fquaternion q1,q2,q3;
-	//q1.set(XFORM());
-	//q2.set(M);
-	//q3.slerp(q1,q2,dt);
-	//Fvector angles1,angles2,angles3;
-	//XFORM().getHPB(angles1.x,angles1.y,angles1.z);
-	//M.getHPB(angles2.x,angles2.y,angles2.z);
-	////angle_lerp(angles3.x,angles1.x,angles2.x,dt);
-	////angle_lerp(angles3.y,angles1.y,angles2.y,dt);
-	////angle_lerp(angles3.z,angles1.z,angles2.z,dt);
-
-	//angles3.lerp(angles1,angles2,dt);
-	////angle_lerp(angles3.y,angles1.y,angles2.y,dt);
-	////angle_lerp(angles3.z,angles1.z,angles2.z,dt);
-	//angle_lerp(angles3.x,angles1.x,angles2.x,dt);
-	//XFORM().setHPB(angles3.x,angles3.y,angles3.z);
 	Fvector position;
 	position.set(Position());
 	//XFORM().rotation(q3);
@@ -611,12 +593,12 @@ void CActor::g_cl_Orientate	(u32 mstate_rl, float dt)
 	} else {
 		// if camera rotated more than 45 degrees - align model with it
 		float ty = angle_normalize(r_torso.yaw);
-		if (_abs(r_model_yaw-ty)>PI_DIV_4)	{
+		if (std::abs(r_model_yaw-ty)>PI_DIV_4)	{
 			r_model_yaw_dest = ty;
 			// 
 			mstate_real	|= mcTurn;
 		}
-		if (_abs(r_model_yaw-r_model_yaw_dest)<EPS_L){
+		if (std::abs(r_model_yaw-r_model_yaw_dest)<EPS_L){
 			mstate_real	&=~mcTurn;
 		}
 		if (mstate_rl&mcTurn){

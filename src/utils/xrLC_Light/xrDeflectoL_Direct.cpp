@@ -304,9 +304,9 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 		Fvector2		size;
 		size.x = p2.x - p1.x;
 		size.y = p2.y - p1.y;
-		int	du = iCeil(_abs(size.x) / texel_size);
-		int	dv = iCeil(_abs(size.y) / texel_size);
-		int steps = _max(du, dv);
+		int	du = iCeil(std::abs(size.x) / texel_size);
+		int	dv = iCeil(std::abs(size.y) / texel_size);
+		int steps = std::max(du, dv);
 		if (steps <= 0)	return;
 
 		for (int I = 0; I <= steps; I++)
@@ -336,7 +336,7 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 
 
 	// *** Render Edges
-	float texel_size = (1.f/float(_max(lm.width,lm.height)))/8.f;
+	float texel_size = (1.f/float(std::max(lm.width,lm.height)))/8.f;
 	for (u32 t=0; t<UVpolys.size(); t++)
 	{
 		UVtri&		T	= UVpolys[t];

@@ -306,7 +306,7 @@ void CStats::Show()
 		for (u32 it=0; it<errors.size(); it++)
 			F_.OutNext("%s",errors[it].c_str());
 #else
-		for (u32 it=(u32)_max(int(0),(int)errors.size() - g_ErrorLineCount); it<errors.size(); it++)
+		for (u32 it=(u32)std::max(int(0),(int)errors.size() - g_ErrorLineCount); it<errors.size(); it++)
 			F_.OutNext("%s",errors[it].c_str());
 #endif
 		F_.OnRender	();

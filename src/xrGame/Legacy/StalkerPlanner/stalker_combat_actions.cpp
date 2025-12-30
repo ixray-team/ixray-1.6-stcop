@@ -530,7 +530,7 @@ void CStalkerActionTakeCover::execute()
 	else 
 	{
 
-		if (_abs(object().Position().y - enemy->Position().y) > 3.f)
+		if (std::abs(object().Position().y - enemy->Position().y) > 3.f)
 			object().sight().setup(CSightAction(SightManager::eSightTypePathDirection));
 		else
 			object().sight().setup(CSightAction(SightManager::eSightTypePosition, mem_object.m_object_params.m_position, true));
@@ -620,7 +620,7 @@ void CStalkerActionLookOut::execute		()
 		return;
 
 	//Prevent stalkers from staring at ceiling or floor for this action
-	if (_abs(object().Position().y - mem_object.m_object_params.m_position.y) > 3.f)
+	if (std::abs(object().Position().y - mem_object.m_object_params.m_position.y) > 3.f)
 		object().sight().setup(CSightAction(SightManager::eSightTypePathDirection));
 	else
 		object().sight().setup(CSightAction(SightManager::eSightTypePosition, mem_object.m_object_params.m_position, true));
@@ -712,7 +712,7 @@ void CStalkerActionHoldPosition::execute		()
 		m_storage->set_property			(eWorldPropertyLookedOut,false);
 
 	//Prevent stalkers from staring at floor or ceiling for this action
-	if (_abs(object().Position().y - mem_object.m_object_params.m_position.y) > 3.f)
+	if (std::abs(object().Position().y - mem_object.m_object_params.m_position.y) > 3.f)
 		object().sight().setup(CSightAction(SightManager::eSightTypePathDirection));
 	else
 		object().sight().setup(CSightAction(SightManager::eSightTypePosition, mem_object.m_object_params.m_position, true));
@@ -837,7 +837,7 @@ void CStalkerActionDetourEnemy::execute			()
 	}
 
 	//Prevent stalkers from looking at ceiling or floor during action
-	if (_abs(object().Position().y - mem_object.m_object_params.m_position.y) >= 3.f)
+	if (std::abs(object().Position().y - mem_object.m_object_params.m_position.y) >= 3.f)
 		object().sight().setup(CSightAction(SightManager::eSightTypePathDirection));
 	else
 		object().sight().setup(CSightAction(SightManager::eSightTypePosition, mem_object.m_object_params.m_position, true));
@@ -1053,7 +1053,7 @@ void CStalkerActionSuddenAttack::execute					()
 	if (visible_now)
 		object().sight().setup(CSightAction(enemy, true));
 	else {
-		if (_abs(object().Position().y - enemy->Position().y) >= 3.f)
+		if (std::abs(object().Position().y - enemy->Position().y) >= 3.f)
 			object().sight().setup(CSightAction(SightManager::eSightTypePathDirection));
 		else
 			object().sight().setup(CSightAction(SightManager::eSightTypePosition, mem_object.m_object_params.m_position, true));
@@ -1286,7 +1286,7 @@ void CStalkerCombatActionThrowGrenade::execute				()
 	Fvector const head_direction			= Fvector().setHP( -object().movement().m_head.current.yaw, -object().movement().m_head.current.pitch );
 	float const cos_alpha					= head_direction.dotproduct(enemy_direction);
 
-	if ( _abs(acosf(cos_alpha)) >= PI_DIV_8 )
+	if (std::abs(acosf(cos_alpha)) >= PI_DIV_8 )
 		return;
 
 	object().throw_target					(enemy_position, enemy_vertex_id, const_cast<CEntityAlive*>(enemy));

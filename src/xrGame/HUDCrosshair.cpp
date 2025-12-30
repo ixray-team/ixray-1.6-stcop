@@ -33,12 +33,12 @@ void CHUDCrosshair::Load		()
 void CHUDCrosshair::SetDispersion	(float disp)
 { 
 	Fvector4 r;
-	Fvector R			= { Device.fViewportNear *_sin(disp), 0.f, Device.fViewportNear };
+	Fvector R			= { Device.fViewportNear * std::sin(disp), 0.f, Device.fViewportNear };
 	Device.mProject.transform	(r,R);
 
 	Fvector2		scr_size;
 	scr_size.set	(float(::Render->getTarget()->get_width()), float(::Render->getTarget()->get_height()));
-	float radius_pixels		= _abs(r.x)*scr_size.x/2.0f;
+	float radius_pixels		= std::abs(r.x)*scr_size.x/2.0f;
 	target_radius		= radius_pixels; 
 }
 
@@ -46,12 +46,12 @@ void CHUDCrosshair::SetDispersion	(float disp)
 void CHUDCrosshair::SetFirstBulletDispertion(float fbdisp)
 {
 	Fvector4 r;
-	Fvector R			= { Device.fViewportNear *_sin(fbdisp), 0.f, Device.fViewportNear };
+	Fvector R			= { Device.fViewportNear * std::sin(fbdisp), 0.f, Device.fViewportNear };
 	Device.mProject.transform	(r,R);
 
 	Fvector2		scr_size;
 	scr_size.set	(float(::Render->getTarget()->get_width()), float(::Render->getTarget()->get_height()));
-	fb_radius		= _abs(r.x)*scr_size.x/2.0f;
+	fb_radius		= std::abs(r.x)*scr_size.x/2.0f;
 }
 
 BOOL	g_bDrawFirstBulletCrosshair = FALSE;

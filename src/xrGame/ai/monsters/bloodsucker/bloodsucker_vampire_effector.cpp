@@ -29,7 +29,7 @@ BOOL CVampirePPEffector::Process(SPPInfo& pp)
 		factor = 0.75f * (1-time_past_perc) / TIME_ATTACK;
 	} else {
 		float time_past_sine_perc = (time_past_perc - TIME_ATTACK) * (1 / ( 1 - TIME_ATTACK + TIME_ATTACK));
-		factor = 0.5f + 0.25f * _sin(PERC_TO_RAD(time_past_sine_perc));
+		factor = 0.5f + 0.25f * std::sin(PERC_TO_RAD(time_past_sine_perc));
 	}
 	
 	clamp(factor,0.01f,1.0f);
@@ -101,9 +101,9 @@ BOOL CVampireCameraEffector::ProcessCam(SCamEffectorInfo& info)
 		dangle_target.y = 0.f;
 		dangle_target.z = 0.f;
 
-		angle_lerp(dangle_current.x, dangle_target.x, _abs(dangle_current.x / fLifeTime + 0.001f), Device.fTimeDelta);
-		angle_lerp(dangle_current.y, dangle_target.y, _abs(dangle_current.y / fLifeTime + 0.001f), Device.fTimeDelta);
-		angle_lerp(dangle_current.z, dangle_target.z, _abs(dangle_current.z / fLifeTime + 0.001f), Device.fTimeDelta);
+		angle_lerp(dangle_current.x, dangle_target.x, std::abs(dangle_current.x / fLifeTime + 0.001f), Device.fTimeDelta);
+		angle_lerp(dangle_current.y, dangle_target.y, std::abs(dangle_current.y / fLifeTime + 0.001f), Device.fTimeDelta);
+		angle_lerp(dangle_current.z, dangle_target.z, std::abs(dangle_current.z / fLifeTime + 0.001f), Device.fTimeDelta);
 
 	} else {
 		

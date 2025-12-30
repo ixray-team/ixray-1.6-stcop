@@ -105,7 +105,7 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const Fvector &S, const Fvect
 	{
 		float tr1,tr2								;	
 		//perp//
-		float abs_c_dist=_abs(Lc);
+		float abs_c_dist= std::abs(Lc);
 		if(abs_c_dist>h+r)return false;
 		float sq_dist=v_smag-Lr*Lr-Lc*Lc;
 		if(sq_dist>sq_r) return false;

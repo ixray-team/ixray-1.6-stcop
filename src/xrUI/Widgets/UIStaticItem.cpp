@@ -120,12 +120,12 @@ void CUIStaticItem::RenderInternal(float angle)
 	if(!uFlags.test(flValidTextureRect))
 		SetTextureRect(Frect().set(0,0,ts.x,ts.y));
 
-	Fvector2							pivot,offset,SZ;
-	SZ.set								(vSize);
+	Fvector2 pivot,offset,SZ;
+	SZ.set(vSize);
 
 
-	float cosA							= _cos(angle);
-	float sinA							= _sin(angle);
+	float cosA = std::cos(angle);
+	float sinA = std::sin(angle);
 
 	// Rotation
 	if( !uFlags.test(flValidHeadingPivot) )	
@@ -133,12 +133,12 @@ void CUIStaticItem::RenderInternal(float angle)
 	else								
 		pivot.set(vHeadingPivot.x, vHeadingPivot.y);
 
-	offset.set							(vPos);
-	offset.add							(vHeadingOffset);
+	offset.set(vPos);
+	offset.add(vHeadingOffset);
 
-	Fvector2							LTt,RBt;
-	LTt.set								(TextureRect.x1/ts.x+hp.x, TextureRect.y1/ts.y+hp.y);
-	RBt.set								(TextureRect.x2/ts.x+hp.x, TextureRect.y2/ts.y+hp.y);
+	Fvector2 LTt,RBt;
+	LTt.set(TextureRect.x1/ts.x+hp.x, TextureRect.y1/ts.y+hp.y);
+	RBt.set(TextureRect.x2/ts.x+hp.x, TextureRect.y2/ts.y+hp.y);
 
 	float kx =	UI().get_current_kx();
 

@@ -422,7 +422,7 @@ void dx103DFluidManager::AdvectVelocity( float timestep, float fGravity )
 
 	RCache.set_RT((IRHIRenderTargetView*)pRenderTargetViews[RENDER_TARGET_VELOCITY1], 0);
 
-	if (_abs(fGravity)<0.000001)
+	if (std::abs(fGravity)<0.000001)
 		RCache.set_Element(m_SimulationTechnique[SS_AdvectVel]);
 	else
 	{

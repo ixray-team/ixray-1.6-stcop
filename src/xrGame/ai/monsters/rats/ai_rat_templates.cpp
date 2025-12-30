@@ -57,7 +57,7 @@ void CAI_Rat::fire	(bool const &bFire)
 void CAI_Rat::movement_type	(float const &fSpeed)
 {
 //	StandUp();
-	m_bMoving = _abs(fSpeed) > EPS_L;
+	m_bMoving = std::abs(fSpeed) > EPS_L;
 	m_fSpeed = m_fCurSpeed = fSpeed;
 }
 
@@ -74,7 +74,7 @@ void CAI_Rat::select_speed	()
 	clamp					(fAngle,-.99999f,.99999f);
 	fAngle					= acosf(fAngle);
 	
-	if (_abs(m_fSpeed - m_fMinSpeed) <= EPS_L)	{
+	if (std::abs(m_fSpeed - m_fMinSpeed) <= EPS_L)	{
 		if (fAngle >= 2*PI_DIV_3) {
 			m_fSpeed = 0;
 			m_fASpeed = m_fNullASpeed;
@@ -87,7 +87,7 @@ void CAI_Rat::select_speed	()
 		}
 	}
 	else
-		if (_abs(m_fSpeed - m_fMaxSpeed) <= EPS_L)	{
+		if (std::abs(m_fSpeed - m_fMaxSpeed) <= EPS_L)	{
 			if (fAngle >= 2*PI_DIV_3) {
 				m_fSpeed = 0;
 				m_fASpeed = m_fNullASpeed;
@@ -103,33 +103,30 @@ void CAI_Rat::select_speed	()
 					m_fASpeed = m_fMaxASpeed;
 				}
 		}
+		else if (std::abs(m_fSpeed - m_fAttackSpeed) <= EPS_L)
+		{
+			if (fAngle >= PI_DIV_2)
+			{
+				m_fSpeed = m_fMinSpeed;
+				m_fASpeed = m_fMinASpeed;
+			}
+			else if (fAngle >= PI_DIV_4)
+			{
+				m_fSpeed = m_fMaxSpeed;
+				m_fASpeed = m_fMaxASpeed;
+			}
+			else
+			{
+				m_fSpeed = m_fAttackSpeed;
+				m_fASpeed = m_fAttackASpeed;
+			}
+		}
 		else
-			if (_abs(m_fSpeed - m_fAttackSpeed) <= EPS_L)	{
-//				if (fAngle >= 2*PI_DIV_3) {
-//					m_fSpeed = 0;
-//					m_fASpeed = m_fNullASpeed;
-//					movement().m_body.target.yaw = -y;
-//				}
-//				else
-					if (fAngle >= PI_DIV_2) {
-						m_fSpeed = m_fMinSpeed;
-						m_fASpeed = m_fMinASpeed;
-					}
-					else
-						if (fAngle >= PI_DIV_4) {
-							m_fSpeed = m_fMaxSpeed;
-							m_fASpeed = m_fMaxASpeed;
-						}
-						else {
-							m_fSpeed = m_fAttackSpeed;
-							m_fASpeed = m_fAttackASpeed;
-						}
-			}
-			else {
-				movement().m_body.target.yaw = -y;
-				m_fSpeed = 0;
-				m_fASpeed = m_fNullASpeed;
-			}
+		{
+			movement().m_body.target.yaw = -y;
+			m_fSpeed = 0;
+			m_fASpeed = m_fNullASpeed;
+		}
 	
 	tTemp2 = XFORM().k;
 	tTemp2.normalize_safe();
@@ -138,7 +135,7 @@ void CAI_Rat::select_speed	()
 	tTemp1.mad(tTemp2,1*m_fSpeed*m_fTimeUpdateDelta);
 	if (bfCheckIfOutsideAIMap(tTemp1)) {
 		tTemp1 = Position();
-		if (_abs(m_fSpeed - m_fAttackSpeed) < EPS_L) {
+		if (std::abs(m_fSpeed - m_fAttackSpeed) < EPS_L) {
 			tTemp1.mad(tTemp2,1*m_fMaxSpeed*m_fTimeUpdateDelta);
 			if (bfCheckIfOutsideAIMap(tTemp1)) {
 				m_fSpeed = m_fMinSpeed;

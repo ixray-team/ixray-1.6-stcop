@@ -47,12 +47,12 @@ Ivector	vpack(Fvector src)
 			{
 				_v = vunpack(x, y, z);
 				float m = _v.magnitude();
-				float me = _abs(m - 1.f);
+				float me = std::abs(m - 1.f);
 				if (me > 0.03f)
 					continue;
 
 				_v.div(m);
-				float e = _abs(src.dotproduct(_v) - 1.f);
+				float e = std::abs(src.dotproduct(_v) - 1.f);
 				if (e < e_best)
 				{
 					e_best = e;

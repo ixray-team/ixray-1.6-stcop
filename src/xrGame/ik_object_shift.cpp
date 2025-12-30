@@ -178,9 +178,9 @@ void	object_shift::set_taget		( float taget_, float time )
 	if( ( x > half_shift_restrict_up || x< -half_shift_restrict_down ) &&   square_equation( aaccel/2.f, accel, speed, x0, x1 ) )
 	{
 		
-		float max_shift0 = _abs( delta_shift( x0 ) ) ;
-		float max_shift1 = _abs( delta_shift( x1 ) ) ;
-		float ax = _abs( x );
+		float max_shift0 = std::abs( delta_shift( x0 ) ) ;
+		float max_shift1 = std::abs( delta_shift( x1 ) ) ;
+		float ax = std::abs( x );
 		bool bx0 = max_shift0 > 2.f * ax;
 		bool bx1 = max_shift1 > 2.f * ax;
 		if( 
