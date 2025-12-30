@@ -61,8 +61,8 @@ bool CTrade::CanTrade()
 	yaw = angle_normalize(yaw);
 	yaw2 = angle_normalize(yaw2);
 
-	float Res = rad2deg(_abs(yaw - yaw2) < PI ? _abs(yaw - yaw2) :
-		PI_MUL_2 - _abs(yaw - yaw2));
+	float Res = rad2deg(std::abs(yaw - yaw2) < PI ? std::abs(yaw - yaw2) :
+		PI_MUL_2 - std::abs(yaw - yaw2));
 	if (Res < 165.f || Res > 195.f)
 	{
 		RemovePartner();
@@ -242,7 +242,7 @@ u32	CTrade::GetItemPrice(PIItem pItem, bool b_buying, bool b_free)
 		action_factor = trade_factors.enemy_factor() + (trade_factors.friend_factor() - trade_factors.enemy_factor()) * relation_factor;
 	}
 
-	clamp(action_factor, _min(trade_factors.enemy_factor(), trade_factors.friend_factor()), _max(trade_factors.enemy_factor(), trade_factors.friend_factor()));
+	clamp(action_factor, std::min(trade_factors.enemy_factor(), trade_factors.friend_factor()), std::max(trade_factors.enemy_factor(), trade_factors.friend_factor()));
 
 	if (action_factor == 0.0f)
 	{

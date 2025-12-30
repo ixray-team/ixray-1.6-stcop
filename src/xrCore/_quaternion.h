@@ -291,12 +291,12 @@ public:
 	// makes unit rotation
 	IC	SelfRef	rotationYawPitchRoll(T _x, T _y, T _z) 
 	{
-		T fSinYaw   = _sin(_x*.5f);
-		T fCosYaw   = _cos(_x*.5f);
-		T fSinPitch = _sin(_y*.5f);
-		T fCosPitch = _cos(_y*.5f);
-		T fSinRoll  = _sin(_z*.5f);
-		T fCosRoll  = _cos(_z*.5f);
+		T fSinYaw   = std::sin(_x*.5f);
+		T fCosYaw   = std::cos(_x*.5f);
+		T fSinPitch = std::sin(_y*.5f);
+		T fCosPitch = std::cos(_y*.5f);
+		T fSinRoll  = std::sin(_z*.5f);
+		T fCosRoll  = std::cos(_z*.5f);
 
 		x = fSinRoll * fCosPitch * fCosYaw - fCosRoll * fSinPitch * fSinYaw;
 		y = fCosRoll * fSinPitch * fCosYaw + fSinRoll * fCosPitch * fSinYaw;
@@ -314,8 +314,8 @@ public:
 	{
 		T	sinTheta;
 
-		w		= _cos(angle*0.5f);
-		sinTheta= _sin(angle*0.5f);
+		w		= std::cos(angle*0.5f);
+		sinTheta= std::sin(angle*0.5f);
 		x = sinTheta * axis.x;
 		y = sinTheta * axis.y;
 		z = sinTheta * axis.z;
@@ -368,10 +368,10 @@ public:
 		
 		if ( (1.0f - cosom) > EPS ) {
 			T	omega	= _acos_( cosom );
-			T	i_sinom = 1.f / _sin( omega );
+			T	i_sinom = 1.f / std::sin( omega );
 			T	t_omega	= tm*omega;
-			Scale0 = _sin( omega - 	t_omega ) * i_sinom;
-			Scale1 = _sin( t_omega			) * i_sinom;
+			Scale0 = std::sin( omega - 	t_omega ) * i_sinom;
+			Scale1 = std::sin( t_omega			) * i_sinom;
 		} else  {
 			// has numerical difficulties around cosom == 0
 			// in this case degenerate to linear interpolation
@@ -391,16 +391,16 @@ public:
 	IC	BOOL	cmp(SelfCRef Q, T Tolerance=0.0001f)
 	{
 		if (	// they are the same but with opposite signs
-			(	(_abs(x + Q.x) <= Tolerance )
-			&&  (_abs(y + Q.y) <= Tolerance )
-			&&  (_abs(z + Q.z) <= Tolerance )
-			&&  (_abs(w + Q.w) <= Tolerance )
+			(	(std::abs(x + Q.x) <= Tolerance )
+			&&  (std::abs(y + Q.y) <= Tolerance )
+			&&  (std::abs(z + Q.z) <= Tolerance )
+			&&  (std::abs(w + Q.w) <= Tolerance )
 			)
 			||  // they are the same with same signs
-			(	(_abs(x - Q.x) <= Tolerance )
-			&&  (_abs(y - Q.y) <= Tolerance )
-			&&  (_abs(z - Q.z) <= Tolerance )
-			&&  (_abs(w - Q.w) <= Tolerance )
+			(	(std::abs(x - Q.x) <= Tolerance )
+			&&  (std::abs(y - Q.y) <= Tolerance )
+			&&  (std::abs(z - Q.z) <= Tolerance )
+			&&  (std::abs(w - Q.w) <= Tolerance )
 			)
 			)
 			return true;

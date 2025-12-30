@@ -277,7 +277,7 @@ void UITaskListWndItem::update_view()
 	m_name->TextItemControl()->SetTextST( m_task->m_Title.c_str() );
 	m_name->AdjustHeightToText();
 	float h1 = m_name->GetWndPos().y + m_name->GetHeight() + 10.0f;
-	h1 = _max( h1, GetHeight() );
+	h1 = std::max( h1, GetHeight() );
 	SetHeight( h1 );
 
     const CGameTask* storyTask = Level().GameTaskManager()->ActiveTask(eTaskTypeStoryline);

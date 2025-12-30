@@ -41,7 +41,7 @@
 
 inline int equal(float x, float y, const float eps = AINT_EPSILON)
 {
-    return (_abs(x - y) < eps);
+    return (std::abs(x - y) < eps);
 }
 
 
@@ -52,7 +52,7 @@ inline int istwopi(float x, const float eps = AINT_EPSILON)
 
 inline int iszero(float x, const float eps = AINT_EPSILON)
 {
-    return _abs(x) < eps;
+    return std::abs(x) < eps;
 }
 
 inline int le(float x, float y, const float eps = AINT_EPSILON)
@@ -158,16 +158,16 @@ public:
 
     int IsFullRange(float eps = AINT_BIG_EPSILON) const
     {
-		return _abs(high-2*M_PI) < eps && _abs(low) < eps;
+		return std::abs(high-2*M_PI) < eps && std::abs(low) < eps;
     }
 
     int IsEmpty(float eps = AINT_BIG_EPSILON) const
     {
 		if (low <= high)
 			return (
-			_abs(low-high) < eps);
+                std::abs(low-high) < eps);
 		else
-			return (_abs(low-2*M_PI) + _abs(high) < eps);
+			return (std::abs(low-2*M_PI) + std::abs(high) < eps);
 		}
 
 		// returns T if a is in the angle range

@@ -329,7 +329,7 @@ void CUIFrameWindow::draw_tile_rect(Frect rect, int i, Fvector2 const& ts)
 	{
 		draw_tile_line		(rect, i, false, ts);
 		rect.lt.x			+= m_tex_rect[i].width();
-		rect.lt.x			= _min(rect.lt.x, tmp.rb.x);
+		rect.lt.x			= std::min(rect.lt.x, tmp.rb.x);
 	}
 }
 

@@ -364,8 +364,8 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 			Fvector2 new_size;
 			new_size.x						= GetWndSize().x;
 			new_size.y						= UIDesc->GetWndPos().y+UIDesc->GetWndSize().y+20.0f;
-			new_size.x						= _max(105.0f, new_size.x);
-			new_size.y						= _max(105.0f, new_size.y);
+			new_size.x						= std::max(105.0f, new_size.x);
+			new_size.y						= std::max(105.0f, new_size.y);
 			
 			SetWndSize						(new_size);
 			if(UIBackground)

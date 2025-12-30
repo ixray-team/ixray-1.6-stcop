@@ -70,7 +70,7 @@ void dx103DFluidRenderer::Initialize(int gridWidth, int gridHeight, int gridDept
 	m_vGridDim[1] = float(gridHeight);
 	m_vGridDim[2] = float(gridDepth);
 
-	m_fMaxDim = _max( _max( m_vGridDim[0], m_vGridDim[1] ), m_vGridDim[2] );
+	m_fMaxDim = std::max(std::max( m_vGridDim[0], m_vGridDim[1] ), m_vGridDim[2] );
 
 	// Initialize the grid offset matrix
 	{
@@ -374,7 +374,7 @@ void dx103DFluidRenderer::SetScreenSize( int width, int height )
 void dx103DFluidRenderer::CalculateRenderTextureSize(int screenWidth, int screenHeight)
 {
 	int maxProjectedSide = int(3.0 * _sqrt(3.0)*m_fMaxDim);
-	int maxScreenDim = _max(screenWidth, screenHeight);
+	int maxScreenDim = std::max(screenWidth, screenHeight);
 
 	float screenAspectRatio = ((float)screenWidth)/screenHeight;
 
@@ -579,7 +579,7 @@ void dx103DFluidRenderer::CalculateLighting(const dx103DFluidData &FluidData, Fo
 
 		float	d = pLight->position.distance_to(Transform.c);
 
-		float	R = pLight->range + _max(size.x, _max(size.y, size.z));
+		float	R = pLight->range + std::max(size.x, std::max(size.y, size.z));
 		if (d >= R)
 			continue;
 

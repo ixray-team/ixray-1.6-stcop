@@ -1402,7 +1402,7 @@ bool hovering_checker(CActor* who)
 	}
 
 	Fvector Vel_y = who->character_physics_support()->movement()->GetVelocity();
-	float abs_ = _abs(Vel_y.x) + _abs(Vel_y.z);
+	float abs_ = std::abs(Vel_y.x) + std::abs(Vel_y.z);
 
 	if (who && Vel_y.y > 0.1f && abs_ < 0.1f && !(who->mstate_real & mcClimb))
 	{
@@ -1813,7 +1813,7 @@ void CActor::CheckFlyhack()
 	}
 
 	Fvector Vel_ = character_physics_support()->movement()->GetVelocity();
-	float Vel_xz_abs = _abs(Vel_.x) + _abs(Vel_.z);
+	float Vel_xz_abs = std::abs(Vel_.x) + std::abs(Vel_.z);
 
 	game_PlayerState* ps = Game().GetPlayerByGameID(ID());
 

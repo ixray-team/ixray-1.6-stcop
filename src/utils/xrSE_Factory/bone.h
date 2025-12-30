@@ -118,8 +118,8 @@ struct ECORE_API SJointIKData
         	// Kostya Slipchenko say:
             // направление вращения в ОДЕ отличается от направления вращение в X-Ray 
             // поэтому меняем знак у лимитов
-            F.w_float	(_min(-limits[k].limit.x,-limits[k].limit.y)); // min (swap special for ODE) 
-            F.w_float	(_max(-limits[k].limit.x,-limits[k].limit.y)); // max (swap special for ODE)
+            F.w_float	(std::min(-limits[k].limit.x,-limits[k].limit.y)); // min (swap special for ODE) 
+            F.w_float	(std::max(-limits[k].limit.x,-limits[k].limit.y)); // max (swap special for ODE)
             F.w_float	(limits[k].spring_factor);
             F.w_float	(limits[k].damping_factor);
         }

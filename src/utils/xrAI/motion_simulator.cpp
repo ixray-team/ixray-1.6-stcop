@@ -1,5 +1,5 @@
 #include "StdAfx.h"
-#include "cl_intersect.h"
+#include "../../xrCore/Collision/cl_intersect.h"
 #include "motion_simulator.h"
 #include "compiler.h"
 

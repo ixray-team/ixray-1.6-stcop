@@ -359,7 +359,7 @@ BOOL CalculateSW(Object* object, VIPM_Result* result, u32 optimize_vertex_order)
 		VIPM_SWR *swr_ = result->swr_records.item ( i );
 		for ( int j = 0; j < swr_->num_tris * 3; j++ ){
 			R_ASSERT ( (j+swr_->offset) < result->indices.size() );
-			swr_->num_verts = _max(swr_->num_verts,*(result->indices.item(j+swr_->offset))); // fignya index ne doljen bit bolshe!!!
+			swr_->num_verts = std::max(swr_->num_verts,*(result->indices.item(j+swr_->offset))); // fignya index ne doljen bit bolshe!!!
 //.			R_ASSERT ( *(result->indices.item(j+swr->offset)) < swr->num_verts ); 
 			if (*(result->indices.item(j+swr_->offset)) >= swr_->num_verts){
 				bRes = FALSE;

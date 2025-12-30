@@ -15,7 +15,7 @@ TEMPLATE_SPECIALIZATION
 IC	CSQuadTree::CQuadTree		(const Fbox &box, float min_cell_size, u32 max_node_count, u32 max_list_item_count)
 {
 	m_leaf_count		= 0;
-	m_radius			= _max(box.max.x - box.min.x, box.max.z - box.min.z)*.5f;
+	m_radius			= std::max(box.max.x - box.min.x, box.max.z - box.min.z)*.5f;
 	m_center.add		(box.min,box.max);
 	m_center.mul		(.5f);
 
@@ -166,8 +166,8 @@ IC	void CSQuadTree::nearest	(const Fvector &position, float radius, xr_vector<_o
 	Fvector			next_center = center;
 	u32				index = neighbour_index(position,next_center,distance);
 	VERIFY			(index < 4);
-	if (_abs(position.z - center.z) < radius) {
-		if (_abs(position.x - center.x) < radius) {
+	if (std::abs(position.z - center.z) < radius) {
+		if (std::abs(position.x - center.x) < radius) {
 			if (_sqr(position.z - center.z) + _sqr(position.x - center.x) < _sqr(radius)) {
 				nearest	(position,radius,objects,node->m_neighbours[0],next_center.set(center.x - distance,center.y,center.z - distance),distance,depth + 1);
 				nearest	(position,radius,objects,node->m_neighbours[1],next_center.set(center.x - distance,center.y,center.z + distance),distance,depth + 1);
@@ -215,7 +215,7 @@ IC	void CSQuadTree::nearest	(const Fvector &position, float radius, xr_vector<_o
 	{
 		nearest(position, radius, objects, node->m_neighbours[index], next_center, distance, depth + 1);
 
-		if (_abs(position.x - center.x) < radius)
+		if (std::abs(position.x - center.x) < radius)
 		{
 			if (position.x > center.x)
 			{

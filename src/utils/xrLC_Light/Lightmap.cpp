@@ -66,8 +66,8 @@ IC void pixel	(int x, int y,  b_texture* T, u32 C=color_rgba(0,255,0,0))
 }
 IC void line	( int x1, int y1, int x2, int y2, b_texture* T )
 {
-    int dx = _abs(x2 - x1);
-    int dy = _abs(y2 - y1);
+    int dx = std::abs(x2 - x1);
+    int dy = std::abs(y2 - y1);
     int sx = x2 >= x1 ? 1 : -1;
     int sy = y2 >= y1 ? 1 : -1;
 

@@ -391,7 +391,7 @@ void CROS_impl::calc_sky_hemi_value(Fvector& position, CObject* _object)
 	
 #if RENDER!=R_R1
 		sky_rays_uptodate	+= ps_r2_dhemi_count;
-		sky_rays_uptodate	= _min(sky_rays_uptodate, lt_hemisamples);
+		sky_rays_uptodate	= std::min(sky_rays_uptodate, lt_hemisamples);
 #endif	//	RENDER!=R_R1
 
 		for (u32 it=0; it<(u32)ps_r2_dhemi_count;	it++)		{	// five samples per one frame

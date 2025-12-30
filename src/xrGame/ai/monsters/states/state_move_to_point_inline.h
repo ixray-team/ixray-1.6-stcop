@@ -104,7 +104,7 @@ bool CStateMonsterMoveToPointExAbstract::check_completion()
 
 	Fvector const self_pos		= this->object->Position();
 	float const dist_to_target	=	data.point.distance_to_xz(self_pos);
-	float const completion_dist	=	_max(data.completion_dist, ai().level_graph().header().cell_size());
+	float const completion_dist	= std::max(data.completion_dist, ai().level_graph().header().cell_size());
 
 	if ( Device.dwTimeGlobal < this->time_state_started + 200 )
 	{

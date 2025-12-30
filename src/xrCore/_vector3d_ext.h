@@ -124,7 +124,7 @@ Fvector   crossproduct (const Fvector& v1, const Fvector& v2)
 inline
 Fvector   cr_vectorHP (float h, float p)
 {
-	float ch = _cos(h), cp=_cos(p), sh=_sin(h), sp=_sin(p);
+	float ch = std::cos(h), cp= std::cos(p), sh= std::sin(h), sp= std::sin(p);
 	Fvector r;
 	r.x = -cp*sh;
 	r.y = sp;
@@ -155,13 +155,10 @@ float   angle_between_vectors (Fvector const v1, Fvector const v2)
 	return					acosf(angle_cos);
 }
 
-inline
-Fvector   rotate_point (Fvector const&	point, float const angle)
+inline Fvector rotate_point(Fvector const& point, float const angle)
 {
-	float	const 	cos_alpha		=	_cos(angle);
-	float	const 	sin_alpha		=	_sin(angle);
+	float const cos_alpha = std::cos(angle);
+	float const sin_alpha = std::sin(angle);
 
-	return								Fvector().set(point.x*cos_alpha - point.z*sin_alpha, 
-  													  0,
-													  point.x*sin_alpha + point.z*cos_alpha);
+	return Fvector().set(point.x * cos_alpha - point.z * sin_alpha, 0, point.x * sin_alpha + point.z * cos_alpha);
 }

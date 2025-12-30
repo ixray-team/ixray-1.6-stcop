@@ -31,11 +31,11 @@ void CUIArrow::init_from_xml( CUIXml& xml, LPCSTR path, CUIWindow* parent )
 	bool arrow_clockwise = ( xml.ReadAttribInt( path, 0, "clockwise", 1 ) == 1 )? true : false;
 	if ( arrow_clockwise )
 	{
-		m_angle_range = -_abs( m_angle_end - m_angle_begin );
+		m_angle_range = -std::abs( m_angle_end - m_angle_begin );
 	}
 	else
 	{
-		m_angle_range = _abs( m_angle_end - m_angle_begin );
+		m_angle_range = std::abs( m_angle_end - m_angle_begin );
 	}
 
 }
@@ -53,7 +53,7 @@ void CUIArrow::SetNewValue( float new_value )
 		float dif = m_temp_pos - m_pos;
 		float val = m_ang_velocity * Device.fTimeDelta;
 
-		val	= _min( _abs(val), _abs(dif) );
+		val	= std::min(std::abs(val), std::abs(dif) );
 		val	*= (dif > 0.0f)? +1.0f : -1.0f;
 		m_pos += val;
 	}

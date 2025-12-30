@@ -318,7 +318,7 @@ void CCar::SWheelSteer::Limit()
 	{
 		//dReal angle = dJointGetHinge2Angle1(joint);
 		float angle = J->GetAxisAngle( 0 );
-		if(_abs(angle)<M_PI/180.f)
+		if(std::abs(angle)<M_PI/180.f)
 		{
 			pwheel->SetSteerLimits(0.f,0.f);
 			pwheel->ApplySteerAxisVel(0.f);

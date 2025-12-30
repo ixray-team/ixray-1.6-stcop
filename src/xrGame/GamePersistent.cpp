@@ -308,9 +308,9 @@ void CGamePersistent::WeathersUpdate()
 
 					Fvector	pos;
 					float	angle = ::Random.randF(PI_MUL_2);
-					pos.x = _cos(angle);
+					pos.x = std::cos(angle);
 					pos.y = 0;
-					pos.z = _sin(angle);
+					pos.z = std::sin(angle);
 					pos.normalize().mul(ch.get_rnd_sound_dist()).add(Device.vCameraPosition);
 					pos.y += 10.f;
 					snd._p->g_type = ESoundTypes::SOUND_TYPE_WORLD_AMBIENT;

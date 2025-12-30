@@ -89,7 +89,7 @@ IC	const CCoverPoint *CCoverManager::best_cover				(const Fvector &position, flo
 		if (radius_sqr < position.distance_to_sqr((*I)->position()))
 			continue;
 
-		if (_abs(position.y - (*I)->position().y) > 3.f)
+		if (std::abs(position.y - (*I)->position().y) > 3.f)
 			continue;
 
 		if (!evaluator.accessible((*I)->position()))

@@ -3,7 +3,7 @@ IC float clamp_rotation( Fquaternion &q, float v )
 {
 	float angl;Fvector ax;
 	q.get_axis_angle( ax, angl );
-	float abs_angl = _abs( angl );
+	float abs_angl = std::abs( angl );
 	if( abs_angl > v )
 	{
 		if( angl <  0.f ) v = -v;
@@ -54,7 +54,7 @@ IC void get_diff_value( const Fmatrix & m0, const Fmatrix &m1, float &l, float &
 	l = diff.c.magnitude( );
 	Fvector ax; 
 	get_axis_angle( diff, ax, a );
-	a = _abs( a );
+	a = std::abs( a );
 }
 
 IC void	cmp_matrix( bool &eq_linear, bool &eq_angular, const Fmatrix &m0, const Fmatrix &m1, float tl, float ta )

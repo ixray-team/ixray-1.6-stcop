@@ -265,7 +265,7 @@ static Fvector parabolic_velocity			(
 {
 	return					(
 		Fvector(start_velocity).mul(
-			_max( 0.f, 1.f - air_resistance*time)
+			std::max( 0.f, 1.f - air_resistance*time)
 		).mad(
 			gravity,
 			time
@@ -280,7 +280,7 @@ static Fvector trajectory_velocity			(
 		float const time
 	)
 {
-	float const parabolic_time	= _max( 0.f, 2.f/air_resistance - air_resistance_epsilon);
+	float const parabolic_time	= std::max( 0.f, 2.f/air_resistance - air_resistance_epsilon);
 	float const	fall_down_time	= time - parabolic_time;
 //	float const fake_velocity	= start_velocity*2.f;
 	if ( fall_down_time < 0.f ) {
@@ -367,7 +367,7 @@ static Fvector trajectory_position			(
 	Fvector const & start_velocity	= base_start_velocity;//g_use_new_ballistics ? Fvector(base_start_velocity).mul( factor ) : base_start_velocity;
 	float const time				= base_time;
 
-	float const parabolic_time		= _max( 0.f, 1.f/air_resistance - air_resistance_epsilon);
+	float const parabolic_time		= std::max( 0.f, 1.f/air_resistance - air_resistance_epsilon);
 	float const	fall_down_time		= time - parabolic_time;
 	if ( fall_down_time < 0.f ) {
 		Fvector const xz_velocity	= Fvector().set( start_velocity.x, 0.f, start_velocity.z);
@@ -449,7 +449,7 @@ static float trajectory_pick_error			(
 	float					magnitude = start_to_max_error.magnitude();
 	start_to_max_error.mul	(1.f/magnitude);
 	Fvector					start_to_target = Fvector().sub(target,start).normalize();
-	float					cosine_alpha = _max(-1.f, _min(start_to_max_error.dotproduct(start_to_target), 1.f));
+	float					cosine_alpha = std::max(-1.f, std::min(start_to_max_error.dotproduct(start_to_target), 1.f));
 	float					sine_alpha = _sqrt(1.f - _sqr(cosine_alpha));
 	return					(magnitude*sine_alpha);
 }
@@ -534,7 +534,7 @@ static bool trajectory_select_pick_ranges(
 		return				(false);
 	}
 
-	float const	fall_down_time	= _max( 0.f, 1.f/air_resistance - air_resistance_epsilon);
+	float const	fall_down_time	= std::max( 0.f, 1.f/air_resistance - air_resistance_epsilon);
 	if ( !fsimilar(fall_down_time, low) ) {
 		result				= trajectory_select_pick_parabolic(bullet, low, fall_down_time, gravity, air_resistance);
 		return				(false);
@@ -688,7 +688,7 @@ static void update_bullet			(
 	)
 {
 	if ( air_resistance*(bullet.life_time + air_resistance_epsilon) >= 1.f ) {
-		update_bullet_gravitation	(bullet, data, gravity, air_resistance, _max( 0.f, 1.f/air_resistance - air_resistance_epsilon));
+		update_bullet_gravitation	(bullet, data, gravity, air_resistance, std::max( 0.f, 1.f/air_resistance - air_resistance_epsilon));
 		return;
 	}
 

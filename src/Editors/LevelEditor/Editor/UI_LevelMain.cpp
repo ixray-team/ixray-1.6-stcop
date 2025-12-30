@@ -1398,10 +1398,10 @@ bool CLevelMain::SelectionFrustum(CFrustum& frustum)
 
 	if(!(x1!=x2&&y1!=y2)) return false;
 
-	pt[0].set(_min(x1,x2),_min(y1,y2));
-	pt[1].set(_max(x1,x2),_min(y1,y2));
-	pt[2].set(_max(x1,x2),_max(y1,y2));
-	pt[3].set(_min(x1,x2),_max(y1,y2));
+	pt[0].set(std::min(x1,x2),std::min(y1,y2));
+	pt[1].set(std::max(x1,x2),std::min(y1,y2));
+	pt[2].set(std::max(x1,x2),std::max(y1,y2));
+	pt[3].set(std::min(x1,x2),std::max(y1,y2));
 
 	SRayPickInfo pinf;
 	for (int i=0; i<4; i++){

@@ -964,7 +964,7 @@ float CGameObject::shedule_Scale_Base()
 						min_distance = distance;
 					}
 				}
-				return _max(_sqrt(min_distance) - Radius(), 0.0f);
+				return std::max(_sqrt(min_distance) - Radius(), 0.0f);
 			}
 		}
 	}

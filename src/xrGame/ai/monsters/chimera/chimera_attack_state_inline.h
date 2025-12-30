@@ -20,8 +20,8 @@ ChimeraAttackState<Object>::ChimeraAttackState (Object *obj) : inherited(obj)
 template <class Object>
 float   ChimeraAttackState<Object>::calculate_min_run_distance () const
 {
-	float	const	cos_half_scan_angle		=	_cos(scan_angle);
-	float	const	sin_half_scan_angle		=	_sin(scan_angle);
+	float	const	cos_half_scan_angle		=	std::cos(scan_angle);
+	float	const	sin_half_scan_angle		=	std::sin(scan_angle);
 
 	float	const	attack_radius			=	this->object->get_attack_params().attack_radius;
 
@@ -364,7 +364,7 @@ void   ChimeraAttackState<Object>::execute ()
 		float	const	self2target_yaw		=	self2target_norm.getH();
 		float	const	self_dir_yaw		=	self_dir.getH();
 		
-		bool  	const 	good_aiming			=	_abs(self2target_yaw - self_dir_yaw) < deg2rad(20.f);
+		bool  	const 	good_aiming			= std::abs(self2target_yaw - self_dir_yaw) < deg2rad(20.f);
 		bool	const	in_stealth			=	current_time() < m_stealth_end_tick && 
 												!this->object->EnemyMan.enemy_see_me_now ();
 		if ( !in_stealth )

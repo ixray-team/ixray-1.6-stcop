@@ -115,8 +115,8 @@ void CUICustomMap::Init_internal(const shared_str& name, CInifile& pLtx, const s
 
 void rotation_(float x, float y, const float angle, float& x_, float& y_, float kx)
 {
-	float _sc 		= _cos(angle);
-	float _sn 		= _sin(angle);
+	float _sc 		= std::cos(angle);
+	float _sn 		= std::sin(angle);
 	x_				= x*_sc+y*_sn;
 	y_				= y*_sc-x*_sn;
 	x_				*= kx;
@@ -686,11 +686,11 @@ void  CUIMiniMap::Draw()
 	
 	for(u32 idx=0; idx<segments_count;++idx)
 	{
-		float cosPT			= _cos(segment_ang*idx + angle);
-		float sinPT			= _sin(segment_ang*idx + angle);
+		float cosPT			= std::cos(segment_ang*idx + angle);
+		float sinPT			= std::sin(segment_ang*idx + angle);
 
-		float cosTX			= _cos(segment_ang*idx);
-		float sinTX			= _sin(segment_ang*idx);
+		float cosTX			= std::cos(segment_ang*idx);
+		float sinTX			= std::sin(segment_ang*idx);
 
 		S[idx].pt.set		(pt_radius*cosPT*kx,		-pt_radius*sinPT);
 		S[idx].uv.set		(tt_radius*cosTX,			-tt_radius*sinTX*k_tt_height);
@@ -730,8 +730,8 @@ bool CUIMiniMap::GetPointerTo(const Fvector2& src, float item_radius, Fvector2& 
 	heading				= -direction.getH();
 
 	float kx			= UI().get_current_kx();
-	float cosPT			= _cos(heading);
-	float sinPT			= _sin(heading);
+	float cosPT			= std::cos(heading);
+	float sinPT			= std::sin(heading);
 	pos.set				(-map_radius*sinPT*kx,		-map_radius*cosPT);
 	pos.add				(clip_center);
 

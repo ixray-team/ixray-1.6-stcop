@@ -73,7 +73,7 @@ void CMonsterEnemyMemory::update()
 			if (CEntityAlive const* enemy = cast_who != nullptr ? cast_who->cast_entity_alive() : nullptr)
 			{
 				float const xz_dist	=	monster->Position().distance_to_xz(g_actor->Position());
-				float const y_dist	=	_abs(monster->Position().y - g_actor->Position().y);
+				float const y_dist	= std::abs(monster->Position().y - g_actor->Position().y);
 
 				if ( monster->CCustomMonster::useful(&monster->memory().enemy(), enemy) && 
 					 y_dist < 10 &&
@@ -110,7 +110,7 @@ void CMonsterEnemyMemory::update()
 	if ( g_actor )
 	{
 		float const xz_dist	=	monster->Position().distance_to_xz(g_actor->Position());
-		float const y_dist	=	_abs(monster->Position().y - g_actor->Position().y);
+		float const y_dist	= std::abs(monster->Position().y - g_actor->Position().y);
 
 		if ( xz_dist < feel_enemy_max_distance && 
 			 y_dist < 10 &&

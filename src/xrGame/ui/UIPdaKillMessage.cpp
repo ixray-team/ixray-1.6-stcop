@@ -27,7 +27,7 @@ void CUIPdaKillMessage::Init(KillMessageStruct& msg, CGameFont* F)
 			InitIcon(m_ext_info,	x, msg.m_ext_info);
 
 	Fvector2 sz		= GetWndSize();
-	sz.x			= _max(sz.x, x+m_ext_info.GetWidth());
+	sz.x			= std::max(sz.x, x+m_ext_info.GetWidth());
 	SetWndSize		(sz);
 	
 	SetColorAnimation			("ui_main_msgs_short", LA_ONLYALPHA|LA_TEXTCOLOR|LA_TEXTURECOLOR, 5000.0f);

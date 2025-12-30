@@ -11,8 +11,10 @@ void CPHSimpleCharacter::UpdateStaticDamage(dContact* c,SGameMtl* tri_material,b
 				}
 				else
 				{
-					float				vel_prg;vel_prg=_max(plane_pgr*tri_material->fPHFriction,norm_prg);
-					mag					=	(vel_prg)*tri_material->fBounceDamageFactor;
+					float vel_prg;
+					vel_prg= std::max(plane_pgr*tri_material->fPHFriction,norm_prg);
+
+					mag = (vel_prg)*tri_material->fBounceDamageFactor;
 				}
 				if(mag>m_collision_damage_info.m_contact_velocity)
 				{
@@ -27,9 +29,6 @@ void CPHSimpleCharacter::UpdateStaticDamage(dContact* c,SGameMtl* tri_material,b
 
 void CPHSimpleCharacter::UpdateDynamicDamage(dContact* c,u16 obj_material_idx,dBodyID b,bool bo1)
 {
-	
-	//if(ph_world ->IsFreezed())
-							//return;
 	const dReal* vel=dBodyGetLinearVel(m_body);
 	dReal c_vel;
 	dMass m;
@@ -46,11 +45,6 @@ void CPHSimpleCharacter::UpdateDynamicDamage(dContact* c,u16 obj_material_idx,dB
 
 
 	dVector3 Pc={vel[0]*m_mass+obj_vel[0]*m.mass,vel[1]*m_mass+obj_vel[1]*m.mass,vel[2]*m_mass+obj_vel[2]*m.mass};
-	//dVectorMul(Vc,1.f/(m_mass+m.mass));
-	//dVector3 vc_obj={obj_vel[0]-Vc[0],obj_vel[1]-Vc[1],obj_vel[2]-Vc[2]};
-	//dVector3 vc_self={vel[0]-Vc[0],vel[1]-Vc[1],vel[2]-Vc[2]};
-	//dReal vc_obj_norm=dDOT(vc_obj,norm);
-	//dReal vc_self_norm=dDOT(vc_self,norm);
 
 	dReal Kself=norm_vel*norm_vel*m_mass/2.f;
 	dReal Kobj=norm_obj_vel*norm_obj_vel*m.mass/2.f;
@@ -89,32 +83,6 @@ void CPHSimpleCharacter::UpdateDynamicDamage(dContact* c,u16 obj_material_idx,dB
 		Msg("cd %s -real_acceted_e %f",		name,				Kself+Kobj-KK);
 		Msg("cd %s -free_energy %f",		name,				dbg_free_energy);
 		Msg("-----------------------------------------------------------------------------------------");
-		/*
-		static float dbg_my_norm_vell=0.f;
-		static float dbg_obj_norm_vell=0.f;
-		static float dbg_my_kinetic_e=0.f;
-		static float dbg_obj_kinetic_e=0.f;
-		static float dbg_my_effective_e=0.f;
-		static float dbg_obj_effective_e=0.f;
-		static float dbg_free_energy=0.f;
-		if()
-			dbg_my_norm_vell=norm_vel;
-			dbg_obj_norm_vell=norm_obj_vel;
-			dbg_my_kinetic_e=Kself;
-			dbg_obj_kinetic_e=Kobj;
-			dbg_my_effective_e=Kself*m_collision_damage_factor;
-			dbg_obj_effective_e=Kobj*object_damage_factor;
-			dbg_free_energy=KK;
-		DBG_OutText("-----dbg obj collision damage-------");
-		DBG_OutText("my_norm_vell %f",dbg_my_norm_vell);
-		DBG_OutText("obj_norm_vell %f",dbg_obj_norm_vell);
-		DBG_OutText("my_kinetic_e %f",dbg_my_kinetic_e);
-		DBG_OutText("obj_kinetic_e %f", dbg_obj_kinetic_e);
-		DBG_OutText("my_effective_e %f",dbg_my_effective_e);
-		DBG_OutText("obj_effective_e %f",dbg_obj_effective_e);
-		DBG_OutText("free_energy %f",dbg_free_energy);
-		DBG_OutText("-----------------------------------");
-		*/
 	}
 #endif
 	if(c_vel>m_collision_damage_info.m_contact_velocity) 
@@ -133,29 +101,27 @@ void CPHSimpleCharacter::UpdateDynamicDamage(dContact* c,u16 obj_material_idx,dB
 	}
 }
 
-
-IC		void	CPHSimpleCharacter::foot_material_update(u16	contact_material_idx,u16	foot_material_idx)
+IC void CPHSimpleCharacter::foot_material_update(u16 contact_material_idx, u16 foot_material_idx)
 {
-	if( m_elevator_state.UpdateMaterial( *p_lastMaterialIDX ) )
+	if (m_elevator_state.UpdateMaterial(*p_lastMaterialIDX))
 		return;
-	if(	*p_lastMaterialIDX!=u16(-1)&&
-		GMLibrary().GetMaterialByIdx( *p_lastMaterialIDX)->Flags.test(SGameMtl:: flPassable)&&
-		!b_foot_mtl_check )	
-						return	;
-	b_foot_mtl_check					=false									   ;
+
+	if (*p_lastMaterialIDX != u16(-1) && GMLibrary().GetMaterialByIdx(*p_lastMaterialIDX)->Flags.test(SGameMtl::flPassable) && !b_foot_mtl_check)
+		return;
+
+	b_foot_mtl_check = false;
 
 	const SGameMtl* contact_material = GMLibrary().GetMaterialByIdx(contact_material_idx);
 
-	if(contact_material->Flags.test(SGameMtl::flPassable))
+	if (contact_material->Flags.test(SGameMtl::flPassable))
 	{
-		if(contact_material->Flags.test(SGameMtl::flInjurious))
-			injuriousMaterialIDX = contact_material_idx	;
+		if (contact_material->Flags.test(SGameMtl::flInjurious))
+			injuriousMaterialIDX = contact_material_idx;
 		else
-			*p_lastMaterialIDX	= contact_material_idx	;
-								
+			*p_lastMaterialIDX = contact_material_idx;
+
+		return;
 	}
-	else	
-								*p_lastMaterialIDX=foot_material_idx					;
 
+	*p_lastMaterialIDX = foot_material_idx;
 }
-
