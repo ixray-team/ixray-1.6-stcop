@@ -436,3 +436,12 @@ void Manager::reset_highlight(CInventoryItem& item)
 		return;
 	}
 }
+
+void Manager::RefreshTranslations()
+{
+	for (const auto& upgrade : m_upgrades)
+	{
+		upgrade.second->RefreshTranslations();
+	}
+
+}
