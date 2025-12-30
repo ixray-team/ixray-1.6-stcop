@@ -1,6 +1,7 @@
 #pragma once
 #pragma warning(push)
 #pragma warning(disable: 4715)
+#include "ExportDefines.h"
 #include "../xrCore/guid.h"
 
 enum fsL_Chunks
@@ -370,7 +371,7 @@ struct SNodePositionOld
 
 constexpr u32 XRCL_CURRENT_VERSION = 18; //17;	// input
 constexpr u32 XRCL_PRODUCTION_VERSION = 14; // output 
-constexpr u32 CFORM_CURRENT_VERSION = 4;
+//constexpr u32 CFORM_CURRENT_VERSION = 4;
 
 constexpr u32 MAX_AI_NODES = NodeCompressed::LINK_MASK_0;
 constexpr u32 MAX_NODE_XZ = NodePosition::MAX_XZ;

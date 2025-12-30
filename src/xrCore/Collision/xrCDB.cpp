@@ -30,6 +30,23 @@ XRCORE_API IReader* CDB::GetModelCache(string_path LevelName, u32 crc)
 	return pReaderCache;
 }
 
+IReader* CDB::GetModelCache(const xr_stack_string_path& LevelName, u32 crc)
+{
+	IReader* pReaderCache = nullptr;
+
+	if (FS.exist("$app_data_root$", LevelName.c_str()))
+	{
+		pReaderCache = FS.r_open("$app_data_root$", LevelName.c_str());
+
+		if (pReaderCache->length() <= 4 || pReaderCache->r_u32() != crc)
+		{
+			FS.r_close(pReaderCache);
+		}
+	}
+
+	return pReaderCache;
+}
+
 // Model building
 MODEL::MODEL()
 {
