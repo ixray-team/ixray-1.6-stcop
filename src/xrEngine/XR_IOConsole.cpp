@@ -602,42 +602,31 @@ void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd, bool Silent)
 
 void CConsole::Show()
 {
-	if ( bVisible )
-	{
+	if (bVisible)
 		return;
-	}
+	
 	bVisible = true;
-
-	ec().clear_states();
-	scroll_delta	= 0;
-	reset_cmd_history_idx();
-	reset_selected_tip();
+	scroll_delta = 0;
+	
 	update_tips();
-
 	m_editor->IR_Capture();
+	
 	Device.seqRender.Add( this, 1 );
 	Device.seqFrame.Add( this );
 }
 
-extern CInput* pInput;
-
 void CConsole::Hide()
 {
-	if ( !bVisible )
-	{
+	if (!bVisible || (g_pGamePersistent && g_dedicated_server))
 		return;
-	}
-	if ( g_pGamePersistent && g_dedicated_server )
-	{
-		return;
-	}
 
 	bVisible = false;
-	reset_selected_tip();
+	
 	update_tips();
 
-	Device.seqFrame.Remove( this );
-	Device.seqRender.Remove( this );
+	Device.seqFrame.Remove(this);
+	Device.seqRender.Remove(this);
+	
 	m_editor->IR_Release();
 }
 
