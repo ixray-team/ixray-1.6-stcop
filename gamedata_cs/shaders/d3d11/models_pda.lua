@@ -9,7 +9,7 @@ function normal(shader, t_base, t_second, t_detail)
 end
 
 function l_special(shader, t_base, t_second, t_detail)
-    shader:begin("deffer_model", "accum_emissivel")
+    shader:begin("deffer_model", "model_pda_screen")
         :zb(true, false)
         :fog(false)
         :emissive(true)
