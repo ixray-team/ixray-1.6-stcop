@@ -20,19 +20,40 @@ void main(p_bumped_new I, out OutStructure O)
     M.Hemi = I.tcdh.z;
     M.Point = I.position.xyz;
 
-    M.Color = s_base.Sample(smp_base, I.tcdh.xy);
 	M.Metalness = 0.0f;
 	M.SSS = 0.0f;
 	M.AO = 1.0f;
 
-    float4 Lmap = s_lmap.Sample(smp_base, I.tcdh.xy);
     float2 tcdbump = I.tcdh.xy * dt_params.xy;
+	
+#ifdef USE_4_BUMP
+	float4 Mask = s_mask.Sample(smp_base, I.tcdh.xy);
+	Mask /= dot(Mask, 1.0f);
+
+	#ifdef USE_TERRAIN_PARALLAX
+		float2 texcoord = 0.0f;
+		#ifdef USE_PBR
+			[branch] if(Mask.x > EPS_L) { texcoord += UpdateTC(I, tcdbump, s_dn_r, 0) * Mask.x; } else { texcoord += tcdbump * Mask.x; }
+			[branch] if(Mask.y > EPS_L) { texcoord += UpdateTC(I, tcdbump, s_dn_g, 0) * Mask.y; } else { texcoord += tcdbump * Mask.y; }
+			[branch] if(Mask.z > EPS_L) { texcoord += UpdateTC(I, tcdbump, s_dn_b, 0) * Mask.z; } else { texcoord += tcdbump * Mask.z; }
+			[branch] if(Mask.w > EPS_L) { texcoord += UpdateTC(I, tcdbump, s_dn_a, 0) * Mask.w; } else { texcoord += tcdbump * Mask.w; }
+		#else
+			[branch] if(Mask.x > EPS_L) { texcoord += UpdateTC(I, tcdbump, s_dn_rX, 3) * Mask.x; } else { texcoord += tcdbump * Mask.x; }
+			[branch] if(Mask.y > EPS_L) { texcoord += UpdateTC(I, tcdbump, s_dn_gX, 3) * Mask.y; } else { texcoord += tcdbump * Mask.y; }
+			[branch] if(Mask.z > EPS_L) { texcoord += UpdateTC(I, tcdbump, s_dn_bX, 3) * Mask.z; } else { texcoord += tcdbump * Mask.z; }
+			[branch] if(Mask.w > EPS_L) { texcoord += UpdateTC(I, tcdbump, s_dn_aX, 3) * Mask.w; } else { texcoord += tcdbump * Mask.w; }
+		#endif
+		
+		tcdbump = texcoord;
+		I.tcdh.xy = tcdbump / dt_params.xy;
+	#endif
+#endif
+
+    M.Color = s_base.Sample(smp_base, I.tcdh.xy);
+    float4 Lmap = s_lmap.Sample(smp_base, I.tcdh.xy);
 
 #ifdef USE_PBR
 	#ifdef USE_4_BUMP
-		float4 Mask = s_mask.Sample(smp_base, I.tcdh.xy);
-		Mask /= dot(Mask, 1.0f);
-
 		float3 r_base = s_dt_r.Sample(smp_base, tcdbump).xyz * Mask.x;
 		float3 g_base = s_dt_g.Sample(smp_base, tcdbump).xyz * Mask.y;
 		float3 b_base = s_dt_b.Sample(smp_base, tcdbump).xyz * Mask.z;
@@ -74,9 +95,6 @@ void main(p_bumped_new I, out OutStructure O)
 	#endif
 #else
 	#ifdef USE_4_BUMP
-		float4 Mask = s_mask.Sample(smp_base, I.tcdh.xy);
-		Mask /= dot(Mask, 1.0f);
-		
 		float3 Detail_R = s_dt_r.Sample(smp_base, tcdbump).xyz * Mask.x;
 		float3 Detail_G = s_dt_g.Sample(smp_base, tcdbump).xyz * Mask.y;
 		float3 Detail_B = s_dt_b.Sample(smp_base, tcdbump).xyz * Mask.z;
