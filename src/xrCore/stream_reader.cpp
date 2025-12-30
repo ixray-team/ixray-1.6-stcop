@@ -14,7 +14,7 @@ void CStreamReader::construct
 	m_start_offset				= start_offset;
 	m_file_size					= file_size;
 	m_archive_size				= archive_size;
-	m_window_size				= _max(window_size,FS.dwAllocGranularity);
+	m_window_size				= std::max(window_size,(intptr_t)FS.dwAllocGranularity);
 
 	map							(0);
 }

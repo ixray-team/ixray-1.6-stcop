@@ -337,8 +337,8 @@ void CDetailManager::Render()
 		fDelta = Device.fTimeDelta;
 	}
 
-	wave_dir1.set(_sin(m_time_rot_1), 0, _cos(m_time_rot_1), 0).normalize().mul(swing_current.amp1);
-	wave_dir2.set(_sin(m_time_rot_2), 0, _cos(m_time_rot_2), 0).normalize().mul(swing_current.amp2);
+	wave_dir1.set(std::sin(m_time_rot_1), 0, std::cos(m_time_rot_1), 0).normalize().mul(swing_current.amp1);
+	wave_dir2.set(std::sin(m_time_rot_2), 0, std::cos(m_time_rot_2), 0).normalize().mul(swing_current.amp2);
 
 	m_global_time_old = Device.fTimeGlobal;
 

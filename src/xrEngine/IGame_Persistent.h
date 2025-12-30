@@ -40,7 +40,7 @@ public:
 		void parse_cmd_line(LPCSTR cmd_line)
 		{
 			reset();
-			int n = _min(4, _GetItemCount(cmd_line, '/'));
+			int n = std::min(4, _GetItemCount(cmd_line, '/'));
 			for (int i = 0; i < n; ++i)
 			{
 				_GetItem(cmd_line, i, m_params[i], '/');

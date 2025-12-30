@@ -1209,10 +1209,10 @@ static Fmatrix aim_on_actor		(
 		}
 		else {
 			float const dot_product		= current_direction.dotproduct(target_direction);
-			if (fsimilar(_abs(dot_product), 0.f))
+			if (fsimilar(std::abs(dot_product), 0.f))
 				transform0.identity		();
 			else {
-				VERIFY					(fsimilar(_abs(dot_product), 1.f));
+				VERIFY					(fsimilar(std::abs(dot_product), 1.f));
 				cross_product.crossproduct	(current_direction, direction_target);
 				transform0.rotation		(cross_product.normalize(), dot_product > 0.f ? 0.f : PI);
 			}
@@ -1232,10 +1232,10 @@ static Fmatrix aim_on_actor		(
 		}
 		else {
 			float const dot_product		= current_direction.dotproduct(target_direction);
-			if (fsimilar(_abs(dot_product), 0.f))
+			if (fsimilar(std::abs(dot_product), 0.f))
 				transform1.identity		();
 			else {
-				VERIFY					(fsimilar(_abs(dot_product), 1.f));
+				VERIFY					(fsimilar(std::abs(dot_product), 1.f));
 				transform1.rotation		(target_direction, dot_product > 0.f ? 0.f : PI);
 			}
 		}

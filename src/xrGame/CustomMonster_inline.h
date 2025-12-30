@@ -29,7 +29,7 @@ IC void CCustomMonster::vfNormalizeSafe(Fvector& Vector)
 
 ICF	bool left_angle(float y1, float y2)
 {
-	return			(_sin(y1)*_cos(y2) - _sin(y2)*_cos(y1) <= 0.f);
+	return			(std::sin(y1)* std::cos(y2) - std::sin(y2)* std::cos(y1) <= 0.f);
 }
 
 IC	CMemoryManager &CCustomMonster::memory		() const

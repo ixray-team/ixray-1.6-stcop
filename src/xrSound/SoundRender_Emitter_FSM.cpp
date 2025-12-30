@@ -212,7 +212,7 @@ void CSoundRender_Emitter::update(float dt)
 IC void	volume_lerp(float& c, float t, float s, float dt)
 {
 	float diff		= t - c;
-	float diff_a	= _abs(diff);
+	float diff_a	= std::abs(diff);
 	if (diff_a<EPS_S) return;
 	float mot		= s*dt;
 	if (mot>diff_a) mot=diff_a;

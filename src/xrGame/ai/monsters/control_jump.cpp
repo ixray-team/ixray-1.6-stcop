@@ -616,7 +616,7 @@ bool CControlJump::can_jump(Fvector const& target, bool const aggressive_jump)
 	float dist = source_position.distance_to(target_position);
 
 	// in aggressive mode we can jump from distance >= 1
-	const float test_min_distance = aggressive_jump ? _min(1.f, m_min_distance) : m_min_distance;
+	const float test_min_distance = aggressive_jump ? std::min(1.f, m_min_distance) : m_min_distance;
 	if ( (dist < test_min_distance) || (dist > m_max_distance) ) 
 		return						false;
 
@@ -632,7 +632,7 @@ bool CControlJump::can_jump(Fvector const& target, bool const aggressive_jump)
 		return						false;
 	
 	// check if target on the same floor etc
-	if (_abs(target_position.y-source_position.y) > m_max_height) 
+	if (std::abs(target_position.y-source_position.y) > m_max_height)
 		return						false;
 
 	// проверка prepare

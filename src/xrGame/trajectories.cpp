@@ -141,7 +141,7 @@ bool trajectory_check_collision (float 							low,
 		Fvector const box_z_axis	=	start_to_target;
 		Fvector box_y_axis;
 		Fvector box_x_axis;
-		if ( _abs(box_z_axis.x) > epsilon || _abs(box_z_axis.z) > epsilon ) {
+		if (std::abs(box_z_axis.x) > epsilon || std::abs(box_z_axis.z) > epsilon ) {
 
 			Fvector const down			=	{ 0, -1, 0 };
 

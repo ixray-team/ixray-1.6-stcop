@@ -65,7 +65,7 @@ static int solve_trig1_aux(float c,
 	return 0;
 
     temp  = atan2(_sqrt(temp), c);
-    num =  (_abs(temp) > 1e-6f) ? 2 : 1;
+    num =  (std::abs(temp) > 1e-6f) ? 2 : 1;
 
     theta[0] = atan2ba;
     if (num == 2)

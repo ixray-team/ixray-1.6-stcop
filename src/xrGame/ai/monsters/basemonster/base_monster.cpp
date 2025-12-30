@@ -248,7 +248,7 @@ bool enemy_inaccessible (CBaseMonster * const object)
 	Fvector const enemy_vert_pos	=	ai().level_graph().vertex_position(enemy->ai_location().level_vertex_id());
 	
 	float const xz_dist_to_vertex	=	enemy_vert_pos.distance_to_xz(enemy_pos);
-	float const y_dist_to_vertex	=	_abs(enemy_vert_pos.y - enemy_pos.y);
+	float const y_dist_to_vertex	= std::abs(enemy_vert_pos.y - enemy_pos.y);
 
 	if ( xz_dist_to_vertex > 0.5f && y_dist_to_vertex > 3.f )
 		return							true;
@@ -1117,10 +1117,10 @@ float CBaseMonster::get_screen_space_coverage_diagonal()
 		Fvector p;
 		b.getpoint		(k,p);
 		xform.transform	(p);
-		mn.x			= _min(mn.x,p.x);
-		mn.y			= _min(mn.y,p.y);
-		mx.x			= _max(mx.x,p.x);
-		mx.y			= _max(mx.y,p.y);
+		mn.x			= std::min(mn.x,p.x);
+		mn.y			= std::min(mn.y,p.y);
+		mx.x			= std::max(mx.x,p.x);
+		mx.y			= std::max(mx.y,p.y);
 	}
 
 	float const width	=	mx.x - mn.x;

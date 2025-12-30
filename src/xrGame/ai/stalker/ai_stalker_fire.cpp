@@ -720,7 +720,7 @@ void CAI_Stalker::can_kill_entity		(const Fvector &position, const Fvector &dire
 	Level().ObjectSpace.RayQuery	(rq_storage_,ray_defs,ray_query_callback,&params,nullptr,this);
 	m_can_kill_enemy				= m_can_kill_enemy  || params.m_can_kill_enemy;
 	m_can_kill_member				= m_can_kill_member || params.m_can_kill_member;
-	m_pick_distance					= _max(m_pick_distance,params.m_pick_distance);
+	m_pick_distance					= std::max(m_pick_distance,params.m_pick_distance);
 }
 
 void CAI_Stalker::can_kill_entity_from	(const Fvector &position, Fvector direction, float distance)
@@ -765,7 +765,7 @@ IC	float CAI_Stalker::start_pick_distance	() const
 		return				(result);
 
 	return					(
-		_max(
+		std::max(
 			result,
 			memory().enemy().selected()->Position().distance_to(Position()) + 1.f
 		)
@@ -903,7 +903,7 @@ bool CAI_Stalker::fire_make_sense		()
 	if ((pick_distance() + PRECISE_DISTANCE) < Position().distance_to(enemy->Position()))
 		return				(false);
 
-	if (_abs(Position().y - enemy->Position().y) > FLOOR_DISTANCE)
+	if (std::abs(Position().y - enemy->Position().y) > FLOOR_DISTANCE)
 		return				(false);
 
 	if (pick_distance() < NEAR_DISTANCE)

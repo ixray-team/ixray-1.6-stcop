@@ -146,10 +146,10 @@ void base::aim_at_position		(
 		}
 		else {
 			float const dot_product		= clampr(current_direction.dotproduct(target_direction), -1.f, 1.f);
-			if (fsimilar(_abs(dot_product), 0.f))
+			if (fsimilar(std::abs(dot_product), 0.f))
 				transform0.identity		();
 			else {
-				VERIFY					(fsimilar(_abs(dot_product), 1.f));
+				VERIFY					(fsimilar(std::abs(dot_product), 1.f));
 				cross_product.crossproduct	(current_direction, direction_target);
 				float const sin_alpha2	= clampr(cross_product.magnitude(), -1.f, 1.f);
 				if (!fis_zero(sin_alpha2)) {
@@ -181,10 +181,10 @@ void base::aim_at_position		(
 		}
 		else {
 			float const dot_product		= clampr(current_direction.dotproduct(target_direction), -1.f, 1.f);
-			if (fsimilar(_abs(dot_product), 0.f))
+			if (fsimilar(std::abs(dot_product), 0.f))
 				transform1.identity		();
 			else {
-				VERIFY					(fsimilar(_abs(dot_product), 1.f));
+				VERIFY					(fsimilar(std::abs(dot_product), 1.f));
 				transform1.rotation		(target_direction, dot_product > 0.f ? 0.f : PI);
 			}
 		}

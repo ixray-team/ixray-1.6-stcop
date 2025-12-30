@@ -163,8 +163,8 @@ void CWeaponShotEffector::UpdateSpringRecoil(float dt)
 	SpringPhysics(dt, current_recoil.Pattern.Stiffness, current_recoil.Pattern.Damping);
 	
 	// Проверка стабилизации
-	bool is_vert_stable = _abs(m_velocity_vert) < 0.001f && _abs(m_angle_vert - m_target_angle_vert) < 0.001f;
-	bool is_horz_stable = _abs(m_velocity_horz) < 0.001f && _abs(m_angle_horz - m_target_angle_horz) < 0.001f;
+	bool is_vert_stable = std::abs(m_velocity_vert) < 0.001f && std::abs(m_angle_vert - m_target_angle_vert) < 0.001f;
+	bool is_horz_stable = std::abs(m_velocity_horz) < 0.001f && std::abs(m_angle_horz - m_target_angle_horz) < 0.001f;
 
 	if (is_vert_stable && is_horz_stable)
 	{
@@ -172,7 +172,7 @@ void CWeaponShotEffector::UpdateSpringRecoil(float dt)
 		m_angle_horz = m_target_angle_horz;
 
 		// Если стабилизировались и цели близки к нулю, деактивируем
-		if (m_shot_end && _abs(m_target_angle_vert) < 0.001f && _abs(m_target_angle_horz) < 0.001f)
+		if (m_shot_end && std::abs(m_target_angle_vert) < 0.001f && std::abs(m_target_angle_horz) < 0.001f)
 		{
 			m_actived = false;
 		}
@@ -181,8 +181,8 @@ void CWeaponShotEffector::UpdateSpringRecoil(float dt)
 
 void CWeaponShotEffector::Relax(float dt)
 {
-	float time_to_relax = _abs(m_angle_vert) / current_recoil.RelaxSpeed;
-	float relax_speed_horz = (fis_zero(time_to_relax)) ? 0.0f : _abs(m_angle_horz) / time_to_relax;
+	float time_to_relax = std::abs(m_angle_vert) / current_recoil.RelaxSpeed;
+	float relax_speed_horz = (fis_zero(time_to_relax)) ? 0.0f : std::abs(m_angle_horz) / time_to_relax;
 
 	if (m_angle_horz >= 0.0f)
 	{

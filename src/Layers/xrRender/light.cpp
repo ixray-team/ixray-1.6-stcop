@@ -169,7 +169,7 @@ void light::set_position(const Fvector& P)
 
 void light::set_range(float R)
 {
-	float	eps = _max(range * 0.1f, EPS);
+	float	eps = std::max(range * 0.1f, EPS);
 	if (fsimilar(range, R, eps))	return;
 	range = R;
 	spatial_move();
@@ -255,7 +255,7 @@ void light::spatial_move()
 				SpatialComponent->spatial.sphere.R		= range * tanf(cone/2.f);
 			} else {
 				// acute-angled
-				SpatialComponent->spatial.sphere.R		= range / (2.f * _sqr(_cos(cone/2.f)));
+				SpatialComponent->spatial.sphere.R		= range / (2.f * _sqr(std::cos(cone/2.f)));
 				SpatialComponent->spatial.sphere.P.mad	(position,direction, SpatialComponent->spatial.sphere.R);
 			}
 		}
@@ -326,7 +326,7 @@ void	light::xform_calc			()
 		L_right.crossproduct		(L_up,L_dir);			L_right.normalize	();
 	} else {
 		// auto find 'up' and 'right' vectors
-		L_up.set					(0,1,0);				if (_abs(L_up.dotproduct(L_dir))>.99f)	L_up.set(0,0,1);
+		L_up.set					(0,1,0);				if (std::abs(L_up.dotproduct(L_dir))>.99f)	L_up.set(0,0,1);
 		L_right.crossproduct		(L_up,L_dir);			L_right.normalize	();
 		L_up.crossproduct			(L_dir,L_right);		L_up.normalize		();
 	}
@@ -376,7 +376,7 @@ void	light::xform_calc			()
 
 		// _min(L->cone + deg2rad(4.5f), PI*0.98f) - Here, it is needed to enlarge the shadow map frustum to include also 
 		// displaced pixels and the pixels neighbor to the examining one.
-		X.S.project.build_projection		(_min(cone + deg2rad(5.f), PI*0.98f), 1.f,virtual_size,range+EPS_S);
+		X.S.project.build_projection		(std::min(cone + deg2rad(5.f), PI*0.98f), 1.f,virtual_size,range+EPS_S);
 
 		X.S.combine.mul(X.S.project,X.S.view);
 	}
@@ -416,7 +416,7 @@ void	light::optimize_smap_size()
 	if (_size<SMAP_adapt_min)	_size	= SMAP_adapt_min;
 	if (_size>SMAP_adapt_max)	_size	= SMAP_adapt_max;
 	int _epsilon				= iCeil	(float(_size)*0.01f);
-	int _diff					= _abs	(int(_size)-int(_cached_size));
+	int _diff					= std::abs	(int(_size)-int(_cached_size));
 	X.S.size					= (_diff>=_epsilon)?_size:_cached_size;
 }
 

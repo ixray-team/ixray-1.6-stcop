@@ -680,7 +680,7 @@ void ESceneWallmarkTool::BuildMatrix	(Fmatrix &mView, float inv_w, float inv_h, 
 
     if (m_Flags.is(flAxisAlign)){
         y.set			(0,1,0);
-        if (_abs(sml_normal.y)>0.99f) y.set(1,0,0);
+        if (std::abs(sml_normal.y)>0.99f) y.set(1,0,0);
     }else{
         y.set			(EDevice->vCameraTop);
         if (fsimilar(y.dotproduct(sml_normal),1.f,EPS)) y.set(EDevice->vCameraRight);
@@ -690,7 +690,7 @@ void ESceneWallmarkTool::BuildMatrix	(Fmatrix &mView, float inv_w, float inv_h, 
 	mView.build_camera	(from,at,up);
 	mRot.rotateZ		(angle);
 	mView.mulA_43		(mRot);
-	mScale.scale		(inv_w,inv_h,_max(inv_w,inv_h));
+	mScale.scale		(inv_w,inv_h, std::max(inv_w,inv_h));
 	mView.mulA_43		(mScale);
 }
 
@@ -739,7 +739,7 @@ BOOL ESceneWallmarkTool::AddWallmark_internal(const Fvector& start, const Fvecto
     // box pick poly
     Fbox					bbox;
     bbox.set				(contact_pt,contact_pt);
-    bbox.grow				(_max(height,width)*2);
+    bbox.grow				(std::max(height,width)*2);
     SPickQuery				BQ;
     if (Scene->BoxQuery(BQ,bbox,CDB::OPT_FULL_TEST,snap_list)){ 
     	for (u32 k=0; k<(u32)BQ.r_count(); k++){

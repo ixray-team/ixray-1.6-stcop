@@ -178,7 +178,7 @@ IC BOOL OrientToNorm(Fvector& local_norm, Fmatrix33& form, Fvector& hs)
 	Fvector * ax_pointer= (Fvector*)&form;
 	int 	max_proj=0,min_size=0;
 	for (u32 k=1; k<3; k++){
-		if (_abs(local_norm[k])>_abs(local_norm[max_proj]))
+		if (std::abs(local_norm[k])> std::abs(local_norm[max_proj]))
 			max_proj=k;
 		if (hs[k]<hs[min_size])
 			min_size=k; 

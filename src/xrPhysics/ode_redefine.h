@@ -15,17 +15,17 @@
 
 #ifdef	dSin
 #undef  dSin
-#define dSin(x) ((float)_sin(x))			/* sine */
+#define dSin(x) ((float)std::sin(x))			/* sine */
 #endif
 
 #ifdef  dCos
 #undef  dCos
-#define dCos(x) ((float)_cos(x))			/* cosine */
+#define dCos(x) ((float)std::cos(x))			/* cosine */
 #endif
 
 #ifdef  dFabs
 #undef  dFabs
-#define dFabs(x) ((float)_abs(x))		/* absolute value */
+#define dFabs(x) ((float)std::abs(x))		/* absolute value */
 #endif
 
 #endif//XRGAME_EXPORTS

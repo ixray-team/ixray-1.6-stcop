@@ -33,9 +33,9 @@ BOOL CPseudogigantStepEffector::ProcessCam(SCamEffectorInfo& info)
 	float cur_amp		= max_amp * (PI / 180) / (10 * k * k);
 
 	Fvector dangle; 
-	dangle.x = cur_amp/2	* _sin(period_all	* (1.0f - time_left_perc));
-	dangle.y = cur_amp		* _cos(period_all/2 * (1.0f - time_left_perc));
-	dangle.z = cur_amp/4	* _sin(period_all/4	* (1.0f - time_left_perc));
+	dangle.x = cur_amp/2	* std::sin(period_all	* (1.0f - time_left_perc));
+	dangle.y = cur_amp		* std::cos(period_all/2 * (1.0f - time_left_perc));
+	dangle.z = cur_amp/4	* std::sin(period_all/4	* (1.0f - time_left_perc));
 
 	// Установить углы смещения
 	Fmatrix		R;

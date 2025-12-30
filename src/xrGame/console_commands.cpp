@@ -235,11 +235,11 @@ public:
 			int id1 = -1, id2 = -1;
 			sscanf(args, "%d %d", &id1, &id2);
 			if ((-1 != id1) && (-1 != id2))
-				if (_max(id1, id2) > (int)ai().game_graph().header().vertex_count() - 1)
+				if (std::max(id1, id2) > (int)ai().game_graph().header().vertex_count() - 1)
 					Msg("! there are only %d vertexes!", ai().game_graph().header().vertex_count());
 				else
-					if (_min(id1, id2) < 0)
-						Msg("! invalid vertex number (%d)!", _min(id1, id2));
+					if (std::min(id1, id2) < 0)
+						Msg("! invalid vertex number (%d)!", std::min(id1, id2));
 					else {
 						//						Sleep				(1);
 						//						CTimer				timer;
@@ -1307,9 +1307,9 @@ struct CCC_StartTimeSingle : public IConsole_Command {
 	{
 		u32 year = 1, month = 1, day = 1, hours = 0, mins = 0, secs = 0, milisecs = 0;
 		sscanf(args, "%d.%d.%d %d:%d:%d.%d", &year, &month, &day, &hours, &mins, &secs, &milisecs);
-		year = _max(year, 1);
-		month = _max(month, 1);
-		day = _max(day, 1);
+		year = std::max(year, 1u);
+		month = std::max(month, 1u);
+		day = std::max(day, 1u);
 		g_qwStartGameTime = generate_time(year, month, day, hours, mins, secs, milisecs);
 
 		if (!g_pGameLevel)

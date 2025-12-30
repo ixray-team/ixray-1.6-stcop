@@ -15,7 +15,7 @@ void CRenderTarget::PhaseGammaApply()
 
 	brightness = (brightness - contrast) * 0.25f;
 	contrast = contrast * 0.5f + 0.5f;
-	gamma = 1.0f / _max(EPS_S, gamma);
+	gamma = 1.0f / std::max(EPS_S, gamma);
 
 #if defined(USE_DX11)
 	u_setrt(w, h, RTarget, nullptr, nullptr, nullptr);

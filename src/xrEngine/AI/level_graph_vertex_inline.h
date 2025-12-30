@@ -216,7 +216,7 @@ IC ILevelGraph::ELineIntersections  ILevelGraph::intersect_no_check(
 
 IC bool ILevelGraph::similar(const Fvector &tPoint0, const Fvector &tPoint1) const
 {
-	return((_abs(tPoint0.x - tPoint1.x) < EPS_L) && (_abs(tPoint0.z - tPoint1.z) < EPS_L));
+	return((std::abs(tPoint0.x - tPoint1.x) < EPS_L) && (std::abs(tPoint0.z - tPoint1.z) < EPS_L));
 }
 
 IC bool ILevelGraph::inside(const Fvector &tPoint, const ILevelGraph::SContour &tContour) const

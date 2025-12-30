@@ -98,7 +98,7 @@ void dx103DFluidEmitters::ApplyDensity( const CEmitter &Emitter)
 	//t += 0.05f;
 	const float fMiddleIntencity = 1;
 	const float saturation = Emitter.m_fSaturation;
-	FLOAT density = 1.5f*(((_sin( t*1.5f + 2.0f*float(PI)/3.0f )*0.5f + 0.5f))*saturation + fMiddleIntencity*(1.0f-saturation));
+	FLOAT density = 1.5f*(((std::sin( t*1.5f + 2.0f*float(PI)/3.0f )*0.5f + 0.5f))*saturation + fMiddleIntencity*(1.0f-saturation));
 	density *= Emitter.m_fDensity;
 	Fvector4 color;
 	color.set(density, density, density, 1.0f);
@@ -142,7 +142,7 @@ void dx103DFluidEmitters::ApplyVelocity( const CEmitter &Emitter)
 		if (fPeriod<0.0001f) fPeriod = 0.0001f;
 		float fFactor = 1.0f + 
 			Emitter.m_DraughtParams.m_fAmp * 
-			_sin
+			std::sin
 			( 
 				( t + Emitter.m_DraughtParams.m_fPhase ) * 
 				(2.0f * float(PI)) / 

@@ -301,7 +301,7 @@ void CActorTools::ZoomObject(BOOL bSelOnly)
 					float		r = 0.5f;
 					switch ((*b_it)->shape.type) {
 					case SBoneShape::stBox:
-						r = _max(_max((*b_it)->shape.box.m_halfsize.x, (*b_it)->shape.box.m_halfsize.y), (*b_it)->shape.box.m_halfsize.z);
+						r = std::max(std::max((*b_it)->shape.box.m_halfsize.x, (*b_it)->shape.box.m_halfsize.y), (*b_it)->shape.box.m_halfsize.z);
 						C = (*b_it)->shape.box.m_translate;
 						break;
 					case SBoneShape::stSphere:
@@ -309,7 +309,7 @@ void CActorTools::ZoomObject(BOOL bSelOnly)
 						C = (*b_it)->shape.sphere.P;
 						break;
 					case SBoneShape::stCylinder:
-						r = _max((*b_it)->shape.cylinder.m_height, (*b_it)->shape.cylinder.m_radius);
+						r = std::max((*b_it)->shape.cylinder.m_height, (*b_it)->shape.cylinder.m_radius);
 						C = (*b_it)->shape.cylinder.m_center;
 						break;
 					}

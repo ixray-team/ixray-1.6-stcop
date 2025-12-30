@@ -590,7 +590,7 @@ bool CExportObjectOGF::ExportAsWavefrontOBJ(IWriter& F, LPCSTR fn)
             }
             for (v_it=VERTS.begin(); v_it!=VERTS.end(); ++v_it)
             {
-                sprintf				(tmp,"vt %f %f",v_it->UV.x,_abs(1.f-v_it->UV.y));
+                sprintf				(tmp,"vt %f %f",v_it->UV.x, std::abs(1.f-v_it->UV.y));
                 F.w_string			(tmp);
             }
             for (v_it=VERTS.begin(); v_it!=VERTS.end(); ++v_it)

@@ -340,7 +340,7 @@ _DDS:
 				R_ASSERT3(false, errMsg, fname);
 			}
 
-			const u32 maxTextureDimension = _max(d3dCaps.MaxTextureWidth, d3dCaps.MaxTextureHeight);
+			const u32 maxTextureDimension = std::max(d3dCaps.MaxTextureWidth, d3dCaps.MaxTextureHeight);
 
 			if (header && (header->width > maxTextureDimension || header->height > maxTextureDimension))
 			{

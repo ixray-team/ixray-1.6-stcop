@@ -1053,7 +1053,7 @@ void CPHMovementControl::GetJumpParam(Fvector& velocity, JumpType& type, const F
 		return;
 	}
 	float rise_time = velosity.y / physics_world()->Gravity();
-	if (_abs(rise_time - time) < EPS_L)
+	if (std::abs(rise_time - time) < EPS_L)
 	{
 		type = jtHigh;
 	}
@@ -1283,7 +1283,7 @@ void CPHMovementControl::UpdateObjectBox(CPHCharacter* ach)
 	Fvector2 plane_cam; plane_cam.set(Device.vCameraDirection.x, Device.vCameraDirection.z); plane_cam.normalize_safe();
 	Fvector2 plane_i; plane_i.set(pObject->XFORM().i.x, pObject->XFORM().i.z);
 	Fvector2 plane_k; plane_k.set(pObject->XFORM().k.x, pObject->XFORM().k.z);
-	float R = _abs(poses_dir.dotproduct(plane_i) * cbox.x) + _abs(poses_dir.dotproduct(plane_k) * cbox.z);
+	float R = std::abs(poses_dir.dotproduct(plane_i) * cbox.x) + std::abs(poses_dir.dotproduct(plane_k) * cbox.z);
 
 	R *= poses_dir.dotproduct(plane_cam);
 	Calculate(Fvector().set(0, 0, 0), Fvector().set(1, 0, 0), 0, 0, 0, 0);
@@ -1296,11 +1296,11 @@ void CPHMovementControl::SetPathDir(const Fvector& v)
 {
 	_vPathDir = v;
 
-	if (_abs(_vPathDir.x) > 1000 || _abs(_vPathDir.y) > 1000 || _abs(_vPathDir.z) > 1000)
+	if (std::abs(_vPathDir.x) > 1000 || std::abs(_vPathDir.y) > 1000 || std::abs(_vPathDir.z) > 1000)
 	{
 		Log("_vPathDir", _vPathDir);
 	}
-	VERIFY2(_abs(_vPathDir.x) < 1000, " incorrect SetPathDir ");
+	VERIFY2(std::abs(_vPathDir.x) < 1000, " incorrect SetPathDir ");
 
 }
 

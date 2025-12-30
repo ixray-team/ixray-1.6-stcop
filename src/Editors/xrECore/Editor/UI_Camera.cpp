@@ -364,20 +364,10 @@ void CUI_Camera::ZoomExtents(const Fbox& bb)
 	D.mul(m_CamMat.k,-1);
     H1 = R/sinf(deg2rad(EDevice->fFOV)*0.5f);
     H2 = R/sinf(deg2rad(EDevice->fFOV)*0.5f/EDevice->fASPECT);
-    m_Position.mad(C,D,_max(H1,H2));
+    m_Position.mad(C,D, std::max(H1,H2));
 	m_Target.set(C);
 
 	BuildCamera();
-/*
-	eye_k - фокусное расстояние, eye_k=eye_width/2
-	camera.alfa:=0;
-     camera.beta:=-30*pi/180;
-     camera.gama:=0;
-     s:=(maxx-minx)*eye_k/eye_width*0.5*0.5;
-     camera.posx:=(maxx+minx)/2;
-     camera.posy:=maxy+s*tan(30*pi/180);
-     camera.posz:=minz-s;
-*/
 }
 
 void CUI_Camera::ArcBall(TShiftState Shift, float dx, float dy)

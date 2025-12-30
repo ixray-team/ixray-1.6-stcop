@@ -159,7 +159,7 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 			Fvector						L_dir, L_up, L_right, L_pos;
 			L_pos.set(fuckingsun->position);
 			L_dir.set(fuckingsun->direction).normalize();
-			L_right.set(1, 0, 0);					if (_abs(L_right.dotproduct(L_dir)) > .99f)	L_right.set(0, 0, 1);
+			L_right.set(1, 0, 0);					if (std::abs(L_right.dotproduct(L_dir)) > .99f)	L_right.set(0, 0, 1);
 			L_up.crossproduct(L_dir, L_right).normalize();
 			L_right.crossproduct(L_up, L_dir).normalize();
 			mdir_View.build_camera_dir(L_pos, L_dir, L_up);

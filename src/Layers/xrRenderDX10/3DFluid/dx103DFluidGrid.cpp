@@ -48,7 +48,7 @@ void dx103DFluidGrid::Initialize( int gridWidth, int gridHeight, int gridDepth)
 	m_vDim[1] = gridHeight;
 	m_vDim[2] = gridDepth;
 
-	m_iMaxDim = _max( _max( m_vDim[0], m_vDim[1] ), m_vDim[2] );
+	m_iMaxDim = std::max(std::max( m_vDim[0], m_vDim[1] ), m_vDim[2] );
 
 	ComputeRowColsForFlat3DTexture(m_vDim[2], &m_iCols, &m_iRows);
 

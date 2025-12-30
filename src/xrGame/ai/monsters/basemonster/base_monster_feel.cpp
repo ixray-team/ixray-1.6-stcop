@@ -192,8 +192,8 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 			float d = -h1 + hd.getH	();
 			s->wnd()->SetHeading	(d);
 			Fvector2 wnd_pos = s->wnd()->GetWndPos();
-			wnd_pos.y	+= 400.0f*_cos(d);
-			wnd_pos.x	+= 500.0f*_sin(d);
+			wnd_pos.y	+= 400.0f*std::cos(d);
+			wnd_pos.x	+= 500.0f*std::sin(d);
 			s->wnd()->SetWndPos(wnd_pos);
 			
 			float time_to_lock		= fDamage * MAX_LOCK_TIME;

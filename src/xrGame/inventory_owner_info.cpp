@@ -29,7 +29,7 @@ void  CInventoryOwner::OnEvent (NET_Packet& P, u16 type)
 		u32 amount = P.r_u32();
 		if (InfinitiveMoney())
 		{
-			m_money = _max(m_money, amount);
+			m_money = std::max(m_money, amount);
 		}
 		else
 		{
