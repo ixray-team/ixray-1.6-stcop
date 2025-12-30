@@ -24,6 +24,13 @@ public:
 		pttLIT
 	};
 
+	struct LITFast
+	{
+		Fvector		p;
+		u32			color;
+		Fvector2	t;
+	};
+	LITFast *temp;
 public:
 	virtual void CreateUIGeom() = 0;
 	virtual void DestroyUIGeom() = 0;
@@ -36,6 +43,9 @@ public:
 	virtual void PushPoint(float x, float y, float z, u32 C, float u, float v) = 0;
 
 	virtual void StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointType pointType) = 0;
+
+	virtual LITFast*& StartPrimitiveLITFast(u32 iMaxVerts, ePrimitiveType primType) { return temp; };
+
 	virtual void FlushPrimitive() = 0;
 
 	virtual LPCSTR	UpdateShaderName(LPCSTR tex_name, LPCSTR sh_name) = 0;
