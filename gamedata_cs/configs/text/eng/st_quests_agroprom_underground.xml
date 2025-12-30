@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="agru_find_secret_task_name">
+		<text>Find the stalker group's stash</text>
+	</string>
+	<string id="agru_find_secret_task_text">
+		<text>The Agroprom underground contains a stash belonging to a group of stalkers which reached the center of the Zone. The stalkers used the stash to exchange information. You must find the stash and the PDA with communications</text>
+	</string>
+	<string id="agru_go_out_end_task_name">
+		<text>Leave the underground</text>
+	</string>
+	<string id="agru_go_out_end_task_text">
+		<text>Get out of the underground</text>
+	</string>
+	<string id="agru_go_out_task_name">
+		<text>Leave the flooded area</text>
+	</string>
+	<string id="agru_go_out_task_text">
+		<text>Emergency water dump activated. The lower levels will be flooded. Leave the flooded area</text>
+	</string>
+	<string id="agru_leader_dolg_task_name">
+		<text>Flood the underground</text>
+	</string>
+	<string id="agru_leader_dolg_task_text">
+		<text>There is an old pumping station used to pump ground water in the underground. You must find the control panel for the pumping station and dump water out of the reservoirs. This will flood the underground</text>
+	</string>
+	<string id="agru_destroy_monsters_task_name">
+		<text>Destroy the mutants</text>
+	</string>
+	<string id="agru_destroy_monsters_task_text">
+		<text>Destroy the mutants that are physically pressuring objects, blocking the passage way to the pump station control room.</text>
+	</string>
+</string_table>

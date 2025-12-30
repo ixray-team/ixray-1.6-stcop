@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="hosp_task_general_name">
+		<text>Find a way to Chernobyl NPP</text>
+	</string>
+	<string id="hosp_task_general_text">
+		<text>The way to Chernobyl NPP leads through the ruined hospital. Hurry - Strelok made it through the Scorcher and he's very close to the power plant. Find the entrance to the catacombs</text>
+	</string>
+	<string id="hosp_task_heli_name">
+		<text>Take out the helicopter</text>
+	</string>
+	<string id="hosp_task_heli_text">
+		<text>Shoot down the military helicopter</text>
+	</string>
+	<string id="hosp_task_kill_sniper_name">
+		<text>Kill the sniper</text>
+	</string>
+	<string id="hosp_task_kill_sniper_text">
+		<text>The sniper isn't protected from this side. Kill the sniper</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_1_name">
+		<text>Sneak up on the sniper</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_1_text">
+		<text>The hospital hall is covered by a sniper and a machine gun nest. The sniper's position is well-protected. Clear Sky will distract the enemy while you cross the hall to take the sniper out</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_2_name">
+		<text>Get to the other side of the hall</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_2_text">
+		<text>The machine gunner is unleashing hell on the lower floor while the sniper has the upper floor covered. Clear Sky will distract the enemy for a short while. Move only when given the order by the commander of the Clear Sky squad</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_3_name">
+		<text>Reach the bridge</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_3_text">
+		<text>You need to reach the bridge. Move only when given the order by the commander of the Clear Sky squad, which will distract the enemy</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_4_name">
+		<text>Cross the bridge</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_4_text">
+		<text>Cross the bridge. Move only when given the order by the commander of the Clear Sky squad, which will distract the enemy</text>
+	</string>
+	<string id="hosp_task_z2_exit_name">
+		<text>Move into the next hall</text>
+	</string>
+	<string id="hosp_task_z2_exit_text">
+		<text>The falling helicopter blew up the wall and opened the path into the next hall. Proceed to the next hall</text>
+	</string>
+	<string id="hosp_task_z3_help_csky_squad_name">
+		<text>Cover the Clear Sky squad</text>
+	</string>
+	<string id="hosp_task_z3_help_csky_squad_text">
+		<text>The Clear Sky squad is advancing to blow up the machine gun nest. Monolithians are attacking the squad. Provide covering fire for the Clear Sky squad</text>
+	</string>
+	<string id="hosp_task_z3_hold_out_name">
+		<text>Hold out until help arrives</text>
+	</string>
+	<string id="hosp_task_z3_hold_out_text">
+		<text>A Clear Sky squad is approaching. Hold out until reinforcements arrive</text>
+	</string>
+</string_table>

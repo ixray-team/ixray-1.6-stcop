@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="hospital_task_general_text">
+		<text>Find the entrance to the catacombs</text>
+	</string>
+	<string id="hospital_task_general_title">
+		<text>Find the entrance to the catacombs</text>
+	</string>
+	<string id="katacomb_task_3_objective_1">
+		<text>Hold out until the Clear Sky squad arrives</text>
+	</string>
+	<string id="katacomb_task_3_objective_2">
+		<text>Help the Clear Sky squad</text>
+	</string>
+	<string id="katacomb_task_3_text">
+		<text>Fight your way through to the catacombs entrance</text>
+	</string>
+	<string id="katacomb_task_3_title">
+		<text>Fight your way through to the catacombs entrance</text>
+	</string>
+	<string id="katacomb_task_helicopter_text">
+		<text>Take out the helicopter</text>
+	</string>
+	<string id="katacomb_task_helicopter_title">
+		<text>Take out the helicopter</text>
+	</string>
+	<string id="katacomb_task_kill_sniper_text">
+		<text>Kill the sniper</text>
+	</string>
+	<string id="katacomb_task_kill_sniper_title">
+		<text>Kill the sniper</text>
+	</string>
+	<string id="katacomb_task_sniper_back_objective_1">
+		<text>Move towards the stairs to the ground floor</text>
+	</string>
+	<string id="katacomb_task_sniper_back_objective_2">
+		<text>Run through the ground floor</text>
+	</string>
+	<string id="katacomb_task_sniper_back_objective_3">
+		<text>Reach the bridge</text>
+	</string>
+	<string id="katacomb_task_sniper_back_objective_4">
+		<text>Cross the bridge</text>
+	</string>
+	<string id="katacomb_task_sniper_back_text">
+		<text>Help the Clear Sky squad escape enemy fire</text>
+	</string>
+	<string id="katacomb_task_sniper_back_title">
+		<text>Sneak up on the enemy sniper</text>
+	</string>
+	<string id="katacomb_task_z2_exit_text">
+		<text>Move into the third hall</text>
+	</string>
+	<string id="katacomb_task_z2_exit_title">
+		<text>Move into the third hall</text>
+	</string>
+</string_table>

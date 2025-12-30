@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="mar_capture_plant">
+		<text>Capture the plant</text>
+	</string>
+	<string id="mar_capture_plant_text">
+		<text>Capture the plant used to extract anomalous substances from the bottom of the swamps.</text>
+	</string>
+	<string id="mar_capture_tower">
+		<text>Capture the guard tower</text>
+	</string>
+	<string id="mar_capture_tower_text">
+		<text>Help the Clear Sky squad take over the guard tower held by bandits.</text>
+	</string>
+	<string id="mar_defend_tower">
+		<text>Repel the bandit attack on the tower</text>
+	</string>
+	<string id="mar_defend_tower_text">
+		<text>Repel the bandit counterattack on the guard tower.</text>
+	</string>
+	<string id="mar_story_capture_bandit_base">
+		<text>Capture the northeastern farm</text>
+	</string>
+	<string id="mar_story_capture_bandit_base_text">
+		<text>Capture the farm northeast of the Swamps by taking out the bandits there.</text>
+	</string>
+	<string id="mar_story_capture_levelchangers">
+		<text>Capture the approaches to the paths to the outside world</text>
+	</string>
+	<string id="mar_story_capture_levelchangers_text">
+		<text>Secure the paths to the Cordon and Agroprom by capturing adjacent positions.</text>
+	</string>
+	<string id="mar_story_empower_csky">
+		<text>Reinforce Clear Sky's presence at the Swamps</text>
+	</string>
+	<string id="mar_story_empower_csky_text">
+		<text>Reinforce Clear Sky's presence at the Swamps by eliminating enemy forces.</text>
+	</string>
+	<string id="mar_story_go_to_escape">
+		<text>Go to the Cordon with the guide</text>
+	</string>
+	<string id="mar_story_go_to_escape_text">
+		<text>Meet the guide and go to the Cordon with him.</text>
+	</string>
+	<string id="mar_story_go_to_marsh">
+		<text>Go to the great Swamps with the guide</text>
+	</string>
+	<string id="mar_story_go_to_marsh_text">
+		<text>Ask the guide to take you to the great Swamps.</text>
+	</string>
+	<string id="mar_story_take_control_over_marsh">
+		<text>Take over the Swamps</text>
+	</string>
+	<string id="mar_story_take_control_over_marsh_text">
+		<text>Take over the Swamps to make the roads safe for guides.</text>
+	</string>
+	<string id="mar_story_talk_with_barman">
+		<text>Talk to the barman</text>
+	</string>
+	<string id="mar_story_talk_with_barman_text">
+		<text>Ask the barman about the Clear Sky base.</text>
+	</string>
+	<string id="mar_story_talk_with_commander_1">
+		<text>Talk to Lebedev</text>
+	</string>
+	<string id="mar_story_talk_with_commander_1_text">
+		<text>Find out what Lebedev wanted.</text>
+	</string>
+	<string id="mar_story_talk_with_commander_2">
+		<text>Ask Lebedev about what happened</text>
+	</string>
+	<string id="mar_story_talk_with_commander_2_text">
+		<text>Ask Lebedev about what happened after the second emission.</text>
+	</string>
+	<string id="mar_story_talk_with_commander_3">
+		<text>Reach an agreement with Lebedev to help each other</text>
+	</string>
+	<string id="mar_story_talk_with_commander_3_text">
+		<text>Reach an agreement with Lebedev to help you leave the Swamps.</text>
+	</string>
+	<string id="mar_story_talk_with_guide">
+		<text>Head to the outpost with the guide</text>
+	</string>
+	<string id="mar_story_talk_with_guide_text">
+		<text>Ask the guide to take you to the outpost.</text>
+	</string>
+	<string id="mar_story_talk_with_sidorovych">
+		<text>Talk to Sidorovich</text>
+	</string>
+	<string id="mar_story_talk_with_sidorovych_text">
+		<text>Ask Sidorovich about the stalker who was interested in strange components. It's the only clue Clear Sky has about why the Zone is being shaken by emissions</text>
+	</string>
+	<string id="mar_story_talk_with_trader">
+		<text>Take equipment from the trader</text>
+	</string>
+	<string id="mar_story_talk_with_trader_text">
+		<text>Get a set of equipment from the trader.</text>
+	</string>
+	<string id="mar_tutorial_help">
+		<text>Help the outpost</text>
+	</string>
+	<string id="mar_tutorial_help_text">
+		<text>Respond to the help signal from the Clear Sky outpost.</text>
+	</string>
+	<string id="mar_tutorial_kill_boars">
+		<text>Kill the boars</text>
+	</string>
+	<string id="mar_tutorial_kill_boars_text">
+		<text>Eliminate the boars attacking the Clear Sky outpost</text>
+	</string>
+	<string id="mar_tutorial_return_to_base">
+		<text>Return to the Clear Sky base</text>
+	</string>
+	<string id="mar_tutorial_return_to_base_text">
+		<text>Reach cover inside the Clear Sky base before the emission hits.</text>
+	</string>
+	<string id="mar_tutorial_tower_top">
+		<text>Ascend the tower</text>
+	</string>
+	<string id="mar_tutorial_tower_top_text">
+		<text>Ascend the tower to escape monsters.</text>
+	</string>
+	<string id="st_bring_item_1_name">
+		<text>Deliver grenades</text>
+	</string>
+	<string id="st_bring_item_1_text">
+		<text>The Clear Sky squad has requested a few grenades.</text>
+	</string>
+	<string id="st_bring_item_2_name">
+		<text>Deliver medical supplies</text>
+	</string>
+	<string id="st_bring_item_2_text">
+		<text>The Clear Sky squad is in dire need of medical supplies.</text>
+	</string>
+	<string id="st_bring_item_3_name">
+		<text>Deliver ammo</text>
+	</string>
+	<string id="st_bring_item_3_text">
+		<text>The Clear Sky squad needs shotgun shells</text>
+	</string>
+	<string id="st_bring_item_4_name">
+		<text>Deliver ammo</text>
+	</string>
+	<string id="st_bring_item_4_text">
+		<text>The Clear Sky squad needs pistol ammo</text>
+	</string>
+	<string id="st_bring_item_5_name">
+		<text>Deliver ammo</text>
+	</string>
+	<string id="st_bring_item_5_text">
+		<text>The Clear Sky squad needs assault rifle ammo</text>
+	</string>
+	<string id="st_recover_item_1_name">
+		<text>Return the PMm</text>
+	</string>
+	<string id="st_recover_item_1_text">
+		<text>While out on a night mission a Clear Sky squad ran into a boar lair. It's probably too late to save the men, but the squad commander had a modified PMm. The pistol will be useful to the faction. Return it.</text>
+	</string>
+	<string id="st_recover_item_2_name">
+		<text>Return the AK74/2u</text>
+	</string>
+	<string id="st_recover_item_2_text">
+		<text>A few days ago renegades attacked a Clear Sky squad, just as they were buying a shipment of weapons from the military. Most shooters were captured by the renegades, but the best assault rifle was hidden. You need to recover it.</text>
+	</string>
+	<string id="st_recover_item_3_name">
+		<text>Get the artifact</text>
+	</string>
+	<string id="st_recover_item_3_text">
+		<text>A Clear Sky squad received a help signal from a stalker who said that he found a rare artifact, but didn't know how to get out of an anomalous area. The squad couldn't get to him in time and the signal died. You need to get the artifact.</text>
+	</string>
+	<string id="st_recover_item_4_name">
+		<text>Return the PDA</text>
+	</string>
+	<string id="st_recover_item_4_text">
+		<text>One of our best pathfinders has gone missing while out on a night recon mission. You need to at least return the scout's PDA to make sure the information he collected does not go to waste.</text>
+	</string>
+	<string id="st_recover_item_5_name">
+		<text>Return the suit</text>
+	</string>
+	<string id="st_recover_item_5_text">
+		<text>Renegades recently captured the small plant at the Swamps, just as an experiment was being conducted there. A suit was being saturated with anomalous jelly. Return the suit so that our scientists can assess the experiment.</text>
+	</string>
+	<string id="st_sim_sos_name">
+		<text>Help</text>
+	</string>
+	<string id="st_mar_find_flesh_up_a_novice_outfit_name">
+		<text>Find information about kevlar body armor</text>
+	</string>
+	<string id="st_mar_find_flesh_up_a_novice_outfit_text">
+		<text>To improve armor, Gray needs information about kevlar body armor.</text>
+	</string>
+	<string id="st_mar_find_flesh_up_ac_mp5_name">
+		<text>Find information about muzzle breaks</text>
+	</string>
+	<string id="st_mar_find_flesh_up_ac_mp5_text">
+		<text>Gray wants to fix up a special muzzle break, but doesn't know enough about how they work. Find the related information and bring it to him.</text>
+	</string>
+	<string id="st_mar_find_flesh_up_bd_mp5_name">
+		<text>Find information about barrel modification</text>
+	</string>
+	<string id="st_mar_find_flesh_up_bd_mp5_text">
+		<text>Gray can make a barrel attachment which would improve a weapon's characteristics, but he's missing some data.</text>
+	</string>
+	<string id="st_mar_leader_notify_actor">
+		<text>Mercernary, stay focused! Our goal is to take control over the Swamps. If you don't know what to do, look in your PDA for active tasks.</text>
+	</string>
+	<string id="st_mar_quest_scout_pda_desc">
+		<text>PDA with information about the Swamps, collected by a pathfinder from Clear Sky.</text>
+	</string>
+	<string id="st_mar_quest_scout_pda_name">
+		<text>CS scout's PDA</text>
+	</string>
+</string_table>

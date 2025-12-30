@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="pda_end_tutorial">
+		<text>Well, that's about it...</text>
+	</string>
+	<string id="pda_start_tutorial">
+		<text>Step-by-step tutorial.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_1">
+		<text>Alrighty. So, as you are aware, our main goal is to gain control over the Swamps, which means war with the aggressors.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_10">
+		<text>Finally, here you will see the current strategic objective, as well as the tactical missions that you must complete to accomplish the strategic objective.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_11">
+		<text>The completed strategic missions will be shown at the bottom.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_2">
+		<text>This section will show you the full tactical details relating to current combat progress.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_3">
+		<text>On the left-hand side you will see information about your current faction. Right now that's us, Clear Sky.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_4">
+		<text>On the right you see primary enemy information.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_5">
+		<text>This is an approximate level of our military power.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_6">
+		<text>This shows our troop numbers.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_7">
+		<text>And this is the level of our logistic support.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_8">
+		<text>The symbols shown at the very bottom reflect the distinctive features of our combat equipment.</text>
+	</string>
+	<string id="pda_tutorial_pda_fraction_war_phrase_9">
+		<text>Similar indicators are displayed for our enemy.</text>
+	</string>
+	<string id="pda_tutorial_pda_ranking_war_phrase_1">
+		<text>On the last tab you can learn about your current relations with each faction and how they rank in military power.</text>
+	</string>
+	<string id="pda_tutorial_pda_ranking_war_phrase_2">
+		<text>Your statistics are also displayed here.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_1">
+		<text>Look here. This is the Missions section - your main guide.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_10">
+		<text>In addition to listing tasks, your map will reveal the locations of friendly squads, as well as the coordinates of detected enemies.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_2">
+		<text>This shows your primary mission...</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_3">
+		<text>As well as your selected secondary mission.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_4">
+		<text>If you have several secondary missions, scroll through them using these buttons.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_5">
+		<text>Most missions will also be displayed on the map, with rare exceptions when the mission target cannot be located.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_6">
+		<text>We will need your help not only with destroying the enemy, but also in capturing strategic positions.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_7">
+		<text>In a situation like that, our fighters will appreciate it if you provide cover fire while they overrun a position.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_8">
+		<text>By the way, you shouldn't ignore calls for help - our boys' lives may depend on your actions.</text>
+	</string>
+	<string id="pda_tutorial_pda_tasks_phrase_9">
+		<text>Hover over a spot on the map to see more detailed information about that location.</text>
+	</string>
+</string_table>

@@ -1,0 +1,567 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_upg_zatvor_rpm">
+		<text>Bolt mechanism modification</text>
+	</string>
+	<string id="st_upg_zatvor_rpm_descr">
+		<text>A technological modification of the bolt mechanism allows for a higher rate of fire.</text>
+	</string>
+	<string id="st_upg_zatvor_recoil">
+		<text>Bolt mechanism modification</text>
+	</string>
+	<string id="st_upg_zatvor_recoil_descr">
+		<text>Careful adjustment of the bolt mechanism increases the weapon's precision.</text>
+	</string>
+	<string id="st_upg_porsh_rpm">
+		<text>Operating rod modification</text>
+	</string>
+	<string id="st_upg_porsh_rpm_descr">
+		<text>Reducing operating rod weight reduces recoil at the expense of the weapon's rate of fire.</text>
+	</string>
+	<string id="st_upg_porsh_recoil">
+		<text>Operating rod modification</text>
+	</string>
+	<string id="st_upg_porsh_recoil_descr">
+		<text>Mounting an operating rod compensator allows recoil to be reduced.</text>
+	</string>
+	<string id="st_upg_barrel_weight">
+		<text>Barrel modification</text>
+	</string>
+	<string id="st_upg_barrel_weight_descr">
+		<text>Replaces the standard barrel with a lightweight version.</text>
+	</string>
+	<string id="st_upg_barrel_curved">
+		<text>Barrel modification</text>
+	</string>
+	<string id="st_upg_barrel_curved_descr">
+		<text>An attachment which lengthens the barrel, increasing muzzle velocity.</text>
+	</string>
+	<string id="st_upg_barrel_recoil">
+		<text>Barrel modification</text>
+	</string>
+	<string id="st_upg_barrel_recoil_descr">
+		<text>Installing a muzzle brake allows recoil to be reduced significantly.</text>
+	</string>
+	<string id="st_upg_barrel_rifled">
+		<text>Barrel modification</text>
+	</string>
+	<string id="st_upg_barrel_rifled_descr">
+		<text>Threading the barrel increases the weapon's effective range when firing slugs and darts. Makes the weapon unsuitable for firing shot.</text>
+	</string>
+	<string id="st_upg_butt_recoil">
+		<text>Cheek Pad</text>
+	</string>
+	<string id="st_upg_butt_recoil_descr">
+		<text>A standard rubber cheek pad for adjusting stock length to the shooter's height.</text>
+	</string>
+	<string id="st_upg_butt_recoil2">
+		<text>Polymer stock</text>
+	</string>
+	<string id="st_upg_butt_recoil2_descr">
+		<text>Replacing the standard stock with a polymer one makes the weapon lighter.</text>
+	</string>
+	<string id="st_upg_butt_recoil3_descr">
+		<text>Replaces the standard stock with a lightweight version.</text>
+	</string>
+	<string id="st_upg_butt_recoil4_descr">
+		<text>The special stock design allows recoil to be reduced considerably.</text>
+	</string>
+	<string id="st_upg_auto_rpm">
+		<text>Improved mechanism balance</text>
+	</string>
+	<string id="st_upg_auto_rpm_descr">
+		<text>Better balancing of the mechanism's working parts allows the weapon's rate of fire to be significantly increased.</text>
+	</string>
+	<string id="st_upg_auto_rpm2">
+		<text>Mechanism replacement</text>
+	</string>
+	<string id="st_upg_auto_rpm2_descr">
+		<text>Replacing a semi-automatic mechanism with an automatic one significantly boosts the weapon's rate of fire.</text>
+	</string>
+	<string id="st_upg_poly_weight">
+		<text>Polymer parts</text>
+	</string>
+	<string id="st_upg_poly_weight_descr">
+		<text>Using polymer parts decreases the weapon's weight considerably.</text>
+	</string>
+	<string id="st_upg_barrel_rpm">
+		<text>Barrel cooling</text>
+	</string>
+	<string id="st_upg_barrel_rpm_descr">
+		<text>A barrel cooling system allows the weapon's rate of fire to be increased further with no risk of barrel deformation.</text>
+	</string>
+	<string id="st_upg_trigger_accur">
+		<text>Soft trigger</text>
+	</string>
+	<string id="st_upg_trigger_accur_descr">
+		<text>A smooth trigger pull allows firing accuracy to be increased.</text>
+	</string>
+	<string id="st_upg_charger_assault">
+		<text>Assault magazine</text>
+	</string>
+	<string id="st_upg_charger_assault_descr">
+		<text>A much larger magazine designed specifically for assault operations.</text>
+	</string>
+	<string id="st_upg_charger_big">
+		<text>Extended magazine</text>
+	</string>
+	<string id="st_upg_charger_big_descr">
+		<text>Increasing magazine capacity using improvised means.</text>
+	</string>
+	<string id="st_upg_charger_small">
+		<text>Lightweight magazine</text>
+	</string>
+	<string id="st_upg_charger_small_descr">
+		<text>Decreases overall weight by reducing the size of the magazine. Makes aimed fire easier.</text>
+	</string>
+	<string id="st_upg_gas_rpm">
+		<text>Gas system modification</text>
+	</string>
+	<string id="st_upg_gas_rpm_descr">
+		<text>A modernized gas system allows for a higher rate of fire.</text>
+	</string>
+	<string id="st_upg_gravi_accur">
+		<text>Gravitational stabilizer</text>
+	</string>
+	<string id="st_upg_gravi_accur_descr">
+		<text>Improves accuracy by stabilizing the bullet using gravitational artifacts.</text>
+	</string>
+	<string id="st_upg_electro_accur">
+		<text>Electronic stabilizer</text>
+	</string>
+	<string id="st_upg_electro_accur_descr">
+		<text>Automatically adjusts bullet momentum and significantly increases firing accuracy.</text>
+	</string>
+	<string id="st_upg_bind_grenade">
+		<text>Under-barrel attachment mount</text>
+	</string>
+	<string id="st_upg_bind_grenade_descr">
+		<text>Allows you to attach an under-barrel grenade launcher to your weapon.</text>
+	</string>
+	<string id="st_upg_bind_optic">
+		<text>Scope mount</text>
+	</string>
+	<string id="st_upg_bind_optic_descr">
+		<text>Allows you to mount various optical scope modifications onto your weapon.</text>
+	</string>
+	<string id="st_upg_bind_silencer">
+		<text>Silencer mount</text>
+	</string>
+	<string id="st_upg_bind_silencer_descr">
+		<text>Allows you to attach a silencer to your weapon.</text>
+	</string>
+	<string id="st_upg_handle_accur">
+		<text>Grip handguards</text>
+	</string>
+	<string id="st_upg_handle_accur_descr">
+		<text>High quality rubber handguards which improve the weapon's handling characteristics.</text>
+	</string>
+	<string id="st_upg_handle_accur2">
+		<text>Anatomical grip</text>
+	</string>
+	<string id="st_upg_handle_accur2_descr">
+		<text>Tailor-made ergonomic grip designed specifically for you.</text>
+	</string>
+	<string id="st_upg_accel_curved">
+		<text>Pneumatic booster</text>
+	</string>
+	<string id="st_upg_accel_curved_descr">
+		<text>Mounting an interior pheumatic booster increases muzzle velocity.</text>
+	</string>
+	<string id="st_upg_accel_curved2">
+		<text>Magnetic booster</text>
+	</string>
+	<string id="st_upg_accel_curved2_descr">
+		<text>Increases bullet speed by using an alternating magnetic field.</text>
+	</string>
+	<string id="st_upg_barrel_curved2">
+		<text>Solid barrel</text>
+	</string>
+	<string id="st_upg_barrel_curved2_descr">
+		<text>An upgrade for weapons with integrated silencers. Replaces the combined barrel and silencer with a solid barrel.</text>
+	</string>
+	<string id="st_upg_pomp_rpm">
+		<text>Improved pump action mechanism</text>
+	</string>
+	<string id="st_upg_pomp_rpm_descr">
+		<text>Fine-tuning and manual modification of the reloading mechanism.</text>
+	</string>
+	<string id="st_upg_head_misfire">
+		<text>Striker replacement</text>
+	</string>
+	<string id="st_upg_head_misfire_descr">
+		<text>Increases a weapon's reliability and reduces the chance of misfiring.</text>
+	</string>
+	<string id="st_upg_mat_wear">
+		<text>Durable materials</text>
+	</string>
+	<string id="st_upg_mat_wear_descr">
+		<text>Replaces the exterior materials that protect a weapon from physical damage with more durable and wear-proof materials.</text>
+	</string>
+	<string id="st_upg_surf_wear">
+		<text>Protective sputter</text>
+	</string>
+	<string id="st_upg_surf_wear_descr">
+		<text>Diamond sputter which protects mechanical parts from wear and tear.</text>
+	</string>
+	<string id="st_upg_group_kuchn">
+		<text>Improved precision</text>
+	</string>
+	<string id="st_upg_group_kuchn_descr">
+		<text>A muzzle adapter which improves precision when firing shot.</text>
+	</string>
+	<string id="st_upg_staple_rpm">
+		<text>Trigger guard removal</text>
+	</string>
+	<string id="st_upg_staple_rpm_descr">
+		<text>A popular and simple improvement intended to increase the rate of fire of a double-barrelled shotgun.</text>
+	</string>
+	<string id="st_prop_ammo_size">
+		<text>magazine size</text>
+	</string>
+	<string id="st_prop_armor">
+		<text>armor</text>
+	</string>
+	<string id="st_prop_artefact">
+		<text>artifact container</text>
+	</string>
+	<string id="st_prop_bullet_speed">
+		<text>flatness</text>
+	</string>
+	<string id="st_prop_calibre">
+		<text>caliber</text>
+	</string>
+	<string id="st_prop_damage">
+		<text>integrity</text>
+	</string>
+	<string id="st_prop_dispersion">
+		<text>accuracy</text>
+	</string>
+	<string id="st_prop_durability">
+		<text>durability</text>
+	</string>
+	<string id="st_prop_grenade_launcher">
+		<text>under-barrel grenade launcher</text>
+	</string>
+	<string id="st_prop_inertion">
+		<text>handling</text>
+	</string>
+	<string id="st_prop_night_vision">
+		<text>night vision</text>
+	</string>
+	<string id="st_prop_power">
+		<text>strength restoration</text>
+	</string>
+	<string id="st_prop_psy">
+		<text>psy-protection</text>
+	</string>
+	<string id="st_prop_radio_chem">
+		<text>radiochemical protection</text>
+	</string>
+	<string id="st_prop_recoil">
+		<text>recoil</text>
+	</string>
+	<string id="st_prop_reliability">
+		<text>reliability</text>
+	</string>
+	<string id="st_prop_restore_bleeding">
+		<text>wound healing</text>
+	</string>
+	<string id="st_prop_restore_health">
+		<text>health restoration</text>
+	</string>
+	<string id="st_prop_rpm">
+		<text>rate of fire</text>
+	</string>
+	<string id="st_prop_scope_1.6x">
+		<text>optical scope</text>
+	</string>
+	<string id="st_prop_scope_4x">
+		<text>built-in scope</text>
+	</string>
+	<string id="st_prop_silencer">
+		<text>silencer</text>
+	</string>
+	<string id="st_prop_thermo_electro">
+		<text>thermo-electrical protection</text>
+	</string>
+	<string id="st_prop_underbarrel_slot">
+		<text>under-barrel mount</text>
+	</string>
+	<string id="st_prop_weight">
+		<text>weight</text>
+	</string>
+	<string id="st_tonnage">
+		<text>maximum weight</text>
+	</string>
+	<string id="st_upg_active_filter_stalk">
+		<text>Active filters</text>
+	</string>
+	<string id="st_upg_active_filter_stalk_descr">
+		<text>Use a more efficient filtering system.</text>
+	</string>
+	<string id="st_upg_ammo_sysytem_rpm">
+		<text>Ammunition feeding system</text>
+	</string>
+	<string id="st_upg_ammo_sysytem_rpm_descr">
+		<text>Speeds up ammunition feeding to the chamber, resulting in a significantly increased rate of fire. </text>
+	</string>
+	<string id="st_upg_anti_gas_stalk">
+		<text>Gas mask</text>
+	</string>
+	<string id="st_upg_anti_gas_stalk_descr">
+		<text>This gas mask serves as one's primary protection from radioactive dust and noxious chemicals.</text>
+	</string>
+	<string id="st_upg_antistatic_coating_stalk">
+		<text>Antistatic coating</text>
+	</string>
+	<string id="st_upg_antistatic_coating_stalk_descr">
+		<text>This spray prevents radioactive dust and chemicals from clinging to one's suit.</text>
+	</string>
+	<string id="st_upg_artefact_slot">
+		<text>Artifact container</text>
+	</string>
+	<string id="st_upg_artefact_slot_descr">
+		<text>Container for wearing additional artifacts.</text>
+	</string>
+	<string id="st_upg_brigandine_suit_stalk">
+		<text>Tarpaulin bodysuit</text>
+	</string>
+	<string id="st_upg_brigandine_suit_stalk_descr">
+		<text>Provides decent protection from fire and electricity.</text>
+	</string>
+	<string id="st_upg_butt_recoil3">
+		<text>Lightweight stock.</text>
+	</string>
+	<string id="st_upg_butt_recoil4">
+		<text>Pneumatic stock.</text>
+	</string>
+	<string id="st_upg_calibre_5_45">
+		<text>5.45x39 mm сaliber</text>
+	</string>
+	<string id="st_upg_calibre_5_45_descr">
+		<text>The barrel is replaced and gun parts are adjusted to the new caliber. This replacement can only be performed once.</text>
+	</string>
+	<string id="st_upg_calibre_5_56">
+		<text>5.56x45 mm сaliber</text>
+	</string>
+	<string id="st_upg_calibre_5_56_descr">
+		<text>The barrel is replaced and gun parts are adjusted to the new caliber. This replacement can only be performed once.</text>
+	</string>
+	<string id="st_upg_calibre_9_18">
+		<text>9x18 mm сaliber</text>
+	</string>
+	<string id="st_upg_calibre_9_18_descr">
+		<text>The barrel is replaced and gun parts are adjusted to the new caliber. This replacement can only be performed once.</text>
+	</string>
+	<string id="st_upg_calibre_9_19">
+		<text>9x19 mm сaliber</text>
+	</string>
+	<string id="st_upg_calibre_9_19_descr">
+		<text>The barrel is replaced and gun parts are adjusted to the new caliber. This replacement can only be performed once.</text>
+	</string>
+	<string id="st_upg_cevlar_body_armor_battle">
+		<text>Kevlar body armor</text>
+	</string>
+	<string id="st_upg_cevlar_body_armor_battle_descr">
+		<text>Multi-layer kevlar body armor material</text>
+	</string>
+	<string id="st_upg_cevlars_armor_battle">
+		<text>Kevlar plates</text>
+	</string>
+	<string id="st_upg_cevlars_armor_battle_descr">
+		<text>Kevlar plates are inserted into body armor for extra protection.</text>
+	</string>
+	<string id="st_upg_composite_armor_battle">
+		<text>Composite plates</text>
+	</string>
+	<string id="st_upg_composite_armor_battle_descr">
+		<text>Composite plates provide maximum protection from small arms fire.</text>
+	</string>
+	<string id="st_upg_double_layer_body_armor_battle">
+		<text>Double-layer body armor</text>
+	</string>
+	<string id="st_upg_double_layer_body_armor_battle_descr">
+		<text>Even if one layer of armor is damaged, the second one will still provide adequate protection.</text>
+	</string>
+	<string id="st_upg_electro_stimulant_battle">
+		<text>Electro-stimulants</text>
+	</string>
+	<string id="st_upg_electro_stimulant_battle_descr">
+		<text>Stimulants create micropulses which facilitate physiological activities.</text>
+	</string>
+	<string id="st_upg_exsternal_filtering_sys_stalk">
+		<text>External filtering system</text>
+	</string>
+	<string id="st_upg_exsternal_filtering_sys_stalk_descr">
+		<text>When filters are separated from the gas mask, more of them can be used.</text>
+	</string>
+	<string id="st_upg_germetic_layer_stalk">
+		<text>Airproof insulation coating</text>
+	</string>
+	<string id="st_upg_germetic_layer_stalk_descr">
+		<text>This special sealant coating can be used to insulate a suit from fire or electricity.</text>
+	</string>
+	<string id="st_upg_hard_barrel_curved">
+		<text>Barrel replacement</text>
+	</string>
+	<string id="st_upg_hard_barrel_curved_descr">
+		<text>This durable steel barrel resists deformation and allows for better bullet acceleration.</text>
+	</string>
+	<string id="st_upg_hard_elements_battle">
+		<text>Hard elements</text>
+	</string>
+	<string id="st_upg_hard_elements_battle_descr">
+		<text>This light alloy frame absorbs most of a bullet's energy.</text>
+	</string>
+	<string id="st_upg_health_sustaining_sys_battle">
+		<text>Life support system</text>
+	</string>
+	<string id="st_upg_health_sustaining_sys_battle_descr">
+		<text>This apparatus is worn on the wrist and, when the wearer is wounded, automatically injects intravenous antishock drugs and stimulants.</text>
+	</string>
+	<string id="st_upg_night_vision_battle">
+		<text>Night vision device</text>
+	</string>
+	<string id="st_upg_night_vision_battle_descr">
+		<text>First-generation night vision device</text>
+	</string>
+	<string id="st_upg_outfit_a_stalk">
+		<text>Relief vest</text>
+	</string>
+	<string id="st_upg_outfit_a_stalk_descr">
+		<text>A relief vest makes it easier to carry one's load by redistributing the weight.</text>
+	</string>
+	<string id="st_upg_outfit_b_stalk">
+		<text>Relief backpack</text>
+	</string>
+	<string id="st_upg_outfit_b_stalk_descr">
+		<text>Special straps make this backpack easier to carry, allowing for heavier loads.</text>
+	</string>
+	<string id="st_upg_plastic_components_battle">
+		<text>Plastic components</text>
+	</string>
+	<string id="st_upg_plastic_components_battle_descr">
+		<text>Plastic suit elements make it more durable.</text>
+	</string>
+	<string id="st_upg_polymer_coating_stalk">
+		<text>Polymer treatment</text>
+	</string>
+	<string id="st_upg_polymer_coating_stalk_descr">
+		<text>Coating a material with this liquid polymer solution makes it more resistant to fire and electricity.</text>
+	</string>
+	<string id="st_upg_polymer_pillow_battle">
+		<text>Polymer thickener</text>
+	</string>
+	<string id="st_upg_polymer_pillow_battle_descr">
+		<text>This thickening fabric effectively absorbs the energy of a bullet.</text>
+	</string>
+	<string id="st_upg_polymer_suit_stalk">
+		<text>Polymer bodysuit</text>
+	</string>
+	<string id="st_upg_polymer_suit_stalk_descr">
+		<text>Polymer materials offer good protection from heat and electric shock.</text>
+	</string>
+	<string id="st_upg_powered_carcass_battle">
+		<text>Reinforced frame</text>
+	</string>
+	<string id="st_upg_powered_carcass_battle_descr">
+		<text>Additional frame elements increase an exoskeleton's strength.</text>
+	</string>
+	<string id="st_upg_powered_servo_motor_battle">
+		<text>Amplifying servomotors</text>
+	</string>
+	<string id="st_upg_powered_servo_motor_battle_descr">
+		<text>Applying a higher voltage to servomotors increases their power.</text>
+	</string>
+	<string id="st_upg_psy_shielding_stalk">
+		<text>Suit screening</text>
+	</string>
+	<string id="st_upg_psy_shielding_stalk_descr">
+		<text>A complex system of screening cables provides limited psy-protection.</text>
+	</string>
+	<string id="st_upg_recycle_breathing_sys_stalk">
+		<text>Closed-cycle respiratory module</text>
+	</string>
+	<string id="st_upg_recycle_breathing_sys_stalk_descr">
+		<text>A recirculation-enabled system takes care of purifying contaminated air.</text>
+	</string>
+	<string id="st_upg_relax_suit_stalk">
+		<text>Load redistribution suit</text>
+	</string>
+	<string id="st_upg_relax_suit_stalk_descr">
+		<text>The suit's elastic fabric helps its wearer endure prolonged physical stress.</text>
+	</string>
+	<string id="st_upg_scope_1_6x_opt">
+		<text>Built-in scope 1.6x</text>
+	</string>
+	<string id="st_upg_scope_1_6x_opt_descr">
+		<text>The 1.6x scope restricts the shooter's field of vision as little as possible and is ideal for assault operations.</text>
+	</string>
+	<string id="st_upg_scope_4x_opt">
+		<text>Built-in scope 4x</text>
+	</string>
+	<string id="st_upg_scope_4x_opt_descr">
+		<text>With a 4x scope, any weapon becomes fit for sniping.</text>
+	</string>
+	<string id="st_upg_sintetic_pillow_battle">
+		<text>Synthetic thickener</text>
+	</string>
+	<string id="st_upg_sintetic_pillow_battle_descr">
+		<text>This thickening fabric, placed under the body armor, acts to effectively reduce damage.</text>
+	</string>
+	<string id="st_upg_slice_leather_battle">
+		<text>Hard leather inserts</text>
+	</string>
+	<string id="st_upg_slice_leather_battle_descr">
+		<text>Soften bullet impact somewhat.</text>
+	</string>
+	<string id="st_upg_spec_coating_stalk">
+		<text>Special coating</text>
+	</string>
+	<string id="st_upg_spec_coating_stalk_descr">
+		<text>This coating, based on a special solution made from materials found in the Zone, protects against fire and electrical anomalies. </text>
+	</string>
+	<string id="st_upg_spectra_body_armor_battle">
+		<text>Spectra body armor</text>
+	</string>
+	<string id="st_upg_spectra_body_armor_battle_descr">
+		<text>This reinforced military body armor provides protection against assault rifle fire.</text>
+	</string>
+	<string id="st_upg_upgrade_night_vision_battle">
+		<text>Second-generation night vision device</text>
+	</string>
+	<string id="st_upg_upgrade_night_vision_battle_descr">
+		<text>This second-generation night vision device provides a clearer picture with less interference.</text>
+	</string>
+	<string id="st_upgr_ammunition">
+		<text>ammo</text>
+	</string>
+	<string id="st_upgr_condlist">
+		<text>no data for upgrade</text>
+	</string>
+	<string id="st_upgr_cost">
+		<text>Cost</text>
+	</string>
+	<string id="st_upgr_disable">
+		<text>Cannot install</text>
+	</string>
+	<string id="st_upgr_enough_money">
+		<text>not enough money:</text>
+	</string>
+	<string id="st_upgr_group">
+		<text>This component has already been upgraded</text>
+	</string>
+	<string id="st_upgr_installed">
+		<text>Installed</text>
+	</string>
+	<string id="st_upgr_parents">
+		<text>Other upgrades required to install this</text>
+	</string>
+	<string id="st_upgr_rpm_lowered">
+		<text>RPM lowered</text>
+	</string>
+	<string id="st_upgrade_install">
+		<text>Are you sure you want to install:</text>
+	</string>
+</string_table>

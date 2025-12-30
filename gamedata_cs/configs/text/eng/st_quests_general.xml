@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="hide_from_surge_name">
+		<text>Hide to avoid the emission</text>
+	</string>
+	<string id="hide_from_surge_name2">
+		<text>Wait until the emission is over</text>
+	</string>
+	<string id="hide_from_surge_text">
+		<text>Run to the nearest cover and hide to avoid the emission</text>
+	</string>
+	<string id="hide_from_surge_text1">
+		<text>Attention! An emission is approaching!!! Approximate time till emission:</text>
+	</string>
+	<string id="hide_from_surge_text2">
+		<text>seconds.</text>
+	</string>
+	<string id="sim_bring_item">
+		<text>Deliver items.</text>
+	</string>
+	<string id="sim_bring_item_text">
+		<text>Take the items you collected to the squad commander</text>
+	</string>
+	<string id="sim_capture_smart">
+		<text>Capture</text>
+	</string>
+	<string id="sim_capture_smart_text">
+		<text>You need to capture and hold the object indicated.</text>
+	</string>
+	<string id="sim_capture_wait_smart">
+		<text>Hold the point until help arrives</text>
+	</string>
+	<string id="sim_defend_smart">
+		<text>Defend the camp</text>
+	</string>
+	<string id="sim_defend_smart_delay">
+		<text>Help</text>
+	</string>
+	<string id="sim_defend_smart_delay_text">
+		<text>The enemy has been spotted in this area. An attack is imminent.</text>
+	</string>
+	<string id="sim_defend_smart_text">
+		<text>The squad has been attacked by the enemy. Help the squad repel the attack</text>
+	</string>
+	<string id="sim_eliminate_smart">
+		<text>Eliminate the enemy</text>
+	</string>
+	<string id="sim_eliminate_smart_text">
+		<text>Eliminate the enemy at the control point</text>
+	</string>
+	<string id="sim_find_upgrade">
+		<text>Find the upgrade</text>
+	</string>
+	<string id="sim_find_upgrade_consent">
+		<text>Agreed?</text>
+	</string>
+	<string id="sim_recover_item">
+		<text>Return item:</text>
+	</string>
+	<string id="sim_repeal_counterattack">
+		<text>Repel the enemy counterattack.</text>
+	</string>
+	<string id="sim_take_reward">
+		<text>Collect your reward</text>
+	</string>
+	<string id="sim_take_reward_text">
+		<text>You can pick up your reward from the faction's trader.</text>
+	</string>
+	<string id="st_sim_eliminate_path_smart">
+		<text>Clear the road</text>
+	</string>
+	<string id="st_sim_eliminate_path_text">
+		<text>Help the friendly squad get through.</text>
+	</string>
+	<string id="st_sim_eliminate_resource_smart">
+		<text>Eliminate the enemy</text>
+	</string>
+	<string id="st_sim_eliminate_resource_text">
+		<text>Chase the enemy away from the area. This will weaken him.</text>
+	</string>
+	<string id="test_storyline_task_text">
+		<text>Approach the barrel</text>
+	</string>
+	<string id="tm_random_task_bring_item">
+		<text>text in default</text>
+	</string>
+	<string id="stc_kill_gunslinger_name">
+		<text>Incapacitate Strelok's psy-protection</text>
+	</string>
+	<string id="stc_kill_gunslinger_text">
+		<text>The psy-field intensity at the station is off the scale, but Strelok is protected from the psy-emissions by the prototype. Incapacitating it will stop Strelok. An electromagnetic rifle can harm the prototype's electronics - use it to fire at Strelok and disable his prototype</text>
+	</string>
+	<string id="stc_kill_monolith_name">
+		<text>Find the teleport that leads to the heat pipeline</text>
+	</string>
+	<string id="stc_kill_monolith_text">
+		<text>The space around the station is permeated with teleports. To keep firing at Strelok you need to return to the heat pipeline. Find the teleport that leads back to it</text>
+	</string>
+</string_table>
