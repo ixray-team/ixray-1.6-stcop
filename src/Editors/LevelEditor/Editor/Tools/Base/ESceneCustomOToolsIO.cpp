@@ -186,4 +186,9 @@ bool ESceneCustomOTool::GetStaticCformData( mesh_build_data &data, bool b_select
       return    ::GetStaticCformData(  m_Objects, data, b_selected_only );
 }
 
+bool ESceneCustomOTool::GetStaticCformData(XRay::CForm::IFormat& CForm, bool b_selected_only)
+{
+	return ESceneToolBase::GetStaticCformData(CForm, b_selected_only);
+}
+
  

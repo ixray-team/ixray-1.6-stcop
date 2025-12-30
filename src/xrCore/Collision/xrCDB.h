@@ -88,6 +88,7 @@ namespace CDB
 
 	// Model definition
 	XRCORE_API IReader* GetModelCache(string_path Name, u32 crc);
+	XRCORE_API IReader* GetModelCache(const xr_stack_string_path& Name, u32 crc);
 	
 	class XRCORE_API MODEL
 	{
@@ -217,11 +218,13 @@ namespace CDB
         void			remove_duplicate_T	( );
 		void			calc_adjacency		( xr_vector<u32>& dest		);
 
-		Fvector*		getV			()	{ return &*verts.begin();		}
-		size_t			getVS			() 	{ return verts.size();			}
-		TRI*			getT			()	{ return &*faces.begin();		}
-		size_t			getTS			()	{ return faces.size();			}
-		void			clear			()	{ verts.clear(); faces.clear();	}
+		ICF Fvector*		getV			()	{ return &*verts.begin();		}
+		ICF size_t			getVS			() 	{ return verts.size();			}
+		ICF xr_span<Fvector> getVSpan(){return verts;}
+		ICF TRI*			getT			()	{ return &*faces.begin();		}
+		ICF size_t			getTS			()	{ return faces.size();			}
+		ICF xr_span<TRI> getTSpan(){return faces;}
+		ICF void			clear			()	{ verts.clear(); faces.clear();	}
 	};
 
 	struct non_copyable {
@@ -271,13 +274,15 @@ namespace CDB
 		void				add_face	( const Fvector& v0, const Fvector& v1, const Fvector& v2, u16 material, u16 sector, u32 flags );
 		void				add_face_D	( const Fvector& v0, const Fvector& v1, const Fvector& v2, u32 dummy , u32 flags );
 
-		xr_vector<Fvector>& getV_Vec()			{ return verts;				}
-		Fvector*			getV()				{ return &*verts.begin();	}
-		size_t				getVS()				{ return verts.size();		}
-		TRI*				getT()				{ return &*faces.begin();	}
-		u32					getfFlags(u32 index){ return flags[index];		}	
-IC		TRI&				getT(u32 index)		{ return faces[index];		}
-		size_t				getTS()				{ return faces.size();		}
+		ICF xr_vector<Fvector>& getV_Vec()			{ return verts;				}
+		ICF Fvector*			getV()				{ return &*verts.begin();	}
+		ICF size_t				getVS()				{ return verts.size();		}
+		ICF xr_span<Fvector> getVSpan(){return verts;}
+		ICF TRI*				getT()				{ return &*faces.begin();	}
+		ICF u32					getfFlags(u32 index){ return flags[index];		}	
+IC		ICF TRI&				getT(u32 index)		{ return faces[index];		}
+		ICF size_t				getTS()				{ return faces.size();		}
+		ICF xr_span<TRI> getTSpan(){return faces;}
 		void				clear();
 	};
 #pragma warning(pop)

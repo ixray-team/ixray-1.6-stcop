@@ -3,6 +3,21 @@
 
 using namespace XRay;
 
+CForm::ChunkHeader& CForm::IFormat::GetHeader()
+{
+    return Header;
+}
+
+const CForm::ChunkHeader& CForm::IFormat::GetHeader() const
+{
+    return Header;
+}
+
+u32 CForm::IFormat::GetFileHash() const
+{
+    return FileHash;
+}
+
 CForm::CFormatVanilla::CFormatVanilla()
 {
     Header.version = CFormVersions::Vanilla;
@@ -13,7 +28,7 @@ bool CForm::CFormatVanilla::Write(xr_string_view FileName)
     xr_stack_string_path Path = FileName.data();
     Path.append(".cform");
     
-    auto Writer = FS.wg_open("$level$", Path.c_str());
+    auto Writer = FS.wg_open(Path.c_str());
     if (!I_ASSERT(Writer))
     {
         return false;
@@ -31,12 +46,14 @@ bool CForm::CFormatVanilla::Read(xr_string_view FileName)
     xr_stack_string_path Path = FileName.data();
     Path.append(".cform");
 
-    auto Reader = FS.rg_open("$level$", Path.c_str());
+    auto Reader = FS.rg_open(Path.c_str());
     if (!I_ASSERT_M(Reader, "Unable to open file [%s]", Path.c_str()))
     {
         return false;
     }
 
+    FileHash = crc32(Reader->pointer(), Reader->length());
+    
     Reader->r(&Header, sizeof(Header));
     if (!I_ASSERT(Header.version == CFormVersions::Vanilla || Header.version == CFormVersions::VanillaChunkedData))
     {
@@ -46,7 +63,8 @@ bool CForm::CFormatVanilla::Read(xr_string_view FileName)
     Data.Tris.resize(Header.facecount);
     Reader->r(Data.Verts.data(), Data.Verts.size()*sizeof(Fvector));
     Reader->r(Data.Tris.data(), Data.Tris.size()*sizeof(CDB::TRI));
-    
+
+    return true;
 }
 
 void CForm::CFormatVanilla::AddStaticGeom(xr_span<Fvector> Verts, xr_span<CDB::TRI> Tris)
@@ -62,6 +80,16 @@ void CForm::CFormatVanilla::AddStaticGeom(xr_span<Fvector> Verts, xr_span<CDB::T
     std::memcpy(Data.Tris.data(), Tris.data(), sizeof(CDB::TRI) * Tris.size());
     Data.Verts.resize(Verts.size());
     std::memcpy(Data.Verts.data(), Verts.data(), sizeof(Fvector) * Verts.size());
+}
+
+void CForm::CFormatVanilla::GetStaticGeom(xr_vector<Fvector>& OutVertices, xr_vector<CDB::TRI>& OutTris) const
+{
+    OutVertices.clear();
+    OutTris.clear();
+    OutVertices.resize(Header.vertcount);
+    OutTris.resize(Header.facecount);
+    std::memcpy(OutVertices.data(), Data.Verts.data(), sizeof(Fvector) * OutVertices.size());
+    std::memcpy(OutTris.data(), Data.Tris.data(), sizeof(CDB::TRI) * OutTris.size());
 }
 
 CForm::CFormatVanillaChunked::CFormatVanillaChunked(u32 ChunkNumber)
@@ -82,7 +110,7 @@ bool CForm::CFormatVanillaChunked::Write(xr_string_view FileName)
 {
     xr_stack_string_path Path = FileName.data();
     Path.append(".cform");
-    auto Writer = FS.wg_open("$level$", Path.c_str());
+    auto Writer = FS.wg_open(Path.c_str());
     if (!I_ASSERT(Writer))
     {
         return false;
@@ -110,11 +138,13 @@ bool CForm::CFormatVanillaChunked::Read(xr_string_view FileName)
 {
     xr_stack_string_path Path = FileName.data();
     Path.append(".cform");
-    auto Reader = FS.rg_open("$level$", Path.c_str());
+    auto Reader = FS.rg_open(Path.c_str());
     if (!I_ASSERT(Reader))
     {
         return false;
     }
+
+    FileHash = crc32(Reader->pointer(), Reader->length());
     
     Reader->r(&Header, sizeof(Header));
     if (!I_ASSERT(Header.version == CFormVersions::VanillaChunkedMain))
@@ -172,13 +202,31 @@ void CForm::CFormatVanillaChunked::AddStaticGeom(xr_span<Fvector> Verts, xr_span
     }
 }
 
-xr_unique_ptr<CForm::IFormat> CForm::Read(xr_string_view Filename)
+void CForm::CFormatVanillaChunked::GetStaticGeom(xr_vector<Fvector>& OutVertices, xr_vector<CDB::TRI>& OutTris) const
+{
+    OutVertices.clear();
+    OutTris.clear();
+    OutVertices.resize(Header.vertcount);
+    OutTris.resize(Header.facecount);
+    for (auto& elem : Data)
+    {
+        OutVertices.append_range(elem.Data.Verts);
+        OutTris.append_range(elem.Data.Tris);
+    }
+}
+
+XRCORE_API xr_unique_ptr<CForm::IFormat> CForm::Read(LPCSTR Initial, xr_string_view Filename)
 {
     ChunkHeader Header;
     xr_stack_string_path Path = Filename.data();
-    Path.append(".cform");
+    if (Initial&&Initial[0])
     {
-        auto Reader = FS.rg_open("$level$", Path.data());
+        FS.update_path(Path,Initial,Filename.data());
+    }
+    {
+        xr_stack_string_path TempPath = Path;
+        TempPath.append(".cform");
+        auto Reader = FS.rg_open(TempPath.c_str());
         if (!I_ASSERT(Reader))
         {
             return nullptr;
@@ -191,7 +239,7 @@ xr_unique_ptr<CForm::IFormat> CForm::Read(xr_string_view Filename)
     case CFormVersions::Vanilla:
         {
             auto Parsed = new CFormatVanilla();
-            if (!I_ASSERT_M(Parsed->Read(Filename), "Unable to read [%s]", Filename.data()))
+            if (!I_ASSERT_M(Parsed->Read(Path.c_str()), "Unable to read [%s]", Path.c_str()))
             {
                 xr_delete(Parsed);
                 return nullptr;
@@ -210,14 +258,29 @@ xr_unique_ptr<CForm::IFormat> CForm::Read(xr_string_view Filename)
         }
     default:
         {
-            I_ASSERT(false, "Invalid .cform type in [%s]", Path.c_str());
+            I_ASSERT_M(false, "Invalid .cform type in [%s]", Path.c_str());
         }
     }
     
     return nullptr;
 }
 
-void CForm::Write(xr_string_view Filename, IFormat& Data)
+XRCORE_API xr_unique_ptr<CForm::IFormat> CForm::Read(xr_string_view Filename)
 {
-    I_ASSERT(Data.Write(Filename));
+    return Read(nullptr, Filename);
+}
+
+XRCORE_API void CForm::Write(LPCSTR Initial, xr_string_view Filename, IFormat& Data)
+{
+    xr_stack_string_path Path = Filename.data();
+    if (Initial&&Initial[0])
+    {
+        FS.update_path(Path,Initial,Filename.data());
+    }
+    I_ASSERT(Data.Write(Path.c_str()));
+}
+
+XRCORE_API void CForm::Write(xr_string_view Filename, IFormat& Data)
+{
+    Write(nullptr, Filename, Data);
 }

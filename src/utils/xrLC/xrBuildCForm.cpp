@@ -7,6 +7,7 @@
 #include "../xrLC_Light/xrFace.h"
 
 #include "../../xrCore/Collision/xrCDB.h"
+#include "../../xrCore/FormatParsers/LevelCForm/CFormIO.h"
 #include "../xrLC_Light/embree_raytracing/EmbreeGeometryBuilder.h"
 
 int GetVertexIndex(Vertex* Vert)
@@ -143,9 +144,16 @@ void CBuild::BuildCForm	()
 		BB.modify(CL.getV()[it]);
 
 	// Saving
-	string_path		fn;
-	IWriter* MFS = FS.w_open(xr_strconcat(fn, pBuild->path, "level.cform"));
 	Status("Saving...");
+
+	XRay::CForm::CFormatVanilla CForm; // TODO: Add switching to chunked version
+	CForm.AddStaticGeom(CL.getVSpan(), CL.getTSpan());
+	xr_stack_string_path level_path = pBuild->path;
+	level_path.append("level");
+	XRay::CForm::Write(level_path.c_str(), CForm);
+	
+	/*string_path		fn;
+	IWriter* MFS = FS.w_open(xr_strconcat(fn, pBuild->path, "level.cform"));
 
 	// Header
 	hdrCFORM hdr;
@@ -156,7 +164,7 @@ void CBuild::BuildCForm	()
 	MFS->w(&hdr, sizeof(hdr));
  	// Data
 	MFS->w(CL.getV(), (u32)CL.getVS() * sizeof(Fvector));
- 	MFS->w(CL.getT(), (u32)CL.getTS() * sizeof(CDB::TRI));
+ 	MFS->w(CL.getT(), (u32)CL.getTS() * sizeof(CDB::TRI));*/
  
 	// Clear pDeflector (it is stored in the same memory space with dwMaterialGame)
 	for (vecFaceIt I = lc_global_data()->g_faces().begin(); I != lc_global_data()->g_faces().end(); I++)
@@ -164,7 +172,7 @@ void CBuild::BuildCForm	()
 		Face* F = *I;
 		F->pDeflector = NULL;
 	}
-	FS.w_close(MFS);
+	//FS.w_close(MFS);
 }
 
 void CBuild::BuildPortals(IWriter& fs)

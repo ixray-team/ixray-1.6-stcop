@@ -3,7 +3,7 @@
 #include "xr_area.h"
 #define ENGINE_API
 #include "../xrEngine/xr_object.h"
-#include "../xrEngine/xrLevel.h"
+//#include "../xrEngine/xrLevel.h"
 #include "../xrEngine/xr_collide_form.h"
 
 using namespace	collide;
@@ -78,17 +78,50 @@ IC int CObjectSpace::GetNearest(xr_vector<CObject*>& q_nearest, ICollisionForm* 
 //----------------------------------------------------------------------
 void CObjectSpace::Load(CDB::build_callback build_callback)
 {
-	Load("$level$", "level.cform", build_callback);
+	
+	Load("$level$", "level", build_callback);
 }
 
-void CObjectSpace::Load(LPCSTR path, LPCSTR fname, CDB::build_callback build_callback)
+void CObjectSpace::Load(LPCSTR initial, LPCSTR fname, CDB::build_callback build_callback, bool NotFromLevel)
 {
-	IReader* F = FS.r_open(path, fname);
+	xr_string Filename;
+	auto CFormData = XRay::CForm::Read(initial, fname);
+	if (!I_ASSERT(CFormData))
+	{
+		FATAL("Attempt to load level with invalid collision data!");
+		return;
+	}
+
+	xr_stack_string_path LevelName;
+	auto LevelPath = FS.get_path("$level$")->m_Add;
+	IReader* pReaderCache = nullptr;
+
+	if (LevelPath != nullptr)
+	{
+		LevelName.append("level_cache\\");
+		LevelName.append(LevelPath);
+		LevelName.append("cform.cache");
+		pReaderCache = CDB::GetModelCache(LevelName, CFormData->GetFileHash());
+	}
+	
+	if (pReaderCache != nullptr)
+	{
+		// Just restore
+		Create(*CFormData, build_callback, pReaderCache, true);
+	}
+	else
+	{
+		IWriter* pWriterCache = FS.w_open("$app_data_root$", LevelName.c_str());
+		pWriterCache->w_u32(CFormData->GetFileHash());
+		Create(*CFormData, build_callback, pWriterCache, false);
+	}
+	
+	/*IReader* F = FS.r_open(path, fname);
 	R_ASSERT(F);
-	Load(F, build_callback);
+	Load(F, build_callback);*/
 }
 
-void CObjectSpace::Load(IReader* F, CDB::build_callback build_callback)
+/*void CObjectSpace::Load(IReader* F, CDB::build_callback build_callback)
 {
 	hdrCFORM H;
 
@@ -121,13 +154,39 @@ void CObjectSpace::Load(IReader* F, CDB::build_callback build_callback)
 	}
 	
 	FS.r_close(F);
-}
+}*/
 
-void CObjectSpace::Create(Fvector* verts, CDB::TRI* tris, const hdrCFORM& H, CDB::build_callback build_callback, void* pRW, bool RWMode)
+/*void CObjectSpace::Create(Fvector* verts, CDB::TRI* tris, const hdrCFORM& H, CDB::build_callback build_callback, void* pRW, bool RWMode)
 {
 	R_ASSERT(CFORM_CURRENT_VERSION == H.version);
 	Static.build(verts, H.vertcount, tris, H.facecount, build_callback, nullptr, pRW, RWMode);
 
+	m_BoundingVolume.set(H.aabb);
+
+	g_SpatialSpace->initialize(m_BoundingVolume);
+	g_SpatialSpacePhysic->initialize(m_BoundingVolume);
+}*/
+
+void CObjectSpace::Create(const XRay::CForm::IFormat& Data, CDB::build_callback build_callback, void* pRW, bool RWMode)
+{
+	auto& H = Data.GetHeader();
+	switch (H.version)
+	{
+	case CFormVersions::Vanilla:
+	case CFormVersions::VanillaChunkedMain:
+		{
+			xr_vector<Fvector> Verts;
+			xr_vector<CDB::TRI> Tris;
+			Data.GetStaticGeom(Verts, Tris);
+			Static.build(Verts.data(), Verts.size(), Tris.data(), Tris.size(), build_callback, nullptr, pRW, RWMode);
+			break;
+		}
+	default:
+		{
+			FATAL("Invalid CForm version!");
+		}
+	}
+	
 	m_BoundingVolume.set(H.aabb);
 
 	g_SpatialSpace->initialize(m_BoundingVolume);
