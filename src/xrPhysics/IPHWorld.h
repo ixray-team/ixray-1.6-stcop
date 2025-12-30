@@ -1,6 +1,7 @@
 #pragma once
 #include "PhysicsExternalCommon.h"
 #include "iphysics_scripted.h"
+#include "../xrCore/FormatParsers/LevelCForm/CFormIO.h"
 class CPhysicsShell;
 class IPHWorldUpdateCallbck
 {
@@ -46,5 +47,5 @@ extern "C" XRPHYSICS_API	void				create_physics_world( bool mt, CObjectSpace* os
 extern "C" XRPHYSICS_API	void				destroy_physics_world();
 extern "C" XRPHYSICS_API	CObjectSpace*		create_object_space();
 struct hdrCFORM;
-extern "C" XRPHYSICS_API	CObjectSpace*		mesh_create_object_space(Fvector* verts, CDB::TRI* tris, const hdrCFORM &H, CDB::build_callback build_callback);
+XRPHYSICS_API	CObjectSpace*		mesh_create_object_space(const XRay::CForm::IFormat& CForm, CDB::build_callback build_callback);
 extern "C" XRPHYSICS_API	void				destroy_object_space(CObjectSpace* &os);
