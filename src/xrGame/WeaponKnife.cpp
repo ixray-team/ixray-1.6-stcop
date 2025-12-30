@@ -596,7 +596,7 @@ static bool intersect	( Fcylinder const& bone, Fsphere const& query )
 	Fvector const bone2query	= Fvector().sub( query.P, bone.m_center );
 	float const axe_projection	= bone2query.dotproduct(bone.m_direction);
 	float const half_height		= bone.m_height/2.f;
-	if ( _abs(axe_projection) > half_height + query.R )
+	if (std::abs(axe_projection) > half_height + query.R )
 		return					false;
 
 	VERIFY						( bone2query.square_magnitude() >= _sqr(axe_projection) );
@@ -604,7 +604,7 @@ static bool intersect	( Fcylinder const& bone, Fsphere const& query )
 	if ( axe_projection2_sqr > _sqr(bone.m_radius + query.R) )
 		return					false;
 
-	if ( _abs(axe_projection) <= half_height )
+	if (std::abs(axe_projection) <= half_height )
 		return					true;
 
 	if ( axe_projection2_sqr <= _sqr(bone.m_radius) )

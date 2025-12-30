@@ -223,7 +223,7 @@ void CEditableObject::GetLODFrame(int frame, Fvector p[4], Fvector2 t[4], const 
 	R_ASSERT(m_objectFlags.is(eoUsingLOD));
 	Fvector P,S;
 	m_BBox.get_CD	(P,S);
-	float r 		= _max(S.x,S.z);//sqrtf(S.x*S.x+S.z*S.z);
+	float r 		= std::max(S.x,S.z);//sqrtf(S.x*S.x+S.z*S.z);
 	Fmatrix T,matrix,rot;
 	T.scale			(r,S.y,r);
 	T.translate_over(P);

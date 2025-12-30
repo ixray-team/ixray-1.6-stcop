@@ -104,7 +104,7 @@ void CreateLODSamples(const Fbox& bbox, U32Vec& tgt_data, u32 tgt_w, u32 tgt_h)
     
     Fvector S;
     bbox.getradius				(S);
-    float R 					= 2.f*_max(S.x,S.z);
+    float R 					= 2.f* std::max(S.x,S.z);
 
     u32 pitch 					= tgt_w*LOD_SAMPLE_COUNT;
     tgt_data.resize				(pitch*tgt_h);
@@ -169,7 +169,7 @@ void CImageManager::CreateLODTexture(CEditableObject* OBJECT, U32Vec& lod_pixels
     bb.getradius(o_size);
     bb.getcenter(o_center);
     SPBItem* PB = UI->ProgressStart(LOD_SAMPLE_COUNT * LOD_IMAGE_SIZE, OBJECT->GetName());
-    float dW = _max(o_size.x, o_size.z) / (LOD_IMAGE_SIZE / 2);
+    float dW = std::max(o_size.x, o_size.z) / (LOD_IMAGE_SIZE / 2);
     float dH = o_size.y / (LOD_IMAGE_SIZE / 2);
     float dR = bb.getradius();
     float d2R = dR * 2.f;

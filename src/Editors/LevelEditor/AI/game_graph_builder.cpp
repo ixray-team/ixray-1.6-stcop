@@ -491,7 +491,7 @@ void CGameGraphBuilder::create_tripples()
 
 			m_tripples.push_back(
 				std::make_pair(
-					_min(
+					std::min(
 						(*i).weight(),
 						edge ? edge->weight() : (*i).weight()
 					),
@@ -525,10 +525,10 @@ void CGameGraphBuilder::process_tripple(const TRIPPLE& tripple)
 		if (edge)
 		{
 			VERIFY(
-				_min((*I).weight(),graph().edge((*I).vertex_id(),tripple.second.first) ? graph().edge((*I).vertex_id(),
+				std::min((*I).weight(),graph().edge((*I).vertex_id(),tripple.second.first) ? graph().edge((*I).vertex_id(),
 					tripple.second.first)->weight() : (*I).weight()) <= tripple.first);
 			VERIFY(
-				_min(edge->weight(),graph().edge(edge->vertex_id(),tripple.second.second) ? graph().edge(edge->vertex_id
+				std::min(edge->weight(),graph().edge(edge->vertex_id(),tripple.second.second) ? graph().edge(edge->vertex_id
 					(),tripple.second.second)->weight() : (*I).weight()) <= tripple.first);
 			if (vertex0.edge(tripple.second.second))
 				graph().remove_edge(tripple.second.first, tripple.second.second);
@@ -541,7 +541,7 @@ void CGameGraphBuilder::process_tripple(const TRIPPLE& tripple)
 		if (edge)
 		{
 			VERIFY(
-				_min((*I).weight(),graph().edge((*I).vertex_id(),tripple.second.first) ? graph().edge((*I).vertex_id(),
+				std::min((*I).weight(),graph().edge((*I).vertex_id(),tripple.second.first) ? graph().edge((*I).vertex_id(),
 					tripple.second.first)->weight() : (*I).weight()) <= tripple.first);
 			VERIFY(edge->weight() <= tripple.first);
 			if (vertex0.edge(tripple.second.second))

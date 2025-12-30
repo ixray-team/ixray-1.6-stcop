@@ -85,7 +85,7 @@ void CPsyDogAura::update_schedule()
 			ENEMIES_MAP::const_iterator E_ = (*it)->EnemyMemory.get_memory().end();
 			for (; I_ != E_; ++I_) {
 				if (I_->first == m_actor) {
-					m_time_phantom_saw_actor = _max(m_time_phantom_saw_actor, I_->second.time);
+					m_time_phantom_saw_actor = std::max(m_time_phantom_saw_actor, I_->second.time);
 				}
 			}
 		}

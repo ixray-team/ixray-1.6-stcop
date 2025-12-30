@@ -48,11 +48,11 @@ const	float		PI_DIV_8	= 0.3926990816987241548078304229099f;
 #include	"_std_extensions.h"
 
 // comparisions
-IC BOOL  fsimilar		( float		a, float	b, float	cmp=EPS )		{ return _abs(a-b)<cmp;	}
-IC BOOL  dsimilar		( double	a, double	b, double	cmp=EPS )		{ return _abs(a-b)<cmp;		}
+IC BOOL  fsimilar		( float		a, float	b, float	cmp=EPS )		{ return std::abs(a-b)<cmp;	}
+IC BOOL  dsimilar		( double	a, double	b, double	cmp=EPS )		{ return std::abs(a-b)<cmp;		}
 
-IC BOOL  fis_zero		( float		val, float	cmp=EPS_S )					{ return _abs(val)<cmp;	}
-IC BOOL  dis_zero		( double	val, double	cmp=EPS_S )					{ return _abs(val)<cmp;		}
+IC BOOL  fis_zero		( float		val, float	cmp=EPS_S )					{ return std::abs(val)<cmp;	}
+IC BOOL  dis_zero		( double	val, double	cmp=EPS_S )					{ return std::abs(val)<cmp;		}
 
 // degree 2 radians and vice-versa
 namespace implement{
@@ -153,9 +153,9 @@ ICF float		angle_difference_signed(float a, float b)
 }
 
 // 0..PI
-ICF float		angle_difference(float a, float b)
+ICF float angle_difference(float a, float b)
 {
-	return _abs	(angle_difference_signed(a,b));
+	return std::abs	(angle_difference_signed(a,b));
 }
 
 IC bool			are_ordered		( float const value0, float const value1, float const value2 )
@@ -186,7 +186,7 @@ IC bool			angle_lerp		(float& c, float t, float s, float dt)
 		if (diff<-PI)	
 			diff	+= PI_MUL_2;
 	}
-	float diff_a	= _abs(diff);
+	float diff_a	= std::abs(diff);
 
 	if (diff_a<EPS_S)	
 		return true;
@@ -263,7 +263,7 @@ IC float		angle_inertion_var(float src, float tgt, float min_speed, float max_sp
 {
 	tgt				= angle_normalize_signed	(tgt);
 	src				= angle_normalize_signed	(src);
-	float speed		= _abs((max_speed-min_speed)*angle_difference(tgt,src)/clmp)+min_speed;
+	float speed		= std::abs((max_speed-min_speed)*angle_difference(tgt,src)/clmp)+min_speed;
 	angle_lerp		(src,tgt,speed,dt);
 	src				= angle_normalize_signed	(src);
 	float dH		= angle_difference_signed	(src,tgt);

@@ -303,17 +303,17 @@ void CSheduler::ProcessStep			()
 #endif // DEBUG
 
 		// Calc next update interval
-		u32		dwMin				= _max(u32(30),T.Object->shedule.t_min);
+		u32		dwMin				= std::max(u32(30),T.Object->shedule.t_min);
 		u32		dwMax				= (1000+T.Object->shedule.t_max)/2;
 		float	scale				= T.Object->shedule_Scale	(); 
 		u32		dwUpdate			= dwMin+iFloor(float(dwMax-dwMin)*scale);
-		clamp	(dwUpdate,u32(_max(dwMin,u32(20))),dwMax);
+		clamp	(dwUpdate,u32(std::max(dwMin,u32(20))),dwMax);
 
 		
 
 		m_current_step_obj = T.Object;
 //			try {
-			T.Object->shedule_Update	(clampr(Elapsed,u32(1),u32(_max(u32(T.Object->shedule.t_max),u32(1000)))) );
+			T.Object->shedule_Update	(clampr(Elapsed,u32(1),u32(std::max(u32(T.Object->shedule.t_max),u32(1000)))) );
 			if (!m_current_step_obj)
 			{
 				continue;
@@ -329,19 +329,6 @@ void CSheduler::ProcessStep			()
 		TNext.scheduled_name		= T.Object->shedule_Name();
 		ItemsProcessed.push_back	(TNext);
 
-
-#ifdef DEBUG
-//		u32	execTime				= eTimer.GetElapsed_ms		();
-		// VERIFY3					(T.Object->dbg_update_shedule == T.Object->dbg_startframe, "Broken sequence of calls to 'shedule_Update'", _obj_name );
-		if (delta_ms> 3*dwUpdate)	{
-			//Msg	("! xrSheduler: failed to shedule object [%s] (%dms)",	_obj_name, delta_ms	);
-		}
-//		if (execTime> 15)			{
-//			Msg	("* xrSheduler: too much time consumed by object [%s] (%dms)",	_obj_name, execTime	);
-//		}
-#endif // DEBUG
-
-		// 
 		if ((i % 3) != (3 - 1))
 			continue;
 

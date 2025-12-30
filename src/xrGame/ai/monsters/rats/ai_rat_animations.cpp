@@ -72,10 +72,10 @@ void CAI_Rat::SelectAnimation(const Fvector& /**_view/**/, const Fvector& /**_mo
 						tpGlobalAnimation = m_tRatAnimations.tNormal.tGlobal.tpaIdle[0];
 				}
 				else
-					if (_abs(m_fSpeed - m_fAttackSpeed) < EPS_L)
+					if (std::abs(m_fSpeed - m_fAttackSpeed) < EPS_L)
 						tpGlobalAnimation = m_tRatAnimations.tNormal.tGlobal.tRunAttack;
 					else
-						if (_abs(m_fSpeed - m_fMaxSpeed) < EPS_L)
+						if (std::abs(m_fSpeed - m_fMaxSpeed) < EPS_L)
 							tpGlobalAnimation = m_tRatAnimations.tNormal.tGlobal.tRun.fwd;
 						else
 							tpGlobalAnimation = m_tRatAnimations.tNormal.tGlobal.tWalk.fwd;

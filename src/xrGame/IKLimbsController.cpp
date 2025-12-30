@@ -136,7 +136,7 @@ float	CIKLimbsController::StaticObjectShift			( const SCalculateData cd[max_size
 		else
 			shift = shift_up;
 		VERIFY( _valid( shift ) );
-		_object_shift.set_taget( shift , _abs( current_shift - shift ) / static_shift_object_speed );
+		_object_shift.set_taget( shift , std::abs( current_shift - shift ) / static_shift_object_speed );
 		return shift;
 }
 static float doun_shift_to_correct = 0.3f;
