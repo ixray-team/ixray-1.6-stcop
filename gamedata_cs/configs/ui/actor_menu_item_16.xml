@@ -247,19 +247,19 @@
       <texture>ui_temp_frame</texture>
     </background_frame>
 
-    <info_name x="17" y="20" width="343" height="20">
+    <info_name x="17" y="20" width="333" height="20">
       <text font="letterica18" r="238" g="155" b="23" complex_mode="0" align="l" vert_align="t"/>
     </info_name>
 
-    <info_desc x="17" y="45" width="343" height="20" complex_mode="1">
+    <info_desc x="17" y="45" width="333" height="20" complex_mode="1">
       <text font="letterica18" r="238" g="155" b="122" align="l" vert_align="t"/>
     </info_desc>
 
-    <info_prerequisites x="17" y="65" width="343" height="20" complex_mode="1">
+    <info_prerequisites x="17" y="65" width="333" height="20" complex_mode="1">
       <text font="letterica18" color="ui_2" align="l" vert_align="t"/>
     </info_prerequisites>
 
-    <properties x="17" y="20" width="343" height="20" sec_col_pos="170" next_line_pos="20">
+    <properties x="17" y="20" width="333" height="20" sec_col_pos="170" next_line_pos="20">
       <icon x="0"  y="0" width="15"  height="19" stretch="1" />
       <text x="20" y="3" width="305" height="19" />
     </properties>
