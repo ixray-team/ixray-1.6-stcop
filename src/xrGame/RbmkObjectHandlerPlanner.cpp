@@ -1458,9 +1458,9 @@ void FRbmkObjectHandlerPlanner::SetGoap(MonsterSpace::EObjectAction ObjectAction
 		
 		uint32		QueueSize = 1;
 		if (MaxQueueSize == InMinQueueSize)
-			QueueSize		= _max(1,MinQueueSize);
+			QueueSize		= std::max(1u,MinQueueSize);
 		else
-			QueueSize		= _max(1,::Random.randI(MinQueueSize,MaxQueueSize));
+			QueueSize		= std::max(1,::Random.randI(MinQueueSize,MaxQueueSize));
 
 		if (MaxQueueInterval == MinQueueInterval)
 			QueueInterval	= MinQueueInterval;

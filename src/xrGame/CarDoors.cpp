@@ -608,9 +608,9 @@ void CCarDoor::SDoorway::Init(CCarDoor* adoor)
 	inv_door_transform.transform_dir(door_axis_in_door, jaxis);
 	float lo_ext, hi_ext, ext;
 
-	if (_abs(door_axis_in_door.x) > _abs(door_axis_in_door.y))
+	if (std::abs(door_axis_in_door.x) > std::abs(door_axis_in_door.y))
 	{
-		if (_abs(door_axis_in_door.x) > _abs(door_axis_in_door.z))
+		if (std::abs(door_axis_in_door.x) > std::abs(door_axis_in_door.z))
 		{
 			//door axis aligned along x
 			door_plane_axes.y = 0;		   //door axis is x (door_plane_axes.y stores door axis direction (i,j,k)=(0,1,2)
@@ -623,7 +623,7 @@ void CCarDoor::SDoorway::Init(CCarDoor* adoor)
 
 			door->Joint->PSecond_element()->get_Extensions(door_transform.k, janchor.dotproduct(door_transform.k), lo_ext, hi_ext);
 			ext = hi_ext - lo_ext;
-			if (_abs(ext) > _abs(door_axis_in_door.x))
+			if (std::abs(ext) > std::abs(door_axis_in_door.x))
 			{
 				door->door_plane_ext.x = ext;
 				door->door_plane_axes.x = 2;

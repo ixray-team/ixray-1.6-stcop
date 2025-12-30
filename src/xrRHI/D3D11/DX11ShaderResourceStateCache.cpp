@@ -96,8 +96,8 @@ void DX11ShaderResourceStateCache::SetPSResource(u32 uiSlot, IRHIShaderResourceV
 		m_PSViews[uiSlot] = SRV;
 		if (m_bUpdatePSViews)
 		{
-			m_uiMinPSView = _min(m_uiMinPSView, uiSlot);
-			m_uiMaxPSView = _max(m_uiMaxPSView, uiSlot);
+			m_uiMinPSView = std::min(m_uiMinPSView, uiSlot);
+			m_uiMaxPSView = std::max(m_uiMaxPSView, uiSlot);
 		}
 		else
 		{
@@ -116,8 +116,8 @@ void DX11ShaderResourceStateCache::SetGSResource(u32 uiSlot, IRHIShaderResourceV
 		m_GSViews[uiSlot] = SRV;
 		if (m_bUpdateGSViews)
 		{
-			m_uiMinGSView = _min(m_uiMinGSView, uiSlot);
-			m_uiMaxGSView = _max(m_uiMaxGSView, uiSlot);
+			m_uiMinGSView = std::min(m_uiMinGSView, uiSlot);
+			m_uiMaxGSView = std::max(m_uiMaxGSView, uiSlot);
 		}
 		else
 		{
@@ -136,8 +136,8 @@ void DX11ShaderResourceStateCache::SetVSResource(u32 uiSlot, IRHIShaderResourceV
 		m_VSViews[uiSlot] = SRV;
 		if (m_bUpdateVSViews)
 		{
-			m_uiMinVSView = _min(m_uiMinVSView, uiSlot);
-			m_uiMaxVSView = _max(m_uiMaxVSView, uiSlot);
+			m_uiMinVSView = std::min(m_uiMinVSView, uiSlot);
+			m_uiMaxVSView = std::max(m_uiMaxVSView, uiSlot);
 		}
 		else
 		{
@@ -156,8 +156,8 @@ void DX11ShaderResourceStateCache::SetHSResource(u32 uiSlot, IRHIShaderResourceV
 		m_HSViews[uiSlot] = SRV;
 		if (m_bUpdateHSViews)
 		{
-			m_uiMinHSView = _min(m_uiMinHSView, uiSlot);
-			m_uiMaxHSView = _max(m_uiMaxHSView, uiSlot);
+			m_uiMinHSView = std::min(m_uiMinHSView, uiSlot);
+			m_uiMaxHSView = std::max(m_uiMaxHSView, uiSlot);
 		}
 		else
 		{
@@ -176,8 +176,8 @@ void DX11ShaderResourceStateCache::SetDSResource(u32 uiSlot, IRHIShaderResourceV
 		m_DSViews[uiSlot] = SRV;
 		if (m_bUpdateDSViews)
 		{
-			m_uiMinDSView = _min(m_uiMinDSView, uiSlot);
-			m_uiMaxDSView = _max(m_uiMaxDSView, uiSlot);
+			m_uiMinDSView = std::min(m_uiMinDSView, uiSlot);
+			m_uiMaxDSView = std::max(m_uiMaxDSView, uiSlot);
 		}
 		else
 		{
@@ -196,8 +196,8 @@ void DX11ShaderResourceStateCache::SetCSResource(u32 uiSlot, IRHIShaderResourceV
 		m_CSViews[uiSlot] = SRV;
 		if (m_bUpdateCSViews)
 		{
-			m_uiMinCSView = _min(m_uiMinCSView, uiSlot);
-			m_uiMaxCSView = _max(m_uiMaxCSView, uiSlot);
+			m_uiMinCSView = std::min(m_uiMinCSView, uiSlot);
+			m_uiMaxCSView = std::max(m_uiMaxCSView, uiSlot);
 		}
 		else
 		{

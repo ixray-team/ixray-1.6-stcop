@@ -125,7 +125,7 @@ void	Vision::feel_vision_update(CObject* parent, Fvector& P, float dt, float vis
 		seen.resize(E - seen.begin());
 
 		{
-			diff.resize(_max(seen.size(), query.size()));
+			diff.resize(std::max(seen.size(), query.size()));
 			xr_vector<CObject*>::iterator	E_ = std::set_difference(
 				seen.begin(), seen.end(),
 				query.begin(), query.end(),
@@ -139,7 +139,7 @@ void	Vision::feel_vision_update(CObject* parent, Fvector& P, float dt, float vis
 	// A-B = objects, that are invisible
 	if (!query.empty())
 	{
-		diff.resize(_max(seen.size(), query.size()));
+		diff.resize(std::max(seen.size(), query.size()));
 		xr_vector<CObject*>::iterator	E = std::set_difference(
 			query.begin(), query.end(),
 			seen.begin(), seen.end(),

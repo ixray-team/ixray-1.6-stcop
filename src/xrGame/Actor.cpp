@@ -1352,10 +1352,10 @@ void CActor::PlayRainOnHelmetSound()
 	if (factor > EPS_L && g_Alive())
 	{
 		const float* hemiCube = renderable_ROS()->get_luminocity_hemi_cube();
-		float hemiValue = _max(hemiCube[0], hemiCube[1]);
-		hemiValue = _max(hemiValue, hemiCube[2]);
-		hemiValue = _max(hemiValue, hemiCube[3]);
-		hemiValue = _max(hemiValue, hemiCube[5]);
+		float hemiValue = std::max(hemiCube[0], hemiCube[1]);
+		hemiValue = std::max(hemiValue, hemiCube[2]);
+		hemiValue = std::max(hemiValue, hemiCube[3]);
+		hemiValue = std::max(hemiValue, hemiCube[5]);
 
 		if (m_rainOnHelmetSnd.is_playing())
 		{
@@ -1401,7 +1401,7 @@ bool hovering_checker(CActor* who)
 	}
 
 	Fvector Vel_y = who->character_physics_support()->movement()->GetVelocity();
-	float abs_ = _abs(Vel_y.x) + _abs(Vel_y.z);
+	float abs_ = std::abs(Vel_y.x) + std::abs(Vel_y.z);
 
 	if (who && Vel_y.y > 0.1f && abs_ < 0.1f && !(who->mstate_real & mcClimb))
 	{
@@ -1781,7 +1781,7 @@ void CActor::CheckFlyhack()
 	}
 
 	Fvector Vel_ = character_physics_support()->movement()->GetVelocity();
-	float Vel_xz_abs = _abs(Vel_.x) + _abs(Vel_.z);
+	float Vel_xz_abs = std::abs(Vel_.x) + std::abs(Vel_.z);
 
 	game_PlayerState* ps = Game().GetPlayerByGameID(ID());
 

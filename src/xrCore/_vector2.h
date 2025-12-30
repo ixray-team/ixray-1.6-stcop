@@ -17,11 +17,11 @@ public:
 	IC SelfRef set(double _u, double _v)			{ x=T(_u); y=T(_v);				return *this;	}
 	IC SelfRef set(int _u, int _v)					{ x=T(_u); y=T(_v);				return *this;	}
 	IC SelfRef set(const Self &p)					{ x=p.x; y=p.y;					return *this;	}
-	IC SelfRef abs(const Self &p)					{ x=_abs(p.x); y=_abs(p.y);		return *this;	}
-	IC SelfRef min(const Self &p)					{ x=_min(x,p.x); y=_min(y,p.y);	return *this;	}
-	IC SelfRef min(T _x, T _y)						{ x=_min(x,_x);  y=_min(y,_y);	return *this;	}
-	IC SelfRef max(const Self &p)					{ x=_max(x,p.x); y=_max(y,p.y);	return *this;	}
-	IC SelfRef max(T _x, T _y)						{ x=_max(x,_x);  y=_max(y,_y);	return *this;	}
+	IC SelfRef abs(const Self &p)					{ x=std::abs(p.x);   y=std::abs(p.y);		return *this;	}
+	IC SelfRef min(const Self &p)					{ x=std::min(x,p.x); y=std::min(y,p.y);	return *this;	}
+	IC SelfRef min(T _x, T _y)						{ x=std::min(x,_x);  y=std::min(y,_y);	return *this;	}
+	IC SelfRef max(const Self &p)					{ x=std::max(x,p.x); y=std::max(y,p.y);	return *this;	}
+	IC SelfRef max(T _x, T _y)						{ x=std::max(x,_x);  y=std::max(y,_y);	return *this;	}
 	IC SelfRef sub(const T p)						{ x-=p; y-=p;					return *this;	}
 	IC SelfRef sub(const Self &p)					{ x-=p.x; y-=p.y;				return *this;	}
 	IC SelfRef sub(const Self &p1, const Self &p2)	{ x=p1.x-p2.x; y=p1.y-p2.y;		return *this;	}
@@ -61,12 +61,12 @@ public:
 
 	IC bool similar(Self &p, T eu, T ev) const
 	{ 
-		return _abs(x-p.x)<eu && _abs(y-p.y)<ev;
+		return std::abs(x-p.x)<eu && std::abs(y-p.y)<ev;
 	}
 	
 	IC bool similar(const Self &p, float E=EPS_L) const
 	{ 
-		return _abs(x-p.x)<E && _abs(y-p.y)<E;
+		return std::abs(x-p.x)<E && std::abs(y-p.y)<E;
 	};
 
 	// average arithmetic

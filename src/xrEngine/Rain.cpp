@@ -70,8 +70,8 @@ void CEffect_Rain::Born(Item& dest, float radius, shared_str& rainType)
 	{
 		float angle = ::Random.randF(0.f, PI_MUL_2);
 		float dist = _sqrt(::Random.randF()) * radius;
-		float x = dist * _cos(angle);
-		float z = dist * _sin(angle);
+		float x = dist * std::cos(angle);
+		float z = dist * std::sin(angle);
 
 		computeDirection(10.f, dest);
 
@@ -86,8 +86,8 @@ void CEffect_Rain::Born(Item& dest, float radius, shared_str& rainType)
 	{
 		float angle = ::Random.randF(0.f, PI_MUL_2);
 		float dist = _sqrt(::Random.randF()) * (radius * 0.5f);
-		float x = dist * _cos(angle);
-		float z = dist * _sin(angle);
+		float x = dist * std::cos(angle);
+		float z = dist * std::sin(angle);
 
 		computeDirection(5.f, dest);
 
@@ -118,8 +118,8 @@ void CEffect_Rain::Born(Item& dest, float radius, shared_str& rainType)
 	{
 		float angle = ::Random.randF(0.f, PI_MUL_2);
 		float dist = _sqrt(::Random.randF()) * radius;
-		float x = dist * _cos(angle);
-		float z = dist * _sin(angle);
+		float x = dist * std::cos(angle);
+		float z = dist * std::sin(angle);
 
 		computeDirection(10.f, dest);
 
@@ -205,10 +205,10 @@ void CEffect_Rain::OnFrame()
 	if (E && E->renderable_ROS() && !Device.IsEditorMode())
 	{
 		float* hemi_cube = E->renderable_ROS()->get_luminocity_hemi_cube();
-		float hemi_val = _max(hemi_cube[0], hemi_cube[1]);
-		hemi_val = _max(hemi_val, hemi_cube[2]);
-		hemi_val = _max(hemi_val, hemi_cube[3]);
-		hemi_val = _max(hemi_val, hemi_cube[5]);
+		float hemi_val = std::max(hemi_cube[0], hemi_cube[1]);
+		hemi_val = std::max(hemi_val, hemi_cube[2]);
+		hemi_val = std::max(hemi_val, hemi_cube[3]);
+		hemi_val = std::max(hemi_val, hemi_cube[5]);
 
 		//		float f					= 0.9f*hemi_factor + 0.1f*hemi_val;
 		float f = hemi_val;
@@ -269,7 +269,7 @@ void CEffect_Rain::OnFrame()
 	// ambient sound
 	if (snd_Ambient.is_playing())
 	{
-		m_rainVolume = _max(0.1f, factor) * hemi_factor;
+		m_rainVolume = std::max(0.1f, factor) * hemi_factor;
 		snd_Ambient.set_volume(m_rainVolume);
 	}
 

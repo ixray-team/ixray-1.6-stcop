@@ -524,12 +524,12 @@ void CEnvironment::calculate_dynamic_sun_dir()
 	g = deg2rad(g);
 
 	//	Declination
-	float D = 0.396372f-22.91327f*_cos(g)+4.02543f*_sin(g)-0.387205f*_cos(2*g)+
-		0.051967f*_sin(2*g)-0.154527f*_cos(3*g) + 0.084798f*_sin(3*g);
+	float D = 0.396372f-22.91327f* std::cos(g)+4.02543f* std::sin(g)-0.387205f* std::cos(2*g)+
+		0.051967f* std::sin(2*g)-0.154527f* std::cos(3*g) + 0.084798f* std::sin(3*g);
 
 	//	Now calculate the time correction for solar angle:
-	float TC = 0.004297f+0.107029f*_cos(g)-1.837877f*_sin(g)-0.837378f*_cos(2*g)-
-		2.340475f*_sin(2*g);
+	float TC = 0.004297f+0.107029f* std::cos(g)-1.837877f* std::sin(g)-0.837378f* std::cos(2*g)-
+		2.340475f* std::sin(2*g);
 
 	//	IN degrees
 	float Longitude = -30.4f;
@@ -545,9 +545,9 @@ void CEnvironment::calculate_dynamic_sun_dir()
 	float const LatitudeR = deg2rad(Latitude);
 
 	//	Now we can calculate the Sun Zenith Angle (SZA):
-	float cosSZA = _sin(LatitudeR)
-		* _sin(deg2rad(D)) + _cos(LatitudeR)*
-		_cos(deg2rad(D)) * _cos(deg2rad(SHA));
+	float cosSZA = std::sin(LatitudeR)
+		* std::sin(deg2rad(D)) + std::cos(LatitudeR)*
+		std::cos(deg2rad(D)) * std::cos(deg2rad(SHA));
 
 	clamp( cosSZA, -1.0f, 1.0f);
 
@@ -556,11 +556,11 @@ void CEnvironment::calculate_dynamic_sun_dir()
 
 	//	To finish we will calculate the Azimuth Angle (AZ):
 	float cosAZ = 0.f;
-	float const sin_SZA = _sin(SZA);
-	float const cos_Latitude = _cos(LatitudeR);
+	float const sin_SZA = std::sin(SZA);
+	float const cos_Latitude = std::cos(LatitudeR);
 	float const sin_SZA_X_cos_Latitude = sin_SZA*cos_Latitude;
 	if (!fis_zero(sin_SZA_X_cos_Latitude))
-		cosAZ	= (_sin(deg2rad(D))-_sin(LatitudeR)*_cos(SZA))/sin_SZA_X_cos_Latitude;
+		cosAZ	= (std::sin(deg2rad(D))- std::sin(LatitudeR)* std::cos(SZA))/sin_SZA_X_cos_Latitude;
 
 	clamp( cosAZ, -1.0f, 1.0f);
 	float AZ = acosf(cosAZ);

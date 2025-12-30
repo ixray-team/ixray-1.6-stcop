@@ -494,7 +494,7 @@ float CObject::shedule_Scale_Base()
 	if (Device.dwTimeGlobal > u_optimize_time)
 	{
 		u_optimize_time = Device.dwTimeGlobal + Random.randI(66, 120);
-		return _max(0.0f, Position().distance_to(Device.vCameraPosition) - Radius());
+		return std::max(0.0f, Position().distance_to(Device.vCameraPosition) - Radius());
 	}
 
 	return f_optimize_dist;
