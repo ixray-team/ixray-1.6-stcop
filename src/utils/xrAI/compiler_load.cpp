@@ -4,6 +4,7 @@
 #include "levelgamedef.h"
 #include "level_graph.h"
 #include "AIMapExport.h"
+#include "../../xrCore/FormatParsers/LevelCForm/CFormIO.h"
 
 size_t BuildAIMapVersion = 0;
 
@@ -77,7 +78,7 @@ void xrLoad(LPCSTR name, bool draft_mode)
 
 			hdrCFORM			H;
 			fs->r(&H, sizeof(hdrCFORM));
-			R_ASSERT(CFORM_CURRENT_VERSION == H.version);
+			R_ASSERT(CFormVersions::Vanilla == H.version);
 
 			Fvector* verts = (Fvector*)fs->pointer();
 			CDB::TRI* tris = (CDB::TRI*)(verts + H.vertcount);

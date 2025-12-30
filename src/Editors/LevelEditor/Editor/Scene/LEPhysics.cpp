@@ -173,14 +173,11 @@ bool CScenePhysics::CreateObjectSpace(bool b_selected_only)
 		CL.add_face_D(build_data.l_verts[F.verts[0]], build_data.l_verts[F.verts[1]], build_data.l_verts[F.verts[2]], i);
 	}
 
-	hdrCFORM H;
-	H.vertcount = CL.getVS();
-	H.facecount = CL.getTS();
-	H.version = CFORM_CURRENT_VERSION;
-	GetBox(H.aabb, CL.getV(), CL.getVS());
+	XRay::CForm::CFormatVanilla CForm;
+	CForm.AddStaticGeom(CL.getVSpan(), CL.getTSpan());
 
 	VERIFY(!m_object_space);
-	m_object_space = mesh_create_object_space(CL.getV(), CL.getT(), H, 0);
+	m_object_space = mesh_create_object_space(CForm, nullptr);
 
 	xr_free(build_data.l_faces);
 	xr_free(build_data.l_verts);
@@ -242,13 +239,16 @@ void CScenePhysics::GenerateCForm(CObjectSpace* To, CDB::build_callback cb)
 			}
 	}
 	VERIFY(!m_object_space);
-	hdrCFORM H;
+	XRay::CForm::CFormatVanilla CForm;
+	CForm.AddStaticGeom({build_data.l_verts, (size_t)build_data.l_vert_it}, {build_data.l_faces, (size_t)build_data.l_face_it});
+	To->Create(CForm, cb, nullptr, false);
+	/*hdrCFORM H;
 	H.vertcount = build_data.l_vert_it;
 	H.facecount = build_data.l_face_it;
 	H.version = CFORM_CURRENT_VERSION;
 	GetBox(H.aabb, build_data.l_verts, build_data.l_vert_it);
 	VERIFY(!m_object_space);
-	To->Create(build_data.l_verts, build_data.l_faces, H, cb, nullptr, false);
+	To->Create(build_data.l_verts, build_data.l_faces, H, cb, nullptr, false);*/
 
 	xr_free(build_data.l_faces);
 	xr_free(build_data.l_verts);

@@ -148,7 +148,7 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 
 		// Header
 		hdrCFORM hdr;
-		hdr.version				= CFORM_CURRENT_VERSION;
+		hdr.version				= CFormVersions::Vanilla;
 		hdr.vertcount			= (u32)CL.getVS();
 		hdr.facecount			= (u32)CL.getTS();
 		hdr.aabb				= scene_bb;

@@ -1346,6 +1346,11 @@ CReaderGuarded CLocatorAPI::rg_open(LPCSTR initial, LPCSTR N)
 	return CReaderGuarded(r_open(initial, N));
 }
 
+CReaderGuarded CLocatorAPI::rg_open(LPCSTR N)
+{
+	return CReaderGuarded(r_open(N));
+}
+
 void CLocatorAPI::get_all_files_in_dir(xr_set<xr_string>& out, LPCSTR dir)
 {
 	for (auto& elem : m_files)
@@ -1400,6 +1405,11 @@ void CLocatorAPI::w_close(IWriter*& S)
 CWriterGuarded CLocatorAPI::wg_open(LPCSTR initial, LPCSTR N)
 {
 	return CWriterGuarded(w_open(initial, N));
+}
+
+CWriterGuarded CLocatorAPI::wg_open(LPCSTR N)
+{
+	return CWriterGuarded(w_open(N));
 }
 
 xr_string CLocatorAPI::fix_path(const xr_string& file)
@@ -1618,6 +1628,11 @@ FS_Path* CLocatorAPI::get_path(LPCSTR path)
 }
 
 LPCSTR CLocatorAPI::update_path(string_path& dest, LPCSTR initial, LPCSTR src)
+{
+	return get_path(initial)->_update(dest,src);
+}
+
+LPCSTR CLocatorAPI::update_path(xr_stack_string_path& dest, LPCSTR initial, LPCSTR src)
 {
 	return get_path(initial)->_update(dest,src);
 }

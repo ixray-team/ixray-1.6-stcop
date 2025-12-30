@@ -140,6 +140,7 @@ public:
 #endif
     	return true;
     }
+	virtual bool		GetStaticCformData		( XRay::CForm::IFormat& CForm, bool b_selected_only ){return true;}
     virtual void		CompileStaticStart		()	{};
     virtual void		CompileStaticEnd		()	{};
 
