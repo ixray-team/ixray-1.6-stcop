@@ -78,6 +78,7 @@ protected:
 	u32 dwGradientColor;
 
 	EAligment eCurrentAlignment;
+	xrCriticalSection s_cs;
 	xr_vector<String> strings;
 	IFontRender* pFontRender;
 
@@ -134,7 +135,7 @@ public:
 
 	void OnRender();
 
-	inline void Clear() { strings.clear(); };
+	inline void Clear() { xrCriticalSectionGuard g(&s_cs); strings.clear(); };
 
 	//shared_str m_font_name;
 

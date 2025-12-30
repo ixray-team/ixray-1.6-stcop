@@ -371,7 +371,7 @@ void CGameFont::OutSetI(float x, float y)
 void CGameFont::OnRender()
 {
 	PROF_EVENT("Render Font");
-
+	xrCriticalSectionGuard g(&s_cs);
 	if (!strings.empty())
 	{
 		pFontRender->OnRender(*this);
@@ -422,7 +422,10 @@ void CGameFont::MasterOut(
 	}
 
 	if (vs_sz)
+	{
+		xrCriticalSectionGuard g(&s_cs);
 		strings.push_back(rs);
+	}
 
 	if (bUseSkip)
 		OutSkip(_skip);
