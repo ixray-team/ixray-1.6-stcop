@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="mil_actor_attack_house">
+		<text>Eliminate the military in the HQ building</text>
+	</string>
+	<string id="mil_actor_attack_house_text">
+		<text>A military squad has taken up a defensive position in the HQ building. Eliminate the military in the building</text>
+	</string>
+	<string id="mil_additional_quest_1_name">
+		<text>Take military cargo at the helicopter.</text>
+	</string>
+	<string id="mil_additional_quest_1_text">
+		<text>A patrolling military helicopter, carrying valuable ammo and weapons, crashed nearby. We need them to hold the barrier - every shooter and round makes a difference. Unfortunately, our boys can't get through to that area. The place is held by Monolithians - a hardass bunch to begin with, but they also have radiation suits, unlike us.</text>
+	</string>
+	<string id="mil_additional_quest_2_name">
+		<text>Find the PDA</text>
+	</string>
+	<string id="mil_additional_quest_2_text">
+		<text>A few nights ago a stalker squad was attacked by a pack of hungry merciless dogs. There were no survivors. The squad commander died along with his men, but he was bringing us important information. Find the commander's body and take the PDA with the information.</text>
+	</string>
+	<string id="mil_additional_quest_3_name">
+		<text>Find the missing stalker's loot</text>
+	</string>
+	<string id="mil_additional_quest_3_text">
+		<text>One of our snipers with invaluable sniper ammo died in an anomaly. If you can return the ammo, you'll be richly rewarded.</text>
+	</string>
+	<string id="mil_additional_quest_4_name">
+		<text>Take the artifact from the dead stalker</text>
+	</string>
+	<string id="mil_additional_quest_4_text">
+		<text>One of our stalkers managed to get through an anomalous swamp, but couldn't bring a valuable artifact back out. Bring us the artifact for a reward.</text>
+	</string>
+	<string id="mil_additional_quest_5_name">
+		<text>Collect the artifact from the village</text>
+	</string>
+	<string id="mil_additional_quest_5_text">
+		<text>That village is cursed, stalker. Bloodsuckers appear out of nowhere - nobody has the guts to go there. Still, some crazy ass thrill-seekers are attracted to that place, despite the fact that the most ruthless and dangerous bloodsuckers in the Zone live there. Then again, if you manage to kill them, in the deserted house you'll find an artifact that's unlike any you'll see in the Zone</text>
+	</string>
+	<string id="mil_contact_with_clear_sky_commander_descr">
+		<text>Meet Lebedev</text>
+	</string>
+	<string id="mil_contact_with_clear_sky_commander_name">
+		<text>A mercenary squad managed to get out of the space bubble and is now proceeding towards the bridge by Limansk. The advance Clear Sky squad is already at the bridge. Move out towards the Red Forest and meet with Lebedev</text>
+	</string>
+	<string id="mil_defend_barrier_name">
+		<text>Defend the barrier</text>
+	</string>
+	<string id="mil_defend_barrier_text">
+		<text>The barrier has been attacked again. Help stalkers defend the barrier</text>
+	</string>
+	<string id="mil_elim_military">
+		<text>Eliminate the military</text>
+	</string>
+	<string id="mil_elim_military_text">
+		<text>Eliminate the military at the base</text>
+	</string>
+	<string id="mil_hires">
+		<text>Meet the mercenaries in the village</text>
+	</string>
+	<string id="mil_hires_text">
+		<text>There's a group of mercenaries in the deserted village looking for the group that got trapped in the space anomaly near Limansk. They can give you more details about where to get the strongest radio signal. Meet the mercenaries in the village.</text>
+	</string>
+	<string id="mil_hog_about_signal_1">
+		<text>Damn! Sorry, bro, this ain't my area of expertise. If anyone can help you it's Forester. They say he knows everything there is to know about the Zone.</text>
+	</string>
+	<string id="mil_hog_hello_dialog_11">
+		<text>Hello, merc!</text>
+	</string>
+	<string id="mil_hog_hello_dialog_12">
+		<text>It's good to see you. So, did you find out how to get our boys out?</text>
+	</string>
+	<string id="mil_hog_hello_dialog_1221">
+		<text>Yeah, the bandit base at the Garbage is a tough nut to crack. You won't manage on your own.</text>
+	</string>
+	<string id="mil_hog_hello_dialog_1231">
+		<text>Hmm...you'll need a good transmitter for that. The military had one like that...hold on, we'll think of something...</text>
+	</string>
+	<string id="mil_hog_hello_dialog_13">
+		<text>Merc, go see Kostyan!</text>
+	</string>
+	<string id="mil_hog_talk_about_1">
+		<text>A few weeks ago we got an important order for a unique artifact. The order came from the top - the client is a real big shot. Anyway, everything was going well: our squad found the artifact somewhere near the Barrier and was already on its way back when it got hit by the large Emission. We thought they all copped it, but they got lucky and survived. Trouble is, they went missing somewhere around here. We were ordered to find them, 'cause we have to deliver on our promise. If we screw this up, no client will ever trust the mercenaries with another order again. </text>
+	</string>
+	<string id="mil_hog_talk_about_111">
+		<text>We pick up fragments of our squad's transmissions, but we can't make out anything from them. The only thing that's clear is that they got lost in broad daylight and are now in some sort of trap. It could be an anomaly or some new evil that's appeared in the Zone. We don't know what to do. There's an old water tower by the farmstead - I think we'd be able to receive their transmissions better up there. We've tried climbing up there before, but some real badass monster jumped out of nowhere, grabbed one of our boys and dragged him away. The rest of us barely made it out!</text>
+	</string>
+	<string id="mil_hog_talk_about_11111">
+		<text>Are you crazy, I'm still shitting my pants from last time, and the boys won't even go near that tower. You, on the other hand, look like you know a thing or two about the Zone. You couldn't kill that beast and receive the message from our boys, could you?</text>
+	</string>
+	<string id="mil_kill_bs">
+		<text>Kill the bloodsucker</text>
+	</string>
+	<string id="mil_kill_bs_text">
+		<text>A bloodsucker has been spotted around the water tower, which provides the strongest signal in the area. Kill the bloodsucker.</text>
+	</string>
+	<string id="mil_reach_battle">
+		<text>Meet up with the Freedom squad</text>
+	</string>
+	<string id="mil_reach_battle_text">
+		<text>Meet up with the Freedom squad</text>
+	</string>
+	<string id="mil_reach_tower_task">
+		<text>Receive the transmission</text>
+	</string>
+	<string id="mil_reach_tower_task_text">
+		<text>The water tower is the highest elevation point at the military warehouses. It provides the strongest signal. Go to the top of the tower and receive the signal from the lost group of mercenaries</text>
+	</string>
+	<string id="mil_talk_2_forester2">
+		<text>Talk to Forester</text>
+	</string>
+	<string id="mil_talk_2_forester2_text">
+		<text>A radio message from the lost group of mercenaries has been received by Forester via his PDA's radio channel. Return to Forester for further instructions</text>
+	</string>
+	<string id="mil_talk_2_fr_com">
+		<text>Meet up with the Freedom squad</text>
+	</string>
+	<string id="mil_talk_2_fr_com_text">
+		<text>Freedom is getting ready to attack the army base to drive the military out and set up their own base at the military warehouses. Help Freedom attack the army base</text>
+	</string>
+	<string id="mil_talk_2_merc_2_task">
+		<text>Talk to the mercenaries</text>
+	</string>
+	<string id="mil_talk_2_merc_2_task_text">
+		<text>The base is full of soldiers keeping close watch over the transmitter. Without outside help it won't be easy to drive them out and transmit the coordinates for the mercenaries to use to get out of the space bubble. Come back to the deserted village and talk to the mercenaries again</text>
+	</string>
+	<string id="mil_test">
+		<text>Help</text>
+	</string>
+	<string id="mil_transfer_coo">
+		<text>Transmit coordinates</text>
+	</string>
+	<string id="mil_transfer_coo_text">
+		<text>The way to the transmitter is open. Go to the top of the tower and transmit the coordinates that Forester provided to the mercenary group that got stuck in the space bubble</text>
+	</string>
+	<string id="mil_treasure_weapon_box_descr">
+		<text>Ammo crate</text>
+	</string>
+	<string id="mil_treasure_weapon_box_name">
+		<text>Ammo crate</text>
+	</string>
+	<string id="mil_blockpost_task">
+		<text>Talk to the outpost commander</text>
+	</string>
+	<string id="mil_blockpost_text">
+		<text>Talk to the outpost commander about the situation at the military warehouses</text>
+	</string>
+</string_table>

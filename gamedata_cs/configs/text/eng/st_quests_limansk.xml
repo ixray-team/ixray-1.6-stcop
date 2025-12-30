@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="lim_destroy_ambush_2_name">
+		<text>Destroy the enemy at the crossroads</text>
+	</string>
+	<string id="lim_destroy_ambush_2_text">
+		<text>Destroy the enemy ambush at the crossroads</text>
+	</string>
+	<string id="lim_destroy_bandit_minigun_name">
+		<text>Destroy the machine gun nest</text>
+	</string>
+	<string id="lim_destroy_bandit_minigun_text">
+		<text>There's a real firefight going on at the crossroads. The building to the left is held by bandits. The building is a good position to clear the road ahead. Destroy the machine gun nest in the building.</text>
+	</string>
+	<string id="lim_destroy_military_minigun_name">
+		<text>Supress the machine gun nest</text>
+	</string>
+	<string id="lim_destroy_military_minigun_text">
+		<text>The enemy has taken up defensive positions in the building on the other side of the bridge. The area on the other side of the bridge is well-covered, so well that the Clear Sky squad didn't even manage to get past the bridge. You must get through to the building and suppress enemy fire. The Clear Sky squad will distract the enemy meanwhile</text>
+	</string>
+	<string id="lim_electro_fence_name">
+		<text>Deactivate the generator</text>
+	</string>
+	<string id="lim_electro_fence_text">
+		<text>Electric unit located. Deactivate the generator and cut the power to the fence</text>
+	</string>
+	<string id="lim_find_way_through_construction_name">
+		<text>Find a way through the construction site</text>
+	</string>
+	<string id="lim_find_way_through_construction_text">
+		<text>The suburbs of Limansk are very close. The road there leads through an unfinished complex. Find a way through the construction site</text>
+	</string>
+	<string id="lim_go_into_limansk_name">
+		<text>Scout the road through Limansk</text>
+	</string>
+	<string id="lim_go_into_limansk_text">
+		<text>Lebedev has given the order to scout the road through Limansk to ensure safe passage for the main Clear Sky squad. A war has broken out on the city streets - proceed with caution</text>
+	</string>
+	<string id="lim_go_to_canal_name">
+		<text>Move towards the bridge via the canal</text>
+	</string>
+	<string id="lim_go_to_canal_text">
+		<text>The enemy fire is too powerful. Leave towards the bridge via the canal</text>
+	</string>
+	<string id="lim_destroy_ambush_1_name">
+		<text>Eliminate the ambush</text>
+	</string>
+	<string id="lim_destroy_ambush_1_text">
+		<text>Eliminate the ambush</text>
+	</string>
+	<string id="lim_electro_fence_actor_come_back_name">
+		<text>Return to the group commander</text>
+	</string>
+	<string id="lim_electro_fence_actor_come_back_text">
+		<text>Return to the group's commander</text>
+	</string>
+	<string id="lim_electro_fence_cs_soldier_cover_name">
+		<text>Help the fighter sneak up on the sniper</text>
+	</string>
+	<string id="lim_electro_fence_cs_soldier_cover_text">
+		<text>Help the Clear Sky fighter sneak up on the sniper.</text>
+	</string>
+	<string id="lim_electro_fence_find_transformator_name">
+		<text>Find generator</text>
+	</string>
+	<string id="lim_electro_fence_find_transformator_text">
+		<text>The path to the generator is blocked by an electric fence. The city has long been without electricity, which means the fence is being powered autonomously. The wires from the fence lead to the institute building on the right. Find the generator that powers the fence.</text>
+	</string>
+	<string id="lim_electro_fence_sniper_name">
+		<text>Eliminate the sniper</text>
+	</string>
+	<string id="lim_electro_fence_sniper_text">
+		<text>Power to the fence has been cut. It's now possible to come closer and eliminate the sniper. Take him down</text>
+	</string>
+	<string id="lim_find_bridge_squad_comander_name">
+		<text>Find the group commander</text>
+	</string>
+	<string id="lim_find_bridge_squad_comander_text">
+		<text>Find the group's commander</text>
+	</string>
+</string_table>
