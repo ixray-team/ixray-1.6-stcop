@@ -19,6 +19,9 @@ public:
 	virtual void PushPoint(float x, float y, float z, u32 C, float u, float v);
 
 	virtual void StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointType pointType);
+
+	virtual LITFast*& StartPrimitiveLITFast(u32 iMaxVerts, ePrimitiveType primType);
+
 	virtual void FlushPrimitive();
 
 	virtual LPCSTR	UpdateShaderName(LPCSTR tex_name, LPCSTR sh_name);
