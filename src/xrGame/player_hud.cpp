@@ -394,6 +394,11 @@ void attachable_hud_item::setup_firedeps(firedeps& fd)
 	// fire point&direction
 	if(m_measures.m_prop_flags.test(hud_item_measures::e_fire_point))
 	{
+		R_ASSERT4(m_measures.m_fire_bone != BI_NONE, 
+			"Invalid fire bone specified", 
+			m_sect_name.c_str(), 
+			pSettings->r_string(m_sect_name, "fire_bone"));
+
 		Fmatrix& fire_mat								= m_model->LL_GetTransform(m_measures.m_fire_bone);
 		fire_mat.transform_tiny							(fd.vLastFP, m_measures.m_fire_point_offset);
 		m_item_transform.transform_tiny					(fd.vLastFP);
@@ -413,6 +418,11 @@ void attachable_hud_item::setup_firedeps(firedeps& fd)
 
 	if(m_measures.m_prop_flags.test(hud_item_measures::e_fire_point2))
 	{
+		R_ASSERT4(m_measures.m_fire_bone2 != BI_NONE,
+			"Invalid fire bone 2 specified",
+			m_sect_name.c_str(),
+			pSettings->r_string(m_sect_name, "fire_bone2"));
+
 		Fmatrix& fire_mat			= m_model->LL_GetTransform(m_measures.m_fire_bone2);
 		fire_mat.transform_tiny		(fd.vLastFP2,m_measures.m_fire_point2_offset);
 		m_item_transform.transform_tiny	(fd.vLastFP2);
