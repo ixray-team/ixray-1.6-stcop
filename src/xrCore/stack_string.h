@@ -14,6 +14,8 @@
 #include <functional>
 #include <string_view>
 
+#include "_std_c_undefs.h"
+
 #ifdef UNICODE
 #ifdef IXR_WINDOWS
 using xr_char_t = wchar_t;
@@ -316,7 +318,7 @@ public:
 		{
 			if constexpr (std::is_same_v<char_t, char>)
 			{
-				number_type arg_len = std::clamp(number_type(view.size()), min(number_type(1), _kStringLength), _kStringLength);
+				number_type arg_len = std::clamp(number_type(view.size()), std::min(number_type(1), _kStringLength), _kStringLength);
 				std::memcpy(this->m_buffer, view.data(), arg_len);
 				this->m_buffer[arg_len] = L'\0';
 			}
@@ -326,7 +328,7 @@ public:
 			{
 				std::wstring_view wview(view.begin(), view.size());
 
-				number_type arg_len = std::clamp(number_type(wview.size()), min(number_type(1), _kStringLength), _kStringLength);
+				number_type arg_len = std::clamp(number_type(wview.size()), std::min(number_type(1), _kStringLength), _kStringLength);
 				std::memcpy(this->m_buffer, wview.data(), arg_len * sizeof(wchar_t));
 				this->m_buffer[arg_len] = L'\0';
 			}
@@ -342,7 +344,7 @@ public:
 		{
 			if constexpr (std::is_same_v<char_t, char>)
 			{
-				number_type arg_len = std::clamp(number_type(strlen(p_str)), min(number_type(1), _kStringLength), _kStringLength);
+				number_type arg_len = std::clamp(number_type(strlen(p_str)), std::min(number_type(1), _kStringLength), _kStringLength);
 				std::memcpy(this->m_buffer, p_str, arg_len);
 				this->m_buffer[arg_len] = '\0';
 			}
@@ -350,7 +352,7 @@ public:
 #ifdef IXR_WINDOWS
 			if constexpr (std::is_same_v<char_t, wchar_t>)
 			{
-				number_type arg_len = std::clamp(number_type(wcslen(p_str)), min(number_type(1), _kStringLength), _kStringLength);
+				number_type arg_len = std::clamp(number_type(wcslen(p_str)), std::min(number_type(1), _kStringLength), _kStringLength);
 				std::memcpy(this->m_buffer, p_str, arg_len * sizeof(wchar_t));
 				this->m_buffer[arg_len] = L'\0';
 			}
@@ -477,3 +479,12 @@ using xr_stack_wstring512 = xr_stack_wstring<512>;
 using xr_stack_wstring1024 = xr_stack_wstring<1024>;
 using xr_stack_wstring2048 = xr_stack_wstring<2048>;
 using xr_stack_wstring4096 = xr_stack_wstring<4096>;
+
+template<xr_ssnt_t StringLength>
+IC void xr_strlwr(xr_stack_string<StringLength>& src)
+{
+	for (auto& Char : src)
+	{
+		Char = std::tolower(Char);
+	}
+}
