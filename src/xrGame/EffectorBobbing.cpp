@@ -95,8 +95,8 @@ BOOL CEffectorBobbing::ProcessCam(SCamEffectorInfo& info)
 
         SelectBobbingParams(m_bZoomMode, is_limping, fOldPhase, fOldFreq, fOldAmp, dwMState, fTime, A, ST);
 
-        float _sinA = _abs(_sin(ST) * A) * fReminderFactor * g_bobbing_factor;
-        float _cosA = _cos(ST) * A * fReminderFactor * g_bobbing_factor;
+        float _sinA = std::abs(std::sin(ST) * A) * fReminderFactor * g_bobbing_factor;
+        float _cosA = std::cos(ST) * A * fReminderFactor * g_bobbing_factor;
 
         // apply footstep bobbing effect
         Fvector dangle;

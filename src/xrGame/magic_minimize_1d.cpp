@@ -209,7 +209,7 @@ void Minimize1D::GetBracketedMinimum (float fT0, float fF0, float fTm,
 
         // test for convergence
         const float fEps = 1e-08f, fTol = 1e-04f;
-        if ( _abs(fT1-fT0) <= 2.0f*fTol*_abs(fTm) + fEps )
+        if (std::abs(fT1-fT0) <= 2.0f*fTol* std::abs(fTm) + fEps )
             break;
 
         // compute vertex of interpolating parabola
@@ -217,7 +217,7 @@ void Minimize1D::GetBracketedMinimum (float fT0, float fF0, float fTm,
         float fDF0 = fF0 - fFm, fDF1 = fF1 - fFm;
         float fTmp0 = fDT0*fDF1, fTmp1 = fDT1*fDF0;
         float fDenom = fTmp1 - fTmp0;
-        if ( _abs(fDenom) < fEps )
+        if (std::abs(fDenom) < fEps )
            return;
 
         float fTv = fTm + 0.5f*(fDT1*fTmp1-fDT0*fTmp0)/fDenom;

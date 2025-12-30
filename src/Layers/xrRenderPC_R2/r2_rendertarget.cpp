@@ -108,7 +108,7 @@ u8		fpack			(float v)				{
 	return	u8(_v);
 }
 u8		fpackZ			(float v)				{
-	s32	_v	= iFloor	(_abs(v)*255.f + .5f);
+	s32	_v	= iFloor	(std::abs(v)*255.f + .5f);
 	clamp	(_v,0,255);
 	return	u8(_v);
 }
@@ -136,16 +136,16 @@ Ivector	vpack			(Fvector src)
 #else
 	int		d=3;
 #endif
-	for (int x=_max(bx-d,0); x<=_min(bx+d,255); x++)
-	for (int y=_max(by-d,0); y<=_min(by+d,255); y++)
-	for (int z=_max(bz-d,0); z<=_min(bz+d,255); z++)
+	for (int x=std::max(bx-d,0); x<=std::min(bx+d,255); x++)
+	for (int y=std::max(by-d,0); y<=std::min(by+d,255); y++)
+	for (int z=std::max(bz-d,0); z<=std::min(bz+d,255); z++)
 	{
 		_v				= vunpack(x,y,z);
 		float	m		= _v.magnitude();
-		float	me		= _abs(m-1.f);
+		float	me		= std::abs(m-1.f);
 		if	(me>0.03f)	continue;
 		_v.div	(m);
-		float	e		= _abs(src.dotproduct(_v)-1.f);
+		float	e		= std::abs(src.dotproduct(_v)-1.f);
 		if (e<e_best)	{
 			e_best		= e;
 			r=x,g=y,b=z;
@@ -167,7 +167,7 @@ void	generate_jitter	(DWORD*	dest, u32 elem_count)
 		BOOL		valid = TRUE;
 		for (u32 t=0; t<samples.size(); t++)
 		{
-			int		dist	= _abs(test.x-samples[t].x)+_abs(test.y-samples[t].y);
+			int		dist	= std::abs(test.x-samples[t].x)+ std::abs(test.y-samples[t].y);
 			if (dist<32)	{
 				valid		= FALSE;
 				break;
@@ -431,11 +431,11 @@ CRenderTarget::CRenderTarget		()
 							}	break;
 							case 3:
 							{ // looks like Metal
-								float	s0 = _abs(1 - _abs(0.05f * _sin(33.f * ld) + ld - ls));
-								float	s1 = _abs(1 - _abs(0.05f * _cos(33.f * ld * ls) + ld - ls));
-								float	s2 = _abs(1 - _abs(ld - ls));
+								float	s0 = std::abs(1 - std::abs(0.05f * std::sin(33.f * ld) + ld - ls));
+								float	s1 = std::abs(1 - std::abs(0.05f * std::cos(33.f * ld * ls) + ld - ls));
+								float	s2 = std::abs(1 - std::abs(ld - ls));
 								fd = ld;				// 1.0
-								fs = powf(_max(_max(s0, s1), s2), 24.f);
+								fs = powf(std::max(std::max(s0, s1), s2), 24.f);
 								fs *= powf(ld, 1 / 7.f);
 							}	break;
 							default:

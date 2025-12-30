@@ -1343,7 +1343,7 @@ DestroyInternal(int slot)
 IC void	volume_lerp(float& c, float t, float s, float dt)
 {
 	float diff = t - c;
-	float diff_a = _abs(diff);
+	float diff_a = std::abs(diff);
 	if (diff_a < EPS_S) return;
 	float mot = s * dt;
 	if (mot > diff_a) mot = diff_a;
@@ -1476,7 +1476,7 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
 			if (handler != nullptr)
 			{
 				float clip = source.pub.max_ai_distance * source.pub.volume;
-				float range = _min(source.pub.max_ai_distance, clip);
+				float range = std::min(source.pub.max_ai_distance, clip);
 
 				if (range >= 0.1f)
 				{

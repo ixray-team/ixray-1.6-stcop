@@ -79,7 +79,7 @@ struct co_plane_pred
             p_plane.n.div(plane_magn);
             p_plane.d /= plane_magn;
             
-			float dot = _abs(plane_dot(m_plane, p_plane));
+			float dot = std::abs(plane_dot(m_plane, p_plane));
             if(fsimilar(dot, 1.0f, EPS_L))
             {
             	Fbox	m_box, p_box;
