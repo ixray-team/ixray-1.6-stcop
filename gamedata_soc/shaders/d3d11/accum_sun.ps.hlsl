@@ -46,7 +46,9 @@ float4 main(PSInput I) : SV_Target
 		Shadow = lerp(FarShadow, Shadow, Fade);
 	}
 	
+#ifdef USE_SUNMASK
 	Shadow *= sunmask(Point);
+#endif
 	
     float3 Light = DirectLight(Ldynamic_color, Ldynamic_dir.xyz, O.Normal, O.View.xyz, O.Color, O.Metalness, O.Roughness, O.F0);
     Light += SimpleTranslucency(Ldynamic_color.xyz, Ldynamic_dir.xyz, O.Normal) * O.SSS * O.Color;
