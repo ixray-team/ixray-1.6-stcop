@@ -84,7 +84,7 @@ bool CLevelSoundManager::MakeEnvGeometry(CMemoryWriter& F, bool bErrMsg)
     F.open_chunk	(1);
     // write header
 	hdrCFORM		H;
-    H.version		= CFORM_CURRENT_VERSION;
+    //H.version		= CFORM_CURRENT_VERSION;
     H.vertcount		= CP.getVS();
     H.facecount		= CP.getTS();
     H.aabb			= aabb;
