@@ -101,6 +101,12 @@ void Upgrade::log_hierarchy(LPCSTR nest)
 
 #endif // DEBUG
 
+void Upgrade::RefreshTranslations()
+{
+	m_name = g_pStringTable->translate(pSettings->r_string(id(), "name"));
+	m_description = g_pStringTable->translate(pSettings->r_string(id(), "description"));
+}
+
 void Upgrade::fill_root_container(Root* root)
 {
 	R_ASSERT(root);

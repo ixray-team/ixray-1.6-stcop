@@ -45,7 +45,7 @@
 #include "Weapon.h"
 #include "raypick.h"
 #include "ai_object_location.h"
-
+#include "inventory_upgrade_manager.h"
 #include "ActorHelmet.h"
 #include "DynamicWallmarkZone.h"
 #include "PickupManager.h"
@@ -1102,6 +1102,8 @@ void RefreshNames()
 {
 	if (g_pGameLevel == nullptr)
 		return;
+
+	Level().m_upgrade_manager->RefreshTranslations();
 
 	for (auto& [id, pointer] : ai().alife().objects().objects())
 	{

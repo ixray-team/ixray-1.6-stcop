@@ -71,6 +71,7 @@ public:
 	void log_hierarchy();
 	void test_all_upgrades(CInventoryItem& item);
 #endif // DEBUG
+	void RefreshTranslations();
 
 	void highlight_hierarchy(CInventoryItem& item, shared_str const& upgrade_id);
 	void reset_highlight(CInventoryItem& item);

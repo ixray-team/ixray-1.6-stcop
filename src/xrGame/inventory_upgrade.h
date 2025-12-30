@@ -137,6 +137,8 @@ public:
 	void set_highlight(bool value);
 	void run_effects(bool loading);
 
+	void RefreshTranslations();
+
 	virtual	void highlight_up() override;
 	virtual	void highlight_down() override;
 
