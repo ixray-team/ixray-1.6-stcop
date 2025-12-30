@@ -149,7 +149,7 @@ float AngleInt::Distance(float v) const
 	}
     }
 
-    return (_abs(t1) < _abs(t2)) ? t1 : t2;
+    return (std::abs(t1) < std::abs(t2)) ? t1 : t2;
 }
 
 
@@ -668,14 +668,14 @@ void AngleIntList::wrap(float eps)
 
     for (AngleIntListNode *temp = head; temp; temp = temp->next)
     {
-	if (_abs(temp->D.Low()) < eps)
+	if (std::abs(temp->D.Low()) < eps)
 	{
 	    s = temp;
 	    if (t) 
 		break;
 	}
 
-	if (_abs(temp->D.High()-2*M_PI) < eps)
+	if (std::abs(temp->D.High()-2*M_PI) < eps)
 	{
 	    t = temp;
 	    if (s)

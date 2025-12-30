@@ -395,7 +395,7 @@ private:
 	float	 			EnginePower							()	;
 	float	 			EngineDriveSpeed					()	;
 	float	 			DriveWheelsMeanAngleRate			() const;
-IC	float	 			EngineRpmFromWheels					() const {return _abs(DriveWheelsMeanAngleRate()*m_current_gear_ratio);}
+IC	float	 			EngineRpmFromWheels					() const {return std::abs(DriveWheelsMeanAngleRate()*m_current_gear_ratio);}
 	/////////////////////////////////////////////////////////////////////////	
 	void				SteerRight							();
 	void				SteerLeft							();

@@ -107,7 +107,7 @@ void i_scan		(int curY, float leftX, float lhx, float rightX, float rhx, float s
 
 	// Move to far my dz/5 to place the pixel at the center of face that it covers. 
 	// This will make sure that objects will not be clipped for just standing next to the home from outside.
-	Z				+= 0.5f*_abs(dZ);
+	Z				+= 0.5f* std::abs(dZ);
 
 	// gain access to buffers
 	occTri** pFrame	= Raster.get_frame();
@@ -174,8 +174,8 @@ void i_test		( int x, int y)
 
 void i_edge		( int x1, int y1, int x2, int y2)
 {
-    int dx	= _abs(x2 - x1);
-    int dy	= _abs(y2 - y1);
+    int dx	= std::abs(x2 - x1);
+    int dy	= std::abs(y2 - y1);
 
     int sx = x2 >= x1 ? 1 : -1;
     int sy = y2 >= y1 ? 1 : -1;

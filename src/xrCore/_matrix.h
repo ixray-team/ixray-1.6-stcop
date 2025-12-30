@@ -225,7 +225,7 @@ public:
 			a._12 * ( a._21 * a._33 - a._23 * a._31 ) +
 			a._13 * ( a._21 * a._32 - a._22 * a._31 ) );
 
-		VERIFY(_abs(fDetInv)>flt_zero);
+		VERIFY(std::abs(fDetInv)>flt_zero);
 		fDetInv=1.0f/fDetInv;
 
 		_11 =  fDetInv * ( a._22 * a._33 - a._23 * a._32 );
@@ -256,7 +256,7 @@ public:
 	                a._13 * (a._21 * (a._32*a._44 - a._34*a._42) - a._22 * (a._31*a._44 - a._34*a._41) + a._24 * (a._31*a._42 - a._32*a._41)) -
 	                a._14 * (a._21 * (a._32*a._43 - a._33*a._42) - a._22 * (a._31*a._43 - a._33*a._41) + a._23 * (a._31*a._42 - a._32*a._41));
 	
-		VERIFY(_abs(fDetInv)>flt_zero);
+		VERIFY(std::abs(fDetInv)>flt_zero);
 		fDetInv=1.0f/fDetInv;
 		
 		_11 = fDetInv * (a._22 * (a._33*a._44 - a._34*a._43) - a._23 * (a._32*a._44 - a._34*a._42) + a._24 * (a._32*a._43 - a._33*a._42));
@@ -288,7 +288,7 @@ public:
 			a._12 * ( a._21 * a._33 - a._23 * a._31 ) +
 			a._13 * ( a._21 * a._32 - a._22 * a._31 ) );
 
-		if (_abs(fDetInv)<=flt_zero)	return	false;
+		if (std::abs(fDetInv)<=flt_zero)	return	false;
 		fDetInv=1.0f/fDetInv;
 
 		_11 =  fDetInv * ( a._22 * a._33 - a._23 * a._32 );
@@ -372,8 +372,8 @@ public:
 
 	IC	SelfRef	rotateX		(T Angle )				// rotation about X axis
 	{
-		T cosa	= _cos(Angle);
-		T sina	= _sin(Angle);
+		T cosa	= std::cos(Angle);
+		T sina	= std::sin(Angle);
 		i.set		(1,		0,		0	);	_14 = 0;
 		j.set		(0,		cosa,	sina);	_24 = 0;
 		k.set		(0,    -sina,   cosa);	_34 = 0;
@@ -382,8 +382,8 @@ public:
 	}
 	IC	SelfRef	rotateY		(T Angle )				// rotation about Y axis
 	{
-		T cosa	= _cos(Angle);
-		T sina	= _sin(Angle);
+		T cosa	= std::cos(Angle);
+		T sina	= std::sin(Angle);
 		i.set		(cosa,	0,	   -sina);	_14 = 0;
 		j.set		(0,		1,		0	);	_24 = 0;
 		k.set		(sina,  0,		cosa);	_34 = 0;
@@ -392,8 +392,8 @@ public:
 	}
 	IC	SelfRef	rotateZ		(T Angle )				// rotation about Z axis
 	{
-		T cosa	= _cos(Angle);
-		T sina	= _sin(Angle);
+		T cosa	= std::cos(Angle);
+		T sina	= std::sin(Angle);
 		i.set		(cosa,	sina,	0	);	_14 = 0;
 		j.set		(-sina,	cosa,	0	);	_24 = 0;
 		k.set		(0,		0,		1	);	_34 = 0;
@@ -419,8 +419,8 @@ public:
 	IC	SelfRef	mapZYX		()	{i.set(0, 0, 1);_14=0;j.set(0, 1, 0);_24=0;k.set(1, 0, 0);_34=0;c.set(0, 0, 0);_44=1;	return *this; }
 
 	IC	SelfRef	rotation	( const Tvector &axis, T Angle )	{
-		T Cosine	= _cos(Angle);
-		T Sine		= _sin(Angle);
+		T Cosine	= std::cos(Angle);
+		T Sine		= std::sin(Angle);
 		m [0][0] 	= axis.x * axis.x + ( 1 - axis.x * axis.x) * Cosine;
 		m [0][1] 	= axis.x * axis.y * ( 1 - Cosine ) + axis.z * Sine;
 		m [0][2] 	= axis.x * axis.z * ( 1 - Cosine ) - axis.y * Sine;
@@ -493,11 +493,11 @@ public:
 		return *this; 
 	}
 	IC	SelfRef	div( const Self &A, T v )	{
-		VERIFY(_abs(v)>0.000001f);
+		VERIFY(std::abs(v)>0.000001f);
 		return mul(A,1.0f/v);
 	}
 	IC	SelfRef	div( T v )					{
-		VERIFY(_abs(v)>0.000001f);
+		VERIFY(std::abs(v)>0.000001f);
 		return mul(1.0f/v);
 	}
 	// fov
@@ -507,8 +507,8 @@ public:
 	// half_fov-angle-tangent
 	IC	SelfRef	build_projection_HAT	(T HAT, T fAspect, T fNearPlane, T fFarPlane) 
 	{
-		VERIFY( _abs(fFarPlane-fNearPlane) > EPS_S );
-		VERIFY( _abs(HAT) > EPS_S );
+		VERIFY(std::abs(fFarPlane-fNearPlane) > EPS_S );
+		VERIFY(std::abs(HAT) > EPS_S );
 		
 		T cot	= T(1)/HAT;
 		T w		= fAspect * cot;
@@ -675,9 +675,9 @@ public:
 	{
         T _ch, _cp, _cb, _sh, _sp, _sb, _cc, _cs, _sc, _ss;
 
-        _sh = _sin(h); _ch = _cos(h);
-        _sp = _sin(p); _cp = _cos(p);
-        _sb = _sin(b); _cb = _cos(b);
+        _sh = std::sin(h); _ch = std::cos(h);
+        _sp = std::sin(p); _cp = std::cos(p);
+        _sb = std::sin(b); _cb = std::cos(b);
         _cc = _ch*_cb; _cs = _ch*_sb; _sc = _sh*_cb; _ss = _sh*_sb;
 
         i.set(_cc-_sp*_ss,	-_cp*_sb,	_sp*_cs+_sc	);	_14_=0;

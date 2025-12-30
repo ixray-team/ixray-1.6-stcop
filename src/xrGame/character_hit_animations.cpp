@@ -153,14 +153,14 @@ void character_hit_animation_controller::PlayHitMotion( const Fvector &dir, cons
 
 	dr.mul(g_params.power_factor);
 	if( dr.y > g_params.side_sensitivity_threshold )
-		play_cycle( CA, rthit_motion, 2, block_blends[0], _abs( dr.y ) ) ;
+		play_cycle( CA, rthit_motion, 2, block_blends[0], std::abs( dr.y ) ) ;
 	else if( dr.y < -g_params.side_sensitivity_threshold )
-		play_cycle( CA, lthit_motion, 2, block_blends[1], _abs( dr.y ) ) ;
+		play_cycle( CA, lthit_motion, 2, block_blends[1], std::abs( dr.y ) ) ;
 
 	if( dr.z<0.f )
-		play_cycle( CA, fvhit_motion, 2, block_blends[2], _abs(dr.z) ) ;
+		play_cycle( CA, fvhit_motion, 2, block_blends[2], std::abs(dr.z) ) ;
 	else
-		play_cycle( CA, bkhit_motion, 2, block_blends[3], _abs( dr.z ) ) ;
+		play_cycle( CA, bkhit_motion, 2, block_blends[3], std::abs( dr.z ) ) ;
 
 	CA->LL_SetChannelFactor( 2, g_params.anim_channel_factor );
 
@@ -170,17 +170,6 @@ void character_hit_animation_controller::PlayHitMotion( const Fvector &dir, cons
 bool character_hit_animation_controller::IsEffected( u16 bi, IKinematics &ca )const
 {
 	return find_in_parents( base_bone, bi, ca );
-	/*
-	u16 root = ca.LL_GetBoneRoot();
-	for( ; bi != root && bi != BI_NONE ; )
-	{
-		CBoneData &bd	= ca.LL_GetData(bi);
-		if(bi == base_bone)
-			return true;
-		bi = bd.GetParentID();
-	}
-	return false;
-	*/
 }
 
 void character_hit_animation_controller::GetBaseMatrix( Fmatrix &m,CEntityAlive &ea)const

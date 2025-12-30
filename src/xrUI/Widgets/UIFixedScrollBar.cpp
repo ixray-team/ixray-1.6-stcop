@@ -50,7 +50,7 @@ bool CUIFixedScrollBar::InitScrollBar(Fvector2 pos, bool horizontal, LPCSTR prof
 		if (!CUIXmlInit::InitFrameLine(xml_doc, _path, 0, m_FrameBackground, false))
 			return false;
 
-		m_ScrollWorkArea = _max(0,iFloor(GetWidth()-2*height));
+		m_ScrollWorkArea = std::max(0,iFloor(GetWidth()-2*height));
 	}
 	else
 	{
@@ -69,7 +69,7 @@ bool CUIFixedScrollBar::InitScrollBar(Fvector2 pos, bool horizontal, LPCSTR prof
 		if (!CUIXmlInit::InitFrameLine(xml_doc, _path, 0, m_FrameBackground, false))
 			return false;
 
-		m_ScrollWorkArea = _max(0,iFloor(GetHeight()-2*width_v));
+		m_ScrollWorkArea = std::max(0,iFloor(GetHeight()-2*width_v));
 	}	
 	UpdateScrollBar();
 	return true;
@@ -88,7 +88,7 @@ void CUIFixedScrollBar::UpdateScrollBar()
 			if(m_bIsHorizontal)
 			{
 				// set width
-				clamp(box_sz,_min(GetHeight(),GetWidth() - m_IncButton->GetWidth() - m_DecButton->GetWidth()),GetWidth() - m_IncButton->GetWidth() - m_DecButton->GetWidth()-2*m_ScrollBoxOffset.x);
+				clamp(box_sz, std::min(GetHeight(),GetWidth() - m_IncButton->GetWidth() - m_DecButton->GetWidth()),GetWidth() - m_IncButton->GetWidth() - m_DecButton->GetWidth()-2*m_ScrollBoxOffset.x);
 				m_ScrollBox->SetWidth(box_sz);
 				// set pos
 				int pos	= PosViewFromScroll(iFloor(box_sz),iFloor(GetHeight()));
@@ -98,7 +98,7 @@ void CUIFixedScrollBar::UpdateScrollBar()
 			else
 			{
 				// set height
-				clamp(box_sz,_min(GetWidth(),GetHeight()-m_IncButton->GetHeight() - m_DecButton->GetHeight()),GetHeight()-m_IncButton->GetHeight() - m_DecButton->GetHeight()-2*m_ScrollBoxOffset.y);
+				clamp(box_sz, std::min(GetWidth(),GetHeight()-m_IncButton->GetHeight() - m_DecButton->GetHeight()),GetHeight()-m_IncButton->GetHeight() - m_DecButton->GetHeight()-2*m_ScrollBoxOffset.y);
 				m_ScrollBox->SetHeight(box_sz);
 				// set pos
 				int pos	= PosViewFromScroll(iFloor(box_sz),iFloor(GetWidth()));
