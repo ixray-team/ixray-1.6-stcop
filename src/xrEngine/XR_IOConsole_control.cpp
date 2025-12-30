@@ -6,8 +6,9 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "XR_IOConsole.h"
+#include <algorithm>
 
+#include "XR_IOConsole.h"
 
 void CConsole::add_cmd_history(shared_str const& str) {
 	if (str.size() == 0) {
@@ -21,9 +22,7 @@ void CConsole::add_cmd_history(shared_str const& str) {
 
 void CConsole::next_cmd_history_idx() {
 	--m_cmd_history_idx;
-	if (m_cmd_history_idx < 0) {
-		m_cmd_history_idx = 0;
-	}
+	m_cmd_history_idx = std::max(m_cmd_history_idx, 0);
 }
 
 void CConsole::prev_cmd_history_idx() {
@@ -44,17 +43,14 @@ void CConsole::next_selected_tip() {
 
 void CConsole::check_next_selected_tip() {
 	if (m_select_tip >= (int)m_tips.size()) {
-		m_select_tip = (u32)m_tips.size() - 1;
+		m_select_tip = 0;
+		m_start_tip = 0;
 	}
 
-	int sel_dif = m_select_tip - VIEW_TIPS_COUNT + 1;
-	if (sel_dif < 0) {
-		sel_dif = 0;
-	}
-
-	if (sel_dif > m_start_tip) {
-		m_start_tip = sel_dif;
-	}
+	int top_cmd_pointer = m_select_tip - VIEW_TIPS_COUNT + 1;
+	
+	top_cmd_pointer = std::max(top_cmd_pointer, 0);
+	m_start_tip = std::max(top_cmd_pointer, m_start_tip);
 }
 
 void CConsole::prev_selected_tip() {
@@ -63,13 +59,14 @@ void CConsole::prev_selected_tip() {
 }
 
 void CConsole::check_prev_selected_tip() {
-	if (m_select_tip < 0) {
-		m_select_tip = 0;
-	}
+	if (m_select_tip < 0)
+		m_select_tip = (u32)m_tips.size() - 1;
 
-	if (m_start_tip > m_select_tip) {
-		m_start_tip = m_select_tip;
-	}
+
+	int top_cmd_pointer = m_select_tip - VIEW_TIPS_COUNT + 1;
+
+	top_cmd_pointer = std::max(top_cmd_pointer, 0);
+	m_start_tip = std::max(top_cmd_pointer, m_start_tip);
 }
 
 void CConsole::reset_selected_tip() {
