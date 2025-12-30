@@ -121,14 +121,14 @@ public		:
 		tips.push_back( str );
 	}
 
-	static Flags32& FastCommand(LPCSTR command_name, u32 mask = 0)
+	static Flags32& FastCommand(LPCSTR command_name, Flags32 default_value = { 0 }, u32 mask = 0)
 	{
 		auto it = Console->Commands.find(command_name);
 		if (it == Console->Commands.end())
 		{
 			CCC_Mask* new_cmd = new CCC_Mask(command_name, new Flags32, mask);
 			Console->Commands[command_name] = new_cmd;
-			*new_cmd->value = { 0 };
+			*new_cmd->value = default_value;
 			return *static_cast<CCC_Mask*>(new_cmd)->value;
 		}
 		else
@@ -172,14 +172,14 @@ public		:
 		tips.push_back( str );
 	}
 
-	static Flags16& FastCommand(LPCSTR command_name, u32 mask = 0)
+	static Flags16& FastCommand(LPCSTR command_name, Flags16 default_value = { 0 }, u32 mask = 0)
 	{
 		auto it = Console->Commands.find(command_name);
 		if (it == Console->Commands.end())
 		{
 			CCC_Mask16* new_cmd = new CCC_Mask16(command_name, new Flags16, mask);
 			Console->Commands[command_name] = new_cmd;
-			*new_cmd->value = { 0 };
+			*new_cmd->value = default_value;
 			return *static_cast<CCC_Mask16*>(new_cmd)->value;
 		}
 		else
@@ -219,14 +219,14 @@ public		:
 		tips.push_back( str );
 	}
 
-	static Flags32& FastCommand(LPCSTR command_name, u32 mask = 0)
+	static Flags32& FastCommand(LPCSTR command_name, Flags32 default_value = { 0 }, u32 mask = 0)
 	{
 		auto it = Console->Commands.find(command_name);
 		if (it == Console->Commands.end())
 		{
 			CCC_ToggleMask* new_cmd = new CCC_ToggleMask(command_name, new Flags32, mask);
 			Console->Commands[command_name] = new_cmd;
-			*new_cmd->value = { 0 };
+			*new_cmd->value = default_value;
 			return *static_cast<CCC_ToggleMask*>(new_cmd)->value;
 		}
 		else
@@ -312,14 +312,14 @@ public		:
 		}
 	}
 
-	static u32& FastCommand(LPCSTR command_name, xr_token& token)
+	static u32& FastCommand(LPCSTR command_name, xr_token&& token, u32 default_value = 0)
 	{
 		auto it = Console->Commands.find(command_name);
 		if (it == Console->Commands.end())
 		{
 			CCC_Token* new_cmd = new CCC_Token(command_name, new u32, new xr_token(std::move(token)));
 			Console->Commands[command_name] = new_cmd;
-			*new_cmd->value = 0;
+			*new_cmd->value = default_value;
 			return *static_cast<CCC_Token*>(new_cmd)->value;
 		}
 		else
@@ -372,14 +372,14 @@ public:
 		IConsole_Command::fill_tips( tips, mode );
 	}
 
-	static float& FastCommand(LPCSTR command_name, float min = -1000.f, float max = 1000.f)
+	static float& FastCommand(LPCSTR command_name, float default_value = 0.f, float min = -1000.f, float max = 1000.f)
 	{
 		auto it = Console->Commands.find(command_name);
 		if (it == Console->Commands.end())
 		{
 			CCC_Float* new_cmd = new CCC_Float(command_name, new float, min, max);
 			Console->Commands[command_name] = new_cmd;
-			*new_cmd->value = 0.f;
+			*new_cmd->value = default_value;
 			return *static_cast<CCC_Float*>(new_cmd)->value;
 		}
 		else
@@ -450,13 +450,13 @@ public:
 		IConsole_Command::fill_tips( tips, mode );
 	}
 
-	static Fvector& FastCommand(LPCSTR command_name, Fvector min = { -1000.f, -1000.f, -1000.f }, Fvector max = { 1000.f, 1000.f, 1000.f })
+	static Fvector& FastCommand(LPCSTR command_name, Fvector default_value = zero_vel, Fvector min = { -1000.f, -1000.f, -1000.f }, Fvector max = { 1000.f, 1000.f, 1000.f })
 	{
 		auto it = Console->Commands.find(command_name);
 		if (it == Console->Commands.end())
 		{
 			CCC_Vector3* new_cmd = new CCC_Vector3(command_name, new Fvector, min, max);
-			*new_cmd->value = zero_vel;
+			*new_cmd->value = default_value;
 			Console->Commands[command_name] = new_cmd;
 			return *static_cast<CCC_Vector3*>(new_cmd)->value;
 		}
@@ -506,13 +506,13 @@ public:
  		IConsole_Command::fill_tips( tips, mode );
 	}
 
-	static int& FastCommand(LPCSTR command_name, int min = -1000, int max = 1000)
+	static int& FastCommand(LPCSTR command_name, int default_value = 0, int min = -1000, int max = 1000)
 	{
 		auto it = Console->Commands.find(command_name);
 		if (it == Console->Commands.end())
 		{
 			CCC_Integer* new_cmd = new CCC_Integer(command_name, new int, min, max);
-			*new_cmd->value = 0;
+			*new_cmd->value = default_value;
 			Console->Commands[command_name] = new_cmd;
 			return *static_cast<CCC_Integer*>(new_cmd)->value;
 		}
@@ -575,13 +575,13 @@ public:
 		IConsole_Command::fill_tips(tips, mode);
 	}
 
-	static bool& FastCommand(LPCSTR command_name, bool min = false, bool max = true)
+	static bool& FastCommand(LPCSTR command_name, bool default_value = false, bool min = false, bool max = true)
 	{
 		auto it = Console->Commands.find(command_name);
 		if (it == Console->Commands.end())
 		{
 			CCC_Boolean* new_cmd = new CCC_Boolean(command_name, new bool, min, max);
-			*new_cmd->value = false;
+			*new_cmd->value = default_value;
 			Console->Commands[command_name] = new_cmd;
 			return *static_cast<CCC_Boolean*>(new_cmd)->value;
 		}
@@ -625,12 +625,12 @@ public:
 		IConsole_Command::fill_tips( tips, mode );
 	}
 
-	static LPSTR FastCommand(LPCSTR command_name, int _size = 512)
+	static LPSTR FastCommand(LPCSTR command_name, LPCSTR default_value = "\0", int _size = 512)
 	{
 		auto it = Console->Commands.find(command_name);
 		if (it == Console->Commands.end())
 		{
-			CCC_String* new_cmd = new CCC_String(command_name, new char[_size], _size);
+			CCC_String* new_cmd = new CCC_String(command_name, strdup(default_value), _size);
 			Console->Commands[command_name] = new_cmd;
 			return static_cast<CCC_String*>(new_cmd)->value;
 		}
