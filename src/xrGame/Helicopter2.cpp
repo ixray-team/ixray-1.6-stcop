@@ -449,7 +449,7 @@ float t_1(float t10, float t11)
 		if(t11<0)
 			return t10;
 		else
-			return _min(t10,t11);
+			return std::min(t10,t11);
 
 }
 

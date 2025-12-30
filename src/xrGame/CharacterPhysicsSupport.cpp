@@ -443,13 +443,8 @@ bool is_similar( const Fmatrix &m0, const Fmatrix &m1, float param )
 	Fquaternion q;
 	q.set( tmp2 );
 	q.get_axis_angle( ax, ang );
-	return _abs( ang )<M_PI/2.f;
+	return std::abs( ang )<M_PI/2.f;
 }
-
-//static struct callback_tracks_disable: public IUpdateTracksCallback
-//{
-//	virtual	bool	operator () ( float dt, IKinematicsAnimated& k ){return false;}
-//} tracks_disable_update;
 
 void CCharacterPhysicsSupport::KillHit( SHit &H )
 {

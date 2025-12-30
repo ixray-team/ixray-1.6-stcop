@@ -745,7 +745,7 @@ LPCSTR DelHyphens( LPCSTR c )
 	static string64 buf;
 
 	u32 sz = xr_strlen( c );
-	u32 sz1 = _min( iFloor(sz/4.0f), 3 );
+	u32 sz1 = std::min( iFloor(sz/4.0f), 3 );
 
 	u32 j = 0; 
 	for ( u32 i = 0; i < sz - sz1; ++i )

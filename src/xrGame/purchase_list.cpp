@@ -73,7 +73,7 @@ void CPurchaseList::process	(const CGameObject &owner, const shared_str &name, c
 			name,
 			(float)count*probability
 			/
-			_max((float)j,min_deficit_factor)
+			std::max((float)j,min_deficit_factor)
 		)
 	);
 }

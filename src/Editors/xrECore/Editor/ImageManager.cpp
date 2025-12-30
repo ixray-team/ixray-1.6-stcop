@@ -507,7 +507,7 @@ BOOL CImageManager::CheckCompliance(LPCSTR fname, int& compl_)
 		if (a)		E = sqrtf(SQR(c1.r-c2.r)+SQR(c1.g-c2.g)+SQR(c1.b-c2.b)+SQR(c1.a-c2.a))*c1.a;	// q(4)
 		else 		E = sqrtf(SQR(c1.r-c2.r)+SQR(c1.g-c2.g)+SQR(c1.b-c2.b));						// q(3)
 		difference 	+= 	E;
-		maximal 	=  	_max(maximal,E);
+		maximal 	= std::max(maximal,E);
 	}
 	difference		/= 	float(data.size());
 	difference		= 	difference/(a ? 2.f : sqrtf(3.f));

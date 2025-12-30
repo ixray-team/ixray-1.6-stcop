@@ -123,7 +123,7 @@ float ILevelGraph::check_position_in_direction(u32 start_vertex_id, const Fvecto
 			return			(max_distance);
 	}
 
-	if (inside(vertex(dwCurNode),finish_position) && (_abs(vertex_plane_y(*vertex(dwCurNode),finish_position.x,finish_position.z) - finish_position.y) < .5f))
+	if (inside(vertex(dwCurNode),finish_position) && (std::abs(vertex_plane_y(*vertex(dwCurNode),finish_position.x,finish_position.z) - finish_position.y) < .5f))
 		return				(start_point.distance_to_xz(finish_position));
 	else
 		return				(max_distance);

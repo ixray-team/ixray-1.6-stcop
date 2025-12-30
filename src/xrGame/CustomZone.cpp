@@ -1474,8 +1474,8 @@ void CCustomZone::CalcDistanceTo(const Fvector& P, float& dist, float& radius)
 		float r1 = nearest_s->data.box.i.magnitude();
 		float r2 = nearest_s->data.box.j.magnitude();
 		float r3 = nearest_s->data.box.k.magnitude();
-		radius = _max(r1,r2);
-		radius = _max(radius,r3);
+		radius = std::max(r1,r2);
+		radius = std::max(radius,r3);
 	}
 
 }

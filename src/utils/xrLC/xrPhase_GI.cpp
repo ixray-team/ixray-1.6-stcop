@@ -156,7 +156,7 @@ public:
 				{
 					float			_e		=	(dst.diffuse.x+dst.diffuse.y+dst.diffuse.z)/3.f;
 					Fvector			_c		=	{dst.diffuse.x,dst.diffuse.y,dst.diffuse.z};
-					if (_abs(_e)>EPS_S)		_c.div	(_e);
+					if (std::abs(_e)>EPS_S)		_c.div	(_e);
 					else					{ _c.set(0,0,0); _e=0; }
 					dst.diffuse				= _c;
 					dst.energy				= _e;

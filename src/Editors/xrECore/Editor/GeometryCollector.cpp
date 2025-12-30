@@ -12,9 +12,9 @@
 VCPacked::VCPacked(const Fbox& bb, float _eps, u32 _sx, u32 _sy, u32 _sz, int apx_vertices)
 {
     eps = _eps;
-    sx  = _max(_sx, 1);
-    sy  = _max(_sy, 1);
-    sz  = _max(_sz, 1);
+    sx  = std::max(_sx, 1u);
+    sy  = std::max(_sy, 1u);
+    sz  = std::max(_sz, 1u);
     // prepare hash table
     VM.resize(sx * sy * sz);
 

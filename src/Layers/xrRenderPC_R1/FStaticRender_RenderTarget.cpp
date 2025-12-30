@@ -252,9 +252,9 @@ BOOL CRenderTarget::NeedPostProcess()
 
 	bool	_cbase	= false;
 	{
-		int		_r	= color_get_R(param_color_base)	; _r=_abs(_r-int(0x7f));
-		int		_g	= color_get_G(param_color_base)	; _g=_abs(_g-int(0x7f));
-		int		_b	= color_get_B(param_color_base)	; _b=_abs(_b-int(0x7f));
+		int		_r	= color_get_R(param_color_base)	; _r=std::abs(_r-int(0x7f));
+		int		_g	= color_get_G(param_color_base)	; _g=std::abs(_g-int(0x7f));
+		int		_b	= color_get_B(param_color_base)	; _b=std::abs(_b-int(0x7f));
 		if (_r>2 || _g>2 || _b>2)	_cbase	= true	;
 	}
 	bool	_cadd	= false;
@@ -263,9 +263,9 @@ BOOL CRenderTarget::NeedPostProcess()
 		//int		_g	= color_get_G(param_color_add)	;
 		//int		_b	= color_get_B(param_color_add)	;
 		//if (_r>2 || _g>2 || _b>2)	_cadd	= true	;
-		int		_r	= _abs((int)(param_color_add.x*255));
-		int		_g	= _abs((int)(param_color_add.y*255));
-		int		_b	= _abs((int)(param_color_add.z*255));
+		int		_r	= std::abs((int)(param_color_add.x*255));
+		int		_g	= std::abs((int)(param_color_add.y*255));
+		int		_b	= std::abs((int)(param_color_add.z*255));
 		if (_r>2 || _g>2 || _b>2)	_cadd	= true	;
 	}
 	return _blur || _gray || _noise || _dual || _cbase || _cadd || _cmap || _menu_pp; 

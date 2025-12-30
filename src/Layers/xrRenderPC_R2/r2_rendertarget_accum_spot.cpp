@@ -268,7 +268,7 @@ void CRenderTarget::accum_volumetric(light* L)
 	float		fQuality = L->m_volumetric_quality;
 	int			iNumSlises = (int)(VOLUMETRIC_SLICES*fQuality);
 	//			min 10 surfaces
-	iNumSlises = _max(10, iNumSlises);
+	iNumSlises = std::max(10, iNumSlises);
 	//	Adjust slice intensity
 	fQuality	= ((float)iNumSlises)/VOLUMETRIC_SLICES;
 	Fvector		L_dir,L_clr,L_pos;	float L_spec;
