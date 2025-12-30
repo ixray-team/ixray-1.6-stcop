@@ -201,7 +201,7 @@ BOOL CTorch::net_Spawn(CSE_Abstract* DC)
 		Switch(torch->m_active);
 		VERIFY(!torch->m_active || (torch->ID_Parent != 0xffff));
 
-		m_delta_h = PI_DIV_2 - atan((range * 0.5f) / _abs(TORCH_OFFSET.x));
+		m_delta_h = PI_DIV_2 - atan((range * 0.5f) / std::abs(TORCH_OFFSET.x));
 	}
 
 	return TRUE;

@@ -320,11 +320,11 @@ void CSpectator::IR_OnMouseMove(int dx, int dy)
 	float scale		= (C->f_fov/g_base_fov)*psMouseSens * psMouseSensScale/50.f;
 	if (dx){
 		float d = float(dx)*scale;
-		cameras[cam_active]->Move((d<0)?kLEFT:kRIGHT, _abs(d));
+		cameras[cam_active]->Move((d<0)?kLEFT:kRIGHT, std::abs(d));
 	}
 	if (dy){
 		float d = ((psMouseInvert.test(1))?-1:1)*float(dy)*scale*3.f/4.f;
-		cameras[cam_active]->Move((d>0)?kUP:kDOWN, _abs(d));
+		cameras[cam_active]->Move((d>0)?kUP:kDOWN, std::abs(d));
 	}
 }
 

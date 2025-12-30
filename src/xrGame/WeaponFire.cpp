@@ -40,8 +40,8 @@ void random_dir(Fvector& tgt_dir, const Fvector& src_dir, float dispersion)
 	float r 			= tan			(alpha);
 	Fvector 			U,V,T;
 	Fvector::generate_orthonormal_basis	(src_dir,U,V);
-	U.mul				(r*_sin(theta));
-	V.mul				(r*_cos(theta));
+	U.mul				(r*std::sin(theta));
+	V.mul				(r*std::cos(theta));
 	T.add				(U,V);
 	tgt_dir.add			(src_dir,T).normalize();
 }

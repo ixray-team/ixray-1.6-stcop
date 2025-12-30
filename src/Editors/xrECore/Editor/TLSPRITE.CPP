@@ -53,8 +53,8 @@ void CTLSprite::Render(Fvector &pos, u32 color, float radius, float angle)
 	if (sz<1.5f) 	return;
 
 	// Rotation
-	float			_sin1=_sin(angle),_cos1=_cos(angle);
-    float			_sin2=_sin(angle+PI_DIV_2),_cos2=_cos(angle+PI_DIV_2);
+	float			_sin1=std::sin(angle),_cos1= std::cos(angle);
+    float			_sin2=std::sin(angle+PI_DIV_2),_cos2= std::cos(angle+PI_DIV_2);
 
 	mesh.m[0].p.x = cx+sz*_sin1;	mesh.m[0].p.y = cy+sz*_cos1;
 	mesh.m[1].p.x = cx-sz*_sin2;	mesh.m[1].p.y = cy-sz*_cos2;

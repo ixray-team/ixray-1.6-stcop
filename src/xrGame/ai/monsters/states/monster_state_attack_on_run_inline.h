@@ -317,11 +317,11 @@ void   ATTACK_ON_RUN_STATE::update_movement_target ()
 	else if ( m_phaze == go_prepare )
 	{
 		float const offs_length				=	5.f;
-		float const offs_angle				=	_max(deg2rad(30.f), offs_length/far_radius) * 
+		float const offs_angle				= std::max(deg2rad(30.f), offs_length/far_radius) *
 												(m_prepare_side == left ? -1 : +1);
 		
-		float const cos_alpha				=	_cos(offs_angle);
-		float const sin_alpha				=	_sin(offs_angle);
+		float const cos_alpha				=	std::cos(offs_angle);
+		float const sin_alpha				=	std::sin(offs_angle);
 
 		Fvector const predicted2self		=	-self2predicted;
 
@@ -574,19 +574,6 @@ void   ATTACK_ON_RUN_STATE::execute ()
 	
 	// обработать squad инфо	
 	this->object->path().set_use_dest_orient			(false);
-
-// 	CMonsterSquad *squad	= monster_squad().get_squad(object);
-// 	if (squad && squad->SquadActive())
-// 	{
-// 		// Получить команду
-// 		SSquadCommand command;
-// 		squad->GetCommand(object, command);
-// 		if (command.type == SC_ATTACK)
-// 		{
-// 			this->object->path().set_use_dest_orient	(true);
-// 			this->object->path().set_dest_direction	(command.direction);
-// 		}
-// 	}
 }
 
 TEMPLATE_SIGNATURE

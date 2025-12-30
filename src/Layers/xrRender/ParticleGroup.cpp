@@ -86,7 +86,7 @@ BOOL CPGDef::LoadOriginal(IReader& F)
 			(*it)->m_Flags.assign	(F.r_u32());
 			
 			if(!dont_calc_timelimit)
-				m_fTimeLimit	= _max(m_fTimeLimit, (*it)->m_Time1);
+				m_fTimeLimit	= std::max(m_fTimeLimit, (*it)->m_Time1);
 		}
 	}
 	return TRUE;

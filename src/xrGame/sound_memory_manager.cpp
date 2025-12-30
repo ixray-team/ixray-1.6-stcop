@@ -93,7 +93,7 @@ IC	void CSoundMemoryManager::update_sound_threshold			()
 	VERIFY		(!fis_zero(m_decrease_factor));
 	VERIFY		(m_sound_decrease_quant);
 	// t = max(t*f^((tc - tl)/tq),min_threshold)
-	m_sound_threshold		= _max(
+	m_sound_threshold		= std::max(
 		m_self_sound_factor*
 		m_sound_threshold*
 		exp(
@@ -200,7 +200,7 @@ void CSoundMemoryManager::feel_sound_new(CObject* object, int sound_type, CSound
 
 	m_last_sound_time = Device.dwTimeGlobal;
 	VERIFY(_valid(m_sound_threshold));
-	m_sound_threshold = _max(m_sound_threshold, sound_power);
+	m_sound_threshold = std::max(m_sound_threshold, sound_power);
 	VERIFY(_valid(m_sound_threshold));
 }
 

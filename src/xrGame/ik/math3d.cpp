@@ -237,8 +237,8 @@ axisangletomatrix(Matrix m, float axis[], float theta)
     float	*p;
     float	a01,a02,a12,a0s,a1s,a2s,a01v,a02v,a12v;
     
-    c = _cos(theta);
-    s = _sin(theta);
+    c = std::cos(theta);
+    s = std::sin(theta);
     v = 1.0f - c;
     
     p = (float *) m;
@@ -346,26 +346,14 @@ void rotation_axis_to_matrix(float axis[3], float angle, Matrix R)
     float cos_a, sin_a;
     float s1, s2, s3;
     
-    cos_a = _cos(angle);
-    sin_a = _sin(angle);
+    cos_a = std::cos(angle);
+    sin_a = std::sin(angle);
     
     // Assume axis is normalized 
-
-#if 0
-    // float normal[3];
-    // cpvector(normal,axis);
-    // unitize(normal);
-
-    // s1 = normal[0];
-    // s2 = normal[1];
-    // s3 = normal[2];
-#else
-
     s1 = axis[0];
     s2 = axis[1];
     s3 = axis[2];
-    
-#endif
+
     float s1s1 = s1*s1;
     float s1s2 = s1*s2;
     float s1s3 = s1*s3; 
@@ -510,10 +498,10 @@ void find_normal_vector(float v[3], float n[3])
     int   min_i;
 
     min_i    = 0;
-    min      = _abs(v[0]);
+    min      = std::abs(v[0]);
     num_zero = (min < 1e-8f);
 
-    temp = _abs(v[1]);
+    temp = std::abs(v[1]);
     if (temp < 1e-8f)
 	num_zero++; 
     if (temp < min)
@@ -522,7 +510,7 @@ void find_normal_vector(float v[3], float n[3])
 	min_i = 1;
     }
 
-    temp = _abs(v[2]);
+    temp = std::abs(v[2]);
     if (temp < 1e-8)
 	num_zero++; 
     if (temp < min)
@@ -670,8 +658,8 @@ void rotation_principal_axis_to_deriv_matrix(char axis, float angle, Matrix m)
     float cos_a, sin_a;
     
     ZeroMemory(m,sizeof(Matrix));
-    cos_a = _cos(angle);
-    sin_a = _sin(angle);
+    cos_a = std::cos(angle);
+    sin_a = std::sin(angle);
     
     switch (axis)
     {
@@ -699,8 +687,8 @@ void rotation_principal_axis_to_matrix(char axis, float angle, Matrix m)
     float cos_a, sin_a;
     
     cpmatrix(m, idmat);
-    cos_a = _cos(angle);
-    sin_a = _sin(angle);
+    cos_a = std::cos(angle);
+    sin_a = std::sin(angle);
     
     switch (axis)
     {
@@ -741,7 +729,7 @@ void rotation_matrix_to_axis(const Matrix R, float axis[], float &angle)
     
 
     // Close to identity. Arbitrarily set solution to z axis rotation of 0 
-    if (_abs(angle) < eps || _abs(angle - M_PI) < eps)
+    if (std::abs(angle) < eps || std::abs(angle - M_PI) < eps)
     {
 	angle = 0.0;
 	axis[0] = axis[1] = 0.0; axis[2] = 1.0; 
@@ -868,8 +856,8 @@ axistoq(Quaternion q,float angle,float axis[])
 {
     float    f;
 
-    f = (float)_sin(angle/2);
-    q[0] = (float)_cos(angle/2);
+    f = (float)std::sin(angle/2);
+    q[0] = (float)std::cos(angle/2);
     q[1] = axis[0] * f;
     q[2] = axis[1] * f;
     q[3] = axis[2] * f;
@@ -881,7 +869,7 @@ qtoaxis(float *angle,float axis[],Quaternion q)
     float    f;
 
     *angle = 2 * ((float)acos(q[0]));
-    f = (float)_sin(*angle/2);
+    f = (float)std::sin(*angle/2);
     if (f > 0) {
         axis[0] = q[1] / f;
         axis[1] = q[2] / f;

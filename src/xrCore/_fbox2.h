@@ -127,7 +127,7 @@ public:
 		rvmin.sub	( min, start );
 		rvmax.sub	( max, start );
 
-		if( _abs(dir.x)!=0 ){
+		if(std::abs(dir.x)!=0 ){
 			alpha	= rvmin.x / dir.x;
 			yt		= alpha * dir.y;
 			if( yt >= rvmin.y - EPS && yt <= rvmax.y + EPS)		return true;
@@ -135,7 +135,7 @@ public:
 			yt		= alpha * dir.y;
 			if( yt >= rvmin.y - EPS && yt <= rvmax.y + EPS)		return true;
 		}
-		if( _abs(dir.y)!=0 ){
+		if(std::abs(dir.y)!=0 ){
 			alpha	= rvmin.y / dir.y;
 			xt		= alpha * dir.x;
 			if( xt >= rvmin.x - EPS && xt <= rvmax.x + EPS)		return true;

@@ -74,9 +74,9 @@ void CWeaponStatMgun::Load(LPCSTR section)
 	m_sounds_layered.LoadSound(section, "snd_shoot", "sndShot", false, SOUND_TYPE_WEAPON_SHOOTING);
 	m_Ammo->Load(pSettings->r_string(section, "ammo_class"), 0);
 	camMaxAngle = pSettings->r_float(section, "cam_max_angle");
-	camMaxAngle = _abs(deg2rad(camMaxAngle));
+	camMaxAngle = std::abs(deg2rad(camMaxAngle));
 	camRelaxSpeed = pSettings->r_float(section, "cam_relax_speed");
-	camRelaxSpeed = _abs(deg2rad(camRelaxSpeed));
+	camRelaxSpeed = std::abs(deg2rad(camRelaxSpeed));
 
 	m_overheat_enabled = !!READ_IF_EXISTS(pSettings, r_bool, section, "overheat_enabled", false);
 	m_overheat_time_quant = READ_IF_EXISTS(pSettings, r_float, section, "overheat_time_quant", 0.025f);
