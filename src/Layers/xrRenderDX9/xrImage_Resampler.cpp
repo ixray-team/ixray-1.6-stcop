@@ -143,7 +143,7 @@ float	B_spline_filter		(float t)	/* box (*) box (*) box (*) box */
 float	sinc				(float x)
 {
 	x *= 3.1415926f;
-	if(x != 0) return(_sin(x) / x);
+	if(x != 0) return(std::sin(x) / x);
 	return(1.0);
 }
 float	Lanczos3_filter		(float t)

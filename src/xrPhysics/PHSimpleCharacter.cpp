@@ -47,7 +47,7 @@ bool test_sides(const Fvector& center, const Fvector& side_dir, const Fvector& f
 
 		float fvn = cast_fv(tri.norm).dotproduct(fv_dir); float sg_fvn = sgn(fvn);
 		float sdn = cast_fv(tri.norm).dotproduct(side_dir); float sg_sdn = sgn(sdn);
-		if (sg_fvn * fvn * box.z + sg_sdn * sdn * box.x + _abs(tri.norm[1]) * box.y > _abs(dist))return false;
+		if (sg_fvn * fvn * box.z + sg_sdn * sdn * box.x + std::abs(tri.norm[1]) * box.y > std::abs(dist))return false;
 	}
 
 	float sdc = side_dir.dotproduct(center);
@@ -112,7 +112,7 @@ bool test_sides(const Fvector& center, const Fvector& side_dir, const Fvector& f
 		float sg_dist = sgn(dist);
 		if (sgn(ov_prg - c_prg) != sg_dist)
 		{
-			if (_abs(fv_dir.dotproduct(crs)) * box.z + _abs(side_dir.dotproduct(crs)) * box.x < sg_dist * dist) return false;
+			if (std::abs(fv_dir.dotproduct(crs)) * box.z + std::abs(side_dir.dotproduct(crs)) * box.x < sg_dist * dist) return false;
 		}
 	}
 
@@ -196,7 +196,7 @@ void CPHSimpleCharacter::TestPathCallback(bool& do_colide,bool bo1,dContact& c,S
 
 void CPHSimpleCharacter::SetBox(const dVector3& sizes)
 {
-	m_radius = _min(sizes[0], sizes[2]) / 2.f;
+	m_radius = std::min(sizes[0], sizes[2]) / 2.f;
 	m_cyl_hight = sizes[1] - 2.f * m_radius;
 	if (m_cyl_hight < 0.f) m_cyl_hight = 0.01f;
 	const dReal k = 1.20f;
@@ -237,7 +237,7 @@ void CPHSimpleCharacter::Create(dVector3 sizes){
 	m_creation_step		=	ph_world->m_steps_num;
 	////////////////////////////////////////////////////////
 
-	m_radius=_min(sizes[0],sizes[2])/2.f;
+	m_radius= std::min(sizes[0],sizes[2])/2.f;
 	m_current_object_radius=m_radius;
 	m_cyl_hight=sizes[1]-2.f*m_radius;
 	if (m_cyl_hight<0.f) m_cyl_hight=0.01f;

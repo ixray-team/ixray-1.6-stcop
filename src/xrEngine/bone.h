@@ -258,8 +258,8 @@ struct ECORE_API SJointIKData
             //F.w_float	(_min(-limits[k].limit.x,-limits[k].limit.y)); // min (swap special for ODE) 
             //F.w_float	(_max(-limits[k].limit.x,-limits[k].limit.y)); // max (swap special for ODE)
 
-			VERIFY(_min(-limits[k].limit.x,-limits[k].limit.y) == -limits[k].limit.y );
-			VERIFY(_max(-limits[k].limit.x,-limits[k].limit.y) == -limits[k].limit.x );
+			VERIFY(std::min(-limits[k].limit.x,-limits[k].limit.y) == -limits[k].limit.y );
+			VERIFY(std::max(-limits[k].limit.x,-limits[k].limit.y) == -limits[k].limit.x );
 			
 			F.w_float	(-limits[k].limit.y); // min (swap special for ODE) 
             F.w_float	(-limits[k].limit.x); // max (swap special for ODE)

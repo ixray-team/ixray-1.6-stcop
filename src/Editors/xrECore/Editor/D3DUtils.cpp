@@ -212,7 +212,7 @@ void CDrawUtilities::OnDeviceCreate()
 
 	for(int i=0;i<LINE_DIVISION;i++){                                
 		float angle = M_PI * 2.f * (i / (float)LINE_DIVISION);
-        float _sa=_sin(angle), _ca=_cos(angle);
+        float _sa= std::sin(angle), _ca= std::cos(angle);
 		circledef1[i].x = _ca;
 		circledef1[i].y = _sa;
 		circledef1[i].z = 0;
@@ -280,8 +280,8 @@ void CDrawUtilities::DrawSpotLight(const Fvector& p, const Fvector& d, float ran
 	Fvector p1;
     float H,P;
     float da	= PI_MUL_2/LINE_DIVISION;
-	float b		= range*_cos(PI_DIV_2-phi/2);
-	float a		= range*_sin(PI_DIV_2-phi/2);
+	float b		= range*std::cos(PI_DIV_2-phi/2);
+	float a		= range*std::sin(PI_DIV_2-phi/2);
     d.getHP		(H,P);
     T.setHPB	(H,P,0);     
     T.translate_over(p);
@@ -289,8 +289,8 @@ void CDrawUtilities::DrawSpotLight(const Fvector& p, const Fvector& d, float ran
     u32				vBase;
     FVF::L*	pv	 	= (FVF::L*)Stream->Lock(LINE_DIVISION*2+2,vs_L->vb_stride,vBase);
 	for (float angle=0; angle<PI_MUL_2; angle+=da){
-        float _sa	=_sin(angle);
-        float _ca	=_cos(angle);
+        float _sa	=std::sin(angle);
+        float _ca	=std::cos(angle);
 		p1.x		= b * _ca;
 		p1.y		= b * _sa;
         p1.z		= a;
@@ -314,7 +314,7 @@ void CDrawUtilities::DrawDirectionalLight(const Fvector& p, const Fvector& d, fl
 	Fmatrix rot;
 
     N.set		(0,1,0);
-	if (_abs(D.y)>0.99f) N.set(1,0,0);
+	if (std::abs(D.y)>0.99f) N.set(1,0,0);
 	R.crossproduct(N,D); R.normalize();
 	N.crossproduct(D,R); N.normalize();
     rot.set(R,N,D,p);
@@ -393,8 +393,8 @@ void CDrawUtilities::DrawFlag(const Fvector& p, float heading, float height, flo
 
     if (bDrawEntity){
 		// fill VB
-        float rx		= _sin(heading);
-        float rz		= _cos(heading);
+        float rx		= std::sin(heading);
+        float rz		= std::cos(heading);
 		FVF::L*	pv	 	= (FVF::L*)Stream->Lock(6,vs_L->vb_stride,vBase);
         sz				*= 0.8f;
         pv->set			(p.x,p.y+height,p.z,clr);											pv++;
@@ -412,7 +412,7 @@ void CDrawUtilities::DrawFlag(const Fvector& p, float heading, float height, flo
 		FVF::L*	pv	 	= (FVF::L*)Stream->Lock(6,vs_L->vb_stride,vBase);
 	    pv->set			(p.x,p.y+height*(1.f-sz_fl),p.z,clr); 								pv++;
     	pv->set			(p.x,p.y+height,p.z,clr); 											pv++;
-	    pv->set			(p.x+_sin(heading)*sz,((pv-2)->p.y+(pv-1)->p.y)/2,p.z+_cos(heading)*sz,clr); pv++;
+	    pv->set			(p.x+ std::sin(heading)*sz,((pv-2)->p.y+(pv-1)->p.y)/2,p.z+ std::cos(heading)*sz,clr); pv++;
     	pv->set			(*(pv-3)); 															pv++;
 	    pv->set			(*(pv-2)); 															pv++;
     	pv->set			(*(pv-4)); 															pv++;
@@ -743,7 +743,7 @@ void CDrawUtilities::DrawAABB(const Fvector& p0, const Fvector& p1, u32 clr_s, u
 {
     Fmatrix			R;
 	Fvector	C; C.set((p1.x+p0.x)*0.5f,(p1.y+p0.y)*0.5f,(p1.z+p0.z)*0.5f);
-    R.scale			(_abs(p1.x-p0.x),_abs(p1.y-p0.y),_abs(p1.z-p0.z));
+    R.scale			(std::abs(p1.x-p0.x), std::abs(p1.y-p0.y), std::abs(p1.z-p0.z));
     R.translate_over(C);
 	RCache.set_xform_world(R);
 	DrawIdentBox	(bSolid,bWire,clr_s,clr_w);
@@ -829,7 +829,7 @@ void CDrawUtilities::DrawCylinder(const Fmatrix& parent, const Fvector& center, 
     // build final rotation / translation
     Fvector             L_dir,L_up,L_right;
     L_dir.set           (dir);       		    L_dir.normalize			();
-    L_up.set            (0,1,0);				if (_abs(L_up.dotproduct(L_dir))>.99f)  L_up.set(0,0,1);
+    L_up.set            (0,1,0);				if (std::abs(L_up.dotproduct(L_dir))>.99f)  L_up.set(0,0,1);
     L_right.crossproduct(L_up,L_dir);           L_right.normalize       ();
     L_up.crossproduct   (L_dir,L_right);        L_up.normalize          ();
 
@@ -855,7 +855,7 @@ void CDrawUtilities::DrawCone	(const Fmatrix& parent, const Fvector& apex, const
     // build final rotation / translation
     Fvector             L_dir,L_up,L_right;
     L_dir.set           (dir);       		    L_dir.normalize			();
-    L_up.set            (0,1,0);				if (_abs(L_up.dotproduct(L_dir))>.99f)  L_up.set(0,0,1);
+    L_up.set            (0,1,0);				if (std::abs(L_up.dotproduct(L_dir))>.99f)  L_up.set(0,0,1);
     L_right.crossproduct(L_up,L_dir);           L_right.normalize       ();
     L_up.crossproduct   (L_dir,L_right);        L_up.normalize          ();
 
@@ -878,7 +878,7 @@ void CDrawUtilities::DrawPlane	(const Fvector& p, const Fvector& n, const Fvecto
 	if (n.square_magnitude()<EPS_S) return;
     // build final rotation / translation
     Fvector             L_dir,L_up=n,L_right;
-    L_dir.set           (0,0,1);				if (_abs(L_up.dotproduct(L_dir))>.99f)  L_dir.set(1,0,0);
+    L_dir.set           (0,0,1);				if (std::abs(L_up.dotproduct(L_dir))>.99f)  L_dir.set(1,0,0);
     L_right.crossproduct(L_up,L_dir);           L_right.normalize	();
     L_dir.crossproduct  (L_right,L_up);        	L_dir.normalize		();
 

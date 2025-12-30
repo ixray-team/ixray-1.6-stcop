@@ -227,7 +227,7 @@ void ISpatial_DB::initialize(Fbox& BB)
 	BB.get_CD(bbc, bbd);
 
 	m_center.set(bbc);
-	m_bounds = _max(_max(bbd.x, bbd.y), bbd.z);
+	m_bounds = std::max(std::max(bbd.x, bbd.y), bbd.z);
 
 	if (m_root == nullptr)
 	{

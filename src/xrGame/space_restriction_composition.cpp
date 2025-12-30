@@ -111,19 +111,19 @@ void CSpaceRestrictionComposition::initialize	()
 	temp.max.z					= spheres[0].P.z + spheres[0].R;
 
 	for (u32 i=1; i<n; ++i) {
-		temp.min.x				= _min(temp.min.x,spheres[i].P.x - spheres[i].R);
-		temp.min.y				= _min(temp.min.y,spheres[i].P.y - spheres[i].R);
-		temp.min.z				= _min(temp.min.z,spheres[i].P.z - spheres[i].R);
-		temp.max.x				= _max(temp.max.x,spheres[i].P.x + spheres[i].R);
-		temp.max.y				= _max(temp.max.y,spheres[i].P.y + spheres[i].R);
-		temp.max.z				= _max(temp.max.z,spheres[i].P.z + spheres[i].R);
+		temp.min.x				= std::min(temp.min.x,spheres[i].P.x - spheres[i].R);
+		temp.min.y				= std::min(temp.min.y,spheres[i].P.y - spheres[i].R);
+		temp.min.z				= std::min(temp.min.z,spheres[i].P.z - spheres[i].R);
+		temp.max.x				= std::max(temp.max.x,spheres[i].P.x + spheres[i].R);
+		temp.max.y				= std::max(temp.max.y,spheres[i].P.y + spheres[i].R);
+		temp.max.z				= std::max(temp.max.z,spheres[i].P.z + spheres[i].R);
 	}
 
 	m_sphere.P.mad				(temp.min,temp.max,.5f);
 	m_sphere.R					= m_sphere.P.distance_to(spheres[0].P) + spheres[0].R;
 
 	for (u32 i=1; i<n ;++i)
-		m_sphere.R				= _max(m_sphere.R,m_sphere.P.distance_to(spheres[i].P) + spheres[i].R);
+		m_sphere.R				= std::max(m_sphere.R,m_sphere.P.distance_to(spheres[i].P) + spheres[i].R);
 
 	m_sphere.R					+= EPS_L;
 

@@ -41,7 +41,7 @@ public:
 	IC	SelfRef		div(const Self &a, const Self &v)	{ x=a.x/v.x;y=a.y/v.y;	z=a.z/v.z;	w=a.w/v.w;	return *this; }
 	IC  SelfRef		div(const Self &a, T s)				{ x=a.x/s;  y=a.y/s;	z=a.z/s;	w=a.w/s;	return *this; }
 
-	IC	BOOL 		similar(const Self& v, T E=EPS_L)	{ return _abs(x-v.x)<E && _abs(y-v.y)<E && _abs(z-v.z)<E && _abs(w-v.w)<E;};
+	IC	BOOL 		similar(const Self& v, T E=EPS_L)	{ return std::abs(x-v.x)<E && std::abs(y-v.y)<E && std::abs(z-v.z)<E && std::abs(w-v.w)<E;};
 
 	IC	T			magnitude_sqr ()					{ return x*x + y*y + z*z + w*w;		}
 	IC	T			magnitude()							{ return _sqrt(magnitude_sqr());	}

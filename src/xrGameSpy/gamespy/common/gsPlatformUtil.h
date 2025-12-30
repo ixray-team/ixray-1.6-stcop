@@ -83,11 +83,6 @@ gsi_bool B64EncodeStream(B64StreamData *data, char output[4]);
 gsi_i8 * gsXxteaEncrypt(const gsi_i8 * iStr, gsi_i32 iLength, gsi_i8 key[XXTEA_KEY_SIZE], gsi_i32 *oLength);
 gsi_i8 * gsXxteaDecrypt(const gsi_i8 * iStr, gsi_i32 iLength, gsi_i8 key[XXTEA_KEY_SIZE], gsi_i32 *oLength);
 
-#ifndef max
-#define max(a,b)    (((a) > (b)) ? (a) : (b))
-#define min(a,b)    (((a) < (b)) ? (a) : (b))
-#endif
-
 #if defined(_DEBUG)
 	void gsiCheckStack(void);
 #else

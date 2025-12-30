@@ -224,7 +224,7 @@ void CSpecificCharacter::load_shared	(LPCSTR)
 		MoneyDef().min_money	= pXML->ReadAttribInt("money", 0, "min");
 		MoneyDef().max_money	= pXML->ReadAttribInt("money", 0, "max");
 		MoneyDef().inf_money	= !!pXML->ReadAttribInt("money", 0, "infinitive");
-		MoneyDef().max_money	= _max(MoneyDef().max_money, MoneyDef().min_money); // :)
+		MoneyDef().max_money	= std::max(MoneyDef().max_money, MoneyDef().min_money); // :)
 
 	}else{
 		MoneyDef().min_money	= 0;

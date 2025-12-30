@@ -36,7 +36,7 @@ public:
 	CSector*						getSector		(CSector* pFrom)	{ return pFrom==pFace?pBack:pFace; }
 	CSector*						getSectorFacing	(const Fvector& V)	{ if (P.classify(V)>0) return pFace; else return pBack; }
 	CSector*						getSectorBack	(const Fvector& V)	{ if (P.classify(V)>0) return pBack; else return pFace;	}
-	float							distance		(const Fvector &V)	{ return _abs(P.classify(V)); }
+	float							distance		(const Fvector &V)	{ return std::abs(P.classify(V)); }
 
 									CPortal			();
 	virtual							~CPortal		();

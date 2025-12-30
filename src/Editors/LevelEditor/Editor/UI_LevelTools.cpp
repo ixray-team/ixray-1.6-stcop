@@ -608,8 +608,8 @@ bool CLevelTool::GetSelectionPosition(Fmatrix& result)
 			BB.getpoint(k,pt);
 			EDevice->mFullTransform.transform(pt_ss_3d, pt);
 			
-			pt_ss.x = _min(pt_ss.x, pt_ss_3d.y);
-			pt_ss.y = _max(pt_ss.y, pt_ss_3d.y);
+			pt_ss.x = std::min(pt_ss.x, pt_ss_3d.y);
+			pt_ss.y = std::max(pt_ss.y, pt_ss_3d.y);
 		}
 
 		float r_bb_ss	 = pt_ss.y - pt_ss.x;

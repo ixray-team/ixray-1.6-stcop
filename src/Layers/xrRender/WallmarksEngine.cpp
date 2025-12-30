@@ -41,7 +41,7 @@ void CWallmarksEngine::CMatrixBuilder_SizeCam::CreateMatrix(Fmatrix& out, const 
 	Fvector				at,up,right,y;
 	at.sub				(contact_point,FaceNormal);
 	y.set				(0,1,0);
-	if (_abs(FaceNormal.y)>.99f) y.set(1,0,0);
+	if (std::abs(FaceNormal.y)>.99f) y.set(1,0,0);
 	right.crossproduct	(y,FaceNormal);
 	up.crossproduct		(FaceNormal,right);
 	out.build_camera	(contact_point,at,up);
@@ -74,7 +74,7 @@ void CWallmarksEngine::CMatrixBuilder_WHR::CreateMatrix(Fmatrix& out, const Fvec
 	Fvector				at,up,right,y;
 	at.sub				(contact_point,FaceNormal);
 	y.set				(0,1,0);
-	if (_abs(FaceNormal.y)>.99f) y.set(1,0,0);
+	if (std::abs(FaceNormal.y)>.99f) y.set(1,0,0);
 	right.crossproduct	(y,FaceNormal);
 	up.crossproduct		(FaceNormal,right);
 	out.build_camera	(contact_point,at,up);
@@ -233,7 +233,7 @@ void CWallmarksEngine::BuildMatrix	(Fmatrix &mView, float invsz, const Fvector& 
     Fvector				at,up,right,y;
 	at.sub				(from,sml_normal);
 	y.set				(0,1,0);
-	if (_abs(sml_normal.y)>.99f) y.set(1,0,0);
+	if (std::abs(sml_normal.y)>.99f) y.set(1,0,0);
 	right.crossproduct	(y,sml_normal);
 	up.crossproduct		(sml_normal,right);
 	mView.build_camera	(from,at,up);

@@ -680,10 +680,10 @@ bool CExportSkeleton::PrepareGeometry(u8 influence)
 
 				{
 					SSkelVert 							v[3];
-					tmp_bone_lst.clear			();
-					u32 			link_type 			= _max(MESH->m_SVertices[f_idx*3+0].bones.size(),MESH->m_SVertices[f_idx*3+1].bones.size());
-					link_type 							= _max(link_type,MESH->m_SVertices[f_idx*3+2].bones.size());
-					VERIFY								(link_type>0 && link_type<=(u32)influence);
+					tmp_bone_lst.clear();
+					u32 			link_type = std::max(MESH->m_SVertices[f_idx * 3 + 0].bones.size(), MESH->m_SVertices[f_idx * 3 + 1].bones.size());
+					link_type = std::max(link_type, MESH->m_SVertices[f_idx * 3 + 2].bones.size());
+					VERIFY(link_type > 0 && link_type <= (u32)influence);
 
 					for (int k=0; k<3; k++)
 					{
@@ -745,8 +745,8 @@ bool CExportSkeleton::PrepareGeometry(u8 influence)
 						m_Splits[mtl_idx].m_SkeletonLinkType = 0;
 					}
 
-					SSplit& cur_split				= m_Splits[mtl_idx];
-					cur_split.m_SkeletonLinkType 	= _max(link_type, cur_split.m_SkeletonLinkType);
+					SSplit& cur_split = m_Splits[mtl_idx];
+					cur_split.m_SkeletonLinkType = std::max(link_type, cur_split.m_SkeletonLinkType);
 
 
 					cur_split.m_UsedBones.insert	(cur_split.m_UsedBones.end(),tmp_bone_lst.begin(),tmp_bone_lst.end());
@@ -1134,12 +1134,12 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
 			{
 				Fvector& t	= BM._keysT[t_idx];
 				Mt.add		(t);
-				At.x		= _min(At.x,t.x);
-				At.y		= _min(At.y,t.y);
-				At.z		= _min(At.z,t.z);
-				Bt.x		= _max(Bt.x,t.x);
-				Bt.y		= _max(Bt.y,t.y);
-				Bt.z		= _max(Bt.z,t.z);
+				At.x		= std::min(At.x,t.x);
+				At.y		= std::min(At.y,t.y);
+				At.z		= std::min(At.z,t.z);
+				Bt.x		= std::max(Bt.x,t.x);
+				Bt.y		= std::max(Bt.y,t.y);
+				Bt.z		= std::max(Bt.z,t.z);
 			}
 			Mt.div			(dwLen);
 			Ct.add			(Bt,At);

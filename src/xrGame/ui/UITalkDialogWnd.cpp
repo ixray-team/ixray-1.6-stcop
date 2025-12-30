@@ -461,7 +461,7 @@ void CUIQuestionItem::Init			(LPCSTR val, LPCSTR text)
 	m_s_value						= val;
 	m_text->TextItemControl()->SetText(text);
 	m_text->AdjustHeightToText		();
-	float new_h						= _max(m_min_height, m_text->GetWndPos().y+m_text->GetHeight());
+	float new_h						= std::max(m_min_height, m_text->GetWndPos().y+m_text->GetHeight());
 	SetHeight						(new_h);
 }
 
@@ -494,7 +494,7 @@ void CUIAnswerItem::Init			(LPCSTR text, LPCSTR name)
 	m_name->SetText					(name);
 	m_text->SetText					(text);
 	m_text->AdjustHeightToText		();
-	float new_h						= _max(m_min_height, m_text->GetWndPos().y+m_text->GetHeight());
+	float new_h						= std::max(m_min_height, m_text->GetWndPos().y+m_text->GetHeight());
 	new_h							+= m_bottom_footer;
 	SetHeight						(new_h);
 }

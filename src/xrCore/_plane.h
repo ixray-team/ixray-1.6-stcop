@@ -82,14 +82,14 @@ public:
 	}
 	IC	T	distance	(const _vector3<T> &v)	
 	{
-		return _abs(classify(v));
+		return std::abs(classify(v));
 	}
 	IC BOOL intersectRayDist(const _vector3<T>& P, const _vector3<T>& D, T& dist)
 	{
 		T numer = classify(P);
 		T denom = n.dotproduct(D);
 	
-		if (_abs(denom)<EPS_S)  // normal is orthogonal to vector3, cant intersect
+		if (std::abs(denom)<EPS_S)  // normal is orthogonal to vector3, cant intersect
 			return FALSE;
 	
 		dist = -(numer / denom);
@@ -100,7 +100,7 @@ public:
 		T numer = classify(P);
 		T denom = n.dotproduct(D);
 
-		if (_abs(denom)<EPS_S) return FALSE; // normal is orthogonal to vector3, cant intersect
+		if (std::abs(denom)<EPS_S) return FALSE; // normal is orthogonal to vector3, cant intersect
 		else {
 	        float dist	= -(numer / denom);
 			dest.mad	(P,D,dist);
@@ -116,7 +116,7 @@ public:
 
 		t.sub(v,u);
 		denom = n.dotproduct(t);
-		if (_abs(denom) < EPS) return false; // they are parallel
+		if (std::abs(denom) < EPS) return false; // they are parallel
 
 		dist = -(n.dotproduct(u) + d) / denom;
 		if (dist < -EPS || dist > 1+EPS) return false;

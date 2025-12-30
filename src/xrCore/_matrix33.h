@@ -169,19 +169,19 @@ public:
         z.set(0,0,0);
 
         for(i=0; i<50; i++){
-            sm=0.0f; sm+=_abs(a.m[0][1]); sm+=_abs(a.m[0][2]); sm+=_abs(a.m[1][2]);
+            sm=0.0f; sm+= std::abs(a.m[0][1]); sm+= std::abs(a.m[0][2]); sm+= std::abs(a.m[1][2]);
             if (sm == 0.0) { set(v); dout.set(d); return i; }
             if (i < 3) tresh=0.2f*sm/(3.0f*3.0f); else tresh=0.0f;
             {
-                g = 100.0f*_abs(a.m[0][1]);
-                if (i>3 && _abs(d.x)+g==_abs(d.x) && _abs(d.y)+g==_abs(d.y))
+                g = 100.0f*std::abs(a.m[0][1]);
+                if (i>3 && std::abs(d.x)+g== std::abs(d.x) && std::abs(d.y)+g== std::abs(d.y))
                     a.m[0][1]=0.0;
-                else if (_abs(a.m[0][1])>tresh){
+                else if (std::abs(a.m[0][1])>tresh){
                     h = d.y-d.x;
-                    if (_abs(h)+g == _abs(h)) t=(a.m[0][1])/h;
+                    if (std::abs(h)+g == std::abs(h)) t=(a.m[0][1])/h;
                     else{
                         theta=0.5f*h/(a.m[0][1]);
-                        t=1.0f/(_abs(theta)+_sqrt(1.0f+theta*theta));
+                        t=1.0f/(std::abs(theta)+_sqrt(1.0f+theta*theta));
                         if (theta < 0.0f) t = -t;
                     }
                     c=1.0f/_sqrt(1+t*t); s=t*c; tau=s/(1.0f+c); h=t*a.m[0][1];
@@ -191,15 +191,15 @@ public:
                 }
             }
             {
-                g = 100.0f*_abs(a.m[0][2]);
-                if (i>3 && _abs(d.x)+g==_abs(d.x) && _abs(d.z)+g==_abs(d.z))
+                g = 100.0f* std::abs(a.m[0][2]);
+                if (i>3 && std::abs(d.x)+g== std::abs(d.x) && std::abs(d.z)+g== std::abs(d.z))
                     a.m[0][2]=0.0f;
-                else if (_abs(a.m[0][2])>tresh){
+                else if (std::abs(a.m[0][2])>tresh){
                     h = d.z-d.x;
-                    if (_abs(h)+g == _abs(h)) t=(a.m[0][2])/h;
+                    if (std::abs(h)+g == std::abs(h)) t=(a.m[0][2])/h;
                     else{
                         theta=0.5f*h/(a.m[0][2]);
-                        t=1.0f/(_abs(theta)+_sqrt(1.0f+theta*theta));
+                        t=1.0f/(std::abs(theta)+_sqrt(1.0f+theta*theta));
                         if (theta < 0.0f) t = -t;
                     }
                     c=1.0f/_sqrt(1+t*t); s=t*c; tau=s/(1.0f+c); h=t*a.m[0][2];
@@ -209,15 +209,15 @@ public:
                 }
             }
             {
-                g = 100.0f*_abs(a.m[1][2]);
-                if (i>3 && _abs(d.y)+g==_abs(d.y) && _abs(d.z)+g==_abs(d.z))
+                g = 100.0f* std::abs(a.m[1][2]);
+                if (i>3 && std::abs(d.y)+g== std::abs(d.y) && std::abs(d.z)+g== std::abs(d.z))
                     a.m[1][2]=0.0f;
-                else if (_abs(a.m[1][2])>tresh){
+                else if (std::abs(a.m[1][2])>tresh){
                     h = d.z-d.y;
-                    if (_abs(h)+g == _abs(h)) t=(a.m[1][2])/h;
+                    if (std::abs(h)+g == std::abs(h)) t=(a.m[1][2])/h;
                     else{
                         theta=0.5f*h/(a.m[1][2]);
-                        t=1.0f/(_abs(theta)+_sqrt(1.0f+theta*theta));
+                        t=1.0f/(std::abs(theta)+_sqrt(1.0f+theta*theta));
                         if (theta < 0.0) t = -t;
                     }
                     c=1.0f/_sqrt(1+t*t); s=t*c; tau=s/(1.0f+c); h=t*a.m[1][2];
