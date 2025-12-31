@@ -46,9 +46,7 @@ RegisterScriptCallback("save", my_script.save)     --// calls code during actor:
 
 * It is enough to place the archive into the addons directory.  
 
-![image](https://github.com/user-attachments/assets/f0c93315-5efe-4cf1-b953-a893e0d5d45c  
-
-
+![image](https://github.com/user-attachments/assets/f0c93315-5efe-4cf1-b953-a893e0d5d45c)
 
 ## Systems for working with addons
 

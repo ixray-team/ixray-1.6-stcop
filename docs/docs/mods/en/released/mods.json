@@ -8,14 +8,6 @@
   },
   "mods": [
     {
-      "id": "dreamcatcher",
-      "title": "Dreamcatcher",
-      "description": "A story-driven mod focused on exploring the Zone and its mystical anomalies.",
-      "author": "Vivient Team",
-      "link": "https://ap-pro.ru/forums/topic/5764-lovec-snov/",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%BB%D0%BE%D0%B2%D0%B5%D1%86.png"
-    },
-    {
       "id": "awakening-2055",
       "title": "Awakening. 2055",
       "description": "A late timeline: new technologies and survival in an altered Zone.",
@@ -24,12 +16,44 @@
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/2055.png"
     },
     {
+      "id": "dreamcatcher2r",
+      "title": "Dreamcatcher 2.0: Remaster",
+      "description": "A story-driven mod focused on exploring the Zone and its mystical anomalies.",
+      "author": "Vivient Team",
+      "link": "https://ap-pro.ru/forums/topic/5764-lovec-snov/",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/dreamcatcher2r.png"
+    },
+    {
+      "id": "script_ny2026",
+      "title": "Who Stole the Holiday?",
+      "description": "In the Footsteps of the Grinch",
+      "author": "ScR1pt",
+      "link": "https://ap-pro.ru/forums/topic/13767-kto-ukral-prazdnik/",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/ктоукралпраздник.png"
+    },
+    {
       "id": "lastnewyear",
       "title": "Alien Among Aliens: The Last New Year",
       "description": "The main character is an ordinary stalker nicknamed Vint, who set out for Limansk",
       "author": "It's Boomer",
-      "link": "https://vk.com/wall-15844953_951638",
+      "link": "https://ap-pro.ru/stuff/zov_pripjati/chuzhoy-sredi-chuzhih-posledniy-novyy-god-r489/",
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/last_ny.png"
+    },
+    {
+      "id": "project2 (BETA)",
+      "title": "[Project №2]",
+      "description": "An attempt to adapt the S.T.A.L.K.E.R. Mobile storyline",
+      "author": "Graff46",
+      "link": "https://ap-pro.ru/forums/topic/2029-proekt-%E2%84%962/?do=findComment&comment=501744",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%822.png"
+    },
+    {
+      "id": "dreamcatcher",
+      "title": "Dreamcatcher",
+      "description": "A story-driven mod focused on exploring the Zone and its mystical anomalies.",
+      "author": "Vivient Team",
+      "link": "https://ap-pro.ru/forums/topic/5764-lovec-snov/",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%BB%D0%BE%D0%B2%D0%B5%D1%86.png"
     },
     {
       "id": "one-way-ticket",

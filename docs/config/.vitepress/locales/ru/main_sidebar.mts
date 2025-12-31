@@ -110,7 +110,7 @@ export const mainSidebar: DefaultTheme.Sidebar = [
       { text: 'Общая информация', link: '/graphics/general-information' },
       { text: 'PBR', link: '/graphics/pbr' },
       { text: 'Dynamic Wallmark', link: '/graphics/dynamic-wallmark' },
-      { text: 'Константы шейдеров', link: '/graphics/shader-constants' },
+      { text: 'Волосы', link: '/graphics/hairs' },
       { text: 'Погода', link: '/graphics/weather/main' },
       {
         items: [
@@ -119,6 +119,7 @@ export const mainSidebar: DefaultTheme.Sidebar = [
         ],
       },
       { text: 'Опции шейдеров', link: '/graphics/shader-options' },
+      { text: 'Константы шейдеров', link: '/graphics/shader-constants' },
       { text: 'XML Blends', link: '/graphics/xml-blends' },
     ],
   },

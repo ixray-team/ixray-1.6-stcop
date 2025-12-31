@@ -1,0 +1,35 @@
+{
+  "eyebrow": "Addon · UI/UX",
+  "title": "UI/UX Add-ons",
+  "subtitle": "Example addon data. Replace with real UI/UX assets.",
+  "labels": {
+    "view": "Download / Open",
+    "soon": "Coming soon"
+  },
+  "mods": [
+    {
+      "id": "hqicons",
+      "title": "HQ Icons 2.0",
+      "description": "Addon with reworked all in-game item icons. All renders were created from scratch with double resolution for improved detail. For artifacts, AI upscaling was applied for additional enhancement.",
+      "author": "MSR, IX-Ray Team",
+      "link": "https://example.com/addons/hqicons",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/UI-UX_addons/hqicons.png"
+    },
+    {
+      "id": "SFA",
+      "title": "Smooth Fade Addon 1.0",
+      "description": "This addon adds smooth transitions when launching the game, loading a save, and moving between locations.",
+      "author": "_V_O_IN_, IX-Ray Team",
+      "link": "https://example.com/addons/SFA",
+      "image": "https://dummyimage.com/640x360/1f2937/ffffff&text=SFA"
+    },
+    {
+      "id": "hdhud",
+      "title": "Renewed Perception (HD HUD)",
+      "description": "The addon’s main goal is to modernize the original interface while preserving its original concept and aesthetics. All textures were manually redrawn, without using old resources or AI-based technologies.",
+      "author": "Desert Cliff, Drombeys, St4lker0k765",
+      "link": "https://example.com/addons/hdhud",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/UI-UX_addons/hdhud.png"
+    }
+  ]
+}

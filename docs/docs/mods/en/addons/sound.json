@@ -1,7 +1,7 @@
-﻿{
-  "eyebrow": "Addons · Sound",
-  "title": "Sound Addons",
-  "subtitle": "Example data for addons. Replace with real sound packs.",
+{
+  "eyebrow": "Addon · Sound",
+  "title": "Sound Add-ons",
+  "subtitle": "Example addon data. Replace with real sound packs.",
   "labels": {
     "view": "Download / Open",
     "soon": "Coming soon"
