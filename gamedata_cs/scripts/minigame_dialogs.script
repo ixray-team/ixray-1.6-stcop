@@ -370,7 +370,7 @@ function have_money_for_shooting()
 	local gt = m:get_minigame_param(shooting, "game_type")
 	local wt = m:get_minigame_param(shooting, "wpn_type")
 	local dist = m:get_minigame_param(shooting, "distance")
-	return shooting_money_table[gt][wt].distance[dist]*shooting_money_table[gt][wt].multiplier[dist]<db.actor:money()
+	return shooting_money_table[gt][wt].distance[dist]*shooting_money_table[gt][wt].multiplier[dist]<=db.actor:money()
 end
 -- has an actor no such money count
 function have_no_money_for_shooting()

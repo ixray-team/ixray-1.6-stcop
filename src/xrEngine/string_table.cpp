@@ -392,3 +392,24 @@ STRING_VALUE CStringTable::translate (const STRING_ID& str_id) const
 	// If not found in either table, return the original string ID
 	return str_id;
 }
+
+// St4lker0k765: Enhanced Edition-style parsing for tasks, etc
+STRING_VALUE CStringTable::ParseStringFromScript(STRING_ID input)
+{
+	xr_string out = "";
+	std::stringstream stringStream(input.c_str());
+	xr_string line;
+	while (std::getline(stringStream, line))
+	{
+		size_t prev = 0, pos;
+		while ((pos = line.find_first_of("#", prev)) != xr_string::npos)
+		{
+			if (pos > prev)
+				out += translate(line.substr(prev, pos - prev).c_str()).c_str();
+			prev = pos + 1;
+		}
+		if (prev < line.length())
+			out += translate(line.substr(prev, xr_string::npos).c_str()).c_str();
+	}
+	return STRING_VALUE(out.c_str());
+}
