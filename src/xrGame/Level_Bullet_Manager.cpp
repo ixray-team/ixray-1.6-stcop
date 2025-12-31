@@ -978,7 +978,7 @@ void CBulletManager::Render	()
 	for(SBullet& bullet : m_Bullets)
 	{
 		if (g_bullet_debug_trj)
-			totalLines += bullet.lines.size();
+			totalLines += (u32)bullet.lines.size();
 
 		if(!bullet.flags.allow_tracer)	
 			continue;
@@ -1028,62 +1028,49 @@ void CBulletManager::Render	()
 	UIRender->FlushPrimitive		();
 	UIRender->CacheSetCullMode		(ERHI_CULLMODE::BACK);
 
-	if (g_bullet_debug_trj)
+	if (g_bullet_debug_trj && totalLines > 0u)
 	{
-		if (totalLines <= 0) return;
-
-		constexpr u32 color = color_rgba(100, 255, 100, 255);
-		constexpr u32 MAX_VERTICES_PER_BATCH = 160'000;
-		constexpr u32 MAX_LINES_PER_BATCH = 80'000;
+		u32 DEFAULT_COLOR = color_rgba(100, 255, 100, 255);
+		u32 MAX_LINES_PER_BATCH = 80'000u;
 
 		UIRender->SetShader(*m_trj_shader);
 
-		if (totalLines <= MAX_LINES_PER_BATCH)
-		{
-			UIRender->StartPrimitive(totalLines * 2, IUIRender::ptLineList, IUIRender::ePointType::pttLIT);
+		BulletVecIt bullet_it = m_Bullets.begin();
+		xr_vector<std::pair<Fvector, Fvector>>::iterator line_it = bullet_it->lines.begin();
 
-			for (SBullet& bullet : m_Bullets)
+		u32 lines_remaining = totalLines;
+
+		while (lines_remaining > 0u)
+		{
+			u32 lines_in_batch = std::min(MAX_LINES_PER_BATCH, lines_remaining);
+			u32 vertices_in_batch = lines_in_batch * 2u;
+
+			IUIRender::LITFast** buffer = UIRender->StartPrimitiveLITFast(vertices_in_batch, IUIRender::ptLineList);
+
+			for (u32 i = 0u; i < lines_in_batch; ++i)
 			{
-				for (auto& line : bullet.lines)
+				while (line_it == bullet_it->lines.end())
 				{
-					UIRender->PushPoint(VPUSH(line.first), color, 0, 0);
-					UIRender->PushPoint(VPUSH(line.second), color, 0, 0);
+					++bullet_it;
+					if (bullet_it == m_Bullets.end()) break;
+					line_it = bullet_it->lines.begin();
 				}
+
+				if (bullet_it == m_Bullets.end()) break;
+
+				(*buffer)->p = line_it->first;
+				(*buffer)->color = DEFAULT_COLOR;
+				(*buffer)++;
+
+				(*buffer)->p = line_it->second;
+				(*buffer)->color = DEFAULT_COLOR;
+				(*buffer)++;
+
+				++line_it;
 			}
 
 			UIRender->FlushPrimitive();
-		}
-		else
-		{
-			u32 linesInCurrentBatch = 0;
-			bool batchStarted = false;
-
-			for (SBullet& bullet : m_Bullets)
-			{
-				for (auto& line : bullet.lines)
-				{
-					if (!batchStarted || linesInCurrentBatch >= MAX_LINES_PER_BATCH)
-					{
-						if (batchStarted)
-						{
-							UIRender->FlushPrimitive();
-							batchStarted = false;
-						}
-
-						u32 linesToStart = std::min(totalLines - (linesInCurrentBatch % MAX_LINES_PER_BATCH), MAX_LINES_PER_BATCH);
-						UIRender->StartPrimitive(linesToStart * 2, IUIRender::ptLineList, IUIRender::ePointType::pttLIT);
-						batchStarted = true;
-						linesInCurrentBatch = 0;
-					}
-
-					UIRender->PushPoint(VPUSH(line.first), color, 0, 0);
-					UIRender->PushPoint(VPUSH(line.second), color, 0, 0);
-					linesInCurrentBatch++;
-				}
-			}
-
-			if (batchStarted)
-				UIRender->FlushPrimitive();
+			lines_remaining -= lines_in_batch;
 		}
 	}
 }
