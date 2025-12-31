@@ -913,11 +913,11 @@ function create_bye_phrase()
 		rnd = math.random(1, 99)
 	end
 	if(rnd>=66) then
-		return game.translate_string("actor_break_dialog_1")
+		return "actor_break_dialog_1"
 	elseif(rnd>=33) then
-		return game.translate_string("actor_break_dialog_2")
+		return "actor_break_dialog_2"
 	else
-		return game.translate_string("actor_break_dialog_3")
+		return "actor_break_dialog_3"
 	end
 end
 

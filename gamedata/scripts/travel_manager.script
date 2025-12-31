@@ -90,7 +90,7 @@ function init_traveler_dialog(dialog)
 	-- Формирование таргетов для проводников
 	local travel_class = get_travel_class()
 	for k,v in pairs(travel_class.smart_travels) do
-		actor_phrase = dialog:AddPhrase(game.translate_string(v.name)..".", v.phrase_id, "121", -10000)
+		actor_phrase = dialog:AddPhrase("#"..v.name.."#.", v.phrase_id, "121", -10000)
 		actor_script = actor_phrase:GetPhraseScript()
 		actor_script:AddPrecondition("travel_manager.travel_condlist")
 
@@ -447,7 +447,7 @@ function get_travel_cost(actor, npc, dialog_id, phrase_id, p1)
 	local price = get_price_by_distance(distance)
 	--printf("TRAVEL DISTANCE %s", distance)
 
-	return game.translate_string("dm_traveler_travel_cost") .. " " .. tostring(price) .."."
+	return "#dm_traveler_travel_cost# " .. tostring(price) .."."
 end
 
 function actor_have_money(actor, npc, dialog_id, phrase_id)
