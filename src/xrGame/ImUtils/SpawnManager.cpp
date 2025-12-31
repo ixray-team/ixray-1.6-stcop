@@ -1227,7 +1227,7 @@ void SpawnManager_HandleButtonPress(CInifile::Sect* section)
 
 		GAME_NEWS_DATA				news_data;
 		news_data.m_type = GAME_NEWS_DATA::eNewsType::eNews;
-		news_data.news_caption = g_pStringTable->translate("general_in_item");
+		news_data.news_caption = "general_in_item";
 		news_data.news_text = text_news_final.c_str();
 		news_data.show_time = 3000;
 		news_data.texture_name = "ui_ixray_spawn_icon";
