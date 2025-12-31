@@ -34,6 +34,7 @@ public:
 	static	void				ReparseKeyBindings		();
 	static	xr_string			LangName				();
 			void				ReloadLanguage(const char* lang);
+			STRING_VALUE		ParseStringFromScript	(STRING_ID input);
 private:
 			void				Init					();
 			void				Load					(LPCSTR xml_file);

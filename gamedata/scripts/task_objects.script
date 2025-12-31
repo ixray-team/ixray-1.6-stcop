@@ -180,7 +180,7 @@ function CGeneralTask:check_task(tm)
 		printf("task [%s] updated due to title change from [%s] to [%s]", tostring(self.id), tostring(self.current_title), tostring(t_tile))
 		task_updated = true
 		self.current_title = t_tile
-		self.t:set_title(game.translate_string(t_tile))
+		self.t:set_title(t_tile) --MTB_Jakub_Jurek
 	end
 
 	local t_descr = task_functor[self.descr_functor](self.id, "descr", self.descr, self.cached_condlist) -- MTB-marek.siemieniuk: cached condlist
@@ -188,7 +188,7 @@ function CGeneralTask:check_task(tm)
 		printf("task [%s] updated due to description change from [%s] to [%s]", tostring(self.id), tostring(self.current_descr), tostring(t_descr))
 		task_updated = true
 		self.current_descr = t_descr
-		self.t:set_description(game.translate_string(t_descr))
+		self.t:set_description(t_descr) --MTB_Jakub_Jurek
 	end
 
 	local t_target = task_functor[self.target_functor](self.id, "target", self.target, self.cached_condlist) -- MTB-marek.siemieniuk: cached condlist
