@@ -746,11 +746,11 @@ function create_bye_phrase()
 		rnd = math.random(1, 99)
 	end
 	if(rnd>=66) then
-		return game.translate_string("actor_break_dialog_1")
+		return "actor_break_dialog_1"
 	elseif(rnd>=33) then
-		return game.translate_string("actor_break_dialog_2")
+		return "actor_break_dialog_2"
 	else
-		return game.translate_string("actor_break_dialog_3")
+		return "actor_break_dialog_3"
 	end
 end
 
@@ -771,11 +771,11 @@ function create_question_phrase()
 		rnd = math.random(1, 99)
 	end
 	if(rnd>=66) then
-		return game.translate_string("dm_actor_news_1")
+		return "dm_actor_news_1"
 	elseif(rnd>=33) then
-		return game.translate_string("dm_actor_news_2")
+		return "dm_actor_news_2"
 	else
-		return game.translate_string("dm_actor_news_3")
+		return "dm_actor_news_3"
 	end
 end
 
@@ -791,12 +791,12 @@ function create_answer_phrase(fs,dn,pi)
 		rnd = math.random(1, 80)
 	end
 	if(rnd>=60) then
-		return game.translate_string("dm_"..community.."_no_news_1")
+		return "dm_"..community.."_no_news_1"
 	elseif(rnd>=40) then
-		return game.translate_string("dm_"..community.."_no_news_2")
+		return "dm_"..community.."_no_news_2"
 	elseif(rnd>=20) then
-		return game.translate_string("dm_"..community.."_no_news_3")
+		return "dm_"..community.."_no_news_3"
 	else
-		return game.translate_string("dm_"..community.."_no_news_4")
+		return "dm_"..community.."_no_news_4"
 	end
 end
