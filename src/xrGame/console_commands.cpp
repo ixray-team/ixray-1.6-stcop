@@ -43,7 +43,7 @@
 #include "FreeMP/game_sv_freemp.h"
 #include "ParticlesObject.h"
 #include "gamespy/GameSpy_Full.h"
-
+#include "../xrCore/discord/discord.h"
 #include "ai_debug_variables.h"
 #include "CharacterPhysicsSupport.h"
 #include "../xrPhysics/console_vars.h"
@@ -2373,6 +2373,8 @@ public:
 		
 		// reload language
 		g_pStringTable->ReloadLanguage(args);
+
+		g_Discord.SetStatus(g_pStringTable->translate(EngineExternal().GetTitle().c_str()).c_str());
 
 		execute_console_command_deferred(Console, "ui_reload");
 		

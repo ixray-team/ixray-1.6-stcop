@@ -101,7 +101,6 @@ void CUITaskRootItem::SetGameTask(CGameTask* gt, u16 obj_idx)
 {
 	inherited::SetGameTask(gt, obj_idx);
 
-	CStringTable		stbl;
 	SGameTaskObjective	*obj = &m_GameTask->Objective(m_TaskObjectiveIdx);
 
 	m_taskImage->InitTexture		(*obj->m_icon_texture_name);
@@ -115,7 +114,7 @@ void CUITaskRootItem::SetGameTask(CGameTask* gt, u16 obj_idx)
 	m_taskImage->SetTextureRect	(texture_rect);
 	m_taskImage->SetStretchTexture	(true);
 
-	m_captionStatic->SetText		(*stbl.translate(m_GameTask->m_Title));
+	m_captionStatic->SetText		(g_pStringTable->ParseStringFromScript(m_GameTask->m_Title).c_str());
 	m_captionStatic->AdjustHeightToText	();
 	
 	xr_string	txt ="";
@@ -236,10 +235,9 @@ void CUITaskSubItem::SetGameTask	(CGameTask* gt, u16 obj_idx)
 {
 	inherited::SetGameTask			(gt, obj_idx);
 
-	CStringTable		stbl;
 	SGameTaskObjective	*obj = &m_GameTask->Objective(m_TaskObjectiveIdx);
 
-	m_descriptionStatic->SetText				(*stbl.translate(obj->m_Description));
+	m_descriptionStatic->SetText				(g_pStringTable->ParseStringFromScript(obj->m_Description).c_str());
 	m_descriptionStatic->AdjustHeightToText		();
 	float h = std::max(	m_ActiveObjectiveStatic->GetWndPos().y+m_ActiveObjectiveStatic->GetHeight(),
 					m_descriptionStatic->GetWndPos().y+ m_descriptionStatic->GetHeight());

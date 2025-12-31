@@ -21,7 +21,7 @@
 #include "../../xrUI/Widgets/UIFixedScrollBar.h"
 #include "../../xrUI/Widgets/UIHint.h"
 #include "UITaskWnd.h"
-
+#include "../../xrEngine/string_table.h"
 #include "../GameTaskDefs.h"
 #include "../GameTask.h"
 #include "../map_location.h"
@@ -274,7 +274,7 @@ void UITaskListWndItem::update_view()
 			m_st_story->InitTexture("ui_inGame2_PDA_icon_Secondary_mission");
 	}
 
-	m_name->TextItemControl()->SetTextST( m_task->m_Title.c_str() );
+	m_name->TextItemControl()->SetTextST( g_pStringTable->ParseStringFromScript(m_task->m_Title).c_str() );
 	m_name->AdjustHeightToText();
 	float h1 = m_name->GetWndPos().y + m_name->GetHeight() + 10.0f;
 	h1 = std::max( h1, GetHeight() );

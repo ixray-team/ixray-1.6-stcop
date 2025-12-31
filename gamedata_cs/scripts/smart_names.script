@@ -21,3 +21,31 @@ function get_smart_terrain_name(smart)
 	end
 	return smart_name
 end
+
+function get_smart_terrain_name_key(smart)
+	local level_name = alife():level_name(game_graph():vertex(smart.m_game_vertex_id):level_id())
+	local smart_name = smart:name()
+	if(smart_names_table[level_name]~=nil) and (smart_names_table[level_name][smart_name]~=nil) then
+		return smart_names_table[level_name][smart_name]	
+	end
+	return smart_name
+end
+
+--MTB_Jabku_Jurek JUD-894
+function get_smart_terrain_name_by_id(id)
+	local number_id = tonumber(id)
+	if (number_id == nil) then return id end
+	
+	local obj = alife():object(number_id)	
+	if (obj == nil) then return id end
+	
+	--if (obj:name == nil) then return id end
+	
+	local level_name = alife():level_name(game_graph():vertex(obj.m_game_vertex_id):level_id())
+	local smart_name = obj:name()
+	if(smart_names_table[level_name]~=nil) and (smart_names_table[level_name][smart_name]~=nil) then
+		return smart_names_table[level_name][smart_name]	
+	end
+	return smart_name
+end
+-- MTB_Jabku_Jurek JUD-894 end
