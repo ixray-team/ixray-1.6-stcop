@@ -1,5 +1,6 @@
 #include "common.hlsli"
 #include "skin.hlsli"
+#include "hair.hlsli"
 
 void skinned_main(in v_model I, out p_bumped_new O)
 {
@@ -8,13 +9,26 @@ void skinned_main(in v_model I, out p_bumped_new O)
     float3 hc_neg = (float3)hemi_cube_neg_faces;
     float3 hc_mixed = (Nw < 0.0f) ? -hc_neg : hc_pos;
     float hemi_val = saturate(dot(hc_mixed, Nw));
-    float3 Pe = mul(m_WV, I.P);
 
     O.tcdh = float4(I.tc.xy, hemi_val, L_material.y);
+
+    float3 pos = I.P.xyz;
+    float3 pos_old = I.P_old.xyz;
+
+#if defined(USE_HAIRMASK)
+    float mask = s_hair.SampleLevel(smp_nofilter, I.tc, 0).r;
+    bool indoor = hemi_val < 0.25f;
+
+    float wind_factor = indoor ? 0.0f : 1.0f;
+
+    hair_wave_anim(I.tc.xy, mask * wind_factor, pos, pos_old, I.N);
+#endif
+
+    float3 Pe = mul(m_WV, float4(pos, 1.0f));
+    float3 N = I.N * 2.0f;
+
     O.position = float4(Pe, 1.0f);
 
-    float3 N = I.N * 2.0f;
-	
 #if defined(USE_BUMP) || defined(USE_TDETAIL_BUMP)
     float3 T = I.T * 2.0f;
     float3 B = I.B * 2.0f;
@@ -35,10 +49,10 @@ void skinned_main(in v_model I, out p_bumped_new O)
     O.M3 = N.zzz;
 #endif
 
-    O.hpos = mul(m_WVP, I.P);
-
+    O.hpos = mul(m_WVP, float4(pos, I.P.w));
+    
     O.hpos_curr = O.hpos;
-    O.hpos_old = mul(m_WVP_old, I.P_old);
+    O.hpos_old = mul(m_WVP_old, float4(pos_old, I.P_old.w));
 
     O.hpos.xy += m_taa_jitter.xy * O.hpos.w;
 	
