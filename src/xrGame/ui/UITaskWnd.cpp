@@ -20,6 +20,7 @@
 #include "../GametaskManager.h"
 #include "../Actor.h"
 #include "../../xrUI/Widgets/UICheckButton.h"
+#include "../../xrEngine/string_table.h"
 
 CUITaskWnd::CUITaskWnd()
 	: m_background(nullptr), m_background2(nullptr),
@@ -498,7 +499,12 @@ void CUITaskItem::InitTask(CGameTask* task)
 	}
 
 	S								= m_info["t_caption"];
-	S->TextItemControl()->SetTextST	((task) ? task->m_Title.c_str() : "");
+	shared_str finalStr = "";
+	if (task)
+	{
+		finalStr = g_pStringTable->ParseStringFromScript(task->m_Title);
+	}
+	S->TextItemControl()->SetTextST	(finalStr.c_str());
 }
 
 void CUITaskItem::OnFocusReceive()
