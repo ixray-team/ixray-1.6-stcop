@@ -90,7 +90,7 @@ void dxUIRender::StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointTy
 	}
 }
 
-IUIRender::LITFast*& dxUIRender::StartPrimitiveLITFast(u32 iMaxVerts, ePrimitiveType primType)
+IUIRender::LITFast** dxUIRender::StartPrimitiveLITFast(u32 iMaxVerts, ePrimitiveType primType)
 {
 	VERIFY(PrimitiveType == ptNone);
 	VERIFY(m_PointType == pttNone);
@@ -102,7 +102,7 @@ IUIRender::LITFast*& dxUIRender::StartPrimitiveLITFast(u32 iMaxVerts, ePrimitive
 	LIT_start_pv = (FVF::LIT*)RCache.Vertex.Lock(m_iMaxVerts, hGeom_LIT.stride(), vOffset);
 	LIT_pv = LIT_start_pv;
 
-	return (LITFast*&)LIT_pv;
+	return (LITFast**)&LIT_pv;
 }
 
 void dxUIRender::FlushPrimitive()

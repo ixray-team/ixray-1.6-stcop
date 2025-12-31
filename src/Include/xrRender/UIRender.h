@@ -30,7 +30,7 @@ public:
 		u32			color;
 		Fvector2	t;
 	};
-	LITFast *temp;
+
 public:
 	virtual void CreateUIGeom() = 0;
 	virtual void DestroyUIGeom() = 0;
@@ -44,7 +44,9 @@ public:
 
 	virtual void StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointType pointType) = 0;
 
-	virtual LITFast*& StartPrimitiveLITFast(u32 iMaxVerts, ePrimitiveType primType) { return temp; };
+	virtual LITFast** StartPrimitiveLITFast(u32 iMaxVerts, ePrimitiveType primType) { return nullptr; };
+
+	virtual LITFast** GetLITFastBuffer() { return nullptr; };
 
 	virtual void FlushPrimitive() = 0;
 
