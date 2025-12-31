@@ -20,7 +20,9 @@ public:
 
 	virtual void StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointType pointType);
 
-	virtual LITFast*& StartPrimitiveLITFast(u32 iMaxVerts, ePrimitiveType primType);
+	virtual LITFast** StartPrimitiveLITFast(u32 iMaxVerts, ePrimitiveType primType);
+
+	virtual LITFast** GetLITFastBuffer() { return (LITFast**)&LIT_pv; };
 
 	virtual void FlushPrimitive();
 
