@@ -93,54 +93,54 @@ function show_tasks(npc, actor, dialog, phrase)
 		local tsk = task_manager.get_task_manager():get_task_by_entity_id(v)
 		if(tsk.status~="selected") then
 			if(tsk.type=="eliminate_smart") then
-				news_caption = game.translate_string(tsk.name)
+				news_caption = tsk.name
 				if(tsk.description~="NO_TEXT") then
 					news_text = tsk.description
 				else
-					news_text = game.translate_string("sim_eliminate_smart_text")
+					news_text = "sim_eliminate_smart_text"
 				end
 			elseif(tsk.type=="capture_smart") then
-				local smart_name = smart_names.get_smart_terrain_name(sim_board.get_sim_board().smarts[tsk.target].smrt)
+				local smart_name = smart_names.get_smart_terrain_name_key(sim_board.get_sim_board().smarts[tsk.target].smrt)
 				if(tsk.task_type==0) then
-					news_caption = game.translate_string(tsk.name)
+					news_caption = tsk.name
 				else
 					if(smart_name~=nil) then
-						news_caption = game.translate_string(tsk.name)..": "..smart_name
+						news_caption = "#"..tsk.name.."#: "..smart_name
 					else
-						news_caption = game.translate_string(tsk.name)..": "..sim_board.get_sim_board().smarts[tsk.target].smrt:name()
+						news_caption = "#"..tsk.name.."#: "..sim_board.get_sim_board().smarts[tsk.target].smrt:name()
 					end
 				end
 				if(tsk.description~="NO_TEXT") then
 					news_text = tsk.description
 				else
-					news_text = game.translate_string("sim_capture_smart_text")
+					news_text = "sim_capture_smart_text"
 				end
 			elseif(tsk.type=="defend_smart") then
-				news_caption = game.translate_string(tsk.name)
+				news_caption = tsk.name
 				if(tsk.description~="NO_TEXT") then
 					news_text = tsk.description
 				else
-					news_text = game.translate_string("sim_defend_smart_text")
+					news_text = "sim_defend_smart_text"
 				end
 			elseif(tsk.type=="take_reward") then
-				news_caption = game.translate_string(tsk.name)
+				news_caption = tsk.name
 				if(tsk.description~="NO_TEXT") then
 					news_text = tsk.description
 				else
-					news_text = game.translate_string("sim_take_reward_text")
+					news_text = "sim_take_reward_text"
 				end
 			elseif(tsk.type=="sos") then
-				news_caption = game.translate_string(tsk.name)
+				news_caption = tsk.name
 				if(tsk.description~="NO_TEXT") then
 					news_text = tsk.description
 				else
-					news_text = game.translate_string("sim_sos_text")
+					news_text = "sim_sos_text"
 				end
 			elseif(tsk.type=="bring_item") then
-				news_caption = game.translate_string("sim_bring_item")
+				news_caption = "sim_bring_item"
 				local s = ""
 				for k,v in pairs(tsk.requested_items) do
-					local name = game.translate_string(system_ini():r_string(k, "inv_name")).." x"..#v
+					local name = "#"..system_ini():r_string(k, "inv_name").."# x"..#v
 					if(s~="") then
 						s = s..", "..name
 					else
@@ -150,19 +150,19 @@ function show_tasks(npc, actor, dialog, phrase)
 				s = s.."."
 				news_text = s
 			elseif(tsk.type=="recover_item") then
-				news_caption = game.translate_string("sim_recover_item")
-				local name = game.translate_string(system_ini():r_string(tsk.requested_item, "inv_name"))
+				news_caption = "sim_recover_item"
+				local name = "#"..system_ini():r_string(tsk.requested_item, "inv_name").."#"
 				news_text = name.."."
 			elseif(tsk.type=="eliminate_squad") then
-				news_caption = game.translate_string(tsk.name)
+				news_caption = tsk.name
 				if(tsk.description~="NO_TEXT") then
 					news_text = tsk.description
 				else
-					news_text = game.translate_string("sim_eliminate_squad_text")
+					news_text = "sim_eliminate_squad_text"
 				end
 			else
-				news_caption = game.translate_string("test_storyline_task")
-				news_text = game.translate_string("test_storyline_task_text")
+				news_caption = "test_storyline_task"
+				news_text = "test_storyline_task_text"
 			end
 --			npc:give_talk_message(news_text, "ui_iconsTotal_lost_money", "iconed_answer_item")
 			npc:give_talk_message2(news_caption, news_text, "ui_iconsTotal_"..tsk.type, "iconed_answer_item")
@@ -272,20 +272,20 @@ end
 function create_task_answer_phrase(npc, dialog_name, phrase_id)
 	local string = ""
 	if(phrase_id=="15") then
-		string = game.translate_string("tm_random_task_15")
+		string = "tm_random_task_15"
 	elseif(phrase_id=="14") then
-		string = game.translate_string("tm_random_task_14")
+		string = "tm_random_task_14"
 	elseif(phrase_id=="13") then
 		local task = task_manager.get_task_manager():get_task_by_entity_id(db.storage[npc:id()].squad_obj.random_tasks[tonumber(phrase_id)-10])
-		string = game.translate_string("sim_recover_item").." "..game.translate_string(system_ini():r_string(task.requested_item, "inv_name"))
+		string = "#sim_recover_item# #"..system_ini():r_string(task.requested_item, "inv_name").."#"
 	else
 		local task = task_manager.get_task_manager():get_task_by_entity_id(db.storage[npc:id()].squad_obj.random_tasks[tonumber(phrase_id)-10])
 		local smt = sim_board.get_sim_board().smarts[task.target].smrt
-		local name = smart_names.get_smart_terrain_name(smt)
+		local name = smart_names.get_smart_terrain_name_key(smt)
 		if(name==nil) then
 			name = smt:name()
 		end
-		string = game.translate_string("tm_random_task_11").." "..name
+		string = "#tm_random_task_11# #"..name.."#"
 	end
 	return string
 end
@@ -480,7 +480,7 @@ function faction_show_task(npc, actor)
 			return
 		end
 --		db.actor:give_talk_message(game.translate_string(v.id), "ui_iconsTotal_locations", "iconed_trade_info")
-		db.actor:give_talk_message2(game.translate_string(v.id), game.translate_string(v.id), "ui_iconsTotal_locations", "iconed_trade_info")
+		db.actor:give_talk_message2(v.id, v.id, "ui_iconsTotal_locations", "iconed_trade_info")
 	end
 end
 
@@ -552,7 +552,7 @@ function mechanic_show_tasks(npc, actor, dialog, phrase)
 		if tsk.status == "normal" then
 			news_text = tsk.item_for_reward
 --			npc:give_talk_message(news_text, "ui_iconsTotal_find_upgrade", "iconed_answer_item")
-			npc:give_talk_message2(game.translate_string("sim_find_upgrade"), news_text, "ui_iconsTotal_find_upgrade", "iconed_answer_item")
+			npc:give_talk_message2("sim_find_upgrade", news_text, "ui_iconsTotal_find_upgrade", "iconed_answer_item")
 		end
 	end
 end
@@ -628,10 +628,10 @@ function mechanic_proposition(npc, actor, dialog, phrase)
 	local news_text = ""
 	for k,v in pairs(flash_card_table) do
 		if actor:object(v.item) ~= nil then
-			local name = game.translate_string(system_ini():r_string(v.item, "inv_name"))
+			local name = system_ini():r_string(v.item, "inv_name")
 			local price = v.price
 			news_caption = name
-			news_text = price..game.translate_string("st_rubles")
+			news_text = price.."#st_rubles#"
 --			npc:give_talk_message(news_text, "ui_iconsTotal_lost_money", "iconed_answer_item")
 			npc:give_talk_message2(news_text, "ui_iconsTotal_lost_money", "iconed_answer_item")
 		end
@@ -643,9 +643,9 @@ function mechanic_proposition_answer_phrase(npc, dialog_name, phrase_id)
 	local i = phrase_id-10
 	if flash_card_table[i]~=nil then
 		if db.actor:object(flash_card_table[i].item) ~= nil then
-			local name = game.translate_string(system_ini():r_string(flash_card_table[i].item, "inv_name"))
+			local name = system_ini():r_string(flash_card_table[i].item, "inv_name")
 			local price = flash_card_table[i].price
-			string = name.."/"..price.." RU"
+			string = "#"..name.."#/"..price.." RU"
 		end
 	end
 	return string

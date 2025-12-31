@@ -447,6 +447,11 @@ LPCSTR	CInventoryOwner::Name () const
 	return m_game_name.c_str();
 }
 
+LPCSTR	CInventoryOwner::NameStr() const
+{
+	return m_game_name_str.c_str();
+}
+
 void CInventoryOwner::SetName(LPCSTR name)
 {
 	m_game_name = name;

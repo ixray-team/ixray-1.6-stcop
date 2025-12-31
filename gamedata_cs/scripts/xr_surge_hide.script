@@ -389,7 +389,7 @@ function activate_surge(time)
             task:give_task(db.actor:character_community())
             surge_finished = false
             surge_activated = true
-            news_manager.send_tip(db.actor, game.translate_string("hide_from_surge_text1").." "..time.." "..game.translate_string("hide_from_surge_text2"))
+            news_manager.send_tip(db.actor, "#hide_from_surge_text1#".." "..time.." ".."#hide_from_surge_text2#") -- MTB_Jakub_Jurek [JUD-139]
         end
     end
 end

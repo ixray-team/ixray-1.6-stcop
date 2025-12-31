@@ -531,7 +531,7 @@ function CRandomTask:action_task_show(npc, actor)
 	for k,v in pairs(self.task_id_by_parent[parent]) do		
 		if self:task_avail(actor, npc, nil, nil, self.task_info[v].init_phrase_id, false) then
 			local task_texture, task_rect = get_texture_info("ui_icons_task_"..self.task_info[v].type, "ui_iconsTotal_locations")
-			db.actor:give_talk_message(game.translate_string(self.task_info[v].name), task_texture, task_rect,"iconed_trade_info")
+			db.actor:give_talk_message(self.task_info[v].name, task_texture, task_rect,"iconed_trade_info")
 		end
 	end
 end

@@ -49,7 +49,7 @@ function CTreasure:give_treasure()
 		news_manager.send_treasure(self.name)
 
 		--' Пометить на карте
-		local text = "%c[255,238,155,23]"..game.translate_string(self.name).."\\n".."%c[default]"..game.translate_string(self.description)
+		local text = "%c[255,238,155,23]#"..self.name.."#\\n".."%c[default]#"..self.description.."#"  --MTB_Jakub_Jurek JUD-925 pass untranslated hint, to save keys rather then transalated string
 
 		level.map_add_object_spot_ser(obj.id, "treasure", text)
 		--' Сгенерить вещи
@@ -270,7 +270,7 @@ function have_no_money()
 	return dt.treasure_cost>db.actor:money()
 end
 function get_treasure_desc()
-	return game.translate_string(dt.description)
+	return dt.description
 end
 function is_item_name()
 	return dt.say_item_name
@@ -281,15 +281,15 @@ end
 function get_item_name()
 	local ini = system_ini()
 	if dt.items then
-        local str = game.translate_string(ini:r_string(dt.items[1].section, "inv_name"))
+        local str = "#"..ini:r_string(dt.items[1].section, "inv_name").."#"
         for i = 2,#dt.items do
-            str = str..", "..game.translate_string(ini:r_string(dt.items[i].section, "inv_name"))
+            str = str..", #"..ini:r_string(dt.items[i].section, "inv_name").."#"
         end
         str = str.."."
         return str
 	else
 		printf("ERROR! items are not set in treasure [%s]", dt.section)
-        return game.translate_string("treasure_dialog_11131")
+        return "treasure_dialog_11131"
 	end
 --	return game.translate_string(system_ini():r_string(dt.items[1].section, "inv_name"))
 end

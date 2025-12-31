@@ -8,7 +8,7 @@
 #include "UITalkWnd.h"
 #include "UIInventoryUtilities.h"
 #include "../../xrUI/Widgets/UIBtnHint.h"
-
+#include "../../xrEngine/string_table.h"
 #include "../game_news.h"
 #include "../Level.h"
 #include "../Actor.h"
@@ -314,8 +314,9 @@ void CUITalkDialogWnd::AddAnswer(LPCSTR SpeakerName, LPCSTR str, bool bActor)
 	news_data.news_caption = SpeakerName;
 
 	xr_string res;
-	res = "%c[250,255,232,208]";
+	res = "%c[250,255,232,208]#";
 	res += str;
+	res += "#";
 	news_data.news_text	= res.c_str();
 
 	news_data.m_type				= GAME_NEWS_DATA::eTalk;
@@ -459,7 +460,7 @@ CUIQuestionItem::CUIQuestionItem(CUIXml* xml_doc, LPCSTR path)
 void CUIQuestionItem::Init			(LPCSTR val, LPCSTR text)
 {
 	m_s_value						= val;
-	m_text->TextItemControl()->SetText(text);
+	m_text->TextItemControl()->SetText(g_pStringTable->ParseStringFromScript(text).c_str());
 	m_text->AdjustHeightToText		();
 	float new_h						= std::max(m_min_height, m_text->GetWndPos().y+m_text->GetHeight());
 	SetHeight						(new_h);
@@ -491,8 +492,8 @@ CUIAnswerItem::CUIAnswerItem			(CUIXml* xml_doc, LPCSTR path)
 
 void CUIAnswerItem::Init			(LPCSTR text, LPCSTR name)
 {
-	m_name->SetText					(name);
-	m_text->SetText					(text);
+	m_name->SetText					(TranslateName(name).c_str());
+	m_text->SetText					(g_pStringTable->ParseStringFromScript(text).c_str());
 	m_text->AdjustHeightToText		();
 	float new_h						= std::max(m_min_height, m_text->GetWndPos().y+m_text->GetHeight());
 	new_h							+= m_bottom_footer;
@@ -515,9 +516,9 @@ CUIAnswerItemIconed::CUIAnswerItemIconed		(CUIXml* xml_doc, LPCSTR path)
 void CUIAnswerItemIconed::Init		(LPCSTR text, LPCSTR name, LPCSTR texture_name)
 {
 	xr_string res;
-	res += name;
+	res += g_pStringTable->ParseStringFromScript(name).c_str();
 	res += "\\n %c[250,255,232,208]";
-	res += text;
+	res += g_pStringTable->ParseStringFromScript(text).c_str();
 
 	inherited::Init					(res.c_str(), "");
 	m_icon->InitTexture				(texture_name);

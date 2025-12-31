@@ -149,7 +149,7 @@ function CTreasure:give_treasure(k)
 		news_manager.send_treasure(v.name)
 
 		--' Пометить на карте		
-		local text = "%c[255,238,155,23]"..game.translate_string(v.name).."\\n".."%c[default]"..game.translate_string(v.description)
+		local text = "%c[255,238,155,23]#"..v.name.."#\\n".."%c[default]#"..v.description.."#" --MTB_Jakub_Jurek JUD-925 pass untranslated hint, to save keys rather then transalated string
 		level.map_add_object_spot_ser(obj.id, "treasure", text)
 
 		--' Сгенерить вещи
