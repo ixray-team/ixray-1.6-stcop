@@ -15,7 +15,7 @@
 #include "object_broker.h"
 #include "GametaskManager.h"
 #include "GameTask.h"
-
+#include "../xrEngine/string_table.h"
 #include "ui/UIActorMenu.h"
 #include "ui/UIPdaWnd.h"
 #include "ui/UIMessageBox.h"
@@ -174,9 +174,9 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
 
             if (Level().GameTaskManager()->IsMultipleTask() && t1 && t2)
             {
-                m_game_objective->m_static->TextItemControl()->SetTextST(t1->m_Title.c_str());
+                m_game_objective->m_static->TextItemControl()->SetTextST(g_pStringTable->ParseStringFromScript(t1->m_Title).c_str());
                 SDrawStaticStruct* sm2 = AddCustomStatic("secondary_task", true);
-                sm2->m_static->TextItemControl()->SetTextST(t2->m_Title.c_str());
+                sm2->m_static->TextItemControl()->SetTextST(g_pStringTable->ParseStringFromScript(t2->m_Title).c_str());
             }
             else
             {
@@ -185,13 +185,13 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
                     CGameTask* t = (t1) ? t1 : t2;
 					if (m_msgs_xml->NavigateToNode("secondary_task"))
 					{
-           	        	m_game_objective->m_static->TextItemControl()->SetTextST(t->m_Title.c_str());
+           	        	m_game_objective->m_static->TextItemControl()->SetTextST(g_pStringTable->ParseStringFromScript(t->m_Title).c_str());
 						SDrawStaticStruct* sm2 = AddCustomStatic("secondary_task", true);
-                   		sm2->m_static->TextItemControl()->SetTextST(t->m_Description.c_str());
+                   		sm2->m_static->TextItemControl()->SetTextST(g_pStringTable->ParseStringFromScript(t->m_Description).c_str());
 					}
 					else
 					{
-						m_game_objective->m_static->TextItemControl()->SetTextST(Level().GameTaskManager()->ActiveObjective()->m_Description.c_str());
+						m_game_objective->m_static->TextItemControl()->SetTextST(g_pStringTable->ParseStringFromScript(Level().GameTaskManager()->ActiveObjective()->m_Description).c_str());
 					}
                 }
                 else

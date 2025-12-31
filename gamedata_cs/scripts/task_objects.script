@@ -120,20 +120,20 @@ function CGeneralTask:give_task(community)
 	if(self.auto_name) then
 		local title = ""
 		if(type=="eliminate_smart") or (type=="capture_smart") or (type=="defend_smart") or (type=="defend_smart_delay") then
-			local sname = smart_names.get_smart_terrain_name(self.board.smarts[self.target].smrt)
+			local sname = smart_names.get_smart_terrain_name_key(self.board.smarts[self.target].smrt)
 			if(sname==nil) then
 				sname = self.board.smarts[self.target].smrt:name()
 			end
-			title = game.translate_string(self.name)..": "..sname
+			title = "#"..self.name.."#: #"..sname.."#" -- MTB_Jakub_Jurek [JUD-139]
 		elseif (type=="recover_item") then
-			local item_inv_name = game.translate_string(system_ini():r_string(self.requested_item, "inv_name"))
-			title = game.translate_string("sim_recover_item").." "..item_inv_name
+			local item_inv_name = "#"..system_ini():r_string(self.requested_item, "inv_name").."#"
+			title = "#sim_recover_item".."# "..item_inv_name -- MTB_Jakub_Jurek [JUD-139]
 		elseif (type=="find_upgrade") then
-			title = game.translate_string("sim_find_upgrade").."."
+			title = "#sim_find_upgrade".."#." -- MTB_Jakub_Jurek [JUD-139]
 		elseif (type=="bring_item") then
-			title = "sim_bring_item"
+			title = "#sim_bring_item#"
 		else
-			title = game.translate_string(self.name)
+			title = self.name -- MTB_Jakub_Jurek [JUD-139]
 		end
 		t:set_title(title)
 	else
@@ -155,9 +155,13 @@ function CGeneralTask:give_task(community)
 		t:set_description("")
 	else
 		if self.auto_faction then
-			t:set_description(game.translate_string(self.community_name)..".\\n"..game.translate_string(self.text))
+			if self.text:find("#") == nil then
+				t:set_description("#"..self.community_name.."#.\\n#"..self.text.."#") -- MTB_Jakub_Jurek [JUD-139]
+			else
+				t:set_description("#"..self.community_name.."#.\\n"..self.text)
+			end
 		else
-			t:set_description(game.translate_string(self.text))
+			t:set_description(self.text) -- MTB_Jakub_Jurek [JUD-139]
 		end
 	end
 
@@ -702,12 +706,12 @@ function CCaptureSmartTask:check_title(is_counterattack)
 --[[
 	local text = smart_names.get_smart_terrain_name(self.board.smarts[self.target].smrt)
 	if(self.task_type==task_types.storyline) then
-		self.t:set_title(game.translate_string(self.name))
+		self.t:set_title(self.name) -- MTB_Jakub_Jurek [JUD-139]
 	else
 		if(text~=nil) then
-			self.t:set_title(game.translate_string(self.name)..": "..text)
+			self.t:set_title("#"..self.name.."#: "..text) -- MTB_Jakub_Jurek [JUD-139]
 		else
-			self.t:set_title(game.translate_string(self.name)..": "..self.board.smarts[self.target].smrt:name())
+			self.t:set_title("#"..self.name.."#: "..self.board.smarts[self.target].smrt:name()) -- MTB_Jakub_Jurek [JUD-139]
 		end
 	end
 ]]
@@ -1273,7 +1277,7 @@ function CGetRewardTask:change_description()
 	end
 	for k,v in pairs(ancillary_item_table) do
 		local ltx = system_ini()
-		local name = game.translate_string(ltx:r_string(k, "inv_name"))
+		local name = "#"..ltx:r_string(k, "inv_name").."#"
 		if death_manager.ammo_sections[k] == true then
 			local box_size = ltx:r_s32(k, "box_size")
 			s = s.."\\n>"..name.." x"..v*box_size
@@ -1292,9 +1296,9 @@ function CGetRewardTask:change_description()
 	end
 	self.description = s
 	if self.auto_faction then
-			self.t:set_description(game.translate_string(self.community_name)..".\\n"..game.translate_string(self.description))
+			self.t:set_description("#"..self.community_name.."#.\\n"..self.description) -- MTB_Jakub_Jurek [JUD-139]
 	else
-			self.t:set_description(game.translate_string(self.description))
+			self.t:set_description(self.description) -- MTB_Jakub_Jurek [JUD-139]
 	end
 --	self.t:set_description(self.description)
 end
@@ -1558,7 +1562,7 @@ end
 function CBringItemTask:set_task_text_for_bring_item()
 	local s = ""
 	for k,v in pairs(self.requested_items) do
-		local name = game.translate_string(system_ini():r_string(k, "inv_name")).." x"..#v
+		local name = "#"..system_ini():r_string(k, "inv_name").."# x"..#v
 		if(db.actor:object(k)) then
 			local not_all = false
 			for i = 1, #v do
@@ -1628,21 +1632,29 @@ function CBringItemTask:has_requested_items()
 		return
 	end
 	if(c<self.ri_counter) then
-		self.t:set_title(game.translate_string("sim_bring_item").." "..c.." ("..self.ri_counter..")")
+		self.t:set_title("#sim_bring_item".."# "..c.." ("..self.ri_counter..")") -- MTB_Jakub_Jurek [JUD-139]
 --		self.t:set_description(game.translate_string(self.text))
 		if self.auto_faction then
-			self.t:set_description(game.translate_string(self.community_name)..".\\n"..game.translate_string(self.text))
+			if self.text:find("#") == nil then
+				self.t:set_description("#"..self.community_name.."#.\\n#"..self.text.."#") -- MTB_Jakub_Jurek [JUD-139]
+			else
+				self.t:set_description("#"..self.community_name.."#.\\n"..self.text) -- MTB_Jakub_Jurek [JUD-139]
+			end
 		else
-			self.t:set_description(game.translate_string(self.text))
+			self.t:set_description(self.text) -- MTB_Jakub_Jurek [JUD-139]
 		end
 		return false
 	else
 		self.t:set_title("sim_bring_item_text")
 --		self.t:set_description(game.translate_string(self.text))
 		if self.auto_faction then
-			self.t:set_description(game.translate_string(self.community_name)..".\\n"..game.translate_string(self.text))
+			if self.text:find("#") == nil then
+				self.t:set_description("#"..self.community_name.."#.\\n#"..self.text.."#") -- MTB_Jakub_Jurek [JUD-139]
+			else
+				self.t:set_description("#"..self.community_name.."#.\\n"..self.text) -- MTB_Jakub_Jurek [JUD-139]
+			end
 		else
-			self.t:set_description(game.translate_string(self.text))
+			self.t:set_description(self.text) -- MTB_Jakub_Jurek [JUD-139]
 		end
 		return true
 	end
@@ -1982,7 +1994,7 @@ end
 
 function CRecoverItemTask:set_task_text_for_recover_item()
 	local s = ""
-	local name = game.translate_string(system_ini():r_string(self.requested_item, "inv_name"))
+	local name = "#"..system_ini():r_string(self.requested_item, "inv_name").."#"
 	if db.actor:object(self.requested_item) ~= nil then
 		s = "+ "..name
 		self.presence_requested_item = true
@@ -1990,7 +2002,7 @@ function CRecoverItemTask:set_task_text_for_recover_item()
 		s = "- "..name
 		self.presence_requested_item = false
 	end
-	self.description = game.translate_string(self.text).."\\n"..s
+	self.description = "#"..self.text.."#\\n"..s
 end
 
 -- Are requested items in actor inventory
@@ -2001,9 +2013,9 @@ function CRecoverItemTask:has_requested_item()
 	end
 	self:set_task_text_for_recover_item()
 	if self.auto_faction then
-		self.t:set_description(game.translate_string(self.community_name)..".\\n"..game.translate_string(self.description))
+		self.t:set_description("#"..self.community_name.."#.\\n"..self.description) -- MTB_Jakub_Jurek [JUD-139]
 	else
-		self.t:set_description(game.translate_string(self.description))
+		self.t:set_description(self.description) -- MTB_Jakub_Jurek [JUD-139]
 	end
 	if self.presence_requested_item then
 		return true
@@ -2287,11 +2299,11 @@ function CHideFromSurgeTask:check_task(tm)
 	end
 	if(db.storage[self.target]) and (db.storage[self.target].object:inside(db.actor:position())) then
 		if(self.name=="hide_from_surge_name") then
-			self.t:set_title(game.translate_string("hide_from_surge_name2"))
+			self.t:set_title("hide_from_surge_name2") -- MTB_Jakub_Jurek [JUD-139]
 		end
 	else
 		if(self.name=="hide_from_surge_name") then
-			self.t:set_title(game.translate_string("hide_from_surge_name"))
+			self.t:set_title("hide_from_surge_name") -- MTB_Jakub_Jurek [JUD-139]
 		end
 	end
 end
@@ -2558,7 +2570,7 @@ end
 function CFindUpgradeTask:has_requested_items()
 	local s = ""
 	local name = ""
-	local name = game.translate_string(self.requested_item_inv_name)
+	local name = "#"..self.requested_item_inv_name.."#"
 	if db.actor:object(self.requested_item) ~= nil then
 		s = s.."+ "..name
 		self.presence_requested_item = true
@@ -2566,15 +2578,15 @@ function CFindUpgradeTask:has_requested_items()
 		s = s.."- "..name
 		self.presence_requested_item = false
 	end
-	self.description = game.translate_string(self.text).."\\n"..s
+	self.description = "#"..self.text.."#".."\\n"..s
 	if(self.t==nil) then
 		self.t = db.actor and db.actor:get_task(tostring(self.entity_id), false) -- "true" used to search only for not finished tasks
 		return
 	end
 	if self.auto_faction then
-		self.t:set_description(game.translate_string(self.community_name)..".\\n"..game.translate_string(self.description))
+		self.t:set_description("#"..self.community_name.."#.\\n"..self.description) -- MTB_Jakub_Jurek [JUD-139]
 	else
-		self.t:set_description(game.translate_string(self.description))
+		self.t:set_description(self.description) -- MTB_Jakub_Jurek [JUD-139]
 	end
 --	self.t:set_description(self.description)
 	if (self.presence_requested_item) then
