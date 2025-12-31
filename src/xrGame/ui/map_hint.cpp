@@ -123,7 +123,7 @@ void CUIMapLocationHint::SetInfoTask(CGameTask* task)
 	S->SetStretchTexture			(true);
 
 	S								= m_info["t_caption"];
-	S->TextItemControl()->SetTextST					(task->m_Title.c_str());
+	S->TextItemControl()->SetTextST	(g_pStringTable->ParseStringFromScript(task->m_Title).c_str());
 	S->AdjustHeightToText			();
 	//float new_w						= S->GetWndPos().x + S->GetWndSize().x + 20.0f;
 
@@ -150,7 +150,7 @@ void CUIMapLocationHint::SetInfoTask(CGameTask* task)
 	S->SetWndPos	(pos);
 
 	S						= m_info["t_hint_text"];
-	S->TextItemControl()->SetTextST			(task->m_Description.c_str());
+	S->TextItemControl()->SetTextST			(g_pStringTable->ParseStringFromScript(task->m_Description).c_str());
 	S->AdjustHeightToText	();
 	if ( b_rem )
 	{

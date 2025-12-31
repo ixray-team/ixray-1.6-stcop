@@ -6,6 +6,8 @@
 #include "../date_time.h"
 #include "UIInventoryUtilities.h"
 #include "../../xrUI/UIHelper.h"
+#include "../../xrEngine/string_table.h"
+#include "../InventoryOwner.h"
 
 CUINewsItemWnd::CUINewsItemWnd()
 {
@@ -48,14 +50,21 @@ void CUINewsItemWnd::Setup			(GAME_NEWS_DATA& news_data)
 
 	if (m_UICaption)
 	{
-		m_UICaption->SetTextST(news_data.news_caption.c_str());
+		if (strstr(news_data.news_caption.c_str(), ":lname_"))
+		{
+			m_UICaption->SetText(TranslateName(news_data.news_caption.c_str()).c_str());
+		}
+		else
+		{
+			m_UICaption->SetText(g_pStringTable->ParseStringFromScript(news_data.news_caption).c_str());
+		}
 		Fvector2 pos = m_UICaption->GetWndPos();
 		pos.x = m_UIDate->GetWndPos().x + m_UIDate->GetWndSize().x + 5.0f;
 		m_UICaption->SetWndPos(pos);
 		m_UICaption->SetWidth(std::min(m_UIText->GetWidth() - m_UIDate->GetWidth() - 5.0f, m_UICaption->GetWidth()));
 	}
 
-	m_UIText->SetTextST				(news_data.news_text.c_str());
+	m_UIText->SetText(g_pStringTable->ParseStringFromScript(news_data.news_text).c_str());
 	m_UIText->AdjustHeightToText	();
 	float h1						= m_UIText->GetWndPos().y + m_UIText->GetHeight() + 6.0f;
 

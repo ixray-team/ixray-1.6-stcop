@@ -172,11 +172,11 @@ end
 
 function set_phrase_text(fs, ss, dn, pi)
 	local smarts = sim_board.get_sim_board().smarts_by_names
-    local point_name = smarts[pi] and smart_names.get_smart_terrain_name(smarts[pi])
+    local point_name = smarts[pi] and smart_names.get_smart_terrain_name_key(smarts[pi])
     if point_name then
-        local string = game.translate_string(temp_points_table[pi].level)..". "..point_name..". "
+        local string = "#"..temp_points_table[pi].level.."#. #"..point_name.."#. "
 		if temp_points_table[pi].cost ~= 0 then
-			string = string..temp_points_table[pi].cost.." "..game.translate_string("st_rubles")
+			string = string..temp_points_table[pi].cost.." "..("#st_rubles#")
 		end
         return string
     end
