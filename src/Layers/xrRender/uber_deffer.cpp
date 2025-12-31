@@ -135,9 +135,16 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 
 	static bool UseWinterPass = EngineExternal()[EEngineExternalRender::UseDynamicSnowMask];
 	bool snow_texture = UseWinterPass && FS.exist(temp, _textures_, C.L_textures[0].c_str(), "_snowmask.dds");
+	bool hair_texture = FS.exist(temp, _textures_, C.L_textures[0].c_str(), "_hairmask.dds");
+
 	if (snow_texture)
 	{
 		RImplementation.addShaderOption("USE_SNOW_TEXTURE", "1");
+	}
+
+	if (hair_texture)
+	{
+		RImplementation.addShaderOption("USE_HAIRMASK", "1");
 	}
 
 	if(bHasDetailBump)
@@ -225,12 +232,20 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 		C.r_dx10Texture("s_snow", Path);
 	}
 
+	if (hair_texture)
+	{
+		string256 Path = {};
+		xr_strconcat(Path, *C.L_textures[0], "_hairmask");
+		C.r_dx10Texture("s_hair", Path);
+	}
+
 	C.r_dx10Texture("s_smap_sun", r2_RT_smap_depth_sun);
 	C.r_dx10Sampler("smp_smap");
 
 	C.r_dx10Sampler("smp_base");
 	C.r_dx10Sampler("smp_linear");
 	C.r_dx10Sampler("smp_rtlinear");
+	C.r_dx10Sampler("smp_nofilter");
 
 #else //USE_DX11
 
