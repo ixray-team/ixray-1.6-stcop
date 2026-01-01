@@ -47,6 +47,7 @@
 #include "CustomOutfit.h"
 #include "player_hud.h"
 #include "../xrUI/ui_base.h"
+#include "../xrEngine/string_table.h"
 
 namespace MemorySpace {
 	struct CVisibleObject;
@@ -1542,6 +1543,10 @@ void CScriptGameObject::sound_prefix(LPCSTR sound_prefix)
 {
 	if (CCustomMonster* custom_monster = object().cast_custom_monster())
 	{
+		string_path localized_prefix;
+		xr_sprintf(localized_prefix, "localization\\%s\\%s", g_pStringTable->LangName().c_str(), sound_prefix);
+
+		custom_monster->sound().sound_prefix_localized(localized_prefix);
 		custom_monster->sound().sound_prefix(sound_prefix);
 	}
 	else
