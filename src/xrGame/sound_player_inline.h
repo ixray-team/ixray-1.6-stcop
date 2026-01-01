@@ -86,3 +86,15 @@ IC	const shared_str &CSoundPlayer::sound_prefix					() const
 {
 	return				(m_sound_prefix);
 }
+
+IC	void CSoundPlayer::sound_prefix_localized						(const shared_str &sound_prefix)
+{
+	m_sound_prefix_localized		= sound_prefix;
+	if (!m_sound_prefix_localized)
+		m_sound_prefix_localized	= "";
+}
+
+IC	const shared_str &CSoundPlayer::sound_prefix_localized			() const
+{
+	return				(m_sound_prefix_localized);
+}
