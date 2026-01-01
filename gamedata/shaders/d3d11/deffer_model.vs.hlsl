@@ -12,19 +12,11 @@ void skinned_main(in v_model I, out p_bumped_new O)
 
     O.tcdh = float4(I.tc.xy, hemi_val, L_material.y);
 
-    float3 pos = I.P.xyz;
-    float3 pos_old = I.P_old.xyz;
-
 #if defined(USE_HAIRMASK)
-    float mask = s_hair.SampleLevel(smp_nofilter, I.tc, 0).r;
-    bool indoor = hemi_val < 0.25f;
-
-    float wind_factor = indoor ? 0.0f : 1.0f;
-
-    hair_wave_anim(I.tc.xy, mask * wind_factor, pos, pos_old, I.N);
+    hair_wave_anim(I.tc.xy, saturate(hemi_val * 4.0f - 1.0f), I.P.xyz, I.P_old.xyz, I.N);
 #endif
 
-    float3 Pe = mul(m_WV, float4(pos, 1.0f));
+    float3 Pe = mul(m_WV, I.P);
     float3 N = I.N * 2.0f;
 
     O.position = float4(Pe, 1.0f);
@@ -49,10 +41,10 @@ void skinned_main(in v_model I, out p_bumped_new O)
     O.M3 = N.zzz;
 #endif
 
-    O.hpos = mul(m_WVP, float4(pos, I.P.w));
+    O.hpos = mul(m_WVP, I.P);
     
     O.hpos_curr = O.hpos;
-    O.hpos_old = mul(m_WVP_old, float4(pos_old, I.P_old.w));
+    O.hpos_old = mul(m_WVP_old, I.P_old);
 
     O.hpos.xy += m_taa_jitter.xy * O.hpos.w;
 	
