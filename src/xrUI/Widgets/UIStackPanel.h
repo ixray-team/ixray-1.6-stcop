@@ -11,7 +11,9 @@ public:
 		eLeft,
 		eRight,
 		eTop,
-		eBottom
+		eBottom,
+		eCenterHorz,
+		eCenterVert
 	};
 	EStackPanelAlignment SPAlignment;
 

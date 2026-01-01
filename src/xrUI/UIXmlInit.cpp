@@ -242,6 +242,8 @@ bool CUIXmlInit::InitStackPanel(CUIXml& xml_doc, LPCSTR path, int index, CUIStac
 	else if (_stricmp(mode_str, "top") == 0) { mode = CUIStackPanel::eTop; }
 	else if (_stricmp(mode_str, "left") == 0) { mode = CUIStackPanel::eLeft; }
 	else if (_stricmp(mode_str, "bottom") == 0) { mode = CUIStackPanel::eBottom; }
+	else if (_stricmp(mode_str, "center_horz") == 0) { mode = CUIStackPanel::eCenterHorz; }
+	else if (_stricmp(mode_str, "center_vert") == 0) { mode = CUIStackPanel::eCenterVert; }
 	pWnd->SPAlignment = mode;
 
 	pWnd->SetSpacing(xml_doc.ReadAttribFlt(path, index, "spacing", 0.0f));
