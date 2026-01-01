@@ -105,6 +105,8 @@ CConsole::CConsole() :
 	xrLogger::AddLogCallback(ConsoleLogCallback);
 }
 
+bool clear_command_on_show = true;
+
 void CConsole::Initialize()
 {
 	scroll_delta	= 0;
@@ -129,6 +131,8 @@ void CConsole::Initialize()
 	// Commands
 	extern void CCC_Register();
 	CCC_Register();
+
+	CMD2(CCC_Boolean, "clear_command_on_show", &clear_command_on_show);
 
 	if (!Device.IsEditorMode())
 	{
@@ -608,6 +612,13 @@ void CConsole::Show()
 	bVisible = true;
 	scroll_delta = 0;
 	
+	if (clear_command_on_show) 
+	{
+		ec().clear_states();
+		reset_cmd_history_idx();
+		reset_selected_tip();
+	}
+
 	update_tips();
 	m_editor->IR_Capture();
 	
