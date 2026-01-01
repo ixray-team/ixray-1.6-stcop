@@ -23,6 +23,7 @@ public:
 	struct CSoundCollectionParams {
 		shared_str								m_sound_prefix;
 		shared_str								m_sound_player_prefix;
+		shared_str								m_sound_player_prefix_localized;
 		u32										m_max_count;
 		ESoundTypes								m_type;
 
@@ -32,6 +33,9 @@ public:
 				return	(false);
 
 			if (m_sound_player_prefix != object.m_sound_player_prefix)
+				return	(false);
+
+			if (m_sound_player_prefix_localized != object.m_sound_player_prefix_localized)
 				return	(false);
 
 			if (m_max_count != object.m_max_count)
@@ -126,6 +130,7 @@ private:
 	u32											m_sound_mask;
 	CObject										*m_object;
 	shared_str									m_sound_prefix;
+	shared_str									m_sound_prefix_localized;
 
 	IC		Fvector		compute_sound_point			(const CSoundSingle &sound);
 			void		remove_inappropriate_sounds	(u32 sound_mask);
@@ -152,6 +157,8 @@ public:
 	IC		bool		active_sound_type			(u32 synchro_mask) const;
 	IC		void		sound_prefix				(const shared_str &sound_prefix);
 	IC	const shared_str &sound_prefix				() const;
+	IC		void		sound_prefix_localized		(const shared_str &sound_prefix);
+	IC	const shared_str &sound_prefix_localized	() const;
 };
 
 #include "sound_player_inline.h"
