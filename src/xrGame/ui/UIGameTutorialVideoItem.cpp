@@ -6,7 +6,7 @@
 #include "../../xrUI/UIXmlInit.h"
 #include "object_broker.h"
 #include "../../xrEngine/xr_input.h"
-
+#include "../../xrEngine/string_table.h"
 #include "../Include/xrRender/UISequenceVideoItem.h"
 #include "../Include/xrRender/UIShader.h"
 #include "../Include/xrRender/UIRender.h"
@@ -98,17 +98,30 @@ void CUISequenceVideoItem::Load(CUIXml* xml, int idx)
 
 	if (snd_name && snd_name[0])
 	{
+		string_path localized_snd;
+		xr_sprintf(localized_snd, "localization\\%s\\%s", g_pStringTable->LangName().c_str(), snd_name);
+
 		string_path _fn;
-		if (FS.exist(_fn, "$game_sounds$", snd_name, ".ogg"))
+		if (FS.exist(_fn, _game_sounds_, localized_snd, ".ogg"))
+		{
+			m_sound.create(localized_snd, st_Effect, sg_Undefined);
+		}
+		else if (FS.exist(_fn, _game_sounds_, snd_name, ".ogg"))
 		{
 			m_sound.create		(snd_name,st_Effect,sg_Undefined);	
 		}
 		else
 		{
 			string_path			_l, _r;
+			xr_strconcat(_l, localized_snd, "_l");
+			if (!FS.exist(_fn, _game_sounds_, _l))
 			xr_strconcat(_l, snd_name, "_l");
-			xr_strconcat(_r, snd_name, "_r");
+
 			m_sound_mono[0].create(_l, st_Effect, sg_Undefined);
+			xr_strconcat(_r, localized_snd, "_r");
+			if (!FS.exist(_fn, _game_sounds_, _r))
+				xr_strconcat(_r, snd_name, "_r");
+
 			m_sound_mono[1].create(_r, st_Effect, sg_Undefined);
 		}
 	}
