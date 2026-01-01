@@ -63,6 +63,7 @@
 #if USE_OLD_OBJECT_PLANNER
 #include "Legacy/object_handler_planner.h"
 #endif
+#include "../../../xrEngine/string_table.h"
 
 #ifdef DEBUG
 #	include "../../alife_simulator.h"
@@ -123,9 +124,13 @@ void CAI_Stalker::reinit			()
 //	movement().reinit				();
 
 	//загрузка спецевической звуковой схемы для сталкера согласно m_SpecificCharacter
-	sound().sound_prefix			( //SpecificCharacter().sound_voice_prefix());
-		READ_IF_EXISTS(pSettings, r_string, cNameSect().c_str(), "voice_prefix", SpecificCharacter().sound_voice_prefix())
-	);
+	LPCSTR prefix = READ_IF_EXISTS(pSettings, r_string, cNameSect().c_str(), "voice_prefix", SpecificCharacter().sound_voice_prefix());
+	
+	string_path localized_prefix;
+	xr_sprintf(localized_prefix, "localization\\%s\\%s", g_pStringTable->LangName().c_str(), prefix);
+
+	sound().sound_prefix_localized	(localized_prefix);
+	sound().sound_prefix			(prefix);
 
 	LoadSounds						(*cNameSect());
 
