@@ -105,6 +105,66 @@ void CUIStackPanel::Draw()
 			}
 		}
 		break;
+	case eCenterHorz:
+		{
+			float totalWidth = 0.0f;
+			for (CUIWindow* W : m_ChildWndList)
+			{
+				if (!W || !W->IsShown())
+				{
+					continue;
+				}
+
+				totalWidth += W->GetWndSize().x;
+				totalWidth += Spacing;
+			}
+
+			float x = (GetWidth() / 2.0f) - (totalWidth / 2.0f);
+			for (CUIWindow* W : m_ChildWndList)
+			{
+				if (!W || !W->IsShown() || W->GetCustomDraw())
+				{
+					continue;
+				}
+
+				W->SetWndPos(Fvector2().set(x, 0.f));
+				x += W->GetWndSize().x;
+				x += Spacing;
+
+				W->Draw();
+			}
+		}
+		break;
+	case eCenterVert:
+		{
+			float totalHeight = 0.0f;
+			for (CUIWindow* W : m_ChildWndList)
+			{
+				if (!W || !W->IsShown())
+				{
+					continue;
+				}
+
+				totalHeight += W->GetWndSize().y;
+				totalHeight += Spacing;
+			}
+
+			float y = (GetHeight() / 2.0f) - (totalHeight / 2.0f);
+			for (CUIWindow* W : m_ChildWndList)
+			{
+				if (!W || !W->IsShown() || W->GetCustomDraw())
+				{
+					continue;
+				}
+
+				W->SetWndPos(Fvector2().set(0.f, y));
+				y += W->GetWndSize().y;
+				y += Spacing;
+
+				W->Draw();
+			}
+		}
+		break;
 	default:
 		R_ASSERT2(false, "not implemented :(");
 		break;
