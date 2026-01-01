@@ -11,35 +11,28 @@
 
 #include "common.hlsli"
 
+uniform float3x4 m_invW;
 float4 env_wind;
 Texture2D s_hair;
 
-void hair_wave_anim(float2 tc, float mask, inout float3 pos, inout float3 pos_old, float3 normal)
+void hair_wave_anim(float2 tc, float indoor_factor, inout float3 pos, inout float3 pos_old, float3 normal)
 {
-    float2 wind_dir = env_wind.xy;
-    float wind_strength = env_wind.z * 0.5f + 0.15f;
+    float2 wind_dir = mul(m_invW, env_wind.xyz).xz;
+    float wind_strength = env_wind.w * 0.5f + 0.15f;
+	
+    float4 mask = s_hair.SampleLevel(smp_rtlinear, tc, 0);
 
-    wind_dir = normalize(wind_dir);
-
-    float time = timers.x;
+	// Это тоже можно вынести в текстуру маски, в другой канал
     float phase = tc.y * 8.0f;
 
     // Волновая анимация
-    float wave1 = sin(time * 2.0f + phase) * 0.15f;
-    float wave2 = sin(time * 3.7f + phase * 1.3f) * 0.05f;
-    float amplitude = (wave1 + wave2) * wind_strength * mask;
-
-    float2 offset = wind_dir * amplitude;
-
-    pos.xz += offset * 0.1f;
-
-    float time_old = time - 0.016f;
-    float wave1_old = sin(time_old * 2.0f + phase) * 0.15f;
-    float wave2_old = sin(time_old * 3.7f + phase * 1.3f) * 0.05f;
-    float amplitude_old = (wave1_old + wave2_old) * wind_strength * mask;
-    float2 offset_old = wind_dir * amplitude_old;
-
-    pos_old.xz += offset_old * 0.1f * 0.95f;
+    float2 wave1 = sin(timers.xy * 2.0f + phase) * 0.15f;
+    float2 wave2 = sin(timers.xy * 3.7f + phase * 1.3f) * 0.05f;
+	
+    float2 amplitude = (wave1 + wave2) * wind_strength * mask.x * indoor_factor;
+	
+    pos_old.xz += wind_dir * amplitude.y * 0.1f;
+    pos.xz += wind_dir * amplitude.x * 0.1f;
 }
 
 #endif
