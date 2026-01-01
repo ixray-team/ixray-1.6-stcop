@@ -231,14 +231,16 @@ class cl_fog_color	: public RHIShaderConstant::Setup {
 #endif
 
 // times
-class cl_times		: public RHIShaderConstant::Setup {
+class cl_times : public RHIShaderConstant::Setup 
+{
 	virtual void setup(RHIShaderConstant* C)
 	{
-		float 		t	= RDEVICE.fTimeGlobal;
-		RCache.set_c	(C,t,t*10,t/10, std::sin(t))	;
+		float t = RDEVICE.fTimeGlobal;
+		RCache.set_c(C, t, t - RDEVICE.fTimeDelta, t * 0.1f, std::sin(t));
 	}
 };
-static cl_times		binder_times;
+
+static cl_times binder_times;
 
 // eye-params
 class cl_eye_P		: public RHIShaderConstant::Setup {
