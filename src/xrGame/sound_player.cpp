@@ -23,7 +23,9 @@ CSoundPlayer::CSoundPlayer			(CObject *object)
 	m_object						= object;
 	seed							(u32(CPU::QPC() & 0xffffffff));
 	m_sound_prefix					= "";
+	m_sound_prefix_localized		= "";
 }
+
 
 CSoundPlayer::~CSoundPlayer			()
 {
@@ -53,6 +55,7 @@ void CSoundPlayer::reload			(LPCSTR section)
 	VERIFY							(m_playing_sounds.empty());
 	clear							();
 	m_sound_prefix					= "";
+	m_sound_prefix_localized		= "";
 }
 
 void CSoundPlayer::unload			()
@@ -73,6 +76,7 @@ u32 CSoundPlayer::add				(LPCSTR prefix, u32 max_count, ESoundTypes type, u32 pr
 	sound_params.m_bone_name			= bone_name;
 	sound_params.m_sound_prefix			= prefix;
 	sound_params.m_sound_player_prefix	= m_sound_prefix;
+	sound_params.m_sound_player_prefix_localized = m_sound_prefix_localized;
 	sound_params.m_max_count			= max_count;
 	sound_params.m_type					= type;
 	sound_params.m_data					= data;
@@ -242,22 +246,45 @@ CSoundPlayer::CSoundCollection::CSoundCollection	(const CSoundCollectionParams &
 
 	seed								(u32(CPU::QPC() & 0xffffffff));
 	m_sounds.clear						();
-	for (int j=0, N = _GetItemCount(*params.m_sound_prefix); j<N; ++j) {
+	for (int j=0, N = _GetItemCount(*params.m_sound_prefix); j<N; ++j) 
+	{
 		string_path						fn, s, temp;
 		_GetItem						(*params.m_sound_prefix,j,temp);
-		xr_strconcat(s,*params.m_sound_player_prefix,temp);
-		if (FS.exist(fn,_game_sounds_,s,".ogg")) {
+		xr_strconcat(s,*params.m_sound_player_prefix_localized,temp);
+		if (FS.exist(fn,_game_sounds_,s,".ogg")) 
+		{
 			ref_sound					*temp_ = add(params.m_type,s);
 			if (temp_)
 				m_sounds.push_back		(temp_);
 		}
-		for (u32 i=0; i<params.m_max_count; ++i){
+		for (u32 i=0; i<params.m_max_count; ++i)
+		{
 			string256					name;
 			xr_sprintf						(name,"%s%d",s,i);
 			if (FS.exist(fn,_game_sounds_,name,".ogg")) {
 				ref_sound				*temp_ = add(params.m_type,name);
 				if (temp_)
 					m_sounds.push_back	(temp_);
+			}
+		}
+		if (m_sounds.empty())
+		{
+			xr_strconcat(s, *params.m_sound_player_prefix, temp);
+			if (FS.exist(fn, _game_sounds_, s, ".ogg"))
+			{
+				ref_sound* temp_ = add(params.m_type, s);
+				if (temp_)
+					m_sounds.push_back(temp_);
+			}
+			for (u32 i = 0; i < params.m_max_count; ++i)
+			{
+				string256					name;
+				xr_sprintf(name, "%s%d", s, i);
+				if (FS.exist(fn, _game_sounds_, name, ".ogg")) {
+					ref_sound* temp_ = add(params.m_type, name);
+					if (temp_)
+						m_sounds.push_back(temp_);
+				}
 			}
 		}
 	}
