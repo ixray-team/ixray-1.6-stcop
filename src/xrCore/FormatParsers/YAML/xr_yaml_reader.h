@@ -10,8 +10,8 @@
 
 class XRCORE_API CYaml final
 {
-	YAML::Node			mRootNode;
-	shared_str			mFileName;
+	YAML::Node mRootNode;
+	xr_string mFileName;
 
 public:
 	CYaml(const char* FilePath, const char* FileName);
@@ -23,7 +23,7 @@ public:
 
 	//чтение элементов
 	const char* GetString(const YAML::Node& BaseNode, const char* ChildNodeName, const char* DefaultStr);
-	std::string GetStringRoot(const YAML::Node& BaseNode, const char* Name, const char* DefaultStr);
+	xr_string GetStringRoot(const YAML::Node& BaseNode, const char* Name, const char* DefaultStr);
 	int   				GetInt(const YAML::Node& BaseNode, const char* ChildNodeName, int iDefaultValue);
 	float   			GetFloat(const YAML::Node& BaseNode, const char* ChildNodeName, float fDefaultValue);
 	bool	   			GetBool(const YAML::Node& BaseNode, const char* ChildNodeName, bool bDefaultValue);
