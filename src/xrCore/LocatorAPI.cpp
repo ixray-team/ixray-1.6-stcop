@@ -74,7 +74,10 @@ void CLocatorAPI::Register(LPCSTR name, u32 vfs, u32 crc, u32 ptr, u32 size_real
 
 	if (IsAddonPhase && !IsArchivePhase)
 	{
-		g_pAddonsManager->CanApply(TempPath, desc);
+		if (!g_pAddonsManager->CanApply(TempPath, desc))
+		{
+			return;
+		}
 	}
 
 	// Register file
@@ -770,12 +773,8 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 	// Load addons
 	if (FS.path_exist("$arch_dir_addons$"))
 	{
-		FS.IsAddonPhase = true;
 		g_pAddonsManager = new CAddonManager;
-
-		FS_Path* AddonsArchsPath = FS.get_path("$arch_dir_addons$");
-		FS.rescan_path(AddonsArchsPath->m_Path, AddonsArchsPath->m_Flags.is(FS_Path::flRecurse));
-		FS.IsAddonPhase = false;
+		g_pAddonsManager->Initialize();
 	}
 
 	// u32	M2 = Memory.mem_usage();
