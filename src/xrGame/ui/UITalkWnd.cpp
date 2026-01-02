@@ -472,31 +472,21 @@ bool CUITalkWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 void CUITalkWnd::PlaySnd(LPCSTR text)
 {
 	u32 text_len = xr_strlen(text);
-	
+
 	// Very crude hack with check for maximum path size
 	// Script result passes here not the text ID, but the fully localized variant
 	if ( text_len == 0 || text_len >= _MAX_PATH)
 	{
 		return;
 	}
-	
+
 	string_path	fn;
-	
-	LPCSTR path = "characters_voice\\dialogs\\";
-	LPCSTR ext  = ".ogg";
-	u32 tsize   = sizeof(fn) - xr_strlen(path) - xr_strlen(ext) - 1;
-	if ( text_len > tsize )
-	{
-		text_len = tsize;
-	}
-
-	strncpy_s( fn, sizeof(fn), path, xr_strlen(path) );
-	strncat_s( fn, sizeof(fn), text, text_len );
-	strncat_s( fn, sizeof(fn), ext,  xr_strlen(ext) );
-
-	//	strconcat( sizeof(fn), fn, "characters_voice\\dialogs\\", text2, ".ogg" );
+	xr_strconcat( fn, "localization\\", g_pStringTable->LangName().c_str(), "\\characters_voice\\dialogs\\", text, ".ogg" );
+	if (!FS.exist(_game_sounds_, fn))
+		xr_strconcat(fn, "characters_voice\\dialogs\\", text, ".ogg");
 
 	StopSnd();
+
 	if (FS.exist(_game_sounds_, fn))
 	{
 		VERIFY(m_pActor);
