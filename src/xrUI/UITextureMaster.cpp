@@ -14,6 +14,7 @@
 #include "uiabstract.h"
 #include "xrUIXmlParser.h"
 #include "../Include/xrRender/UIShader.h"
+#include "../xrEngine/string_table.h"
 
 xr_map<shared_str, TEX_INFO>	CUITextureMaster::m_textures;
 xr_map<sh_pair, ui_shader>		CUITextureMaster::m_shaders;
@@ -102,10 +103,20 @@ bool CUITextureMaster::InitTexture(const shared_str& texture_name, const shared_
 	xr_map<shared_str, TEX_INFO>::iterator it	= m_textures.find(texture_name);
 	if (it != m_textures.end())
 	{
-		sh_pair p={it->second.file, shader_name};
+		string_path fn = "";
+		xr_sprintf(fn, "%s_%s", g_pStringTable->LangName().c_str(), it->second.file.c_str());
+		string_path temp;
+		if (!FS.exist(temp, "$game_textures$", fn, ".dds")
+			&& !FS.exist(temp, "$game_textures$", fn, ".avi")
+			&& !FS.exist(temp, "$game_textures$", fn, ".seq")
+			&& !FS.exist(temp, "$game_textures$", fn, ".ogm"))
+		{
+			xr_strcpy(fn, it->second.file.c_str());
+		}
+		sh_pair p={fn, shader_name};
 		xr_map<sh_pair, ui_shader>::iterator sh_it = m_shaders.find(p);
 		if(sh_it==m_shaders.end())
-			m_shaders[p]->create(shader_name.c_str(), it->second.file.c_str());
+			m_shaders[p]->create(shader_name.c_str(), fn);
 
 		out_shader			= m_shaders[p];
 		out_rect			= (*it).second.rect;
@@ -115,7 +126,20 @@ bool CUITextureMaster::InitTexture(const shared_str& texture_name, const shared_
 	bool texExist = FS.TryLoad(xr_string(texture_name.c_str()));
 	if (texExist || warn_about_missing_tex)
 	{
-		out_shader->create(shader_name.c_str(), texture_name.c_str());
+		string_path fn = "";
+		xr_sprintf(fn, "%s_%s", g_pStringTable->LangName().c_str(), texture_name.c_str());
+		string_path temp;
+		if (FS.exist(temp, "$game_textures$", fn, ".dds")
+			|| FS.exist(temp, "$game_textures$", fn, ".avi")
+			|| FS.exist(temp, "$game_textures$", fn, ".seq")
+			|| FS.exist(temp, "$game_textures$", fn, ".ogm"))
+		{
+			out_shader->create(shader_name.c_str(), fn);
+		}
+		else
+		{
+			out_shader->create(shader_name.c_str(), texture_name.c_str());
+		}
 	}
 	else
 	{
@@ -130,10 +154,20 @@ bool CUITextureMaster::InitTexture(const shared_str& texture_name, CUIStaticItem
 	xr_map<shared_str, TEX_INFO>::iterator it = m_textures.find(texture_name);
 	if (it != m_textures.end())
 	{
-		sh_pair p = { it->second.file, shader_name };
+		string_path fn = "";
+		xr_sprintf(fn, "%s_%s", g_pStringTable->LangName().c_str(), it->second.file.c_str());
+		string_path temp;
+		if (!FS.exist(temp, "$game_textures$", fn, ".dds")
+			&& !FS.exist(temp, "$game_textures$", fn, ".avi")
+			&& !FS.exist(temp, "$game_textures$", fn, ".seq")
+			&& !FS.exist(temp, "$game_textures$", fn, ".ogm"))
+		{
+			xr_strcpy(fn, it->second.file.c_str());
+		}
+		sh_pair p = { fn, shader_name };
 		xr_map<sh_pair, ui_shader>::iterator sh_it = m_shaders.find(p);
 		if (sh_it == m_shaders.end())
-			m_shaders[p]->create(shader_name.c_str(), it->second.file.c_str());
+			m_shaders[p]->create(shader_name.c_str(), fn);
 
 		tc->SetShader(m_shaders[p]);
 		tc->SetTextureRect((*it).second.rect);
@@ -144,7 +178,20 @@ bool CUITextureMaster::InitTexture(const shared_str& texture_name, CUIStaticItem
 	bool texExist = FS.TryLoad(xr_string(texture_name.c_str()));
 	if (texExist || warn_about_missing_tex)
 	{
-		tc->CreateShader(texture_name.c_str(), shader_name.c_str());
+		string_path fn = "";
+		xr_sprintf(fn, "%s_%s", g_pStringTable->LangName().c_str(), texture_name.c_str());
+		string_path temp;
+		if (FS.exist(temp, "$game_textures$", fn, ".dds")
+			|| FS.exist(temp, "$game_textures$", fn, ".avi")
+			|| FS.exist(temp, "$game_textures$", fn, ".seq")
+			|| FS.exist(temp, "$game_textures$", fn, ".ogm"))
+		{
+			tc->CreateShader(fn, shader_name.c_str());
+		}
+		else
+		{
+			tc->CreateShader(texture_name.c_str(), shader_name.c_str());
+		}
 	}
 	else
 	{
