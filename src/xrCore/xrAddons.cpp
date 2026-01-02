@@ -200,7 +200,8 @@ bool CAddonManager::CanApply(xr_string& TempPath, CLocatorAPI::file& Desc)
 
     for (auto& Addon : Addons)
     {
-        const xr_string AddonRoot = Addon.EntryDir.c_str();
+        xr_string AddonRoot = Addon.EntryDir.c_str();
+        xr_strlwr(AddonRoot);
 
         if (TempPath.starts_with(AddonRoot))
         {
