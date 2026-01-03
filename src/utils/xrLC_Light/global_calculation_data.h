@@ -1,7 +1,5 @@
-#ifndef __GLOBAL_CALCULATION_DATA_H__
-#define __GLOBAL_CALCULATION_DATA_H__
+#pragma once
 
-#include "../../Include/Editors/communicate.h"
 #include "base_lighting.h"
 #include "global_slots_data.h"
 #include "b_build_texture.h"
@@ -27,6 +25,5 @@ struct global_claculation_data
 			global_claculation_data		(): g_shaders_xrlc( 0 ) {}
 	void	xrLoad						( );
 };
+
 extern global_claculation_data	gl_data;
-//-----------------------------------------------------------------
-#endif //__GLOBAL_CALCULATION_DATA_H__

@@ -82,7 +82,7 @@ void EmbreeData::BuildRaytraceModel( )
  					 
 		b_material& M = inlc_global_data()->materials()[F->dwMaterial];
 		b_texture& T = inlc_global_data()->textures()[M.surfidx];
- 		if (F->flags.bOpaque || !T.pSurface || !T.bHasAlpha)
+ 		if (F->flags.bOpaque || T.pSurface.Empty() || !T.bHasAlpha)
   			static_geom.AddFaceRaw(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
  		else
  			static_geom_transp.AddFaceRaw(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
@@ -98,7 +98,7 @@ void EmbreeData::BuildRaytraceModel( )
  			Face* F = (Face*) FaceIntel.ptr;
  			b_material& M = inlc_global_data()->materials()[F->dwMaterial];
 			b_texture& T = inlc_global_data()->textures()[M.surfidx];
-			if (F->flags.bOpaque || !T.pSurface || !T.bHasAlpha)
+			if (F->flags.bOpaque || T.pSurface.Empty() || !T.bHasAlpha)
 				static_geom.AddFaceRaw(F, FaceIntel.v1, FaceIntel.v2, FaceIntel.v3);
 			else
 				static_geom_transp.AddFaceRaw(F, FaceIntel.v1, FaceIntel.v2, FaceIntel.v3);
