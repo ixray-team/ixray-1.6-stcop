@@ -11,6 +11,9 @@ void CAddonManager::Initialize()
 {
     FS.IsAddonPhase = true;
 
+    CEngineExternal engineExternal; // Hack
+    currentPlatform = engineExternal.GetCurrentPlatformName();
+
     CollectAddons();
     ResolveDependencies();
     MountAddons();
@@ -51,6 +54,8 @@ void CAddonManager::ReadMetaInfo(const xr_string& InitFile)
     std::filesystem::path InitPath(InitFile.c_str());
     std::filesystem::path RootDir = InitPath.parent_path();
     Addon.EntryDir = RootDir.string().c_str();
+    Addon.AddonName = RootDir.filename().string().c_str();
+    Addon.Platforms.insert(currentPlatform.c_str());
 
     CYaml Yaml(RootDir.string().c_str(), "addon.init");
 
@@ -58,8 +63,29 @@ void CAddonManager::ReadMetaInfo(const xr_string& InitFile)
     {
         const YAML::Node& Root = Yaml.GetRoot();
 
-        xr_string Name = Yaml.GetStringRoot(Root, "name", "");
+        xr_string Name = Yaml.GetStringRoot(Root, "name", RootDir.filename().string().c_str());
         Addon.AddonName = Name.c_str();
+
+        YAML::Node platforms = Root["platform"];
+        if (platforms)
+        {
+            Addon.Platforms.clear();
+
+            if (platforms.IsSequence())
+            {
+                for (const auto& platform : platforms)
+                {
+                    if (platform.IsScalar())
+                    {
+                        Addon.Platforms.insert(platform.as<std::string>().c_str());
+                    }
+                }
+            }
+            else if (platforms.IsScalar())
+            {
+                Addon.Platforms.insert(platforms.as<std::string>().c_str());
+            }
+        }
 
         // Script
         xr_string Script = Yaml.GetStringRoot(Root, "script", "");
@@ -93,8 +119,15 @@ void CAddonManager::ReadMetaInfo(const xr_string& InitFile)
         }
     }
 
-    Addons.push_back(Addon);
-    Msg("Addon found: %s (%s)", Addon.AddonName.c_str(), Addon.EntryDir.c_str());
+    if (Addon.Platforms.contains(currentPlatform.c_str()))
+    {
+        Addons.push_back(Addon);
+        Msg("Addon found: %s (%s)", Addon.AddonName.c_str(), Addon.EntryDir.c_str());
+    }
+    else
+    {
+        Msg("# Add-on `%s` belongs to another platform", Addon.AddonName.c_str());
+    }
 }
 
 void CAddonManager::ResolveDependencies()
