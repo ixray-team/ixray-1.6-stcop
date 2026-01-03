@@ -228,11 +228,15 @@ end
 
 function load_dialog:OnMsgYes()
 	local index = self.list_box:GetSelectedIndex()
-
-	if index == -1 then return end
+	if index == -1 or index == 4294967295 then
+		return
+	end
 
 	if self.msgbox_id == 1 then
-		local item  = self.list_box:GetItemByIndex(index)
+		local item = self.list_box:GetItemByIndex(index)
+		if not item then
+			return
+		end
 
 		local fname = item.fn:GetText()
 
@@ -254,10 +258,14 @@ function load_dialog:load_game_internal()
 	if self.list_box:GetSize()==0 then return end
 
 	local index = self.list_box:GetSelectedIndex()
+	if index == -1 or index == 4294967295 then
+		return
+	end
 
-	if index == -1 then return end
-
-	local item  = self.list_box:GetItemByIndex(index)
+	local item = self.list_box:GetItemByIndex(index)
+	if not item then
+		return
+	end
 
 	local fname = item.fn:GetText()
 
@@ -313,10 +321,14 @@ end
 
 function load_dialog:OnButton_del_clicked()
 	if self.list_box:GetSize()==0 then return end
+	
 	local index = self.list_box:GetSelectedIndex()
-	local item = self.list_box:GetItemByIndex(index) -- Suhar_
-
-	if index == -1 or item==nil then -- Suhar_
+	if index == -1 or index == 4294967295 then
+		return
+	end
+	
+	local item = self.list_box:GetItemByIndex(index)
+	if not item then
 		return
 	end
 
