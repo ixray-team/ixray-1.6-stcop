@@ -55,8 +55,10 @@ void xrLC_GlobalData::clear_build_textures_surface()
 
 	xr_vector<b_BuildTexture>::iterator i = textures().begin();
 	xr_vector<b_BuildTexture>::const_iterator e = textures().end();
-	for(;i!=e;++i)
-		xr_free((*i).pSurface);
+	for (; i != e; ++i)
+	{
+		(*i).pSurface.Clear();
+	}
 
 	Memory.mem_compact();
 	clMsg( "mem usage after clear build textures surface: %u", Memory.mem_usage() );
@@ -71,7 +73,9 @@ void xrLC_GlobalData::clear_build_textures_surface( const xr_vector<u32> &exept 
 	{
 		xr_vector<u32>::const_iterator ff = std::find( exept.begin(), exept.end(),u32( i - b ) );
 		if( ff ==  exept.end() )
-			xr_free((*i).pSurface);
+		{
+			(*i).pSurface.Clear();
+		}
 	}
 	Memory.mem_compact();
 	clMsg( "mem usage after clear build textures surface: %u", Memory.mem_usage() );
@@ -180,7 +184,9 @@ void vec_spetial_clear( xr_vector<T> &v )
 {
 	typename xr_vector<T>::iterator i = v.begin(), e = v.end();
 	for(;i!=e;++i)
-		xr_free((*i).pSurface);
+	{
+		(*i).pSurface.Clear();
+	}
 	v.clear();
 }
 

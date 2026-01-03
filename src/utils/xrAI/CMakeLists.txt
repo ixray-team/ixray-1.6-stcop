@@ -53,17 +53,10 @@ target_compile_definitions(xrAI PRIVATE "$<$<CONFIG:Release>:LUABIND_NO_ERROR_CH
 target_link_libraries(xrAI PUBLIC luabind)
 target_link_libraries(xrAI PUBLIC xrSE_Factory)
 target_link_libraries(xrAI PUBLIC xrEngineCore)
+target_link_libraries(xrAI PUBLIC xrDXT)
 target_link_libraries(xrAI PUBLIC imgui)
 
 target_link_libraries(xrAI PUBLIC "rpcrt4.lib")
-
-## FreeImage
-target_include_directories(xrAI PUBLIC "${FREEIMAGE}/native/include/")
-
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FREEIMAGE}/native/bin/${NUGET_PACKAGE_PLATFORM}/Release/FreeImage.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-)
-target_link_libraries(xrAI PUBLIC ${FREEIMAGE}/native/lib/${NUGET_PACKAGE_PLATFORM}/Release/FreeImage.lib)
 
 ## DirectX SDK
 target_include_directories(xrAI PRIVATE "${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/include/")

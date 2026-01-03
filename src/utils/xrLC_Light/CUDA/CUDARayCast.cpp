@@ -124,7 +124,7 @@ void XRay::RayTrace::CUDA::InitializeTexturesAlpha()
 	xr_vector<TextureDataCPU>  Textures;
  	for (auto& T : lc_global_data()->textures())
 	{
-		if (!T.pSurface || !T.bHasAlpha)
+		if (T.pSurface.Empty() || !T.bHasAlpha)
 		{
  			Textures.push_back(TextureDataCPU());
  			
@@ -142,7 +142,7 @@ void XRay::RayTrace::CUDA::InitializeTexturesAlpha()
 		data.alpha.resize(T.dwWidth*T.dwHeight);
  		u8* ALPHA = data.alpha.data();
 
-		const uint32_t* raw = static_cast<const uint32_t*>(T.pSurface);
+		const uint32_t* raw = static_cast<const uint32_t*>(*T.pSurface);
 		for (auto i = 0; i < T.dwWidth * T.dwHeight; i++)
 		{
 			uint32_t pixel = raw[i];
