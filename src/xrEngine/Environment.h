@@ -410,6 +410,8 @@ public:
 	float						source_rain_radius_render;
 	float						add_const_dist_coefficient;
 	float						add_const_dist_coefficient_render;
+
+	int							multiplier_clouds_color;
 };
 
 ENGINE_API extern Flags32	psEnvFlags;
