@@ -23,7 +23,7 @@ bool CalculateEnergy(int PrimID, Fvector& B, float& energy, float u, float v)
 	if (!T.bHasAlpha)
 		return false;
 
-	if (T.pSurface == nullptr)
+	if (T.pSurface.Empty())
 	{
 		T.bHasAlpha = false;
 		return false;
@@ -43,7 +43,8 @@ bool CalculateEnergy(int PrimID, Fvector& B, float& energy, float u, float v)
 	U %= T.dwWidth;		if (U < 0) U += T.dwWidth;
 	V %= T.dwHeight;	if (V < 0) V += T.dwHeight;
 
- 	u32 pixel = T.pSurface[V * T.dwWidth + U];
+	u32* raw = static_cast<u32*>(*T.pSurface);
+ 	u32 pixel = raw[V * T.dwWidth + U];
 	u32 pixel_a = color_get_A(pixel);
 	float opac = 1.f - _sqr(float(pixel_a) / 255.f);
 

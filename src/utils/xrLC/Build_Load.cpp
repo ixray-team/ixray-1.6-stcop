@@ -1,17 +1,12 @@
 #include "StdAfx.h"
 #include "ELight_def.h"
 
-
-
 #include "Build.h"
 
 #include "../xrLC_Light/xrLC_GlobalData.h"
 #include "../xrLC_Light/xrFace.h"
-
-
 #include "../xrLC_Light/xrMU_Model.h"
 #include "../xrLC_Light/xrMU_Model_Reference.h"
-
 
 extern u32	version;
 template <class T>
@@ -28,21 +23,30 @@ void transfer(const char *name, xr_vector<T> &dest, IReader& F, u32 chunk)
 	if (O)		O->close	();
 }
 
-extern u32*		Surface_Load	(char* name, u32& w, u32& h);
-extern void		Surface_Init	();
-
 struct R_Control
 {
 	string64				name;
 	xr_vector<u32>			data;
 };
+
 struct R_Layer
 {
 	R_Control				control;
 	xr_vector<R_Light>		lights;
 };
 
+inline bool Surface_Detect(string_path& F, LPSTR N)
+{
+	FS.update_path(F, "$game_textures$", xr_strconcat(F, N, ".dds"));
+	FILE* file = fopen(F, "rb");
+	if (file)
+	{
+		fclose(file);
+		return true;
+	}
 
+	return false;
+}
 
 void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 {
@@ -295,34 +299,23 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 	// process textures
 	Status			("Processing textures...");
 	{
-		Surface_Init		();
 		F = fs.open_chunk	(EB_Textures);
-#ifdef _M_X64
-		u32 tex_count = F->length() / sizeof(b_texture64);
-#else
-		u32 tex_count = F->length() / sizeof(b_texture);
-#endif
+		u32 tex_count = F->length() / sizeof(b_texture_real);
 		bool is_thm_missing = false;
 		bool is_tga_missing = false;
 
 		for (u32 t=0; t<tex_count; t++)
 		{
-			Progress		(float(t)/float(tex_count));
-#ifdef _M_X64
-			b_texture64	TEX;
+			Progress(float(t)/float(tex_count));
+
+			b_texture_real TEX;
 			F->r(&TEX, sizeof(TEX));
 			b_BuildTexture	BT;
 
 			// ptr should be copied separately
-			CopyMemory(&BT, &TEX, sizeof(TEX) - 4);	
-			BT.pSurface = (u32*)TEX.pSurface;
-#else
-			b_texture TEX;
-			F->r(&TEX, sizeof(TEX));
+			CopyMemory(&BT, &TEX, sizeof(TEX) - 4);
+			BT.pSurface.Clear();
 
-			b_BuildTexture BT;
-			CopyMemory(&BT, &TEX, sizeof(TEX));
-#endif
 			// load thumbnail
 			LPSTR N			= BT.name;
 			if (strchr(N,'.')) *(strchr(N,'.')) = 0;
@@ -335,7 +328,6 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 				BT.dwHeight		= 1024;
 				BT.bHasAlpha	= TRUE;
 				BT.SetHasSurface(FALSE);
-				BT.pSurface		= 0;
 
 			} 
 			else 
@@ -352,14 +344,12 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 					BT.dwHeight = 1024;
 					BT.bHasAlpha = FALSE;
 					BT.SetHasSurface(FALSE);
-					BT.pSurface = 0;
  				}
 				else
 				{
 					// version
 					u32 version = 0;
 					R_ASSERT2(THM->r_chunk(THM_CHUNK_VERSION, &version), th_name);
-					// if( version!=THM_CURRENT_VERSION )	FATAL	("Unsupported version of THM file.");
 
 					// analyze thumbnail information
 					R_ASSERT2(THM->find_chunk(THM_CHUNK_TEXTUREPARAM), th_name);
@@ -383,27 +373,27 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 						if (BT.bHasAlpha || BT.THM.flags.test(STextureParams::flImplicitLighted) || g_build_options.b_radiosity)
 						{
 							clMsg("- loading: %s W[%u] H[%u]", N, BT.dwWidth, BT.dwHeight);
-							u32			w = 0, h = 0;
-							BT.pSurface = Surface_Load(N, w, h);
 							BT.SetHasSurface(TRUE);
 
-							if (!BT.pSurface) {
+							string_path OutName;
+							if (!Surface_Detect(OutName, N) || !BT.pSurface.LoadFromFile(OutName))
+							{
 								clMsg("! cannot find dds texture: %s", N);
 								is_tga_missing = true;
 								continue;
 							}
 
-							if ((w != BT.dwWidth) || (h != BT.dwHeight))
+							BT.pSurface.ClearMipLevels();
+							BT.pSurface.Convert(RedImageTool::RedTexturePixelFormat::R8G8B8A8);
+							BT.pSurface.SwapRB();
+
+							if ((BT.pSurface.GetWidth() != BT.dwWidth) || (BT.pSurface.GetHeight() != BT.dwHeight))
 							{
-								Msg("- THM doesn't correspond to the texture: %dx%d -> %dx%d", BT.dwWidth, BT.dwHeight, w, h);
-								BT.dwWidth = BT.THM.width = w;
-								BT.dwHeight = BT.THM.height = h;
+								Msg("! THM doesn't correspond to the texture: %dx%d -> %dx%d", BT.dwWidth, BT.dwHeight, BT.pSurface.GetWidth(), BT.pSurface.GetHeight());
+								BT.dwWidth = BT.THM.width = BT.pSurface.GetWidth();
+								BT.dwHeight = BT.THM.height = BT.pSurface.GetHeight();
 							}
 							BT.Vflip();
-						}
-						else 
-						{
-							// Free surface memory
 						}
 					}
 				}

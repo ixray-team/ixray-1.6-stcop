@@ -19,11 +19,18 @@ void transfer(const char *name, xr_vector<T> &dest, IReader& F, u32 chunk)
 	if (O)		O->close	();
 }
 
-extern u32*		Surface_Load	(char* name, u32& w, u32& h);
-extern void		Surface_Init	();
+inline bool Surface_Detect(string_path& F, LPSTR N)
+{
+	FS.update_path(F, "$game_textures$", xr_strconcat(F, N, ".dds"));
+	FILE* file = fopen(F, "rb");
+	if (file)
+	{
+		fclose(file);
+		return true;
+	}
 
-// 
-
+	return false;
+}
 // INTEL SELECTION
 #include "embree_raytracing/EmbreeRayTrace.h"
 #include "../xrForms/CompilersUI.h"
@@ -128,40 +135,27 @@ void global_claculation_data::xrLoad()
 		post_process_materials( *g_shaders_xrlc, g_shader_compile, g_materials );
 		// process textures
 
-		Status			("Processing textures...");
+		Status("Processing textures...");
 		{
-			Surface_Init		();
 			F = fs->open_chunk	(EB_Textures);
 
-#ifdef _M_X64
-			u32 tex_count = F->length() / sizeof(b_texture64);
-#else
-			u32 tex_count = F->length() / sizeof(b_texture);
-#endif			
+			u32 tex_count = F->length() / sizeof(b_texture_real);
 
 			bool is_thm_missing = false;
 			bool is_tga_missing = false;
 
 			for (u32 t=0; t<tex_count; t++)
 			{
-				Progress		(float(t)/float(tex_count));
+				Progress(float(t)/float(tex_count));
 
-#ifdef _M_X64
-				b_texture64	TEX;
+				b_texture_real	TEX;
 				F->r(&TEX, sizeof(TEX));
 
 				b_BuildTexture	BT;
 
 				// ptr should be copied separately
 				CopyMemory(&BT, &TEX, sizeof(TEX) - 4);
-				BT.pSurface = nullptr;
-#else
-				b_texture TEX;
-				F->r(&TEX, sizeof(TEX));
-
-				b_BuildTexture BT;
-				CopyMemory(&BT, &TEX, sizeof(TEX));
-#endif
+				BT.pSurface.Clear();
 
 				// load thumbnail
 				LPSTR N			= BT.name;
@@ -174,7 +168,6 @@ void global_claculation_data::xrLoad()
 					BT.dwWidth	= 1024;
 					BT.dwHeight	= 1024;
 					BT.bHasAlpha= TRUE;
-					BT.pSurface	= 0;
 					BT.SetHasSurface(FALSE);
 				}
 				else
@@ -211,7 +204,6 @@ void global_claculation_data::xrLoad()
 					BT.dwWidth				= BT.THM.width;
 					BT.dwHeight				= BT.THM.height;
 					BT.bHasAlpha			= BT.THM.HasAlphaChannel();
-					BT.pSurface				= 0;
 					BT.SetHasSurface(FALSE);
 
 					if (!bLOD) 
@@ -219,19 +211,26 @@ void global_claculation_data::xrLoad()
 						if (BT.bHasAlpha || BT.THM.flags.test(STextureParams::flImplicitLighted))
 						{
 							clMsg("- loading: %s",N);
-							u32 w=0, h=0;
-							BT.pSurface = Surface_Load(N,w,h);
 							BT.SetHasSurface(TRUE);
 
-							if (!BT.pSurface)
+							string_path OutName;
+							if (!Surface_Detect(OutName, N) || !BT.pSurface.LoadFromFile(OutName))
 							{
 								clMsg("cannot find tga texture: %s", N);
 								is_tga_missing = true;
 								continue;
 							}
 
-							if ((w != BT.dwWidth) || (h != BT.dwHeight))
-								Msg("! THM doesn't correspond to the texture: %dx%d -> %dx%d", BT.dwWidth, BT.dwHeight, w, h);
+							BT.pSurface.ClearMipLevels();
+							BT.pSurface.Convert(RedImageTool::RedTexturePixelFormat::R8G8B8A8);
+							BT.pSurface.SwapRB();
+
+							if ((BT.pSurface.GetWidth() != BT.dwWidth) || (BT.pSurface.GetHeight() != BT.dwHeight))
+							{
+								Msg("! THM doesn't correspond to the texture: %dx%d -> %dx%d", BT.dwWidth, BT.dwHeight, BT.pSurface.GetWidth(), BT.pSurface.GetHeight());
+								BT.dwWidth = BT.THM.width = BT.pSurface.GetWidth();
+								BT.dwHeight = BT.THM.height = BT.pSurface.GetHeight();
+							}
 							BT.Vflip	();
 						}
 					}

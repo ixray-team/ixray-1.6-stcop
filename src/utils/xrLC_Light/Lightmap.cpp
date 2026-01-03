@@ -62,8 +62,11 @@ IC void pixel	(int x, int y,  b_texture* T, u32 C=color_rgba(0,255,0,0))
 {
 	if (x<0) return; else if (x>=(int)T->dwWidth)	return;
 	if (y<0) return; else if (y>=(int)T->dwHeight)	return;
-	T->pSurface[y*T->dwWidth+x]	= C;
+
+	u32* raw = static_cast<u32*>(*T->pSurface);
+	raw[y * T->dwWidth + x] = C;
 }
+
 IC void line	( int x1, int y1, int x2, int y2, b_texture* T )
 {
     int dx = std::abs(x2 - x1);
@@ -142,7 +145,7 @@ void CLightmap::Save(LPCSTR path)
 	lm_texture.bHasAlpha = TRUE;
 	lm_texture.dwWidth = lm.width;
 	lm_texture.dwHeight = lm.height;
-	lm_texture.pSurface = NULL;
+	lm_texture.pSurface.Clear();
 
 	lm.destroy();
 

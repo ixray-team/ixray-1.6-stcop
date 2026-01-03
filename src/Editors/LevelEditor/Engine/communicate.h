@@ -1,8 +1,6 @@
-#ifndef _XR_COMM_
-#define _XR_COMM_
-
-	//#include "RedImageTool/RedImage.hpp"
-	#include "../../xrEngine/xrLevel.h"
+#pragma once
+#include <RedImage/RedImage.hpp>
+#include "../../xrEngine/xrLevel.h"
 #pragma pack(push,4)
 
 const u32 XR_MAX_PORTAL_VERTS	= 6;
@@ -49,14 +47,14 @@ struct b_texture_real
 	u32					RESERVE;
 };
 
-//struct b_texture
-//{
-//	string128			name;
-//	u32					dwWidth;
-//	u32					dwHeight;
-//	BOOL				bHasAlpha;
-//	RedImageTool::RedImage pSurface;
-//};
+struct b_texture
+{
+	string128			name;
+	u32					dwWidth;
+	u32					dwHeight;
+	BOOL				bHasAlpha;
+	RedImageTool::RedImage pSurface;
+};
 
 struct b_light_control						// controller or "layer", 30fps
 {
@@ -245,5 +243,3 @@ enum EBUILD_CHUNKS
 
 	EB_FORCE_DWORD = u32(-1)
 };
-
-#endif
