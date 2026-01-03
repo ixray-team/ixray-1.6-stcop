@@ -137,6 +137,8 @@ CEnvironment::CEnvironment	() :
 	add_const_dist_coefficient = READ_IF_EXISTS(config, r_u32, "rain", "add_const_dist_coefficient", 30);
 	add_const_dist_coefficient_render = READ_IF_EXISTS(config, r_u32, "rain", "add_const_dist_coefficient_render", 40);
 
+	multiplier_clouds_color = READ_IF_EXISTS(config, r_u32, "clounds_params", "multiplier", 0);
+
     if (environmentFolderExist)
         xr_delete(config);
     else
