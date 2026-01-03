@@ -4,7 +4,7 @@
 #include "../../xrEngine/xrLevel.h"
 #include "AIMapExport.h"
 #include "Shader_xrLC.h"
-#include "../../Include/Editors/communicate.h"
+#include "../../Editors/LevelEditor/Engine/communicate.h"
 #include "../../Layers/xrRender/ETextureParams.h"
 
 // base patch used all the time up to merging
@@ -102,27 +102,28 @@ extern	SAIParams			g_params;
 extern	xr_unique_ptr<CDB::MODEL> LevelPtr;
 extern	CDB::COLLIDER		IXRC;
 extern	Fbox				LevelBB;
-//extern	Vectors				Emitters;
 
-struct b_BuildTexture : public b_texture
+struct b_BuildTexture :
+	public b_texture
 {
 	STextureParams	THM;
 
-	u32&	Texel	(u32 x, u32 y)
+	u32& Texel(u32 x, u32 y)
 	{
-		return pSurface[y*dwWidth+x];
+		return ((u32*)*pSurface)[y * dwWidth + x];
 	}
-	void	Vflip		()
+
+	void Vflip()
 	{
-		R_ASSERT(pSurface);
-		for (u32 y=0; y<dwHeight/2; y++)
+		R_ASSERT(!pSurface.Empty());
+		for (u32 y = 0; y < dwHeight / 2; y++)
 		{
-			u32 y2 = dwHeight-y-1;
-			for (u32 x=0; x<dwWidth; x++) 
+			u32 y2 = dwHeight - y - 1;
+			for (u32 x = 0; x < dwWidth; x++)
 			{
-				u32		t	= Texel(x,y);
-				Texel	(x,y)	= Texel(x,y2);
-				Texel	(x,y2)	= t;
+				u32		t = Texel(x, y);
+				Texel(x, y) = Texel(x, y2);
+				Texel(x, y2) = t;
 			}
 		}
 	}
