@@ -4,6 +4,8 @@
 
 class CAddonManager final
 {
+private:
+	shared_str currentPlatform;
 public:
 	struct AddonInfo
 	{
@@ -12,6 +14,7 @@ public:
 		shared_str ScriptInit;   // init-скрипт (без .script)
 
 		xr_vector<xr_string> Dependencies;
+		xr_set<xr_string> Platforms;
 	};
 
 public:
