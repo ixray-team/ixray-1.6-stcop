@@ -127,7 +127,7 @@ void CAI_Stalker::reinit			()
 	LPCSTR prefix = READ_IF_EXISTS(pSettings, r_string, cNameSect().c_str(), "voice_prefix", SpecificCharacter().sound_voice_prefix());
 	
 	string_path localized_prefix;
-	xr_sprintf(localized_prefix, "localization\\%s\%s", g_pStringTable->LangName().c_str(), prefix);
+	xr_sprintf(localized_prefix, "localization\\%s\\%s", g_pStringTable->LangName().c_str(), prefix);
 
 	sound().sound_prefix_localized	(localized_prefix);
 	sound().sound_prefix			(prefix);
