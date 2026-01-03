@@ -131,20 +131,22 @@ LPCSTR CUIListBox::GetSelectedText()
 u32 CUIListBox::GetSelectedIDX()
 {
 	u32 _idx = 0;
-	CUIWindow* w = GetSelected();
 
-	xrCriticalSectionGuard guard(m_pad->csUi);
-
-	for (CUIWindow* child : m_pad->GetChildWndList())
+	if (CUIWindow* w = GetSelected())
 	{
-		if (child->ui_cast_list_box_item() != nullptr)
-		{
-			if (child == w)
-			{
-				return _idx;
-			}
+		xrCriticalSectionGuard guard(m_pad->csUi);
 
-			++_idx;
+		for (CUIWindow* child : m_pad->GetChildWndList())
+		{
+			if (child->ui_cast_list_box_item() != nullptr)
+			{
+				if (child == w)
+				{
+					return _idx;
+				}
+
+				++_idx;
+			}
 		}
 	}
 
