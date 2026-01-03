@@ -2494,13 +2494,13 @@ function CFindUpgradeTask:__init(task_ini, id, type) super (task_ini, id, type)
 	self.requested_item_inv_name = system_ini():r_string(self.requested_item, "inv_name")
 	local cost = utils.cfg_get_number(self.task_ini, self.base_id, "cost", nil, true)
 	local sss = utils.cfg_get_string(self.task_ini, self.base_id, "reward_upgr", nil, false, "")
-	if sss ~= nil and game ~= nil then
+	if sss ~= nil then
 		local char_ini = ini_file("item_upgrades.ltx")
 		local sss_table = utils.parse_names(sss)
-		local name_item = game.translate_string(system_ini():r_string(sss_table[1], "inv_name"))
+		local name_item = system_ini():r_string(sss_table[1], "inv_name")
 		-- local property_name = char_ini:r_string(sss_table[2], "name")
-		local name_apgr = game.translate_string(self.name)
-		self.item_for_reward = name_item..". "..name_apgr..": "..tostring(cost).." "..game.translate_string("st_rubles")
+		local name_apgr = self.name
+		self.item_for_reward = "#"..name_item.."#. #"..name_apgr.."#: "..tostring(cost).." #st_rubles#"
 	end
 	self.cost = cost
 end
