@@ -93,72 +93,73 @@ IC bool RayPick(CDB::COLLIDER& DB, Fvector& P, Fvector& D, float r, R_Light& L)
 
 float getLastRP_Scale(CDB::COLLIDER* DB, R_Light& L)//, Face* skip)
 {
-	u32	tris_count		= DB->r_count();
-	float	scale		= 1.f;
+	u32	tris_count = DB->r_count();
+	float	scale = 1.f;
 	Fvector B;
 
-//	X_TRY 
+	for (u32 I = 0; I < tris_count; I++)
 	{
-		for (u32 I=0; I<tris_count; I++)
-		{
-			CDB::RESULT& rpinf = DB->r_begin()[I];
-			// Access to texture
-			CDB::TRI& clT								= gl_data.RCAST_Model.get_tris()[rpinf.id];
-			b_rc_face& F								= gl_data.g_rc_faces[rpinf.id];
-//			if (0==F)									continue;
-//			if (skip==F)								continue;
+		CDB::RESULT& rpinf = DB->r_begin()[I];
+		// Access to texture
+		CDB::TRI& clT = gl_data.RCAST_Model.get_tris()[rpinf.id];
+		b_rc_face& F = gl_data.g_rc_faces[rpinf.id];
 
-			b_material& M	= gl_data.g_materials				[F.dwMaterial];
-			b_texture&	T	= gl_data.g_textures				[M.surfidx];
+		b_material& M = gl_data.g_materials[F.dwMaterial];
+		b_texture& T = gl_data.g_textures[M.surfidx];
 
-		
-			const Shader_xrLC& SH	= shader( F.dwMaterial, *(gl_data.g_shaders_xrlc), gl_data.g_materials );
-//			Shader_xrLCVec&	LIB = 		gl_data.g_shaders_xrlc->Library	();
-//			if (M.shader_xrlc>=LIB.size()) return		0;		//. hack - vy gonite rebyata - eto ne hack - eto sledy zamesti - shader_xrlc - index ne togo masiva !!
-//			Shader_xrLC& SH	= LIB						[M.shader_xrlc];
+		const Shader_xrLC& SH = shader(F.dwMaterial, *(gl_data.g_shaders_xrlc), gl_data.g_materials);
 
-			if (!SH.flags.bLIGHT_CastShadow)			continue;
+		if (!SH.flags.bLIGHT_CastShadow)
+			continue;
 
-#ifdef		DEBUG
-			const b_BuildTexture	&build_texture  = gl_data.g_textures			[M.surfidx];
-
-			VERIFY( !!(build_texture.HasSurface()) ==  !!(T.pSurface) );
+#ifdef DEBUG
+		const b_BuildTexture& build_texture = gl_data.g_textures[M.surfidx];
+		VERIFY(!!(build_texture.HasSurface()) == !!(!T.pSurface.Empty()));
 #endif
 
-			if (0==T.pSurface)	T.bHasAlpha = FALSE;
-			if (!T.bHasAlpha)	{
-				// Opaque poly - cache it
-				L.tri[0].set	(rpinf.verts[0]);
-				L.tri[1].set	(rpinf.verts[1]);
-				L.tri[2].set	(rpinf.verts[2]);
-				return 0;
-			}
+		if (T.pSurface.Empty())
+			T.bHasAlpha = FALSE;
 
-			// barycentric coords
-			// note: W,U,V order
-			B.set	(1.0f - rpinf.u - rpinf.v,rpinf.u,rpinf.v);
-
-			// calc UV
-			Fvector2*	cuv = F.t;
-			Fvector2	uv;
-			uv.x = cuv[0].x*B.x + cuv[1].x*B.y + cuv[2].x*B.z;
-			uv.y = cuv[0].y*B.x + cuv[1].y*B.y + cuv[2].y*B.z;
-
-			int U = iFloor(uv.x*float(T.dwWidth) + .5f);
-			int V = iFloor(uv.y*float(T.dwHeight)+ .5f);
-			U %= T.dwWidth;		if (U<0) U+=T.dwWidth;
-			V %= T.dwHeight;	if (V<0) V+=T.dwHeight;
-
-			u32 pixel		= T.pSurface[V*T.dwWidth+U];
-			u32 pixel_a		= color_get_A(pixel);
-			float opac		= 1.f - float(pixel_a)/255.f;
-			scale			*= opac;
+		if (!T.bHasAlpha)
+		{
+			// Opaque poly - cache it
+			L.tri[0].set(rpinf.verts[0]);
+			L.tri[1].set(rpinf.verts[1]);
+			L.tri[2].set(rpinf.verts[2]);
+			return 0;
 		}
-	} 
-//	X_CATCH
-//	{
-//		clMsg("* ERROR: getLastRP_Scale");
-//	}
+
+		// barycentric coords
+		// note: W,U,V order
+		B.set(1.0f - rpinf.u - rpinf.v, rpinf.u, rpinf.v);
+
+		// calc UV
+		Fvector2* cuv = F.t;
+		Fvector2	uv;
+		uv.x = cuv[0].x * B.x + cuv[1].x * B.y + cuv[2].x * B.z;
+		uv.y = cuv[0].y * B.x + cuv[1].y * B.y + cuv[2].y * B.z;
+
+		int U = iFloor(uv.x * float(T.dwWidth) + .5f);
+		int V = iFloor(uv.y * float(T.dwHeight) + .5f);
+
+		U %= T.dwWidth;
+		if (U < 0)
+		{
+			U += T.dwWidth;
+		}
+
+		V %= T.dwHeight;
+		if (V < 0)
+		{
+			V += T.dwHeight;
+		}
+
+		u32* raw = static_cast<u32*>(*T.pSurface);
+		u32 pixel = raw[V * T.dwWidth + U];
+		u32 pixel_a = color_get_A(pixel);
+		float opac = 1.f - float(pixel_a) / 255.f;
+		scale *= opac;
+	}
 
 	return scale;
 }

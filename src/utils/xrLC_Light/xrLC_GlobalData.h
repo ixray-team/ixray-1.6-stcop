@@ -6,7 +6,6 @@
 #include "xrDeflectorDefs.h"
 #include "b_build_texture.h"
 #include "base_lighting.h"
-#include "../../Include/Editors/communicate.h"
 #include "../xrForms/CompilersUI.h"
 
 namespace CDB{
