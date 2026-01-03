@@ -29,7 +29,8 @@ void CAddonManager::CollectAddons()
         return;
     }
 
-    for (auto& Entry : std::filesystem::recursive_directory_iterator(AddonsRoot.c_str()))
+    auto options = std::filesystem::directory_options::follow_directory_symlink;
+    for (auto& Entry : std::filesystem::recursive_directory_iterator(AddonsRoot.c_str(), options))
     {
         if (!Entry.is_regular_file())
         {
