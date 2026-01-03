@@ -206,7 +206,7 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
         b_material& M = globalData->materials()[F->dwMaterial];
         b_texture& T = globalData->textures()[M.surfidx];
 
-        bool isTransparent = !F->flags.bOpaque && T.pSurface && T.bHasAlpha;
+        bool isTransparent = !F->flags.bOpaque && !T.pSurface.Empty() && T.bHasAlpha;
         F->flags.bOpaque = !isTransparent;
 
         if (!isTransparent)
@@ -227,7 +227,7 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
             b_material& M = globalData->materials()[F->dwMaterial];
             b_texture& T = globalData->textures()[M.surfidx];
 
-            bool isTransparent = !F->flags.bOpaque && T.pSurface && T.bHasAlpha;
+            bool isTransparent = !F->flags.bOpaque && !T.pSurface.Empty() && T.bHasAlpha;
 
             if (!isTransparent)
                   geometryBuilder.AddFace(F, pF.v1, pF.v2, pF.v3);
