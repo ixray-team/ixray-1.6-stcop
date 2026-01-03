@@ -13,9 +13,10 @@ u32	ImplicitDeflector::Height	()
 	return texture->dwHeight; 
 }
 	
-u32&	ImplicitDeflector::Texel	(u32 x, u32 y)			
+u32& ImplicitDeflector::Texel(u32 x, u32 y)
 {
-	return texture->pSurface[y*Width()+x]; 
+	u32* raw = static_cast<u32*>(*texture->pSurface);
+	return raw[y * Width() + x];
 }
 
 void	ImplicitDeflector::Bounds	(u32 ID, Fbox2& dest)
