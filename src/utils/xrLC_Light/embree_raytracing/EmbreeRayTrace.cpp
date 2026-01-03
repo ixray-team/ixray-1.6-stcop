@@ -91,7 +91,7 @@ bool CalculateEnergy(RayQueryContext* ctxt, RTCHit* hit, Face* F, Fvector& B)
 	}
 
 	// fetch pixel
-	const uint32_t* raw = static_cast<const uint32_t*>(T.pSurface);
+	const uint32_t* raw = static_cast<const uint32_t*>(*T.pSurface);
 	uint32_t pixel   = raw[V * T.dwWidth + U];
 	uint32_t pixel_a = (pixel >> 24) & 0xFF;
 
