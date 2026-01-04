@@ -1254,24 +1254,17 @@ bool CInventory::ClientEat(PIItem pIItem)
 
 bool CInventory::InSlot(const CInventoryItem* pIItem) const
 {
-	if (pIItem->CurrPlace() != eItemPlaceSlot)
-		return false;
-
-	//VERIFY(m_slots[pIItem->CurrSlot()].m_pIItem == pIItem);
-
-	return true;
+	return pIItem->CurrPlace() == eItemPlaceSlot;
 }
 
 bool CInventory::InBelt(const CInventoryItem* pIItem) const
 {
-	if(Get(pIItem->object().ID(), false)) return true;
-	return false;
+	return pIItem->CurrPlace() == eItemPlaceBelt;
 }
 
 bool CInventory::InRuck(const CInventoryItem* pIItem) const
 {
-	if(Get(pIItem->object().ID(), true)) return true;
-	return false;
+	return pIItem->CurrPlace() == eItemPlaceRuck;
 }
 
 
@@ -1360,10 +1353,12 @@ bool CInventory::CanTakeItem(CInventoryItem *inventory_item) const
 
 	if(!inventory_item->CanTake()) return false;
 
+#ifdef DEBUG
 	TIItemContainer::const_iterator it = m_all.begin();
-	for(; it != m_all.end(); it++)
-		if((*it)->object().ID() == inventory_item->object().ID()) break;
-	VERIFY3(it == m_all.end(), "item already exists in inventory",*inventory_item->object().cName());
+	for (; it != m_all.end(); it++)
+		if ((*it)->object().ID() == inventory_item->object().ID()) break;
+	VERIFY3(it == m_all.end(), "item already exists in inventory", *inventory_item->object().cName());
+#endif
 
 	CActor* pActor = m_pOwner->cast_actor();
 	CCar* pCar = m_pOwner->cast_car();
