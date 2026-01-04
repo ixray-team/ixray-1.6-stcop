@@ -550,47 +550,45 @@ void CUIActorMenu::OnBtnPerformTradeBuy(CUIWindow* w, void* d)
 
 	UpdateItemsPlace				();
 }
+
 void CUIActorMenu::OnBtnPerformTradeSell(CUIWindow* w, void* d)
 {
-	if ( m_pTradeActorList->ItemsCount() == 0 ) 
+	if (m_pTradeActorList->ItemsCount() == 0)
 	{
 		return;
 	}
 
-	int actor_money    = (int)m_pActorInvOwner->get_money();
-	int partner_money  = (int)m_pPartnerInvOwner->get_money();
-	int actor_price    = (int)CalcItemsPrice( m_pTradeActorList,   m_partner_trade, true  );
-	int partner_price  = 0;//(int)CalcItemsPrice( m_pTradePartnerList, m_partner_trade, false );
+	int actor_money = (int)m_pActorInvOwner->get_money();
+	int partner_money = (int)m_pPartnerInvOwner->get_money();
+	int actor_price = (int)CalcItemsPrice(m_pTradeActorList, m_partner_trade, true);
+	int partner_price = 0;
+	bool partner_infinivite_money = m_pPartnerInvOwner->InfinitiveMoney();
 
-	int delta_price    = actor_price - partner_price;
-	actor_money        += delta_price;
-	partner_money      -= delta_price;
+	int delta_price = actor_price - partner_price;
+	actor_money += delta_price;
+	partner_money -= delta_price;
 
-	if ( ( actor_money >= 0 ) && ( partner_money >= 0 ) && ( actor_price >= 0 || partner_price > 0 ) )
+	if (actor_money >= 0 && (partner_infinivite_money || partner_money >= 0) && (actor_price >= 0 || partner_price > 0))
 	{
-		m_partner_trade->OnPerformTrade( partner_price, actor_price );
+		m_partner_trade->OnPerformTrade(partner_price, actor_price);
 
-		TransferItems( m_pTradeActorList,   m_pTradePartnerBagList, m_partner_trade, true );
-//		TransferItems( m_pTradePartnerList,	m_pTradeActorBagList,	m_partner_trade, false );
+		TransferItems(m_pTradeActorList, m_pTradePartnerBagList, m_partner_trade, true);
 	}
 	else
 	{
-/*		if ( actor_money < 0 )
+		if (!partner_infinivite_money && partner_money <= 0)
 		{
-			CallMessageBoxOK( "not_enough_money_actor" );
-		}
-		else */if ( partner_money < 0 )
-		{
-			CallMessageBoxOK( "not_enough_money_partner" );
+			CallMessageBoxOK("not_enough_money_partner");
 		}
 		else
 		{
-			CallMessageBoxOK( "trade_dont_make" );
+			CallMessageBoxOK("trade_dont_make");
 		}
 	}
-	SetCurrentItem					( nullptr );
 
-	UpdateItemsPlace				();
+	SetCurrentItem(nullptr);
+
+	UpdateItemsPlace();
 }
 
 void CUIActorMenu::TransferItems( CUIDragDropListEx* pSellList, CUIDragDropListEx* pBuyList, CTrade* pTrade, bool bBuying )
