@@ -204,13 +204,21 @@ function npc_sound:play(npc_id, faction, point, msg)
 	local snd = self.sound_path[npc_id][table_id]
 	-- проверка на существование звука дублирующего основной по ПДА. Если он есть то играть его.
 	local f = getFS()
-	if snd and f:exist("$game_sounds$", snd.."_pda.ogg") ~= nil and npc:position():distance_to_sqr(db.actor:position()) >= 100 then
-		self.pda_snd_obj = sound_object(snd.."_pda")
+	local langName = get_console():get_token("language")
+	local sndName = "localization\\"..langName.."\\"..snd.."_pda"
+	local sndExist = f:exist("$game_sounds$", sndName..".ogg")
+	if sndExist == nil then
+		sndName = snd.."_pda"
+		sndExist = f:exist("$game_sounds$", sndName..".ogg")
+	end
+	
+	if sndName and sndExist ~= nil and npc:position():distance_to_sqr(db.actor:position()) >= 100 then
+		self.pda_snd_obj = sound_object(sndName)
 		self.pda_snd_obj:play_at_pos(db.actor, vector():set(0,0,0), 0, sound_object.s2d)
 		self.pda_snd_obj.volume = 0.8
 	end
 	--printf("snd_path is "..tostring(self.sound_path[npc_id][table_id]))
-	local snd_st, num_copy = string.gsub(snd, "\\", "_")
+	local snd_st = string.gsub(snd, "\\", "_")
 
 	if self.group_snd then
 		self.can_play_group_sound = false
@@ -351,13 +359,24 @@ function actor_sound:__init(snd_ini, section)
 
 	local f = getFS()
 
-	if f:exist("$game_sounds$",self.path..".ogg") ~= nil then
+	local langName = get_console():get_token("language")
+	if f:exist("$game_sounds$","localization\\"..langName.."\\"..self.path..".ogg") ~= nil then
+		self.sound[1] = "localization\\"..langName.."\\"..self.path
+	elseif f:exist("$game_sounds$",self.path..".ogg") ~= nil then
 		self.sound[1] = self.path
 	else
 		local num = 1
-		while f:exist("$game_sounds$",self.path..num..".ogg") do
-			self.sound[num] = self.path..num
+		local localizationExist = false
+		while f:exist("$game_sounds$","localization\\"..langName.."\\"..self.path..num..".ogg") do
+			localizationExist = true
+			self.sound[num] = "localization\\"..langName.."\\"..self.path..num
 			num = num + 1
+		end
+		if not localizationExist then
+			while f:exist("$game_sounds$",self.path..num..".ogg") do
+				self.sound[num] = self.path..num
+				num = num + 1
+			end
 		end
 	end
 	if #self.sound == 0 then
@@ -596,8 +615,16 @@ function object_sound:play(obj_id, faction, point, msg)
 --	printf("object played_id = %s", self.played_id)
 	local snd = self.sound[self.played_id]
 	local f = getFS()
-	if snd and f:exist("$game_sounds$", snd.."_pda.ogg") ~= nil and obj:position():distance_to_sqr(db.actor:position()) >= 5 then
-		self.pda_snd_obj = sound_object(snd.."_pda")
+	local langName = get_console():get_token("language")
+	local sndName = "localization\\"..langName.."\\"..snd.."_pda"
+	local sndExist = f:exist("$game_sounds$", sndName..".ogg")
+	if sndExist == nil then
+		sndName = snd.."_pda"
+		sndExist = f:exist("$game_sounds$", sndName..".ogg")
+	end
+	
+	if snd and sndExist ~= nil and obj:position():distance_to_sqr(db.actor:position()) >= 5 then
+		self.pda_snd_obj = sound_object(sndName)
 		self.pda_snd_obj:play_at_pos(db.actor, vector():set(0,0,0), 0, sound_object.s2d)
 		self.pda_snd_obj.volume = 0.8
 	end	

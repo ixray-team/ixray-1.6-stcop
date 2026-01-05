@@ -176,7 +176,7 @@ function set_phrase_text(fs, ss, dn, pi)
     if point_name then
         local string = "#"..temp_points_table[pi].level.."#. #"..point_name.."#. "
 		if temp_points_table[pi].cost ~= 0 then
-			string = string..temp_points_table[pi].cost.." "..("#st_rubles#")
+			string = string..temp_points_table[pi].cost.." #st_rubles#"
 		end
         return string
     end

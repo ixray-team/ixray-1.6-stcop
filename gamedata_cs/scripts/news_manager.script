@@ -143,6 +143,7 @@ function send_sound(npc, faction, point, str, str2)
 		--printf(point_name)
 		local txt = ""
         if str2 == nil then
+	        txt = string.gsub(str, "(localization\\..\\)([^\\]*)", "%s")
 	        txt = string.gsub(str, "(characters_voice\\human_..\\)([^\\]*)", "%2")
 	        txt = string.gsub(txt, "[\\]([^\\]*)", "_%1")
 		else
@@ -213,7 +214,7 @@ function send_task(actor, type, task)
 	end
     xr_sound.set_sound_play(db.actor:id(), "pda_task")
 	local news_caption = action_descr_by_type[type] -- MTB_Jakub_Jurek [JUD-139]
-	local news_text = task:get_title(false)	-- MTB_Jakub_Jurek [JUD-139]
+	local news_text = task:get_title()	-- MTB_Jakub_Jurek [JUD-139]
 	local task_type = task_manager.get_task_manager():get_task_by_entity_id(tonumber(task:get_id())).type
     db.actor:give_game_news(news_caption, news_text, "ui_iconsTotal_"..task_type, 0, 15000)
 --[[
