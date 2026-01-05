@@ -1,5 +1,5 @@
 ---
-title: Weapons pack
+title: Immersive Add-ons
 aside: false
 ---
 

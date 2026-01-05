@@ -15,7 +15,9 @@ export const modsSidebar: DefaultTheme.Sidebar = [
     items: [
       { text: 'Погода', link: '/mods/addons/weather' },
       { text: 'UI/UX', link: '/mods/addons/ui-ux' },
-      { text: 'Оружейные паки', link: '/mods/addons/weapons-pack' }
+      { text: 'Оружейные паки', link: '/mods/addons/weapons-pack' },
+      { text: 'Иммерсивность', link: '/mods/addons/immersive' },
+      { text: 'Исправления', link: '/mods/addons/fixes' }
     ]
   }
 ]
