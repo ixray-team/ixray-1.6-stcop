@@ -65,7 +65,6 @@ private:
 	xr_string m_SearchText;
 
 	void DrawEditText();
-	int  DrawEditText_Callback(ImGuiInputTextCallbackData* data);
 	void DrawEditGameType();
 	void DrawFilteredProperties();
 	bool DoesItemMatchSearch(shared_str ItemName);

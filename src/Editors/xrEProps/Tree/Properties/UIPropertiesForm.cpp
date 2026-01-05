@@ -410,38 +410,26 @@ void UIPropertiesForm::DrawEditText()
 				m_EditTextValueData = xr_strdup(Platform::ANSI_TO_UTF8(CopyStr).c_str());
 			}
 
-			ImGui::InputTextMultiline
-			(
-				"##text",
-				m_EditTextValueData,
-				m_EditTextValueDataSize,
-				ImVec2(500, 200),
-				ImGuiInputTextFlags_CallbackResize,
-				[](ImGuiInputTextCallbackData* data)->int
+			string512 OutStr = {};
+			xr_strcpy(OutStr, m_EditTextValueData);
+			if (ImGui::InputTextMultiline("##text", OutStr, std::size(OutStr), ImVec2(500, 200)))
+			{
+				bool IsUTF8String = IsUTF8(m_EditTextValueData);
+				xr_free(m_EditTextValueData);
+
+				if (IsUTF8String)
 				{
-					return reinterpret_cast<UIPropertiesForm*>(data->UserData)->DrawEditText_Callback(data);
-				},
-				reinterpret_cast<void*>(this)
-			);
+					m_EditTextValueData = xr_strdup(Platform::UTF8_to_CP1251(OutStr).c_str());
+				}
+				else
+				{
+					m_EditTextValueData = xr_strdup(OutStr);
+				}
+			}
 		}
 		
 		ImGui::EndPopup();
 	}
-}
-
-int UIPropertiesForm::DrawEditText_Callback(ImGuiInputTextCallbackData* data)
-{
-	if (IsUTF8(m_EditTextValueData))
-	{
-		xr_string CopyStr = m_EditTextValueData;
-		xr_free(m_EditTextValueData);
-		m_EditTextValueData = xr_strdup(Platform::UTF8_to_CP1251(CopyStr).c_str());
-	}
-
-	m_EditTextValueData = (char*)xr_realloc(m_EditTextValueData, data->BufSize);
-	m_EditTextValueDataSize = data->BufSize;
-	data->Buf = m_EditTextValueData;
-	return 0;
 }
 
 void UIPropertiesForm::DrawEditGameType()
