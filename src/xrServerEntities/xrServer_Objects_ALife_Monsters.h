@@ -11,7 +11,6 @@
 
 #include "xrServer_Objects_ALife.h"
 #include "xrServer_Objects_ALife_Items.h"
-#include "character_info_defs.h"
 #include "../xrCore/associative_vector.h"
 #include "alife_movement_manager_holder.h"
 #include "../xrPhysics/net_physics_state.h"
@@ -46,9 +45,9 @@ SERVER_ENTITY_DECLARE_BEGIN0(CSE_ALifeTraderAbstract)
 	void							set_specific_character	(shared_str);
 #endif
 
-	CHARACTER_COMMUNITY_INDEX		m_community_index;
-	CHARACTER_REPUTATION_VALUE		m_reputation;
-	CHARACTER_RANK_VALUE			m_rank;
+	s32		m_community_index;
+	s32		m_reputation;
+	s32			m_rank;
 	xr_string						m_character_name;
 	shared_str						m_icon_name;
 	xr_string						m_character_name_raw;
@@ -59,11 +58,11 @@ SERVER_ENTITY_DECLARE_BEGIN0(CSE_ALifeTraderAbstract)
 #ifdef XRGAME_EXPORTS
 	//для работы с relation system
 	u16								object_id				() const;
-	CHARACTER_COMMUNITY_INDEX		Community				() const;
+	s32		Community				() const;
 	LPCSTR							CommunityName			() const;
-	CHARACTER_RANK_VALUE			Rank					();
-	CHARACTER_REPUTATION_VALUE		Reputation				();
-	void							SetRank					(CHARACTER_RANK_VALUE val);
+	s32			Rank					();
+	s32		Reputation				();
+	void							SetRank					(s32 val);
 
 #endif
 
