@@ -134,7 +134,7 @@ void CUITalkWnd::InitOthersStartDialog()
 		m_pOthersDialogManager->InitDialog(m_pOurDialogManager, m_pCurrentDialog);
 		
 		//сказать фразу
-		AddAnswer(m_pCurrentDialog->GetPhraseText("0"), m_pOthersInvOwner->NameStr());
+		AddAnswer(m_pCurrentDialog->GetPhraseText("0"), m_pOthersInvOwner->Name());
 		m_pOthersDialogManager->SayPhrase(m_pCurrentDialog, "0");
 
 		//если диалог завершился, перейти в режим выбора темы
@@ -385,7 +385,7 @@ void CUITalkWnd::AskQuestion()
 
 void CUITalkWnd::SayPhrase(const shared_str& phrase_id)
 {
-	AddAnswer(m_pCurrentDialog->GetPhraseText(phrase_id), m_pOurInvOwner->NameStr());
+	AddAnswer(m_pCurrentDialog->GetPhraseText(phrase_id), m_pOurInvOwner->Name());
 	m_pOurDialogManager->SayPhrase(m_pCurrentDialog, phrase_id);
 	//если диалог завершился, перейти в режим выбора темы
 	if(m_pCurrentDialog->IsFinished()) ToTopicMode();
@@ -408,7 +408,7 @@ void CUITalkWnd::AddAnswer(const shared_str& text, LPCSTR SpeakerName)
 	}
 	PlaySnd			(text.c_str());
 
-	bool i_am = (0 == xr_strcmp(SpeakerName, m_pOurInvOwner->NameStr()));
+	bool i_am = (0 == xr_strcmp(SpeakerName, m_pOurInvOwner->Name()));
 	UITalkDialogWnd->AddAnswer(SpeakerName, text.c_str(), i_am);
 }
 

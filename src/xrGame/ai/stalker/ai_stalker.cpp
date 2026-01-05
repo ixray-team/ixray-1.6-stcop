@@ -696,7 +696,7 @@ BOOL CAI_Stalker::net_Spawn			(CSE_Abstract* DC)
 	static float expirienced_rank_dispersion	= pSettings->r_float("ranks_properties", "dispersion_experienced_k");
 
 	
-	CHARACTER_RANK_VALUE rank = Rank();
+	s32 rank = Rank();
 	clamp(rank, 0, 1000);
 	float rank_k = float(rank)/1000.f;
 	m_fRankImmunity = novice_rank_immunity + (expirienced_rank_immunity - novice_rank_immunity) * rank_k;

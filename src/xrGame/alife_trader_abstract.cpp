@@ -32,7 +32,7 @@ void CSE_ALifeTraderAbstract::spawn_supplies()
 #ifdef XRGAME_EXPORTS
 	character_profile();
 	m_SpecificCharacter = shared_str();
-	m_community_index = NO_COMMUNITY_INDEX;
+	m_community_index = s32(-1);
 	pda->m_specific_character = specific_character();
 #endif
 

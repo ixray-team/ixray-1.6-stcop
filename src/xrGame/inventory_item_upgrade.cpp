@@ -31,6 +31,7 @@ bool CInventoryItem::has_upgrade_group(const shared_str& upgrade_group_id)
 			return true;
 		}
 	}
+
 	return false;
 }
 
@@ -177,10 +178,12 @@ bool CInventoryItem::install_upgrade_impl(LPCSTR section, bool test)
 
 		value = m_flags.test(FAllowSprint);
 		result2 = process_if_exists_set(section, "sprint_allowed", &CInifile::r_bool, value, test);
+
 		if (result2 && !test)
 		{
 			m_flags.set(FAllowSprint, value);
 		}
+
 		result |= result2;
 
 		result |= process_if_exists(section, "control_inertion_factor", &CInifile::r_float, m_fControlInertionFactor, test);
@@ -225,8 +228,7 @@ void CInventoryItem::pre_install_upgrade()
 			}
 		}
 
-		CWeapon* weapon = cast_weapon();
-		if (weapon)
+		if (CWeapon* weapon = cast_weapon())
 		{
 			if (weapon->ScopeAttachable() && weapon->IsScopeAttached())
 			{
@@ -251,8 +253,7 @@ void CInventoryItem::pre_install_upgrade()
 
 		NET_Packet P;
 
-		CWeapon* weapon = cast_weapon();
-		if (weapon)
+		if (CWeapon* weapon = cast_weapon())
 		{
 			// Send unload event
 			CGameObject::u_EventGen(P, GE_WPN_UNLOAD_AMMO, weapon->ID());

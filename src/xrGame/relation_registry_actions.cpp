@@ -16,14 +16,14 @@
 
 struct SAttackGoodwillStorage
 {
-	CHARACTER_GOODWILL	friend_attack_goodwill;
-	CHARACTER_GOODWILL	neutral_attack_goodwill;
-	CHARACTER_GOODWILL	enemy_attack_goodwill;
-	CHARACTER_GOODWILL	community_member_attack_goodwill;
+	s32	friend_attack_goodwill;
+	s32	neutral_attack_goodwill;
+	s32	enemy_attack_goodwill;
+	s32	community_member_attack_goodwill;
 
-	CHARACTER_GOODWILL	friend_attack_reputation;
-	CHARACTER_GOODWILL	neutral_attack_reputation;
-	CHARACTER_GOODWILL	enemy_attack_reputation;
+	s32	friend_attack_reputation;
+	s32	neutral_attack_reputation;
+	s32	enemy_attack_reputation;
 	
 	void load(LPCSTR prefix)
 	{
@@ -62,26 +62,26 @@ void load_attack_goodwill()
 void RELATION_REGISTRY::Action (CEntityAlive* from, CEntityAlive* to, ERelationAction action)
 {
 	if (!from || !to) return;
-	static CHARACTER_GOODWILL friend_kill_goodwill				= pSettings->r_s32(ACTIONS_POINTS_SECT, "friend_kill_goodwill");
-	static CHARACTER_GOODWILL neutral_kill_goodwill				= pSettings->r_s32(ACTIONS_POINTS_SECT, "neutral_kill_goodwill");
-	static CHARACTER_GOODWILL enemy_kill_goodwill				= pSettings->r_s32(ACTIONS_POINTS_SECT, "enemy_kill_goodwill");
-	static CHARACTER_GOODWILL community_member_kill_goodwill	= pSettings->r_s32(ACTIONS_POINTS_SECT, "community_member_kill_goodwill");
+	static s32 friend_kill_goodwill				= pSettings->r_s32(ACTIONS_POINTS_SECT, "friend_kill_goodwill");
+	static s32 neutral_kill_goodwill				= pSettings->r_s32(ACTIONS_POINTS_SECT, "neutral_kill_goodwill");
+	static s32 enemy_kill_goodwill				= pSettings->r_s32(ACTIONS_POINTS_SECT, "enemy_kill_goodwill");
+	static s32 community_member_kill_goodwill	= pSettings->r_s32(ACTIONS_POINTS_SECT, "community_member_kill_goodwill");
 
-	static CHARACTER_REPUTATION_VALUE friend_kill_reputation	= pSettings->r_s32(ACTIONS_POINTS_SECT, "friend_kill_reputation");
-	static CHARACTER_REPUTATION_VALUE neutral_kill_reputation	= pSettings->r_s32(ACTIONS_POINTS_SECT, "neutral_kill_reputation");
-	static CHARACTER_REPUTATION_VALUE enemy_kill_reputation		= pSettings->r_s32(ACTIONS_POINTS_SECT, "enemy_kill_reputation");
+	static s32 friend_kill_reputation	= pSettings->r_s32(ACTIONS_POINTS_SECT, "friend_kill_reputation");
+	static s32 neutral_kill_reputation	= pSettings->r_s32(ACTIONS_POINTS_SECT, "neutral_kill_reputation");
+	static s32 enemy_kill_reputation		= pSettings->r_s32(ACTIONS_POINTS_SECT, "enemy_kill_reputation");
 
 	//(с) мин. время через которое снова будет зарегестрировано сообщение об атаке на персонажа
 	static u32	 min_attack_delta_time							= u32(1000.f * pSettings->r_float(ACTIONS_POINTS_SECT, "min_attack_delta_time"));
 
-	static CHARACTER_GOODWILL friend_fight_help_goodwill		= pSettings->r_s32(ACTIONS_POINTS_SECT, "friend_fight_help_goodwill");
-	static CHARACTER_GOODWILL neutral_fight_help_goodwill		= pSettings->r_s32(ACTIONS_POINTS_SECT, "neutral_fight_help_goodwill");
-	static CHARACTER_GOODWILL enemy_fight_help_goodwill			= pSettings->r_s32(ACTIONS_POINTS_SECT, "enemy_fight_help_goodwill");
-	static CHARACTER_GOODWILL community_member_fight_help_goodwill	= READ_IF_EXISTS(pSettings, r_s32, ACTIONS_POINTS_SECT, "community_member_fight_help_goodwill", 1000);
+	static s32 friend_fight_help_goodwill		= pSettings->r_s32(ACTIONS_POINTS_SECT, "friend_fight_help_goodwill");
+	static s32 neutral_fight_help_goodwill		= pSettings->r_s32(ACTIONS_POINTS_SECT, "neutral_fight_help_goodwill");
+	static s32 enemy_fight_help_goodwill			= pSettings->r_s32(ACTIONS_POINTS_SECT, "enemy_fight_help_goodwill");
+	static s32 community_member_fight_help_goodwill	= READ_IF_EXISTS(pSettings, r_s32, ACTIONS_POINTS_SECT, "community_member_fight_help_goodwill", 1000);
 
-	static CHARACTER_REPUTATION_VALUE friend_fight_help_reputation	= pSettings->r_s32(ACTIONS_POINTS_SECT, "friend_fight_help_reputation");
-	static CHARACTER_REPUTATION_VALUE neutral_fight_help_reputation = pSettings->r_s32(ACTIONS_POINTS_SECT, "neutral_fight_help_reputation");
-	static CHARACTER_REPUTATION_VALUE enemy_fight_help_reputation	= pSettings->r_s32(ACTIONS_POINTS_SECT, "enemy_fight_help_reputation");
+	static s32 friend_fight_help_reputation	= pSettings->r_s32(ACTIONS_POINTS_SECT, "friend_fight_help_reputation");
+	static s32 neutral_fight_help_reputation = pSettings->r_s32(ACTIONS_POINTS_SECT, "neutral_fight_help_reputation");
+	static s32 enemy_fight_help_reputation	= pSettings->r_s32(ACTIONS_POINTS_SECT, "enemy_fight_help_reputation");
 
 	CActor*				actor			= from->cast_actor();
 	CInventoryOwner*	inv_owner_from	= from->cast_inventory_owner();
@@ -153,8 +153,8 @@ void RELATION_REGISTRY::Action (CEntityAlive* from, CEntityAlive* to, ERelationA
 				}
 				SAttackGoodwillStorage*		st		= bDangerScheme?&gw_danger:&gw_free;
 
-				CHARACTER_GOODWILL delta_goodwill		= 0;
-				CHARACTER_REPUTATION_VALUE	delta_reputation = 0;
+				s32 delta_goodwill		= 0;
+				s32	delta_reputation = 0;
 				switch (relation)
 				{
 					case ALife::eRelationTypeEnemy:
@@ -187,8 +187,8 @@ void RELATION_REGISTRY::Action (CEntityAlive* from, CEntityAlive* to, ERelationA
 						ChangeGoodwill(group.members()[i]->ID(), from->ID(), delta_goodwill);
 					}
 						
-					//*(CHARACTER_GOODWILL)( stalker->Sympathy() * (float)(delta_goodwill));
-					CHARACTER_GOODWILL community_goodwill = (CHARACTER_GOODWILL)( stalker->Sympathy() * (float)(st->community_member_attack_goodwill) );
+					//*(s32)( stalker->Sympathy() * (float)(delta_goodwill));
+					s32 community_goodwill = (s32)( stalker->Sympathy() * (float)(st->community_member_attack_goodwill) );
 					if (community_goodwill)
 					{
 						ChangeCommunityGoodwill(stalker->Community(), from->ID(), community_goodwill);
@@ -215,8 +215,8 @@ void RELATION_REGISTRY::Action (CEntityAlive* from, CEntityAlive* to, ERelationA
 				//else
 					relation_before_attack = relation;
 
-				CHARACTER_GOODWILL			delta_goodwill		= 0;
-				CHARACTER_REPUTATION_VALUE	delta_reputation	= 0;
+				s32			delta_goodwill		= 0;
+				s32	delta_reputation	= 0;
 
 				switch (relation_before_attack)
 				{
@@ -254,8 +254,8 @@ void RELATION_REGISTRY::Action (CEntityAlive* from, CEntityAlive* to, ERelationA
 						}
 					}
 
-					//(CHARACTER_GOODWILL)( stalker->Sympathy() * (float)(delta_goodwill+community_member_kill_goodwill));
-					CHARACTER_GOODWILL community_goodwill = (CHARACTER_GOODWILL)( stalker->Sympathy() * (float)(community_member_kill_goodwill) );
+					//(s32)( stalker->Sympathy() * (float)(delta_goodwill+community_member_kill_goodwill));
+					s32 community_goodwill = (s32)( stalker->Sympathy() * (float)(community_member_kill_goodwill) );
 					if (community_goodwill)
 					{
 						ChangeCommunityGoodwill(stalker->Community(), from->ID(), community_goodwill);
@@ -267,7 +267,7 @@ void RELATION_REGISTRY::Action (CEntityAlive* from, CEntityAlive* to, ERelationA
 					inv_owner_from->ChangeReputation(delta_reputation);
 				}
 
-				CHARACTER_RANK_VALUE		delta_rank = 0;
+				s32		delta_rank = 0;
 				delta_rank = CHARACTER_RANK::rank_kill_points(CHARACTER_RANK::ValueToIndex(stalker->Rank()));
 				if(delta_rank)
 					inv_owner_from->ChangeRank(delta_rank);
@@ -279,8 +279,8 @@ void RELATION_REGISTRY::Action (CEntityAlive* from, CEntityAlive* to, ERelationA
 		{
 			if(stalker && stalker->g_Alive())
 			{
-				CHARACTER_GOODWILL			delta_goodwill		= 0;
-				CHARACTER_REPUTATION_VALUE	delta_reputation	= 0;
+				s32			delta_goodwill		= 0;
+				s32	delta_reputation	= 0;
 				
 				switch (relation)
 				{
@@ -311,8 +311,8 @@ void RELATION_REGISTRY::Action (CEntityAlive* from, CEntityAlive* to, ERelationA
 						ChangeGoodwill(group.members()[i]->ID(), from->ID(), delta_goodwill);
 					}
 
-//*					ChangeCommunityGoodwill(stalker->Community(), from->ID(), (CHARACTER_GOODWILL)( stalker->Sympathy() * (float)delta_goodwill ));
-					CHARACTER_GOODWILL community_goodwill = (CHARACTER_GOODWILL)( stalker->Sympathy() * (float)(community_member_fight_help_goodwill) );
+//*					ChangeCommunityGoodwill(stalker->Community(), from->ID(), (s32)( stalker->Sympathy() * (float)delta_goodwill ));
+					s32 community_goodwill = (s32)( stalker->Sympathy() * (float)(community_member_fight_help_goodwill) );
 					if (community_goodwill)
 					{
 						ChangeCommunityGoodwill(stalker->Community(), from->ID(), community_goodwill);

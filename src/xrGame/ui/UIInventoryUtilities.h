@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../inventory_item.h"
-#include "character_info_defs.h"
 
 #include "../../xrUI/ui_defs.h"
 
@@ -88,15 +87,15 @@ void UpdateWeight(CUIStatic& wnd, bool withPrefix = false);
 void UpdateWeightStr(CUIStatic&wnd, CUIStatic&wnd_max, CInventoryOwner *pInvOwner);
 
 // Функции получения строки-идентификатора ранга и отношения по их числовому идентификатору
-LPCSTR	GetRankAsText				(CHARACTER_RANK_VALUE		rankID);
-LPCSTR	GetReputationAsText			(CHARACTER_REPUTATION_VALUE rankID);
-LPCSTR	GetGoodwillAsText			(CHARACTER_GOODWILL			goodwill);
+LPCSTR	GetRankAsText				(s32		rankID);
+LPCSTR	GetReputationAsText			(s32 rankID);
+LPCSTR	GetGoodwillAsText			(s32			goodwill);
 
 void	ClearCharacterInfoStrings	();
 
 void	SendInfoToActor				(LPCSTR info_id);
 void	SendInfoToLuaScripts		(shared_str info);
-u32		GetGoodwillColor			(CHARACTER_GOODWILL gw);
+u32		GetGoodwillColor			(s32 gw);
 u32		GetRelationColor			(ALife::ERelationType r);
-u32		GetReputationColor			(CHARACTER_REPUTATION_VALUE rv);
+u32		GetReputationColor			(s32 rv);
 };

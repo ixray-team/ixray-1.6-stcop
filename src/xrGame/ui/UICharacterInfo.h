@@ -5,7 +5,7 @@
 
 #include "../../xrUI/Widgets/UIWindow.h"
 #include "../../xrEngine/AI/alife_space.h"
-#include "character_info_defs.h"
+
 class CUIStatic;
 class CCharacterInfo;
 class CUIXml;
@@ -18,7 +18,7 @@ private:
 	typedef CUIWindow inherited;
 
 protected:
-	void				SetRelation				(ALife::ERelationType relation, CHARACTER_GOODWILL goodwill);
+	void				SetRelation				(ALife::ERelationType relation, s32 goodwill);
 	void				ResetAllStrings			();
 	void				UpdateRelation			();
 	bool				hasOwner()			{return (m_ownerID!=u16(-1));}

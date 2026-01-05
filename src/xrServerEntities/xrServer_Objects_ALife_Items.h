@@ -13,7 +13,6 @@
 #include "PHSynchronize.h"
 #include "inventory_space.h"
 
-#include "character_info_defs.h"
 #include "InfoPortionDefs.h"
 
 #pragma warning(push)

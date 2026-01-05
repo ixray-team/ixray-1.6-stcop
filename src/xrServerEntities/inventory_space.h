@@ -1,12 +1,12 @@
 #pragma once
 
-#define CMD_START	(1<<0)
-#define CMD_STOP	(1<<1)
+#define CMD_START	(1 << 0)
+#define CMD_STOP	(1 << 1)
 
 enum
 {
-	NO_ACTIVE_SLOT	= 0,
-	KNIFE_SLOT		= 1,//btn1			was (0)			!!!
+	NO_ACTIVE_SLOT = 0,
+	KNIFE_SLOT = 1,//btn1			was (0)			!!!
 	INV_SLOT_2,		//btn2 PISTOL_SLOT	was (1)
 	INV_SLOT_3,		//btn3 RIFLE_SLOT	was (2)
 	GRENADE_SLOT,	//btn4 GRENADE_SLOT	was (3)
@@ -19,7 +19,7 @@ enum
 	ARTEFACT_SLOT,	// artefact
 	HELMET_SLOT,
 	BACKPACK_SLOT,
-	
+
 	PISTOL_SLOT_NEW,
 
 	CUSTOM_SLOT_1,
@@ -35,18 +35,17 @@ enum
 	LAST_SLOT = CUSTOM_SLOT_10,
 };
 
-#define RUCK_HEIGHT			280
-#define RUCK_WIDTH			7
+#define RUCK_HEIGHT 280
+#define RUCK_WIDTH 7
 
 class CInventoryItem;
 class CInventory;
 
-typedef CInventoryItem*				PIItem;
-typedef xr_vector<PIItem>			TIItemContainer;
-
+using PIItem = CInventoryItem*;
+using TIItemContainer = xr_vector<PIItem>;
 
 enum eItemPlace
-{			
+{
 	eItemPlaceUndefined = 0,
 	eItemPlaceSlot,
 	eItemPlaceBelt,
@@ -55,46 +54,48 @@ enum eItemPlace
 
 struct SInvItemPlace
 {
-	union{
-		struct{
-			u16 type				: 4;
-			u16 slot_id				: 6;
-			u16 base_slot_id		: 6;
+	union
+	{
+		struct
+		{
+			u16 type : 4;
+			u16 slot_id : 6;
+			u16 base_slot_id : 6;
 		};
 		u16	value;
 	};
 };
 
-extern u16	INV_STATE_LADDER;
-extern u16	INV_STATE_BLOCK_ALL;
-extern u16	INV_STATE_INV_WND;
-extern u16	INV_STATE_BUY_MENU;
+extern u16 INV_STATE_LADDER;
+extern u16 INV_STATE_BLOCK_ALL;
+extern u16 INV_STATE_INV_WND;
+extern u16 INV_STATE_BUY_MENU;
 
 struct II_BriefInfo
 {
-	shared_str		name;
-	shared_str		icon;
-	shared_str		cur_ammo;
-	shared_str		fmj_ammo;
-	shared_str		ap_ammo;
-    shared_str		total_ammo;
-	shared_str		third_ammo; //Alundaio
-	shared_str		fire_mode;
+	shared_str name;
+	shared_str icon;
+	shared_str cur_ammo;
+	shared_str fmj_ammo;
+	shared_str ap_ammo;
+	shared_str total_ammo;
+	shared_str third_ammo; //Alundaio
+	shared_str fire_mode;
 
-	shared_str		grenade;
+	shared_str grenade;
 
 	II_BriefInfo() { clear(); }
-	
+
 	IC void clear()
 	{
-		name		= "";
-		icon		= "";
-		cur_ammo	= "";
-		fmj_ammo	= "";
-		third_ammo	= ""; //Alundaio
-		ap_ammo		= "";
-		total_ammo	= "";
-		fire_mode	= "";
-		grenade		= "";
+		name = "";
+		icon = "";
+		cur_ammo = "";
+		fmj_ammo = "";
+		third_ammo = ""; //Alundaio
+		ap_ammo = "";
+		total_ammo = "";
+		fire_mode = "";
+		grenade = "";
 	}
 };
