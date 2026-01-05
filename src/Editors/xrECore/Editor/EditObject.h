@@ -323,7 +323,7 @@ public:
 	bool			VerifyBoneParts			();
 	void			OptimizeSMotions		();
 
-	u16				BoneIDByName			(shared_str name);
+	u16				BoneIDByName			(shared_str name) const;
 
 	bool 			LoadBoneData			(IReader& F);
 	void 			SaveBoneData			(IWriter& F);
