@@ -1191,7 +1191,7 @@ function sim_squad_generic:get_squad_props()
 		end
 		if current_action and current_action.name == "attack_point" then
 			if self.assigned_target_smart_id ~= nil then
-				str = game.translate_string(str).."\\n"..game.translate_string("st_target")..": "..smart_names.get_smart_terrain_name(self.board.smarts[self.assigned_target_smart_id].smrt)
+				str = "#"..str.."#\\n#st_target#: #"..smart_names.get_smart_terrain_name_key(self.board.smarts[self.assigned_target_smart_id].smrt).."#"
 			end
 		end
 		return str
