@@ -8,15 +8,12 @@
 #include "ini_id_loader.h"
 #include "ini_table_loader.h"
 
-#include "character_info_defs.h"
-
-
 struct COMMUNITY_DATA
 {
-	COMMUNITY_DATA (CHARACTER_COMMUNITY_INDEX, CHARACTER_COMMUNITY_ID, LPCSTR);
+	COMMUNITY_DATA (s32, shared_str, LPCSTR);
 
-	CHARACTER_COMMUNITY_ID		id;
-	CHARACTER_COMMUNITY_INDEX	index;
+	shared_str		id;
+	s32	index;
 	u8 team;
 };
 
@@ -24,40 +21,40 @@ struct COMMUNITY_DATA
 class CHARACTER_COMMUNITY;
 
 class CHARACTER_COMMUNITY: 
-	public CIni_IdToIndex<1, COMMUNITY_DATA, CHARACTER_COMMUNITY_ID, CHARACTER_COMMUNITY_INDEX, CHARACTER_COMMUNITY>
+	public CIni_IdToIndex<1, COMMUNITY_DATA, shared_str, s32, CHARACTER_COMMUNITY>
 {
 private:
-	typedef CIni_IdToIndex<1, COMMUNITY_DATA, CHARACTER_COMMUNITY_ID, CHARACTER_COMMUNITY_INDEX, CHARACTER_COMMUNITY> inherited;
+	typedef CIni_IdToIndex<1, COMMUNITY_DATA, shared_str, s32, CHARACTER_COMMUNITY> inherited;
 	friend inherited;
 
 public:
 	CHARACTER_COMMUNITY			();
 	~CHARACTER_COMMUNITY		();
 
-	void						set				(CHARACTER_COMMUNITY_ID);		
-	void						set				(CHARACTER_COMMUNITY_INDEX index) {m_current_index = index;};
+	void						set				(shared_str);		
+	void						set				(s32 index) {m_current_index = index;};
 
-	CHARACTER_COMMUNITY_ID		id				() const;
-	CHARACTER_COMMUNITY_INDEX	index			() const	{return m_current_index;};
+	shared_str		id				() const;
+	s32	index			() const	{return m_current_index;};
 	u8							team			() const;
 
 private:
-	CHARACTER_COMMUNITY_INDEX	m_current_index;
+	s32	m_current_index;
 
 	static	void				InitIdToIndex	();
 
 public:
 	//отношение между группировками
-	static CHARACTER_GOODWILL	relation			(CHARACTER_COMMUNITY_INDEX from, CHARACTER_COMMUNITY_INDEX to);
-	CHARACTER_GOODWILL			relation			(CHARACTER_COMMUNITY_INDEX to);
+	static s32	relation			(s32 from, s32 to);
+	s32			relation			(s32 to);
 	
-	static void					set_relation		(CHARACTER_COMMUNITY_INDEX from, CHARACTER_COMMUNITY_INDEX to, CHARACTER_GOODWILL goodwill);
+	static void					set_relation		(s32 from, s32 to, s32 goodwill);
 
-	static float				sympathy			(CHARACTER_COMMUNITY_INDEX);
+	static float				sympathy			(s32);
 	
 	static void					DeleteIdToIndexData	();
 private:
-	typedef CIni_Table<CHARACTER_GOODWILL, CHARACTER_COMMUNITY> GOODWILL_TABLE;
+	typedef CIni_Table<s32, CHARACTER_COMMUNITY> GOODWILL_TABLE;
 	friend GOODWILL_TABLE;
 	static GOODWILL_TABLE m_relation_table;
 

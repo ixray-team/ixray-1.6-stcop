@@ -2016,7 +2016,7 @@ public:
 				if (CInventoryOwner* pIO = HUD().GetCurrentRayQuery().O != nullptr ? HUD().GetCurrentRayQuery().O->cast_inventory_owner() : nullptr)
 				{
 					CHARACTER_COMMUNITY	community_human;
-					for (CHARACTER_COMMUNITY_INDEX i = 0; i < community_human.GetMaxIndex() + 1; ++i)
+					for (s32 i = 0; i < community_human.GetMaxIndex() + 1; ++i)
 					{
 						if (!xr_strcmp(community_human.GetByIndex(i)->id.c_str(), string))
 						{
@@ -2032,7 +2032,7 @@ public:
 			if (CActor* pActor = Level().CurrentControlEntity()->cast_actor())
 			{
 				CHARACTER_COMMUNITY	community_human;
-				for (CHARACTER_COMMUNITY_INDEX i = 0; i < community_human.GetMaxIndex() + 1; ++i)
+				for (s32 i = 0; i < community_human.GetMaxIndex() + 1; ++i)
 				{
 					if (!xr_strcmp(community_human.GetByIndex(i)->id.c_str(), string))
 					{
@@ -2046,7 +2046,7 @@ public:
 	virtual void fill_tips(vecTips& tips, u32 mode)
 	{
 		CHARACTER_COMMUNITY	community_human;
-		for (CHARACTER_COMMUNITY_INDEX i = 0; i < community_human.GetMaxIndex() + 1; ++i)
+		for (s32 i = 0; i < community_human.GetMaxIndex() + 1; ++i)
 			tips.push_back(community_human.GetByIndex(i)->id.c_str());
 	}
 };
