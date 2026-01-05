@@ -13,46 +13,21 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "../Include/xrRender/KinematicsAnimated.h"
 
-
-CInventoryItemObject::CInventoryItemObject	()
+DLL_Pure* CInventoryItemObject::_construct()
 {
-}
+	CInventoryItem::_construct();
+	CPhysicItem::_construct();
 
-CInventoryItemObject::~CInventoryItemObject	()
-{
-}
-
-DLL_Pure *CInventoryItemObject::_construct	()
-{
-	CInventoryItem::_construct	();
-	CPhysicItem::_construct		();
-	return						(this);
+	return this;
 }
 
-void CInventoryItemObject::Load				(LPCSTR section) 
+void CInventoryItemObject::Load(LPCSTR section)
 {
-	CPhysicItem::Load			(section);
-	CInventoryItem::Load		(section);
-}
-/* remove
-LPCSTR CInventoryItemObject::Name			()
-{
-	return						(CInventoryItem::Name());
+	CPhysicItem::Load(section);
+	CInventoryItem::Load(section);
 }
 
-LPCSTR CInventoryItemObject::NameShort		()
-{
-	return						(CInventoryItem::NameShort());
-}
-*/
-/*
-LPCSTR CInventoryItemObject::NameComplex	()
-{
-	return						(CInventoryItem::NameComplex());
-}
-*/
-
-void				CInventoryItemObject::Hit					(SHit* pHDS)
+void CInventoryItemObject::Hit(SHit* pHDS)
 {
 	CPhysicItem::Hit(pHDS);
 	CInventoryItem::Hit(pHDS);
@@ -60,33 +35,33 @@ void				CInventoryItemObject::Hit					(SHit* pHDS)
 
 void CInventoryItemObject::OnH_B_Independent(bool just_before_destroy)
 {
-	CInventoryItem::OnH_B_Independent	(just_before_destroy);
-	CPhysicItem::OnH_B_Independent		(just_before_destroy);
+	CInventoryItem::OnH_B_Independent(just_before_destroy);
+	CPhysicItem::OnH_B_Independent(just_before_destroy);
 }
 
 void CInventoryItemObject::OnH_A_Independent()
 {
-	CInventoryItem::OnH_A_Independent	();
-	CPhysicItem::OnH_A_Independent		();
+	CInventoryItem::OnH_A_Independent();
+	CPhysicItem::OnH_A_Independent();
 }
 
 
-void CInventoryItemObject::OnH_B_Chield		()
+void CInventoryItemObject::OnH_B_Chield()
 {
-	CPhysicItem::OnH_B_Chield			();
-	CInventoryItem::OnH_B_Chield		();
+	CPhysicItem::OnH_B_Chield();
+	CInventoryItem::OnH_B_Chield();
 }
 
-void CInventoryItemObject::OnH_A_Chield		()
+void CInventoryItemObject::OnH_A_Chield()
 {
-	CPhysicItem::OnH_A_Chield			();
-	CInventoryItem::OnH_A_Chield		();
+	CPhysicItem::OnH_A_Chield();
+	CInventoryItem::OnH_A_Chield();
 }
 
-void CInventoryItemObject::UpdateCL			()
+void CInventoryItemObject::UpdateCL()
 {
-	CPhysicItem::UpdateCL				();
-	CInventoryItem::UpdateCL			();
+	CPhysicItem::UpdateCL();
+	CInventoryItem::UpdateCL();
 
 	if (m_sNewVisualName.size() > 0 && Visual() != nullptr)
 	{
@@ -95,10 +70,10 @@ void CInventoryItemObject::UpdateCL			()
 	}
 }
 
-void CInventoryItemObject::OnEvent			(NET_Packet& P, u16 type)
+void CInventoryItemObject::OnEvent(NET_Packet& P, u16 type)
 {
-	CPhysicItem::OnEvent				(P, type);
-	CInventoryItem::OnEvent				(P, type);
+	CPhysicItem::OnEvent(P, type);
+	CInventoryItem::OnEvent(P, type);
 }
 
 BOOL CInventoryItemObject::net_Spawn(CSE_Abstract* DC)
@@ -158,112 +133,112 @@ bool CInventoryItemObject::install_upgrade_impl(LPCSTR section, bool test)
 	return result;
 }
 
-void CInventoryItemObject::net_Destroy		()
+void CInventoryItemObject::net_Destroy()
 {
-	CInventoryItem::net_Destroy			();
-	CPhysicItem::net_Destroy			();
+	CInventoryItem::net_Destroy();
+	CPhysicItem::net_Destroy();
 }
 
-void CInventoryItemObject::net_Import		(NET_Packet& P) 
-{	
-	CInventoryItem::net_Import			(P);
-}
-
-void CInventoryItemObject::net_Export		(NET_Packet& P) 
-{	
-	CInventoryItem::net_Export			(P);
-}
-
-void CInventoryItemObject::save				(NET_Packet &packet)
+void CInventoryItemObject::net_Import(NET_Packet& P)
 {
-	CPhysicItem::save					(packet);
-	CInventoryItem::save				(packet);
+	CInventoryItem::net_Import(P);
 }
 
-void CInventoryItemObject::load				(IReader &packet)
+void CInventoryItemObject::net_Export(NET_Packet& P)
 {
-	CPhysicItem::load					(packet);
-	CInventoryItem::load				(packet);
+	CInventoryItem::net_Export(P);
+}
+
+void CInventoryItemObject::save(NET_Packet& packet)
+{
+	CPhysicItem::save(packet);
+	CInventoryItem::save(packet);
+}
+
+void CInventoryItemObject::load(IReader& packet)
+{
+	CPhysicItem::load(packet);
+	CInventoryItem::load(packet);
 }
 
 void CInventoryItemObject::renderable_Render()
 {
-	CPhysicItem::renderable_Render		();
-	CInventoryItem::renderable_Render	();
+	CPhysicItem::renderable_Render();
+	CInventoryItem::renderable_Render();
 }
 
-void CInventoryItemObject::reload			(LPCSTR section)
+void CInventoryItemObject::reload(LPCSTR section)
 {
-	CPhysicItem::reload					(section);
-	CInventoryItem::reload				(section);
+	CPhysicItem::reload(section);
+	CInventoryItem::reload(section);
 }
 
-void CInventoryItemObject::reinit		()
+void CInventoryItemObject::reinit()
 {
-	CInventoryItem::reinit				();
-	CPhysicItem::reinit					();
+	CInventoryItem::reinit();
+	CPhysicItem::reinit();
 }
 
-void CInventoryItemObject::activate_physic_shell	()
+void CInventoryItemObject::activate_physic_shell()
 {
-	CInventoryItem::activate_physic_shell	();
+	CInventoryItem::activate_physic_shell();
 }
 
-void CInventoryItemObject::on_activate_physic_shell	()
+void CInventoryItemObject::on_activate_physic_shell()
 {
-	CPhysicItem::activate_physic_shell	();
+	CPhysicItem::activate_physic_shell();
 }
 
-void CInventoryItemObject::make_Interpolation	()
+void CInventoryItemObject::make_Interpolation()
 {
-	CInventoryItem::make_Interpolation	();
+	CInventoryItem::make_Interpolation();
 }
 
-void CInventoryItemObject::PH_B_CrPr		()
+void CInventoryItemObject::PH_B_CrPr()
 {
-	CInventoryItem::PH_B_CrPr			();
-}	
+	CInventoryItem::PH_B_CrPr();
+}
 
-void CInventoryItemObject::PH_I_CrPr		()
+void CInventoryItemObject::PH_I_CrPr()
 {
-	CInventoryItem::PH_I_CrPr			();
-} 
+	CInventoryItem::PH_I_CrPr();
+}
 
 #ifdef DEBUG
-void CInventoryItemObject::PH_Ch_CrPr		()
+void CInventoryItemObject::PH_Ch_CrPr()
 {
-	CInventoryItem::PH_Ch_CrPr			();
+	CInventoryItem::PH_Ch_CrPr();
 }
 #endif
 
-void CInventoryItemObject::PH_A_CrPr		()
+void CInventoryItemObject::PH_A_CrPr()
 {
-	CInventoryItem::PH_A_CrPr			();
+	CInventoryItem::PH_A_CrPr();
 }
 
 #ifdef DEBUG_DRAW
-void CInventoryItemObject::OnRender			()
+void CInventoryItemObject::OnRender()
 {
-	CInventoryItem::OnRender			();
+	CInventoryItem::OnRender();
 }
 #endif
 
-void CInventoryItemObject::modify_holder_params	(float &range, float &fov) const
+void CInventoryItemObject::modify_holder_params(float& range, float& fov) const
 {
-	CInventoryItem::modify_holder_params		(range,fov);
+	CInventoryItem::modify_holder_params(range, fov);
 }
 
-u32	 CInventoryItemObject::ef_weapon_type		() const
+u32	CInventoryItemObject::ef_weapon_type() const
 {
-	return								(0);
+	return 0;
 }
 
-bool CInventoryItemObject::NeedToDestroyObject	() const
+bool CInventoryItemObject::NeedToDestroyObject() const
 {
 	return CInventoryItem::NeedToDestroyObject();
 }
 
-bool CInventoryItemObject::Useful				() const
+bool CInventoryItemObject::Useful() const
 {
-	return			(CInventoryItem::Useful());
+	return CInventoryItem::Useful();
 }
