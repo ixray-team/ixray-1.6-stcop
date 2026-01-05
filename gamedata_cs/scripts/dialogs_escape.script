@@ -15,8 +15,8 @@ function not_has_money_for_relation(first_speaker, second_speaker)
 end
 
 function show_money_for_relation(first_speaker, second_speaker)
-	local news_caption = game.translate_string("st_upgr_cost")..": "
-	local news_text = tostring(money_for_relation).." "..game.translate_string("st_rubles")
+	local news_caption = "#st_upgr_cost#: "
+	local news_text = tostring(money_for_relation).." #st_rubles#"
 		db.actor:give_talk_message2(news_caption, news_text, "ui_iconsTotal_found_money", "iconed_answer_item")
 end
 
