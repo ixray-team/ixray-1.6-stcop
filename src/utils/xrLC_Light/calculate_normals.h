@@ -1,11 +1,9 @@
-#ifndef __CALCULATE_NORMALS_H__
-#define __CALCULATE_NORMALS_H__
+#pragma once
 
 #include "itterate_adjacents_static.h"
-#include "itterate_adjacents.h"
+#include "../../Editors/Public/itterate_adjacents.h"
 
-
-template	<typename typeVertex>
+template <typename typeVertex>
 class calculate_normals
 {
 
@@ -96,4 +94,3 @@ static void	calc_normals( vecVertex &vertices, vecFace &faces )
 		(*it)->flags.bSplitted = false;
 }
 };
-#endif //__CALCULATE_NORMALS_H__
