@@ -134,7 +134,8 @@ void CUIGameCustom::Render()
 			UIMainIngameWnd->Draw();
 	}
 
-	m_pMessagesWnd->Draw();
+	if (psHUD_Flags.is(HUD_DRAW))
+		m_pMessagesWnd->Draw();
 
 	DoRenderDialogs();
 }

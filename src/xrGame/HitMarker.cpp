@@ -4,9 +4,9 @@
 #include "../xrEngine/Render.h"
 #include "../xrEngine/LightAnimLibrary.h"
 #include "../../xrUI/Widgets/UIStaticItem.h"
-
+#include "../xrEngine/CustomHUD.h"
 #include "Grenade.h"
-
+#include "ui/UIGameCustom.h"
 #include "../Include/xrRender/UIRender.h"
 #include "../Include/xrRender/UIShader.h"
 
@@ -181,7 +181,8 @@ void SHitMark::Draw( float cam_dir )
 	u32 clr	= m_lanim->CalculateRGB( Device.fTimeGlobal - m_StartTime,frame );
 	m_UIStaticItem->SetTextureColor( subst_alpha( m_UIStaticItem->GetTextureColor(), color_get_A(clr) ) );
 
-	m_UIStaticItem->Render( cam_dir + m_HitDirection );
+	if (CurrentGameUI()->GameIndicatorsShown() && psHUD_Flags.is(HUD_DRAW | HUD_DRAW_RT))
+		m_UIStaticItem->Render( cam_dir + m_HitDirection );
 }
 
 // ######################################################################################
@@ -224,5 +225,6 @@ void SGrenadeMark::Draw( float cam_dir )
 	u32 clr = m_LightAnim->CalculateRGB( 2.0f*(Device.fTimeGlobal - m_LastTime), frame );
 	m_UIStaticItem->SetTextureColor( subst_alpha( m_UIStaticItem->GetTextureColor(), color_get_A(clr) ) );
 
-	m_UIStaticItem->Render( cam_dir + m_Angle );
+	if (CurrentGameUI()->GameIndicatorsShown() && psHUD_Flags.is(HUD_DRAW | HUD_DRAW_RT))
+		m_UIStaticItem->Render( cam_dir + m_Angle );
 }
