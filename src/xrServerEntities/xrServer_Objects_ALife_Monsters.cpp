@@ -162,9 +162,9 @@ CSE_ALifeTraderAbstract::CSE_ALifeTraderAbstract(LPCSTR caSection)
 	m_SpecificCharacter			= nullptr;
 
 #ifdef XRGAME_EXPORTS
-	m_community_index			= NO_COMMUNITY_INDEX;
-	m_rank						= NO_RANK;
-	m_reputation				= NO_REPUTATION;
+	m_community_index			= s32(-1);
+	m_rank						= -type_max(s32);
+	m_reputation				= -type_max(s32);
 #endif
 	m_deadbody_can_take			= true;
 	m_deadbody_closed			= false;
@@ -206,9 +206,9 @@ void CSE_ALifeTraderAbstract::STATE_Write	(NET_Packet &tNetPacket)
 	tNetPacket.w_s32			(m_rank);
 	tNetPacket.w_s32			(m_reputation);
 #else
-	tNetPacket.w_s32			(NO_COMMUNITY_INDEX);
-	tNetPacket.w_s32			(NO_RANK);
-	tNetPacket.w_s32			(NO_REPUTATION);
+	tNetPacket.w_s32			(s32(-1));
+	tNetPacket.w_s32			(-type_max(s32));
+	tNetPacket.w_s32			(-type_max(s32));
 #endif
 	save_data					(m_character_name_raw, tNetPacket);
 	
@@ -358,9 +358,9 @@ shared_str CSE_ALifeTraderAbstract::specific_character()
 				if(spec_char.data()->m_bDefaultForCommunity)
 					m_DefaultCharacters.push_back(id);
 
-				if(char_info.data()->m_Rank == NO_RANK || std::abs(spec_char.Rank() - char_info.data()->m_Rank)<RANK_DELTA)
+				if(char_info.data()->m_Rank == -type_max(s32) || std::abs(spec_char.Rank() - char_info.data()->m_Rank)<RANK_DELTA)
 				{
-					if(char_info.data()->m_Reputation == NO_REPUTATION || std::abs(spec_char.Reputation() - char_info.data()->m_Reputation)<REPUTATION_DELTA)
+					if(char_info.data()->m_Reputation == -type_max(s32) || std::abs(spec_char.Reputation() - char_info.data()->m_Reputation)<REPUTATION_DELTA)
 					{
 #ifdef XRGAME_EXPORTS
 						int* count = nullptr;
@@ -426,7 +426,7 @@ void CSE_ALifeTraderAbstract::set_specific_character	(shared_str new_spec_char)
 
 #ifdef XRGAME_EXPORTS
 
-	if(NO_COMMUNITY_INDEX == m_community_index)
+	if(s32(-1) == m_community_index)
 	{
 		m_community_index = selected_char.Community().index();
 		CSE_ALifeCreatureAbstract* creature = smart_cast<CSE_ALifeCreatureAbstract*>(base());
@@ -442,7 +442,7 @@ void CSE_ALifeTraderAbstract::set_specific_character	(shared_str new_spec_char)
 		setup_location_types_section	(monster->m_tpaTerrain, pSettings, *(selected_char.terrain_sect()));
 	}
 //----
-	if (NO_RANK == m_rank) {
+	if (-type_max(s32) == m_rank) {
 		m_rank = selected_char.Rank();
 		auto minRank = selected_char.RankDef().minRank;
 		auto maxRank = selected_char.RankDef().maxRank;
@@ -450,7 +450,7 @@ void CSE_ALifeTraderAbstract::set_specific_character	(shared_str new_spec_char)
 			m_rank += ::Random.randI(maxRank - minRank);
 		}
 	}
-	if (NO_REPUTATION == m_reputation) {
+	if (-type_max(s32) == m_reputation) {
 		m_reputation = selected_char.Reputation();
 		auto minReputation = selected_char.ReputationDef().minReputation;
 		auto maxReputation = selected_char.ReputationDef().maxReputation;
@@ -525,7 +525,7 @@ u16								CSE_ALifeTraderAbstract::object_id		() const
 	return base()->ID;
 }
 
-CHARACTER_COMMUNITY_INDEX		CSE_ALifeTraderAbstract::Community	() const
+s32		CSE_ALifeTraderAbstract::Community	() const
 {
 	return m_community_index;
 }
@@ -535,19 +535,19 @@ LPCSTR			CSE_ALifeTraderAbstract::CommunityName () const
 	return *CHARACTER_COMMUNITY::IndexToId(m_community_index);
 }
 
-CHARACTER_RANK_VALUE CSE_ALifeTraderAbstract::Rank		()
+s32 CSE_ALifeTraderAbstract::Rank		()
 {
 	specific_character();
 	return m_rank;
 }
 
-void CSE_ALifeTraderAbstract::SetRank(CHARACTER_RANK_VALUE val)
+void CSE_ALifeTraderAbstract::SetRank(s32 val)
 {
 	specific_character();
 	m_rank = val;
 }
 
-CHARACTER_REPUTATION_VALUE	CSE_ALifeTraderAbstract::Reputation ()
+s32	CSE_ALifeTraderAbstract::Reputation ()
 {
 	specific_character();
 	return m_reputation;
