@@ -8,9 +8,9 @@
 
 #pragma once
 
-IC	bool CInventoryItem::useful_for_NPC					() const
+IC	bool CInventoryItem::useful_for_NPC() const
 {
-	return				(Useful() && m_flags.test(Fuseful_for_NPC));
+	return Useful() && m_flags.test(Fuseful_for_NPC);
 }
 
 IC CInventoryItem::Upgrades_type const& CInventoryItem::upgardes() const
@@ -19,41 +19,43 @@ IC CInventoryItem::Upgrades_type const& CInventoryItem::upgardes() const
 }
 
 template <typename T>
-IC bool CInventoryItem::process_if_exists( LPCSTR section, LPCSTR name, T (CInifile::*method)(LPCSTR, LPCSTR) const, T& value, bool test )
+IC bool CInventoryItem::process_if_exists(LPCSTR section, LPCSTR name, T(CInifile::* method)(LPCSTR, LPCSTR) const, T& value, bool test)
 {
-	if ( !pSettings->line_exist( section, name ) )
-	{
-		return false;
-	}
-	LPCSTR str = pSettings->r_string( section, name );
-	if ( !str || !xr_strlen(str) )
+	if (!pSettings->line_exist(section, name))
 	{
 		return false;
 	}
 
-	if ( !test )
+	LPCSTR str = pSettings->r_string(section, name);
+	if (!str || !xr_strlen(str))
 	{
-		value = value + (pSettings->*method)( section, name ); // add
+		return false;
 	}
+
+	if (!test)
+	{
+		value = value + (pSettings->*method)(section, name); // add
+	}
+
 	return true;
 }
 
 template <typename T>
-IC bool CInventoryItem::process_if_exists_set( LPCSTR section, LPCSTR name, T (CInifile::*method)(LPCSTR, LPCSTR) const, T& value, bool test )
+IC bool CInventoryItem::process_if_exists_set(LPCSTR section, LPCSTR name, T(CInifile::* method)(LPCSTR, LPCSTR) const, T& value, bool test)
 {
-	if ( !pSettings->line_exist( section, name ) )
+	if (!pSettings->line_exist(section, name))
 	{
 		return false;
 	}
-	LPCSTR str = pSettings->r_string( section, name );
-	if ( !str || !xr_strlen(str) )
+	LPCSTR str = pSettings->r_string(section, name);
+	if (!str || !xr_strlen(str))
 	{
 		return false;
 	}
 
-	if ( !test )
+	if (!test)
 	{
-		value = (pSettings->*method)( section, name );    // set
+		value = (pSettings->*method)(section, name);    // set
 	}
 	return true;
 }
