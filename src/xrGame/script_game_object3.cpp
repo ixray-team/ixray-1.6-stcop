@@ -835,7 +835,7 @@ void CScriptGameObject::set_movement_selection_type(ESelectionType selection_typ
 	}
 }
 
-CHARACTER_RANK_VALUE CScriptGameObject::GetRank()
+s32 CScriptGameObject::GetRank()
 {
 	if (CAI_Stalker* stalker = object().cast_stalker())
 	{
@@ -843,7 +843,7 @@ CHARACTER_RANK_VALUE CScriptGameObject::GetRank()
 	}
 
 	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member GetRank!");
-	return CHARACTER_RANK_VALUE(0);
+	return s32(0);
 }
 
 void CScriptGameObject::set_desired_position()
