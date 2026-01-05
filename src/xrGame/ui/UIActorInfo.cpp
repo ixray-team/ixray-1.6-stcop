@@ -267,9 +267,9 @@ void	CUIActorInfoWnd::FillReputationDetails(CUIXml* xml, LPCSTR path)
 
 	CHARACTER_REPUTATION					rep_actor, rep_neutral;
 	rep_actor.set							(Actor()->Reputation());
-	rep_neutral.set							(NEUTRAL_REPUTATION);
+	rep_neutral.set							(0);
 
-	CHARACTER_GOODWILL d_neutral			= CHARACTER_REPUTATION::relation(rep_actor.index(), rep_neutral.index());
+	s32 d_neutral			= CHARACTER_REPUTATION::relation(rep_actor.index(), rep_neutral.index());
 
 
 	string64 buff;
@@ -280,7 +280,7 @@ void	CUIActorInfoWnd::FillReputationDetails(CUIXml* xml, LPCSTR path)
 		comm.set							(xml->Read(_list_node,"r",i,"unknown_community"));
 		itm->m_text1->SetTextST				(*(comm.id()));
 		
-		CHARACTER_GOODWILL	gw				= RELATION_REGISTRY().GetCommunityGoodwill(comm.index(), Actor()->ID());
+		s32	gw				= RELATION_REGISTRY().GetCommunityGoodwill(comm.index(), Actor()->ID());
 		gw									+= CHARACTER_COMMUNITY::relation(Actor()->Community(),comm.index());
 		gw									+= d_neutral;
 

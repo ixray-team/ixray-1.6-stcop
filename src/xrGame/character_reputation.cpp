@@ -16,14 +16,14 @@ REPUTATION_DATA::REPUTATION_DATA (int idx, shared_str idn, LPCSTR threshold_str)
 {
 	index = idx;
 	id = idn;
-	threshold = (CHARACTER_REPUTATION_VALUE)atoi(threshold_str);
+	threshold = (s32)atoi(threshold_str);
 }
 //////////////////////////////////////////////////////////////////////////
 CHARACTER_REPUTATION::GOODWILL_TABLE CHARACTER_REPUTATION::m_relation_table;
 
 //////////////////////////////////////////////////////////////////////////
 
-int   CHARACTER_REPUTATION::ValueToIndex    (CHARACTER_REPUTATION_VALUE val)
+int   CHARACTER_REPUTATION::ValueToIndex    (s32 val)
 {
 	T_VECTOR::iterator it = m_pItemDataVector->begin();
 	T_VECTOR::iterator it_e = m_pItemDataVector->end();
@@ -35,7 +35,7 @@ int   CHARACTER_REPUTATION::ValueToIndex    (CHARACTER_REPUTATION_VALUE val)
 	return inherited::GetMaxIndex();
 }
 
-void  CHARACTER_REPUTATION::set	(CHARACTER_REPUTATION_VALUE new_val)
+void  CHARACTER_REPUTATION::set	(s32 new_val)
 {
 	m_current_value = new_val;
 	m_current_index = ValueToIndex(new_val);
@@ -55,12 +55,12 @@ void CHARACTER_REPUTATION::InitIdToIndex	()
 }
 
 
-CHARACTER_GOODWILL CHARACTER_REPUTATION::relation		(int to)
+s32 CHARACTER_REPUTATION::relation		(int to)
 {
 	return relation(m_current_index, to);
 }
 
-CHARACTER_GOODWILL  CHARACTER_REPUTATION::relation		(int from, int to)
+s32  CHARACTER_REPUTATION::relation		(int from, int to)
 {
 	VERIFY(from >= 0 && from <(int)m_relation_table.table().size());
 	VERIFY(to >= 0 && to <(int)m_relation_table.table().size());
