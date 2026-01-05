@@ -22,11 +22,13 @@ public:
     void OnCommandClick(ButtonValue* sender, bool& bModif, bool& bSafe);
     void FillChooseMtl(ChooseItemVec& items, void* param);
     void CopyFrom(SGameMtlPairEditor* parent);
-	SGameMtlPairEditor(CGameMtlLibrary* owner);
     void 				FillProp(PropItemVec& values);
     void				TransferFromParent(SGameMtlPairEditor* parent);
     void                OnDrawUI();
-    virtual ~SGameMtlPairEditor();
+
+	SGameMtlPairEditor(CGameMtlLibrary* owner);
+    ~SGameMtlPairEditor();
+
 	BOOL				SetParent(int parent);
     virtual void		Load(IReader& fs);
 	virtual void		Save(IWriter& fs);

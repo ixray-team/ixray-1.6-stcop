@@ -269,4 +269,5 @@ FACTORY_PTR_INSTANCIATE(ThunderboltRender)
 FACTORY_PTR_INSTANCIATE(ThunderboltDescRender)
 FACTORY_PTR_INSTANCIATE(EnvDescriptorRender)
 FACTORY_PTR_INSTANCIATE(EnvDescriptorMixerRender)
+FACTORY_PTR_INSTANCIATE(WallMarkArray)
 #endif

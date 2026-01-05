@@ -1,8 +1,7 @@
-//---------------------------------------------------------------------------
-#ifndef GameMtlLibH
-#define GameMtlLibH
-//---------------------------------------------------------------------------
 #pragma once
+#include "../Include/xrRender/WallMarkArray.h"
+#include "../Include/xrRender/RenderFactory.h"
+
 class ButtonValue;
 
 #define GAMEMTL_CURRENT_VERSION			0x0001
@@ -50,22 +49,11 @@ class ButtonValue;
 #endif
 #endif
 
-#ifdef GM_NON_GAME
-	#define SoundVec	shared_str
-	#define PSVec 		shared_str
-	#define ShaderVec 	shared_str
-//	#define ShaderVec 	shared_str
-#else
-	using SoundVec = xr_vector<ref_sound>;
-    using SoundIt = SoundVec::iterator;
+using SoundVec = xr_vector<ref_sound>;
+using SoundIt = SoundVec::iterator;
 
-    using PSVec = xr_vector<shared_str>;
-    using PSIt = PSVec::iterator;
-
-#include "../Include/xrRender/WallMarkArray.h"
-#include "../Include/xrRender/RenderFactory.h"
-
-#endif
+using PSVec = xr_vector<shared_str>;
+using PSIt = PSVec::iterator;
 
 struct MTL_EXPORT_API SGameMtl
 {
@@ -151,15 +139,27 @@ using GameMtlIt = GameMtlVec::iterator;
 struct MTL_EXPORT_API SGameMtlPair
 {
 	friend class CGameMtlLibrary;
-    CGameMtlLibrary*	m_Owner;
+    CGameMtlLibrary* m_Owner;
 
-	int					mtl0;
-	int					mtl1;
+	int mtl0;
+	int mtl1;
+	int ID; 	// auto number
+    int ID_parent;
 
-	int 				ID; 	// auto number
-    int					ID_parent;
 public:
-	enum{
+    struct EditorProperties
+    {
+        shared_str BreakingSounds;
+        shared_str StepSounds;
+        shared_str CollideSounds;
+        shared_str CollideParticles;
+        shared_str CollideMarks;
+    };
+    
+    EditorProperties* EditorProp = nullptr;
+
+	enum
+    {
 //		flFlotation		= (1<<0),
         flBreakingSounds= (1<<1),
         flStepSounds	= (1<<2),
@@ -174,14 +174,8 @@ public:
     SoundVec			StepSounds;
     SoundVec			CollideSounds;
     PSVec				CollideParticles;
+    FactoryPtr<IWallMarkArray> m_pCollideMarks;
 
-
-#ifdef	GM_NON_GAME
-	#define ShaderVec 	shared_str
-    ShaderVec			CollideMarks;
-#else	//	GM_NON_GAME
-	FactoryPtr<IWallMarkArray> m_pCollideMarks;
-#endif	//	GM_NON_GAME
 #ifdef _EDITOR
     PropValue*			propBreakingSounds;
     PropValue*			propStepSounds;
@@ -353,5 +347,3 @@ public:
 extern MTL_EXPORT_API CGameMtlLibrary		GMLib;
 
 #include "../xrCore/API/xrAPI.h"
-
-#endif
