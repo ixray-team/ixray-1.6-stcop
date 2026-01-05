@@ -12,7 +12,6 @@
 #include "script_bind_macroses.h"
 #include "../xrScripts/script_export_space.h"
 #include "xr_time.h"
-#include "character_info_defs.h"
 #include "game_graph_space.h"
 #include "game_location_selector.h"
 #include "Artefact.h"
@@ -581,7 +580,7 @@ public:
 			void 				set_sight				(CScriptGameObject *object_to_look, bool torso_look, bool fire_object);
 			void 				set_sight				(CScriptGameObject *object_to_look, bool torso_look, bool fire_object, bool no_pitch);
 			void 				set_sight				(const MemorySpace::CMemoryInfo *memory_object, bool	torso_look);
-			CHARACTER_RANK_VALUE GetRank				();
+			s32 GetRank				();
 			void				play_sound				(u32 internal_type);
 			void				play_sound				(u32 internal_type, u32 max_start_time);
 			void				play_sound				(u32 internal_type, u32 max_start_time, u32 min_start_time);

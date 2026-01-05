@@ -7,7 +7,7 @@
 #include "character_community.h"
 
 //////////////////////////////////////////////////////////////////////////
-COMMUNITY_DATA::COMMUNITY_DATA (CHARACTER_COMMUNITY_INDEX idx, CHARACTER_COMMUNITY_ID idn, LPCSTR team_str)
+COMMUNITY_DATA::COMMUNITY_DATA (s32 idx, shared_str idn, LPCSTR team_str)
 {
 	index = idx;
 	id = idn;
@@ -21,20 +21,20 @@ CHARACTER_COMMUNITY::SYMPATHY_TABLE CHARACTER_COMMUNITY::m_sympathy_table;
 //////////////////////////////////////////////////////////////////////////
 CHARACTER_COMMUNITY::CHARACTER_COMMUNITY	()
 {
-	m_current_index = NO_COMMUNITY_INDEX;
+	m_current_index = s32(-1);
 }
 CHARACTER_COMMUNITY::~CHARACTER_COMMUNITY	()
 {
 }
 
 
-void  CHARACTER_COMMUNITY::set	(CHARACTER_COMMUNITY_ID id)
+void  CHARACTER_COMMUNITY::set	(shared_str id)
 {
 	m_current_index	 = IdToIndex(id);
 
 }
 
-CHARACTER_COMMUNITY_ID		 CHARACTER_COMMUNITY::id			() const
+shared_str		 CHARACTER_COMMUNITY::id			() const
 {
 	return IndexToId(m_current_index);
 }
@@ -55,12 +55,12 @@ void CHARACTER_COMMUNITY::InitIdToIndex	()
 }
 
 
-CHARACTER_GOODWILL CHARACTER_COMMUNITY::relation		(CHARACTER_COMMUNITY_INDEX to)
+s32 CHARACTER_COMMUNITY::relation		(s32 to)
 {
 	return relation(m_current_index, to);
 }
 
-CHARACTER_GOODWILL  CHARACTER_COMMUNITY::relation		(CHARACTER_COMMUNITY_INDEX from, CHARACTER_COMMUNITY_INDEX to)
+s32  CHARACTER_COMMUNITY::relation		(s32 from, s32 to)
 {
 	VERIFY(from >= 0 && from <(int)m_relation_table.table().size());
 	VERIFY(to >= 0 && to <(int)m_relation_table.table().size());
@@ -68,16 +68,16 @@ CHARACTER_GOODWILL  CHARACTER_COMMUNITY::relation		(CHARACTER_COMMUNITY_INDEX fr
 	return m_relation_table.table()[from][to];
 }
 
-void  CHARACTER_COMMUNITY::set_relation			(CHARACTER_COMMUNITY_INDEX from, CHARACTER_COMMUNITY_INDEX to, CHARACTER_GOODWILL goodwill)
+void  CHARACTER_COMMUNITY::set_relation			(s32 from, s32 to, s32 goodwill)
 {
 	VERIFY(from >= 0 && from <(int)m_relation_table.table().size());
 	VERIFY(to >= 0 && to <(int)m_relation_table.table().size());
-	VERIFY(goodwill != NO_GOODWILL);
+	VERIFY(goodwill != -type_max(s32));
 
 	m_relation_table.table()[from][to] = goodwill;
 }
 
-float  CHARACTER_COMMUNITY::sympathy			(CHARACTER_COMMUNITY_INDEX comm)
+float  CHARACTER_COMMUNITY::sympathy			(s32 comm)
 {
 	VERIFY(comm >= 0 && comm <(int)m_sympathy_table.table().size());
 	return m_sympathy_table.table()[comm][0];

@@ -50,9 +50,9 @@ ALife::ERelationType RELATION_REGISTRY::GetRelationType		(T from, T to) const
 	static int attitude_neutral = pSettings->r_s16(GAME_RELATIONS_SECT, "attitude_neutal_threshold");
 	static int attitude_friend = pSettings->r_s16(GAME_RELATIONS_SECT, "attitude_friend_threshold");
 
-	CHARACTER_GOODWILL attitude = GetAttitude(from, to);
+	s32 attitude = GetAttitude(from, to);
 
-	if(attitude == NO_GOODWILL)
+	if(attitude == -type_max(s32))
 		return ALife::eRelationTypeNeutral;
 
 	if(attitude<attitude_neutral)
@@ -66,22 +66,22 @@ ALife::ERelationType RELATION_REGISTRY::GetRelationType		(T from, T to) const
 
 //////////////////////////////////////////////////////////////////////////
 template<typename T>
-CHARACTER_GOODWILL	 RELATION_REGISTRY::GetAttitude	(T from, T to) const 
+s32	 RELATION_REGISTRY::GetAttitude	(T from, T to) const 
 {
 	//личное отношение from к to
-	CHARACTER_GOODWILL presonal_goodwill		= GetGoodwill(from->object_id(), to->object_id()); VERIFY(presonal_goodwill != NO_GOODWILL);
+	s32 presonal_goodwill		= GetGoodwill(from->object_id(), to->object_id()); VERIFY(presonal_goodwill != -type_max(s32));
 	//влияние репутации персонажей
-	CHARACTER_GOODWILL reputation_goodwill		= GetReputationRelation(from->Reputation(), to->Reputation());
+	s32 reputation_goodwill		= GetReputationRelation(from->Reputation(), to->Reputation());
 	//влияние рангов персонажей
-	CHARACTER_GOODWILL rank_goodwill			= GetRankRelation(from->Rank(), to->Rank());
+	s32 rank_goodwill			= GetRankRelation(from->Rank(), to->Rank());
 
 
 	//отношение группировки from персонально к to
-	CHARACTER_GOODWILL community_goodwill		= GetCommunityGoodwill(from->Community(), to->object_id()); VERIFY(community_goodwill != NO_GOODWILL);
+	s32 community_goodwill		= GetCommunityGoodwill(from->Community(), to->object_id()); VERIFY(community_goodwill != -type_max(s32));
 	//отношение группировки from к группировки to
-	CHARACTER_GOODWILL community_to_community	= GetCommunityRelation(from->Community(), to->Community());
+	s32 community_to_community	= GetCommunityRelation(from->Community(), to->Community());
 
-	CHARACTER_GOODWILL attitude = presonal_goodwill + 
+	s32 attitude = presonal_goodwill + 
 		reputation_goodwill +
 		rank_goodwill +
 		community_goodwill + 

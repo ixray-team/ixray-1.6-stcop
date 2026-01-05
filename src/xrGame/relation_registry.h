@@ -5,8 +5,6 @@
 
 #pragma once
 
-#include "character_info_defs.h"
-
 class CRelationRegistryWrapper;
 
 class CInventoryOwner;
@@ -40,29 +38,29 @@ public:
 	//-100< (крайне враждебное) до >100 (очень дрюжелюбное)
 	
 	template<typename T>
-	CHARACTER_GOODWILL	 GetAttitude				(T from, T to)	const ;
+	s32	 GetAttitude				(T from, T to)	const ;
 
 	//личное отношение (благосклонность) одного персонажа к другому - 
 	//величина от -100< (крайне враждебное) до >100 (очень дрюжелюбное)
-	CHARACTER_GOODWILL	 GetGoodwill				(u16 from, u16 to) const ;
-	void				 SetGoodwill				(u16 from, u16 to, CHARACTER_GOODWILL goodwill);
-	void				 ForceSetGoodwill			(u16 from, u16 to, CHARACTER_GOODWILL goodwill);
-	void				 ChangeGoodwill 			(u16 from, u16 to, CHARACTER_GOODWILL delta_goodwill);
+	s32	 GetGoodwill				(u16 from, u16 to) const ;
+	void				 SetGoodwill				(u16 from, u16 to, s32 goodwill);
+	void				 ForceSetGoodwill			(u16 from, u16 to, s32 goodwill);
+	void				 ChangeGoodwill 			(u16 from, u16 to, s32 delta_goodwill);
 
 	//отношения группировки к персонажу (именно так, а не наоборот)
 	//т.е. персонаж сам помнит, как к нему какая группировка отностися
-	CHARACTER_GOODWILL	 GetCommunityGoodwill		(CHARACTER_COMMUNITY_INDEX from_community, u16 to_character) const ;
-	void				 SetCommunityGoodwill		(CHARACTER_COMMUNITY_INDEX from_community, u16 to_character, CHARACTER_GOODWILL goodwill);
-	void				 ChangeCommunityGoodwill	(CHARACTER_COMMUNITY_INDEX from_community, u16 to_character, CHARACTER_GOODWILL delta_goodwill);
+	s32	 GetCommunityGoodwill		(s32 from_community, u16 to_character) const ;
+	void				 SetCommunityGoodwill		(s32 from_community, u16 to_character, s32 goodwill);
+	void				 ChangeCommunityGoodwill	(s32 from_community, u16 to_character, s32 delta_goodwill);
 	
 	void				 ClearRelations				(u16 person_id);
 
-	CHARACTER_GOODWILL	 GetCommunityRelation		(CHARACTER_COMMUNITY_INDEX, CHARACTER_COMMUNITY_INDEX) const;	
-	void				 SetCommunityRelation		(CHARACTER_COMMUNITY_INDEX index1, CHARACTER_COMMUNITY_INDEX index2, CHARACTER_GOODWILL goodwill);
+	s32	 GetCommunityRelation		(s32, s32) const;	
+	void				 SetCommunityRelation		(s32 index1, s32 index2, s32 goodwill);
 
 private:
-	CHARACTER_GOODWILL	 GetRankRelation			(CHARACTER_RANK_VALUE, CHARACTER_RANK_VALUE) const;
-	CHARACTER_GOODWILL	 GetReputationRelation		(CHARACTER_REPUTATION_VALUE, CHARACTER_REPUTATION_VALUE) const;
+	s32	 GetRankRelation			(s32, s32) const;
+	s32	 GetReputationRelation		(s32, s32) const;
 
 
 	//реакцией на действия персонажей и соответствующее изменение отношения
