@@ -8,16 +8,13 @@
 #include "ini_id_loader.h"
 #include "ini_table_loader.h"
 
-#include "character_info_defs.h"
-
-
 struct REPUTATION_DATA
 {
 	REPUTATION_DATA (int, shared_str, LPCSTR);
 
 	shared_str					id;
 	int							index;
-	CHARACTER_REPUTATION_VALUE	threshold;
+	s32	threshold;
 };
 
 
@@ -31,31 +28,31 @@ private:
 	friend inherited;
 
 public:
-	CHARACTER_REPUTATION		():m_current_value(NO_REPUTATION){};
+	CHARACTER_REPUTATION		():m_current_value(-type_max(s32)){};
 	~CHARACTER_REPUTATION		(){};
 
-	void						set				(CHARACTER_REPUTATION_VALUE);
+	void						set				(s32);
 
 	shared_str					id				() const;
 	int							index			() const	{return m_current_index;};
-	CHARACTER_REPUTATION_VALUE	value			() const	{return m_current_value;};
+	s32	value			() const	{return m_current_value;};
 
-	static int					ValueToIndex    (CHARACTER_REPUTATION_VALUE);
+	static int					ValueToIndex    (s32);
 
 private:
-	CHARACTER_REPUTATION_VALUE	m_current_value;
+	s32	m_current_value;
 	int							m_current_index;
 
 	static	void				InitIdToIndex	();
 public:
 	//отношение между репутациями
-	static CHARACTER_GOODWILL	relation			(int from, int to);
-	CHARACTER_GOODWILL			relation			(int to);
+	static s32	relation			(int from, int to);
+	s32			relation			(int to);
 
 	static void					DeleteIdToIndexData	();
 
 private:
-	typedef CIni_Table<CHARACTER_GOODWILL, CHARACTER_REPUTATION> GOODWILL_TABLE;
+	typedef CIni_Table<s32, CHARACTER_REPUTATION> GOODWILL_TABLE;
 	friend GOODWILL_TABLE;
 	static GOODWILL_TABLE m_relation_table;
 };

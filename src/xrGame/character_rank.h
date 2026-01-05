@@ -8,16 +8,13 @@
 #include "ini_id_loader.h"
 #include "ini_table_loader.h"
 
-#include "character_info_defs.h"
-
-
 struct RANK_DATA
 {
 	RANK_DATA (int, shared_str, LPCSTR);
 
 	shared_str				id;
 	int						index;
-	CHARACTER_RANK_VALUE	threshold;
+	s32	threshold;
 };
 
 
@@ -32,38 +29,38 @@ private:
 	friend inherited;
 
 public:
-	CHARACTER_RANK			():m_current_value(NO_RANK){};
+	CHARACTER_RANK			():m_current_value(-type_max(s32)){};
 	~CHARACTER_RANK			(){};
 
-	void						set				(CHARACTER_RANK_VALUE);
+	void						set				(s32);
 
 	shared_str					id				() const;
 	int							index			() const	{return m_current_index;};
-	CHARACTER_RANK_VALUE		value			() const	{return m_current_value;};
+	s32		value			() const	{return m_current_value;};
 
-	static int					ValueToIndex    (CHARACTER_RANK_VALUE);
+	static int					ValueToIndex    (s32);
 
 private:
-	CHARACTER_RANK_VALUE		m_current_value;
+	s32		m_current_value;
 	int							m_current_index;
 
 	static	void				InitIdToIndex	();
 public:
 	//отношение между рангами
-	static CHARACTER_GOODWILL	relation			(int from, int to);
-	CHARACTER_GOODWILL			relation			(int to);
+	static s32	relation			(int from, int to);
+	s32			relation			(int to);
 
-	static CHARACTER_RANK_VALUE	rank_kill_points	(int);
+	static s32	rank_kill_points	(int);
 
 	static void					DeleteIdToIndexData	();
 
 private:
-	typedef CIni_Table<CHARACTER_GOODWILL, CHARACTER_RANK> GOODWILL_TABLE;
+	typedef CIni_Table<s32, CHARACTER_RANK> GOODWILL_TABLE;
 	friend GOODWILL_TABLE;
 	static GOODWILL_TABLE m_relation_table;
 
 	//очки рейтинга которые прибавляются за убийство персонажа с определенным рангом
-	typedef CIni_Table<CHARACTER_RANK_VALUE, CHARACTER_RANK> RANK_KILL_TABLE;
+	typedef CIni_Table<s32, CHARACTER_RANK> RANK_KILL_TABLE;
 	friend RANK_KILL_TABLE;
 	static RANK_KILL_TABLE m_rank_kill_table;
 };

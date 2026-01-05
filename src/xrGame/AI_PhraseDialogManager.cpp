@@ -42,10 +42,10 @@ void CAI_PhraseDialogManager::AnswerPhrase (DIALOG_SHARED_PTR& phrase_dialog)
 
 	if(!phrase_dialog->IsFinished())
 	{
-		CHARACTER_GOODWILL attitude = RELATION_REGISTRY().GetAttitude(pOthersIO, pInvOwner);
+		s32 attitude = RELATION_REGISTRY().GetAttitude(pOthersIO, pInvOwner);
 
 		xr_vector<int> phrases;
-		CHARACTER_GOODWILL phrase_goodwill = NO_GOODWILL;
+		s32 phrase_goodwill = -type_max(s32);
 		//если не найдем более подходяещей выводим фразу
 		//последнюю из списка (самую грубую)
 		int phrase_num = (int) phrase_dialog->PhraseList().size()-1;
@@ -71,7 +71,7 @@ void CAI_PhraseDialogManager::AnswerPhrase (DIALOG_SHARED_PTR& phrase_dialog)
 		
 		if (CurrentGameUI() == nullptr)
 			return;
-		CurrentGameUI()->TalkMenu->AddAnswer	(phrase_dialog->GetPhraseText(phrase_id), pInvOwner->NameStr());
+		CurrentGameUI()->TalkMenu->AddAnswer	(phrase_dialog->GetPhraseText(phrase_id), pInvOwner->Name());
 
 		CPhraseDialogManager::SayPhrase(phrase_dialog, phrase_id);
 	}
