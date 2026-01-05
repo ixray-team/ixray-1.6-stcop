@@ -18,8 +18,8 @@ SSpecificCharacterData::SSpecificCharacterData()
 	m_StartDialog			= nullptr;
 	m_ActorDialogs.clear	(); 
 
-	m_Rank					= NO_RANK;
-	m_Reputation			= NO_REPUTATION;
+	m_Rank					= -type_max(s32);
+	m_Reputation			= -type_max(s32);
 
 	m_bNoRandom				= false;
 	m_bDefaultForCommunity	= false;
@@ -184,40 +184,40 @@ void CSpecificCharacter::load_shared	(LPCSTR)
 	data()->m_Community.set(buf_str);
 	xr_free(buf_str);
 	
-	if(data()->m_Community.index() == NO_COMMUNITY_INDEX)
+	if(data()->m_Community.index() == s32(-1))
 		Debug.fatal(DEBUG_INFO,"wrong 'community' '%s' in specific character %s ", team, *m_OwnId);
 
-	data()->m_Rank = pXML->ReadInt("rank", 0, NO_RANK);
-	if (data()->m_Rank == NO_RANK)
+	data()->m_Rank = pXML->ReadInt("rank", 0, -type_max(s32));
+	if (data()->m_Rank == -type_max(s32))
 	{
 		data()->rankDef.minRank = pXML->ReadAttribInt("rank", 0, "min", data()->m_Rank);
 		data()->rankDef.maxRank = pXML->ReadAttribInt("rank", 0, "max", data()->rankDef.minRank);
 		data()->m_Rank = data()->rankDef.minRank;
 
-		R_ASSERT3(data()->rankDef.minRank != NO_RANK, "'Min rank' field not fulfiled for specific character", *m_OwnId);
-		R_ASSERT3(data()->rankDef.maxRank != NO_RANK, "'Max rank' field not fulfiled for specific character", *m_OwnId);
+		R_ASSERT3(data()->rankDef.minRank != -type_max(s32), "'Min rank' field not fulfiled for specific character", *m_OwnId);
+		R_ASSERT3(data()->rankDef.maxRank != -type_max(s32), "'Max rank' field not fulfiled for specific character", *m_OwnId);
 	}
 	else {
 		data()->rankDef.minRank = data()->rankDef.maxRank = data()->m_Rank;
 	}
 
-	R_ASSERT3(data()->m_Rank != NO_RANK, "'rank' field not fulfiled for specific character", *m_OwnId);
+	R_ASSERT3(data()->m_Rank != -type_max(s32), "'rank' field not fulfiled for specific character", *m_OwnId);
 
-	data()->m_Reputation	= pXML->ReadInt("reputation", 0, NO_REPUTATION);
-	if (data()->m_Reputation == NO_REPUTATION)
+	data()->m_Reputation	= pXML->ReadInt("reputation", 0, -type_max(s32));
+	if (data()->m_Reputation == -type_max(s32))
 	{
 		data()->reputationDef.minReputation = pXML->ReadAttribInt("reputation", 0, "min", data()->m_Reputation);
 		data()->reputationDef.maxReputation = pXML->ReadAttribInt("reputation", 0, "max", data()->reputationDef.minReputation);
 		data()->m_Reputation = data()->reputationDef.minReputation;
 
-		R_ASSERT3(data()->reputationDef.minReputation != NO_REPUTATION, "'Min reputation' field not fulfiled for specific character", *m_OwnId);
-		R_ASSERT3(data()->reputationDef.maxReputation != NO_REPUTATION, "'Max reputation' field not fulfiled for specific character", *m_OwnId);
+		R_ASSERT3(data()->reputationDef.minReputation != -type_max(s32), "'Min reputation' field not fulfiled for specific character", *m_OwnId);
+		R_ASSERT3(data()->reputationDef.maxReputation != -type_max(s32), "'Max reputation' field not fulfiled for specific character", *m_OwnId);
 	}
 	else {
 		data()->reputationDef.minReputation = data()->reputationDef.maxReputation = data()->m_Reputation;
 	}
 
-	R_ASSERT3(data()->m_Reputation != NO_REPUTATION, "'reputation' field not fulfiled for specific character", *m_OwnId);
+	R_ASSERT3(data()->m_Reputation != -type_max(s32), "'reputation' field not fulfiled for specific character", *m_OwnId);
 
 	if(pXML->NavigateToNode(pXML->GetLocalRoot(), "money", 0))
 	{
@@ -304,12 +304,12 @@ shared_str CSpecificCharacter::terrain_sect		() const
 	return	data()->m_terrain_sect;
 }
 
-CHARACTER_RANK_VALUE CSpecificCharacter::Rank() const 
+s32 CSpecificCharacter::Rank() const 
 {
 	return	data()->m_Rank;
 }
 
-CHARACTER_REPUTATION_VALUE CSpecificCharacter::Reputation	() const 
+s32 CSpecificCharacter::Reputation	() const 
 {
 	return data()->m_Reputation;
 }

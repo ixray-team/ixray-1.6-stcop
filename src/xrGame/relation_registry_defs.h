@@ -13,17 +13,17 @@ struct SRelation
 {
 	SRelation();
 	~SRelation();
-	CHARACTER_GOODWILL		Goodwill		() const							{return m_iGoodwill;};
-	void					SetGoodwill		(CHARACTER_GOODWILL new_goodwill)	{m_iGoodwill = new_goodwill;};
+	s32		Goodwill		() const							{return m_iGoodwill;};
+	void					SetGoodwill		(s32 new_goodwill)	{m_iGoodwill = new_goodwill;};
 private:
 	//благосклонность
-	CHARACTER_GOODWILL m_iGoodwill;
+	s32 m_iGoodwill;
 };
 
 using PERSONAL_RELATION_MAP = xr_map<u16, SRelation>;
 using PERSONAL_RELATION_MAP_IT = PERSONAL_RELATION_MAP::iterator;
 
-using COMMUNITY_RELATION_MAP = xr_map<CHARACTER_COMMUNITY_INDEX, SRelation>;
+using COMMUNITY_RELATION_MAP = xr_map<s32, SRelation>;
 using COMMUNITY_RELATION_MAP_IT = COMMUNITY_RELATION_MAP::iterator;
 
 

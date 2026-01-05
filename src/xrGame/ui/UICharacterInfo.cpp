@@ -357,7 +357,7 @@ void CUICharacterInfo::InitCharacter(LPCSTR player_name, LPCSTR player_icon)
 	}
 }
 
-void  CUICharacterInfo::SetRelation(ALife::ERelationType relation, CHARACTER_GOODWILL goodwill)
+void  CUICharacterInfo::SetRelation(ALife::ERelationType relation, s32 goodwill)
 {
 	if(!m_icons[eRelation] || !m_icons[eRelationCaption])
 	{

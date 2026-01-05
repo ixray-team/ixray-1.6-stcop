@@ -52,9 +52,9 @@ xr_hash_map<xr_string, ui_shader*> _weaponUpgradeIconsShaders;
 
 static CUIStatic*	GetUIStatic				();
 
-typedef				std::pair<CHARACTER_RANK_VALUE, shared_str>	CharInfoStringID;
+typedef				std::pair<s32, shared_str>	CharInfoStringID;
 
-using CharInfoStrings = xr_map<CHARACTER_RANK_VALUE, shared_str>;
+using CharInfoStrings = xr_map<s32, shared_str>;
 using CharInfoStrings_it = CharInfoStrings::iterator;
 
 CharInfoStrings		*charInfoReputationStrings	= nullptr;
@@ -557,7 +557,7 @@ void InventoryUtilities::ClearCharacterInfoStrings()
 
 //////////////////////////////////////////////////////////////////////////
 
-LPCSTR InventoryUtilities::GetRankAsText(CHARACTER_RANK_VALUE rankID)
+LPCSTR InventoryUtilities::GetRankAsText(s32 rankID)
 {
 	InitCharacterInfoStrings();
 	CharInfoStrings::const_iterator cit = charInfoRankStrings->upper_bound(rankID);
@@ -568,7 +568,7 @@ LPCSTR InventoryUtilities::GetRankAsText(CHARACTER_RANK_VALUE rankID)
 
 //////////////////////////////////////////////////////////////////////////
 
-LPCSTR InventoryUtilities::GetReputationAsText(CHARACTER_REPUTATION_VALUE rankID)
+LPCSTR InventoryUtilities::GetReputationAsText(s32 rankID)
 {
 	InitCharacterInfoStrings();
 
@@ -581,7 +581,7 @@ LPCSTR InventoryUtilities::GetReputationAsText(CHARACTER_REPUTATION_VALUE rankID
 
 //////////////////////////////////////////////////////////////////////////
 
-LPCSTR InventoryUtilities::GetGoodwillAsText(CHARACTER_GOODWILL goodwill)
+LPCSTR InventoryUtilities::GetGoodwillAsText(s32 goodwill)
 {
 	InitCharacterInfoStrings();
 
@@ -630,10 +630,10 @@ void InventoryUtilities::SendInfoToLuaScripts(shared_str info)
 	}
 }
 
-u32 InventoryUtilities::GetGoodwillColor(CHARACTER_GOODWILL gw)
+u32 InventoryUtilities::GetGoodwillColor(s32 gw)
 {
 	u32 res = 0xffc0c0c0;
-	if(gw==NEUTRAL_GOODWILL){
+	if(gw==0){
 		res = 0xffc0c0c0;
 	}else
 	if(gw>1000){
@@ -645,10 +645,10 @@ u32 InventoryUtilities::GetGoodwillColor(CHARACTER_GOODWILL gw)
 	return res;
 }
 
-u32 InventoryUtilities::GetReputationColor(CHARACTER_REPUTATION_VALUE rv)
+u32 InventoryUtilities::GetReputationColor(s32 rv)
 {
 	u32 res = 0xffc0c0c0;
-	if(rv==NEUTRAL_REPUTATION){
+	if(rv==0){
 		res = 0xffc0c0c0;
 	}else
 	if(rv>50){

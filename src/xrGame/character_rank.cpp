@@ -17,14 +17,14 @@ RANK_DATA::RANK_DATA (int idx, shared_str idn, LPCSTR threshold_str)
 {
 	index		= idx;
 	id			= idn;
-	threshold	= (CHARACTER_RANK_VALUE)atoi(threshold_str);
+	threshold	= (s32)atoi(threshold_str);
 }
 //////////////////////////////////////////////////////////////////////////
 CHARACTER_RANK::GOODWILL_TABLE		CHARACTER_RANK::m_relation_table;
 CHARACTER_RANK::RANK_KILL_TABLE		CHARACTER_RANK::m_rank_kill_table;
 
 
-int   CHARACTER_RANK::ValueToIndex    (CHARACTER_RANK_VALUE val)
+int   CHARACTER_RANK::ValueToIndex    (s32 val)
 {
 	for(int i=0; i<(int)m_pItemDataVector->size(); i++)
 	{
@@ -34,7 +34,7 @@ int   CHARACTER_RANK::ValueToIndex    (CHARACTER_RANK_VALUE val)
 	return GetMaxIndex();
 }
 
-void  CHARACTER_RANK::set	(CHARACTER_RANK_VALUE new_val)
+void  CHARACTER_RANK::set	(s32 new_val)
 {
 	m_current_value = new_val;
 	m_current_index = ValueToIndex(new_val);
@@ -56,12 +56,12 @@ void CHARACTER_RANK::InitIdToIndex	()
 }
 
 
-CHARACTER_GOODWILL CHARACTER_RANK::relation		(int to)
+s32 CHARACTER_RANK::relation		(int to)
 {
 	return relation(m_current_index, to);
 }
 
-CHARACTER_GOODWILL  CHARACTER_RANK::relation		(int from, int to)
+s32  CHARACTER_RANK::relation		(int from, int to)
 {
 	VERIFY(from >= 0 && from <(int)m_relation_table.table().size());
 	VERIFY(to >= 0 && to <(int)m_relation_table.table().size());
@@ -70,7 +70,7 @@ CHARACTER_GOODWILL  CHARACTER_RANK::relation		(int from, int to)
 }
 
 
-CHARACTER_RANK_VALUE CHARACTER_RANK::rank_kill_points	(int rank_index)
+s32 CHARACTER_RANK::rank_kill_points	(int rank_index)
 {
 	return m_rank_kill_table.table()[rank_index][0];
 }
