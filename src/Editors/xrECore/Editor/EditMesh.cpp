@@ -10,7 +10,7 @@
 #include "../xrEngine/bone.h"
 
 #include "face_smoth_flags.h"
-#include "itterate_adjacents.h"
+#include "../Public/itterate_adjacents.h"
 #include "itterate_adjacents_dynamic.h"
 #include "UI_ToolsCustom.h"
 
