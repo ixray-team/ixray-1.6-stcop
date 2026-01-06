@@ -165,6 +165,9 @@ public:
 	const file*					exist				(string_path& fn, LPCSTR path, LPCSTR name);
 	const file*					exist				(string_path& fn, LPCSTR path, LPCSTR name, LPCSTR ext);
 
+	// Check for file existance using OC filesystem checker and not CLocatorAPI. Returns only fact if file exists.
+	bool exists_uncached(LPCSTR N);
+
 	BOOL						file_find			(LPCSTR full_name, FS_File& f);
 
     BOOL 						can_write_to_folder	(LPCSTR path); 

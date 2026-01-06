@@ -862,6 +862,11 @@ const CLocatorAPI::file* CLocatorAPI::exist			(string_path& fn, LPCSTR path, LPC
 	return			exist(fn);
 }
 
+bool CLocatorAPI::exists_uncached(LPCSTR N)
+{
+	return std::filesystem::exists(N);
+}
+
 xr_vector<char*>* CLocatorAPI::file_list_open			(const char* initial, const char* folder, u32 flags)
 {
 	string_path		N = {};
