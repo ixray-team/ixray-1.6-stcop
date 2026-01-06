@@ -329,7 +329,7 @@ xr_string EScene::LevelPartName(LPCSTR map_name, ObjClassID cls)
 	if (cls == OBJCLASS_AIMAP)
 	{
 		xr_string ixray_name = path + "ai_map_ixray.part";
-		if (FS.exists_uncached(ixray_name.c_str()))
+		if (FS.TryLoad(ixray_name))
 		{
 			Msg("* [AI MAP] Load: %s", ixray_name.c_str());
 			return ixray_name;
