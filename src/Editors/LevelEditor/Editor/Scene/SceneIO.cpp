@@ -234,8 +234,7 @@ BOOL EScene::LoadLevelPartLTX(ESceneToolBase* M, LPCSTR mn)
 
 		if (guid!=m_GUID)
 		{
-			ELog.DlgMsg		(mtError,"Skipping invalid version of level part: '%s\\%s.part'",EFS.ExtractFileName(map_name).c_str(),M->ClassName());
-			return 			FALSE;
+			ELog.DlgMsg		(mtWarning,"Part GUID doesn't match with level GUID: '%s\\%s.part'.\nUnexpected behavior possible.",EFS.ExtractFileName(map_name).c_str(),M->ClassName());
 		}
 		// read data
 		M->LoadLTX			(ini);
@@ -271,9 +270,7 @@ BOOL EScene::LoadLevelPartStream(ESceneToolBase* M, LPCSTR map_name)
 
 		if (guid != m_GUID)
 		{
-			ELog.DlgMsg(mtError, "Skipping invalid version of level part: '%s\\%s.part'", EFS.ExtractFileName(map_name).c_str(), M->ClassName());
-			FS.r_close(R);
-			return 			FALSE;
+			ELog.DlgMsg(mtWarning, "Part GUID doesn't match with level GUID: '%s\\%s.part'.\nUnexpected behavior possible.", EFS.ExtractFileName(map_name).c_str(), M->ClassName());
 		}
 		// read data
 		IReader* chunk = R->open_chunk(CHUNK_TOOLS_DATA + M->FClassID);
