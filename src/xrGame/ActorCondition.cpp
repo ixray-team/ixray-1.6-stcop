@@ -1015,7 +1015,7 @@ bool CActorCondition::ApplyBooster(const SBooster& B, const shared_str& sect, bo
 			DisableBoostParameters((*it).second);
 		}
 
-		this_booster = B;
+		m_booster_influences[B.m_type] = B;
 		BoostParameters(B);
 	}
 	return true;
