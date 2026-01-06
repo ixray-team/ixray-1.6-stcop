@@ -147,8 +147,7 @@ public:
 	void							hw_Render		(light*L=NULL);
 
 #ifdef USE_DX11
-	xr_map<u32, IRHIShaderResourceView*> detailSRV_map;
-	xr_map<u32, IRHIBuffer*> detailBuffer_map;
+	xr_map<u32, std::pair<IRHIBuffer*, IRHIShaderResourceView*>> DetailInstanceBuffers;
 
 	void							hw_Render_dump	(const Fvector4 &consts, const Fvector4 &wave, const Fvector4 &wind, const Fvector4& wave_old, const Fvector4& wind_old, u32 var_id, u32 lod_id, light*L=NULL);
 #else //USE_DX11
