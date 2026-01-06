@@ -1090,7 +1090,7 @@ bool CActorCondition::ApplyBooster(const SBooster& B, const shared_str& sect, bo
 		this_booster.fBoostValue = 0.0f;
 		DisableBoostParameters(this_booster);
 
-		this_booster = B;
+		m_booster_influences[B.m_type] = B;
 		BoostParameters(B);
 	}
 
