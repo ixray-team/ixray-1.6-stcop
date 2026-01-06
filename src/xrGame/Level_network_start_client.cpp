@@ -179,52 +179,44 @@ void CLevel::ClientSendProfileData	()
 	SecureSend								(NP,net_flags(TRUE, TRUE, TRUE, TRUE));
 }
 
-
-bool	CLevel::net_start_client5				()
+bool CLevel::net_start_client5()
 {
 	PROF_EVENT("CLevel::net_start_client5");
-	if(connected_to_server){
-		// HUD
-
-		// Textures
-		if	(!g_dedicated_server)
+	if (connected_to_server)
+	{
+		if (!g_dedicated_server)
 		{
 			g_pGamePersistent->SetLoadStageTitle("st_loading_textures");
-			g_pGamePersistent->LoadTitle		();
-			//Device.Resources->DeferredLoad	(FALSE);
-			Device.m_pRender->DeferredLoad		(FALSE);
-			//Device.Resources->DeferredUpload	();
+			g_pGamePersistent->LoadTitle();
+			Device.m_pRender->DeferredLoad(FALSE);
 			Device.m_pRender->ResourcesDeferredUpload();
-			LL_CheckTextures					();
 		}
-		sended_request_connection_data	= FALSE;
-		deny_m_spawn					= TRUE;
+		sended_request_connection_data = FALSE;
+		deny_m_spawn = TRUE;
 	}
+
 	return true;
 }
 
-bool	CLevel::net_start_client6				()
+bool CLevel::net_start_client6()
 {
 	PROF_EVENT("CLevel::net_start_client6");
-	if (connected_to_server) {
+	if (connected_to_server)
+	{
 		// Sync
-		if (!synchronize_map_data				())
+		if (!synchronize_map_data())
 			return false;
 
 		if (!game_configured)
 		{
-			pApp->LoadEnd						(); 
+			pApp->LoadEnd();
 			return true;
 		}
 		if (!g_dedicated_server)
 		{
-			g_hud->Load						();
-			g_hud->OnConnected				();
+			g_hud->Load();
+			g_hud->OnConnected();
 		}
-
-#ifdef DEBUG
-		Msg("--- net_start_client6");
-#endif // #ifdef DEBUG
 
 		if (game)
 		{
@@ -241,14 +233,12 @@ bool	CLevel::net_start_client6				()
 
 		g_pGamePersistent->SetLoadStageTitle("st_client_synchronising");
 		pApp->LoadForceFinish();
-		g_pGamePersistent->LoadTitle		();
-		Device.PreCache						(60, true, true);
-		net_start_result_total				= TRUE;
-
-	}else{
-		net_start_result_total				= FALSE;
+		g_pGamePersistent->LoadTitle();
+		Device.PreCache(60, true, true);
 	}
 
-	pApp->LoadEnd							(); 
+	net_start_result_total = connected_to_server;
+
+	pApp->LoadEnd();
 	return true;
 }

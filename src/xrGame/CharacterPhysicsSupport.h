@@ -75,7 +75,6 @@ private:
 	character_shell_control				m_character_shell_control;
 	interactive_animation				*m_interactive_animation;
 	physics_shell_animated				*m_physics_shell_animated;
-	activating_character_delay			*m_collision_activating_delay;
 	xr_vector<CODEGeom*>				m_weapon_geoms;
 	xr_vector<anim_bone_fix*>			m_weapon_bone_fixes;
 	CPhysicsElement						*m_weapon_attach_bone;
@@ -183,7 +182,6 @@ static	void							DeathAnimCallback				( CBlend *B )																										;
 		void							FlyTo							( const	Fvector &disp );
 IC		void							UpdateDeathAnims				( );
 IC		bool							DoCharacterShellCollide			( );
-		void							UpdateCollisionActivatingDellay ( );
 		void							SpawnCharacterCreate			( );
 };
 #endif  //CHARACTER_PHYSICS_SUPPORT
