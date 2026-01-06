@@ -41,9 +41,6 @@ class CEffectorBobbing;
 class CHolderCustom;
 class CUsableScriptObject;
 
-struct SShootingEffector;
-struct SSleepEffector;
-class  CSleepEffectorPP;
 class CInventoryBox;
 
 class	CHudItem;
