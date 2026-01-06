@@ -5,12 +5,12 @@
 //	Author		: Dmitriy Iassenev
 //	Description : Space restriction base
 ////////////////////////////////////////////////////////////////////////////
-
 #pragma once
-
 #include "space_restriction_abstract.h"
 
-class CSpaceRestrictionBase : public CSpaceRestrictionAbstract {
+class CSpaceRestrictionBase :
+	public CSpaceRestrictionAbstract
+{
 private:
 	typedef CSpaceRestrictionAbstract		inherited;
 
@@ -33,8 +33,9 @@ public:
 
 public:
 #ifdef DEBUG
-	IC		bool		correct				() const;
+	IC bool correct() const
+	{
+		return	(m_correct);
+	}
 #endif
 };
-
-#include "space_restriction_base_inline.h"
