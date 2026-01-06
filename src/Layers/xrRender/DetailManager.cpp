@@ -169,13 +169,12 @@ void CDetailManager::Unload		()
 
 	//LVutner: Release buffers	
 #ifdef USE_DX11
-	for(auto& it : detailBuffer_map)
+	for (auto&[_, it] : DetailInstanceBuffers)
+	{
+		_RELEASE(it.first);
 		_RELEASE(it.second);
-	detailBuffer_map.clear();
-
-	for(auto& its : detailSRV_map)
-		_RELEASE(its.second);
-	detailSRV_map.clear();
+	}
+	DetailInstanceBuffers.clear();
 #endif		
 }
 

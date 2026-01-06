@@ -47,22 +47,12 @@ void CDetailManager::hw_Load_Shaders()
 	{
 		//Buffer
 		bufferDesc.Size = bufferSizes[i] * sizeof(InstanceData);
-
 		IRHIBuffer* buffer = GRHI->CreateBuffer(bufferDesc, nullptr);
-
-		if (buffer)
-		{
-			detailBuffer_map.insert({ bufferSizes[i], buffer });
-		}
 
 		//SRV
 		srvDesc.ElementWidth = bufferSizes[i];
 		IRHIShaderResourceView* srv = GRHI->CreateShaderResourceView(buffer, &srvDesc);
-
-		if (srv)
-		{
-			detailSRV_map.insert({ bufferSizes[i], srv });
-		}
+		DetailInstanceBuffers[bufferSizes[i]] = std::make_pair(buffer, srv);
 	}
 }
 
@@ -127,16 +117,18 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
 
 	for (CDetail& Object : objects)
 	{
-		auto it = detailBuffer_map.lower_bound(Object.m_items[var_id][render_key].size());
+		auto it = DetailInstanceBuffers.lower_bound(Object.m_items[var_id][render_key].size());
 
 		//Use largest buffer possible [should keep HUGE buffer around in those cases]
-		if(it == detailBuffer_map.end())
-			it = detailBuffer_map.find(8192);
+		if(it == DetailInstanceBuffers.end())
+		{
+			it = std::prev(DetailInstanceBuffers.end());
+		}
 
 		//Current buffer size and resources
 		u32 currentSize = it->first;
-		IRHIBuffer* currentBuffer = it->second;
-		IRHIShaderResourceView* currentSRV = detailSRV_map.find(currentSize)->second;
+		IRHIBuffer* currentBuffer = it->second.first;
+		IRHIShaderResourceView* currentSRV = it->second.second;
 
 		//Bind (current) buffer SRV
 		GRHI->ShaderResourceCache->SetVSResource(0, currentSRV);
@@ -145,7 +137,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
 		RCache.set_Geometry(Object.hw_Geom);
 
 		u32 instanceCount = 0;
-		static InstanceData* c_storage = NULL;
+		static InstanceData* c_storage = nullptr;
 
 		for (auto& S : Object.m_items[var_id][render_key])
 		{
