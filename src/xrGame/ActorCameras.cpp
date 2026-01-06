@@ -396,15 +396,25 @@ void CActor::cam_Update(float dt, float fFOV)
 			CCustomDevice* pDevice = GetDevice(true);
 
 			if (pItem && pItem->HudItemData() && pDevice && pDevice->HudItemData())
+			{
 				psHUD_FOV = fminf(pItem->GetHudFov(), pDevice->GetHudFov());
+			}
 			else if (pItem && pItem->HudItemData())
+			{
 				psHUD_FOV = pItem->GetHudFov();
+			}
 			else if (pDevice && pDevice->HudItemData())
+			{
 				psHUD_FOV = pDevice->GetHudFov();
+			}
 			else if (HudAnimator() != nullptr)
+			{
 				psHUD_FOV = HudAnimator()->GetHudFov();
+			}
 			else
+			{
 				psHUD_FOV = psHUD_FOV_def;
+			}
 		}
 		else
 		{
@@ -413,29 +423,39 @@ void CActor::cam_Update(float dt, float fFOV)
 	}
 
 
-	if( (mstate_real & mcClimb) && (cam_active!=eacFreeLook) )
+	if((mstate_real & mcClimb) && (cam_active!=eacFreeLook))
+	{
 		camUpdateLadder(dt);
+	}
+
 	on_weapon_shot_update();
+
 	float y_shift =0;
-	
-	if( GamePersistent().GameType() != eGameIDSingle && ik_cam_shift && character_physics_support() && character_physics_support()->ik_controller() )
+
+	if (GamePersistent().GameType() != eGameIDSingle && ik_cam_shift && character_physics_support() && character_physics_support()->ik_controller())
 	{
 		y_shift = character_physics_support()->ik_controller()->Shift();
 		float cam_smooth_k = 1.f;
-		if(std::abs(y_shift-current_ik_cam_shift)>ik_cam_shift_tolerance)
+
+		if (std::abs(y_shift - current_ik_cam_shift) > ik_cam_shift_tolerance)
 		{
 			cam_smooth_k = 1.f - ik_cam_shift_speed * dt/0.01f;
 		}
 
-		if(std::abs(y_shift)<ik_cam_shift_tolerance/2.f)
-			cam_smooth_k = 1.f - ik_cam_shift_speed * 1.f/0.01f * dt;
-		clamp( cam_smooth_k, 0.f, 1.f );
-		current_ik_cam_shift = cam_smooth_k * current_ik_cam_shift + y_shift * ( 1.f - cam_smooth_k );
-	} else
+		if (std::abs(y_shift) < ik_cam_shift_tolerance / 2.f)
+		{
+			cam_smooth_k = 1.f - ik_cam_shift_speed * 1.f / 0.01f * dt;
+		}
+
+		clamp(cam_smooth_k, 0.f, 1.f);
+		current_ik_cam_shift = cam_smooth_k * current_ik_cam_shift + y_shift * (1.f - cam_smooth_k);
+	}
+	else
+	{
 		current_ik_cam_shift = 0;
+	}
 
 	float camera_h = CameraHeight();
-
 	CorrectActorCameraHeight(camera_h);
 
 	// Alex ADD: smooth crouch
@@ -454,39 +474,48 @@ void CActor::cam_Update(float dt, float fFOV)
 	camera_h = CurrentHeight;
 
 	Fvector point = { 0, camera_h + current_ik_cam_shift, 0 };
-	Fvector dangle		= {0,0,0};
-	Fmatrix				xform;
-	xform.setXYZ		(0,r_torso.yaw,0);
+	Fvector dangle = { 0,0,0 };
+	Fmatrix xform;
+	xform.setXYZ(0, r_torso.yaw, 0);
 	xform.translate_over(XFORM().c);
 
-	// lookout
 	if (this == Level().CurrentControlEntity())
-		cam_Lookout( xform, point.y  );
-
+	{
+		cam_Lookout(xform, point.y);
+	}
 
 	if (!fis_zero(r_torso.roll))
 	{
-		float radius		= point.y*0.5f;
-		float valid_angle	= r_torso.roll/2.f;
-		calc_point			(point,radius,0,valid_angle);
-		dangle.z			= (PI_DIV_2-((PI+valid_angle)/2));
+		float radius = point.y * 0.5f;
+		float valid_angle = r_torso.roll / 2.f;
+		calc_point(point, radius, 0, valid_angle);
+		dangle.z = (PI_DIV_2 - ((PI + valid_angle) / 2));
 	}
 
 	float flCurrentPlayerY	= xform.c.y;
 
 	// Smooth out stair step ups
-	if ((character_physics_support()->movement()->Environment()==CPHMovementControl::peOnGround) && (flCurrentPlayerY-fPrevCamPos>0)){
-		fPrevCamPos			+= dt*1.5f;
+	if ((character_physics_support()->movement()->Environment() == CPHMovementControl::peOnGround) && (flCurrentPlayerY - fPrevCamPos > 0))
+	{
+		fPrevCamPos += dt * 1.5f;
+
 		if (fPrevCamPos > flCurrentPlayerY)
-			fPrevCamPos		= flCurrentPlayerY;
-		if (flCurrentPlayerY-fPrevCamPos>0.2f)
-			fPrevCamPos		= flCurrentPlayerY-0.2f;
-		point.y				+= fPrevCamPos-flCurrentPlayerY;
-	}else{
-		fPrevCamPos			= flCurrentPlayerY;
+		{
+			fPrevCamPos = flCurrentPlayerY;
+		}
+
+		if (flCurrentPlayerY - fPrevCamPos > 0.2f)
+		{
+			fPrevCamPos = flCurrentPlayerY - 0.2f;
+		}
+
+		point.y += fPrevCamPos - flCurrentPlayerY;
+	}
+	else 
+	{
+		fPrevCamPos = flCurrentPlayerY;
 	}
 
-	// calc point
 	xform.transform_tiny(point);
 
 	if (Level().CurrentEntity() == this)
@@ -501,11 +530,13 @@ void CActor::cam_Update(float dt, float fFOV)
 	if (Level().CurrentEntity() == this)
 	{
 		if(!psActorFlags.test(AF_NO_CLIP))
-			collide_camera( *cam_Active(), Device.fViewportNear, this);
+		{
+			collide_camera(*cam_Active(), Device.fViewportNear, this);
+		}
 	}
 
-	fCurAVelocity			= vPrevCamDir.sub(cam_FirstEye()->vDirection).magnitude()/Device.fTimeDelta;
-	vPrevCamDir				= cam_FirstEye()->vDirection;
+	fCurAVelocity = vPrevCamDir.sub(cam_FirstEye()->vDirection).magnitude() / Device.fTimeDelta;
+	vPrevCamDir = cam_FirstEye()->vDirection;
 
 	// Высчитываем разницу между предыдущим и текущим Yaw \ Pitch от 1-го лица //--#SM+ Begin#--
 	float& cam_yaw_cur = cam_FirstEye()->yaw;
@@ -522,21 +553,26 @@ void CActor::cam_Update(float dt, float fFOV)
 	//--#SM+ End#--
 
 #ifdef DEBUG
-	if( dbg_draw_camera_collision )
+	if (dbg_draw_camera_collision)
 	{
-		dbg_draw_viewport( *cam_FirstEye(), Device.fViewportNear);
-		dbg_draw_viewport( Cameras(), Device.fViewportNear);
+		dbg_draw_viewport(*cam_FirstEye(), Device.fViewportNear);
+		dbg_draw_viewport(Cameras(), Device.fViewportNear);
 	}
 #endif
+
 	Cameras().UpdateFromCamera(cam_active==eacLookAt ? cameras[eacLookAt] : cameras[eacFirstEye]);
 	UpdateLensFOV(pItem ? pItem->cast_weapon() : nullptr, Cameras().Fov());
 
 	if (Level().CurrentEntity() == this)
 	{
 		if (Level().Cameras().GetCamEffector(cefDemo) || cam_active > eacLookAt)
-			Level().Cameras().UpdateFromCamera(cam_Active());// auto apply device
+		{
+			Level().Cameras().UpdateFromCamera(cam_Active());
+		}
 		else
+		{
 			Cameras().ApplyDevice(Device.fViewportNear);
+		}
 	}
 }
 
@@ -544,7 +580,6 @@ void CActor::cam_Update(float dt, float fFOV)
 void CActor::update_camera (CCameraShotEffector* effector)
 {
 	if (!effector) return;
-	//	if (Level().CurrentViewEntity() != this) return;
 
 	CCameraBase* pACam = nullptr;
 	if (eacLookAt == cam_active)
