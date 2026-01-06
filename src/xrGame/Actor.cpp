@@ -1294,14 +1294,23 @@ void CActor::g_Physics			(Fvector& _accel, float jump, float dt)
 		}
 	}
 }
-float g_fov = 67.5f;
+
+float g_base_fov = 67.5f;
+float g_fov = g_base_fov;
+
 float CActor::currentFOV()
 {
+	if (IsTalking()) 
+	{
+		return g_fov;
+	}
+
 	const float SprintFov = m_SprintFovFactor * fSprintFactor;
+	g_fov = g_base_fov + SprintFov;
 
 	if (!psHUD_Flags.is(HUD_WEAPON | HUD_WEAPON_RT | HUD_WEAPON_RT2))
 	{
-		return g_fov + SprintFov;
+		return g_fov;
 	}
 	
 	CWeapon* pWeapon = inventory().ActiveItem() ? inventory().ActiveItem()->cast_weapon() : nullptr;
@@ -1321,7 +1330,7 @@ float CActor::currentFOV()
 	}
 	else
 	{
-		return g_fov + SprintFov;
+		return g_fov;
 	}
 }
 
