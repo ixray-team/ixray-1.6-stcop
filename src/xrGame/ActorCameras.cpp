@@ -381,9 +381,9 @@ static const float	ik_cam_shift_speed = 0.01f;
 void CActor::cam_Update(float dt, float fFOV)
 {
 	if(m_holder)
+	{
 		return;
-
-	const float SprintFov = m_SprintFovFactor * fSprintFactor;
+	}
 
 	PIItem active_item = inventory().ActiveItem();
 	CHudItem* pItem = active_item != nullptr ? active_item->cast_hud_item() : nullptr;
@@ -410,8 +410,6 @@ void CActor::cam_Update(float dt, float fFOV)
 		{
 			psHUD_FOV = psHUD_FOV_def;
 		}
-
-		psHUD_FOV += SprintFov;
 	}
 
 

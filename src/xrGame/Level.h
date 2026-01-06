@@ -44,9 +44,10 @@ class	demo_info;
 
 
 extern float g_fov;
+extern float g_base_fov;
 
-const int maxRP					= 64;
-const int maxTeams				= 32;
+const int maxRP = 64;
+const int maxTeams = 32;
 
 //class CFogOfWar;
 class CFogOfWarMngr;
