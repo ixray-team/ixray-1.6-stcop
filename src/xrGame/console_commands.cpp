@@ -528,7 +528,7 @@ public:
 		luabind::functor<bool> savesFunctor;
 		if (m_isSaveStatus)
 		{
-			R_ASSERT2(ai().script_engine().functor(m_onSaveStatus, savesFunctor), "Failed to get functor <mod_saves.GetStatus>");
+			R_ASSERT2(ai().script_engine().functor(m_onSaveStatus, savesFunctor), "Failed to get functor <OnSaveStatus>");
 			if (!savesFunctor())
 				return;
 		}
