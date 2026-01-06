@@ -2138,7 +2138,6 @@ void CActor::shedule_Update	(u32 DT)
 {
 	PROF_EVENT("CActor shedule_Update");
 	setSVU							(OnServer());
-//.	UpdateInventoryOwner			(DT);
 
 	if(m_holder || !getEnabled() || !Ready())
 	{
@@ -2152,10 +2151,11 @@ void CActor::shedule_Update	(u32 DT)
 	//эффектор включаемый при ходьбе
 	if (!pCamBobbing)
 	{
-		pCamBobbing = new CEffectorBobbing	();
-		Cameras().AddCamEffector			(pCamBobbing);
+		pCamBobbing = new CEffectorBobbing();
+		Cameras().AddCamEffector(pCamBobbing);
 	}
-	pCamBobbing->SetState						(mstate_real, conditions().IsLimping(), IsZoomAimingMode());
+
+	pCamBobbing->SetState(mstate_real, conditions().IsLimping(), IsZoomAimingMode());
 
 	//звук тяжелого дыхания при уталости и хромании
 	if(this==Level().CurrentControlEntity() && !g_dedicated_server && Holder() != nullptr)

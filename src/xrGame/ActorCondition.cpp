@@ -5,7 +5,6 @@
 #include "ActorEffector.h"
 #include "Inventory.h"
 #include "Level.h"
-#include "SleepEffector.h"
 #include "game_base_space.h"
 #include "autosave_manager.h"
 #include "xrServer.h"
