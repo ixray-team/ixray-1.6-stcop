@@ -1,30 +1,28 @@
 #include "StdAfx.h"
-#include "Actor.h"
+
+#include "../xrCore/Collision/cl_intersect.h"
 #include "../xrEngine/CameraBase.h"
-#ifdef DEBUG
-#include "PHDebug.h"
-#endif
+#include "../xrPhysics/IElevatorState.h"
+#include "../xrPhysics/ActorCameraCollision.h"
+
+#include "Actor.h"
+#include "GamePersistent.h"
+#include "Level.h"
+
 #include "Hit.h"
 #include "PHDestroyable.h"
 #include "Car.h"
-
 #include "Weapon.h"
 #include "Inventory.h"
-
-#include "SleepEffector.h"
 #include "ActorEffector.h"
-#include "Level.h"
-#include "../xrCore/Collision/cl_intersect.h"
-
-//#include "elevatorstate.h"
 #include "CharacterPhysicsSupport.h"
 #include "EffectorShot.h"
-
 #include "PHMovementControl.h"
-#include "../xrPhysics/IElevatorState.h"
-#include "../xrPhysics/ActorCameraCollision.h"
 #include "IKLimbsController.h"
-#include "GamePersistent.h"
+
+#ifdef DEBUG
+#	include "PHDebug.h"
+#endif
 
 ENGINE_API extern float psHUD_FOV;
 ENGINE_API extern float psHUD_FOV_def;
