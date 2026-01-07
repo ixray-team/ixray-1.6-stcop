@@ -55,6 +55,11 @@ function action_go_position:execute ()
 
 	-- Спрашиваем где сидеть
 	local tmp_pos_vertex, npc_position_num = kamps[self.a.center_point]:getDestVertex(self.object, self.a.radius)
+
+    if tmp_pos_vertex == nil then
+        return
+    end
+
 	if self.a.npc_position_num ~= npc_position_num then
 		self.a.npc_position_num = npc_position_num
 		self.a.pos_vertex = tmp_pos_vertex
@@ -298,30 +303,24 @@ function CKampManager:getDestVertex(npc, radius)
 	radius = radius + math.random(-0.3,0.3)
 
  	local dest_vertex = 4294967295
-	 local isValid = true
-	 local iteration_tries_failed = 0
+	
  	while dest_vertex == 4294967295 do
-		if iteration_tries_failed > 5 then
-			break
-		end
-
  		local tmp_pos = vector():set(0,0,0)
 		tmp_pos.x = pp.x + dir.x * radius
 		tmp_pos.z = pp.z + dir.z * radius
 		tmp_pos.y = pp.y
 	 	dest_vertex = level.vertex_id(tmp_pos)
-		if dest_vertex == 4294967295 then
-			if radius < 1 then
-				printf("Invalid AI map at kamp point [%s]", self.kamp_name)
-				iteration_tries_failed = iteration_tries_failed + 1
-				isValid = false
-			else
-				radius = radius - 0.5
-			end
-		end
+	 	if dest_vertex == 4294967295 then
+	 		if radius < 1 then
+                SemiLog("Invalid AI map at kamp point ["..self.kamp_name.."]")
+                return nil
+	 		else
+	 			radius = radius - 0.5
+	 		end
+	 	end
  	end
 
-	 if not npc:accessible(dest_vertex) or not isValid then
+	if not npc:accessible(dest_vertex) then
 		--printf("vertex_position %s", tostring(dest_vertex))
 		local vp = level.vertex_position(dest_vertex)
 		--printf("Nearest for npc[%s] kamp [%s] position [%s:%s:%s]", npc:name(), tostring(self.kamp_name),tostring(vp.x), tostring(vp.y), tostring(vp.z))
