@@ -492,10 +492,13 @@ void CSE_ALifeTraderAbstract::set_specific_character	(shared_str new_spec_char)
 	u32 min_m = selected_char.MoneyDef().min_money;
 	u32 max_m = selected_char.MoneyDef().max_money;
 
-	m_dwMoney = min_m;
-	if (min_m != max_m)
+	if (min_m != 0 && max_m != 0)
 	{
-		m_dwMoney += ::Random.randI(max_m - min_m);
+		m_dwMoney = min_m;
+		if (min_m != max_m)
+		{
+			m_dwMoney += ::Random.randI(max_m - min_m);
+		}
 	}
 
 #else
