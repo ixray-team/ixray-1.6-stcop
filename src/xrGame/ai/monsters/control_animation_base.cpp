@@ -147,8 +147,13 @@ bool CControlAnimationBase::get_animation_info (EMotionAnim anim, u32 index, Mot
 
 	char  index_string_buffer[128];
 	string256 animation_name_buffer = {};
-	xr_strconcat(animation_name_buffer, anim_it->target_name.c_str(), _itoa(index, index_string_buffer, 10));
-
+	if (anim_it->target_name[anim_it->target_name.size() - 1] == '_') {
+		xr_strconcat(animation_name_buffer, anim_it->target_name.c_str(), _itoa(index, index_string_buffer, 10));
+	}
+	else {
+		xr_strconcat(animation_name_buffer, anim_it->target_name.c_str());
+	}
+		
 	IKinematicsAnimated*	animated	=	smart_cast<IKinematicsAnimated*>(m_object->Visual());
 	if ( !animated )
 	{

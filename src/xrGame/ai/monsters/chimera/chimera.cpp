@@ -58,34 +58,36 @@ void   CChimera::Load (LPCSTR section)
 	MotionID idle_motion_id1			=	KA->LL_MotionID("stand_idle_0");
 	MotionID idle_motion_id2			=	KA->LL_MotionID("stand_idle_1");
 
-	anim().AddAnim	(eAnimLieIdle,			"stand_idle_",			-1, &velocity_none,		PS_LIE);
-	anim().AddAnim	(eAnimSleep,			"stand_idle_",			-1, &velocity_none,		PS_LIE);
+#define ANIM_NAME(Var, Def) READ_IF_EXISTS(pSettings, r_string, section, Var, Def)
 
-	anim().AddAnim	(eAnimWalkFwd,			"stand_walk_",			-1, &velocity_walk,		PS_STAND);
-	anim().AddAnim	(eAnimStandTurnLeft,	"stand_turn_ls_",		-1, &velocity_turn,		PS_STAND);
-	anim().AddAnim	(eAnimStandTurnRight,	"stand_turn_rs_",		-1, &velocity_turn,		PS_STAND);
+	anim().AddAnim	(eAnimLieIdle,			ANIM_NAME("AnimLieIdle_prefix", "stand_idle_"),			-1, &velocity_none,		PS_LIE);
+	anim().AddAnim	(eAnimSleep,			ANIM_NAME("AnimSleep_prefix", "stand_idle_"),			-1, &velocity_none,		PS_LIE);
+
+	anim().AddAnim	(eAnimWalkFwd,			ANIM_NAME("AnimWalkFwd_prefix", "stand_walk_"),			-1, &velocity_walk,		PS_STAND);
+	anim().AddAnim	(eAnimStandTurnLeft,	ANIM_NAME("AnimStandTurnLeft_prefix", "stand_turn_ls_"),		-1, &velocity_turn,		PS_STAND);
+	anim().AddAnim	(eAnimStandTurnRight,	ANIM_NAME("AnimStandTurnRight_prefix", "stand_turn_rs_"),		-1, &velocity_turn,		PS_STAND);
 	
-	anim().AddAnim	(eAnimFastStandTurnLeft, "stand_run_turn_90_ls_", -1, &m_velocity_rotate,	PS_STAND);
-	anim().AddAnim	(eAnimFastStandTurnRight, "stand_run_turn_90_rs_", -1, &m_velocity_rotate,	PS_STAND);
+	anim().AddAnim	(eAnimFastStandTurnLeft, ANIM_NAME("AnimFastStandTurnLeft_prefix", "stand_run_turn_90_ls_"), -1, &m_velocity_rotate,	PS_STAND);
+	anim().AddAnim	(eAnimFastStandTurnRight, ANIM_NAME("AnimFastStandTurnRight_prefix", "stand_run_turn_90_rs_"), -1, &m_velocity_rotate,	PS_STAND);
 
-	anim().AddAnim	(eAnimWalkDamaged,		"stand_walk_dmg_",		-1, &velocity_walk_dmg,	PS_STAND);
-	anim().AddAnim	(eAnimRun,				"stand_run_fwd_",		-1,	&velocity_run,		PS_STAND);
-	anim().AddAnim	(eAnimRunDamaged,		"stand_run_dmg_",		-1,	&velocity_run_dmg,	PS_STAND);
-	anim().AddAnim	(eAnimCheckCorpse,		"stand_check_corpse_",	-1,	&velocity_none,		PS_STAND);
-	anim().AddAnim	(eAnimEat,				"stand_eat_",			-1, &velocity_none,		PS_STAND);
-	anim().AddAnim	(eAnimAttack,			"stand_idle_",			-1, &velocity_turn,		PS_STAND);
+	anim().AddAnim	(eAnimWalkDamaged,		ANIM_NAME("AnimWalkDamaged_prefix", "stand_walk_dmg_"),		-1, &velocity_walk_dmg,	PS_STAND);
+	anim().AddAnim	(eAnimRun,				ANIM_NAME("AnimRun_prefix", "stand_run_fwd_"),		-1,	&velocity_run,		PS_STAND);
+	anim().AddAnim	(eAnimRunDamaged,		ANIM_NAME("AnimRunDamaged_prefix", "stand_run_dmg_"),		-1,	&velocity_run_dmg,	PS_STAND);
+	anim().AddAnim	(eAnimCheckCorpse,		ANIM_NAME("AnimCheckCorpse_prefix", "stand_check_corpse_"),	-1,	&velocity_none,		PS_STAND);
+	anim().AddAnim	(eAnimEat,				ANIM_NAME("AnimEat_prefix", "stand_eat_"),			-1, &velocity_none,		PS_STAND);
+	anim().AddAnim	(eAnimAttack,			ANIM_NAME("AnimAttack_prefix", "stand_idle_"),			-1, &velocity_turn,		PS_STAND);
 
-	anim().AddAnim	(eAnimLookAround,		"stand_idle_",			-1, &velocity_none,		PS_STAND);
-	anim().AddAnim	(eAnimSteal,			"stand_walk_",			-1, &velocity_steal,	PS_STAND);
-	anim().AddAnim	(eAnimPrepareAttack,	"stand_agressive_idle_",-1, &velocity_none,		PS_STAND);
-	anim().AddAnim	(eAnimSteal,			"stand_walk_",			-1, &velocity_steal,	PS_STAND);
-	anim().AddAnim	(eAnimDie,				"stand_idle_",			-1, &velocity_none,		PS_STAND);
-	anim().AddAnim	(eAnimThreaten,			"stand_idle_",			-1, &velocity_none,		PS_STAND);
+	anim().AddAnim	(eAnimLookAround,		ANIM_NAME("AnimLookAround_prefix", "stand_idle_"),			-1, &velocity_none,		PS_STAND);
+	anim().AddAnim	(eAnimSteal,			ANIM_NAME("AnimSteal_prefix", "stand_walk_"),			-1, &velocity_steal,	PS_STAND);
+	anim().AddAnim	(eAnimPrepareAttack,	ANIM_NAME("AnimPrepareAttack_prefix", "stand_agressive_idle_"),-1, &velocity_none,		PS_STAND);
+	anim().AddAnim	(eAnimSteal,			ANIM_NAME("AnimSteal_prefix", "stand_walk_"),			-1, &velocity_steal,	PS_STAND);
+	anim().AddAnim	(eAnimDie,				ANIM_NAME("AnimDie_prefix", "stand_idle_"),			-1, &velocity_none,		PS_STAND);
+	anim().AddAnim	(eAnimThreaten,			ANIM_NAME("AnimThreaten_prefix", "stand_idle_"),			-1, &velocity_none,		PS_STAND);
 
-	anim().AddAnim	(eAnimRunTurnLeft,		"stand_run_turn_ls_",	-1, &velocity_run,	PS_STAND);
-	anim().AddAnim	(eAnimRunTurnRight,		"stand_run_turn_rs_",	-1, &velocity_run,	PS_STAND);
+	anim().AddAnim	(eAnimRunTurnLeft,		ANIM_NAME("AnimRunTurnLeft_prefix", "stand_run_turn_ls_"),	-1, &velocity_run,	PS_STAND);
+	anim().AddAnim	(eAnimRunTurnRight,		ANIM_NAME("AnimRunTurnRight_prefix", "stand_run_turn_rs_"),	-1, &velocity_run,	PS_STAND);
 
-	anim().AddAnim	(eAnimUpperAttack,		"jump_attack_",			-1, &m_velocity_jump_start,	PS_STAND);
+	anim().AddAnim	(eAnimUpperAttack,		ANIM_NAME("AnimUpperAttack_prefix", "jump_attack_"),			-1, &m_velocity_jump_start,	PS_STAND);
 
 	// link action
 	anim().LinkAction						(ACT_STAND_IDLE,	eAnimStandIdle);
@@ -102,6 +104,8 @@ void   CChimera::Load (LPCSTR section)
 	anim().LinkAction						(ACT_STEAL,			eAnimSteal);
 	anim().LinkAction						(ACT_LOOK_AROUND,	eAnimLookAround);
 
+#undef ANIM_NAME(Var, Def)
+	
 	m_attack_params.attack_radius			=	READ_IF_EXISTS(pSettings, r_float,section, "attack_radius",	    10.f);
 	m_attack_params.prepare_jump_timeout	=	READ_IF_EXISTS(pSettings, r_u32,  section, "prepare_jump_timeout",	2000);
 	m_attack_params.attack_jump_timeout		=	READ_IF_EXISTS(pSettings ,r_u32,  section, "attack_jump_timeout",	1000);
@@ -134,11 +138,17 @@ void   CChimera::reinit ()
 	move().load_velocity					(*cNameSect(), 
 											 "Velocity_JumpGround",
 											 MonsterMovement::eChimeraVelocityParameterJumpGround);
+	
+	static string16 def_s3 = "jump_attack_1";
+	static string16 def_s4 = "jump_attack_2";
+
+	LPCSTR s3_anim = READ_IF_EXISTS(pSettings, r_string, get_section(), "jump_data_s3", def_s3);
+	LPCSTR s4_anim = READ_IF_EXISTS(pSettings, r_string, get_section(), "jump_data_s4", def_s4);
 
 	com_man().load_jump_data				(0,//"jump_attack_0",
 											 0,//"jump_attack_0",
-											 "jump_attack_1", 
-											 "jump_attack_2", 
+											 s3_anim,
+											 s4_anim,
 											 u32(-1),//MonsterMovement::eVelocityParameterRunNormal,
 											 MonsterMovement::eChimeraVelocityParameterJumpGround,
 											 0);
@@ -158,7 +168,8 @@ void   CChimera::CheckSpecParams (u32 spec_params)
 
 void   CChimera::HitEntityInJump (const CEntity *pEntity)
 {
-	SAAParam &params					=	anim().AA_GetParams("jump_attack_1");
+	auto AttackParamAnim = READ_IF_EXISTS(pSettings, r_string, get_section(), "AttackParamAnim", "jump_attack_1");
+	SAAParam &params					=	anim().AA_GetParams(AttackParamAnim);
 	
 	HitEntity								(pEntity, params.hit_power, params.impulse, params.impulse_dir);
 }
