@@ -30,7 +30,18 @@ void CCartridge::Load(LPCSTR section, u8 LocalAmmoType)
 	param_s.kHit				= pSettings->r_float(section, "k_hit");
 	param_s.kImpulse			= pSettings->r_float(section, "k_impulse");
 
-	param_s.kAP					= pSettings->line_exist(section, "k_ap") ? pSettings->r_float(section, "k_ap") : pSettings->r_float(section, "k_pierce");
+	if (pSettings->line_exist(section, "k_ap"))
+	{
+		param_s.kAP = pSettings->r_float(section, "k_ap");
+	}
+	else
+	{
+		param_s.kAP = pSettings->r_float(section, "k_pierce");
+		param_s.kAP -= 1.0f;
+
+		if (param_s.kAP < 0.f)
+			param_s.kAP = 0.f;
+	}
 	param_s.u8ColorID			= READ_IF_EXISTS(pSettings, r_u8, section, "tracer_color_ID", 0);
 	
 	if (pSettings->line_exist(section, "k_air_resistance"))
@@ -94,7 +105,18 @@ void CWeaponAmmo::Load(LPCSTR section)
 	cartridge_param.kHit		= pSettings->r_float(section, "k_hit");
 	cartridge_param.kImpulse	= pSettings->r_float(section, "k_impulse");
 
-    cartridge_param.kAP = pSettings->line_exist(section, "k_ap") ? pSettings->r_float(section, "k_ap") : pSettings->r_float(section, "k_pierce");
+	if (pSettings->line_exist(section, "k_ap"))
+	{
+		cartridge_param.kAP = pSettings->r_float(section, "k_ap");
+	}
+	else
+	{
+		cartridge_param.kAP = pSettings->r_float(section, "k_pierce");
+		cartridge_param.kAP -= 1.0f;
+
+		if (cartridge_param.kAP < 0.f)
+			cartridge_param.kAP = 0.f;
+	}
 
 	cartridge_param.u8ColorID	= READ_IF_EXISTS(pSettings, r_u8, section, "tracer_color_ID", 0);
 

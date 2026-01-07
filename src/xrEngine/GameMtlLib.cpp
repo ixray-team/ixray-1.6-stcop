@@ -66,6 +66,10 @@ EGameMtlVersion SGameMtl::Load(IReader& fs)
     	fDensityFactor		= fs.r_float();
         vers = GAMEMTL_VERSION_CS;
     }
+    else // St4lker0k765: for some reason, in SoC shoot factor is reversed
+    {
+        fShootFactor = 1.0f - fShootFactor;
+    }
 
     if (fs.find_chunk(GAMEMTL_CHUNK_FACTORS_MP))
     {
