@@ -1749,11 +1749,11 @@ void	CActor::OnRender_Network()
 				if (!PHGetSyncItem(u16(i))) continue;
 				PHGetSyncItem(u16(i))->get_State(state);
 
-				Color = color_rgba(0, 255, 0, 255);
+				constexpr u32 Color1 = color_rgba(0, 255, 0, 255);
 				M = Fidentity;
 				M.rotation(state.quaternion);
 				M.translate_add(state.position);
-				Level().debug_renderer().draw_obb				(M, half_dim, Color);
+				Level().debug_renderer().draw_obb				(M, half_dim, Color1);
 			};
 		}
 		else
@@ -1776,7 +1776,7 @@ void	CActor::OnRender_Network()
 					half_dim.y = 0.1f;
 					half_dim.z = 0.1f;
 
-					constexpr u32 Color = color_rgba(0, 255, 0, 255);
+					u32 Color = color_rgba(0, 255, 0, 255);
 					Level().debug_renderer().draw_obb				(M, half_dim, Color);
 				};
 				//-----------------------------------------------------------------
