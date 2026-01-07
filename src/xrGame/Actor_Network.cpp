@@ -1737,7 +1737,7 @@ void	CActor::OnRender_Network()
 				half_dim.y = 0.1f;
 				half_dim.z = 0.1f;
 
-				u32 Color = color_rgba(255, 0, 0, 255);
+				constexpr u32 Color = color_rgba(255, 0, 0, 255);
 
 				Fmatrix M;
 				
@@ -1776,7 +1776,7 @@ void	CActor::OnRender_Network()
 					half_dim.y = 0.1f;
 					half_dim.z = 0.1f;
 
-					u32 Color = color_rgba(0, 255, 0, 255);
+					constexpr u32 Color = color_rgba(0, 255, 0, 255);
 					Level().debug_renderer().draw_obb				(M, half_dim, Color);
 				};
 				//-----------------------------------------------------------------
@@ -1825,7 +1825,7 @@ void	CActor::OnRender_Network()
 					half_dim.y = 0.1f;
 					half_dim.z = 0.1f;
 
-					u32 Color = color_rgba(255, 0, 0, 255);
+					constexpr u32 Color = color_rgba(255, 0, 0, 255);
 					Level().debug_renderer().draw_obb				(M, half_dim, Color);
 				};	
 				Fvector LC, LS;
