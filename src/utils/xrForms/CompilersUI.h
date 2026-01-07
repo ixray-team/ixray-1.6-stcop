@@ -1,4 +1,5 @@
 #pragma once
+#include "../../xrEngine/xrLevel.h"
 
 struct ImFont;
 
@@ -46,6 +47,8 @@ struct CompilersMode
 	bool LC_skipWeld = false;
 	bool LC_legacyLM = false;
 
+	CFormVersions LC_CformType = CFormVersions::Vanilla;
+	int LC_CFormChunkSize = 75;
 	int LC_sizeLmaps = 1024 * 4;
 
 	bool IsOverloadedSettings = false;
