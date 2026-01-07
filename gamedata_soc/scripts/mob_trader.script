@@ -40,9 +40,9 @@ head_animations = {
 
 ----------------------------------------------------------------------------------------------------
 function on_start_tutorial_item_1()
-	if db.trader == nil then return end
+--	if db.trader == nil then return end
 	
-	db.trader:external_sound_start("characters_voice\\scenario\\trader\\trader_tutorial_pda_12")
+--	db.trader:external_sound_start("characters_voice\\scenario\\trader\\trader_tutorial_pda_12")
 end
 
 function on_stop_tutorial_item()
