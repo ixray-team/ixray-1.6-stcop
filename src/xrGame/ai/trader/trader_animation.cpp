@@ -4,6 +4,7 @@
 #include "ai_trader.h"
 #include "../../game_object_space.h"
 #include "../../../xrScripts/script_callback_ex.h"
+#include "../../../xrEngine/string_table.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // Startup
@@ -62,12 +63,25 @@ void CTraderAnimation::set_head_animation(LPCSTR anim)
 //////////////////////////////////////////////////////////////////////////
 void CTraderAnimation::set_sound(LPCSTR sound, LPCSTR anim)
 {
-	if (m_sound)		remove_sound();	
-	
-	set_head_animation	(anim);
+	if (m_sound)
+	{
+		remove_sound();
+	}
+	set_head_animation(anim);
 
-	m_sound				= new ref_sound();
-	m_sound->create		(sound,st_Effect,SOUND_TYPE_WORLD);
+	m_sound = new ref_sound();
+	string_path localized_snd;
+	xr_sprintf(localized_snd, "localization\\%s\\%s", g_pStringTable->LangName().c_str(), sound);
+
+	string_path fn;
+	if (FS.exist(fn, _game_sounds_, localized_snd, ".ogg"))
+	{
+		m_sound->create(localized_snd, st_Effect, SOUND_TYPE_WORLD);
+	}
+	else
+	{
+		m_sound->create(sound, st_Effect, SOUND_TYPE_WORLD);
+	}
 	m_sound->play(m_trader);
 }
 
