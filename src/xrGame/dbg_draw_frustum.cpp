@@ -106,7 +106,7 @@ void dbg_draw_frustum	(float FOV, float _FAR, float A, Fvector &P, Fvector &D, F
 	_F[3].mad(COP, ProjDirs[3], _FAR); 
 
 //	u32 CT	= color_rgba(255,255,255,64);
-	u32 CL	= color_rgba(0,255,255,255);
+	constexpr u32 CL	= color_rgba(0,255,255,255);
 	Fmatrix& M	= Fidentity;
 	(*Level().ObjectSpace.m_pRender)->SetShader();
 	Level().debug_renderer().draw_line	(M,COP,_F[0],CL);
