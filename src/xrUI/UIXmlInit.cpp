@@ -1408,7 +1408,7 @@ bool CUIXmlInit::InitTrackBar(CUIXml& xml_doc, LPCSTR path, int index, CUITrackB
 		CUI3tButton* pUIButton = pWnd->GetSlider();
 
 		string512 _path;
-		u32 def_clr = color_rgba(255, 255, 255, 255);
+		constexpr u32 def_clr = color_rgba(255, 255, 255, 255);
 		xr_strconcat(_path, path, ":slider_text_color:e");
 		if (xml_doc.NavigateToNode(_path, index))
 		{

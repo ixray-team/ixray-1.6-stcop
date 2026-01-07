@@ -1046,7 +1046,7 @@ void CRenderTarget::reset_light_marker( bool bResetStencil)
 		float _w = RCache.get_width();
 		float _h = RCache.get_height();
 
-		u32 C = color_rgba(255, 255, 255, 255);
+		constexpr u32 C = color_rgba(255, 255, 255, 255);
 		float eps = 0;
 
 		float _dw = 0.5f;

@@ -375,7 +375,7 @@ void CUIFactionWarWnd::set_amount_our_bonus( int value )
 	{
 		m_our_bonuces[i]->TextItemControl()->SetTextColor( color_rgba( 255, 255, 255, 70) );
 	}
-	u32 cr = color_rgba( 0, 255, 0, 255);
+	constexpr u32 cr = color_rgba( 0, 255, 0, 255);
 	for ( int i = 0; i < value; ++i )
 	{
 		m_our_bonuces[i]->TextItemControl()->SetTextColor( cr );
@@ -388,7 +388,7 @@ void CUIFactionWarWnd::set_amount_enemy_bonus( int value )
 	{
 		m_enemy_bonuces[i]->TextItemControl()->SetTextColor( color_rgba( 255, 255, 255, 70) );
 	}
-	u32 cr = color_rgba( 0, 255, 0, 255);
+	constexpr u32 cr = color_rgba( 0, 255, 0, 255);
 	for ( int i = 0; i < value; ++i )
 	{
 		m_enemy_bonuces[i]->TextItemControl()->SetTextColor( cr );

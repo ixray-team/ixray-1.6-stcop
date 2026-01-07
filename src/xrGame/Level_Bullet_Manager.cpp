@@ -1030,7 +1030,7 @@ void CBulletManager::Render	()
 
 	if (g_bullet_debug_trj && totalLines > 0u)
 	{
-		u32 DEFAULT_COLOR = color_rgba(100, 255, 100, 255);
+		constexpr u32 DEFAULT_COLOR = color_rgba(100, 255, 100, 255);
 		u32 MAX_LINES_PER_BATCH = 80'000u;
 
 		UIRender->SetShader(*m_trj_shader);

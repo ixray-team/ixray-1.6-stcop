@@ -286,7 +286,7 @@ void CRenderTarget::accum_direct_volumetric	(u32 sub_phase, const u32, const Fma
 	//	Assume everything was recalculated before this call by accum_direct
 
 	u32 Offset;
-	u32		C = color_rgba(255, 255, 255, 255);
+	constexpr u32 C = color_rgba(255, 255, 255, 255);
 	float	_w = float(dwWidth);
 	float	_h = float(dwHeight);
 	Fvector2 p0, p1;
