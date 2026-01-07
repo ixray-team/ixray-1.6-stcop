@@ -173,7 +173,7 @@ void CObjectSpace::Create(const XRay::CForm::IFormat& Data, CDB::build_callback 
 	switch (H.version)
 	{
 	case CFormVersions::Vanilla:
-	case CFormVersions::VanillaChunkedMain:
+	case CFormVersions::VanillaChunked:
 		{
 			xr_vector<Fvector> Verts;
 			xr_vector<CDB::TRI> Tris;

@@ -146,11 +146,39 @@ void CBuild::BuildCForm	()
 	// Saving
 	Status("Saving...");
 
-	XRay::CForm::CFormatVanilla CForm; // TODO: Add switching to chunked version
-	CForm.AddStaticGeom(CL.getVSpan(), CL.getTSpan());
+	xr_unique_ptr<XRay::CForm::IFormat> FormatPtr = nullptr;
+
+	switch (gCompilerMode.LC_CformType)
+	{
+	case CFormVersions::Vanilla:
+		{
+			FormatPtr.reset(new XRay::CForm::CFormatVanilla());
+			break;
+		}
+	case CFormVersions::VanillaChunked:
+		{
+			size_t mem_bytes = CL.getTS()*sizeof(*CL.getT()) + CL.getVS()*sizeof(*CL.getV());
+			u32 Number = (mem_bytes / (1024ull*1024ull)) / gCompilerMode.LC_CFormChunkSize;
+			if (!Number)
+			{
+				FormatPtr.reset(new XRay::CForm::CFormatVanilla());
+			} else
+			{
+				FormatPtr.reset(new XRay::CForm::CFormatVanillaChunked(Number+1));
+			}
+			break;
+		}
+	default:
+		{
+			FATAL("Invalid CForm type!");
+		}
+	}
+
+	IVERIFY(FormatPtr.get());
+	FormatPtr->AddStaticGeom(CL.getVSpan(), CL.getTSpan());
 	xr_stack_string_path level_path = pBuild->path;
 	level_path.append("level");
-	XRay::CForm::Write(level_path.c_str(), CForm);
+	XRay::CForm::Write(level_path.c_str(), *FormatPtr);
 	
 	/*string_path		fn;
 	IWriter* MFS = FS.w_open(xr_strconcat(fn, pBuild->path, "level.cform"));
