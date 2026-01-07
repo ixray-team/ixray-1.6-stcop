@@ -26,6 +26,16 @@ public:
 		}
 	}
 
+	template <XRay::Concepts::Enum T>
+	void Read(shared_str Section, T& Value) const
+	{
+		if (JSONData.contains(*Section))
+		{
+			std::underlying_type_t<T> Temp = JSONData[*Section].get<std::underlying_type_t<T>>();
+			Value = static_cast<T>(Temp);
+		}
+	}
+
 	template <XRay::Concepts::XRayString T>
 	void Read(shared_str Section, T& Value) const
 	{
@@ -62,6 +72,12 @@ public:
 	void Write(shared_str Section, T Value)
 	{
 		JSONData[*Section] = Value;
+	}
+
+	template <XRay::Concepts::Enum T>
+	void Write(shared_str Section, T Value)
+	{
+		JSONData[*Section] = (std::underlying_type_t<T>)Value;
 	}
 
 	template <XRay::Concepts::XRayString T>
