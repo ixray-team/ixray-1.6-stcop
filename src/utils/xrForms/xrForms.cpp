@@ -36,7 +36,8 @@ void setup_luabind_allocator()
 	luabind::allocator_parameter = 0;
 }
 
-extern int item_current_selected;
+extern int item_current_lightmap;
+extern int item_current_cform;
 extern int item_current_jitter;
 extern int item_current_jitter_mu;
 extern int current_format;
@@ -296,10 +297,13 @@ void SaveCompilerCfg()
 	Serializer->Write("AI_Draft", gCompilerMode.AI_Draft);
 	Serializer->Write("AI_Verify", gCompilerMode.AI_Verify);
 	Serializer->Write("AI_Verbose", gCompilerMode.AI_Verbose);
-	Serializer->Write("item_current_selected", item_current_selected);
+	Serializer->Write("item_current_selected", item_current_lightmap);
+	Serializer->Write("item_current_cform", item_current_cform);
 	Serializer->Write("item_current_jitter", item_current_jitter);
 	Serializer->Write("item_current_jitter_mu", item_current_jitter_mu);
 	Serializer->Write("LC_legacyLM", gCompilerMode.LC_legacyLM);
+	Serializer->Write("LC_CformType", gCompilerMode.LC_CformType);
+	Serializer->Write("LC_CFormChunkSize", gCompilerMode.LC_CFormChunkSize);
 	Serializer->Save();
 }
 
@@ -364,11 +368,14 @@ int APIENTRY WinMain
 	Serializer->Read("AI_Draft", gCompilerMode.AI_Draft);
 	Serializer->Read("AI_Verify", gCompilerMode.AI_Verify);
 	Serializer->Read("AI_Verbose", gCompilerMode.AI_Verbose);
-	Serializer->Read("item_current_selected", item_current_selected);
+	Serializer->Read("item_current_selected", item_current_lightmap);
+	Serializer->Read("item_current_cform", item_current_cform);
 	Serializer->Read("item_current_jitter", item_current_jitter);
 	Serializer->Read("item_current_jitter_mu", item_current_jitter_mu);
 	Serializer->Read("LC_LmapsAlternative", gCompilerMode.LC_LmapsAlternative);
 	Serializer->Read("LC_legacyLM", gCompilerMode.LC_legacyLM);
+	Serializer->Read("LC_CformType", gCompilerMode.LC_CformType);
+	Serializer->Read("LC_CFormChunkSize", gCompilerMode.LC_CFormChunkSize);
 
 	InitializeUIData();
 	SDL_Application();
