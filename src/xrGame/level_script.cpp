@@ -920,7 +920,7 @@ LPCSTR tutorial_name()
 
 LPCSTR translate_string(LPCSTR str)
 {
-	return *g_pStringTable->translate(str);
+	return *g_pStringTable->ParseStringFromScript(str);
 }
 
 bool has_active_tutotial()

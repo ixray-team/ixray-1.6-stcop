@@ -91,7 +91,7 @@ void CUILines::SetText(const char* text){
 }
 void CUILines::SetTextST(LPCSTR str_id)
 {
-	SetText	(*g_pStringTable->translate(str_id));
+	SetText	(*g_pStringTable->ParseStringFromScript(str_id));
 }
 
 
