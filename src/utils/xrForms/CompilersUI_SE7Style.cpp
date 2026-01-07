@@ -4,6 +4,10 @@
 #include "CompilersUI.h"
 #include "cl_log.h"
 #include <timeapi.h>
+#include <algorithm>
+#include <magic_enum/magic_enum.hpp>
+
+#include "xrLevel.h"
 
 const char* texture_formats[] = 
 {
@@ -265,13 +269,20 @@ void RenderMainUI()
 	}
 }
 
-int item_current_selected = 2;
+int item_current_lightmap = 2;
+int item_current_cform = 0;
 int item_current_jitter = 2;
 int item_current_jitter_mu = 6;
 
 // Index Add (changed list)
 int			max_resolution = 5;
 const char* lightmap_resolution[] = { "1024", "2048", "4096", "8192", "16384"};
+
+const char* cform_types[] = {
+	magic_enum::enum_name<CFormVersions>(CFormVersions::Vanilla).data(),
+	magic_enum::enum_name<CFormVersions>(CFormVersions::VanillaChunked).data()
+};
+constexpr int cform_types_num = sizeof(cform_types) / sizeof(cform_types[0]);
 
 // Jitters
 const char* itemsJitter[] = { "1", "4", "9" };
@@ -296,6 +307,23 @@ void DrawLCConfig()
 
 		ImGui::Checkbox("Skip Subdivide", &gCompilerMode.LC_NoSubdivide);
 		ImGui::Checkbox("Skip Welding", &gCompilerMode.LC_skipWeld);
+
+		ImGui::Separator();
+
+		ImGui::Text("CForm format:");
+		ImGui::SetNextItemWidth(180);
+		if (ImGui::Combo("##cform", &item_current_cform, cform_types, cform_types_num))
+		{
+			auto type = magic_enum::enum_cast<CFormVersions>(cform_types[item_current_cform]);
+			VERIFY(type.has_value());
+			gCompilerMode.LC_CformType = type.value();
+		}
+		
+		ImGui::BeginDisabled(gCompilerMode.LC_CformType != CFormVersions::VanillaChunked);
+		ImGui::SetNextItemWidth(100);
+		ImGui::InputInt("Chunk size (MB)", &gCompilerMode.LC_CFormChunkSize);
+		gCompilerMode.LC_CFormChunkSize = std::max(gCompilerMode.LC_CFormChunkSize, 1);
+		ImGui::EndDisabled();
  
 		ImGui::Separator();
 
@@ -305,9 +333,9 @@ void DrawLCConfig()
 
 		ImGui::Text("Size:");
 		ImGui::SetNextItemWidth(180);
-		if (ImGui::Combo("##lmaps", &item_current_selected, lightmap_resolution, max_resolution))
+		if (ImGui::Combo("##lmaps", &item_current_lightmap, lightmap_resolution, max_resolution))
 		{
-			gCompilerMode.LC_sizeLmaps = atoi(lightmap_resolution[item_current_selected]);
+			gCompilerMode.LC_sizeLmaps = atoi(lightmap_resolution[item_current_lightmap]);
 		}
 
 		ImGui::Text("Format:");
