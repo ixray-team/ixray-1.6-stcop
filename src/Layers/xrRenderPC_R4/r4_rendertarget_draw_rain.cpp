@@ -5,7 +5,7 @@ void CRenderTarget::draw_rain(light& RainSetup) {
 
 	// Common calc for quad-rendering
 	u32 Offset;
-	u32 C = color_rgba(255, 255, 255, 255);
+	constexpr u32 C = color_rgba(255, 255, 255, 255);
 
 	float	_w = RCache.get_width();
 	float	_h = RCache.get_height();

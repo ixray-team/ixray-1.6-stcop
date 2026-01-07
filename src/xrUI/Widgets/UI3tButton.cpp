@@ -24,7 +24,7 @@ CUI3tButton::CUI3tButton()
 
 	m_BtnStatic								= nullptr;
 	m_BtnStaticParams.m_bNeedClrChanging	= false;
-	u32 def_clr								= color_rgba(255, 255, 255, 255);
+	constexpr u32 def_clr = color_rgba(255, 255, 255, 255);
 	m_BtnStaticParams.m_ClrStateE			= def_clr;
 	m_BtnStaticParams.m_ClrStateD			= def_clr;
 	m_BtnStaticParams.m_ClrStateT			= def_clr;
