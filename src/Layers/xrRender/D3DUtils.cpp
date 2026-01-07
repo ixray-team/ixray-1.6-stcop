@@ -89,7 +89,7 @@ static FLvertexVec 	m_GridPoints;
 u32 m_ColorAxis	= 0xff000000;
 u32 m_ColorGrid	= 0xff909090;
 u32 m_ColorGridTh = 0xffb4b4b4;
-u32 m_SelectionRect = color_rgba(127,255,127,64);
+constexpr u32 m_SelectionRect = color_rgba(127,255,127,64);
 
 u32 m_ColorSafeRect = 0xffB040B0;
 
