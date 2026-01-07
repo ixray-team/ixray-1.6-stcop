@@ -97,7 +97,7 @@ CForm::CFormatVanillaChunked::CFormatVanillaChunked(u32 ChunkNumber)
     if (!IVERIFY(ChunkNumber > 0)){
         ChunkNumber = 1;
     }
-    Header.version = CFormVersions::VanillaChunkedMain;
+    Header.version = CFormVersions::VanillaChunked;
     Data.shrink_to_fit();
     Data.resize(ChunkNumber);
     for (auto& elem : Data)
@@ -147,7 +147,7 @@ bool CForm::CFormatVanillaChunked::Read(xr_string_view FileName)
     FileHash = crc32(Reader->pointer(), Reader->length());
     
     Reader->r(&Header, sizeof(Header));
-    if (!I_ASSERT(Header.version == CFormVersions::VanillaChunkedMain))
+    if (!I_ASSERT(Header.version == CFormVersions::VanillaChunked))
     {
         return false;
     }
@@ -187,7 +187,7 @@ void CForm::CFormatVanillaChunked::AddStaticGeom(xr_span<Fvector> Verts, xr_span
     size_t CurrentPosFace = 0;
     for (size_t i = 0; i < ChunksNum; i++)
     {
-        if (!IVERIFY(CurrentPosVerts > Verts.size()) || !IVERIFY(CurrentPosFace > Tris.size()))
+        if (!IVERIFY(CurrentPosVerts < Verts.size()) || !IVERIFY(CurrentPosFace < Tris.size()))
         {
             break;
         }
@@ -206,8 +206,8 @@ void CForm::CFormatVanillaChunked::GetStaticGeom(xr_vector<Fvector>& OutVertices
 {
     OutVertices.clear();
     OutTris.clear();
-    OutVertices.resize(Header.vertcount);
-    OutTris.resize(Header.facecount);
+    OutVertices.reserve(Header.vertcount);
+    OutTris.reserve(Header.facecount);
     for (auto& elem : Data)
     {
         OutVertices.append_range(elem.Data.Verts);
@@ -246,10 +246,10 @@ XRCORE_API xr_unique_ptr<CForm::IFormat> CForm::Read(LPCSTR Initial, xr_string_v
             }
             return xr_unique_ptr<CForm::IFormat>(Parsed);
         }
-    case CFormVersions::VanillaChunkedMain:
+    case CFormVersions::VanillaChunked:
         {
             auto Parsed = new CFormatVanillaChunked(1);
-            if (!I_ASSERT_M(Parsed->Read(Filename), "Unable to read [%s]", Filename.data()))
+            if (!I_ASSERT_M(Parsed->Read(Path.c_str()), "Unable to read [%s]", Path.c_str()))
             {
                 xr_delete(Parsed);
                 return nullptr;

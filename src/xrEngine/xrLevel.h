@@ -57,7 +57,7 @@ enum EBuildQuality
 enum class CFormVersions : u32
 {
 	Vanilla = 4,
-	VanillaChunkedMain,
+	VanillaChunked,
 	VanillaChunkedData
 };
 
