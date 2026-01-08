@@ -157,7 +157,7 @@ void CTerrain::FillProp(LPCSTR pref, PropItemVec& items)
 void CTerrain::OnChangeShader(PropValue* sender)
 {
 	OnChangeSurface(sender);
-	for (const xr_shared_ptr<CSurface>& i : TerrainObject->m_Surfaces) { i->OnDeviceDestroy(); }
+	for (CSurface* i : TerrainObject->m_Surfaces) { i->OnDeviceDestroy(); }
 }
 
 void CTerrain::OnChangeSurface(PropValue* sender)

@@ -39,25 +39,26 @@ bool SceneBuilder::BuildHOMModel()
 			}
 		}else
 		{
-			Fvector v;
+			Fvector 		v;
 			const Fmatrix&	parent = S->_Transform();
-			for (EditMeshIt m_it = E->FirstMesh(); m_it != E->LastMesh(); ++m_it)
+			for (EditMeshIt m_it=E->FirstMesh(); m_it!=E->LastMesh(); ++m_it)
 			{
-				for (SurfFacesPairIt sf_it = (*m_it)->m_SurfFaces.begin(); sf_it != (*m_it)->m_SurfFaces.end(); ++sf_it)
+				for (SurfFacesPairIt sf_it=(*m_it)->m_SurfFaces.begin(); sf_it!=(*m_it)->m_SurfFaces.end(); ++sf_it)
 				{
-					if (sf_it->first->m_GameMtlName == "materials\\occ")
+					CSurface* S 	= sf_it->first;
+					if(S->m_GameMtlName=="materials\\occ")
 					{
-						BOOL b2Sided = sf_it->first->m_Flags.is(CSurface::sf2Sided);
-						IntVec& i_lst = sf_it->second;
-						for (IntIt i_it = i_lst.begin(); i_it != i_lst.end(); ++i_it)
+						BOOL b2Sided 	= S->m_Flags.is(CSurface::sf2Sided);
+						IntVec& i_lst	= sf_it->second;
+						for (IntIt i_it=i_lst.begin(); i_it!=i_lst.end(); ++i_it)
 						{
 							st_Face& face = (*m_it)->m_Faces[*i_it];
-							for (int k = 0; k < 3; ++k)
+							for (int k=0; k<3; ++k)
 							{
-								parent.transform_tiny(v, (*m_it)->m_Vertices[face.pv[k].pindex]);
-								F.w_fvector3(v);
+								parent.transform_tiny	(v,(*m_it)->m_Vertices[face.pv[k].pindex]);
+								F.w_fvector3			(v);
 							}
-							F.w_u32(b2Sided);
+							F.w_u32						(b2Sided);
 						}
 					}
 				}
@@ -95,7 +96,7 @@ bool SceneBuilder::BuildSOMModel()
 			{
 				for (SurfFacesPairIt sf_it=(*m_it)->m_SurfFaces.begin(); sf_it!=(*m_it)->m_SurfFaces.end(); sf_it++)
 				{
-					CSurface* surf 		= sf_it->first.get();
+					CSurface* surf 		= sf_it->first;
 					int gm_id			= surf->_GameMtl(); 
 					if (gm_id==GAMEMTL_NONE_ID)
 					{ 

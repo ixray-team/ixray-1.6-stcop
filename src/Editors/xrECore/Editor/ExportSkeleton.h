@@ -147,7 +147,7 @@ protected:
 		ArbitraryList<VIPM_SWR>	m_SWR;// The records of the collapses.
 	    u32				m_SkeletonLinkType;
     public:
-        SSplit (xr_shared_ptr<CSurface> surf, const Fbox& bb, u16 part);
+        SSplit (CSurface* surf, const Fbox& bb, u16 part);
 
         bool valid()
         {

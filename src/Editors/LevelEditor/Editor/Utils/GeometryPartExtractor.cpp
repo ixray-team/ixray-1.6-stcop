@@ -346,7 +346,7 @@ IC void recurse_tri(SBPart* P, SBFaceVec& faces, SBAdjVec& adjs, SBFace* F)
     }
 }
 
-void CGeomPartExtractor::AppendFace(xr_weak_ptr<CSurface> surf, const Fvector* v, const Fvector* n, const Fvector2* uvs[3])
+void CGeomPartExtractor::AppendFace(CSurface* surf, const Fvector* v, const Fvector* n, const Fvector2* uvs[3])
 {
 	SBFace* F			= new SBFace(surf,uvs);
     // insert verts

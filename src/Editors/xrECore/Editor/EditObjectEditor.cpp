@@ -185,7 +185,7 @@ void CEditableObject::RenderSingle(const Fmatrix& parent)
 void CEditableObject::RenderAnimation(const Fmatrix&){
 }
 
-void CEditableObject::RenderEdge(const Fmatrix& parent, CEditableMesh* mesh, xr_shared_ptr<CSurface> surf, u32 color)
+void CEditableObject::RenderEdge(const Fmatrix& parent, CEditableMesh* mesh, CSurface* surf, u32 color)
 {
 	if (!(m_LoadState.is(LS_RBUFFERS))) DefferedLoadRP();
 
@@ -195,7 +195,7 @@ void CEditableObject::RenderEdge(const Fmatrix& parent, CEditableMesh* mesh, xr_
 			(*_M)->RenderEdge(parent, surf, color);
 }
 
-void CEditableObject::RenderSelection(const Fmatrix& parent, CEditableMesh* mesh, xr_shared_ptr<CSurface> surf, u32 color)
+void CEditableObject::RenderSelection(const Fmatrix& parent, CEditableMesh* mesh, CSurface* surf, u32 color)
 {
 	if (!(m_LoadState.is(LS_RBUFFERS))) DefferedLoadRP();
 

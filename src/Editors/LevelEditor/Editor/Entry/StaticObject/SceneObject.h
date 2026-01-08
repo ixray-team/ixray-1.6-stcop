@@ -37,7 +37,7 @@ public:
 protected:
 	typedef CCustomObject inherited;
     int				m_iBlinkTime;
-	xr_shared_ptr<CSurface> m_BlinkSurf;
+    CSurface*		m_BlinkSurf;
 	void 			RenderBlink				();
 
 public:
@@ -108,7 +108,7 @@ public:
 
     virtual void 	OnShowHint				(AStringVec& dest);
 
-    void			Blink					(xr_shared_ptr<CSurface> surf=0);
+    void			Blink					(CSurface* surf=0);
 
     virtual bool	Validate				(bool bMsg);
 

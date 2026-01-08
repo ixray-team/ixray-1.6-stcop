@@ -809,16 +809,13 @@ void EDetailManager::FillProp(LPCSTR pref, PropItemVec& items)
 
 bool EDetailManager::GetSummaryInfo(SSceneSummary* inf)
 {
-    for (DetailIt it = objects.begin(); it != objects.end(); it++)
-    {
-        ((EDetail*)(*it))->OnDeviceCreate();
-        CEditableObject* E = ((EDetail*)(*it))->m_pRefs;
-        if (!E)
-            continue;
-
-        const xr_shared_ptr<CSurface>& surf = *E->FirstSurface(); VERIFY(surf);
-        inf->AppendTexture(surf->_Texture(), SSceneSummary::sttDO, 0, 0, "$DETAILS$");
+	for (DetailIt it=objects.begin(); it!=objects.end(); it++){
+    	((EDetail*)(*it))->OnDeviceCreate();
+        CEditableObject* E 	= ((EDetail*)(*it))->m_pRefs;
+		if (!E)				continue;
+	    CSurface* surf		= *E->FirstSurface(); VERIFY(surf);
+		inf->AppendTexture	(surf->_Texture(),SSceneSummary::sttDO,0,0,"$DETAILS$");
     }
-
     return true;
 }
+

@@ -115,6 +115,9 @@ void CEditableObject::ClearGeometry()
     for (EditMeshIt m = m_Meshes.begin(); m != m_Meshes.end(); m++)
         xr_delete(*m);
 
+    for (SurfaceIt s_it = m_Surfaces.begin(); s_it != m_Surfaces.end(); s_it++)
+        xr_delete(*s_it);
+
     m_Meshes.clear();
     m_Surfaces.clear();
 
@@ -140,10 +143,9 @@ int CEditableObject::GetFaceCount(bool bMatch2Sided, bool bIgnoreOCC)
 	return m_FaceCount;
 }
 
-int CEditableObject::GetSurfFaceCount(const char* surf_name)
-{
+int CEditableObject::GetSurfFaceCount(const char* surf_name){
 	int cnt=0;
-    const xr_shared_ptr<CSurface>& surf = FindSurfaceByName(surf_name);
+    CSurface* surf = FindSurfaceByName(surf_name);
     for(EditMeshIt m = m_Meshes.begin();m!=m_Meshes.end();m++)
         cnt+=(*m)->GetSurfFaceCount(surf);
 	return cnt;
@@ -194,11 +196,9 @@ void CEditableObject::TranslateToWorld(const Fmatrix& parent)
 	UpdateBox();
 }
 
-xr_shared_ptr<CSurface> CEditableObject::FindSurfaceByName(const char* surf_name, int* s_id)
-{
+CSurface*	CEditableObject::FindSurfaceByName(const char* surf_name, int* s_id){
 	for(SurfaceIt s_it=m_Surfaces.begin(); s_it!=m_Surfaces.end(); s_it++)
     	if (stricmp((*s_it)->_Name(),surf_name)==0){ if (s_id) *s_id=s_it-m_Surfaces.begin(); return *s_it;}
-
     return 0;
 }
 
