@@ -1,7 +1,6 @@
 #pragma once
 
 
-const	u32								c_VB_maxVertices		= 65535;		// count
 const	u32								c_vCacheSize			= 24;			// entries
 const	u32								c_SS_LowVertLimit		= 64;			// polys
 const	u32								c_SS_HighVertLimit		= 2*1024;		// polys

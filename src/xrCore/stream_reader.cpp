@@ -102,7 +102,7 @@ void CStreamReader::r(void* _buffer, intptr_t buffer_size)
 	advance(buffer_size);
 }
 
-CStreamReader* CStreamReader::open_chunk(const u32& chunk_id)
+CStreamReader* CStreamReader::open_chunk(u32 chunk_id)
 {
 	BOOL compressed;
 	intptr_t size = find_chunk(chunk_id, &compressed);
