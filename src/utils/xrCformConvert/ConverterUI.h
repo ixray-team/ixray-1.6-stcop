@@ -14,10 +14,15 @@ namespace CFormConverter
 
 	struct ConverterSettings
 	{
+		int LC_GeomChunkSize = 75;
 		CFormVersions LC_CformType = CFormVersions::Vanilla;
 		int LC_CFormChunkSize = 75;
 		int LC_sizeLmaps = 1024 * 4;
 		int ThreadsPerWork = 14;
+		GeomVanillaType LC_GeomType = GeomVanillaType::Vanilla;
+
+		bool Geom;
+		bool CForm;
 
 		xr_vector<LevelFileData> Files;
 		ImFont* CompilerIconsFont;

@@ -60,12 +60,19 @@ static bool hideLogSection = true;
 static bool ResizeMaximal = false;
 
 int item_current_cform = 0;
+int item_current_geom = 0;
 
 const char* cform_types[] = {
 	magic_enum::enum_name<CFormVersions>(CFormVersions::Vanilla).data(),
 	magic_enum::enum_name<CFormVersions>(CFormVersions::VanillaChunked).data()
 };
 constexpr int cform_types_num = sizeof(cform_types) / sizeof(cform_types[0]);
+
+const char* geom_types[] = {
+	magic_enum::enum_name<GeomVanillaType>(GeomVanillaType::Vanilla).data(),
+	magic_enum::enum_name<GeomVanillaType>(GeomVanillaType::Chunked).data()
+};
+constexpr int geom_types_num = sizeof(geom_types) / sizeof(geom_types[0]);
 
 void CFormConverter::RenderMainUI()
 {
@@ -92,10 +99,11 @@ void CFormConverter::RenderMainUI()
 	if (ImGui::Begin("MainForm", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNavFocus))
 	{
 		ImVec2 ListBoxSize = { float(Size[0] - 20), float ( Size[1] - 115) };
-		if (ImGui::BeginTable("##Levels", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders | ImGuiTableFlags_ScrollY, ListBoxSize))
+		if (ImGui::BeginTable("##Levels", 3, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders | ImGuiTableFlags_ScrollY, ListBoxSize))
 		{
 			// 
 			ImGui::TableSetupColumn("Levels");
+			ImGui::TableSetupColumn("Geom");
 			ImGui::TableSetupColumn("CForm");
 
 			ImGui::TableHeadersRow();
@@ -132,6 +140,30 @@ void CFormConverter::RenderMainUI()
 			ImGui::TableNextColumn();
 			
 			{
+				ImGui::PushID("Geom");
+				ImGui::Checkbox("Geom Converter", &GetConverterSettings().Geom);
+				ImGui::Separator();
+				ImGui::Text("Geom format:");
+				if (ImGui::Combo("##geom", &item_current_geom, geom_types, geom_types_num))
+				{
+					auto type = magic_enum::enum_cast<GeomVanillaType>(geom_types[item_current_geom]);
+					VERIFY(type.has_value());
+					GetConverterSettings().LC_GeomType = type.value();
+				}
+		
+				ImGui::BeginDisabled(GetConverterSettings().LC_GeomType != GeomVanillaType::Chunked);
+				ImGui::InputInt("Chunk size (MB)", &GetConverterSettings().LC_GeomChunkSize);
+				GetConverterSettings().LC_GeomChunkSize = std::max(GetConverterSettings().LC_GeomChunkSize, 1);
+				ImGui::EndDisabled();
+				ImGui::PopID();
+			}
+
+			ImGui::TableNextColumn();
+			
+			{
+				ImGui::PushID("CForm");
+				ImGui::Checkbox("CForm Converter", &GetConverterSettings().CForm);
+				ImGui::Separator();
 				ImGui::Text("CForm format:");
 				if (ImGui::Combo("##cform", &item_current_cform, cform_types, cform_types_num))
 				{
@@ -144,6 +176,7 @@ void CFormConverter::RenderMainUI()
 				ImGui::InputInt("Chunk size (MB)", &GetConverterSettings().LC_CFormChunkSize);
 				GetConverterSettings().LC_CFormChunkSize = std::max(GetConverterSettings().LC_CFormChunkSize, 1);
 				ImGui::EndDisabled();
+				ImGui::PopID();
 			}
 
 			ImGui::EndTable();  
