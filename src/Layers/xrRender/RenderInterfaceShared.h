@@ -188,7 +188,7 @@ void CRender::rmNormal()
 	GRHI->SetViewport(VP);
 }
 
-void CRender::ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase* fs)
+void CRender::ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase& fs)
 {
 	xr_vector<svector<XRay::Legacy::LEGACYVERTEXELEMENT9, XRay::Legacy::LEGACYMAXDECLLENGTH + 1>> LegacyDeclBuffer;
 	LegacyDeclBuffer.resize(Count);
@@ -198,16 +198,16 @@ void CRender::ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDec
 		// decl
 		u32 buffer_size = (XRay::Legacy::LEGACYMAXDECLLENGTH + 1) * sizeof(XRay::Legacy::LEGACYVERTEXELEMENT9);
 		XRay::Legacy::LEGACYVERTEXELEMENT9* dcl = (XRay::Legacy::LEGACYVERTEXELEMENT9*)_alloca(buffer_size);
-		fs->r(dcl, buffer_size);
-		fs->advance(-(int)buffer_size);
+		fs.r(dcl, buffer_size);
+		fs.advance(-(int)buffer_size);
 
 		u32 dcl_len = u32(GetDeclLength(dcl) + 1);
 
 		LegacyDeclBuffer[i].resize(dcl_len);
-		fs->r(LegacyDeclBuffer[i].begin(), dcl_len * sizeof(XRay::Legacy::LEGACYVERTEXELEMENT9));
+		fs.r(LegacyDeclBuffer[i].begin(), dcl_len * sizeof(XRay::Legacy::LEGACYVERTEXELEMENT9));
 
 		// count, size
-		u32 vCount = fs->r_u32();
+		u32 vCount = fs.r_u32();
 		u32 vSize = (u32)ComputeVertexSize(dcl, 0);
 
 		// Create and fill
@@ -218,7 +218,7 @@ void CRender::ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDec
 		vbDesc.CPUAccessFlags = 0;
 
 		xr_vector<u8> tmpData(vCount * vSize);
-		fs->r(tmpData.data(), tmpData.size());
+		fs.r(tmpData.data(), tmpData.size());
 
 		RHIBufferSubresource vbInit{};
 		vbInit.pSysMem = tmpData.data();

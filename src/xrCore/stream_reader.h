@@ -52,7 +52,11 @@ public:
 
 	void			advance(intptr_t offset) override;
 	void			r(void* buffer, intptr_t buffer_size) override;
-	CStreamReader* open_chunk(const u32& chunk_id);
+	CStreamReader* open_chunk(u32 chunk_id);
+
+	// Use separate open_chunk with IReaderBase return to not break whole engine. But should be changed...
+	virtual IReaderBase* open_chunk_base(u32 chunk_id) override {return open_chunk(chunk_id);}
+	
 	intptr_t		find_chunk(u32 ID, BOOL* bCompressed = 0) override;
 
 public:

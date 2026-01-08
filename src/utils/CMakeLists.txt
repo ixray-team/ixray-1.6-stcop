@@ -45,7 +45,7 @@ if(IXRAY_UTILS AND NOT IXRAY_COMPRESSOR_ONLY)
     set_target_properties(xrAI PROPERTIES ${IXRAY_FOLDER_UTILS})
     set_target_properties(xrLevelBuilder PROPERTIES ${IXRAY_FOLDER_UTILS})
     set_target_properties(TextureCloner PROPERTIES ${IXRAY_FOLDER_UTILS})
-    set_target_properties(xrCformConvert PROPERTIES ${IXRAY_FOLDER_UTILS})
+    set_target_properties(xrLevelFilesConverter PROPERTIES ${IXRAY_FOLDER_UTILS})
 
     if(IXRAY_MP)
         if (IXRAY_MP_SQL)

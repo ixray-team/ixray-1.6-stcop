@@ -13,6 +13,7 @@
 #include "CompilerIcons.h"
 
 extern int item_current_cform;
+extern int item_current_geom;
 
 void StartupConv();
 
@@ -177,8 +178,11 @@ void CFormConverter::StartCompile()
 void CFormConverter::SaveCompilerCfg()
 {
 	Serializer->Write("item_current_cform", item_current_cform);
+	Serializer->Write("item_current_geom", item_current_geom);
 	Serializer->Write("LC_CformType", CFormConverter::GetConverterSettings().LC_CformType);
+	Serializer->Write("LC_GeomType", CFormConverter::GetConverterSettings().LC_GeomType);
 	Serializer->Write("LC_CFormChunkSize", CFormConverter::GetConverterSettings().LC_CFormChunkSize);
+	Serializer->Write("LC_GeomChunkSize", CFormConverter::GetConverterSettings().LC_GeomChunkSize);
 	Serializer->Save();
 }
 
@@ -205,8 +209,11 @@ int APIENTRY WinMain
 
 	Serializer = new CJsonSerializer("xrcformconverter.json");
 	Serializer->Read("item_current_cform", item_current_cform);
+	Serializer->Read("item_current_geom", item_current_geom);
 	Serializer->Read("LC_CformType", CFormConverter::GetConverterSettings().LC_CformType);
+	Serializer->Read("LC_GeomType", CFormConverter::GetConverterSettings().LC_GeomType);
 	Serializer->Read("LC_CFormChunkSize", CFormConverter::GetConverterSettings().LC_CFormChunkSize);
+	Serializer->Read("LC_GeomChunkSize", CFormConverter::GetConverterSettings().LC_GeomChunkSize);
 
 	CFormConverter::InitializeUIData();
 	SDL_Application();

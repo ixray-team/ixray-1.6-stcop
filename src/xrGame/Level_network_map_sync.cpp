@@ -6,7 +6,7 @@
 #include "../xrEngine/string_table.h"
 #include "../xrEngine/XR_IOConsole.h"
 
-static const u32 r_buffer_size = 131072;	//128 Kb
+static constexpr u32 r_buffer_size = 131072;	//128 Kb
 void CLevel::CalculateLevelCrc32()
 {
 	void* read_buffer	= _alloca(r_buffer_size);

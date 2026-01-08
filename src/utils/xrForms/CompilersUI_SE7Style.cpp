@@ -281,6 +281,7 @@ void RenderMainUI()
 
 int item_current_lightmap = 2;
 int item_current_cform = 0;
+int item_current_geom = 0;
 int item_current_jitter = 2;
 int item_current_jitter_mu = 6;
 
@@ -293,6 +294,12 @@ const char* cform_types[] = {
 	magic_enum::enum_name<CFormVersions>(CFormVersions::VanillaChunked).data()
 };
 constexpr int cform_types_num = sizeof(cform_types) / sizeof(cform_types[0]);
+
+const char* geom_types[] = {
+	magic_enum::enum_name<GeomVanillaType>(GeomVanillaType::Vanilla).data(),
+	magic_enum::enum_name<GeomVanillaType>(GeomVanillaType::Chunked).data()
+};
+constexpr int geom_types_num = sizeof(geom_types) / sizeof(geom_types[0]);
 
 // Jitters
 const char* itemsJitter[] = { "1", "4", "9" };
@@ -320,6 +327,26 @@ void DrawLCConfig()
 
 		ImGui::Separator();
 
+		ImGui::PushID("geom");
+		ImGui::Text("Geom format:");
+		ImGui::SetNextItemWidth(180);
+		if (ImGui::Combo("##geom", &item_current_geom, geom_types, geom_types_num))
+		{
+			auto type = magic_enum::enum_cast<GeomVanillaType>(geom_types[item_current_geom]);
+			VERIFY(type.has_value());
+			gCompilerMode.LC_GeomType = type.value();
+		}
+		
+		ImGui::BeginDisabled(gCompilerMode.LC_GeomType != GeomVanillaType::Chunked);
+		ImGui::SetNextItemWidth(100);
+		ImGui::InputInt("Chunk size (MB)", &gCompilerMode.LC_GeomChunkSize);
+		gCompilerMode.LC_GeomChunkSize = std::max(gCompilerMode.LC_GeomChunkSize, 1);
+		ImGui::EndDisabled();
+		ImGui::PopID();
+
+		ImGui::Separator();
+
+		ImGui::PushID("CForm");
 		ImGui::Text("CForm format:");
 		ImGui::SetNextItemWidth(180);
 		if (ImGui::Combo("##cform", &item_current_cform, cform_types, cform_types_num))
@@ -334,6 +361,7 @@ void DrawLCConfig()
 		ImGui::InputInt("Chunk size (MB)", &gCompilerMode.LC_CFormChunkSize);
 		gCompilerMode.LC_CFormChunkSize = std::max(gCompilerMode.LC_CFormChunkSize, 1);
 		ImGui::EndDisabled();
+		ImGui::PopID();
  
 		ImGui::Separator();
 

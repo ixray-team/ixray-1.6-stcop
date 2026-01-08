@@ -165,6 +165,13 @@ bool CMemoryWriter::save_to(LPCSTR fn)
 	return false;
 }
 
+void CBufferMemoryWriter::w(const void* ptr, u32 count)
+{
+	R_ASSERT(position+count <= GetBuffer().size());
+	CopyMemory(GetBuffer().data()+position, ptr, count);
+	position += count;
+}
+
 void IWriter::open_chunk	(u32 type)
 {
 	w_u32(type);
@@ -464,6 +471,77 @@ CVirtualFileRW::~CVirtualFileRW()
 	CloseHandle(hSrcMap);
 #endif
 	Platform::CloseFile(hSrcFile);
+}
+
+void CMultiReader::AppendReader(IReader& reader)
+{
+	readers.emplace_back(FullSize, &reader);
+	FullSize += reader.length();
+}
+
+void CMultiReader::advance(intptr_t cnt)
+{
+	R_ASSERT(Pos + cnt >= 0); // we can move backward, right?
+	R_ASSERT(Pos + cnt <= FullSize);
+	Pos += cnt;
+	VERIFY(reader_index < readers.size());
+	if (Pos < readers[reader_index].first)
+	{
+		do
+		{
+			VERIFY(reader_index > 0);
+			reader_index--;
+		} while (Pos < readers[reader_index].first);
+	} else
+	{
+		while (reader_index + 1 < readers.size() && Pos > readers[reader_index + 1].first)
+		{
+			reader_index++;
+		}
+	}
+	readers[reader_index].second->seek(Pos - readers[reader_index].first);
+}
+
+void CMultiReader::r(void* p, intptr_t cnt)
+{
+	R_ASSERT(cnt > 0); // we can move backward, right?
+	R_ASSERT(Pos + cnt <= FullSize);
+	auto ElapsedToRead = cnt;
+	auto CurPtr = (u8*)p;
+	while (ElapsedToRead > 0)
+	{
+		VERIFY(reader_index < readers.size());
+		auto& reader = readers[reader_index];
+		auto ToRead = std::min(ElapsedToRead, reader.second->elapsed());
+		reader.second->r(CurPtr, ToRead);
+		CurPtr += ToRead;
+		ElapsedToRead -= ToRead;
+		if (reader.second->eof())
+		{
+			reader_index++;
+		}
+		if (!IVERIFY(ElapsedToRead >= 0))
+		{
+			break;
+		}
+	}
+	Pos += cnt;
+}
+
+void CMultiReader::seek(intptr_t ptr)
+{
+	R_ASSERT(Pos >= 0); // we can move backward, right?
+	R_ASSERT(Pos <= FullSize);
+	Pos = ptr;
+	for (reader_index = 0; reader_index < readers.size(); reader_index++)
+	{
+		if (readers[reader_index].first > Pos)
+		{
+			reader_index--;
+			break;
+		}
+	}
+	readers[reader_index].second->seek(Pos - readers[reader_index].first);
 }
 
 CVirtualFileReader::CVirtualFileReader(const char* cFileName)

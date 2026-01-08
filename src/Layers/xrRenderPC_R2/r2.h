@@ -121,12 +121,13 @@ public:
 
 private:
 	// Loading / Unloading
-	void							LoadBuffers					(CStreamReader	*fs,	BOOL	_alternative);
 	void							LoadVisuals					(IReader	*fs);
 	void							LoadLights					(IReader	*fs);
 	void							LoadPortals					(IReader	*fs);
 	void							LoadSectors					(IReader	*fs);
-	void							LoadSWIs					(CStreamReader	*fs);
+	void							LoadVertexBuffers			(IReaderBase& fs, bool _alternative);
+	void							LoadIndexBuffers			(IReaderBase& fs, bool _alternative);
+	void							LoadSWIs					(IReaderBase& fs);
 
 	void							add_Static					(dxRender_Visual*pVisual, u32 planes);
 	void							add_leafs_Dynamic			(dxRender_Visual*pVisual, bool IgnoreObject = false); // if detected node's full visibility
@@ -314,7 +315,7 @@ protected:
 
 private:
 	FS_FileSet						m_file_set;
-	void ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase* fs);
+	void ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase& fs);
 };
 
 extern CRender						RImplementation;

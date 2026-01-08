@@ -5,6 +5,7 @@
 #define DEBUG_INFO __FILE__,__LINE__,__FUNCTION__
 #define _TRE(arg)  arg
 
+#include "xrDebug.h"
 
 #	define CHECK_OR_EXIT(expr,message)	do {if (!(expr)) ::Debug.do_exit(message);} while (0)
 

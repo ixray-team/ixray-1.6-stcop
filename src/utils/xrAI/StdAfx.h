@@ -17,7 +17,7 @@
 #include "../../xrEngine/defines.h"
 #include "../xrForms/cl_log.h"
 #include "../../xrCore/Collision/xrCDB.h"
-#include "_d3d_extensions.h"
+#include "../../xrEngine/_d3d_extensions.h"
 #include "../../xrEngine/stdafx.h"
 #include <fcntl.h>
 #include <sys/types.h>
