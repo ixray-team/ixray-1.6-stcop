@@ -621,7 +621,10 @@ CGraphMerger::CGraphMerger(
 		tGraphHeader.m_levels.insert(std::make_pair(tLevel.id(),tLevel));
 	}
 	
-	R_ASSERT(tpGraphs.size());
+	if (!I_ASSERT(tpGraphs.size()))
+	{
+		return;
+	}
 	
 	Phase("Adding interconnection points");
 	{
