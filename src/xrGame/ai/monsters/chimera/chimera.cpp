@@ -134,11 +134,17 @@ void   CChimera::reinit ()
 	move().load_velocity					(*cNameSect(), 
 											 "Velocity_JumpGround",
 											 MonsterMovement::eChimeraVelocityParameterJumpGround);
+	
+	static string16 def_s3 = "jump_attack_1";
+	static string16 def_s4 = "jump_attack_2";
+
+	LPCSTR s3_anim = READ_IF_EXISTS(pSettings, r_string, get_section(), "jump_data_s3", def_s3);
+	LPCSTR s4_anim = READ_IF_EXISTS(pSettings, r_string, get_section(), "jump_data_s4", def_s4);
 
 	com_man().load_jump_data				(0,//"jump_attack_0",
 											 0,//"jump_attack_0",
-											 "jump_attack_1", 
-											 "jump_attack_2", 
+											 s3_anim,
+											 s4_anim,
 											 u32(-1),//MonsterMovement::eVelocityParameterRunNormal,
 											 MonsterMovement::eChimeraVelocityParameterJumpGround,
 											 0);
@@ -158,9 +164,10 @@ void   CChimera::CheckSpecParams (u32 spec_params)
 
 void   CChimera::HitEntityInJump (const CEntity *pEntity)
 {
-	SAAParam &params					=	anim().AA_GetParams("jump_attack_1");
+	auto AttackParamAnim = READ_IF_EXISTS(pSettings, r_string, get_section(), "AttackParamAnim", "jump_attack_1");
+	SAAParam &params = anim().AA_GetParams(AttackParamAnim);
 	
-	HitEntity								(pEntity, params.hit_power, params.impulse, params.impulse_dir);
+	HitEntity(pEntity, params.hit_power, params.impulse, params.impulse_dir);
 }
 
 void   CChimera::jump (Fvector const &position, float const factor)
