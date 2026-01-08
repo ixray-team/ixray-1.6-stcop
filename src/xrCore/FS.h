@@ -2,8 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#ifndef fsH
-#define fsH
+#pragma once
 
 #define CFS_CompressMark	(1ul << 31ul)
 #define CFS_HeaderChunkID	(666)
@@ -38,6 +37,7 @@ public:
 	virtual void	w		(const void* ptr, u32 count)	= 0;
 
 	// generalized writing functions
+	IC void			w_buff	(xr_span<const u8> buff)		{	w(buff.data(), buff.size());	}
 	IC void			w_u64	(u64 d)					{	w(&d,sizeof(u64));	}
 	IC void			w_u32	(u32 d)					{	w(&d,sizeof(u32));	}
 	IC void			w_u16	(u16 d)					{	w(&d,sizeof(u16));	}
@@ -123,21 +123,47 @@ public:
 	virtual	~CMemoryWriter();
 
 	// kernel
-	virtual void	w			(const void* ptr, u32 count);
+	virtual void w(const void* ptr, u32 count);
 
-	virtual void		seek		(size_t pos)	{	position = pos;				}
-	virtual size_t		tell		() 			{	return position;			}
+	virtual void seek(size_t pos) {position = pos;}
+	virtual size_t tell() {return position;}
 
 	// specific
-	IC u8*			pointer		()			{	return data;				}
-	IC u32			size		() const 	{	return file_size;			}
-	IC void			clear		()			{	file_size=0; position=0;	}
+	IC u8* pointer() {return data;}
+	IC u32 size() const {return file_size;}
+	IC void clear() {file_size=0; position=0;}
 #pragma warning(push)
 #pragma warning(disable:4995)
-	IC void			free		()			{	file_size=0; position=0; mem_size=0; xr_free(data);	}
+	IC void free() {file_size=0; position=0; mem_size=0; xr_free(data);}
 #pragma warning(pop)
-	bool			save_to		(LPCSTR fn);
-	virtual	void	flush		()			{ };
+	bool save_to(LPCSTR fn);
+	virtual	void flush(){}
+};
+
+/* IWriter wrapper to write some data in u8 vector like it's for file
+ * Designed to be used when we know max amount of data we want to write
+ */
+class XRCORE_API CBufferMemoryWriter : public IWriter
+{
+	xr_vector<u8>* BufferPtr = nullptr;
+	size_t position = 0;
+
+	IC xr_vector<u8>& GetBuffer()
+	{
+		VERIFY(BufferPtr);
+		return *BufferPtr;
+	}
+	
+public:
+	CBufferMemoryWriter(xr_vector<u8>& buffer)
+	{
+		BufferPtr = &buffer;
+	}
+	
+	void seek(size_t pos) override {position = pos;}
+	size_t tell() override {return position;}
+	void w(const void* ptr, u32 count) override;
+	void flush() override {VERIFY(false);}
 };
 
 //------------------------------------------------------------------------------------
@@ -218,6 +244,7 @@ public:
 	IC	void		rewind		()			{	seek(0); }
 
 	virtual intptr_t find_chunk  (u32 ID, BOOL* bCompressed = 0);
+	virtual IReaderBase* open_chunk_base(u32 chunk_id) = 0;
 	
 	IC	BOOL		r_chunk		(u32 ID, void *dest)	// чтение XR Chunk'ов (4b-ID,4b-size,??b-data)
 	{
@@ -363,6 +390,9 @@ public:
 		return open_chunk(u32(ID));
 	}
 
+	// Use separate open_chunk with IReaderBase return to not break whole engine. But should be changed...
+	virtual IReaderBase* open_chunk_base(u32 chunk_id) override {return open_chunk(chunk_id);}
+
 	// iterators
 	IReader* open_chunk_iterator(u32& ID, IReader* previous=NULL);	// NULL=first
 
@@ -397,4 +427,22 @@ public:
 	virtual ~CVirtualFileRW		();
 };
 
-#endif // fsH
+// in case we need to read several readers like it's a single reader
+class XRCORE_API CMultiReader : public IReaderBase
+{
+	xr_vector<xr_pair<intptr_t, IReader*>> readers = {};
+	size_t reader_index = 0;
+	intptr_t Pos = 0;
+	intptr_t FullSize = 0;
+	
+public:
+	void AppendReader(IReader& reader);
+
+	virtual intptr_t elapsed() const override {return FullSize - Pos;}
+	virtual intptr_t tell() const override {return Pos;}
+	virtual intptr_t length() const override {return FullSize;}
+	virtual void advance(intptr_t cnt) override;
+	virtual void r(void* p, intptr_t cnt) override;
+	virtual void seek(intptr_t ptr) override;
+	virtual IReaderBase* open_chunk_base(u32 chunk_id) override {R_ASSERT(false); return nullptr;} // Not implemented yet
+};
