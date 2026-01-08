@@ -14,7 +14,9 @@
 #include <functional>
 #include <string_view>
 
+#include "xrDebug_macros.h"
 #include "_std_c_undefs.h"
+#include "_stl_extensions_nonalloc.h"
 
 #ifdef UNICODE
 #ifdef IXR_WINDOWS
@@ -65,6 +67,12 @@ public:
 	{
 		m_buffer[0] = char_t(0);
 		append(Str); // maybe need to optimize
+	}
+
+	stack_string(xr_string_view Str)
+	{
+		m_buffer[0] = char_t(0);
+		append(Str);
 	}
 
 	~stack_string() {}
@@ -191,28 +199,65 @@ public:
 
 	inline stack_string<char_t, _kStringLength>& append(const char_t* p_str)
 	{
-		assert(p_str && "don't pass invalid pointer! (NULL)");
+		if (!IVERIFY(p_str))
+		{
+			return *this;
+		}
 
 		const number_type current_length = this->size();
 		const number_type available_length = _kStringLength - current_length;
 
-		if (p_str && available_length > 0)
+		if (!IVERIFY(available_length > 0) || !IVERIFY(std::strlen(p_str) < available_length))
 		{
-			if constexpr (std::is_same_v<char_t, char>)
-			{
-				std::strncat(this->m_buffer, p_str, available_length);
-			}
+			return *this;
+		}
+
+		if constexpr (std::is_same_v<char_t, char>)
+		{
+			std::strncat(this->m_buffer, p_str, available_length);
+		}
 
 #ifdef IXR_WINDOWS
-			if constexpr (std::is_same_v<char_t, wchar_t>)
-			{
-				std::wcsncat(this->m_buffer, p_str, available_length);
-			}
-#endif
+		if constexpr (std::is_same_v<char_t, wchar_t>)
+		{
+			std::wcsncat(this->m_buffer, p_str, available_length);
 		}
+#endif
 
 		return *this;
 	}
+
+	inline stack_string& append(std::basic_string_view<char_t> Str)
+	{
+		const number_type current_length = this->size();
+		const number_type available_length = _kStringLength - current_length;
+
+		if (!IVERIFY(available_length > 0) || !IVERIFY(Str.size() < available_length))
+		{
+			return *this;
+		}
+
+		if constexpr (std::is_same_v<char_t, char>)
+		{
+			std::strncat(this->m_buffer, Str.data(), available_length);
+		}
+		
+#ifdef IXR_WINDOWS
+		if constexpr (std::is_same_v<char_t, wchar_t>)
+		{
+			std::wcsncat(this->m_buffer, Str.data(), available_length);
+		}
+#endif
+		
+		return *this;
+	}
+
+	operator std::basic_string_view<char_t>() const
+	{
+		return {this->m_buffer, this->size()};
+	}
+
+	
 
 	inline void swap(const stack_string<char_t, _kStringLength>& data)
 	{
@@ -228,7 +273,7 @@ public:
 	{
 		const number_type len = this->length();
 
-		if (len < _kStringLength)
+		if (IVERIFY(len < _kStringLength))
 		{
 			this->m_buffer[len] = c;
 			this->m_buffer[len + 1] = char_t();
@@ -239,7 +284,7 @@ public:
 	{
 		const number_type len = this->length();
 
-		if (len > 0)
+		if (IVERIFY(len > 0))
 		{
 			this->m_buffer[len - 1] = char_t();
 		}
@@ -248,16 +293,7 @@ public:
 	// operators
 	inline stack_string<char_t, _kStringLength>& operator+=(char_t symbol)
 	{
-		auto current_index = this->size();
-
-		assert(current_index <= _kStringLength - 1 && "overflow, not good!");
-
-		if (current_index <= _kStringLength - 1)
-			this->m_buffer[current_index] = symbol;
-
-		if (current_index + 1 < _kStringLength)
-			this->m_buffer[current_index + 1] = char_t(0);
-
+		this->push_back(symbol);
 		return *this;
 	}
 
@@ -270,17 +306,24 @@ public:
 	template<number_type Size>
 	inline stack_string<char_t, _kStringLength>& operator+=(const char_t (&str)[Size])
 	{
-		if (Size > _kStringLength)
+		
+		if constexpr (std::is_same_v<char_t, char>)
 		{
-			assert(false && "too big string!");
-			return *this;
+			if (!IVERIFY(std::strlen(&str[0]) + this->size() <= _kStringLength))
+			{
+				return *this;
+			}
 		}
 
-		if (Size + this->size() > _kStringLength)
+#ifdef IXR_WINDOWS
+		if constexpr (std::is_same_v<char_t, wchar_t>)
 		{
-			assert(false && "overflow!");
-			return *this;
+			if (!IVERIFY(std::wcslen(&str[0]) + this->size() <= _kStringLength))
+			{
+				return *this;
+			}
 		}
+#endif
 
 		this->append(&str[0]);
 		return *this;
@@ -289,15 +332,8 @@ public:
 	template<number_type Size>
 	inline stack_string<char_t, _kStringLength>& operator+=(const stack_string<char_t, Size>& str)
 	{
-		if (str.size() > _kStringLength)
+		if (!IVERIFY(str.size() + this->size() <= _kStringLength))
 		{
-			assert(false && "too big string!");
-			return *this;
-		}
-			
-		if (str.size() + this->size() > _kStringLength)
-		{
-			assert(false && "overflow!");
 			return *this;
 		}
 
