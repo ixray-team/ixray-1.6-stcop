@@ -13,6 +13,11 @@ void Log(const char* s)
 	std::cout << s;
 	return;
 #endif
+	if (IsDebuggerPresent())
+	{
+		OutputDebugStringA(s);
+		OutputDebugStringA("\n");
+	}
 	theLogger->SimpleMessage(s);
 }
 
