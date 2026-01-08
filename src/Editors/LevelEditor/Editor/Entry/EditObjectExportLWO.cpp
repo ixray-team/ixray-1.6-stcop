@@ -17,7 +17,7 @@ bool CEditableObject::ExportLWO(LPCSTR fname)
 		// tags
 		F->open_chunk(ID_TAGS);
 			for (SurfaceIt s_it=m_Surfaces.begin(); s_it!=m_Surfaces.end(); s_it++){
-				CSurface* S=(*s_it).get();
+				CSurface* S=*s_it;
 				F->w_stringZ(S->_Name());
 				S->tag = s_it-m_Surfaces.begin();
 				if (FindLPCSTR(images,S->_Texture())<0) images.push_back(S->_Texture());
@@ -34,7 +34,7 @@ bool CEditableObject::ExportLWO(LPCSTR fname)
 		}
 		// surfaces
 		for (auto s_it=m_Surfaces.begin(); s_it!=m_Surfaces.end(); s_it++){
-			CSurface* S=(*s_it).get();
+			CSurface* S=*s_it;
 			int im_idx=FindLPCSTR(images,S->_Texture());
 			R_ASSERT(im_idx>=0);
 			LPCSTR vm_name=S->_VMap();

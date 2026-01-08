@@ -175,7 +175,7 @@ bool CEditableMesh::LoadMesh(IReader& F){
     {
         F.r_stringZ		(surf_name,sizeof(surf_name));
         int surf_id;
-		xr_shared_ptr<CSurface> surf	= m_Parent->FindSurfaceByName(surf_name, &surf_id); VERIFY(surf);
+        CSurface* surf	= m_Parent->FindSurfaceByName(surf_name, &surf_id); VERIFY(surf);
         IntVec&			face_lst = m_SurfFaces[surf];
         face_lst.resize	(F.r_u32());
         if (face_lst.empty())

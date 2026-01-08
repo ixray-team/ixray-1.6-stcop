@@ -10,10 +10,9 @@ IC bool build_mesh(const Fmatrix& parent, CEditableMesh* mesh, CGeomPartExtracto
 	bool bResult 			= true;
 	mesh->GenerateVNormals	(&parent);
 	// fill faces
-	for (SurfFaces::const_iterator sp_it=mesh->GetSurfFaces().begin(); sp_it!=mesh->GetSurfFaces().end(); sp_it++)
-	{
+	for (SurfFaces::const_iterator sp_it=mesh->GetSurfFaces().begin(); sp_it!=mesh->GetSurfFaces().end(); sp_it++){
 		const IntVec& face_lst 	= sp_it->second;
-		const xr_shared_ptr<CSurface>& surf = sp_it->first;
+		CSurface* surf 		= sp_it->first;
 		int gm_id			= surf->_GameMtl(); 
 		if (gm_id==GAMEMTL_NONE_ID){
 			ELog.DlgMsg(mtError, "%s Object '%s', surface '%s' contain invalid game material.", mesh->Name().c_str(), mesh->Parent()->m_LibName.c_str(), surf->_Name());
@@ -57,7 +56,7 @@ IC bool build_mesh(const Fmatrix& parent, CEditableMesh* mesh, CGeomPartExtracto
 			parent.transform_dir	(n[2],vn[*f_it*3+2]); n[2].normalize();
 			const Fvector2*	uv[3];
 			mesh->GetFaceTC			(*f_it,uv);
-			extractor->AppendFace	(surf, v, n, uv);
+			extractor->AppendFace	(surf,v,n,uv);
 		}
 		if (!bResult) break;
 	}
