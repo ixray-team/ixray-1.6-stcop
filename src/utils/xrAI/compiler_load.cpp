@@ -190,7 +190,7 @@ void xrLoad(LPCSTR name, bool draft_mode)
 								clMsg("- loading: %s", N_);
 
 								string_path OutName;
-								if (!Surface_Detect(OutName, N) || !BT.pSurface.LoadFromFile(OutName))
+								if (!Surface_Detect(OutName, N_) || !BT.pSurface.LoadFromFile(OutName))
 								{
 									clMsg("cannot find tga texture: %s", N_);
 									is_tga_missing = true;
