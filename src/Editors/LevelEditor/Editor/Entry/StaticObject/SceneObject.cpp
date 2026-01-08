@@ -24,23 +24,77 @@ void CSceneObject::Construct(LPVOID data)
 
 void CSceneObject::ReloadReferences()
 {
-	if (!m_pReference)
-		return;
-#if 0
-	// TODO: Дофиксить потом (или умные указатели для тупого кодера???)
-	for (CSurface* OverrideSurf : m_Surfaces)
+	if (m_Flags.test(flUseSurface))
 	{
-		OverrideSurf->OnDeviceDestroy();
-		xr_delete(OverrideSurf);
+		if (!m_pReference)
+			return;
+
+		auto& OwnerSurfaces = m_pReference->Surfaces();
+		xr_vector<CSurface*> SurfacesToDelete;
+
+		m_Surfaces.erase
+		(
+			std::remove_if
+			(
+				m_Surfaces.begin(),
+				m_Surfaces.end(),
+				[&](CSurface* Surf)
+				{
+					auto it = std::find_if
+					(
+						OwnerSurfaces.begin(),
+						OwnerSurfaces.end(),
+						[&](CSurface* OwnerSurf)
+						{
+							return xr_strcmp(Surf->_Name(), OwnerSurf->_Name()) == 0;
+						}
+					);
+
+					bool ShouldRemove = (it == OwnerSurfaces.end());
+					if (ShouldRemove)
+					{
+						SurfacesToDelete.push_back(Surf);
+					}
+					return ShouldRemove;
+				}
+			),
+			m_Surfaces.end()
+		);
+
+		for (CSurface* surf : SurfacesToDelete) 
+		{
+			xr_delete(surf);
+		}
+
+		for (CSurface* OwnerSurf : OwnerSurfaces)
+		{
+			auto it = std::find_if
+			(
+				m_Surfaces.begin(),
+				m_Surfaces.end(),
+				[&](CSurface* Surf)
+				{
+					return xr_strcmp(Surf->_Name(), OwnerSurf->_Name()) == 0;
+				}
+			);
+
+			if (it == m_Surfaces.end())
+			{
+				CSurface* NewSurf = new CSurface();
+				NewSurf->CopyFrom(OwnerSurf);
+
+				m_Surfaces.push_back(NewSurf);
+			}
+		}
 	}
-#endif
-
-	for (CSurface* OwnerSurf : m_pReference->Surfaces())
+	else
 	{
-		CSurface* NewSurf = new CSurface();
-		NewSurf->CopyFrom(OwnerSurf);
+		m_Surfaces.clear();
 
-		m_Surfaces.push_back(NewSurf);
+		if (m_pReference)
+		{
+			m_Surfaces = m_pReference->Surfaces();
+		}
 	}
 }
 
@@ -49,6 +103,7 @@ CSceneObject::~CSceneObject()
 	for (CSurface* i : m_Surfaces) { i->OnDeviceDestroy(); xr_delete(i); }
 	Lib.RemoveEditObject(m_pReference);
 }
+
 
 void CSceneObject::EvictObject()
 {
