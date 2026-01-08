@@ -93,11 +93,12 @@ public:
 	xr_list<light*>												v_all_lights_dque;
 private:
 	// Loading / Unloading
-	void								LoadBuffers				(CStreamReader	*fs);
 	void								LoadVisuals				(IReader *fs);
 	void								LoadLights				(IReader *fs);
 	void								LoadSectors				(IReader *fs);
-	void								LoadSWIs				(CStreamReader	*fs);
+	void								LoadVertexBuffers		(IReaderBase& fs);
+	void								LoadIndexBuffers		(IReaderBase& fs);
+	void								LoadSWIs				(IReaderBase& fs);
 
 	void								add_Static				(dxRender_Visual	*pVisual, u32 planes);
 	void								add_leafs_Dynamic		(dxRender_Visual	*pVisual, bool IgnoreObject = false); // if detected node's full visibility
@@ -221,7 +222,7 @@ public:
 	virtual void					rmFar					();
 	virtual void					rmNormal				();
 
-	void ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase* fs);
+	void ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase& fs);
 
 	// Constructor/destructor/loader
 	CRender													();

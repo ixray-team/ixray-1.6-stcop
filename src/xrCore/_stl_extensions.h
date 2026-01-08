@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
-#include <array>
-#include <span>
+
+#include "_stl_extensions_nonalloc.h"
 
 using std::swap;
 
@@ -70,15 +70,6 @@ namespace std
 template <typename T, typename allocator = xalloc<T> >
 using xr_vector = std::vector<T, allocator>;
 
-template <class T, size_t Ext = std::dynamic_extent>
-using xr_span = std::span<T, Ext>;
-
-template <typename K, typename V>
-using xr_pair = std::pair<K, V>;
-
-template<typename... Args>
-using xr_tuple = std::tuple<Args...>;
-
 template <typename T>
 void clear_and_reserve(xr_vector<T> &vector_object) {
     if (vector_object.capacity() <= (vector_object.size() + vector_object.size() / 4)) {
@@ -122,11 +113,6 @@ using xr_hash_map = std::unordered_map<K, V, std::hash<K>, _Traits, allocator>;
 
 template <typename K, typename H = std::hash<K>, class _Traits = std::equal_to<K>, typename allocator = xalloc<K> >
 using xr_hash_set = std::unordered_set<K, H, _Traits, allocator>;
-
-using xr_string_view = std::string_view;
-
-template<typename Type, size_t Size>
-using xr_array = std::array<Type, Size>;
 
 struct pred_str {
 	IC bool operator()(const char* x, const char* y) const				{	return xr_strcmp(x,y)<0;	}

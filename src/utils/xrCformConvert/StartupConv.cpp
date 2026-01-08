@@ -1,6 +1,13 @@
 #include "xrCore.h"
 #define SCRIPTS_API
+#include "../../xrEngine/_d3d_extensions.h"
+#include "../xrLC/vbm.h"
 #include "FormatParsers/LevelCForm/CFormIO.h"
+#include "FormatParsers/LevelGeom/GeomIO.h"
+
+SWIContainer g_SWI, x_SWI;
+VBContainer g_VB, x_VB;
+IBContainer g_IB, x_IB;
 
 static const char* h_str =
 "The following keys are supported / required:\n"
@@ -56,46 +63,111 @@ void StartupConv()
 
 		prjName.append("level");
 
-		auto CForm = XRay::CForm::Read(prjName.c_str());
-
-		switch (CFormConverter::GetConverterSettings().LC_CformType)
+		if (CFormConverter::GetConverterSettings().CForm)
 		{
-		case CFormVersions::Vanilla:
-			{
-				xr_vector<Fvector> Verts;
-				xr_vector<CDB::TRI> Tris;
-				CForm->GetStaticGeom(Verts, Tris);
-				
-				XRay::CForm::CFormatVanilla TargetCForm;
-				TargetCForm.AddStaticGeom(Verts, Tris);
-				XRay::CForm::Write(prjName.c_str(), TargetCForm);
-				break;
-			}
-		case CFormVersions::VanillaChunked:
-			{
-				xr_vector<Fvector> Verts;
-				xr_vector<CDB::TRI> Tris;
-				CForm->GetStaticGeom(Verts, Tris);
+			auto CForm = XRay::CForm::Read(prjName.c_str());
 
-				size_t mem_bytes = Tris.size()*sizeof(CDB::TRI) + Verts.size()*sizeof(Fvector);
-				u32 Number = (mem_bytes / (1024ull*1024ull)) / CFormConverter::GetConverterSettings().LC_CFormChunkSize;
-				if (!Number)
+			switch (CFormConverter::GetConverterSettings().LC_CformType)
+			{
+			case CFormVersions::Vanilla:
 				{
+					xr_vector<Fvector> Verts;
+					xr_vector<CDB::TRI> Tris;
+					CForm->GetStaticGeom(Verts, Tris);
+				
 					XRay::CForm::CFormatVanilla TargetCForm;
 					TargetCForm.AddStaticGeom(Verts, Tris);
 					XRay::CForm::Write(prjName.c_str(), TargetCForm);
-				} else
-				{
-					XRay::CForm::CFormatVanillaChunked TargetCForm(Number+1);
-					TargetCForm.AddStaticGeom(Verts, Tris);
-					XRay::CForm::Write(prjName.c_str(), TargetCForm);
+					break;
 				}
-				break;
+			case CFormVersions::VanillaChunked:
+				{
+					xr_vector<Fvector> Verts;
+					xr_vector<CDB::TRI> Tris;
+					CForm->GetStaticGeom(Verts, Tris);
+
+					size_t mem_bytes = Tris.size()*sizeof(CDB::TRI) + Verts.size()*sizeof(Fvector);
+					u32 Number = (mem_bytes / (1024ull*1024ull)) / CFormConverter::GetConverterSettings().LC_CFormChunkSize;
+					if (!Number)
+					{
+						XRay::CForm::CFormatVanilla TargetCForm;
+						TargetCForm.AddStaticGeom(Verts, Tris);
+						XRay::CForm::Write(prjName.c_str(), TargetCForm);
+					} else
+					{
+						XRay::CForm::CFormatVanillaChunked TargetCForm(Number+1);
+						TargetCForm.AddStaticGeom(Verts, Tris);
+						XRay::CForm::Write(prjName.c_str(), TargetCForm);
+					}
+					break;
+				}
+			default:
+				{
+					FATAL("Invalid target CForm type!");
+				}
 			}
-		default:
+		}
+
+		if (CFormConverter::GetConverterSettings().Geom)
+		{
+			auto func = [&](xr_string_view Ext)
 			{
-				FATAL("Invalid target CForm type!");
-			}
+				auto Geom = XRay::Geom::Read(prjName, Ext);
+
+				if (!I_ASSERT(Geom))
+				{
+					return;
+				}
+				
+				xr_vector<u8> VB, IB, SWI;
+
+				auto read_func = [&](xr_vector<u8>& Buff, IReaderBase& Data)
+				{
+					Buff.resize(Data.length());
+					Data.r(Buff.data(), Buff.size());
+				};
+				read_func(VB, Geom->GetVBData());
+				read_func(IB, Geom->GetIBData());
+				read_func(SWI, Geom->GetSWIData());
+
+				Geom.reset();
+				
+				xr_unique_ptr<XRay::Geom::IFormat> FormatPtr = nullptr;
+				switch (CFormConverter::GetConverterSettings().LC_GeomType)
+				{
+				case GeomVanillaType::Vanilla:
+					{
+						FormatPtr.reset(new XRay::Geom::CGeomVanillaFormat);
+						break;
+					}
+				case GeomVanillaType::Chunked:
+					{
+						size_t mem_bytes = VB.size() + IB.size() + SWI.size();
+						u32 Number = (mem_bytes/(1024ull*1024ull))/CFormConverter::GetConverterSettings().LC_GeomChunkSize;
+						if (!Number)
+						{
+							FormatPtr.reset(new XRay::Geom::CGeomVanillaFormat);
+						} else
+						{
+							FormatPtr.reset(new XRay::Geom::CGeomVanillaChunkedFormat(Number+1));
+						}
+						break;
+					}
+				default:
+					{
+						FATAL("Invalid Geom type!");
+					}
+				}
+				IVERIFY(FormatPtr);
+
+				FormatPtr->AddVBData(VB);
+				FormatPtr->AddIBData(IB);
+				FormatPtr->AddSWIData(SWI);
+
+				Write(prjName, Ext, *FormatPtr);
+			};
+			func(".geom");
+			func(".geomx");
 		}
 	}
 }
