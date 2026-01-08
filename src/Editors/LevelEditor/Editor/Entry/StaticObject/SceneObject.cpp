@@ -26,13 +26,19 @@ void CSceneObject::ReloadReferences()
 {
 	if (!m_pReference)
 		return;
-
-	m_Surfaces.clear();
-
-	for (const xr_shared_ptr<CSurface>& OwnerSurf : m_pReference->Surfaces())
+#if 0
+	// TODO: Дофиксить потом (или умные указатели для тупого кодера???)
+	for (CSurface* OverrideSurf : m_Surfaces)
 	{
-		xr_shared_ptr<CSurface> NewSurf = xr_make_shared<CSurface>();
-		NewSurf->CopyFrom(OwnerSurf.get());
+		OverrideSurf->OnDeviceDestroy();
+		xr_delete(OverrideSurf);
+	}
+#endif
+
+	for (CSurface* OwnerSurf : m_pReference->Surfaces())
+	{
+		CSurface* NewSurf = new CSurface();
+		NewSurf->CopyFrom(OwnerSurf);
 
 		m_Surfaces.push_back(NewSurf);
 	}
@@ -40,12 +46,7 @@ void CSceneObject::ReloadReferences()
 
 CSceneObject::~CSceneObject()
 {
-	for (const xr_shared_ptr<CSurface>& i : m_Surfaces)
-	{
-		i->OnDeviceDestroy();
-	}
-
-	m_Surfaces.clear();
+	for (CSurface* i : m_Surfaces) { i->OnDeviceDestroy(); xr_delete(i); }
 	Lib.RemoveEditObject(m_pReference);
 }
 
@@ -56,6 +57,7 @@ void CSceneObject::EvictObject()
 		m_pReference->EvictObject();
 	}
 }
+
 
 void CSceneObject::Select(BOOL flag)
 {
@@ -246,22 +248,17 @@ void CSceneObject::GetFullTransformToLocal( Fmatrix& m )
 
 CEditableObject* CSceneObject::UpdateReference()
 {
-	for (xr_shared_ptr<CSurface> i : m_Surfaces)
-	{
-		i->OnDeviceDestroy();
-	}
+	for (CSurface* i : m_Surfaces) { i->OnDeviceDestroy(); xr_delete(i); }
 	m_Surfaces.clear();
-
 	Lib.RemoveEditObject(m_pReference);
-	m_pReference = (m_ReferenceName.size())?Lib.CreateEditObject(*m_ReferenceName):0;
-	UpdateTransform();
-
+	m_pReference		= (m_ReferenceName.size())?Lib.CreateEditObject(*m_ReferenceName):0;
+	UpdateTransform		();
 	if (m_pReference)
 	{
 		for (size_t i = 0; i < m_pReference->SurfaceCount(); i++)
 		{
-			xr_shared_ptr<CSurface> surf = xr_make_shared<CSurface>();
-			surf->CopyFrom(m_pReference->Surfaces()[i].get());
+			CSurface* surf = new CSurface();
+			surf->CopyFrom(m_pReference->Surfaces()[i]);
 			m_Surfaces.push_back(surf);
 			if (surf->IsVoid())
 			{
@@ -326,29 +323,21 @@ void CSceneObject::ReferenceChange(PropValue* sender)
 void CSceneObject::OnChangeShader(PropValue* sender)
 {
 	OnChangeSurface(sender);
-
-	for (const xr_shared_ptr<CSurface>& i : m_Surfaces)
-	{
-		i->OnDeviceDestroy();
-	}
+	for (CSurface* i : m_Surfaces) { i->OnDeviceDestroy(); }
 }
-
 void CSceneObject::OnChangeSurface(PropValue* sender)
 {
 	m_Flags.set(flUseSurface, 1);
 }
-
 bool CSceneObject::AfterEditGameMtl(PropValue* sender,shared_str&str)
 {
 	return str != "materials\\occ";
 }
-
 void CSceneObject::OnClickClearSurface(ButtonValue*, bool&, bool&)
 {
 	Scene->UndoSave();
 	ClearSurface();
 }
-
 void CSceneObject::FillProp(LPCSTR pref, PropItemVec& items)
 {
 	static shared_str occ_name = "materials\\occ";
@@ -360,18 +349,18 @@ void CSceneObject::FillProp(LPCSTR pref, PropItemVec& items)
 	SurfaceVec& s_lst = m_Surfaces;
 
 	shared_str Pref1 = PrepareKey(pref, "Surfaces").c_str();
-	xr_vector<xr_shared_ptr<CSurface>> SortedSurfaces(s_lst.begin(), s_lst.end());
+	xr_vector<CSurface*> SortedSurfaces(s_lst.begin(), s_lst.end());
 
 	std::sort
 	(
 		SortedSurfaces.begin(), SortedSurfaces.end(),
-		[](const xr_shared_ptr<CSurface>& a, const xr_shared_ptr<CSurface>& b)
+		[](const CSurface* a, const CSurface* b)
 		{
 			return xr_strcmp(a->_Name(), b->_Name()) < 0;
 		}
 	);
 
-	for (const xr_shared_ptr<CSurface>& s : SortedSurfaces)
+	for (CSurface* s : SortedSurfaces)
 	{
 		shared_str Pref2 = PrepareKey(Pref1.c_str(), s->_Name()).c_str();
 		if (s->m_GameMtlName != occ_name)
@@ -400,24 +389,18 @@ bool CSceneObject::GetSummaryInfo(SSceneSummary* inf)
 {
 	inherited::GetSummaryInfo	(inf);
 	CEditableObject* E 	= GetReference(); R_ASSERT(E);
-	if (IsStatic()||IsMUStatic())
-	{
-		for (SurfaceIt s_it = E->m_Surfaces.begin(); s_it != E->m_Surfaces.end(); s_it++)
-		{
-			float area = 0.f;
-			float pixel_area = 0.f;
-
-			for (EditMeshIt m = E->Meshes().begin(); m != E->Meshes().end(); m++)
-			{
-				area += (*m)->CalculateSurfaceArea(*s_it, true);
-				pixel_area += (*m)->CalculateSurfacePixelArea(*s_it, true);
+	if (IsStatic()||IsMUStatic()){
+		for(SurfaceIt 	s_it=E->m_Surfaces.begin(); s_it!=E->m_Surfaces.end(); s_it++){
+			float area			= 0.f;
+			float pixel_area	= 0.f;
+			for(EditMeshIt m = E->Meshes().begin();m!=E->Meshes().end();m++){
+				area			+= (*m)->CalculateSurfaceArea(*s_it,true);
+				pixel_area		+= (*m)->CalculateSurfacePixelArea(*s_it,true);
 			}
-
 			xr_string temp = ChangeFileExt(xr_string(*(*s_it)->m_Texture), "");
 			xr_strlwr(temp);
-			inf->AppendTexture(temp.c_str(), SSceneSummary::sttBase, area, pixel_area, E->m_LibName.c_str());
+			inf->AppendTexture(temp.c_str(),SSceneSummary::sttBase,area,pixel_area,E->m_LibName.c_str());
 		}
-
 		if (m_Flags.is(CEditableObject::eoUsingLOD)){
 			inf->AppendTexture(E->GetLODTextureName().c_str(),SSceneSummary::sttLOD,0,0,"$LOD$");
 			inf->lod_objects.insert	(E->m_LibName.c_str());
@@ -455,7 +438,7 @@ void CSceneObject::OnShowHint(AStringVec& dest)
 	if (m_pReference->RayPick(dist,UI->m_CurrentRStart,UI->m_CurrentRDir,_ITransform(),&pinf)){
 		dest.push_back(xr_string("Object Type: ")+get_token_name(eo_type_token,pinf.e_obj->m_objectFlags.flags));
 		R_ASSERT(pinf.e_mesh);
-		xr_shared_ptr<CSurface> surf=pinf.e_mesh->GetSurfaceByFaceID(pinf.inf.id);
+		CSurface* surf=pinf.e_mesh->GetSurfaceByFaceID(pinf.inf.id);
 		dest.push_back(xr_string("Surface: ")+xr_string(surf->_Name()));
 		dest.push_back(xr_string("2 Sided: ")+xr_string(surf->m_Flags.is(CSurface::sf2Sided)?"on":"off"));
 		if (pinf.e_obj->m_objectFlags.is(CEditableObject::eoSoundOccluder)){
@@ -478,11 +461,13 @@ void CSceneObject::OnShowHint(AStringVec& dest)
 	}
 }
 
-void CSceneObject::Blink(xr_shared_ptr<CSurface> surf)
+
+void CSceneObject::Blink(CSurface* surf)
 {
-	m_BlinkSurf = surf;
-	m_iBlinkTime = EDevice->dwTimeGlobal + BLINK_TIME + EDevice->dwTimeDelta;
+	m_BlinkSurf		= surf;
+	m_iBlinkTime	= EDevice->dwTimeGlobal+BLINK_TIME+EDevice->dwTimeDelta;
 }
+
 
 bool CSceneObject::Validate(bool bMsg)
 {
@@ -490,20 +475,19 @@ bool CSceneObject::Validate(bool bMsg)
 	return E->Validate();
 }
 
+
+
+
 void CSceneObject::ClearSurface()
 {
-	for (const xr_shared_ptr<CSurface>& i : m_Surfaces)
-	{
-		i->OnDeviceDestroy();
-	}
+	for (CSurface* i : m_Surfaces) { i->OnDeviceDestroy(); xr_delete(i); }
 	m_Surfaces.clear();
-
 	if (m_pReference)
 	{
 		for (size_t i = 0; i < m_pReference->SurfaceCount(); i++)
 		{
-			xr_shared_ptr<CSurface> surf = xr_make_shared<CSurface>();
-			surf->CopyFrom(m_pReference->Surfaces()[i].get());
+			CSurface* surf = new CSurface();
+			surf->CopyFrom(m_pReference->Surfaces()[i]);
 			m_Surfaces.push_back(surf);
 			if (surf->IsVoid())
 				surf->OnDeviceCreate();

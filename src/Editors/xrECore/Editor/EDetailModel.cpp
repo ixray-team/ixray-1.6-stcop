@@ -58,7 +58,7 @@ LPCSTR EDetail::GetName	()
 LPCSTR EDetail::GetTextureName()
 {
 	VERIFY(m_pRefs);
-	xr_shared_ptr<CSurface>& surf = *m_pRefs->FirstSurface(); VERIFY(surf);
+	CSurface* surf		= *m_pRefs->FirstSurface(); VERIFY(surf);
 	return surf->_Texture();
 }
 
@@ -69,7 +69,7 @@ void EDetail::DefferedLoad()
 void EDetail::OnDeviceCreate()
 {
 	if (!m_pRefs)		return;
-	xr_shared_ptr<CSurface>& surf = *m_pRefs->FirstSurface();
+	CSurface* surf		= *m_pRefs->FirstSurface();
 	VERIFY				(surf);
 	xr_string	s_name	= surf->_ShaderName();
 	xr_string	t_name	= surf->_Texture();
@@ -300,7 +300,7 @@ void EDetail::SaveLTX(CInifile& ini, LPCSTR sect_name)
 void EDetail::Export(IWriter& F, LPCSTR tex_name, const Fvector2& offs, const Fvector2& scale, bool rot)
 {
 	R_ASSERT			(m_pRefs);
-	xr_shared_ptr<CSurface>& surf = *m_pRefs->FirstSurface();
+	CSurface* surf		= *m_pRefs->FirstSurface();
 	R_ASSERT			(surf);
 	// write data
 	F.w_stringZ			(surf->_ShaderName());
@@ -325,18 +325,15 @@ void EDetail::Export(IWriter& F, LPCSTR tex_name, const Fvector2& offs, const Fv
 
 void EDetail::Export(LPCSTR name)
 {
-	xr_shared_ptr<CSurface>& surf = *m_pRefs->FirstSurface();
-	R_ASSERT(surf);
-
-	if (IWriter* F = FS.w_open(name))
-	{
-		Fvector2 offs = { 0,0 };
-		Fvector2 scale = { 1,1 };
-		Export(*F, surf->_Texture(), offs, scale, false);
-		FS.w_close(F);
-	}
-	else 
-	{
-		Log("!Can't export detail:", name);
+	CSurface* surf		= *m_pRefs->FirstSurface();
+	R_ASSERT			(surf);
+	IWriter* F 			= FS.w_open(name);
+	if (F){
+		Fvector2 offs	= {0,0};
+		Fvector2 scale	= {1,1};
+		Export			(*F,surf->_Texture(),offs,scale,false);
+		FS.w_close		(F);
+	}else{
+		Log				("!Can't export detail:",name);
 	}
 }

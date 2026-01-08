@@ -342,8 +342,8 @@ void UIEditLibrary::OnPropertiesClick()
 		{
 			AnsiString	pref = AnsiString("Surfaces\\") + (*it)->_Name();
 			PropValue* V = PHelper().CreateCaption(Info, pref.c_str(), "");
-			V->tag = (int)(*it).get();
-			NE->FillSurfaceProps((*it).get(), pref.c_str(), Info);
+			V->tag = (int)*it;
+			NE->FillSurfaceProps(*it, pref.c_str(), Info);
 		}
 
 		xr_delete(SO);
@@ -605,7 +605,7 @@ void UIEditLibrary::PickCallback()
 		if (pinf.e_mesh == nullptr)
 			continue;
 
-		const xr_shared_ptr<CSurface>& surf = pinf.e_mesh->GetSurfaceByFaceID(pinf.inf.id);
+		CSurface* surf = pinf.e_mesh->GetSurfaceByFaceID(pinf.inf.id);
 		PrevClick = AnsiString("Surfaces\\") + AnsiString(surf->_Name());
 
 		UIPropertiesItem* Itm = GetPropertyWnd()->FindPropItem(PrevClick.c_str());

@@ -493,7 +493,7 @@ void ESceneAIMapTool::MotionSimulate(Fvector& result, Fvector& start, Fvector& e
 		for (int i_t=0; i_t<tri_count; i_t++){
             SPickQuery::SResult* R = PQ.r_begin()+i_t;
             if (R->e_obj&&R->e_mesh){
-				const xr_shared_ptr<CSurface>& surf = R->e_mesh->GetSurfaceByFaceID(R->tag);
+                CSurface* surf		= R->e_mesh->GetSurfaceByFaceID(R->tag);
 //.				SGameMtl* mtl 		=  GameMaterialLibrary->GetMaterialByID(surf->_GameMtl());
 //.				if (mtl->Flags.is(SGameMtl::flPassable))continue;
                 Shader_xrLC* c_sh	= EDevice->ShaderXRLC.Get(surf->_ShaderXRLCName());
