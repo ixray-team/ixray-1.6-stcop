@@ -58,12 +58,26 @@ BOOL ESceneAIMapTool::CreateNode(Fvector& vAt, SAINode& N, bool bIC)
 
 		if (R->e_obj&&R->e_mesh)
 		{
-			const xr_shared_ptr<CSurface>& surf = R->e_mesh->GetSurfaceByFaceID(R->tag);
+			CSurface* surf		= R->e_mesh->GetSurfaceByFaceID(R->tag);
+//.			SGameMtl* mtl 		=  GameMaterialLibrary->GetMaterialByID(surf->_GameMtl());
+//.			if (mtl->Flags.is(SGameMtl::flPassable))continue;
+
 
 			Shader_xrLC* c_sh	= EDevice->ShaderXRLC.Get(surf->_ShaderXRLCName());
 			if (!c_sh->flags.bCollision) 			continue;
 		}
+  /*
+		if(m_CFModel)
+		{
+			u16 mtl_id 	= R->material;
 
+			if(std::find(m_ignored_materials.begin(), m_ignored_materials.end(), mtl_id) != m_ignored_materials.end() )
+			{
+//.                Msg("--ignore");
+				continue;
+			}
+		}
+*/
 		tris.push_back	(tri());
 		tri&		D = tris.back();
 		Fvector*	V = R->verts;   
@@ -624,7 +638,7 @@ bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 					const SurfFaces& _sfaces = (*m_it)->GetSurfFaces();
 					for (SurfFaces::const_iterator sp_it = _sfaces.begin(); sp_it != _sfaces.end(); sp_it++)
 					{
-						const xr_shared_ptr<CSurface>& surf = sp_it->first;
+						CSurface* surf = sp_it->first;
 						// test passable
 
 						u16 mtl_id = surf->_GameMtl();// ->material;

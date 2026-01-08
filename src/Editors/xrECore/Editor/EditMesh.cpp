@@ -400,7 +400,7 @@ void CEditableMesh::GenerateAdjacency()
 	}
 }
 
-xr_shared_ptr<CSurface> CEditableMesh::GetSurfaceByFaceID(u32 fid)
+CSurface*	CEditableMesh::GetSurfaceByFaceID(u32 fid)
 {
 	R_ASSERT(fid<m_FaceCount);
     for (SurfFacesPairIt sp_it=m_SurfFaces.begin(); sp_it!=m_SurfFaces.end(); sp_it++){
@@ -437,7 +437,7 @@ int CEditableMesh::GetFaceCount(bool bMatch2Sided, bool bIgnoreOCC)
 	int f_cnt = 0;
     for (SurfFacesPairIt sp_it=m_SurfFaces.begin(); sp_it!=m_SurfFaces.end(); sp_it++)
     {
-		const xr_shared_ptr<CSurface>& S = sp_it->first;
+    	CSurface* S = sp_it->first;
         if(S->m_GameMtlName== occ_name && bIgnoreOCC)
         	continue;
             
@@ -453,7 +453,7 @@ int CEditableMesh::GetFaceCount(bool bMatch2Sided, bool bIgnoreOCC)
     return f_cnt;
 }
 
-float CEditableMesh::CalculateSurfaceArea(xr_shared_ptr<CSurface> surf, bool bMatch2Sided)
+float CEditableMesh::CalculateSurfaceArea(CSurface* surf, bool bMatch2Sided)
 {
 	SurfFacesPairIt sp_it 	= m_SurfFaces.find(surf);
     if (sp_it==m_SurfFaces.end()) return 0;
@@ -470,7 +470,7 @@ float CEditableMesh::CalculateSurfaceArea(xr_shared_ptr<CSurface> surf, bool bMa
     return area;
 }
 
-float CEditableMesh::CalculateSurfacePixelArea	(xr_shared_ptr<CSurface> surf, bool bMatch2Sided)
+float CEditableMesh::CalculateSurfacePixelArea	(CSurface* surf, bool bMatch2Sided)
 {
 	SurfFacesPairIt sp_it 	= m_SurfFaces.find(surf);
     if (sp_it==m_SurfFaces.end()) return 0;
@@ -489,7 +489,7 @@ float CEditableMesh::CalculateSurfacePixelArea	(xr_shared_ptr<CSurface> surf, bo
     return area;
 }
 
-int CEditableMesh::GetSurfFaceCount(xr_shared_ptr<CSurface> surf, bool bMatch2Sided)
+int CEditableMesh::GetSurfFaceCount(CSurface* surf, bool bMatch2Sided)
 {
 	SurfFacesPairIt sp_it = m_SurfFaces.find(surf);
     if (sp_it==m_SurfFaces.end()) return 0;
@@ -568,7 +568,7 @@ void CEditableMesh::Create(st_Face* faces, u32 face_count, Fvector* vertices, u3
 	// Create default surface if none exists
 	if (m_SurfFaces.empty())
 	{
-		xr_shared_ptr<CSurface> surf = xr_make_shared<CSurface>();
+		CSurface* surf = new CSurface();
 		surf->SetName("default");
 		surf->SetShader("default");
 		m_Parent->Surfaces().push_back(surf);

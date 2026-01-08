@@ -504,12 +504,12 @@ BOOL GetStaticCformData(const Fmatrix& parent, CEditableMesh* mesh, CEditableObj
 	for (SurfFacesPairIt sp_it = mesh->Surfaces().begin(); sp_it != mesh->Surfaces().end(); sp_it++)
 	{
 		IntVec& face_lst = sp_it->second;
-		CSurface* surf = sp_it->first.get();
+		CSurface* surf = sp_it->first;
 		for (size_t i = 0; i < mesh->Parent()->SurfaceCount(); i++)
 		{
 			if (obj != nullptr && mesh->Parent()->Surfaces()[i] == sp_it->first)
 			{
-				surf = obj->m_Surfaces[i].get();
+				surf = obj->m_Surfaces[i];
 				break;
 			}
 		}
@@ -620,7 +620,7 @@ BOOL SceneBuilder::BuildMesh(	const Fmatrix& parent,
 		{
 			if (mesh->Parent()->Surfaces()[i] == sp_it->first)
 			{
-				surf = obj ? obj->m_Surfaces[i].get() : sp_it->first.get();
+				surf = obj ? obj->m_Surfaces[i] : sp_it->first;
 				break;
 			}
 		}
@@ -1250,7 +1250,10 @@ int SceneBuilder::BuildTexture(const char* name)
 	return tex_idx;
 }
 
+
+
 // material build functions
+
 int SceneBuilder::FindInMaterials(b_material* m)
 {
 	for (u32 i=0; i<l_materials.size(); i++){
@@ -1262,11 +1265,11 @@ int SceneBuilder::FindInMaterials(b_material* m)
 	return -1;
 }
 
+
 int SceneBuilder::BuildMaterial(CSurface* surf, int sector_num, bool allow_draft)
 {
 	return BuildMaterial(surf->_ShaderName(),surf->_ShaderXRLCName(),surf->_Texture(),((surf->_FVF()&D3DFVF_TEXCOUNT_MASK)>>D3DFVF_TEXCOUNT_SHIFT),sector_num,allow_draft);
 }
-
 int SceneBuilder::BuildMaterial(LPCSTR esh_name, LPCSTR csh_name, LPCSTR tx_name, u32 tx_cnt, int sector_num, bool allow_draft)
 {
 	b_material mtl; ZeroMemory(&mtl,sizeof(mtl));

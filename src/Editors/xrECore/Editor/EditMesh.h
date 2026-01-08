@@ -1,20 +1,29 @@
-#pragma once
+//----------------------------------------------------
+// file: StaticMesh.h
+//----------------------------------------------------
+#ifndef EditMeshH
+#define EditMeshH
 
+//----------------------------------------------------
+// refs
 class 	CSurface;
 struct 	SRayPickInfo;
+//struct CFrustum;
 struct 	FSChunkDef;
 class 	CExporter;
 class	CCustomObject;
 
-#include "pick_defs.h"
+#if 1
+#	include "pick_defs.h"
+#endif
+
 #include "../xrEngine/bone.h"
 
 #pragma pack( push,1 )
 const u8	vmtUV		= 0;
 const u8	vmtWeight	= 1;
 
-struct ECORE_API st_WB
-{                       
+struct ECORE_API st_WB{                       
 	u16 	bone;
 	float 	weight;
 			st_WB	():bone(BI_NONE),weight(0.f){;}
@@ -63,22 +72,17 @@ public:
 using VWBVec = xr_vector<st_VertexWB>;
 using VWBIt = VWBVec::iterator;
 
-struct ECORE_API st_VMapPt
-{
+struct ECORE_API st_VMapPt{
 	int				vmap_index;	// ссылка на мапу
 	int				index;		// индекс в V-мапе на uv/w
 	st_VMapPt(){vmap_index=-1;index=-1;}
 };
-
 // uv's
-class ECORE_API st_VMap
-{
+class ECORE_API st_VMap{
 	FloatVec    	vm;			// u,v - координаты или weight
-
 public:
 	shared_str		name;		// vertex uv map name
-	struct
-	{
+	struct{
 		u8			type	:2;
 		u8			polymap	:1;
 		u8			dim		:2;
@@ -86,7 +90,6 @@ public:
 	};
 	IntVec			vindices;
 	IntVec			pindices;
-
 public:
 	st_VMap			(LPCSTR nm=0, u8 t=vmtUV, bool pm=false)
 	{
@@ -117,56 +120,48 @@ public:
 	IC void			copyfrom	(float* src, int cnt)	{resize(cnt); CopyMemory(&*vm.begin(),src,cnt*dim*4);}
 };
 
-struct st_VMapPtLst
-{
+struct st_VMapPtLst{
 	u8				count;
 	st_VMapPt*		pts;
 };
 using VMRefsVec = xr_vector<st_VMapPtLst>;
 using VMRefsIt = VMRefsVec::iterator;
 
-struct ECORE_API st_SVert
-{
+struct ECORE_API st_SVert{
 	Fvector			offs;
 	Fvector			norm;
 	Fvector2		uv;
-
-	struct bone
-	{
+	struct bone{
+	public:
 		float		w;
 		u16			id;
 		bone		(){w=0.f;id=BI_NONE;}
 		bool		similar		(const bone& b){return (id==b.id) && fsimilar(w,b.w,EPS_L);}
 	};
-
 	svector<bone,4> bones;
-protected:
-	static bool compare_by_weight(const bone& a, const bone& b)
-	{
-		return a.w > b.w; // отсортировать по убыванию
-	}
-	static bool compare_by_bone(const bone& a, const bone& b)
-	{
-		return a.id < b.id; // отсортировать по возрастанию
-	}
-public:
-	void		sort_by_weight	()	{std::sort(bones.begin(),bones.end(),compare_by_weight);}
-	void		sort_by_bone	()	{std::sort(bones.begin(),bones.end(),compare_by_bone);	}
+	protected:
+		static bool compare_by_weight(const bone& a, const bone& b)
+		{
+			return a.w > b.w; // отсортировать по убыванию
+		}
+		static bool compare_by_bone(const bone& a, const bone& b)
+		{
+			return a.id < b.id; // отсортировать по возрастанию
+		}
+	public:
+		void		sort_by_weight	()	{std::sort(bones.begin(),bones.end(),compare_by_weight);}
+		void		sort_by_bone	()	{std::sort(bones.begin(),bones.end(),compare_by_bone);	}
 };
-
 // faces
 struct st_Face;
-struct ECORE_API st_FaceVert
-{
+struct ECORE_API st_FaceVert{
 typedef	st_Face	type_face;
 		int 	pindex;		// point index in PointList
 		int		vmref;		// vm-ref index 
 		bool	gt( const st_FaceVert &v ) const { return pindex > v.pindex;  }
 		bool	eq( const st_FaceVert &v ) const { return pindex == v.pindex;  }
 };
-
-struct ECORE_API st_Face
-{
+struct ECORE_API st_Face{
 	st_FaceVert		pv[3];		// face vertices (P->P...)
 	void EdgeVerts( u8 e, st_FaceVert &v0, st_FaceVert &v1 ) const
 	{
@@ -177,8 +172,7 @@ struct ECORE_API st_Face
 };
 
 // mesh options
-struct ECORE_API st_MeshOptions
-{
+struct ECORE_API st_MeshOptions{
 	int 			m_Reserved0;
 	int 			m_Reserved1;
 	st_MeshOptions	(){m_Reserved0=0;m_Reserved1=0;}
@@ -191,25 +185,27 @@ using AdjIt = AdjVec::iterator;
 using VMapVec = xr_vector<st_VMap*>;
 using VMapIt = VMapVec::iterator;
 
-using SurfFaces = xr_map<xr_shared_ptr<CSurface>, IntVec>;
+using SurfFaces = xr_map<CSurface*, IntVec>;
 using SurfFacesPairIt = SurfFaces::iterator;
 
 //refs
 struct st_RenderBuffer;
+class CSurface;
 class CSector;
 
-struct ECORE_API st_RenderBuffer
-{
-	u32 dwStartVertex;
-	u32 dwNumVertex;
-	ref_geom pGeom;
-	st_RenderBuffer	(u32 sv, u32 nv):dwStartVertex(sv),dwNumVertex(nv),pGeom(0){;}
-};
-using RBVector = xr_vector<st_RenderBuffer>;
-using RBVecIt = RBVector::iterator;
+#if 1
+	struct ECORE_API st_RenderBuffer{
+		u32			dwStartVertex;
+		u32			dwNumVertex;
+		ref_geom 	pGeom;
+		st_RenderBuffer	(u32 sv, u32 nv):dwStartVertex(sv),dwNumVertex(nv),pGeom(0){;}
+	};
+	using RBVector = xr_vector<st_RenderBuffer>;
+	using RBVecIt = RBVector::iterator;
 
-using RBMap = xr_map<xr_shared_ptr<CSurface>, RBVector>;
-using RBMapPairIt = RBMap::iterator;
+	using RBMap = xr_map<CSurface*, RBVector>;
+	using RBMapPairIt = RBMap::iterator;
+#endif
 
 class ECORE_API CEditableMesh 
 {
@@ -290,11 +286,15 @@ protected:
 	st_SVert*		m_SVertices;// | *3
 	SurfFaces	    m_SurfFaces;
 
+#if 1
 	CDB::MODEL*		m_CFModel;
 	RBMap*			m_RenderBuffers;
+#endif
 
-	void 			FillRenderBuffer		(IntVec& face_lst, int start_face, int num_face, const xr_shared_ptr<CSurface> surf, LPBYTE& data);
+	void 			FillRenderBuffer		(IntVec& face_lst, int start_face, int num_face, const CSurface* surf, LPBYTE& data);
+
 	void 			RecurseTri				(int id);
+
 
 	// mesh optimize routine
 	bool 			OptimizeFace			(st_Face& face);
@@ -311,7 +311,7 @@ public:
 	IC void			SetName					(LPCSTR name){m_Name=name;}
 	IC shared_str	Name					(){return m_Name;}
 	void            GetBox					(Fbox& box){box.set(m_Box);}
-	xr_shared_ptr<CSurface> GetSurfaceByFaceID(u32 fid);
+	CSurface*		GetSurfaceByFaceID		(u32 fid);
 	void			GetFaceTC				(u32 fid, const Fvector2* tc[3]);
 	void			GetFacePT				(u32 fid, const Fvector* pt[3]);
 	IC BOOL 		Visible					(){return m_Flags.is(flVisible); }
@@ -335,6 +335,7 @@ public:
 	IC const Fvector*	GetNormals			(){ VERIFY(0!=m_Normals); return m_Normals; }
 	// pick routine
 	bool            RayPick					(float& dist, const Fvector& start, const Fvector& dir, const Fmatrix& inv_parent, SRayPickInfo* pinf = NULL);
+#if 1
 	void            RayQuery				(SPickQuery& pinf);
 	void            RayQuery				(const Fmatrix& parent, const Fmatrix& inv_parent, SPickQuery& pinf);
 	void            BoxQuery				(const Fmatrix& parent, const Fmatrix& inv_parent, SPickQuery& pinf);
@@ -343,20 +344,21 @@ public:
 	void            FrustumPickFaces		(const CFrustum& frustum, const Fmatrix& parent, U32Vec& fl);
 	bool			CHullPickMesh			(PlaneVec& pl, const Fmatrix& parent);
 	void 			GetTiesFaces			(int start_id, U32Vec& fl, float fSoftAngle, bool bRecursive);
+#endif
 
 	// render routine
-	void 			Render					(const Fmatrix& parent, xr_shared_ptr<CSurface> S);
-	void 			RenderSkeleton			(const Fmatrix& parent, xr_shared_ptr<CSurface> S);
+	void 			Render					(const Fmatrix& parent, CSurface* S);
+	void 			RenderSkeleton			(const Fmatrix& parent, CSurface* S);
 	void            RenderList				(const Fmatrix& parent, u32 color, bool bEdge, IntVec& fl);
-	void 			RenderSelection			(const Fmatrix& parent, xr_shared_ptr<CSurface> s, u32 color);
-	void 			RenderEdge				(const Fmatrix& parent, xr_shared_ptr<CSurface> s, u32 color);
+	void 			RenderSelection			(const Fmatrix& parent, CSurface* s, u32 color);
+	void 			RenderEdge				(const Fmatrix& parent, CSurface* s, u32 color);
 
 	// statistics methods
 	int 			GetFaceCount			(bool bMatch2Sided=true, bool bIgnoreOCC=true);
 	int 			GetVertexCount			(){return m_VertCount;}
-	int 			GetSurfFaceCount		(xr_shared_ptr<CSurface> surf, bool bMatch2Sided=true);
-	float			CalculateSurfaceArea	(xr_shared_ptr<CSurface> surf, bool bMatch2Sided);
-	float			CalculateSurfacePixelArea(xr_shared_ptr<CSurface> surf, bool bMatch2Sided);
+	int 			GetSurfFaceCount		(CSurface* surf, bool bMatch2Sided=true);
+	float			CalculateSurfaceArea	(CSurface* surf, bool bMatch2Sided);
+	float			CalculateSurfacePixelArea(CSurface* surf, bool bMatch2Sided);
 
 	// IO - routine
 	void			SaveMesh				(IWriter&);
@@ -365,6 +367,14 @@ public:
 	// debug
 	void			DumpAdjacency			();
 
+	// convert
+#ifdef _MAX_EXPORT
+	void			FlipFaces				();
+	TriObject*		ExtractTriObject		(INode *node, int &deleteIt);
+	bool			Convert					(INode *node);
+	bool			Convert					(CExporter* exporter);
+#endif
+
 	int				FindSimilarUV			(st_VMap* vmap, Fvector2& _uv);
 	int				FindSimilarWeight		(st_VMap* vmap, float _w);
 	int				FindVMapByName			(VMapVec& vmaps, const char* name, u8 t, bool polymap);
@@ -372,3 +382,6 @@ public:
 
 	bool			Validate				();
 };
+//----------------------------------------------------
+#endif /*_INCDEF_EditableMesh_H_*/
+
