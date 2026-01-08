@@ -151,11 +151,12 @@ void xrLoad(LPCSTR name, bool draft_mode)
 					}
 					else
 					{
-						xr_strcat(N_, ".thm");
-						IReader* THM = FS.r_open("$game_textures$", N_);
+						string_path			th_name;
+						xr_strconcat(th_name, N_, ".thm");
+						IReader* THM = FS.r_open("$game_textures$", th_name);
 
 						if (!THM) {
-							clMsg("cannot find thm: %s", N_);
+							clMsg("cannot find thm: %s", th_name);
 							is_thm_missing = true;
 							continue;
 						}
@@ -189,9 +190,9 @@ void xrLoad(LPCSTR name, bool draft_mode)
 								clMsg("- loading: %s", N_);
 
 								string_path OutName;
-								if (!Surface_Detect(OutName, N) || !BT.pSurface.LoadFromFile(OutName))
+								if (!Surface_Detect(OutName, N_) || !BT.pSurface.LoadFromFile(OutName))
 								{
-									clMsg("cannot find tga texture: %s", N);
+									clMsg("cannot find tga texture: %s", N_);
 									is_tga_missing = true;
 									continue;
 								}
