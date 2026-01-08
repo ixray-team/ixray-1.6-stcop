@@ -159,10 +159,12 @@ void RenderMainUI()
 
 		if (isReady)
 		{
+			static bool levelsEmpty = true;
 			for (auto& FILE : gCompilerMode.Files)
 			{
 				if (FILE.Select)
 				{
+					levelsEmpty = false;
 					Msg("Level For Building : %s", FILE.Name.c_str());
 					break;
 				}
@@ -170,7 +172,15 @@ void RenderMainUI()
 
 			ShowMainUI = false;
 			extern void StartCompile();
-			StartCompile();
+			if (!levelsEmpty)
+			{
+				StartCompile();
+			}
+			else
+			{
+				SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Warning!", "No levels selected.", nullptr);
+				ShowMainUI = true;
+			}
 		}
 
 	}
