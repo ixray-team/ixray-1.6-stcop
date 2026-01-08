@@ -46,12 +46,14 @@ struct CompilersMode
 	bool LC_NoSubdivide = false;
 	bool LC_skipWeld = false;
 	bool LC_legacyLM = false;
+	bool IsOverloadedSettings = false;
+
+	int LC_GeomChunkSize = 75;
 
 	CFormVersions LC_CformType = CFormVersions::Vanilla;
 	int LC_CFormChunkSize = 75;
+	
 	int LC_sizeLmaps = 1024 * 4;
-
-	bool IsOverloadedSettings = false;
 	int LC_JSampleMU = 6;
 	int LC_JSample = 9;
 	int ThreadsPerWork = 14;
@@ -60,6 +62,7 @@ struct CompilersMode
 
 	float WeldDistance = 0.005f;
 
+	GeomVanillaType LC_GeomType = GeomVanillaType::Vanilla;
  
 	bool DO_NoSun = false;
 
