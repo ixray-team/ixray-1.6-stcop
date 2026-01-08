@@ -241,9 +241,18 @@ void CControlAnimationBase::select_animation(bool anim_end)
 
 	// установить анимацию	
 	string128	s1,s2;
-	MotionID	cur_anim		= smart_cast<IKinematicsAnimated*>(m_object->Visual())->ID_Cycle_Safe(xr_strconcat(s2,*anim_it->target_name,_itoa(index,s1,10)));
+	LPCSTR animation_name_buffer;
+	if (anim_it->target_name[anim_it->target_name.size() - 1] == '_') {
+		animation_name_buffer = xr_strconcat(s2, *anim_it->target_name, itoa(index, s1, 10));
+	}
+	else {
+		animation_name_buffer = anim_it->target_name.c_str();
+	}
+	MotionID	cur_anim		= m_object->Visual()->dcast_PKinematicsAnimated()->ID_Cycle_Safe(animation_name_buffer);
 	if ( !cur_anim.valid() )
-		FATAL							(s2);
+	{
+		FATAL(s2);
+	}
 
 	// Setup Com
 	ctrl_data->global.set_motion (cur_anim);
@@ -510,10 +519,16 @@ void CControlAnimationBase::UpdateAnimCount()
 	xr_vector<u32> subjectsToDelete;
 
 	for (ANIM_ITEM_VECTOR_IT it = m_anim_storage.begin(); it != m_anim_storage.end(); it++)	{
-		if (!(*it)) continue;
+		if (!(*it))
+		{
+			continue;
+		}
 
 		// проверить, были ли уже загружены данные
-		if ((*it)->count != 0) return;
+		if ((*it)->count != 0)
+		{
+			return;
+		}
 
 		string128	s, s_temp; 
 		u8 count = 0;
@@ -528,6 +543,13 @@ void CControlAnimationBase::UpdateAnimCount()
 				AddAnimTranslation(id,name);
 			}
 			else break;
+		}
+		if (!count) {
+			MotionID	id = skel->ID_Cycle_Safe(((*it)->target_name));
+			if (id.valid()) {
+				count++;
+				AddAnimTranslation(id, *((*it)->target_name));
+			}
 		}
 
 		if (count != 0)

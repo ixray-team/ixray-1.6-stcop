@@ -169,9 +169,9 @@ void   CChimera::CheckSpecParams (u32 spec_params)
 void   CChimera::HitEntityInJump (const CEntity *pEntity)
 {
 	auto AttackParamAnim = READ_IF_EXISTS(pSettings, r_string, get_section(), "AttackParamAnim", "jump_attack_1");
-	SAAParam &params					=	anim().AA_GetParams(AttackParamAnim);
+	SAAParam &params = anim().AA_GetParams(AttackParamAnim);
 	
-	HitEntity								(pEntity, params.hit_power, params.impulse, params.impulse_dir);
+	HitEntity(pEntity, params.hit_power, params.impulse, params.impulse_dir);
 }
 
 void   CChimera::jump (Fvector const &position, float const factor)
