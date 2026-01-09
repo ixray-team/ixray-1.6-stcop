@@ -442,9 +442,13 @@ void UIObjectTool::OnItemFocused(ListItem* item)
 			IRHISurface* Surface = nullptr;
 			m_Thm->Update(Surface);
 
-			m_RealTexture = new CTexture;
-			m_RealTexture->surface_set(Surface);
-			Surface->Release();
+			if (Surface != nullptr)
+			{
+				m_RealTexture = new CTexture;
+				m_RealTexture->surface_set(Surface);
+
+				Surface->Release();
+			}
 
 			PropItemVec Info;
 			m_Thm->FillInfo(Info);
