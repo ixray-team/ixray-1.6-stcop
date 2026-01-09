@@ -241,7 +241,7 @@ void UIEditLibrary::GenerateLOD(const RStringVec& props, bool bHighQuality)
 			_ChangeSymbol(tmp, '\\', '_');
 			tex_name = xr_string("lod_") + tmp;
 			tex_name = ImageLib.UpdateFileName(tex_name);
-			ImageLib.CreateLODTexture(O, tex_name.c_str(), LOD_IMAGE_SIZE, LOD_IMAGE_SIZE, LOD_SAMPLE_COUNT, (time_t)O->Version(), bHighQuality ? 4 /*7*/ : 1);
+			ImageLib.CreateLODTexture(O, tex_name.c_str(), LOD_IMAGE_SIZE, LOD_IMAGE_SIZE, LOD_SAMPLE_COUNT, xr_chrono_to_time_t(std::chrono::system_clock::now()), bHighQuality ? 4 /*7*/ : 1);
 			O->OnDeviceDestroy();
 			O->m_objectFlags.set(CEditableObject::eoUsingLOD, bLod);
 			ELog.Msg(mtInformation, "+ LOD for object '%s' successfully created.", O->GetName());
@@ -278,14 +278,14 @@ void UIEditLibrary::MakeLOD(bool bHighQuality)
 			sel_items.push_back(ListItem->Key());
 		}
 
-		LODTask.wait();
-		LODTask.run
-		(
-			[this, sel_items, bHighQuality]()
+		//LODTask.wait();
+		//LODTask.run
+		//(
+		//	[this, sel_items, bHighQuality]()
 			{
 				GenerateLOD(sel_items, bHighQuality);
 			}
-		);
+		//);
 
 		return;
 	}
