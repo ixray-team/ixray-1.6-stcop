@@ -231,7 +231,6 @@ void global_claculation_data::xrLoad()
 								BT.dwWidth = BT.THM.width = BT.pSurface.GetWidth();
 								BT.dwHeight = BT.THM.height = BT.pSurface.GetHeight();
 							}
-							BT.Vflip	();
 						}
 					}
 				}
