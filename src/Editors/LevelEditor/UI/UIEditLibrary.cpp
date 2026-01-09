@@ -55,6 +55,8 @@ void UIEditLibrary::OnItemFocused(ListItem* item)
 		{
 			IRHISurface* Surface = nullptr;
 			m_Thm->Update(Surface);
+
+			m_RealTexture = new CTexture();
 			m_RealTexture->surface_set(Surface);
 			Surface->Release();
 
