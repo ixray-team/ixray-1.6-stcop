@@ -208,7 +208,6 @@ void xrLoad(LPCSTR name, bool draft_mode)
 									BT.dwWidth = BT.THM.width = BT.pSurface.GetWidth();
 									BT.dwHeight = BT.THM.height = BT.pSurface.GetHeight();
 								}
-								BT.Vflip();
 							}
 						}
 					}
