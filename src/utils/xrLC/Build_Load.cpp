@@ -393,7 +393,6 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 								BT.dwWidth = BT.THM.width = BT.pSurface.GetWidth();
 								BT.dwHeight = BT.THM.height = BT.pSurface.GetHeight();
 							}
-							BT.Vflip();
 						}
 					}
 				}
