@@ -105,7 +105,7 @@ extern "C"
 		FS.update_path(GameGlobals, _game_config_, "game_global.ltx");
 		pGameGlobals = new CInifile(GameGlobals);
 
-		if (g_imgui_editors_state.is_thread_started == false)
+		if (g_imgui_editors_state.is_thread_started == false && !Device.IsEditorMode())
 		{
 			g_imgui_editors_state.worker_thread = std::thread(&AllEditorsAndTools_WorkerThread);
 			g_imgui_editors_state.is_thread_started = true;
