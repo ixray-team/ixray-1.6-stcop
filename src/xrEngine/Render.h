@@ -21,6 +21,7 @@ class IRenderVisual;
 class IKinematics;
 class CGameFont;
 class IRHISurface;
+struct RHITextureMetadata;
 
 #ifndef _EDITOR
 extern const	float		fLightSmoothFactor;
@@ -315,7 +316,7 @@ public:
 	virtual u32						memory_usage			()											{ return 0;};
 
 	virtual IRHISurface* load_texture(LPCSTR fname, u32& msize, bool bStaging=false)=0;
-
+	virtual bool get_texture_metadata(LPCSTR fname, RHITextureMetadata* p_data) = 0;
 
 	virtual void renderImGuiDebugWindow_SVGStorage() {}
 		
