@@ -479,6 +479,9 @@ struct CImGuiTextureEditor
 	bool is_filter_processing = false;
 
 	bool is_update_selected = false;
+	bool is_selected_metadata_loaded = false;
+	bool is_selected_thm_data_loaded = false;
+	bool is_selected_preview_loaded = false;
 
 	bool is_settings_applied = false;
 
