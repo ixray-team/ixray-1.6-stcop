@@ -15,7 +15,7 @@
 
 		<check_mouseinvert x="17" y="74" width="27" height="21" stretch="1">
 			<options_item entry="mouse_invert" group="mm_opt_controls"/>
-			<text font="letterica16" color="ui_6" vert_align="c">ui_mm_invert_mouse</text>
+			<text font="letterica16" color="ui_6">ui_mm_invert_mouse</text>
 		</check_mouseinvert>
 
 		<cap_keyboardsetup x="6" y="100" width="380" height="23">
