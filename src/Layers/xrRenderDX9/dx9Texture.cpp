@@ -241,6 +241,43 @@ void PrintTextureError(HRESULT hr, const char* fname, const void* ddsData, size_
 	Msg("4. Check mipmap chain consistency");
 }
 
+#include <DirectXTex.h>
+bool CRender::get_texture_metadata(LPCSTR absolute_path, RHITextureMetadata* p_data)
+{
+	bool status = false;
+
+	if (absolute_path == nullptr)
+		return status;
+
+	if (FS.path_exist(absolute_path) == false)
+		return status;
+
+	IReader* pReader = FS.r_open(absolute_path);
+
+	if (p_data == nullptr)
+		return status;
+
+	if (pReader == nullptr)
+		return status;
+
+	DirectX::TexMetadata metadata;
+	HRESULT hr = DirectX::GetMetadataFromDDSMemory(pReader->pointer(), pReader->length(), DirectX::DDS_FLAGS::DDS_FLAGS_NONE, metadata);
+
+	if (SUCCEEDED(hr))
+	{
+		p_data->width = metadata.width;
+		p_data->height = metadata.height;
+		p_data->format = metadata.format;
+
+		status = true;
+	}
+
+	if (pReader)
+		pReader->close();
+
+	return status;
+}
+
 IRHISurface* CRender::load_texture(LPCSTR fname, u32& msize, bool bStaging /*= false*/)
 {
 	ID3DBaseTexture* pTexture = this->texture_load(fname, msize);
