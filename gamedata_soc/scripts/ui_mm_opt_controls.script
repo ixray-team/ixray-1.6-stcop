@@ -9,15 +9,18 @@ end
 
 function opt_controls:InitControls(x, y, xml, handler)
 
-	self:Init(x,y, 738, 416)
+	self:SetWndPos(vector2():set(x,y))
+	self:SetWndSize(vector2():set(738,416))
+
 	self:SetAutoDelete(true)
 	
 	self.bk = xml:InitFrame("frame", self)
 	
 	xml:InitStatic		("tab_controls:cap_mousesens",		self)
-	xml:InitLabel		("tab_controls:cap_keyboardsetup",	self)
-	xml:InitLabel		("tab_controls:cap_keyboardsetup",	self)
 	xml:InitTrackBar	("tab_controls:track_mousesens",	self)
+	xml:InitStatic		("tab_controls:cap_mousesens_ui",		self)
+	xml:InitTrackBar	("tab_controls:track_mousesens_ui",	self)
+	xml:InitFrameLine	("tab_controls:cap_keyboardsetup",	self)
 	xml:InitCheck		("tab_controls:check_mouseinvert",	self)	
 	xml:InitKeyBinding	("tab_controls:key_binding",		self)
 
