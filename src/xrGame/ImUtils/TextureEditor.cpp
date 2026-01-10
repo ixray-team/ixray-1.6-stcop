@@ -467,6 +467,63 @@ void TextureEditor_WorkerThread(const ime_request_t& req)
 			{
 				u32 selected_id = req.payload;
 
+				if (g_imgui_texture_editor.pTextureSelected)
+				{
+					g_imgui_texture_editor.pTextureSelected->Release();
+					g_imgui_texture_editor.pTextureSelected = nullptr;
+				}
+
+				if (g_imgui_texture_editor.pTextureSelectedSRV)
+				{
+					g_imgui_texture_editor.pTextureSelectedSRV->Release();
+					g_imgui_texture_editor.pTextureSelectedSRV = nullptr;
+				}
+
+
+				const CImGuiTextureEditor::STextureEntry& tex = g_imgui_texture_editor.textures[selected_id];
+
+				R_ASSERT(std::string_view(tex.path).empty() == false);
+				R_ASSERT(std::string_view(tex.filename).empty() == false);
+
+				string_path subpath;
+
+				if (std::string_view(tex.subpath).empty())
+					std::sprintf(subpath, "%s", tex.filename);
+				else
+				{
+					std::filesystem::path builder;
+					builder = tex.subpath;
+					builder /= tex.filename;
+
+					std::sprintf(subpath, "%s", builder.string().c_str());
+				}
+
+				u32 tex_size = 0;
+				IRHISurface* pSurface = Render->load_texture(subpath, tex_size);
+
+				if (pSurface)
+				{
+					g_imgui_texture_editor.pTextureSelected = pSurface;
+
+					if (GRHI->APILevel != D3D9)
+					{
+						RHIShaderResourceViewDesc desc_srv;
+						desc_srv.MipLevels = 1;
+						desc_srv.Format = pSurface->GetFormat();
+						desc_srv.MostDetailedMip = 0;
+						desc_srv.ViewDimension = ERHI_SRV_DIMENSION::TEXTURE2D;
+						desc_srv.FirstArraySlice = 0;
+						desc_srv.ArraySize = 1;
+						desc_srv.ElementWidth = 0;
+
+						IRHIShaderResourceView* pView = GRHI->CreateShaderResourceView(pSurface, &desc_srv);
+
+						if (pView)
+						{
+							g_imgui_texture_editor.pTextureSelectedSRV = pView;
+						}
+					}
+				}
 
 				g_imgui_texture_editor.is_selected_preview_loaded = true;
 			}
@@ -774,6 +831,40 @@ constexpr const char* dxgi_format_to_string(DXGI_FORMAT fmt) noexcept
 }
 #else
 #endif
+
+void DrawPreview(IRHISurface* pTexture, IRHIShaderResourceView* pView)
+{
+	if (pTexture)
+	{
+		ImVec2 preview_size = kTextureEditor_PreviewSizeHigh;
+
+		u32 texture_size = std::max(pTexture->GetWidth(), pTexture->GetHeight());
+
+		if (texture_size < preview_size.x && texture_size > kTextureEditor_PreviewSizeLow.x)
+		{
+			preview_size = kTextureEditor_PreviewSizeMid;
+		}
+		else if (texture_size < kTextureEditor_PreviewSizeMid.x)
+		{
+			preview_size = kTextureEditor_PreviewSizeLow;
+		}
+
+		if (GRHI->APILevel == D3D9)
+		{
+			if (pTexture->GetRawTexture())
+			{
+				ImGui::Image(pTexture->GetRawTexture(), preview_size);
+			}
+		}
+		else if (GRHI->APILevel == D3D11)
+		{
+			if (pView && pView->GetRawSRV())
+			{
+				ImGui::Image(pView->GetRawSRV(), preview_size);
+			}
+		}
+	}
+}
 
 void RenderTextureEditor()
 {
@@ -1087,36 +1178,7 @@ void RenderTextureEditor()
 #if 1
 													if (g_imgui_texture_editor.is_preview_tooltip_image_loaded)
 													{
-														if (g_imgui_texture_editor.pTexturePreview)
-														{
-															ImVec2 preview_size = kTextureEditor_PreviewSizeHigh;
-
-															u32 texture_size = std::max(g_imgui_texture_editor.pTexturePreview->GetWidth(), g_imgui_texture_editor.pTexturePreview->GetHeight());
-
-															if (texture_size < preview_size.x && texture_size > kTextureEditor_PreviewSizeLow.x)
-															{
-																preview_size = kTextureEditor_PreviewSizeMid;
-															}
-															else if (texture_size < kTextureEditor_PreviewSizeMid.x)
-															{
-																preview_size = kTextureEditor_PreviewSizeLow;
-															}
-
-															if (GRHI->APILevel == D3D9)
-															{
-																if (g_imgui_texture_editor.pTexturePreview->GetRawTexture())
-																{
-																	ImGui::Image(g_imgui_texture_editor.pTexturePreview->GetRawTexture(), preview_size);
-																}
-															}
-															else if (GRHI->APILevel == D3D11)
-															{
-																if (g_imgui_texture_editor.pTexturePreviewSRV && g_imgui_texture_editor.pTexturePreviewSRV->GetRawSRV())
-																{
-																	ImGui::Image(g_imgui_texture_editor.pTexturePreviewSRV->GetRawSRV(), preview_size);
-																}
-															}
-														}
+														DrawPreview(g_imgui_texture_editor.pTexturePreview, g_imgui_texture_editor.pTexturePreviewSRV);
 													}
 													else
 													{
@@ -1358,7 +1420,7 @@ void RenderTextureEditor()
 				{
 					if (g_imgui_texture_editor.is_selected_preview_loaded)
 					{
-
+						DrawPreview(g_imgui_texture_editor.pTextureSelected, g_imgui_texture_editor.pTextureSelectedSRV);
 					}
 					else
 					{
