@@ -40,6 +40,14 @@
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/last_ny.png"
     },
     {
+      "id": "lastnewyear",
+      "title": "Чужой среди Чужих: Deluxe",
+      "description": "Лето 2021 года, сталкер-новичок по прозвищу Бумер приходит в зону за заработком - на этом и начинается целая история из шести эпизодов",
+      "author": "It's Boomer",
+      "link": "https://ap-pro.ru/forums/topic/13361-chuzhoy-sredi-chuzhih-deluxe/",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/чужойделюкс.png"
+    },
+    {
       "id": "project2",
       "title": "[Проект №2] (Бета | Проект закрыт)",
       "description": "Попытка перенести сюжет игры S.T.A.L.K.E.R. Mobile",
