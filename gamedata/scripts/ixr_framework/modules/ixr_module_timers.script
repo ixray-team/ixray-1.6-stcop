@@ -24,7 +24,7 @@ local CONST_TRACE_LEVEL = 3
 
 local ixr_timers = {
 	use_file_log = true,
-	use_console_log = true,
+	use_console_log = false,
 	dynamic_vars = {
 		upd_last_time = 0,
 		initialized = false,

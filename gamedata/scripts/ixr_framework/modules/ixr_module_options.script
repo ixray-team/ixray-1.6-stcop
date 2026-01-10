@@ -192,6 +192,7 @@ function ixr_options.init()
 
 	ixr_options.toLog("[IXR OPTIONS] INITIALIZED")
 	
+	--[[
 	local addons_data = get_addons_list()
 
 	for i, addon_data in ipairs(addons_data) do
@@ -200,7 +201,8 @@ function ixr_options.init()
 			ixr_options.toLog("  Скрипт " .. j .. ": " .. script_name)
 		end
 	end
-
+	--]]
+	
 	return true
 end
 
