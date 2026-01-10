@@ -448,4 +448,19 @@
 	<string id="st_grenade_frags_hit">
 		<text>Frag damage</text>
 	</string>
+	<string id="kb_show_quick_slots">
+		<text>Quick Access Panel</text>
+	</string>
+	<string id="ui_mm_show_minimap">
+		<text>Show minimap</text>
+	</string>
+	<string id="ui_mm_hide_quick_slots">
+		<text>Hide quick access panel</text>
+	</string>
+	<string id="ui_mm_shoot_volume">
+		<text>Shots volume</text>
+	</string>
+	<string id="ui_mm_mouse_sense_ui">
+		<text>Mouse sensitivity in UI</text>
+	</string>
 </string_table>
