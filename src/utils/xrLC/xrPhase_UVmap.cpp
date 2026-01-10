@@ -178,16 +178,15 @@ void CBuild::xrPhase_UVmap()
 	);
 	
  	// VALIDATION
-	for (auto SP = 0; SP < g_XSplit[SP]->size(); SP++)
+	for (auto SP = 0; SP < g_XSplit.size(); SP++)
 	{
-		if (g_XSplit[SP]->size() == 0)
+		if (g_XSplit[SP]->empty())
 		{
 			xr_delete(g_XSplit[SP]);
 			g_XSplit.erase(g_XSplit.begin() + SP);
 			SP--;
 		}
 	}
-
 
 	err_save();
 }
