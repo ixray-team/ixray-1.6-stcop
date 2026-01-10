@@ -44,8 +44,8 @@ float example_how_to_not_implement_gtao(float3 view_position, float3 view_normal
 	//View direction
 	float3 view_direction = -normalize(view_position);
 
-	//Screen-space radius
-	float screen_radius = (GTAO_RADIUS * gtao_parameters) / view_position.z;
+	//Screen-space radius (clamped)
+	float screen_radius = min((GTAO_RADIUS * gtao_parameters) / view_position.z, 256.0);
 
 	//Slice scale
 	//Y flipped as in original GTAO paper, DirectX hello
@@ -173,4 +173,5 @@ uint main(PSInputFullscreen I) : SV_Target
 
 	//Pack the data into R32_UINT (16 bits for depth, and 16 for occlusion)
 	return asuint(f32tof16(Point.z)) | (asuint(f32tof16(occlusion)) << 16);
+
 }
