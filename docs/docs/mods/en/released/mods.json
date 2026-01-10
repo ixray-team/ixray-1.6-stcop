@@ -33,11 +33,19 @@
     },
     {
       "id": "lastnewyear",
-      "title": "Alien Among Aliens: The Last New Year",
+      "title": "Stranger Among Strangers: The Last New Year",
       "description": "The main character is an ordinary stalker nicknamed Vint, who set out for Limansk",
       "author": "It's Boomer",
       "link": "https://ap-pro.ru/stuff/zov_pripjati/chuzhoy-sredi-chuzhih-posledniy-novyy-god-r489/",
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/last_ny.png"
+    },
+    {
+      "id": "lastnewyear",
+      "title": "Stranger Among Strangers: Deluxe",
+      "description": "Summer 2021. A rookie stalker nicknamed Boomer enters the Zone to make money — and this is how a six-episode story begins.",
+      "author": "It's Boomer",
+      "link": "https://ap-pro.ru/forums/topic/13361-chuzhoy-sredi-chuzhih-deluxe/",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/чужойделюкс.png"
     },
     {
       "id": "project2 (BETA)",
