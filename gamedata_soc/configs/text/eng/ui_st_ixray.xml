@@ -466,4 +466,7 @@
 	<string id="ui_mm_shoot_volume">
 		<text>Shots volume</text>
 	</string>
+	<string id="ui_mm_mouse_sense_ui">
+		<text>Mouse sensitivity in UI</text>
+	</string>
 </string_table>
