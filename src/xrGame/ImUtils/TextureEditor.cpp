@@ -405,9 +405,9 @@ void TextureEditor_WorkerThread(const ime_request_t& req)
 				std::sprintf(subpath, "%s", builder.string().c_str());
 			}
 
-			u32 tex_size=0;
+			u32 tex_size = 0;
 			IRHISurface* pSurface = Render->load_texture(subpath, tex_size);
-			
+
 			if (pSurface)
 			{
 				g_imgui_texture_editor.pTexturePreview = pSurface;
@@ -589,6 +589,25 @@ void TextureEditor_WorkerThread(const ime_request_t& req)
 	}
 }
 
+void PrintErrorStatus(bool status)
+{
+	ImGui::SameLine();
+	ImVec4 color;
+	const char* status_name = "";
+	if (status)
+	{
+		color = ImVec4(0.1f, 0.9f, 0.1f, 1.0f);
+		status_name = "OK";
+	}
+	else
+	{
+		color = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+		status_name = "ERROR";
+	}
+
+	ImGui::TextColored(color, status_name);
+}
+
 void RenderTextureEditor()
 {
 	if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_TextureEditor)])
@@ -763,7 +782,7 @@ void RenderTextureEditor()
 							req.request_type = static_cast<u32>(CImGuiTextureEditor::eRequestType::kFilterQuery);
 
 							req.payload = static_cast<u32>(CImGuiTextureEditor::eFilterQueryType::kInvalidFirst);
-							
+
 							g_imgui_editors_state.requests.push(req);
 						}
 
@@ -849,11 +868,11 @@ void RenderTextureEditor()
 												"File name",
 												"Folder path",
 												"Preview",
-//												"Full path"
+												//												"Full path"
 											};
 
 											constexpr u32 _kColumnsSizeTooltipTable = sizeof(_kColumnNamesTooltipTable) / sizeof(_kColumnNamesTooltipTable[0]);
-											
+
 											if (_kColumnsSizeTooltipTable < 4)
 												ImGui::Text("Full path: %s", texture.path);
 
@@ -1064,7 +1083,109 @@ void RenderTextureEditor()
 
 				const texture_t& selected = g_imgui_texture_editor.textures[g_imgui_texture_editor.selected_index];
 
+
+				if (ImGui::Button("Save - THM"))
+				{
+
+				}
+
+				ImGui::Separator();
+
+				ImGui::Text("Validation status:");
+
+				ImGui::Text("\t- Has THM: ");
+
+				PrintErrorStatus(true);
+
+
+				ImGui::Text("\t- THM is valid: ");
+
+				PrintErrorStatus(true);
+
+				ImGui::Text("\t- Dimensions power of 2: ");
+
+
+				PrintErrorStatus(true);
+
+				ImGui::Text("\t- Has mip maps: ");
+
+
+				PrintErrorStatus(true);
+
+				ImGui::Separator();
+
 				ImGui::Text("%s", selected.path);
+
+				constexpr const char* _kColumnTableSelectedNames[] = {
+					"Info",
+					"Settings",
+					"Preview"
+				};
+
+				constexpr u32 _kColumnTableSelectedSize = sizeof(_kColumnTableSelectedNames) / sizeof(_kColumnTableSelectedNames[0]);
+
+				ImGui::BeginTable("##TETV2", _kColumnTableSelectedSize);
+
+				for (u32 i = 0; i < _kColumnTableSelectedSize; ++i)
+				{
+					ImGui::TableSetupColumn(_kColumnTableSelectedNames[i]);
+				}
+
+				ImGui::TableHeadersRow();
+
+				ImGui::TableNextRow();
+
+				for (u32 column_id = 0; column_id < _kColumnTableSelectedSize; ++column_id)
+				{
+					ImGui::TableSetColumnIndex(u32(column_id));
+
+					switch (column_id)
+					{
+					case 0:
+					{
+
+						if (g_imgui_texture_editor.is_selected_metadata_loaded)
+						{
+
+						}
+						else
+						{
+							ImGui::Text("Loading...");
+						}
+
+						break;
+					}
+					case 1:
+					{
+
+						if (g_imgui_texture_editor.is_selected_thm_data_loaded)
+						{
+
+						}
+						else
+						{
+							ImGui::Text("Loading...");
+						}
+
+						break;
+					}
+					case 2:
+					{
+						if (g_imgui_texture_editor.is_selected_preview_loaded)
+						{
+
+						}
+						else
+						{
+							ImGui::Text("Loading...");
+						}
+
+						break;
+					}
+					}
+				}
+
+				ImGui::EndTable();
 			}
 			else
 			{
