@@ -13,4 +13,5 @@ function configure(_ref_ixr_autoloader)
 	-- Игнорирование файлов скриптов из системы поиска автозагрузчика коллбеков
 	_ref_ixr_autoloader.ignore_script("bind_*")
 	_ref_ixr_autoloader.ignore_script("smart_*")
+	_ref_ixr_autoloader.ignore_script("heli_snd")
 end
