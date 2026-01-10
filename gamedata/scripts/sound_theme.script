@@ -212,7 +212,7 @@ function npc_sound:play(npc_id, faction, point, msg)
 	local snd = self.sound_path[npc_id][table_id]
 	-- проверка на существование звука дублирующего основной по ПДА. Если он есть то играть его.
 	local f = getFS()
-	local langName = get_console():get_token("language")
+	local langName = game.current_language()
 	local sndName = "localization\\"..langName.."\\"..snd.."_pda"
 	local sndExist = f:exist("$game_sounds$", sndName..".ogg")
 	if sndExist == nil then
@@ -372,7 +372,7 @@ function actor_sound:__init(snd_ini, section)
 
 	local f = getFS()
 
-	local langName = get_console():get_token("language")
+	local langName = game.current_language()
 	if f:exist("$game_sounds$","localization\\"..langName.."\\"..self.path..".ogg") ~= nil then
 		self.sound[1] = "localization\\"..langName.."\\"..self.path
 	elseif f:exist("$game_sounds$",self.path..".ogg") ~= nil then
@@ -632,7 +632,7 @@ function object_sound:play(obj_id, faction, point, msg)
 --	printf("object played_id = %s", self.played_id)
 	local snd = self.sound[self.played_id]
 	local f = getFS()
-	local langName = get_console():get_token("language")
+	local langName = game.current_language()
 	local sndName = "localization\\"..langName.."\\"..snd.."_pda"
 	local sndExist = f:exist("$game_sounds$", sndName..".ogg")
 	if sndExist == nil then
