@@ -398,7 +398,7 @@ local sound_object_by_path = {}
 function get_safe_sound_object(path)
 	if sound_object_by_path[path] == nil then
 		local f = getFS()
-		local langName = get_console():get_token("language")
+		local langName = game.current_language()
 		local sndName = "localization\\"..langName.."\\"..path
 		local sndExist = f:exist("$game_sounds$", sndName..".ogg")
 		if sndExist then
