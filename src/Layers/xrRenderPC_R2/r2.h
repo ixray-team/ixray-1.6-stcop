@@ -209,6 +209,7 @@ public:
 	virtual void					level_Unload				();
 
 	IRHISurface* load_texture(LPCSTR fname, u32& msize, bool bStaging = false) override;
+	bool get_texture_metadata(LPCSTR fname, RHITextureMetadata* p_data) override;
 
 	virtual IDirect3DBaseTexture9*	texture_load			(LPCSTR	fname, u32& msize);
 

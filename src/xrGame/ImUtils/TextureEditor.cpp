@@ -341,22 +341,6 @@ void TextureEditor_WorkerThread(const ime_request_t& req)
 
 		break;
 	}
-	case CImGuiTextureEditor::eRequestType::kUpdateSelected:
-	{
-		g_imgui_texture_editor.is_update_selected = false;
-
-		if (req.payload != _kInvalidSelectedID)
-		{
-			if (req.payload < g_imgui_texture_editor.textures.size())
-			{
-
-			}
-		}
-
-		g_imgui_texture_editor.is_update_selected = true;
-
-		break;
-	}
 	case CImGuiTextureEditor::eRequestType::kLoadTooltipPreview:
 	{
 		// for debug purposes
@@ -451,6 +435,55 @@ void TextureEditor_WorkerThread(const ime_request_t& req)
 		{
 			g_imgui_texture_editor.pTexturePreviewSRV->Release();
 			g_imgui_texture_editor.pTexturePreviewSRV = nullptr;
+		}
+
+		break;
+	}
+	case CImGuiTextureEditor::eRequestType::kLoadMetadataOfSelected:
+	{
+
+		if (g_imgui_texture_editor.is_init)
+		{
+			if (g_imgui_texture_editor.is_selected_metadata_loaded == false)
+			{
+				u32 selected_id = req.payload;
+
+				const CImGuiTextureEditor::STextureEntry& tex = g_imgui_texture_editor.textures[selected_id];
+
+				bool is_loaded = Render->get_texture_metadata(tex.path, &g_imgui_texture_editor.selected_metadata);
+				R_ASSERT(is_loaded && "failed to obtain metadata");
+
+				g_imgui_texture_editor.is_selected_metadata_loaded = true;
+			}
+		}
+
+		break;
+	}
+	case CImGuiTextureEditor::eRequestType::kLoadPreviewOfSelected:
+	{
+		if (g_imgui_texture_editor.is_init)
+		{
+			if (g_imgui_texture_editor.is_selected_preview_loaded == false)
+			{
+				u32 selected_id = req.payload;
+
+
+				g_imgui_texture_editor.is_selected_preview_loaded = true;
+			}
+		}
+
+		break;
+	}
+	case CImGuiTextureEditor::eRequestType::kLoadTHMOfSelected:
+	{
+		if (g_imgui_texture_editor.is_init)
+		{
+			if (g_imgui_texture_editor.is_selected_thm_data_loaded == false)
+			{
+				u32 selected_id = req.payload;
+
+				g_imgui_texture_editor.is_selected_thm_data_loaded = true;
+			}
 		}
 
 		break;
@@ -607,6 +640,140 @@ void PrintErrorStatus(bool status)
 
 	ImGui::TextColored(color, status_name);
 }
+
+
+
+#ifdef IXR_WINDOWS
+#include <dxgiformat.h>
+
+constexpr const char* dxgi_format_to_string(DXGI_FORMAT fmt) noexcept
+{
+	switch (fmt)
+	{
+	case DXGI_FORMAT_UNKNOWN:                     return "DXGI_FORMAT_UNKNOWN";
+	case DXGI_FORMAT_R32G32B32A32_TYPELESS:       return "DXGI_FORMAT_R32G32B32A32_TYPELESS";
+	case DXGI_FORMAT_R32G32B32A32_FLOAT:          return "DXGI_FORMAT_R32G32B32A32_FLOAT";
+	case DXGI_FORMAT_R32G32B32A32_UINT:           return "DXGI_FORMAT_R32G32B32A32_UINT";
+	case DXGI_FORMAT_R32G32B32A32_SINT:           return "DXGI_FORMAT_R32G32B32A32_SINT";
+	case DXGI_FORMAT_R32G32B32_TYPELESS:          return "DXGI_FORMAT_R32G32B32_TYPELESS";
+	case DXGI_FORMAT_R32G32B32_FLOAT:             return "DXGI_FORMAT_R32G32B32_FLOAT";
+	case DXGI_FORMAT_R32G32B32_UINT:              return "DXGI_FORMAT_R32G32B32_UINT";
+	case DXGI_FORMAT_R32G32B32_SINT:              return "DXGI_FORMAT_R32G32B32_SINT";
+	case DXGI_FORMAT_R16G16B16A16_TYPELESS:       return "DXGI_FORMAT_R16G16B16A16_TYPELESS";
+	case DXGI_FORMAT_R16G16B16A16_FLOAT:          return "DXGI_FORMAT_R16G16B16A16_FLOAT";
+	case DXGI_FORMAT_R16G16B16A16_UNORM:          return "DXGI_FORMAT_R16G16B16A16_UNORM";
+	case DXGI_FORMAT_R16G16B16A16_UINT:           return "DXGI_FORMAT_R16G16B16A16_UINT";
+	case DXGI_FORMAT_R16G16B16A16_SNORM:          return "DXGI_FORMAT_R16G16B16A16_SNORM";
+	case DXGI_FORMAT_R16G16B16A16_SINT:           return "DXGI_FORMAT_R16G16B16A16_SINT";
+	case DXGI_FORMAT_R32G32_TYPELESS:             return "DXGI_FORMAT_R32G32_TYPELESS";
+	case DXGI_FORMAT_R32G32_FLOAT:                return "DXGI_FORMAT_R32G32_FLOAT";
+	case DXGI_FORMAT_R32G32_UINT:                 return "DXGI_FORMAT_R32G32_UINT";
+	case DXGI_FORMAT_R32G32_SINT:                 return "DXGI_FORMAT_R32G32_SINT";
+	case DXGI_FORMAT_R32G8X24_TYPELESS:           return "DXGI_FORMAT_R32G8X24_TYPELESS";
+	case DXGI_FORMAT_D32_FLOAT_S8X24_UINT:        return "DXGI_FORMAT_D32_FLOAT_S8X24_UINT";
+	case DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS:    return "DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS";
+	case DXGI_FORMAT_X32_TYPELESS_G8X24_UINT:     return "DXGI_FORMAT_X32_TYPELESS_G8X24_UINT";
+	case DXGI_FORMAT_R10G10B10A2_TYPELESS:        return "DXGI_FORMAT_R10G10B10A2_TYPELESS";
+	case DXGI_FORMAT_R10G10B10A2_UNORM:           return "DXGI_FORMAT_R10G10B10A2_UNORM";
+	case DXGI_FORMAT_R10G10B10A2_UINT:            return "DXGI_FORMAT_R10G10B10A2_UINT";
+	case DXGI_FORMAT_R11G11B10_FLOAT:             return "DXGI_FORMAT_R11G11B10_FLOAT";
+	case DXGI_FORMAT_R8G8B8A8_TYPELESS:           return "DXGI_FORMAT_R8G8B8A8_TYPELESS";
+	case DXGI_FORMAT_R8G8B8A8_UNORM:              return "DXGI_FORMAT_R8G8B8A8_UNORM";
+	case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:         return "DXGI_FORMAT_R8G8B8A8_UNORM_SRGB";
+	case DXGI_FORMAT_R8G8B8A8_UINT:               return "DXGI_FORMAT_R8G8B8A8_UINT";
+	case DXGI_FORMAT_R8G8B8A8_SNORM:              return "DXGI_FORMAT_R8G8B8A8_SNORM";
+	case DXGI_FORMAT_R8G8B8A8_SINT:               return "DXGI_FORMAT_R8G8B8A8_SINT";
+	case DXGI_FORMAT_R16G16_TYPELESS:             return "DXGI_FORMAT_R16G16_TYPELESS";
+	case DXGI_FORMAT_R16G16_FLOAT:                return "DXGI_FORMAT_R16G16_FLOAT";
+	case DXGI_FORMAT_R16G16_UNORM:                return "DXGI_FORMAT_R16G16_UNORM";
+	case DXGI_FORMAT_R16G16_UINT:                 return "DXGI_FORMAT_R16G16_UINT";
+	case DXGI_FORMAT_R16G16_SNORM:                return "DXGI_FORMAT_R16G16_SNORM";
+	case DXGI_FORMAT_R16G16_SINT:                 return "DXGI_FORMAT_R16G16_SINT";
+	case DXGI_FORMAT_R32_TYPELESS:                return "DXGI_FORMAT_R32_TYPELESS";
+	case DXGI_FORMAT_D32_FLOAT:                   return "DXGI_FORMAT_D32_FLOAT";
+	case DXGI_FORMAT_R32_FLOAT:                   return "DXGI_FORMAT_R32_FLOAT";
+	case DXGI_FORMAT_R32_UINT:                    return "DXGI_FORMAT_R32_UINT";
+	case DXGI_FORMAT_R32_SINT:                    return "DXGI_FORMAT_R32_SINT";
+	case DXGI_FORMAT_R24G8_TYPELESS:              return "DXGI_FORMAT_R24G8_TYPELESS";
+	case DXGI_FORMAT_D24_UNORM_S8_UINT:           return "DXGI_FORMAT_D24_UNORM_S8_UINT";
+	case DXGI_FORMAT_R24_UNORM_X8_TYPELESS:       return "DXGI_FORMAT_R24_UNORM_X8_TYPELESS";
+	case DXGI_FORMAT_X24_TYPELESS_G8_UINT:        return "DXGI_FORMAT_X24_TYPELESS_G8_UINT";
+	case DXGI_FORMAT_R8G8_TYPELESS:               return "DXGI_FORMAT_R8G8_TYPELESS";
+	case DXGI_FORMAT_R8G8_UNORM:                  return "DXGI_FORMAT_R8G8_UNORM";
+	case DXGI_FORMAT_R8G8_UINT:                   return "DXGI_FORMAT_R8G8_UINT";
+	case DXGI_FORMAT_R8G8_SNORM:                  return "DXGI_FORMAT_R8G8_SNORM";
+	case DXGI_FORMAT_R8G8_SINT:                   return "DXGI_FORMAT_R8G8_SINT";
+	case DXGI_FORMAT_R16_TYPELESS:                return "DXGI_FORMAT_R16_TYPELESS";
+	case DXGI_FORMAT_R16_FLOAT:                   return "DXGI_FORMAT_R16_FLOAT";
+	case DXGI_FORMAT_D16_UNORM:                   return "DXGI_FORMAT_D16_UNORM";
+	case DXGI_FORMAT_R16_UNORM:                   return "DXGI_FORMAT_R16_UNORM";
+	case DXGI_FORMAT_R16_UINT:                    return "DXGI_FORMAT_R16_UINT";
+	case DXGI_FORMAT_R16_SNORM:                   return "DXGI_FORMAT_R16_SNORM";
+	case DXGI_FORMAT_R16_SINT:                    return "DXGI_FORMAT_R16_SINT";
+	case DXGI_FORMAT_R8_TYPELESS:                 return "DXGI_FORMAT_R8_TYPELESS";
+	case DXGI_FORMAT_R8_UNORM:                    return "DXGI_FORMAT_R8_UNORM";
+	case DXGI_FORMAT_R8_UINT:                     return "DXGI_FORMAT_R8_UINT";
+	case DXGI_FORMAT_R8_SNORM:                    return "DXGI_FORMAT_R8_SNORM";
+	case DXGI_FORMAT_R8_SINT:                     return "DXGI_FORMAT_R8_SINT";
+	case DXGI_FORMAT_A8_UNORM:                    return "DXGI_FORMAT_A8_UNORM";
+	case DXGI_FORMAT_R1_UNORM:                    return "DXGI_FORMAT_R1_UNORM";
+	case DXGI_FORMAT_R9G9B9E5_SHAREDEXP:          return "DXGI_FORMAT_R9G9B9E5_SHAREDEXP";
+	case DXGI_FORMAT_R8G8_B8G8_UNORM:             return "DXGI_FORMAT_R8G8_B8G8_UNORM";
+	case DXGI_FORMAT_G8R8_G8B8_UNORM:             return "DXGI_FORMAT_G8R8_G8B8_UNORM";
+	case DXGI_FORMAT_BC1_TYPELESS:                return "DXGI_FORMAT_BC1_TYPELESS";
+	case DXGI_FORMAT_BC1_UNORM:                   return "DXGI_FORMAT_BC1_UNORM";
+	case DXGI_FORMAT_BC1_UNORM_SRGB:              return "DXGI_FORMAT_BC1_UNORM_SRGB";
+	case DXGI_FORMAT_BC2_TYPELESS:                return "DXGI_FORMAT_BC2_TYPELESS";
+	case DXGI_FORMAT_BC2_UNORM:                   return "DXGI_FORMAT_BC2_UNORM";
+	case DXGI_FORMAT_BC2_UNORM_SRGB:              return "DXGI_FORMAT_BC2_UNORM_SRGB";
+	case DXGI_FORMAT_BC3_TYPELESS:                return "DXGI_FORMAT_BC3_TYPELESS";
+	case DXGI_FORMAT_BC3_UNORM:                   return "DXGI_FORMAT_BC3_UNORM";
+	case DXGI_FORMAT_BC3_UNORM_SRGB:              return "DXGI_FORMAT_BC3_UNORM_SRGB";
+	case DXGI_FORMAT_BC4_TYPELESS:                return "DXGI_FORMAT_BC4_TYPELESS";
+	case DXGI_FORMAT_BC4_UNORM:                   return "DXGI_FORMAT_BC4_UNORM";
+	case DXGI_FORMAT_BC4_SNORM:                   return "DXGI_FORMAT_BC4_SNORM";
+	case DXGI_FORMAT_BC5_TYPELESS:                return "DXGI_FORMAT_BC5_TYPELESS";
+	case DXGI_FORMAT_BC5_UNORM:                   return "DXGI_FORMAT_BC5_UNORM";
+	case DXGI_FORMAT_BC5_SNORM:                   return "DXGI_FORMAT_BC5_SNORM";
+	case DXGI_FORMAT_B5G6R5_UNORM:                return "DXGI_FORMAT_B5G6R5_UNORM";
+	case DXGI_FORMAT_B5G5R5A1_UNORM:              return "DXGI_FORMAT_B5G5R5A1_UNORM";
+	case DXGI_FORMAT_B8G8R8A8_UNORM:              return "DXGI_FORMAT_B8G8R8A8_UNORM";
+	case DXGI_FORMAT_B8G8R8X8_UNORM:              return "DXGI_FORMAT_B8G8R8X8_UNORM";
+	case DXGI_FORMAT_R10G10B10_XR_BIAS_A2_UNORM:  return "DXGI_FORMAT_R10G10B10_XR_BIAS_A2_UNORM";
+	case DXGI_FORMAT_B8G8R8A8_TYPELESS:           return "DXGI_FORMAT_B8G8R8A8_TYPELESS";
+	case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:         return "DXGI_FORMAT_B8G8R8A8_UNORM_SRGB";
+	case DXGI_FORMAT_B8G8R8X8_TYPELESS:           return "DXGI_FORMAT_B8G8R8X8_TYPELESS";
+	case DXGI_FORMAT_B8G8R8X8_UNORM_SRGB:         return "DXGI_FORMAT_B8G8R8X8_UNORM_SRGB";
+	case DXGI_FORMAT_BC6H_TYPELESS:               return "DXGI_FORMAT_BC6H_TYPELESS";
+	case DXGI_FORMAT_BC6H_UF16:                   return "DXGI_FORMAT_BC6H_UF16";
+	case DXGI_FORMAT_BC6H_SF16:                   return "DXGI_FORMAT_BC6H_SF16";
+	case DXGI_FORMAT_BC7_TYPELESS:                return "DXGI_FORMAT_BC7_TYPELESS";
+	case DXGI_FORMAT_BC7_UNORM:                   return "DXGI_FORMAT_BC7_UNORM";
+	case DXGI_FORMAT_BC7_UNORM_SRGB:              return "DXGI_FORMAT_BC7_UNORM_SRGB";
+	case DXGI_FORMAT_AYUV:                        return "DXGI_FORMAT_AYUV";
+	case DXGI_FORMAT_Y410:                        return "DXGI_FORMAT_Y410";
+	case DXGI_FORMAT_Y416:                        return "DXGI_FORMAT_Y416";
+	case DXGI_FORMAT_NV12:                        return "DXGI_FORMAT_NV12";
+	case DXGI_FORMAT_P010:                        return "DXGI_FORMAT_P010";
+	case DXGI_FORMAT_P016:                        return "DXGI_FORMAT_P016";
+	case DXGI_FORMAT_420_OPAQUE:                  return "DXGI_FORMAT_420_OPAQUE";
+	case DXGI_FORMAT_YUY2:                        return "DXGI_FORMAT_YUY2";
+	case DXGI_FORMAT_Y210:                        return "DXGI_FORMAT_Y210";
+	case DXGI_FORMAT_Y216:                        return "DXGI_FORMAT_Y216";
+	case DXGI_FORMAT_NV11:                        return "DXGI_FORMAT_NV11";
+	case DXGI_FORMAT_AI44:                        return "DXGI_FORMAT_AI44";
+	case DXGI_FORMAT_IA44:                        return "DXGI_FORMAT_IA44";
+	case DXGI_FORMAT_P8:                          return "DXGI_FORMAT_P8";
+	case DXGI_FORMAT_A8P8:                        return "DXGI_FORMAT_A8P8";
+	case DXGI_FORMAT_B4G4R4A4_UNORM:              return "DXGI_FORMAT_B4G4R4A4_UNORM";
+	case DXGI_FORMAT_P208:                        return "DXGI_FORMAT_P208";
+	case DXGI_FORMAT_V208:                        return "DXGI_FORMAT_V208";
+	case DXGI_FORMAT_V408:                        return "DXGI_FORMAT_V408";
+	default:                                      return "DXGI_FORMAT_<unknown>";
+	}
+}
+#else
+#endif
 
 void RenderTextureEditor()
 {
@@ -845,10 +1012,19 @@ void RenderTextureEditor()
 											g_imgui_texture_editor.window_selected_name[0] = 0;
 											g_imgui_texture_editor.selected_index = g_imgui_texture_editor.filter_query[row];
 
+											g_imgui_texture_editor.is_selected_metadata_loaded = false;
+											g_imgui_texture_editor.is_selected_preview_loaded = false;
+											g_imgui_texture_editor.is_selected_thm_data_loaded = false;
+
 											ime_request_t req;
 
 											req.editor_type = static_cast<u32>(eImGuiEditorType::kTextureEditor);
-											req.request_type = static_cast<u32>(CImGuiTextureEditor::eRequestType::kUpdateSelected);
+											req.request_type = static_cast<u32>(CImGuiTextureEditor::eRequestType::kLoadMetadataOfSelected);
+											req.payload = g_imgui_texture_editor.filter_query[row];
+
+											g_imgui_editors_state.requests.push(req);
+
+											req.request_type = static_cast<u32>(CImGuiTextureEditor::eRequestType::kLoadPreviewOfSelected);
 											req.payload = g_imgui_texture_editor.filter_query[row];
 
 											g_imgui_editors_state.requests.push(req);
@@ -1076,122 +1252,125 @@ void RenderTextureEditor()
 	{
 		if (ImGui::Begin(g_imgui_texture_editor.window_selected_name, 0, ImGuiWindowFlags_AlwaysAutoResize))
 		{
+			using texture_t = CImGuiTextureEditor::STextureEntry;
 
-			if (g_imgui_texture_editor.is_update_selected)
+			const texture_t& selected = g_imgui_texture_editor.textures[g_imgui_texture_editor.selected_index];
+
+
+			if (ImGui::Button("Save - THM"))
 			{
-				using texture_t = CImGuiTextureEditor::STextureEntry;
 
-				const texture_t& selected = g_imgui_texture_editor.textures[g_imgui_texture_editor.selected_index];
-
-
-				if (ImGui::Button("Save - THM"))
-				{
-
-				}
-
-				ImGui::Separator();
-
-				ImGui::Text("Validation status:");
-
-				ImGui::Text("\t- Has THM: ");
-
-				PrintErrorStatus(true);
-
-
-				ImGui::Text("\t- THM is valid: ");
-
-				PrintErrorStatus(true);
-
-				ImGui::Text("\t- Dimensions power of 2: ");
-
-
-				PrintErrorStatus(true);
-
-				ImGui::Text("\t- Has mip maps: ");
-
-
-				PrintErrorStatus(true);
-
-				ImGui::Separator();
-
-				ImGui::Text("%s", selected.path);
-
-				constexpr const char* _kColumnTableSelectedNames[] = {
-					"Info",
-					"Settings",
-					"Preview"
-				};
-
-				constexpr u32 _kColumnTableSelectedSize = sizeof(_kColumnTableSelectedNames) / sizeof(_kColumnTableSelectedNames[0]);
-
-				ImGui::BeginTable("##TETV2", _kColumnTableSelectedSize);
-
-				for (u32 i = 0; i < _kColumnTableSelectedSize; ++i)
-				{
-					ImGui::TableSetupColumn(_kColumnTableSelectedNames[i]);
-				}
-
-				ImGui::TableHeadersRow();
-
-				ImGui::TableNextRow();
-
-				for (u32 column_id = 0; column_id < _kColumnTableSelectedSize; ++column_id)
-				{
-					ImGui::TableSetColumnIndex(u32(column_id));
-
-					switch (column_id)
-					{
-					case 0:
-					{
-
-						if (g_imgui_texture_editor.is_selected_metadata_loaded)
-						{
-
-						}
-						else
-						{
-							ImGui::Text("Loading...");
-						}
-
-						break;
-					}
-					case 1:
-					{
-
-						if (g_imgui_texture_editor.is_selected_thm_data_loaded)
-						{
-
-						}
-						else
-						{
-							ImGui::Text("Loading...");
-						}
-
-						break;
-					}
-					case 2:
-					{
-						if (g_imgui_texture_editor.is_selected_preview_loaded)
-						{
-
-						}
-						else
-						{
-							ImGui::Text("Loading...");
-						}
-
-						break;
-					}
-					}
-				}
-
-				ImGui::EndTable();
-			}
-			else
-			{
-				ImGui::Text("Loading...");
 			}
 
+			ImGui::Separator();
+
+			ImGui::Text("Validation status:");
+
+			ImGui::Text("\t- Has THM: ");
+
+			PrintErrorStatus(true);
+
+
+			ImGui::Text("\t- THM is valid: ");
+
+			PrintErrorStatus(true);
+
+			ImGui::Text("\t- Dimensions power of 2: ");
+
+
+			PrintErrorStatus(true);
+
+			ImGui::Text("\t- Has mip maps: ");
+
+
+			PrintErrorStatus(true);
+
+			ImGui::Separator();
+
+			ImGui::Text("%s", selected.path);
+
+			constexpr const char* _kColumnTableSelectedNames[] = {
+				"Info",
+				"Settings",
+				"Preview"
+			};
+
+			constexpr u32 _kColumnTableSelectedSize = sizeof(_kColumnTableSelectedNames) / sizeof(_kColumnTableSelectedNames[0]);
+
+			ImGui::BeginTable("##TETV2", _kColumnTableSelectedSize);
+
+			for (u32 i = 0; i < _kColumnTableSelectedSize; ++i)
+			{
+				ImGui::TableSetupColumn(_kColumnTableSelectedNames[i]);
+			}
+
+			ImGui::TableHeadersRow();
+
+			ImGui::TableNextRow();
+
+			for (u32 column_id = 0; column_id < _kColumnTableSelectedSize; ++column_id)
+			{
+				ImGui::TableSetColumnIndex(u32(column_id));
+
+				switch (column_id)
+				{
+				case 0:
+				{
+
+					if (g_imgui_texture_editor.is_selected_metadata_loaded)
+					{
+						ImGui::Text("Width: %d", g_imgui_texture_editor.selected_metadata.width);
+						ImGui::Text("Height: %d", g_imgui_texture_editor.selected_metadata.height);
+
+						if (GRHI->APILevel == D3D9 || GRHI->APILevel == D3D11)
+						{
+#ifdef IXR_WINDOWS
+							ImGui::Text("Format: %s", dxgi_format_to_string((DXGI_FORMAT)g_imgui_texture_editor.selected_metadata.format));
+#endif
+						}
+						else
+						{
+							R_ASSERT(false, "todo: others -> provide implemenetation");
+						}
+					}
+					else
+					{
+						ImGui::Text("Loading...");
+					}
+
+					break;
+				}
+				case 1:
+				{
+
+					if (g_imgui_texture_editor.is_selected_thm_data_loaded)
+					{
+
+					}
+					else
+					{
+						ImGui::Text("Loading...");
+					}
+
+					break;
+				}
+				case 2:
+				{
+					if (g_imgui_texture_editor.is_selected_preview_loaded)
+					{
+
+					}
+					else
+					{
+						ImGui::Text("Loading...");
+					}
+
+					break;
+				}
+				}
+			}
+
+			ImGui::EndTable();
 		}
 
 		ImGui::End();
