@@ -906,6 +906,11 @@ LPCSTR translate_string(LPCSTR str)
 	return *g_pStringTable->ParseStringFromScript(str);
 }
 
+LPCSTR current_language()
+{
+	return g_pStringTable->LangName().c_str();
+}
+
 bool has_active_tutotial()
 {
 	return (g_tutorial!=nullptr);
@@ -1838,6 +1843,7 @@ void CLevel::script_register(lua_State *L)
 			def("has_active_tutorial",	&has_active_tutotial),
 			def("active_tutorial_name", &tutorial_name),
 			def("translate_string",		&translate_string),
+			def("current_language",		&current_language),
 			def("reload_language", &ReloadLanguage),
 			def("world2ui", &World2Ui),
 			def("jump_level", &jump_level)
