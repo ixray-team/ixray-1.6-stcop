@@ -36,7 +36,7 @@ function main_menu:InitControls()
 	self:SetWndRect	(Frect():set(0,0,1024,768))
 
     self.main_xml:InitStatic("background", self)
-    self.shniaga = self.main_xml:InitMMShniaga("shniaga_wnd", self);
+    self.shniaga = self.main_xml:InitMMShniaga("shniaga_wnd", self)
 
 	self.message_box = CUIMessageBoxEx()
 	self:Register(self.message_box, "msg_box")
@@ -46,12 +46,15 @@ function main_menu:InitControls()
 	_ver:TextControl():SetText("ver. " .. mm:GetGSVer())
 	
 	-- IX-Ray start
-	self.eng_lang_btn = self.main_xml:Init3tButton("english_lang", self)
-	self:Register(self.eng_lang_btn, "english_lang")
+	if self.main_xml:NodeExist("english_lang", 0) then
+		self.eng_lang_btn = self.main_xml:Init3tButton("english_lang", self)
+		self:Register(self.eng_lang_btn, "english_lang")
+	end
 	
-	self.ru_lang_btn = self.main_xml:Init3tButton("russian_lang", self)
-	self:Register(self.ru_lang_btn, "russian_lang")
-
+	if self.main_xml:NodeExist("russian_lang", 0) then
+		self.ru_lang_btn = self.main_xml:Init3tButton("russian_lang", self)
+		self:Register(self.ru_lang_btn, "russian_lang")
+	end
 	SendScriptCallback("main_menu_on_init_controlls", self)
 	-- IX-Ray end
 end
@@ -74,17 +77,10 @@ function main_menu:InitCallBacks()
 	self:AddCallback("btn_load",        ui_events.BUTTON_CLICKED,				self.OnButton_load_clicked,			self)
 	-- save
 	self:AddCallback("btn_save",		ui_events.BUTTON_CLICKED,				self.OnButton_save_clicked,			self)
-	
 	-- multiplayer
 	if (IsSupportMP()) then -- IX-Ray: Optional multiplayer check
-		self:AddCallback("btn_net_game",	ui_events.BUTTON_CLICKED,				self.OnButton_network_game_clicked,	self)
-		self:AddCallback("btn_internet",	ui_events.BUTTON_CLICKED,				self.OnButton_internet_clicked,		self)
-		self:AddCallback("btn_localnet",	ui_events.BUTTON_CLICKED,				self.OnButton_localnet_clicked,		self)
 		self:AddCallback("btn_multiplayer", ui_events.BUTTON_CLICKED,				self.OnButton_multiplayer_clicked,	self)
 	end
-
-	self:AddCallback("btn_logout",		ui_events.BUTTON_CLICKED,				self.OnButton_logout_clicked,		self)
-
 	-- quit
 	self:AddCallback("btn_quit",		ui_events.BUTTON_CLICKED,				self.OnButton_quit_clicked,			self)
 	self:AddCallback("btn_quit_to_mm",	ui_events.BUTTON_CLICKED,				self.OnButton_disconnect_clicked,	self)
@@ -287,13 +283,7 @@ function main_menu:OnButton_load_clicked()
 	self:Show(false)
 end
 
-function main_menu:OnButton_network_game_clicked()
-	self.shniaga:ShowPage(CUIMMShniaga.epi_new_network_game)
-end
-
 function main_menu:OnButton_multiplayer_clicked()
-	-- assert(self.gs_profile)
-
 	if not(self.mp_dlg) then
         self.mp_dlg = ui_mp_main.mp_main()
         self.mp_dlg.owner = self
@@ -304,50 +294,6 @@ function main_menu:OnButton_multiplayer_clicked()
 
     self:HideDialog()
 	self:Show(false)
-
-	local console			= get_console()
-	console:execute			("check_for_updates 0")
-end
-
-function main_menu:OnButton_logout_clicked()
-	-- assert(self.gs_profile)
-	self.shniaga:ShowPage(CUIMMShniaga.epi_new_network_game) --fake
-	self.l_mgr:logout()
-	self.gs_profile = nil
-	self.mp_dlg		= nil
-	self.shniaga:SetPage(CUIMMShniaga.epi_main, "ui_mm_main.xml", "menu_main")
-	self.shniaga:ShowPage(CUIMMShniaga.epi_main)
-end
-
-function main_menu:OnButton_internet_clicked()
-    if not(self.gs_dlg) then
-        self.gs_dlg = ui_mm_mp_gamespy.gamespy_page()
-        self.gs_dlg.owner = self
-    end
-    self.gs_dlg:ShowLoginPage()
-    self.gs_dlg:ShowDialog(true)
-
-	self:HideDialog()
-	self:Show(false)
-
-	local console			= get_console()
-	console:execute			("check_for_updates 0")
-end
-
-function main_menu:OnButton_localnet_clicked()
-	if not(self.ln_dlg) then
-        self.ln_dlg = ui_mm_mp_localnet.localnet_page()
-        self.ln_dlg.owner = self
-        self.ln_dlg.lp_nickname:SetText(self.l_mgr:get_nick_from_registry())
-        self.ln_dlg.lp_check_remember_me:SetCheck(self.l_mgr:get_remember_me_from_registry())
-    end
-    self.ln_dlg:ShowDialog(true)
-
-	self:HideDialog()
-	self:Show(false)
-
-	local console			= get_console()
-	console:execute			("check_for_updates 0")
 end
 
 function main_menu:Dispatch(cmd, param)  --virtual function
