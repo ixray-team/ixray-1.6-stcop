@@ -55,6 +55,9 @@ float4 main(PSInput I) : SV_Target
     float depth = P.z;
     float deltaDepth = direction.z;
 
+    P = mul(m_invV, float4(P, 1.0f));
+    direction = mul(m_invV, direction);
+
     float4 current = mul(m_shadow_sun[2], float4(P, 1.0f));
     float4 delta = mul(m_shadow_sun[2], float4(direction, 0.0f));
 
@@ -78,12 +81,12 @@ float4 main(PSInput I) : SV_Target
         current -= delta;
     }
 
-    float fSturation = dot(normalize(P), -Ldynamic_dir.xyz);
+    float fSturation = dot(O.View, -Ldynamic_dir.xyz);
 
     //	Normalize dot product to
     fSturation = 0.4f * fSturation + 0.6f;
 
-    float fog = saturate(length(P.xyz) * fog_params.w + fog_params.x);
+    float fog = saturate(O.ViewDist * fog_params.w + fog_params.x);
     res = lerp(res, max_density, fog);
     res *= fSturation;
 
