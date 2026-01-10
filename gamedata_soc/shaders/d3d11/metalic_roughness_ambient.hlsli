@@ -3,11 +3,26 @@
 
 #include "common.hlsli"
 
-float2 EpicGamesEnvBRDFApprox(float NdotV, float Roughness)
+//fitted for height-correlated smith
+float2 EpicGamesEnvBRDFApprox(float NdotV, float roughness)
 {
-	float4 R = Roughness * float4(-1, -0.0275, -0.572, 0.022) + float4(1, 0.0425, 1.04, -0.04);
-	float A004 = min(R.x * R.x, exp2(-9.28 * NdotV)) * R.x + R.y;
-	return float2(-1.04, 1.04) * A004 + R.zw;
+    //clamped cuz of extreme spike
+    NdotV = min(NdotV, 0.998);
+
+    float nsqr = NdotV * NdotV;
+    float rsqr = roughness * roughness;
+    
+    float4 fac = float4(0.0187, 1.0133, 1.0000, 1.0000) +
+    float4(1.9496, -2.4717, -0.0333, 2.0508) * NdotV +
+    float4(1.2265, -1.2172, -1.3097, 0.2342) * roughness +
+    float4(-7.6907, 3.4300, 0.5972, -26.9406) * NdotV * roughness +
+    float4(18.3314, 1.4794, 19.3537, 11.1429) * nsqr +
+    float4(-0.2894, 0.5564, 1.5052, 7.0828) * rsqr +
+    float4(-19.3056, -2.2456, -28.2302, 18.5470) * nsqr * roughness +
+    float4(7.0144, -1.8934, 1.3307, 50.6469) * NdotV * rsqr +
+    float4(1.5728, 1.3618, 15.2939, -63.3557) * nsqr * rsqr;
+    
+    return saturate(fac.xy / fac.zw);
 }
 
 float3 CompureDiffuseIrradance(float3 N, float3 Hemi)
@@ -153,4 +168,5 @@ float3 AmbientLighting(float3 View, float3 Normal, float3 Color, float Metalness
 #endif
 }
 #endif
+
 
