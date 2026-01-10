@@ -1,0 +1,27 @@
+{
+  "eyebrow": "Addon · Immersive",
+  "title": "Immersive Add-ons",
+  "subtitle": "Example addon data. Replace with real immersive assets.",
+  "labels": {
+    "view": "Download / Open",
+    "soon": "Coming soon"
+  },
+  "mods": [
+    {
+      "id": "legs",
+      "title": "Legs Addon",
+      "description": "This addon fixes one of the most noticeable visual flaws of the original game — the missing legs of the protagonist. Now, when you look down, you'll see legs that match your selected suit.",
+      "author": "IX-Ray Team",
+      "link": "https://example.com/addons/legs",
+      "image": "https://dummyimage.com/640x360/0f172a/e5e7eb&text=legs"
+    },
+    {
+      "id": "puddles",
+      "title": "Puddles Addon 2.1",
+      "description": "The addon contains 3d puddles placed on the locations of the original game Call of Pripyat. Compatible with all mods and does not require adaptations.",
+      "author": "IX-Ray Team, MSR",
+      "link": "https://example.com/addons/puddles",
+      "image": "https://dummyimage.com/640x360/0f172a/e5e7eb&text=puddles"
+    }
+  ]
+}
