@@ -80,10 +80,10 @@ public:
 	virtual void rmNormal();
 	virtual u32 memory_usage();
 
-	virtual void                    BeforeWorldRender() ; // ����� ����������� ����
-	virtual void                    AfterWorldRender() ; // ����� ���������� ���� (�� UI)
+	virtual void                    BeforeWorldRender() ; // Перед рендерингом мира
+	virtual void                    AfterWorldRender() ; // После рендеринга мира (до UI)
 
-	virtual void					ChangeMark(LPCSTR mark) ; // ������ ���� ��������� �� ���������� �� ��������
+	virtual void					ChangeMark(LPCSTR mark) ; // Каждый кадр проверяем не поменялась ли текстура
 	virtual u32                     active_phase();
 
 	virtual void Render();
@@ -92,6 +92,7 @@ public:
 
 
 	IRHISurface* load_texture(LPCSTR fname, u32& msize, bool bStaging = false) override { return nullptr; };
+	bool get_texture_metadata(LPCSTR absolute_path, RHITextureMetadata* p_data) override { return false; }
 	virtual void ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer);
 
 	
