@@ -406,10 +406,12 @@ struct CImGuiTextureEditor
 		kReadSettings,
 		kWriteSettings,
 		kReadAll,
-		kUpdateSelected,
 		kShutdownThread,
 		kLoadTooltipPreview,
 		kUnloadResources,
+		kLoadMetadataOfSelected,
+		kLoadPreviewOfSelected,
+		kLoadTHMOfSelected,
 		kFilterQuery,
 		kInvalid = -1
 	};
@@ -455,14 +457,6 @@ struct CImGuiTextureEditor
 		string_path path;
 	};
 
-	struct STextureMetadata
-	{
-		int mipcount = -1;
-		int width = -1;
-		int height = -1;
-		int format = -1;
-	};
-
 	// todo: serialize to binary and read before init...
 	struct SUserSettings
 	{
@@ -478,7 +472,6 @@ struct CImGuiTextureEditor
 
 	bool is_filter_processing = false;
 
-	bool is_update_selected = false;
 	bool is_selected_metadata_loaded = false;
 	bool is_selected_thm_data_loaded = false;
 	bool is_selected_preview_loaded = false;
@@ -488,8 +481,7 @@ struct CImGuiTextureEditor
 	bool is_preview_tooltip_image_loaded = false;
 	bool is_preview_tooltip_image_load_started = false;
 
-	std::byte _memory_metadata[sizeof(STextureMetadata)];
-	STextureMetadata* pMetadataOfSelected = nullptr;
+	RHITextureMetadata selected_metadata;
 	IRHISurface* pTexturePreview = nullptr;
 	IRHIShaderResourceView* pTexturePreviewSRV = nullptr;
 	IRHISurface* pTextureSelected = nullptr;
