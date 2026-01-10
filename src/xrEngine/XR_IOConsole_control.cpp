@@ -60,13 +60,13 @@ void CConsole::prev_selected_tip() {
 
 void CConsole::check_prev_selected_tip() {
 	if (m_select_tip < 0)
+	{
 		m_select_tip = (u32)m_tips.size() - 1;
+		m_start_tip = std::max(m_select_tip - VIEW_TIPS_COUNT + 1, 0);
+	}
 
-
-	int top_cmd_pointer = m_select_tip - VIEW_TIPS_COUNT + 1;
-
-	top_cmd_pointer = std::max(top_cmd_pointer, 0);
-	m_start_tip = std::max(top_cmd_pointer, m_start_tip);
+	m_select_tip = std::max(m_select_tip, 0);
+	m_start_tip = std::min(m_start_tip, m_select_tip);
 }
 
 void CConsole::reset_selected_tip() {
