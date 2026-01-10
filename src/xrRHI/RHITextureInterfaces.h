@@ -84,12 +84,12 @@ class IRHITexture
 {
 public:
 	virtual ~IRHITexture() = default;
-	
+
 	virtual void AddRef() = 0;
 	virtual u32 Release() = 0;
-	
+
 	virtual void* GetRawTexture() = 0;
-	
+
 	virtual u32 GetWidth() const = 0;
 	virtual u32 GetHeight() const = 0;
 	virtual u32 GetDepth() const = 0;
@@ -102,18 +102,25 @@ public:
 	virtual ERHI_USAGE GetUsage() const = 0;
 };
 
+struct RHITextureMetadata
+{
+	u32 width = 0;
+	u32 height = 0;
+	int format = (int)ERHI_FORMAT::UNKNOWN;
+};
+
 class IRHISurface :
 	public IRHITexture
 {
 public:
 	virtual ~IRHISurface() = default;
-	
+
 	virtual IRHIShaderResourceView* GetShaderResourceView() = 0;
 	virtual IRHIRenderTargetView* GetRenderTargetView() = 0;
 	virtual IRHIDepthStencilView* GetDepthStencilView() = 0;
-	
+
 	virtual bool UpdateData(u32 mipLevel, u32 arrayLayer, const RHISubResource* subResource, const RHIBox& Box) = 0;
-	
+
 	virtual void* Lock(u32 mipLevel = 0, u32* pitch = nullptr) = 0;
 	virtual void Unlock() = 0;
 };
@@ -122,9 +129,9 @@ class IRHIShaderResourceView
 {
 public:
 	virtual ~IRHIShaderResourceView() = default;
-	
+
 	virtual void* GetRawSRV() = 0;
-	
+
 	virtual IRHISurface* GetSurface() = 0;
 
 	virtual void AddRef() = 0;
@@ -135,11 +142,11 @@ class IRHIRenderTargetView
 {
 public:
 	virtual ~IRHIRenderTargetView() = default;
-	
+
 	virtual void* GetRawRTV() = 0;
-	
+
 	virtual IRHISurface* GetSurface() = 0;
-	
+
 	virtual void AddRef() = 0;
 	virtual u32 Release() = 0;
 };
@@ -148,11 +155,11 @@ class IRHIDepthStencilView
 {
 public:
 	virtual ~IRHIDepthStencilView() = default;
-	
+
 	virtual void* GetRawDSV() = 0;
-	
+
 	virtual IRHISurface* GetSurface() = 0;
-	
+
 	virtual void AddRef() = 0;
 	virtual u32 Release() = 0;
 	virtual ERHI_DSV_DIMENSION GetDimension() const = 0;
@@ -174,7 +181,8 @@ struct RHITextureDesc
 
 	RHITextureDesc() = default;
 	RHITextureDesc(u32 width, u32 height, ERHI_FORMAT format)
-		: Width(width), Height(height), Format(format) {}
+		: Width(width), Height(height), Format(format) {
+	}
 };
 
 class IRHIUnorderedAccessView
