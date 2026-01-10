@@ -444,7 +444,11 @@ void UIObjectTool::OnItemFocused(ListItem* item)
 
 			m_RealTexture = new CTexture;
 			m_RealTexture->surface_set(Surface);
-			Surface->Release();
+
+			if (Surface != nullptr)
+			{
+				Surface->Release();
+			}
 
 			PropItemVec Info;
 			m_Thm->FillInfo(Info);
