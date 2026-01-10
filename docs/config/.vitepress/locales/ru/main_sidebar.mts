@@ -104,6 +104,53 @@ export const mainSidebar: DefaultTheme.Sidebar = [
     ],
   },
   {
+    text: 'IXR Framework (LUA Фреймворк)',
+    collapsed: false,
+    items: [
+      { text: 'Описание основного функционала', link: '/scripting/ixr-framework/general-info' },
+      { text: 'Структура файлов', link: '/scripting/ixr-framework/files' },
+      { text: 'Приступая к работе', link: '/scripting/ixr-framework/guide' },
+      { text: 'Модули', link: '/scripting/ixr-framework/modules' },
+      {
+      items: [
+          { text: 'IXR STORAGE<br>(Модуль хранилища)', link: '/scripting/ixr-framework/modules/ixr_storage' },
+          { text: 'IXR REGISTRY<br>(Модуль реестра)', link: '/scripting/ixr-framework/modules/ixr_registry' },
+          { text: 'IXR AUTOLOADER<br>(Модуль автозагрузки)', link: '/scripting/ixr-framework/modules/ixr_autoloader' },
+          { text: 'IXR SIGNALS<br>(Модуль сигналов)', link: '/scripting/ixr-framework/modules/ixr_signals' },
+          { text: 'IXR OPTIONS<br>(Модуль опций)', link: '/scripting/ixr-framework/modules/ixr_options' },
+          { text: 'IXR TRIGGERS<br>(Модуль триггеров)', link: '/scripting/ixr-framework/modules/ixr_triggers' },
+          { text: 'IXR TIMERS<br>(Модуль таймеров)', link: '/scripting/ixr-framework/modules/ixr_timers' },
+        ],
+      },
+      { text: 'Утилиты', link: '/scripting/ixr-framework/utils' },
+      {
+      items: [
+        { text: 'Callable utils', link: '/scripting/ixr-framework/utils/ffx_callable_utils' },
+        { text: 'Compare utils', link: '/scripting/ixr-framework/utils/ffx_compare_utils' },
+        { text: 'Crypto utils', link: '/scripting/ixr-framework/utils/ffx_crypto_utils' },
+        { text: 'Dump utils', link: '/scripting/ixr-framework/utils/ffx_dump_utils' },
+        { text: 'IO utils', link: '/scripting/ixr-framework/utils/ffx_io_utils' },
+        { text: 'LTX utils', link: '/scripting/ixr-framework/utils/ffx_ltx_utils' },
+        { text: 'Math utils', link: '/scripting/ixr-framework/utils/ffx_math_utils' },
+        { text: 'Object utils', link: '/scripting/ixr-framework/utils/ffx_object_utils' },
+        { text: 'Path utils', link: '/scripting/ixr-framework/utils/ffx_path_utils' },
+        { text: 'Sound utils', link: '/scripting/ixr-framework/utils/ffx_sound_utils' },
+        { text: 'Spawn utils', link: '/scripting/ixr-framework/utils/ffx_spawn_utils' },
+        { text: 'Table utils', link: '/scripting/ixr-framework/utils/ffx_table_utils' },
+        { text: 'Vector utils', link: '/scripting/ixr-framework/utils/ffx_vector_utils' },
+      ]
+    },
+    { text: 'Библиотеки', link: '/scripting/ixr-framework/libs' },
+      {
+      items: [
+        { text: 'Base64', link: '/scripting/ixr-framework/libs/ffx_base64_lib' },
+        { text: 'Json', link: '/scripting/ixr-framework/libs/ffx_json_lib' },
+        { text: 'Random', link: '/scripting/ixr-framework/libs/ffx_random_lib' },
+      ]
+    },
+    ],
+  },
+  {
     text: 'Графика',
     collapsed: false,
     items: [
