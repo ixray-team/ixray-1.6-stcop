@@ -160,8 +160,8 @@ void EditorLuaInit()
     if (FS.exist(jsonSnippetsPath))
     {
         auto file = FS.r_open(jsonSnippetsPath);
-        xr_string temp;
-        file->r_string(temp);
+        xr_string temp((char*)file->pointer(), file->length());
+
         jsonArray = json::parse(temp);
         FS.r_close(file);
     }
