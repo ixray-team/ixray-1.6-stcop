@@ -45,6 +45,10 @@ bool OptixContext::Initialize()
 	options.logCallbackFunction = &OptixLogCallback;
 	options.logCallbackLevel = 4;
 
+#ifdef DEBUG
+	options.validationMode = OPTIX_DEVICE_CONTEXT_VALIDATION_MODE_ALL;
+#endif
+
 	// В этом режиме OptiX требует НЕ nullptr
 	OPTIX_CHECK(optixDeviceContextCreate(cuCtx, &options, &optixContext));
 
@@ -101,11 +105,11 @@ void OptixContext::CreatePipeline(const char* ptxCode)
 	moduleCompileOptions.debugLevel = OPTIX_COMPILE_DEBUG_LEVEL_DEFAULT;
 
 	OptixPipelineCompileOptions pipelineCompileOptions = {};
-	pipelineCompileOptions.traversableGraphFlags = OPTIX_TRAVERSABLE_GRAPH_FLAG_ALLOW_SINGLE_GAS;
+	pipelineCompileOptions.traversableGraphFlags = OPTIX_TRAVERSABLE_GRAPH_FLAG_ALLOW_ANY;
 	pipelineCompileOptions.usesMotionBlur = false;
 	
 	// Todo Сделать где то глобальным параметром через DEFINE
-	pipelineCompileOptions.numPayloadValues = 4;	// se7kills (Важное влияет на количество аргументов OptixTrace)
+	pipelineCompileOptions.numPayloadValues = 2;	// se7kills (Важное влияет на количество аргументов OptixTrace)
 	pipelineCompileOptions.numAttributeValues = 2;
 	pipelineCompileOptions.exceptionFlags = OPTIX_EXCEPTION_FLAG_NONE;
 	pipelineCompileOptions.pipelineLaunchParamsVariableName = "g_params";		// Переменная куда запишется struct OPTICK_Params
