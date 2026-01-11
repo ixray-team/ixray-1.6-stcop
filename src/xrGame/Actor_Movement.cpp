@@ -18,6 +18,8 @@
 #include "CustomOutfit.h"
 #include "ActorBackpack.h"
 
+#include "../xrScripts/script_callback_ex.h"
+
 #ifdef DEBUG
 #include "PHDebug.h"
 #endif
@@ -77,6 +79,11 @@ void CActor::g_cl_ValidateMState(float dt, u32 mstate_wf)
 		m_bJumpKeyPressed	=	TRUE;
 		m_fJumpTime			=	s_fJumpTime;
 		mstate_real			&=~	(mcFall|mcJump);
+
+		callback(GameObject::eOnActorJumpEnd)(
+			character_physics_support()->movement()->gcontact_Power,
+			Position()
+		);
 	}
 	if ((mstate_wf&mcJump)==0)	
 		m_bJumpKeyPressed	=	FALSE;
@@ -220,6 +227,8 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 			//уменьшить силу игрока из-за выполненого прыжка
 			if (!GodMode())
 				conditions().ConditionJump(inventory().TotalWeight() / MaxCarryWeight());
+
+			callback(GameObject::eOnActorJumpBegin)(Position());
 		}
 
 		// mask input into "real" state
