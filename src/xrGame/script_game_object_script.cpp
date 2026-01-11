@@ -95,7 +95,11 @@ void CScriptGameObject::script_register(lua_State *L)
 				value("task_state",					int(GameObject::eTaskStateChange)),
 				value("take_item_from_box",			int(GameObject::eInvBoxItemTake)),
 				value("weapon_no_ammo",				int(GameObject::eWeaponNoAmmoAvailable)),
-		
+
+				value("on_actor_hit_fall",			int(GameObject::eFallHit)),
+				value("on_actor_jump_begin",		int(GameObject::eOnActorJumpBegin)),
+				value("on_actor_jump_end",			int(GameObject::eOnActorJumpEnd)),
+
 				//weapon
 				value("weapon_fired",				int(GameObject::eOnWeaponFired)),
 				value("weapon_jammed",				int(GameObject::eOnWeaponJammed)),
