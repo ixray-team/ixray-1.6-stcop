@@ -52,6 +52,10 @@ namespace GameObject {
 		eInvBoxItemTake,
 		eWeaponNoAmmoAvailable,
 
+		eFallHit,
+		eOnActorJumpBegin,
+		eOnActorJumpEnd,
+
 		eKeyPress,
 		eKeyRelease,
 		eKeyHold,
