@@ -4,7 +4,7 @@
 
 #include "Vector3HW.h"
  
-bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, OptixMeshBuffers& outBuffers)
+bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, OptixMeshBuffers& outBuffers, CUstream stream)
 {
     if (vertices.empty() || triangles.empty()) return false;
  
@@ -68,7 +68,7 @@ bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, OptixMeshBuffer
     OPTIX_CHECK(  optixAccelBuild
     (
         context,
-        0, // CUDA stream
+        stream, // CUDA stream
         &accelOptions,
         &buildInput,
         1,
@@ -79,6 +79,9 @@ bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, OptixMeshBuffer
         &outBuffers.blasHandle,
         &emitDesc, 1
     ));
+
+    CUDA_CHECK(cudaStreamSynchronize(stream));
+
     // 9. Узнаём размер скомпактированной структуры
     uint64_t compactedSize = 0;
     CUDA_CHECK(cudaMemcpy(&compactedSize, reinterpret_cast<void*>(d_compactedSize), sizeof(uint64_t), cudaMemcpyDeviceToHost));
@@ -94,13 +97,15 @@ bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, OptixMeshBuffer
         OptixTraversableHandle compactedHandle;
         OPTIX_CHECK(optixAccelCompact(
             context,
-            0, // stream
+            stream, // stream
             outBuffers.blasHandle,
             d_compactedBuffer,
             compactedSize,
             &compactedHandle
         ));
-    
+
+        CUDA_CHECK(cudaStreamSynchronize(stream));
+
         // Освобождаем старый буфер
         CUDA_CHECK(cudaFree(reinterpret_cast<void*>(outBuffers.blasBuffer)));
     
@@ -116,6 +121,11 @@ bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, OptixMeshBuffer
 
 bool OptixGeometryBuilder::BuildTLAS(OptixDeviceContext context, OptixMeshBuffers& outScene, CUstream stream)
 {
+    if (outScene.blasHandle == 0) {
+        Msg("! ERROR: Invalid BLAS handle");
+        return false;
+    }
+
     // 1. Строим TLAS (один экземпляр BLAS)
     OptixInstance instance = {};
     float transform[12] = {
@@ -145,7 +155,7 @@ bool OptixGeometryBuilder::BuildTLAS(OptixDeviceContext context, OptixMeshBuffer
 
     // 4. Настройка параметров сборки
     OptixAccelBuildOptions buildOptions = {};
-    buildOptions.buildFlags = OPTIX_BUILD_FLAG_NONE; // OPTIX_BUILD_FLAG_PREFER_FAST_TRACE
+    buildOptions.buildFlags = OPTIX_BUILD_FLAG_PREFER_FAST_TRACE; // OPTIX_BUILD_FLAG_PREFER_FAST_TRACE
     buildOptions.operation  = OPTIX_BUILD_OPERATION_BUILD;
 
     // 5. Вычисление требуемой памяти
@@ -170,6 +180,8 @@ bool OptixGeometryBuilder::BuildTLAS(OptixDeviceContext context, OptixMeshBuffer
         &outScene.tlasHandle,
         nullptr, 0
      ));
+
+    CUDA_CHECK(cudaStreamSynchronize(stream));
 
     CUDA_CHECK(cudaFree(reinterpret_cast<void*>(d_tempBuffer)));
     CUDA_CHECK(cudaFree(reinterpret_cast<void*>(d_instances)));
@@ -248,7 +260,7 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
     Msg("*[GPU Accel Structure] Remove Dublicate Face : %llu to %llu", pFaces, geometryBuilder.triangles.size());
 
     // 3. Строим BLAS
-    if (!geometryBuilder.BuildBLAS(context, outScene))          return false;
+    if (!geometryBuilder.BuildBLAS(context, outScene, stream))          return false;
   
     // 4. Строим TLAS
     if (!geometryBuilder.BuildTLAS(context, outScene, stream))  return false;
