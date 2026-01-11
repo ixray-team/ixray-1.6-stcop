@@ -2577,7 +2577,7 @@ LPCSTR CScriptGameObject::GetCutsceneVisual()
 	{
 		Msg("! GetCutsceneVisual(): method applicable only for actor!");
 	}
-	return nullptr;
+	return "";
 }
 
 void CScriptGameObject::SetInvulnerable(bool value)
