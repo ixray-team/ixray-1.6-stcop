@@ -23,6 +23,7 @@ function anomaly_zone_binder:__init(obj) super(obj)
 	if filename then
 		self.ini = ini_file(filename)
 	end
+	
 	local ini = self.ini
 
 	self.artefact_ways_by_id = {}
@@ -134,6 +135,9 @@ function anomaly_zone_binder:__init(obj) super(obj)
 	self.max_artefacts = self.max_artefacts_table[self.cur_layer]
 	self.applying_force_xz = self.forces_table[self.cur_layer].xz
 	self.applying_force_y = self.forces_table[self.cur_layer].y
+	
+	
+	SendScriptCallback("anomaly_zone_on_init", self, obj)
 end
 
 function anomaly_zone_binder:disable_anomaly_fields()
@@ -270,6 +274,7 @@ function anomaly_zone_binder:spawn_artefact_randomly()
 	parent_zones_by_artefact_id[artefact_obj.id] = self
 	self.spawned_count = self.spawned_count + 1
 
+	SendScriptCallback("anomaly_zone_on_spawn_artefact_randomly", self, self.object, artefact_obj)
 end
 
 function anomaly_zone_binder:get_artefact_path()
@@ -330,6 +335,9 @@ end
 
 function anomaly_zone_binder:update(delta)
 	object_binder.update(self, delta)
+	
+	SendScriptCallback("anomaly_zone_on_update", self, self.object)
+	
  	if (not self.turned_off) and (self.spawned_count < self.max_artefacts) and self.respawn_artefacts then
  		local cnt = self.respawn_tries
  		if cnt > self.max_artefacts - self.spawned_count then
@@ -388,6 +396,8 @@ function anomaly_zone_binder:on_artefact_take(obj)
 	self.artefact_points_by_id[id] = nil
 	self.spawned_count = self.spawned_count - 1
 
+	SendScriptCallback("anomaly_zone_on_artefact_take", self, self.object, id, obj, parent_zones_by_artefact_id)
+
 	pda.change_anomalies_names()
 end
 
@@ -432,6 +442,7 @@ function anomaly_zone_binder:save(thread)
 		thread:w_u8(-1)
 	end
 	thread:w_bool(self.turned_off)
+	SendScriptCallback("anomaly_zone_on_save", self, self.object, thread, parent_zones_by_artefact_id)
 	set_save_marker(thread, "save", true, "anomaly_zone_binder")
 end
 -- Loading anomaly zone
@@ -466,5 +477,6 @@ function anomaly_zone_binder:load(thread)
 		self.cur_layer = "layer_"..layer_num
 	end
 	self.turned_off = thread:r_bool()
+	SendScriptCallback("anomaly_zone_on_load", self, self.object, thread, parent_zones_by_artefact_id)
 	set_save_marker(thread, "load", true, "anomaly_zone_binder")
 end
