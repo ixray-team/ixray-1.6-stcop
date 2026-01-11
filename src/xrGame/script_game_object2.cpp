@@ -227,7 +227,7 @@ const CDangerObject* CScriptGameObject::GetBestDanger()
 {
 	if (const CCustomMonster* monster = object().cast_custom_monster())
 	{
-		if (!monster->memory().danger().selected())
+		if (monster->memory().danger().selected())
 		{
 			return monster->memory().danger().selected();
 		}
