@@ -8,6 +8,7 @@
 #include "../inventory_item.h"
 #include "../xrEngine/XR_IOConsole.h"
 #include "../xrEngine/string_table.h"
+#include "../xrEngine/ETextureParams.h"
 #include "../player_hud.h"
 #include "ai_space.h"
 #include "../../xrUI/ui_base.h"
@@ -544,7 +545,46 @@ void TextureEditor_WorkerThread(const ime_request_t& req)
 		{
 			if (g_imgui_texture_editor.is_selected_thm_data_loaded == false)
 			{
+				if (g_imgui_texture_editor.pTHMSelected == nullptr)
+				{
+					g_imgui_texture_editor.pTHMSelected = new STextureParams();
+				}
+
+				if (g_imgui_texture_editor.pTHMSelected)
+				{
+					g_imgui_texture_editor.pTHMSelected->Clear();
+				}
+
 				u32 selected_id = req.payload;
+
+				const CImGuiTextureEditor::STextureEntry& tex = g_imgui_texture_editor.textures[selected_id];
+
+				R_ASSERT(std::string_view(tex.path).empty() == false && "must be valid here");
+
+				std::filesystem::path thm_path = tex.path;
+				thm_path.replace_extension(".thm");
+
+				const auto& casted_thm_path = thm_path.string();
+				if (FS.exist(casted_thm_path.c_str()))
+				{
+					IReader* pReader = FS.r_open(casted_thm_path.c_str());
+
+					if (pReader)
+					{
+						if (g_imgui_texture_editor.pTHMSelected)
+						{
+							bool load_status = g_imgui_texture_editor.pTHMSelected->Load(*pReader);
+
+							if (load_status == false)
+							{
+								g_imgui_texture_editor.pTHMSelected->Clear();
+							}
+						}
+
+
+						pReader->close();
+					}
+				}
 
 				g_imgui_texture_editor.is_selected_thm_data_loaded = true;
 			}
@@ -989,6 +1029,11 @@ void RenderTextureEditor()
 											g_imgui_editors_state.requests.push(req);
 
 											req.request_type = static_cast<u32>(CImGuiTextureEditor::eRequestType::kLoadPreviewOfSelected);
+											req.payload = g_imgui_texture_editor.filter_query[row];
+
+											g_imgui_editors_state.requests.push(req);
+
+											req.request_type = static_cast<u32>(CImGuiTextureEditor::eRequestType::kLoadTHMOfSelected);
 											req.payload = g_imgui_texture_editor.filter_query[row];
 
 											g_imgui_editors_state.requests.push(req);
