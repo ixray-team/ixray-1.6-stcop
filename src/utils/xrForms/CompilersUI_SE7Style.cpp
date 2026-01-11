@@ -42,7 +42,7 @@ void InitializeUIData()
 
 int current_format = 0;
 static bool autoScroll = true;
-static bool hideLogSection = true;
+static bool hideLogSection = false;
 static bool ResizeMaximal = false;
 
 void DrawCompilerConfig();
@@ -358,24 +358,6 @@ void DrawLCConfig()
 		ImGui::Checkbox("LMAP places by se7kills", &gCompilerMode.LC_LmapsAlternative);
 		ImGui::Checkbox("SoC LMaps", &gCompilerMode.LC_legacyLM);
 
-		ImGui::Separator();
-		ImGui::Checkbox("Overload Prebuild", &gCompilerMode.IsOverloadedSettings);
-
-		ImGui::BeginDisabled(!gCompilerMode.IsOverloadedSettings);
-		
-			ImGui::SetNextItemWidth(100);
-			ImGui::Combo("JitterMU", &item_current_jitter_mu, itemsJitterMU, 7);
-			ImGui::SetNextItemWidth(100);
-			ImGui::Combo("Jitter", &item_current_jitter, itemsJitter, 3);
- 			ImGui::SetNextItemWidth(100);
-			ImGui::InputFloat("Pixels", &gCompilerMode.LC_Pixels);
- 			ImGui::SetNextItemWidth(100);
-			ImGui::InputFloat("Dist Weld", &gCompilerMode.WeldDistance);
-
-			gCompilerMode.LC_JSample   = atoi(itemsJitter[item_current_jitter]);
-			gCompilerMode.LC_JSampleMU = atoi(itemsJitterMU[item_current_jitter_mu]);
-	 
-			ImGui::EndDisabled();
 		ImGui::EndDisabled();
 		
 		ImGui::PopID();
@@ -439,15 +421,44 @@ extern bool SaveCForm;
 void DrawCompilerConfig()
 {
 	ImGui::Checkbox("Silent mode", &gCompilerMode.Silent);
-	ImGui::Checkbox("Use Intel Embree", &gCompilerMode.Embree);
-#ifdef LCCUDA_BUILD
-	ImGui::Checkbox("Use Nvidia CUDA", &gCompilerMode.CUDA);
-#endif
-	ImGui::Separator();
 
-	ImGui::TextColored(ImVec4(RGBAColor(0, 255, 0, 255)), "(This Only For Build BVH)");
-	ImGui::Checkbox("Embree Compacted", &gCompilerMode.EmbreeBVHCompact);
-	ImGui::Checkbox("Embree Robust", &gCompilerMode.EmbreeBVHRobust);
+	ImGui::PushID("LightPreset");
+	{
+		static int RadioID = -1;
+		if (RadioID < 0)
+		{
+			RadioID = 0;
+			RadioID += 1 * (int)gCompilerMode.Embree;
+			RadioID += 2 * (int)gCompilerMode.CUDA;
+		}
+
+		ImGui::RadioButton("Use OPCODE", &RadioID, 0);
+		ImGui::RadioButton("Use Intel Embree", &RadioID, 1);
+#ifdef LCCUDA_BUILD
+		ImGui::RadioButton("Use Nvidia CUDA", &RadioID, 2);
+#endif
+
+		switch (RadioID)
+		{
+		case 0: gCompilerMode.CUDA = false; gCompilerMode.Embree = false; break;
+		case 1: gCompilerMode.CUDA = false; gCompilerMode.Embree = true; break;
+		case 2: gCompilerMode.CUDA = true; gCompilerMode.Embree = false; break;
+		default: break;
+		}
+	}
+	ImGui::PopID();
+
+	if (gCompilerMode.Embree)
+	{
+	}
+
+	ImGui::Separator();
+	
+	ImGui::BeginDisabled(!gCompilerMode.Embree);
+		ImGui::TextColored(ImVec4(RGBAColor(0, 255, 0, 255)), "(This Only For Build BVH)");
+		ImGui::Checkbox("Embree Compacted", &gCompilerMode.EmbreeBVHCompact);
+		ImGui::Checkbox("Embree Robust", &gCompilerMode.EmbreeBVHRobust);
+	ImGui::EndDisabled();
 
 	ImGui::Separator();
 
@@ -462,6 +473,25 @@ void DrawCompilerConfig()
 	{
 		gCompilerMode.ThreadsPerWork = std::min((u32)gCompilerMode.ThreadsPerWork, CPU::ID().n_threads);
 	}
+
+	ImGui::Separator();
+	ImGui::Checkbox("Overload Prebuild", &gCompilerMode.IsOverloadedSettings);
+
+	ImGui::BeginDisabled(!gCompilerMode.IsOverloadedSettings);
+
+	ImGui::SetNextItemWidth(100);
+	ImGui::Combo("JitterMU", &item_current_jitter_mu, itemsJitterMU, 7);
+	ImGui::SetNextItemWidth(100);
+	ImGui::Combo("Jitter", &item_current_jitter, itemsJitter, 3);
+	ImGui::SetNextItemWidth(100);
+	ImGui::InputFloat("Pixels", &gCompilerMode.LC_Pixels);
+	ImGui::SetNextItemWidth(100);
+	ImGui::InputFloat("Dist Weld", &gCompilerMode.WeldDistance);
+
+	gCompilerMode.LC_JSample = atoi(itemsJitter[item_current_jitter]);
+	gCompilerMode.LC_JSampleMU = atoi(itemsJitterMU[item_current_jitter_mu]);
+
+	ImGui::EndDisabled();
 }
 
 void getStatusInfo(IterationStatus status, xr_string& text, ImVec4& textCol, char& icon)
