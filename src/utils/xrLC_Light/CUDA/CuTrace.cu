@@ -123,9 +123,7 @@ __device__ float RunOptickTask(unsigned int TaskID, Hardware_Vector& P, Hardware
 	const float RayTime = 0;
 
 	unsigned int Energy = 80;
- 	
-	// hits
-	unsigned int CountHits = 0;
+
 	
 	Hit hits[64];
 	g_params.rays[TaskID].Hits = hits;
@@ -139,7 +137,7 @@ __device__ float RunOptickTask(unsigned int TaskID, Hardware_Vector& P, Hardware
 		OptixVisibilityMask(255),
 		OPTIX_RAY_FLAG_ENFORCE_ANYHIT,
 		0, 1, 0,
-		TaskID, Energy, CountHits
+		TaskID, Energy
 	);
 
 	// Баг был тут поченил
@@ -259,9 +257,12 @@ __device__ void LightPoint(int index)
 	{
 		Hardware_Lighting& L = g_params.lights[i];
 
-		if ((LP_dont_hemi & flags) && L.light_type == eHemi ||
-			(LP_dont_rgb & flags) && L.light_type == eRGB ||
-			(LP_dont_sun & flags) && L.light_type == eSun)			continue;
+		if (((LP_dont_hemi & flags) && L.light_type == eHemi) ||
+			((LP_dont_rgb & flags) && L.light_type == eRGB) ||
+			((LP_dont_sun & flags) && L.light_type == eSun))
+		{
+			continue;
+		}
 
 		RayIndex++;
 		CalculatePoint(g_params.rays[index], L, index);
