@@ -6,6 +6,8 @@
 #include "../xrEngine/string_table.h"
 #include <clsid_game.h>
 
+struct STextureParams;
+
 struct clsid_manager
 {
 	void add_mp_stuff(CLASS_ID id);
@@ -426,13 +428,6 @@ struct CImGuiTextureEditor
 		kInvalid = u32(-1)
 	};
 
-	static_assert(std::numeric_limits<u16>::max() > sizeof(string_path) / sizeof(std::remove_extent_t<string_path>), "supposed to fit in u16, because version of file header is u16. Workaround as re-type type of version field in header or use another base type for path");
-
-	struct SPreviewFileHeader
-	{
-		u32 entries_count = 0;
-	};
-
 	// don't store metadata only on when selected
 	struct STextureEntry
 	{
@@ -486,6 +481,8 @@ struct CImGuiTextureEditor
 	IRHIShaderResourceView* pTexturePreviewSRV = nullptr;
 	IRHISurface* pTextureSelected = nullptr;
 	IRHIShaderResourceView* pTextureSelectedSRV = nullptr;
+	STextureParams* pTHMSelected = nullptr;
+
 
 	u8 search_frame_count = 0;
 
