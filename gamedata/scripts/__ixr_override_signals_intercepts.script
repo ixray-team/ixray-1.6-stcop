@@ -83,6 +83,11 @@ function configure(_ref_ixr_signals)
 	_ref_ixr_signals.add_intercept("actor_on_spawn",                   		{})	
 	_ref_ixr_signals.add_intercept("actor_on_init",                   		{"binder_ref"}) 
 	_ref_ixr_signals.add_intercept("actor_on_reinit",                 		{"binder_ref"}) 
+	
+	_ref_ixr_signals.add_intercept("on_actor_hit_fall",                 	{"binder_ref", "g_contact_health_lost", "g_contact_power"}) 
+	_ref_ixr_signals.add_intercept("on_actor_jump_begin",                 	{"binder_ref", "actor_position"}) 
+	_ref_ixr_signals.add_intercept("on_actor_jump_end",                 	{"binder_ref", "g_contact_power", "actor_position"}) 
+	
 	_ref_ixr_signals.add_intercept("actor_on_save",                   		{"net_packet"}) 
 	_ref_ixr_signals.add_intercept("actor_on_load",                   		{"net_packet"}) 
 	_ref_ixr_signals.add_intercept("actor_on_level_changing",              	{}) 

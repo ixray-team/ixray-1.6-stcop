@@ -45,9 +45,12 @@ local all_callbacks = {
 	["on_detach_vehicle"]		= "actor_on_detach_vehicle",
 	["on_use_vehicle"]			= "actor_on_use_vehicle",
 	
+	["on_actor_hit_fall"]		= "actor_on_hit_fall",
+	["on_actor_jump_begin"]		= "actor_on_jump_begin",
+	["on_actor_jump_end"]		= "actor_on_jump_end",
+	
 	["hud_animation_end"]		= "actor_on_hud_animation_end",
 }
-
 
 -- IXR FFx0001 Упрощенная система подписки и отписки от коллбеков
 function manage_callbacks(_ref_binder, is_set)
@@ -289,6 +292,20 @@ function actor_binder:task_callback(_task, _state)
 	end
 	task_manager.task_callback(_task, _state)
 end
+
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:actor_on_hit_fall(g_contact_health_lost, g_contact_power)
+	SendScriptCallback("actor_on_hit_fall", self, g_contact_health_lost, g_contact_power) -- IX-Ray
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:actor_on_jump_begin(actor_position)
+	SendScriptCallback("actor_on_jump_begin", self, actor_position) -- IX-Ray
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:actor_on_jump_end(g_contact_power, actor_position)
+	SendScriptCallback("actor_on_jump_end", self, g_contact_power, actor_position) -- IX-Ray
+end
+----------------------------------------------------------------------------------------------------------------------
 
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:on_death(victim, who)
