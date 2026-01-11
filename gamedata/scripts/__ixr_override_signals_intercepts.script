@@ -151,6 +151,13 @@ function configure(_ref_ixr_signals)
 	_ref_ixr_signals.add_intercept("monster_on_actor_use_callback",     	{"monster_game_object", "who_game_object"}) 
 	_ref_ixr_signals.add_intercept("monster_on_use",     					{"monster_game_object", "who_game_object", "is_alive_bool"}) 
 
+	_ref_ixr_signals.add_intercept("anomaly_zone_on_init",     				{"binder_class", "anomaly_zone_game_object"}) 
+	_ref_ixr_signals.add_intercept("anomaly_zone_on_spawn_artefact_randomly", {"binder_class", "anomaly_zone_game_object", "artefact_server_object"}) 
+	_ref_ixr_signals.add_intercept("anomaly_zone_on_update",     			{"binder_class", "anomaly_zone_game_object"}) 
+	_ref_ixr_signals.add_intercept("anomaly_zone_on_artefact_take",     	{"binder_class", "anomaly_zone_game_object", "artefact_id", "artefact_object", "parent_zones_by_artefact_id"})
+	_ref_ixr_signals.add_intercept("anomaly_zone_on_save",    				{"binder_class", "anomaly_zone_game_object", "thread", "parent_zones_by_artefact_id"}) 
+	_ref_ixr_signals.add_intercept("anomaly_zone_on_load",    				{"binder_class", "anomaly_zone_game_object", "thread", "parent_zones_by_artefact_id"}) 
+	
 	_ref_ixr_signals.add_intercept("physic_object_on_init",     			{"game_object"}) 
 	_ref_ixr_signals.add_intercept("physic_object_on_death",     			{"game_object", "game_object"}) 
 	_ref_ixr_signals.add_intercept("physic_object_on_use",     				{"physic_game_object", "who_game_object"}) 
