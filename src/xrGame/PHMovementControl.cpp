@@ -18,11 +18,13 @@
 #include "CaptureBoneCallback.h"
 #include "Level.h"
 #include "PhysicsShellHolder.h"
+#include "Actor.h"
 #ifdef DEBUG
 #include "PHDebug.h"
 #endif
 
 #include "../Include/xrRender/Kinematics.h"
+#include "../xrScripts/script_callback_ex.h"
 
 #define GROUND_FRICTION	10.0f
 #define AIR_FRICTION	0.01f
@@ -199,12 +201,20 @@ void CPHMovementControl::UpdateCollisionDamage( )
 
 // calc new
 	gcontact_Power				= fContactSpeed/fMaxCrashSpeed;
-	if (fContactSpeed>fMinCrashSpeed) 
+	if (fContactSpeed > fMinCrashSpeed) 
 	{
-			gcontact_HealthLost = 
-			((fContactSpeed-fMinCrashSpeed))/(fMaxCrashSpeed-fMinCrashSpeed);
+			gcontact_HealthLost = ((fContactSpeed - fMinCrashSpeed)) / (fMaxCrashSpeed - fMinCrashSpeed);
+
 			VERIFY( m_character );
 			m_character->SetHitType( DefineCollisionHitType( m_character->LastMaterialIDX() ) );
+
+			if (m_character->PhysicsRefObject() == Actor())
+			{
+				Actor()->callback(GameObject::eFallHit)(
+					gcontact_HealthLost,
+					gcontact_Power
+				);
+			}
 	}
 }
 
