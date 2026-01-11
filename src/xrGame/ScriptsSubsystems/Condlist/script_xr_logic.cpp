@@ -946,7 +946,7 @@ const char* CScriptXRParser::pickSectionFromCondlist(CCondlistEmbedded& condlist
 		if (section_name == ixray::kReservedWordNever)
 		{
 			bNeedToBreak = true;
-			return nullptr;
+			return 0;
 		}
 		else
 		{
@@ -955,7 +955,7 @@ const char* CScriptXRParser::pickSectionFromCondlist(CCondlistEmbedded& condlist
 		}
 	}
 
-	return nullptr;
+	return 0;
 }
 
 
