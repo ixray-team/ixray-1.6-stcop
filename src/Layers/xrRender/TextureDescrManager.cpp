@@ -1,7 +1,6 @@
 #include "stdafx.h"
 
 #include "TextureDescrManager.h"
-#include "ETextureParams.h"
 
 // eye-params
 float					r__dtex_range	= 50;

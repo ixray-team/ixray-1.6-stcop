@@ -2,7 +2,7 @@
 #define _TextureDescrManager_included_
 
 #pragma once
-#include "ETextureParams.h"
+#include "../../xrEngine/ETextureParams.h"
 
 class cl_dt_scaler;
 
