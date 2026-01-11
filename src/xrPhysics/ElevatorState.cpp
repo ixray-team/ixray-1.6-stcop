@@ -107,13 +107,15 @@ void CElevatorState::SwitchState(Estate new_state)
 		Msg("%s", dbg_state[new_state]);
 #endif
 	VERIFY(m_character);
-	if ((m_state != clbClimbingUp && m_state != clbClimbingDown) &&
-		(new_state == clbClimbingUp || new_state == clbClimbingDown)
-		)dBodySetGravityMode(m_character->get_body(), 0);
+ 	if ((m_state != clbClimbingUp && m_state != clbClimbingDown) && (new_state == clbClimbingUp || new_state == clbClimbingDown))
+	{
+		dBodySetGravityMode(m_character->get_body(), 0);
+	}
 
-	if ((new_state != clbClimbingUp && new_state != clbClimbingDown) &&
-		(m_state == clbClimbingUp || m_state == clbClimbingDown)
-		)dBodySetGravityMode(m_character->get_body(), 1);
+	if ((new_state != clbClimbingUp && new_state != clbClimbingDown) && (m_state == clbClimbingUp || m_state == clbClimbingDown))
+	{
+		dBodySetGravityMode(m_character->get_body(), 1);
+	}
 
 	NewState();
 	m_state = new_state;
@@ -121,14 +123,14 @@ void CElevatorState::SwitchState(Estate new_state)
 
 void CElevatorState::UpdateStNone()
 {
-	VERIFY(m_ladder&&m_character);
-	Fvector d;m_ladder->DToPlain(m_character,d);
-	if( m_ladder->BeforeLadder(m_character)&& 
-		m_ladder->InTouch(m_character)&&
-		dXZDotNormalized( d, m_character->CamDir() ) > look_angle_cosine )
+	VERIFY(m_ladder && m_character);
+	Fvector d; m_ladder->DToPlain(m_character, d);
+	if (m_ladder->BeforeLadder(m_character) &&
+		m_ladder->InTouch(m_character) &&
+		dXZDotNormalized(d, m_character->CamDir()) > look_angle_cosine)
 	{
 
-		if(ClimbDirection()>0.f)
+		if (ClimbDirection() > 0.f)
 		{
 			SwitchState(clbClimbingUp);
 		}
@@ -140,15 +142,15 @@ void CElevatorState::UpdateStNone()
 	else
 	{
 		Fvector temp;
-		float d_to_lower=m_ladder->DDLowerP(m_character,temp),d_to_upper=m_ladder->DDUpperP(m_character,temp);
-		if(d_to_lower<d_to_upper)
+		float d_to_lower = m_ladder->DDLowerP(m_character, temp), d_to_upper = m_ladder->DDUpperP(m_character, temp);
+		if (d_to_lower < d_to_upper)
 		{
-			if(getting_on_dist+m_character->FootRadius() > d_to_lower)
+			if (getting_on_dist + m_character->FootRadius() > d_to_lower)
 				SwitchState(clbNearDown);
 		}
 		else
 		{
-			if(getting_on_dist+m_character->FootRadius() > d_to_upper)
+			if (getting_on_dist + m_character->FootRadius() > d_to_upper)
 				SwitchState(clbNearUp);
 		}
 	}

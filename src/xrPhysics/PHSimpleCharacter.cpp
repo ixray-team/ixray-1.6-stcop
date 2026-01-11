@@ -632,7 +632,7 @@ void CPHSimpleCharacter::PhTune(dReal step)
 	const dReal* velocity=dBodyGetLinearVel(m_body);
 	dReal linear_vel_smag=dDOT(velocity,velocity);
 
-	bool NewLoseControl = b_lose_control && (b_on_ground && m_ground_contact_normal[1] > M_SQRT1_2 / 2.f || fis_zero(linear_vel_smag || m_elevator_state.ClimbingState()));
+	bool NewLoseControl = b_lose_control && (b_on_ground && m_ground_contact_normal[1] > M_SQRT1_2 / 2.f || fis_zero(linear_vel_smag) || m_elevator_state.ClimbingState());
 
 	if (NewLoseControl)
 		b_lose_control = false;
@@ -1114,11 +1114,15 @@ void CPHSimpleCharacter::OnRender()
 
 EEnvironment CPHSimpleCharacter::CheckInvironment()
 {
-	if (b_lose_control)
+	if (b_lose_control && !m_elevator_state.ClimbingState())
+	{
 		return peInAir;
-
+	}
 	else if (m_elevator_state.ClimbingState())
+	{
+		b_lose_control = false;
 		return peAtWall;
+	}
 
 	return peOnGround;
 }
