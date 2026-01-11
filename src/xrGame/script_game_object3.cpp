@@ -1381,7 +1381,7 @@ void CScriptGameObject::info_clear()
 	if (g_dedicated_server)
 	{
 		return;
-}
+	}
 
 #ifdef DEBUG
 	DBG().object_info(&object(),this).clear();
