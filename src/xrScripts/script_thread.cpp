@@ -8,9 +8,6 @@
 
 #include "stdafx.h"
 #include "pch_script.h"
-extern "C" {
-	#include "lua/lua.h"
-};
 #include "script_engine.h"
 #include "script_thread.h"
 

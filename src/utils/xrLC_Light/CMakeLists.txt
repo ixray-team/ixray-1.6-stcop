@@ -169,7 +169,7 @@ set(FREEIMAGE ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.FreeImage.WinMerge.
 target_include_directories(xrLC_Light PUBLIC "${FREEIMAGE}/native/include/")
 add_custom_command(TARGET xrLC_Light POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FREEIMAGE}/native/bin/${NUGET_PACKAGE_PLATFORM}/Release/FreeImage.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}/meshoptimizer.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+#	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}/meshoptimizer.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Embree.Runtimes.win-x64.4.3.3/runtimes/win-x64/native/Release/embree4.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 )
 target_link_libraries(xrLC_Light PUBLIC "${FREEIMAGE}/native/lib/${NUGET_PACKAGE_PLATFORM}/Release/FreeImage.lib")

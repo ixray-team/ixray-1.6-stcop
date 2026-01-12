@@ -1,6 +1,6 @@
 include(FetchContent)
 
-set(LUA_INCLUDE_DIR "${IXRAY_SDK_INC}/lua/" CACHE PATH "" FORCE)
+set(LUA_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/src/3rd-party/lua/" CACHE PATH "" FORCE)
 set(LUA_LIBRARIES "${LUAJIT_LIB}" CACHE FILEPATH "" FORCE)
 set(LUA_LIBRARY "${LUAJIT_LIB}" CACHE FILEPATH "" FORCE)
 
@@ -20,7 +20,7 @@ else()
     set(LUABIND_DEBUG_SCRIPTS OFF CACHE BOOL "" FORCE)
 endif()
 
-set(LUA_INCLUDE_DIR "${IXRAY_SDK_INC}/lua/")
+set(LUA_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/src/3rd-party/lua/")
 set(LUA_LIB ${LUAJIT_LIB})
 
 FetchContent_MakeAvailable(luabind)

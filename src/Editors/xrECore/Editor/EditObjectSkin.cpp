@@ -12,7 +12,7 @@
 #include "ui_main.h"
 
 // FX: link sphere symbols 
-#include <freemagic/MgcSphere.h>
+#include "../../3rd-party/MagicSoftware/FreeMagic/Include/MgcSphere.h"
 
 const u32 color_bone_sel_color	=0xFFFFFFFF;
 const u32 color_bone_norm_color	=0xFFFFFF00;
@@ -220,8 +220,7 @@ int CEditableObject::GetSelectedBones(BoneVec& sel_bones)
 }
 
 //----------------------------------------------------
-
-#include <freemagic/MgcCont3DMinSphere.h>
+#include "../../3rd-party/MagicSoftware/FreeMagic/Include/MgcCont3DMinSphere.h"
 #include "ExportSkeleton.h"
 
 BOOL	f_valid		(float f)
@@ -288,8 +287,7 @@ void ComputeSphere(Fsphere &B, FvectorVec& V)
 	}
 }
 //----------------------------------------------------
-
-#include <freemagic/MgcCont3DCylinder.h>
+#include "../../3rd-party/MagicSoftware/FreeMagic/Include/MgcCont3DCylinder.h"
 void ComputeCylinder(Fcylinder& C, Fobb& B, FvectorVec& V)
 {
     if (V.size()<3) 	{ C.invalidate(); return; }

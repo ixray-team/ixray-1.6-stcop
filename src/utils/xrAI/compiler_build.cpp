@@ -2,12 +2,7 @@
 #include "compiler.h"
 
 #include "cl_intersect.h"
-
 #include "motion_simulator.h"
-
-#pragma warning(disable:4995)
-#include <freemagic/MgcAppr3DPlaneFit.h>
-#pragma warning(default:4995)
 
 IC void SnapXZ	(Fvector&	V)
 {
