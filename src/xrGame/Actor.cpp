@@ -797,12 +797,14 @@ void	CActor::Hit(SHit* pHDS)
 #endif
 
 	//---------------------------------------------------------------
+	CObject* pLastHittingWeapon = nullptr;
+
 	if(		(Level().CurrentViewEntity()==this) && 
 			!g_dedicated_server && 
 			(HDS.hit_type == ALife::eHitTypeFireWound) )
 	{
 		CObject* pLastHitter			= Level().Objects.net_Find(m_iLastHitterID);
-		CObject* pLastHittingWeapon		= Level().Objects.net_Find(m_iLastHittingWeaponID);
+		pLastHittingWeapon				= Level().Objects.net_Find(m_iLastHittingWeaponID);
 		HitSector						(pLastHitter, pLastHittingWeapon);
 	}
 
@@ -863,7 +865,17 @@ void	CActor::Hit(SHit* pHDS)
 			}
 
 			/* AVO: send script callback*/
-			callback(GameObject::eHit)(lua_game_object(), HDS.damage(), HDS.direction(), HDS.who != nullptr ? HDS.who->cast_game_object()->lua_game_object() : nullptr, HDS.boneID);
+			callback(GameObject::eHit)(
+				lua_game_object(),
+				HDS.damage(),
+				HDS.direction(),
+				HDS.who != nullptr ? HDS.who->cast_game_object()->lua_game_object() : nullptr,
+				HDS.boneID,
+				HDS.hit_type,
+				HDS.impulse,
+				pLastHittingWeapon != nullptr ? pLastHittingWeapon->cast_game_object()->lua_game_object() : nullptr,
+				CalcHitDamage(&HDS)
+			);
 
 			HitArtefactsCondition(HDS);
 			inherited::Hit(&HDS);
@@ -909,6 +921,80 @@ void	CActor::Hit(SHit* pHDS)
 			Game().m_WeaponUsageStatistic->OnExplosionKill	(ps, HDS);
 		}
 	}
+}
+
+
+float CActor::CalcHitDamage(SHit* pHDS)
+{
+	CEntityCondition &actorCondition = conditions();
+	bool bAddWound = pHDS->add_wound;
+	float hit_power_org = pHDS->damage();
+	float hit_power = hit_power_org;
+	hit_power = actorCondition.HitOutfitEffect(hit_power_org, pHDS->hit_type, pHDS->boneID, pHDS->armor_piercing, pHDS->add_wound);
+	float m_fHealthLost = 0.f;
+
+	switch (pHDS->hit_type)
+	{
+		case ALife::eHitTypeTelepatic:
+			hit_power -= actorCondition.m_fBoostTelepaticProtection;
+			if (hit_power < 0.f)
+			{
+				hit_power = 0.f;
+			}
+			hit_power *= actorCondition.GetHitImmunity(pHDS->hit_type) - actorCondition.m_fBoostTelepaticImmunity;
+			m_fHealthLost = hit_power * actorCondition.m_fHealthHitPart;
+			break;
+		case ALife::eHitTypeLightBurn:
+		case ALife::eHitTypeBurn:
+			hit_power *= actorCondition.GetHitImmunity(ALife::eHitTypeBurn) - actorCondition.m_fBoostBurnImmunity;
+			m_fHealthLost = hit_power * actorCondition.m_fHealthHitPart * actorCondition.m_fHitBoneScale;
+			break;
+		case ALife::eHitTypeChemicalBurn:
+			hit_power -= actorCondition.m_fBoostChemicalBurnProtection;
+			if (hit_power < 0.f)
+			{
+				hit_power = 0.f;
+			}
+			hit_power *= actorCondition.GetHitImmunity(pHDS->hit_type) - actorCondition.m_fBoostChemicalBurnImmunity;
+			m_fHealthLost = hit_power * actorCondition.m_fHealthHitPart;
+			break;
+		case ALife::eHitTypeShock:
+			hit_power *= actorCondition.GetHitImmunity(pHDS->hit_type) - actorCondition.m_fBoostShockImmunity;
+			m_fHealthLost = hit_power * actorCondition.m_fHealthHitPart;
+			break;
+		case ALife::eHitTypeRadiation:
+			hit_power -= actorCondition.m_fBoostRadiationProtection;
+			if (hit_power < 0.f)
+			{
+				hit_power = 0.f;
+			}
+			hit_power *= actorCondition.GetHitImmunity(pHDS->hit_type) - actorCondition.m_fBoostRadiationImmunity;
+			m_fHealthLost = hit_power;
+			break;
+		case ALife::eHitTypeExplosion:
+			hit_power *= actorCondition.GetHitImmunity(pHDS->hit_type) - actorCondition.m_fBoostExplImmunity;
+			m_fHealthLost = hit_power * actorCondition.m_fHealthHitPart;
+			break;
+		case ALife::eHitTypeStrike:
+		case ALife::eHitTypePhysicStrike:
+			hit_power *= actorCondition.GetHitImmunity(pHDS->hit_type) - actorCondition.m_fBoostStrikeImmunity;
+			m_fHealthLost = hit_power * actorCondition.m_fHealthHitPart;
+			break;
+		case ALife::eHitTypeFireWound:
+			hit_power *= actorCondition.GetHitImmunity(pHDS->hit_type) - actorCondition.m_fBoostFireWoundImmunity;
+			m_fHealthLost = hit_power * actorCondition.m_fHealthHitPart * actorCondition.m_fHitBoneScale;
+			break;
+		case ALife::eHitTypeWound:
+			hit_power *= actorCondition.GetHitImmunity(pHDS->hit_type) - actorCondition.m_fBoostWoundImmunity;
+			m_fHealthLost = hit_power * actorCondition.m_fHealthHitPart * actorCondition.m_fHitBoneScale;
+			break;
+		default:
+		{
+			break;
+		}
+	}
+
+	return m_fHealthLost;
 }
 
 void CActor::HitMark	(float P, 
