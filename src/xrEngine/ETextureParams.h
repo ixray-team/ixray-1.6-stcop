@@ -179,7 +179,11 @@ struct ENGINE_API STextureParams
 };
 #pragma pack( pop )
 
-extern ENGINE_API xr_token tfmt_token[];
+extern ENGINE_API xr_token tfmt_token[12];
+extern ENGINE_API xr_token tmtl_token[6];
+extern ENGINE_API xr_token tparam_token[16];
+extern ENGINE_API xr_token ttype_token[6];
+extern ENGINE_API xr_token tbmode_token[4];
 
 //----------------------------------------------------
 #define THM_CHUNK_VERSION				0x0810
