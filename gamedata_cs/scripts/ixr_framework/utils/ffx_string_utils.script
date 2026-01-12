@@ -1,0 +1,78 @@
+--[[
+Description:
+  Returns the length of a string, or 0 if the input is nil or not provided.
+Parameters:
+  str (string or nil) - the string to measure.
+Returns: number - length of the string or 0.
+]]
+function get_length(str)
+	if not str or str == nil then
+		return 0
+	end
+	
+	return str:len()
+end
+
+--[[
+Description:
+  Trims leading and trailing whitespace from a string.
+Parameters:
+  s (string) - the string to trim.
+Returns: string - trimmed string.
+]]
+function trim(s)
+	return (string.gsub(s,"^%s*(.-)%s*$","%1"))
+end
+
+--[[
+Description:
+  Splits a string by a pattern, trims parts, and includes remainder if pattern found.
+Parameters:
+  str (string) - the string to split.
+  pattern (string) - the pattern to split by.
+Returns: table - array of trimmed string segments.
+]]
+function explode(str, pattern)
+	local tmp_table = {}
+	
+	if (type(str) ~= "string") then
+		return tmp_table
+	end
+	
+	for word, _pattern, start in split(str, pattern) do
+		tmp_table[#tmp_table + 1] = trim(word)
+		
+		if (start and _pattern == pattern) then
+		    tmp_table[#tmp_table + 1] = trim(str:sub(start))
+			break
+		end
+	end
+	
+	return tmp_table
+end
+
+--[[
+Description:
+  Iterator function to split a string by a pattern, returning segments and separators.
+Parameters:
+  str (string) - the string to split.
+  pattern (string or nil) - the pattern to split by; defaults to whitespace.
+Returns: function - iterator returning (segment, separator, next_start).
+]]
+function split(str, pattern)
+    local st, g = 1, str:gmatch("()(" .. (pattern or '%s+') .. ")")
+    
+    local function getter(segments, separators, separator, cap, ...)
+        st = separator and separators + #separator
+		
+        return str:sub(segments, (separators or 0) - 1), cap or separator, ...
+    end
+    
+    local function splitter()
+        if st then
+			return getter(st, g())
+		end
+    end
+    
+    return splitter
+end
