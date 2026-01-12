@@ -9,7 +9,6 @@ if(WIN32)
         "${ENGINE_FREETYPE}native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/freetype.dll"
     )
 else()
-    find_package(PkgConfig QUIET)
     if(PkgConfig_FOUND)
         pkg_check_modules(FREETYPE QUIET freetype2)
     endif()

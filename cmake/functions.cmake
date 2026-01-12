@@ -44,4 +44,27 @@ function(target_copy_dependency TARGET_NAME FILE_PATH)
     endif()
 endfunction()
 
+function(download_single_header url filename)
+    set(full_path "${EXTERNAL_INCLUDE_DIR}${filename}")
+    
+    if(NOT EXISTS "${full_path}")
+        message(STATUS "Downloading ${filename}...")
+        
+        file(DOWNLOAD 
+            "${url}" 
+            "${full_path}"
+            TLS_VERIFY ON
+            STATUS download_status
+            TIMEOUT 60
+        )
+        
+        list(GET download_status 0 status_code)
+        if(NOT status_code EQUAL 0)
+            message(WARNING "Failed to download ${filename}")
+        else()
+            message(STATUS "Successfully downloaded ${filename}")
+        endif()
+    endif()
+endfunction()
+
 find_package(PkgConfig QUIET)
