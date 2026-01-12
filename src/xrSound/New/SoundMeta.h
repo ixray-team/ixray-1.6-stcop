@@ -118,7 +118,7 @@ struct sound_source_public
     u8 reserved0;
     u16 game_type;
     u32 data_size;
-    u32 ref_count;
+    xr_atomic_u32 ref_count;
     u32 frames_total;
 
     float volume;

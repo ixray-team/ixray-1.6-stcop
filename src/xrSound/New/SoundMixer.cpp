@@ -483,7 +483,7 @@ Snd_AcquireSound(const char* name, bool fail_if_not_found)
 	}
 
 	auto& source = mixer.sources[name];
-	InterlockedIncrement(&source.pub.ref_count);
+	source.pub.ref_count++;
 }
 
 static void
@@ -496,7 +496,7 @@ Snd_ReleaseSound(const char* name)
 	R_ASSERT(mixer.sources.contains(name));
 	auto* source = &mixer.sources.at(name);
 	R_ASSERT(source->pub.ref_count);
-	InterlockedDecrement(&source->pub.ref_count);
+	source->pub.ref_count--;
 
 	if (source->pub.ref_count == 0) {
 		ov_clear(&source->file);

@@ -173,5 +173,5 @@ void XRay::Sound::Backend::ChangeDevice(u32 DeviceID)
 void XRay::Sound::Backend::Shutdown()
 {
     backend.is_running = FALSE;
-    WaitForSingleObject(backend.sound_thread, INFINITE);
+    Platform::WaitForSingleObject(backend.sound_thread);
 }
