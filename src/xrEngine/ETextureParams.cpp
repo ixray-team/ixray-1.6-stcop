@@ -152,6 +152,26 @@ static bool FindAndValidateChunk(IReader& F, u32 ID, bool& IncorrectChunk)
 	return dwSize;
 }
 
+STextureParams::STextureParams()
+{
+	Clear();
+}
+
+bool STextureParams::HasAlphaChannel()
+{
+	switch (fmt)
+	{
+	case tfADXT1:
+	case tfDXT3:
+	case tfDXT5:
+	case tf4444:
+	case tf1555:
+	case tfRGBA:
+		return TRUE;
+	default:
+		return FALSE;
+	}
+}
 bool STextureParams::Load(IReader& F)
 {
 	bool FoundedChunk = !!F.find_chunk(THM_CHUNK_TEXTUREPARAM);
