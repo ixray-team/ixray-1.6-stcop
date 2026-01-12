@@ -8,7 +8,7 @@
 
 
 #undef ENGINE_API
-#define ENGINE_API				// fake, to enable sharing with engine
+#define ENGINE_API __declspec(dllimport)
 //comment - ne figa oni ne sharyatsya
 
 #undef ECORE_API

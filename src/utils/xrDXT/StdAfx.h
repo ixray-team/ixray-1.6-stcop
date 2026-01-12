@@ -8,8 +8,8 @@
 #include "../../xrCore/xrCore.h"
 #include "xrDXT.h"
 
-#undef ENGINE_API
-#define ENGINE_API
+#define ENGINE_API __declspec(dllimport)
+
 #define XR_EPROPS_API
 #define ECORE_API
 #define NVTT_SHARED 1
