@@ -1,5 +1,5 @@
 #pragma once
-#include "../../Layers/xrRender/ETextureParams.h" 
+#include "../../xrEngine/ETextureParams.h" 
 
 struct b_BuildTexture :
 	public b_texture
