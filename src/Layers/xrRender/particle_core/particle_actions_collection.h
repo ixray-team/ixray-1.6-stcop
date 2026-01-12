@@ -3,6 +3,7 @@
 
 #include "particle_core.h"
 #include "../../xrEngine/ParticleAnimCurveInterface.h"
+#include "../../Include/xrRender/ParticleCustom.h"
 
 namespace PAPI{
 	enum class ParticleActionVersion

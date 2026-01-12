@@ -1,7 +1,6 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
 
-
 #include "ParticleEffectActions.h"
 #include "../particle_actions_collection.h"
 #include "../noise.h"

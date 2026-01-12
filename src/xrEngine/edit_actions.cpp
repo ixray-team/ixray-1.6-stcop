@@ -81,6 +81,8 @@ void type_pair::init(u32 dik, char c, char c_shift, bool b_translate)
 void type_pair::on_key_press(line_edit_control* const control)
 {
 	char c = 0;
+
+#ifdef IXR_WINDOWS
 	if (m_translate)
 	{
 		c = m_char;
@@ -104,6 +106,7 @@ void type_pair::on_key_press(line_edit_control* const control)
 		}
 	}
 	else
+#endif
 	{
 		c = m_char;
 		if (control->get_key_state(ks_Shift) != control->get_key_state(ks_CapsLock)) {
