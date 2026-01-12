@@ -170,6 +170,10 @@ public:
 	using WOUND_VECTOR = xr_vector<CWound*>;
 	using WOUND_VECTOR_IT = WOUND_VECTOR::iterator;
 
+	//изменение силы хита в зависимости от надетого костюма
+	//(только для InventoryOwner)
+	float					HitOutfitEffect(float hit_power, ALife::EHitType hit_type, s16 element, float ap, bool& add_wound);
+
 protected:
 	void					UpdateHealth			();
 	void					UpdatePower				();
@@ -178,10 +182,6 @@ protected:
 
 	void					UpdateEntityMorale		();
 
-
-	//изменение силы хита в зависимости от надетого костюма
-	//(только для InventoryOwner)
-	float					HitOutfitEffect			(float hit_power, ALife::EHitType hit_type, s16 element, float ap, bool& add_wound );
 	//изменение потери сил в зависимости от надетого костюма
 	float					HitPowerEffect			(float power_loss);
 	
@@ -236,6 +236,7 @@ protected:
 	float				m_fMinWoundSize;
 	bool				m_bIsBleeding;		//есть кровотечение
 
+public:
 	//части хита, затрачиваемые на уменьшение здоровья и силы
 	float				m_fHealthHitPart;
 	float				m_fPowerHitPart;
@@ -275,7 +276,6 @@ protected:
 	u16					m_iWhoID;
 
 	//для передачи параметров из DamageManager
-	float				m_fHitBoneScale;
 	float				m_fWoundBoneScale;
 
 	float				m_limping_threshold;
@@ -285,6 +285,8 @@ protected:
 	BOOSTER_MAP			m_booster_influences;
 
 public:
+	float				m_fHitBoneScale;
+
 	virtual void					reinit				();
 	
 	IC const	float				fdelta_time			() const 	{return		(m_fDeltaTime);			}
