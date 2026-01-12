@@ -44,7 +44,7 @@ local all_callbacks = {
 	["on_attach_vehicle"]		= "actor_on_attach_vehicle",
 	["on_detach_vehicle"]		= "actor_on_detach_vehicle",
 	["on_use_vehicle"]			= "actor_on_use_vehicle",
-	
+	["hit"]						= "actor_on_hit_callback",
 	["on_actor_hit_fall"]		= "actor_on_hit_fall",
 	["on_actor_jump_begin"]		= "actor_on_jump_begin",
 	["on_actor_jump_end"]		= "actor_on_jump_end",
@@ -304,6 +304,10 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:actor_on_jump_end(g_contact_power, actor_position)
 	SendScriptCallback("actor_on_jump_end", self, g_contact_power, actor_position) -- IX-Ray
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:actor_on_hit_callback(hitted_game_object, damage_number, direction_vector, who_game_object, bone_id_number, e_hit_type, impulse_number, p_last_hitting_weapon_game_object, health_lost_number)
+	SendScriptCallback("actor_on_hit_callback", self, hitted_game_object, damage_number, direction_vector, who_game_object, bone_id_number, e_hit_type, impulse_number, p_last_hitting_weapon_game_object, health_lost_number) -- IX-Ray
 end
 ----------------------------------------------------------------------------------------------------------------------
 
