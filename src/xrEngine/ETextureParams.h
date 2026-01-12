@@ -1,7 +1,7 @@
 #pragma once
-#ifdef _EDITOR
-#include "../Editors/Public/PropertiesListHelper.h"
-#endif
+
+class PropValue;
+class PropItem;
 
 #pragma pack(push,1)
 struct ENGINE_API STextureParams
@@ -164,22 +164,22 @@ struct ENGINE_API STextureParams
 	bool HasAlphaChannel();
 	bool Load (IReader& F);
 	void Save (IWriter& F);
-#ifdef _EDITOR
-	PropValue::TOnChange			OnTypeChangeEvent;
-	void 	OnTypeChange	(PropValue* v);
-	void 			FillProp		(LPCSTR base_name, PropItemVec& items, PropValue::TOnChange OnChangeEvent);
-	LPCSTR 			FormatString	();
-	u32 			MemoryUsage		(LPCSTR base_name);
-	BOOL			similar			(STextureParams& tp1, xr_vector<xr_string>& sel_params);
-	
-#endif
+
+	using TOnChange = fastdelegate::FastDelegate<void(PropValue*)>;
+	TOnChange OnTypeChangeEvent;
+
+	using TFillPropImpl = void(*)(STextureParams* ThisCall, LPCSTR base_name, xr_vector<PropItem*>& items, TOnChange OnChangeEvent);
+	static TFillPropImpl FillPropImpl;
+
+	void OnTypeChange	(PropValue* v);
+	void FillProp		(LPCSTR base_name, xr_vector<PropItem*>& items, TOnChange OnChangeEvent);
+	LPCSTR FormatString	();
+	u32 MemoryUsage		(LPCSTR base_name);
+	BOOL similar		(STextureParams& tp1, xr_vector<xr_string>& sel_params);
 };
 #pragma pack( pop )
 
-struct xr_token;
-extern xr_token	tparam_token[];
-extern xr_token	tfmt_token[];
-extern xr_token	ttype_token[];
+extern ENGINE_API xr_token tfmt_token[];
 
 //----------------------------------------------------
 #define THM_CHUNK_VERSION				0x0810

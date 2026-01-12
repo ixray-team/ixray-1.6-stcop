@@ -1,69 +1,22 @@
 #include "stdafx.h"
-          
-
 #include "ETextureParams.h"
 
-xr_token					tparam_token							[ ]={
-	{ "Advanced",			STextureParams::kMIPFilterAdvanced			},
-																		
-	{ "Point",				STextureParams::kMIPFilterPoint				},
-	{ "Box",				STextureParams::kMIPFilterBox				},
-	{ "Triangle",			STextureParams::kMIPFilterTriangle			},
-	{ "Quadratic",			STextureParams::kMIPFilterQuadratic			},
-	{ "Cubic",				STextureParams::kMIPFilterCubic				},
-																		
-	{ "Catrom",				STextureParams::kMIPFilterCatrom			},
-	{ "Mitchell",			STextureParams::kMIPFilterMitchell			},
-																		
-	{ "Gaussian",			STextureParams::kMIPFilterGaussian			},
-	{ "Sinc",				STextureParams::kMIPFilterSinc				},
-	{ "Bessel",				STextureParams::kMIPFilterBessel			},
-																		
-	{ "Hanning",			STextureParams::kMIPFilterHanning			},
-	{ "Hamming",			STextureParams::kMIPFilterHamming			},
-	{ "Blackman",			STextureParams::kMIPFilterBlackman			},
-	{ "Kaiser",				STextureParams::kMIPFilterKaiser			},
-	{ 0,					0											}
-};
+STextureParams::TFillPropImpl STextureParams::FillPropImpl;
 
-xr_token					ttype_token								[ ]={
-	{ "2D Texture",			STextureParams::ttImage						},
-	{ "Cube Map",  			STextureParams::ttCubeMap					},
-	{ "Bump Map",			STextureParams::ttBumpMap					},
-	{ "Normal Map",			STextureParams::ttNormalMap					},
-	{ "Terrain",			STextureParams::ttTerrain					},
-	{ 0,					0											}
-};
-
-xr_token					tfmt_token								[ ]={
-	{ "DXT1",				STextureParams::tfDXT1						},
-	{ "DXT1 Alpha",			STextureParams::tfADXT1						},
-	{ "DXT3",				STextureParams::tfDXT3						},
-	{ "DXT5",				STextureParams::tfDXT5						},
-	{ "DBC7",				STextureParams::tfBC7						},
-	{ "16 bit (1:5:5:5)",	STextureParams::tf1555						},
-	{ "16 bit (5:6:5)",		STextureParams::tf565						},
-	{ "32 bit (8:8:8:8)",	STextureParams::tfRGBA						},
-	{ "8 bit (alpha)",		STextureParams::tfA8						},
-	{ "8 bit (luminance)",	STextureParams::tfL8						},
-	{ "16 bit (alpha:luminance)",STextureParams::tfA8L8					},
-	{ 0,					0											}
-};
-
-xr_token					tmtl_token								[ ]={
-	{ "OrenNayar <-> Blin",	STextureParams::tmOrenNayar_Blin			},
-	{ "Blin <-> Phong",		STextureParams::tmBlin_Phong				},
-	{ "Phong <-> Metal",	STextureParams::tmPhong_Metal				},
-	{ "Metal <-> OrenNayar",STextureParams::tmMetal_OrenNayar			},
-	{ "PBR",                STextureParams::tmPBR_Material			    },
-	{ 0,					0											}
-};
-
-xr_token					tbmode_token							[ ]={
-	{ "None",				STextureParams::tbmNone						},
-	{ "Use",				STextureParams::tbmUse						},
-	{ "Use parallax",		STextureParams::tbmUseParallax				},
-	{ 0,					0											}
+ENGINE_API xr_token tfmt_token[] =
+{
+	{ "DXT1",				STextureParams::tfDXT1		},
+	{ "DXT1 Alpha",			STextureParams::tfADXT1		},
+	{ "DXT3",				STextureParams::tfDXT3		},
+	{ "DXT5",				STextureParams::tfDXT5		},
+	{ "DBC7",				STextureParams::tfBC7		},
+	{ "16 bit (1:5:5:5)",	STextureParams::tf1555		},
+	{ "16 bit (5:6:5)",		STextureParams::tf565		},
+	{ "32 bit (8:8:8:8)",	STextureParams::tfRGBA		},
+	{ "8 bit (alpha)",		STextureParams::tfA8		},
+	{ "8 bit (luminance)",	STextureParams::tfL8		},
+	{ "16 bit (alpha:luminance)",STextureParams::tfA8L8	},
+	{ 0,					0							}
 };
 
 static bool FindAndValidateChunk(IReader& F, u32 ID, bool& IncorrectChunk)
@@ -269,8 +222,6 @@ void STextureParams::Save(IWriter& F)
 	F.close_chunk	();
 }
 
-
-#ifdef _EDITOR
 void STextureParams::OnTypeChange(PropValue* prop)
 {
 	switch (type){
@@ -298,94 +249,22 @@ void STextureParams::OnTypeChange(PropValue* prop)
 		OnTypeChangeEvent(prop);
 }
 
-void STextureParams::FillProp(LPCSTR base_name, PropItemVec& items, PropValue::TOnChange on_type_change)
-{                             
-#if 1
-
-	OnTypeChangeEvent	            = on_type_change;
-	PropValue* P		            = PHelper().CreateToken32	(items, "Type",		(u32*)&type,		ttype_token);
-	P->OnChangeEvent.bind           (this,&STextureParams::OnTypeChange);
-	PHelper().CreateCaption			(items, "Source\\Width",			shared_str().printf("%d",width));
-	PHelper().CreateCaption			(items, "Source\\Height",			shared_str().printf("%d",height));
-	PHelper().CreateCaption			(items, "Source\\Alpha",			HasAlpha	()?"present":"absent"); 
-	switch (type){
-	case ttImage:	
-	case ttCubeMap:	
-		PHelper().CreateToken32		(items, "Format",	   				(u32*)&fmt, 		tfmt_token);
-
-		PHelper().CreateFlag32		(items, "MipMaps\\Enabled",			&flags,				flGenerateMipMaps);
-		PHelper().CreateToken32		(items, "MipMaps\\Filter",			(u32*)&mip_filter,	tparam_token);
-
-		P = PHelper().CreateToken32	(items, "Bump\\Mode",				(u32*)&bump_mode,	tbmode_token);
-		P->OnChangeEvent.bind(this,&STextureParams::OnTypeChange);
-		if (tbmUse==bump_mode || tbmUseParallax==bump_mode)
-		{
-			AnsiString path;
-			path = base_name;
-			PHelper().CreateChoose	(items, "Bump\\Texture",			&bump_name,			smTexture, path.c_str());
-		}
-		
-		PHelper().CreateFlag32		(items, "Details\\Use As Diffuse",	&flags,				flDiffuseDetail);
-		PHelper().CreateFlag32		(items, "Details\\Use As Bump (R2)",&flags,				flBumpDetail);
-		PHelper().CreateChoose		(items, "Details\\Texture",			&detail_name,		smTexture);
-		PHelper().CreateFloat	   	(items, "Details\\Scale",			&detail_scale,		0.1f,10000.f,0.1f,2);
-
-		PHelper().CreateToken32		(items, "Material\\Base",			(u32*)&material,	tmtl_token);
-		PHelper().CreateFloat	   	(items, "Material\\Weight",			&material_weight	);
-		
-//		PHelper().CreateFlag32		(items, "Flags\\Binary Alpha",		&flags,				flBinaryAlpha);
-		PHelper().CreateFlag32		(items, "Flags\\Dither",			&flags,				flDitherColor);
-		PHelper().CreateFlag32		(items, "Flags\\Dither Each MIP",	&flags,				flDitherEachMIPLevel);
-		PHelper().CreateFlag32		(items, "Flags\\Implicit Lighted",	&flags,				flImplicitLighted);
-
-		PHelper().CreateFlag32		(items, "Fade\\Enable Color",		&flags,				flFadeToColor);
-		PHelper().CreateFlag32		(items, "Fade\\Enabled Alpha",		&flags,				flFadeToAlpha);
-		PHelper().CreateU8			(items,	"Fade\\Delay 'n' MIP",		&fade_delay,		0,255);
-		PHelper().CreateU32			(items, "Fade\\% of color to fade in",&fade_amount,		0,100,0);
-		PHelper().CreateColor	   	(items, "Fade\\Color",				&fade_color			);
-		PHelper().CreateU8			(items,	"Fade\\Alpha",				((u8*)&fade_color)+3,0,255);
-
-		PHelper().CreateFlag32		(items, "Border\\Enabled Color",	&flags,				flColorBorder);
-		PHelper().CreateFlag32		(items, "Border\\Enabled Alpha",	&flags,				flAlphaBorder);
-		PHelper().CreateColor	   	(items, "Border\\Color",			&border_color		);
-	break;
-	case ttBumpMap:	
-		PHelper().CreateChoose		(items, "Bump\\Special NormalMap",	&ext_normal_map_name,smTexture,base_name);
-		PHelper().CreateFloat	   	(items, "Bump\\Virtual Height (m)",	&bump_virtual_height, 0.f, 0.1f, 0.001f, 3);
-	break;
-	case ttNormalMap:	
-		P = PHelper().CreateToken32	(items, "Format",	   				(u32*)&fmt, 		tfmt_token); P->Owner()->Enable(false);
-
-		PHelper().CreateFlag32		(items, "MipMaps\\Enabled",			&flags,				flGenerateMipMaps);
-		PHelper().CreateToken32		(items, "MipMaps\\Filter",			(u32*)&mip_filter,	tparam_token);
-	break;
-	case ttTerrain:	
-		P = PHelper().CreateToken32	(items, "Format",	   				(u32*)&fmt, 		tfmt_token); P->Owner()->Enable(false);
-
-		PHelper().CreateFlag32		(items, "Details\\Use As Diffuse",	&flags,				flDiffuseDetail);
-		PHelper().CreateFlag32		(items, "Details\\Use As Bump (R2)",&flags,				flBumpDetail);
-		PHelper().CreateChoose		(items, "Details\\Texture",			&detail_name,		smTexture);
-		PHelper().CreateFloat	   	(items, "Details\\Scale",			&detail_scale,		0.1f,10000.f,0.1f,2);
-
-		PHelper().CreateToken32		(items, "Material\\Base",			(u32*)&material,	tmtl_token);
-		PHelper().CreateFloat	   	(items, "Material\\Weight",			&material_weight	);
-
-		P = PHelper().CreateFlag32	(items, "Flags\\Implicit Lighted",	&flags,				flImplicitLighted);  P->Owner()->Enable(false);
-	break;
-	}
-#endif
+void STextureParams::FillProp(LPCSTR base_name, xr_vector<PropItem*>& items, TOnChange OnChangeEvent)
+{
+	VERIFY(FillPropImpl);
+	FillPropImpl(this, base_name, items, OnChangeEvent);
 }
 
-BOOL STextureParams::similar(STextureParams& tp1, xr_vector<AnsiString>& sel_params)
+BOOL STextureParams::similar(STextureParams& tp1, xr_vector<xr_string>& sel_params)
 {
 	BOOL res 				= TRUE;
 	
-	xr_vector<AnsiString>::iterator it = sel_params.begin();
-	xr_vector<AnsiString>::iterator it_e = sel_params.end();
+	xr_vector<xr_string>::iterator it = sel_params.begin();
+	xr_vector<xr_string>::iterator it_e = sel_params.end();
 
 	for(;it!=it_e;++it)
 	{
-	   const AnsiString& par_name = *it;
+	   const xr_string& par_name = *it;
 		if(par_name=="Type")
 		{
 			res = (type==tp1.type);
@@ -550,4 +429,3 @@ u32 STextureParams::MemoryUsage(LPCSTR base_name)
 	}
 	return mem_usage;
 }
-#endif
