@@ -453,7 +453,7 @@ void CUILevelMap::Draw()
 						sp->SetWndSize(sz);
 					}
 				}
-				else if(sp->m_scale_bounds.x > 0.0f)
+				else if(SpotScaling == eScalingDefault && sp->m_scale_bounds.x > 0.0f)
 					sp->SetVisible		(sp->m_scale_bounds.x<gmz);
 			}
 
