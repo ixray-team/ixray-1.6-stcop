@@ -14,8 +14,8 @@ void CCustomDetector::Load(LPCSTR section)
 {
 	inherited::Load(section);
 
-	m_fAfDetectRadius = pSettings->r_float(section, "af_radius");
-	m_fAfVisRadius = pSettings->r_float(section, "af_vis_radius");
+	m_fAfDetectRadius = READ_IF_EXISTS(pSettings, r_float, section, "af_radius", 0.0f);
+	m_fAfVisRadius = READ_IF_EXISTS(pSettings, r_float, section, "af_vis_radius", 0.0f);
 	m_artefacts.load(section, "af");
 }
 
