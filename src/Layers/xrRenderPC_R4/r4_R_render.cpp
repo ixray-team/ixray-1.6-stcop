@@ -675,7 +675,7 @@ void CRender::Render()
 	}
 
 	static bool UseWinterPass = EngineExternal()[EEngineExternalRender::UseDynamicSnowMask];
-	if(UseWinterPass)
+	if(UseWinterPass && g_pGameLevel->UseSnowmask)
 	{
 		GPU_EVENT(PhaseWinter);
 

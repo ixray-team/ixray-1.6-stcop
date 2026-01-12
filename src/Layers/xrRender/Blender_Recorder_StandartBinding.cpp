@@ -481,7 +481,7 @@ static class cl_rain_params : public R_constant_setup {
 #endif
 		float rainDensity = g_pGamePersistent->Environment().CurrentEnv->rain_density;
 		float rainWetness = g_pGamePersistent->Environment().wetness_factor;
-		RCache.set_c(C, rainDensity, rainWetness, 0.0f, 0.0f);
+		RCache.set_c(C, rainDensity, rainWetness, 0.0f, (float)g_pGameLevel->UseSnowmask);
 	}
 } binder_rain_params;
 
