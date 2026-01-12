@@ -726,23 +726,74 @@ void TextureEditor_WorkerThread(const ime_request_t& req)
 	}
 }
 
-void PrintErrorStatus(bool status)
+void PrintErrorStatus(
+	bool status,
+	const char* pOverrideValidStatus = "OK", 
+	const char* pOverrideInvalidStatus = "ERROR"
+)
 {
 	ImGui::SameLine();
 	ImVec4 color;
 	const char* status_name = "";
+
 	if (status)
 	{
 		color = ImVec4(0.1f, 0.9f, 0.1f, 1.0f);
-		status_name = "OK";
+		status_name = pOverrideValidStatus;
+		R_ASSERT(pOverrideValidStatus);
 	}
 	else
 	{
 		color = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
-		status_name = "ERROR";
+		status_name = pOverrideInvalidStatus;
+		R_ASSERT(pOverrideInvalidStatus);
 	}
 
 	ImGui::TextColored(color, status_name);
+}
+
+template<typename T, u32 TokenSize>
+void ListBoxToken(T (&p_token)[TokenSize], const char* pListBoxName, u32* p_data)
+{
+	if (p_token == nullptr)
+		return;
+
+	if (TokenSize == 0)
+		return;
+	
+	if (p_data == nullptr)
+		return;
+
+	int current_item = 0;
+
+	u32 arr_size = TokenSize - 1;
+	// if slow just make lookup table in that case just make another argument where it will make index of p_token array by value of p_data (but shouldn't)
+	for (u32 i = 0; i < arr_size; ++i)
+	{
+		const xr_token& token = p_token[i];
+
+		if (token.id == static_cast<int>(*p_data))
+		{
+			current_item = i;
+			break;
+		}
+	}
+
+	const char* token_names[TokenSize];
+
+	for (u32 i = 0; i < arr_size; ++i)
+	{
+		token_names[i] = p_token[i].name;
+	}
+
+	bool was_changed = ImGui::Combo(pListBoxName, &current_item, token_names, arr_size);
+
+	if (was_changed)
+	{
+		R_ASSERT(p_data);
+		if (p_data)
+			(*p_data) = (u32)p_token[current_item].id;
+	}
 }
 
 void DrawPreview(IRHISurface* pTexture, IRHIShaderResourceView* pView)
@@ -1326,7 +1377,57 @@ void RenderTextureEditor()
 
 					if (g_imgui_texture_editor.is_selected_thm_data_loaded)
 					{
+						R_ASSERT(g_imgui_texture_editor.pTHMSelected);
+						STextureParams* pTHM = g_imgui_texture_editor.pTHMSelected;
 
+						ImGui::SeparatorText("Flags");
+
+						bool mipmaps_enabled = pTHM->flags.test(STextureParams::flGenerateMipMaps);
+						if (ImGui::Checkbox("\tUse Mipmaps", &mipmaps_enabled))
+						{
+							pTHM->flags.set(STextureParams::flGenerateMipMaps, mipmaps_enabled);
+						}
+
+						bool dither_enabled = pTHM->flags.test(STextureParams::flDitherColor);
+						if (ImGui::Checkbox("\tUse Dither", &dither_enabled))
+						{
+							pTHM->flags.set(STextureParams::flDitherColor, dither_enabled);
+						}
+
+						bool dither_each_mip_enabled = pTHM->flags.test(STextureParams::flDitherEachMIPLevel);
+						if (ImGui::Checkbox("\tUse Dither each mip", &dither_each_mip_enabled))
+						{
+							pTHM->flags.set(STextureParams::flDitherEachMIPLevel, dither_each_mip_enabled);
+						}
+
+						bool implicit_lighted_enabled = pTHM->flags.test(STextureParams::flImplicitLighted);
+						if (ImGui::Checkbox("\tImplicit lighted", &implicit_lighted_enabled))
+						{
+							pTHM->flags.set(STextureParams::flImplicitLighted, implicit_lighted_enabled);
+						}
+
+						bool fade_to_color_enabled = pTHM->flags.test(STextureParams::flFadeToColor);
+						if (ImGui::Checkbox("\tFade to Color", &fade_to_color_enabled))
+						{
+							pTHM->flags.set(STextureParams::flFadeToColor, fade_to_color_enabled);
+						}
+
+						bool fade_to_alpha_enabled = pTHM->flags.test(STextureParams::flFadeToAlpha);
+						if (ImGui::Checkbox("\tFade to Alpha", &fade_to_alpha_enabled))
+						{
+							pTHM->flags.set(STextureParams::flFadeToAlpha, fade_to_alpha_enabled);
+						}
+
+						ImGui::BeginDisabled(!mipmaps_enabled);
+							ImGui::SeparatorText("MipMaps");
+							ListBoxToken(tparam_token, "Filter", &pTHM->mip_filter);
+						ImGui::EndDisabled();
+
+						ImGui::SeparatorText("Bump");
+
+						ImGui::SeparatorText("Details");
+
+						ImGui::SeparatorText("Material");
 					}
 					else
 					{
