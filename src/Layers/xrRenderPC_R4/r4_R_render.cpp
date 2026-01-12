@@ -462,7 +462,10 @@ void CRender::Render()
 			r_dsgraph_render_graph(0);
 		}
 
-		RContext->GenerateMips(Target->rt_Reflection->pTexture->get_SRView());
+		{
+			GPU_EVENT(FORWARD_REFLECTION_MIPS_GEN);
+			RContext->GenerateMips(Target->rt_Reflection->pTexture->get_SRView());
+		}
 
 		RCache.set_xform_project(Device.mProject);
 		RCache.set_xform_view(Device.mView);
