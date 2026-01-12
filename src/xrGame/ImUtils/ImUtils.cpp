@@ -27,6 +27,11 @@ void RegisterImGuiInGame()
 
 void DestroyImGuiInGame()
 {
+	if (Device.IsEditorMode())
+	{
+		return;
+	}
+
 	DestroySpawnManagerWindow();
 }
 

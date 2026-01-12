@@ -138,7 +138,7 @@ void INodeUnknown::SetStartPos(float x, float y)
 
 void INodeUnknown::DrawEnd()
 {
-	ImGui::Separator();
+	//ImGui::Separator();
 	DrawLinks(false);
 
 	ImNodes::EndNode();
