@@ -167,6 +167,7 @@ void ETextureThumbnail::FillProp(PropItemVec& items, PropValue::TOnChange on_typ
 }
 //------------------------------------------------------------------------------
 
+extern xr_token ttype_token[];
 void ETextureThumbnail::FillInfo(PropItemVec& items)
 {                                                                         
 	STextureParams& F			= m_TexParams;

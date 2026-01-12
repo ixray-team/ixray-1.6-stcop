@@ -129,7 +129,7 @@ using RStrVecIt = RStrVec::iterator;
 #define		TEX_POINT_ATT	"internal\\internal_light_attpoint"
 #define		TEX_SPOT_ATT	"internal\\internal_light_attclip"
 
-#include "../../Layers/xrRender/ETextureParams.h"
+#include "../../xrEngine/ETextureParams.h"
 #include "../../Layers/xrRender/ResourceManager.h"
 
 #include "../../Layers/xrRender/blenders/Blender_Recorder.h"
