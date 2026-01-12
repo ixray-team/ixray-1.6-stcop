@@ -5,7 +5,7 @@
 #include "AIMapExport.h"
 #include "Shader_xrLC.h"
 #include "../../Editors/LevelEditor/Engine/communicate.h"
-#include "../../Layers/xrRender/ETextureParams.h"
+#include "../../xrEngine/ETextureParams.h"
 
 // base patch used all the time up to merging
 constexpr u32 InvalidNode = 0xffffffff;
