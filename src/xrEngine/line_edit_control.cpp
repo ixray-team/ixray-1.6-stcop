@@ -685,8 +685,11 @@ void line_edit_control::clamp_cur_pos()
 	clamp( m_cur_pos, 0, (int)xr_strlen( m_edit_str ) );
 }
 
-void line_edit_control::SwitchKL() {
+void line_edit_control::SwitchKL()
+{
+#ifdef IXR_WINDOWS
 	ActivateKeyboardLayout( (HKL)HKL_NEXT, 0 );
+#endif
 }
 
 // -------------------------------------------------------------------------------------------------

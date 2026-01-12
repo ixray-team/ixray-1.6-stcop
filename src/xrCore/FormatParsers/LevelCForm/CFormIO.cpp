@@ -208,11 +208,28 @@ void CForm::CFormatVanillaChunked::GetStaticGeom(xr_vector<Fvector>& OutVertices
     OutTris.clear();
     OutVertices.reserve(Header.vertcount);
     OutTris.reserve(Header.facecount);
+    
+#ifdef IXR_WINDOWS
     for (auto& elem : Data)
     {
         OutVertices.append_range(elem.Data.Verts);
         OutTris.append_range(elem.Data.Tris);
     }
+#else
+#pragma todo("FX: Wait C++23...")
+    for (auto& elem : Data)
+    {
+        for (const auto& vert : elem.Data.Verts)
+        {
+            OutVertices.push_back(vert);
+        }
+        
+        for (const auto& tri : elem.Data.Tris)
+        {
+            OutTris.push_back(tri);
+        }
+    }
+#endif
 }
 
 XRCORE_API xr_unique_ptr<CForm::IFormat> CForm::Read(LPCSTR Initial, xr_string_view Filename)

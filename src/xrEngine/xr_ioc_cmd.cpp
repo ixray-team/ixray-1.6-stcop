@@ -195,9 +195,25 @@ void CCC_SaveCFG::Execute(LPCSTR args)
 			*strext(cfg_full_name) = 0;
 		xr_strcat			(cfg_full_name,".ltx");
 		
-		BOOL b_allow = TRUE;
+	bool b_allow = true;
 		if ( FS.exist(cfg_full_name) )
-			b_allow = SetFileAttributes(Platform::ANSI_TO_TCHAR(cfg_full_name),FILE_ATTRIBUTE_NORMAL);
+	{
+#ifdef IXR_WINDOWS
+		b_allow = !!SetFileAttributes(Platform::ANSI_TO_TCHAR(cfg_full_name), FILE_ATTRIBUTE_NORMAL);
+#else
+		struct stat st;
+    	if (stat(cfg_full_name, &st) == 0) 
+		{
+    	    // Добавляем права на запись для владельца
+    	    mode_t new_mode = st.st_mode | S_IWUSR;
+    	    b_allow = (chmod(cfg_full_name, new_mode) == 0);
+    	}
+		else
+		{
+    	    b_allow = false;
+    	}
+#endif
+	}
 
 	if (b_allow)
 	{
