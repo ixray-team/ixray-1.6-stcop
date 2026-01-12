@@ -17,10 +17,8 @@ function opt_controls:InitControls(x, y, xml, handler)
 	self.bk = xml:InitFrame("frame", self)
 	
 	xml:InitStatic		("tab_controls:cap_mousesens",		self)
-	xml:InitTrackBar	("tab_controls:track_mousesens",	self)
-	xml:InitStatic		("tab_controls:cap_mousesens_ui",	self)
-	xml:InitTrackBar	("tab_controls:track_mousesens_ui",	self)
 	xml:InitFrameLine	("tab_controls:cap_keyboardsetup",	self)
+	xml:InitTrackBar	("tab_controls:track_mousesens",	self)
 	xml:InitCheck		("tab_controls:check_mouseinvert",	self)	
 	xml:InitKeyBinding	("tab_controls:key_binding",		self)
 

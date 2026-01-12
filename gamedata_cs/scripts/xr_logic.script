@@ -104,6 +104,7 @@ function generic_scheme_overrides(npc)
 	либо nil, если ни одна из секций не активна, либо настройки не заданы.
 
 --]]
+local marshalLog = false
 
 --[[
 -- Предназначение:
@@ -1264,14 +1265,31 @@ function pstor_retrieve(obj, varname, defval)
 	return nil
 end
 
+function _log(text, ...)
+	if marshalLog then
+		printf("-- [IXR MARHALIZE]:" .. text, ...)
+		SemiLog("-- [IXR MARHALIZE]:" .. string.format(text, ...))
+	end
+end
+
 function pstor_save_all(obj, packet)
 	local npc_id = obj:id()
+		
+	if (USE_MARSHAL) then
+		db.storage[npc_id].pstor = db.storage[npc_id].pstor or {}
+		SendScriptCallback("on_pstor_save_all",obj,packet)
+		return
+	end
+	
 	local pstor = db.storage[npc_id].pstor
 	if not pstor then
 		pstor = {}
 		db.storage[npc_id].pstor = pstor
 	end
-
+	
+	SetStorageObjectVar(npc_id, "pstor", pstor)
+	_log("[save] pstor [%s]", tostring(pstor))
+	--[[
 	local ctr = 0
 	for k, v in pairs(pstor) do
 		ctr = ctr + 1
@@ -1295,15 +1313,27 @@ function pstor_save_all(obj, packet)
 			abort("xr_logic: pstor_save_all: not registered type '%s' encountered", tv)
 		end
 	end
+	--]]
 end
 
 function pstor_load_all(obj, reader)
 	local npc_id = obj:id()
+		
+	if (USE_MARSHAL) then
+		db.storage[npc_id].pstor = db.storage[npc_id].pstor or {}
+		SendScriptCallback("on_pstor_load_all", obj, reader)
+		return
+	end
+	
 	local pstor = db.storage[npc_id].pstor
 	if not pstor then
 		pstor = {}
 		db.storage[npc_id].pstor = pstor
 	end
+		
+	pstor = GetStorageObjectVar(npc_id, "pstor", {})
+	_log("[load] pstor [%s]", tostring(pstor))
+	--[[
 	local ctr = reader:r_u32()
 
 	for i = 1, ctr do
@@ -1320,6 +1350,7 @@ function pstor_load_all(obj, reader)
 		end
 		--printf("_bp: pstor_load_all: loaded [%s]='%s'", varname, utils.to_str(pstor[varname]))
 	end
+	--]]
 end
 
 function save_obj(obj, packet)
