@@ -15,7 +15,7 @@ if(WIN32)
     add_library(Lua::Lua UNKNOWN IMPORTED)
     set_target_properties(Lua::Lua PROPERTIES
         IMPORTED_LOCATION "${LUAJIT_LIB}"
-        INTERFACE_INCLUDE_DIRECTORIES "${IXRAY_SDK_INC}/lua/"
+        INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/src/3rd-party/lua/"
     )
 
     add_imported_lib(

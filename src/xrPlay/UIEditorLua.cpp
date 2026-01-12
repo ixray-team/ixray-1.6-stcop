@@ -1,5 +1,5 @@
 #include <fstream>
-#include <json/json.hpp>
+#include <nlohmann/json.hpp>
 
 #include "UIEditorMain.h"
 #include "../xrScripts/stdafx.h"
