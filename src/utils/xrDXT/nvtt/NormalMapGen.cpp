@@ -215,7 +215,7 @@ u32	hsample(s32 w, s32 h, s32 p, s32 x, s32 y, u8* src)
     return color_get_R(*((u32*)(src + y*p) + x));
 }
 
-#include "../../Layers/xrRender/ETextureParams.h"
+#include "../../xrEngine/ETextureParams.h"
 #include "Image_DXTC.h"
 
 extern int DXTCompressImageNVTT(LPCSTR out_name, u8* raw_data,
