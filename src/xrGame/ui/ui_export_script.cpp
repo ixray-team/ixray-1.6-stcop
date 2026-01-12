@@ -38,6 +38,11 @@ bool IsControllerMode()
 	return pInput->GetControllerMode();
 }
 
+float get_current_kx()
+{
+	return UI().get_current_kx();
+}
+
 #pragma optimize("s",on)
 void UIRegistrator::script_register(lua_State *L)
 {
@@ -99,6 +104,10 @@ void UIRegistrator::script_register(lua_State *L)
 	[
 		def("get_main_menu",				&MainMenu),
 		def("in_controller_mode",			&IsControllerMode)
+	];
+	module(L,"ui")
+	[
+		def("get_current_kx",				&get_current_kx)
 	];
 
 	CMapManager::script_register(L);
