@@ -13,3 +13,20 @@ if (IXRAY_MP)
     include("${CMAKE_MODULE_PATH}/Opus.cmake")
     include("${CMAKE_MODULE_PATH}/SpeexDSP.cmake")
 endif()
+
+# Headers only libraries
+include("${CMAKE_MODULE_PATH}/FastDynamicCast.cmake")
+include("${CMAKE_MODULE_PATH}/magic_enum.cmake")
+include("${CMAKE_MODULE_PATH}/sse2neon.cmake")
+include("${CMAKE_MODULE_PATH}/nlohmann_json.cmake")
+include("${CMAKE_MODULE_PATH}/amd_adl.cmake")
+include("${CMAKE_MODULE_PATH}/nvapi.cmake")
+include("${CMAKE_MODULE_PATH}/stb.cmake")
+
+if(WIN32)
+    include("${CMAKE_MODULE_PATH}/dirent.cmake")
+endif()
+
+if (IXRAY_EDITORS)
+    include("${CMAKE_MODULE_PATH}/FileWatch.cmake")
+endif()
