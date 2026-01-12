@@ -105,6 +105,41 @@ xr_vector<xr_string> split(const xr_string& s, char delim)
 	return elems;
 }
 
+bool GetDisplayMetricsSDL3(float& width_mm, float& height_mm, float& width_px, float& height_px) 
+{
+	SDL_DisplayID* displays = SDL_GetDisplays(nullptr);
+	if (!displays)
+	{
+		return false;
+	}
+
+	SDL_DisplayID display_id = displays[0];
+	SDL_free(displays);
+
+	float scale = SDL_GetDisplayContentScale(display_id);
+	float dpi = scale * 96.0f;  // scale в DPI
+
+	float dpi_horizontal = scale * 96.0f;
+	float dpi_vertical = scale * 96.0f;
+
+	const SDL_DisplayMode* mode = SDL_GetCurrentDisplayMode(display_id);
+	if (mode)
+	{
+		width_px = static_cast<float>(mode->w);
+		height_px = static_cast<float>(mode->h);
+	}
+	else
+	{
+		width_px = 1920.0f;
+		height_px = 1080.0f;
+	}
+
+	width_mm = (width_px / dpi_horizontal) * 25.4f;
+	height_mm = (height_px / dpi_vertical) * 25.4f;
+
+	return true;
+}
+
 void CGameFont::Initialize2(const char* name, const char* shader, const char* style, u32 size)
 {
 	if (!bFreetypeInitialized)
@@ -145,7 +180,7 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 	// есть кучу способов высчитать размер шрифта для скейлинга
 	// 1. основываясь на DPI(PPI), однако, как не вычисляй его он всегда считается исходя из разрешения моника(системы) и 23 дюймов(мб с дровами на моник - из реальных дюймов)
 	// 2. основываясь на том, как ПЫС делают скейлинг из UI_BASE_HEIGHT/UI_BASE_WIDTH и тд...
-
+#ifdef IXR_WINDOWS
 	SetProcessDPIAware();
 	HDC hDCScreen = GetDC(NULL);
 
@@ -155,6 +190,14 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 	auto Wpx = (float)GetDeviceCaps(hDCScreen, HORZRES);
 
 	ReleaseDC(NULL, hDCScreen);
+#else
+	float Hmm = 0.f;
+	float Wmm = 0.f;
+	float Hpx = 0.f;
+	float Wpx = 0.f;
+
+	GetDisplayMetricsSDL3(Wmm, Hmm, Wpx, Hpx);
+#endif
 
 	auto is_res_depend = !!READ_IF_EXISTS(pSettings, r_bool, Name, "res_depend", TRUE);
 	auto is_dpi_depend = !!READ_IF_EXISTS(pSettings, r_bool, Name, "dpi_depend", !is_res_depend);
