@@ -230,10 +230,12 @@ const xr_map<int, char> russian_lookup_key_table = {
 
 bool CInput::get_dik_name(int dik, LPSTR dest_str, int dest_sz)
 {
+#ifdef IXR_WINDOWS
 	LANGID lang_locale = PRIMARYLANGID(LOWORD(HandleToLong(GetKeyboardLayout(0))));
 	if (lang_locale != LANG_RUSSIAN) {
 		return false;
 	}
+#endif
 
 	if (!russian_lookup_key_table.contains(dik)) {
 		return false;
