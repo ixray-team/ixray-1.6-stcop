@@ -15,13 +15,13 @@
 CEditorRenderDevice 	*	EDevice;
 bool g_bIsEditor;
 
-//CStatsPhysics* _BCL			CEditorRenderDevice::StatPhysics() { return Statistic; }
-void	   _BCL			CEditorRenderDevice::AddSeqFrame(pureFrame* f, bool mt) { seqFrame.Add(f, REG_PRIORITY_LOW); }
-void	   _BCL			CEditorRenderDevice::RemoveSeqFrame(pureFrame* f) { seqFrame.Remove(f); }
+void CEditorRenderDevice::AddSeqFrame(pureFrame* f, bool mt) { seqFrame.Add(f, REG_PRIORITY_LOW); }
+void CEditorRenderDevice::RemoveSeqFrame(pureFrame* f) { seqFrame.Remove(f); }
 
 ENGINE_API xr_atomic_bool g_bRendering;
 //---------------------------------------------------------------------------
 #include <luabind/luabind.hpp>
+void EditorFillPropTextureParams(STextureParams* ThisCall, LPCSTR base_name, xr_vector<PropItem*>& items, PropValue::TOnChange OnChangeEvent);
 
 static LPVOID __cdecl luabind_allocator(
 	luabind::memory_allocation_function_parameter const,
@@ -92,6 +92,7 @@ CEditorRenderDevice::CEditorRenderDevice()
 	g_bIsEditor = true;
 
 	setup_luabind_allocator();
+	STextureParams::FillPropImpl = EditorFillPropTextureParams;
 }
 
 CEditorRenderDevice::~CEditorRenderDevice()
