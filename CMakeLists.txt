@@ -123,3 +123,18 @@ add_subdirectory("src/utils")
 
 # Editors
 add_subdirectory("src/Editors")
+
+# Startup project (Visual Studio only)
+if (WIN32)
+    if (IXRAY_COMPRESSOR_ONLY)
+        if (TARGET xrCompress)
+            set_property(DIRECTORY ${CMAKE_SOURCE_DIR}
+                PROPERTY VS_STARTUP_PROJECT xrCompress)
+        endif()
+    else()
+        if (TARGET xrEngine)
+            set_property(DIRECTORY ${CMAKE_SOURCE_DIR}
+                PROPERTY VS_STARTUP_PROJECT xrEngine)
+        endif()
+    endif()
+endif()

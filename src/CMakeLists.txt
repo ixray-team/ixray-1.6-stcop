@@ -80,8 +80,5 @@ if(WIN32)
 
     if (NOT IXRAY_COMPRESSOR_ONLY AND IXR_TEST_CI)
         set_target_properties(xrRender_R4 PROPERTIES ${IXRAY_FOLDER_RENDER})
-
-        # Set default project
-        set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT xrEngine)
     endif()
 endif()

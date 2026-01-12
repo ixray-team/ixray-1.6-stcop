@@ -58,8 +58,3 @@ if(IXRAY_UTILS AND NOT IXRAY_COMPRESSOR_ONLY)
         set_target_properties(mp_gpprof_server PROPERTIES ${IXRAY_FOLDER_UTILS})
     endif()
 endif()
-
-# Set default project
-if(IXRAY_COMPRESSOR_ONLY)
-    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT xrCompress)
-endif()
