@@ -403,7 +403,7 @@ void RenderUI()
 					}
 
 					float source_time = (float)source->frames_total / (float)SND_SAMPLERATE;
-					ImGui::Text("    [%s:%.2f]: refs - %d", source->name.c_str(), source_time, source->ref_count);
+					ImGui::Text("    [%s:%.2f]: refs - %d", source->name.c_str(), source_time, source->ref_count.load());
 				}
 				ImGui::EndTabItem();
 			}
