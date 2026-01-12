@@ -197,7 +197,8 @@ void Vision::o_trace(Fvector& P, float dt, float vis_threshold) {
 					// cache outdated. real query.
 					VERIFY(!fis_zero(RD.dir.magnitude()));
 
-					if (g_pGameLevel->ObjectSpace.RayQuery(RQR, RD, feel_vision_callback, &feel_params, nullptr, nullptr)) {
+					if (g_pGameLevel->ObjectSpace.RayQuery(RQR, RD, feel_vision_callback, &feel_params, nullptr, const_cast<CObject*>(m_owner)))
+					{
 						I->Cache_vis = feel_params.vis;
 						I->Cache.set(P, D, f, TRUE);
 					}
