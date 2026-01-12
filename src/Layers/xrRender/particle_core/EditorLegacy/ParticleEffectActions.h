@@ -1,5 +1,6 @@
 #pragma once
 #include "luabind/detail/primitives.hpp"
+#include "../../Include/xrRender/ParticleCustom.h"
 
 namespace PS
 {

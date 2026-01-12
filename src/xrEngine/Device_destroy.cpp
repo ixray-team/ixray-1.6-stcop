@@ -38,7 +38,7 @@ void CRenderDevice::Destroy()
 	if (hGameRef)
 	{
 		using xrGameRenderPreDestroy = void();
-		xrGameRenderPreDestroy* pxrGameRenderPreDestroy = (xrGameRenderPreDestroy*)GetProcAddress(hGameRef, "xrGameRenderPreDestroy");
+		xrGameRenderPreDestroy* pxrGameRenderPreDestroy = (xrGameRenderPreDestroy*)Platform::GetAddress(hGameRef, "xrGameRenderPreDestroy");
 		R_ASSERT(pxrGameRenderPreDestroy);
 		pxrGameRenderPreDestroy();
 	}
