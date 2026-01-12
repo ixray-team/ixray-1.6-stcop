@@ -2,58 +2,6 @@
 #include "../xrEProps/ChooseTypesHelper.H"
 #include "../../xrEngine/ETextureParams.H"
 
-xr_token tmtl_token[] =
-{
-	{ "OrenNayar <-> Blin",	STextureParams::tmOrenNayar_Blin			},
-	{ "Blin <-> Phong",		STextureParams::tmBlin_Phong				},
-	{ "Phong <-> Metal",	STextureParams::tmPhong_Metal				},
-	{ "Metal <-> OrenNayar",STextureParams::tmMetal_OrenNayar			},
-	{ "PBR",                STextureParams::tmPBR_Material			    },
-	{ 0,					0											}
-};
-
-xr_token tparam_token[] =
-{
-	{ "Advanced",			STextureParams::kMIPFilterAdvanced			},
-
-	{ "Point",				STextureParams::kMIPFilterPoint				},
-	{ "Box",				STextureParams::kMIPFilterBox				},
-	{ "Triangle",			STextureParams::kMIPFilterTriangle			},
-	{ "Quadratic",			STextureParams::kMIPFilterQuadratic			},
-	{ "Cubic",				STextureParams::kMIPFilterCubic				},
-
-	{ "Catrom",				STextureParams::kMIPFilterCatrom			},
-	{ "Mitchell",			STextureParams::kMIPFilterMitchell			},
-
-	{ "Gaussian",			STextureParams::kMIPFilterGaussian			},
-	{ "Sinc",				STextureParams::kMIPFilterSinc				},
-	{ "Bessel",				STextureParams::kMIPFilterBessel			},
-
-	{ "Hanning",			STextureParams::kMIPFilterHanning			},
-	{ "Hamming",			STextureParams::kMIPFilterHamming			},
-	{ "Blackman",			STextureParams::kMIPFilterBlackman			},
-	{ "Kaiser",				STextureParams::kMIPFilterKaiser			},
-	{ 0,					0											}
-};
-
-xr_token ttype_token[] =
-{
-	{ "2D Texture",			STextureParams::ttImage						},
-	{ "Cube Map",  			STextureParams::ttCubeMap					},
-	{ "Bump Map",			STextureParams::ttBumpMap					},
-	{ "Normal Map",			STextureParams::ttNormalMap					},
-	{ "Terrain",			STextureParams::ttTerrain					},
-	{ 0,					0											}
-};
-
-xr_token tbmode_token[] =
-{
-	{ "None",				STextureParams::tbmNone						},
-	{ "Use",				STextureParams::tbmUse						},
-	{ "Use parallax",		STextureParams::tbmUseParallax				},
-	{ 0,					0											}
-};
-
 void EditorFillPropTextureParams(STextureParams* ThisCall, LPCSTR base_name, xr_vector<PropItem*>& items, PropValue::TOnChange OnChangeEvent)
 {
 	ThisCall->OnTypeChangeEvent = OnChangeEvent;
