@@ -2,7 +2,12 @@
 // NVidia detection system
 
 #include "../RHI.h"
+
+extern "C"
+{
+#define NVAPI_INTERFACE
 #include <nvapi\nvapi.h>
+}
 
 #define NVAPI_MAX_USAGES_PER_GPU 34
 class IUnknown;

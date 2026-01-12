@@ -141,7 +141,7 @@ else()
 	if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 		list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/BSD/")
 	else()
-		list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/BSD/")
+		list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/Linux/")
 	endif()
 endif()
 
@@ -160,11 +160,11 @@ endif()
 # Includes 
 target_include_directories(xrCore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(xrCore PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../3rd-party/lzo/include")
-target_include_directories(xrCore PUBLIC ${IXRAY_SDK_INC})
+target_include_directories(xrCore PUBLIC ${EXTERNAL_INCLUDE_DIR})
 target_include_directories(xrCore PUBLIC ${CMAKE_BINARY_DIR}/dep)
 
 if (NOT WIN32)
-	target_include_directories(xrCore PUBLIC ${IXRAY_SDK_INC}/linux)
+	target_include_directories(xrCore PUBLIC ${EXTERNAL_INCLUDE_DIR}/linux)
 endif()
 
 # Move precompiled header

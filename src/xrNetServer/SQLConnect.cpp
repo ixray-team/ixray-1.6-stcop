@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SQLConnect.h"
 
-#include <json/json.hpp>
+#include <nlohmann/json.hpp>
 #include <fstream>
 
 XRNETSERVER_API DBService* GSQLConnector = nullptr;
