@@ -1,0 +1,143 @@
+
+--[[
+Description:
+  Checks if the object is a Lua table.
+Parameters:
+  object (any) - the object to check.
+Returns: boolean - true if the object is a table, otherwise false.
+]]
+function is_table(object)
+	if not object then 
+		return false
+	end
+	
+	return tostring(type(object)) == "table"
+end
+
+--[[
+Description:
+  Checks if a table (flat or associative) is empty at the root level.
+Parameters:
+  input_table (table) - the table to check.
+Returns: boolean - true if the table is empty or not a table, otherwise false.
+]]
+function is_empty_flat_or_assoc_table(input_table)
+	if not ffx_compare_utils.is_table(input_table) then
+		return true
+	end
+	
+	for _, value in pairs(input_table) do
+		return false
+	end
+	
+	return true
+end
+
+--[[
+Description:
+  Checks if the object is a Lua function.
+Parameters:
+  object (any) - the object to check.
+Returns: boolean - true if the object is a function, otherwise false.
+]]
+function is_function(object)
+	if not object then 
+		return false
+	end
+	
+	return tostring(type(object)) == "function"
+end
+
+--[[
+Description:
+  Checks if the object is userdata.
+Parameters:
+  object (any) - the object to check.
+Returns: boolean - true if the object is userdata, otherwise false.
+]]
+function is_userdata(object)
+	if not object then 
+		return false
+	end
+	
+	return tostring(type(object)) == "userdata"
+end
+
+--[[
+Description:
+  Checks that the string is not nil and not empty.
+Parameters:
+  str (string) - the string to check.
+Returns: boolean - true if the string is not empty, otherwise false.
+]]
+function is_not_empty_string(str)
+	return (str ~= nil and tostring(str) ~= "")
+end
+
+--[[
+Description:
+  Checks that the string is nil or empty.
+Parameters:
+  str (string) - the string to check.
+Returns: boolean - true if the string is empty or nil, otherwise false.
+]]
+function is_empty_string(str)
+	return (str == nil or tostring(str) == "")
+end
+
+--[[
+Description:
+  Checks if the object is a Lua number.
+Parameters:
+  object (any) - the object to check.
+Returns: boolean - true if the object is a number, otherwise false.
+]]
+function is_number(object)
+	if object  == nil then 
+		return false
+	end
+	
+	return tostring(type(object)) == "number"
+end
+
+--[[
+Description:
+  Checks if the given string matches the pattern where the wildcard character can appear multiple times.
+  The wildcard character matches any sequence of characters (including empty).
+  
+  The function handles patterns with multiple wildcards and normalizes consecutive wildcards into single ones.
+  For example, "a**b***c" becomes "a*b*c". Special regex characters in the pattern are properly escaped.
+  
+  If no wildcard is present in the pattern, performs a simple string comparison.
+  If the pattern consists only of wildcards, matches any string (including empty).
+  
+Parameters:
+  str (string) - the string to test against the pattern.
+  pattern (string) - the pattern containing literal characters and wildcard characters.
+  wildcard (string, optional) - the character used as a wildcard in the pattern; defaults to '*'.
+  
+Returns:
+  boolean - true if the string matches the pattern; false otherwise.
+  
+Examples:
+  has_pattern("hello", "hello")        -- true (exact match)
+  has_pattern("se_test", "se_*")       -- true (wildcard at end)
+  has_pattern("info_data", "*data")    -- true (wildcard at start)
+  has_pattern("start_end", "start*end")-- true (wildcard in middle)
+  has_pattern("ac", "a*b*c")           -- true (wildcard matches empty)
+  has_pattern("test", "world")         -- false (no match)
+]]
+function has_pattern(str, pattern)
+    local wildcard = "*"
+
+    if not pattern:find(wildcard, 1, true) then
+        return str == pattern
+    end
+
+    local normalized_pattern = pattern:gsub("%*+", "*")
+    if normalized_pattern == "*" then
+        return true
+    end
+    
+    return str:match("^" .. (normalized_pattern:gsub("([%(%)%.%%%+%-%?%[%]%^%$])", "%%%1")):gsub("%*", ".*") .. "$") ~= nil
+end
