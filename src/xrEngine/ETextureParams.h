@@ -8,25 +8,25 @@ struct ENGINE_API STextureParams
 {
 	enum ETType
 	{
-    	ttImage	= 0,
-        ttCubeMap,
-        ttBumpMap,
-        ttNormalMap,
-        ttTerrain,
+		ttImage	= 0,
+		ttCubeMap,
+		ttBumpMap,
+		ttNormalMap,
+		ttTerrain,
 		ttForceU32	= u32(-1)
 	};
 
 	enum ETFormat
 	{
-    	tfDXT1 = 0,
-        tfADXT1,
-        tfDXT3,
-        tfDXT5,
-        tf4444,
-        tf1555,
-        tf565,
-        tfRGB,
-        tfRGBA,
+		tfDXT1 = 0,
+		tfADXT1,
+		tfDXT3,
+		tfDXT5,
+		tf4444,
+		tf1555,
+		tf565,
+		tfRGB,
+		tfRGBA,
 		tfNVHS,
 		tfNVHU,
 		tfA8,
@@ -36,24 +36,24 @@ struct ENGINE_API STextureParams
 		tfForceU32	= u32(-1)
 	};
 
-    enum ETBumpMode
+	enum ETBumpMode
 	{
-    	tbmResereved	= 0,
-        tbmNone,
-        tbmUse,
-        tbmUseParallax,
+		tbmResereved	= 0,
+		tbmNone,
+		tbmUse,
+		tbmUseParallax,
 		tbmForceU32	= u32(-1)
-    };
+	};
 
-    enum ETMaterial
+	enum ETMaterial
 	{
 		tmOrenNayar_Blin	= 0,
 		tmBlin_Phong, 
 		tmPhong_Metal,
-        tmMetal_OrenNayar,
-        tmPBR_Material,
+		tmMetal_OrenNayar,
+		tmPBR_Material,
 		tmForceU32			= u32(-1)
-    };
+	};
 	enum
 	{
 		kMIPFilterAdvanced			= 5,
@@ -98,33 +98,30 @@ struct ENGINE_API STextureParams
 		flForceU32			= u32(-1)
 	};
 
-    // texture part
-    ETFormat	        fmt;
-    Flags32		        flags;
-    u32			        border_color;
-    u32			        fade_color;
-    u32			        fade_amount;
+	// texture part
+	ETFormat	        fmt;
+	Flags32		        flags;
+	u32			        border_color;
+	u32			        fade_color;
+	u32			        fade_amount;
 	u8					fade_delay;
-    u32			        mip_filter;
-    int			        width;
-    int			        height;
-    // detail ext
-    shared_str			detail_name;
-    float		        detail_scale;
-    ETType		        type;
-    // material
-    ETMaterial			material;
-    float				material_weight;
-    // bump	
+	u32			        mip_filter;
+	int			        width;
+	int			        height;
+	// detail ext
+	shared_str			detail_name;
+	float		        detail_scale;
+	ETType		        type;
+	// material
+	ETMaterial			material;
+	float				material_weight;
+	// bump	
 	float 				bump_virtual_height;
-    ETBumpMode			bump_mode;
-    shared_str			bump_name;
-    shared_str			ext_normal_map_name;
+	ETBumpMode			bump_mode;
+	shared_str			bump_name;
+	shared_str			ext_normal_map_name;
 
-    STextureParams		()
-	{
-		Clear();
-	}
+	STextureParams();
 	
 	IC void destroy_shared_str	(shared_str& object)
 	{
@@ -150,44 +147,31 @@ struct ENGINE_API STextureParams
 
 		flags.set			(flGenerateMipMaps|flDitherColor,TRUE);
 		mip_filter			= kMIPFilterBox;
-        width				= 0;
-        height				= 0;
-        detail_scale		= 1;
-        bump_mode			= tbmNone;
+		width				= 0;
+		height				= 0;
+		detail_scale		= 1;
+		bump_mode			= tbmNone;
 		material			= tmBlin_Phong;
-        bump_virtual_height = 0.05f;
+		bump_virtual_height = 0.05f;
 	}
 
-    IC BOOL HasAlpha()
-    { 
-    	// исходная текстура содержит альфа канал
-    	return flags.is(flHasAlpha);
-    }
-	IC BOOL HasAlphaChannel() // игровая текстура содержит альфа канал
-	{
-		switch (fmt)
-		{
-		case tfADXT1:
-		case tfDXT3:
-		case tfDXT5:
-		case tf4444:
-		case tf1555:
-		case tfRGBA:
-			return TRUE;
-		default:
-			return FALSE;
-		}
+	IC bool HasAlpha()
+	{ 
+		// исходная текстура содержит альфа канал
+		return flags.is(flHasAlpha);
 	}
-    bool Load (IReader& F);
-    void Save (IWriter& F);
+
+	bool HasAlphaChannel();
+	bool Load (IReader& F);
+	void Save (IWriter& F);
 #ifdef _EDITOR
 	PropValue::TOnChange			OnTypeChangeEvent;
 	void 	OnTypeChange	(PropValue* v);
-    void 			FillProp		(LPCSTR base_name, PropItemVec& items, PropValue::TOnChange OnChangeEvent);
-    LPCSTR 			FormatString	();
+	void 			FillProp		(LPCSTR base_name, PropItemVec& items, PropValue::TOnChange OnChangeEvent);
+	LPCSTR 			FormatString	();
 	u32 			MemoryUsage		(LPCSTR base_name);
-    BOOL			similar			(STextureParams& tp1, xr_vector<xr_string>& sel_params);
-    
+	BOOL			similar			(STextureParams& tp1, xr_vector<xr_string>& sel_params);
+	
 #endif
 };
 #pragma pack( pop )
