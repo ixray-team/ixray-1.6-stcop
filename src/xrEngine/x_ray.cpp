@@ -29,7 +29,6 @@ ENGINE_API bool g_dedicated_server  = false;
 BOOL	g_bIntroFinished			= FALSE;
 extern	void	Intro				( void* fn );
 extern	void	Intro_DSHOW			( void* fn );
-extern	int PASCAL IntroDSHOW_wnd	(HINSTANCE hInstC, HINSTANCE hInstP, LPSTR lpCmdLine, int nCmdShow);
 //int		max_load_stage = 0;
 
 // computing build id
@@ -277,7 +276,7 @@ ENGINE_API void EngineLoadStage5()
 	destroyEngine();
 }
 
-
+#ifdef IXR_WINDOWS
 #define dwStickyKeysStructSize sizeof( STICKYKEYS )
 #define dwFilterKeysStructSize sizeof( FILTERKEYS )
 #define dwToggleKeysStructSize sizeof( TOGGLEKEYS )
@@ -378,6 +377,7 @@ struct damn_keys_filter {
 #undef dwStickyKeysStructSize
 #undef dwFilterKeysStructSize
 #undef dwToggleKeysStructSize
+#endif
 
 ENGINE_API void EngineLoadStage1(char* lpCmdLine)
 {
@@ -413,8 +413,11 @@ ENGINE_API void EngineLoadStage1(char* lpCmdLine)
 ENGINE_API void EngineLoadStage2()
 {
 	PROF_EVENT("EngineLoadStage2");
+
+#ifdef IXR_WINDOWS
 	damn_keys_filter filter;
 	(void)filter;
+#endif
 
 	InitEngine();
 	InitInput();
