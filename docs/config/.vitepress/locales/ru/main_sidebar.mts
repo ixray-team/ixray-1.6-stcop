@@ -216,6 +216,10 @@ export const mainSidebar: DefaultTheme.Sidebar = [
         items: [{ text: 'Технические особенности', link: '/platforms/clear-sky/technical-features' }],
       },
       {
+        text: 'Shadow of Chernobyl',
+        items: [{ text: 'Технические особенности', link: '/platforms/shadow-of-chernobyl/technical-features' }],
+      },
+      {
         text: 'Мультиплеер',
         items: [
           { text: 'Общая информация', link: '/platforms/multiplayer/general-information' },
