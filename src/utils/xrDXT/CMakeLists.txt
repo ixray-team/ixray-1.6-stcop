@@ -33,7 +33,7 @@ target_compile_definitions(xrDXT PRIVATE DXT_EXPORTS)
 target_compile_definitions(xrDXT PRIVATE _USRDLL)
 
 # Linker list
-target_link_libraries(xrDXT PUBLIC xrCore)
+target_link_libraries(xrDXT PUBLIC xrEngineCore)
 target_link_libraries(xrDXT PRIVATE NVTT::nvtt)
 
 if (WIN32)
