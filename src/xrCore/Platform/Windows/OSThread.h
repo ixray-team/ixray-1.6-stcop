@@ -24,4 +24,9 @@ namespace Platform
 	{
 		return ::GetCurrentProcessId();
 	}
+	
+    inline void WaitForSingleObject(ThreadID ID)
+    {
+    	::WaitForSingleObject(ID, INFINITE);
+    }
 }

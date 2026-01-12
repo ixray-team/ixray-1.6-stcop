@@ -14,10 +14,12 @@ CAviPlayerCustom::CAviPlayerCustom( )
 
 CAviPlayerCustom::~CAviPlayerCustom( )
 {
-	if( m_aviIC ) {
-
+	if( m_aviIC )
+	{
+#ifdef IXR_WINDOWS
 		ICDecompressEnd( m_aviIC );
 		ICClose( m_aviIC );
+#endif
 	}
 
 	if( m_pDecompressedBuf )	xr_free( m_pDecompressedBuf );
@@ -31,6 +33,7 @@ CAviPlayerCustom::~CAviPlayerCustom( )
 //---------------------------------
 BOOL CAviPlayerCustom::Load (char* fname)
 {
+#ifdef IXR_WINDOWS
 	// Check for alpha
 	string_path		aname;
 	xr_strconcat(aname,fname,"_alpha");
@@ -252,13 +255,14 @@ BOOL CAviPlayerCustom::Load (char* fname)
 		R_ASSERT(m_dwWidth  == alpha->m_dwWidth	);
 		R_ASSERT(m_dwHeight == alpha->m_dwHeight);
 	}
-
+#endif
 //-----------------------------------------------------------------
 	return TRUE;
 }
 
 BOOL CAviPlayerCustom::DecompressFrame( DWORD dwFrameNum )
 {
+#ifdef IXR_WINDOWS
 	// получаем элемент индекса
 	AVIINDEXENTRY	*pCurrFrameIndex = &m_pMovieIndex[ dwFrameNum ];
 
@@ -289,7 +293,7 @@ BOOL CAviPlayerCustom::DecompressFrame( DWORD dwFrameNum )
 			d			= subst_alpha	(d,a);
 		}
 	}
-
+#endif
 	return	TRUE;
 }
 
@@ -300,6 +304,7 @@ GetFrame
 */
 BOOL CAviPlayerCustom::GetFrame( BYTE **pDest )
 {
+#ifdef IXR_WINDOWS
 	R_ASSERT( pDest );
 
 	DWORD	dwCurrFrame;
@@ -342,11 +347,13 @@ BOOL CAviPlayerCustom::GetFrame( BYTE **pDest )
 		DecompressFrame( m_dwFrameCurrent );
 		return	TRUE;
 	}
+#endif
 }
 
 // минимум проверок на валидность переданного для преролла кадра - нужна скорость
-VOID CAviPlayerCustom::PreRoll( DWORD dwFrameNum )
+void CAviPlayerCustom::PreRoll( DWORD dwFrameNum )
 {
+#ifdef IXR_WINDOWS
 	int i;
 
 	AVIINDEXENTRY	*pCurrFrameIndex;
@@ -412,27 +419,28 @@ VOID CAviPlayerCustom::PreRoll( DWORD dwFrameNum )
 			R_ASSERT( 0 );
 		}
 	} // for(...
-
+#endif
 }
 
-VOID CAviPlayerCustom::GetSize(DWORD *dwWidth, DWORD *dwHeight)
+void CAviPlayerCustom::GetSize(DWORD *dwWidth, DWORD *dwHeight)
 {
 	if( dwWidth )	*dwWidth = m_dwWidth;
 	if( dwHeight )	*dwHeight = m_dwHeight;
 }
 
-INT CAviPlayerCustom::SetSpeed( INT nPercent )
+int CAviPlayerCustom::SetSpeed(int nPercent )
 {
-	INT		res = INT( m_fCurrentRate / m_fRate * 100 );
+	int res = int( m_fCurrentRate / m_fRate * 100 );
 
-	m_fCurrentRate	= m_fRate * FLOAT( nPercent / 100.0f );
+	m_fCurrentRate	= m_fRate * float( nPercent / 100.0f );
 
 	return	res;
 }
+
 DWORD CAviPlayerCustom::CalcFrame()
-	{	
-		if(0==m_dwFirstFrameOffset)
-			m_dwFirstFrameOffset = RDEVICE.dwTimeContinual-1;
+{	
+	if(0==m_dwFirstFrameOffset)
+		m_dwFirstFrameOffset = RDEVICE.dwTimeContinual-1;
 
 	return DWORD( floor( (RDEVICE.dwTimeContinual-m_dwFirstFrameOffset) * m_fCurrentRate / 1000.0f) ) % m_dwFrameTotal;
 }

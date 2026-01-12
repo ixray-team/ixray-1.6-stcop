@@ -3,9 +3,61 @@
 
 #include <math.h>
 
-//#include "tntTimer.h"
-#include "vfw.h"
+#ifdef IXR_WINDOWS
+#include "Vfw.h"
 #include "mmsystem.h"
+#else
+using FOURCC = u32;
+
+struct AVIINDEXENTRY
+{
+    u32 ckid;
+    u32 dwFlags;
+    u32 dwChunkOffset;
+    u32 dwChunkLength;
+};
+
+    #define BI_RGB        0L
+    #define BI_RLE8       1L
+    #define BI_RLE4       2L
+    #define BI_BITFIELDS  3L
+    #define BI_JPEG       4L
+    #define BI_PNG        5L
+    
+    #pragma pack(push, 1)
+    struct BITMAPINFOHEADER
+	{
+        DWORD biSize;           // Размер структуры (40 байт)
+        long  biWidth;          // Ширина в пикселях
+        long  biHeight;         // Высота в пикселях
+        u16  biPlanes;         // Всегда 1
+        u16  biBitCount;       // Бит на пиксель (1, 4, 8, 16, 24, 32)
+        DWORD biCompression;    // Тип компрессии
+        DWORD biSizeImage;      // Размер изображения в байтах (0 если BI_RGB)
+        long  biXPelsPerMeter;  // Горизонтальное разрешение (пикселей на метр)
+        long  biYPelsPerMeter;  // Вертикальное разрешение
+        DWORD biClrUsed;        // Количество используемых цветов (0 = все)
+        DWORD biClrImportant;   // Количество важных цветов (0 = все)
+    };
+    #pragma pack(pop)
+    
+    // RGBQUAD для палитры
+    struct RGBQUAD
+	 {
+        u8 rgbBlue;
+        u8 rgbGreen;
+        u8 rgbRed;
+        u8 rgbReserved;  // Обычно 0
+    };
+
+    // Полная структура BITMAPINFO (BITMAPINFOHEADER + палитра)
+    struct BITMAPINFO
+	{
+        BITMAPINFOHEADER bmiHeader;
+        RGBQUAD          bmiColors[1];  // Палитра (для <= 8 бит)
+    };
+	using HIC = void*;
+#endif
 
 // replaced with standard AVIIF_KEYFRAME
 //rr #define	AVIINDEX_ISKEYFRAME		0x10	// ключевой кадр
@@ -49,12 +101,12 @@ typedef struct {
 	DWORD  dwSuggestedBufferSize;
 	DWORD  dwQuality;
 	DWORD  dwSampleSize;
-	struct {
-
-		WORD	left;
-		WORD	top;
-		WORD	right;
-		WORD	bottom;
+	struct
+	{
+		u16	left;
+		u16	top;
+		u16	right;
+		u16	bottom;
 	};
 //	RECT   rcFrame;		- лажа в MSDN
 } AVIStreamHeaderCustom;
@@ -83,7 +135,7 @@ protected:
 	DWORD				CalcFrame			();
 
 	BOOL				DecompressFrame		( DWORD	dwFrameNum );
-	VOID				PreRoll				( DWORD dwFrameNum );
+	void				PreRoll				( DWORD dwFrameNum );
 
 public:
 						CAviPlayerCustom		( );
@@ -91,12 +143,12 @@ public:
 
 	DWORD				m_dwWidth, m_dwHeight;
 
-	VOID				GetSize				( DWORD *dwWidth, DWORD *dwHeight );
+	void				GetSize				( DWORD *dwWidth, DWORD *dwHeight );
 	
 	BOOL				Load				( char *fname  );
 	BOOL				GetFrame			( BYTE **pDest );
 
 	BOOL				NeedUpdate			( ) { return CalcFrame( ) != m_dwFrameCurrent; }
-	INT					SetSpeed			( INT nPercent );
+	int					SetSpeed			( int nPercent );
 };
 #endif

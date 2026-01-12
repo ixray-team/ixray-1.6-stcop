@@ -14,7 +14,7 @@ private:
 		ISheduled*	Object;
 		u32			dwPadding;				// for align-issues
 
-		IC bool		operator < (Item& I)
+		IC bool operator<(const Item& I) const
 		{	return dwTimeForExecute > I.dwTimeForExecute; }
 	};
 	struct	ItemReg

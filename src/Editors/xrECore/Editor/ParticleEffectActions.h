@@ -1,4 +1,5 @@
 #pragma once
+#include "../../Include/xrRender/ParticleCustom.h"
 
 struct PBool
 {

@@ -1,16 +1,5 @@
 #include "stdafx.h"
-
 #include "../xrCore/Collision/Frustum.h"
-
-#pragma warning(disable:4995)
-// mmsystem.h
-#define MMNOSOUND
-#define MMNOMIDI
-#define MMNOAUX
-#define MMNOMIXER
-#define MMNOJOY
-#include <mmsystem.h>
-#pragma warning(default:4995)
 
 #include "x_ray.h"
 #include "Render.h"
@@ -172,8 +161,6 @@ void CRenderDevice::on_idle		()
 			return;
 		dwLastFrameTime = dwCurrentTime;
 	}
-
-
 
 	PROF_FRAME("Main Thread");
 	Platform::SetThreadName("X-Ray Primary Thread");
@@ -353,15 +340,20 @@ void CRenderDevice::Run()
 	// Startup timers and calculate timer delta
 	dwTimeGlobal = 0;
 	Timer_MM_Delta = 0;
+
 	{
-		u32 time_mm = timeGetTime();
-		while (timeGetTime() == time_mm);			// wait for next tick
-		u32 time_system = timeGetTime();
+		u32 time_mm = SDL_GetTicks();
+		while (SDL_GetTicks() == time_mm)
+		{
+			SDL_Delay(0);
+		}
+
+		u32 time_system = SDL_GetTicks();
 		u32 time_local = TimerAsync();
 		Timer_MM_Delta = time_system - time_local;
 	}
 
-	g_AppInfo.MainThread = GetCurrentThread();
+	g_AppInfo.MainThread = Platform::GetCurrentThread();
 	// Message cycle
 	seqAppStart.Process(rp_AppStart);
 
