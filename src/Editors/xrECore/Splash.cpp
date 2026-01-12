@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #define STB_IMAGE_IMPLEMENTATION
+#include <stb/stb_image.h>
 #include <SDL_Ext/SDL_image.h>
 #include <SDL3/SDL.h>
 #include "resource.h"
