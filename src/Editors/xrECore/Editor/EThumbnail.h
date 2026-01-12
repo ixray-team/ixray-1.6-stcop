@@ -1,7 +1,7 @@
 #ifndef EThumbnailH
 #define EThumbnailH
 
-#include "../../../Layers/xrRender/ETextureParams.h"
+#include "../../../xrEngine/ETextureParams.h"
 #include "../Public/PropertiesListHelper.h"
 
 //------------------------------------------------------------------------------
