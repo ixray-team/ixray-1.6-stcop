@@ -226,7 +226,7 @@ void xrMU_Reference::calc_lighting_cuda_2()
 	// Perform lighting
 	for (u32 I = 0; I < SafeVertices.size(); I++)
 	{
-		_vertex& V = SafeVertices[I];
+		_vertex& V						= SafeVertices[I];
 		base_color_c			vC		= colors_cuda[I];
  
 		// Get ambient factor
@@ -321,8 +321,7 @@ void xrMU_Reference::calc_lighting_cuda_2()
 	color.resize(SafeVertices.size());
 	for (u32 I = 0; I < SafeVertices.size(); I++)
 	{
-		Fvector		ptPos = SafeVertices[I].P;
-		base_color	ptColor = SafeVertices[I].C;
+ 		base_color	ptColor = SafeVertices[I].C;
 		color[I] = ptColor;
 	}
 

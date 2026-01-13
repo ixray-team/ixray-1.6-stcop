@@ -9,48 +9,7 @@
 #include "CUDAContext.h"
  
 struct OptixMeshBuffers;
-
-struct GridKeyVertexies 
-{
-    int x, y, z;
-
-    bool operator==(const GridKeyVertexies& other) const noexcept
-    {
-        return x == other.x && y == other.y && z == other.z;
-    }
-};
-
-struct GridKeyHasher
-{
-    std::size_t operator()(const GridKeyVertexies& k) const noexcept 
-    {
-        // Сдвигаем в положительную область
-        uint64_t X = uint64_t(int64_t(k.x) + 4096);
-        uint64_t Y = uint64_t(int64_t(k.y) + 4096);
-        uint64_t Z = uint64_t(int64_t(k.z) + 4096);
-
-        // Простые числа (лучше > диапазона)
-        const uint64_t p1 = 73856093ull;
-        const uint64_t p2 = 19349663ull;
-        const uint64_t p3 = 83492791ull;
-
-        return X * p1 ^ Y * p2 ^ Z * p3;
-    }
-
-    // std::size_t operator()(const GridKeyVertexies& k) const noexcept
-    // {
-    //     const uint64_t fnv_prime = 1099511628211ull;
-    //     uint64_t hash = 1469598103934665603ull; // offset basis
-    // 
-    //     hash ^= uint64_t(k.x); hash *= fnv_prime;
-    //     hash ^= uint64_t(k.y); hash *= fnv_prime;
-    //     hash ^= uint64_t(k.z); hash *= fnv_prime;
-    // 
-    //     return size_t(hash);
-    // }
-
-};
-
+ 
 class OptixGeometryBuilder
 {
 private:
