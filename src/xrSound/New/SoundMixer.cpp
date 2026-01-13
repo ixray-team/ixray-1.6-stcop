@@ -1261,8 +1261,8 @@ Mixer::Initialize()
 		mixer.fft_window[i] = .5 * (1. - cosf(2. * 3.1415926535897932384 * (f64)i / (f64)(SND_BLOCKSIZE-1)));
 	}
 
-	mixer.aligned_input_fft = (float*)_aligned_malloc(SND_BLOCKSIZE * sizeof(float), 16);
-	mixer.aligned_output_fft = (float*)_aligned_malloc(SND_BLOCKSIZE * 2 * sizeof(float), 16);
+	mixer.aligned_input_fft = (float*)aligned_alloc(16, SND_BLOCKSIZE * sizeof(float));
+	mixer.aligned_output_fft = (float*)aligned_alloc(16, SND_BLOCKSIZE * 2 * sizeof(float));
 	mixer.fft_setup = pffft_new_setup(SND_BLOCKSIZE, PFFFT_REAL);
 #endif
 
