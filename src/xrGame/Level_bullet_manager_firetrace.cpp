@@ -22,7 +22,7 @@
 #include "ik/math3d.h"
 #include "ParticlesObject.h"
 #include "ai/monsters/basemonster/base_monster.h"
-#undef min
+#include "CustomZone.h"
 //константы ShootFactor, определяющие 
 //поведение пули при столкновении с объектом
 #define RICOCHET_THRESHOLD		0.1
@@ -38,6 +38,14 @@ BOOL CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 {
 	bullet_test_callback_data* pData = (bullet_test_callback_data*)params;
 	SBullet* bullet = pData->pBullet;
+
+	if (object->SpatialComponent->spatial.type&STYPE_SHAPE)
+	{
+		if (CCustomZone* CZ = object->cast_custom_zone())
+			return CZ->PlayEntranceSmallParticles(bullet->bullet_pos, bullet->dir, bullet->start_velocity, false);
+
+		return FALSE;
+	}
 
 	if ((object->ID() == bullet->parent_id) && (bullet->fly_dist < parent_ignore_distance) && (!bullet->flags.ricochet_was))
 	{
