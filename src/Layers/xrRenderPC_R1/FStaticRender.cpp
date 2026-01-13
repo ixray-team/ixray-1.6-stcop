@@ -382,7 +382,7 @@ void CRender::Calculate				()
 			(
 			lstRenderables,
 			ISpatial_DB::O_ORDERED,
-			STYPE_RENDERABLE + STYPE_PARTICLE + STYPE_LIGHTSOURCE,
+				ESPATIAL_TYPE::RENDERABLE | ESPATIAL_TYPE::PARTICLE | ESPATIAL_TYPE::LIGHTSOURCE,
 			ViewBase);//nearest sorting
 
 			// Determine visibility for dynamic part of scene
@@ -413,9 +413,9 @@ void CRender::Calculate				()
 					continue;	// disassociated from S/P structure
 
 				// Filter only not light spatial
-				if	(PortalTraverser.i_marker != sector->r_marker && (spatial->spatial.type&STYPE_RENDERABLE || spatial->spatial.type&STYPE_PARTICLE) )	continue;	// inactive (untouched) sector
+				if (PortalTraverser.i_marker != sector->r_marker && ((spatial->spatial.type & ESPATIAL_TYPE::RENDERABLE) != ESPATIAL_TYPE::NONE || (spatial->spatial.type & ESPATIAL_TYPE::PARTICLE) != ESPATIAL_TYPE::NONE))	continue;	// inactive (untouched) sector
 
-				if(spatial->spatial.type&STYPE_RENDERABLE || spatial->spatial.type&STYPE_PARTICLE)
+				if ((spatial->spatial.type & ESPATIAL_TYPE::RENDERABLE) != ESPATIAL_TYPE::NONE || (spatial->spatial.type & ESPATIAL_TYPE::PARTICLE) != ESPATIAL_TYPE::NONE)
 				{
 					for (u32 v_it=0; v_it<sector->r_frustums.size(); v_it++)
 					{
@@ -455,11 +455,10 @@ void CRender::Calculate				()
 					}
 				}
 
-				if (spatial->spatial.type & STYPE_LIGHTSOURCE)
+				if ((spatial->spatial.type & ESPATIAL_TYPE::LIGHTSOURCE) != ESPATIAL_TYPE::NONE)
 				{
 					if ( ViewBase.testSphere_dirty(spatial->spatial.sphere.P,spatial->spatial.sphere.R) )
 					{
-						VERIFY(spatial->spatial.type & STYPE_LIGHTSOURCE);
 						// lightsource
 						if (light* L = (light*)spatial->dcast_Light())
 						{

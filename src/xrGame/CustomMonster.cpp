@@ -647,6 +647,8 @@ void CCustomMonster::Die	(CObject* who)
 	inherited::Die			(who);
 	//Level().RemoveMapLocationByID(this->ID());
 	SetActorVisibility	(ID(),0.f);
+	SpatialComponent->spatial.type |= ESPATIAL_TYPE::AI_DEAD;
+	SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::AI_ALIVE;
 }
 
 BOOL CCustomMonster::net_Spawn	(CSE_Abstract* DC)
@@ -657,10 +659,10 @@ BOOL CCustomMonster::net_Spawn	(CSE_Abstract* DC)
 	if (!movement().net_Spawn(DC) || !inherited::net_Spawn(DC) || !CScriptEntity::net_Spawn(DC))
 		return					(FALSE);
 
-	SpatialComponent->spatial.type |= STYPE_VISIBLEFORAI;
+	SpatialComponent->spatial.type |= ESPATIAL_TYPE::VISIBLEFORAI;
 		// enable react to sound only if alive
 	if (g_Alive())
-		SpatialComponent->spatial.type	|= STYPE_REACTTOSOUND;
+		SpatialComponent->spatial.type	|= ESPATIAL_TYPE::REACTTOSOUND;
 
 	CSE_Abstract				*e	= (CSE_Abstract*)(DC);
 	CSE_ALifeMonsterAbstract	*E	= smart_cast<CSE_ALifeMonsterAbstract*>(e);
@@ -727,6 +729,12 @@ BOOL CCustomMonster::net_Spawn	(CSE_Abstract* DC)
 	shedule.t_max				= 250; // This equaltiy is broken by Dima :-( // 30 * NET_Latency / 4;
 
 	m_moving_object				= new moving_object(this);
+
+	SpatialComponent->spatial.type |= ESPATIAL_TYPE::AI;
+	if(GetfHealth()<=0.f)
+		SpatialComponent->spatial.type |= ESPATIAL_TYPE::AI_DEAD;
+	else
+		SpatialComponent->spatial.type |= ESPATIAL_TYPE::AI_ALIVE;
 
 	return TRUE;
 }

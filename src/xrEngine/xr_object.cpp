@@ -117,12 +117,12 @@ void CObject::setEnabled(BOOL _enabled)
 	{
 		Props.bEnabled = 1;	
 		if (collidable.model)
-			SpatialComponent->spatial.type |= STYPE_COLLIDEABLE;
+			SpatialComponent->spatial.type |= ESPATIAL_TYPE::COLLIDEABLE;
 	}
 	else
 	{
 		Props.bEnabled = 0;
-		SpatialComponent->spatial.type &= ~STYPE_COLLIDEABLE;
+		SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::COLLIDEABLE;
 	}
 }
 
@@ -133,17 +133,17 @@ void CObject::setVisible(BOOL _visible, BOOL _visibleshadow)
 	{ // Parent should control object visibility itself (??????)
 		Props.bVisible = 1;
 		if (renderable.visual)
-			SpatialComponent->spatial.type |= STYPE_RENDERABLE;
+			SpatialComponent->spatial.type |= ESPATIAL_TYPE::RENDERABLE;
 	}
 	else
 	{
 		Props.bVisible = 0;
-		SpatialComponent->spatial.type &= ~STYPE_RENDERABLE;
+		SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::RENDERABLE;
 	}
 	if (_visibleshadow)
-		SpatialComponent->spatial.type |= STYPE_RENDERABLESHADOW;
+		SpatialComponent->spatial.type |= ESPATIAL_TYPE::RENDERABLESHADOW;
 	else
-		SpatialComponent->spatial.type &= ~STYPE_RENDERABLESHADOW;
+		SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::RENDERABLESHADOW;
 }
 
 //void	CObject::Center					(Fvector& C)	const	{ VERIFY2(renderable.visual,*cName()); renderable.xform.transform_tiny(C,renderable.visual->vis.sphere.P);	}
@@ -322,7 +322,7 @@ void CObject::UpdateCL			()
 	if (Parent && SpatialComponent->spatial.node_ptr)
 		Debug.fatal	(DEBUG_INFO,"Object %s has parent but is still registered inside spatial DB",*cName());
 
-	if ((0==collidable.model)&&(SpatialComponent->spatial.type&STYPE_COLLIDEABLE))
+	if ((0==collidable.model)&&(SpatialComponent->spatial.type&ESPATIAL_TYPE::COLLIDEABLE)!=ESPATIAL_TYPE::NONE)
 		Debug.fatal	(DEBUG_INFO,"Object %s registered as 'collidable' but has no collidable model",*cName());
 #endif
 
