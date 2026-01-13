@@ -159,6 +159,8 @@ BOOL CHangingLamp::net_Spawn(CSE_Abstract* DC)
 	setVisible					((BOOL)!!Visual());
 	setEnabled					((BOOL)!!collidable.model);
 
+	SpatialComponent->spatial.type |= ESPATIAL_TYPE::LIGHT_LAMP;
+
 	return						(TRUE);
 }
 

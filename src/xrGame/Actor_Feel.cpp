@@ -176,7 +176,7 @@ void CActor::PickupModeUpdate_COD()
 
 	CFrustum frustum;
 	frustum.CreateFromMatrix(transform, FRUSTUM_P_LRTB | FRUSTUM_P_FAR);
-	g_SpatialSpace->q_frustum(ISpatialResult, 0, STYPE_COLLIDEABLE, frustum);
+	g_SpatialSpace->q_frustum(ISpatialResult, 0, ESPATIAL_TYPE::ITEM, frustum);
 
 	float maxlen = 1000.0f;
 	CInventoryItem* pNearestItem = nullptr;
@@ -291,7 +291,7 @@ void CActor::Check_for_AutoPickUp()
 	Fbox APU_Box;
 	APU_Box.set(Fvector().sub(bc, m_AutoPickUp_AABB), Fvector().add(bc, m_AutoPickUp_AABB));
 
-	g_SpatialSpace->q_box(ISpatialResult, 0, STYPE_COLLIDEABLE, bc, m_AutoPickUp_AABB);
+	g_SpatialSpace->q_box(ISpatialResult, 0, ESPATIAL_TYPE::ITEM, bc, m_AutoPickUp_AABB);
 
 	// Determine visibility for dynamic part of scene
 	for (ISpatialShared& spatial : ISpatialResult)

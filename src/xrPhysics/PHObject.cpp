@@ -13,7 +13,7 @@ extern CPHWorld* ph_world;
 
 CPHObject::CPHObject()
 {
-	ISpatialOwner::spatial_create(g_SpatialSpacePhysic, this, STYPE_PHYSIC);
+	ISpatialOwner::spatial_create(g_SpatialSpacePhysic, this, ESPATIAL_TYPE::PHYSIC);
 
 	m_flags.flags	=	0;
 	m_island.Init	();
@@ -93,7 +93,7 @@ void CPHObject::Collide()
 			float	magnitude = dir.magnitude();
 			if (magnitude < EPS) continue;
 			dir.mul(1.f / magnitude);
-			g_SpatialSpacePhysic->q_ray(ph_world->r_spatial, 0, STYPE_PHYSIC, *from, dir, magnitude);//|ISpatial_DB::O_ONLYFIRST
+			g_SpatialSpacePhysic->q_ray(ph_world->r_spatial, 0, ESPATIAL_TYPE::PHYSIC, *from, dir, magnitude);//|ISpatial_DB::O_ONLYFIRST
 #ifdef DEBUG
 			if (debug_output().ph_dbg_draw_mask().test(phDbgDrawRayMotions))
 			{
@@ -125,7 +125,7 @@ void CPHObject::Collide()
 
 void CPHObject::CollideDynamics()
 {
-	g_SpatialSpacePhysic->q_box(ph_world->r_spatial, 0, STYPE_PHYSIC, SpatialComponent->spatial.sphere.P, AABB);
+	g_SpatialSpacePhysic->q_box(ph_world->r_spatial, 0, ESPATIAL_TYPE::PHYSIC, SpatialComponent->spatial.sphere.P, AABB);
 	qResultVec& result = ph_world->r_spatial;
 	qResultIt i = result.begin(), e = result.end();
 	for (; i != e; ++i) {

@@ -145,7 +145,7 @@ void	CLight_DB::LoadHemi	()
 						L->set_color		(Ldata.diffuse.x, Ldata.diffuse.y, Ldata.diffuse.z);
 						L->set_active		(true				);
 						L->set_attenuation_params(Ldata.attenuation0, Ldata.attenuation1, Ldata.attenuation2, Ldata.falloff);
-						L->SpatialComponent->spatial.type = STYPE_LIGHTSOURCEHEMI;
+						L->SpatialComponent->spatial.type = ESPATIAL_TYPE::LIGHTSOURCEHEMI;
 					}
 				}
 

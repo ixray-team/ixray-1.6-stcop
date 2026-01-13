@@ -2,6 +2,7 @@
 
 #include "../xrEngine/CustomHUD.h"
 #include "HitMarker.h"
+#include "LevelInspector.h"
 
 class CHUDTarget;
 class CUIGameCustom;
@@ -17,6 +18,11 @@ private:
 	CHUDTarget*				m_pHUDTarget;
 	bool					b_online;
 public:
+	LevelInspector			world_prims = LevelInspector(FALSE);
+	IC void					draw_prims()
+	{
+		world_prims.OnRender();
+	};
 							CHUDManager			();
 	virtual					~CHUDManager		();
 	virtual		void		OnEvent				(EVENT E, u64 P1, u64 P2);

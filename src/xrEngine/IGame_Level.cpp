@@ -275,7 +275,7 @@ void	IGame_Level::SoundEvent_Register	( ref_sound_data_ptr S, float range )
 	VERIFY					(_valid(p.max_ai_distance));
 	VERIFY					(_valid(p.volume));
 
-	g_SpatialSpace->q_box(snd_ER, 0, STYPE_REACTTOSOUND, snd_position, { range,range,range });
+	g_SpatialSpace->q_box(snd_ER, 0, ESPATIAL_TYPE::REACTTOSOUND, snd_position, { range,range,range });
 
 	// Iterate
 	for (auto& spatial : snd_ER)

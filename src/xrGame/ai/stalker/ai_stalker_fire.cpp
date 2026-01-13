@@ -1006,6 +1006,11 @@ void CAI_Stalker::wounded					(bool value)
 
 	m_wounded				= value;
 
+	if(m_wounded)
+		SpatialComponent->spatial.type |= ESPATIAL_TYPE::STALKER_WOUNDED;
+	else
+		SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::STALKER_WOUNDED;
+
 	if(!m_wounded && g_Alive())
 		character_physics_support()->CreateCharacterSafe();
 

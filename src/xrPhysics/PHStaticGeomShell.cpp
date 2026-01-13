@@ -43,7 +43,7 @@ void CPHStaticGeomShell::Deactivate()
 
 CPHStaticGeomShell::CPHStaticGeomShell()
 {
-	SpatialComponent->spatial.type|=STYPE_PHYSIC;
+	SpatialComponent->spatial.type |= ESPATIAL_TYPE::PHYSIC;
 }
 
 void _BCL	cb(CBoneInstance* B)

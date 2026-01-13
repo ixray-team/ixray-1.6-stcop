@@ -81,6 +81,8 @@ BOOL CDestroyablePhysicsObject::net_Spawn(CSE_Abstract* DC)
 	}
 	CParticlesPlayer::LoadParticles(K);
 	RunStartupAnim(DC);
+
+	SpatialComponent->spatial.type |= ESPATIAL_TYPE::PHYSIC_OBJECT_DESTR;
 	return res;
 }
 

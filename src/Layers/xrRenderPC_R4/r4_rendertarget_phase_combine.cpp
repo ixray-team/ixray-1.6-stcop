@@ -173,9 +173,6 @@ void CRenderTarget::phase_combine()
 		RCache.set_ColorWriteEnable ();
 
 		RImplementation.render_forward	();
-		if (g_pGamePersistent) {
-			g_pGamePersistent->OnRenderPPUI_main();	// PP-UI
-		}
 	}
 
 	//	Igor: for volumetric lights
@@ -216,6 +213,12 @@ void CRenderTarget::phase_combine()
 			GRHI->CopySurface(rt_Generic_0->pSurface, rt_Generic_2->pSurface);
 		}
 	}
+
+	u_setrt(rt_Generic_0, 0, 0, RDepth);
+	if (g_pGamePersistent) {
+		g_pGamePersistent->OnRenderPPUI_main();	// PP-UI
+	}
+	u_setrt(rt_Generic_2, 0, 0, 0);
 
 	if(ps_r_scale_mode < 2) {
 		if(ps_r2_aa_type == 1) {

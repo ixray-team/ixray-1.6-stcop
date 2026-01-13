@@ -438,9 +438,9 @@ void CROS_impl::prepare_lights(Fvector& position, IRenderable* O)
 		Fvector					bb_size	=	{radius,radius,radius};
 
 #if RENDER!=R_R1
-		g_SpatialSpace->q_box(RImplementation.lstSpatial,0,STYPE_LIGHTSOURCEHEMI,position,bb_size);
+		g_SpatialSpace->q_box(RImplementation.lstSpatial,0, ESPATIAL_TYPE::LIGHTSOURCEHEMI,position,bb_size);
 #else
-		g_SpatialSpace->q_box(RImplementation.lstSpatial,0,STYPE_LIGHTSOURCE,position,bb_size);
+		g_SpatialSpace->q_box(RImplementation.lstSpatial,0, ESPATIAL_TYPE::LIGHTSOURCE,position,bb_size);
 #endif
 
 		for (u32 o_it = 0; o_it < RImplementation.lstSpatial.size(); o_it++)

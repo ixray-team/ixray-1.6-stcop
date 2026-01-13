@@ -190,7 +190,7 @@ void dx103DFluidObstacles::ProcessDynamicObstacles( const dx103DFluidData &Fluid
 		(
 		m_lstRenderables,
 		0, //ISpatial_DB::O_ORDERED,
-		STYPE_RENDERABLE,
+		ESPATIAL_TYPE::RENDERABLE,
 		center,
 		size
 		);

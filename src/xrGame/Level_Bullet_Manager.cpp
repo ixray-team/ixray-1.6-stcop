@@ -735,7 +735,7 @@ BOOL CBulletManager::firetrace_callback	(collide::rq_result& result, LPVOID para
 	
 	float const	air_resistance		= (IsGameTypeSingle()) ? Level().BulletManager().m_fAirResistanceK : bullet.air_resistance;
 
-	if(result.O && result.O->SpatialComponent->spatial.type&STYPE_SHAPE)
+	if(result.O && (result.O->SpatialComponent->spatial.type&ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE)
 	{
 		if (CCustomZone* CZ = result.O->cast_custom_zone())
 		{

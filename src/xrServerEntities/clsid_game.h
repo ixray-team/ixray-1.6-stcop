@@ -237,3 +237,9 @@
 #define CLSID_ONLINE_OFFLINE_GROUP		MK_CLSID('O','N','_','O','F','F','_','G')
 
 #define CLSID_EQUIPMENT_BACKPACK MK_CLSID('E', 'Q', '_', 'B', 'A', 'K', 'P', 'K')
+
+
+#define CLSID_SMART_TERRAIN				MK_CLSID('S','M','R','T','T','R','R','N')
+#define CLSID_SPACE_RESTRICTOR			MK_CLSID('S','P','C','_','R','S','_','S')
+#define CLSID_SMART_COVER				MK_CLSID('S','M','R','T','_','C','_','S')
+#define CLSID_SIM_FACTION				MK_CLSID('S','F','A','C','T','I','O','N')
