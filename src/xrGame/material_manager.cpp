@@ -36,8 +36,8 @@ BOOL debug_character_material_load = FALSE;
 void CMaterialManager::Load			(LPCSTR section)
 {
 	R_ASSERT3				(pSettings->line_exist(section,"material"),"Material not found in the section ",*(m_object->cNameSect()));
-	m_my_material_idx		= GMLib.GetMaterialIdx(pSettings->r_string(section,"material"));
-
+	m_my_material_idx		= GMLib.GetMaterialIdx(READ_IF_EXISTS(pSettings, r_string, section, "material", "default_object"));
+	
 #ifdef	DEBUG
 		if( debug_character_material_load )
 		{

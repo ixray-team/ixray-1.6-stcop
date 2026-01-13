@@ -95,7 +95,8 @@ void CEntityAlive::Load		(LPCSTR section)
 		LoadFireParticles	("entity_fire_particles");
 
 	//биолог. вид к торому принадлежит монстр или персонаж
-	monster_community->set	(pSettings->r_string(section, "species"));
+	if(pSettings->line_exist(section, "species"))
+		monster_community->set	(pSettings->r_string(section, "species"));
 }
 
 void CEntityAlive::LoadBloodyWallmarks (LPCSTR section)
