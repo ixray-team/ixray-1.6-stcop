@@ -2879,6 +2879,9 @@ void CCC_RegisterCommands()
 
 	extern BOOL g_bullet_debug_trj;
 	CMD4(CCC_Integer, "g_bullet_debug_trj", &g_bullet_debug_trj, 0, 1);
+
+	extern BOOL g_bullets_stop;
+	CMD4(CCC_Integer, "g_bullets_stop", &g_bullets_stop, 0, 1);
 #endif
 
 
