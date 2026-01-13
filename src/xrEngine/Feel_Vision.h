@@ -24,13 +24,14 @@ namespace Feel
 		xr_vector<CObject*>			diff;
 		collide::rq_results			RQR;
 		xr_vector<ISpatialShared>	r_spatial;
-		CObject const*				m_owner;
+		CObject*					m_owner;
+		CFrustum					Frustum;
 
 		void						o_new		(CObject* E);
 		void						o_delete	(CObject* E);
 		void						o_trace		(Fvector& P, float dt, float vis_threshold);
 	public:
-									Vision		(CObject const* owner);
+									Vision		(CObject* owner);
 		virtual					~	Vision		();
 		struct	 feel_visible_Item 
 		{
@@ -47,21 +48,30 @@ namespace Feel
 		xr_vector<feel_visible_Item>	feel_visible;
 	public:
 		void						feel_vision_clear		();
-		void						feel_vision_query		(Fmatrix& mFull,	Fvector& P);
-		void						feel_vision_update		(CObject* parent,	Fvector& P, float dt, float vis_threshold);
+		void						feel_vision_query		(Fmatrix& mFull);
+		void						feel_vision_update		(Fvector& P, float dt, float vis_threshold);
 		void						feel_vision_relcase		(CObject* object);
 		void						feel_vision_get(xr_vector<CObject*>& R)
 		{
 			PROF_EVENT("feel_vision_get");
 			R.clear();
 			xr_vector<feel_visible_Item>::iterator I = feel_visible.begin(), E = feel_visible.end();
-			for (; I != E; I++)	if (positive(I->fuzzy)) R.push_back(I->O);
+			for (; I != E; I++)
+			{
+				if (positive(I->fuzzy))
+					R.push_back(I->O);
+			}
 		}
-		Fvector						feel_vision_get_vispoint(CObject* _O)					{
+		Fvector						feel_vision_get_vispoint(CObject* _O)
+		{
 			xr_vector<feel_visible_Item>::iterator I=feel_visible.begin(),E=feel_visible.end();
-			for (; I!=E; I++)		if (_O == I->O) {
-				VERIFY	(positive(I->fuzzy));
-				return	I->cp_LAST;
+			for (; I!=E; I++)
+			{
+				if (_O == I->O)
+				{
+					VERIFY(positive(I->fuzzy));
+					return	I->cp_LAST;
+				}
 			}
 			VERIFY2		(0, "There is no such object in the potentially visible list" );
 			return		Fvector().set(flt_max,flt_max,flt_max);

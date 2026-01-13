@@ -123,7 +123,7 @@ protected:
 	BOOL						Update_Visibility		;
 	u32							UCalc_Time				;
 	s32							UCalc_Visibox			;
-
+	u32							Visibox_frame = 0;
 	xrCriticalSection			UCalc_Mutex;
 	xrCriticalSection			UCalc_Mutex2;
 
@@ -206,22 +206,69 @@ public:
 	ICF Fmatrix&			_BCL	LL_GetTransform		(u16 bone_id)		{	return LL_GetBoneInstance(bone_id).mTransform;					}
 	ICF const Fmatrix&		_BCL	LL_GetTransform		(u16 bone_id) const	{	return LL_GetBoneInstance(bone_id).mTransform;					}
 
-	ICF void				_BCL	LL_GetBoneWorldPosition	(u16 bone_id, const Fmatrix& xform, Fvector& result)
+	ICF void				_BCL	LL_GetBoneLocalPosition(u16 bone_id, Fvector& result)
 	{
 		{
 			xrCriticalSectionGuard g(UCalc_Mutex);
-			LL_GetBoneInstance(bone_id).mTransform.transform_tiny(result);
+			result = LL_GetBoneInstance(bone_id).mTransform.c;
 		}
+	}
+
+	ICF void				_BCL	LL_GetBoneLocalTransform(u16 bone_id, Fmatrix& result)
+	{
+		{
+			xrCriticalSectionGuard g(UCalc_Mutex);
+			result = LL_GetBoneInstance(bone_id).mTransform;
+		}
+	}
+
+	ICF void				_BCL	LL_GetBoneWorldPosition	(u16 bone_id, const Fmatrix& xform, Fvector& result)
+	{
+		LL_GetBoneLocalPosition(bone_id, result);
 		xform.transform_tiny(result);
 	}
 
 	ICF void				_BCL	LL_GetBoneWorldTransform(u16 bone_id, const Fmatrix& xform, Fmatrix& result)
 	{
-		{
-			xrCriticalSectionGuard g(UCalc_Mutex);
-			result.mulA_43(LL_GetBoneInstance(bone_id).mTransform);
-		}
+		LL_GetBoneLocalTransform(bone_id, result);
 		result.mulA_43(xform);
+	}
+
+	ICF void CalculateBBox(BOOL bforce = TRUE)
+	{
+		if (!bforce && Device.dwFrame == Visibox_frame)
+			return;
+
+		Visibox_frame = Device.dwFrame;
+
+		// the update itself
+		Fbox	Box; Box.invalidate();
+		for (u32 b = 0; b < bones->size(); b++)
+		{
+			if (!LL_GetBoneVisible(u16(b)))		continue;
+			Fobb& obb = (*bones)[b]->obb;
+			Fmatrix& Mbone = bone_instances[b].mTransform;
+			Fmatrix		Mbox;	obb.xform_get(Mbox);
+			Fmatrix		X;		X.mul_43(Mbone, Mbox);
+			Fvector& S = obb.m_halfsize;
+
+			Fvector			P, A;
+			A.set(-S.x, -S.y, -S.z); X.transform_tiny(P, A); Box.modify(P);
+			A.set(-S.x, -S.y, S.z); X.transform_tiny(P, A); Box.modify(P);
+			A.set(S.x, -S.y, S.z); X.transform_tiny(P, A); Box.modify(P);
+			A.set(S.x, -S.y, -S.z); X.transform_tiny(P, A); Box.modify(P);
+			A.set(-S.x, S.y, -S.z); X.transform_tiny(P, A); Box.modify(P);
+			A.set(-S.x, S.y, S.z); X.transform_tiny(P, A); Box.modify(P);
+			A.set(S.x, S.y, S.z); X.transform_tiny(P, A); Box.modify(P);
+			A.set(S.x, S.y, -S.z); X.transform_tiny(P, A); Box.modify(P);
+		}
+		if (bones->size())
+		{
+			// previous frame we have updated box - update sphere
+			vis.box.min = (Box.min);
+			vis.box.max = (Box.max);
+			vis.box.getsphere(vis.sphere.P, vis.sphere.R);
+		}
 	}
 
 	ICF Fmatrix&					LL_GetTransform_R	(u16 bone_id)		{	return LL_GetBoneInstance(bone_id).mRenderTransform;			}	// rendering only

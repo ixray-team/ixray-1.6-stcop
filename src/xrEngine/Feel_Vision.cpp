@@ -10,7 +10,7 @@
 
 using Feel::Vision;
 
-Vision::Vision(CObject const* owner) :
+Vision::Vision(CObject* owner) :
 	pure_relcase(&Vision::feel_vision_relcase),
 	m_owner(owner)
 {
@@ -27,20 +27,7 @@ struct SFeelParam {
 	float						vis_threshold;
 	SFeelParam(Vision* _parent, Vision::feel_visible_Item* _item, float _vis_threshold) :parent(_parent), item(_item), vis(1.f), vis_threshold(_vis_threshold) {}
 };
-IC BOOL feel_vision_callback(collide::rq_result& result, LPVOID params)
-{
-	SFeelParam* fp = (SFeelParam*)params;
-	float vis = fp->parent->feel_vision_mtl_transp(result.O, result.element);
-	fp->vis *= vis;
-	if (nullptr == result.O && fis_zero(vis)) {
-		CDB::TRI* T = g_pGameLevel->ObjectSpace.GetStaticTris() + result.element;
-		Fvector* V = g_pGameLevel->ObjectSpace.GetStaticVerts();
-		fp->item->Cache.verts[0].set(V[T->verts[0]]);
-		fp->item->Cache.verts[1].set(V[T->verts[1]]);
-		fp->item->Cache.verts[2].set(V[T->verts[2]]);
-	}
-	return (fp->vis > fp->vis_threshold);
-}
+
 void	Vision::o_new(CObject* O)
 {
 	feel_visible.push_back(feel_visible_Item());
@@ -85,13 +72,11 @@ void	Vision::feel_vision_relcase(CObject* object)
 	for (; Ii != IiE; ++Ii)if (Ii->O == object) { feel_visible.erase(Ii); break; }
 }
 
-void Vision::feel_vision_query(Fmatrix& mFull, Fvector& P)
+void Vision::feel_vision_query(Fmatrix& mFull)
 {
-	CFrustum Frustum;
 	Frustum.CreateFromMatrix(mFull, FRUSTUM_P_LRTB | FRUSTUM_P_FAR);
 
 	// Traverse object database
-	r_spatial.resize(0);
 	g_SpatialSpace->q_frustum
 	(
 		r_spatial,
@@ -106,7 +91,8 @@ void Vision::feel_vision_query(Fmatrix& mFull, Fvector& P)
 	{
 		ISpatial* spatial = r_spatial[o_it].get();
 		CObject* object = spatial->dcast_CObject();
-		if (object && feel_vision_isRelevant(object))	seen.push_back(object);
+		if (object && feel_vision_isRelevant(object))
+			seen.push_back(object);
 	}
 	if (seen.size() > 1)
 	{
@@ -116,12 +102,12 @@ void Vision::feel_vision_query(Fmatrix& mFull, Fvector& P)
 	}
 }
 
-void	Vision::feel_vision_update(CObject* parent, Fvector& P, float dt, float vis_threshold)
+void	Vision::feel_vision_update(Fvector& P, float dt, float vis_threshold)
 {
 	// B-A = objects, that become visible
 	if (!seen.empty())
 	{
-		xr_vector<CObject*>::iterator E = std::remove(seen.begin(), seen.end(), parent);
+		xr_vector<CObject*>::iterator E = std::remove(seen.begin(), seen.end(), m_owner);
 		seen.resize(E - seen.begin());
 
 		{
@@ -193,11 +179,27 @@ void Vision::o_trace(Fvector& P, float dt, float vis_threshold) {
 					feel_params.vis = 0.f;
 					//						Log("cache 1");
 				}
-				else {
+				else
+				{
 					// cache outdated. real query.
 					VERIFY(!fis_zero(RD.dir.magnitude()));
 
-					if (g_pGameLevel->ObjectSpace.RayQuery(RQR, RD, feel_vision_callback, &feel_params, nullptr, const_cast<CObject*>(m_owner)))
+					if (g_pGameLevel->ObjectSpace.RayQuery(RQR, RD, [](collide::rq_result & result, LPVOID params) -> BOOL
+					{
+						SFeelParam* fp = (SFeelParam*)params;
+						float vis = fp->parent->feel_vision_mtl_transp(result.O, result.element);
+						fp->vis *= vis;
+						if (nullptr == result.O && fis_zero(vis))
+						{
+							CDB::TRI* T = g_pGameLevel->ObjectSpace.GetStaticTris() + result.element;
+							Fvector* V = g_pGameLevel->ObjectSpace.GetStaticVerts();
+							fp->item->Cache.verts[0].set(V[T->verts[0]]);
+							fp->item->Cache.verts[1].set(V[T->verts[1]]);
+							fp->item->Cache.verts[2].set(V[T->verts[2]]);
+						}
+						return BOOL(fp->vis > fp->vis_threshold);
+					}, &feel_params, nullptr, m_owner))
+
 					{
 						I->Cache_vis = feel_params.vis;
 						I->Cache.set(P, D, f, TRUE);
@@ -211,7 +213,6 @@ void Vision::o_trace(Fvector& P, float dt, float vis_threshold) {
 				}
 			}
 			//				Log("Vis",feel_params.vis);
-			r_spatial.resize(0);
 			g_SpatialSpace->q_ray(r_spatial, 0, STYPE_VISIBLEFORAI, P, D, f);
 
 			RD.flags = CDB::OPT_ONLYFIRST;

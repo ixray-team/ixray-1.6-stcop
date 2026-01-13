@@ -741,22 +741,6 @@ void CAI_Stalker::net_Destroy()
 	CInventoryOwner::net_Destroy();
 	m_pPhysics_support->in_NetDestroy();
 
-	Device.remove_from_seq_parallel
-	(
-		xr_make_delegate
-		(
-			this,
-			&CAI_Stalker::update_object_handler
-		)
-	);
-
-#ifdef DEBUG
-	auto f = xr_make_delegate(this, &CAI_Stalker::update_object_handler);
-	xr_vector<xr_delegate<void()> >::const_iterator	I;
-	I = std::find(Device.seqParallel.begin(), Device.seqParallel.end(), f);
-	VERIFY(I == Device.seqParallel.end());
-#endif // DEBUG
-
 	xr_delete(m_ce_close);
 	xr_delete(m_ce_far);
 	xr_delete(m_ce_best);
@@ -837,24 +821,11 @@ void CAI_Stalker::UpdateCL()
 		if (OnServer())
 		{
 #if USE_OLD_OBJECT_PLANNER
-			if (g_mt_config.test(mtObjectHandler) && CObjectHandler::planner().initialized())
+			if (CObjectHandler::planner().initialized())
 #else
-			if (g_mt_config.test(mtObjectHandler) && m_planner->GoapPlanner.GetCurrentAction())
+			if (m_planner->GoapPlanner.GetCurrentAction())
 #endif
-			{
-				auto f = xr_make_delegate(this, &CAI_Stalker::update_object_handler);
-
-#ifdef DEBUG
-				xr_vector<xr_delegate<void()> >::const_iterator I = std::find(Device.seqParallel.begin(), Device.seqParallel.end(), f);
-				VERIFY(I == Device.seqParallel.end());
-#endif
-				Device.seqParallel.push_back(xr_make_delegate(this, &CAI_Stalker::update_object_handler));
-			}
-			else
-			{
-				PROF_EVENT("object_handler");
 				update_object_handler();
-			}
 		}
 
 
@@ -1235,25 +1206,17 @@ shared_str const &CAI_Stalker::aim_bone_id		() const
 	return					(m_aim_bone_id);
 }
 
-void aim_target							(shared_str const& aim_bone_id, Fvector &result, const CGameObject *object)
-{
-	IKinematics				*kinematics = PKinematics(object->Visual());
-	VERIFY					(kinematics);
-
-	u16						bone_id = kinematics->LL_BoneID(aim_bone_id);
-	VERIFY2					(bone_id != BI_NONE, make_string<const char*>("Cannot find bone %s",bone_id));
-
-	Fmatrix const			&bone_matrix = kinematics->LL_GetTransform(bone_id);
-	Fmatrix					final;
-	final.mul_43			(object->XFORM(), bone_matrix);
-	result					= final.c;
-}
-
 void CAI_Stalker::aim_target					(Fvector &result, const CGameObject *object)
 {
 	VERIFY					(m_aim_bone_id.size());
 
-	::aim_target			( m_aim_bone_id, result, object );
+	IKinematics* kinematics = PKinematics(object->Visual());
+	VERIFY(kinematics);
+
+	u16 bone_id = kinematics->LL_BoneID(*m_aim_bone_id);
+	VERIFY2(bone_id != BI_NONE, make_string<const char*>("Cannot find bone %s", bone_id));
+
+	kinematics->LL_GetBoneWorldPosition(bone_id, object->XFORM(), result);
 }
 
 BOOL CAI_Stalker::AlwaysTheCrow					()

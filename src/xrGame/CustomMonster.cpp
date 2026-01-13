@@ -536,6 +536,8 @@ void CCustomMonster::UpdatePositionAnimation()
 	PROF_EVENT("animation");
 	if (!bfScriptAnimation())
 		SelectAnimation			(XFORM().k,movement().detail().direction(),movement().speed());
+
+	eye_pp_s0();
 }
 
 BOOL CCustomMonster::feel_visible_isRelevant (CObject* O)
@@ -569,7 +571,9 @@ void CCustomMonster::update_range_fov	(float &new_range, float &new_fov, float s
 
 	float	current_fog_density				= GamePersistent().Environment().CurrentEnv->fog_density	;	
 	// 0=no_fog, 1=full_fog, >1 = super-fog
-	float	current_far_plane				= GamePersistent().Environment().CurrentEnv->fog_far;
+
+#pragma todo("v2v3v4: Let's see, maybe it will stay like this because it's much cheaper and more logical.")
+	float	current_far_plane				= ai().get_alife() ? ai().alife().online_distance() : GamePersistent().Environment().CurrentEnv->fog_far;
 	// 300=standart, 50=super-fog
 
 	new_fov = start_fov;
@@ -595,7 +599,7 @@ void CCustomMonster::eye_pp_s1			()
 	VERIFY									(_valid(eye_matrix));
 	mProject.build_projection				(deg2rad(new_fov),1,0.1f,new_range);
 	mFull.mul								(mProject,mView);
-	feel_vision_query						(mFull,eye_matrix.c);
+	feel_vision_query						(mFull);
 	Device.Statistic->AI_Vis_Query.End		();
 }
 
@@ -606,7 +610,7 @@ void CCustomMonster::eye_pp_s2				( )
 	u32 dwTime			= Level().timeServer();
 	u32 dwDT			= dwTime-eye_pp_timestamp;
 	eye_pp_timestamp	= dwTime;
-	feel_vision_update						(this,eye_matrix.c,float(dwDT)/1000.f,memory().visual().transparency_threshold());
+	feel_vision_update						(eye_matrix.c,float(dwDT)/1000.f,memory().visual().transparency_threshold());
 	Device.Statistic->AI_Vis_RayTests.End	();
 }
 
@@ -619,7 +623,6 @@ void CCustomMonster::Exec_Visibility	( )
 	switch (eye_pp_stage%2)	
 	{
 	case 0:	
-			eye_pp_s0();			
 			eye_pp_s1();			break;
 	case 1:	eye_pp_s2();			break;
 	}
@@ -761,12 +764,6 @@ void CCustomMonster::net_Destroy()
 		xr_make_delegate(
 			this,
 			&CCustomMonster::update_sound_player
-		)
-	);
-	Device.remove_from_seq_parallel	(
-		xr_make_delegate(
-			this,
-			&CCustomMonster::Exec_Visibility
 		)
 	);
 	

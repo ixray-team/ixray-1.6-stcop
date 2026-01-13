@@ -21,8 +21,8 @@ base::base						(
 		Fvector const& target
 	) :
 	m_object				( *object ),
-	m_kinematics			( smart_cast<IKinematics&>( *object->Visual() ) ),
-	m_animated				( smart_cast<IKinematicsAnimated&>( *object->Visual() ) ),
+	m_kinematics			( *PKinematics( object->Visual() ) ),
+	m_animated				(*object->Visual()->dcast_PKinematicsAnimated()),
 	m_target				( target ),
 	m_animation_id			( m_animated.LL_MotionID( animation_id ) ),
 	m_animation_start		( animation_start )

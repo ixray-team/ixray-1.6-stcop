@@ -53,34 +53,8 @@ void CKinematics::CalculateBones(BOOL bForceExact)
 		// mark
 		UCalc_Visibox		= -(::Random.randI(psSkeletonUpdate-1));
 
-		// the update itself
-		Fbox	Box; Box.invalidate();
-		for (u32 b=0; b<bones->size(); b++)
-		{
-			if			(!LL_GetBoneVisible(u16(b)))		continue;
-			Fobb&		obb		= (*bones)[b]->obb;
-			Fmatrix&	Mbone	= bone_instances[b].mTransform;
-			Fmatrix		Mbox;	obb.xform_get(Mbox);
-			Fmatrix		X;		X.mul_43(Mbone,Mbox);
-			Fvector&	S		= obb.m_halfsize;
+		CalculateBBox();
 
-			Fvector			P,A;
-			A.set( -S.x,	-S.y,	-S.z ); X.transform_tiny(P,A); Box.modify(P);
-			A.set( -S.x,	-S.y,	 S.z ); X.transform_tiny(P,A); Box.modify(P);
-			A.set(  S.x,	-S.y,	 S.z ); X.transform_tiny(P,A); Box.modify(P);
-			A.set(  S.x,	-S.y,	-S.z ); X.transform_tiny(P,A); Box.modify(P);
-			A.set( -S.x,	 S.y,	-S.z ); X.transform_tiny(P,A); Box.modify(P);
-			A.set( -S.x,	 S.y,	 S.z ); X.transform_tiny(P,A); Box.modify(P);
-			A.set(  S.x, 	 S.y,	 S.z ); X.transform_tiny(P,A); Box.modify(P);
-			A.set(  S.x, 	 S.y,	-S.z ); X.transform_tiny(P,A); Box.modify(P);
-		}
-	if(bones->size())
-	{
-		// previous frame we have updated box - update sphere
-		vis.box.min			= (Box.min);
-		vis.box.max			= (Box.max);
-		vis.box.getsphere	(vis.sphere.P,vis.sphere.R);
-	}
 #ifdef DEBUG
 		// Validate
 		VERIFY3	(_valid(vis.box.min)&&_valid(vis.box.max),	"Invalid bones-xform in model", dbg_name.c_str());
