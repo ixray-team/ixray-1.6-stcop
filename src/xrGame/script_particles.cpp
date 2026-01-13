@@ -130,6 +130,16 @@ void CScriptParticles::MoveTo	(const Fvector &pos, const Fvector& vel)
 	m_particles->UpdateParent	(XF,vel);
 }
 
+void CScriptParticles::SetXFORM(const Fvector& pos, const Fvector& dir, const Fvector& vel)
+{
+	VERIFY(m_particles);
+	Fmatrix XF;
+	XF.k.set(dir);
+	Fvector::generate_orthonormal_basis(XF.k, XF.j, XF.i);
+	XF.c.set(pos);
+	m_particles->UpdateParent(XF, vel);
+}
+
 bool CScriptParticles::IsPlaying() const
 {
 	VERIFY						(m_particles);
