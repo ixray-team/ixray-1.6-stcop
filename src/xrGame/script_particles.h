@@ -48,7 +48,7 @@ public:
 	bool						IsLooped			() const;
 
 	void						MoveTo				(const Fvector &pos, const Fvector& vel);
-
+	void						SetXFORM			(const Fvector& pos, const Fvector& dir, const Fvector& vel);
 	void						LoadPath			(LPCSTR caPathName);
 	void						StartPath			(bool looped);
 	void						StopPath			();
