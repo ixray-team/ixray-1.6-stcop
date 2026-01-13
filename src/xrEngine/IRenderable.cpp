@@ -5,7 +5,7 @@
 
 IRenderable::IRenderable()
 {
-	ISpatialOwner::spatial_create(g_SpatialSpace, this, STYPE_RENDERABLE);
+	ISpatialOwner::spatial_create(g_SpatialSpace, this, ESPATIAL_TYPE::RENDERABLE);
 
 	renderable.xform.identity			();
 	renderable.visual					= nullptr;
