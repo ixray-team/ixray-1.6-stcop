@@ -36,9 +36,8 @@ CObjectSpace::~CObjectSpace()
 //----------------------------------------------------------------------
 int CObjectSpace::GetNearest(xr_vector<ISpatialShared>& q_spatial, xr_vector<CObject*>& q_nearest, const Fvector& point, float range, CObject* ignore_object)
 {
-	q_spatial.resize(0);
 	// Query objects
-	q_nearest.resize(0);
+	q_nearest.clear();
 
 	Fsphere Q;	
 	Q.set(point, range);
@@ -46,7 +45,7 @@ int CObjectSpace::GetNearest(xr_vector<ISpatialShared>& q_spatial, xr_vector<COb
 	Fvector B;	
 	B.set(range, range, range);
 
-	g_SpatialSpace->q_box(q_spatial, 0, STYPE_COLLIDEABLE, point, B);
+	g_SpatialSpace->q_box(q_spatial, 0, ESPATIAL_TYPE::COLLIDEABLE, point, B);
 
 	// Iterate
 	auto it = q_spatial.begin();

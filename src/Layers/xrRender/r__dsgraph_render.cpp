@@ -369,20 +369,24 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 	// Traverse sector/portal structure
 	PortalTraverser.traverse		( _sector, ViewBase, _cop, mCombined, 0 );
 	{
-		PROF_EVENT("add_static")
+		PROF_EVENT("add_static");
 	// Determine visibility for static geometry hierrarhy
-	for (u32 s_it=0; s_it<PortalTraverser.r_sectors.size(); s_it++)
-	{
-		CSector*	sector		= (CSector*)PortalTraverser.r_sectors[s_it];
-		dxRender_Visual*	root	= sector->root();
-		for (u32 v_it=0; v_it<sector->r_frustums.size(); v_it++)	{
-			set_Frustum			(&(sector->r_frustums[v_it]));
-			add_Geometry		(root);
+		if(psDeviceFlags.test(rsDrawStatic))
+		{
+			for (u32 s_it = 0; s_it < PortalTraverser.r_sectors.size(); s_it++)
+			{
+				CSector* sector = (CSector*)PortalTraverser.r_sectors[s_it];
+				dxRender_Visual* root = sector->root();
+				for (u32 v_it = 0; v_it < sector->r_frustums.size(); v_it++)
+				{
+					set_Frustum(&(sector->r_frustums[v_it]));
+					add_Geometry(root);
+				}
 			}
 		}
 	}
 
-	if (_dynamic)
+	if (_dynamic && psDeviceFlags.test(rsDrawDynamic))
 	{
 		PROF_EVENT("add_dynamic")
 		set_Object						(0);
@@ -392,7 +396,7 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 			(
 			lstRenderables,
 			ISpatial_DB::O_ORDERED,
-			STYPE_RENDERABLE + STYPE_RENDERABLESHADOW,
+			ESPATIAL_TYPE::RENDERABLE | ESPATIAL_TYPE::RENDERABLESHADOW,
 			ViewBase
 			);
 
@@ -417,11 +421,11 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 					CKinematics* pKin = (CKinematics*)renderable->renderable.visual;
 					if(pKin)
 					{
-						if(spatial->spatial.type&STYPE_RENDERABLESHADOW)
+						if ((spatial->spatial.type & ESPATIAL_TYPE::RENDERABLESHADOW) != ESPATIAL_TYPE::NONE)
 						{
 							pKin->CalculateBones(TRUE);
 						}
-						if(spatial->spatial.type&STYPE_RENDERABLE)
+						if ((spatial->spatial.type & ESPATIAL_TYPE::RENDERABLE) != ESPATIAL_TYPE::NONE)
 						{
 							if(0==ViewSave.testSphere_dirty(spatial->spatial.sphere.P, spatial->spatial.sphere.R))
 							{

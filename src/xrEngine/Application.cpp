@@ -267,8 +267,6 @@ void CApplication::LoadSwitch()
 void CApplication::OnFrame()
 {
 	g_pEventManager->Event.OnFrame();
-	g_SpatialSpace->update();
-	g_SpatialSpacePhysic->update();
 }
 
 void CApplication::Level_Append(LPCSTR folder)

@@ -99,7 +99,7 @@ BOOL CProjector::net_Spawn(CSE_Abstract* DC)
 	_start = _target = _current;
 
 	//////////////////////////////////////////////////////////////////////////
-
+	SpatialComponent->spatial.type |= ESPATIAL_TYPE::LIGHT_LAMP;
 	return TRUE;
 }
 

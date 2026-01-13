@@ -905,8 +905,8 @@ public:
 			void				StartTrade(CScriptGameObject* obj);
 			void				StartUpgrade(CScriptGameObject* obj);
 			void				SetWeight(float w);
-			u32					GetSpatialType();
-			void				SetSpatialType(u32 sptype);
+			u64					GetSpatialType();
+			void				SetSpatialType(u64 sptype);
 			u8					GetRestrictionType();
 			void				SetRestrictionType(u8 typ);
 
