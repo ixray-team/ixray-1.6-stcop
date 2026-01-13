@@ -116,7 +116,7 @@ BOOL CMissile::net_Spawn(CSE_Abstract* DC)
 
 	m_throw_direction.set(0.0f, 1.0f, 0.0f);
 	m_throw_matrix.identity();
-
+	SpatialComponent->spatial.type |= ESPATIAL_TYPE::MISSILE;
 	return l_res;
 }
 

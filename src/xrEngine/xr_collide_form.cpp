@@ -423,6 +423,8 @@ void CCF_Shape::ComputeBounds()
 		add_sphere(shphere);
 	}
 
+	owner->SpatialComponent->spatial.type |= ESPATIAL_TYPE::SHAPE;
+
 	BOOL bCalcSphere	= (shapes.size()>1);
 	for (u32 el=0; el<shapes.size(); el++)
 	{

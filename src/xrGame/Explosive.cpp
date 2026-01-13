@@ -393,8 +393,8 @@ void CExplosive::Explode()
 	//взрывная волна
 	////////////////////////////////
 	//---------------------------------------------------------------------
-	xr_vector<ISpatialShared> ISpatialResult;
-	g_SpatialSpace->q_sphere(ISpatialResult,0,STYPE_COLLIDEABLE,pos,m_fBlastRadius);
+	static xr_vector<ISpatialShared> ISpatialResult;
+	g_SpatialSpace->q_sphere(ISpatialResult,0, ESPATIAL_TYPE::COLLIDEABLE,pos,m_fBlastRadius);
 
 	m_blasted_objects.clear	();
 	for (u32 o_it=0; o_it<ISpatialResult.size(); o_it++)
@@ -524,7 +524,7 @@ void CExplosive::UpdateCL()
 				m_uLastBlastUpdateTime = Device.dwTimeGlobal + m_uBlastUpdateTime;
 
 				xr_vector<ISpatialShared> ISpatialResult;
-				g_SpatialSpace->q_sphere(ISpatialResult, 0, STYPE_COLLIDEABLE, m_vExplodePos, m_fBlastRadius);
+				g_SpatialSpace->q_sphere(ISpatialResult, 0, ESPATIAL_TYPE::COLLIDEABLE, m_vExplodePos, m_fBlastRadius);
 
 				for (u32 o_it = 0; o_it < ISpatialResult.size(); ++o_it)
 				{

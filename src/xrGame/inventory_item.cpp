@@ -128,7 +128,7 @@ void CInventoryItem::Load(LPCSTR section)
 
 	if (CGameObject* GO = cast_game_object())
 	{
-		cast_game_object()->SpatialComponent->spatial.type |= STYPE_VISIBLEFORAI;
+		cast_game_object()->SpatialComponent->spatial.type |= ESPATIAL_TYPE::VISIBLEFORAI;
 	}
 
 	m_section_id._set(section);
@@ -428,6 +428,8 @@ BOOL CInventoryItem::net_Spawn(CSE_Abstract* DC)
 	{
 		m_flags.set(Fuseful_for_NPC, alife_object->m_flags.test(CSE_ALifeObject::flUsefulForAI));
 	}
+
+	object().SpatialComponent->spatial.type |= ESPATIAL_TYPE::ITEM;
 
 	CSE_ALifeInventoryItem* pSE_InventoryItem = e != nullptr ? e->cast_inventory_item() : nullptr;
 	if (pSE_InventoryItem == nullptr)

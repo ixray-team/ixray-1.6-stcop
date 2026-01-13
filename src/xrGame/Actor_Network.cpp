@@ -720,8 +720,15 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 		m_statistic_manager = new CActorStatisticMgr();
 	}
 
+	SpatialComponent->spatial.type |= ESPATIAL_TYPE::ACTOR;
 
-	SpatialComponent->spatial.type |=STYPE_REACTTOSOUND;
+	if(GetfHealth()>0.f)
+		SpatialComponent->spatial.type |= ESPATIAL_TYPE::ACTOR_ALIVE;
+	else
+		SpatialComponent->spatial.type |= ESPATIAL_TYPE::ACTOR_DEAD;
+
+	SpatialComponent->spatial.type |= ESPATIAL_TYPE::REACTTOSOUND;
+
 	psHUD_Flags.set(HUD_WEAPON_RT,TRUE);
 	psHUD_Flags.set(HUD_WEAPON_RT2,TRUE);
 	
