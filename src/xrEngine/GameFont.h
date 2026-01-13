@@ -104,7 +104,7 @@ public:
 	inline void SetGradientColor(u32 C) { dwGradientColor = C; };
 
 	//inline void SetHeightI(float S);
-	inline void SetHeight(float S);
+	void SetHeight(float S);
 
 	inline float GetHeight() { return fCurrentHeight; };
 	inline void SetAligment(EAligment aligment) { eCurrentAlignment = aligment; }
