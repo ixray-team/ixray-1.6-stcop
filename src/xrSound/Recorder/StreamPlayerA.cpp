@@ -6,11 +6,7 @@
 #include <AL/al.h>
 #include <AL/alc.h>
 
-#ifdef IXR_WINDOWS
-#	include <opus/opus.h>
-#else
-#	include <opus.h>
-#endif
+#include <opus.h>
 
 CStreamPlayerA::CStreamPlayerA(ALuint sampleRate, ALenum format, ALCcontext* context)
 	: m_sampleRate(sampleRate), m_format(format), m_pContext(context), m_source(0)
@@ -198,6 +194,7 @@ void CStreamPlayerA::Update()
 	{
 		alSourcePlay(m_source);
 	}
+
 }
 
 bool CStreamPlayerA::IsPlaying()
@@ -205,4 +202,6 @@ bool CStreamPlayerA::IsPlaying()
 	ALint state;
 	alGetSourcei(m_source, AL_SOURCE_STATE, &state);
 	return state == AL_PLAYING;
+
+	//return SDL_GetAudioStreamQueued(m_audioStream) > 0;
 }

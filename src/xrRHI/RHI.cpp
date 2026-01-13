@@ -33,7 +33,9 @@ CRHI::CRHI()
 
 CRHI::~CRHI()
 {
+#ifdef IXR_WINDOWS
 	GRHIRenderViewManager.Clear();
+#endif
 
 	xr_delete(DevicePtr);
 	xr_delete(ShaderResourceCache);
@@ -611,25 +613,35 @@ void CRHI::SetScissorRect(Irect* R)
 
 void CRHI::SetRenderTargetView(IRHIRenderTargetView* pRenderTargetView, u32 ID, bool bForce)
 {
+#ifdef IXR_WINDOWS
 	GRHIRenderViewManager.SetRenderTargetView(pRenderTargetView, ID, bForce);
+#endif
 }
 
 void CRHI::SetDepthStencilView(IRHIDepthStencilView* pDepthStencilView, bool bForce)
 {
+#ifdef IXR_WINDOWS
 	GRHIRenderViewManager.SetDepthStencilView(pDepthStencilView, bForce);
+#endif
 }
 
 void CRHI::ApplyRenderTargetChange()
 {
+#ifdef IXR_WINDOWS
 	GRHIRenderViewManager.ApplyRenderTargetChange();
+#endif
 }
 
 IRHIDepthStencilView* CRHI::GetDepthStencilView() const
 {
+#ifdef IXR_WINDOWS
 	return GRHIRenderViewManager.DepthStencilView;
+#endif
 }
 
 IRHIRenderTargetView* CRHI::GetRenderTargetView(size_t ID) const
 {
+#ifdef IXR_WINDOWS
 	return GRHIRenderViewManager.RenderTargetViews[ID];
+#endif
 }
