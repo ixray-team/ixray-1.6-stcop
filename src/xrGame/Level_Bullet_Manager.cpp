@@ -15,7 +15,8 @@
 #include "../Include/xrRender/UIRender.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "ParticlesObject.h"
-
+#include "CustomZone.h"
+#include "HUDManager.h"
 #ifdef DEBUG
 #	include "debug_renderer.h"
 #endif
@@ -33,6 +34,7 @@ float const CBulletManager::parent_ignore_distance	= 3.f;
 #endif // #ifdef DEBUG
 float g_bullet_time_factor							= 1.f;
 BOOL g_bullet_debug_trj = FALSE;
+BOOL g_bullets_stop = FALSE;
 SBullet::SBullet()
 {
 }
@@ -40,7 +42,8 @@ SBullet::SBullet()
 SBullet::~SBullet()
 {
 }
-
+int bp_update_idx = 0;
+int bp_render_idx = 1;
 
 void SBullet::Init(const Fvector& position,
 				   const Fvector& direction,
@@ -57,7 +60,13 @@ void SBullet::Init(const Fvector& position,
 				   bool SendHit)
 {
 	flags._storage			= 0;
-	bullet_pos 				= position;
+
+	bullet_pos = position;
+	tracer_pos[0] = position;
+	tracer_pos[1] = position;
+	tracer_last_pos[0] = position;
+	tracer_last_pos[1] = position;
+
 	speed = max_speed		= starting_speed;
 	VERIFY					(speed > 0.f);
 
@@ -74,8 +83,6 @@ void SBullet::Init(const Fvector& position,
 
 	max_dist				= maximum_distance * cartridge.param_s.kDist;
 	fly_dist				= 0;
-	tracer_start_position	= bullet_pos;
-
 	parent_id				= sender_id;
 	flags.allow_sendhit		= SendHit;
 	weapon_id				= sendersweapon_id;
@@ -94,8 +101,6 @@ void SBullet::Init(const Fvector& position,
 	flags.explosive			= !!cartridge.m_flags.test(CCartridge::cfExplosive);
 	flags.magnetic_beam		= !!cartridge.m_flags.test(CCartridge::cfMagneticBeam);
 //	flags.skipped_frame		= 0;
-
-	init_frame_num			= Device.dwFrame;
 
 	targetID				= 0;	
 	density_mode			= 0;
@@ -155,6 +160,31 @@ void CBulletManager::Load		()
 	for (int k=0; k<cnt; ++k)
 		m_ExplodeParticles.push_back	(_GetItem(explode_particles,k,tmp));
 
+	LPCSTR sh_name = READ_IF_EXISTS(pSettings, r_string, bullet_manager_sect, "tracer_shader", "effects\\bullet_tracer");
+	LPCSTR tx_name = READ_IF_EXISTS(pSettings, r_string, bullet_manager_sect, "tracer_texture", "fx\\fx_tracer");
+	m_circle_size_k = READ_IF_EXISTS(pSettings, r_float, bullet_manager_sect, "fire_circle_k", .5f);
+
+	sh_Tracer->create(sh_name, tx_name);
+
+	m_aColors.clear();
+	string64			LineName;
+
+	for (u8 i = 0; i < 255; i++)
+	{
+		xr_sprintf(LineName, "color_%d", i);
+		if (!pSettings->line_exist("tracers_color_table", LineName))
+			break;
+		u32 clr = pSettings->r_color("tracers_color_table", LineName);
+
+		m_aColors.push_back(clr);
+	};
+
+	circle_uv.min.set(32.0f / 64.0f, 0.0f);
+	circle_uv.max.set(1.0f, 32.0f / 512.0f);
+
+	sprite_uv.min.set(0.0f, 1.0f);
+	sprite_uv.max.set(16.0f / 64.0f, 0.0f);
+
 	m_trj_shader->create("portal");
 }
 
@@ -181,8 +211,9 @@ void CBulletManager::PlayWhineSound(SBullet* bullet, CObject* object, const Fvec
 
 void CBulletManager::Clear		()
 {
-	m_Bullets.clear			();
-	m_Events.clear			();
+	m_Bullets.clear();
+	m_Events.clear();
+	m_Bullets_Tracers.clear();
 }
 
 void CBulletManager::AddBullet(const Fvector& position,
@@ -203,7 +234,7 @@ void CBulletManager::AddBullet(const Fvector& position,
 	VERIFY						(u16(-1)!=cartridge.bullet_material_idx);
 //	u32 CurID					= Level().CurrentControlEntity()->ID();
 //	u32 OwnerID					= sender_id;
-	xrCriticalSectionGuard guard(&m_Lock);
+
 	SBullet& bullet				= m_Bullets.emplace_back();
 	if (g_bullet_debug_trj)
 		bullet.lines.reserve(256);
@@ -215,38 +246,37 @@ void CBulletManager::AddBullet(const Fvector& position,
 		if (SendHit)
 			Game().m_WeaponUsageStatistic->OnBullet_Fire(&bullet, cartridge);
 	}
-	
+
 }
 
 void CBulletManager::UpdateWorkload()
 {
-	PROF_EVENT("CBulletManager::UpdateWorkload")
-	xrCriticalSectionGuard guard(&m_Lock);
-	rq_storage.r_clear			();
-
-	u32 const time_delta		= Device.dwTimeDelta;
-	if (!time_delta)
-		return;
-
-	collide::rq_result			dummy;
-
+	PROF_EVENT("CBulletManager::UpdateWorkload");
 	// this is because of ugly nature of removing bullets
 	// when index in vector passed through the tgt_material field
 	// and we can remove them only in case when we iterate bullets
 	// in the reversed order
 
-	BulletVec::reverse_iterator	i = m_Bullets.rbegin();
-	BulletVec::reverse_iterator	e = m_Bullets.rend();
-	for (u16 j=u16(e - i); i != e; ++i, --j)
+	if (m_Bullets.empty()) return;
+
+	u32 const time_delta = Device.dwTimeDelta;
+	if(time_delta)
 	{
-		if ( process_bullet( rq_storage, *i, u32(time_delta*g_bullet_time_factor)) )
-			continue;
+		rq_storage.r_clear();
+		collide::rq_result dummy;
+		BulletVec::reverse_iterator	i = m_Bullets.rbegin();
+		BulletVec::reverse_iterator	e = m_Bullets.rend();
+		for (u16 j = u16(e - i); i != e; ++i, --j)
+		{
+			if (process_bullet(rq_storage, *i, u32(time_delta * g_bullet_time_factor)))
+				continue;
 
-		if (g_bullet_debug_trj && Device.dwTimeGlobal < (*i).born_time + 10000)
-			continue;
+			if (g_bullet_debug_trj && Device.dwTimeGlobal < (*i).born_time + 10000)
+				continue;
 
-		VERIFY					(j > 0);
-		RegisterEvent			(EVENT_REMOVE, FALSE, &*i, Fvector().set(0, 0, 0), dummy, j - 1);
+			VERIFY(j > 0);
+			RegisterEvent(EVENT_REMOVE, FALSE, &*i, Fvector().set(0, 0, 0), dummy, j - 1);
+		}
 	}
 }
 
@@ -705,6 +735,63 @@ BOOL CBulletManager::firetrace_callback	(collide::rq_result& result, LPVOID para
 	
 	float const	air_resistance		= (IsGameTypeSingle()) ? Level().BulletManager().m_fAirResistanceK : bullet.air_resistance;
 
+	if(result.O && result.O->SpatialComponent->spatial.type&STYPE_SHAPE)
+	{
+		if (CCustomZone* CZ = result.O->cast_custom_zone())
+		{
+			u8 flag = CZ->PlayEntranceSmallParticles(collide_position, bullet.dir, bullet.start_velocity, true);
+			if(flag == u8(1))
+			{
+				data.collide_time = 1.f;
+				bullet.speed = 0.f;
+
+				return (TRUE);
+			}
+
+			if (flag == u8(2))
+			{
+				bullet.start_position = collide_position;
+				bullet.bullet_pos = collide_position;
+				bullet.tracer_pos[bp_update_idx] = collide_position;
+
+				Fvector C;
+				CZ->Center(C);
+				float radius = CZ->Radius();
+
+				Fvector normal;
+				normal.sub(collide_position, C);
+				normal.normalize();
+
+				Fvector incoming_dir = bullet.dir;
+				incoming_dir.normalize();
+
+				float dot = incoming_dir.dotproduct(normal);
+				Fvector reflected_dir;
+				reflected_dir.mad(incoming_dir, normal, -2.0f * dot);
+				reflected_dir.normalize();
+
+				reflected_dir.random_dir(reflected_dir, deg2rad(5.0f));
+
+				bullet.dir = reflected_dir;
+
+				float energy_loss = 0.8f;//-80%
+				bullet.speed *= (1.0f - energy_loss);
+
+				bullet.start_velocity.set(bullet.dir);
+				bullet.start_velocity.mul(bullet.speed);
+			}
+
+			if (flag == u8(3))
+			{
+				bullet.start_position = collide_position;
+				bullet.bullet_pos = collide_position;
+				bullet.tracer_pos[bp_update_idx] = collide_position;
+				bullet.dir.random_dir();
+				bullet.start_velocity = Fvector(bullet.dir).mul(bullet.speed * 0.2f);
+			}
+		}
+	}
+
 	CBulletManager& bullet_manager	= Level().BulletManager();
 	Fvector const gravity			= { 0.f, -bullet_manager.m_fGravityConst, 0.f };
 	update_bullet					( bullet, data, gravity, air_resistance);
@@ -761,7 +848,7 @@ bool CBulletManager::trajectory_check_error	(
 	bullet.flags.ricochet_was = 0;
 	bullet.dir				= start_to_target;
 
-	collide::ray_defs RD	(start, start_to_target, distance, CDB::OPT_FULL_TEST, collide::rqtBoth);
+	collide::ray_defs RD	(start, start_to_target, distance, CDB::OPT_FULL_TEST, collide::rq_target(collide::rqtBoth|collide::rqtShape));
 	BOOL const result		= Level().ObjectSpace.RayQuery(storage, RD, CBulletManager::firetrace_callback, &data, CBulletManager::test_callback, nullptr);
 	if ( !result || (data.collide_time == 0.f) ) {
 		add_bullet_point	(bullet.start_position, previous_position, bullet.start_velocity, gravity, air_resistance, high);
@@ -777,8 +864,8 @@ bool CBulletManager::trajectory_check_error	(
 
 	++bullet.change_rajectory_count;
 	bullet.start_position	= data.collide_position;
-	bullet.tracer_start_position	= bullet.bullet_pos;
-	bullet.bullet_pos		= data.collide_position;
+	bullet.bullet_pos = data.collide_position;
+
 	bullet.start_velocity	= Fvector().mul(bullet.dir, bullet.speed);
 	bullet.born_time		+= iFloor(data.collide_time*1000.f);
 	bullet.life_time		= 0.f;
@@ -812,7 +899,9 @@ static bool try_update_bullet				(SBullet& bullet, Fvector const& gravity, float
 	if(g_bullet_debug_trj && !bullet.bullet_pos.similar(new_position))
 		bullet.lines.push_back({ bullet.bullet_pos, new_position });
 
-	bullet.bullet_pos			= new_position;
+	bullet.tracer_last_pos[bp_update_idx] = bullet.bullet_pos;
+	bullet.bullet_pos = new_position;
+	bullet.tracer_pos[bp_update_idx] = new_position;
 	bullet.dir					= Fvector(new_velocity).normalize_safe();
 	bullet.life_time			= time;
 	return						(true);
@@ -825,7 +914,7 @@ bool CBulletManager::process_bullet			(collide::rq_results & storage, SBullet& b
 	Fvector const gravity		= Fvector().set( 0.f, -m_fGravityConst, 0.f);
 
 	float const	air_resistance	= (IsGameTypeSingle()) ? m_fAirResistanceK : bullet.air_resistance;
-	bullet.tracer_start_position= bullet.bullet_pos;
+
 
 #if 0//def DEBUG
 	extern BOOL g_bDrawBulletHit;
@@ -899,7 +988,7 @@ bool CBulletManager::process_bullet			(collide::rq_results & storage, SBullet& b
 	BOOL g_bDrawBulletHit = FALSE;
 #endif
 
-float SqrDistancePointToSegment(const Fvector& pt, const Fvector& orig, const Fvector& dir)
+IC float SqrDistancePointToSegment(const Fvector& pt, const Fvector& orig, const Fvector& dir)
 {
 	Fvector diff;	diff.sub(pt,orig);
 	float fT		= diff.dotproduct(dir);
@@ -919,6 +1008,7 @@ float SqrDistancePointToSegment(const Fvector& pt, const Fvector& orig, const Fv
 
 	return diff.square_magnitude();
 }
+
 
 void CBulletManager::Render	()
 {
@@ -961,117 +1051,311 @@ void CBulletManager::Render	()
 			}
 	}
 #endif
+	const Fvector& cam_P = Device.vCameraPosition;
+	const Fvector& cam_D = Device.vCameraDirection;
+	const Fvector& cam_T = Device.vCameraTop;
+	const Fvector& cam_R = Device.vCameraRight;
 
-	if(m_Bullets.empty()) return;
-	xrCriticalSectionGuard guard(&m_Lock);
-	//u32	vOffset			=	0	;
-	u32 bullet_num		= (u32)m_Bullets.size();
-	u32 totalLines = 0;
-	UIRender->StartPrimitive((u32)bullet_num*12, IUIRender::ptTriList, IUIRender::pttLIT);
+	constexpr u32 MAX_TRIANGLES_PER_BATCH = 58'000u;
+	constexpr u32 MAX_VERTICES_PER_BATCH = MAX_TRIANGLES_PER_BATCH * 3u;
 
-	for(SBullet& bullet : m_Bullets)
+	// 3d tracer
+	//constexpr u32 VERTICES_PER_TRACER = 672u;
+	// 2d tracer
+	constexpr u32 VERTICES_PER_TRACER = 12u;
+
+	constexpr u32 TRACERS_PER_BATCH = MAX_VERTICES_PER_BATCH / VERTICES_PER_TRACER;
+
+	constexpr float MaxDistSqr = 1.0f;
+	constexpr float MinDistSqr = 0.09f;
+	// 3d tracer
+	//UIRender->SetShader(*m_trj_shader);
+	// 2d tracer
+	UIRender->SetShader(*sh_Tracer);
+
+	UIRender->CacheSetCullMode(ERHI_CULLMODE::NONE);
+
+	u32 g_bullet_debug_trj_totalLines = 0u;
+	static xr_vector<SBullet*> visible_tracers;
+
+	if (!g_bullet_debug_trj)
 	{
-		if (g_bullet_debug_trj)
-			totalLines += (u32)bullet.lines.size();
+		visible_tracers.clear();
+		visible_tracers.reserve(m_Bullets.size());
 
-		if(!bullet.flags.allow_tracer)	
-			continue;
-
-		if (!bullet.CanBeRenderedNow())
-			continue;
-
-		Fvector const tracer			= Fvector().sub(bullet.bullet_pos, bullet.tracer_start_position);
-		float length					= tracer.magnitude();
-		Fvector const tracer_direction	= length >= EPS_L ? Fvector(tracer).mul(1.f/length) : Fvector().set(0.f, 0.f, 1.f);
-
-		if (length < m_fTracerLengthMin) 
-			continue;
-
-		if (length > m_fTracerLengthMax)
-			length			= m_fTracerLengthMax;
-
-		float width			= m_fTracerWidth;
-		float dist2segSqr	= SqrDistancePointToSegment(Device.vCameraPosition, bullet.bullet_pos, tracer);
-		//---------------------------------------------
-		float MaxDistSqr = 1.0f;
-		float MinDistSqr = 0.09f;
-		if (dist2segSqr < MaxDistSqr)
+		for (SBullet& bullet : m_Bullets)
 		{
-			if (dist2segSqr < MinDistSqr) dist2segSqr = MinDistSqr;
+			if (!bullet.flags.allow_tracer)
+				continue;
+			Fvector tracer_last_pos = bullet.tracer_last_pos[bp_render_idx];
+			Fvector const tracer = Fvector().sub(bullet.tracer_pos[bp_render_idx], tracer_last_pos);
+			float length = tracer.magnitude();
 
-			width *= _sqrt(dist2segSqr/MaxDistSqr);
-		}
-		if (Device.vCameraPosition.distance_to_sqr(bullet.bullet_pos)<(length*length))
-		{
-			length = Device.vCameraPosition.distance_to(bullet.bullet_pos) - 0.3f;
-		}
+			if (length < m_fTracerLengthMin)
+				continue;
 
-		Fvector center;
-		center.mad				(bullet.bullet_pos, tracer_direction,  -length*.5f);
-		bool bActor				= false;
-		if(Level().CurrentViewEntity())
-		{
-			bActor				= ( bullet.parent_id == Level().CurrentViewEntity()->ID() );
+			Fvector const tracer_direction = length >= EPS_L ? Fvector(tracer).mul(1.f / length) : bullet.dir;
+			Fvector center;
+			center.mad(tracer_last_pos, tracer_direction, length * .5f);
+
+			if (!::Render->ViewBase.testSphere_dirty(center, length * .5f))
+				continue;
+
+			visible_tracers.push_back(&bullet);
 		}
-		tracers.Render			(bullet.bullet_pos, center, tracer_direction, length, width, bullet.m_u8ColorID, bullet.speed, bActor);
 	}
-	
-	UIRender->CacheSetCullMode		(ERHI_CULLMODE::NONE);
-	UIRender->CacheSetXformWorld	(Fidentity);
-	UIRender->SetShader				(*tracers.sh_Tracer);
-	UIRender->FlushPrimitive		();
-	UIRender->CacheSetCullMode		(ERHI_CULLMODE::BACK);
-
-	if (g_bullet_debug_trj && totalLines > 0u)
+	else
 	{
-		constexpr u32 DEFAULT_COLOR = color_rgba(100, 255, 100, 255);
-		u32 MAX_LINES_PER_BATCH = 80'000u;
+		for (SBullet& bullet : m_Bullets)
+			g_bullet_debug_trj_totalLines += (u32)bullet.lines.size();
+	}
+
+	if (!visible_tracers.empty())
+	{
+		u32 current_tracer = 0;
+		const u32 total_tracers = visible_tracers.size();
+
+		while (current_tracer < total_tracers)
+		{
+			u32 tracers_in_batch = std::min(TRACERS_PER_BATCH, total_tracers - current_tracer);
+			u32 vertices_in_batch = tracers_in_batch * VERTICES_PER_TRACER;
+
+			IUIRender::LITFast** buffer = UIRender->StartPrimitiveLITFast(vertices_in_batch, IUIRender::ptTriList);
+
+			for (u32 i = 0; i < tracers_in_batch; ++i)
+			{
+				SBullet* bullet = visible_tracers[current_tracer++];
+
+				Fvector tracer_last_pos = bullet->tracer_last_pos[bp_render_idx];
+				Fvector tracer_pos = bullet->tracer_pos[bp_render_idx];
+
+				Fvector const tracer = Fvector().sub(tracer_pos, tracer_last_pos);
+				float length = tracer.magnitude();
+
+				if (length > m_fTracerLengthMax)
+					length = m_fTracerLengthMax;
+
+				Fvector const tracer_direction = length >= EPS_L ? Fvector(tracer).mul(1.f / length) : bullet->dir;
+
+				float width = m_fTracerWidth;
+				float dist2segSqr = SqrDistancePointToSegment(cam_P, tracer_pos, tracer);
+
+				if (dist2segSqr < MaxDistSqr)
+				{
+					if (dist2segSqr < MinDistSqr) dist2segSqr = MinDistSqr;
+					width *= _sqrt(dist2segSqr / MaxDistSqr);
+				}
+
+				if (cam_P.distance_to_sqr(tracer_pos) < (length * length))
+					length = cam_P.distance_to(tracer_pos) - 0.3f;
+
+				bool bActor = false;
+				if (Level().CurrentViewEntity())
+					bActor = (bullet->parent_id == Level().CurrentViewEntity()->ID());
+
+				R_ASSERT(bullet->m_u8ColorID < m_aColors.size());
+				u32 color = m_aColors[bullet->m_u8ColorID];
+				Fvector& pos = tracer_pos;
+
+				// 3d tracer
+				//{
+				//	Fvector dir = tracer_direction;
+				//	dir.normalize_safe();
+				//
+				//	Fvector up(0.f, 1.f, 0.f);
+				//	float dot = dir.dotproduct(up);
+				//
+				//	if (std::abs(dot) > 0.999f)
+				//	{
+				//		up.set(0.f, 0.f, 1.f);
+				//		dot = dir.dotproduct(up);
+				//
+				//		if (std::abs(dot) > 0.999f)
+				//			up.set(1.f, 0.f, 0.f);
+				//	}
+				//
+				//	Fvector right;
+				//	right.crossproduct(up, dir);
+				//	right.normalize_safe();
+				//
+				//	Fvector real_up;
+				//	real_up.crossproduct(dir, right);
+				//	real_up.normalize_safe();
+				//
+				//	Fmatrix mR;
+				//	mR.i = right;			  mR._14 = 0.f;
+				//	mR.j = real_up;			  mR._24 = 0.f;
+				//	mR.k = dir;				  mR._34 = 0.f;
+				//	mR.c = pos; mR._44 = 1.f;
+				//
+				//	mR.k.mul(length);
+				//	mR.i.mul(width * .15f);
+				//	mR.j.mul(width * .15f);
+				//
+				//	HUD().world_prims.append_ellipse(mR, 0, color, buffer);
+				//}
+
+				// 2d tracer
+				{
+					//sprite circle
+					float k_speed = bullet->speed / 1000.0f;
+					float sprite_size = k_speed * width * m_circle_size_k * (std::abs(cam_D.dotproduct(tracer_direction)) * 0.95f);
+				
+					Fvector Vr, Vt;
+					Vr.mul(cam_R, sprite_size);
+					Vt.mul(cam_T, sprite_size);
+				
+					Fvector a, b, c, d;
+					a.sub(Vt, Vr);
+					b.add(Vt, Vr);
+					c.invert(a);
+					d.invert(b);
+					Fvector center;
+					center.mad(tracer_last_pos, tracer_direction, length * .95f);
+					// Tri 1
+					(*buffer)->p.set(d.x + center.x, d.y + center.y, d.z + center.z);
+					(*buffer)->color = color;
+					(*buffer)->t.set(circle_uv.min.x, circle_uv.max.y);
+					(*buffer)++;
+				
+					(*buffer)->p.set(a.x + center.x, a.y + center.y, a.z + center.z);
+					(*buffer)->color = color;
+					(*buffer)->t.set(circle_uv.min.x, circle_uv.min.y);
+					(*buffer)++;
+				
+					(*buffer)->p.set(c.x + center.x, c.y + center.y, c.z + center.z);
+					(*buffer)->color = color;
+					(*buffer)->t.set(circle_uv.max.x, circle_uv.max.y);
+					(*buffer)++;
+				
+					// Tri 2
+					(*buffer)->p.set(c.x + center.x, c.y + center.y, c.z + center.z);
+					(*buffer)->color = color;
+					(*buffer)->t.set(circle_uv.max.x, circle_uv.max.y);
+					(*buffer)++;
+				
+					(*buffer)->p.set(a.x + center.x, a.y + center.y, a.z + center.z);
+					(*buffer)->color = color;
+					(*buffer)->t.set(circle_uv.min.x, circle_uv.min.y);
+					(*buffer)++;
+				
+					(*buffer)->p.set(b.x + center.x, b.y + center.y, b.z + center.z);
+					(*buffer)->color = color;
+					(*buffer)->t.set(circle_uv.max.x, circle_uv.min.y);
+					(*buffer)++;
+				}
+				
+				{
+					//sprite line
+					Fvector tracer_right;
+					tracer_right.crossproduct(tracer_direction, cam_D).normalize_safe();
+				
+					float line_width = width * .5f;
+					float line_length = length * .5f;
+				
+					Fvector Vr, Vt;
+					Vr.mul(tracer_right, line_width);
+					Vt.mul(tracer_direction, line_length);
+				
+					Fvector a_line, b_line, c_line, d_line;
+					a_line.sub(Vt, Vr);
+					b_line.add(Vt, Vr);
+					c_line.invert(a_line);
+					d_line.invert(b_line);
+					Fvector center;
+					center.mad(tracer_last_pos, tracer_direction, length * .5f);
+					// Tri 1
+					(*buffer)->p.set(d_line.x + center.x, d_line.y + center.y, d_line.z + center.z);
+					(*buffer)->color = color;
+					(*buffer)->t.set(sprite_uv.min.x, sprite_uv.max.y);
+					(*buffer)++;
+				
+					(*buffer)->p.set(a_line.x + center.x, a_line.y + center.y, a_line.z + center.z);
+					(*buffer)->color = color;
+					(*buffer)->t.set(sprite_uv.min.x, sprite_uv.min.y);
+					(*buffer)++;
+				
+					(*buffer)->p.set(c_line.x + center.x, c_line.y + center.y, c_line.z + center.z);
+					(*buffer)->color = color;
+					(*buffer)->t.set(sprite_uv.max.x, sprite_uv.max.y);
+					(*buffer)++;
+				
+					// Tri 2
+					(*buffer)->p.set(c_line.x + center.x, c_line.y + center.y, c_line.z + center.z);
+					(*buffer)->color = color;
+					(*buffer)->t.set(sprite_uv.max.x, sprite_uv.max.y);
+					(*buffer)++;
+				
+					(*buffer)->p.set(a_line.x + center.x, a_line.y + center.y, a_line.z + center.z);
+					(*buffer)->color = color;
+					(*buffer)->t.set(sprite_uv.min.x, sprite_uv.min.y);
+					(*buffer)++;
+				
+					(*buffer)->p.set(b_line.x + center.x, b_line.y + center.y, b_line.z + center.z);
+					(*buffer)->color = color;
+					(*buffer)->t.set(sprite_uv.max.x, sprite_uv.min.y);
+					(*buffer)++;
+				}
+			}
+
+			UIRender->FlushPrimitive();
+		}
+	}
+
+	if (g_bullet_debug_trj && !m_Bullets.empty() && g_bullet_debug_trj_totalLines > 0u)
+	{
+		constexpr u32 DEFAULT_COLOR = color_rgba(100u, 255u, 100u, 255u);
+		constexpr u32 MAX_LINES_PER_BATCH = 80'000u;
 
 		UIRender->SetShader(*m_trj_shader);
 
-		BulletVecIt bullet_it = m_Bullets.begin();
-		xr_vector<std::pair<Fvector, Fvector>>::iterator line_it = bullet_it->lines.begin();
+		static xr_vector<std::pair<Fvector, Fvector>> all_lines;
+		all_lines.clear();
+		all_lines.reserve(g_bullet_debug_trj_totalLines);
 
-		u32 lines_remaining = totalLines;
+		for (SBullet& bullet : m_Bullets)
+			all_lines.insert(all_lines.end(), bullet.lines.begin(), bullet.lines.end());
 
-		while (lines_remaining > 0u)
+		u32 current_line = 0;
+		while (current_line < all_lines.size())
 		{
-			u32 lines_in_batch = std::min(MAX_LINES_PER_BATCH, lines_remaining);
+			u32 lines_in_batch = std::min(MAX_LINES_PER_BATCH,
+				(u32)all_lines.size() - current_line);
 			u32 vertices_in_batch = lines_in_batch * 2u;
 
 			IUIRender::LITFast** buffer = UIRender->StartPrimitiveLITFast(vertices_in_batch, IUIRender::ptLineList);
 
-			for (u32 i = 0u; i < lines_in_batch; ++i)
+			for (u32 i = 0; i < lines_in_batch; ++i)
 			{
-				while (line_it == bullet_it->lines.end())
-				{
-					++bullet_it;
-					if (bullet_it == m_Bullets.end()) break;
-					line_it = bullet_it->lines.begin();
-				}
+				auto& line = all_lines[current_line + i];
 
-				if (bullet_it == m_Bullets.end()) break;
-
-				(*buffer)->p = line_it->first;
+				(*buffer)->p = line.first;
 				(*buffer)->color = DEFAULT_COLOR;
 				(*buffer)++;
 
-				(*buffer)->p = line_it->second;
+				(*buffer)->p = line.second;
 				(*buffer)->color = DEFAULT_COLOR;
 				(*buffer)++;
-
-				++line_it;
 			}
 
 			UIRender->FlushPrimitive();
-			lines_remaining -= lines_in_batch;
+			current_line += lines_in_batch;
 		}
 	}
+
+	UIRender->CacheSetCullMode(ERHI_CULLMODE::BACK);
 }
 
-void CBulletManager::CommitEvents			()	// @ the start of frame
+#include "../xrEngine/xr_ioc_cmd.h"
+void CBulletManager::CommitEvents()	// @ the start of frame
 {
-	PROF_EVENT("CBulletManager::CommitEvents")
+	PROF_EVENT("CBulletManager::CommitEvents");
+	if (Device.Paused())
+		return;
+
+	if (g_bullets_stop)
+		return;
+
 	if (m_Events.size() > 1000)
 		Msg			("! too many bullets during single frame: %d", m_Events.size());
 
@@ -1088,7 +1372,7 @@ void CBulletManager::CommitEvents			()	// @ the start of frame
 			{
 				if (E.bullet.flags.allow_sendhit && !IsGameTypeSingle())
 					Game().m_WeaponUsageStatistic->OnBullet_Remove(&E.bullet);
-				xrCriticalSectionGuard guard(&m_Lock);
+
 				if (E.tgt_material < m_Bullets.size())
 				{
 					m_Bullets[E.tgt_material] = m_Bullets.back();
@@ -1105,6 +1389,8 @@ void CBulletManager::CommitEvents			()	// @ the start of frame
 	else {
 		UpdateWorkload();
 	}
+
+	std::swap(bp_update_idx, bp_render_idx);
 }
 
 void CBulletManager::RegisterEvent			(EventType Type, BOOL _dynamic, SBullet* bullet, const Fvector& end_point, collide::rq_result& R, u16 tgt_material)
