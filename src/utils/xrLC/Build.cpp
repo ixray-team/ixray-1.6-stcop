@@ -241,7 +241,6 @@ void CBuild::Run(LPCSTR P)
 	// Phase("Adaptive HT tessalate ...");
 	xrPhase_AdaptiveHT_tessalte();
 
-	Light_prepare();
 
 	Phase("Building Level.cform ...");
 	BuildCForm();
@@ -261,8 +260,10 @@ void CBuild::Run(LPCSTR P)
 		BuildRapid(false);
 
 	// Hemi MT - Calculate
-	Phase("Adaptive HT lighting ...");
-  	xrPhase_AdaptiveHT_calculate();
+	Phase("LIGHT: Prepare ...");
+	Light_prepare();
+
+   	xrPhase_AdaptiveHT_calculate();
   
  	// Building normals
 	Phase("Building normals...");
@@ -275,11 +276,6 @@ void CBuild::Run(LPCSTR P)
 	// All lighting + lmaps building and saving
 	Light();
 	RunAfterLight(fs);
-}
-
-void CBuild::StartMu()
-{
-	run_mu_light();
 }
 
 void CBuild::RunAfterLight(IWriter* fs)
