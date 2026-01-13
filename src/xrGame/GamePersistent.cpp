@@ -41,6 +41,15 @@
 #include "../xrEngine/string_table.h"
 #include "Level_Bullet_Manager.h"
 #include "ParticlesObject.h"
+#include "../xrEngine/xr_level_controller.h"
+#include "../xrEngine/x_ray.h"
+#include "game_sv_single.h"
+#include "xrServer.h"
+#include "UIGameCustom.h"
+#include "ui/UIMainIngameWnd.h"
+#include "ui/UIPdaWnd.h"
+#include "HUDManager.h"
+
 extern int g_keypress_on_start;
 
 CGamePersistent::CGamePersistent(void)
@@ -183,7 +192,7 @@ void CGamePersistent::Disconnect()
 	m_game_params.m_e_game_type	= eGameIDNoGame;
 }
 
-#include "../xrEngine/xr_level_controller.h"
+
 
 void CGamePersistent::OnGameStart()
 {
@@ -772,12 +781,6 @@ if (!g_pGameLevel)
 	UpdateDof();
 }
 
-#include "game_sv_single.h"
-#include "xrServer.h"
-#include "UIGameCustom.h"
-#include "ui/UIMainIngameWnd.h"
-#include "ui/UIPdaWnd.h"
-
 void CGamePersistent::OnEvent(EVENT E, u64 P1, u64 P2)
 {
 	if (E == eQuickLoad)
@@ -892,8 +895,8 @@ void CGamePersistent::OnRenderPPUI_PP()
 {
 	MainMenu()->OnRenderPPUI_PP();
 }
-#include "../xrEngine/string_table.h"
-#include "../xrEngine/x_ray.h"
+
+
 void CGamePersistent::LoadTitle(bool change_tip, shared_str map_name)
 {
 	pApp->LoadStage();
@@ -974,7 +977,7 @@ void CGamePersistent::RestoreEffectorDOF()
 {
 	SetEffectorDOF			(m_dof[3]);
 }
-#include "HUDManager.h"
+
 
 void CGamePersistent::UpdateDof()
 {
@@ -1009,7 +1012,6 @@ void CGamePersistent::UpdateDof()
 	(m_dof[0].z < m_dof[2].z) ? clamp(m_dof[1].z, m_dof[0].z, m_dof[2].z) : clamp(m_dof[1].z, m_dof[2].z, m_dof[0].z);
 }
 
-#include "ui/UIMainIngameWnd.h"
 void CGamePersistent::OnSectorChanged(int sector)
 {
 	if(CurrentGameUI())
