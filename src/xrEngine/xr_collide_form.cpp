@@ -25,10 +25,8 @@ using namespace	collide;
 // Class	: CXR_CFObject
 // Purpose	: stores collision form
 //----------------------------------------------------------------------
-ICollisionForm::ICollisionForm( CObject* _owner, ECollisionFormType tp )
+ICollisionForm::ICollisionForm( CObject* _owner, ECollisionFormType tp ) : owner(_owner), m_type(tp)
 {
-	owner				= _owner;
-	m_type				= tp;
 	bv_sphere.identity	( );
 }
 
@@ -141,8 +139,8 @@ void CCF_Skeleton::BuildState()
 		if (!I->valid())		continue;
 		SBoneShape&	shape		= K->LL_GetData(I->elem_id).shape;
 		Fmatrix					ME,T,TW;
-		const Fmatrix& Mbone	= K->LL_GetTransform(I->elem_id);
-
+		Fmatrix Mbone;
+		K->LL_GetBoneLocalTransform(I->elem_id, Mbone);
 		VERIFY2( DET(Mbone)>EPS, (make_string<const char*>("0 scale bone matrix, %d \n", I->elem_id ) + dbg_object_full_dump_string( owner ) ).c_str()  );
 
 		switch (I->type){
@@ -320,50 +318,64 @@ BOOL CCF_Shape::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
 	// Convert ray into local model space
 	Fvector dS, dD;
 	Fmatrix temp; 
-	temp.invert			(owner->XFORM());
-	temp.transform_tiny	(dS,Q.start);
-	temp.transform_dir	(dD,Q.dir);
+	temp.invert(owner->XFORM());
+	temp.transform_tiny(dS,Q.start);
+	temp.transform_dir(dD,Q.dir);
 
-	// 
-	if (!bv_sphere.intersect(dS,dD))	return FALSE;
-
+	if (!bv_sphere.intersect(dS,dD))
+		return FALSE;
+	float& range = const_cast<float&>(Q.range);
 	BOOL bHIT = FALSE;
 	for (u32 el=0; el<shapes.size(); el++)
 	{
 		shape_def& shape= shapes[el];
-		float range		= Q.range;
+
 		switch (shape.type)
 		{
-		case 0:
-			{ // sphere
-				Fsphere::ERP_Result	rp_res 	= shape.data.sphere.intersect(dS,dD,range);
-				if ((rp_res==Fsphere::rpOriginOutside)||(!(Q.flags&CDB::OPT_CULL)&&(rp_res==Fsphere::rpOriginInside))){
-					bHIT	= TRUE;
-					R.append_result(owner,range,el,Q.flags&CDB::OPT_ONLYNEAREST);
+			case 0: // sphere
+			{
+				float current_range = range;
+				Fsphere::ERP_Result	rp_res = shape.data.sphere.intersect(dS, dD, current_range);
+				if ((rp_res==Fsphere::rpOriginOutside)||(!(Q.flags&CDB::OPT_CULL)&&(rp_res==Fsphere::rpOriginInside)))
+				{
+					bHIT = TRUE;
+					range = current_range;
+					R.append_result(owner, range, el, Q.flags&CDB::OPT_ONLYNEAREST);
 					if (Q.flags&CDB::OPT_ONLYFIRST) return TRUE;
 				}
 			}
 			break;
-		case 1: // box
+			case 1: // box
 			{
-				Fbox				box;
-				box.identity		();
-				Fmatrix& B			= shape.data.ibox;
-				Fvector				S1,D1,P;
-				B.transform_tiny	(S1,dS);
-				B.transform_dir		(D1,dD);
-				Fbox::ERP_Result	rp_res 	= box.Pick2(S1,D1,P);
-				if ((rp_res==Fbox::rpOriginOutside)||(!(Q.flags&CDB::OPT_CULL)&&(rp_res==Fbox::rpOriginInside))){
-					float d			= P.distance_to_sqr(dS);
-					if (d<range*range) {
-						range		= _sqrt(d);
-						bHIT		= TRUE;
-						R.append_result(owner,range,el,Q.flags&CDB::OPT_ONLYNEAREST);
+				Fbox box;
+				box.identity();
+				Fmatrix& IB = shape.data.ibox;
+				Fmatrix& B = shape.data.box;
+				Fvector S1, D1, P_box_space;
+				IB.transform_tiny(S1, dS);
+				IB.transform_dir(D1, dD);
+
+				Fbox::ERP_Result rp_res = box.Pick2(S1, D1, P_box_space);
+				if ((rp_res==Fbox::rpOriginOutside)||(!(Q.flags&CDB::OPT_CULL)&&(rp_res==Fbox::rpOriginInside)))
+				{
+					Fvector P_world;
+					B.transform_tiny(P_world, P_box_space);
+
+					Fvector ray_to_point;
+					ray_to_point.sub(P_world, dS);
+
+					float dot = ray_to_point.dotproduct(dD);
+
+					if (dot>0.f&&dot<range)
+					{
+						range = dot;
+						bHIT = TRUE;
+						R.append_result(owner, range, el, Q.flags&CDB::OPT_ONLYNEAREST);
 						if (Q.flags&CDB::OPT_ONLYFIRST) return TRUE;
 					}
 				}
+				break;
 			}
-			break;
 		}
 	}
 	return bHIT;
@@ -389,7 +401,13 @@ void CCF_Shape::add_box		(Fmatrix& B )
 
 void CCF_Shape::ComputeBounds()
 {
-	bv_box.invalidate	();
+	bv_box.invalidate();
+
+	if (shapes.empty())
+	{
+		Fsphere shphere{ zero_vel, 1.0f };
+		add_sphere(shphere);
+	}
 
 	BOOL bCalcSphere	= (shapes.size()>1);
 	for (u32 el=0; el<shapes.size(); el++)
