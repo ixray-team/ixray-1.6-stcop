@@ -14,8 +14,16 @@
 
 #define _inline			inline
 #define __inline		inline
-#define ICF				__forceinline			// !!! this should be used only in critical places found by PROFILER
-#define ICN		    	__declspec (noinline)
+
+#ifdef IXR_WINDOWS
+    #define ICF __forceinline
+#elif defined(IXR_LINUX)
+    #define ICF __attribute__((always_inline)) inline
+#else
+    #define ICF inline
+#endif
+
+#define ICN __declspec (noinline)
 
 #ifndef DEBUG
 	#pragma inline_depth	( 254 )
@@ -228,3 +236,10 @@ namespace Platform
 	inline constexpr Enum  operator~ (Enum  E)             { return (Enum)~(__underlying_type(Enum))E; }
 
 extern XRCORE_API xrCore Core;
+
+#ifdef IXR_WINDOWS
+ICF void* aligned_alloc(size_t Aligned, size_t Sizeof)
+{
+    return _aligned_malloc(Sizeof, Aligned);
+}
+#endif
