@@ -52,7 +52,30 @@ void validate_entry(
 
 	if (it != thms.end())
 	{
-		entry.analyze_status_result_flags |= CImGuiTextureEditor::eAnalyzedStatus::kHasTHM;
+		if (FS.exist((*it)->c_str())) {
+			entry.analyze_status_result_flags |= CImGuiTextureEditor::eAnalyzedStatus::kHasTHM;
+
+			STextureParams temp_param;
+
+			IReader* pReader = FS.r_open((*it)->c_str());
+
+			if (pReader)
+			{
+				bool thm_invalid = temp_param.Load(*pReader);
+
+				if (thm_invalid)
+				{
+					entry.analyze_status_result_flags |= CImGuiTextureEditor::eAnalyzedStatus::kTHMIsNotValid;
+				}
+
+				pReader->close();
+			}
+			else
+			{
+				entry.analyze_status_result_flags |= CImGuiTextureEditor::eAnalyzedStatus::kTHMIsNotValid;
+			}
+		}
+
 	}
 	else
 	{
@@ -61,6 +84,25 @@ void validate_entry(
 		if (path_view.find("bump#") != std::string_view::npos)
 		{
 			entry.analyze_status_result_flags |= CImGuiTextureEditor::eAnalyzedStatus::kIgnoreTHM;
+		}
+	}
+
+	if (std::string_view(entry.path).find(".dds") != std::string_view::npos)
+	{
+		RHITextureMetadata mt;
+		bool metadata_obtained = Render->get_texture_metadata(entry.path, &mt);
+
+		if (metadata_obtained)
+		{
+			if (!(mt.width % 2 == 0 && mt.height % 2 == 0))
+			{
+				entry.analyze_status_result_flags |= CImGuiTextureEditor::eAnalyzedStatus::kDimensionsNotPowerOf2;
+			}
+
+			if (mt.mipmap_count == 1)
+			{
+				entry.analyze_status_result_flags |= CImGuiTextureEditor::eAnalyzedStatus::kNoMipMaps;
+			}
 		}
 	}
 }
@@ -428,6 +470,32 @@ void TextureEditor_WorkerThread(const ime_request_t& req)
 
 		g_imgui_texture_editor.is_preview_tooltip_image_loaded = true;
 		g_imgui_texture_editor.is_preview_tooltip_image_load_started = false;
+
+		break;
+	}
+	case CImGuiTextureEditor::eRequestType::kLoadTooltipMetadata:
+	{
+		if (g_imgui_texture_editor.is_init)
+		{
+			if (g_imgui_texture_editor.is_metadata_tooltip_loaded == false)
+			{
+				const CImGuiTextureEditor::STextureEntry& tex = g_imgui_texture_editor.textures[req.payload];
+
+				if (FS.exist(tex.path))
+				{
+					bool failed_to_load = Render->get_texture_metadata(tex.path, &g_imgui_texture_editor.tooltip_metadata);
+					if (!failed_to_load)
+					{
+						g_imgui_texture_editor.tooltip_metadata.width = _kInvalidSelectedID;
+						g_imgui_texture_editor.tooltip_metadata.height = _kInvalidSelectedID;
+						g_imgui_texture_editor.tooltip_metadata.mipmap_count = _kInvalidSelectedID;
+						g_imgui_texture_editor.tooltip_metadata.format = _kInvalidSelectedID;
+					}
+				}
+
+				g_imgui_texture_editor.is_metadata_tooltip_loaded = true;
+			}
+		}
 
 		break;
 	}
@@ -958,6 +1026,8 @@ void RenderTextureEditor()
 
 					ImGui::Checkbox("Show only dds and thm in stats", &g_imgui_texture_editor.settings.show_only_dds_and_thm);
 
+					ImGui::Checkbox("Treat NoMipMap as invalid", &g_imgui_texture_editor.settings.treat_nomipmap_as_invalid);
+
 					ImGui::SeparatorText("Search");
 
 					if (ImGui::InputText("##SearchInput",
@@ -1108,15 +1178,14 @@ void RenderTextureEditor()
 											was_tooltip_shown = true;
 
 											constexpr const char* _kColumnNamesTooltipTable[] = {
-												"File name",
-												"Folder path",
-												"Preview",
+												"Info",
+												"Preview"
 												//												"Full path"
 											};
 
 											constexpr u32 _kColumnsSizeTooltipTable = sizeof(_kColumnNamesTooltipTable) / sizeof(_kColumnNamesTooltipTable[0]);
 
-											if (_kColumnsSizeTooltipTable < 4)
+											if (_kColumnsSizeTooltipTable < 3)
 												ImGui::Text("Full path: %s", texture.path);
 
 											ImGui::BeginTable("##TTTETV", _kColumnsSizeTooltipTable);
@@ -1138,18 +1207,27 @@ void RenderTextureEditor()
 												{
 												case 0:
 												{
-													ImGui::Text("%s", texture.filename);
+													ImGui::Text("name: %s", texture.filename);
+													ImGui::Text("folders: %s", texture.subpath);
+
+													if (g_imgui_texture_editor.is_metadata_tooltip_loaded)
+													{
+														ImGui::Text("width: %d", g_imgui_texture_editor.tooltip_metadata.width);
+														ImGui::Text("height: %d", g_imgui_texture_editor.tooltip_metadata.height);
+														ImGui::Text("mipmap count: %d", g_imgui_texture_editor.tooltip_metadata.mipmap_count);
+
+#ifdef IXR_WINDOWS
+														if (g_imgui_texture_editor.tooltip_metadata.format != _kInvalidSelectedID)
+														{
+															std::string_view format_name = magic_enum::enum_name((DXGI_FORMAT)g_imgui_texture_editor.tooltip_metadata.format);
+															ImGui::Text("format: %s", format_name.data());
+														}
+#endif
+													}
+
 													break;
 												}
 												case 1:
-												{
-													if (texture.subpath[0] != 0)
-													{
-														ImGui::Text("%s", texture.subpath);
-													}
-													break;
-												}
-												case 2:
 												{
 #if 1
 													if (g_imgui_texture_editor.is_preview_tooltip_image_loaded)
@@ -1168,6 +1246,9 @@ void RenderTextureEditor()
 
 															g_imgui_editors_state.requests.push(req);
 
+															req.request_type = static_cast<u32>(CImGuiTextureEditor::eRequestType::kLoadTooltipMetadata);
+															g_imgui_editors_state.requests.push(req);
+								
 															g_imgui_texture_editor.is_preview_tooltip_image_load_started = true;
 														}
 
@@ -1200,6 +1281,11 @@ void RenderTextureEditor()
 										bool is_valid = true;
 										const char* pStatusName = "valid";
 
+										bool has_dim2 = ((texture.analyze_status_result_flags & CImGuiTextureEditor::eAnalyzedStatus::kDimensionsNotPowerOf2) == CImGuiTextureEditor::eAnalyzedStatus::kDimensionsNotPowerOf2);
+										bool has_thmisnotvalid = ((texture.analyze_status_result_flags & CImGuiTextureEditor::eAnalyzedStatus::kTHMIsNotValid) == CImGuiTextureEditor::eAnalyzedStatus::kTHMIsNotValid);
+										bool has_nomipmaps = ((texture.analyze_status_result_flags & CImGuiTextureEditor::eAnalyzedStatus::kNoMipMaps) == CImGuiTextureEditor::eAnalyzedStatus::kNoMipMaps);
+										bool has_hasthm = ((texture.analyze_status_result_flags & CImGuiTextureEditor::eAnalyzedStatus::kHasTHM) == CImGuiTextureEditor::eAnalyzedStatus::kHasTHM);
+
 										if (
 											(
 												texture.analyze_status_result_flags == 0 ||
@@ -1219,6 +1305,32 @@ void RenderTextureEditor()
 										}
 
 										ImGui::TextColored(status_color, "%s", pStatusName);
+
+										if (is_valid == false && ImGui::BeginItemTooltip())
+										{
+											ImGui::SeparatorText("Report");
+
+											std::string_view estr_p2 = magic_enum::enum_name(CImGuiTextureEditor::eAnalyzedStatus::kDimensionsNotPowerOf2);
+											ImGui::Text("%s:", estr_p2.data());
+											PrintErrorStatus(!has_dim2);
+
+											std::string_view estr_hasthm = magic_enum::enum_name(CImGuiTextureEditor::eAnalyzedStatus::kHasTHM);
+											ImGui::Text("%s: ", estr_hasthm.data());
+											PrintErrorStatus(has_hasthm);
+
+											ImGui::BeginDisabled(!has_hasthm);
+											std::string_view estr_tnv = magic_enum::enum_name(CImGuiTextureEditor::eAnalyzedStatus::kTHMIsNotValid);
+											ImGui::Text("%s: ", estr_tnv.data());
+											PrintErrorStatus(!has_thmisnotvalid);
+											ImGui::EndDisabled();
+
+											std::string_view estr_nmm = magic_enum::enum_name(CImGuiTextureEditor::eAnalyzedStatus::kNoMipMaps);
+											ImGui::Text("%s: ", estr_nmm.data());
+											PrintErrorStatus(!has_nomipmaps);
+
+											ImGui::EndTooltip();
+										}
+
 										break;
 									}
 									}
@@ -1232,6 +1344,9 @@ void RenderTextureEditor()
 						{
 							if (g_imgui_texture_editor.is_preview_tooltip_image_loaded)
 								g_imgui_texture_editor.is_preview_tooltip_image_loaded = false;
+
+							if (g_imgui_texture_editor.is_metadata_tooltip_loaded)
+								g_imgui_texture_editor.is_metadata_tooltip_loaded = false;
 
 							if (g_imgui_texture_editor.is_preview_tooltip_image_load_started)
 								g_imgui_texture_editor.is_preview_tooltip_image_load_started = false;
@@ -1359,6 +1474,7 @@ void RenderTextureEditor()
 					{
 						ImGui::Text("Width: %d", g_imgui_texture_editor.selected_metadata.width);
 						ImGui::Text("Height: %d", g_imgui_texture_editor.selected_metadata.height);
+						ImGui::Text("MipMap Count: %d", g_imgui_texture_editor.selected_metadata.mipmap_count);
 
 						if (GRHI->APILevel == D3D9 || GRHI->APILevel == D3D11)
 						{

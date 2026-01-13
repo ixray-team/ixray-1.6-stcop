@@ -268,6 +268,7 @@ bool CRender::get_texture_metadata(LPCSTR absolute_path, RHITextureMetadata* p_d
 		p_data->width = metadata.width;
 		p_data->height = metadata.height;
 		p_data->format = metadata.format;
+		p_data->mipmap_count = (u32)metadata.mipLevels;
 
 		status = true;
 	}

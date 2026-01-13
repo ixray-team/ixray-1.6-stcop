@@ -104,6 +104,7 @@ public:
 
 struct RHITextureMetadata
 {
+	u32 mipmap_count = 0;
 	u32 width = 0;
 	u32 height = 0;
 	int format = (int)ERHI_FORMAT::UNKNOWN;
