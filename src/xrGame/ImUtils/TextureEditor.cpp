@@ -592,6 +592,13 @@ void TextureEditor_WorkerThread(const ime_request_t& req)
 
 		break;
 	}
+	case CImGuiTextureEditor::eRequestType::kDeselectCurrentSelected:
+	{
+		if (g_imgui_texture_editor.is_init)
+		{
+			g_imgui_texture_editor.selected_index = _kInvalidSelectedID;
+		}
+	}
 	case CImGuiTextureEditor::eRequestType::kFilterQuery:
 	{
 		if (g_imgui_texture_editor.is_all_analyzed == false)

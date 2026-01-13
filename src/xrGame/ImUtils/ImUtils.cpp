@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 
 #include "ImUtils.h"
+#include "../xrEngine/xr_input.h"
 
 clsid_manager* g_pClsidManager;
 CImGuiGameSearchManager imgui_search_manager;
@@ -25,6 +26,7 @@ void RegisterImGuiInGame()
 		InitImGuiSearchInGame();
 		InitImGuiHudAdjustInGame();
 		InitSections();
+		InitImGuiInGameInputReceiver();
 	}
 }
 
@@ -440,6 +442,27 @@ const char* clsid_manager::translateCLSID(CLASS_ID id) {
 	return g_pStringTable ? g_pStringTable->translate(name).c_str() : name;
 }
 
+void InitImGuiInGameInputReceiver()
+{
+	R_ASSERT(pInput);
+	R_ASSERT(pInput->xrgame_sdk_input_pressed == nullptr);
+	R_ASSERT(pInput->xrgame_sdk_input_released == nullptr);
+
+	if (pInput)
+	{
+		if (pInput->xrgame_sdk_input_pressed == nullptr)
+		{
+			pInput->xrgame_sdk_input_pressed = AllEditors_OnPressed;
+		}
+
+		if (pInput->xrgame_sdk_input_released == nullptr)
+		{
+			pInput->xrgame_sdk_input_released = AllEditors_OnReleased;
+		}
+	}
+
+}
+
 void AllEditorsAndTools_WorkerThread()
 {
 	constexpr const char _kThreadName[] = "IXRAY - ImGui Editors&Tools thread";
@@ -484,4 +507,24 @@ void AllEditorsAndTools_WorkerThread()
 	}
 
 	Msg("[IXRAY]: Shutdown thread -> %s", _kThreadName);
+}
+
+void AllEditors_OnPressed(int key)
+{
+	if (key == SDL_Scancode::SDL_SCANCODE_ESCAPE)
+	{
+		if (CImGuiManager::Instance().IsCapturingInputs() && Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_TextureEditor)])
+		{
+			ime_request_t req;
+			req.editor_type = (u32)eImGuiEditorType::kTextureEditor;
+			req.request_type = (u32)CImGuiTextureEditor::eRequestType::kDeselectCurrentSelected;
+
+			g_imgui_editors_state.requests.push(req);
+		}
+	}
+}
+
+void AllEditors_OnReleased(int key)
+{
+
 }
