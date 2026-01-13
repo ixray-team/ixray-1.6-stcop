@@ -306,6 +306,14 @@ void ApplyColorGPU(size_t IndexTask, base_color_c& C)
 static xr_vector<u32> not_clear;
 void ImplicitLightingExec()
 {
+	const bool Cuda   = gCompilerMode.CUDA;
+	const bool Embree = gCompilerMode.Embree;
+
+	string128 tmp_phase;
+	sprintf(tmp_phase, "LIGHT: Implicit (*%s*)", Cuda ? "CUDA" : Embree ? "Embree" : "Opcode");
+ 	Phase(tmp_phase);
+	
+
 	Implicit		calculator;
 
 	cl_globs.Allocate();
