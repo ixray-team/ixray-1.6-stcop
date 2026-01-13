@@ -202,7 +202,5 @@ void CStreamPlayerA::Update()
 
 bool CStreamPlayerA::IsPlaying()
 {
-	ALint state;
-	alGetSourcei(m_source, AL_SOURCE_STATE, &state);
-	return state == AL_PLAYING;
+	return SDL_GetAudioStreamQueued(m_audioStream) > 0;
 }

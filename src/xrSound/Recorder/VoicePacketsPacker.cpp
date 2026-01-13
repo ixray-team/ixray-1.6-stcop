@@ -59,9 +59,15 @@ void CVoicePacketsPacker::AddPacket(const void* data, const int length)
 		return;
 
 	VoicePacket* packet = m_voicePackets[m_packetsCount];
-	packet->length = opus_encode(m_pEncoder,
-		(opus_int16*)data,
-		length / sizeof(opus_int16),
+
+	// ����� � �������, �� � ������
+	const int samples = length / sizeof(float);
+
+	packet->length = opus_encode_float
+	(
+		m_pEncoder,
+		reinterpret_cast<const float*>(data),
+		samples,
 		packet->data,
 		VoicePacket::MAX_DATA_SIZE
 	);

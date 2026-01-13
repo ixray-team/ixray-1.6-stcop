@@ -103,9 +103,6 @@ void SBullet::Init(const Fvector& position,
 
 
 CBulletManager::CBulletManager()
-#ifdef DEBUG
-	: m_thread_id(GetCurrentThreadId())
-#endif // #ifdef DEBUG
 {
 	m_Bullets.clear			();
 	m_Bullets.reserve		(100);
@@ -203,8 +200,6 @@ void CBulletManager::AddBullet(const Fvector& position,
 							   bool SendHit,
 							   bool AimBullet)
 {
-	VERIFY						( m_thread_id == GetCurrentThreadId() );
-
 	VERIFY						(u16(-1)!=cartridge.bullet_material_idx);
 //	u32 CurID					= Level().CurrentControlEntity()->ID();
 //	u32 OwnerID					= sender_id;
@@ -226,7 +221,6 @@ void CBulletManager::AddBullet(const Fvector& position,
 void CBulletManager::UpdateWorkload()
 {
 	PROF_EVENT("CBulletManager::UpdateWorkload")
-//	VERIFY						( m_thread_id == GetCurrentThreadId() );
 	xrCriticalSectionGuard guard(&m_Lock);
 	rq_storage.r_clear			();
 

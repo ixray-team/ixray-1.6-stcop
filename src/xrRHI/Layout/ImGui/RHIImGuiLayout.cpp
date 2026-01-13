@@ -16,7 +16,7 @@
 
 #endif
 
-void RHIUtils::ImGui::Init()
+RHI_API void RHIUtils::ImGui::Init()
 {
 	switch (GRHI->APILevel)
 	{
@@ -27,7 +27,7 @@ void RHIUtils::ImGui::Init()
 	}
 }
 
-void RHIUtils::ImGui::NewFrame()
+RHI_API void RHIUtils::ImGui::NewFrame()
 {
 	switch (GRHI->APILevel)
 	{
@@ -38,7 +38,7 @@ void RHIUtils::ImGui::NewFrame()
 	}
 }
 
-void RHIUtils::ImGui::DrawData()
+RHI_API void RHIUtils::ImGui::DrawData()
 {
 	switch (GRHI->APILevel)
 	{
@@ -49,7 +49,7 @@ void RHIUtils::ImGui::DrawData()
 	}
 }
 
-void RHIUtils::ImGui::Destroy()
+RHI_API void RHIUtils::ImGui::Destroy()
 {
 	switch (GRHI->APILevel)
 	{
@@ -60,7 +60,7 @@ void RHIUtils::ImGui::Destroy()
 	}
 }
 
-void RHIUtils::ImGui::Reset()
+RHI_API void RHIUtils::ImGui::Reset()
 {
 #ifdef IXR_WINDOWS
 	if (GRHI->APILevel == ERHI_API_LAYER::D3D9)

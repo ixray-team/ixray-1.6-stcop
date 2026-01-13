@@ -146,8 +146,6 @@ protected:
 	xr_vector<_event>		m_Events			;
 
 #ifdef DEBUG
-	u32						m_thread_id;
-
 	typedef xr_vector<Fvector>	BulletPoints;
 	BulletPoints			m_bullet_points;
 #endif // #ifdef DEBUG
