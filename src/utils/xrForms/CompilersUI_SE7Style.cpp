@@ -277,6 +277,7 @@ void DrawLCConfig()
 {
 	//if (ImGui::BeginChild("LC", { 200, 415 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
 	{
+		ImGui::PushID("xrLC");
 		ImGui::Checkbox("Lighting Compiler", &gCompilerMode.LC);
 		ImGui::Separator();
 
@@ -319,7 +320,7 @@ void DrawLCConfig()
 			ImGui::EndDisabled();
 		ImGui::EndDisabled();
 		
-		
+		ImGui::PopID();
 		//ImGui::EndChild();
 	}
 
@@ -328,17 +329,15 @@ void DrawLCConfig()
 
 void DrawDOConfig()
 {
-	//if (ImGui::BeginChild("DO", { 200, 370 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
-	{
-		ImGui::Checkbox("Details Compiler", &gCompilerMode.DO);
-		ImGui::Separator();
+	ImGui::PushID("xrDO");
+	ImGui::Checkbox("Details Compiler", &gCompilerMode.DO);
+	ImGui::Separator();
 
-		ImGui::BeginDisabled(!gCompilerMode.DO);
-		ImGui::Checkbox("No Sun", &gCompilerMode.LC_NoSun);
-		ImGui::EndDisabled();
-		//ImGui::EndChild();
-	}
-	
+	ImGui::BeginDisabled(!gCompilerMode.DO);
+	ImGui::Checkbox("No Sun", &gCompilerMode.LC_NoSun);
+	ImGui::EndDisabled();
+
+	ImGui::PopID();
 }
 
 void DrawAIConfig()
