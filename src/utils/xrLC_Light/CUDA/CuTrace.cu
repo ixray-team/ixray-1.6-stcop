@@ -50,7 +50,7 @@ extern "C" __global__ void __closesthit__ch()
 	optixSetPayload_1(0);
 }
 
-__device__ void calculate_energy(Hardware_FaceData& F, Hardware_TextureData& T, int primID, float& energy)
+__device__ void calculate_energy(Hardware_FaceData& F, Hardware_TextureData& T, float& energy)
 {
  	// barycentrics
 	const float2 bc		= optixGetTriangleBarycentrics();
@@ -82,7 +82,7 @@ extern "C" __global__ void __anyhit__ah()
 	unsigned int task_id			= optixGetPayload_0();
  	unsigned int energy_int			= optixGetPayload_1();
 
- 	float energy					= float(energy_int) / 100.0f;
+ 	float energy					= float(energy_int) / 10000.0f;
  
 	Hardware_FaceData&    F			= g_params.faces[primID];
 	Hardware_TextureData& T			= g_params.textures[F.surfidx];
@@ -96,7 +96,7 @@ extern "C" __global__ void __anyhit__ah()
 	}
 	  
 	// energy attenuation (LUT)
-	calculate_energy(F, T, primID, energy);				// Проверка тут на воду не понятно почему делает ее темной
+	calculate_energy(F, T, energy);				// Проверка тут на воду не понятно почему делает ее темной
 
 	// opaque → остановить
  	if (energy < ENERGY_MIN)
@@ -108,7 +108,7 @@ extern "C" __global__ void __anyhit__ah()
 		
 	// transparent → пропускаем и летим дальше
  	// Тут тоже сделал явное преобразование
-	unsigned int EnergyReturn = float(energy * 100.0f);
+	unsigned int EnergyReturn = float(energy * 10000.0f);
 	optixSetPayload_1(EnergyReturn);
 	optixIgnoreIntersection();
 }
@@ -118,17 +118,13 @@ __device__ float RunOptickTask(unsigned int TaskID, Hardware_Vector& P, Hardware
 	const float3 origin = P.getVector3();
 	const float3 dir	= N.getVector3();
 
-	const float minT = 1e-2f;
-	const float maxT = Range;
+	const float minT    = 1e-3f;
+	const float maxT    = Range;
 	const float RayTime = 0;
 
-	unsigned int Energy = 80;
-
-	
-	Hit hits[64];
-	g_params.rays[TaskID].Hits = hits;
-
-	//// Обновить размер в CUDAContext В pipelineCompileOptions.numPayloadValues (Если менять кол-во Payloads)
+	unsigned int Energy = 10000;	// 0.0001 точность
+ 	
+ 	//// Обновить размер в CUDAContext В pipelineCompileOptions.numPayloadValues (Если менять кол-во Payloads)
 	optixTrace(
 		g_params.handle,
 		origin,
@@ -141,10 +137,8 @@ __device__ float RunOptickTask(unsigned int TaskID, Hardware_Vector& P, Hardware
 	);
 
 	// Баг был тут поченил
-
-	float EnergyN = float(Energy) / 100.0f;
-	
-	return EnergyN < 1.0f ? EnergyN : 1.0f;
+ 	float EnergyN = float(Energy) / 10000.0f;
+ 	return EnergyN < 1.0f ? EnergyN : 1.0f;
 }
 
 __device__ void CalculatePoint(Hardware_Raytask& Task, Hardware_Lighting& L, unsigned int TaskID)
@@ -156,9 +150,9 @@ __device__ void CalculatePoint(Hardware_Raytask& Task, Hardware_Lighting& L, uns
 
 	Hardware_Vector Ldir;
 	Hardware_Vector Pnew = P;
-	Pnew.Mad_Self(N, 0.001f);
+	Pnew.Mad_Self(N, 0.01f);
 
-	Hardware_Vector LightPosition = { L.position.x, L.position.y, L.position.z };
+	Hardware_Vector LightPosition  = { L.position.x, L.position.y, L.position.z };
 	Hardware_Vector LightDirection = { L.direction.x, L.direction.y, L.direction.z };
 
 	bool isSunOrHemi = L.light_type != eRGB;
@@ -166,93 +160,87 @@ __device__ void CalculatePoint(Hardware_Raytask& Task, Hardware_Lighting& L, uns
 
 	switch (L.type)
 	{
-	case LT_DIRECT:
-	{
-		Ldir.Inverted(LightDirection);
-		float D = Ldir.DotProduct(N);
-		if (D <= 0)
-			return;
-
-		float trace = RunOptickTask(TaskID, Pnew, Ldir, 1000.f);
-		att = isSunOrHemi ? L.energy * trace : D * L.energy * trace;
-	}
-	break;
-
-	case LT_POINT:
-	{
-		float sqD = P.DistanceSquared(LightPosition);
-		if (sqD > L.range2)
-			return;
-
-		Ldir.Subtract(LightPosition, P).Normalize_Safe();
-		float D = Ldir.DotProduct(N);
-		if (D <= 0)
-			return;
-
-		float R = sqrtf(sqD);
-		float trace = RunOptickTask(TaskID, Pnew, Ldir, R);
-		float scale = D * L.energy * trace;
-
-		if (isSunOrHemi)
+		case LT_DIRECT:
 		{
-			att = scale / (L.attenuation0 + L.attenuation1 * R + L.attenuation2 * sqD);
-		}
-		else
+			Ldir.Inverted(LightDirection);
+			float D = Ldir.DotProduct(N);
+			if (D <= 0)
+				return;
+
+			float trace = RunOptickTask(TaskID, Pnew, Ldir, 1000.f);
+			att = isSunOrHemi ? L.energy * trace : D * L.energy * trace;
+		} break;
+
+		case LT_POINT:
 		{
-			att = scale * (1 / (L.attenuation0 + L.attenuation1 * R + L.attenuation2 * sqD) - R * L.falloff);
-		}
-		break;
-	}
+			float sqD = P.DistanceSquared(LightPosition);
+			if (sqD > L.range2) return;
 
-	case LT_SECONDARY:
-	{
-		float sqD = P.DistanceSquared(LightPosition);
-		if (sqD > L.range2)
-			return;
+			Ldir.Subtract(LightPosition, P).Normalize_Safe();
+			float D = Ldir.DotProduct(N);
+			if (D <= 0)			return;
 
-		Ldir.Subtract(LightPosition, P).Normalize_Safe();
-		float D = Ldir.DotProduct(N);
-		if (D <= 0)
-			return;
+			float R		= sqrtf(sqD);
+			float trace = RunOptickTask(TaskID, Pnew, Ldir, R);
+			float scale = D * L.energy * trace;
 
-		D *= -Ldir.DotProduct(LightDirection);
-		if (D <= 0)
-			return;
+			if (isSunOrHemi)
+			{
+				att = scale / (L.attenuation0 + L.attenuation1 * R + L.attenuation2 * sqD);
+			}
+			else
+			{
+				att = scale * (1 / (L.attenuation0 + L.attenuation1 * R + L.attenuation2 * sqD) - R * L.falloff);
+			}
+ 		} break;
 
-		float R = sqrtf(sqD);
-		float trace = RunOptickTask(TaskID, Pnew, Ldir, R);
-		att = powf(D, 0.125f) * L.energy * trace * (1.0f - R / L.range);
-	}
-	break;
+		case LT_SECONDARY:
+		{
+			float sqD = P.DistanceSquared(LightPosition);
+			if (sqD > L.range2)
+				return;
+
+			Ldir.Subtract(LightPosition, P).Normalize_Safe();
+			float D = Ldir.DotProduct(N);
+			if (D <= 0)
+				return;
+
+			D *= -Ldir.DotProduct(LightDirection);
+			if (D <= 0)
+				return;
+
+			float R = sqrtf(sqD);
+			float trace = RunOptickTask(TaskID, Pnew, Ldir, R);
+			att = powf(D, 0.125f) * L.energy * trace * (1.0f - R / L.range);
+		} break;
+
 	}
 
 	switch (L.light_type)
 	{
-	case eSun:
-	{
-		ColorUV.sun += att;
-	} break;
+		case eSun:
+		{
+			ColorUV.sun += att;
+		} break;
 
-	case eHemi:
-	{
-		ColorUV.hemi += att;
-	} break;
+		case eHemi:
+		{
+			ColorUV.hemi += att;
+		} break;
 
-	case eRGB:
-	{
-		Hardware_Vector& rgb = ColorUV.rgb;
-		rgb.x += att * L.diffuse.x;
-		rgb.y += att * L.diffuse.y;
-		rgb.z += att * L.diffuse.z;
-	} break;
-
-	}
+		case eRGB:
+		{
+			Hardware_Vector& rgb = ColorUV.rgb;
+			rgb.x += att * L.diffuse.x;
+			rgb.y += att * L.diffuse.y;
+			rgb.z += att * L.diffuse.z;
+		} break;
+ 	}
 }
 
 __device__ void LightPoint(int index)
 {
-	int RayIndex = 0;
-	int flags = g_params.flags;
+	unsigned char flags = g_params.flags;
 	for (int i = 0; i < g_params.counts_lights; i++)
 	{
 		Hardware_Lighting& L = g_params.lights[i];
@@ -264,8 +252,7 @@ __device__ void LightPoint(int index)
 			continue;
 		}
 
-		RayIndex++;
-		CalculatePoint(g_params.rays[index], L, index);
+ 		CalculatePoint(g_params.rays[index], L, index);
 	}
 }
  

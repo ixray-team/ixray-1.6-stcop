@@ -105,17 +105,25 @@ void run_mu_light()
 	SetThreadPriority(Platform::GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
 	Sleep(0);
 
+	Phase("LIGHT: Mu-Base (*OPCODE* ONLY) ");
 	ThreadTaskID = 0;
 	for (u32 thID = 0; thID < gCompilerMode.ThreadsPerWork; thID++)
 		mu_materials.start(new CMULightCalculation(thID));
  	mu_materials.wait(100); 
 
+
+	const bool Cuda = gCompilerMode.CUDA;
+	const bool Embree = gCompilerMode.Embree;
+
+	string128 tmp_phase;
+	sprintf(tmp_phase, "LIGHT: Mu-Refs (*%s*)", Cuda ? "CUDA" : Embree ? "Embree" : "Opcode");
+	Phase(tmp_phase);
+ 
 	// Light references
 #ifdef LCCUDA_BUILD
 	if (gCompilerMode.CUDA)
 	{
-		Phase("Lighting Mu-Refs Started GPU");
-		GPUTaskinSystem.RestartALL();
+ 		GPUTaskinSystem.RestartALL();
  		GPUTaskinSystem.ColorsMapType = eMumodel;
 		GPUTaskinSystem.current_flags = (gCompilerMode.LC_NoSun ? LP_dont_sun : 0) | LP_DEFAULT;
 	
@@ -159,8 +167,6 @@ void run_mu_light()
 	else
 #endif
 	{
-		Phase("Lighting Mu-Refs Started CPU");
-
 		ThreadTaskID = 0;
 		for (u32 thID = 0; thID < gCompilerMode.ThreadsPerWork; thID++)
 			mu_secondary.start(new CMULight(thID));
