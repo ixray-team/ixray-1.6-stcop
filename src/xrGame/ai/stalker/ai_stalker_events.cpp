@@ -157,7 +157,7 @@ void CAI_Stalker::feel_touch_new				(CObject* O)
 //	Msg					("FEEL_TOUCH::NEW : %s",*O->cName());
 	if (!g_Alive())		return;
 	if (Remote())		return;
-	if ((O->SpatialComponent->spatial.type | STYPE_VISIBLEFORAI) != O->SpatialComponent->spatial.type) return;
+	if ((O->SpatialComponent->spatial.type & ESPATIAL_TYPE::VISIBLEFORAI) == ESPATIAL_TYPE::NONE) return;
 
 	// Now, test for game specific logical objects to minimize traffic
 	CInventoryItem		*I	= O->cast_inventory_item();

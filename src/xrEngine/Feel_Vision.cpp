@@ -81,7 +81,7 @@ void Vision::feel_vision_query(Fmatrix& mFull)
 	(
 		r_spatial,
 		0,
-		STYPE_VISIBLEFORAI,
+		ESPATIAL_TYPE::VISIBLEFORAI,
 		Frustum
 	);
 
@@ -213,7 +213,7 @@ void Vision::o_trace(Fvector& P, float dt, float vis_threshold) {
 				}
 			}
 			//				Log("Vis",feel_params.vis);
-			g_SpatialSpace->q_ray(r_spatial, 0, STYPE_VISIBLEFORAI, P, D, f);
+			g_SpatialSpace->q_ray(r_spatial, 0, ESPATIAL_TYPE::VISIBLEFORAI, P, D, f);
 
 			RD.flags = CDB::OPT_ONLYFIRST;
 

@@ -71,14 +71,13 @@ void try_change_current_entity()
 	CFrustum							frustum;
 	frustum.CreateFromMatrix			(Device.mFullTransform,FRUSTUM_P_LRTB|FRUSTUM_P_FAR);
 
-	using OBJECTS = xr_vector<ISpatialShared>;
-	OBJECTS								ISpatialResult = {};
-	g_SpatialSpace->q_frustum			(ISpatialResult, 0, STYPE_COLLIDEABLE, frustum);
+	static xr_vector<ISpatialShared> ISpatialResult;
+	g_SpatialSpace->q_frustum(ISpatialResult, 0, ESPATIAL_TYPE::MONSTER, frustum);
 
 	float								maxlen = 1000.0f;
 	CCustomMonster*						nearest_agent = 0;
 
-	for (const auto& spatial_object : ISpatialResult)
+	for (ISpatialShared& spatial_object : ISpatialResult)
 	{
 		CCustomMonster* current = spatial_object->dcast_CObject()->cast_custom_monster();
 		if (!current)					continue;

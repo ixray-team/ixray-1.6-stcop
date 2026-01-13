@@ -77,7 +77,7 @@ BOOL CAI_Stalker::feel_touch_on_contact	(CObject *O)
 {
 	VERIFY							(O != this);
 
-	if ((O->SpatialComponent->spatial.type | STYPE_VISIBLEFORAI) != O->SpatialComponent->spatial.type)
+	if ((O->SpatialComponent->spatial.type & ESPATIAL_TYPE::VISIBLEFORAI) == ESPATIAL_TYPE::NONE)
 		return	(FALSE);
 
 	return		(inherited::feel_touch_on_contact(O));

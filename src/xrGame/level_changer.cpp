@@ -94,7 +94,9 @@ BOOL CLevelChanger::net_Spawn	(CSE_Abstract* DC)
 		setEnabled				(TRUE);
 	}
 	g_lchangers.push_back		(this);
-	SpatialComponent->spatial.type |= STYPE_RESTRICTOR;
+
+	SpatialComponent->spatial.type |= ESPATIAL_TYPE::LEVEL_CHANGER;
+
 	return						(bOk);
 }
 
