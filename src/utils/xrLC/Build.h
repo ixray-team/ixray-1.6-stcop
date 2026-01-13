@@ -61,7 +61,7 @@ public:
 
 	void	Load					(const b_params& P, const IReader&  fs);
 	void	Run						(LPCSTR path);
-	void	StartMu					();
+ 
 	void	RunAfterLight			( IWriter* fs	);
 	void	Tesselate				();
 	void	PreOptimize				();
