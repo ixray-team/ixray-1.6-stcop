@@ -179,6 +179,7 @@ jobs:
           libtbb-dev \
           liblzo2-2 \
           liblzo2-dev \
+          libogg-dev \
           libyaml-cpp-dev
 
       - name: Configure targets
