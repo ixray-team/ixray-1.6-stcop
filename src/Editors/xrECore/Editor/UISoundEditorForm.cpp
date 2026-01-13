@@ -64,6 +64,8 @@ void UISoundEditorForm::Update()
                 Form->Draw();
                 ImGui::EndPopup();
             }
+
+            ImGui::OpenPopup("Sound Editor");
         }
         else
         {
