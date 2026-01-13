@@ -66,7 +66,13 @@ void CBuild::ProcessLMAPS_CPU()
 void	CBuild::LMaps					()
 {
 	mem_Compact();
- 	 
+	const bool Cuda   = gCompilerMode.CUDA;
+	const bool Embree = gCompilerMode.Embree;
+
+	string128 tmp_phase;
+	sprintf(tmp_phase, "LIGHT: LMaps (*%s*)", Cuda ? "CUDA" : Embree ? "Embree" : "Opcode");
+	Phase(tmp_phase);
+
 #ifdef LCCUDA_BUILD
 	if (gCompilerMode.CUDA)
 	{
@@ -165,20 +171,14 @@ void CBuild::Light()
 	IsolateVertices(TRUE);
  
 	//****************************************** Implicit
-	Phase("LIGHT: Implicit...");
-	Light_prepare();
- 	ImplicitLighting();
+  	ImplicitLighting();
 
 	//****************************************** LMAPS
-	Phase("LIGHT: LMaps...");
-	Light_prepare();
- 	LMaps();
+  	LMaps();
 
 	//****************************************** Vertex
-	Phase("LIGHT: Vertex...");
-	LightVertex();
+ 	LightVertex();
  
-
 	//****************************************** Merge LMAPS
 	Phase("LIGHT: Merging lightmaps...");
 	xrPhase_MergeLM(0, lc_global_data()->g_deflectors().size());
@@ -190,12 +190,9 @@ void CBuild::Light()
 	//****************************************** Merge geometry
 	Phase("Merging geometry...");
  	xrPhase_MergeGeometry();
-
-
+ 
 	//****************************************** Starting MU
-	Phase("LIGHT: Starting MU...");
-	Light_prepare();
- 	StartMu();
+ 	run_mu_light();
 	
 	//****************************************** Destroy RCast-model
  	Phase("Destroying ray-trace model...");
