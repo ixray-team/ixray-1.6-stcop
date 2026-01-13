@@ -25,8 +25,8 @@ void CPhantom::Load( LPCSTR section )
 {
 	inherited::Load		(section);
 	//////////////////////////////////////////////////////////////////////////
-	SpatialComponent->spatial.type &=~STYPE_VISIBLEFORAI;
-	SpatialComponent->spatial.type &=~STYPE_REACTTOSOUND;
+	SpatialComponent->spatial.type &=~ESPATIAL_TYPE::VISIBLEFORAI;
+	SpatialComponent->spatial.type &=~ESPATIAL_TYPE::REACTTOSOUND;
 	//////////////////////////////////////////////////////////////////////////
 	fSpeed							= pSettings->r_float(section,"speed");
 	fASpeed							= pSettings->r_float(section,"angular_speed");
@@ -243,7 +243,7 @@ void CPhantom::UpdateFlyMedia()
 
 void CPhantom::shedule_Update(u32 DT)
 {
-	SpatialComponent->spatial.type &=~STYPE_VISIBLEFORAI;
+	SpatialComponent->spatial.type &=~ESPATIAL_TYPE::VISIBLEFORAI;
 
 	inherited::shedule_Update(DT);
 

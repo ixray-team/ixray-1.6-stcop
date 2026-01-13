@@ -19,7 +19,7 @@
 //////////////////////////////////////////////////////////////////////
 CGlow::CGlow()// : ISpatial(g_SpatialSpace)
 {
-	ISpatialOwner::spatial_create(g_SpatialSpace, this, STYPE_RENDERABLE);
+	ISpatialOwner::spatial_create(g_SpatialSpace, this, ESPATIAL_TYPE::RENDERABLE);
 	flags.bActive = false;
 	position.set(0, 0, 0);
 	direction.set(0, 0, 0);
@@ -118,7 +118,7 @@ void CGlowManager::Load		(IReader* fs)
 		G->dwFrame			= 0x0;
 		G->bTestResult		= TRUE;
 
-		G->SpatialComponent->spatial.type		= STYPE_RENDERABLE;
+		G->SpatialComponent->spatial.type		= ESPATIAL_TYPE::RENDERABLE;
 
 		G->set_active		(true);
 

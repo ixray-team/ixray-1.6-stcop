@@ -129,8 +129,8 @@ void CAI_Crow::Load(LPCSTR section)
 {
 	inherited::Load(section);
 	//////////////////////////////////////////////////////////////////////////
-	SpatialComponent->spatial.type &= ~STYPE_VISIBLEFORAI;
-	SpatialComponent->spatial.type &= ~STYPE_REACTTOSOUND;
+	SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::VISIBLEFORAI;
+	SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::REACTTOSOUND;
 	//////////////////////////////////////////////////////////////////////////
 
 	// sounds
@@ -167,11 +167,13 @@ BOOL CAI_Crow::net_Spawn(CSE_Abstract* DC)
 	o_workload_frame = 0;
 	o_workload_rframe = 0;
 
-	if (GetfHealth() > 0) {
+	if (GetfHealth() > 0.f)
+	{
 		st_current = ECrowStates::eFlyIdle;
 		st_target = ECrowStates::eFlyIdle;
 		// disable UpdateCL, enable only on HIT
 		processing_deactivate();
+		SpatialComponent->spatial.type |= ESPATIAL_TYPE::CROW_ALIVE;
 	}
 	else {
 		st_current = ECrowStates::eDeathFall;
@@ -179,9 +181,11 @@ BOOL CAI_Crow::net_Spawn(CSE_Abstract* DC)
 		// Crow is already dead, need to enable physics
 		processing_activate();
 		CreateSkeleton();
+		SpatialComponent->spatial.type |= ESPATIAL_TYPE::CROW_DEAD;
 	}
 
 	VERIFY2( valid_pos( Position() ), dbg_valide_pos_string(Position(),this,"CAI_Crow::net_Spawn").c_str());
+	SpatialComponent->spatial.type |= ESPATIAL_TYPE::CROW;
 	return		R;
 }
 
@@ -210,7 +214,7 @@ void CAI_Crow::switch2_FlyIdle()
 void CAI_Crow::switch2_DeathDead()
 {
 	// AI need to pickup this
-	SpatialComponent->spatial.type	|=	STYPE_VISIBLEFORAI;
+	SpatialComponent->spatial.type	|= ESPATIAL_TYPE::VISIBLEFORAI;
 	//
 	Visual()->dcast_PKinematicsAnimated()->PlayCycle	(m_Anims.m_death_dead.GetRandom());
 }
@@ -220,6 +224,8 @@ void CAI_Crow::switch2_DeathFall()
 	V.mul(XFORM().k,fSpeed);
 //	m_PhysicMovementControl->SetVelocity(V);
 	Visual()->dcast_PKinematicsAnimated()->PlayCycle	(m_Anims.m_death.GetRandom(),TRUE,cb_OnHitEndPlaying,this);
+	SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::CROW_ALIVE;
+	SpatialComponent->spatial.type |= ESPATIAL_TYPE::CROW_DEAD;
 }
 
 void CAI_Crow::state_Flying		(float fdt)
@@ -334,7 +340,7 @@ collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject*
 void CAI_Crow::shedule_Update		(u32 DT)
 {
 	float fDT = float(DT)/1000.F;
-	SpatialComponent->spatial.type &=~STYPE_VISIBLEFORAI;
+	SpatialComponent->spatial.type &=~ESPATIAL_TYPE::VISIBLEFORAI;
 
 	inherited::shedule_Update(DT);
 
@@ -358,20 +364,12 @@ void CAI_Crow::shedule_Update		(u32 DT)
 		if(fGoalChangeTime<=0)	{
 			fGoalChangeTime += fGoalChangeDelta+fGoalChangeDelta*Random.randF(-0.5f,0.5f);
 
-			Level().ObjectSpace.GetNearest(nearbyObjects, Position(), 300.0f, NULL);
-			for (CObject* obj : nearbyObjects) 
-			{
-				if (CEntityAlive* entity = smart_cast<CEntityAlive*>(obj); entity && !entity->g_Alive()) 
-				{
-					deadNPCs.push_back(entity);
-				}
-			}
-
+			g_SpatialSpace->q_sphere(nearbyObjects, 0, ESPATIAL_TYPE::ACTOR_DEAD | ESPATIAL_TYPE::AI_DEAD, Position(), 300.0f);
 			Fvector vP;
-			if (!deadNPCs.empty()) 
+			if (!nearbyObjects.empty())
 			{
-				CEntityAlive* targetNPC = deadNPCs[Random.randI(0, deadNPCs.size())];
-				vP = targetNPC->Position();
+				ISpatialShared& S = nearbyObjects[Random.randI(nearbyObjects.size())];
+				vP = S->spatial.sphere.P;
 				//Msg("Flying to dead NPC at [%f, %f, %f]", vP.x, vP.y, vP.z);
 			}
 			else 
@@ -519,4 +517,13 @@ BOOL CAI_Crow::UsedAI_Locations()
 void CAI_Crow::create_physic_shell()
 {
 	// do not delete!!!
+}
+
+void CAI_Crow::net_Relcase(CObject* O)
+{
+	inherited::net_Relcase(O);
+
+	auto it = std::find_if(nearbyObjects.begin(), nearbyObjects.end(), [O](ISpatialShared& spatial) { return O == spatial->dcast_CObject(); });
+	if (it != nearbyObjects.end())
+		nearbyObjects.erase(it);
 }

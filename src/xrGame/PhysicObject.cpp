@@ -87,6 +87,9 @@ if(dbg_draw_doors)
 	DBG_ClosedCashedDraw( 50000000 );
 }
 #endif	
+
+	SpatialComponent->spatial.type |= ESPATIAL_TYPE::PHYSIC_OBJECT;
+
 	return TRUE;
 
 }
