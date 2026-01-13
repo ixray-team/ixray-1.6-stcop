@@ -23,6 +23,8 @@
 #include "game_base_space.h"
 #include "alife_simulator.h"
 #include "ai_object_location.h"
+#include "alife_registry_wrappers.h"
+#include "../xrEngine/xr_collide_form.h"
 
 #define SMALL_ENTITY_RADIUS		0.6f
 #define BLOOD_MARKS_SECT		"bloody_marks"
@@ -320,11 +322,7 @@ void	CEntityAlive::Hit(SHit* pHDS)
 	}
 
 }
-#include "ai_object_location.h"
-#include "monster_community.h"
-#include "relation_registry.h"
-#include "alife_registry_wrappers.h"
- 
+
 void CEntityAlive::Die	(CObject* who)
 {
 	if(who)
@@ -794,8 +792,6 @@ void	CEntityAlive::	destroy_anim_mov_ctrl( )
 	 if( cs )
 		cs->on_destroy_anim_mov_ctrl( );
 }
-
-#include "../xrEngine/xr_collide_form.h"
 
 struct element_predicate {
 	inline bool	operator( )							(CCF_Skeleton::SElement const& element, u16 element_id ) const
