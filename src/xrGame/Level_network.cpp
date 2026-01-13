@@ -307,24 +307,26 @@ void CLevel::Send(NET_Packet& P, u32 dwFlags, u32 dwTimeout)
 {
 	if (IsDemoPlayStarted() || IsDemoPlayFinished()) return;
 	// optimize the case when server located in our memory
-	if(psNET_direct_connect){
-		ClientID	_clid;
-		_clid.set	(1);
-		Server->OnMessage		(P,	_clid );
-	}else
-	if (Server && game_configured && OnServer() )
-	{
-#ifdef DEBUG
-		VERIFY2(Server->IsPlayersMonitorLockedByMe() == false, "potential deadlock detected");
-#endif
-		Server->OnMessageSync	(P,Game().local_svdpnid	);
-	}else											
-		IPureClient::Send	(P,dwFlags,dwTimeout	);
 
-	if (g_pGameLevel && Level().game && !IsGameTypeSingle() && !g_SV_Disable_Auth_Check)		{
+	if (psNET_direct_connect)
+	{
+		ClientID	_clid;
+		_clid.set(1);
+		Server->OnMessage(P, _clid);
+	}
+	else if (Server && game_configured && OnServer())
+	{
+		Server->OnMessageSync(P, Game().local_svdpnid);
+	}
+	else
+	{
+		IPureClient::Send(P, dwFlags, dwTimeout);
+	}
+
+	if (g_pGameLevel && Level().game && !IsGameTypeSingle() && !g_SV_Disable_Auth_Check) {
 		// anti-cheat
-		phTimefactor		= 1.f					;
-		psDeviceFlags.set	(rsConstantFPS,FALSE)	;	
+		phTimefactor = 1.f;
+		psDeviceFlags.set(rsConstantFPS, FALSE);
 	}
 }
 

@@ -1,8 +1,9 @@
 #include "stdafx.h"
-#include "opus/opus.h"
 #include "VoicePacketsPacker.h"
 #include "SoundVoiceChat.h"
 #include "VoicePacket.h"
+
+#include <opus.h>
 
 #define OPUS_BITRATE 16000
 
@@ -54,7 +55,7 @@ void CVoicePacketsPacker::AddPacket(const void* data, const int length)
 
 	VoicePacket* packet = m_voicePackets[m_packetsCount];
 
-	// Длина в сэмплах, не в байтах
+	// пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	const int samples = length / sizeof(float);
 
 	packet->length = opus_encode_float
@@ -66,7 +67,7 @@ void CVoicePacketsPacker::AddPacket(const void* data, const int length)
 		VoicePacket::MAX_DATA_SIZE
 	);
 
-	packet->time = GetTickCount();
+	packet->time = SDL_GetTicks();
 	++m_packetsCount;
 }
 
@@ -75,7 +76,7 @@ void CVoicePacketsPacker::Update()
 	if (m_packetsCount > 0)
 	{
 		VoicePacket* lastPacket = m_voicePackets[m_packetsCount - 1];
-		if (m_packetsCount > MAX_VOICE_PACKETS - 1 || (lastPacket->time + 50) < GetTickCount())
+		if (m_packetsCount > MAX_VOICE_PACKETS - 1 || (lastPacket->time + 50) < SDL_GetTicks())
 		{
 			for (auto it = m_senders.begin(); it != m_senders.end(); ++it)
 			{
