@@ -155,8 +155,15 @@ void LightVertex()
 	g_trans = new mapVert();
 
 	// Start threads, wait, continue --- perform all the work
-	Status("Calculating...");
 
+	const bool Cuda = gCompilerMode.CUDA;
+	const bool Embree = gCompilerMode.Embree;
+ 	string128 tmp_phase;
+	sprintf(tmp_phase, "LIGHT: Vertex (*%s*)", Cuda ? "CUDA" : Embree ? "Embree" : "Opcode");
+	Phase(tmp_phase);
+
+	Status("Calculating...");
+ 
 #ifdef LCCUDA_BUILD
 	if (gCompilerMode.CUDA)
 	{
