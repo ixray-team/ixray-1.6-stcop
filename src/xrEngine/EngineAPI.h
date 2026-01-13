@@ -37,6 +37,7 @@ enum class EditorUI : u8
 	LuaCodespace,
 	ActorInfos,
 	HudAdjust,
+	LevelInspector,
 	ScenesViewer,
 	CameraEffectors,
 	Game_TimeManager,

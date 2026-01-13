@@ -358,6 +358,13 @@ BOOL CBaseMonster::net_Spawn (CSE_Abstract* DC)
 	m_bInterpolate = false;
 	m_dwILastUpdateTime = 0;
 
+	SpatialComponent->spatial.type |= ESPATIAL_TYPE::MONSTER;
+
+	if (GetfHealth() > 0.f)
+		SpatialComponent->spatial.type |= ESPATIAL_TYPE::MONSTER_ALIVE;
+	else
+		SpatialComponent->spatial.type |= ESPATIAL_TYPE::MONSTER_DEAD;
+
 	return(TRUE);
 }
 

@@ -560,7 +560,7 @@ void dx103DFluidRenderer::CalculateLighting(const dx103DFluidData &FluidData, Fo
 		(
 		m_lstRenderables,
 		0, //ISpatial_DB::O_ORDERED,
-		STYPE_LIGHTSOURCE,
+		ESPATIAL_TYPE::LIGHTSOURCE,
 		center,
 		size
 		);

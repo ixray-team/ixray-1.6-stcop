@@ -419,6 +419,9 @@ void CBaseMonster::shedule_Update(u32 dt)
 
 void CBaseMonster::Die(CObject* who)
 {
+	SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::MONSTER_ALIVE;
+	SpatialComponent->spatial.type |= ESPATIAL_TYPE::MONSTER_DEAD;
+
 	if (StateMan) StateMan->critical_finalize();
 
 	m_psy_aura.on_monster_death();

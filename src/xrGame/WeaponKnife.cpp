@@ -907,11 +907,10 @@ bool CWeaponKnife::SelectBestHitVictim(Fvector const & f_pos,
 		std::make_pair(fendpos_dest, m_splash_radius));
 #endif
 
-	m_spartial_query_res.clear();
 	g_SpatialSpace->q_sphere(
 		m_spartial_query_res,
 		0,
-		STYPE_COLLIDEABLE,
+		ESPATIAL_TYPE::COLLIDEABLE | ESPATIAL_TYPE::AI,
 		fendpos_dest,
 		m_splash_radius
 	);

@@ -109,7 +109,7 @@ collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject*
 {
 	collide::rq_result RQ;
 	RQ.set(nullptr, range, -1);
-	collide::rq_results RQR;
+	static collide::rq_results RQR;
 	collide::ray_defs RD(pos, dir, RQ.range, CDB::OPT_FULL_TEST, collide::rqtBoth);
 	Level().ObjectSpace.RayQuery(RQR, RD, GetPickDist_Callback, &RQ, nullptr, ignore);
 	return RQ;

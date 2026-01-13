@@ -99,6 +99,8 @@ BOOL CInventoryBox::net_Spawn(CSE_Abstract* DC)
 		set_tip_text(pSE_box->m_tip_text.c_str());
 	}
 
+	SpatialComponent->spatial.type |= ESPATIAL_TYPE::INV_BOX;
+
 	return TRUE;
 }
 
