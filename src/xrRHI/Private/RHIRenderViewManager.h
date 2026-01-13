@@ -16,4 +16,6 @@ public:
 	bool ChangedRTorZB = false;
 };
 
+#ifdef IXR_WINDOWS
 extern CRHIRenderViewManager GRHIRenderViewManager;
+#endif

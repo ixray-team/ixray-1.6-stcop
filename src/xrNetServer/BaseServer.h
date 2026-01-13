@@ -207,9 +207,5 @@ public:
 #endif //#ifdef DEBUG
 		csMessage.Leave();
 	}
-
-#ifdef DEBUG
-	bool					    IsPlayersMonitorLockedByMe()	const { return net_players.IsCurrentThreadIteratingOnClients() && !sender_functor_invoked; };
-#endif
 };
 
