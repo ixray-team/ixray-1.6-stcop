@@ -540,7 +540,7 @@ bool CObjectSpace::BoxQuery(Fvector const& box_center,
 
 
 //----------------------------------------------------------------------
-IC int	CObjectSpace::GetNearest(xr_vector<CObject*>& q_nearest, const Fvector& point, float range, CObject* ignore_object)
+int CObjectSpace::GetNearest(xr_vector<CObject*>& q_nearest, const Fvector& point, float range, CObject* ignore_object)
 {
 	return GetNearest
 	(

@@ -280,7 +280,7 @@ namespace CDB
 		ICF xr_span<Fvector> getVSpan(){return verts;}
 		ICF TRI*				getT()				{ return &*faces.begin();	}
 		ICF u32					getfFlags(u32 index){ return flags[index];		}	
-IC		ICF TRI&				getT(u32 index)		{ return faces[index];		}
+		ICF TRI&				getT(u32 index)		{ return faces[index];		}
 		ICF size_t				getTS()				{ return faces.size();		}
 		ICF xr_span<TRI> getTSpan(){return faces;}
 		void				clear();

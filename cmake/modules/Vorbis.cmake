@@ -41,6 +41,9 @@ else()
         )
         
         FetchContent_MakeAvailable(libvorbis)
+
+        target_link_libraries(vorbis PUBLIC Ogg::ogg)
+        target_link_libraries(vorbisfile PUBLIC Ogg::ogg)
         
         if(TARGET vorbis AND NOT TARGET Vorbis::vorbis)
             add_library(Vorbis::vorbis ALIAS vorbis)
