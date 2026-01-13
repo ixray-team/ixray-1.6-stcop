@@ -102,6 +102,10 @@ protected:
 		eIdleLightR1			=(1<<15),
 		eBoltEntranceParticles	=(1<<16),
 		eUseSecondaryHit		=(1<<17),
+		eBulletEntranceAction	=(1<<18),
+		eBulletFliesThrough		=(1<<19),
+		eBulletRicochet			=(1<<20),
+		eBulletRandom			=(1<<21),
 	};
 	u32					m_owner_id;
 	u32					m_ttl;
@@ -220,6 +224,7 @@ protected:
 	shared_str				m_sIdleObjectParticlesSmall;
 	shared_str				m_sIdleObjectParticlesBig;
 	shared_str				m_sBoltEntranceParticles;
+	shared_str				m_sBulletEntranceParticles;
 
 	ref_sound				m_idle_sound;
 	ref_sound				m_awaking_sound;
@@ -306,7 +311,7 @@ public:
 	virtual u32				ef_anomaly_type				() const;
 	virtual u32				ef_weapon_type				() const;
 	virtual	bool			register_schedule			() const {return true;}
-
+	u8						PlayEntranceSmallParticles	(const Fvector& pos, const Fvector& dir, const Fvector& vel, bool play_effect = true);
 	// optimization FAST/SLOW mode
 public:	
 	virtual BOOL			AlwaysTheCrow				();
