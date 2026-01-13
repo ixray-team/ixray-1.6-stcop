@@ -150,7 +150,7 @@ __device__ void CalculatePoint(Hardware_Raytask& Task, Hardware_Lighting& L, uns
 
 	Hardware_Vector Ldir;
 	Hardware_Vector Pnew = P;
-	Pnew.Mad_Self(N, 0.3f);
+	Pnew.Mad_Self(N, 0.01f);
 
 	Hardware_Vector LightPosition  = { L.position.x, L.position.y, L.position.z };
 	Hardware_Vector LightDirection = { L.direction.x, L.direction.y, L.direction.z };
