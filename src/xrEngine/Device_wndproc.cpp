@@ -143,12 +143,34 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 		case SDL_EVENT_KEY_DOWN:
 		{
 			pInput->KeyboardButtonUpdate(Event.key.scancode, true);
+
+#ifdef DEBUG_DRAW
+			if (pInput)
+			{
+				if (pInput->xrgame_sdk_input_pressed)
+				{
+					pInput->xrgame_sdk_input_pressed((int)Event.key.scancode);
+				}
+			}
+#endif
+
 			pInput->SetControllerMode(false);
 			break;
 		}
 		case SDL_EVENT_KEY_UP:
 		{
 			pInput->KeyboardButtonUpdate(Event.key.scancode, false);
+
+#ifdef DEBUG_DRAW
+			if (pInput)
+			{
+				if (pInput->xrgame_sdk_input_released)
+				{
+					pInput->xrgame_sdk_input_released((int)Event.key.scancode);
+				}
+			}
+#endif
+
 			break;
 		}
 		case SDL_EVENT_MOUSE_MOTION:
