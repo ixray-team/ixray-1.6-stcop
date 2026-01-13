@@ -178,6 +178,23 @@ void CCustomZone::Load(LPCSTR section)
 		m_zone_flags.set			(eBoltEntranceParticles, (m_sBoltEntranceParticles.size()!=0));
 	}
 
+	if (pSettings->line_exist(section, "bullet_entrance_action"))
+	{
+		m_zone_flags.set(eBulletEntranceAction, TRUE);
+
+		if (pSettings->line_exist(section, "bullet_entrance_particles"))
+			m_sBulletEntranceParticles = pSettings->r_string(section, "bullet_entrance_particles");
+
+		if (pSettings->line_exist(section, "bullet_flies_through"))
+			m_zone_flags.set(eBulletFliesThrough, TRUE);
+
+		if (pSettings->line_exist(section, "bullet_ricochet"))
+			m_zone_flags.set(eBulletRicochet, TRUE);
+
+		if (pSettings->line_exist(section, "bullet_ricochet_random"))
+			m_zone_flags.set(eBulletRandom, TRUE);
+	}
+
 	if(pSettings->line_exist(section,"blowout_particles_time")) 
 	{
 		m_dwBlowoutParticlesTime = pSettings->r_u32(section,"blowout_particles_time");
@@ -250,12 +267,12 @@ void CCustomZone::Load(LPCSTR section)
 
 	//загрузить параметры световой вспышки от взрыва
 	m_zone_flags.set(eBlowoutLight, pSettings->r_bool (section, "blowout_light"));
-	if(m_zone_flags.test(eBlowoutLight) ){
-		sscanf(pSettings->r_string(section,"light_color"), "%f,%f,%f", &m_LightColor.r, &m_LightColor.g, &m_LightColor.b);
+	if(m_zone_flags.test(eBlowoutLight) )
+	{
+		m_LightColor			= pSettings->r_fcolor(section, "light_color");
 		m_fLightRange			= pSettings->r_float(section,"light_range");
 		m_fLightTime			= pSettings->r_float(section,"light_time");
 		m_fLightTimeLeft		= 0;
-
 		m_fLightHeight		= pSettings->r_float(section,"light_height");
 	}
 
@@ -834,6 +851,42 @@ void CCustomZone::PlayEntranceParticles(CGameObject* pObject)
 	{
 		PlayBoltEntranceParticles();
 	}
+}
+
+u8 CCustomZone::PlayEntranceSmallParticles(const Fvector& pos, const Fvector& dir, const Fvector& vel, bool play_effect)
+{
+	if(m_zone_flags.test(eBulletEntranceAction))
+	{
+		if (play_effect)
+		{
+			LPCSTR particles_str = m_sBulletEntranceParticles.size() ? m_sBulletEntranceParticles.c_str() : m_sEntranceParticlesSmall.size() ? m_sEntranceParticlesSmall.c_str() : nullptr;
+			if(particles_str)
+			{
+				if (m_entrance_sound.handle())
+					m_entrance_sound.play_at_pos(0, pos);
+
+				CParticlesObject* pParticles = Particles::Details::Create(particles_str, TRUE).get();
+				Fmatrix xform;
+				Fvector::generate_orthonormal_basis(dir, xform.j, xform.i);
+				xform.c.set(pos);
+				pParticles->UpdateParent(xform, vel);
+				pParticles->Play(false);
+				
+			}
+		}
+		if (m_zone_flags.test(eBulletRicochet))
+			return u8(2);//рикошет по нормали сферы
+
+		if (m_zone_flags.test(eBulletRandom))
+			return u8(3);//рикошет в рандомную сторону
+
+		if (m_zone_flags.test(eBulletFliesThrough))
+			return u8(4);//пролет пули через зону с эффектами столкновения на кромках
+
+		return u8(1);//эффект и удаление пули при первом контакте с зоной
+	}
+
+	return u8(0);
 }
 
 void CCustomZone::PlayBoltEntranceParticles()
