@@ -84,7 +84,7 @@ bool CPickUpManager::CanPickItem(const CFrustum& frustum, const Fvector& from, C
 					}
 					else
 					{ //check obstacle flag
-						if (result.O->SpatialComponent->spatial.type & STYPE_OBSTACLE)
+						if ((result.O->SpatialComponent->spatial.type & ESPATIAL_TYPE::OBSTACLE) != ESPATIAL_TYPE::NONE)
 							bOverlaped = true;
 
 						return TRUE;

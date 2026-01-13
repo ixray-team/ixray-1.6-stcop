@@ -7,7 +7,7 @@ class _MM_ALIGN16 spatial_ray_walker
 {
 public:
 	ray_t			ray;
-	u32				mask;
+	ESPATIAL_TYPE	mask;
 	float			range;
 	float			range2;
 	ISpatial_DB*	space;
@@ -19,7 +19,7 @@ public:
 	spatial_ray_walker(bool SSE, bool First, bool Nearest)
 		:bSSE(SSE), bFirst(First), bNearest(Nearest) {}
 
-	void _init(ISpatial_DB* _space, u32 _mask, const Fvector& _start, const Fvector& _dir, float _range)
+	void _init(ISpatial_DB* _space, ESPATIAL_TYPE _mask, const Fvector& _start, const Fvector& _dir, float _range)
 	{
 		mask			= _mask;
 		ray.pos.set		(_start);
@@ -55,7 +55,7 @@ public:
 		for (ISpatialShared& S : N->items)
 		{
 			if (!S.get()) continue;
-			if (mask!=(S->spatial.type&mask))	continue;
+			if (ESPATIAL_TYPE::NONE == (S->spatial.type & mask))	continue;
 			Fsphere&		sS	= S->spatial.sphere;
 			int				quantity;
 			float			afT[2];
@@ -89,14 +89,14 @@ public:
 	}
 };
 
-void ISpatial_DB::q_ray(xr_vector<ISpatialShared>& R, u32 _o, u32 _mask_and, const Fvector&	_start,  const Fvector&	_dir, float _range)
+void ISpatial_DB::q_ray(xr_vector<ISpatialShared>& R, u32 _o, ESPATIAL_TYPE _mask_and, const Fvector&	_start,  const Fvector&	_dir, float _range)
 {
 	PROF_EVENT("ISpatial_DB::q_ray")
 	xrSRWLockGuard guard(&db_lock, true);
 	if (!m_root)
 		return;
 
-	R.resize(0);
+	R.clear();
 
 	spatial_ray_walker W(CPU::ID().hasFeature(CPUFeature::SSE), !!(_o&O_ONLYFIRST), !!(_o&O_ONLYNEAREST));
 	W._init(this, _mask_and, _start, _dir, _range);

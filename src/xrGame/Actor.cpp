@@ -436,8 +436,8 @@ void CActor::Load	(LPCSTR section )
 		OnDifficultyChanged		();
 	//////////////////////////////////////////////////////////////////////////
 	
-	SpatialComponent->spatial.type	|=	STYPE_VISIBLEFORAI;
-	SpatialComponent->spatial.type	&= ~STYPE_REACTTOSOUND;
+	SpatialComponent->spatial.type	|=	ESPATIAL_TYPE::VISIBLEFORAI;
+	SpatialComponent->spatial.type	&= ~ESPATIAL_TYPE::REACTTOSOUND;
 	
 	//////////////////////////////////////////////////////////////////////////
 
@@ -1150,6 +1150,8 @@ void CActor::HitSignal(float perc, Fvector& vLocalDir, CObject* who, s16 element
 void start_tutorial(LPCSTR name);
 void CActor::Die	(CObject* who)
 {
+	SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::ACTOR_ALIVE;
+	SpatialComponent->spatial.type |= ESPATIAL_TYPE::ACTOR_DEAD;
 #ifdef DEBUG
 	Msg("--- Actor [%s] dies !", this->Name());
 #endif // #ifdef DEBUG
@@ -1833,8 +1835,6 @@ void CActor::UpdateCL()
 
 	if (g_Alive()) 
 		CStepManager::update(this==Level().CurrentViewEntity());
-
-	SpatialComponent->spatial.type |=STYPE_REACTTOSOUND;
 
 	if(m_sndShockEffector)
 	{

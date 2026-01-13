@@ -266,6 +266,9 @@ BOOL CEntityAlive::net_Spawn	(CSE_Abstract* DC)
 		StartBloodDrops			(pWound);
 	}
 
+	if (character_physics_support())
+		SpatialComponent->spatial.type |= ESPATIAL_TYPE::PHYSIC_MOVEMENT;
+
 	return						(TRUE);
 }
 
@@ -341,7 +344,9 @@ void CEntityAlive::Die	(CObject* who)
 	}
 
 	// disable react to sound
-	SpatialComponent->spatial.type &=~STYPE_REACTTOSOUND;
+	SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::REACTTOSOUND;
+	SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::PHYSIC_MOVEMENT;
+
 	if(character_physics_support())
 		character_physics_support()->in_Die();
 }

@@ -87,10 +87,6 @@ void CCustomZone::Load(LPCSTR section)
 	m_StateTime[eZoneStateBlowout]		= pSettings->r_s32(section, "blowout_time");
 	m_StateTime[eZoneStateAccumulate]	= pSettings->r_s32(section, "accamulate_time");
 	
-//////////////////////////////////////////////////////////////////////////
-	SpatialComponent->spatial.type	|=	(STYPE_COLLIDEABLE|STYPE_SHAPE);
-//////////////////////////////////////////////////////////////////////////
-
 	LPCSTR sound_str = nullptr;
 	
 	if(pSettings->line_exist(section,"idle_sound")) 
@@ -382,6 +378,8 @@ BOOL CCustomZone::net_Spawn(CSE_Abstract* DC)
 	{
 		m_zone_flags.set(eAlwaysFastmode, spawn_ini()->r_bool("fast_mode","always_fast"));
 	}
+	SpatialComponent->spatial.type |= ESPATIAL_TYPE::ANOMALY_ZONE;
+	SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::SPACE_RESTRICTOR;
 	return						(TRUE);
 }
 
@@ -1443,7 +1441,7 @@ void CCustomZone::GoEnabledState()
 
 BOOL CCustomZone::feel_touch_on_contact	(CObject *O)
 {
-	if ((SpatialComponent->spatial.type | STYPE_VISIBLEFORAI) != SpatialComponent->spatial.type)
+	if ((SpatialComponent->spatial.type & ESPATIAL_TYPE::VISIBLEFORAI) == ESPATIAL_TYPE::NONE)
 		return			(FALSE);
 
 	return				(inherited::feel_touch_on_contact(O));

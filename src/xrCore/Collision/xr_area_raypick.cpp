@@ -46,7 +46,7 @@ BOOL CObjectSpace::_RayTest(const Fvector& start, const Fvector& dir, float rang
 	// dynamic test
 	if (tgt & rqtDyn) 
 	{
-		u32 d_flags = STYPE_COLLIDEABLE | ((tgt & rqtObstacle) ? STYPE_OBSTACLE : 0) | ((tgt & rqtShape) ? STYPE_SHAPE : 0);
+		ESPATIAL_TYPE d_flags = ESPATIAL_TYPE::COLLIDEABLE | ((tgt & rqtObstacle) ? ESPATIAL_TYPE::OBSTACLE : ESPATIAL_TYPE::NONE) | ((tgt & rqtShape) ? ESPATIAL_TYPE::SHAPE : ESPATIAL_TYPE::NONE);
 
 		// traverse object database
 		g_SpatialSpace->q_ray(CObjectSpaceThreadData::r_spatial, 0, d_flags, start, dir, range);
@@ -140,7 +140,7 @@ BOOL CObjectSpace::_RayPick(const Fvector& start, const Fvector& dir, float rang
 	{
 		collide::ray_defs Q(start, dir, R.range, CDB::OPT_ONLYNEAREST | CDB::OPT_CULL, tgt);
 		// traverse object database
-		u32			d_flags = STYPE_COLLIDEABLE | ((tgt & rqtObstacle) ? STYPE_OBSTACLE : 0) | ((tgt & rqtShape) ? STYPE_SHAPE : 0);
+		ESPATIAL_TYPE d_flags = ESPATIAL_TYPE::COLLIDEABLE | ((tgt & rqtObstacle) ? ESPATIAL_TYPE::OBSTACLE : ESPATIAL_TYPE::NONE) | ((tgt & rqtShape) ? ESPATIAL_TYPE::SHAPE : ESPATIAL_TYPE::NONE);
 		g_SpatialSpace->q_ray(CObjectSpaceThreadData::r_spatial, 0, d_flags, start, dir, range);
 		// Determine visibility for dynamic part of scene
 
@@ -180,7 +180,7 @@ BOOL CObjectSpace::_RayPick(const Fvector& start, const Fvector& dir, float rang
 BOOL CObjectSpace::RayQuery(collide::rq_results& dest, const collide::ray_defs& R, collide::rq_callback* CB, LPVOID user_data, collide::test_callback* tb, CObject* ignore_object)
 {
 	BOOL _res = _RayQuery2(dest, R, CB, user_data, tb, ignore_object);
-	CObjectSpaceThreadData::r_spatial.resize(0);
+	CObjectSpaceThreadData::r_spatial.clear();
 	return (_res);
 }
 
@@ -194,7 +194,7 @@ BOOL CObjectSpace::_RayQuery2	(collide::rq_results& r_dest, const collide::ray_d
 	rq_target	d_mask	=	rq_target(	((R.tgt&rqtObject)	?rqtObject:rqtNone		)|
 										((R.tgt&rqtObstacle)?rqtObstacle:rqtNone	)|
 										((R.tgt&rqtShape)	?rqtShape:rqtNone)		);
-	u32			d_flags =	STYPE_COLLIDEABLE|((R.tgt&rqtObstacle)?STYPE_OBSTACLE:0)|((R.tgt&rqtShape)?STYPE_SHAPE:0);
+	ESPATIAL_TYPE d_flags = ESPATIAL_TYPE::COLLIDEABLE | ((R.tgt&rqtObstacle) ? ESPATIAL_TYPE::OBSTACLE : ESPATIAL_TYPE::NONE) | ((R.tgt&rqtShape) ? ESPATIAL_TYPE::SHAPE : ESPATIAL_TYPE::NONE);
 
 	// Test static
 	if (R.tgt & s_mask)
@@ -262,7 +262,7 @@ BOOL CObjectSpace::_RayQuery3(collide::rq_results& r_dest, const collide::ray_de
 	rq_target	d_mask = rq_target(((R.tgt & rqtObject) ? rqtObject : rqtNone) |
 		((R.tgt & rqtObstacle) ? rqtObstacle : rqtNone) |
 		((R.tgt & rqtShape) ? rqtShape : rqtNone));
-	u32			d_flags = STYPE_COLLIDEABLE | ((R.tgt & rqtObstacle) ? STYPE_OBSTACLE : 0) | ((R.tgt & rqtShape) ? STYPE_SHAPE : 0);
+	ESPATIAL_TYPE d_flags = ESPATIAL_TYPE::COLLIDEABLE | ((R.tgt & rqtObstacle) ? ESPATIAL_TYPE::OBSTACLE : ESPATIAL_TYPE::NONE) | ((R.tgt & rqtShape) ? ESPATIAL_TYPE::SHAPE : ESPATIAL_TYPE::NONE);
 	float		d_range = 0.f;
 
 	do {
@@ -367,7 +367,7 @@ BOOL CObjectSpace::_RayQuery(collide::rq_results& r_dest, const collide::ray_def
 								   ((R.tgt & rqtObstacle) ? rqtObstacle : rqtNone) |
 								   ((R.tgt & rqtShape) ? rqtShape : rqtNone));
 
-	u32 d_flags = STYPE_COLLIDEABLE | ((R.tgt & rqtObstacle) ? STYPE_OBSTACLE : 0) | ((R.tgt & rqtShape) ? STYPE_SHAPE : 0);
+	ESPATIAL_TYPE d_flags = ESPATIAL_TYPE::COLLIDEABLE | ((R.tgt & rqtObstacle) ? ESPATIAL_TYPE::OBSTACLE : ESPATIAL_TYPE::NONE) | ((R.tgt & rqtShape) ? ESPATIAL_TYPE::SHAPE : ESPATIAL_TYPE::NONE);
 
 	s_res.set(0, s_rd.range, -1);
 	do

@@ -882,8 +882,11 @@ bool CGamePersistent::OnRenderPPUI_query()
 extern UI_API void draw_wnds_rects();
 void CGamePersistent::OnRenderPPUI_main()
 {
-	if (g_pGameLevel != nullptr) {
+	if (g_pGameLevel != nullptr)
+	{
 		Level().BulletManager().Render();
+
+		HUD().draw_prims();
 	}
 
 	// always

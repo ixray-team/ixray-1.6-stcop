@@ -38,7 +38,7 @@ CParticlesObject::CParticlesObject(LPCSTR p_name, BOOL bAutoRemove, bool destroy
 
 
 	// spatial
-	SpatialComponent->spatial.type = 0;
+	SpatialComponent->spatial.type = ESPATIAL_TYPE::NONE;
 	SpatialComponent->spatial.sector = nullptr;
 	renderable.pROS_Allowed = FALSE;
 }
@@ -139,10 +139,10 @@ void CParticlesObject::Update(u32 _dt)
 			Fvector	P; float R;
 			renderable.xform.transform_tiny(P, vis.sphere.P);
 			R = vis.sphere.R;
-			if (0 == SpatialComponent->spatial.type)
+			if (ESPATIAL_TYPE::NONE == SpatialComponent->spatial.type)
 			{
 				// First 'valid' update - register
-				SpatialComponent->spatial.type = STYPE_PARTICLE;
+				SpatialComponent->spatial.type = ESPATIAL_TYPE::PARTICLE;
 				SpatialComponent->spatial.sphere.set(P, R);
 				spatial_register();
 			}

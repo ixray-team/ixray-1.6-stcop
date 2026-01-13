@@ -60,6 +60,7 @@ BOOL CCustomRocket::net_Spawn(CSE_Abstract* DC)
 	m_eState = eInactive;
 	BOOL result = inherited::net_Spawn(DC);
 	m_LaunchXForm.set(XFORM());
+	SpatialComponent->spatial.type |= ESPATIAL_TYPE::ROCKET;
 	return result;
 }
 
@@ -290,7 +291,7 @@ void CCustomRocket::reload(LPCSTR section)
 	m_bLightsEnabled = !!pSettings->r_bool(section, "lights_enabled");
 	if (m_bLightsEnabled)
 	{
-		sscanf(pSettings->r_string(section, "trail_light_color"), "%f,%f,%f", &m_TrailLightColor.r, &m_TrailLightColor.g, &m_TrailLightColor.b);
+		m_TrailLightColor = pSettings->r_fcolor(section, "trail_light_color");
 		m_fTrailLightRange = pSettings->r_float(section, "trail_light_range");
 	}
 

@@ -22,24 +22,6 @@ static float GetDistFromCamera(const Fvector& from_position)
 
 	return adjusted_distane;
 }
-static void dbg_text_renderer(const Fvector& pos, u32 color = color_rgba(0,255,100,255), shared_str str = "+")
-{
-    Fvector4		v_res;
-    Device.mFullTransform.transform(v_res, pos);
-
-    float x = (1.f + v_res.x) / 2.f * (Device.Width);
-    float y = (1.f - v_res.y) / 2.f * (Device.Height);
-
-    if (v_res.z < 0 || v_res.w < 0)
-        return;
-
-    if (v_res.x < -1.f || v_res.x > 1.f || v_res.y < -1.f || v_res.y>1.f)
-        return;
-
-	g_FontManager->pFontSystem->SetAligment(CGameFont::alCenter);
-	g_FontManager->pFontSystem->SetColor(color);
-	g_FontManager->pFontSystem->Out(x, y, "%s", str.c_str());
-}
 
 void CRender::render_main	(bool deffered, bool zfill)
 {
@@ -58,7 +40,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 			(
 			lstRenderablesMain,
 			ISpatial_DB::O_ORDERED,
-			STYPE_RENDERABLE + STYPE_RENDERABLESHADOW + STYPE_PARTICLE + STYPE_LIGHTSOURCE,
+			ESPATIAL_TYPE::RENDERABLE | ESPATIAL_TYPE::RENDERABLESHADOW | ESPATIAL_TYPE::PARTICLE | ESPATIAL_TYPE::LIGHTSOURCE,
 			ViewBase);//nearest sorting
 
 			// Determine visibility for dynamic part of scene
@@ -147,7 +129,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 			CSector* sector = (CSector*)spatial->spatial.sector;
 			if	(0==sector) continue;
 
-			if ((spatial->spatial.type & STYPE_LIGHTSOURCE) && deffered)
+			if ((spatial->spatial.type & ESPATIAL_TYPE::LIGHTSOURCE) != ESPATIAL_TYPE::NONE && deffered)
 			{
 				// hud lightsource
 				if(light* L = (light*)(spatial->dcast_Light()))
@@ -162,7 +144,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 
 			if(!HOM.visible(spatial->spatial.sphere)) continue;
 
-			if ((spatial->spatial.type & STYPE_LIGHTSOURCE) && deffered)
+			if ((spatial->spatial.type & ESPATIAL_TYPE::LIGHTSOURCE) != ESPATIAL_TYPE::NONE && deffered)
 			{
 				// lightsource
 				if(light* L = (light*)(spatial->dcast_Light()))
@@ -174,7 +156,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 			}
 			if (dont_test_sectors)
 			{
-				if (spatial->spatial.type & STYPE_RENDERABLE && psDeviceFlags.test(rsDrawDynamic))
+				if ((spatial->spatial.type & ESPATIAL_TYPE::RENDERABLE) != ESPATIAL_TYPE::NONE && psDeviceFlags.test(rsDrawDynamic))
 				{
 					// renderable
 					if	(IRenderable* renderable = spatial->dcast_Renderable())
@@ -212,7 +194,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 					}
 				}
 
-				if (spatial->spatial.type & STYPE_PARTICLE && !deffered)
+				if ((spatial->spatial.type & ESPATIAL_TYPE::PARTICLE) != ESPATIAL_TYPE::NONE && !deffered)
 				{
 					// renderable
 					if	(IRenderable* renderable = spatial->dcast_Renderable())
@@ -232,7 +214,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 					CFrustum&	view	= sector->r_frustums[v_it];
 					if (!view.testSphere_dirty(spatial->spatial.sphere.P,spatial->spatial.sphere.R))	continue;
 
-					if (spatial->spatial.type & STYPE_RENDERABLE && psDeviceFlags.test(rsDrawDynamic))
+					if ((spatial->spatial.type & ESPATIAL_TYPE::RENDERABLE) != ESPATIAL_TYPE::NONE && psDeviceFlags.test(rsDrawDynamic))
 					{
 						// renderable
 						if	(IRenderable* renderable = spatial->dcast_Renderable())
@@ -270,7 +252,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 						}
 					}
 
-					if (spatial->spatial.type & STYPE_PARTICLE && !deffered)
+					if ((spatial->spatial.type & ESPATIAL_TYPE::PARTICLE) != ESPATIAL_TYPE::NONE && !deffered)
 					{
 						// renderable
 						if	(IRenderable* renderable = spatial->dcast_Renderable())
