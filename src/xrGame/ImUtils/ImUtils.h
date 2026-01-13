@@ -410,6 +410,7 @@ struct CImGuiTextureEditor
 		kReadAll,
 		kShutdownThread,
 		kLoadTooltipPreview,
+		kLoadTooltipMetadata,
 		kUnloadResources,
 		kLoadMetadataOfSelected,
 		kLoadPreviewOfSelected,
@@ -458,6 +459,7 @@ struct CImGuiTextureEditor
 	{
 		bool show_invalid_first = false;
 		bool show_only_dds_and_thm = false;
+		bool treat_nomipmap_as_invalid = false;
 	};
 
 	bool is_init = false;
@@ -474,10 +476,12 @@ struct CImGuiTextureEditor
 
 	bool is_settings_applied = false;
 
+	bool is_metadata_tooltip_loaded = false;
 	bool is_preview_tooltip_image_loaded = false;
 	bool is_preview_tooltip_image_load_started = false;
 
 	RHITextureMetadata selected_metadata;
+	RHITextureMetadata tooltip_metadata;
 	IRHISurface* pTexturePreview = nullptr;
 	IRHIShaderResourceView* pTexturePreviewSRV = nullptr;
 	IRHISurface* pTextureSelected = nullptr;
