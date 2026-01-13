@@ -13,40 +13,20 @@ private:
 	players_collection_t		net_Players_disconnected;
 	bool						now_iterating_in_net_players;
 	bool						now_iterating_in_net_players_disconn;
-#ifdef DEBUG
-	DWORD						iterator_thread_id;
-#endif
+
 public:
 	PlayersMonitor()
 	{
 		now_iterating_in_net_players = false;
 		now_iterating_in_net_players_disconn = false;
-#ifdef DEBUG
-		iterator_thread_id = 0;
-#endif
 	}
-#ifdef DEBUG
-	bool IsCurrentThreadIteratingOnClients() const
-	{
-		if (now_iterating_in_net_players || now_iterating_in_net_players_disconn)
-		{
-			if (iterator_thread_id == GetCurrentThreadId())
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-#endif
 
 	template<typename ActionFunctor>
 	void ForEachClientDo(ActionFunctor & functor)
 	{
 		csPlayers.Enter();
 		now_iterating_in_net_players = true;
-#ifdef DEBUG
-		iterator_thread_id = GetCurrentThreadId();
-#endif
+		
 		for (players_collection_t::iterator i = net_Players.begin(),
 			ie = net_Players.end(); i != ie; ++i)
 		{
@@ -61,9 +41,7 @@ public:
 	{
 		csPlayers.Enter();
 		now_iterating_in_net_players = true;
-#ifdef DEBUG
-		iterator_thread_id = GetCurrentThreadId();
-#endif
+		
 		for (players_collection_t::iterator i = net_Players.begin(),
 			ie = net_Players.end(); i != ie; ++i)
 		{
@@ -81,9 +59,7 @@ public:
 		csPlayers.Enter();
 
 		now_iterating_in_net_players = true;
-#ifdef DEBUG
-		iterator_thread_id = GetCurrentThreadId();
-#endif
+
 		players_collection_t::iterator players_endi = net_Players.end();
 		players_collection_t::iterator temp_iter = std::find_if(
 			net_Players.begin(),
@@ -108,9 +84,7 @@ public:
 		csPlayers.Enter();
 		VERIFY(!now_iterating_in_net_players);
 		now_iterating_in_net_players = true;
-#ifdef DEBUG
-		iterator_thread_id = GetCurrentThreadId();
-#endif
+		
 		players_collection_t::iterator client_iter = std::find_if(
 			net_Players.begin(),
 			net_Players.end(),
@@ -161,4 +135,4 @@ public:
 		csPlayers.Leave();
 		return ret_count;
 	}
-}; 
+};
