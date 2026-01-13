@@ -8,7 +8,7 @@ if(WIN32)
     
     add_imported_lib(
         Opus::Opus
-        "${OPUS}/build/native/include"
+        "${OPUS}/build/native/include/opus"
         "${OPUS}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/opus.lib"
         "${OPUS}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/opus.dll"
     )
