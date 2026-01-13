@@ -1,9 +1,9 @@
+#include "stdafx.h"
 #include "StreamPlayerA.h"
 #include "SoundVoiceChat.h"
 #include "SoundRender_Core.h"
 
-#include <opus/opus.h>
-#include <SDL3/SDL.h>
+#include <opus.h>
 
 CStreamPlayerA::CStreamPlayerA(int sampleRate)
 	: m_sampleRate(sampleRate)
@@ -124,7 +124,7 @@ void CStreamPlayerA::Update()
 
 bool CStreamPlayerA::IsPlaying()
 {
-	// SDL3 не даёт прямой информации о "is playing",
-	// но если буфер ещё пишется — значит воспроизведение идёт
+	// SDL3 пїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ "is playing",
+	// пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ
 	return SDL_GetAudioStreamQueued(m_audioStream) > 0;
 }
