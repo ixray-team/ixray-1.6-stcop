@@ -3,10 +3,9 @@
 //////////////////////////////////////////////////////////////////////
 
 #pragma once
-
-
 #include "WeaponAmmo.h"
-#include "Tracer.h"
+
+#include "../xrUI/ui_defs.h"
 
 //коэфициенты и параметры патрона
 struct SBullet_Hit 
@@ -19,23 +18,26 @@ struct SBullet_Hit
 struct SBullet
 {
 	xr_vector<std::pair<Fvector, Fvector>> lines;
-	u32				init_frame_num			;			//номер кадра на котором была запущена пуля
-	union			{
-		struct			{
-			u16			ricochet_was	: 1	;			//пуля срикошетила
-			u16			explosive		: 1	;			//special explosive mode for particles
-			u16			allow_tracer	: 1	;
-			u16			allow_ricochet	: 1	;			//разрешить рикошет
-			u16			allow_sendhit	: 1	;			//statistics
-//.			u16			skipped_frame	: 1	;			//пропуск первой отрисовки
-			u16			aim_bullet		: 1 ;			//прицеленная пуля( вылетевшая первой после длительного молчания оружия (1-3 сек.))
-			u16			magnetic_beam	: 1 ;			//магнитный луч (нет отклонения после пробивания, не падает скорость после пробивания)
+	union
+	{
+		struct
+		{
+			u16 ricochet_was	: 1	;			//пуля срикошетила
+			u16 explosive		: 1	;			//special explosive mode for particles
+			u16 allow_tracer	: 1	;
+			u16 allow_ricochet	: 1	;			//разрешить рикошет
+			u16 allow_sendhit	: 1	;			//statistics
+//.			u16 skipped_frame	: 1	;			//пропуск первой отрисовки
+			u16 aim_bullet		: 1 ;			//прицеленная пуля( вылетевшая первой после длительного молчания оружия (1-3 сек.))
+			u16 magnetic_beam	: 1 ;			//магнитный луч (нет отклонения после пробивания, не падает скорость после пробивания)
 		};
-		u16				_storage			;
-	}				flags				;
+		u16 _storage			;
+	}
+	flags;
+
 	u16				bullet_material_idx	;
 
-	Fvector			bullet_pos			;			//текущая позиция
+	Fvector			bullet_pos		;			//текущая позиция
 	Fvector			dir					;			
 	float			speed				;			//текущая скорость
 	
@@ -43,7 +45,9 @@ struct SBullet
 	u16				weapon_id			;			//ID оружия из которого была выпущены пуля
 	
 	float			fly_dist			;			//дистанция которую пуля пролетела
-	Fvector			tracer_start_position;
+
+	Fvector			tracer_pos[2];
+	Fvector			tracer_last_pos[2]	;
 	
 	Fvector			start_position		;
 	Fvector			start_velocity		;
@@ -79,8 +83,6 @@ struct SBullet
 public:
 					SBullet				();
 					~SBullet			();
-
-	bool			CanBeRenderedNow	() const { return (Device.dwFrame > init_frame_num);}
 
 	void			Init				(const	Fvector& position,
 										const	Fvector& direction,
@@ -143,6 +145,7 @@ protected:
 	xrCriticalSection		m_Lock				;
 
 	BulletVec				m_Bullets			;	// working set, locked
+	xr_vector<SBullet*>		m_Bullets_Tracers;
 	xr_vector<_event>		m_Events			;
 
 #ifdef DEBUG
@@ -151,8 +154,10 @@ protected:
 #endif // #ifdef DEBUG
 
 	//отрисовка трассеров от пуль
-	CTracer					tracers;
-
+	ui_shader				sh_Tracer;
+	xr_vector<u32>			m_aColors;
+	float					m_circle_size_k;
+	Fbox2					circle_uv, sprite_uv;
 	//минимальная скорость, на которой пуля еще считается
 	static float			m_fMinBulletSpeed;
 
