@@ -111,6 +111,13 @@ void CBuild::xrPhase_AdaptiveHT_tessalte()
 
 void CBuild::xrPhase_AdaptiveHT_calculate()
 {
+	const bool Cuda = gCompilerMode.CUDA;
+	const bool Embree = gCompilerMode.Embree;
+
+	string128 tmp_phase;
+	sprintf(tmp_phase, "LIGHT: AdaptiveHT (*%s*)", Cuda ? "CUDA" : Embree ? "Embree" : "Opcode");
+	Phase(tmp_phase);
+
 	// Build model
 	if (!gCompilerMode.CUDA)
 	{

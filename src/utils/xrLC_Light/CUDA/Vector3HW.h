@@ -363,16 +363,6 @@ struct Hardware_Raytask
 {
 	float3   Position;
 	float3   Direction;
-   
-	Hit*     Hits;
-	// unsigned char    CurrentHitID;
-
-	// bool   UseSphere = false;
-
-	//	float3 Sphere_Pos;
-	//	float  Sphare_Range;
-	// int	  CurrentHitID;
-	// Hit    hits[2048];
 };
  
 struct Hardware_TextureData
