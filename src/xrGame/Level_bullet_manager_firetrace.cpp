@@ -39,7 +39,7 @@ BOOL CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 	bullet_test_callback_data* pData = (bullet_test_callback_data*)params;
 	SBullet* bullet = pData->pBullet;
 
-	if (object->SpatialComponent->spatial.type&STYPE_SHAPE)
+	if ((object->SpatialComponent->spatial.type&ESPATIAL_TYPE::SHAPE)!=ESPATIAL_TYPE::NONE)
 	{
 		if (CCustomZone* CZ = object->cast_custom_zone())
 			return CZ->PlayEntranceSmallParticles(bullet->bullet_pos, bullet->dir, bullet->start_velocity, false);
