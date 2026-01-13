@@ -204,6 +204,16 @@ public:
 		return test_mask ? fcvPartial : fcvFully;
 	}
 
+	ICF BOOL testPoint(const Fvector& pt) const
+	{
+		for (int i = 0; i < p_count; i++)
+		{
+			if (planes[i].classify(pt) > 0.0f)
+				return FALSE;
+		}
+		return TRUE;
+	}
+
 	ICF BOOL testPolyInside_dirty(Fvector* p, int count) const
 	{
 		Fvector* e = p + count;
