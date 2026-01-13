@@ -414,6 +414,7 @@ struct CImGuiTextureEditor
 		kLoadMetadataOfSelected,
 		kLoadPreviewOfSelected,
 		kLoadTHMOfSelected,
+		kDeselectCurrentSelected,
 		kFilterQuery,
 		kInvalid = -1
 	};
@@ -549,11 +550,14 @@ struct CImGuiEditorsGlobalState
 
 using ime_request_t = CImGuiEditorsGlobalState::SRequestData;
 
+/* INIT */
 void InitSections();
 void InitImGuiCLSIDInGame();
 void InitImGuiSearchInGame();
 void InitImGuiHudAdjustInGame();
+void InitImGuiInGameInputReceiver();
 
+/* RENDER */
 void RenderTimeManagerWindow();
 void RenderSpawnManagerWindow();
 void RenderWeaponManagerWindow();
@@ -564,6 +568,9 @@ void RenderCarConfigEditor();
 void RenderToolsInputManagerWindow();
 void RenderToolsRenderDebugSVGStorageViewerWindow();
 void RenderTextureEditor();
+
+/* MISCELLANEOUS */
+
 void DestroySpawnManagerWindow();
 
 /* WORKER THREAD of Tools */
@@ -576,6 +583,8 @@ void DestroySpawnManagerWindow();
 
 void AllEditorsAndTools_WorkerThread();
 
+void AllEditors_OnPressed(int key);
+void AllEditors_OnReleased(int key);
 
 void TextureEditor_WorkerThread(const ime_request_t& req);
 void OMFEditor_WorkerThread(const ime_request_t& req);
