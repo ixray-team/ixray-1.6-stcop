@@ -66,6 +66,9 @@ public:
 	std::function<void(void*, bool)> receive_keyboard_addedorremoved;
 	std::function<void(void*, bool)> receive_mouse_addedorremoved;
 
+	std::function<void(int)> xrgame_sdk_input_pressed;
+	std::function<void(int)> xrgame_sdk_input_released;
+
 private:
 	bool						mouseMoved = false;
 	bool						mouseScrolled = false;
