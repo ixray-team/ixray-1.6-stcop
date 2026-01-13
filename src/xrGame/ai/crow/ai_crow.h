@@ -100,8 +100,7 @@ protected:
 	
 	void			UpdateWorkload				(float DT);
 
-	xr_vector<CObject*> nearbyObjects;
-	xr_vector<CEntityAlive*> deadNPCs;
+	xr_vector<ISpatialShared> nearbyObjects;
 
 public:						
 	u32				o_workload_frame	;
@@ -138,6 +137,8 @@ public:
 	virtual bool	IsVisibleForZones()			{ return false;		}
 	virtual BOOL	UsedAI_Locations()			;
 	virtual void	create_physic_shell	()		;
+
+	virtual	void	net_Relcase(CObject* O);
 
 public:
 	DECLARE_SCRIPT_REGISTER_FUNCTION

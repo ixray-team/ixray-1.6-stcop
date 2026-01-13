@@ -130,6 +130,7 @@ BOOL CArtefact::net_Spawn(CSE_Abstract* DC)
 	o_render_frame					= 0;
 	SetState						(eHidden);
 
+	SpatialComponent->spatial.type |= ESPATIAL_TYPE::ARTEFACT;
 	return							result;	
 }
 

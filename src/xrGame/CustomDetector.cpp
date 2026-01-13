@@ -18,6 +18,8 @@ void CCustomDetector::Load(LPCSTR section)
 	m_fAfDetectRadius = READ_IF_EXISTS(pSettings, r_float, section, "af_radius", 30.0f);
 	m_fAfVisRadius = READ_IF_EXISTS(pSettings, r_float, section, "af_vis_radius", 2.0f);
 	m_artefacts.load(section, "af");
+
+	SpatialComponent->spatial.type |= ESPATIAL_TYPE::ANOMALY_DETECTOR;
 }
 
 void CCustomDetector::shedule_Update(u32 dt)

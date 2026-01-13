@@ -32,6 +32,12 @@ public:
 	virtual void	UpdateCL			( );								// Called each frame, so no need for dt
 	virtual void	Center				(Fvector &C) const;
 	virtual float	Radius				() const;
+
+	const Fobb&		BBox				() { return m_box; }
+	const Fvector&	Axis				() { return m_axis; }
+	const Fvector&	Side				() { return m_side; }
+	const Fvector&	Norm				() { return m_norm; }
+
 ////////////////////////////////////////////////////////////////////
 	virtual IPhysicsShellHolder			*cast_IPhysicsShellHolder	(){ return this; }
 	virtual CPhysicsShellHolder*		cast_physics_shell_holder() { return this; }

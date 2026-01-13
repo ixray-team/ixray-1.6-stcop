@@ -6,13 +6,13 @@ extern Fvector	c_spatial_offset[8];
 class _MM_ALIGN16 spatial_frustum_walker
 {
 public:
-	u32				mask;
+	ESPATIAL_TYPE	mask;
 	CFrustum*		F;
 	ISpatial_DB*	space;
-	Fbox BB;
+	Fbox			BB;
 
 public:
-	spatial_frustum_walker(ISpatial_DB* _space, u32 _mask, const CFrustum* _F)
+	spatial_frustum_walker(ISpatial_DB* _space, ESPATIAL_TYPE _mask, const CFrustum* _F)
 	{
 		mask = _mask;
 		F = (CFrustum*)_F;
@@ -32,7 +32,7 @@ public:
 		for (ISpatialShared& S : N->items)
 		{
 			if (!S.get()) continue;
-			if (0 == (S->spatial.type & mask))
+			if (ESPATIAL_TYPE::NONE == (S->spatial.type & mask))
 				continue;
 
 			Fvector& sC = S->spatial.sphere.P;
@@ -59,14 +59,14 @@ public:
 	}
 };
 
-void ISpatial_DB::q_frustum(xr_vector<ISpatialShared>& R, u32 _o, u32 _mask, const CFrustum& _frustum)
+void ISpatial_DB::q_frustum(xr_vector<ISpatialShared>& R, u32 _o, ESPATIAL_TYPE _mask, const CFrustum& _frustum)
 {
 	PROF_EVENT("ISpatial_DB::q_frustum")
 	xrSRWLockGuard guard(&db_lock, true);
 	if (!m_root)
 		return;
 
-	R.resize(0);
+	R.clear();
 
 	spatial_frustum_walker W(this,_mask,&_frustum);
 	W.walk(R,m_root,m_center,m_bounds,_frustum.getMask());

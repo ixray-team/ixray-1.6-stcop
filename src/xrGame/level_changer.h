@@ -39,7 +39,7 @@ public:
 	virtual void		shedule_Update		(u32 dt);
 	virtual void		feel_touch_new		(CObject* O);
 	virtual BOOL		feel_touch_contact	(CObject* O);
-
+	GameGraph::_GRAPH_ID NextVertexId() const { return m_game_vertex_id; }
 	virtual bool		IsVisibleForZones() { return false;}
 	void				EnableLevelChanger	(bool b)				{m_b_enabled=b;}
 	bool				IsLevelChangerEnabled() const				{return m_b_enabled;}

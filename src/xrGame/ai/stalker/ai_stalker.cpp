@@ -482,6 +482,10 @@ void CAI_Stalker::reload			(LPCSTR section)
 
 void CAI_Stalker::Die				(CObject* who)
 {
+	SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::STALKER_WOUNDED;
+	SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::STALKER_ALIVE;
+	SpatialComponent->spatial.type |= ESPATIAL_TYPE::STALKER_DEAD;
+
 	movement().on_death				( );
 
 	notify_on_wounded_or_killed		(who);
@@ -736,6 +740,17 @@ BOOL CAI_Stalker::net_Spawn			(CSE_Abstract* DC)
 	}
 
 	m_pPhysics_support->in_NetSpawn	(e);
+
+	SpatialComponent->spatial.type |= ESPATIAL_TYPE::STALKER;
+
+	if (GetfHealth()>0.f)
+	{
+		SpatialComponent->spatial.type |= ESPATIAL_TYPE::STALKER_ALIVE;
+		if (wounded())
+			SpatialComponent->spatial.type |= ESPATIAL_TYPE::STALKER_WOUNDED;
+	}
+	else
+		SpatialComponent->spatial.type |= ESPATIAL_TYPE::STALKER_DEAD;
 
 	return							(TRUE);
 }

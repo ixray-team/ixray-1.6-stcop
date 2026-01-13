@@ -313,6 +313,8 @@ public:
 	void			SetHandsVisible(bool val){m_bhands_visible=val;};
 	bool			GetHandsVisible(){return m_bhands_visible;};
 
+	Fmatrix&		GetTransform(){return m_transform;};
+
 	void			UpdateWeaponOffset(u32 delta);
 
 	IKinematics*	m_legs_model;
