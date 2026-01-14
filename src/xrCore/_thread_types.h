@@ -25,16 +25,16 @@ using xr_atomic_float = std::atomic<float>;
 #ifdef IXR_WINDOWS
 using xr_task_group = concurrency::task_group;
 
-template <typename T, typename U>
-using xr_concurrent_unordered_map = concurrency::concurrent_unordered_map<T, U>;
+template <typename T, typename U, typename H = ::std::hash<T>>
+using xr_concurrent_unordered_map = concurrency::concurrent_unordered_map<T, U, H>;
 
 template <typename T>
 using xr_concurrent_vector = concurrency::concurrent_vector<T>;
 #else
 using xr_task_group = tbb::task_group;
 
-template <typename T, typename U>
-using xr_concurrent_unordered_map = tbb::concurrent_unordered_map<T, U>;
+template <typename T, typename U, typename H = std::hash<T>>
+using xr_concurrent_unordered_map = tbb::concurrent_unordered_map<T, U, H>;
 template <typename T>
 using xr_concurrent_vector = tbb::concurrent_vector<T>;
 #endif
