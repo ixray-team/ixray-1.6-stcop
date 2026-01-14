@@ -1051,30 +1051,6 @@ void CBulletManager::Render	()
 			}
 	}
 #endif
-	const Fvector& cam_P = Device.vCameraPosition;
-	const Fvector& cam_D = Device.vCameraDirection;
-	const Fvector& cam_T = Device.vCameraTop;
-	const Fvector& cam_R = Device.vCameraRight;
-
-	constexpr u32 MAX_TRIANGLES_PER_BATCH = 58'000u;
-	constexpr u32 MAX_VERTICES_PER_BATCH = MAX_TRIANGLES_PER_BATCH * 3u;
-
-	// 3d tracer
-	//constexpr u32 VERTICES_PER_TRACER = 672u;
-	// 2d tracer
-	constexpr u32 VERTICES_PER_TRACER = 12u;
-
-	constexpr u32 TRACERS_PER_BATCH = MAX_VERTICES_PER_BATCH / VERTICES_PER_TRACER;
-
-	constexpr float MaxDistSqr = 1.0f;
-	constexpr float MinDistSqr = 0.09f;
-	// 3d tracer
-	//UIRender->SetShader(*m_trj_shader);
-	// 2d tracer
-	UIRender->SetShader(*sh_Tracer);
-
-	UIRender->CacheSetCullMode(ERHI_CULLMODE::NONE);
-
 	u32 g_bullet_debug_trj_totalLines = 0u;
 	static xr_vector<SBullet*> visible_tracers;
 
@@ -1112,6 +1088,30 @@ void CBulletManager::Render	()
 
 	if (!visible_tracers.empty())
 	{
+		// 3d tracer
+		//UIRender->SetShader(*m_trj_shader);
+		// 2d tracer
+		UIRender->SetShader(*sh_Tracer);
+
+		UIRender->CacheSetCullMode(ERHI_CULLMODE::NONE);
+
+		const Fvector& cam_P = Device.vCameraPosition;
+		const Fvector& cam_D = Device.vCameraDirection;
+		const Fvector& cam_T = Device.vCameraTop;
+		const Fvector& cam_R = Device.vCameraRight;
+
+		constexpr u32 MAX_TRIANGLES_PER_BATCH = 58'000u;
+		constexpr u32 MAX_VERTICES_PER_BATCH = MAX_TRIANGLES_PER_BATCH * 3u;
+
+		// 3d tracer
+		//constexpr u32 VERTICES_PER_TRACER = 672u;
+		// 2d tracer
+		constexpr u32 VERTICES_PER_TRACER = 12u;
+
+		constexpr u32 TRACERS_PER_BATCH = MAX_VERTICES_PER_BATCH / VERTICES_PER_TRACER;
+
+		constexpr float MaxDistSqr = 1.0f;
+		constexpr float MinDistSqr = 0.09f;
 		u32 current_tracer = 0;
 		const u32 total_tracers = visible_tracers.size();
 
@@ -1300,6 +1300,8 @@ void CBulletManager::Render	()
 
 			UIRender->FlushPrimitive();
 		}
+
+		UIRender->CacheSetCullMode(ERHI_CULLMODE::BACK);
 	}
 
 	if (g_bullet_debug_trj && !m_Bullets.empty() && g_bullet_debug_trj_totalLines > 0u)
@@ -1342,8 +1344,6 @@ void CBulletManager::Render	()
 			current_line += lines_in_batch;
 		}
 	}
-
-	UIRender->CacheSetCullMode(ERHI_CULLMODE::BACK);
 }
 
 #include "../xrEngine/xr_ioc_cmd.h"
