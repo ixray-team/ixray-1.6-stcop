@@ -556,8 +556,8 @@ function motivator_binder:load(reader)
 	set_save_marker(reader, "load", true, "motivator_binder")
 end
 
-function motivator_binder:hear_callback(self, who, sound_type, sound_position, sound_power)
-	if who:id() == self:id() then
+function motivator_binder:hear_callback(self, who_id, sound_type, sound_position, sound_power)
+	if who_id == self:id() then
 		return
 	end
 	local type = "NIL"
@@ -600,9 +600,6 @@ function motivator_binder:hear_callback(self, who, sound_type, sound_position, s
 		elseif bit_and(sound_type, snd_type.monster_eat) == snd_type.monster_eat then
 			type = "MST_eat"
 		end
-	end
-	if type ~= "NIL" then
-		printf("SND *%s* dist: %d [%f], %s -> %s", type, self:position():distance_to(who:position()), sound_power, who:name(), self:name())
 	end
 end
 
