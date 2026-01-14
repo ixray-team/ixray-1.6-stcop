@@ -1310,10 +1310,6 @@ void RenderTextureEditor()
 										{
 											ImGui::SeparatorText("Report");
 
-											std::string_view estr_p2 = magic_enum::enum_name(CImGuiTextureEditor::eAnalyzedStatus::kDimensionsNotPowerOf2);
-											ImGui::Text("%s:", estr_p2.data());
-											PrintErrorStatus(!has_dim2);
-
 											std::string_view estr_hasthm = magic_enum::enum_name(CImGuiTextureEditor::eAnalyzedStatus::kHasTHM);
 											ImGui::Text("%s: ", estr_hasthm.data());
 											PrintErrorStatus(has_hasthm);
@@ -1323,6 +1319,10 @@ void RenderTextureEditor()
 											ImGui::Text("%s: ", estr_tnv.data());
 											PrintErrorStatus(!has_thmisnotvalid);
 											ImGui::EndDisabled();
+
+											std::string_view estr_p2 = magic_enum::enum_name(CImGuiTextureEditor::eAnalyzedStatus::kDimensionsNotPowerOf2);
+											ImGui::Text("%s:", estr_p2.data());
+											PrintErrorStatus(!has_dim2);
 
 											std::string_view estr_nmm = magic_enum::enum_name(CImGuiTextureEditor::eAnalyzedStatus::kNoMipMaps);
 											ImGui::Text("%s: ", estr_nmm.data());
@@ -1414,29 +1414,52 @@ void RenderTextureEditor()
 			{
 
 			}
+			ImGui::SameLine();
+			if (ImGui::Button("Open - MipMap Viewer"))
+			{
+
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Open - Color channels Viewer"))
+			{
+
+			}
 
 			ImGui::Separator();
 
 			ImGui::Text("Validation status:");
 
-			ImGui::Text("\t- Has THM: ");
 
-			PrintErrorStatus(true);
+			bool has_dim2 = ((selected.analyze_status_result_flags & CImGuiTextureEditor::eAnalyzedStatus::kDimensionsNotPowerOf2) == CImGuiTextureEditor::eAnalyzedStatus::kDimensionsNotPowerOf2);
+			bool has_thmisnotvalid = ((selected.analyze_status_result_flags & CImGuiTextureEditor::eAnalyzedStatus::kTHMIsNotValid) == CImGuiTextureEditor::eAnalyzedStatus::kTHMIsNotValid);
+			bool has_nomipmaps = ((selected.analyze_status_result_flags & CImGuiTextureEditor::eAnalyzedStatus::kNoMipMaps) == CImGuiTextureEditor::eAnalyzedStatus::kNoMipMaps);
+			bool has_hasthm = ((selected.analyze_status_result_flags & CImGuiTextureEditor::eAnalyzedStatus::kHasTHM) == CImGuiTextureEditor::eAnalyzedStatus::kHasTHM);
+			bool has_ignorethm = ((selected.analyze_status_result_flags & CImGuiTextureEditor::eAnalyzedStatus::kIgnoreTHM) == CImGuiTextureEditor::eAnalyzedStatus::kIgnoreTHM);
 
+			std::string_view field_name = magic_enum::enum_name(CImGuiTextureEditor::eAnalyzedStatus::kHasTHM);
+			ImGui::Text("\t- %s: ", field_name.data());
+			PrintErrorStatus((has_ignorethm ? true : has_hasthm));
 
-			ImGui::Text("\t- THM is valid: ");
+			field_name = magic_enum::enum_name(CImGuiTextureEditor::eAnalyzedStatus::kTHMIsNotValid);
+			ImGui::Text("\t- %s: ", field_name.data());
+			PrintErrorStatus(has_thmisnotvalid==false);
 
-			PrintErrorStatus(true);
+			field_name = magic_enum::enum_name(CImGuiTextureEditor::eAnalyzedStatus::kDimensionsNotPowerOf2);
+			ImGui::Text("\t- %s: ", field_name.data());
+			PrintErrorStatus(has_dim2==false);
 
-			ImGui::Text("\t- Dimensions power of 2: ");
+			field_name = magic_enum::enum_name(CImGuiTextureEditor::eAnalyzedStatus::kNoMipMaps);
+			ImGui::Text("\t- %s: ", field_name.data());
+			PrintErrorStatus(has_nomipmaps==false);
 
+			ImGui::Text("Validation result: ");
 
-			PrintErrorStatus(true);
-
-			ImGui::Text("\t- Has mip maps: ");
-
-
-			PrintErrorStatus(true);
+			bool is_valid = (has_ignorethm ? true : has_hasthm) && 
+				(has_thmisnotvalid == false) && 
+				(has_dim2 == false) &&
+				(has_nomipmaps == false);
+			
+			PrintErrorStatus(is_valid, "ALL GOOD", "INVALID");
 
 			ImGui::Separator();
 
@@ -1444,7 +1467,7 @@ void RenderTextureEditor()
 
 			constexpr const char* _kColumnTableSelectedNames[] = {
 				"Info",
-				"Settings",
+				"THM - Editing",
 				"Preview"
 			};
 
