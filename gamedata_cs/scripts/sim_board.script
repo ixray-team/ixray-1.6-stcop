@@ -505,12 +505,8 @@ function sim_board:create_squad(player_id, squad_class, spawn_smart, sq_id, sett
 
         --' Пересчитываем Team, Squad, Group
         for k,v in pairs(squad.squad_npc) do
-            local obj = alife():object(k)
-			
-			if (obj) then
-				squad.board:setup_squad_and_group(obj)
-				SendScriptCallback("squad_on_npc_creation", squad, obj, spawn_smart)
-			end
+                local obj = alife():object(k)
+                squad.board:setup_squad_and_group(obj)
         end
         --' Регистрануть новый отряд в его группировке.
         self.players[player_id]:register_squad(squad)
@@ -576,9 +572,8 @@ function sim_board:assign_squad_to_smart(squad, smart_id)
         old_smart_id = squad.smart_id
     end
         if old_smart_id ~= nil then
-			self.smarts[old_smart_id].squads[squad.squad_id] = nil
-            self.smarts[old_smart_id].smrt:refresh()				
-			SendScriptCallback("squad_on_leave_smart", squad, self.smarts[old_smart_id].smrt)
+        self.smarts[old_smart_id].squads[squad.squad_id] = nil
+                self.smarts[old_smart_id].smrt:refresh()
         end
 
         if smart_id == nil then
@@ -594,8 +589,6 @@ function sim_board:assign_squad_to_smart(squad, smart_id)
         self.smarts[smart_id].squads[squad.squad_id] = squad
 
         self.smarts[smart_id].smrt:refresh()
-			
-	SendScriptCallback("squad_on_enter_smart", squad, self.smarts[smart_id].smrt)
 end
 --' Отряд покидает смарт (уменьшаются ресурсы)
 function sim_board:exit_smart(squad, smart)
