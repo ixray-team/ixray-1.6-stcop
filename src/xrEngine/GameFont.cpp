@@ -23,7 +23,7 @@ void CGameFont::InitializeFreetype()
 
 ENGINE_API Fvector2	g_current_font_scale = { 1.0f, 1.0f };
 
-CGameFont::CGameFont(const char* section, u32 flags) : Name(section)
+CGameFont::CGameFont(const char* section, u32 flags) : Name(section), LineSpacing(1.f), LetterSpacing(0.f)
 {
 #ifdef DEBUG
 	Msg("* Init font %s", section);
@@ -375,7 +375,7 @@ void CGameFont::OnRender()
 	if (!strings.empty())
 	{
 		pFontRender->OnRender(*this);
-		strings.resize(0);
+		strings.clear();
 	}
 }
 
@@ -448,7 +448,7 @@ void CGameFont::Out(float _x, float _y, const char* fmt, ...)
 
 void CGameFont::OutNext(const char* fmt, ...)
 {
-	MASTER_OUT(TRUE, FALSE, FALSE, TRUE, 0.0f, 0.0f, 1.0f, fmt);
+	MASTER_OUT(TRUE, FALSE, FALSE, TRUE, 0.0f, 0.0f, LineSpacing, fmt);
 };
 
 void CGameFont::OutSkip(float val)
