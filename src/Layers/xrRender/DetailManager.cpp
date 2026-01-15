@@ -303,9 +303,9 @@ void CDetailManager::Render()
 			if (0 == dtFS)						return;
 			if (!psDeviceFlags.is(rsDetails))	return;
 #endif
-			OPTICK_START_THREAD("Details async");
+			PROF_START_THREAD("Details async");
 			UpdateVisibleM();
-			OPTICK_STOP_THREAD();
+			PROF_STOP_THREAD();
 		}
 	);
 
