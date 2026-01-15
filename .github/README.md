@@ -40,7 +40,7 @@
       <img src="https://img.shields.io/discord/959159181053661244.svg?label=Server&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2" alt="Discord" />
     </a>
     <a href="https://t.me/ixray_platform">
-      <img src="https://img.shields.io/badge/Channel-view-blue?style=flat-squeare&logo=telegram&logoColor=white" alt="Telegram" />
+      <img src="https://img.shields.io/badge/Channel-view-blue?style=flat-square&logo=telegram&logoColor=white" alt="Telegram" />
     </a>
     <br />
     <a href="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/build-engine.yml">
@@ -75,6 +75,15 @@ Common purposes of the project is improving developer and gaming experience, fix
 ## Quick start
 
 Latest release of the engine can be downloaded on the [releases page](https://github.com/ixray-team/ixray-1.6-stcop/releases)
+
+## Ready-made builds
+
+| Platform | Build | System | Files | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| Call of Pripyat | Gamer | Windows x64 | [Engine+Assets](https://github.com/ixray-team/ixray-1.6-stcop/releases/download/r1.3.1/ixray-1.6-r1.3.1-engine-x64-game.zip) | Ready-made engine build for players or necessary for the release of modifications. Archive contains the engine and assets for running the game |
+| Call of Pripyat | Developer | Windows x64 | [Engine+Assets](https://github.com/ixray-team/ixray-1.6-stcop/releases/download/r1.3.1/ixray-1.6-r1.3.1-engine-x64-develop.zip) | Ready-made engine build for developers, necessary for convenient modification development. Archive contains the engine and assets for launching the game |
+
+You can read about the differences in [FAQ](https://github.com/ixray-team/ixray-1.6-stcop/blob/default/doc/faq.md#what-is-the-difference-between-the-game-player-and-developer-builds)
 
 ## Features
 
@@ -148,25 +157,10 @@ git clone https://github.com/ixray-team/ixray-1.6-stcop.git
 >
 > 1. Disable third-party network tools:
 >     - DPI bypass tools
->     - VPN and proxy services
 >
 > 2. Enable Long Paths support in Windows:
 >     - This is the system limit of 260 characters for a file path
 >     - Note: In newer versions of Windows 10/11, this setting is often enabled by default. You can check it by running the command `fsutil behavior query LongPathsEnabled` in a terminal with administrator rights. If it outputs `1`, it is enabled
-
-### Generate Visual Studio solution
-
-To generate a solution with default settings from the console, follow the steps below:
-
-  ```sh
-  cmake -B build
-  ```
-
-To build the project after generating solution:
-
-- Open generated solution in Visual Sudio
-- Select necessary build config
-- Build solution
 
 ### CMake GUI with Visual Studio
 
@@ -183,49 +177,19 @@ To build the project after generating solution:
 - Select necessary build config
 - Build solution
 
-### CMake with console
+### Generate Visual Studio solution
 
-To build from the console follow steps below
-
-- Select one of preset from the list and configure project:
-
-  - `Engine-x86-Windows`
-  - `Engine-x64-Windows`
-  - `Engine-x86-NonUnity`
-  - `Engine-x64-NonUnity`
-  - `Server-x86-Windows`
-  - `Server-x64-Windows`
-  - `Editors-x64-Windows`
-  - `Utilities-x86-Windows`
-  - `Utilities-x64-Windows`
-  - `Plugins-x64-Windows`
-  - `Compressor-x86-Windows`
-  - `Compressor-x64-Windows`
-  - `Compressor-x64-Linux`
+To generate a solution with default settings from the console, follow the steps below:
 
   ```sh
-  cmake --preset <preset-name>
-  # For example:
-  # cmake --preset Engine-x64
+  cmake -B build
   ```
 
-- Select build configuration from the list and build project:
+To build the project after generating solution:
 
-  - `Debug`
-  - `RelWithDebInfo`
-  - `Release`
-
-  ```sh
-  cmake --build --preset <preset-name-configuration>
-  # For example:
-  # cmake --build --preset Engine-x64-Debug
-  ```
-
-- Run script to get modified files and packed assets:
-
-  ```sh
-  .\util\generate-patch.bat build\x64\Compressor-Windows\bin\Release\xrCompress.exe
-  ```
+- Open generated solution in Visual Sudio
+- Select necessary build config
+- Build solution
 
 ## Changelog
 

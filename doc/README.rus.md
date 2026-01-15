@@ -40,7 +40,7 @@
       <img src="https://img.shields.io/discord/959159181053661244.svg?label=Server&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2" alt="Discord" />
     </a>
     <a href="https://t.me/ixray_platform">
-      <img src="https://img.shields.io/badge/Channel-view-blue?style=flat-squeare&logo=telegram&logoColor=white" alt="Telegram" />
+      <img src="https://img.shields.io/badge/Channel-view-blue?style=flat-square&logo=telegram&logoColor=white" alt="Telegram" />
     </a>
     <br />
     <a href="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/build-engine.yml">
@@ -75,6 +75,15 @@ __IX-Ray__ - это форк движка __X-Ray 1.6__, который напр
 ## Быстрый старт
 
 Последнюю версию движка можно скачать на странице [релизов](https://github.com/ixray-team/ixray-1.6-stcop/releases)
+
+### Скачать готовые сборки
+
+| Платформа | Сборка | Система | Файлы | Описание |
+| :--- | :--- | :--- | :--- | :--- |
+| Зов Припяти | Игровая | Windows x64 | [Engine+Assets](https://github.com/ixray-team/ixray-1.6-stcop/releases/download/r1.3.1/ixray-1.6-r1.3.1-engine-x64-game.zip) | Готовая сборка движка для игроков или необходимая для выпуска модификаций. Архив содержит движок и ресурсы для запуска игры |
+| Зов Припяти | Для разработки | Windows x64 | [Engine+Assets](https://github.com/ixray-team/ixray-1.6-stcop/releases/download/r1.3.1/ixray-1.6-r1.3.1-engine-x64-develop.zip) | Готовая сборка движка для разработчиков, необходимая для удобной разработки модификаций. Архив содержит движок и ресурсы для запуска игры |
+
+Прочитать о различиях можно в [FAQ](https://github.com/ixray-team/ixray-1.6-stcop/blob/default/doc/faq.rus.md#%D1%87%D0%B5%D0%BC-%D0%BE%D1%82%D0%BB%D0%B8%D1%87%D0%B0%D0%B5%D1%82%D1%81%D1%8F-%D0%B1%D0%B8%D0%BB%D0%B4-%D0%B4%D0%BB%D1%8F-%D0%B8%D0%B3%D1%80%D0%BE%D0%BA%D0%B0-%D0%B8-%D1%80%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%87%D0%B8%D0%BA%D0%B0)
 
 ## Возможности
 
@@ -148,25 +157,10 @@ git clone https://github.com/ixray-team/ixray-1.6-stcop.git
 >
 > 1. Отключите сторонние сетевые инструменты:
 >     - Обходы DPI
->     - VPN- и прокси-сервисы
 >
 > 2. Включите поддержку длинных путей в Windows:
 >     - Это системное ограничение на 260 символов в пути к файлу
 >     - Примечание: В новых версиях Windows 10/11 этот параметр часто включён по умолчанию. Проверить можно командой `fsutil behavior query LongPathsEnabled` в терминале с правами администратора. Если выведет `1` — включено
-
-### Генерация решения Visual Studio
-
-Чтобы сгенерировать решение с настройками по умолчанию с помощью консоли, выполнить следующие действия:
-
-  ```sh
-  cmake -B build
-  ```
-
-Для сборки проекта после генерации решения:
-
-- Открыть сгенерированное решение в Visual Sudio
-- Выбрать необходимую конфигурацию сборки
-- Собрать решение
 
 ### CMake GUI с Visual Studio
 
@@ -183,42 +177,19 @@ git clone https://github.com/ixray-team/ixray-1.6-stcop.git
 - Выбрать необходимую конфигурацию сборки
 - Собрать решение
 
-### CMake с консолью
+### Генерация решения Visual Studio
 
-Чтобы собрать из консоли, выполните следующие действия
-
-- Выбрать один из пресетов из списка и сконфигурировать проект:
-
-  - `Engine-x64`
-  - `Server-x64`
-  - `Utilities-x64`
-  - `Plugins-3ds-Max-x64`
-  - `Plugins-Lightwave-x64`
-  - `Compressor-x64`
+Чтобы сгенерировать решение с настройками по умолчанию с помощью консоли, выполнить следующие действия:
 
   ```sh
-  cmake --preset <preset-name>
-  # Например:
-  # cmake --preset Engine-x64
+  cmake -B build
   ```
 
-- Выбрать конфигурацию сборки из списка и собрать проект:
+Для сборки проекта после генерации решения:
 
-  - `Debug`
-  - `RelWithDebInfo`
-  - `Release`
-
-  ```sh
-  cmake --build --preset <preset-name-configuration>
-  # Например:
-  # cmake --build --preset Engine-x64-Debug
-  ```
-
-- Запустить скрипт для получения модифицированных файлов и упакованных ассетов
-
-  ```sh
-  .\util\generate-patch.bat build\x64\Compressor-Windows\bin\Release\xrCompress.exe
-  ```
+- Открыть сгенерированное решение в Visual Sudio
+- Выбрать необходимую конфигурацию сборки
+- Собрать решение
 
 ## Список изменений
 
