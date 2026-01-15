@@ -6,8 +6,7 @@
 
 ENGINE_API CFontManager* g_FontManager = nullptr;
 
-u32 TextureDimension = 2048 * 2;
-xr_vector<u32> FontBitmap;
+u32 TextureDimension = 2048u * 2u;
 
 CFontManager::CFontManager()
 {
@@ -21,8 +20,6 @@ CFontManager::CFontManager()
 	pFontStat = nullptr;
 
 	TextureDimension = EngineExternal().GetFontAltasSize();
-
-	FontBitmap.resize(TextureDimension * TextureDimension);
 }
 
 CFontManager::~CFontManager()
@@ -34,8 +31,6 @@ CFontManager::~CFontManager()
 		xr_delete(fontPair.second);
 	}
 	Fonts.clear();
-
-	FontBitmap.clear();
 }
 
 void CFontManager::InitializeFonts()
