@@ -75,9 +75,7 @@ void CScriptStorage::reinit	()
 	luajit::open_lib(lua(), LUA_FFILIBNAME, luaopen_ffi);
 
 	// Lua Plugins
-#ifdef XRGAME_EXPORTS
 	lua_init_ext(lua());
-#endif
 }
 
 int CScriptStorage::vscript_log		(ScriptStorage::ELuaMessageType tLuaMessageType, LPCSTR caFormat, va_list marker)
