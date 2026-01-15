@@ -463,68 +463,61 @@ void InitImGuiInGameInputReceiver()
 
 }
 
-void AllEditorsAndTools_WorkerThread()
+void AllEditors_SendRequest(SRequestData& req)
 {
-	constexpr const char _kThreadName[] = "IXRAY - ImGui Editors&Tools thread";
-	thread_name(_kThreadName);
-
-	while (g_imgui_editors_state.is_running_wt)
+	g_imgui_editors_requests.run([req]()
 	{
-		if (g_imgui_editors_state.requests.empty() == false)
+		OPTICK_START_THREAD("ImGui_run_request");
+		eImGuiEditorType et = static_cast<eImGuiEditorType>(req.editor_type);
+
+		switch (et)
 		{
-			const ime_request_t& req = g_imgui_editors_state.requests.pop();
-
-			eImGuiEditorType et = static_cast<eImGuiEditorType>(req.editor_type);
-
-			switch (et)
-			{
-			case eImGuiEditorType::kTextureEditor:
-			{
-				TextureEditor_WorkerThread(req);
-				break;
-			}
-			case eImGuiEditorType::kOMFEditor:
-			{
-				OMFEditor_WorkerThread(req);
-				break;
-			}
-			case eImGuiEditorType::kNoEditor:
-			{
-				if (req.request_type == 0)
-				{
-					g_imgui_editors_state.is_running_wt = false;
-				}
-
-				break;
-			}
-			default:
-			{
-				R_ASSERT2(false, "you forgot to register new workload!");
-				break;
-			}
-			}
+		case eImGuiEditorType::kTextureEditor:
+		{
+			TextureEditorApplyRequest(req);
+			break;
 		}
-	}
-
-	Msg("[IXRAY]: Shutdown thread -> %s", _kThreadName);
+		case eImGuiEditorType::kOMFEditor:
+		{
+			OMFEditorApplyRequest(req);
+			break;
+		}
+		case eImGuiEditorType::kNoEditor:break;
+		default:
+		{
+			R_ASSERT2(false, "you forgot to register new workload!");
+			break;
+		}
+		OPTICK_STOP_THREAD();
+	}});
 }
 
 void AllEditors_OnPressed(int key)
 {
-	if (key == SDL_Scancode::SDL_SCANCODE_ESCAPE)
+	if (!CImGuiManager::Instance().IsCapturingInputs() || pInput->xrgame_sdk_input_pressed == nullptr)
+		return;
+
+	switch(key)
 	{
-		if (CImGuiManager::Instance().IsCapturingInputs() && Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_TextureEditor)])
+	case SDL_Scancode::SDL_SCANCODE_ESCAPE:
+	{
+		if (Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_TextureEditor)])
 		{
-			ime_request_t req;
+			SRequestData req;
 			req.editor_type = (u32)eImGuiEditorType::kTextureEditor;
 			req.request_type = (u32)CImGuiTextureEditor::eRequestType::kDeselectCurrentSelected;
 
-			g_imgui_editors_state.requests.push(req);
+			AllEditors_SendRequest(req);
 		}
+	}break;
+	//...
 	}
 }
 
 void AllEditors_OnReleased(int key)
 {
+	if (!CImGuiManager::Instance().IsCapturingInputs() || pInput->xrgame_sdk_input_released == nullptr)
+		return;
 
+	//...
 }
