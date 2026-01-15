@@ -40,27 +40,35 @@ This is done intentionally to solve engine debugging problems (minimizing, etc) 
 
 ### What is Nvidia DLSS and AMD FSR2 in the context of this project?
 
-Both technologies take an image with a lower resolution and scale it up to a higher resolution. They use advanced algorithms to make this scaling higher quality. DLSS uses artificial intelligence and deep learning to predict and improve image details, while FSR uses noise reduction and edge smoothing algorithms to achieve a similar result. As a result, these technologies provide a sharper and smoother image, improving graphics quality and game performance even on less powerful systems. If these scaling methods are used in native mode, they will work as anti-aliasing.
+Both technologies take an image with a lower resolution and scale it up to a higher resolution. They use advanced algorithms to make this scaling higher quality. DLSS uses artificial intelligence and deep learning to predict and improve image details, while FSR uses noise reduction and edge smoothing algorithms to achieve a similar result. As a result, these technologies provide a sharper and smoother image, improving graphics quality and game performance even on less powerful systems. If these scaling methods are used in native mode, they will work as anti-aliasing
+
+### What is the difference between the game (player) and developer builds?
+
+The developer build includes a full set of in-game tools, including debug console commands and cheats, for testing purposes. These features are disabled in the player build, which provides a clean engine without additional tools. Only the engine differs; the game resources are the same in both versions. Modders are advised to start working with the developer build and replace the bin folder with the version from the player build before release
+
+### Do some addons (such as weapon packs) require their own fork of the engine?
+
+All our official addons — such as STCoP WP, Gunslinger Mod, and others — use a single engine codebase. They do not require separate forks or modifications to the engine. If a particular mod does need its own fork, this should be explicitly stated in the project description
 
 ### Is multiplayer supported and is its development planned?
 
-Unlike some other projects, we do not aim to completely bury the possibility of multiplayer gaming. At the moment, the engine supports multiplayer, but it still requires refinement.
+Unlike some other projects, we do not aim to completely bury the possibility of multiplayer gaming. At the moment, the engine supports multiplayer, but it still requires refinement
 
 ### I don't see support for `component_name` or `feature_name` in the engine. What should I do?
 
-We do not practice completely removing components without providing a full functional replacement.
+We do not practice completely removing components without providing a full functional replacement
 
 ### I found a bug, what should I do?
 
-Fill out the [form](https://github.com/ixray-team/ixray-1.6-stcop/issues/new?assignees=&labels=bug&projects=&template=bug_report.yml) on GitHub or leave a detailed description of the problem on the [relevant channel](https://discord.com/channels/959159181053661244/1165620257436733540) of the Discord server.
+Fill out the [form](https://github.com/ixray-team/ixray-1.6-stcop/issues/new?assignees=&labels=bug&projects=&template=bug_report.yml) on GitHub or leave a detailed description of the problem on the [relevant channel](https://discord.com/channels/959159181053661244/1165620257436733540) of the Discord server
 
 ### I have an idea and I think it might be useful to others. How can I report it?
 
-Fill out the [form](https://github.com/ixray-team/ixray-1.6-stcop/issues/new?assignees=&labels=enhancement&projects=&template=feature_request.yml) on GitHub.
+Fill out the [form](https://github.com/ixray-team/ixray-1.6-stcop/issues/new?assignees=&labels=enhancement&projects=&template=feature_request.yml) on GitHub
 
 ### I want to move to your engine, but I need `feature_name`, what should I do?
 
-Also fill out the corresponding [form](https://github.com/ixray-team/ixray-1.6-stcop/issues/new?assignees=&labels=enhancement&projects=&template=feature_request.yml).
+Also fill out the corresponding [form](https://github.com/ixray-team/ixray-1.6-stcop/issues/new?assignees=&labels=enhancement&projects=&template=feature_request.yml)
 
 ### The team's profile lists partners, how does it work?
 
@@ -68,36 +76,44 @@ All those teams listed in our profile directly work with us on making changes to
 
 ### Besides the CoP engine, I saw forks of other parts of the game, what is their status?
 
-Forks of the SoC and CS engines are still under development and require a huge number of changes, so there can be no talk of their release yet.
+After integrating SoC, CS, and CoC into the main CoP repository, the engine forks for these platforms were archived. Development of SoC, CS, and CoC support continues as part of the main project
+
+### Do you plan to adapt the Anomaly mod?
+
+No, there are no such plans. While we recognize the popularity of this platform, its adaptation would require close cooperation with the original mod developers and their willingness to migrate, as well as a complete overhaul of both the mod itself and all its addons to fit the specifics of the IX‑Ray Platform. The key feature of Anomaly is its ecosystem of modifications and extensions, which are incompatible with IX‑Ray without a full rewrite
+
+### How does your engine differ from others?
+
+We offer a complete development platform: a game engine with built‑in tools, a full set of editors, utilities, plugins, and detailed documentation. Every serious project has its own documentation, releases, and descriptions - you can review and compare them to choose what suits you best. It is also important to independently verify the functionality of each platform you are interested in, rather than relying solely on stated features
 
 ### Where can I see what tasks are planned to be performed?
 
-On the corresponding [page](https://github.com/orgs/ixray-team/projects/7).
+On the corresponding [page](https://github.com/orgs/ixray-team/projects/7)
 
 ### You have so many features! But where is the documentation?
 
-It is available on the [wiki](https://github.com/ixray-team/ixray-1.6-stcop/wiki).
+It is available on the [wiki](https://github.com/ixray-team/ixray-1.6-stcop/wiki)
 
 ### Is the unification of the SoC, CS, and CoP game modules planned?
 
-As soon as possible.
+As soon as possible
 
-### Is the adaptation of Gunslinger/StCop/IWP/my_favorite_weapon_pack planned?
+### Is the adaptation of Gunslinger/STCoP WP/IWP/my_favorite_weapon_pack planned?
 
-Follow this information in the official sources.
+Follow this information in the official sources
 
 ### There is a `gamedata` folder in your repository, why is it there?
 
-Some engine fixes and changes require corresponding changes in game resources. Moreover, there were a huge number of problems not only in the engine but also in the game files that required fixes for the game to work correctly or to properly support mods. The repository contains full gamedata (without assets), and only the modified files are in the releases.
+Some engine fixes and changes require corresponding changes in game resources. Moreover, there were a huge number of problems not only in the engine but also in the game files that required fixes for the game to work correctly or to properly support mods. The repository contains full gamedata (without assets), and only the modified files are in the releases
 
 ### How can an ordinary player or modder help the project?
 
-The best support is to help with testing and spreading information about the project. Create your modifications, builds, update old modifications, and let us know about it for publication on our resources.
+The best support is to help with testing and spreading information about the project. Create your modifications, builds, update old modifications, and let us know about it for publication on our resources
 
 ### Will only your tools (editors, utilities) or third-party ones be suitable for the engine?
 
-We did not break backward compatibility with the original game formats, so we can talk about full backward compatibility. Both our and third-party tools will be suitable.
+We did not break backward compatibility with the original game formats, so we can talk about full backward compatibility. Both our and third-party tools will be suitable
 
 ### I launched DLSS/FSR and the image became too blurry or sharp. How to fix this?
 
-There is a "Sharpness" slider in the graphics settings. Adjust it to a comfortable value.
+There is a "Sharpness" slider in the graphics settings. Adjust it to a comfortable value
