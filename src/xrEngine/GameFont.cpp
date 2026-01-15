@@ -10,7 +10,7 @@
 #include <freetype/ftfntfmt.h>
 
 extern u32 TextureDimension;
-extern xr_vector<u32> FontBitmap;
+thread_local xr_vector<u32> FontBitmap;
 
 FT_Library FreetypeLib = nullptr;
 
@@ -142,6 +142,7 @@ bool GetDisplayMetricsSDL3(float& width_mm, float& height_mm, float& width_px, f
 
 void CGameFont::Initialize2(const char* name, const char* shader, const char* style, u32 size)
 {
+	FontBitmap.resize(TextureDimension * TextureDimension);
 	if (!bFreetypeInitialized)
 	{
 		InitializeFreetype();
