@@ -25,7 +25,7 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 
 				if (pInput->receive_gamepad_addedorremoved)
 				{
-					pInput->receive_gamepad_addedorremoved(reinterpret_cast<void*>(Event.jdevice.which), true);
+					pInput->receive_gamepad_addedorremoved((Event.jdevice.which), true);
 				}
 			}
 			break;
@@ -73,7 +73,7 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 		{
 			if (pInput->receive_keyboard_addedorremoved)
 			{
-				pInput->receive_keyboard_addedorremoved(reinterpret_cast<void*>(Event.kdevice.which), true);
+				pInput->receive_keyboard_addedorremoved((Event.kdevice.which), true);
 			}
 
 			break;
@@ -82,7 +82,7 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 		{
 			if (pInput->receive_keyboard_addedorremoved)
 			{
-				pInput->receive_keyboard_addedorremoved(nullptr, false);
+				pInput->receive_keyboard_addedorremoved(0, false);
 			}
 
 			break;
@@ -91,7 +91,7 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 		{
 			if (pInput->receive_mouse_addedorremoved)
 			{
-				pInput->receive_mouse_addedorremoved(reinterpret_cast<void*>(Event.mdevice.which), true);
+				pInput->receive_mouse_addedorremoved((Event.mdevice.which), true);
 			}
 
 			break;
@@ -100,7 +100,7 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 		{
 			if (pInput->receive_mouse_addedorremoved)
 			{
-				pInput->receive_mouse_addedorremoved(nullptr, false);
+				pInput->receive_mouse_addedorremoved(0, false);
 			}
 
 			break;

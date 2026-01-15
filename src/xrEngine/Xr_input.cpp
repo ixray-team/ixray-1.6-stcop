@@ -505,9 +505,9 @@ bool CInput::FillVendorInfo(const CInputDevice& device, CInputDeviceVendorInfo& 
 	{
 	case eInputDeviceType::keyboard:
 	{
-		if (device.p_handle)
+		if (device.handle != u32(-1))
 		{
-			const char* pName = SDL_GetKeyboardNameForID(reinterpret_cast<SDL_KeyboardID>(device.p_handle));
+			const char* pName = SDL_GetKeyboardNameForID((device.handle));
 
 			if (pName)
 			{
@@ -520,7 +520,7 @@ bool CInput::FillVendorInfo(const CInputDevice& device, CInputDeviceVendorInfo& 
 	}
 	case eInputDeviceType::gamepad:
 	{
-		SDL_Joystick* joystick = SDL_OpenJoystick(reinterpret_cast<SDL_JoystickID>(device.p_handle));
+		SDL_Joystick* joystick = SDL_OpenJoystick((device.handle));
 
 		if (joystick) {
 			const char* name = SDL_GetJoystickName(joystick);
@@ -561,9 +561,9 @@ bool CInput::FillVendorInfo(const CInputDevice& device, CInputDeviceVendorInfo& 
 	}
 	case eInputDeviceType::mouse:
 	{
-		if (device.p_handle)
+		if (device.handle)
 		{
-			const char* pName = SDL_GetMouseNameForID(reinterpret_cast<SDL_MouseID>(device.p_handle));
+			const char* pName = SDL_GetMouseNameForID((device.handle));
 
 			if (pName)
 			{
@@ -605,7 +605,7 @@ bool CInput::GetConnectedInputKeyboards(CInputDevice(&pool)[DEF_XR_INPUT_MAX_INP
 	unsigned char index = static_cast<unsigned char>(eInputDeviceType::keyboard);
 	for (unsigned char i = 0; i < count; ++i)
 	{
-		pool[index].p_handle = reinterpret_cast<void*>(pKeyboards[i]);
+		pool[index].handle = u32(pKeyboards[i]);
 		pool[index].type = eInputDeviceType::keyboard;
 
 		index += i;
@@ -634,7 +634,7 @@ bool CInput::GetConnectedInputMouses(CInputDevice(&pool)[DEF_XR_INPUT_MAX_INPUT_
 	unsigned char index = static_cast<unsigned char>(eInputDeviceType::mouse);
 	for (unsigned char i = 0; i < count; ++i)
 	{
-		pool[index].p_handle = reinterpret_cast<void*>(pMouses[i]);
+		pool[index].handle = u32(pMouses[i]);
 		pool[index].type = eInputDeviceType::mouse;
 
 		index += i;
@@ -665,7 +665,7 @@ bool CInput::GetConnectedInputGamepads(CInputDevice(&pool)[DEF_XR_INPUT_MAX_INPU
 	unsigned char index = static_cast<unsigned char>(eInputDeviceType::gamepad);
 	for (unsigned char i = 0; i < count; ++i)
 	{
-		pool[index].p_handle = reinterpret_cast<void*>(pGamepads[i]);
+		pool[index].handle = u32(pGamepads[i]);
 		pool[index].type = eInputDeviceType::gamepad;
 
 		index += i;
