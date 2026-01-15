@@ -1642,7 +1642,7 @@ void LevelInspector::DrawGameGraph()
 		}
 	}
 }
-#pragma optimize("", off)
+
 void LevelInspector::DrawLevelGraph()
 {
 	PROF_EVENT(__FUNCTION__);
