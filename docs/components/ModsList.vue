@@ -185,6 +185,7 @@ const mods = computed(() => copy.value.mods as ModCard[])
               white;
     border: 1px solid var(--mod-card-border);
 
+  max-width: 350px;
   
   overflow: hidden;
   box-shadow:

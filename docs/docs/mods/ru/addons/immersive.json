@@ -13,7 +13,7 @@
       "description": "Этот аддон исправляет один из самых заметных визуальных недостатков оригинала — отсутствие ног у главного героя. Теперь при взгляде вниз вы увидите ноги, соответствующие выбранному костюму. Добавлена анимация движения, благодаря чему игра выглядит более реалистично и завершенно.",
       "author": "IX-Ray Team",
       "link": "https://example.com/addons/legs",
-      "image": "https://dummyimage.com/640x360/0f172a/e5e7eb&text=legs"
+      "image": "https://dummyimage.com/524x482/0f172a/e5e7eb&text=legs"
     },
     {
       "id": "puddles",
@@ -21,7 +21,7 @@
       "description": "Аддон содержит 3D-лужи, размещенные в локациях оригинальной игры Call of Pripyat. Совместим со всеми модами и не требует адаптации.",
       "author": "IX-Ray Team, MSR",
       "link": "https://example.com/addons/puddles",
-      "image": "https://dummyimage.com/640x360/0f172a/e5e7eb&text=puddles"
+      "image": "https://dummyimage.com/524x482/0f172a/e5e7eb&text=puddles"
     }
   ]
 }

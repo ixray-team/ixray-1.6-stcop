@@ -13,7 +13,7 @@
       "description": "Это дополнение исправляет положение мушки при прицеливании и корректирует анимации для определенных видов оружия, которые вызывали проблемы в оригинальной игре Stalker Call of Pripyat и при игре с IX-Ray Engine. Оно предназначено для исправления ошибок оригинального оружия.",
       "author": "IX-Ray Team, MSR",
       "link": "https://example.com/addons/fixed-weapons",
-      "image": "https://dummyimage.com/640x360/0f172a/e5e7eb&text=fixed-weapons"
+      "image": "https://dummyimage.com/524x482/0f172a/e5e7eb&text=fixed-weapons"
     },
     {
       "id": "SWR",
@@ -21,7 +21,7 @@
       "description": "Сенсационная Stalker Weapon Reanimation врывается в IX-Ray. Да, оружие здесь может быть громоздким, угловатым, с кривой сглаженностью и покошенными буграми, но оно в полной мере передает дух постсоветского постмодернизма — а теперь ещё и с потрясающей анимацией от GWR и IWP.",
       "author": "Last_Dawn (syka-bluadt)",
       "link": "https://example.com/addons/SWR",
-      "image": "https://dummyimage.com/640x360/0f172a/e5e7eb&text=SWR"
+      "image": "https://dummyimage.com/524x482/0f172a/e5e7eb&text=SWR"
     }
   ]
 }
