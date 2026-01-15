@@ -28,7 +28,7 @@ enum class eInputDeviceType : unsigned char
 struct CInputDevice
 {
 	eInputDeviceType type;
-	void* p_handle;
+	u32 handle=u32(-1);
 };
 
 struct CInputDeviceVendorInfo
@@ -62,9 +62,9 @@ public:
 
 	SDL_Gamepad* pGamePad = nullptr;
 
-	std::function<void(void*, bool)> receive_gamepad_addedorremoved;
-	std::function<void(void*, bool)> receive_keyboard_addedorremoved;
-	std::function<void(void*, bool)> receive_mouse_addedorremoved;
+	std::function<void(u32, bool)> receive_gamepad_addedorremoved;
+	std::function<void(u32, bool)> receive_keyboard_addedorremoved;
+	std::function<void(u32, bool)> receive_mouse_addedorremoved;
 
 	std::function<void(int)> xrgame_sdk_input_pressed;
 	std::function<void(int)> xrgame_sdk_input_released;
