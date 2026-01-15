@@ -606,14 +606,14 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float,		"r1_ssa_lod_b",			&ps_r1_ssaLOD_B,			16,		64		);
 #endif // DEBUG
 	CMD4(CCC_Float,		"r1_lmodel_lerp",		&ps_r1_lmodel_lerp,			0,		0.333f	);
-	CMD3(CCC_Mask,		"r1_dlights",			&ps_r1_flags,				R1FLAG_DLIGHTS	);
+	CMD3(CCC_Mask32,		"r1_dlights",			&ps_r1_flags,				R1FLAG_DLIGHTS	);
 	CMD4(CCC_Float,		"r1_dlights_clip",		&ps_r1_dlights_clip,		10.f,	150.f	);
 	CMD4(CCC_Float,		"r1_pps_u",				&ps_r1_pps_u,				-1.f,	+1.f	);
 	CMD4(CCC_Float,		"r1_pps_v",				&ps_r1_pps_v,				-1.f,	+1.f	);
 
 	// R1-specific
 	CMD4(CCC_Integer,	"r1_glows_per_frame",	&ps_r1_GlowsPerFrame,		2,		32		);
-	CMD3(CCC_Mask,		"r1_detail_textures",	&ps_r2_ls_flags,			R1FLAG_DETAIL_TEXTURES);
+	CMD3(CCC_Mask32,		"r1_detail_textures",	&ps_r2_ls_flags,			R1FLAG_DETAIL_TEXTURES);
 
 	CMD4(CCC_Float,		"r1_fog_luminance",		&ps_r1_fog_luminance,		0.2f,	5.f	);
 
@@ -622,7 +622,7 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float,		"r2_ssa_lod_b",			&ps_r2_ssaLOD_B,			0,		512		);
 
 	// R2-specific
-	CMD3(CCC_Mask,		"r2_tonemap",			&ps_r2_ls_flags,			R2FLAG_TONEMAP	);
+	CMD3(CCC_Mask32,		"r2_tonemap",			&ps_r2_ls_flags,			R2FLAG_TONEMAP	);
 	CMD4(CCC_Float,		"r2_tonemap_middlegray",&ps_r2_tonemap_middlegray,	0.0f,	2.0f	);
 	CMD4(CCC_Float,		"r2_tonemap_adaptation",&ps_r2_tonemap_adaptation,	0.01f,	10.0f	);
 	CMD4(CCC_Float,		"r2_tonemap_lowlum",	&ps_r2_tonemap_low_lum,		0.0001f,1.0f	);
@@ -633,24 +633,24 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float,		"r2_ls_bloom_kernel_b",	&ps_r2_ls_bloom_kernel_b,	0.01f,	1.f		);
 	CMD4(CCC_Float,		"r2_ls_bloom_threshold",&ps_r2_ls_bloom_threshold,	0.f,	1.f		);
 	CMD4(CCC_Float,		"r2_ls_bloom_speed",	&ps_r2_ls_bloom_speed,		0.f,	100.f	);
-	CMD3(CCC_Mask,		"r2_ls_bloom_fast",		&ps_r2_ls_flags,			R2FLAG_FASTBLOOM);
+	CMD3(CCC_Mask32,		"r2_ls_bloom_fast",		&ps_r2_ls_flags,			R2FLAG_FASTBLOOM);
 	CMD4(CCC_Float,		"r2_ls_squality",		&ps_r2_ls_squality,			.5f,	10.f		);
 
-	CMD3(CCC_Mask,		"r2_zfill",				&ps_r2_ls_flags,			R2FLAG_ZFILL	);
+	CMD3(CCC_Mask32,		"r2_zfill",				&ps_r2_ls_flags,			R2FLAG_ZFILL	);
 	CMD4(CCC_Float,		"r2_zfill_depth",		&ps_r2_zfill,				.001f,	.5f		);
-	CMD3(CCC_Mask,		"r2_allow_r1_lights",	&ps_r2_ls_flags,			R2FLAG_R1LIGHTS	);
+	CMD3(CCC_Mask32,		"r2_allow_r1_lights",	&ps_r2_ls_flags,			R2FLAG_R1LIGHTS	);
 
 	CMD4(CCC_Float,		"r2_gloss_factor",		&ps_r2_gloss_factor,		.0f,	10.f	);
 
 #ifdef DEBUG
-	CMD3(CCC_Mask,		"r2_use_nvdbt",			&ps_r2_ls_flags,			R2FLAG_USE_NVDBT);
-	CMD3(CCC_Mask,		"r2_mt",				&ps_r2_ls_flags,			R2FLAG_EXP_MT_CALC);
+	CMD3(CCC_Mask32,		"r2_use_nvdbt",			&ps_r2_ls_flags,			R2FLAG_USE_NVDBT);
+	CMD3(CCC_Mask32,		"r2_mt",				&ps_r2_ls_flags,			R2FLAG_EXP_MT_CALC);
 #endif // DEBUG
 
-	CMD3(CCC_Mask,		"r2_sun",				&ps_r2_ls_flags,			R2FLAG_SUN		);
-	CMD3(CCC_Mask,		"r2_sun_details",		&ps_r2_ls_flags,			R2FLAG_SUN_DETAILS);
-	CMD3(CCC_Mask,		"r2_lights_details",	&ps_r2_ls_flags,			R2FLAG_LIGHTS_DETAILS);
-	CMD3(CCC_Mask,		"r2_exp_donttest_shad",	&ps_r2_ls_flags,			R2FLAG_EXP_DONT_TEST_SHADOWED);
+	CMD3(CCC_Mask32,		"r2_sun",				&ps_r2_ls_flags,			R2FLAG_SUN		);
+	CMD3(CCC_Mask32,		"r2_sun_details",		&ps_r2_ls_flags,			R2FLAG_SUN_DETAILS);
+	CMD3(CCC_Mask32,		"r2_lights_details",	&ps_r2_ls_flags,			R2FLAG_LIGHTS_DETAILS);
+	CMD3(CCC_Mask32,		"r2_exp_donttest_shad",	&ps_r2_ls_flags,			R2FLAG_EXP_DONT_TEST_SHADOWED);
 	
 	CMD4(CCC_Float,		"r2_sun_bias",			&ps_r2_sun_bias,			-0.5,	+0.5	);
 	CMD4(CCC_Float,		"r2_sun_near",			&ps_r2_sun_near,			1.f,	50.f	);
@@ -680,64 +680,64 @@ void		xrRender_initconsole	()
 	CMD4( CCC_DofFar,	"r2_dof_far",	&ps_r2_dof.z, tw_min.z, tw_max.z);
 	CMD4(CCC_Float,		"r2_dof_kernel",&ps_r2_dof_kernel_size,				.0f,	10.f);
 	CMD4(CCC_Float,		"r2_dof_sky",	&ps_r2_dof_sky,						-10000.f,	10000.f);
-	CMD3(CCC_Mask,		"r2_dof_enable",&ps_r2_ls_flags,	R2FLAG_DOF);
+	CMD3(CCC_Mask32,		"r2_dof_enable",&ps_r2_ls_flags,	R2FLAG_DOF);
 
-	CMD3(CCC_Mask,		"r2_volumetric_lights",			&ps_r2_ls_flags,			R2FLAG_VOLUMETRIC_LIGHTS);
+	CMD3(CCC_Mask32,		"r2_volumetric_lights",			&ps_r2_ls_flags,			R2FLAG_VOLUMETRIC_LIGHTS);
 	CMD3(CCC_Token,		"r2_sun_shafts",				&ps_r_sun_shafts,			qsun_shafts_token);
 	CMD3(CCC_Token,		"r2_ssao_mode",					&ps_r_ssao_mode,			qssao_mode_token);
 
-	CMD3(CCC_Mask,		"r2_steep_parallax",			&ps_r2_ls_flags,			R2FLAG_STEEP_PARALLAX);
-	CMD3(CCC_Mask,		"r2_detail_bump",				&ps_r2_ls_flags,			R2FLAG_DETAIL_BUMP);
+	CMD3(CCC_Mask32,		"r2_steep_parallax",			&ps_r2_ls_flags,			R2FLAG_STEEP_PARALLAX);
+	CMD3(CCC_Mask32,		"r2_detail_bump",				&ps_r2_ls_flags,			R2FLAG_DETAIL_BUMP);
 
 	CMD3(CCC_Token,		"r2_sun_quality",				&ps_r_sun_quality,			qsun_quality_token);
 
 	//	Igor: need restart
-	CMD3(CCC_Mask,		"r2_soft_water",				&ps_r2_ls_flags,			R2FLAG_SOFT_WATER);
-	CMD3(CCC_Mask,		"r2_soft_particles",			&ps_r2_ls_flags,			R2FLAG_SOFT_PARTICLES);
+	CMD3(CCC_Mask32,		"r2_soft_water",				&ps_r2_ls_flags,			R2FLAG_SOFT_WATER);
+	CMD3(CCC_Mask32,		"r2_soft_particles",			&ps_r2_ls_flags,			R2FLAG_SOFT_PARTICLES);
 
-	CMD3(CCC_Mask,		"r3_dynamic_wet_surfaces",		&ps_r2_ls_flags,			R3FLAG_DYN_WET_SURF);
+	CMD3(CCC_Mask32,		"r3_dynamic_wet_surfaces",		&ps_r2_ls_flags,			R3FLAG_DYN_WET_SURF);
 	CMD4(CCC_Float,		"r3_dynamic_wet_surfaces_near",	&ps_r3_dyn_wet_surf_near,	10,	70		);
 	CMD4(CCC_Float,		"r3_dynamic_wet_surfaces_far",	&ps_r3_dyn_wet_surf_far,	30,	100		);
 	CMD4(CCC_Integer,	"r3_dynamic_wet_surfaces_sm_res",&ps_r3_dyn_wet_surf_sm_res,64,	2048	);
 
-	CMD3(CCC_Mask,		"r3_volumetric_smoke",			&ps_r2_ls_flags,			R3FLAG_VOLUMETRIC_SMOKE);
-	CMD3(CCC_Mask, "r4_enable_tessellation", &ps_r2_ls_flags_ext, R2FLAGEXT_ENABLE_TESSELLATION);
+	CMD3(CCC_Mask32,		"r3_volumetric_smoke",			&ps_r2_ls_flags,			R3FLAG_VOLUMETRIC_SMOKE);
+	CMD3(CCC_Mask32, "r4_enable_tessellation", &ps_r2_ls_flags_ext, R2FLAGEXT_ENABLE_TESSELLATION);
 
-	CMD3(CCC_Mask, "r4_enable_vslr", &ps_r2_ls_flags_ext, R4FLAG_OFFSCREEN_REFLECTIONS);
+	CMD3(CCC_Mask32, "r4_enable_vslr", &ps_r2_ls_flags_ext, R4FLAG_OFFSCREEN_REFLECTIONS);
 	CMD4(CCC_Float, "r4_vslr_distance", &ps_r4_vslr_distance, 0.4f, 1.f);
 
 	// IX-Ray
-	CMD3(CCC_Mask, "r__fast_details_update",&ps_r2_ls_flags, R2FLAG_FAST_DETAILS_UPDATE);
-	CMD4(CCC_DetailRadius, "r__detail_radius", &ps_r__detail_radius, 10, 300);
-	CMD3(CCC_Mask, "r__no_ram_textures", &ps_r__common_flags, RFLAG_NO_RAM_TEXTURES);
-	CMD3(CCC_Mask, "r__mt_texture_load", &ps_r__common_flags, RFLAG_MT_TEX_LOAD);
+	CMD3(CCC_Mask32, "r__fast_details_update",&ps_r2_ls_flags, R2FLAG_FAST_DETAILS_UPDATE);
+	CMD4(CCC_DetailRadius, "r__detail_radius", &ps_r__detail_radius, 10, 350);
+	CMD3(CCC_Mask32, "r__no_ram_textures", &ps_r__common_flags, RFLAG_NO_RAM_TEXTURES);
+	CMD3(CCC_Mask32, "r__mt_texture_load", &ps_r__common_flags, RFLAG_MT_TEX_LOAD);
 	CMD3(CCC_Token, "r_aa", &ps_r2_aa_type, aa_type_token);
 	CMD4(CCC_Integer, "r__optimize_static_geom", &opt_static, 0, 2);
 	CMD4(CCC_Integer, "r__optimize_dynamic_geom", &opt_dynamic, 0, 2);
-	CMD3(CCC_Mask, "r__optimize_shadow_geom", &ps_r__common_flags, RFLAG_OPT_SHAD_GEOM);
-	CMD3(CCC_Mask, "r__shader_cache", &ps_r__common_flags, RFLAG_USE_CACHE);
+	CMD3(CCC_Mask32, "r__optimize_shadow_geom", &ps_r__common_flags, RFLAG_OPT_SHAD_GEOM);
+	CMD3(CCC_Mask32, "r__shader_cache", &ps_r__common_flags, RFLAG_USE_CACHE);
 	
 	CMD3(CCC_Token, "r__screenshot_format", &ps_screenshot_format, screenshot_format_token);
 	CMD3(CCC_Token, "r4_mblur_quality", &ps_r4_mblur_quality, mblur_quality_token);
 	CMD4(CCC_Float, "r4_mblur_power", &ps_r4_mblur_power, 0.0f, 1.0f);
 
-	CMD3(CCC_Mask, "r1_use_terrain_mask", &ps_r1_flags, R1FLAG_TERRAIN_MASK);
+	CMD3(CCC_Mask32, "r1_use_terrain_mask", &ps_r1_flags, R1FLAG_TERRAIN_MASK);
 
 	CMD4(CCC_Float, "r2_aref_quality", &ps_r2_def_aref_quality, 70.0f, 200.0f);
-	CMD3(CCC_Mask, "r2_use_bump", &ps_r__common_flags, R2FLAG_USE_BUMP);
-	CMD3(CCC_Mask, "r2_vignette", &ps_r2_ls_flags_ext, R2FLAG_SPP_VIGNETTE);
-	CMD3(CCC_Mask, "r2_aberration", &ps_r2_ls_flags_ext, R2FLAG_SPP_ABERRATION);
-	CMD3(CCC_Mask, "r2_saturation", &ps_r2_ls_flags_ext, R2FLAG_SPP_SATURATION);
+	CMD3(CCC_Mask32, "r2_use_bump", &ps_r__common_flags, R2FLAG_USE_BUMP);
+	CMD3(CCC_Mask32, "r2_vignette", &ps_r2_ls_flags_ext, R2FLAG_SPP_VIGNETTE);
+	CMD3(CCC_Mask32, "r2_aberration", &ps_r2_ls_flags_ext, R2FLAG_SPP_ABERRATION);
+	CMD3(CCC_Mask32, "r2_saturation", &ps_r2_ls_flags_ext, R2FLAG_SPP_SATURATION);
 	CMD3(CCC_Token, "r2_smap_size", &ps_r2_smapsize, qsmapsize_token);
-	CMD3(CCC_Mask, "r2_cloud_shadows", &ps_r2_ls_flags_ext, RFLAG_CLOUD_SHADOWS);	//Need restart
+	CMD3(CCC_Mask32, "r2_cloud_shadows", &ps_r2_ls_flags_ext, RFLAG_CLOUD_SHADOWS);	//Need restart
 
-	CMD3(CCC_Mask, "r4_hud_shadows", &ps_r2_ls_flags_ext, R4FLAG_SCREEN_SPACE_HUD_SHADOWS);
-	CMD3(CCC_Mask, "r4_hashed_alpha_test", &ps_r2_ls_flags_ext, R4FLAG_HASHED_ALPHA_TEST);
-	CMD3(CCC_Mask, "r4_sslr_water", &ps_r2_ls_flags_ext, R4FLAG_SSLR_ON_WATER);
-	CMD3(CCC_Mask, "r4_sslr_reflections", &ps_r2_ls_flags_ext, R4FLAG_SSLR_ON_WORLD);
+	CMD3(CCC_Mask32, "r4_hud_shadows", &ps_r2_ls_flags_ext, R4FLAG_SCREEN_SPACE_HUD_SHADOWS);
+	CMD3(CCC_Mask32, "r4_hashed_alpha_test", &ps_r2_ls_flags_ext, R4FLAG_HASHED_ALPHA_TEST);
+	CMD3(CCC_Mask32, "r4_sslr_water", &ps_r2_ls_flags_ext, R4FLAG_SSLR_ON_WATER);
+	CMD3(CCC_Mask32, "r4_sslr_reflections", &ps_r2_ls_flags_ext, R4FLAG_SSLR_ON_WORLD);
 	CMD4(CCC_Float, "r4_cas_sharpening", &ps_r4_cas_sharpening, 0.0f, 1.0f);
 
-	CMD3(CCC_Mask, "r4_puddles", &ps_r2_ls_flags_ext, R4FLAG_PUDDLES);
+	CMD3(CCC_Mask32, "r4_puddles", &ps_r2_ls_flags_ext, R4FLAG_PUDDLES);
 
 	CMD2(CCC_Boolean, "r4_use_gasmask", &UseGasmak);
 	CMD2(CCC_Boolean, "r2_use_rain_drops", &UseRainDrops);
@@ -754,7 +754,7 @@ void		xrRender_initconsole	()
 	CMD1(CCC_Fog_Reload, "r3_fog_reload");
 #endif
 
-	CMD3(CCC_Mask, "r4_wireframe", &ps_r2_ls_flags_ext, R2FLAGEXT_WIREFRAME);//Need restart
+	CMD3(CCC_Mask32, "r4_wireframe", &ps_r2_ls_flags_ext, R2FLAGEXT_WIREFRAME);//Need restart
 	CMD2(CCC_R2GM, "r2em", &ps_r2_gmaterial);
 
 	CMD2(CCC_Boolean, "ui_dbg_graphic", &Engine.External.EditorStates[(int)EditorUI::Shaders]);
@@ -777,10 +777,10 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float, "r2_dhemi_light_scale", &ps_r2_dhemi_light_scale, 0, 100.f);
 	CMD4(CCC_Float, "r2_dhemi_light_flow", &ps_r2_dhemi_light_flow, 0, 1.f);
 	CMD4(CCC_Float, "r2_dhemi_smooth", &ps_r2_lt_smooth, 0.f, 10.f);
-	CMD3(CCC_Mask, "rs_hom_depth_draw", &ps_r2_ls_flags_ext, R_FLAGEXT_HOM_DEPTH_DRAW);
-	CMD3(CCC_Mask, "r2_shadow_cascede_zcul", &ps_r2_ls_flags_ext, R2FLAGEXT_SUN_ZCULLING);
-	CMD3(CCC_Mask, "r2_exp_splitscene", &ps_r2_ls_flags, R2FLAG_EXP_SPLIT_SCENE);
-	CMD3(CCC_Mask, "r2_exp_donttest_uns", &ps_r2_ls_flags, R2FLAG_EXP_DONT_TEST_UNSHADOWED);
+	CMD3(CCC_Mask32, "rs_hom_depth_draw", &ps_r2_ls_flags_ext, R_FLAGEXT_HOM_DEPTH_DRAW);
+	CMD3(CCC_Mask32, "r2_shadow_cascede_zcul", &ps_r2_ls_flags_ext, R2FLAGEXT_SUN_ZCULLING);
+	CMD3(CCC_Mask32, "r2_exp_splitscene", &ps_r2_ls_flags, R2FLAG_EXP_SPLIT_SCENE);
+	CMD3(CCC_Mask32, "r2_exp_donttest_uns", &ps_r2_ls_flags, R2FLAG_EXP_DONT_TEST_UNSHADOWED);
 
 	CMD4(CCC_Integer, "rs_dbg_draw_depth", &r_debug_render_depth, 0, 1);
 #endif

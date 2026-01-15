@@ -10,7 +10,7 @@
 
 bool CConsole::GetBool(LPCSTR cmd) const {
 	IConsole_Command* cc	= GetCommand(cmd);
-	CCC_Mask* cf			= dynamic_cast<CCC_Mask*>(cc);
+	CCC_Mask32* cf			= dynamic_cast<CCC_Mask32*>(cc);
 	if (cf) {
 		return ( cf->GetValue() != 0 );
 	}
@@ -59,7 +59,7 @@ int CConsole::GetInteger(LPCSTR cmd, int& min, int& max) const {
 		cf->GetBounds(min, max);
 		return cf->GetValue();
 	}
-	CCC_Mask* cm = dynamic_cast<CCC_Mask*>(cc);
+	CCC_Mask32* cm = dynamic_cast<CCC_Mask32*>(cc);
 	if (cm) {
 		min = 0;
 		max = 1;
