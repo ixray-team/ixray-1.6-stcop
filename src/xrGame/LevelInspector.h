@@ -86,8 +86,12 @@ struct LevelInspector final
 	collide::rq_results RQR;
 	collide::rq_result RQ;
 
-	CGameObject* selected_obj = nullptr;
+
+
 	CGameFont* dbg_font = nullptr;
+	float font_spacing = 0.9f;
+	xr_concurrent_unordered_map<shared_str, CGameFont*> m_clone_fonts_map;
+
 	LevelInspector* hud_prims = nullptr;
 	ui_shader shader;
 
@@ -95,6 +99,10 @@ struct LevelInspector final
 	bool wp_recalc = true;
 	u32 zbuffer_key = 225u;
 	u32 visible_currents_key = 224u;
+
+
+
+
 	Flags32 m_flags = { 0 };
 	Flags32 m_selection_flags = { 0 };
 	Flags32 m_selection_text_flags = { 0 };
@@ -111,7 +119,7 @@ struct LevelInspector final
 
 	void OnRender();
 
-	ICF Fvector2 append_text3d(const Fvector& pos, shared_str str = "+", u32 color = color_rgba(0, 255, 100, 255), CGameFont::EAligment align = CGameFont::alCenter)
+	ICF bool append_text3d(const Fvector& pos, shared_str str = "+", u32 color = color_rgba(0, 255, 100, 255), CGameFont::EAligment align = CGameFont::alCenter)
 	{
 		Fvector4 v_res;
 		if(hud_mode)
@@ -123,24 +131,25 @@ struct LevelInspector final
 		float y = (1.f - v_res.y) / 2.f * (Device.Height);
 
 		if (v_res.z < 0 || v_res.w < 0)
-			return Fvector2{ 0.f, 0.f };
+			return false;
 
 		if (v_res.x < -1.f || v_res.x > 1.f || v_res.y < -1.f || v_res.y>1.f)
-			return  Fvector2{ 0.f, 0.f };
+			return false;
 
 		append_text2d(x, y, str, color, align);
 
-		return Fvector2{ x, y };
+		return true;
 	}
 
 	ICF void append_text2d(float x, float y, shared_str str = "+", u32 color = color_rgba(0, 255, 100, 255), CGameFont::EAligment align = CGameFont::alCenter)
 	{
 		dbg_font->SetAligment(align);
 		dbg_font->SetColor(color);
-		dbg_font->Out(x, y, *str);
+		dbg_font->OutSet(x, y);
+		dbg_font->OutNext(*str);
 	}
 
-	IC void append_text_next(shared_str str = "+")
+	ICF void append_text_next(shared_str str = "+")
 	{
 		dbg_font->OutNext(*str);
 	}
