@@ -55,9 +55,9 @@ void CUIOptConCom::Init()
 	CMD4(CCC_Integer,	"mm_net_srv_maxplayers",			&m_iMaxPlayers,	2, 32);
 	CMD3(CCC_Token,		"mm_net_srv_gamemode",				&m_curGameMode,	g_GameModes);
 	m_uNetSrvParams.zero();
-	CMD3(CCC_Mask,		"mm_mm_net_srv_dedicated",			&m_uNetSrvParams,	flNetSrvDedicated);
-	CMD3(CCC_Mask,		"mm_net_con_publicserver",			&m_uNetSrvParams,	flNetConPublicServer);
-	CMD3(CCC_Mask,		"mm_net_con_spectator_on",			&m_uNetSrvParams,	flNetConSpectatorOn);
+	CMD3(CCC_Mask32,		"mm_mm_net_srv_dedicated",			&m_uNetSrvParams,	flNetSrvDedicated);
+	CMD3(CCC_Mask32,		"mm_net_con_publicserver",			&m_uNetSrvParams,	flNetConPublicServer);
+	CMD3(CCC_Mask32,		"mm_net_con_spectator_on",			&m_uNetSrvParams,	flNetConSpectatorOn);
 	m_iNetConSpectator	= 20;
 	CMD4(CCC_Integer,	"mm_net_con_spectator",				&m_iNetConSpectator, 1, 32);
 
@@ -74,12 +74,12 @@ void CUIOptConCom::Init()
 	CMD3(CCC_String,	"mm_net_srv_name",					m_serverName,	sizeof(m_serverName));
 
 	m_uNetFilter.one	();
-	CMD3(CCC_Mask,		"mm_net_filter_empty",				&m_uNetFilter,		fl_empty);
-	CMD3(CCC_Mask,		"mm_net_filter_full",				&m_uNetFilter,		fl_full);
-	CMD3(CCC_Mask,		"mm_net_filter_pass",				&m_uNetFilter,		fl_pass);
-	CMD3(CCC_Mask,		"mm_net_filter_wo_pass",			&m_uNetFilter,		fl_wo_pass);
-	CMD3(CCC_Mask,		"mm_net_filter_wo_ff",				&m_uNetFilter,		fl_wo_ff);
-	CMD3(CCC_Mask,		"mm_net_filter_listen",				&m_uNetFilter,		fl_listen);
+	CMD3(CCC_Mask32,		"mm_net_filter_empty",				&m_uNetFilter,		fl_empty);
+	CMD3(CCC_Mask32,		"mm_net_filter_full",				&m_uNetFilter,		fl_full);
+	CMD3(CCC_Mask32,		"mm_net_filter_pass",				&m_uNetFilter,		fl_pass);
+	CMD3(CCC_Mask32,		"mm_net_filter_wo_pass",			&m_uNetFilter,		fl_wo_pass);
+	CMD3(CCC_Mask32,		"mm_net_filter_wo_ff",				&m_uNetFilter,		fl_wo_ff);
+	CMD3(CCC_Mask32,		"mm_net_filter_listen",				&m_uNetFilter,		fl_listen);
 };
 
 void		CUIOptConCom::ReadPlayerNameFromRegistry	()
