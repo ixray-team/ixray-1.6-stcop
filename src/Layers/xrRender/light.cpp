@@ -224,7 +224,7 @@ bool light::has_light_visible_from_sectors()
 	for (IRender_Sector* IRsector : m_sectors)
 	{
 		CSector* sector_ = (CSector*)IRsector;
-		if (PortalTraverser.i_marker == sector_->r_marker)
+		if (sector_ != nullptr && PortalTraverser.i_marker == sector_->r_marker)
 		{
 			return true;
 		}
