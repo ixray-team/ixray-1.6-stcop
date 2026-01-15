@@ -2147,10 +2147,10 @@ void register_mp_console_commands()
 	CMD4(CCC_Integer,	"net_sv_update_rate",	&psNET_ServerUpdate,1,		100				);
 	CMD4(CCC_Integer,	"net_sv_pending_lim",	&psNET_ServerPending,0,		10				);
 	CMD4(CCC_Integer,	"net_sv_gpmode",	    &psNET_GuaranteedPacketMode,0, 2)	;
-	CMD3(CCC_Mask,		"net_sv_log_data",		&psNET_Flags,		NETFLAG_LOG_SV_PACKETS	);
-	CMD3(CCC_Mask,		"net_cl_log_data",		&psNET_Flags,		NETFLAG_LOG_CL_PACKETS	);
+	CMD3(CCC_Mask32,		"net_sv_log_data",		&psNET_Flags,		NETFLAG_LOG_SV_PACKETS	);
+	CMD3(CCC_Mask32,		"net_cl_log_data",		&psNET_Flags,		NETFLAG_LOG_CL_PACKETS	);
 #ifdef DEBUG
-	CMD3(CCC_Mask,		"net_dump_size",		&psNET_Flags,		NETFLAG_DBG_DUMPSIZE	);
+	CMD3(CCC_Mask32,		"net_dump_size",		&psNET_Flags,		NETFLAG_DBG_DUMPSIZE	);
 	CMD1(CCC_Dbg_NumObjects,"net_dbg_objects"				);
 #endif // DEBUG
 	CMD3(CCC_GSCDKey,	"cdkey",				gsCDKey,			sizeof(gsCDKey)			);

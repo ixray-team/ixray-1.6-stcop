@@ -13,7 +13,7 @@ void CConsole::DrawUIConsoleVars()
 	}
 
 	for (const auto& [Name, Command] : Commands) {
-		if (auto Mask = dynamic_cast<CCC_Mask*>(Command)) {
+		if (auto Mask = dynamic_cast<CCC_Mask32*>(Command)) {
 			continue;
 		}
 
