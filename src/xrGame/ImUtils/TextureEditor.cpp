@@ -129,7 +129,7 @@ ICF void lexicographic_sorting(xr_concurrent_vector<CImGuiTextureEditor::STextur
 	entries.swap(temp);
 }
 
-void TextureEditorApplyRequest(const SRequestData& req)
+void RequestHandler_TextureEditor(const SRequestData& req)
 {
 	if (!xr_FS)
 		return;
@@ -390,11 +390,11 @@ void TextureEditorApplyRequest(const SRequestData& req)
 					}
 				});
 
-				lexicographic_sorting(g_imgui_texture_editor.textures);
+			lexicographic_sorting(g_imgui_texture_editor.textures);
 
-				g_imgui_texture_editor.filter_query.resize(g_imgui_texture_editor.textures.size());
-				for (u32 i = 0; i < g_imgui_texture_editor.textures.size(); ++i)
-					g_imgui_texture_editor.filter_query[i] = i;
+			g_imgui_texture_editor.filter_query.resize(g_imgui_texture_editor.textures.size());
+			for (u32 i = 0; i < g_imgui_texture_editor.textures.size(); ++i)
+				g_imgui_texture_editor.filter_query[i] = i;
 
 			g_imgui_texture_editor.current_analyzed_count = g_imgui_texture_editor.textures.size();
 			g_imgui_texture_editor.is_all_analyzed = true;
@@ -814,7 +814,7 @@ void TextureEditorApplyRequest(const SRequestData& req)
 
 void PrintErrorStatus(
 	bool status,
-	const char* pOverrideValidStatus = "OK", 
+	const char* pOverrideValidStatus = "OK",
 	const char* pOverrideInvalidStatus = "ERROR"
 )
 {
@@ -839,14 +839,14 @@ void PrintErrorStatus(
 }
 
 template<typename T, u32 TokenSize>
-void ListBoxToken(T (&p_token)[TokenSize], const char* pListBoxName, u32* p_data)
+void ListBoxToken(T(&p_token)[TokenSize], const char* pListBoxName, u32* p_data)
 {
 	if (p_token == nullptr)
 		return;
 
 	if (TokenSize == 0)
 		return;
-	
+
 	if (p_data == nullptr)
 		return;
 
@@ -930,15 +930,11 @@ void RenderTextureEditor()
 		g_imgui_texture_editor.textures.reserve(_kReserve);
 		g_imgui_texture_editor.filter_query.reserve(_kReserve);
 
-		SRequestData req;
-
-		req.editor_type = static_cast<u32>(eImGuiEditorType::kTextureEditor);
-		req.request_type = static_cast<u32>(CImGuiTextureEditor::eRequestType::kReadSettings);
-
-		AllEditors_SendRequest(req);
-
-		req.request_type = static_cast<u32>(CImGuiTextureEditor::eRequestType::kReadAll);
-		AllEditors_SendRequest(req);
+		AllEditors_SendRequests_Sequential(xr_array{
+			SRequestData{.editor_type = u32(eImGuiEditorType::kTextureEditor),
+			.request_type = u32(CImGuiTextureEditor::eRequestType::kReadSettings)},
+			SRequestData{.editor_type = u32(eImGuiEditorType::kTextureEditor), .request_type = u32(CImGuiTextureEditor::eRequestType::kReadAll)}
+			});
 
 		g_imgui_texture_editor.is_init = true;
 	}
@@ -994,23 +990,25 @@ void RenderTextureEditor()
 						{
 							if (g_imgui_texture_editor.search_input_buffer[0] != 0)
 							{
-								SRequestData req;
-
-								req.editor_type = static_cast<u32>(eImGuiEditorType::kTextureEditor);
-								req.request_type = static_cast<u32>(CImGuiTextureEditor::eRequestType::kFilterQuery);
-								req.payload = static_cast<u32>(CImGuiTextureEditor::eFilterQueryType::kSearch);
-
-								AllEditors_SendRequest(req);
-
-								req.payload = static_cast<u32>(CImGuiTextureEditor::eFilterQueryType::kInvalidFirstExisted);
-								AllEditors_SendRequest(req);
+								AllEditors_SendRequests_Sequential(xr_array{
+									SRequestData{
+										.editor_type = u32(eImGuiEditorType::kTextureEditor),
+										.request_type = u32(CImGuiTextureEditor::eRequestType::kFilterQuery),
+										.payload = u32(CImGuiTextureEditor::eFilterQueryType::kSearch)
+									},
+									SRequestData{
+										.editor_type = u32(eImGuiEditorType::kTextureEditor),
+										.request_type = u32(CImGuiTextureEditor::eRequestType::kFilterQuery),
+										.payload = u32(CImGuiTextureEditor::eFilterQueryType::kInvalidFirstExisted)
+									}
+									});
 							}
 							else
 							{
 								SRequestData req;
+
 								req.editor_type = static_cast<u32>(eImGuiEditorType::kTextureEditor);
 								req.request_type = static_cast<u32>(CImGuiTextureEditor::eRequestType::kFilterQuery);
-
 								req.payload = static_cast<u32>(CImGuiTextureEditor::eFilterQueryType::kInvalidFirst);
 
 								AllEditors_SendRequest(req);
@@ -1018,18 +1016,29 @@ void RenderTextureEditor()
 						}
 						else
 						{
-							SRequestData req;
-
-							req.editor_type = static_cast<u32>(eImGuiEditorType::kTextureEditor);
-							req.request_type = static_cast<u32>(CImGuiTextureEditor::eRequestType::kFilterQuery);
-
-							req.payload = static_cast<u32>(CImGuiTextureEditor::eFilterQueryType::kNoFilter);
-
-							AllEditors_SendRequest(req);
-
 							if (g_imgui_texture_editor.search_input_buffer[0] != 0)
 							{
-								req.payload = static_cast<u32>(CImGuiTextureEditor::eFilterQueryType::kSearch);
+								SRequestData req;
+
+								req.editor_type = static_cast<u32>(eImGuiEditorType::kTextureEditor);
+								req.request_type = static_cast<u32>(CImGuiTextureEditor::eRequestType::kFilterQuery);
+								req.payload = static_cast<u32>(CImGuiTextureEditor::eFilterQueryType::kNoFilter);
+
+								AllEditors_SendRequests_Sequential(xr_array{
+									req,
+									SRequestData{.editor_type = u32(eImGuiEditorType::kTextureEditor),
+									.request_type = u32(CImGuiTextureEditor::eRequestType::kFilterQuery),
+									.payload = u32(CImGuiTextureEditor::eFilterQueryType::kSearch)}
+									});
+							}
+							else
+							{
+								SRequestData req;
+
+								req.editor_type = static_cast<u32>(eImGuiEditorType::kTextureEditor);
+								req.request_type = static_cast<u32>(CImGuiTextureEditor::eRequestType::kFilterQuery);
+								req.payload = static_cast<u32>(CImGuiTextureEditor::eFilterQueryType::kNoFilter);
+
 								AllEditors_SendRequest(req);
 							}
 						}
@@ -1065,18 +1074,33 @@ void RenderTextureEditor()
 						{
 							g_imgui_texture_editor.search_frame_count = 0;
 
-							SRequestData req;
 
-							req.editor_type = static_cast<u32>(eImGuiEditorType::kTextureEditor);
-							req.request_type = static_cast<u32>(CImGuiTextureEditor::eRequestType::kFilterQuery);
-
-							req.payload = static_cast<u32>(CImGuiTextureEditor::eFilterQueryType::kSearch);
-
-							AllEditors_SendRequest(req);
 
 							if (g_imgui_texture_editor.settings.show_invalid_first)
 							{
-								req.payload = static_cast<u32>(CImGuiTextureEditor::eFilterQueryType::kInvalidFirstExisted);
+								SRequestData req;
+
+								req.editor_type = static_cast<u32>(eImGuiEditorType::kTextureEditor);
+								req.request_type = static_cast<u32>(CImGuiTextureEditor::eRequestType::kFilterQuery);
+								req.payload = static_cast<u32>(CImGuiTextureEditor::eFilterQueryType::kSearch);
+
+								AllEditors_SendRequests_Sequential(xr_array{
+									req,
+									SRequestData{
+										.editor_type = u32(eImGuiEditorType::kTextureEditor),
+										.request_type = u32(CImGuiTextureEditor::eRequestType::kFilterQuery),
+										.payload = u32(CImGuiTextureEditor::eFilterQueryType::kInvalidFirstExisted)}
+									});
+							}
+							else
+							{
+								SRequestData req;
+
+								req.editor_type = static_cast<u32>(eImGuiEditorType::kTextureEditor);
+								req.request_type = static_cast<u32>(CImGuiTextureEditor::eRequestType::kFilterQuery);
+
+								req.payload = static_cast<u32>(CImGuiTextureEditor::eFilterQueryType::kSearch);
+
 								AllEditors_SendRequest(req);
 							}
 						}
@@ -1090,7 +1114,6 @@ void RenderTextureEditor()
 
 							req.editor_type = static_cast<u32>(eImGuiEditorType::kTextureEditor);
 							req.request_type = static_cast<u32>(CImGuiTextureEditor::eRequestType::kFilterQuery);
-
 							req.payload = static_cast<u32>(CImGuiTextureEditor::eFilterQueryType::kInvalidFirst);
 
 							AllEditors_SendRequest(req);
@@ -1260,7 +1283,7 @@ void RenderTextureEditor()
 															req.request_type = static_cast<u32>(CImGuiTextureEditor::eRequestType::kLoadTooltipMetadata);
 
 															AllEditors_SendRequest(req);
-								
+
 															g_imgui_texture_editor.is_preview_tooltip_image_load_started = true;
 														}
 
@@ -1454,23 +1477,23 @@ void RenderTextureEditor()
 
 			field_name = magic_enum::enum_name(CImGuiTextureEditor::eAnalyzedStatus::kTHMIsNotValid);
 			ImGui::Text("\t- %s: ", field_name.data());
-			PrintErrorStatus(has_thmisnotvalid==false);
+			PrintErrorStatus(has_thmisnotvalid == false);
 
 			field_name = magic_enum::enum_name(CImGuiTextureEditor::eAnalyzedStatus::kDimensionsNotPowerOf2);
 			ImGui::Text("\t- %s: ", field_name.data());
-			PrintErrorStatus(has_dim2==false);
+			PrintErrorStatus(has_dim2 == false);
 
 			field_name = magic_enum::enum_name(CImGuiTextureEditor::eAnalyzedStatus::kNoMipMaps);
 			ImGui::Text("\t- %s: ", field_name.data());
-			PrintErrorStatus(has_nomipmaps==false);
+			PrintErrorStatus(has_nomipmaps == false);
 
 			ImGui::Text("Validation result: ");
 
-			bool is_valid = (has_ignorethm ? true : has_hasthm) && 
-				(has_thmisnotvalid == false) && 
+			bool is_valid = (has_ignorethm ? true : has_hasthm) &&
+				(has_thmisnotvalid == false) &&
 				(has_dim2 == false) &&
 				(has_nomipmaps == false);
-			
+
 			PrintErrorStatus(is_valid, "ALL GOOD", "INVALID");
 
 			ImGui::Separator();
@@ -1577,8 +1600,8 @@ void RenderTextureEditor()
 						}
 
 						ImGui::BeginDisabled(!mipmaps_enabled);
-							ImGui::SeparatorText("MipMaps");
-							ListBoxToken(tparam_token, "Filter", &pTHM->mip_filter);
+						ImGui::SeparatorText("MipMaps");
+						ListBoxToken(tparam_token, "Filter", &pTHM->mip_filter);
 						ImGui::EndDisabled();
 
 						ImGui::SeparatorText("Bump");
