@@ -467,7 +467,7 @@ void AllEditors_SendRequest(SRequestData& req)
 {
 	g_imgui_editors_requests.run([req]()
 	{
-		OPTICK_START_THREAD("ImGui_run_request");
+		PROF_START_THREAD("ImGui_run_request");
 		eImGuiEditorType et = static_cast<eImGuiEditorType>(req.editor_type);
 
 		switch (et)
@@ -488,7 +488,7 @@ void AllEditors_SendRequest(SRequestData& req)
 			R_ASSERT2(false, "you forgot to register new workload!");
 			break;
 		}
-		OPTICK_STOP_THREAD();
+		PROF_STOP_THREAD();
 	}});
 }
 
