@@ -517,7 +517,7 @@ struct CImGuiTextureEditor
 	std::string path_to_texture_folder;
 
 	xr_concurrent_vector<STextureEntry> textures;
-	xr_concurrent_vector<u32> filter_query;
+	xr_vector<u32> filter_query;
 
 	string_path window_selected_name;
 	string_path search_input_buffer;
@@ -535,10 +535,17 @@ enum class eImGuiEditorType : u32
 
 struct SRequestData
 {
-	u32 editor_type = 0;
+	u32 editor_type = static_cast<u32>(eImGuiEditorType::kInvalid);
 	u32 request_type = 0;
 	u32 payload = 0;
 };
+
+struct CImGuiRequestManager
+{
+	xr_task_group requests;
+};
+
+#define IXRAY_MAX_IMGUI_REQUESTS_COUNT 8
 
 /* INIT */
 void InitSections();
@@ -571,12 +578,13 @@ void DestroySpawnManagerWindow();
 
 // note3: each editor (if it is needed) defines somewhere (preferably in their own class/struct definitions) a request enum that will describe tasks that their own workload need to handle (see TextureEditor implementation as example)
 void AllEditors_SendRequest(SRequestData& req);
+void AllEditors_ExecuteRequest(const SRequestData& req);
 
 void AllEditors_OnPressed(int key);
 void AllEditors_OnReleased(int key);
 
-void TextureEditorApplyRequest(const SRequestData& req);
-void OMFEditorApplyRequest(const SRequestData& req);
+void RequestHandler_TextureEditor(const SRequestData& req);
+void RequestHandler_OMFEditor(const SRequestData& req);
 
 void RegisterImGuiInGame();
 void execute_console_command_deferred(CConsole* c, LPCSTR string_to_execute);
@@ -585,4 +593,16 @@ extern clsid_manager* g_pClsidManager;
 extern CImGuiGameSearchManager imgui_search_manager;
 extern CHudAdjustManager imgui_hud_adjust_manager;
 extern CImGuiTextureEditor g_imgui_texture_editor;
-extern xr_task_group g_imgui_editors_requests;
+extern CImGuiRequestManager g_imgui_editor_request_manager;
+
+template<typename T, std::size_t N>
+IC void AllEditors_SendRequests_Sequential(const xr_array<T, N>& reqs)
+{
+	g_imgui_editor_request_manager.requests.run([reqs]() 
+		{
+			for (const SRequestData& req : reqs)
+			{
+				AllEditors_ExecuteRequest(req);
+			}
+		});
+}

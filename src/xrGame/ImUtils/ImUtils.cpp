@@ -465,31 +465,37 @@ void InitImGuiInGameInputReceiver()
 
 void AllEditors_SendRequest(SRequestData& req)
 {
-	g_imgui_editors_requests.run([req]()
-	{
-		PROF_START_THREAD("ImGui_run_request");
-		eImGuiEditorType et = static_cast<eImGuiEditorType>(req.editor_type);
+	g_imgui_editor_request_manager.requests.run([req]()
+		{
+			AllEditors_ExecuteRequest(req);
+		});
+}
 
-		switch (et)
-		{
-		case eImGuiEditorType::kTextureEditor:
-		{
-			TextureEditorApplyRequest(req);
-			break;
-		}
-		case eImGuiEditorType::kOMFEditor:
-		{
-			OMFEditorApplyRequest(req);
-			break;
-		}
-		case eImGuiEditorType::kNoEditor:break;
-		default:
-		{
-			R_ASSERT2(false, "you forgot to register new workload!");
-			break;
-		}
-		PROF_STOP_THREAD();
-	}});
+void AllEditors_ExecuteRequest(const SRequestData& req)
+{
+	PROF_START_THREAD("AllEditors_SendRequest");
+	eImGuiEditorType et = static_cast<eImGuiEditorType>(req.editor_type);
+
+	switch (et)
+	{
+	case eImGuiEditorType::kTextureEditor:
+	{
+		RequestHandler_TextureEditor(req);
+		break;
+	}
+	case eImGuiEditorType::kOMFEditor:
+	{
+		RequestHandler_OMFEditor(req);
+		break;
+	}
+	case eImGuiEditorType::kNoEditor:break;
+	default:
+	{
+		R_ASSERT2(false, "you forgot to register new workload!");
+		break;
+	}
+	}
+	PROF_STOP_THREAD();
 }
 
 void AllEditors_OnPressed(int key)
@@ -497,7 +503,7 @@ void AllEditors_OnPressed(int key)
 	if (!CImGuiManager::Instance().IsCapturingInputs() || pInput->xrgame_sdk_input_pressed == nullptr)
 		return;
 
-	switch(key)
+	switch (key)
 	{
 	case SDL_Scancode::SDL_SCANCODE_ESCAPE:
 	{
