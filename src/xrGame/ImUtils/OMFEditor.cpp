@@ -587,7 +587,7 @@ void OMFEditor_RenameBone(int bone_id, const OMFData::omf_name_t& new_name, OMFD
 	}
 }
 
-void OMFEditorApplyRequest(const SRequestData& req)
+void RequestHandler_OMFEditor(const SRequestData& req)
 {
 	R_ASSERT2(static_cast<eImGuiEditorType>(req.editor_type) == eImGuiEditorType::kOMFEditor, "mistaken workload calling! that means data was corrupted or some error occurred");
 
