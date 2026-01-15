@@ -116,7 +116,9 @@ void export_classes	(lua_State *L)
 	CSE_ALifeHumanStalker::script_register(L);
 	CSE_ALifeOnlineOfflineGroup::script_register(L);
 	CSE_SmartCover::script_register(L);
-	
+
+	fs_registrator::script_register(L);
+
 #ifdef XRSE_FACTORY_EXPORTS
 	CScriptPropertiesListHelper::script_register(L);
 #else
@@ -137,7 +139,6 @@ void export_classes	(lua_State *L)
 	demo_player_info::script_register(L);
 	demo_info::script_register(L);
 	CEF_Storage::script_register(L);
-	fs_registrator::script_register(L);
 	CGameTask::script_register(L);
 	DLL_PureScript::script_register(L);
 	ISheduledScript::script_register(L);
