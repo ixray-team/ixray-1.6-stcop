@@ -685,7 +685,7 @@ void CCC_Register()
 	CMD1(CCC_Disconnect,"disconnect"			);
 	CMD1(CCC_SaveCFG,	"cfg_save"				);
 	CMD1(CCC_LoadCFG,	"cfg_load"				);
-	CMD3(CCC_Mask,		"mt_particles",			&psDeviceFlags,			mtParticles);
+	CMD3(CCC_Mask32,		"mt_particles",			&psDeviceFlags,			mtParticles);
 #ifdef DEBUG
 	CMD1(CCC_MotionsStat,	"stat_motions"		);
 	CMD1(CCC_TexturesStat,	"stat_textures"		);
@@ -693,46 +693,46 @@ void CCC_Register()
 
 #ifdef DEBUG
 
-	CMD3(CCC_Mask,		"mt_sound",				&psDeviceFlags,			mtSound);
-	CMD3(CCC_Mask,		"mt_physics",			&psDeviceFlags,			mtPhysics);
-	CMD3(CCC_Mask,		"mt_network",			&psDeviceFlags,			mtNetwork);
+	CMD3(CCC_Mask32,		"mt_sound",				&psDeviceFlags,			mtSound);
+	CMD3(CCC_Mask32,		"mt_physics",			&psDeviceFlags,			mtPhysics);
+	CMD3(CCC_Mask32,		"mt_network",			&psDeviceFlags,			mtNetwork);
 	
 	// Events
 	CMD1(CCC_E_Dump,	"e_list"				);
 	CMD1(CCC_E_Signal,	"e_signal"				);
 
-	CMD3(CCC_Mask,		"rs_wireframe",			&psDeviceFlags,		rsWireframe);
-	CMD3(CCC_Mask,		"rs_clear_bb",			&psDeviceFlags,		rsClearBB);
-	CMD3(CCC_Mask,		"rs_occlusion",			&psDeviceFlags,		rsOcclusion);
+	CMD3(CCC_Mask32,		"rs_wireframe",			&psDeviceFlags,		rsWireframe);
+	CMD3(CCC_Mask32,		"rs_clear_bb",			&psDeviceFlags,		rsClearBB);
+	CMD3(CCC_Mask32,		"rs_occlusion",			&psDeviceFlags,		rsOcclusion);
 #endif
 
 #ifndef MASTER_GOLD
-	CMD3(CCC_Mask,		"rs_render_details",	&psDeviceFlags,		rsDetails);
-	CMD3(CCC_Mask,		"rs_render_statics",	&psDeviceFlags,		rsDrawStatic);
-	CMD3(CCC_Mask,		"rs_render_dynamics",	&psDeviceFlags,		rsDrawDynamic);
-	CMD3(CCC_Mask,		"rs_render_portals",	&psGameFlags,		rsDrawPortals);
+	CMD3(CCC_Mask32,		"rs_render_details",	&psDeviceFlags,		rsDetails);
+	CMD3(CCC_Mask32,		"rs_render_statics",	&psDeviceFlags,		rsDrawStatic);
+	CMD3(CCC_Mask32,		"rs_render_dynamics",	&psDeviceFlags,		rsDrawDynamic);
+	CMD3(CCC_Mask32,		"rs_render_portals",	&psGameFlags,		rsDrawPortals);
 #endif
 	// Render device states
-	CMD3(CCC_Mask, "rs_device_active", &psDeviceFlags, rsDeviceActive);
+	CMD3(CCC_Mask32, "rs_device_active", &psDeviceFlags, rsDeviceActive);
 	
 	CMD2(CCC_Boolean,	"rs_fps_show",			&IsFpsShow);
 	CMD4(CCC_Integer,	"rs_fps_limit",			&g_dwFPSlimit,		0, 1000);
 
-	CMD3(CCC_Mask,		"rs_v_sync",			&psDeviceFlags,		rsVSync				);
+	CMD3(CCC_Mask32,		"rs_v_sync",			&psDeviceFlags,		rsVSync				);
 	
 #ifdef MASTER_GOLD
-	CMD3(CCC_Mask, "rs_fullscreen", &psDeviceFlags, rsFullscreen);
+	CMD3(CCC_Mask32, "rs_fullscreen", &psDeviceFlags, rsFullscreen);
 #endif // MASTER_GOLD
 
-	//CMD3(CCC_Mask,		"rs_refresh_60hz",		&psDeviceFlags,		rsRefresh60hz			);
-	CMD3(CCC_Mask,		"rs_stats",				&psDeviceFlags,		rsStatistic				);
+	//CMD3(CCC_Mask32,		"rs_refresh_60hz",		&psDeviceFlags,		rsRefresh60hz			);
+	CMD3(CCC_Mask32,		"rs_stats",				&psDeviceFlags,		rsStatistic				);
 	CMD4(CCC_Float,		"rs_vis_distance",		&psVisDistance,		0.4f,	1.0f			);
-	CMD3(CCC_Mask,		"r_actor_shadow",		&psGameFlags,		rsActorShadow			);
+	CMD3(CCC_Mask32,		"r_actor_shadow",		&psGameFlags,		rsActorShadow			);
 
-	CMD3(CCC_Mask,		"rs_cam_pos",			&psDeviceFlags,		rsCameraPos				);
+	CMD3(CCC_Mask32,		"rs_cam_pos",			&psDeviceFlags,		rsCameraPos				);
 #ifdef DEBUG_DRAW
-	CMD3(CCC_Mask,		"rs_occ_draw",			&psDeviceFlags,		rsOcclusionDraw			);
-	CMD3(CCC_Mask,		"rs_occ_stats",			&psDeviceFlags,		rsOcclusionStats		);
+	CMD3(CCC_Mask32,		"rs_occ_draw",			&psDeviceFlags,		rsOcclusionDraw			);
+	CMD3(CCC_Mask32,		"rs_occ_stats",			&psDeviceFlags,		rsOcclusionStats		);
 #endif // DEBUG
 
 	CMD2(CCC_Gamma,		"rs_c_gamma"			,&ps_gamma			);
@@ -759,22 +759,22 @@ void CCC_Register()
 	CMD2(CCC_Float,		"snd_volume_eff",		&psSoundVEffects);
 	CMD2(CCC_Float,		"snd_volume_music",		&psSoundVMusic);
 	CMD1(CCC_SND_Restart,"snd_restart"			);
-	CMD3(CCC_Mask,		"snd_acceleration",		&psSoundFlags,		ss_Hardware	);
-	CMD3(CCC_Mask,		"snd_efx",				&psSoundFlags,		ss_EFX		);
+	CMD3(CCC_Mask32,		"snd_acceleration",		&psSoundFlags,		ss_Hardware	);
+	CMD3(CCC_Mask32,		"snd_efx",				&psSoundFlags,		ss_EFX		);
 
 #ifdef DEBUG
-	CMD3(CCC_Mask,		"snd_stats",			&g_stats_flags,		st_sound	);
-	CMD3(CCC_Mask,		"snd_stats_min_dist",	&g_stats_flags,		st_sound_min_dist );
-	CMD3(CCC_Mask,		"snd_stats_max_dist",	&g_stats_flags,		st_sound_max_dist );
-	CMD3(CCC_Mask,		"snd_stats_ai_dist",	&g_stats_flags,		st_sound_ai_dist );
-	CMD3(CCC_Mask,		"snd_stats_info_name",	&g_stats_flags,		st_sound_info_name );
-	CMD3(CCC_Mask,		"snd_stats_info_object",&g_stats_flags,		st_sound_info_object );
+	CMD3(CCC_Mask32,		"snd_stats",			&g_stats_flags,		st_sound	);
+	CMD3(CCC_Mask32,		"snd_stats_min_dist",	&g_stats_flags,		st_sound_min_dist );
+	CMD3(CCC_Mask32,		"snd_stats_max_dist",	&g_stats_flags,		st_sound_max_dist );
+	CMD3(CCC_Mask32,		"snd_stats_ai_dist",	&g_stats_flags,		st_sound_ai_dist );
+	CMD3(CCC_Mask32,		"snd_stats_info_name",	&g_stats_flags,		st_sound_info_name );
+	CMD3(CCC_Mask32,		"snd_stats_info_object",&g_stats_flags,		st_sound_info_object );
 
 	CMD4(CCC_Integer,	"error_line_count",		&g_ErrorLineCount,	6,	1024	);
 #endif // DEBUG
 
 	// Mouse
-	CMD3(CCC_Mask,		"mouse_invert",			&psMouseInvert,1);
+	CMD3(CCC_Mask32,		"mouse_invert",			&psMouseInvert,1);
 	psMouseSens			= 0.12f;
 	CMD4(CCC_Float,		"mouse_sens",			&psMouseSens,		0.001f, 0.6f);
 	CMD4(CCC_Float,		"mouse_sens_ui",		&psMouseUISens,		0.01f, 2.f);
