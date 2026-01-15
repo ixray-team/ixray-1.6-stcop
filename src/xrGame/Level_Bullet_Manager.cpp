@@ -1088,12 +1088,12 @@ void CBulletManager::Render	()
 
 	if (!visible_tracers.empty())
 	{
+		UIRender->CacheSetCullMode(ERHI_CULLMODE::NONE);
+		UIRender->CacheSetXformWorld(Fidentity);
 		// 3d tracer
 		//UIRender->SetShader(*m_trj_shader);
 		// 2d tracer
 		UIRender->SetShader(*sh_Tracer);
-
-		UIRender->CacheSetCullMode(ERHI_CULLMODE::NONE);
 
 		const Fvector& cam_P = Device.vCameraPosition;
 		const Fvector& cam_D = Device.vCameraDirection;
