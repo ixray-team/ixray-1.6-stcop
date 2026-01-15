@@ -19,7 +19,7 @@ void RegisterExpressionDelegates();
 
 CInifile* pGameGlobals = nullptr;
 
-xr_task_group g_imgui_editors_requests;
+CImGuiRequestManager g_imgui_editor_request_manager;
 void LoadCallbackGlobals(bool& flag, const char*& value, const char* section)
 {
 	flag = pGameGlobals->line_exist("callbacks", section);
@@ -121,7 +121,7 @@ extern "C"
 
 	DLL_API void __cdecl xrGameShutdown()
 	{
-		g_imgui_editors_requests.wait();
+		g_imgui_editor_request_manager.requests.wait();
 	}
 	
 	DLL_API void __cdecl xrGameRenderPreDestroy()
