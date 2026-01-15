@@ -935,21 +935,40 @@ bool ConsoleBindCmds::execute(int dik)
 
 	if (buffer[0] != '\0')
 	{
-		if(IConsole_Command* cmd = Console->GetCommand(buffer))
+		if (IConsole_Command* cmd = Console->GetCommand(buffer))
 		{
 			if (CCC_Boolean* ccc_bool = cmd->dcast_bool())
 			{
-				ccc_bool->SetInverseValue();
+				ccc_bool->Toggle();
 				Console->Execute(ccc_bool->Name());
-
 				return true;
 			}
 
-			if (CCC_Mask* ccc_mask = cmd->dcast_mask())
+			if (CCC_Integer* ccc_int = cmd->dcast_int())
 			{
-				ccc_mask->SetInverseValue();
-				Console->Execute(ccc_mask->Name());
+				ccc_int->Toggle();
+				Console->Execute(ccc_int->Name());
+				return true;
+			}
 
+			if (CCC_Mask16* ccc_mask16 = cmd->dcast_mask16())
+			{
+				ccc_mask16->Toggle();
+				Console->Execute(ccc_mask16->Name());
+				return true;
+			}
+			
+			if (CCC_Mask32* ccc_mask32 = cmd->dcast_mask32())
+			{
+				ccc_mask32->Toggle();
+				Console->Execute(ccc_mask32->Name());
+				return true;
+			}
+
+			if (CCC_Mask64* ccc_mask64 = cmd->dcast_mask64())
+			{
+				ccc_mask64->Toggle();
+				Console->Execute(ccc_mask64->Name());
 				return true;
 			}
 		}
