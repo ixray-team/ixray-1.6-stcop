@@ -473,7 +473,7 @@ void 	CRender::set_Transform(Fmatrix* M)
 	current_matrix.set(*M);
 }
 
-void CRender::add_Visual(IRenderVisual* visual)
+void CRender::add_Visual(IRenderVisual* visual, bool)
 {
 	if(val_bInvisible) {
 		return;
