@@ -3,9 +3,10 @@
 ## Windows {#windows}
 
 To build on Windows you need:
+
 - git
 - cmake
-- Visual Studio 2019 or 2022
+- Visual Studio (2019, 2022, or 2026)
 
 **Build**
 
@@ -21,6 +22,7 @@ Then, in the build folder, open the .sln file in Visual Studio and build the pro
 ## Linux {#linux}
 
 To build on Linux you need:
+
 - git
 - cmake
 - clang
@@ -39,6 +41,9 @@ libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev
 ## Steam Networking
 sudo apt install libssl-dev libprotobuf-dev protobuf-compiler
 
+## Vorbis
+sudo apt install libogg-dev
+
 ## IX-Ray
 sudo apt install uuid-dev libtbb-dev liblzo2-dev
 ```
@@ -56,6 +61,9 @@ libdrm-devel mesa-libgbm-devel libusb1-devel libdecor-devel pipewire-jack-audio-
 
 ## Steam Networking
 sudo dnf install openssl-devel protobuf-devel
+
+## Vorbis
+sudo dnf install libogg-devel
 
 ## IX-Ray
 sudo dnf install libuuid-devel tbb-devel lzo-devel
