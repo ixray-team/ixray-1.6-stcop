@@ -294,14 +294,7 @@ void CDetailManager::Render()
 #endif
 
 	Device.details_task.wait();
-
-	int idx = calc_key;
-	render_key = idx;
-	calc_key = (idx + 1) % 2;
-
-	static DWORD this_thread_id = 0;
-	this_thread_id = GetCurrentThreadId();
-
+	std::swap(render_key, calc_key);
 	Device.details_task.run
 	(
 		[this]()
@@ -310,11 +303,9 @@ void CDetailManager::Render()
 			if (0 == dtFS)						return;
 			if (!psDeviceFlags.is(rsDetails))	return;
 #endif
-			if (this_thread_id != GetCurrentThreadId()) 
-			{
-				PROF_THREAD("Details async")
-			}
+			OPTICK_START_THREAD("Details async");
 			UpdateVisibleM();
+			OPTICK_STOP_THREAD();
 		}
 	);
 
