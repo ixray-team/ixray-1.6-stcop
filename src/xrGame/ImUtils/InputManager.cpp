@@ -32,7 +32,7 @@ struct InGameEditor_InputManager
 void InitializeInGameEditor_InputManager(InGameEditor_InputManager*);
 void UpdateInGameEditor_InputManager(InGameEditor_InputManager*);
 
-void InGameEditor_InputManager_CallbackOnGamepadAddedOrRemoved(void* p_handle_device, bool added)
+void InGameEditor_InputManager_CallbackOnGamepadAddedOrRemoved(u32 p_handle_device, bool added)
 {
 	if (ie_inputmanager.was_inited)
 	{
@@ -42,7 +42,7 @@ void InGameEditor_InputManager_CallbackOnGamepadAddedOrRemoved(void* p_handle_de
 	InitializeInGameEditor_InputManager(&ie_inputmanager);
 }
 
-void InGameEditor_InputManager_CallbackOnKeyboardAddedOrRemoved(void* p_handle_device, bool added)
+void InGameEditor_InputManager_CallbackOnKeyboardAddedOrRemoved(u32 p_handle_device, bool added)
 {
 	if (ie_inputmanager.was_inited)
 	{
@@ -52,7 +52,7 @@ void InGameEditor_InputManager_CallbackOnKeyboardAddedOrRemoved(void* p_handle_d
 	InitializeInGameEditor_InputManager(&ie_inputmanager);
 }
 
-void InGameEditor_InputManager_CallbackOnMouseAddedOrRemoved(void* p_handle_device, bool added)
+void InGameEditor_InputManager_CallbackOnMouseAddedOrRemoved(u32 p_handle_device, bool added)
 {
 	if (ie_inputmanager.was_inited)
 	{
