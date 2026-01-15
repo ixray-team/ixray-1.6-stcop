@@ -495,19 +495,19 @@ struct CImGuiTextureEditor
 	u32 hovered_tooltip_index = u32(-1);
 
 	std::atomic<u32> current_analyzed_count = 0;
-	u32 total_textures_in_folder = 0;
-	u32 total_thm_in_folder = 0;
-	u32 total_unable_to_classify_files_in_folder = 0;
-	u32 total_seq_in_folder = 0;
-	u32 total_png_in_folder = 0;
-	u32 total_svg_in_folder = 0;
-	u32 total_bmp_in_folder = 0;
-	u32 total_ogm_in_folder = 0;
-	u32 total_ini_in_folder = 0;
-	u32 total_other_in_folder = 0;
-	u32 total_files_in_folder = 0;
+	std::atomic<u32> total_textures_in_folder = 0;
+	std::atomic<u32> total_thm_in_folder = 0;
+	std::atomic<u32> total_unable_to_classify_files_in_folder = 0;
+	std::atomic<u32> total_seq_in_folder = 0;
+	std::atomic<u32> total_png_in_folder = 0;
+	std::atomic<u32> total_svg_in_folder = 0;
+	std::atomic<u32> total_bmp_in_folder = 0;
+	std::atomic<u32> total_ogm_in_folder = 0;
+	std::atomic<u32> total_ini_in_folder = 0;
+	std::atomic<u32> total_other_in_folder = 0;
+	std::atomic<u32> total_files_in_folder = 0;
 
-	u32 valid_count = 0;
+	std::atomic<u32> valid_count = 0;
 	u32 invalid_by_filenamelength = 0;
 	u32 invalid_by_thm = 0;
 
@@ -516,8 +516,8 @@ struct CImGuiTextureEditor
 	std::string_view wt_current_analyzing_texture;
 	std::string path_to_texture_folder;
 
-	std::vector<STextureEntry> textures;
-	std::vector<u32> filter_query;
+	xr_concurrent_vector<STextureEntry> textures;
+	xr_concurrent_vector<u32> filter_query;
 
 	string_path window_selected_name;
 	string_path search_input_buffer;
@@ -533,26 +533,12 @@ enum class eImGuiEditorType : u32
 	kInvalid = u32(-1)
 };
 
-/// @brief \~english use global instance of this type for shared data/state between editors BUT only if it makes sense if you can isolate or relate to editor and its own state then it is better to isolate and move data to correspodning type of editor and don't make a super state class for all editors (it is wrong)
-struct CImGuiEditorsGlobalState
+struct SRequestData
 {
-	struct SRequestData
-	{
-		u32 editor_type = 0;
-		u32 request_type = 0;
-		u32 payload = 0;
-	};
-
-	bool is_thread_started = false;
-	bool is_running_wt = true;
-
-	ThreadSafeQueue<SRequestData> requests;
-
-	/// @brief \~english when you try to implemenet your tool/editor you should use only one dedicated thread that was allocated for ALL editors and tools. If you really want to speed up things you should use xr_task_group inside the worker_thread (see TextureEditor implementation as example)
-	std::thread worker_thread;
+	u32 editor_type = 0;
+	u32 request_type = 0;
+	u32 payload = 0;
 };
-
-using ime_request_t = CImGuiEditorsGlobalState::SRequestData;
 
 /* INIT */
 void InitSections();
@@ -584,14 +570,13 @@ void DestroySpawnManagerWindow();
 // note2: other functions need to use prefix _WorkerThread only to identify threaded execution of these function, so the difference between real function that used in std::thread and others is that others accept ime_request_t alias for handling incoming request from worker thread
 
 // note3: each editor (if it is needed) defines somewhere (preferably in their own class/struct definitions) a request enum that will describe tasks that their own workload need to handle (see TextureEditor implementation as example)
-
-void AllEditorsAndTools_WorkerThread();
+void AllEditors_SendRequest(SRequestData& req);
 
 void AllEditors_OnPressed(int key);
 void AllEditors_OnReleased(int key);
 
-void TextureEditor_WorkerThread(const ime_request_t& req);
-void OMFEditor_WorkerThread(const ime_request_t& req);
+void TextureEditorApplyRequest(const SRequestData& req);
+void OMFEditorApplyRequest(const SRequestData& req);
 
 void RegisterImGuiInGame();
 void execute_console_command_deferred(CConsole* c, LPCSTR string_to_execute);
@@ -600,4 +585,4 @@ extern clsid_manager* g_pClsidManager;
 extern CImGuiGameSearchManager imgui_search_manager;
 extern CHudAdjustManager imgui_hud_adjust_manager;
 extern CImGuiTextureEditor g_imgui_texture_editor;
-extern CImGuiEditorsGlobalState g_imgui_editors_state;
+extern xr_task_group g_imgui_editors_requests;
