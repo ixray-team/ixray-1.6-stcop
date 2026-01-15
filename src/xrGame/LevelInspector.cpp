@@ -457,11 +457,42 @@ ICF void setkey(u32& zbufKey, u8 idx, const char* label_name = "ZBuff")
 	}
 }
 
+ICF void fontselectioncombo(LevelInspector& LI)
+{
+	ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
+	static xr_concurrent_vector<const char*> font_names;
+	static int curr_idx = 0;
+
+	if (font_names.empty() && !g_FontManager->Fonts.empty())
+	{
+		font_names.reserve(g_FontManager->Fonts.size());
+		xr_parallel_foreach(g_FontManager->Fonts.begin(), g_FontManager->Fonts.end(),
+		[&](const std::pair<const shared_str, CGameFont*>& pair)
+		{
+			if (!pSettings->section_exist(pair.first.c_str()))
+				return;
+			LI.m_clone_fonts_map[pair.first] = new CGameFont(pair.first.c_str());
+			font_names.push_back(pair.first.c_str());
+		});
+	}
+
+	if (!font_names.empty())
+	{
+		if (ImGui::Combo("##SelectFontCombo", &curr_idx, &font_names[0], font_names.size()))
+			LI.dbg_font = LI.m_clone_fonts_map[font_names[curr_idx]];
+
+		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
+		ImGui::SliderFloat("##FontSpacing", &LI.font_spacing, 0.0f, 10.f);
+		LI.dbg_font->SetLineSpacing(LI.font_spacing);
+	}
+}
+
 LevelInspector::LevelInspector(BOOL hm) : hud_mode(hm)
 {
 	shader->create("portal");
-	dbg_font = g_FontManager->CloneFont("ui_font_letterica18_russian");
 
+	dbg_font = g_FontManager->Fonts[shared_str("ui_font_letterica18_russian")];
+	
 	if(!hud_mode)
 	{
 		hud_prims = new LevelInspector(TRUE);
@@ -600,7 +631,7 @@ LevelInspector::LevelInspector(BOOL hm) : hud_mode(hm)
 				if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_SELECTION) && ImGui::CollapsingHeader("Selection"))
 				{
 					ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.1f, 0.1f, 0.12f, 0.3f));
-					ImGui::BeginChild("##SelectionGroup", ImVec2(0, ImGui::GetFrameHeightWithSpacing() * 14));
+					ImGui::BeginChild("##SelectionGroup", ImVec2(0, ImGui::GetFrameHeightWithSpacing() * 16));
 
 					if(m_flags.test(ESCENE_FLAGS::ESF_DRAW_OBJECTS))
 					{
@@ -636,6 +667,8 @@ LevelInspector::LevelInspector(BOOL hm) : hud_mode(hm)
 					if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_OBJECTS) || m_flags.test(ESCENE_FLAGS::ESF_DRAW_ZONES))
 					{
 						ImGui::Separator();
+
+						fontselectioncombo(*this);
 
 						ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
 						ImGui::CheckboxFlags("Draw Section Name", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_SNAME);
@@ -680,6 +713,11 @@ LevelInspector::~LevelInspector()
 	if (!hud_mode)
 		CImGuiManager::Instance().Unsubscribe("LevelInspector");
 	xr_delete(hud_prims);
+
+	for (const auto& pair : m_clone_fonts_map)
+	{
+		xr_delete(pair.second);
+	}
 }
 
 void LevelInspector::OnRender()
@@ -974,23 +1012,24 @@ void LevelInspector::DrawWayPoints()
 			float range = RD.range;
 			if (visible_currents || (!RQ.O && wp->obb.intersect(cam_pos, cam_dir, range)))
 			{
-				Fvector2 xy = append_text3d(wppos, wp->path_name, wp->color, CGameFont::alLeft);
-				if (xy.x > 0.f && xy.y > 0.f)
+				bool text3d = append_text3d(wppos, wp->path_name, wp->color, CGameFont::alLeft);
+				if(text3d)
+					append_text_next(wp->name);
+				else
+					text3d = append_text3d(wppos, wp->name, wp->color, CGameFont::alLeft);
+				for (auto& flag : wp->m_flags)
 				{
-					xy.y += 20.f;
-					append_text2d(xy.x, xy.y, wp->name, wp->color, CGameFont::alLeft);
-
-					for (auto& flag : wp->m_flags)
-					{
-						xy.y += 20.f;
-						append_text2d(xy.x, xy.y, flag, wp->color, CGameFont::alLeft);
-					}
-
-					if(wp->level_name.size())
-					{
-						xy.y += 20.f;
-						append_text2d(xy.x, xy.y, wp->level_name, wp->color, CGameFont::alLeft);
-					}
+					if (text3d)
+						append_text_next(flag);
+					else
+						text3d = append_text3d(wppos, flag, wp->color, CGameFont::alLeft);
+				}
+				if(wp->level_name)
+				{
+					if (text3d)
+						append_text_next(wp->level_name);
+					else
+						text3d = append_text3d(wppos, wp->level_name, wp->color, CGameFont::alLeft);
 				}
 				//draw selection box
 				{
@@ -1449,8 +1488,17 @@ void LevelInspector::DrawGameGraph()
 		}
 	};
 
-	static xr_map<EdgeKey, GraphPointD> m_links;
-	static xr_map<u16, GraphPointC> m_graphs;
+	struct EdgeKeyHash
+	{
+		std::size_t operator()(const EdgeKey& key) const noexcept
+		{
+			return (static_cast<std::size_t>(key.min_vertex) << 16) ^
+				static_cast<std::size_t>(key.max_vertex);
+		}
+	};
+
+	static xr_concurrent_unordered_map<EdgeKey, GraphPointD, EdgeKeyHash> m_links;
+	static xr_concurrent_unordered_map<u16, GraphPointC> m_graphs;
 	if (last_level_id != curr_level_id)
 	{
 		m_links.clear();
@@ -1461,9 +1509,11 @@ void LevelInspector::DrawGameGraph()
 	if(m_links.empty() && m_graphs.empty())
 	{
 		u16 v_cnt = graph.header().vertex_count();
-
-		for (u16 global_vid = 0U; global_vid < v_cnt; ++global_vid)
+		static u32 main_thread_id = GetCurrentThreadId();
+		xr_parallel_for(u16(0), v_cnt, [&](u16 global_vid)
 		{
+			OPTICK_START_THREAD("build_graph_nodes");
+			PROF_EVENT("build_graph_points_and_links");
 			const IGameGraph::CVertex* global_vertex = graph.vertex(global_vid);
 
 			if (global_vertex->level_id() == lgraph.level_id())
@@ -1493,7 +1543,6 @@ void LevelInspector::DrawGameGraph()
 						continue;
 					}
 
-
 					if (!lgraph.valid_vertex_id(global_vertex->level_vertex_id()) || !lgraph.valid_vertex_id(child_vertex->level_vertex_id()))
                         continue;
 
@@ -1501,17 +1550,17 @@ void LevelInspector::DrawGameGraph()
 					if (it != m_links.end())
 						continue;
 
-					auto link = m_links.emplace(EdgeKey{ global_vid, VI2->vertex_id() }, GraphPointD{});
-					link.first->second.is_blue[0] = global_vertex->vertex_type()[3];
-					link.first->second.is_blue[1] = child_vertex->vertex_type()[3];
+					auto& link = m_links[EdgeKey{ global_vid, VI2->vertex_id() }];
+					link.is_blue[0] = global_vertex->vertex_type()[3];
+					link.is_blue[1] = child_vertex->vertex_type()[3];
 
 					Fvector child_pos = child_vertex->level_point();
 
-					link.first->second.pos[0] = main_graph_pos + Fvector{0.f,1.f,0.f};
-					link.first->second.pos[1] = child_pos + Fvector{ 0.f,1.f,0.f };
-					link.first->second.pos[2].add(main_graph_pos, child_pos).mul(0.5f);
+					link.pos[0] = main_graph_pos + Fvector{0.f,1.f,0.f};
+					link.pos[1] = child_pos + Fvector{ 0.f,1.f,0.f };
+					link.pos[2].add(main_graph_pos, child_pos).mul(0.5f);
 
-					static xr_vector<u32> m_path;
+					thread_local xr_vector<u32> m_path;
 					//lgraph.Search(global_vertex->level_vertex_id(), child_vertex->level_vertex_id(), m_path);
 					//PostProcessPath(m_path);
 					SearchSmooth(global_vertex->level_vertex_id(), child_vertex->level_vertex_id(), m_path);
@@ -1520,29 +1569,30 @@ void LevelInspector::DrawGameGraph()
 						m_path.pop_back();
 						m_path.erase(m_path.begin());
 
-						link.first->second.m_path.push_back(link.first->second.pos[0]);
+						link.m_path.push_back(link.pos[0]);
 						for (u32 travelpoint : m_path)
 						{
 							Fvector lvtx_pos = lgraph.vertex_position(travelpoint);
 							lvtx_pos.y += 1.f;
 							bbox.modify(lvtx_pos);
-							link.first->second.m_path.push_back(lvtx_pos);
+							link.m_path.push_back(lvtx_pos);
 						}
-						link.first->second.m_path.push_back(link.first->second.pos[1]);
+						link.m_path.push_back(link.pos[1]);
 					}
 					else
 					{
-						link.first->second.m_path.push_back(link.first->second.pos[0]);
-						link.first->second.m_path.push_back(link.first->second.pos[2]);
-						link.first->second.m_path.push_back(link.first->second.pos[1]);
+						link.m_path.push_back(link.pos[0]);
+						link.m_path.push_back(link.pos[2]);
+						link.m_path.push_back(link.pos[1]);
 					}
 					bbox.modify(child_pos);
-					bbox.get_CD(link.first->second.spatial_c, link.first->second.spatial_bd);
+					bbox.get_CD(link.spatial_c, link.spatial_bd);
 					//bbox.getcenter(graph_child.first->second.spatial_c);
-					link.first->second.spatial_r += bbox.getradius();
+					link.spatial_r += bbox.getradius();
 				}
 			}
-		}
+			OPTICK_STOP_THREAD();
+		});
 	}
 	float RENDER_DISTANCE = visible_currents ? 50000.f : g_pGamePersistent->pEnvironment->CurrentEnv->fog_distance;
 	float RENDER_DISTANCE_SQR = RENDER_DISTANCE * RENDER_DISTANCE;
@@ -1558,6 +1608,7 @@ void LevelInspector::DrawGameGraph()
 	CFrustum& view_base = ::Render->ViewBase;
 	auto& graphs = m_graphs;
 	constexpr u32 color_green = color_rgba(0, 255, 100, 255);
+	
 	for (auto& pair : graphs)
 	{
 		GraphPointC& graph_main = pair.second;
@@ -1583,11 +1634,13 @@ void LevelInspector::DrawGameGraph()
 			{
 				Fvector post = pos;
 				post.y += graph_main.obb.m_halfsize.y + 0.1f;
-				Fvector2 xy = append_text3d(post, shared_str().printf("%d", graph_main.gvid), color_green, CGameFont::alLeft);
-				if (graph_main.next_level && xy.x > 0.f && xy.y > 0.f)
+				bool text3d = append_text3d(post, shared_str().printf("%d", graph_main.gvid), color_green, CGameFont::alLeft);
+				if(graph_main.next_level)
 				{
-					xy.y += 20.f;
-					append_text2d(xy.x, xy.y, shared_str().printf("next_level: %s", *graph_main.next_level), color_green, CGameFont::alLeft);
+					if (text3d)
+						append_text_next(shared_str().printf("next_level: %s", *graph_main.next_level));
+					else
+						text3d = append_text3d(pos, shared_str().printf("next_level: %s", *graph_main.next_level), color_green, CGameFont::alLeft);
 				}
 				tcolor = selection_tcolor;
 				if(!visible_currents)
@@ -1682,19 +1735,17 @@ void LevelInspector::DrawLevelGraph()
 				if (children[i]) delete children[i];
 		}
 	};
-
 	static xr_vector<CachedNode> cached_nodes;
 	static xr_vector<CachedNode*> vertex_buffer[2];
 	static xr_vector<u32> node_indices;
 	static xr_vector<u32> temp_indices;
-	static Fbox level_bbox;
 	static Fbox2 level_bbox2D;
 
 	static QuadTreeNode* quadtree_root = nullptr;
 	static bool quadtree_built = false;
 
 	static int devider = 32000;
-	static int nodes_size = lgraph.header().vertex_count();
+	static u32 nodes_size = lgraph.header().vertex_count();
 	//int console_value = CCC_Integer::FastCommand("granularity", devider, 1, nodes_size);
 	//if (devider != console_value)
 	//{
@@ -1725,7 +1776,6 @@ void LevelInspector::DrawLevelGraph()
 		cached_nodes.clear();
 		node_indices.clear();
 		temp_indices.clear();
-		level_bbox.invalidate();
 		level_bbox2D.invalidate();
 		nodes_size = lgraph.header().vertex_count();
 		last_level_id = curr_level_id;
@@ -1737,11 +1787,9 @@ void LevelInspector::DrawLevelGraph()
 
 	if (cached_nodes.empty())
 	{
+		PROF_EVENT("build_cached_nodes");
 		ILevelGraph::CVertex* verts = lgraph.vertices();
 		cached_nodes.reserve(nodes_size);
-
-		level_bbox.invalidate();
-
 		for (u32 i = 0; i < nodes_size; ++i)
 		{
 			ILevelGraph::CVertex& vertex = verts[i];
@@ -1761,15 +1809,10 @@ void LevelInspector::DrawLevelGraph()
 			node.v4.set(node_pos.x - node_R, node_pos.y, node_pos.z + node_R);
 			node.c.set(node_pos.x, node_pos.z);
 
-			lgraph.project_point(plane, node.v1);
-			lgraph.project_point(plane, node.v2);
-			lgraph.project_point(plane, node.v3);
-			lgraph.project_point(plane, node.v4);
-
-			//level_bbox.modify(node.v1);
-			level_bbox.modify(node.v2);
-			//level_bbox.modify(node.v3);
-			level_bbox.modify(node.v4);
+			node.v1.y -= plane.classify(node.v1) / plane.n.y;
+			node.v2.y -= plane.classify(node.v2) / plane.n.y;
+			node.v3.y -= plane.classify(node.v3) / plane.n.y;
+			node.v4.y -= plane.classify(node.v4) / plane.n.y;
 
 			if (!lgraph.is_accessible(i))
 				node.base_color = color_rgba(128, 128, 128, 180);
@@ -1795,7 +1838,7 @@ void LevelInspector::DrawLevelGraph()
 
 			node.color = node.base_color;
 		}
-
+		const Fbox& level_bbox = Level().ObjectSpace.GetBoundingVolume();
 		level_bbox2D.min.set(level_bbox.min.x, level_bbox.min.z);
 		level_bbox2D.max.set(level_bbox.max.x, level_bbox.max.z);
 
@@ -1808,7 +1851,8 @@ void LevelInspector::DrawLevelGraph()
 
 	if (!quadtree_built)
 	{
-		static auto build_quadtree = [](auto& self, u32 start, u32 end, const Fbox2& node_bbox, int depth) -> QuadTreeNode*
+		PROF_EVENT("build_quad_tree");
+		auto build_quadtree = [](auto& self, u32 start, u32 end, const Fbox2& node_bbox, int depth) -> QuadTreeNode*
 		{
 			u32 node_count = end - start;
 			if (node_count <= leafs_granularity || depth >= 12)
@@ -2034,14 +2078,13 @@ void LevelInspector::DrawLevelGraph()
 
 		constexpr u32 TRIS_PER_QUAD = 2u;
 		constexpr u32 MAX_TRIS_PER_BATCH = 58'000u;
-		constexpr u32 MAX_QUADS_PER_BATCH = MAX_TRIS_PER_BATCH / TRIS_PER_QUAD; // 29'000
+		constexpr u32 MAX_QUADS_PER_BATCH = MAX_TRIS_PER_BATCH / TRIS_PER_QUAD;
 		constexpr u32 VERTS_PER_BATCH = MAX_TRIS_PER_BATCH * 3u;
 
 		xr_vector<CachedNode*>& nodes = vertex_buffer[render_idx];
 		u32 total_quads = (u32)nodes.size();
 		u32 total_tris = total_quads * TRIS_PER_QUAD;
 
-		// Предвычисляем количество батчей
 		u32 num_batches = (total_tris + MAX_TRIS_PER_BATCH - 1) / MAX_TRIS_PER_BATCH;
 
 		for (u32 batch_idx = 0u; batch_idx < num_batches; ++batch_idx)
@@ -2050,9 +2093,8 @@ void LevelInspector::DrawLevelGraph()
 			u32 quads_in_batch = std::min(MAX_QUADS_PER_BATCH, total_quads - start_quad);
 			u32 tris_in_batch = quads_in_batch * TRIS_PER_QUAD;
 
-			// Точно вычисляем необходимое количество вершин
 			IUIRender::LITFast** buffer = UIRender->StartPrimitiveLITFast(tris_in_batch * 3u, IUIRender::ptTriList);
-			// Обрабатываем целый батч квадов
+
 			u32 end_quad = start_quad + quads_in_batch;
 			for (u32 q = start_quad; q < end_quad; ++q)
 			{
@@ -2306,99 +2348,83 @@ void LevelInspector::DrawObjectInfo(CGameObject* GO, const Fvector& pos, Fvector
 	//Fvector C;
 	//GO->Center(C);
 	//C.y += GO->Radius();
-
+	bool text3d = false;
 	
 	if (m_selection_text_flags.test(EOBJECT_INFO::EOI_SNAME))
-	{
-		if (xy.x > 0.f && xy.y > 0.f)
-		{
-			xy.y += 20.f;
-			append_text2d(xy.x, xy.y, GO->cNameSect(), color_green, CGameFont::alLeft);
-		}
-		else
-			xy = append_text3d(pos, GO->cNameSect(), color_green, CGameFont::alLeft);
-	}
+		text3d = append_text3d(pos, GO->cNameSect(), color_green, CGameFont::alLeft);
+
 	if (m_selection_text_flags.test(EOBJECT_INFO::EOI_LNAME))
 	{
-		if (xy.x > 0.f && xy.y > 0.f)
-		{
-			xy.y += 20.f;
-			append_text2d(xy.x, xy.y, GO->Name(), color_green, CGameFont::alLeft);
-		}
-		else
-			xy = append_text3d(pos, GO->Name(), color_green, CGameFont::alLeft);
+		if (text3d)
+			append_text_next(GO->Name());
+        else
+			text3d = append_text3d(pos, GO->Name(), color_green, CGameFont::alLeft);
 	}
+
 	if (m_selection_text_flags.test(EOBJECT_INFO::EOI_LCNAME))
 	{
 		string16 temp; CLSID2TEXT(GO->CLS_ID, temp);
-		if (xy.x > 0.f && xy.y > 0.f)
-		{
-			xy.y += 20.f;
-			append_text2d(xy.x, xy.y, shared_str().printf("%s[%d]", temp, GO->CLS_ID), color_green, CGameFont::alLeft);
-		}
-		else
-			xy = append_text3d(pos, shared_str().printf("%s[%d]", temp, GO->CLS_ID), color_green, CGameFont::alLeft);
+        if (text3d)
+			append_text_next(shared_str().printf("%s[%d]", temp, GO->CLS_ID));
+        else
+			text3d = append_text3d(pos, shared_str().printf("%s[%d]", temp, GO->CLS_ID), color_green, CGameFont::alLeft);
 
-		if (xy.x > 0.f && xy.y > 0.f)
-		{
-			xy.y += 20.f;
-			append_text2d(xy.x, xy.y, typeid(*GO).name(), color_green, CGameFont::alLeft);
-		}
+		if (text3d)
+			append_text_next(typeid(*GO).name());
 		else
-			xy = append_text3d(pos, typeid(*GO).name(), color_green, CGameFont::alLeft);
+			text3d = append_text3d(pos, typeid(*GO).name(), color_green, CGameFont::alLeft);
 	}
 	if (m_selection_text_flags.test(EOBJECT_INFO::EOI_VNAME) && GO->cNameVisual())
 	{
-		if (xy.x > 0.f && xy.y > 0.f)
-		{
-			xy.y += 20.f;
-			append_text2d(xy.x, xy.y, GO->cNameVisual(), color_green, CGameFont::alLeft);
-		}
+		if (text3d)
+			append_text_next(GO->cNameVisual());
 		else
-			xy = append_text3d(pos, GO->cNameVisual(), color_green, CGameFont::alLeft);
+            text3d = append_text3d(pos, GO->cNameVisual(), color_green, CGameFont::alLeft);
 	}
 	if (m_selection_text_flags.test(EOBJECT_INFO::EOI_POSITION))
 	{
-		if (xy.x > 0.f && xy.y > 0.f)
-		{
-			xy.y += 20.f;
-			append_text2d(xy.x, xy.y, shared_str().printf("pos[%3.3f, %3.3f, %3.3f]", VPUSH(GO->Position())), color_green, CGameFont::alLeft);
-		}
+		if (text3d)
+			append_text_next(shared_str().printf("pos[%3.3f, %3.3f, %3.3f]", VPUSH(GO->Position())));
 		else
-			xy = append_text3d(pos, shared_str().printf("pos[%3.3f, %3.3f, %3.3f]", VPUSH(GO->Position())), color_green, CGameFont::alLeft);
+            text3d = append_text3d(pos, shared_str().printf("pos[%3.3f, %3.3f, %3.3f]", VPUSH(GO->Position())), color_green, CGameFont::alLeft);
 	}
 	if (m_selection_text_flags.test(EOBJECT_INFO::EOI_GVERTEX_LVERTEX))
 	{
-		if (xy.x > 0.f && xy.y > 0.f)
-		{
-			xy.y += 20.f;
-			append_text2d(xy.x, xy.y, shared_str().printf("gvid[%d] lvid[%d]", GO->ai_location().game_vertex_id(), GO->ai_location().level_vertex_id()), color_green, CGameFont::alLeft);
-		}
+		if (text3d)
+			append_text_next(shared_str().printf("gvid[%d] lvid[%d]", GO->ai_location().game_vertex_id(), GO->ai_location().level_vertex_id()));
 		else
-			xy = append_text3d(pos, shared_str().printf("gvid[%d] lvid[%d]", GO->ai_location().game_vertex_id(), GO->ai_location().level_vertex_id()), color_green, CGameFont::alLeft);
+			append_text3d(pos, shared_str().printf("gvid[%d] lvid[%d]", GO->ai_location().game_vertex_id(), GO->ai_location().level_vertex_id()), color_green, CGameFont::alLeft);
 	}
+
 	if (m_selection_text_flags.test(EOBJECT_INFO::EOI_INI))
 	{
+		//color_red
+		dbg_font->SetColor(color_red);
+
 		if (CInifile* ini = GO->spawn_ini())
 		{
 			for (CInifile::Sect* sect : ini->sections())
 			{
-				if (xy.x > 0.f && xy.y > 0.f)
-				{
-					xy.y += 20.f;
-					append_text2d(xy.x, xy.y, shared_str().printf("[%s]", *sect->Name), color_red, CGameFont::alLeft);
-				}
+				if (text3d)
+					append_text_next(shared_str().printf("[%s]", *sect->Name));
 				else
-					xy = append_text3d(pos, shared_str().printf("[%s]", *sect->Name), color_red, CGameFont::alLeft);
+					text3d = append_text3d(pos, shared_str().printf("[%s]", *sect->Name), color_red, CGameFont::alLeft);
+
 				for (CInifile::Item& line : sect->Data)
 				{
-					if (xy.x > 0.f && xy.y > 0.f)
+					if (line.second)
 					{
-						xy.y += 20.f;
-						if (line.second)
-							append_text2d(xy.x, xy.y, shared_str().printf("%s = %s", *line.first, *line.second), color_red, CGameFont::alLeft);
+						if (text3d)
+							append_text_next(shared_str().printf("%s = %s", *line.first, *line.second));
 						else
-							append_text2d(xy.x, xy.y, line.first, color_red, CGameFont::alLeft);
+							text3d = append_text3d(pos, shared_str().printf("%s = %s", *line.first, *line.second), color_red, CGameFont::alLeft);
+					}
+					else
+					{
+						if (text3d)
+							append_text_next(line.first);
+						else
+							text3d = append_text3d(pos, line.first, color_red, CGameFont::alLeft);
 					}
 				}
 			}
@@ -2412,13 +2438,10 @@ void LevelInspector::DrawObjectInfo(CGameObject* GO, const Fvector& pos, Fvector
 				auto it = graph.header().levels().find(graph.vertex(vertex)->level_id());
 				if (it != graph.header().levels().end())
 				{
-					if (xy.x > 0.f && xy.y > 0.f)
-					{
-						xy.y += 20.f;
-						append_text2d(xy.x, xy.y, shared_str().printf("next_level: %s", it->second.name().c_str()), color_red, CGameFont::alLeft);
-					}
+					if (text3d)
+						append_text_next(shared_str().printf("next_level: %s", it->second.name().c_str()));
 					else
-						xy = append_text3d(pos, shared_str().printf("next_level: %s", it->second.name().c_str()), color_red, CGameFont::alLeft);
+						text3d = append_text3d(pos, shared_str().printf("next_level: %s", it->second.name().c_str()), color_red, CGameFont::alLeft);
 				}
 			}
 		}
@@ -2428,14 +2451,10 @@ void LevelInspector::DrawObjectInfo(CGameObject* GO, const Fvector& pos, Fvector
 			RestrictionSpace::ERestrictorTypes restr_type = RestrictionSpace::ERestrictorTypes(restrictor->m_space_restrictor_type);
 			if(restr_type!=RestrictionSpace::ERestrictorTypes::eRestrictorTypeNone)
 			{
-				auto restr_type_name = magic_enum::enum_name(restr_type);
-				if (xy.x > 0.f && xy.y > 0.f)
-				{
-					xy.y += 20.f;
-					append_text2d(xy.x, xy.y, restr_type_name.data(), color_red, CGameFont::alLeft);
-				}
+				if (text3d)
+					append_text_next(magic_enum::enum_name(restr_type).data());
 				else
-					xy = append_text3d(pos, restr_type_name.data(), color_red, CGameFont::alLeft);
+					text3d = append_text3d(pos, magic_enum::enum_name(restr_type).data(), color_red, CGameFont::alLeft);
 			}
 		}
 
@@ -2443,43 +2462,30 @@ void LevelInspector::DrawObjectInfo(CGameObject* GO, const Fvector& pos, Fvector
 		{
 			if (cover_object->cover().is_combat_cover())
 			{
-				if (xy.x > 0.f && xy.y > 0.f)
-				{
-					xy.y += 20.f;
-					append_text2d(xy.x, xy.y, "is_combat_cover", color_red, CGameFont::alLeft);
-				}
+				if (text3d)
+					append_text_next(shared_str("is_combat_cover"));
 				else
-					xy = append_text3d(pos, "is_combat_cover", color_red, CGameFont::alLeft);
+					text3d = append_text3d(pos, shared_str("is_combat_cover"), color_red, CGameFont::alLeft);
 			}
 
 			if (cover_object->cover().can_fire())
 			{
-				if (xy.x > 0.f && xy.y > 0.f)
-				{
-					xy.y += 20.f;
-					append_text2d(xy.x, xy.y, "can_fire", color_red, CGameFont::alLeft);
-				}
+				if (text3d)
+					append_text_next(shared_str("can_fire"));
 				else
-					xy = append_text3d(pos, "can_fire", color_red, CGameFont::alLeft);
+					text3d = append_text3d(pos, shared_str("can_fire"), color_red, CGameFont::alLeft);
 			}
-
-			if (xy.x > 0.f && xy.y > 0.f)
-			{
-				xy.y += 20.f;
-				append_text2d(xy.x, xy.y, cover_object->cover().description()->table_id(), color_red, CGameFont::alLeft);
-			}
+			if (text3d)
+				append_text_next(cover_object->cover().description()->table_id());
 			else
-				xy = append_text3d(pos, cover_object->cover().description()->table_id(), color_red, CGameFont::alLeft);
+				text3d = append_text3d(pos, cover_object->cover().description()->table_id(), color_red, CGameFont::alLeft);
 
 			for (smart_cover::loophole* lophole : cover_object->cover().loopholes())
 			{
-				if (xy.x > 0.f && xy.y > 0.f)
-				{
-					xy.y += 20.f;
-					append_text2d(xy.x, xy.y, lophole->id(), color_red, CGameFont::alLeft);
-				}
+				if (text3d)
+					append_text_next(lophole->id());
 				else
-					xy = append_text3d(pos, lophole->id(), color_red, CGameFont::alLeft);
+					text3d = append_text3d(pos, lophole->id(), color_red, CGameFont::alLeft);
 			}
 		}
 	}
@@ -2850,7 +2856,7 @@ void LevelInspector::DrawObjects()
 					Fsphere sphere = shape.data.sphere;
 					GO->XFORM().transform_tiny(sphere.P);
 					append_sphere(sphere, line_color, tritmp_color);
-					if (visible_currents)
+					if (visible_currents && m_selection_flags.test(ESELECTION_FLAGS::ESLF_Z))
 					{
 						Fvector C = sphere.P;
 						C.y += sphere.R;
@@ -2864,7 +2870,7 @@ void LevelInspector::DrawObjects()
 					Fobb obb; obb.xform_set(matrix);
 					obb.m_halfsize.set(0.5f, 0.5f, 0.5f);
 					append_obb(obb, line_color, tritmp_color);
-					if (visible_currents)
+					if (visible_currents && m_selection_flags.test(ESELECTION_FLAGS::ESLF_Z))
 					{
 						Fvector C = obb.m_translate;
 						C.y += obb.m_rotate.j.magnitude() * 0.5f;
@@ -2895,7 +2901,7 @@ void LevelInspector::DrawObjects()
 				}
 			}
 
-			if (visible_currents)
+			if (visible_currents && m_selection_flags.test(ESELECTION_FLAGS::ESLF_O))
 			{
 				Fvector C;
 				GO->Center(C);
