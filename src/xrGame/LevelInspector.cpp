@@ -1512,7 +1512,7 @@ void LevelInspector::DrawGameGraph()
 		static u32 main_thread_id = GetCurrentThreadId();
 		xr_parallel_for(u16(0), v_cnt, [&](u16 global_vid)
 		{
-			OPTICK_START_THREAD("build_graph_nodes");
+			PROF_START_THREAD("build_graph_nodes");
 			PROF_EVENT("build_graph_points_and_links");
 			const IGameGraph::CVertex* global_vertex = graph.vertex(global_vid);
 
@@ -1591,7 +1591,7 @@ void LevelInspector::DrawGameGraph()
 					link.spatial_r += bbox.getradius();
 				}
 			}
-			OPTICK_STOP_THREAD();
+			PROF_STOP_THREAD();
 		});
 	}
 	float RENDER_DISTANCE = visible_currents ? 50000.f : g_pGamePersistent->pEnvironment->CurrentEnv->fog_distance;
