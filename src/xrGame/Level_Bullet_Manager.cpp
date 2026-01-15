@@ -32,9 +32,11 @@ float const CBulletManager::parent_ignore_distance	= 3.f;
 #else // #ifdef DEBUG
 	static float const air_resistance_epsilon		= .1f;
 #endif // #ifdef DEBUG
+
 float g_bullet_time_factor							= 1.f;
-BOOL g_bullet_debug_trj = FALSE;
-BOOL g_bullets_stop = FALSE;
+bool  g_bullet_debug_trj							= false;
+bool  g_bullets_stop								= false;
+
 SBullet::SBullet()
 {
 }
