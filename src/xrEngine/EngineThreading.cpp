@@ -11,7 +11,7 @@
 void XRay::Engine::PreRenderThread()
 {
 	Platform::SetThreadName("X-Ray Pre-Render");
-	OPTICK_START_THREAD("X-Ray Pre-Render");
+	PROF_START_THREAD("X-Ray Pre-Render");
 	{
 		PROF_EVENT("Discord Sync");
 		g_Discord.Update();
@@ -30,14 +30,14 @@ void XRay::Engine::PreRenderThread()
 
 		g_pGamePersistent->UpdateParticles();
 	}
-	OPTICK_STOP_THREAD();
+	PROF_STOP_THREAD();
 	Platform::SetThreadName("X-Ray Empty Task");
 }
 
 void XRay::Engine::GameThread()
 {
 	Platform::SetThreadName("X-Ray Game Thread");
-	OPTICK_START_THREAD("X-Ray Game Thread");
+	PROF_START_THREAD("X-Ray Game Thread");
 	// we has granted permission to execute
 	{
 		PROF_EVENT("g_hud OnFrameMT");
@@ -68,6 +68,6 @@ void XRay::Engine::GameThread()
 		PROF_EVENT("seqFrameMT");
 		Device.seqFrameMT.Process(rp_Frame);
 	}
-	OPTICK_STOP_THREAD();
+	PROF_STOP_THREAD();
 	Platform::SetThreadName("X-Ray Empty Task");
 }
