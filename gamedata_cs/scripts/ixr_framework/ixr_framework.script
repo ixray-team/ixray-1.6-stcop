@@ -58,7 +58,11 @@ Description: Initializes the module and sets up necessary configurations.
 Return: (bool) - Returns true if the module was successfully initialized.
 ]]
 function init()
-	ixr_framework.init()
+	if editor() then
+		return false
+	end
+	
+	return ixr_framework.init()
 end
 
 --[[
@@ -131,6 +135,11 @@ function ixr_framework.init(log_reinit)
 	counter = counter + 1
 	if log_reinit == nil then
 		log_reinit = true
+	end
+	
+	if editor() then
+		ixr_framework.toLog("USED EDITOR MODE SKIP INIT", true)
+		return
 	end
 	
 	if ixr_framework.dynamic_vars.is_init_processing then
