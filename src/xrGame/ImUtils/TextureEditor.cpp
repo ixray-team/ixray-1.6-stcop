@@ -33,62 +33,6 @@ constexpr ImVec2 kTextureEditor_PreviewSizeHigh = ImVec2(512.0f, 512.0f);
 constexpr ImVec2 kTextureEditor_PreviewSizeMid = ImVec2(256.0f, 256.0f);
 constexpr ImVec2 kTextureEditor_PreviewSizeLow = ImVec2(64.0f, 64.0f);
 
-ICF void check_and_add_entry(const xr_string* thm_path, CImGuiTextureEditor::STextureEntry& entry)
-{
-	if (thm_path && FS.exist(thm_path->c_str()))
-	{
-		entry.analyze_status_result_flags |= CImGuiTextureEditor::eAnalyzedStatus::kHasTHM;
-
-		STextureParams temp_param;
-		IReader* pReader = FS.r_open(thm_path->c_str());
-
-		if (pReader)
-		{
-			bool thm_invalid = temp_param.Load(*pReader);
-			if (thm_invalid)
-			{
-				entry.analyze_status_result_flags |= CImGuiTextureEditor::eAnalyzedStatus::kTHMIsNotValid;
-			}
-			pReader->close();
-		}
-		else
-		{
-			entry.analyze_status_result_flags |= CImGuiTextureEditor::eAnalyzedStatus::kTHMIsNotValid;
-		}
-	}
-	else
-	{
-		std::string_view path_view = entry.path;
-
-		if (path_view.find("bump#") != std::string_view::npos)
-		{
-			entry.analyze_status_result_flags |= CImGuiTextureEditor::eAnalyzedStatus::kIgnoreTHM;
-		}
-	}
-
-	std::string_view path_view = entry.path;
-	if (path_view.find(".dds") != std::string_view::npos)
-	{
-		RHITextureMetadata mt;
-		bool metadata_obtained = Render->get_texture_metadata(entry.path, &mt);
-
-		if (metadata_obtained)
-		{
-			if (!(mt.width % 2 == 0 && mt.height % 2 == 0))
-			{
-				entry.analyze_status_result_flags |= CImGuiTextureEditor::eAnalyzedStatus::kDimensionsNotPowerOf2;
-			}
-
-			if (mt.mipmap_count == 1)
-			{
-				entry.analyze_status_result_flags |= CImGuiTextureEditor::eAnalyzedStatus::kNoMipMaps;
-			}
-		}
-	}
-
-	g_imgui_texture_editor.textures.push_back(std::move(entry));
-}
-
 void RequestHandler_TextureEditor(const SRequestData& req)
 {
 	if (!xr_FS)
@@ -221,38 +165,6 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 
 					if (is_dds)
 					{
-						const xr_string* thm_ptr = nullptr;
-
-						size_t next_index = index + 1;
-						// find next .thm
-						if (next_index < files_vec.size())
-						{
-							const xr_string& next = files_vec[index + 1];
-							size_t next_len = next.length();
-
-							if (next_len >= 4 &&
-								next.compare(next_len - 4, 4, ".thm") == 0 &&
-								fn.compare(0, len - 4, next, 0, next_len - 4) == 0)
-							{
-								thm_ptr = &next;
-							}
-						}
-
-						//find next .thm after .seq
-						next_index = next_index + 1;
-						if (!thm_ptr && next_index < files_vec.size())
-						{
-							const xr_string& next = files_vec[next_index];
-							size_t next_len = next.length();
-
-							if (next_len >= 4 &&
-								next.compare(next_len - 4, 4, ".thm") == 0 &&
-								fn.compare(0, len - 4, next, 0, next_len - 4) == 0)
-							{
-								thm_ptr = &next;
-							}
-						}
-
 						CImGuiTextureEditor::STextureEntry entry;
 						entry.analyze_status_result_flags = 0;
 
@@ -285,7 +197,50 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 							++g_imgui_texture_editor.valid_count;
 						}
 
-						check_and_add_entry(thm_ptr, entry);
+						//try to load thm
+						*strext(entry.path) = 0;
+						xr_strcat(entry.path, ".thm");
+						if (FS.exist(entry.path))
+						{
+							entry.analyze_status_result_flags |= CImGuiTextureEditor::eAnalyzedStatus::kHasTHM;
+
+							STextureParams temp_param;
+							IReader* pReader = FS.r_open(entry.path);
+
+							if (pReader)
+							{
+								bool thm_invalid = temp_param.Load(*pReader);
+								if (thm_invalid)
+									entry.analyze_status_result_flags |= CImGuiTextureEditor::eAnalyzedStatus::kTHMIsNotValid;
+								pReader->close();
+							}
+							else
+								entry.analyze_status_result_flags |= CImGuiTextureEditor::eAnalyzedStatus::kTHMIsNotValid;
+						}
+						else
+						{
+							std::string_view path_view = entry.path;
+
+							if (path_view.find("bump#") != std::string_view::npos)
+								entry.analyze_status_result_flags |= CImGuiTextureEditor::eAnalyzedStatus::kIgnoreTHM;
+						}
+
+						//try to load dds
+						*strext(entry.path) = 0;
+						xr_strcat(entry.path, ".dds");
+						RHITextureMetadata mt;
+						bool metadata_obtained = Render->get_texture_metadata(entry.path, &mt);
+
+						if (metadata_obtained)
+						{
+							if (!(mt.width % 2 == 0 && mt.height % 2 == 0))
+								entry.analyze_status_result_flags |= CImGuiTextureEditor::eAnalyzedStatus::kDimensionsNotPowerOf2;
+
+							if (mt.mipmap_count == 1)
+								entry.analyze_status_result_flags |= CImGuiTextureEditor::eAnalyzedStatus::kNoMipMaps;
+						}
+
+						g_imgui_texture_editor.textures.push_back(std::move(entry));
 					}
 					else if (len >= 4 && fn.compare(len - 4, 4, ".thm") == 0)
 						++g_imgui_texture_editor.total_thm_in_folder;
