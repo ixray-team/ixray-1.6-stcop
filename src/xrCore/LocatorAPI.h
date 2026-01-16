@@ -156,6 +156,8 @@ public:
 	CReaderGuarded rg_open(LPCSTR N);
 
 	void						get_all_files_in_dir(xr_set<xr_string>& out, LPCSTR dir);
+	void						get_all_files_in_dir(xr_vector<LPCSTR>& out, LPCSTR dir);
+	void						get_all_files_in_dir(xr_vector<xr_string>& out, LPCSTR dir);
 
 	IWriter*					w_open				(LPCSTR initial, LPCSTR N);
 	IC IWriter*					w_open				(LPCSTR N){return w_open(nullptr,N);}
