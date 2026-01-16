@@ -15,7 +15,9 @@ function AddIntercept(name, args_map)
 	if ixr_framework and ixr_framework.is_module_loaded("ixr_signals") then
 		ixr_framework.get_module("ixr_signals").add_intercept(name, args_map)
 	else
-		SemiLog("! error ixr_signals not initialized:: [SKIP] AddIntercept: (" .. tostring(name) .. ",...)")
+		if not editor() then
+			SemiLog("! error ixr_signals not initialized:: [SKIP] AddIntercept: (" .. tostring(name) .. ",...)")
+		end
 	end
 end
 
@@ -24,7 +26,9 @@ function RemoveIntercept(name)
 	if ixr_framework and ixr_framework.is_module_loaded("ixr_signals") then
 		ixr_framework.get_module("ixr_signals").remove_intercept(name)
 	else
-		SemiLog("! error ixr_signals not initialized:: [SKIP] RemoveIntercept: (" .. tostring(name) .. ",...)")
+		if not editor() then 
+			SemiLog("! error ixr_signals not initialized:: [SKIP] RemoveIntercept: (" .. tostring(name) .. ",...)")
+		end
 	end
 end
 
@@ -40,7 +44,9 @@ function RegisterScriptCallback(name, func_or_userdata)
 		ixr_framework.get_module("ixr_signals").subscribe_to_event(name, func_or_userdata)
 		return
 	else
-		SemiLog("! error ixr_signals not initialized:: [SKIP] RegisterScriptCallback: (" .. tostring(name) .. ",...)")
+		if not editor() then
+			SemiLog("! error ixr_signals not initialized:: [SKIP] RegisterScriptCallback: (" .. tostring(name) .. ",...)")
+		end
 	end
 	
 	if (func_or_userdata == nil) then
@@ -75,7 +81,9 @@ function UnregisterScriptCallback(name, func_or_userdata)
 		ixr_framework.get_module("ixr_signals").un_subscribe_from_event(name, func_or_userdata)
 		return
 	else
-		SemiLog("! error ixr_signals not initialized:: [SKIP] UnregisterScriptCallback: (" .. tostring(name) .. ",...)")
+		if not editor() then
+			SemiLog("! error ixr_signals not initialized:: [SKIP] UnregisterScriptCallback: (" .. tostring(name) .. ",...)")
+		end
 	end
 	
 	if (intercepts[name]) then
@@ -96,7 +104,9 @@ function SendScriptCallback(name, ...)
 		ixr_framework.get_module("ixr_signals").send_event(name, ...)
 		return
 	else
-		SemiLog("! error ixr_signals not initialized:: [SKIP] SendScriptCallback: (" .. tostring(name) .. ",...)")
+		if not editor() then
+			SemiLog("! error ixr_signals not initialized:: [SKIP] SendScriptCallback: (" .. tostring(name) .. ",...)")
+		end
 	end
 
 	
