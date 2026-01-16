@@ -59,13 +59,13 @@ public:
 			return (xr_strcmp( x, y ) < 0);
 		}
 	};
-	typedef  xr_map<LPCSTR,IConsole_Command*,str_pred>	vecCMD;
-	typedef  vecCMD::iterator							vecCMD_IT;
-	typedef  vecCMD::const_iterator						vecCMD_CIT;
-	typedef  xr_delegate<void()>			Callback;
-	typedef  xr_vector<shared_str>						vecHistory;
-	typedef  xr_vector<shared_str>						vecTips;
-	typedef  xr_vector<TipString>						vecTipsEx;
+	using mapCMD = xr_map<LPCSTR,IConsole_Command*,str_pred>;
+	using vecCMD_IT = mapCMD::iterator;
+	using vecCMD_CIT = mapCMD::const_iterator;
+	using Callback = xr_delegate<void()>;
+	using vecHistory = xr_vector<shared_str>;
+	using vecTips = xr_vector<shared_str>;
+	using vecTipsEx = xr_vector<TipString>;
 
 	enum			{ CONSOLE_BUF_SIZE = 1024 };
 	enum			{ VIEW_TIPS_COUNT = 14, MAX_TIPS_COUNT = 220 };
@@ -98,6 +98,7 @@ private:
 	int				m_prompt_width;
 	int				m_cursor_width;
 	float			m_line_height;
+	shared_str		m_config_name;
 
 	void			DrawUIConsole();
 	void			DrawUIConsoleVars();
@@ -117,7 +118,7 @@ public:
 	virtual void	OnScreenResolutionChanged();
 	string64		ConfigFile;
 	bool			bVisible;
-	vecCMD			Commands;
+	mapCMD			Commands;
 
 	void			AddCommand			( IConsole_Command* cc );
 	void			RemoveCommand		( IConsole_Command* cc );
@@ -169,7 +170,6 @@ protected:
 	void	OutFont				( LPCSTR text, float& pos_y );
 	void	Register_callbacks	();
 	
-protected:
 	void  Prev_log	();
 	void  Next_log	();
 	void  Begin_log	();
@@ -194,7 +194,6 @@ protected:
 
 	void  GamePause	();
 
-protected:
 	void	add_cmd_history		( shared_str const& str );
 	void	next_cmd_history_idx();
 	void	prev_cmd_history_idx();

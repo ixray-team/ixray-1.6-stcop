@@ -4,6 +4,7 @@
 #include "stdafx.h"
 
 #include <charconv>
+#include <ranges>
 
 #include "line_editor.h"
 
@@ -124,6 +125,8 @@ void CConsole::Initialize()
 	m_tips_mode		= 0;
 	m_prev_length_str = 0;
 	m_cur_cmd		= nullptr;
+	m_config_name   = "last_cmds.ltx";
+	
 	reset_selected_tip();
 
 	// Commands
@@ -136,6 +139,21 @@ void CConsole::Initialize()
 	{
 		CImGuiManager::Instance().Subscribe("DebugConsole", CImGuiManager::ERenderPriority::eMedium, std::bind(&CConsole::DrawUIConsole, this));
 		CImGuiManager::Instance().Subscribe("DebugConsoleVars", CImGuiManager::ERenderPriority::eMedium, std::bind(&CConsole::DrawUIConsoleVars, this));
+	}
+
+	string_path path;
+	FS.update_path(path, "$app_data_root$", m_config_name.c_str());
+	
+	if (IReader* reader = FS.r_open(path))
+	{
+		string1024 line;
+
+		while (!reader->eof())
+		{
+			reader->r_string(line, sizeof(line));
+			m_cmd_history.emplace_back(line);
+		}
+		FS.r_close(reader);
 	}
 }
 
@@ -156,6 +174,40 @@ CConsole::~CConsole()
 
 void CConsole::Destroy()
 {
+	if (m_cmd_history.empty())
+		return;
+
+	string_path path;
+	FS.update_path(path, "$app_data_root$", m_config_name.c_str());
+
+	IWriter* writer = FS.w_open(path);
+	
+	xr_set<shared_str> filter;
+	constexpr size_t HISTORY_SIZE = 15;
+
+	size_t read_from = m_cmd_history.size() > HISTORY_SIZE ? m_cmd_history.size() - HISTORY_SIZE  : 0;
+	size_t read_to   = m_cmd_history.size();
+		
+	for (size_t i = read_from; i < read_to; ++i)
+	{
+		if (shared_str& line = m_cmd_history[i]; !filter.contains(line))
+		{
+			filter.insert(line);
+			
+			string1024 buffer;
+			_GetItem(line.c_str(), 0, buffer, ' ');
+			
+			if (strcmp(buffer, "quit") == 0)
+				continue; 
+			
+			if (buffer[0] != '\0')
+				if (Commands.contains(buffer))
+					writer->w_string(line.c_str());
+		}
+	}
+	
+	FS.w_close(writer);
+	m_cmd_history.clear();
 	Commands.clear();
 }
 
