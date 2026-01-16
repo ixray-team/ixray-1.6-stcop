@@ -62,7 +62,7 @@ function CALifeStorageManager_before_save(fname)
 	
 	m_data.GAME_VERSION = GAME_VERSION
 	
-	SendScriptCallback("save_state",m_data)
+	SendScriptCallback("save_state", m_data)
 	
 	--printf("CALifeStorageManager_before_save AFTER callback")
 	
@@ -171,7 +171,7 @@ function CALifeStorageManager_load(fname)
 	-- For debugging save state
 	--alun_utils.print_table(m_data,"m_data_on_load ("..path..")")
 
-	SendScriptCallback("load_state",m_data)
+	SendScriptCallback("load_state", m_data)
 	
 	if ffx_path_utils then
 		fname = ffx_path_utils.get_file_name(fname, false)
