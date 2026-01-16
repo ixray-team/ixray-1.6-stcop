@@ -100,6 +100,10 @@ Description: Initializes the module and sets up necessary configurations.
 Return: (bool) - Returns true if the module was successfully initialized.
 ]]
 function init()
+	if editor() then
+		return false
+	end
+	
 	return ixr_autoloader.init()
 end
 

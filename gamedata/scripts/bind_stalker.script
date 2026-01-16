@@ -563,68 +563,74 @@ function actor_binder:update(delta)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:save(packet)
-	set_save_marker(packet, "save", false, "actor_binder")
-	object_binder.save(self, packet)
-	
 	if (utils.level_changing()) then
 		SendScriptCallback("on_level_changing")
 		SendScriptCallback("actor_on_level_changing")
 	end
-	
-	-- Сохраняем уровень сложности
-	bind_stalker_marshal.game_difficulty(self, true)
-	
-	-- Сохраняем данные об отключенном вводе
-	bind_stalker_marshal.disable_input_time(self, true)
 
-	-- Сохраняем PSTOR 
+	set_save_marker(packet, "save", false, "actor_binder")
+	object_binder.save(self, packet)
+	--' Сохраняем уровень сложности
+	packet:w_u8(level.get_game_difficulty())
+	--' Сохраняем данные об отключенном вводе
+	if self.st.disable_input_time == nil then
+		packet:w_bool(false)
+	else
+		packet:w_bool(true)
+		utils.w_CTime(packet, self.st.disable_input_time)
+	end
 	xr_logic.pstor_save_all(self.object, packet)
-	
-	-- Сохраняем погоду
 	self.weather_manager:save(packet)
-	
-	-- Сохраняем менеджер уборщика трупов
 	release_body_manager.get_release_body_manager():save(packet)
-	
-	-- Сохраняем менеджер выбросов
 	self.surge_manager:save(packet)
-	
-	-- Сохраняем пси антены
 	sr_psy_antenna.save( packet )
-	
-	-- Сохраняем симуляцию
-	bind_stalker_marshal.simboard(self, true)
+	packet:w_bool(sim_board.get_sim_board().simulation_started)
 
-	-- Сохраняем звуковые схемы
 	xr_sound.actor_save(packet)
-	
-	-- Сохраняем название уровня
-	bind_stalker_marshal.level_name(self, true)
-	
-	-- Сохраняем статистику
+	packet:w_stringZ(tostring(self.last_level_name))
 	xr_statistic.save(packet)
-	
-	-- Сохраняем менеджер тайников
 	treasure_manager.get_treasure_manager():save(packet)
 
-	-- Сохраняем скрипты
-	bind_stalker_marshal.script_ids(self, true)
-	
-	-- Сохраняем задания
+	local n = 0
+	for k,v in pairs(db.script_ids) do
+		n = n + 1
+	end
+	packet:w_u8(n)
+	for k,v in pairs (db.script_ids) do
+		packet:w_u16(k)
+		packet:w_stringZ(v)
+	end
 	task_manager.get_task_manager():save(packet)
 
-	-- Сохраняем активный слот
-	bind_stalker_marshal.active_slot(self, true)
-
-	-- Сохраняем демиос
-	bind_stalker_marshal.deimos(self, true)
-
-	-- Сохраняем ачивку детектива
-	bind_stalker_marshal.detective_achivement(self, true)
+--	packet:w_bool(self.actor_weapon_on_start)
 	
-	-- Сохраняем ачивку охотника
-	bind_stalker_marshal.hunter_achivement(self, true)
-	
+	packet:w_u8(self.object:active_slot())
+
+
+	local deimos_exist = false
+	for k,v in pairs(db.zone_by_name) do
+		if(db.storage[v:id()] and db.storage[v:id()].active_scheme=="sr_deimos") then
+			deimos_exist = true
+			packet:w_bool(true)
+			packet:w_float(db.storage[v:id()].sr_deimos.intensity)
+		end
+	end
+	if not deimos_exist then
+		packet:w_bool(false)
+	end
+
+	if self.last_detective_achievement_spawn_time == nil then
+		packet:w_bool(false)
+	else
+		packet:w_bool(true)
+		utils.w_CTime(packet, self.last_detective_achievement_spawn_time)
+	end
+	if self.last_mutant_hunter_achievement_spawn_time == nil then
+		packet:w_bool(false)
+	else
+		packet:w_bool(true)
+		utils.w_CTime(packet, self.last_mutant_hunter_achievement_spawn_time)
+	end
 	set_save_marker(packet, "save", true, "actor_binder")
 	
 	SendScriptCallback("save", packet) -- IX-Ray
@@ -637,62 +643,56 @@ end
 function actor_binder:load(reader)
 	set_save_marker(reader, "load", false, "actor_binder")
 	object_binder.load(self, reader)
-	
 	--' Загружаем уровень сложности
-	bind_stalker_marshal.game_difficulty(self, false)
-	
-	--' Загружаем данные об отключенном вводе
-	bind_stalker_marshal.disable_input_time(self, false)
-	
-	-- Загружаем PSTOR 
+	local game_difficulty = reader:r_u8()
+	printf("load game_difficulty %s", tostring(game_difficulty))
+	get_console():execute("g_game_difficulty "..game_difficulty_by_num[game_difficulty])
+	local stored_input_time = reader:r_u8()
+	if stored_input_time == true then
+		self.st.disable_input_time = utils.r_CTime(reader)
+	end
 	xr_logic.pstor_load_all(self.object, reader)
-	
-	-- Загружаем погоду
 	self.weather_manager:load(reader)
-	
-	-- Загружаем менеджер уборщика трупов
 	release_body_manager.get_release_body_manager():load(reader)
-	
-	-- Загружаем менеджер выбросов
+--	self.surge_manager:initialize()
 	self.surge_manager:load(reader)
 	self.f_surge_manager_loaded = true
-	
-	-- Загружаем пси антены
 	sr_psy_antenna.load(reader)
-	
-	-- Загружаем симуляцию
-	bind_stalker_marshal.simboard(self, false)
+	sim_board.get_sim_board().simulation_started = reader:r_bool()
 
-	-- Загружаем звуковые схемы
 	xr_sound.actor_load(reader)
-	
-	-- Загружаем название уровня
-	bind_stalker_marshal.level_name(self, false)
-	
-	-- Загружаем статистику
+	local n = reader:r_stringZ()
+	if(n~="nil") then
+		self.last_level_name = n
+	end
 	xr_statistic.load(reader)
-	
-	-- Загружаем менеджер тайников
 	treasure_manager.get_treasure_manager():load(reader)
-	
-	-- Загружаем скрипты
-	bind_stalker_marshal.script_ids(self, false)
+	n = reader:r_u8()
+	for i = 1,n do
+		db.script_ids[reader:r_u16()] = reader:r_stringZ()
+	end
 
-	-- Загружаем задания
 	task_manager.get_task_manager():load(reader)
 
-	-- Загружаем активный слот
-	bind_stalker_marshal.active_slot(self, false)
-
-	-- Загружаем демиос
-	bind_stalker_marshal.deimos(self, false)
-
-	-- Загружаем ачивку детектива
-	bind_stalker_marshal.detective_achivement(self, false)
+--	self.actor_weapon_on_start = reader:r_bool()
 	
-	-- Загружаем ачивку охотника
-	bind_stalker_marshal.hunter_achivement(self, false)
+	self.loaded_active_slot = reader:r_u8()
 	
+	self.loaded_slot_applied = false
+
+	local b = reader:r_bool()
+	if(b) then
+		self.deimos_intensity = reader:r_float()
+	end
+
+	local stored_achievement_time = reader:r_bool()
+	if stored_achievement_time == true then
+		self.last_detective_achievement_spawn_time = utils.r_CTime(reader)
+	end
+	stored_achievement_time = reader:r_bool()
+	if stored_achievement_time == true then
+		self.last_mutant_hunter_achievement_spawn_time = utils.r_CTime(reader)
+	end
 	set_save_marker(reader, "load", true, "actor_binder")
 
 	SendScriptCallback("load", reader) -- IX-Ray
