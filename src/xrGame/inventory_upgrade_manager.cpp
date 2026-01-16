@@ -373,7 +373,7 @@ LPCSTR Manager::get_upgrade_by_index(CInventoryItem& item, Ivector2 const& index
 		}
 	}
 
-	VERIFY2(upgrade, make_string<const char*>("! Upgrade with index <%d,%d> in inventory item [%s] does not exist!", index.x, index.y, item.m_section_id.c_str()));
+	R_ASSERT2(upgrade, make_string<const char*>("! Upgrade with index <%d,%d> in inventory item [%s] does not exist!", index.x, index.y, item.m_section_id.c_str()));
 	return nullptr;
 }
 
