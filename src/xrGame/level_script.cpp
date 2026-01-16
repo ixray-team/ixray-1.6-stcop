@@ -58,6 +58,10 @@
 
 #include "ElectronicsProblemsManager.h"
 
+#include "../xrEngine/xr_ioc_cmd.h"
+#include "../xrScripts/script_engine.h"
+#include "../xrScripts/script_process.h"
+
 using namespace luabind;
 
 void show_legs(bool val)
@@ -1532,6 +1536,57 @@ LPCSTR GetActorMaterialPairName()
 	}
 }
 
+class CCC_ScriptCommand : public IConsole_Command {
+public:
+	xr_vector<shared_str> m_fill_tips;
+	luabind::functor<void> functor;
+	CCC_ScriptCommand(LPCSTR N, luabind::functor<void> &funct, LPCSTR m_tips_string) : IConsole_Command(N)
+	{
+		bEmptyArgsHandled = true; 
+		functor = funct;
+
+		for (int i = 0, n = _GetItemCount(m_tips_string); i < n; ++i)
+		{
+			string128 tmp;
+			m_fill_tips.push_back(_GetItem(m_tips_string, i, tmp));
+		}
+
+	};
+
+	virtual void Execute(LPCSTR args)
+	{
+		functor(args);
+	}
+
+	virtual void fill_tips(vecTips& tips, u32 mode)
+	{
+		tips = m_fill_tips;
+		IConsole_Command::fill_tips(tips, mode);
+	}
+};
+
+
+void registerLuaCommand(LPCSTR command_name, luabind::functor<void> functor, LPCSTR m_tips_string)
+{
+	auto it = Console->Commands.find(command_name);
+
+	if (it != Console->Commands.end())
+	{
+		if (CCC_ScriptCommand* new_cmd = smart_cast<CCC_ScriptCommand*>(it->second))
+		{
+			delete new_cmd;
+			Console->Commands.erase(command_name);
+		}
+	}
+
+	if (it == Console->Commands.end())
+	{
+		CCC_ScriptCommand* new_cmd = new CCC_ScriptCommand(command_name, functor, m_tips_string);
+		Console->Commands[command_name] = new_cmd;
+	}
+}
+
+
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {
@@ -1552,6 +1607,7 @@ void CLevel::script_register(lua_State *L)
 		def("check_object",						check_object),
 #endif
 		def("set_time_factor_single", set_time_factor_single), // FNAS
+		def("register_lua_command",				registerLuaCommand),
 		def("get_weather",						get_weather),
 		def("set_weather",						set_weather),
 		def("set_weather_fx",					set_weather_fx),
