@@ -1362,6 +1362,32 @@ void CLocatorAPI::get_all_files_in_dir(xr_set<xr_string>& out, LPCSTR dir)
 	}
 }
 
+void CLocatorAPI::get_all_files_in_dir(xr_vector<LPCSTR>& out, LPCSTR dir)
+{
+	out.clear();
+	out.reserve(m_files.size());
+	for (auto& elem : m_files)
+	{
+		if (xr_strlen(elem.name) > xr_strlen(dir) && std::isalpha(elem.name[xr_strlen(elem.name) - 1]) && !xr_strncmp(elem.name, dir, xr_strlen(dir) - 1))
+		{
+			out.push_back(elem.name);
+		}
+	}
+}
+
+void CLocatorAPI::get_all_files_in_dir(xr_vector<xr_string>& out, LPCSTR dir)
+{
+	out.clear();
+	out.reserve(m_files.size());
+	for (auto& elem : m_files)
+	{
+		if (xr_strlen(elem.name) > xr_strlen(dir) && std::isalpha(elem.name[xr_strlen(elem.name) - 1]) && !xr_strncmp(elem.name, dir, xr_strlen(dir) - 1))
+		{
+			out.push_back(elem.name);
+		}
+	}
+}
+
 IWriter* CLocatorAPI::w_open	(LPCSTR path, LPCSTR _fname)
 {
 	string_path	fname;
