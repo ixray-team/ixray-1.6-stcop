@@ -182,7 +182,7 @@ void CConsole::Destroy()
 	IWriter* writer = FS.w_open(path);
 	
 	xr_set<shared_str> filter;
-	constexpr size_t HISTORY_SIZE = 5;
+	constexpr size_t HISTORY_SIZE = 15;
 
 	size_t read_from = m_cmd_history.size() > HISTORY_SIZE ? m_cmd_history.size() - HISTORY_SIZE  : 0;
 	size_t read_to   = m_cmd_history.size();
@@ -616,7 +616,6 @@ void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd, bool Silent)
 				if ( cc->bEmptyArgsHandled )
 				{
 					cc->Execute( last );
-					
 				}
 				else
 				{
