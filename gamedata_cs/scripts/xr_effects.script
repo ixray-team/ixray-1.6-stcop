@@ -1878,7 +1878,12 @@ function del_cs_text(actor, npc, p)
 end
 
 function autosave_game()
-	get_console():execute("save "..user_name().." - "..game.translate_string("st_save_zat_a1_game_start"))
+	local con = get_console()
+	if con then
+		con:execute("save "..tostring(user_name()).." - "..tostring(game.translate_string("st_save_zat_a1_game_start")))
+	else
+		SemiLog("! Error get_console() unavialable")
+	end
 end
 
 function set_game_time(actor, npc, p)
