@@ -13,6 +13,38 @@ lastime = nil
 local bloodsuckers_restr = {}
 bloodsucker_zone_enter = {}
 
+--[[
+ IXR FFx0001 все коллбеки определять здесь (автоматическая регистрация - снатие событий)
+ Отсутствие коллбека в движке не вызывает вылет
+ Отсутсвие вызываемого метода в биндере не вызывает вылет
+--]] 
+local use_callback_logs = false -- логирование подписки и отписки для коллбеков
+local all_callbacks = {
+	["hit"] 				= "hit_callback",
+	["death"] 				= "death_callback",
+	["use_object"] 			= "use_callback",
+	["sound"] 				= "hear_callback",
+	["on_item_drop"]		= "on_item_drop",
+	["on_item_take"]		= "on_item_take",
+	["take_item_from_box"] 	= "on_take_item_from_box",
+}
+
+-- IXR FFx0001 Упрощенная система подписки и отписки от коллбеков
+function manage_callbacks(_ref_binder, is_set)
+	local _script_name = script_name()
+	
+	ixr_callback_binder.manage_callbacks(_script_name, all_callbacks, _ref_binder, is_set, use_callback_logs,
+		function (obj_id)
+			_ref_binder.object:set_patrol_extrapolate_callback(_ref_binder["extrapolate_callback"], _ref_binder)
+			ixr_callback_binder.custom_log("set callback:[extrapolate_callback]", is_set, use_callback_logs, _script_name, _ref_binder.object:id())
+		end,
+		function (obj_id)
+			_ref_binder.object:set_patrol_extrapolate_callback(nil)
+			ixr_callback_binder.custom_log("unset callback:[extrapolate_callback]", is_set, use_callback_logs, _script_name, _ref_binder.object:id())
+		end
+	)
+end
+
 ----------------------------------------------------------------------------------------------------------------------
 class "motivator_binder" (object_binder)
 
@@ -25,6 +57,24 @@ function motivator_binder:__init (obj) super(obj)
 	self.treasure_processed = false
 	self.now_in_combat = false
 	self.strelok_particles_added = false
+end
+
+function motivator_binder:on_take_item_from_box(box, item)
+	if not (self.object) then return end
+	
+	SendScriptCallback("npc_on_item_take_from_box", self.object, box, item)
+end
+
+function motivator_binder:on_item_take(item)
+	if not (self.object) then return end
+
+	SendScriptCallback("npc_on_item_take", self.object, item)
+end
+
+function motivator_binder:on_item_drop(item)
+	if not (self.object) then return end
+
+	SendScriptCallback("npc_on_item_drop", self.object, item)
 end
 
 function motivator_binder:extrapolate_callback(cur_pt)
@@ -87,13 +137,8 @@ function motivator_binder:net_spawn(sobject)
 	db.add_obj(self.object)
 
 	-- Все CALLBACK-и ставить здесь:
-	self.object:set_patrol_extrapolate_callback(motivator_binder.extrapolate_callback, self)
-	self.object:set_callback(callback.hit, motivator_binder.hit_callback, self)
-	self.object:set_callback(callback.death, motivator_binder.death_callback, self)
-	self.object:set_callback(callback.use_object, motivator_binder.use_callback, self)
+	manage_callbacks(self, true) -- IX-Ray SET CALLBACKS
 	--memusage.collect_info(self.object, "after__callback")
-
-	--self.object:set_callback(callback.sound, motivator_binder.hear_callback, self)
 
 	-- ставим дефолтное расстояние входа в смарткаверы
 
@@ -169,10 +214,15 @@ function motivator_binder:net_spawn(sobject)
 		stc_strelok_health_manager.cs_strelok_health(self.object)
 	end
 
+	SendScriptCallback("npc_on_net_spawn", self.object, se_obj)
+
 	return true
 end
 
 function motivator_binder:net_destroy()
+	if self.object then
+		SendScriptCallback("npc_on_net_destroy", self.object)
+	end
 	--printf("motivator_binder:net_destroy(): self.object:name()='%s'", self.object:name())
 	xrs_dyn_music.npc_table[self.object:id()] = nil
 	xrs_dyn_music.stop_combat(self.object:id())
@@ -186,7 +236,7 @@ function motivator_binder:net_destroy()
 
 	db.storage[self.object:id()] = nil
 
-	self:clear_callbacks()
+	manage_callbacks(self, false) -- IX-Ray UNSET CALLBACKS
 
 		if self.e_index ~= nil then
 		db.delete_enemy( self.e_index )
@@ -195,13 +245,6 @@ function motivator_binder:net_destroy()
 		stc_strelok_health_manager.remove_health_bar()
 	end
 	object_binder.net_destroy(self)
-end
-
-function motivator_binder:clear_callbacks()
-	self.object:set_patrol_extrapolate_callback(nil)
-	self.object:set_callback(callback.hit, nil)
-	self.object:set_callback(callback.death, nil)
-	-- self.object:set_callback(callback.use_object, nil)
 end
 
 function motivator_binder:hit_callback(obj, amount, local_direction, who, bone_index)
@@ -234,6 +277,9 @@ end
 
 function motivator_binder:death_callback(victim, who)
 	callstack()
+	
+	SendScriptCallback("npc_on_death_callback", victim, who)
+	
 	--' Distemper 03.2008 --
 	xrs_dyn_music.stop_combat(self.object:id())
 	--' Если игрок был с квестом от механика - фейлить его
@@ -266,7 +312,7 @@ function motivator_binder:death_callback(victim, who)
 
 		db.delete_enemy( self.e_index )
 
-	self:clear_callbacks()
+	manage_callbacks(self, false) -- IX-Ray UNSET CALLBACKS
 	-- Отключаем реакцию на кровососа
 	bloodsucker_reaction.disable_bloodsucker_reaction(self.object)
 	--' Наносим небольшой импульс вперед.
@@ -298,7 +344,13 @@ function motivator_binder:use_callback(obj, who)
 			treasure_manager.use(self.object)
 			self.treasure_processed = true
 		end
+		
+		local comm = character_community(obj)
+		SendScriptCallback("actor_on_interaction", "factions", nil, comm)
 	end
+	
+	SetRegistryValue("used_npc_id", obj:id())
+	SendScriptCallback("npc_on_use", obj, who)
 end
 
 function motivator_binder:update(delta)
@@ -443,7 +495,10 @@ function motivator_binder:update(delta)
 	else
 		object:set_tip_text_default()
 	end
-
+	
+	if object then
+		SendScriptCallback("npc_on_update", object, db.storage[self.object:id()])
+	end
 end
 
 function motivator_binder:reload(section)
@@ -498,6 +553,21 @@ function motivator_binder:load(reader)
 end
 
 function motivator_binder:hear_callback(self, who, sound_type, sound_position, sound_power)
+	if not self then
+		return
+	end
+	
+	if not who then
+		return
+	end
+	
+	if type(who) == "number" then
+		return
+	end
+	
+	SemiLog("self:" .. type(self) .. " ->" .. tostring(self))
+	SemiLog("who:" .. type(who) .. " ->" .. tostring(who))
+	
 	if who:id() == self:id() then
 		return
 	end

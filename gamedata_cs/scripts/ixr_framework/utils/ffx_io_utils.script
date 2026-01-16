@@ -1,0 +1,53 @@
+
+
+function write_string_file(text, file_path, mode)
+	if mode == nil then
+		mode = "w+"
+	end
+	
+	local file = io.open(tostring(file_path), mode)
+	if file then
+		file:write(text)
+		file:close()
+		
+		return true
+	end
+	
+	return false
+end
+
+function read_string_file_(file_path, def_value)
+	local file = io.open(file_path, "r")
+	if file then 
+		local result = file:read()
+		file:close()
+		
+		return result
+	end
+
+	return def_value
+end
+
+function write_binary_file(binary_data, file_path)
+	local file = io.open(file_path, "wb+")
+	if file then 
+		file:write(binary_data)
+		file:close()
+		
+		return true
+	end
+	
+	return false
+end
+
+function read_binary_file(file_path, def_value)
+	local file = io.open(file_path, "rb")
+	if file then 
+		local result = file:read("*all")
+		file:close()
+		
+		return result
+	end
+
+	return def_value
+end

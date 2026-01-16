@@ -83,7 +83,7 @@ function restrictor_binder:net_destroy()
 	object_binder.net_destroy(self)
 end
 
--- вызывается из обновления актёра!
+-- вызывается из обновления актёра!(БРЕХНЯ!!!!!!!)
 function restrictor_binder:update(delta)
 	if not self.initialized and db.actor then
 		self.initialized = true
