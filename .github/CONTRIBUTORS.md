@@ -20,7 +20,6 @@ Detail list of all contributors to IX-Ray project
   - Red Panda (isobolevskiy)
   - LVutner
   - VodkaNET
-  - BigBro
   - St4lker0k765
   - wh1t3lord
   - GladiatorVS
@@ -44,6 +43,7 @@ Detail list of all contributors to IX-Ray project
   - after_glow
   - MafiosiGhost
   - Mawrak
+  - BigBro
 
 - IX-Ray Testers:
   - Kystman
@@ -92,6 +92,9 @@ Detail list of all contributors to IX-Ray project
 - xr-Renn
 - rederr404
 - LostAlphaRus
+- BASE1707
+- tabudz
+- openhands
 
 ## Former Contributors
 

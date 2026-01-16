@@ -20,7 +20,6 @@
   - Red Panda (isobolevskiy)
   - LVutner
   - VodkaNET
-  - BigBro
   - St4lker0k765
   - wh1t3lord
   - GladiatorVS
@@ -44,6 +43,7 @@
   - after_glow
   - MafiosiGhost
   - Mawrak
+  - BigBro
 
 - IX-Ray Testers:
   - Kystman
@@ -92,6 +92,9 @@
 - xr-Renn
 - rederr404
 - LostAlphaRus
+- BASE1707
+- tabudz
+- openhands
 
 ## Бывшие участники
 
