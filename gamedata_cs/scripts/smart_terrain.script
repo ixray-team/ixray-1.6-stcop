@@ -124,6 +124,7 @@ end
 -- вызывается симулятором.
 function se_smart_terrain:on_register()
 	cse_alife_smart_zone.on_register(self)
+	SendScriptCallback("server_entity_on_register", self, "se_smart_terrain")
 
 	printf("register smart %s", self:name())
 
@@ -154,6 +155,7 @@ end
 -- анрегистрация объекта в симуляторе.
 -- вызывается симулятором.
 function se_smart_terrain:on_unregister()
+	SendScriptCallback("server_entity_on_unregister", self, "se_smart_terrain")
 	cse_alife_smart_zone.on_unregister(self)
 	self.board:unregister_smart(self)
 	smart_terrains_by_name[self:name()] = nil

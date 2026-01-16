@@ -34,6 +34,14 @@ function evaluator_danger:evaluate()
 		self.mgr = self.object:motivation_action_manager()
 	end
 
+	local flags_into_callbacks = {ret_value = true}
+	SendScriptCallback("npc_on_eval_danger", self.object, flags_into_callbacks)
+	if flags_into_callbacks.ret_value == false then
+		db.storage[self.object:id()].danger_flag = flags_into_callbacks.ret_value
+		
+		return false 
+	end
+
 	local best_danger = self.object:best_danger()
 
 	--' проверка на денжер.
