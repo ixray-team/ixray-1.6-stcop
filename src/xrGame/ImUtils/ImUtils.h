@@ -517,7 +517,7 @@ struct CImGuiTextureEditor
 	std::string path_to_texture_folder;
 
 	xr_concurrent_vector<STextureEntry> textures;
-	xr_concurrent_vector<u32> filter_query;
+	xr_vector<u32> filter_query;
 
 	string_path window_selected_name;
 	string_path search_input_buffer;

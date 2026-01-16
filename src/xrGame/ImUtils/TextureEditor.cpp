@@ -33,7 +33,7 @@ constexpr ImVec2 kTextureEditor_PreviewSizeHigh = ImVec2(512.0f, 512.0f);
 constexpr ImVec2 kTextureEditor_PreviewSizeMid = ImVec2(256.0f, 256.0f);
 constexpr ImVec2 kTextureEditor_PreviewSizeLow = ImVec2(64.0f, 64.0f);
 
-ICF void validate_entry(const xr_string* thm_path, CImGuiTextureEditor::STextureEntry& entry)
+ICF void check_and_add_entry(const xr_string* thm_path, CImGuiTextureEditor::STextureEntry& entry)
 {
 	if (thm_path && FS.exist(thm_path->c_str()))
 	{
@@ -85,48 +85,8 @@ ICF void validate_entry(const xr_string* thm_path, CImGuiTextureEditor::STexture
 			}
 		}
 	}
-}
-ICF void lexicographic_sorting(xr_concurrent_vector<CImGuiTextureEditor::STextureEntry>& entries)
-{
-	const size_t n = entries.size();
-	if (n < 2) return;
 
-	xr_concurrent_vector<CImGuiTextureEditor::STextureEntry> temp(n);
-
-	xr_vector<std::pair<uint64_t, size_t>> keys(n);
-	for (size_t i = 0; i < n; ++i)
-	{
-		uint64_t hash = 0;
-		const char* path = entries[i].path;
-		for (int j = 0; j < 8 && path[j]; ++j) {
-			hash = (hash << 8) | (uint8_t)path[j];
-		}
-		keys[i] = { hash, i };
-	}
-
-	std::sort(keys.begin(), keys.end(),
-		[](const auto& a, const auto& b) { return a.first < b.first; });
-
-	for (size_t i = 0; i < n; ++i)
-		temp[i] = std::move(entries[keys[i].second]);
-
-	for (size_t i = 0; i < n; )
-	{
-		size_t j = i + 1;
-		while (j < n && keys[j].first == keys[i].first) ++j;
-
-		if (j - i > 1)
-		{
-			std::sort(temp.begin() + i, temp.begin() + j,
-				[](const auto& a, const auto& b) {
-					return strcmp(a.path, b.path) < 0;
-				});
-		}
-
-		i = j;
-	}
-
-	entries.swap(temp);
+	g_imgui_texture_editor.textures.push_back(std::move(entry));
 }
 
 void RequestHandler_TextureEditor(const SRequestData& req)
@@ -138,9 +98,6 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 
 	if (static_cast<eImGuiEditorType>(req.editor_type) != eImGuiEditorType::kTextureEditor)
 		return;
-
-	using status_t = CImGuiTextureEditor::eAnalyzedStatus;
-	using texture_t = CImGuiTextureEditor::STextureEntry;
 
 	switch (static_cast<CImGuiTextureEditor::eRequestType>(req.request_type))
 	{
@@ -212,7 +169,7 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 
 		if (!g_imgui_texture_editor.is_all_analyzed)
 		{
-			static xr_set<xr_string> files; files.clear();
+			static xr_vector<xr_string> files_vec;
 			static FS_Path* pTexturesFolder = FS.get_path(_game_textures_);
 
 			if (!pTexturesFolder)
@@ -225,14 +182,9 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 			if (pTexturesFolder)
 			{
 				PROF_EVENT("get_all_files");
-				FS.get_all_files_in_dir(files, pTexturesFolder->m_Path);
-				g_imgui_texture_editor.total_files_in_folder = files.size();
+				FS.get_all_files_in_dir(files_vec, pTexturesFolder->m_Path);
+				g_imgui_texture_editor.total_files_in_folder = files_vec.size();
 			}
-
-			static xr_vector<xr_string> files_vec; files_vec.clear();
-			files_vec.reserve(files.size());
-			files_vec.assign(files.begin(), files.end());
-
 			if (!files_vec.empty())
 				g_imgui_texture_editor.wt_current_analyzing_texture = files_vec[0].c_str();
 
@@ -251,26 +203,10 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 			g_imgui_texture_editor.total_unable_to_classify_files_in_folder = 0;
 			g_imgui_texture_editor.total_other_in_folder = 0;
 
-			struct ExtensionInfo
-			{
-				const char* ext;
-				std::atomic<u32>* counter;
-			};
-
-			static const ExtensionInfo other_extensions[]
-			{
-				{".seq", &g_imgui_texture_editor.total_seq_in_folder},
-				{".png", &g_imgui_texture_editor.total_png_in_folder},
-				{".svg", &g_imgui_texture_editor.total_svg_in_folder},
-				{".bmp", &g_imgui_texture_editor.total_bmp_in_folder},
-				{".ogm", &g_imgui_texture_editor.total_ogm_in_folder},
-				{".ini", &g_imgui_texture_editor.total_ini_in_folder}
-			};
-
 			PROF_EVENT("load_and_validate_all");
 
 			xr_parallel_for(0ULL, files_vec.size(),
-				[&](size_t index)
+				[](size_t index)
 				{
 					const xr_string& fn = files_vec[index];
 					size_t len = fn.length();
@@ -285,10 +221,11 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 
 					if (is_dds)
 					{
-						bool has_thm = false;
 						const xr_string* thm_ptr = nullptr;
 
-						if (index + 1 < files_vec.size())
+						size_t next_index = index + 1;
+						// find next .thm
+						if (next_index < files_vec.size())
 						{
 							const xr_string& next = files_vec[index + 1];
 							size_t next_len = next.length();
@@ -297,25 +234,39 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 								next.compare(next_len - 4, 4, ".thm") == 0 &&
 								fn.compare(0, len - 4, next, 0, next_len - 4) == 0)
 							{
-								has_thm = true;
 								thm_ptr = &next;
 							}
 						}
 
-						CImGuiTextureEditor::STextureEntry data;
-						data.analyze_status_result_flags = 0;
+						//find next .thm after .seq
+						next_index = next_index + 1;
+						if (!thm_ptr && next_index < files_vec.size())
+						{
+							const xr_string& next = files_vec[next_index];
+							size_t next_len = next.length();
 
-						xr_strcpy(data.path, fn.c_str());
+							if (next_len >= 4 &&
+								next.compare(next_len - 4, 4, ".thm") == 0 &&
+								fn.compare(0, len - 4, next, 0, next_len - 4) == 0)
+							{
+								thm_ptr = &next;
+							}
+						}
+
+						CImGuiTextureEditor::STextureEntry entry;
+						entry.analyze_status_result_flags = 0;
+
+						xr_strcpy(entry.path, fn.c_str());
 
 						if (fn.size() > sizeof(string_path))
-							data.analyze_status_result_flags |= status_t::kTooLongPath;
+							entry.analyze_status_result_flags |= CImGuiTextureEditor::eAnalyzedStatus::kTooLongPath;
 						else
 						{
 							size_t slash_pos = fn.find_last_of("/\\");
 							if (slash_pos != xr_string::npos)
-								xr_strcpy(data.filename, fn.c_str() + slash_pos + 1);
+								xr_strcpy(entry.filename, fn.c_str() + slash_pos + 1);
 							else
-								xr_strcpy(data.filename, fn.c_str());
+								xr_strcpy(entry.filename, fn.c_str());
 
 							if (slash_pos != xr_string::npos)
 							{
@@ -324,57 +275,45 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 									subpath.c_str(), pTexturesFolder->m_Path);
 
 								if (relative != ".")
-									xr_strcpy(data.subpath, relative.string().c_str());
+									xr_strcpy(entry.subpath, relative.string().c_str());
 								else
-									data.subpath[0] = 0;
+									entry.subpath[0] = 0;
 							}
 							else
-								data.subpath[0] = 0;
+								entry.subpath[0] = 0;
 
 							++g_imgui_texture_editor.valid_count;
 						}
 
-						if (has_thm && thm_ptr)
-						{
-							validate_entry(thm_ptr, data);
-							g_imgui_texture_editor.total_thm_in_folder++;
-						}
-
-						g_imgui_texture_editor.textures.push_back(std::move(data));
-						size_t texture_index = g_imgui_texture_editor.textures.size() - 1;
-						g_imgui_texture_editor.filter_query.push_back(static_cast<u32>(texture_index));
-
-						++g_imgui_texture_editor.total_textures_in_folder;
-
-						//if (has_thm)
-							//...
+						check_and_add_entry(thm_ptr, entry);
 					}
 					else if (len >= 4 && fn.compare(len - 4, 4, ".thm") == 0)
-					{
-						if (index > 0)
-						{
-							const xr_string& prev = files_vec[index - 1];
-							size_t prev_len = prev.length();
-
-							if (prev_len >= 4 &&
-								prev.compare(prev_len - 4, 4, ".dds") == 0 &&
-								fn.compare(0, len - 4, prev, 0, prev_len - 4) == 0)
-							{
-								return;
-							}
-						}
 						++g_imgui_texture_editor.total_thm_in_folder;
-					}
 					else
 					{
 						bool classified = false;
+						struct ExtensionInfo
+						{
+							const char* ext;
+							std::atomic<u32>& counter;
+						};
+
+						const ExtensionInfo other_extensions[]
+						{
+							{".seq", g_imgui_texture_editor.total_seq_in_folder},
+							{".png", g_imgui_texture_editor.total_png_in_folder},
+							{".svg", g_imgui_texture_editor.total_svg_in_folder},
+							{".bmp", g_imgui_texture_editor.total_bmp_in_folder},
+							{".ogm", g_imgui_texture_editor.total_ogm_in_folder},
+							{".ini", g_imgui_texture_editor.total_ini_in_folder}
+						};
 
 						for (const auto& ext_info : other_extensions)
 						{
 							size_t ext_len = strlen(ext_info.ext);
 							if (len >= ext_len && fn.compare(len - ext_len, ext_len, ext_info.ext) == 0)
 							{
-								(*ext_info.counter)++;
+								ext_info.counter++;
 								classified = true;
 								break;
 							}
@@ -390,14 +329,22 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 					}
 				});
 
-			lexicographic_sorting(g_imgui_texture_editor.textures);
+			std::sort(g_imgui_texture_editor.textures.begin(),
+				g_imgui_texture_editor.textures.end(),
+				[](const CImGuiTextureEditor::STextureEntry& a, const CImGuiTextureEditor::STextureEntry& b) {
+					return xr_strcmp(a.path, b.path) < 0;
+				});
 
 			g_imgui_texture_editor.filter_query.resize(g_imgui_texture_editor.textures.size());
 			for (u32 i = 0; i < g_imgui_texture_editor.textures.size(); ++i)
 				g_imgui_texture_editor.filter_query[i] = i;
 
+			g_imgui_texture_editor.total_textures_in_folder = g_imgui_texture_editor.textures.size();
+
+
 			g_imgui_texture_editor.current_analyzed_count = g_imgui_texture_editor.textures.size();
 			g_imgui_texture_editor.is_all_analyzed = true;
+
 		}
 
 		break;
