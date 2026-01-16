@@ -1,0 +1,59 @@
+
+local actor_present = false
+
+function on_game_start()
+	RegisterScriptCallback("actor_on_spawn", function () actor_present = true end)
+	RegisterScriptCallback("CUIActorMenu_OnItemFocusReceive", this.on_item_focus_receive)
+end
+
+function on_item_focus_receive(item_game_object)
+	 if (not actor_present) then
+		return
+	 end
+
+
+	if item_game_object and item_game_object:id() then
+		processing_description(item_game_object)
+	end
+end
+
+function processing_description(item_game_object)
+	local extend_description_table = {}
+    
+    SendScriptCallback(
+		"on_item_draw_description", 
+		item_game_object, 
+		item_game_object:id(),
+		item_game_object:section(),
+		extend_description_table
+	)
+    
+    if ffx_table_utils.get_size(extend_description_table) <= 0 then
+        if item_game_object:is_item_used_additional_description() then
+			item_game_object:unset_item_additional_description()
+		end
+		
+        return
+    end
+
+    local additional_description_text = ffx_table_utils.deep_concat(
+        ffx_table_utils.sort_assoc_tables(extend_description_table),
+        function(value)
+            return ffx_ltx_utils.translate(value)
+        end
+    )
+    
+    if tostring(additional_description_text) == "" then
+		if item_game_object:is_item_used_additional_description() then
+			item_game_object:unset_item_additional_description()
+		end
+		
+        return
+    end
+    
+    item_game_object:set_item_additional_description(
+		tostring(
+			additional_description_text
+		)
+	)
+end
