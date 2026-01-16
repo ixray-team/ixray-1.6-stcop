@@ -4,6 +4,106 @@ English | [Русский](../doc/CHANGELOG.rus.md)
 
 Full changelog of _IX-Ray_ 1.6 project
 
+## Release 1.3.2 (January 2025)
+
+### Common
+
+- Selected xrEngine project by default during solution generation (@Drombeys)
+- Updated root documents (@Drombeys)
+- Updated website (@ForserX)
+
+### Engine
+
+- Added self-model ignoring in feel vision (@v2v3v4)
+- Applied `LineSpacing` for `CGameFont` (@v2v3v4)
+- Fixed shape intersection issues (@v2v3v4)
+- Fixed single-line Lua snippet reading (@ForserX)
+- Fixed window focus in fullscreen mode (@Drombeys)
+- Forced function inlining (@v2v3v4)
+- Implemented separate Render Object Specific for rain to prevent hand darkening (@v2v3v4)
+
+### Graphics (renders, shaders)
+
+- Added `FORWARD_REFLECTION_MIPS_GEN` GPU event (@Drombeys)
+- Added `particle_s-mul` shader in D3D11 (@Drombeys)
+- Added security check for `has_light_visible_from_sectors` method (@Drombeys)
+- Clamped GTAO radius in shaders (@LVutner)
+- Fixed double particle rendering (@v2v3v4, @Dimakuzmin)
+- Fixed wetness effect implementation (@Hozar2002)
+- Forced early-z for `accum_base` shader (@LVutner)
+- Implemented snow mask disabling capability for specific locations (@ForserX)
+- Improved DFV approximation in shaders (@LVutner)
+- Improved water shader for proper display of defective textures (@Hozar2002)
+
+### Gameplay
+
+- Added additional mouse bindings (@Drombeys, @BASE1707)
+- Added center mode support for `CUIStackPanel` control (@St4lker0k765)
+- Added chimera configuration for animation prefix override (@mnelenpridumivat)
+- Added critical sections for game fonts (@v2v3v4)
+- Added logging for incorrectly configured bones (@St4lker0k765)
+- Added stub functions for Gasmask script exports (@Drombeys, @BASE1707)
+- Added translation reload for upgrades (@St4lker0k765)
+- Added visual identification helper (@v2v3v4)
+- Detached legs position from root bone (@Drombeys)
+- Disabled hitmarks and news rendering when HUD was disabled (@St4lker0k765)
+- Extended Explosive module capabilities (@Drombeys, @BASE1707)
+- Fixed `box_x_axis` calculation in trajectory collision checking (@mnelenpridumivat)
+- Fixed `sv_adm_menu_ban_time` warning in console (@St4lker0k765)
+- Fixed Call of Chernobyl item drop and trading crashes (@Romann, @revolucas)
+- Fixed chimera attack animations when only one unnumbered animation existed (@mnelenpridumivat)
+- Fixed crash caused by grenade throwing (@v2v3v4)
+- Fixed crash for scopes with target illumination (@v2v3v4)
+- Fixed crash on missing `upgrades_properties` section (@St4lker0k765)
+- Fixed crash when inserting artifacts into locked belt (@St4lker0k765)
+- Fixed crash with duplicate task targets (@St4lker0k765)
+- Fixed infinite money trades (@Shtrecker)
+- Fixed menu text alignment after resolution change (@St4lker0k765)
+- Fixed minimum and maximum character money (@Shtrecker)
+- Fixed NPC shaking when aiming at nearby player (@v2v3v4)
+- Fixed physics for proper ladder functionality (@ForserX)
+- Fixed script export functionality (@Hozar_2002)
+- Fixed single item selection (@MAYLAYSHEZ)
+- Fixed talk menu display issue (@St4lker0k765)
+- Implemented game save creation limit (@Drombeys)
+- Improved `g_fight_fast_respawn` console command (@v2v3v4)
+- Improved FOV change handling during running (@Hozar2002)
+- Optimized `InBelt` and `InRuck` functions (@Shtrecker)
+- Removed `missing danger fov` warning (@St4lker0k765)
+- Removed verify in `CWeaponBinoculars::OnZoomOut` method (@Drombeys)
+- Returned `UpdateCameraDirection` function (@St4lker0k765)
+- Reverted "Improve AI system" (@Drombeys)
+- Set parameters with default values (@v2v3v4)
+
+### Resources
+
+- Added missing English locale XMLs for Clear Sky (@St4lker0k765)
+- Bypassed crash on invalid AI map at kamp point (@Drombeys)
+- Fixed broken logic in `[logic@defend_work2]` section (@Drombeys)
+- Fixed missing trade caption in Clear Sky (@St4lker0k765)
+- Fixed option application in Clear Sky (@St4lker0k765)
+- Fixed text size for upgrades window (@St4lker0k765)
+
+### Toolchain
+
+- Added portal shader for Editors (@ForserX)
+- Always initialized xrDebug for Editors (@St4lker0k765)
+- Did not skip loading on GUID mismatch (@St4lker0k765)
+- Disabled async LOD calculation due to rendering architecture limitations (@ForserX)
+- Fixed `ai_map_ixray.part` loading (@mnelenpridumivat)
+- Fixed `Bone Form` opening (@mnelenpridumivat)
+- Fixed `EditorProp` initialization in `SGameMtlPair` during AE loading (@mnelenpridumivat)
+- Fixed debug portal drawing (@ForserX)
+- Fixed editor implementation issues (@ForserX)
+- Fixed ImGui error with No Sun checkbox IDs (@mnelenpridumivat)
+- Fixed loop condition and used empty() method in xrLC (@ForserX)
+- Fixed particle destruction in Particle Editor (@ForserX)
+- Fixed Play Level and Play Clean Game buttons (@VodkaNET)
+- Fixed sector loading issues (@St4lker0k765)
+- Fixed Shader Editor material issues (@ForserX)
+- Fixed Sound Editor opening (@ForserX)
+- Fixed textures loading in xrAI (@St4lker0k765)
+
 ## Release 1.3.1 (December 2025)
 
 ### Common
