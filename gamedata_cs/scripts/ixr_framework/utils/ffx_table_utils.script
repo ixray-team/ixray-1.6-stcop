@@ -1,0 +1,266 @@
+
+function is_value_exists_by_key(tbl, key, value)
+	for i, v in ipairs(tbl) do
+		if v ~= nil and v[key] ~= nil and v[key] == value then
+			return true
+		end
+	end
+	
+	return false
+end
+
+
+function push_back_by_key(tbl, key, value)
+	if type(tbl) == "table" then
+		if tbl[key] == nil then
+			tbl[key] = {}
+		end
+		
+		table.insert(tbl[key], value)
+	end
+end
+
+--[[
+Description:
+  Get deep copy table.
+Parameters: t (table).
+Returns: table
+]]
+function clone(tbl)
+    if tbl == nil then
+        return {}
+    end
+    if type(tbl) ~= "table" then
+        return tbl
+    end
+
+    local res = {}
+    for k, v in pairs(tbl) do
+        local key = k
+        if type(k) == "table" then
+            key = clone(k)
+        end
+        if type(v) == "table" then
+            v = clone(v)
+        end
+        res[key] = v
+    end
+
+
+    local mt = getmetatable(tbl)
+    setmetatable(res, mt)
+    return res
+end
+
+--[[
+Description:
+  Get size any table.
+Parameters: t (table).
+Returns: int
+]]
+function get_size(tbl)
+	local size = 0
+	
+	for k, v in pairs(tbl) do
+		size = size + 1
+	end
+	
+	return size
+end
+
+--[[
+Description:
+  Forward sort assoc by keys tables
+Parameters: 
+	tbl (table).
+Returns: table
+]]
+function sort_assoc_tables(tbl)
+	local keys = {}
+	
+	for k, _ in pairs(tbl) do
+		table.insert(keys, tostring(k))
+	end
+    
+    table.sort(keys)
+    
+    local sorted_values = {}
+    for _, key in ipairs(keys) do
+        table.insert(sorted_values, tbl[key])
+    end
+	
+	return sorted_values
+end
+
+--[[
+Description:
+  Deep concat table with middleware and true forward sort
+Parameters: 
+	tbl (table).
+	closure_fn (function(value) with return string).
+Returns: string
+]]
+function deep_concat(tbl, closure_fn)
+    local parts = {}
+    
+    local function process_value(value)
+        if type(value) == "table" then
+            table.insert(parts, deep_concat(value, closure_fn))
+        else
+            table.insert(parts, closure_fn(value))
+        end
+    end
+    
+    local sorted_keys = {}
+	
+    for k, _ in pairs(tbl) do
+		table.insert(sorted_keys, k)
+	end
+	
+    table.sort(sorted_keys, function(a, b)
+		return tostring(a) < tostring(b) 
+	end)
+    
+    for _, key in ipairs(sorted_keys) do
+        process_value(tbl[key])
+    end
+    
+    return table.concat(parts)
+end
+
+--[[
+Description:
+  Checks if a flat table contains a specific value.
+Parameters:
+  t (table) - the flat table to check.
+  item (any) - the value to find.
+Returns: boolean - true if the value is found, otherwise false.
+]]
+function is_contains(t, item)
+	for k, v in pairs(t) do
+		if v == item then
+			return true
+		end
+	end
+	
+	return false
+end
+
+--[[
+Description:
+  Retrieves the last value at the root level of a table (flat or associative).
+Parameters:
+  input_table (table) - the table to inspect.
+  default_value (any) - value to return if table is empty or invalid.
+Returns: any - the last value found or the default value.
+]]
+function get_last_value(input_table, default_value)
+    if not ffx_compare_utils.is_table(input_table) then
+		return default_value
+	end
+
+    local indexMax = nil
+    local lastValue = nil
+
+    for key, value in pairs(input_table) do
+        if ffx_compare_utils.is_number(key) then
+            if indexMax == nil or key > indexMax then
+                indexMax = key
+            end
+
+            lastValue = value
+        end
+    end
+
+    if lastValue then
+        return lastValue
+    end
+
+    return default_value
+end
+
+--[[
+Description:
+  Finds the maximum numeric key in a table (flat or associative), optionally recursively by depth.
+Parameters:
+  input_table (table) - the table to inspect.
+  default_value (any) - value to return if no numeric keys found.
+  depth (number or nil) - recursion depth; nil or 1 for root only, >1 for nested, -1 for unlimited.
+Returns: number or any - the maximum numeric key found or the default value.
+]]
+function get_max_key_index(input_table, default_value, depth)
+    if not ffx_compare_utils.is_table(input_table) or ffx_compare_utils.is_empty_flat_or_assoc_table(input_table) then
+        return default_value
+    end
+
+    if depth == nil then
+        depth = 1
+    end
+
+    local max_index = nil
+
+    for key, value in pairs(input_table) do
+        if is_number(key) then
+            if max_index == nil or key > max_index then
+                max_index = key
+            end
+        end
+
+        local should_recurse = false
+        if depth == -1 then
+            should_recurse = ffx_compare_utils.is_table(value)
+        elseif depth > 1 then
+            should_recurse = ffx_compare_utils.is_table(value)
+        end
+
+        if should_recurse then
+            local next_depth = (depth == -1) and -1 or (depth - 1)
+            local nested_max = get_max_key_index(value, nil, next_depth)
+            if nested_max ~= nil then
+                if max_index == nil or nested_max > max_index then
+                    max_index = nested_max
+                end
+            end
+        end
+    end
+
+    return max_index or default_value
+end
+
+--[[
+Description:
+  Finds the minimum numeric key in a table (flat or associative), optionally recursively by depth.
+Parameters:
+  input_table (table) - the table to inspect.
+  default_value (any) - value to return if no numeric keys found.
+  depth (number or nil) - recursion depth; nil or 1 for root only, >1 for nested.
+Returns: number or any - the minimum numeric key found or the default value.
+]]
+function get_min_key_index(input_table, default_value, depth)
+    if not ffx_compare_utils.is_table(input_table) then
+        return default_value
+    end
+
+    depth = depth or 1
+
+    local min_index = nil
+
+    for key, value in pairs(input_table) do
+        if type(key) == "number" then
+            if min_index == nil or key < min_index then
+                min_index = key
+            end
+        end
+
+        if depth > 1 and ffx_compare_utils.is_table(value) then
+            local nested_min = get_min_key_index(value, nil, depth - 1)
+            if nested_min ~= nil then
+                if min_index == nil or nested_min < min_index then
+                    min_index = nested_min
+                end
+            end
+        end
+    end
+
+    return min_index or default_value
+end

@@ -184,6 +184,7 @@ function heli_binder:on_hit( power, impulse, hit_type, enemy_id )
 		xr_sound.set_sound_play(self.object:id(), self.snd_hit)
 		self.last_hit_snd_timeout = time_global() + math.random( 4000, 8000 )
 	end
+	SendScriptCallback("heli_on_hit_callback", self.object, power, nil, enemy, nil)
 end
 
 function heli_binder:on_point( distance, position, path_idx )

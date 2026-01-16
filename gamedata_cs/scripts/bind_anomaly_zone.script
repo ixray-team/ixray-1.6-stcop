@@ -29,6 +29,8 @@ function anomaly_zone_binder:__init(obj) super(obj)
 	self.artefacts_table	= parse_names(artefacts)
 	self.spawned_count = 0
 	self.idle_time_end = 0
+	
+	SendScriptCallback("anomaly_zone_on_init", self, obj)
 end
 
 function anomaly_zone_binder:spawn_artefact_randomly()
@@ -44,6 +46,8 @@ function anomaly_zone_binder:spawn_artefact_randomly()
 	 parent_zones_by_artefact_id[artefact_obj.id] = self
 	 self.spawned_count = self.spawned_count + 1
 	 printf("artefact [%s] spawned at position %s by zone [%s]",artefact_obj:name(), vec_to_str(artefact_obj.position),self.object:name())
+	 
+	 SendScriptCallback("anomaly_zone_on_spawn_artefact_randomly", self, self.object, artefact_obj)
 end
 
 
@@ -65,6 +69,9 @@ end
 
 function anomaly_zone_binder:update(delta)
 	object_binder.update(self, delta)
+	
+	SendScriptCallback("anomaly_zone_on_update", self, self.object)
+	
 	for k,v in pairs(artefact_ways_by_id) do
 		local cl_pos = (db.storage[k] and db.storage[k].object and db.storage[k].object:position())
 		
@@ -81,9 +88,20 @@ function anomaly_zone_binder:update(delta)
 	end
 end
   
-function anomaly_zone_binder:on_artefact_take()
+function anomaly_zone_binder:on_artefact_take(obj)
 	self.spawned_count = self.spawned_count - 1
 	self.idle_time_end = time_global() + self.idle_time
+	
+	local id = nil
+	if obj then
+		if(type(obj.id)=="number") then
+			id = obj.id
+		else
+			id = obj:id()
+		end
+	end
+	
+	SendScriptCallback("anomaly_zone_on_artefact_take", self, self.object, id, obj, parent_zones_by_artefact_id)
 end
 
 -- Standart function for save
@@ -111,7 +129,9 @@ function anomaly_zone_binder:save(thread)
 	else
 		thread:w_u32(time_diff)
 	end
-
+	
+	SendScriptCallback("anomaly_zone_on_save", self, self.object, thread, parent_zones_by_artefact_id)
+	
 	set_save_marker(thread, "save", true, "anomaly_zone_binder")
 end
 -- Loading anomaly zone
@@ -129,6 +149,8 @@ function anomaly_zone_binder:load(thread)
 	local time_diff = thread:r_u32()
 	printf(time_diff)
 	self.idle_time_end = time_global()+time_diff
-
+	
+	SendScriptCallback("anomaly_zone_on_load", self, self.object, thread, parent_zones_by_artefact_id)
+	
 	set_save_marker(thread, "load", true, "anomaly_zone_binder")
 end
