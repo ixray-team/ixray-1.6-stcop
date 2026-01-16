@@ -1,0 +1,274 @@
+
+--[[
+	IX-Ray Module Triggers
+	Version: 1.0
+	Author: FFx0001
+	Script: ixr_module_triggers.script
+	Description: Module for centralized set triggers functions by inside to sphere zone
+	
+	Public exports:
+		get_module_info()
+		init()
+		is_initialized()
+		
+		set_trigger(trigger_name, trigger_level_name, trigger_center_position, trigger_radius, callable_fn)
+		has_trigger(trigger_name)
+		remove_trigger(trigger_name)
+]]
+
+local SCRIPT_ENABLED = true
+local SCAN_DELAY = 100
+
+local ixr_triggers = {
+	use_file_log = true,
+	use_console_log = false,
+	delay = SCAN_DELAY,
+	dynamic_vars = {
+		initialized = false,
+		is_actor_present = false,
+		level_name = false,
+		first_log_record = true,
+		actor_timer = 0,
+		npc_timer = 0,
+		monster_timer = 0,
+		triggers = {},
+	}
+}
+
+-- ################################
+-- #		   PUBLIC METHODS	  #
+-- ################################
+
+--[[
+Description: Module management. Returns metadata about the module.
+Return: (table) - A table containing module information such as alias name, category, version, authors, and description.
+]]
+function get_module_info()
+	return {
+		-- (string) constant module name independent of the script name, which will be centralized via ixr_framework.get_module("alias_name") to maintain module versioning without the need to access the script name during integration.
+		alias_name = "ixr_triggers",
+		
+		-- (string) use once value at range or custom latin snake case name default categories: ["ixr_system", "sub_system", "sub_gameplay", "sub_utils"] use for ordering init calls at 1 to last ASC
+		category = "ixr_system",
+		
+		-- (float) value for controll versions
+		version = 1.0,
+		
+		-- (string) public exposed function name, allowed in this script for auto init module
+		init_function_name = "init",
+		
+		-- (string|string[]) code author(s) nick name(s)
+		authors = "FFx0001",
+		
+		-- (string) short description about module
+		description = "Module for centralized set triggers functions by inside to sphere zone",
+	}
+end
+
+--[[
+Description: Initializes the module and sets up necessary configurations.
+Return: (bool) - Returns true if the module was successfully initialized.
+]]
+function init()
+	return ixr_triggers.init()
+end
+
+--[[
+Description: Checks whether the module has been initialized.
+Return: (bool) - Returns true if the module is initialized, otherwise false.
+]]
+function is_initialized()
+	return ixr_triggers.dynamic_vars.initialized
+end
+
+--[[
+Description: Add new trigger by name without overlapping.
+	trigger_name = trigger name
+	trigger_level_name = level name
+	trigger_center_position = vector center position trigger 
+	trigger_radius = int distance to center
+	callable_fn = function (level_name, trigger_name, trigger_center, trigger_radius, game_object_entity, contact_position, is_inside, in_zone, is_outside, source=monster|npc|actor)
+Return: (bool) - Returns true if success register, otherwise false.
+]]
+function set_trigger(trigger_name, trigger_level_name, trigger_center_position, trigger_radius, callable_fn)
+	return ixr_triggers.set_trigger(trigger_name, trigger_level_name, trigger_center_position, trigger_radius, callable_fn)
+end
+
+--[[
+Description: Checks has trigger by name exists.
+Return: (bool) - Returns true if exists, otherwise false.
+]]
+function has_trigger(trigger_name)
+	return ixr_triggers.has_trigger(trigger_name)
+end
+
+--[[
+Description: Remove trigger by name.
+Return: (bool) - Returns true if success, otherwise false.
+]]
+function remove_trigger(trigger_name)
+	return ixr_triggers.remove_trigger(trigger_name)
+end
+
+
+-- #############################################
+-- 			CALLBACKS
+-- #############################################
+function monster_on_update(monster_game_object, db_storage_table)
+	if (not ixr_triggers.dynamic_vars.is_actor_present) or (not ixr_triggers.dynamic_vars.level_name) or (not monster_game_object) or (not monster_game_object:id()) then
+		return
+	end
+	
+	if ixr_triggers.dynamic_vars.monster_timer <= time_global() then 
+		ixr_triggers.dynamic_vars.monster_timer = time_global() + ixr_triggers.delay
+		ixr_triggers.check_position(monster_game_object, "monster")
+	end
+end
+
+function npc_on_update(npc_game_object, db_storage_table)
+	if (not ixr_triggers.dynamic_vars.is_actor_present) or (not ixr_triggers.dynamic_vars.level_name) or (not npc_game_object) or (not npc_game_object:id()) then
+		return
+	end
+	
+	if ixr_triggers.dynamic_vars.npc_timer <= time_global() then 
+		ixr_triggers.dynamic_vars.npc_timer = time_global() + ixr_triggers.delay
+		ixr_triggers.check_position(npc_game_object, "npc")
+	end
+end
+
+function actor_on_update()
+	if (not ixr_triggers.dynamic_vars.is_actor_present) or (not ixr_triggers.dynamic_vars.level_name) then
+		return
+	end
+	
+	if ixr_triggers.dynamic_vars.actor_timer <= time_global() then 
+		ixr_triggers.dynamic_vars.actor_timer = time_global() + ixr_triggers.delay
+		ixr_triggers.check_position(db.actor, "actor")
+	end
+end
+
+-- #############################################
+-- 			SYSTEM LOGIC
+-- #############################################
+
+function ixr_triggers.init()
+	ixr_triggers.toLog("INIT :: [BEGIN]")
+	ixr_triggers.register_callbacks()
+	ixr_triggers.toLog("INIT :: [COMPLETED]")
+	ixr_triggers.dynamic_vars.initialized = true
+	
+	return ixr_triggers.dynamic_vars.initialized
+end
+
+function ixr_triggers.register_callbacks()
+	ixr_triggers.toLog("REGISTER CALLBACKS :: [BEGIN]")
+	
+	RegisterScriptCallback("actor_on_spawn", function () 
+		ixr_triggers.dynamic_vars.is_actor_present = true
+		ixr_triggers.dynamic_vars.level_name = level.name()
+	end)
+	
+	RegisterScriptCallback("actor_on_update", this.actor_on_update)
+	RegisterScriptCallback("npc_on_update", this.npc_on_update)
+	RegisterScriptCallback("monster_on_update", this.monster_on_update)
+	
+	ixr_triggers.toLog("REGISTER CALLBACKS :: [COMPLETED]")
+end
+
+function ixr_triggers.toLog(text)
+	if ixr_triggers.use_file_log then
+		ffx_dump_utils.write_to_file_log(text, ixr_triggers.dynamic_vars.first_log_record)
+		ixr_triggers.dynamic_vars.first_log_record = false
+	end
+	
+	if ixr_triggers.use_console_log then
+		ffx_dump_utils.write_to_console_log(text)
+	end
+end
+
+function ixr_triggers.check_position(gobj, source)
+	if gobj and gobj:id() and ixr_triggers.dynamic_vars.triggers[ixr_triggers.dynamic_vars.level_name] ~= nil then
+		local id = gobj:id()
+		local pos = gobj:position()
+		local to_remove = {}
+		
+		for name, trigger in pairs(ixr_triggers.dynamic_vars.triggers[ixr_triggers.dynamic_vars.level_name]) do
+			if trigger.callable_fn ~= nil then
+				local need_remove = false
+				local trigger_center = vector():set(trigger.x, trigger.y, trigger.z)
+				if trigger_center:distance_to(pos) < trigger.radius then
+					if trigger.inside_ids[id] == nil then
+						trigger.inside_ids[id] = true
+						need_remove = trigger.callable_fn(trigger.lvl, trigger.name, trigger_center, trigger.radius, gobj, pos, true, false, false, source)
+					else
+						need_remove = trigger.callable_fn(trigger.lvl, trigger.name, trigger_center, trigger.radius, gobj, pos, false, true, false, source)
+					end
+				else
+					if trigger.inside_ids[id] ~= nil then
+						trigger.inside_ids[id] = nil
+						need_remove = trigger.callable_fn(trigger.lvl, trigger.name, trigger_center, trigger.radius, gobj, pos, false, false, true, source)
+					end
+				end
+				
+				if need_remove then
+					table.insert(to_remove, trigger.name)
+				end
+			end
+		end
+		
+		for k, v in pairs(to_remove) do
+			ixr_triggers.remove_trigger(v)
+		end
+		
+	end
+end
+
+function ixr_triggers.has_trigger(trigger_name)
+	for lvl, list in pairs(ixr_triggers.dynamic_vars.triggers) do
+		if list[trigger_name] ~= nil then
+			return true
+		end
+	end
+	
+	return false
+end
+
+function ixr_triggers.remove_trigger(trigger_name)
+	for lvl, list in pairs(ixr_triggers.dynamic_vars.triggers) do
+		if list[trigger_name] ~= nil then
+			ixr_triggers.dynamic_vars.triggers[lvl][trigger_name] = nil
+			ixr_triggers.toLog("Remove trigger :: [" .. tostring(trigger_name) .. "]")
+			return true
+		end
+	end
+	
+	return false
+end
+
+-- callable_fn(level_name, trigger_name, trigger_center, trigger_radius, game_object_entity, contact_position, is_inside, in_zone, is_outside, source=monster|npc|actor)
+function ixr_triggers.set_trigger(trigger_name, level_name, position, radius, callable_fn)
+	if has_trigger(trigger_name) then
+		return false
+	end
+	
+	ixr_triggers.toLog("Create trigger :: level_name:[" .. tostring(level_name) .. "] trigger_name:[" .. tostring(trigger_name) .. "] radius:[" ..tostring(radius) .. "]")
+	
+	local pos = ffx_vector_utils.clone(position)
+	
+	if ixr_triggers.dynamic_vars.triggers[level_name] == nil then
+		ixr_triggers.dynamic_vars.triggers[level_name] = {}
+	end
+	
+	 ixr_triggers.dynamic_vars.triggers[level_name][trigger_name] = {
+		name = trigger_name,
+		lvl = level_name, 
+		x = pos.x,
+		y = pos.y, 
+		z = pos.z, 
+		radius = radius, 
+		callable_fn = callable_fn,
+		inside_ids = {},
+	}
+	
+	return true
+end

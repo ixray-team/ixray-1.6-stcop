@@ -113,13 +113,6 @@ end
 
 -- Создает и возвращает копию вектора
 function vector_copy_by_val(vec)
---[[
-	local newvec = vector()
-	newvec.x = vec.x
-	newvec.y = vec.y
-	newvec.z = vec.z
-	return newvec
---]]
 	return vector():set(vec)
 end
 
@@ -607,6 +600,28 @@ function w_CTime( p, t )
 	--set_save_marker(p, "save", true, "CTIME")
 end
 
+-- Упаковка CTime в таблицу
+function get_table_CTime(t)
+	local Y, M, D, h, m, s, ms = 0, 0, 0, 0, 0, 0, 0
+		Y, M, D, h, m, s, ms = t:get( Y, M, D, h, m, s, ms )
+		
+	return {
+		Y = Y - 2000,
+		M = M,
+		D = D,
+		h = h,
+		m = m,
+		s = s,
+		ms = ms
+	}
+end
+
+-- Распаковка CTime из таблицы
+function get_CTime_from_table(c_time_tbl)
+	local tm = game.CTime()
+	return tm:set(c_time_tbl.Y + 2000,  c_time_tbl.M, c_time_tbl.D, c_time_tbl.h, c_time_tbl.m, c_time_tbl.s, c_time_tbl.ms)
+end
+
 -- чтение CTime из пакета
 function r_CTime( p )
 	--set_save_marker(p, "load", false, "CTIME")
@@ -634,7 +649,7 @@ end
 function send_to_nearest_accessible_vertex( npc, v_id )
 	if not npc:accessible( v_id ) then
 		local vtemp = vector()
-		printf("vertex_position")
+		--printf("vertex_position")
 		v_id, vtemp = npc:accessible_nearest( level.vertex_position( v_id ), vtemp )
 	end
 
@@ -753,4 +768,78 @@ function parse_target(target)
 		else
 				return target, nil
 		end
+end
+
+function parse_data(npc,s)
+	local t = {}
+
+		if s then
+		for name in string.gfind( s, "(%|*%d+%|[^%|]+)%p*" ) do
+--			printf("[%s]", utils.to_str(name))
+			local dat = {	dist = nil,
+							state = nil,
+							sound = nil}
+
+			local t_pos = string.find( name, "|", 1, true )
+			local s_pos = string.find( name, "@", 1, true )
+
+			local dist = string.sub( name, 1, t_pos - 1 )
+			local state
+			local sound
+
+			if s_pos then
+				state	= string.sub( name, t_pos + 1,
+											s_pos - 1 )
+				sound	= string.sub( name, s_pos + 1)
+			else
+				state	= string.sub( name, t_pos + 1)
+			end
+
+--			printf("	[%s]=[%s][%s]", utils.to_str(dist), utils.to_str(state), utils.to_str(sound))
+
+			dat.dist = tonumber(dist)
+			if state then
+				dat.state = xr_logic.parse_condlist(npc, dist, state, state)
+			end
+			if sound then
+				dat.sound = xr_logic.parse_condlist(npc, dist, sound, sound)
+			end
+			table.insert(t, dat)
+		end
+	end
+		return t
+end
+
+function parse_syn_data(npc,s)
+--	printf("parse_syn_data [%s]", utils.to_str(s))
+	local t = {}
+		if s then
+		for name in string.gfind( s, "(%|*[^%|]+%|*)%p*" ) do
+			local dat = {	zone = nil,
+							state = nil,
+							sound = nil}
+--			printf("[%s]", utils.to_str(name))
+
+			local t_pos = string.find( name, "@", 1, true )
+			local s_pos = string.find( name, "|", 1, true )
+
+			local state = string.sub( name, 1, t_pos - 1 )
+			local sound
+			if s_pos then
+				sound = string.sub( name, t_pos + 1, s_pos -1)
+			else
+				sound = string.sub( name, t_pos + 1)
+			end
+
+			dat.state = state
+			dat.sound = sound
+			table.insert(t, dat)
+		end
+	end
+
+		return t
+end
+
+function is_widescreen()
+	return (device().width/device().height>1024/768+0.01)
 end
