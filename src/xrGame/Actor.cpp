@@ -1285,11 +1285,11 @@ void CActor::PlayRainOnHelmetSound()
 
 	if (factor > EPS_L && g_Alive())
 	{
-		const float* hemiCube = renderable_ROS()->get_luminocity_hemi_cube();
-		float hemiValue = _max(hemiCube[0], hemiCube[1]);
-		hemiValue = _max(hemiValue, hemiCube[2]);
-		hemiValue = _max(hemiValue, hemiCube[3]);
-		hemiValue = _max(hemiValue, hemiCube[5]);
+		const float* hemiCube = g_pGamePersistent->Environment().eff_Rain->Rain_ROS ? g_pGamePersistent->Environment().eff_Rain->Rain_ROS->get_luminocity_hemi_cube() : renderable_ROS()->get_luminocity_hemi_cube();
+		float hemiValue = std::max(hemiCube[0], hemiCube[1]);
+		hemiValue = std::max(hemiValue, hemiCube[2]);
+		hemiValue = std::max(hemiValue, hemiCube[3]);
+		hemiValue = std::max(hemiValue, hemiCube[5]);
 
 		if (m_rainOnHelmetSnd._feedback())
 		{

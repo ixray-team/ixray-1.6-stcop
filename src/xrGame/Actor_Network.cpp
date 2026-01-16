@@ -600,7 +600,7 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 		
 	if (ROS())
 	{
-		ROS()->force_mode(IRender_ObjectSpecific::TRACE_HEMI|IRender_ObjectSpecific::TRACE_SUN);
+		ROS()->force_mode(IRender_ObjectSpecific::TRACE_ALL);
 	}
 
 	//mstate_wishful = E->mstate;

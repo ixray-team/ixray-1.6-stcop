@@ -33,6 +33,8 @@ CEffect_Rain::CEffect_Rain()
 
 	m_rainVolume = 0.0f;
 	p_create();
+	Rain_ROS = ::Render->ros_create(nullptr);
+	Rain_ROS->force_mode(IRender_ObjectSpecific::TRACE_HEMI | IRender_ObjectSpecific::TRACE_SUN);
 }
 
 CEffect_Rain::~CEffect_Rain()
@@ -44,6 +46,7 @@ CEffect_Rain::~CEffect_Rain()
 
 	// Cleanup
 	p_destroy();
+	::Render->ros_destroy(Rain_ROS);
 }
 
 // Born
@@ -195,13 +198,14 @@ void CEffect_Rain::OnFrame()
 	float factor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
 	static float hemi_factor = 0.f;
 	CObject *E = g_pGameLevel ? g_pGameLevel->CurrentViewEntity() : nullptr;
-	if (E && E->renderable_ROS() && !Device.IsEditorMode())
+	if (E && !Device.IsEditorMode())
 	{
-		float* hemi_cube = E->renderable_ROS()->get_luminocity_hemi_cube();
-		float hemi_val = _max(hemi_cube[0], hemi_cube[1]);
-		hemi_val = _max(hemi_val, hemi_cube[2]);
-		hemi_val = _max(hemi_val, hemi_cube[3]);
-		hemi_val = _max(hemi_val, hemi_cube[5]);
+		Rain_ROS->update_smooth(E);
+		float* hemi_cube = Rain_ROS->get_luminocity_hemi_cube();
+		float hemi_val = std::max(hemi_cube[0], hemi_cube[1]);
+		hemi_val = std::max(hemi_val, hemi_cube[2]);
+		hemi_val = std::max(hemi_val, hemi_cube[3]);
+		hemi_val = std::max(hemi_val, hemi_cube[5]);
 
 		//		float f					= 0.9f*hemi_factor + 0.1f*hemi_val;
 		float f = hemi_val;

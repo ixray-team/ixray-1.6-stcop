@@ -10,7 +10,7 @@
 
 //refs
 class ENGINE_API IRender_DetailModel;
-
+class ENGINE_API IRender_ObjectSpecific;
 #include "../Include/xrRender/FactoryPtr.h"
 #include "../Include/xrRender/RainRender.h"
 //
@@ -97,6 +97,9 @@ public:
 	void							UpdateItems		();
 	void InvalidateState();
 	float GetRainVolume() const { return m_rainVolume; }
-};
 
+	IRender_ObjectSpecific* Rain_ROS = nullptr;
+	bool IsEnabled = true;
+	void Enable(bool Value);
+};
 #endif //RainH

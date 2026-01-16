@@ -123,6 +123,7 @@ public:
 	virtual float						get_luminocity		()									= 0;
 	virtual float						get_luminocity_hemi	()									= 0;
 	virtual float*						get_luminocity_hemi_cube		()									= 0;
+	virtual void						update_smooth(IRenderable* O = 0) {};
 
 	virtual ~IRender_ObjectSpecific()	{};
 };
