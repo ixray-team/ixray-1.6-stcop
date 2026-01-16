@@ -5,6 +5,9 @@
 function printf()
 end	
 
+fighting_with_actor_npcs = {
+}
+
 function is_enemy(obj, enemy, st, not_check_sim)
 	if not obj:alive() then
 		return false
@@ -183,6 +186,17 @@ function action_process_enemy:enemy_callback( obj, enemy )
 --'	printf("FOUND ENEMY [%s](%s,%s,%s) -> [%s](%s,%s,%s)", self.object:name(), obj_pos.x, obj_pos.y, obj_pos.z,
 --'														   enemy:name(), ene_pos.x, ene_pos.y, ene_pos.z)
 
+	if not db.actor then
+		return false
+	end
+	
+	if enemy:id() == db.actor:id() then
+		if not fighting_with_actor_npcs[obj:id()] then
+			SendScriptCallback("npc_on_fighting_actor", obj)
+		end
+		
+		fighting_with_actor_npcs[obj:id()] = true
+	end
 
 	return is_enemy( obj, enemy, self.st, false )
 end
