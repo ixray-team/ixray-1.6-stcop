@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "../xrRender/du_sphere.h"
+#include "du_sphere.h"
 
 void CRenderTarget::accum_point_geom_create()
 {

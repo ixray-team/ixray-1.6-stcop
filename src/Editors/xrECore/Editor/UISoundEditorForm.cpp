@@ -226,7 +226,7 @@ float UISoundEditorForm::GetOGGDurationInSeconds(const char* filename)
         return -1.0f;
     }
 
-    // ������������ � ��������
+    // Длительность в секундах
     double duration = ov_time_total(&vf, -1);
 
     ov_clear(&vf);

@@ -26,13 +26,13 @@ protected:
 	float           m_accumulated_time = 0.0f;
 
 
-	// Пружинная система
+	// РџСЂСѓР¶РёРЅРЅР°СЏ СЃРёСЃС‚РµРјР°
 	float			m_target_angle_vert;
 	float			m_target_angle_horz;
 	float			m_velocity_vert;
 	float			m_velocity_horz;
 
-	// Флаг использования паттерна
+	// Р¤Р»Р°Рі РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ РїР°С‚С‚РµСЂРЅР°
 	bool			m_using_pattern; 
 
 	float			m_delta_vert;

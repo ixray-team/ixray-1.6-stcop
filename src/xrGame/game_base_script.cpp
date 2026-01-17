@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "pch_script.h"
 #include "game_base.h"
 #include "xrServer_script_macroses.h"

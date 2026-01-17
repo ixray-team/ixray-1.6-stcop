@@ -13,13 +13,13 @@ struct RayRecvestIndex;
 
 namespace XRay::RayTrace::CUDA
 {
-    // Отдельный инициализвтор
+    // РћС‚РґРµР»СЊРЅС‹Р№ РёРЅРёС†РёР°Р»РёР·РІС‚РѕСЂ
     void InitializeLights();
 
-    // Загрузить Faces
+    // Р—Р°РіСЂСѓР·РёС‚СЊ Faces
     void InitializeFaces(xr_vector<Face*> Faces);
 
-    // Загрузить Альфу Текстур
+    // Р—Р°РіСЂСѓР·РёС‚СЊ РђР»СЊС„Сѓ РўРµРєСЃС‚СѓСЂ
     void InitializeTexturesAlpha();
 
     // Builder Scene
