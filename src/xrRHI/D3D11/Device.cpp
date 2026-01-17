@@ -15,7 +15,7 @@ InternalDevice11::InternalDevice11()
 	}
 	else if (GRHI->DriverExt->GetNV())
 	{
-		VertexCache = 32; // Дискретка
+		VertexCache = 32; // Р”РёСЃРєСЂРµС‚РєР°
 	}
 	else
 	{

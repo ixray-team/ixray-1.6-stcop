@@ -6,14 +6,14 @@
 //	Description : Base server game script export
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "pch_script.h"
 #include "game_sv_base.h"
 #include "xrMessages.h"
 #include "ui/UIInventoryUtilities.h"
 #include "xr_time.h"
 #include "../xrCore/net_utils.h"
-#include "UI/UIGameTutorial.h"
+#include "ui/UIGameTutorial.h"
 #include "../xrEngine/string_table.h"
 #include "object_broker.h"
 

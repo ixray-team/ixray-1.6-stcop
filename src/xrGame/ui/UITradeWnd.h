@@ -5,7 +5,7 @@
 #include "UIDragDropListEx.h"
 #include "UICharacterInfo.h"
 #include "../../xrUI/Widgets/UI3tButton.h"
-#include "uiiteminfo.h"
+#include "UIItemInfo.h"
 
 class CInventoryOwner;
 class CEatableItem;

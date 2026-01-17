@@ -349,7 +349,7 @@ struct LevelInspector final
 		append_geometry(vertices, cylinder_lindices, cylinder_tindices, lcolor, tcolor, fastbuff);
 	}
 
-	ICF void append_cone(const Fcylinder& cone/*когда-то добавлю отдельный класс Fcone*/, u32 lcolor = u32(0), u32 tcolor = u32(0), IUIRender::LITFast** fastbuff = nullptr)
+	ICF void append_cone(const Fcylinder& cone/*РєРѕРіРґР°-С‚Рѕ РґРѕР±Р°РІР»СЋ РѕС‚РґРµР»СЊРЅС‹Р№ РєР»Р°СЃСЃ Fcone*/, u32 lcolor = u32(0), u32 tcolor = u32(0), IUIRender::LITFast** fastbuff = nullptr)
 	{
 		extern Fvector cone_vertices[17];
 		extern lindex cone_lindices[32];
