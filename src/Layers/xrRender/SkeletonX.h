@@ -143,7 +143,7 @@ BOOL pick_bone(CKinematics* Parent, IKinematics::pick_result &r, float dist, con
 		return intersect;
 	}
 
-	// Last resort: cannot map the buffer for CPU read — log and return FALSE
+	// Last resort: cannot map the buffer for CPU read - log and return FALSE
 	Msg("! pick_bone: cannot map vertex buffer for read\n");
 	return FALSE;
 }

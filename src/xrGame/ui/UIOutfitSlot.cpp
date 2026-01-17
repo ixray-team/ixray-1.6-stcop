@@ -3,7 +3,7 @@
 #include "../../xrUI/Widgets/UIStatic.h"
 #include "UICellItem.h"
 #include "../CustomOutfit.h"
-#include "../actor.h"
+#include "../Actor.h"
 #include "UIInventoryUtilities.h"
 
 CUIOutfitDragDropList::CUIOutfitDragDropList()
@@ -18,7 +18,7 @@ CUIOutfitDragDropList::~CUIOutfitDragDropList()
 {
 }
 
-#include "../level.h"
+#include "../Level.h"
 
 void CUIOutfitDragDropList::SetOutfit(CUICellItem* itm)
 {

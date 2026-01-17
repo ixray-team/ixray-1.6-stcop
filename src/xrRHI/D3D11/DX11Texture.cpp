@@ -96,16 +96,16 @@ u32 GetFormatSize(DXGI_FORMAT format)
 	case DXGI_FORMAT_D16_UNORM:
 		return 2;
 	case DXGI_FORMAT_D24_UNORM_S8_UINT:
-		return 3; // Но обычно выравнивается до 4 байт
+		return 3; // РќРѕ РѕР±С‹С‡РЅРѕ РІС‹СЂР°РІРЅРёРІР°РµС‚СЃСЏ РґРѕ 4 Р±Р°Р№С‚
 	case DXGI_FORMAT_D32_FLOAT:
 		return 4;
 	case DXGI_FORMAT_D32_FLOAT_S8X24_UINT:
 		return 8;
 
-		// Unknown/typeless - используем fallback
+		// Unknown/typeless - РёСЃРїРѕР»СЊР·СѓРµРј fallback
 	case DXGI_FORMAT_UNKNOWN:
 	default:
-		return 4; // По умолчанию предполагаем RGBA8
+		return 4; // РџРѕ СѓРјРѕР»С‡Р°РЅРёСЋ РїСЂРµРґРїРѕР»Р°РіР°РµРј RGBA8
 	}
 }
 
@@ -722,7 +722,7 @@ IRHIUnorderedAccessView* DX11TextureFactory::CreateUAV(IRHISurface* pTexture, co
 	D3D11_UNORDERED_ACCESS_VIEW_DESC dxDesc;
 	ZeroMemory(&dxDesc, sizeof(dxDesc));
 
-	// Конвертация формата
+	// РљРѕРЅРІРµСЂС‚Р°С†РёСЏ С„РѕСЂРјР°С‚Р°
 	dxDesc.Format = DXGI_FORMAT(desc.Format);
 
 	switch (desc.ViewDimension)

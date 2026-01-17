@@ -2173,7 +2173,7 @@ bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 p
 
 	return true;
 }
-// анимация-эффект которая не будет отключать обычные анимации но позволит создать подрагивания уклонения и прочие анимационные эффекты
+
 void player_hud::animator_fx_play(const shared_str& anim_name, u16 place_idx, u16 part_id, u8 anm_idx, float blendAccrue, float blendFalloff, float Speed, float Power)
 {
 	MotionID motion;

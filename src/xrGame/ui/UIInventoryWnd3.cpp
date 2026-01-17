@@ -1,14 +1,14 @@
 #include "stdafx.h"
 #include "UIInventoryWnd.h"
-#include "../actor.h"
-#include "../silencer.h"
-#include "../scope.h"
-#include "../grenadelauncher.h"
+#include "../Actor.h"
+#include "../Silencer.h"
+#include "../Scope.h"
+#include "../GrenadeLauncher.h"
 #include "../Artefact.h"
 #include "../eatable_item.h"
 #include "../BottleItem.h"
 #include "../WeaponMagazined.h"
-#include "../inventory.h"
+#include "../Inventory.h"
 #include "../game_base.h"
 #include "../game_cl_base.h"
 #include "../../xrEngine/xr_level_controller.h"
@@ -17,10 +17,10 @@
 #include "../CustomOutfit.h"
 #include "../../xrUI/UICursor.h"
 #include "ui_drop_amount.h"
-#include "../pda.h"
+#include "../PDA.h"
 #include "../game_sv_single.h"
 #include "ai_object_location.h"
-#include "../actorhelmet.h"
+#include "../ActorHelmet.h"
 
 void CUIInventoryWnd::EatItem(PIItem itm)
 {
@@ -34,8 +34,8 @@ void CUIInventoryWnd::EatItem(PIItem itm)
 	PlaySnd									(eInvItemUse);
 }
 
-#include "../Medkit.h"
-#include "../Antirad.h"
+#include "../medkit.h"
+#include "../antirad.h"
 void CUIInventoryWnd::ActivatePropertiesBox()
 {
 	TryHidePropertiesBox();

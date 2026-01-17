@@ -7,7 +7,7 @@
 	#include "../../Editors/xrECore/Editor/UI_ToolsCustom.h"
 	#include "../../Editors/xrECore/Editor/ParticleEffectActions.h"
 #else
-#include "../../Layers/xrRender/particle_core/EditorLegacy/ParticleEffectActions.h"
+#include "particle_core/EditorLegacy/ParticleEffectActions.h"
 #endif
 
 //---------------------------------------------------------------------------

@@ -7,7 +7,7 @@
 #include "dxRenderDeviceRender.h"
 
 #ifdef USE_DX11
-#include "../xrRender/tss.h"
+#include "tss.h"
 #endif
 
 void fix_texture_name(LPSTR fn);

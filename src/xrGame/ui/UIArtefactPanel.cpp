@@ -3,7 +3,7 @@
 #include "UIInventoryUtilities.h"
 #include "../../xrUI/UIXmlInit.h"
 
-#include "../artefact.h"
+#include "../Artefact.h"
 
 using namespace InventoryUtilities;
 

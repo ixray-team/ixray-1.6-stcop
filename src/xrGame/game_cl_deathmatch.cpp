@@ -17,7 +17,7 @@
 #include "map_location.h"
 #include "clsid_game.h"
 #include "ui/UIActorMenu.h"
-#include "ui/uiinventorywnd.h"
+#include "ui/UIInventoryWnd.h"
 #include "Weapon.h"
 #include "../xrEngine/string_table.h"
 

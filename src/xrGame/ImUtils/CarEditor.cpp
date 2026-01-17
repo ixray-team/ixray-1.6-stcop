@@ -117,7 +117,7 @@ void RenderCarConfigEditor()
 	if (ImGui::Button("Save"))
 		g_CarConfig.Save(g_CarConfig.Name);
 
-	// ----------- SECTIONS (—œŒ…À≈–€) ------------------------------------
+	// ----------- SECTIONS (—è–æ–Ω–∏–∫–µ–ø—à) ------------------------------------
 
 	if (ImGui::CollapsingHeader("Geometry"))
 	{

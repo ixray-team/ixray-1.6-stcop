@@ -48,9 +48,9 @@ struct RHIUAVDesc
 	ERHI_VIEW_DIMENSION ViewDimension;
 	u32 FirstElement;
 	u32 NumElements;
-	u32 MipSlice; // Для текстур
-	u32 FirstWSlice; // Для 3D текстур
-	u32 WSize; // Для 3D текстур
+	u32 MipSlice; // Р”Р»СЏ С‚РµРєСЃС‚СѓСЂ
+	u32 FirstWSlice; // Р”Р»СЏ 3D С‚РµРєСЃС‚СѓСЂ
+	u32 WSize; // Р”Р»СЏ 3D С‚РµРєСЃС‚СѓСЂ
 };
 
 struct RHISubResource
