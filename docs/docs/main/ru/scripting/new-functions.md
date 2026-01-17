@@ -706,6 +706,35 @@ retval: none
 args: bool, vector2, vector2, string, int
 
 ```
+## CConsole
+```lua
+--// Регистрация LUA команды в консоли (нужно вызывать каждый раз на старте уровня)
+  get_console():register_lua_command(name_command, callable_fn, tips_string)
+
+retval: none
+args: 
+  name_command, -- Имя команды в консоли
+  callable_fn, -- lua функция принимает таблицу аргументов
+  tips_string -- подсказки в консоли напротив команды разделитель запятая
+```
+#### Пример кода Регистрация LUA команды в консоли
+```lua
+--// Регистрация LUA команды в консоли
+-- Пример создания команды которая будет спавнить секцию указанную в первом аргументе в инвентарь к гг
+  get_console():register_lua_command(
+    "spawn_item_to_actor",
+    function (args)
+      alife():create(
+        args[1],
+        db.actor:position(),
+        db.actor:level_vertex_id(),
+        db.actor:game_vertex_id(),
+        db.actor:id()
+      )
+    end,
+    "wpn_pm, wpn_ak_74, bandage" -- подсказки для консоли разделитель запятая
+  )
+```
 
 ## ActorMenu
 ```lua
