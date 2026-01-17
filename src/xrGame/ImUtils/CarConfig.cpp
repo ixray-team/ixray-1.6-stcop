@@ -49,7 +49,7 @@ void CarConfig::Load(const shared_str& Section)
 
 	shared_str VisualName = pSettings->r_string(Section, "visual");
 
-	// Ãðóçèì âèçóàë ÷òîáû äîñòàòü user data
+	// Ð“Ñ€ÑƒÐ·Ð¸Ð¼ Ð²Ð¸Ð·ÑƒÐ°Ð» Ñ‡Ñ‚Ð¾Ð±Ñ‹ Ð´Ð¾ÑÑ‚Ð°Ñ‚ÑŒ user data
 	auto Visual = ::Render->model_Create(VisualName.c_str());
 	auto& ini = *Visual->dcast_PKinematics()->LL_UserData();
 	const char* section = "car_definition";

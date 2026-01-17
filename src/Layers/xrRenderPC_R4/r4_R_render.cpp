@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 
 #include "../../xrEngine/IGame_Persistent.h"
 #include "../xrRender/FBasicVisual.h"

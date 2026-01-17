@@ -2,7 +2,7 @@
 #include "../../xrUI/Widgets/UIDialogWnd.h"
 #include "../../xrUI/Widgets/UIListItem.h"
 #include "../../xrUI/Widgets/UIWndCallback.h"
-#include "../../xrUI/Widgets/UI3tbutton.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
 
 class CGameTask;
 class CUIStatic;
