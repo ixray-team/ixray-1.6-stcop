@@ -13,8 +13,8 @@ inline BYTE ConvertFormatToDeclType(ERHI_FORMAT format)
 	case ERHI_FORMAT::R8G8B8A8_UNORM:
 	case ERHI_FORMAT::B8G8R8A8_UNORM:    return D3DDECLTYPE_D3DCOLOR;
 
-	case ERHI_FORMAT::R16G16_FLOAT:       return D3DDECLTYPE_SHORT2;      // нужно проверить, может SHORT2N
-	case ERHI_FORMAT::R16G16B16A16_FLOAT: return D3DDECLTYPE_SHORT4;      // аналогично
+	case ERHI_FORMAT::R16G16_FLOAT:       return D3DDECLTYPE_SHORT2;      // РЅСѓР¶РЅРѕ РїСЂРѕРІРµСЂРёС‚СЊ, РјРѕР¶РµС‚ SHORT2N
+	case ERHI_FORMAT::R16G16B16A16_FLOAT: return D3DDECLTYPE_SHORT4;      // Р°РЅР°Р»РѕРіРёС‡РЅРѕ
 
 	case ERHI_FORMAT::UNKNOWN:
 	case ERHI_FORMAT::R32G32B32A32_UINT:
@@ -76,7 +76,7 @@ void DX9ShaderDeclaration::GenerateLayerDescriptors(void*)
 	IDirect3DDevice9* DxDevice = (IDirect3DDevice9*)GRHI->DevicePtr->RawDevice;
 	DX9Descriptors.resize(Descriptors.size() + 1);
 
-	u32 offset = 0; // начальное смещение
+	u32 offset = 0; // РЅР°С‡Р°Р»СЊРЅРѕРµ СЃРјРµС‰РµРЅРёРµ
 	for (size_t i = 0; i < Descriptors.size(); ++i)
 	{
 		const RHIInputElementDesc& Desc = Descriptors[i];

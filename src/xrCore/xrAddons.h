@@ -9,9 +9,9 @@ private:
 public:
 	struct AddonInfo
 	{
-		shared_str EntryDir;     // Корень аддона
-		shared_str AddonName;    // Уникальное имя
-		shared_str ScriptInit;   // init-скрипт (без .script)
+		shared_str EntryDir;     // РљРѕСЂРµРЅСЊ Р°РґРґРѕРЅР°
+		shared_str AddonName;    // РЈРЅРёРєР°Р»СЊРЅРѕРµ РёРјСЏ
+		shared_str ScriptInit;   // init-СЃРєСЂРёРїС‚ (Р±РµР· .script)
 
 		xr_vector<xr_string> Dependencies;
 		xr_set<xr_string> Platforms;
