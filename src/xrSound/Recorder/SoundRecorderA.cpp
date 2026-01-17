@@ -127,7 +127,7 @@ void CSoundRecorderA::Update()
 
 		if (psSoundRecorderMode || psSoundRecorderDenoise)
 		{
-			// Speex всё ещё short*, поэтому нужен конверт
+			// Speex РІСЃС‘ РµС‰С‘ short*, РїРѕСЌС‚РѕРјСѓ РЅСѓР¶РµРЅ РєРѕРЅРІРµСЂС‚
 			static xr_vector<short> tempShort(m_samplesPerBuffer);
 			for (int i = 0; i < m_samplesPerBuffer; ++i)
 				tempShort[i] = (short)(std::clamp(m_buffer[i], -1.0f, 1.0f) * 32767.0f);

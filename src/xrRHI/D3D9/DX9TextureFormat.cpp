@@ -94,11 +94,11 @@ D3DFORMAT ConvertRHIFormatToDX9(ERHI_FORMAT rhiFormat)
 	case ERHI_FORMAT::B8G8R8X8_UNORM:        return D3DFMT_X8R8G8B8;
 	case ERHI_FORMAT::B4G4R4A4_UNORM:        return D3DFMT_A4R4G4B4;
 
-	// Video formats (частичная поддержка)
+	// Video formats (С‡Р°СЃС‚РёС‡РЅР°СЏ РїРѕРґРґРµСЂР¶РєР°)
 	//case ERHI_FORMAT::NV12:                  return D3DFMT_NV12;
 	case ERHI_FORMAT::YUY2:                  return D3DFMT_YUY2;
 
-	// Неподдерживаемые форматы
+	// РќРµРїРѕРґРґРµСЂР¶РёРІР°РµРјС‹Рµ С„РѕСЂРјР°С‚С‹
 	case ERHI_FORMAT::UNKNOWN:				return D3DFMT_UNKNOWN;
 	case ERHI_FORMAT::FORCE_UINT:
 	default:
@@ -126,14 +126,14 @@ ERHI_FORMAT ConvertDX9FormatToRHI(D3DFORMAT dx9Format)
 	case D3DFMT_D24S8:            return ERHI_FORMAT::D24_UNORM_S8_UINT;
 	case D3DFMT_D16:              return ERHI_FORMAT::D16_UNORM;
 	case D3DFMT_D24X8:            return ERHI_FORMAT::R24_UNORM_X8_TYPELESS;
-	case D3DFMT_D15S1:            return ERHI_FORMAT::D24_UNORM_S8_UINT; // Ближайший аналог
+	case D3DFMT_D15S1:            return ERHI_FORMAT::D24_UNORM_S8_UINT; // Р‘Р»РёР¶Р°Р№С€РёР№ Р°РЅР°Р»РѕРі
 
 	// 10-bit RGB formats
 	case D3DFMT_A2B10G10R10:      return ERHI_FORMAT::R10G10B10A2_UNORM;
 
 	// 8-bit RGBA formats
 	case D3DFMT_A8B8G8R8:         return ERHI_FORMAT::R8G8B8A8_UNORM;
-	case D3DFMT_X8B8G8R8:         return ERHI_FORMAT::R8G8B8A8_UNORM; // Без альфа-канала
+	case D3DFMT_X8B8G8R8:         return ERHI_FORMAT::R8G8B8A8_UNORM; // Р‘РµР· Р°Р»СЊС„Р°-РєР°РЅР°Р»Р°
 
 	// 16-bit RG formats
 	case D3DFMT_G16R16F:          return ERHI_FORMAT::R16G16_FLOAT;
@@ -152,9 +152,9 @@ ERHI_FORMAT ConvertDX9FormatToRHI(D3DFORMAT dx9Format)
 
 	// Compressed formats (BC/DXT)
 	case D3DFMT_DXT1:             return ERHI_FORMAT::BC1_UNORM;
-	case D3DFMT_DXT2:             return ERHI_FORMAT::BC2_UNORM; // DXT2 аналогичен DXT3
+	case D3DFMT_DXT2:             return ERHI_FORMAT::BC2_UNORM; // DXT2 Р°РЅР°Р»РѕРіРёС‡РµРЅ DXT3
 	case D3DFMT_DXT3:             return ERHI_FORMAT::BC2_UNORM;
-	case D3DFMT_DXT4:             return ERHI_FORMAT::BC3_UNORM; // DXT4 аналогичен DXT5
+	case D3DFMT_DXT4:             return ERHI_FORMAT::BC3_UNORM; // DXT4 Р°РЅР°Р»РѕРіРёС‡РµРЅ DXT5
 	case D3DFMT_DXT5:             return ERHI_FORMAT::BC3_UNORM;
 
 	// Legacy formats
@@ -168,15 +168,15 @@ ERHI_FORMAT ConvertDX9FormatToRHI(D3DFORMAT dx9Format)
 
 	// Video formats
 	case D3DFMT_YUY2:             return ERHI_FORMAT::YUY2;
-	case D3DFMT_UYVY:             return ERHI_FORMAT::YUY2; // Ближайший аналог
+	case D3DFMT_UYVY:             return ERHI_FORMAT::YUY2; // Р‘Р»РёР¶Р°Р№С€РёР№ Р°РЅР°Р»РѕРі
 
-	// Дополнительные форматы, которые могут быть в DX9
-	case D3DFMT_A4L4:             return ERHI_FORMAT::R8_UNORM; // Ближайший аналог
-	case D3DFMT_A2B10G10R10_XR_BIAS: return ERHI_FORMAT::R10G10B10A2_UNORM; // Ближайший аналог
-	case D3DFMT_A8P8:             return ERHI_FORMAT::R8_UNORM; // Ближайший аналог
-	case D3DFMT_P8:               return ERHI_FORMAT::R8_UNORM; // Ближайший аналог
+	// Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ С„РѕСЂРјР°С‚С‹, РєРѕС‚РѕСЂС‹Рµ РјРѕРіСѓС‚ Р±С‹С‚СЊ РІ DX9
+	case D3DFMT_A4L4:             return ERHI_FORMAT::R8_UNORM; // Р‘Р»РёР¶Р°Р№С€РёР№ Р°РЅР°Р»РѕРі
+	case D3DFMT_A2B10G10R10_XR_BIAS: return ERHI_FORMAT::R10G10B10A2_UNORM; // Р‘Р»РёР¶Р°Р№С€РёР№ Р°РЅР°Р»РѕРі
+	case D3DFMT_A8P8:             return ERHI_FORMAT::R8_UNORM; // Р‘Р»РёР¶Р°Р№С€РёР№ Р°РЅР°Р»РѕРі
+	case D3DFMT_P8:               return ERHI_FORMAT::R8_UNORM; // Р‘Р»РёР¶Р°Р№С€РёР№ Р°РЅР°Р»РѕРі
 
-	// Неподдерживаемые форматы
+	// РќРµРїРѕРґРґРµСЂР¶РёРІР°РµРјС‹Рµ С„РѕСЂРјР°С‚С‹
 	case D3DFMT_UNKNOWN:
 	default:
 		return ERHI_FORMAT::UNKNOWN;
@@ -199,9 +199,9 @@ u32 GetDX9FormatSize(D3DFORMAT dx9Format)
 	case D3DFMT_L16:                return 2;
 	case D3DFMT_L8:                 return 1;
 	case D3DFMT_A8:                 return 1;
-	case D3DFMT_DXT1:               return 8;  // на блок 4x4
-	case D3DFMT_DXT3:               return 16; // на блок 4x4
-	case D3DFMT_DXT5:               return 16; // на блок 4x4
+	case D3DFMT_DXT1:               return 8;  // РЅР° Р±Р»РѕРє 4x4
+	case D3DFMT_DXT3:               return 16; // РЅР° Р±Р»РѕРє 4x4
+	case D3DFMT_DXT5:               return 16; // РЅР° Р±Р»РѕРє 4x4
 	case D3DFMT_R5G6B5:             return 2;
 	case D3DFMT_A1R5G5B5:           return 2;
 	case D3DFMT_A8R8G8B8:           return 4;
