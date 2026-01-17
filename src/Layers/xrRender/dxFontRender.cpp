@@ -181,7 +181,7 @@ void dxFontRender::CreateFontAtlas(u32 width, u32 height, const char* name, void
 {
 	PROF_EVENT("dxFontRender::CreateFontAtlas");
 
-	// Заполняем описание текстуры
+	// Р—Р°РїРѕР»РЅСЏРµРј РѕРїРёСЃР°РЅРёРµ С‚РµРєСЃС‚СѓСЂС‹
 	RHITextureDesc rhiDesc = {};
 	rhiDesc.Width = width;
 	rhiDesc.Height = height;

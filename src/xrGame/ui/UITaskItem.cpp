@@ -3,7 +3,7 @@
 #include "UITaskItem.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/Widgets/UI3tButton.h"
-#include "../gametask.h"
+#include "../GameTask.h"
 #include "../../xrEngine/string_table.h"
 #include "UIEventsWnd.h"
 #include "../../xrUI/Widgets/UIEditBoxEx.h"
@@ -11,9 +11,9 @@
 #include "UIInventoryUtilities.h"
 #include "../map_location.h"
 #include "../map_manager.h"
-#include "../level.h"
-#include "../actor.h"
-#include "../gametaskmanager.h"
+#include "../Level.h"
+#include "../Actor.h"
+#include "../GametaskManager.h"
 
 CUITaskItemLegacy::CUITaskItemLegacy(CUIEventsWnd* w)
 :m_GameTask			(nullptr),

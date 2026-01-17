@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 // XRay typedefs, which don't use xalloc
 #include <span>
 #include <array>

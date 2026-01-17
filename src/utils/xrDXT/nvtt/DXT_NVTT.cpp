@@ -64,7 +64,7 @@ void ExtractCubeFacesFromCrossRGBA(const u8* src, int W, int H, int pitch, std::
 		}
 	};
 
-	// порядок: +X, -X, +Y, -Y, +Z, -Z
+	// РїРѕСЂСЏРґРѕРє: +X, -X, +Y, -Y, +Z, -Z
 	copyFace(0, 2 * S, S); // +X
 	copyFace(1, 0 * S, S); // -X
 	copyFace(2, 1 * S, 0); // +Y

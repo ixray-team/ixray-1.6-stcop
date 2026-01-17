@@ -21,7 +21,7 @@
 #include "UIInventoryWnd.h"
 #include "game_cl_base.h"
 #include "UICarBodyWnd.h"
-#include "uitradewnd.h"
+#include "UITradeWnd.h"
 #include "../xrEngine/x_ray.h"
 #include "ui/UICellItem.h"
 

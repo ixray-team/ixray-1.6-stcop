@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-#include "../xrRender/ResourceManager.h"
-#include "../xrRender/dxRenderDeviceRender.h"
+#include "ResourceManager.h"
+#include "dxRenderDeviceRender.h"
 
 CRT::CRT()
 {

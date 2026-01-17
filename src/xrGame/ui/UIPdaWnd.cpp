@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "UIPdaWnd.h"
 #include "../PDA.h"
-#include "uipdaaux.h"
+#include "UIPdaAux.h"
 #include "../../xrUI/xrUIXmlParser.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "UIInventoryUtilities.h"
@@ -30,8 +30,8 @@
 #include "UIScriptWnd.h"
 #include "UIPdaContactsWnd.h"
 #include "UIEncyclopediaWnd.h"
-#include "uiactorinfo.h"
-#include "uidiarywnd.h"
+#include "UIActorInfo.h"
+#include "UIDiaryWnd.h"
 
 #define PDA_XML		"pda.xml"
 

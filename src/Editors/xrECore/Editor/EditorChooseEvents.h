@@ -217,12 +217,12 @@ namespace ChoseEvents
             for (u32 X = 0; X < THUMB_WIDTH; ++X)
             {
                 u32 Color = Item->CalculateRGB(EDevice->fTimeGlobal, Frame);
-                Color = subst_alpha(Color, 0xFF); // фиксируем альфу
+                Color = subst_alpha(Color, 0xFF); // С„РёРєСЃРёСЂСѓРµРј Р°Р»СЊС„Сѓ
                 Pixels[Y * THUMB_WIDTH + X] = Color;
             }
         }
 
-        // Подготовка подресурса
+        // РџРѕРґРіРѕС‚РѕРІРєР° РїРѕРґСЂРµСЃСѓСЂСЃР°
         RHISubResource SubResource{};
         SubResource.Width = THUMB_WIDTH;
         SubResource.Height = THUMB_HEIGHT;

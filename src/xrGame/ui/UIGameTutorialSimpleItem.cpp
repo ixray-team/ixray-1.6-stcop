@@ -14,7 +14,7 @@
 #include "../MainMenu.h"
 #include "../../xrScripts/script_engine.h"
 #include "../ai_space.h"
-#include "uiinventorywnd.h"
+#include "UIInventoryWnd.h"
 #include "../../xrEngine/string_table.h"
 
 extern ENGINE_API BOOL bShowPauseString;

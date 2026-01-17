@@ -9,7 +9,7 @@
 
 extern void Jitter_Select	(Fvector2* &Jitter, u32& Jcount);
 
-// Освещение
+// РћСЃРІРµС‰РµРЅРёРµ
 
 // Compression 
 extern BOOL	compress_Zero(lm_layer& lm, u32 rms);

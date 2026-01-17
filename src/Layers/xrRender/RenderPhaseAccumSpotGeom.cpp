@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "../xrRender/du_cone.h"
+#include "du_cone.h"
 
 void CRenderTarget::accum_spot_geom_create()
 {

@@ -663,7 +663,7 @@ void R_dsgraph_structure::renderImGuiDebugWindow_SVGStorage()
 									hoveredSubMin = subMin;
 									hoveredSubSize = subSize;
 									break_called = true;
-									break; // stop after first hit (assuming subregions don’t overlap)
+									break; // stop after first hit (assuming subregions donâ€™t overlap)
 								}
 
 								++i;

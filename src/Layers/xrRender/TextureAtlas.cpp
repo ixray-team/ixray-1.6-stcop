@@ -3,7 +3,7 @@
 #include "SVGStorage.h"
 
 #include "dxRenderDeviceRender.h"
-#include "../xrRender/dxUIShader.h"
+#include "dxUIShader.h"
 
 #include <lunasvg.h>
 #include "smol-atlas.h"

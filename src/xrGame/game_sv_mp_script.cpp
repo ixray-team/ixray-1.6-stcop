@@ -1,10 +1,10 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "pch_script.h"
 #include "game_sv_mp_script.h"
 #include "xrServer_script_macroses.h"
-#include "xrserver.h"
+#include "xrServer.h"
 #include "xrserver_objects_alife_monsters.h"
-#include "level.h"
+#include "Level.h"
 #include "ai_space.h"
 #include "../xrScripts/script_engine.h"
 

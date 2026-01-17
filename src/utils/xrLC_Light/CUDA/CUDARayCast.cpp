@@ -113,7 +113,7 @@ void XRay::RayTrace::CUDA::InitializeFaces(xr_vector<Face*> Faces)
  
  	size_faces = Faces.size();
 
-	// 🔥 РЕАЛЬНО освобождаем CPU память
+	// РЕАЛЬНО освобождаем CPU память
 	faces_host.clear();
 }
 
