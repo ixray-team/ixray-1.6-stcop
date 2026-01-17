@@ -1,7 +1,10 @@
 #include "StdAfx.h"
 #include "pch_script.h"
 #include "console_registrator.h"
-#include "../xrEngine/XR_IOConsole.h"
+#include "../xrEngine/xr_ioc_cmd.h"
+#include "../xrScripts/script_engine.h"
+#include "../xrScripts/script_process.h"
+#include "ai_space.h"
 
 using namespace luabind;
 
@@ -34,6 +37,69 @@ void execute_console_command_deferred	(CConsole* c, LPCSTR string_to_execute)
 	g_pEventManager->Event.Defer	("KERNEL:console", size_t(xr_strdup(string_to_execute)) );
 }
 
+class CCC_ScriptLuaCommand : public IConsole_Command {
+public:
+	xr_vector<shared_str> m_fill_tips;
+	luabind::functor<void> functor;
+
+	CCC_ScriptLuaCommand(LPCSTR N, luabind::functor<void>& funct, LPCSTR m_tips_string) : IConsole_Command(N)
+	{
+		bEmptyArgsHandled = true;
+		functor = funct;
+
+		int cnt = _GetItemCount(m_tips_string);
+		m_fill_tips.reserve(cnt);
+
+		for (int i = 0; i < cnt; ++i)
+		{
+			string128 tmp;
+			m_fill_tips.push_back(_GetItem(m_tips_string, i, tmp));
+		}
+	};
+
+	virtual void Execute(LPCSTR args)
+	{
+		int cnt = _GetItemCount(args);
+		luabind::object params_to_lua = luabind::newtable(ai().script_engine().lua());
+
+		for (int i = 0; i < cnt; ++i)
+		{
+			string128 tmp;
+			params_to_lua[i + 1] = _GetItem(args, i, tmp);
+		}
+
+		functor(params_to_lua);
+	}
+
+	virtual void fill_tips(vecTips& tips, u32 mode)
+	{
+		tips = m_fill_tips;
+		IConsole_Command::fill_tips(tips, mode);
+	}
+};
+
+void registerLuaCommand(CConsole* c, LPCSTR command_name, luabind::functor<void> functor, LPCSTR m_tips_string)
+{
+	if (!command_name)
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "! Error missing lua command name");
+		return;
+	}
+	auto it = c->Commands.find(command_name);
+
+	if (it != c->Commands.end())
+	{
+		if (CCC_ScriptLuaCommand* new_cmd = smart_cast<CCC_ScriptLuaCommand*>(it->second))
+		{
+			delete new_cmd;
+			c->Commands.erase(command_name);
+		}
+	}
+
+	CCC_ScriptLuaCommand* new_cmd = new CCC_ScriptLuaCommand(command_name, functor, m_tips_string);
+	c->Commands[command_name] = new_cmd;
+}
+
 #pragma optimize("s",on)
 void console_registrator::script_register(lua_State *L)
 {
@@ -46,6 +112,8 @@ void console_registrator::script_register(lua_State *L)
 			.def("execute_script",			&CConsole::ExecuteScript)
 			.def("show",					&CConsole::Show)
 			.def("hide",					&CConsole::Hide)
+
+			.def("register_lua_command",	&registerLuaCommand)
 
 			.def("get_string",				&CConsole::GetString)
 			.def("get_integer",				&get_console_integer)
