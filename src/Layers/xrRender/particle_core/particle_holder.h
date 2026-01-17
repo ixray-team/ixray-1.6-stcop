@@ -107,6 +107,7 @@ namespace PAPI
 			if (R.length())
 			{
 				u32 cnt = R.r_u32();
+				m_actions.clear(); // without this in SDK effects are broken
 				m_actions.reserve(cnt);
 
 				for (u32 k = 0; k < cnt; ++k)
