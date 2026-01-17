@@ -55,7 +55,7 @@ IC bool IsValuableToRender(dxRender_Visual* pVisual, bool isStatic, bool sm, Fma
 
 	float adjusted_distance = GetDistFromCamera(pos);
 
-	// Настройки для статических и динамических объектов
+	// РќР°СЃС‚СЂРѕР№РєРё РґР»СЏ СЃС‚Р°С‚РёС‡РµСЃРєРёС… Рё РґРёРЅР°РјРёС‡РµСЃРєРёС… РѕР±СЉРµРєС‚РѕРІ
 	static Fvector4 static_sizes[12] =
 	{
 		o_optimize_static_l1_size, o_optimize_static_l2_size, o_optimize_static_l3_size,
@@ -91,7 +91,7 @@ IC bool IsValuableToRender(dxRender_Visual* pVisual, bool isStatic, bool sm, Fma
 			float level_size = sz.x;
 			float level_dist = ds.x;
 
-			// Определяем компоненту по opt_level
+			// РћРїСЂРµРґРµР»СЏРµРј РєРѕРјРїРѕРЅРµРЅС‚Сѓ РїРѕ opt_level
 			switch (opt_level)
 			{
 				case 2: level_size = sz.y; level_dist = ds.y; break;

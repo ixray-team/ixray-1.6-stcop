@@ -46,7 +46,7 @@ void CWeaponShotEffector::Reset()
 	m_using_pattern = false;
 	m_shot_end = true;
 
-	// Сбрасываем накопленное время
+	// РЎР±СЂР°СЃС‹РІР°РµРј РЅР°РєРѕРїР»РµРЅРЅРѕРµ РІСЂРµРјСЏ
 	m_accumulated_time = 0.0f;
 }
 
@@ -62,29 +62,29 @@ void CWeaponShotEffector::Shot(CWeapon* weapon)
 
 	current_recoil = weapon->IsZoomed() ? weapon->zoom_cam_recoil : weapon->cam_recoil;
 
-	// Получаем паттерн отдачи от оружия
+	// РџРѕР»СѓС‡Р°РµРј РїР°С‚С‚РµСЂРЅ РѕС‚РґР°С‡Рё РѕС‚ РѕСЂСѓР¶РёСЏ
 	float pattern_x = 0.0f;
 	float pattern_y = 0.0f;
 
 	if (weapon->GetCurrentRecoilPattern(pattern_x, pattern_y))
 	{
-		// Используем паттернную систему
+		// РСЃРїРѕР»СЊР·СѓРµРј РїР°С‚С‚РµСЂРЅРЅСѓСЋ СЃРёСЃС‚РµРјСѓ
 		m_using_pattern = true;
 
 //		Msg("Shot: Factor=%.3f,", current_recoil.Pattern.Factor);
 
-		// Получаем множители паттерна от оружия
+		// РџРѕР»СѓС‡Р°РµРј РјРЅРѕР¶РёС‚РµР»Рё РїР°С‚С‚РµСЂРЅР° РѕС‚ РѕСЂСѓР¶РёСЏ
 		float pattern_factor = current_recoil.Pattern.Factor;
 
 		float final_x = pattern_x * pattern_factor;
 		float final_y = pattern_y * pattern_factor;
 
-		// Используем значения из паттерна
+		// РСЃРїРѕР»СЊР·СѓРµРј Р·РЅР°С‡РµРЅРёСЏ РёР· РїР°С‚С‚РµСЂРЅР°
 		ShotFromPattern(final_x, final_y);
 	}
 	else
 	{
-		// Используем СТАРУЮ ЛОГИКУ
+		// РСЃРїРѕР»СЊР·СѓРµРј РЎРўРђР РЈР® Р›РћР“РРљРЈ
 		m_using_pattern = false;
 		float angle = current_recoil.Dispersion * weapon->cur_silencer_koef.cam_dispersion;
 		angle += current_recoil.DispersionInc * weapon->cur_silencer_koef.cam_disper_inc * (float)m_shot_numer;
@@ -95,11 +95,11 @@ void CWeaponShotEffector::Shot(CWeapon* weapon)
 
 void CWeaponShotEffector::ShotFromPattern(float pattern_x, float pattern_y)
 {
-	// Добавляем мгновенную скорость для резкого начала отдачи
+	// Р”РѕР±Р°РІР»СЏРµРј РјРіРЅРѕРІРµРЅРЅСѓСЋ СЃРєРѕСЂРѕСЃС‚СЊ РґР»СЏ СЂРµР·РєРѕРіРѕ РЅР°С‡Р°Р»Р° РѕС‚РґР°С‡Рё
 	m_velocity_vert += pattern_y * current_recoil.Pattern.Impulse;
 	m_velocity_horz += pattern_x * current_recoil.Pattern.Impulse;
 
-	// Обновляем целевые углы (добавляем к текущим, а не заменяем)
+	// РћР±РЅРѕРІР»СЏРµРј С†РµР»РµРІС‹Рµ СѓРіР»С‹ (РґРѕР±Р°РІР»СЏРµРј Рє С‚РµРєСѓС‰РёРј, Р° РЅРµ Р·Р°РјРµРЅСЏРµРј)
 	m_target_angle_vert += pattern_y;
 	m_target_angle_horz += pattern_x;
 
@@ -133,13 +133,13 @@ void CWeaponShotEffector::Shot2Legacy(float angle)
 
 void CWeaponShotEffector::SpringPhysics(float dt, float spring_stiffness, float damping)
 {
-	// Физика пружины для вертикальной оси
+	// Р¤РёР·РёРєР° РїСЂСѓР¶РёРЅС‹ РґР»СЏ РІРµСЂС‚РёРєР°Р»СЊРЅРѕР№ РѕСЃРё
 	float acceleration_vert = (m_target_angle_vert - m_angle_vert) * spring_stiffness;
 	acceleration_vert -= m_velocity_vert * damping;
 	m_velocity_vert += acceleration_vert * dt;
 	m_angle_vert += m_velocity_vert * dt;
 
-	// Физика пружины для горизонтальной оси
+	// Р¤РёР·РёРєР° РїСЂСѓР¶РёРЅС‹ РґР»СЏ РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅРѕР№ РѕСЃРё
 	float acceleration_horz = (m_target_angle_horz - m_angle_horz) * spring_stiffness;
 	acceleration_horz -= m_velocity_horz * damping;
 	m_velocity_horz += acceleration_horz * dt;
@@ -155,14 +155,14 @@ void CWeaponShotEffector::UpdateSpringRecoil(float dt)
 		float return_speed = current_recoil.Pattern.ReturnSpeed * dt; 
 		clamp(return_speed, 0.0f, 1.0f);
 
-		//Постепенное уменьшение паттернных целей
+		//РџРѕСЃС‚РµРїРµРЅРЅРѕРµ СѓРјРµРЅСЊС€РµРЅРёРµ РїР°С‚С‚РµСЂРЅРЅС‹С… С†РµР»РµР№
 		m_target_angle_vert *= (1.0f - return_speed);
 		m_target_angle_horz *= (1.0f - return_speed);
 	}
 
 	SpringPhysics(dt, current_recoil.Pattern.Stiffness, current_recoil.Pattern.Damping);
 	
-	// Проверка стабилизации
+	// РџСЂРѕРІРµСЂРєР° СЃС‚Р°Р±РёР»РёР·Р°С†РёРё
 	bool is_vert_stable = std::abs(m_velocity_vert) < 0.001f && std::abs(m_angle_vert - m_target_angle_vert) < 0.001f;
 	bool is_horz_stable = std::abs(m_velocity_horz) < 0.001f && std::abs(m_angle_horz - m_target_angle_horz) < 0.001f;
 
@@ -171,7 +171,7 @@ void CWeaponShotEffector::UpdateSpringRecoil(float dt)
 		m_angle_vert = m_target_angle_vert;
 		m_angle_horz = m_target_angle_horz;
 
-		// Если стабилизировались и цели близки к нулю, деактивируем
+		// Р•СЃР»Рё СЃС‚Р°Р±РёР»РёР·РёСЂРѕРІР°Р»РёСЃСЊ Рё С†РµР»Рё Р±Р»РёР·РєРё Рє РЅСѓР»СЋ, РґРµР°РєС‚РёРІРёСЂСѓРµРј
 		if (m_shot_end && std::abs(m_target_angle_vert) < 0.001f && std::abs(m_target_angle_horz) < 0.001f)
 		{
 			m_actived = false;
@@ -215,7 +215,7 @@ void CWeaponShotEffector::Relax(float dt)
 
 void CWeaponShotEffector::Update()
 {
-	// Общая логика получения дельты времени для фиксированного шага
+	// РћР±С‰Р°СЏ Р»РѕРіРёРєР° РїРѕР»СѓС‡РµРЅРёСЏ РґРµР»СЊС‚С‹ РІСЂРµРјРµРЅРё РґР»СЏ С„РёРєСЃРёСЂРѕРІР°РЅРЅРѕРіРѕ С€Р°РіР°
 	float dt = Device.fTimeDelta;
 
 	m_accumulated_time += dt;
@@ -226,7 +226,7 @@ void CWeaponShotEffector::Update()
 	{
 		if (m_using_pattern)
 		{
-			// Паттернная система
+			// РџР°С‚С‚РµСЂРЅРЅР°СЏ СЃРёСЃС‚РµРјР°
 			UpdateSpringRecoil(FIXED_STEP);
 		}
 		else
@@ -245,7 +245,7 @@ void CWeaponShotEffector::Update()
 		m_accumulated_time -= FIXED_STEP;
 	}
 
-		// Общие вычисления дельт
+		// РћР±С‰РёРµ РІС‹С‡РёСЃР»РµРЅРёСЏ РґРµР»СЊС‚
 	m_delta_vert = m_angle_vert - m_prev_angle_vert;
 	m_delta_horz = m_angle_horz - m_prev_angle_horz;
 	m_prev_angle_vert = m_angle_vert;

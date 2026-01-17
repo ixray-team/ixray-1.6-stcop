@@ -1,4 +1,4 @@
-﻿// SkeletonX.cpp: implementation of the CSkeletonX class.
+// SkeletonX.cpp: implementation of the CSkeletonX class.
 //
 //////////////////////////////////////////////////////////////////////
 

@@ -61,8 +61,8 @@ void CUIZoneMap::Init()
 
 	m_activeMap->SetRounded(m_background.WndSizeIsProbablyRelative());
 
-	legacyMapMode = !uiXml.NavigateToNode("minimap:static_counter"); // St4lker0k765: может есть варианты и получше, 
-																				   // но пока это единственное что приходит на ум, увы
+	legacyMapMode = !uiXml.NavigateToNode("minimap:static_counter"); // St4lker0k765: РјРѕР¶РµС‚ РµСЃС‚СЊ РІР°СЂРёР°РЅС‚С‹ Рё РїРѕР»СѓС‡С€Рµ, 
+																				   // РЅРѕ РїРѕРєР° СЌС‚Рѕ РµРґРёРЅСЃС‚РІРµРЅРЅРѕРµ С‡С‚Рѕ РїСЂРёС…РѕРґРёС‚ РЅР° СѓРј, СѓРІС‹
 	xml_init.InitStatic				(uiXml, "minimap:compass", 0, &m_compass);
 
 	if (!legacyMapMode)
