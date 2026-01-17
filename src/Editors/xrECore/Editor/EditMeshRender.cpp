@@ -45,11 +45,11 @@ void CEditableMesh::GenerateRenderBuffers()
 
 		int buf_size = FVF::ComputeVertexSize(_S->_FVF()) * rb.dwNumVertex;
 		R_ASSERT2(buf_size, "Empty buffer size or bad FVF.");
-		IRHIBuffer* pVB = nullptr; // íàø RHI áóôåð
+		IRHIBuffer* pVB = nullptr; // Ð½Ð°Ñˆ RHI Ð±ÑƒÑ„ÐµÑ€
 		R_ASSERT(RHIUtils::CreateVertexBuffer(&pVB, nullptr, buf_size));
 		rb.pGeom.create(_S->_FVF(), pVB, 0);
 
-		// Äàëåå çàïîëíÿåì áóôåð
+		// Ð”Ð°Ð»ÐµÐµ Ð·Ð°Ð¿Ð¾Ð»Ð½ÑÐµÐ¼ Ð±ÑƒÑ„ÐµÑ€
 		u8* bytes = nullptr;
 		RHIMappedSubresource mapped = {};
 		if (pVB->Map(ERHI_BUFFER_MAP::WRITE, 0, &mapped))

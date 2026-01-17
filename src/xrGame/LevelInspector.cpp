@@ -1597,12 +1597,12 @@ void LevelInspector::DrawGameGraph()
 	float RENDER_DISTANCE = visible_currents ? 50000.f : g_pGamePersistent->pEnvironment->CurrentEnv->fog_distance;
 	float RENDER_DISTANCE_SQR = RENDER_DISTANCE * RENDER_DISTANCE;
 
-	constexpr u32 default_lcolor = color_rgba(255, 0, 255, 255);//розовый
-	constexpr u32 graph_blue_lcolor = color_rgba(0, 255, 255, 255);//голубой
+	constexpr u32 default_lcolor = color_rgba(255, 0, 255, 255);//СЂРѕР·РѕРІС‹Р№
+	constexpr u32 graph_blue_lcolor = color_rgba(0, 255, 255, 255);//РіРѕР»СѓР±РѕР№
 
-	constexpr u32 default_tcolor = color_rgba(255, 0, 255, 60);//розовый
-	constexpr u32 graph_blue_tcolor = color_rgba(0, 255, 255, 60);//голубой
-	constexpr u32 selection_tcolor = color_rgba(255, 0, 0, 150);//розовый
+	constexpr u32 default_tcolor = color_rgba(255, 0, 255, 60);//СЂРѕР·РѕРІС‹Р№
+	constexpr u32 graph_blue_tcolor = color_rgba(0, 255, 255, 60);//РіРѕР»СѓР±РѕР№
+	constexpr u32 selection_tcolor = color_rgba(255, 0, 0, 150);//СЂРѕР·РѕРІС‹Р№
 	Fvector& cam_pos = Device.vCameraPosition;
 	Fvector& cam_dir = Device.vCameraDirection;
 	CFrustum& view_base = ::Render->ViewBase;
@@ -1678,13 +1678,13 @@ void LevelInspector::DrawGameGraph()
 		size_t total = child_vertices.size();
 		if (total < 2) return;
 
-		size_t mid_point = total / 2; // индекс, после которого меняем цвет
+		size_t mid_point = total / 2; // РёРЅРґРµРєСЃ, РїРѕСЃР»Рµ РєРѕС‚РѕСЂРѕРіРѕ РјРµРЅСЏРµРј С†РІРµС‚
 		bool is_first_path = true;
 		u32 color = link.second.is_blue[0] ? graph_blue_lcolor : default_lcolor;
 
 		for (size_t i = 0; i + 1 < total; i++)
 		{
-			// Если следующая точка будет уже во второй половине
+			// Р•СЃР»Рё СЃР»РµРґСѓСЋС‰Р°СЏ С‚РѕС‡РєР° Р±СѓРґРµС‚ СѓР¶Рµ РІРѕ РІС‚РѕСЂРѕР№ РїРѕР»РѕРІРёРЅРµ
 			if (is_first_path && (i + 1) >= mid_point)
 			{
 				is_first_path = false;

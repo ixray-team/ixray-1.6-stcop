@@ -4,17 +4,17 @@ inline UINT DX11GetFormatSize(DXGI_FORMAT fmt)
 {
 	switch (fmt)
 	{
-		// 128-бит
+		// 128-Р±РёС‚
 	case DXGI_FORMAT_R32G32B32A32_FLOAT:   return 16;
 	case DXGI_FORMAT_R32G32B32A32_UINT:    return 16;
 	case DXGI_FORMAT_R32G32B32A32_SINT:    return 16;
 
-		// 96-бит
+		// 96-Р±РёС‚
 	case DXGI_FORMAT_R32G32B32_FLOAT:      return 12;
 	case DXGI_FORMAT_R32G32B32_UINT:       return 12;
 	case DXGI_FORMAT_R32G32B32_SINT:       return 12;
 
-		// 64-бит
+		// 64-Р±РёС‚
 	case DXGI_FORMAT_R16G16B16A16_FLOAT:   return 8;
 	case DXGI_FORMAT_R16G16B16A16_UNORM:   return 8;
 	case DXGI_FORMAT_R16G16B16A16_UINT:    return 8;
@@ -25,10 +25,10 @@ inline UINT DX11GetFormatSize(DXGI_FORMAT fmt)
 	case DXGI_FORMAT_R32G32_UINT:          return 8;
 	case DXGI_FORMAT_R32G32_SINT:          return 8;
 
-	case DXGI_FORMAT_R32G8X24_TYPELESS:    return 8; // спец. случай для depth/stencil
+	case DXGI_FORMAT_R32G8X24_TYPELESS:    return 8; // СЃРїРµС†. СЃР»СѓС‡Р°Р№ РґР»СЏ depth/stencil
 	case DXGI_FORMAT_D32_FLOAT_S8X24_UINT: return 8;
 
-		// 32-бит
+		// 32-Р±РёС‚
 	case DXGI_FORMAT_R32_FLOAT:            return 4;
 	case DXGI_FORMAT_R32_UINT:             return 4;
 	case DXGI_FORMAT_R32_SINT:             return 4;
@@ -54,7 +54,7 @@ inline UINT DX11GetFormatSize(DXGI_FORMAT fmt)
 	case DXGI_FORMAT_R24G8_TYPELESS:       return 4;
 	case DXGI_FORMAT_D24_UNORM_S8_UINT:    return 4;
 
-		// 16-бит
+		// 16-Р±РёС‚
 	case DXGI_FORMAT_R16_FLOAT:            return 2;
 	case DXGI_FORMAT_R16_UNORM:            return 2;
 	case DXGI_FORMAT_R16_UINT:             return 2;
@@ -66,7 +66,7 @@ inline UINT DX11GetFormatSize(DXGI_FORMAT fmt)
 	case DXGI_FORMAT_R8G8_SNORM:           return 2;
 	case DXGI_FORMAT_R8G8_SINT:            return 2;
 
-		// 8-бит
+		// 8-Р±РёС‚
 	case DXGI_FORMAT_R8_UNORM:             return 1;
 	case DXGI_FORMAT_R8_UINT:              return 1;
 	case DXGI_FORMAT_R8_SNORM:             return 1;
@@ -74,7 +74,7 @@ inline UINT DX11GetFormatSize(DXGI_FORMAT fmt)
 
 	case DXGI_FORMAT_A8_UNORM:             return 1;
 
-		// специальные и блочные форматы (размер зависит от блока)
+		// СЃРїРµС†РёР°Р»СЊРЅС‹Рµ Рё Р±Р»РѕС‡РЅС‹Рµ С„РѕСЂРјР°С‚С‹ (СЂР°Р·РјРµСЂ Р·Р°РІРёСЃРёС‚ РѕС‚ Р±Р»РѕРєР°)
 	case DXGI_FORMAT_BC1_TYPELESS:
 	case DXGI_FORMAT_BC1_UNORM:
 	case DXGI_FORMAT_BC1_UNORM_SRGB:

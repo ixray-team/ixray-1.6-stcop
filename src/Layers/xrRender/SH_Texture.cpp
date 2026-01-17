@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "../../xrRHI/RHITextureInterfaces.h"
-#include "../xrRender/ResourceManager.h"
+#include "ResourceManager.h"
 
 #ifndef _EDITOR
 #	include "../../xrEngine/Render.h"
@@ -10,7 +10,7 @@
 #include "../../xrEngine/tntQAVI.h"
 #include "../../xrEngine/xrTheora_Surface.h"
 
-#include "../xrRender/dxRenderDeviceRender.h"
+#include "dxRenderDeviceRender.h"
 
 void resptrcode_texture::create(const char* _name)
 {
