@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "../../xrEngine/string_table.h"
-#include "../xrRender/ScreenshotManager.h"
+#include "ScreenshotManager.h"
 
 void CRender::ScreenshotImpl(ScreenshotMode Mode, LPCSTR Name, CMemoryWriter* MemoryWriter)
 {

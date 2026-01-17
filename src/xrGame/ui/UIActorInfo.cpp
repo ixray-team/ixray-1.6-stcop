@@ -2,7 +2,7 @@
 #include "UIActorInfo.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../Level.h"
-#include "../actor.h"
+#include "../Actor.h"
 
 #include "UIInventoryUtilities.h"
 #include "../../xrUI/Widgets/UIFrameWindow.h"

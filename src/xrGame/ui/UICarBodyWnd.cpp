@@ -4,14 +4,14 @@
 #include "../xrUI/xrUIXmlParser.h"
 #include "../xrUI/UIXmlInit.h"
 #include "../HUDManager.h"
-#include "../level.h"
+#include "../Level.h"
 #include "UICharacterInfo.h"
 #include "UIDragDropListEx.h"
 #include "../xrUI/Widgets/UIFrameWindow.h"
 #include "UIItemInfo.h"
 #include "../xrUI/Widgets/UIPropertiesBox.h"
-#include "../ai/monsters/BaseMonster/base_monster.h"
-#include "../inventory.h"
+#include "../ai/monsters/basemonster/base_monster.h"
+#include "../Inventory.h"
 #include "UIInventoryUtilities.h"
 #include "UICellItem.h"
 #include "UICellItemFactory.h"
@@ -32,7 +32,7 @@
 #include "../WeaponBinoculars.h"
 #include "../WeaponKnife.h"
 #include "../WeaponMagazinedWGrenade.h"
-#include "../pda.h"
+#include "../PDA.h"
 #include "ui_drop_amount.h"
 #include "../game_sv_single.h"
 #include "ai_object_location.h"
@@ -523,8 +523,8 @@ bool CUICarBodyWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 	return false;
 }
 
-#include "../Medkit.h"
-#include "../Antirad.h"
+#include "../medkit.h"
+#include "../antirad.h"
 
 void CUICarBodyWnd::ActivatePropertiesBox()
 {

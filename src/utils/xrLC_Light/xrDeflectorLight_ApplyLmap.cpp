@@ -171,7 +171,7 @@ IC u32	rms_diff(u32 a, u32 b)
 	else		return b - a;
 }
  
-// Это при сжатии используется
+// Р­С‚Рѕ РїСЂРё СЃР¶Р°С‚РёРё РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ
 BOOL	__stdcall rms_test_compress(lm_layer& lm, u32 w, u32 h, u32 rms)
 {
 	if ((w <= 1) || (h <= 1))	return FALSE;
@@ -230,7 +230,7 @@ BOOL	__stdcall rms_test_compress(lm_layer& lm, u32 w, u32 h, u32 rms)
 	return	TRUE;
 }
 
-// Это при проверке используется
+// Р­С‚Рѕ РїСЂРё РїСЂРѕРІРµСЂРєРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ
 BOOL	__stdcall rms_test(lm_layer& lm, u32 _r, u32 _g, u32 _b, u32 _s, u32 _h, u32 rms)
 {
 	u32 x, y;
