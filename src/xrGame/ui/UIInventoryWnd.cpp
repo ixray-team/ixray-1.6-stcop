@@ -6,26 +6,26 @@
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrEngine/string_table.h"
 
-#include "../actor.h"
-#include "uigamesp.h"
-#include "../hudmanager.h"
+#include "../Actor.h"
+#include "UIGameSP.h"
+#include "../HUDManager.h"
 
 #include "../CustomOutfit.h"
 
-#include "../weapon.h"
+#include "../Weapon.h"
 
 #include "../../xrScripts/script_process.h"
 
 #include "../eatable_item.h"
-#include "../inventory.h"
+#include "../Inventory.h"
 
 #include "UIInventoryUtilities.h"
 using namespace InventoryUtilities;
 
 #include "UIHelperGame.h"
 #include "../InfoPortion.h"
-#include "../level.h"
-#include "../entitycondition.h"
+#include "../Level.h"
+#include "../EntityCondition.h"
 
 #include "../game_cl_base.h"
 #include "../ActorCondition.h"

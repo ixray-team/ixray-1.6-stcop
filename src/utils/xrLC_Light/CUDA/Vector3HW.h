@@ -369,12 +369,12 @@ struct Hardware_TextureData
 {
 	unsigned int  width;
 	unsigned int  height;
-	unsigned char  * pSurface; // Указатель на GPU память (Только Alpha)
+	unsigned char  * pSurface; // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° GPU РїР°РјСЏС‚СЊ (РўРѕР»СЊРєРѕ Alpha)
 };
 
 struct Hardware_FaceData
 {
- 	Hardware_Vector2 TC0[3]; // UV координаты
+ 	Hardware_Vector2 TC0[3]; // UV РєРѕРѕСЂРґРёРЅР°С‚С‹
 	unsigned short surfidx;
 
 	bool		 bOpacue = false;
@@ -388,7 +388,7 @@ struct OPTICK_Params
 
 	unsigned char		  flags;
 	Hardware_Raytask*	  rays;
-	Hardware_Color*		  colors;		// Раньше rays == colors
+	Hardware_Color*		  colors;		// Р Р°РЅСЊС€Рµ rays == colors
 
 	Hardware_Lighting*	  lights;
 	int					  counts_lights;
