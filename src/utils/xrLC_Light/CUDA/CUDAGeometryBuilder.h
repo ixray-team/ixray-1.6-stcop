@@ -307,7 +307,7 @@ public:
                 facePointers.push_back(raw_faces[i].F);
             }
 
-            // 💣 освобождаем батч
+            // освобождаем батч
             for (auto& [k, c] : grid)
                 c.indices.clear();
         }

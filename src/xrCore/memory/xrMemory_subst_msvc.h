@@ -16,7 +16,7 @@ struct xr_special_free
 
 			if constexpr (std::is_polymorphic_v<T> && !std::is_final_v<T>)
 			{
-				// FX: Проблемы множественного наследования
+				// FX: С•СЂРѕР±Р»РµРјС‹ РјРЅРѕР¶РµСЃС‚РІРµРЅРЅРѕРіРѕ РЅР°СЃР»РµРґРѕРІР°РЅРёв‚¬
 				_real_ptr = dynamic_cast<void*>(ptr);
 			}
 			else

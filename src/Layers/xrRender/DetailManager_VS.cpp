@@ -72,16 +72,16 @@ void CDetailManager::hw_Load_Geom()
 	RHIBufferDesc vbDesc = {};
 	vbDesc.Size = dwVerts * vSize;
 	vbDesc.Type = ERHI_BUFFER_TYPE::VERTEX;
-	vbDesc.Usage = ERHI_USAGE::USAGE_DEFAULT; // èëè USAGE_DYNAMIC ïî íåîáõîäèìîñòè
+	vbDesc.Usage = ERHI_USAGE::USAGE_DEFAULT; // Ð¸Ð»Ð¸ USAGE_DYNAMIC Ð¿Ð¾ Ð½ÐµÐ¾Ð±Ñ…Ð¾Ð´Ð¸Ð¼Ð¾ÑÑ‚Ð¸
 	vbDesc.CPUAccessFlags = 0;
 
 	RHIBufferDesc ibDesc = {};
 	ibDesc.Size = dwIndices * 2;
 	ibDesc.Type = ERHI_BUFFER_TYPE::INDEX;
-	ibDesc.Usage = ERHI_USAGE::USAGE_DEFAULT; // èëè USAGE_DYNAMIC
+	ibDesc.Usage = ERHI_USAGE::USAGE_DEFAULT; // Ð¸Ð»Ð¸ USAGE_DYNAMIC
 	ibDesc.CPUAccessFlags = 0;
 
-	// ñîçäà¸ì áóôåðû ÷åðåç RHI
+	// ÑÐ¾Ð·Ð´Ð°Ñ‘Ð¼ Ð±ÑƒÑ„ÐµÑ€Ñ‹ Ñ‡ÐµÑ€ÐµÐ· RHI
 	IRHIBuffer* hw_VB = GRHI->CreateBuffer(vbDesc, nullptr);
 	IRHIBuffer* hw_IB = GRHI->CreateBuffer(ibDesc, nullptr);
 
