@@ -8,7 +8,7 @@
 
 #pragma once
 
-IC	CHitMemoryManager::CHitMemoryManager							(CCustomMonster *object, CAI_Stalker *stalker)
+IC	CHitMemoryManager::CHitMemoryManager							(CCreature *object, CAI_Stalker *stalker)
 {
 	VERIFY			(object);
 	m_object		= object;
@@ -36,7 +36,7 @@ IC	void CHitMemoryManager::set_squad_objects						(xr_vector<CHitObject> *squad_
 	m_hits			= squad_objects;
 }
 
-IC	CCustomMonster &CHitMemoryManager::object						() const
+IC	CCreature &CHitMemoryManager::object						() const
 {
 	VERIFY			(m_object);
 	return			(*m_object);
