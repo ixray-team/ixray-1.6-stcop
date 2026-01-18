@@ -238,6 +238,11 @@ void CWeapon::UpdateXForm	()
 
 void CWeapon::UpdateFireDependencies_internal()
 {
+	if (Device.dwFrame == dwFP_Frame)
+		return;
+
+	dwFP_Frame = Device.dwFrame;
+
 	UpdateXForm			();
 
 	if ( GetHUDmode() )
