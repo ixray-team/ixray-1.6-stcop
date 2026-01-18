@@ -11,7 +11,7 @@
 #include "PHMovementControl.h"
 #include "detail_path_manager.h"
 #include "Level.h"
-#include "CustomMonster.h"
+#include "Creature.h"
 #include "../xrPhysics/IColisiondamageInfo.h"
 
 // Lain: added 

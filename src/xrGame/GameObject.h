@@ -27,7 +27,7 @@ class CParticlesPlayer;
 class CCustomZone;
 class IInputReceiver;
 class CArtefact;
-class CCustomMonster;
+class CCreature;
 class CAI_Stalker;
 class CScriptEntity;
 class CAI_ObjectLocation;
@@ -127,7 +127,7 @@ public:
 	virtual IInputReceiver*				cast_input_receiver			()						{return nullptr;}
 	virtual CParticlesPlayer*			cast_particles_player		()						{return nullptr;}
 	virtual CArtefact*					cast_artefact				()						{return nullptr;}
-	virtual CCustomMonster*				cast_custom_monster			()						{return nullptr;}
+	virtual CCreature*				cast_creature			()						{return nullptr;}
 	virtual CAI_Stalker*				cast_stalker				()						{return nullptr;}
 	virtual CScriptEntity*				cast_script_entity			()						{return nullptr;}
 	virtual CWeapon*					cast_weapon					()						{return nullptr;}

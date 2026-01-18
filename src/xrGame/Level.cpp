@@ -866,7 +866,7 @@ void CLevel::OnRender()
 				stalker->OnRender();
 			}
 
-			if (CCustomMonster* monster = _O != nullptr ? _O->cast_custom_monster() : nullptr)
+			if (CCreature* monster = _O != nullptr ? _O->cast_creature() : nullptr)
 			{
 				monster->OnRender();
 			}

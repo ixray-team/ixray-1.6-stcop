@@ -18,7 +18,7 @@
 #include "patrol_path_manager.h"
 #include "xrMessages.h"
 #include "ai_object_location.h"
-#include "CustomMonster.h"
+#include "Creature.h"
 #include "location_manager.h"
 #include "level_path_builder.h"
 #include "detail_path_builder.h"
@@ -32,7 +32,7 @@ using namespace MovementManager;
 
 const float verify_distance = 15.f;
 
-CMovementManager::CMovementManager	(CCustomMonster *object)
+CMovementManager::CMovementManager	(CCreature *object)
 {
 	VERIFY						(object);
 	m_object					= object;
