@@ -20,7 +20,7 @@
 XRCORE_API xrCore	Core;
 XRCORE_API u32		build_id;
 XRCORE_API LPCSTR	build_date;
-
+XRCORE_API bool ignore_error_window = false;
 namespace CPU
 {
 	extern void Detect();
