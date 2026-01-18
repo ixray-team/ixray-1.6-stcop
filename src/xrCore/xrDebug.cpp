@@ -118,13 +118,17 @@ void xrDebug::gather_info		(const char *expression, const char *description, con
 
 void xrDebug::do_exit	(const std::string &message)
 {
+	extern XRCORE_API bool ignore_error_window;
 	xrLogger::FlushLog			();
 	if (!SilentErrorMode)
 	{
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", message.c_str(), nullptr);
+		
+		if(!ignore_error_window)
+			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", message.c_str(), nullptr);
 	}
 
 #ifdef IXR_WINDOWS
+	if (!ignore_error_window)
 	TerminateProcess	(GetCurrentProcess(),1);
 #else
 	kill(getpid(), SIGKILL);
@@ -211,8 +215,8 @@ void xrDebug::show_dialog(const std::string& message, bool& ignore_always)
 		buttons,					/* .buttons */
 		nullptr						/* .colorScheme */
 	};
-
-	int ret = SDL_ShowMessageBox(&messageboxdata, &buttonid);
+	extern XRCORE_API bool ignore_error_window;
+	int ret = ignore_error_window ? 0 : SDL_ShowMessageBox(&messageboxdata, &buttonid);
 
 	if (buttonid == 1)
 	{
@@ -246,12 +250,15 @@ void xrDebug::show_dialog(const std::string& message, bool& ignore_always)
 #endif
 	else
 	{
-		if (IsDebuggerPresent())
+		if(!ignore_error_window)
 		{
-			DEBUG_INVOKE;
+			if (IsDebuggerPresent())
+			{
+				DEBUG_INVOKE;
+			}
+			// TODO: Maybe not correct
+			exit(-1);
 		}
-		// TODO: Maybe not correct
-		exit(-1);
 	}
 	if (get_on_dialog())
 		get_on_dialog()	(false);
@@ -520,7 +527,9 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 
 		//SDL_ShowWindow(g_AppInfo.Window);
 		//SDL_MinimizeWindow(g_AppInfo.Window);
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Fatal error", "Fatal error occured\n\nPress OK to abort program execution", nullptr);
+		extern XRCORE_API bool ignore_error_window;
+		if(!ignore_error_window)
+			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Fatal error", "Fatal error occured\n\nPress OK to abort program execution", nullptr);
 	}
 
 	ReportFault(pExceptionInfo, 0);

@@ -236,7 +236,7 @@ namespace Platform
 	inline constexpr Enum  operator~ (Enum  E)             { return (Enum)~(__underlying_type(Enum))E; }
 
 extern XRCORE_API xrCore Core;
-
+extern XRCORE_API bool ignore_error_window;
 #ifdef IXR_WINDOWS
 ICF void* aligned_alloc(size_t Aligned, size_t Sizeof)
 {
