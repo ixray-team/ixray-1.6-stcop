@@ -66,6 +66,8 @@ protected:
 	SArtefactDetectorsSupport*		m_detectorObj;
 
 	u16								m_CarringBoneID;
+	u16								m_ParticlesBoneID;
+	u16								m_LightBoneID;
 	shared_str						m_sParticlesName;
 	shared_str						m_sParticlesBone;
 	ref_light						m_pTrailLight;
