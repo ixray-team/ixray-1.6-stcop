@@ -4,7 +4,7 @@
 #include "../Include/xrRender/RenderVisual.h"
 #include "../xrPhysics/PhysicsShell.h"
 #include "ai_space.h"
-#include "CustomMonster.h" 
+#include "Creature.h" 
 #include "PhysicObject.h"
 #include "HangingLamp.h"
 #include "../xrPhysics/PhysicsShell.h"

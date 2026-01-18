@@ -385,7 +385,7 @@ void   add_debug_info_restrictions (debug::text_tree& root_s, const xr_string& r
 {
 }
 
-void   add_enemy_debug_info (debug::text_tree& root_s, const CCustomMonster* pThis, const CEntityAlive* pEnemy)
+void   add_enemy_debug_info (debug::text_tree& root_s, const CCreature* pThis, const CEntityAlive* pEnemy)
 {
 }
 

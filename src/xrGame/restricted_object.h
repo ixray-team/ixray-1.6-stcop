@@ -11,7 +11,7 @@
 #include "alife_space.h"
 
 class CSE_Abstract;
-class CCustomMonster;
+class CCreature;
 class CGameObject;
 
 namespace RestrictionSpace {
@@ -26,7 +26,7 @@ private:
 	friend struct CRestrictionPredicate<false>;
 
 private:
-	CCustomMonster			*m_object;
+	CCreature			*m_object;
 	mutable bool			m_applied;
 	mutable bool			m_removed;
 	bool					m_actual;
@@ -38,7 +38,7 @@ protected:
 	IC		void			remove_object_restriction		(ALife::_OBJECT_ID id, const RestrictionSpace::ERestrictorTypes &restrictor_type);
 
 public:
-	IC						CRestrictedObject				(CCustomMonster *object);
+	IC						CRestrictedObject				(CCreature *object);
 	virtual					~CRestrictedObject				();
 	virtual BOOL			net_Spawn						(CSE_Abstract* data);
 	virtual void			net_Destroy						();
@@ -66,7 +66,7 @@ public:
 			shared_str		base_in_restrictions			() const;
 			shared_str		base_out_restrictions			() const;
 	IC		bool			applied							() const;
-	IC		CCustomMonster	&object							() const;
+	IC		CCreature	&object							() const;
 	IC		bool			actual							() const;
 			void			actual							(bool value);
 

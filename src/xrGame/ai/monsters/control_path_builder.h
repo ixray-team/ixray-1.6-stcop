@@ -3,7 +3,7 @@
 #include "control_combase.h"
 #include "../../movement_manager.h"
 
-class CCustomMonster;
+class CCreature;
 class CControl_Manager;
 
 struct SControlPathBuilderData : public ControlCom::IComData {
@@ -38,7 +38,7 @@ class CControlPathBuilder :
 	friend	class CControl_Manager;
 
 public:
-					CControlPathBuilder		(CCustomMonster *monster);
+					CControlPathBuilder		(CCreature *monster);
 	virtual			~CControlPathBuilder	();
 
 	virtual void	load					(LPCSTR section);
