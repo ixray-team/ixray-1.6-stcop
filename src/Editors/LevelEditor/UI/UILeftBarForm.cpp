@@ -128,7 +128,7 @@ void UILeftBarForm::Draw()
 				ImGui::PushStyleColor(ImGuiCol_Button, BtnColor);
 				if (ImGui::Button(tool->ClassDesc(), ImVec2(-1, 15)))
 				{
-					ExecCommand(COMMAND_CHANGE_TARGET, Tools[id]);
+					ExecCommand(COMMAND_CHANGE_TARGET, IsActive ? OBJCLASS_DUMMY : Tools[id]);
 				}
 				ImGui::PopStyleColor();
 
