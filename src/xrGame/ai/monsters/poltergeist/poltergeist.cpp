@@ -358,7 +358,7 @@ BOOL CPoltergeist::net_Spawn (CSE_Abstract* DC)
 	// спаунится нивидимым
 	setVisible		(false);
 	ability()->on_hide();
-	
+	tele_objects.reserve(64);
 	return			(TRUE);
 }
 
