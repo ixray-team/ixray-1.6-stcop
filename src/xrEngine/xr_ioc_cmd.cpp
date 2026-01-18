@@ -671,6 +671,8 @@ extern bool use_smoothed_delta;
 
 void CCC_Register()
 {
+	extern XRCORE_API bool ignore_error_window;
+	CMD2(CCC_Boolean, "ignore_error_window", &ignore_error_window);
 	CMD2(CCC_Boolean, "use_smoothed_delta", &use_smoothed_delta);
 
 	CMD2(CCC_Boolean, "ui_dbg_weather",		&Engine.External.EditorStates[(int)EditorUI::Weather]);
