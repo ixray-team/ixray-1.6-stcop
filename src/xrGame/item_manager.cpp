@@ -9,7 +9,7 @@
 #include "StdAfx.h"
 #include "item_manager.h"
 #include "inventory_item.h"
-#include "CustomMonster.h"
+#include "Creature.h"
 #include "ai_object_location.h"
 #include "level_graph.h"
 #include "restricted_object.h"
@@ -19,7 +19,7 @@
 #include "stalker_movement_manager_smart_cover.h"
 #include "restricted_object.h"
 
-CItemManager::CItemManager			(CCustomMonster *object)
+CItemManager::CItemManager			(CCreature *object)
 {
 	VERIFY					(object);
 	m_object				= object;
