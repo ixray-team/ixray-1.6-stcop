@@ -347,6 +347,10 @@ void CIKLimbsController:: IKVisualCallback( IKinematics* K )
 	VERIFY( Sh );
 	CIKLimbsController* ik = Sh->character_ik_controller( );
 	VERIFY( ik );
+
+	for (CIKLimb& L : ik->_bone_chains)
+		ik->LimbUpdate(L);
+
 	ik->Calculate( );
 }
 
@@ -377,9 +381,7 @@ void	CIKLimbsController:: Update						( )
 	update_blend( m_legs_blend );
 
 	_pose_extrapolation.update( m_object->XFORM() );
-	xr_vector<CIKLimb>::iterator i = _bone_chains.begin(), e = _bone_chains.end();
-	for( ; e != i; ++i )
-			LimbUpdate( *i );
+
 
 	/*
 	Fmatrix predict;
