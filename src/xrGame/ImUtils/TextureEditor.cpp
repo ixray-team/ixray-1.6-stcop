@@ -1036,7 +1036,7 @@ void RenderTextureEditor()
 						};
 
 						constexpr u32 _kColumnsSize = sizeof(_kColumnNames) / sizeof(_kColumnNames[0]);
-
+						ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(ImGui::GetStyle().CellPadding.x, 0.0f));
 						ImGui::BeginTable("##TETV", _kColumnsSize);
 
 						for (u32 i = 0; i < _kColumnsSize; ++i)
@@ -1290,6 +1290,8 @@ void RenderTextureEditor()
 						}
 
 						ImGui::EndTable();
+
+						ImGui::PopStyleVar();
 					}
 					else
 					{
@@ -1352,12 +1354,12 @@ void RenderTextureEditor()
 
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("Open - MipMap Viewer"))
+			if (ImGui::Button("View - mipmaps"))
 			{
 
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("Open - Color channels Viewer"))
+			if (ImGui::Button("View - color channels"))
 			{
 
 			}
@@ -1400,7 +1402,7 @@ void RenderTextureEditor()
 
 			ImGui::Separator();
 
-			ImGui::Text("%s", selected.path);
+			ImGui::Text("Full path: [%s]", selected.path);
 
 			constexpr const char* _kColumnTableSelectedNames[] = {
 				"Info",
