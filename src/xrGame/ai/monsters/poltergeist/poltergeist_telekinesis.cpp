@@ -180,17 +180,17 @@ bool CPolterTele::trace_object(CObject *obj, const Fvector &target)
 
 void CPolterTele::tele_find_objects(xr_vector<CObject*> &objects, const Fvector &pos) 
 {
-	m_nearest.resize(0);
+	objects.clear();
+
 	Level().ObjectSpace.GetNearest	(m_nearest, pos, m_pmt_radius, nullptr);
 
-	for (u32 i=0;i<m_nearest.size();i++)
+	for (CObject* pObject : m_nearest)
 	{
-		CPhysicsShellHolder* obj = m_nearest[i] != nullptr ? m_nearest[i]->cast_physics_shell_holder() : nullptr;
-		CCustomMonster* custom_monster = m_nearest[i] != nullptr ? m_nearest[i]->cast_base_monster() : nullptr;
+		CPhysicsShellHolder* obj = pObject->cast_physics_shell_holder();
 		if (!obj || 
 			!obj->PPhysicsShell() || 
 			!obj->PPhysicsShell()->isActive()|| 
-			custom_monster ||
+			obj->cast_custom_monster() ||
 			(obj->spawn_ini() && obj->spawn_ini()->section_exist("ph_heavy")) || 
 			(obj->m_pPhysicsShell->getMass() < m_pmt_object_min_mass) || 
 			(obj->m_pPhysicsShell->getMass() > m_pmt_object_max_mass) || 
@@ -210,8 +210,7 @@ void CPolterTele::tele_find_objects(xr_vector<CObject*> &objects, const Fvector 
 bool CPolterTele::tele_raise_objects()
 {
 	// find objects near actor
-	xr_vector<CObject*>		tele_objects;
-	tele_objects.reserve	(20);
+	xr_vector<CObject*>& tele_objects = m_object->tele_objects;
 
 	// получить список объектов вокруг врага
 	tele_find_objects	(tele_objects, Actor()->Position());
