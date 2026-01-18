@@ -29,7 +29,7 @@ public:
 	R_feedback*													val_feedback;		// feedback for geometry being rendered
 	u32															val_feedback_breakp;// breakpoint
 
-	u32															phase;
+
 	u32															marker;
 	bool														pmask[3];
 public:
@@ -141,6 +141,9 @@ public:
 	void		r_dsgraph_render_subspace						(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic, BOOL _precise_portals=FALSE, CObject*O=nullptr );
 	void		r_dsgraph_render_R1_box							(IRender_Sector* _sector, Fbox& _bb, int _element);
 
+
+	void detectSectors_sphere(CSector* sector, xr_vector<IRender_Sector*>& m_sectors, const Fsphere& sphere);
+	void detectSectors_frustum(CSector* sector, xr_vector<IRender_Sector*>& m_sectors, CFrustum* _frustum);
 
 public:
 	virtual		u32						memory_usage			()

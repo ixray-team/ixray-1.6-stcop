@@ -141,17 +141,19 @@ IRender_Sector* CRender::detectSector(const Fvector& P, Fvector& dir)
 	}
 }
 
-xr_vector<IRender_Sector*> CRender::detectSectors_sphere(CSector* sector, const Fvector& b_center, const Fvector& b_dim)
+void R_dsgraph_structure::detectSectors_sphere(CSector* sector, xr_vector<IRender_Sector*>& m_sectors, const Fsphere& sphere)
 {
-	xr_vector<IRender_Sector*> m_sectors;
-	m_sectors.push_back(sector);
-	if (rmPortals)
+	if(sector)
+		m_sectors.push_back(sector);
+
+	if (CDB::MODEL* portals_cform = RImplementation.rmPortals)
 	{
 		sectors_detect_xrc.box_options(CDB::OPT_FULL_TEST);
-		sectors_detect_xrc.box_query(rmPortals,b_center,b_dim);
+		float sphere_r = sphere.R;
+		sectors_detect_xrc.box_query(portals_cform, sphere.P, { sphere_r, sphere_r, sphere_r });
 		for (int K=0; K< sectors_detect_xrc.r_count(); K++)
 		{
-			CPortal* pPortal = (CPortal*) Portals[rmPortals->get_tris()[sectors_detect_xrc.r_begin()[K].id].dummy];
+			CPortal* pPortal = (CPortal*)RImplementation.Portals[portals_cform->get_tris()[sectors_detect_xrc.r_begin()[K].id].dummy];
 
 			if(!pPortal)
 				continue;
@@ -166,20 +168,20 @@ xr_vector<IRender_Sector*> CRender::detectSectors_sphere(CSector* sector, const 
 				m_sectors.push_back(pBack);
 		}
 	}
-	return m_sectors;
 }
 
-xr_vector<IRender_Sector*> CRender::detectSectors_frustum(CSector* sector, CFrustum* _frustum)
+void R_dsgraph_structure::detectSectors_frustum(CSector* sector, xr_vector<IRender_Sector*>& m_sectors, CFrustum* _frustum)
 {
-	xr_vector<IRender_Sector*> m_sectors;
-	m_sectors.push_back(sector);
-	if (rmPortals)
+	if(sector)
+		m_sectors.push_back(sector);
+	
+	if (CDB::MODEL* portals_cform = RImplementation.rmPortals)
 	{
 		sectors_detect_xrc.frustum_options(CDB::OPT_FULL_TEST);
-		sectors_detect_xrc.frustum_query(rmPortals,*_frustum);
+		sectors_detect_xrc.frustum_query(portals_cform, *_frustum);
 		for (int K=0; K< sectors_detect_xrc.r_count(); K++)
 		{
-			CPortal* pPortal = (CPortal*) Portals[rmPortals->get_tris()[sectors_detect_xrc.r_begin()[K].id].dummy];
+			CPortal* pPortal = (CPortal*)RImplementation.Portals[portals_cform->get_tris()[sectors_detect_xrc.r_begin()[K].id].dummy];
 
 			if(!pPortal)
 				continue;
@@ -194,5 +196,4 @@ xr_vector<IRender_Sector*> CRender::detectSectors_frustum(CSector* sector, CFrus
 				m_sectors.push_back(pBack);
 		}
 	}
-	return m_sectors;
 }

@@ -196,7 +196,7 @@ void	light::set_rotation		(const Fvector& D, const Fvector& R)	{
 #if RENDER!=R_R1
 void light::get_sectors()
 {
-	if(RImplementation.SectorsCount()<=1) return;
+	if(RImplementation.SectorsCount()<=1 || SpatialComponent.get() == nullptr) return;
 	xrCriticalSectionGuard guard(&sectors_lc);
 	if(0== SpatialComponent->spatial.sector)
 		SpatialComponent->spatial_updatesector();
@@ -206,14 +206,14 @@ void light::get_sectors()
 
 	if(flags.type == IRender_Light::SPOT || flags.type == IRender_Light::OMNIPART)
 	{
-		CFrustum temp = CFrustum();
-		temp.CreateFromMatrix			(X.S.combine, FRUSTUM_P_ALL);
+		CFrustum temp;
+		temp.CreateFromMatrix(X.S.combine, FRUSTUM_P_ALL);
 
-		m_sectors = std::move(RImplementation.detectSectors_frustum(sector, &temp));
+		RImplementation.detectSectors_frustum(sector, m_sectors, &temp);
 	}
-	if(flags.type == IRender_Light::POINT)
+	else if(flags.type == IRender_Light::POINT)
 	{
-		m_sectors = std::move(RImplementation.detectSectors_sphere(sector, position, Fvector().set(range, range, range)));
+		RImplementation.detectSectors_sphere(sector, m_sectors, { position, range });
 	}
 }
 
@@ -223,6 +223,9 @@ bool light::has_light_visible_from_sectors()
 	xrCriticalSectionGuard guard(&sectors_lc);
 	for (IRender_Sector* IRsector : m_sectors)
 	{
+		if (IRsector == nullptr)
+			continue;
+
 		CSector* sector_ = (CSector*)IRsector;
 		if (sector_ != nullptr && PortalTraverser.i_marker == sector_->r_marker)
 		{

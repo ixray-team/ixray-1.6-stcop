@@ -192,11 +192,18 @@ public:
 		SM_FOR_MPSENDING			= 4,
 		SM_forcedword				= u32(-1)
 	};
+	enum
+	{
+		PHASE_NORMAL = 0,	// E[0]
+		PHASE_SMAP = 1,	// E[1]
+		PHASE_REFLECT = 2,
+	};
 public:
 
 	// data
 	CFrustum						ViewBase;
 	CFrustum*						View;
+	u32								phase;
 public:
 	// feature level
 	virtual	GenerationLevel			get_generation			()											= 0;

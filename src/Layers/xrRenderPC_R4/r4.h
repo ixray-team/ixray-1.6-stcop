@@ -27,13 +27,7 @@ class dxRender_Visual;
 class CRender	:	public R_dsgraph_structure
 {
 public:
-	enum
-	{
-		PHASE_NORMAL	= 0,	// E[0]
-		PHASE_SMAP		= 1,	// E[1]
-		PHASE_REFLECT	= 2,
-	};
-	
+
 	enum
 	{
 		MMSM_OFF = 0,
@@ -255,8 +249,6 @@ public:
 	virtual IRender_Sector*			getSector					(int id);
 	virtual IRenderVisual*			getVisual					(int id);
 	virtual IRender_Sector*			detectSector				(const Fvector& P);
-	xr_vector<IRender_Sector*>		detectSectors_sphere		(CSector* sector, const Fvector& b_center, const Fvector& b_dim);
-	xr_vector<IRender_Sector*>		detectSectors_frustum		(CSector* sector, CFrustum* _frustum);
 	virtual IRender_Target*			getTarget					();
 
 	// Main 
