@@ -9,6 +9,7 @@ public:
 	IC bool IsSnapListMode()const { return m_SnapListMode; }
 
 	IC bool IsUseSnapList()const { return bDrawSnapListObjects; }
+	IC bool IsShowSnapList()const { return bUseSnapList; }
 	IC void ShowSnapList(bool v) { bUseSnapList = v; }
 
 	IC bool IsUseObjectsTool()const { return bUseObjectsTool; }

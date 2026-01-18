@@ -135,17 +135,24 @@ void UIEditLibrary::Show()
 {
 	UI->BeginEState(esEditLibrary);
 
+	bool NeedToPush = false;
+
 	if (!Form)
 	{
 		Form = new UIEditLibrary();
+		NeedToPush = true;
 	}
 	else
 	{
+		NeedToPush = !Form->bOpen;
 		Form->bOpen = true;
 	}
 
-	UI->Push(Form, false);
-	modif_map.clear();
+	if (NeedToPush)
+	{
+		UI->Push(Form, false);
+		modif_map.clear();
+	}
 }
 
 void UIEditLibrary::Close()

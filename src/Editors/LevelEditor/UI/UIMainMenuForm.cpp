@@ -553,7 +553,7 @@ void UIMainMenuForm::Draw()
 			ImGui::Separator();
 
 			{
-				bool selected = MainForm->GetLeftBarForm()->IsUseSnapList();
+				bool selected = MainForm->GetLeftBarForm()->IsShowSnapList();
 				if (ImGui::MenuItem("Snap List", "", &selected))
 				{
 					MainForm->GetLeftBarForm()->ShowSnapList(selected);
