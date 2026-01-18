@@ -28,11 +28,13 @@ set(DEP_DIR ${CMAKE_BINARY_DIR}/dep)
 #set(IXR_3DS_MAX_SDK ${DEP_DIR}/max_sdk/)
 
 # Maya SDK
-set(IXR_MAYA_SDK_ZIP ${DEP_DIR}/Autodesk.Maya.Sdk.2024.zip)
-set(IXR_MAYA_SDK_URL https://github.com/ixray-team/ixray-packages/releases/download/d2024.5.3/Autodesk.Maya.Sdk.2024.zip)
-set(IXR_MAYA_SDK_DIR ${DEP_DIR}/maya_sdk)
-download_and_extract_sdk(${IXR_MAYA_SDK_URL} ${IXR_MAYA_SDK_ZIP} ${IXR_MAYA_SDK_DIR})
-set(IXR_MAYA_SDK ${IXR_MAYA_SDK_DIR}/)
+if (IXRAY_PLUGINS)
+    set(IXR_MAYA_SDK_ZIP ${DEP_DIR}/Autodesk.Maya.Sdk.2024.zip)
+    set(IXR_MAYA_SDK_URL https://github.com/ixray-team/ixray-packages/releases/download/d2024.5.3/Autodesk.Maya.Sdk.2024.zip)
+    set(IXR_MAYA_SDK_DIR ${DEP_DIR}/maya_sdk)
+    download_and_extract_sdk(${IXR_MAYA_SDK_URL} ${IXR_MAYA_SDK_ZIP} ${IXR_MAYA_SDK_DIR})
+    set(IXR_MAYA_SDK ${IXR_MAYA_SDK_DIR}/)
+endif()
 
 # LightWave SDK (закомментировано)
 #set(IXR_LW_SDK_ZIP ${DEP_DIR}/lw_sdk_2020.zip)
