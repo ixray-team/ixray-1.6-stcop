@@ -197,7 +197,7 @@ void CStateBurerAttackTele<Object>::FindFreeObjects(xr_vector<CObject*>& tpObjec
 	for (CObject* object : tpObjects)
 	{
 		CPhysicsShellHolder* obj = object->cast_physics_shell_holder();
-		CCustomMonster* custom_monster = object->cast_custom_monster();
+		CCreature* custom_monster = object->cast_creature();
 		CGrenade* grenade = object->cast_grenade();
 
 		if (grenade || // grenades are handled by HandleGrenades function

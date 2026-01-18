@@ -17,7 +17,7 @@ class CGameObject;
 class CScriptEntityAction;
 class CEntity;
 class CScriptGameObject;
-class CCustomMonster;
+class CCreature;
 
 using namespace ScriptEntity;
 
@@ -48,7 +48,7 @@ protected:
 
 private:
 	CGameObject					*m_object;
-	CCustomMonster				*m_monster;
+	CCreature				*m_monster;
 	bool						m_initialized;
 	
 	bool						m_can_capture;

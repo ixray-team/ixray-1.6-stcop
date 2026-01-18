@@ -28,7 +28,7 @@
 CMemoryManager::CMemoryManager		(CEntityAlive *entity_alive, CSound_UserDataVisitor *visitor)
 {
 	VERIFY				(entity_alive);
-	m_object			= entity_alive ? entity_alive->cast_custom_monster() : NULL;
+	m_object			= entity_alive ? entity_alive->cast_creature() : NULL;
 	m_stalker			= m_object ? m_object->cast_stalker() : NULL;
 
 	if (m_stalker)

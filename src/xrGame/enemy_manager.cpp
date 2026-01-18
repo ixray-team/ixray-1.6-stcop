@@ -36,7 +36,7 @@ bool g_enemy_manager_second_update	 = false;
 
 #define USE_EVALUATOR
 
-CEnemyManager::CEnemyManager									(CCustomMonster *object)
+CEnemyManager::CEnemyManager									(CCreature *object)
 {
 	VERIFY						(object);
 	m_object					= object;
@@ -127,7 +127,7 @@ float CEnemyManager::evaluate				(const CEntityAlive *object) const
 //	}
 //	else {
 //		// if object is npc and it sees us
-//		const CCustomMonster	*monster = smart_cast<const CCustomMonster*>(object);
+//		const CCreature	*monster = smart_cast<const CCreature*>(object);
 //		if (monster && monster->memory().visual().visible_now(m_object))
 //			penalty			-= 300.f;
 //	}
