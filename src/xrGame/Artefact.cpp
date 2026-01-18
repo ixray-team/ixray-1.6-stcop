@@ -42,6 +42,8 @@ CArtefact::CArtefact()
 	m_detectorObj				= nullptr;
 	m_additional_weight			= 0.0f;
 	has_detector_visibling		= false;
+	m_ParticlesBoneID			= BI_NONE;
+	m_LightBoneID				= BI_NONE;
 }
 
 void CArtefact::Load(LPCSTR section) 
@@ -51,6 +53,9 @@ void CArtefact::Load(LPCSTR section)
 
 	if (pSettings->line_exist(section, "particles"))
 		m_sParticlesName	= pSettings->r_string(section, "particles");
+
+	IKinematics* K = PKinematics(Visual());
+	R_ASSERT2(K, cNameSect().c_str());
 
 	if (pSettings->line_exist(section, "particles_bones"))
 	{
@@ -70,28 +75,27 @@ void CArtefact::Load(LPCSTR section)
 			}
 			else
 			{
-				IKinematics* K			= PKinematics(Visual());
-				R_ASSERT2				(K, cNameSect().c_str());
-				u16 bone_id				= K->LL_BoneID(m_sParticlesBone.c_str());
+				m_ParticlesBoneID		= K->LL_BoneID(m_sParticlesBone.c_str());
 				
-				if (bone_id == BI_NONE)
+				if (m_ParticlesBoneID == BI_NONE)
 				{
 					shared_str message;
 					message.printf("Can`t find particle bone [%s] in [%s] section", m_sParticlesBone.c_str(), section);
 					
-					R_ASSERT2(bone_id!=BI_NONE, message.c_str());
+					R_ASSERT2(m_ParticlesBoneID !=BI_NONE, message.c_str());
 				}
 
-				CParticlesPlayer::AppendBone(bone_id);
+				CParticlesPlayer::AppendBone(m_ParticlesBoneID);
 			}
 		}
 	}
 
 	m_bLightsEnabled		= !!pSettings->r_bool(section, "lights_enabled");
 	if(m_bLightsEnabled){
-		sscanf(pSettings->r_string(section,"trail_light_color"), "%f,%f,%f", 
-			&m_TrailLightColor.r, &m_TrailLightColor.g, &m_TrailLightColor.b);
+		m_TrailLightColor = pSettings->r_fcolor(section, "trail_light_color");
 		m_fTrailLightRange	= pSettings->r_float(section,"trail_light_range");
+
+		m_LightBoneID = pSettings->line_exist(section, "trail_light_bone") ? K->LL_BoneID(pSettings->r_string(section, "trail_light_bone")) : BI_NONE;
 	}
 
 
@@ -118,9 +122,7 @@ BOOL CArtefact::net_Spawn(CSE_Abstract* DC)
 		m_detectorObj				= new SArtefactDetectorsSupport(this);
 
 	BOOL result						= inherited::net_Spawn(DC);
-	SwitchAfParticles				(true);
 
-	StartLights();
 	m_CarringBoneID					= u16(-1);
 	IKinematicsAnimated	*K			= Visual()->dcast_PKinematicsAnimated();
 	if(K)
@@ -129,6 +131,22 @@ BOOL CArtefact::net_Spawn(CSE_Abstract* DC)
 	o_fastmode						= FALSE;		// start initially with fast-mode enabled
 	o_render_frame					= 0;
 	SetState						(eHidden);
+
+	m_pTrailLight = ::Render->light_create();
+	bool const b_light_shadow = READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "idle_light_shadow", false);
+
+	m_pTrailLight->set_shadow(b_light_shadow);
+
+	if (GetAfRank() != 0)
+	{
+		SwitchAfParticles(false);
+		setVisible(false);
+	}
+	else
+	{
+		SwitchAfParticles(true);
+		StartLights();
+	}
 
 	SpatialComponent->spatial.type |= ESPATIAL_TYPE::ARTEFACT;
 	return							result;	
@@ -175,8 +193,20 @@ void CArtefact::OnH_B_Independent(bool just_before_destroy)
 	VERIFY(!physics_world()->Processing());
 	inherited::OnH_B_Independent(just_before_destroy);
 
-	StartLights();
-	SwitchAfParticles	(true);
+
+	if(H_Parent())
+	{
+		if (just_before_destroy)
+		{
+			StopLights();
+			SwitchAfParticles(false);
+		}
+		else
+		{
+			StartLights();
+			SwitchAfParticles(true);
+		}
+	}
 }
 
 void CArtefact::SwitchAfParticles(bool bOn)
@@ -197,16 +227,16 @@ void CArtefact::SwitchAfParticles(bool bOn)
 
 			IKinematics* K			= PKinematics(Visual());
 			R_ASSERT2				(K, cNameSect().c_str());
-			u16 bone_id				= K->LL_BoneID(m_sParticlesBone.c_str());
-			if (bone_id == BI_NONE)
+
+			if (m_ParticlesBoneID == BI_NONE)
 			{
 				shared_str message;
 				message.printf("Can`t find particle bone [%s]", m_sParticlesBone.c_str());
 
-				R_ASSERT2(bone_id != BI_NONE, message.c_str());
+				R_ASSERT2(m_ParticlesBoneID != BI_NONE, message.c_str());
 			}
 
-			CParticlesPlayer::StartParticles(m_sParticlesName,bone_id,dir,ID(),-1, false);
+			CParticlesPlayer::StartParticles(m_sParticlesName, m_ParticlesBoneID,dir,ID(),-1, false);
 			
 	}else
 	{
@@ -304,11 +334,6 @@ void CArtefact::StartLights()
 	VERIFY(!physics_world()->Processing());
 	if(!m_bLightsEnabled)		return;
 
-	VERIFY						(m_pTrailLight == nullptr);
-	m_pTrailLight				= ::Render->light_create();
-	bool const b_light_shadow	= READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "idle_light_shadow", false);
-
-	m_pTrailLight->set_shadow	(b_light_shadow);
 	m_pTrailLight->set_ignore_object(this);
 
 	m_pTrailLight->set_color	(m_TrailLightColor); 
@@ -324,14 +349,23 @@ void CArtefact::StopLights()
 		return;
 
 	m_pTrailLight->set_active	(false);
-	m_pTrailLight.destroy		();
 }
 
 void CArtefact::UpdateLights()
 {
 	VERIFY(!physics_world()->Processing());
 	if(!m_bLightsEnabled || !m_pTrailLight ||!m_pTrailLight->get_active()) return;
-	m_pTrailLight->set_position(Position());
+
+	if (m_LightBoneID != BI_NONE)
+	{
+		Fvector light_pos;
+		IKinematics* K = PKinematics(Visual());
+		K->LL_GetTransform(m_LightBoneID).transform_tiny(light_pos);
+		XFORM().transform_tiny(light_pos);
+		m_pTrailLight->set_position(light_pos);
+	}
+	else
+		m_pTrailLight->set_position(Position());
 }
 
 void CArtefact::ActivateArtefact	()
