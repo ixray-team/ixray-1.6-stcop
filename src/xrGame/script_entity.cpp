@@ -9,7 +9,7 @@
 #include "StdAfx.h"
 #include "pch_script.h"
 #include "script_entity.h"
-#include "CustomMonster.h"
+#include "Creature.h"
 #include "../xrEngine/Feel_Vision.h"
 #include "../xrEngine/motion.h"
 #include "../Include/xrRender/Kinematics.h"
@@ -53,7 +53,7 @@ DLL_Pure *CScriptEntity::_construct		()
 	m_object	= smart_cast<CGameObject*>(this);
 	VERIFY		(m_object);
 	
-	m_monster	= smart_cast<CCustomMonster*>(this);
+	m_monster	= smart_cast<CCreature*>(this);
 	
 	init		();
 	

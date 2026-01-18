@@ -5,7 +5,7 @@
 #include "Hit.h"
 #include "PHDestroyable.h"
 #include "PHMovementControl.h"
-#include "CustomMonster.h"
+#include "Creature.h"
 
 #include "../Include/xrRender/KinematicsAnimated.h"
 

@@ -8,7 +8,7 @@
 
 #pragma once
 
-IC	CRestrictedObject::CRestrictedObject		(CCustomMonster *object)
+IC	CRestrictedObject::CRestrictedObject		(CCreature *object)
 {
 	VERIFY				(object);
 	m_object			= object;
@@ -19,7 +19,7 @@ IC	bool CRestrictedObject::applied				() const
 	return				(m_applied);
 }
 
-IC	CCustomMonster &CRestrictedObject::object	() const
+IC	CCreature &CRestrictedObject::object	() const
 {
 	VERIFY				(m_object);
 	return				(*m_object);

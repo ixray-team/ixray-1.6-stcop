@@ -119,7 +119,7 @@ void CAI_Stalker::reinit			()
 {
 	CObjectHandler::reinit			(this);
 	sight().reinit					();
-	CCustomMonster::reinit			();
+	CCreature::reinit			();
 	animation().reinit				();
 //	movement().reinit				();
 
@@ -259,7 +259,7 @@ void CAI_Stalker::reload			(LPCSTR section)
 {
 	brain().setup					(this);
 
-	CCustomMonster::reload			(section);
+	CCreature::reload			(section);
 	if (!already_dead())
 		CStepManager::reload		(section);
 
@@ -538,7 +538,7 @@ void CAI_Stalker::Die				(CObject* who)
 
 void CAI_Stalker::Load				(LPCSTR section)
 { 
-	CCustomMonster::Load			(section);
+	CCreature::Load			(section);
 	CObjectHandler::Load			(section);
 	sight().Load					(section);
 	
@@ -1106,7 +1106,7 @@ CMemoryManager *CAI_Stalker::create_memory_manager		()
 DLL_Pure *CAI_Stalker::_construct			()
 {
 	m_pPhysics_support					= new CCharacterPhysicsSupport(CCharacterPhysicsSupport::etStalker,this);
-	CCustomMonster::_construct			();
+	CCreature::_construct			();
 	CObjectHandler::_construct			();
 	CStepManager::_construct			();
 

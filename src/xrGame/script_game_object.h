@@ -28,7 +28,7 @@
 #include "script_zone.h"
 #include "ai/trader/ai_trader.h"
 #include "ai/stalker/ai_stalker.h"
-#include "CustomMonster.h"
+#include "Creature.h"
 #include "Torch.h"
 #include "space_restrictor.h"
 #include "CustomZone.h"
@@ -257,7 +257,7 @@ public:
 			bool				DisableHitMarks		() const;
 			Fvector				GetMovementSpeed	() const;
 	
-	// CCustomMonster
+	// CCreature
 			bool				CheckObjectVisibility(const CScriptGameObject *tpLuaGameObject);
 			bool				CheckTypeVisibility	(const char *section_name);
 			LPCSTR				WhoHitName			();
@@ -877,7 +877,7 @@ public:
 			_DECLARE_FUNCTION14(cast_SpaceRestrictor, CSpaceRestrictor);
 			_DECLARE_FUNCTION14(cast_Stalker, CAI_Stalker);
 			_DECLARE_FUNCTION14(cast_CustomZone, CCustomZone);
-			_DECLARE_FUNCTION14(cast_Monster, CCustomMonster);
+			_DECLARE_FUNCTION14(cast_Monster, CCreature);
 			_DECLARE_FUNCTION14(cast_Explosive, CExplosive);
 			_DECLARE_FUNCTION14(cast_ScriptZone, CScriptZone);
 			//_DECLARE_FUNCTION14(cast_Projector, CProjector);

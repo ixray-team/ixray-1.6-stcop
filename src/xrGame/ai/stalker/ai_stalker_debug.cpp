@@ -75,11 +75,11 @@ void try_change_current_entity()
 	g_SpatialSpace->q_frustum(ISpatialResult, 0, ESPATIAL_TYPE::MONSTER, frustum);
 
 	float								maxlen = 1000.0f;
-	CCustomMonster*						nearest_agent = 0;
+	CCreature*						nearest_agent = 0;
 
 	for (ISpatialShared& spatial_object : ISpatialResult)
 	{
-		CCustomMonster* current = spatial_object->dcast_CObject()->cast_custom_monster();
+		CCreature* current = spatial_object->dcast_CObject()->cast_creature();
 		if (!current)					continue;
 		if (Level().CurrentEntity() == current) continue;
 
@@ -991,7 +991,7 @@ typedef xr_vector<Fvector>	COLLIDE_POINTS;
 
 class ray_query_param	{
 public:
-	CCustomMonster			*m_holder;
+	CCreature			*m_holder;
 	float					m_power;
 	float					m_power_threshold;
 	float					m_pick_distance;
@@ -1000,7 +1000,7 @@ public:
 	COLLIDE_POINTS			*m_points;
 
 public:
-	IC				ray_query_param		(CCustomMonster *holder, float power_threshold, float distance, const Fvector &start_position, const Fvector &direction, COLLIDE_POINTS &points)
+	IC				ray_query_param		(CCreature *holder, float power_threshold, float distance, const Fvector &start_position, const Fvector &direction, COLLIDE_POINTS &points)
 	{
 		m_holder			= holder;
 		m_power				= 1.f;
@@ -1032,7 +1032,7 @@ BOOL _ray_query_callback	(collide::rq_result& result, LPVOID params)
 	return								(false);
 }
 
-void fill_points			(CCustomMonster *self, const Fvector &position, const Fvector &direction, float distance, collide::rq_results& rq_storage, COLLIDE_POINTS &points, float &pick_distance)
+void fill_points			(CCreature *self, const Fvector &position, const Fvector &direction, float distance, collide::rq_results& rq_storage, COLLIDE_POINTS &points, float &pick_distance)
 {
 	VERIFY							(!fis_zero(direction.square_magnitude()));
 
@@ -1046,7 +1046,7 @@ void fill_points			(CCustomMonster *self, const Fvector &position, const Fvector
 	pick_distance					= params.m_pick_distance;
 }
 
-void draw_visiblity_rays	(CCustomMonster *self, const CObject *object, collide::rq_results& rq_storage)
+void draw_visiblity_rays	(CCreature *self, const CObject *object, collide::rq_results& rq_storage)
 {
 	typedef Feel::Vision::feel_visible_Item		feel_visible_Item;
 	typedef xr_vector<feel_visible_Item>		VISIBLE_ITEMS;

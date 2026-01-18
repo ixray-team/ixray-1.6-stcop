@@ -10,7 +10,7 @@
 
 #include "object_manager.h"
 #include "entity_alive.h"
-#include "CustomMonster.h"
+#include "Creature.h"
 #include "../xrScripts/script_callback_ex.h"
 
 class CAI_Stalker;
@@ -22,7 +22,7 @@ public:
 	typedef CScriptCallbackEx<bool>				USEFULE_CALLBACK;
 
 private:
-	CCustomMonster				*m_object;
+	CCreature				*m_object;
 	CAI_Stalker					*m_stalker;
 	float						m_ignore_monster_threshold;
 	float						m_max_ignore_distance;
@@ -49,7 +49,7 @@ protected:
 			bool				expedient			(const CEntityAlive *object) const;
 
 public:
-								CEnemyManager		(CCustomMonster *object);
+								CEnemyManager		(CCreature *object);
 	virtual void				reload				(LPCSTR section);
 	virtual bool				useful				(const CEntityAlive *object) const;
 	virtual bool				is_useful			(const CEntityAlive *object) const;

@@ -27,7 +27,7 @@
 #include "HangingLamp.h"
 #include "patrol_path_manager.h"
 #include "ai_object_location.h"
-#include "CustomMonster.h"
+#include "Creature.h"
 #include "EntityCondition.h"
 #include "space_restrictor.h"
 #include "detail_path_manager.h"
@@ -296,7 +296,7 @@ void CScriptGameObject::bind_object(CScriptBinderObject* game_object)
 
 void CScriptGameObject::set_previous_point(int point_index)
 {
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CCreature* monster = object().cast_creature())
 	{
 		monster->movement().patrol().set_previous_point(point_index);
 	}
@@ -308,7 +308,7 @@ void CScriptGameObject::set_previous_point(int point_index)
 
 void CScriptGameObject::set_start_point(int point_index)
 {
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CCreature* monster = object().cast_creature())
 	{
 		monster->movement().patrol().set_start_point(point_index);
 	}
@@ -320,7 +320,7 @@ void CScriptGameObject::set_start_point(int point_index)
 
 u32 CScriptGameObject::get_current_patrol_point_index()
 {
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CCreature* monster = object().cast_creature())
 	{
 		return monster->movement().patrol().get_current_point_index();
 	}
@@ -622,99 +622,99 @@ bool CScriptGameObject::inside(const Fvector& position) const
 
 void CScriptGameObject::set_patrol_extrapolate_callback(const luabind::functor<bool>& functor)
 {
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CCreature* monster = object().cast_creature())
 	{
 		monster->movement().patrol().extrapolate_callback().set(functor);
 	}
 	else
 	{
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomMonster : cannot access class member set_patrol_extrapolate_callback!");
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCreature : cannot access class member set_patrol_extrapolate_callback!");
 	}
 }
 
 void CScriptGameObject::set_patrol_extrapolate_callback(const luabind::functor<bool>& functor, const luabind::object& object)
 {
-	if (CCustomMonster* monster = this->object().cast_custom_monster())
+	if (CCreature* monster = this->object().cast_creature())
 	{
 		monster->movement().patrol().extrapolate_callback().set(functor, object);
 	}
 	else
 	{
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomMonster : cannot access class member set_patrol_extrapolate_callback!");
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCreature : cannot access class member set_patrol_extrapolate_callback!");
 	}
 }
 
 void CScriptGameObject::set_patrol_extrapolate_callback()
 {
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CCreature* monster = object().cast_creature())
 	{
 		monster->movement().patrol().extrapolate_callback().clear();
 	}
 	else
 	{
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomMonster : cannot access class member set_patrol_extrapolate_callback!");
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCreature : cannot access class member set_patrol_extrapolate_callback!");
 	}
 }
 
 void CScriptGameObject::extrapolate_length(float extrapolate_length)
 {
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CCreature* monster = object().cast_creature())
 	{
 		monster->movement().detail().extrapolate_length(extrapolate_length);
 	}
 	else
 	{
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomMonster : cannot access class member extrapolate_length!");
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCreature : cannot access class member extrapolate_length!");
 	}
 }
 
 float CScriptGameObject::extrapolate_length() const
 {
-	if (const CCustomMonster* monster = object().cast_custom_monster())
+	if (const CCreature* monster = object().cast_creature())
 	{
 		return monster->movement().detail().extrapolate_length();
 	}
 
-	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomMonster : cannot access class member extrapolate_length!");
+	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCreature : cannot access class member extrapolate_length!");
 	return 0.0f;
 }
 
 void CScriptGameObject::set_fov(float new_fov)
 {
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CCreature* monster = object().cast_creature())
 	{
 		monster->set_fov(new_fov);
 	}
 	else
 	{
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomMonster : cannot access class member set_fov!");
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCreature : cannot access class member set_fov!");
 	}
 }
 
 void CScriptGameObject::set_range(float new_range)
 {
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CCreature* monster = object().cast_creature())
 	{
 		monster->set_range(new_range);
 	}
 	else
 	{
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomMonster : cannot access class member set_range!");
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCreature : cannot access class member set_range!");
 	}
 }
 
 u32	CScriptGameObject::vertex_in_direction(u32 level_vertex_id, Fvector direction, float max_distance) const
 {
-	CCustomMonster* monster = object().cast_custom_monster();
+	CCreature* monster = object().cast_creature();
 	if (monster == nullptr)
 	{
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomMonster : cannot access class member vertex_in_direction!");
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCreature : cannot access class member vertex_in_direction!");
 		return (u32(-1));
 	}
 
 	if (!monster->movement().restrictions().accessible(level_vertex_id))
 	{
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomMonster::vertex_in_direction - start vertex id is not accessible!");
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCreature::vertex_in_direction - start vertex id is not accessible!");
 		return (u32(-1));
 	}
 
@@ -735,12 +735,12 @@ u32	CScriptGameObject::vertex_in_direction(u32 level_vertex_id, Fvector directio
 
 bool CScriptGameObject::invulnerable() const
 {
-	if (const CCustomMonster* monster = object().cast_custom_monster())
+	if (const CCreature* monster = object().cast_creature())
 	{
 		return monster->invulnerable();
 	}
 
-	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomMonster : cannot access class member invulnerable!");
+	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCreature : cannot access class member invulnerable!");
 	return false;
 }
 
@@ -750,13 +750,13 @@ void CScriptGameObject::invulnerable(bool invulnerable)
 	{
 		psActorFlags.set(AF_GOD_MODE, invulnerable);
 	}
-	else if (CCustomMonster* monster = object().cast_custom_monster())
+	else if (CCreature* monster = object().cast_creature())
 	{
 		monster->invulnerable(invulnerable);
 	}
 	else
 	{
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomMonster : cannot access class member invulnerable!");
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCreature : cannot access class member invulnerable!");
 	}
 }
 

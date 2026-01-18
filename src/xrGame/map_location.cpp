@@ -28,7 +28,7 @@
 #include "GametaskManager.h"
 #include "ActorHelmet.h"
 #include "Inventory.h"
-//#include "CustomMonster.h"
+//#include "Creature.h"
 
 CMapLocation::CMapLocation(LPCSTR type, u16 object_id, bool is_user_loc)
 {

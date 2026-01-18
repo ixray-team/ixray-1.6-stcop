@@ -17,7 +17,7 @@
 extern bool show_restrictions(CRestrictedObject *object);
 #endif
 
-CControlPathBuilder::CControlPathBuilder(CCustomMonster *monster) : CMovementManager(monster)
+CControlPathBuilder::CControlPathBuilder(CCreature *monster) : CMovementManager(monster)
 {
 }
 

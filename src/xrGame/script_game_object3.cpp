@@ -351,7 +351,7 @@ const CCoverPoint *CScriptGameObject::safe_cover(const Fvector &position, float 
 
 const xr_vector<MemorySpace::CVisibleObject>& CScriptGameObject::memory_visible_objects() const
 {
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CCreature* monster = object().cast_creature())
 	{
 		return monster->memory().visual().objects();
 	}
@@ -365,7 +365,7 @@ const xr_vector<MemorySpace::CVisibleObject>& CScriptGameObject::memory_visible_
 
 const xr_vector<MemorySpace::CSoundObject>& CScriptGameObject::memory_sound_objects() const
 {
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CCreature* monster = object().cast_creature())
 	{
 		return monster->memory().sound().objects();
 	}
@@ -379,7 +379,7 @@ const xr_vector<MemorySpace::CSoundObject>& CScriptGameObject::memory_sound_obje
 
 const xr_vector<MemorySpace::CHitObject>& CScriptGameObject::memory_hit_objects() const
 {
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CCreature* monster = object().cast_creature())
 	{
 		return monster->memory().hit().objects();
 	}
@@ -393,31 +393,31 @@ const xr_vector<MemorySpace::CHitObject>& CScriptGameObject::memory_hit_objects(
 
 void CScriptGameObject::ChangeTeam(u8 team, u8 squad, u8 group)
 {
-	if (CCustomMonster* custom_monster = object().cast_custom_monster())
+	if (CCreature* custom_monster = object().cast_creature())
 	{
 		custom_monster->ChangeTeam(team, squad, group);
 	}
 	else
 	{
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomMonster: cannot access class member ChangeTeam!");
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCreature: cannot access class member ChangeTeam!");
 	}
 }
 
 void CScriptGameObject::SetVisualMemoryEnabled(bool enabled)
 {
-	if (CCustomMonster* custom_monster = object().cast_custom_monster())
+	if (CCreature* custom_monster = object().cast_creature())
 	{
 		custom_monster->memory().visual().enable(enabled);
 	}
 	else
 	{
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomMonster: cannot access class member SetVisualMemoryEnabled!");
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCreature: cannot access class member SetVisualMemoryEnabled!");
 	}
 }
 
 CScriptGameObject *CScriptGameObject::GetEnemy() const
 {
-	if (CCustomMonster* l_tpCustomMonster = object().cast_custom_monster())
+	if (CCreature* l_tpCustomMonster = object().cast_creature())
 	{
 		CEntity* current_enemy = l_tpCustomMonster->GetCurrentEnemy();
 		if (l_tpCustomMonster->g_Alive() && current_enemy != nullptr && !current_enemy->getDestroy())
@@ -432,7 +432,7 @@ CScriptGameObject *CScriptGameObject::GetEnemy() const
 
 CScriptGameObject *CScriptGameObject::GetCorpse() const
 {
-	if (CCustomMonster* l_tpCustomMonster = object().cast_custom_monster())
+	if (CCreature* l_tpCustomMonster = object().cast_creature())
 	{
 		CEntity* current_corpse = l_tpCustomMonster->GetCurrentCorpse();
 		if (l_tpCustomMonster->g_Alive() && current_corpse != nullptr && !current_corpse->getDestroy())
@@ -447,7 +447,7 @@ CScriptGameObject *CScriptGameObject::GetCorpse() const
 
 bool CScriptGameObject::CheckTypeVisibility(const char *section_name)
 {
-	if (CCustomMonster* l_tpCustomMonster = object().cast_custom_monster())
+	if (CCreature* l_tpCustomMonster = object().cast_creature())
 	{
 		return l_tpCustomMonster->CheckTypeVisibility(section_name);
 	}
@@ -1331,7 +1331,7 @@ bool CScriptGameObject::weapon_unstrapped() const
 
 bool CScriptGameObject::path_completed() const
 {
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CCreature* monster = object().cast_creature())
 	{
 		return monster->movement().path_completed();
 	}
@@ -1342,7 +1342,7 @@ bool CScriptGameObject::path_completed() const
 
 void CScriptGameObject::patrol_path_make_inactual()
 {
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CCreature* monster = object().cast_creature())
 	{
 		monster->movement().patrol().make_inactual();
 	}
@@ -1530,18 +1530,18 @@ void show_condition(CScriptIniFile* ini_file, LPCSTR section)
 
 LPCSTR CScriptGameObject::sound_prefix() const
 {
-	if (CCustomMonster* custom_monster = object().cast_custom_monster())
+	if (CCreature* custom_monster = object().cast_creature())
 	{
 		return *custom_monster->sound().sound_prefix();
 	}
 
-	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomMonster : cannot access class member sound_prefix!");
+	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCreature : cannot access class member sound_prefix!");
 	return 0;
 }
 
 void CScriptGameObject::sound_prefix(LPCSTR sound_prefix)
 {
-	if (CCustomMonster* custom_monster = object().cast_custom_monster())
+	if (CCreature* custom_monster = object().cast_creature())
 	{
 		string_path localized_prefix;
 		xr_sprintf(localized_prefix, "localization\\%s\\%s", g_pStringTable->LangName().c_str(), sound_prefix);
@@ -1551,7 +1551,7 @@ void CScriptGameObject::sound_prefix(LPCSTR sound_prefix)
 	}
 	else
 	{
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomMonster : cannot access class member sound_prefix!");
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCreature : cannot access class member sound_prefix!");
 	}
 }
 

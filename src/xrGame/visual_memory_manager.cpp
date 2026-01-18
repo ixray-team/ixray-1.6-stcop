@@ -83,7 +83,7 @@ struct CNotYetVisibleObjectPredicate{
 	}
 };
 
-CVisualMemoryManager::CVisualMemoryManager		(CCustomMonster *object)
+CVisualMemoryManager::CVisualMemoryManager		(CCreature *object)
 {
 	m_object			= object;
 	m_stalker			= 0;
@@ -744,7 +744,7 @@ void CVisualMemoryManager::update				(float time_delta)
 	}
 }
 
-static inline bool is_object_valuable_to_save ( CCustomMonster const* const self, MemorySpace::CVisibleObject const& object )
+static inline bool is_object_valuable_to_save ( CCreature const* const self, MemorySpace::CVisibleObject const& object )
 {
 	CGameObject* GO = const_cast<CGameObject*>(object.m_object);
 	CEntityAlive* entity_alive = GO ? GO->cast_entity_alive() : NULL;
