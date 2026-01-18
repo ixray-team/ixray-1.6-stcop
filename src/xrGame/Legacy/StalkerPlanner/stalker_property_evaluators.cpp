@@ -147,7 +147,7 @@ _value_type CStalkerPropertyEvaluatorEnemySeeMe::evaluate	()
 
 	CEntityAlive* cast_enemy = const_cast<CEntityAlive*>(enemy);
 
-	const CCustomMonster	*enemy_monster = cast_enemy != nullptr ? cast_enemy->cast_custom_monster() : nullptr;
+	const CCreature	*enemy_monster = cast_enemy != nullptr ? cast_enemy->cast_creature() : nullptr;
 	if (enemy_monster)
 		return				(enemy_monster->memory().visual().visible_now(m_object));
 

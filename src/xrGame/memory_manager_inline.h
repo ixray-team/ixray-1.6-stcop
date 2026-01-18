@@ -78,7 +78,7 @@ IC	CDangerManager			&CMemoryManager::danger		() const
 	return					(*m_danger);
 }
 
-IC	CCustomMonster &CMemoryManager::object				() const
+IC	CCreature &CMemoryManager::object				() const
 {
 	VERIFY					(m_object);
 	return					(*m_object);

@@ -61,7 +61,7 @@ class CHolderCustom;
 class CCar;
 class CBaseMonster;
 class CGrenade;
-class CCustomMonster;
+class CCreature;
 class CPhraseDialogManager;
 class CBackpack;
 class CClimableObject;
@@ -242,7 +242,7 @@ public:
 	virtual CCar* cast_car() { return nullptr; }
 	virtual CBaseMonster* cast_base_monster() { return nullptr; }
 	virtual CGrenade* cast_grenade() { return nullptr; }
-	virtual CCustomMonster* cast_custom_monster() { return nullptr; }
+	virtual CCreature* cast_creature() { return nullptr; }
 	virtual CPhraseDialogManager* cast_phrase_dialog_manager() { return nullptr; }
 	virtual CBackpack* cast_backpack() { return nullptr; }
 	virtual CClimableObject* cast_climable_object() { return nullptr; }

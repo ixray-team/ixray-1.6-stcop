@@ -162,7 +162,7 @@ protected:
 	friend class CDetailPathBuilder;
 #ifdef DEBUG_DRAW
 	friend class CLevelGraph;
-	friend class CCustomMonster;
+	friend class CCreature;
 #endif
 
 public:

@@ -11,7 +11,7 @@
 #include "visual_memory_params.h"
 #include "memory_space.h"
 
-class CCustomMonster;
+class CCreature;
 class CAI_Stalker;
 class vision_client;
 
@@ -36,7 +36,7 @@ private:
 	typedef xr_vector<CDelayedVisibleObject>	DELAYED_VISIBLE_OBJECTS;
 
 private:
-	CCustomMonster		*m_object;
+	CCreature		*m_object;
 	CAI_Stalker			*m_stalker;
 	vision_client		*m_client;
 
@@ -83,7 +83,7 @@ private:
 			void	initialize				();
 
 public:
-					CVisualMemoryManager	(CCustomMonster *object);
+					CVisualMemoryManager	(CCreature *object);
 					CVisualMemoryManager	(CAI_Stalker *stalker);
 					CVisualMemoryManager	(vision_client *client);
 	virtual			~CVisualMemoryManager	();
