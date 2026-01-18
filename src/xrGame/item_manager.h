@@ -11,7 +11,7 @@
 #include "object_manager.h"
 #include "GameObject.h"
 
-class CCustomMonster;
+class CCreature;
 
 class CItemManager : public CObjectManager<const CGameObject > {
 public:
@@ -19,11 +19,11 @@ public:
 	typedef OBJECTS								ITEMS;
 
 private:
-	CCustomMonster		*m_object;
+	CCreature		*m_object;
 	CAI_Stalker			*m_stalker;
 
 public:
-						CItemManager	(CCustomMonster *object);
+						CItemManager	(CCreature *object);
 	virtual bool		useful			(const CGameObject *object) const;
 	virtual bool		is_useful		(const CGameObject *object) const;
 	virtual	float		evaluate		(const CGameObject *object) const;

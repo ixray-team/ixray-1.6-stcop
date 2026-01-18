@@ -196,7 +196,7 @@ bool CBaseMonster::bfAssignMovement (CScriptEntityAction *tpEntityAction)
 			ALife::_OBJECT_ID leader_id = group.commander_id();
 			bool const should_follow_leader = leader_id != (ALife::_OBJECT_ID)(-1) && leader_id != ID();
 			CObject* finded_item = Level().Objects.net_Find(leader_id);
-			CCustomMonster* const leader = should_follow_leader ? finded_item != nullptr ? finded_item->cast_custom_monster() : nullptr : nullptr;
+			CCreature* const leader = should_follow_leader ? finded_item != nullptr ? finded_item->cast_creature() : nullptr : nullptr;
 
 			if ( !should_follow_leader || !leader || (leader && !leader->GetScriptControl()) )
 			{

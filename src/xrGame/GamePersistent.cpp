@@ -32,7 +32,7 @@
 #include "ui/UILoadingScreen.h"
 
 #ifndef MASTER_GOLD
-#	include "custommonster.h"
+#	include "Creature.h"
 #endif // MASTER_GOLD
 
 #include "ai_debug.h"
@@ -668,7 +668,7 @@ if (!g_pGameLevel)
 			if (!g_actor || (g_actor->ID() != Level().CurrentViewEntity()->ID()))
 			{
 				CObject* current_view_entity = Level().CurrentViewEntity();
-				CCustomMonster	*custom_monster = current_view_entity != nullptr ? current_view_entity->cast_custom_monster() : nullptr;
+				CCreature	*custom_monster = current_view_entity != nullptr ? current_view_entity->cast_creature() : nullptr;
 				if (custom_monster) // can be spectator in multiplayer
 					custom_monster->UpdateCamera();
 			}

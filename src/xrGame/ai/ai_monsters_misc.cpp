@@ -10,7 +10,7 @@
 #include "pch_script.h"
 #include "ai_monsters_misc.h"
 #include "../ai_space.h"
-#include "../CustomMonster.h"
+#include "../Creature.h"
 #include "../ef_storage.h"
 #include "../seniority_hierarchy_holder.h"
 #include "../team_hierarchy_holder.h"
@@ -104,7 +104,7 @@ u32 dwfChooseAction(u32 dwActionRefreshRate, float fMinProbability0, float fMinP
 		}
 	}
 
-	const CCustomMonster					*monster = tpEntity ? tpEntity->cast_custom_monster() : NULL;
+	const CCreature					*monster = tpEntity ? tpEntity->cast_creature() : NULL;
 	VERIFY									(monster);
 	const CAI_Stalker						*stalker = tpEntity ? tpEntity->cast_stalker() : NULL;
 	const xr_vector<const CEntityAlive*>	&VisibleEnemies = monster->memory().enemy().objects();

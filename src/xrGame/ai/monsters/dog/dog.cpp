@@ -199,7 +199,7 @@ void CAI_Dog::reinit()
 {
 	inherited::reinit();
 
-	if(CCustomMonster::use_simplified_visual())	return;
+	if(CCreature::use_simplified_visual())	return;
 	
 	com_man().add_rotation_jump_data("1","2","3","4", PI_DIV_2);
 	com_man().add_rotation_jump_data("5","6","7","8", deg(179));
