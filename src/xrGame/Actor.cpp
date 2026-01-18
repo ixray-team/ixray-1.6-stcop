@@ -2264,14 +2264,11 @@ void CActor::shedule_Update	(u32 DT)
 }
 
 #include "debug_renderer.h"
-void CActor::renderable_Render	()
+void CActor::renderable_Render()
 {
 	VERIFY(_valid(XFORM()));
-	inherited::renderable_Render			();
-	if(1/*!HUDview()*/)
-	{
-		CInventoryOwner::renderable_Render	();
-	}
+	inherited::renderable_Render();
+	CInventoryOwner::renderable_Render();
 	VERIFY(_valid(XFORM()));
 }
 
@@ -2501,6 +2498,18 @@ float CActor::Radius()const
 	if (W) R	+= W->Radius();
 	//	if (HUDview()) R *= 1.f/psHUD_FOV;
 	return R;
+}
+
+void CActor::Center(Fvector& C)	const
+{
+	VERIFY2(renderable.visual, *cName());
+	if (cam_active == eacFirstEye)
+	{
+		C = Position();
+		C = { C.x, C.y+Radius(), C.z };
+	}
+	else
+		inherited::Center(C);
 }
 
 bool		CActor::use_bolts				() const

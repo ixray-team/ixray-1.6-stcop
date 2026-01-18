@@ -120,6 +120,8 @@ public:
 
 	virtual void						OnEvent				( NET_Packet& P, u16 type		);
 
+	void								Center(Fvector& C)	const;
+
 	// Render
 	virtual void						renderable_Render			();
 	virtual BOOL						renderable_ShadowGenerate	();
