@@ -31,7 +31,7 @@ class CPoltergeist final :	public CBaseMonster ,
 
 	CPolterSpecialAbility	*m_flame;
 	CPolterSpecialAbility	*m_tele;
-
+	xr_vector<CObject*>		tele_objects;
 	bool					m_actor_ignore;
 
 	TTime					m_last_detection_time;
