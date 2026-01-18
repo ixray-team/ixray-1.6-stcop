@@ -136,9 +136,15 @@ IC void CBackend::set_Element			(ShaderElement* S, u32	pass)
 #endif
 }
 
-ICF void CBackend::set_Shader			(Shader* S, u32 pass)
+ICF void CBackend::set_Shader(Shader* S, u32 pass)
 {
-	set_Element			(S->E[0],pass);
+	if (S == nullptr)
+	{
+		Msg("! Not found shader in library!");
+		return;
+	}
+
+	set_Element(S->E[0], pass);
 }
 
 #endif

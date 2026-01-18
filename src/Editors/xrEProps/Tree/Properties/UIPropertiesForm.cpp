@@ -186,6 +186,10 @@ void UIPropertiesForm::AssignItems(PropItemVec& items)
 		return;
 
 	m_Items = items;
+
+	m_SearchText = "";
+	m_SearchText.clear();
+
 	for (PropItem* PItem : items)
 	{
 		PItem->m_Owner = this;
@@ -222,6 +226,9 @@ void UIPropertiesForm::ClearProperties()
 	}
 	m_Root = UIPropertiesItem("",this);
 	m_Items.clear();
+
+	m_SearchText = "";
+	m_SearchText.clear();
 }
 
 PropItem* UIPropertiesForm::FindItem(const char* name)

@@ -206,21 +206,23 @@ bool CPropHelper::FvectorRDOnAfterEdit(PropValue* sender, Fvector& edit_val)
 
 void CPropHelper::floatRDOnBeforeEdit(PropValue* sender, float& edit_val)
 {
-    edit_val 		= rad2deg(edit_val);
-    FloatValue* V 	= dynamic_cast<FloatValue*>(sender); R_ASSERT(V);
-    //V->lim_mn 		= rad2deg(V->lim_mn); V->lim_mx = rad2deg(V->lim_mx);
+    edit_val = rad2deg(edit_val);
+    FloatValue* V = dynamic_cast<FloatValue*>(sender); R_ASSERT(V);
+    V->lim_mn = rad2deg(V->lim_mn); V->lim_mx = rad2deg(V->lim_mx);
 }
+
 void CPropHelper::floatRDOnDraw(PropValue* sender, xr_string& draw_val)
 {
-	FloatValue* V	= dynamic_cast<FloatValue*>(sender); VERIFY(V);
+    FloatValue* V = dynamic_cast<FloatValue*>(sender); VERIFY(V);
     float val;    	val = rad2deg(*V->value);
-    draw_sprintf	(draw_val,val,V->dec);
+    draw_sprintf(draw_val, val, V->dec);
 }
+
 bool CPropHelper::floatRDOnAfterEdit(PropValue* sender, float& edit_val)
 {
-    edit_val 		= deg2rad(edit_val);
-    FloatValue* V 	= dynamic_cast<FloatValue*>(sender); R_ASSERT(V);
-    //V->lim_mn 		= deg2rad(V->lim_mn); V->lim_mx = deg2rad(V->lim_mx);
+    edit_val = deg2rad(edit_val);
+    FloatValue* V = dynamic_cast<FloatValue*>(sender); R_ASSERT(V);
+    V->lim_mn = deg2rad(V->lim_mn); V->lim_mx = deg2rad(V->lim_mx);
     return true;
 }
 //------------------------------------------------------------------------------
