@@ -1422,11 +1422,11 @@ void player_hud::render_hud()
 	if (m_animator_item && m_animator_item->IsPlaying)
 		m_animator_item->render();
 
-	if(m_show_legs && Actor() && m_legs_model && Actor()->Holder() == nullptr)
+	if(m_show_legs && m_legs_model && Actor() && Actor()->Holder() == nullptr && Actor()->active_cam() == eacFirstEye)
 	{
 		bool isClimb = Actor()->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & mcClimb;
-		if(!isClimb) {
-			auto bHud = ::Render->get_HUD();
+		if(!isClimb)
+		{
 			IKinematics* actor_model = Actor()->Visual()->dcast_PKinematics();
 
 			actor_model->CalculateBones(TRUE);
@@ -1434,37 +1434,39 @@ void player_hud::render_hud()
 			m_legs_model->CalculateBones_Invalidate();
 			m_legs_model->CalculateBones(TRUE);
 
-			if(m_legs_model->LL_BoneCount() == actor_model->LL_BoneCount()) {
-				for(u16 i = 0; i < m_legs_model->LL_BoneCount(); ++i) {
-					auto& BoneInstance = m_legs_model->LL_GetBoneInstance(i);
-					BoneInstance.mTransform.set(actor_model->LL_GetBoneInstance(i).mTransform);
-					BoneInstance.mRenderTransform.mul_43(BoneInstance.mTransform, m_legs_model->LL_GetData(i).m2b_transform);
+			u16 legs_bones_cnt = m_legs_model->LL_BoneCount();
+			if(legs_bones_cnt == actor_model->LL_BoneCount())
+			{
+				for(u16 i = 0; i < legs_bones_cnt; ++i)
+				{
+					CBoneInstance& legs_BI = m_legs_model->LL_GetBoneInstance(i);
+					legs_BI.mTransform.set(actor_model->LL_GetTransform(i));
+					legs_BI.mRenderTransform.mul_43(legs_BI.mTransform, m_legs_model->LL_GetData(i).m2b_transform);
 				}
 			}
-			else {
-				auto setBoneTransform = [actor_model, this](u16 ID, shared_str bonename) {
-					auto BoneID = actor_model->LL_BoneID(bonename);
-					if(BoneID != BI_NONE) {
-						auto& BoneInstance = m_legs_model->LL_GetBoneInstance(ID);
-						BoneInstance.mTransform.set(actor_model->LL_GetBoneInstance(BoneID).mTransform);
-						BoneInstance.mRenderTransform.mul_43(BoneInstance.mTransform, m_legs_model->LL_GetData(ID).m2b_transform);
+			else
+			{
+				auto setBoneTransform = [actor_model, this](u16 legs_BID, u16 act_BID) -> void
+				{
+					if(act_BID != BI_NONE)
+					{
+						CBoneInstance& legs_BI = m_legs_model->LL_GetBoneInstance(legs_BID);
+						legs_BI.mTransform.set(actor_model->LL_GetTransform(act_BID));
+						legs_BI.mRenderTransform.mul_43(legs_BI.mTransform, m_legs_model->LL_GetData(act_BID).m2b_transform);
 					}
 				};
 
-				setBoneTransform(0, "root_stalker");
-				setBoneTransform(1, "bip01");
+				setBoneTransform(0, actor_model->LL_BoneID("root_stalker"));
+				setBoneTransform(1, actor_model->LL_BoneID("bip01"));
 
-				shared_str bonename;
-				for(u16 i = 0; i < m_legs_model->LL_BoneCount(); ++i) {
-					bonename = m_legs_model->LL_BoneName_dbg(i);
-					setBoneTransform(i, bonename);
-				}
+				for(u16 i = 0; i < legs_bones_cnt; ++i)
+					setBoneTransform(i, i);
 			}
 
-			const u16 BoneID = m_legs_model->LL_BoneID("bip01_spine");
-			auto& BoneInstance = m_legs_model->LL_GetData(BoneID);
-			m_legs_model->Bone_Calculate(&BoneInstance, &m_legs_model->LL_GetTransform(BoneInstance.GetParentID()));
+			CBoneData& legs_BD = m_legs_model->LL_GetData(m_legs_model->LL_BoneID("bip01_spine"));
+			m_legs_model->Bone_Calculate(&legs_BD, &m_legs_model->LL_GetTransform(legs_BD.GetParentID()));
 
+			BOOL bHud = ::Render->get_HUD();
 			::Render->set_HUD(FALSE);
 
 			::Render->set_Transform(&Actor()->XFORM());
