@@ -190,37 +190,37 @@ CScriptActionPlanner* script_action_planner(CScriptGameObject *obj)
 
 void CScriptGameObject::set_enemy_callback(const luabind::functor<bool> &functor)
 {
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CCreature* monster = object().cast_creature())
 	{
 		monster->memory().enemy().useful_callback().set(functor);
 	}
 	else
 	{
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomMonster : cannot access class member set_enemy_callback!");
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCreature : cannot access class member set_enemy_callback!");
 	}
 }
 
 void CScriptGameObject::set_enemy_callback(const luabind::functor<bool> &functor, const luabind::object &object)
 {
-	if (CCustomMonster* monster = this->object().cast_custom_monster())
+	if (CCreature* monster = this->object().cast_creature())
 	{
 		monster->memory().enemy().useful_callback().set(functor, object);
 	}
 	else
 	{
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomMonster : cannot access class member set_enemy_callback!");
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCreature : cannot access class member set_enemy_callback!");
 	}
 }
 
 void CScriptGameObject::set_enemy_callback()
 {
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CCreature* monster = object().cast_creature())
 	{
 		monster->memory().enemy().useful_callback().clear();
 	}
 	else
 	{
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomMonster : cannot access class member set_enemy_callback!");
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCreature : cannot access class member set_enemy_callback!");
 	}
 }
 

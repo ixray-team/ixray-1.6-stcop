@@ -98,7 +98,7 @@ void CGroupHierarchyHolder::register_in_agent_manager	(CEntity *member)
 
 void CGroupHierarchyHolder::register_in_group_senses	(CEntity *member)
 {
-	CCustomMonster			*monster = smart_cast<CCustomMonster*>(member);
+	CCreature			*monster = smart_cast<CCreature*>(member);
 	if (monster) {
 		monster->memory().visual().set_squad_objects(&visible_objects());
 		monster->memory().sound().set_squad_objects	(&sound_objects());
@@ -145,7 +145,7 @@ void CGroupHierarchyHolder::unregister_in_agent_manager	(CEntity *member)
 
 void CGroupHierarchyHolder::unregister_in_group_senses	(CEntity *member)
 {
-	CCustomMonster			*monster = smart_cast<CCustomMonster*>(member);
+	CCreature			*monster = smart_cast<CCreature*>(member);
 	if (monster) {
 		monster->memory().visual().set_squad_objects(0);
 		monster->memory().sound().set_squad_objects	(0);

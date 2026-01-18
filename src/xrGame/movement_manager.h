@@ -64,7 +64,7 @@ class CGameGraph;
 class CLevelGraph;
 class CRestrictedObject;
 class CLocationManager;
-class CCustomMonster;
+class CCreature;
 
 namespace steering_behaviour { class manager; }
 
@@ -177,7 +177,7 @@ public:
 	CLocationManager		*m_location_manager;
 	CLevelPathBuilder		*m_level_path_builder;
 	CDetailPathBuilder		*m_detail_path_builder;
-	CCustomMonster			*m_object;
+	CCreature			*m_object;
 
 private:
 			void	process_game_path		();
@@ -193,7 +193,7 @@ protected:
 
 public:
 
-					CMovementManager		(CCustomMonster *object);
+					CMovementManager		(CCreature *object);
 	virtual			~CMovementManager		();
 	virtual void	Load					(LPCSTR caSection);
 	virtual void	reinit					();
@@ -250,7 +250,7 @@ public:
 	IC		CPatrolPathManager		&patrol						() const;
 	IC		CRestrictedObject		&restrictions				() const;
 	IC		CLocationManager		&locations					() const;
-	IC		CCustomMonster			&object						() const;
+	IC		CCreature			&object						() const;
 	IC		CLevelPathBuilder		&level_path_builder			() const;
 	IC		CDetailPathBuilder		&detail_path_builder		() const;
 

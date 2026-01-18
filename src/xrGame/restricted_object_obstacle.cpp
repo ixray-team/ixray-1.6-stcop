@@ -14,7 +14,7 @@
 
 typedef obstacles_query::AREA	AREA;
 
-CRestrictedObjectObstacle::CRestrictedObjectObstacle(CCustomMonster *object, const obstacles_query &static_query, const obstacles_query &dynamic_query) : 
+CRestrictedObjectObstacle::CRestrictedObjectObstacle(CCreature *object, const obstacles_query &static_query, const obstacles_query &dynamic_query) : 
 	inherited				(object),
 	m_static_query			(static_query),
 	m_dynamic_query			(dynamic_query)

@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "../../../CustomMonster.h"
+#include "../../../Creature.h"
 #include "../../../eatable_item.h"
 #include "../../../seniority_hierarchy_holder.h"
 #include "../../../team_hierarchy_holder.h"
@@ -24,10 +24,10 @@ class rat_state_manager;
 namespace steering_behaviour {
 	class manager;
 } // namespace steering_behaviour
-class CAI_Rat final : public CCustomMonster, public CEatableItem
+class CAI_Rat final : public CCreature, public CEatableItem
 {
 private:
-	typedef	CCustomMonster	inherited;
+	typedef	CCreature	inherited;
 	const CPatrolPath	*m_path;
 
 private:
@@ -354,7 +354,7 @@ public:
 	virtual CEntity*			cast_entity					()	{return this;}
 	virtual CPhysicsShellHolder*cast_physics_shell_holder	()	{return this;}
 	virtual CParticlesPlayer*	cast_particles_player		()	{return this;}
-	virtual CCustomMonster*		cast_custom_monster			()	{return this;}
+	virtual CCreature*		cast_creature			()	{return this;}
 	virtual CScriptEntity*		cast_script_entity			()	{return this;}
 	virtual CWeapon*			cast_weapon					()	{return NULL;}
 	virtual CAI_Rat				*dcast_Rat					()	{return this;};

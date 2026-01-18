@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "../../CustomMonster.h"
+#include "../../Creature.h"
 #include "../../InventoryOwner.h"
 #include "../../script_entity.h"
 #include "../../sound_player.h"

@@ -21,7 +21,7 @@
 #include "../xrEngine/string_table.h"
 #include "alife_registry_wrappers.h"
 #include "relation_registry.h"
-#include "CustomMonster.h"
+#include "Creature.h"
 #include "ActorCondition.h"
 #include "level_graph.h"
 #include "HudItem.h"
@@ -1015,7 +1015,7 @@ void construct_restriction_vector(shared_str restrictions, xr_vector<ALife::_OBJ
 
 void CScriptGameObject::add_restrictions(LPCSTR out, LPCSTR in)
 {
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CCreature* monster = object().cast_creature())
 	{
 		monster->movement().restrictions().add_restrictions(out, in);
 	}
@@ -1027,7 +1027,7 @@ void CScriptGameObject::add_restrictions(LPCSTR out, LPCSTR in)
 
 void CScriptGameObject::remove_restrictions(LPCSTR out, LPCSTR in)
 {
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CCreature* monster = object().cast_creature())
 	{
 		monster->movement().restrictions().remove_restrictions(out, in);
 	}
@@ -1039,7 +1039,7 @@ void CScriptGameObject::remove_restrictions(LPCSTR out, LPCSTR in)
 
 void CScriptGameObject::remove_all_restrictions()
 {
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CCreature* monster = object().cast_creature())
 	{
 		monster->movement().restrictions().remove_all_restrictions();
 	}
@@ -1051,7 +1051,7 @@ void CScriptGameObject::remove_all_restrictions()
 
 LPCSTR CScriptGameObject::in_restrictions()
 {
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CCreature* monster = object().cast_creature())
 	{
 		return (*monster->movement().restrictions().in_restrictions());
 	}
@@ -1062,7 +1062,7 @@ LPCSTR CScriptGameObject::in_restrictions()
 
 LPCSTR CScriptGameObject::out_restrictions()
 {
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CCreature* monster = object().cast_creature())
 	{
 		return (*monster->movement().restrictions().out_restrictions());
 	}
@@ -1073,7 +1073,7 @@ LPCSTR CScriptGameObject::out_restrictions()
 
 LPCSTR CScriptGameObject::base_in_restrictions()
 {
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CCreature* monster = object().cast_creature())
 	{
 		return (*monster->movement().restrictions().base_in_restrictions());
 	}
@@ -1084,7 +1084,7 @@ LPCSTR CScriptGameObject::base_in_restrictions()
 
 LPCSTR CScriptGameObject::base_out_restrictions()
 {
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CCreature* monster = object().cast_creature())
 	{
 		return (*monster->movement().restrictions().base_out_restrictions());
 	}
@@ -1095,7 +1095,7 @@ LPCSTR CScriptGameObject::base_out_restrictions()
 
 bool CScriptGameObject::accessible_position(const Fvector &position)
 {
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CCreature* monster = object().cast_creature())
 	{
 		return monster->movement().restrictions().accessible(position);
 	}
@@ -1111,7 +1111,7 @@ bool CScriptGameObject::accessible_vertex_id(u32 level_vertex_id)
 		return false;
 	}
 
-	CCustomMonster* monster = object().cast_custom_monster();
+	CCreature* monster = object().cast_creature();
 
 	if (monster == nullptr)
 	{
@@ -1125,7 +1125,7 @@ bool CScriptGameObject::accessible_vertex_id(u32 level_vertex_id)
 
 u32 CScriptGameObject::accessible_nearest(const Fvector &position, Fvector &result)
 {
-	CCustomMonster* monster = object().cast_custom_monster();
+	CCreature* monster = object().cast_creature();
 	if (!monster)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,"CRestrictedObject : cannot access class member accessible!");
@@ -1619,24 +1619,24 @@ void CScriptGameObject::SetActorMovementState(ACTOR_DEFS::EMovementStates state,
 
 void CScriptGameObject::enable_movement(bool enable)
 {
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CCreature* monster = object().cast_creature())
 	{
 		monster->movement().enable_movement(enable);
 	}
 	else
 	{
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomMonster : cannot access class member movement_enabled!");
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCreature : cannot access class member movement_enabled!");
 	}
 }
 
 bool CScriptGameObject::movement_enabled()
 {
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CCreature* monster = object().cast_creature())
 	{
 		return monster->movement().enabled();
 	}
 
-	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomMonster : cannot access class member movement_enabled!");
+	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCreature : cannot access class member movement_enabled!");
 	return false;
 }
 

@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "../../CustomMonster.h"
+#include "../../Creature.h"
 #include "../../ObjectHandler.h"
 #include "../../AI_PhraseDialogManager.h"
 #include "../../step_manager.h"
@@ -104,13 +104,13 @@ class CDangerLocation;
 class CRestrictedObject;
 
 class CAI_Stalker final : 
-	public CCustomMonster, 
+	public CCreature, 
 	public CObjectHandler,
 	public CAI_PhraseDialogManager,
 	public CStepManager
 {
 private:
-	typedef CCustomMonster								inherited;
+	typedef CCreature								inherited;
 
 public:
 	using inherited::useful;
@@ -219,7 +219,7 @@ public:
 	virtual CParticlesPlayer*			cast_particles_player		()						{return this;}
 	virtual	Feel::Sound*				dcast_FeelSound				()						{return this;}
 	virtual CAI_Stalker*				cast_stalker				()						{return this;}
-	virtual CCustomMonster*				cast_custom_monster			()						{return this;}
+	virtual CCreature*				cast_creature			()						{return this;}
 	virtual CScriptEntity*				cast_script_entity			()						{return this;}
 	virtual CPhraseDialogManager*		cast_phrase_dialog_manager	()						{return this;}
 	virtual CAI_PhraseDialogManager*	cast_ai_phrase_dialog_manager()						{return this;}

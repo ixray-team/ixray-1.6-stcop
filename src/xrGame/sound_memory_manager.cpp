@@ -14,7 +14,7 @@
 #include "visual_memory_manager.h"
 #include "enemy_manager.h"
 #include "memory_space_impl.h"
-#include "CustomMonster.h"
+#include "Creature.h"
 #include "ai_object_location.h"
 #include "level_graph.h"
 #include "sound_user_data_visitor.h"
