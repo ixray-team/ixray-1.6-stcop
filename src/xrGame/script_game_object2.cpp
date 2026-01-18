@@ -20,7 +20,7 @@
 #include "memory_manager.h"
 #include "AI_PhraseDialogManager.h"
 #include "xrMessages.h"
-#include "CustomMonster.h"
+#include "Creature.h"
 #include "memory_manager.h"
 #include "visual_memory_manager.h"
 #include "sound_memory_manager.h"
@@ -201,7 +201,7 @@ CScriptGameObject* CScriptGameObject::GetBestEnemy()
 		return actor->GetBestEnemy();
 	}
 
-	if (const CCustomMonster* monster = object().cast_custom_monster())
+	if (const CCreature* monster = object().cast_creature())
 	{
 		if (monster->memory().enemy().selected())
 		{
@@ -225,7 +225,7 @@ void CScriptGameObject::SetBestEnemy(CScriptGameObject* lua_game_object)
 
 const CDangerObject* CScriptGameObject::GetBestDanger()
 {
-	if (const CCustomMonster* monster = object().cast_custom_monster())
+	if (const CCreature* monster = object().cast_creature())
 	{
 		if (monster->memory().danger().selected())
 		{
@@ -238,7 +238,7 @@ const CDangerObject* CScriptGameObject::GetBestDanger()
 
 CScriptGameObject* CScriptGameObject::GetBestItem()
 {
-	if (const CCustomMonster* monster = object().cast_custom_monster())
+	if (const CCreature* monster = object().cast_creature())
 	{
 		if (monster->memory().item().selected())
 		{
@@ -251,7 +251,7 @@ CScriptGameObject* CScriptGameObject::GetBestItem()
 
 u32 CScriptGameObject::memory_time(const CScriptGameObject& lua_game_object)
 {
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CCreature* monster = object().cast_creature())
 	{
 		return monster->memory().memory_time(&lua_game_object.object());
 	}
@@ -262,7 +262,7 @@ u32 CScriptGameObject::memory_time(const CScriptGameObject& lua_game_object)
 
 Fvector CScriptGameObject::memory_position(const CScriptGameObject& lua_game_object)
 {
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CCreature* monster = object().cast_creature())
 	{
 		return monster->memory().memory_position(&lua_game_object.object());
 	}
@@ -273,7 +273,7 @@ Fvector CScriptGameObject::memory_position(const CScriptGameObject& lua_game_obj
 
 void CScriptGameObject::enable_memory_object(CScriptGameObject* game_object, bool enable)
 {
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CCreature* monster = object().cast_creature())
 	{
 		monster->memory().enable(&game_object->object(), enable);
 	}
@@ -285,7 +285,7 @@ void CScriptGameObject::enable_memory_object(CScriptGameObject* game_object, boo
 
 const xr_vector<CNotYetVisibleObject>& CScriptGameObject::not_yet_visible_objects() const
 {
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CCreature* monster = object().cast_creature())
 	{
 		return monster->memory().visual().not_yet_visible_objects();
 	}
@@ -299,7 +299,7 @@ const xr_vector<CNotYetVisibleObject>& CScriptGameObject::not_yet_visible_object
 
 float CScriptGameObject::visibility_threshold() const
 {
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CCreature* monster = object().cast_creature())
 	{
 		return monster->memory().visual().visibility_threshold();
 	}
@@ -310,7 +310,7 @@ float CScriptGameObject::visibility_threshold() const
 
 void CScriptGameObject::enable_vision(bool value)
 {
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CCreature* monster = object().cast_creature())
 	{
 		monster->memory().visual().enable(value);
 	}
@@ -322,7 +322,7 @@ void CScriptGameObject::enable_vision(bool value)
 
 bool CScriptGameObject::vision_enabled() const
 {
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CCreature* monster = object().cast_creature())
 	{
 		return monster->memory().visual().enabled();
 	}
@@ -333,7 +333,7 @@ bool CScriptGameObject::vision_enabled() const
 
 void CScriptGameObject::set_sound_threshold(float value)
 {
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CCreature* monster = object().cast_creature())
 	{
 		monster->memory().sound().set_threshold(value);
 	}
@@ -345,7 +345,7 @@ void CScriptGameObject::set_sound_threshold(float value)
 
 void CScriptGameObject::restore_sound_threshold()
 {
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CCreature* monster = object().cast_creature())
 	{
 		monster->memory().sound().restore_threshold();
 	}
@@ -401,7 +401,7 @@ void CScriptGameObject::SetActorPosition(Fvector pos)
 
 void CScriptGameObject::SetNpcPosition(Fvector pos)
 {
-	if (CCustomMonster* obj = object().cast_custom_monster())
+	if (CCreature* obj = object().cast_creature())
 	{
 		Fmatrix F = obj->XFORM();
 		F.c = pos;
@@ -416,7 +416,7 @@ void CScriptGameObject::SetNpcPosition(Fvector pos)
 	}
 	else
 	{
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "ScriptGameObject : attempt to call SetActorPosition method for non-CCustomMonster object");
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "ScriptGameObject : attempt to call SetActorPosition method for non-CCreature object");
 	}
 
 }
@@ -605,7 +605,7 @@ u32 CScriptGameObject::location_on_path(float distance, Fvector* location)
 		return (u32(-1));
 	}
 
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CCreature* monster = object().cast_creature())
 	{
 		VERIFY(location);
 		return monster->movement().detail().location_on_path(monster, distance, *location);

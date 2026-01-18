@@ -8,7 +8,7 @@
 
 #pragma once
 
-IC	CDangerManager::CDangerManager							(CCustomMonster *object)
+IC	CDangerManager::CDangerManager							(CCreature *object)
 {
 	VERIFY			(object);
 	m_object		= object;

@@ -263,7 +263,7 @@ void CAI_Bloodsucker::reinit()
 	CControlledActor::reinit	();
 	m_visual_default			= cNameVisual();
 
-	if(CCustomMonster::use_simplified_visual())	return;
+	if(CCreature::use_simplified_visual())	return;
 
 	Bones.Reset					();
 
@@ -502,7 +502,7 @@ void   CAI_Bloodsucker::force_visibility_state (int state)
 
 void   CAI_Bloodsucker::update_invisibility ()
 {
-	if(CCustomMonster::use_simplified_visual())	return;
+	if(CCreature::use_simplified_visual())	return;
 
 	using namespace ::detail::bloodsucker;
 

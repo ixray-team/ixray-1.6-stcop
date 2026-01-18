@@ -223,7 +223,7 @@ bool CMonsterEnemyManager::enemy_see_me_now()
 	}
 	else 
 	{
-		CCustomMonster *cm = const_cast<CEntityAlive*>(enemy)->cast_custom_monster();
+		CCreature *cm = const_cast<CEntityAlive*>(enemy)->cast_creature();
 		if ( cm ) 
 		{
 			return cm->memory().visual().visible_right_now(monster);

@@ -2634,7 +2634,7 @@ void LevelInspector::DrawAIPaths()
 
 		if ((spatial->spatial.type & ESPATIAL_TYPE::AI_ALIVE) != ESPATIAL_TYPE::NONE)
 		{
-			if (CCustomMonster* monst = GO->cast_custom_monster())
+			if (CCreature* monst = GO->cast_creature())
 			{
 				auto& path = monst->movement().detail().path();
 				u32 curr_t_pioint = monst->movement().detail().curr_travel_point_index();

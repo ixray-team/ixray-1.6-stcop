@@ -34,10 +34,10 @@ private:
 	u32					m_time_line;
 
 private:
-	CCustomMonster		*m_object;
+	CCreature		*m_object;
 
 public:
-	IC					CDangerManager		(CCustomMonster *object);
+	IC					CDangerManager		(CCreature *object);
 	virtual				~CDangerManager		();
 	virtual void		Load				(LPCSTR section);
 	virtual void		reinit				();
