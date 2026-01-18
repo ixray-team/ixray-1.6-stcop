@@ -45,7 +45,7 @@ void CMonsterEnemyMemory::update()
 	{
 		if (CEntityAlive* enemy = monster->HitMemory.get_last_hit_object() != nullptr ? monster->HitMemory.get_last_hit_object()->cast_entity_alive() : nullptr)
 		{
-			if ( monster->CCustomMonster::useful(&monster->memory().enemy(), enemy) && 
+			if ( monster->CCreature::useful(&monster->memory().enemy(), enemy) && 
 				 monster->Position().distance_to(enemy->Position()) 
 				                        < 
 				 monster->get_feel_enemy_who_just_hit_max_distance() )
@@ -75,7 +75,7 @@ void CMonsterEnemyMemory::update()
 				float const xz_dist	=	monster->Position().distance_to_xz(g_actor->Position());
 				float const y_dist	= std::abs(monster->Position().y - g_actor->Position().y);
 
-				if ( monster->CCustomMonster::useful(&monster->memory().enemy(), enemy) && 
+				if ( monster->CCreature::useful(&monster->memory().enemy(), enemy) && 
 					 y_dist < 10 &&
 					 xz_dist < monster->get_feel_enemy_who_made_sound_max_distance() &&
 					 g_actor->memory().visual().visible_now(monster)	)

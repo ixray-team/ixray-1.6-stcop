@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../../CustomMonster.h"
+#include "../../../Creature.h"
 
 #include "../monster_enemy_memory.h"
 #include "../monster_corpse_memory.h"
@@ -74,9 +74,9 @@ namespace monster_interpolation {
 	};
 };
 
-class CBaseMonster : public CCustomMonster, public CStepManager, public CInventoryOwner
+class CBaseMonster : public CCreature, public CStepManager, public CInventoryOwner
 {
-	typedef	CCustomMonster								inherited;
+	typedef	CCreature								inherited;
 	
 public:
 							CBaseMonster						();
@@ -91,7 +91,7 @@ public:
 	virtual CEntity*					cast_entity					()	{return this;}
 	virtual CPhysicsShellHolder*		cast_physics_shell_holder	()	{return this;}
 	virtual CParticlesPlayer*			cast_particles_player		()	{return this;}
-	virtual CCustomMonster*				cast_custom_monster			()	{return this;}
+	virtual CCreature*				cast_creature			()	{return this;}
 	virtual CScriptEntity*				cast_script_entity			()	{return this;}
 	virtual CBaseMonster*				cast_base_monster			()	{return this;}
 

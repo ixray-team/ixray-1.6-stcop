@@ -129,7 +129,7 @@ IC	CLocationManager &CMovementManager::locations						() const
 	return					(*m_location_manager);
 }
 
-IC	CCustomMonster &CMovementManager::object							() const
+IC	CCreature &CMovementManager::object							() const
 {
 	VERIFY					(m_object);
 	return					(*m_object);

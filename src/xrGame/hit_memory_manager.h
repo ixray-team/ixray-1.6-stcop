@@ -19,7 +19,7 @@ namespace MemorySpace {
 };
 
 class CEntityAlive;
-class CCustomMonster;
+class CCreature;
 class CAI_Stalker;
 
 class CHitMemoryManager {
@@ -37,7 +37,7 @@ private:
 	typedef xr_vector<CDelayedHitObject>			DELAYED_HIT_OBJECTS;
 
 private:
-	CCustomMonster				*m_object;
+	CCreature				*m_object;
 	CAI_Stalker					*m_stalker;
 	HITS						*m_hits;
 	DELAYED_HIT_OBJECTS			m_delayed_objects;
@@ -49,7 +49,7 @@ private:
 	u32							m_last_hit_time;
 
 public:
-	IC							CHitMemoryManager	(CCustomMonster *object, CAI_Stalker *stalker);
+	IC							CHitMemoryManager	(CCreature *object, CAI_Stalker *stalker);
 	virtual						~CHitMemoryManager	();
 	virtual	void				Load				(LPCSTR section);
 	virtual	void				reinit				();
@@ -75,7 +75,7 @@ public:
 
 public:
 			void				enable				(const CObject *object, bool enable);
-			CCustomMonster		&object				() const;
+			CCreature		&object				() const;
 
 public:
 			void				save				(NET_Packet &packet) const;

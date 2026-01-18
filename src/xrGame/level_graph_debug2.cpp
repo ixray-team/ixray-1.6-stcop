@@ -17,7 +17,7 @@
 #include "../../xrUI/ui_base.h"
 #include "game_graph.h"
 #include "game_sv_single.h"
-#include "CustomMonster.h"
+#include "Creature.h"
 #include "ai/stalker/ai_stalker.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "cover_point.h"
@@ -338,7 +338,7 @@ void CLevelGraph::draw_objects()
 			continue;
 		}
 
-		if (CCustomMonster* tpCustomMonster = _O != nullptr ? _O->cast_custom_monster() : nullptr)
+		if (CCreature* tpCustomMonster = _O != nullptr ? _O->cast_creature() : nullptr)
 		{
 			tpCustomMonster->OnRender();
 			if (!tpCustomMonster->movement().detail().path().empty())
