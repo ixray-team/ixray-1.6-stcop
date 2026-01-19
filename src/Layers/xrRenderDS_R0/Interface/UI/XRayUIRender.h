@@ -36,6 +36,8 @@ public:
 	virtual void	CacheSetCullMode(ERHI_CULLMODE);
 
 	virtual void zb_enable(u32 val) {};
+
+	virtual Irect GetScissor() const { return Irect(); };
 private:
 };
 
