@@ -412,6 +412,7 @@ void CPHElement::PhDataUpdate(dReal step)
 		dBodySetAngularVel(m_body, 0, 0, 0);
 		dBodySetForce(m_body, 0, 0, 0);
 		dBodySetTorque(m_body, 0, 0, 0);
+		dBodyDisable(m_body);
 		return;
 	}
 
