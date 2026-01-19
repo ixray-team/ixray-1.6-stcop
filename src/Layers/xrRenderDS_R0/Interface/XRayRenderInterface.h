@@ -90,7 +90,7 @@ public:
 	virtual void Render();
 	virtual void OnFrame();
 	virtual void Calculate();
-	virtual void RenderUI();
+	virtual void RenderUI(bool = false);
 
 
 	IRHISurface* load_texture(LPCSTR fname, u32& msize, bool bStaging = false) override { return nullptr; };
