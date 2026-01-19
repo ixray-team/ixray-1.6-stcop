@@ -91,8 +91,8 @@ float3 CompureSpecularIrradance(float3 R, float3 Hemi, float Roughness)
 #endif
 	
 #ifdef IBL_FAKE_IRRADANCE
-	float3 SampleLastD = env_s0.SampleLevel(smp_rtlinear, LightDirection, 0.0f).xyz;
-	float3 SampleNextD = env_s1.SampleLevel(smp_rtlinear, LightDirection, 0.0f).xyz;
+	float3 SampleLastD = env_s0.SampleLevel(smp_linear, LightDirection, 0.0f).xyz;
+	float3 SampleNextD = env_s1.SampleLevel(smp_linear, LightDirection, 0.0f).xyz;
 #endif
 
 #ifdef IBL_REMAP_POSITIVE_Y
@@ -163,6 +163,28 @@ float3 AmbientLighting(float3 View, float3 Normal, float3 Color, float Metalness
 
 	float3 DiffuseIrradance = CompureDiffuseIrradance(Normal, Material.x) + L_ambient.xyz;
 	float3 SpecularIrradance = CompureDiffuseIrradance(Reflect, Material.y);
+
+	return DiffuseIrradance * Color + SpecularIrradance * Roughness;
+#endif
+}
+
+float3 AmbientLightingUI(float3 View, float3 Normal, float3 Color, float Metalness, float Roughness, float Hemi, float3 F0 = 0.04f)
+{
+	float3 Reflect = reflect(View, Normal);
+
+#ifndef USE_LEGACY_LIGHT
+	float3 DiffuseIrradance = env_s0.SampleLevel(smp_linear, Normal, 0.0f).xyz;
+	float3 SpecularIrradance = sky_s0.SampleLevel(smp_linear, Reflect, 10.0f * Roughness).xyz;
+	
+	float NdotV = max(0.0, dot(Normal, -View));
+	
+	return AmbientLighting(DiffuseIrradance, SpecularIrradance, NdotV, Color, Metalness, Roughness, F0);
+#else
+	float Specular = 0.5f - 0.5f * dot(View, Reflect);
+	float2 Material = s_material.SampleLevel(smp_material, float3(Hemi, Specular, Metalness), 0).xy;
+
+	float3 DiffuseIrradance = Material.x * env_s0.SampleLevel(smp_linear, Normal, 0.0f).xyz;
+	float3 SpecularIrradance = Material.y * env_s0.SampleLevel(smp_linear, Reflect, 0.0f).xyz;
 
 	return DiffuseIrradance * Color + SpecularIrradance * Roughness;
 #endif

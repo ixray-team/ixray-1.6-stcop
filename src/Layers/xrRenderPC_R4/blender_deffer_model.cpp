@@ -52,9 +52,30 @@ void	CBlender_deffer_model::Load	(	IReader& fs, u16 version )
 	}
 }
 
-void	CBlender_deffer_model::Compile(CBlender_Compile& C)
+void CBlender_deffer_model::Compile(CBlender_Compile& C)
 {
-	IBlender::Compile		(C);
+	IBlender::Compile(C);
+
+	if (C.iElement == SE_R2_UI)
+	{
+		uber_deffer(C, true, "deffer_model", "ui_base", !!oBlend.value, 0, true);
+
+		if (oStrictSorting.value || (oBlend.value && oAREF.value < 16)) 
+		{
+			C.PassSET_ZB(TRUE, FALSE);
+			C.PassSET_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, 0);
+		}
+
+		C.r_dx10Texture("env_s0", "shaders\\newsky_viewport#small");
+		C.r_dx10Texture("sky_s0", "shaders\\newsky_viewport");
+
+		C.r_dx10Texture("s_material", r2_material);
+		C.r_dx10Sampler("smp_material");
+
+		C.r_End();
+
+		return;
+	}
 
 	if (oStrictSorting.value || (oBlend.value && oAREF.value < 16)) {
 		switch (C.iElement)
