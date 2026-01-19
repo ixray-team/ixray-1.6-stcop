@@ -9,11 +9,14 @@ inline void SampleImage(inout float4 Final, in float2 SampleUV, in float CenterD
 	SampleWeight = saturate(1.0f - 8.0f * abs(SampleWeight - CenterDepth) * rcp(max(SampleWeight, CenterDepth)));
  	SampleWeight *= GetBorderAtten(SampleUV);
 	
-	Final.xyz += SampleWeight * s_image.SampleLevel(smp_rtlinear, SampleUV, 0).xyz;
+	float3 Color = s_image.SampleLevel(smp_rtlinear, SampleUV, 0).xyz;
+	Color *= rcp(1.0f + Color);
+	
+	Final.xyz += SampleWeight * Color;
 	Final.w += SampleWeight;
 }
 
-void main(in PSInputFullscreen I, out float4 Color : SV_Target)
+void main(in PSInputFullscreen I, out float3 Color : SV_Target)
 {	
 	float2 Vel = 0;
 	
@@ -31,6 +34,8 @@ void main(in PSInputFullscreen I, out float4 Color : SV_Target)
 	float CenterDepth = s_position.SampleLevel(smp_rtlinear, I.texcoord.xy, 0).x;
 	
 	float4 Final = s_image.SampleLevel(smp_rtlinear, I.texcoord.xy, 0);
+	Final.xyz *= rcp(1.0f + Final.xyz);
+	
 	Final.w = 1.0f;
 	
 	float PixelSize = max(mblur_params.z, mblur_params.w);
@@ -51,6 +56,10 @@ void main(in PSInputFullscreen I, out float4 Color : SV_Target)
 		}
 	}
 	
-	Color = Final * rcp(Final.w);
+	
+	Color.xyz = Final * rcp(Final.w);
+	Color = saturate(Color);
+	
+	Color *= rcp(max(0.00001f, 1.0f - Color));
 }
 
