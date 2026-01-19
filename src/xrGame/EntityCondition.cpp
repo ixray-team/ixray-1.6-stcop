@@ -538,8 +538,8 @@ void CEntityCondition::UpdateHealth()
 	m_bIsBleeding = fis_zero(bleeding_speed) ? false : true;
 	m_fDeltaHealth -= CanBeHarmed() ? bleeding_speed : 0;
 	m_fDeltaHealth += m_fDeltaTime * (m_change_v.m_fV_HealthRestore + m_fBoostHpRestore);
-	
-	VERIFY						(_valid(m_fDeltaHealth));
+
+	VERIFY(_valid(m_fDeltaHealth));
 	ChangeBleeding((m_change_v.m_fV_WoundIncarnation + m_fBoostBleedingRestore) * m_fDeltaTime);
 }
 
@@ -548,24 +548,24 @@ void CEntityCondition::UpdatePower()
 
 void CEntityCondition::UpdatePsyHealth()
 {
-	m_fDeltaPsyHealth += m_change_v.m_fV_PsyHealth*m_fDeltaTime;
+	m_fDeltaPsyHealth += m_change_v.m_fV_PsyHealth * m_fDeltaTime;
 }
 
 void CEntityCondition::UpdateRadiation()
 {
-	if(m_fRadiation>0)
+	if (m_fRadiation > 0)
 	{
 		m_fDeltaRadiation -= (m_change_v.m_fV_Radiation + m_fBoostRadiationRestore) * m_fDeltaTime;
 
-		m_fDeltaHealth -= CanBeHarmed() ? m_change_v.m_fV_RadiationHealth*m_fRadiation*m_fDeltaTime : 0.0f;
+		m_fDeltaHealth -= CanBeHarmed() ? m_change_v.m_fV_RadiationHealth * m_fRadiation * m_fDeltaTime : 0.0f;
 	}
 }
 
 void CEntityCondition::UpdateEntityMorale()
 {
-	if(m_fEntityMorale<m_fEntityMoraleMax)
+	if (m_fEntityMorale < m_fEntityMoraleMax)
 	{
-		m_fDeltaEntityMorale += m_change_v.m_fV_EntityMorale*m_fDeltaTime;
+		m_fDeltaEntityMorale += m_change_v.m_fV_EntityMorale * m_fDeltaTime;
 	}
 }
 
