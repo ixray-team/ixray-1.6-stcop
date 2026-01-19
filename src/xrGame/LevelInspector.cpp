@@ -2136,7 +2136,21 @@ void LevelInspector::DrawSkeleton(IKinematics* pKinematics, Fmatrix& xform, CGam
 {
 	if (m_skeleton_flags.test(ESKELETON_INFO::ESI_NONE))
 		return;
-
+	u32 lines_color = color_rgba(0, 255, 0, 255);
+	u32 triangles_color = color_rgba(0, 255, 0, 10);
+	
+	if (GO)
+	{
+		if(CPhysicsShellHolder* SH = GO->cast_physics_shell_holder())
+		{
+			if ((SH->m_pPhysicsShell && SH->m_pPhysicsShell->isActive() && SH->m_pPhysicsShell->isEnabled()) ||
+				(SH->character_physics_support() && SH->character_physics_support()->movement()->IsCharacterEnabled()))
+			{
+				lines_color = color_rgba(255, 0, 0, 255);
+				triangles_color = color_rgba(255, 0, 0, 20);
+			}
+		}
+	}
 	Fvector box_c, box_hs;
 	pKinematics->dcast_RenderVisual()->getVisData().box.get_CD(box_c, box_hs);
 	float dist_to_cam_sqr = Device.vCameraPosition.distance_to_sqr(xform.c);
@@ -2160,7 +2174,7 @@ void LevelInspector::DrawSkeleton(IKinematics* pKinematics, Fmatrix& xform, CGam
 					bone_xform.transform_dir(obb.m_rotate.i);
 					bone_xform.transform_dir(obb.m_rotate.j);
 					bone_xform.transform_tiny(obb.m_translate);
-					append_obb(obb, color_rgba(0, 255, 0, 255), color_rgba(0, 255, 0, 10));
+					append_obb(obb, lines_color, triangles_color);
 					if (m_selection_flags.test(ESELECTION_FLAGS::ESLF_O) && GO && (shape.flags.test(SBoneShape::sfNoPickable) || !GO->getEnabled()) && GO->dcast_CObject() != RQ.O && obb.intersect(RD.start, RD.dir, RD.range))
 					{
 						Fvector C = obb.m_translate;
@@ -2176,7 +2190,7 @@ void LevelInspector::DrawSkeleton(IKinematics* pKinematics, Fmatrix& xform, CGam
 					B.scale(sphere.R, sphere.R, sphere.R);
 					B.translate_over(sphere.P);
 					B.mulA_43(bone_xform);
-					append_ellipse(B, color_rgba(0, 255, 0, 255), color_rgba(0, 255, 0, 10));
+					append_ellipse(B, lines_color, triangles_color);
 					B.transform_tiny(sphere.P);
 					if (m_selection_flags.test(ESELECTION_FLAGS::ESLF_O) && GO && (shape.flags.test(SBoneShape::sfNoPickable) || !GO->getEnabled()) && GO->dcast_CObject() != RQ.O && sphere.intersect2(RD.start, RD.dir, RD.range))
 					{
@@ -2190,7 +2204,7 @@ void LevelInspector::DrawSkeleton(IKinematics* pKinematics, Fmatrix& xform, CGam
 					Fcylinder Cyl = shape.cylinder;
 					bone_xform.transform_tiny(Cyl.m_center);
 					bone_xform.transform_dir(Cyl.m_direction);
-					append_cylinder(Cyl, color_rgba(0, 255, 0, 255), color_rgba(0, 255, 0, 10));
+					append_cylinder(Cyl, lines_color, triangles_color);
 					if (m_selection_flags.test(ESELECTION_FLAGS::ESLF_O) && GO && (shape.flags.test(SBoneShape::sfNoPickable) || !GO->getEnabled()) && GO->dcast_CObject() != RQ.O && Cyl.intersect(RD.start, RD.dir, RD.range))
 					{
 						Fvector C = Cyl.m_center;
@@ -2212,7 +2226,7 @@ void LevelInspector::DrawSkeleton(IKinematics* pKinematics, Fmatrix& xform, CGam
 				obb_xform.mulA_43(bone_xform);
 				obb_xform.mulA_43(xform);
 				obb.xform_set(obb_xform);
-				append_obb(obb, color_rgba(0, 255, 0, 255), color_rgba(0, 255, 0, 10));
+				append_obb(obb, lines_color, triangles_color);
 				if (m_selection_flags.test(ESELECTION_FLAGS::ESLF_O) && GO && (shape.flags.test(SBoneShape::sfNoPickable) || !GO->getEnabled()) && GO->dcast_CObject() != RQ.O && obb.intersect(RD.start, RD.dir, RD.range))
 					DrawObjectInfo(GO, obb.m_translate, { 0.f, 0.f });
 			}
@@ -2266,7 +2280,7 @@ void LevelInspector::DrawSkeleton(IKinematics* pKinematics, Fmatrix& xform, CGam
 		obb.xform_get(obb_xform);
 		obb_xform.mulA_43(xform);
 		obb.xform_set(obb_xform);
-		append_obb(obb, color_rgba(0, 255, 0, 255), color_rgba(0, 255, 0, 10));
+		append_obb(obb, lines_color, triangles_color);
 		if (m_selection_flags.test(ESELECTION_FLAGS::ESLF_O) && GO && GO->dcast_CObject() != RQ.O && obb.intersect(RD.start, RD.dir, RD.range))
 		{
 			Fvector C = obb.m_translate;
