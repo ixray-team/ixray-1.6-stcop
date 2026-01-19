@@ -463,7 +463,7 @@ void InitImGuiInGameInputReceiver()
 
 }
 
-void AllEditors_SendRequest(SRequestData& req)
+void AllEditors_SendRequest(const SRequestData& req)
 {
 	g_imgui_editor_request_manager.requests.run([req]()
 		{
