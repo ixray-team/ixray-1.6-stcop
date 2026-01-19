@@ -202,8 +202,11 @@ void  ActionCallback(IKinematics *tpKinematics)
 
 void CScriptEntity::vfUpdateParticles()
 {
-	if (!GetCurrentAction()) return;
-	CScriptParticleAction	&l_tParticleAction = GetCurrentAction()->m_tParticleAction;
+	CScriptEntityAction* currentAction = GetCurrentAction();
+	if (currentAction == nullptr)
+		return;
+
+	CScriptParticleAction	&l_tParticleAction = currentAction->m_tParticleAction;
 	if (l_tParticleAction.m_caBoneName.size()) {
 		xr_shared_ptr<CParticlesObject> l_tpParticlesObject = l_tParticleAction.m_tpParticleSystem;
 		l_tpParticlesObject->UpdateParent(GetUpdatedMatrix(l_tParticleAction.m_caBoneName,l_tParticleAction.m_tParticlePosition,l_tParticleAction.m_tParticleAngles),l_tParticleAction.m_tParticleVelocity);
@@ -212,9 +215,15 @@ void CScriptEntity::vfUpdateParticles()
 
 void CScriptEntity::vfUpdateSounds()
 {
-	CScriptSoundAction	&l_tSoundAction = GetCurrentAction()->m_tSoundAction;
+	CScriptEntityAction* currentAction = GetCurrentAction();
+	if (currentAction == nullptr)
+		return;
+
+	CScriptSoundAction	&l_tSoundAction = currentAction->m_tSoundAction;
 	if (l_tSoundAction.m_caBoneName.size() && m_current_sound && m_current_sound->_feedback())
+	{
 		m_current_sound->_feedback()->set_position(GetUpdatedMatrix(l_tSoundAction.m_caBoneName,l_tSoundAction.m_tSoundPosition,Fvector().set(0,0,0)).c);
+	}
 }
 
 void CScriptEntity::vfFinishAction(CScriptEntityAction *tpEntityAction)
