@@ -402,6 +402,8 @@ void CMainMenu::OnRender	()
 	}
 }
 
+//#define DCMOD
+
 void CMainMenu::OnRenderPPUI_main	()
 {
 	if(!IsActive()) return;
@@ -419,11 +421,16 @@ void CMainMenu::OnRenderPPUI_main	()
 
 	UI().pp_stop();
 
-	pCGameFont->SetAligment(CGameFont::alRight);
 	pCGameFont->SetHeight(0.022f);
 	pCGameFont->SetColor(0xFFF5F5DC);
 
-	pCGameFont->Out(Device.TargetWidth - pCGameFont->GetHeight(), (Device.TargetHeight - pCGameFont->GetHeight()), "%s " _VER " Branch[" _BRANCH "] Hash[" _HASH "] Platform [%s]", "IX-Ray", EngineExternal().GetCurrentPlatformFullName());
+#ifdef DCMOD
+	pCGameFont->SetAligment(CGameFont::alLeft);
+	pCGameFont->Out(Device.TargetWidth - Device.TargetWidth + pCGameFont->GetHeight(), (Device.TargetHeight - (pCGameFont->GetHeight()*2)), "%s " _VER " Branch[" _BRANCH "] Hash[" _HASH "] Platform [%s]", "IX-Ray", EngineExternal().GetCurrentPlatformFullName());
+#else
+	pCGameFont->SetAligment(CGameFont::alRight);
+	pCGameFont->Out(Device.TargetWidth - pCGameFont->GetHeight(), (Device.TargetHeight - (pCGameFont->GetHeight()*2)), "%s " _VER " Branch[" _BRANCH "] Hash[" _HASH "] Platform [%s]", "IX-Ray", EngineExternal().GetCurrentPlatformFullName());
+#endif
 	pCGameFont->OnRender();
 }
 
