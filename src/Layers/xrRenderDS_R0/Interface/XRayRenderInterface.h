@@ -31,6 +31,7 @@ public:
 
 	virtual void set_Transform(Fmatrix* M);
 	virtual void set_HUD(BOOL V);
+	virtual void set_UI(BOOL V);
 	virtual BOOL get_HUD();
 	virtual void set_Invisible(BOOL V);
 	virtual void set_Object(IRenderable* O);
@@ -89,6 +90,7 @@ public:
 	virtual void Render();
 	virtual void OnFrame();
 	virtual void Calculate();
+	virtual void RenderUI();
 
 
 	IRHISurface* load_texture(LPCSTR fname, u32& msize, bool bStaging = false) override { return nullptr; };

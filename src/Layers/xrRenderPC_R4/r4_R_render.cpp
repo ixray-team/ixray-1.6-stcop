@@ -352,7 +352,46 @@ void CRender::render_menu() {
 
 Fvector3 ps_r_taa_jitter_full = {0,0,0};
 
+#include "../../Include/xrRender/UIRender.h"
+
 extern u32 g_r;
+
+void CRender::RenderUI(bool is_debug)
+{
+	ps_r_taa_jitter.set(0, 0, -1);
+	ps_r_taa_jitter_full.set(ps_r_taa_jitter);
+
+	GRHI->ClearDepthStencil(Target->rt_ui_depth->pZRT, ERHI_CLEAR_TARGET::DEPTH, 1.0f, 0L);
+	Target->u_setrt(Target->rt_ui_color, NULL, Target->rt_ui_depth->pZRT);
+
+	auto Scissor = UIRender->GetScissor();
+	Scissor.mul(2, 2);
+
+	UIRender->SetScissor(&Scissor);
+	rmNormal();
+
+	if (!is_debug) 
+	{
+		Target->phase_ui_postprocess_copy();
+	}
+	else 
+	{
+		static Fvector4 debug_icon_color = { 0.5, 0, 0, 1 };
+		GRHI->ClearTarget(Target->rt_ui_color->pRT, &debug_icon_color.x);
+	}
+
+	r_dsgraph_render_ui();
+	r_dsgraph_render_sorted_ui();
+
+	Scissor.div(2, 2);
+
+	Target->u_setrt(Target->rt_BackbufferLUT, nullptr, nullptr, nullptr);
+	UIRender->SetScissor(&Scissor);
+	RImplementation.rmNormal();
+
+	Target->phase_ui_postprocess();
+}
+
 bool is_render_cubemap = false;
 
 void CRender::Render()

@@ -35,6 +35,9 @@
 #define		r2_RT_env_depth		"$user$sky_depth"
 #define		r2_RT_env_temp		"$user$sky_1temp"
 
+#define		r2_RT_ui_depth		"$user$ui_depth"
+#define		r2_RT_ui_color		"$user$ui_color"
+
 #define		r2_RT_sslr			"$user$sslr"
 #define		r2_RT_sslr_old		"$user$sslr_old"
 #define		r2_RT_sslr_data		"$user$sslr_data"
@@ -102,6 +105,7 @@ const		u32					LUMINANCE_size = 16;
 #define		SE_R2_NORMAL_LQ		1	// low quality
 #define		SE_R2_SHADOW		2	// shadow generation
 #define		SE_R2_REFLECTIONS	3	// reflections generation
+#define		SE_R2_UI			4	// ui static generation
 
 #if USE_DX11
 #define		SE_R2_DETAIL_SHADOW_HQ 2	 // shadow generation (Wind)
