@@ -634,7 +634,7 @@ public		:
 };
 
 
-ENGINE_API float psHUD_FOV_def = 33.75f;
+ENGINE_API float psHUD_FOV_def = 50.0f;
 ENGINE_API float psHUD_FOV = psHUD_FOV_def;
 ENGINE_API bool g_3d_scopes = false;
 
