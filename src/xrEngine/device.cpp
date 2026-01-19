@@ -160,7 +160,7 @@ void CRenderDevice::on_idle		()
 
 	// FPS Limit
 	bool main_menu_active = g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive();
-	int fps_limit = main_menu_active ? 500 : g_dwFPSlimit;
+	int fps_limit = main_menu_active ? 120 : g_dwFPSlimit;
 	if (fps_limit > 0)
 	{
 		static DWORD dwLastFrameTime = 0;
