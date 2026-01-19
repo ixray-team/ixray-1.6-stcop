@@ -1447,7 +1447,7 @@ void LevelInspector::DrawGameGraph()
 	struct GraphPointD
 	{
 		bool is_blue[2]{ false, false };
-		xr_vector<Fvector> m_path;
+		xr_concurrent_vector<Fvector> m_path;
 		Fvector pos[3];
 		Fvector spatial_c, spatial_bd;
 		float spatial_r = 1.f;
@@ -1560,7 +1560,7 @@ void LevelInspector::DrawGameGraph()
 					link.pos[1] = child_pos + Fvector{ 0.f,1.f,0.f };
 					link.pos[2].add(main_graph_pos, child_pos).mul(0.5f);
 
-					thread_local xr_vector<u32> m_path;
+					thread_local xr_vector<u32> m_path; m_path.clear();
 					//lgraph.Search(global_vertex->level_vertex_id(), child_vertex->level_vertex_id(), m_path);
 					//PostProcessPath(m_path);
 					SearchSmooth(global_vertex->level_vertex_id(), child_vertex->level_vertex_id(), m_path);
