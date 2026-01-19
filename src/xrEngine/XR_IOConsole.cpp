@@ -153,6 +153,7 @@ void CConsole::Initialize()
 			reader->r_string(line, sizeof(line));
 			m_cmd_history.emplace_back(line);
 		}
+		FS.r_close(reader);
 	}
 }
 
