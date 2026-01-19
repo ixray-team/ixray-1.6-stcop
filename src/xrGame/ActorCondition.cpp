@@ -339,10 +339,10 @@ void CActorCondition::UpdateBoosters()
 		}
 	}
 
-	if(m_object == Level().CurrentViewEntity() && !g_dedicated_server)
+	if (m_object == Level().CurrentViewEntity() && !g_dedicated_server)
 	{
 		CurrentGameUI()->UIMainIngameWnd->UpdateBoosterIndicators(m_booster_influences);
-}
+	}
 }
 
 void CActorCondition::AffectDamage_InjuriousMaterialAndMonstersInfluence()
@@ -639,7 +639,7 @@ void CActorCondition::save(NET_Packet &output_packet)
 
 	output_packet.w_u8((u8)m_booster_influences.size());
 	BOOSTER_MAP::iterator b = m_booster_influences.begin(), e = m_booster_influences.end();
-	for(; b!=e; b++)
+	for (; b != e; b++)
 	{
 		output_packet.w_u8((u8)b->second.m_type);
 		output_packet.w_float(b->second.fBoostValue);
@@ -669,7 +669,7 @@ void CActorCondition::load(IReader &input_packet)
 	load_data			(m_curr_medicine_influence.fTimeCurrent, input_packet);
 
 	u8 cntr = input_packet.r_u8();
-	for(; cntr>0; cntr--)
+	for (; cntr > 0; cntr--)
 	{
 		SBooster B;
 		B.m_type = (EBoostParams)input_packet.r_u8();
@@ -816,7 +816,7 @@ void CActorCondition::BoostParameters(const SBooster& B)
 
 void CActorCondition::DisableBoostParameters(const SBooster& B)
 {
-	switch(B.m_type)
+	switch (B.m_type)
 	{
 	case eBoostHpRestore:
 	{
@@ -905,7 +905,7 @@ void CActorCondition::DisableBoostParameters(const SBooster& B)
 		m_fBoostChemicalBurnProtection = 0.0f;
 		break;
 	}
-		default: NODEFAULT;	
+	default: NODEFAULT;
 	}
 }
 
@@ -1067,7 +1067,7 @@ bool CActorCondition::ApplyBooster(const SBooster& B, const shared_str& sect, bo
 		{
 			if (use_sound && pSettings->line_exist(sect, "use_sound"))
 			{
-				if(m_use_sound.is_playing())
+				if (m_use_sound.is_playing())
 				{
 					m_use_sound.stop();
 				}
@@ -1089,7 +1089,7 @@ bool CActorCondition::ApplyBooster(const SBooster& B, const shared_str& sect, bo
 		this_booster.fBoostValue = 0.0f;
 		DisableBoostParameters(this_booster);
 
-		m_booster_influences[B.m_type] = B;
+		this_booster = B;
 		BoostParameters(B);
 	}
 
