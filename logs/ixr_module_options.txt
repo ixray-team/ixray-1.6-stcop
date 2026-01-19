@@ -1,0 +1,55 @@
+[IXR OPTIONS] PREPARE INIT
+[IXR OPTIONS] INITIALIZED
+[IXR OPTIONS] BEGIN LOAD OPTIONS BY FILE
+[IXR OPTIONS] LOAD OLD OPTIONS FILE
+[IXR OPTIONS] LOADED [0] OPTIONS
+[IXR OPTIONS] END LOAD OPTIONS BY FILE
+[IXR OPTIONS] DUMP:[ixr_options.options_storage]:
+
+{
+}
+
+[IXR OPTIONS] INIT SCRIPTS OPTIONS BEGIN
+
+
+[IXR OPTIONS]::[REGISTER]:: script_name:[ffx_test] group_name:[nil] variable_name:[float_track_bar] controll_data:[{"min_value":0,"max_value":100,"controll":"track_bar","value_offset":1,"default_value":23}]
+[IXR OPTIONS]::[REGISTER]:: script_name:[ffx_test] group_name:[nil] variable_name:[float_picker] controll_data:[{"min_value":-1,"max_value":1,"controll":"numeric_up_down","value_offset":0.25,"default_value":0}]
+[IXR OPTIONS]::[REGISTER]:: script_name:[ffx_test] group_name:[nil] variable_name:[color_picker] controll_data:[{"default_value":1,"controll":"combo_box","list_values":[{"option_return_value":[255,255,255],"option_display_name":"Не задан"},{"option_return_value":[255,0,0],"option_display_name":"Красный"},{"option_return_value":[0,255,0],"option_display_name":"Зеленый"},{"option_return_value":[0,0,255],"option_display_name":"Синий"}]}]
+[IXR OPTIONS]::[REGISTER]:: script_name:[ffx_test] group_name:[nil] variable_name:[gg_name] controll_data:[{"default_value":"Меченый","controll":"text_box"}]
+[IXR OPTIONS]::[REGISTER]:: script_name:[ffx_test] group_name:[nil] variable_name:[var_2] controll_data:[{"default_value":false,"controll":"check_box"}]
+[IXR OPTIONS]::[REGISTER]:: script_name:[ffx_test] group_name:[nil] variable_name:[var_3] controll_data:[{"default_value":true,"controll":"check_box"}]
+[IXR OPTIONS]::[REGISTER]:: script_name:[ffx_test] group_name:[Группа 1] variable_name:[var_4] controll_data:[{"default_value":false,"controll":"check_box"}]
+[IXR OPTIONS]::[REGISTER]:: script_name:[ffx_test] group_name:[Группа 1] variable_name:[var_5] controll_data:[{"default_value":false,"controll":"check_box"}]
+[IXR OPTIONS]::[REGISTER]:: script_name:[ffx_test] group_name:[Группа 1] variable_name:[var_6] controll_data:[{"default_value":true,"controll":"check_box"}]
+[IXR OPTIONS]::[REGISTER]:: script_name:[ffx_test] group_name:[Группа 1] variable_name:[var_7] controll_data:[{"default_value":true,"controll":"check_box"}]
+[IXR OPTIONS]::[REGISTER]:: script_name:[ffx_test] group_name:[Группа 1] variable_name:[var_8] controll_data:[{"default_value":false,"controll":"check_box"}]
+[IXR OPTIONS]::[REGISTER]:: script_name:[ffx_test] group_name:[Группа 2] variable_name:[var_9] controll_data:[{"default_value":true,"controll":"check_box"}]
+[IXR OPTIONS]::[REGISTER]:: script_name:[ffx_test] group_name:[Группа 2] variable_name:[var_10] controll_data:[{"default_value":true,"controll":"check_box"}]
+[IXR OPTIONS]::[REGISTER]:: script_name:[ffx_test] group_name:[Группа 3] variable_name:[var_11] controll_data:[{"default_value":false,"controll":"check_box"}]
+[IXR OPTIONS]::[REGISTER]:: script_name:[ffx_test] group_name:[Группа 3] variable_name:[var_12] controll_data:[{"default_value":true,"controll":"check_box"}]
+[IXR OPTIONS]::[REGISTER]:: script_name:[ffx_test] group_name:[Группа 3] variable_name:[var_13] controll_data:[{"default_value":true,"controll":"check_box"}]
+[IXR OPTIONS] INIT SCRIPTS OPTIONS END
+
+
+[IXR OPTIONS] BEGIN SEND EVENTS TO SCRIPTS BY LOADED VALUES
+
+
+[IXR OPTIONS] RUN CALLBACK::[ffx_test.script] -> { group_name:[nil] variable_name:[float_track_bar] actual_value:[23]
+[IXR OPTIONS] RUN CALLBACK::[ffx_test.script] -> { group_name:[nil] variable_name:[float_picker] actual_value:[0]
+[IXR OPTIONS] RUN CALLBACK::[ffx_test.script] -> { group_name:[nil] variable_name:[color_picker] actual_value:[[255,255,255]]
+[IXR OPTIONS] RUN CALLBACK::[ffx_test.script] -> { group_name:[nil] variable_name:[gg_name] actual_value:["Меченый"]
+[IXR OPTIONS] RUN CALLBACK::[ffx_test.script] -> { group_name:[nil] variable_name:[var_2] actual_value:[false]
+[IXR OPTIONS] RUN CALLBACK::[ffx_test.script] -> { group_name:[nil] variable_name:[var_3] actual_value:[true]
+[IXR OPTIONS] RUN CALLBACK::[ffx_test.script] -> { group_name:[Группа 1] variable_name:[var_4] actual_value:[false]
+[IXR OPTIONS] RUN CALLBACK::[ffx_test.script] -> { group_name:[Группа 1] variable_name:[var_5] actual_value:[false]
+[IXR OPTIONS] RUN CALLBACK::[ffx_test.script] -> { group_name:[Группа 1] variable_name:[var_6] actual_value:[true]
+[IXR OPTIONS] RUN CALLBACK::[ffx_test.script] -> { group_name:[Группа 1] variable_name:[var_7] actual_value:[true]
+[IXR OPTIONS] RUN CALLBACK::[ffx_test.script] -> { group_name:[Группа 1] variable_name:[var_8] actual_value:[false]
+[IXR OPTIONS] RUN CALLBACK::[ffx_test.script] -> { group_name:[Группа 2] variable_name:[var_9] actual_value:[true]
+[IXR OPTIONS] RUN CALLBACK::[ffx_test.script] -> { group_name:[Группа 2] variable_name:[var_10] actual_value:[true]
+[IXR OPTIONS] RUN CALLBACK::[ffx_test.script] -> { group_name:[Группа 3] variable_name:[var_11] actual_value:[false]
+[IXR OPTIONS] RUN CALLBACK::[ffx_test.script] -> { group_name:[Группа 3] variable_name:[var_12] actual_value:[true]
+[IXR OPTIONS] RUN CALLBACK::[ffx_test.script] -> { group_name:[Группа 3] variable_name:[var_13] actual_value:[true]
+[IXR OPTIONS] END SEND EVENTS TO SCRIPTS BY LOADED VALUES
+
+
