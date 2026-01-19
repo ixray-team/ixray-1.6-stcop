@@ -392,6 +392,12 @@ void CRenderTarget::phase_combine()
 		GPU_EVENT(PhaseAberration);
 		PhaseAberration();
 	}
+
+	if (ps_r2_ls_flags_ext.test(R2FLAG_SPP_SINCITY)) {
+		GPU_EVENT(PhaseSinCity);
+		PhaseSinCity();
+	}
+
 	{
 		GPU_EVENT(phase_pp);
 		phase_pp();

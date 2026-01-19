@@ -48,6 +48,10 @@ void CRenderTarget::PhaseSaturation() {
     RenderEffect(ScreenPostProcessType::Saturation);
 }
 
+void CRenderTarget::PhaseSinCity() {
+    RenderEffect(ScreenPostProcessType::SinCity);
+}
+
 void CRenderTarget::PhaseWinter() {
     RCache.set_xform_world(Fidentity);
     RCache.set_xform_world_old(Fidentity);

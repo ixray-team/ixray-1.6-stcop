@@ -46,6 +46,9 @@ void CBlender_SPP::Compile(CBlender_Compile& C)
         case ScreenPostProcessType::Saturation:
             C.r_Pass("stub_screen_space", "saturation", FALSE, FALSE, FALSE);
             break;
+        case ScreenPostProcessType::SinCity:
+            C.r_Pass("stub_screen_space", "sincity", FALSE, FALSE, FALSE);
+            break;
     }
 
     C.r_dx10Texture("s_image", r2_RT_backbuffer_final);

@@ -207,6 +207,8 @@ float		ps_r__test_exp_to_shaders_2	= 1.0f;
 float		ps_r__test_exp_to_shaders_3	= 1.0f;
 float		ps_r__test_exp_to_shaders_4	= 1.0f;
 
+float ps_r_sincity_sensitivity = 1.0f;  // how strongly red is preserved (larger = easier)
+
 BOOL		ps_r2_particle_dt			= FALSE;
 
 int			r_debug_render_depth		= 0;
@@ -762,6 +764,8 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float, "r2_aref_quality", &ps_r2_def_aref_quality, 70.0f, 200.0f);
 	CMD3(CCC_Mask, "r2_use_bump", &ps_r__common_flags, R2FLAG_USE_BUMP);
 	CMD3(CCC_Mask, "r2_vignette", &ps_r2_ls_flags_ext, R2FLAG_SPP_VIGNETTE);
+	CMD3(CCC_Mask, "r2_sincity", &ps_r2_ls_flags_ext, R2FLAG_SPP_SINCITY);
+	CMD4(CCC_Float, "r2_sincity_sensitivity", &ps_r_sincity_sensitivity, 0.0f, 32.0f);
 	CMD3(CCC_Mask, "r2_aberration", &ps_r2_ls_flags_ext, R2FLAG_SPP_ABERRATION);
 	CMD3(CCC_Mask, "r2_saturation", &ps_r2_ls_flags_ext, R2FLAG_SPP_SATURATION);
 	CMD3(CCC_Token, "r2_smap_size", &ps_r2_smapsize, qsmapsize_token);

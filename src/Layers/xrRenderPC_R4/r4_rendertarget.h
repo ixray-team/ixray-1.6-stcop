@@ -275,6 +275,7 @@ public:
 	void						RenderEffect			(ScreenPostProcessType postProcessType, bool = true);
 	void						PhaseAberration			();
 	void						PhaseVignette			();
+	void						PhaseSinCity();
 	void						PhaseSaturation			();
 	void						PhaseWinter				();
 

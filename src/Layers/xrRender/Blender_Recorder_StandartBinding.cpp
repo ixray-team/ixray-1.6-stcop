@@ -586,6 +586,13 @@ static class cl_digiclock : public R_constant_setup
 	}
 } binder_digiclock;
 
+static class cl_sincity_params : public R_constant_setup {
+public:
+    virtual void setup(R_constant* C) override {
+		RCache.set_c(C, ps_r_sincity_sensitivity);
+    }
+} binder_sincity;
+
 // Standart constant-binding
 void	CBlender_Compile::SetMapping()
 {
@@ -678,6 +685,8 @@ void	CBlender_Compile::SetMapping()
 	r_Constant("m_timearrow", &binder_m_timearrow);
 	r_Constant("m_timearrow2", &binder_m_timearrow2);
 	r_Constant("m_digiclock", &binder_digiclock);
+
+	r_Constant("sincity_params", &binder_sincity);
 
 	// detail
 	//if (bDetail	&& detail_scaler)
