@@ -460,6 +460,8 @@ struct CImGuiTextureEditor
 		bool show_invalid_first = false;
 		bool show_only_dds_and_thm = false;
 		bool treat_nomipmap_as_invalid = false;
+		bool treat_notpowerof2dimensions_as_invalid = false;
+		bool treat_nothasthm_as_invalid = false;
 	};
 
 	bool is_init = false;
@@ -577,7 +579,7 @@ void DestroySpawnManagerWindow();
 // note2: other functions need to use prefix _WorkerThread only to identify threaded execution of these function, so the difference between real function that used in std::thread and others is that others accept ime_request_t alias for handling incoming request from worker thread
 
 // note3: each editor (if it is needed) defines somewhere (preferably in their own class/struct definitions) a request enum that will describe tasks that their own workload need to handle (see TextureEditor implementation as example)
-void AllEditors_SendRequest(SRequestData& req);
+void AllEditors_SendRequest(const SRequestData& req);
 void AllEditors_ExecuteRequest(const SRequestData& req);
 
 void AllEditors_OnPressed(int key);
@@ -598,7 +600,7 @@ extern CImGuiRequestManager g_imgui_editor_request_manager;
 template<typename T, std::size_t N>
 IC void AllEditors_SendRequests_Sequential(const xr_array<T, N>& reqs)
 {
-	g_imgui_editor_request_manager.requests.run([reqs]() 
+	g_imgui_editor_request_manager.requests.run([reqs]()
 		{
 			for (const SRequestData& req : reqs)
 			{
