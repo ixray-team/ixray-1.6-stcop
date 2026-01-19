@@ -532,21 +532,19 @@ float CEntityCondition::BleedingSpeed()
 	return (m_WoundVector.empty() ? 0.f : bleeding_speed / m_WoundVector.size());
 }
 
-
 void CEntityCondition::UpdateHealth()
 {
-	float bleeding_speed		= BleedingSpeed() * m_fDeltaTime * m_change_v.m_fV_Bleeding;
+	float bleeding_speed = BleedingSpeed() * m_fDeltaTime * (m_change_v.m_fV_Bleeding + m_fBoostBleedingRestore);
 	m_bIsBleeding				= fis_zero(bleeding_speed)?false:true;
 	m_fDeltaHealth				-= CanBeHarmed() ? bleeding_speed : 0;
-	m_fDeltaHealth				+= m_fDeltaTime * m_change_v.m_fV_HealthRestore;
+	m_fDeltaHealth += m_fDeltaTime * (m_change_v.m_fV_HealthRestore + m_fBoostHpRestore);
 	
 	VERIFY						(_valid(m_fDeltaHealth));
-	ChangeBleeding				(m_change_v.m_fV_WoundIncarnation * m_fDeltaTime);
+	ChangeBleeding((m_change_v.m_fV_WoundIncarnation + m_fBoostBleedingRestore) * m_fDeltaTime);
 }
 
 void CEntityCondition::UpdatePower()
-{
-}
+{}
 
 void CEntityCondition::UpdatePsyHealth()
 {
@@ -557,8 +555,7 @@ void CEntityCondition::UpdateRadiation()
 {
 	if(m_fRadiation>0)
 	{
-		m_fDeltaRadiation -= m_change_v.m_fV_Radiation*
-							m_fDeltaTime;
+		m_fDeltaRadiation -= (m_change_v.m_fV_Radiation + m_fBoostRadiationRestore) * m_fDeltaTime;
 
 		m_fDeltaHealth -= CanBeHarmed() ? m_change_v.m_fV_RadiationHealth*m_fRadiation*m_fDeltaTime : 0.0f;
 	}
@@ -572,12 +569,14 @@ void CEntityCondition::UpdateEntityMorale()
 	}
 }
 
-
 bool CEntityCondition::IsLimping() const
 {
 	if (!m_use_limping_state)
-		return	(false);
-	return (m_fPower*GetHealth() <= m_limping_threshold);
+	{
+		return false;
+	}
+
+	return !!(m_fPower * GetHealth() <= m_limping_threshold);
 }
 
 void CEntityCondition::save	(NET_Packet &output_packet)

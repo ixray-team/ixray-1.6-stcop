@@ -51,11 +51,13 @@ static const LPCSTR ef_boosters_section_names[] =
 	"boost_wound_immunity"
 };
 
-struct SBooster{
-	float fBoostTime;
-	float fBoostValue;
-	EBoostParams m_type;
-	SBooster():fBoostTime(-1.0f){};
+struct SBooster
+{
+	float fBoostTime = 0.0f;
+	float fBoostValue = 0.0f;
+	EBoostParams m_type = eBoostMaxCount;
+	SBooster() = default;
+	~SBooster() = default;
 	void Load(const shared_str& sect, EBoostParams type);
 };
 
@@ -250,6 +252,13 @@ protected:
 	float 				m_fBoostTelepaticProtection;
 	float 				m_fBoostChemicalBurnProtection;
 
+	float				m_fBoostHpRestore = 0.0f;
+	float				m_fBoostPowerRestore = 0.0f;
+	float				m_fBoostRadiationRestore = 0.0f;
+	float				m_fBoostBleedingRestore = 0.0f;
+	float				m_fBoostWeightAdd = 0.0f;
+
+protected:
 	//потеря здоровья от последнего хита
 	float				m_fHealthLost;
 

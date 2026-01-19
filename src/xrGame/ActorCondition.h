@@ -49,23 +49,6 @@ public:
 
 	void 				BoostParameters				(const SBooster& B);
 	void 				DisableBoostParameters		(const SBooster& B);
-	void				BoostMaxWeight				(const float value);
-	void				BoostHpRestore				(const float value);
-	void				BoostPowerRestore			(const float value);
-	void				BoostRadiationRestore		(const float value);
-	void				BoostBleedingRestore		(const float value);
-	void				BoostBurnImmunity			(const float value);
-	void				BoostShockImmunity			(const float value);
-	void				BoostRadiationImmunity		(const float value);
-	void				BoostTelepaticImmunity		(const float value);
-	void				BoostChemicalBurnImmunity	(const float value);
-	void				BoostExplImmunity			(const float value);
-	void				BoostStrikeImmunity			(const float value);
-	void				BoostFireWoundImmunity		(const float value);
-	void				BoostWoundImmunity			(const float value);
-	void				BoostRadiationProtection	(const float value);
-	void				BoostTelepaticProtection	(const float value);
-	void				BoostChemicalBurnProtection	(const float value);
 	   BOOSTER_MAP&		GetCurBoosterInfluences		() {return m_booster_influences;};
 
 	// хромание при потере сил и здоровья

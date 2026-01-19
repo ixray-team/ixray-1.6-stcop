@@ -72,11 +72,19 @@ CActorCondition::CActorCondition(CActor *object) :
 	m_max_power_restore_speed	= 0.0f;
 	m_max_wound_protection		= 0.0f;
 	m_max_fire_wound_protection = 0.0f;
+
+	for (u8 i = 0; i < eBoostMaxCount; i++)
+	{
+		SBooster booster = SBooster();
+		booster.m_type = EBoostParams(i);
+		m_booster_influences.emplace(EBoostParams(i), booster);
+	}
 }
 
 CActorCondition::~CActorCondition()
 {
 	xr_delete( m_death_effector );
+	m_booster_influences.clear();
 }
 
 void CActorCondition::LoadCondition(LPCSTR entity_section)
@@ -321,22 +329,21 @@ void CActorCondition::UpdateCondition()
 
 void CActorCondition::UpdateBoosters()
 {
-	for(u8 i=0;i<eBoostMaxCount;i++)
+	for (auto& booster : m_booster_influences)
 	{
-		BOOSTER_MAP::iterator it = m_booster_influences.find((EBoostParams)i);
-		if(it!=m_booster_influences.end())
+		booster.second.fBoostTime -= m_fDeltaTime / (IsGameTypeSingle() ? Level().GetGameTimeFactor() : 1.0f);
+		if (booster.second.fBoostTime <= 0.0f)
 		{
-			it->second.fBoostTime -= m_fDeltaTime/(IsGameTypeSingle()?Level().GetGameTimeFactor():1.0f);
-			if(it->second.fBoostTime<=0.0f)
-			{
-				DisableBoostParameters(it->second);
-				m_booster_influences.erase(it);
-			}
+			booster.second.fBoostTime = 0.0f;
+			booster.second.fBoostValue = 0.0f;
+			DisableBoostParameters(booster.second);
 		}
 	}
 
 	if(m_object == Level().CurrentViewEntity() && !g_dedicated_server)
+	{
 		CurrentGameUI()->UIMainIngameWnd->UpdateBoosterIndicators(m_booster_influences);
+}
 }
 
 void CActorCondition::AffectDamage_InjuriousMaterialAndMonstersInfluence()
@@ -357,7 +364,7 @@ void CActorCondition::AffectDamage_InjuriousMaterialAndMonstersInfluence()
 	// Add Radiation and Psy Level from Monsters
 	if (m_object && m_object->g_Alive())
 	{
-		typedef xr_vector<CObject*> monsters;
+		using monsters = xr_vector<CObject*>;
 
 		for (const CObject* Object : m_object->feel_touch)
 		{
@@ -472,7 +479,7 @@ void CActorCondition::UpdateSatiety()
 {
 	if (!IsGameTypeSingleCompatible())
 	{
-		m_fDeltaPower += Satiety.PowerBoost * m_fDeltaTime;
+		m_fDeltaPower += (Satiety.PowerBoost + m_fBoostPowerRestore) * m_fDeltaTime;
 		return;
 	}
 
@@ -486,7 +493,7 @@ void CActorCondition::UpdateSatiety()
 	if (CanBeHarmed() && !psActorFlags.test(AF_DISABLE_CONDITION_TEST))
 	{
 		m_fDeltaHealth += Satiety.HealthBoost * satiety_health_koef * m_fDeltaTime;
-		m_fDeltaPower += Satiety.PowerBoost * Satiety.Current * m_fDeltaTime;
+		m_fDeltaPower += (Satiety.PowerBoost + m_fBoostPowerRestore) * Satiety.Current * m_fDeltaTime;
 	}
 }
 
@@ -707,10 +714,7 @@ void CActorCondition::ChangeSleepiness(float value)
 float CActorCondition::GetBoosterValueByType(EBoostParams type) const
 {
 	auto BoostInfluenceIter = m_booster_influences.find(type);
-	if (BoostInfluenceIter != m_booster_influences.end())
-	{
 		return BoostInfluenceIter->second.fBoostValue;
-	}
 
 	return 0.0f;
 }
@@ -719,23 +723,93 @@ void CActorCondition::BoostParameters(const SBooster& B)
 {
 	switch (B.m_type)
 	{
-	case eBoostHpRestore: BoostHpRestore(B.fBoostValue); break;
-	case eBoostPowerRestore: BoostPowerRestore(B.fBoostValue); break;
-	case eBoostRadiationRestore: BoostRadiationRestore(B.fBoostValue); break;
-	case eBoostBleedingRestore: BoostBleedingRestore(B.fBoostValue); break;
-	case eBoostMaxWeight: BoostMaxWeight(B.fBoostValue); break;
-	case eBoostBurnImmunity: BoostBurnImmunity(B.fBoostValue); break;
-	case eBoostShockImmunity: BoostShockImmunity(B.fBoostValue); break;
-	case eBoostRadiationImmunity: BoostRadiationImmunity(B.fBoostValue); break;
-	case eBoostTelepaticImmunity: BoostTelepaticImmunity(B.fBoostValue); break;
-	case eBoostChemicalBurnImmunity: BoostChemicalBurnImmunity(B.fBoostValue); break;
-	case eBoostExplImmunity: BoostExplImmunity(B.fBoostValue); break;
-	case eBoostStrikeImmunity: BoostStrikeImmunity(B.fBoostValue); break;
-	case eBoostFireWoundImmunity: BoostFireWoundImmunity(B.fBoostValue); break;
-	case eBoostWoundImmunity: BoostWoundImmunity(B.fBoostValue); break;
-	case eBoostRadiationProtection: BoostRadiationProtection(B.fBoostValue); break;
-	case eBoostTelepaticProtection: BoostTelepaticProtection(B.fBoostValue); break;
-	case eBoostChemicalBurnProtection: BoostChemicalBurnProtection(B.fBoostValue); break;
+	case eBoostHpRestore:
+	{
+		m_fBoostHpRestore = B.fBoostValue;
+		break;
+	}
+	case eBoostPowerRestore:
+	{
+		m_fBoostPowerRestore = B.fBoostValue;
+		break;
+	}
+	case eBoostRadiationRestore:
+	{
+		m_fBoostRadiationRestore = B.fBoostValue;
+		break;
+	}
+	case eBoostBleedingRestore:
+	{
+		m_fBoostBleedingRestore = B.fBoostValue;
+		break;
+	}
+	case eBoostMaxWeight:
+	{
+		m_fBoostWeightAdd = B.fBoostValue;
+		m_object->inventory().SetMaxWeight(object().inventory().GetMaxWeight() + m_fBoostWeightAdd);
+		m_MaxWalkWeight += m_fBoostWeightAdd;
+		break;
+	}
+	case eBoostBurnImmunity:
+	{
+		m_fBoostBurnImmunity = B.fBoostValue;
+		break;
+	}
+	case eBoostShockImmunity:
+	{
+		m_fBoostShockImmunity = B.fBoostValue;
+		break;
+	}
+	case eBoostRadiationImmunity:
+	{
+		m_fBoostRadiationImmunity = B.fBoostValue;
+		break;
+	}
+	case eBoostTelepaticImmunity:
+	{
+		m_fBoostTelepaticImmunity = B.fBoostValue;
+		break;
+	}
+	case eBoostChemicalBurnImmunity:
+	{
+		m_fBoostChemicalBurnImmunity = B.fBoostValue;
+		break;
+	}
+	case eBoostExplImmunity:
+	{
+		m_fBoostExplImmunity = B.fBoostValue;
+		break;
+	}
+	case eBoostStrikeImmunity:
+	{
+		m_fBoostStrikeImmunity = B.fBoostValue;
+		break;
+	}
+	case eBoostFireWoundImmunity:
+	{
+		m_fBoostFireWoundImmunity = B.fBoostValue;
+		break;
+	}
+	case eBoostWoundImmunity:
+	{
+		m_fBoostWoundImmunity = B.fBoostValue;
+		break;
+	}
+	case eBoostRadiationProtection:
+	{
+		m_fBoostRadiationImmunity = B.fBoostValue;
+		break;
+	}
+	case eBoostTelepaticProtection:
+	{
+		m_fBoostTelepaticImmunity = B.fBoostValue;
+		break;
+	}
+	case eBoostChemicalBurnProtection:
+	{
+		m_fBoostChemicalBurnImmunity = B.fBoostValue;
+		break;
+	}
 	default: NODEFAULT;
 	}
 }
@@ -744,94 +818,95 @@ void CActorCondition::DisableBoostParameters(const SBooster& B)
 {
 	switch(B.m_type)
 	{
-		case eBoostHpRestore: BoostHpRestore(-B.fBoostValue); break;
-		case eBoostPowerRestore: BoostPowerRestore(-B.fBoostValue); break;
-		case eBoostRadiationRestore: BoostRadiationRestore(-B.fBoostValue); break;
-		case eBoostBleedingRestore: BoostBleedingRestore(-B.fBoostValue); break;
-		case eBoostMaxWeight: BoostMaxWeight(-B.fBoostValue); break;
-		case eBoostBurnImmunity: BoostBurnImmunity(-B.fBoostValue); break;
-		case eBoostShockImmunity: BoostShockImmunity(-B.fBoostValue); break;
-		case eBoostRadiationImmunity: BoostRadiationImmunity(-B.fBoostValue); break;
-		case eBoostTelepaticImmunity: BoostTelepaticImmunity(-B.fBoostValue); break;
-		case eBoostChemicalBurnImmunity: BoostChemicalBurnImmunity(-B.fBoostValue); break;
-		case eBoostExplImmunity: BoostExplImmunity(-B.fBoostValue); break;
-		case eBoostStrikeImmunity: BoostStrikeImmunity(-B.fBoostValue); break;
-		case eBoostFireWoundImmunity: BoostFireWoundImmunity(-B.fBoostValue); break;
-		case eBoostWoundImmunity: BoostWoundImmunity(-B.fBoostValue); break;
-		case eBoostRadiationProtection: BoostRadiationProtection(-B.fBoostValue); break;
-		case eBoostTelepaticProtection: BoostTelepaticProtection(-B.fBoostValue); break;
-		case eBoostChemicalBurnProtection: BoostChemicalBurnProtection(-B.fBoostValue); break;
+	case eBoostHpRestore:
+	{
+		m_fBoostHpRestore = 0.0f;
+		break;
+	}
+	case eBoostPowerRestore:
+	{
+		m_fBoostPowerRestore = 0.0f;
+		break;
+	}
+	case eBoostRadiationRestore:
+	{
+		m_fBoostRadiationRestore = 0.0f;
+		break;
+	}
+	case eBoostBleedingRestore:
+	{
+		m_fBoostBleedingRestore = 0.0f;
+		break;
+	}
+	case eBoostMaxWeight:
+	{
+		m_object->inventory().SetMaxWeight(object().inventory().GetMaxWeight() - m_fBoostWeightAdd);
+		m_MaxWalkWeight -= m_fBoostWeightAdd;
+		m_fBoostWeightAdd = 0.0f;
+		break;
+	}
+	case eBoostBurnImmunity:
+	{
+		m_fBoostBurnImmunity = 0.0f;
+		break;
+	}
+	case eBoostShockImmunity:
+	{
+		m_fBoostShockImmunity = 0.0f;
+		break;
+	}
+	case eBoostRadiationImmunity:
+	{
+		m_fBoostRadiationImmunity = 0.0f;
+		break;
+	}
+	case eBoostTelepaticImmunity:
+	{
+		m_fBoostTelepaticImmunity = 0.0f;
+		break;
+	}
+	case eBoostChemicalBurnImmunity:
+	{
+		m_fBoostChemicalBurnImmunity = 0.0f;
+		break;
+	}
+	case eBoostExplImmunity:
+	{
+		m_fBoostExplImmunity = 0.0f;
+		break;
+	}
+	case eBoostStrikeImmunity:
+	{
+		m_fBoostStrikeImmunity = 0.0f;
+		break;
+	}
+	case eBoostFireWoundImmunity:
+	{
+		m_fBoostFireWoundImmunity = 0.0f;
+		break;
+	}
+	case eBoostWoundImmunity:
+	{
+		m_fBoostWoundImmunity = 0.0f;
+		break;
+	}
+	case eBoostRadiationProtection:
+	{
+		m_fBoostRadiationImmunity = 0.0f;
+		break;
+	}
+	case eBoostTelepaticProtection:
+	{
+		m_fBoostTelepaticImmunity = 0.0f;
+		break;
+	}
+	case eBoostChemicalBurnProtection:
+	{
+		m_fBoostChemicalBurnImmunity = 0.0f;
+		break;
+	}
 		default: NODEFAULT;	
 	}
-}
-void CActorCondition::BoostHpRestore(const float value)
-{
-	m_change_v.m_fV_HealthRestore += value;
-}
-void CActorCondition::BoostPowerRestore(const float value)
-{
-	Satiety.PowerBoost += value;
-}
-void CActorCondition::BoostRadiationRestore(const float value)
-{
-	m_change_v.m_fV_Radiation += value;
-}
-void CActorCondition::BoostBleedingRestore(const float value)
-{
-	m_change_v.m_fV_WoundIncarnation += value;
-}
-void CActorCondition::BoostMaxWeight(const float value)
-{
-	m_object->inventory().SetMaxWeight(object().inventory().GetMaxWeight()+value);
-	m_MaxWalkWeight += value;
-}
-void CActorCondition::BoostBurnImmunity(const float value)
-{
-	m_fBoostBurnImmunity += value;
-}
-void CActorCondition::BoostShockImmunity(const float value)
-{
-	m_fBoostShockImmunity += value;
-}
-void CActorCondition::BoostRadiationImmunity(const float value)
-{
-	m_fBoostRadiationImmunity += value;
-}
-void CActorCondition::BoostTelepaticImmunity(const float value)
-{
-	m_fBoostTelepaticImmunity += value;
-}
-void CActorCondition::BoostChemicalBurnImmunity(const float value)
-{
-	m_fBoostChemicalBurnImmunity += value;
-}
-void CActorCondition::BoostExplImmunity(const float value)
-{
-	m_fBoostExplImmunity += value;
-}
-void CActorCondition::BoostStrikeImmunity(const float value)
-{
-	m_fBoostStrikeImmunity += value;
-}
-void CActorCondition::BoostFireWoundImmunity(const float value)
-{
-	m_fBoostFireWoundImmunity += value;
-}
-void CActorCondition::BoostWoundImmunity(const float value)
-{
-	m_fBoostWoundImmunity += value;
-}
-void CActorCondition::BoostRadiationProtection(const float value)
-{
-	m_fBoostRadiationProtection += value;
-}
-void CActorCondition::BoostTelepaticProtection(const float value)
-{
-	m_fBoostTelepaticProtection += value;
-}
-void CActorCondition::BoostChemicalBurnProtection(const float value)
-{
-	m_fBoostChemicalBurnProtection += value;
 }
 
 void CActorCondition::UpdateTutorialThresholds()
@@ -993,7 +1068,9 @@ bool CActorCondition::ApplyBooster(const SBooster& B, const shared_str& sect, bo
 			if (use_sound && pSettings->line_exist(sect, "use_sound"))
 			{
 				if(m_use_sound._feedback())
-					m_use_sound.stop		();
+				{
+					m_use_sound.stop();
+				}
 
 				shared_str snd_name = pSettings->r_string(sect, "use_sound");
 				m_use_sound.create(snd_name.c_str(), st_Effect, sg_SourceType);
@@ -1008,15 +1085,14 @@ bool CActorCondition::ApplyBooster(const SBooster& B, const shared_str& sect, bo
 			return true;
 		}
 
-		BOOSTER_MAP::iterator it = m_booster_influences.find(B.m_type);
-		if (it != m_booster_influences.end())
-		{
-			DisableBoostParameters((*it).second);
-		}
+		this_booster.fBoostTime = 0.0f;
+		this_booster.fBoostValue = 0.0f;
+		DisableBoostParameters(this_booster);
 
 		this_booster = B;
 		BoostParameters(B);
 	}
+
 	return true;
 }
 

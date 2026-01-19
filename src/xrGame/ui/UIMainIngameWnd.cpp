@@ -1218,7 +1218,7 @@ void CUIMainIngameWnd::UpdateBoosterIndicators(const xr_map<EBoostParams, SBoost
 		{
 			case eBoostHpRestore: 
 				{
-				if (m_ind_boost_health)
+				if (m_ind_boost_health && booster.second.fBoostTime > 0.0f)
 				{
 					m_ind_boost_health->Show(true);
 					string16 buf = {};
@@ -1233,7 +1233,7 @@ void CUIMainIngameWnd::UpdateBoosterIndicators(const xr_map<EBoostParams, SBoost
 				break;
 			case eBoostPowerRestore: 
 				{
-				if (m_ind_boost_power)
+				if (m_ind_boost_power && booster.second.fBoostTime > 0.0f)
 				{
 					m_ind_boost_power->Show(true);
 					string16 buf = {};
@@ -1248,7 +1248,7 @@ void CUIMainIngameWnd::UpdateBoosterIndicators(const xr_map<EBoostParams, SBoost
 				break;
 			case eBoostRadiationRestore: 
 				{
-				if (m_ind_boost_rad)
+				if (m_ind_boost_rad && booster.second.fBoostTime > 0.0f)
 				{
 					m_ind_boost_rad->Show(true);
 					string16 buf = {};
@@ -1263,7 +1263,7 @@ void CUIMainIngameWnd::UpdateBoosterIndicators(const xr_map<EBoostParams, SBoost
 				break;
 			case eBoostBleedingRestore: 
 				{
-				if (m_ind_boost_wound)
+				if (m_ind_boost_wound && booster.second.fBoostTime > 0.0f)
 				{
 					m_ind_boost_wound->Show(true);
 					string16 buf = {};
@@ -1278,7 +1278,7 @@ void CUIMainIngameWnd::UpdateBoosterIndicators(const xr_map<EBoostParams, SBoost
 				break;
 			case eBoostMaxWeight: 
 				{
-				if (m_ind_boost_weight)
+				if (m_ind_boost_weight && booster.second.fBoostTime > 0.0f)
 				{
 					m_ind_boost_weight->Show(true);
 					string16 buf = {};
@@ -1294,7 +1294,7 @@ void CUIMainIngameWnd::UpdateBoosterIndicators(const xr_map<EBoostParams, SBoost
 			case eBoostRadiationImmunity: 
 			case eBoostRadiationProtection: 
 				{
-				if (m_ind_boost_radia)
+				if (m_ind_boost_radia && booster.second.fBoostTime > 0.0f)
 				{
 					m_ind_boost_radia->Show(true);
 					string16 buf = {};
@@ -1310,7 +1310,7 @@ void CUIMainIngameWnd::UpdateBoosterIndicators(const xr_map<EBoostParams, SBoost
 			case eBoostTelepaticImmunity: 
 			case eBoostTelepaticProtection: 
 				{
-				if (m_ind_boost_psy)
+				if (m_ind_boost_psy && booster.second.fBoostTime > 0.0f)
 				{
 					m_ind_boost_psy->Show(true);
 					string16 buf = {};
@@ -1326,7 +1326,7 @@ void CUIMainIngameWnd::UpdateBoosterIndicators(const xr_map<EBoostParams, SBoost
 			case eBoostChemicalBurnImmunity: 
 			case eBoostChemicalBurnProtection: 
 				{
-				if (m_ind_boost_chem)
+				if (m_ind_boost_chem && booster.second.fBoostTime > 0.0f)
 				{
 					m_ind_boost_chem->Show(true);
 					string16 buf = {};
