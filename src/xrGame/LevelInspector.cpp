@@ -2691,7 +2691,9 @@ void LevelInspector::DrawObjects()
 	PROF_EVENT(__FUNCTION__);
 	Fvector& cam_pos = Device.vCameraPosition;
 
-	ESPATIAL_TYPE dyn_flags = m_flags.test(ESCENE_FLAGS::ESF_DRAW_OBJECTS) ? (ESPATIAL_TYPE::LADDER |
+	ESPATIAL_TYPE dyn_flags = m_flags.test(ESCENE_FLAGS::ESF_DRAW_OBJECTS) ? 
+		(ESPATIAL_TYPE::COLLIDEABLE |
+		ESPATIAL_TYPE::LADDER |
 		ESPATIAL_TYPE::ACTOR |
 		ESPATIAL_TYPE::ACTOR_DEAD |
 		ESPATIAL_TYPE::ACTOR_ALIVE |
