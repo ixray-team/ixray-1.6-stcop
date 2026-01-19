@@ -32,6 +32,15 @@ void dxUIRender::SetAlphaRef(int aref)
 
 void dxUIRender::SetScissor(Irect* rect)
 {
+	if (rect) 
+	{
+		copy_scissor.set(*rect);
+	}
+	else 
+	{
+		copy_scissor.set(0, 0, Device.TargetWidth, Device.TargetHeight);
+	}
+
 	RCache.set_Scissor(rect);
 	GRHI->StateManager->OverrideScissoring(rect != nullptr, true);
 }
