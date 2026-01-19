@@ -21,7 +21,7 @@
 
 local SCRIPT_ENABLED = true
 local DEBUG_FILE_LOGS = true
-local DEBUG_CONSOLE_LOGS = true
+local DEBUG_CONSOLE_LOGS = false
 
 local ixr_framework = {
 	use_file_log = DEBUG_FILE_LOGS,
