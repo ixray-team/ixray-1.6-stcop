@@ -38,6 +38,7 @@ public:
 	virtual void SetShader(IUIShader &shader) = 0;
 	virtual void SetAlphaRef(int aref) = 0;
 	virtual void SetScissor(Irect* rect=NULL) = 0;
+	virtual Irect GetScissor() const = 0;
 	virtual void GetActiveTextureResolution(Fvector2 &res) = 0;
 
 	virtual void PushPoint(float x, float y, float z, u32 C, float u, float v) = 0;

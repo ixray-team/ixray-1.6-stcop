@@ -1,10 +1,12 @@
 #pragma once
 #include "UIDragDropListEx.h"
 
+class CUI3dStatic;
+
 class CUIOutfitDragDropList :public CUIDragDropListEx
 {
 	typedef CUIDragDropListEx						inherited;
-	CUIStatic*										m_background;
+	CUI3dStatic*									m_background;
 	shared_str										m_default_outfit;
 	void					SetOutfit				(CUICellItem* itm);
 	

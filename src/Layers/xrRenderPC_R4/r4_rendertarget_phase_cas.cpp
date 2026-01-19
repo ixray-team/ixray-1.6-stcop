@@ -15,3 +15,18 @@ void CRenderTarget::phase_cas()
 	//Resolve back to rt_Back_Buffer
 	GRHI->CopySurface(rt_Back_Buffer->pSurface, rt_Back_Buffer_AA->pSurface);
 }
+
+void CRenderTarget::phase_ui_postprocess()
+{
+	RCache.set_Element(s_cas->E[2]);
+	RCache.set_Geometry(FSTriangleGeom);
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
+}
+
+
+void CRenderTarget::phase_ui_postprocess_copy()
+{
+	RCache.set_Element(s_cas->E[1]);
+	RCache.set_Geometry(FSTriangleGeom);
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
+}

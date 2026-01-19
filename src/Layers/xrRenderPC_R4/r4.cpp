@@ -36,19 +36,30 @@ public:
 	virtual void					set_color			(float r, float g, float b)	{ }
 };
 
-float		r_dtex_range		= 50.f;
-//////////////////////////////////////////////////////////////////////////
-ShaderElement*			CRender::rimp_select_sh_dynamic	(dxRender_Visual	*pVisual, float cdist_sq)
+float r_dtex_range = 50.f;
+
+ShaderElement* CRender::rimp_select_sh_dynamic(dxRender_Visual* pVisual, float cdist_sq)
 {
-	int		id	= SE_R2_SHADOW;
-	if	(CRender::PHASE_NORMAL == RImplementation.phase)
+	if (!!RImplementation.val_bUI)
 	{
-		id = ((_sqrt(cdist_sq)-pVisual->vis.sphere.R)<r_dtex_range)?SE_R2_NORMAL_HQ:SE_R2_NORMAL_LQ;
+		if (auto pSh = pVisual->shader->E[SE_R2_UI]._get())
+		{
+			return pSh;
+		}
+
+		return pVisual->shader->E[SE_R2_NORMAL_LQ]._get();
 	}
-	else if(CRender::PHASE_REFLECT == RImplementation.phase) {
+
+	int id = SE_R2_SHADOW;
+
+	if (CRender::PHASE_NORMAL == RImplementation.phase)
+	{
+		id = ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range) ? SE_R2_NORMAL_HQ : SE_R2_NORMAL_LQ;
+	}
+	else if (CRender::PHASE_REFLECT == RImplementation.phase) 
+	{
 		Msg("! This is no implemented");
 		id = SE_R2_NORMAL_LQ;
-		//id = SE_R2_REFLECTIONS;
 	}
 	return pVisual->shader->E[id]._get();
 }
