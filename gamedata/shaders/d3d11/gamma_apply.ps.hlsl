@@ -16,6 +16,6 @@ float4 main(in PSInput I) : SV_Target
 	color = color_params.x * pow(color, color_params.y) + color_params.z;
 	color = saturate(color.xyz * color_grading.xyz);
 	
-    color = deband_color(color, I.texcoord.xy);
+    color = deband_color(color, I.hpos.xy);
 	return float4(color, 1.0f);
 }
