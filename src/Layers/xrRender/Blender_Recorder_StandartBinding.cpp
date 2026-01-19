@@ -444,28 +444,35 @@ static class cl_screen_res : public RHIShaderConstant::Setup
 	}
 }	binder_screen_res;
 
-static class cl_scaled_screen_res : public RHIShaderConstant::Setup {
-	virtual void setup(RHIShaderConstant* C) {
+static class cl_scaled_screen_res : public RHIShaderConstant::Setup 
+{
+	virtual void setup(RHIShaderConstant* C) 
+	{
 		RCache.set_c(C, RCache.get_width(), RCache.get_height(), 1.0f / RCache.get_width(), 1.0f / RCache.get_height());
 	}
 }	binder_scaled_screen_res;
 
-static class cl_target_screen_res : public RHIShaderConstant::Setup {
-	virtual void setup(RHIShaderConstant* C) {
+static class cl_target_screen_res : public RHIShaderConstant::Setup 
+{
+	virtual void setup(RHIShaderConstant* C) 
+	{
 		RCache.set_c(C, (float)::Render->getTarget()->get_width(), (float)::Render->getTarget()->get_height(),
 			1.0f / (float)::Render->getTarget()->get_width(), 1.0f / (float)::Render->getTarget()->get_height());
 	}
 }	binder_target_screen_res;
 
-static class cl_screen_scale : public RHIShaderConstant::Setup {
-	virtual void setup(RHIShaderConstant* C) {
+static class cl_screen_scale : public RHIShaderConstant::Setup 
+{
+	virtual void setup(RHIShaderConstant* C) 
+	{
 		RCache.set_c(C, GRHI->DevicePtr->RenderScale, 0.0f, 0.0f, 0.0f);
 	}
 } binder_screen_scale;
 
 static class cl_def_aref : public RHIShaderConstant::Setup
 {
-	virtual void setup(RHIShaderConstant* C) override {
+	virtual void setup(RHIShaderConstant* C) override 
+	{
 #ifdef _EDITOR
 		float def_aref_cmd = 100 / 255.0f;
 #else
