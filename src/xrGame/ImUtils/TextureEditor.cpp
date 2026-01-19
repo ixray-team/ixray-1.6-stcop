@@ -129,8 +129,6 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 				FS.get_all_files_in_dir(files_vec, pTexturesFolder->m_Path);
 				g_imgui_texture_editor.total_files_in_folder = files_vec.size();
 			}
-			if (!files_vec.empty())
-				g_imgui_texture_editor.wt_current_analyzing_texture = files_vec[0].c_str();
 
 			g_imgui_texture_editor.textures.clear();
 			g_imgui_texture_editor.filter_query.clear();
@@ -165,6 +163,7 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 
 					if (is_dds)
 					{
+						g_imgui_texture_editor.wt_current_analyzing_texture = fn.c_str();
 						CImGuiTextureEditor::STextureEntry entry;
 						entry.analyze_status_result_flags = 0;
 
@@ -714,6 +713,12 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 	}
 }
 
+void PrintIgnoreStatus(const char* pName, const ImVec4& color)
+{
+	ImGui::SameLine();
+	ImGui::TextColored(color, pName);
+}
+
 void PrintErrorStatus(
 	bool status,
 	const char* pOverrideValidStatus = "OK",
@@ -843,6 +848,8 @@ void RenderTextureEditor()
 
 	bool is_in_game = g_actor && ai().get_alife() && g_pGameLevel;
 
+	bool checkbox_about_treat_settings_was_updated = false;
+
 	if (ImGui::Begin("Texture Editor", 0, ImGuiWindowFlags_AlwaysAutoResize))
 	{
 		if (ImGui::BeginTabBar("##TETB"))
@@ -948,7 +955,28 @@ void RenderTextureEditor()
 
 					ImGui::Checkbox("Show only dds and thm in stats", &g_imgui_texture_editor.settings.show_only_dds_and_thm);
 
-					ImGui::Checkbox("Treat NoMipMap as invalid", &g_imgui_texture_editor.settings.treat_nomipmap_as_invalid);
+
+					constexpr std::string_view _kNoMipMap = magic_enum::enum_name(CImGuiTextureEditor::eAnalyzedStatus::kNoMipMaps);
+					constexpr std::string_view _kNotEvenDimensions = magic_enum::enum_name(CImGuiTextureEditor::eAnalyzedStatus::kDimensionsNotPowerOf2);
+
+
+					{
+						char checkbox_nomipmap_name[32];
+						std::sprintf(checkbox_nomipmap_name, "Treat %s as invalid", _kNoMipMap.data());
+						if (ImGui::Checkbox(checkbox_nomipmap_name, &g_imgui_texture_editor.settings.treat_nomipmap_as_invalid))
+						{
+							checkbox_about_treat_settings_was_updated = true;
+						}
+					}
+					 
+					{
+						char checkbox_notevendimensions_name[32];
+						std::sprintf(checkbox_notevendimensions_name, "Treat %s as invalid", _kNotEvenDimensions.data());
+						if (ImGui::Checkbox(checkbox_notevendimensions_name, &g_imgui_texture_editor.settings.treat_notpowerof2dimensions_as_invalid))
+						{
+							checkbox_about_treat_settings_was_updated = true;
+						}
+					}
 
 					ImGui::SeparatorText("Search");
 
@@ -1315,8 +1343,7 @@ void RenderTextureEditor()
 					}
 					else
 					{
-						ImGui::Text("Analyzing: %zu/%zu",
-							g_imgui_texture_editor.current_analyzed_count.load(),
+						ImGui::Text("Analyzing: %zu",
 							g_imgui_texture_editor.textures.size()
 						);
 
@@ -1339,6 +1366,18 @@ void RenderTextureEditor()
 	}
 
 	ImGui::End();
+
+	if (checkbox_about_treat_settings_was_updated)
+	{
+		SRequestData req;
+
+		req.editor_type = u32(eImGuiEditorType::kTextureEditor);
+		req.request_type = u32(CImGuiTextureEditor::eRequestType::kReadAll);
+
+		AllEditors_SendRequest(req);
+
+		return;
+	}
 
 	if (g_imgui_texture_editor.selected_index != _kInvalidSelectedID)
 	{
