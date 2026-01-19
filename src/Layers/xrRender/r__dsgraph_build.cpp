@@ -143,47 +143,54 @@ ICF	float CalcSSA(float& distSQ, Fvector& C, float R)
 
 void R_dsgraph_structure::r_dsgraph_insert_dynamic	(dxRender_Visual *pVisual, Fvector& Center)
 {
-	CRender&	RI			=	RImplementation;
+	CRender& RI = RImplementation;
 
-	if (pVisual->vis.marker	==	RI.marker)	return	;
-	pVisual->vis.marker		=	RI.marker			;
+	if (pVisual->vis.marker == RI.marker)	
+	{
+		return;
+	}
+
+	pVisual->vis.marker = RI.marker;
 
 #if RENDER==R_R1
-	if (RI.o.vis_intersect &&	(pVisual->vis.accept_frame!=Device.dwFrame))	return;
-	pVisual->vis.accept_frame	=	Device.dwFrame	;
+	if (RI.o.vis_intersect && (pVisual->vis.accept_frame != Device.dwFrame)) return;
+	pVisual->vis.accept_frame = Device.dwFrame;
 #endif
 
-	float distSQ			;
-	float SSA				=	CalcSSA		(distSQ,Center,pVisual);
-	if (SSA<=r_ssaDISCARD)		return;
+	float distSQ;
+	float SSA = CalcSSA(distSQ, Center, pVisual);
+	if (SSA <= r_ssaDISCARD) return;
 
 	// Distortive geometry should be marked and R2 special-cases it
 	// a) Allow to optimize RT order
 	// b) Should be rendered to special distort buffer in another pass
-	VERIFY						(pVisual->shader._get());
-	ShaderElement*		sh_d	= pVisual->shader->E[4] ? &*pVisual->shader->E[4] : nullptr;
-	if (RImplementation.o.distortion && sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority/2]) {
+
+	VERIFY(pVisual->shader._get());
+	ShaderElement* sh_d = pVisual->shader->E[4] ? &*pVisual->shader->E[4] : nullptr;
+
+	if (RImplementation.o.distortion && sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority / 2]) 
+	{
 		mapSorted_T& test = RI.val_bHUD ? mapHUDDistort : mapDistort;
+		mapSorted_Node* N = test.insertInAnyWay(distSQ);
 
-		mapSorted_Node* N		= test.insertInAnyWay(distSQ);
-
-		N->val.ssa				= SSA;
-		N->val.pObject			= RI.val_pObject;
-		N->val.pVisual			= pVisual;
-		N->val.Matrix			= *RI.val_pTransform;
-		N->val.se				= sh_d;		// 4=L_special
+		N->val.ssa = SSA;
+		N->val.pObject = RI.val_pObject;
+		N->val.pVisual = pVisual;
+		N->val.Matrix = *RI.val_pTransform;
+		N->val.se = sh_d;		// 4=L_special
 	}
 
-	if (sh_d && sh_d->flags.bScopeMask && pmask[0]) {
+	if (sh_d && sh_d->flags.bScopeMask && pmask[0]) 
+	{
 		mapHUDScopeMask.insertInAnyWay(distSQ, { SSA, RI.val_pObject, pVisual, *RI.val_pTransform, sh_d });
 	}
 
-	// Select shader
-	ShaderElement*	sh		=	RImplementation.rimp_select_sh_dynamic	(pVisual,distSQ);
-	if (0==sh)								return;
-	if (!pmask[sh->flags.iPriority/2])		return;
+	ShaderElement* sh = RImplementation.rimp_select_sh_dynamic(pVisual, distSQ);
+	if (0 == sh) return;
 
-	// Create common node
+	if (!pmask[sh->flags.iPriority / 2] && !RI.val_bUI) return;
+
+	//// Create common node
 	// NOTE: Invisible elements exist only in R1
 
 	// HUD rendering
@@ -192,17 +199,38 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic	(dxRender_Visual *pVisual, Fv
 		if (sh->flags.bStrictB2F)	
 		{
 			mapHUDSorted.insertInAnyWay(distSQ, { SSA, RI.val_pObject, pVisual, *RI.val_pTransform, sh });
-			return;
 		} 
 		else 
 		{
 			mapHUD.insertInAnyWay(distSQ, { SSA, RI.val_pObject, pVisual, *RI.val_pTransform, sh });
 #if RENDER!=R_R1
 			if (sh->flags.bEmissive) 
+			{
 				mapHUDEmissive.insertInAnyWay(distSQ, { SSA, RI.val_pObject, pVisual, *RI.val_pTransform, sh_d });
+			}
 #endif	//	RENDER!=R_R1
-			return;
 		}
+		return;
+	}
+
+	// UI rendering
+	if (RI.val_bUI)
+	{
+		if (sh->flags.bStrictB2F)
+		{
+			mapUISorted.insertInAnyWay(distSQ, { SSA, RI.val_pObject, pVisual, *RI.val_pTransform, sh });
+		}
+		else
+		{
+			mapUI.insertInAnyWay(distSQ, { SSA, RI.val_pObject, pVisual, *RI.val_pTransform, sh });
+#if RENDER!=R_R1
+			if (sh->flags.bEmissive)
+			{
+				mapUIEmissive.insertInAnyWay(distSQ, { SSA, RI.val_pObject, pVisual, *RI.val_pTransform, sh_d });
+			}
+#endif	//	RENDER!=R_R1
+		}
+		return;
 	}
 
 	// Shadows registering

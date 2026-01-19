@@ -129,8 +129,11 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount, CRT:
 		case ERHI_FORMAT::R24G8_TYPELESS:
 			ViewDesc.Format = ERHI_FORMAT::D24_UNORM_S8_UINT;
 			break;
-			case ERHI_FORMAT::R32_TYPELESS:
+		case ERHI_FORMAT::R32_TYPELESS:
 			ViewDesc.Format = ERHI_FORMAT::D32_FLOAT;
+			break;
+		case ERHI_FORMAT::R16_TYPELESS:
+			ViewDesc.Format = ERHI_FORMAT::D16_UNORM;
 			break;
 		}
 
@@ -180,10 +183,10 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount, CRT:
 
 				pUAView = GRHI->CreateUAV(pSurface, uavDesc);
 			}
-		}
 
-		pMippedRT.resize(desc.MipLevels);
-		pMippedRT[0] = pRT; pRT->AddRef();
+			pMippedRT.resize(desc.MipLevels);
+			pMippedRT[0] = pRT; pRT->AddRef();
+		}
 
 		for(UINT mip_level = 1; mip_level < desc.MipLevels; ++mip_level)
 		{

@@ -70,6 +70,8 @@ public:
 	ref_rt						rt_SurfaceTemp;
 	ref_rt						rt_Velocity;
 	ref_rt						rt_ui_pda;
+	ref_rt						rt_ui_depth;
+	ref_rt						rt_ui_color;
 
 	ref_rtc						rt_Reflection;
 	ref_rtc						rt_Reflection_temp;
@@ -280,6 +282,9 @@ public:
 	void						phase_mblur				();
 
 	void						phase_cas				();
+	void						phase_ui_postprocess	();
+	void						phase_ui_postprocess_copy();
+
 	void						phase_gtao				();
 	void						phase_sslr				();
 
