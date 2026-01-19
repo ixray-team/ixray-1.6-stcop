@@ -1,0 +1,101 @@
+::: [IX-Ray Framework] [INIT PREPARE] :::
+::: [IX-Ray Framework] [INIT CUSTOM OVERRIDED SUB MODULES] :::
+
+
+::: [IX-Ray Framework] [REGISTER MODULE]:
+ --------------------- script_name: ixr_module_signals 
+ --------------------- alias_name: ixr_signals 
+ --------------------- category: ixr_system 
+ --------------------- version: 1 
+ --------------------- init_function_name: init 
+ --------------------- authors: FFx0001 
+ --------------------- description: Module for centralized subscribes to game callbacks automatically callable in subscribed script on event called in external scripts
+::: [IX-Ray Framework] [PREPARE TO LOAD MODULE]:ixr_module_signals :::
+::: [IX-Ray Framework] [SUCCESS LOAD MODULE]:ixr_module_signals CALL RESPONSE:[true] :::
+
+
+::: [IX-Ray Framework] [REGISTER MODULE]:
+ --------------------- script_name: ixr_module_global_registry 
+ --------------------- alias_name: ixr_registry 
+ --------------------- category: ixr_system 
+ --------------------- version: 1.1 
+ --------------------- init_function_name: init 
+ --------------------- authors: FFx0001 
+ --------------------- description: A lightweight global ledger module for inter-script communication, providing a centralized system for storing key-value pairs with additional support for nested subkeys. Store and retrieve data from any script without the need for direct links between them. Supports storage of all types of Lua data.
+::: [IX-Ray Framework] [PREPARE TO LOAD MODULE]:ixr_module_global_registry :::
+::: [IX-Ray Framework] [SUCCESS LOAD MODULE]:ixr_module_global_registry CALL RESPONSE:[nil] :::
+
+
+::: [IX-Ray Framework] [REGISTER MODULE]:
+ --------------------- script_name: ixr_module_options 
+ --------------------- alias_name: ixr_options 
+ --------------------- category: ixr_system 
+ --------------------- version: 1 
+ --------------------- init_function_name: init 
+ --------------------- authors: FFx0001 
+ --------------------- description: Module for centralized configure scripts options in main menu
+::: [IX-Ray Framework] [PREPARE TO LOAD MODULE]:ixr_module_options :::
+::: [IX-Ray Framework] [SUCCESS LOAD MODULE]:ixr_module_options CALL RESPONSE:[true] :::
+
+
+::: [IX-Ray Framework] [REGISTER MODULE]:
+ --------------------- script_name: ixr_module_storage 
+ --------------------- alias_name: ixr_storage 
+ --------------------- category: ixr_system 
+ --------------------- version: 1 
+ --------------------- init_function_name: init 
+ --------------------- authors: FFx0001 
+ --------------------- description: Module for centralized save and load variables isolated by script names
+::: [IX-Ray Framework] [PREPARE TO LOAD MODULE]:ixr_module_storage :::
+::: [IX-Ray Framework] [SUCCESS LOAD MODULE]:ixr_module_storage CALL RESPONSE:[true] :::
+
+
+::: [IX-Ray Framework] [REGISTER MODULE]:
+ --------------------- script_name: ixr_module_timers 
+ --------------------- alias_name: ixr_timers 
+ --------------------- category: ixr_system 
+ --------------------- version: 1 
+ --------------------- init_function_name: init 
+ --------------------- authors: FFx0001 
+ --------------------- description: Module for centralized call functions by timers intervals with save timeline and closure
+::: [IX-Ray Framework] [PREPARE TO LOAD MODULE]:ixr_module_timers :::
+::: [IX-Ray Framework] [SUCCESS LOAD MODULE]:ixr_module_timers CALL RESPONSE:[true] :::
+
+
+::: [IX-Ray Framework] [REGISTER MODULE]:
+ --------------------- script_name: ixr_module_triggers 
+ --------------------- alias_name: ixr_triggers 
+ --------------------- category: ixr_system 
+ --------------------- version: 1 
+ --------------------- init_function_name: init 
+ --------------------- authors: FFx0001 
+ --------------------- description: Module for centralized set triggers functions by inside to sphere zone
+::: [IX-Ray Framework] [PREPARE TO LOAD MODULE]:ixr_module_triggers :::
+::: [IX-Ray Framework] [SUCCESS LOAD MODULE]:ixr_module_triggers CALL RESPONSE:[true] :::
+
+
+::: [IX-Ray Framework] [REGISTER MODULE]:
+ --------------------- script_name: ixr_module_throttlers 
+ --------------------- alias_name: ixr_throttlers 
+ --------------------- category: ixr_system 
+ --------------------- version: 1 
+ --------------------- init_function_name: init 
+ --------------------- authors: FFx0001 
+ --------------------- description: Module for centralized break functions by time intervals
+::: [IX-Ray Framework] [PREPARE TO LOAD MODULE]:ixr_module_throttlers :::
+::: [IX-Ray Framework] [SUCCESS LOAD MODULE]:ixr_module_throttlers CALL RESPONSE:[true] :::
+
+
+::: [IX-Ray Framework] [REGISTER MODULE]:
+ --------------------- script_name: ixr_module_autoloader 
+ --------------------- alias_name: ixr_autoloader 
+ --------------------- category: ixr_system 
+ --------------------- version: 1 
+ --------------------- init_function_name: init 
+ --------------------- authors: FFx0001 
+ --------------------- description: Module for search scripts with implement function on_game_start(...) and call it on load game level automatically
+::: [IX-Ray Framework] [PREPARE TO LOAD MODULE]:ixr_module_autoloader :::
+::: [IX-Ray Framework] [SUCCESS LOAD MODULE]:ixr_module_autoloader CALL RESPONSE:[true] :::
+
+
+::: [IX-Ray Framework] [INIT COMPLETED] :::
