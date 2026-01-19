@@ -1,0 +1,746 @@
+
+--- init begin ---
+
+
+ ::: load default ignores :::
+
+ [add ignore option]: (ixr_module_autoloader)
+ [add ignore option]: (_g)
+ [add ignore option]: (_e)
+ [add ignore option]: (_f)
+ [add ignore option]: (lua_help)
+ [add ignore option]: (lua_help*)
+ [add ignore option]: (*_help)
+ [add ignore option]: (*_lib)
+ [add ignore option]: (*_utils)
+ [add ignore option]: (ce_*)
+ [add ignore option]: (se_*)
+ [add ignore option]: (ph_*)
+ [add ignore option]: (class_registrator)
+ [add ignore option]: (game_registrator)
+ [add ignore option]: (alife_storage_manager)
+ [add ignore option]: (__ixr_override_*)
+
+ ::: load custom ignores :::
+
+ [add ignore option]: (bind_*)
+ [add ignore option]: (smart_*)
+ [add ignore option]: (heli_snd)
+
+ ::: load fs scripts :::
+
+☐ [READ]: ___ixr_engine_callbacks.script
+☒ [READ]: __ixr_override_autoload_system.script  ignore_by_patterns:["__ixr_override_*"]
+☒ [READ]: __ixr_override_framework_load_sub_modules.script  ignore_by_patterns:["__ixr_override_*"]
+☒ [READ]: __ixr_override_signals_intercepts.script  ignore_by_patterns:["__ixr_override_*"]
+☐ [READ]: __storage_mod_version.script
+☒ [READ]: _g.script  ignore_by_patterns:["_g"]
+☐ [READ]: actor_menu.script
+☐ [READ]: actor_proxy.script
+☒ [READ]: alife_storage_manager.script  ignore_by_patterns:["alife_storage_manager"]
+▣ [READ]: anabiotic_vanilla.script
+☐ [READ]: benchmark.script
+☒ [READ]: bind_anomaly_field.script  ignore_by_patterns:["bind_*"]
+☒ [READ]: bind_anomaly_zone.script  ignore_by_patterns:["bind_*"]
+☒ [READ]: bind_artefact.script  ignore_by_patterns:["bind_*"]
+☒ [READ]: bind_camp.script  ignore_by_patterns:["bind_*"]
+☒ [READ]: bind_campfire.script  ignore_by_patterns:["bind_*"]
+☒ [READ]: bind_crow.script  ignore_by_patterns:["bind_*"]
+☒ [READ]: bind_door_labx8.script  ignore_by_patterns:["bind_*"]
+☒ [READ]: bind_faction.script  ignore_by_patterns:["bind_*"]
+☒ [READ]: bind_heli.script  ignore_by_patterns:["bind_*"]
+☒ [READ]: bind_level_changer.script  ignore_by_patterns:["bind_*"]
+☒ [READ]: bind_monster.script  ignore_by_patterns:["bind_*"]
+☒ [READ]: bind_physic_object.script  ignore_by_patterns:["bind_*"]
+☒ [READ]: bind_restrictor.script  ignore_by_patterns:["bind_*"]
+☒ [READ]: bind_signal_light.script  ignore_by_patterns:["bind_*"]
+☒ [READ]: bind_smart_cover.script  ignore_by_patterns:["bind_*"]
+☒ [READ]: bind_smart_terrain.script  ignore_by_patterns:["bind_*"]
+☒ [READ]: bind_stalker.script  ignore_by_patterns:["bind_*"]
+☐ [READ]: cam_effector_sets.script
+☒ [READ]: ce_new_attachable_item.script  ignore_by_patterns:["ce_*"]
+☒ [READ]: ce_new_game_dm.script  ignore_by_patterns:["ce_*"]
+☒ [READ]: ce_switcher.script  ignore_by_patterns:["ce_*"]
+☐ [READ]: check_logic_path.script
+☐ [READ]: chkdz_effects_spark.script
+☒ [READ]: class_registrator.script  ignore_by_patterns:["class_registrator"]
+☐ [READ]: combat_restrictor.script
+☐ [READ]: cover_manager.script
+☐ [READ]: custom_log.script
+☐ [READ]: db.script
+☐ [READ]: death_manager.script
+☐ [READ]: dialog_manager.script
+☐ [READ]: dialogs.script
+☐ [READ]: dialogs_darkvalley.script
+☐ [READ]: dialogs_jupiter.script
+☐ [READ]: dialogs_pripyat.script
+☐ [READ]: dialogs_zaton.script
+☒ [READ]: game_registrator.script  ignore_by_patterns:["game_registrator"]
+☐ [READ]: game_relations.script
+☐ [READ]: game_stats.script
+☐ [READ]: game_types.script
+☐ [READ]: gulag_general.script
+☐ [READ]: heli_combat.script
+☐ [READ]: heli_fire.script
+☐ [READ]: heli_fly.script
+☐ [READ]: heli_look.script
+☐ [READ]: heli_move.script
+☒ [READ]: heli_snd.script  ignore_by_patterns:["heli_snd"]
+☐ [READ]: inventory_upgrades.script
+▣ [READ]: ixr_framework\extend_callbacks\ixr_callback__actor_on_spawn.script
+▣ [READ]: ixr_framework\extend_callbacks\ixr_callback__item_extend_description.script
+▣ [READ]: ixr_framework\extend_callbacks\ixr_callback__on_game_present.script
+▣ [READ]: ixr_framework\extend_callbacks\ixr_callback__torch_enable_disable.script
+☐ [READ]: ixr_framework\ixr_callback_binder.script
+☐ [READ]: ixr_framework\ixr_framework.script
+☐ [READ]: ixr_framework\ixr_npc_info.script
+☒ [READ]: ixr_framework\modules\ixr_module_autoloader.script  ignore_by_patterns:["ixr_module_autoloader"]
+☐ [READ]: ixr_framework\modules\ixr_module_global_registry.script
+▣ [READ]: ixr_framework\modules\ixr_module_options.script
+☐ [READ]: ixr_framework\modules\ixr_module_signals.script
+☐ [READ]: ixr_framework\modules\ixr_module_storage.script
+☐ [READ]: ixr_framework\modules\ixr_module_throttlers.script
+☐ [READ]: ixr_framework\modules\ixr_module_timers.script
+☐ [READ]: ixr_framework\modules\ixr_module_triggers.script
+☒ [READ]: ixr_framework\utils\ffx_actor_utils.script  ignore_by_patterns:["*_utils"]
+☒ [READ]: ixr_framework\utils\ffx_cache_utils.script  ignore_by_patterns:["*_utils"]
+☒ [READ]: ixr_framework\utils\ffx_callable_utils.script  ignore_by_patterns:["*_utils"]
+☒ [READ]: ixr_framework\utils\ffx_compare_utils.script  ignore_by_patterns:["*_utils"]
+☒ [READ]: ixr_framework\utils\ffx_console_utils.script  ignore_by_patterns:["*_utils"]
+☒ [READ]: ixr_framework\utils\ffx_crypto_utils.script  ignore_by_patterns:["*_utils"]
+☒ [READ]: ixr_framework\utils\ffx_ctime_utils.script  ignore_by_patterns:["*_utils"]
+☒ [READ]: ixr_framework\utils\ffx_dump_utils.script  ignore_by_patterns:["*_utils"]
+☒ [READ]: ixr_framework\utils\ffx_gui_utils.script  ignore_by_patterns:["*_utils"]
+☒ [READ]: ixr_framework\utils\ffx_io_utils.script  ignore_by_patterns:["*_utils"]
+☒ [READ]: ixr_framework\utils\ffx_ltx_utils.script  ignore_by_patterns:["*_utils"]
+☒ [READ]: ixr_framework\utils\ffx_math_utils.script  ignore_by_patterns:["*_utils"]
+☒ [READ]: ixr_framework\utils\ffx_object_utils.script  ignore_by_patterns:["*_utils"]
+☒ [READ]: ixr_framework\utils\ffx_particles_utils.script  ignore_by_patterns:["*_utils"]
+☒ [READ]: ixr_framework\utils\ffx_path_utils.script  ignore_by_patterns:["*_utils"]
+☒ [READ]: ixr_framework\utils\ffx_sound_utils.script  ignore_by_patterns:["*_utils"]
+☒ [READ]: ixr_framework\utils\ffx_spawn_utils.script  ignore_by_patterns:["*_utils"]
+☒ [READ]: ixr_framework\utils\ffx_string_utils.script  ignore_by_patterns:["*_utils"]
+☒ [READ]: ixr_framework\utils\ffx_table_utils.script  ignore_by_patterns:["*_utils"]
+☒ [READ]: ixr_framework\utils\ffx_vector_utils.script  ignore_by_patterns:["*_utils"]
+☒ [READ]: ixr_framework\utils\libs\ffx_base64_lib.script  ignore_by_patterns:["*_lib"]
+☒ [READ]: ixr_framework\utils\libs\ffx_json_lib.script  ignore_by_patterns:["*_lib"]
+☒ [READ]: ixr_framework\utils\libs\ffx_random_lib.script  ignore_by_patterns:["*_lib"]
+☐ [READ]: ixray_global.script
+☐ [READ]: js2_subtitles.script
+☐ [READ]: js2_ui_boss_health_bar.script
+☐ [READ]: jump_level.script
+☐ [READ]: lain_test_bl.script
+☐ [READ]: level_psy_antenna.script
+☐ [READ]: level_weathers.script
+☐ [READ]: loadscreen.script
+☒ [READ]: lua_help.script  ignore_by_patterns:["lua_help"]
+☐ [READ]: luaxml.script
+☐ [READ]: memusage.script
+☐ [READ]: mob_camp.script
+☐ [READ]: mob_combat.script
+☐ [READ]: mob_death.script
+☐ [READ]: mob_home.script
+☐ [READ]: mob_jump.script
+☐ [READ]: mob_remark.script
+☐ [READ]: mob_state_mgr.script
+☐ [READ]: mob_walker.script
+☐ [READ]: modules.script
+☐ [READ]: move_mgr.script
+☐ [READ]: news_manager.script
+☐ [READ]: object_collection.script
+☐ [READ]: outro_bad.script
+☐ [READ]: outro_balanced_good.script
+☐ [READ]: outro_cond.script
+☐ [READ]: outro_good.script
+☐ [READ]: pda.script
+☒ [READ]: ph_appforce.script  ignore_by_patterns:["ph_*"]
+☒ [READ]: ph_button.script  ignore_by_patterns:["ph_*"]
+☒ [READ]: ph_car.script  ignore_by_patterns:["ph_*"]
+☒ [READ]: ph_code.script  ignore_by_patterns:["ph_*"]
+☒ [READ]: ph_death.script  ignore_by_patterns:["ph_*"]
+☒ [READ]: ph_door.script  ignore_by_patterns:["ph_*"]
+☒ [READ]: ph_hit.script  ignore_by_patterns:["ph_*"]
+☒ [READ]: ph_idle.script  ignore_by_patterns:["ph_*"]
+☒ [READ]: ph_minigun.script  ignore_by_patterns:["ph_*"]
+☒ [READ]: ph_on_hit.script  ignore_by_patterns:["ph_*"]
+☒ [READ]: ph_oscillate.script  ignore_by_patterns:["ph_*"]
+☒ [READ]: ph_sound.script  ignore_by_patterns:["ph_*"]
+☐ [READ]: phantom_manager.script
+☐ [READ]: post_combat_idle.script
+☐ [READ]: profiler.script
+☐ [READ]: ranks.script
+☐ [READ]: release_body_manager.script
+☐ [READ]: restrictor_manager.script
+☒ [READ]: se_actor.script  ignore_by_patterns:["se_*"]
+☒ [READ]: se_artefact.script  ignore_by_patterns:["se_*"]
+☒ [READ]: se_car.script  ignore_by_patterns:["se_*"]
+☒ [READ]: se_heli.script  ignore_by_patterns:["se_*"]
+☒ [READ]: se_item.script  ignore_by_patterns:["se_*"]
+☒ [READ]: se_level_changer.script  ignore_by_patterns:["se_*"]
+☒ [READ]: se_monster.script  ignore_by_patterns:["se_*"]
+☒ [READ]: se_new_attachable_item.script  ignore_by_patterns:["se_*"]
+☒ [READ]: se_smart_cover.script  ignore_by_patterns:["se_*"]
+☒ [READ]: se_squad_group.script  ignore_by_patterns:["se_*"]
+☒ [READ]: se_stalker.script  ignore_by_patterns:["se_*"]
+☒ [READ]: se_zones.script  ignore_by_patterns:["se_*"]
+☐ [READ]: sim_board.script
+☐ [READ]: sim_faction_brain_human.script
+☐ [READ]: sim_faction_brain_mutant.script
+☐ [READ]: sim_objects.script
+☐ [READ]: sim_squad_actions.script
+☐ [READ]: sim_squad_generic.script
+☐ [READ]: sim_squad_scripted.script
+☐ [READ]: simulation_objects.script
+☒ [READ]: smart_covers.script  ignore_by_patterns:["smart_*"]
+☒ [READ]: smart_covers_anim_pri_a22.script  ignore_by_patterns:["smart_*"]
+☒ [READ]: smart_covers_animpoint_pri_a15.script  ignore_by_patterns:["smart_*"]
+☒ [READ]: smart_covers_animpoint_sit_high.script  ignore_by_patterns:["smart_*"]
+☒ [READ]: smart_covers_animpoint_sit_low.script  ignore_by_patterns:["smart_*"]
+☒ [READ]: smart_covers_animpoint_sit_normal.script  ignore_by_patterns:["smart_*"]
+☒ [READ]: smart_covers_animpoint_stay_table.script  ignore_by_patterns:["smart_*"]
+☒ [READ]: smart_covers_animpoint_stay_wall.script  ignore_by_patterns:["smart_*"]
+☒ [READ]: smart_covers_combat.script  ignore_by_patterns:["smart_*"]
+☒ [READ]: smart_covers_combat_front.script  ignore_by_patterns:["smart_*"]
+☒ [READ]: smart_covers_combat_prone.script  ignore_by_patterns:["smart_*"]
+☒ [READ]: smart_covers_loophole_anim_pri_a22.script  ignore_by_patterns:["smart_*"]
+☒ [READ]: smart_covers_loophole_animpoint_pri_a15.script  ignore_by_patterns:["smart_*"]
+☒ [READ]: smart_covers_loophole_animpoint_sit_high.script  ignore_by_patterns:["smart_*"]
+☒ [READ]: smart_covers_loophole_animpoint_sit_low.script  ignore_by_patterns:["smart_*"]
+☒ [READ]: smart_covers_loophole_animpoint_sit_normal.script  ignore_by_patterns:["smart_*"]
+☒ [READ]: smart_covers_loophole_animpoint_stay_table.script  ignore_by_patterns:["smart_*"]
+☒ [READ]: smart_covers_loophole_animpoint_stay_wall.script  ignore_by_patterns:["smart_*"]
+☒ [READ]: smart_covers_loophole_crouch_back.script  ignore_by_patterns:["smart_*"]
+☒ [READ]: smart_covers_loophole_crouch_front.script  ignore_by_patterns:["smart_*"]
+☒ [READ]: smart_covers_loophole_crouch_front_left.script  ignore_by_patterns:["smart_*"]
+☒ [READ]: smart_covers_loophole_crouch_front_right.script  ignore_by_patterns:["smart_*"]
+☒ [READ]: smart_covers_loophole_crouch_left.script  ignore_by_patterns:["smart_*"]
+☒ [READ]: smart_covers_loophole_crouch_right.script  ignore_by_patterns:["smart_*"]
+☒ [READ]: smart_covers_loophole_prone.script  ignore_by_patterns:["smart_*"]
+☒ [READ]: smart_covers_loophole_stand_back.script  ignore_by_patterns:["smart_*"]
+☒ [READ]: smart_covers_loophole_stand_front_left.script  ignore_by_patterns:["smart_*"]
+☒ [READ]: smart_covers_loophole_stand_front_right.script  ignore_by_patterns:["smart_*"]
+☒ [READ]: smart_covers_loophole_stand_left.script  ignore_by_patterns:["smart_*"]
+☒ [READ]: smart_covers_loophole_stand_right.script  ignore_by_patterns:["smart_*"]
+☒ [READ]: smart_names.script  ignore_by_patterns:["smart_*"]
+☒ [READ]: smart_terrain.script  ignore_by_patterns:["smart_*"]
+☒ [READ]: smart_terrain_control.script  ignore_by_patterns:["smart_*"]
+☐ [READ]: sound_manager.script
+☐ [READ]: sound_theme.script
+☐ [READ]: spark_global.script
+☐ [READ]: spawn_b103.script
+☐ [READ]: spawn_items.script
+☐ [READ]: spawn_nimble_items.script
+☐ [READ]: spawn_quest_items.script
+☐ [READ]: spawn_upgrades.script
+☐ [READ]: spawner.script
+☐ [READ]: sr_camp.script
+☐ [READ]: sr_crow_spawner.script
+☐ [READ]: sr_cutscene.script
+☐ [READ]: sr_deimos.script
+☐ [READ]: sr_idle.script
+☐ [READ]: sr_light.script
+☐ [READ]: sr_monster.script
+☐ [READ]: sr_no_weapon.script
+☐ [READ]: sr_particle.script
+☐ [READ]: sr_postprocess.script
+☐ [READ]: sr_psy_antenna.script
+☐ [READ]: sr_silence.script
+☐ [READ]: sr_teleport.script
+☐ [READ]: sr_timer.script
+☐ [READ]: stalker_generic.script
+☒ [READ]: state_lib.script  ignore_by_patterns:["*_lib"]
+☐ [READ]: state_lib_animpoint.script
+▣ [READ]: state_lib_spark.script
+☐ [READ]: state_mgr.script
+☐ [READ]: state_mgr_animation.script
+☐ [READ]: state_mgr_animation_list.script
+☐ [READ]: state_mgr_animation_list_animpoint.script
+▣ [READ]: state_mgr_animation_list_spark.script
+☐ [READ]: state_mgr_animstate.script
+☐ [READ]: state_mgr_animstate_list.script
+☐ [READ]: state_mgr_animstate_list_animpoint.script
+▣ [READ]: state_mgr_animstate_list_spark.script
+☐ [READ]: state_mgr_bodystate.script
+☐ [READ]: state_mgr_direction.script
+☐ [READ]: state_mgr_goap.script
+☐ [READ]: state_mgr_mental.script
+☐ [READ]: state_mgr_movement.script
+☐ [READ]: state_mgr_pri_a15.script
+☐ [READ]: state_mgr_scenario.script
+☐ [READ]: state_mgr_smartcover.script
+☐ [READ]: state_mgr_weapon.script
+☐ [READ]: story_objects.script
+☐ [READ]: surge_manager.script
+☐ [READ]: task_functor.script
+☐ [READ]: task_manager.script
+☐ [READ]: task_objects.script
+▣ [READ]: test\ffx_test.script
+☐ [READ]: test_pp.script
+☐ [READ]: test_pp_stop.script
+☐ [READ]: trade_manager.script
+☐ [READ]: travel_manager.script
+☐ [READ]: treasure_manager.script
+☐ [READ]: ui_freeplay_dialog.script
+☐ [READ]: ui_gui_element.script
+☐ [READ]: ui_load_dialog.script
+☐ [READ]: ui_main_menu.script
+☐ [READ]: ui_mm_mp_demo.script
+☐ [READ]: ui_mm_mp_gamespy.script
+☐ [READ]: ui_mm_mp_join.script
+☐ [READ]: ui_mm_mp_localnet.script
+☐ [READ]: ui_mm_mp_options.script
+☐ [READ]: ui_mm_mp_profile.script
+☐ [READ]: ui_mm_mp_server.script
+☐ [READ]: ui_mm_opt_con_cmd.script
+☐ [READ]: ui_mm_opt_controls.script
+☐ [READ]: ui_mm_opt_gameplay.script
+☐ [READ]: ui_mm_opt_main.script
+☐ [READ]: ui_mm_opt_sound.script
+☐ [READ]: ui_mm_opt_video.script
+☐ [READ]: ui_mm_opt_video_adv.script
+☐ [READ]: ui_mp_main.script
+☐ [READ]: ui_notepad.script
+☐ [READ]: ui_numpad.script
+☐ [READ]: ui_registrator.script
+☐ [READ]: ui_save_dialog.script
+☐ [READ]: ui_scenes.script
+☐ [READ]: ui_si.script
+☐ [READ]: ui_sleep_dialog.script
+☐ [READ]: ui_wpn_params.script
+☐ [READ]: utils.script
+☐ [READ]: version.script
+☐ [READ]: xr_abuse.script
+☐ [READ]: xr_actions_id.script
+☐ [READ]: xr_animpoint.script
+☐ [READ]: xr_animpoint_predicates.script
+☐ [READ]: xr_box.script
+☐ [READ]: xr_camper.script
+☐ [READ]: xr_combat.script
+☐ [READ]: xr_combat_camper.script
+☐ [READ]: xr_combat_ignore.script
+☐ [READ]: xr_combat_monolith.script
+☐ [READ]: xr_combat_zombied.script
+☐ [READ]: xr_comm_ptr.script
+☐ [READ]: xr_companion.script
+☐ [READ]: xr_conditions.script
+☐ [READ]: xr_corpse_detection.script
+☐ [READ]: xr_cover.script
+☐ [READ]: xr_danger.script
+☐ [READ]: xr_death.script
+☐ [READ]: xr_detector.script
+☐ [READ]: xr_dialogs.script
+☐ [READ]: xr_effects.script
+☐ [READ]: xr_evaluators_id.script
+☐ [READ]: xr_gather_items.script
+☐ [READ]: xr_guide.script
+☐ [READ]: xr_gulag.script
+☐ [READ]: xr_hear.script
+☐ [READ]: xr_heli_hunter.script
+☐ [READ]: xr_help_wounded.script
+☐ [READ]: xr_hit.script
+☐ [READ]: xr_info.script
+☐ [READ]: xr_kamp.script
+☐ [READ]: xr_logic.script
+☐ [READ]: xr_meet.script
+☐ [READ]: xr_motivator.script
+☐ [READ]: xr_patrol.script
+☐ [READ]: xr_reach_task.script
+☐ [READ]: xr_remark.script
+☐ [READ]: xr_s.script
+☐ [READ]: xr_sleeper.script
+☐ [READ]: xr_smartcover.script
+☐ [READ]: xr_sound.script
+☐ [READ]: xr_sounds.script
+☐ [READ]: xr_sounds_id.script
+☐ [READ]: xr_spawner.script
+☐ [READ]: xr_state.script
+☐ [READ]: xr_statistic.script
+☐ [READ]: xr_walker.script
+☐ [READ]: xr_wounded.script
+☐ [READ]: xr_zones.script
+☐ [READ]: xr_zones_sound.script
+☐ [READ]: xrs_dyn_music.script
+☐ [READ]: xrs_dynamic_music_themes.script
+☐ [READ]: xrs_stereo.script
+☐ [READ]: zone_no_weapon.script
+
+ ::: dump scripts :::
+
+
+[IGNORED]:
+  bind_artefact.script
+  smart_covers_loophole_animpoint_sit_high.script
+  ph_hit.script
+  ffx_io_utils.script
+  smart_covers_anim_pri_a22.script
+  smart_covers_combat.script
+  smart_covers_loophole_animpoint_pri_a15.script
+  se_squad_group.script
+  se_heli.script
+  lua_help.script
+  ph_death.script
+  se_actor.script
+  ffx_sound_utils.script
+  ffx_gui_utils.script
+  bind_signal_light.script
+  smart_covers_loophole_anim_pri_a22.script
+  bind_stalker.script
+  ffx_compare_utils.script
+  ffx_spawn_utils.script
+  smart_covers_loophole_crouch_front.script
+  smart_covers_loophole_crouch_front_right.script
+  bind_crow.script
+  ffx_cache_utils.script
+  bind_door_labx8.script
+  smart_covers_animpoint_sit_normal.script
+  state_lib.script
+  smart_covers_animpoint_sit_high.script
+  se_stalker.script
+  bind_restrictor.script
+  bind_smart_cover.script
+  smart_covers_loophole_stand_back.script
+  ph_button.script
+  smart_covers.script
+  ph_appforce.script
+  bind_campfire.script
+  smart_covers_loophole_animpoint_stay_table.script
+  ffx_dump_utils.script
+  smart_names.script
+  ph_sound.script
+  ph_on_hit.script
+  class_registrator.script
+  ffx_base64_lib.script
+  bind_level_changer.script
+  smart_covers_loophole_animpoint_stay_wall.script
+  smart_covers_animpoint_stay_wall.script
+  se_level_changer.script
+  ph_minigun.script
+  ce_new_attachable_item.script
+  ffx_random_lib.script
+  ffx_ltx_utils.script
+  smart_covers_animpoint_stay_table.script
+  ph_code.script
+  __ixr_override_autoload_system.script
+  bind_monster.script
+  ffx_crypto_utils.script
+  __ixr_override_framework_load_sub_modules.script
+  smart_covers_loophole_crouch_right.script
+  se_monster.script
+  game_registrator.script
+  ffx_json_lib.script
+  smart_covers_combat_front.script
+  ixr_module_autoloader.script
+  ffx_path_utils.script
+  bind_anomaly_zone.script
+  bind_faction.script
+  ce_switcher.script
+  smart_covers_loophole_crouch_left.script
+  smart_covers_animpoint_pri_a15.script
+  se_item.script
+  ce_new_game_dm.script
+  ffx_table_utils.script
+  ffx_particles_utils.script
+  smart_covers_loophole_stand_left.script
+  ffx_math_utils.script
+  _g.script
+  se_smart_cover.script
+  smart_covers_loophole_stand_front_right.script
+  ph_car.script
+  bind_heli.script
+  ph_oscillate.script
+  ffx_string_utils.script
+  bind_smart_terrain.script
+  __ixr_override_signals_intercepts.script
+  smart_covers_loophole_stand_front_left.script
+  bind_anomaly_field.script
+  ph_idle.script
+  smart_covers_loophole_stand_right.script
+  ffx_vector_utils.script
+  smart_covers_combat_prone.script
+  ffx_actor_utils.script
+  ffx_object_utils.script
+  se_car.script
+  smart_covers_animpoint_sit_low.script
+  ph_door.script
+  bind_physic_object.script
+  se_new_attachable_item.script
+  se_zones.script
+  ffx_callable_utils.script
+  bind_camp.script
+  heli_snd.script
+  smart_covers_loophole_crouch_front_left.script
+  se_artefact.script
+  ffx_ctime_utils.script
+  smart_covers_loophole_animpoint_sit_low.script
+  alife_storage_manager.script
+  smart_covers_loophole_prone.script
+  smart_covers_loophole_crouch_back.script
+  smart_covers_loophole_animpoint_sit_normal.script
+  smart_terrain.script
+  ffx_console_utils.script
+  smart_terrain_control.script
+
+[WITHOUT AUTO LOADERS]:
+  state_mgr_weapon.script
+  xr_zones_sound.script
+  surge_manager.script
+  restrictor_manager.script
+  game_stats.script
+  object_collection.script
+  ui_load_dialog.script
+  xr_death.script
+  xr_patrol.script
+  sr_deimos.script
+  dialogs_darkvalley.script
+  sim_board.script
+  pda.script
+  sr_monster.script
+  __storage_mod_version.script
+  test_pp_stop.script
+  sim_squad_actions.script
+  mob_jump.script
+  xr_cover.script
+  dialog_manager.script
+  post_combat_idle.script
+  outro_cond.script
+  ui_main_menu.script
+  xr_reach_task.script
+  heli_fly.script
+  xr_heli_hunter.script
+  chkdz_effects_spark.script
+  ui_wpn_params.script
+  mob_walker.script
+  mob_death.script
+  ixr_callback_binder.script
+  heli_fire.script
+  xr_walker.script
+  task_functor.script
+  ui_mm_mp_localnet.script
+  level_weathers.script
+  state_mgr_animation_list_animpoint.script
+  loadscreen.script
+  test_pp.script
+  outro_good.script
+  custom_log.script
+  version.script
+  utils.script
+  state_mgr_bodystate.script
+  state_mgr_goap.script
+  sr_teleport.script
+  sim_objects.script
+  spawn_nimble_items.script
+  ui_mm_mp_options.script
+  xr_gulag.script
+  spawn_items.script
+  state_mgr_animstate_list_animpoint.script
+  ui_gui_element.script
+  xr_danger.script
+  inventory_upgrades.script
+  ui_save_dialog.script
+  heli_look.script
+  ranks.script
+  ui_mm_mp_demo.script
+  xrs_dynamic_music_themes.script
+  level_psy_antenna.script
+  state_mgr_smartcover.script
+  xr_box.script
+  cover_manager.script
+  xr_effects.script
+  sr_cutscene.script
+  sim_squad_scripted.script
+  benchmark.script
+  db.script
+  ui_freeplay_dialog.script
+  outro_balanced_good.script
+  xr_combat_ignore.script
+  state_mgr_pri_a15.script
+  sr_silence.script
+  state_mgr_direction.script
+  cam_effector_sets.script
+  jump_level.script
+  xr_evaluators_id.script
+  sr_no_weapon.script
+  xr_dialogs.script
+  xr_statistic.script
+  ixr_module_storage.script
+  xr_abuse.script
+  simulation_objects.script
+  actor_proxy.script
+  sr_psy_antenna.script
+  move_mgr.script
+  state_mgr_scenario.script
+  luaxml.script
+  xr_help_wounded.script
+  ixray_global.script
+  sr_postprocess.script
+  xr_animpoint.script
+  outro_bad.script
+  release_body_manager.script
+  ui_mm_opt_gameplay.script
+  spawn_quest_items.script
+  state_mgr_animation.script
+  xr_smartcover.script
+  xr_meet.script
+  heli_move.script
+  sim_faction_brain_human.script
+  trade_manager.script
+  ui_registrator.script
+  spawn_upgrades.script
+  ixr_module_timers.script
+  zone_no_weapon.script
+  xrs_stereo.script
+  xr_sound.script
+  dialogs_pripyat.script
+  xr_zones.script
+  heli_combat.script
+  xr_state.script
+  xr_spawner.script
+  ui_mm_opt_video.script
+  story_objects.script
+  xr_sounds_id.script
+  xr_sounds.script
+  ixr_module_global_registry.script
+  check_logic_path.script
+  xr_s.script
+  xr_remark.script
+  ixr_npc_info.script
+  mob_combat.script
+  ui_mm_mp_server.script
+  xr_kamp.script
+  xr_info.script
+  xr_hit.script
+  gulag_general.script
+  xr_combat.script
+  xr_guide.script
+  mob_camp.script
+  xr_gather_items.script
+  state_lib_animpoint.script
+  xr_detector.script
+  ui_sleep_dialog.script
+  xr_conditions.script
+  state_mgr_animstate.script
+  ui_scenes.script
+  spawner.script
+  xr_comm_ptr.script
+  xr_combat_zombied.script
+  ixr_module_signals.script
+  mob_remark.script
+  xr_combat_camper.script
+  xr_camper.script
+  xr_combat_monolith.script
+  mob_state_mgr.script
+  game_relations.script
+  ui_si.script
+  ui_notepad.script
+  ui_numpad.script
+  ui_mm_opt_video_adv.script
+  ui_mm_opt_sound.script
+  ui_mm_opt_main.script
+  combat_restrictor.script
+  sr_idle.script
+  ui_mm_mp_profile.script
+  ui_mm_mp_join.script
+  sim_squad_generic.script
+  ui_mm_mp_gamespy.script
+  sound_manager.script
+  xr_logic.script
+  memusage.script
+  game_types.script
+  sr_crow_spawner.script
+  spark_global.script
+  sound_theme.script
+  ixr_module_triggers.script
+  xr_sleeper.script
+  ui_mm_opt_con_cmd.script
+  lain_test_bl.script
+  xr_hear.script
+  dialogs_zaton.script
+  task_manager.script
+  xr_actions_id.script
+  js2_subtitles.script
+  profiler.script
+  state_mgr_movement.script
+  sr_camp.script
+  dialogs.script
+  xr_wounded.script
+  state_mgr_animstate_list.script
+  sr_particle.script
+  js2_ui_boss_health_bar.script
+  task_objects.script
+  xr_corpse_detection.script
+  news_manager.script
+  state_mgr_animation_list.script
+  treasure_manager.script
+  state_mgr.script
+  dialogs_jupiter.script
+  actor_menu.script
+  ___ixr_engine_callbacks.script
+  ixr_module_throttlers.script
+  xr_animpoint_predicates.script
+  ui_mm_opt_controls.script
+  xr_motivator.script
+  sim_faction_brain_mutant.script
+  modules.script
+  xr_companion.script
+  ixr_framework.script
+  death_manager.script
+  state_mgr_mental.script
+  stalker_generic.script
+  ui_mp_main.script
+  sr_timer.script
+  sr_light.script
+  spawn_b103.script
+  phantom_manager.script
+  xrs_dyn_music.script
+  mob_home.script
+  travel_manager.script
+
+[WITH AUTO LOADERS]:
+  ixr_module_options.script
+  ixr_callback__on_game_present.script
+  ixr_callback__item_extend_description.script
+  state_mgr_animation_list_spark.script
+  anabiotic_vanilla.script
+  ixr_callback__actor_on_spawn.script
+  state_mgr_animstate_list_spark.script
+  state_lib_spark.script
+  ffx_test.script
+  ixr_callback__torch_enable_disable.script
+
+ ::: call autoloads :::
+
+
+[CALL AUTO LOADERS]:
+  [EXECUTING] ixr_module_options->on_game_start(...)
+
+[IXR AUTOLOADER] :: CALL ENTRY POINT: ixr_module_options->on_game_start(...)
+  [EXECUTING] ixr_callback__on_game_present->on_game_start(...)
+
+[IXR AUTOLOADER] :: CALL ENTRY POINT: ixr_callback__on_game_present->on_game_start(...)
+  [EXECUTING] ixr_callback__item_extend_description->on_game_start(...)
+
+[IXR AUTOLOADER] :: CALL ENTRY POINT: ixr_callback__item_extend_description->on_game_start(...)
+  [EXECUTING] state_mgr_animation_list_spark->on_game_start(...)
+
+[IXR AUTOLOADER] :: CALL ENTRY POINT: state_mgr_animation_list_spark->on_game_start(...)
+  [EXECUTING] anabiotic_vanilla->on_game_start(...)
+
+[IXR AUTOLOADER] :: CALL ENTRY POINT: anabiotic_vanilla->on_game_start(...)
+  [EXECUTING] ixr_callback__actor_on_spawn->on_game_start(...)
+
+[IXR AUTOLOADER] :: CALL ENTRY POINT: ixr_callback__actor_on_spawn->on_game_start(...)
+  [EXECUTING] state_mgr_animstate_list_spark->on_game_start(...)
+
+[IXR AUTOLOADER] :: CALL ENTRY POINT: state_mgr_animstate_list_spark->on_game_start(...)
+  [EXECUTING] state_lib_spark->on_game_start(...)
+
+[IXR AUTOLOADER] :: CALL ENTRY POINT: state_lib_spark->on_game_start(...)
+  [EXECUTING] ffx_test->on_game_start(...)
+
+[IXR AUTOLOADER] :: CALL ENTRY POINT: ffx_test->on_game_start(...)
+  [EXECUTING] ixr_callback__torch_enable_disable->on_game_start(...)
+
+[IXR AUTOLOADER] :: CALL ENTRY POINT: ixr_callback__torch_enable_disable->on_game_start(...)
+
+--- init end ---
+
