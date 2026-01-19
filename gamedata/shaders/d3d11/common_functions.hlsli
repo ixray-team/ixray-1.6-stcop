@@ -176,23 +176,19 @@ float hashed_alpha_test(float3 position)
     return clamp(thresh, 0.063f, 1.0f);
 }
 
-#define IMAGE_BITRATE float3(255.f, 255.f, 255.f)
+// https://media.steampowered.com/apps/valve/2015/Alex_Vlachos_Advanced_VR_Rendering_GDC2015.pdf
+// page 49
 
-// Deband color function (by Hozar 2002) - may be huita
+#ifndef IMAGE_BITRATE
+	#define IMAGE_BITRATE 255
+#endif
+
 float3 deband_color(float3 image, float2 uv)
 {
-    float3 dither = Hash23(cos(uv.xy * timers.x) * 1245.0f);
+    float3 dither = dot(float2(171.0, 231.0), uv.xy + m_taa_jitter.w).xxx;
+    dither = 2.0f * frac(dither / float3(103.0, 71.0, 97.0)) - 1.0f;
 
-    float3 color = saturate(image) * IMAGE_BITRATE;
-    float3 pq = frac(color);
-
-    color -= pq;
-    pq = step(dither, pq);
-
-    color += pq;
-    color *= rcp(IMAGE_BITRATE);
-
-    return color;
+    return image + dither * rcp(IMAGE_BITRATE);
 }
 
 //Builds a cotangent frame. Source: http://www.thetenthplanet.de/archives/1180
