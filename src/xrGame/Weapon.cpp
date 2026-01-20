@@ -99,6 +99,12 @@ CWeapon::CWeapon()
 	m_cur_scope				= 0;
 	_last_update_time = Device.dwTimeGlobal;
 	useLegacyMisfire = false;
+}
+
+CWeapon::~CWeapon		()
+{
+	xr_delete				(m_UIScope);
+	delete_data				(m_scopes);
 
 	for (auto& it : m_ammo_bones_mag)
 	{
@@ -117,12 +123,6 @@ CWeapon::CWeapon()
 		xr_delete(it);
 	}
 	m_shell_bones.clear();
-}
-
-CWeapon::~CWeapon		()
-{
-	xr_delete				(m_UIScope);
-	delete_data				(m_scopes);
 }
 
 void CWeapon::Hit					(SHit* pHDS)
