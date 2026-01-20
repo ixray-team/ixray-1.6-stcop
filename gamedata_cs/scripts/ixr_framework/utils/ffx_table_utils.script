@@ -148,6 +148,24 @@ end
 
 --[[
 Description:
+  Get table key by contains value or false.
+Parameters:
+  t (table) - the flat table to check.
+  item (any) - the value to find.
+Returns: key otherwise false.
+]]
+function get_contains_index(t, item)
+	for k, v in pairs(t) do
+		if v == item then
+			return k
+		end
+	end
+	
+	return false
+end
+
+--[[
+Description:
   Retrieves the last value at the root level of a table (flat or associative).
 Parameters:
   input_table (table) - the table to inspect.
