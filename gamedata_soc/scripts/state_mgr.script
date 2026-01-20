@@ -368,11 +368,11 @@ function state_manager:set_state(state_name, callback, timeout, target, emerg, s
 
 
 		--' Если мы переключаемся из идущего положения в стоящее - надо задизаблить перемещение
-		if state_lib.states[self.target_state].movement ~= move.stand and
-		   state_lib.states[state_name].movement == move.stand
-		then
-			self.npc:movement_enabled(false)
-		end
+		-- if state_lib.states[self.target_state].movement ~= move.stand and
+			-- state_lib.states[state_name].movement == move.stand
+		-- then
+			-- self.npc:movement_enabled(false)
+		-- end
 
 
 		self.target_state = state_name	
