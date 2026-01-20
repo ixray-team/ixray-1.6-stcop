@@ -667,6 +667,8 @@ function _on_main_menu_init_callbacks(_ref)
 	set_menu_ref(_ref)
 	
 	get_menu_ref().ixr_options_btn = get_menu_ref().options_xml:Init3tButton("ixr_options_btn", get_menu_ref())
+	get_menu_ref().ixr_options_btn:SetWndPos(vector2():set(get_menu_ref().ixr_options_btn:GetWndPos().x * ui.get_current_kx(), get_menu_ref().ixr_options_btn:GetWndPos().y))
+    get_menu_ref().ixr_options_btn:SetWidth(get_menu_ref().ixr_options_btn:GetWidth()*ui.get_current_kx())
 	get_menu_ref():Register(get_menu_ref().ixr_options_btn, "ixr_options_btn")
 	get_menu_ref():AddCallback("ixr_options_btn", ui_events.BUTTON_CLICKED, this.on_btn_options_ixr_clicked, get_menu_ref())
 end
@@ -741,7 +743,7 @@ function _on_main_menu_init_controlls(_ref)
 				vector2():set(250, 65), 
 				"ui\\ixr_options\\icons\\addon_icon",
 				tostring(options_script_name).. ".script", GetARGB(255, 255, 255, 255),
-				"Call Of Pripat 1.6.0.2", GetARGB(255, 200, 200, 200),
+				"Call Of Pripat 1.6.02", GetARGB(255, 200, 200, 200),
 				"1.0.0", GetARGB(255, 200, 200, 200),
 				"active", GetARGB(255, 200, 200, 200),
 				options_variables
@@ -1012,7 +1014,7 @@ function add_option_group(option_index, padding, alpha, count, group_display_tex
 		option_name_controll:SetWndPos(vector2():set(padding + padding, 5 + padding + y_offset))
 		option_name_controll:SetWndSize(vector2():set(texture_width - padding, group_name_text_height))
 		
-		option_name_controll:TextControl():SetText(tostring(variable_name) .. " (" .. tostring(display_text) .. ")")
+		option_name_controll:TextControl():SetText(tostring(variable_name) .. " (" .. game.translate_string(tostring(display_text)) .. ")")
 		
 		option_name_controll:TextControl():SetTextColor(GetARGB(255, 200, 200, 200))
 		option_name_controll:Show(true)
