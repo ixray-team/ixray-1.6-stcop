@@ -539,6 +539,7 @@ public:
 	virtual void			IR_OnKeyboardHold		(int dik);
 	virtual void			IR_OnMouseWheel			(int direction);
 	virtual	float			GetLookFactor			();
+	bool					IsActionKeyPressedInGame(const EGameActions& EGameAction) const;
 	void					SetActorKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags mask, bool state, bool ignore_suicide = false);
 	void					ProcessKeys(CHudItem* itm = nullptr);
 
