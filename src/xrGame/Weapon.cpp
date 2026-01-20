@@ -29,6 +29,8 @@
 #include "../xrEngine/GameMtlLib.h"
 #include "../xrScripts/script_callback_ex.h"
 #include "ElectronicsProblemsManager.h"
+#include "ai/crow/ai_crow.h"
+#include "ai/monsters/bloodsucker/bloodsucker.h"
 
 #include <algorithm>
 
@@ -640,6 +642,9 @@ void CWeapon::Load		(LPCSTR section)
 
 	m_bGaussScheme = !!READ_IF_EXISTS(pSettings, r_bool, section, "use_gauss_scheme", false);
 
+	m_bullet_point_offset_hud = READ_IF_EXISTS(pSettings, r_float, section, "bullet_point_offset_hud", -1.0f);
+	m_bullet_point_offset_world = READ_IF_EXISTS(pSettings, r_float, section, "bullet_point_offset_world", -0.3f);
+
 	m_bAmmoInChamber = READ_IF_EXISTS(pSettings, r_bool, section, "ammo_in_chamber", false);
 	m_bHideColimSightInAlter = READ_IF_EXISTS(pSettings, r_bool, section, "hide_collimator_sights_in_alter_zoom", true);
 	
@@ -664,6 +669,12 @@ void CWeapon::Load		(LPCSTR section)
 
 	m_bIsPumpEnabled = READ_IF_EXISTS(pSettings, r_bool, section, "use_pump_system", false);
 	m_bNeedPumpReloadEnd = READ_IF_EXISTS(pSettings, r_bool, section, "need_pump_reload_end", false);
+
+	m_iAutoAimTime = std::floor(READ_IF_EXISTS(pSettings, r_float, section, "autoaim_time", 0.0f) * 1000.0f);
+	m_bAutoAimOnlyAlive = !!READ_IF_EXISTS(pSettings, r_bool, section, "autoaim_only_alive", false);
+	m_bAutoAimIgnoreDead = !!READ_IF_EXISTS(pSettings, r_bool, section, "autoaim_ignore_dead", false);
+	m_bAutoAimShotAfterKeyReleased = !!READ_IF_EXISTS(pSettings, r_bool, section, "autoaim_shot_after_key_released", false);
+	m_bAutoAimAutoShot = !!READ_IF_EXISTS(pSettings, r_bool, section, "autoaim_auto_shot", false);
 
 	const static bool isImproveMis = EngineExternal()[EEngineExternalGame::EnableImproveWeaponMisfire];
 
@@ -1503,7 +1514,7 @@ void CWeapon::UpdateCL		()
 	}
 	else
 	{
-		CActor* pActor = H_Parent() ? H_Parent()->cast_actor() : NULL;
+		CActor* pActor = H_Parent() ? H_Parent()->cast_actor() : nullptr;
 		if ((IsZoomed() && m_zoom_params.m_fZoomRotationFactor <= 1.f) ||
 			(!IsZoomed() && m_zoom_params.m_fZoomRotationFactor > 0.f))
 		{
@@ -1522,6 +1533,18 @@ void CWeapon::UpdateCL		()
 	}
 
 	UpdateLensFactor(delta);
+
+	{
+		s32 autoaim_period = GetAutoAimPeriod();
+		CActor* pActor = H_Parent() ? H_Parent()->cast_actor() : nullptr;
+		if (pActor != nullptr && autoaim_period != 0 && m_bAutoAimNeedAutoShot && pActor->IsActionKeyPressedInGame(EGameActions::kWPN_FIRE) && IsAutoAimHaveTarget())
+		{
+			if (autoaim_period > 0 && Device.GetTimeDeltaSafe(GetAutoAimStartTime()) >= autoaim_period || autoaim_period < 0)
+			{
+				pActor->SetActorKeyRepeatFlag(ACTOR_DEFS::kfFIRE, true);
+			}
+		}
+	}
 
 	_last_update_time = Device.dwTimeGlobal;
 }
@@ -1810,9 +1833,29 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 				}
 
 				if (flags&CMD_START) 
+				{
+					m_bAutoAimNeedReleaseShot = false;
+					m_bAutoAimNeedAutoShot = false;
+					m_bAutoAimShooted = false;
 					FireStart();
-				else 
+					SetAutoAimStartTime(Device.dwTimeGlobal);
+				}
+				else
+				{
 					FireEnd();
+
+					if (m_bAutoAimShotAfterKeyReleased)
+					{
+						if (!m_bAutoAimShooted)
+						{
+							if (IsAutoAimHaveTarget() || Device.GetTimeDeltaSafe(GetAutoAimStartTime()) >= GetAutoAimPeriod())
+							{
+								m_bAutoAimNeedReleaseShot = true;
+								FireStart();
+							}
+						}
+					}
+				}
 
 				return true;
 			} 
@@ -4888,4 +4931,52 @@ BOOL CWeapon::AlwaysTheCrow()
 		return TRUE;
 
 	return inherited::AlwaysTheCrow();
+}
+
+s32 CWeapon::GetAutoAimPeriod() const
+{
+	if (m_bGaussScreen)
+	{
+		return m_iAutoAimTime;
+	}
+
+	return 0;
+}
+
+static bool is_visible_by_thermovisor(CObject* pointer)
+{
+	if (smart_cast<CAI_Crow*>(pointer))
+	{
+		return true;
+	}
+
+	if (smart_cast<CAI_Bloodsucker*>(pointer))
+	{
+		return false;
+	}
+
+	return pointer != nullptr ? pointer->cast_entity_alive() : nullptr;
+}
+
+bool CWeapon::IsAutoAimHaveTarget()
+{
+	Fvector pos = get_LastFP(), dir = get_LastFD();
+
+	collide::rq_result rqr;
+
+	bool is_aim_exist = Level().ObjectSpace.RayPick(pos, dir, 1000.0f, collide::rq_target::rqtObject, rqr, H_Parent());
+
+	if (m_bAutoAimOnlyAlive && !is_visible_by_thermovisor(rqr.O))
+	{
+		is_aim_exist = false;
+	}
+
+	CEntityAlive* entity_alive = rqr.O != nullptr ? rqr.O->cast_entity_alive() : nullptr;
+
+	if (is_aim_exist && m_bAutoAimIgnoreDead && (entity_alive != nullptr && !entity_alive->g_Alive() || entity_alive == nullptr))
+	{
+		is_aim_exist = false;
+	}
+
+	return is_aim_exist;
 }
