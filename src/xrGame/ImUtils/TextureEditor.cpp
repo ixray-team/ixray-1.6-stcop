@@ -1173,6 +1173,7 @@ void RenderTextureEditor()
 											{
 												g_imgui_texture_editor.is_preview_tooltip_image_load_started = false;
 												g_imgui_texture_editor.is_preview_tooltip_image_loaded = false;
+												g_imgui_texture_editor.is_metadata_tooltip_loaded = false;
 											}
 
 											for (u32 column_tt = 0; column_tt < _kColumnsSizeTooltipTable; ++column_tt)
