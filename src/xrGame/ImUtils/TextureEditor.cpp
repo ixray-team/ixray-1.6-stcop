@@ -163,7 +163,6 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 
 					if (is_dds)
 					{
-						g_imgui_texture_editor.wt_current_analyzing_texture = fn.c_str();
 						CImGuiTextureEditor::STextureEntry entry;
 						entry.analyze_status_result_flags = 0;
 
@@ -283,15 +282,19 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 					}
 				});
 
-			std::sort(g_imgui_texture_editor.textures.begin(),
-				g_imgui_texture_editor.textures.end(),
-				[](const CImGuiTextureEditor::STextureEntry& a, const CImGuiTextureEditor::STextureEntry& b) {
-					return xr_strcmp(a.path, b.path) < 0;
-				});
+			if(!g_imgui_texture_editor.textures.empty())
+			{
+				std::sort(g_imgui_texture_editor.textures.begin(),
+					g_imgui_texture_editor.textures.end(),
+					[](const CImGuiTextureEditor::STextureEntry& a, const CImGuiTextureEditor::STextureEntry& b) {
+						return xr_strcmp(a.path, b.path) < 0;
+					});
 
-			g_imgui_texture_editor.filter_query.resize(g_imgui_texture_editor.textures.size());
-			for (u32 i = 0; i < g_imgui_texture_editor.textures.size(); ++i)
-				g_imgui_texture_editor.filter_query[i] = i;
+				g_imgui_texture_editor.filter_query.resize(g_imgui_texture_editor.textures.size());
+				for (u32 i = 0; i < g_imgui_texture_editor.textures.size(); ++i)
+					g_imgui_texture_editor.filter_query[i] = i;
+				g_imgui_texture_editor.wt_current_analyzing_texture = g_imgui_texture_editor.textures.back().path;
+			}
 
 			g_imgui_texture_editor.total_textures_in_folder = g_imgui_texture_editor.textures.size();
 
