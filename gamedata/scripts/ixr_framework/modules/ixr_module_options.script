@@ -33,6 +33,9 @@ local ixr_options = {
 	__timer = 0,
 	dynamic_vars = {
 		first_log_record = true,
+		menu_opened = false,
+		is_callbacks_skip = false,
+		need_redraw = false,
 	},
 	controlls_defines = {
 		check_box_width = 70,
@@ -172,6 +175,9 @@ end
 -- #######################################
 -- #	 	 SYSTEM METHODS 	  	 	 #
 -- #######################################
+function ixr_options.is_options_opened()
+	return ixr_options.dynamic_vars.menu_opened
+end
 
 function ixr_options.is_initialized()
 	return ixr_options.initialized
@@ -229,7 +235,24 @@ function _load_options()
 	ixr_options.toLog("[IXR OPTIONS] BEGIN LOAD OPTIONS BY FILE")
 	local stored_options_string = ffx_io_utils.read_string_file_(_get_option_storage_path(), false)
 	if stored_options_string then
-		ixr_options.options_storage = ffx_json_lib.json_decode(stored_options_string)
+		local tmp_opt_storage = ffx_json_lib.json_decode(stored_options_string) or {}
+		local need_resave = false
+		for k, v in pairs(tmp_opt_storage) do
+			if type(v) ~= "table" then
+				need_resave = true
+			else
+				need_resave = v.metadata == nil
+			end
+			break
+		end
+	
+		if need_resave then
+			ffx_io_utils.write_string_file(ffx_json_lib.json_encode(ixr_options.options_storage), _get_option_storage_path(), "w+")
+			ixr_options.toLog("[IXR OPTIONS] CREATE NEW OPTIONS FILE [ACTUALIZE VERSION]")
+		else
+			ixr_options.options_storage = tmp_opt_storage
+		end
+		
 		ixr_options.toLog("[IXR OPTIONS] LOAD OLD OPTIONS FILE")
 		ixr_options.toLog("[IXR OPTIONS] LOADED [" .. tostring(ffx_table_utils.get_size(ixr_options.options_storage)) .. "] OPTIONS")
 	else
@@ -297,7 +320,7 @@ function ixr_options.get_stored_variable(script_name, var_name, default_value)
 		return default_value
 	end
 	
-	return ixr_options.options_storage[ixr_options.build_variable_key(script_name, var_name)]
+	return ixr_options.options_storage[ixr_options.build_variable_key(script_name, var_name)].value
 end
 
 function ixr_options.get_variable_value(script_name, var_name, default_value)
@@ -321,7 +344,7 @@ function ixr_options.get_variable_value(script_name, var_name, default_value)
 end
 
 function ixr_options.set_variable_value(script_name, var_name, value)
-	ixr_options.options_storage[ixr_options.build_variable_key(script_name, var_name)] = value
+	ixr_options.options_storage[ixr_options.build_variable_key(script_name, var_name)] = {value = value, metadata = ixr_options.get_metadata(script_name, var_name)}
 end
 
 function ixr_options.remove_variable_value(script_name, var_name)
@@ -330,6 +353,20 @@ end
 
 function ixr_options.build_variable_key(script_name, var_name)
 	return tostring(script_name) .. "_" .. tostring(var_name)
+end
+
+function ixr_options.get_metadata(script_name, var_name)
+	if ixr_options.options_storage[ixr_options.build_variable_key(script_name, var_name)] ~= nil then
+		return ixr_options.options_storage[ixr_options.build_variable_key(script_name, var_name)].metadata
+	end
+	
+	return {}
+end
+
+function ixr_options.set_metadata(script_name, var_name, metadata)
+	if ixr_options.options_storage[ixr_options.build_variable_key(script_name, var_name)] ~= nil then
+		ixr_options.options_storage[ixr_options.build_variable_key(script_name, var_name)].metadata = metadata
+	end
 end
 
 function ixr_options.register_option(group_name, variable_name, display_text, controll_data, _callback)
@@ -386,6 +423,53 @@ function ixr_options.combo_box(default_selected_index, list_values_array)
 		["controll"] = "combo_box",
 		["default_value"] = default_selected_index,
 		["list_values"] = list_values_array,
+	}
+end
+
+function disable_ComboBox_index(variable_name, index)
+	local script_name = ffx_callable_utils.find_caller_source(3)
+	local metadata = ixr_options.get_metadata(script_name, variable_name)
+	if metadata.disabled_ids == nil then
+		metadata.disabled_ids = {}
+	end
+
+	if ffx_table_utils.is_contains(metadata.disabled_ids, index) then
+		return
+	end
+
+	table.insert(metadata.disabled_ids, index)
+	ixr_options.set_metadata(script_name, variable_name, metadata)
+	
+	--SemiLog("disable_ComboBox_index meta:"..tostring(ffx_json_lib.json_encode( {script_name, variable_name, ixr_options.get_metadata(script_name, variable_name)} )))
+end
+
+function enable_ComboBox_index(variable_name, index)
+	local script_name = ffx_callable_utils.find_caller_source(3)
+	local metadata = ixr_options.get_metadata(script_name, variable_name)
+	if metadata.disabled_ids == nil then
+		metadata.disabled_ids = {}
+	end
+
+	if not ffx_table_utils.is_contains(metadata.disabled_ids, index) then
+		return
+	end
+
+	table.remove(metadata.disabled_ids, ffx_table_utils.get_contains_index(metadata.disabled_ids, index))
+	ixr_options.set_metadata(script_name, variable_name, metadata)
+	
+	--SemiLog("enable_ComboBox_index meta:"..tostring(ffx_json_lib.json_encode( {script_name, variable_name, ixr_options.get_metadata(script_name, variable_name)} )))
+end
+
+
+function ixr_options.combo_box_item(option_display_name, is_visible, option_return_value)
+	if is_visible == nil then
+		is_visible = true
+	end
+
+	return {
+		["option_display_name"] = option_display_name, 
+		["option_return_value"] = option_return_value,
+		["is_visible"] = is_visible,
 	}
 end
 
@@ -534,14 +618,14 @@ function register_textbox(name_controll, x, y, alpha, def_value, _ref, _callback
 	register_controll(name_controll)
 end
 
-function register_combobox(name_controll, x, y, alpha, def_value, list_values, _ref, _callback)
+function register_combobox(name_controll, x, y, alpha, def_value, list_values, _ref, _callback, script_name, variable_name)
 	if _ref == nil then
 		_ref = get_menu_ref()
 	end
 	
 	name_controll = name_controll .. "_combobox_"
 	
-	set_controll(name_controll, IXRComboBox(name_controll, x, y, alpha, def_value, list_values, _callback, _ref))
+	set_controll(name_controll, IXRComboBox(name_controll, x, y, alpha, def_value, list_values, _callback, _ref, script_name, variable_name))
 	get_controll(name_controll):Show(true)
 	register_controll(name_controll)
 end
@@ -583,13 +667,12 @@ function _on_main_menu_init_callbacks(_ref)
 	set_menu_ref(_ref)
 	
 	get_menu_ref().ixr_options_btn = get_menu_ref().options_xml:Init3tButton("ixr_options_btn", get_menu_ref())
-	get_menu_ref().ixr_options_btn:SetWndPos(vector2():set(get_menu_ref().ixr_options_btn:GetWndPos().x*ui.get_current_kx(), get_menu_ref().ixr_options_btn:GetWndPos().y))
-	get_menu_ref().ixr_options_btn:SetWidth(get_menu_ref().ixr_options_btn:GetWidth()*ui.get_current_kx())
 	get_menu_ref():Register(get_menu_ref().ixr_options_btn, "ixr_options_btn")
 	get_menu_ref():AddCallback("ixr_options_btn", ui_events.BUTTON_CLICKED, this.on_btn_options_ixr_clicked, get_menu_ref())
 end
 
 function on_ixr_options_exit_btn_clicked()
+	ixr_options.dynamic_vars.menu_opened = false
 	hide_options()
 	get_menu_ref().ixr_options_btn:Show(true)
 	get_menu_ref().shniaga:Show(true)
@@ -599,6 +682,7 @@ function on_ixr_options_exit_btn_clicked()
 end
 
 function on_btn_options_ixr_clicked()
+	ixr_options.dynamic_vars.menu_opened = true
 	get_menu_ref().ixr_options_btn:Show(false)
 	get_menu_ref().eng_lang_btn:Show(false)
 	get_menu_ref().ru_lang_btn:Show(false)
@@ -657,7 +741,7 @@ function _on_main_menu_init_controlls(_ref)
 				vector2():set(250, 65), 
 				"ui\\ixr_options\\icons\\addon_icon",
 				tostring(options_script_name).. ".script", GetARGB(255, 255, 255, 255),
-				"Call Of Pripyat 1.6.02", GetARGB(255, 200, 200, 200),
+				"Call Of Pripat 1.6.0.2", GetARGB(255, 200, 200, 200),
 				"1.0.0", GetARGB(255, 200, 200, 200),
 				"active", GetARGB(255, 200, 200, 200),
 				options_variables
@@ -712,6 +796,26 @@ function on_draw_options(index, item)
 	return true
 end
 
+local skip_redraw = false
+
+function ReDraw()
+	if skip_redraw then
+		return
+	end
+	
+	if ixr_options.is_initialized() and ixr_options.is_options_opened() then
+		local listBox = get_controll("addons_list_box")
+		if listBox and listBox:GetSize() > 0 and listBox:GetSelectedItem() ~= nil then
+			SemiLog("REDRAW OPTIONS IXR")
+			---ixr_options.dynamic_vars.is_callbacks_skip = true
+			skip_redraw = true
+			OnAddonItemClicked()
+			skip_redraw = false
+			--ixr_options.dynamic_vars.is_callbacks_skip = false
+		end
+	end
+end
+
 function OnAddonItemClicked()
 	if get_controll("addons_list_box"):GetSize() == 0 then return end
 
@@ -735,10 +839,23 @@ function pick_controll(option_data, option_bg, option_key_name)
 	local parent_element_width = option_bg:GetWidth()
 	
 	local __callback_handler = function (value, ctrl)
+		if ixr_options.dynamic_vars.is_callbacks_skip then
+			return
+		end
+		
+		--[[
+		if controll_type == "combo_box" then
+			if not option_data["controll_data"]["list_values"][value]["is_visible"] then
+				SemiLog("DISABLED::"..tostring(controll_type) .. tostring(option_key_name) )
+				return
+			end
+		end
+		--]]
+
 		ixr_options.set_variable_value(script_name, variable_name, value)
 		option_data["controll_data"]["default_value"] = value
 		
-		--SemiLog(tostring(controll_type) .. tostring(option_key_name).." [changed]: "..tostring(value) .. " -- " .. tostring(ctrl)) 
+		--SemiLog("PICK::" ..tostring(controll_type) .. tostring(option_key_name).." [changed]: "..tostring(value) .. " -- " .. tostring(ctrl)) 
 		
 		if option_data["_callback"] ~= nil then
 			if controll_type == "combo_box" then
@@ -782,7 +899,9 @@ function pick_controll(option_data, option_bg, option_key_name)
 			option_data["controll_data"]["default_value"],
 			option_data["controll_data"]["list_values"],
 			option_bg,
-			__callback_handler
+			__callback_handler,
+			script_name, 
+			variable_name
 		)
 	end
 	
@@ -893,7 +1012,7 @@ function add_option_group(option_index, padding, alpha, count, group_display_tex
 		option_name_controll:SetWndPos(vector2():set(padding + padding, 5 + padding + y_offset))
 		option_name_controll:SetWndSize(vector2():set(texture_width - padding, group_name_text_height))
 		
-		option_name_controll:TextControl():SetText(tostring(variable_name) .. " (" .. game.translate_string(tostring(display_text)) .. ")")
+		option_name_controll:TextControl():SetText(tostring(variable_name) .. " (" .. tostring(display_text) .. ")")
 		
 		option_name_controll:TextControl():SetTextColor(GetARGB(255, 200, 200, 200))
 		option_name_controll:Show(true)
@@ -1147,12 +1266,18 @@ end
 -- 											COMBO BOX
 -- #########################################################################################################
 class "IXRComboBox" (CUIStatic)
-function IXRComboBox:__init(controll_name, x, y, alpha, default_value_index, list_values, _callback, _ref)
+function IXRComboBox:__init(controll_name, x, y, alpha, default_value_index, list_values, _callback, _ref, script_name, variable_name)
 	super()
 	
 	self.visible = false
 	self.value_index = nil
 	self.list_values = list_values
+	
+	self.script_name = script_name
+	self.variable_name = variable_name
+	self.disabled_ids = {}
+	self:RefreshDisabledIds()
+	
 	
 	self.on_change_callback = _callback
 	self.controll_name = controll_name .. "_" .. tostring(getNextControllIndex())
@@ -1200,6 +1325,29 @@ function IXRComboBox:__init(controll_name, x, y, alpha, default_value_index, lis
 	self:SetValueIndex(default_value_index)
 end
 
+
+
+function IXRComboBox:RefreshDisabledIds()
+	local metadata = ixr_options.get_metadata(self.script_name, self.variable_name)
+	local disabled_ids = {}
+	if metadata ~= nil and metadata.disabled_ids ~= nil then
+		self.disabled_ids = metadata.disabled_ids
+	end
+end
+
+function IXRComboBox:Update()
+	self:RefreshDisabledIds()
+	self:UpdateTextColor()
+end
+
+function IXRComboBox:UpdateTextColor()
+	if self:IsIndexDisabled(self.value_index) then
+		self.controll_text:TextControl():SetTextColor(GetARGB(200, 150, 100, 100))
+	else
+		self.controll_text:TextControl():SetTextColor(GetARGB(200, 255, 255, 255))
+	end
+end
+
 function IXRComboBox:Show(flag)
 	self.visible = flag
 	self.controll_background:Show(flag)
@@ -1212,6 +1360,12 @@ function IXRComboBox:Show(flag)
 	end
 	
 	self:UpdateArrowsVisibility()
+	
+	if flag then
+		set_main_menu_update(self.controll_name.."combo_box", function () self:Update() end)
+	else
+		set_main_menu_update(self.controll_name.."combo_box", nil)
+	end
 end
 
 function IXRComboBox:UpdateArrowsVisibility()
@@ -1242,11 +1396,43 @@ function IXRComboBox:UpdateArrowsVisibility()
 end
 
 function IXRComboBox:LeftArrowClick()
-	self:SetValueIndex(self.value_index - 1)
+	local allowed_indexes = self:GetAllowedIndexes()
+	
+	local next_index = self.value_index
+	if #allowed_indexes > 0 then
+		for i = #allowed_indexes, 1, -1 do
+			if allowed_indexes[i] < self.value_index then
+				next_index = allowed_indexes[i]
+				break
+			end
+		end
+	end
+
+	if next_index == self.value_index then
+		self:SetValueIndex(self.value_index - 1)
+	else
+		self:SetValueIndex(next_index)
+	end
 end
 
 function IXRComboBox:RightArrowClick()
-	self:SetValueIndex(self.value_index + 1)
+	local allowed_indexes = self:GetAllowedIndexes()
+	
+	local next_index = self.value_index
+	if #allowed_indexes > 0 then
+		for i, v in ipairs(allowed_indexes) do
+			if v > self.value_index then
+				next_index = v
+				break
+			end
+		end
+	end
+
+	if next_index == self.value_index then
+		self:SetValueIndex(self.value_index - 1)
+	else
+		self:SetValueIndex(next_index)
+	end
 end
 
 function IXRComboBox:SetValueIndex(index)
@@ -1265,6 +1451,7 @@ function IXRComboBox:SetValueIndex(index)
 	self.value_index = index
 	
 	if #self.list_values > 0 and self.list_values[index] then
+		self:UpdateTextColor()
 		self.controll_text:TextControl():SetText(tostring(self.list_values[index]["option_display_name"] or nil))
 	end
 
@@ -1272,12 +1459,37 @@ function IXRComboBox:SetValueIndex(index)
 	self:OnChangeState()
 end
 
+function IXRComboBox:IsIndexDisabled(item_index)
+	if #self.disabled_ids <= 0 then
+		return false
+	end
+	
+	for k, v in pairs(self.disabled_ids) do
+		if item_index == v then
+			return true
+		end
+	end
+	
+	return false
+end
+
+function IXRComboBox:GetAllowedIndexes()	
+	local indexes = {}
+	for i, v in ipairs(self.list_values) do
+		if not self:IsIndexDisabled(i) then
+			table.insert(indexes, i)
+		end
+	end
+
+	return indexes
+end
+
 function IXRComboBox:GetValue()
 	return self.value_index
 end
 
 function IXRComboBox:OnChangeState()
-	if self.on_change_callback then
+	if self.on_change_callback and not self:IsIndexDisabled(self.value_index) then
 		self.on_change_callback(self:GetValue(), self.controll_name)
 	end
 end
