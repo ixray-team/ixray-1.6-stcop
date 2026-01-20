@@ -113,7 +113,7 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 
 		if (!g_imgui_texture_editor.is_all_analyzed)
 		{
-			static xr_vector<xr_string> files_vec;
+			static xr_vector<LPCSTR> files_vec;
 			static FS_Path* pTexturesFolder = FS.get_path(_game_textures_);
 
 			if (!pTexturesFolder)
@@ -122,8 +122,7 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 				Msg("[TextureEditor]: ! invalid filesystem was initialized on your side -> report to developers!");
 				break;
 			}
-
-			if (pTexturesFolder)
+			else
 			{
 				PROF_EVENT("get_all_files");
 				FS.get_all_files_in_dir(files_vec, pTexturesFolder->m_Path);
@@ -145,12 +144,22 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 			g_imgui_texture_editor.total_unable_to_classify_files_in_folder = 0;
 			g_imgui_texture_editor.total_other_in_folder = 0;
 
-			PROF_EVENT("load_and_validate_all");
+			{
+				PROF_EVENT("get_all_textures_count");
+				for (LPCSTR path : files_vec)
+				{
+					std::string_view fn = path;
+					size_t len = fn.length();
+					if (len >= 4 && fn.compare(len - 4, 4, ".dds") == 0)
+						++g_imgui_texture_editor.total_textures_in_folder;
+				}
+			}
 
+			PROF_EVENT("load_and_validate_all");
 			xr_parallel_for(0ULL, files_vec.size(),
 				[](size_t index)
 				{
-					const xr_string& fn = files_vec[index];
+					std::string_view fn = files_vec[index];
 					size_t len = fn.length();
 
 					if (len < 4)
@@ -167,7 +176,7 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 						CImGuiTextureEditor::STextureEntry entry;
 						entry.analyze_status_result_flags = 0;
 
-						xr_strcpy(entry.path, fn.c_str());
+						xr_strcpy(entry.path, fn.data());
 
 						if (fn.size() > sizeof(string_path))
 							entry.analyze_status_result_flags |= CImGuiTextureEditor::eAnalyzedStatus::kTooLongPath;
@@ -175,15 +184,14 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 						{
 							size_t slash_pos = fn.find_last_of("/\\");
 							if (slash_pos != xr_string::npos)
-								xr_strcpy(entry.filename, fn.c_str() + slash_pos + 1);
+								xr_strcpy(entry.filename, fn.data() + slash_pos + 1);
 							else
-								xr_strcpy(entry.filename, fn.c_str());
+								xr_strcpy(entry.filename, fn.data());
 
 							if (slash_pos != xr_string::npos)
 							{
-								xr_string subpath = fn.substr(0, slash_pos);
 								std::filesystem::path relative = std::filesystem::relative(
-									subpath.c_str(), pTexturesFolder->m_Path);
+									xr_string(fn.data()).substr(0, slash_pos).c_str(), pTexturesFolder->m_Path);
 
 								if (relative != ".")
 									xr_strcpy(entry.subpath, relative.string().c_str());
@@ -227,10 +235,9 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 						//try to load dds
 						*strext(entry.path) = 0;
 						xr_strcat(entry.path, ".dds");
-						RHITextureMetadata mt;
-						bool metadata_obtained = Render->get_texture_metadata(entry.path, &mt);
 
-						if (metadata_obtained)
+						RHITextureMetadata mt;
+						if (Render->get_texture_metadata(entry.path, &mt))
 						{
 							if (!(mt.width % 2 == 0 && mt.height % 2 == 0))
 								entry.analyze_status_result_flags |= CImGuiTextureEditor::eAnalyzedStatus::kDimensionsNotPowerOf2;
@@ -238,8 +245,11 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 							if (mt.mipmap_count == 1)
 								entry.analyze_status_result_flags |= CImGuiTextureEditor::eAnalyzedStatus::kNoMipMaps;
 						}
+						//else
+						//	texture_metadata not loaded :(
 
 						g_imgui_texture_editor.textures.push_back(std::move(entry));
+						g_imgui_texture_editor.current_analyzed_count++;
 					}
 					else if (len >= 4 && fn.compare(len - 4, 4, ".thm") == 0)
 						++g_imgui_texture_editor.total_thm_in_folder;
@@ -295,11 +305,6 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 				for (u32 i = 0; i < g_imgui_texture_editor.textures.size(); ++i)
 					g_imgui_texture_editor.filter_query[i] = i;
 			}
-
-			g_imgui_texture_editor.total_textures_in_folder = g_imgui_texture_editor.textures.size();
-
-
-			g_imgui_texture_editor.current_analyzed_count = g_imgui_texture_editor.textures.size();
 			g_imgui_texture_editor.is_all_analyzed = true;
 
 		}
@@ -870,7 +875,7 @@ void RenderTextureEditor()
 					ImGui::SeparatorText("Stats");
 					ImGui::Text("Total files: %d", g_imgui_texture_editor.total_files_in_folder.load());
 					ImGui::Text("\t- .dds: %d", g_imgui_texture_editor.total_textures_in_folder.load());
-					ImGui::SetItemTooltip("analyzed: %d", g_imgui_texture_editor.current_analyzed_count.load());
+					ImGui::SetItemTooltip("analyzed: %d", g_imgui_texture_editor.textures.size());
 					ImGui::Text("\t- .thm: %d", g_imgui_texture_editor.total_thm_in_folder.load());
 
 					if (g_imgui_texture_editor.settings.show_only_dds_and_thm == false)
@@ -1346,26 +1351,13 @@ void RenderTextureEditor()
 				}
 				else
 				{
-					if (g_imgui_texture_editor.total_files_in_folder.load() == 0)
-					{
-						ImGui::Text("Preparing...");
-					}
-					else if (g_imgui_texture_editor.current_analyzed_count.load() == 0)
-					{
-						ImGui::Text("Found: [%s]",
-							g_imgui_texture_editor.wt_current_analyzing_texture.data()
-						);
-					}
-					else
-					{
-						ImGui::Text("Analyzing: %zu",
-							g_imgui_texture_editor.textures.size()
-						);
+					ImGui::Text("Preparing...");
+					ImGui::Text("Found: [%s]", g_imgui_texture_editor.wt_current_analyzing_texture.data());
 
-						ImGui::Text("[%s]",
-							g_imgui_texture_editor.wt_current_analyzing_texture.data()
-						);
-					}
+					float a = g_imgui_texture_editor.current_analyzed_count.load();
+					float b = g_imgui_texture_editor.total_textures_in_folder.load();
+					if(a && b)
+                        ImGui::Text("%d%%", (int)(a / b * 100));
 				}
 
 				ImGui::EndTabItem();
