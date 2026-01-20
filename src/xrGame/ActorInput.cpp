@@ -708,7 +708,7 @@ static bool IsActionKeyPressed(const EGameActions& EGameAction)
 	return ((key1 != 0) && IsKeyPressed(key1)) || ((key2 != 0) && IsKeyPressed(key2));
 }
 
-static bool IsActionKeyPressedInGame(const EGameActions& EGameAction)
+bool CActor::IsActionKeyPressedInGame(const EGameActions& EGameAction) const
 {
 	return IsActionKeyPressed(EGameAction) && !Console->bVisible && CurrentGameUI() != nullptr && !CurrentGameUI()->TopInputReceiver() && g_pGameLevel && g_pGameLevel->Cameras().GetCamEffector(cefDemo) == nullptr && !load_screen_renderer.IsActive() && !CImGuiManager::Instance().IsCapturingInputs();
 }
