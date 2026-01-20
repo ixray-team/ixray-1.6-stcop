@@ -29,6 +29,7 @@
 #endif
 #include "../xrScripts/script_callback_ex.h"
 #include "../xrEngine/xr_input.h"
+#include "HUDManager.h"
 
 CUIXml* pWpnScopeXml = nullptr;
 
@@ -504,6 +505,43 @@ void CWeaponMagazined::FireStart()
 				{
 					return;
 				}
+
+				const s32 autoaim_period = GetAutoAimPeriod();
+				const bool have_target = IsAutoAimHaveTarget();
+
+				if (autoaim_period != 0)
+				{
+					if (autoaim_period > 0)
+					{
+						if (m_bAutoAimShotAfterKeyReleased)
+						{
+							if (!m_bAutoAimNeedReleaseShot && (!have_target || Device.GetTimeDeltaSafe(GetAutoAimStartTime()) < autoaim_period))
+							{
+								if (m_bAutoAimAutoShot)
+								{
+									m_bAutoAimNeedAutoShot = true;
+								}
+								return;
+							}
+						}
+					}
+					else
+					{
+						if (!have_target)
+						{
+							if (m_bAutoAimAutoShot)
+							{
+								m_bAutoAimNeedAutoShot = true;
+							}
+							return;
+						}
+					}
+				}
+
+				m_bAutoAimNeedReleaseShot = false;
+				m_bAutoAimNeedAutoShot = false;
+				m_bAutoAimShooted = true;
+				SetAutoAimStartTime(0);
 
 				inherited::FireStart();
 				R_ASSERT(parent);
@@ -1210,7 +1248,6 @@ void CWeaponMagazined::state_Fire(float dt)
 			StopShooting();
 			return;
 		}
-
 		entity->g_fireParams	(this, p1,d);
 
 		if( !entity->g_stateFire() )
