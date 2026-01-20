@@ -516,6 +516,7 @@ struct CImGuiTextureEditor
 	SUserSettings settings;
 
 	std::string_view wt_current_analyzing_texture;
+	std::string_view current_tooltip_texture_filename;
 	std::string path_to_texture_folder;
 
 	xr_concurrent_vector<STextureEntry> textures;
