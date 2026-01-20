@@ -607,7 +607,7 @@ void	CKinematicsAnimated::LL_UpdateFxTracks( float dt )
 		{
 		case CBlend::eFREE_SLOT: 
 			NODEFAULT;
-
+			break;
 		case CBlend::eAccrue:
             B.blendAmount 	+= dt*B.blendAccrue*B.blendPower*B.speed;
 			if (B.blendAmount>=B.blendPower) {
@@ -848,8 +848,7 @@ void CKinematicsAnimated::Load(const char* N, IReader* data, u32 dwFlags) {
 		for (u32 k = 0; k < set_cnt; ++k)
 		{
 			_GetItem(items_nm, k, nm);
-			xr_strcat(nm, ".omf");
-			LoadOmf(nm, N);
+			ProcessOmfFiles(nm, N);
 		}
 	}
 	else if (data->find_chunk(OGF_S_MOTION_REFS2))
