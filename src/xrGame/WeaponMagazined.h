@@ -77,6 +77,11 @@ protected:
 
 	virtual void	state_Fire		(float dt);
 	virtual void	state_FireChamber(float dt);
+			bool	IsShotNeededNow	();
+			int		GetAutoAimPeriod();
+			void	CorrectShooting(Fvector3& pos, Fvector3 dir);
+			void	CorrectDirFromWorldToHud(Fvector3& dir, Fvector3& pos, float k);
+	float	m_hud_recalc_koef;
 public:
 	CWeaponMagazined();
 	virtual ~CWeaponMagazined();
@@ -134,6 +139,8 @@ public:
 	virtual bool	StopedAfterQueueFired	()			{return m_bStopedAfterQueueFired; }
 	virtual void	StopedAfterQueueFired	(bool value){ m_bStopedAfterQueueFired = value; }
 	virtual float	GetFireDispersion		(float cartridge_k, bool for_crosshair = false);
+	virtual void	SetAutoAimStartTime		(int cnt)	{ m_autoaim_valid_time = cnt; }
+	IC		int		GetAutoAimStartTime		() const	{ return m_autoaim_valid_time; }
 
 protected:
 	//максимальный размер очереди, которой можно стрельнуть
@@ -159,6 +166,14 @@ protected:
 	xr_vector<s8>	m_aFireModes;
 	s8				m_iCurFireMode;
 	s8				m_iPrevFireMode;
+	// автоаим
+	u32				m_autoaim_time;
+	LPCSTR			m_autoaim_modes;
+	BOOL			m_autoaim_only_alive;
+	BOOL			m_autoaim_ignore_dead;
+	BOOL			m_autoaim_shot_after_key_released;
+	int				m_autoaim_valid_time;
+	BOOL			m_autoaim_shot_cancellation;
 
 	//переменная блокирует использование
 	//только разных типов патронов

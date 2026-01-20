@@ -640,6 +640,9 @@ void CWeapon::Load		(LPCSTR section)
 
 	m_bGaussScheme = !!READ_IF_EXISTS(pSettings, r_bool, section, "use_gauss_scheme", false);
 
+	m_bullet_point_offset_hud = READ_IF_EXISTS(pSettings, r_float, section, "bullet_point_offset_hud", -1.0f);
+	m_bullet_point_offset_world = READ_IF_EXISTS(pSettings, r_float, section, "bullet_point_offset_world", -0.3f);
+
 	m_bAmmoInChamber = READ_IF_EXISTS(pSettings, r_bool, section, "ammo_in_chamber", false);
 	m_bHideColimSightInAlter = READ_IF_EXISTS(pSettings, r_bool, section, "hide_collimator_sights_in_alter_zoom", true);
 	

@@ -818,7 +818,7 @@ bool CWeapon::install_upgrade_scope_zoom(LPCSTR section, bool test)
 	}
 	result |= result2;
 
-	result2 = process_if_exists_set(section, "steps_brightness", &CInifile::r_float, value, test);
+	result2 = process_if_exists_set(section, "jitter_brightness", &CInifile::r_float, value, test);
 	if (result2 && !test)
 	{
 		m_lens_night_brightness.jitter = value;
