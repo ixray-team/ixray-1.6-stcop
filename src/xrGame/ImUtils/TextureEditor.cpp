@@ -163,6 +163,7 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 
 					if (is_dds)
 					{
+						g_imgui_texture_editor.wt_current_analyzing_texture = fn;
 						CImGuiTextureEditor::STextureEntry entry;
 						entry.analyze_status_result_flags = 0;
 
@@ -282,7 +283,7 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 					}
 				});
 
-			if(!g_imgui_texture_editor.textures.empty())
+			if (!g_imgui_texture_editor.textures.empty())
 			{
 				std::sort(g_imgui_texture_editor.textures.begin(),
 					g_imgui_texture_editor.textures.end(),
@@ -293,7 +294,6 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 				g_imgui_texture_editor.filter_query.resize(g_imgui_texture_editor.textures.size());
 				for (u32 i = 0; i < g_imgui_texture_editor.textures.size(); ++i)
 					g_imgui_texture_editor.filter_query[i] = i;
-				g_imgui_texture_editor.wt_current_analyzing_texture = g_imgui_texture_editor.textures.back().path;
 			}
 
 			g_imgui_texture_editor.total_textures_in_folder = g_imgui_texture_editor.textures.size();
@@ -340,6 +340,7 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 
 			R_ASSERT(std::string_view(tex.path).empty() == false);
 			R_ASSERT(std::string_view(tex.filename).empty() == false);
+			R_ASSERT(g_imgui_texture_editor.is_preview_tooltip_image_loaded == false && "logic execution is corrupted, expected false. Debug your code");
 
 			string_path subpath;
 
@@ -353,6 +354,8 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 
 				std::sprintf(subpath, "%s", builder.string().c_str());
 			}
+
+			g_imgui_texture_editor.current_tooltip_texture_filename = tex.filename;
 
 			u32 tex_size = 0;
 			IRHISurface* pSurface = Render->load_texture(subpath, tex_size);
@@ -971,7 +974,7 @@ void RenderTextureEditor()
 							checkbox_about_treat_settings_was_updated = true;
 						}
 					}
-					 
+
 					{
 						char checkbox_notevendimensions_name[32];
 						std::sprintf(checkbox_notevendimensions_name, "Treat %s as invalid", _kNotEvenDimensions.data());
@@ -1166,6 +1169,13 @@ void RenderTextureEditor()
 
 											ImGui::TableNextRow();
 
+											if (g_imgui_texture_editor.current_tooltip_texture_filename != texture.filename)
+											{
+												g_imgui_texture_editor.is_preview_tooltip_image_load_started = false;
+												g_imgui_texture_editor.is_preview_tooltip_image_loaded = false;
+												g_imgui_texture_editor.is_metadata_tooltip_loaded = false;
+											}
+
 											for (u32 column_tt = 0; column_tt < _kColumnsSizeTooltipTable; ++column_tt)
 											{
 												ImGui::TableSetColumnIndex((int)column_tt);
@@ -1199,6 +1209,8 @@ void RenderTextureEditor()
 #if 1
 													if (g_imgui_texture_editor.is_preview_tooltip_image_loaded)
 													{
+														R_ASSERT(g_imgui_texture_editor.current_tooltip_texture_filename.empty() == false && "can't be report to developers");
+
 														DrawPreview(g_imgui_texture_editor.pTexturePreview, g_imgui_texture_editor.pTexturePreviewSRV);
 													}
 													else
