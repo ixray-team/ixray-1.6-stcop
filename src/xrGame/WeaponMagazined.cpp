@@ -29,6 +29,9 @@
 #endif
 #include "../xrScripts/script_callback_ex.h"
 #include "../xrEngine/xr_input.h"
+#include "HUDManager.h"
+#include "ai/crow/ai_crow.h"
+#include "ai/monsters/bloodsucker/bloodsucker.h"
 
 CUIXml* pWpnScopeXml = nullptr;
 
@@ -52,6 +55,7 @@ CWeaponMagazined::CWeaponMagazined()
 	m_iQueueSize				= WEAPON_ININITE_QUEUE;
 	m_bLockType					= false;
 	bMisfireReload				= false;
+	m_autoaim_valid_time		= 0;
 }
 
 CWeaponMagazined::~CWeaponMagazined()
@@ -91,6 +95,14 @@ void CWeaponMagazined::Load(LPCSTR section)
 		m_aFireModes.push_back(1);
 		m_iCurFireMode = 1;
 	}
+
+	m_autoaim_time = iFloor(READ_IF_EXISTS(pSettings, r_u32, section, "autoaim_time", 0)*1000);	
+	m_autoaim_modes = READ_IF_EXISTS(pSettings, r_string, section, "autoaim_modes", "");
+	m_autoaim_only_alive = READ_IF_EXISTS(pSettings, r_bool, section, "autoaim_only_alive", false);
+	m_autoaim_ignore_dead = READ_IF_EXISTS(pSettings, r_bool, section, "autoaim_ignore_dead", false);
+	m_autoaim_shot_after_key_released = READ_IF_EXISTS(pSettings, r_bool, section, "autoaim_shot_after_key_released", false);
+	m_hud_recalc_koef = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_recalc_koef", 1.0f);
+	m_autoaim_shot_cancellation = READ_IF_EXISTS(pSettings, r_bool, section, "autoaim_shot_cancellation", false);
 
 	LoadSilencerKoeffs();
 }
@@ -1164,6 +1176,205 @@ void CWeaponMagazined::UpdateSounds	()
 	}
 }
 
+int CWeaponMagazined::GetAutoAimPeriod()
+{
+	xr_string modes = m_autoaim_modes;
+	LPCSTR mode = "";
+	if (GetQueueSize() >= 0)
+	{
+		mode = std::to_string(GetQueueSize()).c_str();
+	}
+	else
+	{
+		mode = "a";
+	}
+
+	if (modes.find(mode) != xr_string::npos)
+	{
+		return m_autoaim_time;
+	}
+	else
+	{
+		return 0;
+	}
+}
+void CWeaponMagazined::CorrectDirFromWorldToHud(Fvector3& dir, Fvector3& pos, float k)
+{
+	Fvector3 tmp = Device.vCameraDirection;
+	float m = k * g_base_fov / GetHudFov();
+	dir.sub(tmp);
+	dir.mul(m);
+	dir.add(tmp);
+	dir.normalize();
+}
+
+void CWeaponMagazined::CorrectShooting(Fvector3 &pos, Fvector3 dir)
+{
+	Fvector3 olddir = dir;
+	if (H_Parent()->cast_actor()->inventory().ActiveItem() == this && HudItemData())
+	{
+		olddir.mul(m_bullet_point_offset_hud);
+	}
+	else
+	{
+		olddir.mul(m_bullet_point_offset_world);
+	}
+	pos.add(olddir);
+	Fvector3 oldpos = pos;
+	olddir = dir;
+	H_Parent()->cast_entity()->g_fireParams(this, pos, dir);
+	if (oldpos == pos && olddir == dir)
+	{
+		return;
+	}
+
+	if ((H_Parent()->cast_actor()) && m_bIsAimStarted /*&& !IsActorControlled() */)
+	{
+		//Актор в режиме прицеливания - стреляем из центра экрана
+		Fvector3 campos = Device.vCameraPosition;
+		Fvector3 camdir = Device.vCameraDirection;
+		dir = camdir;
+		pos = campos;
+	}
+	else if (H_Parent()->cast_actor() && (!m_bIsAimStarted /* && (buf.IsLaserInstalled() && buf.IsLaserEnabled())*/ || (g_SingleGameDifficulty >= egdVeteran) /*|| IsRealBallistics()  || IsActorControlled()*/))
+	{
+		pos=oldpos;
+		dir=olddir;
+		//вид от 1-го лица, лазер/контроль... короче, стреляем туда, куда показывает оружие
+		CorrectDirFromWorldToHud(dir, pos, m_hud_recalc_koef);
+	}
+	else
+	{
+		collide::ray_defs rd(pos, dir, 1000.f, CDB::OPT_CULL, collide::rqtBoth);
+		float dist = HUD().GetCurrentRayQuery().range;
+		dir.mul(dist);
+		pos.add(dir); //в pos - точка попадания
+
+		//если точка попадания лежит ближе, чем точка вылета - все плохо, пойдет стрельба сквозь стену
+
+	    //выставляем стартовую точку в FirePoint, а полет направим в вычисленную новую точку
+	    pos.sub(oldpos);
+	    pos.normalize();
+		dir = pos;
+		pos = oldpos;
+	}
+}
+
+bool is_visible_by_thermovisor(CObject* pointer)
+{
+	if (smart_cast<CAI_Crow*>(pointer))
+	{
+		return true;
+	}
+
+	if (smart_cast<CAI_Bloodsucker*>(pointer))
+	{
+		return false;
+	}
+
+	return pointer->cast_entity_alive();
+}
+
+bool CWeaponMagazined::IsShotNeededNow()
+{
+	bool result = true;
+	if (!IsZoomed())
+	{
+		return result;
+	}
+	int aimperiod = GetAutoAimPeriod();
+	if (aimperiod == 0)
+	{
+		return result;
+	}
+	Fvector3 pos = get_LastFP();
+	Fvector3 dir = get_LastFD();
+	if (H_Parent())
+	{
+		CorrectShooting(pos, dir);
+	}
+
+	collide::rq_result rqr;
+	bool is_aim_exist = Level().ObjectSpace.RayPick(pos, dir, 1000.f, collide::rqtObject, rqr, H_Parent());
+	
+	if (!is_visible_by_thermovisor(rqr.O) && m_autoaim_only_alive)
+	{
+		is_aim_exist = false;
+	}
+
+	CEntity* entity = rqr.O->cast_entity();
+	if (is_aim_exist && m_autoaim_ignore_dead && !entity->GetfHealth())
+	{
+		is_aim_exist = false;
+	}
+
+	if (aimperiod > 0)
+	{
+		if (m_autoaim_shot_after_key_released)
+		{
+			// Схема с выстрелом после отпускания кнопки - в каждом апдейте выставляем дельту заново
+			if (GetState() == eFire)
+			{
+				SetAutoAimStartTime(Device.dwTimeGlobal);
+			}
+		}
+		else if (GetAutoAimStartTime() == 0)
+		{
+			//схема с отложенным выстрелом - еще не стартовали.
+			SetAutoAimStartTime(Device.dwTimeGlobal);
+		}
+		result = is_aim_exist || (Device.dwTimeGlobal - GetAutoAimStartTime()) >= GetAutoAimPeriod();
+
+		if (result)
+		{
+			SetAutoAimStartTime(0);
+		}
+		else if (fShotTimeCounter <= 0)
+		{
+			//не даем выйти из состояния shoot
+			fShotTimeCounter = 0;
+		};
+	}
+	else
+	{
+		//схема с отменой выстрела
+		result = is_aim_exist;
+		if (!result)
+		{
+			if (m_autoaim_shot_cancellation)
+			{
+				//У нас автоматический предохранитель, прекращаем стрельбу
+				fShotTimeCounter = -1;
+			}
+			else if (GetState() == eFire)
+			{
+				//У нас система непрерывного автоспуска, не даем выйти из состояния shoot
+				if (fShotTimeCounter <= 0)
+				{
+					fShotTimeCounter = 0;
+				}
+			} 
+			else
+			{
+				//стрелять уже не надо
+				fShotTimeCounter = -1;
+			}
+		}
+	}
+
+	if (!result && H_Parent()->cast_actor())
+	{
+		if (H_Parent()->cast_actor()->GetMovementState(eOld) && H_Parent()->cast_actor()->GetMovementState(eReal))
+		{
+			SwitchState(eIdle);
+			PlayAnimIdle();
+			SwitchState(eFire);
+		}
+	}
+
+	return result;
+}
+
 void CWeaponMagazined::state_Fire(float dt)
 {
 	if(iAmmoElapsed > 0)
@@ -1210,7 +1421,6 @@ void CWeaponMagazined::state_Fire(float dt)
 			StopShooting();
 			return;
 		}
-
 		entity->g_fireParams	(this, p1,d);
 
 		if( !entity->g_stateFire() )
@@ -1502,6 +1712,12 @@ void CWeaponMagazined::SelectShotSound()
 
 void CWeaponMagazined::OnShot()
 {
+	if (!IsShotNeededNow())
+	{
+		StopShooting();
+		return;
+	}
+
 	SelectShotSound();
 
 	ApplyPattern();
@@ -3301,9 +3517,28 @@ bool CWeaponMagazined::install_upgrade_impl(LPCSTR section, bool test)
 
 	result |= process_if_exists_set(section, "base_dispersioned_bullets_count", &CInifile::r_s32, m_iBaseDispersionedBulletsCount, test);
 	result |= process_if_exists_set(section, "base_dispersioned_bullets_speed", &CInifile::r_float, m_fBaseDispersionedBulletsSpeed, test);
+	result |= process_if_exists_set(section, "autoaim_only_alive", &CInifile::r_bool, m_autoaim_only_alive, test);
+	result |= process_if_exists_set(section, "autoaim_ignore_dead", &CInifile::r_bool, m_autoaim_ignore_dead, test);
+	result |= process_if_exists_set(section, "autoaim_shot_after_key_released", &CInifile::r_bool, m_autoaim_shot_after_key_released, test);
+	result |= process_if_exists_set(section, "autoaim_shot_cancellation", &CInifile::r_bool, m_autoaim_shot_cancellation, test);
 
 	result2 = process_if_exists_set(section, "snd_draw", &CInifile::r_string, str, test);
 	if (result2 && !test) { m_sounds.LoadSound(section, "snd_draw", "sndShow", false, m_eSoundShow); }
+	result |= result2;
+
+	result2 = process_if_exists_set(section, "autoaim_modes", &CInifile::r_string, str, test);
+	if (result2 && !test) 
+	{ 
+		m_autoaim_modes = str; 
+	}
+	result |= result2;
+
+	u32 val = 0;
+	result2 = process_if_exists_set(section, "autoaim_time", &CInifile::r_u32, val, test);
+	if (result2 && !test)
+	{
+		m_autoaim_time = val;
+	}
 	result |= result2;
 
 	result2 = process_if_exists_set(section, "snd_holster", &CInifile::r_string, str, test);
