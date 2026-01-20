@@ -7,7 +7,7 @@
 		<text>Бонус за КПК</text>
 	</string>
 	<string id="st_drink">
-		<text>Выпить</text>
+		<text>выпить</text>
 	</string>
 	<string id="st_mp_direct_ip">
 		<text>Прямой IP</text>
@@ -28,7 +28,7 @@
 		<text>Рендер-2</text>
 	</string>
 	<string id="ui_pda_details">
-		<text>Детали</text>
+		<text># /детали</text>
 	</string>
 	<string id="ui_st_btn_cancel">
 		<text>Отмена</text>
@@ -58,7 +58,7 @@
 		<text>Ошибка соединения: сервер заполнен</text>
 	</string>
 	<string id="ui_st_days">
-		<text>Дни</text>
+		<text>дн.</text>
 	</string>
 	<string id="ui_st_error">
 		<text>Ошибка</text>
@@ -70,22 +70,22 @@
 		<text>Имя файла пустое</text>
 	</string>
 	<string id="ui_st_hours">
-		<text>Часы</text>
+		<text>час.</text>
 	</string>
 	<string id="ui_st_leave">
 		<text>Уйти</text>
 	</string>
 	<string id="ui_st_mins">
-		<text>Минуты</text>
+		<text>мин.</text>
 	</string>
 	<string id="ui_st_months">
-		<text>Месяцы</text>
+		<text>мес.</text>
 	</string>
 	<string id="ui_st_params">
 		<text>Параметры</text>
 	</string>
 	<string id="ui_st_secs">
-		<text>Секунды</text>
+		<text>сек.</text>
 	</string>
 	<string id="ui_st_select_one_map">
 		<text>Пожалуйста, выберите хотя бы одну карту</text>
