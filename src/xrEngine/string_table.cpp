@@ -397,6 +397,10 @@ STRING_VALUE CStringTable::translate (const STRING_ID& str_id) const
 STRING_VALUE CStringTable::ParseStringFromScript(STRING_ID input)
 {
 	xr_string out = "";
+	if (!input.size())
+	{
+		return STRING_VALUE(out.c_str());
+	}
 	std::stringstream stringStream(input.c_str());
 	xr_string line;
 	while (std::getline(stringStream, line))
