@@ -148,6 +148,15 @@ namespace PAPI
 						case PAVortexID:    		PA = new PAVortex();			break;
 						case PATurbulenceID:		PA = new PATurbulence();		break;
 						case PAScatterID:  			PA = new PAScatter();			break;
+						case PABindVelocityValueID: PA = new PABindVelocityValue();			break;
+						case PABindRotationValueID: PA = new PABindRotationValue();			break;
+						case PABindSizeValueID:  	PA = new PABindSizeValue();			break;
+						case PABindColorValueID:  	PA = new PABindColorValue();			break;
+						case PABindColorAlphaID:  	PA = new PABindColorAlpha();			break;
+						case PAColorAnimatorID:  	PA = new PAColorAnimator();			break;
+						case PASizeAnimatorID:  	PA = new PASizeAnimator();			break;
+						case PAVelocityAnimatorID:  PA = new PAVelocityAnimator();			break;
+						case PAVelocityRotationAnimatorID: PA = new PAVelocityRotationAnimator();	break;
 						default: NODEFAULT;
 					}
 					R_ASSERT(PA);
