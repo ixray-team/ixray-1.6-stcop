@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+﻿#include "StdAfx.h"
 
 #include "ImUtils.h"
 #include "../xrEngine/xr_input.h"
@@ -526,4 +526,93 @@ void AllEditors_OnReleased(int key)
 		return;
 
 	//...
+}
+
+#include "imgui_internal.h"
+void CImGuiTextureEditor::SImGuiWindowState::Capture(const char* windowName)
+{
+	ImGuiWindow* w = ImGui::FindWindowByName(windowName);
+	if (!w) return;
+
+	if (canApply)
+		return;
+
+	canApply = true;
+
+	pos = w->Pos;
+	size = w->Size;
+
+	ImGuiDockNode* node = w->DockNode;
+	wasDocked = (node != nullptr);
+	isCentralNode = false;
+	dockDir = ImGuiDir_None;
+
+	if (!node) return;
+
+	/* If the node has no parent it is the root (central) node */
+	ImGuiDockNode* parent = node->ParentNode;
+	if (!parent)
+	{
+		isCentralNode = true;
+		return;
+	}
+
+	/* Otherwise we are one of the two children of a split node.
+	   SplitAxis tells us which axis the parent was split on. */
+	ImGuiAxis axis = parent->SplitAxis;   // ImGuiAxis_X  -> horizontal split
+	// ImGuiAxis_Y  -> vertical split
+
+/* ChildNodes[0] is always the “leading”  child (left / top)
+   ChildNodes[1] is always the “trailing” child (right / bottom) */
+	if (parent->ChildNodes[0] == node)
+		dockDir = (axis == ImGuiAxis_X) ? ImGuiDir_Left : ImGuiDir_Up;
+	else
+		dockDir = (axis == ImGuiAxis_X) ? ImGuiDir_Right : ImGuiDir_Down;
+}
+
+void CImGuiTextureEditor::SImGuiWindowState::Apply(const char* windowName)
+{
+	if (canApply == false)
+		return;
+
+	canApply = false;
+
+	if (pos.x != FLT_MAX)  // we have a saved floating position
+	{
+		ImGui::SetNextWindowPos(pos, ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSize(size, ImGuiCond_FirstUseEver);
+	}
+
+	if (wasDocked)
+	{
+		// Build a persistent dock-space if you do not have one yet:
+		ImGuiID dockspaceId = ImGui::GetID("MyDockSpace");
+		if (!ImGui::DockBuilderGetNode(dockspaceId))
+		{
+			ImGui::DockBuilderAddNode(dockspaceId, ImGuiDockNodeFlags_DockSpace);
+			ImGui::DockBuilderSetNodeSize(dockspaceId, ImGui::GetMainViewport()->Size);
+			ImGui::DockBuilderFinish(dockspaceId);
+		}
+
+		// Re-dock the window into the same node (left/right/top/bottom/central)
+		ImGuiID targetId = dockspaceId;
+
+		if (!isCentralNode && dockDir != ImGuiDir_None)
+		{
+			// split the root once in the remembered direction
+			ImGuiID central = 0;
+			ImGuiID side = 0;
+			ImGui::DockBuilderSplitNode(dockspaceId, dockDir, 0.35f, &side, &central);
+			targetId = side;
+		}
+
+		ImGui::SetNextWindowDockID(targetId, ImGuiCond_FirstUseEver);
+	}
+
+	ImGuiWindow* w = ImGui::FindWindowByName(windowName);
+	
+	if (w)
+	{
+		ImGui::FocusWindow(w);
+	}
 }
