@@ -172,7 +172,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
 			// Load and get header
 			reader = FS.r_open(fn);
 #ifdef DEBUG
-			Msg("* Loaded: %s[%d]b", fn, reader->length());
+			Msg("* Loaded: %s[%d]", fn, reader->length());
 #endif // DEBUG
 			img_size = reader->length();
 			R_ASSERT(reader);
