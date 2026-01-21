@@ -6,7 +6,7 @@
 //
 // Copyright 2005 GSC Game World
 
-#include "StdAfx.h"
+#include "stdafx.h"
 
 #include "UILines.h"
 #include "UIXmlInit.h"
@@ -142,6 +142,7 @@ void CUILines::ParseText(bool force)
 	BOOL bNewLines = FALSE;
 
 	if (uFlags.test(flRecognizeNewLine))
+	{
 		if (m_pFont->IsMultibyte())
 		{
 			CUILine* ptmp_line = new CUILine();
@@ -173,6 +174,7 @@ void CUILines::ParseText(bool force)
 		{
 			line->ProcessNewLines();
 		}
+	}
 
 	if (m_pFont->IsMultibyte()) {
 #define UBUFFER_SIZE 100
@@ -228,6 +230,7 @@ void CUILines::ParseText(bool force)
 		u32 sbl_cnt = (int)line->m_subLines.size();
 		CUILine									tmp_line;
 		string4096								buff;
+		bool has_space_from_prev = false;
 		float curr_width = 0.0f;
 		float __eps = get_str_width(m_pFont, '1');//hack -(
 		for (u32 sbl_idx = 0; sbl_idx < sbl_cnt; ++sbl_idx)
@@ -254,38 +257,58 @@ void CUILines::ParseText(bool force)
 				bool b_last_ch = (idx == sub_len - 1);
 
 				if (isspace(sbl.m_text[idx]))
+				{
+					has_space_from_prev = false;
 					last_space_idx = idx;
+				}
 
 				float w1 = get_str_width(m_pFont, utf16text != nullptr ? utf16text[idx] : sbl.m_text[idx]);
 				bool bOver = (curr_width + w1 + __eps > max_width);
 
 				if (bOver || b_last_ch)
 				{
-					if (last_space_idx && !b_last_ch)
+					bool HandleWrapFromStart = false;
+					// if we have last_space_idx != 0, we have an index of last space in this substring
+					// BUT if we have last_space_idx == 0, we maybe have a space from previous substring from this line!
+					if ((last_space_idx || has_space_from_prev) && !b_last_ch)
 					{
+						HandleWrapFromStart = has_space_from_prev;
+						has_space_from_prev = false;
 						idx = last_space_idx;
 						last_space_idx = 0;
 					}
+					if (!HandleWrapFromStart)
+					{
 #ifdef IXR_WINDOWS
-					if (utf16text != nullptr)
-					{
-						wchar_t tempbuff[4096] = {};
-						wcsncpy_s(tempbuff, sizeof(buff), utf16text + curr_w_pos, idx - curr_w_pos + 1);
+						if (utf16text != nullptr)
+						{
+							wchar_t tempbuff[4096] = {};
+							wcsncpy_s(tempbuff, sizeof(buff), utf16text + curr_w_pos, idx - curr_w_pos + 1);
 
-						xr_string ValidUTF8Text = Platform::CP_TCHAR_TO_ANSI_U8(tempbuff);
-						strcpy(buff, ValidUTF8Text.c_str());
-					}
-					else
+							xr_string ValidUTF8Text = Platform::CP_TCHAR_TO_ANSI_U8(tempbuff);
+							strcpy(buff, ValidUTF8Text.c_str());
+						}
+						else
 #endif
+						{
+							strncpy_s(buff, sizeof(buff), sbl.m_text.c_str() + curr_w_pos, idx - curr_w_pos + 1);
+						}
+						tmp_line.AddSubLine(buff, sbl.m_color);
+						curr_w_pos = idx + 1;
+					} else
 					{
-						strncpy_s(buff, sizeof(buff), sbl.m_text.c_str() + curr_w_pos, idx - curr_w_pos + 1);
+						buff[0] = '\0';
+						tmp_line.AddSubLine(buff, sbl.m_color);
 					}
-					tmp_line.AddSubLine(buff, sbl.m_color);
-					curr_w_pos = idx + 1;
 				}
 				else
 				{
 					curr_width += w1;
+				}
+
+				if (b_last_ch)
+				{
+					has_space_from_prev = idx == last_space_idx;
 				}
 
 				if (bOver || (b_last_ch && sbl.m_last_in_line))
