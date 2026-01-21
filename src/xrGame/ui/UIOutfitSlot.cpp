@@ -9,7 +9,6 @@
 CUIOutfitDragDropList::CUIOutfitDragDropList()
 {
 	m_background				= new CUI3dStatic();
-	//m_background->SetVisual(Actor()->Visual());
 	m_background->SetAutoDelete	(true);
 	AttachChild					(m_background);
 	m_default_outfit			= "npc_icon_without_outfit";
@@ -84,6 +83,8 @@ void CUIOutfitDragDropList::SetOutfit(CUICellItem* itm)
 		*/
 	}
 
+	m_background->SetVisual(Actor()->Visual());
+	m_background->SetXYZ(0, 3, 0);
 	m_background->TextureOn				();
 //	m_background->RescaleRelative2Rect	(r);
 }
