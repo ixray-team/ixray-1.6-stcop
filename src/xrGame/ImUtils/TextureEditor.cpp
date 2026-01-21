@@ -133,6 +133,7 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 			g_imgui_texture_editor.filter_query.clear();
 
 			g_imgui_texture_editor.valid_count = 0;
+			g_imgui_texture_editor.current_analyzed_count = 0;
 			g_imgui_texture_editor.total_textures_in_folder = 0;
 			g_imgui_texture_editor.total_thm_in_folder = 0;
 			g_imgui_texture_editor.total_seq_in_folder = 0;
@@ -245,8 +246,10 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 							if (mt.mipmap_count == 1)
 								entry.analyze_status_result_flags |= CImGuiTextureEditor::eAnalyzedStatus::kNoMipMaps;
 						}
-						//else
-						//	texture_metadata not loaded :(
+						else
+						{
+							entry.analyze_status_result_flags |= CImGuiTextureEditor::eAnalyzedStatus::kInvalidMetadata;
+						}
 
 						g_imgui_texture_editor.textures.push_back(std::move(entry));
 						g_imgui_texture_editor.current_analyzed_count++;
@@ -854,6 +857,9 @@ void RenderTextureEditor()
 			SRequestData{.editor_type = u32(eImGuiEditorType::kTextureEditor), .request_type = u32(CImGuiTextureEditor::eRequestType::kReadAll)}
 			});
 
+		g_imgui_texture_editor.window_selected_name[0] = 0;
+		std::strcat(g_imgui_texture_editor.window_selected_name, "Selected##TE");
+
 		g_imgui_texture_editor.is_init = true;
 	}
 
@@ -1116,7 +1122,7 @@ void RenderTextureEditor()
 
 										if (ImGui::Selectable(sel_name, selected_status))
 										{
-											g_imgui_texture_editor.window_selected_name[0] = 0;
+											//g_imgui_texture_editor.window_selected_name[0] = 0;
 											g_imgui_texture_editor.selected_index = g_imgui_texture_editor.filter_query[row];
 
 											g_imgui_texture_editor.is_selected_metadata_loaded = false;
@@ -1141,11 +1147,13 @@ void RenderTextureEditor()
 
 											AllEditors_SendRequest(req);
 
-											std::strcat(g_imgui_texture_editor.window_selected_name, "Selected - ");
+											g_imgui_texture_editor.last_window_selected_state.Capture(g_imgui_texture_editor.window_selected_name);
 
-											std::filesystem::path temp = g_imgui_texture_editor.textures[g_imgui_texture_editor.filter_query[row]].path;
+										//	std::strcat(g_imgui_texture_editor.window_selected_name, "Selected");
 
-											std::strcat(g_imgui_texture_editor.window_selected_name, temp.filename().string().c_str());
+										//	std::filesystem::path temp = g_imgui_texture_editor.textures[g_imgui_texture_editor.filter_query[row]].path;
+
+										//	std::strcat(g_imgui_texture_editor.window_selected_name, temp.filename().string().c_str());
 										}
 
 										if (ImGui::BeginItemTooltip())
@@ -1351,13 +1359,17 @@ void RenderTextureEditor()
 				}
 				else
 				{
-					ImGui::Text("Preparing...");
-					ImGui::Text("Found: [%s]", g_imgui_texture_editor.wt_current_analyzing_texture.data());
+					char progressbar_content[32];
+					std::sprintf(progressbar_content, "%d/%d",
+						g_imgui_texture_editor.current_analyzed_count.load(), 
+						g_imgui_texture_editor.total_textures_in_folder.load()
+					);
+					float progress = float(g_imgui_texture_editor.current_analyzed_count.load()) / float(g_imgui_texture_editor.total_textures_in_folder.load());
+					clamp(progress, 0.0f, 1.0f);
+					ImGui::ProgressBar(progress, ImVec2(0.0f, 0.0f), progressbar_content);
 
-					float a = g_imgui_texture_editor.current_analyzed_count.load();
-					float b = g_imgui_texture_editor.total_textures_in_folder.load();
-					if(a && b)
-                        ImGui::Text("%d%%", (int)(a / b * 100));
+					ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
+					ImGui::Text("[%s]", g_imgui_texture_editor.wt_current_analyzing_texture.data());
 				}
 
 				ImGui::EndTabItem();
@@ -1388,10 +1400,12 @@ void RenderTextureEditor()
 
 	if (g_imgui_texture_editor.selected_index != _kInvalidSelectedID)
 	{
+		g_imgui_texture_editor.last_window_selected_state.Apply(g_imgui_texture_editor.window_selected_name);
+
 		if (ImGui::Begin(g_imgui_texture_editor.window_selected_name, 0, ImGuiWindowFlags_AlwaysAutoResize))
 		{
 			using texture_t = CImGuiTextureEditor::STextureEntry;
-
+		
 			const texture_t& selected = g_imgui_texture_editor.textures[g_imgui_texture_editor.selected_index];
 
 
@@ -1480,20 +1494,30 @@ void RenderTextureEditor()
 
 					if (g_imgui_texture_editor.is_selected_metadata_loaded)
 					{
-						ImGui::Text("Width: %d", g_imgui_texture_editor.selected_metadata.width);
-						ImGui::Text("Height: %d", g_imgui_texture_editor.selected_metadata.height);
-						ImGui::Text("MipMap Count: %d", g_imgui_texture_editor.selected_metadata.mipmap_count);
+						bool is_invalid_metadata = ((selected.analyze_status_result_flags & CImGuiTextureEditor::eAnalyzedStatus::kInvalidMetadata) == CImGuiTextureEditor::eAnalyzedStatus::kInvalidMetadata);
 
-						if (GRHI->APILevel == D3D9 || GRHI->APILevel == D3D11)
+						if (is_invalid_metadata)
 						{
-#ifdef IXR_WINDOWS
-							xr_string_view casted_enum = magic_enum::enum_name((DXGI_FORMAT)g_imgui_texture_editor.selected_metadata.format);
-							ImGui::Text("Format: %s", casted_enum.data());
-#endif
+							R_ASSERT(false && "report to developers!");
+							ImGui::TextColored(ImVec4(1.0f, 0.1f, 0.1f, 1.0f), "FAILED TO LOAD METADATA, REPORT TO DEVELOPERS!");
 						}
 						else
 						{
-							R_ASSERT(false, "todo: others -> provide implemenetation");
+							ImGui::Text("Width: %d", g_imgui_texture_editor.selected_metadata.width);
+							ImGui::Text("Height: %d", g_imgui_texture_editor.selected_metadata.height);
+							ImGui::Text("MipMap Count: %d", g_imgui_texture_editor.selected_metadata.mipmap_count);
+
+							if (GRHI->APILevel == D3D9 || GRHI->APILevel == D3D11)
+							{
+#ifdef IXR_WINDOWS
+								xr_string_view casted_enum = magic_enum::enum_name((DXGI_FORMAT)g_imgui_texture_editor.selected_metadata.format);
+								ImGui::Text("Format: %s", casted_enum.data());
+#endif
+							}
+							else
+							{
+								R_ASSERT(false, "todo: others -> provide implemenetation");
+							}
 						}
 					}
 					else

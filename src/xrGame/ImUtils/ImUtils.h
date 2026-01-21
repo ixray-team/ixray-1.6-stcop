@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "../xrCore/clsid.h"
 
@@ -400,7 +400,8 @@ struct CImGuiTextureEditor
 		kTHMIsNotValid = 1 << 3,
 		kDimensionsNotPowerOf2 = 1 << 4,
 		kNoMipMaps = 1 << 5,
-		kIgnoreTHM = 1 << 6
+		kIgnoreTHM = 1 << 6,
+		kInvalidMetadata = 1 << 7
 	};
 
 	enum class eRequestType
@@ -464,6 +465,21 @@ struct CImGuiTextureEditor
 		bool treat_nothasthm_as_invalid = false;
 	};
 
+	// todo: if it can be generalized then remove from CImGuiTextureEditor scope and make it 'publically' accessible
+	struct SImGuiWindowState
+	{
+		bool canApply = false;
+		bool    wasDocked = false;
+		bool    isCentralNode = false;
+
+		ImVec2  pos = { FLT_MAX, FLT_MAX };  
+		ImVec2  size = { 0,0 };
+		ImGuiDir dockDir = ImGuiDir_None;
+                 
+		void Capture(const char* windowName);
+		void Apply(const char* windowName);
+	};
+
 	bool is_init = false;
 	// written on wt side
 	bool is_all_analyzed = false;
@@ -481,20 +497,18 @@ struct CImGuiTextureEditor
 	bool is_metadata_tooltip_loaded = false;
 	bool is_preview_tooltip_image_loaded = false;
 	bool is_preview_tooltip_image_load_started = false;
+	u8 search_frame_count = 0;
 
 	RHITextureMetadata selected_metadata;
 	RHITextureMetadata tooltip_metadata;
+	SImGuiWindowState last_window_selected_state;
+	u32 selected_index = u32(-1);
+	u32 hovered_tooltip_index = u32(-1);
 	IRHISurface* pTexturePreview = nullptr;
 	IRHIShaderResourceView* pTexturePreviewSRV = nullptr;
 	IRHISurface* pTextureSelected = nullptr;
 	IRHIShaderResourceView* pTextureSelectedSRV = nullptr;
 	STextureParams* pTHMSelected = nullptr;
-
-
-	u8 search_frame_count = 0;
-
-	u32 selected_index = u32(-1);
-	u32 hovered_tooltip_index = u32(-1);
 
 	std::atomic<u32> current_analyzed_count = 0;
 	std::atomic<u32> total_textures_in_folder = 0;
