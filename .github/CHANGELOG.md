@@ -4,7 +4,41 @@ English | [Русский](../doc/CHANGELOG.rus.md)
 
 Full changelog of _IX-Ray_ 1.6 project
 
-## Release 1.3.2 (January 2025)
+## Release 1.3.3 (January 2026)
+
+### Common
+
+- Updated root documents (@Drombeys)
+
+### Engine
+
+- Added `log1` function for script message output to log (@MAYLAYSHEZ)
+- Added security check for `CScriptEntity::vfUpdateSounds()` method (@Drombeys)
+- Centralized IK calculation in one place (@v2v3v4)
+- Disabled by force fixed objects (@v2v3v4)
+- Fixed comma-separated OMF animation mask reading (@Drombeys)
+- Set main menu FPS lock to 120 (@MAYLAYSHEZ)
+
+### Graphics
+
+- Fixed typo in texture loading message (@Drombeys)
+- Fixed wallmark display (@Drombeys)
+- Improved light source testing on sectors and portals (@v2v3v4)
+
+### Gameplay
+
+- Fixed restrictor triggers when legs are enabled (@v2v3v4)
+- Fixed weapon data cleaning implementation (@Shtrecker)
+- Refactored first-person leg code (@v2v3v4)
+- Reworked booster system functionality (@Shtrecker)
+
+### Toolchain
+
+- Fixed numeric issues in Editors (@ForserX)
+- Fixed UI/UX issues in Level Editor (@ForserX)
+- Restored auto-mod selection feature (@ForserX)
+
+## Release 1.3.2 (January 2026)
 
 ### Common
 
