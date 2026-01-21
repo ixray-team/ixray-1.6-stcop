@@ -85,6 +85,13 @@ void UIPACEditorForm::DrawCurves()
 	static ImPlotSubplotFlags flags = ImPlotSubplotFlags_ShareItems|ImPlotSubplotFlags_NoLegend;
 	static float rratios[] = {5,1};
 	static float cratios[] = {1};
+	static struct DrawAxisData
+	{
+		bool R = true;
+		bool G = true;
+		bool B = true;
+		bool A = true;
+	} DrawData;
 	float MaxTime = EditedPAC->GetMaxTime();
 	if (fis_zero(MaxTime))
 	{
@@ -138,6 +145,18 @@ void UIPACEditorForm::DrawCurves()
 		keys_x[NewIndex] = dkeys_x[NewIndex].Value;
 		SelectedKeyframeIndex = NewIndex;
 	};
+	{
+		ImGui::PushID("AxisSwitch");
+#define DrawAxisSwitch(X, sameline) \
+		ImGui::Checkbox(#X, &DrawData.##X); \
+		if constexpr(sameline){ ImGui::SameLine(); }
+		DrawAxisSwitch(R, true);
+		DrawAxisSwitch(G, true);
+		DrawAxisSwitch(B, true);
+		DrawAxisSwitch(A, false);
+#undef DrawAxisSwitch
+		ImGui::PopID();
+	}
 	if (ImPlot::BeginSubplots("Animation Curves", 2, 1, ImVec2(-1,400), flags, rratios, cratios))
 	{
 		if (ImPlot::BeginPlot("Curves", ImVec2(-1,0), ImPlotFlags_NoTitle|ImPlotFlags_NoLegend|ImPlotFlags_NoMenus))
@@ -145,14 +164,26 @@ void UIPACEditorForm::DrawCurves()
 			ImPlot::SetupAxes(nullptr, "value", ImPlotAxisFlags_NoDecorations);
 			ImPlot::SetupAxisLinks(ImAxis_X1, &LinkXMin, &LinkXMax);
 			ImPlot::SetupAxesLimits(-XSpace,MaxTime+XSpace,EditedPAC->GetMinValue()-YSpace,EditedPAC->GetMaxValue()+YSpace);
-			ImPlot::SetNextLineStyle(ImColor(255,0,0));
-			ImPlot::PlotLine("R", keys_x.data(), R_keys_y.data(), R_keys_y.size());
-			ImPlot::SetNextLineStyle(ImColor(0,255,0));
-			ImPlot::PlotLine("G", keys_x.data(), G_keys_y.data(), G_keys_y.size());
-			ImPlot::SetNextLineStyle(ImColor(0,0,255));
-			ImPlot::PlotLine("B", keys_x.data(), B_keys_y.data(), B_keys_y.size());
-			ImPlot::SetNextLineStyle(ImColor(255,255,255));
-			ImPlot::PlotLine("A", keys_x.data(), A_keys_y.data(), A_keys_y.size());
+			if (DrawData.R)
+			{
+				ImPlot::SetNextLineStyle(ImColor(255,0,0));
+				ImPlot::PlotLine("R", keys_x.data(), R_keys_y.data(), R_keys_y.size());
+			}
+			if (DrawData.G)
+			{
+				ImPlot::SetNextLineStyle(ImColor(0,255,0));
+				ImPlot::PlotLine("G", keys_x.data(), G_keys_y.data(), G_keys_y.size());
+			}
+			if (DrawData.B)
+			{
+				ImPlot::SetNextLineStyle(ImColor(0,0,255));
+				ImPlot::PlotLine("B", keys_x.data(), B_keys_y.data(), B_keys_y.size());
+			}
+			if (DrawData.A)
+			{
+				ImPlot::SetNextLineStyle(ImColor(255,255,255));
+				ImPlot::PlotLine("A", keys_x.data(), A_keys_y.data(), A_keys_y.size());
+			}
 			ImPlot::EndPlot();
 		}
 		if (ImPlot::BeginPlot("Times", ImVec2(-1,0), ImPlotFlags_NoTitle|ImPlotFlags_NoLegend|ImPlotFlags_NoMenus))
