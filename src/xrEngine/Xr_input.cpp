@@ -353,8 +353,8 @@ bool CInput::get_dik_name(int dik, LPSTR dest_str, int dest_sz)
 	return true;
 }
 
-#define MOUSE_1		(0xED + 100)
-#define MOUSE_8		(0xED + 107)
+#define MOUSE_1		(SDL_SCANCODE_COUNT + 100)
+#define MOUSE_8		(SDL_SCANCODE_COUNT + 107)
 
 BOOL CInput::iGetAsyncKeyState( int dik )
 {
