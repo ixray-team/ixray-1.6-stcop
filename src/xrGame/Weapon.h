@@ -415,6 +415,21 @@ protected:
 	bool m_bNeedPumpState = false;
 	bool m_bIsPumpEnabled = false;
 
+	s32	m_iAutoAimTime = 0;
+	BOOL m_bAutoAimOnlyAlive = false;
+	BOOL m_bAutoAimIgnoreDead = false;
+	BOOL m_bAutoAimShotAfterKeyReleased = false;
+	bool m_bAutoAimNeedReleaseShot = false;
+	bool m_bAutoAimNeedAutoShot = false;
+	bool m_bAutoAimShooted = false;
+	s32 m_iAutoAimValidTime = 0;
+	BOOL m_bAutoAimAutoShot = false;
+
+	bool	IsAutoAimHaveTarget();
+	s32		GetAutoAimPeriod() const;
+	void	SetAutoAimStartTime(int cnt) { m_iAutoAimValidTime = cnt; }
+	IC s32	GetAutoAimStartTime() const { return m_iAutoAimValidTime; }
+
 	shared_str hud_silencer;
 	shared_str hud_scope;
 	shared_str hud_gl;
