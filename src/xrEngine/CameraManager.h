@@ -4,7 +4,7 @@
 
 struct ENGINE_API SPPInfo {
 	struct SColor{
-		float r, g, b;
+		float r=0, g=0, b=0;
 		SColor() = default;
 		SColor					(float _r, float _g, float _b):r(_r),g(_g),b(_b){}
 		IC operator u32()										{
@@ -42,8 +42,8 @@ struct ENGINE_API SPPInfo {
 		}
 	} duality;
 	struct SNoise	{
-		float		intensity, grain;
-		float		fps;
+		float		intensity=0, grain=0;
+		float		fps=0;
 		SNoise() = default;
 		SNoise					(float _i, float _g, float _f):intensity(_i),grain(_g),fps(_f){}
 		IC SNoise& set			(float _i, float _g, float _f){
