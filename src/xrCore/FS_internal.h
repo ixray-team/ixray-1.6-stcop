@@ -1,6 +1,5 @@
 #pragma once
-
-#include "lzhuf.h"
+#include "compression/lzss/lzhuf.h"
 #include <fcntl.h>
 
 void*			FileDownload	(LPCSTR fn, intptr_t& pdwSize);
