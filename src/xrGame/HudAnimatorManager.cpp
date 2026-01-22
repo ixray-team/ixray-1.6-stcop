@@ -842,6 +842,15 @@ CHudAnimatorManager::CHudAnimatorManager(CActor* actor) : m_actor(actor)
 		}
 	}
 
+	if (pGameGlobals->line_exist("burn", "burn_animator"))
+	{
+		LPCSTR burn_animator = pGameGlobals->r_string("burn", "burn_animator");
+		if (pSettings->section_exist(burn_animator))
+		{
+			m_burn_animator = new CBurnAnimator(this, burn_animator);
+		}
+	}
+
 	static const bool Use3DPDA = EngineExternal()[EEngineExternalGame::Enable3DPDA];
 
 	if (Use3DPDA && pGameGlobals->line_exist("pda", "pda_animator"))
@@ -859,6 +868,7 @@ CHudAnimatorManager::~CHudAnimatorManager()
 	xr_delete(m_item_animator);
 	xr_delete(m_backpack_animator);
 	xr_delete(m_pda_animator);
+	xr_delete(m_burn_animator);
 
 	m_actor = nullptr;
 }
@@ -883,6 +893,11 @@ void CHudAnimatorManager::Update()
 	if (PdaAnimator() != nullptr)
 	{
 		PdaAnimator()->Update();
+	}
+
+	if (BurnAnimator() != nullptr)
+	{
+		BurnAnimator()->Update();
 	}
 }
 

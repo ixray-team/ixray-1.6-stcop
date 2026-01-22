@@ -2,6 +2,9 @@
 bolt_item = bolt
 pda_item  = device_pda
 
+[pda_map]
+hand_spot_icon_xml_section = treasure; override engine pda hand spot icon xml section
+
 [night_vision]
 night_vision_section = night_vision_base
 night_vision_animator = nvs_animator
@@ -12,8 +15,28 @@ headlamp_animator = nvs_animator
 [glass_mask]
 clearmask_animator = clear_gasmask_animator
 
+[quick_kick]
+quick_kick_animator = knife_kick_animator
+
+[mutant_kicks]
+burer_kick_animator = burer_kick_animator_hud
+front_kick_animator = boar_front_kick_animator_hud
+back_kick_animator = boar_back_kick_animator_hud
+
+[backpack]
+backpack_animator = backpack_animator_hud
+
+[burn]
+burn_animator  = burn_animator_hud
+
+[pda]
+pda_animator = pda_show_animator_hud
+
 [render]
 default_wallmark = explosion_marks
+
+[sound_events]
+screenshot = device\torch_click
 
 [callbacks]
 ; IX-Ray
