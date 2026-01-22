@@ -255,6 +255,9 @@ struct animator_item
 	bool IsPlaying = false;
 	hud_item_measures::hud_hands_positions m_hands_positions;
 	player_hud_motion_container	m_hand_motions;
+	bool m_has_fire_point = false;
+	u16 m_fire_bone = u16(-1);
+	Fvector m_fire_point_offset;
 
 	shared_str m_section;
 
@@ -270,6 +273,7 @@ struct animator_item
 
 	void anim_play(const shared_str& item_anm_name, BOOL bMixIn, float speed);
 	u32 anim_play(const shared_str& anim_name, BOOL bMixIn, const CMotionDef*& md);
+	void			setup_firedeps		(firedeps& fd);
 };
 
 class player_hud

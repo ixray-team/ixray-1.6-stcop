@@ -2269,7 +2269,16 @@ animator_item::animator_item(CHudAnimatorBase* animator, player_hud* pParent, co
 	{
 		const shared_str& visual_name = pSettings->r_string(section, "item_visual");
 		m_item = PKinematics(::Render->model_Create(visual_name.c_str()));
-		
+
+		m_has_fire_point =  pSettings->line_exist(section, "fire_bone");
+		if (m_has_fire_point)
+		{
+			m_fire_bone = m_item->LL_BoneID(pSettings->r_string(section, "fire_bone"));
+			m_fire_point_offset = pSettings->r_fvector3(section, "fire_point");
+		}
+		else
+			m_fire_point_offset.set(0, 0, 0);
+
 		m_item_attach[0] = READ_IF_EXISTS(pSettings, r_fvector3, section.c_str(), "item_position", zero_vel);
 		m_item_attach[1] = READ_IF_EXISTS(pSettings, r_fvector3, section.c_str(), "item_orientation", zero_vel);
 	}
@@ -2430,4 +2439,31 @@ Fvector& animator_item::hands_attach_pos()
 Fvector& animator_item::hands_attach_rot()
 {
 	return m_hands_positions.hands_offsets[1][0];
+}
+
+void animator_item::setup_firedeps(firedeps& fd)
+{
+	update							(false);
+	// fire point&direction
+	if(m_has_fire_point)
+	{
+		if (m_fire_bone == BI_NONE)
+			return;
+
+		Fmatrix& fire_mat								= m_item->LL_GetTransform(m_fire_bone);
+		fire_mat.transform_tiny							(fd.vLastFP, m_fire_point_offset);
+		m_item_transform.transform_tiny					(fd.vLastFP);
+
+		fd.vLastFD.set									(0.f,0.f,1.f);
+		m_item_transform.transform_dir					(fd.vLastFD);
+		VERIFY(_valid(fd.vLastFD));
+		VERIFY(_valid(fd.vLastFD));
+
+		fd.m_FireParticlesXForm.identity				();
+		fd.m_FireParticlesXForm.k.set					(fd.vLastFD);
+		Fvector::generate_orthonormal_basis_normalized	(	fd.m_FireParticlesXForm.k,
+															fd.m_FireParticlesXForm.j, 
+															fd.m_FireParticlesXForm.i);
+		VERIFY(_valid(fd.m_FireParticlesXForm));
+	}
 }

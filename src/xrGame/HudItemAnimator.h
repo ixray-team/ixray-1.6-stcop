@@ -61,4 +61,11 @@ private:
 	void OnAnimationEnd();
 	void UpdateAnimation();
 	xr_shared_ptr<CParticlesObject> m_pFlameParticles;
+	firedeps				m_current_firedeps;
+	u32							dwFP_Frame;
+	void UpdateFireDependencies_internal();
+	IC		void			UpdateFireDependencies() { if (dwFP_Frame == Device.dwFrame) return; UpdateFireDependencies_internal(); };
+	IC		const Fvector& get_LastFP() { UpdateFireDependencies(); return m_current_firedeps.vLastFP; }
+	virtual const Fvector& get_CurrentFirePoint() { return get_LastFP(); }
+	virtual const Fmatrix& get_ParticlesXFORM() { UpdateFireDependencies(); return m_current_firedeps.m_FireParticlesXForm; }
 };
