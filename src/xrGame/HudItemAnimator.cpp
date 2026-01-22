@@ -459,8 +459,12 @@ void CBurnAnimator::Update()
 
 	if (m_pFlameParticles->m_bPlaying)
 	{
-		m_pFlameParticles->SetXFORM(Fidentity);
+		Fmatrix pos;
+		pos.set(get_ParticlesXFORM());
+		pos.c.set(get_CurrentFirePoint());
+		m_pFlameParticles->UpdateParent(pos, zero_vel);
 	}
+	UpdateFireDependencies();
 
 	UpdateAnimation();
 }
@@ -470,10 +474,23 @@ void CBurnAnimator::StartFlameParticle()
 	m_pFlameParticles->Stop(FALSE);
 
 	Fmatrix pos;
-	pos.set(Fidentity);
+	pos.set(get_ParticlesXFORM());
+	pos.c.set(get_CurrentFirePoint());
 
-	m_pFlameParticles->SetXFORM(pos);
+	m_pFlameParticles->UpdateParent(pos, zero_vel);
 	m_pFlameParticles->Play(true);
+}
+
+void CBurnAnimator::UpdateFireDependencies_internal()
+{
+	if (Device.dwFrame == dwFP_Frame)
+		return;
+
+	dwFP_Frame = Device.dwFrame;
+
+	if (g_player_hud->GetAnimator())
+		g_player_hud->GetAnimator()->setup_firedeps(m_current_firedeps);
+	VERIFY(_valid(m_current_firedeps.m_FireParticlesXForm));
 }
 
 void CBurnAnimator::PlayAnimBurn()
