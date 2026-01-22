@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "configs_dumper.h"
 #include "configs_common.h"
-#include "../xrCore/ppmd_compressor.h"
+#include "../xrCore/compression/ppmd/ppmd_compressor.h"
 #include "../xrCore/xr_ini.h"
 
 #include "GameObject.h"
