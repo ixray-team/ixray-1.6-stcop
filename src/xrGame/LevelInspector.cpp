@@ -35,6 +35,7 @@
 #include "patrol_path_storage.h"
 #include "player_hud.h"
 #include <magic_enum/magic_enum.hpp>
+#include "ImUtils\ImUtils.h"
 Fvector aabb_selection_vertices[]
 {
 	{-0.505f, -0.505f, -0.505f},
@@ -405,36 +406,25 @@ constexpr int graph_point_tvertices_max = std::size(graph_point_tindices) * 3;
 
 ICF void RenderSkeletonFlags(Flags32& flags, bool hud_mode)
 {
-	ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
 	ImGui::CheckboxFlags("Draw joints", &flags.flags, LevelInspector::ESKELETON_INFO::ESI_BONES);
-	ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
 	ImGui::CheckboxFlags("Draw joints info", &flags.flags, LevelInspector::ESKELETON_INFO::ESI_BONES_INFO);
-	ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
 	ImGui::CheckboxFlags("Draw links", &flags.flags, LevelInspector::ESKELETON_INFO::ESI_BONES_LINKS);
 
 	if (hud_mode)
-	{
-		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
 		ImGui::CheckboxFlags("Draw fire&shell points", &flags.flags, LevelInspector::ESKELETON_INFO::ESI_FIRE_POINTS);
-	}
 	else
 	{
-		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
 		ImGui::CheckboxFlags("Draw hit boxes", &flags.flags, LevelInspector::ESKELETON_INFO::ESI_HIT_SHAPES);
-		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
-		ImGui::CheckboxFlags("Draw Actor", &flags.flags, LevelInspector::ESKELETON_INFO::ESI_ACTOR);
-		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
 		ImGui::CheckboxFlags("Draw PH boxes", &flags.flags, LevelInspector::ESKELETON_INFO::ESI_PH_BBOX);
 	}
 
-	ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
 	ImGui::CheckboxFlags("Draw bounding boxes", &flags.flags, LevelInspector::ESKELETON_INFO::ESI_BBOXES);
-	ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
 	ImGui::CheckboxFlags("Draw main bounding boxes", &flags.flags, LevelInspector::ESKELETON_INFO::ESI_MAIN_BBOX);
+	if (!hud_mode)
+		ImGui::CheckboxFlags("For Actor", &flags.flags, LevelInspector::ESKELETON_INFO::ESI_ACTOR);
 }
 ICF void setkey(u32& zbufKey, u8 idx, const char* label_name = "ZBuff")
 {
-	ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 10);
 	static bool waitingKey[2] = {false, false};
 
 	if (waitingKey[idx])
@@ -459,7 +449,6 @@ ICF void setkey(u32& zbufKey, u8 idx, const char* label_name = "ZBuff")
 
 ICF void fontselectioncombo(LevelInspector& LI)
 {
-	ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
 	static xr_concurrent_vector<const char*> font_names;
 	static int curr_idx = 0;
 
@@ -481,8 +470,7 @@ ICF void fontselectioncombo(LevelInspector& LI)
 		if (ImGui::Combo("##SelectFontCombo", &curr_idx, &font_names[0], font_names.size()))
 			LI.dbg_font = LI.m_clone_fonts_map[font_names[curr_idx]];
 
-		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
-		ImGui::SliderFloat("##FontSpacing", &LI.font_spacing, 0.0f, 10.f);
+		ImGui::SliderFloat("FontLineSpacing", &LI.font_spacing, 0.0f, 10.f);
 		LI.dbg_font->SetLineSpacing(LI.font_spacing);
 	}
 }
@@ -501,168 +489,109 @@ LevelInspector::LevelInspector(BOOL hm) : hud_mode(hm)
 			{
 				static bool& isOpen = Engine.External.EditorStates[static_cast<u8>(EditorUI::LevelInspector)];
 				if (!isOpen) return;
-
+				ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, kGeneralAlphaLevelForImGuiWindows));
 				ImGui::Begin("LevelInspector", &isOpen);
+				if(ImGui::CollapsingHeader("Main"))
+				{
+					ImGui::CheckboxFlags("Draw Inspector", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW);
+					ImGui::CheckboxFlags("Draw All Spatials", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_ALL_SPATIALS);
+					ImGui::CheckboxFlags("Draw HUD", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_HUD);
+					ImGui::CheckboxFlags("Draw Objects", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_OBJECTS);
+					ImGui::CheckboxFlags("Draw Zones", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_ZONES);
+					ImGui::CheckboxFlags("Draw Selected", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_SELECTION);
+					ImGui::CheckboxFlags("Draw AIPaths", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_AI_PATHS);
+					ImGui::CheckboxFlags("Draw GameGraph", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_G_GRID);
+					ImGui::CheckboxFlags("Draw WayPoints", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_W_GRID);
+					ImGui::CheckboxFlags("Draw LevelGraph", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_L_GRID);
 
-				ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.1f, 0.1f, 0.12f, 0.3f));
-				ImGui::BeginChild("##MainFlags", ImVec2(0, ImGui::GetFrameHeightWithSpacing() * 11));
+					ImGui::Separator();
 
-				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 10);
-				ImGui::CheckboxFlags("Draw Inspector", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW);
+					setkey(zbuffer_key, 0);
+					hud_prims->zbuffer_key = zbuffer_key;
+					setkey(visible_currents_key, 1, "ZBuffText");
+				}
 
-				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 10);
-				ImGui::CheckboxFlags("Draw HUD", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_HUD);
-
-				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 10);
-				ImGui::CheckboxFlags("Draw Objects", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_OBJECTS);
-
-				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 10);
-				ImGui::CheckboxFlags("Draw Zones", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_ZONES);
-
-				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 10);
-				ImGui::CheckboxFlags("Draw Selected", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_SELECTION);
-
-				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 10);
-				ImGui::CheckboxFlags("Draw AIPaths", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_AI_PATHS);
-
-				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 10);
-				ImGui::CheckboxFlags("Draw GameGraph", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_G_GRID);
-
-				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 10);
-				ImGui::CheckboxFlags("Draw WayPoints", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_W_GRID);
-
-				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 10);
-				ImGui::CheckboxFlags("Draw LevelGraph", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_L_GRID);
-
-				setkey(zbuffer_key, 0);
-				hud_prims->zbuffer_key = zbuffer_key;
-				setkey(visible_currents_key, 1, "ZBuffText");
-
-				ImGui::EndChild();
-				ImGui::PopStyleColor();
-				ImGui::Spacing();
+				if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_ALL_SPATIALS) && ImGui::CollapsingHeader("Spatials"))
+				{
+					constexpr ImU64 flags_cnt = magic_enum::enum_count<ESPATIAL_TYPE, magic_enum::detail::enum_subtype::flags>();
+					ImGui::CheckboxFlags("##show_hide_all", &reinterpret_cast<ImU64&>(m_spatials_mask), ImU64(-1));
+					for (ImU64 i = 0ULL; i < flags_cnt; ++i)
+					{
+						ImU64 flag = 1ULL << i;
+						if(LPCSTR enum_name = magic_enum::enum_name<ESPATIAL_TYPE, magic_enum::detail::enum_subtype::flags>(ESPATIAL_TYPE(flag)).data())
+							ImGui::CheckboxFlags(enum_name, &reinterpret_cast<ImU64&>(m_spatials_mask), flag);
+					}
+				}
 
 				if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_HUD) && ImGui::CollapsingHeader("HUD"))
-				{
-					ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.12f, 0.1f, 0.1f, 0.3f));
-					ImGui::BeginChild("##HUDGroup", ImVec2(0, ImGui::GetFrameHeightWithSpacing() * 6));
-
 					RenderSkeletonFlags(hud_prims->m_skeleton_flags, true);
 
-					ImGui::EndChild();
-					ImGui::PopStyleColor();
-					ImGui::Spacing();
-				}
-
 				if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_OBJECTS) && ImGui::CollapsingHeader("Objects"))
-				{
-					ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.1f, 0.12f, 0.1f, 0.3f));
-					ImGui::BeginChild("##ObjectsGroup", ImVec2(0, ImGui::GetFrameHeightWithSpacing() * 8));
-
 					RenderSkeletonFlags(m_skeleton_flags, false);
-
-					ImGui::EndChild();
-					ImGui::PopStyleColor();
-					ImGui::Spacing();
-				}
 
 				if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_ZONES) && ImGui::CollapsingHeader("Zones"))
 				{
-					ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.1f, 0.12f, 0.1f, 0.3f));
-					ImGui::BeginChild("##ZonesGroup", ImVec2(0, ImGui::GetFrameHeightWithSpacing() * 7));
-
-					ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
 					ImGui::CheckboxFlags("Draw Restrictor", &m_zone_flags.flags, EZONE_INFO::EZI_RESTR);
-
-					ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
 					ImGui::CheckboxFlags("Draw AnomalyZone", &m_zone_flags.flags, EZONE_INFO::EZI_ANOMALY_ZONE);
-
-					ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
 					ImGui::CheckboxFlags("Draw AnomalyZoneLogic", &m_zone_flags.flags, EZONE_INFO::EZI_ANOMAL_ZONE_LOGIC);
-
-					ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
 					ImGui::CheckboxFlags("Draw CampZone", &m_zone_flags.flags, EZONE_INFO::EZI_CAMP_ZONE);
-
-					ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
 					ImGui::CheckboxFlags("Draw LevelChanger", &m_zone_flags.flags, EZONE_INFO::EZI_LEVEL_CHANGER);
-
-					ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
 					ImGui::CheckboxFlags("Draw SmartCover", &m_zone_flags.flags, EZONE_INFO::EZI_SMART_COVER);
-
-					ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
 					ImGui::CheckboxFlags("Draw SmartTerrain", &m_zone_flags.flags, EZONE_INFO::EZI_SMART_TERRAIN);
-
-					ImGui::EndChild();
-					ImGui::PopStyleColor();
-					ImGui::Spacing();
+					ImGui::CheckboxFlags("Draw SimFaction", &m_zone_flags.flags, EZONE_INFO::EZI_SIM_FACTION);
 				}
 
 
 				if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_W_GRID) && ImGui::CollapsingHeader("WayPointsFilter"))
 				{
-					ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.1f, 0.1f, 0.12f, 0.3f));
-					ImGui::BeginChild("##wp_flGroup", ImVec2(0, ImGui::GetFrameHeightWithSpacing() * 4));
-
-					ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
 					if (ImGui::CheckboxFlags("Draw by prefix", &m_waypoint_flags.flags, EWAYPOINT_INFO::EWI_PREFIX))
 						wp_recalc = true;
-
-					ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
+					
 					ImGui::BeginDisabled(!m_waypoint_flags.test(EWAYPOINT_INFO::EWI_PREFIX));
-						static string64 temp_str = "zat";
-						if (ImGui::InputTextWithHint("##wp_fltext", "Prefix", temp_str, sizeof(temp_str)))
-							wp_recalc = true;
-						wp_prefix = temp_str;
+
+					static string64 temp_str{"\0"};
+					if(!wp_prefix)
+					{
+						IGameGraph& graph = ai().game_graph();
+						xr_string curr_l_n = "zat";
+						u8 level_id = graph.vertex(graph.current_level_vertex())->level_id();
+						auto it = graph.header().levels().find(level_id);
+						if (it != graph.header().levels().end())
+						{
+							curr_l_n = *it->second.m_name;
+							curr_l_n.length() > 3 ? curr_l_n = curr_l_n.substr(0, 3) : curr_l_n;
+						}
+						xr_strcpy(temp_str, sizeof(temp_str), curr_l_n.c_str());
+					}
+					if (ImGui::InputTextWithHint("##wp_fltext", "Prefix", temp_str, sizeof(temp_str)))
+						wp_recalc = true;
+					wp_prefix = temp_str;
+
 					ImGui::EndDisabled();
 
-					ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
 					if (ImGui::CheckboxFlags("Draw by location id", &m_waypoint_flags.flags, EWAYPOINT_INFO::EWI_LICATION_ID))
 						wp_recalc = true;
 
-					ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
 					if (ImGui::CheckboxFlags("Draw All", &m_waypoint_flags.flags, EWAYPOINT_INFO::EWI_ALL))
 						wp_recalc = true;
-
-					ImGui::EndChild();
-					ImGui::PopStyleColor();
-					ImGui::Spacing();
 				}
 
 				if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_SELECTION) && ImGui::CollapsingHeader("Selection"))
 				{
-					ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.1f, 0.1f, 0.12f, 0.3f));
-					ImGui::BeginChild("##SelectionGroup", ImVec2(0, ImGui::GetFrameHeightWithSpacing() * 16));
-
 					if(m_flags.test(ESCENE_FLAGS::ESF_DRAW_OBJECTS))
-					{
-						ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
 						ImGui::CheckboxFlags("Select Object", &m_selection_flags.flags, ESELECTION_FLAGS::ESLF_O);
-					}
 
 					if(m_flags.test(ESCENE_FLAGS::ESF_DRAW_ZONES))
-					{
-						ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
 						ImGui::CheckboxFlags("Select Zone", &m_selection_flags.flags, ESELECTION_FLAGS::ESLF_Z);
-					}
 
 					if(m_flags.test(ESCENE_FLAGS::ESF_DRAW_W_GRID))
-					{
-						ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
 						ImGui::CheckboxFlags("Select WayPoint", &m_selection_flags.flags, ESELECTION_FLAGS::ESLF_WP);
-					}
 
 					if(m_flags.test(ESCENE_FLAGS::ESF_DRAW_G_GRID))
-					{
-
-						ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
 						ImGui::CheckboxFlags("Select GraphPoint", &m_selection_flags.flags, ESELECTION_FLAGS::ESLF_GP);
-					}
 
 					if(m_flags.test(ESCENE_FLAGS::ESF_DRAW_L_GRID))
-					{
-						ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
 						ImGui::CheckboxFlags("Select AINode", &m_selection_flags.flags, ESELECTION_FLAGS::ESLF_LG);
-					}
 
 					if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_OBJECTS) || m_flags.test(ESCENE_FLAGS::ESF_DRAW_ZONES))
 					{
@@ -670,40 +599,30 @@ LevelInspector::LevelInspector(BOOL hm) : hud_mode(hm)
 
 						fontselectioncombo(*this);
 
-						ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
-						ImGui::CheckboxFlags("Draw Section Name", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_SNAME);
-
-						ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
-						ImGui::CheckboxFlags("Draw Class Name", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_LCNAME);
-
-						ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
-						ImGui::CheckboxFlags("Draw Name", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_LNAME);
-
-						ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
-						ImGui::CheckboxFlags("Draw Visual Name", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_VNAME);
-
-						ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
-						ImGui::CheckboxFlags("Draw Custom Data", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_INI);
-
-						ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
-						ImGui::CheckboxFlags("Draw Position", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_POSITION);
-
-						ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
-						ImGui::CheckboxFlags("Draw GVertexID & LVertexID", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_GVERTEX_LVERTEX);
+						ImGui::CheckboxFlags("Section Name", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_SNAME);
+						ImGui::CheckboxFlags("Class Name", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_LCNAME);
+						ImGui::CheckboxFlags("Name", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_LNAME);
+						ImGui::CheckboxFlags("Visual Name", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_VNAME);
+						ImGui::CheckboxFlags("Custom Data", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_INI);
+						ImGui::CheckboxFlags("Position", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_POSITION);
+						ImGui::CheckboxFlags("GVertexID & LVertexID", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_GVERTEX_LVERTEX);
 
 						if(m_flags.test(ESCENE_FLAGS::ESF_DRAW_OBJECTS))
-						{
-							ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
-							ImGui::CheckboxFlags("Draw Actor", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_ACTOR);
-						}
+							ImGui::CheckboxFlags("For Actor ", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_ACTOR);
 					}
-
-					ImGui::EndChild();
-					ImGui::PopStyleColor();
-					ImGui::Spacing();
 				}
+				if (!selected_info_str.empty())
+				{
+					ImGui::Separator();
+					if (selected_info_str.back() == '\n')
+						selected_info_str.back() = '\0';
 
+					ImGui::InputTextMultiline("Selection info", selected_info_str.data(), selected_info_str.size() + 1,
+						ImVec2(ImGui::GetWindowWidth(), ImGui::GetTextLineHeight() * float(selected_info_height) * 1.05f),
+						ImGuiInputTextFlags_ReadOnly);
+				}
 				ImGui::End();
+				ImGui::PopStyleColor(1);
 			});
 	}
 }
@@ -1017,6 +936,15 @@ void LevelInspector::DrawWayPoints()
 					append_text_next(wp->name);
 				else
 					text3d = append_text3d(wppos, wp->name, wp->color, CGameFont::alLeft);
+				if (!visible_currents)
+				{
+					selected_info_str.clear();
+					selected_info_str += *wp->path_name;
+					selected_info_str += '\n';
+					selected_info_str += *wp->name;
+					selected_info_str += '\n';
+					selected_info_height = 2;
+				}
 				for (auto& flag : wp->m_flags)
 				{
 					if (text3d)
@@ -1634,7 +1562,15 @@ void LevelInspector::DrawGameGraph()
 			{
 				Fvector post = pos;
 				post.y += graph_main.obb.m_halfsize.y + 0.1f;
+				shared_str str = shared_str().printf("%d", graph_main.gvid);
 				bool text3d = append_text3d(post, shared_str().printf("%d", graph_main.gvid), color_green, CGameFont::alLeft);
+				if (!visible_currents)
+				{
+					selected_info_str.clear();
+					selected_info_str += *str;
+					selected_info_str += '\n';
+					selected_info_height = 1;
+				}
 				if(graph_main.next_level)
 				{
 					if (text3d)
@@ -2000,9 +1936,15 @@ void LevelInspector::DrawLevelGraph()
 				t_clr.set(selected_nodes[5]->base_color);
 				t_clr.mul_rgba(1.7f);
 				selected_nodes[5]->color = t_clr.get();
-
-				append_text3d(node_pos, shared_str().printf("%d", tv_id), color_rgba(255, 0, 0, 255), CGameFont::alLeft);
-
+				shared_str str = shared_str().printf("%d", tv_id);
+				append_text3d(node_pos, str, color_rgba(255, 0, 0, 255), CGameFont::alLeft);
+				if (!visible_currents)
+				{
+					selected_info_str.clear();
+					selected_info_str += *str;
+					selected_info_str += '\n';
+					selected_info_height = 1;
+				}
 				ILevelGraph::CVertex* vertex = lgraph.vertex(tv_id);
 				for (u32 j = 0; j < 4; ++j)
 				{
@@ -2363,9 +2305,21 @@ void LevelInspector::DrawObjectInfo(CGameObject* GO, const Fvector& pos, Fvector
 	//GO->Center(C);
 	//C.y += GO->Radius();
 	bool text3d = false;
-	
+	if (!visible_currents)
+	{
+		selected_info_str.clear();
+		selected_info_height = 0;
+	}
 	if (m_selection_text_flags.test(EOBJECT_INFO::EOI_SNAME))
+	{
 		text3d = append_text3d(pos, GO->cNameSect(), color_green, CGameFont::alLeft);
+		if (!visible_currents)
+		{
+			selected_info_str += *GO->cNameSect();
+			selected_info_str += '\n';
+			selected_info_height++;
+		}
+	}
 
 	if (m_selection_text_flags.test(EOBJECT_INFO::EOI_LNAME))
 	{
@@ -2373,20 +2327,40 @@ void LevelInspector::DrawObjectInfo(CGameObject* GO, const Fvector& pos, Fvector
 			append_text_next(GO->Name());
         else
 			text3d = append_text3d(pos, GO->Name(), color_green, CGameFont::alLeft);
+		if (!visible_currents)
+		{
+			selected_info_str += Platform::ANSI_TO_UTF8(GO->Name());
+			selected_info_str += '\n';
+			selected_info_height++;
+		}
 	}
 
 	if (m_selection_text_flags.test(EOBJECT_INFO::EOI_LCNAME))
 	{
 		string16 temp; CLSID2TEXT(GO->CLS_ID, temp);
+		shared_str str = shared_str().printf("%s[%d]", temp, GO->CLS_ID);
         if (text3d)
-			append_text_next(shared_str().printf("%s[%d]", temp, GO->CLS_ID));
+			append_text_next(str);
         else
-			text3d = append_text3d(pos, shared_str().printf("%s[%d]", temp, GO->CLS_ID), color_green, CGameFont::alLeft);
+			text3d = append_text3d(pos, str, color_green, CGameFont::alLeft);
+		if (!visible_currents)
+		{
+			selected_info_str += *str;
+			selected_info_str += '\n';
+			selected_info_height++;
+		}
 
+		LPCSTR class_name = typeid(*GO).name();
+		if (!visible_currents)
+		{
+			selected_info_str += class_name;
+			selected_info_str += '\n';
+			selected_info_height++;
+		}
 		if (text3d)
-			append_text_next(typeid(*GO).name());
+			append_text_next(class_name);
 		else
-			text3d = append_text3d(pos, typeid(*GO).name(), color_green, CGameFont::alLeft);
+			text3d = append_text3d(pos, class_name, color_green, CGameFont::alLeft);
 	}
 	if (m_selection_text_flags.test(EOBJECT_INFO::EOI_VNAME) && GO->cNameVisual())
 	{
@@ -2394,20 +2368,40 @@ void LevelInspector::DrawObjectInfo(CGameObject* GO, const Fvector& pos, Fvector
 			append_text_next(GO->cNameVisual());
 		else
             text3d = append_text3d(pos, GO->cNameVisual(), color_green, CGameFont::alLeft);
+		if (!visible_currents)
+		{
+			selected_info_str += *GO->cNameVisual();
+			selected_info_str += '\n';
+			selected_info_height++;
+		}
 	}
 	if (m_selection_text_flags.test(EOBJECT_INFO::EOI_POSITION))
 	{
+		shared_str str = shared_str().printf("pos[%3.3f, %3.3f, %3.3f]", VPUSH(GO->Position()));
 		if (text3d)
 			append_text_next(shared_str().printf("pos[%3.3f, %3.3f, %3.3f]", VPUSH(GO->Position())));
 		else
             text3d = append_text3d(pos, shared_str().printf("pos[%3.3f, %3.3f, %3.3f]", VPUSH(GO->Position())), color_green, CGameFont::alLeft);
+		if (!visible_currents)
+		{
+			selected_info_str += *str;
+			selected_info_str += '\n';
+			selected_info_height++;
+		}
 	}
 	if (m_selection_text_flags.test(EOBJECT_INFO::EOI_GVERTEX_LVERTEX))
 	{
+		shared_str str = shared_str().printf("gvid[%d] lvid[%d]", GO->ai_location().game_vertex_id(), GO->ai_location().level_vertex_id());
 		if (text3d)
 			append_text_next(shared_str().printf("gvid[%d] lvid[%d]", GO->ai_location().game_vertex_id(), GO->ai_location().level_vertex_id()));
 		else
 			append_text3d(pos, shared_str().printf("gvid[%d] lvid[%d]", GO->ai_location().game_vertex_id(), GO->ai_location().level_vertex_id()), color_green, CGameFont::alLeft);
+		if (!visible_currents)
+		{
+			selected_info_str += *str;
+			selected_info_str += '\n';
+			selected_info_height++;
+		}
 	}
 
 	if (m_selection_text_flags.test(EOBJECT_INFO::EOI_INI))
@@ -2419,19 +2413,35 @@ void LevelInspector::DrawObjectInfo(CGameObject* GO, const Fvector& pos, Fvector
 		{
 			for (CInifile::Sect* sect : ini->sections())
 			{
-				if (text3d)
-					append_text_next(shared_str().printf("[%s]", *sect->Name));
-				else
-					text3d = append_text3d(pos, shared_str().printf("[%s]", *sect->Name), color_red, CGameFont::alLeft);
+				{
+					shared_str str = shared_str().printf("[%s]", *sect->Name);
+					if (text3d)
+						append_text_next(str);
+					else
+						text3d = append_text3d(pos, str, color_red, CGameFont::alLeft);
+					if (!visible_currents)
+					{
+						selected_info_str += *str;
+						selected_info_str += '\n';
+						selected_info_height++;
+					}
+				}
 
 				for (CInifile::Item& line : sect->Data)
 				{
 					if (line.second)
 					{
+						shared_str str = shared_str().printf("%s = %s", *line.first, *line.second);
 						if (text3d)
-							append_text_next(shared_str().printf("%s = %s", *line.first, *line.second));
+							append_text_next(str);
 						else
-							text3d = append_text3d(pos, shared_str().printf("%s = %s", *line.first, *line.second), color_red, CGameFont::alLeft);
+							text3d = append_text3d(pos, str, color_red, CGameFont::alLeft);
+						if (!visible_currents)
+						{
+							selected_info_str += *str;
+							selected_info_str += '\n';
+							selected_info_height++;
+						}
 					}
 					else
 					{
@@ -2439,6 +2449,12 @@ void LevelInspector::DrawObjectInfo(CGameObject* GO, const Fvector& pos, Fvector
 							append_text_next(line.first);
 						else
 							text3d = append_text3d(pos, line.first, color_red, CGameFont::alLeft);
+						if (!visible_currents)
+						{
+							selected_info_str += *line.first;
+							selected_info_str += '\n';
+							selected_info_height++;
+						}
 					}
 				}
 			}
@@ -2515,7 +2531,8 @@ void LevelInspector::DrawObjectsInfo()
 	collide::rq_target test_zones = m_selection_flags.test(ESELECTION_FLAGS::ESLF_Z)&&m_flags.test(ESCENE_FLAGS::ESF_DRAW_ZONES) ? collide::rqtShape : collide::rqtNone;
 	collide::rq_target test_flags = collide::rq_target(test_zones | test_dynamic | test_static);
 	RD = collide::ray_defs(cam_pos, cam_dir, RQ.range, CDB::OPT_CULL | CDB::OPT_FULL_TEST, test_flags);
-	static LevelInspector& LI = *this;
+	static LevelInspector* LI = this;
+	LI = this;
 	Level().ObjectSpace.RayQuery(
 	RQR, 
 	RD,
@@ -2539,25 +2556,28 @@ void LevelInspector::DrawObjectsInfo()
 	{
 		if (object && (object->SpatialComponent->spatial.type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE)
 		{
-			if ((object->SpatialComponent->spatial.type & ESPATIAL_TYPE::SMART_COVER) != ESPATIAL_TYPE::NONE && !LI.m_zone_flags.test(EZONE_INFO::EZI_SMART_COVER))
+			if ((object->SpatialComponent->spatial.type & ESPATIAL_TYPE::SMART_COVER) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_SMART_COVER))
 				return FALSE;
 
-			if ((object->SpatialComponent->spatial.type & ESPATIAL_TYPE::SPACE_RESTRICTOR) != ESPATIAL_TYPE::NONE && !LI.m_zone_flags.test(EZONE_INFO::EZI_RESTR))
+			if ((object->SpatialComponent->spatial.type & ESPATIAL_TYPE::SPACE_RESTRICTOR) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_RESTR))
 				return FALSE;
 
-			if ((object->SpatialComponent->spatial.type & ESPATIAL_TYPE::ANOMALY_ZONE) != ESPATIAL_TYPE::NONE && !LI.m_zone_flags.test(EZONE_INFO::EZI_ANOMALY_ZONE))
+			if ((object->SpatialComponent->spatial.type & ESPATIAL_TYPE::ANOMALY_ZONE) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_ANOMALY_ZONE))
 				return FALSE;
 
-			if ((object->SpatialComponent->spatial.type & ESPATIAL_TYPE::LEVEL_CHANGER) != ESPATIAL_TYPE::NONE && !LI.m_zone_flags.test(EZONE_INFO::EZI_LEVEL_CHANGER))
+			if ((object->SpatialComponent->spatial.type & ESPATIAL_TYPE::LEVEL_CHANGER) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_LEVEL_CHANGER))
 				return FALSE;
 
-			if ((object->SpatialComponent->spatial.type & ESPATIAL_TYPE::CAMP_ZONE) != ESPATIAL_TYPE::NONE && !LI.m_zone_flags.test(EZONE_INFO::EZI_CAMP_ZONE))
+			if ((object->SpatialComponent->spatial.type & ESPATIAL_TYPE::CAMP_ZONE) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_CAMP_ZONE))
 				return FALSE;
 
-			if ((object->SpatialComponent->spatial.type & ESPATIAL_TYPE::ANOMAL_ZONE_LOGIC) != ESPATIAL_TYPE::NONE && !LI.m_zone_flags.test(EZONE_INFO::EZI_ANOMAL_ZONE_LOGIC))
+			if ((object->SpatialComponent->spatial.type & ESPATIAL_TYPE::ANOMAL_ZONE_LOGIC) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_ANOMAL_ZONE_LOGIC))
 				return FALSE;
 
-			if ((object->SpatialComponent->spatial.type & ESPATIAL_TYPE::SMART_TERRAIN) != ESPATIAL_TYPE::NONE && !LI.m_zone_flags.test(EZONE_INFO::EZI_SMART_TERRAIN))
+			if ((object->SpatialComponent->spatial.type & ESPATIAL_TYPE::SMART_TERRAIN) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_SMART_TERRAIN))
+				return FALSE;
+
+			if ((object->SpatialComponent->spatial.type & ESPATIAL_TYPE::SIM_FACTION) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_SIM_FACTION))
 				return FALSE;
 		}
 
@@ -2736,7 +2756,8 @@ void LevelInspector::DrawObjects()
 			(m_zone_flags.test(EZONE_INFO::EZI_SMART_COVER) ? ESPATIAL_TYPE::SMART_COVER : ESPATIAL_TYPE::NONE) |
 			(m_zone_flags.test(EZONE_INFO::EZI_CAMP_ZONE) ? ESPATIAL_TYPE::CAMP_ZONE : ESPATIAL_TYPE::NONE) |
 			(m_zone_flags.test(EZONE_INFO::EZI_ANOMALY_ZONE) ? ESPATIAL_TYPE::ANOMALY_ZONE : ESPATIAL_TYPE::NONE) |
-			(m_zone_flags.test(EZONE_INFO::EZI_ANOMAL_ZONE_LOGIC) ? ESPATIAL_TYPE::ANOMAL_ZONE_LOGIC : ESPATIAL_TYPE::NONE))
+			(m_zone_flags.test(EZONE_INFO::EZI_ANOMAL_ZONE_LOGIC) ? ESPATIAL_TYPE::ANOMAL_ZONE_LOGIC : ESPATIAL_TYPE::NONE) |
+			(m_zone_flags.test(EZONE_INFO::EZI_SIM_FACTION) ? ESPATIAL_TYPE::SIM_FACTION : ESPATIAL_TYPE::NONE))
 		: ESPATIAL_TYPE::NONE;
 
 	g_SpatialSpace->q_frustum(m_objects, 0, dyn_flags | zone_flags, Render->ViewBase);
@@ -2754,7 +2775,7 @@ void LevelInspector::DrawObjects()
 		CGameObject* GO = (_O && !_O->getDestroy()) ? _O->cast_game_object() : nullptr;
 		if (!GO) continue;
 
-		if (GO->Visual())
+		if (GO->Visual() && m_flags.test(ESCENE_FLAGS::ESF_DRAW_OBJECTS))
 		{
 			if (!m_skeleton_flags.test(ESKELETON_INFO::ESI_ACTOR) && g_actor == GO->cast_actor())
 				continue;
@@ -2835,7 +2856,7 @@ void LevelInspector::DrawObjects()
 		}
 
 		
-		if ((spatial->spatial.type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE)
+		if ((spatial->spatial.type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE && (spatial->spatial.type & zone_flags) != ESPATIAL_TYPE::NONE)
 		{
 			CCF_Shape* ccfshape = (CCF_Shape*)(GO->CFORM());
 
@@ -2966,6 +2987,44 @@ void LevelInspector::DrawObjects()
 			p1.add(ladder->XFORM().c, d);
 			p2.set(ladder->XFORM().c);
 			append_line({ p1, p2, color_rgba(0, 255, 0, 255) });
+		}
+	}
+
+	if(m_flags.test(ESCENE_FLAGS::ESF_DRAW_ALL_SPATIALS))
+	{
+		g_SpatialSpace->q_frustum(m_objects, 0, m_spatials_mask, Render->ViewBase);
+
+		for (ISpatialShared& spatial : m_objects)
+		{
+			if (!spatial.get()) continue;
+
+			float opt_dist = cam_pos.distance_to_sqr(spatial->spatial.sphere.P);
+			float fog_dist = visible_currents ? 50000.f : g_pGamePersistent->pEnvironment->CurrentEnv->fog_distance;
+			if (opt_dist >= _sqr(fog_dist + spatial->spatial.sphere.R))
+				continue;
+
+			if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_ALL_SPATIALS))
+				append_sphere(spatial->spatial.sphere, color_rgba(10, 10, 10, 255), color_rgba(255, 100, 0, 20));
+
+		}
+
+		if ((m_spatials_mask & ESPATIAL_TYPE::PHYSIC) != ESPATIAL_TYPE::NONE)
+		{
+			g_SpatialSpacePhysic->q_frustum(m_objects, 0, m_spatials_mask, Render->ViewBase);
+
+			for (ISpatialShared& spatial : m_objects)
+			{
+				if (!spatial.get()) continue;
+
+				float opt_dist = cam_pos.distance_to_sqr(spatial->spatial.sphere.P);
+				float fog_dist = visible_currents ? 50000.f : g_pGamePersistent->pEnvironment->CurrentEnv->fog_distance;
+				if (opt_dist >= _sqr(fog_dist + spatial->spatial.sphere.R))
+					continue;
+
+				if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_ALL_SPATIALS))
+					append_sphere(spatial->spatial.sphere, color_rgba(10, 10, 10, 255), color_rgba(255, 100, 0, 20));
+
+			}
 		}
 	}
 }
