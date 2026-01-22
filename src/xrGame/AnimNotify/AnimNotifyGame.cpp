@@ -16,29 +16,22 @@
 #include "Level.h"
 #include "../xrCore/AnimNotify/AnimNotifyRegistry.h"
 
-void CAnimNotifyHandler::TriggerNotify(IAnimNotifyMessage* notify)
+void CAnimNotifyHandler::TriggerNotify(IAnimNotifyMessage&& notify)
 {
-    xrCriticalSectionGuard guard(NotifyQueue.Lock);
-    NotifyQueue.Queue.push(notify);
+    xrCriticalSectionGuard guard(cs);
+    m_msgs.push_back(notify);
 }
 
 void CAnimNotifyHandler::Update()
 {
-    xrCriticalSectionGuard guard(NotifyQueue.Lock);
-    while (!NotifyQueue.Queue.empty())
+    xrCriticalSectionGuard guard(cs);
+    for (IAnimNotifyMessage& Message : m_msgs)
     {
-        auto Name = NotifyQueue.Queue.front();
-        NotifyQueue.Queue.pop();
-        ProcessNotify(Name);
-        xr_delete(Name);
+        IAnimNotify* Notify = CAnimNotifyRegistry::GetInstance().get(Message.notify);
+        R_ASSERT3(Notify, "Invalid notify", Message.notify.c_str());
+        Notify->Execute(Message.render_visual, Message.bone_id);
     }
-}
-
-void CAnimNotifyHandler::ProcessNotify(IAnimNotifyMessage* Message)
-{
-    auto Notify = CAnimNotifyRegistry::GetInstance().get(Message->notify);
-    R_ASSERT3(Notify, "Invalid notify", Message->notify.c_str());
-    Notify->Execute(Message->render_visual, Message->bone_id);
+    m_msgs.clear();
 }
 
 IAnimNotify* CAnimNotifyHandler::ConstructNotify(const EAnimNotifyType type)
