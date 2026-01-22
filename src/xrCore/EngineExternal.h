@@ -16,6 +16,7 @@ enum class EEngineExternalUI
 enum class EEngineExternalPhysical
 {
 	DeadBodyRagdoll,
+	DisableCameraMagicField,
 	None
 };
 
