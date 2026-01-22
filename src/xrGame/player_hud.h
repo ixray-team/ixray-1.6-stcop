@@ -306,7 +306,7 @@ public:
 	void			UpdateWeaponOffset(u32 delta);
 
 	IKinematics*	m_legs_model;
-	bool			m_show_legs = true;
+	s32				m_show_legs = 1;
 	bool			m_need_reload = true;
 	shared_str		NextHUDSect;
 

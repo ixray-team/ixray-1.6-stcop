@@ -57,7 +57,7 @@ using namespace luabind;
 
 void show_legs(bool val)
 {
-	g_player_hud->m_show_legs = val;
+	g_player_hud->m_show_legs += val ? 1 : -1;
 }
 
 void block_action_script(int cmd) {
