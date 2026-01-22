@@ -7,7 +7,7 @@ class XRCORE_API IAnimNotifyHandler
 {
 public:
     virtual ~IAnimNotifyHandler() = default;
-    virtual void TriggerNotify(IAnimNotifyMessage* notify) = 0;
+    virtual void TriggerNotify(IAnimNotifyMessage&& notify) = 0;
 
     virtual void Update() = 0;
 
