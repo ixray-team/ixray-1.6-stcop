@@ -72,6 +72,7 @@ FRbmkGoapAction& FRbmkGoapAction::AddEffect(const shared_str& Name, bool Value)
 
 void FRbmkGoapParameters::Add(const shared_str& Name, bool Value)
 {
+	Parameters.reserve(64);
 	const auto Iterator = std::lower_bound(Parameters.begin(),Parameters.end(),Name,[](const FRbmkGoapParameter&Left, const shared_str&Right){return Left.Name._get()<Right._get();});
 	if(Iterator != Parameters.end()&&Iterator->Name == Name)
 	{
@@ -87,6 +88,7 @@ void FRbmkGoapParameters::Add(const shared_str& Name, bool Value)
 
 void FRbmkGoapParameters::Add(const FRbmkGoapParameters& InParameters)
 {
+	Parameters.reserve(64);
 	auto WithIterator = InParameters.Parameters.begin();
 	const auto WithIteratorEnd = InParameters.Parameters.end();
 
@@ -460,6 +462,7 @@ void FRbmkGoapPlanner::RemoveProperty(FRbmkGoapProperty* InProperty)
 
 void FRbmkGoapPlanner::AddAction(FRbmkGoapAction* InAction)
 {
+	Actions.reserve(64);
 	InAction->Owner = this;
 	const bool Inserted = Names2Actions.contains(InAction->Name);
 	VERIFY(Inserted == false);
@@ -603,7 +606,12 @@ bool FRbmkGoapPlanner::Search()
 {
 	FRbmkGoapParameters* StartParameters;
 	FRbmkGoapParameters* TargetParameters = nullptr;
-	
+
+	CacheParameters.reserve(64);
+	TempPriorityNode.reserve(64);
+	TempPriorityNode.reserve(64);
+	CacheProperties.reserve(64);
+
 	auto GetParametersPtr = [this](FRbmkGoapParameters& From)
 	{
 		//From.SubFromCache(this);
