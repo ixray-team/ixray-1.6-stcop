@@ -133,6 +133,7 @@ public:
 	IC float				GetMaxPower				() const			{return m_fPowerMax;};
 
 	void 					ChangeBleeding			(const float percent);
+	void 					ChangeWoundsByType		(const float percent, ALife::EHitType type);
 
 	void 					ChangeCircumspection	(const float value);
 	void 					ChangeEntityMorale		(const float value);
