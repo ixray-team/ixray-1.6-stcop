@@ -4,19 +4,13 @@
 class CAnimNotifyHandler : public IAnimNotifyHandler
 {
 public:
-    void TriggerNotify(IAnimNotifyMessage* notify) override;
+    void TriggerNotify(IAnimNotifyMessage&& notify) override;
 
     void Update() override;
 
 private:
-    struct LockedQueue
-    {
-        xrCriticalSection Lock;
-        xr_queue<IAnimNotifyMessage*> Queue;
-    };
-    LockedQueue NotifyQueue;
-
-    void ProcessNotify(IAnimNotifyMessage* Message);
+    xrCriticalSection cs;
+    xr_vector<IAnimNotifyMessage> m_msgs;
 
 public:
     IAnimNotify* ConstructNotify(const EAnimNotifyType type) override;

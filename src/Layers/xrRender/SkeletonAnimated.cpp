@@ -536,50 +536,38 @@ void CKinematicsAnimated::LL_UpdateTracks( float dt, bool b_force, bool leave_bl
 
 			for (auto& BoneNotify : B.notifies)
 			{
-				if (!BoneNotify.second.keyframes.size())
-				{
+				CBlend::NotifyKeyframes& notify = BoneNotify.second;
+				auto& keyframes = notify.keyframes;
+				if (keyframes.empty())
 					continue;
-				}
+
 				if (B.speed < 0)
 				{
-					for (s64 i = BoneNotify.second.current_notify_index; i >= 0; --i)
+					for (s64 i = notify.current_notify_index; i >= 0; --i)
 					{
-						if (B.timeCurrent < BoneNotify.second.keyframes[i].key)
+						if (B.timeCurrent < keyframes[i].key)
 						{
-							for (auto& elem : BoneNotify.second.keyframes[i].assigned)
+							for (auto& elem : keyframes[i].assigned)
 							{
 								Msg("AnimNotify: external ref %s", elem->ExternalRef.c_str());
-								auto message = new IAnimNotifyMessage();
-								message->bone_id = BoneNotify.first;
-								message->notify = elem->ExternalRef;
-								message->render_visual = this;
-								IAnimNotifyHandler::Get().TriggerNotify(message);
+								IAnimNotifyHandler::Get().TriggerNotify({ elem->ExternalRef, this, BoneNotify.first });
 							}
-							--BoneNotify.second.current_notify_index;
-						} else
-						{
-							break;
-						}
+							--notify.current_notify_index;
+						} else break;
 					}
 				} else
 				{
-					for (; BoneNotify.second.current_notify_index < BoneNotify.second.keyframes.size(); ++BoneNotify.second.current_notify_index)
+					size_t keyframes_size = keyframes.size();
+					for (; notify.current_notify_index < keyframes_size; ++notify.current_notify_index)
 					{
-						if (B.timeCurrent > BoneNotify.second.keyframes[BoneNotify.second.current_notify_index].key)
+						if (B.timeCurrent > keyframes[notify.current_notify_index].key)
 						{
-							for (auto& elem : BoneNotify.second.keyframes[BoneNotify.second.current_notify_index].assigned)
+							for (auto& elem : keyframes[notify.current_notify_index].assigned)
 							{
 								Msg("AnimNotify: external ref %s", elem->ExternalRef.c_str());
-								auto message = new IAnimNotifyMessage();
-								message->bone_id = BoneNotify.first;
-								message->notify = elem->ExternalRef;
-								message->render_visual = this;
-								IAnimNotifyHandler::Get().TriggerNotify(message);
+								IAnimNotifyHandler::Get().TriggerNotify({ elem->ExternalRef, this, BoneNotify.first });
 							}
-						} else
-						{
-							break;
-						}
+						} else break;
 					}
 				}
 			}
