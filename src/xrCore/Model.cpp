@@ -5,10 +5,10 @@
  *  Contents: PPMII model description and encoding/decoding routines        *
  ****************************************************************************/
 #include "stdafx.h"
-#include <string.h>
-#include "PPMd.h"
 
-#include "Coder.hpp"
+#include "compression/ppmd/PPMd.h"
+#include "compression/ppmd/Coder.hpp"
+
 #include "SubAlloc.hpp"
 
 using namespace ppmd;

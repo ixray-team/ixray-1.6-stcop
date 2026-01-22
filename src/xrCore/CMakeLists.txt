@@ -19,11 +19,6 @@ file(GLOB CORE_SOURCE_MATH_FILES
 	"_*.h"
 )
 
-file(GLOB CORE_SOURCE_LZ_FILES
-	"LzHuf*.cpp"
-	"lzhuf.h"
-)
-
 file(GLOB CORE_SOURCE_XML_FILES "FormatParsers/XML/*.*")
 file(GLOB CORE_SOURCE_JSON_FILES "FormatParsers/json/*.*")
 file(GLOB CORE_SOURCE_YAML_FILES "FormatParsers/YAML/*.*")
@@ -75,8 +70,11 @@ file(GLOB_RECURSE CORE_SOURCE_ALL_FILES CONFIGURE_DEPENDS
 	"*.h"
 )
 
-file(GLOB CORE_SOURCE_RT_FILES "rt_c*.*")
-file(GLOB CORE_SOURCE_PPMD_FILES "ppmd_*.*")
+file(GLOB CORE_SOURCE_RT_FILES "compression/rtc/*.*")
+file(GLOB CORE_SOURCE_PPMD_FILES "compression/ppmd/*.*")
+file(GLOB CORE_SOURCE_LZO_FILES "compression/lzo/*.*")
+file(GLOB CORE_SOURCE_LZSS_FILES "compression/lzss/*.*")
+file(GLOB CORE_SOURCE_PV3_FILES "compression/pv3/*.*")
 file(GLOB_RECURSE CORE_SOURCE_DISCORD_FILES "discord/*.*")
 file(GLOB CORE_SOURCE_XR_API_FILES "API/*.*")
 file(GLOB CORE_SOURCE_XR_API_PLATF_FILES "Platform/*.*")
@@ -100,9 +98,11 @@ source_group("memory/p3malloc" FILES ${CORE_SOURCE_MEMORY_P3_FILES})
 source_group("debug" FILES ${CORE_SOURCE_DEBUG_FILES})
 source_group("collision/engine" FILES ${CORE_SOURCE_COLLSION_FILES})
 source_group("collision/opcode" FILES ${CORE_SOURCE_COLLSION_OPCODE_FILES})
-source_group("compressors/rt" FILES ${CORE_SOURCE_RT_FILES})
-source_group("compressors/lz" FILES ${CORE_SOURCE_LZ_FILES})
+source_group("compressors/rtc" FILES ${CORE_SOURCE_RT_FILES})
+source_group("compressors/lzss" FILES ${CORE_SOURCE_LZSS_FILES})
+source_group("compressors/lzo" FILES ${CORE_SOURCE_LZO_FILES})
 source_group("compressors/ppmd" FILES ${CORE_SOURCE_PPMD_FILES})
+source_group("compressors/pv3" FILES ${CORE_SOURCE_PV3_FILES})
 source_group("core/fs" FILES ${CORE_SOURCE_FS_FILES})
 source_group("core/stl" FILES ${CORE_SOURCE_STL_FILES})
 source_group("core/formats/YAML" FILES ${CORE_SOURCE_YAML_FILES})
