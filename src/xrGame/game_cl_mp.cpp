@@ -31,8 +31,8 @@
 #include "RegistryFuncs.h"
 #include "../xrGameSpy/xrGameSpy_MainDefs.h"
 #include "screenshot_server.h"
-#include "../xrCore/ppmd_compressor.h"
-#include "../xrCore/rt_compressor.h"
+#include "../xrCore/compression/ppmd/ppmd_compressor.h"
+#include "../xrCore/compression/rtc/rt_compressor.h"
 #include "game_cl_mp_snd_messages.h"
 #include "../3rd-party/crypto/crypto.h"
 
