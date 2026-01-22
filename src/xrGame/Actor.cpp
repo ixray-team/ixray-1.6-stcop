@@ -1806,9 +1806,6 @@ void CActor::UpdateCL()
 			Device.hudViewportData.renderZoomRotateFactor = 0.0f;
 			Device.hudViewportData.isRenderActive = false;
 			Device.hudViewportData.ActorWeaponCondition = -1.0f;
-			Device.hudViewportData.ActorWeaponLoading = 1.0f;
-			Device.hudViewportData.renderScopeBrightnessValue = 0.0f;
-			Device.hudViewportData.renderScopeBrightnessJitterValue = 0.0f;
 
 			// Switch back to third-person if was forced
 			if (bLook_cam_fp_zoom && cam_active == eacFirstEye) {
