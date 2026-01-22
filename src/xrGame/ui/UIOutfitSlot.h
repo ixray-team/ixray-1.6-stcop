@@ -8,7 +8,7 @@ class CUIOutfitDragDropList :public CUIDragDropListEx
 	typedef CUIDragDropListEx						inherited;
 	CUI3dStatic*									m_background;
 	shared_str										m_default_outfit;
-	void					SetOutfit				(CUICellItem* itm);
+	void					SetOutfit				();
 	
 public:
 							CUIOutfitDragDropList	();
