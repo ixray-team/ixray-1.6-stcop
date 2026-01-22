@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "Level.h"
 #include "xrServer_updates_compressor.h"
-#include "../xrCore/ppmd_compressor.h"
+#include "../xrCore/compression/ppmd/ppmd_compressor.h"
 #include "../xrServerEntities/object_broker.h"
 #include "xrMessages.h"
 
