@@ -206,6 +206,21 @@ void CEntityCondition::ChangeBleeding(const float percent)
 	}
 }
 
+void CEntityCondition::ChangeWoundsByType(const float percent, ALife::EHitType type)
+{
+	//затянуть раны
+	for (WOUND_VECTOR_IT it = m_WoundVector.begin(); m_WoundVector.end() != it; ++it)
+	{
+		CWound* wound = *it;
+		if (fis_zero(wound->TypeSize(type)))
+			continue;
+
+		(*it)->Incarnation(percent, m_fMinWoundSize);
+		if (0 == (*it)->TotalSize())
+			(*it)->SetDestroy(true);
+	}
+}
+
 bool RemoveWoundPred(CWound* pWound)
 {
 	if(pWound->GetDestroy())
