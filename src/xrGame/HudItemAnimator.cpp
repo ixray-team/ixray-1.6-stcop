@@ -5,6 +5,8 @@
 #include "Inventory.h"
 #include "ai_space.h"
 #include "UIActorMenu.h"
+#include "ParticlesObject.h"
+#include "actor.h"
 
 extern bool m_AnimatorForceHideItems;
 
@@ -369,5 +371,248 @@ void CBackpackAnimator::OnMotionMark(const motion_marks& mark, u32 state)
 		{
 			ui->ShowActorMenu();
 		}
+	}
+}
+
+CBurnAnimator::CBurnAnimator(CHudAnimatorManager* m_manager, const shared_str& section) : CHudAnimatorBase(m_manager)
+{
+	m_section = section;
+	Load();
+}
+
+void CBurnAnimator::Load()
+{
+	CHudAnimatorBase::Load();
+	m_burn_restore = pSettings->r_float(m_section, "burn_restore");
+
+	m_pFlameParticles = Particles::Details::Create(pSettings->r_string(m_section, "flame_particles"), FALSE);
+	m_pFlameParticles->m_bAutoStop = true;
+	m_pFlameParticles->SetLiveUpdate(TRUE);
+
+	m_sounds.LoadSound(m_section.c_str(), "snd_burn", "sndBurned", true);
+}
+
+void CBurnAnimator::Update()
+{
+	if (m_bNeedActivated)
+	{
+		m_manager->SetTargetAnimator(this);
+		bool wpn_hide = !g_player_hud->attached_item(0) && !m_manager->Parent()->inventory().ActiveItem() && !m_manager->Parent()->inventory().GetNextActiveSlot() && !m_manager->Parent()->inventory().GetActiveSlot();
+		if (wpn_hide && g_player_hud->GetAnimator() == nullptr && !g_player_hud->attached_item(1))
+		{
+			PlayAnimBurn();
+		}
+		else
+		{
+			CHudAnimatorBase* current_animator = m_manager->Parent()->HudAnimator()->CurrentAnimator();
+			if (CHudStateAnimator* state_animator = current_animator != nullptr ? current_animator->cast_hud_state_animator() : nullptr)
+			{
+				if (state_animator->GetState() != CHudStateAnimator::EAnimatorStates::eHidden && state_animator->GetState() != CHudStateAnimator::EAnimatorStates::eHiding)
+				{
+					if (m_AnimatorForceHideItems)
+					{
+						state_animator->StopAnimator();
+					}
+					else
+					{
+						state_animator->SetState(CHudStateAnimator::EAnimatorStates::eHiding);
+					}
+				}
+			}
+
+			CHudItem* active_item = m_manager->Parent()->inventory().ActiveItem() ? m_manager->Parent()->inventory().ActiveItem()->cast_hud_item() : nullptr;
+			if (active_item != nullptr)
+			{
+				u16 slot = m_manager->Parent()->inventory().GetActiveSlot();
+				m_manager->SlotToRestore() = slot;
+
+				if (m_AnimatorForceHideItems)
+				{
+					m_manager->Parent()->inventory().SetActiveSlot(NO_ACTIVE_SLOT);
+					active_item->SwitchState(CHUDState::EHudStates::eHidden);
+					active_item->SetState(CHUDState::EHudStates::eHidden);
+					g_player_hud->detach_item_idx(0);
+				}
+				else if (active_item->GetState() != CHUDState::EHudStates::eHiding)
+				{
+					m_manager->Parent()->inventory().Activate(NO_ACTIVE_SLOT);
+				}
+			}
+
+			if (CCustomDevice* dev = m_manager->Parent()->GetDevice())
+			{
+				m_manager->RestoreDevice() = true;
+
+				if (m_AnimatorForceHideItems)
+				{
+					dev->SwitchState(CHUDState::EHudStates::eHidden);
+					dev->SetState(CHUDState::EHudStates::eHidden);
+					g_player_hud->detach_item_idx(1);
+				}
+				else if (dev->GetState() != CHUDState::EHudStates::eHiding)
+				{
+					dev->HideDetector(true, true);
+				}
+			}
+		}
+	}
+
+	if (m_pFlameParticles->m_bPlaying)
+	{
+		m_pFlameParticles->SetXFORM(Fidentity);
+	}
+
+	UpdateAnimation();
+}
+
+void CBurnAnimator::StartFlameParticle()
+{
+	m_pFlameParticles->Stop(FALSE);
+
+	Fmatrix pos;
+	pos.set(Fidentity);
+
+	m_pFlameParticles->SetXFORM(pos);
+	m_pFlameParticles->Play(true);
+}
+
+void CBurnAnimator::PlayAnimBurn()
+{
+	g_player_hud->create_animator_item(this, m_section);
+
+	u32 ret = g_player_hud->GetAnimator()->anim_play("anm_show", false, m_current_motion_def);
+
+	m_bNeedActivated = false;
+	m_bIsPlaying = true;
+
+	if (m_manager->TargetAnimator() == this)
+	{
+		m_manager->SetTargetAnimator(nullptr);
+	}
+
+	m_manager->SetCurrentAnimator(this);
+
+	if (m_bHideUI)
+	{
+		if (auto ui = CurrentGameUI())
+		{
+			ui->HideShownDialogs();
+		}
+
+		m_manager->Parent()->set_inventory_disabled(true);
+		m_manager->Parent()->set_pda_disabled(true);
+	}
+
+	CallStartCallback();
+
+	m_sounds.PlaySound("sndBurned", m_manager->Parent()->Position(), m_manager->Parent(), !!m_manager->Parent()->HUDview(), !!(ret == 0));
+
+	if (ret > 0)
+	{
+		m_dwMotionStartTm = Device.dwTimeGlobal;
+		m_dwMotionCurrTm = m_dwMotionStartTm;
+		m_dwMotionEndTm = m_dwMotionStartTm + ret;
+		m_bStopAtEndAnimIsRunning = true;
+	}
+	else
+	{
+		m_bStopAtEndAnimIsRunning = false;
+	}
+}
+
+void CBurnAnimator::UpdateAnimation()
+{
+	if (m_current_motion_def)
+	{
+		if (m_bStopAtEndAnimIsRunning)
+		{
+			m_dwMotionCurrTm = Device.dwTimeGlobal;
+			if (m_dwMotionCurrTm > m_dwMotionEndTm)
+			{
+				m_current_motion_def = nullptr;
+				m_dwMotionStartTm = 0;
+				m_dwMotionEndTm = 0;
+				m_dwMotionCurrTm = 0;
+				m_bStopAtEndAnimIsRunning = false;
+				OnAnimationEnd();
+			}
+		}
+	}
+}
+
+void CBurnAnimator::OnAnimationEnd()
+{
+	Level().CurrentControlEntity()->cast_actor()->SetActorBurning(false);
+	StopAnimator();
+
+	u8& restore_slot = m_manager->SlotToRestore();
+	bool& restore_device = m_manager->RestoreDevice();
+
+	if (restore_slot > 0 && m_manager->Parent()->inventory().ItemFromSlot(restore_slot))
+	{
+		m_manager->Parent()->inventory().Activate(restore_slot);
+		restore_slot = 0;
+	}
+
+	if (restore_device && m_manager->Parent()->GetDevice(true))
+	{
+		m_manager->Parent()->GetDevice(true)->ToggleDetector(true);
+		restore_device = false;
+	}
+}
+
+void CBurnAnimator::StartAnimator()
+{
+	if (m_bNeedActivated || m_bIsPlaying)
+	{
+		return;
+	}
+
+	m_sLuaModifySect = READ_IF_EXISTS(pSettings, r_string, m_section, "modify_sect_lua_callback", "null");
+
+	if (m_sLuaModifySect != "null")
+	{
+		luabind::functor<const char*> lua_func;
+		if (ai().script_engine().functor(*m_sLuaModifySect, lua_func))
+		{
+			m_section = lua_func(m_section.c_str());
+			m_sLuaModifySect = "null";
+		}
+		else
+		{
+			Msg("Error to call section modify script [%s] in animator [%s]", *m_sLuaModifySect, *m_section);
+		}
+	}
+
+	m_sLuaPrecondFunc = READ_IF_EXISTS(pSettings, r_string, m_section, "precondition_functor", "null");
+
+	if (m_sLuaPrecondFunc != "null")
+	{
+		luabind::functor<bool> precondition;
+		if (ai().script_engine().functor(*m_sLuaPrecondFunc, precondition))
+		{
+			m_sLuaPrecondFunc = "null";
+			if (!precondition())
+			{
+				return;
+			}
+		}
+		else
+		{
+			Msg("Error to call precondition script [%s] in animator [%s]", *m_sLuaPrecondFunc, *m_section);
+		}
+	}
+
+	m_bNeedActivated = true;
+
+	if (m_bHideUI)
+	{
+		if (auto ui = CurrentGameUI())
+		{
+			ui->HideShownDialogs();
+		}
+
+		m_manager->Parent()->set_inventory_disabled(true);
+		m_manager->Parent()->set_pda_disabled(true);
 	}
 }
