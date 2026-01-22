@@ -640,6 +640,8 @@ void CWeapon::Load		(LPCSTR section)
 
 	m_fCollimatorLevelsProblem = READ_IF_EXISTS(pSettings, r_float, section, "collimator_problems_level", 0.0f);
 
+	m_fRechargeTime = READ_IF_EXISTS(pSettings, r_float, section, "recharge_time", 0.0f);
+
 	m_bGaussScheme = !!READ_IF_EXISTS(pSettings, r_bool, section, "use_gauss_scheme", false);
 
 	m_bullet_point_offset_hud = READ_IF_EXISTS(pSettings, r_float, section, "bullet_point_offset_hud", -1.0f);
@@ -1464,6 +1466,30 @@ void CWeapon::UpdateCL		()
 
 	inherited::UpdateCL		();
 
+	{
+		if (m_fRechargeTime > fOneShotTime)
+		{
+			m_fLastRechargeTime = m_fRechargeTime;
+		}
+		else
+		{
+			m_fLastRechargeTime = fOneShotTime;
+		}
+
+		if (ParentIsActor())
+		{
+			float reload_time = std::floor(m_fLastRechargeTime * 1000.0f);
+			u32 now_time = Device.GetTimeDeltaSafe(m_iLastShotTime);
+			float actor_wpn_loading = now_time / reload_time;
+			if (actor_wpn_loading > 1.0f || !isHudItemData)
+			{
+				actor_wpn_loading = 1.0f;
+			}
+
+			Device.hudViewportData.ActorWeaponLoading = actor_wpn_loading;
+		}
+	}
+
 	//подсветка от выстрела
 	UpdateEffects();
 
@@ -1537,7 +1563,8 @@ void CWeapon::UpdateCL		()
 	{
 		s32 autoaim_period = GetAutoAimPeriod();
 		CActor* pActor = H_Parent() ? H_Parent()->cast_actor() : nullptr;
-		if (pActor != nullptr && autoaim_period != 0 && m_bAutoAimNeedAutoShot && pActor->IsActionKeyPressedInGame(EGameActions::kWPN_FIRE) && IsAutoAimHaveTarget())
+		if (pActor != nullptr && autoaim_period != 0 && m_bAutoAimNeedAutoShot && pActor->IsActionKeyPressedInGame(EGameActions::kWPN_FIRE) && IsAutoAimHaveTarget()
+			&& (m_fRechargeTime > 0.0f && Device.GetTimeDeltaSafe(m_iLastShotTime) > std::floor(m_fLastRechargeTime * 1000.0f) || m_fRechargeTime == 0.0f))
 		{
 			if (autoaim_period > 0 && Device.GetTimeDeltaSafe(GetAutoAimStartTime()) >= autoaim_period || autoaim_period < 0)
 			{
@@ -2040,6 +2067,11 @@ bool CWeapon::SwitchAmmoType(u32 flags)
 	const static bool isDelayedWeaponActions = EngineExternal()[EEngineExternalGame::EnableDelayedWeaponActions];
 
 	if (!isDelayedWeaponActions && IsPending())
+	{
+		return false;
+	}
+
+	if (m_fRechargeTime > 0.0f && Device.GetTimeDeltaSafe(m_iLastShotTime) < std::floor(m_fLastRechargeTime * 1000.0f))
 	{
 		return false;
 	}
