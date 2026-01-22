@@ -47,6 +47,20 @@ bool CWeapon::install_upgrade_impl( LPCSTR section, bool test )
 	{
 		m_bGaussScheme = !!value;
 	}
+	result |= result2;
+
+	s32 val = m_iAutoAimTime;
+	result2 = process_if_exists_set(section, "autoaim_time", &CInifile::r_s32, val, test);
+	if (result2 && !test)
+	{
+		m_iAutoAimTime = val;
+	}
+	result |= result2;
+
+	result |= process_if_exists_set(section, "autoaim_only_alive", &CInifile::r_bool, m_bAutoAimOnlyAlive, test);
+	result |= process_if_exists_set(section, "autoaim_ignore_dead", &CInifile::r_bool, m_bAutoAimIgnoreDead, test);
+	result |= process_if_exists_set(section, "autoaim_shot_after_key_released", &CInifile::r_bool, m_bAutoAimShotAfterKeyReleased, test);
+	result |= process_if_exists_set(section, "autoaim_auto_shot", &CInifile::r_bool, m_bAutoAimAutoShot, test);
 
 	return result;
 }

@@ -29,6 +29,8 @@
 #include "../xrEngine/GameMtlLib.h"
 #include "../xrScripts/script_callback_ex.h"
 #include "ElectronicsProblemsManager.h"
+#include "ai/crow/ai_crow.h"
+#include "ai/monsters/bloodsucker/bloodsucker.h"
 
 #include <algorithm>
 
@@ -667,6 +669,12 @@ void CWeapon::Load		(LPCSTR section)
 
 	m_bIsPumpEnabled = READ_IF_EXISTS(pSettings, r_bool, section, "use_pump_system", false);
 	m_bNeedPumpReloadEnd = READ_IF_EXISTS(pSettings, r_bool, section, "need_pump_reload_end", false);
+
+	m_iAutoAimTime = std::floor(READ_IF_EXISTS(pSettings, r_float, section, "autoaim_time", 0.0f) * 1000.0f);
+	m_bAutoAimOnlyAlive = !!READ_IF_EXISTS(pSettings, r_bool, section, "autoaim_only_alive", false);
+	m_bAutoAimIgnoreDead = !!READ_IF_EXISTS(pSettings, r_bool, section, "autoaim_ignore_dead", false);
+	m_bAutoAimShotAfterKeyReleased = !!READ_IF_EXISTS(pSettings, r_bool, section, "autoaim_shot_after_key_released", false);
+	m_bAutoAimAutoShot = !!READ_IF_EXISTS(pSettings, r_bool, section, "autoaim_auto_shot", false);
 
 	const static bool isImproveMis = EngineExternal()[EEngineExternalGame::EnableImproveWeaponMisfire];
 
@@ -1344,8 +1352,6 @@ void CWeapon::OnH_A_Independent	()
 	Light_Destroy				();
 	UpdateAddonsVisibility		();
 	ProcessScope();
-	Engine.Sheduler.Unregister(this);
-	//Engine.Sheduler.Register(this);
 };
 
 void CWeapon::OnH_A_Chield		()
@@ -1353,9 +1359,6 @@ void CWeapon::OnH_A_Chield		()
 	inherited::OnH_A_Chield		();
 	UpdateAddonsVisibility		();
 	ProcessScope();
-	shedule.t_min = shedule.t_max = 1;
-	//Engine.Sheduler.Unregister(this);
-	Engine.Sheduler.Register(this, TRUE);
 };
 
 void CWeapon::OnActiveItem ()
@@ -1521,7 +1524,7 @@ void CWeapon::UpdateCL		()
 	}
 	else
 	{
-		CActor* pActor = H_Parent() ? H_Parent()->cast_actor() : NULL;
+		CActor* pActor = H_Parent() ? H_Parent()->cast_actor() : nullptr;
 		if ((IsZoomed() && m_zoom_params.m_fZoomRotationFactor <= 1.f) ||
 			(!IsZoomed() && m_zoom_params.m_fZoomRotationFactor > 0.f))
 		{
@@ -1540,6 +1543,18 @@ void CWeapon::UpdateCL		()
 	}
 
 	UpdateLensFactor(delta);
+
+	{
+		s32 autoaim_period = GetAutoAimPeriod();
+		CActor* pActor = H_Parent() ? H_Parent()->cast_actor() : nullptr;
+		if (pActor != nullptr && autoaim_period != 0 && m_bAutoAimNeedAutoShot && pActor->IsActionKeyPressedInGame(EGameActions::kWPN_FIRE) && IsAutoAimHaveTarget())
+		{
+			if (autoaim_period > 0 && Device.GetTimeDeltaSafe(GetAutoAimStartTime()) >= autoaim_period || autoaim_period < 0)
+			{
+				pActor->SetActorKeyRepeatFlag(ACTOR_DEFS::kfFIRE, true);
+			}
+		}
+	}
 
 	_last_update_time = Device.dwTimeGlobal;
 }
@@ -1828,9 +1843,29 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 				}
 
 				if (flags&CMD_START) 
+				{
+					m_bAutoAimNeedReleaseShot = false;
+					m_bAutoAimNeedAutoShot = false;
+					m_bAutoAimShooted = false;
 					FireStart();
-				else 
+					SetAutoAimStartTime(Device.dwTimeGlobal);
+				}
+				else
+				{
 					FireEnd();
+
+					if (m_bAutoAimShotAfterKeyReleased)
+					{
+						if (!m_bAutoAimShooted)
+						{
+							if (IsAutoAimHaveTarget() || Device.GetTimeDeltaSafe(GetAutoAimStartTime()) >= GetAutoAimPeriod())
+							{
+								m_bAutoAimNeedReleaseShot = true;
+								FireStart();
+							}
+						}
+					}
+				}
 
 				return true;
 			} 
@@ -3496,7 +3531,7 @@ bool CWeapon::show_crosshair()
 
 bool CWeapon::show_indicators()
 {
-	if (!IsGrenadeMode() && !IsRotatingToZoom())
+	if (!IsGrenadeMode() && IsZoomed())
 	{
 		if (bUseAltScope && bScopeIsHasTexture && IsScopeAttached() && (ZoomTexture() != nullptr || g_3d_scopes))
 		{
@@ -3768,15 +3803,15 @@ bool CWeapon::IsUIForceHiding()
 {
 	CWeaponBinoculars* bino = cast_weapon_binoculars();
 
-	if (bino && !IsRotatingToZoom())
+	if (bino && IsZoomed())
 	{
 		return READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "zoom_hide_ui", true);
 	}
-	else if (get_ScopeStatus() == 1 && !IsRotatingToZoom())
+	else if (get_ScopeStatus() == 1 && IsZoomed())
 	{
 		return READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "zoom_hide_ui", true);
 	}
-	else if (get_ScopeStatus() == 2 && IsScopeAttached() && !IsRotatingToZoom())
+	else if (get_ScopeStatus() == 2 && IsScopeAttached() && IsZoomed())
 	{
 		return READ_IF_EXISTS(pSettings, r_bool, GetScopeName(), "zoom_hide_ui", true);
 	}
@@ -4877,9 +4912,65 @@ void CWeapon::OnChangeVisual()
 	UpdateAmmoBones(for_grenade ? m_ammo_bones_gl : m_ammo_bones_mag, config, GetTargetAmmoType(for_grenade));
 }
 
-void CWeapon::on_a_hud_attach()
+#include "ai/stalker/ai_stalker.h"
+#include "memory_manager.h"
+#include "enemy_manager.h"
+// нормальный оптимизированный фикс 
+// чтобы сталкеры которые не попадают в камеру
+// и находятся далеко от нас могли полноценно поддерживать бой
+// а не устраивать пистолетные дуэли
+BOOL CWeapon::AlwaysTheCrow()
 {
-	inherited::on_a_hud_attach();
+	if (H_Parent() && H_Parent()->cast_stalker() && H_Parent()->cast_stalker()->memory().enemy().selected() && m_pInventory && m_pInventory->ActiveItem() == this && !m_strapped_mode)
+		return TRUE;
 
-	ForceUpdateHUD();
+	return inherited::AlwaysTheCrow();
+}
+
+s32 CWeapon::GetAutoAimPeriod() const
+{
+	if (m_bGaussScreen)
+	{
+		return m_iAutoAimTime;
+	}
+
+	return 0;
+}
+
+static bool is_visible_by_thermovisor(CObject* pointer)
+{
+	if (smart_cast<CAI_Crow*>(pointer))
+	{
+		return true;
+	}
+
+	if (smart_cast<CAI_Bloodsucker*>(pointer))
+	{
+		return false;
+	}
+
+	return pointer != nullptr ? pointer->cast_entity_alive() : nullptr;
+}
+
+bool CWeapon::IsAutoAimHaveTarget()
+{
+	Fvector pos = get_LastFP(), dir = get_LastFD();
+
+	collide::rq_result rqr;
+
+	bool is_aim_exist = Level().ObjectSpace.RayPick(pos, dir, 1000.0f, collide::rq_target::rqtObject, rqr, H_Parent());
+
+	if (m_bAutoAimOnlyAlive && !is_visible_by_thermovisor(rqr.O))
+	{
+		is_aim_exist = false;
+	}
+
+	CEntityAlive* entity_alive = rqr.O != nullptr ? rqr.O->cast_entity_alive() : nullptr;
+
+	if (is_aim_exist && m_bAutoAimIgnoreDead && (entity_alive != nullptr && !entity_alive->g_Alive() || entity_alive == nullptr))
+	{
+		is_aim_exist = false;
+	}
+
+	return is_aim_exist;
 }
