@@ -64,7 +64,9 @@ void main(p_bumped_new I, out f_forward O)
 		M.Roughness = Specular;
     #endif
 #endif
-
+	
+	float3 LightDir = mul((float3x3)m_V, L_sun_dir_w.xyz);
+	
 #ifndef USE_R2_STATIC_SUN
 	float4 Point = float4(M.Point.xyz, 1.f);
     Point.xyz += M.Normal * 0.025f;
@@ -89,6 +91,11 @@ void main(p_bumped_new I, out f_forward O)
 
 		float FarShadow = saturate(M.Hemi * 8.0f - 2.0f);
 		Shadow = lerp(FarShadow, Shadow, Fade);
+	
+#ifdef USE_LENGTH_BUFFER
+		float3 FlatNormal = normalize(cross(ddx(M.Point.xyz), ddy(M.Point.xyz)));
+		Shadow *= step(0.0f, dot(FlatNormal, -LightDir));
+#endif
 	}
 	
 	M.Sun = Shadow;
@@ -99,7 +106,7 @@ void main(p_bumped_new I, out f_forward O)
 	float ViewLength = length(M.Point);
 	float3 View = M.Point.xyz * rcp(ViewLength);
 	
-    float3 Light = M.Sun * DirectLight(LightColor, mul((float3x3)m_V, L_sun_dir_w.xyz), M.Normal, View, M.Color.xyz, M.Metalness, M.Roughness, F0);
+    float3 Light = M.Sun * DirectLight(LightColor, LightDir, M.Normal, View, M.Color.xyz, M.Metalness, M.Roughness, F0);
     float3 Ambient = PushGamma(M.AO) * AmbientLighting(View, M.Normal, M.Color.xyz, M.Metalness, M.Roughness, M.Hemi, F0);
 	
 #ifdef USE_LENGTH_BUFFER
