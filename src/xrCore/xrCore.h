@@ -108,7 +108,7 @@
 #include "xrstring.h"
 #include "FixedVector.h"
 #include "xr_resource.h"
-#include "rt_compressor.h"
+#include "compression/rtc/rt_compressor.h"
 #include "xr_shared.h"
 #include "string_concatenations.h"
 #include "xr_path.h"

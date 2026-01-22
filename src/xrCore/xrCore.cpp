@@ -2,12 +2,13 @@
 //
 #include "stdafx.h"
 #include "FormatParsers/XML/Expression.h"
-
+#include "compression/ppmd/compression_ppmd_stream.h"
 
 #ifdef IXR_WINDOWS
-#include <mmsystem.h>
-#include <objbase.h>
+#	include <mmsystem.h>
+#	include <objbase.h>
 #endif
+
 #include "xrCore.h"
 #include "discord/discord.h"
 
@@ -107,7 +108,6 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, xrLogger::LogCallback cb, BOO
 	init_counter++;
 }
 
-#include "compression_ppmd_stream.h"
 extern compression::ppmd::stream	*trained_model;
 
 void xrCore::_destroy		()
