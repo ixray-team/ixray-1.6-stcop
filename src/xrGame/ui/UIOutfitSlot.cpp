@@ -20,73 +20,22 @@ CUIOutfitDragDropList::~CUIOutfitDragDropList()
 
 #include "../Level.h"
 
-void CUIOutfitDragDropList::SetOutfit(CUICellItem* itm)
+void CUIOutfitDragDropList::SetOutfit()
 {
-	/*
-	static Fvector2 fNoOutfit			= pSettings->r_fvector2(m_default_outfit, "full_scale_icon");
-	Frect								r;
-	r.x1								= fNoOutfit.x*ICON_GRID_WIDTH;
-	r.y1								= fNoOutfit.y*ICON_GRID_HEIGHT;
-	r.x2								= r.x1+CHAR_ICON_FULL_WIDTH*ICON_GRID_WIDTH;
-	r.y2								= r.y1+CHAR_ICON_FULL_HEIGHT*ICON_GRID_HEIGHT;
-	*/
-	m_background->SetWndPos					(Fvector2().set(0,0)) ;
-	m_background->SetWndSize				(Fvector2().set(GetWidth(), GetHeight()));
-	
-	m_background->SetStretchTexture		(true);
+	CObject* current_entity = Level().CurrentControlEntity();
+	CActor* pActor = current_entity != nullptr ? current_entity->cast_actor() : nullptr;
 
-
-	if ((!IsGameTypeSingle()) && !itm)
+	if (pActor)
 	{
-		CObject* current_entity = Level().CurrentEntity();
-        CActor* pActor = current_entity != nullptr ? current_entity->cast_actor() : nullptr;
-
-		xr_string a;
-		if (pActor)
-			a = *pActor->cNameVisual();
-		else
-			a = *m_default_outfit;
-
-		xr_string::iterator it = std::find(a.rbegin(), a.rend(), '\\').base(); 
-
-		// Cut leading full path
-		if (it != a.begin())
-			a.erase(a.begin(), it);
-		// Cut trailing ".ogf"
-		R_ASSERT(xr_strlen(a.c_str()) > 4);
-		if ('.' == a[a.size() - 4])
-			a.erase(a.size() - 4);
-
-		m_background->InitTexture(a.c_str());
+		m_background->SetVisual(pActor->Visual());
+		m_background->SetXYZ(0, 3, 0);
+		m_background->TextureOn();
 	}
-	else {
-		if(itm)
-		{
-			PIItem _iitem	= (PIItem)itm->m_pData;
-			CCustomOutfit* pOutfit = _iitem != nullptr ? _iitem->cast_outfit() : nullptr; VERIFY(pOutfit);
-			/*
-			r.lt			= pOutfit->GetIconPos();
-			r.x1			*= ICON_GRID_WIDTH;
-			r.y1			*= ICON_GRID_HEIGHT;
-			*/
-			m_background->InitTexture			(pOutfit->GetFullIconName().c_str());
-		}else
-		{
-			m_background->InitTexture		("npc_icon_without_outfit");
-		}
-		/*
-		r.x2			= r.x1+CHAR_ICON_FULL_WIDTH*ICON_GRID_WIDTH;
-		r.y2			= r.y1+CHAR_ICON_FULL_HEIGHT*ICON_GRID_HEIGHT;
-
-		m_background->SetShader				(InventoryUtilities::GetCharIconsShader());
-        m_background->SetOriginalRect		(r);
-		*/
+	else
+	{
+		m_background->SetVisual(nullptr);
+		m_background->TextureOff();
 	}
-
-	m_background->SetVisual(Actor()->Visual());
-	m_background->SetXYZ(0, 3, 0);
-	m_background->TextureOn				();
-//	m_background->RescaleRelative2Rect	(r);
 }
 
 void CUIOutfitDragDropList::SetDefaultOutfit(LPCSTR default_outfit){
@@ -96,28 +45,28 @@ void CUIOutfitDragDropList::SetDefaultOutfit(LPCSTR default_outfit){
 void CUIOutfitDragDropList::SetItem(CUICellItem* itm)
 {
 	if(itm)	inherited::SetItem			(itm);
-	SetOutfit							(itm);
+	SetOutfit							();
 }
 
 bool CUIOutfitDragDropList::SetItem(CUICellItem* itm, Fvector2 abs_pos)
 {
 	if(itm)	
 		inherited::SetItem			(itm, abs_pos);
-	SetOutfit							(itm);
+	SetOutfit							();
 	return true;
 }
 
 void CUIOutfitDragDropList::SetItem(CUICellItem* itm, Ivector2 cell_pos)
 {
 	if(itm)	inherited::SetItem			(itm, cell_pos);
-	SetOutfit							(itm);
+	SetOutfit							();
 }
 
 CUICellItem* CUIOutfitDragDropList::RemoveItem(CUICellItem* itm, bool force_root)
 {
 	VERIFY								(!force_root);
 	CUICellItem* ci						= inherited::RemoveItem(itm, force_root);
-	SetOutfit							(nullptr);
+	SetOutfit							();
 	return								ci;
 }
 
