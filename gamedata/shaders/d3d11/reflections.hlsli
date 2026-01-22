@@ -205,16 +205,14 @@ float4 FastViewReflectionsSSR(float3 Point, float3 Reflect, bool is_hud)
 		Fade = Fade && EndProj.z < 0.02f;
 	
 #ifdef USE_BASE_HUD_REFLECTIONS
-		if(!Fade && ReflectBase.z > 0.0f) {
+		if(!Fade && ReflectBase.z > 0.0f) 
+		{
 			EndProj = mul(m_P, float4(ReflectBase, 1.0f)); EndProj.xyz /= EndProj.w;
 			EndProj.xy = EndProj.xy * float2(0.5f, -0.5f) + 0.5f;
 			EndProj.xy = saturate(EndProj.xy);
 			
 			EndProj.z = s_position.SampleLevel(smp_nofilter, EndProj.xy, 0).x;
-			Fade = GetBorderAtten(EndProj.xy, 0.001f) > 0.0f;
-			Fade = Fade && EndProj.z > 0.02f && EndProj.z < 1.0f;
-			
-			EndProj.z *= 0.0002f;
+			Fade = GetBorderAtten(EndProj.xy) && EndProj.z > 0.02f && EndProj.z < 1.0f;
 		}
 #endif
 	} else {
