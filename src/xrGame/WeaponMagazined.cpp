@@ -544,6 +544,11 @@ void CWeaponMagazined::FireStart()
 					}
 				}
 
+				if (m_fRechargeTime > 0.0f && Device.GetTimeDeltaSafe(m_iLastShotTime) < std::floor(m_fLastRechargeTime * 1000.0f))
+				{
+					return;
+				}
+
 				m_bAutoAimNeedReleaseShot = false;
 				m_bAutoAimNeedAutoShot = false;
 				m_bAutoAimShooted = true;
@@ -2268,6 +2273,11 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 						return false;
 					}
 
+					if (m_fRechargeTime > 0.0f && Device.GetTimeDeltaSafe(m_iLastShotTime) < std::floor(m_fLastRechargeTime * 1000.0f))
+					{
+						return false;
+					}
+
 					if (IsPending())
 					{
 						return false;
@@ -3058,6 +3068,11 @@ void CWeaponMagazined::PlayAnimShoot()
 	else if (!m_magazine.empty())
 	{
 		UpdateShellBones(m_magazine.back().m_LocalAmmoType);
+	}
+
+	if (!IsMisfire())
+	{
+		m_iLastShotTime = Device.dwTimeGlobal;
 	}
 
 	PlayHUDMotion(SetCurrentShootAnimation(), EHudMixType::eMixHands, GetState());

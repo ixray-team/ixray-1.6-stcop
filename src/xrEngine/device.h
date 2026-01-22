@@ -78,7 +78,7 @@ public:
 		float ActorHealth = -1.0f;
 		float ActorOutfitCondition = -1.0f;
 		float ActorWeaponCondition = -1.0f;
-		float ActorWeaponLoading = -1.0f;
+		float ActorWeaponLoading = 1.0f;
 	} hudViewportData;
 
 	// Engine flow-control
