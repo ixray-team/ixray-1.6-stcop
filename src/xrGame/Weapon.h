@@ -384,9 +384,12 @@ protected:
 
 	float m_fCollimatorLevelsProblem = 0.0f;
 	float m_fMisfireAfterProblemsLevel = 10.0f;
+	float m_fRechargeTime = 0.0f;
+	float m_fLastRechargeTime = 0.0f;
 
 	bool bUpdateHUDBonesVisibility = false;
 	u32 _last_update_time;
+	u32 m_iLastShotTime = 0;
 
 	xr_vector<std::pair<u8, u32>> m_mags_capacity{};
 
