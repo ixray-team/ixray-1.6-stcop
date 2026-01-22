@@ -45,19 +45,7 @@ struct RayQueryContext
 	R_Light* Light = 0;
 	float energy = 1.0f;
 };
-
-// Предвычисленный LUT для прозрачности
-alignas(64) static float opacityLUT[256];
-struct OpacityInit {
-	OpacityInit() {
-		for (int i = 0; i < 256; i++)
-		{
-			float a = float(i) / 255.f;
-			opacityLUT[i] = 1.f - a * a; // 1 - (a^2)
-		}
-	}
-} initOpacity;
-
+ 
 // Сделать потом переключалку
 bool CalculateEnergy(RayQueryContext* ctxt, RTCHit* hit, Face* F, Fvector& B)
 {
@@ -71,24 +59,11 @@ bool CalculateEnergy(RayQueryContext* ctxt, RTCHit* hit, Face* F, Fvector& B)
 	const Fvector2* cuv = F->getTC0();
 	float u = cuv[0].x * Barry0 + cuv[1].x * hit->u + cuv[2].x * hit->v;
 	float v = cuv[0].y * Barry0 + cuv[1].y * hit->u + cuv[2].y * hit->v;
-
-	int U = int(u * T.dwWidth + 0.5f);
-	int V = int(v * T.dwHeight + 0.5f);
-
-	// fast wrap (если pow2, иначе можно без ветки)
-	if ((T.dwWidth & (T.dwWidth - 1)) == 0)
-		U &= (T.dwWidth - 1);
-	else {
-		if (U < 0) U += T.dwWidth;
-		else if (U >= T.dwWidth) U %= T.dwWidth;
-	}
-
-	if ((T.dwHeight & (T.dwHeight - 1)) == 0)
-		V &= (T.dwHeight - 1);
-	else {
-		if (V < 0) V += T.dwHeight;
-		else if (V >= T.dwHeight) V %= T.dwHeight;
-	}
+  
+	int U = (int) floor(u * float(T.dwWidth) + .5f);
+	int V = (int) floor(v * float(T.dwHeight) + .5f);
+	U %= T.dwWidth;		if (U < 0) U += T.dwWidth;
+	V %= T.dwHeight;	if (V < 0) V += T.dwHeight;
 
 	// fetch pixel
 	const uint32_t* raw = static_cast<const uint32_t*>(*T.pSurface);
@@ -96,8 +71,9 @@ bool CalculateEnergy(RayQueryContext* ctxt, RTCHit* hit, Face* F, Fvector& B)
 	uint32_t pixel_a = (pixel >> 24) & 0xFF;
 
 	// LUT вместо деления и sqr
-  	ctxt->energy *= opacityLUT[pixel_a];
-
+	float a = float(pixel_a) / 255.f;
+	float opacity = 1.f - a * a;
+	ctxt->energy *= opacity;  // opacityLUT[pixel_a];
 	if (ctxt->energy < EmbreeEnergyMAX)
 		return false;
 
