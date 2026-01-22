@@ -1,7 +1,6 @@
 #pragma once
-
-#include "../xrCore/compression_ppmd_stream.h"
-#include "../xrCore/lzo_compressor.h"
+#include "../xrCore/compression/ppmd/compression_ppmd_stream.h"
+#include "../xrCore/compression/lzo/lzo_compressor.h"
 
 namespace compression
 {

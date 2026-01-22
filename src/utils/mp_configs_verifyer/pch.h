@@ -3,7 +3,7 @@
 
 #include "../../xrCore/xrCore.h"
 #include "../../xrCore/LocatorAPI.h"
-#include "../../xrCore/ppmd_compressor.h"
+#include "../../xrCore/compression/ppmd/ppmd_compressor.h"
 #include "../../3rd-party/crypto/crypto.h"
 
 

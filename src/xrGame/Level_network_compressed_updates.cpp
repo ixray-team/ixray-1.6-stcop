@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "Level.h"
-#include "../xrCore/ppmd_compressor.h"
+#include "../xrCore/compression/ppmd/ppmd_compressor.h"
 #include "../xrPhysics/IPHWorld.h"
 #include "xrServer_updates_compressor.h"
 
