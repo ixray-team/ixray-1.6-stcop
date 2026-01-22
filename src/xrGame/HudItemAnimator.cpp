@@ -404,7 +404,6 @@ void CBurnAnimator::Update()
 		}
 		else
 		{
-
 			CHudAnimatorBase* current_animator = m_manager->Parent()->HudAnimator()->CurrentAnimator();
 			if (CHudStateAnimator* state_animator = current_animator != nullptr ? current_animator->cast_hud_state_animator() : nullptr)
 			{
@@ -459,7 +458,9 @@ void CBurnAnimator::Update()
 	}
 
 	if (m_pFlameParticles->m_bPlaying)
+	{
 		m_pFlameParticles->SetXFORM(Fidentity);
+	}
 
 	UpdateAnimation();
 }
@@ -541,14 +542,7 @@ void CBurnAnimator::UpdateAnimation()
 
 void CBurnAnimator::OnAnimationEnd()
 {
-	CallLeftCallback();
-	CallLeft2Callback();
-	CallRightCallback();
-	CallRight2Callback();
-	CallEndCallback();
-
 	Level().CurrentControlEntity()->cast_actor()->SetActorBurning(false);
-
 	StopAnimator();
 
 	u8& restore_slot = m_manager->SlotToRestore();
