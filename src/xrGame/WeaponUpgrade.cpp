@@ -62,6 +62,8 @@ bool CWeapon::install_upgrade_impl( LPCSTR section, bool test )
 	result |= process_if_exists_set(section, "autoaim_shot_after_key_released", &CInifile::r_bool, m_bAutoAimShotAfterKeyReleased, test);
 	result |= process_if_exists_set(section, "autoaim_auto_shot", &CInifile::r_bool, m_bAutoAimAutoShot, test);
 
+	result |= process_if_exists(section, "recharge_time", &CInifile::r_float, m_fRechargeTime, test);
+
 	return result;
 }
 
