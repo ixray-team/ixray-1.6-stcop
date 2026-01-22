@@ -14,6 +14,7 @@ struct LevelInspector final
 		ESF_DRAW_AI_PATHS = 64,
 		ESF_DRAW_SELECTION = 128,
 		ESF_DRAW_HUD = 256,
+		ESF_DRAW_ALL_SPATIALS = 512,
 	};
 	
 	enum ESELECTION_FLAGS
@@ -64,6 +65,7 @@ struct LevelInspector final
 		EZI_CAMP_ZONE = 16,
 		EZI_ANOMALY_ZONE = 32,
 		EZI_ANOMAL_ZONE_LOGIC = 64,
+		EZI_SIM_FACTION = 128,
 	};
 
 	enum EWAYPOINT_INFO
@@ -85,8 +87,8 @@ struct LevelInspector final
 	xr_vector<tvertex> tris;
 	collide::rq_results RQR;
 	collide::rq_result RQ;
-
-
+	xr_string selected_info_str;
+	int selected_info_height = 0;
 
 	CGameFont* dbg_font = nullptr;
 	float font_spacing = 0.9f;
@@ -109,6 +111,7 @@ struct LevelInspector final
 	Flags32 m_skeleton_flags = { 0 };
 	Flags32 m_waypoint_flags = { 0 };
 	Flags32 m_zone_flags = { 0 };
+	ESPATIAL_TYPE m_spatials_mask{ ESPATIAL_TYPE(-1)};
 
 	BOOL zbuffer_enable = TRUE;
 	BOOL visible_currents = TRUE;
