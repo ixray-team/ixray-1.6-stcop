@@ -939,6 +939,12 @@ bool CActor::use_Holder(CHolderCustom* holder)
 
 void CActor::ActorUse()
 {
+	if (IsActorBurning() /* && !IsActorControlled()*/ && HudAnimator() && HudAnimator()->BurnAnimator())
+	{
+		HudAnimator()->BurnAnimator()->StartAnimator();
+		m_need_fire_particle = true;
+		return;
+	}
 	if (HudAnimator() && HudAnimator()->IsAnyAnimatorActive())
 	{
 		return;
