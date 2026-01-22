@@ -1042,13 +1042,16 @@ BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 
 	GiveAmmoFromMagToChamber();
 
-	UpdateLiteAmmoBones(iAmmoElapsed + iAmmoChamberElapsed);
-
 	UpdateAltScope();
 	UpdateAddonsVisibility();
 	UpdateHUDAddonsVisibility();
 	ProcessScope();
 	InitAddons();
+
+	UpdateLiteAmmoBones(iAmmoElapsed + iAmmoChamberElapsed);
+	const bool for_grenade = IsGrenadeMode();
+	const u32 config = for_grenade ? iAmmoElapsed : iAmmoElapsed + iAmmoChamberElapsed;
+	UpdateAmmoBones(for_grenade ? m_ammo_bones_gl : m_ammo_bones_mag, config, GetTargetAmmoType(for_grenade));
 
 	m_dwWeaponIndependencyTime = 0;
 
@@ -1410,10 +1413,6 @@ void CWeapon::UpdateCL		()
 
 	bool need_update_hud = false;
 	bool isHudItemData = HudItemData() != nullptr;
-
-	if (isHudItemData && bUseAltScope) {
-		need_update_hud = true;
-	}
 	
 	if (isHudItemData && !bUpdateHUDBonesVisibility)
 	{
@@ -3836,6 +3835,7 @@ const shared_str CWeapon::GetScopeName() const
 
 void CWeapon::UpdateAltScope()
 {
+	bUpdateHUDBonesVisibility = false;
 	if (m_eScopeStatus != ALife::eAddonAttachable || !bUseAltScope)
 		return;
 
@@ -4692,4 +4692,9 @@ void CWeapon::OnChangeVisual()
 
 	UpdateAddonsVisibility();
 	ProcessScope();
+	UpdateLiteAmmoBones(iAmmoElapsed + iAmmoChamberElapsed);
+
+	const bool for_grenade = IsGrenadeMode();
+	const u32 config = for_grenade ? iAmmoElapsed : iAmmoElapsed + iAmmoChamberElapsed;
+	UpdateAmmoBones(for_grenade ? m_ammo_bones_gl : m_ammo_bones_mag, config, GetTargetAmmoType(for_grenade));
 }
