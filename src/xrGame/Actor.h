@@ -884,8 +884,8 @@ private:
 private:
 	CScriptGameObject* m_pBestEnemy = nullptr;
 	xr_vector<LPCSTR> m_burn_restore_materials{};
-	float m_burn_restore_material_speed = 0.f;
-	float m_actor_burn_restore_speed = 0.f;
+	float m_burn_restore_material_speed = 0.0f;
+	float m_actor_burn_restore_speed = 0.0f;
 	float GetMaterialBurnRestoreSpeed(LPCSTR mtl);
 	bool m_need_fire_particle = false;
 	bool m_actor_burning = false;
