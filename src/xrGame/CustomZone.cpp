@@ -378,6 +378,8 @@ BOOL CCustomZone::net_Spawn(CSE_Abstract* DC)
 	}
 	SpatialComponent->spatial.type |= ESPATIAL_TYPE::ANOMALY_ZONE;
 	SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::SPACE_RESTRICTOR;
+	if (Visual())
+		setEnabled(TRUE);
 	return						(TRUE);
 }
 
