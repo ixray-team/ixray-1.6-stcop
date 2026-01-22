@@ -42,6 +42,7 @@
 #include "ParticlesObject.h"
 #include "UIPdaWnd.h"
 #include "../xrUI/UICursor.h"
+#include "Wound.h"
 
 using namespace luabind;
 
@@ -608,7 +609,18 @@ if(!g_dedicated_server)
 	m_fLookOutSpeed = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "lookout_speed", 6.0f);
 	m_fLookOutAmplK = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "lookout_ampl_k", 1.0f);
 	m_fLookOutSpeedAmplDXPow = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "lookout_ampl_dx_pow", 1.0f);
+	m_burn_restore_material_speed = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "burn_restore_material_speed", 0.0f);
+	m_actor_burn_restore_speed = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_burn_restore_speed", 0.000001f);
 
+	if (pSettings->line_exist("gunslinger_base", "burn_restore_materials"))
+	{
+		xr_string materialList = pSettings->r_string("gunslinger_base", "burn_restore_materials");
+		SStringVec materials = materialList.Split(',');
+		for (xr_string mtl : materials)
+		{
+			m_burn_restore_materials.push_back(mtl.c_str());
+		}
+	}
 	if (pGameGlobals->line_exist("night_vision", "night_vision_animator"))
 	{
 		LPCSTR nvg_animator = pGameGlobals->r_string("night_vision", "night_vision_animator");
@@ -839,6 +851,10 @@ void	CActor::Hit(SHit* pHDS)
 			float hit_power = EngineExternal().ShadowOfChernobylMode() ? HitArtefactsOnBeltLegacy(HDS.damage(), HDS.hit_type) : HitArtefactsOnBelt(HDS.damage(), HDS.hit_type);
 			HDS.power = hit_power;
 			HDS.add_wound = true;
+			if (HDS.damage() > 0.05f && (HDS.hit_type == ALife::eHitTypeBurn || HDS.hit_type == ALife::eHitTypeLightBurn))
+			{
+				m_actor_burning = true;
+			}
 			if (m_isBeforeHitCallback)
 			{
 				if (g_Alive())
@@ -1730,6 +1746,33 @@ void CActor::UpdateCL()
 	if (HudAnimator())
 	{
 		HudAnimator()->Update();
+	}
+	
+	if (IsActorBurning() && HudAnimator() && HudAnimator()->BurnAnimator())
+	{
+		if (HudAnimator()->BurnAnimator()->IsActive())
+		{
+			conditions().ChangeWoundsByType(HudAnimator()->BurnAnimator()->m_burn_restore * dt, ALife::eHitTypeBurn);
+			if (m_need_fire_particle)
+			{
+				HudAnimator()->BurnAnimator()->StartFlameParticle();
+				m_need_fire_particle = false;
+			}
+		}
+		else 
+		{
+			float material_burn_restore_speed = GetMaterialBurnRestoreSpeed(GMLib.GetMaterialByIdx(material().last_material_idx())->m_Name.c_str());
+			if (material_burn_restore_speed > 0)
+			{
+				conditions().ChangeWoundsByType(material_burn_restore_speed * dt, ALife::eHitTypeBurn);
+			}
+			if (g_SingleGameDifficulty == egdNovice)
+			{
+				SDrawStaticStruct* s = CurrentGameUI()->AddCustomStatic("gunsl_messenger", true);
+				s->SetText(g_pStringTable->translate("gunsl_actor_burned").c_str());
+			}
+			conditions().ChangeWoundsByType(m_actor_burn_restore_speed * dt, ALife::eHitTypeBurn);
+		}
 	}
 
 	Device.hudViewportData.ActorHealth = GetfHealth();
@@ -3335,4 +3378,21 @@ void CScriptGameObject::SetCharacterMaxWeight(float value)
 		pInventoryOwner->inventory().SetMaxWeight(value);
 	else
 		Msg("! SetCharacterMaxWeight(...): pInventoryOwner is nullptr!");
+}
+
+bool CActor::IsActorBurning()
+{
+	return m_actor_burning;
+}
+
+float CActor::GetMaterialBurnRestoreSpeed(LPCSTR mtl)
+{
+	for (LPCSTR material_name : m_burn_restore_materials)
+	{
+		if (!xr_strcmp(material_name, mtl))
+		{
+			return m_burn_restore_material_speed;
+		}
+	}
+	return 0.f;
 }

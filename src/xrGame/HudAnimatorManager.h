@@ -11,6 +11,7 @@ class CHudItemAnimator;
 class CBackpackAnimator;
 class CHudStateAnimator;
 class CHudAnimatorManager;
+class CBurnAnimator;
 
 class CHudAnimatorBase
 {
@@ -87,6 +88,7 @@ public:
 	virtual CHudItemAnimator* cast_item_animator() { return nullptr; }
 	virtual CHudStateAnimator* cast_hud_state_animator() { return nullptr; }
 	virtual CBackpackAnimator* cast_backpack_animator() { return nullptr; }
+	virtual CBurnAnimator* cast_burn_animator() { return nullptr; }
 	virtual CHudPdaAnimator* cast_pda_animator() { return nullptr; }
 };
 
@@ -191,6 +193,7 @@ class CHudAnimatorManager
 	CHudItemAnimator* m_item_animator = nullptr;
 	CHudStateAnimator* m_hud_state_animator = nullptr;
 	CBackpackAnimator* m_backpack_animator = nullptr;
+	CBurnAnimator* m_burn_animator = nullptr;
 
 	CHudAnimatorBase* m_current_animator = nullptr;
 	CHudAnimatorBase* m_target_animator = nullptr;
@@ -227,4 +230,5 @@ public:
 	CHudAnimatorBase* CurrentAnimator() { return m_current_animator; }
 	CHudAnimatorBase* TargetAnimator() { return m_target_animator; }
 	CBackpackAnimator* BackpackAnimator() { return m_backpack_animator; }
+	CBurnAnimator* BurnAnimator() { return m_burn_animator; }
 };
