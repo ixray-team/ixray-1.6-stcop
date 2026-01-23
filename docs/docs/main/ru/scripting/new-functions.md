@@ -852,4 +852,38 @@ args: wallmark_object(script game object), status (boolean)
 --// Get fog distance from current env
 level.get_fog_distance()
 retval: float
+
+```
+
+## level (runtime storage)
+```lua
+
+--// Специальная обертка для проброса строковых луа таблиц между перезагрузками луа машины
+
+--// Проверить наличие таблицы строк в хранилище по имени
+level.is_exists_named_stash_string_vector(key_name)
+retval: bool
+args: key_name (string)
+
+--// Получить таблицу строк из хранилища по имени
+level.get_named_stash_string_vector(key_name)
+retval: lua table
+args: key_name (string)
+
+--// Заполнить таблицу строк в хранилище по имени
+level.set_named_stash_string_vector(key_name, table)
+retval: void
+args:
+ key_name (string)
+ table (lua table)
+
+--// Удалить таблицу строк из хранилища по имени
+level.remove_named_stash_string_vector(key_name)
+retval: void
+args: key_name (string)
+
+--// Удалить все таблицы строк из хранилища
+level.remove_all_named_stash_string_vectors()
+retval: void
+
 ```
