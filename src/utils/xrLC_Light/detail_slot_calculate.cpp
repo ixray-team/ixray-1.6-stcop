@@ -164,14 +164,14 @@ float getLastRP_Scale(CDB::COLLIDER* DB, R_Light& L)//, Face* skip)
 	return scale;
 }
 
+#include "embree_raytracing/EmbreeRayTrace.h"
 #include "../xrForms/CompilersUI.h"
 
-extern float RaytraceEmbreeDetails(R_Light& L, Fvector& P, Fvector& N, float range);
 float rayTrace	(CDB::COLLIDER* DB, R_Light& L, Fvector& P, Fvector& D, float R)//, Face* skip)
 {
 	if (gCompilerMode.Embree)
 	{
- 		return RaytraceEmbreeDetails(L, P, D, R);
+ 		return EmbreeMain.RaytraceEmbreeDetails(P, D, R);
 	}
 	else
 	{

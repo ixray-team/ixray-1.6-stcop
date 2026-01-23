@@ -8,59 +8,39 @@
 
 #include "ppl.h"
 
-#define NUM_THREADS		CPU::ID.n_threads
+#include "embree_raytracing/EmbreeRayTrace.h"
 
-xr_atomic_s32 IDX;
-
- 
 void xrLight_Details()
 {
 	CTimer start_time;
-
- 	CThreadManager Threads;
-	 
-//  3:31 min 3:29
-/*	for (u32 thID = 0; thID < NUM_THREADS; thID++)
-	{
-		CThread* T = new LightThread(thID);
-		T->thMessages = FALSE;
-		T->thMonitor = FALSE;
-		Threads.start(T);
-	}
-	
-	Threads.wait();
-*/
-
- // 3:15min, 4:03 ppl
+   
 	u32 MAX_Z = gl_data.slots_data.size_z();
 	u32 MAX_X = gl_data.slots_data.size_x();
 	thread_local CDB::COLLIDER		DB;
 	DB.ray_options(CDB::OPT_CULL);
 	DB.box_options(CDB::OPT_FULL_TEST);
-	thread_local base_lighting		Selected;
 
-	thread_local DWORDVec box_result;
+
+	thread_local base_lighting		Selected;
+ 	thread_local DWORDVec			box_result;
+
+	InitializeEmbreeDevice();
  
+	xr_atomic_u32 IndexTask = 0;
 	xr_parallel_for
 	(
-		size_t(0), size_t(MAX_Z),
-		[&](size_t Z)
+		size_t(0), size_t(MAX_Z), [&](size_t Z)
 		{
-			Status("Z: %u/%u, processed: %u", Z, gl_data.slots_data.size_z(), IDX.load());
-
-			for (u32 X = 0; X < gl_data.slots_data.size_x(); X++)
+ 			for (u32 X = 0; X < gl_data.slots_data.size_x(); X++)
 			{
-
-				DetailSlot& DS = gl_data.slots_data.get_slot(X, Z);
-				if (!detail_slot_process(X, Z, DS))
-					continue;
-				if (!detail_slot_calculate(X, Z, DS, box_result, DB, Selected))
-					continue;
+ 				DetailSlot& DS = gl_data.slots_data.get_slot(X, Z);
+				if (!detail_slot_process(X, Z, DS))												continue;
+				if (!detail_slot_calculate(X, Z, DS, box_result, DB, Selected))					continue;
 				gl_data.slots_data.set_slot_calculated(X, Z);
 
 			}
-
-			IDX.fetch_add(1);
+ 
+			AditionalData("Processing TaskID[%u/%u]", IndexTask.fetch_add(1), MAX_Z);
 		}
 	);
  
