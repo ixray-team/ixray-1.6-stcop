@@ -51,12 +51,10 @@ class IPhysicsShellHolder
 	virtual	CPhysicsShell*&				_BCL	ObjectPPhysicsShell				()						=0;
 	virtual	void						_BCL	enable_notificate					()						=0;
 	virtual bool						_BCL	has_parent_object					()						=0;
-	virtual	void						_BCL	on_physics_disable					()						=0;
 	virtual	IPHCapture*					_BCL	PHCapture							()						=0;
 	virtual	bool						_BCL	IsInventoryItem						()						=0;
 	virtual	bool						_BCL	IsActor								()						=0;
 	virtual bool						_BCL	IsStalker							()						=0;
-	//virtual	void							SetWeaponHideState					( u16 State, bool bSet )=0;
 	virtual	void						_BCL	HideAllWeapons						( bool v )				=0;//(SetWeaponHideState(INV_STATE_BLOCK_ALL,true))
 	virtual	void						_BCL	MovementCollisionEnable				( bool enable )			=0;
 	virtual CPHSoundPlayer*				_BCL	ObjectPhSoundPlayer				()  					=0;
