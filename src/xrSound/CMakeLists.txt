@@ -19,7 +19,6 @@ file(GLOB_RECURSE SND_SOURCE_3RDI_FILES
     "OpenALDeviceList.*"
     "guids.*"
     "cl_intersect.*"
-    "pffft.*"
 )
 file(GLOB_RECURSE SND_SOURCE_CORE_RECORD_FILES "Recorder/*.*")
 file(GLOB_RECURSE SND_SOURCE_CORE_NEW_FILES "New/*.*")
@@ -35,9 +34,6 @@ source_group("3rd Interfaces" FILES ${SND_SOURCE_3RDI_FILES})
 # Apply list
 list(APPEND SND_SRC_FILES ${SND_SOURCE_ALL_FILES})
 
-if (IXRAY_ENABLE_RESONANCEAUDIO)
-    list(FILTER SND_SRC_FILES EXCLUDE REGEX "pffft.*")
-endif()
 if(NOT IXRAY_MP)
     list(FILTER SND_SRC_FILES EXCLUDE REGEX "Recorder/*.*")
 endif()
@@ -56,6 +52,7 @@ target_compile_definitions(xrSound PRIVATE _USRDLL)
 
 # Linker list
 target_link_libraries(xrSound PUBLIC xrCore)
+target_link_libraries(xrSound PUBLIC pffft)
 target_link_libraries(xrSound PRIVATE Ogg::ogg)
 target_link_libraries(xrSound PRIVATE Vorbis::vorbis)
 target_link_libraries(xrSound PRIVATE Vorbis::vorbisfile)

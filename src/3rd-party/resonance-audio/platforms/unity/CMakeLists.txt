@@ -158,7 +158,7 @@ if (IOS_DETECTED OR ANDROID)
     set(RA_UNITY_SOURCES
             $<TARGET_OBJECTS:ResonanceAudioObj>
             $<TARGET_OBJECTS:SadieHrtfsObj>
-            $<TARGET_OBJECTS:PffftObj>
+            $<TARGET_OBJECTS:pffft>
             ${RA_UNITY_SOURCE_DIR}/unity_nativeaudioplugins.h
             ${RA_UNITY_SOURCE_DIR}/unity_nativeaudioplugins.cc
             ${RA_UNITY_SOURCE_DIR}/unity.h
@@ -168,7 +168,7 @@ else ()
     set(RA_UNITY_SOURCES
             $<TARGET_OBJECTS:ResonanceAudioObj>
             $<TARGET_OBJECTS:SadieHrtfsObj>
-            $<TARGET_OBJECTS:PffftObj>
+            $<TARGET_OBJECTS:pffft>
             $<TARGET_OBJECTS:GeometricalAcousticsObj>
             $<TARGET_OBJECTS:OggRecorderObj>
             ${RA_UNITY_SOURCE_DIR}/unity_nativeaudioplugins.h
@@ -185,8 +185,6 @@ set(PFFFT_INCLUDE_DIR ${PFFFT_DIR})
 target_include_directories(audiopluginresonanceaudio PRIVATE ${UNITY_PLUGIN_SDK_DIR})
 target_include_directories(audiopluginresonanceaudio PRIVATE ${RA_SOURCE_DIR})
 target_include_directories(audiopluginresonanceaudio PRIVATE ${LIBEMBREE_INCLUDE_DIR})
-target_include_directories(audiopluginresonanceaudio PRIVATE ${EIGEN3_INCLUDE_DIR}/)
-target_include_directories(audiopluginresonanceaudio PRIVATE ${PFFFT_INCLUDE_DIR}/)
 target_include_directories(audiopluginresonanceaudio PRIVATE ${LIBVORBIS_INCLUDE_DIR})
 target_include_directories(audiopluginresonanceaudio PRIVATE ${LIBOGG_INCLUDE_DIR})
 if (MSVC)
@@ -255,7 +253,7 @@ if (BUILD_GEOMETRICAL_ACOUSTICS_TESTS)
             $<TARGET_OBJECTS:gtest>
             $<TARGET_OBJECTS:ResonanceAudioObj>
             $<TARGET_OBJECTS:SadieHrtfsObj>
-            $<TARGET_OBJECTS:PffftObj>
+            $<TARGET_OBJECTS:pffft>
             $<TARGET_OBJECTS:GeometricalAcousticsObj>)
     # Link test executable against gtest & gtest_main
     TargetLinkExternal3PStaticLibs(RAGeometricAcousticsUnitTests)
