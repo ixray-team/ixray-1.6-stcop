@@ -162,25 +162,26 @@ int APIENTRY WinMain
 	//Console->Execute("stat_memory");
 	Msg("IX-Ray %s %s build info: hash[%s] branch[%s] commit author[%s]", EngineExternal().GetCurrentPlatformFullName(), _VER, _HASH, _BRANCH, _AUTHOR);
 
-	splash::update(75, "Creating device");
+	splash::update(70, "Creating device");
 	EngineLoadStage4();
 
-	splash::update(90, "Loading custom settings");
+	splash::update(80, "Loading custom settings");
 	LoadCustomSettings();
-
-	splash::update(100, "Finalizing");
-	// Splash wnd => Game wnd
-	splash::hide();
-		SDL_DestroyWindow(wnd1);
-		
-	MigrateToGameWindow();
 	
 #ifdef DEBUG_DRAW
 	RenderUI();
 	EditorLuaInit();
 #endif
 
+	splash::update(90, "Loading menu");
+
 	EngineLoadStage5();
+	// Splash wnd => Game wnd
+	splash::hide();
+	SDL_DestroyWindow(wnd1);
+
+	MigrateToGameWindow();
+	EngineLoadStage6();
 
 	xr_delete(g_pStringTable);
 
