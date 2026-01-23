@@ -96,37 +96,43 @@ float EmbreeRayTraceModel::RaytraceEmbreeDetails( Fvector& P, Fvector& N, float 
 	return data_hits.energy;
 }
 
-
-void LoadGeomBufferNew(RTCDevice& EmbreeDevice, RTCGeometry& geom, RTCBuildQuality& quality, TriangleContainer& geom_buffer)
-{
-	geom = rtcNewGeometry(EmbreeDevice, RTC_GEOMETRY_TYPE_TRIANGLE);
-	rtcSetGeometryBuildQuality(geom, quality);
-	rtcSetGeometryOccludedFilterFunction(geom, &FilterRaytraceD);
-
-	rtcSetSharedGeometryBuffer(geom, RTC_BUFFER_TYPE_VERTEX, 0, RTC_FORMAT_FLOAT3, geom_buffer.vertex().data(), 0, sizeof(Fvector), geom_buffer.vertex().size());
-	rtcSetSharedGeometryBuffer(geom, RTC_BUFFER_TYPE_INDEX, 0, RTC_FORMAT_UINT3, geom_buffer.faces().data(), 0, sizeof(Triangle), geom_buffer.faces().size());
-
-	rtcCommitGeometry(geom);
-};
-
 // хм почемуто не хочет с другого места работать 
 
-RTCDevice DeviceDetails = rtcNewDevice("");
+
+void errors_embree_det(void* userPtr, enum RTCError code, const char* str)
+{
+	R_ASSERT2(false, str);
+}
+
+RTCDevice DeviceDetails = nullptr;
 void EmbreeRayTraceModel::InitEmbreeDetails()
 {
- 	// Загрузка Геометрии
-	this->BuildRaytraceModel_2();
+	// InitializeEmbreeDevice();	// TODO
+	
+	DeviceDetails = rtcNewDevice(GetDeviceConfig());;
+	rtcSetDeviceErrorFunction(DeviceDetails, &errors_embree_det, nullptr);
 
+ 	// Загрузка Геометрии
+	auto GeometryLoad = [&]()
+	{
+		this->BuildRaytraceModel_2();
+ 			
+		IntelGeometryDetails = rtcNewGeometry(DeviceDetails, RTC_GEOMETRY_TYPE_TRIANGLE);
+		rtcSetGeometryBuildQuality(IntelGeometryDetails, RTCBuildQuality::RTC_BUILD_QUALITY_LOW);
+		rtcSetGeometryOccludedFilterFunction(IntelGeometryDetails, &FilterRaytraceD);
+
+		rtcSetSharedGeometryBuffer(IntelGeometryDetails, RTC_BUFFER_TYPE_VERTEX, 0, RTC_FORMAT_FLOAT3, static_geom.vertex().data(), 0, sizeof(Fvector), static_geom.vertex().size());
+		rtcSetSharedGeometryBuffer(IntelGeometryDetails, RTC_BUFFER_TYPE_INDEX, 0, RTC_FORMAT_UINT3, static_geom.faces().data(), 0, sizeof(Triangle), static_geom.faces().size());
+		rtcCommitGeometry(IntelGeometryDetails);
+	};
+	GeometryLoad();
 	clMsg("Loading Embree : verts[%u] faces[%u]", static_geom.vertex_cnt(), static_geom.faces_cnt());
 
-	auto quality = RTCBuildQuality::RTC_BUILD_QUALITY_LOW;
-	LoadGeomBufferNew(DeviceDetails, IntelGeometryDetails, quality, static_geom);
-
-	 
-	IntelSceneDetails = rtcNewScene(EmbreeDevice);
+  
+	IntelSceneDetails = rtcNewScene(DeviceDetails);
 	rtcSetSceneFlags(IntelSceneDetails, scene_flags);
-
-	rtcCommitGeometry(IntelGeometryDetails);
 	rtcAttachGeometryByID(IntelSceneDetails, IntelGeometryDetails, 0);
 	rtcCommitScene(IntelSceneDetails);
+
+	clMsg("Scene Create");
 }
