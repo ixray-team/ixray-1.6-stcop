@@ -64,6 +64,8 @@ bool CWeapon::install_upgrade_impl( LPCSTR section, bool test )
 
 	result |= process_if_exists(section, "recharge_time", &CInifile::r_float, m_fRechargeTime, test);
 
+	result |= process_if_exists_set(section, "use_revolver_scheme", &CInifile::r_bool, m_bUseRevolverScheme, test);
+
 	return result;
 }
 

@@ -672,6 +672,8 @@ void CWeapon::Load		(LPCSTR section)
 	m_bIsPumpEnabled = READ_IF_EXISTS(pSettings, r_bool, section, "use_pump_system", false);
 	m_bNeedPumpReloadEnd = READ_IF_EXISTS(pSettings, r_bool, section, "need_pump_reload_end", false);
 
+	m_bUseRevolverScheme = !!READ_IF_EXISTS(pSettings, r_bool, section, "use_revolver_scheme", false);
+
 	m_iAutoAimTime = std::floor(READ_IF_EXISTS(pSettings, r_float, section, "autoaim_time", 0.0f) * 1000.0f);
 	m_bAutoAimOnlyAlive = !!READ_IF_EXISTS(pSettings, r_bool, section, "autoaim_only_alive", false);
 	m_bAutoAimIgnoreDead = !!READ_IF_EXISTS(pSettings, r_bool, section, "autoaim_ignore_dead", false);
