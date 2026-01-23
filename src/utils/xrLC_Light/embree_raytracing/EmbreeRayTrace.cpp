@@ -229,6 +229,8 @@ void errors_embree(void* userPtr, enum RTCError code, const char* str)
 
 void InitializeEmbreeDevice()
 {
+	if (isDeviceInitialized)		return;
+
 	bool avx_test = CPU::ID().hasFeature(CPUFeature::AVX2);
 	bool sse = CPU::ID().hasFeature(CPUFeature::SSE);
 
@@ -246,4 +248,6 @@ void InitializeEmbreeDevice()
 	string128 state;
 	sprintf(state, "- Intilized Intel Embree %s - %s", RTC_VERSION_STRING, avx_test ? "avx" : sse ? "sse" : "default");
 	Status(state);
+
+	isDeviceInitialized = true;
 }
