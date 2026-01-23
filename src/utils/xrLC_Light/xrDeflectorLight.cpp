@@ -149,7 +149,7 @@ float rayTrace	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvec
 	}
 	else
 	{
-		return EmbreeMain.RaytraceEmbreeProcess(L, P, D, R, skip);
+		return EmbreeMain.RaytraceEmbreeProcess(P, D, R, skip);
 	}
 }
 
@@ -278,3 +278,120 @@ void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c& C, Fvector& P,
 }
 
 
+void LightPointNew(EmbreeRayTraceModel* MDL, base_color_c& C, Fvector& P, Fvector& N, base_lighting& lights, u32 flags, Face* skip)
+{
+	auto processLight = [&]<typename T>(R_Light & L, T & accumulator, bool isSunOrHemi)
+	{
+		Fvector Ldir;
+		Fvector Pnew = P;
+		Pnew.mad(N, 0.01f);
+		float att = 0.0f;
+
+		switch (L.type)
+		{
+		case LT_DIRECT:
+		{
+			Ldir.invert(L.direction);
+			float D = Ldir.dotproduct(N);
+			if (D <= 0)
+				return;
+
+			float trace = MDL->RaytraceEmbreeProcess( Pnew, Ldir, 1000.f, skip );
+			att = isSunOrHemi ? L.energy * trace : D * L.energy * trace;
+			break;
+		}
+		case LT_POINT:
+		{
+			float sqD = P.distance_to_sqr(L.position);
+			if (sqD > L.range2)
+				return;
+
+			Ldir.sub(L.position, P).normalize_safe();
+			float D = Ldir.dotproduct(N);
+			if (D <= 0)
+				return;
+
+			float R = _sqrt(sqD);
+			float trace = MDL->RaytraceEmbreeProcess( Pnew, Ldir, R, skip);
+			float scale = D * L.energy * trace;
+
+			if (isSunOrHemi)
+			{
+				att = scale / (L.attenuation0 + L.attenuation1 * R + L.attenuation2 * sqD);
+			}
+			else
+			{
+				att = (inlc_global_data()->gl_linear())
+					? scale * (1 - R / L.range)
+					: scale * (1 / (L.attenuation0 + L.attenuation1 * R + L.attenuation2 * sqD) - R * L.falloff);
+			}
+			break;
+		}
+		case LT_SECONDARY:
+		{
+			float sqD = P.distance_to_sqr(L.position);
+			if (sqD > L.range2)
+				return;
+
+			Ldir.sub(L.position, P).normalize_safe();
+			float D = Ldir.dotproduct(N);
+			if (D <= 0)
+				return;
+
+			D *= -Ldir.dotproduct(L.direction);
+			if (D <= 0)
+				return;
+
+			float R = _sqrt(sqD);
+			float trace = MDL->RaytraceEmbreeProcess( Pnew, Ldir, R, skip );
+			att = powf(D, 0.125f) * L.energy * trace * (1 - R / L.range);
+			break;
+		}
+		}
+
+		if (isSunOrHemi)
+		{
+			if constexpr (std::is_arithmetic_v<T>)
+			{
+				accumulator += att;
+			}
+			else
+			{
+				accumulator.add(att);
+			}
+		}
+		else
+		{
+			C.rgb.x += att * L.diffuse.x;
+			C.rgb.y += att * L.diffuse.y;
+			C.rgb.z += att * L.diffuse.z;
+		}
+	};
+
+	// RGB Lights
+	if (!(flags & LP_dont_rgb))
+	{
+		for (R_Light& L : lights.rgb)
+		{
+			processLight(L, C.rgb, false);
+		}
+	}
+
+	// Sun Lights
+	if (!(flags & LP_dont_sun))
+	{
+		for (R_Light& L : lights.sun)
+		{
+			processLight(L, C.sun, true);
+		}
+	}
+
+	// Hemi Lights
+	if (!(flags & LP_dont_hemi))
+	{
+		for (R_Light& L : lights.hemi)
+		{
+			processLight(L, C.hemi, true);
+		}
+	}
+}

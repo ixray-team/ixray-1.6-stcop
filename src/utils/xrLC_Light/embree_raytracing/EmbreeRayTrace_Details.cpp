@@ -1,18 +1,20 @@
 #include "stdafx.h"
 #include "EmbreeRayTrace.h"
-
 #include "../../xrCore/Collision/xrCDB.h"
-
-// INTEL DATA STRUCTURE
-int LastGeometryDetailsID = RTC_INVALID_GEOMETRY_ID;
-
-RTCDevice DeviceDetails;
-RTCScene IntelSceneDetails;
-RTCGeometry IntelGeometryOpacue = 0;
- 
 #include "global_calculation_data.h"
 #include "xrLC_GlobalData.h"
+
 extern global_claculation_data	gl_data;
+
+struct RayQueryContext
+{
+	RTCRayQueryContext context;
+	Fvector B;
+
+	Face* skip = 0;
+ 	float energy = 1.0f;
+};
+
 
 bool CalculateEnergy(int PrimID, Fvector& B, float& energy, float u, float v)
 {
@@ -55,18 +57,7 @@ bool CalculateEnergy(int PrimID, Fvector& B, float& energy, float u, float v)
 
 	return true;
 }
-
-
-struct RayQueryContext
-{
-	RTCRayQueryContext context;
-	Fvector B;
-
-	Face* skip = 0;
-	R_Light* Light = 0;
-	float energy = 1.0f;
-};
-
+ 
 ICF void FilterRaytraceD(const struct RTCFilterFunctionNArguments* args)
 {
 	RayQueryContext* ctxt = (RayQueryContext*)args->context;
@@ -82,13 +73,11 @@ ICF void FilterRaytraceD(const struct RTCFilterFunctionNArguments* args)
 
 	args->valid[0] = 0;		 // Продолжить
 }
- 
-
-float RaytraceEmbreeDetails(R_Light& L, Fvector& P, Fvector& N, float range)
+  
+float EmbreeRayTraceModel::RaytraceEmbreeDetails( Fvector& P, Fvector& N, float range)
 {
   	RayQueryContext data_hits;
-	data_hits.Light = &L;
-	data_hits.skip = 0;
+ 	data_hits.skip = 0;
 	data_hits.energy = 1.0f;
 
 	RTCRayHit rayhit;
@@ -102,74 +91,31 @@ float RaytraceEmbreeDetails(R_Light& L, Fvector& P, Fvector& N, float range)
 
 	data_hits.context = context;
 	args.context = &data_hits.context;
-	rtcIntersect1(IntelSceneDetails, &rayhit, &args);
+	rtcIntersect1(IntelScene, &rayhit, &args);
 
 	return data_hits.energy;
 }
 
-void LoadGeomBuffer(RTCGeometry& geom, TriangleContainer& geom_buffer)
-{
-	geom = rtcNewGeometry(DeviceDetails, RTC_GEOMETRY_TYPE_TRIANGLE);
-	rtcSetGeometryBuildQuality(geom, RTC_BUILD_QUALITY_LOW);
-	rtcSetGeometryOccludedFilterFunction(geom, &FilterRaytraceD);
-
-	rtcSetSharedGeometryBuffer(geom, RTC_BUFFER_TYPE_VERTEX, 0, RTC_FORMAT_FLOAT3, geom_buffer.vertex().data(), 0, sizeof(Fvector), geom_buffer.vertex().size());
-	rtcSetSharedGeometryBuffer(geom, RTC_BUFFER_TYPE_INDEX, 0, RTC_FORMAT_UINT3, geom_buffer.faces().data(), 0, sizeof(Triangle), geom_buffer.faces().size());
-
-	rtcCommitGeometry(geom);
-};
-
-void  EmbreeData::ConsturctGeometry()
-{
-	// se7kills Rewrite
-	EmbreeData::BuildRaytraceModel_2();
-
-	CTimer t; t.Start();
-	LoadGeomBuffer(IntelGeometryOpacue, static_geom);
-	rtcAttachGeometryByID(IntelSceneDetails, IntelGeometryOpacue, 0);
-	rtcCommitScene(IntelSceneDetails);
-
-	clMsg("$[Embree] Loading To Scene geometry : %u ms", t.GetElapsed_ms());
-}
-
-
-void EmbreeData::InitEmbreeDetails()
+void EmbreeRayTraceModel::InitEmbreeDetails()
 {
 	Phase("Loading Embree");
-
-	CTimer t; t.Start();
-
-	bool avx_test = true;
-	bool sse = false;
-
-	const char* config = "";
-	if (avx_test)
-		config = "threads=16,isa=avx2";
-	else if (sse)
-		config = "threads=16,isa=sse4.2";
-	else
-		config = "threads=16,isa=sse2";
-
-	DeviceDetails = rtcNewDevice(config);
+  
+  	// Scene
+	IntelScene = rtcNewScene(EmbreeDevice);
+	rtcSetSceneFlags(IntelScene, RTCSceneFlags::RTC_SCENE_FLAG_NONE);
  
- 	string128 phase;
-	sprintf(phase, "Intilized Intel Embree (Details Raytracer) %s - %s", RTC_VERSION_STRING, avx_test ? "avx" : sse ? "sse" : "default");
-	Status(phase);
+	// Загрузка Геометрии
+	this->BuildRaytraceModel_2();
 
- 	// Scene
-	IntelSceneDetails = rtcNewScene(DeviceDetails);
-	rtcSetSceneFlags(IntelSceneDetails, RTCSceneFlags::RTC_SCENE_FLAG_NONE);
+	IntelGeometryNormal = rtcNewGeometry(EmbreeDevice, RTC_GEOMETRY_TYPE_TRIANGLE);
+	rtcSetGeometryBuildQuality(IntelGeometryNormal, RTC_BUILD_QUALITY_LOW);
+	rtcSetGeometryOccludedFilterFunction(IntelGeometryNormal, &FilterRaytraceD);
 
-	ConsturctGeometry();
+	rtcSetSharedGeometryBuffer(IntelGeometryNormal, RTC_BUFFER_TYPE_VERTEX, 0, RTC_FORMAT_FLOAT3, static_geom.vertex().data(), 0, sizeof(Fvector), static_geom.vertex().size());
+	rtcSetSharedGeometryBuffer(IntelGeometryNormal, RTC_BUFFER_TYPE_INDEX, 0, RTC_FORMAT_UINT3, static_geom.faces().data(), 0, sizeof(Triangle), static_geom.faces().size());
 
-	clMsg("$[Embree] Level is Loaded : %u ms", t.GetElapsed_ms());
+	rtcCommitGeometry(IntelGeometryNormal);
+	rtcAttachGeometryByID(IntelScene, IntelGeometryNormal, 0);
+	rtcCommitScene(IntelScene);
 }
-
-void IntelEmbereDetailsUNLOAD()
-{
- 	rtcDetachGeometry(IntelSceneDetails, 0);
- 	rtcReleaseGeometry(IntelGeometryOpacue);
  
-	rtcReleaseScene(IntelSceneDetails);
-	rtcReleaseDevice(DeviceDetails);
-}

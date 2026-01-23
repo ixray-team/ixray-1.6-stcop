@@ -169,6 +169,9 @@ void CBuild::Light()
 	xrPhase_Subdivide();
 	lc_global_data()->vertices_isolate_and_pool_reload();
 	IsolateVertices(TRUE);
+
+	//****************************************** Starting MU
+	run_mu_light();
  
 	//****************************************** Implicit
   	ImplicitLighting();
@@ -190,15 +193,12 @@ void CBuild::Light()
 	//****************************************** Merge geometry
 	Phase("Merging geometry...");
  	xrPhase_MergeGeometry();
- 
-	//****************************************** Starting MU
- 	run_mu_light();
-	
+  
 	//****************************************** Destroy RCast-model
  	Phase("Destroying ray-trace model...");
  	lc_global_data()->destroy_rcmodel();
-	if (gCompilerMode.Embree)
-		EmbreeMain.IntelEmbereUNLOAD();
+	if (gCompilerMode.Embree || gCompilerMode.CUDA)
+		EmbreeMain.IntelEmbereUnloadAll();
 }
 
 void CBuild::LightVertex	()
