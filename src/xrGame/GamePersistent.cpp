@@ -108,6 +108,16 @@ CGamePersistent::CGamePersistent(void)
 	SetBaseDof				(*DofValue);
 
 	g_Discord.SetStatus(g_pStringTable->translate(EngineExternal().GetTitle().c_str()).c_str());
+
+	// Hozar 2002: For some reason 
+	// we need it on scripts runing
+	g_pGamePersistent = this;
+
+	luabind::functor<void> ixr_framework;
+	if (ai().script_engine().functor("ixr_framework.init", ixr_framework))
+	{
+		ixr_framework();
+	}
 }
 
 CGamePersistent::~CGamePersistent(void)
