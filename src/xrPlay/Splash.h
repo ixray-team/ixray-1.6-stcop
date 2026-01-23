@@ -2,7 +2,7 @@
 
 namespace splash
 {
-	void show(void*&window);
-	void update(int, const char*);
-	void hide();
+	int Show();
+	void Close();
+	void SetProgressStatus(int prog, const char* status);
 }
