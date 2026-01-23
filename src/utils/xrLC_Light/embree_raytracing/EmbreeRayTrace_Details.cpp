@@ -91,31 +91,42 @@ float EmbreeRayTraceModel::RaytraceEmbreeDetails( Fvector& P, Fvector& N, float 
 
 	data_hits.context = context;
 	args.context = &data_hits.context;
-	rtcIntersect1(IntelScene, &rayhit, &args);
+	rtcIntersect1(IntelSceneDetails, &rayhit, &args);
 
 	return data_hits.energy;
 }
 
+
+void LoadGeomBufferNew(RTCDevice& EmbreeDevice, RTCGeometry& geom, RTCBuildQuality& quality, TriangleContainer& geom_buffer)
+{
+	geom = rtcNewGeometry(EmbreeDevice, RTC_GEOMETRY_TYPE_TRIANGLE);
+	rtcSetGeometryBuildQuality(geom, quality);
+	rtcSetGeometryOccludedFilterFunction(geom, &FilterRaytraceD);
+
+	rtcSetSharedGeometryBuffer(geom, RTC_BUFFER_TYPE_VERTEX, 0, RTC_FORMAT_FLOAT3, geom_buffer.vertex().data(), 0, sizeof(Fvector), geom_buffer.vertex().size());
+	rtcSetSharedGeometryBuffer(geom, RTC_BUFFER_TYPE_INDEX, 0, RTC_FORMAT_UINT3, geom_buffer.faces().data(), 0, sizeof(Triangle), geom_buffer.faces().size());
+
+	rtcCommitGeometry(geom);
+};
+
+// хм почемуто не хочет с другого места работать 
+
+RTCDevice DeviceDetails = rtcNewDevice("");
 void EmbreeRayTraceModel::InitEmbreeDetails()
 {
-	Phase("Loading Embree");
-  
-  	// Scene
-	IntelScene = rtcNewScene(EmbreeDevice);
-	rtcSetSceneFlags(IntelScene, RTCSceneFlags::RTC_SCENE_FLAG_NONE);
- 
-	// Загрузка Геометрии
+ 	// Загрузка Геометрии
 	this->BuildRaytraceModel_2();
 
-	IntelGeometryNormal = rtcNewGeometry(EmbreeDevice, RTC_GEOMETRY_TYPE_TRIANGLE);
-	rtcSetGeometryBuildQuality(IntelGeometryNormal, RTC_BUILD_QUALITY_LOW);
-	rtcSetGeometryOccludedFilterFunction(IntelGeometryNormal, &FilterRaytraceD);
+	clMsg("Loading Embree : verts[%u] faces[%u]", static_geom.vertex_cnt(), static_geom.faces_cnt());
 
-	rtcSetSharedGeometryBuffer(IntelGeometryNormal, RTC_BUFFER_TYPE_VERTEX, 0, RTC_FORMAT_FLOAT3, static_geom.vertex().data(), 0, sizeof(Fvector), static_geom.vertex().size());
-	rtcSetSharedGeometryBuffer(IntelGeometryNormal, RTC_BUFFER_TYPE_INDEX, 0, RTC_FORMAT_UINT3, static_geom.faces().data(), 0, sizeof(Triangle), static_geom.faces().size());
+	auto quality = RTCBuildQuality::RTC_BUILD_QUALITY_LOW;
+	LoadGeomBufferNew(DeviceDetails, IntelGeometryDetails, quality, static_geom);
 
-	rtcCommitGeometry(IntelGeometryNormal);
-	rtcAttachGeometryByID(IntelScene, IntelGeometryNormal, 0);
-	rtcCommitScene(IntelScene);
+	 
+	IntelSceneDetails = rtcNewScene(EmbreeDevice);
+	rtcSetSceneFlags(IntelSceneDetails, scene_flags);
+
+	rtcCommitGeometry(IntelGeometryDetails);
+	rtcAttachGeometryByID(IntelSceneDetails, IntelGeometryDetails, 0);
+	rtcCommitScene(IntelSceneDetails);
 }
- 
