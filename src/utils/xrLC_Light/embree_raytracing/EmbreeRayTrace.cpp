@@ -17,20 +17,9 @@ extern CompilersMode gCompilerMode;
 // Инициализация Основных Фишек Embree
 
 // INTEL DATA STRUCTURE
-RTCSceneFlags scene_flags = RTC_SCENE_FLAG_NONE;
-RTCBuildQuality scene_quality = RTC_BUILD_QUALITY_LOW;
+EmbreeRayTraceModel EmbreeMain;
 
-RTCDevice device	= 0;
-RTCScene IntelScene = 0;
  
-RTCGeometry IntelGeometryNormal = 0;
-RTCGeometry IntelGeometryTransp = 0;
- 
-EmbreeData EmbreeMain;
- 
-// Сильно ускоряет Но не нужно сильно завышать вообще 0.01f желаетельно 
-// Влияет на яркость на выходе (если близко к 0 будет занулятся)
-// можно и 0.10f Было раньше так
 // Сильно ускоряет Но не нужно сильно завышать вообще 0.01f желаетельно 
 // Влияет на яркость на выходе (если близко к 0 будет занулятся)
 // можно и 0.10f Было раньше так
@@ -41,9 +30,10 @@ struct RayQueryContext
 	RTCRayQueryContext context;
 	Fvector B;
 
- 	Face* skip = 0;
-	R_Light* Light = 0;
-	float energy = 1.0f;
+ 	Face* skip			  = 0;
+	vecFace* static_dummy = nullptr;
+	vecFace* transp_dummy = nullptr;
+ 	float energy = 1.0f;
 };
  
 // Сделать потом переключалку
@@ -73,18 +63,18 @@ bool CalculateEnergy(RayQueryContext* ctxt, RTCHit* hit, Face* F, Fvector& B)
 	// LUT вместо деления и sqr
 	float a = float(pixel_a) / 255.f;
 	float opacity = 1.f - a * a;
-	ctxt->energy *= opacity;  // opacityLUT[pixel_a];
+	ctxt->energy *= opacity;
 	if (ctxt->energy < EmbreeEnergyMAX)
 		return false;
 
 	return true;
 }
-
+ 
 void FilterRayTraceOpaque(const struct RTCFilterFunctionNArguments* args)
 {
 	RayQueryContext* ctxt = (RayQueryContext*)args->context;
 	RTCHit* hit = (RTCHit*)args->hit;
-	Face* F = EmbreeMain.static_geom.dummy[hit->primID];
+	Face* F = (*ctxt->static_dummy)[hit->primID];
 	if (F != ctxt->skip)
 	{
 		ctxt->energy = 0;
@@ -100,7 +90,7 @@ void FilterRaytraceTransparent(const struct RTCFilterFunctionNArguments* args)
 	RTCHit* hit = (RTCHit*)args->hit;
 
 	// Собрать все
-	Face* F = EmbreeMain.static_geom_transp.dummy[hit->primID]; 
+	Face* F = (*ctxt->transp_dummy)[hit->primID];
 	if (F != ctxt->skip && !CalculateEnergy(ctxt, hit, F, ctxt->B))
 	{
 		ctxt->energy = 0;
@@ -110,14 +100,15 @@ void FilterRaytraceTransparent(const struct RTCFilterFunctionNArguments* args)
 	args->valid[0] = 0;		 // Продолжаем Trace
 }
 
-float EmbreeData::RaytraceEmbreeProcess(R_Light& L, Fvector& P, Fvector& N, float range, void* skip)
+float EmbreeRayTraceModel::RaytraceEmbreeProcess(Fvector& P, Fvector& N, float range, void* skip)
 {
 	// Структура для RayTracing
 	RayQueryContext data_hits;
-	data_hits.Light = &L;
-	data_hits.skip = (Face*)skip;
+ 	data_hits.skip = (Face*)skip;
 	data_hits.energy = 1.0f;
-  
+	data_hits.static_dummy = &static_geom.dummy;
+	data_hits.transp_dummy = &static_geom_transp.dummy;
+
 	RTCRay ray;
 	SetRay1(ray, P, N, 0.1f, range);
 
@@ -144,10 +135,12 @@ size_t GetMemory()
 	return used;
 }
 
+static xrCriticalSection csEmbree;
+ 
 // Loading Common 
-void LoadGeomBuffer(RTCGeometry& geom, RTCBuildQuality& quality, bool FilterTransp, TriangleContainer& geom_buffer)
+void LoadGeomBuffer(RTCDevice& EmbreeDevice, RTCGeometry& geom, RTCBuildQuality& quality, bool FilterTransp, TriangleContainer& geom_buffer)
 {
-	geom = rtcNewGeometry(device, RTC_GEOMETRY_TYPE_TRIANGLE);
+	geom = rtcNewGeometry(EmbreeDevice, RTC_GEOMETRY_TYPE_TRIANGLE);
 	rtcSetGeometryBuildQuality(geom, quality);
 
 	if (FilterTransp)
@@ -161,103 +154,96 @@ void LoadGeomBuffer(RTCGeometry& geom, RTCBuildQuality& quality, bool FilterTran
 	rtcCommitGeometry(geom);
 };
 
-void EmbreeData::InitializeGeometry()
+void EmbreeRayTraceModel::CommitScene()
 {
- 	// Конструктор модели
- 	EmbreeData::BuildRaytraceModel();
-   	LoadGeomBuffer(IntelGeometryNormal, scene_quality, false, static_geom);
-   	LoadGeomBuffer(IntelGeometryTransp, scene_quality, true, static_geom_transp);
- 
-	IntelScene = rtcNewScene(device);
+	if (gCompilerMode.EmbreeBVHCompact) scene_flags = scene_flags | RTC_SCENE_FLAG_COMPACT;
+	if (gCompilerMode.EmbreeBVHRobust)	scene_flags = scene_flags | RTC_SCENE_FLAG_ROBUST;
+
+ 	IntelScene = rtcNewScene(EmbreeDevice);
 	rtcSetSceneFlags(IntelScene, scene_flags);
 
- 	rtcAttachGeometryByID(IntelScene, IntelGeometryNormal, 0);
-	rtcAttachGeometryByID(IntelScene, IntelGeometryTransp, 1);
+	if (static_geom.faces_cnt() > 0)
+	{
+		LoadGeomBuffer(EmbreeDevice, IntelGeometryNormal, scene_quality, false, static_geom);
+		rtcAttachGeometryByID(IntelScene, IntelGeometryNormal, 0);
+	}
 
+	if (static_geom_transp.faces_cnt() > 0)
+	{
+		LoadGeomBuffer(EmbreeDevice, IntelGeometryTransp, scene_quality, true, static_geom_transp);
+		rtcAttachGeometryByID(IntelScene, IntelGeometryTransp, 1);
+	}
 	rtcCommitScene(IntelScene);
 }
 
-void EmbreeData::RemoveGeometry(bool isDealloc)
+void EmbreeRayTraceModel::InitializeGeometry()
 {
- 	if (isDealloc)
-	{
- 		rtcReleaseScene(IntelScene);
-  		static_geom.ClearAll();
-		static_geom_transp.ClearAll();
-	}
-	else
-	{
-		rtcReleaseScene(IntelScene);
-	}
- 	
-	IntelScene = 0;
+ 	// Конструктор модели
+ 	BuildRaytraceModel();
+	
+	csEmbree.Enter();
+	CommitScene();
+	csEmbree.Leave();
 }
 
+void EmbreeRayTraceModel::InitializeGeometry_Model(xr_vector<FaceDataEmbree>& faces)
+{
+	BuildModel(faces);
+
+	csEmbree.Enter();
+	CommitScene();
+	csEmbree.Leave();
+}
+
+void EmbreeRayTraceModel::RemoveGeometry()
+{
+	csEmbree.Enter();
+ 	if (IntelScene)			 rtcReleaseScene(IntelScene);
+  	if (IntelGeometryTransp) rtcReleaseGeometry(IntelGeometryTransp);
+	if (IntelGeometryNormal) rtcReleaseGeometry(IntelGeometryNormal);
+ 	csEmbree.Leave();
+
+	static_geom.ClearAll();
+	static_geom_transp.ClearAll();
+
+	IntelScene = 0;
+
+}
+
+void EmbreeRayTraceModel::IntelEmbereUnloadAll()
+{
+	if (this == &EmbreeMain)
+ 		Msg("* Intel Embree Releasing Start| Memory: %u mb", u32(GetMemory() / 1024 / 1024));
+ 	
+	RemoveGeometry();
+
+	if (this == &EmbreeMain)
+  		Msg("* Intel Embree Releasing End| Memory: %u mb", u32(GetMemory() / 1024 / 1024));
+}
+ 
+// Embree Device (Должен быть один)
 void errors_embree(void* userPtr, enum RTCError code, const char* str)
 {
- 	R_ASSERT2(false, str);
+	R_ASSERT2(false, str);
 }
 
- 
-void EmbreeData::IntializeDevice()
+void InitializeEmbreeDevice()
 {
 	bool avx_test = CPU::ID().hasFeature(CPUFeature::AVX2);
 	bool sse = CPU::ID().hasFeature(CPUFeature::SSE);
 
 	const char* config = "";
 	if (avx_test)
-		config = "threads=16,isa=avx,verbose=0";
+		config = "isa=avx2";
 	else if (sse)
-		config = "threads=16,isa=sse4.2,verbose=0";
+		config = "isa=sse4.2";
 	else
-		config = "threads=16,isa=sse2,verbose=0";
+		config = "isa=sse2";
 
-	device = rtcNewDevice(config);
-
-	rtcSetDeviceProperty(device, RTC_DEVICE_PROPERTY_NATIVE_RAY16_SUPPORTED, 0);
- 	rtcSetDeviceErrorFunction(device, &errors_embree, NULL);
+	EmbreeDevice = rtcNewDevice(config);
+  	rtcSetDeviceErrorFunction(EmbreeDevice, &errors_embree, NULL);
 
 	string128 state;
 	sprintf(state, "- Intilized Intel Embree %s - %s", RTC_VERSION_STRING, avx_test ? "avx" : sse ? "sse" : "default");
 	Status(state);
-
-	GetEmbreeDeviceProperty("RTC_DEVICE_PROPERTY_RAY_MASK_SUPPORTED", device, RTC_DEVICE_PROPERTY_RAY_MASK_SUPPORTED);
-	GetEmbreeDeviceProperty("RTC_DEVICE_PROPERTY_BACKFACE_CULLING_ENABLED", device, RTC_DEVICE_PROPERTY_BACKFACE_CULLING_ENABLED);
-	GetEmbreeDeviceProperty("RTC_DEVICE_PROPERTY_NATIVE_RAY4_SUPPORTED", device, RTC_DEVICE_PROPERTY_NATIVE_RAY4_SUPPORTED);
-
-	GetEmbreeDeviceProperty("RTC_DEVICE_PROPERTY_NATIVE_RAY8_SUPPORTED", device, RTC_DEVICE_PROPERTY_NATIVE_RAY8_SUPPORTED);
-	GetEmbreeDeviceProperty("RTC_DEVICE_PROPERTY_NATIVE_RAY16_SUPPORTED", device, RTC_DEVICE_PROPERTY_NATIVE_RAY16_SUPPORTED);
-	GetEmbreeDeviceProperty("RTC_DEVICE_PROPERTY_IGNORE_INVALID_RAYS_ENABLED", device, RTC_DEVICE_PROPERTY_IGNORE_INVALID_RAYS_ENABLED);
-
-	GetEmbreeDeviceProperty("RTC_DEVICE_PROPERTY_TASKING_SYSTEM", device, RTC_DEVICE_PROPERTY_TASKING_SYSTEM);
-}
-
-void EmbreeData::IntelEmbereLOAD()
-{
-	Phase("CPU: Initialize Raytrace Model");
-
-	if (!isInitialized)
-	{
-		IntializeDevice();
-		isInitialized = true;
-	}
-
- 	Msg("- Intel Embree Loading| Memory: %u mb", u32(GetMemory()/1024/1024) );
-	if (gCompilerMode.EmbreeBVHCompact)
-		scene_flags = scene_flags | RTC_SCENE_FLAG_COMPACT;
-	if (gCompilerMode.EmbreeBVHRobust)
-		scene_flags = scene_flags | RTC_SCENE_FLAG_ROBUST;
- 	 
-	IntelScene = rtcNewScene(device);
-	rtcSetSceneFlags(IntelScene, scene_flags);
-
-	// LOADING NORMAL GEOM
-   	InitializeGeometry( );
-}
-
-void EmbreeData::IntelEmbereUNLOAD()
-{
- 	Msg("* Intel Embree Releasing Start| Memory: %u mb", u32(GetMemory() / 1024 / 1024));
- 	RemoveGeometry(true);
-  	Msg("* Intel Embree Releasing End| Memory: %u mb", u32(GetMemory() / 1024 / 1024));
 }
