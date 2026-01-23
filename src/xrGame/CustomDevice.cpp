@@ -520,7 +520,7 @@ void CCustomDevice::OnAnimationEnd(u32 state)
 
 bool CCustomDevice::NeedBlockSprint() const
 {
-	return GetState() == eSprintEnd;
+	return false;//GetState() == eSprintEnd;
 }
 
 bool CCustomDevice::CanDrawHand() const
