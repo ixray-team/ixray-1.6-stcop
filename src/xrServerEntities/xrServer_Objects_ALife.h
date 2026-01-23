@@ -164,7 +164,7 @@ private:
 	virtual CSE_Abstract*			setAddonFlagsIsWeapon(CSE_Abstract* E, LPCSTR spawnArgs);
 	virtual void					spawnAmmoForWeapon(LPCSTR wpnSection, CSE_Abstract* E, int i_ammo_type, u32 countAmmoBoxesToSpawn);
 	virtual void					setItemCondition(CSE_Abstract* E, float condition);
-	virtual xr_vector <CInifile::Sect*> parseLoadouts(CInifile& ini);
+	virtual void					parseLoadouts(CInifile& ini, xr_vector <CInifile::Sect*>& m_loadouts);
 	virtual void					processingSpawnFullRandomLoadout(CInifile& ini);
 	virtual void					processingSpawnOnceRandomitemByRandomLoadout(CInifile& ini);
 	virtual void					processingSpawnOnceRandomItemPerEachLoadouts(CInifile& ini);

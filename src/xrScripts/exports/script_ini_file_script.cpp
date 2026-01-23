@@ -93,14 +93,10 @@ SCRIPTS_API CScriptIniFile *create_ini_file	(LPCSTR ini_string)
 
 void section_for_each(CScriptIniFile* self, luabind::functor<bool> functor)
 {
-	typedef CInifile::Root sections_type;
-	sections_type& sections = self->sections();
-
-	sections_type::const_iterator i = sections.begin();
-	sections_type::const_iterator e = sections.end();
-	for (; i != e; ++i)
+	CInifile::Root& sections = self->sections();
+	for (CInifile::Sect& sect : sections)
 	{
-		if (functor((LPCSTR)(*i)->Name.c_str()))
+		if (functor((LPCSTR)sect.Name.c_str()))
 			return;
 	}
 }
