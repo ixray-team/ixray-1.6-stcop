@@ -97,13 +97,7 @@ elseif (UNIX)
     set(CMAKE_CXX_FLAGS "-fPIC -O3 -Wno-vla -msse -msse2 -msse3 -mfpmath=sse")
 endif ()
 
-# Add Eigen3.
-set(EIGEN3_DIR "${PROJECT_SOURCE_DIR}/third_party/eigen/" CACHE PATH "Path to eigen3 library")
-set(EIGEN3_INCLUDE_DIR ${EIGEN3_DIR})
-add_definitions(-DEIGEN_MPL2_ONLY)
-
 include_directories(${PROJECT_SOURCE_DIR})
-include_directories(${EIGEN3_INCLUDE_DIR})
 
 add_subdirectory(resonance_audio)
 add_subdirectory(platforms)

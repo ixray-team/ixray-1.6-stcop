@@ -39,7 +39,7 @@ set(RESONANCE_AUDIO_MONITOR_RESOURCES
         )
 add_library(ResonanceAudioMonitorVst MODULE ${RESONANCE_AUDIO_MONITOR_VST} $<TARGET_OBJECTS:ResonanceAudioObj>
         $<TARGET_OBJECTS:SadieHrtfsObj>
-        $<TARGET_OBJECTS:PffftObj>)
+        $<TARGET_OBJECTS:pffft>)
 target_include_directories(ResonanceAudioMonitorVst PUBLIC ${PROJECT_SOURCE_DIR}/platforms/vst/)
 
 #Add VST SDK
