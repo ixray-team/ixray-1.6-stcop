@@ -11,6 +11,7 @@
 #include "GameTaskDefs.h"
 #include "actor_statistic_defs.h"
 #include "../xrCore/fastdelegate.h"
+#include "../xrCore/Save/SaveObject.h"
 
 namespace SaveSystemDefined {
 
@@ -18,12 +19,11 @@ namespace SaveSystemDefined {
 	void Serialize2(ISaveObject& Object, std::pair<K, V>& Value);
 
 	template<>
-	void Serialize2<ALife::_OBJECT_ID, KNOWN_INFO_VECTOR>(ISaveObject& Object, std::pair<ALife::_OBJECT_ID, KNOWN_INFO_VECTOR>& Value)
+	void Serialize2<ALife::_OBJECT_ID, KNOWN_INFO_CONTAINER>(ISaveObject& Object, std::pair<ALife::_OBJECT_ID, KNOWN_INFO_CONTAINER>& Value)
 	{
-		BEGIN_CHUNK(Object,"Registry::u16+KNOWN_INFO_VECTOR")
+		BEGIN_CHUNK(Object,"Registry::u16+KNOWN_INFO_CONTAINER")
 		{
-			Object << Value.first;
-			((CSaveObject&)Object).Serialize(Value.second);
+			Object << Value.first << Value.second;
 		}
 	}
 
@@ -123,9 +123,9 @@ namespace SaveSystemDefined {
 	}
 
 	template<>
-	void Serialize<ALife::_OBJECT_ID, KNOWN_INFO_VECTOR>(ISaveObject& Object, xr_map<ALife::_OBJECT_ID, KNOWN_INFO_VECTOR>& Value)
+	void Serialize<ALife::_OBJECT_ID, KNOWN_INFO_CONTAINER>(ISaveObject& Object, xr_map<ALife::_OBJECT_ID, KNOWN_INFO_CONTAINER>& Value)
 	{
-		((CSaveObject&)Object).Serialize(Value, fastdelegate::MakeDelegate(&SaveSystemDefined::Serialize2<ALife::_OBJECT_ID, KNOWN_INFO_VECTOR>));
+		((CSaveObject&)Object).Serialize(Value, fastdelegate::MakeDelegate(&SaveSystemDefined::Serialize2<ALife::_OBJECT_ID, KNOWN_INFO_CONTAINER>));
 	}
 
 	template<>

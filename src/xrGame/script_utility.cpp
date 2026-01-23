@@ -118,23 +118,17 @@ bool ixray::is_weapon(CScriptGameObject* pObject)
 
 bool ixray::has_alife_info(const char* info_id)
 {
-	bool result{};
 	if (!info_id)
-		return result;
+	{
+		return false;
+	}
 
-	const KNOWN_INFO_VECTOR* known_info =
-		ai().alife().registry().get<CInfoPortionRegistry>().object(0, true);
-
+	auto known_info = ai().alife().registry().get<CInfoPortionRegistry>().object(0, true);
 	if (!known_info)
-		return result;
-
-	if (std::find_if(known_info->begin(), known_info->end(),
-			CFindByIDPred(info_id)) == known_info->end())
-		return result;
-
-	result = true;
-
-	return result;
+	{
+		return false;
+	}
+	return known_info->HasInfo(info_id);
 }
 
 int ixray::get_script_clsid(const char* str)

@@ -54,21 +54,19 @@ void CUIActorMenu::InitDeadBodySearchMode()
 	//only for partner, box = no, monster = no
 	if (m_pPartnerInvOwner != nullptr && monster == nullptr && pCar == nullptr)
 	{
-		CInfoPortionWrapper						known_info_registry;
-		known_info_registry.registry().init		(m_pPartnerInvOwner->object_id());
-		KNOWN_INFO_VECTOR& known_infos			= known_info_registry.registry().objects();
-
-		auto it_					= known_infos.begin();
-		for(int i=0;it_!=known_infos.end();++it_,++i)
+		CInfoPortionWrapper known_info_registry;
+		known_info_registry.registry().init(m_pPartnerInvOwner->object_id());
+		auto& known_infos = known_info_registry.registry().objects();
+		for (auto& known_info : known_infos.Data)
 		{
 			NET_Packet					P;
 			CGameObject::u_EventGen		(P,GE_INFO_TRANSFER, m_pActorInvOwner->object_id());
 			P.w_u16						(0);
-			P.w_stringZ					(it_->info_id.c_str());
+			P.w_stringZ					(known_info.info_id.c_str());
 			P.w_u8						(1);
 			CGameObject::u_EventSend	(P);
 		}
-		known_infos.clear	();
+		known_infos.Data.clear();
 	}
 	UpdateDeadBodyBag();
 	SetAreaSelectionTo(m_pDeadBodyBagList);
