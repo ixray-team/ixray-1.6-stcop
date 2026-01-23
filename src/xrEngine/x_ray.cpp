@@ -246,16 +246,21 @@ ENGINE_API void EngineLoadStage5()
 	{
 		Device.m_pRender->PostCreate();
 	}
+}
 
-	// Main cycle
-	//Memory.mem_usage();
-	Device.Run					( );
+ENGINE_API void EngineLoadStage6()
+{
+	PROF_EVENT("EngineLoadStage6");
+
+	Device.Run();
+
 	// Destroy APP
-	xr_delete					( g_SpatialSpacePhysic	);
-	xr_delete					( g_SpatialSpace		);
-	DEL_INSTANCE				( g_pGamePersistent		);
-	xr_delete					( pApp					);
-	g_pEventManager->Event.Dump			( );
+	xr_delete(g_SpatialSpacePhysic);
+	xr_delete(g_SpatialSpace);
+	DEL_INSTANCE(g_pGamePersistent);
+
+	xr_delete(pApp);
+	g_pEventManager->Event.Dump();
 
 	xr_delete(pFPSCounter);
 
@@ -264,8 +269,7 @@ ENGINE_API void EngineLoadStage5()
 	destroyInput();
 
 	destroySettings();
-
-	LALib.OnDestroy				( );
+	LALib.OnDestroy();
 	
 	destroyConsole();
 
