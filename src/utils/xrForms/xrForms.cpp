@@ -144,6 +144,8 @@ void Startup(LPSTR lpCmdLine)
 		make_time(dwTimeDO).c_str()
 	);
 
+	AditionalData("Time Elapsed: %s", make_time((dwEndTime - dwStartupTime) / 1000).c_str() );
+
 	if (!gCompilerMode.Silent)
 	{
 		MessageBoxA(nullptr, stats, "Congratulations!", MB_OK | MB_ICONINFORMATION);
