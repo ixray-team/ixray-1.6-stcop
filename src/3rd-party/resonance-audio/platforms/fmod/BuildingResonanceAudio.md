@@ -152,7 +152,7 @@ Note:
 * To build static library instead of dylib, replace:
         add_library(resonanceaudio SHARED ${RESONANCE_AUDIO_FMOD_PLUGIN_SOURCES} $<TARGET_OBJECTS:ResonanceAudioObj>
                 $<TARGET_OBJECTS:SadieHrtfsObj>
-                $<TARGET_OBJECTS:PffftObj>)
+                $<TARGET_OBJECTS:pffft>)
     With:
         if (IOS_DETECTED)
             set(LIB_BUILD_TYPE STATIC)
@@ -162,7 +162,7 @@ Note:
         
         add_library(resonanceaudio ${LIB_BUILD_TYPE} ${RESONANCE_AUDIO_FMOD_PLUGIN_SOURCES} $<TARGET_OBJECTS:ResonanceAudioObj>
                 $<TARGET_OBJECTS:SadieHrtfsObj>
-                $<TARGET_OBJECTS:PffftObj>)
+                $<TARGET_OBJECTS:pffft>)
     In <path_to_resonance_audio>\platforms\fmod\CMakeLists.txt
 
 Manual Steps
