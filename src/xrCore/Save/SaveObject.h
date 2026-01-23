@@ -537,19 +537,22 @@ public:
 		return *this;
 	}
 	
-	template<IsSaveObjectSerializable T, IsSaveObjectSerializable H, typename Eq>
+	template<IsSaveObjectSerializable T, typename H, typename Eq>
 	ISaveObject& Serialize(xr_hash_set<T, H, Eq>& Value)
 	{
 		if (IsSave())
 		{
 			GetCurrentChunk()->WriteArray();
+			static std::hash<T> hasher;
 			for (auto& elem : Value) {
+				auto StartHash = hasher(elem);
 				if constexpr (std::is_pointer_v<T>) {
 					(*this) << *elem;
 				}
 				else {
-					(*this) << elem;
+					(*this) << const_cast<T&>(elem);
 				}
+				R_ASSERT(StartHash == hasher(elem));
 			}
 			
 		} else
@@ -579,16 +582,19 @@ public:
 	ISaveObject& Serialize(xr_hash_map<Key, Mapped>& Value) {
 		if (IsSave()) {
 			GetCurrentChunk()->WriteArray();
+			static std::hash<Key> hasher;
 			for (auto& elem : Value) {
 				BEGIN_CHUNK((*this), "MapElem")
 				{
+					auto StartHash = hasher(elem.first);
 					if constexpr (std::is_pointer_v<Key>) {
 						(*this) << *(elem.first);
 					}
 					else {
-						Key Value = elem.first;
-						(*this) << Value;
+						Key& KeyValue = elem.first;
+						(*this) << KeyValue;
 					}
+					R_ASSERT(StartHash == hasher(Value.first));
 					if constexpr (std::is_pointer_v<Mapped>) {
 						(*this) << *(elem.second);
 					}
@@ -795,7 +801,14 @@ ISaveObject& operator<<(ISaveObject& Object, FixedVector<T, Size>& Value) {
 }
 #endif
 
-template<IsSaveObjectSerializable T, IsSaveObjectSerializable H, typename Eq>
+#ifndef IXR_WINDOWS
+template<IsSaveObjectSerializable T, int Size>
+ISaveObject& operator<<(ISaveObject& Object, FixedVector<T, Size>& Value) {
+	return ((CSaveObject*)&Object)->Serialize(Value);
+}
+#endif
+
+template<IsSaveObjectSerializable T, typename H, typename Eq>
 ISaveObject& operator<<(ISaveObject& Object, xr_hash_set<T, H, Eq>& Value) {
 	return ((CSaveObject*)&Object)->Serialize(Value);
 }

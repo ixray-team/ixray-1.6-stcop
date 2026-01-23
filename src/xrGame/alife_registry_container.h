@@ -21,7 +21,7 @@
 
 #include "actor_statistic_defs.h"
 
-using CInfoPortionRegistry = CALifeAbstractRegistry<ALife::_OBJECT_ID, KNOWN_INFO_VECTOR>;
+using CInfoPortionRegistry = CALifeAbstractRegistry<ALife::_OBJECT_ID, KNOWN_INFO_CONTAINER>;
 using CRelationRegistry = CALifeAbstractRegistry<ALife::_OBJECT_ID, RELATION_DATA>;
 using CGameNewsRegistry = CALifeAbstractRegistry<u16, GAME_NEWS_VECTOR>;
 using CSpecificCharacterRegistry = CALifeAbstractRegistry<shared_str, int>;
