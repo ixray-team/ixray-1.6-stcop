@@ -597,7 +597,7 @@ static bool IsActionKeyPressed(const EGameActions& EGameAction)
 
 static bool IsActionKeyPressedInGame(const EGameActions& EGameAction)
 {
-	return IsActionKeyPressed(EGameAction) && !Console->bVisible && CurrentGameUI() != nullptr && !CurrentGameUI()->TopInputReceiver() && g_pGameLevel && g_pGameLevel->Cameras().GetCamEffector(cefDemo) == nullptr;
+	return IsActionKeyPressed(EGameAction) && !Console->bVisible && CurrentGameUI() != nullptr && !CurrentGameUI()->TopInputReceiver() && g_pGameLevel && g_pGameLevel->Cameras().GetCamEffector(cefDemo) == nullptr && !load_screen_renderer.IsActive();
 }
 
 void CActor::SetActorKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags mask, bool state, bool ignore_suicide)
