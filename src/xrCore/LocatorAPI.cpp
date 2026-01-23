@@ -1,5 +1,6 @@
 // LocatorAPI.cpp: implementation of the CLocatorAPI class.
 //
+// Fast LocatorAPI init authors: mnelenpridumivat and v2v3v4
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
@@ -487,92 +488,121 @@ namespace Platform
 	XRCORE_API xr_string TCHAR_TO_ANSI_U8(const xr_special_char* C);
 }
 
+xr_unique_ptr<xr_hash_set<shared_str>>& GetScannedDirsBuffer()
+{
+	static xr_unique_ptr<xr_hash_set<shared_str>> buff;
+	if (!buff)
+	{
+		buff = xr_make_unique<xr_hash_set<shared_str>>();
+	}
+	return buff;
+}
+
+
+struct scan_chache
+{
+	bool dir;
+	xr_string fileName;
+	u64 fsize;
+	time_t ftime;
+};
+
+xr_unique_ptr<xr_vector<scan_chache>>& GetScanCacheBuffer()
+{
+	static xr_unique_ptr<xr_vector<scan_chache>> buff;
+	if (!buff)
+	{
+		buff = xr_make_unique<xr_vector<scan_chache>>();
+	}
+	return buff;
+}
+
 bool CLocatorAPI::Recurse(const char* path)
 {
-	string_path N = {};
-	xr_strcpy(N, sizeof(N), path);
+	string_path scanPath;
+	xr_strcpy(scanPath, sizeof(scanPath), path);
+	
+	size_t oldSize = GetScanCacheBuffer()->size();
+	GetScanCacheBuffer()->reserve(oldSize + 256);
 
-	// find all files
-	system_file sFile;
-
-	xr_strcpy(N, Platform::ValidPath(N));
-
-	bool bWrapPath = strlen(N) == 0;
-	if (bWrapPath)
+	if (!std::filesystem::exists(path))
 	{
-		xr_strcpy(N, Platform::ValidPath("./"));
+		return false;
 	}
 
-	if(!std::filesystem::exists(N))
-		return false;
-
-	rec_files.reserve(512);
-
-	for (const xr_dir_entry& CurrentFile : xr_dir_iter { N })
+	for (xr_dir_entry elem : xr_dir_iter(path))
 	{
-		xr_path currentPath = CurrentFile;
-#ifdef IXR_WINDOWS
-		xr_string ValidFileName = Platform::TCHAR_TO_ANSI_U8(currentPath.generic_wstring().c_str());
-#else
-				xr_string ValidFileName = Platform::TCHAR_TO_ANSI_U8(currentPath.generic_string().c_str());
-#endif
-		if (bWrapPath)
-			ValidFileName = ValidFileName.substr(2);
+		xr_path elem_path = elem;
 
-		xr_strcpy(sFile.name, Platform::RestorePath(ValidFileName.c_str()));
-		sFile.attrib = 0;
-
-		auto StatusFile = std::filesystem::symlink_status(CurrentFile);
-		if (StatusFile.type() == std::filesystem::file_type::not_found || !std::filesystem::exists(CurrentFile))
+		if (CheckSkip(elem_path))
 		{
-			Msg("! Dead symlink: %s", ValidFileName.c_str());
 			continue;
 		}
 
-		if (CurrentFile.is_directory())
-			sFile.attrib |= _A_SUBDIR;
-		else 
-			sFile.size = CurrentFile.file_size();
-
-#ifdef IXR_WINDOWS
-		if (GetFileAttributes(currentPath.generic_wstring().c_str()) & FILE_ATTRIBUTE_HIDDEN)
-			sFile.attrib |= _A_HIDDEN;
-#endif
-
-		sFile.time_write = xr_chrono_to_time_t(CurrentFile.last_write_time());
-		sFile.time_create = xr_chrono_to_time_t(CurrentFile.last_write_time());
-
-		bool NeedSkip = false;
-		if (m_Flags.test(flNeedCheck))
-		{
-			NeedSkip = CheckSkip(sFile.name) || ignore_path(sFile.name);
-
-			// загоняем в вектор для того *.db* приходили в сортированном порядке
-			if (NeedSkip)
-				rec_files.push_back(sFile);
-		}
-		else
-		{
-			NeedSkip = CheckSkip(sFile.name);
-		}
-
-		if (!NeedSkip)
-			rec_files.push_back(sFile);
+		GetScanCacheBuffer()->emplace_back();
+		scan_chache& chache = GetScanCacheBuffer()->back();
+		chache.dir = elem.is_directory();
+		chache.ftime = xr_chrono_to_time_t(elem.last_write_time());
+		chache.fsize = elem.file_size();
+		chache.fileName = elem_path.xfilename();
 	}
 
-	FFVec StackFiles;
-	StackFiles.swap(rec_files);
+	size_t newSize = GetScanCacheBuffer()->size();
+	if (newSize > oldSize)
+	{
+		for (size_t i = oldSize; i < newSize; i++)
+		{
+			auto& chache = GetScanCacheBuffer()->at(i);
+			
+			string_path N;
+			VERIFY(path[xr_strlen(path)-1] == '\\');
+			VERIFY(path[xr_strlen(path)-2] != '\\');
+			xr_strcpy(N, sizeof(N), path);
+			xr_strcat(N, chache.fileName.c_str());
+			xr_strlwr(N);
 
-	std::sort(StackFiles.begin(), StackFiles.end(), pred_str_ff);
+			if (chache.dir)
+			{
+				if (bNoRecurse || chache.fileName == "." || chache.fileName == "..")
+				{
+					continue;
+				}
 
-	for (system_file& FileData : StackFiles)
-		ProcessOne(path, &FileData);
-
-	// insert self
-	if (path && path[0])
+				if (!m_Flags.test(flReady))
+				{
+					if (GetScannedDirsBuffer()->find(N) == GetScannedDirsBuffer()->end())
+					{
+						GetScannedDirsBuffer()->insert(N);
+						xr_strcat(N, "\\");
+						Recurse(N);
+					}
+				} else
+				{
+					xr_strcat(N, "\\");
+					Recurse(N);
+				}
+			}
+			else
+			{
+				if (strext(N) && (0 == strncmp(strext(N), ".db", 3) || 0 == strncmp(strext(N), ".xdb", 4)))
+				{
+					ProcessArchive(N);
+				}
+				else
+				{
+					u32 fsize = chache.fsize;
+					Register(N, 0xffffffff, 0, 0, fsize, fsize, chache.ftime);
+					//Register(N, 0xffffffff, 0, 0, fsize, fsize, u32(chache.ftime / 10000000 - 11644473600LL));
+				}
+			}
+		}
+		GetScanCacheBuffer()->erase(GetScanCacheBuffer()->begin() + oldSize, GetScanCacheBuffer()->end());
+	}
+	
+	if (path && path[0] != 0)
+	{
 		Register(path, 0xffffffff, 0, 0, 0, 0, 0);
-
-	rec_files.clear();
+	}
 
 	return true;
 }
@@ -676,7 +706,7 @@ IReader *CLocatorAPI::setup_fs_ltx	(LPCSTR fs_name)
 }
 
 void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
-{
+{	
 	char _delimiter = '|'; //','
 	if (m_Flags.is(flReady))return;
 	CTimer t;
@@ -716,6 +746,7 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 
 		Msg("pFSltx: %s", fs_name);
 
+		GetScannedDirsBuffer()->clear();
 		while (!pFSltx->eof())
 		{
 			pFSltx->r_string(buf, sizeof(buf));
@@ -774,6 +805,7 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 	if (FS.path_exist("$arch_dir_addons$"))
 	{
 		g_pAddonsManager = new CAddonManager;
+		GetScannedDirsBuffer()->clear();
 		g_pAddonsManager->Initialize();
 	}
 
@@ -795,11 +827,14 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 		if (pLogsPath) pLogsPath->_set_root(c_newAppPathRoot);
 		if (pAppdataPath)
 		{
+			GetScannedDirsBuffer()->clear();
 			pAppdataPath->_set_root(c_newAppPathRoot);
 			rescan_path(pAppdataPath->m_Path, pAppdataPath->m_Flags.is(FS_Path::flRecurse));
 		}
 	}
 
+	GetScanCacheBuffer().reset();
+	GetScannedDirsBuffer().reset();
 	rec_files.clear();
 	//-----------------------------------------------------------
 
@@ -1640,7 +1675,15 @@ FS_Path* CLocatorAPI::append_path(LPCSTR path_alias, LPCSTR root, LPCSTR add, BO
 
 	FS_Path* P = new FS_Path(root, add, LPCSTR(0), LPCSTR(0), 0);
 	bNoRecurse = !recursive;
-	Recurse(P->m_Path);
+	xr_path path;
+	if (!xr_strlen(P->m_Path))
+	{
+		path = ".\\";
+	} else
+	{
+		path = P->m_Path;
+	}
+	Recurse			(path.xstring().c_str());
 
 	pathes.insert(std::make_pair(xr_strdup(path_alias), P));
 	return P;
@@ -1703,7 +1746,7 @@ void CLocatorAPI::set_file_age(LPCSTR nm, time_t age)
 }
 
 void CLocatorAPI::rescan_path(LPCSTR full_path, BOOL bRecurse)
-{
+{	
 	file desc = {};
 	desc.name		= full_path;
 	files_it	I 	= m_files.lower_bound(desc);
@@ -1741,6 +1784,9 @@ void CLocatorAPI::rescan_path(LPCSTR full_path, BOOL bRecurse)
 
 	bNoRecurse	= !bRecurse;
 	Recurse(full_path);
+	
+	GetScanCacheBuffer().reset();
+	GetScannedDirsBuffer().reset();
 }
 
 void  CLocatorAPI::rescan_pathes()
