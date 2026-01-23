@@ -208,7 +208,9 @@ void CAddonManager::MountAddons()
 
         if (std::filesystem::is_directory(AddonPath))
         {
-            FS.rescan_path(Addon.EntryDir.c_str(), true);
+            xr_stack_string_path addon_path = Addon.EntryDir.c_str();
+            addon_path.append("\\");
+            FS.rescan_path(addon_path.c_str(), true);
         }
         else if (AddonPath.extension() == ".db" && std::filesystem::is_regular_file(AddonPath))
         {
