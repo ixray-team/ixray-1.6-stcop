@@ -121,22 +121,20 @@ void InitSections()
 	}
 
 	//xr_set<xr_string> classes = {};
-	for (const auto& pSection : pSettings->sections())
+	CInifile::Root& sections = pSettings->sections();
+	for (CInifile::Sect& sect : sections)
 	{
-		if (pSection == nullptr)
-			continue;
-
-		xr_string_view name = pSection->Name.c_str();
+		xr_string_view name = sect.Name.c_str();
 
 		if (name.empty())
 			continue;
 
-		if (!pSection->line_exist("class"))
+		if (!sect.line_exist("class"))
 			continue;
 
 		CLASS_ID classId = pSettings->r_clsid(name.data(), "class");
 
-		if (pSection->line_exist("visual"))
+		if (sect.line_exist("visual"))
 		{
 			xr_string_view visual = pSettings->r_string(name.data(), "visual");
 			shared_str full_path;
@@ -156,9 +154,9 @@ void InitSections()
 			}
 		}
 
-		bool isInvItem = pSection->line_exist("cost") && pSection->line_exist("inv_weight");
-		bool isFakeItem = pSection->line_exist("inv_grid_width") && pSettings->r_u32(name.data(), "inv_grid_width") <= 0 &&
-						  pSection->line_exist("inv_grid_height") && pSettings->r_u32(name.data(), "inv_grid_height") <= 0;
+		bool isInvItem = sect.line_exist("cost") && sect.line_exist("inv_weight");
+		bool isFakeItem = sect.line_exist("inv_grid_width") && pSettings->r_u32(name.data(), "inv_grid_width") <= 0 &&
+			sect.line_exist("inv_grid_height") && pSettings->r_u32(name.data(), "inv_grid_height") <= 0;
 
 		isInvItem &= !isFakeItem;
 
@@ -167,156 +165,156 @@ void InitSections()
 		{
 			if (isInvItem)
 			{
-				imgui_spawn_manager.MpStuffSections.Sorted.push_back({ name, pSection });
+				imgui_spawn_manager.MpStuffSections.Sorted.push_back({ name, &sect });
 			}
 			else
 			{
-				imgui_spawn_manager.MpStuffSections.Unsorted.push_back({ name, pSection });
+				imgui_spawn_manager.MpStuffSections.Unsorted.push_back({ name, &sect });
 			}
 		}
 		else if (g_pClsidManager->is_weapon(classId))
 		{
 			bool isValidSect = true;
-			if (pSection->line_exist("parent_section"))
+			if (sect.line_exist("parent_section"))
 			{
 				const char* parentSection = pSettings->r_string(name.data(), "parent_section");
 				isValidSect = parentSection != nullptr && *parentSection != '\0' && strcmp(parentSection, name.data()) == 0;
 			}
 			if (isInvItem && isValidSect)
 			{
-				imgui_spawn_manager.WeaponsSections.Sorted.push_back({ name, pSection });
+				imgui_spawn_manager.WeaponsSections.Sorted.push_back({ name, &sect });
 			}
 			else
 			{
-				imgui_spawn_manager.WeaponsSections.Unsorted.push_back({ name, pSection });
+				imgui_spawn_manager.WeaponsSections.Unsorted.push_back({ name, &sect });
 			}
 		}
 		else if (g_pClsidManager->is_item(classId))
 		{
-			if (!pSection->line_exist("immunities_sect"))
+			if (!sect.line_exist("immunities_sect"))
 				continue;
 
 			if (isInvItem)
 			{
-				imgui_spawn_manager.ItemsSections.Sorted.push_back({ name, pSection });
+				imgui_spawn_manager.ItemsSections.Sorted.push_back({ name, &sect });
 			}
 			else
 			{
-				imgui_spawn_manager.ItemsSections.Unsorted.push_back({ name, pSection });
+				imgui_spawn_manager.ItemsSections.Unsorted.push_back({ name, &sect });
 			}
 		}
 		else if (g_pClsidManager->is_item_used(classId))
 		{
-			if (!pSection->line_exist("immunities_sect"))
+			if (!sect.line_exist("immunities_sect"))
 				continue;
 
 			if (isInvItem)
 			{
-				imgui_spawn_manager.ItemsUsedSections.Sorted.push_back({ name, pSection });
+				imgui_spawn_manager.ItemsUsedSections.Sorted.push_back({ name, &sect });
 			}
 			else
 			{
-				imgui_spawn_manager.ItemsUsedSections.Unsorted.push_back({ name, pSection });
+				imgui_spawn_manager.ItemsUsedSections.Unsorted.push_back({ name, &sect });
 			}
 		}
 		else if (g_pClsidManager->is_device(classId))
 		{
-			if (!pSection->line_exist("immunities_sect"))
+			if (!sect.line_exist("immunities_sect"))
 				continue;
 
 			if (isInvItem)
 			{
-				imgui_spawn_manager.DevicesSections.Sorted.push_back({ name, pSection });
+				imgui_spawn_manager.DevicesSections.Sorted.push_back({ name, &sect });
 			}
 			else
 			{
-				imgui_spawn_manager.DevicesSections.Unsorted.push_back({ name, pSection });
+				imgui_spawn_manager.DevicesSections.Unsorted.push_back({ name, &sect });
 			}
 		}
 		else if (g_pClsidManager->is_ammo(classId))
 		{
 			if (isInvItem)
 			{
-				imgui_spawn_manager.AmmoSections.Sorted.push_back({ name, pSection });
+				imgui_spawn_manager.AmmoSections.Sorted.push_back({ name, &sect });
 			}
 			else
 			{
-				imgui_spawn_manager.AmmoSections.Unsorted.push_back({ name, pSection });
+				imgui_spawn_manager.AmmoSections.Unsorted.push_back({ name, &sect });
 			}
 		}
 		else if (g_pClsidManager->is_outfit(classId))
 		{
 			if (isInvItem)
 			{
-				imgui_spawn_manager.OutfitSections.Sorted.push_back({ name, pSection });
+				imgui_spawn_manager.OutfitSections.Sorted.push_back({ name, &sect });
 			}
 			else
 			{
-				imgui_spawn_manager.OutfitSections.Unsorted.push_back({ name, pSection });
+				imgui_spawn_manager.OutfitSections.Unsorted.push_back({ name, &sect });
 			}
 		}
 		else if (g_pClsidManager->is_addon(classId))
 		{
 			if (isInvItem)
 			{
-				imgui_spawn_manager.AddonSections.Sorted.push_back({ name, pSection });
+				imgui_spawn_manager.AddonSections.Sorted.push_back({ name, &sect });
 			}
 			else
 			{
-				imgui_spawn_manager.AddonSections.Unsorted.push_back({ name, pSection });
+				imgui_spawn_manager.AddonSections.Unsorted.push_back({ name, &sect });
 			}
 		}
 		else if (g_pClsidManager->is_artefact(classId))
 		{
 			if (isInvItem)
 			{
-				imgui_spawn_manager.ArtefactSections.Sorted.push_back({ name, pSection });
+				imgui_spawn_manager.ArtefactSections.Sorted.push_back({ name, &sect });
 			}
 			else
 			{
-				imgui_spawn_manager.ArtefactSections.Unsorted.push_back({ name, pSection });
+				imgui_spawn_manager.ArtefactSections.Unsorted.push_back({ name, &sect });
 			}
 		}
 		else if (g_pClsidManager->is_npc(classId))
 		{
-			imgui_spawn_manager.NpcList.push_back({ name, pSection });
+			imgui_spawn_manager.NpcList.push_back({ name, &sect });
 		}
 		else if (g_pClsidManager->is_squad(classId))
 		{
-			if (pSection->line_exist("faction") && (pSection->line_exist("npc") || pSection->line_exist("npc_in_squad")))
+			if (sect.line_exist("faction") && (sect.line_exist("npc") || sect.line_exist("npc_in_squad")))
 			{
-				imgui_spawn_manager.Squads.Sorted.push_back({ name, pSection });
+				imgui_spawn_manager.Squads.Sorted.push_back({ name, &sect });
 			}
 			else
 			{
-				imgui_spawn_manager.Squads.Unsorted.push_back({ name, pSection });
+				imgui_spawn_manager.Squads.Unsorted.push_back({ name, &sect });
 			}
 		}
 		else if (g_pClsidManager->is_monster(classId))
 		{
-			imgui_spawn_manager.Monsters.push_back({ name, pSection });
+			imgui_spawn_manager.Monsters.push_back({ name, &sect });
 		}
 		else if (g_pClsidManager->is_anomaly(classId))
 		{
-			imgui_spawn_manager.Anomalies.push_back({ name, pSection });
+			imgui_spawn_manager.Anomalies.push_back({ name, &sect });
 		}
 		else if (g_pClsidManager->is_vehicle(classId))
 		{
-			imgui_spawn_manager.Vehicles.push_back({ name, pSection });
+			imgui_spawn_manager.Vehicles.push_back({ name, &sect });
 		}
 		else if (g_pClsidManager->is_dynamic_object(classId))
 		{
-			imgui_spawn_manager.DynamicObjects.push_back({ name, pSection });
+			imgui_spawn_manager.DynamicObjects.push_back({ name, &sect });
 		}
 		else if (g_pClsidManager->is_explo(classId))
 		{
-			imgui_spawn_manager.Explosives.push_back({ name, pSection });
+			imgui_spawn_manager.Explosives.push_back({ name, &sect });
 		}
 		else {
 			//string32 temp; CLSID2TEXT(classId, temp);
 			//classes.insert(temp);
 
-			imgui_spawn_manager.Others.push_back({ name, pSection });
+			imgui_spawn_manager.Others.push_back({ name, &sect });
 		}
 	}
 }

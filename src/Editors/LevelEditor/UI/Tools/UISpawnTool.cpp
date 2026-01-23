@@ -127,17 +127,18 @@ void UISpawnTool::RefreshList()
 	ListItemsVec items;
 	LHelper().CreateItem(items, RPOINT_CHOOSE_NAME, 0, 0, 0);
 	LHelper().CreateItem(items, ENVMOD_CHOOSE_NAME, 0, 0, 0);
-	CInifile::Root& data = ((CInifile*)pSettings)->sections();
-	for (CInifile::RootIt it = data.begin(); it != data.end(); it++) {
+	CInifile::Root& sections = pSettings->sections();
+	for (CInifile::Sect& sect : sections)
+	{
+		shared_str& sect_name = sect.Name;
 		LPCSTR val;
-		if ((*it)->line_exist("$spawn", &val))
+		if (sect.line_exist("$spawn", &val))
 		{
-			shared_str caption = pSettings->r_string_wb((*it)->Name, "$spawn");
-			shared_str sect = (*it)->Name;
+			shared_str caption = pSettings->r_string_wb(sect_name, "$spawn");
 			if (caption.size())
 			{
-				ListItem* I = LHelper().CreateItem(items, caption.c_str(), 0, ListItem::flDrawThumbnail, (LPVOID) * (*it)->Name);
-				//m_caption_to_sect[caption] = sect;
+				ListItem* I = LHelper().CreateItem(items, caption.c_str(), 0, ListItem::flDrawThumbnail, (LPVOID)sect_name.c_str());
+				//m_caption_to_sect[caption] = sect_name;
 			}
 		}
 	}

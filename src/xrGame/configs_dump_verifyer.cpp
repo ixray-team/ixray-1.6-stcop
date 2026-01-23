@@ -169,16 +169,16 @@ LPCSTR configs_verifyer::get_diff(CInifile & received,
 								  string256 & dst_diff)
 {
 	LPCSTR diff_str = nullptr;
-	for (CInifile::RootIt sit = received.sections().begin(),
-		siet = received.sections().end(); sit != siet; ++sit)
+	CInifile::Root& sections = received.sections();
+	for (CInifile::Sect& sect : sections)
 	{
-		CInifile::Sect*	tmp_sect = *sit;
-		if (tmp_sect->Name == cd_info_secion)
+		shared_str& sect_name = sect.Name;
+		if (sect_name == cd_info_secion)
 			continue;
-		if (tmp_sect->Name == active_params_section)
+		if (sect_name == active_params_section)
 			continue;
 
-		diff_str = get_section_diff(tmp_sect, active_params, dst_diff);
+		diff_str = get_section_diff(&sect, active_params, dst_diff);
 		if (diff_str)
 		{
 			return diff_str;

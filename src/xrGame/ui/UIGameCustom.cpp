@@ -679,25 +679,18 @@ void CMapListHelper::Load()
 	}
 	
 	//read original maps from config
-	CInifile::RootIt it			= map_list_cfg.sections().begin();
-	CInifile::RootIt it_e		= map_list_cfg.sections().end();
-	for( ;it!=it_e; ++it)
+	CInifile::Root& sections = map_list_cfg.sections();
+	for(CInifile::Sect& sect : sections)
 	{
 		m_storage.resize		(m_storage.size()+1);
 		SGameTypeMaps&	M		= m_storage.back();
-		M.m_game_type_name	= (*it)->Name;
+		M.m_game_type_name	= sect.Name;
 		M.m_game_type_id		= (EGameIDs)get_token_id(game_types, M.m_game_type_name.c_str() );
 
-		CInifile::SectCIt sit	= (*it)->Data.begin();
-		CInifile::SectCIt sit_e	= (*it)->Data.end();
-		
-		for( ;sit!=sit_e; ++sit)
-		{
-			SGameTypeMaps::SMapItm	Itm;
-			Itm.map_name			= (*sit).first;
-			Itm.map_ver				= "1.0";
-			M.m_map_names.push_back	(Itm);
-		}
+		CInifile::Items& items = sect.Data;
+		M.m_map_names.reserve(items.size());
+		for(CInifile::Item& item : items)
+			M.m_map_names.push_back({ item.first, "1.0" });
 	}
 	// scan for additional maps
 	FS_FileSet			fset;
