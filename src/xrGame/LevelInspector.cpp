@@ -2411,10 +2411,11 @@ void LevelInspector::DrawObjectInfo(CGameObject* GO, const Fvector& pos, Fvector
 
 		if (CInifile* ini = GO->spawn_ini())
 		{
-			for (CInifile::Sect* sect : ini->sections())
+			CInifile::Root& sections = ini->sections();
+			for (CInifile::Sect& sect : sections)
 			{
 				{
-					shared_str str = shared_str().printf("[%s]", *sect->Name);
+					shared_str str = shared_str().printf("[%s]", *sect.Name);
 					if (text3d)
 						append_text_next(str);
 					else
@@ -2427,7 +2428,7 @@ void LevelInspector::DrawObjectInfo(CGameObject* GO, const Fvector& pos, Fvector
 					}
 				}
 
-				for (CInifile::Item& line : sect->Data)
+				for (CInifile::Item& line : sect.Data)
 				{
 					if (line.second)
 					{
