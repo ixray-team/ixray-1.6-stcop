@@ -1,5 +1,4 @@
-#ifndef ACTOR_MP_CLIENT_H
-#define ACTOR_MP_CLIENT_H
+#pragma once
 
 #include "Actor.h"
 #include "actor_mp_state.h"
@@ -7,13 +6,13 @@
 
 class CActorMP :
 	public IAnticheatDumpable,
-	public CActor {
+	public CActor
+{
 private:
 	typedef CActor			inherited;
 
 private:
 	actor_mp_state_holder	m_state_holder;
-	//bool					m_i_am_dead;
 	float					prev_cam_inert_value;
 	static const float		cam_inert_value;
 
@@ -36,5 +35,3 @@ public:
 protected:
 			void			use_booster				(NET_Packet &packet);
 };
-
-#endif // ACTOR_MP_CLIENT_H
