@@ -57,7 +57,7 @@ void xrMU_Model::export_cform_rcast	(CDB::CollectorPacked& CL, Fmatrix& xform)
 	}
 }
 
-void xrMU_Model::export_cform_rcast_new(xr_vector<FaceDataIntel>& faces, Fmatrix& xform)
+void xrMU_Model::export_cform_rcast_new(xr_vector<FaceDataEmbree>& faces, Fmatrix& xform)
 {
 	for (v_faces_it it = m_faces.begin(); it != m_faces.end(); it++)
 	{
@@ -70,7 +70,7 @@ void xrMU_Model::export_cform_rcast_new(xr_vector<FaceDataIntel>& faces, Fmatrix
 		xform.transform_tiny(P[1], F->v[1]->P);
 		xform.transform_tiny(P[2], F->v[2]->P);
 
-		FaceDataIntel data;
+		FaceDataEmbree data;
 		data.v1 = P[0];
 		data.v2 = P[1];
 		data.v3 = P[2];

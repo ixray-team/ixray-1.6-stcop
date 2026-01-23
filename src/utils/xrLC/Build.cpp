@@ -117,6 +117,8 @@ size_t GetHeapMemory()
   
 void CBuild::Run(LPCSTR P)
 {
+	if (gCompilerMode.CUDA || gCompilerMode.Embree)
+		InitializeEmbreeDevice();
 
 
 	lc_global_data()->initialize();
@@ -169,7 +171,9 @@ void CBuild::Run(LPCSTR P)
 	else
 #endif
 	if (gCompilerMode.Embree)
-		EmbreeMain.IntelEmbereLOAD();
+	{
+		EmbreeMain.InitializeGeometry();
+	}
 	else
 		BuildRapid(false);
 
