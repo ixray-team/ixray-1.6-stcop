@@ -92,6 +92,6 @@ struct TriangleContainer
 		raw_faces.push_back({ {v1, v2, v3}, F, 0, 0 });
 	};
  
-	void RemoveDublicatesVertexs(bool isTransparent);
-	void RemoveDublicatesFaces(bool isTransparent);
+	void RemoveDublicatesVertexs(bool isTransparent, bool enable_msg);
+	void RemoveDublicatesFaces(bool isTransparent, bool enable_msg);
 };
