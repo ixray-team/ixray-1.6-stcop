@@ -195,13 +195,7 @@ bool OptixGeometryBuilder::BuildTLAS(OptixDeviceContext context, OptixMeshBuffer
 #include <embree_raytracing/EmbreeRayTrace.h>
 #include "xrDeflectorLight_Packed.h"
 
-struct FaceDataIntel;
-
-
-
-
-
-
+struct FaceDataEmbree;
  
 bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context, CUstream stream, OptixMeshBuffers& outScene)
 {
@@ -209,28 +203,28 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
     if (!globalData)        return false;
 
     OptixGeometryBuilder geometryBuilder;
-    // 1. Обрабатываем статическую геометрию    
+    
+    // 1. Обрабатываем статическую геометрию
+
+	xr_map<shared_str, bool> materialUsed;
+
     for (Face* F : globalData->g_faces())
     {
         const Shader_xrLC& SH = F->Shader();
-        if (!SH.flags.bLIGHT_CastShadow) continue;
+        if (!SH.flags.bLIGHT_CastShadow) { continue; }
 
-        b_material& M = globalData->materials()[F->dwMaterial];
-        b_texture& T = globalData->textures()[M.surfidx];
+        u16 surfaceID = globalData->materials()[F->dwMaterial].surfidx;
+        b_texture& T = globalData->textures()[surfaceID];
 
-        bool isTransparent = !F->flags.bOpaque && !T.pSurface.Empty() && T.bHasAlpha;
-        F->flags.bOpaque = !isTransparent;
-
-        if (!isTransparent)
-            geometryBuilder.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
-        else
-            geometryBuilder.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
+        bool isTransparent  = (!T.pSurface.Empty() && T.bHasAlpha);
+        F->flags.bOpaque    = !isTransparent;
+        geometryBuilder.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
     }
 
     // 2. Обрабатываем MU-референсы
     for (auto ref : globalData->mu_refs())
     {
-        xr_vector<FaceDataIntel> tempBuffer;
+        xr_vector<FaceDataEmbree> tempBuffer;
         ref->export_cform_rcast_new(tempBuffer);
 
         for (auto& pF : tempBuffer)
@@ -238,13 +232,10 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
             Face* F = (Face*)pF.ptr;
             b_material& M = globalData->materials()[F->dwMaterial];
             b_texture& T = globalData->textures()[M.surfidx];
-
-            bool isTransparent = !F->flags.bOpaque && !T.pSurface.Empty() && T.bHasAlpha;
-
-            if (!isTransparent)
-                  geometryBuilder.AddFace(F, pF.v1, pF.v2, pF.v3);
-            else
-                geometryBuilder.AddFace(F, pF.v1, pF.v2, pF.v3);
+ 
+            bool isTransparent  = (!T.pSurface.Empty() && T.bHasAlpha);
+            F->flags.bOpaque    = isTransparent;
+            geometryBuilder.AddFace(F, pF.v1, pF.v2, pF.v3);
         }
     }
    

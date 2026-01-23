@@ -105,18 +105,19 @@ void run_mu_light()
 	SetThreadPriority(Platform::GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
 	Sleep(0);
 
-	Phase("LIGHT: Mu-Base (*OPCODE* ONLY) ");
-	ThreadTaskID = 0;
+ 	const bool Cuda = gCompilerMode.CUDA;
+	const bool Embree = gCompilerMode.Embree;
+
+	string128 tmp_phase;
+	sprintf(tmp_phase, "LIGHT: Mu-Base (*%s*)", Embree || Cuda ? "Embree" : "Opcode");
+	Phase(tmp_phase);
+
+ 	ThreadTaskID = 0;
 	for (u32 thID = 0; thID < gCompilerMode.ThreadsPerWork; thID++)
 		mu_materials.start(new CMULightCalculation(thID));
  	mu_materials.wait(100); 
 
-
-	const bool Cuda = gCompilerMode.CUDA;
-	const bool Embree = gCompilerMode.Embree;
-
-	string128 tmp_phase;
-	sprintf(tmp_phase, "LIGHT: Mu-Refs (*%s*)", Cuda ? "CUDA" : Embree ? "Embree" : "Opcode");
+ 	sprintf(tmp_phase, "LIGHT: Mu-Refs (*%s*)", Cuda ? "CUDA" : Embree ? "Embree" : "Opcode");
 	Phase(tmp_phase);
  
 	// Light references
