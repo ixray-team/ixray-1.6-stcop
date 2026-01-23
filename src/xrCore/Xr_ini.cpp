@@ -465,6 +465,7 @@ void CInifile::insert_item(CInifile::Sect* tgt, const CInifile::Item& I)
 	}
 	else
 	{
+		tgt->Data.reserve(16);
 		tgt->Data.insert(sect_it, I);
 	}
 }
@@ -1085,7 +1086,14 @@ void CInifile::Load(IReader* F, LPCSTR path, allow_include_func_t allow_include_
 {
 	AllowIncludeFunc = allow_include_func;
 	R_ASSERT(F);
-
+	DATA.reserve(16);
+	OverrideModifyListData.reserve(16);
+	FinalData.reserve(16);
+	BaseData.reserve(16);
+	OverrideData.reserve(16);
+	BaseParentDataMap.reserve(16);
+	OverrideParentDataMap.reserve(16);
+	OverrideToFilename.reserve(16);
 	// Read contents of root file
 	LTXLoad(F, path, OverrideData, OverrideParentDataMap, true, true);
 
