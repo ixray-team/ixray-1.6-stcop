@@ -171,6 +171,16 @@ shared_str CWeaponMagazinedWGrenade::SetCurrentReloadAnimation()
 
 	if (H_Parent() && H_Parent() == Level().CurrentControlEntity())
 	{
+		LPCSTR end_suffix = m_bGrenadeMode ? "_g" : "_w_gl";
+
+		if (m_bUseRevolverScheme && !IsGrenadeMode() && !IsMisfire() && !IsChangeAmmoType())
+		{
+			if (AddSuffixName(anim, shared_str().printf("_%d", iAmmoElapsed).c_str(), end_suffix))
+			{
+				return anim;
+			}
+		}
+
 		if (GetQueueSize() == -1)
 		{
 			AddSuffixName(anim, "_auto");
@@ -182,7 +192,7 @@ shared_str CWeaponMagazinedWGrenade::SetCurrentReloadAnimation()
 
 		int GetElapsed = m_bGrenadeMode ? iAmmoElapsed2 : iAmmoElapsed;
 		bool empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 && GetElapsed == 0 : GetElapsed == 0;
-		LPCSTR end_suffix = m_bGrenadeMode ? "_g" : "_w_gl";
+
 		if (IsMisfire())
 		{
 			if (IsChangeAmmoType() && (!m_bGrenadeMode || iAmmoElapsed))
