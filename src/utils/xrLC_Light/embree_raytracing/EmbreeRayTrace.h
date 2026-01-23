@@ -30,7 +30,7 @@ struct BuildData
 };
 
 // Vertex, Tri Buffers
-static RTCDevice	EmbreeDevice = 0;
+static RTCDevice	EmbreeDevice		= nullptr;
 static bool			isDeviceInitialized = false;
 
 void InitializeEmbreeDevice();
@@ -42,7 +42,6 @@ protected:
 	RTCBuildQuality scene_quality	= RTC_BUILD_QUALITY_LOW;
 
 	RTCScene	IntelScene			= nullptr;
-
 	RTCGeometry IntelGeometryNormal = nullptr;
 	RTCGeometry IntelGeometryTransp = nullptr;
  
@@ -71,6 +70,8 @@ public:
  	void  IntelEmbereUnloadAll();
 
 	// Details Loading 
+	RTCScene	IntelSceneDetails = nullptr;
+	RTCGeometry IntelGeometryDetails = nullptr;
 	float RaytraceEmbreeDetails(Fvector& P, Fvector& N, float range);
 	void InitEmbreeDetails();
 };
