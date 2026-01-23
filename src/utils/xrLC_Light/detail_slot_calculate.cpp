@@ -30,21 +30,21 @@ float	color_intensity	(Fcolor& c)
 }
 
 
-class base_color
+class base_color_new
 {
 public:
 	Fvector					rgb;		// - all static lighting
 	float					hemi;		// - hemisphere
 	float					sun;		// - sun
 	float					_tmp_;		// ???
-	base_color()			{ rgb.set(0,0,0); hemi=0; sun=0; _tmp_=0;	}
+	base_color_new()			{ rgb.set(0,0,0); hemi=0; sun=0; _tmp_=0;	}
 
 	void					mul			(float s)									{	rgb.mul(s);	hemi*=s; sun*=s;				};
 	void					add			(float s)									{	rgb.add(s);	hemi+=s; sun+=s;				};
-	void					add			(base_color& s)								{	rgb.add(s.rgb);	hemi+=s.hemi; sun+=s.sun;	};
+	void					add			(base_color_new& s)								{	rgb.add(s.rgb);	hemi+=s.hemi; sun+=s.sun;	};
 	void					scale		(int samples)								{	mul	(1.f/float(samples));					};
-	void					max			(base_color& s)								{ 	rgb.max(s.rgb); hemi= std::max(hemi,s.hemi); sun= std::max(sun,s.sun); };
-	void					lerp		(base_color& A, base_color& B, float s)		{ 	rgb.lerp(A.rgb,B.rgb,s); float is=1-s;  hemi=is*A.hemi+s*B.hemi; sun=is*A.sun+s*B.sun; };
+	void					max			(base_color_new& s)								{ 	rgb.max(s.rgb); hemi= std::max(hemi,s.hemi); sun= std::max(sun,s.sun); };
+	void					lerp		(base_color_new& A, base_color_new& B, float s)		{ 	rgb.lerp(A.rgb,B.rgb,s); float is=1-s;  hemi=is*A.hemi+s*B.hemi; sun=is*A.sun+s*B.sun; };
 };
 
 
@@ -200,7 +200,7 @@ float rayTrace	(CDB::COLLIDER* DB, R_Light& L, Fvector& P, Fvector& D, float R)/
 	}
 }
 
-void LightPoint(CDB::COLLIDER* DB, base_color &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags)
+void LightPoint(CDB::COLLIDER* DB, base_color_new&C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags)
 {
 	Fvector		Ldir,Pnew;
 	Pnew.mad	(P,N,0.01f);
@@ -354,7 +354,7 @@ bool detail_slot_calculate( u32 _x, u32 _z, DetailSlot&	DS, DWORDVec& box_result
 	Selected.select		( gl_data.g_lights, S.P, S.R );
 
 	// lighting itself
-	base_color		amount;
+	base_color_new		amount;
 	u32				count	= 0;
 	float coeff		= DETAIL_SLOT_SIZE_2/float(LIGHT_Count);
 
