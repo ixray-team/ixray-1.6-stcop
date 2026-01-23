@@ -41,8 +41,6 @@ void global_claculation_data::xrLoad()
 	g_shaders_xrlc				= new Shader_xrLC_LIB ();
 	g_shaders_xrlc->Load		( N );
 
-	InitializeEmbreeDevice();
-
 	// Load CFORM
 	{
 		FS.update_path			(N,"$level$","build.cform");
