@@ -11,14 +11,7 @@ using namespace		Opcode;
 class _MM_ALIGN16 cform_ray_collider
 {
 public:
-	// Intersection Filter
-	bool			UseIntersectionFilter = false;
-	bool			continue_work = true;
-	OpcodeContext*	ctxt = 0;
-
-	// Старый код
-
-	COLLIDER*		dest;
+  	COLLIDER*		dest;
 	TRI*			tris;
 	Fvector*		verts;
 	
@@ -57,9 +50,6 @@ public:
 		ray.fwd_dir.set(D);
 		rRange = R;
 		rRange2 = R * R;
-
-		if (ctxt)
-			UseIntersectionFilter = ctxt->filterIntersect != nullptr;
 	}
 
 	// sse
@@ -149,18 +139,6 @@ public:
 		}
 		else
  		{
-			if (UseIntersectionFilter)
-			{
-				// OpcodeArgs  data;
-				ctxt->result->hit_struct.u = u;
-				ctxt->result->hit_struct.v = v;
-				ctxt->result->hit_struct.prim = prim;
-				ctxt->result->hit_struct.dist = r;
-				ctxt->filterIntersect(ctxt->result);
-				continue_work = ctxt->result->valid;
-				return;
-			}
-
 			RESULT& R	= dest->r_add();				// По порядку создает RESULT
 			R.id		= prim;
 			R.range		= r;
@@ -175,10 +153,6 @@ public:
 
 	void _stab(const AABBNoLeafNode* node)
 	{
-		// Intersection filter stoping 
-		if (!continue_work)
-			return;
-
 		// Actual ray/aabb test
 		// use SSE
 		if (bSSE)
@@ -239,25 +213,7 @@ void COLLIDER::ray_query(const MODEL* m_def, const Fvector& r_start, const Fvect
 	RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
 	RC._stab(N);
 }
-
-
-ICF void CDB::COLLIDER::rayTrace1(OpcodeContext* context)
-{
-	MODEL* MDL = static_cast<MODEL*>(context->result->MDL);
-
-	MDL->syncronize();
-
-	// Get nodes
-	const AABBNoLeafTree* T = (const AABBNoLeafTree*)MDL->tree->GetTree();
-	const AABBNoLeafNode* N = T->GetNodes();
-	r_clear();
-
-	cform_ray_collider RC(CPU::ID().hasFeature(CPUFeature::SSE), true, false, false);
-	RC.ctxt = context;
-	RC._init_intersection(this, MDL, context->r_start, context->r_dir, context->r_range);
-	RC._stab(N);
-}
-
+ 
 bool XRay::Collision::TestRayTriA(const Fvector& C, const Fvector& D, Fvector** p, float& u, float& v, float& range, bool bCull)
 {
 	Fvector edge1, edge2, tvec, pvec, qvec;
