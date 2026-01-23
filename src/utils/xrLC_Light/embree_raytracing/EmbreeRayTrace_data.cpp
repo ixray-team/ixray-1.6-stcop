@@ -142,7 +142,6 @@ void EmbreeRayTraceModel::BuildRaytraceModel( )
 
 	static_geom.RemoveDublicatesFaces(false, true);
 	static_geom_transp.RemoveDublicatesFaces(true, true);
-
 }
 
 #include "global_calculation_data.h"
