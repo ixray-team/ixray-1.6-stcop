@@ -17,7 +17,7 @@ struct CSaver {
 		IC	static void save_data(const T &data, M &stream, const P &p)
 		{
 			static_assert(!std::is_polymorphic<T>::value, "Cannot save polymorphic classes as binary data");
-			stream.w					(&data,sizeof(T));
+			stream.w(&data,sizeof(T));
 		}
 
 		template <>
@@ -199,7 +199,14 @@ IC	void save_data(const T &data, M &stream, const P &p)
 	CSaver<M,P>::save_data(data,stream,p);
 }
 
-template <typename T, typename M>
+template<typename T>
+concept IsSaver =
+requires(T a, void* ptr, u32 count)
+{
+	{a.w(ptr, count) } -> std::same_as<void>;
+};
+
+template <typename T, IsSaver M>
 IC	void save_data(const T &data, M &stream)
 {
 	save_data(data,stream,object_saver::detail::CEmptyPredicate());

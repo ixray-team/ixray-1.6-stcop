@@ -168,7 +168,7 @@ void CActor::UpdateAvailableDialogs(CPhraseDialogManager* partner)
 	if (m_known_info_registry->registry().objects_ptr())
 	{
 		auto& infoPortionRegistry = *m_known_info_registry->registry().objects_ptr();
-		for (const INFO_DATA& info_data : infoPortionRegistry)
+		for (const INFO_DATA& info_data : infoPortionRegistry.Data)
 		{
 			//подгрузить кусочек информации с которым мы работаем
 			CInfoPortion info_portion;

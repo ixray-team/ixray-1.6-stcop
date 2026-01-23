@@ -347,7 +347,7 @@ xr_vector<xr_string> CActor::GetKnownPortions() const
 		return {};
 	}
 
-	for (auto& Info : *KnownInfos)
+	for (auto& Info : KnownInfos->Data)
 	{
 		SafeVector.push_back(Info.info_id.c_str());
 	}
