@@ -252,31 +252,28 @@ void RenderWeaponManagerWindow()
 				// icons
 				imgui_weapon_manager.icons_count = 0;
 				ZeroMemory(imgui_weapon_manager.icons, sizeof(imgui_weapon_manager.icons));
-
-				for (const auto& pSection : pSettings->sections())
+				CInifile::Root& sections = pSettings->sections();
+				for (CInifile::Sect& pSection : sections)
 				{
-					if (pSection)
+					// todo: temp because of korzyna need to replace to g_pClsidManager
+
+					xr_string_view name = pSection.Name.c_str();
+
+					if (!name.empty())
 					{
-						// todo: temp because of korzyna need to replace to g_pClsidManager
-
-						xr_string_view name = pSection->Name.c_str();
-
-						if (!name.empty())
+						size_t index = name.find("wpn_");
+						if (index != xr_string_view::npos && index == 0)
 						{
-							size_t index = name.find("wpn_");
-							if (index != xr_string_view::npos && index == 0)
+							if (pSection.line_exist("inv_grid_x") && pSection.line_exist("inv_grid_y") && pSection.line_exist("inv_grid_width") && pSection.line_exist("inv_grid_height"))
 							{
-								if (pSection->line_exist("inv_grid_x") && pSection->line_exist("inv_grid_y") && pSection->line_exist("inv_grid_width") && pSection->line_exist("inv_grid_height"))
-								{
-									auto& icon = imgui_weapon_manager.icons[imgui_weapon_manager.icons_count];
-									icon.inv_scale = READ_IF_EXISTS(pSettings, r_float, pSection->Name, "inv_scale", 1.0f);
-									icon.inv_grid_x = pSettings->r_u32(pSection->Name, "inv_grid_x");
-									icon.inv_grid_y = pSettings->r_u32(pSection->Name, "inv_grid_y");
-									icon.inv_grid_width = pSettings->r_u32(pSection->Name, "inv_grid_width");
-									icon.inv_grid_height = pSettings->r_u32(pSection->Name, "inv_grid_height");
-									icon.p_section_name = pSection->Name.c_str();
-									++imgui_weapon_manager.icons_count;
-								}
+								auto& icon = imgui_weapon_manager.icons[imgui_weapon_manager.icons_count];
+								icon.inv_scale = READ_IF_EXISTS(pSettings, r_float, name.data(), "inv_scale", 1.0f);
+								icon.inv_grid_x = pSettings->r_u32(name.data(), "inv_grid_x");
+								icon.inv_grid_y = pSettings->r_u32(name.data(), "inv_grid_y");
+								icon.inv_grid_width = pSettings->r_u32(name.data(), "inv_grid_width");
+								icon.inv_grid_height = pSettings->r_u32(name.data(), "inv_grid_height");
+								icon.p_section_name = name.data();
+								++imgui_weapon_manager.icons_count;
 							}
 						}
 					}

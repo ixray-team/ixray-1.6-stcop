@@ -905,7 +905,7 @@ void CEnvironment::load_weathers		()
         env.reserve(sections.size());
 
         for (const auto& section : sections)
-            env.emplace_back(create_descriptor(section->Name, config));
+            env.emplace_back(create_descriptor(section.Name, config));
 
         CInifile::Destroy(config);
     }
@@ -969,13 +969,13 @@ void CEnvironment::load_weather_effects()
         FS.update_path(file_name, "$game_weather_effects$", fileName);
         CInifile* config = CInifile::Create(file_name);
 
-        auto& sections = config->sections();
+		CInifile::Root& sections = config->sections();
         env.reserve(sections.size() + 2);
 
         env.emplace_back(create_descriptor("00:00:00", nullptr));
 
-        for (const auto& section : sections)
-            env.emplace_back(create_descriptor(section->Name, config));
+        for (CInifile::Sect& sect : sections)
+            env.emplace_back(create_descriptor(sect.Name, config));
 
         CInifile::Destroy(config);
 

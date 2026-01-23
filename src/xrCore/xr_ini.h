@@ -29,7 +29,7 @@ public:
 		BOOL			line_exist	(LPCSTR L, LPCSTR* val=0);
 	};
 
-	typedef	xr_vector<Sect*>		Root;
+	typedef	xr_vector<Sect>			Root;
 	typedef Root::iterator			RootIt;
 	typedef Root::const_iterator	RootCIt;
 	
