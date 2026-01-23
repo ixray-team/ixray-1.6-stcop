@@ -25,7 +25,9 @@
 #include "movement_manager.h"
 #include "agent_manager.h"
 #include "agent_enemy_manager.h"
-
+#ifndef MASTER_GOLD
+#	include "ai_debug.h"
+#endif // MASTER_GOLD
 static const u32 ENEMY_INERTIA_TIME_TO_SOMEBODY	= 3000;
 static const u32 ENEMY_INERTIA_TIME_TO_ACTOR	= 0;
 static const u32 ENEMY_INERTIA_TIME_FROM_ACTOR	= 6000;
@@ -58,6 +60,12 @@ bool CEnemyManager::is_useful				(const CEntityAlive *entity_alive) const
 bool CEnemyManager::useful					(const CEntityAlive *entity_alive) const
 {
 	PROF_EVENT("CEnemyManager::useful");
+
+#ifndef MASTER_GOLD
+	if (const_cast<CEntityAlive*>(entity_alive)->cast_actor() && psAI_Flags.test(aiIgnoreActor))
+		return				(false);
+#endif // MASTER_GOLD
+
 	if (!entity_alive->g_Alive())
 		return				(false);
 
