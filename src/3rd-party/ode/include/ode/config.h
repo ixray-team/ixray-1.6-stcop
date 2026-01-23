@@ -30,24 +30,16 @@
 #define _ODE_CONFIG_H_
 
 #ifdef __cplusplus
-
-extern "C" {
-
+extern "C"
+{
 #endif
 
-
-
 #include <stdio.h>
-
 #include <stdarg.h>
-
 #include <malloc.h>		// for alloca under windows
-
 #include <string.h>
-
 #include <math.h>
-
-
+#include <stdint.h>
 
 #if defined(WIN32) && (defined(MSVC) || defined(MINGW))
 
