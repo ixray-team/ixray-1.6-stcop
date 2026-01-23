@@ -73,7 +73,7 @@ void CWeaponShotgun::switch2_Fire()
 
 void CWeaponShotgun::OnAnimationEnd(u32 state)
 {
-	if (!m_bTriStateReload || state != eReload || state == eReload && IsMisfire() && (HudAnimationExist("anm_reload_jammed") || HudAnimationExist("anm_reload_misfire")))
+	if (!m_bTriStateReload || state != eReload || state == eReload && (bMisfireReload || bReloadEmptyByScheme))
 	{
 		bStopReloadSignal = false;
 		return inherited::OnAnimationEnd(state);
@@ -127,6 +127,9 @@ void CWeaponShotgun::OnAnimationEnd(u32 state)
 
 void CWeaponShotgun::Reload()
 {
+	bMisfireReload = false;
+	bReloadEmptyByScheme = false;
+
 	bool is_misfire = IsMisfire() && (HudAnimationExist("anm_reload_jammed") || HudAnimationExist("anm_reload_misfire"));
 
 	if (is_misfire)
@@ -134,7 +137,14 @@ void CWeaponShotgun::Reload()
 		bMisfireReload = true;
 	}
 
-	if (m_bTriStateReload && !is_misfire)
+	bool empty_reload = m_bUseMosinScheme && !IsScopeAttached() && iAmmoChamberElapsed + iAmmoElapsed == 0 && HaveCartridgeInInventory(GetMagCapacity());
+
+	if (empty_reload)
+	{
+		bReloadEmptyByScheme = true;
+	}
+
+	if (m_bTriStateReload && !is_misfire && !empty_reload)
 		TriStateReload();
 	else
 		inherited::Reload();
@@ -153,8 +163,7 @@ void CWeaponShotgun::TriStateReload()
 
 void CWeaponShotgun::OnStateSwitch(u32 S)
 {
-	bool is_misfire = S == eReload && IsMisfire() && (HudAnimationExist("anm_reload_jammed") || HudAnimationExist("anm_reload_misfire"));
-	if (!m_bTriStateReload || S != eReload || is_misfire)
+	if (!m_bTriStateReload || S != eReload || S == eReload && (bMisfireReload || bReloadEmptyByScheme))
 	{
 		bStopReloadSignal = false;
 		m_bIsPreloaded = false;
