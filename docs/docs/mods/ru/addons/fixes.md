@@ -1,5 +1,6 @@
 ---
 title: Аддоны на исправления ванильных ресурсов
+aside: false
 ---
 
 <script setup lang="ts">

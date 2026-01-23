@@ -12,7 +12,7 @@
       "title": "PARADOX WEATHER UNIT: IX-RAY",
       "description": "Модификация мягко преображает оригинальную игру, обновляя её графическую и звуковую составляющую. В игре представлены около 10 погодных циклов, периодичность каждого цикла варьируется в зависимости от локации, что обеспечивает разнообразие и естественность смены атмосферных условий.",
       "author": "OSWALD, IX-Ray Team",
-      "link": "https://example.com/addons/pwu",
+      "link": "https://www.moddb.com/mods/ix-ray-platform/addons/ix-ray-13-paradox-weather-unit-v21",
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Weathers_addons/PWU.png"
     },
     {
@@ -20,7 +20,7 @@
       "title": "Stalker Weather Total Conversion",
       "description": "Этот графический мод помимо таких достоинств, как невероятное разнообразие, отличается тем, что являет собой целостную художественную структуру и проработанную концепцию. Автор хотел придать игре неповторимый, атмосферный вид, и дать ей новое дыхание и взгляд с другого угла.",
       "author": "Vincent_Vega, IX-Ray Team",
-      "link": "https://example.com/addons/swtc",
+      "link": "https://www.moddb.com/mods/ix-ray-platform/addons/ix-ray-13-swtc-rel-10",
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Weathers_addons/SWTC.png"
     },
     {
@@ -28,7 +28,7 @@
       "title": "AtmosFear 3",
       "description": "Официальная адаптация Atmosfear 3 под платформу IX-Ray. Atmosfear изменяет и расширяет стандартную систему погоды, делая ее более реалистичной и разнообразной. Дальность видимости на погодных циклах разная, так что в ясный день можно разглядеть буквально всю локацию.",
       "author": "CrommCruac, IX-Ray Team",
-      "link": "https://example.com/addons/af3",
+      "link": "https://www.moddb.com/mods/ix-ray-platform/addons/ix-ray-13-atmosfear-3-rel-10",
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Weathers_addons/AF3.png"
     },
     {
@@ -36,7 +36,7 @@
       "title": "CGIM2 Weathers",
       "description": "Это официальная адаптация погодного мода CGIM2 под платформу IX-Ray. Пак добавляет несколько полностью новых погодных циклов и создаёт в игре летнюю атмосферу.",
       "author": "zhoracementov, IX-Ray Team",
-      "link": "https://example.com/addons/cgim2",
+      "link": "https://www.moddb.com/mods/ix-ray-platform/addons/ix-ray-13-cgim2-weathers-rel-10",
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Weathers_addons/CGIM2.png"
     }
   ]

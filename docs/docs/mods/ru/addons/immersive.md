@@ -1,5 +1,6 @@
 ---
 title: Иммерсивные аддоны
+aside: false
 ---
 
 <script setup lang="ts">

@@ -12,7 +12,7 @@
       "title": "PARADOX WEATHER UNIT: IX-RAY",
       "description": "This mod gently transforms the original game by updating its graphical and audio aspects. The game features about 10 weather cycles; the frequency of each cycle varies by location, providing variety and natural atmospheric changes.",
       "author": "OSWALD, IX-Ray Team",
-      "link": "https://example.com/addons/pwu",
+      "link": "https://www.moddb.com/mods/ix-ray-platform/addons/ix-ray-13-paradox-weather-unit-v21",
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Weathers_addons/PWU.png"
     },
     {
@@ -20,7 +20,7 @@
       "title": "Stalker Weather Total Conversion",
       "description": "This graphical mod stands out for its incredible variety and cohesive artistic structure with a developed concept. The author aimed to give the game a distinctive atmospheric look and a fresh perspective.",
       "author": "Vincent_Vega, IX-Ray Team",
-      "link": "https://example.com/addons/swtc",
+      "link": "https://www.moddb.com/mods/ix-ray-platform/addons/ix-ray-13-swtc-rel-10",
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Weathers_addons/SWTC.png"
     },
     {
@@ -28,7 +28,7 @@
       "title": "AtmosFear 3",
       "description": "Official adaptation of Atmosfear 3 for the IX-Ray platform. Atmosfear modifies and expands the standard weather system, making it more realistic and varied. Visibility ranges differ across weather cycles, so on clear days you can discern the entire location.",
       "author": "CrommCruac, IX-Ray Team",
-      "link": "https://example.com/addons/af3",
+      "link": "https://www.moddb.com/mods/ix-ray-platform/addons/ix-ray-13-atmosfear-3-rel-10",
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Weathers_addons/AF3.png"
     },
     {
@@ -36,7 +36,7 @@
       "title": "CGIM2 Weathers",
       "description": "Official adaptation of the CGIM2 weather mod for IX-Ray. The pack adds several completely new weather cycles and creates a summer atmosphere in the game.",
       "author": "zhoracementov, IX-Ray Team",
-      "link": "https://example.com/addons/cgim2",
+      "link": "https://www.moddb.com/mods/ix-ray-platform/addons/ix-ray-13-cgim2-weathers-rel-10",
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Weathers_addons/CGIM2.png"
     }
   ]

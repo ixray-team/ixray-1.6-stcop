@@ -1,5 +1,6 @@
 ---
 title: Оружейные паки
+aside: false
 ---
 
 <script setup lang="ts">

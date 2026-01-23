@@ -24,6 +24,22 @@
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/dreamcatcher2r.png"
     },
     {
+      "id": "vestnik",
+      "title": "Vestnik",
+      "description": "The player will assume the role of a bandit nicknamed 'Ace', who has taken a job working for the military in the Chernobyl Exclusion Zone in order to later save his brother Valera. The mod features additional activities and interesting locations",
+      "author": "FacingSlave",
+      "link": "https://ap-pro.ru/forums/topic/13947-vestnik/",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%92%D0%B5%D1%81%D1%82%D0%BD%D0%B8%D0%BA.png"
+    },
+    {
+      "id": "stcop_wp38",
+      "title": "STCoP Weapon Pack 3.8",
+      "description": "Weapon Pack",
+      "author": "Ga2z",
+      "link": "https://ap-pro.ru/forums/topic/13959-stcop-weapon-pack-38/",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/stcop38.png"
+    },
+    {
       "id": "script_ny2026",
       "title": "Who Stole the Holiday?",
       "description": "In the Footsteps of the Grinch",

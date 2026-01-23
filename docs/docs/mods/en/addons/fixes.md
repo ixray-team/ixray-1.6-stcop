@@ -1,5 +1,6 @@
 ---
 title: Fixes vanilla resources Add-ons
+aside: false
 ---
 
 <script setup lang="ts">

@@ -12,7 +12,7 @@
       "title": "HQ Icons 2.0",
       "description": "Аддон с перерабаткой всех внутриигровых иконкок предметов. Все рендеры были созданы с нуля с удвоенным разрешением для улучшенной детализации. Для артефактов использовалось дополнительное улучшение через ИИ-апскейлинг.",
       "author": "MSR, IX-Ray Team",
-      "link": "https://example.com/addons/hqicons",
+      "link": "https://www.moddb.com/mods/ix-ray-platform/addons/hq-icons-20",
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/UI-UX_addons/hqicons.png"
     },
     {
@@ -20,7 +20,7 @@
       "title": "Smooth Fade Addon 1.0",
       "description": "Этот аддон добавляет плавные переходы при запуске игры, загрузке сохранения и перемещении между локациями.",
       "author": "_V_O_IN_, IX-Ray Team",
-      "link": "https://example.com/addons/SFA",
+      "link": "https://www.moddb.com/mods/ix-ray-platform/addons/smooth-fade-addon-10",
       "image": "https://dummyimage.com/524x482/1f2937/ffffff&text=SFA"
     },
     {
@@ -28,7 +28,7 @@
       "title": "Renewed Perception (HD HUD)",
       "description": "Основная задача аддона - осовременить оригинальный интерфейс, сохраняя его изначальную задумку и эстетику. Все текстуры были полностью перерисованы вручную, без использования старых ресурсов и технологий искусственного интеллекта.",
       "author": "Desert Cliff, Drombeys, St4lker0k765",
-      "link": "https://example.com/addons/hdhud",
+      "link": "https://www.moddb.com/mods/ix-ray-platform/addons/ix-ray-131-renewed-perception-hd-hud-ver-11",
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/UI-UX_addons/hdhud.png"
     }
   ]
