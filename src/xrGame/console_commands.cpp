@@ -1912,11 +1912,11 @@ public:
 			}
 		}
 
-		for (const auto& section : pSettings->sections())
+		for (CInifile::Sect& sect : pSettings->sections())
 		{
-			if (section->line_exist("class"))
+			if (sect.line_exist("class"))
 			{
-				tips.push_back(section->Name.c_str());
+				tips.push_back(sect.Name.c_str());
 			}
 		}
 	}
@@ -1925,8 +1925,10 @@ public:
 #include "alife_smart_terrain_registry.h"
 class CCC_SpawnSquad : public IConsole_Command {
 public:
-	CCC_SpawnSquad(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
-
+	CInifile* l_tpIniFile = NULL;
+	vecTips m_tips;
+	CCC_SpawnSquad(LPCSTR N) : IConsole_Command(N){	bEmptyArgsHandled = false;};
+	~CCC_SpawnSquad() { IConsole_Command ::~IConsole_Command(); xr_delete(l_tpIniFile); }
 	LPCSTR GetNearestSmartName()
 	{
 		const auto& objects = ai().alife().smart_terrains().objects();
@@ -1978,7 +1980,20 @@ public:
 			if (ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel))
 			{
 				string256 script_command;
-				xr_sprintf(script_command, "xr_effects.create_squad(db.actor,nil,{\"%s\",\"%s\"})", nameSection, GetNearestSmartName());
+				if(l_tpIniFile)
+				{
+					auto& section = l_tpIniFile->r_section(nameSection);
+					if (section.line_exist("faction"))
+					{
+						sprintf_s(script_command, "sim_board.get_sim_board():create_squad(\"%s\", sim_squad_scripted.sim_squad_scripted, sim_board.get_sim_board().smarts_by_names[\"%s\"], nil, \"%s\")", l_tpIniFile->r_string(nameSection, "faction"), GetNearestSmartName(), nameSection);
+					}
+					else
+					{
+						sprintf_s(script_command, "xr_effects.create_squad(db.actor,nil,{\"%s\",\"%s\"})", nameSection, GetNearestSmartName());
+					}
+				}
+				else
+					xr_sprintf(script_command, "xr_effects.create_squad(db.actor,nil,{\"%s\",\"%s\"})", nameSection, GetNearestSmartName());
 
 				ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel)->add_script(script_command, true, true);
 			}
@@ -1987,12 +2002,31 @@ public:
 
 	virtual void fill_tips(vecTips& tips, u32 mode)
 	{
-		CInifile::Root sections = pSettings->sections();
-		for (CInifile::Root::iterator i = sections.begin(), ie = sections.end(); i != ie; ++i)
+		if (m_tips.empty())
 		{
-			if ((*i)->line_exist("faction") && ((*i)->line_exist("npc") || (*i)->line_exist("npc_in_squad")))
-				tips.push_back((*i)->Name.c_str());
+			
+			bool has_CS = true;
+			for (CInifile::Sect& sect : pSettings->sections())
+			{
+				if (sect.line_exist("faction") && (sect.line_exist("npc") || sect.line_exist("npc_in_squad")))
+				{
+					has_CS = false;
+					m_tips.push_back(sect.Name);
+				}
+			}
+			if (has_CS && !l_tpIniFile)
+			{
+				string_path S;
+				FS.update_path(S, "$game_config$", "misc\\squad_descr.ltx");
+				l_tpIniFile = new CInifile(S);
+				for (CInifile::Sect& sect : l_tpIniFile->sections())
+				{
+					if (sect.line_exist("faction") && (sect.line_exist("npc") || sect.line_exist("npc_in_squad")))
+						m_tips.push_back(sect.Name);
+				}
+			}
 		}
+		tips = m_tips;
 	}
 };
 
@@ -2158,14 +2192,14 @@ public:
 			return;
 		}
 
-		for (const auto& section : pSettings->sections())
+		for (CInifile::Sect& sect : pSettings->sections())
 		{
-			if (section->line_exist("visual")
-				&& isValidSection(section->Name.c_str())
-				&& section->line_exist("cost") 
-				&& section->line_exist("inv_weight"))
+			if (sect.line_exist("visual")
+				&& isValidSection(sect.Name.c_str())
+				&& sect.line_exist("cost") 
+				&& sect.line_exist("inv_weight"))
 			{
-				tips.push_back(section->Name.c_str());
+				tips.push_back(sect.Name.c_str());
 			}
 		}
 	}

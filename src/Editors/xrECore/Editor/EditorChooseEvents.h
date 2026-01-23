@@ -18,11 +18,12 @@ namespace ChoseEvents
     void   FillEntity(ChooseItemVec& items, void* param)
     {
         //.    AppendItem	   					(RPOINT_CHOOSE_NAME);
-        CInifile::Root const& data = pSettings->sections();
-        for (CInifile::RootCIt it = data.begin(); it != data.end(); it++) {
+        CInifile::Root& sections = pSettings->sections();
+        for (CInifile::Sect& sect : sections)
+        {
             LPCSTR val;
-            if ((*it)->line_exist("$spawn", &val))
-                items.push_back(SChooseItem(*(*it)->Name, ""));
+            if (sect.line_exist("$spawn", &val))
+                items.push_back(SChooseItem(*sect.Name, ""));
         }
     }
     //---------------------------------------------------------------------------

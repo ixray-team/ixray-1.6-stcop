@@ -1517,23 +1517,21 @@ bool CSpawnPoint::ExportGame(SExportStreams* F)
 
 void CSpawnPoint::OnFillRespawnItemProfile(ChooseValue* val)
 {
-	val->m_Items->clear		();
-	string_path				fn;
-	FS.update_path			(fn,"$game_config$", "mp\\respawn_items.ltx");
-	CInifile				ini(fn);
-	CInifile::RootIt it 	= ini.sections().begin();
-	CInifile::RootIt it_e 	= ini.sections().end();
-
-	for(;it!=it_e;++it)
+	val->m_Items->clear();
+	string_path	fn;
+	FS.update_path(fn,"$game_config$", "mp\\respawn_items.ltx");
+	CInifile ini(fn);
+	CInifile::Root& sections = ini.sections();
+	for(CInifile::Sect& sect : sections)
 	{
-		shared_str name		= (*it)->Name;
+		shared_str& sect_name = sect.Name;
 		shared_str hint;
-		if(ini.line_exist(name,"description"))
-			hint 			= ini.r_string(name,"description");
+		if(ini.line_exist(sect_name,"description"))
+			hint 			= ini.r_string(sect_name,"description");
 		else
 			hint 			= "<empty>";
 		
-		val->m_Items->push_back( SChooseItem( name.c_str(), hint.c_str() ) );
+		val->m_Items->push_back( SChooseItem(sect_name.c_str(), hint.c_str() ) );
 	}
 }
 
