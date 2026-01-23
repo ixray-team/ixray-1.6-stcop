@@ -264,8 +264,9 @@ void CDetailManager::UpdateVisibleM()
 #endif
 				float R = D.bv_sphere.R;
 				float Rq_drcp = R*R*dist_sq_rcp;	// reordered expression for 'ssa' calc
-
-				for (auto& SItem : sp.items)
+				auto& ditems = D.m_items;
+				auto& items = sp.items;
+				for (auto& SItem : items)
 				{
 					CDetail::SlotItem& Item  = *SItem;
 					float scale = Item.scale_calculated = Item.scale*alpha_i;
@@ -277,7 +278,7 @@ void CDetailManager::UpdateVisibleM()
 					u32 vis_id = 0;
 					if (ssa > r_ssaCHEAP)
 						vis_id = Item.vis_ID;
-					D.m_items[vis_id][calc_key].push_back(SItem);
+					ditems[vis_id][calc_key].push_back(SItem);
 				}
 			}
 		}
