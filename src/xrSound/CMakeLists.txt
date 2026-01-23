@@ -37,9 +37,6 @@ list(APPEND SND_SRC_FILES ${SND_SOURCE_ALL_FILES})
 if(NOT IXRAY_MP)
     list(FILTER SND_SRC_FILES EXCLUDE REGEX "Recorder/*.*")
 endif()
-if(NOT WIN32)
-    list(FILTER SND_SRC_FILES EXCLUDE REGEX "System/NotificationClient.*")
-endif()
 
 # xrSound project
 add_library(xrSound SHARED ${SND_SRC_FILES})
