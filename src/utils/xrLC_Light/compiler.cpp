@@ -23,8 +23,6 @@ void xrLight_Details()
 
 	thread_local base_lighting		Selected;
  	thread_local DWORDVec			box_result;
-
-	InitializeEmbreeDevice();
  
 	xr_atomic_u32 IndexTask = 0;
 	xr_parallel_for
