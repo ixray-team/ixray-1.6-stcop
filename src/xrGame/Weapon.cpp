@@ -3673,12 +3673,12 @@ bool CWeapon::NeedBlockSprint() const
 
 	if (isDelayedWeaponActions)
 	{
-		return state != eIdle && state != eSprintStart || m_bIsAimAnimationPlaying;
+		return state != eIdle && state != eSprintStart && state != eSprintEnd || m_bIsAimAnimationPlaying;
 	}
 
 	const static bool isBlockSprintInReload = EngineExternal()[EEngineExternalGame::EnableBlockSprintInReload];
 
-	return state == eFire || state == eFire2 || state == eSprintEnd || isBlockSprintInReload && state == eReload || m_bIsAimAnimationPlaying;
+	return state == eFire || state == eFire2 || isBlockSprintInReload && state == eReload || m_bIsAimAnimationPlaying;
 }
 
 void CWeapon::render_hud_mode()
