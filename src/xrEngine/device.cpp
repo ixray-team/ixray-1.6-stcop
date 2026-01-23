@@ -457,7 +457,7 @@ struct EfficientFilteredDelta
 		size_t count = buffer_filled ? BUFFER_SIZE : current_index;
 		if (count < 5) return median * 2.0f;
 
-		std::vector<float> deviations;
+		xr_vector<float> deviations;
 		deviations.reserve(count);
 
 		for (size_t i = 0; i < count; ++i)
