@@ -417,6 +417,7 @@ protected:
 	bool m_bGaussScheme = false;
 	bool m_bGaussScreen = false;
 	BOOL m_bUseRevolverScheme = false;
+	BOOL m_bUseMosinScheme = false;
 
 	bool m_bHaveShell = false;
 	bool m_bNeedPumpState = false;
