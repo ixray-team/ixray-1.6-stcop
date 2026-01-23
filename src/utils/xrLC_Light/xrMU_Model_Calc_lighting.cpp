@@ -68,7 +68,7 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 			N.random_dir(vN, deg2rad(30.f));
 			P.mad(vP, N, a);
 
-			if (gCompilerMode.Embree || gCompilerMode.CUDA)
+			if (MDL && (gCompilerMode.Embree || gCompilerMode.CUDA) )
 			{
 				LightPointNew	( (EmbreeRayTraceModel*) MDL, vC, P, N, lights, flags, 0);
 			}
