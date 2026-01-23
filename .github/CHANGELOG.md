@@ -17,6 +17,9 @@ Full changelog of _IX-Ray_ 1.6 project
 - Centralized IK calculation in one place (@v2v3v4)
 - Disabled by force fixed objects (@v2v3v4)
 - Fixed comma-separated OMF animation mask reading (@Drombeys)
+- Fixed mouse button state checking (@Shtrecker)
+- Fixed structure initialization in camera effector (@Hozar_2002)
+- Pre-reserved memory for GOAP upon first vector addition (@v2v3v4)
 - Set main menu FPS lock to 120 (@MAYLAYSHEZ)
 
 ### Graphics
@@ -27,9 +30,13 @@ Full changelog of _IX-Ray_ 1.6 project
 
 ### Gameplay
 
+- Added visual change during upgrades (@Shtrecker)
+- Fixed item pickup functionality (@Drombeys)
+- Fixed machine gun belt hiding during alternative sight system operation (@Shtrecker)
+- Fixed original bug with incorrect color text transfer (@mnelenpridumivat)
 - Fixed restrictor triggers when legs are enabled (@v2v3v4)
 - Fixed weapon data cleaning implementation (@Shtrecker)
-- Refactored first-person leg code (@v2v3v4)
+- Refactored first-person leg code (@v2v3v4, @Hozar2002)
 - Reworked booster system functionality (@Shtrecker)
 
 ### Toolchain
