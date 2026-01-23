@@ -57,8 +57,6 @@ public:
 	void	mem_Compact				();
  
 public:
-//	void	GetMemoryUsedStorage();
-
 	void	Load					(const b_params& P, const IReader&  fs);
 	void	Run						(LPCSTR path);
  
