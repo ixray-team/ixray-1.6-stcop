@@ -16,6 +16,7 @@ ENGINE_API void EngineLoadStage2();
 ENGINE_API void EngineLoadStage3();
 ENGINE_API void EngineLoadStage4();
 ENGINE_API void EngineLoadStage5();
+ENGINE_API void EngineLoadStage6();
 
 namespace
 {
@@ -152,6 +153,7 @@ int main(int argc, char** argv)
 	Console->Execute("vid_restart");
 
 	EngineLoadStage5();
+	EngineLoadStage6();
 
 	DedicatedConsoleInput::Stop();
 
