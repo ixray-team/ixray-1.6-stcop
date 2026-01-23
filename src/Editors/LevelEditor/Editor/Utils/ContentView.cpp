@@ -1817,15 +1817,14 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 xr_map<xr_string, CContentView::FileOptData> CContentView::ScanConfigs(const xr_string& StartPath)
 {
 	xr_map<xr_string, FileOptData> TempPath;
-	CInifile::Root& data = ((CInifile*)pSettings)->sections();
-
-	for (CInifile::RootIt it = data.begin(); it != data.end(); it++)
+	CInifile::Root& sections = pSettings->sections();
+	for (CInifile::Sect& sect : sections)
 	{
 		LPCSTR val;
-		if ((*it)->line_exist("$spawn", &val))
+		if (sect.line_exist("$spawn", &val))
 		{
-			shared_str caption = pSettings->r_string_wb((*it)->Name, "$spawn");
-			shared_str sect = (*it)->Name;
+			shared_str& sect_name = sect.Name;
+			shared_str caption = pSettings->r_string_wb(sect_name, "$spawn");
 			if (caption.size())
 			{
 				xr_string FileName = caption.c_str();
@@ -1874,14 +1873,14 @@ xr_map<xr_string, CContentView::FileOptData> CContentView::ScanConfigs(const xr_
 						}
 						else
 						{
-							TempPath[DirName] = { (DirName + ".ise").c_str(), false, sect };
+							TempPath[DirName] = { (DirName + ".ise").c_str(), false, sect_name };
 						}
 					}
 
 					continue;
 				}
 
-				TempPath[FileName] = { (FileName + ".ise").c_str(), false, sect };
+				TempPath[FileName] = { (FileName + ".ise").c_str(), false, sect_name };
 			}
 		}
 	}
