@@ -413,6 +413,7 @@ protected:
 	bool m_bNeedPumpReloadEnd = false;
 	bool m_bGaussScheme = false;
 	bool m_bGaussScreen = false;
+	BOOL m_bUseRevolverScheme = false;
 
 	bool m_bHaveShell = false;
 	bool m_bNeedPumpState = false;
