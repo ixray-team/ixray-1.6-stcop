@@ -104,7 +104,7 @@ void   CChimera::Load (LPCSTR section)
 	anim().LinkAction						(ACT_STEAL,			eAnimSteal);
 	anim().LinkAction						(ACT_LOOK_AROUND,	eAnimLookAround);
 
-#undef ANIM_NAME(Var, Def)
+#undef ANIM_NAME
 	
 	m_attack_params.attack_radius			=	READ_IF_EXISTS(pSettings, r_float,section, "attack_radius",	    10.f);
 	m_attack_params.prepare_jump_timeout	=	READ_IF_EXISTS(pSettings, r_u32,  section, "prepare_jump_timeout",	2000);
