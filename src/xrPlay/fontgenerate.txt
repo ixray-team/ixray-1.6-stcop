@@ -1,0 +1,9 @@
+https://stmn.itch.io/font2bitmap
+
+
+ref font:
+DroidSansMono.ttf
+Per row: 14
+Grid width: 10
+Grid height: 20
+Font size: 16
