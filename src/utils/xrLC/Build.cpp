@@ -114,95 +114,11 @@ size_t GetHeapMemory()
 
 	return 0;
 }
-
-void GetMemoryUsedStorage()
-{
-#if 0
-	if (!lc_global_data())
-		return;
-
-	u32 tree = pBuild->GetTreeSize() / 1024 / 1024;
-	size_t defl = 0; size_t lightmaps = 0;
-	for (auto& D : lc_global_data()->g_deflectors())
-	{
-		defl += D->size_deflector();
-	}
-	defl /= (1024 * 1024);
- 	for (auto&  LM  : lc_global_data()->lightmaps())
-	{
-		lightmaps += LM->lm.memory_lmap();
- 	}
-	lightmaps /= (1024 * 1024);
-  	 
-	size_t sV = 0;
-	for (auto& V : lc_global_data()->g_vertices())
-	{
-		sizeof(Vertex);
-		sV += V->used_memory(); 
-	}
-	
-	sV /= (1024 * 1024);
-
-	size_t sF = 0;// lc_global_data()->g_faces().size() * sizeof(Face);
-	for (auto& F : lc_global_data()->g_faces())
-	{						
-		sF += sizeof(*F) + sizeof(void*); //void* vector size
-	}
-	
-	sF /= (1024 * 1024);
-	
-	size_t TAlloc = 0;
-	for (auto& T : lc_global_data()->textures())
-	{
-		TAlloc += (T.dwHeight* T.dwHeight * 4);
-	}
-	lc_global_data()->textures();
-	size_t sTex = lc_global_data()->textures().size() * sizeof(b_BuildTexture);
-	sTex += TAlloc;
-	sTex /= (1024 * 1024);
-
-	size_t SplitsMemory = 0;
-	for (auto X : g_XSplit)
-	{
-		SplitsMemory += X->capacity() * sizeof(void*);
-	}
-	SplitsMemory += g_XSplit.capacity() * sizeof(void*);
-
-	u32 MB = 1024 * 1024;
-
-	Msg("!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-	Msg("- xSplits:		%u count, %u capacity, %u mb", g_XSplit.size(), g_XSplit.capacity(), SplitsMemory / 1024 / 1024);
-	
-	Msg("- GeomTree:	%u mb, cap:%u",		tree, g_tree.capacity());
-	Msg("- Deflectors:	%u mb, cap:%u",		defl, lc_global_data()->g_deflectors().capacity());
-	Msg("- Lightmaps:	%u mb, cap:%u",		lightmaps, lc_global_data()->lightmaps().capacity());
- 	Msg("- vertexes:	%u mb, store: %u, cap:%u",		sV, lc_global_data()->g_vertices().size(),  lc_global_data()->g_vertices().capacity());	// Не учитываю алокацию adjucement при создании и жрет в разы больше
-	Msg("- faces:		%u mb, store: %u, cap:%u",		sF, lc_global_data()->g_faces().size(), lc_global_data()->g_faces().capacity());	// Не учитываю алокацию adjucement при создании и жрет в разы больше
-	Msg("- Textures:	%u mb, cap:%u",		sTex, lc_global_data()->textures().capacity());
-	Msg("- Embree BVH: %umb, Static: %umb, MU: %umb", EmbreeMain.BVH_size / MB, EmbreeMain.Static_size / MB, EmbreeMain.MU_size / MB);
-
-	u32 memdata = tree + defl + lightmaps;
-	
-	u32 EmbreeMem = (EmbreeMain.BVH_size / MB) + (EmbreeMain.Static_size / MB) + (EmbreeMain.MU_size / MB);
- 
-	if (g_XSplit.capacity() != g_XSplit.size())
-		g_XSplit.shrink_to_fit();
-
-	if (lc_global_data()->g_deflectors().capacity() != lc_global_data()->g_deflectors().size())
-		lc_global_data()->g_deflectors().shrink_to_fit();
-
-	if (lc_global_data()->lightmaps().capacity() != lc_global_data()->lightmaps().size())
-		lc_global_data()->lightmaps().shrink_to_fit();
-
-	Msg("- Total Memory (AFTER SHIRK):	%u / (Check) %u + %u + %u mb", GetHeapMemory() / (1024 * 1024), EmbreeMem, sV + sF + sTex, memdata);
-
-
-	Msg("!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-#endif
-}
-
+  
 void CBuild::Run(LPCSTR P)
 {
+
+
 	lc_global_data()->initialize();
 
 	//****************************************** Open Level
@@ -238,10 +154,8 @@ void CBuild::Run(LPCSTR P)
 	mem_Compact();
 
  	// Tesselate + calculate
-	// Phase("Adaptive HT tessalate ...");
-	xrPhase_AdaptiveHT_tessalte();
-
-
+ 	xrPhase_AdaptiveHT_tessalte();
+ 
 	Phase("Building Level.cform ...");
 	BuildCForm();
 
