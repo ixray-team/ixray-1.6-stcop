@@ -67,6 +67,30 @@ void CWeaponMagazined::Load(LPCSTR section)
 {
 	inherited::Load(section);
 
+	s32 mag_size = iMagazineSize;
+
+	if (!m_mags_capacity.empty())
+	{
+		for (auto& capacity : m_mags_capacity)
+		{
+			if (capacity.second > mag_size)
+			{
+				mag_size = capacity.second;
+			}
+		}
+	}
+
+	mag_size += iChamberSize;
+
+	for (s32 i = 0; i < mag_size; i++)
+	{
+		const shared_str name = shared_str().printf("snd_reload_%d", i);
+		if (SoundExist(section, *name))
+		{
+			m_sounds.LoadSound(section, *name, *shared_str().printf("sndReloadR%d", i), false, m_eSoundReload);
+		}
+	}
+
 	m_iBaseDispersionedBulletsCount = READ_IF_EXISTS(pSettings, r_u8, section, "base_dispersioned_bullets_count", 0);
 	m_fBaseDispersionedBulletsSpeed = READ_IF_EXISTS(pSettings, r_float, section, "base_dispersioned_bullets_speed", m_fStartBulletSpeed);
 	m_fBaseDispersionedBulletsTimeDelta = READ_IF_EXISTS(pSettings, r_float, section, "base_dispersioned_bullets_time_delta", 0.0f);
@@ -1878,6 +1902,15 @@ void CWeaponMagazined::PlayReloadSound()
 		return;
 	}
 
+	s32 elapsed = iAmmoElapsed + iAmmoChamberElapsed;
+	const shared_str name = shared_str().printf("sndReloadR%d", elapsed);
+
+	if (m_bUseRevolverScheme && !IsGrenadeMode() && !IsMisfire() && elapsed > 0 && m_sounds.FindSoundItem(*name, false))
+	{
+		PlaySound(*name, get_LastFP());
+		return;
+	}
+
 	bool empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 : iAmmoElapsed == 0;
 	CActor* actor = Level().CurrentControlEntity() != nullptr ? Level().CurrentControlEntity()->cast_actor() : nullptr;
 	bool detector = actor != nullptr && actor->GetDevice() != nullptr;
@@ -2768,6 +2801,14 @@ shared_str CWeaponMagazined::SetCurrentReloadAnimation()
 
 	if (H_Parent() && H_Parent() == Level().CurrentControlEntity())
 	{
+		if (m_bUseRevolverScheme && !IsGrenadeMode() && !IsMisfire() && !IsChangeAmmoType())
+		{
+			if (AddSuffixName(anim, shared_str().printf("_%d", iAmmoElapsed).c_str()))
+			{
+				return anim;
+			}
+		}
+
 		if (GetQueueSize() == -1)
 		{
 			AddSuffixName(anim, "_auto");
