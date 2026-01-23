@@ -887,3 +887,42 @@ level.remove_all_named_stash_string_vectors()
 retval: void
 
 ```
+
+## Примеры (runtime storage)
+```lua
+--// Проверить наличие таблицы строк в хранилище по имени
+if level.is_exists_named_stash_string_vector("my-data") then
+
+end
+
+--// Получить таблицу строк из хранилища по имени
+local data = level.get_named_stash_string_vector(key_name)
+  
+--// Заполнить таблицу строк в хранилище по имени
+level.set_named_stash_string_vector(
+  "my-data", --// имя хранилища
+  {"test", "best"} --// хранимая таблица
+)
+
+--// Удалить таблицу строк из хранилища по имени
+level.remove_named_stash_string_vector("my-data")
+
+--// Удалить все таблицы строк из хранилища
+level.remove_all_named_stash_string_vectors()
+
+
+--// Комплексное использование
+if level.is_exists_named_stash_string_vector("my-data") then
+  --// Таблица есть в хранилище - выведем в лог
+	SemiLog(tostring(ffx_dump_utils.var_export(
+	    level.get_named_stash_string_vector("my-data"))
+  ))
+else
+  --// Таблицы нет в хранилище - заполняем
+	level.set_named_stash_string_vector(
+    "my-data", 
+    {"test", "best"}
+	)
+end
+
+```
