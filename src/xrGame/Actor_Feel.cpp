@@ -92,10 +92,12 @@ void CActor::PickupModeUpdate()
 
 	//подбирание объекта
 	if (g_b_COD_PickUpMode) {
-		if (m_pObjectWeLookingAt && m_pObjectWeLookingAt->cast_inventory_item() &&
-			m_pObjectWeLookingAt->cast_inventory_item()->Useful() && m_pUsableObject &&
-			!m_pUsableObject->nonscript_usable() &&
-			!Level().m_feel_deny.is_object_denied(m_pObjectWeLookingAt)) {
+		if (m_pObjectWeLookingAt &&
+			m_pObjectWeLookingAt->cast_inventory_item() &&
+			m_pObjectWeLookingAt->cast_inventory_item()->Useful() &&
+			m_pUsableObject &&
+			!Level().m_feel_deny.is_object_denied(m_pObjectWeLookingAt))
+		{
 			m_pUsableObject->use(this);
 			Game().SendPickUpEvent(ID(), m_pObjectWeLookingAt->ID());
 		}
