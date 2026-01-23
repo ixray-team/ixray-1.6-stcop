@@ -140,19 +140,21 @@ Property* Manager::add_property(shared_str const& property_id)
 // -------------------------------------------------------------------------------------------
 void Manager::load_all_inventory()
 {
-	for (const auto& section : pSettings->sections())
+	CInifile::Root& sections = pSettings->sections();
+	for (CInifile::Sect& section : sections)
 	{
-		if (!pSettings->line_exist(section->Name, "upgrades") || !pSettings->r_string(section->Name, "upgrades"))
+		shared_str& sect_name = section.Name;
+		if (!pSettings->line_exist(sect_name, "upgrades") || !pSettings->r_string(sect_name, "upgrades"))
 		{
 			continue;
 		}
 
-		if (!pSettings->line_exist(section->Name, "upgrade_scheme") || !pSettings->r_string(section->Name, "upgrade_scheme"))
+		if (!pSettings->line_exist(sect_name, "upgrade_scheme") || !pSettings->r_string(sect_name, "upgrade_scheme"))
 		{
 			continue;
 		}
 
-		add_root(section->Name);
+		add_root(sect_name);
 	}
 }
 

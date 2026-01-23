@@ -105,13 +105,16 @@ ESceneSpawnTool::ESceneSpawnTool():ESceneCustomOTool(OBJCLASS_SPAWNPOINT)
 	m_Flags.zero();
     UIChooseForm::AppendEvents	(smSpawnItem,		"Select Spawn Item",		FillSpawnItems,		0,0,0,0);
     m_Classes.clear			();
-    CInifile::Root const& data 	= pSettings->sections();
-    for (CInifile::RootCIt it=data.begin(); it!=data.end(); it++){
+    CInifile::Root& sections = pSettings->sections();
+    for (CInifile::Sect& sect : sections)
+    {
     	LPCSTR val;
-    	if ((*it)->line_exist	("$spawn",&val)){
-        	CLASS_ID cls_id	= pSettings->r_clsid((*it)->Name,"class");
-        	shared_str v	= pSettings->r_string_wb((*it)->Name,"$spawn");
-        	m_Classes[cls_id].push_back(SChooseItem(*v,*(*it)->Name));
+    	if (sect.line_exist	("$spawn",&val))
+        {
+            shared_str& sect_name = sect.Name;
+        	CLASS_ID cls_id	= pSettings->r_clsid(sect_name,"class");
+        	shared_str v	= pSettings->r_string_wb(sect_name,"$spawn");
+        	m_Classes[cls_id].push_back(SChooseItem(*v,*sect_name));
         }
     }
 }

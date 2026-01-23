@@ -146,16 +146,17 @@ void CRender::LoadPuddles()
 	}
 
 	CInifile ini(ini_file);
-
-	for(CInifile::Sect* Section : ini.sections())
+	CInifile::Root& sections = ini.sections();
+	for(CInifile::Sect& sect : sections)
 	{
+		shared_str& sect_name = sect.Name;
 		PuddleBase& m_puddle = m_levels_puddles.emplace_back();
 
-		Fvector position = ini.r_fvector3(Section->Name, "position");
-		float max_height = ini.r_float(Section->Name, "max_height");
+		Fvector position = ini.r_fvector3(sect_name, "position");
+		float max_height = ini.r_float(sect_name, "max_height");
 
-		Fvector2 size_xz = ini.r_fvector2(Section->Name, "size_xz");
-		float rotation = ini.r_float(Section->Name, "rotation");
+		Fvector2 size_xz = ini.r_fvector2(sect_name, "size_xz");
+		float rotation = ini.r_float(sect_name, "rotation");
 
 		m_puddle.m_world.rotateY(rotation);
 		m_puddle.m_world.mulB_43(Fmatrix().scale(size_xz.x, 1.0f, size_xz.y));

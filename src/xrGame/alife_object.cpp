@@ -186,65 +186,48 @@ void CSE_ALifeObject::spawn_supplies(LPCSTR ini_string)
     if (!xr_strlen(ini_string))
         return;
 
-#pragma warning(push)
-#pragma warning(disable:4238)
-	IReader temp(
-		(void*) (ini_string),
-		xr_strlen(ini_string)
-	);
+    string_path	fn;
+    FS.update_path(fn, "$game_config$", ini_string);
+    CInifile loadouts_ini(fn);
 
-	CInifile ini(&temp,
-		FS.get_path(_game_config_)->m_Path
-	);
-#pragma warning(pop)
-
-    processingVanillaSpawn(ini);
+    processingVanillaSpawn(loadouts_ini);
 
     if (EngineExternal()[EEngineExternalSpawnSupplies::EnableLoadoutsSupplies]) {
 
         if (EngineExternal()[EEngineExternalSpawnSupplies::EnableSpawnFullRandomLoadout]) {
-            processingSpawnFullRandomLoadout(ini);
+            processingSpawnFullRandomLoadout(loadouts_ini);
             return;
         }
 
         if (EngineExternal()[EEngineExternalSpawnSupplies::EnableSpawnOnceRandomItemPerEachLoadouts]) {
-            processingSpawnOnceRandomItemPerEachLoadouts(ini);
+            processingSpawnOnceRandomItemPerEachLoadouts(loadouts_ini);
             return;
         }
 
         if (EngineExternal()[EEngineExternalSpawnSupplies::EnableSpawnOnceRandomitemByRandomLoadout]) {
-            processingSpawnOnceRandomitemByRandomLoadout(ini);
+            processingSpawnOnceRandomitemByRandomLoadout(loadouts_ini);
             return;
         }
     }
 }
 
-xr_vector <CInifile::Sect*> CSE_ALifeObject::parseLoadouts(CInifile& ini)
+xr_vector <CInifile::Sect*> m_loadouts;
+void CSE_ALifeObject::parseLoadouts(CInifile& ini, xr_vector <CInifile::Sect*>& m_loadouts)
 {
-    xr_vector <CInifile::Sect*> m_loadouts;
-    LPCSTR loadoutSpawnSectionName = "";
-    auto sections = ini.sections();
     m_loadouts.clear();
-
-    for (size_t i = 0; i < sections.size(); i++) {
-        CInifile::Sect* sect = sections[i];
-        if (!sect) {
-            continue;
-        }
-
-        loadoutSpawnSectionName = sect->Name.c_str();
-        if (nullptr != strstr(loadoutSpawnSectionName, "spawn_loadout")) {
-            m_loadouts.push_back(&ini.r_section(loadoutSpawnSectionName));
-        }
+    CInifile::Root& sections = ini.sections();
+    m_loadouts.reserve(sections.size());
+    for (CInifile::Sect& sect : sections)
+    {
+        if (nullptr != strstr(sect.Name.c_str(), "spawn_loadout"))
+            m_loadouts.push_back(&sect);
     }
-
-    return m_loadouts;
 }
 
 // ������� ���� ������ ������ ����� ��������� � ������ ������� � ������� ��� � ������� supplies
 void CSE_ALifeObject::processingSpawnFullRandomLoadout(CInifile& ini)
 {
-    xr_vector <CInifile::Sect*> m_loadouts = parseLoadouts(ini);
+    parseLoadouts(ini, m_loadouts);
     LPCSTR itemSection = "";
     LPCSTR spawnArgs = "";
 
@@ -294,7 +277,7 @@ void CSE_ALifeObject::processingSpawnFullRandomLoadout(CInifile& ini)
 // ������� ���� ��������� ������� ����� �������� ���������� ������� � ������ ������� � ������� ��� � ������� supplies
 void CSE_ALifeObject::processingSpawnOnceRandomitemByRandomLoadout(CInifile& ini)
 {
-    xr_vector <CInifile::Sect*> m_loadouts = parseLoadouts(ini);
+    parseLoadouts(ini, m_loadouts);
     if (m_loadouts.empty()) {
         return;
     }
@@ -331,7 +314,7 @@ void CSE_ALifeObject::processingSpawnOnceRandomitemByRandomLoadout(CInifile& ini
 // ������� �� ������ ���������� �������� �� ������� ������� ��������������� � ��� � ������� � ������ 1 ����� �������
 void CSE_ALifeObject::processingSpawnOnceRandomItemPerEachLoadouts(CInifile& ini)
 {
-    xr_vector <CInifile::Sect*> m_loadouts = parseLoadouts(ini);
+    parseLoadouts(ini, m_loadouts);
     LPCSTR itemSection = "";
     LPCSTR spawnArgs = "";
     size_t randomLoadoutItemIndex = 0;
