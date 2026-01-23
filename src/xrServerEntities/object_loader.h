@@ -16,7 +16,7 @@ struct CLoader {
 		IC	static void load_data(T &data, M &stream, const P &p)
 		{
 			static_assert(!std::is_polymorphic<T>::value, "Cannot load polymorphic classes as binary data");
-			stream.r					(&data,sizeof(T));
+			stream.r(&data,sizeof(T));
 		}
 
 		template <>
@@ -62,22 +62,6 @@ struct CLoader {
 			{ 
 				value = has_value_compare<T>::value
 			};
-		};
-
-		template <typename T1, typename T2>
-		struct add_helper
-		{
-			template <bool>
-			IC	static void add(T1 &data, T2 &value)
-			{
-				data.push_back	(value);
-			}
-
-			template <>
-			IC void add<true>(T1 &data, T2 &value)
-			{
-				data.insert		(value);
-			}
 		};
 
 		template <typename T1, typename T2>
@@ -302,8 +286,15 @@ IC	void load_data(const T &data, M &stream, const P &p)
 	CLoader<M,P>::load_data	(*temp,stream,p);
 }
 
-template <typename T, typename M>
+template<typename T>
+concept IsLoader =
+requires(T a, void* ptr, u32 count)
+{
+	{a.r(ptr, count) } -> std::same_as<void>;
+};
+
+template <typename T, IsLoader M>
 IC	void load_data(const T &data, M &stream)
 {
-	load_data				(data,stream,object_loader::detail::CEmptyPredicate());
+	load_data(data,stream,object_loader::detail::CEmptyPredicate());
 }
