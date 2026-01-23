@@ -465,7 +465,6 @@ void CInifile::insert_item(CInifile::Sect* tgt, const CInifile::Item& I)
 	}
 	else
 	{
-		tgt->Data.reserve(16);
 		tgt->Data.insert(sect_it, I);
 	}
 }
