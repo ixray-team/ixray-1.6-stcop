@@ -14,10 +14,7 @@ void CAnimNotifyGiveInfo::Construct(const CInifile& ini, const char* sect)
 
 void CAnimNotifyGiveInfo::Execute(IRenderVisual* visual, u16 bone_id)
 {
-    KNOWN_INFO_VECTOR *known_info = ai().get_alife()->registry().get<CInfoPortionRegistry>().object(0, true);
+    auto known_info = ai().get_alife()->registry().get<CInfoPortionRegistry>().object(0, true);
     VERIFY(known_info);
-    if (std::find_if(known_info->begin(), known_info->end(), CFindByIDPred(Info)) == known_info->end())
-    {
-        known_info->push_back(INFO_DATA(Info.c_str(), Level().GetGameTime()));
-    }
+    known_info->AddInfo(Info, Level().GetGameTime());
 }

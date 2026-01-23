@@ -223,24 +223,21 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, CInventoryOwner* pOthers)
 	EnableAll										();
 	UpdateLists										();
 
-	if(!monster)
-	{
-		CInfoPortionWrapper	*known_info_registry	= new CInfoPortionWrapper();
-		known_info_registry->registry().init		(m_pOthersObject->object_id());
-		KNOWN_INFO_VECTOR& known_info				= known_info_registry->registry().objects();
-
-		KNOWN_INFO_VECTOR::iterator it = known_info.begin();
-		for(int i=0;it!=known_info.end();++it,++i){
-			(*it).info_id;	
+	if(!monster){
+		CInfoPortionWrapper	*known_info_registry = new CInfoPortionWrapper();
+		known_info_registry->registry().init(m_pOthersObject->object_id());
+		auto& known_info = known_info_registry->registry().objects();
+		for (auto& info : known_info.Data)
+		{
 			NET_Packet		P;
 			CGameObject::u_EventGen		(P,GE_INFO_TRANSFER, m_pOurObject->object_id());
 			P.w_u16						(0);//not used
-			P.w_stringZ					((*it).info_id);			//сообщение
+			P.w_stringZ					(info.info_id);			//сообщение
 			P.w_u8						(1);						//добавление сообщения
 			CGameObject::u_EventSend	(P);
 		}
-		known_info.clear	();
-		xr_delete			(known_info_registry);
+		known_info.Data.clear();
+		xr_delete(known_info_registry);
 	}
 	SetAreaSelectionTo							(m_pUIOthersBagList);
 }

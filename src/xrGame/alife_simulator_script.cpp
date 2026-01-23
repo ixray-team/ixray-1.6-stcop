@@ -370,7 +370,7 @@ CSE_ALifeCreatureActor *get_actor				(const CALifeSimulator *self_)
 	return								(self_->graph().actor());
 }
 
-KNOWN_INFO_VECTOR* registry(const CALifeSimulator* self_, const ALife::_OBJECT_ID& id)
+KNOWN_INFO_CONTAINER* registry(const CALifeSimulator* self_, const ALife::_OBJECT_ID& id)
 {
 	THROW(self_);
 	return (self_->registry().get<CInfoPortionRegistry>().object(id, true));
@@ -378,21 +378,19 @@ KNOWN_INFO_VECTOR* registry(const CALifeSimulator* self_, const ALife::_OBJECT_I
 
 bool has_info									(const CALifeSimulator *self_, const ALife::_OBJECT_ID &id, const char* info_id)
 {
-	const KNOWN_INFO_VECTOR				*known_info = registry(self_,id);
+	auto known_info = registry(self_,id);
 	if (!known_info)
-		return							(false);
-
-	if (std::find_if(known_info->begin(), known_info->end(), CFindByIDPred(info_id)) == known_info->end())
-		return							(false);
-
-	return								(true);
+	{
+		return false;
+	}
+	return known_info->HasInfo(info_id);
 }
 
 bool dont_has_info								(const CALifeSimulator *self_, const ALife::_OBJECT_ID &id, const char* info_id)
 {
-	THROW								(self_);
+	THROW(self_);
 	// absurdly, but only because of scriptwriters needs
-	return								(!has_info(self_,id,info_id));
+	return !has_info(self_,id,info_id);
 }
 
 void set_objects_per_update(CALifeSimulator* self, u32 count)
@@ -402,24 +400,22 @@ void set_objects_per_update(CALifeSimulator* self, u32 count)
 
 void AlifeGiveInfo(const CALifeSimulator *alife, const ALife::_OBJECT_ID &id, const char* info_id)
 {
-	KNOWN_INFO_VECTOR *known_info = alife->registry().get<CInfoPortionRegistry>().object(id, true);
+	auto known_info = alife->registry().get<CInfoPortionRegistry>().object(id, true);
 	if (!known_info)
-		return;
-
-	if (std::find_if(known_info->begin(), known_info->end(), CFindByIDPred(info_id)) == known_info->end())
 	{
-		known_info->push_back(INFO_DATA(info_id, Level().GetGameTime()));
+		return;
 	}
-
-	return;
+	known_info->AddInfo(info_id, Level().GetGameTime());
 }
 
 void AlifeRemoveInfo(const CALifeSimulator *alife, const ALife::_OBJECT_ID &id, const char* info_id)
 {
-	KNOWN_INFO_VECTOR	*known_info = alife->registry().get<CInfoPortionRegistry>().object(id, true);
+	auto known_info = alife->registry().get<CInfoPortionRegistry>().object(id, true);
 	if (!known_info)
+	{
 		return;
-	known_info->erase(std::find_if(known_info->begin(), known_info->end(), CFindByIDPred(info_id)),known_info->end());
+	}
+	known_info->RemoveInfo(info_id);
 }
 
 void teleport_object(CALifeSimulator* alife, ALife::_OBJECT_ID id, GameGraph::_GRAPH_ID game_vertex_id, u32 level_vertex_id, const Fvector& position)
@@ -431,12 +427,16 @@ void IterateInfo(const CALifeSimulator* alife, const ALife::_OBJECT_ID& id, cons
 {
 	const auto known_info = registry(alife, id);
 	if (!known_info)
+	{
 		return;
+	}
 
-	for (const auto& it : *known_info)
+	for (const auto& it : known_info->Data)
 	{
 		if (functor(id, (const char*)(it).info_id.c_str()))
+		{
 			return;
+		}
 	}
 }
 

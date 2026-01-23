@@ -491,26 +491,27 @@ void attachable_hud_item::setup_firedeps(firedeps& fd)
 	// fire point&direction
 	if(m_measures.m_prop_flags.test(hud_item_measures::e_fire_point))
 	{
-		R_ASSERT4(m_measures.m_fire_bone != BI_NONE, 
+		if (I_ASSERT_M(m_measures.m_fire_bone != BI_NONE, 
 			"Invalid fire bone specified", 
 			m_sect_name.c_str(), 
-			pSettings->r_string(m_sect_name, "fire_bone"));
-
-		Fmatrix& fire_mat								= m_model->LL_GetTransform(m_measures.m_fire_bone);
-		fire_mat.transform_tiny							(fd.vLastFP, m_measures.m_fire_point_offset);
-		m_item_transform.transform_tiny					(fd.vLastFP);
-
-		fd.vLastFD.set									(0.f,0.f,1.f);
-		m_item_transform.transform_dir					(fd.vLastFD);
-		VERIFY(_valid(fd.vLastFD));
-		VERIFY(_valid(fd.vLastFD));
-
-		fd.m_FireParticlesXForm.identity				();
-		fd.m_FireParticlesXForm.k.set					(fd.vLastFD);
-		Fvector::generate_orthonormal_basis_normalized	(	fd.m_FireParticlesXForm.k,
-															fd.m_FireParticlesXForm.j, 
-															fd.m_FireParticlesXForm.i);
-		VERIFY(_valid(fd.m_FireParticlesXForm));
+			pSettings->r_string(m_sect_name, "fire_bone")))
+		{
+			Fmatrix& fire_mat								= m_model->LL_GetTransform(m_measures.m_fire_bone);
+			fire_mat.transform_tiny							(fd.vLastFP, m_measures.m_fire_point_offset);
+			m_item_transform.transform_tiny					(fd.vLastFP);
+	
+			fd.vLastFD.set									(0.f,0.f,1.f);
+			m_item_transform.transform_dir					(fd.vLastFD);
+			VERIFY(_valid(fd.vLastFD));
+			VERIFY(_valid(fd.vLastFD));
+	
+			fd.m_FireParticlesXForm.identity				();
+			fd.m_FireParticlesXForm.k.set					(fd.vLastFD);
+			Fvector::generate_orthonormal_basis_normalized	(	fd.m_FireParticlesXForm.k,
+																fd.m_FireParticlesXForm.j, 
+																fd.m_FireParticlesXForm.i);
+			VERIFY(_valid(fd.m_FireParticlesXForm));
+		}
 	}
 
 	if(m_measures.m_prop_flags.test(hud_item_measures::e_fire_point) || m_measures.m_prop_flags.test(hud_item_measures::e_fire_point2))
