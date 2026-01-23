@@ -33,6 +33,7 @@ struct BuildData
 static RTCDevice	EmbreeDevice		= nullptr;
 static bool			isDeviceInitialized = false;
 
+const char* GetDeviceConfig();
 void InitializeEmbreeDevice();
 
 class EmbreeRayTraceModel
