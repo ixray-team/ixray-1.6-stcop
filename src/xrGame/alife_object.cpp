@@ -186,26 +186,34 @@ void CSE_ALifeObject::spawn_supplies(LPCSTR ini_string)
     if (!xr_strlen(ini_string))
         return;
 
-    string_path	fn;
-    FS.update_path(fn, "$game_config$", ini_string);
-    CInifile loadouts_ini(fn);
+#pragma warning(push)
+#pragma warning(disable:4238)
+    IReader temp(
+        (void*)(ini_string),
+        xr_strlen(ini_string)
+    );
 
-    processingVanillaSpawn(loadouts_ini);
+    CInifile ini(&temp,
+        FS.get_path(_game_config_)->m_Path
+    );
+#pragma warning(pop)
+
+    processingVanillaSpawn(ini);
 
     if (EngineExternal()[EEngineExternalSpawnSupplies::EnableLoadoutsSupplies]) {
 
         if (EngineExternal()[EEngineExternalSpawnSupplies::EnableSpawnFullRandomLoadout]) {
-            processingSpawnFullRandomLoadout(loadouts_ini);
+            processingSpawnFullRandomLoadout(ini);
             return;
         }
 
         if (EngineExternal()[EEngineExternalSpawnSupplies::EnableSpawnOnceRandomItemPerEachLoadouts]) {
-            processingSpawnOnceRandomItemPerEachLoadouts(loadouts_ini);
+            processingSpawnOnceRandomItemPerEachLoadouts(ini);
             return;
         }
 
         if (EngineExternal()[EEngineExternalSpawnSupplies::EnableSpawnOnceRandomitemByRandomLoadout]) {
-            processingSpawnOnceRandomitemByRandomLoadout(loadouts_ini);
+            processingSpawnOnceRandomitemByRandomLoadout(ini);
             return;
         }
     }
