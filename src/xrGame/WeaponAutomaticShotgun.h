@@ -43,5 +43,7 @@ protected:
 	ESoundTypes		m_eSoundAddCartridge;
 	ESoundTypes		m_eSoundClose;
 
+	bool bReloadEmptyByScheme = false;
+
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
