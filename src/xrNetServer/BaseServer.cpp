@@ -272,16 +272,12 @@ void BaseServer::BannedList_Load()
 	string_path					temp;
 	FS.update_path(temp, "$app_data_root$", GetBannedListName());
 
-	CInifile					ini(temp);
-
-	auto it = ini.sections().begin();
-	auto it_e = ini.sections().end();
-
-	for (; it != it_e; ++it)
+	CInifile ini(temp);
+	CInifile::Root& sections = ini.sections();
+	for (CInifile::Sect& sect : sections)
 	{
-		const shared_str& sect_name = (*it)->Name;
 		IBannedClient* Cl = new IBannedClient();
-		Cl->Load(ini, sect_name);
+		Cl->Load(ini, sect.Name);
 		BannedAddresses.push_back(Cl);
 	}
 }

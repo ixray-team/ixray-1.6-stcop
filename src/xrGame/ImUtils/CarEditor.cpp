@@ -8,15 +8,16 @@ static int s_SelectedCar = 0;
 static void CollectCars()
 {
 	s_AvailableCars.clear();
-
-	for (const auto& S : pSettings->sections())
+	CInifile::Root& sections = pSettings->sections();
+	for (CInifile::Sect& sect : sections)
 	{
-		if (pSettings->line_exist(S->Name, "class"))
+		shared_str& sect_name = sect.Name;
+		if (pSettings->line_exist(sect_name, "class"))
 		{
-			shared_str Class = pSettings->r_string(S->Name, "class");
+			shared_str Class = pSettings->r_string(sect_name, "class");
 			if (Class == "C_NIVA")
 			{
-				s_AvailableCars.emplace_back(S->Name);
+				s_AvailableCars.emplace_back(sect_name);
 			}
 		}
 	}
