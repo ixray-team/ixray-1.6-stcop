@@ -557,7 +557,7 @@ void CAI_Stalker::BoneCallback(CBoneInstance* B) {
 
 void CAI_Stalker::LookAtActor(CBoneInstance* headBone)
 {
-	if (!m_bHeadRotate || !g_Alive() || !Actor())
+	if (!m_bHeadRotate || !g_Alive() || !g_actor)
 		return;
 
 	if (wounded())
@@ -569,7 +569,7 @@ void CAI_Stalker::LookAtActor(CBoneInstance* headBone)
 		savedOrientation.z = angle_inertion(savedOrientation.z, targetRoll, angle_difference(savedOrientation.z, targetRoll), PI_MUL_2, Device.fTimeDelta);
 		};
 
-	if (Actor()->Position().distance_to(Position()) > 4.f) {
+	if (g_actor->Position().distance_to(Position()) > 4.f) {
 		adjustHeadOrientation(0.f, 0.f, 0.f);
 		Fmatrix M;
 		M.setHPB(VPUSH(savedOrientation));
@@ -577,16 +577,16 @@ void CAI_Stalker::LookAtActor(CBoneInstance* headBone)
 		return;
 	}
 
-	if (memory().visual().visible_right_now(Actor())) {
+	if (memory().visual().visible_right_now(g_actor)) {
 		Fmatrix actorHead;
-		PKinematics(Actor()->Visual())->Bone_GetAnimPos(actorHead, u16(Actor()->m_head), u8(-1), false);
-		actorHead.mulA_43(Actor()->XFORM());
+		PKinematics(g_actor->Visual())->Bone_GetAnimPos(actorHead, u16(g_actor->m_head), u8(-1), false);
+		actorHead.mulA_43(g_actor->XFORM());
 
 		Fmatrix myHead = headBone->mTransform;
 		myHead.mulA_43(XFORM());
 		myHead.c.mad(myHead.i, .15f);
 
-		Fvector dir, cam_pos = Actor()->HUDview() ? Actor()->cam_FirstEye()->Position() : actorHead.c;
+		Fvector dir, cam_pos = g_actor->HUDview() ? g_actor->cam_FirstEye()->Position() : actorHead.c;
 		dir.sub(cam_pos, myHead.c).normalize();
 
 		Fmatrix target_matrix;
