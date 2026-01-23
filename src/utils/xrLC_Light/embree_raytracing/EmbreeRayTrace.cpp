@@ -227,13 +227,15 @@ void errors_embree(void* userPtr, enum RTCError code, const char* str)
 	R_ASSERT2(false, str);
 }
 
-void InitializeEmbreeDevice()
+const char* GetDeviceConfig()
 {
-	if (isDeviceInitialized)		return;
-
 	bool avx_test = CPU::ID().hasFeature(CPUFeature::AVX2);
 	bool sse = CPU::ID().hasFeature(CPUFeature::SSE);
 
+	string128 state;
+	sprintf(state, "- Intilized Intel Embree %s - %s", RTC_VERSION_STRING, avx_test ? "avx" : sse ? "sse" : "default");
+	Status(state);
+ 
 	const char* config = "";
 	if (avx_test)
 		config = "isa=avx2";
@@ -241,13 +243,16 @@ void InitializeEmbreeDevice()
 		config = "isa=sse4.2";
 	else
 		config = "isa=sse2";
+	
+	return config;
+}
 
-	EmbreeDevice = rtcNewDevice(config);
-  	rtcSetDeviceErrorFunction(EmbreeDevice, &errors_embree, NULL);
+void InitializeEmbreeDevice()
+{
+	if (isDeviceInitialized)		return;
 
-	string128 state;
-	sprintf(state, "- Intilized Intel Embree %s - %s", RTC_VERSION_STRING, avx_test ? "avx" : sse ? "sse" : "default");
-	Status(state);
+	EmbreeDevice = rtcNewDevice(GetDeviceConfig());
+  	rtcSetDeviceErrorFunction(EmbreeDevice, &errors_embree, nullptr);
 
 	isDeviceInitialized = true;
 }
