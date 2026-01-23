@@ -950,8 +950,8 @@ bool CMissile::NeedBlockSprint() const
 	const static bool isDelayedWeaponActions = EngineExternal()[EEngineExternalGame::EnableDelayedWeaponActions];
 	if (isDelayedWeaponActions)
 	{
-		return state != eIdle && state != eSprintStart;
+		return state != eIdle && state != eSprintStart && state != eSprintEnd;
 	}
 
-	return state == eSprintEnd;
+	return false;//state == eSprintEnd;
 }
