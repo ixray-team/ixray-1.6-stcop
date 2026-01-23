@@ -661,6 +661,11 @@ bool CHudItem::TryPlayAnimIdle()
 			u32 state = pActor->GetMovementState(eReal);
 			if (state & ACTOR_DEFS::EMoveCommand::mcSprint)
 			{
+				if (GetState() == eSprintStart)
+				{
+					return true;
+				}
+
 				if (!m_bSwitchSprint && m_eAnimationsFlags.test(EAnimationsFlags::af_sprint_in_out))
 				{
 					SwitchState(eSprintStart);
@@ -794,10 +799,24 @@ void CHudItem::PlayAnimDeviceSwitch()
 
 void CHudItem::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
 {
-	if (GetState() == eIdle && !m_bStopAtEndAnimIsRunning)
+	if (GetState() == eIdle)
 	{
-		PlayAnimIdle();
-		ResetSubStateTime();
+		if (!m_bStopAtEndAnimIsRunning)
+		{
+			PlayAnimIdle();
+			ResetSubStateTime();
+		}
+	}
+	else
+	{
+		if ((cmd & ACTOR_DEFS::EMoveCommand::mcSprint) != 0 && GetState() != eSprintStart && GetState() == eSprintEnd)
+		{
+			SwitchState(eSprintStart);
+		}
+		else if ((cmd & ACTOR_DEFS::EMoveCommand::mcSprint) == 0 && GetState() != eSprintEnd && GetState() == eSprintStart)
+		{
+			SwitchState(eSprintEnd);
+		}
 	}
 }
 
