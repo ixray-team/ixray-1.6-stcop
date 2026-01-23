@@ -24,6 +24,54 @@ void INFO_DATA::save (IWriter& stream)
 	save_data(receive_time, stream);
 }
 
+bool INFO_DATA::operator==(const INFO_DATA& other) const
+{
+	return info_id == other.info_id;
+}
+
+bool INFO_DATA::operator==(shared_str other) const
+{
+	return info_id == other;
+}
+
+bool KNOWN_INFO_CONTAINER::HasInfo(shared_str id) const
+{
+	return std::ranges::find(Data, INFO_DATA(id, 0)) != Data.end();
+}
+
+void KNOWN_INFO_CONTAINER::AddInfo(shared_str id, ALife::_TIME_ID time)
+{
+	INFO_DATA temp = {id, time};
+	if (std::ranges::find(Data, temp) == Data.end())
+	{
+		Data.emplace(temp);
+	}
+}
+
+void KNOWN_INFO_CONTAINER::RemoveInfo(shared_str id)
+{
+	if (auto It = std::ranges::find(Data, INFO_DATA(id, 0)); It != Data.end())
+	{
+		Data.erase(It);
+	}
+}
+
+const INFO_DATA& KNOWN_INFO_CONTAINER::GetInfo(shared_str id) const
+{
+	R_ASSERT(HasInfo(id));
+	return *Data.find(INFO_DATA(id, 0));
+}
+
+void KNOWN_INFO_CONTAINER::load(IReader& storage)
+{
+	load_data(Data, storage);
+}
+
+void KNOWN_INFO_CONTAINER::save(IWriter& storage)
+{
+	save_data(Data, storage);
+}
+
 
 SInfoPortionData::SInfoPortionData ()
 {

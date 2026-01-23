@@ -15,11 +15,7 @@ void CAnimNotifyDisableInfo::Construct(const CInifile& ini, const char* sect)
 
 void CAnimNotifyDisableInfo::Execute(IRenderVisual* visual, u16 bone_id)
 {
-    KNOWN_INFO_VECTOR *known_info = ai().get_alife()->registry().get<CInfoPortionRegistry>().object(0, true);
+    auto known_info = ai().get_alife()->registry().get<CInfoPortionRegistry>().object(0, true);
     VERIFY(known_info);
-    if (auto It = std::find_if(known_info->begin(), known_info->end(), CFindByIDPred(Info));
-        It != known_info->end())
-    {
-        known_info->erase(It);
-    }
+    known_info->RemoveInfo(Info);
 }
