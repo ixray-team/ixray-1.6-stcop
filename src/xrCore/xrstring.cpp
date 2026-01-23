@@ -4,11 +4,10 @@
 #include "xrstring.h"
 
 #include "FS_impl.h"
-
-xr_vector<xr_string> xr_string::Split(char splitCh) const
+void xr_string::Split(xr_vector<xr_string>& splitted_vec, char splitCh) const
 {
-	xr_vector<xr_string> Result;
-
+	splitted_vec.clear();
+	splitted_vec.reserve(32);
 	u32 SubStrBeginCursor = 0;
 	u32 Len = 0;
 
@@ -20,12 +19,12 @@ xr_vector<xr_string> xr_string::Split(char splitCh) const
 			if ((StrCursor - SubStrBeginCursor) > 0)
 			{
 				Len = StrCursor - SubStrBeginCursor;
-				Result.emplace_back(&at(SubStrBeginCursor), Len);
+				splitted_vec.emplace_back(&at(SubStrBeginCursor), Len);
 				SubStrBeginCursor = StrCursor + 1;
 			}
 			else
 			{
-				Result.emplace_back("");
+				splitted_vec.emplace_back("");
 				SubStrBeginCursor = StrCursor + 1;
 			}
 		}
@@ -34,8 +33,14 @@ xr_vector<xr_string> xr_string::Split(char splitCh) const
 	if (StrCursor > SubStrBeginCursor)
 	{
 		Len = StrCursor - SubStrBeginCursor;
-		Result.emplace_back(xr_string(&at(SubStrBeginCursor), Len));
+		splitted_vec.emplace_back(&at(SubStrBeginCursor), Len);
 	}
+}
+
+xr_vector<xr_string> xr_string::Split(char splitCh) const
+{
+	xr_vector<xr_string> Result;
+	Split(Result, splitCh);
 	return Result;
 }
 
