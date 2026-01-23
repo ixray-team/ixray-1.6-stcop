@@ -1533,6 +1533,70 @@ LPCSTR GetActorMaterialPairName()
 }
 
 
+std::unordered_map<shared_str, xr_vector<shared_str>> m_named_stash;
+
+void SetNamedStashStringVector(LPCSTR name, luabind::object const& table)
+{
+	VERIFY(table.type() == LUA_TTABLE);
+
+	xr_vector<shared_str>& runtime_vector = m_named_stash[name];
+	runtime_vector.clear();
+
+	luabind::object::iterator I = table.begin();
+	luabind::object::iterator E = table.end();
+
+	for (; I != E; ++I)
+	{
+		luabind::object t_value = *I;
+		if (t_value.type() != LUA_TSTRING)
+		{
+			VERIFY(t_value.type() != LUA_TNIL);
+			continue;
+		}
+
+		shared_str t_strng_value = luabind::object_cast<const char*>(t_value);
+		runtime_vector.push_back(t_strng_value);
+	}
+}
+
+bool IsExistsNamedStashStringVector(LPCSTR name)
+{
+	return m_named_stash.find(name) != m_named_stash.end();
+}
+
+luabind::object GetNamedStashStringVector(LPCSTR name)
+{
+	luabind::object vector_to_lua = luabind::newtable(ai().script_engine().lua());
+
+	if (IsExistsNamedStashStringVector(name))
+	{
+		xr_vector<shared_str>& runtime_vector = m_named_stash[name];
+		size_t cnt = runtime_vector.size();
+
+		for (size_t i = 0; i < cnt; i++)
+		{
+			string128 tmp;
+			vector_to_lua[i + 1] = runtime_vector[i].c_str();
+		}
+	}
+
+	return vector_to_lua;
+}
+
+void RemoveNamedStashStringVector(LPCSTR name)
+{
+	if (IsExistsNamedStashStringVector(name))
+	{
+		xr_vector<shared_str>& runtime_vector = m_named_stash[name];
+		runtime_vector.clear();
+	}
+}
+
+void RemoveAllNamedStashStringVectors()
+{
+	m_named_stash.clear();
+}
+
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {
@@ -1553,6 +1617,13 @@ void CLevel::script_register(lua_State *L)
 		def("check_object",						check_object),
 #endif
 		def("set_time_factor_single", set_time_factor_single), // FNAS
+		
+		def("is_exists_named_stash_string_vector", &IsExistsNamedStashStringVector),
+		def("get_named_stash_string_vector", &GetNamedStashStringVector),
+		def("set_named_stash_string_vector", &SetNamedStashStringVector),
+		def("remove_named_stash_string_vector", &RemoveNamedStashStringVector),
+		def("remove_all_named_stash_string_vectors", &RemoveAllNamedStashStringVectors),
+
 		def("get_weather",						get_weather),
 		def("set_weather",						set_weather),
 		def("set_weather_fx",					set_weather_fx),
