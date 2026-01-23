@@ -13,22 +13,6 @@
 # limitations under the License.
 #
 
-# Build PFFFT.
-set(PFFFT_DIR "${PROJECT_SOURCE_DIR}/third_party/pffft/" CACHE PATH "Path to pffft library")
-set(PFFFT_INCLUDE_DIR ${PFFFT_DIR})
-set(PFFFT_SOURCE
-        ${PFFFT_DIR}/fftpack.c
-        ${PFFFT_DIR}/fftpack.h
-        ${PFFFT_DIR}/pffft.c
-        ${PFFFT_DIR}/pffft.h
-        )
-add_library(PffftObj OBJECT ${PFFFT_SOURCE})
-target_include_directories(PffftObj PRIVATE ${PFFFT_INCLUDE_DIR}/)
-
-if (UNIX)
-    set_target_properties(PffftObj PROPERTIES COMPILE_FLAGS -fPIC)
-endif (UNIX)
-
 # Build SADIE HRTF database.
 set(SADIE_HRTFS_DIR "${PROJECT_SOURCE_DIR}/third_party/SADIE_hrtf_database/generated/" CACHE PATH "Path to SADIE_hrtf_database library")
 set(SADIE_HRTFS_INCLUDE_DIR ${SADIE_HRTFS_DIR})
@@ -212,18 +196,13 @@ set(RA_SOURCES
 
 add_library(ResonanceAudioObj OBJECT ${RA_SOURCES})
 target_include_directories(ResonanceAudioObj PRIVATE ${PROJECT_SOURCE_DIR}/resonance_audio/)
-target_include_directories(ResonanceAudioObj PRIVATE ${EIGEN3_INCLUDE_DIR}/)
-target_include_directories(ResonanceAudioObj PRIVATE ${PFFFT_INCLUDE_DIR}/)
-
-# Build shared library
-#add_library(ResonanceAudioShared SHARED $<TARGET_OBJECTS:ResonanceAudioObj>
-#        $<TARGET_OBJECTS:SadieHrtfsObj>
-#        $<TARGET_OBJECTS:PffftObj>)
 
 # Build static library
-add_library(ResonanceAudioStatic STATIC $<TARGET_OBJECTS:ResonanceAudioObj>
-        $<TARGET_OBJECTS:SadieHrtfsObj>
-        $<TARGET_OBJECTS:PffftObj>)
+add_library(ResonanceAudioStatic STATIC $<TARGET_OBJECTS:ResonanceAudioObj> $<TARGET_OBJECTS:SadieHrtfsObj>)
+
+target_compile_definitions(ResonanceAudioObj PUBLIC EIGEN_MPL2_ONLY)
+target_link_libraries(ResonanceAudioObj PUBLIC Eigen3::Eigen)
+target_link_libraries(ResonanceAudioObj PUBLIC pffft)
 
 set(RA_INSTALL_DIR "${INSTALL_DIR}/resonance_audio/")
 install(TARGETS ResonanceAudioStatic #ResonanceAudioShared
@@ -306,10 +285,8 @@ if (BUILD_RESONANCE_AUDIO_TESTS)
                                            $<TARGET_OBJECTS:gtest>
                                            $<TARGET_OBJECTS:ResonanceAudioObj>
                                            $<TARGET_OBJECTS:SadieHrtfsObj>
-                                           $<TARGET_OBJECTS:PffftObj>)
+                                           $<TARGET_OBJECTS:pffft>)
 
-    target_include_directories(ResonanceAudioUnitTests PRIVATE "${EIGEN3_INCLUDE_DIR}/")
-    target_include_directories(ResonanceAudioUnitTests PRIVATE "${PFFFT_INCLUDE_DIR}/")
     target_include_directories(ResonanceAudioUnitTests PRIVATE "${PROJECT_SOURCE_DIR}/resonance_audio/")
     target_include_directories(ResonanceAudioUnitTests PRIVATE "${GTEST_DIR}/googlemock/")
     target_include_directories(ResonanceAudioUnitTests PRIVATE "${GTEST_DIR}/googlemock/include")

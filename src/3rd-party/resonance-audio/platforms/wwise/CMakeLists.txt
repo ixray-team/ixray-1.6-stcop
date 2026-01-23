@@ -41,7 +41,7 @@ if (BUILD_WWISE_SOUND_ENGINE_PLUGIN)
             ${RESONANCE_AUDIO_WWISE_PLUGIN_SHARED_SOURCES}
             $<TARGET_OBJECTS:ResonanceAudioObj>
             $<TARGET_OBJECTS:SadieHrtfsObj>
-            $<TARGET_OBJECTS:PffftObj>)
+            $<TARGET_OBJECTS:pffft>)
     target_include_directories(ResonanceAudioFXShared PRIVATE ${WWISE_SDK_INCLUDE_DIR})
     target_include_directories(ResonanceAudioFXShared PRIVATE ${RA_SOURCE_DIR})
     set_property(TARGET ResonanceAudioFXShared PROPERTY POSITION_INDEPENDENT_CODE ON)
@@ -50,7 +50,7 @@ if (BUILD_WWISE_SOUND_ENGINE_PLUGIN)
             ${RESONANCE_AUDIO_WWISE_PLUGIN_STATIC_SOURCES}
             $<TARGET_OBJECTS:ResonanceAudioObj>
             $<TARGET_OBJECTS:SadieHrtfsObj>
-            $<TARGET_OBJECTS:PffftObj>)
+            $<TARGET_OBJECTS:pffft>)
     target_include_directories(ResonanceAudioFXStatic PRIVATE ${WWISE_SDK_INCLUDE_DIR})
     target_include_directories(ResonanceAudioFXStatic PRIVATE ${RA_SOURCE_DIR})
 
@@ -156,7 +156,7 @@ if (WIN32 AND BUILD_WWISE_AUTHORING_PLUGIN)
             ${RESONANCE_AUDIO_WWISE_PLUGIN_STATIC_SOURCES}
             $<TARGET_OBJECTS:ResonanceAudioObj>
             $<TARGET_OBJECTS:SadieHrtfsObj>
-            $<TARGET_OBJECTS:PffftObj>)
+            $<TARGET_OBJECTS:pffft>)
     target_include_directories(ResonanceAudio PRIVATE ${WWISE_SDK_INCLUDE_DIR})
     target_include_directories(ResonanceAudio PRIVATE ${RA_SOURCE_DIR})
     target_sources(ResonanceAudio PUBLIC ${WWISE_PLUGIN_DIR}/wwise_win.def)

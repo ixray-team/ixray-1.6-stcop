@@ -29,7 +29,7 @@ set(RESONANCE_AUDIO_FMOD_PLUGIN_SOURCES
 
 add_library(resonanceaudio SHARED ${RESONANCE_AUDIO_FMOD_PLUGIN_SOURCES} $<TARGET_OBJECTS:ResonanceAudioObj>
         $<TARGET_OBJECTS:SadieHrtfsObj>
-        $<TARGET_OBJECTS:PffftObj>)
+        $<TARGET_OBJECTS:pffft>)
 target_include_directories(resonanceaudio PRIVATE ${FMOD_SDK_DIR})
 target_include_directories(resonanceaudio PRIVATE ${RA_SOURCE_DIR})
 if (MSVC)

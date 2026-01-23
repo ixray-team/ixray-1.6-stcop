@@ -14,6 +14,10 @@ include("${CMAKE_MODULE_PATHEX}/lzo.cmake")
 include("${CMAKE_MODULE_PATHEX}/tbb.cmake")
 include("${CMAKE_MODULE_PATHEX}/lunasvg.cmake")
 
+# Resonance Audio 3rd
+include("${CMAKE_MODULE_PATHEX}/eigen.cmake")
+include("${CMAKE_MODULE_PATHEX}/pffft.cmake")
+
 if (IXRAY_MP)
     include("${CMAKE_MODULE_PATHEX}/GameNetworkingSockets.cmake")
     include("${CMAKE_MODULE_PATHEX}/Opus.cmake")
