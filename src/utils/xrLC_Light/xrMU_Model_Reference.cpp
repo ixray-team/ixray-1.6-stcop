@@ -90,13 +90,13 @@ void xrMU_Reference::export_cform_rcast(CDB::CollectorPacked& CL)
 	model->export_cform_rcast(CL,xform);
 }
  
-void xrMU_Reference::export_cform_rcast_new(xr_vector<FaceDataIntel>& faces)
+void xrMU_Reference::export_cform_rcast_new(xr_vector<FaceDataEmbree>& faces)
 {
 	model->export_cform_rcast_new(faces, xform);
 }
  
 // Collision Building 
-void xrMU_Reference::export_cform_game_new(xr_vector<FaceDataIntel>& faces)
+void xrMU_Reference::export_cform_game_new(xr_vector<FaceDataEmbree>& faces)
 {
 	for (auto F : model->m_faces)
 	{
@@ -108,7 +108,7 @@ void xrMU_Reference::export_cform_game_new(xr_vector<FaceDataIntel>& faces)
 		xform.transform_tiny(P[1], F->v[1]->P);
 		xform.transform_tiny(P[2], F->v[2]->P);
 
-		FaceDataIntel data;
+		FaceDataEmbree data;
 		data.v1 = P[0];
 		data.v2 = P[1];
 		data.v3 = P[2];

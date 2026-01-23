@@ -16,16 +16,16 @@
 extern CompilersMode gCompilerMode;
 
 void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip);
-  
+void LightPointNew(EmbreeRayTraceModel* MDL, base_color_c& C, Fvector& P, Fvector& N, base_lighting& lights, u32 flags, Face* skip);
+
 //-----------------------------------------------------------------------
-void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xform, CDB::MODEL* MDL, base_lighting& lights, u32 flags)
+void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xform, void* MDL, base_lighting& lights, u32 flags)
 {
 	// trans-map
 	typedef	xr_multimap<float,v_vertices>	mapVert;
 	typedef	mapVert::iterator				mapVertIt;
 	mapVert									g_trans;
  
-
 	// trans-epsilons
 	const float eps			= EPS_L;
 	const float eps2		= 2.f*eps;
@@ -67,8 +67,16 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 			Fvector				P, N;
 			N.random_dir(vN, deg2rad(30.f));
 			P.mad(vP, N, a);
-			LightPoint(&DB, MDL, vC, P, N, lights, flags, 0);
-		}
+
+			if (gCompilerMode.Embree || gCompilerMode.CUDA)
+			{
+				LightPointNew	( (EmbreeRayTraceModel*) MDL, vC, P, N, lights, flags, 0);
+			}
+			else
+			{
+				LightPoint(&DB, (CDB::MODEL*)MDL, vC, P, N, lights, flags, 0);
+			}
+ 		}
     
 		// Get ambient factor
 		float		v_amb = 0.f;
@@ -182,16 +190,32 @@ void xrMU_Model::calc_lighting	()
 	for (v_vertices_it vit=m_vertices.begin(); vit!=m_vertices.end(); vit++)
 		BB.modify	((*vit)->P);
 
-	// Export CForm
-	CDB::CollectorPacked	CL	(BB,(u32)m_vertices.size(),(u32)m_faces.size());
-	export_cform_rcast		(CL,Fidentity);
+	if (gCompilerMode.Embree || gCompilerMode.CUDA)
+	{
+		xr_vector<FaceDataEmbree> faces;
+ 		export_cform_rcast_new(faces, Fidentity);
 
-	CDB::MODEL*				M	= new CDB::MODEL();
-	M->build				(CL.getV(),(u32)CL.getVS(),CL.getT(),(u32)CL.getTS());
+		R_ASSERT(faces.size());
 
-	calc_lighting			(color,Fidentity, M, inlc_global_data()->L_static(), LP_dont_rgb+LP_dont_sun);
+		EmbreeRayTraceModel MDL;
+ 		MDL.InitializeGeometry_Model(faces);
 
-	xr_delete				(M);
+		calc_lighting(color, Fidentity, &MDL, inlc_global_data()->L_static(), LP_dont_rgb + LP_dont_sun);
+
+		MDL.IntelEmbereUnloadAll();
+	}
+	else
+	{
+		// Export CForm
+		CDB::CollectorPacked	CL(BB, (u32)m_vertices.size(), (u32)m_faces.size());
+		export_cform_rcast(CL, Fidentity);
+
+		CDB::MODEL* M = new CDB::MODEL();
+		M->build(CL.getV(), (u32)CL.getVS(), CL.getT(), (u32)CL.getTS());
+
+		calc_lighting(color, Fidentity, M, inlc_global_data()->L_static(), LP_dont_rgb + LP_dont_sun);
+		xr_delete(M);
+ 	}
 
 	clMsg					("model '%s' - REF_lighted.",*m_name);
 }

@@ -4,7 +4,7 @@
 #include "mu_model_face.h"
 
 class xrMU_Model;
-struct FaceDataIntel;
+struct FaceDataEmbree;
 
 namespace CDB { class CollectorPacked; }
   
@@ -37,8 +37,8 @@ public:
 	void					export_cform_game	(CDB::CollectorPacked& CL);
 	void					export_cform_rcast	(CDB::CollectorPacked& CL); 
 
-	void					export_cform_rcast_new(xr_vector<FaceDataIntel>& faces);
-	void					export_cform_game_new(xr_vector<FaceDataIntel>& faces);
+	void					export_cform_rcast_new(xr_vector<FaceDataEmbree>& faces);
+	void					export_cform_game_new(xr_vector<FaceDataEmbree>& faces);
 
 };
  

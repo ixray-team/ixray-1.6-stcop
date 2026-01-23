@@ -67,8 +67,38 @@ IC bool	FaceEqual__(Face& F1, Face& F2)
 	if ((F1.v[1] == F2.v[0]) && (F1.v[2] == F2.v[1]) && (F1.v[0] == F2.v[2])) return true;
 	return false;
 }
+
+void EmbreeRayTraceModel::BuildModel(xr_vector<FaceDataEmbree>& faces)
+{
+	static_geom.ClearAll();
+	static_geom_transp.ClearAll();
+
+	int IndexFace = 0, IndexFaceTransp = 0;
+	for (auto& Fe : faces)
+	{
+		Face* F = (Face*) Fe.ptr;
+
+  		b_material& M = inlc_global_data()->materials()[F->dwMaterial];
+		b_texture& T = inlc_global_data()->textures()[M.surfidx];
+		
+		bool isOpcue = F->flags.bOpaque || T.pSurface.Empty() || !T.bHasAlpha;
+		auto& geom_buff = isOpcue ? static_geom : static_geom_transp;
+ 		geom_buff.AddFaceRaw(F, Fe.v1, Fe.v2, Fe.v3);
+	
+		if ( isOpcue)  IndexFace++;
+		if ( !isOpcue) IndexFaceTransp++;
+	}
+
+	clMsg("RawFaces total : %u | RawFaces Transp: %u", IndexFace, IndexFaceTransp);
+
+	static_geom.RemoveDublicatesVertexs(false, false);			// Обезательно вызывать иначе не будет Vertex, Tris (Убрал жрание памяти при создании)
+	static_geom_transp.RemoveDublicatesVertexs(true, false);	// Обезательно вызывать иначе не будет Vertex, Tris (Убрал жрание памяти при создании)
+
+	static_geom.RemoveDublicatesFaces(false, false);
+	static_geom_transp.RemoveDublicatesFaces(true, false);
+}
   
-void EmbreeData::BuildRaytraceModel( )
+void EmbreeRayTraceModel::BuildRaytraceModel( )
 {
 	static_geom.ClearAll();
 	static_geom_transp.ClearAll();
@@ -91,7 +121,7 @@ void EmbreeData::BuildRaytraceModel( )
  
 	for (auto ref : lc_global_data()->mu_refs())
 	{
-		xr_vector<FaceDataIntel> temp_buffer;
+		xr_vector<FaceDataEmbree> temp_buffer;
   		ref->export_cform_rcast_new(temp_buffer);
 		for (auto& FaceIntel : temp_buffer)
 		{
@@ -107,11 +137,11 @@ void EmbreeData::BuildRaytraceModel( )
  	}
 	Status("[RcastModel] Capturing Faces [%u ms]", t.GetElapsed_ms());
 
- 	static_geom.RemoveDublicatesVertexs(false);			// Обезательно вызывать иначе не будет Vertex, Tris (Убрал жрание памяти при создании)
-	static_geom_transp.RemoveDublicatesVertexs(true);	// Обезательно вызывать иначе не будет Vertex, Tris (Убрал жрание памяти при создании)
+ 	static_geom.RemoveDublicatesVertexs(false, true);			// Обезательно вызывать иначе не будет Vertex, Tris (Убрал жрание памяти при создании)
+	static_geom_transp.RemoveDublicatesVertexs(true, true);	// Обезательно вызывать иначе не будет Vertex, Tris (Убрал жрание памяти при создании)
 
-	static_geom.RemoveDublicatesFaces(false);
-	static_geom_transp.RemoveDublicatesFaces(true);
+	static_geom.RemoveDublicatesFaces(false, true);
+	static_geom_transp.RemoveDublicatesFaces(true, true);
 
 }
 
@@ -119,7 +149,7 @@ void EmbreeData::BuildRaytraceModel( )
 #include "xrLC_GlobalData.h"
 extern global_claculation_data	gl_data;
 
-void EmbreeData::BuildRaytraceModel_2()
+void EmbreeRayTraceModel::BuildRaytraceModel_2()
 {
 	CTimer t; t.Start();
 	// Тут уже будет отфильтровано 
@@ -132,9 +162,7 @@ void EmbreeData::BuildRaytraceModel_2()
 	{
 		auto& FCDB = build_data.build_faces[Fid];
 		auto& F    = gl_data.g_rc_faces[Fid];
-		 
-		
-
+ 
 		static_geom.faces_v[Fid].point1 = FCDB.verts[0];
 		static_geom.faces_v[Fid].point2 = FCDB.verts[1];
 		static_geom.faces_v[Fid].point3 = FCDB.verts[2];
@@ -152,7 +180,7 @@ void EmbreeData::BuildRaytraceModel_2()
 #include "../xrLC/Build.h"
 extern CBuild* pBuild;
 
-void EmbreeData::BuildRcast()
+void EmbreeRayTraceModel::BuildRcast()
 { 
 	Status("Start Export Build.cform");
 	TriangleContainer container;
@@ -169,7 +197,7 @@ void EmbreeData::BuildRcast()
 
 	for (auto ref : lc_global_data()->mu_refs())
 	{
-		xr_vector<FaceDataIntel> temp_buffer;
+		xr_vector<FaceDataEmbree> temp_buffer;
 		ref->export_cform_rcast_new(temp_buffer);
 		for (auto& FaceIntel : temp_buffer)
 		{
@@ -178,8 +206,8 @@ void EmbreeData::BuildRcast()
 		}
  	}
  
-	container.RemoveDublicatesVertexs(false);	// Обезательно 
-	container.RemoveDublicatesFaces(false);		// Обезательно 
+	container.RemoveDublicatesVertexs(false, true);	// Обезательно 
+	container.RemoveDublicatesFaces(false, true);		// Обезательно 
 
  	clMsg("Build.cform is builded at : %u ms", tStats.GetElapsed_ms());
 

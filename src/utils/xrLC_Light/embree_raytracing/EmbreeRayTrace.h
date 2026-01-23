@@ -10,7 +10,7 @@
 
 #include "EmbreeGeometryBuilder.h"
 
-struct FaceDataIntel
+struct FaceDataEmbree
 {
 	Fvector v1, v2, v3;
 	void* ptr;
@@ -30,34 +30,51 @@ struct BuildData
 };
 
 // Vertex, Tri Buffers
-class EmbreeData
-{
-public:
-	BuildData  build_data;
+static RTCDevice	EmbreeDevice = 0;
+static bool			isDeviceInitialized = false;
 
+void InitializeEmbreeDevice();
+
+class EmbreeRayTraceModel
+{
+protected:
+	RTCSceneFlags	scene_flags		= RTC_SCENE_FLAG_NONE;
+	RTCBuildQuality scene_quality	= RTC_BUILD_QUALITY_LOW;
+
+	RTCScene	IntelScene			= nullptr;
+
+	RTCGeometry IntelGeometryNormal = nullptr;
+	RTCGeometry IntelGeometryTransp = nullptr;
+ 
 	/** NORMAL GEOM **/
 	TriangleContainer			static_geom;
 	TriangleContainer			static_geom_transp;
  
+
+	void RemoveGeometry();
+ 	void CommitScene();
+
+	void BuildModel(xr_vector<FaceDataEmbree> & faces);
 	void BuildRaytraceModel_2	();
  	void BuildRaytraceModel		();
-	void BuildRcast();
- 	
-	// Loading 
-	bool  isInitialized = false;
-	void  RemoveGeometry(bool isDealloc);
-	float RaytraceEmbreeProcess(R_Light& L, Fvector& P, Fvector& N, float range, void* skip);
-	void  InitializeGeometry();
  
-	void IntializeDevice();
-	void IntelEmbereLOAD();
-	void IntelEmbereUNLOAD();
+public:
+	// Rcast Model Constructing (Build.cform)
+	BuildData	build_data;
+	void BuildRcast();
+
+	// Loading 
+	float RaytraceEmbreeProcess( Fvector& P, Fvector& N, float range, void* skip);
+	void  InitializeGeometry();		// Rcast-model
+	void  InitializeGeometry_Model(xr_vector<FaceDataEmbree> & faces); // Single-Models (xrMU-Model)
+  
+ 	void  IntelEmbereUnloadAll();
 
 	// Details Loading 
-	void ConsturctGeometry();
+	float RaytraceEmbreeDetails(Fvector& P, Fvector& N, float range);
 	void InitEmbreeDetails();
 };
 
-extern EmbreeData EmbreeMain;
+extern EmbreeRayTraceModel EmbreeMain;
  
 void GetEmbreeDeviceProperty(LPCSTR msg, RTCDevice& device, RTCDeviceProperty prop);
