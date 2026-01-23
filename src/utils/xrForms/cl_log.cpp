@@ -112,8 +112,7 @@ void SetActiveIteration(IterationData* i)
 }
 
 extern size_t GetHeapMemory();
-// extern void GetMemoryUsedStorage();
-
+ 
 void Phase(const char* phase_name)
 {
 	csLog.Enter();
@@ -125,9 +124,7 @@ void Phase(const char* phase_name)
 	{
  		ActiveIteration->phases[ActiveIteration->phases.size() - 1].used_memory = GetHeapMemory();
 		ActiveIteration->phases[ActiveIteration->phases.size() - 1].status		= Complete;
-
-		// GetMemoryUsedStorage();
-	}
+ 	}
 
 	ActiveIteration->phases.push_back({ phase_name });
 
