@@ -18,16 +18,16 @@ void cdkey_ban_list::load()
 	FS.update_path			(banlist_file, "$app_data_root$", "banned_list.ltx");
 	CInifile		bl_ini	(banlist_file);
 	CInifile::Root& banlist = bl_ini.sections();
-	for (CInifile::Root::iterator i = banlist.begin(),
-		ie = banlist.end(); i != ie; ++i)
+	for (CInifile::Sect& sect : banlist)
 	{
+		shared_str& sect_name = sect.Name;
 		banned_client* tmp_client = new banned_client();
-		if (tmp_client->load(&bl_ini, (*i)->Name))
+		if (tmp_client->load(&bl_ini, sect_name))
 		{
 			m_ban_list.push_back(tmp_client);
 		} else
 		{
-			Msg("! ERROR: load [%s] ban item section", (*i)->Name.size() > 0 ? (*i)->Name.c_str() : "");
+			Msg("! ERROR: load [%s] ban item section", sect_name.size() > 0 ? sect_name.c_str() : "");
 			xr_delete(tmp_client);
 		}
 	}

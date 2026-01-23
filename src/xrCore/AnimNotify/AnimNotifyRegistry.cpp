@@ -17,16 +17,18 @@ CAnimNotifyRegistry::CAnimNotifyRegistry()
             continue;
         }
         CInifile ini = CInifile(str.c_str());
-        for (const auto& section : ini.sections())
+        CInifile::Root& sections = ini.sections();
+        for (CInifile::Sect& sect : sections)
         {
             VERIFY(IAnimNotifyHandler::IsValid());
-            auto type_str = ini.r_string(section->Name, "type");
+            shared_str& sect_name = sect.Name;
+            LPCSTR type_str = ini.r_string(sect_name, "type");
             auto type = magic_enum::enum_cast<EAnimNotifyType>(type_str);
-            R_ASSERT4(type.has_value(), "Invalid notify type", section->Name.c_str(), type_str);
+            R_ASSERT4(type.has_value(), "Invalid notify type", sect_name.c_str(), type_str);
             auto NewNotify = IAnimNotifyHandler::Get().ConstructNotify(type.value());
-            NewNotify->Construct(ini, section->Name.c_str());
-            R_ASSERT3(!map.contains(section->Name), "Find duplicated anim notify section", section->Name.c_str());
-            map[section->Name] = NewNotify;
+            NewNotify->Construct(ini, sect_name.c_str());
+            R_ASSERT3(!map.contains(sect_name), "Find duplicated anim notify section", sect_name.c_str());
+            map[sect_name] = NewNotify;
         }
     }
 }
