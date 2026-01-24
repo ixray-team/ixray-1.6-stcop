@@ -620,6 +620,9 @@ LevelInspector::LevelInspector(BOOL hm) : hud_mode(hm)
 					ImGui::InputTextMultiline("Selection info", selected_info_str.data(), selected_info_str.size() + 1,
 						ImVec2(ImGui::GetWindowWidth(), ImGui::GetTextLineHeight() * float(selected_info_height) * 1.05f),
 						ImGuiInputTextFlags_ReadOnly);
+
+					if (ImGui::Button("Copy to Clipboard"))
+						ImGui::SetClipboardText(selected_info_str.c_str());
 				}
 				ImGui::End();
 				ImGui::PopStyleColor(1);
