@@ -1,5 +1,7 @@
 #pragma once
+#ifndef IXRAY_NO_LUA
 #include "luabind/detail/primitives.hpp"
+#endif
 #include "../../Include/xrRender/ParticleCustom.h"
 
 namespace PS
