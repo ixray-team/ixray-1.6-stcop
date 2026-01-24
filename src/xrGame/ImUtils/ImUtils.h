@@ -600,6 +600,9 @@ void AllEditors_ExecuteRequest(const SRequestData& req);
 void AllEditors_OnPressed(int key);
 void AllEditors_OnReleased(int key);
 
+void TextureEditor_OnPressed(int key);
+void TextureEditor_OnReleased(int key);
+
 void RequestHandler_TextureEditor(const SRequestData& req);
 void RequestHandler_OMFEditor(const SRequestData& req);
 
