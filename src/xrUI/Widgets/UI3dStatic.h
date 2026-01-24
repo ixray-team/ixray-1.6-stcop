@@ -1,11 +1,10 @@
 #pragma once
+#include "UIStatic.h"
 
-#include "..\xrUI\Widgets\UIStatic.h"
-
-class CGameObject;
 class IRenderVisual;
 
-class CUI3dStatic : public CUIStatic
+class UI_API CUI3dStatic : 
+    public CUIStatic
 {
     typedef CUIStatic inherited;
 
@@ -37,7 +36,7 @@ protected:
 
     void FromScreenToItem(int x_screen, int y_screen, float& x_item, float& y_item);
 
-    IRenderVisual* m_pCurrentItem = NULL;
+    IRenderVisual* m_pCurrentItem = nullptr;
 
     float fViewportNear, fViewportDist, fViewportAspect;
     float fViewportFOV, fViewportSize;
