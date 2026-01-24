@@ -1,5 +1,7 @@
 #pragma once
+#ifndef IXRAY_NO_LUA
 #include "../../xrScripts/script_export_space.h"
+#endif
 #include "UIOptionsItem.h"
 #include "UICustomEdit.h"
 
@@ -31,5 +33,7 @@ public:
 protected:
 	CUIFrameLineWnd*	m_frameLine;
 	shared_str			m_opt_backup_value;
+#ifndef IXRAY_NO_LUA
 	DECLARE_SCRIPT_REGISTER_FUNCTION
+#endif
 };

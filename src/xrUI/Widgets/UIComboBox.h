@@ -82,6 +82,8 @@ public:
 	void				SetTextColor			(u32 color)			{m_textColor[0] = color;};
 	void				SetTextColorD			(u32 color)			{m_textColor[1] = color;};
 
-protected:	
+protected:
+#ifndef IXRAY_NO_LUA
 	DECLARE_SCRIPT_REGISTER_FUNCTION
+#endif
 };

@@ -2,6 +2,7 @@
 #include "UIPropertiesBox.h"
 #include "UIListBoxItem.h"
 
+#ifndef IXRAY_NO_LUA
 #include <luabind/luabind.hpp>
 
 using namespace luabind;
@@ -25,3 +26,4 @@ void CUIPropertiesBox::script_register(lua_State *L)
 //		.def("",					&CUIPropertiesBox::)
 	];
 }
+#endif

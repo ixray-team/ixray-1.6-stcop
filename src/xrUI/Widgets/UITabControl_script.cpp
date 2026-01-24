@@ -3,6 +3,7 @@
 #include "UITabControl.h"
 #include "UITabButton.h"
 
+#ifndef IXRAY_NO_LUA
 #include <luabind/luabind.hpp>
 #include <luabind/adopt_policy.hpp>
 using namespace luabind;
@@ -32,3 +33,4 @@ void CUITabControl::script_register(lua_State *L)
 	];
 
 }
+#endif

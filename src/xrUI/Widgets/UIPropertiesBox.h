@@ -46,5 +46,7 @@ private:
 	CUIPropertiesBox*	m_parent_sub_menu;					//warning !!! dubling pointers to the same object !!!
 	CUIWindow*			m_item_sub_menu_initiator;			//fills in ShowSubMenu
 
+#ifndef IXRAY_NO_LUA
 	DECLARE_SCRIPT_REGISTER_FUNCTION
+#endif
 };

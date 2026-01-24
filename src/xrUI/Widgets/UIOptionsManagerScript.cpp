@@ -3,9 +3,11 @@
 #include "UIOptionsItem.h"
 #include "UIOptionsManagerScript.h"
 
+#ifndef IXRAY_NO_LUA
 #include <luabind/luabind.hpp>
 
 using namespace luabind;
+#endif
 
 void CUIOptionsManagerScript::SetCurrentValues(const char* group){
 	CUIOptionsItem::GetOptionsManager()->SetCurrentValues(group);
@@ -40,6 +42,7 @@ bool CUIOptionsManagerScript::NeedVidRestart()
 	return CUIOptionsItem::GetOptionsManager()->NeedVidRestart();
 }
 
+#ifndef IXRAY_NO_LUA
 #pragma optimize("s",on)
 void CUIOptionsManagerScript::script_register(lua_State *L)
 {
@@ -57,3 +60,4 @@ void CUIOptionsManagerScript::script_register(lua_State *L)
 			.def("NeedVidRestart",		&CUIOptionsManagerScript::NeedVidRestart )
 		];
 }
+#endif

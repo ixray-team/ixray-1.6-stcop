@@ -8,9 +8,11 @@
 #include "UITrackBar.h"
 #include "UIArrowStepper.h"
 
+#ifndef IXRAY_NO_LUA
 #include <luabind/luabind.hpp>
 
 using namespace luabind;
+#endif
 
 void AssignProps_script_track(CUITrackBar* track, LPCSTR entry, LPCSTR group) 
 { 
@@ -31,7 +33,7 @@ void SetSystemDepends_script_check(CUICheckButton* btn, int depend)
 {
 	btn->SetSystemDepends((CUIOptionsItem::ESystemDepends)depend);
 }
-
+#ifndef IXRAY_NO_LUA
 #pragma optimize("s",on)
 void CUIButton::script_register(lua_State *L)
 {
@@ -98,3 +100,4 @@ void CUIButton::script_register(lua_State *L)
 		.def("SetCurrentValue",			&CUIArrowStepper::SetCurrentOptValue)
 	];
 }
+#endif

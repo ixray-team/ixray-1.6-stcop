@@ -9,7 +9,9 @@ class CUIWindow;
 //////////////////////////////////////////////////////////////////////////
 
 #include "UIMessages.h"
+#ifndef IXRAY_NO_LUA
 #include "../../xrScripts/script_export_space.h"
+#endif
 #include "../uiabstract.h"
 
 class CUIStatic;
@@ -217,7 +219,9 @@ protected:
 #endif
 
 public:
+#ifndef IXRAY_NO_LUA
 	DECLARE_SCRIPT_REGISTER_FUNCTION
+#endif
 };
 
 UI_API bool fit_in_rect(CUIWindow* w, Frect const& vis_rect, float border = 0.0f, float dx16pos = 0.0f );

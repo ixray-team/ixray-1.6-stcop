@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UIEditBox.h"
 
+#ifndef IXRAY_NO_LUA
 #include <luabind/luabind.hpp>
 
 using namespace luabind;
@@ -22,3 +23,4 @@ void CUIEditBox::script_register(lua_State *L)
         .def("InitTexture",			+[](CUIEditBox* self, pcstr texture) { self->InitTexture(texture); })
 	];
 }
+#endif

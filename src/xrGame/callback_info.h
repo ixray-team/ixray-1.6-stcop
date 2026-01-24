@@ -1,12 +1,16 @@
 #pragma once
 
+#ifndef IXRAY_NO_LUA
 #include "../xrScripts/script_callback_ex.h"
+#endif
 
 class CUIWindow;
 
 struct SCallbackInfo
 {
+#ifndef IXRAY_NO_LUA
 	CScriptCallbackEx<void>	m_callback;
+#endif
 	xr_delegate<void(CUIWindow*,void*)> m_cpp_callback;
 	CUIWindow* 				m_control_ptr;
 	shared_str 				m_control_name;

@@ -11,8 +11,10 @@
 #include "UIComboBox.h"
 #include "UIListBoxItem.h"
 
+#ifndef IXRAY_NO_LUA
 #include <luabind/luabind.hpp>
 using namespace luabind;
+#endif
 
 void AssignProps_script_combo(CUIComboBox* cb, LPCSTR entry, LPCSTR group)
 {
@@ -23,7 +25,7 @@ void SetSystemDepends_script_combo(CUIComboBox* cb, int depend)
 {
 	cb->SetSystemDepends((CUIOptionsItem::ESystemDepends)depend);
 }
-
+#ifndef IXRAY_NO_LUA
 #pragma optimize("s",on)
 void CUIComboBox::script_register(lua_State *L)
 {
@@ -50,3 +52,4 @@ void CUIComboBox::script_register(lua_State *L)
 
 	];
 }
+#endif

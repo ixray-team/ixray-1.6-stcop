@@ -1,7 +1,9 @@
 #include "stdafx.h"
 
+#ifndef IXRAY_NO_LUA
 #include <luabind/luabind.hpp>
 #include <luabind/adopt_policy.hpp>
+#endif
 
 #include "UIListBox.h"
 #include "UIListBoxItem.h"
@@ -9,20 +11,27 @@
 #include "UISpinText.h"
 #include "UIComboBox.h"
 
+#ifndef IXRAY_NO_LUA
 using namespace luabind;
+#endif
 
-
-struct CUIListBoxItemWrapper : public CUIListBoxItem, public luabind::wrap_base 
+struct CUIListBoxItemWrapper : public CUIListBoxItem
+#ifndef IXRAY_NO_LUA
+	, public luabind::wrap_base
+#endif
 {
 	CUIListBoxItemWrapper(float h):CUIListBoxItem(h){}
 };
 
-struct CUIListBoxItemMsgChainWrapper : public CUIListBoxItemMsgChain, public luabind::wrap_base
+struct CUIListBoxItemMsgChainWrapper : public CUIListBoxItemMsgChain
+#ifndef IXRAY_NO_LUA
+	, public luabind::wrap_base
+#endif
 {
 	CUIListBoxItemMsgChainWrapper(float h) : CUIListBoxItemMsgChain(h) {}
 };
 
-
+#ifndef IXRAY_NO_LUA
 #pragma optimize("s",on)
 void CUIListBox::script_register(lua_State *L)
 {
@@ -57,3 +66,4 @@ void CUIListBox::script_register(lua_State *L)
 		.def(							constructor<float>())
 	];
 }
+#endif

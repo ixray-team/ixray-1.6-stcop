@@ -1,28 +1,37 @@
 #include "stdafx.h"
 #include "UIListWnd.h"
 #include "UIListItemEx.h"
+#ifndef IXRAY_NO_LUA
 #include <luabind/luabind.hpp>
 #include <luabind/adopt_policy.hpp>
 
 using namespace luabind;
+#endif
 
 bool CUIListWnd::AddItem_script(CUIListItem* item)
 {
     return AddItem(item, -1);
 }
 
-struct CUIListItemWrapper : public CUIListItem, public luabind::wrap_base
+struct CUIListItemWrapper : public CUIListItem
+#ifndef IXRAY_NO_LUA
+	, public luabind::wrap_base
+#endif
 {
 	virtual CUIWindow* ui_cast_window() { return this; }
 	virtual CUIListItem* ui_cast_list_item() { return this; }
 };
 
-struct CUIListItemExWrapper : public CUIListItemEx, public luabind::wrap_base
+struct CUIListItemExWrapper : public CUIListItemEx
+#ifndef IXRAY_NO_LUA
+	, public luabind::wrap_base
+#endif
 {
 	virtual CUIWindow* ui_cast_window() { return this; }
 	virtual CUIListItem* ui_cast_list_item() { return this; }
 };
 
+#ifndef IXRAY_NO_LUA
 // clang-format off
 #pragma optimize("s", on)
 void CUIListWnd::script_register(lua_State* L)
@@ -70,3 +79,4 @@ void CUIListWnd::script_register(lua_State* L)
 
 		];
 }
+#endif
