@@ -217,7 +217,13 @@ void xrLogger::LogThreadEntry()
 
 	while (bIsAlive)
 	{
-		PROF_EVENT("Log Frame")
+		PROF_EVENT("Log Frame");
+
+		if (logFile == nullptr)
+		{
+			continue;
+		}
+
 		bool bHaveMore = true;
 		LogRecord theRecord;
 
