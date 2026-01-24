@@ -132,7 +132,7 @@ void CWeaponAutomaticShotgun::Reload()
 		bMisfireReload = true;
 	}
 
-	bool empty_reload = m_bUseMosinScheme && !IsScopeAttached() && iAmmoChamberElapsed + iAmmoElapsed == 0 && HaveCartridgeInInventory(iMagazineSize);
+	bool empty_reload = m_bUseMosinScheme && !IsScopeAttached() && iAmmoChamberElapsed + iAmmoElapsed == 0 && HaveCartridgeInInventory(GetMagCapacity());
 
 	if (empty_reload)
 	{
