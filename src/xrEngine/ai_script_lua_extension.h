@@ -12,6 +12,7 @@
 //struct CLuaVirtualMachine;
 
 namespace Script {
+#ifndef IXRAY_NO_LUA
 #ifndef ENGINE_BUILD
 	void				vfExportGlobals				(CLuaVirtualMachine *tpLuaVM);
 	void				vfExportFvector				(CLuaVirtualMachine *tpLuaVM);
@@ -46,4 +47,5 @@ namespace Script {
 	bool				bfIsObjectPresent			(CLuaVirtualMachine *tpLuaVM, LPCSTR	caIdentifier,	int type);
 	bool				bfIsObjectPresent			(CLuaVirtualMachine *tpLuaVM, LPCSTR	caNamespaceName, LPCSTR	caIdentifier, int type);
 	luabind::object		lua_namespace_table			(CLuaVirtualMachine *tpLuaVM, LPCSTR namespace_name);
+#endif
 };

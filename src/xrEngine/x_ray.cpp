@@ -15,8 +15,10 @@
 #include "GameFont.h"
 #include "LightAnimLibrary.h"
 #include "../xrCore/Collision/ISpatial.h"
+#ifndef IXRAY_NO_LUA
 #include <luabind/luabind.hpp>
 #include <luabind/luabind_memory.h>
+#endif
 #include "string_table.h"
 #include "../xrCore/discord/discord.h"
 #include "std_classes.h"

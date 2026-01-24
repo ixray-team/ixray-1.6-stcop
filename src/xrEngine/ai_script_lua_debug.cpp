@@ -10,6 +10,7 @@
 #include "ai_script_space.h"
 #include "ai_script_lua_extension.h"
 
+#ifndef IXRAY_NO_LUA
 using namespace Script;
 
 bool Script::bfPrintOutput(CLuaVirtualMachine *tpLuaVirtualMachine, LPCSTR caScriptFileName, int iErorCode)
@@ -126,3 +127,4 @@ bool Script::bfListLevelVars(CLuaVirtualMachine *tpLuaVirtualMachine, int iStack
 //	return		(true);
 	return		(false);
 }
+#endif
