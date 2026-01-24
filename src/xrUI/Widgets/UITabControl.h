@@ -82,7 +82,5 @@ protected:
 	bool				m_bAcceleratorsEnable;
 	shared_str			m_opt_backup_value;
 
-#ifndef IXRAY_NO_LUA
 	DECLARE_SCRIPT_REGISTER_FUNCTION
-#endif
 };

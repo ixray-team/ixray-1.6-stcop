@@ -66,7 +66,5 @@ public:
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 
-#ifndef IXRAY_NO_LUA
 	DECLARE_SCRIPT_REGISTER_FUNCTION
-#endif
 };

@@ -2,9 +2,7 @@
 
 #include "UIArrow.h"
 #include "../UIXmlInit.h"
-#ifndef IXRAY_NO_LUA
 #include <luabind/luabind.hpp>
-#endif
 CUIArrow::CUIArrow()
 {
 	m_angle_begin	= 0.0f;
@@ -68,7 +66,6 @@ void CUIArrow::SetPos( float pos )
 	inherited::SetHeading( m_angle_begin + m_pos * m_angle_range );
 }
 
-#ifndef IXRAY_NO_LUA
 using namespace luabind;
 #pragma optimize("s",on)
 void CUIArrow::script_register(lua_State* L)
@@ -83,4 +80,3 @@ void CUIArrow::script_register(lua_State* L)
 
 		];
 }
-#endif

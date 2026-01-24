@@ -3,9 +3,7 @@
 #include "UIWindow.h"
 #include "UIScrollBar.h"
 #include "UIListItem.h"
-#ifndef IXRAY_NO_LUA
 #include "../../xrScripts/script_export_space.h"
-#endif
 #define DEFAULT_ITEM_HEIGHT 30
 
 using LIST_ITEM_LIST = xr_list<CUIListItem*>;
@@ -162,9 +160,8 @@ protected:
 
     // Текущий уникальный идентификатор
     int m_iLastUniqueID;
-#ifndef IXRAY_NO_LUA
+
     DECLARE_SCRIPT_REGISTER_FUNCTION
-#endif
 };
 
 #include "UIListWnd_inline.h"

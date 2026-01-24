@@ -11,7 +11,7 @@
 #include "ai_script_lua_extension.h"
 #include "ai_script_space.h"
 
-#ifndef IXRAY_NO_LUA
+
 #ifdef XRRENDER_R4_EXPORTS
 #define ENGINE_BUILD
 #endif	//	XRRENDER_R4_EXPORTS
@@ -447,4 +447,3 @@ luabind::object Script::lua_namespace_table(CLuaVirtualMachine *tpLuaVM, LPCSTR 
 		S				= I + 1;
 	}
 }
-#endif

@@ -8,10 +8,8 @@
 #include "UITextureMaster.h"
 #include "UIScrollView.h"
 #include "../UICursor.h"
-#ifndef IXRAY_NO_LUA
 #include <luabind/luabind.hpp>
 #include <luabind/adopt_policy.hpp>
-#endif
 #include "UIHint.h"
 #include "UIStackPanel.h"
 
@@ -104,7 +102,6 @@ void SetCursorPosition_script(Fvector2& pos)
 	GetUICursor().SetUICursorPosition(pos);
 }
 
-#ifndef IXRAY_NO_LUA
 using namespace luabind;
 #pragma optimize("s",on)
 void CUIWindow::script_register(lua_State *L)
@@ -308,4 +305,3 @@ void CUIWindow::script_register(lua_State *L)
 			]
 	];
 }
-#endif

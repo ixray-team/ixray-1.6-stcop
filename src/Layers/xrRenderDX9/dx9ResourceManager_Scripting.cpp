@@ -9,15 +9,11 @@
 #include "../xrRender/blenders/Blender_Recorder.h"
 #include	"../../xrEngine/ai_script_space.h"
 #include	"../../xrEngine/ai_script_lua_extension.h"
-#ifndef IXRAY_NO_LUA
 #include	"luabind/return_reference_to_policy.hpp"
-#endif
 
 #include	"../xrRender/dxRenderDeviceRender.h"
 
-#ifndef IXRAY_NO_LUA
 using namespace				luabind;
-#endif
 
 // wrapper
 class	adopt_sampler
@@ -78,15 +74,11 @@ public:
 
 void LuaLog(LPCSTR caMessage)
 {
-#ifndef IXRAY_NO_LUA
 	Lua::LuaOut	(Lua::eLuaMessageTypeMessage,"%s",caMessage);
-#endif
 }
 void LuaError(lua_State* L)
 {
-#ifndef IXRAY_NO_LUA
 	Debug.fatal(DEBUG_INFO,"LUA error: %s",lua_tostring(L,-1));
-#endif
 }
 
 doug_lea_allocator g_render_lua_allocator("render:lua");
@@ -108,7 +100,6 @@ static void* lua_alloc(void* ud, void* ptr, size_t osize, size_t nsize) {
 // export
 void	CResourceManager::LS_Load			()
 {
-#ifndef IXRAY_NO_LUA
 	LSVM			= luaL_newstate();
 	if (!LSVM)		{
 		Msg			("! ERROR : Cannot initialize LUA VM!");
@@ -205,19 +196,12 @@ void	CResourceManager::LS_Load			()
 		}
 	}
 	FS.file_list_close			(folder);
-#else
-	R_ASSERT(false && "todo: [nolua]");
-#endif
 }
 
 void	CResourceManager::LS_Unload			()
 {
-#ifndef IXRAY_NO_LUA
 	lua_close	(LSVM);
 	LSVM		= nullptr;
-#else
-	R_ASSERT(false && "todo: [nolua]");
-#endif
 }
 
 BOOL	CResourceManager::_lua_HasShader	(LPCSTR s_shader)
@@ -229,13 +213,9 @@ BOOL	CResourceManager::_lua_HasShader	(LPCSTR s_shader)
 #ifdef _EDITOR
 		Script::bfIsObjectPresent(LSVM, undercorated, "editor", LUA_TFUNCTION) ||
 #endif
-#ifndef IXRAY_NO_LUA
 		Script::bfIsObjectPresent(LSVM, undercorated, "normal", LUA_TFUNCTION) ||
 		Script::bfIsObjectPresent(LSVM, undercorated, "l_special", LUA_TFUNCTION)
 		;
-#else
-		false;
-#endif
 }
 
 Shader*	CResourceManager::_lua_Create		(LPCSTR d_shader, LPCSTR s_textures)
@@ -260,12 +240,7 @@ Shader*	CResourceManager::_lua_Create		(LPCSTR d_shader, LPCSTR s_textures)
 	C.detail_scaler		= nullptr;
 
 	// Compile element	(LOD0 - HQ)
-#ifndef IXRAY_NO_LUA
 	if (Script::bfIsObjectPresent(LSVM,s_shader,"normal_hq",LUA_TFUNCTION))
-#else
-	R_ASSERT(false && "todo: [nolua]");
-	if (true)
-#endif
 	{
 		// Analyze possibility to detail this shader
 		C.iElement			= 0;
@@ -276,9 +251,7 @@ Shader*	CResourceManager::_lua_Create		(LPCSTR d_shader, LPCSTR s_textures)
 		if (C.bDetail)		S.E[0]	= C._lua_Compile(s_shader,"normal_hq");
 		else				S.E[0]	= C._lua_Compile(s_shader,"normal");
 	} else {
-#ifndef IXRAY_NO_LUA
 		if (Script::bfIsObjectPresent(LSVM,s_shader,"normal",LUA_TFUNCTION))
-#endif
 		{
 			C.iElement			= 0;
 //.			C.bDetail			= dxRenderDeviceRender::Instance().Resources->_GetDetailTexture(*C.L_textures[0],C.detail_texture,C.detail_scaler);
@@ -289,9 +262,7 @@ Shader*	CResourceManager::_lua_Create		(LPCSTR d_shader, LPCSTR s_textures)
 	}
 
 	// Compile element	(LOD1)
-#ifndef IXRAY_NO_LUA
 	if (Script::bfIsObjectPresent(LSVM,s_shader,"normal",LUA_TFUNCTION))
-#endif
 	{
 		C.iElement			= 1;
 //.		C.bDetail			= dxRenderDeviceRender::Instance().Resources->_GetDetailTexture(*C.L_textures[0],C.detail_texture,C.detail_scaler);
@@ -301,9 +272,7 @@ Shader*	CResourceManager::_lua_Create		(LPCSTR d_shader, LPCSTR s_textures)
 	}
 
 	// Compile element
-#ifndef IXRAY_NO_LUA
 	if (Script::bfIsObjectPresent(LSVM,s_shader,"l_point",LUA_TFUNCTION))
-#endif
 	{
 		C.iElement			= 2;
 		C.bDetail			= FALSE;
@@ -311,9 +280,7 @@ Shader*	CResourceManager::_lua_Create		(LPCSTR d_shader, LPCSTR s_textures)
 	}
 
 	// Compile element
-#ifndef IXRAY_NO_LUA
 	if (Script::bfIsObjectPresent(LSVM,s_shader,"l_spot",LUA_TFUNCTION))
-#endif
 	{
 		C.iElement			= 3;
 		C.bDetail			= FALSE;
@@ -321,9 +288,7 @@ Shader*	CResourceManager::_lua_Create		(LPCSTR d_shader, LPCSTR s_textures)
 	}
 
 	// Compile element
-#ifndef IXRAY_NO_LUA
 	if (Script::bfIsObjectPresent(LSVM,s_shader,"l_special",LUA_TFUNCTION))
-#endif
 	{
 		C.iElement			= 4;
 		C.bDetail			= FALSE;
@@ -353,17 +318,14 @@ ShaderElement*		CBlender_Compile::_lua_Compile	(LPCSTR namesp, LPCSTR name)
 	LPCSTR				t_0		= *L_textures[0]			? *L_textures[0] : "null";
 	LPCSTR				t_1		= (L_textures.size() > 1)	? *L_textures[1] : "null";
 	LPCSTR				t_d		= detail_texture			? detail_texture : "null" ;
-#ifndef IXRAY_NO_LUA
+
 	lua_State*			LSVM	= DEV->LSVM;
 	object				shader	= get_globals(LSVM)[namesp];
 	functor<void>		element	= object_cast<functor<void> >(shader[name]);
-#else
-	R_ASSERT(false && "todo: [nolua]");
-#endif
+
 	adopt_compiler		ac		= adopt_compiler(this);
-#ifndef IXRAY_NO_LUA
+
 	element						(ac,t_0,t_1,t_d);
-#endif
 	r_End				();
 	ShaderElement*	_r	= DEV->_CreateElement(E);
 	return			_r;

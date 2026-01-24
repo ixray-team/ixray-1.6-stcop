@@ -7,7 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
-#ifndef IXRAY_NO_LUA
+
 // Lua
 #pragma warning(disable:4244)
 #pragma warning(disable:4995)
@@ -37,5 +37,5 @@ struct SMemberCallback {
 	luabind::object			*m_lua_object;
 	shared_str				m_method_name;
 };
-#endif
+
 #include "ai_script_lua_space.h"

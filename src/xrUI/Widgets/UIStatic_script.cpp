@@ -2,7 +2,6 @@
 #include "UIStatic.h"
 #include "UIAnimatedStatic.h"
 
-#ifndef IXRAY_NO_LUA
 #include <luabind/luabind.hpp>
 
 using namespace luabind;
@@ -85,4 +84,3 @@ void CUIStatic::script_register(lua_State *L)
 		.def(						constructor<>())
 	];
 }
-#endif

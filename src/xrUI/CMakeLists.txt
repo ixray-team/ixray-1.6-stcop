@@ -98,8 +98,6 @@ target_compile_definitions(xrUI PRIVATE XR_UI_EXPORTS)
 
 # Linker list
 target_link_libraries(xrUI PUBLIC xrEngineCore)
-if (NOT IXRAY_NO_LUA)
 target_link_libraries(xrUI PUBLIC xrScripts)
-endif()
 # Move precompiled header
 target_validate_pch(xrUI ${CMAKE_CURRENT_SOURCE_DIR})

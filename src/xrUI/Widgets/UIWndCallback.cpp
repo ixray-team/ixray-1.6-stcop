@@ -1,7 +1,5 @@
 #include "stdafx.h"
-#ifndef IXRAY_NO_LUA
 #include <luabind/luabind.hpp>
-#endif
 #include "UIWndCallback.h"
 #include "UIWindow.h"
 #include "../xrServerEntities/object_broker.h"
@@ -35,11 +33,7 @@ void CUIWndCallback::OnEvent(CUIWindow* pWnd, s16 msg, void* pData)
 	if(it==m_callbacks.end())
 		return ;
 
-#ifndef IXRAY_NO_LUA
 	(*it)->m_callback();
-#else
-	R_ASSERT(false && "todo: [nolua]");
-#endif
 	
 	if ((*it)->m_cpp_callback)	
 		(*it)->m_cpp_callback(pWnd, pData);

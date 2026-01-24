@@ -2,9 +2,7 @@
 
 #include "UILanimController.h"
 #include "UIStaticItem.h"
-#ifndef IXRAY_NO_LUA
 #include "../../xrScripts/script_export_space.h"
-#endif
 #include "UILines.h"
 
 class CUIFrameWindow;
@@ -169,7 +167,5 @@ protected:
 public:
 	CUILines*		TextItemControl						();
 	shared_str		m_stat_hint_text;
-#ifndef IXRAY_NO_LUA
 	DECLARE_SCRIPT_REGISTER_FUNCTION
-#endif
 };

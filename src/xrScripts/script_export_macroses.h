@@ -8,10 +8,8 @@
 
 #pragma once
 
-#ifndef IXRAY_NO_LUA
+#if 1
 #define XR_LUABIND_WRAP_BASE , public luabind::wrap_base
-#else
-#define XR_LUABIND_WRAP_BASE
 #endif
 
 
@@ -29,7 +27,7 @@
 #define DEFINE_LUA_WRAPPER_FOOTER(cls)													\
 	};
 
-#ifndef IXRAY_NO_LUA
+#if 1
 #define DEFINE_LUABIND_CLASS_WRAPPER_0(type, wrapper, name) \
 	luabind::class_<type, luabind::no_bases, wrapper>(name)
 
@@ -59,19 +57,17 @@
 #	ifdef LUABIND_NO_EXCEPTIONS 
 #	define CAST_FAILED(v_func_name,ret_type)
 #	else
-#ifndef IXRAY_NO_LUA
 #	define CAST_FAILED(v_func_name,ret_type) \
 		catch(luabind::cast_failed exception) {										\
 			ai().script_engine().script_log (ScriptStorage::eLuaMessageTypeError,"SCRIPT RUNTIME ERROR : luabind::cast_failed in function %s (%s)!",#v_func_name,#ret_type);\
 			return ((ret_type)(0));													\
 		}
-#endif
 #	endif
 #else
 #	define CAST_FAILED(v_func_name,ret_type)
 #endif
 
-#ifndef IXRAY_NO_LUA
+#if 1
 #define DEFINE_LUA_WRAPPER_CONST_METHOD_0(v_func_name,ret_type)							\
 		virtual ret_type v_func_name() const											\
 		{																				\
@@ -340,7 +336,9 @@
 		{																				\
 			ptr->self_type::inherited::v_func_name(p1,p2,*p3);							\
 		}
-#else
+#endif
+
+#if 0
 #define DEFINE_LUA_WRAPPER_CONST_METHOD_0(v_func_name,ret_type)							\
 		virtual ret_type v_func_name() const											\
 		{																				\

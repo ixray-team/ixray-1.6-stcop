@@ -9,17 +9,12 @@
 #ifndef xrServer_SpaceH
 #define xrServer_SpaceH
 
-#ifndef IXRAY_NO_LUA
 #include "../xrScripts/script_export_space.h"
-#endif
 
 #ifndef XRGAME_EXPORTS
 #	define SERVER_ENTITY_EDITOR_METHODS					virtual void FillProps(LPCSTR pref, PropItemVec& values);
 #else // #ifdef XRGAME_EXPORTS
 #	define SERVER_ENTITY_EDITOR_METHODS
-#ifdef IXRAY_NO_LUA
-#define DECLARE_SCRIPT_REGISTER_FUNCTION
-#endif
 #endif // #ifndef XRGAME_EXPORTS
 
 #define SERVER_ENTITY_SCRIPT_METHODS					DECLARE_SCRIPT_REGISTER_FUNCTION

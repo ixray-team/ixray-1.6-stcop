@@ -53,7 +53,6 @@ protected:
 	shared_str		m_selection_texture;
 
 	bool			m_bImmediateSelection;
-#ifndef IXRAY_NO_LUA
+
 	DECLARE_SCRIPT_REGISTER_FUNCTION
-#endif
 };

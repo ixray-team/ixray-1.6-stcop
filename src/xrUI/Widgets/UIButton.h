@@ -64,7 +64,6 @@ protected:
 	float				m_iShadowOffsetY;
 
 	bool				m_bIsSwitch;
-#ifndef IXRAY_NO_LUA
+
 	DECLARE_SCRIPT_REGISTER_FUNCTION
-#endif
 };

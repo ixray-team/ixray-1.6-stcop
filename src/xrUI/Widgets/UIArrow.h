@@ -1,9 +1,7 @@
 #pragma once
 
 #include "UIStatic.h"
-#ifndef IXRAY_NO_LUA
 #include "../../xrScripts/script_export_space.h"
-#endif
 
 class UI_API CUIArrow:
 	public CUIStatic
@@ -32,7 +30,5 @@ private:
 	float		m_temp_pos;
 	float		m_pos;
 
-#ifndef IXRAY_NO_LUA
 	DECLARE_SCRIPT_REGISTER_FUNCTION
-#endif
 };
