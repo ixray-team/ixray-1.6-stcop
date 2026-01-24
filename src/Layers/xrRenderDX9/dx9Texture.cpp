@@ -249,7 +249,7 @@ bool CRender::get_texture_metadata(LPCSTR absolute_path, RHITextureMetadata* p_d
 	if (absolute_path == nullptr)
 		return status;
 
-	if (FS.path_exist(absolute_path) == false)
+	if (FS.exist(absolute_path) == nullptr)
 		return status;
 
 	IReader* pReader = FS.r_open(absolute_path);
