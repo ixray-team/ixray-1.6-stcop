@@ -1084,7 +1084,7 @@ namespace level_nearest
 	xr_vector<CObject*> ObjectList;
 	void Set(float Radius, const Fvector& Pos)
 	{
-		ObjectList.clear();
+		//ObjectList.clear();
 		g_pGameLevel->ObjectSpace.GetNearest(ObjectList, Pos, Radius, nullptr);
 	}
 
@@ -1597,6 +1597,43 @@ void RemoveAllNamedStashStringVectors()
 	m_named_stash.clear();
 }
 
+
+const xr_vector<CScriptGameObject*>& GetOnlineGameObjectsByShapeSpatial(u64 mask, const Fvector& _center, const float _radius)
+{
+	static xr_vector<CScriptGameObject*> m_objects;
+	m_objects.clear();
+
+	static xr_vector<ISpatialShared> R;
+	R.clear();
+	R.reserve(64);
+
+	g_SpatialSpace->q_sphere(R, 0, ESPATIAL_TYPE(mask), _center, _radius);
+	m_objects.reserve(R.size());
+
+	for(ISpatialShared& spatial :R)
+	{
+		if (!spatial.get())
+		{
+			continue;
+		}
+
+		if (CObject* obj = spatial->dcast_CObject())
+		{
+			if (obj->getDestroy() || !obj->cast_game_object())
+			{
+				continue;
+			}
+
+			if (CScriptGameObject* luaobj = obj->cast_game_object()->lua_game_object())
+			{
+				m_objects.push_back(luaobj);
+			}
+		}
+	}
+
+	return m_objects;
+}
+
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {
@@ -1609,6 +1646,65 @@ void CLevel::script_register(lua_State *L)
 
 	module(L,"level")
 	[
+		class_<enum_exporter<ESPATIAL_TYPE>>("e_spatial_type")
+			.enum_("e_spatial_types")
+			[
+				value("NONE", u64(ESPATIAL_TYPE::NONE)),
+				value("INVALIDSECTOR", u64(ESPATIAL_TYPE::INVALIDSECTOR)),
+				value("RENDERABLE", u64(ESPATIAL_TYPE::RENDERABLE)),
+				value("LIGHTSOURCE", u64(ESPATIAL_TYPE::LIGHTSOURCE)),
+				value("LIGHTSOURCEHEMI", u64(ESPATIAL_TYPE::LIGHTSOURCEHEMI)),
+				value("PHYSIC", u64(ESPATIAL_TYPE::PHYSIC)),
+				value("SHAPE", u64(ESPATIAL_TYPE::SHAPE)),
+				value("PARTICLE", u64(ESPATIAL_TYPE::PARTICLE)),
+				value("COLLIDEABLE", u64(ESPATIAL_TYPE::COLLIDEABLE)),
+				value("VISIBLEFORAI", u64(ESPATIAL_TYPE::VISIBLEFORAI)),
+				value("REACTTOSOUND", u64(ESPATIAL_TYPE::REACTTOSOUND)),
+				value("OBSTACLE", u64(ESPATIAL_TYPE::OBSTACLE)),
+				value("RENDERABLESHADOW", u64(ESPATIAL_TYPE::RENDERABLESHADOW)),
+				value("LADDER", u64(ESPATIAL_TYPE::LADDER)),
+				value("ACTOR", u64(ESPATIAL_TYPE::ACTOR)),
+				value("ACTOR_DEAD", u64(ESPATIAL_TYPE::ACTOR_DEAD)),
+				value("ACTOR_ALIVE", u64(ESPATIAL_TYPE::ACTOR_ALIVE)),
+				value("AI", u64(ESPATIAL_TYPE::AI)),
+				value("AI_DEAD", u64(ESPATIAL_TYPE::AI_DEAD)),
+				value("AI_ALIVE", u64(ESPATIAL_TYPE::AI_ALIVE)),
+				value("STALKER", u64(ESPATIAL_TYPE::STALKER)),
+				value("STALKER_WOUNDED", u64(ESPATIAL_TYPE::STALKER_WOUNDED)),
+				value("STALKER_DEAD", u64(ESPATIAL_TYPE::STALKER_DEAD)),
+				value("STALKER_ALIVE", u64(ESPATIAL_TYPE::STALKER_ALIVE)),
+				value("MONSTER", u64(ESPATIAL_TYPE::MONSTER)),
+				value("MONSTER_DEAD", u64(ESPATIAL_TYPE::MONSTER_DEAD)),
+				value("MONSTER_ALIVE", u64(ESPATIAL_TYPE::MONSTER_ALIVE)),
+				value("CROW", u64(ESPATIAL_TYPE::CROW)),
+				value("CROW_DEAD", u64(ESPATIAL_TYPE::CROW_DEAD)),
+				value("CROW_ALIVE", u64(ESPATIAL_TYPE::CROW_ALIVE)),
+				value("ITEM", u64(ESPATIAL_TYPE::ITEM)),
+				value("WEAPON", u64(ESPATIAL_TYPE::WEAPON)),
+				value("MISSILE", u64(ESPATIAL_TYPE::MISSILE)),
+				value("ROCKET", u64(ESPATIAL_TYPE::ROCKET)),
+				value("ARTEFACT", u64(ESPATIAL_TYPE::ARTEFACT)),
+				value("ANOMALY_DETECTOR", u64(ESPATIAL_TYPE::ANOMALY_DETECTOR)),
+				value("CAR", u64(ESPATIAL_TYPE::CAR)),
+				value("HELI", u64(ESPATIAL_TYPE::HELI)),
+				value("PHYSIC_OBJECT", u64(ESPATIAL_TYPE::PHYSIC_OBJECT)),
+				value("PHYSIC_SHELL_HOLDER", u64(ESPATIAL_TYPE::PHYSIC_SHELL_HOLDER)),
+				value("PHYSIC_OBJECT_DESTR", u64(ESPATIAL_TYPE::PHYSIC_OBJECT_DESTR)),
+				value("PHYSIC_OBJECT_BRKBL", u64(ESPATIAL_TYPE::PHYSIC_OBJECT_BRKBL)),
+				value("PHYSIC_MOVEMENT", u64(ESPATIAL_TYPE::PHYSIC_MOVEMENT)),
+				value("INV_BOX", u64(ESPATIAL_TYPE::INV_BOX)),
+				value("AI_DOOR", u64(ESPATIAL_TYPE::AI_DOOR)),
+				value("LIGHT_LAMP", u64(ESPATIAL_TYPE::LIGHT_LAMP)),
+				value("LEVEL_CHANGER", u64(ESPATIAL_TYPE::LEVEL_CHANGER)),
+				value("SPACE_RESTRICTOR", u64(ESPATIAL_TYPE::SPACE_RESTRICTOR)),
+				value("ANOMALY_ZONE", u64(ESPATIAL_TYPE::ANOMALY_ZONE)),
+				value("SIM_FACTION", u64(ESPATIAL_TYPE::SIM_FACTION)),
+				value("SMART_TERRAIN", u64(ESPATIAL_TYPE::SMART_TERRAIN)),
+				value("CAMP_ZONE", u64(ESPATIAL_TYPE::CAMP_ZONE)),
+				value("SMART_COVER", u64(ESPATIAL_TYPE::SMART_COVER)),
+				value("ANOMAL_ZONE_LOGIC", u64(ESPATIAL_TYPE::ANOMAL_ZONE_LOGIC))
+			],
+
 		// obsolete\deprecated
 		def("object_by_id",						get_object_by_id),
 #ifdef DEBUG
@@ -1618,6 +1714,8 @@ void CLevel::script_register(lua_State *L)
 #endif
 		def("set_time_factor_single", set_time_factor_single), // FNAS
 		
+		def("get_online_objects", &GetOnlineGameObjectsByShapeSpatial, return_stl_iterator),
+
 		def("is_exists_named_stash_string_vector", &IsExistsNamedStashStringVector),
 		def("get_named_stash_string_vector", &GetNamedStashStringVector),
 		def("set_named_stash_string_vector", &SetNamedStashStringVector),
