@@ -2083,6 +2083,11 @@ bool CWeapon::SwitchAmmoType(u32 flags)
 		return false;
 	}
 
+	if (m_fRechargeTime > 0.0f && Device.GetTimeDeltaSafe(m_iLastShotTime) < std::floor(m_fLastRechargeTime * 1000.0f))
+	{
+		return false;
+	}
+
 	u8 l_newType = m_ammoType;
 	bool b1, b2;
 	do
