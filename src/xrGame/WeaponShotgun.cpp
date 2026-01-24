@@ -143,7 +143,7 @@ void CWeaponShotgun::Reload()
 
 void CWeaponShotgun::TriStateReload()
 {
-	if (m_magazine.size() == (u32)iMagazineSize || !HaveCartridgeInInventory(1))
+	if (m_magazine.size() == GetMagCapacity() || !HaveCartridgeInInventory(1))
 		return;
 
 	CWeapon::Reload();
@@ -165,7 +165,7 @@ void CWeaponShotgun::OnStateSwitch(u32 S)
 
 	CWeapon::OnStateSwitch(S);
 
-	if ((u32)m_magazine.size() == (u32)iMagazineSize || !HaveCartridgeInInventory(1))
+	if ((u32)m_magazine.size() == GetMagCapacity() || !HaveCartridgeInInventory(1))
 	{
 		switch2_EndReload();
 		m_sub_state = eSubstateReloadEnd;
@@ -327,7 +327,7 @@ shared_str CWeaponShotgun::SelectCloseWeaponAnimation()
 			m_bIsPreloaded = false;
 		}
 
-		if (iAmmoElapsed + iAmmoChamberElapsed >= iMagazineSize && AddSuffixName(anim, "_final"))
+		if (iAmmoElapsed + iAmmoChamberElapsed >= GetMagCapacity() && AddSuffixName(anim, "_final"))
 		{
 			m_bJustAfterReload = true;
 		}
@@ -417,7 +417,7 @@ void CWeaponShotgun::OnMotionMark(u32 state, const motion_marks& mark)
 	{
 		if (m_sub_state == EWeaponSubStates::eSubstateReloadBegin)
 		{
-			if (iAmmoElapsed < iMagazineSize)
+			if (iAmmoElapsed < GetMagCapacity())
 			{
 				m_bIsReloaded = true;
 				AddCartridge(1);
@@ -425,7 +425,7 @@ void CWeaponShotgun::OnMotionMark(u32 state, const motion_marks& mark)
 		}
 		else if (m_sub_state == EWeaponSubStates::eSubstateReloadInProcess)
 		{
-			if (iAmmoElapsed < iMagazineSize)
+			if (iAmmoElapsed < GetMagCapacity())
 			{
 				m_bIsReloaded = true;
 				AddCartridge(1);
