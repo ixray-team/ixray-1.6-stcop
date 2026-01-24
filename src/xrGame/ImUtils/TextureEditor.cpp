@@ -1535,6 +1535,11 @@ void RenderTextureEditor()
 						R_ASSERT(g_imgui_texture_editor.pTHMSelected);
 						STextureParams* pTHM = g_imgui_texture_editor.pTHMSelected;
 
+						ImGui::Separator();
+
+						ListBoxToken(ttype_token, "Type", reinterpret_cast<u32*>(&pTHM->type));
+						ListBoxToken(tfmt_token, "Format", reinterpret_cast<u32*>(&pTHM->fmt));
+
 						ImGui::SeparatorText("Flags");
 
 						bool mipmaps_enabled = pTHM->flags.test(STextureParams::flGenerateMipMaps);
@@ -1580,9 +1585,41 @@ void RenderTextureEditor()
 
 						ImGui::SeparatorText("Bump");
 
+						ImGui::BeginDisabled(pTHM->type != STextureParams::ETType::ttBumpMap);
+						ListBoxToken(tbmode_token, "Mode", (u32*)(&pTHM->bump_mode));
+							ImGui::BeginDisabled(pTHM->bump_mode != STextureParams::ETBumpMode::tbmNone);
+							char button_bump_name[256];
+							std::sprintf(button_bump_name, "%s##TE_BUMP", pTHM->bump_name.c_str());
+							if (ImGui::Button(button_bump_name))
+							{
+
+							}
+							ImGui::EndDisabled();
+						ImGui::EndDisabled();
+
 						ImGui::SeparatorText("Details");
 
+						ImGui::BeginDisabled(false);
+						
+						char button_detail_name[256];
+						std::sprintf(button_detail_name, "%s##TE_DETAIL", pTHM->detail_name.c_str());
+						if (ImGui::Button(button_detail_name))
+						{
+
+						}
+
+						ImGui::DragFloat("Scale##TE_DETAIL", &pTHM->detail_scale, 0.1f, 0.1f, 10000.0f);
+
+						ImGui::EndDisabled();
+
 						ImGui::SeparatorText("Material");
+
+						ListBoxToken(tmtl_token, "Base", (u32*)(&pTHM->material));
+						ImGui::DragFloat("Weight##TE_MATERIAL", &pTHM->material_weight, 0.01f, 0.0f, 1.0f);
+
+						ImGui::SeparatorText("Fade");
+
+						ImGui::SeparatorText("Border");
 					}
 					else
 					{
