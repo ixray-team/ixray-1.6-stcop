@@ -7,7 +7,9 @@
 #include "../../xrGame/xr_time.h"
 #include "lua_ext.h"
 #include "lua.h"
+#ifndef IXRAY_NO_LUA
 #include <luabind/luabind.hpp>
+#endif
 
 #include "script_engine.h"
 
@@ -354,6 +356,7 @@ namespace CSaveObject_script
 
 }
 
+#ifndef IXRAY_NO_LUA
 using namespace luabind;
 
 void SaveSystemScript::script_register(lua_State* L)
@@ -380,3 +383,4 @@ void SaveSystemScript::script_register(lua_State* L)
 				.def("IsSave", &CSaveObject_script::IsSave)
 		];
 }
+#endif
