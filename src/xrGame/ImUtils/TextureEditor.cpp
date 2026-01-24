@@ -590,7 +590,22 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 	{
 		if (g_imgui_texture_editor.is_init)
 		{
-			g_imgui_texture_editor.selected_index = _kInvalidSelectedID;
+			bool is_main_only_visible = false;
+
+			if (g_imgui_texture_editor.selected_index != _kInvalidSelectedID)
+			{
+				g_imgui_texture_editor.selected_index = _kInvalidSelectedID;
+			}
+			else
+			{
+				is_main_only_visible = true;
+			}
+
+			if (is_main_only_visible)
+			{
+				Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_TextureEditor)] = false;
+			}
+
 		}
 	}
 	case CImGuiTextureEditor::eRequestType::kFilterQuery:
@@ -1651,5 +1666,29 @@ void RenderTextureEditor()
 	}
 
 
+
+}
+
+void TextureEditor_OnPressed(int key)
+{
+	switch (key)
+	{
+	case SDL_Scancode::SDL_SCANCODE_ESCAPE:
+	{
+		if (Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_TextureEditor)])
+		{
+			SRequestData req;
+			req.editor_type = (u32)eImGuiEditorType::kTextureEditor;
+			req.request_type = (u32)CImGuiTextureEditor::eRequestType::kDeselectCurrentSelected;
+
+			AllEditors_SendRequest(req);
+		}
+	}
+	break;
+	}
+}
+
+void TextureEditor_OnReleased(int key)
+{
 
 }
