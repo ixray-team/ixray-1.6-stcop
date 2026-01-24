@@ -503,20 +503,10 @@ void AllEditors_OnPressed(int key)
 	if (!CImGuiManager::Instance().IsCapturingInputs() || pInput->xrgame_sdk_input_pressed == nullptr)
 		return;
 
-	switch (key)
-	{
-	case SDL_Scancode::SDL_SCANCODE_ESCAPE:
-	{
-		if (Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_TextureEditor)])
-		{
-			SRequestData req;
-			req.editor_type = (u32)eImGuiEditorType::kTextureEditor;
-			req.request_type = (u32)CImGuiTextureEditor::eRequestType::kDeselectCurrentSelected;
 
-			AllEditors_SendRequest(req);
-		}
-	}break;
-	//...
+	if (Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_TextureEditor)])
+	{
+		TextureEditor_OnPressed(key);
 	}
 }
 
@@ -525,7 +515,10 @@ void AllEditors_OnReleased(int key)
 	if (!CImGuiManager::Instance().IsCapturingInputs() || pInput->xrgame_sdk_input_released == nullptr)
 		return;
 
-	//...
+	if (Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_TextureEditor)])
+	{
+		TextureEditor_OnReleased(key);
+	}
 }
 
 #include "imgui_internal.h"
