@@ -8,11 +8,20 @@
 
 #pragma once
 
+#ifndef IXRAY_NO_LUA
+#define XR_LUABIND_WRAP_BASE , public luabind::wrap_base
+#else
+#define XR_LUABIND_WRAP_BASE
+#endif
+
+
 #define MAKE_WRAPPER_NAME(cls)                                                          \
 	cls##_wrapper
 
 #define DEFINE_LUA_WRAPPER_HEADER_0(cls)												\
-	struct MAKE_WRAPPER_NAME(cls) : public cls, public luabind::wrap_base {				\
+	struct MAKE_WRAPPER_NAME(cls) : public cls\
+	XR_LUABIND_WRAP_BASE	\
+ {				\
 		typedef cls inherited;                                                          \
 		typedef MAKE_WRAPPER_NAME(cls) self_type;										\
 		MAKE_WRAPPER_NAME(cls) ():inherited() {}
@@ -20,6 +29,7 @@
 #define DEFINE_LUA_WRAPPER_FOOTER(cls)													\
 	};
 
+#ifndef IXRAY_NO_LUA
 #define DEFINE_LUABIND_CLASS_WRAPPER_0(type, wrapper, name) \
 	luabind::class_<type, luabind::no_bases, wrapper>(name)
 
@@ -43,21 +53,25 @@
 
 #define DEFINE_LUABIND_VIRTUAL_FUNCTION_EXPLICIT_1(a,b,c,d,e,f) \
 	.def(#c, (d (a::*)(e))(&a::c), (d (*)(b*,f))(&b::c##_static))
+#endif
 
 #ifdef DEBUG
 #	ifdef LUABIND_NO_EXCEPTIONS 
 #	define CAST_FAILED(v_func_name,ret_type)
 #	else
+#ifndef IXRAY_NO_LUA
 #	define CAST_FAILED(v_func_name,ret_type) \
 		catch(luabind::cast_failed exception) {										\
 			ai().script_engine().script_log (ScriptStorage::eLuaMessageTypeError,"SCRIPT RUNTIME ERROR : luabind::cast_failed in function %s (%s)!",#v_func_name,#ret_type);\
 			return ((ret_type)(0));													\
 		}
+#endif
 #	endif
 #else
 #	define CAST_FAILED(v_func_name,ret_type)
 #endif
 
+#ifndef IXRAY_NO_LUA
 #define DEFINE_LUA_WRAPPER_CONST_METHOD_0(v_func_name,ret_type)							\
 		virtual ret_type v_func_name() const											\
 		{																				\
@@ -326,3 +340,199 @@
 		{																				\
 			ptr->self_type::inherited::v_func_name(p1,p2,*p3);							\
 		}
+#else
+#define DEFINE_LUA_WRAPPER_CONST_METHOD_0(v_func_name,ret_type)							\
+		virtual ret_type v_func_name() const											\
+		{																				\
+			R_ASSERT(false);															\
+			return (ret_type)(0);															\
+		}																				\
+		static ret_type v_func_name##_static(const inherited* ptr)						\
+		{                                                                               \
+			return ptr->self_type::inherited::v_func_name();							\
+		}
+
+#ifdef DEBUG
+#define DEFINE_LUA_WRAPPER_CONST_METHOD_1(v_func_name,ret_type,t1)						\
+		virtual ret_type v_func_name(t1 p1) const										\
+		{																				\
+			R_ASSERT(false);															\
+			return (ret_type)(0);															\
+		}																				\
+		static ret_type v_func_name##_static(const inherited* ptr, t1 p1)				\
+		{                                                                               \
+			return ptr->self_type::inherited::v_func_name(p1);							\
+		}
+#else // DEBUG
+#define DEFINE_LUA_WRAPPER_CONST_METHOD_1(v_func_name,ret_type,t1)						\
+		virtual ret_type v_func_name(t1 p1) const										\
+		{																				\
+			R_ASSERT(false);\
+			return (ret_type)(0);	\
+		}																				\
+		static ret_type v_func_name##_static(const inherited* ptr, t1 p1)				\
+		{                                                                               \
+			return ptr->self_type::inherited::v_func_name(p1);							\
+		}
+#endif // DEBUG
+
+#define DEFINE_LUA_WRAPPER_METHOD_V0(v_func_name)										\
+		virtual void v_func_name()														\
+		{																				\
+			R_ASSERT(false);															\
+		}																				\
+		static void v_func_name##_static(inherited* ptr)								\
+		{                                                                               \
+			ptr->self_type::inherited::v_func_name();									\
+		}
+
+#define DEFINE_LUA_WRAPPER_METHOD_V1(v_func_name,t1)									\
+		virtual void v_func_name(t1 p1)													\
+		{																				\
+			R_ASSERT(false);															\
+		}																				\
+		static void v_func_name##_static(inherited* ptr, t1 p1)							\
+		{                                                                               \
+			ptr->self_type::inherited::v_func_name(p1);									\
+		}
+
+#define DEFINE_LUA_WRAPPER_METHOD_V2(v_func_name,t1,t2)									\
+		virtual void v_func_name(t1 p1, t2 p2)											\
+		{																				\
+			R_ASSERT(false);															\
+		}																				\
+		static void v_func_name##_static(inherited* ptr, t1 p1, t2 p2)					\
+		{                                                                               \
+			ptr->self_type::inherited::v_func_name(p1,p2);								\
+		}
+
+#define DEFINE_LUA_WRAPPER_METHOD_V3(v_func_name,t1,t2,t3)								\
+		virtual void v_func_name(t1 p1, t2 p2, t3 p3)									\
+		{																				\
+			R_ASSERT(false);															\
+		}																				\
+		static void v_func_name##_static(inherited* ptr, t1 p1, t2 p2, t3 p3)			\
+		{                                                                               \
+			ptr->self_type::inherited::v_func_name(p1,p2,p3);							\
+		}
+
+#define DEFINE_LUA_WRAPPER_METHOD_V4(v_func_name,t1,t2,t3,t4)							\
+		virtual void v_func_name(t1 p1, t2 p2, t3 p3, t4 p4)							\
+		{																				\
+			R_ASSERT(false);															\
+		}																				\
+		static void v_func_name##_static(inherited* ptr, t1 p1, t2 p2, t3 p3, t4 p4)	\
+		{                                                                               \
+			ptr->self_type::inherited::v_func_name(p1,p2,p3,p4);						\
+		}
+
+#define DEFINE_LUA_WRAPPER_METHOD_0(v_func_name,ret_type)								\
+		virtual ret_type v_func_name()													\
+		{																				\
+			R_ASSERT(false);															\
+			return (ret_type)(0);															\
+		}																				\
+		static ret_type v_func_name##_static(inherited* ptr)							\
+		{                                                                               \
+			return ptr->self_type::inherited::v_func_name();							\
+		}
+
+#define DEFINE_LUA_WRAPPER_METHOD_1(v_func_name,ret_type,t1)							\
+		virtual ret_type v_func_name(t1 p1)                                    			\
+		{																				\
+			R_ASSERT(false);															\
+			return (ret_type)(0);															\
+		}                                   											\
+		static  ret_type v_func_name##_static(inherited* ptr, t1 p1)            		\
+		{																				\
+			return ptr->self_type::inherited::v_func_name(p1);                          \
+		}
+
+#define DEFINE_LUA_WRAPPER_METHOD_2(v_func_name,ret_type,t1,t2)							\
+		virtual ret_type v_func_name(t1 p1, t2 p2)                                    	\
+		{																				\
+			R_ASSERT(false);															\
+			return (ret_type)(0);															\
+		}                                   											\
+		static  ret_type v_func_name##_static(inherited* ptr, t1 p1, t2 p2)            	\
+		{																				\
+			return ptr->self_type::inherited::v_func_name(p1,p2);						\
+		}
+
+#define DEFINE_LUA_WRAPPER_METHOD_3(v_func_name,ret_type,t1,t2,t3)						\
+		virtual ret_type v_func_name(t1 p1, t2 p2, t3 p3)                               \
+		{																				\
+			R_ASSERT(false);															\
+			return (ret_type)(0);															\
+		}                                   											\
+		static  ret_type v_func_name##_static(inherited* ptr, t1 p1, t2 p2, t3 p3)      \
+		{																				\
+			return ptr->self_type::inherited::v_func_name(p1,p2,p3);					\
+		}
+
+#define DEFINE_LUA_WRAPPER_METHOD_4(v_func_name,ret_type,t1,t2,t3,t4)					\
+		virtual ret_type v_func_name(t1 p1, t2 p2, t3 p3, t4 p4)						\
+		{																				\
+			R_ASSERT(false);															\
+			return (ret_type)(0);															\
+		}                                   											\
+		static  ret_type v_func_name##_static(inherited* ptr, t1 p1, t2 p2, t3 p3, t4 p4)\
+		{																				\
+			return ptr->self_type::inherited::v_func_name(p1,p2,p3,p4);					\
+		}
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+
+#define DEFINE_LUA_WRAPPER_METHOD_R2P1_V1(v_func_name,t1)								\
+		virtual void v_func_name(t1& p1)												\
+		{																				\
+			R_ASSERT(false);															\
+		}                                   											\
+		static  void v_func_name##_static(inherited* ptr, t1* p1)						\
+		{																				\
+			ptr->self_type::inherited::v_func_name(*p1);								\
+		}
+
+#define DEFINE_LUA_WRAPPER_METHOD_R2P1_V2(v_func_name,t1,t2)							\
+		virtual void v_func_name(t1& p1, t2 p2)											\
+		{																				\
+			R_ASSERT(false);															\
+		}                                   											\
+		static  void v_func_name##_static(inherited* ptr, t1* p1, t2 p2)				\
+		{																				\
+			ptr->self_type::inherited::v_func_name(*p1,p2);								\
+		}
+
+#define DEFINE_LUA_WRAPPER_METHOD_R2P2_V2(v_func_name,t1,t2)							\
+		virtual void v_func_name(t1 p1, t2& p2)											\
+		{																				\
+			R_ASSERT(false);															\
+		}                                   											\
+		static  void v_func_name##_static(inherited* ptr, t1 p1, t2* p2)				\
+		{																				\
+			ptr->self_type::inherited::v_func_name(p1,*p2);								\
+		}
+
+#define DEFINE_LUA_WRAPPER_METHOD_R2P1_V4(v_func_name,t1,t2,t3,t4)						\
+		virtual void v_func_name(t1& p1, t2 p2, t3 p3, t4 p4)							\
+		{																				\
+			R_ASSERT(false);															\
+		}                                   											\
+		static  void v_func_name##_static(inherited* ptr, t1* p1, t2 p2, t3 p3, t4 p4)	\
+		{																				\
+			ptr->self_type::inherited::v_func_name(*p1,p2,p3,p4);						\
+		}
+
+#define DEFINE_LUA_WRAPPER_METHOD_R2P3_V3(v_func_name,t1,t2,t3)							\
+		virtual void v_func_name(t1 p1, t2 p2, t3& p3)									\
+		{																				\
+			R_ASSERT(false);															\
+		}                                   											\
+		static  void v_func_name##_static(inherited* ptr, t1 p1, t2 p2, t3* p3)			\
+		{																				\
+			ptr->self_type::inherited::v_func_name(p1,p2,*p3);							\
+		}
+#endif

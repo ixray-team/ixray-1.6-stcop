@@ -9,12 +9,17 @@
 #ifndef xrServer_SpaceH
 #define xrServer_SpaceH
 
+#ifndef IXRAY_NO_LUA
 #include "../xrScripts/script_export_space.h"
+#endif
 
 #ifndef XRGAME_EXPORTS
 #	define SERVER_ENTITY_EDITOR_METHODS					virtual void FillProps(LPCSTR pref, PropItemVec& values);
 #else // #ifdef XRGAME_EXPORTS
 #	define SERVER_ENTITY_EDITOR_METHODS
+#ifdef IXRAY_NO_LUA
+#define DECLARE_SCRIPT_REGISTER_FUNCTION
+#endif
 #endif // #ifndef XRGAME_EXPORTS
 
 #define SERVER_ENTITY_SCRIPT_METHODS					DECLARE_SCRIPT_REGISTER_FUNCTION
@@ -35,15 +40,15 @@ public:\
 struct	SRotation
 {
 	float  yaw, pitch, roll;
-	SRotation() { yaw=pitch=roll=0; }
-	SRotation(float y, float p, float r) { yaw=y;pitch=p;roll=r; }
+	SRotation() { yaw = pitch = roll = 0; }
+	SRotation(float y, float p, float r) { yaw = y; pitch = p; roll = r; }
 };
 
 enum EPOType {
 	epotBox,
 	epotFixedChain,
-    epotFreeChain,
-    epotSkeleton
+	epotFreeChain,
+	epotSkeleton
 };
 
 using DWORD_VECTOR = xr_vector<u32>;
@@ -70,9 +75,9 @@ using FVECTOR_IT = FVECTOR_VECTOR::iterator;
 #endif
 
 #ifdef DECLARE_ENTITY_DESTROY
-template <class T> void	F_entity_Destroy	(T *&P)
+template <class T> void	F_entity_Destroy(T*& P)
 {
-	xr_delete	(P);
+	xr_delete(P);
 };
 #endif
 

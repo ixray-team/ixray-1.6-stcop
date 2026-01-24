@@ -7,11 +7,16 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
-
+#ifndef IXRAY_NO_LUA
 #include "../xrScripts/script_export_macroses.h"
+#endif
 #include "ai_space.h"
+
+#ifndef IXRAY_NO_LUA
 #include "../xrScripts/script_engine.h"
 #include "luabind/error.hpp"
+#endif
+
 #ifdef XRGAME_EXPORTS
 #include "alife_smart_terrain_task.h"
 #endif //#ifdef XRGAME_EXPORTS
@@ -117,75 +122,111 @@ class CALifeSmartTerrainTask;
 	DEFINE_LUA_WRAPPER_METHOD_0			(bfUseful,	bool)
 
 template <typename T>
-struct CWrapperPure : public T, public luabind::wrap_base {
+struct CWrapperPure : public T
+#ifndef IXRAY_NO_LUA
+	, public luabind::wrap_base
+#endif
+{
 	typedef T							inherited;
 	typedef CWrapperPure<T>				self_type;
-	CWrapperPure						(LPCSTR section) : inherited(section){}
+	CWrapperPure(LPCSTR section) : inherited(section) {}
 	INHERIT_PURE;
 };
 
 template <typename T>
-struct CWrapperAbstract : public T, public luabind::wrap_base {
+struct CWrapperAbstract : public T
+#ifndef IXRAY_NO_LUA
+	, public luabind::wrap_base
+#endif
+{
 	typedef T							inherited;
 	typedef CWrapperAbstract<T>			self_type;
 
-	CWrapperAbstract					(LPCSTR section) : inherited(section){}
+	CWrapperAbstract(LPCSTR section) : inherited(section) {}
 	INHERIT_ABSTRACT;
 };
 
 template <typename T>
-struct CWrapperAbstractALife : public T, public luabind::wrap_base {
+struct CWrapperAbstractALife : public T
+#ifndef IXRAY_NO_LUA
+	, public luabind::wrap_base
+#endif
+{
 	typedef T							inherited;
 	typedef CWrapperAbstractALife<T>	self_type;
-	CWrapperAbstractALife				(LPCSTR section) : inherited(section){}
+	CWrapperAbstractALife(LPCSTR section) : inherited(section) {}
 	INHERIT_ALIFE;
 };
 
 template <typename T>
-struct CWrapperAbstractDynamicALife : public T, public luabind::wrap_base {
+struct CWrapperAbstractDynamicALife : public T
+#ifndef IXRAY_NO_LUA
+	, public luabind::wrap_base
+#endif
+{
 	typedef T								inherited;
 	typedef CWrapperAbstractDynamicALife<T>	self_type;
-	CWrapperAbstractDynamicALife		(LPCSTR section) : inherited(section){}
+	CWrapperAbstractDynamicALife(LPCSTR section) : inherited(section) {}
 	INHERIT_DYNAMIC_ALIFE;
 };
 
 template <typename T>
-struct CWrapperAbstractOnlineOfflineGroup : public T, public luabind::wrap_base {
+struct CWrapperAbstractOnlineOfflineGroup : public T
+#ifndef IXRAY_NO_LUA
+	, public luabind::wrap_base
+#endif
+{
 	typedef T								inherited;
 	typedef CWrapperAbstractOnlineOfflineGroup<T>	self_type;
-	CWrapperAbstractOnlineOfflineGroup	(LPCSTR section) : inherited(section){}
+	CWrapperAbstractOnlineOfflineGroup(LPCSTR section) : inherited(section) {}
 	INHERIT_ONLINE_OFFLINE_GROUP;
 };
 
 template <typename T>
-struct CWrapperAbstractZone : public T, public luabind::wrap_base {
+struct CWrapperAbstractZone : public T
+#ifndef IXRAY_NO_LUA
+	, public luabind::wrap_base
+#endif
+{
 	typedef T							inherited;
 	typedef CWrapperAbstractZone<T>		self_type;
-	CWrapperAbstractZone				(LPCSTR section) : inherited(section){}
+	CWrapperAbstractZone(LPCSTR section) : inherited(section) {}
 	INHERIT_ZONE;
 };
 
 template <typename T>
-struct CWrapperAbstractCreature : public T, public luabind::wrap_base {
+struct CWrapperAbstractCreature : public T
+#ifndef IXRAY_NO_LUA
+	, public luabind::wrap_base
+#endif
+{
 	typedef T							inherited;
 	typedef CWrapperAbstractCreature<T>	self_type;
-	CWrapperAbstractCreature			(LPCSTR section) : inherited(section){}
+	CWrapperAbstractCreature(LPCSTR section) : inherited(section) {}
 	INHERIT_CREATURE;
 };
 
 template <typename T>
-struct CWrapperAbstractMonster : public T, public luabind::wrap_base {
+struct CWrapperAbstractMonster : public T
+#ifndef IXRAY_NO_LUA
+	, public luabind::wrap_base
+#endif
+{
 	typedef T							inherited;
 	typedef CWrapperAbstractMonster<T>	self_type;
-	CWrapperAbstractMonster				(LPCSTR section) : inherited(section){}
+	CWrapperAbstractMonster(LPCSTR section) : inherited(section) {}
 	INHERIT_MONSTER;
 };
 
 template <typename T>
-struct CWrapperAbstractItem : public T, public luabind::wrap_base {
+struct CWrapperAbstractItem : public T
+#ifndef IXRAY_NO_LUA
+	, public luabind::wrap_base
+#endif
+{
 	typedef T							inherited;
 	typedef CWrapperAbstractItem<T>		self_type;
-	CWrapperAbstractItem				(LPCSTR section) : inherited(section){}
+	CWrapperAbstractItem(LPCSTR section) : inherited(section) {}
 	INHERIT_ITEM;
 };
 
@@ -259,7 +300,7 @@ struct CWrapperAbstractItem : public T, public luabind::wrap_base {
 	DEFINE_LUABIND_VIRTUAL_FUNCTION(a,b,update) \
 	DEFINE_LUABIND_VIRTUAL_FUNCTION(a,b,get_current_task)
 #else
-	#define luabind_virtual_online_offline_group(a,b) \
+#define luabind_virtual_online_offline_group(a,b) \
 	DEFINE_LUABIND_VIRTUAL_FUNCTION(a,b,update)
 #endif //#ifdef XRGAME_EXPORTS
 
