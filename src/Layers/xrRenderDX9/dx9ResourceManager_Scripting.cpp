@@ -260,7 +260,12 @@ Shader*	CResourceManager::_lua_Create		(LPCSTR d_shader, LPCSTR s_textures)
 	C.detail_scaler		= nullptr;
 
 	// Compile element	(LOD0 - HQ)
+#ifndef IXRAY_NO_LUA
 	if (Script::bfIsObjectPresent(LSVM,s_shader,"normal_hq",LUA_TFUNCTION))
+#else
+	R_ASSERT(false && "todo: [nolua]");
+	if (true)
+#endif
 	{
 		// Analyze possibility to detail this shader
 		C.iElement			= 0;
@@ -271,7 +276,9 @@ Shader*	CResourceManager::_lua_Create		(LPCSTR d_shader, LPCSTR s_textures)
 		if (C.bDetail)		S.E[0]	= C._lua_Compile(s_shader,"normal_hq");
 		else				S.E[0]	= C._lua_Compile(s_shader,"normal");
 	} else {
+#ifndef IXRAY_NO_LUA
 		if (Script::bfIsObjectPresent(LSVM,s_shader,"normal",LUA_TFUNCTION))
+#endif
 		{
 			C.iElement			= 0;
 //.			C.bDetail			= dxRenderDeviceRender::Instance().Resources->_GetDetailTexture(*C.L_textures[0],C.detail_texture,C.detail_scaler);
@@ -282,7 +289,9 @@ Shader*	CResourceManager::_lua_Create		(LPCSTR d_shader, LPCSTR s_textures)
 	}
 
 	// Compile element	(LOD1)
+#ifndef IXRAY_NO_LUA
 	if (Script::bfIsObjectPresent(LSVM,s_shader,"normal",LUA_TFUNCTION))
+#endif
 	{
 		C.iElement			= 1;
 //.		C.bDetail			= dxRenderDeviceRender::Instance().Resources->_GetDetailTexture(*C.L_textures[0],C.detail_texture,C.detail_scaler);
@@ -292,7 +301,9 @@ Shader*	CResourceManager::_lua_Create		(LPCSTR d_shader, LPCSTR s_textures)
 	}
 
 	// Compile element
+#ifndef IXRAY_NO_LUA
 	if (Script::bfIsObjectPresent(LSVM,s_shader,"l_point",LUA_TFUNCTION))
+#endif
 	{
 		C.iElement			= 2;
 		C.bDetail			= FALSE;
@@ -300,7 +311,9 @@ Shader*	CResourceManager::_lua_Create		(LPCSTR d_shader, LPCSTR s_textures)
 	}
 
 	// Compile element
+#ifndef IXRAY_NO_LUA
 	if (Script::bfIsObjectPresent(LSVM,s_shader,"l_spot",LUA_TFUNCTION))
+#endif
 	{
 		C.iElement			= 3;
 		C.bDetail			= FALSE;
@@ -308,7 +321,9 @@ Shader*	CResourceManager::_lua_Create		(LPCSTR d_shader, LPCSTR s_textures)
 	}
 
 	// Compile element
+#ifndef IXRAY_NO_LUA
 	if (Script::bfIsObjectPresent(LSVM,s_shader,"l_special",LUA_TFUNCTION))
+#endif
 	{
 		C.iElement			= 4;
 		C.bDetail			= FALSE;
