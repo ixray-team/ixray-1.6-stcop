@@ -158,51 +158,23 @@ CInifile::~CInifile()
 	}
 }
 
-void CInifile::EvaluateSection(xr_string SectionName, xr_vector<xr_string>& PreviousEvaluations)
+void CInifile::EvaluateSection(const xr_string& SectName, xr_vector<xr_string>& PreviousEvaluations)
 {
-	std::unordered_set<xr_string> FinalizedSections;
+	PreviousEvaluations.push_back(SectName);
 
-	if (FinalizedSections.contains(SectionName))
-		return;
-
-	PreviousEvaluations.push_back(SectionName);
-
-	xr_vector<xr_string>* BaseParents = &BaseParentDataMap[SectionName];
-	xr_vector<xr_string>* OverrideParents = &OverrideParentDataMap[SectionName];
-
-	auto vectorToString = [&](const xr_vector<xr_string>& vec)
-		{
-			xr_string result;
-			for (const xr_string& str : vec)
-			{
-				result += str + ", ";
-			}
-			if (!result.empty())
-			{
-				result = result.substr(0, result.length() - 2);
-			}
-			return result;
-		};
+	xr_vector<xr_string>& BaseParents = BaseParentDataMap[SectName];
+	xr_vector<xr_string>& OverrideParents = OverrideParentDataMap[SectName];
 
 	BOOL bDeleteSectionIfEmpty = FALSE;
 
-	MergeParentSet(*BaseParents, *OverrideParents, false);
+	MergeParentSet(BaseParents, OverrideParents, false);
 
-	std::pair<xr_string, Sect> CurrentSecPair = std::pair<xr_string, Sect>(SectionName, Sect());
-
+	std::pair<xr_string, Sect> CurrentSecPair(SectName, Sect(SectName.c_str()));
 	Sect* CurrentSect = &CurrentSecPair.second;
-	CurrentSect->Name = SectionName.c_str();
 
-	auto IsStringDLTXDelete = [&](shared_str str)
+	auto InsertItemWithDelete = [&bDeleteSectionIfEmpty, &CurrentSect](const Item& CurrentItem, InsertType Type)
 		{
-			const char* RawString = str.c_str();
-
-			return RawString && xr_string(RawString) == DLTX_DELETE;
-		};
-
-	auto InsertItemWithDelete = [&](Item CurrentItem, InsertType Type)
-		{
-			if (IsStringDLTXDelete(CurrentItem.first))
+			if (CurrentItem.first == DLTX_DELETE)
 			{
 				// Delete section
 				bDeleteSectionIfEmpty = TRUE;
@@ -214,57 +186,58 @@ void CInifile::EvaluateSection(xr_string SectionName, xr_vector<xr_string>& Prev
 
 				if (sect_it != CurrentSect->Data.end() && sect_it->first.equal(CurrentItem.first))
 				{
-					bool bShouldInsert = [&]()
-						{
-							switch (Type)
-							{
-							case InsertType::Override: return true;
-							case InsertType::Base: return false;
-							case InsertType::Parent: return IsStringDLTXDelete(sect_it->second);
-							}
+					bool bShouldInsert = false;
 
-							return true;
-						}();
+					switch (Type)
+					{
+					case InsertType::Override:
+						bShouldInsert = true;
+						break;
 
-						if (bShouldInsert)
-						{
-							sect_it->second = CurrentItem.second;
-						}
+					case InsertType::Base:
+						bShouldInsert = false;
+						break;
+
+					case InsertType::Parent:
+						bShouldInsert = (sect_it->second == DLTX_DELETE);
+						break;
+
+					default:
+						bShouldInsert = true;
+						break;
+					}
+
+					if (bShouldInsert)
+						sect_it->second = CurrentItem.second;
 				}
 				else
-				{
 					CurrentSect->Data.insert(sect_it, CurrentItem);
-				}
 			}
 		};
 
 	// Insert variables of own data
-	auto InsertData = [&](xr_string_map<xr_string, Sect>* Data, BOOL bIsBase)
+	auto InsertData = [&SectName, &InsertItemWithDelete](xr_string_map<xr_string, Sect>& Data, BOOL bIsBase)
 		{
-			auto It = Data->find(SectionName);
+			auto It = Data.find(SectName);
 
-			if (It != Data->end())
+			if (It != Data.end())
 			{
 				Sect* DataSection = &It->second;
-				for (Item CurrentItem : DataSection->Data)
-				{
+				for (const Item& CurrentItem : DataSection->Data)
 					InsertItemWithDelete(CurrentItem, bIsBase ? InsertType::Base : InsertType::Override);
-				}
 
 				if (!bIsBase)
-				{
-					Data->erase(It);
-				}
+					Data.erase(It);
 			}
 		};
 
-	InsertData(&OverrideData, false);
-	InsertData(&BaseData, true);
+	InsertData(OverrideData, false);
+	InsertData(BaseData, true);
 
 	// Insert variables from parents
-	for (auto It = BaseParents->rbegin(); It != BaseParents->rend(); ++It)
+	for (auto It = BaseParents.rbegin(); It != BaseParents.rend(); ++It)
 	{
-		xr_string ParentSectionName = *(It.base() - 1);
+		const xr_string& ParentSectionName = *(It.base() - 1);
 
 		for (const xr_string& It : PreviousEvaluations)
 		{
@@ -286,79 +259,50 @@ void CInifile::EvaluateSection(xr_string SectionName, xr_vector<xr_string>& Prev
 			Debug.fatal(DEBUG_INFO,
 				"Section '%s' inherits from non-existent section '%s'. Check this file and its DLTX mods: %s, "
 				"mod file %s",
-				SectionName.c_str(), ParentSectionName.c_str(), m_file_name, DLTXCurrentFileName);
+				SectName.c_str(), ParentSectionName.c_str(), m_file_name, DLTXCurrentFileName);
 
 			return;
 		}
 
-		Sect* ParentSec = &ParentIt->second;
-
-		for (Item CurrentItem : ParentSec->Data)
-		{
+		Items& ParentSecItems = ParentIt->second.Data;
+		for (const Item& CurrentItem : ParentSecItems)
 			InsertItemWithDelete(CurrentItem, InsertType::Parent);
-		}
 	}
 
 	// Delete entries that are still marked DLTX_DELETE
 	for (auto It = CurrentSect->Data.rbegin(); It != CurrentSect->Data.rend(); ++It)
 	{
-		if (IsStringDLTXDelete(It->second))
-		{
+		if (It->second == DLTX_DELETE)
 			CurrentSect->Data.erase(It.base() - 1);
-		}
 	}
 
 	// If there is data to modify parameters lists
-	if (OverrideModifyListData.find(xr_string(CurrentSect->Name.c_str())) != OverrideModifyListData.end())
+	if (OverrideModifyListData.find(SectName) != OverrideModifyListData.end())
 	{
-		for (auto It = OverrideModifyListData[xr_string(CurrentSect->Name.c_str())].begin();
-			It != OverrideModifyListData[xr_string(CurrentSect->Name.c_str())].end(); ++It)
+		Items& items = OverrideModifyListData[SectName];
+		for (Item& item : items)
 		{
-			CInifile::Item& I = *It;
-
 			// If section exists with item list, split list and perform operation
-			char dltx_listmode = I.first[0];
-			I.first = I.first.c_str() + 1;
+			char dltx_listmode = item.first[0];
+			item.first = item.first.c_str() + 1;
 
-			CInifile::SectIt_ sect_it =
-				std::lower_bound(CurrentSect->Data.begin(), CurrentSect->Data.end(), *I.first, item_pred);
-			if (sect_it != CurrentSect->Data.end() && sect_it->first.equal(I.first))
+			CInifile::SectIt_ sect_it = std::lower_bound(CurrentSect->Data.begin(), CurrentSect->Data.end(), *item.first, item_pred);
+			if (sect_it != CurrentSect->Data.end() && sect_it->first.equal(item.first))
 			{
 				// Msg("%s has dltx_listmode %s", I.first.c_str(), xr_string(1, dltx_listmode).c_str());
 
 				if (dltx_listmode && sect_it->second != nullptr)
 				{
-					// Split list
+					xr_string split_str(sect_it->second.c_str());
+					thread_local xr_vector<xr_string> sect_it_items_vec;
+					split_str.Split(sect_it_items_vec);
 
-					auto split_list = [](const xr_string items, const xr_string delimiter = ",") {
-						xr_string i = items;
-						xr_vector<xr_string> vec;
-						size_t pos = 0;
-						xr_string token;
-						while ((pos = i.find(delimiter)) != xr_string::npos)
-						{
-							token = i.substr(0, pos);
-							vec.push_back(token);
-							i.erase(0, pos + delimiter.length());
-						}
-						vec.push_back(i);
-
-						auto trim = [](xr_string& s, const char* t = " \t\n\r\f\v")
-							{
-								s.erase(s.find_last_not_of(t) + 1);
-								s.erase(0, s.find_first_not_of(t));
-							};
-						for (auto& item : vec)
-						{
-							trim(item);
-						}
-						return vec;
-						};
-					xr_vector<xr_string> sect_it_items_vec = split_list(sect_it->second.c_str());
-					xr_vector<xr_string> I_items_vec = split_list(I.second.c_str());
+					split_str = item.second.c_str();
+					thread_local xr_vector<xr_string> I_items_vec;
+					split_str.Split(I_items_vec);
 
 					// Add or remove to the list
-					auto find_and_store_index = [](const xr_vector<xr_string>& items_vec, const xr_string item, int& vec_index)
+					auto find_and_store_index = [](const xr_vector<xr_string>& items_vec, const xr_string& item, int& vec_index)
 						{
 							auto it = std::find(items_vec.begin(), items_vec.end(), item);
 							if (it != items_vec.end())
@@ -375,7 +319,7 @@ void CInifile::EvaluateSection(xr_string SectionName, xr_vector<xr_string>& Prev
 
 					int vec_index = -1;
 
-					for (const auto& item : I_items_vec)
+					for (const xr_string& item : I_items_vec)
 					{
 						if (dltx_listmode == '>')
 						{
@@ -389,47 +333,22 @@ void CInifile::EvaluateSection(xr_string SectionName, xr_vector<xr_string>& Prev
 							}
 						}
 					}
-
-					// Store result back
-					auto join_list = [](const xr_vector<xr_string>& items_vec,
-						const xr_string delimiter = ",")
-						{
-							xr_string ret;
-							for (const auto& i : items_vec)
-							{
-								if (!ret.empty())
-								{
-									ret += delimiter;
-								}
-								ret += i;
-							}
-							return ret;
-						};
-
-					sect_it->second = join_list(sect_it_items_vec, ",").c_str();
+					sect_it->second = xr_string().Join(sect_it_items_vec.begin(), sect_it_items_vec.end(), ',').c_str();
 				}
 			}
 		}
 	}
 
-	// Pop from stack
-	auto LastElement = PreviousEvaluations.end();
-	LastElement--;
-
-	PreviousEvaluations.erase(LastElement);
+	PreviousEvaluations.pop_back();
 
 	// Finalize
 	if (!bDeleteSectionIfEmpty || CurrentSecPair.second.Data.size())
-	{
 		FinalData.emplace(CurrentSecPair);
-	}
-
-	FinalizedSections.insert(SectionName);
 }
 
 void CInifile::MergeParentSet(xr_vector<xr_string>& ParentsBase, xr_vector<xr_string>& ParentsOverride, bool bIncludeRemovers)
 {
-	for (xr_string CurrentParent : ParentsOverride)
+	for (const xr_string& CurrentParent : ParentsOverride)
 	{
 		bool bIsParentRemoval = CurrentParent[0] == '!';
 		xr_string StaleParentString = (!bIsParentRemoval ? "!" : "") + CurrentParent.substr(1);
@@ -1100,12 +1019,12 @@ void CInifile::Load(IReader* F, LPCSTR path, allow_include_func_t allow_include_
 	LTXLoad(F, path, BaseData, BaseParentDataMap, false, true);
 
 	// Merge base and override data together
-	xr_vector<xr_string> PreviousEvaluations;
+	thread_local xr_vector<xr_string> PreviousEvaluations;
+	PreviousEvaluations.clear();
+	PreviousEvaluations.reserve(64);
 
 	for (auto& [Name, Section] : BaseData)
-	{
 		EvaluateSection(Name, PreviousEvaluations);
-	}
 
 	// Insert all finalized sections into final container
 	for (auto &[Name, Section] : FinalData)
