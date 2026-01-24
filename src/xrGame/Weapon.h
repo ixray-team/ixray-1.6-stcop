@@ -205,7 +205,7 @@ public:
 		u8 AmmoType = undefined_ammo_type;
 		xr_hash_map<u32, std::pair<shared_str, RStringVec>> ConfigurationMap{};
 		RStringVec AllBones{};
-		void Load(const shared_str& section);
+		void Load(const shared_str& section, s32 base_node_count);
 	};
 
 	struct SAmmoBonesLite
