@@ -71,7 +71,7 @@ protected:
 
 	string_path DLTXCurrentFileName = {};
 
-	void EvaluateSection	(xr_string SectName, xr_vector<xr_string>& Data);
+	void EvaluateSection	(const xr_string& SectName, xr_vector<xr_string>& Data);
 	void MergeParentSet		(xr_vector<xr_string>& ParentsBase, xr_vector<xr_string>& ParentsOverride, bool bIncludeRemovers);
 
 private:
