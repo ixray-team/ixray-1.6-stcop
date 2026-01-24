@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../xrUI/Widgets/UIStatic.h"
-#include "UI3dStatic.h"
+#include "../../xrUI/Widgets/UI3dStatic.h"
 #include "../../xrUI/Widgets/UIDialogWnd.h"
 
 class CUIDragItem;
