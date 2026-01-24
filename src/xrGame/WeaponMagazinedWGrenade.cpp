@@ -60,7 +60,7 @@ void CWeaponMagazinedWGrenade::Load(LPCSTR section)
 	if (pSettings->line_exist(hud_sect, "gl_ammo_params_section") && pSettings->section_exist(pSettings->r_string(hud_sect, "gl_ammo_params_section")))
 	{
 		SAmmoBonesParams* bone_params = new SAmmoBonesParams(undefined_ammo_type);
-		bone_params->Load(pSettings->r_string(hud_sect, "gl_ammo_params_section"));
+		bone_params->Load(pSettings->r_string(hud_sect, "gl_ammo_params_section"), 1);
 		m_ammo_bones_gl.push_back(bone_params);
 	}
 	else for (int i = 0; i < m_ammoTypes2.size(); i++)
@@ -70,7 +70,7 @@ void CWeaponMagazinedWGrenade::Load(LPCSTR section)
 		if (pSettings->line_exist(hud_sect, *params_section))
 		{
 			SAmmoBonesParams* bone_params = new SAmmoBonesParams(i);
-			bone_params->Load(pSettings->r_string(hud_sect, *params_section));
+			bone_params->Load(pSettings->r_string(hud_sect, *params_section), 1);
 			m_ammo_bones_gl.push_back(bone_params);
 		}
 	}
@@ -1164,7 +1164,7 @@ bool CWeaponMagazinedWGrenade::install_upgrade_impl(LPCSTR section, bool test)
 		{
 			if (bone_param->AmmoType == undefined_ammo_type)
 			{
-				bone_param->Load(pSettings->r_string(hud_sect, "gl_ammo_params_section"));
+				bone_param->Load(pSettings->r_string(hud_sect, "gl_ammo_params_section"), 1);
 			}
 		}
 	}
@@ -1178,7 +1178,7 @@ bool CWeaponMagazinedWGrenade::install_upgrade_impl(LPCSTR section, bool test)
 			{
 				if (bone_param->AmmoType == i)
 				{
-					bone_param->Load(pSettings->r_string(hud_sect, *params_section));
+					bone_param->Load(pSettings->r_string(hud_sect, *params_section), 1);
 				}
 			}
 		}
