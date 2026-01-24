@@ -1,15 +1,15 @@
 #include "stdafx.h"
 #include "UI3dStatic.h"
-#include "gameobject.h"
-#include "HUDManager.h"
+#include "../Include/xrRender/RenderVisual.h"
 
 #include "../xrEngine/device.h"
+#include "../xrEngine/vis_common.h"
+#include "../xrEngine/Render.h"
 #include "../../Include/xrRender/RenderVisual.h"
 #include "../../Include/xrRender/KinematicsAnimated.h"
 #include "../../Include/xrRender/Kinematics.h"
 #include "../xrEngine/xr_ioc_cmd.h"
 #include "../xrUI/UICursor.h"
-#include "Level.h"
 
 CUI3dStatic::CUI3dStatic()
 {
