@@ -15,6 +15,7 @@ if(NOT IXRAY_COMPRESSOR_ONLY)
     add_subdirectory("xrScripts")
     add_subdirectory("xrUI")
     add_subdirectory("xrRHI")
+    add_subdirectory("xrBinder_Lua")
 endif()
 
 if(NOT IXRAY_COMPRESSOR_ONLY)

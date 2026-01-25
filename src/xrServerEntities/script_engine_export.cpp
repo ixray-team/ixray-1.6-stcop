@@ -122,8 +122,9 @@ void export_classes	(lua_State *L)
 #ifdef XRSE_FACTORY_EXPORTS
 	CScriptPropertiesListHelper::script_register(L);
 #else
-	
+#ifndef IXRAY_NO_LUA
 	CScriptActionBase::script_register(L);
+#endif
 	CScriptActionPlanner::script_register(L);
 	CScriptActionPlannerAction::script_register(L);
 	CScriptGameObject::script_register(L);

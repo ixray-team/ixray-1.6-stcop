@@ -79,7 +79,9 @@ public:
 	virtual	void				save				(NET_Packet &packet) {}
 	virtual	void				load				(IReader &packet) {}
 
+#ifndef IXRAY_NO_LUA
 	DECLARE_SCRIPT_REGISTER_FUNCTION
+#endif
 };
 typedef CActionBase<CScriptGameObject> CScriptActionBase;
 
