@@ -84,11 +84,11 @@ void main(PSInputFullscreen I, out float4 Point : SV_Target0, out float4 Final :
 #ifdef USE_OFFSCREEN_REFLECTIONS
 		float4 VSLR = FastViewReflections(StartPoint, Reflection);
 		Point.xyz = lerp(Point.xyz, VSLR.xyz, VSLR.w);
-#endif
 	} 
 	else
 	{
 		Point.xyz = Reflection.xyz * s_env.SampleLevel(smp_linear, Point.xyz, 0.0f).w;
+#endif
 	}
 	
 	float4 SSLR = FastViewReflectionsSSR(StartPoint, Reflection, !isNotHUD);
@@ -123,6 +123,7 @@ void main(PSInputFullscreen I, out float4 Point : SV_Target0, out float4 Final :
 	Hemi.w = saturate(Hemi.w * fog_params.w + fog_params.x);
 	
 	Final.xyz = lerp(Final.xyz, Hemi.xyz, Hemi.w);
+	Point.xyz = length(Point.xyz - StartPoint.xyz) * Reflection.xyz + ReflectPoint;
 	
 	Point.w = rcp(max(0.000001f, H.w));
 	Final.xyz *= rcp(1.0f + Final.xyz);
