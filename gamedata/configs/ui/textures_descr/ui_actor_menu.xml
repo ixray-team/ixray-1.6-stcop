@@ -56,4 +56,6 @@
 		<texture id="ui_inGame2_artefakt_highlighter" x="410" y="614" width="52" height="52" />
 
    </file>
+	<file name="ui\ui_ui_inv_atribute">
+	</file>
 </w>
