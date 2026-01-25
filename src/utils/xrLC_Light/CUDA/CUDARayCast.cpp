@@ -4,8 +4,10 @@
 #include "CUDAGeometryBuilder.h"
 #include "../xrLC_GlobalData.h"
 #include <xrDeflector.h>
-#include "Vector3HW.h"
 #include <optix_function_table_definition.h>
+
+// FX: Для данных о CUDA типах
+#include "Vector3HW.cuh"
 
 // Пример использования:
 OptixContext optixContext;
