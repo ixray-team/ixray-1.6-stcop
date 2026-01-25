@@ -406,20 +406,23 @@ constexpr int graph_point_tvertices_max = std::size(graph_point_tindices) * 3;
 
 ICF void RenderSkeletonFlags(Flags32& flags, bool hud_mode)
 {
-	ImGui::CheckboxFlags("Draw joints", &flags.flags, LevelInspector::ESKELETON_INFO::ESI_BONES);
-	ImGui::CheckboxFlags("Draw joints info", &flags.flags, LevelInspector::ESKELETON_INFO::ESI_BONES_INFO);
-	ImGui::CheckboxFlags("Draw links", &flags.flags, LevelInspector::ESKELETON_INFO::ESI_BONES_LINKS);
+	ImGui::CheckboxFlags(hud_mode ? "Draw bones" : "Draw bones ", &flags.flags, LevelInspector::ESKELETON_INFO::ESI_BONES);
+	ImGui::CheckboxFlags(hud_mode ? "Draw bones info" : "Draw bones info ", &flags.flags, LevelInspector::ESKELETON_INFO::ESI_BONES_INFO);
+	ImGui::CheckboxFlags(hud_mode ? "Draw bones shapes" : "Draw bones shapes ", &flags.flags, LevelInspector::ESKELETON_INFO::ESI_BONES_SHAPES);
+	ImGui::CheckboxFlags(hud_mode ? "Draw bones links" : "Draw bones links ", &flags.flags, LevelInspector::ESKELETON_INFO::ESI_BONES_LINKS);
 
 	if (hud_mode)
 		ImGui::CheckboxFlags("Draw fire&shell points", &flags.flags, LevelInspector::ESKELETON_INFO::ESI_FIRE_POINTS);
 	else
 	{
 		ImGui::CheckboxFlags("Draw hit boxes", &flags.flags, LevelInspector::ESKELETON_INFO::ESI_HIT_SHAPES);
-		ImGui::CheckboxFlags("Draw PH boxes", &flags.flags, LevelInspector::ESKELETON_INFO::ESI_PH_BBOX);
+		ImGui::CheckboxFlags("Draw PH box", &flags.flags, LevelInspector::ESKELETON_INFO::ESI_PH_BBOX);
+		ImGui::CheckboxFlags("Draw BSphere", &flags.flags, LevelInspector::ESKELETON_INFO::ESI_MAIN_SPHERE);
+		ImGui::CheckboxFlags("Draw BRSphere", &flags.flags, LevelInspector::ESKELETON_INFO::ESI_MAIN_RSPHERE);
 	}
 
-	ImGui::CheckboxFlags("Draw bounding boxes", &flags.flags, LevelInspector::ESKELETON_INFO::ESI_BBOXES);
-	ImGui::CheckboxFlags("Draw main bounding boxes", &flags.flags, LevelInspector::ESKELETON_INFO::ESI_MAIN_BBOX);
+	ImGui::CheckboxFlags(hud_mode ? "Draw bounding boxes" : "Draw bounding boxes ", &flags.flags, LevelInspector::ESKELETON_INFO::ESI_BBOXES);
+	ImGui::CheckboxFlags(hud_mode ? "Draw main bounding boxes" : "Draw main bounding boxes ", &flags.flags, LevelInspector::ESKELETON_INFO::ESI_MAIN_BBOX);
 	if (!hud_mode)
 		ImGui::CheckboxFlags("For Actor", &flags.flags, LevelInspector::ESKELETON_INFO::ESI_ACTOR);
 }
@@ -2107,7 +2110,7 @@ void LevelInspector::DrawSkeleton(IKinematics* pKinematics, Fmatrix& xform, CGam
 			bone_xform = pKinematics->LL_GetTransform(bone.second);
 			CBoneData& data = pKinematics->LL_GetData(bone.second);
 			SBoneShape shape = data.shape;
-			if (m_skeleton_flags.test(ESKELETON_INFO::ESI_HIT_SHAPES) && pKinematics->LL_GetBoneVisible(bone.second))
+			if (m_skeleton_flags.test(ESKELETON_INFO::ESI_BONES_SHAPES) && pKinematics->LL_GetBoneVisible(bone.second))
 			{
 				bone_xform.mulA_43(xform);
 				switch (shape.type)
@@ -2231,6 +2234,83 @@ void LevelInspector::DrawSkeleton(IKinematics* pKinematics, Fmatrix& xform, CGam
 			Fvector C = obb.m_translate;
 			C.y += obb.m_rotate.j.magnitude() * 0.5f;
 			DrawObjectInfo(GO, C, { 0.f, 0.f });
+		}
+	}
+
+	if (GO)
+	{
+		if(m_skeleton_flags.test(ESKELETON_INFO::ESI_HIT_SHAPES))
+		{
+			if (CCF_Skeleton* Skeleton = GO->CFORM() ? GO->CFORM()->cast_cff_skeleton() : nullptr)
+			{
+				const CCF_Skeleton::ElementVec& Elements = Skeleton->_GetElements();
+				for (const CCF_Skeleton::SElement& elem : Elements)
+				{
+					if (!elem.valid())
+						continue;
+					switch (elem.type)
+					{
+					case SBoneShape::stBox:
+					{
+						Fmatrix M;
+						M.invert(elem.b_IM);
+						Fobb obb;
+						obb.m_halfsize = elem.b_hsize;
+						obb.xform_set(M);
+						append_obb(obb);
+					}break;
+					case SBoneShape::stCylinder:
+					{
+						append_cylinder(elem.c_cylinder, color_rgba(0, 127, 255, 255), color_rgba(0, 127, 255, 20));
+					}break;
+					case SBoneShape::stSphere:
+					{
+						append_sphere(elem.s_sphere, color_rgba(0, 255, 0, 255), color_rgba(0, 255, 0, 20));
+					}break;
+					};
+				};
+			}
+		}
+
+		if (m_skeleton_flags.test(ESKELETON_INFO::ESI_MAIN_SPHERE))
+		{
+			Fsphere sphere;
+			Fvector C;
+			GO->Center(C);
+			sphere.set(C, GO->Radius());
+			append_sphere(sphere, color_rgba(0, 255, 0, 100), color_rgba(0, 255, 0, 10));
+		}
+
+		if (m_skeleton_flags.test(ESKELETON_INFO::ESI_MAIN_RSPHERE))
+		{
+			Fsphere sphere;
+			Fvector C = GO->Visual()->getVisData().sphere.P;
+			GO->XFORM().transform_tiny(C);
+			sphere.set(C, GO->Visual()->getVisData().sphere.R);
+			append_sphere(sphere, color_rgba(0, 255, 0, 100), color_rgba(0, 255, 0, 10));
+		}
+
+		if (m_skeleton_flags.test(ESKELETON_INFO::ESI_PH_BBOX) &&
+			(GO->SpatialComponent->spatial.type & ESPATIAL_TYPE::PHYSIC_MOVEMENT) != ESPATIAL_TYPE::NONE &&
+			(GO->SpatialComponent->spatial.type & (ESPATIAL_TYPE::STALKER_ALIVE | ESPATIAL_TYPE::ACTOR_ALIVE | ESPATIAL_TYPE::MONSTER_ALIVE)) != ESPATIAL_TYPE::NONE)
+		{
+			if (GO->cast_entity_alive() &&
+				GO->cast_entity_alive()->character_physics_support() &&
+				GO->cast_entity_alive()->character_physics_support()->movement()->CharacterExist())
+			{
+				const Fmatrix& trans = GO->XFORM();
+				Fvector box_c, box_hs;
+				GO->cast_entity_alive()->character_physics_support()->movement()->Box().get_CD(box_c, box_hs);
+				//Fobb obb;
+				//obb.m_rotate.set(trans);
+				//trans.transform_tiny(obb.m_translate, box_c);
+				//obb.m_halfsize = box_hs;
+				//append_obb(obb, color_rgba(0, 255, 0, 100));
+				Fbox aabb;
+				trans.transform_tiny(box_c);
+				aabb.setb(box_c, box_hs);
+				append_aabb(aabb, color_rgba(0, 255, 0, 100), color_rgba(0, 255, 0, 10));
+			}
 		}
 	}
 }
@@ -2834,91 +2914,67 @@ void LevelInspector::DrawObjects()
 		//		}
 		//	}
 		//}
-
-		if (m_skeleton_flags.test(ESKELETON_INFO::ESI_PH_BBOX) && (((spatial->spatial.type & ESPATIAL_TYPE::STALKER_ALIVE) != ESPATIAL_TYPE::NONE ||
-			(spatial->spatial.type & ESPATIAL_TYPE::ACTOR_ALIVE) != ESPATIAL_TYPE::NONE ||
-			(spatial->spatial.type & ESPATIAL_TYPE::MONSTER_ALIVE) != ESPATIAL_TYPE::NONE) &&
-			(spatial->spatial.type & ESPATIAL_TYPE::PHYSIC_MOVEMENT) != ESPATIAL_TYPE::NONE))
-		{
-			if (GO->cast_entity_alive() &&
-				GO->cast_entity_alive()->character_physics_support() &&
-				GO->cast_entity_alive()->character_physics_support()->movement()->CharacterExist())
-			{
-				const Fmatrix& trans = GO->XFORM();
-				Fvector box_c, box_hs;
-				GO->cast_entity_alive()->character_physics_support()->movement()->Box().get_CD(box_c, box_hs);
-				//Fobb obb;
-				//obb.m_rotate.set(trans);
-				//trans.transform_tiny(obb.m_translate, box_c);
-				//obb.m_halfsize = box_hs;
-				//append_obb(obb, color_rgba(0, 255, 0, 100));
-				Fbox aabb;
-				trans.transform_tiny(box_c);
-				aabb.setb(box_c, box_hs);
-				append_aabb(aabb, color_rgba(0, 255, 0, 100));
-			}
-		}
-
 		
 		if ((spatial->spatial.type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE && (spatial->spatial.type & zone_flags) != ESPATIAL_TYPE::NONE)
 		{
-			CCF_Shape* ccfshape = (CCF_Shape*)(GO->CFORM());
-
-			u32 line_color = pSettings->line_exist(GO->cNameSect_str(), "shape_edge_color") ? pSettings->r_color(GO->cNameSect_str(), "shape_edge_color") : color_rgba(32, 32, 32, 255);
-			u32 tri_color = pSettings->line_exist(GO->cNameSect_str(), "shape_transp_color") ? pSettings->r_color(GO->cNameSect_str(), "shape_transp_color") : color_rgba(128, 128, 128, 60);
-			auto& shapes = ccfshape->shapes;
-			
-			for (int i = 0; i < shapes.size(); ++i)
+			if(CCF_Shape* ccfshape = GO->CFORM() ? GO->CFORM()->cast_shape() : nullptr)
 			{
-				u32 tritmp_color = tri_color;
-				if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_SELECTION) && RQ.O == GO)
-				{
-					if(RQ.element == i)
-					{
-						Fcolor t_clr;
-						t_clr.set(tri_color);
-						t_clr.mul_rgba(1.5f);
-						tritmp_color = t_clr.get();
-					}
-					else
-					{
-						Fcolor t_clr;
-						t_clr.set(tri_color);
-						t_clr.mul_rgba(1.2f);
-						tritmp_color = t_clr.get();
-					}
-				}
+				u32 line_color = pSettings->line_exist(GO->cNameSect_str(), "shape_edge_color") ? pSettings->r_color(GO->cNameSect_str(), "shape_edge_color") : color_rgba(32, 32, 32, 255);
+				u32 tri_color = pSettings->line_exist(GO->cNameSect_str(), "shape_transp_color") ? pSettings->r_color(GO->cNameSect_str(), "shape_transp_color") : color_rgba(128, 128, 128, 60);
+				auto& shapes = ccfshape->shapes;
 
-				CCF_Shape::shape_def& shape = shapes[i];
-				switch (shape.type)
+				for (int i = 0; i < shapes.size(); ++i)
 				{
-				case 0:
-				{
-					Fsphere sphere = shape.data.sphere;
-					GO->XFORM().transform_tiny(sphere.P);
-					append_sphere(sphere, line_color, tritmp_color);
-					if (visible_currents && m_selection_flags.test(ESELECTION_FLAGS::ESLF_Z))
+					u32 tritmp_color = tri_color;
+					if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_SELECTION) && RQ.O == GO)
 					{
-						Fvector C = sphere.P;
-						C.y += sphere.R;
-						DrawObjectInfo(GO, C, { 0.f, 0.f });
+						if (RQ.element == i)
+						{
+							Fcolor t_clr;
+							t_clr.set(tri_color);
+							t_clr.mul_rgba(1.5f);
+							tritmp_color = t_clr.get();
+						}
+						else
+						{
+							Fcolor t_clr;
+							t_clr.set(tri_color);
+							t_clr.mul_rgba(1.2f);
+							tritmp_color = t_clr.get();
+						}
 					}
-				}break;
-				case 1:
-				{
-					Fmatrix matrix = shape.data.box;
-					matrix.mulA_43(GO->XFORM());
-					Fobb obb; obb.xform_set(matrix);
-					obb.m_halfsize.set(0.5f, 0.5f, 0.5f);
-					append_obb(obb, line_color, tritmp_color);
-					if (visible_currents && m_selection_flags.test(ESELECTION_FLAGS::ESLF_Z))
+
+					CCF_Shape::shape_def& shape = shapes[i];
+					switch (shape.type)
 					{
-						Fvector C = obb.m_translate;
-						C.y += obb.m_rotate.j.magnitude() * 0.5f;
-						DrawObjectInfo(GO, C, { 0.f, 0.f });
+					case 0:
+					{
+						Fsphere sphere = shape.data.sphere;
+						GO->XFORM().transform_tiny(sphere.P);
+						append_sphere(sphere, line_color, tritmp_color);
+						if (visible_currents && m_selection_flags.test(ESELECTION_FLAGS::ESLF_Z))
+						{
+							Fvector C = sphere.P;
+							C.y += sphere.R;
+							DrawObjectInfo(GO, C, { 0.f, 0.f });
+						}
+					}break;
+					case 1:
+					{
+						Fmatrix matrix = shape.data.box;
+						matrix.mulA_43(GO->XFORM());
+						Fobb obb; obb.xform_set(matrix);
+						obb.m_halfsize.set(0.5f, 0.5f, 0.5f);
+						append_obb(obb, line_color, tritmp_color);
+						if (visible_currents && m_selection_flags.test(ESELECTION_FLAGS::ESLF_Z))
+						{
+							Fvector C = obb.m_translate;
+							C.y += obb.m_rotate.j.magnitude() * 0.5f;
+							DrawObjectInfo(GO, C, { 0.f, 0.f });
+						}
+					}break;
+					default: NODEFAULT;
 					}
-				}break;
-				default: NODEFAULT;
 				}
 			}
 		}
