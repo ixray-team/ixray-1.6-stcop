@@ -1361,3 +1361,22 @@ Section FilterSectionsWithSearch(const Section& sections, const char* searchBuff
 
 	return filtered;
 }
+
+void SpawnManager_OnPressed(int key)
+{
+	switch (key)
+	{
+	case SDL_Scancode::SDL_SCANCODE_ESCAPE:
+	{
+		if (Engine.External.EditorStates[u8(EditorUI::Game_SpawnManager)])
+		{
+			Engine.External.EditorStates[u8(EditorUI::Game_SpawnManager)] = false;
+		}
+		break;
+	}
+	}
+}
+
+void SpawnManager_OnReleased(int key)
+{
+}
