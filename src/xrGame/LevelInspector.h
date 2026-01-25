@@ -4,76 +4,79 @@ struct LevelInspector final
 {
 	enum ESCENE_FLAGS
 	{
-		ESF_NONE = 0,
-		ESF_DRAW = 1,
-		ESF_DRAW_L_GRID = 2,
-		ESF_DRAW_G_GRID = 4,
-		ESF_DRAW_W_GRID = 8,
-		ESF_DRAW_OBJECTS = 16,
-		ESF_DRAW_ZONES = 32,
-		ESF_DRAW_AI_PATHS = 64,
-		ESF_DRAW_SELECTION = 128,
-		ESF_DRAW_HUD = 256,
-		ESF_DRAW_ALL_SPATIALS = 512,
+		ESF_NONE				= 0U,
+		ESF_DRAW				= bit_lshift(0U),
+		ESF_DRAW_L_GRID			= bit_lshift(1U),
+		ESF_DRAW_G_GRID			= bit_lshift(2U),
+		ESF_DRAW_W_GRID			= bit_lshift(3U),
+		ESF_DRAW_OBJECTS		= bit_lshift(4U),
+		ESF_DRAW_ZONES			= bit_lshift(5U),
+		ESF_DRAW_AI_PATHS		= bit_lshift(6U),
+		ESF_DRAW_SELECTION		= bit_lshift(7U),
+		ESF_DRAW_HUD			= bit_lshift(8U),
+		ESF_DRAW_ALL_SPATIALS	= bit_lshift(9U),
 	};
 	
 	enum ESELECTION_FLAGS
 	{
-		ESLF_NONE = 0,
-		ESLF_O = 1,
-		ESLF_Z = 2,
-		ESLF_WP = 4,
-		ESLF_GP = 8,
-		ESLF_LG = 16,
+		ESLF_NONE	= 0U,
+		ESLF_O		= bit_lshift(0U),
+		ESLF_Z		= bit_lshift(1U),
+		ESLF_WP		= bit_lshift(2U),
+		ESLF_GP		= bit_lshift(3U),
+		ESLF_LG		= bit_lshift(4U),
 	};
 
 
 	enum EOBJECT_INFO
 	{
-		EOI_NONE = 0,
-		EOI_SNAME = 1,
-		EOI_LCNAME = 2,
-		EOI_LNAME = 4,
-		EOI_VNAME = 8,
-		EOI_INI = 16,
-		EOI_POSITION = 32,
-		EOI_GVERTEX_LVERTEX = 64,
-		EOI_ACTOR = 128,
+		EOI_NONE			= 0U,
+		EOI_SNAME			= bit_lshift(0U),
+		EOI_LCNAME			= bit_lshift(1U),
+		EOI_LNAME			= bit_lshift(2U),
+		EOI_VNAME			= bit_lshift(3U),
+		EOI_INI				= bit_lshift(4U),
+		EOI_POSITION		= bit_lshift(5U),
+		EOI_GVERTEX_LVERTEX = bit_lshift(6U),
+		EOI_ACTOR			= bit_lshift(7U),
 	};
 
 	enum ESKELETON_INFO
 	{
-		ESI_NONE = 0,
-		ESI_BONES = 1,
-		ESI_BONES_INFO = 2,
-		ESI_BONES_LINKS = 4,
-		ESI_HIT_SHAPES = 8,
-		ESI_BBOXES = 16,
-		ESI_FIRE_POINTS = 32,
-		ESI_MAIN_BBOX = 64,
-		ESI_ACTOR = 128,
-		ESI_PH_BBOX = 256,
+		ESI_NONE			= 0U,
+		ESI_BONES			= bit_lshift(0U),
+		ESI_BONES_INFO		= bit_lshift(1U),
+		ESI_BONES_LINKS		= bit_lshift(2U),
+		ESI_BONES_SHAPES	= bit_lshift(3U),
+		ESI_HIT_SHAPES		= bit_lshift(4U),
+		ESI_BBOXES			= bit_lshift(5U),
+		ESI_FIRE_POINTS		= bit_lshift(6U),
+		ESI_MAIN_BBOX		= bit_lshift(7U),
+		ESI_MAIN_SPHERE		= bit_lshift(8U),
+		ESI_MAIN_RSPHERE	= bit_lshift(9U),
+		ESI_ACTOR			= bit_lshift(10U),
+		ESI_PH_BBOX			= bit_lshift(11U),
 	};
 
 	enum EZONE_INFO
 	{
-		EZI_NONE = 0,
-		EZI_RESTR = 1,
-		EZI_SMART_TERRAIN = 2,
-		EZI_LEVEL_CHANGER = 4,
-		EZI_SMART_COVER = 8,
-		EZI_CAMP_ZONE = 16,
-		EZI_ANOMALY_ZONE = 32,
-		EZI_ANOMAL_ZONE_LOGIC = 64,
-		EZI_SIM_FACTION = 128,
+		EZI_NONE				= 0U,
+		EZI_RESTR				= bit_lshift(0U),
+		EZI_SMART_TERRAIN		= bit_lshift(1U),
+		EZI_LEVEL_CHANGER		= bit_lshift(2U),
+		EZI_SMART_COVER			= bit_lshift(3U),
+		EZI_CAMP_ZONE			= bit_lshift(4U),
+		EZI_ANOMALY_ZONE		= bit_lshift(5U),
+		EZI_ANOMAL_ZONE_LOGIC	= bit_lshift(6U),
+		EZI_SIM_FACTION			= bit_lshift(7U),
 	};
 
 	enum EWAYPOINT_INFO
 	{
-		EWI_NONE = 0,
-		EWI_PREFIX = 1,
-		EWI_LICATION_ID = 2,
-		EWI_ALL = 4,
+		EWI_NONE		= 0U,
+		EWI_PREFIX		= bit_lshift(0U),
+		EWI_LICATION_ID = bit_lshift(1U),
+		EWI_ALL			= bit_lshift(2U),
 	};
 
 	struct lindex { u8 i1, i2; };
