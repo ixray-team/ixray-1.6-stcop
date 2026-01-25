@@ -4,6 +4,7 @@
 #include "alife_space.h"
 #include "gametype_chooser.h"
 #include "player_account.h"
+#include "../xrScripts/script_export_space.h"
 
 #pragma pack(push,1)
 
