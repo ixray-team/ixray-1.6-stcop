@@ -685,17 +685,6 @@ if(!g_dedicated_server)
 	}
 }
 
-void CActor::legs_shift_callback(CBoneInstance* B) 
-{
-	if(Level().CurrentViewEntity() == this && cam_active == eacFirstEye) 
-	{
-		if(g_player_hud && g_player_hud->m_legs_model)
-		{
-			B->mTransform.c.z += m_fLegs_shift;
-		}
-	}
-};
-
 void CActor::PHHit(SHit &H)
 {
 	m_pPhysics_support->in_Hit( H, false );
@@ -2747,18 +2736,6 @@ float CActor::Radius()const
 	if (W) R	+= W->Radius();
 	//	if (HUDview()) R *= 1.f/psHUD_FOV;
 	return R;
-}
-
-void CActor::Center(Fvector& C)	const
-{
-	VERIFY2(renderable.visual, *cName());
-	if (cam_active == eacFirstEye)
-	{
-		C = Position();
-		C = { C.x, C.y+Radius(), C.z };
-	}
-	else
-		inherited::Center(C);
 }
 
 bool		CActor::use_bolts				() const

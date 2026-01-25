@@ -850,6 +850,21 @@ BOOL	CActor::net_Relevant		()				// relevant for export to server
 	};
 };
 
+//костыли для ног
+void CActor::Center(Fvector& C)	const
+{
+	VERIFY2(renderable.visual, *cName());
+	if (cam_active == eacFirstEye && g_player_hud && g_player_hud->m_legs_model && Level().CurrentViewEntity() == this)
+	{
+		C = Visual()->getVisData().sphere.P;
+		C.z -= m_fLegs_shift;
+		XFORM().transform_tiny(C);
+		return;
+	}
+
+	inherited::Center(C);
+}
+
 void	CActor::SetCallbacks()
 {
 	IKinematics* V		= Visual()->dcast_PKinematics();
@@ -863,8 +878,26 @@ void	CActor::SetCallbacks()
 	V->LL_GetBoneInstance(u16(shoulder_bone)).set_callback	(bctCustom,ShoulderCallback,this);
 	V->LL_GetBoneInstance(u16(head_bone)).set_callback		(bctCustom,HeadCallback,this);
 
+	//костыли для ног
 	V->LL_GetBoneInstance(V->LL_GetBoneRoot()).set_callback(bctCustom,
-		[](CBoneInstance* B) {static_cast<CActor*>(B->callback_param())->legs_shift_callback(B); }, this);
+		[](CBoneInstance* B)
+		{
+			CActor* actor = static_cast<CActor*>(B->callback_param());
+			if (actor->active_cam() == eacFirstEye && !actor->Holder() && g_player_hud && g_player_hud->m_legs_model && Level().CurrentViewEntity() == actor)
+				B->mTransform.c.z += actor->m_fLegs_shift;
+
+		}, this);
+
+	if (CCF_Skeleton* skeleton = smart_cast<CCF_Skeleton*>(CFORM()))
+	{
+		skeleton->CCF_SetCallback(
+			[](Fmatrix& bone_lxform, void* param)
+			{
+				CActor* actor = static_cast<CActor*>(param);
+				if (actor->active_cam() == eacFirstEye && !actor->Holder() && g_player_hud && g_player_hud->m_legs_model && Level().CurrentViewEntity() == actor)
+					bone_lxform.c.z -= actor->m_fLegs_shift;
+			}, this);
+	}
 }
 
 void CActor::ResetCallbacks()
@@ -880,7 +913,11 @@ void CActor::ResetCallbacks()
 	V->LL_GetBoneInstance(u16(spine1_bone)).reset_callback();
 	V->LL_GetBoneInstance(u16(shoulder_bone)).reset_callback();
 	V->LL_GetBoneInstance(u16(head_bone)).reset_callback();
+
+	//костыли для ног
 	V->LL_GetBoneInstance(V->LL_GetBoneRoot()).reset_callback();
+	if (CCF_Skeleton* skeleton = smart_cast<CCF_Skeleton*>(CFORM()))
+		skeleton->CCF_SetCallback(nullptr, nullptr);
 }
 
 void CActor::OnChangeVisual()

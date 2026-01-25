@@ -80,6 +80,9 @@ enum /*ENGINE_API*/	ECollisionFormType{
 	cftObject,
 	cftShape
 };
+class ENGINE_API CCF_Skeleton;
+class ENGINE_API CCF_EventBox;
+class ENGINE_API CCF_Shape;
 
 class ENGINE_API	ICollisionForm
 {
@@ -104,6 +107,10 @@ public:
 	float			getRadius		( )	const				{ return bv_sphere.R;	}
 	const Fsphere&	getSphere		( )	const				{ return bv_sphere;		}
 	const ECollisionFormType Type	( ) const				{ return m_type;		}
+
+	virtual	CCF_Skeleton* cast_cff_skeleton() { return nullptr; };
+	virtual	CCF_EventBox* cast_event_box() { return nullptr; };
+	virtual	CCF_Shape* cast_shape() { return nullptr; };
 };
 
 class ENGINE_API	CCF_Skeleton : public ICollisionForm
@@ -138,6 +145,9 @@ private:
 	VisMask				vis_mask;
 	ElementVec			elements;
 
+	typedef void(*BonelxformCallback)(Fmatrix& bone_lxform, void* param);
+	BonelxformCallback CCF_bone_callback = nullptr;
+	void* CCF_bone_callback_param = nullptr;
 	u32					dwFrame;		// The model itself
 	u32					dwFrameTL;		// Top level
 	xrSRWLock			build_lock;
@@ -145,13 +155,19 @@ private:
 	void				BuildTopLevel	();
 public:
 						CCF_Skeleton	( CObject* _owner );
-
+	ICF void			CCF_SetCallback(BonelxformCallback callback, void* param)
+	{
+		CCF_bone_callback = callback;
+		CCF_bone_callback_param = param;
+	};
 	virtual BOOL		_RayQuery		( const collide::ray_defs& Q, collide::rq_results& R);
 	bool				_ElementCenter	(u16 elem_id, Fvector& e_center);
 	const ElementVec&	_GetElements	() {return elements;}
 #ifdef DEBUG
 	void				_dbg_refresh	(){BuildTopLevel();BuildState();}
 #endif
+
+	virtual	CCF_Skeleton* cast_cff_skeleton() { return this; };
 };
 
 class ENGINE_API	CCF_EventBox : public ICollisionForm
@@ -165,6 +181,8 @@ public:
 	//virtual void	_BoxQuery		( const Fbox& B, const Fmatrix& M, u32 flags);
 
 	BOOL			Contact			( CObject* O );
+
+	virtual	CCF_EventBox* cast_event_box() { return this; };
 };
 
 class ENGINE_API	CCF_Shape	: public ICollisionForm
@@ -200,6 +218,8 @@ public:
 	void			ComputeBounds	( );
 	BOOL			Contact			( CObject* O	);
 	xr_vector<shape_def>& Shapes	(){return shapes;}
+
+	virtual	CCF_Shape* cast_shape() { return this; };
 };
 
 #endif //__XR_COLLIDE_FORM_H__

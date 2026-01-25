@@ -996,6 +996,21 @@ Fvector CEntityAlive::get_last_local_point_on_mesh	( Fvector const& last_point, 
 		return							inherited::get_last_local_point_on_mesh( last_point, bone_id );
 
 	Fvector result;
+	//костыли для ног
+	if (Level().CurrentViewEntity() == this)
+	{
+		if (CActor* actor = smart_cast<CActor*>(this))
+		{
+			if (actor->active_cam() == eacFirstEye && !actor->Holder() && g_player_hud && g_player_hud->m_legs_model)
+			{
+				PKinematics(Visual())->LL_GetBoneLocalPosition(bone_id, result);
+				result.z -= actor->m_fLegs_shift;
+				actor->XFORM().transform_tiny(result);
+				return result;
+			}
+		}
+	}
+
 	PKinematics(Visual())->LL_GetBoneWorldPosition(bone_id, XFORM(), result);
 	return result;
 }

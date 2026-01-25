@@ -142,6 +142,8 @@ void CCF_Skeleton::BuildState()
 		Fmatrix Mbone;
 		K->LL_GetBoneLocalTransform(I->elem_id, Mbone);
 		VERIFY2( DET(Mbone)>EPS, (make_string<const char*>("0 scale bone matrix, %d \n", I->elem_id ) + dbg_object_full_dump_string( owner ) ).c_str()  );
+		if (CCF_bone_callback && owner == g_pGameLevel->CurrentViewEntity())
+			CCF_bone_callback(Mbone, CCF_bone_callback_param);
 
 		switch (I->type){
 			case SBoneShape::stBox:{
