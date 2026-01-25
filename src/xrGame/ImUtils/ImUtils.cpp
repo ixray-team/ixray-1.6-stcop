@@ -508,6 +508,11 @@ void AllEditors_OnPressed(int key)
 	{
 		TextureEditor_OnPressed(key);
 	}
+
+	if (Engine.External.EditorStates[u8(EditorUI::Game_SpawnManager)])
+	{
+		SpawnManager_OnPressed(key);
+	}
 }
 
 void AllEditors_OnReleased(int key)
@@ -518,6 +523,11 @@ void AllEditors_OnReleased(int key)
 	if (Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_TextureEditor)])
 	{
 		TextureEditor_OnReleased(key);
+	}
+
+	if (Engine.External.EditorStates[u8(EditorUI::Game_SpawnManager)])
+	{
+		SpawnManager_OnReleased(key);
 	}
 }
 
