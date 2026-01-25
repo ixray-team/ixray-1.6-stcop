@@ -1,5 +1,6 @@
 #include "common.hlsli"
 #include "sload.hlsli"
+#include "shadow.hlsli"
 
 #ifndef USE_LENGTH_BUFFER
 	#define OutStructure IXrayGbufferPack
@@ -117,8 +118,7 @@ void main(p_bumped_new I, out OutStructure O)
 	#endif
 		M.Normal.z *= 0.5f;
 		M.Color.xyz *= Detail * 2.0f;
-#endif	
-
+#endif
 
     M.Normal = mul(float3x3(I.M1, I.M2, I.M3), M.Normal);
     M.Normal = normalize(M.Normal);
@@ -159,7 +159,43 @@ void main(p_bumped_new I, out OutStructure O)
 	float3 F0 = 0.04f;
 #endif
 
-    float3 Light = M.Sun * DirectLight(LightColor, mul((float3x3)m_V, L_sun_dir_w.xyz), M.Normal, View, M.Color.xyz, M.Metalness, M.Roughness, F0);
+	float3 LightDir = mul((float3x3)m_V, L_sun_dir_w.xyz);
+
+#ifndef USE_R2_STATIC_SUN
+	float4 Point = float4(M.Point.xyz, 1.f);
+    Point.xyz += M.Normal * 0.025f;
+	
+	Point.xyz = mul(m_invV, Point).xyz;
+
+	int cascade_index;
+	float3 smap_texcoord;
+	
+	bool is_in_bounds = calc_cascades(Point.xyz, m_shadow_sun, cascade_index, smap_texcoord);
+
+	float Shadow = 1.0;
+
+	if(is_in_bounds) {
+		Shadow = pcf_3x3(s_smap_sun, smp_smap, smap_texcoord, float2(SMAP_size, 1.0 / SMAP_size), 0.0, cascade_index);
+	}
+
+	if(cascade_index >= 2)
+	{
+		float3 Factor = smoothstep(0.499f, 0.498f, abs(smap_texcoord - 0.5f));
+		float Fade = Factor.x * Factor.y * Factor.z;
+
+		float FarShadow = saturate(M.Hemi * 8.0f - 2.0f);
+		Shadow = lerp(FarShadow, Shadow, Fade);
+	
+#ifdef USE_LENGTH_BUFFER
+		float3 FlatNormal = normalize(cross(ddx(M.Point.xyz), ddy(M.Point.xyz)));
+		Shadow *= step(0.0f, dot(FlatNormal, -LightDir));
+#endif
+	}
+	
+	M.Sun = Shadow;
+#endif
+
+    float3 Light = M.Sun * DirectLight(LightColor, LightDir, M.Normal, View, M.Color.xyz, M.Metalness, M.Roughness, F0);
     float3 Ambient = PushGamma(M.AO) * AmbientLighting(View, M.Normal, M.Color.xyz, M.Metalness, M.Roughness, M.Hemi, F0);
 	
 	Light += DirectLight(float4(Lmap.xyz, 0.5f), View, M.Normal, View, M.Color.xyz, M.Metalness, M.Roughness, F0);
