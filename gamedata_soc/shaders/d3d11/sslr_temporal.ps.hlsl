@@ -139,7 +139,7 @@ float4 main(PSInputFullscreen I) : SV_Target
 	SSLR_OldSpecular = lerp(SSLR_Diffuse, SSLR_OldSpecular, GetBorderAtten(PrevSpecularUV));
 	
 	float SpecularFactor = 1.0f - HistoryClamp(SSLR_OldSpecular.xyz, SSLRMain.xyz, SSLRBoxMin.xyz, SSLRBoxMax.xyz);	
-	SSLR_OldSpecular = lerp(SSLRMain * 0.5f + SSLR_Diffuse * 0.5f, SSLR_OldSpecular, 0.98 * SpecularFactor * Fade);
+	SSLR_OldSpecular = lerp(SSLRMain, SSLR_OldSpecular, 0.98 * SpecularFactor * Fade);
 	
 	SpecularFactor = 1.0f - saturate(length(PrevDiffuseUV.xy - PrevSpecularUV.xy) * 300.0f);
 	float4 SSLR_Specular = lerp(SSLR_OldSpecular, SSLR_Diffuse, 0.95f * SpecularFactor);
