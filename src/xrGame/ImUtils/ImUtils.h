@@ -603,6 +603,9 @@ void AllEditors_OnReleased(int key);
 void TextureEditor_OnPressed(int key);
 void TextureEditor_OnReleased(int key);
 
+void SpawnManager_OnPressed(int key);
+void SpawnManager_OnReleased(int key);
+
 void RequestHandler_TextureEditor(const SRequestData& req);
 void RequestHandler_OMFEditor(const SRequestData& req);
 
