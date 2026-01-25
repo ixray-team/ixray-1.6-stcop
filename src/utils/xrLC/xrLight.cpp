@@ -38,7 +38,7 @@ void CBuild::ProcessLMAPS_CPU()
 				if (IndexTask >= lc_global_data()->g_deflectors().size()) break;
 
  				CDeflector* D = lc_global_data()->g_deflectors()[IndexTask];
- 				if (IndexTask % 8 == 0)
+ 				if (IndexTask % 512 == 0)
 					AditionalData("Deflectors: %u / %u", IndexTask, lc_global_data()->g_deflectors().size());
 
 
@@ -100,7 +100,8 @@ void	CBuild::LMaps					()
 
 					isFirst ? D->LightGPU() : D->LowerResolutionGPU();
 					
-					AditionalData("*** [LMAPS] Lmap [%u/%u] W: %u | H: %u", Index, deflectors.size(), D->layer.width, D->layer.height);
+					if (Index % 1024 == 0)
+						AditionalData("*** [LMAPS] Lmap [%u/%u] W: %u | H: %u", Index, deflectors.size(), D->layer.width, D->layer.height);
 				}
 
 				// Система тасков щас иная
