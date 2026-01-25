@@ -21,9 +21,7 @@ void hair_wave_anim(float2 tc, float indoor_factor, inout float3 pos, inout floa
     float wind_strength = env_wind.w * 0.5f + 0.15f;
 	
     float4 mask = s_hair.SampleLevel(smp_rtlinear, tc, 0);
-
-	// Это тоже можно вынести в текстуру маски, в другой канал
-    float phase = tc.y * 8.0f;
+    float phase = 8.0f;
 
     // Волновая анимация
     float2 wave1 = sin(timers.xy * 2.0f + phase) * 0.15f;
