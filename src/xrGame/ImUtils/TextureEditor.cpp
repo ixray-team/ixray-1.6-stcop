@@ -1683,8 +1683,8 @@ void TextureEditor_OnPressed(int key)
 
 			AllEditors_SendRequest(req);
 		}
+		break;
 	}
-	break;
 	}
 }
 
