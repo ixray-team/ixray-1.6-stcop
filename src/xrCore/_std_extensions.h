@@ -31,6 +31,12 @@ struct XRCORE_API xr_token2
 	int 	id;
 };
 
+template<typename T>
+consteval T bit_lshift(T n) { return T{ 1 } << n; }
+
+template<typename T>
+consteval T bit_rshift(T value, T n) { return value >> n; }
+
 // generic
 template <class T>	IC T		_sqr	(T a)		{ return a*a;		}
 
