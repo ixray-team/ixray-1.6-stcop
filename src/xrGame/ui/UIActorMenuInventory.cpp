@@ -36,6 +36,7 @@
 
 #include "../actor_defs.h"
 #include "../InventoryBox.h"
+#include "InventorySorter.h"
 
 #include "../game_sv_single.h"
 #include "ai_object_location.h"
@@ -48,6 +49,9 @@ void move_item_from_to(u16 from_id, u16 to_id, u16 what_id);
 
 void CUIActorMenu::InitInventoryMode()
 {
+	m_currentSortCategory = EInventorySortCategory::All;
+	UpdateSortButtons();
+
 	m_pInventoryBagList->Show(true);
 	m_pInventoryBeltList->Show(true);
 
@@ -484,6 +488,13 @@ void CUIActorMenu::InitCellForSlot( u16 slot_idx )
 		return;
 	}
 
+	if (slot_idx == GRENADE_SLOT && m_currMenuMode == mmInventory && m_pInventorySorter &&
+		m_currentSortCategory != EInventorySortCategory::All &&
+		m_currentSortCategory != EInventorySortCategory::Ammo)
+	{
+		return;
+	}
+
 	CUIDragDropListEx* curr_list	= GetSlotList( slot_idx );
 	CUICellItem* cell_item			= create_cell_item( item );
 	curr_list->SetItem( cell_item );
@@ -535,6 +546,19 @@ void CUIActorMenu::InitInventoryContents(CUIDragDropListEx* pBagList)
 
 	curr_list					= pBagList;
 
+	if (m_currMenuMode == mmInventory && m_pInventorySorter && m_currentSortCategory != EInventorySortCategory::All)
+	{
+		TIItemContainer filtered_list;
+		for (PIItem item : ruck_list)
+		{
+			if (m_pInventorySorter->ItemMatchesCategory(item, m_currentSortCategory))
+			{
+				filtered_list.push_back(item);
+			}
+		}
+		ruck_list = filtered_list;
+	}
+
 	itb = ruck_list.begin();
 	ite = ruck_list.end();
 	for ( ; itb != ite; ++itb )
@@ -558,6 +582,64 @@ void CUIActorMenu::InitInventoryContents(CUIDragDropListEx* pBagList)
 	}
 	if (m_pQuickSlot)
 	m_pQuickSlot->ReloadReferences(m_pActorInvOwner);
+}
+
+void CUIActorMenu::UpdateActorBagList()
+{
+	if (!m_pInventoryBagList || !m_pActorInvOwner)
+	{
+		return;
+	}
+
+	m_pInventoryBagList->ClearAll(true);
+
+	TIItemContainer ruck_list = m_pActorInvOwner->inventory().m_ruck;
+	std::sort(ruck_list.begin(), ruck_list.end(), InventoryUtilities::GreaterRoomInRuck);
+
+	if (m_pInventorySorter && m_currentSortCategory != EInventorySortCategory::All)
+	{
+		TIItemContainer filtered_list;
+		for (PIItem item : ruck_list)
+		{
+			if (m_pInventorySorter->ItemMatchesCategory(item, m_currentSortCategory))
+			{
+				filtered_list.push_back(item);
+			}
+		}
+		ruck_list = filtered_list;
+	}
+
+	for (PIItem item : ruck_list)
+	{
+		CMPPlayersBag* bag = smart_cast<CMPPlayersBag*>(&item->object());
+		if (bag)
+		{
+			continue;
+		}
+
+		CUICellItem* itm = create_cell_item(item);
+		m_pInventoryBagList->SetItem(itm);
+		if (m_currMenuMode == mmTrade && m_pPartnerInvOwner)
+		{
+			ColorizeItem(itm, !CanMoveToPartner(item));
+		}
+	}
+
+	PIItem grenade_item = m_pActorInvOwner->inventory().ItemFromSlot(GRENADE_SLOT);
+	if (grenade_item)
+	{
+		const bool allow_grenade = (m_currentSortCategory == EInventorySortCategory::All ||
+			m_currentSortCategory == EInventorySortCategory::Ammo);
+		if (allow_grenade)
+		{
+			CUICellItem* itm = create_cell_item(grenade_item);
+			m_pInventoryBagList->SetItem(itm);
+			if (m_currMenuMode == mmTrade && m_pPartnerInvOwner)
+			{
+				ColorizeItem(itm, !CanMoveToPartner(grenade_item));
+			}
+		}
+	}
 }
 
 bool CUIActorMenu::TryActiveSlot(CUICellItem* itm)
