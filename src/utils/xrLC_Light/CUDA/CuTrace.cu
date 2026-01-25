@@ -59,8 +59,17 @@ __device__ void calculate_energy(Hardware_FaceData& F, Hardware_TextureData& T, 
  	float b0			= 1.0f - hitU - hitV;
  	 
 	// interpolate UV
-	float u = F.TC0[0].x * b0 + F.TC0[1].x * hitU + F.TC0[2].x * hitV;
-	float v = F.TC0[0].y * b0 + F.TC0[1].y * hitU + F.TC0[2].y * hitV;
+	float TC0x = __half2float(F.TC0[0].x);
+	float TC0y = __half2float(F.TC0[0].y);
+ 
+	float TC1x = __half2float(F.TC0[1].x);
+	float TC1y = __half2float(F.TC0[1].y);
+
+	float TC2x = __half2float(F.TC0[2].x);
+	float TC2y = __half2float(F.TC0[2].y);
+
+	float u = TC0x * b0 + TC1x * hitU + TC2x * hitV;
+	float v = TC0y * b0 + TC1y * hitU + TC2y * hitV;
 
 	int U = (int) floor (u * float(T.width) + .5f);
 	int V = (int) floor (v * float(T.height) + .5f);
