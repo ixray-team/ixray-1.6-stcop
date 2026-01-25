@@ -68,13 +68,11 @@ float4 main(PSInput I) : SV_Target
 		return 0.0f;
 	}
 		
-	float3 ReflectPoint = GbufferGetPointRealUnjitter(I.texcoord.xy, O.Depth) * lerp(0.02f, 1.0f, BaseColor.w);
+	float3 ReflectPoint = GbufferGetPointRealUnjitter(I.texcoord.xy, O.Depth);
 	float3 View = normalize(ReflectPoint);
 	
-	O.Roughness = lerp(1.0f, O.Roughness, BaseColor.w);
-	
 	float4 FinalColor = BaseColor.xyzz;
- 	FinalColor.w = length(O.Point - SSLR.xyz);
+ 	FinalColor.w = length(ReflectPoint - SSLR.xyz);
 	
 	float FinalWeight = 1;
     float NdotV = max(0.0f, -dot(O.Normal, View));
@@ -88,7 +86,7 @@ float4 main(PSInput I) : SV_Target
 		SSLR = s_refl.SampleLevel(smp_nofilter, offset, 0);
 		
 		float4 Color = s_image.SampleLevel(smp_nofilter, offset, 0.0f);
-		float3 Light = O.Point - SSLR.xyz;
+		float3 Light = ReflectPoint - SSLR.xyz;
 		
 		float Length = length(Light);
 		Light *= rcp(max(EPS_S, Length));
