@@ -40,6 +40,70 @@
 #include "../trade.h"
 #include "Car.h"
 #include "../xrEngine/string_table.h"
+#include "InventorySorter.h"
+
+void CUIActorMenu::OnSortCategoryButtonClick(CUIWindow* w, void* pData)
+{
+    if (!m_pInventorySorter)
+    {
+        return;
+    }
+
+    if (m_currMenuMode != mmInventory && m_currMenuMode != mmDeadBodySearch)
+    {
+        return;
+    }
+
+    CUI3tButton* clickedButton = smart_cast<CUI3tButton*>(w);
+    if (!clickedButton)
+    {
+        return;
+    }
+
+    for (u32 i = 0; i < m_sortButtons.size(); ++i)
+    {
+        if (m_sortButtons[i] == clickedButton)
+        {
+            EInventorySortCategory category = m_pInventorySorter->GetCategoryByIndex(i);
+            m_currentSortCategory = category;
+            UpdateSortButtons();
+            
+            if (m_pInventoryBagList)
+            {
+				if (m_currMenuMode == mmInventory)
+				{
+					InitInventoryContents(m_pInventoryBagList);
+				}
+				else
+				{
+					UpdateActorBagList();
+				}
+            }
+            break;
+        }
+    }
+}
+
+void CUIActorMenu::UpdateSortButtons()
+{
+    if (!m_pInventorySorter)
+    {
+        return;
+    }
+
+    for (u32 i = 0; i < m_sortButtons.size(); ++i)
+    {
+        CUI3tButton* button = m_sortButtons[i];
+        if (!button)
+        {
+            continue;
+        }
+
+        EInventorySortCategory category = m_pInventorySorter->GetCategoryByIndex(i);
+        bool isActive = (m_currentSortCategory == category);
+        button->SetButtonState(isActive ? CUIButton::BUTTON_PUSHED : CUIButton::BUTTON_NORMAL);
+    }
+}
 
 void CUIActorMenu::SetActor(CInventoryOwner* io)
 {
@@ -214,6 +278,16 @@ void CUIActorMenu::SetMenuMode(EMenuMode mode)
 		UpdateActor();
 	}
 	UpdateButtonsLayout();
+	const bool showSortButtons = (m_currMenuMode == mmInventory || m_currMenuMode == mmDeadBodySearch);
+	for (CUI3tButton* button : m_sortButtons)
+	{
+		if (!button)
+		{
+			continue;
+		}
+		button->Show(showSortButtons);
+		button->Enable(showSortButtons);
+	}
 }
 
 void CUIActorMenu::PlaySnd(eActorMenuSndAction a)
