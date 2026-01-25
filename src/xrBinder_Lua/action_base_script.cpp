@@ -11,7 +11,7 @@
 #include "../xrGame/script_action_wrapper.h"
 #include "../xrGame/script_game_object.h"
 
-#ifndef IXRAY_NO_LUA
+ 
 using namespace luabind;
 
 #pragma optimize("s",on)
@@ -41,4 +41,4 @@ void CActionBase<CScriptGameObject>::script_register(lua_State *L)
 #endif
 	];
 }
-#endif
+ 

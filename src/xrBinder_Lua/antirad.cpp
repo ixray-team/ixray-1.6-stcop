@@ -1,0 +1,20 @@
+///////////////////////////////////////////////////////////////
+// Antirad.cpp
+// Antirad - таблетки выводящие радиацию
+///////////////////////////////////////////////////////////////
+
+#include "StdAfx.h"
+#include "pch_script.h"
+#include "../xrGame/antirad.h"
+
+using namespace luabind;
+
+#pragma optimize("s",on)
+void CAntirad::script_register(lua_State* L)
+{
+	module(L)
+		[
+			class_<CAntirad, CGameObject>("CAntirad")
+				.def(constructor<>())
+		];
+}

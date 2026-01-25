@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include "action_planner_script.h"
-#include "action_script_base.h"
-#include "action_planner_action_script.h"
+#include "../../action_planner_script.h"
+#include "../../action_script_base.h"
+#include "../../action_planner_action_script.h"
 
 class CAI_Stalker;
 
