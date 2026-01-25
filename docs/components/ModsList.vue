@@ -20,6 +20,8 @@ interface ModCard {
   author?: string
   link?: string
   image?: string
+  score?: string
+  rank?: string
 }
 
 const props = defineProps<{
@@ -97,6 +99,8 @@ const mods = computed(() => copy.value.mods as ModCard[])
 			<div class="mod-card__media">
 				<img :src="mod.image" :alt="mod.title" loading="lazy">
 				<span v-if="mod.tag" class="mod-card__badge">{{mod.tag}}</span>
+        <span v-if="mod.score" class="mod-card__score">{{mod.score}}</span>
+        <span v-if="mod.rank" class="mod-card__rank">{{ mod.rank }}</span>
 			</div>
 			
 			<div class="mod-card__body">
@@ -110,12 +114,12 @@ const mods = computed(() => copy.value.mods as ModCard[])
 				<p class="mod-card__desc">
 					{{mod.description}}
 				</p>
-				
-				
-				
-				<button class="mod-card__btn" type="button" v-if="mod.link">
-					{{ labels.view }}
-				</button>
+
+        <div v-if="mod.link" class="mod-card__footer">
+          <button class="mod-card__btn" type="button">
+            {{ labels.view }}
+          </button>
+        </div>
 			</div>
 		</a>
       </article>
@@ -259,6 +263,25 @@ const mods = computed(() => copy.value.mods as ModCard[])
   font-weight: 600;
 }
 
+/* Оценка в правом верхнем углу */
+.mod-card__score {
+  position: absolute;
+  right: 0.75rem;
+  top: 0.75rem;
+  padding: 0.24rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.36);
+  border: 1px solid rgba(16, 185, 129, 0.75);
+  color: #ecfdf5;
+  font-size: 0.62rem;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  text-transform: uppercase;
+  box-shadow:
+    0 6px 14px rgba(3, 105, 63, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
 /* Текстовая часть */
 .mod-card__body {
   flex: 1;
@@ -284,6 +307,32 @@ const mods = computed(() => copy.value.mods as ModCard[])
   font-size: 0.78rem;
   line-height: 1.4;
   color: #4b5563;
+}
+
+/* Нижний блок: кнопка */
+.mod-card__footer {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.mod-card__rank {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(99, 102, 241, 0.27);
+  border: 1px solid rgba(99, 102, 241, 0.65);
+  color: #eef2ff;
+  font-size: 0.62rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  box-shadow:
+    0 6px 14px rgba(30, 27, 75, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 /* Метаданные */
@@ -314,7 +363,6 @@ const mods = computed(() => copy.value.mods as ModCard[])
 
 /* Кнопка действия */
 .mod-card__btn {
-  margin-top: auto;
   align-self: stretch;
   padding: 0.45rem 0.7rem;
   border-radius: 999px;
@@ -411,5 +459,15 @@ const mods = computed(() => copy.value.mods as ModCard[])
 }
 :root.dark .mod-card__author {
   color: var(--mod-card-text-muted);
+}
+:root.dark .mod-card__score {
+  background: rgba(16, 185, 129, 0.45);
+  border-color: rgba(16, 185, 129, 0.85);
+  color: #ecfdf5;
+}
+:root.dark .mod-card__rank {
+  background: rgba(99, 102, 241, 0.39);
+  border-color: rgba(99, 102, 241, 0.85);
+  color: #eef2ff;
 }
 </style>
