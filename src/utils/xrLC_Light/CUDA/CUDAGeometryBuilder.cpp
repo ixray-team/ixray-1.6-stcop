@@ -262,7 +262,7 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
     Msg("$[GPU Accel Structure] Remove Dublicate Vert : %llu to %llu", pVertex, geometryBuilder.vertices.size());
     Msg("$[GPU Accel Structure] Remove Dublicate Face : %llu to %llu", pFaces, geometryBuilder.triangles.size());
 
-    Msg("*[GPU Accel Structure] MU-Faces Memory: %u mb", u32(GetMemory() - StartMemory / 1024 / 1024));
+    Msg("*[GPU Accel Structure] MU-Faces Memory: %u mb", u32( (GetMemory() - StartMemory) / 1024 / 1024));
   
     StartMemory = GetMemory();
 
@@ -271,12 +271,12 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
   
      // 4. Строим TLAS
     if (!geometryBuilder.BuildTLAS(context, outScene, stream))          return false;
-    Msg("*[GPU Accel Structure] Cpu (GPU Used) Memory: %u mb", u32(GetMemory() - StartMemory / 1024 / 1024));
+    Msg("*[GPU Accel Structure] Cpu (GPU Used) Memory: %u mb", u32( (GetMemory() - StartMemory) / 1024 / 1024));
 
     StartMemory = GetMemory();
     // 5: Face Pointers Loading to GPU
     XRay::RayTrace::CUDA::InitializeFaces(geometryBuilder.facePointers);
-    Msg("*[GPU Accel Structure] GPU FACES COPY Memory: %u mb", u32(GetMemory() - StartMemory / 1024 / 1024));
+    Msg("*[GPU Accel Structure] GPU FACES COPY Memory: %u mb", u32( (GetMemory() - StartMemory) / 1024 / 1024));
  
 
     geometryBuilder.Clear();
