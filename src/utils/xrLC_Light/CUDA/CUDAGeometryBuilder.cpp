@@ -2,8 +2,6 @@
 #include "CUDAGeometryBuilder.h"
 #include "../../xrLC/Build.h"
 
-#include "Vector3HW.h"
- 
 bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, OptixMeshBuffers& outBuffers, CUstream stream)
 {
     if (vertices.empty() || triangles.empty()) return false;
