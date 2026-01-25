@@ -100,9 +100,14 @@ void XRay::RayTrace::CUDA::InitializeFaces(xr_vector<Face*>& Faces)
 		FaceGPU.surfidx = surface;
 
 		auto TC = F->getTC0();
-		FaceGPU.TC0[0].set(TC[0].x, TC[0].y);
-		FaceGPU.TC0[1].set(TC[1].x, TC[1].y);
-		FaceGPU.TC0[2].set(TC[2].x, TC[2].y);
+		FaceGPU.TC0[0].x = __float2half( TC[0].x );
+		FaceGPU.TC0[0].y = __float2half( TC[0].y );
+
+		FaceGPU.TC0[1].x = __float2half( TC[1].x );
+		FaceGPU.TC0[1].y = __float2half( TC[1].y );
+
+ 		FaceGPU.TC0[2].x = __float2half( TC[2].x );
+		FaceGPU.TC0[2].y = __float2half( TC[2].y );
 
 		IndexFace++;
 	}
