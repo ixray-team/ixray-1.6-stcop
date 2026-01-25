@@ -193,7 +193,6 @@ public:
 	virtual void OnItemDropUpdate ();
 
 	virtual	void OnPlayHeadShotParticle (NET_Packet P);
-	void legs_shift_callback(CBoneInstance* K);
 
 	virtual void						Die				(CObject* who);
 	virtual	void						Hit				(SHit* pHDS);
