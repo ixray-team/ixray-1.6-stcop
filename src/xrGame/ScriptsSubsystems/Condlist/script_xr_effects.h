@@ -1,6 +1,6 @@
 #pragma once
 
-#include "script_utility.h"
+#include "../../script_utility.h"
 
 class CLevel;
 

@@ -1,8 +1,8 @@
 #include "StdAfx.h"
-#include "ScriptsSubsystems/StoryID/StoryIDManager.h"
+#include "../xrGame/ScriptsSubsystems/StoryID/StoryIDManager.h"
 
-#include "alife_object_registry.h"
-#include "alife_simulator.h"
+#include "../xrGame/alife_object_registry.h"
+#include "../xrGame/alife_simulator.h"
 
 CScriptStoryIDManager& CScriptStoryIDManager::GetInstance()
 {

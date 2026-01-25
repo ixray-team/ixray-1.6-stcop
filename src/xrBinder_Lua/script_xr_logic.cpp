@@ -1,13 +1,13 @@
 #include "StdAfx.h"
-#include "script_xr_logic.h"
-#include "script_xr_conditions.h"
-#include "script_xr_effects.h"
-#include "Level.h"
-#include "ai_space.h"
+#include "../xrGame/ScriptsSubsystems/Condlist/script_xr_logic.h"
+#include "../xrGame/ScriptsSubsystems/Condlist/script_xr_conditions.h"
+#include "../xrGame/ScriptsSubsystems/Condlist/script_xr_effects.h"
+#include "../xrGame/Level.h"
+#include "../xrGame/ai_space.h"
 #include "xrServer_Objects_ALife_All.h"
-#include "script_game_object.h"
+#include "../xrGame/script_game_object.h"
 
-#include "ScriptsSubsystems/Condlist/CondlistGC.h"
+#include "../xrGame/ScriptsSubsystems/Condlist/CondlistGC.h"
 
 CScriptXRParser::CScriptXRParser() :
 	m_nCurrentIndex{}, m_pLevel(nullptr), m_pXRConditions(nullptr), m_pXREffects(nullptr)

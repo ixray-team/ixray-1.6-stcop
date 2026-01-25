@@ -1,6 +1,6 @@
 #pragma once
-#include "script_utility.h"
-#include "GameObject.h"
+#include "../../script_utility.h"
+#include "../../GameObject.h"
 
 class CCondlistGarbageCollector final
 {

@@ -8,7 +8,7 @@
 #include "../../xrUI/Widgets/UIFrameLineWnd.h"
 #include "../../xrUI/Widgets/UIEditBox.h"
 #include "../../xrUI/Widgets/UI3tButton.h"
-#include "mixed_delegate.h"
+#include "../mixed_delegate.h"
 
 
 class CUIXml;
