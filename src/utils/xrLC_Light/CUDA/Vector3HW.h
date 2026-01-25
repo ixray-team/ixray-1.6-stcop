@@ -1,13 +1,22 @@
 #pragma once
 #include <cuda_runtime.h>
+#include <cuda_fp16.h>
+
 
 #define EPS_L_GPU 0.0010000f;
 #define EPS_S_GPU 0.0000001f
 
 // Hardware Vectors 
+
+struct Hardware_Vector2_Half
+{
+	__half x; 
+	__half y;
+};
+
 struct Hardware_Vector2
 {
-	float x;
+  	float x;
 	float y;
  
 	__device__ Hardware_Vector2(float2 value)
@@ -374,10 +383,9 @@ struct Hardware_TextureData
 
 struct Hardware_FaceData
 {
- 	Hardware_Vector2 TC0[3]; // UV координаты
+ 	Hardware_Vector2_Half TC0[3]; // UV координаты
 	unsigned short surfidx;
-
-	bool		 bOpacue = false;
+ 	bool		 bOpacue = false;
 	bool		 bWater = false;
 };
 
@@ -402,10 +410,11 @@ struct OPTICK_Params
 
 struct OptixMeshBuffers
 {
-	CUdeviceptr vertexBuffer = 0;
-	CUdeviceptr indexBuffer = 0;
+	// Blas Model
 	CUdeviceptr blasBuffer = 0;
 	OptixTraversableHandle blasHandle = 0;
+	
+	// Tlas Model
 	CUdeviceptr tlasBuffer = 0;
 	OptixTraversableHandle tlasHandle = 0;
 };
