@@ -8,18 +8,23 @@ bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, OptixMeshBuffer
 {
     if (vertices.empty() || triangles.empty()) return false;
  
+    // 0. Временные буферы для построения
+    CUdeviceptr  d_tempBuffer;
+    CUdeviceptr  d_tmp_vertexBuffer;
+    CUdeviceptr  d_tmp_indexBuffer;
+
     // 1. Загружаем вершины на GPU
-    CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&outBuffers.vertexBuffer),
+    CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&d_tmp_vertexBuffer),
         sizeof(Fvector) * vertices.size()));
-    CUDA_CHECK(cudaMemcpy(reinterpret_cast<void*>(outBuffers.vertexBuffer),
+    CUDA_CHECK(cudaMemcpy(reinterpret_cast<void*>(d_tmp_vertexBuffer),
         vertices.data(),
         sizeof(Fvector) * vertices.size(),
         cudaMemcpyHostToDevice));
   
     // 2. Загружаем индексы на GPU
-    CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&outBuffers.indexBuffer),
+    CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&d_tmp_indexBuffer),
         sizeof(CDB::TRI) * triangles.size()));
-    CUDA_CHECK(cudaMemcpy(reinterpret_cast<void*>(outBuffers.indexBuffer),
+    CUDA_CHECK(cudaMemcpy(reinterpret_cast<void*>(d_tmp_indexBuffer),
         triangles.data(),
         sizeof(CDB::TRI) * triangles.size(),
         cudaMemcpyHostToDevice));
@@ -31,12 +36,12 @@ bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, OptixMeshBuffer
     buildInput.triangleArray.vertexFormat           = OPTIX_VERTEX_FORMAT_FLOAT3;
     buildInput.triangleArray.vertexStrideInBytes    = sizeof(Fvector);
     buildInput.triangleArray.numVertices            = static_cast<uint32_t>(vertices.size());
-    buildInput.triangleArray.vertexBuffers          = &outBuffers.vertexBuffer;
+    buildInput.triangleArray.vertexBuffers          = &d_tmp_vertexBuffer;
 
     buildInput.triangleArray.indexFormat            = OPTIX_INDICES_FORMAT_UNSIGNED_INT3;
     buildInput.triangleArray.indexStrideInBytes     = sizeof(CDB::TRI);
     buildInput.triangleArray.numIndexTriplets       = static_cast<uint32_t>(triangles.size());
-    buildInput.triangleArray.indexBuffer            = outBuffers.indexBuffer;
+    buildInput.triangleArray.indexBuffer            = d_tmp_indexBuffer;
 
     static uint32_t flags                           = OPTIX_GEOMETRY_FLAG_NONE; 
     buildInput.triangleArray.flags = &flags;
@@ -51,9 +56,15 @@ bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, OptixMeshBuffer
     OptixAccelBufferSizes bufferSizes;
     OPTIX_CHECK(optixAccelComputeMemoryUsage(context, &accelOptions, &buildInput, 1, &bufferSizes));
      
+    clMsg("BLAS : ( Temp : %u mb | update size: %u mb | output: %u mb ) ", 
+        bufferSizes.tempSizeInBytes / 1024 / 1024, 
+        bufferSizes.tempUpdateSizeInBytes / 1024 / 1024,
+        bufferSizes.outputSizeInBytes / 1024 / 1024 
+     );
+
+
     // 6. Выделение памяти
-    CUdeviceptr tempBuffer;
-    CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&tempBuffer), bufferSizes.tempSizeInBytes));
+    CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&d_tempBuffer), bufferSizes.tempSizeInBytes));
     CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&outBuffers.blasBuffer), bufferSizes.outputSizeInBytes));
 
 
@@ -72,7 +83,7 @@ bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, OptixMeshBuffer
         &accelOptions,
         &buildInput,
         1,
-        tempBuffer,
+        d_tempBuffer,
         bufferSizes.tempSizeInBytes,
         outBuffers.blasBuffer,
         bufferSizes.outputSizeInBytes,
@@ -115,7 +126,10 @@ bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, OptixMeshBuffer
     }
  
     // 11. Освобождаем временный буфер
-    CUDA_CHECK(cudaFree(reinterpret_cast<void*>(tempBuffer)));
+    CUDA_CHECK( cudaFree(reinterpret_cast<void*>(d_tempBuffer)));
+    CUDA_CHECK( cudaFree(reinterpret_cast<void*>(d_tmp_vertexBuffer) ));
+    CUDA_CHECK( cudaFree(reinterpret_cast<void*>(d_tmp_indexBuffer) ));
+     
     return true;
 }
 
@@ -196,18 +210,19 @@ bool OptixGeometryBuilder::BuildTLAS(OptixDeviceContext context, OptixMeshBuffer
 #include "xrDeflectorLight_Packed.h"
 
 struct FaceDataEmbree;
+
+size_t GetMemory();
  
 bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context, CUstream stream, OptixMeshBuffers& outScene)
 {
     xrLC_GlobalData* globalData = lc_global_data();
     if (!globalData)        return false;
 
+
     OptixGeometryBuilder geometryBuilder;
     
+    size_t StartMemory = GetMemory();
     // 1. Обрабатываем статическую геометрию
-
-	xr_map<shared_str, bool> materialUsed;
-
     for (Face* F : globalData->g_faces())
     {
         const Shader_xrLC& SH = F->Shader();
@@ -238,37 +253,35 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
             geometryBuilder.AddFace(F, pF.v1, pF.v2, pF.v3);
         }
     }
-   
+  
     size_t pVertex = geometryBuilder.RawFacesSize() * 3;
     size_t pFaces  = geometryBuilder.RawFacesSize();
-     
-    //geometryBuilder.InitializeModel();  // Это для теста ( без RemoveDublicate вызывать )
-     
-    geometryBuilder.RemoveDublicates_Batched();
-    Msg("*[GPU Accel Structure] Remove Dublicate Vert : %llu to %llu", pVertex, geometryBuilder.vertices.size());
-   
+    geometryBuilder.RemoveDublicates_Batched();  
     geometryBuilder.RemoveDublicateFaces();
-    Msg("*[GPU Accel Structure] Remove Dublicate Face : %llu to %llu", pFaces, geometryBuilder.triangles.size());
+
+    Msg("$[GPU Accel Structure] Remove Dublicate Vert : %llu to %llu", pVertex, geometryBuilder.vertices.size());
+    Msg("$[GPU Accel Structure] Remove Dublicate Face : %llu to %llu", pFaces, geometryBuilder.triangles.size());
+
+    Msg("*[GPU Accel Structure] MU-Faces Memory: %u mb", u32(GetMemory() - StartMemory / 1024 / 1024));
+  
+    StartMemory = GetMemory();
 
     // 3. Строим BLAS
     if (!geometryBuilder.BuildBLAS(context, outScene, stream))          return false;
   
-    // 4. Строим TLAS
-    if (!geometryBuilder.BuildTLAS(context, outScene, stream))  return false;
+     // 4. Строим TLAS
+    if (!geometryBuilder.BuildTLAS(context, outScene, stream))          return false;
+    Msg("*[GPU Accel Structure] Cpu (GPU Used) Memory: %u mb", u32(GetMemory() - StartMemory / 1024 / 1024));
 
+    StartMemory = GetMemory();
     // 5: Face Pointers Loading to GPU
     XRay::RayTrace::CUDA::InitializeFaces(geometryBuilder.facePointers);
-
-    // 6. Индексируем фаейсы из созданой геометрии
-    int Index = 0;
-    for (auto& F : geometryBuilder.facePointers)
-    {
-        SetFaceIndex( F, Index );
-        Index++;
-    }
+    Msg("*[GPU Accel Structure] GPU FACES COPY Memory: %u mb", u32(GetMemory() - StartMemory / 1024 / 1024));
  
+
     geometryBuilder.Clear();
     geometryBuilder.MemoryDealoc();
+
     return true;
 }
 
