@@ -8,13 +8,13 @@
 
 #pragma once
 #include "../xrScripts/script_export_macroses.h"
-#include "ai_space.h"
+#include "../xrGame/ai_space.h"
 
 #include "../xrScripts/script_engine.h"
 #include "luabind/error.hpp"
 
 #ifdef XRGAME_EXPORTS
-#include "alife_smart_terrain_task.h"
+#include "../xrGame/alife_smart_terrain_task.h"
 #endif //#ifdef XRGAME_EXPORTS
 
 //#define USE_WRITER_READER

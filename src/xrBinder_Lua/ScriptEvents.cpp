@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "pch_script.h"
-#include "ScriptEvents.h"
+#include "../xrGame/FreeMP/ScriptEvents.h"
 
 using namespace luabind;
 

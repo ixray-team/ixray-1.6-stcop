@@ -6,7 +6,7 @@
 #include "../xrUI/Widgets/UIDialogHolder.h"
 #include "../xrEngine/CustomHUD.h"
 #include "../xrEngine/IGame_UICustom.h"
-#include "script_game_object.h"
+#include "../xrGame/script_game_object.h"
 
 // refs
 class CUI;

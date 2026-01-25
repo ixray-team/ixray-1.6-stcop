@@ -14,7 +14,7 @@
 #include "alife_space.h"
 #include "game_graph_space.h"
 #ifdef XRGAME_EXPORTS
-#include "alife_smart_terrain_task.h"
+#include "../xrGame/alife_smart_terrain_task.h"
 #endif //#ifdef XRGAME_EXPORTS
 
 #pragma warning(push)

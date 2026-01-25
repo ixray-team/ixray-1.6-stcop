@@ -6,7 +6,7 @@
 #include "../../xrUI/Widgets/UIHint.h"
 
 #include "../script_game_object.h" //Alundaio
-#include <WeaponMagazined.h>
+#include "../WeaponMagazined.h"
 
 class CUICharacterInfo;
 class CUIDragDropListEx;
