@@ -1,21 +1,10 @@
-﻿
-
-#include <cuda_runtime.h>
-  
+﻿#include <cuda_runtime.h>
 #include <optix.h>
 #include <optix_device.h>
-#include "Vector3HW.h"
 
-#ifdef __INTELLISENSE__
-#define __device__
-#define __global__
-#define __constant__
-#define __shared__
-#define __host__
-#endif
+#include "IntelliSense.cuh"
+#include "Vector3HW.cuh"
 
-// Jitter Select
- 
 extern "C"
 {
 	__constant__ OPTICK_Params g_params;
@@ -42,7 +31,7 @@ enum Flags
 
 extern "C" __global__ void __miss__ms()
 {
-	// если ничего не встретили → свет проходит
+	// если ничего не встретили -> свет проходит
 }
 
 extern "C" __global__ void __closesthit__ch()
@@ -133,7 +122,6 @@ __device__ float RunOptickTask(unsigned int TaskID, Hardware_Vector& P, Hardware
 
 	unsigned int Energy = 10000;	// 0.0001 точность
  	
- 	//// Обновить размер в CUDAContext В pipelineCompileOptions.numPayloadValues (Если менять кол-во Payloads)
 	optixTrace(
 		g_params.handle,
 		origin,

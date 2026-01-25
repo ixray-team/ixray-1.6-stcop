@@ -2,12 +2,10 @@
 #include <cuda_runtime.h>
 #include <cuda_fp16.h>
 
-
 #define EPS_L_GPU 0.0010000f;
 #define EPS_S_GPU 0.0000001f
 
 // Hardware Vectors 
-
 struct Hardware_Vector2_Half
 {
 	__half x; 
@@ -361,7 +359,6 @@ struct Hardware_Lighting
 	float	 energy;			// For radiosity ONLY
 };
 
-
 struct Hit
 {
 	float maxT;
@@ -389,7 +386,6 @@ struct Hardware_FaceData
 	bool		 bWater = false;
 };
 
-#include "optix.h"
 struct OPTICK_Params
 {
 	OptixTraversableHandle handle;
@@ -406,15 +402,4 @@ struct OPTICK_Params
 
 	Hardware_TextureData* textures;
 	int					  count_textures;
-};
-
-struct OptixMeshBuffers
-{
-	// Blas Model
-	CUdeviceptr blasBuffer = 0;
-	OptixTraversableHandle blasHandle = 0;
-	
-	// Tlas Model
-	CUdeviceptr tlasBuffer = 0;
-	OptixTraversableHandle tlasHandle = 0;
 };

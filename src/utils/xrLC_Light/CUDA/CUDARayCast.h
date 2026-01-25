@@ -4,12 +4,23 @@
 #include "../base_lighting.h"
 #include "../xrFace.h"
 
-#include "Vector3HW.h"          // se7kills: HW Data Structure
+//#include "Vector3HW.h"          // se7kills: HW Data Structure
 #include <optix.h>
 #include <optix_stubs.h>
 #include <cuda_runtime.h>
 
 struct RayRecvestIndex;
+
+struct OptixMeshBuffers
+{
+    // Blas Model
+    CUdeviceptr blasBuffer = 0;
+    OptixTraversableHandle blasHandle = 0;
+
+    // Tlas Model
+    CUdeviceptr tlasBuffer = 0;
+    OptixTraversableHandle tlasHandle = 0;
+};
 
 namespace XRay::RayTrace::CUDA
 {
