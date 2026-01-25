@@ -84,7 +84,7 @@ void XRay::RayTrace::CUDA::InitializeLights()
 	size_lights = numLights;
 }
 
-void XRay::RayTrace::CUDA::InitializeFaces(xr_vector<Face*> Faces)
+void XRay::RayTrace::CUDA::InitializeFaces(xr_vector<Face*>& Faces)
 {
 	xr_vector<Hardware_FaceData> faces_host;
 	faces_host.resize(Faces.size());
@@ -115,6 +115,7 @@ void XRay::RayTrace::CUDA::InitializeFaces(xr_vector<Face*> Faces)
 
 	// РЕАЛЬНО освобождаем CPU память
 	faces_host.clear();
+	faces_host.shrink_to_fit();
 }
 
 void XRay::RayTrace::CUDA::InitializeTexturesAlpha()

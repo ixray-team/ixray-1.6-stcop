@@ -86,15 +86,3 @@ void PackedLighting::LightPointPacked_run_tasks()
 	recvests.clear();
 }
  
-// Enumerate Faces
-xr_hash_map<Face*, u32>   facesIndexes;
-u32 GetFaceIndex(Face* F)
-{
-	return facesIndexes[F];
-}
-
-void SetFaceIndex(Face* F, u32 Index)
-{
-	facesIndexes[F] = Index;
-}
-
