@@ -190,6 +190,14 @@ void CInput::GamepadUpdate()
 			}
 		}
 	}
+
+	for (int i = 0; i < COUNT_GP_BUTTONS; i++)
+	{
+		if (GPState[i])
+		{
+			cbStack.back()->IR_GamepadKeyHold((int)i);
+		}
+	}
 }
 
 const xr_map<int, char> russian_lookup_key_table = {
