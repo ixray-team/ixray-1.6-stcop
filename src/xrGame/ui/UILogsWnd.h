@@ -78,8 +78,10 @@ public:
 	virtual void		Update				();
 	virtual void		SendMessage			( CUIWindow* pWnd, s16 msg, void* pData );
 
-	virtual bool		OnKeyboardAction			(int dik, EUIMessages keyboard_action);
+	virtual bool		OnKeyboardAction	(int dik, EUIMessages keyboard_action);
 	virtual bool		OnKeyboardHold		(int dik);
+	virtual bool		OnGamepadKeyAction	(int key, EUIMessages gamepad_action);
+	virtual bool		OnGamepadStickAction(int key, Fvector2 value, EUIMessages gamepad_action);
 
 	IC		void		UpdateNews			()	{ m_need_reload = true; }
 	void		PerformWork			();
@@ -95,7 +97,7 @@ protected:
 			void 	PrevPeriod		( CUIWindow* w, void* d);
 			void 	NextPeriod		( CUIWindow* w, void* d);
 	
-			void 		on_scroll_keys		( int dik );
+			void 		on_scroll_keys		( int dik, int step = 1 );
 
 /*
 protected:
