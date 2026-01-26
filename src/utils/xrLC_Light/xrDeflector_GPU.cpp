@@ -3,6 +3,7 @@
 #include "xrLC_GlobalData.h"
 #include "light_point.h"
 #include "xrFace.h"
+#include "uv_grid.h"
 
 // 08.12.2025 (Убрал 2Hash Нужно было для ускорения поиска по треугольникам) (для GPU кода будет сложно сделать)
 // 14.12.2025 (Повыпиливал лишние действие с Edge) там можно было и так посчитать ;
@@ -43,9 +44,7 @@ void CDeflector::LightGPU()
 	}
 
 }
-
-thread_local HASH hash_2d;
-
+ 
 void CDeflector::L_DirectGPU()
 {
 	auto FromBarry = [](Face* F, Fvector& wP, Fvector& wN, Fvector& B)
@@ -70,14 +69,20 @@ void CDeflector::L_DirectGPU()
 	Jitter_Select(Jitter, Jcount);
  
 	// Создание тоже может занимать время
-  	Fbox2			bounds;
-	Bounds_Summary(bounds);
-	hash_2d.initialize(bounds, (u32)UVpolys.size());
-	for (u32 fid = 0; fid < UVpolys.size(); fid++)
+	bool UseHashMap = false;
+	thread_local UVGridLazy<UVtri> uv_grid;
+
+	if (UVpolys.size() > 0)
 	{
-		UVtri* T = &(UVpolys[fid]);
-		Bounds(fid, bounds);
-		hash_2d.add(bounds, T);
+ 		Fbox2 bounds;
+		Bounds_Summary(bounds);
+
+		// 🔹 вычисляем AABB для каждого треугольника и нормализуем UV
+		for (auto& T : UVpolys)
+			T.computeAABB(bounds);
+ 		uv_grid.reset();
+
+		UseHashMap = true;
 	}
  
 	for (u32 V = 0; V < lm.height; V++)
@@ -92,19 +97,36 @@ void CDeflector::L_DirectGPU()
  				Fvector2 P;
 				P.x = float(U) / dim.x + half.x + Jitter[J].x * JS.x;
 				P.y = float(V) / dim.y + half.y + Jitter[J].y * JS.y;
-
- 				// World space
 				Fvector wP, wN, B;
-				auto& Hash = hash_2d.query(P.x, P.y);
-				for (auto& TRIANGLE : Hash)
+
+				if (UseHashMap)
 				{
-					if (TRIANGLE->isInside(P, B))
+					// World space
+					auto& list = uv_grid.query(P.x, P.y, UVpolys);
+ 					for (UVtri* T : list)
+ 					{
+						if (T->isInside(P, B))
+						{
+							Face* F = T->owner;
+							FromBarry(F, wP, wN, B);
+							GPUTaskinSystem.LightPointPacked_add_task(TaskID, this, wP, wN, F);
+							Fcount += 1;
+							break;
+						}
+					}
+				}
+				else
+				{
+					for (auto& T : UVpolys)
 					{
-						Face* F = TRIANGLE->owner;
-						FromBarry(F, wP, wN, B);
-						GPUTaskinSystem.LightPointPacked_add_task(TaskID, this, wP, wN, F);
- 						Fcount += 1;
-						break;
+ 						if (T.isInside(P, B))
+						{
+							Face* F = T.owner;
+							FromBarry(F, wP, wN, B);
+							GPUTaskinSystem.LightPointPacked_add_task(TaskID, this, wP, wN, F);
+							Fcount += 1;
+							break;
+						}
 					}
 				}
 			}
@@ -234,48 +256,19 @@ void CDeflector::ApplyColor(size_t IKey, base_color_c& C)
 	CResult._set(cNew);
 }
 
-/// Перерасчет в более сжатый формат
-
-
-BOOL	compress_RMS(lm_layer& lm, u32 rms, u32& w, u32& h);
+// se7kills: Убрал Перерасчет в сжатый формат
+// тестил на затоне не было замечено багов
 BOOL	compress_Zero(lm_layer& lm, u32 rms);
-
-void CDeflector::LowerResolutionGPU()
-{
- 	for (u32 ref = 254; ref > 0; ref--)
-	if (!ApplyBorders(layer, ref))		break;
-
- 	ApplyResolution = false;
-
-
-	try
-	{
-		u32	w, h;
-		if (compress_Zero(layer, rms_zero))
-		{
- 			ApplyResolution = true;
-			return;		// already with borders
-		}
-		else if (compress_RMS(layer, rms_shrink, w, h))
-		{
-			// Reacalculate lightmap at lower resolution
-			layer.create(w, h);
-			L_DirectGPU(); 
-
-			GPUTaskinSystem.Recalculated++;
-		}	
-	}
-	catch (...)
-	{
-		clMsg("* ERROR: CDeflector::Light - Compression");
-	}	
-}
 
 /// После сжатия пересчитываем
 void CDeflector::ApplyExpandBordersGPU()
 {
-	if (ApplyResolution) return;
-
+	for (u32 ref = 254; ref > 0; ref--)
+	if (!ApplyBorders(layer, ref))		break;
+ 
+ 	if (compress_Zero(layer, rms_zero))   		return;		// already with borders (Se7kills: Быстро очень обычно)
+	// se7kills : Убрал 2й проход со сжатием !
+	 
 	// Expand with borders
 	try
 	{
@@ -338,8 +331,7 @@ void CDeflector::ApplyExpandBordersGPU()
 			ApplyBorders(layer, 252);
 			ApplyBorders(layer, 251);
 			for (u32 ref = 250; ref > 0; ref--)
-			if (!ApplyBorders(layer, ref))
-				break;
+			if (!ApplyBorders(layer, ref)) break;
 
 			layer.width = lm_old.width;
 			layer.height = lm_old.height;
