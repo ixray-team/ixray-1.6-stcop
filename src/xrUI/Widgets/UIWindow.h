@@ -81,6 +81,7 @@ public:
 
 	virtual bool			OnGamepadKeyAction	(int key, EUIMessages gamepad_action);
 	virtual bool			OnGamepadStickAction(int key, Fvector2 value, EUIMessages gamepad_action);
+	virtual bool			OnGamepadKeyHold	(int key);
 
 	virtual void 			OnFocusReceive		();
 	virtual void 			OnFocusLost			();
