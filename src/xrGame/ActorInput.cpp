@@ -568,11 +568,12 @@ void CActor::IR_OnMouseMove(int dx, int dy)
 	}
 }
 
+#define DEADZONE_SIZE 0.2f
 void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 {
 	float absValueX = std::abs(value.x);
 	float absValueY = std::abs(value.y);
-	if (id != 2 && absValueX < 0.03f && absValueY < 0.03f)
+	if (id != 2 && absValueX < DEADZONE_SIZE && absValueY < DEADZONE_SIZE)
 	{
 		if (id == 0)
 		{
