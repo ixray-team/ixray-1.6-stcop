@@ -691,6 +691,13 @@ void CConsole::Hide()
 	m_editor->IR_Release();
 }
 
+void CConsole::Clear()
+{
+	Console->ClearLog();
+	xrLogger::FlushLog();
+	Msg("* Log file has been cleaned successfully!");
+}
+
 void CConsole::SelectCommand()
 {
 	if ( m_cmd_history.empty() )
