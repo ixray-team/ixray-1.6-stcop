@@ -21,6 +21,8 @@ class CUIDragDropReferenceList;
 class CUIEditBox;
 class CUITrackBar;
 class CUIScrollView;
+class CUIStackPanel;
+class CUIGamepadLegend;
 
 #include "Widgets/UIStackPanel.h"
 
@@ -31,7 +33,8 @@ public:
 	~UIHelper		() {};
 
 	static	CUIStatic*			CreateStatic		( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent, bool critical = true );
-	static	CUIStackPanel*		CreateStackPanel	( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent );
+	static	CUIStackPanel*		CreateStackPanel	( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent, bool critical = true );
+	static	CUIGamepadLegend*	CreateGamepadLegend	( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent, bool critical = true );
 	static	CUIProgressBar*		CreateProgressBar	( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent );
 	static	CUIProgressShape*	CreateProgressShape	( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent );
 	static	CUIFrameLineWnd*	CreateFrameLine		( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent, bool critical = true );

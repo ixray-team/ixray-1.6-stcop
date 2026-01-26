@@ -124,6 +124,9 @@ Flags32	g_mt_config = { mtLevelPath | mtDetailPath | mtObjectHandler | mtSoundPl
 Flags32	dbg_net_Draw_Flags = { 0 };
 #endif
 
+extern UI_API u32 gamepad_prefix_type;
+extern UI_API xr_token	gamepad_prefix_token[];
+
 #ifdef DEBUG
 BOOL	g_bDebugNode = FALSE;
 u32		g_dwDebugNodeSource = 0;
@@ -2455,6 +2458,18 @@ public:
 	}
 };
 
+class CCC_GamepadPrefix :
+	public CCC_Token
+{
+public:
+	CCC_GamepadPrefix(LPCSTR N, u32* V, xr_token* T) : CCC_Token(N,V,T)	{}	;
+
+	virtual void	Execute	(LPCSTR args)	
+	{
+		CCC_Token::Execute	(args);
+		execute_console_command_deferred(Console, "ui_reload");
+	}
+};
 void CCC_RegisterCommands()
 {
 	// options
@@ -2947,6 +2962,7 @@ void CCC_RegisterCommands()
 	CMD3(CCC_String, "slot_1", g_quick_use_slots[1], 32);
 	CMD3(CCC_String, "slot_2", g_quick_use_slots[2], 32);
 	CMD3(CCC_String, "slot_3", g_quick_use_slots[3], 32);
+	CMD3(CCC_GamepadPrefix, "gamepad_prefix", &gamepad_prefix_type, gamepad_prefix_token);
 
 	CMD4(CCC_Integer, "keypress_on_start", &g_keypress_on_start, 0, 1);
 
