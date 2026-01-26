@@ -11,6 +11,9 @@
 #define IDB_FONT                        127
 #define IDB_PNG1                        128
 #define IDB_LOAD_ICON                   128
+#define IDB_SPLASH_BG_HW                129
+#define IDB_PNG4                        130
+#define IDB_SPLASH_BG_NG                131
 #define IDC_LIST                        1000
 #define IDC_FILE                        1001
 #define IDC_LINE                        1002
@@ -24,7 +27,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        129
+#define _APS_NEXT_RESOURCE_VALUE        132
 #define _APS_NEXT_COMMAND_VALUE         40002
 #define _APS_NEXT_CONTROL_VALUE         1008
 #define _APS_NEXT_SYMED_VALUE           101
