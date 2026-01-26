@@ -1378,6 +1378,10 @@ void LevelInspector::DrawGameGraph()
 	u8 curr_level_id = lgraph.level_id();
 	static u8 last_level_id = curr_level_id;
 
+	string_path S;
+	FS.update_path(S, "$game_config$", "game_graphs.ltx");
+	static CInifile* l_tpIniFile = new CInifile(S);
+
 	struct GraphPointD
 	{
 		bool is_blue[2]{ false, false };
@@ -1391,10 +1395,12 @@ void LevelInspector::DrawGameGraph()
 	{
 		Fobb obb;
 		Fvector pos;
-		shared_str next_level;
+		shared_str next_level=nullptr;
+		shared_str locations[4]{nullptr,nullptr,nullptr,nullptr};
 		u32 gvid = u32(-1);
 		float spatial_r = 1.f;
 		bool is_blue = false;
+		bool is_blueblack = false;
 	};
 
 	struct EdgeKey
@@ -1454,7 +1460,20 @@ void LevelInspector::DrawGameGraph()
 			{
 				Fvector main_graph_pos = global_vertex->level_point();
 				GraphPointC& gr = m_graphs[global_vid];
-				gr.is_blue = global_vertex->vertex_type()[3];
+
+				if(l_tpIniFile)
+				{
+					for (u8 i = u8(0); i < u8(4); i++)
+					{
+						u8 value = global_vertex->vertex_type()[i];
+						if (value > u8(0))
+							gr.locations[i] = l_tpIniFile->r_section(shared_str().printf("location_%d", i)).Data[value].second;
+					}
+				}
+
+				gr.is_blue = !!global_vertex->vertex_type()[3];
+				gr.is_blueblack = !!global_vertex->vertex_type()[2];
+
 				gr.pos = main_graph_pos;
 				Fbox bbox; bbox.identity();
 				bbox.setb(main_graph_pos, {0.5f, 1.0f, 0.5f});
@@ -1494,12 +1513,16 @@ void LevelInspector::DrawGameGraph()
 					link.pos[1] = child_pos + Fvector{ 0.f,1.f,0.f };
 					link.pos[2].add(main_graph_pos, child_pos).mul(0.5f);
 
-					thread_local xr_vector<u32> m_path; m_path.clear();
+					thread_local xr_vector<u32> m_path;
+					m_path.clear();
+					m_path.reserve(64);
+					
 					//lgraph.Search(global_vertex->level_vertex_id(), child_vertex->level_vertex_id(), m_path);
 					//PostProcessPath(m_path);
 					SearchSmooth(global_vertex->level_vertex_id(), child_vertex->level_vertex_id(), m_path);
 					if(m_path.size() > 3)
 					{
+						link.m_path.reserve(64);
 						m_path.pop_back();
 						m_path.erase(m_path.begin());
 
@@ -1536,6 +1559,7 @@ void LevelInspector::DrawGameGraph()
 
 	constexpr u32 default_tcolor = color_rgba(255, 0, 255, 60);//розовый
 	constexpr u32 graph_blue_tcolor = color_rgba(0, 255, 255, 60);//голубой
+	constexpr u32 graph_blueblack_tcolor = color_rgba(0, 70, 255, 100);//синий
 	constexpr u32 selection_tcolor = color_rgba(255, 0, 0, 150);//розовый
 	Fvector& cam_pos = Device.vCameraPosition;
 	Fvector& cam_dir = Device.vCameraDirection;
@@ -1560,6 +1584,7 @@ void LevelInspector::DrawGameGraph()
 		//obb.m_halfsize = graph_main.spatial_bd;
 		//append_obb(obb, color_rgba(0, 255, 0, 150));
 		u32 tcolor = graph_main.is_blue ? graph_blue_tcolor : default_tcolor;
+		tcolor = graph_main.is_blueblack ? graph_blueblack_tcolor : tcolor;
 		Fvector& pos = graph_main.pos;
 		if(m_flags.test(ESCENE_FLAGS::ESF_DRAW_SELECTION) && m_selection_flags.test(ESELECTION_FLAGS::ESLF_GP))
 		{
@@ -1572,10 +1597,11 @@ void LevelInspector::DrawGameGraph()
 				bool text3d = append_text3d(post, shared_str().printf("%d", graph_main.gvid), color_green, CGameFont::alLeft);
 				if (!visible_currents)
 				{
+					selected_info_height = 0;
 					selected_info_str.clear();
 					selected_info_str += *str;
 					selected_info_str += '\n';
-					selected_info_height = 1;
+					selected_info_height++;
 				}
 				if(graph_main.next_level)
 				{
@@ -1584,6 +1610,36 @@ void LevelInspector::DrawGameGraph()
 					else
 						text3d = append_text3d(pos, shared_str().printf("next_level: %s", *graph_main.next_level), color_green, CGameFont::alLeft);
 				}
+
+				if(l_tpIniFile)
+				{
+					for (u8 i = u8(0); i < u8(4); i++)
+					{
+						shared_str& location_name = graph_main.locations[i];
+						if (location_name)
+						{
+							shared_str location_sect = shared_str().printf("[location_%d]", i);
+							if (text3d)
+								append_text_next(location_sect);
+							else
+								text3d = append_text3d(pos, location_sect, color_green, CGameFont::alLeft);
+
+							if (text3d)
+								append_text_next(location_name);
+							else
+								text3d = append_text3d(pos, location_name, color_green, CGameFont::alLeft);
+
+							selected_info_str += *location_sect;
+							selected_info_str += '\n';
+							selected_info_height++;
+
+							selected_info_str += Platform::ANSI_TO_UTF8(*location_name);
+							selected_info_str += '\n';
+							selected_info_height++;
+						}
+					}
+				}
+
 				tcolor = selection_tcolor;
 				if(!visible_currents)
 				{
