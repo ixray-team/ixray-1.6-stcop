@@ -59,6 +59,7 @@ u32 MergeLmap(vecDefl& Layer, CLightmap* lmap)
 		{
 			lmap->Capture(Layer[it], rT.a.x, rT.a.y, rT.SizeX(), rT.SizeY(), bRotated);
 			Layer[it]->bMerged = TRUE;
+			Layer[it]->layer.clear_memory();
 			MERGED++;
 		}
 
@@ -146,6 +147,7 @@ u32 MergeLmap_Compact(vecDefl& Layer, CLightmap* lmap)
 				{
 					lmap->Capture(D, rT.a.x, rT.a.y, rT.SizeX(), rT.SizeY(), rotated);
 					D->bMerged = TRUE;
+					D->layer.clear_memory();
 					MergedCount++;
 				}
 				IndexLock.Leave();
@@ -257,14 +259,14 @@ void CBuild::xrPhase_MergeLM(size_t begin, size_t end)
 
 	while (Layer.size())
 	{
- 		Status("Selection...");
-		for (u32 it = 0; it < materials().size(); it++) materials()[it].internal_max_area = 0;
+ 		for (u32 it = 0; it < materials().size(); it++) materials()[it].internal_max_area = 0;
 		for (u32 it = 0; it < Layer.size(); it++)
 		{
 			CDeflector* D = Layer[it];
 			materials()[D->GetBaseMaterial()].internal_max_area = std::max(D->layer.Area(), materials()[D->GetBaseMaterial()].internal_max_area);
 		}
 
+		CLightmap* lmap = nullptr;
 		if (gCompilerMode.LC_LmapsAlternative)
 		{
 			std::sort(Layer.begin(), Layer.end(), [&](CDeflector* D1, CDeflector* D2) {
@@ -272,8 +274,7 @@ void CBuild::xrPhase_MergeLM(size_t begin, size_t end)
  			});
 
 			// Startup
-			Status("Processing...");
- 			CLightmap* lmap = new CLightmap();
+  			lmap = new CLightmap();
 			lc_global_data()->lightmaps().push_back(lmap);
 			TotalMerged += MergeLmap(Layer, lmap);
 		}
@@ -282,68 +283,38 @@ void CBuild::xrPhase_MergeLM(size_t begin, size_t end)
 			std::stable_sort(Layer.begin(), Layer.end(), sort_defl_complex);
 
 			// Startup
-			Status("Processing...");
-			placer_perpixel._InitSurface_tbb();
-			CLightmap* lmap = new CLightmap();
+ 			placer_perpixel._InitSurface_tbb();
+			lmap = new CLightmap();
 			lc_global_data()->lightmaps().push_back(lmap);
 			
 			// Collect All to map
 			TotalMerged		+= MergeLmap_Compact(Layer, lmap);
 		}
   
- 		AditionalData("Merging:[%u/%u]", TotalMerged, StartSize);
 		Progress(float(TotalMerged / float(StartSize)));
 
 		// Remove merged lightmaps
-		Status("Cleanup...");
-		vecDeflIt last = std::remove_if(Layer.begin(), Layer.end(), pred_remove());
+ 		vecDeflIt last = std::remove_if(Layer.begin(), Layer.end(), pred_remove());
 		Layer.erase(last, Layer.end());
-	}
-		 
-	u64 size_of_defl = 0;
-	for (auto i = begin; i < end; i++)
-	{
-		auto D = lc_global_data()->g_deflectors()[i];
-		size_of_defl += D->size_of_lm();
-	}
-	size_of_defl /= 1024 * 1024;
-	clMsg("%d deflectors lightmap: %u mb", size_of_defl);
 
-	for (auto i = begin; i < end; i++)
-	{
-		auto D = lc_global_data()->g_deflectors()[i];
-		D->layer.clear_memory();
+ 		CTimer t; t.Start();
+		lmap->Save(pBuild->path);
+ 		clMsg("Merging:[%u/%u] Saving Map [%u] : elapsed %u ms",
+			TotalMerged, StartSize, 
+			lc_global_data()->lightmaps().size(),
+			t.GetElapsed_ms()
+		);
 	}
 
- 	clMsg("%d lightmaps builded", lc_global_data()->lightmaps().size());
+	clMsg("Merged Lmaps: [%u/%u] : Lmaps: %u", TotalMerged, StartSize, lc_global_data()->lightmaps().size());
+ 	clMsg("%d lightmaps builded", lc_global_data()->lightmaps().size()); 
 }
  
 void CBuild::xrPhase_SaveLmaps()
 {
-	Status("Destroying deflectors...");
-	clMsg("Start Destroy Deflectors: Memory: %llu mb used", u32(GetHeapMemory() / 1024 / 1024));
+ 	clMsg("Start Destroy Deflectors: Memory: %llu mb used", u32(GetHeapMemory() / 1024 / 1024));
 	for (u32 it = 0; it < lc_global_data()->g_deflectors().size(); it++)
 		xr_delete(lc_global_data()->g_deflectors()[it]);
 	lc_global_data()->g_deflectors().clear();
 	clMsg("End Destroy Deflectors: Memory: %llu mb used", u32(GetHeapMemory() / 1024 / 1024));
-
-	Status("Start Saving Lmaps: ");
-	size_t USED_MEMORY = 0;
-
-	CTimer t;
-	int IDX = 0;
-	for (auto lmap : lc_global_data()->lightmaps())
-	{
-		t.Start();
-		lmap->Save(pBuild->path);
-		clMsg("Saving Map [%u/%u] %u ms", IDX, lc_global_data()->lightmaps().size(), t.GetElapsed_ms());
-
-		IDX++;
-		USED_MEMORY += lmap->lm.memory_lmap();
-	}
-
-	u32 USED_LMAPS = USED_MEMORY / 1024 / 1024;
-	clMsg("Allocated FOR Lmaps Memory: %u mb", u32(USED_LMAPS));
-
-	AditionalData("Lmaps allocated: %u mb", USED_LMAPS);
-}
+ }
