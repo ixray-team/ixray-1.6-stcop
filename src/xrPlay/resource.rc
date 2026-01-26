@@ -75,8 +75,6 @@ END
 // PNG
 //
 
-IDB_SPLASH_BG           PNG                     "ixray_splash.png"
-
 IDB_FONT                PNG                     "font.png"
 
 #endif    // Russian (Russia) resources
@@ -133,7 +131,13 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // PNG
 //
 
+IDB_SPLASH_BG           PNG                     "ixray_splash.png"
+
 IDB_LOAD_ICON           PNG                     "splash_ld.png"
+
+IDB_SPLASH_BG_HW        PNG                     "splash_bg_hw.png"
+
+IDB_SPLASH_BG_NG        PNG                     "splash_bg_ng.png"
 
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
