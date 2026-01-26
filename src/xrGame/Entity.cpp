@@ -327,9 +327,6 @@ void CEntity::set_death_time	()
 	m_game_death_time	= ai().get_alife() ? ai().alife().time_manager().game_time() : Level().GetGameTime();
 }
 
-bool CEntity::IsFocused			()const	{ return (smart_cast<const CEntity*>(g_pGameLevel->CurrentEntity())==this);		}
-bool CEntity::IsMyCamera		()const	{ return (smart_cast<const CEntity*>(g_pGameLevel->CurrentViewEntity())==this);	}
-
 void CEntity::set_ready_to_save	()
 {
 }
