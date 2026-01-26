@@ -1,0 +1,42 @@
+<w>
+	<file name="ui\ps4_controller">
+		<texture id="ps4_controller_a" x="187" y="487" width="84" height="84"/>
+		<texture id="ps4_controller_b" x="90" y="574" width="84" height="84"/>
+		<texture id="ps4_controller_dpad" x="2" y="74" width="96" height="96"/>
+		<texture id="ps4_controller_dpadd" x="207" y="2" width="96" height="96"/>
+		<texture id="ps4_controller_dpadh" x="102" y="93" width="96" height="96"/>
+		<texture id="ps4_controller_dpadl" x="2" y="174" width="96" height="96"/>
+		<texture id="ps4_controller_dpadr" x="307" y="2" width="96" height="96"/>
+		<texture id="ps4_controller_dpadu" x="407" y="2" width="96" height="96"/>
+		<texture id="ps4_controller_dpadv" x="202" y="102" width="96" height="96"/>
+		<texture id="ps4_controller_holda" x="2" y="560" width="84" height="85"/>
+		<texture id="ps4_controller_holdb" x="382" y="388" width="84" height="85"/>
+		<texture id="ps4_controller_holdx" x="382" y="477" width="84" height="85"/>
+		<texture id="ps4_controller_holdy" x="286" y="483" width="84" height="85"/>
+		<texture id="ps4_controller_lb" x="275" y="572" width="84" height="60"/>
+		<texture id="ps4_controller_lmenu" x="98" y="479" width="85" height="91"/>
+		<texture id="ps4_controller_ls" x="302" y="198" width="92" height="91"/>
+		<texture id="ps4_controller_lsclick" x="373" y="653" width="90" height="90"/>
+		<texture id="ps4_controller_lsd" x="198" y="202" width="92" height="91"/>
+		<texture id="ps4_controller_lsh" x="98" y="289" width="92" height="91"/>
+		<texture id="ps4_controller_lsl" x="2" y="370" width="92" height="91"/>
+		<texture id="ps4_controller_lsr" x="398" y="198" width="92" height="91"/>
+		<texture id="ps4_controller_lsu" x="102" y="193" width="92" height="92"/>
+		<texture id="ps4_controller_lsv" x="2" y="274" width="92" height="92"/>
+		<texture id="ps4_controller_lt" x="266" y="636" width="76" height="86"/>
+		<texture id="ps4_controller_rb" x="178" y="575" width="84" height="60"/>
+		<texture id="ps4_controller_rmenu" x="106" y="2" width="97" height="87"/>
+		<texture id="ps4_controller_rs" x="294" y="293" width="92" height="91"/>
+		<texture id="ps4_controller_rsclick" x="4" y="741" width="90" height="90"/>
+		<texture id="ps4_controller_rsd" x="194" y="297" width="92" height="91"/>
+		<texture id="ps4_controller_rsh" x="98" y="384" width="92" height="91"/>
+		<texture id="ps4_controller_rsl" x="2" y="465" width="92" height="91"/>
+		<texture id="ps4_controller_rsr" x="390" y="293" width="92" height="91"/>
+		<texture id="ps4_controller_rsu" x="302" y="102" width="92" height="92"/>
+		<texture id="ps4_controller_rsv" x="398" y="102" width="92" height="92"/>
+		<texture id="ps4_controller_rt" x="178" y="639" width="76" height="86"/>
+		<texture id="ps4_controller_tpad" x="113" y="736" width="105" height="105"/>
+		<texture id="ps4_controller_x" x="2" y="649" width="84" height="84"/>
+		<texture id="ps4_controller_y" x="374" y="566" width="84" height="84"/>
+	</file>
+</w>
