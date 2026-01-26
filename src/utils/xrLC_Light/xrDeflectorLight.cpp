@@ -40,12 +40,6 @@ void Jitter_Select(Fvector2* &Jitter, u32& Jcount)
 	}
 }
  
-BOOL ApplyBorders( lm_layer &lm, u32 ref ) 
-{
-	extern BOOL NEW_ApplyBorders(lm_layer & lm, u32 ref);
- 	return NEW_ApplyBorders( lm, ref );
-}
- 
 float getLastRP_Scale(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Face* skip)
 {
 	u32		tris_count = DB->r_count();
