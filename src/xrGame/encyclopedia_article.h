@@ -10,6 +10,7 @@
 #include "shared_data.h"
 
 #include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrUI/Widgets/UI3dStatic.h"
 
 //////////////////////////////////////////////////////////////////////////
 // SInfoPortionData: данные для InfoProtion
@@ -20,7 +21,8 @@ struct SArticleData : CSharedResource
 	shared_str group;
 	
 	//картинка
-	CUIStatic image;
+	CUI3dStatic model;
+	CUIStatic	image;
 
 	//текст статьи
 	xr_string	text;

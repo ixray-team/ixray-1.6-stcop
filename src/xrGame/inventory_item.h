@@ -109,6 +109,7 @@ public:
 public:
 	virtual void Load(LPCSTR section);
 	void ReadCustomTextAndMarks(LPCSTR section);
+	void Read3dStaticsData(LPCSTR section);
 	void RefreshTranslations();
 
 	// Дополнение описания предмета для кастомизации через скрипты к основному описанию в UIItemInfo.cpp
@@ -171,6 +172,15 @@ public:
 	virtual float Weight() const { return m_weight; }
 	void setWeight(float value);
 
+	Fvector		Get3DStaticRotate() const
+	{
+		Fvector value;
+		value.x = m_3d_static_rotate_x;
+		value.y = m_3d_static_rotate_y;
+		value.z = m_3d_static_rotate_z;
+		return value;
+	}
+
 public:
 	CInventory* m_pInventory = nullptr;
 	shared_str m_section_id;
@@ -192,6 +202,10 @@ public:
 	LPCSTR m_custom_mark_lanim = {};
 	float ScaleIcon = 1.0f;
 	shared_str IconsTexture;
+
+	float m_3d_static_rotate_x, m_3d_static_rotate_y, m_3d_static_rotate_z = 0.f;
+	float m_3d_static_scale = 1.f;
+	LPCSTR m_3d_static_visual_name = "";
 
 	SInvItemPlace m_ItemCurrPlace = {};
 	RStringVec m_HiglightRelatedItemSections = {}; // FFx0001 ++

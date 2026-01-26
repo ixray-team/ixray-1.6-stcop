@@ -6,40 +6,40 @@ class IRenderVisual;
 class UI_API CUI3dStatic : 
     public CUIStatic
 {
-    typedef CUIStatic inherited;
+	typedef CUIStatic inherited;
 
 public:
 
-    CUI3dStatic();
-    virtual ~CUI3dStatic();
+					CUI3dStatic		();
+	virtual			~CUI3dStatic	();
 
-    IC void SetXYZ(Fvector& _xyz) 
-    {
-        rotate_matrix.setXYZ(_xyz);
-    }
+	IC void			SetXYZ			(Fvector& _xyz) { m_rot_matrix.setXYZ(_xyz); }
 
-    IC void SetXYZ(float x, float y, float z) 
-    {
-        rotate_matrix.setXYZ(x, y, z);
-    }
+	IC void			SetXYZ			(float x, float y, float z) { m_rot_matrix.setXYZ(x, y, z); }
+	IC void			SetHPB			(float h, float p, float b) { Fvector pos = m_rot_matrix.c; m_rot_matrix.setHPB(h, p, b); m_rot_matrix.c = pos; }
+	IC void			SetHPB			(Fvector& _hpb) { Fvector pos = m_rot_matrix.c; m_rot_matrix.setHPB(_hpb.x,_hpb.y, _hpb.z ); m_rot_matrix.c = pos; }
 
-    Fvector GetXYZ() const;
+	Fvector			GetXYZ			() const;
+	Fvector			GetHPB			() const;
 
-    void SetVisual(IRenderVisual* pVisual);
-    virtual void Draw();
+			void	SetVisual		(IRenderVisual* pVisual);
+	virtual void	Draw			();
+			void	SetScaleFactor	(float fScale) { m_fScaleFactor = fScale; }
+			float	GetScaleFactor	() { return m_fScaleFactor;  }
 
-    float ScaleFactor = 1.0f;
-
+	IRenderVisual*	GetVisual		() { return m_pCurrentItem; }
 protected:
 
-    Fmatrix rotate_matrix = Fidentity;
+	Fmatrix m_rot_matrix = Fidentity;
 
-    void FromScreenToItem(int x_screen, int y_screen, float& x_item, float& y_item);
+	void FromScreenToItem				(int x_screen, int y_screen, float& x_item, float& y_item);
 
-    IRenderVisual* m_pCurrentItem = nullptr;
+	IRenderVisual* m_pCurrentItem = NULL;
 
-    float fViewportNear, fViewportDist, fViewportAspect;
-    float fViewportFOV, fViewportSize;
+	float m_fViewportNear, m_fViewportDist, m_fViewportAspect;
+	float m_fViewportFOV, m_fViewportSize;
 
-    Fmatrix mView, mInvView, mProject;
+	Fmatrix m_mView, m_mInvView, m_mProject;
+
+	float m_fScaleFactor;
 };
