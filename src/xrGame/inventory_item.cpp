@@ -175,6 +175,7 @@ void CInventoryItem::Load(LPCSTR section)
 	m_inv_rect.set(inv_grid_x, inv_grid_y, inv_grid_width, inv_grid_height);
 
 	ReadCustomTextAndMarks(section);
+	Read3dStaticsData(section);
 }
 
 void CInventoryItem::SetAdditionalDescription(LPCSTR additionalDescription)
@@ -214,6 +215,32 @@ void CInventoryItem::ReadCustomTextAndMarks(LPCSTR section)
 	m_custom_mark_size = READ_IF_EXISTS(pSettings, r_fvector2, section, "item_custom_mark_size", Fvector2().set(0.f, 0.f));
 	m_custom_mark_clr = READ_IF_EXISTS(pSettings, r_color, section, "item_custom_mark_clr", 0);
 }
+
+void CInventoryItem::Read3dStaticsData(LPCSTR section)
+{
+	// this functional will used for cell icons
+	m_3d_static_rotate_x		= deg2rad(READ_IF_EXISTS(pSettings, r_float, section, "3d_static_rotate_x", 0.f));
+	m_3d_static_rotate_y		= deg2rad(READ_IF_EXISTS(pSettings, r_float, section, "3d_static_rotate_y", 0.f));
+	m_3d_static_rotate_z		= deg2rad(READ_IF_EXISTS(pSettings, r_float, section, "3d_static_rotate_z", 0.f));
+	m_3d_static_scale			= READ_IF_EXISTS(pSettings, r_float, section, "3d_static_scale", 1.f);
+	m_3d_static_visual_name		= READ_IF_EXISTS(pSettings, r_string, section, "3d_static_visual_name", object().cNameVisual().c_str());
+
+	string_path vis_name;
+	if (pSettings->line_exist(section, "3d_static_visual_name"))
+	{
+		// Add default ext if no ext at all
+		if (0 == strext(m_3d_static_visual_name))
+			xr_strconcat(vis_name, vis_name, m_3d_static_visual_name, ".ogf");
+		else
+			xr_strcpy(vis_name, sizeof(vis_name), m_3d_static_visual_name);
+		if (!FS.exist("$game_meshes$", vis_name))
+		{
+			Msg("!Can't find model file '%s' declared 3d_static_visual_name line in [%s] section , fallback to common visual", vis_name, section);
+			m_3d_static_visual_name = object().cNameVisual().c_str();
+		}
+	}
+}
+
 
 void CInventoryItem::RefreshTranslations()
 {
