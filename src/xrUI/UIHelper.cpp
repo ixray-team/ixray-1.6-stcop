@@ -19,6 +19,8 @@
 #include "Widgets/UIEditBox.h"
 #include "Widgets/UITrackBar.h"
 #include "Widgets/UIScrollView.h"
+#include "Widgets/UIStackPanel.h"
+#include "Widgets/UIGamepadLegend.h"
 
 CUIStatic* UIHelper::CreateStatic( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent, bool critical )
 {
@@ -40,15 +42,43 @@ CUIStatic* UIHelper::CreateStatic( CUIXml& xml, LPCSTR ui_path, CUIWindow* paren
     return ui;
 }
 
-CUIStackPanel* UIHelper::CreateStackPanel(CUIXml& xml, LPCSTR ui_path, CUIWindow* parent)
+CUIStackPanel* UIHelper::CreateStackPanel(CUIXml& xml, LPCSTR ui_path, CUIWindow* parent, bool critical)
 {
-	CUIStackPanel* ui = new CUIStackPanel;
-	if (parent)
+	// If it's not critical element, then don't crash if it doesn't exist
+	if (!critical && !xml.NavigateToNode(ui_path, 0))
+		return nullptr;
+
+	auto ui = new CUIStackPanel();
+	if (!CUIXmlInit::InitStackPanel(xml, ui_path, 0, ui, critical))
+	{
+		R_ASSERT4(!critical, "Failed to create stack panel", ui_path, xml.m_xml_file_name);
+		xr_delete(ui);
+	}
+	else if (parent)
 	{
 		parent->AttachChild(ui);
 		ui->SetAutoDelete(true);
 	}
-	CUIXmlInit::InitStackPanel(xml, ui_path, 0, ui);
+	return ui;
+}
+
+CUIGamepadLegend* UIHelper::CreateGamepadLegend(CUIXml& xml, LPCSTR ui_path, CUIWindow* parent, bool critical)
+{
+	// If it's not critical element, then don't crash if it doesn't exist
+	if (!critical && !xml.NavigateToNode(ui_path, 0))
+		return nullptr;
+
+	auto ui = new CUIGamepadLegend();
+	if (!CUIXmlInit::InitGamepadLegend(xml, ui_path, 0, ui, critical))
+	{
+		R_ASSERT4(!critical, "Failed to create stack panel", ui_path, xml.m_xml_file_name);
+		xr_delete(ui);
+	}
+	else if (parent)
+	{
+		parent->AttachChild(ui);
+		ui->SetAutoDelete(true);
+	}
 	return ui;
 }
 
@@ -169,7 +199,7 @@ CUIScrollView* UIHelper::CreateScrollView( CUIXml& xml, LPCSTR ui_path, CUIWindo
     auto ui = new CUIScrollView();
     if (!CUIXmlInit::InitScrollView(xml, ui_path, 0, ui, critical))
     {
-        R_ASSERT4(!critical, "Failed to create static", ui_path, xml.m_xml_file_name);
+        R_ASSERT4(!critical, "Failed to create scroll view", ui_path, xml.m_xml_file_name);
         xr_delete(ui);
     }
     else if (parent)
