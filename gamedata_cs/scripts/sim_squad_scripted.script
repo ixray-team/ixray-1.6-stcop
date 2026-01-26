@@ -13,9 +13,6 @@ class "sim_squad_scripted" (sim_squad_generic.sim_squad_generic)
 function sim_squad_scripted:__init(sim_board, player_id, squad_id, settings_id) super (sim_board, player_id, squad_id)
 	self.name = "sim_squad_scripted"
 	self.settings_id = settings_id or squad_id
-	self.first_update 		= false
-	self.last_gvid			= nil
-	self.level_name			= nil
 end
 --' Инициализация
 function sim_squad_scripted:init_squad(smart)
@@ -30,30 +27,6 @@ function sim_squad_scripted:init_squad(smart)
 
 	self.always_walk = utils.cfg_get_bool(sim_board.squad_ltx, self.settings_id, "always_walk", self, false)
 end
-
-function sim_squad_scripted:on_register()
-	SendScriptCallback("server_entity_on_register", self, "sim_squad_scripted")
-	SendScriptCallback("squad_on_register", self)
-end
-
-function sim_squad_scripted:on_unregister()
-	SendScriptCallback("server_entity_on_register", self, "sim_squad_scripted")
-	SendScriptCallback("squad_on_unregister", self)
-end
-
---' Удаление конкретного персонажа отряда
-function sim_squad_scripted:remove_npc(npc_id)
-	local se_npc = alife():object(npc_id)
-	self:on_npc_death(se_npc, nil)
-	--printf("releasing object ["..se_npc:name().."]")
-	alife():release(se_npc, true)
-end
-
---' Убийство НПС
-function sim_squad_scripted:on_npc_death(se_npc, se_killer)
-	SendScriptCallback("squad_on_npc_death", self, se_npc, se_killer)
-end
-
 --' Создание чуваков в отряд
 function sim_squad_scripted:create_npc(spawn_smart)
 	local spawn_sections = utils.parse_names(utils.cfg_get_string(sim_board.squad_ltx, self.settings_id, "npc", self, true, ""))
@@ -209,12 +182,6 @@ function sim_squad_scripted:check_invulnerability()
 	end
 end
 function sim_squad_scripted:update()
-	if not (self.first_update) then 
-		self.first_update = true 
-		SendScriptCallback("squad_on_first_update", self)
-	end
-	
-	SendScriptCallback("squad_on_update", self)
 	self:check_invulnerability()
 	local script_target = self:get_script_target()
 	--printf("[%s] SCRIPTED UPDATE. Target[%s]", self.squad_id, tostring(script_target))
@@ -293,18 +260,6 @@ function sim_squad_scripted:update()
 	end
 	if not self.items_spawned and self.smart_id ~= nil then
 		self:spawn_box_items(self.smart_id)
-	end
-	
-	local cur_lvl = alife():level_name(game_graph():vertex(self.m_game_vertex_id):level_id()) 
-	
-	if not (self.last_gvid == self.m_game_vertex_id) then
-		SendScriptCallback("squad_on_after_game_vertex_change", self, self.last_gvid, self.m_game_vertex_id, not (cur_lvl == self.level_name))
-		self.last_gvid = self.m_game_vertex_id
-	end
-	
-	if not (cur_lvl == self.level_name) then
-		SendScriptCallback("squad_on_after_level_change", self, self.level_name, cur_lvl)
-		self.level_name = cur_lvl
 	end
 end
 function sim_squad_scripted:save(packet)
