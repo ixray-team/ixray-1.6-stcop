@@ -6,12 +6,12 @@
 float DistributionGGX(float NdotH, float Roughness)
 {
     float Alpha = Roughness * Roughness;
-    float AlphaTwo = Alpha * Alpha;
+    float AlphaTwo = Alpha * Alpha + EPS_S;
 
     float AlphaTwoInv = AlphaTwo - 1.0f;
 
     float Divider = NdotH * NdotH * AlphaTwoInv + 1.0f;
-    return AlphaTwo * rcp(max(EPS_S, Divider * Divider));
+    return AlphaTwo * rcp(Divider * Divider);
 }
 
 // Simple GSC - like attention
