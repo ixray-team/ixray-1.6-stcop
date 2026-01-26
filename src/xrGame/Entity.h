@@ -78,9 +78,6 @@ public:
 	
 	virtual void			shedule_Update		(u32 dt);
 
-	bool					IsFocused			()const;
-	bool					IsMyCamera			()const;
-
 //	virtual float			g_Health			()const	{ return GetfHealth();}
 /*	virtual*/ IC float			GetMaxHealth		()const	{ return m_entity_condition->max_health();	}
 /*	virtual*/ IC void			SetMaxHealth		(float v)	{ m_entity_condition->max_health()=v;}
