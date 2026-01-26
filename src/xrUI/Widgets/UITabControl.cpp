@@ -218,6 +218,26 @@ void CUITabControl::SetActiveTabByIndex(u32 index)
 	SetActiveTab(newBtn->m_btn_id);
 }
 
+void CUITabControl::NextTab()
+{
+	int nextIdx = GetActiveIndex() + 1;
+	if (nextIdx > GetButtonsVector()->size()-1)
+	{
+		nextIdx = 0;
+	}
+	SetActiveTabByIndex(nextIdx);
+}
+
+void CUITabControl::PrevTab()
+{
+	int nextIdx = GetActiveIndex() - 1;
+	if (nextIdx < 0)
+	{
+		nextIdx = GetButtonsVector()->size()-1;
+	}
+	SetActiveTabByIndex(nextIdx);
+}
+
 bool CUITabControl::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
 
