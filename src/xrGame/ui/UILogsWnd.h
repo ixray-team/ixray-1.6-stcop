@@ -26,6 +26,7 @@ class CUI3tButton;
 class CUICheckButton;
 struct GAME_NEWS_DATA;
 class CUINewsItemWnd;
+class CUIGamepadLegend;
 
 class CUILogsWnd final : public CUIWindow, public CUIWndCallback
 {
@@ -67,6 +68,7 @@ private:
 	CUIWindow*			ItemFromCache		();
 //	void				ItemToCache			(CUIWindow* w);
 	CUIXml				m_uiXml;
+	CUIGamepadLegend*	m_gamepad_legend = nullptr;
 
 public:
 						CUILogsWnd			();
