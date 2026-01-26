@@ -17,10 +17,8 @@
 #include "patrol_path_storage.h"
 
 extern LPCSTR GAME_CONFIG;
-extern LPCSTR generate_temp_file_name			(LPCSTR header0, LPCSTR header1, string_path& buffer);
 
 #define NO_MULTITHREADING
-
 
 CGameSpawnConstructor::~CGameSpawnConstructor	()
 {
@@ -55,30 +53,14 @@ bool CGameSpawnConstructor::load_spawns	(LPCSTR name, bool no_separator_check)
 	// init spawn graph
 	m_spawn_graph						= new SPAWN_GRAPH();
 	
-	// init ini file
-//	m_game_info							= new CInifile(INI_FILE);
-//	R_ASSERT							(m_game_info->section_exist("levels"));
-
 	// init patrol path storage
 	m_patrol_path_storage				= new CPatrolPathStorage();
 	xr_vector<LPCSTR>					needed_levels;
 	string4096							levels_string;
 	xr_strcpy							(levels_string,name);
 	strlwr								(levels_string);
-	//fill_needed_levels					(levels_string,needed_levels);
-
-	// fill level info
-	/*read_levels(
-		&game_info(),
-		m_levels,
-		false,
-		&needed_levels
-	);*/
 
 	// init game graph
-//	generate_temp_file_name				("game_graph","",m_game_graph_id);
-//	xrMergeGraphs						(m_game_graph_id,name,false);
-
 	m_levels.insert(CLevelInfo(0, Scene->m_LevelOp.m_FNLevelPath, Fvector().set(0, 0, 0),"UwU"));
 	m_game_graph = Scene->GetGameGraph();
 
