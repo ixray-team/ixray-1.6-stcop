@@ -60,8 +60,6 @@ void main(PSInputFullscreen I, out float4 Point : SV_Target0, out float4 Final :
 	Jitter.x = Jitter.x * 0.5f + 0.5f;
 	Jitter.y *= 0.7f;
 	
-	float3 BaseReflect = normalize(reflect(ViewVec, O.Normal.xyz));
-	
 	float4 H = ImportanceSampleGGX(mul(m_invV, O.Normal.xyz), Jitter, O.Roughness);
 	H.xyz = mul(m_V, H.xyz);
 	
@@ -75,23 +73,28 @@ void main(PSInputFullscreen I, out float4 Point : SV_Target0, out float4 Final :
 	float3 StartPoint = ReflectPoint * 0.996f;
 	Point.xyz = StartPoint + Reflection * fog_params.z;	
 	
-	bool isNotHUD = O.Depth >= 0.02f;
+	bool isHUDRender = O.Depth < 0.02f;
 	
-	if(isNotHUD)
+#ifdef USE_OFFSCREEN_REFLECTIONS
+	float4 VSLR = 0;
+#endif
+
+	if(!isHUDRender)
 	{
-		StartPoint += O.Normal * 0.15f;
+		StartPoint += O.Normal * 0.025f;
 		
 #ifdef USE_OFFSCREEN_REFLECTIONS
-		float4 VSLR = FastViewReflections(StartPoint, Reflection);
-		Point.xyz = lerp(Point.xyz, VSLR.xyz, VSLR.w);
+		VSLR = FastViewReflections(mul(m_env_view, float4(StartPoint.xyz, 1.0f)).xyz, mul((float3x3)m_env_view, Reflection).xyz);
+		Point.xyz = lerp(Point.xyz, mul(m_env_view_inv, float4(VSLR.xyz, 1.0f)).xyz, VSLR.w);
 	} 
 	else
 	{
+		VSLR.xyz = mul(m_env_view, float4(Point.xyz, 1.0f));
 		Point.xyz = Reflection.xyz * s_env.SampleLevel(smp_linear, Point.xyz, 0.0f).w;
 #endif
 	}
 	
-	float4 SSLR = FastViewReflectionsSSR(StartPoint, Reflection, !isNotHUD);
+	float4 SSLR = FastViewReflectionsSSR(StartPoint, Reflection, isHUDRender);
 	
 	float4 EndProj = mul(O.Depth < 0.02f ? m_P_hud : m_P, float4(SSLR.xyz, 1.0f));
 	EndProj.xy = EndProj.xy * rcp(EndProj.w) * float2(0.5f, -0.5f) + 0.5f;
@@ -102,14 +105,14 @@ void main(PSInputFullscreen I, out float4 Point : SV_Target0, out float4 Final :
 	Final = s_image.Sample(smp_rtlinear, PrevSpecularUV.xy);
 	
 #ifdef USE_OFFSCREEN_REFLECTIONS
-	O.Hemi = saturate(O.Hemi * 3.0f);
+	O.Hemi = isHUDRender ? 1.0f : saturate(O.Hemi * 3.0f);
 #endif
 	
 	float4 Hemi = CompureSpecularIrradance(Reflection.xyz, O.Hemi, 0.0f).xyzz;
 	SSLR.w *= GetBorderAtten(PrevSpecularUV);
 	
 #ifdef USE_OFFSCREEN_REFLECTIONS
-	float3 Color = s_env.SampleLevel(smp_linear, Point.xyz, 0.0f);
+	float3 Color = s_env.SampleLevel(smp_linear, VSLR.xyz, 0.0f);
 	Color.xyz *= rcp(1.00001f - Color.xyz);
 #else
 	float3 Color = Hemi.xyz;
@@ -125,9 +128,10 @@ void main(PSInputFullscreen I, out float4 Point : SV_Target0, out float4 Final :
 	Final.xyz = lerp(Final.xyz, Hemi.xyz, Hemi.w);
 	Point.xyz = length(Point.xyz - StartPoint.xyz) * Reflection.xyz + ReflectPoint;
 	
-	Point.w = rcp(max(0.000001f, H.w));
+	Point.w = rcp(max(EPS_S, H.w));
 	Final.xyz *= rcp(1.0f + Final.xyz);
+	Final.xyz = saturate(Final.xyz);
 	
-	Final.w = isNotHUD;
+	Final.w = isHUDRender;
 }
 

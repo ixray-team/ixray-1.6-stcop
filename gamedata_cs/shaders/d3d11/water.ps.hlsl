@@ -59,11 +59,15 @@ float4 main(vf I, float4 pos2d : SV_POSITION) : SV_Target
 
 #ifdef USE_SSLR_ON_WATER
 	float3 Reflect = mul((float3x3)m_V, vreflect);
+	float3 ReflectPoint = WaterPoint * 0.99f + Reflect * 0.025f;
 	
-    float4 sslr = ScreenSpaceLocalReflections(WaterPoint, Reflect);
+    float4 sslr = ScreenSpaceLocalReflections(ReflectPoint, Reflect);
 	
 	#ifdef USE_OFFSCREEN_REFLECTIONS
-		float4 vslr = FastViewReflections(WaterPoint, Reflect);
+		ReflectPoint = mul(m_env_view, float4(ReflectPoint, 1.0f)).xyz;
+		Reflect = mul((float3x3)m_env_view, Reflect);
+	
+		float4 vslr = FastViewReflections(ReflectPoint, Reflect);
 		
 		float Fog = saturate(length(vslr.xyz) * fog_params.w + fog_params.x);
 		vslr.w *= 1.f - Fog * Fog;
@@ -74,6 +78,8 @@ float4 main(vf I, float4 pos2d : SV_POSITION) : SV_Target
 #else
 	#ifdef USE_OFFSCREEN_REFLECTIONS
 		float3 Reflect = mul((float3x3)m_V, vreflect);
+		Reflect = mul((float3x3)m_env_view, Reflect);
+		
 		float4 vslr = s_env.SampleLevel(smp_rtlinear, Reflect.xyz, 0.0f);
 		vslr.xyz *= rcp(1.00001f - vslr.xyz);
 		

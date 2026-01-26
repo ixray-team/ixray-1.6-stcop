@@ -1,9 +1,5 @@
 #include "common.hlsli"
 
-#if defined(USE_OFFSCREEN_REFLECTIONS) && !defined(USE_SSLR_REFLECTIONS)
-#define USE_VIEW_REFLECTIONS
-#endif
-
 #include "metalic_roughness_light.hlsli"
 #include "metalic_roughness_ambient.hlsli"
 #include "reflections.hlsli"
@@ -25,7 +21,7 @@ float4 main(PSInputFullscreen I) : SV_Target
 #ifndef USE_LEGACY_LIGHT
 	#ifdef USE_SSLR_REFLECTIONS
 		float3 SpecularIrradance = s_refl.SampleLevel(smp_rtlinear, I.texcoord, 0.0).xyz;
-		SpecularIrradance *= rcp(1.00001f - SpecularIrradance);
+		SpecularIrradance *= SpecularIrradance > 0.0f ? rcp(1.0f - SpecularIrradance) : 0.0f;
 	#else
 		float3 SpecularIrradance = CompureSpecularIrradance(reflect(O.View, O.Normal), O.Hemi, O.Roughness);
 	#endif
@@ -37,7 +33,7 @@ float4 main(PSInputFullscreen I) : SV_Target
 #endif
 
     float3 Color = Occ * Ambient + Light;
-
+	
     float Fog = PushGamma(saturate(O.ViewDist * fog_params.w + fog_params.x));
     Color = lerp(Color, PushGamma(fog_color.xyz), Fog);
 
