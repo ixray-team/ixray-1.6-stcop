@@ -22,6 +22,7 @@
 #include "Widgets/UIStackPanel.h"
 #include "Widgets/UITextBanner.h"
 #include "Widgets/UIMultiTextStatic.h"
+#include "Widgets/UIGamepadLegend.h"
 
 #include "UITextureMaster.h"
 #include "Widgets/UITabButtonMP.h"
@@ -227,10 +228,22 @@ bool CUIXmlInit::InitStatic(CUIXml& xml_doc, LPCSTR path, int index, CUIStatic* 
 	return true;
 }
 
-bool CUIXmlInit::InitStackPanel(CUIXml& xml_doc, LPCSTR path, int index, CUIStackPanel* pWnd)
+bool CUIXmlInit::InitGamepadLegend(CUIXml& xml_doc, LPCSTR path, int index, CUIGamepadLegend* pWnd, bool fatal)
 {
-	bool RetVal = InitWindow(xml_doc, path, index, pWnd);
+	bool RetVal = InitWindow(xml_doc, path, index, pWnd, fatal);
+	if (!RetVal)
+		return RetVal;
 
+	pWnd->SetSpacing(xml_doc.ReadAttribFlt(path, index, "spacing", 5.0f));
+
+	return RetVal;
+}
+
+bool CUIXmlInit::InitStackPanel(CUIXml& xml_doc, LPCSTR path, int index, CUIStackPanel* pWnd, bool fatal)
+{
+	bool RetVal = InitWindow(xml_doc, path, index, pWnd, fatal);
+	if (!RetVal)
+		return RetVal;
 
 	CUIStackPanel::EStackPanelAlignment mode = CUIStackPanel::eLeft;
 	if (xml_doc.ReadAttribBool(path, index, "right", true))
@@ -665,6 +678,16 @@ bool CUIXmlInit::InitLoadscreenProgress(CUIXml& xml_doc, LPCSTR path, int index,
 	return true;
 }
 
+UI_API u32 gamepad_prefix_type = 3;
+UI_API xr_token	gamepad_prefix_token[] =
+{
+	{ "ps4",	0		},
+	{ "ps5",	1		},
+	{ "switch",	2		},
+	{ "xbox1",	3		},
+	{ 0,		0		}
+};
+
 void CUIXmlInit::InitAutoStaticGroup(CUIXml& xml_doc, LPCSTR path, int index, CUIWindow* pParentWnd)
 {
 	XML_NODE* _stored_root				= xml_doc.GetLocalRoot();
@@ -678,6 +701,7 @@ void CUIXmlInit::InitAutoStaticGroup(CUIXml& xml_doc, LPCSTR path, int index, CU
 	int cnt_static						= 0;
 	int cnt_frameline					= 0;
 	int cnt_framewindow					= 0;
+	int cnt_gp_binding_static			= 0;
 	string512							buff;
 
 	while(node)
@@ -715,6 +739,24 @@ void CUIXmlInit::InitAutoStaticGroup(CUIXml& xml_doc, LPCSTR path, int index, CU
 			pParentWnd->AttachChild	(pUIFramewindow);
 
 			++cnt_framewindow;
+		}
+		else if (!_stricmp(node_name, "gp_bind"))
+		{
+			CUIStatic* pUIStatic = new CUIStatic();
+			InitStatic(xml_doc, "gp_bind", cnt_gp_binding_static, pUIStatic);
+
+			LPCSTR texture = xml_doc.Read("gp_bind:texture", cnt_gp_binding_static, "");
+			string256					buf;
+			xr_strconcat(buf, get_token_name(gamepad_prefix_token, gamepad_prefix_type), "_", texture);
+			pUIStatic->InitTexture(buf);
+
+			xr_sprintf(buff, "gp_bind_%d", cnt_gp_binding_static);
+			pUIStatic->SetWindowName(buff);
+
+			pUIStatic->SetAutoDelete(true);
+			pParentWnd->AttachChild(pUIStatic);
+
+			++cnt_gp_binding_static;
 		}
 		node = node->NextSibling();
 	}

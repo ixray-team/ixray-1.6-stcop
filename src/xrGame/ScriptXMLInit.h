@@ -32,6 +32,7 @@ class CUIProgressBar;
 class CUIListWnd;
 class CUIStackPanel;
 class CUIArrow;
+class CUIGamepadLegend;
 
 class CScriptXmlInit 
 {
@@ -54,6 +55,7 @@ public:
 	CUIEditBox*			InitEditBox(LPCSTR path, CUIWindow* parent);
 	CUIStatic*			InitStatic(LPCSTR path, CUIWindow* parent);
 	CUIStackPanel*		InitStackPanel(LPCSTR path, CUIWindow* parent);
+	CUIGamepadLegend*	InitGamepadLegend(LPCSTR path, CUIWindow* parent);
 	CUIStatic*			InitAnimStatic(LPCSTR path, CUIWindow* parent);
 	CUIStatic*			InitSleepStatic(LPCSTR path, CUIWindow* parent);
 	CUICheckButton*		InitCheck(LPCSTR path, CUIWindow* parent);
