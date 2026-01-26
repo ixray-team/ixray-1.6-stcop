@@ -705,6 +705,22 @@ void CLevel::IR_GamepadKeyPress(int id)
 	}
 }
 
+void CLevel::IR_GamepadKeyHold(int id)
+{
+	if (g_bDisableAllInput)
+		return;
+
+	if (Device.Paused())
+		return;
+
+	if (CurrentGameUI() && CurrentGameUI()->IR_UIOnGamepadKeyHold(id)) return;
+
+	if (g_actor != nullptr && g_actor->g_Alive())
+	{
+		g_actor->IR_GamepadKeyHold(id);
+	}
+}
+
 void CLevel::block_action(int cmd) {
 	++blocked_bings[cmd];
 }
