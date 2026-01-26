@@ -1,0 +1,41 @@
+<w>
+	<file name="ui\xbox1_controller">
+		<texture id="xbox1_controller_a" x="270" y="481" width="84" height="84"/>
+		<texture id="xbox1_controller_b" x="182" y="545" width="84" height="84"/>
+		<texture id="xbox1_controller_dpad" x="2" y="2" width="94" height="94"/>
+		<texture id="xbox1_controller_dpadd" x="100" y="2" width="94" height="94"/>
+		<texture id="xbox1_controller_dpadh" x="198" y="2" width="94" height="94"/>
+		<texture id="xbox1_controller_dpadl" x="296" y="2" width="94" height="94"/>
+		<texture id="xbox1_controller_dpadr" x="394" y="2" width="94" height="94"/>
+		<texture id="xbox1_controller_dpadu" x="2" y="100" width="94" height="94"/>
+		<texture id="xbox1_controller_dpadv" x="100" y="100" width="94" height="94"/>
+		<texture id="xbox1_controller_holda" x="94" y="388" width="84" height="85"/>
+		<texture id="xbox1_controller_holdb" x="182" y="456" width="84" height="85"/>
+		<texture id="xbox1_controller_holdx" x="94" y="477" width="84" height="85"/>
+		<texture id="xbox1_controller_holdy" x="2" y="483" width="84" height="85"/>
+		<texture id="xbox1_controller_lb" x="194" y="387" width="92" height="65"/>
+		<texture id="xbox1_controller_lmenu" x="358" y="550" width="80" height="79"/>
+		<texture id="xbox1_controller_ls" x="2" y="198" width="92" height="91"/>
+		<texture id="xbox1_controller_lsclick" x="266" y="651" width="90" height="90"/>
+		<texture id="xbox1_controller_lsd" x="98" y="198" width="92" height="91"/>
+		<texture id="xbox1_controller_lsh" x="294" y="196" width="92" height="91"/>
+		<texture id="xbox1_controller_lsl" x="390" y="196" width="92" height="91"/>
+		<texture id="xbox1_controller_lsr" x="294" y="291" width="92" height="91"/>
+		<texture id="xbox1_controller_lsu" x="198" y="100" width="92" height="92"/>
+		<texture id="xbox1_controller_lsv" x="294" y="100" width="92" height="92"/>
+		<texture id="xbox1_controller_lt" x="178" y="633" width="76" height="87"/>
+		<texture id="xbox1_controller_rb" x="386" y="386" width="92" height="65"/>
+		<texture id="xbox1_controller_rmenu" x="270" y="569" width="80" height="79"/>
+		<texture id="xbox1_controller_rs" x="194" y="292" width="92" height="91"/>
+		<texture id="xbox1_controller_rsclick" x="363" y="650" width="90" height="90"/>
+		<texture id="xbox1_controller_rsd" x="390" y="291" width="92" height="91"/>
+		<texture id="xbox1_controller_rsh" x="2" y="293" width="92" height="91"/>
+		<texture id="xbox1_controller_rsl" x="98" y="293" width="92" height="91"/>
+		<texture id="xbox1_controller_rsr" x="290" y="386" width="92" height="91"/>
+		<texture id="xbox1_controller_rsu" x="390" y="100" width="92" height="92"/>
+		<texture id="xbox1_controller_rsv" x="198" y="196" width="92" height="92"/>
+		<texture id="xbox1_controller_rt" x="90" y="654" width="76" height="87"/>
+		<texture id="xbox1_controller_x" x="90" y="566" width="84" height="84"/>
+		<texture id="xbox1_controller_y" x="2" y="572" width="84" height="84"/>
+	</file>
+</w>
