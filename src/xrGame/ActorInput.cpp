@@ -570,6 +570,35 @@ void CActor::IR_OnMouseMove(int dx, int dy)
 
 void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 {
+	float absValueX = std::abs(value.x);
+	float absValueY = std::abs(value.y);
+	if (id != 2 && absValueX < 0.03f && absValueY < 0.03f)
+	{
+		if (id == 0)
+		{
+			if (mstate_wishful & mcAccel)
+			{
+				mstate_wishful &= ~mcAccel;
+			}
+			if (mstate_wishful & mcLStrafe)
+			{
+				mstate_wishful &= ~mcLStrafe;
+			}
+			if (mstate_wishful & mcRStrafe)
+			{
+				mstate_wishful &= ~mcRStrafe;
+			}
+			if (mstate_wishful & mcFwd)
+			{
+				mstate_wishful &= ~mcFwd;
+			}
+			if (mstate_wishful & mcBack)
+			{
+				mstate_wishful &= ~mcBack;
+			}
+		}
+		return;
+	}
 	// Left stick
 	if (id == 0)
 	{
@@ -589,15 +618,6 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 			else
 			{
 				mstate_wishful &= ~mcAccel;
-
-				if (value.y > 0.75f)
-				{
-					mstate_wishful |= mcSprint;
-				}
-				else
-				{
-					mstate_wishful &= ~mcSprint;
-				}
 			}
 		}
 	}
@@ -629,7 +649,7 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 		{
 			IR_OnKeyboardPress(kWPN_ZOOM);
 		}
-		else
+		else if (pInput->GetControllerMode())
 		{
 			IR_OnKeyboardRelease(kWPN_ZOOM);
 		}
@@ -638,7 +658,7 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 		{
 			IR_OnKeyboardPress(kWPN_FIRE);
 		}
-		else
+		else if (pInput->GetControllerMode())
 		{
 			IR_OnKeyboardRelease(kWPN_FIRE);
 		}
@@ -647,31 +667,100 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 
 void CActor::IR_GamepadKeyPress(int id)
 {
-	if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_LEFT_SHOULDER)
+	switch (id)
 	{
-		IR_OnKeyboardPress(kPREV_SLOT);
+	case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_LEFT_SHOULDER:
+		{
+			SDrawStaticStruct* s = CurrentGameUI()->AddCustomStatic("gun_jammed", true);
+			s->SetText("Wheel Weapon Menu - To be implemented");
+			break;
+		}
+	case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER:
+		{
+			IR_OnKeyboardPress(kWPN_RELOAD);
+			break;
+		}
+	case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_WEST:
+		{
+			IR_OnKeyboardPress(kUSE);
+			IR_OnKeyboardPress(kWPN_RELOAD);
+			break;
+		}
+	case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_NORTH:
+		{
+			if (!inventory_disabled())
+			{
+				if (HudAnimator()->BackpackAnimator() != nullptr)
+				{
+					HudAnimator()->BackpackAnimator()->SwitchAnimator();
+				}
+				else
+				{
+					CurrentGameUI()->ShowActorMenu();
+				}
+			}
+			break;
+		}
+	case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_EAST:
+		{
+			IR_OnKeyboardPress(kCROUCH);
+			break;
+		}
+	case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_SOUTH:
+	{
+		IR_OnKeyboardPress(kJUMP);
+		break;
 	}
-	else if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER)
-	{
-		IR_OnKeyboardPress(kNEXT_SLOT);
-	}
-	else if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_SOUTH)
-	{
-		IR_OnKeyboardPress(kUSE);
-	}
-	else if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_WEST)
-	{
-		IR_OnKeyboardPress(kWPN_RELOAD);
-	}
-	else if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_NORTH)
-	{
-		inventory().SetActiveSlot(NO_ACTIVE_SLOT);
-	}
-	else if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_LEFT_STICK)
-	{
-	}
-	else if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_RIGHT_STICK)
-	{
+	case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_LEFT_STICK:
+		{
+			IR_OnKeyboardPress(kSPRINT_TOGGLE);
+			break;
+		}
+	case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_RIGHT_STICK:
+		{
+			IR_OnKeyboardPress(kTORCH);
+			break;
+		}
+	case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_BACK:
+		{
+			if (!pda_disabled())
+			{
+				if (HudAnimator()->PdaAnimator() != nullptr)
+				{
+					HudAnimator()->PdaAnimator()->SwitchAnimator();
+				}
+				else
+				{
+					CurrentGameUI()->ShowPdaMenu();
+				}
+			}
+			break;
+		}
+	case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_START:
+		{
+			IR_OnKeyboardPress(kQUIT);
+			break;
+		}
+	case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_DPAD_UP:
+		{
+			IR_OnKeyboardPress(kQUICK_USE_1);
+			break;
+		}
+	case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_DPAD_DOWN:
+		{
+			IR_OnKeyboardPress(kQUICK_USE_4);
+			break;
+		}
+	case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_DPAD_LEFT:
+		{
+			IR_OnKeyboardPress(kQUICK_USE_2);
+			break;
+		}
+	case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_DPAD_RIGHT:
+		{
+			IR_OnKeyboardPress(kQUICK_USE_3);
+			break;
+		}
 	}
 }
 
