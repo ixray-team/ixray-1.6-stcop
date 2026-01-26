@@ -60,8 +60,6 @@ void main(PSInputFullscreen I, out float4 Point : SV_Target0, out float4 Final :
 	Jitter.x = Jitter.x * 0.5f + 0.5f;
 	Jitter.y *= 0.7f;
 	
-	float3 BaseReflect = normalize(reflect(ViewVec, O.Normal.xyz));
-	
 	float4 H = ImportanceSampleGGX(mul(m_invV, O.Normal.xyz), Jitter, O.Roughness);
 	H.xyz = mul(m_V, H.xyz);
 	
@@ -79,7 +77,7 @@ void main(PSInputFullscreen I, out float4 Point : SV_Target0, out float4 Final :
 	
 	if(isNotHUD)
 	{
-		StartPoint += O.Normal * 0.15f;
+		StartPoint += O.Normal * 0.025f;
 		
 #ifdef USE_OFFSCREEN_REFLECTIONS
 		float4 VSLR = FastViewReflections(StartPoint, Reflection);
@@ -102,7 +100,7 @@ void main(PSInputFullscreen I, out float4 Point : SV_Target0, out float4 Final :
 	Final = s_image.Sample(smp_rtlinear, PrevSpecularUV.xy);
 	
 #ifdef USE_OFFSCREEN_REFLECTIONS
-	O.Hemi = saturate(O.Hemi * 3.0f);
+	O.Hemi = isNotHUD ? saturate(O.Hemi * 3.0f) : 1.0f;
 #endif
 	
 	float4 Hemi = CompureSpecularIrradance(Reflection.xyz, O.Hemi, 0.0f).xyzz;
@@ -125,8 +123,9 @@ void main(PSInputFullscreen I, out float4 Point : SV_Target0, out float4 Final :
 	Final.xyz = lerp(Final.xyz, Hemi.xyz, Hemi.w);
 	Point.xyz = length(Point.xyz - StartPoint.xyz) * Reflection.xyz + ReflectPoint;
 	
-	Point.w = rcp(max(0.000001f, H.w));
+	Point.w = rcp(max(EPS_S, H.w));
 	Final.xyz *= rcp(1.0f + Final.xyz);
+	Final.xyz = saturate(Final.xyz);
 	
 	Final.w = isNotHUD;
 }
