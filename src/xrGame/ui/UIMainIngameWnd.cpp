@@ -71,9 +71,6 @@ const u32	g_clWhite					= 0xffffffff;
 
 #define		SHOW_INFO_SPEED				0.5f
 #define		HIDE_INFO_SPEED				10.f
-#define     QUICK_SLOTS_SHOW_SPEED       3.0f
-#define     QUICK_SLOTS_HIDE_DELAY       2.0f
-#define     QUICK_SLOTS_HIDE_SPEED       4.0f
 
 constexpr auto C_ON_ENEMY = color_xrgb(0xff, 0, 0);
 constexpr auto C_DEFAULT = color_xrgb(0xff, 0xff, 0xff);
@@ -484,16 +481,32 @@ void CUIMainIngameWnd::Init()
 
 	HUD_SOUND_ITEM::LoadSound("maingame_ui", "snd_new_contact", m_contactSnd, SOUND_TYPE_IDLE);
 
+	const bool isHideQuickSlotsEnabled = psHUD_Flags.test(HUD_HIDE_QUICK_SLOTS);
+	if (isHideQuickSlotsEnabled)
+	{
+		if (uiXml.NavigateToNode("quick_slots_panel", 0))
+		{
+			m_quick_slots_show_speed = uiXml.ReadAttribFlt("quick_slots_panel", 0, "show_speed", 3.0f);
+			m_quick_slots_hide_speed = uiXml.ReadAttribFlt("quick_slots_panel", 0, "hide_speed", 4.0f);
+			m_quick_slots_hide_delay = uiXml.ReadAttribFlt("quick_slots_panel", 0, "hide_delay", 2.0f);
+		}
+	}
+	
+	if (uiXml.NavigateToNode("quick_slots_panel", 0))
+	{
+		m_quick_slots_empty_red_glow_counter = uiXml.ReadAttribInt("quick_slots_panel", 0, "empty_red_glow_counter", 1) != 0;
+		m_quick_slots_empty_red_glow_icon = uiXml.ReadAttribInt("quick_slots_panel", 0, "empty_red_glow_icon", 1) != 0;
+		m_quick_slots_empty_red_intensity = uiXml.ReadAttribFlt("quick_slots_panel", 0, "empty_red_intensity", 1.0f);
+		m_quick_slots_empty_red_intensity = clampr(m_quick_slots_empty_red_intensity, 0.0f, 1.0f);
+	}
 
-	// Quick slots panel hidden by default
-	m_quick_slots_visible = EngineExternal()[EEngineExternalUI::ShowQuickSlotByDefault];
-	m_quick_slots_force_visible = false; // Never force visibility on init to allow auto-hide
-	m_quick_slots_force_visible_by_key = false; // Track if force visibility was set by key press
-	m_quick_slots_alpha = 0.0f;
-	m_quick_slots_last_interaction_time = 0.0f; // Initialize to 0 instead of negative value
+	m_quick_slots_visible = !isHideQuickSlotsEnabled;                  // Visible by default if hide option is disabled
+	m_quick_slots_force_visible = false;                               // Never force visibility on init to allow auto-hide
+	m_quick_slots_force_visible_by_key = false;                        // Track if force visibility was set by key press
+	m_quick_slots_alpha = isHideQuickSlotsEnabled ? 0.0f : 1.0f;       // Start visible if hide option is disabled
+	m_quick_slots_last_interaction_time = 0.0f;                        // Initialize to 0 instead of negative value
 
-	// Скрываем все элементы панели по умолчанию
-	if (!m_quick_slots_visible)
+	if (isHideQuickSlotsEnabled && !m_quick_slots_visible)
 	{
 		for (const auto& slot : m_quick_slots_icons)
 		{
@@ -854,14 +867,13 @@ void CUIMainIngameWnd::TickQuickSlotsPanelFade()
 
 	if (should_be_visible)
 	{
-
-		m_quick_slots_alpha += QUICK_SLOTS_SHOW_SPEED * dt;
+		m_quick_slots_alpha += m_quick_slots_show_speed * dt;
 		if (m_quick_slots_alpha > 1.0f)
 			m_quick_slots_alpha = 1.0f;
 
 		if (!m_quick_slots_force_visible && m_quick_slots_visible)
 		{
-			if ((Device.fTimeGlobal - m_quick_slots_last_interaction_time) >= QUICK_SLOTS_HIDE_DELAY)
+			if ((Device.fTimeGlobal - m_quick_slots_last_interaction_time) >= m_quick_slots_hide_delay)
 			{
 				m_quick_slots_visible = false;
 			}
@@ -869,10 +881,9 @@ void CUIMainIngameWnd::TickQuickSlotsPanelFade()
 	}
 	else
 	{
-
 		if (m_quick_slots_alpha > 0.0f)
 		{
-			m_quick_slots_alpha -= QUICK_SLOTS_HIDE_SPEED * dt;
+			m_quick_slots_alpha -= m_quick_slots_hide_speed * dt;
 			if (m_quick_slots_alpha < 0.0f)
 				m_quick_slots_alpha = 0.0f;
 		}
@@ -1586,10 +1597,30 @@ void CUIMainIngameWnd::UpdateQuickSlots()
 					const float alphaScale = isEmpty ? 128.0f : 255.0f;
 					const u32 alpha = (u32)clampr(iFloor(m_quick_slots_alpha * alphaScale), 0, (int)alphaScale);
 
-					const u32 color = subst_alpha(color_rgba(255, 255, 255, 255), alpha);
-					wnd->SetTextureColor(color);
-					slot->SetTextureColor(color);
-					wnd->TextItemControl()->SetTextColor(subst_alpha(color_rgba(255, 255, 255, 255), 255));
+					u32 iconColor;
+					if (isEmpty && m_quick_slots_empty_red_glow_icon)
+					{
+						const u32 redComponent = (u32)clampr(iFloor(255.0f * m_quick_slots_empty_red_intensity), 0, 255);
+						const u32 greenBlueComponent = (u32)clampr(iFloor(255.0f * (1.0f - m_quick_slots_empty_red_intensity)), 0, 255);
+						iconColor = subst_alpha(color_rgba(255, greenBlueComponent, greenBlueComponent, 255), alpha);
+					}
+					else
+					{
+						iconColor = subst_alpha(color_rgba(255, 255, 255, 255), alpha);
+					}
+
+					slot->SetTextureColor(iconColor);
+
+					if (isEmpty && m_quick_slots_empty_red_glow_counter)
+					{
+						const u32 redComponent = (u32)clampr(iFloor(255.0f * m_quick_slots_empty_red_intensity), 0, 255);
+						const u32 greenBlueComponent = (u32)clampr(iFloor(255.0f * (1.0f - m_quick_slots_empty_red_intensity)), 0, 255);
+						wnd->TextItemControl()->SetTextColor(subst_alpha(color_rgba(255, greenBlueComponent, greenBlueComponent, 255), 255));
+					}
+					else
+					{
+						wnd->TextItemControl()->SetTextColor(subst_alpha(color_rgba(255, 255, 255, 255), 255));
+					}
 				}
 			}
 			else

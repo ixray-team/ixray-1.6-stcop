@@ -105,6 +105,8 @@
 
 	<new_contact_snd>detectors\contact_1</new_contact_snd>
 
+	<quick_slots_panel show_speed="3.0" hide_speed="4.0" hide_delay="2.0" empty_red_glow_counter="1" empty_red_glow_icon="1" empty_red_intensity="1.0"/>
+
     <quick_slot0 x="20" y="710" width="40" height="40">
 	    <counter x="1" y="1" width="29" height="16">
 			<window_name>counter</window_name>
