@@ -400,6 +400,9 @@
 	<string id="ui_mm_r2_use_rain_drops">
 		<text>Drops on Glass</text>
 	</string>
+	<string id="ui_mm_mouse_sense_ui">
+		<text>Mouse sensitivity in UI</text>
+	</string>
 	<string id="st_drop_amount">
 		<text>drop amount</text>
 	</string>
@@ -460,7 +463,20 @@
 	<string id="ui_mm_shoot_volume">
 		<text>Shots volume</text>
 	</string>
-	<string id="ui_mm_mouse_sense_ui">
-		<text>Mouse sensitivity in UI</text>
+
+	<string id="ui_pda_tabs">
+		<text>Tabs</text>
+	</string>
+	<string id="ui_pda_log_to_start">
+		<text>First</text>
+	</string>
+	<string id="ui_pda_log_to_end">
+		<text>Last</text>
+	</string>
+	<string id="ui_pda_log_date_prev">
+		<text>Previous date</text>
+	</string>
+	<string id="ui_pda_log_date_next">
+		<text>Next date</text>
 	</string>
 </string_table>

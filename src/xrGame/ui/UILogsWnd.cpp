@@ -16,6 +16,7 @@
 #include "../../xrUI/Widgets/UIFixedScrollBar.h"
 #include "../../xrUI/Widgets/UIScrollView.h"
 #include "../../xrUI/Widgets/UICheckButton.h"
+#include "../../xrUI/Widgets/UIStackPanel.h"
 #include "../../xrUI/UIHelper.h"
 #include "UICharacterInfo.h"
 #include "UIInventoryUtilities.h"
@@ -154,6 +155,8 @@ void CUILogsWnd::Init()
 
 	m_prev_period = UIHelper::Create3tButton( m_uiXml, "btn_prev_period", this );
 	m_next_period = UIHelper::Create3tButton( m_uiXml, "btn_next_period", this );
+
+	m_gamepad_legend = UIHelper::CreateGamepadLegend( m_uiXml, "gamepad_legend", this, false );
 
 	Register( m_filter_news );
 	Register( m_filter_talk );
