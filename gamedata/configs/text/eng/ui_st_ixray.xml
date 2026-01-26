@@ -463,4 +463,23 @@
 	<string id="ui_mm_hide_quick_slots">
 		<text>Hide quick access panel</text>
 	</string>
+	<string id="ui_mm_shoot_volume">
+		<text>Shots volume</text>
+	</string>
+
+	<string id="ui_pda_tabs">
+		<text>Tabs</text>
+	</string>
+	<string id="ui_pda_log_to_start">
+		<text>First</text>
+	</string>
+	<string id="ui_pda_log_to_end">
+		<text>Last</text>
+	</string>
+	<string id="ui_pda_log_date_prev">
+		<text>Previous date</text>
+	</string>
+	<string id="ui_pda_log_date_next">
+		<text>Next date</text>
+	</string>
 </string_table>
