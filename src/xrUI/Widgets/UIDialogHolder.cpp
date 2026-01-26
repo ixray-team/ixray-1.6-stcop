@@ -338,6 +338,22 @@ bool CDialogHolder::IR_UIOnGamepadUpdateStick(int id, Fvector2 value)
 	return true;
 };
 
+bool CDialogHolder::IR_UIOnGamepadKeyHold(int id)
+{
+	CUIDialogWnd* TIR = TopInputReceiver();
+	if (!TIR)				
+		return false;
+
+	if (!TIR->IR_process())	
+		return false;
+
+	if (TIR->OnGamepadKeyHold(id))
+		return true;
+
+	// TODO: add customizable bindings for gamepad
+	return true;
+}
+
 bool CDialogHolder::IR_UIOnKeyboardRelease(int dik)
 {
 	CUIDialogWnd* TIR		= TopInputReceiver();
