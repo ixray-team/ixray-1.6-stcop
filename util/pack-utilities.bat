@@ -12,9 +12,6 @@ pushd build\x64\Utilities-Windows
 "%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r%release%-utilities-x64-debug-bin.zip" ^
     "bin\Debug" ^
     -xr!"*.pdb"
-"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r%release%-utilities-x64-release-bin.zip" ^
-    "bin\Release" ^
-    -xr!"*.pdb"
 "%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r%release%-utilities-x64-mixed-bin.zip" ^
     "bin\RelWithDebInfo" ^
     -xr!"*.pdb"
@@ -23,17 +20,11 @@ move build\x64\Utilities-Windows\ixray-1.6-r%release%-utilities-x64-debug-bin.zi
     publish\ixray-1.6-r%release%-utilities-x64-debug-bin.zip
 move build\x64\Utilities-Windows\ixray-1.6-r%release%-utilities-x64-mixed-bin.zip ^
     publish\ixray-1.6-r%release%-utilities-x64-mixed-bin.zip
-move build\x64\Utilities-Windows\ixray-1.6-r%release%-utilities-x64-release-bin.zip ^
-    publish\ixray-1.6-r%release%-utilities-x64-release-bin.zip
 
 :: Pack libraries
 pushd build\x64\Utilities-Windows
 "%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r%release%-utilities-x64-debug-lib.zip" ^
     "lib\Debug" ^
-    -xr!"*.pdb" ^
-    -xr!"*.idb"
-"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r%release%-utilities-x64-release-lib.zip" ^
-    "lib\Release" ^
     -xr!"*.pdb" ^
     -xr!"*.idb"
 "%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r%release%-utilities-x64-mixed-lib.zip" ^
@@ -45,8 +36,6 @@ move build\x64\Utilities-Windows\ixray-1.6-r%release%-utilities-x64-debug-lib.zi
     publish\ixray-1.6-r%release%-utilities-x64-debug-lib.zip
 move build\x64\Utilities-Windows\ixray-1.6-r%release%-utilities-x64-mixed-lib.zip ^
     publish\ixray-1.6-r%release%-utilities-x64-mixed-lib.zip
-move build\x64\Utilities-Windows\ixray-1.6-r%release%-utilities-x64-release-lib.zip ^
-    publish\ixray-1.6-r%release%-utilities-x64-release-lib.zip
 
 :: Pack symbols
 pushd build\x64\Utilities-Windows
