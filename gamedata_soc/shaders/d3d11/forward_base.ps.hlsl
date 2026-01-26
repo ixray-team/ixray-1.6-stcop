@@ -3,8 +3,7 @@
 #include "shadow.hlsli"
 
 #ifdef USE_OFFSCREEN_REFLECTIONS
-#define USE_VIEW_REFLECTIONS
-#define USE_OLD_VIEW_REFLECTIONS
+	#define USE_VIEW_REFLECTIONS
 #endif
 
 #include "metalic_roughness_light.hlsli"
