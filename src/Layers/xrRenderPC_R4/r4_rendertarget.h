@@ -74,6 +74,9 @@ public:
 	ref_rt						rt_ui_depth;
 	ref_rt						rt_ui_color;
 
+	ref_rt						rt_upscaled_depth;
+	ref_rt						rt_upscaled_depth_old;
+
 	ref_rtc						rt_Reflection;
 	ref_rtc						rt_Reflection_temp;
 	ref_rt						rt_Depth;
@@ -278,10 +281,13 @@ public:
 	bool						phase_dlss();
 	void						phase_scale				();
 
+	void						copy_position			();
+
 	void						phase_fxaa				();
 	void						phase_smaa				();
 	void						phase_taa				();
 	void						phase_mblur				();
+	void						phase_depth_upscale		();
 
 	void						phase_cas				();
 	void						phase_ui_postprocess	();
