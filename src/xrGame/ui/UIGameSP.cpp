@@ -132,7 +132,7 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
 
 	case kMAP:
 	{
-		if (!pActor->inventory_disabled())
+		if (!pActor->pda_disabled())
 		{
 			PdaMenu()->SetActiveSubdialog("eptMap");
 			ShowPdaMenu();
@@ -142,7 +142,7 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
 
 	case kCONTACTS:
 	{
-		if (!pActor->inventory_disabled())
+		if (!pActor->pda_disabled())
 		{
 			PdaMenu()->SetActiveSubdialog("eptContacts");
 			ShowPdaMenu();
