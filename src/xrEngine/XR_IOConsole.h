@@ -125,6 +125,7 @@ public:
 
 	void			Show				();
 	void			Hide				();
+	void			Clear				();
 
 	void			Execute				( LPCSTR cmd );
 	void			ExecuteScript		( LPCSTR str );
