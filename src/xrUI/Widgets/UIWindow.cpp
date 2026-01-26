@@ -548,6 +548,32 @@ bool CUIWindow::OnGamepadStickAction(int key, Fvector2 value, EUIMessages gamepa
 	return false;
 }
 
+bool CUIWindow::OnGamepadKeyHold(int dik)
+{
+	bool result;
+
+	if (nullptr != m_pKeyboardCapturer)
+	{
+		result = m_pKeyboardCapturer->OnKeyboardHold(dik);
+
+		if (result) return true;
+	}
+	xrCriticalSectionGuard guard(csUi);
+	WINDOW_LIST::reverse_iterator it = m_ChildWndList.rbegin();
+
+	for (; it != m_ChildWndList.rend(); ++it)
+	{
+		if ((*it)->IsEnabled())
+		{
+			result = (*it)->OnGamepadKeyHold(dik);
+
+			if (result)	return true;
+		}
+	}
+
+	return false;
+}
+
 bool CUIWindow::OnKeyboardHold(int dik)
 {
 	bool result;
