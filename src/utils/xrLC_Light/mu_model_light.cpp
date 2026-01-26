@@ -152,15 +152,33 @@ void run_mu_light()
 		// APPLY
 
 		tStats.Start();
-		u32 _REF_INDEX = 0;
-		for (auto& REF : inlc_global_data()->mu_refs())
+		REF_INDEX = 0;
+		xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [&](size_t ThreadID)
 		{
-			AditionalData("REF LIGHT APPLY: %u/%u", _REF_INDEX, inlc_global_data()->mu_refs().size());
+			while (true)
+			{
+				u32 Index = REF_INDEX.fetch_add(1);
+				if (Index >= inlc_global_data()->mu_refs().size()) break;
+					
+				auto REF = inlc_global_data()->mu_refs()[Index];
+					
+				REF->calc_lighting_cuda_2();
+				REF->calc_lighting_cuda_3();
 
-			REF->calc_lighting_cuda_2();
-			REF->calc_lighting_cuda_3();
-			_REF_INDEX++;
-		}
+				AditionalData("REF LIGHT APPLY: %u/%u", Index, inlc_global_data()->mu_refs().size());
+			}
+ 		} );
+
+
+		// u32 _REF_INDEX = 0;
+		// for (auto& REF : inlc_global_data()->mu_refs())
+		// {
+		// 	AditionalData("REF LIGHT APPLY: %u/%u", _REF_INDEX, inlc_global_data()->mu_refs().size());
+		// 
+		// 	REF->calc_lighting_cuda_2();
+		// 	REF->calc_lighting_cuda_3();
+		// 	_REF_INDEX++;
+		// }
 		Msg("[MURefs] Elapsed For Apply Colors: %u ms", tStats.GetElapsed_ms());
 
 		GPUTaskinSystem.RestartALL(); // Выгружаем все Это последнее освещение 
