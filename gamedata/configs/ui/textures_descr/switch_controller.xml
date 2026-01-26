@@ -1,0 +1,42 @@
+<w>
+	<file name="ui\switch_controller">
+		<texture id="switch_controller_a" x="103" y="12" width="84" height="84"/>
+		<texture id="switch_controller_b" x="188" y="11" width="84" height="84"/>
+		<texture id="switch_controller_x" x="213" y="635" width="84" height="84"/>
+		<texture id="switch_controller_y" x="313" y="631" width="84" height="84"/>
+		<texture id="switch_controller_holda" x="609" y="630" width="84" height="84"/>
+		<texture id="switch_controller_holdb" x="10" y="727" width="84" height="84"/>
+		<texture id="switch_controller_holdx" x="108" y="728" width="84" height="84"/>
+		<texture id="switch_controller_holdy" x="212" y="728" width="84" height="84"/>
+		<texture id="switch_controller_dpad" x="318" y="108" width="76" height="76"/>
+		<texture id="switch_controller_dpadd" x="409" y="98" width="96" height="96"/>
+		<texture id="switch_controller_dpadl" x="2" y="204" width="96" height="96"/>
+		<texture id="switch_controller_dpadr" x="103" y="202" width="96" height="96"/>
+		<texture id="switch_controller_dpadu" x="203" y="202" width="96" height="96"/>
+		<texture id="switch_controller_dpadv" x="310" y="726" width="96" height="96"/>
+		<texture id="switch_controller_dpadh" x="409" y="726" width="96" height="96"/>
+		<texture id="switch_controller_lt" x="7" y="406" width="84" height="84"/>
+		<texture id="switch_controller_lmenu" x="103" y="433" width="88" height="50"/>
+		<texture id="switch_controller_ls" x="105" y="305" width="96" height="96"/>
+		<texture id="switch_controller_lsclick" x="204" y="306" width="96" height="96"/>
+		<texture id="switch_controller_lsd" x="106" y="920" width="96" height="96"/>
+		<texture id="switch_controller_lsh" x="304" y="306" width="96" height="96"/>
+		<texture id="switch_controller_lsl" x="207" y="920" width="96" height="96"/>
+		<texture id="switch_controller_lsr" x="306" y="920" width="96" height="96"/>
+		<texture id="switch_controller_lsu" x="6" y="921" width="96" height="96"/>
+		<texture id="switch_controller_lsv" x="407" y="303" width="96" height="96"/>
+		<texture id="switch_controller_lb" x="411" y="207" width="82" height="82"/>
+		<texture id="switch_controller_rb" x="306" y="418" width="82" height="82"/>
+		<texture id="switch_controller_rmenu" x="196" y="412" width="96" height="96"/>
+		<texture id="switch_controller_rs" x="5" y="516" width="96" height="96"/>
+		<texture id="switch_controller_rsclick" x="104" y="513" width="96" height="96"/>
+		<texture id="switch_controller_rsd" x="5" y="819" width="96" height="96"/>
+		<texture id="switch_controller_rsh" x="306" y="515" width="96" height="96"/>
+		<texture id="switch_controller_rsl" x="303" y="824" width="96" height="96"/>
+		<texture id="switch_controller_rsr" x="203" y="818" width="96" height="96"/>
+		<texture id="switch_controller_rsu" x="104" y="818" width="96" height="96"/>
+		<texture id="switch_controller_rsv" x="204" y="513" width="96" height="96"/>
+		<texture id="switch_controller_rt" x="410" y="512" width="84" height="84"/>
+		<texture id="switch_controller_tpad" x="103" y="433" width="88" height="50"/>
+	</file>
+</w>
