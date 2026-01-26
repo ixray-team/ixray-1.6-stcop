@@ -144,24 +144,51 @@ BOOL NEW_ApplyBorders(lm_layer& lm, u32 ref)
 						clr.scale(C);
 						lm.surface[y * lm.width + x]._set(clr);
 						lm.marker[y * lm.width + x] = u8(ref);
-
-						// if (ref >= 255) clMsg("V: [%u] U: [%u]  is alpha == %u", ref);
-	 
+ 
 						bNeedContinue = TRUE;
 					}
 
 				}
 			}
 		}
-		//lm	= result;
-	}
+ 	}
 	catch (...)
 	{
 		clMsg("* ERROR: ApplyBorders");
 	}
 	return bNeedContinue;
 }
+ 
+thread_local CStatTimer tApplyBorders;
+thread_local CStatTimer tRmsTests;
+thread_local CStatTimer tRmsTestsZero;
 
+
+BOOL ApplyBorders(lm_layer& lm, u32 ref)
+{
+	tApplyBorders.Begin();
+	bool ret =  NEW_ApplyBorders(lm, ref);
+	tApplyBorders.End();
+ 	return ret;
+}
+
+void GetApplyStats()
+{
+	tApplyBorders.FrameEnd();
+	tRmsTests.FrameEnd();
+	tRmsTestsZero.FrameEnd();
+
+	Msg("TH[%u] ApplyBorder: %u ms | Rms: %u ms | Zero: %u ms",
+		GetCurrentThreadId(),
+		tApplyBorders.GetElapsed_ms(),
+		tRmsTests.GetElapsed_ms(),
+		tRmsTestsZero.GetElapsed_ms() 
+	);
+
+	tApplyBorders.FrameStart();
+	tRmsTests.FrameStart();
+	tRmsTestsZero.FrameStart();
+}
 
 // Compression test
 
@@ -174,6 +201,8 @@ IC u32	rms_diff(u32 a, u32 b)
 // Это при сжатии используется
 BOOL	__stdcall rms_test_compress(lm_layer& lm, u32 w, u32 h, u32 rms)
 {
+	CScopeTimer T(tRmsTests);
+
 	if ((w <= 1) || (h <= 1))	return FALSE;
 
 	// scale down(lanczos3) and up (bilinear, as video board) //.
@@ -243,11 +272,18 @@ BOOL	__stdcall rms_test(lm_layer& lm, u32 _r, u32 _g, u32 _b, u32 _s, u32 _h, u3
 			{
 				u8			r, g, b, s, h;
 				lm.Pixel(offset, r, g, b, s, h);
-				if (rms_diff(_r, r) > rms)			return FALSE;
-				if (rms_diff(_g, g) > rms)			return FALSE;
-				if (rms_diff(_b, b) > rms)			return FALSE;
-				if (rms_diff(_s, s) > rms)			return FALSE;
-				if (rms_diff(_h, h) > ((rms * 4) / 3))	return FALSE;
+
+				u32 r_rms = rms_diff(_r, r);
+				u32 g_rms = rms_diff(_g, g);
+				u32 b_rms = rms_diff(_b, b);
+ 				u32 s_rms = rms_diff(_s, s);
+ 				u32 h_rms = rms_diff(_h, h);
+
+				if (r_rms > rms)			return FALSE;
+				if (g_rms > rms)			return FALSE;
+				if (b_rms > rms)			return FALSE;
+				if (s_rms > rms)			return FALSE;
+				if (h_rms > ((rms * 4) / 3))	return FALSE;
 			}
 		}
 	}
@@ -278,6 +314,8 @@ u32	__stdcall rms_average(lm_layer& lm, base_color_c& C)
 
 BOOL	compress_Zero(lm_layer& lm, u32 rms)
 {
+	CScopeTimer T(tRmsTestsZero);
+
 	// Average color
 	base_color_c	_c;
 	u32				_count = rms_average(lm, _c);
