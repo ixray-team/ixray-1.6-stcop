@@ -119,21 +119,19 @@ float4 main(PSInputFullscreen I) : SV_Target
     float4 SSLR_OldDiffyse = s_refl.SampleLevel(smp_rtlinear, PrevDiffuseUV.xy, 0.0f);
 	SSLR_OldDiffyse = lerp(SSLRMain, SSLR_OldDiffyse, GetBorderAtten(PrevDiffuseUV));
 	
-	float Fade = 1.0f; // - Fog * 0.1f;
-	
+	float Fade = 0.98f;
 	float DepthClamp = 1.0f - saturate(50.0f * abs(SSLR_OldDiffyse.w - O.Depth));
 	
-	if(O.Depth < 0.02f) {
-		Fade = 0.95f - Fog * 0.1f;
-		
-		DepthClamp = 1.0f - saturate(80.0f * abs(SSLR_OldDiffyse.w - O.Depth) * rcp(O.Depth) - 0.5f);
+	if(O.Depth < 0.02f) 
+	{
+		DepthClamp = 1.0f - saturate(80.0f * abs(min(0.02f, SSLR_OldDiffyse.w) - O.Depth) * rcp(O.Depth) - 0.5f);
 		SSLRMain.xyz = lerp(SSLRMain.xyz, SSLR4.xyz, GetBorderAtten(PrevDiffuseUV));
-		SSLRMain.xyz = lerp(SSLRMain.xyz, SSLR_OldDiffyse.xyz, DepthClamp * 0.98f * Fade);
+		SSLRMain.xyz = lerp(SSLRMain.xyz, SSLR_OldDiffyse.xyz, DepthClamp * Fade);
 		
 		return saturate(SSLRMain);
 	}
 	
-	float4 SSLR_Diffuse = lerp(SSLRMain, SSLR_OldDiffyse, 0.98f * Fade);
+	float4 SSLR_Diffuse = lerp(SSLRMain, SSLR_OldDiffyse, Fade);
     float4 SSLR_OldSpecular = s_refl.SampleLevel(smp_rtlinear, PrevSpecularUV.xy, 0.0f);
 	
 	SSLR_OldSpecular = lerp(SSLR_Diffuse, SSLR_OldSpecular, GetBorderAtten(PrevSpecularUV));

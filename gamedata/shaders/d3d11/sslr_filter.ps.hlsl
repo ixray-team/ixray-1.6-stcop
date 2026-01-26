@@ -55,7 +55,7 @@ float4 main(PSInputFullscreen I) : SV_Target
     GbufferUnpack(I.texcoord.xy, I.hpos.xy, O);
 
 	float4 SSLR = s_refl.SampleLevel(smp_nofilter, I.texcoord.xy, 0);
-	float4 BaseColor = s_image.SampleLevel(smp_nofilter, I.texcoord.xy, 0.0f);
+	float isHUDRender = O.Depth < 0.02f ? 1.0f : 0.0f;
 	
 	if(O.Depth >= 1.0f)
 	{		
@@ -76,7 +76,7 @@ float4 main(PSInputFullscreen I) : SV_Target
 		float2 offset = Disk32_Normalized[i] * scaled_screen_res.zw * DISK32_RADIUS;
 		offset = mirror(I.texcoord.xy + offset * 16.0f);
 		
-		SSLR = s_refl.SampleLevel(smp_nofilter, offset, 0);
+		float4 SSLR = s_refl.SampleLevel(smp_nofilter, offset, 0);
 		
 		float4 Color = s_image.SampleLevel(smp_nofilter, offset, 0.0f);
 		float3 Light = ReflectPoint - SSLR.xyz;
@@ -93,7 +93,7 @@ float4 main(PSInputFullscreen I) : SV_Target
 		float G = NdotL * GeometrySmithD(NdotL, NdotV, O.Roughness);
 		
 		float SampleWeight = D * G * SSLR.w;
-		SampleWeight *= 1.0f - abs(Color.w - BaseColor.w);
+		SampleWeight *= 1.0f - abs(Color.w - isHUDRender);
 
 		Color.w = Length;
 		FinalColor += Color * SampleWeight;
