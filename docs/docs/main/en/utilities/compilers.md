@@ -1,38 +1,41 @@
 # Compilers
 > [!IMPORTANT]  
 > **Status**: Supported <br>
-> **Minimal version**: 1.3
+> **Minimal version**: 1.4
 
-![image](https://github.com/user-attachments/assets/a5b56345-ff52-4b07-91c0-3cd242e966a6)
+![image](https://github.com/user-attachments/assets/ef90d5a5-d2c9-4ff1-a539-a3a8e2cf5a10)
 
 * Fixed thread count initialization
-* * Creates count equal to CPU cores
-* Added **IntelEmbree** tracing support, greatly speeding up builds
-* * Legacy OPCODE build also sped up
-* Prints all missing textures and thm
+* * Number created equals CPU cores
+* Added support for **IntelEmbree** and **CUDA** tracing, greatly increasing speed
+* Output of all missing textures and thm
 * Removed `net` compilation
 * BC7 format support
+* Support for splitting `level.cform` and `level.geom` into several files by size
+* Ability to override compilation quality without launching `Level Editor`
 
 ## LC
 * Skip `invalid faces`
-* New LightMaps save algorithm
-* * Bakes to chosen texture size with faster lookup
-* Fixed original bug where MU models could turn black
-* Option to skip geometry tessellation
-* Option to skip subdivide stage
+* New LightMaps saving algorithm
+* * Bakes into selected texture size with faster sampling
+* Fixed original bug where sometimes MU models became black
+* Ability to skip geometry tessellation
+* Ability to skip subdivide stage
 * Optimized `geometry merge` stage
-* Multithreaded sector compilation
-* Removed QSlim for CForm optimization
-* * Now uses MeshOptimizer for better results
+* Multithreaded sector compilation on location
+* Removed QSlim usage for CForm optimization (Temporary solution)
 * Removed old dx9mesh geometry optimizer
-* * Now uses modern DirectXMesh
-* LightMap without compression supported
-* * Keeps original texture quality
+* * Now uses modern DirectXMesh library
+* LightMap saving modes:
+* * No compression `RBGA`
+* * DX11 Only `BC7`
+* * Vanilla `DXT3`
 
 ## DO
-* Grass saved as DXT3
+* Grass saved in DXT3
 
 ## AI
 * Reimplemented AStart algorithm
-* AI Map compiled in 25-bit format
-* * Input supports original SDK data and 25-bit format
+* 25-bit grid support
+* * Compiler is based on `build.aimap` format for output format `level.aimap`
+* Automatic `.spawn` file assembly for **FreeMP**

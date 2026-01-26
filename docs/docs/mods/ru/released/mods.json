@@ -14,8 +14,8 @@
       "author": "Little Frenchman (Жекан)",
       "link": "https://vk.com/wall-195948120_7369",
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/2055.png",
-      "score": "Оценка: 9.0",
-      "rank": "Top 1 2025"
+      "score": "Ap-Pro: 7.9",
+      "rank": "Топ 1 [2025]"
     },
     {
       "id": "dreamcatcher2r",
@@ -23,7 +23,9 @@
       "description": "Сюжетный мод с уклоном в исследование Зоны и мистические аномалии.",
       "author": "Vivient Team",
       "link": "https://ap-pro.ru/forums/topic/5764-lovec-snov/",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/dreamcatcher2r.png"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/dreamcatcher2r.png",
+      "score": "Ap-Pro: 8.5",
+      "rank": "Топ 2 [2023]"
     },
     {
       "id": "vestnik",
@@ -31,7 +33,8 @@
       "description": "Игрок примет на себя роль бандита по кличке \"Туз\", который отправился работать на военных в Окрестности Чернобыля, чтобы в дальнейшем спасти своего брата Валеру. В моде присутствуют дополнительные активности, интересные места",
       "author": "FacingSlave",
       "link": "https://ap-pro.ru/forums/topic/13947-vestnik/",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%92%D0%B5%D1%81%D1%82%D0%BD%D0%B8%D0%BA.png"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%92%D0%B5%D1%81%D1%82%D0%BD%D0%B8%D0%BA.png",
+      "score": "Ap-Pro: 8.3"
     },
     {
       "id": "stcop_wp38",
@@ -47,7 +50,8 @@
       "description": "По следам Гринча",
       "author": "ScR1pt",
       "link": "https://ap-pro.ru/forums/topic/13767-kto-ukral-prazdnik/",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/ктоукралпраздник.png"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/ктоукралпраздник.png",
+      "score": "Ap-Pro: 9.2"
     },
     {
       "id": "lastnewyear",
@@ -55,15 +59,17 @@
       "description": "Главный герой — обычный сталкер по прозвищу Винт, который отправился в Лиманск",
       "author": "It's Boomer",
       "link": "https://ap-pro.ru/stuff/zov_pripjati/chuzhoy-sredi-chuzhih-posledniy-novyy-god-r489/",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/last_ny.png"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/last_ny.png",
+      "score": "Ap-Pro: 7.2"
     },
     {
-      "id": "lastnewyear",
+      "id": "chsch_deluxe",
       "title": "Чужой среди Чужих: Deluxe",
       "description": "Лето 2021 года, сталкер-новичок по прозвищу Бумер приходит в зону за заработком - на этом и начинается целая история из шести эпизодов",
       "author": "It's Boomer",
       "link": "https://ap-pro.ru/forums/topic/13361-chuzhoy-sredi-chuzhih-deluxe/",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/чужойделюкс.png"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/чужойделюкс.png",
+      "score": "Ap-Pro: 8.1"
     },
     {
       "id": "project2",
@@ -79,7 +85,9 @@
       "description": "Сюжетный мод с уклоном в исследование Зоны и мистические аномалии.",
       "author": "Vivient Team",
       "link": "https://ap-pro.ru/forums/topic/5764-lovec-snov/",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%BB%D0%BE%D0%B2%D0%B5%D1%86.png"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%BB%D0%BE%D0%B2%D0%B5%D1%86.png",
+      "score": "Ap-Pro: 8.5",
+      "rank": "Топ 2 [2023]"
     },
     {
       "id": "one-way-ticket",
@@ -87,7 +95,8 @@
       "description": "Хардкорная кампания про выживание без обратной дороги из Зоны.",
       "author": "OneWay Studio",
       "link": "https://ap-pro.ru/forums/topic/10232-%C2%ABbilet-v-odin-konec%C2%BB/",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%B1%D0%B8%D0%BB%D0%B5%D1%82.png"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%B1%D0%B8%D0%BB%D0%B5%D1%82.png",
+      "rank": "Топ 1 [Конкурс квестов 2024]"
     },
     {
       "id": "sins-academic",
@@ -95,7 +104,8 @@
       "description": "Военная драма с упором на боевые миссии и сложные решения.",
       "author": "Mawrak",
       "link": "https://ap-pro.ru/forums/topic/10194-grehi-akademika-krasnyy-rassvet/",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%B0%D0%BA%D0%B0%D0%B4%D0%B5%D0%BC%D0%B8%D0%BA.png"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%B0%D0%BA%D0%B0%D0%B4%D0%B5%D0%BC%D0%B8%D0%BA.png",
+      "rank": "Топ 2 [Конкурс квестов 2024]"
     },
     {
       "id": "pavlik-day",
@@ -111,7 +121,8 @@
       "description": "Возвращение к истокам с переосмыслением классических локаций.",
       "author": "Retro Zone",
       "link": "https://ap-pro.ru/forums/topic/12208-stalker-nazad-v-proshloe/",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%BD%D0%B0%D0%B7%D0%B0%D0%B4.png"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%BD%D0%B0%D0%B7%D0%B0%D0%B4.png",
+      "score": "Ap-Pro: 7.4"
     }
   ]
 }

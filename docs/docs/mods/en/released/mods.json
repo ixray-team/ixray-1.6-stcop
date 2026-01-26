@@ -13,7 +13,9 @@
       "description": "A late timeline: new technologies and survival in an altered Zone.",
       "author": "Little Frenchman (Jekan)",
       "link": "https://vk.com/wall-195948120_7369",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/2055.png"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/2055.png",
+      "score": "Ap-Pro: 7.9",
+      "rank": "Top 1 [2025]"
     },
     {
       "id": "dreamcatcher2r",
@@ -21,7 +23,9 @@
       "description": "A story-driven mod focused on exploring the Zone and its mystical anomalies.",
       "author": "Vivient Team",
       "link": "https://ap-pro.ru/forums/topic/5764-lovec-snov/",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/dreamcatcher2r.png"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/dreamcatcher2r.png",
+      "score": "Ap-Pro: 8.5",
+      "rank": "Top 2 [2023]"
     },
     {
       "id": "vestnik",
@@ -29,7 +33,8 @@
       "description": "The player will assume the role of a bandit nicknamed 'Ace', who has taken a job working for the military in the Chernobyl Exclusion Zone in order to later save his brother Valera. The mod features additional activities and interesting locations",
       "author": "FacingSlave",
       "link": "https://ap-pro.ru/forums/topic/13947-vestnik/",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%92%D0%B5%D1%81%D1%82%D0%BD%D0%B8%D0%BA.png"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%92%D0%B5%D1%81%D1%82%D0%BD%D0%B8%D0%BA.png",
+      "score": "Ap-Pro: 8.3"
     },
     {
       "id": "stcop_wp38",
@@ -45,7 +50,8 @@
       "description": "In the Footsteps of the Grinch",
       "author": "ScR1pt",
       "link": "https://ap-pro.ru/forums/topic/13767-kto-ukral-prazdnik/",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/ктоукралпраздник.png"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/ктоукралпраздник.png",
+      "score": "Ap-Pro: 9.2"
     },
     {
       "id": "lastnewyear",
@@ -53,19 +59,21 @@
       "description": "The main character is an ordinary stalker nicknamed Vint, who set out for Limansk",
       "author": "It's Boomer",
       "link": "https://ap-pro.ru/stuff/zov_pripjati/chuzhoy-sredi-chuzhih-posledniy-novyy-god-r489/",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/last_ny.png"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/last_ny.png",
+      "score": "Ap-Pro: 7.2"
     },
     {
-      "id": "lastnewyear",
+      "id": "chsch_deluxe",
       "title": "Stranger Among Strangers: Deluxe",
       "description": "Summer 2021. A rookie stalker nicknamed Boomer enters the Zone to make money — and this is how a six-episode story begins.",
       "author": "It's Boomer",
       "link": "https://ap-pro.ru/forums/topic/13361-chuzhoy-sredi-chuzhih-deluxe/",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/чужойделюкс.png"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/чужойделюкс.png",
+      "score": "Ap-Pro: 8.1"
     },
     {
-      "id": "project2 (BETA)",
-      "title": "[Project №2]",
+      "id": "project2",
+      "title": "[Project №2] (Beta | Project closed)",
       "description": "An attempt to adapt the S.T.A.L.K.E.R. Mobile storyline",
       "author": "Graff46",
       "link": "https://ap-pro.ru/forums/topic/2029-proekt-%E2%84%962/?do=findComment&comment=501744",
@@ -77,7 +85,9 @@
       "description": "A story-driven mod focused on exploring the Zone and its mystical anomalies.",
       "author": "Vivient Team",
       "link": "https://ap-pro.ru/forums/topic/5764-lovec-snov/",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%BB%D0%BE%D0%B2%D0%B5%D1%86.png"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%BB%D0%BE%D0%B2%D0%B5%D1%86.png",
+      "score": "Ap-Pro: 8.5",
+      "rank": "Top 2 [2023]"
     },
     {
       "id": "one-way-ticket",
@@ -85,7 +95,8 @@
       "description": "A hardcore campaign about survival with no return from the Zone.",
       "author": "OneWay Studio",
       "link": "https://ap-pro.ru/forums/topic/10232-%C2%ABbilet-v-odin-konec%C2%BB/",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%B1%D0%B8%D0%BB%D0%B5%D1%82.png"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%B1%D0%B8%D0%BB%D0%B5%D1%82.png",
+      "rank": "Top 1 [Quest Contest 2024]"
     },
     {
       "id": "sins-academic",
@@ -93,7 +104,8 @@
       "description": "A military drama emphasizing combat missions and tough decisions.",
       "author": "Mawrak",
       "link": "https://ap-pro.ru/forums/topic/10194-grehi-akademika-krasnyy-rassvet/",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%B0%D0%BA%D0%B0%D0%B4%D0%B5%D0%BC%D0%B8%D0%BA.png"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%B0%D0%BA%D0%B0%D0%B4%D0%B5%D0%BC%D0%B8%D0%BA.png",
+      "rank": "Top 2 [Quest Contest 2024]"
     },
     {
       "id": "pavlik-day",
@@ -109,7 +121,8 @@
       "description": "A return to the roots with a reinterpretation of classic locations.",
       "author": "Retro Zone",
       "link": "https://ap-pro.ru/forums/topic/12208-stalker-nazad-v-proshloe/",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%BD%D0%B0%D0%B7%D0%B0%D0%B4.png"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%BD%D0%B0%D0%B7%D0%B0%D0%B4.png",
+      "score": "Ap-Pro: 7.4"
     }
   ]
 }
