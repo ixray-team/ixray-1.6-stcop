@@ -1748,7 +1748,7 @@ void CActor::UpdateCL()
 		HudAnimator()->Update();
 	}
 	
-	if (IsActorBurning() && HudAnimator()->BurnAnimator())
+	if (IsActorBurning() && HudAnimator() && HudAnimator()->BurnAnimator())
 	{
 		if (HudAnimator()->BurnAnimator()->IsActive())
 		{
