@@ -424,92 +424,107 @@ void CRender::Render()
 		return;
 	}
 
-	if(RImplementation.o.offscreen_reflecitons && pLastSector) {
+	if(RImplementation.o.offscreen_reflecitons && RImplementation.o.deffered_reflecitons && pLastSector)
+	{
 		GPU_EVENT(FORWARD_REFLECTIONS);
 
-		is_render_cubemap = true;
-		static Fmatrix cProj{}, cView{}, cTrans{};
-		static Fvector cmNorm[6]{}, cmDir[6]{};
+		static Fvector EnvPosition;
+		static Fmatrix EnvViewReal;
 
-		auto& CurrentEnv = *g_pGamePersistent->Environment().CurrentEnv;
-		u32 RefSize = Target->rt_Reflection->dwSize;
+		static Fmatrix EnvProject;
 
-		Fvector4 fog_color4 = {
-			CurrentEnv.fog_color.x / (1.0f + CurrentEnv.fog_color.x),
-			CurrentEnv.fog_color.y / (1.0f + CurrentEnv.fog_color.y),
-			CurrentEnv.fog_color.z / (1.0f + CurrentEnv.fog_color.z),
-			CurrentEnv.far_plane
+		static Fmatrix EnvView[6](Fidentity);
+		static Fmatrix EnvFullTransform[6](Fidentity);
+
+		static Fvector cmNorm[6] = {
+			{0.f, +1.f, 0.f},
+			{0.f, +1.f, 0.f},
+			{0.f, 0.f, -1.f},
+			{0.f, 0.f, +1.f},
+			{0.f, +1.f, 0.f},
+			{0.f, +1.f, 0.f}
 		};
 
-		cProj.build_projection(PI_DIV_2 + 0.002f, 1.0f,
-			Device.fViewportNear, CurrentEnv.far_plane * ps_r4_vslr_distance);
+		static Fvector cmDir[6] = {
+			{+1.f, 0.f, 0.f},
+			{-1.f, 0.f, 0.f},
+			{0.f, +1.f, 0.f},
+			{0.f, -1.f, 0.f},
+			{0.f, 0.f, +1.f},
+			{0.f, 0.f, -1.f}
+		};
 
-		cmDir[2].mul(Device.vCameraTop, +1.0f);
-		cmDir[3].mul(Device.vCameraTop, -1.0f);
+		static int iFace = 6;
 
-		cmNorm[2].mul(Device.vCameraDirection, -1.0f);
-		cmNorm[3].mul(Device.vCameraDirection, +1.0f);
+		if (iFace == 6)
+		{
+			GPU_EVENT(FORWARD_REFLECTION_COMPOSE);
 
-		cmDir[0].mul(Device.vCameraRight, +1.0f);
-		cmDir[1].mul(Device.vCameraRight, -1.0f);
+			CEnvDescriptorMixer* CurrentEnv = g_pGamePersistent->Environment().CurrentEnv;
 
-		cmNorm[0].mul(Device.vCameraTop, +1.0f);
-		cmNorm[1].mul(Device.vCameraTop, +1.0f);
+			EnvProject.build_projection(PI_DIV_2, 1.0f,	Device.fViewportNear, 
+			CurrentEnv->far_plane * ps_r4_vslr_distance);
 
-		cmDir[4].mul(Device.vCameraDirection, +1.0f);
-		cmDir[5].mul(Device.vCameraDirection, -1.0f);
+			Fvector4 fog_color4 = {
+				CurrentEnv->fog_color.x / (1.0f + CurrentEnv->fog_color.x),
+				CurrentEnv->fog_color.y / (1.0f + CurrentEnv->fog_color.y),
+				CurrentEnv->fog_color.z / (1.0f + CurrentEnv->fog_color.z),
+				CurrentEnv->fog_far
+			};
 
-		cmNorm[4].mul(Device.vCameraTop, +1.0f);
-		cmNorm[5].mul(Device.vCameraTop, +1.0f);
+			EnvPosition.set(Device.vCameraPosition);
 
-		RCache.set_xform_project(cProj);
+			GRHI->CopySurface(Target->rt_Reflection_temp->pSurface, Target->rt_Reflection->pSurface);
+			GRHI->GenerateMips(Target->rt_Reflection_temp->pTexture->get_SRView());
 
-		phase = PHASE_REFLECT;
+			RCache.xforms.set_env_view(EnvView[4]);
 
-		HOM.Disable();
-		r_pmask(true, false, true);
+			for (auto i = 0; i < 6; ++i)
+			{
+				EnvView[i].build_camera_dir(EnvPosition, cmDir[i], cmNorm[i]);
+				EnvFullTransform[i].mul(EnvProject, EnvView[i]);
 
-		ps_r_taa_jitter.set(0, 0, -1);
-		ps_r_taa_jitter_full.set(ps_r_taa_jitter);
-		
-		Fvector PointPos = Device.vCameraPosition;
-		GRHI->CopySurface(Target->rt_Reflection_temp->pSurface, Target->rt_Reflection->pSurface);
-
-		for(auto i = 0; i < 6; ++i)
+				GRHI->ClearTarget(Target->rt_Reflection->pRT[i], (FLOAT*)&fog_color4);
+			}
+		}
+		else
 		{
 			GPU_EVENT(FORWARD_REFLECTION_SIDE);
 
-			cView.build_camera_dir(PointPos, cmDir[i], cmNorm[i]);
-			cTrans.mul(cProj, cView);
+			phase = PHASE_REFLECT;
+			r_pmask(true, false, true);
 
-			r_dsgraph_render_subspace(pLastSector, cTrans, PointPos, FALSE, FALSE);
+			is_render_cubemap = true;
 
-			RCache.set_xform_view(cView);
+			ps_r_taa_jitter.set(0, 0, -1);
+			ps_r_taa_jitter_full.set(ps_r_taa_jitter);
+
+			r_dsgraph_render_subspace(pLastSector, EnvFullTransform[iFace], EnvPosition, FALSE, FALSE);
+
+			RCache.set_xform_project(EnvProject);
+			RCache.set_xform_view(EnvView[iFace]);
+
 			mapWmark.clear();
 
-			GRHI->ClearTarget(Target->rt_Reflection->pRT[i], (FLOAT*)&fog_color4);
+			u32 dwSize = Target->rt_Reflection->dwSize;
 			GRHI->ClearDepthStencil(Target->rt_Depth->pZRT, ERHI_CLEAR_TARGET::DEPTH, 1.0f, 0L);
+			Target->u_setrt(dwSize, dwSize, Target->rt_Reflection->pRT[iFace], NULL, NULL, Target->rt_Depth->pZRT);
 
-			Target->u_setrt(RefSize, RefSize, Target->rt_Reflection->pRT[i], NULL, NULL, Target->rt_Depth->pZRT);
-			
 			RImplementation.rmNormal();
 
 			RCache.set_Stencil(FALSE);
 			RCache.set_ColorWriteEnable();
 
 			r_dsgraph_render_graph(0);
+
+			RCache.set_xform_project(Device.mProject);
+			RCache.set_xform_view(Device.mView);
+
+			is_render_cubemap = false;
+			phase = PHASE_NORMAL;
 		}
 
-		{
-			GPU_EVENT(FORWARD_REFLECTION_MIPS_GEN);
-			GRHI->GenerateMips(Target->rt_Reflection->pTexture->get_SRView());
-		}
-
-		RCache.set_xform_project(Device.mProject);
-		RCache.set_xform_view(Device.mView);
-
-		is_render_cubemap = false;
-		phase = PHASE_NORMAL;
+		iFace = (iFace + 1) % 7;
 	}
 
 	if(ps_r_scale_mode > 1 || ps_r2_aa_type == 3)
