@@ -386,6 +386,8 @@ int APIENTRY WinMain
 	Serializer->Read("LC_GeomType", gCompilerMode.LC_GeomType);
 	Serializer->Read("LC_GeomChunkSize", gCompilerMode.LC_GeomChunkSize);
 
+	gCompilerMode.LmapsFormat = (LCLightmapFormat) current_format;
+
 	InitializeUIData();
 	SDL_Application();
 
