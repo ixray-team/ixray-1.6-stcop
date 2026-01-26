@@ -40,3 +40,24 @@ pushd build\x64\Server-Windows\temp-game
 popd
 move build\x64\Server-Windows\temp-game\ixray-1.6-r%release%-engine-x64-game.zip ^
     publish\ixray-1.6-r%release%-engine-x64-game.zip
+
+:: Pack editors build
+mkdir build\x64\Editors-Windows\temp-editor
+copy fs*.ltx build\x64\Editors-Windows\temp-editor
+copy .xrignore build\x64\Editors-Windows\temp-editor
+copy ActorEditorLevel.cform build\x64\Editors-Windows\temp-editor
+xcopy patch build\x64\Editors-Windows\temp-editor\gamedata /e /i
+xcopy rawdata build\x64\Editors-Windows\temp-editor\rawdata /e /i
+xcopy build\x64\Editors-Windows\bin\RelWithDebInfo build\x64\Editors-Windows\temp-editor\bin /e /i
+pushd build\x64\Editors-Windows\temp-editor
+"%ProgramFiles%"\7-Zip\7z.exe a -tzip "ixray-1.6-r%release%-editors-x64.zip" ^
+    "bin" ^
+    -ir!"gamedata" ^
+    -ir!"rawdata" ^
+    -ir!"fs*.ltx" ^
+    -ir!".xrignore" ^
+    -ir!"ActorEditorLevel.cform" ^
+    -xr!"*.pdb"
+popd
+move build\x64\Editors-Windows\temp-editor\ixray-1.6-r%release%-editors-x64.zip ^
+    publish\ixray-1.6-r%release%-editors-x64.zip
