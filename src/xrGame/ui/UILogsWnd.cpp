@@ -363,7 +363,71 @@ bool CUILogsWnd::OnKeyboardHold( int dik )
 	return inherited::OnKeyboardHold( dik );
 }
 
-void CUILogsWnd::on_scroll_keys( int dik )
+bool CUILogsWnd::OnGamepadKeyAction(int key, EUIMessages gamepad_action)
+{
+	if (WINDOW_KEY_PRESSED == gamepad_action)
+	{
+		switch (key)
+		{
+			case SDL_GAMEPAD_BUTTON_DPAD_UP:
+			{
+				m_list->ScrollToBegin();
+				break;
+			}
+			case SDL_GAMEPAD_BUTTON_DPAD_DOWN:
+			{
+				m_list->ScrollToEnd();
+				break;
+			}
+			case SDL_GAMEPAD_BUTTON_DPAD_LEFT:
+			{
+				m_prev_period->OnClick();
+				break;
+			}
+			case SDL_GAMEPAD_BUTTON_DPAD_RIGHT:
+			{
+				m_next_period->OnClick();
+				break;
+			}
+			case SDL_GAMEPAD_BUTTON_SOUTH:
+			{
+				m_filter_talk->SetCheck(!m_filter_talk->GetCheck());
+				break;
+			}
+			case SDL_GAMEPAD_BUTTON_NORTH:
+			{
+				m_filter_news->SetCheck(!m_filter_news->GetCheck());
+				break;
+			}
+			return true;
+		}
+	}
+
+	return inherited::OnGamepadKeyAction(key, gamepad_action);
+}
+
+bool CUILogsWnd::OnGamepadStickAction(int key, Fvector2 value, EUIMessages gamepad_action)
+{
+	if (key != 2)
+	{
+		float absoluteVal = std::abs(value.y);
+		if (absoluteVal < 0.5f)
+		{
+			return inherited::OnGamepadStickAction(key, value, gamepad_action);
+		}
+		if (value.y > 0.5f)
+		{
+			on_scroll_keys(key == 1 ? SDL_SCANCODE_DOWN : SDL_SCANCODE_UP, 32 * absoluteVal);
+		}
+		else if (value.y < -0.5f)
+		{
+			on_scroll_keys(key == 1 ? SDL_SCANCODE_UP : SDL_SCANCODE_DOWN, 32 * absoluteVal);
+		}
+	}
+	return inherited::OnGamepadStickAction(key, value, gamepad_action);
+}
+
+void CUILogsWnd::on_scroll_keys( int dik, int step )
 {
 	VERIFY( m_list && m_list->ScrollBar() );
 
@@ -372,7 +436,7 @@ void CUILogsWnd::on_scroll_keys( int dik )
 	case SDL_SCANCODE_UP:
 		{
 			int orig = m_list->ScrollBar()->GetStepSize();
-			m_list->ScrollBar()->SetStepSize( 1 );
+			m_list->ScrollBar()->SetStepSize( step );
 			m_list->ScrollBar()->TryScrollDec();
 			m_list->ScrollBar()->SetStepSize( orig );
 			break;
@@ -380,7 +444,7 @@ void CUILogsWnd::on_scroll_keys( int dik )
 	case SDL_SCANCODE_DOWN:
 		{
 			int orig = m_list->ScrollBar()->GetStepSize();
-			m_list->ScrollBar()->SetStepSize( 1 );
+			m_list->ScrollBar()->SetStepSize( step );
 			m_list->ScrollBar()->TryScrollInc();
 			m_list->ScrollBar()->SetStepSize( orig );
 			break;
