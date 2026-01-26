@@ -12,6 +12,7 @@ call util\build-compressor.bat
 call util\build-engine.bat
 call util\build-server.bat
 call util\build-utilities.bat
+call util\build-editors.bat
 
 :: Prepare packing
 call util\generate-patch.bat build\x64\Compressor-Windows\bin\Release\xrCompress.exe
@@ -24,4 +25,5 @@ call util\pack-packages.bat %release%
 call util\pack-engine.bat %release%
 call util\pack-server.bat %release%
 call util\pack-utilities.bat %release%
+call util\pack-editors.bat %release%
 call util\pack-builds.bat %release%
