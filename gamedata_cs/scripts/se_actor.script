@@ -5,18 +5,10 @@ function se_actor:__init (section) super (section)
 end
 function se_actor:on_register()
 	cse_alife_creature_actor.on_register(self)
-	SendScriptCallback("se_actor_on_register", self)
-	SendScriptCallback("server_entity_on_register", self, "se_actor")
 	self.m_registred = true
-end
-function se_actor:on_unregister()
-	SendScriptCallback("se_actor_on_unregister", self)
-	SendScriptCallback("server_entity_on_unregister", self, "se_actor")
-	cse_alife_creature_actor.on_unregister(self)
 end
 --------------------
 function se_actor:STATE_Write(packet)
-	SendScriptCallback("se_actor_on_STATE_Write", self, packet)
 	cse_alife_creature_actor.STATE_Write (self, packet)
 
 --	if self.m_registred ~= true then
@@ -32,7 +24,6 @@ function se_actor:STATE_Write(packet)
 end
 --------------------
 function se_actor:STATE_Read(packet, size)
-	SendScriptCallback("se_actor_on_STATE_Read", self, packet, size)
 	cse_alife_creature_actor.STATE_Read (self, packet, size)
 
 	-- под LevelEditor не пытаться читать из пакета ничего
