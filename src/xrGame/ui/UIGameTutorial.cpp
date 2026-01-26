@@ -408,17 +408,28 @@ void CUISequencer::IR_OnKeyboardHold		(int dik)
 
 void CUISequencer::IR_GamepadKeyPress(int id)
 {
-	if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_DPAD_DOWN)
-		IR_OnKeyboardPress(SDL_SCANCODE_DOWN);
+	switch (id)
+	{
+		case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_DPAD_DOWN:
+		{
+			IR_OnKeyboardPress(SDL_SCANCODE_DOWN);
+			break;
+		}
+		case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_DPAD_UP:
+		{
+			IR_OnKeyboardPress(SDL_SCANCODE_UP);
+			break;
+		}
+		case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_EAST:
+		case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_START:
+		{
+			IR_OnKeyboardPress(SDL_SCANCODE_ESCAPE);
+			break;
+		}
+	}
 
-	if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_DPAD_UP)
-		IR_OnKeyboardPress(SDL_SCANCODE_UP);
-
-	if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_START)
-		IR_OnKeyboardPress(SDL_SCANCODE_RETURN);
-
-	if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_EAST)
-		IR_OnKeyboardPress(SDL_SCANCODE_ESCAPE);
+	if (!GrabInput() && m_pStoredInputReceiver)
+		m_pStoredInputReceiver->IR_GamepadKeyPress(id);
 }
 
 void CUISequencer::IR_OnMouseWheel		(int direction)
