@@ -424,6 +424,7 @@ CRenderTarget::CRenderTarget()
 		DisplayRT(rt_Generic_2);
 		DisplayRT(rt_Normal);
 		DisplayRT(rt_Position);
+		DisplayRT(rt_upscaled_depth);
 		DisplayRT(rt_sslr);
 		DisplayRT(rt_sslr_temp);
 		DisplayRT(rt_sslr_data);
@@ -533,6 +534,9 @@ CRenderTarget::CRenderTarget()
 
 		rt_Depth.create(r2_RT_env_depth, RefSize, RefSize, ERHI_FORMAT::R24G8_TYPELESS);
 	}
+
+	rt_upscaled_depth.create(r2_RT_upscaled_depth, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16_FLOAT);
+	rt_upscaled_depth_old.create(r2_RT_upscaled_depth_old, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16_FLOAT);
 
 	rt_ui_depth.create(r2_RT_ui_depth, get_target_width() * 2.0f, get_target_height() * 2.0f, ERHI_FORMAT::D16_UNORM);
 	rt_ui_color.create(r2_RT_ui_color, get_target_width() * 2.0f, get_target_height() * 2.0f, ERHI_FORMAT::R10G10B10A2_UNORM);
@@ -1100,4 +1104,12 @@ bool CRenderTarget::need_to_render_sunshafts()
 	}
 
 	return false;
+}
+
+void CRenderTarget::copy_position()
+{
+	GPU_EVENT(ZBUFFER_COPY);
+
+	GRHI->SetDepthStencilView(nullptr, true);
+	GRHI->CopySurface(rt_Position->pSurface, RDepth->GetSurface());
 }
