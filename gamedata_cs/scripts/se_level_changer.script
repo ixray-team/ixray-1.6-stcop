@@ -5,14 +5,6 @@ function se_level_changer:__init(section) super (section)
 	self.hint = "level_changer_invitation"
 end
 --------------------
-function se_level_changer:on_register()
-	SendScriptCallback("server_entity_on_register", self, "se_level_changer")
-end
---------------------
-function se_level_changer:on_unregister()
-	SendScriptCallback("server_entity_on_unregister", self, "se_level_changer")
-end
---------------------
 function se_level_changer:STATE_Write(packet)
 	cse_alife_level_changer.STATE_Write(self, packet)
 
