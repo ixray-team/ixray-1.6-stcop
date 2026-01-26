@@ -775,6 +775,35 @@ bool CUIPdaWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 	return inherited::OnKeyboardAction(dik, keyboard_action);
 }
 
+bool CUIPdaWnd::OnGamepadKeyAction(int key, EUIMessages gamepad_action)
+{
+	if (WINDOW_KEY_PRESSED == gamepad_action)
+	{
+		switch (key)
+		{
+			case SDL_GAMEPAD_BUTTON_EAST:
+			case SDL_GAMEPAD_BUTTON_BACK:
+			{
+				HideDialog();
+				break;
+			}
+			case SDL_GAMEPAD_BUTTON_LEFT_SHOULDER:
+			{
+				UITabControl->PrevTab();
+				break;
+			}
+			case SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER:
+			{
+				UITabControl->NextTab();
+				break;
+			}
+			return true;
+		}
+	}
+
+	return inherited::OnGamepadKeyAction(key, gamepad_action);
+}
+
 void CUIPdaWnd::HideDialog()
 {
 	if (!IsShown())
