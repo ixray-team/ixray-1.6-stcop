@@ -21,6 +21,10 @@ public:
 	Fmatrix			m_wv_old;	// Derived	- world2view old frame
 	Fmatrix			m_vp_old;	// Derived	- view2projection old frame
 	Fmatrix			m_wvp_old;	// Derived	- world2view2projection old frame
+
+	Fmatrix			m_env_view;
+	Fmatrix			m_env_view_inv;
+	Fmatrix			m_env_view_real;
 	
 	RHIShaderConstant*		c_invw;
 	RHIShaderConstant*		c_invv;
@@ -38,6 +42,9 @@ public:
 	RHIShaderConstant*		c_wv_old;
 	RHIShaderConstant*		c_vp_old;
 	RHIShaderConstant*		c_wvp_old;
+
+	RHIShaderConstant*		c_env_view;
+	RHIShaderConstant*		c_env_view_inv;
 private:
 	bool			m_bInvWValid;
 public:
@@ -51,6 +58,8 @@ public:
 	void			set_W_old	(const Fmatrix& m);
 	void			set_V_old	(const Fmatrix& m);
 	void			set_P_old	(const Fmatrix& m);
+
+	void			set_env_view	(const Fmatrix& m);
 
 	IC const Fmatrix&	get_W	() { return m_w; }
 	IC const Fmatrix&	get_V	() { return m_v; }
@@ -76,6 +85,9 @@ public:
 	IC void			set_c_wv_old(RHIShaderConstant* C);
 	IC void			set_c_vp_old(RHIShaderConstant* C);
 	IC void			set_c_wvp_old(RHIShaderConstant* C);
+
+	IC void			set_c_env_view(RHIShaderConstant* C);
+	IC void			set_c_env_view_inv(RHIShaderConstant* C);
 
 private:
 	void			apply_invw	();
