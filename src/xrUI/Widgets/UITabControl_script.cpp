@@ -25,7 +25,9 @@ void CUITabControl::script_register(lua_State *L)
 		.def("SetActiveTab",			&CUITabControl::SetActiveTab_script)
         .def("SetNewActiveTab",			&CUITabControl::SetActiveTabByIndex)
 		.def("GetButtonById",			&CUITabControl::GetButtonById_script)
-		.def("GetButtonByIndex",		&CUITabControl::GetButtonByIndex),
+		.def("GetButtonByIndex",		&CUITabControl::GetButtonByIndex)
+		.def("NextTab",					&CUITabControl::NextTab)
+		.def("PrevTab",					&CUITabControl::PrevTab),
 
 		class_<CUITabButton, CUIButton>("CUITabButton")
 		.def(							constructor<>())		
