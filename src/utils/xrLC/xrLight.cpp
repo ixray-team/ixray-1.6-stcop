@@ -62,9 +62,12 @@ void CBuild::ProcessLMAPS_CPU()
 #include "../xrLC_Light/light_point.h"
 #endif
 
- 
+extern XRCORE_API BOOL			g_bEnableStatGather;
+
 void	CBuild::LMaps					()
 {
+	g_bEnableStatGather = true;
+
 	mem_Compact();
 	const bool Cuda   = gCompilerMode.CUDA;
 	const bool Embree = gCompilerMode.Embree;
@@ -77,15 +80,14 @@ void	CBuild::LMaps					()
 	if (gCompilerMode.CUDA)
 	{
 		// Se7kills 
- 		Status("Lighting Precalculate for GPU...");
-		
-		CTimer start_time; start_time.Start();
- 		auto RunCollect = [&](xr_vector<CDeflector*>& deflectors, bool isFirst)
+ 		CTimer start_time; start_time.Start();
+ 		auto RunCollect = [&](xr_vector<CDeflector*>& deflectors)
 		{
 			GPUTaskinSystem.RestartALL();
 
 			GPUTaskinSystem.ColorsMapType = eDeflectors;
 			GPUTaskinSystem.current_flags = (gCompilerMode.LC_NoSun ? LP_dont_sun : 0) | LP_UseFaceDisable;
+
 
 			xr_atomic_u32 IndexTaskID = 0;
   			xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [&](size_t TID)
@@ -98,17 +100,17 @@ void	CBuild::LMaps					()
 					CDeflector* D = deflectors[Index];
 					if (D == nullptr) continue;
 
-					isFirst ? D->LightGPU() : D->LowerResolutionGPU();
+					D->LightGPU();
 					
-					if (Index % 1024 == 0)
-						AditionalData("*** [LMAPS] Lmap [%u/%u] W: %u | H: %u", Index, deflectors.size(), D->layer.width, D->layer.height);
+ 					AditionalData("*** [LMAPS] Lighting ID [%u/%u] W: %u | H: %u", Index, deflectors.size(), D->layer.width, D->layer.height);
 				}
 
 				// Система тасков щас иная
 				GPUTaskinSystem.LightPointPacked_run_tasks();
-			});
-			 
 
+				GetApplyStats();
+			});
+ 
 			int IndexApply = 0;
 			for (auto& D : deflectors)
 			{
@@ -118,27 +120,37 @@ void	CBuild::LMaps					()
 				AditionalData("*** [LMAPS] Apply Lmaps [%u/%u]", IndexApply, deflectors.size());
 			}
 
-			Msg("*** [LMAPS] Apply Lmaps [%u/%u]", IndexApply, deflectors.size());
+			AditionalData("*** [LMAPS] Apply Lmaps [%u/%u]", IndexApply, deflectors.size());
 		};
 
-		auto& DEFLS = lc_global_data()->g_deflectors();
- 		RunCollect(DEFLS, true);  // Обычный расщет
-		RunCollect(DEFLS, false); // Проверка на размер (Если нужно перерасчитываем)
+		CTimer t; t.Start();
 
-		Msg("*** [LMAPS] Apply Borders Started [%u]", DEFLS.size());
+		auto& DEFLS = lc_global_data()->g_deflectors();
+ 		RunCollect(DEFLS);  // Обычный расщет
+		clMsg("Lighting Map : %.0f seconds", t.GetElapsed_sec()); t.Start();
+  
+		AditionalData("*** [LMAPS] Apply Borders Started [%u]", DEFLS.size());
 
 		xr_atomic_u32 IndexTaskID = 0;
 		xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [&](size_t TID)
 		{
 			while (true)
 			{
-				u32 Index = IndexTaskID.fetch_add(1);
+ 				u32 Index = IndexTaskID.fetch_add(1);
 				if (Index >= DEFLS.size()) { break; }
 				CDeflector* D = lc_global_data()->g_deflectors()[Index];
 				if (D != nullptr) D->ApplyExpandBordersGPU();
-			}
+
+				AditionalData("*** [LMAPS] Expand Borders Started [%u/%u]", Index, lc_global_data()->g_deflectors().size() );
+ 			}
+
+			GetApplyStats();
 		});
-		 
+		clMsg("Expand Borders  Map: %.0f seconds", t.GetElapsed_sec()); t.Start();
+
+
+		
+
 		Msg("%f seconds", start_time.GetElapsed_sec());
   	}
 	else
