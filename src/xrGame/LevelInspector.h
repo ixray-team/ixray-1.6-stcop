@@ -133,8 +133,8 @@ struct LevelInspector final
 		else
 			Device.mFullTransform.transform(v_res, pos);
 
-		float x = (1.f + v_res.x) / 2.f * (Device.Width);
-		float y = (1.f - v_res.y) / 2.f * (Device.Height);
+		float x = (1.f + v_res.x) / 2.f * (Device.TargetWidth);
+		float y = (1.f - v_res.y) / 2.f * (Device.TargetHeight);
 
 		if (v_res.z < 0 || v_res.w < 0)
 			return false;
