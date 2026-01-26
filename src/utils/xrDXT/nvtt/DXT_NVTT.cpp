@@ -99,24 +99,24 @@ int DXTCompressImageNVTT(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch,
 	nvtt::CompressionOptions compOpt;
 	compOpt.setQuality(nvtt::Quality_Fastest);
 	compOpt.setQuantization(fmt->flags.is(STextureParams::flDitherColor), false, fmt->flags.is(STextureParams::flBinaryAlpha));
-
+ 
 	switch (fmt->fmt)
 	{
-	case STextureParams::tfDXT1: 	compOpt.setFormat(nvtt::Format_DXT1); 	break;
-	case STextureParams::tfADXT1: 	compOpt.setFormat(nvtt::Format_DXT1a); 	break;
-	case STextureParams::tfDXT3: 	compOpt.setFormat(nvtt::Format_DXT3); 	break;
-	case STextureParams::tfDXT5: 	compOpt.setFormat(nvtt::Format_DXT5); 	break;
-	case STextureParams::tfBC7: 	compOpt.setFormat(nvtt::Format_BC7); 	break;
-	case STextureParams::tfRGB: 	compOpt.setFormat(nvtt::Format_RGB); 	break;
-	case STextureParams::tfRGBA: 	compOpt.setFormat(nvtt::Format_RGBA); 	break;
+		case STextureParams::tfDXT1: 	compOpt.setFormat(nvtt::Format_DXT1); 	break;
+		case STextureParams::tfADXT1: 	compOpt.setFormat(nvtt::Format_DXT1a); 	break;
+		case STextureParams::tfDXT3: 	compOpt.setFormat(nvtt::Format_DXT3); 	break;
+		case STextureParams::tfDXT5: 	compOpt.setFormat(nvtt::Format_DXT5); 	break;
+		case STextureParams::tfBC7: 	compOpt.setFormat(nvtt::Format_BC7); 	break;
+		case STextureParams::tfRGB: 	compOpt.setFormat(nvtt::Format_RGB); 	break;
+		case STextureParams::tfRGBA: 	compOpt.setFormat(nvtt::Format_RGBA); 	break;
 	}
 
 	switch (fmt->mip_filter)
 	{
-	case STextureParams::kMIPFilterAdvanced:    break;
-	case STextureParams::kMIPFilterBox:         inOpt.setMipmapFilter(nvtt::MipmapFilter_Box);      break;
-	case STextureParams::kMIPFilterTriangle:    inOpt.setMipmapFilter(nvtt::MipmapFilter_Triangle); break;
-	case STextureParams::kMIPFilterKaiser:      inOpt.setMipmapFilter(nvtt::MipmapFilter_Kaiser);   break;
+		case STextureParams::kMIPFilterAdvanced:    break;
+		case STextureParams::kMIPFilterBox:         inOpt.setMipmapFilter(nvtt::MipmapFilter_Box);      break;
+		case STextureParams::kMIPFilterTriangle:    inOpt.setMipmapFilter(nvtt::MipmapFilter_Triangle); break;
+		case STextureParams::kMIPFilterKaiser:      inOpt.setMipmapFilter(nvtt::MipmapFilter_Kaiser);   break;
 	}
 
 	nvtt::OutputOptions outOpt;
@@ -128,14 +128,16 @@ int DXTCompressImageNVTT(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch,
 
 	if ((fmt->flags.is(STextureParams::flGenerateMipMaps)) && (STextureParams::kMIPFilterAdvanced == fmt->mip_filter))
 	{
-		GenerateAdvancedFilterMipMaps(w, h, inOpt, pitch, raw_data, fmt, result, compOpt, outOpt);
+ 		GenerateAdvancedFilterMipMaps(w, h, inOpt, pitch, raw_data, fmt, result, compOpt, outOpt);
 	}
 	else
 	{
-		rgba_t* pixels = new rgba_t[w * h * 4];
+		// se7kills: Нахрена это нужно ? 8к текстура утечка 1.1гб
+		// rgba_t* pixels = new rgba_t[w * h * 4];
+		
 		u8* pixel = raw_data;
-		for (u32 k = 0; k < w * h; k++, pixel += 4)
-			pixels[k].set(pixel[0], pixel[1], pixel[2], pixel[3]);
+		// for (u32 k = 0; k < w * h; k++, pixel += 4)
+		// 	pixels[k].set(pixel[0], pixel[1], pixel[2], pixel[3]);
 
 		if (fmt->type == STextureParams::ttCubeMap)
 		{
@@ -152,6 +154,8 @@ int DXTCompressImageNVTT(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch,
 		{
 			inOpt.setMipmapData(raw_data, w, h);
 		}
+
+
 
 		result = nvtt::Compressor().process(inOpt, compOpt, outOpt);
 	}
