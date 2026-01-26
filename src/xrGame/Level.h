@@ -189,16 +189,12 @@ private:
 	OBJECTS_LIST				pObjects4CrPr;
 	OBJECTS_LIST				pActors4CrPr;
 
-	CObject*					pCurrentControlEntity;
 	xrServer::EConnect			m_connect_server_err;
 public:
 	void						AddObject_To_Objects4CrPr	(CGameObject* pObj);
 	void						AddActor_To_Actors4CrPr		(CGameObject* pActor);
 
 	void						RemoveObject_From_4CrPr		(CGameObject* pObj);	
-
-	CObject*					CurrentControlEntity	( void ) const		{ return pCurrentControlEntity; }
-	void						SetControlEntity		( CObject* O  )		{ pCurrentControlEntity=O; }
 protected:
 	
 	void						make_NetCorrectionPrediction	();
