@@ -73,10 +73,6 @@ float3 CompureDiffuseIrradance(float3 N, float3 Hemi)
 float3 CompureSpecularIrradance(float3 R, float3 Hemi, float Roughness)
 {
 	float3 LightDirection = mul((float3x3)m_invV, R);
-
-#ifdef USE_OLD_VIEW_REFLECTIONS
-	R = mul(m_V_old, LightDirection);
-#endif
 	
 #ifndef IBL_MAX_LOD
 	float4 MipLevels = 0.0f;
@@ -124,14 +120,16 @@ float3 CompureSpecularIrradance(float3 R, float3 Hemi, float Roughness)
 #endif
 
 #ifdef USE_VIEW_REFLECTIONS
-	float4 SampleRef = s_env.SampleLevel(smp_linear, R, 8.0f * Roughness);
+	float4 SampleRef = s_env.SampleLevel(smp_linear, mul((float3x3)m_env_view, R), 8.0f * Roughness);
 	SampleRef.xyz *= rcp(1.00001f - SampleRef.xyz);
 	
     float fog = saturate(SampleRef.w * fog_params.w + fog_params.x);
-	Irradance = lerp(PopGamma(SampleRef.xyz), Irradance, fog);
+	Irradance = lerp(PopGamma(SampleRef.xyz), Irradance * saturate(Hemi * 3.0f), fog);
+#else
+	Irradance *= Hemi;
 #endif
 
-	return Irradance * Hemi;
+	return Irradance;
 }
 
 float3 AmbientLighting(float3 DiffuseIrradance, float3 SpecularIrradance, float NdotV, float3 Color, float Metalness, float Roughness, float3 F0 = 0.04f)
