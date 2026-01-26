@@ -167,8 +167,6 @@ CLevel::CLevel():
 	//---------------------------------------------------------
 	pObjects4CrPr.clear();
 	pActors4CrPr.clear();
-	//---------------------------------------------------------
-	pCurrentControlEntity = nullptr;
 
 	//---------------------------------------------------------
 	m_dwCL_PingLastSendTime = 0;
