@@ -1,9 +1,5 @@
 #include "common.hlsli"
 
-#if defined(USE_OFFSCREEN_REFLECTIONS) && !defined(USE_SSLR_REFLECTIONS)
-#define USE_VIEW_REFLECTIONS
-#endif
-
 #include "metalic_roughness_light.hlsli"
 #include "metalic_roughness_ambient.hlsli"
 #include "reflections.hlsli"

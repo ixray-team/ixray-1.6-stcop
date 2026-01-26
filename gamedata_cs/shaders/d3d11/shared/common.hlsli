@@ -22,6 +22,13 @@ cbuffer dynamic_transforms
     uniform float4 hemi_cube_pos_faces;
     uniform float4 hemi_cube_neg_faces;
     uniform float4 dt_params;
+
+#ifdef USE_OFFSCREEN_REFLECTIONS
+	uniform float3x4 m_env_view;
+	uniform float3x4 m_env_view_inv;
+#endif
+
+    uniform float4 m_taa_jitter;
 }
 
 cbuffer shader_params
@@ -61,8 +68,6 @@ cbuffer static_globals
     uniform float4 depth_unpack;
     uniform float def_aref;
     uniform float4 parallax;
-
-    uniform float4 m_taa_jitter;
 }
 
 float calc_cyclic(float x)
