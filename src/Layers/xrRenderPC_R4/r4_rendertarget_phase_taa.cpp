@@ -45,3 +45,17 @@ void CRenderTarget::phase_mblur()
 		GRHI->CopySurface(rt_Generic_0->pSurface, rt_Generic_2->pSurface);
 	}
 }
+
+void CRenderTarget::phase_depth_upscale()
+{
+	u_setrt(rt_upscaled_depth, nullptr, nullptr, nullptr);
+	Fmatrix invVP_old; invVP_old.invert44(Device.mFullTransform_old);
+
+	RCache.set_Element(s_taa->E[2]);
+	RCache.set_Geometry(FSTriangleGeom);
+
+	RCache.set_c("m_invVP_old", invVP_old);
+
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
+	GRHI->CopySurface(rt_upscaled_depth_old->pSurface, rt_upscaled_depth->pSurface);
+}

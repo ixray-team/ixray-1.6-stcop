@@ -35,6 +35,9 @@
 #define		r2_RT_env_depth		"$user$sky_depth"
 #define		r2_RT_env_temp		"$user$sky_1temp"
 
+#define		r2_RT_upscaled_depth "$user$upscaled_depth"
+#define		r2_RT_upscaled_depth_old "$user$upscaled_depth_old"
+
 #define		r2_RT_ui_depth		"$user$ui_depth"
 #define		r2_RT_ui_color		"$user$ui_color"
 
