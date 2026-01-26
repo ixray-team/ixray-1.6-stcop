@@ -1574,7 +1574,8 @@ void CWeaponMagazined::OnShot()
 	// Camera	
 	AddShotEffector();
 
-	pInput->feedback(65535, 65535, 0.1f);
+	if (H_Parent() && H_Parent() == Level().CurrentControlEntity())
+		pInput->feedback(65535, 65535, 0.1f);
 
 	// Animation
 	PlayAnimShoot();
