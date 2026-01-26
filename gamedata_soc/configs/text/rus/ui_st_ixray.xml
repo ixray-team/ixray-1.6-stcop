@@ -397,13 +397,30 @@
 	<string id="st_dress_backpack">
 		<text>надеть рюкзак</text>
 	</string>
+	<string id="ui_mm_bobbing_factor">
+		<text>Сила качания камеры</text>
+	</string>
+	<string id="ui_mm_hit_slowmo">
+		<text>Замедление после урона</text>
+	</string>
+	<string id="ui_mm_wpn_aim_toggle">
+		<text>Прицеливание по клику</text>
+	</string>
+	<string id="kb_clear_gasmask">
+		<text>Протирание маски</text>
+	</string>
+	<string id="ui_mm_mouse_sense_ui">
+		<text>Чувствительность мыши в UI</text>
+	</string>
 	<string id="ui_mm_r4_use_gasmask">
 		<text>Эффект маски стекла</text>
 	</string>
 	<string id="ui_mm_r2_use_rain_drops">
 		<text>Капли на стекле</text>
 	</string>
-
+	<string id="ui_mm_mouse_sense_ui">
+		<text>Чувствительность мыши в UI</text>
+	</string>
 	<string id="st_drop_amount">
 		<text>выбросить кол-во</text>
 	</string>
@@ -464,7 +481,20 @@
 	<string id="ui_mm_shoot_volume">
 		<text>Громкость выстрелов</text>
 	</string>
-	<string id="ui_mm_mouse_sense_ui">
-		<text>Чувствительность мыши в UI</text>
+	
+	<string id="ui_pda_tabs">
+		<text>Вкладки</text>
+	</string>
+	<string id="ui_pda_log_to_start">
+		<text>В начало</text>
+	</string>
+	<string id="ui_pda_log_to_end">
+		<text>В конец</text>
+	</string>
+	<string id="ui_pda_log_date_prev">
+		<text>Предыдущая дата</text>
+	</string>
+	<string id="ui_pda_log_date_next">
+		<text>Следующая дата</text>
 	</string>
 </string_table>
