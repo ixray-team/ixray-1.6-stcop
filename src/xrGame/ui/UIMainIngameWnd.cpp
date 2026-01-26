@@ -1223,7 +1223,7 @@ void CUIMainIngameWnd::UpdateMainIndicators()
 	float bleeding = pActor->conditions().BleedingSpeed();
 	if (m_ind_bleeding)
 	{
-		if (!pActor->IsActorBurning() && fis_zero(bleeding, EPS))
+		if ((pActor->HudAnimator() && pActor->HudAnimator()->BurnAnimator() ? !pActor->IsActorBurning() : true) && fis_zero(bleeding, EPS))
 		{
 			m_ind_bleeding->Show(false);
 			m_ind_bleeding->ResetColorAnimation();
@@ -1235,7 +1235,7 @@ void CUIMainIngameWnd::UpdateMainIndicators()
 			u32 texColor = m_ind_bleeding->GetTextureColor();
 			_color casted(texColor);
 
-			if (pActor->IsActorBurning())
+			if (pActor->HudAnimator() && pActor->HudAnimator()->BurnAnimator() && pActor->IsActorBurning())
 			{
 				m_ind_bleeding->InitTexture("ui_gunsl_inGame2_circle_fire");
 				m_ind_bleeding->SetColorAnimation("ui_fast_blinking_alpha", flags);
