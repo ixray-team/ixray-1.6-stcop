@@ -180,7 +180,6 @@ end
 --------------------
 function se_stalker:on_register()
 	cse_alife_human_stalker.on_register( self )
-	SendScriptCallback("server_entity_on_register", self, "se_stalker")
 
 	self.board 	= sim_board.get_sim_board()
 	self.tm		= task_manager.get_task_manager()
@@ -219,7 +218,6 @@ function se_stalker:on_register()
 end
 --------------------
 function se_stalker:on_unregister()
-	SendScriptCallback("server_entity_on_register", self, "se_stalker")
 	local strn_id = self:smart_terrain_id()
 	if strn_id ~= 65535 then
 		local smart = alife():object(strn_id)
@@ -232,7 +230,6 @@ end
 --------------------
 function se_stalker:on_spawn()
 	cse_alife_human_stalker.on_spawn(self)
-	SendScriptCallback("se_stalker_on_spawn", self)
 end
 --------------------
 function se_stalker:on_death(killer)
@@ -279,14 +276,6 @@ end
 --'Торговец
 class "se_trader" (cse_alife_trader)
 function se_trader:__init (section) super (section)
-end
-
-function se_trader:on_register()
-	SendScriptCallback("server_entity_on_register", self, "se_trader")
-end
-
-function se_trader:on_unregister()
-	SendScriptCallback("server_entity_on_unregister", self, "se_trader")
 end
 function se_trader:keep_saved_data_anyway()
 	return true
