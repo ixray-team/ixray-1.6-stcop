@@ -72,7 +72,7 @@ namespace splash
         CRT,
         NOVA_GODA,
         SPOOKY,
-    } sphash_render_prikol;
+    } splash_render_prikol;
 
     void splash::SetProgressStatus(int prog, const char* status)
     {
@@ -123,7 +123,7 @@ namespace splash
     void renderPrikolHub(SDL_Surface* overlaySurf, SDL_Texture* overlayTex)
     {
 
-        switch (sphash_render_prikol)
+        switch (splash_render_prikol)
         {
         case NORMIS: { break; }
         case SPOOKY: { break; }
@@ -170,7 +170,7 @@ namespace splash
         SDL_RenderFillRect(renderer, &progressBarFill);
 
         //RenderText(status, (WINDOW_WIDTH - (strlen(status) * CHAR_WIDTH)) / 2, progressBarBackground.y - CHAR_HEIGHT);
-        RenderText(status, 35.f, progressBarBackground.y - CHAR_HEIGHT - (CHAR_HEIGHT / 3));
+        RenderText(status, 32.f, progressBarBackground.y - CHAR_HEIGHT - (CHAR_HEIGHT / 3));
     }
 
 #if! DISABLE_SPLASH_EVENTS
@@ -186,6 +186,22 @@ namespace splash
         if (month == 12 && day >= 25 && day <= 31)  return true;
 
         if (month == 1 && day >= 1 && day <= 5)  return true;
+
+        return false;
+    }
+
+    bool IsBetweenOct30AndNov5()
+    {
+        std::time_t t = std::time(nullptr);
+        std::tm tm;
+        localtime_s(&tm, &t);
+
+        int month = tm.tm_mon + 1;
+        int day = tm.tm_mday;
+
+        if (month == 10 && day >= 30 && day <= 31)  return true;
+
+        if (month == 11 && day >= 1 && day <= 5)  return true;
 
         return false;
     }
@@ -224,6 +240,17 @@ namespace splash
         if (!SDL_Init(SDL_INIT_VIDEO))
             return 1;
 
+#if DISABLE_SPLASH_EVENTS
+        sphash_render_prikol = NORMIS;
+#else
+        //idk where the splash shound to enable crt effect, so let's just disable it for now ! :-)
+
+        if (IsBetweenDec25AndJan5()) splash_render_prikol = NOVA_GODA;
+        else if (IsBetweenOct30AndNov5()) splash_render_prikol = SPOOKY;
+        //else if (crt) sphash_render_prikol = CRT;
+        else splash_render_prikol = NORMIS;
+#endif
+        
         unsigned char* imageData = nullptr;
 
         SDL_Surface* surface = NULL;
@@ -297,7 +324,22 @@ namespace splash
 
             if (!extern_splash)
             {
-                surface = LoadPNGSurfaceFromResource(imageData, MAKEINTRESOURCE(IDB_SPLASH_BG), TEXT("PNG"));
+                int res_id = 0;
+                switch (splash_render_prikol)
+                {
+                case NOVA_GODA:
+                    res_id = IDB_SPLASH_BG_NG;
+                    break;
+                case SPOOKY:
+                    res_id = IDB_SPLASH_BG_HW;
+                    break;
+                default:
+                    res_id = IDB_SPLASH_BG;
+                    break;
+                }
+
+                surface = LoadPNGSurfaceFromResource(imageData, MAKEINTRESOURCE(res_id), TEXT("PNG"));
+
                 if (!surface) {
                     SDL_Log("Couldn't load bitmap: %s", SDL_GetError());
                     return SDL_APP_FAILURE;
@@ -365,18 +407,10 @@ namespace splash
         float timer = 0.0f;
 
         Uint64 prevTicks = SDL_GetTicks();
-
-#if DISABLE_SPLASH_EVENTS
-        sphash_render_prikol = NORMIS;
-#else
-        //idk where the splash shound to enable crt effect, so let's just disable it for now ! :-)
-        sphash_render_prikol = (IsBetweenDec25AndJan5() ? NOVA_GODA : NORMIS);
-#endif
-
         
         SDL_Event e;
 
-        if (sphash_render_prikol == NOVA_GODA)
+        if (splash_render_prikol == NOVA_GODA)
             splash::nova_goda::init_snow(WINDOW_WIDTH, WINDOW_HEIGHT);
 
         SDL_PropertiesID props = SDL_GetWindowProperties(window);
@@ -429,7 +463,7 @@ namespace splash
                 };
                 //POSITIONING OF LOADING ANIMATION SCHNYAGA
                 SDL_FRect dst{
-                     0.f, WINDOW_HEIGHT - 7.f - frameH,
+                     1.f, WINDOW_HEIGHT - 10.f - frameH,
                      //WINDOW_WIDTH - 5.f - frameW, WINDOW_HEIGHT - 5.f - frameH,
                      //WINDOW_WIDTH - 5.f - frameW, 5.f,
                      float(frameW),
@@ -442,7 +476,11 @@ namespace splash
             renderPrikolHub(overlaySurf, overlayTex);
 
 #ifdef DEBUG_DRAW
-            RenderText("DEV BUILD", 0, 0);
+    #ifdef NDEBUG
+                RenderText("DEV BUILD", 0, 0);
+    #else
+                RenderText("DEBUG BUILD", 0, 0);
+    #endif
 #endif // !_NDEBUG
 
             SDL_RenderPresent(renderer);
