@@ -24,6 +24,7 @@
 #include "../../xrUI/Widgets/UIListWnd.h"
 #include "../../xrUI/Widgets/UIStackPanel.h"
 #include "../../xrUI/Widgets/UIArrow.h"
+#include "../../xrUI/Widgets/UIGamepadLegend.h"
 
 using namespace luabind;
 
@@ -155,8 +156,16 @@ CUIStatic* CScriptXmlInit::InitStatic(LPCSTR path, CUIWindow* parent)
 
 CUIStackPanel* CScriptXmlInit::InitStackPanel(LPCSTR path, CUIWindow* parent)
 {
-	CUIStackPanel* pWnd = new CUIStackPanel;
+	CUIStackPanel* pWnd = new CUIStackPanel();
 	CUIXmlInit::InitStackPanel(m_xml, path, 0, pWnd);
+	_attach_child(pWnd, parent);
+	return pWnd;
+}
+
+CUIGamepadLegend* CScriptXmlInit::InitGamepadLegend(LPCSTR path, CUIWindow* parent)
+{
+	CUIGamepadLegend* pWnd = new CUIGamepadLegend();
+	CUIXmlInit::InitGamepadLegend(m_xml, path, 0, pWnd);
 	_attach_child(pWnd, parent);
 	return pWnd;
 }
@@ -373,6 +382,7 @@ void CScriptXmlInit::script_register(lua_State *L){
 		.def("InitEditBox",				&CScriptXmlInit::InitEditBox)
 		.def("InitStatic",				&CScriptXmlInit::InitStatic)
 		.def("InitStackPanel",			&CScriptXmlInit::InitStackPanel)
+		.def("InitGamepadLegend",		&CScriptXmlInit::InitGamepadLegend)
 		.def("InitTextWnd",				&CScriptXmlInit::InitStatic)
 		.def("InitAnimStatic",			&CScriptXmlInit::InitAnimStatic)
 		.def("InitSleepStatic",			&CScriptXmlInit::InitSleepStatic)

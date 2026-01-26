@@ -12,6 +12,7 @@
 #include <luabind/adopt_policy.hpp>
 #include "UIHint.h"
 #include "UIStackPanel.h"
+#include "UIGamepadLegend.h"
 
 CFontManager& mngr()
 {
@@ -224,6 +225,9 @@ void CUIWindow::script_register(lua_State *L)
 		.def(							constructor<>())
 		.def("SetRightAlign",			&CUIStackPanel::SetRightAlign)
 		.def("IsAlignRight",			&CUIStackPanel::IsAlignRight),
+
+		class_<CUIGamepadLegend, CUIWindow>("CUIGamepadLegend")
+		.def(							constructor<>()),
 
 		class_<UIHint, CUIWindow>("UIHint")
 		.def(							constructor<>())
