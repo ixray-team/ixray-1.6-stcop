@@ -220,6 +220,8 @@ void CRenderTarget::phase_combine()
 	if (g_pGamePersistent) {
 		g_pGamePersistent->OnRenderPPUI_main();	// PP-UI
 	}
+
+	copy_position();
 	u_setrt(rt_Generic_2, 0, 0, 0);
 
 	if(ps_r_scale_mode < 2) {
@@ -239,6 +241,7 @@ void CRenderTarget::phase_combine()
 		}
 	}
 
+	phase_depth_upscale();
 	phase_mblur();
 
 	u_setrt(get_width(), get_height(), 0, 0, 0, 0);

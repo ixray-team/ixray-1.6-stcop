@@ -305,10 +305,7 @@ void R_dsgraph_structure::r_dsgraph_render_scope	()
 {
 #if	RENDER==R_R4
 	GPU_EVENT(SCOPE_BUFFER_RENDER);
-	{
-		GPU_EVENT(ZBUFFER_COPY);
-		GRHI->CopySurface(RImplementation.Target->rt_Position->pSurface, RDepth->GetSurface());
-	}
+	RImplementation.Target->copy_position();
 
 	RImplementation.Target->u_setrt(NULL, NULL, RDepth);
 	CHudInitializer initalizer(true);

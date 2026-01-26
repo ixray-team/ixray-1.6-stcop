@@ -35,5 +35,18 @@ void CBlender_taa::Compile(CBlender_Compile& C)
             C.r_End();
             break;
         }
+        case 2:
+        {
+            C.r_Pass("stub_fullscreen_triangle", "upscale_depth", FALSE, FALSE, FALSE);
+
+            C.r_dx10Texture("s_image", r2_RT_upscaled_depth_old);
+            C.r_dx10Texture("s_velocity", r2_RT_velocity);
+            C.r_dx10Texture("s_position", r2_RT_P);
+
+            C.r_dx10Sampler("smp_rtlinear");
+            C.r_dx10Sampler("smp_nofilter");
+            C.r_End();
+            break;
+        }
     }
 }

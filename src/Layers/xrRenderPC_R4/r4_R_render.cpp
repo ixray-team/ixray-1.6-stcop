@@ -706,11 +706,7 @@ void CRender::Render()
 		Target->phase_scene_end					();
 	}
 
-	{
-		GPU_EVENT(ZBUFFER_COPY);
-		GRHI->SetDepthStencilView(NULL, true);
-		GRHI->CopySurface(Target->rt_Position->pSurface, RDepth->GetSurface());
-	}
+	Target->copy_position();
 
 	static bool UseWinterPass = EngineExternal()[EEngineExternalRender::UseDynamicSnowMask];
 	if(UseWinterPass && g_pGameLevel->UseSnowmask)
