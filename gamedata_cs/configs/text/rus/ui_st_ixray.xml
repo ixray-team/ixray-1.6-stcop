@@ -418,6 +418,9 @@
 	<string id="ui_mm_r2_use_rain_drops">
 		<text>Капли на стекле</text>
 	</string>
+	<string id="ui_mm_mouse_sense_ui">
+		<text>Чувствительность мыши в UI</text>
+	</string>
 	<string id="st_drop_amount">
 		<text>выбросить кол-во</text>
 	</string>
@@ -465,5 +468,24 @@
 	</string>
 	<string id="ui_mm_hide_quick_slots">
 		<text>Скрыть быстрый доступ</text>
+	</string>
+	<string id="ui_mm_shoot_volume">
+		<text>Громкость выстрелов</text>
+	</string>
+	
+	<string id="ui_pda_tabs">
+		<text>Вкладки</text>
+	</string>
+	<string id="ui_pda_log_to_start">
+		<text>В начало</text>
+	</string>
+	<string id="ui_pda_log_to_end">
+		<text>В конец</text>
+	</string>
+	<string id="ui_pda_log_date_prev">
+		<text>Предыдущая дата</text>
+	</string>
+	<string id="ui_pda_log_date_next">
+		<text>Следующая дата</text>
 	</string>
 </string_table>
