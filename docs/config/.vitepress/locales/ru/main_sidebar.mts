@@ -88,6 +88,7 @@ export const mainSidebar: DefaultTheme.Sidebar = [
       { text: 'Пользовательские атласы иконок', link: '/interface/custom-icon-atlases' },
       { text: 'Шрифты', link: '/interface/fonts' },
       { text: 'XML Expression', link: '/interface/xml-expression' },
+      { text: 'SVG иконки', link: '/interface/svg-icons' },
     ],
   },
   {
@@ -105,7 +106,7 @@ export const mainSidebar: DefaultTheme.Sidebar = [
   },
   {
     text: 'IXR Framework (LUA Фреймворк)',
-    collapsed: false,
+    collapsed: true,
     items: [
       { text: 'Описание основного функционала', link: '/scripting/ixr-framework/general-info' },
       { text: 'Структура файлов', link: '/scripting/ixr-framework/files' },
