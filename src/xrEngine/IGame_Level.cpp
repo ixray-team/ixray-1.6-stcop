@@ -27,6 +27,7 @@ IGame_Level::IGame_Level	()
 	bReady						= false;
 	pCurrentEntity				= nullptr;
 	pCurrentViewEntity			= nullptr;
+	pCurrentControlEntity		= nullptr;
 #ifdef DEBUG
 	if (!Device.IsEditorMode())
 	{

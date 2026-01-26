@@ -48,6 +48,21 @@ void CObject::MakeMeCrow			()
 	g_pGameLevel->Objects.o_crow	(this);
 }
 
+IC bool CObject::IsFocused() const
+{
+	return g_pGameLevel->CurrentEntity() == this;
+}
+
+IC bool CObject::IsMyCamera() const
+{
+	return g_pGameLevel->CurrentViewEntity() == this;
+}
+
+IC bool CObject::isLocalPlayer() const
+{
+	return g_pGameLevel->CurrentControlEntity() == this;
+}
+
 void CObject::cName_set			(shared_str N)
 { 
 	NameObject	=	N; 
