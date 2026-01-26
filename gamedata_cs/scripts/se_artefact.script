@@ -9,14 +9,6 @@ function se_artefact:__init (section) super (section)
        self.is_day_night = false
     end 
 end
-
-function se_artefact:on_register()
-	SendScriptCallback("server_entity_on_register", self, "se_artefact")
-end
-
-function se_artefact:on_unregister()
-	SendScriptCallback("server_entity_on_unregister", self, "se_artefact")
-end
 --------------------
 function se_artefact:can_switch_offline ()
 	return true
