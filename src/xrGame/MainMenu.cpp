@@ -372,6 +372,9 @@ void	CMainMenu::IR_OnKeyboardHold(int dik)
 
 void CMainMenu::IR_GamepadKeyPress(int id)
 {
+	if (!IsActive()) 
+		return;
+
 	if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_DPAD_DOWN)
 		IR_UIOnKeyboardPress(SDL_SCANCODE_DOWN);
 
@@ -387,9 +390,38 @@ void CMainMenu::IR_GamepadKeyPress(int id)
 	CDialogHolder::IR_UIOnGamepadKeyPress(id);
 }
 
+bool isMMGamepadAxisMoved = false;
+void CMainMenu::IR_GamepadUpdateStick(int id, Fvector2 value)
+{
+	if (!IsActive()) 
+		return;
+
+	if (id == 0)
+	{
+		if (std::abs(value.y) < 0.5f)
+		{
+			CDialogHolder::IR_UIOnGamepadUpdateStick(id, value);
+			isMMGamepadAxisMoved = false;
+			return;
+		}
+		if (!isMMGamepadAxisMoved && value.y > 0.5f)
+		{
+			IR_UIOnKeyboardPress(SDL_SCANCODE_UP);
+			isMMGamepadAxisMoved = true;
+		}
+		else if (!isMMGamepadAxisMoved && value.y < -0.5f)
+		{
+			IR_UIOnKeyboardPress(SDL_SCANCODE_DOWN);
+			isMMGamepadAxisMoved = true;
+		}
+	}
+	CDialogHolder::IR_UIOnGamepadUpdateStick(id, value);
+}
+
 void CMainMenu::IR_OnMouseWheel(int direction)
 {
-	if(!IsActive()) return;
+	if(!IsActive()) 
+		return;
 	
 	CDialogHolder::IR_UIOnMouseWheel(direction);
 }
