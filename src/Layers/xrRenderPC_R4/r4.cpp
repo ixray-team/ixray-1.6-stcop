@@ -176,6 +176,23 @@ static class cl_m_shadow_sun : public RHIShaderConstant::Setup
 	}
 }	binder_m_shadow_sun;
 
+class cl_m_env_view : public RHIShaderConstant::Setup
+{
+	virtual void setup(RHIShaderConstant* C)
+	{
+		RCache.xforms.set_c_env_view(C);
+	}
+};
+
+
+class cl_m_env_view_inv : public RHIShaderConstant::Setup
+{
+	virtual void setup(RHIShaderConstant* C)
+	{
+		RCache.xforms.set_c_env_view_inv(C);
+	}
+};
+
 //////////////////////////////////////////////////////////////////////////
 // Just two static storage
 void CRender::create()
@@ -234,6 +251,15 @@ void CRender::create()
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("depth_unpack", &binder_depth_unpack);
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("triLOD", &binder_LOD);
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("m_shadow_sun", &binder_m_shadow_sun);
+
+	if (o.offscreen_reflecitons)
+	{
+		static cl_m_env_view binder_m_env_view;
+		static cl_m_env_view_inv binder_m_env_view_inv;
+
+		dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("m_env_view", &binder_m_env_view);
+		dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("m_env_view_inv", &binder_m_env_view_inv);
+	}
 
 	c_lmaterial = "L_material";
 	c_sbase = "s_base";
