@@ -38,7 +38,7 @@ void CConsole::Register_callbacks()
 
 	ec().assign_callback(SDL_SCANCODE_ESCAPE, text_editor::ks_free, Callback(this, &CConsole::Hide_cmd_esc));
 	ec().assign_callback(SDL_SCANCODE_GRAVE, text_editor::ks_free, Callback(this, &CConsole::Hide_cmd));
-	ec().assign_callback(SDL_SCANCODE_DELETE, text_editor::ks_free, Callback(this, &CConsole::Clear));
+	ec().assign_callback(SDL_SCANCODE_DELETE, text_editor::ks_Ctrl, Callback(this, &CConsole::Clear));
 }
 
 void CConsole::Prev_log() // DIK_PRIOR=PAGE_UP
