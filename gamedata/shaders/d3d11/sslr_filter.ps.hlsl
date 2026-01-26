@@ -12,7 +12,6 @@
 #define DISK32_RADIUS DISK32_RADIUS32
 
 static const float2 Disk32_Normalized[32] = {
-	float2(-0.50000f, 0.100000f),
 	float2(0.408569f, 0.024217f),
 	float2(0.162925f, 0.230704f),
 	float2(-0.108248f, 0.367911f),
@@ -20,6 +19,7 @@ static const float2 Disk32_Normalized[32] = {
 	float2(-0.223398f, -0.167128f),
 	float2(-0.067794f, -0.356288f),
 	float2(0.136270f, -0.214864f),
+	float2(0.512536f, -0.384894f),
 
 	float2(0.597250f, 0.006447f),
 	float2(0.464972f, 0.455376f),
@@ -28,7 +28,7 @@ static const float2 Disk32_Normalized[32] = {
 	float2(-0.657243f, -0.046063f),
 	float2(-0.484844f, -0.466902f),
 	float2(0.019780f, -0.556973f),
-	float2(0.512536f, -0.384894f),
+	float2(0.00000f, 0.000000f),
 
 	float2(0.932249f, 0.011329f),
 	float2(0.857066f, 0.402364f),
@@ -65,11 +65,10 @@ float4 main(PSInputFullscreen I) : SV_Target
 	float3 ReflectPoint = GbufferGetPointRealUnjitter(I.texcoord.xy, O.Depth);
 	float3 View = normalize(ReflectPoint);
 	
-	float4 FinalColor = BaseColor.xyzz;
- 	FinalColor.w = length(ReflectPoint - SSLR.xyz);
+	float4 FinalColor = 0.0f;
+	float FinalWeight = 0.0;
 	
-	float FinalWeight = 1;
-    float NdotV = max(0.0f, -dot(O.Normal, View));
+    float NdotV = max(0.0f, dot(O.Normal, -View));
 
 	[unroll(NUM_SAMPLES)]
 	for(uint i = 0; i < NUM_SAMPLES; ++i)
@@ -83,12 +82,12 @@ float4 main(PSInputFullscreen I) : SV_Target
 		float3 Light = ReflectPoint - SSLR.xyz;
 		
 		float Length = length(Light);
-		Light *= rcp(max(EPS_S, Length));
+		Light *= Length > 0.0f ? rcp(Length) : 0.0f;
 		
 		float3 Half = normalize(Light + View);
 
-		float NdotL = max(0.0f, -dot(O.Normal, Light));
-		float NdotH = max(0.0f, -dot(O.Normal, Half));
+		float NdotL = max(0.0f, dot(O.Normal, -Light));
+		float NdotH = max(0.0f, dot(O.Normal, -Half));
 		
 		float D = DistributionGGX(NdotH, O.Roughness);
 		float G = NdotL * GeometrySmithD(NdotL, NdotV, O.Roughness);
