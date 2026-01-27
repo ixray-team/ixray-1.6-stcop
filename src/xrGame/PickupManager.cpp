@@ -13,6 +13,54 @@ CPickUpManager::CPickUpManager(CActor* NewOwner) :
 	PickupInfoRadius = 100;
 }
 
+void CPickUpManager::UpdateClPickup(bool IsPressed)
+{
+	if(IsPressed)
+	{
+		bIsPressed = true;
+		if (bIsProcessed)
+		{
+			return;
+		}
+		if (!OnSimpleActivate.empty() && !VerifyHoldToActionAvailable.empty() && !VerifyHoldToActionAvailable())
+		{
+			OnSimpleActivate();
+			return;
+		}
+		if (CurrentHoldTime >= HoldTime)
+		{
+			if (!OnHoldActivating.empty())
+			{
+				OnHoldActivating(1.0f);
+			}
+			if (!OnHoldActivate.empty())
+			{
+				OnHoldActivate();
+			}
+			bIsProcessed = true;
+		} else
+		{
+			if (!OnHoldActivating.empty() && IVERIFY(!fis_zero(HoldTime)))
+			{
+				OnHoldActivating(CurrentHoldTime/HoldTime);
+			}
+			CurrentHoldTime += Device.fTimeDelta;
+		}
+	} else if (bIsPressed)
+	{
+		bIsPressed = false;
+		CurrentHoldTime = 0.0f;
+		if (!bIsProcessed)
+		{
+			if (!OnHoldAbort.empty())
+			{
+				OnHoldAbort();
+			}
+		}
+		bIsProcessed = false;
+	}
+}
+
 void CPickUpManager::RenderInfo()
 {
 	Owner->feel_touch_update(Owner->cam_FirstEye()->vPosition, PickupInfoRadius);

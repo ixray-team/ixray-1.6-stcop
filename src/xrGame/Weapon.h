@@ -39,6 +39,7 @@ class CWeapon : public CHudItemObject,
 				public CShootingObject
 {
 	using inherited = CHudItemObject;
+	bool IsQuickUnloading = false;
 
 protected:
 	friend struct TAmmoBones;
@@ -46,6 +47,8 @@ protected:
 public:
 							CWeapon				();
 	virtual					~CWeapon			();
+
+	void SetIsQuickUnloading(bool Unloading) {IsQuickUnloading = Unloading;};
 
 	// Generic
 	virtual void			Load				(const char* section);
