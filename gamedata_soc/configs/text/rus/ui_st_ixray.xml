@@ -497,4 +497,10 @@
 	<string id="ui_pda_log_date_next">
 		<text>Следующая дата</text>
 	</string>
+	<string id="ui_mm_select">
+		<text>Выбрать пункт меню</text>
+	</string>
+	<string id="ui_mm_select_difficulty">
+		<text>Выбрать уровень сложности</text>
+	</string>
 </string_table>

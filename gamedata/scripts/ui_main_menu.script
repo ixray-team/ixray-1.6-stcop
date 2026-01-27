@@ -26,6 +26,29 @@ end
 
 function main_menu:Update()
 	CUIScriptWnd.Update(self)
+	
+	if self.gamepad_legend then
+		local icon_back		= self:GetStatic("gp_icon_back")	
+		if icon_back then
+			icon_back:Show(level.present() or self.shniaga:GetPage() == CUIMMShniaga.epi_new_game)
+		end
+
+		local text_back		= self:GetStatic("gp_text_back")	
+		if text_back then
+			text_back:Show(level.present() or self.shniaga:GetPage() == CUIMMShniaga.epi_new_game)
+		end
+
+		local text_select_def		= self:GetStatic("gp_select_default")	
+		if text_select_def then
+			text_select_def:Show(self.shniaga:GetPage() ~= CUIMMShniaga.epi_new_game)
+		end
+
+		local text_select_difficulty		= self:GetStatic("gp_select_difficulty")	
+		if text_select_difficulty then
+			text_select_difficulty:Show(self.shniaga:GetPage() == CUIMMShniaga.epi_new_game)
+		end
+	end
+	
 	SendScriptCallback("main_menu_update", self)
 end
 
@@ -54,6 +77,11 @@ function main_menu:InitControls()
 	if self.main_xml:NodeExist("russian_lang", 0) then
 		self.ru_lang_btn = self.main_xml:Init3tButton("russian_lang", self)
 		self:Register(self.ru_lang_btn, "russian_lang")
+	end
+	
+	if self.main_xml:NodeExist("gamepad_legend", 0) then
+		self.gamepad_legend = self.main_xml:InitGamepadLegend("gamepad_legend", self)
+		self:Register(self.gamepad_legend, "gamepad_legend")
 	end
 	SendScriptCallback("main_menu_on_init_controlls", self)
 	-- IX-Ray end
