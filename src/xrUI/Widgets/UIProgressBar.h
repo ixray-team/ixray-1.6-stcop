@@ -56,7 +56,7 @@ public:
 	float				GetRange_max				() 							{ return  m_MaxPos; }
 
 	void				SetProgressPos				(float _Pos);
-	float				GetProgressPos				()							{ return m_ProgressPos.y; }
+	float				GetProgressPos				() { return (m_orient_mode == EOrientMode::om_down || m_orient_mode == EOrientMode::om_vert) ? m_ProgressPos.y : m_ProgressPos.x; }
 
 	void				ShowBackground				(bool status)				{ m_bBackgroundPresent = status; }
 	bool				IsShownBackground			()							{ return m_bBackgroundPresent; }

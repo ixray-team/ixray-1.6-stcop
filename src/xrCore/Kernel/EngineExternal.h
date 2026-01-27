@@ -58,6 +58,7 @@ enum class EEngineExternalGame
 	EnableEngineArtefactSpawn,
 	Enable3DPDA,
 	EnableTorchOnlyInOutfit,
+	EnableQuickReload,
 	EnableBurerShieldPenetrationWithGauss,
 	EnableWeaponAlternateRPMSystem,
 	EnableInventoryVolume,
