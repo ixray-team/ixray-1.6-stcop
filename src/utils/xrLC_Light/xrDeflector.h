@@ -17,8 +17,7 @@ class  execute_statistics;
 class XRLC_LIGHT_API CDeflector
 {
 public:
-   	bool ApplyLmap			= false;
-  	bool bMerged			= false;
+   	bool bMerged			= false;
  
 	Fvector				normal;
  	xr_vector<UVtri>	UVpolys;
