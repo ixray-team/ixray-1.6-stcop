@@ -2194,8 +2194,17 @@ void CWeapon::SpawnAmmo(u32 boxCurr, const char* ammoSect, ALife::_OBJECT_ID Par
 		D->set_name_replace			("");
 		D->s_RP						= 0xff;
 		D->ID						= ALife::INVALID_OBJECT_ID;
-		R_ASSERT					(parentObj);
-		D->ID_Parent				= parentObj->ID();
+		R_ASSERT					(parentObj || IsQuickUnloading);
+		if(IsQuickUnloading && !parentObj)
+		{
+			VERIFY(IsGameTypeSingle(), "Not supported in MP");
+			auto CurActor = Actor();
+			VERIFY(CurActor);
+			D->ID_Parent = CurActor->ID();
+		} else 
+		{
+			D->ID_Parent = parentObj->ID();
+		}
 
 		D->ID_Phantom				= ALife::INVALID_OBJECT_ID;
 		D->s_flags.assign			(M_SPAWN_OBJECT_LOCAL);

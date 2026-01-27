@@ -216,6 +216,11 @@ void CUIMainIngameWnd::Init()
 	if (UIZoneMap)
 		UIZoneMap->Init();
 	UIStaticQuickHelp = UIHelper::CreateStatic(uiXml, "quick_info", this);
+	if (EngineExternal()[EEngineExternalGame::EnableQuickReload])
+	{
+		UIStaticQuickHelp2 = UIHelper::CreateStatic(uiXml, "quick_info2", this);
+		UIProgressBarAction = UIHelper::CreateProgressBar(uiXml, "progress_bar_hold_to_action", this);
+	}
 
 	uiXml.SetLocalRoot(uiXml.GetRoot());
 
@@ -1285,9 +1290,20 @@ void CUIMainIngameWnd::RenderQuickInfos()
 		return;
 	}
 
+	const bool HasQuickReload = EngineExternal()[EEngineExternalGame::EnableQuickReload];
+
 	static CGameObject *pObject = nullptr;
-	const char* actor_action	= pActor->GetDefaultActionForObject();
+	LPCSTR actor_action	= pActor->GetDefaultActionForObject();
+	LPCSTR secondary_actor_action = pActor->GetSecondaryDefaultActionForObject();
 	UIStaticQuickHelp->Show(nullptr!=actor_action);
+	if (HasQuickReload)
+	{
+		VERIFY(UIStaticQuickHelp2);
+		VERIFY(UIProgressBarAction);
+		UIStaticQuickHelp2->Show(secondary_actor_action);
+		UIProgressBarAction->Show(secondary_actor_action);
+		UIProgressBarAction->SetProgressPos(pActor->GetHoldActivationProgress());
+	}
 
 	if (nullptr != actor_action)
 	{
@@ -1296,11 +1312,23 @@ void CUIMainIngameWnd::RenderQuickInfos()
 			UIStaticQuickHelp->SetTextST(actor_action);
 		}
 	}
+	if (HasQuickReload && UIStaticQuickHelp2 && secondary_actor_action)
+	{
+		if (_stricmp(secondary_actor_action,UIStaticQuickHelp2->GetText()))
+		{
+			UIStaticQuickHelp2->SetTextST(actor_action);
+		}
+	}
 
 	if (pObject != pActor->ObjectWeLookingAt())
 	{
 		UIStaticQuickHelp->SetTextST(actor_action ? actor_action : " ");
 		UIStaticQuickHelp->ResetColorAnimation();
+		if (HasQuickReload && UIStaticQuickHelp2)
+		{
+			UIStaticQuickHelp2->SetTextST(secondary_actor_action ? secondary_actor_action : " ");
+			UIStaticQuickHelp2->ResetColorAnimation();
+		}
 		pObject	= pActor->ObjectWeLookingAt();
 	}
 }
