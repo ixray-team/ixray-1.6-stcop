@@ -177,7 +177,16 @@ void CBuild::Flex2OGF()
 		R_ASSERT(!std::isinf(pOGF->bbox.max.z));
 
 		cs.Enter();
-		g_tree.push_back(pOGF);
+
+		if (pOGF->data.faces.empty())
+		{
+			Msg("Found zero faces in mesh!");
+		}
+		else
+		{
+			g_tree.push_back(pOGF);
+		}
+
 		ProgressID++;
 		Progress(float(ProgressID) / float(g_XSplit.size()));
 
