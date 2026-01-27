@@ -46,6 +46,8 @@ public:
 	void NewPlatformFrame() const;
 	void NewHardwareFrame() const;
 
+	bool IsGUIRendering() const;
+
 public:
 	static CImGuiManager& Instance();
 

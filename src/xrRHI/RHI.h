@@ -41,7 +41,6 @@ enum
 	rsStatistic = (1ul << 5ul),
 	rsDetails = (1ul << 6ul),
 	rsRefresh60hz = (1ul << 7ul),
-	rsConstantFPS = (1ul << 8ul),
 	rsDrawStatic = (1ul << 9ul),
 	rsDrawDynamic = (1ul << 10ul),
 	rsDisableObjectsAsCrows = (1ul << 11ul),
