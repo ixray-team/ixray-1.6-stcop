@@ -108,6 +108,84 @@ ENGINE_API extern float		psHUD_FOV;
 ENGINE_API extern bool g_3d_scopes;
 
 
+void CActor::UpdateLookAt()
+{
+	//что актер видит перед собой
+	collide::rq_result& RQ				= HUD().GetCurrentRayQuery();
+
+	LookAtData.PickPos = { 0.0f, 0.0f, 0.0f };
+	Fvector ActorPos = Position();
+	ActorPos.y += ACTOR_HEIGHT * 0.5f;
+
+	LookAtData.PickPos.mad(Device.vCameraPosition, Device.vCameraDirection, RQ.range);
+	LookAtData.LookAtObject = nullptr;
+	if (RQ.O)
+	{
+		//PickPos = RQ.O->Position();
+		RQ.O->Center(LookAtData.PickPos);
+		LookAtData.LookAtObject = RQ.O->getVisible() ? RQ.O : nullptr;
+	}
+
+	LookAtData.IsNearEnough = ActorPos.distance_to_sqr(LookAtData.PickPos) < 6.0f;
+}
+
+void CActor::OnHoldActivating(float Status)
+{
+	HoldActivatingProgress = Status;
+	// Place to create tick call for charging widget
+}
+
+void CActor::OnHoldActivate()
+{
+	HoldActivatingProgress = 0.0f;
+	// TODO: Support for MP
+	if (!IVERIFY_M(IsGameTypeSingle(), "Need to make support for MP game"))
+	{
+		return;
+	}
+
+	if(!LookAtData.LookAtObject || !LookAtData.IsNearEnough)
+	{
+		return;
+	}
+	auto Weapon = LookAtData.LookAtObject->cast_weapon_magazined();
+	if(!Weapon)
+	{
+		return;
+	}
+	Weapon->SetIsQuickUnloading(true);
+	Weapon->UnloadMagazine();
+	Weapon->SetIsQuickUnloading(false);
+}
+
+void CActor::OnHoldAbort()
+{
+	HoldActivatingProgress = 0.0f;
+	VERIFY(pPickup);
+	pPickup->SetPickupMode(true);
+}
+
+bool CActor::VerifyHoldToActionAvailable()
+{
+	// TODO: Support for MP
+	if (!IVERIFY_M(IsGameTypeSingle(), "Need to make support for MP game"))
+	{
+		return false;
+	}
+
+	if(!LookAtData.LookAtObject || !LookAtData.IsNearEnough)
+	{
+		return false;
+	}
+	auto Weapon = LookAtData.LookAtObject->cast_weapon_magazined();
+	if(Weapon)
+	{
+		return true;
+	}
+	
+	return false;
+}
+
 CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 {
 	LoadCallbackGlobals(m_isBeforeHitCallback, m_onBeforeHitCallback, "OnBeforeHit");
@@ -176,6 +254,11 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 	m_pVehicleWeLookingAt	= nullptr;
 	m_pObjectWeLookingAt	= nullptr;
 	pPickup = new CPickUpManager(this);
+	pPickup->OnHoldActivating.bind(this, &CActor::OnHoldActivating);
+	pPickup->OnHoldActivate.bind(this, &CActor::OnHoldActivate);
+	pPickup->OnHoldAbort.bind(this, &CActor::OnHoldAbort);
+	pPickup->OnSimpleActivate.bind(this, &CActor::OnHoldAbort);
+	pPickup->VerifyHoldToActionAvailable.bind(this, &CActor::VerifyHoldToActionAvailable);
 
 	pAutoaim = new CAutoAim();
 
@@ -186,6 +269,7 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 	SetZoomAimingMode		(false);
 
 	m_sDefaultObjAction		= nullptr;
+	m_sSecondaryDefaultObjAction = nullptr;
 
 	m_fSprintFactor			= 4.f;
 
@@ -614,6 +698,7 @@ void CActor::Load	(const char* section )
 	m_sCarCharacterUseAction		= "car_character_use";
 	m_sInventoryItemUseAction		= "inventory_item_use";
 	m_sInventoryBoxUseAction		= "inventory_box_use";
+	m_sWeaponQuickReloadAction		= "weapon_quick_reload";
 	//---------------------------------------------------------------------
 	m_sHeadShotParticle	= READ_IF_EXISTS(pSettings,r_string,section,"HeadShotParticle",0);
 	m_fLegs_shift = READ_IF_EXISTS(pSettings, r_float, "actor_hud", "legs_shift_delta", -0.55f);
@@ -2579,7 +2664,7 @@ void CActor::shedule_Update	(u32 DT)
 	}
 
 	//что актер видит перед собой
-	collide::rq_result& RQ				= HUD().GetCurrentRayQuery();
+	/*collide::rq_result& RQ				= HUD().GetCurrentRayQuery();
 	
 	Fvector ActorPos, PickPos = { 0.0f, 0.0f, 0.0f };
 	//Center(ActorPos);
@@ -2591,15 +2676,16 @@ void CActor::shedule_Update	(u32 DT)
 	{
 		//PickPos = RQ.O->Position();
 		RQ.O->Center(PickPos);
-	}
+	}*/
+	UpdateLookAt();
 	const static bool isMonstersInventory = EngineExternal()[EEngineExternalGame::EnableMonstersInventory];
 
-	if (!input_external_handler_installed() && RQ.O && RQ.O->getVisible() && ActorPos.distance_to_sqr(PickPos) < 6.0f && 
+	if (!input_external_handler_installed() && LookAtData.LookAtObject && LookAtData.IsNearEnough && 
 		!(HudAnimator() && HudAnimator()->PdaAnimator() && HudAnimator()->PdaAnimator()->IsActive()))
 	{
-		m_pObjectWeLookingAt = RQ.O->cast_game_object();
+		m_pObjectWeLookingAt = LookAtData.LookAtObject->cast_game_object();
 
-		CGameObject* game_object = RQ.O->cast_game_object();
+		CGameObject* game_object = m_pObjectWeLookingAt;
 		m_pUsableObject = game_object ? game_object->cast_usable_script_object() : nullptr;
 		m_pInvBoxWeLookingAt = game_object ? game_object->cast_inventory_box() : nullptr;
 		m_pPersonWeLookingAt = game_object ? game_object->cast_inventory_owner() : nullptr;
@@ -2689,13 +2775,24 @@ void CActor::shedule_Update	(u32 DT)
 						}
 					}
 				}
-				else if (m_pObjectWeLookingAt && m_pObjectWeLookingAt->cast_inventory_item() && m_pObjectWeLookingAt->cast_inventory_item()->CanTake())
+				else if (m_pObjectWeLookingAt)
 				{
+					auto CastedObj = m_pObjectWeLookingAt->cast_inventory_item();
+					if(!CastedObj || !CastedObj->CanTake() )
+					{
+						m_sDefaultObjAction = nullptr;
+						return;
+					}
 					m_sDefaultObjAction = m_sInventoryItemUseAction;
+					if(auto WeaponObj = CastedObj->cast_weapon(); WeaponObj)
+					{
+						m_sSecondaryDefaultObjAction = WeaponObj->GetAmmoElapsed() > 0 ? m_sWeaponQuickReloadAction : nullptr;
+					}
 				}
 				else 
 				{
 					m_sDefaultObjAction = nullptr;
+					m_sSecondaryDefaultObjAction = nullptr;
 				}
 			}
 		}
@@ -2706,6 +2803,7 @@ void CActor::shedule_Update	(u32 DT)
 		m_sDefaultObjAction		= nullptr;
 		m_pUsableObject			= nullptr;
 		m_pObjectWeLookingAt	= nullptr;
+		m_sSecondaryDefaultObjAction = nullptr;
 		m_pVehicleWeLookingAt	= nullptr;
 		m_pInvBoxWeLookingAt	= nullptr;
 	}

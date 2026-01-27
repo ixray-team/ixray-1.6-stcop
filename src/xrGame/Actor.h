@@ -90,11 +90,28 @@ private:
 	CPickUpManager* pPickup = nullptr;
 	CAutoAim* pAutoaim = nullptr;
 
+	struct LookAtData
+	{
+		CObject* LookAtObject = nullptr;
+		Fvector PickPos;
+		bool IsNearEnough = false;
+	} LookAtData;
+	void UpdateLookAt();
+
+	void OnHoldActivating(float Status);
+	void OnHoldActivate();
+	void OnHoldAbort();
+	bool VerifyHoldToActionAvailable();
+
+	float HoldActivatingProgress = 0.0f;
+
 	const char* m_onBeforeHitCallback = {};
 	bool m_isBeforeHitCallback = false;
 public:
 										CActor				();
 	~CActor				() override;
+
+	float GetHoldActivationProgress() const { return HoldActivatingProgress;}
 
 public:
 	bool						AlwaysTheCrow				() override { return TRUE; }
@@ -498,7 +515,8 @@ public:
 
 	CGameObject*			ObjectWeLookingAt			() const {return m_pObjectWeLookingAt;}
 	CInventoryOwner*		PersonWeLookingAt			() const {return m_pPersonWeLookingAt;}
-	const char*					GetDefaultActionForObject	() const {return *m_sDefaultObjAction;}
+	LPCSTR					GetDefaultActionForObject	() const {return *m_sDefaultObjAction;}
+	LPCSTR					GetSecondaryDefaultActionForObject	() {return *m_sSecondaryDefaultObjAction;}
 protected:
 	CUsableScriptObject*	m_pUsableObject;
 	// Person we're looking at
@@ -509,6 +527,7 @@ protected:
 
 	// Tip for action for object we're looking at
 	shared_str				m_sDefaultObjAction;
+	shared_str				m_sSecondaryDefaultObjAction;
 	shared_str				m_sCarTrunk;
 	shared_str				m_sCarUse;
 	shared_str				m_sCharacterUseAction;
@@ -519,6 +538,7 @@ protected:
 	shared_str				m_sCarCharacterUseAction;
 	shared_str				m_sInventoryItemUseAction;
 	shared_str				m_sInventoryBoxUseAction;
+	shared_str				m_sWeaponQuickReloadAction;
 	
 	//расстояние (в метрах) на котором актер чувствует гранату (любую)
 	float					m_fFeelGrenadeRadius;
