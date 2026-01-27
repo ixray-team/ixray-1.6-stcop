@@ -37,6 +37,7 @@ public:
 	IC	void	SetCheck(bool ch)
 	{
 		SetButtonState( ch ? BUTTON_PUSHED : BUTTON_NORMAL);
+		GetMessageTarget()->SendMessage(this, BUTTON_CLICKED, nullptr);
 	}
 
 	void SetDependControl(CUIWindow* pWnd);
