@@ -577,7 +577,7 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 	{
 		if (id == 0)
 		{
-			if (mstate_wishful & mcAccel)
+			if (mstate_wishful & mcAccel && !isActorAccelerated(mstate_real, IsZoomAimingMode()))
 			{
 				mstate_wishful &= ~mcAccel;
 			}
@@ -666,6 +666,7 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 	}
 }
 
+u32 gamepad_crouch_time_global = 0;
 void CActor::IR_GamepadKeyPress(int id)
 {
 	switch (id)
@@ -704,14 +705,14 @@ void CActor::IR_GamepadKeyPress(int id)
 		}
 	case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_EAST:
 		{
-			IR_OnKeyboardPress(kCROUCH);
+			gamepad_crouch_time_global = Device.dwTimeContinual;
 			break;
 		}
 	case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_SOUTH:
-	{
-		IR_OnKeyboardPress(kJUMP);
-		break;
-	}
+		{
+			IR_OnKeyboardPress(kJUMP);
+			break;
+		}
 	case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_LEFT_STICK:
 		{
 			IR_OnKeyboardPress(kSPRINT_TOGGLE);
@@ -739,7 +740,7 @@ void CActor::IR_GamepadKeyPress(int id)
 		}
 	case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_START:
 		{
-			IR_OnKeyboardPress(kQUIT);
+			Console->Execute("main_menu");
 			break;
 		}
 	case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_DPAD_UP:
@@ -762,6 +763,34 @@ void CActor::IR_GamepadKeyPress(int id)
 			IR_OnKeyboardPress(kQUICK_USE_3);
 			break;
 		}
+	}
+}
+
+void CActor::IR_GamepadKeyRelease(int id)
+{
+	switch (id)
+	{
+		case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_EAST:
+		{
+			mstate_wishful &= mcCrouch;
+			break;
+		}
+	}
+}
+
+void CActor::IR_GamepadKeyHold(int id)
+{
+	switch (id)
+	{
+	case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_EAST:
+	{
+		if (Device.dwTimeContinual > (gamepad_crouch_time_global + 500))
+		{
+			mstate_wishful |= mcAccel;
+		}
+		mstate_wishful |= mcCrouch;
+		break;
+	}
 	}
 }
 
