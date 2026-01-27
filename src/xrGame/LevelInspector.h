@@ -190,29 +190,26 @@ struct LevelInspector final
 	}
 
 	template<typename V, typename L, typename T>
-	ICF void append_geometry(const V* vertices, const L& line_indices, const T& tri_indices, u32 lcolor = u32(0), u32 tcolor = u32(0), IUIRender::LITFast** fastbuff = nullptr)
+	ICF void append_geometry(const V* vertices, const L& line_indices, const T& tri_indices, u32 lcolor = u32(0), u32 tcolor = u32(0), void** buff = nullptr)
 	{
 		const size_t line_count = std::size(line_indices);
 		const size_t tri_count = std::size(tri_indices);
 		const size_t max_count = std::max(line_count, tri_count);
-
+		IUIRender::r_vert<3>** fastbuff3 = (IUIRender::r_vert<3>**)buff;
+		IUIRender::r_vert<2>** fastbuff2 = (IUIRender::r_vert<2>**)buff;
 		for (size_t i = 0; i < max_count; ++i)
 		{
 			if (tcolor > 0 && i < tri_count)
 			{
-				if (fastbuff)
+				if (fastbuff3)
 				{
-					(*fastbuff)->p = vertices[tri_indices[i].i1];
-					(*fastbuff)->color = tcolor;
-					(*fastbuff)++;
-
-					(*fastbuff)->p = vertices[tri_indices[i].i2];
-					(*fastbuff)->color = tcolor;
-					(*fastbuff)++;
-
-					(*fastbuff)->p = vertices[tri_indices[i].i3];
-					(*fastbuff)->color = tcolor;
-					(*fastbuff)++;
+					*(*fastbuff3) =
+					{
+						vertices[tri_indices[i].i1], tcolor, {0.f,0.f},
+						vertices[tri_indices[i].i2], tcolor, {0.f,0.f},
+						vertices[tri_indices[i].i3], tcolor, {0.f,0.f}
+					};
+					(*fastbuff3)++;
 				}
 				else
 					tris.push_back({
@@ -224,15 +221,14 @@ struct LevelInspector final
 			}
 			if (lcolor > 0 && i < line_count)
 			{
-				if (fastbuff)
+				if (fastbuff2)
 				{
-					(*fastbuff)->p = vertices[line_indices[i].i1];
-					(*fastbuff)->color = lcolor;
-					(*fastbuff)++;
-
-					(*fastbuff)->p = vertices[line_indices[i].i2];
-					(*fastbuff)->color = lcolor;
-					(*fastbuff)++;
+					*(*fastbuff2) =
+					{
+						vertices[line_indices[i].i1], lcolor, { 0.f,0.f },
+						vertices[line_indices[i].i2], lcolor, { 0.f,0.f }
+					};
+					(*fastbuff2)++;
 				}
 				else
 					lines.push_back({
@@ -244,7 +240,7 @@ struct LevelInspector final
 		}
 	}
 
-	ICF void append_obb(const Fobb& obb, u32 lcolor = u32(0), u32 tcolor = u32(0), IUIRender::LITFast** fastbuff = nullptr)
+	ICF void append_obb(const Fobb& obb, u32 lcolor = u32(0), u32 tcolor = u32(0), void** fastbuff = nullptr)
 	{
 		extern Fvector obb_vertices[8];
 		extern lindex obb_lindices[12];
@@ -261,7 +257,7 @@ struct LevelInspector final
 		append_geometry(vertices, obb_lindices, obb_tindices, lcolor, tcolor, fastbuff);
 	}
 
-	ICF void append_aabb(const Fbox& box, u32 lcolor = u32(0), u32 tcolor = u32(0), IUIRender::LITFast** fastbuff = nullptr)
+	ICF void append_aabb(const Fbox& box, u32 lcolor = u32(0), u32 tcolor = u32(0), void** fastbuff = nullptr)
 	{
 		Fobb obb;
 		obb.m_rotate.identity();
@@ -269,17 +265,17 @@ struct LevelInspector final
 		append_obb(obb, lcolor, tcolor, fastbuff);
 	}
 
-	ICF void append_sphere(const Fvector& pos, float radius, u32 lcolor = u32(0), u32 tcolor = u32(0), IUIRender::LITFast** fastbuff = nullptr)
+	ICF void append_sphere(const Fvector& pos, float radius, u32 lcolor = u32(0), u32 tcolor = u32(0), void** fastbuff = nullptr)
 	{
 		append_sphere(Fsphere{ pos, radius }, lcolor, tcolor, fastbuff);
 	}
 
-	ICF void append_sphere(const Fsphere& sphere, u32 lcolor = u32(0), u32 tcolor = u32(0), IUIRender::LITFast** fastbuff = nullptr)
+	ICF void append_sphere(const Fsphere& sphere, u32 lcolor = u32(0), u32 tcolor = u32(0), void** fastbuff = nullptr)
 	{
 		append_ellipse(sphere.P, Fvector{ sphere.R, sphere.R, sphere.R }, lcolor, tcolor, fastbuff);
 	}
 
-	ICF void append_ellipse(const Fvector& pos, const Fvector& scale, u32 lcolor = u32(0), u32 tcolor = u32(0), IUIRender::LITFast** fastbuff = nullptr)
+	ICF void append_ellipse(const Fvector& pos, const Fvector& scale, u32 lcolor = u32(0), u32 tcolor = u32(0), void** fastbuff = nullptr)
 	{
 		Fmatrix matrix;
 		matrix.identity();
@@ -288,7 +284,7 @@ struct LevelInspector final
 		append_ellipse(matrix, lcolor, tcolor, fastbuff);
 	}
 
-	ICF void append_ellipse(const Fmatrix& matrix, u32 lcolor = u32(0), u32 tcolor = u32(0), IUIRender::LITFast** fastbuff = nullptr)
+	ICF void append_ellipse(const Fmatrix& matrix, u32 lcolor = u32(0), u32 tcolor = u32(0), void** fastbuff = nullptr)
 	{
 		extern Fvector sphere_vertices[114];
 		extern lindex sphere_lindices[48];
@@ -303,7 +299,7 @@ struct LevelInspector final
 		append_geometry(vertices, sphere_lindices, sphere_tindices, lcolor, tcolor, fastbuff);
 	}
 
-	ICF void append_cylinder(const Fcylinder& cylinder, u32 lcolor = u32(0), u32 tcolor = u32(0), IUIRender::LITFast** fastbuff = nullptr)
+	ICF void append_cylinder(const Fcylinder& cylinder, u32 lcolor = u32(0), u32 tcolor = u32(0), void** fastbuff = nullptr)
 	{
 		extern Fvector cylinder_vertices[24];
 		extern lindex cylinder_lindices[36];
@@ -355,7 +351,7 @@ struct LevelInspector final
 		append_geometry(vertices, cylinder_lindices, cylinder_tindices, lcolor, tcolor, fastbuff);
 	}
 
-	ICF void append_cone(const Fcylinder& cone/*когда-то добавлю отдельный класс Fcone*/, u32 lcolor = u32(0), u32 tcolor = u32(0), IUIRender::LITFast** fastbuff = nullptr)
+	ICF void append_cone(const Fcylinder& cone/*когда-то добавлю отдельный класс Fcone*/, u32 lcolor = u32(0), u32 tcolor = u32(0), void** fastbuff = nullptr)
 	{
 		extern Fvector cone_vertices[17];
 		extern lindex cone_lindices[32];
@@ -407,7 +403,7 @@ struct LevelInspector final
 		append_geometry(vertices, cone_lindices, cone_tindices, lcolor, tcolor, fastbuff);
 	}
 
-	ICF void append_graph_point(const Fvector& pos, u32 lcolor = u32(0), u32 tcolor = u32(0), IUIRender::LITFast** fastbuff = nullptr)
+	ICF void append_graph_point(const Fvector& pos, u32 lcolor = u32(0), u32 tcolor = u32(0), void** fastbuff = nullptr)
 	{
 		extern Fvector graph_point_vertices[5];
 		extern lindex graph_point_lindices[8];
