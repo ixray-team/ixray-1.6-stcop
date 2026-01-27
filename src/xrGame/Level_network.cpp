@@ -326,7 +326,6 @@ void CLevel::Send(NET_Packet& P, u32 dwFlags, u32 dwTimeout)
 	if (g_pGameLevel && Level().game && !IsGameTypeSingle() && !g_SV_Disable_Auth_Check) {
 		// anti-cheat
 		phTimefactor = 1.f;
-		psDeviceFlags.set(rsConstantFPS, FALSE);
 	}
 }
 

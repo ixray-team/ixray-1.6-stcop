@@ -338,6 +338,51 @@ void CRenderDevice::BeginRender()
 	CImGuiManager::Instance().UpdateCapture();
 }
 
+extern int main_menu_fps_limit, fps_limit;
+
 void CRenderDevice::EndRender()
 {
+	PROF_EVENT("CRenderDevice::EndRender")
+    
+	using tick = long long;
+	using clock = std::chrono::high_resolution_clock;
+    
+	bool main_menu_active = g_pGamePersistent						   &&
+							g_pGamePersistent->m_pMainMenu			   &&
+							g_pGamePersistent->m_pMainMenu->IsActive();
+
+	if (int target_fps = main_menu_active ? main_menu_fps_limit : fps_limit; target_fps > 0)
+	{
+		static tick prev_ticks = clock::now().time_since_epoch().count();
+		tick curr_ticks = clock::now().time_since_epoch().count();
+        
+		tick current_ticks = curr_ticks - prev_ticks;
+		tick target_ticks = 1'000'000'000 / target_fps;
+		
+		if (current_ticks < target_ticks)
+		{
+#if !false
+			auto ms_sleep = std::chrono::duration_cast<std::chrono::milliseconds>(
+				std::chrono::nanoseconds(
+						target_ticks - current_ticks
+					)
+				);
+
+			{
+				PROF_EVENT("FPS limiter - sleep")
+				std::this_thread::sleep_for(ms_sleep);
+			}
+#else // precise fps limiter
+			long long ticks_wait = curr_ticks + target_ticks - current_ticks;
+			
+			// Не даёт процессорное время другим задачам, но это точнейший лок.
+			// Со sleep'ом кал на постном масле, из-за системных прерываний в 1/60,
+			// но и timeBeginPeriod(1) - не вариант, повышает энергопотребление.
+
+			PROF_EVENT("FPS limiter - spin wait")
+			while (clock::now().time_since_epoch().count() < ticks_wait);
+#endif
+		}
+		prev_ticks = clock::now().time_since_epoch().count();
+	}
 }
