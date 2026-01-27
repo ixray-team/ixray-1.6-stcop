@@ -5,6 +5,9 @@
 #include "xrFace.h"
 #include "uv_grid.h"
 
+// Создание тоже может занимать время
+thread_local UVGridLazy<UVtri> uv_grid;
+
 // 08.12.2025 (Убрал 2Hash Нужно было для ускорения поиска по треугольникам) (для GPU кода будет сложно сделать)
 // 14.12.2025 (Повыпиливал лишние действие с Edge) там можно было и так посчитать ;
  
@@ -47,6 +50,46 @@ void CDeflector::LightGPU()
  
 void CDeflector::L_DirectGPU()
 {
+ 	auto EdgeProcessing = [](CDeflector* Deflector, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip)
+		{
+			Fvector vdir;
+			vdir.sub(v2, v1);
+
+			lm_layer& lm = Deflector->layer;
+
+			Fvector2 size;
+			size.x = p2.x - p1.x;
+			size.y = p2.y - p1.y;
+			int	du = iCeil(std::abs(size.x) / texel_size);
+			int	dv = iCeil(std::abs(size.y) / texel_size);
+			int steps = std::max(du, dv);
+			if (steps <= 0)	return;
+
+			for (int I = 0; I <= steps; I++)
+			{
+				float	time = float(I) / float(steps);
+
+				Fvector2	uv;
+				uv.x = size.x * time + p1.x;
+				uv.y = size.y * time + p1.y;
+				int	_x = iFloor(uv.x * float(lm.width));
+				int _y = iFloor(uv.y * float(lm.height));
+
+				if ((_x < 0) || (_x >= (int)lm.width))	continue;
+				if ((_y < 0) || (_y >= (int)lm.height))	continue;
+
+				if (lm.marker[_y * lm.width + _x])		continue;
+
+				// ok - perform lighting
+				Fvector			P;
+				P.mad(v1, vdir, time);
+
+				size_t TaskID = GPUTaskinSystem.MakeKey(_x, _y);
+				GPUTaskinSystem.LightPointPacked_add_task(TaskID, Deflector, P, N, skip);
+				lm.marker[_y * lm.width + _x] = 255;
+			}
+		};
+
 	auto FromBarry = [](Face* F, Fvector& wP, Fvector& wN, Fvector& B)
 	{
 		wP.from_bary(F->v[0]->P, F->v[1]->P, F->v[2]->P, B);
@@ -55,10 +98,10 @@ void CDeflector::L_DirectGPU()
 		wN.add(F->N);
 		exact_normalize(wN);
 	};
-
-	lm_layer& lm = layer;
- 
+  
  	// Setup variables
+	lm_layer& lm = layer;
+
 	Fvector2	dim, half;
 	dim.set(float(lm.width), float(lm.height));
 	half.set(.5f / dim.x, .5f / dim.y);
@@ -67,24 +110,14 @@ void CDeflector::L_DirectGPU()
 	u32 Jcount; Fvector2 JS; Fvector2* Jitter;
 	JS.set(.4999f / dim.x, .4999f / dim.y);
 	Jitter_Select(Jitter, Jcount);
- 
-	// Создание тоже может занимать время
-	bool UseHashMap = false;
-	thread_local UVGridLazy<UVtri> uv_grid;
 
-	if (UVpolys.size() > 0)
-	{
- 		Fbox2 bounds;
-		Bounds_Summary(bounds);
-
-		// 🔹 вычисляем AABB для каждого треугольника и нормализуем UV
-		for (auto& T : UVpolys)
-			T.computeAABB(bounds);
- 		uv_grid.reset();
-
-		UseHashMap = true;
-	}
- 
+  	Fbox2 bounds;
+	Bounds_Summary(bounds);
+ 	// 🔹 вычисляем AABB для каждого треугольника и нормализуем UV
+	for (auto& T : UVpolys)
+		T.computeAABB(bounds);
+ 	uv_grid.reset();
+  
 	for (u32 V = 0; V < lm.height; V++)
 	{
  		for (u32 U = 0; U < lm.width; U++)
@@ -99,37 +132,20 @@ void CDeflector::L_DirectGPU()
 				P.y = float(V) / dim.y + half.y + Jitter[J].y * JS.y;
 				Fvector wP, wN, B;
 
-				if (UseHashMap)
-				{
-					// World space
-					auto& list = uv_grid.query(P.x, P.y, UVpolys);
- 					for (UVtri* T : list)
- 					{
-						if (T->isInside(P, B))
-						{
-							Face* F = T->owner;
-							FromBarry(F, wP, wN, B);
-							GPUTaskinSystem.LightPointPacked_add_task(TaskID, this, wP, wN, F);
-							Fcount += 1;
-							break;
-						}
-					}
-				}
-				else
-				{
-					for (auto& T : UVpolys)
+ 				// World space
+				auto& list = uv_grid.query(P.x, P.y, UVpolys);
+ 				for (UVtri* T : list)
+ 				{
+					if (T->isInside(P, B))
 					{
- 						if (T.isInside(P, B))
-						{
-							Face* F = T.owner;
-							FromBarry(F, wP, wN, B);
-							GPUTaskinSystem.LightPointPacked_add_task(TaskID, this, wP, wN, F);
-							Fcount += 1;
-							break;
-						}
+						Face* F = T->owner;
+						FromBarry(F, wP, wN, B);
+						GPUTaskinSystem.LightPointPacked_add_task(TaskID, this, wP, wN, F);
+						Fcount += 1;
+						break;
 					}
 				}
-			}
+ 			}
 
 			if (Fcount > 0)
 				lm.marker[V * lm.width + U] = 255;
@@ -137,46 +153,6 @@ void CDeflector::L_DirectGPU()
 				lm.marker[V * lm.width + U] = 0;
 		}
 	}
-	 
-	auto EdgeProcessing = [](CDeflector* Deflector, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip)
-	{
-		Fvector vdir;
-		vdir.sub(v2, v1);
-
-		lm_layer& lm = Deflector->layer;
-
-		Fvector2 size;
-		size.x = p2.x - p1.x;
-		size.y = p2.y - p1.y;
-		int	du = iCeil(std::abs(size.x) / texel_size);
-		int	dv = iCeil(std::abs(size.y) / texel_size);
-		int steps = std::max(du, dv);
-		if (steps <= 0)	return;
-
-		for (int I = 0; I <= steps; I++)
-		{
-			float	time = float(I) / float(steps);
-
-			Fvector2	uv;
-			uv.x = size.x * time + p1.x;
-			uv.y = size.y * time + p1.y;
-			int	_x = iFloor(uv.x * float(lm.width));
-			int _y = iFloor(uv.y * float(lm.height));
-
-			if ((_x < 0) || (_x >= (int)lm.width))	continue;
-			if ((_y < 0) || (_y >= (int)lm.height))	continue;
-
-			if (lm.marker[_y * lm.width + _x])		continue;
-
-			// ok - perform lighting
-			Fvector			P;
-			P.mad(v1, vdir, time);
-			  
-			size_t TaskID = GPUTaskinSystem.MakeKey(_x, _y);
-			GPUTaskinSystem.LightPointPacked_add_task(TaskID, Deflector, P, N, skip);
-			lm.marker[_y * lm.width + _x] = 255;
-		}
-	};
 
 	// *** Render Edges (Embree Process)
 	float texel_size = (1.f / float(std::max(lm.width, lm.height))) / 8.f;
@@ -188,10 +164,6 @@ void CDeflector::L_DirectGPU()
 		EdgeProcessing(this, T.uv[1], T.uv[2], F->v[1]->P, F->v[2]->P, F->N, texel_size, F);
 		EdgeProcessing(this, T.uv[2], T.uv[0], F->v[2]->P, F->v[0]->P, F->N, texel_size, F);
 	}
-
-	
-	// Для теста выключаем
-	ApplyLmap = true; //  (Включает ApplyColors)
 }
   
 
@@ -205,37 +177,30 @@ bool CDeflector::ApplyColors()
 	lm_layer& lm = layer;
  
     // Faces Только будет при простом проходе
- 	bool AnyValue = ApplyLmap;
-	if ( ApplyLmap)
+	base_color_c C_Zero, Cnew;
+ 	for (u32 V = 0; V < lm.height; V++)
 	{
-		ApplyLmap = false;
- 
-	
-		base_color_c C_Zero, Cnew;
- 		for (u32 V = 0; V < lm.height; V++)
+		for (u32 U = 0; U < lm.width; U++)
 		{
-			for (u32 U = 0; U < lm.width; U++)
-			{
-				u32		Key   = V * lm.width + U;
-				u8   Samples  = lm.samples[Key];
-				auto& CResult = lm.surface[Key];
+			u32		Key   = V * lm.width + U;
+			u8   Samples  = lm.samples[Key];
+			auto& CResult = lm.surface[Key];
 
-				if (Samples > 0)
-				{
- 					CResult._get(Cnew);
-					Cnew.scale(Samples);
-					Cnew.mul(0.5f);
-					CResult._set(Cnew);
-				}
-				else
-				{
-					CResult._set(C_Zero);
-				}
+			if (Samples > 0)
+			{
+ 				CResult._get(Cnew);
+				Cnew.scale(Samples);
+				Cnew.mul(0.5f);
+				CResult._set(Cnew);
+			}
+			else
+			{
+				CResult._set(C_Zero);
 			}
 		}
-   	}	
- 
-	return AnyValue;
+	}
+
+	return true;
 } 
 
 void CDeflector::ApplyColor(size_t IKey, base_color_c& C)
