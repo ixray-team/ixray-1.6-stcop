@@ -665,7 +665,8 @@ extern Flags32		psEnvFlags;
 extern int			g_ErrorLineCount;
 
 extern bool			dsEnableGamepad;
-extern int g_dwFPSlimit;
+extern int fps_limit;
+extern int main_menu_fps_limit;
 extern bool IsFpsShow;
 
 extern bool use_smoothed_delta;
@@ -718,8 +719,14 @@ void CCC_Register()
 	// Render device states
 	CMD3(CCC_Mask32, "rs_device_active", &psDeviceFlags, rsDeviceActive);
 	
+	extern xr_token fps_text_pos_tokens[4];
+	extern u32 fps_text_current_pos;
+	
 	CMD2(CCC_Boolean,	"rs_fps_show",			&IsFpsShow);
-	CMD4(CCC_Integer,	"rs_fps_limit",			&g_dwFPSlimit,		0, 1000);
+	CMD4(CCC_Integer, "rs_fps_limit", &fps_limit, 0, 1000);
+	CMD4(CCC_Integer, "rs_main_menu_fps_limit", &main_menu_fps_limit, 0, 1000);
+	CMD3(CCC_Token,	  "rs_fps_pos", &fps_text_current_pos, fps_text_pos_tokens);
+	
 
 	CMD3(CCC_Mask32,		"rs_v_sync",			&psDeviceFlags,		rsVSync				);
 	

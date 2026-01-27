@@ -166,7 +166,8 @@ int		psNET_DedicatedSleep	= 5;
 bool IsFpsShow = false;
 void	IGame_Level::OnRender		( ) 
 {
-	if (!g_dedicated_server) {
+	if (!g_dedicated_server)
+	{
 		{
 			PROF_EVENT("IGame_Level::OnRender: Calculate");
 			Render->Calculate();
@@ -176,11 +177,11 @@ void	IGame_Level::OnRender		( )
 			Render->Render();
 		}
 
-		if (IsFpsShow) {
+		if (IsFpsShow) 
 			pFPSCounter->OnRender();
-		}
 	}
 }
+
 
 void	IGame_Level::OnFrame		( ) 
 {

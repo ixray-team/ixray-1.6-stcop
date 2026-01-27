@@ -101,35 +101,41 @@ void CStats::Show()
 		TEST2.FrameEnd				();
 		TEST3.FrameEnd				();
 	}
+	
+	if (Device.fTimeDelta > EPS_S)
+	{
+		constexpr float smoothing_alpha = 0.10f;
+		
+		float raw_fps = 1.f / Device.fTimeDelta;
+		fFPS = raw_fps * smoothing_alpha + fFPS * (1.f - smoothing_alpha);
 
-	// calc FPS & TPS
-	if (Device.fTimeDelta>EPS_S) {
-		float fps  = 1.f/Device.fTimeDelta;
-		//if (Engine.External.tune_enabled)	vtune.update	(fps);
 		float fOne = 0.3f;
 		float fInv = 1.f-fOne;
-		fFPS = fInv*fFPS + fOne*fps;
-
-		if (RenderTOTAL.result>EPS_S) {
+		
+		if (RenderTOTAL.result > EPS_S)
+		{
 			u32	rendered_polies = Device.m_pRender->GetCacheStatPolys();
 			fTPS = fInv*fTPS + fOne*float(rendered_polies)/(RenderTOTAL.result*1000.f);
 			//fTPS = fInv*fTPS + fOne*float(RCache.stat.polys)/(RenderTOTAL.result*1000.f);
 			fRFPS= fInv*fRFPS+ fOne*1000.f/RenderTOTAL.result;
 		}
 	}
+	
 	{
 		float mem_count		= float	(Memory.stat_calls);
 		if (mem_count>fMem_calls)	fMem_calls	=	mem_count;
 		else						fMem_calls	=	.9f*fMem_calls + .1f*mem_count;
 		Memory.stat_calls	= 0		;
 	}
-
-	////////////////////////////////////////////////
-	if (g_dedicated_server) return;
-	////////////////////////////////////////////////
+	
+	if (g_dedicated_server)
+		return;
+	
 	int frm = 2000;
 	div_t ddd = div(Device.dwFrame,frm);
-	if( ddd.rem < frm/2.0f ){
+	
+	if( ddd.rem < frm/2.0f )
+		{
 		pFont->SetColor	(0xFFFFFFFF	);
 		pFont->OutSet	(0,0);
 		pFont->OutNext	(*eval_line_1);
@@ -141,8 +147,7 @@ void CStats::Show()
 	CGameFont& F = *pFont;
 	float f_base_size = 15.0f;
 	F.SetHeight(f_base_size);
-
-	// Show them
+	
 	if (psDeviceFlags.test(rsStatistic))
 	{
 		static float	r_ps		= 0;
@@ -155,8 +160,8 @@ void CStats::Show()
 		F.SetColor	(0xFFFFFFFF	);
 
 		F.OutSet	(10,35);
-		F.OutNext	("FPS/RFPS:    %3.1f/%3.1f",fFPS,fRFPS);
-		F.OutNext	("TPS:         %2.2f M",	fTPS);
+		F.OutNext	("FPS/RFPS:    %4.0f/%4.0f",fFPS,fRFPS);
+		F.OutNext	("TPS:         %4.0f M",	fTPS);
 		m_pRender->OutData1(F);
 		m_pRender->OutData3(F);
 		F.OutSkip	();
