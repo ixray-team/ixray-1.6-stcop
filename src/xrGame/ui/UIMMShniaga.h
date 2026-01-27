@@ -34,6 +34,7 @@ public:
 		epi_none
 	};//enum	enum_page_id
 			void		SetPage					(enum_page_id page_id, LPCSTR xml_file, LPCSTR xml_path);
+	IC enum_page_id		GetPage					()	{ return m_page; }
 			void		ShowPage				(enum_page_id page_id);
 protected:
 	typedef enum {

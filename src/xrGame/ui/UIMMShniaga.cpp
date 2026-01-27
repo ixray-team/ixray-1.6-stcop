@@ -418,6 +418,7 @@ void CUIMMShniaga::script_register(lua_State* L)
 		.def("SetVisibleMagnifier",			&CUIMMShniaga::SetVisibleMagnifier)
 		.def("SetPage",						&CUIMMShniaga::SetPage)
 		.def("ShowPage",					&CUIMMShniaga::ShowPage)
+		.def("GetPage",						&CUIMMShniaga::GetPage)
 	];
 }
 
