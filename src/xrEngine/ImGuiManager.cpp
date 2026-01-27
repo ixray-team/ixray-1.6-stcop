@@ -265,6 +265,11 @@ void CImGuiManager::NewHardwareFrame() const
 	RHIUtils::ImGui::NewFrame();
 }
 
+bool CImGuiManager::IsGUIRendering() const
+{
+	return DrawUIRender;
+}
+
 CImGuiManager& CImGuiManager::Instance()
 {
 	static CImGuiManager Object;
