@@ -176,12 +176,9 @@ void	IGame_Level::OnRender		( )
 			Render->Render();
 		}
 
-		if (IsFpsShow) {
+		if (IsFpsShow) 
 			pFPSCounter->OnRender();
-		}
 	}
-
-	
 }
 
 void	IGame_Level::OnFrame		( ) 
