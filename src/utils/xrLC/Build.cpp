@@ -158,12 +158,10 @@ void CBuild::Run(LPCSTR P)
  	// Tesselate + calculate
  	xrPhase_AdaptiveHT_tessalte();
  
-	Phase("Building Level.cform ...");
+	Phase("Building (Level, Build).cform ...");
 	BuildCForm();
-
-	// se7kills: теперь тут код эксплота build.cform
-	Phase("Building Build.cform ...");
-	EmbreeMain.BuildRcast();
+ 	// se7kills: теперь тут код эксплота build.cform
+ 	EmbreeMain.BuildRcast();
 
 #ifdef LCCUDA_BUILD
 	if (gCompilerMode.CUDA)
@@ -178,9 +176,7 @@ void CBuild::Run(LPCSTR P)
 		BuildRapid(false);
 
 	// Hemi MT - Calculate
-	Phase("LIGHT: Prepare ...");
-	Light_prepare();
-
+ 	Light_prepare();
    	xrPhase_AdaptiveHT_calculate();
   
  	// Building normals
@@ -235,6 +231,8 @@ void CBuild::RunAfterLight(IWriter* fs)
 	{
 		Progress(mRID / mu_refs().size());
 		export_ogf(*mu_refs()[mRID]);
+
+		AditionalData("MU : Refference: %u / %u", mRID, mu_refs().size() );
 	}
 
 	//****************************************** Build sectors
