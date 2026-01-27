@@ -174,7 +174,7 @@ bool CUIXmlInit::InitStatic(CUIXml& xml_doc, LPCSTR path, int index, CUIStatic* 
 
 	string256			buf;
 	pWnd->m_text_control_exists	= InitText			(xml_doc, xr_strconcat(buf,path,":text"), index, pWnd);
-	InitTexture			(xml_doc, path, index, pWnd);
+	InitTexture			(xml_doc, path, index, pWnd, fatal);
 	InitTextureOffset	(xml_doc,path,index,pWnd);
 
 	int flag = xml_doc.ReadAttribInt(path, index, "heading", 0);
@@ -711,8 +711,13 @@ void CUIXmlInit::InitAutoStaticGroup(CUIXml& xml_doc, LPCSTR path, int index, CU
 		{
 			CUIStatic* pUIStatic		= new CUIStatic();
 			InitStatic					(xml_doc, "auto_static", cnt_static, pUIStatic);
+
+			if (!xml_doc.NavigateToNode("auto_static:window_name", cnt_static))
+			{
 			xr_sprintf					(buff,"auto_static_%d", cnt_static);
 			pUIStatic->SetWindowName	(buff);
+			}
+
 			pUIStatic->SetAutoDelete	(true);
 			pParentWnd->AttachChild		(pUIStatic);
 
@@ -722,8 +727,13 @@ void CUIXmlInit::InitAutoStaticGroup(CUIXml& xml_doc, LPCSTR path, int index, CU
 		{
 			CUIFrameLineWnd* pUIFrameline = new CUIFrameLineWnd();
 			InitFrameLine				(xml_doc, "auto_frameline", cnt_frameline, pUIFrameline);
+
+			if (!xml_doc.NavigateToNode("auto_frameline:window_name", cnt_frameline))
+			{
 			xr_sprintf					(buff,"auto_frameline_%d", cnt_frameline);
 			pUIFrameline->SetWindowName	(buff);
+			}
+
 			pUIFrameline->SetAutoDelete	(true);
 			pParentWnd->AttachChild	(pUIFrameline);
 
@@ -733,8 +743,13 @@ void CUIXmlInit::InitAutoStaticGroup(CUIXml& xml_doc, LPCSTR path, int index, CU
 		{
 			CUIFrameWindow* pUIFramewindow = new CUIFrameWindow();
 			InitFrameWindow				(xml_doc, "auto_framewindow", cnt_framewindow, pUIFramewindow);
+
+			if (!xml_doc.NavigateToNode("auto_framewindow:window_name", cnt_framewindow))
+			{
 			xr_sprintf					(buff,"auto_framewindow_%d", cnt_framewindow);
 			pUIFramewindow->SetWindowName	(buff);
+			}
+
 			pUIFramewindow->SetAutoDelete	(true);
 			pParentWnd->AttachChild	(pUIFramewindow);
 
@@ -743,15 +758,18 @@ void CUIXmlInit::InitAutoStaticGroup(CUIXml& xml_doc, LPCSTR path, int index, CU
 		else if (!_stricmp(node_name, "gp_bind"))
 		{
 			CUIStatic* pUIStatic = new CUIStatic();
-			InitStatic(xml_doc, "gp_bind", cnt_gp_binding_static, pUIStatic);
+			InitStatic(xml_doc, "gp_bind", cnt_gp_binding_static, pUIStatic, false);
 
 			LPCSTR texture = xml_doc.Read("gp_bind:texture", cnt_gp_binding_static, "");
 			string256					buf;
 			xr_strconcat(buf, get_token_name(gamepad_prefix_token, gamepad_prefix_type), "_", texture);
 			pUIStatic->InitTexture(buf);
 
+			if (!xml_doc.NavigateToNode("gp_bind:window_name", cnt_gp_binding_static))
+			{
 			xr_sprintf(buff, "gp_bind_%d", cnt_gp_binding_static);
 			pUIStatic->SetWindowName(buff);
+			}
 
 			pUIStatic->SetAutoDelete(true);
 			pParentWnd->AttachChild(pUIStatic);
