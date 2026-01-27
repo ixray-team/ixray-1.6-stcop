@@ -117,7 +117,13 @@ void OGF::Stripify()
 	}
 
 	// normal verts
-	try {
+	try
+	{
+		if (data.faces.empty())
+		{
+			return;
+		}
+
 		xr_vector<u16>	indices, permute;
 
 		// Stripify
@@ -134,7 +140,8 @@ void OGF::Stripify()
 		for (u32 i = 0; i < temp_list.size(); i++)
 			data.vertices[i] = temp_list[permute[i]];
 	}
-	catch (...) {
+	catch (...) 
+	{
 		clMsg("ERROR: [slow-vert] Stripifying failed. Dump below.");
 		DumpFaces();
 	}
