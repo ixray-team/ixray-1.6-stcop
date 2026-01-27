@@ -81,7 +81,7 @@ void	CBuild::LMaps					()
 	{
 		// Se7kills 
  		CTimer start_time; start_time.Start();
- 		auto RunCollect = [&](xr_vector<CDeflector*>& deflectors)
+		auto RunCollect = [&](xr_vector<CDeflector*>& deflectors)
 		{
 			GPUTaskinSystem.RestartALL();
 
@@ -90,38 +90,45 @@ void	CBuild::LMaps					()
 
 
 			xr_atomic_u32 IndexTaskID = 0;
-  			xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [&](size_t TID)
-			{
-				while (true)
+			xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [&](size_t TID)
 				{
-					u32 Index = IndexTaskID.fetch_add(1);
-					if (Index >= deflectors.size()) break;
+					while (true)
+					{
+						u32 Index = IndexTaskID.fetch_add(1);
+						if (Index >= deflectors.size()) break;
 
-					CDeflector* D = deflectors[Index];
-					if (D == nullptr) continue;
+						CDeflector* D = deflectors[Index];
+						if (D == nullptr) continue;
 
-					D->LightGPU();
-					
- 					AditionalData("*** [LMAPS] Lighting ID [%u/%u] W: %u | H: %u", Index, deflectors.size(), D->layer.width, D->layer.height);
+						D->LightGPU();
+
+						AditionalData("*** [LMAPS] Lighting ID [%u/%u] W: %u | H: %u", Index, deflectors.size(), D->layer.width, D->layer.height);
+					}
+
+					// Система тасков щас иная
+					GPUTaskinSystem.LightPointPacked_run_tasks();
+
+					GetApplyStats();
+				});
+
+			IndexTaskID = 0;
+			xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [&](size_t TID)
+				{
+					while (true)
+					{
+						u32 IndexApply = IndexTaskID.fetch_add(1);
+						if (IndexApply >= deflectors.size()) break;
+
+						CDeflector* D = deflectors[IndexApply];
+						if (D == nullptr) continue;
+
+						D->ApplyColors(); 
+						AditionalData("*** [LMAPS] Apply Lmaps [%u/%u]", IndexApply, deflectors.size());
+					}
+
 				}
-
-				// Система тасков щас иная
-				GPUTaskinSystem.LightPointPacked_run_tasks();
-
-				GetApplyStats();
-			});
- 
-			int IndexApply = 0;
-			for (auto& D : deflectors)
-			{
-				if (D->ApplyColors()) 
-					IndexApply++;
-
-				AditionalData("*** [LMAPS] Apply Lmaps [%u/%u]", IndexApply, deflectors.size());
-			}
-
-			AditionalData("*** [LMAPS] Apply Lmaps [%u/%u]", IndexApply, deflectors.size());
-		};
+			);
+  		};
 
 		CTimer t; t.Start();
 
@@ -196,12 +203,7 @@ void CBuild::Light()
  	LightVertex();
  
 	//****************************************** Merge LMAPS
-	Phase("LIGHT: Merging lightmaps...");
 	xrPhase_MergeLM(0, lc_global_data()->g_deflectors().size());
-
-	// Save Lmaps
-	Phase("LIGHT: Save lightmaps...");
-	xrPhase_SaveLmaps();
  
 	//****************************************** Merge geometry
 	Phase("Merging geometry...");
@@ -210,8 +212,14 @@ void CBuild::Light()
 	//****************************************** Destroy RCast-model
  	Phase("Destroying ray-trace model...");
  	lc_global_data()->destroy_rcmodel();
-	if (gCompilerMode.Embree || gCompilerMode.CUDA)
+	if (gCompilerMode.Embree)
 		EmbreeMain.IntelEmbereUnloadAll();
+
+	if (gCompilerMode.CUDA)
+	{
+
+ 	}
+	
 }
 
 void CBuild::LightVertex	()

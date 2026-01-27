@@ -23,7 +23,7 @@ CLightmap::~CLightmap()
  
 void CLightmap::Capture		(CDeflector *D, int b_u, int b_v, int s_u, int s_v, BOOL bRotated)
 {
-	// Allocate 512x512 texture if needed
+	// Allocate texture if needed
 	if (lm.surface.empty())
 		lm.create(gCompilerMode.LC_sizeLmaps, gCompilerMode.LC_sizeLmaps);
 	
@@ -136,7 +136,7 @@ void CLightmap::Save(LPCSTR path)
 		ApplyBorders(lm, ref);
 		Progress(1.f - float(ref) / float(254 - 16));
 	}
-	clMsg("[Lightmap] Corection Borders: %u ms, Apply Borders: %u ms", correct, t.GetElapsed_ms());
+ 	u32 ApplyBorders = t.GetElapsed_ms();
 
 	Progress(1.f);
 
@@ -152,11 +152,12 @@ void CLightmap::Save(LPCSTR path)
 	lm_texture.pSurface.Clear();
  	lm.clear_memory();
 
-	t.Start();
-	
+
+	clMsg("$ [Lightmap] Saving DDS ...");
+ 	t.Start();
 	if (true)
 	{
-		Status("Compression base...");
+		// Status("Compression base...");
 
 		string_path				FN;
 		xr_sprintf(lm_texture.name, "lmap#%d", lmapNameID);
@@ -186,14 +187,14 @@ void CLightmap::Save(LPCSTR path)
 
 	if (true)
 	{
-		Status("Compression hemi...");
+		// Status("Compression hemi...");
 
  		string_path				FN;
 		xr_sprintf(lm_texture.name, "lmap#%d", lmapNameID);
 		xr_sprintf(FN, "%s%s_2.dds", path, lm_texture.name);
 
-		u32 w = lm_texture.dwWidth;//lm.width;
-		u32 h = lm_texture.dwHeight;//lm.height;
+		u32 w = lm_texture.dwWidth;		//lm.width;
+		u32 h = lm_texture.dwHeight;	//lm.height;
 		u32	pitch = w * 4;
 
 		u8* raw_data = LPBYTE(&*hemi_packed.begin());
@@ -219,8 +220,10 @@ void CLightmap::Save(LPCSTR path)
 	lm_packed.shrink_to_fit();
 	hemi_packed.shrink_to_fit();
 
+ 	s32 UsedMemory = StartMemory > GetMemory() ? - s32( ( StartMemory - GetMemory() ) / 1024 / 1024) : ( ( GetMemory() - StartMemory) / 1024 / 1024 );
 
-	size_t UsedMemory = GetMemory() - StartMemory;
-	clMsg("[Lightmap] Save Base: %u ms, Hemi: %u ms, Memory: %u mb", saving_base, t.GetElapsed_ms(), UsedMemory / 1024 / 1024);
 
+	// Чтобы лучше выглядело в логе
+	clMsg("* [Lightmap] Corection Borders: %u ms, Apply Borders: %u ms", correct, ApplyBorders);
+	clMsg("* [Lightmap] Save Base: %u ms, Hemi: %u ms, Memory: %d mb",   saving_base, t.GetElapsed_ms(), u32(UsedMemory) );
 }

@@ -101,8 +101,7 @@ public:
 	//void	Light_R2				();
 	void	LightVertex				();
 	void	xrPhase_MergeLM			(size_t start, size_t end);
-	void	xrPhase_SaveLmaps		();
-
+ 
 	void	xrPhase_MergeGeometry	();
 
 	void	Flex2OGF				();

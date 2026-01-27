@@ -28,8 +28,7 @@ void PackedLighting::LightPointPacked_add_task(size_t IndexTask, void* Owner, Fv
 	if (task_pools_deflectors.size() >= MAX_RAYS_PER_TASK - 1024)
 		LightPointPacked_run_tasks();
  
-	// RayRecvestIndex task_data;
-	RayRecvestIndex task_data;
+ 	RayRecvestIndex task_data;
  	task_data.INDEX_TASK	= IndexTask;
 	task_data.P				= P;
 	task_data.N				= N;

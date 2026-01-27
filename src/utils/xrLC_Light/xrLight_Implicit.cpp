@@ -107,7 +107,7 @@ void ImplicitExecute::Execute()
 					Fvector2				P;
 					P.x = float(U) / dim.x + half.x + Jitter[J].x * JS.x;
 					P.y = float(V) / dim.y + half.y + Jitter[J].y * JS.y;
-					xr_vector<Face*>& space = cl_globs.Hash().query(P.x, P.y);
+					xr_vector<Face*>& space = cl_globs.query(P.x, P.y);
 
 					// World space
 					Fvector wP, wN, B;
@@ -157,14 +157,6 @@ void ImplicitExecute::Execute()
 
 class CImplicitDeflector
 {
-	struct ColorsReady
-	{
-		base_color_c C;
-		u8			 Samples = 0;
-	};
-
-	xr_concurrent_unordered_map <size_t, ColorsReady>		ColorsImplicitGPU;
-
 public:
 	ImplicitDeflector* defl = nullptr;
  
@@ -172,40 +164,38 @@ public:
 	{
  	}
 
-	void ApplyColor(size_t IndexTask, base_color_c& C)
+	void ApplyColor(size_t IndexTask, base_color_c& Cnew)
 	{
-		ColorsImplicitGPU[IndexTask].C.add(C);
-		ColorsImplicitGPU[IndexTask].Samples++;
+		u32 U = GPUTaskinSystem.GetU(IndexTask);
+		u32 V = GPUTaskinSystem.GetV(IndexTask);
+
+		base_color_c Cadd;
+		defl->Lumel(U, V)._get(Cadd); Cadd.add(Cnew);
+ 		defl->Lumel(U, V)._set(Cadd);
+		defl->Samples(U, V) += 1;
 	}
 
 	void ApplyColors()
 	{
- 		for (auto& T : ColorsImplicitGPU)
+		for (auto V = 0; V < defl->Height(); V++)
+		for (auto U = 0; U < defl->Width(); U++)
 		{
-			auto KEY = T.first;
- 			u8	Samples = T.second.Samples;
-
-			u32 U = GPUTaskinSystem.GetU(KEY);
-			u32 V = GPUTaskinSystem.GetV(KEY);
-
- 			if (Samples)
+			u8 samples = defl->Samples(U, V);
+			
+			if (samples)
 			{
-				// Color
-				auto& C = T.second.C;
- 
-				// Calculate lighting amount
-				C.scale(Samples);
-				C.mul(.5f);
-				defl->Lumel(U, V)._set(C);
+				base_color_c cAdd;
+				defl->Lumel(U, V)._get(cAdd);
+				cAdd.scale(samples);
+				cAdd.mul(0.5f);
+				defl->Lumel(U, V)._set(cAdd);
 				defl->Marker(U, V) = 255;
 			}
 			else
 			{
 				defl->Marker(U, V) = 0;
 			}
-		}
-		ColorsImplicitGPU.clear();
-
+ 		}
 	}
 
 	void RunTaskGPU()
@@ -253,7 +243,7 @@ public:
 							Fvector2				P;
 							P.x = float(U) / dim.x + half.x + Jitter[SampleID].x * JS.x;
 							P.y = float(V) / dim.y + half.y + Jitter[SampleID].y * JS.y;
-							xr_vector<Face*>& space = cl_globs.Hash().query(P.x, P.y);
+							xr_vector<Face*>& space = cl_globs.query(P.x, P.y);
 
 							// World space
 							Fvector wP, wN, B;
@@ -315,9 +305,8 @@ void ImplicitLightingExec()
 	
 
 	Implicit		calculator;
-
-	cl_globs.Allocate();
 	not_clear.clear();
+
 	// Sorting
 	Status("Sorting faces...");
 	for (vecFaceIt I = inlc_global_data()->g_faces().begin(); I != inlc_global_data()->g_faces().end(); I++)
@@ -458,6 +447,5 @@ void ImplicitLightingExec()
 		//defl.Deallocate				();
 	}
 	not_clear.clear();
-	cl_globs.Deallocate();
 	calculator.clear();
 }

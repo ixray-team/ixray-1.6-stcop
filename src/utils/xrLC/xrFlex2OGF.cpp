@@ -168,6 +168,14 @@ void CBuild::Flex2OGF()
 			Msg("* ERROR: Flex2OGF, 2nd part, model# %d", SV);
 		}
  
+		R_ASSERT(!std::isinf(pOGF->bbox.min.x));
+		R_ASSERT(!std::isinf(pOGF->bbox.min.y));
+ 		R_ASSERT(!std::isinf(pOGF->bbox.min.z));
+
+		R_ASSERT(!std::isinf(pOGF->bbox.max.x));
+		R_ASSERT(!std::isinf(pOGF->bbox.max.y));
+		R_ASSERT(!std::isinf(pOGF->bbox.max.z));
+
 		cs.Enter();
 		g_tree.push_back(pOGF);
 		ProgressID++;
