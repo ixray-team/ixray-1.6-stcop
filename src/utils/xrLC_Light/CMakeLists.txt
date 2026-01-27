@@ -90,6 +90,7 @@ if(CUDAToolkit_FOUND)
 	find_package(OptiX REQUIRED)
 	if(OptiX_FOUND)
 		message(STATUS "OptiX found: ${OptiX_VERSION}")
+		set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -allow-unsupported-compiler")
 		enable_language(CUDA)
 		list(APPEND LCL_SRC_FILES ${XLC_SOURCE_CUDABACKEND_FILES})
 
