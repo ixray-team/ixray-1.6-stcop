@@ -24,11 +24,13 @@ public:
 		pttLIT
 	};
 
-	struct LITFast
+	template<u8 verts_count = 1>
+	struct r_vert
 	{
-		Fvector		p;
-		u32			color;
-		Fvector2	t;
+		struct
+		{
+			Fvector v; u32 clr; Fvector2 uv;
+		} vertices[verts_count];
 	};
 
 public:
@@ -45,9 +47,9 @@ public:
 
 	virtual void StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointType pointType) = 0;
 
-	virtual LITFast** StartPrimitiveLITFast(u32 iMaxVerts, ePrimitiveType primType) { return nullptr; };
+	virtual void** StartPrimitiveLITFast(u32 iMaxVerts, ePrimitiveType primType) { return nullptr; };
 
-	virtual LITFast** GetLITFastBuffer() { return nullptr; };
+	virtual void** GetLITFastBuffer() { return nullptr; };
 
 	virtual void FlushPrimitive() = 0;
 

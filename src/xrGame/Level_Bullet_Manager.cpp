@@ -1091,10 +1091,12 @@ void CBulletManager::Render	()
 	if (!visible_tracers.empty())
 	{
 		UIRender->CacheSetXformWorld(Fidentity);
+
 		// 3d tracer
 		//UIRender->SetShader(*m_trj_shader);
 		// 2d tracer
 		UIRender->SetShader(*sh_Tracer);
+
 		UIRender->CacheSetCullMode(ERHI_CULLMODE::NONE);
 		const Fvector& cam_P = Device.vCameraPosition;
 		const Fvector& cam_D = Device.vCameraDirection;
@@ -1121,7 +1123,10 @@ void CBulletManager::Render	()
 			u32 tracers_in_batch = std::min(TRACERS_PER_BATCH, total_tracers - current_tracer);
 			u32 vertices_in_batch = tracers_in_batch * VERTICES_PER_TRACER;
 
-			IUIRender::LITFast** buffer = UIRender->StartPrimitiveLITFast(vertices_in_batch, IUIRender::ptTriList);
+			// 3d tracer
+			//void** buffer = UIRender->StartPrimitiveLITFast(vertices_in_batch, IUIRender::ptTriList);
+			// 2d tracer
+			IUIRender::r_vert<12>** buffer = (IUIRender::r_vert<12>**)UIRender->StartPrimitiveLITFast(vertices_in_batch, IUIRender::ptTriList);
 
 			for (u32 i = 0; i < tracers_in_batch; ++i)
 			{
@@ -1184,10 +1189,10 @@ void CBulletManager::Render	()
 				//	real_up.normalize_safe();
 				//
 				//	Fmatrix mR;
-				//	mR.i = right;			  mR._14 = 0.f;
-				//	mR.j = real_up;			  mR._24 = 0.f;
-				//	mR.k = dir;				  mR._34 = 0.f;
-				//	mR.c = pos; mR._44 = 1.f;
+				//	mR.i = right;	mR._14 = 0.f;
+				//	mR.j = real_up;	mR._24 = 0.f;
+				//	mR.k = dir;		mR._34 = 0.f;
+				//	mR.c = pos;		mR._44 = 1.f;
 				//
 				//	mR.k.mul(length);
 				//	mR.i.mul(width * .15f);
@@ -1197,106 +1202,69 @@ void CBulletManager::Render	()
 				//}
 
 				// 2d tracer
+
+				float k_speed = bullet->speed / 1000.0f;
+				float sprite_size = k_speed * width * m_circle_size_k * (std::abs(cam_D.dotproduct(tracer_direction)) * 0.95f);
+				float sprite_width = width * .5f;
+				float sprite_length = length * .5f;
+				
+				//sprite circle
+				Fvector Vr, Vt;
+				Vr.mul(cam_R, sprite_size);
+				Vt.mul(cam_T, sprite_size);
+				
+				Fvector a_circle, b_circle, c_circle, d_circle;
+				a_circle.sub(Vt, Vr);
+				b_circle.add(Vt, Vr);
+				c_circle.invert(a_circle);
+				d_circle.invert(b_circle);
+				Fvector center_circle;
+				center_circle.mad(tracer_last_pos, tracer_direction, length * .95f);
+				
+				//sprite line
+				Vr.mul(Fvector().crossproduct(tracer_direction, cam_D).normalize_safe(), sprite_width);
+				Vt.mul(tracer_direction, sprite_length);
+				
+				Fvector a_sprite, b_sprite, c_sprite, d_sprite;
+				a_sprite.sub(Vt, Vr);
+				b_sprite.add(Vt, Vr);
+				c_sprite.invert(a_sprite);
+				d_sprite.invert(b_sprite);
+				Fvector center_sprite;
+				center_sprite.mad(tracer_last_pos, tracer_direction, length * .5f);
+				
+				Fbox2 crcuv = circle_uv;
+				Fbox2 spruv = sprite_uv;
+				
+				Fvector2 a_c_uf{ crcuv.min.x,crcuv.min.y };
+				Fvector2 c_c_uf{ crcuv.max.x,crcuv.max.y };
+				
+				Fvector2 a_s_uf{ spruv.min.x,spruv.min.y };
+				Fvector2 c_s_uf{ spruv.max.x,spruv.max.y };
+				
+				Fvector a_c_vert{ a_circle+center_circle };
+				Fvector c_c_vert{ c_circle+center_circle };
+				
+				Fvector a_s_vert{ a_sprite+center_sprite };
+				Fvector c_s_vert{ c_sprite+center_sprite };
+				
+				*(*buffer) = 
 				{
-					//sprite circle
-					float k_speed = bullet->speed / 1000.0f;
-					float sprite_size = k_speed * width * m_circle_size_k * (std::abs(cam_D.dotproduct(tracer_direction)) * 0.95f);
+					d_circle+center_circle,color,{crcuv.min.x,crcuv.max.y},
+					a_c_vert,color,a_c_uf,
+					c_c_vert,color,c_c_uf,
+					c_c_vert,color,c_c_uf,
+					a_c_vert,color,a_c_uf,
+					b_circle+center_circle,color,{crcuv.max.x,crcuv.min.y},
 				
-					Fvector Vr, Vt;
-					Vr.mul(cam_R, sprite_size);
-					Vt.mul(cam_T, sprite_size);
-				
-					Fvector a, b, c, d;
-					a.sub(Vt, Vr);
-					b.add(Vt, Vr);
-					c.invert(a);
-					d.invert(b);
-					Fvector center;
-					center.mad(tracer_last_pos, tracer_direction, length * .95f);
-					// Tri 1
-					(*buffer)->p.set(d.x + center.x, d.y + center.y, d.z + center.z);
-					(*buffer)->color = color;
-					(*buffer)->t.set(circle_uv.min.x, circle_uv.max.y);
-					(*buffer)++;
-				
-					(*buffer)->p.set(a.x + center.x, a.y + center.y, a.z + center.z);
-					(*buffer)->color = color;
-					(*buffer)->t.set(circle_uv.min.x, circle_uv.min.y);
-					(*buffer)++;
-				
-					(*buffer)->p.set(c.x + center.x, c.y + center.y, c.z + center.z);
-					(*buffer)->color = color;
-					(*buffer)->t.set(circle_uv.max.x, circle_uv.max.y);
-					(*buffer)++;
-				
-					// Tri 2
-					(*buffer)->p.set(c.x + center.x, c.y + center.y, c.z + center.z);
-					(*buffer)->color = color;
-					(*buffer)->t.set(circle_uv.max.x, circle_uv.max.y);
-					(*buffer)++;
-				
-					(*buffer)->p.set(a.x + center.x, a.y + center.y, a.z + center.z);
-					(*buffer)->color = color;
-					(*buffer)->t.set(circle_uv.min.x, circle_uv.min.y);
-					(*buffer)++;
-				
-					(*buffer)->p.set(b.x + center.x, b.y + center.y, b.z + center.z);
-					(*buffer)->color = color;
-					(*buffer)->t.set(circle_uv.max.x, circle_uv.min.y);
-					(*buffer)++;
-				}
-				
-				{
-					//sprite line
-					Fvector tracer_right;
-					tracer_right.crossproduct(tracer_direction, cam_D).normalize_safe();
-				
-					float line_width = width * .5f;
-					float line_length = length * .5f;
-				
-					Fvector Vr, Vt;
-					Vr.mul(tracer_right, line_width);
-					Vt.mul(tracer_direction, line_length);
-				
-					Fvector a_line, b_line, c_line, d_line;
-					a_line.sub(Vt, Vr);
-					b_line.add(Vt, Vr);
-					c_line.invert(a_line);
-					d_line.invert(b_line);
-					Fvector center;
-					center.mad(tracer_last_pos, tracer_direction, length * .5f);
-					// Tri 1
-					(*buffer)->p.set(d_line.x + center.x, d_line.y + center.y, d_line.z + center.z);
-					(*buffer)->color = color;
-					(*buffer)->t.set(sprite_uv.min.x, sprite_uv.max.y);
-					(*buffer)++;
-				
-					(*buffer)->p.set(a_line.x + center.x, a_line.y + center.y, a_line.z + center.z);
-					(*buffer)->color = color;
-					(*buffer)->t.set(sprite_uv.min.x, sprite_uv.min.y);
-					(*buffer)++;
-				
-					(*buffer)->p.set(c_line.x + center.x, c_line.y + center.y, c_line.z + center.z);
-					(*buffer)->color = color;
-					(*buffer)->t.set(sprite_uv.max.x, sprite_uv.max.y);
-					(*buffer)++;
-				
-					// Tri 2
-					(*buffer)->p.set(c_line.x + center.x, c_line.y + center.y, c_line.z + center.z);
-					(*buffer)->color = color;
-					(*buffer)->t.set(sprite_uv.max.x, sprite_uv.max.y);
-					(*buffer)++;
-				
-					(*buffer)->p.set(a_line.x + center.x, a_line.y + center.y, a_line.z + center.z);
-					(*buffer)->color = color;
-					(*buffer)->t.set(sprite_uv.min.x, sprite_uv.min.y);
-					(*buffer)++;
-				
-					(*buffer)->p.set(b_line.x + center.x, b_line.y + center.y, b_line.z + center.z);
-					(*buffer)->color = color;
-					(*buffer)->t.set(sprite_uv.max.x, sprite_uv.min.y);
-					(*buffer)++;
-				}
+					d_sprite+center_sprite,color,{spruv.min.x,spruv.max.y},
+					a_s_vert,color,a_s_uf,
+					c_s_vert,color,c_s_uf,
+					c_s_vert,color,c_s_uf,
+					a_s_vert,color,a_s_uf,
+					b_sprite+center_sprite,color,{spruv.max.x,spruv.min.y},
+				};
+				(*buffer)++;
 			}
 
 			UIRender->FlushPrimitive();
@@ -1309,7 +1277,7 @@ void CBulletManager::Render	()
 	{
 		constexpr u32 DEFAULT_COLOR = color_rgba(100u, 255u, 100u, 255u);
 		constexpr u32 MAX_LINES_PER_BATCH = 80'000u;
-
+		constexpr Fvector2 nulluv = { 0.f,0.f };
 		UIRender->SetShader(*m_trj_shader);
 
 		static xr_vector<std::pair<Fvector, Fvector>> all_lines;
@@ -1326,18 +1294,17 @@ void CBulletManager::Render	()
 				(u32)all_lines.size() - current_line);
 			u32 vertices_in_batch = lines_in_batch * 2u;
 
-			IUIRender::LITFast** buffer = UIRender->StartPrimitiveLITFast(vertices_in_batch, IUIRender::ptLineList);
+			IUIRender::r_vert<2>** buffer = (IUIRender::r_vert<2>**)UIRender->StartPrimitiveLITFast(vertices_in_batch, IUIRender::ptLineList);
 
 			for (u32 i = 0; i < lines_in_batch; ++i)
 			{
 				auto& line = all_lines[current_line + i];
 
-				(*buffer)->p = line.first;
-				(*buffer)->color = DEFAULT_COLOR;
-				(*buffer)++;
-
-				(*buffer)->p = line.second;
-				(*buffer)->color = DEFAULT_COLOR;
+				*(*buffer) =
+				{
+					line.first,DEFAULT_COLOR,nulluv,
+					line.second,DEFAULT_COLOR,nulluv
+				};
 				(*buffer)++;
 			}
 
