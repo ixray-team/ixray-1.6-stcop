@@ -380,6 +380,9 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 							{
 								clMsg("! cannot find dds texture: %s", N);
 								is_tga_missing = true;
+
+								BT.SetHasSurface(FALSE);
+								textures().push_back(BT);
 								continue;
 							}
 
