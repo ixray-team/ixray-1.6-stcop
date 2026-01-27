@@ -2072,7 +2072,7 @@ void CActor::UpdatePlayerView()
 			mstate_wishful &= ~mcRLookout;
 			mstate_wishful &= ~mcFwd;
 			mstate_wishful &= ~mcBack;
-			if (!psActorFlags.test(AF_CROUCH_TOGGLE))
+			if (!psActorFlags.test(AF_CROUCH_TOGGLE) || pInput->GetControllerMode())
 				mstate_wishful &= ~mcCrouch;
 		}
 	}
