@@ -128,7 +128,8 @@ void CRenderDevice::PreCache(u32 amount, bool b_draw_loadscreen, bool b_wait_use
 int g_svDedicateServerUpdateReate = 100;
 
 ENGINE_API xr_list<LOADING_EVENT> g_loading_events;
-int g_dwFPSlimit = 500;
+int fps_limit, main_menu_fps_limit = 144;
+
 void CRenderDevice::time_factor(const float &time_factor)
 {
 	Timer.time_factor		(time_factor);
@@ -147,20 +148,10 @@ void CRenderDevice::on_idle		()
 		Sleep(100);
 		return;
 	}
-
-	// FPS Limit
-	bool main_menu_active = g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive();
-	int fps_limit = main_menu_active ? 120 : g_dwFPSlimit;
-	if (fps_limit > 0)
-	{
-		static DWORD dwLastFrameTime = 0;
-		int dwCurrentTime = static_cast<int>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
-
-		int selected_time = (dwCurrentTime - (int)dwLastFrameTime);
-		if (selected_time >= 0 && selected_time < (1000 / fps_limit))
-			return;
-		dwLastFrameTime = dwCurrentTime;
-	}
+	
+	bool main_menu_active = g_pGamePersistent						   &&
+							g_pGamePersistent->m_pMainMenu			   &&
+							g_pGamePersistent->m_pMainMenu->IsActive();
 
 	PROF_FRAME("Main Thread");
 	Platform::SetThreadName("X-Ray Primary Thread");
@@ -474,53 +465,52 @@ bool use_smoothed_delta = false;
 void CRenderDevice::FrameMove()
 {
 	PROF_EVENT("Render: Frame Move");
-	dwFrame			++;
+	dwFrame++;
 	dwTimeContinual	= TimerMM.GetElapsed_ms() - app_inactive_time;
+	
+	float smoothing_alpha = .1f; 
+	float current_delta	= Timer.GetElapsed_sec(); Timer.Start();
+	float previous_delta = fTimeDelta;
 
-	if (psDeviceFlags.test(rsConstantFPS))	{
-		fTimeDelta		=	0.033f;			
-		fTimeGlobal		+=	0.033f;
-		dwTimeDelta		=	33;
-		dwTimeGlobal	+=	33;
-	} else {
-		float fPreviousFrameTime = Timer.GetElapsed_sec(); Timer.Start();	// previous frame
-		fTimeDelta = 0.1f * fTimeDelta + 0.9f*fPreviousFrameTime;			// smooth random system activity - worst case ~7% error
+	// EMA smoothing
+	fTimeDelta = smoothing_alpha * current_delta + (1.f - smoothing_alpha) * previous_delta; 
+	
+	clamp(fTimeDelta, EPS_S, .1f);
+	
+	fTimeDeltaSmoothing = fTimeDelta;
+	
+	if (!Paused())
+		delta_filter.CalculateSmoothedDelta(fTimeDeltaSmoothing);
+	
+	clamp(fTimeDeltaSmoothing, EPS_S, .1f);
 
-		clamp(fTimeDelta, 0.0000002f, .1f);
-
-		fTimeDeltaSmoothing = fTimeDelta;
-		if (!Paused())
-			delta_filter.CalculateSmoothedDelta(fTimeDeltaSmoothing);
-			clamp(fTimeDeltaSmoothing, 0.0000002f, .1f);
-
-		if(use_smoothed_delta)
+	if (use_smoothed_delta)
 		fTimeDelta = fTimeDeltaSmoothing;
 
-		if (Paused()) {
-			fTimeDelta = 0.0f;
-			fTimeDeltaSmoothing = 0.0f;
-		}
-
-		fTimeGlobal		= TimerGlobal.GetElapsed_sec();
-		u32	_old_global	= dwTimeGlobal;
-		dwTimeGlobal = TimerGlobal.GetElapsed_ms();
-		dwTimeDelta		= dwTimeGlobal-_old_global;
+	if (Paused())
+	{
+		fTimeDelta = 0.0f;
+		fTimeDeltaSmoothing = 0.0f;
 	}
 
+	fTimeGlobal = TimerGlobal.GetElapsed_sec();
+	u32 _old_global = dwTimeGlobal;
+	dwTimeGlobal = TimerGlobal.GetElapsed_ms();
+	dwTimeDelta = dwTimeGlobal - _old_global;
+	
 	Statistic->EngineTOTAL.Begin();
 	Device.seqFrame.Process(rp_Frame);
 	g_bLoaded = TRUE;
 	Statistic->EngineTOTAL.End();
 }
 
-CRenderDevice::CRenderDevice() :
-	m_pRender(0)
+CRenderDevice::CRenderDevice() : dwPrecacheTotal(0), m_pRender(nullptr), Statistic(nullptr)
 {
 	b_is_Active = true;
 	b_is_Ready = FALSE;
 	Timer.Start();
 	m_bNearer = FALSE;
-};
+}
 
 ENGINE_API BOOL bShowPauseString = TRUE;
 void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason)
