@@ -66,7 +66,7 @@ void StartupLC()
 		IReader* F = FS.r_open(prjName);
 		if (NULL == F)
 		{
-			xr_sprintf(inf, "Build failed!\nCan't find level: '%s'", Name.data());
+			xr_sprintf(inf, "Build failed!\n! Can't find level: '%s'", Name.data());
 			clMsg(inf);
 			MessageBoxA(nullptr, inf, "Error!", MB_OK | MB_ICONERROR);
 			return;
