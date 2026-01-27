@@ -479,4 +479,10 @@
 	<string id="ui_pda_log_date_next">
 		<text>Next date</text>
 	</string>
+	<string id="ui_mm_select">
+		<text>Select menu item</text>
+	</string>
+	<string id="ui_mm_select_difficulty">
+		<text>Select difficulty</text>
+	</string>
 </string_table>

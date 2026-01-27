@@ -3,7 +3,7 @@
 	<string id="st_ixray_title">
 		<text>S.T.A.L.K.E.R.: Зов Припяти</text>
 	</string>
-	 <string id="st_ixray_title_cs">
+	<string id="st_ixray_title_cs">
 		<text>S.T.A.L.K.E.R.: Чистое Небо</text>
 	</string>
 	<string id="st_ixray_title_soc">
@@ -487,5 +487,11 @@
 	</string>
 	<string id="ui_pda_log_date_next">
 		<text>Следующая дата</text>
+	</string>
+	<string id="ui_mm_select">
+		<text>Выбрать пункт меню</text>
+	</string>
+	<string id="ui_mm_select_difficulty">
+		<text>Выбрать уровень сложности</text>
 	</string>
 </string_table>
