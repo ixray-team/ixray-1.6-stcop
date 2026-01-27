@@ -132,6 +132,11 @@ u32 MergeLmap_Compact(vecDefl& Layer, CLightmap* lmap)
 				placer_perpixel.RecalcY();
 				AditionalData("IT: %u/%u | filled: %u | NoPlaced: %u", IndexTask, merge_count, placer_perpixel.FilledPercent, ErrorsPlace.load());
 			}
+			else if (IndexTask % 64 == 0)
+			{
+				float Total = float(IndexTask - 1) / float(merge_count);
+				Progress(Total);
+			}
 
 			L_rect		rT, rS;
 			rS.a.set(0, 0);

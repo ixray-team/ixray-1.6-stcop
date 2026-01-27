@@ -49,7 +49,7 @@ struct b_texture_real
 
 struct b_texture
 {
-	string128			name;
+	string128			name = {};
 	u32					dwWidth;
 	u32					dwHeight;
 	BOOL				bHasAlpha;
