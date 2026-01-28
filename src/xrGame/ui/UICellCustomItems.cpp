@@ -26,15 +26,7 @@ CUIInventoryCellItem::CUIInventoryCellItem(CInventoryItem* itm)
 
 	const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, itm->m_section_id, "icons_texture", nullptr);
 
-	bool isRaster = EngineExternal().isRenderingUIRaster();
-
-	if (!isRaster)
-	{
-		if (EngineExternal().isRenderingUIErrorFallbackToDefaultAtlas()==false)
-		{
-			isRaster = !(pSettings->line_exist(itm->m_section_id, kUIConfigField_InventoryVectorIcon));
-		}
-	}
+	const bool isRaster = !(pSettings->line_exist(itm->m_section_id, kUIConfigField_InventoryVectorIcon));
 
 	m_grid_size.set(itm->GetInvGridRect().rb);
 	if (isRaster)
@@ -102,8 +94,6 @@ CUIInventoryCellItem::CUIInventoryCellItem(CInventoryItem* itm)
 			inherited::SetStretchTexture(true);
 		}
 	}
-
-
 }
 
 bool CUIInventoryCellItem::EqualTo(CUICellItem* itm)
