@@ -1,12 +1,5 @@
 #include "stdafx.h"
 #include "noise.h"
-#include <xmmintrin.h>
-
-ICF int iFloor_SSE( float const x )
-{
-	return _mm_cvtt_ss2si( _mm_set_ss( x ) );
-}
- 
 //==============================================================================
 // Perlin's noise from Texturing and Modeling...
 #define B 256
@@ -18,7 +11,7 @@ ICF int iFloor_SSE( float const x )
 
 #define PN_SETUP(i,b0,b1,r0,r1) \
 	t = vec[i] + 10000.f;\
-	tt = iFloor_SSE(t); \
+	tt = iFloor(t); \
 	b0 = tt & (B-1);\
 	b1 = (b0+1) & (B-1);\
 	r0 = t - float(tt);\
