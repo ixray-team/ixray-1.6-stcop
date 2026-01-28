@@ -2,17 +2,15 @@
 #include "IGame_Level.h"
 #include "IGame_Persistent.h"
 
-#include "x_ray.h"
-#include "std_classes.h"
-#include "CustomHUD.h"
-#include "Render.h"
-#include "GameFont.h"
-#include "xrLevel.h"
 #include "CameraManager.h"
-#include "xr_object.h"
+#include "CustomHUD.h"
 #include "Feel_Sound.h"
+#include "Render.h"
+#include "std_classes.h"
+#include "xrLevel.h"
+#include "xr_object.h"
+#include "x_ray.h"
 
-#include "FPSCounter.h"
 #include "../xrGame/AnimNotify/AnimNotifyGame.h"
 
 ENGINE_API	IGame_Level*	g_pGameLevel	= nullptr;
@@ -163,7 +161,6 @@ BOOL IGame_Level::Load			(u32 dwNum)
 }
 
 int		psNET_DedicatedSleep	= 5;
-bool IsFpsShow = false;
 void	IGame_Level::OnRender		( ) 
 {
 	if (!g_dedicated_server)
@@ -176,9 +173,6 @@ void	IGame_Level::OnRender		( )
 			PROF_EVENT("IGame_Level::OnRender: Render");
 			Render->Render();
 		}
-
-		if (IsFpsShow) 
-			pFPSCounter->OnRender();
 	}
 }
 
