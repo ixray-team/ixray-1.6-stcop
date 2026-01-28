@@ -126,6 +126,25 @@ public:
 	virtual	void				SpawnItem(LPCSTR section, const Fvector& position, u32 level_vertex_id, u16 parent_id) = 0;
 	virtual IGame_Patrol*		CreatePatrol(const char* patrol) = 0;
 	virtual void				LoadEditor(shared_str LevelName) {};
+
+	ICF void dbg_text_renderer(const Fvector& pos, u32 color = color_rgba(0, 255, 100, 255), shared_str str = "+")
+	{
+		Fvector4		v_res;
+		Device.mFullTransform.transform(v_res, pos);
+
+		float x = (1.f + v_res.x) / 2.f * (Device.Width);
+		float y = (1.f - v_res.y) / 2.f * (Device.Height);
+
+		if (v_res.z < 0 || v_res.w < 0)
+			return;
+
+		if (v_res.x < -1.f || v_res.x > 1.f || v_res.y < -1.f || v_res.y>1.f)
+			return;
+
+		g_FontManager->pFontSystem->SetAligment(CGameFont::alCenter);
+		g_FontManager->pFontSystem->SetColor(color);
+		g_FontManager->pFontSystem->Out(x, y, "%s", str.c_str());
+	}
 };
 
 extern ENGINE_API IGame_Level* g_pGameLevel;
