@@ -42,8 +42,15 @@ void dxFontRender::OnRender(CGameFont& owner)
 		{
 			// lock AGP memory
 			u32	vOffset;
-			FVF::TL* vertexes = (FVF::TL*)RCache.Vertex.Lock(length * 4, pGeom.stride(), vOffset);
-			FVF::TL* start = vertexes;
+			struct TLF
+			{
+				struct
+				{
+					Fvector4 p; u32 color; Fvector2	uv;
+				} buff[4];
+			};
+			TLF* vertexes = (TLF*)RCache.Vertex.Lock(length * 4, pGeom.stride(), vOffset);
+			TLF* start = vertexes;
 
 			float X = float(iFloor(str.x));
 			float Y = float(iFloor(str.y));
@@ -119,60 +126,54 @@ void dxFontRender::OnRender(CGameFont& owner)
 
 				if (str.gradientMode == CGameFont::gm_horz)
 				{ 
-					vertexes->set(X, GlyphY2, clr, u1, v2);
-					++vertexes;
-					vertexes->set(X, GlyphY, clr, u1, v1);
-					++vertexes;
-					vertexes->set(X2, GlyphY2, clr2, u2, v2);
-					++vertexes;
-					vertexes->set(X2, GlyphY, clr2, u2, v1);
-					++vertexes;
+					*vertexes =
+					{ 
+						Fvector4{X, GlyphY2,.0001f,.9999f}, clr, Fvector2{u1, v2},
+						Fvector4{X, GlyphY,.0001f,.9999f}, clr, Fvector2{u1, v1},
+						Fvector4{X2, GlyphY2,.0001f,.9999f}, clr2, Fvector2{u2, v2},
+						Fvector4{X2, GlyphY,.0001f,.9999f}, clr2, Fvector2{u2, v1},
+					};
 				}
 				else if (str.gradientMode == CGameFont::gm_back)
 				{
-					vertexes->set(X, GlyphY2, clr2, u1, v2);
-					++vertexes;
-					vertexes->set(X, GlyphY, clr2, u1, v1);
-					++vertexes;
-					vertexes->set(X2, GlyphY2, clr, u2, v2);
-					++vertexes;
-					vertexes->set(X2, GlyphY, clr, u2, v1);
-					++vertexes;
+					*vertexes =
+					{
+						Fvector4{X, GlyphY2,.0001f,.9999f}, clr2, Fvector2{u1, v2},
+						Fvector4{X, GlyphY,.0001f,.9999f}, clr2, Fvector2{u1, v1},
+						Fvector4{X2, GlyphY2,.0001f,.9999f}, clr, Fvector2{u2, v2},
+						Fvector4{X2, GlyphY,.0001f,.9999f}, clr, Fvector2{u2, v1}
+					};
 				}
 				else if (str.gradientMode == CGameFont::gm_down)
 				{
-					vertexes->set(X, GlyphY2, clr, u1, v2);
-					++vertexes;
-					vertexes->set(X, GlyphY, clr2, u1, v1);
-					++vertexes;
-					vertexes->set(X2, GlyphY2, clr, u2, v2);
-					++vertexes;
-					vertexes->set(X2, GlyphY, clr2, u2, v1);
-					++vertexes;
+					*vertexes =
+					{
+						Fvector4{X, GlyphY2,.0001f,.9999f}, clr, Fvector2{u1, v2},
+						Fvector4{X, GlyphY,.0001f,.9999f}, clr2, Fvector2{u1, v1},
+						Fvector4{X2, GlyphY2,.0001f,.9999f}, clr, Fvector2{u2, v2},
+						Fvector4{X2, GlyphY,.0001f,.9999f}, clr2, Fvector2{u2, v1}
+					};
 				}
 				else
 				{
-					vertexes->set(X, GlyphY2, clr2, u1, v2);
-					++vertexes;
-					vertexes->set(X, GlyphY, clr, u1, v1);
-					++vertexes;
-					vertexes->set(X2, GlyphY2, clr2, u2, v2);
-					++vertexes;
-					vertexes->set(X2, GlyphY, clr, u2, v1);
-					++vertexes;
+					*vertexes =
+					{
+						Fvector4{X, GlyphY2,.0001f,.9999f}, clr2, Fvector2{u1, v2},
+						Fvector4{X, GlyphY,.0001f,.9999f}, clr, Fvector2{u1, v1},
+						Fvector4{X2, GlyphY2,.0001f,.9999f}, clr2, Fvector2{u2, v2},
+						Fvector4{X2, GlyphY,.0001f,.9999f}, clr, Fvector2{u2, v1}
+					};
 				}
+				++vertexes;
 				X = X2 + glyphInfo->Abc.abcC + owner.GetLetterSpacing();
 			}
 
 			// Unlock and draw
-			u32 vertexesCount = (u32)(vertexes - start);
+			u32 vertexesCount = (u32)(vertexes - start) * 4;
 			RCache.Vertex.Unlock(vertexesCount, pGeom.stride());
 
-			if(vertexesCount > 0)
-			{
-				RCache.set_Geometry(pGeom);
-				RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vOffset, 0, vertexesCount, 0, vertexesCount / 2);
-			}
+			RCache.set_Geometry(pGeom);
+			RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vOffset, 0, vertexesCount, 0, vertexesCount / 2);
 		}
 	}
 }
