@@ -435,7 +435,8 @@ void	CResourceManager::_GetMemoryUsage(u32& m_base, u32& c_base, u32& m_lmaps, u
 		}
 	}
 }
-void	CResourceManager::_DumpMemoryUsage		()
+
+void CResourceManager::_DumpMemoryUsage		()
 {
 	xr_multimap<u32,std::pair<u32,shared_str> >		mtex	;
 
@@ -460,7 +461,7 @@ void	CResourceManager::_DumpMemoryUsage		()
 	}
 }
 
-void	CResourceManager::Evict()
+void CResourceManager::Evict()
 {
 	//	TODO: DX10: check if we really need this method
 #ifndef USE_DX11
@@ -471,7 +472,7 @@ void	CResourceManager::Evict()
 void CResourceManager::Initialize_SVGStorage()
 {
 	// we don't use storage svg if rendering ui is raster because there's no need in such creation
-	if (!m_pStorageSVG && !EngineExternal().isRenderingUIRaster())
+	if (m_pStorageSVG == nullptr)
 	{
 		m_pStorageSVG = new CSVGStorage(eSVGStorageFlags::kFeatureSVGStorage_Static_Allocation);
 		m_pStorageSVG->init();
