@@ -89,7 +89,7 @@ int APIENTRY WinMain
 		return -1;
 	}
 
-	std::jthread s(splash::Show);
+	//std::jthread s(splash::Show); //
 
 	splash::SetProgressStatus(5, "Initializing debugger");
 	Debug._initialize(false);
@@ -121,7 +121,8 @@ int APIENTRY WinMain
 
 	splash::SetProgressStatus(20, "Initializing xrCore");
 	EngineLoadStage1(lpCmdLine);
-
+	//plat
+	std::jthread s(splash::Show);
 #ifdef DEBUG_DRAW
 	xrLogger::EnableFastDebugLog();
 #endif
