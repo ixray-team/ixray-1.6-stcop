@@ -59,12 +59,12 @@ void CUIStatic::SetXformLightAnim(LPCSTR lanim, bool bCyclic)
 	m_lanim_xform.m_origSize			= GetWndSize();
 }
 
-bool CUIStatic::InitTexture(pcstr texture, bool fatal)
+bool CUIStatic::InitTexture(const char* texture, bool fatal)
 {
     return InitTextureEx(texture, "hud\\default", fatal);
 }
 
-bool CUIStatic::InitTexture(LPCSTR raster_texture_name, LPCSTR svg_texture_name)
+bool CUIStatic::InitTexture(const char* raster_texture_name, const char* svg_texture_name)
 {
 	bool result = CUITextureMaster::InitTexture(svg_texture_name, &m_UIStaticItem, GetWidth(), GetHeight());
 
@@ -74,17 +74,10 @@ bool CUIStatic::InitTexture(LPCSTR raster_texture_name, LPCSTR svg_texture_name)
 	return result;
 }
 
-void CUIStatic::InitSVG(CUIXml& xml_doc, LPCSTR path, int index)
+void CUIStatic::InitSVG(CUIXml& xml_doc, const char* path, int index)
 {
-	bool isRaster = EngineExternal().isRenderingUIRaster();
-
-	if (!isRaster)
-	{
-		LPCSTR svg = xml_doc.ReadAttrib(path, index, "svg");
-		m_bHasSvgAttribute = strlen(svg)>0;
-
-		// todo: probably provide nested nodes? but might there's better to refactor and make one place where we init svg data from xmls
-	}
+	const char* svg = xml_doc.ReadAttrib(path, index, "svg");
+	m_bHasSvgAttribute = strlen(svg) > 0;
 }
 
 bool CUIStatic::isSVGPresented(void) const
@@ -92,7 +85,7 @@ bool CUIStatic::isSVGPresented(void) const
 	return m_bHasSvgAttribute;
 }
 
-LPCSTR CUIStatic::getSVGFilename(CUIXml& xml_doc, LPCSTR path, int index)
+const char* CUIStatic::getSVGFilename(CUIXml& xml_doc, const char* path, int index)
 {
 	R_ASSERT(m_bHasSvgAttribute && "must be initialized!");
 
@@ -102,8 +95,7 @@ LPCSTR CUIStatic::getSVGFilename(CUIXml& xml_doc, LPCSTR path, int index)
 
 		R_ASSERT2(validNode, "not presented");
 
-		LPCSTR result = xml_doc.ReadAttrib(path, index, "svg");
-
+		const char* result = xml_doc.ReadAttrib(path, index, "svg");
 		return result;
 	}
 
@@ -115,14 +107,14 @@ void CUIStatic::CreateShader(const char* tex, const char* sh)
     m_UIStaticItem.CreateShader(tex, sh);
 }
 
-bool CUIStatic::InitTextureEx(pcstr texture, pcstr shader, bool fatal)
+bool CUIStatic::InitTextureEx(const char* texture, const char* shader, bool fatal)
 {
 	if (texture == nullptr)
 	{
 		return false;
 	}
 
-    LPCSTR res_shname = UIRender->UpdateShaderName(texture, shader);
+	const char* res_shname = UIRender->UpdateShaderName(texture, shader);
     bool result = CUITextureMaster::InitTexture(texture, &m_UIStaticItem, res_shname, fatal);
 
     Fvector2 p = GetWndPos();
@@ -130,13 +122,12 @@ bool CUIStatic::InitTextureEx(pcstr texture, pcstr shader, bool fatal)
     return result;
 }
 
-void  CUIStatic::Draw()
+void CUIStatic::Draw()
 {
-	DrawTexture				();	
-	inherited::Draw			();
-	DrawText				();
+	DrawTexture();
+	inherited::Draw();
+	DrawText();
 }
-
 
 void CUIStatic::DrawText()
 {
