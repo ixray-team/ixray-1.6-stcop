@@ -97,7 +97,13 @@ bool CUIMessageBoxEx::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 		{
 			m_pMessageBox->OnYesOk();
 			return true;
-		}else
+		}
+		else if (dik == SDL_SCANCODE_ESCAPE)
+		{
+			m_pMessageBox->OnNo();
+			return true;
+		}
+		else
 			return CUIDialogWnd::OnKeyboardAction(dik, keyboard_action);
 	}
 	return CUIDialogWnd::OnKeyboardAction(dik, keyboard_action);
