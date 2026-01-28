@@ -79,13 +79,6 @@ enum class EEngineExternalPlatform : u8
 	Unknown = static_cast<u8>(-1)
 };
 
-enum class EEngineExternalUIRenderingType : u8
-{
-	Raster,
-	Vector,
-	Unknown = static_cast<u8>(-1)
-};
-
 constexpr const char* kPlatformNameCOP = "cop";
 constexpr const char* kPlatformNameCS = "cs";
 constexpr const char* kPlatformNameSOC = "soc";
@@ -125,8 +118,6 @@ public:
 	const char* GetCurrentPlatformName();
 	EEngineExternalPlatform GetCurrentPlatform();
 	shared_str GetInventoryItemCountPrefix();
-	bool isRenderingUIRaster() const;
-	bool isRenderingUIErrorFallbackToDefaultAtlas() const;
 
 	bool operator[](const EEngineExternalUI& ID) const;
 	bool operator[](const EEngineExternalPhysical& ID) const;
@@ -145,8 +136,6 @@ private:
 	void InitPlatform(const char* pPlatformName);
 
 private:
-	bool m_is_rendering_ui_vector_when_error_use_default_atlas;
-	EEngineExternalUIRenderingType m_preferredUIRendering;
 	EEngineExternalPlatform m_platform_type;
 	CInifile* pOptions;
 };
