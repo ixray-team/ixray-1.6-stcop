@@ -4,6 +4,7 @@
 #include "x_ray.h"
 #include "Render.h"
 #include "EngineThreading.h"
+#include "FPSCounter.h"
 #include "IGame_Level.h"
 
 #include "../xrCore/FS_impl.h"
@@ -16,6 +17,7 @@ ENGINE_API CTimer loading_save_timer;
 ENGINE_API bool loading_save_timer_started = false;
 ENGINE_API xr_atomic_bool g_bRendering = false;
 extern ENGINE_API float psHUD_FOV;
+bool IsFpsShow = false;
 
 BOOL g_bLoaded = FALSE;
 ref_light precache_light = 0;
@@ -239,6 +241,10 @@ void CRenderDevice::on_idle		()
 				seqRender.Process(rp_Render);
 				if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Statistic->errors.size())
 					Statistic->Show();
+
+
+				if (IsFpsShow)
+					pFPSCounter->OnRender();
 
 				End();
 			}
