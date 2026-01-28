@@ -306,6 +306,12 @@ void CUIMessageBox::OnYesOk()
 	};
 }
 
+void CUIMessageBox::OnNo()
+{
+	GetMessageTarget()->SendMessage(m_UIButtonNo, MESSAGE_BOX_NO_CLICKED);
+	GetMessageTarget()->SendMessage(this, MESSAGE_BOX_NO_CLICKED);
+}
+
 void CUIMessageBox::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 {
 	if ( msg == BUTTON_CLICKED )
@@ -330,8 +336,7 @@ void CUIMessageBox::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 			}
 			else if(pWnd == m_UIButtonNo)
 			{
-				GetMessageTarget()->SendMessage(m_UIButtonNo, MESSAGE_BOX_NO_CLICKED);
-				GetMessageTarget()->SendMessage(this, MESSAGE_BOX_NO_CLICKED);
+				OnNo();
 			}
 			break;
 		case MESSAGEBOX_YES_NO_CANCEL:
@@ -341,8 +346,7 @@ void CUIMessageBox::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 			}
 			else if(pWnd == m_UIButtonNo)
 			{
-				GetMessageTarget()->SendMessage(m_UIButtonNo, MESSAGE_BOX_NO_CLICKED);
-				GetMessageTarget()->SendMessage(this, MESSAGE_BOX_NO_CLICKED);
+				OnNo();
 			}
 			else if(pWnd == m_UIButtonCancel)
 			{
@@ -357,8 +361,7 @@ void CUIMessageBox::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 			}
 			else if(pWnd == m_UIButtonNo)
 			{
-				GetMessageTarget()->SendMessage(m_UIButtonNo, MESSAGE_BOX_NO_CLICKED);
-				GetMessageTarget()->SendMessage(this, MESSAGE_BOX_NO_CLICKED);
+				OnNo();
 			}
 			else if(pWnd == m_UIButtonCopy)
 			{
