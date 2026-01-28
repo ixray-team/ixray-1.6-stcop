@@ -206,9 +206,7 @@ void CMiniMapSpot::Load(CUIXml* xml, LPCSTR path)
 		m_icon_below				= m_UIStaticItem.GetShader		();
 	}
 
-	bool isRaster = EngineExternal().isRenderingUIRaster();
-
-	if (isRaster)
+	if (!isSVGPresented())
 	{
 		xr_strconcat(buf, path, ":texture");
 		n = xml->NavigateToNode(buf, 0);
@@ -230,10 +228,6 @@ void CMiniMapSpot::Load(CUIXml* xml, LPCSTR path)
 		}
 
 		m_UIStaticItem.SetTextureRect(_stored_rect);
-	}
-	else
-	{
-		// be careful because it is already initialized in inherited::Load(xml,path); call
 	}
 }
 
