@@ -1024,14 +1024,9 @@ bool CUIXmlInit::InitTexture(CUIXml& xml_doc, LPCSTR path, int index, ITextureOw
 	LPCSTR shader	= nullptr;
 	LPCSTR raster_texture = nullptr;
 
-	bool isRaster = EngineExternal().isRenderingUIRaster();
-
-	if (!isRaster)
-	{
 		string256 buf2;
 		xr_strconcat(buf2, path, ":svg");
-		isRaster = (!(xml_doc.NavigateToNode(buf2))) && (EngineExternal().isRenderingUIErrorFallbackToDefaultAtlas()==false);
-	}
+	const bool isRaster = xml_doc.NavigateToNode(buf2) == nullptr;
 
 	if (isRaster)
 	{
@@ -1057,8 +1052,6 @@ bool CUIXmlInit::InitTexture(CUIXml& xml_doc, LPCSTR path, int index, ITextureOw
 		R_ASSERT(strlen(raster_texture) > 0 && "must be not empty!");
 	}
 	
-
-
 	if (texture)
 	{
 		if (isRaster)

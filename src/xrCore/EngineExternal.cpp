@@ -5,7 +5,9 @@
 
 XRCORE_API CEngineExternal* g_pEngineExternal = nullptr;
 
-CEngineExternal::CEngineExternal() : m_is_rendering_ui_vector_when_error_use_default_atlas{}, m_preferredUIRendering(EEngineExternalUIRenderingType::Unknown), m_platform_type(EEngineExternalPlatform::Unknown), pOptions(nullptr)
+CEngineExternal::CEngineExternal() : 
+	m_platform_type(EEngineExternalPlatform::Unknown),
+	pOptions(nullptr)
 {
 	string_path fname;
 	FS.update_path(fname, _game_config_, "engine_external.ltx");
@@ -36,28 +38,8 @@ CEngineExternal::CEngineExternal() : m_is_rendering_ui_vector_when_error_use_def
 	{
 		R_ASSERT2(false, "Unknown platform mode specified. Please check your engine_external.ltx.");
 	}
+
 	gamesaveSize = READ_IF_EXISTS(pOptions, r_ivector2, "general", "SaveImageSize", Ivector2().set(128, 128));
-	const char* pRenderingUIType = READ_IF_EXISTS(pOptions, r_string, "ui", "RenderingType", "default");
-
-	const char* pRenderingUIVectorFallbackToDefault = READ_IF_EXISTS(pOptions, r_string, "ui", "VectorErrorRenderingFallback", "false");
-
-	if (!strcmp(pRenderingUIType, "default") || !strcmp(pRenderingUIType, "raster"))
-	{
-		m_preferredUIRendering = EEngineExternalUIRenderingType::Raster;
-	}
-	else
-	{
-		m_preferredUIRendering = EEngineExternalUIRenderingType::Vector;
-	}
-
-	if (!strcmp(pRenderingUIVectorFallbackToDefault, "true") || !strcmp(pRenderingUIVectorFallbackToDefault, "1"))
-	{
-		m_is_rendering_ui_vector_when_error_use_default_atlas = true;
-	}
-	else
-	{
-		m_is_rendering_ui_vector_when_error_use_default_atlas = false;
-	}
 }
 
 CEngineExternal::~CEngineExternal() 
@@ -260,14 +242,4 @@ shared_str CEngineExternal::GetInventoryItemCountPrefix()
 CInifile* CEngineExternal::GetIniFile()
 {
 	return pOptions;
-}
-
-bool CEngineExternal::isRenderingUIRaster() const
-{
-	return m_preferredUIRendering == EEngineExternalUIRenderingType::Raster;
-}
-
-bool CEngineExternal::isRenderingUIErrorFallbackToDefaultAtlas() const
-{
-	return m_is_rendering_ui_vector_when_error_use_default_atlas;
 }
