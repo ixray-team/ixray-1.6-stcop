@@ -42,52 +42,40 @@ void XRay::Hardware::FPSCounter::OnRender()
 		}
 
 		shared_str text = shared_str().printf("FPS: %d", static_cast<int>(visible_fps));
+		font_->OutNext(*text);
 		
 		if (strcmp(fps_text_pos_tokens[fps_text_current_pos].name, "top-left") == 0)
 		{
 #ifndef MASTER_GOLD
-			font_->OutSet(
-					10,
-					CImGuiManager::Instance().IsGUIRendering() ? text_screen_padding + 20 : text_screen_padding
-				);
+			font_->OutLeft(text_screen_padding);
+			font_->OutTop(CImGuiManager::Instance().IsGUIRendering() ? text_screen_padding + 20 : text_screen_padding);
 #else
-			font_->OutSet(
-					10,
-					text_screen_padding
-				);
+			font_->OutLeft(text_screen_padding);
+			font_->OutTop(text_screen_padding);
 #endif
 		}
 		else if (strcmp(fps_text_pos_tokens[fps_text_current_pos].name, "top-right") == 0)
 		{
 #ifndef MASTER_GOLD
-			font_->OutSet(
-					static_cast<float>(Device.TargetWidth) - font_->SizeOf_(*text) - 10,
-					CImGuiManager::Instance().IsGUIRendering() ? text_screen_padding + 20 : text_screen_padding
-				);
+			font_->OutRight(text_screen_padding);
+			font_->OutTop(CImGuiManager::Instance().IsGUIRendering() ? text_screen_padding + 20 : text_screen_padding);
 #else
-			font_->OutSet(
-					static_cast<float>(Device.TargetWidth) - font_->SizeOf_(*text) - 10,
-					text_screen_padding
-				);
+			font_->OutRight(text_screen_padding);
+			font_->OutTop(text_screen_padding);
 #endif
 		}
 		else if (strcmp(fps_text_pos_tokens[fps_text_current_pos].name, "bottom-left") == 0)
 		{
-			font_->OutSet(
-					text_screen_padding,
-					static_cast<float>(Device.TargetHeight) - font_->GetHeight() - 10
-				);
+			font_->OutLeft(text_screen_padding);
+			font_->OutBottom(text_screen_padding);
 		}
 		else if (strcmp(fps_text_pos_tokens[fps_text_current_pos].name, "bottom-right") == 0)
 		{
-			font_->OutSet(
-					static_cast<float>(Device.TargetWidth) - font_->SizeOf_(*text) - text_screen_padding,
-					static_cast<float>(Device.TargetHeight) - font_->GetHeight() - text_screen_padding
-				);
+			font_->OutRight(text_screen_padding);
+			font_->OutBottom(text_screen_padding);
 		}
 		
 		font_->SetColor(text_color);
-		font_->OutNext(*text);
 		font_->OnRender();
 	}
 }
