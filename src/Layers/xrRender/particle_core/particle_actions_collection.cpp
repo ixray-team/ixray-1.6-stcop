@@ -2494,98 +2494,38 @@ void* PAVortex::GetVariableImpl(u8 VarID)
 static int	noise_start = 1;
 extern void	noise3Init();
 
-#include <xmmintrin.h>
-
-__forceinline __m128 _mm_load_fvector( const Fvector& v )
+void PATurbulence::Execute(ParticleHolder* effect, const float dt, float& tm_max)
 {
-	__m128 R1,R2;
-
-	R1 = _mm_load_ss( (float*) &v.x );	// R1 = 0 | 0 | 0 | v.x
-	R2 = _mm_load_ss( (float*) &v.y );	// R2 = 0 | 0 | 0 | v.y
-	R1 = _mm_unpacklo_ps( R1 , R2 );	// R1 = 0 | 0 | v.y | v.x
-	R2 = _mm_load_ss( (float*) &v.z );	// R2 = 0 | 0 | 0 | v.z
-	R1 = _mm_movelh_ps( R1 , R2 );		// R1 = 0 | v.z | v.y | v.x
-
-	return R1;
-}
-
-__forceinline void _mm_store_fvector( Fvector& v , const __m128 R1 )
-{
-	__m128 R2;
-
-	_mm_store_ss( (float*) &v.x , R1 );
-	R2 = _mm_unpacklo_ps( R1 , R1 );	// R2 = v.y | v.y | v.x | v.x
-	R2 = _mm_movehl_ps( R2 , R2 );		// R2 = v.y | v.y | v.y | v.y 
-	_mm_store_ss( (float*) &v.y , R2 );
-	R2 = _mm_movehl_ps( R1 , R1 );		// R2 = 0 | v.z | 0 | v.z
-	_mm_store_ss( (float*) &v.z , R2 );
-}
-
-void PATurbulence::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
-{
-	if ( noise_start ) {
+	if (noise_start) {
 		noise_start = 0;
 		noise3Init();
 	};
 
-    Fvector pV;
-    Fvector vX;
-    Fvector vY;
-    Fvector vZ;
-    age		+= dt;
-    for(u32 i = 0; i < pHolder->p_count; i++)
-    {
-        Particle &m = pHolder->particles[i];
+	Fvector pV;
+	Fvector vX;
+	Fvector vY;
+	Fvector vZ;
+	age += dt;
+	for (u32 i = 0; i < effect->p_count; i++)
+	{
+		Particle& m = effect->particles[i];
 
-		pV.mad(m.pos,offset,age);
-		vX.set(pV.x+epsilon,pV.y,pV.z);
-		vY.set(pV.x,pV.y+epsilon,pV.z);
-		vZ.set(pV.x,pV.y,pV.z+epsilon);
-
-        float d	=	fractalsum3(pV, frequency, octaves);
+		pV.mad(m.pos, offset, age);
+		vX.set(pV.x + epsilon, pV.y, pV.z);
+		vY.set(pV.x, pV.y + epsilon, pV.z);
+		vZ.set(pV.x, pV.y, pV.z + epsilon);
 
 		Fvector D;
+		float d = fractalsum3(pV, frequency, octaves);
+		D.x = (fractalsum3(vX, frequency, octaves) - d) * (float)magnitude;
+		D.y = (fractalsum3(vY, frequency, octaves) - d) * (float)magnitude;
+		D.z = (fractalsum3(vZ, frequency, octaves) - d) * (float)magnitude;
 
-        D.x 	= 	fractalsum3(vX, frequency, octaves);
-        D.y 	= 	fractalsum3(vY, frequency, octaves);
-        D.z 	= 	fractalsum3(vZ, frequency, octaves);
-
-		__m128 _D = _mm_load_fvector( D );
-		__m128 _d = _mm_set1_ps( d );
-		__m128 _magnitude = _mm_set1_ps( magnitude );
-		__m128 _mvel = _mm_load_fvector( m.vel );
-		_D = _mm_sub_ps( _D , _d );
-		_D = _mm_mul_ps( _D , _magnitude );
-
-		__m128 _vmo = _mm_mul_ps( _mvel , _mvel );	// _vmo = 00 | zz | yy | xx
-		__m128 _tmp = _mm_movehl_ps( _vmo , _vmo );	// _tmp = 00 | zz | 00 | zz 
-		_vmo = _mm_add_ss( _vmo , _tmp );			// _vmo = 00 | zz | yy | xx + zz
-		_tmp = _mm_unpacklo_ps( _vmo , _vmo );		// _tmp = yy | yy | xx + zz | xx + zz
-		_tmp = _mm_movehl_ps( _tmp , _tmp );		// _tmp = yy | yy | yy | yy 
-		_vmo = _mm_add_ss( _vmo , _tmp );			// _vmo = 00 | zz | yy | xx + yy + zz
-		_vmo = _mm_sqrt_ss( _vmo );					// _vmo = 00 | zz | yy | vmo
-
-		_mvel = _mm_add_ps( _mvel , _D );
-
-		__m128 _vmn = _mm_mul_ps( _mvel , _mvel );	// _vmn = 00 | zz | yy | xx
-		_tmp = _mm_movehl_ps( _vmn , _vmn );		// _tmp = 00 | zz | 00 | zz 
-		_vmn = _mm_add_ss( _vmn , _tmp );			// _vmn = 00 | zz | yy | xx + zz
-		_tmp = _mm_unpacklo_ps( _vmn , _vmn );		// _tmp = yy | yy | xx + zz | xx + zz
-		_tmp = _mm_movehl_ps( _tmp , _tmp );		// _tmp = yy | yy | yy | yy 
-		_vmn = _mm_add_ss( _vmn , _tmp );			// _vmn = 00 | zz | yy | xx + yy + zz
-		_vmn = _mm_sqrt_ss( _vmn );					// _vmn = 00 | zz | yy | vmn
-
-		_vmo = _mm_div_ss( _vmo , _vmn );			// _vmo = 00 | zz | yy | scale
-
-		_vmo = _mm_shuffle_ps( _vmo , _vmo , _MM_SHUFFLE( 0 , 0 , 0 , 0 ) ); // _vmo = scale | scale | scale | scale
-		_mvel = _mm_mul_ps( _mvel , _vmo );
-
-    	_mm_store_fvector( m.vel , _mvel );
-    	if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
-    	{
-    		m.rot_vel = m.vel;
-    		m.rot_vel.normalize_safe();
-    	}
+		float velMagOrig = m.vel.magnitude();
+		m.vel.add(D);
+		float	velMagNow = m.vel.magnitude();
+		float	valMagScale = velMagOrig / velMagNow;
+		m.vel.mul(valMagScale);
 	}
 }
 
