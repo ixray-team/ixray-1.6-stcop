@@ -200,6 +200,8 @@ bool CDeflector::ApplyColors()
 		}
 	}
 
+	lm.samples.clear();
+	lm.samples.shrink_to_fit(); // Выгрузка памяти
 	return true;
 } 
 
