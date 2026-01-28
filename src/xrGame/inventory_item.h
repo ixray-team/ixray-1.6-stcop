@@ -172,13 +172,9 @@ public:
 	virtual float Weight() const { return m_weight; }
 	void setWeight(float value);
 
-	Fvector		Get3DStaticRotate() const
+	Fvector Get3DStaticRotate() const
 	{
-		Fvector value;
-		value.x = m_3d_static_rotate_x;
-		value.y = m_3d_static_rotate_y;
-		value.z = m_3d_static_rotate_z;
-		return value;
+		return m_3d_static_rotate;
 	}
 
 public:
@@ -203,7 +199,7 @@ public:
 	float ScaleIcon = 1.0f;
 	shared_str IconsTexture;
 
-	float m_3d_static_rotate_x, m_3d_static_rotate_y, m_3d_static_rotate_z = 0.f;
+	Fvector m_3d_static_rotate{};
 	float m_3d_static_scale = 1.f;
 	LPCSTR m_3d_static_visual_name = "";
 

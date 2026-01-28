@@ -291,11 +291,14 @@ void CRenderDevice::CalculateTransforms()
 		Device.fViewportNear, g_pGamePersistent->Environment().CurrentEnv->far_plane), mView_hud);
 	mInv3x4FullTransform_hud_special.invert(mFullTransform_hud_special);
 
-	mView_saved				= mView;
-	mProject_saved			= mProject;
-	mFullTransform_saved	= mFullTransform;
+	mView_saved = mView;
+	mProject_saved = mProject;
+	mFullTransform_saved = mFullTransform;
 
-	vCameraPosition_saved	= vCameraPosition;
+	vCameraPosition_saved = vCameraPosition;
+	vCameraDirection_saved = vCameraDirection;
+	vCameraRight_saved = vCameraRight;
+	vCameraTop_saved = vCameraTop;
 }
 
 bool quiting = false;
