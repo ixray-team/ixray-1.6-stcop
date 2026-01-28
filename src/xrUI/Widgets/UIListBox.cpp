@@ -388,3 +388,29 @@ void CUIListBox::SetImmediateSelection(bool f)
 {
 	m_bImmediateSelection = f;
 }
+
+void CUIListBox::NextItem()
+{
+	int nextIdx = GetSelectedIDX() + 1;
+	if (nextIdx > m_pad->GetChildWndList().size() - 1)
+	{
+		nextIdx = 0;
+		ScrollToBegin();
+	}
+	SetSelectedIDX(nextIdx);
+	GetSelectedItem()->OnMouseDown(MOUSE_1);
+	SetScrollPos(GetSelectedIDX() * GetItemHeight());
+}
+
+void CUIListBox::PrevItem()
+{
+	int nextIdx = GetSelectedIDX() - 1;
+	if (nextIdx < 0)
+	{
+		nextIdx = m_pad->GetChildWndList().size() - 1;
+		ScrollToEnd();
+	}
+	SetSelectedIDX(nextIdx);
+	GetSelectedItem()->OnMouseDown(MOUSE_1);
+	SetScrollPos(GetSelectedIDX() * GetItemHeight());
+}
