@@ -441,7 +441,7 @@ void CGameFont::MasterOut(
 {
 	if (bCheckDevice && (!Device.b_is_Active))
 		return;
-
+	
 	String rs;
 
 	rs.x = (bUseCoords ? (bScaleCoords ? (DI2PX(_x)) : _x) : fCurrentX);
@@ -483,17 +483,42 @@ void CGameFont::MasterOut(
 void CGameFont::OutI(float _x, float _y, const char* fmt, ...)
 {
 	MASTER_OUT(FALSE, TRUE, TRUE, FALSE, _x, _y, 0.0f, fmt);
-};
+}
 
 void CGameFont::Out(float _x, float _y, const char* fmt, ...)
 {
 	MASTER_OUT(TRUE, TRUE, FALSE, FALSE, _x, _y, 0.0f, fmt);
-};
+}
 
 void CGameFont::OutNext(const char* fmt, ...)
 {
 	MASTER_OUT(TRUE, FALSE, FALSE, TRUE, 0.0f, 0.0f, LineSpacing, fmt);
-};
+}
+
+void CGameFont::OutLeft(float x)
+{
+	fCurrentX = 0 + x;
+}
+
+void CGameFont::OutRight(float x)
+{
+	float max_str_size_in_px = 0.f;
+	
+	for (const String& str : strings)
+		max_str_size_in_px = std::max(max_str_size_in_px, SizeOf_(str.string));
+	
+	fCurrentX = static_cast<float>(Device.TargetWidth) - max_str_size_in_px - x;
+}
+
+void CGameFont::OutTop(float y)
+{
+	fCurrentY = 0 + y;
+}
+
+void CGameFont::OutBottom(float y)
+{
+	fCurrentY = static_cast<float>(Device.TargetHeight) - GetHeight() * static_cast<float>(strings.size()) - y;
+}
 
 void CGameFont::OutSkip(float val)
 {
