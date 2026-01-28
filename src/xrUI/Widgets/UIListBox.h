@@ -35,6 +35,9 @@ public:
 		void		SetSelectedText					(LPCSTR txt);
 		void		SetImmediateSelection			(bool f);
 
+		void		NextItem						();
+		void		PrevItem						();
+
 virtual bool		OnMouseAction							(float x, float y, EUIMessages mouse_action);
 virtual void		SendMessage						(CUIWindow* pWnd, s16 msg, void* pData = 0);
 
