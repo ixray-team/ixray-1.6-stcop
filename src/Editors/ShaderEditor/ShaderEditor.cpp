@@ -2,7 +2,7 @@
 //
 #include "stdafx.h"
 #include "../../xrEngine/xr_input.h"
-#include "xrECore/Splash.h"
+#include "../xrPlay/Splash.h"
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLine, int nCmdShow)
 {
@@ -11,14 +11,14 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 		Msg("! SDL_Init Error: %s", SDL_GetError());
 		return 0;
 	}
+	splash::SetBackground(IDB_SE);
+	std::jthread s(splash::Show);
 
-	splash::show(IDB_SE);
-
-	splash::update(5, "Initializing Debugger");
+	splash::SetProgressStatus(5, "Initializing Debugger");
 
 	Debug._initialize(false);
 
-	splash::update(15, "Initializing Core System");
+	splash::SetProgressStatus(15, "Initializing Core System");
 
     const char* FSName = "fs.ltx";
     LPCSTR fsgame_ltx_name = "-fsltx ";
@@ -31,23 +31,23 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 
     Core._initialize("Shader", ELogCallback, 1, fsgame[0] ? fsgame : FSName);
 
-	splash::update(35, "Initializing Shader Tools");
+	splash::SetProgressStatus(35, "Initializing Shader Tools");
 
 	Tools = new CShaderTool();
 	STools = (CShaderTool*)Tools;
 
-	splash::update(60, "Registering UI Commands");
+	splash::SetProgressStatus(60, "Registering UI Commands");
 
 	UI = new CShaderMain();
 	UI->RegisterCommands();
 
-	splash::update(85, "Creating Main UI Form");
+	splash::SetProgressStatus(85, "Creating Main UI Form");
 	UIMainForm* MainForm = new UIMainForm();
 	::MainForm = MainForm;
 	UI->Push(MainForm, false);
 
-	splash::update(100, "Finalizing");
-	splash::hide();
+	splash::SetProgressStatus(100, "Finalizing");
+	splash::Close();
 
 	bool NeedExit = false;
 	while (!NeedExit)
@@ -128,7 +128,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 		}
 		MainForm->Frame();
 	}
-
+	s.join();
 	xr_delete(MainForm);
 	Core._destroy();
 	return 0;

@@ -8,7 +8,7 @@
 #include "Editor/Utils/ContentView.h"
 #include "Editor/Scene/LEPhysics.h"
 
-#include "../xrECore/Splash.h"
+#include "../../xrPlay/Splash.h"
 
 #include "../../xrEngine/std_classes.h"
 #include "../../xrEngine/IGame_Persistent.h"
@@ -32,13 +32,14 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 		return 0;
 	}
 
-	splash::show(IDB_LE);
+	splash::SetBackground(IDB_LE);
+	std::jthread s(splash::Show);
 
-	splash::update(5, "Initializing Debugger");
+	splash::SetProgressStatus(5, "Initializing Debugger");
 
 	Debug._initialize(false);
 	
-	splash::update(10, "Initializing Core System");
+	splash::SetProgressStatus(10, "Initializing Core System");
 
 	const char* FSName = "fs.ltx";
 	LPCSTR fsgame_ltx_name = "-fsltx ";
@@ -51,28 +52,28 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 
 	Core._initialize("LevelEditor", ELogCallback, 1, fsgame[0] ? fsgame : FSName);
 
-	splash::update(20, "Initializing Level Tools");
+	splash::SetProgressStatus(20, "Initializing Level Tools");
 
 	Tools = new CLevelTool();
 	LTools = static_cast<CLevelTool*>(Tools);
 
-	splash::update(25, "Registering UI Commands");
+	splash::SetProgressStatus(25, "Registering UI Commands");
 
 	UI = new CLevelMain();
 	UI->RegisterCommands();
 
 	LUI = static_cast<CLevelMain*>(UI);
 
-	splash::update(30, "Creating Editor Scene");
+	splash::SetProgressStatus(30, "Creating Editor Scene");
 
 	Scene = new EScene();
 	EditorScene = Scene;
 
-	splash::update(25, "Initializing Content View");
+	splash::SetProgressStatus(25, "Initializing Content View");
 
 	GContentView = new CContentView;
 
-	splash::update(30, "Creating Main UI Form");
+	splash::SetProgressStatus(30, "Creating Main UI Form");
 
 	UIMainForm* MainForm = new UIMainForm();
 
@@ -80,17 +81,17 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	g_XrGameManager = new XrGameManager();
 	g_SEFactoryManager = new XrSEFactoryManager();
 
-	splash::update(40, "Loading Game Materials");
+	splash::SetProgressStatus(40, "Loading Game Materials");
 
 	// Initialize APP
 	GameMaterialLibraryEditors->Load();
 
-	splash::update(55, "Initializing Game Persistent Objects");
+	splash::SetProgressStatus(55, "Initializing Game Persistent Objects");
 
 	g_pGamePersistent = static_cast<IGame_Persistent*>(g_XrGameManager->Create(CLSID_GAME_PERSISTANT));
 	EDevice->seqAppStart.Process(rp_AppStart);
 
-	splash::update(65, "Setting Up Console");
+	splash::SetProgressStatus(65, "Setting Up Console");
 
 	Console->Execute("default_controls");
 
@@ -106,7 +107,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 
 	Console->Hide();
 
-	splash::update(75, "Performing Final UI Setup");
+	splash::SetProgressStatus(75, "Performing Final UI Setup");
 
 	::MainForm = MainForm;
 	UI->Push(MainForm, false);
@@ -114,14 +115,14 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	pFPSCounter = new XRay::Hardware::FPSCounter();
 
 	bool NeedExit = false;
-	splash::update(85, "Performing Final Checks");
+	splash::SetProgressStatus(85, "Performing Final Checks");
 	MainForm->GetRenderForm()->DragFunctor = DragDrop;
 	
-	splash::update(90, "Finalizing UI Setup");
+	splash::SetProgressStatus(90, "Finalizing UI Setup");
 	GContentView->Init();
 	UI->PushBegin(GContentView);
-	splash::update(100, "Finalizing");
-	splash::hide();
+	splash::SetProgressStatus(100, "Finalizing");
+	splash::Close();
 	while (!NeedExit)
 	{
 		SDL_Event Event;
@@ -240,7 +241,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 		if (g_pGamePersistent)
 			g_pGamePersistent->UpdateParticles();
 	}
-
+	s.join();
 	xr_delete(g_FontManager);
 
 	g_scene_physics.DestroyAll();
