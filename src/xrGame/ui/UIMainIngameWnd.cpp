@@ -205,61 +205,45 @@ void CUIMainIngameWnd::Init()
 	if (uiXml.NavigateToNode("indicator_overweight", 0))
 		m_ind_overweight = UIHelper::CreateStatic(uiXml, "indicator_overweight", indicatorParent);
 
-	bool isRaster = EngineExternal().isRenderingUIRaster();
-
 	auto pInitSVGForCUIStatic = [](CUIStatic* pElement, CUIXml& uiXml, bool& svg_init) -> void
+	{
+		if (pElement == nullptr || !pElement->isSVGPresented())
 		{
-			if (!pElement)
-				return;
-
-		if (
-			pElement->isSVGPresented() && EngineExternal().isRenderingUIRaster()==false)
-		{
-			R_ASSERT(pElement->WindowNodeName().size() > 0 && "must be valid! otherwise you passed invalid or not initialized element");
-
-			LPCSTR pSVGFilename = pElement->getSVGFilename(uiXml, pElement->WindowNodeName().c_str(), 0);
-
-			if (pSVGFilename)
-			{
-				Fvector2 scaled_w_and_h;
-				UI().ClientToScreenScaled(scaled_w_and_h, pElement->GetWidth(), pElement->GetHeight());
-
-				float fRequestedWidth = scaled_w_and_h.x;
-				float fRequestedHeight = scaled_w_and_h.y;
-
-				const ui_shader& svg_shader = UI().GetVectorShader(pSVGFilename, fRequestedWidth, fRequestedHeight);
-				const Frect& svg_uv = UI().GetVectorUV(pSVGFilename, fRequestedWidth, fRequestedHeight);
-
-				pElement->SetShader(svg_shader);
-				pElement->SetTextureRect(svg_uv);
-
-				// virtual callings are not cheap and for runtime better to reduce that overhead tbh so we have to cache at init stage 
-				svg_init = true;
-			}
+			return;
 		}
-#ifdef DEBUG
-		else
-		{
-			Msg("! [svg]: nor attribute nor nested node was presented for <%s>", pElement->WindowNodeName().c_str());
-		}
-#endif
 
-		};
+		R_ASSERT(pElement->WindowNodeName().size() > 0 && "must be valid! otherwise you passed invalid or not initialized element");
+
+		LPCSTR pSVGFilename = pElement->getSVGFilename(uiXml, pElement->WindowNodeName().c_str(), 0);
+
+		if (pSVGFilename)
+		{
+			Fvector2 scaled_w_and_h;
+			UI().ClientToScreenScaled(scaled_w_and_h, pElement->GetWidth(), pElement->GetHeight());
+
+			float fRequestedWidth = scaled_w_and_h.x;
+			float fRequestedHeight = scaled_w_and_h.y;
+
+			const ui_shader& svg_shader = UI().GetVectorShader(pSVGFilename, fRequestedWidth, fRequestedHeight);
+			const Frect& svg_uv = UI().GetVectorUV(pSVGFilename, fRequestedWidth, fRequestedHeight);
+
+			pElement->SetShader(svg_shader);
+			pElement->SetTextureRect(svg_uv);
+
+			// virtual callings are not cheap and for runtime better to reduce that overhead tbh so we have to cache at init stage 
+			svg_init = true;
+		}
+	};
 
 	// todo: refactor and make function that accept CUIStatic and initialize others...
-	if (!isRaster)
-	{
+	pInitSVGForCUIStatic(m_ind_bleeding, uiXml, m_ind_bleeding_svg_inited);
 
-		pInitSVGForCUIStatic(m_ind_bleeding, uiXml, m_ind_bleeding_svg_inited);
-
-		pInitSVGForCUIStatic(m_ind_weapon_broken, uiXml, m_ind_weapon_broken_svg_inited);
-		pInitSVGForCUIStatic(m_ind_helmet_broken, uiXml, m_ind_helmet_broken_svg_inited);
-		pInitSVGForCUIStatic(m_ind_outfit_broken, uiXml, m_ind_outfit_broken_svg_inited);
-		pInitSVGForCUIStatic(m_ind_overweight, uiXml, m_ind_overweight_svg_inited);
-		pInitSVGForCUIStatic(m_ind_radiation, uiXml, m_ind_radiation_svg_inited);
-		pInitSVGForCUIStatic(m_ind_starvation, uiXml, m_ind_starvation_svg_inited);
-
-	}
+	pInitSVGForCUIStatic(m_ind_weapon_broken, uiXml, m_ind_weapon_broken_svg_inited);
+	pInitSVGForCUIStatic(m_ind_helmet_broken, uiXml, m_ind_helmet_broken_svg_inited);
+	pInitSVGForCUIStatic(m_ind_outfit_broken, uiXml, m_ind_outfit_broken_svg_inited);
+	pInitSVGForCUIStatic(m_ind_overweight, uiXml, m_ind_overweight_svg_inited);
+	pInitSVGForCUIStatic(m_ind_radiation, uiXml, m_ind_radiation_svg_inited);
+	pInitSVGForCUIStatic(m_ind_starvation, uiXml, m_ind_starvation_svg_inited);
 
 
 	if (!IsGameTypeSingle())
@@ -1057,17 +1041,9 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 		return;
 	};
 
+	shared_str sect_name = m_pPickUpItem->object().cNameSect();
 
-	shared_str sect_name	= m_pPickUpItem->object().cNameSect();
-
-	bool isRaster = EngineExternal().isRenderingUIRaster();
-	if (!isRaster)
-	{
-		if (EngineExternal().isRenderingUIErrorFallbackToDefaultAtlas()==false)
-		{
-			isRaster = !(pSettings->line_exist(sect_name, kUIConfigField_InventoryVectorIcon));
-		}
-	}
+	bool isRaster = !(pSettings->line_exist(sect_name, kUIConfigField_InventoryVectorIcon));
 
 	int m_iGridWidth = pSettings->r_u32(sect_name, "inv_grid_width");
 	int m_iGridHeight = pSettings->r_u32(sect_name, "inv_grid_height");
@@ -1531,15 +1507,7 @@ void CUIMainIngameWnd::UpdateQuickSlots()
 
 				wnd->Show(should_show_panel);
 
-				bool isRaster = EngineExternal().isRenderingUIRaster();
-
-				if (!isRaster)
-				{
-					if (EngineExternal().isRenderingUIErrorFallbackToDefaultAtlas() == false)
-					{
-						isRaster = !(pSettings->line_exist(item_name, kUIConfigField_InventoryVectorIcon));
-					}
-				}
+				bool isRaster = !(pSettings->line_exist(item_name, kUIConfigField_InventoryVectorIcon));
 				
 				if (isRaster)
 				{
@@ -1556,8 +1524,6 @@ void CUIMainIngameWnd::UpdateQuickSlots()
 				texture_rect.y2 = pSettings->r_float(item_name, "inv_grid_height") * INV_GRID_HEIGHT(scaleIcon);
 				texture_rect.rb.add(texture_rect.lt);
 
-
-
 				if (isRaster)
 				{
 					slot->SetTextureRect(texture_rect);
@@ -1569,7 +1535,7 @@ void CUIMainIngameWnd::UpdateQuickSlots()
 
 					xr_string_view svg_icon_name = pSettings->r_string(item_name, kUIConfigField_InventoryVectorIcon);
 
-					if (svg_icon_name.empty() == false)
+					if (!svg_icon_name.empty())
 					{
 						const ui_shader& svg_shader = UI().GetVectorShader(svg_icon_name, fWidth, fHeight);
 						texture_rect = UI().GetVectorUV(svg_icon_name, fWidth, fHeight);
@@ -1584,7 +1550,6 @@ void CUIMainIngameWnd::UpdateQuickSlots()
 						slot->SetTextureRect(texture_rect);
 					}
 				}
-
 
 				slot->TextureOn();
 				slot->SetStretchTexture(true);
