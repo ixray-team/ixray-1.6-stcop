@@ -15,6 +15,17 @@ namespace splash
         constexpr int SNOW_COUNT = 178/*300*/;
         Snowflake snow[SNOW_COUNT];
 
+        int getBackgroundID(EEngineExternalPlatform platform)
+        {
+            if (platform == EEngineExternalPlatform::ShadowOfChernobyl)
+                return IDB_SOC_SPLASH_BG_NG;
+
+            if (platform == EEngineExternalPlatform::ClearSky)
+                return IDB_CS_SPLASH_BG_NG;
+
+            return IDB_COP_SPLASH_BG_NG;
+        }
+
         void init_snow(int win_width, int win_height)
         {
             
