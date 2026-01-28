@@ -703,7 +703,7 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Mask32,		"r3_volumetric_smoke",			&ps_r2_ls_flags,			R3FLAG_VOLUMETRIC_SMOKE);
 	CMD3(CCC_Mask32, "r4_enable_tessellation", &ps_r2_ls_flags_ext, R2FLAGEXT_ENABLE_TESSELLATION);
 
-	CMD3(CCC_Mask32, "r4_enable_vslr", &ps_r2_ls_flags_ext, R4FLAG_OFFSCREEN_REFLECTIONS);
+	CMD3(CCC_Mask32, "r4_vslr_enable", &ps_r2_ls_flags_ext, R4FLAG_OFFSCREEN_REFLECTIONS);
 	CMD4(CCC_Float, "r4_vslr_distance", &ps_r4_vslr_distance, 0.4f, 1.f);
 
 	// IX-Ray
