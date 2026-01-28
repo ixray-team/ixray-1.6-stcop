@@ -28,7 +28,7 @@ void CUIOutfitDragDropList::SetOutfit()
 	if (pActor)
 	{
 		m_background->SetVisual(pActor->Visual());
-		m_background->SetXYZ(0, 3, 0);
+		m_background->SetXYZ(0, M_PI, 0);
 		m_background->TextureOn();
 	}
 	else
