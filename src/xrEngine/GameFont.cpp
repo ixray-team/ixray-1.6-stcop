@@ -502,7 +502,7 @@ void CGameFont::OutLeft(float x)
 
 void CGameFont::OutRight(float x)
 {
-	static float max_str_size_in_px = 0;
+	float max_str_size_in_px = 0.f;
 	
 	for (const String& str : strings)
 		max_str_size_in_px = std::max(max_str_size_in_px, SizeOf_(str.string));
