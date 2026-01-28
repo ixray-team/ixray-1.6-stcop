@@ -46,6 +46,7 @@ public:
 	virtual void SendMessage		(CUIWindow *pWnd, s16 msg, void *pData);
 
 	void		OnYesOk				();
+	void		OnNo				();
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 	virtual CUIStatic* ui_cast_static() { return this; }
