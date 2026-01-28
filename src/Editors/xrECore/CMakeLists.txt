@@ -146,6 +146,7 @@ file(GLOB_RECURSE ECORE_SOURCE_EXT_FILES CONFIGURE_DEPENDS
 	"../../xrEngine/ai_script_lua_debug.cpp"
 	"../../xrEngine/ai_script_lua_extension.cpp"
 	"../../xrServerEntities/LevelGameDef.cpp"
+	"../../xrPlay/Splash.*"
 )
 
 set(ECORE_SRC_FILES)

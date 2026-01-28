@@ -1,5 +1,4 @@
-#include "../xrEngine/stdafx.h"
-
+#include "stdafx.h"
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_video.h>
 #include <SDL_Ext/SDL_image.h>
@@ -8,11 +7,20 @@
 #include <ctime>
 
 #include "splash.h"
-#include "splash_eff_ng.h"  //NOVA GODA PRIKOL
-#include "splash_eff_crt.h"
+
 #include <Windows.h>
 #include<string>
-#include "resource.h"
+#ifdef _EDITOR
+    #include "../Editors/xrECore/resource.h"
+    #define DISABLE_SPLASH_EVENTS 1
+#else
+    #include "resource.h"
+    #define DISABLE_SPLASH_EVENTS 0
+
+    #include "splash_eff_ng.h"  //NOVA GODA PRIKOL
+    #include "splash_eff_crt.h"
+#endif
+
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
@@ -20,7 +28,6 @@
 
 
 //CHANGE THIS TO 1 TO DISABLE SPLASH EVENTS (NEW YEAR AND ETC)
-#define DISABLE_SPLASH_EVENTS 0
 
 
 //#if HAVE_SLD3TTF
@@ -43,6 +50,8 @@ namespace splash
 
     const char* SPLASH_STATUS = "";
     int progress_percent = 0;
+    int background_resource_id = 0;
+
     // WINDOW ==
 
     // == LOADING AMIN SHNYAGA
@@ -74,7 +83,7 @@ namespace splash
         SPOOKY,
     } splash_render_prikol;
 
-    void splash::SetProgressStatus(int prog, const char* status)
+    SPLASH_API void SetProgressStatus(int prog, const char* status)
     {
         progress_percent = prog;
         SPLASH_STATUS = status;
@@ -120,6 +129,7 @@ namespace splash
         return surface;
     }
 
+#ifndef _EDITOR
     void renderPrikolHub(SDL_Surface* overlaySurf, SDL_Texture* overlayTex)
     {
 
@@ -133,6 +143,7 @@ namespace splash
             break;
         }
     }
+#endif // !_EDITOR
 
     void RenderText(const char* text, int x, int y) {
         if (!fontTexture) return;
@@ -172,6 +183,14 @@ namespace splash
         //RenderText(status, (WINDOW_WIDTH - (strlen(status) * CHAR_WIDTH)) / 2, progressBarBackground.y - CHAR_HEIGHT);
         RenderText(status, 32.f, progressBarBackground.y - CHAR_HEIGHT - (CHAR_HEIGHT / 3));
     }
+
+#ifdef _EDITOR
+    SPLASH_API void SetBackground(int id)
+    {
+        background_resource_id = id;
+        return;
+    }
+#endif
 
 #if! DISABLE_SPLASH_EVENTS
     bool IsBetweenDec25AndJan5()
@@ -231,7 +250,7 @@ namespace splash
         );
     }
     bool running = true;
-    int Show()
+    SPLASH_API int Show()
     {
         srand((unsigned)time(nullptr));
 
@@ -241,7 +260,7 @@ namespace splash
             return 1;
 
 #if DISABLE_SPLASH_EVENTS
-        sphash_render_prikol = NORMIS;
+        splash_render_prikol = NORMIS;
 #else
         //idk where the splash shound to enable crt effect, so let's just disable it for now ! :-)
 
@@ -324,21 +343,21 @@ namespace splash
 
             if (!extern_splash)
             {
-                int res_id = 0;
+#ifndef _EDITOR
                 switch (splash_render_prikol)
                 {
                 case NOVA_GODA:
-                    res_id = IDB_SPLASH_BG_NG;
+                    background_resource_id = IDB_SPLASH_BG_NG;
                     break;
                 case SPOOKY:
-                    res_id = IDB_SPLASH_BG_HW;
+                    background_resource_id = IDB_SPLASH_BG_HW;
                     break;
                 default:
-                    res_id = IDB_SPLASH_BG;
+                    background_resource_id = IDB_SPLASH_BG;
                     break;
                 }
-
-                surface = LoadPNGSurfaceFromResource(imageData, MAKEINTRESOURCE(res_id), TEXT("PNG"));
+#endif
+                surface = LoadPNGSurfaceFromResource(imageData, MAKEINTRESOURCE(background_resource_id), TEXT("PNG"));
 
                 if (!surface) {
                     SDL_Log("Couldn't load bitmap: %s", SDL_GetError());
@@ -410,8 +429,10 @@ namespace splash
         
         SDL_Event e;
 
+#ifndef _EDITOR
         if (splash_render_prikol == NOVA_GODA)
             splash::nova_goda::init_snow(WINDOW_WIDTH, WINDOW_HEIGHT);
+#endif
 
         SDL_PropertiesID props = SDL_GetWindowProperties(window);
         HWND hwnd = (HWND)SDL_GetPointerProperty(props, SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL);
@@ -473,15 +494,17 @@ namespace splash
             }
             UpdatepProgressBar(progress_percent, SPLASH_STATUS);
 
+#ifndef _EDITOR
             renderPrikolHub(overlaySurf, overlayTex);
 
-#ifdef DEBUG_DRAW
-    #ifdef NDEBUG
-                RenderText("DEV BUILD", 0, 0);
-    #else
-                RenderText("DEBUG BUILD", 0, 0);
-    #endif
-#endif // !_NDEBUG
+    #ifdef DEBUG_DRAW
+        #ifdef NDEBUG
+                    RenderText("DEV BUILD", 0, 0);
+        #else
+                    RenderText("DEBUG BUILD", 0, 0);
+        #endif
+    #endif // !_NDEBUG
+#endif // _EDITOR
 
             SDL_RenderPresent(renderer);
 
@@ -499,7 +522,7 @@ namespace splash
         return 1;
     }
 
-    void Close()
+    SPLASH_API void Close()
     {
         //SDL_Event e{};
         //e.type = SDL_EVENT_QUIT;

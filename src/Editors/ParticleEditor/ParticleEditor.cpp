@@ -3,7 +3,7 @@
 #include "stdafx.h"
 #include "../../xrEngine/xr_input.h"
 
-#include "xrECore/Splash.h"
+#include "../xrPlay/Splash.h"
 
 extern ECORE_API xr_token2* actions_token;
 extern xr_token2 actions_token_impl[];
@@ -16,9 +16,10 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 		return 0;
 	}
 
-	splash::show(IDB_PE);
+	splash::SetBackground(IDB_PE);
+	std::jthread s(splash::Show);
 
-	splash::update(5, "Initializing Debugger");
+	splash::SetProgressStatus(5, "Initializing Debugger");
 
 	Debug._initialize(false);
 
@@ -32,34 +33,34 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
     }
 
 
-	splash::update(10, "Initializing COM Library");
+	splash::SetProgressStatus(10, "Initializing COM Library");
 
 	CoInitialize(nullptr);
 
-	splash::update(20, "Core Initialization");
+	splash::SetProgressStatus(20, "Core Initialization");
 
     Core._initialize("Patricle", ELogCallback, 1, fsgame[0] ? fsgame : FSName);
 
 	psDeviceFlags.set(rsFullscreen, false);
 
-	splash::update(35, "Initializing Particle Tools");
+	splash::SetProgressStatus(35, "Initializing Particle Tools");
 	actions_token = actions_token_impl;
 	Tools = new CParticleTool();
 	PTools = (CParticleTool*)Tools;
 
-	splash::update(55, "Registering UI Commands");
+	splash::SetProgressStatus(55, "Registering UI Commands");
 
 	UI = new CParticleMain();
 	UI->RegisterCommands();
 	
-	splash::update(75, "Creating Main UI Form");
+	splash::SetProgressStatus(75, "Creating Main UI Form");
 
 	UIMainForm* MainForm = new UIMainForm();
 	::MainForm = MainForm;
 	UI->Push(MainForm, false);
 
-	splash::update(100, "Finalizing");
-	splash::hide();
+	splash::SetProgressStatus(100, "Finalizing");
+	splash::Close();
 
 	//MainForm->Frame();
 	bool NeedExit = false;
@@ -145,7 +146,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 		}
 		MainForm->Frame();
 	}
-
+	s.join();
 	xr_delete(MainForm);
 	Core._destroy();
 	return 0;
