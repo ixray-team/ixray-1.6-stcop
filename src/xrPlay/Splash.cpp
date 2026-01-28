@@ -18,6 +18,7 @@
     #define DISABLE_SPLASH_EVENTS 0
 
     #include "splash_eff_ng.h"  //NOVA GODA PRIKOL
+    #include "splash_eff_sp.h"
     #include "splash_eff_crt.h"
 #endif
 
@@ -222,7 +223,7 @@ namespace splash
 
         if (month == 11 && day >= 1 && day <= 5)  return true;
 
-        return false;
+        return true;
     }
 #endif
     bool IsWindowFocused(SDL_Window* window)
@@ -344,16 +345,25 @@ namespace splash
             if (!extern_splash)
             {
 #ifndef _EDITOR
+                CEngineExternal engineExternal; // Hack
+                auto platform = engineExternal.GetCurrentPlatform();
+
                 switch (splash_render_prikol)
                 {
                 case NOVA_GODA:
-                    background_resource_id = IDB_SPLASH_BG_NG;
+                    background_resource_id = nova_goda::getBackgroundID(platform);
+
                     break;
                 case SPOOKY:
-                    background_resource_id = IDB_SPLASH_BG_HW;
+                    background_resource_id = spooky::getBackgroundID(platform);
                     break;
                 default:
-                    background_resource_id = IDB_SPLASH_BG;
+                    if (platform == EEngineExternalPlatform::ShadowOfChernobyl)
+                        background_resource_id = IDB_SOC_SPLASH_BG;
+                    else if (platform == EEngineExternalPlatform::ClearSky)
+                        background_resource_id = IDB_CS_SPLASH_BG;
+                    else
+                        background_resource_id = IDB_COP_SPLASH_BG;
                     break;
                 }
 #endif
