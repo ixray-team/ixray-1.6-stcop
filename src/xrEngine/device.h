@@ -65,8 +65,8 @@ public:
 	struct {
 		float renderZoomFactor = 1.0f;
 		float renderZoomRotateFactor = 0.0f;
-		bool isRenderActive{};
-		bool isRenderProcess{};
+		bool isRenderActive = false;
+		bool isRenderProcess = false;
 
 		float renderScopeBrightnessValue = 0.0f;
 		float renderScopeBrightnessJitterValue = 0.0f;
@@ -104,6 +104,10 @@ public:
 
 	// Copies of corresponding members. Used for synchronization.
 	Fvector									vCameraPosition_saved;
+
+	Fvector									vCameraDirection_saved;
+	Fvector									vCameraRight_saved;
+	Fvector									vCameraTop_saved;
 
 	Fmatrix									mView_saved;
 	Fmatrix									mProject_saved;

@@ -5,7 +5,6 @@
 #include "../xrEngine/device.h"
 #include "../xrEngine/vis_common.h"
 #include "../xrEngine/Render.h"
-#include "../../Include/xrRender/RenderVisual.h"
 #include "../../Include/xrRender/KinematicsAnimated.h"
 #include "../../Include/xrRender/Kinematics.h"
 #include "../xrEngine/xr_ioc_cmd.h"
@@ -13,23 +12,23 @@
 
 CUI3dStatic::CUI3dStatic()
 {
-	m_fViewportNear				= 0.2f;
-	m_fViewportDist				= 0.3f;
+	fViewportNear = 0.2f;
+	fViewportDist = 0.3f;
 
-	m_fViewportFOV				= deg2rad(2.0f);
-	m_fViewportSize				= m_fViewportNear * tanf(m_fViewportFOV * 0.5f);
+	fViewportFOV = deg2rad(2.0f);
+	fViewportSize = fViewportNear * tanf(fViewportFOV * 0.5f);
 
-	m_fViewportAspect			= (float)Device.TargetHeight / (float)Device.TargetWidth;
+	fViewportAspect = (float)Device.TargetHeight / (float)Device.TargetWidth;
 
-	m_mProject.build_projection	(m_fViewportFOV, m_fViewportAspect, m_fViewportNear, 20.0f);
+	mProject.build_projection(fViewportFOV, fViewportAspect, fViewportNear, 20.0f);
 
-	m_mView.build_camera_dir	(Fidentity.c, Fidentity.k, Fidentity.j);
-	m_mInvView.invert			(m_mView);
+	mView.build_camera_dir(Fidentity.c, Fidentity.k, Fidentity.j);
+	mInvView.invert(mView);
 
-	m_rot_matrix.set			(Fidentity);
-	m_fScaleFactor				= 1.0f;
+	mRotate.set(Fidentity);
+	fScaleFactor = 1.0f;
 
-	SetVisual					(nullptr);
+	pCurrentVisual = nullptr;
 }
 
 CUI3dStatic::~CUI3dStatic()
@@ -42,19 +41,19 @@ void CUI3dStatic::FromScreenToItem(int x, int y, float& x_item, float& y_item)
 	float halfwidth = UI_BASE_WIDTH * 0.5f;
 	float halfheight = UI_BASE_HEIGHT * 0.5f;
 
-	float size_y = m_fViewportSize;
-	float size_x = size_y / m_fViewportAspect;
+	float size_y = fViewportSize;
+	float size_x = size_y / fViewportAspect;
 
 	float r_pt = float(x - halfwidth) * size_x / (float)halfwidth;
 	float u_pt = float(halfheight - y) * size_y / (float)halfheight;
 
-	x_item = r_pt * m_fViewportDist / m_fViewportNear;
-	y_item = u_pt * m_fViewportDist / m_fViewportNear;
+	x_item = r_pt * fViewportDist / fViewportNear;
+	y_item = u_pt * fViewportDist / fViewportNear;
 }
 
 void CUI3dStatic::Draw()
 {
-	if (m_pCurrentItem)
+	if (pCurrentVisual)
 	{
 		Frect rect{};
 		GetAbsoluteRect(rect);
@@ -67,28 +66,28 @@ void CUI3dStatic::Draw()
 		Fmatrix matrix = Fidentity;
 		Fmatrix translate_matrix = Fidentity;
 
-		translate_matrix.c.sub(m_pCurrentItem->getVisData().sphere.P);
+		translate_matrix.c.sub(pCurrentVisual->getVisData().sphere.P);
 
 		matrix.mulA_44(translate_matrix);
-		matrix.mulA_44(m_rot_matrix);
+		matrix.mulA_44(mRotate);
 
 		float x1, y1, x2, y2;
 
-		m_pCurrentItem->dcast_PKinematics()->CalculateBones_Invalidate();
-		m_pCurrentItem->dcast_PKinematics()->CalculateBones(TRUE);
+		pCurrentVisual->dcast_PKinematics()->CalculateBones_Invalidate();
+		pCurrentVisual->dcast_PKinematics()->CalculateBones(TRUE);
 
 		FromScreenToItem(rect.left, rect.top, x1, y1);
 		FromScreenToItem(rect.right, rect.bottom, x2, y2);
 
 		Fvector2 normal_size; normal_size.set(x2 - x1, y1 - y2);
 
-		Fbox mBox = m_pCurrentItem->getVisData().box;
+		Fbox mBox = pCurrentVisual->getVisData().box;
 		mBox.xform(matrix);
 
 		Fvector2 item_size; item_size.set(mBox.max.x - mBox.min.x, mBox.max.y - mBox.min.y);
 		normal_size.div(item_size);
 
-		float scale = 0.95f * std::min(std::abs(normal_size.x), std::abs(normal_size.y)) * m_fScaleFactor;
+		float scale = 0.95f * std::min(std::abs(normal_size.x), std::abs(normal_size.y)) * fScaleFactor;
 
 		static Fmatrix scale_matrix;
 
@@ -100,10 +99,10 @@ void CUI3dStatic::Draw()
 		FromScreenToItem(rect.left + GetWidth() * 0.5f, rect.top + GetHeight() * 0.5f, right_item_offset, up_item_offset);
 
 		translate_matrix.identity();
-		translate_matrix.translate(right_item_offset, up_item_offset, m_fViewportDist);
+		translate_matrix.translate(right_item_offset, up_item_offset, fViewportDist);
 
 		matrix.mulA_44(translate_matrix);
-		matrix.mulA_44(m_mInvView);
+		matrix.mulA_44(mInvView);
 
 		Device.vCameraTop.set(Fidentity.j);
 		Device.vCameraRight.set(Fidentity.i);
@@ -111,8 +110,8 @@ void CUI3dStatic::Draw()
 
 		Device.vCameraPosition.set(Fidentity.c);
 
-		Device.mView = m_mView;
-		Device.mProject = m_mProject;
+		Device.mView = mView;
+		Device.mProject = mProject;
 
 		Device.m_pRender->SetCacheXform(Device.mView, Device.mProject);
 
@@ -120,10 +119,10 @@ void CUI3dStatic::Draw()
 		
 		::Render->set_UI(true);
 
-		m_pCurrentItem->getVisData().marker = 0;
+		pCurrentVisual->getVisData().marker = 0;
 
 		::Render->set_Transform(&matrix);
-		::Render->add_Visual(m_pCurrentItem, true);
+		::Render->add_Visual(pCurrentVisual, true);
 
 		::Render->set_UI(false);
 		::Render->RenderUI();
@@ -131,6 +130,10 @@ void CUI3dStatic::Draw()
 		UI().PopScissor();
 
 		Device.vCameraPosition.set(Device.vCameraPosition_saved);
+
+		Device.vCameraDirection.set(Device.vCameraDirection_saved);
+		Device.vCameraRight.set(Device.vCameraRight_saved);
+		Device.vCameraTop.set(Device.vCameraTop_saved);
 
 		Device.mView = Device.mView_saved;
 		Device.mProject = Device.mProject_saved;
@@ -147,7 +150,7 @@ void CUI3dStatic::Draw()
 Fvector CUI3dStatic::GetXYZ() const
 {
 	static Fvector rotate_vector{};
-	m_rot_matrix.getXYZ(rotate_vector);
+	mRotate.getXYZ(rotate_vector);
 
 	return rotate_vector;
 }
@@ -155,32 +158,27 @@ Fvector CUI3dStatic::GetXYZ() const
 Fvector CUI3dStatic::GetHPB() const
 {
 	static Fvector rotate_vector{};
-	m_rot_matrix.getHPB(rotate_vector);
+	mRotate.getHPB(rotate_vector);
 
 	return rotate_vector;
 }
 
-void CUI3dStatic::SetVisual(IRenderVisual* pVisual)
+void CUI3dStatic::SetVisual(const shared_str& cVisualName)
 {
-	if (m_pCurrentItem) 
+	if (pCurrentVisual)
 	{
-		::Render->model_Delete(m_pCurrentItem);
-		m_pCurrentItem = nullptr;
+		::Render->model_Delete(pCurrentVisual);
+		pCurrentVisual = nullptr;
 	}
 
-	if (!pVisual) 
+	if (!cVisualName)
 	{
 		return;
 	}
 
-	m_pCurrentItem = ::Render->model_Duplicate(pVisual);
-	
-	if (auto pK = m_pCurrentItem->dcast_PKinematics()) 
-	{
-		pK->LL_SetBonesVisible(pVisual->dcast_PKinematics()->LL_GetBonesVisible());
-	}
+	pCurrentVisual = ::Render->model_Create(*cVisualName);
 
-	if (auto pKa = m_pCurrentItem->dcast_PKinematicsAnimated()) 
+	if (auto pKa = pCurrentVisual->dcast_PKinematicsAnimated())
 	{
 		auto MotionID = pKa->ID_Cycle_Safe("idle");
 
@@ -192,7 +190,43 @@ void CUI3dStatic::SetVisual(IRenderVisual* pVisual)
 		pKa->PlayCycle(MotionID, false);
 	}
 
-	m_pCurrentItem->dcast_PKinematics()->CalculateBones_Invalidate();
-	m_pCurrentItem->dcast_PKinematics()->CalculateBones(TRUE);
+	pCurrentVisual->dcast_PKinematics()->CalculateBones_Invalidate();
+	pCurrentVisual->dcast_PKinematics()->CalculateBones(TRUE);
+}
+
+void CUI3dStatic::SetVisual(IRenderVisual* pVisual)
+{
+	if (pCurrentVisual) 
+	{
+		::Render->model_Delete(pCurrentVisual);
+		pCurrentVisual = nullptr;
+	}
+
+	if (!pVisual) 
+	{
+		return;
+	}
+
+	pCurrentVisual = ::Render->model_Duplicate(pVisual);
+	
+	if (auto pK = pCurrentVisual->dcast_PKinematics())
+	{
+		pK->LL_SetBonesVisible(pVisual->dcast_PKinematics()->LL_GetBonesVisible());
+	}
+
+	if (auto pKa = pCurrentVisual->dcast_PKinematicsAnimated())
+	{
+		auto MotionID = pKa->ID_Cycle_Safe("idle");
+
+		if (!MotionID)
+		{
+			MotionID.set(0, 0);
+		}
+
+		pKa->PlayCycle(MotionID, false);
+	}
+
+	pCurrentVisual->dcast_PKinematics()->CalculateBones_Invalidate();
+	pCurrentVisual->dcast_PKinematics()->CalculateBones(TRUE);
 }
 
