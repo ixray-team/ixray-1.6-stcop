@@ -332,8 +332,6 @@ CRenderTarget::CRenderTarget()
 			return;
 		}
 
-		GRHI->GPUStatsEnable = true;
-
 		auto State = g_debug_blend_state;
 		auto DisplayTarget = [State](const ref_rt& rt, bool& ShowData)
 		{
@@ -433,8 +431,9 @@ CRenderTarget::CRenderTarget()
 		DisplayRT(rt_ui_pda);
 #undef DisplayRT
 
-		static int stack_levels = 3;
+		static int stack_levels = 0;
 		ImGui::SliderInt("Stack Levels", &stack_levels, 0, 8);
+		GRHI->GPUStatsEnable |= stack_levels > 0;
 
 		auto& perf = GRHI->GPUStats();
 		for (size_t i = 0; i < perf.count; i++)
