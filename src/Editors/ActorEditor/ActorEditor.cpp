@@ -5,7 +5,7 @@
 
 #include "../xrEProps/UIBoneView.h"
 
-#include "xrECore/Splash.h"
+#include "../xrPlay/Splash.h"
 
 void DragFile(xr_string File)
 {
@@ -89,13 +89,13 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 		return 0;
 	}
 
-	splash::show(IDB_AE);
-
-	splash::update(2, "Initializing Debugger");
+	splash::SetBackground(IDB_AE);
+	std::jthread s(splash::Show);
+	splash::SetProgressStatus(2, "Initializing Debugger");
 
 	Debug._initialize(false);
 
-	splash::update(5, "Core Initialization");
+	splash::SetProgressStatus(5, "Core Initialization");
 
 	const char* FSName = "fs.ltx";
 	LPCSTR fsgame_ltx_name = "-fsltx ";
@@ -108,28 +108,28 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 
 	Core._initialize("Actor", ELogCallback, 1, fsgame[0] ? fsgame : FSName);
 
-	splash::update(20, "Initializing Actor Tools");
+	splash::SetProgressStatus(20, "Initializing Actor Tools");
 
 	Tools = new CActorTools();
 	ATools = (CActorTools*)Tools;
 
-	splash::update(35, "Registering UI Commands");
+	splash::SetProgressStatus(35, "Registering UI Commands");
 
 	UI = new CActorMain();
 	UI->RegisterCommands();
 
-	splash::update(50, "Creating Main UI Form");
+	splash::SetProgressStatus(50, "Creating Main UI Form");
 
 	UIMainForm* MainForm = new UIMainForm();
 	::MainForm = MainForm;
 
-	splash::update(75, "Loading Game Materials");
+	splash::SetProgressStatus(75, "Loading Game Materials");
 
 	PGMLib->Load();
 
-	splash::update(85, "Initializing UI");
+	splash::SetProgressStatus(85, "Initializing UI");
 	UI->PushBegin(MainForm, false);
-	splash::update(90, "Processing Command-Line Arguments");
+	splash::SetProgressStatus(90, "Processing Command-Line Arguments");
 	int ArgsCount = 0;
 	auto Commands = CommandLineToArgvW(GetCommandLine(), &ArgsCount);
 
@@ -142,8 +142,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 		}
 	}
 
-	splash::update(100, "Finalizing");
-	splash::hide();
+	splash::SetProgressStatus(100, "Finalizing");
+	splash::Close();
 
 	bool NeedExit = false;
 
@@ -239,7 +239,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 		}
 		MainForm->Frame();
 	}
-
+	s.join();
 	xr_delete(MainForm);
 
 	Core._destroy();
