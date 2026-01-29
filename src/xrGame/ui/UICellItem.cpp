@@ -273,23 +273,24 @@ bool CUICellItem::OnKeyboardAction(int dik, EUIMessages keyboard_action)
             Fvector xyz = GetXYZ();
             float fScale = GetScaleFactor();
             if (dik == SDL_SCANCODE_Z)
-                xyz.x += val;
+                xyz.x += deg2rad(val * 10.f);
             else if (dik == SDL_SCANCODE_X)
-                xyz.y += val;
+                xyz.y += deg2rad(val * 10.f);
             else if (dik == SDL_SCANCODE_C)
-                xyz.z += val;
+                xyz.z += deg2rad(val * 10.f);
             else if (dik == SDL_SCANCODE_V)
                 fScale += val;
-            else if (dik == SDL_SCANCODE_P)
+            else if (dik == SDL_SCANCODE_B)
             {
-
+                PIItem itm = (PIItem)m_pData;
+                Msg("! [%s]", itm->m_section_id.c_str());
                 string256 tmpStr;
-                xr_sprintf(tmpStr, "3d_static_rotate\t\t\t= %f,%f,%f",
+                xr_sprintf(tmpStr, "! 3d_static_rotate\t\t\t= %f,%f,%f",
                            rad2deg(xyz.x),
                            rad2deg(xyz.y),
                            rad2deg(xyz.z));
                 Log(tmpStr);
-                xr_sprintf(tmpStr, "3d_static_scale\t\t\t= %f",
+                xr_sprintf(tmpStr, "! 3d_static_scale\t\t\t= %f",
                            fScale);
                 Log(tmpStr);
             }
