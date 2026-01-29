@@ -636,6 +636,9 @@
 	<string id="ui_mm_save_game">
 		<text>Zapisz grê</text>
 	</string>
+	<string id="ui_mm_icons_3d_inv">
+		<text>Ikony 3D w ekwipunku</text>
+	</string>
 	<string id="ui_mm_show_crosshair">
 		<text>Poka¿ celownik</text>
 	</string>
