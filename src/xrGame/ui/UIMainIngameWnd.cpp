@@ -523,7 +523,7 @@ void CUIMainIngameWnd::Draw()
 	}
 	FS.dwOpenCounter = 0;
 
-	if (!IsGameTypeSingle() && psHUD_Flags.test(HUD_MINIMAP))
+	if (!IsGameTypeSingle())
 	{
 		float luminocity = Level().CurrentEntity()->cast_game_object()->ROS()->get_luminocity();
 		float power = log(luminocity > .001f ? luminocity : .001f) * (1.f);
@@ -538,12 +538,8 @@ void CUIMainIngameWnd::Draw()
 		return;
 	}
 
-	if (psHUD_Flags.test(HUD_MINIMAP))
-	{
-		UIMotionIcon->SetNoise((s16)(0xffff&iFloor(pActor->m_snd_noise*100)));
-		UIMotionIcon->Draw();
-	}
-
+	UIMotionIcon->SetNoise((s16)(0xffff&iFloor(pActor->m_snd_noise*100)));
+	UIMotionIcon->Draw();
 
 	const static bool noHUDonMaster = EngineExternal()[EEngineExternalUI::DisableHudRenderingOnMaster];
 	if (noHUDonMaster)
