@@ -84,7 +84,6 @@ function opt_gameplay:InitControls(x, y, xml, handler)
 
 	lineFrame("st_ui_settings")
 
-	addCheck("ui_mm_icons_3d_inv", "g_3d_icons_inv")
 	addCheck("ui_mm_show_crosshair", "hud_crosshair")
 	addCheck("ui_mm_dyn_crosshair", "cl_dynamiccrosshair")
 	addCheck("ui_mm_crosshair_distance", "hud_crosshair_dist")
