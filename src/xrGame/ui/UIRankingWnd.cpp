@@ -16,7 +16,7 @@
 #include "../../xrUI/Widgets/UIScrollView.h"
 #include "../../xrUI/UIHelper.h"
 #include "UIInventoryUtilities.h"
-
+#include "../../xrUI/Widgets/UI3dStatic.h"
 #include "../Actor.h"
 #include "../ai_space.h"
 #include "../alife_simulator.h"
@@ -229,7 +229,10 @@ void CUIRankingWnd::Init()
 	if (xml.NavigateToNode("favorite_weapon_back"))
 		m_favorite_weapon_bckgrnd	= UIHelper::CreateStatic(xml, "favorite_weapon_back", this);
 	if (xml.NavigateToNode("favorite_weapon_icon"))
-		m_favorite_weapon_icon		= UIHelper::CreateStatic(xml, "favorite_weapon_icon", this);
+	{
+		m_favorite_weapon_icon = UIHelper::Create3dStatic(xml, "favorite_weapon_icon", this);
+		m_use_3d_icon = xml.ReadAttribBool("favorite_weapon_icon", 0, "use_3d", false);
+	}
 	if (xml.NavigateToNode("favorite_weapon_ramka"))
 		m_favorite_weapon_ramka		= UIHelper::CreateFrameWindow(xml, "favorite_weapon_ramka", this);
 	if (xml.NavigateToNode("favorite_weapon_over"))
@@ -486,22 +489,33 @@ void CUIRankingWnd::get_favorite_weapon()
 	{
 		if(pSettings->section_exist(str) && pSettings->line_exist(str, "upgr_icon_x"))
 		{
-			const char* upgrIconsTexture = READ_IF_EXISTS(pSettings, r_string, str, "upgr_icons_texture", nullptr);
-			m_favorite_weapon_icon->SetShader(InventoryUtilities::GetWeaponUpgradeIconsShader(upgrIconsTexture));
-			if(!xr_strcmp(str, "wpn_rpg7"))
-				m_favorite_weapon_icon->SetShader(InventoryUtilities::GetOutfitUpgradeIconsShader(upgrIconsTexture));
+			if (m_use_3d_icon)
+			{
+				m_favorite_weapon_icon->SetVisual(READ_IF_EXISTS(pSettings, r_string, str, "3d_static_visual_name", pSettings->r_string(str, "visual")));
+				Fvector rot = READ_IF_EXISTS(pSettings, r_fvector3, str, "3d_static_rotate", rot.set(0, 0, 0));
+				rot.mul(M_PI / 180.0f);
+				m_favorite_weapon_icon->SetXYZ(rot);
+				m_favorite_weapon_icon->SetScaleFactor(READ_IF_EXISTS(pSettings, r_float, str, "3d_static_scale", 1.f));
+			}
+			else
+			{
+				const char* upgrIconsTexture = READ_IF_EXISTS(pSettings, r_string, str, "upgr_icons_texture", nullptr);
+				m_favorite_weapon_icon->SetShader(InventoryUtilities::GetWeaponUpgradeIconsShader(upgrIconsTexture));
+				if (!xr_strcmp(str, "wpn_rpg7"))
+					m_favorite_weapon_icon->SetShader(InventoryUtilities::GetOutfitUpgradeIconsShader(upgrIconsTexture));
 
-			Frect				tex_rect;
-			tex_rect.x1			= float(pSettings->r_u32(str, "upgr_icon_x"));
-			tex_rect.y1			= float(pSettings->r_u32(str, "upgr_icon_y"));
-			tex_rect.x2			= float(pSettings->r_u32(str, "upgr_icon_width"));
-			tex_rect.y2			= float(pSettings->r_u32(str, "upgr_icon_height"));
-			tex_rect.rb.add		(tex_rect.lt);
-			m_favorite_weapon_icon->SetTextureRect(tex_rect);
-			m_favorite_weapon_icon->TextureOn();
-			m_favorite_weapon_icon->SetTextureColor(color_rgba(255,255,255,255));
-			m_favorite_weapon_icon->SetWndSize(Fvector2().set((tex_rect.x2-tex_rect.x1)*UI().get_current_kx()*0.8, (tex_rect.y2-tex_rect.y1)*0.8));
-			m_favorite_weapon_icon->SetStretchTexture(true);
+				Frect				tex_rect;
+				tex_rect.x1 = float(pSettings->r_u32(str, "upgr_icon_x"));
+				tex_rect.y1 = float(pSettings->r_u32(str, "upgr_icon_y"));
+				tex_rect.x2 = float(pSettings->r_u32(str, "upgr_icon_width"));
+				tex_rect.y2 = float(pSettings->r_u32(str, "upgr_icon_height"));
+				tex_rect.rb.add(tex_rect.lt);
+				m_favorite_weapon_icon->SetTextureRect(tex_rect);
+				m_favorite_weapon_icon->TextureOn();
+				m_favorite_weapon_icon->SetTextureColor(color_rgba(255, 255, 255, 255));
+				m_favorite_weapon_icon->SetWndSize(Fvector2().set((tex_rect.x2 - tex_rect.x1) * UI().get_current_kx() * 0.8, (tex_rect.y2 - tex_rect.y1) * 0.8));
+				m_favorite_weapon_icon->SetStretchTexture(true);
+			}
 		}
 		m_last_weapon_icon = str;
 	}

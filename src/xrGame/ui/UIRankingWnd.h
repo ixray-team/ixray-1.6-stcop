@@ -13,6 +13,7 @@
 #include "UIRankingsCoC.h"
 
 class CUIStatic;
+class CUI3dStatic;
 class CUIXml;
 class CUIProgressBar;
 class CUIFrameLineWnd;
@@ -54,7 +55,7 @@ private:
 	CUIStatic*			m_monster_icon_back = nullptr;
 	CUIStatic*			m_monster_icon = nullptr;
 	CUIStatic*			m_favorite_weapon_bckgrnd = nullptr;
-	CUIStatic*			m_favorite_weapon_icon = nullptr;
+	CUI3dStatic*		m_favorite_weapon_icon = nullptr;
 
 	//Alundaio: CoC Rankings
 	CUIScrollView*		m_coc_ranking = nullptr;
@@ -88,6 +89,8 @@ private:
 
 	bool m_isGetRankingsArraySize = false;
 	const char* m_onGetRankingsArraySize = {};
+
+	bool m_use_3d_icon = false;
 
 public:
 						CUIRankingWnd			();

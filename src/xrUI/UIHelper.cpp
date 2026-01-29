@@ -21,6 +21,7 @@
 #include "Widgets/UIScrollView.h"
 #include "Widgets/UIStackPanel.h"
 #include "Widgets/UIGamepadLegend.h"
+#include "Widgets/UI3dStatic.h"
 
 CUI3dStatic* UIHelper::Create3dStatic( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent, bool critical )
 {
@@ -60,6 +61,26 @@ CUIStatic* UIHelper::CreateStatic( CUIXml& xml, LPCSTR ui_path, CUIWindow* paren
         ui->SetAutoDelete(true);
     }
     return ui;
+}
+
+CUI3dStatic* UIHelper::Create3dStatic(CUIXml& xml, LPCSTR ui_path, CUIWindow* parent, bool critical)
+{
+	// If it's not critical element, then don't crash if it doesn't exist
+	if (!critical && !xml.NavigateToNode(ui_path, 0))
+		return nullptr;
+
+	auto ui = new CUI3dStatic();
+	if (!CUIXmlInit::InitStatic(xml, ui_path, 0, ui, critical))
+	{
+		R_ASSERT4(!critical, "Failed to create 3d static", ui_path, xml.m_xml_file_name);
+		xr_delete(ui);
+	}
+	else if (parent)
+	{
+		parent->AttachChild(ui);
+		ui->SetAutoDelete(true);
+	}
+	return ui;
 }
 
 CUIStackPanel* UIHelper::CreateStackPanel(CUIXml& xml, LPCSTR ui_path, CUIWindow* parent, bool critical)
