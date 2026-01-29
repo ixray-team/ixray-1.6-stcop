@@ -523,7 +523,7 @@ void CUIMainIngameWnd::Draw()
 	}
 	FS.dwOpenCounter = 0;
 
-	if (!IsGameTypeSingle())
+	if (!IsGameTypeSingle() && psHUD_Flags.test(HUD_MINIMAP))
 	{
 		float luminocity = Level().CurrentEntity()->cast_game_object()->ROS()->get_luminocity();
 		float power = log(luminocity > .001f ? luminocity : .001f) * (1.f);
@@ -538,9 +538,11 @@ void CUIMainIngameWnd::Draw()
 		return;
 	}
 
-	UIMotionIcon->SetNoise((s16)(0xffff&iFloor(pActor->m_snd_noise*100)));
-
-	UIMotionIcon->Draw();
+	if (psHUD_Flags.test(HUD_MINIMAP))
+	{
+		UIMotionIcon->SetNoise((s16)(0xffff&iFloor(pActor->m_snd_noise*100)));
+		UIMotionIcon->Draw();
+	}
 
 
 	const static bool noHUDonMaster = EngineExternal()[EEngineExternalUI::DisableHudRenderingOnMaster];
@@ -1022,9 +1024,10 @@ void CUIMainIngameWnd::AnimateContacts(bool b_snd)
 {
 	UIZoneMap->Counter_ResetClrAnimation();
 
-	if(b_snd)
-		HUD_SOUND_ITEM::PlaySound	(m_contactSnd, Fvector().set(0,0,0), 0, true );
-
+	if (!psHUD_Flags.test(HUD_MINIMAP))
+		b_snd = false;
+	if (b_snd)
+		HUD_SOUND_ITEM::PlaySound(m_contactSnd, Fvector().set(0,0,0), 0, true);
 }
 
 
