@@ -35,6 +35,7 @@ function opt_con_cmd:InitControls(x, y, xml, handler)
 	self:initOneEntry							("hud_weapon", "check", xml)
 	self:initOneEntry							("g_autopickup", "check", xml)
 
+	self:initOneEntry							("g_3d_icons_inv", "check", xml)
 	self:initOneEntry							("wpn_aim_toggle", "check", xml)
 	self:initOneEntry							("hud_old_style", "check", xml)
 	self:initOneEntry							("hud_info", "check", xml)

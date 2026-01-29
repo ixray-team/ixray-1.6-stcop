@@ -16,6 +16,7 @@ enum
 	AF_INFINITE_FIRE			= (1 << 13),
 	AF_INFINITE_DURABILITY		= (1 << 14),
 	AF_HIT_SLOWMO				= (1 << 15),
+	AF_3D_ICONS_INV				= (1 << 16),
 };
 
 extern Flags32	psActorFlags;

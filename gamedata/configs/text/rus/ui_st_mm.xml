@@ -636,6 +636,9 @@
 	<string id="ui_mm_save_game">
 		<text>Сохранить игру</text>
 	</string>
+	<string id="ui_mm_icons_3d_inv">
+		<text>3D Иконки в инвентаре</text>
+	</string>
 	<string id="ui_mm_show_crosshair">
 		<text>Показывать прицел</text>
 	</string>
