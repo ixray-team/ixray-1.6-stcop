@@ -142,7 +142,7 @@ public:
 	virtual void				PlayAnimIdle		();
 	virtual void				PlayAnimBore		();
 	virtual void				PlayAnimDeviceSwitch();
-	bool						TryPlayAnimIdle		();
+	virtual bool				TryPlayAnimIdle		();
 	virtual bool				MovingAnimAllowedNow ()				{return true;}
 
 	virtual void				PlayAnimIdleMoving();
