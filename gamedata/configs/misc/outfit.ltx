@@ -31,6 +31,7 @@ full_icon_name					= npc_icon_without_outfit
 default_to_ruck     = false
 sprint_allowed      = true
 control_inertion_factor = 1
+3d_static_rotate			= -90,-180,0
 ;player_hud_section	= actor_hud_05
 
 [without_outfit]:outfit_base
@@ -135,6 +136,11 @@ $spawn 			= "outfit\stalker_outfit"
 class			= E_STLK
 cform           = skeleton
 visual          = dynamics\outfit\stalker_outfit
+3d_static_rotate	= -84,170,-10
+3d_static_scale		= 1
+;visual          = stalker_suit
+;3d_static_rotate			= 90,0,0
+;3d_static_scale			= 0.95
 actor_visual	= actors\stalker_hero\stalker_hero_stalker_1.ogf
 player_hud_section	= actor_hud_05
 
@@ -223,6 +229,7 @@ cform           = skeleton
 visual          = dynamics\outfit\svoboda_light_outfit
 actor_visual	= actors\stalker_hero\stalker_hero_freedom_1.ogf
 player_hud_section	= actor_hud_03
+3d_static_rotate	= -90,0,0
 
 ef_equipment_type	= 3
 
@@ -1012,6 +1019,8 @@ control_inertion_factor	= 1.0
 inv_name             	= st_helm_respirator
 inv_name_short       	= st_helm_respirator
 description				= st_helm_respirator_descr
+3d_static_rotate		= -90,4,-180
+3d_static_scale			= 0.900000
 
 inv_weight           	= 4.0
 
@@ -1057,6 +1066,7 @@ fire_wound_immunity		= 0.04
 [helm_hardhat]:helmet
 $spawn 			= "outfit\helm_hardhat"
 visual          	= dynamics\outfit\helm_hardhat
+3d_static_rotate			= -40,0,0
 control_inertion_factor	= 1.0
 inv_name             	= st_helm_hardhat
 inv_name_short       	= st_helm_hardhat
@@ -1107,6 +1117,8 @@ fire_wound_immunity		= 0.025
 [helm_protective]:helmet
 $spawn 			= "outfit\helm_protective"
 visual          	= dynamics\outfit\helm_protective
+3d_static_rotate			= -90,180,0
+3d_static_scale			= 0.900000
 control_inertion_factor	= 1.0
 inv_name             	= st_helm_protective
 inv_name_short       	= st_helm_protective
@@ -1160,6 +1172,8 @@ control_inertion_factor	= 1.0
 inv_name             	= st_helm_tactic
 inv_name_short       	= st_helm_tactic
 description				= st_helm_tactic_descr
+3d_static_rotate			= -20,180,0
+3d_static_scale			= 1.1
 
 inv_weight           	= 4.0
 
@@ -1212,6 +1226,7 @@ fire_wound_immunity		= 0.015
 [helm_battle]:helmet
 $spawn 			= "outfit\helm_battle"
 visual          	= dynamics\outfit\helm_battle
+3d_static_rotate			= -30,180,0.000000
 control_inertion_factor	= 1.0
 inv_name             	= st_helm_battle
 inv_name_short       	= st_helm_battle
