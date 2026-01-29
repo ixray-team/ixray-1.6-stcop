@@ -636,9 +636,6 @@
 	<string id="ui_mm_save_game">
 		<text>Spiel speichern</text>
 	</string>
-	<string id="ui_mm_icons_3d_inv">
-		<text>3D-Symbole im Inventar</text>
-	</string>
 	<string id="ui_mm_show_crosshair">
 		<text>Fadenkreuz darstellen</text>
 	</string>
