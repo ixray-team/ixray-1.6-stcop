@@ -184,10 +184,10 @@ void CUIMotionIcon::SetPower(float newPos)
 
 void CUIMotionIcon::SetNoise(float newPos)
 {
-	if (!IsGameTypeSingleCompatible() || !psHUD_Flags.test(HUD_MINIMAP))
+	if (!IsGameTypeSingleCompatible())
 		return;
 
-	if (m_noise_progress_shape)
+	if (m_noise_progress_shape && psHUD_Flags.test(HUD_MINIMAP))
 	{
 		float pos = newPos;
 		pos = clampr(pos, 0.f, 100.f);
@@ -203,11 +203,13 @@ void CUIMotionIcon::SetNoise(float newPos)
 
 void CUIMotionIcon::SetLuminosity(float newPos)
 {
-	if (!IsGameTypeSingleCompatible() || !psHUD_Flags.test(HUD_MINIMAP))
+	if (!IsGameTypeSingleCompatible())
 		return;
 
-	if (m_luminosity_progress_shape)
+	if (m_luminosity_progress_shape && psHUD_Flags.test(HUD_MINIMAP))
+	{
 		m_luminosity = newPos;
+	}
 	else if (m_luminosity_progress_bar)
 	{
 		newPos = clampr(newPos, m_luminosity_progress_bar->GetRange_min(), m_luminosity_progress_bar->GetRange_max());
@@ -220,7 +222,7 @@ void CUIMotionIcon::Draw()
 	const static bool disableMotionIcon = EngineExternal()[EEngineExternalUI::DisableMotionIcon];
 	const static bool noHUDonMaster = EngineExternal()[EEngineExternalUI::DisableHudRenderingOnMaster];
 	bool renderHUD = noHUDonMaster ? g_SingleGameDifficulty < egdVeteran : true;
-	if (!disableMotionIcon && renderHUD && psHUD_Flags.test(HUD_MINIMAP))
+	if (!disableMotionIcon && renderHUD)
 		inherited::Draw();
 }
 
@@ -231,7 +233,7 @@ void CUIMotionIcon::Update()
 		inherited::Update();
 		return;
 	}
-	if (psHUD_Flags.test(HUD_MINIMAP) && m_bchanged)
+	if (m_bchanged)
 	{
 		m_bchanged = false;
 		if (!m_npc_visibility.empty())
@@ -244,10 +246,7 @@ void CUIMotionIcon::Update()
 	}
 	inherited::Update();
 
-	if (!psHUD_Flags.test(HUD_MINIMAP))
-		return;
-
-	if (m_luminosity_progress_shape)
+	if (m_luminosity_progress_shape && psHUD_Flags.test(HUD_MINIMAP))
 	{
 		if (m_cur_pos != m_luminosity)
 		{
