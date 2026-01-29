@@ -1665,10 +1665,7 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 			SwitchState(eHidden);  
 		break;
 		case eIdle:
-		{
-			m_bIsAimAnimationPlaying = false;
 			switch2_Idle();
-		}
 		break;
 		case eEmptyClick:
 		{
@@ -2961,22 +2958,14 @@ void CWeaponMagazined::PlaySoundAim(bool in)
 	}
 }
 
-bool CWeaponMagazined::TryPlayAnimIdle()
-{
-	if (m_bIsAimAnimationPlaying)
-	{
-		return false;
-	}
-
-	return CHudItem::TryPlayAnimIdle();
-}
-
 void CWeaponMagazined::PlayAnimIdle()
 {
 	if (GetState() != eIdle)
 	{
 		return;
 	}
+
+	m_bIsAimAnimationPlaying = false;
 
 	if (IsZoomed())
 	{
@@ -2988,10 +2977,7 @@ void CWeaponMagazined::PlayAnimIdle()
 			return;
 		}
 
-		if (!m_bIsAimAnimationPlaying)
-		{
-			PlayAnimAim();
-		}
+		PlayAnimAim();
 	}
 	else
 	{
@@ -3004,11 +2990,6 @@ void CWeaponMagazined::PlayAnimIdle()
 		}
 
 		if (TryPlayAnimIdle())
-		{
-			return;
-		}
-
-		if (m_bIsAimAnimationPlaying)
 		{
 			return;
 		}

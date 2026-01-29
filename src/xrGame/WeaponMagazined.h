@@ -189,7 +189,6 @@ protected:
 	virtual void	PlayAnimHide		();
 	virtual void	PlayAnimReload		();
 	virtual void	PlayAnimIdle		();
-	virtual bool	TryPlayAnimIdle() final override;
 	virtual void	PlayAnimShoot		();
 	virtual void	PlayReloadSound		();
 	virtual void	PlayAnimAim			();
