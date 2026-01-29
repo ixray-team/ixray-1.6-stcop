@@ -59,7 +59,9 @@ xr_token							aa_type_token[] = {
 	{ "fxaa",						1												},
 #if RENDER != R_R1
 	{ "smaa",						2												},
+#ifdef USE_DX11
 	{ "taa",						3												},
+#endif
 #endif // DEBUG	
 	{ 0,							0												}
 };
