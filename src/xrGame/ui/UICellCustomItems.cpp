@@ -4,6 +4,7 @@
 #include "../Weapon.h"
 #include "UIDragDropListEx.h"
 #include "../../xrUI/Widgets/UIProgressBar.h"
+#include "../../xrUI/Widgets/UI3dStatic.h"
 
 namespace detail 
 {
@@ -94,6 +95,13 @@ CUIInventoryCellItem::CUIInventoryCellItem(CInventoryItem* itm)
 			inherited::SetStretchTexture(true);
 		}
 	}
+
+    // Для 3d иконок
+    if (psActorFlags.test(AF_3D_ICONS_INV))
+    {
+        SetVisual(itm->m_3d_static_visual_name);
+        // SetVisual(itm->object().Visual());
+    }
 }
 
 bool CUIInventoryCellItem::EqualTo(CUICellItem* itm)
@@ -371,7 +379,7 @@ void CUIWeaponCellItem::Update()
 
 	if (object()->SilencerAttachable())
 	{
-		if (object()->IsSilencerAttached())
+		if (object()->IsSilencerAttached() && !psActorFlags.test(AF_3D_ICONS_INV))
 		{
 			if (!GetIcon(eSilencer) || bForceReInitAddons)
 			{
@@ -379,7 +387,7 @@ void CUIWeaponCellItem::Update()
 				RefreshOffset();
 				InitAddon	(GetIcon(eSilencer), *object()->GetSilencerName(), m_addon_offset[eSilencer], Heading());
 			}
-		}
+        }
 		else
 		{
 			if (m_addons[eSilencer])
@@ -394,7 +402,7 @@ void CUIWeaponCellItem::Update()
 			DestroyIcon(eScope);
 		}
 
-		if (object()->IsScopeAttached())
+		if (object()->IsScopeAttached() && !psActorFlags.test(AF_3D_ICONS_INV))
 		{
 			if (!GetIcon(eScope) || bForceReInitAddons)
 			{
@@ -405,8 +413,9 @@ void CUIWeaponCellItem::Update()
 		}
 	}
 
-	if (object()->GrenadeLauncherAttachable()){
-		if (object()->IsGrenadeLauncherAttached())
+	if (object()->GrenadeLauncherAttachable())
+    {
+		if (object()->IsGrenadeLauncherAttached() && !psActorFlags.test(AF_3D_ICONS_INV))
 		{
 			if (!GetIcon(eLauncher) || bForceReInitAddons)
 			{

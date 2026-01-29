@@ -464,7 +464,14 @@ void CUIDragDropListEx::SetItem(CUICellItem* itm, Ivector2 cell_pos) // start at
 
 	m_container->PlaceItemAtPos	(itm, cell_pos);
 
-	itm->SetWindowName			("cell_item");
+    const PIItem iitem = static_cast<PIItem>(itm->m_pData);
+    itm->SetScaleFactor(iitem->m_3d_static_scale);
+    Fvector fRot = iitem->m_3d_static_rotate;
+    if (GetVerticalPlacement())
+        fRot.x += deg2rad(90.f);
+    itm->SetXYZ(fRot);
+
+    itm->SetWindowName			("cell_item");
 	Register					(itm);
 	itm->SetOwnerList			(this);
 }
@@ -570,24 +577,24 @@ CUICellContainer::~CUICellContainer()
 
 bool CUICellContainer::AddSimilar(CUICellItem* itm)
 {
-    if (!m_pParentDragDropList->IsGrouping())
-        return false;
+	if (!m_pParentDragDropList->IsGrouping())
+		return false;
 
-    const PIItem iitem = static_cast<PIItem>(itm->m_pData);
-    if (iitem && iitem->m_pInventory && iitem->m_pInventory->ItemFromSlot(iitem->BaseSlot()) == iitem)
-        return false;
+	const PIItem iitem = static_cast<PIItem>(itm->m_pData);
+	if (iitem && iitem->m_pInventory && iitem->m_pInventory->ItemFromSlot(iitem->BaseSlot()) == iitem)
+		return false;
 
-    if (!iitem->CanStack())
-        return false;
+	if (!iitem->CanStack())
+		return false;
 
-    CUICellItem* i = FindSimilar(itm);
-    if (i == nullptr || i == itm || itm->ChildsCount() > 0)
-        return false;
+	CUICellItem* i = FindSimilar(itm);
+	if (i == nullptr || i == itm || itm->ChildsCount() > 0)
+		return false;
 
-    i->PushChild(itm);
-    itm->SetOwnerList(m_pParentDragDropList);
+	i->PushChild(itm);
+	itm->SetOwnerList(m_pParentDragDropList);
 
-    return true;
+	return true;
 }
 
 CUICellItem* CUICellContainer::FindSimilar(CUICellItem* itm)
