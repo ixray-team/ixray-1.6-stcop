@@ -187,11 +187,11 @@ void CUIMotionIcon::SetNoise(float newPos)
 	if (!IsGameTypeSingleCompatible())
 		return;
 
-	if (m_noise_progress_shape && psHUD_Flags.test(HUD_MINIMAP))
+	if (m_noise_progress_shape)
 	{
 		float pos = newPos;
 		pos = clampr(pos, 0.f, 100.f);
-		m_noise_progress_shape->SetPos(pos / 100.f);
+		m_noise_progress_shape->SetPos(psHUD_Flags.test(HUD_MINIMAP) ? pos / 100.f : 0.f);
 	}
 	else if (m_noise_progress_bar)
 	{
@@ -206,9 +206,9 @@ void CUIMotionIcon::SetLuminosity(float newPos)
 	if (!IsGameTypeSingleCompatible())
 		return;
 
-	if (m_luminosity_progress_shape && psHUD_Flags.test(HUD_MINIMAP))
+	if (m_luminosity_progress_shape)
 	{
-		m_luminosity = newPos;
+		m_luminosity = psHUD_Flags.test(HUD_MINIMAP) ? newPos : 0.f;
 	}
 	else if (m_luminosity_progress_bar)
 	{
