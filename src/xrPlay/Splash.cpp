@@ -223,7 +223,7 @@ namespace splash
 
         if (month == 11 && day >= 1 && day <= 5)  return true;
 
-        return true;
+        return false;
     }
 #endif
     bool IsWindowFocused(SDL_Window* window)
