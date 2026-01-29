@@ -40,6 +40,8 @@ public:
     virtual void DrawIndexedInstanced(u32 baseVertex, u32 startVertex, u32 vertexCount, u32 startIndex, u32 primitiveCount, u32 instanceCount, u32 startInstanceLocation) override;
     virtual void DrawNoInputAssembly(u32 vertexCount) override;
 
+	virtual void EvictManagedResources() override;
+
 private:
     D3DPRIMITIVETYPE d3dTopology;
     ERHI_PRIMITIVE_TOPOLOGY currentTopology;
