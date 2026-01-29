@@ -1,5 +1,6 @@
 #pragma once
 #include "UIDragDropListEx.h"
+#include "../../xrUI/Widgets/UI3dStatic.h"
 #include "../../xrServerEntities/inventory_space.h"
 class CInventoryOwner;
 
@@ -7,7 +8,7 @@ class CUIDragDropReferenceList final : public CUIDragDropListEx
 {
 private:
 	typedef CUIDragDropListEx inherited;
-	typedef xr_vector<CUIStatic*> ITEMS_REFERENCES_VEC;
+	typedef xr_vector<CUI3dStatic*> ITEMS_REFERENCES_VEC;
 	typedef ITEMS_REFERENCES_VEC::iterator ITEMS_REFERENCES_VEC_IT;
 	ITEMS_REFERENCES_VEC m_references;
 

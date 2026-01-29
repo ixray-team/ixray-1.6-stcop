@@ -10,7 +10,6 @@
 #include "UIInventoryUtilities.h"
 #include "../../xrEngine/xr_input.h"
 #include "../../xrUI/UICursor.h"
-#include "UICellItemFactory.h"
 
 CUIDragDropReferenceList::CUIDragDropReferenceList()
 {
@@ -22,16 +21,16 @@ CUIDragDropReferenceList::~CUIDragDropReferenceList()
 void CUIDragDropReferenceList::Initialize()
 {
 	for(int i=0; i<m_container->CellsCapacity().x; i++)
-	{
-		m_references.push_back(new CUIStatic());
-		Fvector2 pos = Fvector2().set((m_container->CellSize().x+m_container->CellsSpacing().x)*i,0);
+    {
+        m_references.push_back(new CUI3dStatic());
+        Fvector2 pos = Fvector2().set((m_container->CellSize().x+m_container->CellsSpacing().x)*i,0);
 		m_references.back()->SetAutoDelete(true);
 		m_references.back()->SetWndPos(pos);
 		m_references.back()->SetWndSize(Fvector2().set(m_container->CellSize().x, m_container->CellSize().y));
 		AttachChild(m_references.back());
 		m_references.back()->SetWindowName("cell_item_reference");
 		Register(m_references.back());
-	}
+    }
 }
 void CUIDragDropReferenceList::SetItem(CUICellItem* itm)
 {
@@ -65,7 +64,31 @@ bool CUIDragDropReferenceList::SetItem(CUICellItem* itm, Fvector2 abs_pos)
 
 void CUIDragDropReferenceList::SetItem(CUICellItem* itm, Ivector2 cell_pos)
 {
-	CUIStatic* ref = m_references[cell_pos.x];
+    CUI3dStatic *ref = m_references[cell_pos.x];
+    if (psActorFlags.test(AF_3D_ICONS_INV))
+    {
+        const PIItem iitem = static_cast<PIItem>(itm->m_pData);
+        ref->SetVisual(iitem->m_3d_static_visual_name);
+        ref->SetScaleFactor(iitem->m_3d_static_scale);
+        Fvector fRot = iitem->m_3d_static_rotate;
+        if (GetVerticalPlacement())
+        {
+            fRot.x += deg2rad(90.f);
+            fRot.y -= deg2rad(180.f);
+        }
+        ref->SetXYZ(fRot);
+        itm->SetVisual(iitem->m_3d_static_visual_name);
+        itm->SetScaleFactor(iitem->m_3d_static_scale);
+        if (GetVerticalPlacement())
+        {
+            fRot.x += deg2rad(90.f);
+            fRot.y -= deg2rad(180.f);
+        }
+        itm->SetXYZ(fRot);
+    }
+    else
+        ref->SetVisual(nullptr);
+
 	ref->SetShader(itm->GetShader());
 	ref->SetTextureRect(itm->GetTextureRect());
 	ref->TextureOn();
@@ -97,7 +120,27 @@ CUICellItem* CUIDragDropReferenceList::RemoveItem(CUICellItem* itm, bool force_r
 
 void CUIDragDropReferenceList::LoadItemTexture(LPCSTR section, Ivector2 cell_pos)
 {
-	CUIStatic* ref = m_references[cell_pos.x];
+    CUI3dStatic* ref = m_references[cell_pos.x];
+
+    if (psActorFlags.test(AF_3D_ICONS_INV))
+    {
+        LPCSTR m_3d_static_visual_name = READ_IF_EXISTS(pSettings, r_string, section, "3d_static_visual_name", pSettings->r_string(section, "visual"));
+        ref->SetVisual(m_3d_static_visual_name);
+
+        Fvector m_3d_static_rotate = READ_IF_EXISTS(pSettings, r_fvector3, section, "3d_static_rotate", m_3d_static_rotate.set(0, 0, 0));
+        m_3d_static_rotate.mul(M_PI / 180.0f);
+        float m_3d_static_scale = READ_IF_EXISTS(pSettings, r_float, section, "3d_static_scale", 1.f);
+        ref->SetScaleFactor(m_3d_static_scale);
+        Fvector fRot = m_3d_static_rotate;
+        if (GetVerticalPlacement())
+        {
+            fRot.x += deg2rad(90.f);
+            fRot.y -= deg2rad(180.f);
+        }
+        ref->SetXYZ(fRot);
+    }
+    else
+        ref->SetVisual(nullptr);
 
 	const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, section, "icons_texture", nullptr);
 	ref->SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
@@ -128,7 +171,7 @@ void CUIDragDropReferenceList::ReloadReferences(CInventoryOwner* pActor)
 
 	for(u8 i=0; i<m_container->CellsCapacity().x; i++)
 	{
-		CUIStatic* ref = m_references[i];
+        CUI3dStatic* ref = m_references[i];
 		LPCSTR item_name = ACTOR_DEFS::g_quick_use_slots[i];
 		if(item_name && xr_strlen(item_name))
 		{
