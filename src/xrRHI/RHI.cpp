@@ -561,6 +561,11 @@ HRESULT CRHI::BuildShader(const void* srcData, size_t srcSize, const char* sourc
 	return ShaderCompiler->Build(srcData, srcSize, sourceName, defines, include, entryPoint, target, flags1, flags2, code, errors);
 }
 
+void CRHI::EvictManagedResources()
+{
+	DevicePtr->EvictManagedResources();
+}
+
 void CRHI::SetShader(void* NativeShader, ERHI_SHADER_TYPE Type)
 {
 	if (Shaders[(size_t)Type] == NativeShader)
