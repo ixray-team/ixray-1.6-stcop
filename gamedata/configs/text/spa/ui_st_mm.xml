@@ -636,9 +636,6 @@
 	<string id="ui_mm_save_game">
 		<text>Guardar partida</text>
 	</string>
-	<string id="ui_mm_icons_3d_inv">
-		<text>Iconos 3D en inventario</text>
-	</string>
 	<string id="ui_mm_show_crosshair">
 		<text>Mostrar punto de mira</text>
 	</string>
