@@ -470,7 +470,14 @@ void CUIDragDropListEx::SetItem(CUICellItem* itm, Ivector2 cell_pos) // start at
 
 	m_container->PlaceItemAtPos	(itm, cell_pos);
 
-	itm->SetWindowName			("cell_item");
+    const PIItem iitem = static_cast<PIItem>(itm->m_pData);
+    itm->SetScaleFactor(iitem->m_3d_static_scale);
+    Fvector fRot = iitem->m_3d_static_rotate;
+    if (GetVerticalPlacement())
+        fRot.x += deg2rad(90.f);
+    itm->SetXYZ(fRot);
+
+    itm->SetWindowName			("cell_item");
 	Register					(itm);
 	itm->SetOwnerList			(this);
 }

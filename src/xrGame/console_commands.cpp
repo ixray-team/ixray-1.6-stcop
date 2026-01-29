@@ -108,6 +108,7 @@ int m_iQuickSavesCount = 5;
 
 extern float	_delta_pos;
 extern float	_delta_rot;
+extern BOOL g_Adjust3dIcon;
 
 ENGINE_API extern float	g_console_sensitive;
 extern	BOOL	g_b_COD_PickUpMode;
@@ -2697,6 +2698,8 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask32, "g_dynamic_music", &psActorFlags, AF_DYNAMIC_MUSIC);
 	CMD3(CCC_Mask32, "g_important_save", &psActorFlags, AF_IMPORTANT_SAVE);
 	CMD3(CCC_Mask32, "g_hit_slowmo", &psActorFlags, AF_HIT_SLOWMO);
+	CMD3(CCC_Mask32, "g_3d_icons_inv", &psActorFlags, AF_3D_ICONS_INV);
+	CMD4(CCC_Integer, "3d_icons_adjust_mode", &g_Adjust3dIcon, 0, 3);
 
 #ifdef DEBUG
 	CMD1(CCC_LuaHelp, "lua_help");
