@@ -3,6 +3,7 @@
 #include "UIMotionIcon.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/UIHelper.h"
+#include "../../xrEngine/CustomHUD.h"
 #include "../game_cl_single.h"
 
 const LPCSTR MOTION_ICON_XML = "motion_icon.xml";
@@ -183,26 +184,26 @@ void CUIMotionIcon::SetPower(float newPos)
 
 void CUIMotionIcon::SetNoise(float newPos)
 {
-	if(!IsGameTypeSingleCompatible())
+	if (!IsGameTypeSingleCompatible() || !psHUD_Flags.test(HUD_MINIMAP))
 		return;
 
-    if (m_noise_progress_shape)
-    {
-        float pos = newPos;
-        pos = clampr(pos, 0.f, 100.f);
-        m_noise_progress_shape->SetPos(pos / 100.f);
-    }
-    else if (m_noise_progress_bar)
-    {
-        float pos = newPos;
-        pos = clampr(pos, m_noise_progress_bar->GetRange_min(), m_noise_progress_bar->GetRange_max());
-        m_noise_progress_bar->SetProgressPos(pos);
-    }
+	if (m_noise_progress_shape)
+	{
+		float pos = newPos;
+		pos = clampr(pos, 0.f, 100.f);
+		m_noise_progress_shape->SetPos(pos / 100.f);
+	}
+	else if (m_noise_progress_bar)
+	{
+		float pos = newPos;
+		pos = clampr(pos, m_noise_progress_bar->GetRange_min(), m_noise_progress_bar->GetRange_max());
+		m_noise_progress_bar->SetProgressPos(pos);
+	}
 }
 
 void CUIMotionIcon::SetLuminosity(float newPos)
 {
-	if(!IsGameTypeSingleCompatible())
+	if (!IsGameTypeSingleCompatible() || !psHUD_Flags.test(HUD_MINIMAP))
 		return;
 
 	if (m_luminosity_progress_shape)
@@ -216,71 +217,64 @@ void CUIMotionIcon::SetLuminosity(float newPos)
 
 void CUIMotionIcon::Draw()
 {
-    const static bool disableMotionIcon = EngineExternal()[EEngineExternalUI::DisableMotionIcon];
-    const static bool noHUDonMaster = EngineExternal()[EEngineExternalUI::DisableHudRenderingOnMaster];
-    bool renderHUD = noHUDonMaster ? g_SingleGameDifficulty < egdVeteran : true;
-    if (!disableMotionIcon && renderHUD)
-	    inherited::Draw();
+	const static bool disableMotionIcon = EngineExternal()[EEngineExternalUI::DisableMotionIcon];
+	const static bool noHUDonMaster = EngineExternal()[EEngineExternalUI::DisableHudRenderingOnMaster];
+	bool renderHUD = noHUDonMaster ? g_SingleGameDifficulty < egdVeteran : true;
+	if (!disableMotionIcon && renderHUD && psHUD_Flags.test(HUD_MINIMAP))
+		inherited::Draw();
 }
 
 void CUIMotionIcon::Update()
 {
-    if (!IsGameTypeSingleCompatible())
-    {
-        inherited::Update();
-        return;
-    }
-    if (m_bchanged)
-    {
-        m_bchanged = false;
-        if (!m_npc_visibility.empty())
-        {
-            std::sort(m_npc_visibility.begin(), m_npc_visibility.end());
-            SetLuminosity(m_npc_visibility.back().value);
-        }
-        else
-            SetLuminosity(0.f);
-    }
-    inherited::Update();
+	if (!IsGameTypeSingleCompatible())
+	{
+		inherited::Update();
+		return;
+	}
+	if (psHUD_Flags.test(HUD_MINIMAP) && m_bchanged)
+	{
+		m_bchanged = false;
+		if (!m_npc_visibility.empty())
+		{
+			std::sort(m_npc_visibility.begin(), m_npc_visibility.end());
+			SetLuminosity(m_npc_visibility.back().value);
+		}
+		else
+			SetLuminosity(0.f);
+	}
+	inherited::Update();
 
-    // m_luminosity_progress_shape
-    if (m_luminosity_progress_shape)
-    {
-        if (m_cur_pos != m_luminosity)
-        {
-            const float _diff = std::abs(m_luminosity - m_cur_pos);
-            if (m_luminosity > m_cur_pos)
-            {
-                m_cur_pos += _diff * Device.fTimeDelta;
-            }
-            else
-            {
-                m_cur_pos -= _diff * Device.fTimeDelta;
-            }
-            clamp(m_cur_pos, 0.f, 100.f);
-            // XXX: make it like progress bar so we can remove m_cur_pos
-            m_luminosity_progress_shape->SetPos(m_cur_pos / 100.f);
-        }
-    }
-        else if (m_luminosity_progress_bar)
-        {
-            const float len = m_luminosity_progress_bar->GetRange_max() - m_luminosity_progress_bar->GetRange_min();
-            m_cur_pos = m_luminosity_progress_bar->GetProgressPos();
-            if (m_cur_pos != m_luminosity)
-            {
-                const float _diff = std::abs(m_luminosity - m_cur_pos);
-                if (m_luminosity > m_cur_pos)
-                {
-                    m_cur_pos += std::min(len * Device.fTimeDelta, _diff);
-                }
-                else
-                {
-                    m_cur_pos -= std::min(len * Device.fTimeDelta, _diff);
-                }
-                clamp(m_cur_pos, m_luminosity_progress_bar->GetRange_min(), m_luminosity_progress_bar->GetRange_max());
-                m_luminosity_progress_bar->SetProgressPos(m_cur_pos);
-        }
-    }
+	if (!psHUD_Flags.test(HUD_MINIMAP))
+		return;
+
+	if (m_luminosity_progress_shape)
+	{
+		if (m_cur_pos != m_luminosity)
+		{
+			const float _diff = std::abs(m_luminosity - m_cur_pos);
+			if (m_luminosity > m_cur_pos)
+				m_cur_pos += _diff * Device.fTimeDelta;
+			else
+				m_cur_pos -= _diff * Device.fTimeDelta;
+			clamp(m_cur_pos, 0.f, 100.f);
+			m_luminosity_progress_shape->SetPos(m_cur_pos / 100.f);
+		}
+	}
+	else if (m_luminosity_progress_bar)
+	{
+		const float len = m_luminosity_progress_bar->GetRange_max() - m_luminosity_progress_bar->GetRange_min();
+		m_cur_pos = m_luminosity_progress_bar->GetProgressPos();
+		if (m_cur_pos != m_luminosity)
+		{
+			const float _diff = std::abs(m_luminosity - m_cur_pos);
+			if (m_luminosity > m_cur_pos)
+				m_cur_pos += std::min(len * Device.fTimeDelta, _diff);
+			else
+				m_cur_pos -= std::min(len * Device.fTimeDelta, _diff);
+			clamp(m_cur_pos, m_luminosity_progress_bar->GetRange_min(), m_luminosity_progress_bar->GetRange_max());
+			m_luminosity_progress_bar->SetProgressPos(m_cur_pos);
+		}
+	}
 }
 
 void SetActorVisibility		(u16 who_id, float value)
