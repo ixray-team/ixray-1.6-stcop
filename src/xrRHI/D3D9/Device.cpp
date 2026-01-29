@@ -480,6 +480,11 @@ void InternalDevice9::DrawIndexedInstanced(u32 baseVertex, u32 startVertex, u32 
 	VERIFY(!"DrawIndexedInstanced not supported in DX9");
 }
 
+void InternalDevice9::EvictManagedResources()
+{
+	DX9Device->EvictManagedResources();
+}
+
 void InternalDevice9::DrawNoInputAssembly(u32 vertexCount)
 {
 	VERIFY(!"DrawNoInputAssembly not supported in DX9");

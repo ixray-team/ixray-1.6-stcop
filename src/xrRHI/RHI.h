@@ -136,6 +136,9 @@ public:
 		const void* srcData, size_t srcSize, const char* sourceName, const void* defines, void* include,
 		const char* entryPoint, const char* target, u32 flags1, u32 flags2, void** code, void** errors
 	);
+
+	void EvictManagedResources();
+
 public:
 	IRHIDevice* DevicePtr = nullptr;
 	IRHIShaderResourceStateCache* ShaderResourceCache = nullptr;

@@ -62,4 +62,6 @@ public:
 	// Render Taget setup
 	virtual void SetRenderTargets(u32 NumViews, IRHIRenderTargetView* const* ppRenderTargetViews) = 0;
 	virtual void SetDSV(IRHIDepthStencilView* pDepthStencilView) = 0;
+
+	virtual void EvictManagedResources() {};
 };
