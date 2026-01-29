@@ -15,18 +15,7 @@
 #endif
 //	Already defined in Texture.cpp
 void fix_texture_name(LPSTR fn);
-/*
-void fix_texture_name(LPSTR fn)
-{
-	LPSTR _ext = strext(fn);
-	if(  _ext					&&
-	  (0==_stricmp(_ext,".tga")	||
-		0==_stricmp(_ext,".dds")	||
-		0==_stricmp(_ext,".bmp")	||
-		0==_stricmp(_ext,".ogm")	) )
-		*_ext = 0;
-}
-*/
+
 //--------------------------------------------------------------------------------------------------------------
 template <class T>
 BOOL	reclaim		(xr_vector<T*>& vec, const T* ptr)
@@ -45,20 +34,22 @@ IBlender* CResourceManager::_GetBlender		(LPCSTR Name)
 
 	LPSTR N = LPSTR(Name);
 	map_Blender::iterator I = m_blenders.find	(N);
-#ifdef _EDITOR
-	if (I==m_blenders.end())	return 0;
-#else
+
 //	TODO: DX10: When all shaders are ready switch to common path
-#ifdef USE_DX11
-	if (I==m_blenders.end())	
+	if (I==m_blenders.end())
 	{
-		Msg("DX10: Shader '%s' not found in library.",Name); 
+#ifdef USE_DX11
+		Msg("DX10: Shader '%s' not found in library.", Name);
+#else
+		if (!Device.IsEditorMode())
+		{
+			Debug.fatal(DEBUG_INFO, "Shader '%s' not found in library.", Name);
+		}
+#endif
 		return 0;
 	}
-#endif
-	if (I==m_blenders.end())	{ Debug.fatal(DEBUG_INFO,"Shader '%s' not found in library.",Name); return 0; }
-#endif
-	else					return I->second;
+	
+	return I->second;
 }
 
 IBlender* CResourceManager::_FindBlender		(LPCSTR Name)
@@ -228,53 +219,35 @@ Shader*	CResourceManager::_cpp_Create	(IBlender* B, LPCSTR s_shader, LPCSTR s_te
 	return ResultShader;
 }
 
-Shader*	CResourceManager::_cpp_Create	(LPCSTR s_shader, LPCSTR s_textures, LPCSTR s_constants, LPCSTR s_matrices)
+Shader*	CResourceManager::_cpp_Create(LPCSTR s_shader, LPCSTR s_textures, LPCSTR s_constants, LPCSTR s_matrices)
 {
-//#ifndef DEDICATED_SERVER
-#ifndef _EDITOR
 	if (!g_dedicated_server)
-#endif    
 	{
 		//	TODO: DX10: When all shaders are ready switch to common path
 #ifdef USE_DX11
-		IBlender *pBlender = _GetBlender(s_shader?s_shader:"null");
-		if(!pBlender) {
+		IBlender* pBlender = _GetBlender(s_shader ? s_shader : "null");
+		if (!pBlender)
+		{
 			return nullptr;
 		}
-		return	_cpp_Create(pBlender ,s_shader,s_textures,s_constants,s_matrices);
+		return	_cpp_Create(pBlender, s_shader, s_textures, s_constants, s_matrices);
 #else //USE_DX11
-		return	_cpp_Create(_GetBlender(s_shader?s_shader:"null"),s_shader,s_textures,s_constants,s_matrices);
+		return	_cpp_Create(_GetBlender(s_shader ? s_shader : "null"), s_shader, s_textures, s_constants, s_matrices);
 #endif
-//#else
 	}
-#ifndef _EDITOR
-	else
-#endif    
-	{
-		return nullptr;
-	}
-//#endif
+
+	return nullptr;
 }
 
-Shader*		CResourceManager::Create	(IBlender*	B,		LPCSTR s_shader,	LPCSTR s_textures,	LPCSTR s_constants, LPCSTR s_matrices)
+Shader*CResourceManager::Create(IBlender* B, LPCSTR s_shader, LPCSTR s_textures, LPCSTR s_constants, LPCSTR s_matrices)
 {
-//#ifndef DEDICATED_SERVER
-#ifndef _EDITOR
 	if (!g_dedicated_server)
-#endif
 	{
 		return	_cpp_Create	(B,s_shader,s_textures,s_constants,s_matrices);
-//#else
 	}
-#ifndef _EDITOR
-	else
-#endif
-	{
-		return nullptr;
-//#endif
-	}
-}
 
+	return nullptr;
+}
 
 static xrCriticalSection ResSafe;
 Shader* CResourceManager::Create	(LPCSTR s_shader,	LPCSTR s_textures,	LPCSTR s_constants,	LPCSTR s_matrices)
@@ -317,14 +290,8 @@ Shader* CResourceManager::Create	(LPCSTR s_shader,	LPCSTR s_textures,	LPCSTR s_c
 			return	_cpp_Create	(s_shader,s_textures,s_constants,s_matrices);
 #endif
 	}
-//#else
-#ifndef _EDITOR
-	else
-#endif
-	{
-		return nullptr;
-	}
-//#endif
+
+	return nullptr;
 }
 
 void CResourceManager::Delete(const Shader* S)
@@ -463,10 +430,7 @@ void CResourceManager::_DumpMemoryUsage		()
 
 void CResourceManager::Evict()
 {
-	//	TODO: DX10: check if we really need this method
-#ifndef USE_DX11
-	CHK_DX	(RDevice->EvictManagedResources());
-#endif //USE_DX11
+	GRHI->EvictManagedResources();
 }
 
 void CResourceManager::Initialize_SVGStorage()
