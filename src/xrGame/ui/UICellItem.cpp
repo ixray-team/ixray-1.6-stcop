@@ -260,10 +260,43 @@ bool CUICellItem::OnMouseAction(float x, float y, EUIMessages mouse_action)
 	return false;
 };
 
+BOOL g_Adjust3dIcon = FALSE;
+float g_Adjust3dIconValue = 0.1f;
 bool CUICellItem::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
 	if (WINDOW_KEY_PRESSED == keyboard_action)
 	{
+        if (g_Adjust3dIcon && m_bCursorOverWindow)
+        {
+            bool bCtrl = !!pInput->iGetAsyncKeyState(SDL_SCANCODE_LCTRL);
+            float val = (bCtrl ? -1.f : 1.f) * g_Adjust3dIconValue;
+            Fvector xyz = GetXYZ();
+            float fScale = GetScaleFactor();
+            if (dik == SDL_SCANCODE_Z)
+                xyz.x += val;
+            else if (dik == SDL_SCANCODE_X)
+                xyz.y += val;
+            else if (dik == SDL_SCANCODE_C)
+                xyz.z += val;
+            else if (dik == SDL_SCANCODE_V)
+                fScale += val;
+            else if (dik == SDL_SCANCODE_P)
+            {
+
+                string256 tmpStr;
+                xr_sprintf(tmpStr, "3d_static_rotate\t\t\t= %f,%f,%f",
+                           rad2deg(xyz.x),
+                           rad2deg(xyz.y),
+                           rad2deg(xyz.z));
+                Log(tmpStr);
+                xr_sprintf(tmpStr, "3d_static_scale\t\t\t= %f",
+                           fScale);
+                Log(tmpStr);
+            }
+            SetScaleFactor(fScale);
+            SetXYZ(xyz);
+            return true;
+        }
 		if (GetAccelerator() == dik)
 		{
 			GetMessageTarget()->SendMessage(this, DRAG_DROP_ITEM_DB_CLICK, NULL);
