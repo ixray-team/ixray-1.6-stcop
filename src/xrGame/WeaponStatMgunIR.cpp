@@ -20,7 +20,7 @@ void CWeaponStatMgun::OnMouseMove(int dx, int dy)
 
 	if (dy) 
 	{
-		float d = ((psMouseInvert.test(1)) ? -1 : 1) * float(dy) * scale * 3.f / 4.f;
+		float d = (psMouseInvert ? -1 : 1) * float(dy) * scale * 3.f / 4.f;
 		p -= d;
 		SetDesiredDir(h, p);
 	}

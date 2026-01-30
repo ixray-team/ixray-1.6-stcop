@@ -784,10 +784,12 @@ void CCC_Register()
 #endif // DEBUG
 
 	// Mouse
-	CMD3(CCC_Mask32,		"mouse_invert",			&psMouseInvert,1);
-	psMouseSens			= 0.12f;
+	CMD2(CCC_Boolean,	"mouse_invert",			&psMouseInvert);
 	CMD4(CCC_Float,		"mouse_sens",			&psMouseSens,		0.001f, 0.6f);
 	CMD4(CCC_Float,		"mouse_sens_ui",		&psMouseUISens,		0.01f, 2.f);
+
+	CMD4(CCC_Float,		"gamepad_sens",			&psGamepadSens,		0.001f, 0.6f);
+	CMD2(CCC_Boolean,	"gamepad_invert",		&psGamepadInvert);
 
 #ifndef MASTER_GOLD
 	// Other
