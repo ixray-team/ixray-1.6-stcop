@@ -32,7 +32,7 @@ void CCar::OnMouseMove(int dx, int dy)
 
 	if (dy)
 	{
-		float d = ((psMouseInvert.test(1)) ? -1 : 1) * float(dy) * scale * 3.f / 4.f;
+		float d = (psMouseInvert ? -1 : 1) * float(dy) * scale * 3.f / 4.f;
 		C->Move((d > 0) ? kUP : kDOWN, std::abs(d));
 	}
 }

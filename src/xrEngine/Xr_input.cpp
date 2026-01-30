@@ -7,10 +7,13 @@
 CInput *	pInput	= nullptr;
 IInputReceiver		dummyController;
 
-ENGINE_API float	psMouseSens			= 1.f;
+ENGINE_API float	psMouseSens			= 0.12f;
 ENGINE_API float	psMouseUISens		= 1.f;
 ENGINE_API float	psMouseSensScale	= 1.f;
-ENGINE_API Flags32	psMouseInvert		= {FALSE};
+ENGINE_API bool		psMouseInvert		= false;
+
+ENGINE_API float	psGamepadSens		= 0.2f;
+ENGINE_API bool		psGamepadInvert		= false;
 
 static bool g_exclusive	= true;
 static void on_error_dialog			(bool before)

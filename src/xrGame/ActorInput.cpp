@@ -519,7 +519,7 @@ void CActor::IR_OnMouseMove(int dx, int dy)
 		CCameraBase* C = cameras[cam_active];
 		float scale = (C->f_fov / g_fov) * psMouseSens * psMouseSensScale / 50.0f / LookFactor;
 		float dx_ = float(dx) * scale;
-		float dy_ = ((psMouseInvert.test(1)) ? -1 : 1) * float(dy) * scale * 3.0f / 4.0f;
+		float dy_ = (psMouseInvert ? -1 : 1) * float(dy) * scale * 3.0f / 4.0f;
 		g_player_hud->tune({ dx_, dy_, 0.f });
 		return;
 	}
@@ -563,7 +563,7 @@ void CActor::IR_OnMouseMove(int dx, int dy)
 
 	if (dy)
 	{
-		float d = ((psMouseInvert.test(1)) ? -1 : 1) * float(dy) * scale * 3.0f / 4.0f;
+		float d = (psMouseInvert ? -1 : 1) * float(dy) * scale * 3.0f / 4.0f;
 		cam_Active()->Move((d > 0) ? kUP : kDOWN, std::abs(d));
 	}
 }
@@ -628,7 +628,7 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 		float LookFactor = GetLookFactor();
 
 		CCameraBase* C = cameras[cam_active];
-		float scale = (C->f_fov / g_fov) * psMouseSens * psMouseSensScale / 50.f / LookFactor;
+		float scale = (C->f_fov / g_fov) * psGamepadSens * psMouseSensScale / 50.f / LookFactor;
 
 		if (!fis_zero(value.x))
 		{
@@ -638,7 +638,7 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 
 		if (!fis_zero(value.y))
 		{
-			float d = ((psMouseInvert.test(1)) ? -1 : 1) * value.y * scale * 3.f / 4.f;
+			float d = (psGamepadInvert ? -1 : 1) * value.y * scale * 3.f / 4.f;
 			d *= 8;
 
 			cam_Active()->Move((d > 0) ? kUP : kDOWN, std::abs(d));
