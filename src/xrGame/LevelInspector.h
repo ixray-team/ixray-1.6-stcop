@@ -195,8 +195,8 @@ struct LevelInspector final
 		const size_t line_count = std::size(line_indices);
 		const size_t tri_count = std::size(tri_indices);
 		const size_t max_count = std::max(line_count, tri_count);
-		IUIRender::r_vert<3>** fastbuff3 = (IUIRender::r_vert<3>**)buff;
-		IUIRender::r_vert<2>** fastbuff2 = (IUIRender::r_vert<2>**)buff;
+		IUIRender::r_vertL<3>** fastbuff3 = (IUIRender::r_vertL<3>**)buff;
+		IUIRender::r_vertL<2>** fastbuff2 = (IUIRender::r_vertL<2>**)buff;
 		for (size_t i = 0; i < max_count; ++i)
 		{
 			if (tcolor > 0 && i < tri_count)
@@ -205,9 +205,9 @@ struct LevelInspector final
 				{
 					*(*fastbuff3) =
 					{
-						vertices[tri_indices[i].i1], tcolor, {0.f,0.f},
-						vertices[tri_indices[i].i2], tcolor, {0.f,0.f},
-						vertices[tri_indices[i].i3], tcolor, {0.f,0.f}
+						vertices[tri_indices[i].i1], tcolor,
+						vertices[tri_indices[i].i2], tcolor,
+						vertices[tri_indices[i].i3], tcolor
 					};
 					(*fastbuff3)++;
 				}
@@ -225,8 +225,8 @@ struct LevelInspector final
 				{
 					*(*fastbuff2) =
 					{
-						vertices[line_indices[i].i1], lcolor, { 0.f,0.f },
-						vertices[line_indices[i].i2], lcolor, { 0.f,0.f }
+						vertices[line_indices[i].i1], lcolor,
+						vertices[line_indices[i].i2], lcolor
 					};
 					(*fastbuff2)++;
 				}
