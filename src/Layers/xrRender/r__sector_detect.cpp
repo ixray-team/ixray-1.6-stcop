@@ -143,6 +143,7 @@ IRender_Sector* CRender::detectSector(const Fvector& P, Fvector& dir)
 
 void R_dsgraph_structure::detectSectors_sphere(CSector* sector, xr_vector<IRender_Sector*>& m_sectors, const Fsphere& sphere)
 {
+	m_sectors.clear();
 	if(sector)
 		m_sectors.push_back(sector);
 
@@ -172,6 +173,7 @@ void R_dsgraph_structure::detectSectors_sphere(CSector* sector, xr_vector<IRende
 
 void R_dsgraph_structure::detectSectors_frustum(CSector* sector, xr_vector<IRender_Sector*>& m_sectors, CFrustum* _frustum)
 {
+	m_sectors.clear();
 	if(sector)
 		m_sectors.push_back(sector);
 	
