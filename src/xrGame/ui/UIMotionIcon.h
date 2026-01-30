@@ -20,6 +20,7 @@ private:
 	EState m_current_state;
 	xr_map<EState, CUIStatic*> m_states;
 	CUIProgressBar* m_power_progress;
+	bool m_independent = false;
 
 	CUIProgressShape* m_luminosity_progress_shape;
 	CUIProgressShape* m_noise_progress_shape;
