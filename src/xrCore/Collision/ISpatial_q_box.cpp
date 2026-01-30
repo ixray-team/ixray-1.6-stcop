@@ -10,7 +10,7 @@ struct spatial_box_walker final
 	xr_vector<ISpatialShared>& R;
 	bool bFirst = false;
 
-	void _vectorcall walk(ISpatial_NODE* N, Fvector& n_C, float n_R)
+	void xr_vectorcall walk(ISpatial_NODE* N, Fvector& n_C, float n_R)
 	{
 		// box
 		float n_vR = n_R * 2.f;
