@@ -470,7 +470,7 @@ void CDemoRecord::IR_OnMouseMove		(int dx, int dy)
 	float scale			= .5f;//psMouseSens;
 	if (dx||dy){
 		vR_delta.y			+= float(dx)*scale; // heading
-		vR_delta.x			+= ((psMouseInvert.test(1))?-1:1)*float(dy)*scale*(3.f/4.f); // pitch
+		vR_delta.x			+= (psMouseInvert?-1:1)*float(dy)*scale*(3.f/4.f); // pitch
 	}
 	update_whith_timescale( m_vR, vR_delta );
 }
