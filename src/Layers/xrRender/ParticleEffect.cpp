@@ -376,7 +376,6 @@ ICF void FillSprite	(LITF*& pv, const Fvector& pos, const Fvector& dir, const Fv
 	pv++;
 }
 
-extern ENGINE_API float		psHUD_FOV;
 void CParticleEffect::Render(float )
 {
 	PROF_EVENT(__FUNCTION__);
