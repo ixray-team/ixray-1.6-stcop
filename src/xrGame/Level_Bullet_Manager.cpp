@@ -1124,7 +1124,7 @@ void CBulletManager::Render	()
 			u32 vertices_in_batch = tracers_in_batch * VERTICES_PER_TRACER;
 
 			// 3d tracer
-			//void** buffer = UIRender->StartPrimitiveLITFast(vertices_in_batch, IUIRender::ptTriList);
+			//void** buffer = UIRender->StartPrimitive(vertices_in_batch, IUIRender::ptTriList, IUIRender::pttLIT);
 			// 2d tracer
 			IUIRender::r_vertLIT<12>** buffer = (IUIRender::r_vertLIT<12>**)UIRender->StartPrimitive(vertices_in_batch, IUIRender::ptTriList, IUIRender::pttLIT);
 
@@ -1294,7 +1294,7 @@ void CBulletManager::Render	()
 				(u32)all_lines.size() - current_line);
 			u32 vertices_in_batch = lines_in_batch * 2u;
 
-			IUIRender::r_vertL<2>** buffer = (IUIRender::r_vertL<2>**)UIRender->StartPrimitive(vertices_in_batch, IUIRender::ptLineList, IUIRender::pttLIT);
+			IUIRender::r_vertL<2>** buffer = (IUIRender::r_vertL<2>**)UIRender->StartPrimitive(vertices_in_batch, IUIRender::ptLineList, IUIRender::pttL);
 
 			for (u32 i = 0; i < lines_in_batch; ++i)
 			{
