@@ -44,20 +44,19 @@ bool CUIMotionIcon::Init(Frect const& zonemap_rect)
 
 	CUIXmlInit					xml_init;
 
-	bool independent = false; // Not bound to minimap
 	if (uiXml.NavigateToNode("window", 0))
 	{
 		xml_init.InitWindow(uiXml, "window", 0, this);
 	}
 	else
 	{
-		independent = xml_init.InitStatic(uiXml, "background", 0, this);
+		m_independent = xml_init.InitStatic(uiXml, "background", 0, this);
 	}
 
 	Fvector2					sz;
 	Fvector2					pos;
 
-    if (!independent)
+    if (!m_independent)
     {
         const float rel_sz = uiXml.ReadAttribFlt("window", 0, "rel_size", 1.0f);
 
@@ -75,7 +74,7 @@ bool CUIMotionIcon::Init(Frect const& zonemap_rect)
         m_power_progress = UIHelper::CreateProgressBar(uiXml, "power_progress", this);
 
     // Initialization order matters, we should try progress bars first!!!
-    if (independent)
+    if (m_independent)
     {
         m_luminosity_progress_bar = UIHelper::CreateProgressBar(uiXml, "luminosity_progress", this);
         m_noise_progress_bar = UIHelper::CreateProgressBar(uiXml, "noise_progress", this);
@@ -86,7 +85,7 @@ bool CUIMotionIcon::Init(Frect const& zonemap_rect)
         if (!m_luminosity_progress_bar)
         {
             m_luminosity_progress_shape = UIHelper::CreateProgressShape(uiXml, "luminosity_progress", this);
-            if (m_luminosity_progress_shape && !independent)
+            if (m_luminosity_progress_shape && !m_independent)
             {
                 m_luminosity_progress_shape->SetWndSize(sz);
                 m_luminosity_progress_shape->SetWndPos(pos);
@@ -96,7 +95,7 @@ bool CUIMotionIcon::Init(Frect const& zonemap_rect)
         if (!m_noise_progress_bar)
         {
             m_noise_progress_shape = UIHelper::CreateProgressShape(uiXml, "noise_progress", this);
-            if (m_noise_progress_shape && !independent)
+            if (m_noise_progress_shape && !m_independent)
             {
                 m_noise_progress_shape->SetWndSize(sz);
                 m_noise_progress_shape->SetWndPos(pos);
@@ -149,7 +148,7 @@ bool CUIMotionIcon::Init(Frect const& zonemap_rect)
 
     ShowState(stNormal);
 
-    return independent;
+    return m_independent;
 }
 
 void CUIMotionIcon::ShowState(EState state)
@@ -191,7 +190,7 @@ void CUIMotionIcon::SetNoise(float newPos)
 	{
 		float pos = newPos;
 		pos = clampr(pos, 0.f, 100.f);
-		m_noise_progress_shape->SetPos(psHUD_Flags.test(HUD_MINIMAP) ? pos / 100.f : 0.f);
+		m_noise_progress_shape->SetPos(pos / 100.f);
 	}
 	else if (m_noise_progress_bar)
 	{
@@ -208,7 +207,7 @@ void CUIMotionIcon::SetLuminosity(float newPos)
 
 	if (m_luminosity_progress_shape)
 	{
-		m_luminosity = psHUD_Flags.test(HUD_MINIMAP) ? newPos : 0.f;
+		m_luminosity = newPos;
 	}
 	else if (m_luminosity_progress_bar)
 	{
@@ -222,7 +221,8 @@ void CUIMotionIcon::Draw()
 	const static bool disableMotionIcon = EngineExternal()[EEngineExternalUI::DisableMotionIcon];
 	const static bool noHUDonMaster = EngineExternal()[EEngineExternalUI::DisableHudRenderingOnMaster];
 	bool renderHUD = noHUDonMaster ? g_SingleGameDifficulty < egdVeteran : true;
-	if (!disableMotionIcon && renderHUD)
+	bool showMotionIcon = m_independent ? true : psHUD_Flags.test(HUD_MINIMAP);
+	if (!disableMotionIcon && renderHUD && showMotionIcon)
 		inherited::Draw();
 }
 
@@ -246,7 +246,7 @@ void CUIMotionIcon::Update()
 	}
 	inherited::Update();
 
-	if (m_luminosity_progress_shape && psHUD_Flags.test(HUD_MINIMAP))
+	if (m_luminosity_progress_shape)
 	{
 		if (m_cur_pos != m_luminosity)
 		{
