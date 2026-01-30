@@ -5,6 +5,7 @@
 #include "../../xrEngine/AI/alife_space.h"
 #include "../EntityCondition.h"
 #include "UICarPanel.h"
+#include "../../xrUI/Widgets/UI3dStatic.h"
 
 class	CUIPdaMsgListItem;
 class	CLAItem;
@@ -17,6 +18,7 @@ class	CUIHudStatesWnd;
 class	CUIMotionIcon;
 class	CUIArtefactPanel;
 class	CUIStackPanel;
+class	CUI3dStatic;
 
 class CUIMainIngameWnd final :
 	public CUIWindow
@@ -86,7 +88,7 @@ public:
 	CUIHudStatesWnd* get_hud_states() { return m_ui_hud_states; } //temp
 	void				OnSectorChanged(int sector);
 
-	xr_vector<CUIStatic* > m_quick_slots_icons;
+	xr_vector<CUI3dStatic* > m_quick_slots_icons;
 	CUIStatic* m_QuickSlotText1;
 	CUIStatic* m_QuickSlotText2;
 	CUIStatic* m_QuickSlotText3;
