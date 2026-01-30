@@ -1,16 +1,8 @@
 #include "stdafx.h"
-
-
 #include "xrHemisphere.h"
 
-#define HEMI1_VERTS	26
-#define HEMI1_FACES	40
-#define HEMI2_VERTS	91
-#define HEMI2_FACES	160
-#define HEMI3_VERTS	196
-
-#pragma warning (disable:4305)
-const Fvector hemi_1[HEMI1_VERTS] = {
+Fvector hemi_1[26]
+{
 	{ 0.525730,	 0.850655,	-0.000000},
 	{ 0.162460,	 0.850655,	 0.500000},
 	{ 0.000000,	 1.000000,	-0.000000},
@@ -38,7 +30,9 @@ const Fvector hemi_1[HEMI1_VERTS] = {
 	{ 0.587788,	 0.000000,	-0.809013},
 	{ 0.951057,	 0.000000,	-0.309017},
 };
-const u16 hemi_1v[HEMI1_FACES*3] = {
+
+u16 hemi_1v[120]
+{
 	0,		1,		2,
 	1,		3,		2,
 	3,		4,		2,
@@ -81,7 +75,7 @@ const u16 hemi_1v[HEMI1_FACES*3] = {
 	24,		25,		10,
 };
 
-const Fvector hemi_2[HEMI2_VERTS] = 
+Fvector hemi_2[91]
 {
 	{ 0.273268,	 0.961937,	-0.000000},
 	{ 0.084444,	 0.961937,	 0.259892},
@@ -174,8 +168,10 @@ const Fvector hemi_2[HEMI2_VERTS] =
 	{-0.309015,	 0.000000,	-0.951057},
 	{ 0.309017,	 0.000000,	-0.951057},
 	{ 0.809021,	 0.000000,	-0.587788},
-};					   	
-const u16 hemi_2v[HEMI2_FACES*3] = {
+};
+
+u16 hemi_2v[480]
+{
 	0,		1,		2,
 	3,		4,		0,
 	4,		1,		0,
@@ -338,7 +334,7 @@ const u16 hemi_2v[HEMI2_FACES*3] = {
 	90,		80,		79,
 };
 
-const Fvector hemi_3[HEMI3_VERTS] = 
+Fvector hemi_3[196]
 {					   	
 	{+0.0000,	+0.5000,	+0.0000	},
 	{+0.2629,	+0.4253,	+0.0000	},
@@ -537,7 +533,6 @@ const Fvector hemi_3[HEMI3_VERTS] =
 	{+0.1525,	+0.0799,	-0.4694	},
 	{+0.3971,	+0.0952,	-0.2885	},
 };
-#pragma warning(default:4305)
 
 void ENGINE_API xrHemisphereBuild	(int quality, float energy, xrHemisphereIterator* iterator, LPVOID param)
 {
@@ -565,15 +560,15 @@ int ENGINE_API xrHemisphereVertices	(int quality, const Fvector*& verts)
 	switch (quality)
 	{
 	case 1:	// LOW quality
-		h_count		= HEMI1_VERTS;
+		h_count		= std::size(hemi_1);
 		verts		= hemi_1;
 		break;
 	case 2:	// HIGH quality
-		h_count		= HEMI2_VERTS;
+		h_count		= std::size(hemi_2);
 		verts		= hemi_2;
 		break;
 	case 3:	// SUPER HIGH quality
-		h_count		= HEMI3_VERTS;
+		h_count		= std::size(hemi_3);
 		verts		= hemi_3;
 		break;
 	default:// NO 	
@@ -589,11 +584,11 @@ int	ENGINE_API xrHemisphereIndices	(int quality, const u16*& indices)
 	switch (quality)
 	{
 	case 1:	// LOW quality
-		h_count		= HEMI1_FACES*3;
+		h_count		= std::size(hemi_1v);
 		indices		= hemi_1v;
 		break;
 	case 2:	// HIGH quality
-		h_count		= HEMI2_FACES*3;
+		h_count		= std::size(hemi_2v);
 		indices		= hemi_2v;
 		break;
 //	case 3:	// SUPER HIGH quality
