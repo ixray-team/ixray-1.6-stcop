@@ -59,8 +59,9 @@ void CDS0_UIRender::PushPoint(float x, float y, float z, u32 C, float u, float v
 {
 }
 
-void CDS0_UIRender::StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointType pointType)
+void** CDS0_UIRender::StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointType pointType)
 {
+	return nullptr;
 }
 
 void CDS0_UIRender::FlushPrimitive()
