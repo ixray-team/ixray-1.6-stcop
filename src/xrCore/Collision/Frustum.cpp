@@ -2,41 +2,6 @@
 #include "Frustum.h"
 
 //////////////////////////////////////////////////////////////////////
-void CFrustum::fplane::cache()
-{
-	if(positive(n.x)) {
-		if(positive(n.y)) {
-			if(positive(n.z))	aabb_overlap_id	= 0;
-			else				aabb_overlap_id	= 1;
-		} else {
-			if(positive(n.z))	aabb_overlap_id	= 2;
-			else				aabb_overlap_id = 3;
-		}
-	} else {
-		if(positive(n.y)) {
-			if(positive(n.z))	aabb_overlap_id = 4;
-			else				aabb_overlap_id = 5;
-		} else {
-			if(positive(n.z))	aabb_overlap_id = 6;
-			else				aabb_overlap_id = 7;
-		}
-	}
-}
-void			CFrustum::_add			(Fplane &P) 
-{ 
-	VERIFY(p_count<FRUSTUM_MAXPLANES); 
-	planes[p_count].set		(P);
-	planes[p_count].cache	();
-	p_count					++;
-}
-void			CFrustum::_add			(Fvector& P1, Fvector& P2, Fvector&P3)
-{
-	VERIFY(p_count<FRUSTUM_MAXPLANES);
-	planes[p_count].build_precise	(P1,P2,P3);
-	planes[p_count].cache			();
-	p_count							++;
-}
- 
 #define			mx			0
 #define			my			1
 #define			mz			2

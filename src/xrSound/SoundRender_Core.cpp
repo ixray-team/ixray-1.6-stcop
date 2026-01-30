@@ -7,6 +7,7 @@
 #	include "System/NotificationClient.h"
 #endif
 
+#include "../xrCore/Collision/cl_intersect.h"
 #include "SoundRender_Core.h"
 #include "SoundRender_Source.h"
 #include "SoundRender_Emitter.h"

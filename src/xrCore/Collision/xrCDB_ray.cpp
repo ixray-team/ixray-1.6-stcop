@@ -1,60 +1,23 @@
 #include "stdafx.h"
-
-
 #include "xrCDB.h"
 #include "override/Model.h"
-#include "sse_intersect.h"
 
-using namespace		CDB;
-using namespace		Opcode;
+using namespace CDB;
+using namespace Opcode;
 
-class _MM_ALIGN16 cform_ray_collider
+struct cform_ray_collider final
 {
-public:
-  	COLLIDER*		dest;
-	TRI*			tris;
-	Fvector*		verts;
-	
-	ray_t			ray;
-	float			rRange;
-	float			rRange2;
+	Fvector pos, fwd_dir;
+  	COLLIDER* dest;
+	TRI* tris;
+	Fvector* verts;
+	float rRange, rRange2;
 
-	bool bSSE = false;
 	bool bCull = false;
 	bool bFirst = false;
 	bool bNearest = false;
 
-	cform_ray_collider(bool SSE, bool Cull, bool First, bool Nearest)
-		:bSSE(SSE), bCull(Cull), bFirst(First), bNearest(Nearest) {}
-
-	IC void _init(COLLIDER* CL, Fvector* V, TRI* T, const Fvector& C, const Fvector& D, float R)
-	{
-		dest			= CL;
-		tris			= T;
-		verts			= V;
-		ray.pos.set		(C);
-		ray.inv_dir.set	(1.f,1.f,1.f).div(D);
-		ray.fwd_dir.set	(D);
-		rRange			= R;
-		rRange2			= R*R;
-	}
-
-	IC void _init_intersection(COLLIDER* CL, CDB::MODEL* model, const Fvector& C, const Fvector& D, float R)
-	{
-		tris = model->get_tris();
-		verts = model->get_verts();
-
-		dest = CL;
- 		ray.pos.set(C);
-		ray.inv_dir.set(1.f, 1.f, 1.f).div(D);
-		ray.fwd_dir.set(D);
-		rRange = R;
-		rRange2 = R * R;
-	}
-
-	// sse
-
-	IC bool _tri(u32* p, float& u, float& v, float& range)
+	ICF bool _tri(u32* p, float& u, float& v, float& range)
 	{
 		Fvector edge1, edge2, tvec, pvec, qvec;
 		float	det,inv_det;
@@ -67,17 +30,17 @@ public:
 		edge2.sub			(p2, p0);
 		// begin calculating determinant - also used to calculate U parameter
 		// if determinant is near zero, ray lies in plane of triangle
-		pvec.crossproduct	(ray.fwd_dir, edge2);
+		pvec.crossproduct	(fwd_dir, edge2);
 		det = edge1.dotproduct(pvec);
 
 		if (bCull)
 		{						
 			if (det < EPS)  return false;
-			tvec.sub(ray.pos, p0);						// calculate distance from vert0 to ray origin
+			tvec.sub(pos, p0);						// calculate distance from vert0 to ray origin
 			u = tvec.dotproduct(pvec);					// calculate U parameter and test bounds
 			if (u < 0.f || u > det) return false;
 			qvec.crossproduct(tvec, edge1);				// prepare to test V parameter
-			v = ray.fwd_dir.dotproduct(qvec);			// calculate V parameter and test bounds
+			v = fwd_dir.dotproduct(qvec);			// calculate V parameter and test bounds
 			if (v < 0.f || u + v > det) return false;
 			range = edge2.dotproduct(qvec);				// calculate t, scale parameters, ray intersects triangle
 			inv_det = 1.0f / det;
@@ -89,18 +52,18 @@ public:
 		{			
 			if (det > -EPS && det < EPS) return false;
 			inv_det = 1.0f / det;
-			tvec.sub(ray.pos, p0);						// calculate distance from vert0 to ray origin
+			tvec.sub(pos, p0);						// calculate distance from vert0 to ray origin
 			u = tvec.dotproduct(pvec)*inv_det;			// calculate U parameter and test bounds
 			if (u < 0.0f || u > 1.0f)    return false;
 			qvec.crossproduct(tvec, edge1);				// prepare to test V parameter
-			v = ray.fwd_dir.dotproduct(qvec)*inv_det;	// calculate V parameter and test bounds
+			v = fwd_dir.dotproduct(qvec)*inv_det;	// calculate V parameter and test bounds
 			if (v < 0.0f || u + v > 1.0f) return false;
 			range = edge2.dotproduct(qvec)*inv_det;		// calculate t, ray intersects triangle
 		}
 		return true;
 	}
 	
-	void _prim(DWORD prim)
+	ICF void _prim(DWORD prim)
 	{
 		float	u,v,r;
 		if (!_tri(tris[prim].verts, u, v, r))	return;
@@ -153,27 +116,15 @@ public:
 
 	void _stab(const AABBNoLeafNode* node)
 	{
-		// Actual ray/aabb test
-		// use SSE
-		if (bSSE)
-		{
-			// Should help
-			_mm_prefetch((char*)node->GetNeg(), _MM_HINT_NTA);
-
-			float d;
-			if (!_box_sse(ray, (Fvector&)node->mAABB.mCenter, (Fvector&)node->mAABB.mExtents, d))
-				return;
-			if (d > rRange)
-				return;
-		}
-		else
-		{
-			Fvector		P;
-			if (!_box_fpu(ray, (Fvector&)node->mAABB.mCenter, (Fvector&)node->mAABB.mExtents, P))
-				return;
-			if (P.distance_to_sqr(ray.pos) > rRange2)
-				return;
-		}
+		Fvector& center = (Fvector&)node->mAABB.mCenter;
+		Fvector& extents = (Fvector&)node->mAABB.mExtents;
+		Fbox BB; BB.set(center-extents, center+extents);
+		Fvector P;
+		if (!BB.Pick2(pos, fwd_dir, P))
+			return;
+		
+		if (P.distance_to_sqr(pos) > rRange2)
+			return;
 
 		// 1st chield
 		if (node->HasPosLeaf())	_prim(node->GetPosPrimitive());
@@ -205,12 +156,24 @@ void COLLIDER::ray_query(const MODEL* m_def, const Fvector& r_start, const Fvect
 	// Get nodes
 	const AABBNoLeafTree* T = (const AABBNoLeafTree*)m_def->tree->GetTree();
 	const AABBNoLeafNode* N = T->GetNodes();
-	r_clear();
 
-	// SSE
-	// Binary dispatcher
-	cform_ray_collider RC(CPU::ID().hasFeature(CPUFeature::SSE), !!(ray_mode&OPT_CULL), !!(ray_mode&OPT_ONLYFIRST), !!(ray_mode&OPT_ONLYNEAREST));
-	RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
+	r_clear();
+	r_vec().reserve(16);
+
+	cform_ray_collider RC
+	{
+		r_start,
+		r_dir,
+		this,
+		m_def->tris,
+		m_def->verts,
+		r_range,
+		r_range*r_range,
+
+		!!(ray_mode & OPT_CULL),
+		!!(ray_mode & OPT_ONLYFIRST),
+		!!(ray_mode & OPT_ONLYNEAREST)
+	};
 	RC._stab(N);
 }
  

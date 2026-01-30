@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 
-#include "cl_intersect.h"
+#include "../xrCore/Collision/cl_intersect.h"
 #include "SoundRender_Core.h"
 #include "SoundRender_CoreA.h"
 #include "SoundRender_Emitter.h"

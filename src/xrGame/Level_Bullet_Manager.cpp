@@ -1126,7 +1126,7 @@ void CBulletManager::Render	()
 			// 3d tracer
 			//void** buffer = UIRender->StartPrimitiveLITFast(vertices_in_batch, IUIRender::ptTriList);
 			// 2d tracer
-			IUIRender::r_vert<12>** buffer = (IUIRender::r_vert<12>**)UIRender->StartPrimitiveLITFast(vertices_in_batch, IUIRender::ptTriList);
+			IUIRender::r_vertLIT<12>** buffer = (IUIRender::r_vertLIT<12>**)UIRender->StartPrimitive(vertices_in_batch, IUIRender::ptTriList, IUIRender::pttLIT);
 
 			for (u32 i = 0; i < tracers_in_batch; ++i)
 			{
@@ -1294,7 +1294,7 @@ void CBulletManager::Render	()
 				(u32)all_lines.size() - current_line);
 			u32 vertices_in_batch = lines_in_batch * 2u;
 
-			IUIRender::r_vert<2>** buffer = (IUIRender::r_vert<2>**)UIRender->StartPrimitiveLITFast(vertices_in_batch, IUIRender::ptLineList);
+			IUIRender::r_vertL<2>** buffer = (IUIRender::r_vertL<2>**)UIRender->StartPrimitive(vertices_in_batch, IUIRender::ptLineList, IUIRender::pttLIT);
 
 			for (u32 i = 0; i < lines_in_batch; ++i)
 			{
@@ -1302,8 +1302,8 @@ void CBulletManager::Render	()
 
 				*(*buffer) =
 				{
-					line.first,DEFAULT_COLOR,nulluv,
-					line.second,DEFAULT_COLOR,nulluv
+					line.first,DEFAULT_COLOR,
+					line.second,DEFAULT_COLOR
 				};
 				(*buffer)++;
 			}
