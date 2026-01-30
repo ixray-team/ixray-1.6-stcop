@@ -2,30 +2,20 @@
 #include "ISpatial.h"
 
 extern Fvector	c_spatial_offset[8];
-class _MM_ALIGN16 spatial_box_walker
+struct spatial_box_walker final
 {
-public:
-	ESPATIAL_TYPE	mask;
-	Fvector			center;
-	Fvector			size;
 	Fbox			box;
+	ESPATIAL_TYPE	mask;
 	ISpatial_DB*	space;
-
+	xr_vector<ISpatialShared>& R;
 	bool bFirst = false;
-public:
-	spatial_box_walker(ISpatial_DB*	_space, ESPATIAL_TYPE _mask, const Fvector& _center, const Fvector& _size)
-	{
-		mask	= _mask;
-		center	= _center;
-		size	= _size;
-		box.setb(center,size);
-		space	= _space;
-	}
-	void walk(xr_vector<ISpatialShared>& R, ISpatial_NODE* N, Fvector& n_C, float n_R)
+
+	void _vectorcall walk(ISpatial_NODE* N, Fvector& n_C, float n_R)
 	{
 		// box
-		float	n_vR = 2 * n_R;
-		Fbox	BB;		BB.set(n_C.x - n_vR, n_C.y - n_vR, n_C.z - n_vR, n_C.x + n_vR, n_C.y + n_vR, n_C.z + n_vR);
+		float n_vR = n_R * 2.f;
+		Fbox BB;
+		BB.set(Fvector().sub(n_C, n_vR), Fvector().add(n_C, n_vR));
 		if (!BB.intersect(box))
 			return;
 
@@ -37,8 +27,8 @@ public:
 				continue;
 
 			Fvector& sC = S->spatial.sphere.P;
-			float			sR = S->spatial.sphere.R;
-			Fbox			sB;		sB.set(sC.x - sR, sC.y - sR, sC.z - sR, sC.x + sR, sC.y + sR, sC.z + sR);
+			float sR = S->spatial.sphere.R;
+			Fbox sB; sB.set(Fvector().sub(sC, sR), Fvector().add(sC, sR));
 			if (!sB.intersect(box))	continue;
 
 			R.push_back(S);
@@ -46,13 +36,17 @@ public:
 		}
 
 		// recurse
-		float	c_R = n_R / 2;
+		float c_R = n_R * 0.5f;
 		for (u32 octant = 0; octant < 8; octant++)
 		{
-			if (0 == N->children[octant])	continue;
-			Fvector		c_C;			c_C.mad(n_C, c_spatial_offset[octant], c_R);
-			walk(R, N->children[octant], c_C, c_R);
-			if (bFirst && !R.empty())	return;
+			if (0 == N->children[octant])
+				continue;
+
+			Fvector c_C; c_C.mad(n_C, c_spatial_offset[octant], c_R);
+			walk(N->children[octant], c_C, c_R);
+
+			if (bFirst && !R.empty())
+				return;
 		}
 	}
 };
@@ -64,15 +58,21 @@ void ISpatial_DB::q_box(xr_vector<ISpatialShared>& R, u32 _o, ESPATIAL_TYPE _mas
 	if (!m_root)
 		return;
 
-	R.resize(0);
+	R.clear();
+	R.reserve(16);
 
-	spatial_box_walker W(this, _mask, _center, _size);
-	W.bFirst = !!(_o&O_ONLYFIRST);
-	W.walk(R, m_root, m_center, m_bounds);
+	spatial_box_walker W
+	{
+		Fbox().setb(_center,_size),
+		_mask,
+		this,
+		R,
+		!!(_o & O_ONLYFIRST),
+	};
+	W.walk(m_root, m_center, m_bounds);
 }
 
 void ISpatial_DB::q_sphere(xr_vector<ISpatialShared>& R, u32 _o, ESPATIAL_TYPE _mask, const Fvector& _center, const float _radius)
 {
-	Fvector _size = { _radius,_radius,_radius };
-	q_box(R, _o, _mask, _center, _size);
+	q_box(R, _o, _mask, _center, { _radius,_radius,_radius });
 }
