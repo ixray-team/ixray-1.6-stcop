@@ -152,14 +152,13 @@ namespace CDB
 		ICF void		obb_options(u32 f) { obb_mode = f; }
 		void			obb_query(const MODEL* m_def, const Fobb& _obb);
 
-		ICF RESULT*		r_begin			()	{	return &*rd.begin();		};
-		ICF RESULT*		r_end			()	{	return &*rd.end();			};
-		RESULT&			r_add			()	;
-		void			r_free			()	;
-		ICF int			r_count			()	{	return (u32)rd.size();			};
-		ICF void		r_clear			()	{	rd.resize(0);		};
-		ICF void		r_clear_compact	()	{	rd.clear();		};
-		IC xr_vector<RESULT>& r_vec		()	{	return rd;		};
+		ICF RESULT*		r_begin			(){return &*rd.begin();};
+		ICF RESULT*		r_end			(){return &*rd.end();};
+		ICF RESULT&		r_add			(){return rd.emplace_back();}
+		ICF void		r_free			(){rd.clear();}
+		ICF int			r_count			(){return (u32)rd.size();};
+		ICF void		r_clear			(){rd.clear();};
+		ICF auto&		r_vec			(){return rd;};
 	};
 
 	//
