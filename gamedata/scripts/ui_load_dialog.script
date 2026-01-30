@@ -93,6 +93,11 @@ function load_dialog:InitControls()
 
 	self.message_box		= CUIMessageBoxEx()
 	self:Register			(self.message_box,"message_box")
+	
+	if xml:NodeExist("gamepad_legend", 0) then
+		self.gamepad_legend = xml:InitGamepadLegend("gamepad_legend", self)
+		self:Register(self.gamepad_legend, "gamepad_legend")
+	end
 end
 
 function load_dialog:InitCallBacks()
@@ -345,11 +350,24 @@ function load_dialog:OnKeyboard(dik, keyboard_action)  --virtual function
 	if bind == key_bindings.kQUIT then
 		self:OnButton_back_clicked()
 	else
-
-		 DIK_RETURN = 40 -- IX-Ray: Fixed DIK_RETURN
-
-		if dik == DIK_RETURN and keyboard_action == ui_events.WINDOW_KEY_PRESSED then
+		if dik == DIK_keys.DIK_RETURN and keyboard_action == ui_events.WINDOW_KEY_PRESSED then
 			self:OnButton_load_clicked()
+		end
+	end
+	return true
+end
+
+function load_dialog:OnGamepadKey(key, gamepad_action)  --virtual function
+	CUIScriptWnd.OnGamepadKey(self,key,gamepad_action)
+	if gamepad_action == ui_events.WINDOW_KEY_PRESSED then
+		if key == gamepad_keys.BUTTON_A then
+			self:OnButton_load_clicked()		
+		elseif key == gamepad_keys.BUTTON_X then
+			self:OnButton_del_clicked()		
+		elseif key == gamepad_keys.BUTTON_DPAD_UP then
+			self.list_box:PrevItem()
+		elseif key == gamepad_keys.BUTTON_DPAD_DOWN then
+			self.list_box:NextItem()
 		end
 	end
 	return true
