@@ -148,7 +148,7 @@ public:
 	typedef Self&			SelfRef;
 	typedef const Self&		SelfCRef;
 private:
-	IC T _asin_(T x_)
+	ICF T _asin_(T x_)
 	{
 		const T c1 = 0.892399f;
 		const T c3 = 1.693204f;
@@ -160,7 +160,7 @@ private:
 		
 		return d;
 	}
-	IC T _acos_(T x_)
+	ICF T _acos_(T x_)
 	{
 		return PI_DIV_2 - _asin_(x_);
 	}
@@ -170,14 +170,14 @@ public:
 	T z = 0;
 	T w = 0;
 
-	IC	SelfRef	set(T W, T X, T Y, T Z)	// don't normalize
+	ICF	SelfRef	set(T W, T X, T Y, T Z)	// don't normalize
 	{	x=X; y=Y; z=Z; w=W;			return *this; }
-	IC	SelfRef	set(SelfCRef Q)				// don't normalize
+	ICF	SelfRef	set(SelfCRef Q)				// don't normalize
 	{	set(Q.w, Q.x, Q.y, Q.z);	return *this; }
 
-	IC SelfRef	set(const _matrix<T>& m);
+	ICF SelfRef	set(const _matrix<T>& m);
 
-	IC	SelfRef	mul(SelfCRef q1l, SelfCRef q2l)
+	ICF	SelfRef	mul(SelfCRef q1l, SelfCRef q2l)
 	{
 		VERIFY( q1l.isValid() );
 		VERIFY( q2l.isValid() );
@@ -196,7 +196,7 @@ public:
 		return *this; 
 	}
 
-	IC	SelfRef	add(SelfCRef q1, SelfCRef q2)
+	ICF	SelfRef	add(SelfCRef q1, SelfCRef q2)
 	{
 		x  =	q1.x+q2.x;
 		y  =	q1.y+q2.y;
@@ -204,7 +204,7 @@ public:
 		w  =	q1.w+q2.w;
 		return *this; 
 	}
-	IC	SelfRef	sub(SelfCRef q1, SelfCRef q2)
+	ICF	SelfRef	sub(SelfCRef q1, SelfCRef q2)
 	{
 		x  =	q1.x-q2.x;
 		y  =	q1.y-q2.y;
@@ -213,7 +213,7 @@ public:
 		return *this; 
 	}
 
-	IC	SelfRef	add(SelfCRef q)
+	ICF	SelfRef	add(SelfCRef q)
 	{
 		x  +=	q.x;
 		y  +=	q.y;
@@ -221,7 +221,7 @@ public:
 		w  +=	q.w;
 		return *this; 
 	}
-	IC	SelfRef	sub(SelfCRef q)
+	ICF	SelfRef	sub(SelfCRef q)
 	{
 		x  -=	q.x;
 		y  -=	q.y;
@@ -231,7 +231,7 @@ public:
 	}
 
 	// validates numerical stability
-	IC	const BOOL	isValid(void) const 
+	ICF	const BOOL	isValid(void) const 
 	{
 		if ((w * w) < 0.0f)	return false;
 		if ((x * x) < 0.0f)	return false;
@@ -241,7 +241,7 @@ public:
 	}
 
 	// checks for Unit-length quanternion
-	IC	const BOOL	isUnit(void) 
+	ICF	const BOOL	isUnit(void) 
 	{
 		T m  =  magnitude();
 
@@ -251,7 +251,7 @@ public:
 	}
 
 	// normalizes Q to be a unit geQuaternion
-	IC	SelfRef	normalize(void) 
+	ICF	SelfRef	normalize(void) 
 	{
 		T	m,one_over_magnitude;
 
@@ -270,26 +270,26 @@ public:
 	}
 
 	// inversion
-	IC	SelfRef	inverse(SelfCRef Q)
+	ICF	SelfRef	inverse(SelfCRef Q)
 	{	return set(Q.w,-Q.x,-Q.y,-Q.z);	}
-	IC	SelfRef	inverse()
+	ICF	SelfRef	inverse()
 	{	return set(w,-x,-y,-z);	}
-	IC	SelfRef	inverse_with_w(SelfCRef Q)
+	ICF	SelfRef	inverse_with_w(SelfCRef Q)
 	{	return set(-Q.w,-Q.x,-Q.y,-Q.z);	}
-	IC	SelfRef	inverse_with_w()
+	ICF	SelfRef	inverse_with_w()
 	{	return set(-w,-x,-y,-z);	}
 
 	// identity - no rotation
-	IC	SelfRef	identity(void)
+	ICF	SelfRef	identity(void)
 	{	return set(1.f,0.f,0.f,0.f);		}
 
 	// square length
-	IC	T	magnitude(void) {
+	ICF	T	magnitude(void) {
 		return w*w + x*x + y*y + z*z;
 	}
 
 	// makes unit rotation
-	IC	SelfRef	rotationYawPitchRoll(T _x, T _y, T _z) 
+	ICF	SelfRef	rotationYawPitchRoll(T _x, T _y, T _z) 
 	{
 		T fSinYaw   = std::sin(_x*.5f);
 		T fCosYaw   = std::cos(_x*.5f);
@@ -306,11 +306,11 @@ public:
 	}
 
 	// makes unit rotation
-	IC	SelfRef	rotationYawPitchRoll(const Fvector &ypr)
+	ICF	SelfRef	rotationYawPitchRoll(const Fvector &ypr)
 	{	return rotationYawPitchRoll(ypr.x,ypr.y,ypr.z);	}
 
 	// set a quaternion from an axis and a rotation around the axis
-	IC	SelfRef	rotation(Fvector &axis, T angle)
+	ICF	SelfRef	rotation(Fvector &axis, T angle)
 	{
 		T	sinTheta;
 
@@ -326,7 +326,7 @@ public:
 	// returns TRUE if there is an axis.
 	// returns FALSE if there is no axis (and Axis is set to 0,0,0, and Theta is 0)
 
-	IC	BOOL	get_axis_angle(Fvector &axis, T &angle)
+	ICF bool	get_axis_angle(Fvector &axis, T &angle)
 	{
 		T s = _sqrt(x*x + y*y + z*z);
 		if ( s > EPS_S ) 	{
@@ -388,7 +388,7 @@ public:
 	}
 
 	// return TRUE if quaternions differ elementwise by less than Tolerance.
-	IC	BOOL	cmp(SelfCRef Q, T Tolerance=0.0001f)
+	ICF	BOOL	cmp(SelfCRef Q, T Tolerance=0.0001f)
 	{
 		if (	// they are the same but with opposite signs
 			(	(std::abs(x + Q.x) <= Tolerance )
@@ -407,7 +407,7 @@ public:
 		else
 			return false;
 	}
-	IC	SelfRef	ln(SelfCRef Q)
+	ICF	SelfRef	ln(SelfCRef Q)
 	{
 		T n	 = Q.x*Q.x+Q.y*Q.y+Q.z*Q.z;
 		T r  = _sqrt(n);
@@ -418,7 +418,7 @@ public:
 		w = .5f*_log(n+Q.w*Q.w);
 		return *this;
 	}
-	IC	SelfRef	exp(SelfCRef Q)
+	ICF	SelfRef	exp(SelfCRef Q)
 	{
 		T r  = _sqrt(Q.x*Q.x+Q.y*Q.y+Q.z*Q.z);
 		T et = expf(Q.w);
