@@ -85,57 +85,60 @@ extern float r_ssaDISCARD			;
 extern float r_ssaLOD_A, r_ssaLOD_B ;
 void CPortalTraverser::fade_render	()
 {
-	if (f_portals.empty())			return;
+	if (f_portals.empty())
+		return;
 
+	u32 _offset = 0;
 	// re-sort, back to front
-	if(!psGameFlags.test(rsDrawPortals))
-		std::sort						(f_portals.begin(),f_portals.end(),psort_pred);
-	
-	// calc poly-count
-	u32		_pcount					= 0;
-	for		(u32 _it = 0; _it<f_portals.size(); _it++)	_pcount	+= f_portals[_it].first->getPoly().size()-2;
+	if (!psGameFlags.test(rsDrawPortals))
+		std::sort(f_portals.begin(), f_portals.end(), psort_pred);
 
-	// fill buffers
-	u32			_offset				= 0;
-	FVF::L*		_v					= (FVF::L*)RCache.Vertex.Lock(_pcount*3,f_geom.stride(),_offset);
-	float		ssaRange			= r_ssaLOD_A - r_ssaLOD_B;
-	Fvector		_ambient_f			= g_pGamePersistent->Environment().CurrentEnv->ambient;
-	u32			_ambient			= psGameFlags.test(rsDrawPortals) ? u32(-1) : color_rgba_f(_ambient_f.x,_ambient_f.y,_ambient_f.z,0.f);
-	for (u32 _it = 0; _it<f_portals.size(); _it++)
+	// calc poly-count
+	u32 poly_per_portal = 0;
+	for (auto& pair : f_portals)
+		poly_per_portal += pair.first->getPoly().size()-2;
+	struct LF
 	{
-		std::pair<CPortal*, float>&	fp		= f_portals	[_it]	;
-		CPortal*					_P		= fp.first	;
-		u32							_clr=u32(-1);
+		FVF::L buff[3];
+	};
+	
+	LF* _v = (LF*)RCache.Vertex.Lock(poly_per_portal*3,f_geom.stride(),_offset);
+	float ssaRange = r_ssaLOD_A - r_ssaLOD_B;
+	Fvector _ambient_f = g_pGamePersistent->Environment().CurrentEnv->ambient;
+	u32 _ambient = psGameFlags.test(rsDrawPortals) ? u32(-1) : color_rgba_f(_ambient_f.x,_ambient_f.y,_ambient_f.z,0.f);
+	for (std::pair<CPortal*, float>& fp : f_portals)
+	{
+		u32 _clr = u32(-1);
 		if(psGameFlags.test(rsDrawPortals))
-			_clr	= color_rgba(0,255,100,255);
+			_clr = color_rgba(0,255,100,255);
 		else
-		{
-			float						_ssa	= fp.second	;
-			float		ssaDiff					= _ssa-r_ssaLOD_B	;
-			float		ssaScale				= ssaDiff/ssaRange	;
-			int			iA						= iFloor((1-ssaScale)*255.5f);	clamp(iA,0,255);
-			_clr	= subst_alpha(_ambient,u32(iA));	
-		}
+			_clr = subst_alpha(_ambient,u32(clampr(iFloor((1-fp.second-r_ssaLOD_B/ssaRange)*255.5f),0,255)));
 
 		// fill polys
-		u32			_polys					= _P->getPoly().size()-2;
-		for			(u32 _pit=0; _pit<_polys; _pit++)	{
-			_v->set	(_P->getPoly()[0],		_clr);	_v++;
-			_v->set (_P->getPoly()[_pit+1],_clr);	_v++;
-			_v->set (_P->getPoly()[_pit+2],_clr);	_v++;
+		CPortal* _P = fp.first;
+		u32 _polys = _P->getPoly().size()-2;
+		for (u32 _pit = 0; _pit < _polys; _pit++)
+		{
+			*_v =
+			{
+				FVF::L{_P->getPoly()[0], _clr},
+				FVF::L{_P->getPoly()[_pit + 1],_clr},
+				FVF::L{_P->getPoly()[_pit + 2],_clr},
+			};
+			_v++;
 		}
 	}
-	RCache.Vertex.Unlock			(_pcount*3,f_geom.stride());
+	RCache.Vertex.Unlock(poly_per_portal*3,f_geom.stride());
 
 	// render
-	RCache.set_xform_world			(Fidentity);
-	RCache.set_Shader				(f_shader);
-	RCache.set_Geometry				(f_geom);
+	RCache.set_xform_world(Fidentity);
+	RCache.set_Shader(f_shader);
+	RCache.set_Geometry(f_geom);
 
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,_offset,_pcount);
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,_offset, poly_per_portal);
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 
 	// cleanup
-	f_portals.clear					();
+	f_portals.clear();
 }
