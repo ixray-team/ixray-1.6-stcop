@@ -37,6 +37,9 @@ public:
 	IC	void	SetCheck(bool ch)
 	{
 		SetButtonState( ch ? BUTTON_PUSHED : BUTTON_NORMAL);
+	}
+	IC	void	SendClickCallback()
+	{
 		GetMessageTarget()->SendMessage(this, BUTTON_CLICKED, nullptr);
 	}
 
