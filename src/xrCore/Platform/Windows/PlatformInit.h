@@ -78,3 +78,4 @@ using xr_special_char = wchar_t;
 #define xr_interface __interface
 
 #define xr_strerror(errno, buffer, bufferSize) strerror_s(buffer, sizeof(buffer), errno)
+#define xr_vectorcall _vectorcall
