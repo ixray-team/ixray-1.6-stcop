@@ -9,7 +9,7 @@ struct spatial_frustum_walker final
 	ESPATIAL_TYPE	mask;
 	ISpatial_DB*	space;
 	xr_vector<ISpatialShared>& R;
-	void _vectorcall walk(ISpatial_NODE* N, Fvector& n_C, float n_R, u32 fmask)
+	void xr_vectorcall walk(ISpatial_NODE* N, Fvector& n_C, float n_R, u32 fmask)
 	{
 		// box
 		float n_vR = n_R * 2.f;
