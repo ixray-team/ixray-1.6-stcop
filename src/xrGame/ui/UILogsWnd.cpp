@@ -395,11 +395,13 @@ bool CUILogsWnd::OnGamepadKeyAction(int key, EUIMessages gamepad_action)
 			case SDL_GAMEPAD_BUTTON_SOUTH:
 			{
 				m_filter_talk->SetCheck(!m_filter_talk->GetCheck());
+				m_filter_talk->SendClickCallback();
 				break;
 			}
 			case SDL_GAMEPAD_BUTTON_NORTH:
 			{
 				m_filter_news->SetCheck(!m_filter_news->GetCheck());
+				m_filter_news->SendClickCallback();
 				break;
 			}
 			return true;
