@@ -21,11 +21,7 @@ public:
 
 	virtual void PushPoint(float x, float y, float z, u32 C, float u, float v);
 
-	virtual void StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointType pointType);
-
-	virtual void** StartPrimitiveLITFast(u32 iMaxVerts, ePrimitiveType primType);
-
-	virtual void** GetLITFastBuffer() { return (void**)&LIT_pv; };
+	virtual void** StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointType pointType);
 
 	virtual void FlushPrimitive();
 
@@ -37,6 +33,7 @@ public:
 	virtual void zb_enable(u32 val);
 
 private:
+	ref_geom		hGeom_L;
 	ref_geom		hGeom_TL;
 	ref_geom		hGeom_LIT;
 
@@ -46,6 +43,9 @@ private:
 	//	Vertex buffer attributes
 	u32				m_iMaxVerts;
 	u32				vOffset;
+
+	FVF::L*			L_start_pv;
+	FVF::L*			L_pv;
 
 	FVF::TL*		TL_start_pv;
 	FVF::TL*		TL_pv;

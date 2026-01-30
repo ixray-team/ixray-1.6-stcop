@@ -37,68 +37,95 @@ void dxLensFlareRender::Render(CLensFlare &owner, BOOL bSun, BOOL bFlares, BOOL 
 	Fcolor color;
 	Fvector vec, vecSx, vecSy;
 	Fvector vecDx, vecDy;
-
+	float fDistance = FAR_DIST * 0.75f;
 	dwLight.set(owner.LightColor);
 	svector<ref_shader, MAX_Flares> _2render;
 
 	u32 VS_Offset;
-	FVF::LIT* pv = (FVF::LIT*)RCache.Vertex.Lock(MAX_Flares * 4, hGeom.stride(), VS_Offset);
-
-	float fDistance = FAR_DIST * 0.75f;
-
-	if (bSun){
-		if (owner.m_Current->m_Flags.is(CLensFlareDescriptor::flSource)){
+	struct LITF
+	{
+		struct
+		{
+			Fvector p; u32 color; Fvector2 t;
+		} buff[4];
+	};
+	LITF* pv = (LITF*)RCache.Vertex.Lock(MAX_Flares * 4, hGeom.stride(), VS_Offset);
+	Fvector& vecLight = owner.vecLight;
+	if (bSun)
+	{
+		if (owner.m_Current->m_Flags.is(CLensFlareDescriptor::flSource))
+		{
 			vecSx.mul(owner.vecX, owner.m_Current->m_Source.fRadius*fDistance);
 			vecSy.mul(owner.vecY, owner.m_Current->m_Source.fRadius*fDistance);
-			if (owner.m_Current->m_Source.ignore_color) color.set(1.f,1.f,1.f,1.f);
-			else color.set(dwLight);
+			if (owner.m_Current->m_Source.ignore_color)
+				color.set(1.f,1.f,1.f,1.f);
+			else
+				color.set(dwLight);
 			color.a *= owner.m_StateBlend;
 			u32 c = color.get();
-			pv->set (owner.vecLight.x+vecSx.x-vecSy.x, owner.vecLight.y+vecSx.y-vecSy.y, owner.vecLight.z+vecSx.z-vecSy.z, c, 0, 0); pv++;
-			pv->set (owner.vecLight.x+vecSx.x+vecSy.x, owner.vecLight.y+vecSx.y+vecSy.y, owner.vecLight.z+vecSx.z+vecSy.z, c, 0, 1); pv++;
-			pv->set (owner.vecLight.x-vecSx.x-vecSy.x, owner.vecLight.y-vecSx.y-vecSy.y, owner.vecLight.z-vecSx.z-vecSy.z, c, 1, 0); pv++;
-			pv->set (owner.vecLight.x-vecSx.x+vecSy.x, owner.vecLight.y-vecSx.y+vecSy.y, owner.vecLight.z-vecSx.z+vecSy.z, c, 1, 1); pv++;
-			_2render.push_back	(((dxFlareRender*)&*owner.m_Current->m_Source.m_pRender)-> hShader);
+			
+			*pv =
+			{
+				vecLight + vecSx - vecSy, c, {0.f, 0.f},
+				vecLight + vecSx + vecSy, c, {0.f, 1.f},
+				vecLight - vecSx - vecSy, c, {1.f, 0.f},
+				vecLight - vecSx + vecSy, c, {1.f, 1.f}
+			};
+			pv++;
+			_2render.push_back(((dxFlareRender*)&*owner.m_Current->m_Source.m_pRender)->hShader);
 		}
 	}
 	if (owner.fBlend>=EPS_L)
 	{
-		if(bFlares){
+		if(bFlares)
+		{
 			vecDx.normalize (owner.vecAxis);
 			vecDy.crossproduct (vecDx, owner.vecDir);
-			if (owner.m_Current->m_Flags.is(CLensFlareDescriptor::flFlare)){
-				for(CLensFlareDescriptor::FlareIt it = owner.m_Current->m_Flares.begin(); it != owner.m_Current->m_Flares.end(); it++) {
-					CLensFlareDescriptor::SFlare& F = *it;
+			if (owner.m_Current->m_Flags.is(CLensFlareDescriptor::flFlare))
+			{
+				for(CLensFlareDescriptor::SFlare& F : owner.m_Current->m_Flares)
+				{
 					vec.mul(owner.vecAxis, F.fPosition);
 					vec.add(owner.vecCenter);
-					vecSx.mul(vecDx, F.fRadius * fDistance);
-					vecSy.mul(vecDy, F.fRadius * fDistance);
-					float cl = F.fOpacity * owner.fBlend * owner.m_StateBlend;
+					vecSx.mul(F.fPosition == 1.0f ? owner.vecX : vecDx, F.fRadius*fDistance);//если блик в центре солнца то не будем его вращать
+					vecSy.mul(F.fPosition == 1.0f ? owner.vecY : vecDy, F.fRadius*fDistance);
 					color.set(dwLight);
-					color.mul_rgba(cl);
+					color.mul_rgba(F.fOpacity*owner.fBlend*owner.m_StateBlend);
 					u32 c = color.get();
-					pv->set(vec.x + vecSx.x - vecSy.x, vec.y + vecSx.y - vecSy.y, vec.z + vecSx.z - vecSy.z, c, 0, 0); pv++;
-					pv->set(vec.x + vecSx.x + vecSy.x, vec.y + vecSx.y + vecSy.y, vec.z + vecSx.z + vecSy.z, c, 0, 1); pv++;
-					pv->set(vec.x - vecSx.x - vecSy.x, vec.y - vecSx.y - vecSy.y, vec.z - vecSx.z - vecSy.z, c, 1, 0); pv++;
-					pv->set(vec.x - vecSx.x + vecSy.x, vec.y - vecSx.y + vecSy.y, vec.z - vecSx.z + vecSy.z, c, 1, 1); pv++;
-					_2render.push_back(((dxFlareRender*)&*it->m_pRender)->hShader);
+					*pv =
+					{
+						vec + vecSx - vecSy, c, {0.f, 0.f},
+						vec + vecSx + vecSy, c, {0.f, 1.f},
+						vec - vecSx - vecSy, c, {1.f, 0.f},
+						vec - vecSx + vecSy, c, {1.f, 1.f}
+					};
+					pv++;
+					_2render.push_back(((dxFlareRender*)&*F.m_pRender)->hShader);
 				}
 			}
 		}
 		// gradient
-		if (bGradient&&(owner.fGradientValue>=EPS_L)){
-			if (owner.m_Current->m_Flags.is(CLensFlareDescriptor::flGradient)){
-				vecSx.mul(owner.vecX, owner.m_Current->m_Gradient.fRadius * owner.fGradientValue * fDistance);
-				vecSy.mul(owner.vecY, owner.m_Current->m_Gradient.fRadius * owner.fGradientValue * fDistance);
+		if (bGradient&&(owner.fGradientValue>=EPS_L))
+		{
+			if (owner.m_Current->m_Flags.is(CLensFlareDescriptor::flGradient))
+			{
+				vecSx.mul(owner.vecX, owner.m_Current->m_Gradient.fRadius*owner.fGradientValue*fDistance);
+				vecSy.mul(owner.vecY, owner.m_Current->m_Gradient.fRadius*owner.fGradientValue*fDistance);
 
 				color.set(dwLight);
 				color.mul_rgba(owner.fGradientValue * owner.m_StateBlend);
 
 				u32 c = color.get();
-				pv->set(owner.vecLight.x + vecSx.x - vecSy.x, owner.vecLight.y + vecSx.y - vecSy.y, owner.vecLight.z + vecSx.z - vecSy.z, c, 0, 0); pv++;
-				pv->set(owner.vecLight.x + vecSx.x + vecSy.x, owner.vecLight.y + vecSx.y + vecSy.y, owner.vecLight.z + vecSx.z + vecSy.z, c, 0, 1); pv++;
-				pv->set(owner.vecLight.x - vecSx.x - vecSy.x, owner.vecLight.y - vecSx.y - vecSy.y, owner.vecLight.z - vecSx.z - vecSy.z, c, 1, 0); pv++;
-				pv->set(owner.vecLight.x - vecSx.x + vecSy.x, owner.vecLight.y - vecSx.y + vecSy.y, owner.vecLight.z - vecSx.z + vecSy.z, c, 1, 1); pv++;
+				*pv =
+				{
+					
+					owner.vecLight + vecSx - vecSy, c, 0, 0,
+					owner.vecLight + vecSx + vecSy, c, 0, 1,
+					owner.vecLight - vecSx - vecSy, c, 1, 0,
+					owner.vecLight - vecSx + vecSy, c, 1, 1
+				};
+				pv++;
+
 				_2render.push_back(((dxFlareRender*)&*owner.m_Current->m_Gradient.m_pRender)->hShader);
 			}
 		}
