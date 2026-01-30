@@ -446,7 +446,7 @@ void CUIMainIngameWnd::Init()
 		xr_sprintf(path, "quick_slot%d", i);
 		if (uiXml.NavigateToNode(path))
 		{
-			m_quick_slots_icons.push_back(new CUIStatic());
+			m_quick_slots_icons.push_back(new CUI3dStatic());
 			m_quick_slots_icons.back()->SetAutoDelete(true);
 			AttachChild(m_quick_slots_icons.back());
 			CUIXmlInit::InitStatic(uiXml, path, 0, m_quick_slots_icons.back());
@@ -1499,6 +1499,19 @@ void CUIMainIngameWnd::UpdateQuickSlots()
 			shared_str item_name = g_quick_use_slots[i];
 			if (item_name.size())
 			{
+                if (psActorFlags.test(AF_3D_ICONS_INV))
+                {
+                    LPCSTR m_3d_static_visual_name = READ_IF_EXISTS(pSettings, r_string, item_name, "3d_static_visual_name", pSettings->r_string(item_name, "visual"));
+                    slot->SetVisual(m_3d_static_visual_name);
+                    Fvector m_3d_static_rotate = READ_IF_EXISTS(pSettings, r_fvector3, item_name, "3d_static_rotate", m_3d_static_rotate.set(0, 0, 0));
+                    m_3d_static_rotate.mul(M_PI / 180.0f);
+                    slot->SetXYZ(m_3d_static_rotate);
+                    float m_3d_static_scale = READ_IF_EXISTS(pSettings, r_float, item_name, "3d_static_scale", 1.f);
+                    slot->SetScaleFactor(m_3d_static_scale);
+                }
+                else
+                    slot->SetVisual(nullptr);
+
 				const u32 count = pActor->inventory().dwfGetSameItemCount(item_name.c_str(), true);
 				string32 str;
 				xr_sprintf(str, "%s%d", EngineExternal().GetInventoryItemCountPrefix().c_str(), count);
