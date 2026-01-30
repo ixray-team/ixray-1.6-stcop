@@ -13,7 +13,7 @@ struct spatial_ray_walker final
 	bool bFirst = false;
 	bool bNearest = false;
 
-	void _vectorcall walk(ISpatial_NODE* N, Fvector& n_C, float n_R)
+	void xr_vectorcall walk(ISpatial_NODE* N, Fvector& n_C, float n_R)
 	{
 		float n_vR = n_R * 2.f;
 		Fbox BB;

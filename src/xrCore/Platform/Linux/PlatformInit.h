@@ -47,6 +47,8 @@
 #define WPARAM void*
 #define LPVOID void*
 
+#define xr_vectorcall
+
 using UINT = unsigned int;
 
 #include <inttypes.h>
