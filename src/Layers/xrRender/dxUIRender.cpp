@@ -7,12 +7,14 @@ dxUIRender UIRenderImpl;
 
 void dxUIRender::CreateUIGeom()
 {
+	hGeom_L.create(FVF::F_L, RCache.Vertex.Buffer(), 0);
 	hGeom_TL.create(FVF::F_TL, RCache.Vertex.Buffer(), 0);
 	hGeom_LIT.create(FVF::F_LIT, RCache.Vertex.Buffer(), 0);
 }
 
 void dxUIRender::DestroyUIGeom()
 {
+	hGeom_L = nullptr;
 	hGeom_TL = nullptr;
 	hGeom_LIT = nullptr;
 }
@@ -74,10 +76,14 @@ void dxUIRender::PushPoint(float x, float y, float z, u32 C, float u, float v)
 		TL_pv->set(x, y, C, u, v);
 		++TL_pv;
 		break;
+	case pttL:
+		L_pv->set(x, y, z, C);
+		++L_pv;
+		break;
 	}
 }
 
-void dxUIRender::StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointType pointType)
+void** dxUIRender::StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointType pointType)
 {
 	VERIFY(PrimitiveType == ptNone);
 	VERIFY(m_PointType == pttNone);
@@ -89,29 +95,20 @@ void dxUIRender::StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointTy
 	switch(m_PointType)
 	{
 	case pttLIT:
-		LIT_start_pv	= (FVF::LIT*)RCache.Vertex.Lock	(m_iMaxVerts,hGeom_LIT.stride(),vOffset);
+		LIT_start_pv	= (FVF::LIT*)RCache.Vertex.Lock(m_iMaxVerts,hGeom_LIT.stride(),vOffset);
 		LIT_pv			= LIT_start_pv;
-		break;
+		return (void**)&LIT_pv;
 	case pttTL:
-		TL_start_pv		= (FVF::TL*)RCache.Vertex.Lock	(m_iMaxVerts,hGeom_TL.stride(),vOffset);
+		TL_start_pv		= (FVF::TL*)RCache.Vertex.Lock(m_iMaxVerts,hGeom_TL.stride(),vOffset);
 		TL_pv			= TL_start_pv;
-		break;
+		return (void**)&TL_pv;
+	case pttL:
+		L_start_pv		= (FVF::L*)RCache.Vertex.Lock(m_iMaxVerts,hGeom_L.stride(),vOffset);
+		L_pv			= L_start_pv;
+		return (void**)&L_pv;
 	}
-}
 
-void** dxUIRender::StartPrimitiveLITFast(u32 iMaxVerts, ePrimitiveType primType)
-{
-	VERIFY(PrimitiveType == ptNone);
-	VERIFY(m_PointType == pttNone);
-
-	m_iMaxVerts = iMaxVerts;
-	PrimitiveType = primType;
-	m_PointType = pttLIT;
-
-	LIT_start_pv = (FVF::LIT*)RCache.Vertex.Lock(m_iMaxVerts, hGeom_LIT.stride(), vOffset);
-	LIT_pv = LIT_start_pv;
-
-	return (void**)&LIT_pv;
+	return nullptr;
 }
 
 void dxUIRender::FlushPrimitive()
@@ -135,6 +132,13 @@ void dxUIRender::FlushPrimitive()
 
 		RCache.Vertex.Unlock		(u32(p_cnt),hGeom_TL.stride());
 		RCache.set_Geometry	 		(hGeom_TL);
+		break;
+	case pttL:
+		p_cnt = L_pv - L_start_pv;
+		VERIFY(u32(p_cnt) <= m_iMaxVerts);
+
+		RCache.Vertex.Unlock(u32(p_cnt), hGeom_L.stride());
+		RCache.set_Geometry(hGeom_L);
 		break;
 	default:
 		NODEFAULT;

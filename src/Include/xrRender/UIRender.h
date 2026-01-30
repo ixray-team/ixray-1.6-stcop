@@ -20,12 +20,22 @@ public:
 	enum ePointType
 	{
 		pttNone = -1,
+		pttL,
 		pttTL,
 		pttLIT
 	};
 
 	template<u8 verts_count = 1>
-	struct r_vert
+	struct r_vertL
+	{
+		struct
+		{
+			Fvector v; u32 clr;
+		} vertices[verts_count];
+	};
+
+	template<u8 verts_count = 1>
+	struct r_vertLIT
 	{
 		struct
 		{
@@ -45,11 +55,7 @@ public:
 
 	virtual void PushPoint(float x, float y, float z, u32 C, float u, float v) = 0;
 
-	virtual void StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointType pointType) = 0;
-
-	virtual void** StartPrimitiveLITFast(u32 iMaxVerts, ePrimitiveType primType) { return nullptr; };
-
-	virtual void** GetLITFastBuffer() { return nullptr; };
+	virtual void** StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointType pointType) { return nullptr; };
 
 	virtual void FlushPrimitive() = 0;
 
