@@ -709,15 +709,15 @@ void LevelInspector::OnRender()
 				u32 total = total_tris - start_idx;
 				u32 batch_size = std::min(MAX_TRIS_PER_BATCH, total);
 
-				IUIRender::r_vert<3>** buffer = (IUIRender::r_vert<3>**)UIRender->StartPrimitiveLITFast(batch_size * 3u, IUIRender::ptTriList);
+				IUIRender::r_vertL<3>** buffer = (IUIRender::r_vertL<3>**)UIRender->StartPrimitive(batch_size * 3u, IUIRender::ptTriList, IUIRender::pttL);
 				for (size_t i = 0u; i < batch_size; ++i)
 				{
 					tvertex& tri = tris[start_idx + i];
 					*(*buffer) =
 					{ 
-						tri.v1,tri.color,nulluv,
-						tri.v2,tri.color,nulluv,
-						tri.v3,tri.color,nulluv
+						tri.v1,tri.color,
+						tri.v2,tri.color,
+						tri.v3,tri.color
 					};
 					(*buffer)++;
 				}
@@ -738,7 +738,7 @@ void LevelInspector::OnRender()
 				u32 total = total_lines - start_idx;
 				u32 batch_size = std::min(MAX_LINES_PER_BATCH, total);
 
-				IUIRender::r_vert<2>** buffer = (IUIRender::r_vert<2>**)UIRender->StartPrimitiveLITFast(batch_size * 2u, IUIRender::ptLineList);
+				IUIRender::r_vertL<2>** buffer = (IUIRender::r_vertL<2>**)UIRender->StartPrimitive(batch_size * 2u, IUIRender::ptLineList, IUIRender::pttL);
 
 				for (u32 i = 0u; i < batch_size; ++i)
 				{
@@ -746,8 +746,8 @@ void LevelInspector::OnRender()
 
 					*(*buffer) =
 					{ 
-						line.v1,line.color,nulluv,
-						line.v2,line.color,nulluv
+						line.v1,line.color,
+						line.v2,line.color
 					};
 					(*buffer)++;
 				}
@@ -1732,7 +1732,7 @@ void LevelInspector::DrawLevelGraph()
 		}
 	};
 	static xr_vector<CachedNode> cached_nodes;
-	static xr_vector<IUIRender::r_vert<6>> vertex_buffer[2];
+	static xr_vector<IUIRender::r_vertL<6>> vertex_buffer[2];
 	static xr_vector<u32> node_indices;
 	static xr_vector<u32> temp_indices;
 	static Fbox2 level_bbox2D;
@@ -2035,7 +2035,7 @@ void LevelInspector::DrawLevelGraph()
 		PROF_EVENT("LevelInspector::calc_nodes");
 		float RENDER_DISTANCE = g_pGamePersistent&&g_pGamePersistent->Environment().CurrentEnv ? g_pGamePersistent->Environment().CurrentEnv->fog_distance : 10.f;
 		float RENDER_DISTANCE_SQR = RENDER_DISTANCE * RENDER_DISTANCE;
-		xr_vector<IUIRender::r_vert<6>>& vbuff = vertex_buffer[update_idx];
+		xr_vector<IUIRender::r_vertL<6>>& vbuff = vertex_buffer[update_idx];
 		vbuff.clear();
 		static xr_vector<QuadTreeNode*> stack;
 		stack.clear();
@@ -2069,12 +2069,12 @@ void LevelInspector::DrawLevelGraph()
 					
 					vbuff.push_back(
 					{
-						vert3,color,nulluv,
-						node.v2,color,nulluv,
-						vert1,color,nulluv,
-						node.v4,color,nulluv,
-						vert3,color,nulluv,
-						vert1,color,nulluv
+						vert3,color,
+						node.v2,color,
+						vert1,color,
+						node.v4,color,
+						vert3,color,
+						vert1,color
 					});
 					
 				}
@@ -2103,7 +2103,7 @@ void LevelInspector::DrawLevelGraph()
 		constexpr u32 MAX_QUADS_PER_BATCH = MAX_TRIS_PER_BATCH / TRIS_PER_QUAD;
 		constexpr u32 VERTS_PER_BATCH = MAX_TRIS_PER_BATCH * 3u;
 
-		xr_vector<IUIRender::r_vert<6>>& nodes = vertex_buffer[render_idx];
+		xr_vector<IUIRender::r_vertL<6>>& nodes = vertex_buffer[render_idx];
 		u32 total_quads = (u32)nodes.size();
 		u32 total_tris = total_quads * TRIS_PER_QUAD;
 
@@ -2115,7 +2115,7 @@ void LevelInspector::DrawLevelGraph()
 			u32 quads_in_batch = std::min(MAX_QUADS_PER_BATCH, total_quads - start_quad);
 			u32 tris_in_batch = quads_in_batch * TRIS_PER_QUAD;
 
-			IUIRender::r_vert<6>** buffer = (IUIRender::r_vert<6>**)UIRender->StartPrimitiveLITFast(tris_in_batch * 3u, IUIRender::ptTriList);
+			IUIRender::r_vertL<6>** buffer = (IUIRender::r_vertL<6>**)UIRender->StartPrimitive(tris_in_batch * 3u, IUIRender::ptTriList, IUIRender::pttL);
 
 			u32 end_quad = start_quad + quads_in_batch;
 			for (u32 q = start_quad; q < end_quad; ++q)

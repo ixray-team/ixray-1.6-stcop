@@ -80,9 +80,8 @@ ICF bool planeBoxOverlap(const Point& normal, const float d, const Point& maxbox
 	if(min>rad || max<-rad) return false;
 
 
-class _MM_ALIGN16 cform_box_collider
+struct cform_box_collider final
 {
-public:
 	COLLIDER*		dest;
 	TRI*			tris;
 	Fvector*		verts;
@@ -90,24 +89,10 @@ public:
 	Fvector			b_min, b_max;
 	Point			center, extents;
 
+	bool bClass3, bFirst;
+
 	Point			mLeafVerts[3];
 	
-	bool bClass3 = false;
-	bool bFirst = false;
-
-	cform_box_collider(bool bClass, bool bFrst) 
-		:bClass3(bClass), bFirst(bFrst) {}
-
-	IC void			_init		(COLLIDER* CL, Fvector* V, TRI* T, const Fvector& C, const Fvector& E)
-	{
-		dest		= CL;
-		verts		= V;
-		tris		= T;
-		center		= Point(C.x,C.y,C.z);
-		extents		= Point(E.x,E.y,E.z);
-		b_min.sub	(C,E);
-		b_max.add	(C,E);
-	}
 	ICF	bool		_box		(const Fvector& C, const Fvector& E)
 	{
 		if( b_max.x < C.x-E.x )	return false;
@@ -193,7 +178,7 @@ public:
 		}
 		return true;
 	}
-	void			_prim		(DWORD prim)
+	ICF void _prim(DWORD prim)
 	{
 		TRI&	T	= tris[prim];
 		Fvector& v0	= verts[ T.verts[0] ];	mLeafVerts[0].x = v0.x;	mLeafVerts[0].y = v0.y;	mLeafVerts[0].z = v0.z;
@@ -207,7 +192,7 @@ public:
 		R.verts[2]	= v2;
 		R.dummy		= T.dummy;
 	}
-	void			_stab		(const AABBNoLeafNode* node)
+	void _stab(const AABBNoLeafNode* node)
 	{
 		// Actual box-box test
 		if (!_box((Fvector&)node->mAABB.mCenter,(Fvector&)node->mAABB.mExtents))
@@ -238,14 +223,26 @@ void COLLIDER::box_query(const MODEL *m_def, const Fvector& b_center, const Fvec
 	// Get nodes
 	const AABBNoLeafTree* T = (const AABBNoLeafTree*)m_def->tree->GetTree();
 	const AABBNoLeafNode* N = T->GetNodes();
-	r_clear();
 
-	cform_box_collider BC(!!(box_mode&OPT_FULL_TEST), !!(box_mode&OPT_ONLYFIRST));
-	BC._init(this, m_def->verts, m_def->tris, b_center, b_dim);
+	r_clear();
+	r_vec().reserve(16);
+
+	cform_box_collider BC
+	{
+		this,
+		m_def->tris,
+		m_def->verts,
+		Fvector().sub(b_center, b_dim),
+		Fvector().add(b_center, b_dim),
+		Point(VPUSH(b_center)),
+		Point(VPUSH(b_dim)),
+		!!(box_mode & OPT_FULL_TEST),
+		!!(box_mode & OPT_ONLYFIRST)
+	};
 	BC._stab(N);
 }
 
-struct obb_collider
+struct obb_collider final
 {
 	COLLIDER* dest;
 	TRI* tris;
@@ -257,7 +254,7 @@ struct obb_collider
 
 	Fvector mLeafVerts[3];
 
-	void _prim(DWORD prim)
+	ICF void _prim(DWORD prim)
 	{
 		TRI& T = tris[prim];
 		mLeafVerts[0] = verts[T.verts[0]];
@@ -304,8 +301,18 @@ void COLLIDER::obb_query(const MODEL* m_def, const Fobb& obb)
 	// Get nodes
 	const AABBNoLeafTree* T = (const AABBNoLeafTree*)m_def->tree->GetTree();
 	const AABBNoLeafNode* N = T->GetNodes();
-	r_clear();
 
-	obb_collider OC{ this, m_def->tris, m_def->verts, obb, !!(box_mode & OPT_FULL_TEST), !!(box_mode & OPT_ONLYFIRST) };
+	r_clear();
+	r_vec().reserve(16);
+
+	obb_collider OC
+	{
+		this,
+		m_def->tris,
+		m_def->verts,
+		obb,
+		!!(box_mode & OPT_FULL_TEST),
+		!!(box_mode & OPT_ONLYFIRST)
+	};
 	OC._stab(N);
 }

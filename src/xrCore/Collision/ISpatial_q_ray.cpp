@@ -1,65 +1,42 @@
 #include "stdafx.h"
 #include "ISpatial.h"
-#include "sse_intersect.h"
 
 extern Fvector	c_spatial_offset[8];
-class _MM_ALIGN16 spatial_ray_walker
+struct spatial_ray_walker final
 {
-public:
-	ray_t			ray;
-	ESPATIAL_TYPE	mask;
-	float			range;
-	float			range2;
-	ISpatial_DB*	space;
+	Fvector pos, fwd_dir;
+	ESPATIAL_TYPE mask;
+	ISpatial_DB* space;
+	xr_vector<ISpatialShared>& R;
+	float range, range2;
 
-	bool bSSE = false;
 	bool bFirst = false;
 	bool bNearest = false;
-public:
-	spatial_ray_walker(bool SSE, bool First, bool Nearest)
-		:bSSE(SSE), bFirst(First), bNearest(Nearest) {}
 
-	void _init(ISpatial_DB* _space, ESPATIAL_TYPE _mask, const Fvector& _start, const Fvector& _dir, float _range)
+	void _vectorcall walk(ISpatial_NODE* N, Fvector& n_C, float n_R)
 	{
-		mask			= _mask;
-		ray.pos.set		(_start);
-		ray.inv_dir.set	(1.f,1.f,1.f).div(_dir);
-		ray.fwd_dir.set (_dir);
-		if (!bSSE)	{
-			// for FPU - zero out inf
-			if (std::abs(_dir.x)>flt_eps){}	else ray.inv_dir.x=0;
-			if (std::abs(_dir.y)>flt_eps){}	else ray.inv_dir.y=0;
-			if (std::abs(_dir.z)>flt_eps){}	else ray.inv_dir.z=0;
-		}
-		range	= _range;
-		range2	= _range*_range;
-		space	= _space;
-	}
+		float n_vR = n_R * 2.f;
+		Fbox BB;
+		BB.set(Fvector().sub(n_C, n_vR), Fvector().add(n_C, n_vR));
+		Fvector P;
+		if (!BB.Pick2(pos, fwd_dir, P))
+			return;
 
-	void walk(xr_vector<ISpatialShared>& R, ISpatial_NODE* N, Fvector& n_C, float n_R)
-	{
-		// Actual ray/aabb test
-		if (bSSE)		{
-			// use SSE
-			float		d;
-			if (!_box_sse(ray,n_C,n_R,d))				return;
-			if (d>range)							return;
-		} else {
-			// use FPU
-			Fvector		P;
-			if (!_box_fpu(ray,n_C,n_R,P))				return;
-			if (P.distance_to_sqr(ray.pos)>range2)	return;
-		}
+		if (P.distance_to_sqr(pos) > range2)
+			return;
 
-		// test items
 		for (ISpatialShared& S : N->items)
 		{
-			if (!S.get()) continue;
-			if (ESPATIAL_TYPE::NONE == (S->spatial.type & mask))	continue;
-			Fsphere&		sS	= S->spatial.sphere;
-			int				quantity;
-			float			afT[2];
-			Fsphere::ERP_Result	result	= sS.intersect(ray.pos,ray.fwd_dir,range,quantity,afT);
+			if (!S.get())
+				continue;
+
+			if (ESPATIAL_TYPE::NONE == (S->spatial.type & mask))
+				continue;
+
+			Fsphere& sS = S->spatial.sphere;
+			int quantity;
+			float afT[2];
+			Fsphere::ERP_Result	result = sS.intersect(pos, fwd_dir,range,quantity,afT);
 
 			if (result==Fsphere::rpOriginInside || ((result==Fsphere::rpOriginOutside)&&(afT[0]<range)))
 			{
@@ -67,24 +44,36 @@ public:
 				{
 					switch(result)
 					{
-					case Fsphere::rpOriginInside:	range	= afT[0]<range?afT[0]:range;	break;
-					case Fsphere::rpOriginOutside:	range	= afT[0];						break;
+					case Fsphere::rpOriginInside:
+						range = afT[0]<range?afT[0]:range;
+						break;
+
+					case Fsphere::rpOriginOutside:
+						range = afT[0];
+						break;
 					}
-					range2			=range*range; 
+					range2 = _sqr(range);
 				}
-				R.push_back	(S);
-				if (bFirst)				return;
+				R.push_back(S);
+
+				if (bFirst)
+					return;
 			}
 		}
 
-		// recurse
-		float	c_R		= n_R/2;
+		float c_R = n_R * 0.5f;
 		for (u32 octant=0; octant<8; octant++)
 		{
-			if (0==N->children[octant])	continue;
-			Fvector		c_C;			c_C.mad	(n_C,c_spatial_offset[octant],c_R);
-			walk						(R,N->children[octant],c_C,c_R);
-			if (bFirst && !R.empty())	return;
+			if (0==N->children[octant])
+				continue;
+
+			Fvector c_C;
+			c_C.mad(n_C,c_spatial_offset[octant],c_R);
+
+			walk(N->children[octant],c_C,c_R);
+
+			if (bFirst && !R.empty())
+				return;
 		}
 	}
 };
@@ -97,8 +86,19 @@ void ISpatial_DB::q_ray(xr_vector<ISpatialShared>& R, u32 _o, ESPATIAL_TYPE _mas
 		return;
 
 	R.clear();
+	R.reserve(16);
 
-	spatial_ray_walker W(CPU::ID().hasFeature(CPUFeature::SSE), !!(_o&O_ONLYFIRST), !!(_o&O_ONLYNEAREST));
-	W._init(this, _mask_and, _start, _dir, _range);
-	W.walk(R, m_root, m_center, m_bounds);
+	spatial_ray_walker W
+	{
+		_start,
+		_dir,
+		_mask_and,
+		this,
+		R,
+		_range,
+		_range*_range,
+		!!(_o&O_ONLYFIRST),
+		!!(_o&O_ONLYNEAREST),
+	};
+	W.walk(m_root, m_center, m_bounds);
 }

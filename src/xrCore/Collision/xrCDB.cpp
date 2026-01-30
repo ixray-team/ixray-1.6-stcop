@@ -191,14 +191,3 @@ COLLIDER::~COLLIDER()
 {
 	r_free			();
 }
-
-RESULT& COLLIDER::r_add	()
-{
-	rd.push_back		(RESULT());
-	return rd.back		();
-}
-
-void COLLIDER::r_free	()
-{
-	rd.clear();
-}

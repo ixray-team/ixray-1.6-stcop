@@ -9,56 +9,48 @@
 using namespace CDB;
 using namespace Opcode;
 
-class _MM_ALIGN16 cform_frustum_collider {
+struct cform_frustum_collider final
+{
+	COLLIDER* dest;
+	TRI* tris;
+	Fvector* verts;
+	const CFrustum& F;
 
-	IC void SetByVerts(Fvector* Val, DWORD prim)
+	bool bClass3, bFirst;
+
+	ICF void SetByVerts(Fvector* Val, DWORD prim)
 	{
 		Val[0] = verts[tris[prim].verts[0]];
 		Val[1] = verts[tris[prim].verts[1]];
 		Val[2] = verts[tris[prim].verts[2]];
 	}
 
-public:
-	COLLIDER* dest;
-	TRI* tris;
-	Fvector* verts;
-	const CFrustum* F;
-	Fvector mM[2];
-	sPoly Src, Dst;
-
-	bool bClass3 = false;
-	bool bFirst = false;
-
-	cform_frustum_collider(bool bClass, bool bFrst)
-		:bClass3(bClass), bFirst(bFrst) {}
-
-	void _init(COLLIDER* CL, Fvector* V, TRI* T, const CFrustum* _F)
+	ICF EFC_Visible Box(const Fvector& C, const Fvector& E, u32& mask)
 	{
-		dest = CL;
-		tris = T;
-		verts = V;
-		F = _F;
-	}
-
-	IC EFC_Visible Box(const Fvector& C, const Fvector& E, u32& mask) {
+		Fvector mM[2];
 		mM[0].sub(C, E);
 		mM[1].add(C, E);
-		return F->testAABB(&mM[0].x, mask);
+		return F.testAABB(&mM[0].x, mask);
 	}
 
-	void Prim(DWORD InPrim) {
+	ICF void Prim(DWORD InPrim)
+	{
 		if (bClass3)
 		{
+			static sPoly Src, Dst;
 			Src.resize(3);
 			SetByVerts(Src.begin(), InPrim);
 
-			if (F->ClipPoly(Src, Dst)) {
+			if (F.ClipPoly(Src, Dst))
+			{
 				RESULT& R = dest->r_add();
 				R.id = InPrim;
 				SetByVerts(R.verts, InPrim);
 				R.dummy = tris[InPrim].dummy;
 			}
-		} else {
+		}
+		else
+		{
 			RESULT& R = dest->r_add();
 			R.id = InPrim;
 			SetByVerts(R.verts, InPrim);
@@ -86,20 +78,14 @@ public:
 		if (bFirst) 
 		{
 			if (dest->r_count()) 
-			{
 				return;
-			}
 		}
 
 		// 2nd chield
 		if (node->HasNegLeaf())
-		{
 			Prim((DWORD)node->GetNegPrimitive());
-		} 
 		else 
-		{
 			Stab(node->GetNeg(), mask);
-		}
 	}
 };
 
@@ -114,10 +100,18 @@ void COLLIDER::frustum_query(const MODEL* m_def, const CFrustum& F)
 	// Get nodes
 	const AABBNoLeafNode* pNodes = ((AABBNoLeafTree*)m_def->tree->GetTree())->GetNodes();
 	const DWORD mask = F.getMask();
-	r_clear();
 
-	// Binary dispatcher
-	cform_frustum_collider BC(!!(frustum_mode&OPT_FULL_TEST), !!(frustum_mode&OPT_ONLYFIRST));
-	BC._init(this, m_def->verts, m_def->tris, &F);
+	r_clear();
+	r_vec().reserve(16);
+
+	cform_frustum_collider BC
+	{
+		this,
+		m_def->tris,
+		m_def->verts,
+		F,
+		!!(frustum_mode & OPT_FULL_TEST),
+		!!(frustum_mode & OPT_ONLYFIRST)
+	};
 	BC.Stab(pNodes, mask);
 }
