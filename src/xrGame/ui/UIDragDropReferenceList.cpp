@@ -129,15 +129,9 @@ void CUIDragDropReferenceList::LoadItemTexture(LPCSTR section, Ivector2 cell_pos
 
         Fvector m_3d_static_rotate = READ_IF_EXISTS(pSettings, r_fvector3, section, "3d_static_rotate", m_3d_static_rotate.set(0, 0, 0));
         m_3d_static_rotate.mul(M_PI / 180.0f);
+        ref->SetXYZ(m_3d_static_rotate);
         float m_3d_static_scale = READ_IF_EXISTS(pSettings, r_float, section, "3d_static_scale", 1.f);
         ref->SetScaleFactor(m_3d_static_scale);
-        Fvector fRot = m_3d_static_rotate;
-        if (GetVerticalPlacement())
-        {
-            fRot.x += deg2rad(90.f);
-            fRot.y -= deg2rad(180.f);
-        }
-        ref->SetXYZ(fRot);
     }
     else
         ref->SetVisual(nullptr);
