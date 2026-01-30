@@ -149,7 +149,7 @@ public:
 	};
 
 	// Does the vector3 intersects box
-	IC BOOL Pick			(const Tvector& start, const Tvector& dir)
+	ICF BOOL Pick			(const Tvector& start, const Tvector& dir)
 	{
 		T	alpha,xt,yt,zt;
 		Tvector rvmin,rvmax;
@@ -210,14 +210,14 @@ public:
 		return false;
 	};
 
-	IC u32& IR(T &x) { return (u32&)x; }
+	ICF u32& IR(T &x) { return (u32&)x; }
 	enum ERP_Result{
 		rpNone			= 0,
 		rpOriginInside	= 1,
 		rpOriginOutside	= 2,
 		fcv_forcedword = u32(-1)
 	};
-	IC ERP_Result Pick2(const Tvector& origin, const Tvector& dir, Tvector& coord)
+	ICF ERP_Result Pick2(const Tvector& origin, const Tvector& dir, Tvector& coord)
 	{
 		BOOL Inside = TRUE;
 		Tvector		MaxT;
