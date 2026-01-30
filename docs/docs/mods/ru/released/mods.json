@@ -10,7 +10,7 @@
     {
       "id": "awakening-2055",
       "title": "Пробуждение. 2055",
-      "description": "Поздний таймлайн: новые технологии и выживание в изменённой Зоне.",
+      "description": "История со своей вселенной, не связанной с миром STALKER. Главный герой волей случая переносится в будущее, попадая в мир, переживший ядерную войну.",
       "author": "Little Frenchman (Жекан)",
       "link": "https://vk.com/wall-195948120_7369",
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/2055.png",
@@ -30,7 +30,7 @@
     {
       "id": "vestnik",
       "title": "Вестник",
-      "description": "Игрок примет на себя роль бандита по кличке \"Туз\", который отправился работать на военных в Окрестности Чернобыля, чтобы в дальнейшем спасти своего брата Валеру. В моде присутствуют дополнительные активности, интересные места",
+      "description": "Игрок примет на себя роль бандита по кличке \"Туз\", который отправился работать на военных в Окрестности Чернобыля, чтобы в дальнейшем спасти своего брата Валеру. В моде присутствуют дополнительные активности, интересные места.",
       "author": "FacingSlave",
       "link": "https://ap-pro.ru/forums/topic/13947-vestnik/",
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%92%D0%B5%D1%81%D1%82%D0%BD%D0%B8%D0%BA.png",
@@ -47,7 +47,7 @@
     {
       "id": "script_ny2026",
       "title": "Кто Украл Праздник?",
-      "description": "По следам Гринча",
+      "description": "По следам Гринча: небольшое новогоднее приключение с большим числом отсылок и пасхалок.",
       "author": "ScR1pt",
       "link": "https://ap-pro.ru/forums/topic/13767-kto-ukral-prazdnik/",
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/ктоукралпраздник.png",
@@ -56,7 +56,7 @@
     {
       "id": "lastnewyear",
       "title": "Чужой среди Чужих: Последний Новый год",
-      "description": "Главный герой — обычный сталкер по прозвищу Винт, который отправился в Лиманск",
+      "description": "Главный герой — обычный сталкер по прозвищу Винт, который отправился в Лиманск, чтобы спасти друга. Но всё ли является тем, чем кажется?",
       "author": "It's Boomer",
       "link": "https://ap-pro.ru/stuff/zov_pripjati/chuzhoy-sredi-chuzhih-posledniy-novyy-god-r489/",
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/last_ny.png",
@@ -65,7 +65,7 @@
     {
       "id": "chsch_deluxe",
       "title": "Чужой среди Чужих: Deluxe",
-      "description": "Лето 2021 года, сталкер-новичок по прозвищу Бумер приходит в зону за заработком - на этом и начинается целая история из шести эпизодов",
+      "description": "Лето 2021 года, сталкер-новичок по прозвищу Бумер приходит в зону за заработком - на этом и начинается целая история из шести эпизодов.",
       "author": "It's Boomer",
       "link": "https://ap-pro.ru/forums/topic/13361-chuzhoy-sredi-chuzhih-deluxe/",
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/чужойделюкс.png",
@@ -74,26 +74,16 @@
     {
       "id": "project2",
       "title": "[Проект №2] (Бета | Проект закрыт)",
-      "description": "Попытка перенести сюжет игры S.T.A.L.K.E.R. Mobile",
+      "description": "Попытка перенести сюжет игры S.T.A.L.K.E.R. Mobile.",
       "author": "Graff46",
       "link": "https://ap-pro.ru/forums/topic/2029-proekt-%E2%84%962/?do=findComment&comment=501744",
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%822.png"
     },
     {
-      "id": "dreamcatcher",
-      "title": "Ловец Снов",
-      "description": "Сюжетный мод с уклоном в исследование Зоны и мистические аномалии.",
-      "author": "Vivient Team",
-      "link": "https://ap-pro.ru/forums/topic/5764-lovec-snov/",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%BB%D0%BE%D0%B2%D0%B5%D1%86.png",
-      "score": "Ap-Pro: 8.5",
-      "rank": "Топ 2 [2023]"
-    },
-    {
       "id": "one-way-ticket",
       "title": "Билет в один конец",
-      "description": "Хардкорная кампания про выживание без обратной дороги из Зоны.",
-      "author": "OneWay Studio",
+      "description": "Столкнувшись с неизвестным существом, журналист Алексей Волков оказывается в западне без пути назад. Сможет ли он побороть свои страхи и выжить?",
+      "author": "sevo",
       "link": "https://ap-pro.ru/forums/topic/10232-%C2%ABbilet-v-odin-konec%C2%BB/",
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%B1%D0%B8%D0%BB%D0%B5%D1%82.png",
       "rank": "Топ 1 [Конкурс квестов 2024]"
@@ -101,7 +91,7 @@
     {
       "id": "sins-academic",
       "title": "Грехи Академика. Красный Рассвет",
-      "description": "Военная драма с упором на боевые миссии и сложные решения.",
+      "description": "Учёный-одиночка пробирается вглубь Зоны в надежде создать Вечный Двигатель с помощью её даров. Мораль и этика - не преграда на пути к истине.",
       "author": "Mawrak",
       "link": "https://ap-pro.ru/forums/topic/10194-grehi-akademika-krasnyy-rassvet/",
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%B0%D0%BA%D0%B0%D0%B4%D0%B5%D0%BC%D0%B8%D0%BA.png",
@@ -110,16 +100,16 @@
     {
       "id": "pavlik-day",
       "title": "Один день из жизни Павлика",
-      "description": "Короткая история в духе дневников с атмосферой сталкерского быта.",
-      "author": "Pavlik Dev",
+      "description": "Короткая юморная история о том, как свободовец Павлик ребятам помогал и базу от Долга защищал.",
+      "author": "Skala",
       "link": "https://ap-pro.ru/forums/topic/10129-odin-den-iz-zhizni-pavlika",
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D1%80%D0%B0%D0%B2%D0%BB%D0%B8%D0%BA.png"
     },
     {
       "id": "back-to-past",
       "title": "Назад в прошлое",
-      "description": "Возвращение к истокам с переосмыслением классических локаций.",
-      "author": "Retro Zone",
+      "description": "Заключительная серия приключений сталкера по кличке \"Травис\". Герою предстоит пережить мистические события и путешествие во времени.",
+      "author": "FacingSlave, Mawrak",
       "link": "https://ap-pro.ru/forums/topic/12208-stalker-nazad-v-proshloe/",
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%BD%D0%B0%D0%B7%D0%B0%D0%B4.png",
       "score": "Ap-Pro: 7.4"
