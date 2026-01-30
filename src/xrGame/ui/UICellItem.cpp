@@ -283,14 +283,14 @@ bool CUICellItem::OnKeyboardAction(int dik, EUIMessages keyboard_action)
             else if (dik == SDL_SCANCODE_B)
             {
                 PIItem itm = (PIItem)m_pData;
-                Msg("! [%s]", itm->m_section_id.c_str());
+                Msg("[%s]", itm->m_section_id.c_str());
                 string256 tmpStr;
-                xr_sprintf(tmpStr, "! 3d_static_rotate\t\t\t= %f,%f,%f",
+                xr_sprintf(tmpStr, "3d_static_rotate\t\t\t= %f,%f,%f",
                            rad2deg(xyz.x),
                            rad2deg(xyz.y),
                            rad2deg(xyz.z));
                 Log(tmpStr);
-                xr_sprintf(tmpStr, "! 3d_static_scale\t\t\t= %f",
+                xr_sprintf(tmpStr, "3d_static_scale\t\t\t= %f",
                            fScale);
                 Log(tmpStr);
             }
