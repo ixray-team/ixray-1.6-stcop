@@ -408,37 +408,11 @@ void CUISequencer::IR_OnKeyboardHold		(int dik)
 
 void CUISequencer::IR_GamepadKeyPress(int id)
 {
-	switch (id)
-	{
-		case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_DPAD_DOWN:
-		{
-			IR_OnKeyboardPress(SDL_SCANCODE_DOWN);
-			break;
-		}
-		case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_DPAD_UP:
-		{
-			IR_OnKeyboardPress(SDL_SCANCODE_UP);
-			break;
-		}
-		case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_EAST:
-		case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_START:
-		{
-			IR_OnKeyboardPress(SDL_SCANCODE_ESCAPE);
-			break;
-		}
-	}
-
-	if (!GrabInput() && m_pStoredInputReceiver)
-		m_pStoredInputReceiver->IR_GamepadKeyPress(id);
+	if(ButtonPress(id) && !GrabInput() && m_pStoredInputReceiver)
+		m_pStoredInputReceiver->IR_GamepadKeyPress	(id);
 }
 
-void CUISequencer::IR_OnMouseWheel		(int direction)
-{
-	if(!GrabInput()&&m_pStoredInputReceiver)
-		m_pStoredInputReceiver->IR_OnMouseWheel(direction);
-}
-
-void CUISequencer::IR_OnKeyboardPress	(int dik)
+bool CUISequencer::ButtonPress(int id)
 {
 	CActor* actor = nullptr;
 
@@ -449,25 +423,26 @@ void CUISequencer::IR_OnKeyboardPress	(int dik)
 		{
 			if (actor->HudAnimator()->ItemAnimator() != nullptr && actor->HudAnimator()->ItemAnimator()->IsActive())
 			{
-				return;
+				return false;
 			}
 		}
 	}
 
-	if(m_sequencer_items.size())	
-		m_sequencer_items.front()->OnKeyboardPress			(dik);
-	
-	bool b = true;
-	if(m_sequencer_items.size()) b &= m_sequencer_items.front()->AllowKey(dik);
+	if (m_sequencer_items.size())
+		m_sequencer_items.front()->OnKeyboardPress(id);
 
-	bool binded = is_binded(kQUIT, dik);
-	if(b && binded )
+	bool b = true;
+	if (m_sequencer_items.size()) b &= m_sequencer_items.front()->AllowKey(id);
+
+	bool binded = is_binded(kQUIT, id);
+	bool secondaryQuit = pInput->GetControllerMode() ? id == SDL_GAMEPAD_BUTTON_EAST : false;
+	if (b && (binded || secondaryQuit))
 	{
-		Stop		();
-		return;
+		Stop();
+		return false;
 	}
 
-	if(binded && CurrentGameUI())
+	if (binded && CurrentGameUI())
 	{
 		if (actor != nullptr)
 		{
@@ -482,28 +457,38 @@ void CUISequencer::IR_OnKeyboardPress	(int dik)
 			}
 		}
 
-		if(CurrentGameUI()->ActorMenu() && CurrentGameUI()->ActorMenu()->IsShown())
+		if (CurrentGameUI()->ActorMenu() && CurrentGameUI()->ActorMenu()->IsShown())
 		{
 			CurrentGameUI()->HideActorMenu();
-			return;
+			return false;
 		}
 		if (CurrentGameUI()->InventoryWnd() && CurrentGameUI()->InventoryWnd()->IsShown())
 		{
 			CurrentGameUI()->HideActorMenu();
-			return;
+			return false;
 		}
 
 		if (CurrentGameUI()->PdaMenu()->IsShown())
 		{
 			CurrentGameUI()->HidePdaMenu();
-			return;
+			return false;
 		}
 		Console->Execute("main_menu");
-		return;
+		return false;
 	}
+	return b;
+}
 
-	if(b && !GrabInput() && m_pStoredInputReceiver)	
-		m_pStoredInputReceiver->IR_OnKeyboardPress	(dik);
+void CUISequencer::IR_OnMouseWheel		(int direction)
+{
+	if(!GrabInput()&&m_pStoredInputReceiver)
+		m_pStoredInputReceiver->IR_OnMouseWheel(direction);
+}
+
+void CUISequencer::IR_OnKeyboardPress	(int dik)
+{
+	if (ButtonPress(dik) && !GrabInput() && m_pStoredInputReceiver)
+		m_pStoredInputReceiver->IR_OnKeyboardPress(dik);
 }
 
 void CUISequencer::IR_OnActivate()
