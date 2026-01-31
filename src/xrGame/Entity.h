@@ -1,9 +1,8 @@
 #pragma once
-
-
 #include "PhysicsShellHolder.h"
 #include "damage_manager.h"
 #include "EntityCondition.h"
+
 // refs
 class ENGINE_API CCameraBase;
 class ENGINE_API CMotionDef;
@@ -17,9 +16,8 @@ class CAI_Stalker;
 class CEntityAlive;
 class CInventoryOwner;
 
-class CEntity : 
-		public CPhysicsShellHolder,
-		public CDamageManager
+class CEntity :
+	public CPhysicsShellHolder
 {
 	friend class CEntityCondition;
 private:
