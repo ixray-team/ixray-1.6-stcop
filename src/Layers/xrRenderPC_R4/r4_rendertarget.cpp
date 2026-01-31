@@ -1109,6 +1109,6 @@ void CRenderTarget::copy_position()
 {
 	GPU_EVENT(ZBUFFER_COPY);
 
-	GRHI->SetDepthStencilView(nullptr, true);
+	GRHI->SetDepthStencilView(nullptr);
 	GRHI->CopySurface(rt_Position->pSurface, RDepth->GetSurface());
 }
