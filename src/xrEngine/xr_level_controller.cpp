@@ -491,8 +491,6 @@ void remap_keys()
 	{
 		buff[0] = 0;
 		_keyboard& kb = gamepads[idx];
-		bool res = pInput->get_dik_name(kb.dik, buff, sizeof(buff));
-		kb.key_local_name = res ? buff : kb.key_local_name;
 
 		if (kb.key_local_name.starts_with('c'))
 		{
