@@ -9,6 +9,7 @@
 class CUIXml;
 class CUIWindow;
 class CUIStatic;
+class CUI3dStatic;
 class CUIProgressBar;
 class CUIProgressShape;
 class CUIFrameLineWnd;
@@ -25,6 +26,7 @@ class CUIStackPanel;
 class CUIGamepadLegend;
 
 #include "Widgets/UIStackPanel.h"
+#include "Widgets/UI3dStatic.h"
 
 class UI_API UIHelper
 {
@@ -33,6 +35,7 @@ public:
 	~UIHelper		() {};
 
 	static	CUIStatic*			CreateStatic		( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent, bool critical = true );
+    static	CUI3dStatic*        Create3dStatic      ( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent, bool critical = true );
 	static	CUIStackPanel*		CreateStackPanel	( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent, bool critical = true );
 	static	CUIGamepadLegend*	CreateGamepadLegend	( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent, bool critical = true );
 	static	CUIProgressBar*		CreateProgressBar	( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent );
