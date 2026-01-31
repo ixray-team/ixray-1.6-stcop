@@ -1,10 +1,10 @@
 #pragma once
-#include "CustomZone.h"
+#include "AnomalyZone.h"
 
 class CNoGravityZone final :
-	public CCustomZone
+	public CAnomalyZone
 {
-typedef CCustomZone inherited;
+typedef CAnomalyZone inherited;
 public:
 protected:
 	virtual		void	enter_Zone						(SZoneObjectInfo& io)				;

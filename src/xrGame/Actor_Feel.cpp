@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "Actor.h"
 #include "Inventory.h"
-#include "CustomZone.h"
+#include "AnomalyZone.h"
 #include "ui/UIMainIngameWnd.h"
 #include "UIGameCustom.h"
 #include "Grenade.h"
@@ -96,7 +96,7 @@ BOOL CActor::feel_touch_on_contact(CObject* O)
 		return FALSE;
 	}
 
-	CCustomZone* custom_zone = GO->cast_custom_zone();
+	CAnomalyZone* custom_zone = GO->cast_anomaly_zone();
 	if (custom_zone == nullptr)
 	{
 		return TRUE;

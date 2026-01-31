@@ -5,7 +5,7 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "../xrEngine/LightAnimLibrary.h"
 #include "ai/stalker/ai_stalker.h"
-#include "CustomZone.h"
+#include "AnomalyZone.h"
 #include "../xrPhysics/MathUtils.h"
 
 #include "Actor.h"
@@ -239,7 +239,7 @@ void	CHelicopter::Hit							(SHit* pHDS)
 #endif
 	};
 
-	if (pHDS->who != nullptr && pHDS->who->cast_actor() != nullptr || pHDS->who->cast_stalker() != nullptr || pHDS->who->cast_custom_zone())
+	if (pHDS->who != nullptr && pHDS->who->cast_actor() != nullptr || pHDS->who->cast_stalker() != nullptr || pHDS->who->cast_anomaly_zone())
 	{
 		callback(GameObject::eHelicopterOnHit)(pHDS->damage(), pHDS->impulse, pHDS->hit_type, pHDS->who->ID());
 	}

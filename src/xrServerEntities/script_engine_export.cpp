@@ -99,7 +99,7 @@ void export_classes	(lua_State *L)
 	//CSE_ALifeStationaryMgun::script_register(L);
 	CSE_ALifeTraderAbstract::script_register(L);
 	CSE_ALifeTrader::script_register(L);
-	CSE_ALifeCustomZone::script_register(L);
+	CSE_ALifeAnomalyZone::script_register(L);
 	CSE_ALifeAnomalousZone::script_register(L);
 	CSE_ALifeTorridZone::script_register(L);
 	CSE_ALifeZoneVisual::script_register(L);
@@ -263,7 +263,7 @@ void export_classes	(lua_State *L)
 	CAntirad::script_register(L);
 	CBottleItem::script_register(L);
 	CCustomOutfit::script_register(L);
-	CCustomZone::script_register(L);
+	CAnomalyZone::script_register(L);
 	CFoodItem::script_register(L);
 	CHudItem::script_register(L);
 	CInventoryItem::script_register(L);

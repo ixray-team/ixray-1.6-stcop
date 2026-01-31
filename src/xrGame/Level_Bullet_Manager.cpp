@@ -15,7 +15,7 @@
 #include "../Include/xrRender/UIRender.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "ParticlesObject.h"
-#include "CustomZone.h"
+#include "AnomalyZone.h"
 #include "HUDManager.h"
 #ifdef DEBUG
 #	include "debug_renderer.h"
@@ -739,7 +739,7 @@ BOOL CBulletManager::firetrace_callback	(collide::rq_result& result, LPVOID para
 
 	if(result.O && (result.O->SpatialComponent->spatial.type&ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE)
 	{
-		if (CCustomZone* CZ = result.O->cast_custom_zone())
+		if (CAnomalyZone* CZ = result.O->cast_anomaly_zone())
 		{
 			u8 flag = CZ->PlayEntranceSmallParticles(collide_position, bullet.dir, bullet.start_velocity, true);
 			if(flag == u8(1))

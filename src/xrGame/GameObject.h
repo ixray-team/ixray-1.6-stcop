@@ -24,7 +24,7 @@ class CInventoryOwner;
 class CActor;
 class CPhysicsShellHolder;
 class CParticlesPlayer;
-class CCustomZone;
+class CAnomalyZone;
 class IInputReceiver;
 class CArtefact;
 class CCreature;
@@ -122,7 +122,7 @@ public:
 	virtual CEntityAlive*				cast_entity_alive			()						{return nullptr;}
 	virtual CActor*						cast_actor					()						{return nullptr;}
 	virtual CAI_Trader*					cast_trader					()						{return nullptr;}
-	virtual CCustomZone*				cast_custom_zone			()						{return nullptr;}
+	virtual CAnomalyZone*				cast_anomaly_zone			()						{return nullptr;}
 	virtual CPhysicsShellHolder*		cast_physics_shell_holder	()						{return nullptr;}
 	virtual IInputReceiver*				cast_input_receiver			()						{return nullptr;}
 	virtual CParticlesPlayer*			cast_particles_player		()						{return nullptr;}
