@@ -720,9 +720,12 @@ void CUIMainIngameWnd::Update()
 		case ewiWeaponJammed:
 		{
 			u16 slot = pActor->inventory().GetActiveSlot();
-			CWeapon* weapon = smart_cast<CWeapon*>(pActor->inventory().ItemFromSlot(slot));
-			if (weapon)
+
+			PIItem ActiveItem = pActor->inventory().ItemFromSlot(slot);
+			if (CWeapon* weapon = ActiveItem ? ActiveItem->cast_weapon() : nullptr)
+			{
 				value = 1 - weapon->GetConditionToShow();
+			}
 			break;
 		}
 		case ewiStarvation:
@@ -1308,70 +1311,58 @@ void CUIMainIngameWnd::UpdateMainIndicators()
 			}
 		}
 	}
-// Satiety icon
-	if (m_ind_starvation)
+
+	auto UpdateAddictionIconLambda = [](CUIStatic* Icon, float Value, float Critical, std::array<const char*, 3> NameArray)
 	{
-		float satiety = pActor->conditions().GetSatiety();
-		float satiety_critical = pActor->conditions().SatietyCritical();
-		float satiety_koef = (satiety - satiety_critical) / (satiety >= satiety_critical ? 1 - satiety_critical : satiety_critical);
-		if (satiety_koef > 0.5)
-			m_ind_starvation->Show(false);
-		else
+		if (Icon == nullptr)
 		{
-			m_ind_starvation->Show(true);
-			if (satiety_koef > 0.0f)
-				m_ind_starvation->InitTexture("ui_inGame2_circle_hunger_green");
-			else if (satiety_koef > -0.5f)
-				m_ind_starvation->InitTexture("ui_inGame2_circle_hunger_yellow");
-			else
-				m_ind_starvation->InitTexture("ui_inGame2_circle_hunger_red");
+			return;
 		}
+
+		const float AddictionKoef = (Value - Critical) / (Value >= Critical ? 1 - Critical : Critical);
+		bool IsVisible = AddictionKoef < 0.5f;
+
+		Icon->Show(IsVisible);
+		
+		if (IsVisible)
+		{
+			Icon->InitTexture(AddictionKoef > 0.0f ? NameArray[0] : (AddictionKoef > -0.5f ? NameArray[1] : NameArray[2]));
+		}
+	};
+
+	// Satiety icon
+	UpdateAddictionIconLambda
+	(
+		m_ind_starvation,
+		pActor->conditions().GetSatiety(),
+		pActor->conditions().SatietyCritical(),
+		{ "ui_inGame2_circle_hunger_green", "ui_inGame2_circle_hunger_yellow", "ui_inGame2_circle_hunger_red" }
+	);
+
+	// Thirst icon
+	const static bool EnableThirst = EngineExternal()[EEngineExternalGame::EnableThirst];
+	if (EnableThirst)
+	{
+		UpdateAddictionIconLambda
+		(
+			m_ind_thirst,
+			pActor->conditions().GetThirst(),
+			pActor->conditions().ThirstCritical(),
+			{ "ui_inGame2_circle_thirst_green", "ui_inGame2_circle_thirst_yellow", "ui_inGame2_circle_thirst_red" }
+		);
 	}
 
-// Thirst icon
-	const static bool enableThirst = EngineExternal()[EEngineExternalGame::EnableThirst];
-	if (enableThirst)
+	// Sleepiness icon
+	const static bool EnableSleepiness = EngineExternal()[EEngineExternalGame::EnableSleepiness];
+	if (EnableSleepiness)
 	{
-		float thirst = pActor->conditions().GetThirst();
-		float thirst_critical = pActor->conditions().ThirstCritical();
-		float thirst_koef = (thirst - thirst_critical) / (thirst >= thirst_critical ? 1 - thirst_critical : thirst_critical);
-
-		if (thirst_koef > 0.5f)
-		{
-			m_ind_thirst->Show(false);
-		}
-		else
-		{
-			m_ind_thirst->Show(true);
-			if (thirst_koef > 0.0f)
-				m_ind_thirst->InitTexture("ui_inGame2_circle_thirst_green");
-			else if (thirst_koef > -0.5f)
-				m_ind_thirst->InitTexture("ui_inGame2_circle_thirst_yellow");
-			else
-				m_ind_thirst->InitTexture("ui_inGame2_circle_thirst_red");
-		}
-	}
-
-// Sleepiness icon
-	const static bool enableSleepiness = EngineExternal()[EEngineExternalGame::EnableSleepiness];
-	if (enableSleepiness)
-	{
-		float sleepiness = pActor->conditions().GetSleepiness();
-		float sleepiness_critical = pActor->conditions().SleepinessCritical();
-		float sleepiness_koef = (sleepiness - sleepiness_critical) / (sleepiness < sleepiness_critical ? 1 - sleepiness_critical : sleepiness_critical);
-
-		if (sleepiness_koef < 0.5)
-			m_ind_sleepiness->Show(false);
-		else
-		{
-			m_ind_sleepiness->Show(true);
-			if (sleepiness_koef > 0.0f)
-				m_ind_sleepiness->InitTexture("ui_inGame2_circle_sleepiness_green");
-			else if (sleepiness_koef > -0.5f)
-				m_ind_sleepiness->InitTexture("ui_inGame2_circle_sleepiness_yellow");
-			else
-				m_ind_sleepiness->InitTexture("ui_inGame2_circle_sleepiness_red");
-		}
+		UpdateAddictionIconLambda
+		(
+			m_ind_sleepiness,
+			pActor->conditions().GetSleepiness(),
+			pActor->conditions().SleepinessCritical(),
+			{ "ui_inGame2_circle_sleepiness_green", "ui_inGame2_circle_sleepiness_yellow", "ui_inGame2_circle_sleepiness_red" }
+		);
 	}
 
 // Armor broken icon
