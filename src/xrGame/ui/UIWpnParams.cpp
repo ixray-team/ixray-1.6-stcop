@@ -106,11 +106,11 @@ void CUIWpnParams::InitFromXml(CUIXml& xml_doc)
 		if (xml_doc.NavigateToNode("wpn_params:cap_ammo_used_type"))
 			m_textAmmoUsedType = UIHelper::CreateStatic(xml_doc, "wpn_params:cap_ammo_used_type", this);
 		if (xml_doc.NavigateToNode("wpn_params:static_ammo_type1"))
-			m_stAmmoType1 = UIHelper::CreateStatic(xml_doc, "wpn_params:static_ammo_type1", this);
+			m_stAmmoType1 = UIHelper::Create3dStatic(xml_doc, "wpn_params:static_ammo_type1", this);
 		if (xml_doc.NavigateToNode("wpn_params:static_ammo_type2"))
-			m_stAmmoType2 = UIHelper::CreateStatic(xml_doc, "wpn_params:static_ammo_type2", this);
+			m_stAmmoType2 = UIHelper::Create3dStatic(xml_doc, "wpn_params:static_ammo_type2", this);
 		if (xml_doc.NavigateToNode("wpn_params:static_ammo_type3"))
-			m_stAmmoType3 = UIHelper::CreateStatic(xml_doc, "wpn_params:static_ammo_type3", this);
+			m_stAmmoType3 = UIHelper::Create3dStatic(xml_doc, "wpn_params:static_ammo_type3", this);
 	}
 
 }
@@ -201,6 +201,19 @@ void CUIWpnParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn)
 
 			if (m_stAmmoType1)
 			{
+                if (psActorFlags.test(AF_3D_ICONS_INV))
+                {
+                    LPCSTR m_3d_static_visual = READ_IF_EXISTS(pSettings, r_string, ammo_types[0].c_str(), "3d_static_visual_name", pSettings->r_string(ammo_types[0].c_str(), "visual"));
+                    m_stAmmoType1->SetVisual(m_3d_static_visual);
+                    Fvector m_3d_static_rotate = READ_IF_EXISTS(pSettings, r_fvector3, ammo_types[0].c_str(), "3d_static_rotate", m_3d_static_rotate.set(0, 0, 0));
+                    m_3d_static_rotate.mul(M_PI / 180.0f);
+                    m_stAmmoType1->SetXYZ(m_3d_static_rotate);
+                    float m_3d_static_scale = READ_IF_EXISTS(pSettings, r_float, ammo_types[0].c_str(), "3d_static_scale", 1.f);
+                    m_stAmmoType1->SetScaleFactor(m_3d_static_scale);
+                }
+                else
+                    m_stAmmoType1->SetVisual(nullptr);
+
 				const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, ammo_types[0].c_str(), "icons_texture", nullptr);
 				m_stAmmoType1->SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
 				float scaleIcon = READ_IF_EXISTS(pSettings, r_float, ammo_types[0].c_str(), "inv_scale", 1.0f);
@@ -223,6 +236,19 @@ void CUIWpnParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn)
 
 			if (enable_ammo_type_2 && m_stAmmoType2)
 			{
+                if (psActorFlags.test(AF_3D_ICONS_INV))
+                {
+                    LPCSTR m_3d_static_visual = READ_IF_EXISTS(pSettings, r_string, ammo_types[1].c_str(), "3d_static_visual_name", pSettings->r_string(ammo_types[1].c_str(), "visual"));
+                    m_stAmmoType2->SetVisual(m_3d_static_visual);
+                    Fvector m_3d_static_rotate = READ_IF_EXISTS(pSettings, r_fvector3, ammo_types[1].c_str(), "3d_static_rotate", m_3d_static_rotate.set(0, 0, 0));
+                    m_3d_static_rotate.mul(M_PI / 180.0f);
+                    m_stAmmoType2->SetXYZ(m_3d_static_rotate);
+                    float m_3d_static_scale = READ_IF_EXISTS(pSettings, r_float, ammo_types[1].c_str(), "3d_static_scale", 1.f);
+                    m_stAmmoType2->SetScaleFactor(m_3d_static_scale);
+                }
+                else
+                    m_stAmmoType2->SetVisual(nullptr);
+
 				Frect tex_rect = {};
 
 				const char* icons_texture1 = nullptr; // St4lker0k765: small hack for weapons with only 1 ammo type (like BM-16 in vanilla CoP)
@@ -249,6 +275,19 @@ void CUIWpnParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn)
 
 			if (enable_ammo_type_3 && m_stAmmoType3)
 			{
+                if (psActorFlags.test(AF_3D_ICONS_INV))
+                {
+                    LPCSTR m_3d_static_visual = READ_IF_EXISTS(pSettings, r_string, ammo_types[2].c_str(), "3d_static_visual_name", pSettings->r_string(ammo_types[2].c_str(), "visual"));
+                    m_stAmmoType3->SetVisual(m_3d_static_visual);
+                    Fvector m_3d_static_rotate = READ_IF_EXISTS(pSettings, r_fvector3, ammo_types[2].c_str(), "3d_static_rotate", m_3d_static_rotate.set(0, 0, 0));
+                    m_3d_static_rotate.mul(M_PI / 180.0f);
+                    m_stAmmoType3->SetXYZ(m_3d_static_rotate);
+                    float m_3d_static_scale = READ_IF_EXISTS(pSettings, r_float, ammo_types[2].c_str(), "3d_static_scale", 1.f);
+                    m_stAmmoType3->SetScaleFactor(m_3d_static_scale);
+                }
+                else
+                    m_stAmmoType3->SetVisual(nullptr);
+
 				Frect tex_rect = {};
 
 				const char* icons_texture1 = nullptr; // St4lker0k765: small hack for weapons with only 1 ammo type (like BM-16 in vanilla CoP)
