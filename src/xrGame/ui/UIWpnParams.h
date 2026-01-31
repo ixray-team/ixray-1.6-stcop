@@ -4,6 +4,7 @@
 #include "../../xrUI/Widgets/UIDoubleProgressBar.h"
 
 class CUIXml;
+class CUI3dStatic;
 class CInventoryItem;
 
 #include "../../xrScripts/script_export_space.h"
@@ -43,9 +44,9 @@ protected:
 	CUIStatic*				m_textAmmoUsedType;
 	CUIStatic*				m_textAmmoCount;
 	CUIStatic*				m_textAmmoCount2;
-	CUIStatic*				m_stAmmoType1;
-	CUIStatic*				m_stAmmoType2;
-	CUIStatic*				m_stAmmoType3;
+	CUI3dStatic*			m_stAmmoType1;
+	CUI3dStatic*			m_stAmmoType2;
+	CUI3dStatic*			m_stAmmoType3;
 	CUIStatic*				m_Prop_line;
 };
 
