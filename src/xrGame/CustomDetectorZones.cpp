@@ -30,7 +30,7 @@ BOOL CZoneList::feel_touch_contact(CObject* O)
 	TypesMapIt it = m_TypesMap.find(O->cNameSect());
 	bool res = (it != m_TypesMap.end());
 
-	CCustomZone* pZone = O && O->cast_game_object() ? O->cast_game_object()->cast_custom_zone() : nullptr;
+	CAnomalyZone* pZone = O && O->cast_game_object() ? O->cast_game_object()->cast_anomaly_zone() : nullptr;
 	if (pZone != nullptr && !pZone->IsEnabled())
 	{
 		res = false;

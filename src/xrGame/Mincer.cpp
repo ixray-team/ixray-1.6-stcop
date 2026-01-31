@@ -5,7 +5,7 @@
 #include "Mincer.h"
 #include "xrMessages.h"
 #include "Level.h"
-#include "CustomZone.h"
+#include "AnomalyZone.h"
 #include "entity_alive.h"
 #include "PHDestroyableNotificate.h"
 #include "Actor.h"

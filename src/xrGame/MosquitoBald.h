@@ -1,12 +1,12 @@
 #pragma once
 
-#include "CustomZone.h"
+#include "AnomalyZone.h"
 #include "../xrScripts/script_export_space.h"
 
-class CMosquitoBald : public CCustomZone
+class CMosquitoBald : public CAnomalyZone
 {
 private:
-	typedef	CCustomZone	inherited;
+	typedef	CAnomalyZone	inherited;
 public:
 					CMosquitoBald				();
 	virtual			~CMosquitoBald				();

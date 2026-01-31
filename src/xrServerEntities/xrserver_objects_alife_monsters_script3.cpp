@@ -33,7 +33,7 @@ void CSE_ALifeTorridZone::script_register(lua_State *L)
 		luabind_class_dynamic_alife2(
 			CSE_ALifeTorridZone,
 			"cse_torrid_zone",
-			CSE_ALifeCustomZone,
+			CSE_ALifeAnomalyZone,
 			CSE_Motion
 			)
 	];

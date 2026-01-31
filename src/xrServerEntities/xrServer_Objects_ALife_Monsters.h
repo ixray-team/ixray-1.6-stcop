@@ -120,7 +120,7 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeTrader,CSE_ALifeDynamicObjectVisual,CSE_AL
 	virtual CSE_ALifeTrader			*cast_trader			() {return this;};
 SERVER_ENTITY_DECLARE_END
 
-SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeCustomZone,CSE_ALifeSpaceRestrictor)
+SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeAnomalyZone,CSE_ALifeSpaceRestrictor)
 	f32								m_maxPower;
 	ALife::EHitType					m_tHitType;
 	u32								m_owner_id;
@@ -128,11 +128,11 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeCustomZone,CSE_ALifeSpaceRestrictor)
 	u32								m_disabled_time;
 	u32								m_start_time_shift;
 
-									CSE_ALifeCustomZone		(LPCSTR caSection);
-	virtual							~CSE_ALifeCustomZone	();
+									CSE_ALifeAnomalyZone		(LPCSTR caSection);
+	virtual							~CSE_ALifeAnomalyZone	();
 SERVER_ENTITY_DECLARE_END
 
-SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeAnomalousZone,CSE_ALifeCustomZone)
+SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeAnomalousZone,CSE_ALifeAnomalyZone)
 	CSE_ALifeItemWeapon				*m_tpCurrentBestWeapon;
 	float							m_offline_interactive_radius;
 	u32								m_artefact_position_offset;
@@ -159,7 +159,7 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeAnomalousZone,CSE_ALifeCustomZone)
 #endif
 SERVER_ENTITY_DECLARE_END
 
-SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeTorridZone,CSE_ALifeCustomZone,CSE_Motion)
+SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeTorridZone,CSE_ALifeAnomalyZone,CSE_Motion)
 									CSE_ALifeTorridZone		(LPCSTR caSection);
 	virtual							~CSE_ALifeTorridZone	();
 	virtual CSE_Motion*		motion					();

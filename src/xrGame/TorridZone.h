@@ -6,7 +6,7 @@ class CObjectAnimator;
 class CTorridZone final :public CMosquitoBald
 {
 private:
-	typedef	CCustomZone	inherited;
+	typedef	CAnomalyZone	inherited;
 	CObjectAnimator		*m_animator;
 public:
 						CTorridZone			();

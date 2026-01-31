@@ -59,7 +59,7 @@ public:
 	virtual BOOL				UsedAI_Locations	();
 	virtual void				spatial_move		();
 	IC		bool				actual				() const;
-	virtual CCustomZone* cast_custom_zone() { return nullptr; }
+	virtual CAnomalyZone* cast_anomaly_zone() { return nullptr; }
 	virtual CSpaceRestrictor* cast_restrictor() { return this; }
 	virtual CGameObject* cast_game_object() { return this; }
 	virtual CScriptZone* cast_script_zone() { return nullptr; }

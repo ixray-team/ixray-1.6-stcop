@@ -15,7 +15,7 @@
 #include "PHDestroyable.h"
 #include "Actor.h"
 #include "Actor_Flags.h"
-#include "CustomZone.h"
+#include "AnomalyZone.h"
 #include "../xrScripts/script_engine.h"
 #include "../xrScripts/script_engine_space.h"
 #include "../xrScripts/script_process.h"

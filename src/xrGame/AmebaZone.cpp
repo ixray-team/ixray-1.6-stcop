@@ -2,7 +2,7 @@
 
 #include "AmebaZone.h"
 #include "ZoneVisual.h"
-#include "CustomZone.h"
+#include "AnomalyZone.h"
 #include "../xrEngine/xr_collide_form.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "PhysicsShellHolder.h"

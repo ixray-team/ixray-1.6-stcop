@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CustomZone.h"
+#include "AnomalyZone.h"
 //#include "../Include/xrRender/KinematicsAnimated.h"
 #include "../Include/xrRender/KinematicsAnimated.h"
 #include "ZoneVisual.h"

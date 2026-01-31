@@ -95,11 +95,11 @@ void CSE_ALifeTrader::script_register(lua_State *L)
 	];
 }
 
-void CSE_ALifeCustomZone::script_register(lua_State *L)
+void CSE_ALifeAnomalyZone::script_register(lua_State *L)
 {
 	module(L)[
 		luabind_class_dynamic_alife2(
-			CSE_ALifeCustomZone,
+			CSE_ALifeAnomalyZone,
 			"cse_custom_zone",
 			CSE_ALifeDynamicObject,
 			CSE_Shape
@@ -113,7 +113,7 @@ void CSE_ALifeAnomalousZone::script_register(lua_State *L)
 		luabind_class_dynamic_alife1(
 			CSE_ALifeAnomalousZone,
 			"cse_anomalous_zone",
-			CSE_ALifeCustomZone
+			CSE_ALifeAnomalyZone
 		)
 #ifdef XRGAME_EXPORTS
 		.def("spawn_artefacts",	&CSE_ALifeAnomalousZone::spawn_artefacts)
