@@ -1,6 +1,6 @@
 #pragma once
 #include "CustomDevice.h"
-#include "CustomZone.h"
+#include "AnomalyZone.h"
 #include "CustomDetectorZones.h"
 #include "ui/ArtefactDetectorUI.h"
 

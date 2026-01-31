@@ -5,7 +5,7 @@
 #include "Actor.h"
 #include "ExplosiveItem.h"
 #include "Level.h"
-#include "CustomZone.h"
+#include "AnomalyZone.h"
 #include "game_base_kill_type.h"
 #include "game_base_menu_events.h"
 #include "UIGameCustom.h"
@@ -788,7 +788,7 @@ void game_cl_mp::OnPlayerKilled			(NET_Packet& P)
 					}
 				} else
 				{
-					CCustomZone* pAnomaly = pWeapon->cast_custom_zone();
+					CAnomalyZone* pAnomaly = pWeapon->cast_anomaly_zone();
 					if (pAnomaly)
 					{
 						KMS.m_initiator.m_shader = GetKillEventIconsShader();
@@ -805,7 +805,7 @@ void game_cl_mp::OnPlayerKilled			(NET_Packet& P)
 			{
 				if (!pKiller)
 				{
-					CCustomZone* pAnomaly = pOKiller->cast_custom_zone();
+					CAnomalyZone* pAnomaly = pOKiller->cast_anomaly_zone();
 					if (pAnomaly)
 					{
 						KMS.m_initiator.m_shader = GetKillEventIconsShader();
@@ -922,7 +922,7 @@ void game_cl_mp::OnPlayerKilled			(NET_Packet& P)
 
 			if (!pKiller)
 			{
-				CCustomZone* pAnomaly = pOKiller->cast_custom_zone();
+				CAnomalyZone* pAnomaly = pOKiller->cast_anomaly_zone();
 				if (pAnomaly)
 				{
 					KMS.m_ext_info.m_shader = GetKillEventIconsShader();

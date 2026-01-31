@@ -14,7 +14,7 @@
 #include "space_restriction_manager.h"
 #include "restriction_space.h"
 #include "ai_space.h"
-#include "CustomZone.h"
+#include "AnomalyZone.h"
 #include "../xrEngine/xr_collide_form.h"
 #ifdef DEBUG
 #	include "debug_renderer.h"
@@ -76,7 +76,7 @@ BOOL CSpaceRestrictor::net_Spawn(CSE_Abstract* data)
 		return FALSE;
 	}
 
-	CCustomZone* zone = cast_custom_zone();
+	CAnomalyZone* zone = cast_anomaly_zone();
 	const static bool isAiDieInAnomaly = EngineExternal()[EEngineExternalGame::EnableAiDieInAnomaly];
 	if (!isAiDieInAnomaly || zone == nullptr || zone->cast_radioactive_zone() != nullptr)
 	{
@@ -252,7 +252,7 @@ void CSpaceRestrictor::shedule_Update	(u32 dt)
 
 #ifdef DEBUG
 
-#include "CustomZone.h"
+#include "AnomalyZone.h"
 #include "../../xrUI/ui_base.h"
 
 extern	Flags32	dbg_net_Draw_Flags;
@@ -269,7 +269,7 @@ void CSpaceRestrictor::OnRender	()
 	xr_vector<CCF_Shape::shape_def>::iterator l_pShape;
 	
 	u32 Color = 0;
-	CCustomZone	*custom_zone = cast_custom_zone();
+	CAnomalyZone	*custom_zone = cast_anomaly_zone();
 	if (custom_zone && custom_zone->IsEnabled())
 		Color = color_xrgb(0, 255, 255);
 	else
@@ -331,15 +331,15 @@ void CSpaceRestrictor::OnRender	()
 		UI().Font().pFontMedium->SetColor	(0xffff0000);
 		UI().Font().pFontMedium->OutSet	(x, y-=delta_height);
 		UI().Font().pFontMedium->OutNext	( Name() );
-		CCustomZone* z = cast_custom_zone();
+		CAnomalyZone* z = cast_anomaly_zone();
 		if(z){
 			string64 str;
 			switch (z->ZoneState()){
-				case CCustomZone::eZoneStateIdle:		xr_strcpy(str,"IDLE"); break;
-				case CCustomZone::eZoneStateAwaking:	xr_strcpy(str,"AWAKING"); break;
-				case CCustomZone::eZoneStateBlowout:	xr_strcpy(str,"BLOWOUT"); break;
-				case CCustomZone::eZoneStateAccumulate: xr_strcpy(str,"ACCUMULATE"); break;
-				case CCustomZone::eZoneStateDisabled:	xr_strcpy(str,"DISABLED"); break;
+				case CAnomalyZone::eZoneStateIdle:		xr_strcpy(str,"IDLE"); break;
+				case CAnomalyZone::eZoneStateAwaking:	xr_strcpy(str,"AWAKING"); break;
+				case CAnomalyZone::eZoneStateBlowout:	xr_strcpy(str,"BLOWOUT"); break;
+				case CAnomalyZone::eZoneStateAccumulate: xr_strcpy(str,"ACCUMULATE"); break;
+				case CAnomalyZone::eZoneStateDisabled:	xr_strcpy(str,"DISABLED"); break;
 			};
 			UI().Font().pFontMedium->OutNext	( str );
 		}

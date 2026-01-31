@@ -1,9 +1,9 @@
 #pragma once
 
 class CVisualZone :
-	public CCustomZone
+	public CAnomalyZone
 {
-	typedef				CCustomZone		inherited	;
+	typedef				CAnomalyZone		inherited	;
 	MotionID			m_idle_animation			;
 	MotionID			m_attack_animation			;
 	u32					m_dwAttackAnimaionStart		;
