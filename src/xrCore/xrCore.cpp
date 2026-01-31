@@ -11,12 +11,8 @@
 
 #include "xrCore.h"
 #include "discord/discord.h"
-
-#ifdef DEBUG
-#	include	<malloc.h>
-#endif // DEBUG
-
 #include "stack_string.h"
+#include "ECS/EntityManager.h"
 
 XRCORE_API xrCore	Core;
 XRCORE_API u32		build_id;
@@ -37,6 +33,8 @@ extern xr_hash_map<xr_string, CInifile*>* cached_ini_map;
 
 void xrCore::_initialize	(LPCSTR _ApplicationName, xrLogger::LogCallback cb, BOOL init_fs, LPCSTR fs_fname)
 {
+	GECSManager = new CECSManager;
+
 	cached_ini_map = new xr_hash_map<xr_string, CInifile*>();
 
 	PROF_EVENT("xrCore::_initialize");
@@ -127,6 +125,9 @@ void xrCore::_destroy		()
 		xr_delete(cached_ini_map);
 		Memory._destroy		();
 	}
+
+	GECSManager->DestroyAll();
+	xr_delete(GECSManager);
 }
 
 #ifndef XRCORE_STATIC
