@@ -33,6 +33,8 @@
 #include "../xrEngine/AI/game_level_cross_table.h"
 #include "../xrEngine/AI/level_graph.h"
 
+#include "../xrCore/ECS/EntityManager.h"
+
 #ifndef _EDITOR
 #	include "pch_script.h"
 extern CInifile* pGameGlobals;

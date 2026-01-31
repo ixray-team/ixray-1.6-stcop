@@ -706,14 +706,19 @@ void	CCar::OnHUDDraw(CCustomHUD* /**hud*/)
 #endif
 }
 
-void	CCar::Hit(SHit* pHDS)
+void CCar::Hit(SHit* pHDS)
 {
-
-	SHit	HDS = *pHDS;
+	SHit HDS = *pHDS;
 	WheelHit(HDS.damage(), HDS.bone(), HDS.hit_type);
 	DoorHit(HDS.damage(), HDS.bone(), HDS.hit_type);
 	float hitScale = 1.f, woundScale = 1.f;
-	if (HDS.hit_type != ALife::eHitTypeStrike) CDamageManager::HitScale(HDS.bone(), hitScale, woundScale);
+
+	if (HDS.hit_type != ALife::eHitTypeStrike)
+	{
+		TDamageManager* DmgManager = GECSManager->GetComponent<TDamageManager>(static_cast<CEntity*>(this));
+		DmgManager->HitScale(HDS.bone(), hitScale, woundScale);
+	}
+
 	HDS.power *= GetHitImmunity(HDS.hit_type) * hitScale;
 
 	inherited::Hit(&HDS);
@@ -1285,7 +1290,8 @@ void CCar::Init()
 		LoadImmunities("immunities", ini);
 	}
 
-	CDamageManager::reload("car_definition", "damage", ini);
+	TDamageManager* DmgManager = GECSManager->GetComponent<TDamageManager>(static_cast<CEntity*>(this));
+	DmgManager->reload("car_definition", "damage", ini);
 
 	HandBreak();
 	Transmission(1);
