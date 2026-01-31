@@ -1096,7 +1096,7 @@ void CUIHudStatesWnd::UpdateZones()
 	CZoneList::ItemsMapIt ite	= Level().hud_zones_list->m_ItemInfos.end();
 	for ( ; itb != ite; ++itb ) 
 	{
-		CCustomZone*		pZone = itb->first;
+		CAnomalyZone*		pZone = itb->first;
 		ITEM_INFO&			zone_info = itb->second;
 		ITEM_TYPE*			zone_type = zone_info.curr_ref;
 		

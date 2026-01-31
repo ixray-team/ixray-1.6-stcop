@@ -4,7 +4,7 @@
 #include "actor_mp_server.h"
 #include "xrServer.h"
 #include "xrServer_Object_Base.h"
-#include "CustomZone.h"
+#include "AnomalyZone.h"
 
 
 
@@ -104,7 +104,7 @@ private:
 	void	AddAnomalyChanges(
 				NET_Packet & packet,
 				TAnomaliesVector const & anomalies,
-				CCustomZone::EZoneState state);
+				CAnomalyZone::EZoneState state);
 
 	void	SendAnomalyStates();
 	void	CheckAnomalyUpdate(u32 current_time);
