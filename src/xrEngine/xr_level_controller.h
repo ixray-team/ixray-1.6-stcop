@@ -66,7 +66,7 @@ enum EGameActions
 	kACTIVE_JOBS,
 	kMAP,
 	kCONTACTS,
-						
+
 	kVOTE_BEGIN,
 	kSHOW_ADMIN_MENU,
 	kVOTE,
@@ -172,6 +172,7 @@ struct _binding
 {
 	_action*		m_action;
 	_keyboard*		m_keyboard[2];
+	_keyboard*		m_gamepad;
 };
 
 extern ENGINE_API _binding g_key_bindings[];

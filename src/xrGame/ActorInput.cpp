@@ -227,48 +227,7 @@ void CActor::IR_OnKeyboardPress(int cmd)
 	case kQUICK_USE_3:
 	case kQUICK_USE_4:
 	{
-		// Show quick slots panel on item use
-		if (CurrentGameUI() && CurrentGameUI()->UIMainIngameWnd)
-		{
-			CurrentGameUI()->UIMainIngameWnd->ShowQuickSlotsPanel();
-		}
-
-		if (HudAnimator() && HudAnimator()->ItemAnimator()->IsActive())
-		{
-			return;
-		}
-
-		if (!CurrentGameUI()->ActorMenu() || !CurrentGameUI()->ActorMenu()->m_pQuickSlot)
-		{
-			break;
-		}
-
-		const shared_str& item_name = g_quick_use_slots[cmd - kQUICK_USE_1];
-		if (item_name.size())
-		{
-			PIItem best_itm = nullptr;
-
-			for (auto& it : inventory().m_ruck)
-			{
-				if (it->m_section_id == item_name && (best_itm == nullptr || it->GetCondition() < best_itm->GetCondition()))
-				{
-					best_itm = it;
-				}
-			}
-
-			if (best_itm != nullptr)
-			{
-				IsGameTypeSingle() ? inventory().Eat(best_itm) : inventory().ClientEat(best_itm);
-
-				SDrawStaticStruct* _s = CurrentGameUI()->AddCustomStatic("item_used", true);
-				string1024 str = {};
-
-				xr_strconcat(str, *g_pStringTable->translate("st_item_used"), ": ", best_itm->NameItem());
-				_s->wnd()->TextItemControl()->SetText(str);
-
-				CurrentGameUI()->ActorMenu()->m_pQuickSlot->ReloadReferences(this);
-			}
-		}
+		ActorQuickSlotUse(cmd);
 	}
 	break;
 	case kSHOW_QUICK_SLOTS:
@@ -669,99 +628,98 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 u32 gamepad_crouch_time_global = 0;
 void CActor::IR_GamepadKeyPress(int id)
 {
+	if (hud_adj_mode && pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT))
+	{
+		return;
+	}
+
+	if (Remote())
+	{
+		return;
+	}
+
+	if (IsTalking())
+	{
+		return;
+	}
+
+	if (m_input_external_handler && !m_input_external_handler->authorized(id))
+	{
+		return;
+	}
+
+	if (load_screen_renderer.IsActive())
+	{
+		return;
+	}
+
+	if (HudAnimator() != nullptr)
+	{
+		if (HudAnimator()->InputKeyPress(id))
+		{
+			return;
+		}
+	}
+
+#ifndef MASTER_GOLD
+	if (psActorFlags.test(AF_NO_CLIP))
+	{
+		NoClipFly(id);
+		if (m_holder && kUSE != id)
+			m_holder->OnKeyboardPress(id);
+		return;
+	}
+#endif //DEBUG
+
+	if (!g_Alive()) return;
+
+	if(m_holder && kUSE != id)
+	{
+		m_holder->OnKeyboardPress			(id);
+		if(m_holder->allowWeapon() && inventory().Action((u16)id, CMD_START))		return;
+		return;
+	}else
+		if(inventory().Action((u16)id, CMD_START))					return;
+
+	if (IsWaunded)
+	{
+		return;
+	}
+
 	switch (id)
 	{
-	case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_LEFT_SHOULDER:
+		case kUSE:
 		{
-			SDrawStaticStruct* s = CurrentGameUI()->AddCustomStatic("gun_jammed", true);
-			s->SetText("Wheel Weapon Menu - To be implemented");
+			ActorUse();
 			break;
 		}
-	case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER:
-		{
-			IR_OnKeyboardPress(kWPN_RELOAD);
-			break;
-		}
-	case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_WEST:
-		{
-			IR_OnKeyboardPress(kUSE);
-			IR_OnKeyboardPress(kWPN_RELOAD);
-			break;
-		}
-	case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_NORTH:
-		{
-			if (!inventory_disabled())
-			{
-				if (HudAnimator()->BackpackAnimator() != nullptr)
-				{
-					HudAnimator()->BackpackAnimator()->SwitchAnimator();
-				}
-				else
-				{
-					CurrentGameUI()->ShowActorMenu();
-				}
-			}
-			break;
-		}
-	case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_EAST:
+		case kCROUCH:
 		{
 			gamepad_crouch_time_global = Device.dwTimeContinual;
 			break;
 		}
-	case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_SOUTH:
+		case kJUMP:
 		{
-			IR_OnKeyboardPress(kJUMP);
+			mstate_wishful |= mcJump;
 			break;
 		}
-	case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_LEFT_STICK:
+		case kSPRINT_TOGGLE:
 		{
-			IR_OnKeyboardPress(kSPRINT_TOGGLE);
+			if (Holder() == nullptr)
+				mstate_wishful ^= mcSprint;
 			break;
 		}
-	case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_RIGHT_STICK:
+		case kTORCH:
 		{
-			IR_OnKeyboardPress(kTORCH);
+			SwitchTorch();
 			break;
 		}
-	case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_BACK:
+		case kQUICK_USE_1:
+		case kQUICK_USE_2:
+		case kQUICK_USE_3:
+		case kQUICK_USE_4:
 		{
-			if (!pda_disabled())
-			{
-				if (HudAnimator()->PdaAnimator() != nullptr)
-				{
-					HudAnimator()->PdaAnimator()->SwitchAnimator();
-				}
-				else
-				{
-					CurrentGameUI()->ShowPdaMenu();
-				}
-			}
-			break;
-		}
-	case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_START:
-		{
-			Console->Execute("main_menu");
-			break;
-		}
-	case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_DPAD_UP:
-		{
-			IR_OnKeyboardPress(kQUICK_USE_1);
-			break;
-		}
-	case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_DPAD_DOWN:
-		{
-			IR_OnKeyboardPress(kQUICK_USE_4);
-			break;
-		}
-	case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_DPAD_LEFT:
-		{
-			IR_OnKeyboardPress(kQUICK_USE_2);
-			break;
-		}
-	case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_DPAD_RIGHT:
-		{
-			IR_OnKeyboardPress(kQUICK_USE_3);
-			break;
+			ActorQuickSlotUse(id);
 		}
 	}
 }
@@ -770,7 +728,12 @@ void CActor::IR_GamepadKeyRelease(int id)
 {
 	switch (id)
 	{
-		case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_EAST:
+		case kJUMP:
+		{
+			mstate_wishful &= ~mcJump;		
+			break;
+		}
+		case kCROUCH:
 		{
 			mstate_wishful &= mcCrouch;
 			break;
@@ -782,15 +745,15 @@ void CActor::IR_GamepadKeyHold(int id)
 {
 	switch (id)
 	{
-	case SDL_GamepadButton::SDL_GAMEPAD_BUTTON_EAST:
-	{
-		if (Device.dwTimeContinual > (gamepad_crouch_time_global + 500))
+		case kCROUCH:
 		{
-			mstate_wishful |= mcAccel;
+			if (Device.dwTimeContinual > (gamepad_crouch_time_global + 500))
+			{
+				mstate_wishful |= mcAccel;
+			}
+			mstate_wishful |= mcCrouch;
+			break;
 		}
-		mstate_wishful |= mcCrouch;
-		break;
-	}
 	}
 }
 
@@ -1777,3 +1740,49 @@ void CActor::NoClipFly(int cmd)
 	if(inventory().Action((u16)cmd, CMD_START))return;
 }
 #endif //DEBUG
+
+void CActor::ActorQuickSlotUse(int cmd)
+{
+	// Show quick slots panel on item use
+	if (CurrentGameUI() && CurrentGameUI()->UIMainIngameWnd)
+	{
+		CurrentGameUI()->UIMainIngameWnd->ShowQuickSlotsPanel();
+	}
+
+	if (HudAnimator() && HudAnimator()->ItemAnimator()->IsActive())
+	{
+		return;
+	}
+
+	if (!CurrentGameUI()->ActorMenu() || !CurrentGameUI()->ActorMenu()->m_pQuickSlot)
+	{
+		return;
+	}
+
+	const shared_str& item_name = g_quick_use_slots[cmd - kQUICK_USE_1];
+	if (item_name.size())
+	{
+		PIItem best_itm = nullptr;
+
+		for (auto& it : inventory().m_ruck)
+		{
+			if (it->m_section_id == item_name && (best_itm == nullptr || it->GetCondition() < best_itm->GetCondition()))
+			{
+				best_itm = it;
+			}
+		}
+
+		if (best_itm != nullptr)
+		{
+			IsGameTypeSingle() ? inventory().Eat(best_itm) : inventory().ClientEat(best_itm);
+
+			SDrawStaticStruct* _s = CurrentGameUI()->AddCustomStatic("item_used", true);
+			string1024 str = {};
+
+			xr_strconcat(str, *g_pStringTable->translate("st_item_used"), ": ", best_itm->NameItem());
+			_s->wnd()->TextItemControl()->SetText(str);
+
+			CurrentGameUI()->ActorMenu()->m_pQuickSlot->ReloadReferences(this);
+		}
+	}
+}
