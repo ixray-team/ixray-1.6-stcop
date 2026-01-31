@@ -10,6 +10,7 @@
 #define UI_INVENTORY_UPGRADE_WND_H_INCLUDED
 
 #include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrUI/Widgets/UI3dStatic.h"
 #include "UIInvUpgrade.h"
 
 extern const LPCSTR g_inventory_upgrade_xml;
@@ -77,6 +78,7 @@ public:
 	UIUpgrade* FindUIUpgrade(Upgrade_type const* upgr);
 
 	virtual CUIWindow* ui_cast_window() { return this; }
+    virtual bool OnMouseAction(float x, float y, EUIMessages mouse_action);
 
 private:
 	void LoadCellsBacks(CUIXml& uiXml);
@@ -96,7 +98,7 @@ public:
 
 protected:
 	CUIStatic* m_background = nullptr;
-	CUIStatic* m_item = nullptr;
+	CUI3dStatic* m_item = nullptr;
 	CUIItemInfo* m_item_info = nullptr;
 	CUIWindow* m_back = nullptr;
 	CInventoryItem* m_inv_item = nullptr;
