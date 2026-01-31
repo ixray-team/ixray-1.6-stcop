@@ -4,6 +4,7 @@
 
 class CInventoryItem;
 class CUIStatic;
+class CUI3dStatic;
 class CUIScrollView;
 class CUIProgressBar;
 class CUIConditionParams;
@@ -79,5 +80,5 @@ public:
 	CUIProgressBar*			UICondProgresBar;
 
 	Fvector2			UIItemImageSize; 
-	CUIStatic*			UIItemImage;
+	CUI3dStatic*		UIItemImage;
 };
