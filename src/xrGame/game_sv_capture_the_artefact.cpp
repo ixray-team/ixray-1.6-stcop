@@ -4,7 +4,7 @@
 #include "Level.h"
 #include "xrServer.h"
 #include "Inventory.h"
-#include "CustomZone.h"
+#include "AnomalyZone.h"
 #include "../xrEngine/IGame_Persistent.h"
 #include "../xrEngine/CameraManager.h"
 #include "Actor.h"
@@ -1101,7 +1101,7 @@ void game_sv_CaptureTheArtefact::ReStartRandomAnomaly()
 void game_sv_CaptureTheArtefact::AddAnomalyChanges(
 	NET_Packet & packet,
 	TAnomaliesVector const & anomalies,
-	CCustomZone::EZoneState state
+	CAnomalyZone::EZoneState state
 	)
 {
 	typedef TAnomaliesVector::const_iterator TAnomIter;
@@ -1127,7 +1127,7 @@ void game_sv_CaptureTheArtefact::SendAnomalyStates()
 	AddAnomalyChanges(
 		event_pack, 
 		m_AnomaliesPermanent, 
-		CCustomZone::eZoneStateIdle
+		CAnomalyZone::eZoneStateIdle
 	);
 
 	typedef TAnomalySet::iterator TAnomSetIter;
@@ -1136,11 +1136,11 @@ void game_sv_CaptureTheArtefact::SendAnomalyStates()
 	// this order of for blocks is necessarily, because enabling of zones must be at last
 	for (TAnomSetIter i = m_AnomalySet.begin(); i != ie; ++i) {
 		if (!i->second)
-			AddAnomalyChanges	(event_pack, i->first, CCustomZone::eZoneStateDisabled);
+			AddAnomalyChanges	(event_pack, i->first, CAnomalyZone::eZoneStateDisabled);
 	}
 	for (TAnomSetIter i = m_AnomalySet.begin(); i != ie; ++i) {
 		if (i->second)
-			AddAnomalyChanges	(event_pack, i->first, CCustomZone::eZoneStateIdle);
+			AddAnomalyChanges	(event_pack, i->first, CAnomalyZone::eZoneStateIdle);
 	}
 	m_dwLastAnomalyStartTime = Level().timeServer();
 	u_EventSend(event_pack);
@@ -2458,7 +2458,7 @@ void game_sv_CaptureTheArtefact::OnPostCreate(u16 id_who)
 	if (!entity)
 		return;
 
-	CSE_ALifeCustomZone*	custom_zone = smart_cast<CSE_ALifeCustomZone*>(entity);
+	CSE_ALifeAnomalyZone*	custom_zone = smart_cast<CSE_ALifeAnomalyZone*>(entity);
 	if (!custom_zone)
 		return;
 	

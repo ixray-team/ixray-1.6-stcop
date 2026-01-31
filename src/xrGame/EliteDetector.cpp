@@ -286,7 +286,7 @@ void CScientificDetector::UpdateWork()
 
 	for (; zit_b != zit_e; ++zit_b)
 	{
-		CCustomZone* pZone = zit_b->first;
+		CAnomalyZone* pZone = zit_b->first;
 		ui().RegisterItemToDraw(pZone->Position(), pZone->cNameSect());
 	}
 

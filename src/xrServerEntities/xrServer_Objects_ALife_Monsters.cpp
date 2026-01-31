@@ -670,9 +670,9 @@ void CSE_ALifeTrader::FillProps				(LPCSTR _pref, PropItemVec& items)
 #endif // #ifndef XRGAME_EXPORTS
 
 ////////////////////////////////////////////////////////////////////////////
-// CSE_ALifeCustomZone
+// CSE_ALifeAnomalyZone
 ////////////////////////////////////////////////////////////////////////////
-CSE_ALifeCustomZone::CSE_ALifeCustomZone	(LPCSTR caSection) : CSE_ALifeSpaceRestrictor(caSection)
+CSE_ALifeAnomalyZone::CSE_ALifeAnomalyZone	(LPCSTR caSection) : CSE_ALifeSpaceRestrictor(caSection)
 {
 	m_owner_id					= u32(-1);
 //	m_maxPower					= pSettings->r_float(caSection,"min_start_power");
@@ -686,11 +686,11 @@ CSE_ALifeCustomZone::CSE_ALifeCustomZone	(LPCSTR caSection) : CSE_ALifeSpaceRest
 
 }
 
-CSE_ALifeCustomZone::~CSE_ALifeCustomZone	()
+CSE_ALifeAnomalyZone::~CSE_ALifeAnomalyZone	()
 {
 }
 
-void CSE_ALifeCustomZone::STATE_Read		(NET_Packet	&tNetPacket, u16 size)
+void CSE_ALifeAnomalyZone::STATE_Read		(NET_Packet	&tNetPacket, u16 size)
 {
 	inherited::STATE_Read		(tNetPacket,size);
 	
@@ -719,7 +719,7 @@ void CSE_ALifeCustomZone::STATE_Read		(NET_Packet	&tNetPacket, u16 size)
 
 }
 
-void CSE_ALifeCustomZone::STATE_Write	(NET_Packet	&tNetPacket)
+void CSE_ALifeAnomalyZone::STATE_Write	(NET_Packet	&tNetPacket)
 {
 	inherited::STATE_Write		(tNetPacket);
 	tNetPacket.w_float			(0.0/*m_maxPower*/);
@@ -729,18 +729,18 @@ void CSE_ALifeCustomZone::STATE_Write	(NET_Packet	&tNetPacket)
 	tNetPacket.w_u32			(m_start_time_shift);
 }
 
-void CSE_ALifeCustomZone::UPDATE_Read	(NET_Packet	&tNetPacket)
+void CSE_ALifeAnomalyZone::UPDATE_Read	(NET_Packet	&tNetPacket)
 {
 	inherited::UPDATE_Read		(tNetPacket);
 }
 
-void CSE_ALifeCustomZone::UPDATE_Write	(NET_Packet	&tNetPacket)
+void CSE_ALifeAnomalyZone::UPDATE_Write	(NET_Packet	&tNetPacket)
 {
 	inherited::UPDATE_Write		(tNetPacket);
 }
 
 #ifndef XRGAME_EXPORTS
-void CSE_ALifeCustomZone::FillProps		(LPCSTR pref, PropItemVec& items)
+void CSE_ALifeAnomalyZone::FillProps		(LPCSTR pref, PropItemVec& items)
 {
 	inherited::FillProps		(pref,items);
 	PHelper().CreateU32			(items,PrepareKey(pref,*s_name,"on/off mode\\Shift time (sec)"),	&m_start_time_shift,0,100000);
@@ -752,7 +752,7 @@ void CSE_ALifeCustomZone::FillProps		(LPCSTR pref, PropItemVec& items)
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeAnomalousZone
 ////////////////////////////////////////////////////////////////////////////
-CSE_ALifeAnomalousZone::CSE_ALifeAnomalousZone(LPCSTR caSection) : CSE_ALifeCustomZone(caSection)
+CSE_ALifeAnomalousZone::CSE_ALifeAnomalousZone(LPCSTR caSection) : CSE_ALifeAnomalyZone(caSection)
 {
 	m_offline_interactive_radius	= 30.f;
 	m_artefact_spawn_count			= 32;
@@ -872,7 +872,7 @@ void CSE_ALifeAnomalousZone::FillProps		(LPCSTR pref, PropItemVec& items)
 //SE_ALifeTorridZone
 //////////////////////////////////////////////////////////////////////////
 CSE_ALifeTorridZone::CSE_ALifeTorridZone	(LPCSTR caSection)
-:CSE_ALifeCustomZone(caSection),CSE_Motion()
+:CSE_ALifeAnomalyZone(caSection),CSE_Motion()
 {
 }
 

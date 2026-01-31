@@ -1,11 +1,11 @@
 #pragma once
-#include "CustomZone.h"
+#include "AnomalyZone.h"
 #include "../xrScripts/script_export_space.h"
 
-class CRadioactiveZone final : public CCustomZone
+class CRadioactiveZone final : public CAnomalyZone
 {
 private:
-	using inherited = CCustomZone;
+	using inherited = CAnomalyZone;
 public:
 	CRadioactiveZone(void);
 	virtual ~CRadioactiveZone(void);

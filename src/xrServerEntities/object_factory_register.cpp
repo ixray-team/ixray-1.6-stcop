@@ -125,7 +125,7 @@
 
 #	include "MPPlayersBag.h"
 
-#	include "customzone.h"
+#	include "AnomalyZone.h"
 #	include "mosquitobald.h"
 #	include "mincer.h"
 #	include "gravizone.h"
@@ -381,7 +381,7 @@ void CObjectFactory::register_classes	()
 	//-----------------------------------------------------------------------------------------------------------------
 
 	// Zones
-	ADD(CCustomZone				,CSE_ALifeCustomZone			,CLSID_ZONE						,"zone");
+	ADD(CAnomalyZone				,CSE_ALifeAnomalyZone			,CLSID_ZONE						,"zone");
 	ADD(CMosquitoBald			,CSE_ALifeAnomalousZone			,CLSID_Z_MBALD					,"zone_mosquito_bald");
 	ADD(CMincer					,CSE_ALifeAnomalousZone			,CLSID_Z_MINCER					,"zone_mincer");
 	ADD(CMosquitoBald			,CSE_ALifeAnomalousZone			,CLSID_Z_ACIDF					,"zone_acid_fog");
