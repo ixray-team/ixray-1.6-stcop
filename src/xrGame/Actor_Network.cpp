@@ -948,7 +948,10 @@ void CActor::OnChangeVisual()
 	SetCallbacks();
 	m_anims->Create(V);
 	m_vehicle_anims->Create(V);
-	CDamageManager::reload(*cNameSect(), "damage", pSettings);
+
+	TDamageManager* DmgManager = GECSManager->GetComponent<TDamageManager>(static_cast<CEntity*>(this));
+	DmgManager->reload(*cNameSect(), "damage", pSettings);
+
 	//-------------------------------------------------------------------------------
 
 	IKinematics* kinematics = PKinematics(Visual());
