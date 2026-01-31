@@ -23,8 +23,10 @@ public:
 
 	virtual void		SetClGame				(game_cl_GameState* g);
 	virtual bool		IR_UIOnKeyboardPress	(int dik);
+	virtual bool		IR_UIOnGamepadKeyPress	(int dik);
 	virtual void _BCL	OnFrame					();
 
+	void				OnAction				(CActor* actor, EGameActions action);
  
  #ifdef DEBUG
 	virtual void		Render					();
