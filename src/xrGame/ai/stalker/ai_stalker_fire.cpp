@@ -14,7 +14,7 @@
 #include "../../Inventory.h"
 #include "../../ef_storage.h"
 #include "../../script_game_object.h"
-#include "../../CustomZone.h"
+#include "../../AnomalyZone.h"
 #include "../../../Include/xrRender/KinematicsAnimated.h"
 #include "../../agent_manager.h"
 #include "../../stalker_animation_manager.h"
@@ -808,7 +808,7 @@ bool CAI_Stalker::inside_anomaly()
 {
 	for (const auto& feel_object : feel_touch)
 	{
-		CCustomZone* zone = feel_object != nullptr && feel_object->cast_game_object() != nullptr ? feel_object->cast_game_object()->cast_custom_zone() : nullptr;
+		CAnomalyZone* zone = feel_object != nullptr && feel_object->cast_game_object() != nullptr ? feel_object->cast_game_object()->cast_anomaly_zone() : nullptr;
 		if (zone != nullptr && (zone->restrictor_type() != RestrictionSpace::eRestrictorTypeNone))
 		{
 			if (zone->cast_radioactive_zone())

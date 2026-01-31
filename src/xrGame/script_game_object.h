@@ -31,7 +31,7 @@
 #include "Creature.h"
 #include "Torch.h"
 #include "space_restrictor.h"
-#include "CustomZone.h"
+#include "AnomalyZone.h"
 #include "HudItem.h"
 #include "FoodItem.h"
 #include "PhysicsShellHolder.h"
@@ -876,7 +876,7 @@ public:
 			_DECLARE_FUNCTION14(cast_GrenadeLauncher, CGrenadeLauncher);
 			_DECLARE_FUNCTION14(cast_SpaceRestrictor, CSpaceRestrictor);
 			_DECLARE_FUNCTION14(cast_Stalker, CAI_Stalker);
-			_DECLARE_FUNCTION14(cast_CustomZone, CCustomZone);
+			_DECLARE_FUNCTION14(cast_CustomZone, CAnomalyZone);
 			_DECLARE_FUNCTION14(cast_Monster, CCreature);
 			_DECLARE_FUNCTION14(cast_Explosive, CExplosive);
 			_DECLARE_FUNCTION14(cast_ScriptZone, CScriptZone);

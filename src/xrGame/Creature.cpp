@@ -14,7 +14,7 @@
 #include "team_hierarchy_holder.h"
 #include "squad_hierarchy_holder.h"
 #include "group_hierarchy_holder.h"
-#include "CustomZone.h"
+#include "AnomalyZone.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "detail_path_manager.h"
 #include "memory_manager.h"
@@ -826,7 +826,7 @@ BOOL CCreature::feel_touch_on_contact	(CObject *O)
 	CGameObject* GO = O->cast_game_object();
 	if (!GO)
 		return		(FALSE);
-	CCustomZone	*custom_zone = GO->cast_custom_zone();
+	CAnomalyZone	*custom_zone = GO->cast_anomaly_zone();
 	if (!custom_zone)
 		return	(TRUE);
 
@@ -846,7 +846,7 @@ BOOL CCreature::feel_touch_contact		(CObject *O)
 	CGameObject* GO = O->cast_game_object();
 	if (!GO)
 		return		(FALSE);
-	CCustomZone* custom_zone = GO->cast_custom_zone();
+	CAnomalyZone* custom_zone = GO->cast_anomaly_zone();
 	if (!custom_zone)
 		return	(TRUE);
 

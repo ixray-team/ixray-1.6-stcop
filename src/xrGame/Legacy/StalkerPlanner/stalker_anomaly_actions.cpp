@@ -12,7 +12,7 @@
 #include "ai/stalker/ai_stalker.h"
 #include "script_game_object.h"
 #include "stalker_decision_space.h"
-#include "CustomZone.h"
+#include "AnomalyZone.h"
 #include "space_restriction_manager.h"
 #include "space_restriction_bridge.h"
 #include "space_restriction_base.h"
@@ -107,7 +107,7 @@ void CStalkerActionGetOutOfAnomaly::execute()
 
 	for (const auto& feel_object : object().feel_touch)
 	{
-		CCustomZone* zone = feel_object != nullptr ? feel_object->cast_custom_zone() : nullptr;
+		CAnomalyZone* zone = feel_object != nullptr ? feel_object->cast_anomaly_zone() : nullptr;
 		if (zone != nullptr && (zone->restrictor_type() != RestrictionSpace::eRestrictorTypeNone))
 		{
 			if (zone->cast_radioactive_zone())

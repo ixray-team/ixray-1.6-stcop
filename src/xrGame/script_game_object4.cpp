@@ -464,7 +464,7 @@ SPECIFIC_CAST(CScriptGameObject::cast_Silencer, CSilencer);
 SPECIFIC_CAST(CScriptGameObject::cast_GrenadeLauncher, CGrenadeLauncher);
 SPECIFIC_CAST(CScriptGameObject::cast_SpaceRestrictor, CSpaceRestrictor);
 SPECIFIC_CAST(CScriptGameObject::cast_Stalker, CAI_Stalker);
-SPECIFIC_CAST(CScriptGameObject::cast_CustomZone, CCustomZone);
+SPECIFIC_CAST(CScriptGameObject::cast_CustomZone, CAnomalyZone);
 SPECIFIC_CAST(CScriptGameObject::cast_Monster, CCreature);
 SPECIFIC_CAST(CScriptGameObject::cast_Explosive, CExplosive);
 SPECIFIC_CAST(CScriptGameObject::cast_ScriptZone, CScriptZone);
