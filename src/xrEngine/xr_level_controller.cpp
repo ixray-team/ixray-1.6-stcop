@@ -127,7 +127,7 @@ ENGINE_API _action  actions[]		= {
 	{ "wpn_chamber_load",   kWPN_CHAMBER_LOAD		,_both },
 	{ "wpn_chamber_unload", kWPN_CHAMBER_UNLOAD     ,_both },
 	{ "wpn_chamber_check",  kWPN_CHAMBER_CHECK      ,_both },
-																
+															
 	{ nullptr, 				kLASTACTION				,_both}		
 };															
 
@@ -410,6 +410,36 @@ _keyboard keyboards[] = {
 	{ nullptr,                  0}
 };
 
+
+_keyboard gamepads[] = 
+{
+	{ "cA",                     SDL_GAMEPAD_BUTTON_SOUTH,         "A" },
+	{ "cB",                     SDL_GAMEPAD_BUTTON_EAST,          "B" },
+	{ "cX",                     SDL_GAMEPAD_BUTTON_WEST,          "X" },
+	{ "cY",                     SDL_GAMEPAD_BUTTON_NORTH,         "Y" },
+	{ "cBACK",                  SDL_GAMEPAD_BUTTON_BACK,          "Back" },
+	{ "cSTART",                 SDL_GAMEPAD_BUTTON_START,         "Start" },
+	{ "cLS",                    SDL_GAMEPAD_BUTTON_LEFT_STICK,    "LS" },
+	{ "cRS",                    SDL_GAMEPAD_BUTTON_RIGHT_STICK,   "RS" },
+	{ "cLB",                    SDL_GAMEPAD_BUTTON_LEFT_SHOULDER, "LB" },
+	{ "cRB",                    SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER,"RB" },
+	{ "cDPAD_UP",               SDL_GAMEPAD_BUTTON_DPAD_UP,       "D-Pad Up" },
+	{ "cDPAD_DOWN",             SDL_GAMEPAD_BUTTON_DPAD_DOWN,     "D-Pad Down" },
+	{ "cDPAD_LEFT",             SDL_GAMEPAD_BUTTON_DPAD_LEFT,     "D-Pad Left" },
+	{ "cDPAD_RIGHT",            SDL_GAMEPAD_BUTTON_DPAD_RIGHT,    "D-Pad Right" },
+	{ "cMISC1",                 SDL_GAMEPAD_BUTTON_MISC1,         "Misc 1" },
+	{ "cRPADDLE1",              SDL_GAMEPAD_BUTTON_RIGHT_PADDLE1, "Upper Right Paddle" },
+	{ "cLPADDLE1",              SDL_GAMEPAD_BUTTON_LEFT_PADDLE1,  "Upper Left Paddle" },
+	{ "cRPADDLE2",              SDL_GAMEPAD_BUTTON_RIGHT_PADDLE2, "Lower Right Paddle" },
+	{ "cLPADDLE2",              SDL_GAMEPAD_BUTTON_LEFT_PADDLE2,  "Lower Left Paddle" },
+	{ "cTOUCHPAD",              SDL_GAMEPAD_BUTTON_TOUCHPAD,      "Touchpad" },
+	{ "cMISC2",                 SDL_GAMEPAD_BUTTON_MISC2,         "Misc 2" },
+	{ "cMISC3",                 SDL_GAMEPAD_BUTTON_MISC3,         "Misc 3" },
+	{ "cMISC4",                 SDL_GAMEPAD_BUTTON_MISC4,         "Misc 4" },
+	{ "cMISC5",                 SDL_GAMEPAD_BUTTON_MISC5,         "Misc 5" },
+	{ "cMISC6",                 SDL_GAMEPAD_BUTTON_MISC6,         "Misc 6" },
+	{ nullptr,                  0}
+};
 void initialize_bindings()
 {
 #ifdef DEBUG
@@ -450,6 +480,21 @@ void remap_keys()
 		kb.key_local_name = res ? buff : kb.key_local_name;
 
 		if (kb.key_local_name.starts_with('k'))
+		{
+			kb.key_local_name = kb.key_local_name.substr(1);
+		}
+
+		++idx;
+	}
+	idx = 0;
+	while (gamepads[idx].key_name)
+	{
+		buff[0] = 0;
+		_keyboard& kb = gamepads[idx];
+		bool res = pInput->get_dik_name(kb.dik, buff, sizeof(buff));
+		kb.key_local_name = res ? buff : kb.key_local_name;
+
+		if (kb.key_local_name.starts_with('c'))
 		{
 			kb.key_local_name = kb.key_local_name.substr(1);
 		}
@@ -512,6 +557,14 @@ ENGINE_API _keyboard* dik_to_ptr(int _dik, bool bSafe)
 			return &keyboards[idx];
 		++idx;
 	}	
+	idx = 0;
+	while(gamepads[idx].key_name)
+	{
+		_keyboard&	kb		= gamepads[idx];
+		if(kb.dik==_dik)
+			return &gamepads[idx];
+		++idx;
+	}	
 	if (!bSafe)
 		Msg			("! cant find corresponding [_keyboard] for dik");
 	return			nullptr;
@@ -540,6 +593,17 @@ ENGINE_API _keyboard* keyname_to_ptr(LPCSTR _name)
 		if (TestName.EqualWithCaseInsensitive(KeyData.key_name))
 			return &KeyData;
 	}
+	for (_keyboard& gpKeyData : gamepads)
+	{
+		if (gpKeyData.key_name == nullptr)
+			continue;
+
+		if (TestName.EqualWithCaseInsensitive(gpKeyData.key_local_name))
+			return &gpKeyData;
+
+		if (TestName.EqualWithCaseInsensitive(gpKeyData.key_name))
+			return &gpKeyData;
+	}
 
 	Msg("! cant find corresponding [_keyboard*] for keyname %s", _name);
 	return nullptr;
@@ -558,12 +622,20 @@ bool is_group_matching(_key_group g1, _key_group g2)
 ENGINE_API bool is_binded(EGameActions _action_id, int _dik)
 {
 	_binding* pbinding = &g_key_bindings[_action_id];
-	if(pbinding->m_keyboard[0] && pbinding->m_keyboard[0]->dik==_dik)
-		return true;
+	if (pInput->GetControllerMode())
+	{
+		if (pbinding->m_gamepad && pbinding->m_gamepad->dik == _dik)
+			return true;
+	}
+	else
+	{
+		if (pbinding->m_keyboard[0] && pbinding->m_keyboard[0]->dik == _dik)
+			return true;
 
-	if(pbinding->m_keyboard[1] && pbinding->m_keyboard[1]->dik==_dik)
-		return true;
-	
+		if (pbinding->m_keyboard[1] && pbinding->m_keyboard[1]->dik == _dik)
+			return true;
+	}
+
 	return false;
 }
 
@@ -573,15 +645,16 @@ ENGINE_API int get_action_dik(EGameActions _action_id, int idx)
 	
 	if(idx==-1)
 	{
-	if(pbinding->m_keyboard[0])
-		return pbinding->m_keyboard[0]->dik;
+		if(pbinding->m_keyboard[0])
+			return pbinding->m_keyboard[0]->dik;
 
-	if(pbinding->m_keyboard[1])
-		return pbinding->m_keyboard[1]->dik;
-	}else
+		if(pbinding->m_keyboard[1])
+			return pbinding->m_keyboard[1]->dik;
+	}
+	else
 	{
-	if(pbinding->m_keyboard[idx])
-		return pbinding->m_keyboard[idx]->dik;
+		if(pbinding->m_keyboard[idx])
+			return pbinding->m_keyboard[idx]->dik;
 	}
 	return 0;
 }
@@ -596,11 +669,19 @@ ENGINE_API EGameActions get_binded_action(int _dik)
 		
 		if(!b_is_group_matching)	continue;
 
-		if(binding->m_keyboard[0] && binding->m_keyboard[0]->dik==_dik && b_is_group_matching)
-			return binding->m_action->id;
-		
-		if(binding->m_keyboard[1] && binding->m_keyboard[1]->dik==_dik && b_is_group_matching)
-			return binding->m_action->id;
+		if (pInput->GetControllerMode())
+		{
+			if (binding->m_gamepad && binding->m_gamepad->dik == _dik && b_is_group_matching)
+				return binding->m_action->id;
+		}
+		else
+		{
+			if (binding->m_keyboard[0] && binding->m_keyboard[0]->dik == _dik && b_is_group_matching)
+				return binding->m_action->id;
+
+			if (binding->m_keyboard[1] && binding->m_keyboard[1]->dik == _dik && b_is_group_matching)
+				return binding->m_action->id;
+		}
 	}
 	return kNOTBINDED;
 }
@@ -618,8 +699,10 @@ ENGINE_API void GetActionAllBinding(LPCSTR _action, char* dst_buff, int dst_buff
 
 	string128 prim;
 	string128 sec;
+	string128 gp;
 	prim[0] = 0;
 	sec[0] = 0;
+	gp[0] = 0;
 
 	if (pbinding->m_keyboard[0])
 		xr_strcpy(prim, pbinding->m_keyboard[0]->key_local_name.c_str());
@@ -627,8 +710,13 @@ ENGINE_API void GetActionAllBinding(LPCSTR _action, char* dst_buff, int dst_buff
 	if (pbinding->m_keyboard[1])
 		xr_strcpy(sec, pbinding->m_keyboard[1]->key_local_name.c_str());
 
-	if (nullptr == pbinding->m_keyboard[0] && nullptr == pbinding->m_keyboard[1])
+	if (pbinding->m_gamepad)
+		xr_strcpy(gp, pbinding->m_gamepad->key_local_name.c_str());
+
+	if (!pbinding->m_keyboard[0] && !pbinding->m_keyboard[1] && !pbinding->m_gamepad)
 		xr_sprintf(dst_buff, dst_buff_sz, "%s", g_pStringTable->translate("st_key_notbinded").c_str());
+	else if (pbinding->m_gamepad && pInput->GetControllerMode())
+		xr_sprintf(dst_buff, dst_buff_sz, "%s", gp);
 	else
 		xr_sprintf(dst_buff, dst_buff_sz, "%s%s%s", prim[0] ? prim : "", (sec[0] && prim[0]) ? " , " : "", sec[0] ? sec : "");
 }
@@ -729,6 +817,93 @@ public:
     }
 };
 
+class CCC_BindGamepad : public IConsole_Command
+{
+public:
+	CCC_BindGamepad(LPCSTR N) : IConsole_Command(N) {};
+	virtual void Execute(LPCSTR args) 
+	{
+		string256							action;
+		string256							key;
+		*action								= 0;
+		*key								= 0;
+
+		sscanf								(args,"%s %s", action, key);
+		if (!*action)
+			return;
+
+		if (!*key)
+			return;
+
+		if(!bRemapped) {
+			remap_keys	();
+			bRemapped	= TRUE;
+		}
+
+		if (!action_name_to_ptr(action))
+			return;
+
+		int action_id						= action_name_to_id			(action);
+		if (action_id==kNOTBINDED)
+			return;
+
+		_keyboard*	pkeyboard				= keyname_to_ptr(key);
+		if (!pkeyboard)
+			return;
+
+		_binding*	curr_pbinding			= &g_key_bindings[action_id];
+
+		curr_pbinding->m_gamepad= pkeyboard;
+			
+		{
+			for(int idx=0; idx<bindings_count; ++idx)
+			{
+				_binding*	binding			= &g_key_bindings[idx];
+				if(binding==curr_pbinding)	continue;
+
+				bool b_conflict = !is_group_not_conflicted(binding->m_action->key_group, curr_pbinding->m_action->key_group);
+
+				if(binding->m_gamepad==pkeyboard && b_conflict)
+					binding->m_gamepad=nullptr;
+			}
+		}
+
+
+		CStringTable::ReparseKeyBindings();
+	}
+	virtual void Save(IWriter* F) 
+	{
+		for(int idx=0; idx<bindings_count;++idx)
+		{
+			_binding* pbinding = &g_key_bindings[idx];
+			if( pbinding->m_gamepad )
+			{
+				F->w_printf("%s %s %s\r\n", 
+							cName, 
+							pbinding->m_action->action_name,
+							pbinding->m_gamepad->key_name);
+			}
+		}
+	}
+
+    virtual void fill_tips(vecTips& tips, u32 mode)
+    {
+        for (int idx = 0; idx < bindings_count; ++idx) {
+            if (idx > bindings_count)
+                continue;
+            _binding* pbinding = &g_key_bindings[idx];
+            if (!pbinding)
+                continue;
+            if (!pbinding->m_action)
+                continue;
+            if (!pbinding->m_action->action_name)
+                continue;
+            tips.push_back(pbinding->m_action->action_name);
+        }
+        IConsole_Command::fill_tips(tips, mode);
+    }
+};
+
 class CCC_UnBind : public IConsole_Command
 {
 	int m_work_idx;
@@ -740,6 +915,38 @@ public:
 		int action_id						= action_name_to_id			(args);
 		_binding*	pbinding				= &g_key_bindings[action_id];
 		pbinding->m_keyboard[m_work_idx]	= nullptr;
+
+		CStringTable::ReparseKeyBindings();
+	}
+
+    virtual void fill_tips(vecTips& tips, u32 mode)
+    {
+        for (int idx = 0; idx < bindings_count; ++idx) {
+            if (idx > bindings_count)
+                continue;
+            _binding* pbinding = &g_key_bindings[idx];
+            if (!pbinding)
+                continue;
+            if (!pbinding->m_action)
+                continue;
+            if (!pbinding->m_action->action_name)
+                continue;
+            tips.push_back(pbinding->m_action->action_name);
+        }
+        IConsole_Command::fill_tips(tips, mode);
+    }
+};
+
+class CCC_UnBindGamepad : public IConsole_Command
+{
+public:
+	CCC_UnBindGamepad(LPCSTR N) : IConsole_Command(N)
+	{ bEmptyArgsHandled=TRUE; };
+	virtual void Execute(LPCSTR args)
+	{
+		int action_id						= action_name_to_id			(args);
+		_binding*	pbinding				= &g_key_bindings[action_id];
+		pbinding->m_gamepad	= nullptr;
 
 		CStringTable::ReparseKeyBindings();
 	}
@@ -792,6 +999,7 @@ public:
 			_binding* pbinding		= &g_key_bindings[idx];
 			pbinding->m_keyboard[0]	= nullptr;
 			pbinding->m_keyboard[1]	= nullptr;
+			pbinding->m_gamepad = nullptr;
 		}
 		bindConsoleCmds.clear();
 	}
@@ -833,10 +1041,11 @@ public:
 		for(int idx=0; idx<bindings_count;++idx)
 		{
 			_binding* pbinding		= &g_key_bindings[idx];
-			xr_sprintf		(buff,"[%s] primary is[%s] secondary is[%s]",
+			xr_sprintf		(buff,"[%s] primary is[%s] secondary is[%s] gamepad is [%s]",
 						pbinding->m_action->action_name,
 						(pbinding->m_keyboard[0])?pbinding->m_keyboard[0]->key_local_name.c_str():"nullptr",
-						(pbinding->m_keyboard[1])?pbinding->m_keyboard[1]->key_local_name.c_str():"nullptr");
+						(pbinding->m_keyboard[1])?pbinding->m_keyboard[1]->key_local_name.c_str():"nullptr",
+						(pbinding->m_gamepad)?pbinding->m_gamepad->key_local_name.c_str():"nullptr");
 			Log		(buff);
 		}
 		Log				("- --- Bind list end   ---");
@@ -994,8 +1203,10 @@ ENGINE_API void CCC_RegisterInput()
 	initialize_bindings									();
 	CMD2(CCC_Bind,				"bind",					0);
 	CMD2(CCC_Bind,				"bind_sec",				1);
+	CMD1(CCC_BindGamepad,		"bind_gamepad"			);
 	CMD2(CCC_UnBind,			"unbind",				0);
 	CMD2(CCC_UnBind,			"unbind_sec",			1);
+	CMD1(CCC_UnBindGamepad,		"unbind_gamepad",		);
 	CMD1(CCC_UnBindAll,			"unbindall"				);
 	CMD1(CCC_DefControls,		"default_controls"		);
 	CMD1(CCC_ListActions,		"list_actions"			);
