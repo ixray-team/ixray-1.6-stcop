@@ -1,5 +1,5 @@
 #include "stdafx.h"
-
+#include "string_table.h"
 
 #include "xr_input.h"
 #include "IInputReceiver.h"
@@ -684,4 +684,13 @@ bool CInput::GetConnectedInputGamepads(CInputDevice(&pool)[DEF_XR_INPUT_MAX_INPU
 	}
 
 	return result;
+}
+
+void CInput::SetControllerMode(bool val)
+{
+	if (val == controllerMode)
+		return;
+
+	controllerMode = val;
+	CStringTable::ReparseKeyBindings();
 }
