@@ -154,7 +154,7 @@ void CUIMainIngameWnd::Init()
 		UIWeaponIcon.SetShader		(GetEquipmentIconsShader());
 		UIWeaponIcon_rect			= UIWeaponIcon.GetWndRect();
 	*/	//---------------------------------------------------------
-	UIPickUpItemIcon = UIHelper::CreateStatic(uiXml, "pick_up_item", this);
+	UIPickUpItemIcon = UIHelper::Create3dStatic(uiXml, "pick_up_item", this);
 	UIPickUpItemIcon->SetShader(GetEquipmentIconsShader());
 
 	m_iPickUpItemIconWidth = UIPickUpItemIcon->GetWidth();
@@ -1041,6 +1041,18 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 	};
 
 	shared_str sect_name = m_pPickUpItem->object().cNameSect();
+    if (psActorFlags.test(AF_3D_ICONS_INV))
+    {
+        LPCSTR m_3d_static_visual_name = READ_IF_EXISTS(pSettings, r_string, sect_name, "3d_static_visual_name", pSettings->r_string(sect_name, "visual"));
+        UIPickUpItemIcon->SetVisual(m_3d_static_visual_name);
+        Fvector m_3d_static_rotate = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "3d_static_rotate", m_3d_static_rotate.set(0, 0, 0));
+        m_3d_static_rotate.mul(M_PI / 180.0f);
+        UIPickUpItemIcon->SetXYZ(m_3d_static_rotate);
+        float m_3d_static_scale = READ_IF_EXISTS(pSettings, r_float, sect_name, "3d_static_scale", 1.f);
+        UIPickUpItemIcon->SetScaleFactor(m_3d_static_scale);
+    }
+    else
+        UIPickUpItemIcon->SetVisual(nullptr);
 
 	bool isRaster = !(pSettings->line_exist(sect_name, kUIConfigField_InventoryVectorIcon));
 
