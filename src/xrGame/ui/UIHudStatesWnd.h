@@ -6,6 +6,7 @@
 #include "../actor_defs.h"
 
 class CUIStatic;
+class CUI3dStatic;
 class CUIProgressBar;
 class CUIProgressShape;
 class CUIXml;
@@ -96,7 +97,7 @@ public:
 	CUIProgressBar*		m_ui_health_bar = nullptr;
 	CUIProgressBar*		m_ui_armor_bar = nullptr;
 	CUIProgressBar*		m_ui_stamina_bar = nullptr;
-	CUIStatic*			m_ui_weapon_icon = nullptr;
+	CUI3dStatic*		m_ui_weapon_icon = nullptr;
 	CUIStatic*			m_back = nullptr;
 	CUIStatic*			m_ui_weapon_third_ammo = nullptr; //Alundaio
 
