@@ -3,7 +3,7 @@
 #include "HudSound.h"
 #include "../xrSound/ai_sounds.h"
 #include "Artefact.h"
-#include "CustomZone.h"
+#include "AnomalyZone.h"
 
 struct ITEM_TYPE
 {
@@ -97,7 +97,7 @@ public:
 	}
 };
 
-class CCustomZone;
+class CAnomalyZone;
 
 class CAfList final : public CDetectList<CArtefact>
 {
@@ -108,7 +108,7 @@ public:
 	int m_af_rank = 0;
 };
 
-class CZoneList final : public CDetectList<CCustomZone>
+class CZoneList final : public CDetectList<CAnomalyZone>
 {
 protected:
 	BOOL feel_touch_contact(CObject* O) override;
