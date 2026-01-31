@@ -100,7 +100,7 @@ CUIInventoryCellItem::CUIInventoryCellItem(CInventoryItem* itm)
     if (psActorFlags.test(AF_3D_ICONS_INV))
     {
         SetVisual(itm->m_3d_static_visual_name);
-        // SetVisual(itm->object().Visual());
+		SetBonesVisible(itm->object().Visual()->dcast_PKinematics());
     }
 }
 
@@ -377,6 +377,8 @@ void CUIWeaponCellItem::Update()
 	
 	bool bForceReInitAddons		= (b!=Heading());
 
+	bool reinit_3d_icon = false;
+
 	if (object()->SilencerAttachable())
 	{
 		if (object()->IsSilencerAttached() && !psActorFlags.test(AF_3D_ICONS_INV))
@@ -386,12 +388,17 @@ void CUIWeaponCellItem::Update()
 				CreateIcon	(eSilencer);
 				RefreshOffset();
 				InitAddon	(GetIcon(eSilencer), *object()->GetSilencerName(), m_addon_offset[eSilencer], Heading());
+
+				reinit_3d_icon = true;
 			}
         }
 		else
 		{
 			if (m_addons[eSilencer])
+			{
 				DestroyIcon(eSilencer);
+				reinit_3d_icon = true;
+			}
 		}
 	}
 
@@ -400,6 +407,7 @@ void CUIWeaponCellItem::Update()
 		if (m_addons[eScope])
 		{
 			DestroyIcon(eScope);
+			reinit_3d_icon = true;
 		}
 
 		if (object()->IsScopeAttached() && !psActorFlags.test(AF_3D_ICONS_INV))
@@ -409,6 +417,7 @@ void CUIWeaponCellItem::Update()
 				CreateIcon(eScope);
 				RefreshOffset();
 				InitAddon(GetIcon(eScope), *object()->GetScopeName(), m_addon_offset[eScope], Heading());
+				reinit_3d_icon = true;
 			}
 		}
 	}
@@ -422,12 +431,30 @@ void CUIWeaponCellItem::Update()
 				CreateIcon	(eLauncher);
 				RefreshOffset();
 				InitAddon	(GetIcon(eLauncher), *object()->GetGrenadeLauncherName(), m_addon_offset[eLauncher], Heading());
+				reinit_3d_icon = true;
 			}
 		}
 		else
 		{
 			if (m_addons[eLauncher])
+			{
 				DestroyIcon(eLauncher);
+				reinit_3d_icon = true;
+			}
+		}
+	}
+
+	if (reinit_3d_icon) 
+	{
+		if (auto pItem = (CInventoryItem*)m_pData)
+		{
+			if (auto pWeapon = pItem->cast_weapon())
+			{
+				pWeapon->UpdateAddonsVisibility();
+				pWeapon->ForceUpdateHUD();
+			}
+
+			SetBonesVisible(pItem->object().Visual()->dcast_PKinematics());
 		}
 	}
 }
@@ -452,13 +479,30 @@ void CUIWeaponCellItem::SetTextureColor( u32 color )
 void CUIWeaponCellItem::OnAfterChild(CUIDragDropListEx* parent_list)
 {
 	if(is_silencer() && GetIcon(eSilencer))
-		InitAddon	(GetIcon(eSilencer), *object()->GetSilencerName(),	m_addon_offset[eSilencer], parent_list->GetVerticalPlacement());
+	{
+		InitAddon(GetIcon(eSilencer), *object()->GetSilencerName(), m_addon_offset[eSilencer], parent_list->GetVerticalPlacement());
+	}
 
 	if(is_scope() && GetIcon(eScope))
-		InitAddon	(GetIcon(eScope),	*object()->GetScopeName(),		m_addon_offset[eScope], parent_list->GetVerticalPlacement());
+	{
+		InitAddon(GetIcon(eScope), *object()->GetScopeName(), m_addon_offset[eScope], parent_list->GetVerticalPlacement());
+	}
 
 	if(is_launcher() && GetIcon(eLauncher))
-		InitAddon	(GetIcon(eLauncher), *object()->GetGrenadeLauncherName(),m_addon_offset[eLauncher], parent_list->GetVerticalPlacement());
+	{
+		InitAddon(GetIcon(eLauncher), *object()->GetGrenadeLauncherName(), m_addon_offset[eLauncher], parent_list->GetVerticalPlacement());
+	}
+
+	if (auto pItem = (CInventoryItem*)m_pData)
+	{
+		if (auto pWeapon = pItem->cast_weapon())
+		{
+			pWeapon->UpdateAddonsVisibility();
+			pWeapon->ForceUpdateHUD();
+		}
+
+		SetBonesVisible(pItem->object().Visual()->dcast_PKinematics());
+	}
 }
 
 void CUIWeaponCellItem::InitAddon(CUIStatic* s, LPCSTR section, Fvector2 addon_offset, bool b_rotate)

@@ -517,10 +517,10 @@ protected:
 	void HideOneUpgradeLevel(const char* section);
 	void LoadUpgradeBonesToHide(const char* section, const char* line);
 	u32 FakeReload();
-	virtual void ForceUpdateHUD();
 
 public:
 	virtual bool IsGrenadeMode() const { return false; }
+	virtual void ForceUpdateHUD();
 
 	IC bool					IsZoomEnabled		()	const		{return m_zoom_params.m_bZoomEnabled;}
 	virtual	void			ZoomInc				();
