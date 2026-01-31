@@ -172,6 +172,7 @@ struct _binding
 {
 	_action*		m_action;
 	_keyboard*		m_keyboard[2];
+	_keyboard*		m_gamepad;
 };
 
 extern ENGINE_API _binding g_key_bindings[];
