@@ -29,6 +29,7 @@ CUI3dStatic::CUI3dStatic()
 	fScaleFactor = 1.0f;
 
 	pCurrentVisual = nullptr;
+    m_bCaptMoving = false;
 }
 
 CUI3dStatic::~CUI3dStatic()
