@@ -77,6 +77,43 @@ void CUIGameSP::OnFrame()
 #endif
 }
 
+bool CUIGameSP::IR_UIOnGamepadKeyPress(int id)
+{
+	if(inherited::IR_UIOnGamepadKeyPress(id)) 
+		return true;
+
+	if(Device.Paused() ) 
+		return false;
+
+	CObject* current_entity = Level().CurrentEntity();
+
+	CInventoryOwner* pInvOwner = current_entity != nullptr ? current_entity->cast_inventory_owner() : nullptr;
+	if (pInvOwner == nullptr)
+	{
+		return false;
+	}
+
+	CEntityAlive* EA = current_entity->cast_entity_alive();
+	if (EA == nullptr || !EA->g_Alive())
+	{
+		return false;
+	}
+
+	CActor* pActor = pInvOwner->cast_actor();
+	if (pActor == nullptr)
+	{
+		return false;
+	}
+
+	if (!pActor->g_Alive())
+	{
+		return false;
+	}
+
+	OnAction(pActor, get_binded_action(id));
+	return false;
+}
+
 bool CUIGameSP::IR_UIOnKeyboardPress(int dik) 
 {
 	if(inherited::IR_UIOnKeyboardPress(dik)) return true;
@@ -112,15 +149,21 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
 		return false;
 	}
 
-	switch ( get_binded_action(dik) )
+	OnAction(pActor, get_binded_action(dik));
+	return false;
+}
+
+void CUIGameSP::OnAction(CActor* actor, EGameActions action)
+{
+	switch (action)
 	{
 	case kACTIVE_JOBS:
 	{
-		if (!pActor->pda_disabled())
+		if (!actor->pda_disabled())
 		{
-			if (pActor->HudAnimator()->PdaAnimator() != nullptr)
+			if (actor->HudAnimator()->PdaAnimator() != nullptr)
 			{
-				pActor->HudAnimator()->PdaAnimator()->SwitchAnimator();
+				actor->HudAnimator()->PdaAnimator()->SwitchAnimator();
 			}
 			else
 			{
@@ -132,7 +175,7 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
 
 	case kMAP:
 	{
-		if (!pActor->pda_disabled())
+		if (!actor->pda_disabled())
 		{
 			PdaMenu()->SetActiveSubdialog("eptMap");
 			ShowPdaMenu();
@@ -142,7 +185,7 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
 
 	case kCONTACTS:
 	{
-		if (!pActor->pda_disabled())
+		if (!actor->pda_disabled())
 		{
 			PdaMenu()->SetActiveSubdialog("eptContacts");
 			ShowPdaMenu();
@@ -151,59 +194,59 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
 	}
 
 	case kINVENTORY:
+	{
+		if (!actor->inventory_disabled())
 		{
-			if (!pActor->inventory_disabled())
+			if (actor->HudAnimator()->BackpackAnimator() != nullptr)
 			{
-				if (pActor->HudAnimator()->BackpackAnimator() != nullptr)
-				{
-					pActor->HudAnimator()->BackpackAnimator()->SwitchAnimator();
-				}
-				else
-				{
-					ShowActorMenu();
-				}
+				actor->HudAnimator()->BackpackAnimator()->SwitchAnimator();
 			}
-			break;
+			else
+			{
+				ShowActorMenu();
+			}
 		}
+		break;
+	}
 	case kSCORES:
-        if (!pActor->pda_disabled())
-        {
-            m_game_objective = AddCustomStatic("main_task", true);
-            CGameTask* t1 = Level().GameTaskManager()->ActiveTask(eTaskTypeStoryline);
-            CGameTask* t2 = Level().GameTaskManager()->ActiveTask(eTaskTypeAdditional);
+		if (!actor->pda_disabled())
+		{
+			m_game_objective = AddCustomStatic("main_task", true);
+			CGameTask* t1 = Level().GameTaskManager()->ActiveTask(eTaskTypeStoryline);
+			CGameTask* t2 = Level().GameTaskManager()->ActiveTask(eTaskTypeAdditional);
 
-            if (Level().GameTaskManager()->IsMultipleTask() && t1 && t2)
-            {
-                m_game_objective->m_static->TextItemControl()->SetTextST(g_pStringTable->ParseStringFromScript(t1->m_Title).c_str());
-                SDrawStaticStruct* sm2 = AddCustomStatic("secondary_task", true);
-                sm2->m_static->TextItemControl()->SetTextST(g_pStringTable->ParseStringFromScript(t2->m_Title).c_str());
-            }
-            else
-            {
-                if (t1 || t2)
-                {
-                    CGameTask* t = (t1) ? t1 : t2;
+			if (Level().GameTaskManager()->IsMultipleTask() && t1 && t2)
+			{
+				m_game_objective->m_static->TextItemControl()->SetTextST(g_pStringTable->ParseStringFromScript(t1->m_Title).c_str());
+				SDrawStaticStruct* sm2 = AddCustomStatic("secondary_task", true);
+				sm2->m_static->TextItemControl()->SetTextST(g_pStringTable->ParseStringFromScript(t2->m_Title).c_str());
+			}
+			else
+			{
+				if (t1 || t2)
+				{
+					CGameTask* t = (t1) ? t1 : t2;
 					if (m_msgs_xml->NavigateToNode("secondary_task"))
 					{
-           	        	m_game_objective->m_static->TextItemControl()->SetTextST(g_pStringTable->ParseStringFromScript(t->m_Title).c_str());
+						m_game_objective->m_static->TextItemControl()->SetTextST(g_pStringTable->ParseStringFromScript(t->m_Title).c_str());
 						SDrawStaticStruct* sm2 = AddCustomStatic("secondary_task", true);
-                   		sm2->m_static->TextItemControl()->SetTextST(g_pStringTable->ParseStringFromScript(t->m_Description).c_str());
+						sm2->m_static->TextItemControl()->SetTextST(g_pStringTable->ParseStringFromScript(t->m_Description).c_str());
 					}
 					else
 					{
 						m_game_objective->m_static->TextItemControl()->SetTextST(g_pStringTable->ParseStringFromScript(Level().GameTaskManager()->ActiveObjective()->m_Description).c_str());
 					}
-                }
-                else
-                {
-                    m_game_objective->m_static->TextItemControl()->SetTextST("st_no_active_task");
-                }
-            }
-        }break;
+				}
+				else
+				{
+					m_game_objective->m_static->TextItemControl()->SetTextST("st_no_active_task");
+				}
+			}
+		}break;
 	}
 
-	return false;
 }
+
 #ifdef DEBUG
 void CUIGameSP::Render()
 {

@@ -691,33 +691,134 @@ void CLevel::IR_GamepadUpdateStick(int id, Fvector2 value)
 
 void CLevel::IR_GamepadKeyPress(int id)
 {
-	if (g_bDisableAllInput)
+	auto _curr = get_binded_action(id);
+	if (_curr != kNOTBINDED) 
+	{
+		if (is_block_action(static_cast<int>(_curr))) 
+		{
+			return;
+		}
+	}
+
+	if (Device.dwPrecacheFrame)
 		return;
 
+	bool b_ui_exist = (!!CurrentGameUI());
+
+	if (g_bDisableAllInput)
+	{
+		if (_curr == kQUIT)
+		{
+			Console->Execute("main_menu");
+		}
+		return;
+	}
 	if (Device.Paused())
 		return;
 
-	if (CurrentGameUI() && CurrentGameUI()->IR_UIOnGamepadKeyPress(id)) return;
-
-	if (g_actor != nullptr && g_actor->g_Alive())
+	switch ( _curr ) 
 	{
-		g_actor->IR_GamepadKeyPress(id);
+	case kQUIT: 
+		{
+			if(b_ui_exist && CurrentGameUI()->TopInputReceiver() )
+			{
+				if(Device.Paused())
+				{
+					// Снимаем паузу, через Esc
+					Device.Pause(FALSE, TRUE, TRUE, "kQUIT");
+					return;
+				}
+
+				if(CurrentGameUI()->IR_UIOnGamepadKeyPress(id))	
+					return;//special case for mp and main_menu
+
+				CurrentGameUI()->TopInputReceiver()->HideDialog();
+			}
+			else
+			{
+				Console->Execute("main_menu");
+			}
+			return;
+		}break;
+	};
+
+	if ( !bReady || !b_ui_exist )			return;
+
+	if (b_ui_exist && CurrentGameUI()->IR_UIOnGamepadKeyPress(id)) return;
+
+
+	if (CURRENT_ENTITY())		
+	{
+		IInputReceiver*		IR	= smart_cast<IInputReceiver*>	(smart_cast<CGameObject*>(CURRENT_ENTITY()));
+		if (IR)				IR->IR_GamepadKeyPress(get_binded_action(id));
 	}
 }
 
 void CLevel::IR_GamepadKeyHold(int id)
 {
+	EGameActions bind = get_binded_action(id);
+	if (bind != kNOTBINDED)
+	{
+		if (is_block_action(static_cast<int>(bind)))
+		{
+			return;
+		}
+	}
+
 	if (g_bDisableAllInput)
+	{
 		return;
+	}
 
 	if (Device.Paused())
+	{
 		return;
+	}
 
 	if (CurrentGameUI() && CurrentGameUI()->IR_UIOnGamepadKeyHold(id)) return;
 
-	if (g_actor != nullptr && g_actor->g_Alive())
+	if (Device.Paused() && !Level().IsDemoPlay()
+#ifdef DEBUG
+		&& !psActorFlags.test(AF_NO_CLIP)
+#endif //DEBUG
+		) return;
+	if (CURRENT_ENTITY())
 	{
-		g_actor->IR_GamepadKeyHold(id);
+		IInputReceiver* IR = smart_cast<IInputReceiver*>(smart_cast<CGameObject*>(CURRENT_ENTITY()));
+		if (IR != nullptr)
+		{
+			IR->IR_GamepadKeyHold(bind);
+		}
+	}
+}
+
+void CLevel::IR_GamepadKeyRelease(int id)
+{
+	auto bind = get_binded_action(id);
+	if (bind != kNOTBINDED) 
+	{
+		if (is_block_action(static_cast<int>(bind))) 
+		{
+			return;
+		}
+	}
+
+	if (!bReady || g_bDisableAllInput	)								return;
+//	if ( CurrentGameUI() && CurrentGameUI()->IR_GamepadKeyRelease(id)) return;
+//	if (game && game->OnKeyboardRelease(get_binded_action(id)) )		return;
+	if (Device.Paused() 
+#ifdef DEBUG
+		&& !psActorFlags.test(AF_NO_CLIP)
+#endif //DEBUG
+		)				return;
+
+	if (CURRENT_ENTITY())		
+	{
+		IInputReceiver*		IR	= smart_cast<IInputReceiver*>	(smart_cast<CGameObject*>(CURRENT_ENTITY()));
+		if (IR != nullptr) 
+		{
+			IR->IR_GamepadKeyRelease(bind);
+		}
 	}
 }
 
