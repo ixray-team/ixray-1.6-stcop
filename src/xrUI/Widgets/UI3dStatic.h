@@ -29,6 +29,8 @@ public:
 
 			void	SetScaleFactor	(float fScale) { fScaleFactor = fScale; }
 			float	GetScaleFactor	() { return fScaleFactor;  }
+			void	SetCaptMoving	(bool bMoving) { m_bCaptMoving = bMoving; }
+			bool	IsCaptMoving	() { return m_bCaptMoving; }
 
 	IRenderVisual*	GetVisual		() { return pCurrentVisual; }
 
@@ -41,6 +43,7 @@ protected:
 
 	float fViewportNear, fViewportDist, fViewportAspect;
 	float fViewportFOV, fViewportSize;
+    bool m_bCaptMoving;
 
 	Fmatrix mView, mInvView, mProject, mRotate;
 
