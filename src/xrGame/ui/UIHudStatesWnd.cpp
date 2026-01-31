@@ -8,11 +8,11 @@
 #include "../ActorHelmet.h"
 #include "../Inventory.h"
 #include "../RadioactiveZone.h"
-#include "../ActorHelmet.h"
 #include "../../xrUI/UIFontDefines.h"
 #include "../Grenade.h"
 #include "../../xrUI/UITextureMaster.h"
 #include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrUI/Widgets/UI3dStatic.h"
 #include "../../xrUI/Widgets/UIProgressBar.h"
 #include "../../xrUI/Widgets/UIProgressShape.h"
 #include "../../xrUI/UIXmlInit.h"
@@ -397,7 +397,7 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 	if (m_static_weapon)
 		wpnIconParent = m_static_weapon;
 	
-	m_ui_weapon_icon			= UIHelper::CreateStatic( xml, "static_wpn_icon", wpnIconParent);
+	m_ui_weapon_icon			= UIHelper::Create3dStatic( xml, "static_wpn_icon", wpnIconParent);
 	m_ui_weapon_icon->SetShader( InventoryUtilities::GetEquipmentIconsShader() );
 //	m_ui_weapon_icon->Enable	( false );
 	m_ui_weapon_icon_rect		= m_ui_weapon_icon->GetWndRect();
@@ -972,6 +972,19 @@ void CUIHudStatesWnd::SetAmmoIcon(const shared_str& sect_name)
 		return;
 	}
 	m_ui_weapon_icon->Show(true);
+
+    if (psActorFlags.test(AF_3D_ICONS_INV))
+    {
+        LPCSTR m_3d_static_visual_name = READ_IF_EXISTS(pSettings, r_string, sect_name, "3d_static_visual_name", pSettings->r_string(sect_name, "visual"));
+        m_ui_weapon_icon->SetVisual(m_3d_static_visual_name);
+        Fvector m_3d_static_rotate = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "3d_static_rotate", m_3d_static_rotate.set(0, 0, 0));
+        m_3d_static_rotate.mul(M_PI / 180.0f);
+        m_ui_weapon_icon->SetXYZ(m_3d_static_rotate);
+        float m_3d_static_scale = READ_IF_EXISTS(pSettings, r_float, sect_name, "3d_static_scale", 1.f);
+        m_ui_weapon_icon->SetScaleFactor(m_3d_static_scale);
+    }
+    else
+        m_ui_weapon_icon->SetVisual(nullptr);
 
 	Frect texture_rect;
 	float scaleIcon = READ_IF_EXISTS(pSettings, r_float, sect_name, "inv_scale", 1.0f);
