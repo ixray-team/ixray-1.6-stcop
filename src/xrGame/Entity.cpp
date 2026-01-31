@@ -32,10 +32,10 @@ CEntity::CEntity()
 }
 
 CEntity::~CEntity()
-{	
-	xr_delete				(m_entity_condition);
+{
+	xr_delete(m_entity_condition);
+	GECSManager->DestroyAllForOwner(this);
 }
-
 
 CEntityConditionSimple *CEntity::create_entity_condition(CEntityConditionSimple* ec)
 {
@@ -97,15 +97,8 @@ float CEntity::CalcCondition(float hit)
 	return hit;
 }
 
-
-
-
-//void CEntity::Hit			(float perc, Fvector &dir, CObject* who, s16 element,Fvector position_in_object_space, float impulse, ALife::EHitType hit_type) 
-void	CEntity::Hit		(SHit* pHDS)
+void CEntity::Hit(SHit* pHDS)
 {
-
-//	if (bDebug)				Log("Process HIT: ", *cName());
-
 	// *** process hit calculations
 	// Calc impulse
 	Fvector					vLocalDir;
@@ -222,10 +215,18 @@ BOOL CEntity::net_Spawn		(CSE_Abstract* DC)
 	IKinematics* pKinematics = PKinematics(Visual());
 	CInifile* ini = nullptr;
 
-	if(pKinematics) ini = pKinematics->LL_UserData();
-	if (ini) {
+	if (pKinematics)
+	{
+		ini = pKinematics->LL_UserData();
+	}
+	
+	if (ini)
+	{
 		if (ini->section_exist("damage_section") && !use_simplified_visual())
-			CDamageManager::reload(pSettings->r_string("damage_section","damage"),ini);
+		{
+			TDamageManager* DmgManager = GECSManager->GetComponent<TDamageManager>(this);
+			DmgManager->reload(pSettings->r_string("damage_section", "damage"), ini);
+		}
 
 		CParticlesPlayer::LoadParticles(pKinematics);
 	}
@@ -302,23 +303,19 @@ void CEntity::KillEntity(u16 whoID, bool bypass_actor_check /*AVO: added for act
 	}
 };
 
-//void CEntity::KillEntity(CObject* who)
-//{
-//	VERIFY			(who);
-//	if (who) KillEntity(who->ID());	
-//}
-
-void CEntity::reinit			()
+void CEntity::reinit()
 {
-	inherited::reinit			();
+	inherited::reinit();
 }
 
-
-void CEntity::reload			(LPCSTR section)
+void CEntity::reload(LPCSTR section)
 {
-	inherited::reload			(section);
+	inherited::reload(section);
 	if (!use_simplified_visual())
-		CDamageManager::reload	(section,"damage",pSettings);
+	{
+		TDamageManager* DmgManager = GECSManager->GetComponent<TDamageManager>(this);
+		DmgManager->reload(section, "damage", pSettings);
+	}
 }
 
 void CEntity::set_death_time	()
@@ -331,12 +328,14 @@ void CEntity::set_ready_to_save	()
 {
 }
 
-DLL_Pure *CEntity::_construct	()
+DLL_Pure* CEntity::_construct()
 {
-	inherited::_construct		();
-	CDamageManager::_construct	();
-	m_entity_condition			= create_entity_condition(nullptr);
-	return						(this);
+	inherited::_construct();
+	m_entity_condition = create_entity_condition(nullptr);
+	TDamageManager& DmgManager = GECSManager->CreateComponent<TDamageManager>(this);
+	DmgManager.m_object = this;
+
+	return (this);
 }
 
 const u32 FORGET_KILLER_TIME = 180000;
