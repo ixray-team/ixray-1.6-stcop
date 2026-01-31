@@ -780,11 +780,16 @@ void CAI_Bloodsucker::predator_start()
 		}
 		m_predator = false;
 	}
-	if (m_predator)					return;
+	
+	if (m_predator)
+	{
+		return;
+	}
 
 	cNameVisual_set(m_visual_predator);
-	CDamageManager::reload(*cNameSect(),"damage",pSettings);
 
+	TDamageManager* DmgManager = GECSManager->GetComponent<TDamageManager>(static_cast<CEntity*>(this));
+	DmgManager->reload(*cNameSect(),"damage",pSettings);
 
 	if (IsGameTypeSingle() || OnServer())
 		control().animation().restart();
@@ -851,7 +856,8 @@ void CAI_Bloodsucker::predator_stop()
 	cNameVisual_set(*m_visual_default);
 	character_physics_support()->in_ChangeVisual();
 
-	CDamageManager::reload(*cNameSect(),"damage",pSettings);
+	TDamageManager* DmgManager = GECSManager->GetComponent<TDamageManager>(static_cast<CEntity*>(this));
+	DmgManager->reload(*cNameSect(),"damage",pSettings);
 
 	if (IsGameTypeSingle() || OnServer())
 		control().animation().restart();
