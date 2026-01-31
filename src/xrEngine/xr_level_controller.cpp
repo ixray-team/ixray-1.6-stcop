@@ -1206,7 +1206,7 @@ ENGINE_API void CCC_RegisterInput()
 	CMD1(CCC_BindGamepad,		"bind_gamepad"			);
 	CMD2(CCC_UnBind,			"unbind",				0);
 	CMD2(CCC_UnBind,			"unbind_sec",			1);
-	CMD1(CCC_UnBindGamepad,		"unbind_gamepad",		);
+	CMD1(CCC_UnBindGamepad,		"unbind_gamepad"		);
 	CMD1(CCC_UnBindAll,			"unbindall"				);
 	CMD1(CCC_DefControls,		"default_controls"		);
 	CMD1(CCC_ListActions,		"list_actions"			);
