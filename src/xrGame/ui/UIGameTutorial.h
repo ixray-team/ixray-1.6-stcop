@@ -49,12 +49,12 @@ public:
 	virtual void			IR_OnKeyboardRelease(int dik);
 	virtual void			IR_OnKeyboardHold	(int dik);
 
-	virtual void			IR_GamepadKeyPress(int id);
+	virtual void			IR_GamepadKeyPress	(int id);
 
 	virtual void			IR_OnMouseWheel		(int direction)	;
 	virtual void			IR_OnActivate		(void);
 			bool			Persistent			() {return !!m_flags.test(etsPersistent);}
-
+			bool			ButtonPress			(int id);
 	xr_delegate<void()>	m_on_destroy_event;
 	
 	enum {	
@@ -149,7 +149,7 @@ public:
 	float					m_time_length;
 	string64				m_pda_section;
 	Fvector2				m_desired_cursor_pos;
-	int						m_continue_dik_guard;
+	EGameActions			m_continue_dik_guard;
 	xr_vector<SActionItem>	m_actions;
 public:
 							CUISequenceSimpleItem(CUISequencer* owner):CUISequenceItem(owner){}
