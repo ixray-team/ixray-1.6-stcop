@@ -3,10 +3,8 @@
 
 void CRenderTarget::phase_taa()
 {
-	//Output directly to rt_Generic_0 hence we didn't call CopyResource before
     u_setrt(rt_Generic_2, nullptr, nullptr, nullptr);
     GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-    RCache.set_Stencil(FALSE);
 
     RCache.set_Element(s_taa->E[0]);
 	RCache.set_Geometry(FSTriangleGeom);
@@ -14,8 +12,6 @@ void CRenderTarget::phase_taa()
 	
 	//Save previous frame
 	GRHI->CopySurface(rt_Generic_0_prev->pSurface, rt_Generic_2->pSurface);
-
-	//Copy to rt_Generic_0... waste more perf...
 	GRHI->CopySurface(rt_Generic_0->pSurface, rt_Generic_2->pSurface);
 }
 
@@ -34,9 +30,7 @@ void CRenderTarget::phase_mblur()
 	for (u32 i = 1; i <= ps_r4_mblur_quality; ++i) 
 	{
 		u_setrt(rt_Generic_2, nullptr, nullptr, nullptr);
-
 		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-		RCache.set_Stencil(FALSE);
 
 		RCache.set_Element(s_taa->E[1]);
 		RCache.set_c("mblur_params", mblur_power / i, i, 1.0f / dwWidth, 1.0f / dwHeight);

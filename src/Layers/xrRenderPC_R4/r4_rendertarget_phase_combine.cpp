@@ -217,25 +217,32 @@ void CRenderTarget::phase_combine()
 	}
 
 	u_setrt(rt_Generic_0, 0, 0, RDepth);
-	if (g_pGamePersistent) {
+
+	if (g_pGamePersistent) 
+	{
 		g_pGamePersistent->OnRenderPPUI_main();	// PP-UI
 	}
 
 	copy_position();
-	u_setrt(rt_Generic_2, 0, 0, 0);
 
-	if(ps_r_scale_mode < 2) {
-		if(ps_r2_aa_type == 1) {
+	if(ps_r_scale_mode < 2) 
+	{
+		if(ps_r2_aa_type == 1) 
+		{
 			GPU_EVENT(phase_fxaa);
 			phase_fxaa();
+
 			RCache.set_Stencil(FALSE);
 		}
-		else if(ps_r2_aa_type == 2) {
+		else if(ps_r2_aa_type == 2) 
+		{
 			GPU_EVENT(phase_smaa);
 			phase_smaa();
+
 			RCache.set_Stencil(FALSE);
 		}
-		else if(ps_r2_aa_type == 3) {
+		else if(ps_r2_aa_type == 3)
+		{
 			GPU_EVENT(phase_taa);
 			phase_taa();
 		}
