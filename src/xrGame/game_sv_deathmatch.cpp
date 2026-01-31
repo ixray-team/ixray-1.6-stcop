@@ -4,7 +4,7 @@
 #include "Level.h"
 #include "xrServer.h"
 #include "Inventory.h"
-#include "CustomZone.h"
+#include "AnomalyZone.h"
 #include "../xrEngine/IGame_Persistent.h"
 #include "Actor.h"
 #include "game_cl_base.h"
@@ -1468,7 +1468,7 @@ void	game_sv_Deathmatch::StartAnomalies			(int AnomalySet)
 	///////////////////////////////////////////////////
 	if (m_dwLastAnomalySetID < m_AnomalySetsList.size())
 	{
-		Send_EventPack_for_AnomalySet(m_dwLastAnomalySetID, CCustomZone::eZoneStateDisabled); //Disable
+		Send_EventPack_for_AnomalySet(m_dwLastAnomalySetID, CAnomalyZone::eZoneStateDisabled); //Disable
 	};
 	///////////////////////////////////////////////////
 	if (AnomalySet != -1 && AnomalySet < (int)m_AnomalySetsList.size())
@@ -1480,7 +1480,7 @@ void	game_sv_Deathmatch::StartAnomalies			(int AnomalySet)
 		m_dwLastAnomalySetID = NewAnomalySetID;
 
 	if (IsAnomaliesEnabled())
-		Send_EventPack_for_AnomalySet(m_dwLastAnomalySetID, CCustomZone::eZoneStateIdle); //Idle
+		Send_EventPack_for_AnomalySet(m_dwLastAnomalySetID, CAnomalyZone::eZoneStateIdle); //Idle
 	m_dwLastAnomalyStartTime = Level().timeServer();
 #ifdef DEBUG
 	Msg("Anomaly Set %d Activated", m_dwLastAnomalySetID);
@@ -1897,7 +1897,7 @@ BOOL game_sv_Deathmatch::OnPreCreate(CSE_Abstract* E)
 	BOOL res = inherited::OnPreCreate(E);
 	if (!res) return res;
 
-	CSE_ALifeCustomZone* pCustomZone	=	smart_cast<CSE_ALifeCustomZone*> (E);
+	CSE_ALifeAnomalyZone* pCustomZone	=	smart_cast<CSE_ALifeAnomalyZone*> (E);
 	if (pCustomZone)
 	{
 		return Is_Anomaly_InLists(pCustomZone);
@@ -1918,7 +1918,7 @@ void game_sv_Deathmatch::OnPostCreate(u16 eid_who)
 	CSE_Abstract	*pEntity	= get_entity_from_eid(eid_who);
 	if (!pEntity) return;
 	
-	CSE_ALifeCustomZone* pCustomZone	=	smart_cast<CSE_ALifeCustomZone*> (pEntity);
+	CSE_ALifeAnomalyZone* pCustomZone	=	smart_cast<CSE_ALifeAnomalyZone*> (pEntity);
 	if (!pCustomZone || pCustomZone->m_owner_id != u32(-1)) return;
 	
 	for (u32 j=0; j<m_AnomalySetsList.size(); j++)
@@ -1932,7 +1932,7 @@ void game_sv_Deathmatch::OnPostCreate(u16 eid_who)
 			//-----------------------------------------------------------------------------
 			NET_Packet P;
 			u_EventGen		(P,GE_ZONE_STATE_CHANGE,eid_who);
-			P.w_u8			(u8(CCustomZone::eZoneStateDisabled)); //eZoneStateDisabled
+			P.w_u8			(u8(CAnomalyZone::eZoneStateDisabled)); //eZoneStateDisabled
 			u_EventSend(P);
 			//-----------------------------------------------------------------------------
 			return;
@@ -1946,7 +1946,7 @@ void game_sv_Deathmatch::OnPostCreate(u16 eid_who)
 
 		NET_Packet P;
 		u_EventGen		(P,GE_ZONE_STATE_CHANGE,eid_who);
-		P.w_u8			(u8(CCustomZone::eZoneStateDisabled)); //eZoneStateDisabled
+		P.w_u8			(u8(CAnomalyZone::eZoneStateDisabled)); //eZoneStateDisabled
 		u_EventSend(P);
 	};*/
 };
@@ -1960,7 +1960,7 @@ void game_sv_Deathmatch::Send_Anomaly_States(ClientID id_who)
 	//-----------------------------------
 	for (u32 j=0; j<m_AnomalyIDSetsList.size(); j++)
 	{
-		u8 AnomalyState = u8((m_dwLastAnomalySetID == j) ? CCustomZone::eZoneStateIdle : CCustomZone::eZoneStateDisabled);
+		u8 AnomalyState = u8((m_dwLastAnomalySetID == j) ? CAnomalyZone::eZoneStateIdle : CAnomalyZone::eZoneStateDisabled);
 
 		ANOMALIES_ID* Anomalies = &(m_AnomalyIDSetsList[j]);
 		if (Anomalies->empty()) return;
