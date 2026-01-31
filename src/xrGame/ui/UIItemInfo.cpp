@@ -201,7 +201,7 @@ bool CUIItemInfo::InitItemInfo(LPCSTR xml_name)
 
 	if (uiXml.NavigateToNode("image_static", 0))
 	{	
-		UIItemImage					= new CUIStatic();	 
+		UIItemImage					= new CUI3dStatic();	 
 		AttachChild					(UIItemImage);	
 		UIItemImage->SetAutoDelete	(true);
 		xml_init.InitStatic			(uiXml, "image_static", 0, UIItemImage);
@@ -375,8 +375,20 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 		UIDesc->ScrollToBegin				();
 	}
 	if(UIItemImage)
-	{
-		// Загружаем картинку
+    {
+        if (psActorFlags.test(AF_3D_ICONS_INV))
+        {
+            const PIItem iitem = static_cast<PIItem>(pCellItem->m_pData);
+            UIItemImage->SetVisual(iitem->m_3d_static_visual_name);
+            UIItemImage->SetScaleFactor(iitem->m_3d_static_scale);
+            iitem->m_3d_static_rotate.mul(M_PI / 180.0f);
+            UIItemImage->SetXYZ(iitem->m_3d_static_rotate);
+            UIItemImage->SetScaleFactor(iitem->m_3d_static_scale);
+        }
+        else
+            UIItemImage->SetVisual(nullptr);
+
+        // Загружаем картинку
 		UIItemImage->SetShader(InventoryUtilities::GetEquipmentIconsShader(m_pInvItem->IconsTexture.c_str()));
 
 		Irect item_grid_rect = pInvItem->GetInvGridRect();
@@ -396,10 +408,11 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 
 		v_r.x								*= UI().get_current_kx();
 
+
 		UIItemImage->GetUIStaticItem().SetSize	(v_r);
 		UIItemImage->SetWidth					(v_r.x);
 		UIItemImage->SetHeight					(v_r.y);
-	}
+    }
 }
 
 void CUIItemInfo::TryAddConditionInfo(CInventoryItem& pInvItem, CInventoryItem* pCompareItem)
