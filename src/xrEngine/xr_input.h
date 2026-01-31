@@ -145,7 +145,7 @@ public:
 
 	void						feedback(u16 s1, u16 s2, float time);
 
-	void						SetControllerMode(bool val) { controllerMode = val; }
+	void						SetControllerMode(bool val);
 	bool						GetControllerMode() { return controllerMode; }
 private:
 	bool FillVendorInfo(const CInputDevice& device, CInputDeviceVendorInfo& info) noexcept;
