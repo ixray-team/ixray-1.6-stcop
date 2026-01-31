@@ -37,6 +37,30 @@ CUI3dStatic::~CUI3dStatic()
 	SetVisual(nullptr);
 }
 
+void CUI3dStatic::SetBonesVisible(IKinematics* pVisual)
+{
+	if (!pCurrentVisual)
+	{
+		return;
+	}
+
+	if (auto pK = pCurrentVisual->dcast_PKinematics())
+	{
+		pK->LL_SetBonesVisibleAll();
+
+		for (auto& [bonename, bone_id] : *pVisual->LL_Bones())
+		{
+			if (auto BoneID = pK->LL_BoneID(bonename); BoneID != BI_NONE)
+			{
+				pK->LL_SetBoneVisible(BoneID, pVisual->LL_GetBoneVisible(bone_id), FALSE);
+			}
+		}
+
+		pK->CalculateBones_Invalidate();
+		pK->CalculateBones(TRUE);
+	}
+}
+
 void CUI3dStatic::FromScreenToItem(int x, int y, float& x_item, float& y_item)
 {
 	float halfwidth = UI_BASE_WIDTH * 0.5f;
@@ -64,6 +88,9 @@ void CUI3dStatic::Draw()
 			return;
 		}
 
+		pCurrentVisual->dcast_PKinematics()->CalculateBones_Invalidate();
+		pCurrentVisual->dcast_PKinematics()->CalculateBones(TRUE);
+
 		Fmatrix matrix = Fidentity;
 		Fmatrix translate_matrix = Fidentity;
 
@@ -73,9 +100,6 @@ void CUI3dStatic::Draw()
 		matrix.mulA_44(mRotate);
 
 		float x1, y1, x2, y2;
-
-		pCurrentVisual->dcast_PKinematics()->CalculateBones_Invalidate();
-		pCurrentVisual->dcast_PKinematics()->CalculateBones(TRUE);
 
 		FromScreenToItem(rect.left, rect.top, x1, y1);
 		FromScreenToItem(rect.right, rect.bottom, x2, y2);
@@ -226,8 +250,5 @@ void CUI3dStatic::SetVisual(IRenderVisual* pVisual)
 
 		pKa->PlayCycle(MotionID, false);
 	}
-
-	pCurrentVisual->dcast_PKinematics()->CalculateBones_Invalidate();
-	pCurrentVisual->dcast_PKinematics()->CalculateBones(TRUE);
 }
 
