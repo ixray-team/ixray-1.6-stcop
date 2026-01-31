@@ -2,7 +2,7 @@
 #include "anomaly_detector.h"
 #include "basemonster/base_monster.h"
 #include "../../restricted_object.h"
-#include "../../CustomZone.h"
+#include "../../AnomalyZone.h"
 #include "../../Level.h"
 #include "../../space_restriction_manager.h"
 
@@ -79,7 +79,7 @@ void CAnomalyDetector::on_contact(CObject *obj)
 	if(!obj || obj->getDestroy()) return;
 	CGameObject* game_object = obj->cast_game_object();
 	if (!game_object) return;
-	CCustomZone	*custom_zone = game_object->cast_custom_zone();
+	CAnomalyZone	*custom_zone = game_object->cast_anomaly_zone();
 	if (!custom_zone) return;
 	
 	// if its NOT A restrictor - skip
