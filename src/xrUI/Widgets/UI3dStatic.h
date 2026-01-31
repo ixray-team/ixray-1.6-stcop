@@ -2,6 +2,7 @@
 #include "UIStatic.h"
 
 class IRenderVisual;
+class IKinematics;
 
 class UI_API CUI3dStatic : 
     public CUIStatic
@@ -33,6 +34,8 @@ public:
 			bool	IsCaptMoving	() { return m_bCaptMoving; }
 
 	IRenderVisual*	GetVisual		() { return pCurrentVisual; }
+
+	void			SetBonesVisible (IKinematics* pVisual);
 
 protected:
 
