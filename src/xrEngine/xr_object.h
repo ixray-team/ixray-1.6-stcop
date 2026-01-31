@@ -43,7 +43,7 @@ class CAI_Stalker;
 class CBolt;
 class CPda;
 class CInventoryBox;
-class CCustomZone;
+class CAnomalyZone;
 class CSpaceRestrictor;
 class CSpectator;
 class CSilencer;
@@ -224,7 +224,7 @@ public:
 	virtual CBolt* cast_bolt() { return nullptr; }
 	virtual CPda* cast_pda() { return nullptr; }
 	virtual CInventoryBox* cast_inventory_box() { return nullptr; }
-	virtual CCustomZone* cast_custom_zone() { return nullptr; }
+	virtual CAnomalyZone* cast_anomaly_zone() { return nullptr; }
 	virtual CSpaceRestrictor* cast_restrictor() { return nullptr; }
 	virtual CSpectator* cast_spectator() {return nullptr;}
 	virtual CSilencer* cast_addon_silencer() {return nullptr;}

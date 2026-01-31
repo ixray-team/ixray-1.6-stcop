@@ -19,7 +19,7 @@
 #include "stalker_animation_manager.h"
 #include "Weapon.h"
 #include "Inventory.h"
-#include "CustomZone.h"
+#include "AnomalyZone.h"
 #include "patrol_path_manager.h"
 #include "memory_manager.h"
 #include "visual_memory_manager.h"
@@ -1277,7 +1277,7 @@ CScriptGameObject* CScriptGameObject::GetObjectByIndex(int iIndex) const
 
 void CScriptGameObject::EnableAnomaly()
 {
-	CCustomZone* zone = object().cast_custom_zone();
+	CAnomalyZone* zone = object().cast_anomaly_zone();
 	THROW(zone);
 
 	zone->ZoneEnable();
@@ -1285,7 +1285,7 @@ void CScriptGameObject::EnableAnomaly()
 
 void CScriptGameObject::DisableAnomaly()
 {
-	CCustomZone* zone = object().cast_custom_zone();
+	CAnomalyZone* zone = object().cast_anomaly_zone();
 	THROW(zone);
 
 	zone->ZoneDisable();
@@ -1293,7 +1293,7 @@ void CScriptGameObject::DisableAnomaly()
 
 float CScriptGameObject::GetAnomalyPower()
 {
-	CCustomZone* zone = object().cast_custom_zone();
+	CAnomalyZone* zone = object().cast_anomaly_zone();
 	THROW(zone);
 
 	return zone->GetMaxPower();
@@ -1301,7 +1301,7 @@ float CScriptGameObject::GetAnomalyPower()
 
 void CScriptGameObject::SetAnomalyPower(float p)
 {
-	CCustomZone* zone = object().cast_custom_zone();
+	CAnomalyZone* zone = object().cast_anomaly_zone();
 	THROW(zone);
 
 	zone->SetMaxPower(p);
