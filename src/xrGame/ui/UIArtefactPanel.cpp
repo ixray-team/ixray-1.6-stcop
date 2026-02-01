@@ -27,19 +27,17 @@ void CUIArtefactPanel::InitFromXML	(CUIXml& xml, LPCSTR path, int index)
 
 void CUIArtefactPanel::InitIcons(const xr_vector<const CArtefact*>& artefacts)
 {
-	m_si.SetShader(GetEquipmentIconsShader());
+	m_static.SetShader(GetEquipmentIconsShader());
 	m_vRects.clear();
 	
-	for(xr_vector<const CArtefact*>::const_iterator it = artefacts.begin();
-		it != artefacts.end(); it++)
+	for(const CArtefact* af : artefacts)
 	{
-		const CArtefact* artefact = *it;
 		Frect rect;
-		float scaleIcon = READ_IF_EXISTS(pSettings, r_float, artefact->cNameSect(), "inv_scale", 1.0f);
-		rect.left = float(artefact->GetInvGridRect().x1 *INV_GRID_WIDTH(scaleIcon));
-		rect.top = float(artefact->GetInvGridRect().y1 *INV_GRID_HEIGHT(scaleIcon));
-		rect.right = rect.left + artefact->GetInvGridRect().x2 *INV_GRID_WIDTH(scaleIcon);
-		rect.bottom = rect.top + artefact->GetInvGridRect().y2 *INV_GRID_HEIGHT(scaleIcon);
+		float scaleIcon = READ_IF_EXISTS(pSettings, r_float, af->cNameSect(), "inv_scale", 1.0f);
+		rect.left = float(af->GetInvGridRect().x1 *INV_GRID_WIDTH(scaleIcon));
+		rect.top = float(af->GetInvGridRect().y1 *INV_GRID_HEIGHT(scaleIcon));
+		rect.right = rect.left + af->GetInvGridRect().x2 *INV_GRID_WIDTH(scaleIcon);
+		rect.bottom = rect.top + af->GetInvGridRect().y2 *INV_GRID_HEIGHT(scaleIcon);
 		m_vRects.push_back(rect);
 	}
 }
@@ -69,13 +67,13 @@ void CUIArtefactPanel::Draw()
 		iHeight = m_fScale*(r.bottom - r.top);
 		iWidth  = _s*m_fScale*(r.right - r.left);
 
-		m_si.SetTextureRect(r);
-		m_si.SetSize(Fvector2().set(iWidth, iHeight));
+		m_static.SetTextureRect(r);
+		m_static.SetWndSize(Fvector2().set(iWidth, iHeight));
 
-		m_si.SetPos(x, y);
-		x = x + iIndent + iWidth;
-
-        m_si.Render();
+		m_static.SetWndPos(Fvector2().set(x, y));
+		x = x + iIndent + iWidth;	
+		m_static.SetStretchTexture(true);
+		m_static.Draw();
 	}
 
 	CUIWindow::Draw();
