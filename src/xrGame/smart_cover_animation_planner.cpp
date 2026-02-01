@@ -55,9 +55,9 @@ animation_planner::~animation_planner	()
 
 }
 
-void animation_planner::setup			(CAI_Stalker *object, CPropertyStorage *storage)
+void animation_planner::setup			(CAI_Stalker *Object, CPropertyStorage *storage)
 {
-	inherited::setup		(object);
+	inherited::setup		(Object);
 #ifdef DEBUG
 //	inherited::m_use_log	= true;
 #endif // DEBUG
@@ -65,7 +65,7 @@ void animation_planner::setup			(CAI_Stalker *object, CPropertyStorage *storage)
 	add_evaluators			();
 	add_actions				();
 
-	object->movement().target_selector().setup(this, storage);
+	Object->movement().target_selector().setup(this, storage);
 }
 
 void animation_planner::target			(StalkerDecisionSpace::EWorldProperties const &world_property)
