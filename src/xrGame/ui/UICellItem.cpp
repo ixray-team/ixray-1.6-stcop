@@ -9,7 +9,9 @@
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/Widgets/UIProgressBar.h"
 #include "../eatable_item.h"
-
+#include "../../Include/xrRender/Kinematics.h"
+#include "../Include/xrRender/RenderVisual.h"
+#include "../Actor.h"
 #include "CustomOutfit.h"
 
 CUICellItem* CUICellItem::m_mouse_selected_item = nullptr;
@@ -328,6 +330,17 @@ CUIDragItem* CUICellItem::CreateDragItem()
 		r.y2			= r.y1 + t1;
 	}
 	tmp->Init(GetShader(), r, GetUIStaticItem().GetTextureRect());
+	if (psActorFlags.test(AF_3D_ICONS_INV))
+	{
+		tmp->wnd()->SetVisual(GetVisual());
+		tmp->wnd()->SetXYZ(GetXYZ().x, GetXYZ().y, GetXYZ().z);
+		tmp->wnd()->SetScaleFactor(GetScaleFactor());
+		tmp->wnd()->SetBonesVisible(GetVisual()->dcast_PKinematics());
+	}
+	else
+	{
+		tmp->wnd()->SetVisual(nullptr);
+	}
 	return tmp;
 }
 
