@@ -571,7 +571,7 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 		{
 			mstate_wishful |= (value.y > 0.f) ? mcFwd : mcBack;
 
-			if (value.y < 0.22f)
+			if (absValueY < 0.22f)
 			{
 				mstate_wishful |= mcAccel;
 			}
