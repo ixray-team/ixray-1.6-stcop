@@ -164,6 +164,7 @@ void CUIInventoryUpgradeWnd::InitInventory(CUICellItem* cellItem, bool can_upgra
             m_item->SetXYZ(m_3d_static_rotate);
             float m_3d_static_scale = READ_IF_EXISTS(pSettings, r_float, m_inv_item->m_section_id, "3d_static_scale", 1.f);
             m_item->SetScaleFactor(m_3d_static_scale);
+			m_item->SetBonesVisible(m_inv_item->object().Visual()->dcast_PKinematics());
         }
         else
             m_item->SetVisual(nullptr);
