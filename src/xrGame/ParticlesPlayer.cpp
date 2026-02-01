@@ -4,7 +4,7 @@
 ///////////////////////////////////////////////////////////////
 #include "StdAfx.h"
 #include "ParticlesPlayer.h"
-#include "../xrEngine/xr_object.h"
+#include "GameObject.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "ParticlesObject.h"
 //-------------------------------------------------------------------------------------
@@ -347,5 +347,5 @@ u16 TParticlesPlayer::GetNearestBone	(IKinematics* K, u16 bone_id)
 
 void TParticlesPlayer::SetupOwner(IECSOwner* Owner)
 {
-	m_self_object = smart_cast<CObject*>(Owner);
+	m_self_object = smart_cast<CGameObject*>(Owner);
 }
