@@ -17,6 +17,10 @@ void CECSManager::DestroyAll()
 		xr_delete(Storage);
 	}
 	ComponentStorages.clear();
+
+#ifdef DEBUG_DRAW
+	ECS_DrawFuncs.clear();
+#endif
 }
 
 void CECSManager::DestroyAllForOwner(IECSOwner* Owner)

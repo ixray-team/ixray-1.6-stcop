@@ -66,6 +66,8 @@ extern void destroy_lua_knife_params();
 
 void clean_game_globals()
 {
+	GECSManager->DestroyAll();
+
 	destroy_lua_wpn_params();
 	destroy_lua_knife_params();
 
