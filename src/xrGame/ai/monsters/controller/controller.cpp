@@ -386,7 +386,7 @@ void CController::reinit()
 	control().path_builder().detail().add_velocity(MonsterMovement::eControllerVelocityParameterMoveFwd,	CDetailPathManager::STravelParams(m_velocity_move_fwd.velocity.linear,	m_velocity_move_fwd.velocity.angular_path,	m_velocity_move_fwd.velocity.angular_real));
 	control().path_builder().detail().add_velocity(MonsterMovement::eControllerVelocityParameterMoveBkwd,	CDetailPathManager::STravelParams(m_velocity_move_bkwd.velocity.linear,	m_velocity_move_bkwd.velocity.angular_path, m_velocity_move_bkwd.velocity.angular_real));
 
-	m_sndShockEffector		 = 0;
+	DestroyComponent<TSndShockEffector>();
 	active_control_fx		 = false;
 }
 
@@ -416,11 +416,13 @@ void CController::UpdateCL()
 {
 	inherited::UpdateCL();
 	
-	if(m_sndShockEffector)
+	if(TSndShockEffector* ShockEffect = GetComponent<TSndShockEffector>())
 	{
-		m_sndShockEffector->Update();
-		if(!m_sndShockEffector->InWork()) 
-			xr_delete(m_sndShockEffector);
+		ShockEffect->Update();
+		if (!ShockEffect->InWork())
+		{
+			DestroyComponent<TSndShockEffector>();
+		}
 	}
 
 	if (active_control_fx) {
