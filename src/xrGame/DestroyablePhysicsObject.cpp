@@ -27,7 +27,6 @@ CDestroyablePhysicsObject ::CDestroyablePhysicsObject()
 
 CDestroyablePhysicsObject::~CDestroyablePhysicsObject()
 {
-	GECSManager->DestroyAllForOwner(this);
 }
 
 void CDestroyablePhysicsObject::OnChangeVisual()
@@ -63,7 +62,7 @@ BOOL CDestroyablePhysicsObject::net_Spawn(CSE_Abstract* DC)
 	if(ini&&ini->section_exist("destroyed"))
 		CPHDestroyable::Load(ini,"destroyed");
 
-	TDamageManager* DmgManager = GECSManager->GetComponent<TDamageManager>(this);
+	TDamageManager* DmgManager = GetComponent<TDamageManager>();
 	DmgManager->reload("damage_section",ini);
 
 	if(ini){	
@@ -82,7 +81,9 @@ BOOL CDestroyablePhysicsObject::net_Spawn(CSE_Abstract* DC)
 			}
 		}
 	}
-	CParticlesPlayer::LoadParticles(K);
+
+	TParticlesPlayer* PPlayer = GetOrCreateComponent<TParticlesPlayer>();
+	PPlayer->LoadParticles(K);
 	RunStartupAnim(DC);
 
 	SpatialComponent->spatial.type |= ESPATIAL_TYPE::PHYSIC_OBJECT_DESTR;
@@ -106,7 +107,7 @@ void CDestroyablePhysicsObject::Hit(SHit* pHDS)
 	HDS.power = CHitImmunity::AffectHit(HDS.power, HDS.hit_type);
 	float hit_scale = 1.f, wound_scale = 1.f;
 
-	TDamageManager* DmgManager = GECSManager->GetComponent<TDamageManager>(this);
+	TDamageManager* DmgManager = GetComponent<TDamageManager>();
 	DmgManager->HitScale(HDS.bone(), hit_scale, wound_scale);
 
 	HDS.power *= hit_scale;
@@ -155,7 +156,9 @@ void CDestroyablePhysicsObject::Destroy()
 		}
 		m.i.crossproduct(m.j, hdir); m.i.normalize();
 		m.k.crossproduct(m.i, m.j);
-		StartParticles(m_destroy_particles, m, ID());
+
+		TParticlesPlayer* PPlayer = GetOrCreateComponent<TParticlesPlayer>();
+		PPlayer->StartParticles(m_destroy_particles, m, ID());
 	}
 
 	SheduleRegister();
@@ -182,13 +185,17 @@ void CDestroyablePhysicsObject::shedule_Update(u32 dt)
 
 bool CDestroyablePhysicsObject::CanRemoveObject()
 {
-	return !CParticlesPlayer::IsPlaying()&& !m_destroy_sound.is_playing();
+	bool CanRemove = true;
+
+	if (TParticlesPlayer* PPlayer = GetComponent<TParticlesPlayer>())
+	{
+		CanRemove = !PPlayer->IsPlaying();
+	}
+	return CanRemove && !m_destroy_sound.is_playing();
 }
 
 DLL_Pure *CDestroyablePhysicsObject::_construct()
 {
-	TDamageManager& DmgManager = GECSManager->CreateComponent<TDamageManager>(this);
-	DmgManager.m_object = this;
-
+	TDamageManager& DmgManager = CreateComponent<TDamageManager>();
 	return inherited::_construct();
 }

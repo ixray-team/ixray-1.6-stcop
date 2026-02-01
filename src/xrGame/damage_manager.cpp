@@ -48,6 +48,11 @@ void TDamageManager::reload(LPCSTR section, LPCSTR line, CInifile const * ini)
 		reload(section,0);
 }
 
+void TDamageManager::SetupOwner(IECSOwner* Owner)
+{
+	m_object = smart_cast<CObject*>(Owner);
+}
+
 void TDamageManager::init_bones(LPCSTR section, CInifile const* ini)
 {
 	IKinematics* kinematics = PKinematics(m_object->Visual());
