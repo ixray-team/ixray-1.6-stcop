@@ -4,6 +4,7 @@
 #include "../../xrUI/Widgets/UIDoubleProgressBar.h"
 
 class CUIXml;
+class CUI3dStatic;
 class CInventoryItem;
 
 #include "../../xrScripts/script_export_space.h"
