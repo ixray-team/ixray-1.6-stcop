@@ -277,7 +277,8 @@ void CPsyDogPhantom::Think()
 	setVisible		(TRUE);
 	setEnabled		(TRUE);
 
-	CParticlesPlayer::StartParticles(m_particles_appear,Fvector().set(0.0f,0.1f,0.0f),ID());
+	TParticlesPlayer* PPlayer = GetOrCreateComponent<TParticlesPlayer>();
+	PPlayer->StartParticles(m_particles_appear,Fvector().set(0.0f,0.1f,0.0f),ID());
 
 	if (EnemyMan.get_enemy() != Actor()) 
 		return;
