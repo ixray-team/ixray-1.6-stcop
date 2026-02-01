@@ -2,9 +2,10 @@
 //
 //////////////////////////////////////////////////////////////////////
 #pragma once
-
 #include "../xrEngine/xr_object.h"
+#include "../xrCore/ECS/EntityOwner.h"
 #include "../xrNetServer/NET_DeprecatedConstants.h"
+
 #include "xrServer_Space.h"
 #include "alife_space.h"
 #include "UsableScriptObject.h"
@@ -23,7 +24,6 @@ class CEntityAlive;
 class CInventoryOwner;
 class CActor;
 class CPhysicsShellHolder;
-class CParticlesPlayer;
 class CAnomalyZone;
 class IInputReceiver;
 class CArtefact;
@@ -93,7 +93,8 @@ class CScriptCallbackEx;
 class CGameObject : 
 	public CObject, 
 	public CUsableScriptObject,
-	public CScriptBinder
+	public CScriptBinder,
+	public IECSOwner
 {
 	typedef CObject inherited;
 protected:
@@ -125,7 +126,6 @@ public:
 	virtual CAnomalyZone*				cast_anomaly_zone			()						{return nullptr;}
 	virtual CPhysicsShellHolder*		cast_physics_shell_holder	()						{return nullptr;}
 	virtual IInputReceiver*				cast_input_receiver			()						{return nullptr;}
-	virtual CParticlesPlayer*			cast_particles_player		()						{return nullptr;}
 	virtual CArtefact*					cast_artefact				()						{return nullptr;}
 	virtual CCreature*				cast_creature			()						{return nullptr;}
 	virtual CAI_Stalker*				cast_stalker				()						{return nullptr;}

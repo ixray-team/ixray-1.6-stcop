@@ -19,7 +19,7 @@ void CECSManager::DestroyAll()
 	ComponentStorages.clear();
 }
 
-void CECSManager::DestroyAllForOwner(void* Owner)
+void CECSManager::DestroyAllForOwner(IECSOwner* Owner)
 {
 	xrSRWLockGuard guard(RWMutex, true);
 	for (auto& [_, Storage] : ComponentStorages)
