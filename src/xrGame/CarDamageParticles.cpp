@@ -45,33 +45,49 @@ void CCarDamageParticles::Init(CCar *car)
 
 void CCarDamageParticles::Play1(CCar* car)
 {
-	if(*m_car_damage_particles1)
+	if (*m_car_damage_particles1)
 	{
-		BIDS_I i=bones1.begin(),e=bones1.end();
-		for(;e!=i;++i) car->StartParticles(m_car_damage_particles1,*i,Fvector().set(0,1,0),car->ID());
+		BIDS_I i = bones1.begin(), e = bones1.end();
+		TParticlesPlayer* PPlayer = car->GetOrCreateComponent<TParticlesPlayer>();
+		for (; e != i; ++i)
+		{
+			PPlayer->StartParticles(m_car_damage_particles1, *i, Fvector().set(0, 1, 0), car->ID());
+		}
 	}
 }
 
 void CCarDamageParticles::Play2(CCar* car)
 {
 	VERIFY(!physics_world()->Processing());
-	if(*m_car_damage_particles2)
+	if (*m_car_damage_particles2)
 	{
-		BIDS_I i=bones2.begin(),e=bones2.end();
-		for(;e!=i;++i) car->StartParticles(m_car_damage_particles2,*i,Fvector().set(0,1,0),car->ID());
+		BIDS_I i = bones2.begin(), e = bones2.end();
+		TParticlesPlayer* PPlayer = car->GetOrCreateComponent<TParticlesPlayer>();
+		for (; e != i; ++i)
+		{
+			PPlayer->StartParticles(m_car_damage_particles2, *i, Fvector().set(0, 1, 0), car->ID());
+		}
 	}
 }
 
-void CCarDamageParticles::PlayWheel1(CCar*car,u16 bone_id)
+void CCarDamageParticles::PlayWheel1(CCar* car, u16 bone_id)
 {
 	VERIFY(!physics_world()->Processing());
-	if(*m_wheels_damage_particles1)car->StartParticles(m_wheels_damage_particles1,bone_id,Fvector().set(0,1,0),car->ID());
+	if (*m_wheels_damage_particles1)
+	{
+		TParticlesPlayer* PPlayer = car->GetOrCreateComponent<TParticlesPlayer>();
+		PPlayer->StartParticles(m_wheels_damage_particles1, bone_id, Fvector().set(0, 1, 0), car->ID());
+	}
 }
 
-void CCarDamageParticles::PlayWheel2(CCar*car,u16 bone_id)
+void CCarDamageParticles::PlayWheel2(CCar* car, u16 bone_id)
 {
 	VERIFY(!physics_world()->Processing());
-	if(*m_wheels_damage_particles2)car->StartParticles(m_wheels_damage_particles2,bone_id,Fvector().set(0,1,0),car->ID());
+	if (*m_wheels_damage_particles2)
+	{
+		TParticlesPlayer* PPlayer = car->GetOrCreateComponent<TParticlesPlayer>();
+		PPlayer->StartParticles(m_wheels_damage_particles2, bone_id, Fvector().set(0, 1, 0), car->ID());
+	}
 }
 
 
@@ -85,8 +101,12 @@ void CCarDamageParticles::Stop1(CCar* car)
 {
 	if (*m_car_damage_particles1)
 	{
+		TParticlesPlayer* PPlayer = car->GetOrCreateComponent<TParticlesPlayer>();
 		auto i = bones1.begin(), e = bones1.end();
-		for (; e != i; ++i) car->StopParticles(car->ID(), *i, false);
+		for (; e != i; ++i)
+		{
+			PPlayer->StopParticles(car->ID(), *i, false);
+		}
 	}
 }
 
@@ -95,7 +115,11 @@ void CCarDamageParticles::Stop2(CCar* car)
 	VERIFY(!physics_world()->Processing());
 	if (*m_car_damage_particles2)
 	{
+		TParticlesPlayer* PPlayer = car->GetOrCreateComponent<TParticlesPlayer>();
 		auto i = bones2.begin(), e = bones2.end();
-		for (; e != i; ++i) car->StopParticles(car->ID(), *i, false);
+		for (; e != i; ++i)
+		{
+			PPlayer->StopParticles(car->ID(), *i, false);
+		}
 	}
 }

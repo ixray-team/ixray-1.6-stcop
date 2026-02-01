@@ -6,6 +6,7 @@ class XRCORE_API CECSManager final
 {
 private:
 	using ECSComponentTypeID = size_t;
+	friend class IECSOwner;
 	friend void ECSViewDraw();
 
 public:
@@ -13,28 +14,28 @@ public:
 	~CECSManager();
 
 	template <typename T>
-	T& CreateComponent(void* Owner)
+	T& CreateComponent(IECSOwner* Owner)
 	{
 		CECSComponentStorage<T>& Storage = GetOrCreateStorage<T>();
 		return Storage.Create(Owner);
 	}
 
 	template <typename T>
-	T* GetComponent(void* Owner)
+	T* GetComponent(IECSOwner* Owner)
 	{
 		CECSComponentStorage<T>& Storage = GetOrCreateStorage<T>();
 		return Storage.Get(Owner);
 	}
 
 	template <typename T>
-	void DestroyComponent(void* Owner)
+	void DestroyComponent(IECSOwner* Owner)
 	{
 		CECSComponentStorage<T>& Storage = GetOrCreateStorage<T>();
 		Storage.Destroy(Owner);
 	}
 
 	void DestroyAll();
-	void DestroyAllForOwner(void* Owner);
+	void DestroyAllForOwner(IECSOwner* Owner);
 
 private:
 	inline ECSComponentTypeID GenerateComponentTypeID()

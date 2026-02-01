@@ -49,7 +49,6 @@ class   CArtefact;
 struct SActorMotions;
 struct SActorVehicleAnims;
 class  CActorCondition;
-class SndShockEffector;
 class CActorFollowerMngr;
 
 struct CameraRecoil;
@@ -255,7 +254,6 @@ protected:
 	bool IsWaunded = false;
 
 	// media
-	SndShockEffector*		m_sndShockEffector;
 	xr_vector<ref_sound>	sndHit[ALife::eHitTypeMax];
 	ref_sound				sndDie[SND_DIE_COUNT];
 

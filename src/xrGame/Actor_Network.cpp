@@ -474,13 +474,12 @@ void	CActor::net_Import_Physic_proceed	( )
 	CrPr_SetActivationStep(0);
 };
 
-BOOL CActor::net_Spawn		(CSE_Abstract* DC)
+BOOL CActor::net_Spawn(CSE_Abstract* DC)
 {
 	m_holder_id				= ALife::_OBJECT_ID(-1);
 	m_feel_touch_characters = 0;
 	m_snd_noise			= 0.0f;
-	m_sndShockEffector	= nullptr;
-/*	m_followers			= nullptr;*/
+
 	if (m_pPhysicsShell)
 	{
 		m_pPhysicsShell->Deactivate();
@@ -766,7 +765,8 @@ void CActor::net_Destroy	()
 	};
 	m_pPhysics_support->in_NetDestroy	();
 
-	xr_delete		(m_sndShockEffector);
+	DestroyComponent<TSndShockEffector>();
+
 	xr_delete		(pStatGraph);
 	xr_delete		(m_pActorEffector);
 	pCamBobbing		= nullptr;
@@ -949,7 +949,7 @@ void CActor::OnChangeVisual()
 	m_anims->Create(V);
 	m_vehicle_anims->Create(V);
 
-	TDamageManager* DmgManager = GECSManager->GetComponent<TDamageManager>(static_cast<CEntity*>(this));
+	TDamageManager* DmgManager = GetComponent<TDamageManager>();
 	DmgManager->reload(*cNameSect(), "damage", pSettings);
 
 	//-------------------------------------------------------------------------------
@@ -2045,8 +2045,9 @@ void				CActor::OnPlayHeadShotParticle (NET_Packet P)
 	P.r_vec3(HitPos);
 	//-----------------------------------
 	if (!m_sHeadShotParticle.size()) return;
-	Fmatrix pos; 	
-	CParticlesPlayer::MakeXFORM(this,element,HitDir,HitPos,pos);
+	Fmatrix pos;
+	TParticlesPlayer* PPlayer = GetOrCreateComponent<TParticlesPlayer>();
+	PPlayer->MakeXFORM(this,element,HitDir,HitPos,pos);
 
 	//  particles
 	xr_shared_ptr<CParticlesObject> ps = Particles::Details::Create(m_sHeadShotParticle.c_str(),TRUE);

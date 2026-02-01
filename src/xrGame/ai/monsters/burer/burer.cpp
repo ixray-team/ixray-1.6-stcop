@@ -597,7 +597,8 @@ void CBurer::StartGraviPrepare()
 
 	if (IsGameTypeSingle())
 	{
-		pA->CParticlesPlayer::StartParticles(particle_gravi_prepare, Fvector().set(0.0f, 0.1f, 0.0f), pA->ID());
+		TParticlesPlayer* PPlayer = pA->GetOrCreateComponent<TParticlesPlayer>();
+		PPlayer->StartParticles(particle_gravi_prepare, Fvector().set(0.0f, 0.1f, 0.0f), pA->ID());
 	}
 	else
 	{
@@ -616,7 +617,9 @@ void CBurer::StopGraviPrepare()
 		CActor* pA = Actor();
 		if (!pA)
 			return;
-		pA->CParticlesPlayer::StopParticles(particle_gravi_prepare, BI_NONE, true);
+
+		TParticlesPlayer* PPlayer = pA->GetOrCreateComponent<TParticlesPlayer>();
+		PPlayer->StopParticles(particle_gravi_prepare, BI_NONE, true);
 	}
 	else
 	{
@@ -640,32 +643,26 @@ void CBurer::StopGraviPrepare()
 
 void CBurer::StartTeleObjectParticle(CGameObject *pO) 
 {
-	CParticlesPlayer* PP = pO != nullptr ? pO->cast_particles_player() : nullptr;
-	if(!PP) return;
-	PP->StartParticles								(particle_tele_object,
-													 Fvector().set(0.0f, 0.1f, 0.0f),
-													 pO->ID());
+	TParticlesPlayer* PPlayer = pO->GetOrCreateComponent<TParticlesPlayer>();
+	PPlayer->StartParticles(particle_tele_object, Fvector().set(0.0f, 0.1f, 0.0f), pO->ID());
 }
 
 void CBurer::StopTeleObjectParticle(CGameObject *pO) 
 {
-	CParticlesPlayer* PP = pO != nullptr ? pO->cast_particles_player() : nullptr;
-	if(!PP) return;
-	PP->StopParticles								(particle_tele_object, BI_NONE, true);
+	TParticlesPlayer* PPlayer = pO->GetOrCreateComponent<TParticlesPlayer>();
+	PPlayer->StopParticles(particle_tele_object, BI_NONE, true);
 }
 
-void	CBurer::Hit								(SHit* pHDS)
+void CBurer::Hit(SHit* pHDS)
 {
-	if ( m_shield_active							&& 
-		 pHDS->hit_type == ALife::eHitTypeFireWound	&& 
-		 Device.dwFrame != last_hit_frame				) 
+	if (m_shield_active && pHDS->hit_type == ALife::eHitTypeFireWound && Device.dwFrame != last_hit_frame) 
 	{
-
-		if (IsGameTypeSingle()) {
+		if (IsGameTypeSingle())
+		{
 			// вычислить позицию и направленность партикла
 			Fmatrix pos;
-			//CParticlesPlayer::MakeXFORM(this,element,Fvector().set(0.f,0.f,1.f),p_in_object_space,pos);
-			CParticlesPlayer::MakeXFORM(this, pHDS->bone(), pHDS->dir, pHDS->p_in_bone_space, pos);
+			TParticlesPlayer* PPlayer = GetOrCreateComponent<TParticlesPlayer>();
+			PPlayer->MakeXFORM(this, pHDS->bone(), pHDS->dir, pHDS->p_in_bone_space, pos);
 			// установить particles
 			xr_shared_ptr<CParticlesObject> ps = Particles::Details::Create(particle_fire_shield, TRUE);
 			ps->UpdateParent(pos, Fvector().set(0.f, 0.f, 0.f));
@@ -716,7 +713,8 @@ void CBurer::OnEvent(NET_Packet& P, u16 type)
 
 	switch (type)
 	{
-	case GE_BURER_GRAVI_PARTICLES: {
+	case GE_BURER_GRAVI_PARTICLES:
+	{
 		u16 target;
 		u8 start_particles;
 		P.r_u8(start_particles);
@@ -732,19 +730,22 @@ void CBurer::OnEvent(NET_Packet& P, u16 type)
 
 		if (start_particles == 1)
 		{
-			pA->CParticlesPlayer::StartParticles(particle_gravi_prepare,
-				Fvector().set(0.0f, 0.1f, 0.0f),
-				pA->ID());
+			TParticlesPlayer* PPlayer = GetOrCreateComponent<TParticlesPlayer>();
+			PPlayer->StartParticles(particle_gravi_prepare, Fvector().set(0.0f, 0.1f, 0.0f), pA->ID());
 		}
 		else
 		{
 			if (Actor())
-				Actor()->CParticlesPlayer::StopParticles(particle_gravi_prepare, BI_NONE, true);
+			{
+				TParticlesPlayer* PPlayer = GetOrCreateComponent<TParticlesPlayer>();
+				PPlayer->StopParticles(particle_gravi_prepare, BI_NONE, true);
+			}
 		}
 
 		break;
 	}
-	case GE_BURER_GRAVI_WAVE: {
+	case GE_BURER_GRAVI_WAVE:
+	{
 		u16 target;
 		P.r_u16(target);
 
@@ -768,31 +769,32 @@ void CBurer::OnEvent(NET_Packet& P, u16 type)
 		m_gravi_object.activate(entity, from_pos, target_pos);
 		break;
 	}
-	case GE_BURER_SHIELD: {
-		this->CParticlesPlayer::StartParticles(m_shield_keep_particle,
-			Fvector().set(0, 1, 0),
-			ID(),
-			-1,
-			true);
+	case GE_BURER_SHIELD:
+	{
+		TParticlesPlayer* PPlayer = GetOrCreateComponent<TParticlesPlayer>();
+		PPlayer->StartParticles(m_shield_keep_particle, Fvector().set(0, 1, 0), ID(), -1, true);
 		break;
 	}
-	case GE_BURER_SHIELD_HIT: {
+	case GE_BURER_SHIELD_HIT:
+	{
 		u16 bone;
 		Fvector dir;
 		Fvector p_in_bone_space;
 		P.r_u16(bone);
 		P.r_vec3(dir);
 		P.r_vec3(p_in_bone_space);
+
 		// вычислить позицию и направленность партикла
-		if (bone) {
-		Fmatrix pos;
-		//CParticlesPlayer::MakeXFORM(this,element,Fvector().set(0.f,0.f,1.f),p_in_object_space,pos);
-		CParticlesPlayer::MakeXFORM(this, bone, dir, p_in_bone_space, pos);
-		// установить particles
-		xr_shared_ptr<CParticlesObject> ps = Particles::Details::Create(particle_fire_shield, TRUE);
-		ps->UpdateParent(pos, Fvector().set(0.f, 0.f, 0.f));
-		GamePersistent().ps_needtoplay.push_back(ps);
-	}
+		if (bone)
+		{
+			Fmatrix pos;
+			TParticlesPlayer* PPlayer = GetOrCreateComponent<TParticlesPlayer>();
+			PPlayer->MakeXFORM(this, bone, dir, p_in_bone_space, pos);
+			// установить particles
+			xr_shared_ptr<CParticlesObject> ps = Particles::Details::Create(particle_fire_shield, TRUE);
+			ps->UpdateParent(pos, Fvector().set(0.f, 0.f, 0.f));
+			GamePersistent().ps_needtoplay.push_back(ps);
+		}
 	}
 	}
 }

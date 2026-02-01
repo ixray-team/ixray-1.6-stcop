@@ -33,8 +33,6 @@ CEntity::CEntity()
 
 CEntity::~CEntity()
 {
-	xr_delete(m_entity_condition);
-	GECSManager->DestroyAllForOwner(this);
 }
 
 CEntityConditionSimple *CEntity::create_entity_condition(CEntityConditionSimple* ec)
@@ -224,11 +222,12 @@ BOOL CEntity::net_Spawn		(CSE_Abstract* DC)
 	{
 		if (ini->section_exist("damage_section") && !use_simplified_visual())
 		{
-			TDamageManager* DmgManager = GECSManager->GetComponent<TDamageManager>(this);
+			TDamageManager* DmgManager = GetComponent<TDamageManager>();
 			DmgManager->reload(pSettings->r_string("damage_section", "damage"), ini);
 		}
 
-		CParticlesPlayer::LoadParticles(pKinematics);
+		TParticlesPlayer* PPlayer = GetOrCreateComponent<TParticlesPlayer>();
+		PPlayer->LoadParticles(pKinematics);
 	}
 	return					TRUE;
 }
@@ -313,7 +312,7 @@ void CEntity::reload(LPCSTR section)
 	inherited::reload(section);
 	if (!use_simplified_visual())
 	{
-		TDamageManager* DmgManager = GECSManager->GetComponent<TDamageManager>(this);
+		TDamageManager* DmgManager = GetComponent<TDamageManager>();
 		DmgManager->reload(section, "damage", pSettings);
 	}
 }
@@ -332,7 +331,7 @@ DLL_Pure* CEntity::_construct()
 {
 	inherited::_construct();
 	m_entity_condition = create_entity_condition(nullptr);
-	TDamageManager& DmgManager = GECSManager->CreateComponent<TDamageManager>(this);
+	TDamageManager& DmgManager = CreateComponent<TDamageManager>();
 	DmgManager.m_object = this;
 
 	return (this);
