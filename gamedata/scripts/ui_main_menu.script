@@ -362,6 +362,26 @@ function main_menu:OnKeyboard(dik, keyboard_action)  --virtual function
 	return true
 end
 
+function main_menu:OnGamepadKey(dik, gamepad_action)  --virtual function
+	CUIScriptWnd.OnGamepadKey(self,dik,gamepad_action)
+	local bind = dik_to_bind(dik)
+	local console = get_console()
+	
+	if gamepad_action == ui_events.WINDOW_KEY_PRESSED then
+		if dik == gamepad_keys.BUTTON_B or dik == gamepad_keys.BUTTON_START then
+			if level.present() and
+				(	((db.actor ~= nil)and(db.actor:alive())) or
+					(false==IsGameTypeSingle())
+				) then
+				self.OnButton_return_game()                      --' xStream 02.2008
+			end
+		end
+
+	end
+
+	return true
+end
+
 function main_menu:OnMenuReloaded()
 	self:OnButton_options_clicked()
 	self.opt_dlg:OnMenuReloaded()
