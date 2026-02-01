@@ -52,6 +52,7 @@ enum class EditorUI : u8
 	Tools_PostProcessEffectorEditor,
 	Tools_TextureEditor,
 	UI_General,
+	ECSViewer,
 	Count
 };
 

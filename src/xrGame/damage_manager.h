@@ -20,6 +20,13 @@ struct TDamageManager
 	void HitScale(const int bone_num, float& hit_scale, float& wound_scale, bool aim_bullet = false);
 
 private:
+	ECS_COMPONENT(TDamageManager)
+		ECS_VALUE(m_default_hit_factor, "Hit Factor")
+		ECS_VALUE(m_default_wound_factor, "Wound Factor")
+		ECS_STRING(m_object->cNameSect_str(), "Object Name")
+		ECS_PTR(m_object, "Object")
+	ECS_END
+
 	void load_section(LPCSTR section, CInifile const* ini);
 	void init_bones(LPCSTR section, CInifile const* ini);
 };
