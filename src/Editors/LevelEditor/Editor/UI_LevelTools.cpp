@@ -694,11 +694,11 @@ void CLevelTool::RunXrLC()
 
 	if (CompPath.empty())
 	{
-		xr_sprintf(CommandLine, " xrLC.exe -f %s", Scene->m_LevelOp.m_FNLevelPath.c_str());
+		xr_sprintf(CommandLine, "xrLC.exe -f %s", Scene->m_LevelOp.m_FNLevelPath.c_str());
 	}
 	else
 	{
-		xr_sprintf(CommandLine, " %s -f %s", CompPath.data(), Scene->m_LevelOp.m_FNLevelPath.c_str());
+		xr_sprintf(CommandLine, "%s -f %s", CompPath.data(), Scene->m_LevelOp.m_FNLevelPath.c_str());
 	}
 
 	Msg("~ Run %s.\n", CommandLine);
