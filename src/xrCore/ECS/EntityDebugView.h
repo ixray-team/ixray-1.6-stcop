@@ -38,9 +38,9 @@
 		} ecsRegisterDrawInstance;
 
 #else
-#   define ECS_COMPONENT(Type)
+#   define ECS_COMPONENT(Type) friend class CECSComponentStorage<Type>; static const char* ECS_Name() { return #Type; } void ECS_DebugDraw() const { 
 #   define ECS_VALUE(var, name)
 #   define ECS_STRING(var, name)
 #   define ECS_PTR(var, name)
-#   define ECS_END
+#   define ECS_END }
 #endif
