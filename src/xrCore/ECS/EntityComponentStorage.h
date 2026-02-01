@@ -6,6 +6,7 @@ public:
 	virtual ~IECSComponentStorage() = default;
 	virtual void DestroyAll() = 0;
 	virtual void Destroy(void* Owner) = 0;
+	virtual const char* ECS_GetName() const = 0;
 };
 
 template <typename T>
@@ -15,6 +16,7 @@ class CECSComponentStorage final :
 public:
 	T& Create(void* Owner)
 	{
+		xrSRWLockGuard guard(RWMutex, false);
 		size_t Index = Components.size();
 		T& NewComponent = Components.emplace_back();
 
@@ -26,12 +28,14 @@ public:
 
 	T* Get(void* Owner)
 	{
+		xrSRWLockGuard guard(RWMutex, true);
 		auto Iter = Lookup.find(Owner);
 		return Iter != Lookup.end() ? &Components[Iter->second] : nullptr;
 	}
 
 	virtual void Destroy(void* Owner) override
 	{
+		xrSRWLockGuard guard(RWMutex, false);
 		auto Iter = Lookup.find(Owner);
 		if (Iter == Lookup.end())
 		{
@@ -52,16 +56,20 @@ public:
 
 	virtual void DestroyAll() override
 	{
+		xrSRWLockGuard guard(RWMutex, false);
+
 		Components.clear();
 		Owners.clear();
 		Lookup.clear();
 	}
 
-	inline xr_vector<T>& Data() { return Components; }
-	inline xr_vector<void*>& Entities() { return Owners; }
+	inline const xr_vector<T>& Data() const & { return Components; }
+	inline const xr_vector<void*>& Entities() const & { return Owners; }
 
+	virtual const char* ECS_GetName() const override { return T::ECS_Name(); }
 private:
 	xr_vector<T> Components;
 	xr_vector<void*> Owners;
 	xr_hash_map<void*, size_t> Lookup;
+	xrSRWLock RWMutex;
 };
