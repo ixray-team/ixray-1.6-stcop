@@ -736,7 +736,8 @@ void	CActor::Hit(SHit* pHDS)
 				// вычислить позицию и направленность партикла
 				Fmatrix pos; 
 
-				CParticlesPlayer::MakeXFORM(this,HDS.bone(),HDS.dir,HDS.p_in_bone_space,pos);
+				TParticlesPlayer* PPlayer = GetOrCreateComponent<TParticlesPlayer>();
+				PPlayer->MakeXFORM(this,HDS.bone(),HDS.dir,HDS.p_in_bone_space,pos);
 
 				// установить particles
 				xr_shared_ptr<CParticlesObject> ps_ = nullptr;
@@ -771,9 +772,11 @@ void	CActor::Hit(SHit* pHDS)
 			if (this == Level().CurrentControlEntity())
 			{
 				S.set_volume(10.0f);
-				if(!m_sndShockEffector){
-					m_sndShockEffector = new SndShockEffector();
-					m_sndShockEffector->Start(this, float(S.get_length_sec()*1000.0f), HDS.damage() );
+				if(!GetComponent<TSndShockEffector>())
+				{
+					TSndShockEffector& SndShockEffector = CreateComponent<TSndShockEffector>();
+					SndShockEffector.m_actor = this;
+					SndShockEffector.Start(float(S.get_length_sec()*1000.0f), HDS.damage() );
 				}
 			}
 			else
@@ -1278,7 +1281,7 @@ void CActor::Die	(CObject* who)
 	mstate_wishful	&=		~mcAnyMove;
 	mstate_real		&=		~mcAnyMove;
 
-	xr_delete				(m_sndShockEffector);
+	DestroyComponent<TSndShockEffector>();
 }
 
 void	CActor::SwitchOutBorder(bool new_border_state)
@@ -1875,17 +1878,21 @@ void CActor::UpdateCL()
 	if (g_Alive()) 
 		CStepManager::update(this==Level().CurrentViewEntity());
 
-	if(m_sndShockEffector)
+	if (TSndShockEffector* SndShockEffector = GetComponent<TSndShockEffector>())
 	{
 		if (this == Level().CurrentViewEntity())
 		{
-			m_sndShockEffector->Update();
+			SndShockEffector->Update();
 
-			if(!m_sndShockEffector->InWork() || !g_Alive())
-				xr_delete(m_sndShockEffector);
+			if (!SndShockEffector->InWork() || !g_Alive())
+			{
+				DestroyComponent<TSndShockEffector>();
+			}
 		}
 		else
-			xr_delete(m_sndShockEffector);
+		{
+			DestroyComponent<TSndShockEffector>();
+		}
 	}
 	Fmatrix							trans;
 	Cameras().hud_camera_Matrix(trans);

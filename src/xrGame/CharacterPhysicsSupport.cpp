@@ -1152,7 +1152,14 @@ void CCharacterPhysicsSupport::in_ChangeVisual()
 
 bool CCharacterPhysicsSupport::CanRemoveObject()
 {
-	return m_eType == etActor ? false : !m_EntityAlife.IsPlaying();
+	bool CanRemove = true;
+
+	if (TParticlesPlayer* PPlayer = m_EntityAlife.GetComponent<TParticlesPlayer>())
+	{
+		CanRemove = !PPlayer->IsPlaying();
+	}
+
+	return m_eType == etActor ? false : CanRemove;
 }
 
 void CCharacterPhysicsSupport::PHGetLinearVell(Fvector& velocity)

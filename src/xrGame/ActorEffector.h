@@ -109,25 +109,36 @@ public:
 	virtual BOOL		Valid							();
 };
 
-class SndShockEffector:public CEffectorController
+struct TSndShockEffector:
+	public CEffectorController
 {
 	typedef CEffectorController inherited;
-public:
-	float						m_snd_length;	//ms
-	float						m_cur_length;	//ms
-	float						m_stored_volume;
-	float						m_end_time;
-	float						m_life_time;
-	CActor*						m_actor;
-public:
-								SndShockEffector	();
-	virtual						~SndShockEffector	();
-	void						Start				(CActor* A, float snd_length, float power);
-	void						Update				();
 
-	virtual		BOOL			Valid				();
-				BOOL			InWork				();
-	virtual	float 	GetFactor			();
+	float m_snd_length = 0.f;
+	float m_cur_length = 0.f;
+	float m_stored_volume = -1.f;
+
+	float m_end_time;
+	float m_life_time;
+
+	CActor* m_actor = nullptr;
+
+	TSndShockEffector();
+	virtual ~TSndShockEffector();
+	void Start(float snd_length, float power);
+	void Update();
+
+	virtual BOOL Valid();
+			BOOL InWork();
+
+	virtual	float GetFactor();
+
+private:
+	ECS_COMPONENT(TSndShockEffector)
+		ECS_VALUE(m_snd_length, "Sound Lenght")
+		ECS_VALUE(m_cur_length, "Current Lenght")
+		ECS_VALUE(m_stored_volume, "Stored Volume")
+	ECS_END
 };
 
 

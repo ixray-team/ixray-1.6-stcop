@@ -686,7 +686,7 @@ void CScriptGameObject::set_visual_name(LPCSTR visual, bool bForce)
 				stalker->CStepManager::reload(*stalker->cNameSect());
 			}
 
-			TDamageManager* DmgManager = GECSManager->GetComponent<TDamageManager>(static_cast<CEntity*>(stalker));
+			TDamageManager* DmgManager = stalker->GetComponent<TDamageManager>();
 			DmgManager->reload(*stalker->cNameSect(), "damage", pSettings);
 			stalker->ResetBoneProtections(NULL, NULL);
 			stalker->reattach_items();

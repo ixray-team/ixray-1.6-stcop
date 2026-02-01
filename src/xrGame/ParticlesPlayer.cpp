@@ -4,7 +4,7 @@
 ///////////////////////////////////////////////////////////////
 #include "StdAfx.h"
 #include "ParticlesPlayer.h"
-#include "../xrEngine/xr_object.h"
+#include "GameObject.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "ParticlesObject.h"
 //-------------------------------------------------------------------------------------
@@ -14,7 +14,7 @@ static void generate_orthonormal_basis(const Fvector& dir,Fmatrix &result)
 	result.k.normalize	(dir);
 	Fvector::generate_orthonormal_basis(result.k, result.j, result.i);
 }
-CParticlesPlayer::SParticlesInfo* CParticlesPlayer::SBoneInfo::FindParticles(const shared_str& ps_name)
+TParticlesPlayer::SParticlesInfo* TParticlesPlayer::SBoneInfo::FindParticles(const shared_str& ps_name)
 {
 	for(ParticlesInfoListIt it = particles.begin(); it != particles.end(); it++) {
 		if(it->ps && it->ps->Name() == ps_name) {
@@ -23,7 +23,7 @@ CParticlesPlayer::SParticlesInfo* CParticlesPlayer::SBoneInfo::FindParticles(con
 	}
 	return 0;
 }
-CParticlesPlayer::SParticlesInfo* CParticlesPlayer::SBoneInfo::AppendParticles(CObject* object, const shared_str& ps_name)
+TParticlesPlayer::SParticlesInfo* TParticlesPlayer::SBoneInfo::AppendParticles(CObject* object, const shared_str& ps_name)
 {
 	SParticlesInfo* pi	= FindParticles(ps_name);
 	if (pi)				return pi;
@@ -32,7 +32,7 @@ CParticlesPlayer::SParticlesInfo* CParticlesPlayer::SBoneInfo::AppendParticles(C
 	pi->ps				= Particles::Details::Create(*ps_name,FALSE);
 	return pi;
 }
-void CParticlesPlayer::SBoneInfo::StopParticles(const shared_str& ps_name, bool bDestroy)
+void TParticlesPlayer::SBoneInfo::StopParticles(const shared_str& ps_name, bool bDestroy)
 {
 	SParticlesInfo* pi	= FindParticles(ps_name);
 	if (pi){
@@ -43,7 +43,7 @@ void CParticlesPlayer::SBoneInfo::StopParticles(const shared_str& ps_name, bool 
 	}
 }
 
-void CParticlesPlayer::SBoneInfo::StopParticles(u16 sender_id, bool bDestroy)
+void TParticlesPlayer::SBoneInfo::StopParticles(u16 sender_id, bool bDestroy)
 {
 	for (ParticlesInfoListIt it=particles.begin(); it!=particles.end(); it++)
 		if (it->sender_id==sender_id){
@@ -55,7 +55,7 @@ void CParticlesPlayer::SBoneInfo::StopParticles(u16 sender_id, bool bDestroy)
 }
 //-------------------------------------------------------------------------------------
 
-CParticlesPlayer::CParticlesPlayer() : m_bActiveBones(false)
+TParticlesPlayer::TParticlesPlayer() : m_bActiveBones(false)
 {
 	AppendBone(0);
 
@@ -63,17 +63,10 @@ CParticlesPlayer::CParticlesPlayer() : m_bActiveBones(false)
 	m_self_object = nullptr;
 }
 
-CParticlesPlayer::~CParticlesPlayer ()
+void TParticlesPlayer::LoadParticles(IKinematics* K)
 {
-	VERIFY				(!m_self_object);
-}
-
-void CParticlesPlayer::LoadParticles(IKinematics* K)
-{
-	VERIFY				(K);
-
+	VERIFY(K);
 	m_Bones.clear();
-	
 
 	//считать список косточек и соответствующих
 	//офсетов  куда можно вешать партиклы
@@ -94,7 +87,7 @@ void CParticlesPlayer::LoadParticles(IKinematics* K)
 		AppendBone(K->LL_GetBoneRoot());
 }
 
-void CParticlesPlayer::LoadParticles(LPCSTR section, IKinematics* K)
+void TParticlesPlayer::LoadParticles(LPCSTR section, IKinematics* K)
 {
 	VERIFY				(K);
 
@@ -112,7 +105,7 @@ void CParticlesPlayer::LoadParticles(LPCSTR section, IKinematics* K)
 	}
 }
 
-void CParticlesPlayer::LoadParticles(LPCSTR section, LPCSTR line, IKinematics* K)
+void TParticlesPlayer::LoadParticles(LPCSTR section, LPCSTR line, IKinematics* K)
 {
 	VERIFY				(K);
 
@@ -129,7 +122,7 @@ void CParticlesPlayer::LoadParticles(LPCSTR section, LPCSTR line, IKinematics* K
 	}
 }
 
-void CParticlesPlayer::AppendBone(u16 bone_id, Fvector offs)
+void TParticlesPlayer::AppendBone(u16 bone_id, Fvector offs)
 {
 	if(get_bone_info(bone_id))
 		return;
@@ -139,7 +132,7 @@ void CParticlesPlayer::AppendBone(u16 bone_id, Fvector offs)
 }
 
 //уничтожение партиклов на net_Destroy
-void	CParticlesPlayer::net_DestroyParticles	()
+void TParticlesPlayer::net_DestroyParticles	()
 {
 	VERIFY(m_self_object);
 
@@ -158,7 +151,7 @@ void	CParticlesPlayer::net_DestroyParticles	()
 	m_self_object	= 0;
 }
 
-CParticlesPlayer::SBoneInfo* CParticlesPlayer::get_nearest_bone_info(IKinematics* K, u16 bone_index)
+TParticlesPlayer::SBoneInfo* TParticlesPlayer::get_nearest_bone_info(IKinematics* K, u16 bone_index)
 {
 	u16 play_bone	= bone_index;
 	while((BI_NONE!=play_bone)&&!bone_mask.is(play_bone))
@@ -169,13 +162,13 @@ CParticlesPlayer::SBoneInfo* CParticlesPlayer::get_nearest_bone_info(IKinematics
 }
 
 
-void CParticlesPlayer::StartParticles(const shared_str& particles_name, u16 bone_num, const Fvector& dir, u16 sender_id, int life_time, bool auto_stop)
+void TParticlesPlayer::StartParticles(const shared_str& particles_name, u16 bone_num, const Fvector& dir, u16 sender_id, int life_time, bool auto_stop)
 {
 	Fmatrix xform;
 	generate_orthonormal_basis(dir,xform);
 	StartParticles(particles_name,bone_num,xform,sender_id,life_time,auto_stop);
 }
-void CParticlesPlayer::StartParticles(const shared_str& particles_name, u16 bone_num, const Fmatrix& xform, u16 sender_id, int life_time, bool auto_stop)
+void TParticlesPlayer::StartParticles(const shared_str& particles_name, u16 bone_num, const Fmatrix& xform, u16 sender_id, int life_time, bool auto_stop)
 {
 	VERIFY(fis_zero(xform.c.magnitude()));
 	R_ASSERT(*particles_name);
@@ -202,7 +195,7 @@ void CParticlesPlayer::StartParticles(const shared_str& particles_name, u16 bone
 	m_bActiveBones = true;
 }
 
-void CParticlesPlayer::StartParticles(const shared_str& ps_name, const Fmatrix& xform, u16 sender_id, int life_time, bool auto_stop)
+void TParticlesPlayer::StartParticles(const shared_str& ps_name, const Fmatrix& xform, u16 sender_id, int life_time, bool auto_stop)
 {
 	CObject* object					= m_self_object;
 	VERIFY(object);
@@ -225,7 +218,7 @@ void CParticlesPlayer::StartParticles(const shared_str& ps_name, const Fmatrix& 
 	m_bActiveBones = true;
 }
 
-void CParticlesPlayer::StartParticles(const shared_str& ps_name, const Fvector& dir, u16 sender_id, int life_time, bool auto_stop)
+void TParticlesPlayer::StartParticles(const shared_str& ps_name, const Fvector& dir, u16 sender_id, int life_time, bool auto_stop)
 {
 	Fmatrix xform;
 	generate_orthonormal_basis(dir,xform);
@@ -233,7 +226,7 @@ void CParticlesPlayer::StartParticles(const shared_str& ps_name, const Fvector& 
 }
 
 
-void CParticlesPlayer::StopParticles(u16 sender_id, u16 bone_id, bool bDestroy)
+void TParticlesPlayer::StopParticles(u16 sender_id, u16 bone_id, bool bDestroy)
 {
 	if (BI_NONE==bone_id){
 		for(BoneInfoVecIt it=m_Bones.begin(); it!=m_Bones.end(); it++)
@@ -245,7 +238,7 @@ void CParticlesPlayer::StopParticles(u16 sender_id, u16 bone_id, bool bDestroy)
 	UpdateParticles();
 }
 
-void CParticlesPlayer::StopParticles(const shared_str& ps_name, u16 bone_id, bool bDestroy)
+void TParticlesPlayer::StopParticles(const shared_str& ps_name, u16 bone_id, bool bDestroy)
 {
 	if (BI_NONE==bone_id){
 		for(BoneInfoVecIt it=m_Bones.begin(); it!=m_Bones.end(); it++)
@@ -258,7 +251,7 @@ void CParticlesPlayer::StopParticles(const shared_str& ps_name, u16 bone_id, boo
 }
 
 //остановка партиклов, по истечении их времени жизни
-void CParticlesPlayer::AutoStopParticles(const shared_str& ps_name, u16 bone_id,u32 life_time)
+void TParticlesPlayer::AutoStopParticles(const shared_str& ps_name, u16 bone_id,u32 life_time)
 {
 	if (BI_NONE==bone_id){
 		for(BoneInfoVecIt it=m_Bones.begin(); it!=m_Bones.end(); it++)
@@ -274,12 +267,12 @@ void CParticlesPlayer::AutoStopParticles(const shared_str& ps_name, u16 bone_id,
 }
 struct SRP
 {
-	bool operator	() (CParticlesPlayer::SParticlesInfo& pi)
+	bool operator	() (TParticlesPlayer::SParticlesInfo& pi)
 	{
 		return ! pi.ps;
 	}
 };
-void CParticlesPlayer::UpdateParticles()
+void TParticlesPlayer::UpdateParticles()
 {
 	if	(!m_bActiveBones)	return;
 	m_bActiveBones			= false;
@@ -324,7 +317,7 @@ void CParticlesPlayer::UpdateParticles()
 }
 
 
-void CParticlesPlayer::GetBonePos	(CObject* pObject, u16 bone_id, const Fvector& offset, Fvector& result)
+void TParticlesPlayer::GetBonePos	(CObject* pObject, u16 bone_id, const Fvector& offset, Fvector& result)
 {
 	VERIFY(pObject);
 	IKinematics* pKinematics = PKinematics(pObject->Visual()); VERIFY(pKinematics);
@@ -335,13 +328,13 @@ void CParticlesPlayer::GetBonePos	(CObject* pObject, u16 bone_id, const Fvector&
 	pObject->XFORM().transform_tiny(result);
 }
 
-void CParticlesPlayer::MakeXFORM	(CObject* pObject, u16 bone_id, const Fvector& dir, const Fvector& offset, Fmatrix& result)
+void TParticlesPlayer::MakeXFORM	(CObject* pObject, u16 bone_id, const Fvector& dir, const Fvector& offset, Fmatrix& result)
 {
 	generate_orthonormal_basis(dir,result);
 	GetBonePos(pObject, bone_id, offset, result.c);
 }
 
-u16 CParticlesPlayer::GetNearestBone	(IKinematics* K, u16 bone_id)
+u16 TParticlesPlayer::GetNearestBone	(IKinematics* K, u16 bone_id)
 {
 	u16 play_bone	= bone_id;
 
@@ -352,10 +345,7 @@ u16 CParticlesPlayer::GetNearestBone	(IKinematics* K, u16 bone_id)
 	return play_bone;
 }
 
-void CParticlesPlayer::net_SpawnParticles	()
+void TParticlesPlayer::SetupOwner(IECSOwner* Owner)
 {
-	VERIFY				(!m_self_object);
-	m_self_object		= smart_cast<CObject*>(this);
-	VERIFY				(m_self_object);
-
+	m_self_object = smart_cast<CGameObject*>(Owner);
 }

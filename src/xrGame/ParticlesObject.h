@@ -1,5 +1,4 @@
-#ifndef ParticlesObjectH
-#define ParticlesObjectH
+#pragma once
 
 namespace PAPI
 {
@@ -62,5 +61,3 @@ namespace Particles::Details
 		}
 	}
 }
-
-#endif /*ParticlesObjectH*/
