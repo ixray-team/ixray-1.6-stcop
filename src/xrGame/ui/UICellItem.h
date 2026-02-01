@@ -100,7 +100,7 @@ public:
 class CUIDragItem final: public CUIWindow, public pureRender, public pureFrame
 {
 	typedef		CUIWindow	inherited;
-	CUIStatic				m_static;
+	CUI3dStatic				m_static;
 	CUICellItem*			m_pParent;
 	Fvector2				m_pos_offset;
 	CUIDragDropListEx*		m_back_list;
@@ -111,7 +111,7 @@ public:
 	virtual					~CUIDragItem();
 				void		SetCustomDraw			(ICustomDrawDragItem* c);
 
-			CUIStatic*		wnd						() {return &m_static;}
+			CUI3dStatic*	wnd						() {return &m_static;}
 	virtual		bool		OnMouseAction					(float x, float y, EUIMessages mouse_action);
 	virtual		void		Draw					();
 
