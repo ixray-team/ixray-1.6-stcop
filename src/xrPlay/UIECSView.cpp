@@ -4,6 +4,7 @@
 
 void ECSViewDraw()
 {
+#ifdef DEBUG_DRAW
 	CImGuiManager::Instance().Subscribe
 	(
 		"ECS Viewer", CImGuiManager::ERenderPriority::eMedium,
@@ -32,4 +33,5 @@ void ECSViewDraw()
 			ImGui::End();
 		}
 	);
+#endif
 }
