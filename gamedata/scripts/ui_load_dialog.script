@@ -352,8 +352,8 @@ function load_dialog:OnKeyboard(dik, keyboard_action)  --virtual function
 			self:OnButton_back_clicked()
 		elseif dik == DIK_keys.DIK_DELETE then
 			self:OnButton_del_clicked()
-		elseif dik == DIK_keys.DIK_DELETE then
-			self:OnButton_del_clicked()
+		elseif dik == DIK_keys.DIK_RETURN then
+			self:OnButton_load_clicked()
 		elseif dik == DIK_keys.DIK_UP then
 			self.list_box:PrevItem()
 		elseif dik == DIK_keys.DIK_DOWN then
