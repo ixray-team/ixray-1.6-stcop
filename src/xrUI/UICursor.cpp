@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "UICursor.h"
-
+#include "../xrEngine/xr_input.h"
 #include "Widgets/UIStatic.h"
 #include "Widgets/UIBtnHint.h"
 #include "UIXmlInit.h"
@@ -67,6 +67,11 @@ void CUICursor::InitInternal()
 u32 last_render_frame = 0;
 void CUICursor::OnRender	()
 {
+	if (pInput->GetControllerMode())
+	{
+		return;
+	}
+
 	if (last_render_frame == Device.dwFrame)
 	{
 		return;
