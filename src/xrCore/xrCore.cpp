@@ -108,26 +108,26 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, xrLogger::LogCallback cb, BOO
 
 extern compression::ppmd::stream	*trained_model;
 
-void xrCore::_destroy		()
+void xrCore::_destroy()
 {
 	--init_counter;
-	if (0==init_counter){
-		FS._destroy			();
-		EFS._destroy		();
-		xr_delete			(xr_FS);
-		xr_delete			(xr_EFS);
+	if (0 == init_counter)
+	{
+		FS._destroy();
+		EFS._destroy();
+		xr_delete(xr_FS);
+		xr_delete(xr_EFS);
+
+		xr_delete(GECSManager);
 
 		if (trained_model) {
-			void			*buffer = trained_model->buffer();
-			xr_free			(buffer);
-			xr_delete		(trained_model);
+			void* buffer = trained_model->buffer();
+			xr_free(buffer);
+			xr_delete(trained_model);
 		}
 		xr_delete(cached_ini_map);
-		Memory._destroy		();
+		Memory._destroy();
 	}
-
-	GECSManager->DestroyAll();
-	xr_delete(GECSManager);
 }
 
 #ifndef XRCORE_STATIC
