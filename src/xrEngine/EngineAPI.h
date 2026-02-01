@@ -53,6 +53,7 @@ enum class EditorUI : u8
 	Tools_TextureEditor,
 	Audio_General,
 	UI_General,
+	ECSViewer,
 	Count
 };
 

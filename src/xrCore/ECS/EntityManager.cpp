@@ -10,6 +10,7 @@ CECSManager::~CECSManager()
 
 void CECSManager::DestroyAll()
 {
+	xrSRWLockGuard guard(RWMutex, false);
 	for (auto& [_, Storage] : ComponentStorages)
 	{
 		Storage->DestroyAll();
@@ -20,6 +21,7 @@ void CECSManager::DestroyAll()
 
 void CECSManager::DestroyAllForOwner(void* Owner)
 {
+	xrSRWLockGuard guard(RWMutex, true);
 	for (auto& [_, Storage] : ComponentStorages)
 	{
 		Storage->Destroy(Owner);
