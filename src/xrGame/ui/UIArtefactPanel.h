@@ -1,13 +1,13 @@
 #pragma once
 #include "../../xrUI/Widgets/UIWindow.h"
-#include "../../xrUI/Widgets/UIStaticItem.h"
+#include "../../xrUI/Widgets/UI3dStatic.h"
 class CUIXml;
 class CArtefact;
 
 class CUIArtefactPanel : public CUIWindow
 {
 	typedef xr_vector<Frect>::const_iterator ITr;
-	typedef xr_vector<CUIStaticItem*>::const_iterator ITsi;
+	typedef xr_vector<CUI3dStatic*>::const_iterator ITsi;
 
 public:
 	CUIArtefactPanel			();
@@ -21,5 +21,5 @@ protected:
 	float						m_fScale;
 	Fvector2					m_cell_size;
 	xr_vector<Frect>            m_vRects;
-	CUIStaticItem               m_si;
+	CUI3dStatic					m_static;
 };
