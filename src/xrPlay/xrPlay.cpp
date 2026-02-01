@@ -171,6 +171,7 @@ int APIENTRY WinMain
 #ifdef DEBUG_DRAW
 	RenderUI();
 	EditorLuaInit();
+	ECSViewDraw();
 #endif
 
 	splash::SetProgressStatus(90, "Loading menu");
