@@ -357,7 +357,6 @@
 	<string id="SO_HLAMP">
 		<text>Hanging lamp</text>
 	</string>
-
 	<string id="ui_mm_screenshot_format">
 		<text>Screenshot format</text>
 	</string>
@@ -466,7 +465,6 @@
 	<string id="ui_mm_shoot_volume">
 		<text>Shots volume</text>
 	</string>
-
 	<string id="ui_pda_tabs">
 		<text>Tabs</text>
 	</string>
@@ -487,5 +485,8 @@
 	</string>
 	<string id="ui_mm_select_difficulty">
 		<text>Select difficulty</text>
+	</string>
+	<string id="st_manual_save">
+		<text>Manual save - </text>
 	</string>
 </string_table>
