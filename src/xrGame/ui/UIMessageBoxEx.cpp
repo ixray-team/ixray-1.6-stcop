@@ -103,10 +103,26 @@ bool CUIMessageBoxEx::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 			m_pMessageBox->OnNo();
 			return true;
 		}
-		else
-			return CUIDialogWnd::OnKeyboardAction(dik, keyboard_action);
 	}
 	return CUIDialogWnd::OnKeyboardAction(dik, keyboard_action);
+}
+
+bool CUIMessageBoxEx::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
+{
+	if(gamepad_action == WINDOW_KEY_PRESSED)
+	{
+		if ( id == SDL_GAMEPAD_BUTTON_SOUTH )
+		{
+			m_pMessageBox->OnYesOk();
+			return true;
+		}
+		else if (id == SDL_GAMEPAD_BUTTON_EAST)
+		{
+			m_pMessageBox->OnNo();
+			return true;
+		}
+	}
+	return CUIDialogWnd::OnKeyboardAction(id, gamepad_action);
 }
 
 void  CUIMessageBoxEx::SetTextEditURL( LPCSTR text )

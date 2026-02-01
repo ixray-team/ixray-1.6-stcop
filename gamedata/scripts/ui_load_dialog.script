@@ -347,11 +347,17 @@ end
 function load_dialog:OnKeyboard(dik, keyboard_action)  --virtual function
 	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
 	local bind = dik_to_bind(dik)
-	if bind == key_bindings.kQUIT then
-		self:OnButton_back_clicked()
-	else
-		if dik == DIK_keys.DIK_RETURN and keyboard_action == ui_events.WINDOW_KEY_PRESSED then
-			self:OnButton_load_clicked()
+	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
+		if bind == key_bindings.kQUIT then
+			self:OnButton_back_clicked()
+		elseif dik == DIK_keys.DIK_DELETE then
+			self:OnButton_del_clicked()
+		elseif dik == DIK_keys.DIK_DELETE then
+			self:OnButton_del_clicked()
+		elseif dik == DIK_keys.DIK_UP then
+			self.list_box:PrevItem()
+		elseif dik == DIK_keys.DIK_DOWN then
+			self.list_box:NextItem()
 		end
 	end
 	return true
@@ -362,6 +368,8 @@ function load_dialog:OnGamepadKey(key, gamepad_action)  --virtual function
 	if gamepad_action == ui_events.WINDOW_KEY_PRESSED then
 		if key == gamepad_keys.BUTTON_A then
 			self:OnButton_load_clicked()		
+		elseif key == gamepad_keys.BUTTON_B or key == gamepad_keys.BUTTON_START then
+			self:OnButton_back_clicked()		
 		elseif key == gamepad_keys.BUTTON_X then
 			self:OnButton_del_clicked()		
 		elseif key == gamepad_keys.BUTTON_DPAD_UP then
