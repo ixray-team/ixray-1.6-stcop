@@ -48,8 +48,7 @@ CArtefact::CArtefact()
 
 void CArtefact::Load(LPCSTR section) 
 {
-	inherited::Load			(section);
-
+	inherited::Load(section);
 
 	if (pSettings->line_exist(section, "particles"))
 		m_sParticlesName	= pSettings->r_string(section, "particles");
@@ -57,10 +56,11 @@ void CArtefact::Load(LPCSTR section)
 	IKinematics* K = PKinematics(Visual());
 	R_ASSERT2(K, cNameSect().c_str());
 
+	TParticlesPlayer* PPlayer = GetOrCreateComponent<TParticlesPlayer>();
 	if (pSettings->line_exist(section, "particles_bones"))
 	{
 		m_sParticlesBone = nullptr;
-		CParticlesPlayer::LoadParticles(section,"particles_bones",PKinematics(Visual()));
+		PPlayer->LoadParticles(section,"particles_bones",PKinematics(Visual()));
 	}
 	else
 	{
@@ -70,7 +70,7 @@ void CArtefact::Load(LPCSTR section)
 			int count = _GetItemCount(m_sParticlesBone.c_str());
 			if(count>1)
 			{
-				CParticlesPlayer::LoadParticles(section,"particles_bone",PKinematics(Visual()));
+				PPlayer->LoadParticles(section,"particles_bone",PKinematics(Visual()));
 				m_sParticlesBone = nullptr;
 			}
 			else
@@ -85,7 +85,7 @@ void CArtefact::Load(LPCSTR section)
 					R_ASSERT2(m_ParticlesBoneID !=BI_NONE, message.c_str());
 				}
 
-				CParticlesPlayer::AppendBone(m_ParticlesBoneID);
+				PPlayer->AppendBone(m_ParticlesBoneID);
 			}
 		}
 	}
@@ -211,36 +211,37 @@ void CArtefact::OnH_B_Independent(bool just_before_destroy)
 
 void CArtefact::SwitchAfParticles(bool bOn)
 {
-	if(m_sParticlesName.size()==0)
+	if (m_sParticlesName.size() == 0)
 		return;
 
-	if(bOn)
+	TParticlesPlayer* PPlayer = GetOrCreateComponent<TParticlesPlayer>();
+	if (bOn)
 	{
-			Fvector dir;
-			dir.set(0,1,0);
+		Fvector dir;
+		dir.set(0, 1, 0);
 
-			if(m_sParticlesBone.size()==0)
-			{
-				CParticlesPlayer::StartParticles(m_sParticlesName,dir,ID(),-1, false);
-				return;
-			}
+		if (m_sParticlesBone.size() == 0)
+		{
+			PPlayer->StartParticles(m_sParticlesName, dir, ID(), -1, false);
+			return;
+		}
 
-			IKinematics* K			= PKinematics(Visual());
-			R_ASSERT2				(K, cNameSect().c_str());
+		IKinematics* K = PKinematics(Visual());
+		R_ASSERT2(K, cNameSect().c_str());
 
-			if (m_ParticlesBoneID == BI_NONE)
-			{
-				shared_str message;
-				message.printf("Can`t find particle bone [%s]", m_sParticlesBone.c_str());
+		if (m_ParticlesBoneID == BI_NONE)
+		{
+			shared_str message;
+			message.printf("Can`t find particle bone [%s]", m_sParticlesBone.c_str());
 
-				R_ASSERT2(m_ParticlesBoneID != BI_NONE, message.c_str());
-			}
+			R_ASSERT2(m_ParticlesBoneID != BI_NONE, message.c_str());
+		}
 
-			CParticlesPlayer::StartParticles(m_sParticlesName, m_ParticlesBoneID,dir,ID(),-1, false);
-			
-	}else
+		PPlayer->StartParticles(m_sParticlesName, m_ParticlesBoneID, dir, ID(), -1, false);
+	}
+	else
 	{
-			CParticlesPlayer::StopParticles(m_sParticlesName, BI_NONE, true);
+		PPlayer->StopParticles(m_sParticlesName, BI_NONE, true);
 	}
 }
 
@@ -283,7 +284,9 @@ void CArtefact::UpdateWorkload		(u32 dt)
 		CPhysicsShellHolder* pPhysicsShellHolder = H_Parent()->cast_physics_shell_holder();
 		if(pPhysicsShellHolder) pPhysicsShellHolder->PHGetLinearVell(vel);
 	}
-	CParticlesPlayer::SetParentVel	(vel);
+
+	TParticlesPlayer* PPlayer = GetOrCreateComponent<TParticlesPlayer>();
+	PPlayer->SetParentVel(vel);
 
 	// 
 	UpdateLights					();
@@ -607,9 +610,11 @@ void SArtefactDetectorsSupport::SetVisible(bool b)
 
 	if(m_parent->has_detector_visibling)
 	{
+		TParticlesPlayer* PPlayer = m_parent->GetOrCreateComponent<TParticlesPlayer>();
+
 		LPCSTR curr				= pSettings->r_string(m_parent->cNameSect().c_str(), (b)?"det_show_particles":"det_hide_particles");
 		if(nullptr==m_parent->PS_bone())
-			m_parent->CParticlesPlayer::StartParticles(curr,Fvector().set(0,1,0),m_parent->ID());
+			PPlayer->StartParticles(curr,Fvector().set(0,1,0),m_parent->ID());
 		else
 		{
 			IKinematics* K			= PKinematics(m_parent->Visual());
@@ -624,7 +629,7 @@ void SArtefactDetectorsSupport::SetVisible(bool b)
 				R_ASSERT2(bone_id != BI_NONE, message.c_str());
 			}
 
-			m_parent->CParticlesPlayer::StartParticles(curr,bone_id,Fvector().set(0,1,0),m_parent->ID());
+			PPlayer->StartParticles(curr,bone_id,Fvector().set(0,1,0),m_parent->ID());
 		}
 
 		curr					= pSettings->r_string(m_parent->cNameSect().c_str(), (b)?"det_show_snd":"det_hide_snd");
@@ -639,9 +644,13 @@ void SArtefactDetectorsSupport::SetVisible(bool b)
 
 void SArtefactDetectorsSupport::Blink()
 {
-	LPCSTR curr				= pSettings->r_string(m_parent->cNameSect().c_str(), "det_show_particles");
-	if(nullptr==m_parent->PS_bone())
-		m_parent->CParticlesPlayer::StartParticles(curr,Fvector().set(0,1,0),m_parent->ID(), 1000, true);
+	TParticlesPlayer* PPlayer = m_parent->GetOrCreateComponent<TParticlesPlayer>();
+
+	LPCSTR curr = pSettings->r_string(m_parent->cNameSect().c_str(), "det_show_particles");
+	if (nullptr == m_parent->PS_bone())
+	{
+		PPlayer->StartParticles(curr, Fvector().set(0, 1, 0), m_parent->ID(), 1000, true);
+	}
 	else
 	{
 		IKinematics* K			= PKinematics(m_parent->Visual());
@@ -656,7 +665,7 @@ void SArtefactDetectorsSupport::Blink()
 			R_ASSERT2(bone_id != BI_NONE, message.c_str());
 		}
 
-		m_parent->CParticlesPlayer::StartParticles(curr,bone_id,Fvector().set(0,1,0),m_parent->ID(), 1000, true);
+		PPlayer->StartParticles(curr,bone_id,Fvector().set(0,1,0),m_parent->ID(), 1000, true);
 	}
 }
 

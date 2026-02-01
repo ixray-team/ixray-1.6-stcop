@@ -144,14 +144,13 @@ void SArtefactActivation::ChangeEffects()
 								state_def.m_light_color.g,
 								state_def.m_light_color.b);
 	
-	if(state_def.m_particle.size()){
+	if(state_def.m_particle.size())
+	{
 		Fvector dir;
 		dir.set(0,1,0);
 
-		m_af->CParticlesPlayer::StartParticles(	state_def.m_particle,
-												dir,
-												m_af->ID(),
-												iFloor(state_def.m_time*1000) );
+		TParticlesPlayer* PPlayer = m_af->GetOrCreateComponent<TParticlesPlayer>();
+		PPlayer->StartParticles(state_def.m_particle, dir, m_af->ID(), iFloor(state_def.m_time*1000) );
 	};
 
 	if (state_def.m_animation.size())

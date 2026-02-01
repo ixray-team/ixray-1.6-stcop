@@ -169,31 +169,26 @@ void		CTeleWhirlwindObject::		release					()
 	switch_state(TS_None);
 }
 
-bool	CTeleWhirlwindObject::destroy_object		(const Fvector dir,float val) 
+bool CTeleWhirlwindObject::destroy_object(const Fvector dir, float val)
 {
-	CPHDestroyable* D=object->ph_destroyable();
-	if(D)
+	CPHDestroyable* D = object->ph_destroyable();
+	if (D)
 	{
 		D->PhysicallyRemoveSelf();
 		D->Destroy(m_telekinesis->OwnerObject()->ID());
-		
-//.		m_telekinesis->add_impact(dir,val*10.f);
 
-		xr_vector<shared_str>::iterator i = D->m_destroyed_obj_visual_names.begin();
-		xr_vector<shared_str>::iterator e = D->m_destroyed_obj_visual_names.end();
 		if (IsGameTypeSingle())
 		{
-			for(;e!=i;i++)
-				m_telekinesis->add_impact(dir,val*10.f);
-		};	
+			xr_vector<shared_str>::iterator i = D->m_destroyed_obj_visual_names.begin();
+			xr_vector<shared_str>::iterator e = D->m_destroyed_obj_visual_names.end();
+			for (; e != i; i++)
+				m_telekinesis->add_impact(dir, val * 10.f);
+		};
 
+		u16 root = (smart_cast<IKinematics*>(object->Visual()))->LL_GetBoneRoot();
+		TParticlesPlayer* PPlayer = object->GetOrCreateComponent<TParticlesPlayer>();
+		PPlayer->StartParticles(m_telekinesis->destroing_particles(), root, Fvector().set(0, 1, 0), m_telekinesis->OwnerObject()->ID());
 
-		CParticlesPlayer* PP = smart_cast<CParticlesPlayer*>(object);
-		if(PP)
-		{
-			u16 root=(smart_cast<IKinematics*>(object->Visual()))->LL_GetBoneRoot();
-			PP->StartParticles(m_telekinesis->destroing_particles(),root, Fvector().set(0,1,0),m_telekinesis->OwnerObject()->ID());
-		}
 		return true;
 	}
 	return false;
