@@ -216,7 +216,6 @@ public:
 	virtual CEntity*					cast_entity					()						{return this;}
 	virtual CGameObject*				cast_game_object			() override				{return this;}
 	virtual CPhysicsShellHolder*		cast_physics_shell_holder	()						{return this;}
-	virtual CParticlesPlayer*			cast_particles_player		()						{return this;}
 	virtual	Feel::Sound*				dcast_FeelSound				()						{return this;}
 	virtual CAI_Stalker*				cast_stalker				()						{return this;}
 	virtual CCreature*				cast_creature			()						{return this;}

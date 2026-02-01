@@ -43,7 +43,6 @@ public:
 	virtual CEntity*					cast_entity				()						{return this;}
 	virtual CGameObject*				cast_game_object		()						{return this;}
 	virtual CPhysicsShellHolder*		cast_physics_shell_holder	()					{return this;}
-	virtual CParticlesPlayer*			cast_particles_player	()						{return this;}
 	virtual CScriptEntity*				cast_script_entity		()						{return this;}
 	virtual CAI_Trader*					cast_trader				()						{ return this; }
 	virtual CPhraseDialogManager*		cast_phrase_dialog_manager()					{ return this; }

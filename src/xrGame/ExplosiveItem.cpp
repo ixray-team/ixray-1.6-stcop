@@ -46,7 +46,8 @@ void CExplosiveItem::Hit(SHit* pHDS)
 
 void CExplosiveItem::StartTimerEffects()
 {
-	CParticlesPlayer::StartParticles(pSettings->r_string(*cNameSect(), "set_timer_particles"), Fvector().set(0, 1, 0), ID());
+	TParticlesPlayer* PPlayer = GetOrCreateComponent<TParticlesPlayer>();
+	PPlayer->StartParticles(pSettings->r_string(*cNameSect(), "set_timer_particles"), Fvector().set(0, 1, 0), ID());
 }
 
 void CExplosiveItem::OnEvent(NET_Packet& P, u16 type)
@@ -69,7 +70,9 @@ void CExplosiveItem::shedule_Update(u32 dt)
 		Fvector normal;
 		FindNormal(normal);
 		CExplosive::GenExplodeEvent(Position(), normal);
-		CParticlesPlayer::StopParticles(ID(), BI_NONE, true);
+
+		TParticlesPlayer* PPlayer = GetOrCreateComponent<TParticlesPlayer>();
+		PPlayer->StopParticles(ID(), BI_NONE, true);
 	}
 }
 

@@ -18,6 +18,7 @@ struct TDamageManager
 	void reload(LPCSTR section, LPCSTR sub_section, CInifile const* ini);
 
 	void HitScale(const int bone_num, float& hit_scale, float& wound_scale, bool aim_bullet = false);
+	void SetupOwner(IECSOwner* Owner);
 
 private:
 	ECS_COMPONENT(TDamageManager)

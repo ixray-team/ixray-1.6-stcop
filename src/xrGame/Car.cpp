@@ -715,7 +715,7 @@ void CCar::Hit(SHit* pHDS)
 
 	if (HDS.hit_type != ALife::eHitTypeStrike)
 	{
-		TDamageManager* DmgManager = GECSManager->GetComponent<TDamageManager>(static_cast<CEntity*>(this));
+		TDamageManager* DmgManager = GetComponent<TDamageManager>();
 		DmgManager->HitScale(HDS.bone(), hitScale, woundScale);
 	}
 
@@ -1290,7 +1290,7 @@ void CCar::Init()
 		LoadImmunities("immunities", ini);
 	}
 
-	TDamageManager* DmgManager = GECSManager->GetComponent<TDamageManager>(static_cast<CEntity*>(this));
+	TDamageManager* DmgManager = GetComponent<TDamageManager>();
 	DmgManager->reload("car_definition", "damage", ini);
 
 	HandBreak();

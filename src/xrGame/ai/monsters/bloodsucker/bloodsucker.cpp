@@ -788,7 +788,7 @@ void CAI_Bloodsucker::predator_start()
 
 	cNameVisual_set(m_visual_predator);
 
-	TDamageManager* DmgManager = GECSManager->GetComponent<TDamageManager>(static_cast<CEntity*>(this));
+	TDamageManager* DmgManager = GetComponent<TDamageManager>();
 	DmgManager->reload(*cNameSect(),"damage",pSettings);
 
 	if (IsGameTypeSingle() || OnServer())
@@ -828,12 +828,13 @@ void CAI_Bloodsucker::predator_start()
 
 		}
 	}
-	
-	CParticlesPlayer::StartParticles(invisible_particle_name,Fvector().set(0.0f,0.1f,0.0f),ID());		
-	sound().play					(CAI_Bloodsucker::eChangeVisibility);
 
-	m_predator						= true;
-	//state_invisible				= false;
+	TParticlesPlayer* PPlayer = GetOrCreateComponent<TParticlesPlayer>();
+	PPlayer->StartParticles(invisible_particle_name,Fvector().set(0.0f,0.1f,0.0f),ID());
+
+	sound().play(CAI_Bloodsucker::eChangeVisibility);
+
+	m_predator = true;
 }
 
 void CAI_Bloodsucker::predator_stop()
@@ -856,7 +857,7 @@ void CAI_Bloodsucker::predator_stop()
 	cNameVisual_set(*m_visual_default);
 	character_physics_support()->in_ChangeVisual();
 
-	TDamageManager* DmgManager = GECSManager->GetComponent<TDamageManager>(static_cast<CEntity*>(this));
+	TDamageManager* DmgManager = GetComponent<TDamageManager>();
 	DmgManager->reload(*cNameSect(),"damage",pSettings);
 
 	if (IsGameTypeSingle() || OnServer())
@@ -894,9 +895,10 @@ void CAI_Bloodsucker::predator_stop()
 		}
 	}
 
-	CParticlesPlayer::StartParticles(invisible_particle_name,Fvector().set(0.0f,0.1f,0.0f),ID());		
-	sound().play					(CAI_Bloodsucker::eChangeVisibility);
-	m_predator						= false;
+	TParticlesPlayer* PPlayer = GetOrCreateComponent<TParticlesPlayer>();
+	PPlayer->StartParticles(invisible_particle_name,Fvector().set(0.0f,0.1f,0.0f),ID());
+	sound().play(CAI_Bloodsucker::eChangeVisibility);
+	m_predator = false;
 }
 
 void CAI_Bloodsucker::predator_freeze()

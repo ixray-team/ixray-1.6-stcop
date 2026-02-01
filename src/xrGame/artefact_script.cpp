@@ -4,7 +4,6 @@
 #include "MercuryBall.h"
 #include "GraviArtifact.h"
 #include "BlackDrops.h"
-#include "Needles.h"
 #include "BastArtifact.h"
 #include "BlackGraviArtifact.h"
 #include "DummyArtifact.h"

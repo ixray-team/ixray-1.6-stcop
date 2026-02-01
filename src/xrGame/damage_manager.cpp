@@ -7,7 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 #include "StdAfx.h"
 #include "damage_manager.h"
-#include "../xrEngine/xr_object.h"
+#include "GameObject.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "../xrEngine/bone.h"
 
@@ -46,6 +46,11 @@ void TDamageManager::reload(LPCSTR section, LPCSTR line, CInifile const * ini)
 		reload(ini->r_string(section,line),ini);	
 	else 
 		reload(section,0);
+}
+
+void TDamageManager::SetupOwner(IECSOwner* Owner)
+{
+	m_object = smart_cast<CGameObject*>(Owner);
 }
 
 void TDamageManager::init_bones(LPCSTR section, CInifile const* ini)

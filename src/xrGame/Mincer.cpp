@@ -128,10 +128,11 @@ void CMincer::NotificateDestroy			(CPHDestroyableNotificate *dn)
 	//CObject* obj=Level().Objects.net_Find(id);
 	CPhysicsShellHolder* obj=dn->PPhysicsShellHolder();
 	m_telekinetics.draw_out_impact(dir,impulse);
-	CParticlesPlayer* PP = obj != nullptr ? obj->cast_particles_player() : nullptr;
-	if(PP && *m_torn_particles)
+
+	TParticlesPlayer* PPlayer = obj->GetOrCreateComponent<TParticlesPlayer>();
+	if(*m_torn_particles)
 	{
-		PP->StartParticles(m_torn_particles,Fvector().set(0,1,0),ID());
+		PPlayer->StartParticles(m_torn_particles,Fvector().set(0,1,0),ID());
 	}
 	m_tearing_sound.play_at_pos(0,m_telekinetics.Center());
 

@@ -365,12 +365,6 @@ void CScriptGameObject::set_level_changer_invitation(LPCSTR str)
 
 void CScriptGameObject::start_particles(LPCSTR pname, LPCSTR bone)
 {
-	CParticlesPlayer* PP = object().cast_particles_player();
-	if (PP == nullptr)
-	{
-		return;
-	}
-
 	IKinematics* K = PKinematics(object().Visual());
 	R_ASSERT(K);
 
@@ -379,7 +373,8 @@ void CScriptGameObject::start_particles(LPCSTR pname, LPCSTR bone)
 
 	if (K->LL_GetBoneVisible(play_bone))
 	{
-		PP->StartParticles(pname, play_bone, Fvector().set(0, 1, 0), 9999);
+		TParticlesPlayer* PPlayer = object().GetOrCreateComponent<TParticlesPlayer>();
+		PPlayer->StartParticles(pname, play_bone, Fvector().set(0, 1, 0), 9999);
 	}
 	else
 	{
@@ -389,12 +384,6 @@ void CScriptGameObject::start_particles(LPCSTR pname, LPCSTR bone)
 
 void CScriptGameObject::stop_particles(LPCSTR pname, LPCSTR bone)
 {
-	CParticlesPlayer* PP = object().cast_particles_player();
-	if (PP == nullptr)
-	{
-		return;
-	}
-
 	IKinematics* K = PKinematics(object().Visual());
 	R_ASSERT(K);
 
@@ -403,7 +392,8 @@ void CScriptGameObject::stop_particles(LPCSTR pname, LPCSTR bone)
 
 	if (K->LL_GetBoneVisible(play_bone))
 	{
-		PP->StopParticles(9999, play_bone, true);
+		TParticlesPlayer* PPlayer = object().GetOrCreateComponent<TParticlesPlayer>();
+		PPlayer->StopParticles(9999, play_bone, true);
 	}
 	else
 	{
