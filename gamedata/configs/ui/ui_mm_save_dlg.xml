@@ -13,6 +13,27 @@
 			<texture>ui_save_load_back</texture>
 		</auto_static>
 	</background>
+	<gamepad_legend x="0" y="724" width="1024" height="30" spacing="5">
+		<gp_bind x="0" y="0" width="30" height="30" stretch="1">
+			<texture>controller_a</texture>
+		</gp_bind>
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_mm_save</text>
+		</auto_static>
+		<gp_bind x="0" y="0" width="30" height="30" stretch="1">
+			<texture>controller_x</texture>
+		</gp_bind>
+		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>gp_delete_text</window_name>
+			<text font="graffiti19" vert_align="c">ui_mm_delete</text>
+		</auto_static>
+		<gp_bind x="0" y="0" width="30" height="30" stretch="1">
+			<texture>controller_b</texture>
+		</gp_bind>
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_mm_back</text>
+		</auto_static>
+	</gamepad_legend>
 	<file_item>
 	    <main width="490" height="18"/>
 	    <fn width="325" height="18"/>
@@ -23,7 +44,7 @@
 	    <caption x="0" y="20" width="560" height="30">
 		    <text font="graffiti32" align="c">ui_mm_save_game</text>
 	    </caption>
-	    <edit x="30" y="75" width="256" height="23" file_name_mode="1">
+	    <edit x="30" y="75" width="500" height="23" file_name_mode="1" max_symb_count="120">
 		    <texture>ui_inGame2_edit_box_1</texture>
 		    <text x="3" font="letterica18" vert_align="c"/>
 	    </edit>
