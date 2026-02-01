@@ -90,7 +90,6 @@ public:
 	virtual CEntityAlive*				cast_entity_alive			()	{return this;}
 	virtual CEntity*					cast_entity					()	{return this;}
 	virtual CPhysicsShellHolder*		cast_physics_shell_holder	()	{return this;}
-	virtual CParticlesPlayer*			cast_particles_player		()	{return this;}
 	virtual CCreature*				cast_creature			()	{return this;}
 	virtual CScriptEntity*				cast_script_entity			()	{return this;}
 	virtual CBaseMonster*				cast_base_monster			()	{return this;}

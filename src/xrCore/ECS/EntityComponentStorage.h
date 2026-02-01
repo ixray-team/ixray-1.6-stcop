@@ -1,12 +1,20 @@
 ﻿#pragma once
 
+class IECSOwner;
+
 class IECSComponentStorage
 {
 public:
 	virtual ~IECSComponentStorage() = default;
 	virtual void DestroyAll() = 0;
-	virtual void Destroy(void* Owner) = 0;
+	virtual void Destroy(IECSOwner* Owner) = 0;
 	virtual const char* ECS_GetName() const = 0;
+};
+
+template <typename T>
+concept HasSetupOwner = requires(T t, IECSOwner* owner)
+{
+	{ t.SetupOwner(owner) };
 };
 
 template <typename T>
@@ -14,11 +22,16 @@ class CECSComponentStorage final :
 	public IECSComponentStorage
 {
 public:
-	T& Create(void* Owner)
+	T& Create(IECSOwner* Owner)
 	{
 		xrSRWLockGuard guard(RWMutex, false);
 		size_t Index = Components.size();
 		T& NewComponent = Components.emplace_back();
+
+		if constexpr (HasSetupOwner<T>)
+		{
+			NewComponent.SetupOwner(Owner);
+		}
 
 		Owners.emplace_back(Owner);
 		Lookup[Owner] = Index;
@@ -26,14 +39,14 @@ public:
 		return NewComponent;
 	}
 
-	T* Get(void* Owner)
+	T* Get(IECSOwner* Owner)
 	{
 		xrSRWLockGuard guard(RWMutex, true);
 		auto Iter = Lookup.find(Owner);
 		return Iter != Lookup.end() ? &Components[Iter->second] : nullptr;
 	}
 
-	virtual void Destroy(void* Owner) override
+	virtual void Destroy(IECSOwner* Owner) override
 	{
 		xrSRWLockGuard guard(RWMutex, false);
 		auto Iter = Lookup.find(Owner);

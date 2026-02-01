@@ -16,12 +16,10 @@ class CCharacterPhysicsSupport;
 class ICollisionDamageInfo;
 class CIKLimbsController;
 
-
-
-class CPhysicsShellHolder:  public CGameObject,
-							public CParticlesPlayer,
-							public IObjectPhysicsCollision,
-							public IPhysicsShellHolder
+class CPhysicsShellHolder:
+	public CGameObject,
+	public IObjectPhysicsCollision,
+	public IPhysicsShellHolder
 	
 {
 	bool				b_sheduled;
@@ -67,7 +65,6 @@ public:
 
 	virtual CPhysicsShellHolder* cast_physics_shell_holder() { return this; }
 	virtual CPhysicItem* cast_physics_item() { return nullptr; }
-	virtual CParticlesPlayer* cast_particles_player() { return this; }
 	virtual CGameObject* cast_game_object() { return this; }
 	virtual IDamageSource* cast_IDamageSource() { return nullptr; }
 

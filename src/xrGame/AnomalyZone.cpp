@@ -780,14 +780,14 @@ void CAnomalyZone::PlayHitParticles(CGameObject* pObject)
 		particle_str = m_sHitParticlesBig;
 	}
 
-	if( particle_str.size() )
+	if (particle_str.size())
 	{
-		CParticlesPlayer* PP = pObject->cast_particles_player();
-		if (PP)
+		TParticlesPlayer* PPlayer = pObject->GetOrCreateComponent<TParticlesPlayer>();
+
+		u16 play_bone = PPlayer->GetRandomBone();
+		if (play_bone != BI_NONE)
 		{
-			u16 play_bone = PP->GetRandomBone(); 
-			if (play_bone!=BI_NONE)
-				PP->StartParticles	(particle_str,play_bone,Fvector().set(0,1,0), ID());
+			PPlayer->StartParticles(particle_str, play_bone, Fvector().set(0, 1, 0), ID());
 		}
 	}
 }
@@ -795,56 +795,58 @@ void CAnomalyZone::PlayHitParticles(CGameObject* pObject)
 void CAnomalyZone::PlayEntranceParticles(CGameObject* pObject)
 {
 	if (!pObject || pObject->getDestroy()) return;
-	m_entrance_sound.play_at_pos		(0, pObject->Position());
+	m_entrance_sound.play_at_pos(0, pObject->Position());
 
-	LPCSTR particle_str				= nullptr;
+	LPCSTR particle_str = nullptr;
 
-	if(pObject->Radius()<SMALL_OBJECT_RADIUS)
+	if (pObject->Radius() < SMALL_OBJECT_RADIUS)
 	{
-		if(!m_sEntranceParticlesSmall) 
+		if (!m_sEntranceParticlesSmall)
 			return;
 
 		particle_str = m_sEntranceParticlesSmall.c_str();
 	}
 	else
 	{
-		if(!m_sEntranceParticlesBig) 
+		if (!m_sEntranceParticlesBig)
 			return;
 
-		particle_str				= m_sEntranceParticlesBig.c_str();
+		particle_str = m_sEntranceParticlesBig.c_str();
 	}
 
 	Fvector							vel;
-	CPhysicsShellHolder* shell_holder= pObject->cast_physics_shell_holder();
-	if(shell_holder)
+	CPhysicsShellHolder* shell_holder = pObject->cast_physics_shell_holder();
+	if (shell_holder)
 		shell_holder->PHGetLinearVell(vel);
-	else 
-		vel.set						(0,0,0);
-	
-	//выбрать случайную косточку на объекте
-	CParticlesPlayer* PP			= pObject->cast_particles_player();
-	if (PP)
-	{
-		u16 play_bone				= PP->GetRandomBone(); 
-		
-		if (play_bone!=BI_NONE)
-		{
-			CParticlesObject* pParticles = Particles::Details::Create(particle_str, TRUE).get();
-			Fmatrix					xform;
-			Fvector					dir;
-			if(fis_zero				(vel.magnitude()))
-				dir.set				(0,1,0);
-			else
-			{
-				dir.set				(vel);
-				dir.normalize		();
-			}
+	else
+		vel.set(0, 0, 0);
 
-			PP->MakeXFORM			(pObject,play_bone,dir,Fvector().set(0,0,0),xform);
-			pParticles->UpdateParent(xform, vel);
-			pParticles->Play		(false);
+	//выбрать случайную косточку на объекте
+	TParticlesPlayer* PPlayer = pObject->GetOrCreateComponent<TParticlesPlayer>();
+
+	u16 play_bone = PPlayer->GetRandomBone();
+
+	if (play_bone != BI_NONE)
+	{
+		CParticlesObject* pParticles = Particles::Details::Create(particle_str, TRUE).get();
+		Fmatrix xform;
+		Fvector dir;
+		
+		if (fis_zero(vel.magnitude()))
+		{
+			dir.set(0, 1, 0);
 		}
+		else
+		{
+			dir.set(vel);
+			dir.normalize();
+		}
+
+		PPlayer->MakeXFORM(pObject, play_bone, dir, Fvector().set(0, 0, 0), xform);
+		pParticles->UpdateParent(xform, vel);
+		pParticles->Play(false);
 	}
+
 	if (m_zone_flags.test(eBoltEntranceParticles) && pObject->cast_bolt())
 	{
 		PlayBoltEntranceParticles();
@@ -962,32 +964,34 @@ void CAnomalyZone::PlayBulletParticles(Fvector& pos)
 
 void CAnomalyZone::PlayObjectIdleParticles(CGameObject* pObject)
 {
-	if (!pObject || pObject->getDestroy()) return;
-	CParticlesPlayer* PP = pObject->cast_particles_player();
-	if(!PP) return;
+	if (!pObject || pObject->getDestroy())
+	{
+		return;
+	}
 
+	TParticlesPlayer* PPlayer = pObject->GetOrCreateComponent<TParticlesPlayer>();
 	shared_str particle_str = nullptr;
 
 	//разные партиклы для объектов разного размера
-	if(pObject->Radius()<SMALL_OBJECT_RADIUS)
+	if (pObject->Radius() < SMALL_OBJECT_RADIUS)
 	{
-		if(!m_sIdleObjectParticlesSmall) return;
+		if (!m_sIdleObjectParticlesSmall) return;
 		particle_str = m_sIdleObjectParticlesSmall;
 	}
 	else
 	{
-		if(!m_sIdleObjectParticlesBig) return;
+		if (!m_sIdleObjectParticlesBig) return;
 		particle_str = m_sIdleObjectParticlesBig;
 	}
 
-	
 	//запустить партиклы на объекте
-	//. new
-	PP->StopParticles (particle_str, BI_NONE, true);
+	PPlayer->StopParticles(particle_str, BI_NONE, true);
 
-	PP->StartParticles (particle_str, Fvector().set(0,1,0), ID());
+	PPlayer->StartParticles(particle_str, Fvector().set(0, 1, 0), ID());
 	if (!IsEnabled())
-		PP->StopParticles	(particle_str, BI_NONE, true);
+	{
+		PPlayer->StopParticles(particle_str, BI_NONE, true);
+	}
 }
 
 void CAnomalyZone::StopObjectIdleParticles(CGameObject* pObject)
@@ -996,25 +1000,24 @@ void CAnomalyZone::StopObjectIdleParticles(CGameObject* pObject)
 	if (m_zone_flags.test(eIdleObjectParticlesDontStop) && !pObject->cast_actor())
 		return;
 
-	CParticlesPlayer* PP = pObject->cast_particles_player();
-	if(!PP) return;
+	TParticlesPlayer* PPlayer = pObject->GetOrCreateComponent<TParticlesPlayer>();
 
-	if(!SZoneObjectInfo::get(this, pObject)) return;
-	
+	if (!SZoneObjectInfo::get(this, pObject)) return;
+
 	shared_str particle_str = nullptr;
 	//разные партиклы для объектов разного размера
-	if(pObject->Radius()<SMALL_OBJECT_RADIUS)
+	if (pObject->Radius() < SMALL_OBJECT_RADIUS)
 	{
-		if(!m_sIdleObjectParticlesSmall) return;
+		if (!m_sIdleObjectParticlesSmall) return;
 		particle_str = m_sIdleObjectParticlesSmall;
 	}
 	else
 	{
-		if(!m_sIdleObjectParticlesBig) return;
+		if (!m_sIdleObjectParticlesBig) return;
 		particle_str = m_sIdleObjectParticlesBig;
 	}
 
-	PP->StopParticles	(particle_str, BI_NONE, true);
+	PPlayer->StopParticles(particle_str, BI_NONE, true);
 }
 
 void	CAnomalyZone::Hit					(SHit* pHDS)
