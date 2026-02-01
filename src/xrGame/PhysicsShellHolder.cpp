@@ -71,8 +71,13 @@ void CPhysicsShellHolder::net_Destroy()
 	//remove calls
 	CPHSriptReqGObjComparer cmpr(this);
 	Level().ph_commander_scripts().remove_calls(&cmpr);
+
 	//удалить партиклы из ParticlePlayer
-	CParticlesPlayer::net_DestroyParticles		();
+	if (TParticlesPlayer* PPlayer = GetComponent<TParticlesPlayer>())
+	{
+		PPlayer->net_DestroyParticles();
+	}
+
 	CCharacterPhysicsSupport	*char_support = character_physics_support();
 	if( char_support )
 		char_support->destroy_imotion();
@@ -93,7 +98,6 @@ enum EEnableState
 static u8 st_enable_state=(u8)stNotDefitnite;
 BOOL CPhysicsShellHolder::net_Spawn				(CSE_Abstract*	DC)
 {
-	CParticlesPlayer::net_SpawnParticles		();
 	st_enable_state=(u8)stNotDefitnite;
 	b_sheduled									=	true;
 	BOOL ret=inherited::net_Spawn				(DC);//load
@@ -353,8 +357,12 @@ void CPhysicsShellHolder::UpdateCL	()
 {
 	PROF_EVENT("CPhysicsShellHolder::UpdateCL")
 	inherited::UpdateCL	();
+
 	//обновить присоединенные партиклы
-	UpdateParticles		();
+	if (TParticlesPlayer* PPlayer = GetComponent<TParticlesPlayer>())
+	{
+		PPlayer->UpdateParticles();
+	}
 }
 float CPhysicsShellHolder::EffectiveGravity()
 {
