@@ -371,6 +371,35 @@ bool CUIMMShniaga::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 	return CUIWindow::OnKeyboardAction(dik, keyboard_action);
 }
 
+bool CUIMMShniaga::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
+{
+	if (WINDOW_KEY_PRESSED == gamepad_action)
+	{
+		switch (id)
+		{
+			case SDL_GAMEPAD_BUTTON_DPAD_UP:
+				if (m_selected_btn > 0)
+					SelectBtn(m_selected_btn - 1);
+				return true;
+			case SDL_GAMEPAD_BUTTON_DPAD_DOWN:
+				if (m_selected_btn < BtnCount() - 1)
+					SelectBtn(m_selected_btn + 1);
+				return true;
+			case SDL_GAMEPAD_BUTTON_SOUTH:
+				OnBtnClick();
+				return true;
+			case SDL_GAMEPAD_BUTTON_EAST:
+			case SDL_GAMEPAD_BUTTON_START:
+				if (m_page != epi_main)
+					ShowMain();
+				return true;
+		}
+	}
+
+
+	return CUIWindow::OnGamepadKeyAction(id, gamepad_action);
+}
+
 int CUIMMShniaga::BtnCount()
 {
 	R_ASSERT(-1);
