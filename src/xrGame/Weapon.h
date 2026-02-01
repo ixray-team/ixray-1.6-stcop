@@ -205,6 +205,8 @@ public:
 
 	} m_ammo_bones_lite;
 
+	xr_hash_map<u8, RStringVec> m_mag_bone_type{};
+
 	public:
 		struct SRecoilPoint {
 			float x; 
@@ -244,6 +246,7 @@ protected:
 	void ProcessScope();
 	void UpdateScopePosition();
 	void UpdateAmmoBones(xr_vector<SAmmoBonesParams*>& lVector, u32 idx, u8 type);
+	void UpdateMagAmmoBones(xr_hash_map<u8, RStringVec>& lVector, u8 type);
 	void UpdateLiteAmmoBones(u32 idx);
 	void UpdateShellBones(u32 idx, u8 type);
 	virtual void UpdateBonePartAnimations() {}

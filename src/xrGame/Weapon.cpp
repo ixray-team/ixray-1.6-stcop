@@ -793,13 +793,33 @@ void CWeapon::Load		(LPCSTR section)
 	if (m_ammo_bones_lite.bullet_cnt > 0)
 	{
 		shared_str read_bullet_bone_name = pSettings->r_string(section, "bullet_bone_name");
-		shared_str bullet_bone_name = read_bullet_bone_name;
 
-		for (u32 i = 1; i < m_ammo_bones_lite.bullet_cnt; ++i)
+		for (u32 i = 1; i <= m_ammo_bones_lite.bullet_cnt; ++i)
 		{
+			shared_str bullet_bone_name;
 			bullet_bone_name.printf("%s%d", *read_bullet_bone_name, i);
-			auto& ConfigNode = m_ammo_bones_lite.bullet_bones[i];
-			ConfigNode = bullet_bone_name;
+
+			m_ammo_bones_lite.bullet_bones[i] = bullet_bone_name;
+		}
+	}
+
+	for (u8 i = 0; i < m_ammoTypes.size(); i++)
+	{
+		shared_str mag_bone_type = shared_str().printf("mag_bone_type_%d", i);
+
+		if (pSettings->line_exist(section, *mag_bone_type))
+		{
+			RStringVec bones = {};
+			LPCSTR read_mag_bone_type = pSettings->r_string(section, *mag_bone_type);
+
+			for (int i = 0, count = _GetItemCount(read_mag_bone_type); i < count; ++i)
+			{
+				string128 bone_name = {};
+				_GetItem(read_mag_bone_type, i, bone_name);
+				bones.push_back(bone_name);
+			}
+
+			m_mag_bone_type[i] = bones;
 		}
 	}
 
@@ -4190,7 +4210,7 @@ u32 CWeapon::FakeReload()
 		return GetMagCapacity();
 	}
 
-	u32 in_box = GetAmmoCount(GetTargetAmmoType(IsGrenadeMode()));
+	u32 in_box = GetAmmoCount(GetTargetAmmoType(IsGrenadeMode())) + iAmmoElapsed;
 	return clampr(in_box, (u32)0, (u32)iMagazineSize);
 }
 
@@ -4203,12 +4223,18 @@ void CWeapon::OnMotionMark(u32 state, const motion_marks& mark)
 		m_bBlockEmptyClick = false;
 	}
 
-	if (state == eReload && mark.name == "Left")
+	bool for_grenade = IsGrenadeMode();
+
+	if (state == eReload && !m_bTriStateReload && mark.name == "Left")
 	{
 		u32 current_configuration = FakeReload();
-		bool for_grenade = IsGrenadeMode();
 		UpdateAmmoBones(for_grenade ? m_ammo_bones_gl : m_ammo_bones_mag, current_configuration, GetTargetAmmoType(for_grenade));
 		UpdateLiteAmmoBones(current_configuration);
+	}
+
+	if (state == eReload && !m_bTriStateReload && mark.name == "Left2")
+	{
+		UpdateMagAmmoBones(m_mag_bone_type, GetTargetAmmoType(for_grenade));
 	}
 
 	if (state == eKick && mark.name == "Left")
@@ -4372,11 +4398,14 @@ void CWeapon::UpdateLiteAmmoBones(u32 idx)
 	IKinematics* hud_kin = HID != nullptr ? HID->m_model : nullptr;
 	IKinematics* world_kin = Visual() != nullptr ? PKinematics(Visual()) : nullptr;
 
-	for (u32 i = 1; i < m_ammo_bones_lite.bullet_bones.size(); i++)
+	for (const auto& it : m_ammo_bones_lite.bullet_bones)
 	{
-		const shared_str& node = m_ammo_bones_lite.bullet_bones[i];
-		SetVisible(world_kin, node, idx >= i);
-		SetVisible(hud_kin, node, idx >= i);
+		u32 bullet_idx = it.first;
+		const shared_str& node = it.second;
+
+		BOOL visible = (bullet_idx <= idx);
+		SetVisible(world_kin, node, visible);
+		SetVisible(hud_kin, node, visible);
 	}
 
 	if (world_kin != nullptr)
@@ -4410,6 +4439,52 @@ bool CWeapon::ScopeFit(CScope* pIItem) const
 	}
 
 	return false;
+}
+
+void CWeapon::UpdateMagAmmoBones(xr_hash_map<u8, RStringVec>& lVector, u8 type)
+{
+	if (lVector.empty())
+	{
+		return;
+	}
+
+	auto SetVisible = [&](IKinematics* kin, const shared_str& bone_name, BOOL status)
+	{
+		if (kin != nullptr)
+		{
+			u16 bone_id = kin->LL_BoneID(bone_name);
+			if (bone_id != BI_NONE)
+			{
+				kin->LL_SetBoneVisible(bone_id, status, FALSE);
+			}
+		}
+	};
+
+	attachable_hud_item* HID = HudItemData();
+	IKinematics* hud_kin = HID != nullptr ? HID->m_model : nullptr;
+	IKinematics* world_kin = Visual() != nullptr ? PKinematics(Visual()) : nullptr;
+
+	for (const auto& [ammotype, vec] : lVector)
+	{
+		BOOL status = !!(ammotype == type);
+		for (const auto& bone : vec)
+		{
+			SetVisible(hud_kin, bone, status);
+			SetVisible(world_kin, bone, status);
+		}
+	}
+
+	if (world_kin != nullptr)
+	{
+		world_kin->CalculateBones_Invalidate();
+		world_kin->CalculateBones(TRUE);
+	}
+
+	if (hud_kin != nullptr)
+	{
+		hud_kin->CalculateBones_Invalidate();
+		hud_kin->CalculateBones(TRUE);
+	}
 }
 
 int CWeapon::GetMagCapacity()

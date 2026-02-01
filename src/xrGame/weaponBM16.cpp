@@ -188,8 +188,6 @@ shared_str CWeaponBM16::SetCurrentReloadAnimation()
 
 void CWeaponBM16::PlayAnimReload()
 {
-	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, m_ammoType);
-
 	VERIFY(GetState() == eReload);
 	
 	PlayHUDMotion(SetCurrentReloadAnimation(), EHudMixType::eMixAll, GetState());
