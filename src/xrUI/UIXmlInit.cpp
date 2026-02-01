@@ -23,7 +23,7 @@
 #include "Widgets/UITextBanner.h"
 #include "Widgets/UIMultiTextStatic.h"
 #include "Widgets/UIGamepadLegend.h"
-
+#include "../../xrEngine/xr_input.h"
 #include "UITextureMaster.h"
 #include "Widgets/UITabButtonMP.h"
 #include "Widgets/UILines.h"
@@ -678,16 +678,6 @@ bool CUIXmlInit::InitLoadscreenProgress(CUIXml& xml_doc, LPCSTR path, int index,
 	return true;
 }
 
-UI_API u32 gamepad_prefix_type = 3;
-UI_API xr_token	gamepad_prefix_token[] =
-{
-	{ "ps4",	0		},
-	{ "ps5",	1		},
-	{ "switch",	2		},
-	{ "xbox1",	3		},
-	{ 0,		0		}
-};
-
 void CUIXmlInit::InitAutoStaticGroup(CUIXml& xml_doc, LPCSTR path, int index, CUIWindow* pParentWnd)
 {
 	XML_NODE* _stored_root				= xml_doc.GetLocalRoot();
@@ -762,7 +752,7 @@ void CUIXmlInit::InitAutoStaticGroup(CUIXml& xml_doc, LPCSTR path, int index, CU
 
 			LPCSTR texture = xml_doc.Read("gp_bind:texture", cnt_gp_binding_static, "");
 			string256					buf;
-			xr_strconcat(buf, get_token_name(gamepad_prefix_token, gamepad_prefix_type), "_", texture);
+			xr_strconcat(buf, pInput->GamepadPrefix(), "_", texture);
 			pUIStatic->InitTexture(buf);
 
 			if (!xml_doc.NavigateToNode("gp_bind:window_name", cnt_gp_binding_static))

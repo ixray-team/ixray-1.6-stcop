@@ -694,3 +694,37 @@ void CInput::SetControllerMode(bool val)
 	controllerMode = val;
 	CStringTable::ReparseKeyBindings();
 }
+
+void CInput::SelectGamepadPrefix()
+{
+	if (!pGamePad)
+		return;
+	
+	switch (SDL_GetGamepadType(pGamePad))
+	{
+		case SDL_GAMEPAD_TYPE_PS3:
+		case SDL_GAMEPAD_TYPE_PS4:
+		{
+			gamepadPrefix = "ps4";
+			break;
+		}
+		case SDL_GAMEPAD_TYPE_PS5:
+		{
+			gamepadPrefix = "ps5";
+			break;
+		}
+		case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_PRO:
+		case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_LEFT:
+		case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT:
+		case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_PAIR:
+		{
+			gamepadPrefix = "switch";
+			break;
+		}
+		default:	// Use Xbox prefix as a fallback
+		{
+			gamepadPrefix = "xbox1";
+			break;
+		}
+	}
+}
