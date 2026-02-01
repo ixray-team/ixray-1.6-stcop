@@ -706,6 +706,35 @@ retval: none
 args: bool, vector2, vector2, string, int
 
 ```
+## CConsole
+```lua
+--// Регистрация LUA команды в консоли (нужно вызывать каждый раз на старте уровня)
+  get_console():register_lua_command(name_command, callable_fn, tips_string)
+
+retval: none
+args: 
+  name_command, -- Имя команды в консоли
+  callable_fn, -- lua функция принимает таблицу аргументов
+  tips_string -- подсказки в консоли напротив команды разделитель запятая
+```
+#### Пример кода Регистрация LUA команды в консоли
+```lua
+--// Регистрация LUA команды в консоли
+-- Пример создания команды которая будет спавнить секцию указанную в первом аргументе в инвентарь к гг
+  get_console():register_lua_command(
+    "spawn_item_to_actor",
+    function (args)
+      alife():create(
+        args[1],
+        db.actor:position(),
+        db.actor:level_vertex_id(),
+        db.actor:game_vertex_id(),
+        db.actor:id()
+      )
+    end,
+    "wpn_pm, wpn_ak_74, bandage" -- подсказки для консоли разделитель запятая
+  )
+```
 
 ## ActorMenu
 ```lua
@@ -823,4 +852,77 @@ args: wallmark_object(script game object), status (boolean)
 --// Get fog distance from current env
 level.get_fog_distance()
 retval: float
+
+```
+
+## level (runtime storage)
+```lua
+
+--// Специальная обертка для проброса строковых луа таблиц между перезагрузками луа машины
+
+--// Проверить наличие таблицы строк в хранилище по имени
+level.is_exists_named_stash_string_vector(key_name)
+retval: bool
+args: key_name (string)
+
+--// Получить таблицу строк из хранилища по имени
+level.get_named_stash_string_vector(key_name)
+retval: lua table
+args: key_name (string)
+
+--// Заполнить таблицу строк в хранилище по имени
+level.set_named_stash_string_vector(key_name, table)
+retval: void
+args:
+ key_name (string)
+ table (lua table)
+
+--// Удалить таблицу строк из хранилища по имени
+level.remove_named_stash_string_vector(key_name)
+retval: void
+args: key_name (string)
+
+--// Удалить все таблицы строк из хранилища
+level.remove_all_named_stash_string_vectors()
+retval: void
+
+```
+
+## Примеры (runtime storage)
+```lua
+--// Проверить наличие таблицы строк в хранилище по имени
+if level.is_exists_named_stash_string_vector("my-data") then
+
+end
+
+--// Получить таблицу строк из хранилища по имени
+local data = level.get_named_stash_string_vector(key_name)
+  
+--// Заполнить таблицу строк в хранилище по имени
+level.set_named_stash_string_vector(
+  "my-data", --// имя хранилища
+  {"test", "best"} --// хранимая таблица
+)
+
+--// Удалить таблицу строк из хранилища по имени
+level.remove_named_stash_string_vector("my-data")
+
+--// Удалить все таблицы строк из хранилища
+level.remove_all_named_stash_string_vectors()
+
+
+--// Комплексное использование
+if level.is_exists_named_stash_string_vector("my-data") then
+  --// Таблица есть в хранилище - выведем в лог
+	SemiLog(tostring(ffx_dump_utils.var_export(
+	    level.get_named_stash_string_vector("my-data"))
+  ))
+else
+  --// Таблицы нет в хранилище - заполняем
+	level.set_named_stash_string_vector(
+    "my-data", 
+    {"test", "best"}
+	)
+end
+
 ```
