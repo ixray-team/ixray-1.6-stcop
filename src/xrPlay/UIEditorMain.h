@@ -3,3 +3,4 @@
 void RenderUI();
 void RenderUIWeather();
 void EditorLuaInit();
+void ECSViewDraw();
