@@ -22,19 +22,20 @@ CUIOutfitDragDropList::~CUIOutfitDragDropList()
 
 void CUIOutfitDragDropList::SetOutfit()
 {
-	CObject* current_entity = Level().CurrentControlEntity();
-	CActor* pActor = current_entity != nullptr ? current_entity->cast_actor() : nullptr;
+	m_background->SetWndPos(Fvector2().set(0, 0));
+	m_background->SetWndSize(Fvector2().set(GetWidth(), GetHeight()));
 
-	if (pActor)
+	m_background->SetStretchTexture(true);
+	CObject* current_entity = IsGameTypeSingle() ? Level().CurrentEntity() : Level().CurrentControlEntity();
+
+	if (current_entity)
 	{
-		m_background->SetVisual(pActor->Visual());
+		m_background->SetVisual(current_entity->Visual());
 		m_background->SetXYZ(0, M_PI, 0);
-		m_background->TextureOn();
 	}
 	else
 	{
 		m_background->SetVisual(nullptr);
-		m_background->TextureOff();
 	}
 }
 
