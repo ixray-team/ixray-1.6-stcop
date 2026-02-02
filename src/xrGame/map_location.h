@@ -4,6 +4,13 @@
 #include "alife_space.h"
 #include "game_graph_space.h"
 
+enum class ECompassSpotKind : u8
+{
+    Generic = 0,
+    Mission,
+    Npc
+};
+
 class CMapSpot;
 class CMiniMapSpot;
 class CMapSpotPointer;
@@ -25,6 +32,7 @@ enum ELocationFlags
 	eCollidable			= (1<<6),
 	eHintEnabled		= (1<<7),
 	eUserDefined		= (1 << 8),
+	eShowOnCompass		= (1 << 9),
 };
 
 protected:
@@ -62,6 +70,9 @@ protected:
 		bool				m_Actuality;
 	};
 	SCachedValues			m_cached;
+	shared_str				m_compass_spot_texture;
+	u32						m_compass_spot_color;
+	float					m_fCompassMaxDist;
 private:
 							CMapLocation					(const CMapLocation&){R_ASSERT(0);} //disable copy ctor
 
@@ -107,6 +118,11 @@ public:
 	IC const shared_str&	GetLevelName					()	{return m_cached.m_LevelName;}
 	IC LPCSTR				GetLPLevelName					()	{return m_cached.m_LevelName.c_str();}
 	const Fvector2&			GetPosition						()	{return m_cached.m_Position;}
+	IC bool					ShowOnCompass					()	const { return !!m_flags.test(eShowOnCompass); }
+	const shared_str&		GetCompassSpotTexture			()	const { return m_compass_spot_texture; }
+	IC u32					GetCompassSpotColor				()	const { return m_compass_spot_color; }
+	IC float				GetCompassMaxDist				()	const { return m_fCompassMaxDist; }
+	ECompassSpotKind		GetCompassSpotKind				()	const;
 
 	u16						ObjectID						() {return m_objectID;}
 	virtual		bool		Update							();
