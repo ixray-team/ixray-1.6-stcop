@@ -3,6 +3,8 @@
 #include "UIMainIngameWnd.h"
 #include "UIMessagesWindow.h"
 #include "UIZoneMap.h"
+#include "UICompassBar.h"
+#include "../../xrCore/EngineExternal.h"
 
 
 #include "../Actor.h"
@@ -22,6 +24,7 @@
 #include "../alife_object_registry.h"
 #include "../game_cl_base.h"
 #include "../Level.h"
+#include "../map_manager.h"
 #include "../seniority_hierarchy_holder.h"
 #include "UIArtefactPanel.h"
 
@@ -81,7 +84,17 @@ CUIMainIngameWnd::CUIMainIngameWnd()
 :/*m_pGrenade(nullptr),m_pItem(nullptr),*/m_pPickUpItem(nullptr),m_pMPChatWnd(nullptr),UIArtefactIcon(nullptr),m_pMPLogWnd(nullptr)
 {
 	UIStaticDiskIO				= nullptr;
-	UIZoneMap					= new CUIZoneMap();
+	const bool useCompassBar = EngineExternal()[EEngineExternalUI::UseCompassBar];
+	if (useCompassBar)
+	{
+		UICompassBar = new CUICompassBar();
+		UIZoneMap = nullptr;
+	}
+	else
+	{
+		UIZoneMap = new CUIZoneMap();
+		UICompassBar = nullptr;
+	}
 	UIWeaponJammedIcon			= nullptr;
 	UIInvincibleIcon			= nullptr;
 	UIArtefactIcon				= nullptr;
@@ -116,7 +129,10 @@ extern CUIProgressShape* g_MissileForceShape;
 CUIMainIngameWnd::~CUIMainIngameWnd()
 {
 	DestroyFlashingIcons		();
-	xr_delete					(UIZoneMap);
+	xr_delete(UIZoneMap);
+	if (UICompassBar && IsChild(UICompassBar))
+		DetachChild(UICompassBar);
+	xr_delete(UICompassBar);
 	HUD_SOUND_ITEM::DestroySound(m_contactSnd);
 	xr_delete					(g_MissileForceShape);
 	xr_delete					(UIWeaponJammedIcon);
@@ -163,10 +179,14 @@ void CUIMainIngameWnd::Init()
 	m_iPickUpItemIconY = UIPickUpItemIcon->GetWndRect().top;
 	//---------------------------------------------------------
 
-	//индикаторы 
-	UIZoneMap->Init();
+	if (UIZoneMap)
+		UIZoneMap->Init();
+	if (UICompassBar)
+	{
+		UICompassBar->Init();
+		AttachChild(UICompassBar);
+	}
 
-	// Подсказки, которые возникают при наведении прицела на объект
 	UIStaticQuickHelp = UIHelper::CreateStatic(uiXml, "quick_info", this);
 
 	uiXml.SetLocalRoot(uiXml.GetRoot());
@@ -230,12 +250,10 @@ void CUIMainIngameWnd::Init()
 			pElement->SetShader(svg_shader);
 			pElement->SetTextureRect(svg_uv);
 
-			// virtual callings are not cheap and for runtime better to reduce that overhead tbh so we have to cache at init stage 
 			svg_init = true;
 		}
 	};
 
-	// todo: refactor and make function that accept CUIStatic and initialize others...
 	pInitSVGForCUIStatic(m_ind_bleeding, uiXml, m_ind_bleeding_svg_inited);
 
 	pInitSVGForCUIStatic(m_ind_weapon_broken, uiXml, m_ind_weapon_broken_svg_inited);
@@ -398,11 +416,24 @@ void CUIMainIngameWnd::Init()
 	UICarPanel.Init();
 	AttachChild(&UICarPanel);
 
-	// Icons
 	UIMotionIcon = new CUIMotionIcon(); UIMotionIcon->SetAutoDelete(true);
-	const bool independent = UIMotionIcon->Init(UIZoneMap->MapFrame().GetWndRect());
-	if (!independent)
-		UIZoneMap->MapFrame().AttachChild(UIMotionIcon);
+	bool independent = false;
+	if (UIZoneMap)
+	{
+		independent = UIMotionIcon->Init(UIZoneMap->MapFrame().GetWndRect());
+		if (!independent)
+			UIZoneMap->MapFrame().AttachChild(UIMotionIcon);
+		else
+			AttachChild(UIMotionIcon);
+	}
+	else if (UICompassBar)
+	{
+		independent = UIMotionIcon->Init(UICompassBar->GetFrame()->GetWndRect());
+		if (!independent)
+			UICompassBar->AttachChild(UIMotionIcon);
+		else
+			AttachChild(UIMotionIcon);
+	}
 	else
 		AttachChild(UIMotionIcon);
 
@@ -422,7 +453,10 @@ void CUIMainIngameWnd::Init()
 	{
 		UIPdaOnline = new CUIStatic();
 		xml_init.InitStatic(uiXml, "static_pda_online", 0, UIPdaOnline);
-		UIZoneMap->Background().AttachChild(UIPdaOnline);
+		if (UIZoneMap)
+			UIZoneMap->Background().AttachChild(UIPdaOnline);
+		else if (UICompassBar)
+			UICompassBar->Background().AttachChild(UIPdaOnline);
 	}
 
 	if (uiXml.NavigateToNode("disk_io"))
@@ -542,16 +576,30 @@ void CUIMainIngameWnd::Draw()
 	UIMotionIcon->Draw();
 
 	const static bool noHUDonMaster = EngineExternal()[EEngineExternalUI::DisableHudRenderingOnMaster];
-	if (noHUDonMaster)
+	if (UIZoneMap)
 	{
-		bool renderHUD = noHUDonMaster ? g_SingleGameDifficulty < egdVeteran : true;
-		UIZoneMap->disabled = !renderHUD;
+		if (noHUDonMaster)
+		{
+			bool renderHUD = noHUDonMaster ? g_SingleGameDifficulty < egdVeteran : true;
+			UIZoneMap->disabled = !renderHUD;
+		}
+		if (psHUD_Flags.test(HUD_MINIMAP))
+		{
+			UIZoneMap->visible = true;
+			UIZoneMap->Render();
+		}
 	}
-
-	if (psHUD_Flags.test(HUD_MINIMAP))
+	else if (UICompassBar)
 	{
-		UIZoneMap->visible = true;
-		UIZoneMap->Render();
+		if (noHUDonMaster)
+		{
+			bool renderHUD = g_SingleGameDifficulty < egdVeteran;
+			UICompassBar->visible = renderHUD && psHUD_Flags.test(HUD_MINIMAP);
+		}
+		else
+			UICompassBar->visible = psHUD_Flags.test(HUD_MINIMAP);
+		if (UICompassBar->visible)
+			UICompassBar->Draw();
 	}
 
 	bool tmp = UIMotionIcon->IsShown();
@@ -612,12 +660,14 @@ void CUIMainIngameWnd::Update()
 		return;
 	}
 
-	if (psHUD_Flags.test(HUD_MINIMAP))
-	{
+	if (UIZoneMap && psHUD_Flags.test(HUD_MINIMAP))
 		UIZoneMap->Update();
+	if (UICompassBar && psHUD_Flags.test(HUD_MINIMAP))
+	{
+		UICompassBar->SetActiveTarget(Level().MapManager().GetActiveTaskCompassLocation());
+		UICompassBar->Update();
 	}
-	
-//	UIHealthBar.SetProgressPos	(m_pActor->GetfHealth()*100.0f);
+
 	UIMotionIcon->SetPower		(pActor->conditions().GetPower()*100.0f);
 	
 	UpdatePickUpItem			();
@@ -1021,9 +1071,10 @@ void CUIMainIngameWnd::UpdateFlashingIcons()
 
 void CUIMainIngameWnd::AnimateContacts(bool b_snd)
 {
-	UIZoneMap->Counter_ResetClrAnimation();
+	if (UIZoneMap)
+		UIZoneMap->Counter_ResetClrAnimation();
 
-	if (!psHUD_Flags.test(HUD_MINIMAP))
+	if ((UIZoneMap || UICompassBar) && !psHUD_Flags.test(HUD_MINIMAP))
 		b_snd = false;
 	if (b_snd)
 		HUD_SOUND_ITEM::PlaySound(m_contactSnd, Fvector().set(0,0,0), 0, true);
@@ -1146,7 +1197,8 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 
 void CUIMainIngameWnd::OnConnected()
 {
-	UIZoneMap->SetupCurrentMap();
+	if (UIZoneMap)
+		UIZoneMap->SetupCurrentMap();
 	if ( m_ui_hud_states )
 	{
 		m_ui_hud_states->on_connected();
@@ -1155,7 +1207,8 @@ void CUIMainIngameWnd::OnConnected()
 
 void CUIMainIngameWnd::OnSectorChanged(int sector)
 {
-	UIZoneMap->OnSectorChanged(sector);
+	if (UIZoneMap)
+		UIZoneMap->OnSectorChanged(sector);
 }
 
 void CUIMainIngameWnd::reset_ui()
@@ -1170,22 +1223,28 @@ void CUIMainIngameWnd::reset_ui()
 
 void CUIMainIngameWnd::ShowZoneMap( bool status ) 
 { 
-	UIZoneMap->visible = status; 
+	if (UIZoneMap)
+		UIZoneMap->visible = status; 
+	if (UICompassBar)
+		UICompassBar->visible = status;
 }
 
 void CUIMainIngameWnd::DrawZoneMap() 
 {
-	if (psHUD_Flags.test(HUD_MINIMAP))
-	{
+	if (UIZoneMap && psHUD_Flags.test(HUD_MINIMAP))
 		UIZoneMap->Render();
-	}
+	if (UICompassBar && psHUD_Flags.test(HUD_MINIMAP))
+		UICompassBar->Draw();
 }
 
 void CUIMainIngameWnd::UpdateZoneMap() 
 {
-	if (psHUD_Flags.test(HUD_MINIMAP))
-	{
+	if (UIZoneMap && psHUD_Flags.test(HUD_MINIMAP))
 		UIZoneMap->Update();
+	if (UICompassBar && psHUD_Flags.test(HUD_MINIMAP))
+	{
+		UICompassBar->SetActiveTarget(Level().MapManager().GetActiveTaskCompassLocation());
+		UICompassBar->Update();
 	}
 }
 
