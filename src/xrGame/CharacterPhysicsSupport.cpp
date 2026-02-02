@@ -1094,10 +1094,14 @@ void CCharacterPhysicsSupport::EndActivateFreeShell(CObject* who, const Fvector&
 void CCharacterPhysicsSupport::in_ChangeVisual()
 {
 	IKinematicsAnimated* KA = m_EntityAlife.Visual()->dcast_PKinematicsAnimated();
-	DestroyIKController();
-	if (KA)
+
+	if (m_EntityAlife.GetComponent<TIKLimbsController>())
 	{
-		CreateIKController();
+		DestroyIKController();
+		if (KA)
+		{
+			CreateIKController();
+		}
 	}
 
 	xr_delete(m_interactive_animation);
