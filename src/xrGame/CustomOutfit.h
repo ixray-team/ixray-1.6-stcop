@@ -5,14 +5,13 @@
 
 struct SBoneProtections;
 
-class CCustomOutfit : public CArmorBase
+class CCustomOutfit :
+	public CArmorBase
 {
 	using inherited = CArmorBase;
 public:
-					CCustomOutfit();
-	virtual			~CCustomOutfit();
 
-	virtual void	Load(LPCSTR section) override;
+	virtual void Load(LPCSTR section) override;
 
 	//коэффициент на который домножается потеря силы
 	//если на персонаже надет костюм

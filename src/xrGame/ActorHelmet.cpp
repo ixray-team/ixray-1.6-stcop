@@ -5,15 +5,6 @@
 #include "BoneProtections.h"
 #include "../Include/xrRender/Kinematics.h"
 
-CHelmet::CHelmet() : inherited()
-{
-}
-
-CHelmet::~CHelmet()
-{
-	inherited::~CArmorBase();
-}
-
 void CHelmet::Load(LPCSTR section)
 {
 	inherited::Load(section);

@@ -14,15 +14,6 @@
 #include "UIGameCustom.h"
 #include "UIActorMenu.h"
 
-CCustomOutfit::CCustomOutfit() : inherited()
-{
-}
-
-CCustomOutfit::~CCustomOutfit()
-{
-	inherited::~CArmorBase();
-}
-
 void CCustomOutfit::Load(LPCSTR section)
 {
 	inherited::Load(section);

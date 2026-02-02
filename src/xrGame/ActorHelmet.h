@@ -1,17 +1,14 @@
 #pragma once
-
 #include "ArmorBase.h"
 
 struct SBoneProtections;
 
-class CHelmet : public CArmorBase
+class CHelmet :
+	public CArmorBase
 {
-private:
 	using inherited = CArmorBase;
-public:
-						CHelmet					();
-	virtual				~CHelmet				();
 
+public:
 	virtual void		Load					(LPCSTR section) override;
 
 	virtual void		OnMoveToSlot			(const SInvItemPlace& previous_place) override;
