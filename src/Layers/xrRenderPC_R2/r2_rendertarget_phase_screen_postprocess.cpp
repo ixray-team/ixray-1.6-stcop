@@ -54,8 +54,8 @@ void CRenderTarget::PhaseSaturation() {
 
 void CRenderTarget::PhaseRaindrops()
 {
-	const bool ItemCfgHudRainDropsAvialable = g_pGamePersistent->ShaderParams.ItemCfgHudRainDropsAvialable;
-	if (!ItemCfgHudRainDropsAvialable)
+	const bool ItemCfgHudRainDropsAvailable = g_pGamePersistent->ShaderParams.ItemCfgHudRainDropsAvailable;
+	if (!ItemCfgHudRainDropsAvailable)
 	{
 		return;
 	}
