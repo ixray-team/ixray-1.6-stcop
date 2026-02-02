@@ -77,6 +77,8 @@ public:
 
 	virtual BOOL		UsedAI_Locations		();
 
+	virtual bool CanPutInSlot(PIItem item, u32 slot) override { return false; }
+
 	///////////////////////////////////////////////////////////////////////
 	virtual u16					PHGetSyncItemsNumber	()			{return inherited ::PHGetSyncItemsNumber();}
 	virtual CPHSynchronize*		PHGetSyncItem			(u16 item)	{return inherited ::PHGetSyncItem(item);}
