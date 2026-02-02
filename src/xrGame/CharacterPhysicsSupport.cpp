@@ -74,7 +74,7 @@ CCharacterPhysicsSupport::CCharacterPhysicsSupport(EType atype, CEntityAlive* ae
 	m_pPhysicsShell(aentity->PPhysicsShell()), m_EntityAlife(*aentity),
 	mXFORM(aentity->XFORM()), m_ph_sound_player(aentity), m_interactive_motion(0),
 	m_PhysicMovementControl(new CPHMovementControl(aentity)), m_eType(atype), m_eState(esAlive),
-	m_physics_skeleton(nullptr), m_ik_controller(nullptr), m_BonceDamageFactor(1.f),
+	m_physics_skeleton(nullptr), m_BonceDamageFactor(1.f),
 	m_collision_hit_callback(nullptr), m_interactive_animation(nullptr), m_physics_shell_animated(nullptr),
 	m_physics_shell_animated_time_destroy(u32(-1)), m_weapon_attach_bone(0), m_active_item_obj(0), m_hit_valide_time(u32(-1))
 {
@@ -595,10 +595,10 @@ void CCharacterPhysicsSupport::in_UpdateCL()
 		m_character_shell_control.UpdateFrictionAndJointResistanse(m_pPhysicsShell);
 
 	}
-	else if (ik_controller())
+	else if (TIKLimbsController* LimbContorller = m_EntityAlife.GetComponent<TIKLimbsController>())
 	{
 		update_interactive_anims();
-		ik_controller()->Update();
+		LimbContorller->Update();
 	}
 
 #ifdef DEBUG
@@ -1094,7 +1094,8 @@ void CCharacterPhysicsSupport::EndActivateFreeShell(CObject* who, const Fvector&
 void CCharacterPhysicsSupport::in_ChangeVisual()
 {
 	IKinematicsAnimated* KA = m_EntityAlife.Visual()->dcast_PKinematicsAnimated();
-	if (m_ik_controller)
+
+	if (m_EntityAlife.GetComponent<TIKLimbsController>())
 	{
 		DestroyIKController();
 		if (KA)
@@ -1175,18 +1176,12 @@ void CCharacterPhysicsSupport::PHGetLinearVell(Fvector& velocity)
 
 void CCharacterPhysicsSupport::CreateIKController()
 {
-
-	VERIFY(!m_ik_controller);
-	m_ik_controller = new CIKLimbsController();
-	m_ik_controller->Create(&m_EntityAlife);
-	
+	m_EntityAlife.CreateComponent<TIKLimbsController>();
 }
 
 void CCharacterPhysicsSupport::DestroyIKController()
 {
-	if(!m_ik_controller)return;
-	m_ik_controller->Destroy(&m_EntityAlife);
-	xr_delete(m_ik_controller);
+	m_EntityAlife.DestroyComponent<TIKLimbsController>();
 }
 
 void CCharacterPhysicsSupport::in_NetRelcase(CObject* O)

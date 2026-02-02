@@ -1,24 +1,20 @@
 #pragma once
-
-
 #include "ik/IKLimb.h"
 #include "pose_extrapolation.h"
 #include "ik_object_shift.h"
-class IKinematicsAnimated;
-class CGameObject	;
-class CBlend		;
-struct SIKCrlCalcData;
 
+class CGameObject;
+class CBlend;
 
-
-class CIKLimbsController {
+class TIKLimbsController
+{
 private:
-	static	const u16	max_size	=				4;
+	static constexpr u16 max_size = 4;
 
 public:
-					CIKLimbsController			( );
-			void	Create						( CGameObject *O );
-			void	Destroy						( CGameObject *O );
+	void BeginComponent(IECSOwner* O);
+	void EndComponent();
+
 public:
 			void	PlayLegs					( CBlend *b );
 			void	Update						( );
@@ -35,18 +31,25 @@ private:
 			void	LimbSetup					( );
 
 private:
-	static	void  	IKVisualCallback	( IKinematics* K );
+	static void IKVisualCallback(IKinematics* K);
 
 private:
-	CBlend					*m_legs_blend;
-	CGameObject				*m_object;
-	xr_vector<CIKLimb>		_bone_chains;
-	object_shift			_object_shift;
-	extrapolation::points	_pose_extrapolation;
+	CBlend *m_legs_blend = nullptr;
+	CGameObject *m_object = nullptr;
+	xr_vector<CIKLimb> _bone_chains;
+	object_shift _object_shift;
+	extrapolation::points _pose_extrapolation;
 
-#ifdef	DEBUG
-	LPCSTR			anim_name;
-	LPCSTR			anim_set_name;
+#ifdef DEBUG
+	LPCSTR anim_name;
+	LPCSTR anim_set_name;
 #endif
 
+private:
+	ECS_COMPONENT(TIKLimbsController)
+#ifdef DEBUG
+		ECS_STRING(anim_name, "Anim name")
+		ECS_STRING(anim_set_name, "Anim set name")
+#endif
+	ECS_END
 };
