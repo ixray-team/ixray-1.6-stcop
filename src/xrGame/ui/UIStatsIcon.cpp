@@ -5,6 +5,8 @@
 
 #include "../Include/xrRender/UIShader.h"
 
+using namespace InventoryUtilities;
+
 CUIStatsIcon::TEX_INFO		CUIStatsIcon::m_tex_info[MAX_DEF_TEX][2];
 
 CUIStatsIcon::CUIStatsIcon(){
@@ -30,15 +32,15 @@ void CUIStatsIcon::InitTexInfo(){
 
 	// artefact
 	LPCSTR artefact_name = pSettings->r_string("artefacthunt_gamedata", "artefact");
-	float fGridWidth	= pSettings->r_float(artefact_name, "inv_grid_width");
-	float fGridHeight	= pSettings->r_float(artefact_name, "inv_grid_height");
-	float fXPos			= pSettings->r_float(artefact_name, "inv_grid_x");
-	float fYPos			= pSettings->r_float(artefact_name, "inv_grid_y");
+	InventoryIconParams icons_struct = GetInventoryIconParams(artefact_name);
+	float fGridWidth	= icons_struct.inv_grid_width;
+	float fGridHeight	= icons_struct.inv_grid_height;
+	float fXPos			= icons_struct.inv_grid_x;
+	float fYPos			= icons_struct.inv_grid_y;
 
-	const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, artefact_name, "icons_texture", nullptr);
-	float scaleIcon = READ_IF_EXISTS(pSettings, r_float, artefact_name, "inv_scale", 1.0f);
+	float scaleIcon = icons_struct.scaleIcon;
 
-	m_tex_info[ARTEFACT][0].sh = InventoryUtilities::GetEquipmentIconsShader(icons_texture);
+	m_tex_info[ARTEFACT][0].sh = GetEquipmentIconsShader(icons_struct.icons_texture);
 	m_tex_info[ARTEFACT][0].rect.set(
 		fXPos * INV_GRID_WIDTH(scaleIcon),
 		fYPos * INV_GRID_HEIGHT(scaleIcon),
