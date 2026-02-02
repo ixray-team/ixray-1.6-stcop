@@ -9,7 +9,8 @@
 
 class	CUIPdaMsgListItem;
 class	CLAItem;
-class	CUIZoneMap;
+class CUIZoneMap;
+class CUICompassBar;
 class	CUIScrollView;
 struct	GAME_NEWS_DATA;
 class	CMissile;
@@ -63,6 +64,7 @@ public:
 	CUIStatic*			UIStaticQuickHelp;
 	CUIMotionIcon* UIMotionIcon;
 	CUIZoneMap* UIZoneMap;
+	CUICompassBar* UICompassBar;
 
 	CUIStackPanel* UIStackPanelBoosters;
 	CUIStackPanel* UIStackPanelIndicators;
