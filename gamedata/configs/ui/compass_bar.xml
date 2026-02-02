@@ -1,0 +1,31 @@
+<window>
+	<compass_bar x="256" y="30" width="450" height="100" fov_angle="120">
+		<background x="256" y="10" width="450" height="50" stretch="1" alignment="c">
+			<texture>ui_inGame2_compass_bar_window</texture>
+		</background>
+		<compass_dial>
+			<strip x="75" y="15" width="362" height="17" stretch="1" tex_width="771">
+				<texture>ui_inGame2_compass_dial</texture>
+			</strip>
+			<cardinal_points y="2" width="16" height="14" alignment="c">
+				<text font="font_rubik_18" color="ui_7" align="c" vert_align="c"/>
+				<n>N</n>
+				<e color="ui_1" align="r">E</e>
+				<s color="ui_1">S</s>
+				<w color="ui_1" align="l">W</w>
+			</cardinal_points>
+		</compass_dial>
+		<!-- distances from map_spots compass_dist; colors from texture r,g,b -->
+		<spots show="1" x="256" y="45" align="c" layer="1">
+			<spot_template width="10" height="14"/>
+		</spots>
+		<active_target strip_y="0" markers_y="-10" dist_y="-5" smoothing_speed="15.0" active_target_padding="8" offset_x="0" offset_y="0" text_offset_x="38" text_offset_y="10">
+			<distance_text width="80" height="14" alignment="c">
+				<text font="letterica16" color="ui_7" align="c" vert_align="c"/>
+			</distance_text>
+			<marker width="15" height="18" stretch="1">
+				<texture>ui_inGame2_hint_wnd_main_window</texture>
+			</marker>
+		</active_target>
+	</compass_bar>
+</window>
