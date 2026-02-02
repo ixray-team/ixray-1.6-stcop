@@ -660,6 +660,23 @@ u32 InventoryUtilities::GetReputationColor(s32 rv)
 	return res;
 }
 
+InventoryUtilities::InventoryIconParams InventoryUtilities::GetInventoryIconParams(LPCSTR section)
+{
+    InventoryIconParams ret_struct;
+    ret_struct.inv_grid_x = pSettings->r_float(section, "inv_grid_x");
+    ret_struct.inv_grid_y = pSettings->r_float(section, "inv_grid_y");
+    ret_struct.inv_grid_height = pSettings->r_float(section, "inv_grid_height");
+    ret_struct.inv_grid_width = pSettings->r_float(section, "inv_grid_width");
+    ret_struct.icons_texture = READ_IF_EXISTS(pSettings, r_string, section, "icons_texture", nullptr);
+    ret_struct.scaleIcon = READ_IF_EXISTS(pSettings, r_float, section, "inv_scale", 1.0f);
+
+    ret_struct._3d_static_visual = READ_IF_EXISTS(pSettings, r_string, section, "3d_static_visual_name", pSettings->r_string(section, "visual"));
+    ret_struct._3d_static_rotate = READ_IF_EXISTS(pSettings, r_fvector3, section, "3d_static_rotate", ret_struct._3d_static_rotate.set(0, 0, 0));
+    ret_struct._3d_static_rotate.mul(M_PI / 180.0f);
+    ret_struct._3d_static_scale = READ_IF_EXISTS(pSettings, r_float, section, "3d_static_scale", 1.f);
+    return ret_struct;
+}
+
 u32	InventoryUtilities::GetRelationColor(ALife::ERelationType relation)
 {
 	switch(relation) {
