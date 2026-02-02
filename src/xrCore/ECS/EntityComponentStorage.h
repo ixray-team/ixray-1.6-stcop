@@ -12,9 +12,20 @@ public:
 };
 
 template <typename T>
-concept HasSetupOwner = requires(T t, IECSOwner* owner)
+concept ECSHasSetupOwner = requires(T t, IECSOwner* owner)
 {
 	{ t.SetupOwner(owner) };
+};
+
+template <typename T>
+concept ECSHasBeginComponent = requires(T t, IECSOwner* owner)
+{
+	{ t.BeginComponent(owner) };
+};
+template <typename T>
+concept ECSHasEndComponent = requires(T t)
+{
+	{ t.EndComponent() };
 };
 
 template <typename T>
@@ -28,9 +39,14 @@ public:
 		size_t Index = Components.size();
 		T& NewComponent = Components.emplace_back();
 
-		if constexpr (HasSetupOwner<T>)
+		if constexpr (ECSHasSetupOwner<T>)
 		{
 			NewComponent.SetupOwner(Owner);
+		}
+
+		if constexpr (ECSHasBeginComponent<T>)
+		{
+			NewComponent.BeginComponent(Owner);
 		}
 
 		Owners.emplace_back(Owner);
@@ -58,9 +74,17 @@ public:
 		size_t Index = Iter->second;
 		size_t Last = Components.size() - 1;
 
-		Components[Index] = std::move(Components[Last]);
-		Owners[Index] = Owners[Last];
-		Lookup[Owners[Index]] = Index;
+		if constexpr (ECSHasEndComponent<T>)
+		{
+			Components[Index].EndComponent();
+		}
+
+		if (Index != Last)
+		{
+			Components[Index] = std::move(Components[Last]);
+			Owners[Index] = Owners[Last];
+			Lookup[Owners[Index]] = Index;
+		}
 
 		Components.pop_back();
 		Owners.pop_back();

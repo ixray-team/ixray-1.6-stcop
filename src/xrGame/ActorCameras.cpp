@@ -430,9 +430,10 @@ void CActor::cam_Update(float dt, float fFOV)
 
 	float y_shift =0;
 
-	if (GamePersistent().GameType() != eGameIDSingle && ik_cam_shift && character_physics_support() && character_physics_support()->ik_controller())
+	TIKLimbsController* IKController = GetComponent<TIKLimbsController>();
+	if (GamePersistent().GameType() != eGameIDSingle && ik_cam_shift && IKController)
 	{
-		y_shift = character_physics_support()->ik_controller()->Shift();
+		y_shift = IKController->Shift();
 		float cam_smooth_k = 1.f;
 
 		if (std::abs(y_shift - current_ik_cam_shift) > ik_cam_shift_tolerance)
