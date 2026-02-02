@@ -28,20 +28,25 @@ void CUIArtefactPanel::InitFromXML	(CUIXml& xml, LPCSTR path, int index)
 
 void CUIArtefactPanel::InitIcons(const xr_vector<const CArtefact*>& artefacts)
 {
-	m_static.SetShader(GetEquipmentIconsShader());
 	m_vRects.clear();
+	m_statics.clear();
 
 	for(const CArtefact* af : artefacts)
 	{
         InventoryIconParams icons_struct = GetInventoryIconParams(af->cNameSect().c_str());
+
+		CUI3dStatic* tmp = new CUI3dStatic();
+		tmp->SetShader(GetEquipmentIconsShader(af->IconsTexture.c_str()));
         if (psActorFlags.test(AF_3D_ICONS_INV))
         {
-            GetStatic()->SetVisual(icons_struct._3d_static_visual);
-            GetStatic()->SetXYZ(icons_struct._3d_static_rotate);
-            GetStatic()->SetScaleFactor(icons_struct._3d_static_scale);
+			tmp->SetVisual(icons_struct._3d_static_visual);
+			tmp->SetXYZ(icons_struct._3d_static_rotate);
+			tmp->SetScaleFactor(icons_struct._3d_static_scale);
         }
         else
-            GetStatic()->SetVisual(nullptr);
+			tmp->SetVisual(nullptr);
+
+		m_statics.push_back(tmp);
 
 		Frect rect;
 		float scaleIcon = icons_struct.scaleIcon;
@@ -71,20 +76,20 @@ void CUIArtefactPanel::Draw()
 	
 	float _s			= m_cell_size.x/m_cell_size.y;
 
-	for (ITr it = m_vRects.begin(); it != m_vRects.end(); ++it)
+	for (int i = 0; i < m_statics.size(); ++i)
 	{
-		const Frect& r = *it;		
+		const Frect& r = m_vRects[i];		
 
 		iHeight = m_fScale*(r.bottom - r.top);
 		iWidth  = _s*m_fScale*(r.right - r.left);
 
-		m_static.SetTextureRect(r);
-		m_static.SetWndSize(Fvector2().set(iWidth, iHeight));
+		m_statics[i]->SetTextureRect(r);
+		m_statics[i]->SetWndSize(Fvector2().set(iWidth, iHeight));
 
-		m_static.SetWndPos(Fvector2().set(x, y));
+		m_statics[i]->SetWndPos(Fvector2().set(x, y));
 		x = x + iIndent + iWidth;	
-		m_static.SetStretchTexture(true);
-		m_static.Draw();
+		m_statics[i]->SetStretchTexture(true);
+		m_statics[i]->Draw();
 	}
 
 	CUIWindow::Draw();
