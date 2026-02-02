@@ -13,21 +13,29 @@
 
 class CScriptGameObject;
 
-class CScriptHit {
+class CScriptHit
+{
 public:
-	float				m_fPower; 
-	Fvector				m_tDirection;
-	shared_str				m_caBoneName;
-	CScriptGameObject		*m_tpDraftsman;
-	float				m_fImpulse;
-	int					m_tHitType;
+	float m_fPower = 100;
+	Fvector m_tDirection = { 1, 1, 1};
+	shared_str m_caBoneName = "";
+	CScriptGameObject* m_tpDraftsman = nullptr;
+	float m_fImpulse = 0;
+	ALife::EHitType m_tHitType = ALife::eHitTypeWound;
 
 public:
-	IC					CScriptHit		();
-	IC					CScriptHit		(const CScriptHit *tpLuaHit);
-	virtual				~CScriptHit		();
-	IC		void		set_bone_name	(LPCSTR bone_name);
+	IC CScriptHit() = default;
+	virtual ~CScriptHit() = default;
+
+	IC CScriptHit(const CScriptHit* tpLuaHit)
+	{
+		*this = *tpLuaHit;
+	}
+
+	IC void set_bone_name(LPCSTR bone_name)
+	{
+		m_caBoneName = bone_name;
+	}
+
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-
-#include "script_hit_inline.h"
