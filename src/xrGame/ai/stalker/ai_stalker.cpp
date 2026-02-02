@@ -123,16 +123,18 @@ void CAI_Stalker::reinit			()
 	animation().reinit				();
 //	movement().reinit				();
 
-	//загрузка спецевической звуковой схемы для сталкера согласно m_SpecificCharacter
-	LPCSTR prefix = READ_IF_EXISTS(pSettings, r_string, cNameSect().c_str(), "voice_prefix", SpecificCharacter().sound_voice_prefix());
-	
-	string_path localized_prefix;
-	xr_sprintf(localized_prefix, "localization\\%s\\%s", g_pStringTable->LangName().c_str(), prefix);
+	if (g_Alive())
+	{
+		//загрузка спецевической звуковой схемы для сталкера согласно m_SpecificCharacter
+		LPCSTR prefix = READ_IF_EXISTS(pSettings, r_string, cNameSect().c_str(), "voice_prefix", SpecificCharacter().sound_voice_prefix());
+		string_path localized_prefix;
+		xr_sprintf(localized_prefix, "localization\\%s\\%s", g_pStringTable->LangName().c_str(), prefix);
 
-	sound().sound_prefix_localized	(localized_prefix);
-	sound().sound_prefix			(prefix);
+		sound().sound_prefix_localized	(localized_prefix);
+		sound().sound_prefix			(prefix);
 
-	LoadSounds						(*cNameSect());
+		LoadSounds						(*cNameSect());
+	}
 
 	m_pPhysics_support->in_Init		();
 	

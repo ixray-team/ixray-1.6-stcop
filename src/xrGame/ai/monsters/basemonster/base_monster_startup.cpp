@@ -234,21 +234,22 @@ void CBaseMonster::reload	(LPCSTR section)
 
 	CInventoryOwner::reload		(section);
 	movement().reload	(section);
-
-	// load base sounds
-	LOAD_SOUND("sound_idle",			SOUND_TYPE_MONSTER_TALKING,		MonsterSound::eLowPriority,			MonsterSound::eBaseChannel,			MonsterSound::eMonsterSoundIdle);
-	LOAD_SOUND("sound_distant_idle",	SOUND_TYPE_MONSTER_TALKING,		MonsterSound::eLowPriority+1,		MonsterSound::eBaseChannel,			MonsterSound::eMonsterSoundIdleDistant);
-	LOAD_SOUND("sound_eat",				SOUND_TYPE_MONSTER_TALKING,		MonsterSound::eNormalPriority + 4,	MonsterSound::eBaseChannel,			MonsterSound::eMonsterSoundEat);
-	LOAD_SOUND("sound_aggressive",		SOUND_TYPE_MONSTER_ATTACKING,	MonsterSound::eNormalPriority + 3,	MonsterSound::eBaseChannel,			MonsterSound::eMonsterSoundAggressive);
-	LOAD_SOUND("sound_attack_hit",		SOUND_TYPE_MONSTER_ATTACKING,	MonsterSound::eHighPriority + 1,	MonsterSound::eCaptureAllChannels,	MonsterSound::eMonsterSoundAttackHit);
-	LOAD_SOUND("sound_take_damage",		SOUND_TYPE_MONSTER_INJURING,	MonsterSound::eHighPriority,		MonsterSound::eCaptureAllChannels,	MonsterSound::eMonsterSoundTakeDamage);
-	LOAD_SOUND("sound_strike",			SOUND_TYPE_MONSTER_ATTACKING,	MonsterSound::eNormalPriority,		MonsterSound::eChannelIndependent,	MonsterSound::eMonsterSoundStrike);
-	LOAD_SOUND("sound_die",				SOUND_TYPE_MONSTER_DYING,		MonsterSound::eCriticalPriority,	MonsterSound::eCaptureAllChannels,	MonsterSound::eMonsterSoundDie);
-	LOAD_SOUND("sound_die_in_anomaly",	SOUND_TYPE_MONSTER_DYING,		MonsterSound::eCriticalPriority,	MonsterSound::eCaptureAllChannels,	MonsterSound::eMonsterSoundDieInAnomaly);
-	LOAD_SOUND("sound_threaten",		SOUND_TYPE_MONSTER_ATTACKING,	MonsterSound::eNormalPriority,		MonsterSound::eBaseChannel,			MonsterSound::eMonsterSoundThreaten);
-	LOAD_SOUND("sound_steal",			SOUND_TYPE_MONSTER_STEP,		MonsterSound::eNormalPriority + 1,	MonsterSound::eBaseChannel,			MonsterSound::eMonsterSoundSteal);
-	LOAD_SOUND("sound_panic",			SOUND_TYPE_MONSTER_STEP,		MonsterSound::eNormalPriority + 2,	MonsterSound::eBaseChannel,			MonsterSound::eMonsterSoundPanic);
-	
+	if (g_Alive())
+	{
+		// load base sounds
+		LOAD_SOUND("sound_idle",			SOUND_TYPE_MONSTER_TALKING,		MonsterSound::eLowPriority,			MonsterSound::eBaseChannel,			MonsterSound::eMonsterSoundIdle);
+		LOAD_SOUND("sound_distant_idle",	SOUND_TYPE_MONSTER_TALKING,		MonsterSound::eLowPriority+1,		MonsterSound::eBaseChannel,			MonsterSound::eMonsterSoundIdleDistant);
+		LOAD_SOUND("sound_eat",				SOUND_TYPE_MONSTER_TALKING,		MonsterSound::eNormalPriority + 4,	MonsterSound::eBaseChannel,			MonsterSound::eMonsterSoundEat);
+		LOAD_SOUND("sound_aggressive",		SOUND_TYPE_MONSTER_ATTACKING,	MonsterSound::eNormalPriority + 3,	MonsterSound::eBaseChannel,			MonsterSound::eMonsterSoundAggressive);
+		LOAD_SOUND("sound_attack_hit",		SOUND_TYPE_MONSTER_ATTACKING,	MonsterSound::eHighPriority + 1,	MonsterSound::eCaptureAllChannels,	MonsterSound::eMonsterSoundAttackHit);
+		LOAD_SOUND("sound_take_damage",		SOUND_TYPE_MONSTER_INJURING,	MonsterSound::eHighPriority,		MonsterSound::eCaptureAllChannels,	MonsterSound::eMonsterSoundTakeDamage);
+		LOAD_SOUND("sound_strike",			SOUND_TYPE_MONSTER_ATTACKING,	MonsterSound::eNormalPriority,		MonsterSound::eChannelIndependent,	MonsterSound::eMonsterSoundStrike);
+		LOAD_SOUND("sound_die",				SOUND_TYPE_MONSTER_DYING,		MonsterSound::eCriticalPriority,	MonsterSound::eCaptureAllChannels,	MonsterSound::eMonsterSoundDie);
+		LOAD_SOUND("sound_die_in_anomaly",	SOUND_TYPE_MONSTER_DYING,		MonsterSound::eCriticalPriority,	MonsterSound::eCaptureAllChannels,	MonsterSound::eMonsterSoundDieInAnomaly);
+		LOAD_SOUND("sound_threaten",		SOUND_TYPE_MONSTER_ATTACKING,	MonsterSound::eNormalPriority,		MonsterSound::eBaseChannel,			MonsterSound::eMonsterSoundThreaten);
+		LOAD_SOUND("sound_steal",			SOUND_TYPE_MONSTER_STEP,		MonsterSound::eNormalPriority + 1,	MonsterSound::eBaseChannel,			MonsterSound::eMonsterSoundSteal);
+		LOAD_SOUND("sound_panic",			SOUND_TYPE_MONSTER_STEP,		MonsterSound::eNormalPriority + 2,	MonsterSound::eBaseChannel,			MonsterSound::eMonsterSoundPanic);
+	}
 	control().reload					(section);
 
 	// load monster type
