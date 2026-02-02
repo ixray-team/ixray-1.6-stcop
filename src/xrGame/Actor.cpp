@@ -1721,8 +1721,8 @@ void CActor::UpdateCL()
 		psHUD_Flags.set(HUD_DRAW_RT, true);
 
 		g_pGamePersistent->ShaderParams.HelmetCondition = -1;
-		g_pGamePersistent->ShaderParams.ItemCfgHudGasMaskAvialable = true;
-		g_pGamePersistent->ShaderParams.ItemCfgHudRainDropsAvialable = true;
+		g_pGamePersistent->ShaderParams.ItemCfgHudGasMaskAvailable = true;
+		g_pGamePersistent->ShaderParams.ItemCfgHudRainDropsAvailable = true;
 
 		if (PIItem Helmet = inventory().ItemFromSlot(HELMET_SLOT))
 		{
@@ -1730,8 +1730,8 @@ void CActor::UpdateCL()
 			CHelmet* CHM = Helmet->cast_helmet();
 
 			if (CHM) {
-				g_pGamePersistent->ShaderParams.ItemCfgHudGasMaskAvialable = CHM->bIsHudGasMaskAvialable;
-				g_pGamePersistent->ShaderParams.ItemCfgHudRainDropsAvialable = CHM->bIsHudRainDropsAvialable;
+				g_pGamePersistent->ShaderParams.ItemCfgHudGasMaskAvailable = CHM->IsHudGasMaskAvailable();
+				g_pGamePersistent->ShaderParams.ItemCfgHudRainDropsAvailable = CHM->IsHudRainDropsAvailable();
 			}
 		}
 		else if (PIItem Outfit = inventory().ItemFromSlot(OUTFIT_SLOT))
@@ -1740,8 +1740,8 @@ void CActor::UpdateCL()
 
 			if (COF && !COF->bIsHelmetAvaliable) {
 				g_pGamePersistent->ShaderParams.HelmetCondition = Outfit->GetCondition();
-				g_pGamePersistent->ShaderParams.ItemCfgHudGasMaskAvialable = COF->bIsHudGasMaskAvialable;
-				g_pGamePersistent->ShaderParams.ItemCfgHudRainDropsAvialable = COF->bIsHudRainDropsAvialable;
+				g_pGamePersistent->ShaderParams.ItemCfgHudGasMaskAvailable = COF->IsHudGasMaskAvailable();
+				g_pGamePersistent->ShaderParams.ItemCfgHudRainDropsAvailable = COF->IsHudRainDropsAvailable();
 			}
 		}
 	}

@@ -32,7 +32,7 @@ void CNightVisionEffector::SwitchNightVision(bool vision_on, bool use_sounds)
 
 	CCustomOutfit* outfit = m_pActor->GetOutfit();
 	CHelmet* helmet = m_pActor->GetHelmet();
-	bool has_nvs = helmet && helmet->m_NightVisionSect.size() || outfit && outfit->m_NightVisionSect.size();
+	bool has_nvs = helmet && helmet->GetNV_Sect().size() || outfit && outfit->GetNV_Sect().size();
 
 	if (!has_nvs)
 		return;
@@ -54,11 +54,11 @@ void CNightVisionEffector::SwitchNightVision(bool vision_on, bool use_sounds)
 
 	if (helmet)
 	{
-		Start(helmet->m_NightVisionSect, use_sounds);
+		Start(helmet->GetNV_Sect(), use_sounds);
 	}
 	else if (outfit)
 	{
-		Start(outfit->m_NightVisionSect, use_sounds);
+		Start(outfit->GetNV_Sect(), use_sounds);
 	}
 
 	m_bNightVisionOn = true;
