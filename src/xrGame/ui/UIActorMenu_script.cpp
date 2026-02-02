@@ -28,6 +28,7 @@
 #include "UIActorMenu.h"
 #include "UIMainIngameWnd.h"
 #include "UIZoneMap.h"
+#include "UICompassBar.h"
 #include "UIMotionIcon.h"
 #include "UIHudStatesWnd.h"
 
@@ -537,6 +538,12 @@ void CUIActorMenu::script_register(lua_State *L)
 				.def_readonly("visible", &CUIZoneMap::visible)
 				.def("MapFrame", &CUIZoneMap::MapFrame)
 				.def("Background", &CUIZoneMap::Background),
+
+				class_< CUICompassBar >("CUICompassBar")
+				.def(constructor<>())
+				.def_readwrite("visible", &CUICompassBar::visible)
+				.def("Background", &CUICompassBar::Background)
+				.def("GetFrame", &CUICompassBar::GetFrame),
 
 				class_< CUIMotionIcon, CUIWindow>("CUIMotionIcon")
 				.def(constructor<>()),
