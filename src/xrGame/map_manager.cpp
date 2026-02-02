@@ -8,6 +8,8 @@
 #include "relation_registry.h"
 #include "GameObject.h"
 #include "map_location.h"
+#include "GameTask.h"
+#include "GameTaskDefs.h"
 #include "GametaskManager.h"
 #include "xrServer.h"
 #include "game_object_space.h"
@@ -258,6 +260,20 @@ CMapLocation* CMapManager::GetMapLocation(const shared_str& spot_type, u16 id)
 		return (*it).location;
 	
 	return 0;
+}
+
+CMapLocation* CMapManager::GetActiveTaskCompassLocation()
+{
+	if (!Level().GameTaskManager())
+		return nullptr;
+	CGameTask* storyTask = Level().GameTaskManager()->ActiveTask(eTaskTypeStoryline);
+	CGameTask* additionalTask = Level().GameTaskManager()->ActiveTask(eTaskTypeAdditional);
+	CMapLocation* activeLoc = nullptr;
+	if (storyTask && storyTask->m_map_object_id != u16(-1) && storyTask->m_map_location.size() > 0)
+		activeLoc = GetMapLocation(storyTask->m_map_location, storyTask->m_map_object_id);
+	if (!activeLoc && additionalTask && additionalTask->m_map_object_id != u16(-1) && additionalTask->m_map_location.size() > 0)
+		activeLoc = GetMapLocation(additionalTask->m_map_location, additionalTask->m_map_object_id);
+	return activeLoc;
 }
 
 void CMapManager::GetMapLocations(const shared_str& spot_type, u16 id, xr_vector<CMapLocation*>& res)

@@ -56,6 +56,7 @@ CMapLocation::CMapLocation(LPCSTR type, u16 object_id, bool is_user_loc)
 
 	m_objectID				= object_id;
 	m_actual_time			= 0;
+	m_fCompassMaxDist		= -1.0f;
 	m_owner_se_object = (ai().get_alife() && !IsUserDefined()) ? ai().alife().objects().object(m_objectID, true) : nullptr;
 	m_flags.set				(eHintEnabled, TRUE);
 	LoadSpot				(type, false);
@@ -68,6 +69,28 @@ CMapLocation::CMapLocation(LPCSTR type, u16 object_id, bool is_user_loc)
 	m_cached.m_graphID		= GameGraph::_GRAPH_ID(-1);
 	if(!IsGameTypeSingle())
 		m_cached.m_LevelName = Level().name();
+}
+
+ECompassSpotKind CMapLocation::GetCompassSpotKind() const
+{
+	LPCSTR typeStr = GetType();
+	if (!typeStr || !*typeStr)
+	{
+		return ECompassSpotKind::Generic;
+	}
+
+	if (strstr(typeStr, "enemy_location") || strstr(typeStr, "friend_location") ||
+		strstr(typeStr, "neutral_location") || strstr(typeStr, "deadbody_location"))
+	{
+		return ECompassSpotKind::Npc;
+	}
+
+	if (strstr(typeStr, "storyline") || strstr(typeStr, "additional") || strstr(typeStr, "task"))
+	{
+		return ECompassSpotKind::Mission;
+	}
+
+	return ECompassSpotKind::Generic;
 }
 
 CMapLocation::~CMapLocation()
@@ -139,6 +162,7 @@ void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 	XML_NODE* node = nullptr;
 	string512 path_base, path;
 	xr_strcpy		(path_base,type);
+	m_compass_spot_color = 0;
 	R_ASSERT3		(g_uiSpotXml->NavigateToNode(path_base,0), "XML node not found in file map_spots.xml", path_base);
 	LPCSTR s		= g_uiSpotXml->ReadAttrib(path_base, 0, "hint", "no hint");
 	SetHint			(s);
@@ -167,7 +191,7 @@ void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 	{
 		m_flags.set( ePosToActor, TRUE);
 	}
-	
+	m_fCompassMaxDist = g_uiSpotXml->ReadAttribFlt(path_base, 0, "compass_dist", -1.0f);
 	xr_strconcat(path,path_base,":level_map");
 	node = g_uiSpotXml->NavigateToNode(path,0);
 	if ( node )
@@ -215,6 +239,29 @@ void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 		}else{
 			VERIFY( !(bReload && m_minimap_spot) );
 		}
+		if ( g_uiSpotXml->ReadAttribInt(path, 0, "compass", 0) != 0 )
+			m_flags.set(eShowOnCompass, TRUE);
+		if ( m_flags.test(eShowOnCompass) && xr_strlen(str) )
+		{
+			string512 buf;
+			xr_strconcat(buf, str, ":texture");
+			if ( g_uiSpotXml->NavigateToNode(buf, 0) )
+			{
+				m_compass_spot_texture = g_uiSpotXml->Read(buf, 0, nullptr);
+				int r = g_uiSpotXml->ReadAttribInt(buf, 0, "r", -1);
+				int g = g_uiSpotXml->ReadAttribInt(buf, 0, "g", -1);
+				int b = g_uiSpotXml->ReadAttribInt(buf, 0, "b", -1);
+				int a = g_uiSpotXml->ReadAttribInt(buf, 0, "a", 255);
+				if (r >= 0 || g >= 0 || b >= 0)
+					m_compass_spot_color = color_argb(a >= 0 ? a : 255, r >= 0 ? r : 255, g >= 0 ? g : 255, b >= 0 ? b : 255);
+				else
+					m_compass_spot_color = 0;
+			}
+			else
+				m_compass_spot_color = 0;
+		}
+		else
+			m_compass_spot_color = 0;
 		m_spot_border_names[2] = g_uiSpotXml->ReadAttrib(path, 0, "spot_a", "mini_map_spot_border");
 		m_spot_border_names[3] = g_uiSpotXml->ReadAttrib(path, 0, "spot_na", "");
 
