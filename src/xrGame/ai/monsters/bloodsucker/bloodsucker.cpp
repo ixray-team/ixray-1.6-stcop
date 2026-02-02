@@ -292,6 +292,10 @@ void CAI_Bloodsucker::reinit()
 void CAI_Bloodsucker::reload(LPCSTR section)
 {
 	inherited::reload(section);
+	if (!g_Alive())
+	{
+		return;
+	}
 
 	sound().add(pSettings->r_string(section,"Sound_Vampire_Grasp"),				DEFAULT_SAMPLE_COUNT,	SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eHighPriority + 4,	MonsterSound::eBaseChannel,	eVampireGrasp,					"bip01_head");
 	sound().add(pSettings->r_string(section,"Sound_Vampire_Sucking"),			DEFAULT_SAMPLE_COUNT,	SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eHighPriority + 3,	MonsterSound::eBaseChannel,	eVampireSucking,				"bip01_head");
