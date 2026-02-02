@@ -80,15 +80,15 @@ void CEncyclopediaArticle::load_shared	(LPCSTR)
 	{
 		if (ltx && pSettings->section_exist(ltx))
 		{
-			const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, ltx, "icons_texture", nullptr);
-			data()->image.SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
+			InventoryIconParams icons_struct = GetInventoryIconParams(ltx);
+			data()->image.SetShader(GetEquipmentIconsShader(icons_struct.icons_texture));
 
 			Frect tex_rect;
-			float scaleIcon = READ_IF_EXISTS(pSettings, r_float, ltx, "inv_scale", 1.0f);
-			tex_rect.x1 = float(pSettings->r_u32(ltx, "inv_grid_x") * INV_GRID_WIDTH(scaleIcon));
-			tex_rect.y1 = float(pSettings->r_u32(ltx, "inv_grid_y") * INV_GRID_HEIGHT(scaleIcon));
-			tex_rect.x2 = float(pSettings->r_u32(ltx, "inv_grid_width") * INV_GRID_WIDTH(scaleIcon));
-			tex_rect.y2 = float(pSettings->r_u32(ltx, "inv_grid_height") * INV_GRID_HEIGHT(scaleIcon));
+			float scaleIcon = icons_struct.scaleIcon;
+			tex_rect.x1 = icons_struct.inv_grid_x * INV_GRID_WIDTH(scaleIcon);
+			tex_rect.y1 = icons_struct.inv_grid_y * INV_GRID_HEIGHT(scaleIcon);
+			tex_rect.x2 = icons_struct.inv_grid_width * INV_GRID_WIDTH(scaleIcon);
+			tex_rect.y2 = icons_struct.inv_grid_height * INV_GRID_HEIGHT(scaleIcon);
 			tex_rect.rb.add(tex_rect.lt);
 			data()->image.GetUIStaticItem().SetTextureRect(tex_rect);
 		}
