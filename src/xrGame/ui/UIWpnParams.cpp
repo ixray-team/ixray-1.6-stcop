@@ -14,6 +14,8 @@
 #include "Silencer.h"
 #include "../../xrUI/UIHelper.h"
 
+using namespace InventoryUtilities;
+
 struct SLuaWpnParams
 {
 	luabind::functor<float>		m_functorRPM;
@@ -201,27 +203,23 @@ void CUIWpnParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn)
 
 			if (m_stAmmoType1)
 			{
-                if (psActorFlags.test(AF_3D_ICONS_INV))
-                {
-                    LPCSTR m_3d_static_visual = READ_IF_EXISTS(pSettings, r_string, ammo_types[0].c_str(), "3d_static_visual_name", pSettings->r_string(ammo_types[0].c_str(), "visual"));
-                    m_stAmmoType1->SetVisual(m_3d_static_visual);
-                    Fvector m_3d_static_rotate = READ_IF_EXISTS(pSettings, r_fvector3, ammo_types[0].c_str(), "3d_static_rotate", m_3d_static_rotate.set(0, 0, 0));
-                    m_3d_static_rotate.mul(M_PI / 180.0f);
-                    m_stAmmoType1->SetXYZ(m_3d_static_rotate);
-                    float m_3d_static_scale = READ_IF_EXISTS(pSettings, r_float, ammo_types[0].c_str(), "3d_static_scale", 1.f);
-                    m_stAmmoType1->SetScaleFactor(m_3d_static_scale);
-                }
-                else
-                    m_stAmmoType1->SetVisual(nullptr);
+				InventoryIconParams icons_struct = GetInventoryIconParams(ammo_types[0].c_str());
+				if (psActorFlags.test(AF_3D_ICONS_INV))
+				{
+					m_stAmmoType1->SetVisual(icons_struct._3d_static_visual);
+					m_stAmmoType1->SetXYZ(icons_struct._3d_static_rotate);
+					m_stAmmoType1->SetScaleFactor(icons_struct._3d_static_scale);
+				}
+				else
+					m_stAmmoType1->SetVisual(nullptr);
 
-				const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, ammo_types[0].c_str(), "icons_texture", nullptr);
-				m_stAmmoType1->SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
-				float scaleIcon = READ_IF_EXISTS(pSettings, r_float, ammo_types[0].c_str(), "inv_scale", 1.0f);
+				m_stAmmoType1->SetShader(GetEquipmentIconsShader(icons_struct.icons_texture));
+				float scaleIcon = icons_struct.scaleIcon;
 				Frect tex_rect = {};
-				tex_rect.x1 = pSettings->r_float(ammo_types[0].c_str(), "inv_grid_x") * INV_GRID_WIDTH(scaleIcon);
-				tex_rect.y1 = pSettings->r_float(ammo_types[0].c_str(), "inv_grid_y") * INV_GRID_HEIGHT(scaleIcon);
-				tex_rect.x2 = pSettings->r_float(ammo_types[0].c_str(), "inv_grid_width") * INV_GRID_WIDTH(scaleIcon);
-				tex_rect.y2 = pSettings->r_float(ammo_types[0].c_str(), "inv_grid_height") * INV_GRID_HEIGHT(scaleIcon);
+				tex_rect.x1 = icons_struct.inv_grid_x * INV_GRID_WIDTH(scaleIcon);
+				tex_rect.y1 = icons_struct.inv_grid_y * INV_GRID_HEIGHT(scaleIcon);
+				tex_rect.x2 = icons_struct.inv_grid_width * INV_GRID_WIDTH(scaleIcon);
+				tex_rect.y2 = icons_struct.inv_grid_height * INV_GRID_HEIGHT(scaleIcon);
 				tex_rect.rb.add(tex_rect.lt);
 				m_stAmmoType1->SetTextureRect(tex_rect);
 				m_stAmmoType1->TextureOn();
@@ -236,31 +234,23 @@ void CUIWpnParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn)
 
 			if (enable_ammo_type_2 && m_stAmmoType2)
 			{
-                if (psActorFlags.test(AF_3D_ICONS_INV))
-                {
-                    LPCSTR m_3d_static_visual = READ_IF_EXISTS(pSettings, r_string, ammo_types[1].c_str(), "3d_static_visual_name", pSettings->r_string(ammo_types[1].c_str(), "visual"));
-                    m_stAmmoType2->SetVisual(m_3d_static_visual);
-                    Fvector m_3d_static_rotate = READ_IF_EXISTS(pSettings, r_fvector3, ammo_types[1].c_str(), "3d_static_rotate", m_3d_static_rotate.set(0, 0, 0));
-                    m_3d_static_rotate.mul(M_PI / 180.0f);
-                    m_stAmmoType2->SetXYZ(m_3d_static_rotate);
-                    float m_3d_static_scale = READ_IF_EXISTS(pSettings, r_float, ammo_types[1].c_str(), "3d_static_scale", 1.f);
-                    m_stAmmoType2->SetScaleFactor(m_3d_static_scale);
-                }
-                else
-                    m_stAmmoType2->SetVisual(nullptr);
+				InventoryIconParams icons_struct = GetInventoryIconParams(ammo_types[1].c_str());
+				if (psActorFlags.test(AF_3D_ICONS_INV))
+				{
+					m_stAmmoType2->SetVisual(icons_struct._3d_static_visual);
+					m_stAmmoType2->SetXYZ(icons_struct._3d_static_rotate);
+					m_stAmmoType2->SetScaleFactor(icons_struct._3d_static_scale);
+				}
+				else
+					m_stAmmoType2->SetVisual(nullptr);
 
+				m_stAmmoType2->SetShader(GetEquipmentIconsShader(icons_struct.icons_texture));
+				float scaleIcon = icons_struct.scaleIcon;
 				Frect tex_rect = {};
-
-				const char* icons_texture1 = nullptr; // St4lker0k765: small hack for weapons with only 1 ammo type (like BM-16 in vanilla CoP)
-				if (ammo_types.size() >= 2)
-					icons_texture1 = READ_IF_EXISTS(pSettings, r_string, ammo_types[1].c_str(), "icons_texture", nullptr);
-				float scaleIcon = READ_IF_EXISTS(pSettings, r_float, ammo_types[1].c_str(), "inv_scale", 1.0f);
-
-				m_stAmmoType2->SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture1));
-				tex_rect.x1 = pSettings->r_float(ammo_types[1].c_str(), "inv_grid_x") * INV_GRID_WIDTH(scaleIcon);
-				tex_rect.y1 = pSettings->r_float(ammo_types[1].c_str(), "inv_grid_y") * INV_GRID_HEIGHT(scaleIcon);
-				tex_rect.x2 = pSettings->r_float(ammo_types[1].c_str(), "inv_grid_width") * INV_GRID_WIDTH(scaleIcon);
-				tex_rect.y2 = pSettings->r_float(ammo_types[1].c_str(), "inv_grid_height") * INV_GRID_HEIGHT(scaleIcon);
+				tex_rect.x1 = icons_struct.inv_grid_x * INV_GRID_WIDTH(scaleIcon);
+				tex_rect.y1 = icons_struct.inv_grid_y * INV_GRID_HEIGHT(scaleIcon);
+				tex_rect.x2 = icons_struct.inv_grid_width * INV_GRID_WIDTH(scaleIcon);
+				tex_rect.y2 = icons_struct.inv_grid_height * INV_GRID_HEIGHT(scaleIcon);
 				tex_rect.rb.add(tex_rect.lt);
 				m_stAmmoType2->SetTextureRect(tex_rect);
 				m_stAmmoType2->TextureOn();
@@ -275,31 +265,23 @@ void CUIWpnParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn)
 
 			if (enable_ammo_type_3 && m_stAmmoType3)
 			{
-                if (psActorFlags.test(AF_3D_ICONS_INV))
-                {
-                    LPCSTR m_3d_static_visual = READ_IF_EXISTS(pSettings, r_string, ammo_types[2].c_str(), "3d_static_visual_name", pSettings->r_string(ammo_types[2].c_str(), "visual"));
-                    m_stAmmoType3->SetVisual(m_3d_static_visual);
-                    Fvector m_3d_static_rotate = READ_IF_EXISTS(pSettings, r_fvector3, ammo_types[2].c_str(), "3d_static_rotate", m_3d_static_rotate.set(0, 0, 0));
-                    m_3d_static_rotate.mul(M_PI / 180.0f);
-                    m_stAmmoType3->SetXYZ(m_3d_static_rotate);
-                    float m_3d_static_scale = READ_IF_EXISTS(pSettings, r_float, ammo_types[2].c_str(), "3d_static_scale", 1.f);
-                    m_stAmmoType3->SetScaleFactor(m_3d_static_scale);
-                }
-                else
-                    m_stAmmoType3->SetVisual(nullptr);
+				InventoryIconParams icons_struct = GetInventoryIconParams(ammo_types[2].c_str());
+				if (psActorFlags.test(AF_3D_ICONS_INV))
+				{
+					m_stAmmoType3->SetVisual(icons_struct._3d_static_visual);
+					m_stAmmoType3->SetXYZ(icons_struct._3d_static_rotate);
+					m_stAmmoType3->SetScaleFactor(icons_struct._3d_static_scale);
+				}
+				else
+					m_stAmmoType3->SetVisual(nullptr);
 
+				m_stAmmoType3->SetShader(GetEquipmentIconsShader(icons_struct.icons_texture));
+				float scaleIcon = icons_struct.scaleIcon;
 				Frect tex_rect = {};
-
-				const char* icons_texture1 = nullptr; // St4lker0k765: small hack for weapons with only 1 ammo type (like BM-16 in vanilla CoP)
-				if (ammo_types.size() >= 3)
-					icons_texture1 = READ_IF_EXISTS(pSettings, r_string, ammo_types[2].c_str(), "icons_texture", nullptr);
-
-				float scaleIcon = READ_IF_EXISTS(pSettings, r_float, ammo_types[1].c_str(), "inv_scale", 1.0f);
-				m_stAmmoType3->SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture1));
-				tex_rect.x1 = pSettings->r_float(ammo_types[2].c_str(), "inv_grid_x") * INV_GRID_WIDTH(scaleIcon);
-				tex_rect.y1 = pSettings->r_float(ammo_types[2].c_str(), "inv_grid_y") * INV_GRID_HEIGHT(scaleIcon);
-				tex_rect.x2 = pSettings->r_float(ammo_types[2].c_str(), "inv_grid_width") * INV_GRID_WIDTH(scaleIcon);
-				tex_rect.y2 = pSettings->r_float(ammo_types[2].c_str(), "inv_grid_height") * INV_GRID_HEIGHT(scaleIcon);
+				tex_rect.x1 = icons_struct.inv_grid_x * INV_GRID_WIDTH(scaleIcon);
+				tex_rect.y1 = icons_struct.inv_grid_y * INV_GRID_HEIGHT(scaleIcon);
+				tex_rect.x2 = icons_struct.inv_grid_width * INV_GRID_WIDTH(scaleIcon);
+				tex_rect.y2 = icons_struct.inv_grid_height * INV_GRID_HEIGHT(scaleIcon);
 				tex_rect.rb.add(tex_rect.lt);
 				m_stAmmoType3->SetTextureRect(tex_rect);
 				m_stAmmoType3->TextureOn();
@@ -328,7 +310,7 @@ bool CUIWpnParams::Check(CInventoryItem& wpn_section)
 		if (wpn_section.cast_weapon_knife())
 			return false;
 
-        return true;		
+		return true;		
 	}
 	return false;
 }

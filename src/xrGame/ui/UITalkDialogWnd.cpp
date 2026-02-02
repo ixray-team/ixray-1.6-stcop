@@ -17,6 +17,8 @@
 
 #define				TALK_XML				"talk.xml"
 
+using namespace InventoryUtilities;
+
 CUITalkDialogWnd::CUITalkDialogWnd()
 	: m_uiXml(nullptr),
 	m_pParent(nullptr),
@@ -171,21 +173,21 @@ void CUITalkDialogWnd::InitTalkDialogWnd()
 	
 void CUITalkDialogWnd::Show()
 {
-	InventoryUtilities::SendInfoToActor				("ui_talk_show");
-	InventoryUtilities::SendInfoToLuaScripts		("ui_talk_show");
-	inherited::Show									(true);
-	inherited::Enable								(true);
+    SendInfoToActor("ui_talk_show");
+    SendInfoToLuaScripts("ui_talk_show");
+    inherited::Show(true);
+    inherited::Enable(true);
 
-	ResetAll										();
+    ResetAll();
 }
 
 void CUITalkDialogWnd::Hide()
 {
-	InventoryUtilities::SendInfoToActor				("ui_talk_hide");
-	InventoryUtilities::SendInfoToLuaScripts		("ui_talk_hide");
-	inherited::Show									(false);
-	inherited::Enable								(false);
-	g_btnHint->Discard								();
+    SendInfoToActor("ui_talk_hide");
+    SendInfoToLuaScripts("ui_talk_hide");
+    inherited::Show(false);
+    inherited::Enable(false);
+    g_btnHint->Discard();
 }
 
 void CUITalkDialogWnd::OnQuestionClicked(CUIWindow* w, void*)
@@ -276,13 +278,13 @@ void CUITalkDialogWnd::AddQuestion(LPCSTR str, LPCSTR value, int number, SPhrase
 		}
 		else
 		{
-			const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, phInfo.sIconName, "icons_texture", nullptr);
-			pBtnStatic->GetUIStaticItem().SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
-			float scaleIcon = READ_IF_EXISTS(pSettings, r_float, phInfo.sIconName, "inv_scale", 1.0f);
-			float x = float(pSettings->r_u32(phInfo.sIconName, "inv_grid_x") * INV_GRID_WIDTH(scaleIcon));
-			float y = float(pSettings->r_u32(phInfo.sIconName, "inv_grid_y") * INV_GRID_HEIGHT(scaleIcon));
-			float width = float(pSettings->r_u32(phInfo.sIconName, "inv_grid_width") * INV_GRID_WIDTH(scaleIcon));
-			float height = float(pSettings->r_u32(phInfo.sIconName, "inv_grid_height") * INV_GRID_HEIGHT(scaleIcon));
+			InventoryIconParams icons_struct = GetInventoryIconParams(phInfo.sIconName.c_str());
+			pBtnStatic->GetUIStaticItem().SetShader(GetEquipmentIconsShader(icons_struct.icons_texture));
+			float scaleIcon = icons_struct.scaleIcon;
+			float x = icons_struct.inv_grid_x * INV_GRID_WIDTH(scaleIcon);
+			float y = icons_struct.inv_grid_y * INV_GRID_HEIGHT(scaleIcon);
+			float width = icons_struct.inv_grid_width * INV_GRID_WIDTH(scaleIcon);
+			float height = icons_struct.inv_grid_height * INV_GRID_HEIGHT(scaleIcon);
 			Frect tex_rect{ x, y, width, height };
 			tex_rect.rb.add(tex_rect.lt);
 
@@ -358,21 +360,21 @@ void CUITalkDialogWnd::AddIconedAnswer(LPCSTR caption, LPCSTR text, LPCSTR textu
 
 void CUITalkDialogWnd::AddIconedAnswer(LPCSTR text, LPCSTR texture_name, Frect texture_rect, LPCSTR templ_name)
 {
-    CUIAnswerItemIconed* itm = new CUIAnswerItemIconed(m_uiXml, templ_name);
-    itm->Init(text, texture_name, texture_rect);
-    UIAnswersList->AddWindow(itm, true);
-    UIAnswersList->ScrollToEnd();
+	CUIAnswerItemIconed* itm = new CUIAnswerItemIconed(m_uiXml, templ_name);
+	itm->Init(text, texture_name, texture_rect);
+	UIAnswersList->AddWindow(itm, true);
+	UIAnswersList->ScrollToEnd();
 
-    GAME_NEWS_DATA news_data;
-    news_data.news_caption = "";
-    news_data.news_text = text;
+	GAME_NEWS_DATA news_data;
+	news_data.news_caption = "";
+	news_data.news_text = text;
 	news_data.tex_rect = texture_rect;
 
-    news_data.m_type = GAME_NEWS_DATA::eTalk;
-    news_data.texture_name = texture_name;
-    news_data.receive_time = Level().GetGameTime();
+	news_data.m_type = GAME_NEWS_DATA::eTalk;
+	news_data.texture_name = texture_name;
+	news_data.receive_time = Level().GetGameTime();
 
-    Actor()->game_news_registry->registry().objects().push_back(news_data);
+	Actor()->game_news_registry->registry().objects().push_back(news_data);
 }
 
 void CUITalkDialogWnd::SetOsoznanieMode(bool b)
