@@ -75,7 +75,7 @@ void xrDebug::gather_info		(const char *expression, const char *description, con
 		}
 	}
 
-	if (!IsDebuggerPresent() && !strstr(GetCommandLineA(), "-no_call_stack_assert")) {
+	if (!ignore_error_window && !IsDebuggerPresent() && !strstr(GetCommandLineA(), "-no_call_stack_assert")) {
 		if (shared_str_initialized)
 			Msg			("stack trace:\n");
 
@@ -84,28 +84,29 @@ void xrDebug::gather_info		(const char *expression, const char *description, con
 #endif // USE_OWN_ERROR_MESSAGE_WINDOW
 
 #if USE_CXX_STACKTRACE
-		auto stack = std::stacktrace::current();
 		int frame_i = 0;
-
-		for (auto i = stack.begin(); i != stack.end();++i)
+		const auto& stack = std::stacktrace::current();
+		for (const std::stacktrace_entry& entry : stack)
 		{
-			if (i->source_file().empty())
+			const std::string& source_file = entry.source_file();
+			if (source_file.empty())
 				continue;
 
-			if (i->source_file().contains("vctools\\crt\\vcstartup")
-				|| i->source_file().contains("VC\\Tools\\MSVC"))
+			if (source_file.contains("vctools\\crt\\vcstartup")
+				|| source_file.contains("VC\\Tools\\MSVC"))
 				continue;
 
-			if (i->description().contains("xrDebug::gather_info+")
-				|| i->description().contains("xrDebug::backend+")
-				|| i->description().contains("xrDebug::fail+"))
+			const std::string& description = entry.description();
+			if (description.contains("xrDebug::gather_info+")
+				|| description.contains("xrDebug::backend+")
+				|| description.contains("xrDebug::fail+"))
 				continue;
 
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
-			buffer += xr_sprintf(buffer, assertion_size - u32(buffer - buffer_base), "Frame %d: %s - %s:%d%s", ++frame_i, i->description().c_str(), i->source_file().c_str(), i->source_line(), endline);
+			buffer += xr_sprintf(buffer, assertion_size - u32(buffer - buffer_base), "Frame %d: %s - %s:%d%s", ++frame_i, description.c_str(), source_file.c_str(), entry.source_line(), endline);
 #endif // USE_OWN_ERROR_MESSAGE_WINDOW
 
-			Msg("Frame %d: %s - %s:%d\n", frame_i, i->description().c_str(), i->source_file().c_str(), i->source_line());
+			Msg("Frame %d: %s - %s:%d\n", frame_i, description.c_str(), source_file.c_str(), entry.source_line());
 		}
 #endif
 
@@ -137,6 +138,7 @@ void xrDebug::do_exit	(const std::string &message)
 
 void xrDebug::backend	(const char *expression, const char *description, const char *argument0, const char *argument1, const char *file, int line, const char *function, bool &ignore_always)
 {
+	PROF_EVENT("xrDebug::backend");
 	static xrCriticalSection CS;
 
 	CS.Enter			();
@@ -182,10 +184,10 @@ void xrDebug::show_dialog(const std::string& message, bool& ignore_always)
 		return;
 	}
 
-	if (handler)
+	if (!ignore_error_window && handler)
 		handler();
 
-	if (get_on_dialog())
+	if (!ignore_error_window && get_on_dialog())
 		get_on_dialog()	(true);
 
 	xrLogger::FlushLog();
@@ -260,7 +262,7 @@ void xrDebug::show_dialog(const std::string& message, bool& ignore_always)
 			exit(-1);
 		}
 	}
-	if (get_on_dialog())
+	if (!ignore_error_window && get_on_dialog())
 		get_on_dialog()	(false);
 }
 
