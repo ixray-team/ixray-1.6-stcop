@@ -47,6 +47,7 @@
 #endif
 
 #include "../../xrUI/Widgets/UIScrollView.h"
+#include "../../xrUI/Widgets/UI3dStatic.h"
 #include "map_hint.h"
 #include "../game_news.h"
 
@@ -58,7 +59,6 @@ void test_draw	();
 void test_key	(int dik);
 
 #include "../Include/xrRender/Kinematics.h"
-
 
 using namespace InventoryUtilities;
 //BOOL		g_old_style_ui_hud			= FALSE;
@@ -1033,7 +1033,7 @@ void CUIMainIngameWnd::AnimateContacts(bool b_snd)
 void CUIMainIngameWnd::SetPickUpItem	(CInventoryItem* PickUpItem)
 {
 	m_pPickUpItem = PickUpItem;
-};
+}
 
 void CUIMainIngameWnd::UpdatePickUpItem	()
 {
@@ -1044,29 +1044,26 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 	};
 
 	shared_str sect_name = m_pPickUpItem->object().cNameSect();
-    if (psActorFlags.test(AF_3D_ICONS_INV))
-    {
-        LPCSTR m_3d_static_visual_name = READ_IF_EXISTS(pSettings, r_string, sect_name, "3d_static_visual_name", pSettings->r_string(sect_name, "visual"));
-        UIPickUpItemIcon->SetVisual(m_3d_static_visual_name);
-        Fvector m_3d_static_rotate = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "3d_static_rotate", m_3d_static_rotate.set(0, 0, 0));
-        m_3d_static_rotate.mul(M_PI / 180.0f);
-        UIPickUpItemIcon->SetXYZ(m_3d_static_rotate);
-        float m_3d_static_scale = READ_IF_EXISTS(pSettings, r_float, sect_name, "3d_static_scale", 1.f);
-        UIPickUpItemIcon->SetScaleFactor(m_3d_static_scale);
-    }
-    else
-        UIPickUpItemIcon->SetVisual(nullptr);
+	InventoryIconParams icons_struct = GetInventoryIconParams(sect_name.c_str());
+	if (psActorFlags.test(AF_3D_ICONS_INV))
+	{
+		UIPickUpItemIcon->SetVisual(icons_struct._3d_static_visual);
+		UIPickUpItemIcon->SetXYZ(icons_struct._3d_static_rotate);
+		UIPickUpItemIcon->SetScaleFactor(icons_struct._3d_static_scale);
+	}
+	else
+		UIPickUpItemIcon->SetVisual(nullptr);
 
 	bool isRaster = !(pSettings->line_exist(sect_name, kUIConfigField_InventoryVectorIcon));
 
-	int m_iGridWidth = pSettings->r_u32(sect_name, "inv_grid_width");
-	int m_iGridHeight = pSettings->r_u32(sect_name, "inv_grid_height");
-	int m_iXPos = pSettings->r_u32(sect_name, "inv_grid_x");
-	int m_iYPos = pSettings->r_u32(sect_name, "inv_grid_y");
+	int m_iGridWidth = icons_struct.inv_grid_width;
+	int m_iGridHeight = icons_struct.inv_grid_height;
+	int m_iXPos = icons_struct.inv_grid_x;
+	int m_iYPos = icons_struct.inv_grid_y;
 
 	float scaleIcon = m_pPickUpItem->ScaleIcon;
 
-	UIPickUpItemIcon->SetShader(InventoryUtilities::GetEquipmentIconsShader(m_pPickUpItem->IconsTexture.c_str()));
+	UIPickUpItemIcon->SetShader(GetEquipmentIconsShader(m_pPickUpItem->IconsTexture.c_str()));
 
 	float scale_x = m_iPickUpItemIconWidth /
 		float(m_iGridWidth * INV_GRID_WIDTH(scaleIcon));
@@ -1093,8 +1090,7 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 	//properties used by inventory menu
 	if (isRaster)
 	{
-		const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, sect_name.c_str(), "icons_texture", nullptr);
-		const ui_shader& ui_shader = InventoryUtilities::GetEquipmentIconsShader(icons_texture);
+		const ui_shader& ui_shader = GetEquipmentIconsShader(icons_struct.icons_texture);
 		UIPickUpItemIcon->SetShader(ui_shader);
 
 		texture_rect.lt.set(m_iXPos * INV_GRID_WIDTH(scaleIcon), m_iYPos * INV_GRID_HEIGHT(scaleIcon));
@@ -1502,18 +1498,15 @@ void CUIMainIngameWnd::UpdateQuickSlots()
 			shared_str item_name = g_quick_use_slots[i];
 			if (item_name.size())
 			{
-                if (psActorFlags.test(AF_3D_ICONS_INV))
-                {
-                    LPCSTR m_3d_static_visual_name = READ_IF_EXISTS(pSettings, r_string, item_name, "3d_static_visual_name", pSettings->r_string(item_name, "visual"));
-                    slot->SetVisual(m_3d_static_visual_name);
-                    Fvector m_3d_static_rotate = READ_IF_EXISTS(pSettings, r_fvector3, item_name, "3d_static_rotate", m_3d_static_rotate.set(0, 0, 0));
-                    m_3d_static_rotate.mul(M_PI / 180.0f);
-                    slot->SetXYZ(m_3d_static_rotate);
-                    float m_3d_static_scale = READ_IF_EXISTS(pSettings, r_float, item_name, "3d_static_scale", 1.f);
-                    slot->SetScaleFactor(m_3d_static_scale);
-                }
-                else
-                    slot->SetVisual(nullptr);
+				InventoryIconParams icons_struct = GetInventoryIconParams(item_name.c_str());
+				if (psActorFlags.test(AF_3D_ICONS_INV))
+				{
+					slot->SetVisual(icons_struct._3d_static_visual);
+					slot->SetXYZ(icons_struct._3d_static_rotate);
+					slot->SetScaleFactor(icons_struct._3d_static_scale);
+				}
+				else
+					slot->SetVisual(nullptr);
 
 				const u32 count = pActor->inventory().dwfGetSameItemCount(item_name.c_str(), true);
 				string32 str;
@@ -1526,17 +1519,16 @@ void CUIMainIngameWnd::UpdateQuickSlots()
 				
 				if (isRaster)
 				{
-					const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, item_name.c_str(), "icons_texture", nullptr);
-					slot->SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
+					slot->SetShader(GetEquipmentIconsShader(icons_struct.icons_texture));
 				}
 
-				float scaleIcon = READ_IF_EXISTS(pSettings, r_float, item_name, "inv_scale", 1.0f);
+				float scaleIcon = icons_struct.scaleIcon;
 
 				Frect texture_rect;
-				texture_rect.x1 = pSettings->r_float(item_name, "inv_grid_x") * INV_GRID_WIDTH(scaleIcon);
-				texture_rect.y1 = pSettings->r_float(item_name, "inv_grid_y") * INV_GRID_HEIGHT(scaleIcon);
-				texture_rect.x2 = pSettings->r_float(item_name, "inv_grid_width") * INV_GRID_WIDTH(scaleIcon);
-				texture_rect.y2 = pSettings->r_float(item_name, "inv_grid_height") * INV_GRID_HEIGHT(scaleIcon);
+				texture_rect.x1 = icons_struct.inv_grid_x * INV_GRID_WIDTH(scaleIcon);
+				texture_rect.y1 = icons_struct.inv_grid_y * INV_GRID_HEIGHT(scaleIcon);
+				texture_rect.x2 = icons_struct.inv_grid_width * INV_GRID_WIDTH(scaleIcon);
+				texture_rect.y2 = icons_struct.inv_grid_height * INV_GRID_HEIGHT(scaleIcon);
 				texture_rect.rb.add(texture_rect.lt);
 
 				if (isRaster)
