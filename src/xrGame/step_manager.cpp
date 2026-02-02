@@ -173,9 +173,12 @@ void CStepManager::on_animation_start(MotionID motion_id, CBlend *blend)
 	m_blend	= blend;
 	if (!m_blend) return;
 
-	if (!g_dedicated_server && m_object->character_ik_controller())
+	if (!g_dedicated_server)
 	{
-		m_object->character_ik_controller()->PlayLegs(blend);
+		if (TIKLimbsController* LimbController = m_object->GetComponent<TIKLimbsController>())
+		{
+			LimbController->PlayLegs(blend);
+		}
 	}
 
 	m_time_anim_started = Device.dwTimeGlobal; 
