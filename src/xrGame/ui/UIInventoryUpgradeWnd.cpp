@@ -42,6 +42,8 @@
 
 using namespace luabind;
 using namespace inventory::upgrade;
+using namespace InventoryUtilities;
+
 
 const LPCSTR g_inventory_upgrade_xml = "inventory_upgrade.xml";
 
@@ -143,28 +145,25 @@ void CUIInventoryUpgradeWnd::InitInventory(CUICellItem* cellItem, bool can_upgra
 		if (m_inv_item->cast_weapon())
 		{
 			is_shader = true;
-			m_item->SetShader(InventoryUtilities::GetWeaponUpgradeIconsShader(upgrIconsTexture));
+			m_item->SetShader(GetWeaponUpgradeIconsShader(upgrIconsTexture));
 			if (m_inv_item->cast_weapon_rpg7())
 			{
-				m_item->SetShader(InventoryUtilities::GetOutfitUpgradeIconsShader(upgrIconsTexture));
+				m_item->SetShader(GetOutfitUpgradeIconsShader(upgrIconsTexture));
 			}
 		}
 		else if (m_inv_item->cast_outfit() || m_inv_item->cast_helmet())
 		{
 			is_shader = true;
-			m_item->SetShader(InventoryUtilities::GetOutfitUpgradeIconsShader(upgrIconsTexture));
+			m_item->SetShader(GetOutfitUpgradeIconsShader(upgrIconsTexture));
 		}
 
+		InventoryIconParams icons_struct = GetInventoryIconParams(m_inv_item->m_section_id.c_str());
         if (psActorFlags.test(AF_3D_ICONS_INV))
         {
-            LPCSTR m_3d_static_visual_name = READ_IF_EXISTS(pSettings, r_string, m_inv_item->m_section_id, "3d_static_visual_name", pSettings->r_string(m_inv_item->m_section_id, "visual"));
-            m_item->SetVisual(m_3d_static_visual_name);
-            Fvector m_3d_static_rotate = READ_IF_EXISTS(pSettings, r_fvector3, m_inv_item->m_section_id, "3d_static_rotate", m_3d_static_rotate.set(0, 0, 0));
-            m_3d_static_rotate.mul(M_PI / 180.0f);
-            m_item->SetXYZ(m_3d_static_rotate);
-            float m_3d_static_scale = READ_IF_EXISTS(pSettings, r_float, m_inv_item->m_section_id, "3d_static_scale", 1.f);
-            m_item->SetScaleFactor(m_3d_static_scale);
-			m_item->SetBonesVisible(m_inv_item->object().Visual()->dcast_PKinematics());
+            m_item->SetVisual(icons_struct._3d_static_visual);
+            m_item->SetXYZ(icons_struct._3d_static_rotate);
+            m_item->SetScaleFactor(icons_struct._3d_static_scale);
+            m_item->SetBonesVisible(m_inv_item->object().Visual()->dcast_PKinematics());
         }
         else
             m_item->SetVisual(nullptr);
@@ -510,33 +509,33 @@ void CUIInventoryUpgradeWnd::DeInitInventory()
 
 bool CUIInventoryUpgradeWnd::OnMouseAction(float x, float y, EUIMessages mouse_action)
 {
-    if (m_item && m_item->GetVisual())
-    {
-        if (mouse_action == WINDOW_LBUTTON_UP)
-        {
-            if (m_item->IsCaptMoving())
-                m_item->SetCaptMoving(false);
-        }
-        if (m_item->CursorOverWindow() && mouse_action == WINDOW_LBUTTON_DOWN)
-        {
-            m_item->SetCaptMoving(true);
-        }
+	if (m_item && m_item->GetVisual())
+	{
+		if (mouse_action == WINDOW_LBUTTON_UP)
+		{
+			if (m_item->IsCaptMoving())
+				m_item->SetCaptMoving(false);
+		}
+		if (m_item->CursorOverWindow() && mouse_action == WINDOW_LBUTTON_DOWN)
+		{
+			m_item->SetCaptMoving(true);
+		}
 
-        // bool bShift = !!pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT);
-        bool bCtrl = !!pInput->iGetAsyncKeyState(SDL_SCANCODE_LCTRL);
-        if (m_item->IsCaptMoving() && m_item->CursorOverWindow())
-        {
-            // need to fix input invertion on 180 degs rotate
-            Fvector xyz = m_item->GetXYZ();
-            Fvector2 delta_pos = GetUICursor().GetCursorPositionDelta();
-            if (bCtrl)
-                xyz.z += delta_pos.y / 30.f;
-            // else if (bShift)
-            // xyz.x += delta_pos.y / 50.f;
-            else
-                xyz.y += delta_pos.x / 40.f;
-            m_item->SetXYZ(xyz.x, xyz.y, xyz.z);
-        }
-    }
-    return inherited::OnMouseAction(x, y, mouse_action);
+		// bool bShift = !!pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT);
+		bool bCtrl = !!pInput->iGetAsyncKeyState(SDL_SCANCODE_LCTRL);
+		if (m_item->IsCaptMoving() && m_item->CursorOverWindow())
+		{
+			// need to fix input invertion on 180 degs rotate
+			Fvector xyz = m_item->GetXYZ();
+			Fvector2 delta_pos = GetUICursor().GetCursorPositionDelta();
+			if (bCtrl)
+				xyz.z += delta_pos.y / 30.f;
+			// else if (bShift)
+			// xyz.x += delta_pos.y / 50.f;
+			else
+				xyz.y += delta_pos.x / 40.f;
+			m_item->SetXYZ(xyz.x, xyz.y, xyz.z);
+		}
+	}
+	return inherited::OnMouseAction(x, y, mouse_action);
 }
