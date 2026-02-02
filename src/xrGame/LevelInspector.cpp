@@ -20,7 +20,7 @@
 #include "memory_manager.h"
 #include "alife_update_manager.h"
 #include "alife_simulator.h"
-#include "ai_object_location_impl.h"
+#include "ai_object_location.h"
 #include "abstract_path_manager.h"
 #include "level_changer.h"
 #include "smart_cover_object.h"
@@ -1395,6 +1395,7 @@ void LevelInspector::DrawGameGraph()
 		Fvector pos;
 		shared_str next_level=nullptr;
 		shared_str locations[4]{nullptr,nullptr,nullptr,nullptr};
+		xr_string connections;
 		u32 gvid = u32(-1);
 		float spatial_r = 1.f;
 		bool is_blue = false;
@@ -1463,14 +1464,29 @@ void LevelInspector::DrawGameGraph()
 				{
 					for (u8 i = u8(0); i < u8(4); i++)
 					{
-						u8 value = global_vertex->vertex_type()[i];
-						if (value > u8(0))
-							gr.locations[i] = l_tpIniFile->r_section(shared_str().printf("location_%d", i)).Data[value].second;
+						shared_str location_id = shared_str().printf("location_%d", i);
+						if (l_tpIniFile->section_exist(location_id))
+						{
+							CInifile::Sect& sect = l_tpIniFile->r_section(location_id);
+							CInifile::Items& items = sect.Data;
+
+							if (!items.empty())
+							{
+								
+								u8 value = global_vertex->vertex_type()[i];
+								if (value > u8(0) && value < items.size())
+								{
+									shared_str& str = items[value].second;
+									if(str.c_str() && str.size())
+										gr.locations[i] = str;
+								}
+							}
+						}
 					}
 				}
 
-				gr.is_blue = !!global_vertex->vertex_type()[3];
-				gr.is_blueblack = !!global_vertex->vertex_type()[2];
+				gr.is_blue = !!global_vertex->vertex_type()[0] || !!global_vertex->vertex_type()[3];
+				gr.is_blueblack = !!global_vertex->vertex_type()[1] || !!global_vertex->vertex_type()[2];
 
 				gr.pos = main_graph_pos;
 				Fbox bbox; bbox.identity();
@@ -1480,12 +1496,14 @@ void LevelInspector::DrawGameGraph()
 				//bbox.getcenter(gr.spatial_c);
 				gr.spatial_r += bbox.getradius();
 				gr.gvid = global_vid;
-				IGameGraph::const_iterator VI2, E;
+				CGameGraph::const_iterator VI2, E;
 				graph.begin(global_vid, VI2, E);
 
 				for (; VI2 != E; ++VI2)
 				{
-					const IGameGraph::CVertex* child_vertex = graph.vertex((u32)VI2->vertex_id());
+					u16 child_id = VI2->vertex_id();
+					gr.connections += shared_str().printf(" %d", child_id).c_str();
+					const CGameGraph::CVertex* child_vertex = graph.vertex((u32)child_id);
 					if (child_vertex->level_id() != lgraph.level_id())
 					{
 						auto it = graph.header().levels().find(child_vertex->level_id());
@@ -1497,18 +1515,18 @@ void LevelInspector::DrawGameGraph()
 					if (!lgraph.valid_vertex_id(global_vertex->level_vertex_id()) || !lgraph.valid_vertex_id(child_vertex->level_vertex_id()))
                         continue;
 
-					auto it = m_links.find({ global_vid, VI2->vertex_id() });
+					auto it = m_links.find({ global_vid, child_id });
 					if (it != m_links.end())
 						continue;
 
-					auto& link = m_links[EdgeKey{ global_vid, VI2->vertex_id() }];
-					link.is_blue[0] = global_vertex->vertex_type()[3];
-					link.is_blue[1] = child_vertex->vertex_type()[3];
+					auto& link = m_links[EdgeKey{ global_vid, child_id }];
+					link.is_blue[0] = !!global_vertex->vertex_type()[0] || !!global_vertex->vertex_type()[3];
+					link.is_blue[1] = !!child_vertex->vertex_type()[0] || !!child_vertex->vertex_type()[3];
 
 					Fvector child_pos = child_vertex->level_point();
 
-					link.pos[0] = main_graph_pos + Fvector{0.f,1.f,0.f};
-					link.pos[1] = child_pos + Fvector{ 0.f,1.f,0.f };
+					link.pos[0] = Fvector(main_graph_pos).add(Fvector{0.f,1.f,0.f});
+					link.pos[1] = Fvector(child_pos).add(Fvector{ 0.f,1.f,0.f });
 					link.pos[2].add(main_graph_pos, child_pos).mul(0.5f);
 
 					thread_local xr_vector<u32> m_path;
@@ -1546,7 +1564,6 @@ void LevelInspector::DrawGameGraph()
 					link.spatial_r += bbox.getradius();
 				}
 			}
-			PROF_STOP_THREAD();
 		});
 	}
 	float RENDER_DISTANCE = visible_currents ? 50000.f : g_pGamePersistent->pEnvironment->CurrentEnv->fog_distance;
@@ -1558,13 +1575,16 @@ void LevelInspector::DrawGameGraph()
 	constexpr u32 default_tcolor = color_rgba(255, 0, 255, 60);//розовый
 	constexpr u32 graph_blue_tcolor = color_rgba(0, 255, 255, 60);//голубой
 	constexpr u32 graph_blueblack_tcolor = color_rgba(0, 70, 255, 100);//синий
-	constexpr u32 selection_tcolor = color_rgba(255, 0, 0, 150);//розовый
+	constexpr u32 selection_tcolor = color_rgba(255, 0, 0, 150);//красный
+	constexpr u32 color_green = color_rgba(0, 255, 100, 255);//зулёный
+	constexpr u32 default_white = color_rgba(255, 255, 255, 255);//белый
+
 	Fvector& cam_pos = Device.vCameraPosition;
 	Fvector& cam_dir = Device.vCameraDirection;
 	CFrustum& view_base = ::Render->ViewBase;
 	auto& graphs = m_graphs;
-	constexpr u32 color_green = color_rgba(0, 255, 100, 255);
 	
+	u16 selected_graph_id = u16(-1);
 	for (auto& pair : graphs)
 	{
 		GraphPointC& graph_main = pair.second;
@@ -1589,6 +1609,7 @@ void LevelInspector::DrawGameGraph()
 			float range = RD.range;
 			if (visible_currents || (!RQ.O && graph_main.obb.intersect(cam_pos, cam_dir, range)))
 			{
+				selected_graph_id = graph_main.gvid;
 				Fvector post = pos;
 				post.y += graph_main.obb.m_halfsize.y + 0.1f;
 				shared_str str = shared_str().printf("%d", graph_main.gvid);
@@ -1601,20 +1622,31 @@ void LevelInspector::DrawGameGraph()
 					selected_info_str += '\n';
 					selected_info_height++;
 				}
-				if(graph_main.next_level)
+				if(graph_main.next_level.size())
 				{
 					if (text3d)
 						append_text_next(shared_str().printf("next_level: %s", *graph_main.next_level));
 					else
 						text3d = append_text3d(pos, shared_str().printf("next_level: %s", *graph_main.next_level), color_green, CGameFont::alLeft);
 				}
+				if (!graph_main.connections.empty())
+				{
+					shared_str str = shared_str().printf("connections:%s", graph_main.connections.c_str());
+					if (text3d)
+						append_text_next(str);
+					else
+						text3d = append_text3d(pos, str, color_green, CGameFont::alLeft);
 
+					selected_info_str += *str;
+					selected_info_str += '\n';
+					selected_info_height++;
+				}
 				if(l_tpIniFile)
 				{
 					for (u8 i = u8(0); i < u8(4); i++)
 					{
 						shared_str& location_name = graph_main.locations[i];
-						if (location_name)
+						if (location_name.size())
 						{
 							shared_str location_sect = shared_str().printf("[location_%d]", i);
 							if (text3d)
@@ -1669,6 +1701,8 @@ void LevelInspector::DrawGameGraph()
 		//append_line({ link.second.pos[0], link.second.pos[2], link.second.is_blue[0] ? graph_blue_lcolor : default_lcolor });
 		//append_line({ link.second.pos[1], link.second.pos[2], link.second.is_blue[1] ? graph_blue_lcolor : default_lcolor });
 
+		
+
 		auto& child_vertices = link.second.m_path;
 
 		size_t total = child_vertices.size();
@@ -1678,13 +1712,16 @@ void LevelInspector::DrawGameGraph()
 		bool is_first_path = true;
 		u32 color = link.second.is_blue[0] ? graph_blue_lcolor : default_lcolor;
 
+		if (selected_graph_id == link.first.min_vertex || selected_graph_id == link.first.max_vertex)
+			color = default_white;
+
 		for (size_t i = 0; i + 1 < total; i++)
 		{
 			// Если следующая точка будет уже во второй половине
 			if (is_first_path && (i + 1) >= mid_point)
 			{
 				is_first_path = false;
-				color = link.second.is_blue[1] ? graph_blue_lcolor : default_lcolor;
+				color = color == default_white ? default_white : link.second.is_blue[1] ? graph_blue_lcolor : default_lcolor;
 			}
 
 			append_line({ child_vertices[i], child_vertices[i + 1], color });
@@ -2151,16 +2188,17 @@ void LevelInspector::DrawSkeleton(IKinematics* pKinematics, Fmatrix& xform, CGam
 	Fvector box_c, box_hs;
 	pKinematics->dcast_RenderVisual()->getVisData().box.get_CD(box_c, box_hs);
 	float dist_to_cam_sqr = Device.vCameraPosition.distance_to_sqr(xform.c);
-	if (dist_to_cam_sqr <= 2500.f)
+	if (hud_mode || dist_to_cam_sqr <= 2500.f)
 	{
 		Fmatrix obb_xform, bone_xform;
 		for (std::pair<shared_str, u16>& bone : *pKinematics->LL_Bones())
 		{
-			bone_xform = pKinematics->LL_GetTransform(bone.second);
+			
 			CBoneData& data = pKinematics->LL_GetData(bone.second);
 			SBoneShape shape = data.shape;
 			if (m_skeleton_flags.test(ESKELETON_INFO::ESI_BONES_SHAPES) && pKinematics->LL_GetBoneVisible(bone.second))
 			{
+				bone_xform = pKinematics->LL_GetTransform(bone.second);
 				bone_xform.mulA_43(xform);
 				switch (shape.type)
 				{
@@ -2249,18 +2287,17 @@ void LevelInspector::DrawSkeleton(IKinematics* pKinematics, Fmatrix& xform, CGam
 				}
 				if (m_skeleton_flags.test(ESKELETON_INFO::ESI_BONES_LINKS))
 				{
+					bone_xform = pKinematics->LL_GetTransform(bone.second);
 					bone_xform.mulA_43(xform);
+					Fmatrix child_xform;
 					CBoneData& bone_data = pKinematics->LL_GetData(bone.second);
 					IBoneData& ibone_data = bone_data;
 					u16	num_children = ibone_data.GetNumChildren();
 					for (int i = 0; i < num_children; ++i)
 					{
-						Fvector self_pos, child_pos;
-						pKinematics->LL_GetTransform(bone.second).transform_tiny(self_pos);
-						xform.transform_tiny(self_pos);
-						pKinematics->LL_GetTransform(ibone_data.GetChild(i).GetSelfID()).transform_tiny(child_pos);
-						xform.transform_tiny(child_pos);
-						append_line({ self_pos, child_pos, color_rgba(255, 200, 100, 255) });
+						child_xform = pKinematics->LL_GetTransform(ibone_data.GetChild(i).GetSelfID());
+						child_xform.mulA_43(xform);
+						append_line({ bone_xform.c, child_xform.c, color_rgba(255, 200, 100, 255) });
 					}
 				}
 			}
