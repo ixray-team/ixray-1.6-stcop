@@ -13,6 +13,7 @@ public:
 	CECSManager() = default;
 	~CECSManager();
 
+	// Указатель не стабильный! Не хранить!
 	template <typename T>
 	T& CreateComponent(IECSOwner* Owner)
 	{
@@ -20,6 +21,7 @@ public:
 		return Storage.Create(Owner);
 	}
 
+	// Указатель не стабильный! Не хранить!
 	template <typename T>
 	T* GetComponent(IECSOwner* Owner)
 	{
