@@ -16,6 +16,10 @@ public:
 	virtual void InitIcons		(const xr_vector<const CArtefact*>& artefacts);
 	virtual void Draw			();
 			void InitFromXML	(CUIXml& xml, LPCSTR path, int index);
+            CUI3dStatic* GetStatic()
+            {
+                return &m_static;
+            }
 
 protected:
 	float						m_fScale;
