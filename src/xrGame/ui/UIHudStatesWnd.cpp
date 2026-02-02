@@ -26,6 +26,8 @@
 #include "../Weapon.h"
 #include "../../xrEngine/string_table.h"
 
+using namespace InventoryUtilities;
+
 CUIHudStatesWnd::CUIHudStatesWnd()
 :m_b_force_update(true),
 	m_timer_1sec(0),
@@ -349,7 +351,7 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 			
 			// Create icon widget using same position as text widget
 			m_ui_fire_mode_icon = UIHelper::CreateStatic(xml, "static_fire_mode", this);
-			m_ui_fire_mode_icon->SetShader(InventoryUtilities::GetEquipmentIconsShader());
+			m_ui_fire_mode_icon->SetShader(GetEquipmentIconsShader());
 			m_ui_fire_mode_icon->Show(false);
 			
 			// Hide text widget in icon mode
@@ -398,7 +400,7 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 		wpnIconParent = m_static_weapon;
 	
 	m_ui_weapon_icon			= UIHelper::Create3dStatic( xml, "static_wpn_icon", wpnIconParent);
-	m_ui_weapon_icon->SetShader( InventoryUtilities::GetEquipmentIconsShader() );
+	m_ui_weapon_icon->SetShader( GetEquipmentIconsShader() );
 //	m_ui_weapon_icon->Enable	( false );
 	m_ui_weapon_icon_rect		= m_ui_weapon_icon->GetWndRect();
 	
@@ -973,31 +975,38 @@ void CUIHudStatesWnd::SetAmmoIcon(const shared_str& sect_name)
 	}
 	m_ui_weapon_icon->Show(true);
 
+	InventoryIconParams icons_struct = GetInventoryIconParams(sect_name.c_str());
     if (psActorFlags.test(AF_3D_ICONS_INV))
     {
-        LPCSTR m_3d_static_visual_name = READ_IF_EXISTS(pSettings, r_string, sect_name, "3d_static_visual_name", pSettings->r_string(sect_name, "visual"));
-        m_ui_weapon_icon->SetVisual(m_3d_static_visual_name);
-        Fvector m_3d_static_rotate = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "3d_static_rotate", m_3d_static_rotate.set(0, 0, 0));
-        m_3d_static_rotate.mul(M_PI / 180.0f);
-        m_ui_weapon_icon->SetXYZ(m_3d_static_rotate);
-        float m_3d_static_scale = READ_IF_EXISTS(pSettings, r_float, sect_name, "3d_static_scale", 1.f);
-        m_ui_weapon_icon->SetScaleFactor(m_3d_static_scale);
+        m_ui_weapon_icon->SetVisual(icons_struct._3d_static_visual);
+        m_ui_weapon_icon->SetXYZ(icons_struct._3d_static_rotate);
+        m_ui_weapon_icon->SetScaleFactor(icons_struct._3d_static_scale);
     }
     else
         m_ui_weapon_icon->SetVisual(nullptr);
 
 	Frect texture_rect;
-	float scaleIcon = READ_IF_EXISTS(pSettings, r_float, sect_name, "inv_scale", 1.0f);
-	texture_rect.x1 = pSettings->r_float(sect_name, "inv_grid_x") * INV_GRID_WIDTH(scaleIcon);
-	texture_rect.y1 = pSettings->r_float(sect_name, "inv_grid_y") * INV_GRID_HEIGHT(scaleIcon);
-	texture_rect.x2 = pSettings->r_float(sect_name, "inv_grid_width") * INV_GRID_WIDTH(scaleIcon);
-	texture_rect.y2 = pSettings->r_float(sect_name, "inv_grid_height") * INV_GRID_HEIGHT(scaleIcon);
+	float scaleIcon = icons_struct.scaleIcon;
+	texture_rect.x1 = icons_struct.inv_grid_x * INV_GRID_WIDTH(scaleIcon);
+	texture_rect.y1 = icons_struct.inv_grid_y * INV_GRID_HEIGHT(scaleIcon);
+	texture_rect.x2 = icons_struct.inv_grid_width * INV_GRID_WIDTH(scaleIcon);
+	texture_rect.y2 = icons_struct.inv_grid_height * INV_GRID_HEIGHT(scaleIcon);
 	texture_rect.rb.add				(texture_rect.lt);
 	m_ui_weapon_icon->GetUIStaticItem().SetTextureRect(texture_rect);
 	m_ui_weapon_icon->SetStretchTexture(true);
 
-	const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, sect_name, "icons_texture", nullptr);
-	m_ui_weapon_icon->SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
+	if (psActorFlags.test(AF_3D_ICONS_INV))
+	{
+		m_ui_weapon_icon->SetVisual(icons_struct._3d_static_visual);
+
+		m_ui_weapon_icon->SetScaleFactor(icons_struct._3d_static_scale);
+		Fvector fRot = icons_struct._3d_static_rotate;
+		m_ui_weapon_icon->SetXYZ(fRot);
+	}
+	else
+		m_ui_weapon_icon->SetVisual(nullptr);
+
+	m_ui_weapon_icon->SetShader(GetEquipmentIconsShader(icons_struct.icons_texture));
 
 	float h = texture_rect.height() * EngineExternal().GetWeaponIconScaling();
 	float w = texture_rect.width() * EngineExternal().GetWeaponIconScaling();

@@ -73,6 +73,20 @@ enum EDatePrecision
 	edpDateToYear
 };
 
+struct InventoryIconParams
+{
+	LPCSTR _3d_static_visual;
+	Fvector _3d_static_rotate;
+	float _3d_static_scale;
+	float scaleIcon;
+
+	LPCSTR icons_texture;
+	float inv_grid_x;
+	float inv_grid_y;
+	float inv_grid_width;
+	float inv_grid_height;
+};
+
 const shared_str GetGameDateAsString(EDatePrecision datePrec, char dateSeparator = ',');
 const shared_str GetGameTimeAsString(ETimePrecision timePrec, char timeSeparator = ':');
 const shared_str GetDateAsString(ALife::_TIME_ID time, EDatePrecision datePrec, char dateSeparator = ',');
@@ -98,4 +112,5 @@ void	SendInfoToLuaScripts		(shared_str info);
 u32		GetGoodwillColor			(s32 gw);
 u32		GetRelationColor			(ALife::ERelationType r);
 u32		GetReputationColor			(s32 rv);
+InventoryIconParams	GetInventoryIconParams(LPCSTR section);
 };

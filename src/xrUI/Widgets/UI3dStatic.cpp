@@ -201,7 +201,13 @@ void CUI3dStatic::SetVisual(const shared_str& cVisualName)
 		return;
 	}
 
-	pCurrentVisual = ::Render->model_Create(*cVisualName);
+    string_path name;
+    if (0 == strext(cVisualName.c_str()))
+        xr_strconcat(name, cVisualName.c_str(), ".ogf");
+    else
+        xr_strcpy(name, sizeof(name), cVisualName.c_str());
+
+    pCurrentVisual = ::Render->model_Create(name);
 
 	if (auto pKa = pCurrentVisual->dcast_PKinematicsAnimated())
 	{
