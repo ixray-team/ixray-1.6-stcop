@@ -631,50 +631,50 @@ void CActor::IR_GamepadKeyPress(int id)
 	if (hud_adj_mode && pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT))
 	{
 		return;
-	}
+		}
 
 	if (Remote())
-	{
+		{
 		return;
-	}
+		}
 
 	if (IsTalking())
-	{
+		{
 		return;
-	}
+		}
 
 	if (m_input_external_handler && !m_input_external_handler->authorized(id))
-	{
+		{
 		return;
-	}
+				}
 
 	if (load_screen_renderer.IsActive())
-	{
+				{
 		return;
-	}
+				}
 
 	if (HudAnimator() != nullptr)
-	{
+		{
 		if (HudAnimator()->InputKeyPress(id))
 		{
 			return;
 		}
-	}
+		}
 
 #ifndef MASTER_GOLD
 	if (psActorFlags.test(AF_NO_CLIP))
-	{
+		{
 		NoClipFly(id);
 		if (m_holder && kUSE != id)
 			m_holder->OnKeyboardPress(id);
 		return;
-	}
+		}
 #endif //DEBUG
 
 	if (!g_Alive()) return;
 
 	if(m_holder && kUSE != id)
-	{
+		{
 		m_holder->OnKeyboardPress			(id);
 		if(m_holder->allowWeapon() && inventory().Action((u16)id, CMD_START))		return;
 		return;
@@ -682,14 +682,14 @@ void CActor::IR_GamepadKeyPress(int id)
 		if(inventory().Action((u16)id, CMD_START))					return;
 
 	if (IsWaunded)
-	{
+			{
 		return;
 	}
 
 	switch (id)
-	{
+				{
 		case kUSE:
-		{
+				{
 			ActorUse();
 			break;
 		}
@@ -746,14 +746,14 @@ void CActor::IR_GamepadKeyHold(int id)
 	switch (id)
 	{
 		case kCROUCH:
+	{
+		if (Device.dwTimeContinual > (gamepad_crouch_time_global + 500))
 		{
-			if (Device.dwTimeContinual > (gamepad_crouch_time_global + 500))
-			{
-				mstate_wishful |= mcAccel;
-			}
-			mstate_wishful |= mcCrouch;
-			break;
+			mstate_wishful |= mcAccel;
 		}
+		mstate_wishful |= mcCrouch;
+		break;
+	}
 	}
 }
 
@@ -1260,7 +1260,7 @@ void CActor::set_input_external_handler(CActorInputHandler *handler)
 
 void CActor::SwitchNightVision()
 {
-	bool has_nvg = GetOutfit() && GetOutfit()->m_NightVisionSect.size() > 0 || GetHelmet() && GetHelmet()->m_NightVisionSect.size() > 0;
+	bool has_nvg = GetOutfit() && GetOutfit()->GetNV_Sect().size() > 0 || GetHelmet() && GetHelmet()->GetNV_Sect().size() > 0;
 
 	if (!has_nvg)
 	{
@@ -1606,13 +1606,13 @@ collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject*
 void CActor::NoClipFly(int cmd)
 {
 	Fvector cur_pos;
-    cur_pos.set(0, 0, 0);
+	cur_pos.set(0, 0, 0);
 	CCar* pCar = m_holder ? m_holder->cast_car() : nullptr;
 
-    if (pInput->iGetAsyncKeyState(SDL_SCANCODE_DELETE))
+	if (pInput->iGetAsyncKeyState(SDL_SCANCODE_DELETE))
 	{
-        collide::rq_result RQ = GetPickResult(Device.vCameraPosition, Device.vCameraDirection, 1000.0f, this);
-        if (RQ.element>=0)
+		collide::rq_result RQ = GetPickResult(Device.vCameraPosition, Device.vCameraDirection, 1000.0f, this);
+		if (RQ.element>=0)
 		{
 			if (pCar)
 			{
@@ -1639,7 +1639,7 @@ void CActor::NoClipFly(int cmd)
 			else
 				SetPhPosition(XFORM().translate(Fvector(Device.vCameraPosition).mad(Fvector(Device.vCameraDirection), RQ.range)));
 		}
-    }
+	}
 
 	switch (cmd)
 	{
@@ -1700,14 +1700,14 @@ void CActor::NoClipFly(int cmd)
 				pCar->m_pPhysicsShell->applyImpulse(left, (GetNoclipSpeedScale() * pCar->m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
 		}break;
 		case kCAM_1:
-		    cam_Set(eacFirstEye);
-		    break;
+			cam_Set(eacFirstEye);
+			break;
 		case kCAM_2:
-		    cam_Set(eacLookAt);
-		    break;
+			cam_Set(eacLookAt);
+			break;
 		case kCAM_3:
-		    cam_Set(eacFreeLook);
-		    break;
+			cam_Set(eacFreeLook);
+			break;
 		case kNIGHT_VISION:
 			SwitchNightVision();
 			break;
