@@ -13,7 +13,6 @@
 #include "animation_utils.h"
 class CPhysicsShell;
 class CPHMovementControl;
-class CIKLimbsController;
 class interactive_motion;
 class interactive_animation;
 class physics_shell_animated;
@@ -60,13 +59,12 @@ private:
 		animation_movement_state( )		{ init( ); }
 	}									anim_mov_state;
 
-	CEntityAlive						&m_EntityAlife																																		;
-	Fmatrix								&mXFORM																																				;
-	CPhysicsShell						*&m_pPhysicsShell																																	;
-	CPhysicsShell						*m_physics_skeleton																																	;
-	CPHMovementControl					*m_PhysicMovementControl																															;
-	CPHSoundPlayer						m_ph_sound_player																																	;
-	CIKLimbsController					*m_ik_controller																																	;
+	CEntityAlive						&m_EntityAlife;
+	Fmatrix								&mXFORM;
+	CPhysicsShell						*&m_pPhysicsShell;
+	CPhysicsShell						*m_physics_skeleton;
+	CPHMovementControl					*m_PhysicMovementControl;
+	CPHSoundPlayer						m_ph_sound_player;
 	ICollisionHitCallback				*m_collision_hit_callback;
 	character_hit_animation_controller	m_hit_animations;
 	death_anims							m_death_anims;
@@ -113,7 +111,6 @@ public:
 IC		CPHMovementControl				*movement						( )	{ return m_PhysicMovementControl; }
 IC	const	CPHMovementControl			*movement						( ) const{ return m_PhysicMovementControl; }
 IC		CPHSoundPlayer					*ph_sound_player				( )	{ return &m_ph_sound_player; }
-IC		CIKLimbsController				*ik_controller					( )	{ return m_ik_controller; }
 		bool							interactive_motion				( ) ;
 		bool							can_drop_active_weapon			( ) ;
 		void							SetRemoved						( );
