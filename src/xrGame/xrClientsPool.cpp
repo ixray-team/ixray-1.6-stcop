@@ -78,7 +78,7 @@ bool const xrClientsPool::pooled_client_finder::operator()(dclient const & right
 	return false;
 }
 
-xrClientData*	xrClientsPool::Get(xrClientData* new_client)
+xrClientData* xrClientsPool::Get(xrClientData* new_client)
 {
 	ClearExpiredClients		();
 	pooled_client_finder	tmp_finder;
