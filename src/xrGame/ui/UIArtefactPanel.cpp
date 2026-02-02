@@ -4,6 +4,7 @@
 #include "../../xrUI/UIXmlInit.h"
 
 #include "../Artefact.h"
+#include "Actor_Flags.h"
 
 using namespace InventoryUtilities;
 
@@ -29,11 +30,21 @@ void CUIArtefactPanel::InitIcons(const xr_vector<const CArtefact*>& artefacts)
 {
 	m_static.SetShader(GetEquipmentIconsShader());
 	m_vRects.clear();
-	
+
 	for(const CArtefact* af : artefacts)
 	{
+        InventoryIconParams icons_struct = GetInventoryIconParams(af->cNameSect().c_str());
+        if (psActorFlags.test(AF_3D_ICONS_INV))
+        {
+            GetStatic()->SetVisual(icons_struct._3d_static_visual);
+            GetStatic()->SetXYZ(icons_struct._3d_static_rotate);
+            GetStatic()->SetScaleFactor(icons_struct._3d_static_scale);
+        }
+        else
+            GetStatic()->SetVisual(nullptr);
+
 		Frect rect;
-		float scaleIcon = READ_IF_EXISTS(pSettings, r_float, af->cNameSect(), "inv_scale", 1.0f);
+		float scaleIcon = icons_struct.scaleIcon;
 		rect.left = float(af->GetInvGridRect().x1 *INV_GRID_WIDTH(scaleIcon));
 		rect.top = float(af->GetInvGridRect().y1 *INV_GRID_HEIGHT(scaleIcon));
 		rect.right = rect.left + af->GetInvGridRect().x2 *INV_GRID_WIDTH(scaleIcon);
