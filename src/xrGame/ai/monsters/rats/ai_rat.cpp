@@ -127,6 +127,10 @@ void CAI_Rat::reload					(LPCSTR	section)
 {
 	inherited::reload		(section);
 	CEatableItem::reload	(section);
+	if (!g_Alive())
+	{
+		return;
+	}
 	LPCSTR					head_bone_name = pSettings->r_string(section,"bone_head");
 	sound().add		(pSettings->r_string(section,"sound_death"),	100, SOUND_TYPE_MONSTER_DYING,		0, u32(eRatSoundMaskDie),		eRatSoundDie,		head_bone_name);
 	sound().add		(pSettings->r_string(section,"sound_hit"),		100, SOUND_TYPE_MONSTER_INJURING,	1, u32(eRatSoundMaskInjuring),	eRatSoundInjuring,	head_bone_name);
