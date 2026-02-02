@@ -14,7 +14,7 @@ class IDamageSource;
 class CPHSkeleton;
 class CCharacterPhysicsSupport;
 class ICollisionDamageInfo;
-class CIKLimbsController;
+class TIKLimbsController;
 
 class CPhysicsShellHolder:
 	public CGameObject,
@@ -71,7 +71,6 @@ public:
 	virtual CPHSoundPlayer* ph_sound_player() { return nullptr; }
 	virtual	CCharacterPhysicsSupport* character_physics_support() { return nullptr; }
 	virtual	const CCharacterPhysicsSupport* character_physics_support() const { return nullptr; }
-	virtual	CIKLimbsController* character_ik_controller() { return nullptr; }
 	virtual ICollisionHitCallback* get_collision_hit_callback() { return nullptr; }
 
 	virtual void set_collision_hit_callback(ICollisionHitCallback* cc) {}
