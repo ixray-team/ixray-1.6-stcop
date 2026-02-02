@@ -49,8 +49,8 @@ void CRenderTarget::PhaseSaturation()
 
 void CRenderTarget::PhaseRaindrops()
 {
-	const bool ItemCfgHudRainDropsAvialable = g_pGamePersistent->ShaderParams.ItemCfgHudRainDropsAvialable;
-	if (!ItemCfgHudRainDropsAvialable)
+	const bool ItemCfgHudRainDropsAvailable = g_pGamePersistent->ShaderParams.ItemCfgHudRainDropsAvailable;
+	if (!ItemCfgHudRainDropsAvailable)
 	{
 		return;
 	}
@@ -71,8 +71,8 @@ void CRenderTarget::PhaseRaindrops()
 
 void CRenderTarget::PhaseGasmask()
 {
-	const bool ItemCfgHudGasMaskAvialable = g_pGamePersistent->ShaderParams.ItemCfgHudGasMaskAvialable;
-	if (!ItemCfgHudGasMaskAvialable)
+	const bool ItemCfgHudGasMaskAvailable = g_pGamePersistent->ShaderParams.ItemCfgHudGasMaskAvailable;
+	if (!ItemCfgHudGasMaskAvailable)
 	{
 		return;
 	}
