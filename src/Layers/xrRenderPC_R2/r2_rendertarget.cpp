@@ -218,7 +218,7 @@ CRenderTarget::CRenderTarget		()
 		u32		w=RCache.get_width(), h=RCache.get_height();
 		rt_Position.create			(r2_RT_P,		w,h, ERHI_FORMAT::R16G16B16A16_FLOAT);
 		rt_Normal.create			(r2_RT_N,		w,h, ERHI_FORMAT::R16G16B16A16_FLOAT);
-
+		rt_ui_pda.create(r_ui_pda, w, h, ERHI_FORMAT::B8G8R8A8_UNORM);
 		// select albedo & accum
 		if (RImplementation.o.mrtmixdepth)	
 		{
