@@ -10,6 +10,7 @@ enum class EEngineExternalUI
 	PdaRearrangeTabButtons,
 	UseSavedGameStatic,
 	DisableHudRenderingOnMaster,
+	UseCompassBar,
 	None
 };
 
