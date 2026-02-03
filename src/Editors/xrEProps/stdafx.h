@@ -18,6 +18,7 @@ inline void not_implemented()
 #endif
 
 #include "../xrEUI/stdafx.h"
+#include "../xrEUI/ModernUI.h"
 #include "../../xrEngine/stdafx.h"
 #include "../Public/xrEProps.h"
 #include "ChooseTypes.H"
