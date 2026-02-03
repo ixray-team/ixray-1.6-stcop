@@ -6,7 +6,7 @@
 #include "GameObject.h"
 
 #include "../game_object_space.h"
-#include "../ik_anim_state.h"
+#include "ik_anim_state.h"
 
 //#include "../ode_include.h"
 #include "../../xrPhysics/MathUtils.h"
