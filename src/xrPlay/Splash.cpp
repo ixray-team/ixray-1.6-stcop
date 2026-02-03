@@ -156,7 +156,7 @@ namespace splash
             int srcX = (charIndex % CHARS_PER_ROW) * CHAR_WIDTH;
             int srcY = (charIndex / CHARS_PER_ROW) * CHAR_HEIGHT;
 
-            SDL_FRect srcRect = { (float)srcX, (float)srcY, CHAR_WIDTH, CHAR_HEIGHT };
+            SDL_FRect srcRect = { (float)srcX, (float)srcY, (float)CHAR_WIDTH, (float)CHAR_HEIGHT };
             SDL_FRect dstRect = { (float)x + i * CHAR_WIDTH, (float)y, (float)CHAR_WIDTH, (float)CHAR_HEIGHT };
 
             SDL_RenderTexture(renderer, fontTexture, &srcRect, &dstRect);
