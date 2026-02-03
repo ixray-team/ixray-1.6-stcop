@@ -4,7 +4,7 @@
 #include "common.hlsli"
 uniform float4x4 m_shadow;
 
-Texture2D s_smap : register(ps, t0);
+Texture2D s_smap : register(t0);
 SamplerComparisonState smp_smap;
 sampler smp_jitter;
 

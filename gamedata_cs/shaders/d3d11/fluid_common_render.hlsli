@@ -318,7 +318,8 @@ float4 Raycast(PS_INPUT_RAYCAST input)
     stepVec = -stepVec;
 #endif //	RENDER_FIRE
 
-    for (int i = 0; i < nSamples; i++)
+    int i = 0;
+    for (i = 0; i < nSamples; i++)
     {
         DoSample(1, O, color);
         O += stepVec;

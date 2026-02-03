@@ -30,9 +30,9 @@ void skinned_main(in v_model I, out p_bumped_new O)
 #else
 	N = mul((float3x3)m_WV, N);
 
-    O.M1 = N.xxx;
-    O.M2 = N.yyy;
-    O.M3 = N.zzz;
+    O.M1 = float3(N.x, N.x, N.x);
+    O.M2 = float3(N.y, N.y, N.y);
+    O.M3 = float3(N.z, N.z, N.z);
 #endif
 
     O.hpos = mul(m_WVP, I.P);
