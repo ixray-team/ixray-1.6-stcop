@@ -1,5 +1,6 @@
 #pragma once
 #include "../../xrUI/Widgets/UIWindow.h"
+#include "../../xrUI/UIXmlInit.h"
 #include "../../xrCore/_stl_extensions.h"
 #include "../../xrCore/shared_string.h"
 #include "../map_location_defs.h"
