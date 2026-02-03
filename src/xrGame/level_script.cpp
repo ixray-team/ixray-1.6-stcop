@@ -1597,9 +1597,33 @@ void RemoveAllNamedStashStringVectors()
 	m_named_stash.clear();
 }
 
-
-const xr_vector<CScriptGameObject*>& GetOnlineGameObjectsByShapeSpatial(u64 mask, const Fvector& _center, const float _radius)
+const xr_vector<CScriptGameObject*>& GetOnlineGameObjectsByShapeSpatial(const Fvector& _center, const float _radius, luabind::object const& eSpatialTypes)
 {
+	u64 mask = 0;
+
+	VERIFY(eSpatialTypes.type() == LUA_TTABLE);
+
+	luabind::object::iterator I = eSpatialTypes.begin();
+	luabind::object::iterator E = eSpatialTypes.end();
+
+	for (; I != E; ++I)
+	{
+		luabind::object  tValue = *I;
+		if (tValue.type() == LUA_TNIL || tValue.type() != LUA_TNUMBER)
+		{
+			continue;
+		}
+
+		if (mask == 0)
+		{
+			mask = luabind::object_cast<u64>(tValue);
+		}
+		else 
+		{
+			mask |= luabind::object_cast<u64>(tValue);
+		}
+	}
+
 	static xr_vector<CScriptGameObject*> m_objects;
 	m_objects.clear();
 
@@ -1714,7 +1738,7 @@ void CLevel::script_register(lua_State *L)
 #endif
 		def("set_time_factor_single", set_time_factor_single), // FNAS
 		
-		def("get_online_objects", &GetOnlineGameObjectsByShapeSpatial, return_stl_iterator),
+		def("search_online_objects_by_sphere", &GetOnlineGameObjectsByShapeSpatial, return_stl_iterator),
 
 		def("is_exists_named_stash_string_vector", &IsExistsNamedStashStringVector),
 		def("get_named_stash_string_vector", &GetNamedStashStringVector),
