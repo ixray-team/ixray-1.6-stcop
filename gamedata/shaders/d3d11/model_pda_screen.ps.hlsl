@@ -1,6 +1,6 @@
 #include "common.hlsli"
 
-// uniform	float4 		m_affects;
+uniform	float4 		m_affects;
 
 struct 	v2p
 {
@@ -9,51 +9,71 @@ struct 	v2p
   	float4	c0:			COLOR0;		// sun.(fog*fog)
 };
 
-// float get_noise(float2 co)
-// {
-      // return (frac(sin(dot(co.xy ,float2(12.9898,78.233))) * 43758.5453))*0.5;
-// };
+float get_noise(float2 co)
+{
+      return (frac(sin(dot(co.xy ,float2(12.9898,78.233))) * 43758.5453))*0.5;
+};
 
-// Texture2D 	s_vp2;
-// Texture2D 	s_load;
-// float4 problems_main( v2p I )
-// {
-	// // ÛÁÍ‡ˇ ÔÓÎÓÒÍ‡ ËÒÍ‡ÊÂÌËÈ
-	// float problems = frac( timers.z * 5*(1 + 2 * m_affects.x) );	
-	// I.tc0.x+= ( m_affects.x > 0.09 && I.tc0.y > problems-0.01 && I.tc0.y < problems) ? sin((I.tc0.y-problems)*5*m_affects.y)  : 0;
+Texture2D 	s_vp2;
+Texture2D 	s_load;
+float4 problems_main(p_bumped_new I)
+{
+    // –ü–æ–ª—É—á–∞–µ–º –±–∞–∑–æ–≤—ã–µ UV-–∫–æ–æ—Ä–¥–∏–Ω–∞—Ç—ã –∏–∑ tcdh.xy
+    float2 base_uv = I.tcdh.xy;
+    
+    // –£–∑–∫–∞—è –ø–æ–ª–æ—Å–∫–∞ –∏—Å–∫–∞–∂–µ–Ω–∏–π
+    float problems = frac(timers.z * 5 * (1 + 2 * m_affects.x));    
+    base_uv.x += (m_affects.x > 0.09 && base_uv.y > problems - 0.01 && base_uv.y < problems) ? 
+                 sin((base_uv.y - problems) * 5 * m_affects.y) : 0;
 
-	// // ¯ËÓÍ‡ˇ ÔÓÎÓÒÍ‡ ËÒÍ‡ÊÂÌËÈ	
-	// problems = cos( ( frac( timers.z *2 ) - 0.5 ) * 3.1416 )*2 - 0.8;
-	// float AMPL = 0.13;
-	// I.tc0.x -= ( m_affects.x > 0.15 && I.tc0.y > problems-AMPL && I.tc0.y < problems+AMPL) ? cos(4.71*(I.tc0.y-problems)/AMPL) * sin( frac(timers.z)*6.2831*90 )  * 0.02 * (AMPL-abs(I.tc0.y-problems))/AMPL : 0;		
-	
-	// // ÚˇÒÍ‡ ‚ÎÂ‚Ó-‚Ô‡‚Ó ‚ ÙËÌ‡Î¸ÌÓÈ ÒÚ‡‰ËË
-	// I.tc0.x += ( m_affects.x > 0.38 ) ? (m_affects.y - 0.5) * 0.04 : 0;	
-	
-	// float4	t_vp2	 = (m_affects.x < 0.27) ? s_vp2.Sample	( smp_base, I.tc0) : s_base.Sample	( smp_base, I.tc0) ;  	
-	
-	// // ÿÛÏ ÔË ‚˚·ÓÒÂ
-	// float noise	= get_noise(I.tc0*timers.z) *  m_affects.x * m_affects.x * 20;		
-	// t_vp2.r += noise;
-	// t_vp2.g += noise;
-	// t_vp2.b += noise;
-	
-	// //ÓÚÍÎ˛˜ÂÌËÂ ˝Í‡Ì‡
-	// t_vp2.rgb = (m_affects.x > 0.41) ? 0 : t_vp2.rgb;
-	
-	// return  float4	(t_vp2.r, t_vp2.g, t_vp2.b, 1);
-// }
+    // –®–∏—Ä–æ–∫–∞—è –ø–æ–ª–æ—Å–∫–∞ –∏—Å–∫–∞–∂–µ–Ω–∏–π    
+    problems = cos((frac(timers.z * 2) - 0.5) * 3.1416) * 2 - 0.8;
+    float AMPL = 0.13;
+    base_uv.x -= (m_affects.x > 0.15 && base_uv.y > problems - AMPL && base_uv.y < problems + AMPL) ? 
+                 cos(4.71 * (base_uv.y - problems) / AMPL) * sin(frac(timers.z) * 6.2831 * 90) * 0.02 * 
+                 (AMPL - abs(base_uv.y - problems)) / AMPL : 0;        
+    
+    // –¢—Ä—è—Å–∫–∞ –≤–ª–µ–≤–æ-–≤–ø—Ä–∞–≤–æ –≤ —Ñ–∏–Ω–∞–ª—å–Ω–æ–π —Å—Ç–∞–¥–∏–∏
+    base_uv.x += (m_affects.x > 0.38) ? (m_affects.y - 0.5) * 0.04 : 0;    
+    
+    // –í—ã–±–æ—Ä —Ç–µ–∫—Å—Ç—É—Ä—ã –≤ –∑–∞–≤–∏—Å–∏–º–æ—Å—Ç–∏ –æ—Ç —Å–æ—Å—Ç–æ—è–Ω–∏—è —ç—Ñ—Ñ–µ–∫—Ç–∞
+    float4 t_vp2 = (m_affects.x < 0.27) ? 
+                   s_vp2.Sample(smp_rtlinear, base_uv) : 
+                   s_base.Sample(smp_base, base_uv);  
+    
+    // –®—É–º –ø—Ä–∏ –≤—ã–±—Ä–æ—Å–µ
+    float noise = get_noise(base_uv * timers.z) * m_affects.x * m_affects.x * 20;        
+    t_vp2.r += noise;
+    t_vp2.g += noise;
+    t_vp2.b += noise;
 
+    // –û—Ç–∫–ª—é—á–µ–Ω–∏–µ —ç–∫—Ä–∞–Ω–∞
+    t_vp2.rgb = (m_affects.x > 0.41) ? 0 : t_vp2.rgb;
 
-// float4 loading_main( v2p I )
-// {
-	// float4 t_load = s_load.Sample ( smp_base, I.tc0);
-	// return  float4	(t_load.r, t_load.g, t_load.b, 1);
-// }
+    return t_vp2;
+}
+
+float4 loading_main( p_bumped_new I )
+{
+    float4 t_load = s_load.Sample ( smp_base, I.tcdh.xy);
+	return t_load;
+}
 
 float4 main( p_bumped_new I ) : SV_Target
 {
-	float4 t_base = s_base.Sample(smp_base, I.tcdh.xy);
-	t_base.xyz = detonemap(t_base.xyz);
-	return t_base;
+    float4 final = 1.0f;
+
+    [branch]
+    if (m_affects.a > 0 && m_affects.x >= 0.08)
+    {
+        final.xyz = loading_main(I).xyz;
+    }
+    else
+    {
+        final.xyz = problems_main(I).xyz;
+    }
+
+    final.xyz = detonemap(final.xyz * 0.8f);
+    
+    return final;
 }
