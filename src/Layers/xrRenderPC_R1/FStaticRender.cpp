@@ -18,7 +18,7 @@
 #include "../xrRender/dxWallMarkArray.h"
 #include "../xrRender/dxUIShader.h"
 #include "../../xrCore/git_version.h"
-
+#include "../../xrEngine/IGame_Actor.h"
 #include "../xrRender/RenderInterfaceShared.h"
 using namespace R_dsgraph;
 
@@ -513,6 +513,14 @@ void CRender::Render()
 
 	g_r											= 1;
 	Device.Statistic->RenderDUMP.Begin();
+
+	if (g_pIGameActor)
+	{
+		Target->set_ui_target();
+		g_pIGameActor->RenderItemUI();							// render ui in world
+		Target->set_default_target();
+	}
+
 	// Begin
 	Target->Begin								();
 	o.vis_intersect								= FALSE			;
