@@ -217,6 +217,18 @@
 	        </progress>
 	    </progress_bar_stamina>
 
+<!--Adaptive ammo Widget-->
+<!--
+		<static_ammo_adaptive x="872" y="663" width="70" height="40">
+			<clip_text x="0" y="0" width="40" height="37">
+				<text complex_mode="0" font="graffiti32" color="ui_7" align="r" vert_align="c"/>
+			</clip_text>
+			<total_text x="45" y="4" width="55" height="27">
+				<text complex_mode="0" font="graffiti22" r="238" g="155" b="23" a="200" align="l" vert_align="c"/>
+			</total_text>
+		</static_ammo_adaptive>
+-->
+
 		<static_cur_ammo x="887" y="690" width="54" height="37">
 			<text complex_mode="0" font="graffiti32" color="ui_7" align="c" vert_align="c">ammo</text>
 		</static_cur_ammo>
