@@ -98,19 +98,17 @@ void** dxUIRender::StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePoint
 		LIT_start_pv	= (FVF::LIT*)RCache.Vertex.Lock(m_iMaxVerts,hGeom_LIT.stride(),vOffset);
 		LIT_pv			= LIT_start_pv;
 		return (void**)&LIT_pv;
-		break;
 	case pttTL:
 		TL_start_pv		= (FVF::TL*)RCache.Vertex.Lock(m_iMaxVerts,hGeom_TL.stride(),vOffset);
 		TL_pv			= TL_start_pv;
 		return (void**)&TL_pv;
-		break;
 	case pttL:
 		L_start_pv		= (FVF::L*)RCache.Vertex.Lock(m_iMaxVerts,hGeom_L.stride(),vOffset);
 		L_pv			= L_start_pv;
 		return (void**)&L_pv;
-		break;
 	}
 
+	return nullptr;
 }
 
 void dxUIRender::FlushPrimitive()
