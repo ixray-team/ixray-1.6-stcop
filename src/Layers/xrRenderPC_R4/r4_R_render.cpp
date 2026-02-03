@@ -547,10 +547,13 @@ void CRender::Render()
 	if (g_pIGameActor)
 	{
 		Target->u_setrt(Target->rt_ui_pda, 0, 0);
+		rmNormal();
+
 		g_pIGameActor->RenderItemUI();
 	}
 
 	Target->u_setrt(Target->rt_Generic_0, Target->rt_Velocity, 0, 0);
+	rmNormal();
 
 	GRHI->ClearTarget(Target->rt_Generic_0->pRT);
 	GRHI->ClearTarget(Target->rt_Velocity->pRT);
