@@ -1,0 +1,42 @@
+name: Build (Self-Hosted)
+
+on:
+  workflow_dispatch:
+    inputs:
+      configuration:
+        description: Build configuration
+        required: true
+        type: choice
+        default: Release
+        options:
+          - Debug
+          - RelWithDebInfo
+          - Release
+
+jobs:
+  build:
+    runs-on: [self-hosted, windows, x64, winefixes]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure
+        shell: pwsh
+        run: cmake --preset Engine-x64-Windows
+
+      - name: Build
+        shell: pwsh
+        run: cmake --build --preset Engine-x64-Windows-${{ inputs.configuration }}
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: ixray-${{ inputs.configuration }}-${{ github.sha }}
+          path: |
+            build/x64/Engine-Windows/bin/${{ inputs.configuration }}/*.exe
+            build/x64/Engine-Windows/bin/${{ inputs.configuration }}/*.dll
+            build/x64/Engine-Windows/bin/${{ inputs.configuration }}/*.pdb
+          if-no-files-found: warn
