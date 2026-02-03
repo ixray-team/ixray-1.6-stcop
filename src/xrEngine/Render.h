@@ -256,8 +256,8 @@ public:
 
 	// Main 
 	IC		void					set_Frustum				(CFrustum*	O	)							{ VERIFY(O);	View = O;			}
-	virtual void					set_Transform			(Fmatrix*	M	)							{};
-	virtual void					set_LocalTransform		(Fmatrix*	M	)							{};
+	virtual void					set_Transform			(Fmatrix&	M	)							{};
+	virtual void					set_LocalTransform		(Fmatrix&	M	)							{};
 	virtual void					set_UI					(bool 		V	)							= 0;
 	virtual void					set_HUD					(bool 		V	)							{};
 	virtual bool					get_HUD					()											{ return 0; };

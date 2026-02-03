@@ -15,6 +15,7 @@ SCutsceneObjectElement::SCutsceneObjectElement(LPCSTR ObjectName)
     R_ASSERT3(HudModel, "Unable to find object", ObjectName);
     HudModelKinematics = smart_cast<IKinematics*>(HudModel);
     HudModelKinematicsAnimated = smart_cast<IKinematicsAnimated*>(HudModel);
+    Offset.identity();
 }
 
 void SCutsceneObjectElement::SetAllBonesVisibility(bool Visibility)
@@ -37,13 +38,34 @@ void SCutsceneObjectElement::SetBoneVisibility(u16 BoneID, bool Visibility)
     HudModelKinematics->LL_SetBoneVisible(BoneID, Visibility, true);
 }
 
+SCutsceneObjectElement* SCutsceneObjectElement::GetParent()
+{
+    return parent;
+}
+
 void SCutsceneObjectElement::SetParent(SCutsceneObjectElement* Parent, u16 BoneID)
 {
     parent = Parent;
     AttachBoneID = BoneID;
-#ifndef MASTER_GOLD
+//#ifndef MASTER_GOLD
     parent->children.push_back(this);
-#endif
+//#endif
+}
+
+void SCutsceneObjectElement::SetOffset(Fvector Offset)
+{
+    this->Offset.c.add(Offset);
+}
+
+void SCutsceneObjectElement::SetRotationDegrees(Fvector Rotation)
+{
+    Fmatrix TempMRot(Fmatrix::Identity);
+    TempMRot.setHPB(
+        deg2rad(Rotation.y),
+        deg2rad(Rotation.x),
+        deg2rad(Rotation.z)
+    );
+    Offset.mulB_43(TempMRot);
 }
 
 void SCutsceneObjectElement::Activate()
@@ -55,42 +77,66 @@ void SCutsceneObjectElement::Activate()
     }
 	R_ASSERT4(M2.valid(), "model has no motion", HudModel->getDebugName().c_str(), AnimName.c_str());
 
-    CBlend* B = HudModelKinematicsAnimated->PlayCycle(M2, true, [](CBlend* P)
+    // We cannot just call IKinematicsAnimated::PlayCycle for all bones because we need a CBlend for control
+    for (u16 i = 0; i < HudModelKinematicsAnimated->partitions().count(); ++i)
     {
-        auto Self = (SCutsceneObjectElement*)P->CallbackParam;
-        Level().CreateDefferedScriptCallback([Self]()
+        CBlend* B = nullptr;
+        if (!i)
         {
-            luabind::functor<void> funct;
-            if (ai().script_engine().functor(Self->OnFinishFuncName.c_str(), funct))
+            B = HudModelKinematicsAnimated->PlayCycle(i, M2, true, [](CBlend* P)
             {
-                funct();
-            }
-        });
-    }, this);
-    //B->update_callback = false;
-    //B->stop_at_end = true;
+                auto Self = (SCutsceneObjectElement*)P->CallbackParam;
+                Level().CreateDefferedScriptCallback([Self]()
+                {
+                    luabind::functor<void> funct;
+                    if (ai().script_engine().functor(Self->OnFinishFuncName.c_str(), funct))
+                    {
+                        funct();
+                    }
+                });
+            }, this);
+            B->stop_at_end_callback = true;
+        } else
+        {
+            B = HudModelKinematicsAnimated->PlayCycle(i, M2, true);
+        }
+        B->stop_at_end = true;
 #ifndef MASTER_GOLD
-    m_pBlends.push_back(B);
+        m_pBlends.push_back(B);
 #endif
+    }
 }
 
-void SCutsceneObjectElement::Update(Fvector Deviation)
+void SCutsceneObjectElement::Update(Fmatrix Deviation)
 {
-    Fmatrix m_transform;
-    m_transform.identity();
+    //Fmatrix m_transform;
+    //m_transform.identity();
     // TODO: Fix position for child objects
     //if (!parent)
     //{
-        m_transform.c = Deviation;
+    //    m_transform.c = Deviation;
     //} else
     //{
     //    auto trans = parent->HudModelKinematics->LL_GetTransform(AttachBoneID);
     //    trans.c.add(start_parent_transform.c);
     //    m_transform = trans;
     //}
-    HudModelKinematics->CalculateBones(true);
-    ::Render->set_Transform(&m_transform);
-    ::Render->add_Visual(HudModel, false, true);
+    {
+        Fmatrix Trans = Deviation;
+        Trans.mulB_44(Offset);
+        //Trans.c.add(Offset);
+        HudModelKinematics->CalculateBones(true);
+        ::Render->set_Transform(Trans);
+        ::Render->add_Visual(HudModel, false, true);
+    }
+
+    for (auto& Child : children)
+    {
+        //m_transform.identity();
+        auto trans = HudModelKinematics->LL_GetTransform(Child->AttachBoneID);
+        
+        Child->Update(trans);
+    }
 }
 
 #ifndef MASTER_GOLD
@@ -204,10 +250,13 @@ void CCutsceneItem::Activate()
 
 void CCutsceneItem::Update(Fmatrix matrix)
 {
-    auto pos = matrix.c;
+    //auto pos = matrix.c;
     for (auto& elem : CutsceneElements)
     {
-        elem->Update(pos);
+        if (!elem->GetParent())
+        {
+            elem->Update(matrix);
+        }
     }
 }
 

@@ -10,14 +10,17 @@ struct SCutsceneObjectElement
     ~SCutsceneObjectElement();
     void SetAllBonesVisibility(bool Visibility);
     void SetBoneVisibility(u16 BoneID, bool Visibility);
+    SCutsceneObjectElement* GetParent();
     void SetParent(SCutsceneObjectElement* Parent, u16 BoneID);
+    void SetOffset(Fvector Offset);
+    void SetRotationDegrees(Fvector Rotation); // set rotation in format {Pitch, Yaw, Roll}
     void SetAnimToPlay(LPCSTR AnimName);
     void SetOnFinishFunc(LPCSTR Name);
     u16 GetBoneID(LPCSTR BoneName);
     void SetBonesWeapon(u16 BoneIDR, u16 BoneIDL);
 
     void Activate();
-    void Update(Fvector Deviation);
+    void Update(Fmatrix Deviation);
     
 #ifndef MASTER_GOLD
     void StopAnimation();
@@ -29,9 +32,10 @@ struct SCutsceneObjectElement
 private:
 #ifndef MASTER_GOLD
     xr_vector<CBlend*> m_pBlends = {};
-    xr_vector<SCutsceneObjectElement*> children = {};
     shared_str ObjName;
 #endif
+    xr_vector<SCutsceneObjectElement*> children = {};
+    Fmatrix Offset = {};
     IKinematicsAnimated* HudModelKinematicsAnimated = nullptr;
     IKinematics* HudModelKinematics = nullptr;
     IRenderVisual* HudModel = nullptr;
