@@ -228,7 +228,7 @@ void CParticlesObject::renderable_Render()
 	if (g_dedicated_server || renderable.visual == nullptr || m_NeedDestroy || !m_bPlaying)
 		return;
 
-	::Render->set_Transform	(&renderable.xform);
+	::Render->set_Transform	(renderable.xform);
 	::Render->add_Visual	(renderable.visual);
 }
 

@@ -21,7 +21,7 @@ class	R_dsgraph_structure										: public IRender_interface, public pureFrame
 {
 public:
 	IRenderable*												val_pObject;
-	Fmatrix*													val_pTransform;
+	Fmatrix*												val_pTransform;
 	Fmatrix*													val_pLocalTransform;
 	bool														val_bHUD;
 	bool														val_bUI;

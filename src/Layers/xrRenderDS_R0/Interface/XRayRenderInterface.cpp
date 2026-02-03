@@ -79,7 +79,7 @@ IRender_Target* CDS0_RenderInterface::getTarget()
 	return &Target;
 }
 
-void CDS0_RenderInterface::set_Transform(Fmatrix* M)
+void CDS0_RenderInterface::set_Transform(Fmatrix& M)
 {
 }
 

@@ -635,7 +635,7 @@ bool attachable_hud_item::need_renderable()
 
 void attachable_hud_item::render()
 {
-	::Render->set_Transform		(&m_item_transform);
+	::Render->set_Transform		(m_item_transform);
 	::Render->add_Visual		(m_model->dcast_RenderVisual(), true);
 	debug_draw_firedeps			();
 	m_parent_hud_item->render_hud_mode();
@@ -1861,7 +1861,7 @@ void player_hud::render_hud()
 	{
 		if (m_model || animatorPlaying)
 		{
-			::Render->set_Transform(&m_transform);
+			::Render->set_Transform(m_transform);
 			::Render->add_Visual(m_model->dcast_RenderVisual(), true);
 
 			if (m_model_watches != nullptr)
@@ -1931,7 +1931,7 @@ void player_hud::render_hud()
 			auto bHud = ::Render->get_HUD();
 			::Render->set_HUD(false);
 
-			::Render->set_Transform(&Actor()->XFORM());
+			::Render->set_Transform(Actor()->XFORM());
 			::Render->add_Visual(m_legs_model->dcast_RenderVisual(), true);
 
 			::Render->set_HUD(bHud);
@@ -3141,7 +3141,7 @@ void animator_item::render()
 		return;
 	}
 
-	::Render->set_Transform(&m_item_transform);
+	::Render->set_Transform(m_item_transform);
 	::Render->add_Visual(m_item->dcast_RenderVisual(), true);
 }
 

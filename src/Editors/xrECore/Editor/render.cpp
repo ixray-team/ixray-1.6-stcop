@@ -473,9 +473,9 @@ void CRender::RenderUI(bool)
 {
 }
 
-void 	CRender::set_Transform(Fmatrix* M)
+void 	CRender::set_Transform(Fmatrix& M)
 {
-	current_matrix.set(*M);
+	current_matrix.set(M);
 }
 
 void CRender::add_Visual(IRenderVisual* visual, bool IgnoreOptimize, bool Force)

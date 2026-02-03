@@ -29,7 +29,7 @@ public:
 	virtual IRender_Sector* detectSector(const Fvector& P);
 	virtual IRender_Target* getTarget();
 
-	virtual void set_Transform(Fmatrix* M);
+	virtual void set_Transform(Fmatrix& M) override;
 	virtual void set_HUD(bool V);
 	virtual void set_UI(bool V);
 	virtual bool get_HUD();
