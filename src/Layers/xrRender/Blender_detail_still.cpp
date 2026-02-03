@@ -115,8 +115,13 @@ void CBlender_Detail_Still::Compile	(CBlender_Compile& C)
 {
 	IBlender::Compile	(C);
 
-	if(C.iElement == SE_R2_DETAIL_SHADOW_HQ || C.iElement == SE_R2_DETAIL_SHADOW_LQ) {
+	if(C.iElement == SE_R2_DETAIL_SHADOW_HQ || C.iElement == SE_R2_DETAIL_SHADOW_LQ)
+	{
 		RImplementation.addShaderOption("DETAIL_SHADOW_PASS", "1");
+	}
+	else
+	{
+		RImplementation.addShaderOption("FIX_CULL_NORMAL", "1");
 	}
 
 	switch(C.iElement)
