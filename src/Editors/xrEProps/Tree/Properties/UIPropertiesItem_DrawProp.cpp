@@ -287,7 +287,7 @@ void UIPropertiesItem::DrawProp()
 
 		PItem->BeforeEdit<VectorValue, Fvector>(edit_val);
 		float vector[3] = { edit_val.x,edit_val.y,edit_val.z };
-		if (ImGui::InputFloat3("##value", vector, V->dec))
+		if (XRay::ImGui::InputVector3("##value", vector, V->dec))
 		{
 			for (int i = 0; i < 3; i++)
 			{
