@@ -34,6 +34,7 @@
 #ifndef _MYVECH
 #define _MYVECH
 #include <cmath>
+#include <cstring>
 
 
 #define DTOR(x)  ((x)*3.14159/180.0)
