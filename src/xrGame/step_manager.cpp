@@ -5,7 +5,7 @@
 #include "Level.h"
 #include "GamePersistent.h"
 #include "material_manager.h"
-#include "IKLimbsController.h"
+#include "ik/IKLimbsController.h"
 #include "../xrEngine/Rain.h"
 
 #include "CustomOutfit.h"

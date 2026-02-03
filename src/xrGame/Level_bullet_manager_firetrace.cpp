@@ -19,10 +19,12 @@
 #include "../xrCore/Collision/xr_collide_defs.h"
 #include "../xrEngine/xr_collide_form.h"
 #include "Weapon.h"
-#include "ik/math3d.h"
 #include "ParticlesObject.h"
 #include "ai/monsters/basemonster/base_monster.h"
 #include "AnomalyZone.h"
+
+#include <math3d.h>
+
 //константы ShootFactor, определяющие 
 //поведение пули при столкновении с объектом
 #define RICOCHET_THRESHOLD		0.1

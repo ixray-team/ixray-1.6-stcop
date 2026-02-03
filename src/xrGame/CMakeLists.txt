@@ -220,6 +220,7 @@ target_link_libraries(xrGame PUBLIC xrScripts)
 target_link_libraries(xrGame PUBLIC xrUI)
 target_link_libraries(xrGame PUBLIC luabind)
 target_link_libraries(xrGame PUBLIC crypto)
+target_link_libraries(xrGame PUBLIC IKAN)
 
 target_link_libraries(xrGame PRIVATE "shlwapi.lib")
 
