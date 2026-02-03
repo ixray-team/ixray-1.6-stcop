@@ -855,6 +855,108 @@ retval: float
 
 ```
 
+## level
+```lua
+--// Поиск онлайн обьектов по eSpatial в сфере
+level.get_online_objects(center_position, radius, table_spatial_types)
+retval: none
+args: 
+  center_position (vector3),
+  radius (float),
+  table_spatial_types (table)
+  
+  
+--// Допустимые E_SPATIAL типы
+level.e_spatial_type.NONE
+level.e_spatial_type.INVALIDSECTOR
+level.e_spatial_type.RENDERABLE
+level.e_spatial_type.LIGHTSOURCE
+level.e_spatial_type.LIGHTSOURCEHEMI
+level.e_spatial_type.PHYSIC
+level.e_spatial_type.SHAPE
+level.e_spatial_type.PARTICLE
+
+level.e_spatial_type.COLLIDEABLE
+level.e_spatial_type.VISIBLEFORAI
+level.e_spatial_type.REACTTOSOUND
+level.e_spatial_type.OBSTACLE
+level.e_spatial_type.RENDERABLESHADOW
+
+level.e_spatial_type.LADDER
+
+level.e_spatial_type.ACTOR
+level.e_spatial_type.ACTOR_DEAD
+level.e_spatial_type.ACTOR_ALIVE
+
+level.e_spatial_type.AI
+level.e_spatial_type.AI_DEAD
+level.e_spatial_type.AI_ALIVE
+
+level.e_spatial_type.STALKER
+level.e_spatial_type.STALKER_WOUNDED
+level.e_spatial_type.STALKER_DEAD
+level.e_spatial_type.STALKER_ALIVE
+
+level.e_spatial_type.MONSTER
+level.e_spatial_type.MONSTER_DEAD
+level.e_spatial_type.MONSTER_ALIVE
+
+level.e_spatial_type.CROW
+level.e_spatial_type.CROW_DEAD
+level.e_spatial_type.CROW_ALIVE
+
+level.e_spatial_type.ITEM
+level.e_spatial_type.WEAPON
+level.e_spatial_type.MISSILE
+level.e_spatial_type.ROCKET
+level.e_spatial_type.ARTEFACT
+level.e_spatial_type.ANOMALY_DETECTOR
+
+level.e_spatial_type.CAR
+level.e_spatial_type.HELI
+
+level.e_spatial_type.PHYSIC_OBJECT
+level.e_spatial_type.PHYSIC_SHELL_HOLDER
+level.e_spatial_type.PHYSIC_OBJECT_DESTR
+level.e_spatial_type.PHYSIC_OBJECT_BRKBL
+level.e_spatial_type.PHYSIC_MOVEMENT
+
+level.e_spatial_type.INV_BOX
+
+level.e_spatial_type.AI_DOOR
+
+level.e_spatial_type.LIGHT_LAMP
+
+level.e_spatial_type.LEVEL_CHANGER
+level.e_spatial_type.SPACE_RESTRICTOR
+level.e_spatial_type.ANOMALY_ZONE
+level.e_spatial_type.SIM_FACTION
+level.e_spatial_type.SMART_TERRAIN
+level.e_spatial_type.CAMP_ZONE
+level.e_spatial_type.SMART_COVER
+level.e_spatial_type.ANOMAL_ZONE_LOGIC
+```
+
+## Пример поиск онлайн обьектов по eSpatial в сфере
+```lua
+--// Центр сферы относительно которого будет произведен поиск
+local center = db.actor:position()
+--// Радиус поиска
+local radius = 120
+--// Перечисление типов обьектов для фильтрации поиска
+local spatial_types = {
+  level.e_spatial_type.SHAPE,
+  level.e_spatial_type.STALKER,
+}
+
+--// Поиск и печать списка найденных онлайн обьектов
+for obj in level.get_online_objects(center, radius, spatial_types) do
+    if obj then
+      SemiLog(tostring( obj:name() )) --// Распечатать имена обьектов из результата поиска
+    end
+end
+```
+
 ## level (runtime storage)
 ```lua
 
