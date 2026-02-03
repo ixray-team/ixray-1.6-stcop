@@ -18,7 +18,7 @@
 #include "CharacterPhysicsSupport.h"
 #include "EffectorShot.h"
 #include "PHMovementControl.h"
-#include "IKLimbsController.h"
+#include "ik/IKLimbsController.h"
 
 #ifdef DEBUG
 #	include "PHDebug.h"
