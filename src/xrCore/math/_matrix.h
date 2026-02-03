@@ -59,11 +59,24 @@ public:
 		_vector4<T> row[4];
 	};
 
+	enum EIdentity
+	{
+		Identity
+	};
+
 	ICF _matrix()
 	{
 		for (int row = 0; row < 4; ++row)
 			for (int col = 0; col < 4; ++col)
 				m[row][col] = static_cast<T>(0);
+	}
+
+	IC _matrix(EIdentity)
+	{
+		_11=1; _12=0; _13=0; _14=0;
+		_21=0; _22=1; _23=0; _24=0;
+		_31=0; _32=0; _33=1; _34=0;
+		_41=0; _42=0; _43=0; _44=1;
 	}
 	
 	ICF _matrix(const std::initializer_list<T>& list)
