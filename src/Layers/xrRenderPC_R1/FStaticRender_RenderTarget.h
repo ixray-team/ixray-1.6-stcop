@@ -17,6 +17,7 @@ private:
 	ref_rt				RTTemp;
 	ref_rt				RT_color_map;
 	ref_rt				RT_distort;
+	ref_rt				RT_ui_pda;
 
 	//FXAA
 	ref_shader s_fxaa;
@@ -107,4 +108,6 @@ public:
 			u32			get_rtheight		()				{ return rtHeight;											}
 
 			void		phase_fxaa(u32 pass);
+			void		set_default_target();
+			void		set_ui_target();
 };
