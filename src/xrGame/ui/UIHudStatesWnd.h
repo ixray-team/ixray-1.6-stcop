@@ -56,27 +56,17 @@ private:
 	bool				m_cur_state_LA[it_max];
 	bool				m_b_force_update;
 	bool				m_weapon_icon_text_mode = false;
-	bool				m_use_adaptive_ammo_mode = false;
-	bool				m_use_ammo_type_separator = false;
+	bool				m_use_adaptive_ammo_widget = false;
 	bool				m_use_fire_mode_icons = false;
 
 	bool				m_isZoneTouch = false;
 	const char*			m_onZoneTouch = {};
 	
-	CUIStatic*			m_ui_active_ammo_type = nullptr;
-	CUIStatic*			m_ui_ammo_type_magazine = nullptr;
-	CUIStatic*			m_ui_ammo_type_separator = nullptr;
-	CUIStatic*			m_ui_ammo_type_backpack = nullptr;
+	CUIStatic*			m_ui_adaptive_clip = nullptr;
+	CUIStatic*			m_ui_adaptive_total = nullptr;
 	CUIStatic*			m_ui_fire_mode_icon = nullptr;
 	
 	xr_map<shared_str, shared_str>	m_fire_mode_icon_map;
-	
-	// Adaptive ammo display customization
-	CGameFont*			m_ammo_magazine_font = nullptr;
-	CGameFont*			m_ammo_backpack_font = nullptr;
-	u32					m_ammo_low_color;
-	u32					m_ammo_normal_color;
-	float				m_ammo_low_threshold;
 
 	CUIStackPanel*		UIStackPanelDangers;
 public:
