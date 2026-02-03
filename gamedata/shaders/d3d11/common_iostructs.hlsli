@@ -339,11 +339,11 @@ struct p_bumped_new
     float4 hpos_old : TEXCOORD6;
 
 	float snow_mask : TEXCOORD7;
-	
+
 #ifndef USE_LM_HEMI
-#ifdef USE_LENGTH_BUFFER
-	float3 lmap : TEXCOORD8;
-#endif
+	#ifdef USE_LENGTH_BUFFER
+		float3 lmap : TEXCOORD8;
+	#endif
 #endif
 };
 
@@ -509,6 +509,7 @@ struct v_detail
 {
     float4 pos : POSITION; // position, frac
     float2 tc : TEXCOORD0; // texcoord
+    float4 N : NORMAL; // (nx,ny,nz)
 };
 
 //	Fullscreen triangle

@@ -11,26 +11,44 @@ struct vertHW
 {
 	Fvector4 pos_frac;
 	Fvector2 uv;
+	u32 normal = 0;
 };
+
+extern inline u8 q_N(float v);
 
 static RHIInputElementDesc dwDecl[] =
 {
 	{ "POSITION", 0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 0, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "TEXCOORD", 0, ERHI_FORMAT::R32G32_FLOAT, 0, 16, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 }
+	{ "TEXCOORD", 0, ERHI_FORMAT::R32G32_FLOAT, 0, 16, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+	{ "NORMAL", 0, ERHI_FORMAT::R8G8B8A8_UNORM, 0, 24, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
 };
 
 CDetail::~CDetail()
 {
 	for (u32 i = 0; i < 3; ++i)
+	{
 		for (u32 j = 0; j < 2; ++j)
+		{
 			m_items[i][j].clear();
+		}
+	}
 }
 
 void CDetail::Unload	()
 {
-	if (vertices)		{ xr_free(vertices);	vertices=0; }
-	if (indices)		{ xr_free(indices);		indices=0;	}
-	shader.destroy		();
+	if (vertices) 
+	{ 
+		xr_free(vertices);
+		vertices = 0;
+	}
+
+	if (indices) 
+	{ 
+		xr_free(indices);
+		indices = 0;
+	}
+
+	shader.destroy();
 
 	//LVutner: Release (per-object) IB/VB
 #ifdef USE_DX11
@@ -40,118 +58,162 @@ void CDetail::Unload	()
 #endif
 }
 
+// Transfer vertices
 void CDetail::transfer	(Fmatrix& mXform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset)
 {
-	// Transfer vertices
+	CDetail::fvfVertexIn* srcIt = vertices, *srcEnd = vertices + number_vertices;
+	CDetail::fvfVertexOut* dstIt = vDest;
+
+	for (; srcIt != srcEnd; srcIt++, dstIt++)
 	{
-		CDetail::fvfVertexIn	*srcIt = vertices, *srcEnd = vertices+number_vertices;
-		CDetail::fvfVertexOut	*dstIt = vDest;
-		for	(; srcIt!=srcEnd; srcIt++, dstIt++)
-		{
-			mXform.transform_tiny	(dstIt->P,srcIt->P);
-			dstIt->C	= C;
-			dstIt->u	= srcIt->u;
-			dstIt->v	= srcIt->v;
-		}
+		mXform.transform_tiny(dstIt->P, srcIt->P);
+		dstIt->C = C;
+		dstIt->u = srcIt->u;
+		dstIt->v = srcIt->v;
 	}
 	
 	// Transfer indices (in 32bit lines)
-	VERIFY	(iOffset<65535);
+	VERIFY(iOffset < 65535);
+
+	u32	item = (iOffset << 16) | iOffset;
+	u32	count = number_indices / 2;
+	LPDWORD	sit = LPDWORD(indices);
+	LPDWORD	send = sit + count;
+	LPDWORD	dit = LPDWORD(iDest);
+
+	for (; sit != send; dit++, sit++)
 	{
-		u32	item	= (iOffset<<16) | iOffset;
-		u32	count	= number_indices/2;
-		LPDWORD	sit		= LPDWORD(indices);
-		LPDWORD	send	= sit+count;
-		LPDWORD	dit		= LPDWORD(iDest);
-		for		(; sit!=send; dit++,sit++)	*dit=*sit+item;
-		if		(number_indices&1)	
-			iDest[number_indices-1]=u16(indices[number_indices-1]+u16(iOffset));
+		*dit = *sit + item;
+	}
+
+	if (number_indices & 1)
+	{
+		iDest[number_indices - 1] = u16(indices[number_indices - 1] + u16(iOffset));
 	}
 }
 
 void CDetail::transfer	(Fmatrix& mXform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset, float du, float dv)
 {
-	// Transfer vertices
+	CDetail::fvfVertexIn* srcIt = vertices, * srcEnd = vertices + number_vertices;
+	CDetail::fvfVertexOut* dstIt = vDest;
+
+	for (; srcIt != srcEnd; srcIt++, dstIt++)
 	{
-		CDetail::fvfVertexIn	*srcIt = vertices, *srcEnd = vertices+number_vertices;
-		CDetail::fvfVertexOut	*dstIt = vDest;
-		for	(; srcIt!=srcEnd; srcIt++, dstIt++)
-		{
-			mXform.transform_tiny	(dstIt->P,srcIt->P);
-			dstIt->C	= C;
-			dstIt->u	= srcIt->u+du;
-			dstIt->v	= srcIt->v+dv;
-		}
+		mXform.transform_tiny(dstIt->P, srcIt->P);
+		dstIt->C = C;
+		dstIt->u = srcIt->u + du;
+		dstIt->v = srcIt->v + dv;
 	}
 	
 	// Transfer indices (in 32bit lines)
-	VERIFY	(iOffset<65535);
+	VERIFY(iOffset < 65535);
+
+	u32	item = (iOffset << 16) | iOffset;
+	u32	count = number_indices / 2;
+	LPDWORD	sit = LPDWORD(indices);
+	LPDWORD	send = sit + count;
+	LPDWORD	dit = LPDWORD(iDest);
+
+	for (; sit != send; dit++, sit++)
 	{
-		u32	item	= (iOffset<<16) | iOffset;
-		u32	count	= number_indices/2;
-		LPDWORD	sit		= LPDWORD(indices);
-		LPDWORD	send	= sit+count;
-		LPDWORD	dit		= LPDWORD(iDest);
-		for		(; sit!=send; dit++,sit++)	*dit=*sit+item;
-		if		(number_indices&1)	
-			iDest[number_indices-1]=u16(indices[number_indices-1]+u16(iOffset));
+		*dit = *sit + item;
+	}
+
+	if (number_indices & 1)
+	{
+		iDest[number_indices - 1] = u16(indices[number_indices - 1] + u16(iOffset));
 	}
 }
 
-void CDetail::Load		(IReader* S)
+void CDetail::Load(IReader* S)
 {
 	// Shader
-	string256		fnT,fnS;
-	S->r_stringZ	(fnS,sizeof(fnS));
-	S->r_stringZ	(fnT,sizeof(fnT));
-	shader.create	(fnS,	fnT);
+	string256 fnT, fnS;
+
+	S->r_stringZ(fnS, sizeof(fnS));
+	S->r_stringZ(fnT, sizeof(fnT));
+
+	shader.create(fnS, fnT);
 
 	// Params
-	m_Flags.assign	(S->r_u32	());
-	m_fMinScale		= S->r_float();
-	m_fMaxScale		= S->r_float();
-	number_vertices	= S->r_u32	();
-	number_indices	= S->r_u32	();
-	R_ASSERT		(0==(number_indices%3));
-	
+	m_Flags.assign(S->r_u32());
+	m_fMinScale = S->r_float();
+	m_fMaxScale = S->r_float();
+	number_vertices = S->r_u32();
+	number_indices = S->r_u32();
+
+	R_ASSERT(0 == (number_indices % 3));
+
 	// Vertices                             
-	u32				size_vertices		= number_vertices*sizeof(fvfVertexIn); 
-	vertices		= xr_alloc<CDetail::fvfVertexIn>	(number_vertices);
-	S->r			(vertices,size_vertices);
-	
+	u32 size_vertices = number_vertices * sizeof(fvfVertexIn);
+	vertices = xr_alloc<CDetail::fvfVertexIn>(number_vertices);
+	S->r(vertices, size_vertices);
+
 	// Indices
-	u32				size_indices		= number_indices*sizeof(u16);
-	indices			= xr_alloc<u16>						(number_indices);
-	S->r			(indices,size_indices);
+	u32 size_indices = number_indices * sizeof(u16);
+	indices = xr_alloc<u16>(number_indices);
+	S->r(indices, size_indices);
 	
 	// Validate indices
 #ifdef DEBUG
 	for (u32 idx = 0; idx<number_indices; idx++)
-		R_ASSERT	(indices[idx]<(u16)number_vertices);
+	{
+		R_ASSERT(indices[idx] < (u16)number_vertices);
+	}
 #endif
 
 	// Calc BB & SphereRadius
-	bv_bb.invalidate	();
-	for (u32 i=0; i<number_vertices; i++)
-		bv_bb.modify	(vertices[i].P);
-	bv_bb.getsphere		(bv_sphere.P,bv_sphere.R);
+	bv_bb.invalidate();
+
+	for (u32 i = 0; i < number_vertices; i++)
+	{
+		bv_bb.modify(vertices[i].P);
+	}
+
+	bv_bb.getsphere(bv_sphere.P, bv_sphere.R);
 
 	//LVutner: Create vertex and index buffers
 #ifdef USE_DX11
 	{
+		xr_vector<Fvector> vNormals(number_vertices, Fidentity.c);
+		Fvector normal;
+
+		for (u32 i = 0; i < number_indices; i += 3)
+		{
+			const auto& idx_0 = indices[i + 0];
+			const auto& idx_1 = indices[i + 1];
+			const auto& idx_2 = indices[i + 2];
+
+			const auto& v_0 = vertices[idx_0].P;
+			const auto& v_1 = vertices[idx_1].P;
+			const auto& v_2 = vertices[idx_2].P;
+
+			normal.mknormal(v_0, v_1, v_2);
+
+			vNormals[idx_0].add(normal);
+			vNormals[idx_1].add(normal);
+			vNormals[idx_2].add(normal);
+		}
+
 		xr_vector<vertHW> pV;
+		vertHW V;
+
 		for (u32 v = 0; v < number_vertices; v++)
 		{
-			vertHW V;
 			V.pos_frac.x = vertices[v].P.x;
 			V.pos_frac.y = vertices[v].P.y;
 			V.pos_frac.z = vertices[v].P.z;
 			V.pos_frac.w = vertices[v].P.y / (bv_bb.max.y - bv_bb.min.y);
 
+			auto& vNormal = vNormals[v].normalize_safe();
+			V.normal = color_rgba(q_N(vNormal.x), q_N(vNormal.y), q_N(vNormal.z), 0);
+
 			V.uv.x = vertices[v].u;
 			V.uv.y = vertices[v].v;
+
 			pV.push_back(V);
 		}
+
 		R_ASSERT(RHIUtils::CreateVertexBuffer(&hw_VB, pV.data(), number_vertices * sizeof(vertHW)));
 		R_ASSERT(RHIUtils::CreateIndexBuffer(&hw_IB, indices, size_indices));
 		hw_Geom.create(dwDecl, std::size(dwDecl), hw_VB, hw_IB);
