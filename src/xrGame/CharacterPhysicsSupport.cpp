@@ -15,7 +15,7 @@
 #include "../xrPhysics/IPHCapture.h"
 #include "../xrPhysics/IPHWorld.h"
 
-#include "IKLimbsController.h"
+#include "ik/IKLimbsController.h"
 #include "Actor.h"
 #include "ai/stalker/ai_stalker.h"
 #include "imotion_position.h"
