@@ -3,57 +3,39 @@
 ## RU
 
 - Форк для исправления проблем запуска **IX-Ray 1.6 STCoP** в **CrossOver / Wine (D3DMetal/DXMT)**.
-- Это не “официальная macOS-версия” движка, а набор практичных совместимых правок.
+- Это не официальный macOS-порт, а практичный compatibility-ветвь.
 
-Если что-то ломается в этом форке — пожалуйста, **не** отправляйте issue в основной `ixray-team/ixray-1.6-stcop` по wine-специфичным проблемам.
+### Модель веток
 
-### Что исправлено
-
-- Убраны/адаптированы HLSL-конструкции, которые нестабильно обрабатываются D3DMetal:
-  - stage-специфичные `register(ps, t0)` -> `register(t0)`
-  - проблемные `SV_ClipDistance*` в отдельных шейдерах
-  - конфликты семантик `TEXCOORD*`
-  - проблемные swizzle-присваивания вида `N.xxx` (заменены на явные `float3(...)`)
-  - scope-ошибки цикла в fluid-шейдерах
+- `r1.3.3_winefixes` — стабильные и проверенные фиксы для релиза `r1.3.3`.
+- `r1.3.3_winefixes_dev` — тестовые/временные изменения до подтверждения.
 
 ### Рекомендуемые настройки
 
-- В `gamedata/configs/engine_external.ltx`:
-  - `USE_LEGACY_LIGHT = 0`
-- После изменения шейдеров очищать:
-  - `_appdata_ixray_/shaders_cache/r1.3.3/d3d11`
+- В `gamedata/configs/engine_external.ltx`: `USE_LEGACY_LIGHT = 0`
+- После правок шейдеров очищать `_appdata_ixray_/shaders_cache/r1.3.3/d3d11`.
 
-### Известные ограничения
+### Важно
 
-- Некоторые DX11-фичи могут оставаться нестабильными на отдельных версиях CrossOver/D3DMetal.
-- Это ожидаемо для нативно-Windows рендера, запущенного через translation layer.
+- Wine/CrossOver-специфичные проблемы не нужно отправлять в upstream `ixray-team/ixray-1.6-stcop`.
 
 ---
 
 ## ENG
 
-- Fork focused on fixing **IX-Ray 1.6 STCoP** startup/runtime issues under **CrossOver / Wine (D3DMetal/DXMT)**.
+- Fork focused on fixing **IX-Ray 1.6 STCoP** issues under **CrossOver / Wine (D3DMetal/DXMT)**.
 - This is not an official macOS port; it is a pragmatic compatibility branch.
 
-If something breaks here, please **do not** file Wine-specific issues against upstream `ixray-team/ixray-1.6-stcop`.
+### Branch model
 
-### What is fixed
-
-- Patched/adapted HLSL patterns that are unstable under D3DMetal:
-  - stage-specific `register(ps, t0)` -> `register(t0)`
-  - problematic `SV_ClipDistance*` usage in selected shaders
-  - `TEXCOORD*` semantic collisions
-  - problematic swizzle-broadcast assignments like `N.xxx` (replaced with explicit `float3(...)`)
-  - loop-scope issues in fluid shaders
+- `r1.3.3_winefixes` — stable, confirmed fixes for upstream release `r1.3.3`.
+- `r1.3.3_winefixes_dev` — in-testing changes before promotion.
 
 ### Recommended settings
 
-- In `gamedata/configs/engine_external.ltx`:
-  - `USE_LEGACY_LIGHT = 0`
-- After shader changes, clear:
-  - `_appdata_ixray_/shaders_cache/r1.3.3/d3d11`
+- In `gamedata/configs/engine_external.ltx`: `USE_LEGACY_LIGHT = 0`
+- After shader edits, clear `_appdata_ixray_/shaders_cache/r1.3.3/d3d11`.
 
-### Known limitations
+### Note
 
-- Some DX11 features may still be unstable depending on CrossOver/D3DMetal version.
-- This is expected for a Windows-first renderer running through a translation layer.
+- Please do not file Wine/CrossOver-specific issues against upstream `ixray-team/ixray-1.6-stcop`.
