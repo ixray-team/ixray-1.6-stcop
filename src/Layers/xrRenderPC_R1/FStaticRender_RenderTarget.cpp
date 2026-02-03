@@ -69,6 +69,8 @@ BOOL CRenderTarget::Create()
 	{
 		RT_color_map.create	(RTname_color_map,	curWidth, curHeight, ERHI_FORMAT::B8G8R8X8_UNORM);
 	}
+	
+	RT_ui_pda.create("$user$ui_pda", curWidth, curHeight, ERHI_FORMAT::B8G8R8X8_UNORM);
 
 	//FXAA
 	s_fxaa.create(b_fxaa, "r1\\fxaa");
@@ -132,6 +134,19 @@ BOOL CRenderTarget::Create()
 	g_postprocess.create				(D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_SPECULAR|D3DFVF_TEX3,RCache.Vertex.Buffer(),RCache.QuadIB);
 	return	RT->valid() && RT_distort->valid();
 }
+
+void CRenderTarget::set_default_target()
+{
+	RCache.set_RT(RT->pRT);
+	GRHI->SetDepthStencilView(ZB);
+}
+
+void CRenderTarget::set_ui_target()
+{
+	RCache.set_RT(RT_ui_pda->pRT);
+	GRHI->SetDepthStencilView(ZB);
+}
+
 
 void CRenderTarget::phase_fxaa(u32 pass) {
 	u32 Offset = 0;
