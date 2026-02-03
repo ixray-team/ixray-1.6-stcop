@@ -1504,14 +1504,13 @@ bool CExportSkeleton::ExportMotionDefs(IWriter& F)
 			F.w_u16(1);
 			F.w_stringZ("default");
 			F.w_u16((u16)m_Source->BoneCount());
-			for (int i = 0; i < m_Source->BoneCount(); i++)
+			for (int i=0; i<m_Source->BoneCount(); i++) 
 			{
+				F.w_stringZ(m_Source->BoneNameByID(i));
 				F.w_u32(i);
 			}
 		}
-
-		pb->Inc();
-
+		pb->Inc		();
 		// motion defs
 		SMotionVec& sm_lst = m_Source->SMotions();
 		F.w_u16((u16)sm_lst.size());
