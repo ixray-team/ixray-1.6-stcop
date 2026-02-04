@@ -43,4 +43,10 @@ private:
 	void ClickPlayCleanGame();
 
 	void ClickPreferences();
+
+private:
+	float HeightCell = 0;
+	xr_string_map<xr_string, ImVec2> TableSizes;
+	void ApplyBackground(const xr_string& TableColumName);
+	void CalcTableEndPos(const xr_string& TableColumName);
 };
