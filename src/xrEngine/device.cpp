@@ -179,10 +179,26 @@ void CRenderDevice::on_idle		()
 
 	Device.BeginRender();
 	const bool Minimized = SDL_GetWindowFlags(g_AppInfo.Window) & SDL_WINDOW_MINIMIZED;
-	const bool Focus = psDeviceFlags.test(rsFullscreen) || (!Minimized && !main_menu_active && !CImGuiManager::Instance().IsCapturingInputs());
+	const bool ImGuiCapturing = CImGuiManager::Instance().IsCapturingInputs();
+	const bool Focus = psDeviceFlags.test(rsFullscreen) || (!Minimized && !main_menu_active && !ImGuiCapturing);
 
 	SDL_SetWindowMouseGrab(g_AppInfo.Window, !g_dedicated_server && Focus);
 	SDL_SetWindowRelativeMouseMode(g_AppInfo.Window, !g_dedicated_server && Focus);
+	// On Wine/CrossOver, relative mode may not reliably hide the OS cursor, so force state explicitly.
+	{
+		static bool CursorHidden = false;
+		const bool ShouldHideCursor = !g_dedicated_server && Focus && !ImGuiCapturing;
+
+		if (ShouldHideCursor != CursorHidden)
+		{
+			if (ShouldHideCursor)
+				SDL_HideCursor();
+			else
+				SDL_ShowCursor();
+
+			CursorHidden = ShouldHideCursor;
+		}
+	}
 
 	g_bEnableStatGather = psDeviceFlags.test(rsStatistic);
 
