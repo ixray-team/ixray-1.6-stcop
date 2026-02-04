@@ -41,6 +41,7 @@ void CInventorySorter::InitializeDefaultCategories()
     infoAll._hasIcon = false;
     infoAll._hasText = true;
     _categories[EInventorySortCategory::All] = infoAll;
+    _idToCategory[infoAll._id] = EInventorySortCategory::All;
 
     SInventorySortCategoryInfo infoWeapons;
     infoWeapons._id = "weapons";
@@ -49,6 +50,7 @@ void CInventorySorter::InitializeDefaultCategories()
     infoWeapons._hasIcon = false;
     infoWeapons._hasText = true;
     _categories[EInventorySortCategory::Weapons] = infoWeapons;
+    _idToCategory[infoWeapons._id] = EInventorySortCategory::Weapons;
 
     SInventorySortCategoryInfo infoAmmo;
     infoAmmo._id = "ammo";
@@ -57,6 +59,7 @@ void CInventorySorter::InitializeDefaultCategories()
     infoAmmo._hasIcon = false;
     infoAmmo._hasText = true;
     _categories[EInventorySortCategory::Ammo] = infoAmmo;
+    _idToCategory[infoAmmo._id] = EInventorySortCategory::Ammo;
 
     SInventorySortCategoryInfo infoArmor;
     infoArmor._id = "armor";
@@ -65,6 +68,7 @@ void CInventorySorter::InitializeDefaultCategories()
     infoArmor._hasIcon = false;
     infoArmor._hasText = true;
     _categories[EInventorySortCategory::Armor] = infoArmor;
+    _idToCategory[infoArmor._id] = EInventorySortCategory::Armor;
 
     SInventorySortCategoryInfo infoDevices;
     infoDevices._id = "devices";
@@ -73,6 +77,7 @@ void CInventorySorter::InitializeDefaultCategories()
     infoDevices._hasIcon = false;
     infoDevices._hasText = true;
     _categories[EInventorySortCategory::Devices] = infoDevices;
+    _idToCategory[infoDevices._id] = EInventorySortCategory::Devices;
 
     SInventorySortCategoryInfo infoConsumables;
     infoConsumables._id = "consumables";
@@ -81,6 +86,7 @@ void CInventorySorter::InitializeDefaultCategories()
     infoConsumables._hasIcon = false;
     infoConsumables._hasText = true;
     _categories[EInventorySortCategory::Consumables] = infoConsumables;
+    _idToCategory[infoConsumables._id] = EInventorySortCategory::Consumables;
 
     SInventorySortCategoryInfo infoArtefacts;
     infoArtefacts._id = "artefacts";
@@ -89,6 +95,7 @@ void CInventorySorter::InitializeDefaultCategories()
     infoArtefacts._hasIcon = false;
     infoArtefacts._hasText = true;
     _categories[EInventorySortCategory::Artefacts] = infoArtefacts;
+    _idToCategory[infoArtefacts._id] = EInventorySortCategory::Artefacts;
 
     SInventorySortCategoryInfo infoAttachments;
     infoAttachments._id = "attachments";
@@ -97,6 +104,7 @@ void CInventorySorter::InitializeDefaultCategories()
     infoAttachments._hasIcon = false;
     infoAttachments._hasText = true;
     _categories[EInventorySortCategory::Attachments] = infoAttachments;
+    _idToCategory[infoAttachments._id] = EInventorySortCategory::Attachments;
 
     for (auto& [category, info] : _categories)
     {
@@ -397,21 +405,24 @@ bool CInventorySorter::IsAttachment(PIItem item) const
 
 bool CInventorySorter::MatchesCustomCategory(PIItem item, const shared_str& categoryId) const
 {
-    auto it = _categories.begin();
-    for (; it != _categories.end(); ++it)
-    {
-        if (it->second._id == categoryId && it->second._isCustom)
-        {
-            break;
-        }
-    }
-
-    if (it == _categories.end())
+    auto idIt = _idToCategory.find(categoryId);
+    if (idIt == _idToCategory.end())
     {
         return false;
     }
 
-    const SInventorySortCategoryInfo& info = it->second;
+    auto categoryIt = _categories.find(idIt->second);
+    if (categoryIt == _categories.end())
+    {
+        return false;
+    }
+
+    const SInventorySortCategoryInfo& info = categoryIt->second;
+
+    if (!info._isCustom)
+    {
+        return false;
+    }
 
     if (item)
     {
@@ -455,6 +466,23 @@ const SInventorySortCategoryInfo* CInventorySorter::GetCategoryInfo(EInventorySo
     return nullptr;
 }
 
+EInventorySortCategory CInventorySorter::GetCategoryById(const shared_str& id) const
+{
+    auto it = _idToCategory.find(id);
+    if (it != _idToCategory.end())
+    {
+        return it->second;
+    }
+
+    return EInventorySortCategory::All;
+}
+
+const SInventorySortCategoryInfo* CInventorySorter::GetCategoryInfoById(const shared_str& id) const
+{
+    EInventorySortCategory category = GetCategoryById(id);
+    return GetCategoryInfo(category);
+}
+
 void CInventorySorter::AddCustomCategory(const shared_str& id, const shared_str& name, const shared_str& hint)
 {
     EInventorySortCategory newCategory = (EInventorySortCategory)((u8)EInventorySortCategory::CustomStart + _customCategoryCounter);
@@ -469,6 +497,7 @@ void CInventorySorter::AddCustomCategory(const shared_str& id, const shared_str&
     info._isCustom = true;
 
     _categories[newCategory] = info;
+    _idToCategory[id] = newCategory;
     _customCategoryMap[id] = newCategory;
 }
 
@@ -525,4 +554,10 @@ void CInventorySorter::SortItems(TIItemContainer& items, EInventorySortCategory 
     }
 
     items = filtered;
+}
+
+void CInventorySorter::SortItemsById(TIItemContainer& items, const shared_str& categoryId) const
+{
+    EInventorySortCategory category = GetCategoryById(categoryId);
+    SortItems(items, category);
 }

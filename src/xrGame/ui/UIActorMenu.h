@@ -4,6 +4,7 @@
 #include "../../xrUI/Widgets/UIWndCallback.h"
 #include "../../xrServerEntities/inventory_space.h"
 #include "../../xrUI/Widgets/UIHint.h"
+#include "../../xrUI/Widgets/UITabControl.h"
 #include "InventorySorter.h"
 
 #include "../script_game_object.h" //Alundaio
@@ -175,7 +176,8 @@ protected:
 	CUIStatic*					m_clock_value = nullptr;
 
 	CInventorySorter*			m_pInventorySorter = nullptr;
-	xr_vector<CUI3tButton*>		m_sortButtons;
+	CUITabControl*				m_sortTabControl = nullptr;
+	shared_str					m_currentSortCategoryId;
 	EInventorySortCategory		m_currentSortCategory = EInventorySortCategory::All;
 
 	u32							m_last_time;
@@ -263,8 +265,7 @@ protected:
 	void						InitCellForSlot				(u16 slot_idx);
 	void						InitInventoryContents		(CUIDragDropListEx* pBagList);
 	void						UpdateActorBagList			();
-	void						OnSortCategoryButtonClick	(CUIWindow* w, void* pData);
-	void						UpdateSortButtons			();
+	void						OnSortTabChanged			(CUIWindow* w, void* pData);
 	void						ClearAllLists				();
 	void						BindDragDropListEvents		(CUIDragDropListEx* lst);
 	
