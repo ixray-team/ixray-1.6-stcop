@@ -22,6 +22,7 @@
 #include "../../xrUI/Widgets/UIWndCallback.h"
 #include "UIHelperGame.h"
 #include "../../xrUI/Widgets/UIProgressBar.h"
+#include "../../xrUI/Widgets/UITabControl.h"
 #include "../../xrUI/ui_base.h"
 #include "../../xrEngine/string_table.h"
 #include "ui_drop_amount.h"
@@ -371,53 +372,15 @@ void CUIActorMenu::Construct()
 	m_pInventorySorter					= new CInventorySorter();
 	m_pInventorySorter->Initialize();
 
-	if (uiXml.NavigateToNode("inventory_sort_buttons", 0))
+	if (uiXml.NavigateToNode("inventory_sort_tabs", 0))
 	{
-		XML_NODE* stored_root_before_sort = uiXml.GetLocalRoot();
-		XML_NODE* sortButtonsNode = uiXml.NavigateToNode("inventory_sort_buttons", 0);
-		uiXml.SetLocalRoot(sortButtonsNode);
-		
-		u32 categoriesCount = m_pInventorySorter->GetCategoriesCount();
-		m_sortButtons.reserve(categoriesCount);
-		
-		for (u32 i = 0; i < categoriesCount; ++i)
-		{
-			EInventorySortCategory category = m_pInventorySorter->GetCategoryByIndex(i);
-			const SInventorySortCategoryInfo* info = m_pInventorySorter->GetCategoryInfo(category);
-			
-			if (!info)
-			{
-				continue;
-			}
-			
-			string256 buttonPath;
-			xr_sprintf(buttonPath, "category_%s", info->_id.c_str());
-			
-			if (uiXml.NavigateToNode(buttonPath, 0))
-			{
-				CUI3tButton* button = UIHelper::Create3tButton(uiXml, buttonPath, this);
-				if (button)
-				{
-					if (info->_hasText)
-					{
-						LPCSTR text = g_pStringTable ? g_pStringTable->translate(info->_name.c_str()).c_str() : info->_name.c_str();
-						button->SetText(text);
-					}
-					
-					if (info->_hint.size() > 0)
-					{
-						LPCSTR hintText = g_pStringTable ? g_pStringTable->translate(info->_hint.c_str()).c_str() : info->_hint.c_str();
-						button->m_hint_text = hintText;
-					}
-					
-					m_sortButtons.push_back(button);
-					Register(button);
-					AddCallback(button, BUTTON_CLICKED, CUIWndCallback::void_function(this, &CUIActorMenu::OnSortCategoryButtonClick));
-				}
-			}
-		}
-		
-		uiXml.SetLocalRoot(stored_root_before_sort);
+		m_sortTabControl = new CUITabControl();
+		m_sortTabControl->SetAutoDelete(true);
+		AttachChild(m_sortTabControl);
+		CUIXmlInit::InitTabControl(uiXml, "inventory_sort_tabs", 0, m_sortTabControl);
+		m_sortTabControl->SetWindowName("inventory_sort_tabs");
+		Register(m_sortTabControl);
+		AddCallbackStr("inventory_sort_tabs", TAB_CHANGED, CUIWndCallback::void_function(this, &CUIActorMenu::OnSortTabChanged));
 	}
 
 	m_message_box_yes_no				= new CUIMessageBoxEx();	

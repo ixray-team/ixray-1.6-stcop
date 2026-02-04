@@ -33,6 +33,7 @@
 #include "UIDragDropReferenceList.h"
 #include "UIInventoryUpgradeWnd.h"
 #include "../../xrUI/Widgets/UI3tButton.h"
+#include "../../xrUI/Widgets/UITabControl.h"
 #include "../../xrUI/Widgets/UIBtnHint.h"
 #include "UIMessageBoxEx.h"
 #include "../../xrUI/Widgets/UIPropertiesBox.h"
@@ -42,7 +43,7 @@
 #include "../xrEngine/string_table.h"
 #include "InventorySorter.h"
 
-void CUIActorMenu::OnSortCategoryButtonClick(CUIWindow* w, void* pData)
+void CUIActorMenu::OnSortTabChanged(CUIWindow* w, void* pData)
 {
     if (!m_pInventorySorter)
     {
@@ -54,54 +55,36 @@ void CUIActorMenu::OnSortCategoryButtonClick(CUIWindow* w, void* pData)
         return;
     }
 
-    CUI3tButton* clickedButton = smart_cast<CUI3tButton*>(w);
-    if (!clickedButton)
+    CUITabControl* tabControl = smart_cast<CUITabControl*>(w);
+    if (!tabControl)
     {
         return;
     }
 
-    for (u32 i = 0; i < m_sortButtons.size(); ++i)
-    {
-        if (m_sortButtons[i] == clickedButton)
-        {
-            EInventorySortCategory category = m_pInventorySorter->GetCategoryByIndex(i);
-            m_currentSortCategory = category;
-            UpdateSortButtons();
-            
-            if (m_pInventoryBagList)
-            {
-				if (m_currMenuMode == mmInventory)
-				{
-					InitInventoryContents(m_pInventoryBagList);
-				}
-				else
-				{
-					UpdateActorBagList();
-				}
-            }
-            break;
-        }
-    }
-}
+    const shared_str& activeId = tabControl->GetActiveId();
+    m_currentSortCategoryId = activeId;
 
-void CUIActorMenu::UpdateSortButtons()
-{
-    if (!m_pInventorySorter)
+    if (!m_currentSortCategoryId.size())
+    {
+        m_currentSortCategory = EInventorySortCategory::All;
+    }
+    else
+    {
+        m_currentSortCategory = m_pInventorySorter->GetCategoryById(m_currentSortCategoryId);
+    }
+
+    if (!m_pInventoryBagList)
     {
         return;
     }
 
-    for (u32 i = 0; i < m_sortButtons.size(); ++i)
+    if (m_currMenuMode == mmInventory)
     {
-        CUI3tButton* button = m_sortButtons[i];
-        if (!button)
-        {
-            continue;
-        }
-
-        EInventorySortCategory category = m_pInventorySorter->GetCategoryByIndex(i);
-        bool isActive = (m_currentSortCategory == category);
-        button->SetButtonState(isActive ? CUIButton::BUTTON_PUSHED : CUIButton::BUTTON_NORMAL);
+        InitInventoryContents(m_pInventoryBagList);
+    }
+    else
+    {
+        UpdateActorBagList();
     }
 }
 
@@ -278,15 +261,12 @@ void CUIActorMenu::SetMenuMode(EMenuMode mode)
 		UpdateActor();
 	}
 	UpdateButtonsLayout();
-	const bool showSortButtons = (m_currMenuMode == mmInventory || m_currMenuMode == mmDeadBodySearch);
-	for (CUI3tButton* button : m_sortButtons)
+
+	const bool showSortTabs = (m_currMenuMode == mmInventory || m_currMenuMode == mmDeadBodySearch);
+	if (m_sortTabControl)
 	{
-		if (!button)
-		{
-			continue;
-		}
-		button->Show(showSortButtons);
-		button->Enable(showSortButtons);
+		m_sortTabControl->Show(showSortTabs);
+		m_sortTabControl->Enable(showSortTabs);
 	}
 }
 
@@ -1026,10 +1006,18 @@ void CUIActorMenu::CallMessageBoxOK( LPCSTR text )
 
 void CUIActorMenu::ResetMode()
 {
-	ClearAllLists				();
-	m_pMouseCapturer			= nullptr;
-	m_UIPropertiesBox->Hide		();
-	SetCurrentItem				(nullptr);
+	ClearAllLists();
+	m_pMouseCapturer = nullptr;
+	m_UIPropertiesBox->Hide();
+	SetCurrentItem(nullptr);
+
+	m_currentSortCategory = EInventorySortCategory::All;
+	m_currentSortCategoryId = "";
+
+	if (m_sortTabControl)
+	{
+		m_sortTabControl->ResetTab();
+	}
 }
 
 void CUIActorMenu::UpdateActorMoneyMP()
