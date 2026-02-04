@@ -35,6 +35,13 @@ jobs:
           $version = $version -replace "_", "-"
           "value=$version" >> $env:GITHUB_OUTPUT
 
+      - name: Prepare build paths
+        id: paths
+        run: |
+          $buildDir = "b\\x64\\s"
+          "build_dir=$buildDir" >> $env:GITHUB_OUTPUT
+          "bin_dir=$buildDir\\bin\\Release" >> $env:GITHUB_OUTPUT
+
       - name: Cache packages
         uses: actions/cache@v5
         with:
@@ -45,11 +52,19 @@ jobs:
           path: |
             ~/.nuget/packages
 
+      - name: Reset local package folder
+        run: |
+          $pkgDir = "${{ steps.paths.outputs.build_dir }}\\packages"
+          if (Test-Path $pkgDir) {
+            Remove-Item $pkgDir -Recurse -Force
+          }
+          New-Item -ItemType Directory -Path $pkgDir -Force | Out-Null
+
       - name: Configure server
-        run: cmake --preset Server-x64-Windows
+        run: cmake --preset Server-x64-Windows -B "${{ steps.paths.outputs.build_dir }}"
 
       - name: Build server
-        run: cmake --build --preset Server-x64-Windows-Release
+        run: cmake --build "${{ steps.paths.outputs.build_dir }}" --config Release --parallel
 
       - name: Setup compressor
         uses: ixray-team/setup-compressor@v0.1
@@ -80,8 +95,8 @@ jobs:
           }
 
           New-Item -ItemType Directory -Path "$stageDir\\bin" -Force | Out-Null
-          Copy-Item "build\\x64\\Server-Windows\\bin\\Release\\*.exe" "$stageDir\\bin\\" -Force
-          Copy-Item "build\\x64\\Server-Windows\\bin\\Release\\*.dll" "$stageDir\\bin\\" -Force
+          Copy-Item "${{ steps.paths.outputs.bin_dir }}\\*.exe" "$stageDir\\bin\\" -Force
+          Copy-Item "${{ steps.paths.outputs.bin_dir }}\\*.dll" "$stageDir\\bin\\" -Force
           Copy-Item "gamedata" "$stageDir\\gamedata" -Recurse -Force
           Copy-Item "fsgame.ltx" "$stageDir\\fsgame.ltx" -Force
           Copy-Item ".xrignore" "$stageDir\\.xrignore" -Force
