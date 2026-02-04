@@ -384,25 +384,20 @@ void UITopBarForm::ApplyBackground(const xr_string& TableColumName)
 
 void UITopBarForm::CalcTableEndPos(const xr_string& TableColumName)
 {
-	if (TableSizes.contains(TableColumName))
-	{
-		return;
-	}
-
 	constexpr float padding = 2.0f;
 	constexpr float rounding = 6.0f;
 
 	ImVec2& BottomRight = TableSizes[TableColumName]; 
 	BottomRight = ImGui::GetItemRectMax();
 	BottomRight.x -= padding;
-	BottomRight.y -= padding * 2;
+	BottomRight.y = ImGui::GetItemRectMin().y + ImGui::GetContentRegionAvail().y - 1 - (padding * 2);
 
-	if (HeightCell == 0)
-	{
-		HeightCell = BottomRight.y;
-	}
-	else
-	{
-		BottomRight.y = HeightCell;
-	}
+	//if (HeightCell == 0)
+	//{
+	//	HeightCell = BottomRight.y;
+	//}
+	//else
+	//{
+	//	BottomRight.y = HeightCell;
+	//}
 }
