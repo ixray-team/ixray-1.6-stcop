@@ -1,28 +1,7 @@
 name: 'Build utilities'
 
 on:
-  push:
-    branches:
-      - '**'
-    paths:
-      - '.github/workflows/**'
-      - 'gamedata/**'
-      - 'sdk/**'
-      - 'src/**'
-      - '**/CMakeLists.txt'
-      - '**/*.ltx'
-      - '**/*.json'
-  pull_request:
-    branches:
-      - '**'
-    paths:
-      - '.github/workflows/**'
-      - 'gamedata/**'
-      - 'sdk/**'
-      - 'src/**'
-      - '**/CMakeLists.txt'
-      - '**/*.ltx'
-      - '**/*.json'
+  workflow_dispatch:
 
 defaults:
   run:
@@ -41,8 +20,6 @@ jobs:
         platform:
           - x64
         config:
-          - Debug
-          - RelWithDebInfo
           - Release
 
     runs-on: ${{ matrix.system }}
@@ -119,8 +96,6 @@ jobs:
         platform:
           - x64
         config:
-          - Debug
-          - RelWithDebInfo
           - Release
 
     defaults:
@@ -288,7 +263,7 @@ jobs:
         preset:
           - Utilities
         config:
-          - RelWithDebInfo
+          - Release
 
     runs-on: ${{ matrix.system }}
 

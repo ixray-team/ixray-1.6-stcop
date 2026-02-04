@@ -1,28 +1,7 @@
 name: 'Build engine'
 
 on:
-  push:
-    branches:
-      - '**'
-    paths:
-      - '.github/workflows/**'
-      - 'gamedata/**'
-      - 'sdk/**'
-      - 'src/**'
-      - '**/CMakeLists.txt'
-      - '**/*.ltx'
-      - '**/*.json'
-  pull_request:
-    branches:
-      - '**'
-    paths:
-      - '.github/workflows/**'
-      - 'gamedata/**'
-      - 'sdk/**'
-      - 'src/**'
-      - '**/CMakeLists.txt'
-      - '**/*.ltx'
-      - '**/*.json'
+  workflow_dispatch:
 
 defaults:
   run:
@@ -41,8 +20,6 @@ jobs:
         platform:
           - x64
         config:
-          - Debug
-          - RelWithDebInfo
           - Release
 
     runs-on: ${{ matrix.system }}
@@ -167,7 +144,7 @@ jobs:
         preset:
           - Engine
         config:
-          - RelWithDebInfo
+          - Release
 
     runs-on: ${{ matrix.system }}
 

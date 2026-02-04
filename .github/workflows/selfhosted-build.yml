@@ -9,8 +9,6 @@ on:
         type: choice
         default: Release
         options:
-          - Debug
-          - RelWithDebInfo
           - Release
       clean_build:
         description: Clean rebuild (slower)
