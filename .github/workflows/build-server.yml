@@ -88,8 +88,14 @@ jobs:
       - name: Generate patch
         run: |
           Push-Location "${{ steps.paths.outputs.source_dir }}"
-          ./util/generate-patch.bat xrCompress.exe
-          type *.log
+          $compressor = "${{ steps.paths.outputs.bin_dir }}\\xrCompress.exe"
+          if (!(Test-Path $compressor)) {
+            throw "xrCompress.exe not found: $compressor"
+          }
+          ./util/generate-patch.bat "$compressor"
+          if (Test-Path "*.log") {
+            Get-Content *.log
+          }
           move ./gamedata ./gamedata_full
           move ./patch ./gamedata
           Pop-Location
