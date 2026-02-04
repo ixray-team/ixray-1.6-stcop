@@ -435,6 +435,32 @@ bool CHudPdaAnimator::InputKeyPress(int cmd)
 			}
 			break;
 		}
+		case kWPN_1:
+		case kWPN_2:
+		case kWPN_3:
+		case kWPN_4:
+		case kWPN_5:
+		case kWPN_6:
+		{
+			if (GetState() == eHiding || GetState() == eHidden)
+			{
+				return false;
+			}
+
+			if (cmd == kWPN_6 && !IsGameTypeSingleCompatible())
+			{
+				return false;
+			}
+
+			u16 slot = u16(cmd - kWPN_1 + 1);
+			PIItem item_from_slot = m_manager->Parent()->inventory().ItemFromSlot(slot);
+			if (item_from_slot != nullptr && !m_manager->Parent()->inventory().IsSlotBlocked(item_from_slot))
+			{
+				m_manager->SlotToRestore() = slot;
+				SetState(eHiding);
+				return true;
+			}
+		}break;
 	};
 
 	return false;
