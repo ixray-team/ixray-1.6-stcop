@@ -11,7 +11,7 @@ enum TShiftState_
 	ssAlt = 16,
 };
 using TShiftState = int;
-inline int UIToolBarSize = 24;
+inline int UIToolBarSize = 28;
 
 class XREUI_API XrUIManager
 {
