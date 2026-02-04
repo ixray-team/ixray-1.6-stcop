@@ -1,7 +1,8 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "UITopBarForm.h"
 #include <shellapi.h>
 #include "IconsFontAwesome6.h"
+#include <imgui_internal.h>
 
 UITopBarForm::UITopBarForm()
 {
@@ -72,7 +73,7 @@ void UITopBarForm::Draw()
 {
 	ImGuiViewport* viewport = ImGui::GetMainViewport();
 	ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x, viewport->Pos.y + UI->GetMenuBarHeight()));
-	ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, UIToolBarSize));
+	ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, 28));
 	ImGui::SetNextWindowViewport(viewport->ID);
 
 	ImGuiWindowFlags window_flags = 0
@@ -85,17 +86,15 @@ void UITopBarForm::Draw()
 		;
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.f);
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,ImVec2( 2,0));
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(2, 2));
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(2, 0));
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(-2, 0));
-	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(6, 6));
+	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(6, 0));
 	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
 	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.f, 0.f, 0.f, 0.f));
 
 	if (ImGui::Begin("TOOLBAR", NULL, window_flags))
 	{
 		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 6);
-		ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 6);
 
 		if (ImGui::BeginTable("##ToolbarTable", 11, ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ContextMenuInBody | ImGuiTableFlags_Hideable))
 		{
@@ -115,26 +114,33 @@ void UITopBarForm::Draw()
 
 			if (ImGui::TableNextColumn())
 			{
+				ApplyBackground("Actions");
 				IMGUI_HINT_AF_BUTTON_EX(ICON_FA_ROTATE_LEFT, m_timeUndo, "Undo the last action", ClickUndo);
 				IMGUI_HINT_AF_BUTTON_EX(ICON_FA_ROTATE_RIGHT, m_timeRedo, "Repeat the last action", ClickRedo);
+				CalcTableEndPos("Actions");
 			}
 
 			if (ImGui::TableNextColumn())
 			{
+				ApplyBackground("File");
 				IMGUI_HINT_AF_BUTTON(ICON_FA_FILE, "Clear/New Scene", ClickNew);
 				IMGUI_HINT_AF_BUTTON(ICON_FA_FILE_IMPORT, "Open level", ClickOpen);
 				IMGUI_HINT_AF_BUTTON(ICON_FA_FLOPPY_DISK, "Save level", ClickSave);
+				CalcTableEndPos("File");
 			}
 
 			if (ImGui::TableNextColumn())
 			{
+				ApplyBackground("PIE Pre-Build");
 				IMGUI_HINT_AF_BUTTON(ICON_FA_CUBE, "Build CFORM", ClickCForm);
 				IMGUI_HINT_BUTTON("BuildAIMap", m_tAIMap, "Build AI-Map", ClickAIMap);
 				IMGUI_HINT_AF_BUTTON(ICON_FA_DIAGRAM_PROJECT, "Build Game Graph", ClickGGraph);
+				CalcTableEndPos("PIE Pre-Build");
 			}
 
 			if (ImGui::TableNextColumn())
 			{
+				ApplyBackground("PIE Actions");
 				if (LTools->IsCompilerRunning() || LTools->IsGameRunning())
 				{
 					IMGUI_HINT_BUTTON("StopPIE", m_tTerminated, "Stop Play in Editor", ClickTerminated);
@@ -166,46 +172,58 @@ void UITopBarForm::Draw()
 					ImGui::Checkbox("Build artefact spawn positions", &((CLevelPreferences*)EPrefs)->PIEArtSpawnPos);
 					ImGui::EndPopup();
 				}
+				CalcTableEndPos("PIE Actions");
 			}
 
 			if (ImGui::TableNextColumn())
 			{
+				ApplyBackground("Compile Actions");
 				ImGui::BeginDisabled(LTools->IsCompilerRunning() || LTools->IsGameRunning());
 				IMGUI_HINT_BUTTON("ReloadCfg", m_tReloadConfigs, "Reload Configs", ClickReloadConfigs);
 				IMGUI_HINT_AF_BUTTON(ICON_FA_TROWEL_BRICKS, "Build and Make", ClickBuildAndMake);
 				ImGui::EndDisabled();
+				CalcTableEndPos("Compile Actions");
 			}
 
 			if (ImGui::TableNextColumn())
 			{
+				ApplyBackground("Engine");
 				ImGui::BeginDisabled(LTools->IsCompilerRunning() || LTools->IsGameRunning());
 				IMGUI_HINT_BUTTON("PlayPC", m_tPlayPC, "Play level", ClickPlayPC);
 				IMGUI_HINT_BUTTON("PlayLIG", m_tPlayCleanGame, "Play level in game", ClickPlayCleanGame);
 				ImGui::EndDisabled();
+				CalcTableEndPos("Engine");
 			}
 
 			if (ImGui::TableNextColumn())
 			{
+				ApplyBackground("Directory Actions");
 				IMGUI_HINT_AF_BUTTON(ICON_FA_FOLDER_OPEN, "Open 'gamedata' folder", ClickOpenGameData);
+				CalcTableEndPos("Directory Actions");
 			}
 
 			if (ImGui::TableNextColumn())
 			{
+				//ApplyBackground("Hint");
 				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3);
 				ImGui::Checkbox("Hint ", &MainForm->GetRenderForm()->UseHint);
+				//CalcTableEndPos("Hint");
 			}
 
 			if (ImGui::TableNextColumn())
 			{
+				//ApplyBackground("Sound Preferences");
 				ImGui::BeginDisabled(psDeviceFlags.is(rsMuteSounds));
 				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3);
 				ImGui::SetNextItemWidth(150);
 				ImGui::SliderFloat(!psDeviceFlags.is(rsMuteSounds) ? ICON_FA_VOLUME_HIGH : ICON_FA_VOLUME_XMARK, &EPrefs->sound_volume, 0, 1, "%.2f");
 				ImGui::EndDisabled();
+				//CalcTableEndPos("Sound Preferences");
 			}
 
 			if (ImGui::TableNextColumn())
 			{
+				//ApplyBackground("Physics");
 				ImGui::SetCursorPosY(3);
 				if (ImGui::Checkbox("Phys Simulation", &m_Simulate))
 				{
@@ -233,18 +251,21 @@ void UITopBarForm::Draw()
 					ImGui::SetTooltip("Use the position of the selected object when physics simulation is active\r\nThe position of the object will be applied when simulating physics");
 				}
 				ImGui::PopStyleColor();
+				//CalcTableEndPos("Physics");
 			}
 
 			if (ImGui::TableNextColumn())
 			{
+				ApplyBackground("Preferences");
 				IMGUI_HINT_AF_BUTTON(ICON_FA_SLIDERS, "Preferences", ClickPreferences);
+				CalcTableEndPos("Preferences");
 			}
         }
 		ImGui::EndTable();
 	}
 	ImGui::End();
 	ImGui::PopStyleColor();
-	ImGui::PopStyleVar(7);
+	ImGui::PopStyleVar(6);
 }
 
 void UITopBarForm::ClickUndo()
@@ -340,4 +361,48 @@ void UITopBarForm::ClickPlayCleanGame()
 void UITopBarForm::ClickPreferences()
 {
 	ExecCommand(COMMAND_EDITOR_PREF);
+}
+
+void UITopBarForm::ApplyBackground(const xr_string& TableColumName)
+{
+	if (!TableSizes.contains(TableColumName))
+	{
+		return;
+	}
+
+	constexpr float padding = 2.0f;
+	constexpr float rounding = 6.0f;
+	ImU32 Color = ImGui::GetColorU32(ImVec4(0.14f, 0.14f, 0.14f, 0.85f));
+
+	ImVec2 TopLeft = ImGui::GetCursorScreenPos();
+	TopLeft.x += padding;
+	TopLeft.y += padding + 1;
+
+	ImVec2& BottomRight = TableSizes[TableColumName];
+	ImGui::GetWindowDrawList()->AddRectFilled(TopLeft, BottomRight, Color, rounding, ImDrawFlags_RoundCornersAll);
+}
+
+void UITopBarForm::CalcTableEndPos(const xr_string& TableColumName)
+{
+	if (TableSizes.contains(TableColumName))
+	{
+		return;
+	}
+
+	constexpr float padding = 2.0f;
+	constexpr float rounding = 6.0f;
+
+	ImVec2& BottomRight = TableSizes[TableColumName]; 
+	BottomRight = ImGui::GetItemRectMax();
+	BottomRight.x -= padding;
+	BottomRight.y -= padding * 2;
+
+	if (HeightCell == 0)
+	{
+		HeightCell = BottomRight.y;
+	}
+	else
+	{
+		BottomRight.y = HeightCell;
+	}
 }
