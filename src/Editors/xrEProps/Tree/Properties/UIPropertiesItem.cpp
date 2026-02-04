@@ -30,7 +30,7 @@ void UIPropertiesItem::Draw()
 
 	if (!Items.empty())
 	{
-		ImGuiTreeNodeFlags FloderFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
+		constexpr ImGuiTreeNodeFlags FloderFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
 		if (IsSelect)
 		{
 			ImVec4 TextColor = ImGui::GetStyle().Colors[ImGuiCol_Text];
@@ -61,7 +61,7 @@ void UIPropertiesItem::Draw()
 	}
 	else
 	{
-		constexpr size_t Flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Bullet | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_SpanFullWidth;
+		constexpr size_t Flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_SpanFullWidth;
 		if (IsTexture)
 		{
 			MultiChooseValue* Prop = (MultiChooseValue*)PItem->GetFrontValue();
