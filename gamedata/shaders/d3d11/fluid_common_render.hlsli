@@ -130,101 +130,6 @@ float EdgeDetectScalar(float sx, float sy, float threshold)
     return e;
 }
 
-/*
-// We can select either back=to-front or front-to-back raycasting and blending.
-//  front-to-back may be slightly more expensive, but if the smoke is dense it allows
-//  early-out when the opacity gets saturated (close to 1.0), making it a bit cheaper
-//
-// Define BACK_TO_FRONT to use back-to-front raycasting
-//#define BACK_TO_FRONT 1
-void DoSample(float weight, float3 O, inout float4 color )
-{
-    // This value can be tuned to produce denser or thinner looking smoke
-    // Alternatively a transfer function could be used
-    #define OPACITY_MODULATOR 0.1
-
-    float3 texcoords;
-    float4 sample;
-    float t;
-
-    texcoords = float3( O.x, 1 - O.y, O.z) ;
-//    sample = weight * colorTex.SampleLevel(samLinearClamp, texcoords, 0);
-//	sample = weight * abs(SampleTricubic(colorTex, texcoords));
-//	sample = weight * abs(SampleTrilinear(colorTex, texcoords));
-        sample = weight * abs(Sample(colorTex, texcoords));
-    sample.a = (sample.r) * OPACITY_MODULATOR;
-
-#ifdef BACK_TO_FRONT // back-to-front blending
-    color.rgb = (1 - sample.a) * color.r + sample.a * sample.r;
-    color.a = (1 - sample.a) * color.a + sample.a;
-#else // front-to-back blending
-    t = sample.a * (1.0-color.a);
-    color.rgb += t * sample.r;
-    color.a += t;
-#endif
-
-}
-
-float4 Raycast( PS_INPUT_RAYCAST input )
-{
-    float4 color = 0;
-    float4 rayData = rayDataTex.Sample(samLinearClamp, float2(input.pos.x/RTWidth,input.pos.y/RTHeight));
-
-    // Don't raycast if the starting position is negative
-    //   (see use of OCCLUDED_PIXEL_RAYVALUE in PS_RAYDATA_FRONT)
-    if(rayData.x < 0)
-        return color;
-
-    // If the front face of the box was clipped here by the near plane of the camera
-    //   (see use of NEARCLIPPED_PIXEL_RAYPOS in PS_RAYDATA_BACK)
-    if(rayData.y < 0)
-    {
-       // Initialize the position of the fragment and adjust the depth
-       rayData.xyz = input.posInGrid;
-       rayData.w = rayData.w - ZNear;
-//	   return float4 (1,0,0,saturate(rayData.w/5));
-    }
-
-    float3 rayOrigin = rayData.xyz;
-    float Offset = jitterTex.Sample( samRepeat, input.pos.xy / 256.0 ).r;
-    float rayLength = rayData.w;
-
-    // Sample twice per voxel
-    float fSamples = ( rayLength / gridScaleFactor * maxGridDim ) * 2.0;
-    int nSamples = floor(fSamples);
-    float3 stepVec = normalize( (rayOrigin - eyeOnGrid) * gridDim ) * recGridDim * 0.5;
-
-    float3 O = rayOrigin + stepVec*Offset;
-
-#ifdef BACK_TO_FRONT
-    // In back-to-front blending we start raycasting from the surface point and step towards the eye
-    O += fSamples * stepVec;
-    stepVec = -stepVec;
-#endif
-
-    for( int i=0; i<nSamples ; i++ )
-    {
-        DoSample(1, O, color);
-        O += stepVec;
-
-#ifndef BACK_TO_FRONT
-    // If doing front-to-back blending we can do early exit when opacity saturates
-    if( color.a > 0.99 )
-        break;
-#endif
-    }
-
-    // The last sample is weighted by the fractional part of the ray length in voxel
-    //  space (fSamples), thus avoiding banding artifacts when the smoke is blended against the scene
-    if( i == nSamples )
-    {
-        DoSample(frac(fSamples), O, color);
-    }
-
-    return color;
-}
-*/
-
 // #define	RENDER_FIRE
 void DoSample(float weight, float3 O, inout float4 color)
 {
@@ -342,4 +247,3 @@ float4 Raycast(PS_INPUT_RAYCAST input)
 
     return color;
 }
-
