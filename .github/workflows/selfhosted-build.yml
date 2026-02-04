@@ -12,6 +12,11 @@ on:
           - Debug
           - RelWithDebInfo
           - Release
+      clean_build:
+        description: Clean rebuild (slower)
+        required: true
+        type: boolean
+        default: false
 
 jobs:
   build:
@@ -27,9 +32,15 @@ jobs:
         shell: pwsh
         run: cmake --preset Engine-x64-Windows
 
-      - name: Build
+      - name: Build (incremental)
+        if: ${{ !inputs.clean_build }}
         shell: pwsh
         run: cmake --build --preset Engine-x64-Windows-${{ inputs.configuration }}
+
+      - name: Build (clean)
+        if: ${{ inputs.clean_build }}
+        shell: pwsh
+        run: cmake --build --preset Engine-x64-Windows-${{ inputs.configuration }} --clean-first
 
       - name: Upload binaries
         uses: actions/upload-artifact@v4
