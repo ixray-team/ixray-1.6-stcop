@@ -44,6 +44,13 @@ private:
 		bool SetText{ false };
 	};
 
+	struct FolderNode
+	{
+		xr_string Name;
+		xr_string FullPath;
+		xr_vector<FolderNode> Children;
+	};
+
 	enum class EViewMode
 	{
 		Tile,
@@ -73,7 +80,12 @@ public:
 
 	void RemoveCustomIcon(const xr_string&);
 	void LoadCustomIcons();
+
 private:
+	void CollectAllFolder();
+	void DrawFolderNode(FolderNode& Node);
+	void DrawFolderTree();
+	void DrawLayout();
 	bool DrawItem(const FileOptData& FilePath, size_t& HorBtnIter, const size_t IterCount);
 	bool DrawItemHelper(xr_path& FilePath, xr_string& FileName, const CContentView::FileOptData& InitFileName, CContentView::IconData* IconPtr, bool isSelected);
 	bool DrawItemN(const FileOptData& FilePath, size_t& HorBtnIter, const size_t IterCount);
@@ -150,6 +162,8 @@ private:
 
 	CUIThmProperties ThmPropWnd;
 	xr_vector<xr_string> GameDialogs;
+	xr_vector<xr_string> DirCollection;
+	FolderNode Root{ "root" };
 };
 
 extern CContentView* GContentView;
