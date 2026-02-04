@@ -65,31 +65,33 @@ jobs:
       - name: Prune workspace (keep build cache)
         shell: pwsh
         run: |
-          git clean -ffd -e build/
+          git clean -ffd -e b/ -e build/
 
       - name: Prepare build variables
         id: vars
         shell: pwsh
         run: |
+          $buildDir = "b/x64/e"
           $parallel = "${{ inputs.parallel }}"
           if ([string]::IsNullOrWhiteSpace($parallel) -or $parallel -eq "0") {
             $parallel = $env:NUMBER_OF_PROCESSORS
           }
+          "build_dir=$buildDir" >> $env:GITHUB_OUTPUT
           "parallel=$parallel" >> $env:GITHUB_OUTPUT
-          "bin_dir=build/x64/Engine-Windows/bin/${{ inputs.configuration }}" >> $env:GITHUB_OUTPUT
+          "bin_dir=$buildDir/bin/${{ inputs.configuration }}" >> $env:GITHUB_OUTPUT
 
       - name: Clean build directory
         if: ${{ inputs.clean_build }}
         shell: pwsh
         run: |
-          if (Test-Path "build/x64/Engine-Windows") {
-            Remove-Item "build/x64/Engine-Windows" -Recurse -Force
+          if (Test-Path "${{ steps.vars.outputs.build_dir }}") {
+            Remove-Item "${{ steps.vars.outputs.build_dir }}" -Recurse -Force
           }
 
       - name: Reset preset NuGet package folder
         shell: pwsh
         run: |
-          $pkgPath = "build/x64/Engine-Windows/packages"
+          $pkgPath = "${{ steps.vars.outputs.build_dir }}/packages"
           if (Test-Path $pkgPath) {
             Remove-Item $pkgPath -Recurse -Force
           }
@@ -97,17 +99,17 @@ jobs:
 
       - name: Configure
         shell: pwsh
-        run: cmake --preset Engine-x64-Windows
+        run: cmake --preset Engine-x64-Windows -B "${{ steps.vars.outputs.build_dir }}"
 
       - name: Build (incremental)
         if: ${{ !inputs.clean_build }}
         shell: pwsh
-        run: cmake --build --preset Engine-x64-Windows-${{ inputs.configuration }} --target "${{ inputs.target }}" --parallel ${{ steps.vars.outputs.parallel }}
+        run: cmake --build "${{ steps.vars.outputs.build_dir }}" --config "${{ inputs.configuration }}" --target "${{ inputs.target }}" --parallel ${{ steps.vars.outputs.parallel }}
 
       - name: Build (clean)
         if: ${{ inputs.clean_build }}
         shell: pwsh
-        run: cmake --build --preset Engine-x64-Windows-${{ inputs.configuration }} --target "${{ inputs.target }}" --clean-first --parallel ${{ steps.vars.outputs.parallel }}
+        run: cmake --build "${{ steps.vars.outputs.build_dir }}" --config "${{ inputs.configuration }}" --target "${{ inputs.target }}" --clean-first --parallel ${{ steps.vars.outputs.parallel }}
 
       - name: Upload binaries
         if: ${{ inputs.upload_artifacts }}
