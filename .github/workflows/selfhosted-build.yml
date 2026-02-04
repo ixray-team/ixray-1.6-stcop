@@ -17,16 +17,69 @@ on:
         required: true
         type: boolean
         default: false
+      target:
+        description: CMake target to build
+        required: true
+        type: string
+        default: ALL_BUILD
+      parallel:
+        description: Build jobs (0 = auto from runner CPU count)
+        required: true
+        type: string
+        default: "0"
+      upload_symbols:
+        description: Upload PDB symbols
+        required: true
+        type: boolean
+        default: false
+      artifact_retention_days:
+        description: Artifact retention days
+        required: true
+        type: number
+        default: 7
+      upload_artifacts:
+        description: Upload build artifacts
+        required: true
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
 
 jobs:
   build:
     runs-on: [self-hosted, windows, x64, winefixes]
+    timeout-minutes: 120
+    concurrency:
+      group: selfhosted-build-${{ github.ref_name }}
+      cancel-in-progress: true
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          # Keep local build trees on self-hosted runner for true incremental builds.
+          clean: false
+
+      - name: Prepare build variables
+        id: vars
+        shell: pwsh
+        run: |
+          $parallel = "${{ inputs.parallel }}"
+          if ([string]::IsNullOrWhiteSpace($parallel) -or $parallel -eq "0") {
+            $parallel = $env:NUMBER_OF_PROCESSORS
+          }
+          "parallel=$parallel" >> $env:GITHUB_OUTPUT
+          "bin_dir=build/x64/Engine-Windows/bin/${{ inputs.configuration }}" >> $env:GITHUB_OUTPUT
+
+      - name: Clean build directory
+        if: ${{ inputs.clean_build }}
+        shell: pwsh
+        run: |
+          if (Test-Path "build/x64/Engine-Windows") {
+            Remove-Item "build/x64/Engine-Windows" -Recurse -Force
+          }
 
       - name: Configure
         shell: pwsh
@@ -35,19 +88,32 @@ jobs:
       - name: Build (incremental)
         if: ${{ !inputs.clean_build }}
         shell: pwsh
-        run: cmake --build --preset Engine-x64-Windows-${{ inputs.configuration }}
+        run: cmake --build --preset Engine-x64-Windows-${{ inputs.configuration }} --target "${{ inputs.target }}" --parallel ${{ steps.vars.outputs.parallel }}
 
       - name: Build (clean)
         if: ${{ inputs.clean_build }}
         shell: pwsh
-        run: cmake --build --preset Engine-x64-Windows-${{ inputs.configuration }} --clean-first
+        run: cmake --build --preset Engine-x64-Windows-${{ inputs.configuration }} --target "${{ inputs.target }}" --clean-first --parallel ${{ steps.vars.outputs.parallel }}
 
       - name: Upload binaries
-        uses: actions/upload-artifact@v4
+        if: ${{ inputs.upload_artifacts }}
+        uses: actions/upload-artifact@v6
         with:
-          name: ixray-${{ inputs.configuration }}-${{ github.sha }}
+          name: ixray-bin-${{ inputs.configuration }}-${{ github.sha }}
           path: |
-            build/x64/Engine-Windows/bin/${{ inputs.configuration }}/*.exe
-            build/x64/Engine-Windows/bin/${{ inputs.configuration }}/*.dll
-            build/x64/Engine-Windows/bin/${{ inputs.configuration }}/*.pdb
+            ${{ steps.vars.outputs.bin_dir }}/*.exe
+            ${{ steps.vars.outputs.bin_dir }}/*.dll
           if-no-files-found: warn
+          compression-level: 0
+          retention-days: ${{ inputs.artifact_retention_days }}
+
+      - name: Upload symbols
+        if: ${{ inputs.upload_artifacts && inputs.upload_symbols }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: ixray-pdb-${{ inputs.configuration }}-${{ github.sha }}
+          path: |
+            ${{ steps.vars.outputs.bin_dir }}/*.pdb
+          if-no-files-found: warn
+          compression-level: 0
+          retention-days: ${{ inputs.artifact_retention_days }}
