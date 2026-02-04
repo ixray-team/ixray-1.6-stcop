@@ -100,7 +100,8 @@ void main(in v_detail I, out p_bumped_new O, uint instance_id : SV_InstanceID)
 
     O.hpos.xy += m_taa_jitter.xy * O.hpos.w;
 #else
-    O.hpos_curr = O.hpos_old = O.hpos;
+    O.hpos_old = O.hpos;
+    O.hpos_curr = O.hpos;
 #endif
 	O.snow_mask = 0.0;
 }

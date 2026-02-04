@@ -34,7 +34,9 @@ void main(p_shadow _I, out IXrayGbufferPack O)
     I.M2 = xform[1];
     I.M3 = xform[2];
 
-    I.hpos_curr = I.hpos_old = I.hpos = _I.hpos;
+    I.hpos = _I.hpos;
+    I.hpos_old = I.hpos;
+    I.hpos_curr = I.hpos;
     IXrayMaterial M;
 
     M.Sun = G.SSS;
