@@ -37,10 +37,19 @@ jobs:
           $version = $version -replace "_", "-"
           "value=$version" >> $env:GITHUB_OUTPUT
 
+      - name: Map short workspace drive
+        run: |
+          if (Get-PSDrive -Name X -ErrorAction SilentlyContinue) {
+            cmd /c "subst X: /d"
+          }
+          cmd /c "subst X: $env:GITHUB_WORKSPACE\\w"
+
       - name: Prepare build paths
         id: paths
         run: |
-          $buildDir = "b\\x64\\s"
+          $sourceDir = "X:\\"
+          $buildDir = "X:\\b\\x64\\s"
+          "source_dir=$sourceDir" >> $env:GITHUB_OUTPUT
           "build_dir=$buildDir" >> $env:GITHUB_OUTPUT
           "bin_dir=$buildDir\\bin\\Release" >> $env:GITHUB_OUTPUT
 
@@ -63,7 +72,10 @@ jobs:
           New-Item -ItemType Directory -Path $pkgDir -Force | Out-Null
 
       - name: Configure server
-        run: cmake --preset Server-x64-Windows -B "${{ steps.paths.outputs.build_dir }}"
+        run: |
+          Push-Location "${{ steps.paths.outputs.source_dir }}"
+          cmake --preset Server-x64-Windows -B "${{ steps.paths.outputs.build_dir }}"
+          Pop-Location
 
       - name: Build server
         run: cmake --build "${{ steps.paths.outputs.build_dir }}" --config Release --parallel
@@ -75,15 +87,18 @@ jobs:
 
       - name: Generate patch
         run: |
+          Push-Location "${{ steps.paths.outputs.source_dir }}"
           ./util/generate-patch.bat xrCompress.exe
           type *.log
           move ./gamedata ./gamedata_full
           move ./patch ./gamedata
+          Pop-Location
 
       - name: Pack game archive
         id: package
         run: |
           $version = "${{ steps.version.outputs.value }}"
+          $sourceDir = "${{ steps.paths.outputs.source_dir }}"
           $archiveName = "ixray-1.6-$version-engine-x64-game.zip"
           $publishDir = "$env:GITHUB_WORKSPACE\\publish"
           $stageDir = "$publishDir\\package-game"
@@ -99,9 +114,9 @@ jobs:
           New-Item -ItemType Directory -Path "$stageDir\\bin" -Force | Out-Null
           Copy-Item "${{ steps.paths.outputs.bin_dir }}\\*.exe" "$stageDir\\bin\\" -Force
           Copy-Item "${{ steps.paths.outputs.bin_dir }}\\*.dll" "$stageDir\\bin\\" -Force
-          Copy-Item "gamedata" "$stageDir\\gamedata" -Recurse -Force
-          Copy-Item "fsgame.ltx" "$stageDir\\fsgame.ltx" -Force
-          Copy-Item ".xrignore" "$stageDir\\.xrignore" -Force
+          Copy-Item "$sourceDir\\gamedata" "$stageDir\\gamedata" -Recurse -Force
+          Copy-Item "$sourceDir\\fsgame.ltx" "$stageDir\\fsgame.ltx" -Force
+          Copy-Item "$sourceDir\\.xrignore" "$stageDir\\.xrignore" -Force
 
           $zipTool = "$env:ProgramFiles\\7-Zip\\7z.exe"
           if (Test-Path $zipTool) {
@@ -127,3 +142,10 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: ${{ steps.package.outputs.path }}
+
+      - name: Unmap workspace drive
+        if: always()
+        run: |
+          if (Get-PSDrive -Name X -ErrorAction SilentlyContinue) {
+            cmd /c "subst X: /d"
+          }
