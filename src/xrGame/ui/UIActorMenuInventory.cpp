@@ -50,7 +50,7 @@ void move_item_from_to(u16 from_id, u16 to_id, u16 what_id);
 void CUIActorMenu::InitInventoryMode()
 {
 	m_currentSortCategory = EInventorySortCategory::All;
-	UpdateSortButtons();
+	m_currentSortCategoryId = "";
 
 	m_pInventoryBagList->Show(true);
 	m_pInventoryBeltList->Show(true);
@@ -546,17 +546,9 @@ void CUIActorMenu::InitInventoryContents(CUIDragDropListEx* pBagList)
 
 	curr_list					= pBagList;
 
-	if (m_currMenuMode == mmInventory && m_pInventorySorter && m_currentSortCategory != EInventorySortCategory::All)
+	if (m_currMenuMode == mmInventory && m_pInventorySorter)
 	{
-		TIItemContainer filtered_list;
-		for (PIItem item : ruck_list)
-		{
-			if (m_pInventorySorter->ItemMatchesCategory(item, m_currentSortCategory))
-			{
-				filtered_list.push_back(item);
-			}
-		}
-		ruck_list = filtered_list;
+		m_pInventorySorter->SortItems(ruck_list, m_currentSortCategory);
 	}
 
 	itb = ruck_list.begin();
@@ -596,17 +588,9 @@ void CUIActorMenu::UpdateActorBagList()
 	TIItemContainer ruck_list = m_pActorInvOwner->inventory().m_ruck;
 	std::sort(ruck_list.begin(), ruck_list.end(), InventoryUtilities::GreaterRoomInRuck);
 
-	if (m_pInventorySorter && m_currentSortCategory != EInventorySortCategory::All)
+	if (m_pInventorySorter)
 	{
-		TIItemContainer filtered_list;
-		for (PIItem item : ruck_list)
-		{
-			if (m_pInventorySorter->ItemMatchesCategory(item, m_currentSortCategory))
-			{
-				filtered_list.push_back(item);
-			}
-		}
-		ruck_list = filtered_list;
+		m_pInventorySorter->SortItems(ruck_list, m_currentSortCategory);
 	}
 
 	for (PIItem item : ruck_list)
