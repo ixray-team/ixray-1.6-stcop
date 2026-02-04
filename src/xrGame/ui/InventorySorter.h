@@ -36,7 +36,6 @@ class CInventorySorter final
 public:
     CInventorySorter();
     ~CInventorySorter() = default;
-
     void Initialize();
     void LoadCustomCategories();
     
@@ -46,12 +45,15 @@ public:
     u32 GetCategoriesCount() const { return _categories.size(); }
     EInventorySortCategory GetCategoryByIndex(u32 index) const;
     const SInventorySortCategoryInfo* GetCategoryInfo(EInventorySortCategory category) const;
+    EInventorySortCategory GetCategoryById(const shared_str& id) const;
+    const SInventorySortCategoryInfo* GetCategoryInfoById(const shared_str& id) const;
     
     void AddCustomCategory(const shared_str& id, const shared_str& name, const shared_str& hint);
     void AddItemToCustomCategory(const shared_str& categoryId, const shared_str& itemSection);
     void AddClsidToCustomCategory(const shared_str& categoryId, CLASS_ID clsid);
     
     void SortItems(TIItemContainer& items, EInventorySortCategory category) const;
+    void SortItemsById(TIItemContainer& items, const shared_str& categoryId) const;
     
 private:
     void InitializeDefaultCategories();
@@ -65,8 +67,8 @@ private:
     bool IsArtefact(PIItem item) const;
     bool IsAttachment(PIItem item) const;
     bool MatchesCustomCategory(PIItem item, const shared_str& categoryId) const;
-    
     xr_map<EInventorySortCategory, SInventorySortCategoryInfo> _categories;
+    xr_map<shared_str, EInventorySortCategory> _idToCategory;
     xr_map<shared_str, EInventorySortCategory> _customCategoryMap;
     u32 _customCategoryCounter = 0;
 };
