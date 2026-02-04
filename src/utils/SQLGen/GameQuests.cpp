@@ -10,7 +10,7 @@ xr_vector<shared_str> ParseGameQuests()
 
 	for (auto Sect : TMIni.sections())
 	{
-		Trash.emplace_back(Sect->Name);
+		Trash.emplace_back(Sect.Name);
 	}
 
 	return std::move(Trash);

@@ -145,24 +145,24 @@ xr_vector<shared_str> ParseGameItems(CInifile* File)
 
 	for (auto Sect : File->sections())
 	{
-		if (!Sect->line_exist("class"))
+		if (!Sect.line_exist("class"))
 			continue;
 
-		CLASS_ID ClassID = File->r_clsid(Sect->Name, "class");
+		CLASS_ID ClassID = File->r_clsid(Sect.Name, "class");
 
 		auto Iter = std::find(std::begin(Classes), std::end(Classes), ClassID);
 		auto IterScript = std::find(std::begin(ScriptClasses), std::end(ScriptClasses), ClassID);
 		if (Iter != std::end(Classes))
 		{
-			Trash.emplace_back(Sect->Name);
+			Trash.emplace_back(Sect.Name);
 		}
 		else if (IterScript != std::end(ScriptClasses))
 		{
-			Trash.emplace_back(Sect->Name);
+			Trash.emplace_back(Sect.Name);
 		}
 		else
 		{
-			Msg("Not found class from section: %s", *Sect->Name);
+			Msg("Not found class from section: %s", *Sect.Name);
 		}
 	}
 
