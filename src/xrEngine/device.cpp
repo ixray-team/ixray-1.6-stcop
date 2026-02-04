@@ -184,21 +184,12 @@ void CRenderDevice::on_idle		()
 
 	SDL_SetWindowMouseGrab(g_AppInfo.Window, !g_dedicated_server && Focus);
 	SDL_SetWindowRelativeMouseMode(g_AppInfo.Window, !g_dedicated_server && Focus);
-	// On Wine/CrossOver, relative mode may not reliably hide the OS cursor, so force state explicitly.
-	{
-		static bool CursorHidden = false;
-		const bool ShouldHideCursor = !g_dedicated_server && Focus && !ImGuiCapturing;
-
-		if (ShouldHideCursor != CursorHidden)
-		{
-			if (ShouldHideCursor)
-				SDL_HideCursor();
-			else
-				SDL_ShowCursor();
-
-			CursorHidden = ShouldHideCursor;
-		}
-	}
+	// On Wine/CrossOver, cursor visibility can desync after focus changes, so enforce state every frame.
+	const bool ShouldHideCursor = !g_dedicated_server && Focus && !ImGuiCapturing;
+	if (ShouldHideCursor)
+		SDL_HideCursor();
+	else
+		SDL_ShowCursor();
 
 	g_bEnableStatGather = psDeviceFlags.test(rsStatistic);
 
