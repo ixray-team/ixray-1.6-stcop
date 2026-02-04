@@ -29,6 +29,7 @@
 ### Важно
 
 - Оригинальные версии DX11-шейдеров движка не полностью совместимы с DXMT/D3DMetal, поэтому нужны winefix-правки шейдеров.
+- В `r1.3.3_winefixes` уже включены фиксы критичных падений компиляции DX11-шейдеров на D3DMetal/DXMT (включая `deffer_detail` и fluid-пайплайн).
 - Если вы воспользовались этим форком и что-то не работает — НЕ мучайте разработчиков основного проекта вопросами и issue.
 
 ---
@@ -62,4 +63,5 @@
 ### Note
 
 - Original DX11 shader versions are not fully compatible with DXMT/D3DMetal, so winefix shader adjustments are required.
+- `r1.3.3_winefixes` already includes fixes for critical DX11 shader compile crashes on D3DMetal/DXMT (including `deffer_detail` and fluid pipeline cases).
 - If you use this fork and something breaks, please do NOT bother upstream `ixray-team/ixray-1.6-stcop` developers with questions or issues.
