@@ -9,6 +9,8 @@ public:
 	virtual ~UIObjectTool();
 	virtual void Draw();
 
+	void GenerateGarbage();
+
 	void DrawRandomAppend();
 
 	void DrawObjectsList();
@@ -46,4 +48,5 @@ private:
 	ref_texture m_TextureNull;
 	ref_texture m_RealTexture;
 	ref_texture m_RemoveTexture;
+	UIPropertiesForm PropsRandomAppend;
 };
