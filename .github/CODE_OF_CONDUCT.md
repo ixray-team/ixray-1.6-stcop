@@ -1,6 +1,14 @@
 # Code of Conduct
 
-English | [Русский](../doc/CODE_OF_CONDUCT.rus.md)
+<div>
+  <p>
+    English
+    |
+    <a href="../doc/CODE_OF_CONDUCT.rus.md">
+      Русский
+    </a>
+  </p>
+</div>
 
 Code of Conduct of __IX-Ray__ project
 

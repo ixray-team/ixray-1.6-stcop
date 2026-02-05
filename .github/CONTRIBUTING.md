@@ -1,6 +1,14 @@
 # Contributing guide
 
-English | [Русский](../doc/CONTRIBUTING.rus.md)
+<div>
+  <p>
+    English
+    |
+    <a href="../doc/CONTRIBUTING.rus.md">
+      Русский
+    </a>
+  </p>
+</div>
 
 __IX-Ray__ project __contributing__ guide
 
