@@ -155,7 +155,7 @@ BOOL FlagOnEdit(PropItem* prop, bool& change)
 	prop->BeforeEdit<FlagValue<_flags<T> >, _flags<T> >(new_val);
 	u32 u = new_val.get();
 
-	if (ImGui::CheckboxFlags("##value", &u, V->mask))
+	if (XRay::ImGui::ToggleFlagButton("##value", &u, V->mask, {-1, 0}))
 	{
 		new_val.assign(u);
 		if (prop->AfterEdit<FlagValue<_flags<T> >, _flags<T> >(new_val))
