@@ -113,7 +113,7 @@ void UILeftBarForm::Draw()
 				if (!IsVisible) IconColor.w = 0.5f;
 
 				ImGui::PushStyleColor(ImGuiCol_Text, IconColor);
-				if (ImGui::Button(Icon.c_str(), ImVec2(20, 15)))
+				if (ImGui::Button(Icon.c_str(), ImVec2(20, 18)))
 				{
 					tool->m_EditFlags.set(ESceneToolBase::flVisible, !IsVisible);
 					UI->RedrawScene();
@@ -126,7 +126,7 @@ void UILeftBarForm::Draw()
 				ImVec4 BtnColor = IsActive ? Style.Colors[ImGuiCol_ButtonActive] : Style.Colors[ImGuiCol_Button];
 
 				ImGui::PushStyleColor(ImGuiCol_Button, BtnColor);
-				if (ImGui::Button(tool->ClassDesc(), ImVec2(-1, 15)))
+				if (ImGui::Button(tool->ClassDesc(), ImVec2(-1, 18)))
 				{
 					ExecCommand(COMMAND_CHANGE_TARGET, IsActive ? OBJCLASS_DUMMY : Tools[id]);
 				}
