@@ -30,6 +30,7 @@ void UIPropertiesItem::Draw()
 
 	if (!Items.empty())
 	{
+		ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, ImGui::GetColorU32(ImGuiCol_TableRowBgAlt));
 		constexpr ImGuiTreeNodeFlags FloderFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
 		if (IsSelect)
 		{
@@ -61,6 +62,7 @@ void UIPropertiesItem::Draw()
 	}
 	else
 	{
+		ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, ImGui::GetColorU32(ImGuiCol_TableRowBg));
 		constexpr size_t Flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_SpanFullWidth;
 		if (IsTexture)
 		{
@@ -78,7 +80,10 @@ void UIPropertiesItem::Draw()
 		}
 		else
 		{
-			ImGui::TreeNodeEx(*Name, Flags);
+			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 2);
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3);
+			ImGui::TextUnformatted(*Name);
+			//ImGui::TreeNodeEx(*Name, Flags | ImGuiTreeNodeFlags_SelectableDontClosePopup);
 		}
 
 		ImGui::TableNextColumn();
