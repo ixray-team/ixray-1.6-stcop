@@ -41,6 +41,7 @@ public:
 
 	IC bool IsReadOnly()const { return m_Flags.is(plReadOnly); }
 
+	float StartDrawPos = 0.f;
 private:
 	bool IsSearchActive = false;
 	xr_atomic_bool bAsyncUpdated = true;
