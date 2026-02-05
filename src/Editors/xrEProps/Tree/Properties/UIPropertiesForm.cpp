@@ -140,12 +140,14 @@ void UIPropertiesForm::Draw()
 		Flags |= ImGuiTableFlags_Resizable;
 	}
 
+	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0, ImGui::GetStyle().CellPadding.y));
 	if (ImGui::BeginTable("props", 2, Flags))
 	{
-		ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed, 0.0f);
+		ImGui::TableSetupColumn(" Name", ImGuiTableColumnFlags_WidthFixed, 0.0f);
 		ImGui::TableSetupColumn("Prop", ImGuiTableColumnFlags_WidthStretch);
 		ImGui::TableHeadersRow();
 
+		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0, 1));
 		if (IsSearchActive)
 		{
 			DrawFilteredProperties();
@@ -154,9 +156,11 @@ void UIPropertiesForm::Draw()
 		{
 			m_Root.DrawRoot();
 		}
+		ImGui::PopStyleVar();
 
 		ImGui::EndTable();
 	}
+	ImGui::PopStyleVar();
 }
 
 void UIPropertiesForm::ResetEnd()
