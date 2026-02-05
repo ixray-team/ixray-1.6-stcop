@@ -16,11 +16,11 @@ XREUI_API bool XRay::ImGui::InputVector3(const char* Label, float V[3], float St
 	};
 
 	static const char* Ids[3] = { "##x", "##y", "##z" };
-	constexpr float StripeWidth = 4.0f;
+	constexpr float StripeWidth = 2.0f;
 	constexpr float Rounding = 4.0f;
 
 	float TotalWidth = ::ImGui::GetContentRegionAvail().x;
-	float InputWidth = (TotalWidth - 2.0f * 0.0f - 3 * StripeWidth) / 3.0f;
+	float InputWidth = (TotalWidth) / 3.0f;
 
 	for (int i = 0; i < 3; ++i)
 	{
