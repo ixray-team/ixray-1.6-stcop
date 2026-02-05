@@ -41,7 +41,7 @@ void LoadImGuiFontBase(const char* Font, float scale)
 	{
 		if (!FontsStorage.contains(Font))
 		{
-			FontsStorage[Font] = ImGui::GetIO().Fonts->AddFontFromFileTTF(Platform::ANSI_TO_UTF8(FullPath).c_str(), scale * 14.0f, &FontConfig, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
+			FontsStorage[Font] = ImGui::GetIO().Fonts->AddFontFromFileTTF(Platform::ANSI_TO_UTF8(FullPath).c_str(), scale * 16.0f, &FontConfig, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
 		}
 
 		ImCurrentFont = Font;
