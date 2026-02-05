@@ -54,27 +54,80 @@ default_to_ruck			= false
 ![bread]
 use_text = st_eat
 eat_portions_num = 1
+3d_static_rotate = -12,-140,30
+3d_static_scale = 1.17
 
 ![kolbasa]
 use_text = st_eat
 eat_portions_num = 1
+3d_static_rotate = -16.5,-140,-30
+3d_static_scale = 1.3
 
 ![conserva]
 use_text = st_eat
 eat_portions_num = 1
+3d_static_rotate = 19,0,0
 
 ![antirad]
 eat_portions_num = 1
+3d_static_rotate = 54,-12,3
+3d_static_scale = 0.9
 
 ![vodka]
 use_text = st_drink
 eat_portions_num = 1
+3d_static_rotate = -10,-10,40
+
+![guitar_a]
+3d_static_rotate = 0,-100,100
+
+![energy_drink]
+3d_static_rotate = -10,-10,40
+
+![bandage]
+3d_static_rotate = 40,70,130
+
+![medkit]
+3d_static_rotate = 58,-19,0
+3d_static_scale = 0.9
+
+![medkit_army]
+3d_static_rotate = 58,-19,0
+3d_static_scale = 0.9
+
+![medkit_scientic]
+3d_static_rotate = 58,-19,0
+3d_static_scale = 0.9
+
+![device_pda]
+3d_static_rotate = 61,-23,4
+
+![dev_flash_1]
+3d_static_rotate = -40,110,100
+
+![dev_flash_2]
+3d_static_rotate = -40,110,100
 
 ![device_torch]
 sound_activate          = device\torch_click
 sound_deactivate        = device\torch_click_off
 
-;device.ltx
+;outfit.ltx
+![outfit_base]
+3d_static_rotate			= -90,-180,0
+
+![stalker_outfit]
+3d_static_rotate = -84,170,-10
+3d_static_scale = 1
+
+![svoboda_light_outfit]
+3d_static_rotate = -90,0,0
+
+;devices.ltx
+![detector_simple]
+3d_static_rotate = 60,-20,-0
+3d_static_scale = 0.92
+
 ;![detector_simple_hud]
 ;anm_bore = dev_detector_1_idle_bore
 ;anm_bore_16x9 = dev_detector_1_idle_bore_ws, dev_detector_1_idle_bore
@@ -215,6 +268,222 @@ mchg_max_queue_size_close		= 15
 mchg_min_queue_interval_close	= 1000
 mchg_max_queue_interval_close	= 2000
 
+;creatures/monsters.ltx
+![monsters_common]
+corpse_remove_game_time_interval = 24 ; in hours
+stay_after_death_time_interval = 36 ; in hours
+
+;defines.ltx
+![default_weapon_params]
+3d_static_rotate			= 0.000000,-90,0.000000
+3d_static_scale			= 0.900000
+
+![hud_base] ; Gunslinger Style
+;наклоны оружия при ходьбе
+hud_move_speed_rot = 3			;скорость доворота до заданного угла			
+hud_move_speed_pos = 2		        ;скорость перемещения до заданной позиции
+hud_move_stabilize_factor = 3.5		;во сколько раз быстрее возвращаемся в нейтральное положение при идле
+hud_move_weaponhide_factor = 3.5	;во сколько раз быстрее возвращаемся в нейтральное положение при убирании оружия
+hud_move_unzoom_factor = 2.0
+hud_move_slow_factor = 0.5		;во сколько раз менять амплитуду при шаге
+hud_move_crouch_factor = 0.5		;во сколько раз менять амплитуду при присяде
+hud_move_slow_crouch_factor = 0.3	;во сколько раз менять амплитуду при полном присяде
+
+;задаются максимальные отклонения от центрального в разных режимах ходьбы
+;Аддитивно!
+
+;стрейф влево
+hud_move_left_offset_pos = -0.03,-0.018,0
+hud_move_left_offset_rot = 0,0,-3.5
+
+hud_move_left_offset_pos_16x9 = -0.03,-0.018,0
+hud_move_left_offset_rot_16x9 = 0,0,-3.5
+
+;стрейф вправо
+hud_move_right_offset_pos = 0.03,-0.005,0
+hud_move_right_offset_rot = 0,0,5
+
+hud_move_right_offset_pos_16x9 = 0.03,-0.005,0
+hud_move_right_offset_rot_16x9 = 0,0,5
+
+;движение вперед
+hud_move_forward_offset_pos = 0,-0.005,-0.035
+hud_move_forward_offset_rot = 0,0,0
+
+hud_move_forward_offset_pos_16x9 = 0,-0.005,-0.035
+hud_move_forward_offset_rot_16x9 = 0,0,0
+
+;движение назад
+hud_move_back_offset_pos = 0,-0.005,0.045
+hud_move_back_offset_rot = 0,0,0
+
+hud_move_back_offset_pos_16x9 = 0,-0.005,0.045
+hud_move_back_offset_rot_16x9 = 0,0,0
+
+;прыжок
+hud_move_jump_offset_pos = 0,0.05,0.03
+hud_move_jump_offset_rot = 0,-10,-10
+
+hud_move_jump_offset_pos_16x9 = 0,0.05,0.03
+hud_move_jump_offset_rot_16x9 = 0,-10,-10
+
+;падение
+hud_move_fall_offset_pos = 0,-0.05,0.06
+hud_move_fall_offset_rot = 0,5,0
+
+hud_move_fall_offset_pos_16x9 = 0,-0.05,0.06
+hud_move_fall_offset_rot_16x9 = 0,5,0
+
+;приземление - первая фаза
+hud_move_landing_offset_pos = 0,-0.2,0.03
+hud_move_landing_offset_rot = 0,-5,10
+
+hud_move_landing_offset_pos_16x9 = 0,-0.2,0.03
+hud_move_landing_offset_rot_16x9 = 0,-5,10
+
+;приземление - вторая фаза
+hud_move_landing2_offset_pos = 0,-0.3,0.03
+hud_move_landing2_offset_rot = 0,-13,20
+
+hud_move_landing2_offset_pos_16x9 = 0,-0.3,0.03
+hud_move_landing2_offset_rot_16x9 = 0,-13,20
+
+;переход из стойки в присяд
+to_crouch_time = 0.15
+hud_move_to_crouch_offset_pos = 0,-0.02, 0
+hud_move_to_crouch_offset_rot = 0,1.5,-4
+
+hud_move_to_crouch_offset_pos_16x9 = 0,-0.02, 0
+hud_move_to_crouch_offset_rot_16x9 = 0,1.5,-4
+
+;переход из присяда в стойку
+from_crouch_time = 0.15
+hud_move_from_crouch_offset_pos = 0,-0.008,0
+hud_move_from_crouch_offset_rot = 0,-0.8,3
+
+hud_move_from_crouch_offset_pos_16x9 = 0,-0.008,0
+hud_move_from_crouch_offset_rot_16x9 = 0,-0.8,3
+
+;переход из присяда в низкий присяд
+to_slow_crouch_time = 0.15
+hud_move_to_slow_crouch_offset_pos = 0,-0.05, 0
+hud_move_to_slow_crouch_offset_rot = 0,1,-2
+
+hud_move_to_slow_crouch_offset_pos_16x9 = 0,-0.05, 0
+hud_move_to_slow_crouch_offset_rot_16x9 = 0,1,-2
+
+;переход из низкого присяда в присяд
+from_slow_crouch_time = 0.15
+hud_move_from_slow_crouch_offset_pos = 0,0.02,0
+hud_move_from_slow_crouch_offset_rot = 0,-1,2
+
+hud_move_from_slow_crouch_offset_pos_16x9 = 0,0.02,0
+hud_move_from_slow_crouch_offset_rot_16x9 = 0,-1,2
+
+;переход из обычного в наклон влево
+to_llookout_time = 0.15
+hud_move_to_llookout_offset_pos 	= -0.01, 0, 0
+hud_move_to_llookout_offset_rot		= 0,0,0
+hud_move_to_llookout_offset_pos_16x9 	= -0.01, 0, 0
+hud_move_to_llookout_offset_rot_16x9	= 0,0,0
+
+;переход из наклона влево в обычный
+from_llookout_time = 0.15
+hud_move_from_llookout_offset_pos 	= -0.01, 0, 0
+hud_move_from_llookout_offset_rot	= 0,0,0
+hud_move_from_llookout_offset_pos_16x9 	= -0.01, 0, 0
+hud_move_from_llookout_offset_rot_16x9	= 0,0,0
+
+
+;переход из обычного в наклон вправо
+to_rlookout_time = 0.15
+hud_move_to_rlookout_offset_pos 	= 0.01, 0, 0
+hud_move_to_rlookout_offset_rot		= 0,0,0
+hud_move_to_rlookout_offset_pos_16x9 	= 0.01, 0, 0
+hud_move_to_rlookout_offset_rot_16x9	= 0,0,0
+
+;переход из наклона вправо в обычный
+from_rlookout_time = 0.15
+hud_move_from_rlookout_offset_pos 	= 0.01, 0, 0
+hud_move_from_rlookout_offset_rot	= 0,0,0
+hud_move_from_rlookout_offset_pos_16x9 	= 0.01, 0, 0
+hud_move_from_rlookout_offset_rot_16x9	= 0,0,0
+
+;наклон влево (постоянная компонента)
+hud_move_llookout_offset_speed_factor = 2.8
+hud_move_llookout_offset_pos 		= -0.045, -0.03, 0
+hud_move_llookout_offset_pos_16x9 	= -0.045, -0.03, 0
+hud_move_llookout_offset_rot 		= 0, 0, -9
+hud_move_llookout_offset_rot_16x9 	= 0, 0, -9
+
+;наклон вправо (постоянная компонента)
+hud_move_rlookout_offset_speed_factor = 2.8
+hud_move_rlookout_offset_pos 		= 0.04, -0.01, 0
+hud_move_rlookout_offset_pos_16x9 	= 0.04, -0.01, 0
+hud_move_rlookout_offset_rot 		= 0, 0, 10
+hud_move_rlookout_offset_rot_16x9 	= 0, 0, 10
+
+
+;аналогично для прицеливания
+;переход из стойки в присяд
+hud_aim_move_to_crouch_offset_pos = 0,0.003, 0
+hud_aim_move_to_crouch_offset_rot = 0,0.3,-0.5
+
+hud_aim_move_to_crouch_offset_pos_16x9 = 0,0.003, 0
+hud_aim_move_to_crouch_offset_rot_16x9 = 0,0.3,-0.5
+
+;переход из присяда в стойку
+hud_aim_move_from_crouch_offset_pos = 0,-0.003,0
+hud_aim_move_from_crouch_offset_rot = 0,-0.3,0.5
+
+hud_aim_move_from_crouch_offset_pos_16x9 = 0,-0.003,0
+hud_aim_move_from_crouch_offset_rot_16x9 = 0,-0.3,0.5
+
+;переход из присяда в низкий присяд
+hud_aim_move_to_slow_crouch_offset_pos = 0,0.001, 0
+hud_aim_move_to_slow_crouch_offset_rot = 0,0.3,-0.5
+
+hud_aim_move_to_slow_crouch_offset_pos_16x9 = 0,0.002, 0
+hud_aim_move_to_slow_crouch_offset_rot_16x9 = 0,0.3,-0.5
+
+;переход из низкого присяда в присяд
+hud_aim_move_from_slow_crouch_offset_pos = 0,-0.001,0
+hud_aim_move_from_slow_crouch_offset_rot = 0,-0.3,0.5
+
+hud_aim_move_from_slow_crouch_offset_pos_16x9 = 0,-0.001,0
+hud_aim_move_from_slow_crouch_offset_rot_16x9 = 0,-0.3,0.5
+
+;переход из обычного в наклон влево
+hud_aim_move_to_llookout_offset_pos 	        = -0.003, 0, 0
+hud_aim_move_to_llookout_offset_rot		= 0,0,-0.6
+hud_aim_move_to_llookout_offset_pos_16x9 	= -0.003, 0, 0
+hud_aim_move_to_llookout_offset_rot_16x9	= 0,0,-0.6
+
+;переход из наклона влево в обычный
+hud_aim_move_from_llookout_offset_pos 	        = 0, 0, 0
+hud_aim_move_from_llookout_offset_rot	        = 0,0,-1
+hud_aim_move_from_llookout_offset_pos_16x9 	= 0, 0, 0
+hud_aim_move_from_llookout_offset_rot_16x9	= 0,0,-1
+
+
+;переход из обычного в наклон вправо
+hud_aim_move_to_rlookout_offset_pos 	        = 0.003, 0, 0
+hud_aim_move_to_rlookout_offset_rot		= 0,0,0.6
+hud_aim_move_to_rlookout_offset_pos_16x9 	= 0.003, 0, 0
+hud_aim_move_to_rlookout_offset_rot_16x9	= 0,0,0.6
+
+;переход из наклона вправо в обычный
+hud_aim_move_from_rlookout_offset_pos 	        = 0, 0, 0
+hud_aim_move_from_rlookout_offset_rot	        = 0,0,1
+hud_aim_move_from_rlookout_offset_pos_16x9 	= 0, 0, 0
+hud_aim_move_from_rlookout_offset_rot_16x9	= 0,0,1
+
+hud_collision_enabled							= true
+hud_collision_offset_pos						= 0,-0.5,0
+hud_collision_offset_pos_16x9					= 0,-0.5,0
+hud_collision_offset_rot						= -0.8,0,0
+hud_collision_offset_rot_16x9					= -0.8,0,0
+
 ;effectors.ltx
 ![bobbing_effector] ; Gunslinger Style
 
@@ -314,3 +583,73 @@ show_text = true
 name = st_inv_sort_attachments
 hint = st_inv_sort_attachments_hint
 show_text = true
+
+;weapons.ltx
+![ammo_base]
+3d_static_rotate = 11,-12,1
+3d_static_scale = 0.75
+
+![ammo_9x18_fmj]
+3d_static_scale	= 0.85
+
+![ammo_9x18_pmm]
+3d_static_scale = 0.85
+
+![ammo_9x19_fmj]
+3d_static_scale = 0.85
+
+![ammo_9x19_pbp]
+3d_static_scale = 0.85
+
+![ammo_gauss]
+3d_static_rotate = 0,90,0
+
+![ammo_og-7b]
+3d_static_scale = 1
+
+![ammo_vog-25]
+3d_static_rotate = 31,-32,1
+
+![ammo_m209]
+3d_static_rotate = 31,-32,1
+
+![wpn_addon_scope]
+3d_static_rotate = 0,90,-80
+
+![wpn_addon_scope_x2.7]
+3d_static_rotate = 0,90,-80
+
+![wpn_addon_scope_detector]
+3d_static_rotate = 0,90,-80
+
+![wpn_addon_scope_night]
+3d_static_rotate = 0,90,-80
+
+![wpn_addon_scope_susat]
+3d_static_rotate = 0,80,0
+
+![wpn_addon_scope_susat_x1.6]
+3d_static_rotate = 0,80,0
+
+![wpn_addon_scope_susat_custom]
+3d_static_rotate = 0,80,0
+
+![wpn_addon_scope_susat_dusk]
+3d_static_rotate = 0,80,0
+
+![wpn_addon_scope_susat_night]
+3d_static_rotate = 0,80,0
+
+![wpn_addon_silencer]
+3d_static_rotate = 0,90,0
+
+![wpn_addon_grenade_launcher]
+3d_static_rotate = 0,-60,0
+
+![wpn_addon_grenade_launcher_m203]
+3d_static_rotate = 0,-60,0
+
+;w_pm.ltx
+![wpn_pm]
+3d_static_rotate = 0,-45,-1
+3d_static_scale = 0.9
