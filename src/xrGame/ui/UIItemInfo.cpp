@@ -378,12 +378,9 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
     {
         if (psActorFlags.test(AF_3D_ICONS_INV))
         {
-            const PIItem iitem = static_cast<PIItem>(pCellItem->m_pData);
-            UIItemImage->SetVisual(iitem->m_3d_static_visual_name);
-            UIItemImage->SetScaleFactor(iitem->m_3d_static_scale);
-            iitem->m_3d_static_rotate.mul(M_PI / 180.0f);
-            UIItemImage->SetXYZ(iitem->m_3d_static_rotate);
-            UIItemImage->SetScaleFactor(iitem->m_3d_static_scale);
+            UIItemImage->SetVisual(pInvItem->m_3d_static_visual_name);
+            UIItemImage->SetScaleFactor(pInvItem->m_3d_static_scale);
+            UIItemImage->SetXYZ(pInvItem->m_3d_static_rotate);
         }
         else
             UIItemImage->SetVisual(nullptr);
