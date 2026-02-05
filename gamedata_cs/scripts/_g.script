@@ -90,18 +90,26 @@ function printf(fmt,...)
 	local is_g = 0
 	local result = fmt
 	if debug == nil then
-		log(string.format(fmt,...))
+		if log ~= nil then
+			log(string.format(fmt,...))
+		end
 		return
 	end
 	local info_table = debug.getinfo(2)
 	local script_name = string.gsub(info_table.short_src, "%.script", "")
 	script_name = string.gsub(script_name, "gamedata\\scripts\\", "")
-	if scripts_to_print[script_name] == true then return end
+	
+	if scripts_to_print[script_name] == false then return end
+
 	script_name,is_g = string.gsub(script_name, "_g", "")
 	if is_g == 0 then
 		result = script_name..":("..info_table.currentline.."):"..fmt
+	else
+		result = fmt
 	end
-	log(string.format(result,...))
+	if log ~= nil then
+		log(string.format(result,...))
+	end
 end
 
 ----------------------------------------------------------------------
