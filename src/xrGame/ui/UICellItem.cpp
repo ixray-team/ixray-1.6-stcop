@@ -333,7 +333,12 @@ CUIDragItem* CUICellItem::CreateDragItem()
 	if (psActorFlags.test(AF_3D_ICONS_INV))
 	{
 		tmp->wnd()->SetVisual(GetVisual());
-		tmp->wnd()->SetXYZ(GetXYZ().x, GetXYZ().y, GetXYZ().z);
+		Fvector xyz = GetXYZ();
+		if (m_pParentList->GetVerticalPlacement())
+		{
+			xyz.x -= deg2rad(90.f);
+		}
+		tmp->wnd()->SetXYZ(xyz);
 		tmp->wnd()->SetScaleFactor(GetScaleFactor());
 		tmp->wnd()->SetBonesVisible(GetVisual()->dcast_PKinematics());
 	}
