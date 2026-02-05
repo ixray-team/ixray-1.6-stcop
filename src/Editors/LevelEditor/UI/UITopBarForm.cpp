@@ -23,7 +23,7 @@ UITopBarForm::~UITopBarForm() {}
 
 #define IMGUI_HINT_BUTTON(Name, Ptr, Hint, Callback) \
 			Ptr->Load(); \
-			if (ImGui::ImageButton("##" Name, Ptr->get_SRView()->GetRawSRV(), ImVec2(20, 20))) \
+			if (ImGui::ImageButton("##" Name, Ptr->get_SRView()->GetRawSRV(), ImVec2(24, 24))) \
 				Callback(); \
 			if (ImGui::IsItemHovered()) \
 			{ \
