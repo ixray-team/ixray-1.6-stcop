@@ -399,7 +399,12 @@ void CUIListBox::NextItem()
 	}
 	SetSelectedIDX(nextIdx);
 	GetSelectedItem()->OnMouseDown(MOUSE_1);
-	SetScrollPos(GetSelectedIDX() * GetItemHeight());
+	int pos = GetSelectedIDX() * GetItemHeight();
+	pos -= GetHeight()/2;
+	if (pos < 0)
+		pos = 0;
+
+	SetScrollPos(pos);
 }
 
 void CUIListBox::PrevItem()
@@ -412,5 +417,10 @@ void CUIListBox::PrevItem()
 	}
 	SetSelectedIDX(nextIdx);
 	GetSelectedItem()->OnMouseDown(MOUSE_1);
-	SetScrollPos(GetSelectedIDX() * GetItemHeight());
+	int pos = GetSelectedIDX() * GetItemHeight();
+	pos -= GetHeight() / 2;
+	if (pos < 0)
+		pos = 0;
+
+	SetScrollPos(pos);
 }
