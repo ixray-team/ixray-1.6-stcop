@@ -96,7 +96,7 @@ void UIPropertiesForm::Draw()
 
 	if (!IsSearchDisabled)
 	{
-		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 45);
+		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 
 		string32 FindStr = {};
 		xr_strcpy(FindStr, m_SearchText.c_str());
@@ -119,13 +119,6 @@ void UIPropertiesForm::Draw()
 		}
 
 		IsSearchActive = !m_SearchText.empty();
-
-		ImGui::SameLine();
-		if (ImGui::Button("Clear"))
-		{
-			m_SearchText = "";
-			IsSearchActive = false;
-		}
 
 		ImGui::Separator();
 	}
