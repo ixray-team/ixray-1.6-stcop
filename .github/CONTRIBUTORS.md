@@ -1,6 +1,14 @@
 # Contributors
 
-English | [Русский](../doc/CONTRIBUTORS.rus.md)
+<div>
+  <p>
+    English
+    |
+    <a href="../doc/CONTRIBUTORS.rus.md">
+      Русский
+    </a>
+  </p>
+</div>
 
 Detail list of all contributors to IX-Ray project
 
