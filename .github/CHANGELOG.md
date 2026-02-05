@@ -1,6 +1,14 @@
 # Changelog
 
-English | [Русский](../doc/CHANGELOG.rus.md)
+<div>
+  <p>
+    English
+    |
+    <a href="../doc/CHANGELOG.rus.md">
+      Русский
+    </a>
+  </p>
+</div>
 
 Full changelog of _IX-Ray_ 1.6 project
 

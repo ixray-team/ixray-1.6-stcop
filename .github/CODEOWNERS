@@ -1,5 +1,5 @@
 # Default assignment
-* @acidicMercury8 @Drombeys
+* @Drombeys @ForserX
 
 # Sources
 sdk/ @Drombeys @ForserX
@@ -10,12 +10,12 @@ gamedata/ @Drombeys
 rawdata @Drombeys
 
 # Configs
-*.config @acidicMercury8 @ForserX
-*.json @acidicMercury8
-*.yaml @acidicMercury8
-*.yml @acidicMercury8
+*.config @Drombeys @ForserX
+*.json @Drombeys @ForserX
+*.yaml @Drombeys @ForserX
+*.yml @Drombeys @ForserX
 
 # Build system
-cmake/* @acidicMercury8 @ForserX
-*.cmake @acidicMercury8 @ForserX
-*.txt @acidicMercury8 @ForserX
+cmake/* @ForserX
+*.cmake @ForserX
+*.txt @ForserX

@@ -1,6 +1,14 @@
 # Security policy
 
-English | [Русский](../doc/SECURITY.rus.md)
+<div>
+  <p>
+    English
+    |
+    <a href="./doc/SECURITY.rus.md">
+      Русский
+    </a>
+  </p>
+</div>
 
 ## Supported versions
 
