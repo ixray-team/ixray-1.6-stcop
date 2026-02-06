@@ -358,16 +358,24 @@ void UIPropertiesItem::DrawProp()
 
 		PItem->BeforeEdit<VectorValue, Fvector>(edit_val);
 		float color[3] = { edit_val[0],edit_val[1],edit_val[2] };
-		if (ImGui::ColorEdit3("##value", color))
+		bool Editing = ImGui::ColorEdit3("##value", color);
+		if (Editing)
 		{
 			edit_val[0] = color[0];
 			edit_val[1] = color[1];
-			edit_val[2] = color[2]; 
-			if (PItem->AfterEdit<VectorValue, Fvector>(edit_val))
-				if (PItem->ApplyValue<VectorValue, Fvector>(edit_val))
-				{
-					PropertiesFrom->Modified();
-				}
+			edit_val[2] = color[2];
+			if (PItem->AfterEdit<VectorValue, Fvector>(edit_val) && PItem->ApplyValue<VectorValue, Fvector>(edit_val))
+			{
+				NeedCallback = true;
+			}
+		}
+		if (ImGui::IsItemDeactivatedAfterEdit())
+		{
+			if (NeedCallback)
+			{
+				PropertiesFrom->Modified();
+			}
+			NeedCallback = false;
 		}
 	}
 	break;
