@@ -38,6 +38,8 @@ float4 main(p_volume I, float4 pos2d : SV_POSITION) : SV_Target
 #endif
 
 #ifdef USE_LMAP
+	Point = float4(O.Point.xyz, 1.0f);
+	PS = mul(m_shadow, Point);
     #ifdef USE_LMAPXFORM
 		PS.x = dot(Point, m_lmap[0]);
 		PS.y = dot(Point, m_lmap[1]);

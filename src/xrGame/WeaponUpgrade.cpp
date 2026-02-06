@@ -752,6 +752,15 @@ bool CWeapon::install_upgrade_torch_laser(LPCSTR section, bool test)
 	}
 	result |= result2;
 
+	bool result3 = process_if_exists_set(section, "laser_installed", &CInifile::r_bool, value, test);
+
+	if (result3 && !test)
+	{
+		m_LightLaser.NewTorchlight(section);
+	}
+
+	result |= result3;
+
 	return result;
 }
 
