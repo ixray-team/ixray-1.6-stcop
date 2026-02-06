@@ -383,7 +383,7 @@ void UIPropertiesItem::DrawProp()
 	{
 		MultiChooseValue* Prop = (MultiChooseValue*)PItem->GetFrontValue();
 
-		if (ImGui::BeginTable("##multi_choose_table", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_NoBordersInBody | ImGuiTableFlags_NoPadOuterX))
+		if (ImGui::BeginTable("##multi_choose_table", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_NoBordersInBody | ImGuiTableFlags_NoPadOuterX | ImGuiTableFlags_Borders))
 		{
 			ImGui::TableSetupColumn("Key", ImGuiTableColumnFlags_WidthFixed);
 			ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
@@ -409,6 +409,8 @@ void UIPropertiesItem::DrawProp()
 
 				ImGui::TableSetColumnIndex(0);
 				ImGui::AlignTextToFramePadding();
+				
+				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 2);
 				ImGui::TextUnformatted(text.c_str());
 
 				ImGui::TableSetColumnIndex(1);
