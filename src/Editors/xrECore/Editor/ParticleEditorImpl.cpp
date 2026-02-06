@@ -200,12 +200,18 @@ void PS::CPEDef::FillProp(LPCSTR pref, ::PropItemVec& items, void* owner)
     P=PHelper().CreateFlag32(items,PrepareKey				(pref,"Time Limit"),		  			&m_Flags, dfTimeLimit);
     P->OnChangeEvent.bind	(this,&PS::CPEDef::OnFlagChange);
     if (m_Flags.is(dfTimeLimit))
-	    PHelper().CreateFloat	(items,PrepareKey			(pref,"Time Limit\\Value (sec)"),		&m_fTimeLimit,  0, 10000.f);
+    {
+	    P = PHelper().CreateButton(items, PrepareKey(pref,"Time Limit\\Control"), "Disable", 0, xr_make_delegate(this, &PS::CPEDef::OnTimeLimitClicked));
+    	P->OnChangeEvent.bind	(this,&PS::CPEDef::OnFlagChange);
+    	PHelper().CreateFloat	(items,PrepareKey			(pref,"Time Limit\\Value (sec)"),		&m_fTimeLimit,  0, 10000.f);
+    }
 	// sprite
     P=PHelper().CreateFlag32(items,PrepareKey				(pref,"Sprite"),		 	   			&m_Flags, dfSprite);
     P->OnChangeEvent.bind	(this,&PS::CPEDef::OnFlagChange);
     if (m_Flags.is(dfSprite)){
-	    P=PHelper().CreateChoose(items,PrepareKey			(pref,"Sprite\\Texture"), 	   			&m_TextureName, smTexture, 0,0, 2);
+	    P=PHelper().CreateButton(items, PrepareKey(pref,"Sprite\\Control"), "Disable", 0, xr_make_delegate(this, &PS::CPEDef::OnSpriteClicked));
+    	P->OnChangeEvent.bind	(this,&PS::CPEDef::OnFlagChange);
+    	P=PHelper().CreateChoose(items,PrepareKey			(pref,"Sprite\\Texture"), 	   			&m_TextureName, smTexture, 0,0, 2);
         P->OnChangeEvent.bind	(this,&PS::CPEDef::OnShaderChange);
 	    P=PHelper().CreateChoose(items,PrepareKey			(pref,"Sprite\\Shader"), 	   			&m_ShaderName,	smEShader);
         P->OnChangeEvent.bind	(this,&PS::CPEDef::OnShaderChange);
@@ -213,11 +219,17 @@ void PS::CPEDef::FillProp(LPCSTR pref, ::PropItemVec& items, void* owner)
         P=PHelper().CreateFlag32(items,PrepareKey			(pref,"Sprite\\Culling"),			 	&m_Flags, dfCulling);
         P->OnChangeEvent.bind	(this,&PS::CPEDef::OnFlagChange);
         if (m_Flags.is(CPEDef::dfCulling))
+        {
+	        P = PHelper().CreateButton(items, PrepareKey(pref,"Sprite\\Culling\\Control"), "Disable", 0, xr_make_delegate(this, &PS::CPEDef::OnSpriteCullingClicked));
+        	P->OnChangeEvent.bind	(this,&PS::CPEDef::OnFlagChange);
         	PHelper().CreateFlag32(items,PrepareKey			(pref,"Sprite\\Culling\\CCW"),			&m_Flags, dfCullCCW);
+        }
         P=PHelper().CreateFlag32(items,PrepareKey			(pref,"Sprite\\Frame"),		 		 	&m_Flags, dfFramed);
         P->OnChangeEvent.bind	(this,&PS::CPEDef::OnFlagChange);
         if (m_Flags.is(dfFramed)){
-            PHelper().CreateFlag32(items,PrepareKey		(pref,"Sprite\\Frame\\Random Init"), 	&m_Flags, dfRandomFrame);
+        	P = PHelper().CreateButton(items, PrepareKey(pref,"Sprite\\Frame\\Control"), "Disable", 0, xr_make_delegate(this, &PS::CPEDef::OnSpriteFrameClicked));
+        	P->OnChangeEvent.bind	(this,&PS::CPEDef::OnFlagChange);
+        	PHelper().CreateFlag32(items,PrepareKey		(pref,"Sprite\\Frame\\Random Init"), 	&m_Flags, dfRandomFrame);
             PHelper().CreateS32	(items,PrepareKey			(pref,"Sprite\\Frame\\Count"),			&m_Frame.m_iFrameCount, 1,256);
             P=PHelper().CreateFloat(items,PrepareKey		(pref,"Sprite\\Frame\\Size U (0..1)"),	&m_Frame.m_fTexSize.x, EPS_S,1.f,0.001f,8);
             P->OnChangeEvent.bind	(this,&PS::CPEDef::OnFrameResize);
@@ -226,7 +238,9 @@ void PS::CPEDef::FillProp(LPCSTR pref, ::PropItemVec& items, void* owner)
             P=PHelper().CreateFlag32(items,PrepareKey		(pref,"Sprite\\Animated"),				&m_Flags, dfAnimated);
             P->OnChangeEvent.bind	(this,&PS::CPEDef::OnFlagChange);
             if (m_Flags.is(dfAnimated)){
-                PHelper().CreateFlag32(items,PrepareKey	(pref,"Sprite\\Animated\\Random Playback"),	&m_Flags, dfRandomPlayback);
+                P = PHelper().CreateButton(items, PrepareKey(pref,"Sprite\\Animated\\Control"), "Disable", 0, xr_make_delegate(this, &PS::CPEDef::OnSpriteAnimatedClicked));
+            	P->OnChangeEvent.bind	(this,&PS::CPEDef::OnFlagChange);
+            	PHelper().CreateFlag32(items,PrepareKey	(pref,"Sprite\\Animated\\Random Playback"),	&m_Flags, dfRandomPlayback);
 		    	PHelper().CreateFloat(items,PrepareKey		(pref,"Sprite\\Animated\\Speed"),		&m_Frame.m_fSpeed, 0.f,1000.f);
             }
         }
@@ -235,7 +249,9 @@ void PS::CPEDef::FillProp(LPCSTR pref, ::PropItemVec& items, void* owner)
     P=PHelper().CreateFlag32(items,PrepareKey	(pref,"Movement\\Align To Path"), 					&m_Flags, dfAlignToPath);
     P->OnChangeEvent.bind	(this,&PS::CPEDef::OnFlagChange);
     if (m_Flags.is(dfAlignToPath)){
-	    PHelper().CreateFlag32(items,PrepareKey	(pref,"Movement\\Align To Path\\Face Align"), 		&m_Flags, dfFaceAlign);
+	    P = PHelper().CreateButton(items, PrepareKey(pref,"Movement\\Align To Path\\Control"), "Disable", 0, xr_make_delegate(this, &PS::CPEDef::OnMovementAlignClicked));
+    	P->OnChangeEvent.bind	(this,&PS::CPEDef::OnFlagChange);
+    	PHelper().CreateFlag32(items,PrepareKey	(pref,"Movement\\Align To Path\\Face Align"), 		&m_Flags, dfFaceAlign);
 	    PHelper().CreateFlag32(items,PrepareKey	(pref,"Movement\\Align To Path\\Default World Align"), &m_Flags, dfWorldAlign);
     	PHelper().CreateAngle3(items,PrepareKey	(pref,"Movement\\Align To Path\\Default Rotate"),	&m_APDefaultRotation);
     }
@@ -243,12 +259,18 @@ void PS::CPEDef::FillProp(LPCSTR pref, ::PropItemVec& items, void* owner)
     P=PHelper().CreateFlag32(items,PrepareKey	(pref,"Movement\\Velocity Scale"),					&m_Flags, dfVelocityScale);
     P->OnChangeEvent.bind	(this,&PS::CPEDef::OnFlagChange);
     if (m_Flags.is(dfVelocityScale))
+    {
+	    P = PHelper().CreateButton(items, PrepareKey(pref,"Movement\\Velocity Scale\\Control"), "Disable", 0, xr_make_delegate(this, &PS::CPEDef::OnMovementVelocityClicked));
+    	P->OnChangeEvent.bind	(this,&PS::CPEDef::OnFlagChange);
     	PHelper().CreateVector(items,PrepareKey	(pref,"Movement\\Velocity Scale\\Value"),			&m_VelocityScale, -1000.f, 1000.f);
+    }
 	// collision
     P=PHelper().CreateFlag32(items,PrepareKey	(pref,"Movement\\Collision"),						&m_Flags, dfCollision);
     P->OnChangeEvent.bind	(this,&PS::CPEDef::OnFlagChange);
     FloatValue*	V 			= 0;
     if (m_Flags.is(dfCollision)){
+    	P = PHelper().CreateButton(items, PrepareKey(pref,"Movement\\Collision\\Control"), "Disable", 0, xr_make_delegate(this, &PS::CPEDef::OnMovementCollisionClicked));
+    	P->OnChangeEvent.bind	(this,&PS::CPEDef::OnFlagChange);
     	PHelper().CreateFlag32(items,PrepareKey(pref,"Movement\\Collision\\Collide With Dynamic"),	&m_Flags, dfCollisionDyn);
     	PHelper().CreateFlag32(items,PrepareKey(pref,"Movement\\Collision\\Destroy On Contact"),	&m_Flags, dfCollisionDel);
 	    V=PHelper().CreateFloat	(items,PrepareKey	(pref,"Movement\\Collision\\Friction"),			&m_fCollideOneMinusFriction,0.f, 1.f);
@@ -271,7 +293,7 @@ void PS::CPEDef::FillProp(LPCSTR pref, ::PropItemVec& items, void* owner)
         sprintf(buffer, "%s (%s)", *(*s_it)->actionType, *(*s_it)->actionName);
     	shared_str a_pref		= PrepareKey(pref,"Actions", buffer);
 
-        ButtonValue* B			= PHelper().CreateButton(items,a_pref,"Up,Down,Remove",ButtonValue::flFirstOnly); B->tag = (s_it-m_EActionList.begin());
+        ButtonValue* B			= PHelper().CreateButton(items,PrepareKey(a_pref.c_str(), "Controls"),"Up,Down,Remove",ButtonValue::flFirstOnly); B->tag = (s_it-m_EActionList.begin());
         B->Owner()->prop_color	= clr;
         B->OnBtnClickEvent.bind	(this,&PS::CPEDef::OnActionEditClick);
 
@@ -282,6 +304,55 @@ void PS::CPEDef::FillProp(LPCSTR pref, ::PropItemVec& items, void* owner)
     	(*s_it)->FillProp	(items,a_pref.c_str(),clr);
     }
 }
+
+void PS::CPEDef::OnSpriteFrameClicked(ButtonValue* value, bool& bModif, bool& bSafe)
+{
+	m_Flags.set(dfFramed, false);
+    ExecCommand(COMMAND_UPDATE_PROPERTIES);
+}
+
+void PS::CPEDef::OnSpriteAnimatedClicked(ButtonValue* value, bool& bModif, bool& bSafe)
+{
+	m_Flags.set(dfAnimated, false);
+    ExecCommand(COMMAND_UPDATE_PROPERTIES);
+}
+
+void PS::CPEDef::OnTimeLimitClicked(ButtonValue* value, bool& bModif, bool& bSafe)
+{
+	m_Flags.set(dfTimeLimit, false);
+    ExecCommand(COMMAND_UPDATE_PROPERTIES);
+}
+
+void PS::CPEDef::OnSpriteClicked(ButtonValue* value, bool& bModif, bool& bSafe)
+{
+	m_Flags.set(dfSprite, false);
+    ExecCommand(COMMAND_UPDATE_PROPERTIES);
+}
+
+void PS::CPEDef::OnSpriteCullingClicked(ButtonValue* value, bool& bModif, bool& bSafe)
+{
+	m_Flags.set(dfCulling, false);
+    ExecCommand(COMMAND_UPDATE_PROPERTIES);
+}
+
+void PS::CPEDef::OnMovementAlignClicked(ButtonValue* value, bool& bModif, bool& bSafe)
+{
+	m_Flags.set(dfAlignToPath, false);
+    ExecCommand(COMMAND_UPDATE_PROPERTIES);
+}
+
+void PS::CPEDef::OnMovementVelocityClicked(ButtonValue* value, bool& bModif, bool& bSafe)
+{
+	m_Flags.set(dfVelocityScale, false);
+    ExecCommand(COMMAND_UPDATE_PROPERTIES);
+}
+
+void PS::CPEDef::OnMovementCollisionClicked(ButtonValue* value, bool& bModif, bool& bSafe)
+{
+	m_Flags.set(dfCollision, false);
+    ExecCommand(COMMAND_UPDATE_PROPERTIES);
+}
+
 bool PS::CPEDef::Validate(bool bMsg)
 {
     bool have_kill_old  = false;
@@ -509,7 +580,7 @@ void PS::CPGDef::SEffect::FillPropInit(PropItemVec& items, LPCSTR pref)
 	sprintf(nm.data(), "Effect #%d", Index + 1);
 
 	auto FullPref = PrepareKey(pref,nm.c_str());
-	auto B=PHelper().CreateButton(items,FullPref,"Preview,Select,Remove",ButtonValue::flFirstOnly);
+	auto B=PHelper().CreateButton(items,PrepareKey(FullPref.c_str(),"Controls"),"Preview,Select,Remove",ButtonValue::flFirstOnly);
 	B->tag = Index;
 	B->OnBtnClickEvent.bind	(parent,&PS::CPGDef::OnEffectEditClick);
 	B->Owner()->prop_color	= clr;
@@ -688,7 +759,7 @@ void PS::CPGDef::FillProp(LPCSTR pref, PropItemVec& items, void* owner)
         sprintf(nm.data(), "Effect #%d", i + 1);
 
     	auto FullPref = PrepareKey(pref,nm.c_str());
-        B=PHelper().CreateButton(items,FullPref,"Preview,Select,Remove",ButtonValue::flFirstOnly); B->tag = it-m_Effects.begin();
+        B=PHelper().CreateButton(items,PrepareKey(FullPref.c_str(),"Controls"),"Preview,Select,Remove",ButtonValue::flFirstOnly); B->tag = it-m_Effects.begin();
         B->OnBtnClickEvent.bind	(this,&PS::CPGDef::OnEffectEditClick);
         B->Owner()->prop_color	= clr;
 
