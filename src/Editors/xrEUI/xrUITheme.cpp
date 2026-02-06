@@ -612,6 +612,9 @@ void CUIThemeManager::Load()
 	}
 
 	ImGuiStyle& style = ImGui::GetStyle();
+	style.FrameRounding = 6.f;
+	style.FrameBorderSize = 1.0f;
+
 	ImVec4* colors = style.Colors;
 
 	FastJSonReadImColor(ImGuiCol_WindowBg);
