@@ -8,15 +8,17 @@
 //refs
 class ENGINE_API IRender_DetailModel;
 class ENGINE_API IRender_ObjectSpecific;
+class ENGINE_API CEnvironment;
 #include "../Include/xrRender/FactoryPtr.h"
 #include "../Include/xrRender/RainRender.h"
 //
 class ENGINE_API CEffect_Rain
 {
 	friend class dxRainRender;
-private:
+public:
 	struct	Item
 	{
+		Item();
 		Fvector			P;
 		Fvector			Phit;
 		Fvector			D;
@@ -24,10 +26,11 @@ private:
 		u32				dwTime_Life;
 		u32				dwTime_Hit;
 		u32				uv_set;
-		void			invalidate	()
-		{
-			dwTime_Life	= 0;
-		}
+	};
+	struct rain_line
+	{
+		Fvector quad[4];
+		u32 uv_set;
 	};
 	struct	Particle
 	{
@@ -41,13 +44,13 @@ private:
 		stIdle		= 0,
 		stWorking
 	};
+	FactoryPtr<IRainRender>	m_pRender;
 
 private:
-	// Visualization	(rain) and (drops)
-	FactoryPtr<IRainRender>	m_pRender;
-	
-	// Data and logic
+
 	xr_vector<Item>					items;
+
+	xr_vector<rain_line>			m_rquads;
 	States							state;
 
 	// Particles
@@ -61,7 +64,7 @@ private:
 	ref_sound						snd_RoofDropletsHard;
 	xrCriticalSection				rainCS;
 	float m_rainVolume = 0.0f;
-
+public:
 	// Utilities
 	void							p_create		();
 	void							p_destroy		();
@@ -73,18 +76,13 @@ private:
 	void							p_free			(Particle* P);
 
 	// Some methods
-	void							Born			(Item& dest, float radius, shared_str& rainType);
-	void							Hit				(Fvector& pos);
-	void							RenewItem		(Item& dest, float height, BOOL bHit);
-public:
-	BOOL							RayPick			(const Fvector& s, const Fvector& d, float& range, collide::rq_target tgt);
+
 									CEffect_Rain	();
 									~CEffect_Rain	();
 
 	void							Render			();
 	void							OnFrame			();
 	void							UpdateItems		();
-
 	void InvalidateState();
 	float GetRainVolume() const { return m_rainVolume; }
 

@@ -452,7 +452,7 @@ void RenderUIWeather() {
 	CInifile::Root& ambsections = ambConfig->sections();
 	for (int i = 0; i != ambsections.size(); i++)
 	{
-		if (cur->env_ambient->name() == ambsections[i].Name) {
+		if (cur->env_ambient && cur->env_ambient->name() == ambsections[i].Name) {
 			sel = i;
 		}
 	}
@@ -471,7 +471,7 @@ void RenderUIWeather() {
 
 	char buf[100];
 
-	if (editTexture("clouds_texture", cur->clouds_texture_name)) {
+	if (cur->clouds_texture_name && editTexture("clouds_texture", cur->clouds_texture_name)) {
 		cur->on_device_create();
 		changed = true;
 	}
@@ -492,39 +492,30 @@ void RenderUIWeather() {
 		changed = true;
 	}
 
-	static std::unordered_set<xr_string> validRainTypes =
+	static xr_vector<const char*> rain_types =
 	{
 		"default", 
 		"drizzle",
 		"dense", 
 		"spherical" 
 	};
+	
+	static int curr_idx = 0;
 
-	static xr_string previousRainType;
-	previousRainType = cur->rain_type.c_str();
-
-	static char rainTypeBuffer[100];
-	strcpy_s(rainTypeBuffer, previousRainType.c_str());
-
-	if (ImGui::InputText("rain_type", rainTypeBuffer, sizeof(rainTypeBuffer))) 
+	if (ImGui::Combo("rain_type", &curr_idx, &rain_types[0], rain_types.size()))
 	{
-		static xr_string newRainType;
-		newRainType = rainTypeBuffer;
-		if (validRainTypes.find(newRainType) != validRainTypes.end()) 
-		{
-			if (newRainType != previousRainType) 
-			{
-				cur->rain_type = newRainType.c_str();
-				changed = true;
-			}
-		}
-		else 
-		{
-			ImGui::TextColored(ImVec4(1, 0, 0, 1), "Invalid rain_type. Allowed values: default, drizzle, dense, spherical");
-		}
+		if(env.CurrentEnv)
+			env.CurrentEnv->rain_type = rain_types[curr_idx];
+		cur->rain_type = rain_types[curr_idx];
+	}
+	else
+	{
+		auto it = std::find_if(rain_types.begin(), rain_types.end(), [cur](const char* type) { return xr_strcmp(cur->rain_type, type) == 0; });
+		if (it != rain_types.end())
+			curr_idx = it - rain_types.begin();
 	}
 
-	if (ImGui::SliderFloat("rain_density", &cur->rain_density, 0.0f, 1.0f)) {
+	if (ImGui::SliderFloat("rain_density", &cur->rain_density, 0.0f, 5.0f)) {
 		changed = true;
 	}
 	if (ImGui::ColorEdit3("rain_color", (float*)&cur->rain_color)) {
@@ -557,7 +548,7 @@ void RenderUIWeather() {
 		changed = true;
 	}
 
-	if (editTexture("sky_texture", cur->sky_texture_name))
+	if (cur->sky_texture_name && editTexture("sky_texture", cur->sky_texture_name))
 	{
 		cur->sky_texture_name = xr_string(cur->sky_texture_name.c_str(), 
 			cur->sky_texture_name.size() - 4).c_str(); // .dds
