@@ -26,13 +26,29 @@ public:
 
 public:
 	HudLightTorch() = default;
-	~HudLightTorch();
+	virtual ~HudLightTorch();
 
 public:
-	void NewTorchlight(const char* section);
+	virtual void NewTorchlight(const char* section);
+	virtual void UpdateTorchFromObject(CHudItem* item) const;
+
 	void SwitchTorchlight(bool isActive);
-	void SetInstalled(bool install) { IsTorchInstalled = install; }
-	void UpdateTorchFromObject(CHudItem* item) const;
-	bool GetTorchActive() const { return IsRenderLight; }
-	bool GetTorchInstalled() const { return IsTorchInstalled; }
+	IC void SetInstalled(bool install) { IsTorchInstalled = install; }
+
+	IC bool GetTorchActive() const { return IsRenderLight; }
+	IC bool GetTorchInstalled() const { return IsTorchInstalled; }
+};
+
+class HudLightLaser : public HudLightTorch
+{
+	float LaserLightDist = 15.0f;
+	float LaserWorkDist = 7.5f;
+	float LaserMaxDist = 15.0f;
+	Fvector2 LightSpotAngle = {2, 5};
+
+public:
+	HudLightLaser();
+	virtual ~HudLightLaser();
+	virtual void NewTorchlight(const char* section);
+	virtual void UpdateTorchFromObject(CHudItem* item) const;
 };
