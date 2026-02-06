@@ -23,6 +23,8 @@ public:
 
 	virtual void** StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointType pointType);
 
+	virtual u32 VBuffMaxSize();
+
 	virtual void FlushPrimitive();
 
 	virtual LPCSTR	UpdateShaderName(LPCSTR tex_name, LPCSTR sh_name);
