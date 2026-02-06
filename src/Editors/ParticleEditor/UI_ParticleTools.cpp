@@ -1366,7 +1366,15 @@ bool CParticleTool::VerifyParticleCreateFolder(UIItemListForm::Node* Node)
 
 bool CParticleTool::VerifyParticleRenameItem(UIItemListForm::Node* Node)
 {
-    if (!Node || !Node->Object)
+    if (!Node)
+    {
+        return false;
+    }
+    if (Node->Type == FolderHelper<ListItem, true>::FNT_Floder)
+    {
+        return true;
+    }
+    if (!Node->Object)
     {
         return false;
     }
