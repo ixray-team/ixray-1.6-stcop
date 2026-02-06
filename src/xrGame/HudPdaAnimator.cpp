@@ -453,7 +453,8 @@ bool CHudPdaAnimator::InputKeyPress(int cmd)
 			}
 
 			u16 slot = u16(cmd - kWPN_1 + 1);
-			if (m_manager->Parent()->inventory().ItemFromSlot(slot) != nullptr)
+			PIItem item_from_slot = m_manager->Parent()->inventory().ItemFromSlot(slot);
+			if (item_from_slot != nullptr && !m_manager->Parent()->inventory().IsSlotBlocked(item_from_slot))
 			{
 				m_manager->SlotToRestore() = slot;
 				SetState(eHiding);
