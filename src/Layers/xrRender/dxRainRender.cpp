@@ -39,8 +39,8 @@ void dxRainRender::Copy(IRainRender &_in)
 void dxRainRender::Render(CEffect_Rain &owner)
 {
 	float factor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
-	auto& m_rquads = owner.m_rquads;
-	if (factor<EPS_L || m_rquads.empty())
+	auto& m_sprites = owner.m_rquads;
+	if (factor<EPS_L || m_sprites.empty())
 		return;
 
 	// perform update
@@ -58,32 +58,34 @@ void dxRainRender::Render(CEffect_Rain &owner)
 	factor_visual *= 0.8f;
 #endif // RENDER != R_R1
 
-	u32 current_line = 0;
 	struct LITF { struct { Fvector p; u32 color; Fvector2 uv; } buff[4]; };
-	u32 max_quads_per_batch = RCache.Vertex.GetSize() / u32(sizeof(LITF));
-	while (current_line < m_rquads.size())
+
+	u32 MAX_SPRITES = RCache.Vertex.GetSize() / u32(sizeof(LITF));
+	u32 total_sprites = (u32)m_sprites.size();
+
+	for (u32 start_idx = 0u; start_idx < total_sprites; start_idx += MAX_SPRITES)
 	{
-		u32 lines_in_batch = std::min(max_quads_per_batch, (u32)m_rquads.size()-current_line);
-		u32 vertices_in_batch = lines_in_batch * 4u;
+		u32 batch_size = std::min(MAX_SPRITES, total_sprites - start_idx);
+		u32 vertices_in_batch = batch_size * 4u;
 		u32 vOffset;
-		
 		LITF* verts = (LITF*)RCache.Vertex.Lock(vertices_in_batch, hGeom_Rain->vb_stride, vOffset);
-		for (u32 i = 0; i < lines_in_batch; ++i)
+
+		for (u32 i = 0u; i < batch_size; ++i)
 		{
-			CEffect_Rain::rain_line& line = m_rquads[current_line + i];
-			u32 s = line.uv_set;
+			CEffect_Rain::rain_line& sprite = m_sprites[start_idx + i];
+			u32 s = sprite.uv_set;
 			*verts =
 			{
-				line.quad[0],u_rain_color,Rain_l_UV[s][0].x,Rain_l_UV[s][0].y,
-				line.quad[1],u_rain_color,Rain_l_UV[s][1].x,Rain_l_UV[s][1].y,
-				line.quad[2],u_rain_color,Rain_l_UV[s][2].x,Rain_l_UV[s][2].y,
-				line.quad[3],u_rain_color,Rain_l_UV[s][3].x,Rain_l_UV[s][3].y
+				sprite.quad[0],u_rain_color,Rain_l_UV[s][0].x,Rain_l_UV[s][0].y,
+				sprite.quad[1],u_rain_color,Rain_l_UV[s][1].x,Rain_l_UV[s][1].y,
+				sprite.quad[2],u_rain_color,Rain_l_UV[s][2].x,Rain_l_UV[s][2].y,
+				sprite.quad[3],u_rain_color,Rain_l_UV[s][3].x,Rain_l_UV[s][3].y
 			};
 			verts++;
 		}
+
 		RCache.Vertex.Unlock(vertices_in_batch, hGeom_Rain->vb_stride);
 		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vOffset, 0, vertices_in_batch, 0, vertices_in_batch / 2);
-		current_line += lines_in_batch;
 	}
 
 	// Particles

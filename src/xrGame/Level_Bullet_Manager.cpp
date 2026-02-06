@@ -1055,12 +1055,11 @@ void CBulletManager::Render	()
 #endif
 	u32 g_bullet_debug_trj_totalLines = 0u;
 	static xr_vector<SBullet*> visible_tracers;
+	visible_tracers.clear();
+	visible_tracers.reserve(m_Bullets.size());
 
 	if (!g_bullet_debug_trj)
 	{
-		visible_tracers.clear();
-		visible_tracers.reserve(m_Bullets.size());
-
 		for (SBullet& bullet : m_Bullets)
 		{
 			if (!bullet.flags.allow_tracer)
@@ -1102,35 +1101,28 @@ void CBulletManager::Render	()
 		const Fvector& cam_D = Device.vCameraDirection;
 		const Fvector& cam_T = Device.vCameraTop;
 		const Fvector& cam_R = Device.vCameraRight;
-
-		constexpr u32 MAX_TRIANGLES_PER_BATCH = 58'000u;
-		constexpr u32 MAX_VERTICES_PER_BATCH = MAX_TRIANGLES_PER_BATCH * 3u;
+		constexpr float MaxDistSqr = 1.0f;
+		constexpr float MinDistSqr = 0.09f;
 
 		// 3d tracer
 		//constexpr u32 VERTICES_PER_TRACER = 672u;
+		//u32 MAX_TRACERS = UIRender->VBuffMaxSize() / sizeof(IUIRender::r_vertL<VERTICES_PER_TRACER>);
 		// 2d tracer
 		constexpr u32 VERTICES_PER_TRACER = 12u;
+		u32 MAX_TRACERS = UIRender->VBuffMaxSize() / sizeof(IUIRender::r_vertLIT<VERTICES_PER_TRACER>);
 
-		constexpr u32 TRACERS_PER_BATCH = MAX_VERTICES_PER_BATCH / VERTICES_PER_TRACER;
-
-		constexpr float MaxDistSqr = 1.0f;
-		constexpr float MinDistSqr = 0.09f;
-		u32 current_tracer = 0;
-		const u32 total_tracers = visible_tracers.size();
-
-		while (current_tracer < total_tracers)
+		u32 total_tracers = visible_tracers.size();
+		for (u32 start_idx = 0u; start_idx < total_tracers; start_idx += MAX_TRACERS)
 		{
-			u32 tracers_in_batch = std::min(TRACERS_PER_BATCH, total_tracers - current_tracer);
-			u32 vertices_in_batch = tracers_in_batch * VERTICES_PER_TRACER;
-
+			u32 batch_size = std::min(MAX_TRACERS, total_tracers - start_idx);
 			// 3d tracer
-			//void** buffer = UIRender->StartPrimitive(vertices_in_batch, IUIRender::ptTriList, IUIRender::pttLIT);
+			//void** buffer = UIRender->StartPrimitive(batch_size * VERTICES_PER_TRACER, IUIRender::ptTriList, IUIRender::pttL);
 			// 2d tracer
-			IUIRender::r_vertLIT<12>** buffer = (IUIRender::r_vertLIT<12>**)UIRender->StartPrimitive(vertices_in_batch, IUIRender::ptTriList, IUIRender::pttLIT);
+			IUIRender::r_vertLIT<VERTICES_PER_TRACER>** buffer = (IUIRender::r_vertLIT<VERTICES_PER_TRACER>**)UIRender->StartPrimitive(batch_size * VERTICES_PER_TRACER, IUIRender::ptTriList, IUIRender::pttLIT);
 
-			for (u32 i = 0; i < tracers_in_batch; ++i)
+			for (u32 i = 0; i < batch_size; ++i)
 			{
-				SBullet* bullet = visible_tracers[current_tracer++];
+				SBullet* bullet = visible_tracers[start_idx + i];
 
 				Fvector tracer_last_pos = bullet->tracer_last_pos[bp_render_idx];
 				Fvector tracer_pos = bullet->tracer_pos[bp_render_idx];
@@ -1202,69 +1194,70 @@ void CBulletManager::Render	()
 				//}
 
 				// 2d tracer
-
-				float k_speed = bullet->speed / 1000.0f;
-				float sprite_size = k_speed * width * m_circle_size_k * (std::abs(cam_D.dotproduct(tracer_direction)) * 0.95f);
-				float sprite_width = width * .5f;
-				float sprite_length = length * .5f;
-				
-				//sprite circle
-				Fvector Vr, Vt;
-				Vr.mul(cam_R, sprite_size);
-				Vt.mul(cam_T, sprite_size);
-				
-				Fvector a_circle, b_circle, c_circle, d_circle;
-				a_circle.sub(Vt, Vr);
-				b_circle.add(Vt, Vr);
-				c_circle.invert(a_circle);
-				d_circle.invert(b_circle);
-				Fvector center_circle;
-				center_circle.mad(tracer_last_pos, tracer_direction, length * .95f);
-				
-				//sprite line
-				Vr.mul(Fvector().crossproduct(tracer_direction, cam_D).normalize_safe(), sprite_width);
-				Vt.mul(tracer_direction, sprite_length);
-				
-				Fvector a_sprite, b_sprite, c_sprite, d_sprite;
-				a_sprite.sub(Vt, Vr);
-				b_sprite.add(Vt, Vr);
-				c_sprite.invert(a_sprite);
-				d_sprite.invert(b_sprite);
-				Fvector center_sprite;
-				center_sprite.mad(tracer_last_pos, tracer_direction, length * .5f);
-				
-				Fbox2 crcuv = circle_uv;
-				Fbox2 spruv = sprite_uv;
-				
-				Fvector2 a_c_uf{ crcuv.min.x,crcuv.min.y };
-				Fvector2 c_c_uf{ crcuv.max.x,crcuv.max.y };
-				
-				Fvector2 a_s_uf{ spruv.min.x,spruv.min.y };
-				Fvector2 c_s_uf{ spruv.max.x,spruv.max.y };
-				
-				Fvector a_c_vert{ a_circle+center_circle };
-				Fvector c_c_vert{ c_circle+center_circle };
-				
-				Fvector a_s_vert{ a_sprite+center_sprite };
-				Fvector c_s_vert{ c_sprite+center_sprite };
-				
-				*(*buffer) = 
 				{
-					d_circle+center_circle,color,{crcuv.min.x,crcuv.max.y},
-					a_c_vert,color,a_c_uf,
-					c_c_vert,color,c_c_uf,
-					c_c_vert,color,c_c_uf,
-					a_c_vert,color,a_c_uf,
-					b_circle+center_circle,color,{crcuv.max.x,crcuv.min.y},
+					float k_speed = bullet->speed / 1000.0f;
+					float sprite_size = k_speed * width * m_circle_size_k * (std::abs(cam_D.dotproduct(tracer_direction)) * 0.95f);
+					float sprite_width = width * .5f;
+					float sprite_length = length * .5f;
 				
-					d_sprite+center_sprite,color,{spruv.min.x,spruv.max.y},
-					a_s_vert,color,a_s_uf,
-					c_s_vert,color,c_s_uf,
-					c_s_vert,color,c_s_uf,
-					a_s_vert,color,a_s_uf,
-					b_sprite+center_sprite,color,{spruv.max.x,spruv.min.y},
-				};
-				(*buffer)++;
+					//sprite circle
+					Fvector Vr, Vt;
+					Vr.mul(cam_R, sprite_size);
+					Vt.mul(cam_T, sprite_size);
+				
+					Fvector a_circle, b_circle, c_circle, d_circle;
+					a_circle.sub(Vt, Vr);
+					b_circle.add(Vt, Vr);
+					c_circle.invert(a_circle);
+					d_circle.invert(b_circle);
+					Fvector center_circle;
+					center_circle.mad(tracer_last_pos, tracer_direction, length * .95f);
+				
+					//sprite line
+					Vr.mul(Fvector().crossproduct(tracer_direction, cam_D).normalize_safe(), sprite_width);
+					Vt.mul(tracer_direction, sprite_length);
+				
+					Fvector a_sprite, b_sprite, c_sprite, d_sprite;
+					a_sprite.sub(Vt, Vr);
+					b_sprite.add(Vt, Vr);
+					c_sprite.invert(a_sprite);
+					d_sprite.invert(b_sprite);
+					Fvector center_sprite;
+					center_sprite.mad(tracer_last_pos, tracer_direction, length * .5f);
+				
+					Fbox2 crcuv = circle_uv;
+					Fbox2 spruv = sprite_uv;
+				
+					Fvector2 a_c_uf{ crcuv.min.x,crcuv.min.y };
+					Fvector2 c_c_uf{ crcuv.max.x,crcuv.max.y };
+				
+					Fvector2 a_s_uf{ spruv.min.x,spruv.min.y };
+					Fvector2 c_s_uf{ spruv.max.x,spruv.max.y };
+				
+					Fvector a_c_vert{ a_circle + center_circle };
+					Fvector c_c_vert{ c_circle + center_circle };
+				
+					Fvector a_s_vert{ a_sprite + center_sprite };
+					Fvector c_s_vert{ c_sprite + center_sprite };
+				
+					*(*buffer) =
+					{
+						d_circle + center_circle,color,{crcuv.min.x,crcuv.max.y},
+						a_c_vert,color,a_c_uf,
+						c_c_vert,color,c_c_uf,
+						c_c_vert,color,c_c_uf,
+						a_c_vert,color,a_c_uf,
+						b_circle + center_circle,color,{crcuv.max.x,crcuv.min.y},
+				
+						d_sprite + center_sprite,color,{spruv.min.x,spruv.max.y},
+						a_s_vert,color,a_s_uf,
+						c_s_vert,color,c_s_uf,
+						c_s_vert,color,c_s_uf,
+						a_s_vert,color,a_s_uf,
+						b_sprite + center_sprite,color,{spruv.max.x,spruv.min.y},
+					};
+					(*buffer)++;
+				}
 			}
 
 			UIRender->FlushPrimitive();
@@ -1276,8 +1269,6 @@ void CBulletManager::Render	()
 	if (g_bullet_debug_trj && !m_Bullets.empty() && g_bullet_debug_trj_totalLines > 0u)
 	{
 		constexpr u32 DEFAULT_COLOR = color_rgba(100u, 255u, 100u, 255u);
-		constexpr u32 MAX_LINES_PER_BATCH = 80'000u;
-		constexpr Fvector2 nulluv = { 0.f,0.f };
 		UIRender->SetShader(*m_trj_shader);
 
 		static xr_vector<std::pair<Fvector, Fvector>> all_lines;
@@ -1287,18 +1278,17 @@ void CBulletManager::Render	()
 		for (SBullet& bullet : m_Bullets)
 			all_lines.insert(all_lines.end(), bullet.lines.begin(), bullet.lines.end());
 
-		u32 current_line = 0;
-		while (current_line < all_lines.size())
+		u32 MAX_LINES = UIRender->VBuffMaxSize() / sizeof(IUIRender::r_vertL<2u>);
+		u32 total_lines = (u32)all_lines.size();
+
+		for (u32 start_idx = 0u; start_idx < total_lines; start_idx += MAX_LINES)
 		{
-			u32 lines_in_batch = std::min(MAX_LINES_PER_BATCH,
-				(u32)all_lines.size() - current_line);
-			u32 vertices_in_batch = lines_in_batch * 2u;
+			u32 batch_size = std::min(MAX_LINES, total_lines - start_idx);
+			IUIRender::r_vertL<2u>** buffer = (IUIRender::r_vertL<2u>**)UIRender->StartPrimitive(batch_size * 2u, IUIRender::ptLineList, IUIRender::pttL);
 
-			IUIRender::r_vertL<2>** buffer = (IUIRender::r_vertL<2>**)UIRender->StartPrimitive(vertices_in_batch, IUIRender::ptLineList, IUIRender::pttL);
-
-			for (u32 i = 0; i < lines_in_batch; ++i)
+			for (u32 i = 0u; i < batch_size; ++i)
 			{
-				auto& line = all_lines[current_line + i];
+				auto& line = all_lines[start_idx + i];
 
 				*(*buffer) =
 				{
@@ -1309,7 +1299,6 @@ void CBulletManager::Render	()
 			}
 
 			UIRender->FlushPrimitive();
-			current_line += lines_in_batch;
 		}
 	}
 }

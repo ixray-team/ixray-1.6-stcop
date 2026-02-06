@@ -25,7 +25,7 @@ public:
 		pttLIT
 	};
 
-	template<u8 verts_count = 1>
+	template<u32 verts_count = 1>
 	struct r_vertL
 	{
 		struct
@@ -34,7 +34,7 @@ public:
 		} vertices[verts_count];
 	};
 
-	template<u8 verts_count = 1>
+	template<u32 verts_count = 1>
 	struct r_vertLIT
 	{
 		struct
@@ -65,6 +65,8 @@ public:
 	virtual void	CacheSetCullMode	(ERHI_CULLMODE) = 0;
 
 	virtual void zb_enable(u32 val) = 0;
+
+	virtual u32 VBuffMaxSize() { return 0U; }
 };
 
 #endif	//	UIRender_included
