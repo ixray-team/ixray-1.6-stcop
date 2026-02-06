@@ -333,6 +333,7 @@ void CContentView::DrawHeader()
 		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 5);
 	}
 
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.f);
 	if (ImGui::Button("root"))
 	{
 		CurrentDir = RootDir;
@@ -449,6 +450,7 @@ void CContentView::DrawHeader()
 	}
 
 	ImVec2 IconSize{ 0,0 };
+	ImGui::PopStyleVar();
 
 	ImGui::SetNextItemWidth(w - IconSize.x*1.5f);
 
