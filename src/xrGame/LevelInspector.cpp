@@ -701,14 +701,12 @@ void LevelInspector::OnRender()
 		constexpr Fvector2 nulluv = { 0.f,0.f };
 		if (!tris_empty)
 		{
-			u32 MAX_TRIS_PER_BATCH = 58'000u;
+			u32 MAX_TRIS = UIRender->VBuffMaxSize() / sizeof(IUIRender::r_vertL<3>);
 			u32 total_tris = (u32)tris.size();
 
-			for (u32 start_idx = 0u; start_idx < total_tris; start_idx += MAX_TRIS_PER_BATCH)
+			for (u32 start_idx = 0u; start_idx < total_tris; start_idx += MAX_TRIS)
 			{
-				u32 total = total_tris - start_idx;
-				u32 batch_size = std::min(MAX_TRIS_PER_BATCH, total);
-
+				u32 batch_size = std::min(MAX_TRIS, total_tris - start_idx);
 				IUIRender::r_vertL<3>** buffer = (IUIRender::r_vertL<3>**)UIRender->StartPrimitive(batch_size * 3u, IUIRender::ptTriList, IUIRender::pttL);
 				for (size_t i = 0u; i < batch_size; ++i)
 				{
@@ -730,14 +728,12 @@ void LevelInspector::OnRender()
 
 		if (!lines_empty)
 		{
-			u32 MAX_LINES_PER_BATCH = 87'000u;
+			u32 MAX_LINES = UIRender->VBuffMaxSize() / sizeof(IUIRender::r_vertL<2>);
 			u32 total_lines = (u32)lines.size();
 
-			for (u32 start_idx = 0u; start_idx < total_lines; start_idx += MAX_LINES_PER_BATCH)
+			for (u32 start_idx = 0u; start_idx < total_lines; start_idx += MAX_LINES)
 			{
-				u32 total = total_lines - start_idx;
-				u32 batch_size = std::min(MAX_LINES_PER_BATCH, total);
-
+				u32 batch_size = std::min(MAX_LINES, total_lines - start_idx);
 				IUIRender::r_vertL<2>** buffer = (IUIRender::r_vertL<2>**)UIRender->StartPrimitive(batch_size * 2u, IUIRender::ptLineList, IUIRender::pttL);
 
 				for (u32 i = 0u; i < batch_size; ++i)
@@ -2135,29 +2131,18 @@ void LevelInspector::DrawLevelGraph()
 			UIRender->zb_enable(zbuffer_enable);
 		}
 
-		constexpr u32 TRIS_PER_QUAD = 2u;
-		constexpr u32 MAX_TRIS_PER_BATCH = 58'000u;
-		constexpr u32 MAX_QUADS_PER_BATCH = MAX_TRIS_PER_BATCH / TRIS_PER_QUAD;
-		constexpr u32 VERTS_PER_BATCH = MAX_TRIS_PER_BATCH * 3u;
-
 		xr_vector<IUIRender::r_vertL<6>>& nodes = vertex_buffer[render_idx];
-		u32 total_quads = (u32)nodes.size();
-		u32 total_tris = total_quads * TRIS_PER_QUAD;
+		u32 MAX_NODES = UIRender->VBuffMaxSize() / sizeof(IUIRender::r_vertL<6>);
+		u32 total_nodes = (u32)nodes.size();
 
-		u32 num_batches = (total_tris + MAX_TRIS_PER_BATCH - 1) / MAX_TRIS_PER_BATCH;
-
-		for (u32 batch_idx = 0u; batch_idx < num_batches; ++batch_idx)
+		for (u32 start_idx = 0u; start_idx < total_nodes; start_idx += MAX_NODES)
 		{
-			u32 start_quad = batch_idx * MAX_QUADS_PER_BATCH;
-			u32 quads_in_batch = std::min(MAX_QUADS_PER_BATCH, total_quads - start_quad);
-			u32 tris_in_batch = quads_in_batch * TRIS_PER_QUAD;
+			u32 batch_size = std::min(MAX_NODES, total_nodes - start_idx);
+			IUIRender::r_vertL<6>** buffer = (IUIRender::r_vertL<6>**)UIRender->StartPrimitive(batch_size * 6u, IUIRender::ptTriList, IUIRender::pttL);
 
-			IUIRender::r_vertL<6>** buffer = (IUIRender::r_vertL<6>**)UIRender->StartPrimitive(tris_in_batch * 3u, IUIRender::ptTriList, IUIRender::pttL);
-
-			u32 end_quad = start_quad + quads_in_batch;
-			for (u32 q = start_quad; q < end_quad; ++q)
+			for (u32 i = 0u; i < batch_size; ++i)
 			{
-				*(*buffer) = nodes[q];
+				*(*buffer) = nodes[start_idx + i];
 				(*buffer)++;
 			}
 
