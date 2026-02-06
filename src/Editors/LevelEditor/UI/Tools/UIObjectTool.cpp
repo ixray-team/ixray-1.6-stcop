@@ -78,17 +78,16 @@ void UIObjectTool::HandleDragDrop()
 
 void UIObjectTool::Draw()
 {
-	//ImGui::Checkbox("Show lists", &bDrawList);
-
-
-	if (XRay::ImGui::TumblerButton("Multiple Append in World Center", m_MultiAppend, { -1, 25 }))
+	if (ImGui::Button("Multiple Append in World Center", { -1, 25 }))
 	{
+		m_MultiAppend = true;
 		UIChooseForm::SelectItem(smObject, 512, 0);
 	}
+	ImGui::Separator();
 
 	const float TumblerWidth = ImGui::GetContentRegionAvail().x - (27 * 2);
 
-	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, ImGui::GetStyle().ItemSpacing.y));
 
 	if (XRay::ImGui::TumblerButton("Random Append", m_RandomAppend, { TumblerWidth, 25 }))
 	{
@@ -155,71 +154,60 @@ void UIObjectTool::Draw()
 		{
 			GenerateGarbage();
 		}
+		ImGui::Separator();
 	}
 
 	m_RemoveTexture.destroy();
 
-	ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-	if (ImGui::TreeNode("Reference Select"))
+	static bool ShowRefSel = false;
+	XRay::ImGui::TumblerButton("Reference Select", ShowRefSel, { -1, 25 });
+
+	if (ShowRefSel)
 	{
-		ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
-		{
-			ImGui::Text("Select by Current: "); ImGui::SameLine(); if (ImGui::Button(" +")) { SelByRefObject(true); } ImGui::SameLine(); if (ImGui::Button(" -")) { SelByRefObject(false); }
-			ImGui::Text("Select by Selected:"); ImGui::SameLine(); if (ImGui::Button("=%")) { MultiSelByRefObject(true); } ImGui::SameLine(); if (ImGui::Button("+%")) { MultiSelByRefObject(false); } ImGui::SameLine(); ImGui::SetNextItemWidth(-ImGui::GetTextLineHeight() - 8); ImGui::DragFloat("%", &m_selPercent, 1, 0, 100, "%.1f");
-		}
+		ImGui::Text("Select by Current: "); ImGui::SameLine(); if (ImGui::Button(" +")) { SelByRefObject(true); } ImGui::SameLine(); if (ImGui::Button(" -")) { SelByRefObject(false); }
+		ImGui::Text("Select by Selected:"); ImGui::SameLine(); if (ImGui::Button("=%")) { MultiSelByRefObject(true); } ImGui::SameLine(); if (ImGui::Button("+%")) { MultiSelByRefObject(false); } ImGui::SameLine(); ImGui::SetNextItemWidth(-ImGui::GetTextLineHeight() - 8); ImGui::DragFloat("%", &m_selPercent, 1, 0, 100, "%.1f");
 		ImGui::Separator();
-		ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
-		ImGui::TreePop();
 	}
-	ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
 
 	float XSize = ImGui::GetWindowSize().x - 25;
 	XSize /= 2;
 
-	if (ImGui::TreeNode("Surface"))
+	static bool ShowSurf = false;
+	XRay::ImGui::TumblerButton("Surface", ShowSurf, { -1, 25 });
+	if (ShowSurf)
 	{
-		ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
+		if (ImGui::Button("Clear Select", ImVec2(XSize, 0)))
 		{
-			if (ImGui::Button("Clear Select", ImVec2(XSize, 0)))
+			Scene->UndoSave();
+			ClearSurface(true);
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Clear Level", ImVec2(XSize, 0)))
+		{
+			if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to reset surface in level?") == mrYes)
 			{
 				Scene->UndoSave();
-				ClearSurface(true);
-			}
-			ImGui::SameLine();
-			if (ImGui::Button("Clear Level", ImVec2(XSize, 0)))
-			{
-				if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to reset surface in level?") == mrYes) 
-				{
-					Scene->UndoSave();
-					ClearSurface(false);
-				}
-			  
+				ClearSurface(false);
 			}
 		}
 		ImGui::Separator();
-		ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
-		ImGui::TreePop();
 	}
-	ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-	if (ImGui::TreeNode("Current Object"))
-	{
 
-		ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
+	static bool ShowCurObject = false;
+	XRay::ImGui::TumblerButton("Current Object", ShowCurObject, { -1, 25 });
+	if (ShowCurObject)
+	{
+		if (ImGui::Button("Select", ImVec2(XSize, 0)))
 		{
-			if (ImGui::Button("Select", ImVec2(XSize, 0)))
-			{
-				UIChooseForm::SelectItem(smObject,1, m_Current,0,0,0,0,0);
-				m_Selection = true;
-			}
-			ImGui::SameLine();
-			if (ImGui::Button("Refresh", ImVec2(XSize, 0)))
-			{
-				RefreshList();
-			}
+			UIChooseForm::SelectItem(smObject, 1, m_Current, 0, 0, 0, 0, 0);
+			m_Selection = true;
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Refresh", ImVec2(XSize, 0)))
+		{
+			RefreshList();
 		}
 		ImGui::Separator();
-		ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
-		ImGui::TreePop();
 	}
 }
 
