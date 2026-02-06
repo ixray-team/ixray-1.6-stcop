@@ -31,7 +31,7 @@ void UIPropertiesItem::Draw()
 	if (!Items.empty())
 	{
 		ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, ImGui::GetColorU32(ImGuiCol_TableRowBgAlt));
-		constexpr ImGuiTreeNodeFlags FloderFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
+		constexpr ImGuiTreeNodeFlags FloderFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap;
 		if (IsSelect)
 		{
 			ImVec4 TextColor = ImGui::GetStyle().Colors[ImGuiCol_Text];
@@ -43,14 +43,23 @@ void UIPropertiesItem::Draw()
 			ImGui::PushStyleColor(ImGuiCol_Text, TextColor);
 		}
 
-		bool open = ImGui::TreeNodeEx(Name.c_str(), FloderFlags);
-
+		//float LastCursorPosX = ImGui::GetCursorPosX();
+		bool open = ImGui::TreeNodeEx((xr_string("##") + *Name).c_str(), FloderFlags);
+		
 		if (IsSelect)
 		{
 			ImGui::PopStyleColor();
 		}
+
+		ImDrawList* DrawList = ImGui::GetWindowDrawList();
+		ImVec2 row_min = ImGui::GetItemRectMin();
+		ImVec2 text_pos = row_min;
+		text_pos.x += 19;
+
+		DrawList->AddText(text_pos, ImGui::GetColorU32(ImGuiCol_Text), *Name);
 		ImGui::TableNextColumn();
-		DrawItem();
+		DrawList->AddText(text_pos, ImGui::GetColorU32(ImGuiCol_Text), *Name);
+
 		if (open)
 		{
 			for (UITreeItem* Item : Items)
