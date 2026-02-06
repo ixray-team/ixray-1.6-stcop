@@ -375,39 +375,65 @@ void UIPropertiesItem::DrawProp()
 	{
 		MultiChooseValue* Prop = (MultiChooseValue*)PItem->GetFrontValue();
 
-		for (ChooseValue* ChooseItem: Prop->Values)
+		if (ImGui::BeginTable("##multi_choose_table", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_NoBordersInBody | ImGuiTableFlags_NoPadOuterX))
 		{
-			xr_string text = ChooseItem->Owner()->Key();
-			xr_string TextValue = ChooseItem->Owner()->GetDrawText();
-			if (TextValue.empty())
-			{
-				text = NONE_CAPTION;
-			}
-			else
-			{
-				xr_path ExtractName = text;
-				text = ExtractName.xfilename() + ": " + TextValue;
-			}
+			ImGui::TableSetupColumn("Key", ImGuiTableColumnFlags_WidthFixed);
+			ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
 
-			if (ImGui::Button(text.c_str(), ImVec2(-1, 0)))
+			for (ChooseValue* ChooseItem : Prop->Values)
 			{
-				ChooseValue* V = dynamic_cast<ChooseValue*>(ChooseItem->Owner()->GetFrontValue()); VERIFY(V);
-				shared_str	edit_val = V->GetValue();
-				if (!edit_val.size())
-					edit_val = V->m_StartPath;
+				xr_string text = ChooseItem->Owner()->Key();
+				xr_string TextValue = ChooseItem->Owner()->GetDrawText();
 
-				ChooseItem->Owner()->BeforeEdit<ChooseValue, shared_str>(edit_val);
-
-				ChooseItemVec Items;
-				if (!V->OnChooseFillEvent.empty())
+				if (TextValue.empty())
 				{
-					V->m_Items = &Items;
-					V->OnChooseFillEvent(V);
+					text = NONE_CAPTION;
+					TextValue = NONE_CAPTION;
 				}
-				UIChooseForm::SelectItem(V->m_ChooseID, V->subitem, edit_val.c_str(), 0, V->m_FillParam, 0, !Items.empty() ? &Items : 0, V->m_ChooseFlags);
-				PropertiesFrom->m_EditChooseValue = ChooseItem->Owner();
+				else
+				{
+					xr_path ExtractName = text;
+					text = ExtractName.xfilename();
+				}
+
+				ImGui::PushID(ChooseItem);
+				ImGui::TableNextRow();
+
+				ImGui::TableSetColumnIndex(0);
+				ImGui::AlignTextToFramePadding();
+				ImGui::TextUnformatted(text.c_str());
+
+				ImGui::TableSetColumnIndex(1);
+				if (ImGui::Button(TextValue.c_str(), ImVec2(-1, 0)))
+				{
+					ChooseValue* V = dynamic_cast<ChooseValue*>(ChooseItem->Owner()->GetFrontValue());
+					VERIFY(V);
+
+					shared_str edit_val = V->GetValue();
+					if (!edit_val.size())
+					{
+						edit_val = V->m_StartPath;
+					}
+
+					ChooseItem->Owner()->BeforeEdit<ChooseValue, shared_str>(edit_val);
+
+					ChooseItemVec Items;
+					if (!V->OnChooseFillEvent.empty())
+					{
+						V->m_Items = &Items;
+						V->OnChooseFillEvent(V);
+					}
+
+					UIChooseForm::SelectItem(V->m_ChooseID, V->subitem, edit_val.c_str(), 0, V->m_FillParam, 0, !Items.empty() ? &Items : 0, V->m_ChooseFlags);
+					PropertiesFrom->m_EditChooseValue = ChooseItem->Owner();
+				}
+
+				ImGui::PopID();
 			}
+
+			ImGui::EndTable();
 		}
+
 		break;
 	}
 	case PROP_CHOOSE:
