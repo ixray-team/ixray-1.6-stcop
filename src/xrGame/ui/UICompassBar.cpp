@@ -13,61 +13,39 @@
 #include "../../xrUI/Widgets/UILines.h"
 #include "../../xrEngine/GameFont.h"
 #include "../../xrCore/FormatParsers/XML/xrXMLParser.h"
-
-static const char* kActiveMarkerFallbackTexture = "ui_inGame2_hint_wnd_main_window";
-
-void CUICompassBar::detachAndDelete(CUIWindow* wnd)
-{
-    if (!wnd)
-    {
-        return;
-    }
-    CUIWindow* parent = wnd->GetParent();
-    if (parent)
-    {
-        parent->DetachChild(wnd);
-    }
-    xr_delete(wnd);
-}
+#include "../../xrCore/vector.h"
 
 CUICompassBar::CUICompassBar()
     : _background(nullptr),
+      _layerBg(nullptr),
       _strip(nullptr),
-      _cardinalN(nullptr),
-      _cardinalE(nullptr),
-      _cardinalS(nullptr),
-      _cardinalW(nullptr),
-      _activeDistanceText(nullptr),
-      _activeTargetMarker(nullptr),
-      _fov(kDefaultFovDeg * kPi / 180.0f),
-      _stripWidth(0.0f),
-      _stripTexWidth(771.0f),
-      _stripY(0.0f),
-      _markersY(0.0f),
-      _distTextY(-18.0f),
-      _smoothSpeed(10.0f),
-      _activeTargetPadding(8.0f),
-      _activeBlockOffsetX(0.0f),
-      _activeBlockOffsetY(0.0f),
-      _textOffsetX(0.0f),
-      _textOffsetY(0.0f),
-      _curActiveX(0.0f),
+      _layerFg(nullptr),
+      _activeMarker(nullptr),
+      _activeDistText(nullptr),
+      _activeTargetLoc(nullptr),
       _lastActiveLoc(nullptr),
-      _activeTargetLoc(nullptr)
+      _activeTargetCurX(0.0f),
+      _fov(_kDefaultFovDeg * _kPi / 180.0f),
+      _stripWidth(0.0f),
+      _stripTexWidth(_kDefaultStripTexWidth),
+      _stripTexLoop(true),
+      _collectSpotsTimer(0.0f)
 {
+    _cfg.stripY = 0.0f;
+    _cfg.markersY = 0.0f;
+    _cfg.activePadding = 8.0f;
+    _cfg.smoothingSpeed = 10.0f;
+    _cfg.distY = -18.0f;
+    _cfg.activeOffsetX = 0.0f;
+    _cfg.activeOffsetY = 0.0f;
+    _cfg.textOffsetX = 38.0f;
+    _cfg.textOffsetY = 10.0f;
 }
 
 CUICompassBar::~CUICompassBar()
 {
-    detachAndDelete(_activeDistanceText);
-    _activeDistanceText = nullptr;
-    detachAndDelete(_activeTargetMarker);
-    _activeTargetMarker = nullptr;
-    for (CUIStatic* s : _spotPool)
-    {
-        detachAndDelete(s);
-    }
-    _spotPool.clear();
+    _poolSpots.clear();
+    _poolSpotTextureNames.clear();
 }
 
 void CUICompassBar::Init()
@@ -80,6 +58,29 @@ void CUICompassBar::Init()
         Msg("! CUICompassBar::Init: node 'compass_bar' not found in compass_bar.xml");
         return;
     }
+    InitWindowAndBackground(uiXml, xmlInit);
+    InitLayoutFromXml(uiXml);
+
+    _layerBg = new CUIWindow();
+    _layerBg->SetAutoDelete(true);
+    _layerBg->SetWndSize(GetWndSize());
+    _layerBg->SetWndPos(Fvector2().set(0.0f, 0.0f));
+    AttachChild(_layerBg);
+
+    InitCompassDial(uiXml, xmlInit);
+
+    _layerFg = new CUIWindow();
+    _layerFg->SetAutoDelete(true);
+    _layerFg->SetWndSize(GetWndSize());
+    _layerFg->SetWndPos(Fvector2().set(0.0f, 0.0f));
+    AttachChild(_layerFg);
+
+    InitActiveTargetWidgets(uiXml);
+    InitStripVectorIcon(uiXml);
+}
+
+void CUICompassBar::InitWindowAndBackground(CUIXml& uiXml, CUIXmlInit& xmlInit)
+{
     xmlInit.InitWindow(uiXml, "compass_bar", 0, this);
     _background = UIHelper::CreateStatic(uiXml, "compass_bar:background", this);
     if (!_background)
@@ -89,9 +90,19 @@ void CUICompassBar::Init()
         _background->SetWndSize(GetWndSize());
         AttachChild(_background);
     }
-    float fovDeg = uiXml.ReadAttribFlt("compass_bar", 0, "fov_angle", kDefaultFovDeg);
-    _fov = fovDeg * kPi / 180.0f;
-    parseSpots(uiXml, "compass_bar:spots");
+    else
+    {
+        _background->SetWndSize(GetWndSize());
+        _background->SetWndPos(Fvector2().set(0.0f, 0.0f));
+    }
+}
+
+void CUICompassBar::InitLayoutFromXml(CUIXml& uiXml)
+{
+    float fovDeg = uiXml.ReadAttribFlt("compass_bar", 0, "fov_angle", _kDefaultFovDeg);
+    _fov = fovDeg * _kPi / 180.0f;
+    ParseSpots(uiXml, "compass_bar:spots");
+
     const char* layoutPath = "compass_bar:active_target";
     if (!uiXml.NavigateToNode(layoutPath, 0))
     {
@@ -99,92 +110,51 @@ void CUICompassBar::Init()
     }
     if (uiXml.NavigateToNode(layoutPath, 0))
     {
-        _stripY = uiXml.ReadAttribFlt(layoutPath, 0, "strip_y", 0.0f);
-        _markersY = uiXml.ReadAttribFlt(layoutPath, 0, "markers_y", 0.0f);
-        _distTextY = uiXml.ReadAttribFlt(layoutPath, 0, "dist_y", -18.0f);
-        _smoothSpeed = uiXml.ReadAttribFlt(layoutPath, 0, "smoothing_speed", 10.0f);
-        _activeTargetPadding = uiXml.ReadAttribFlt(layoutPath, 0, "active_target_padding", 8.0f);
-        _activeBlockOffsetX = uiXml.ReadAttribFlt(layoutPath, 0, "offset_x", 0.0f);
-        _activeBlockOffsetY = uiXml.ReadAttribFlt(layoutPath, 0, "offset_y", 0.0f);
-        _textOffsetX = uiXml.ReadAttribFlt(layoutPath, 0, "text_offset_x", 0.0f);
-        _textOffsetY = uiXml.ReadAttribFlt(layoutPath, 0, "text_offset_y", 0.0f);
-    }
-    initCompassDial(uiXml, xmlInit);
-    if (uiXml.NavigateToNode("compass_bar:active_target:distance_text", 0))
-    {
-        _activeDistanceText = UIHelper::CreateStatic(uiXml, "compass_bar:active_target:distance_text", this);
-        if (_activeDistanceText)
-        {
-            _activeDistanceText->SetAutoDelete(false);
-        }
-    }
-    if (uiXml.NavigateToNode("compass_bar:active_target:marker", 0))
-    {
-        _activeTargetMarker = UIHelper::CreateStatic(uiXml, "compass_bar:active_target:marker", nullptr, false);
-        if (_activeTargetMarker)
-        {
-            _activeTargetMarker->SetAutoDelete(false);
-        }
-    }
-    _spotPool.reserve(kMaxSpotPoolSize);
-    for (u32 i = 0; i < kMaxSpotPoolSize; ++i)
-    {
-        CUIStatic* s = new CUIStatic();
-        s->SetAutoDelete(false);
-        s->SetWndSize(Fvector2().set(16.0f, 16.0f));
-        s->SetStretchTexture(true);
-        s->Show(false);
-        _spotPool.push_back(s);
+        _cfg.stripY = uiXml.ReadAttribFlt(layoutPath, 0, "strip_y", 0.0f);
+        _cfg.markersY = uiXml.ReadAttribFlt(layoutPath, 0, "markers_y", 0.0f);
+        _cfg.distY = uiXml.ReadAttribFlt(layoutPath, 0, "dist_y", -18.0f);
+        _cfg.smoothingSpeed = uiXml.ReadAttribFlt(layoutPath, 0, "smoothing_speed", 10.0f);
+        _cfg.activePadding = uiXml.ReadAttribFlt(layoutPath, 0, "active_target_padding", 8.0f);
+        _cfg.activeOffsetX = uiXml.ReadAttribFlt(layoutPath, 0, "offset_x", 0.0f);
+        _cfg.activeOffsetY = uiXml.ReadAttribFlt(layoutPath, 0, "offset_y", 0.0f);
+        _cfg.textOffsetX = uiXml.ReadAttribFlt(layoutPath, 0, "text_offset_x", 38.0f);
+        _cfg.textOffsetY = uiXml.ReadAttribFlt(layoutPath, 0, "text_offset_y", 10.0f);
     }
 }
 
-u8 CUICompassBar::parseAlign(const char* alignStr)
+void CUICompassBar::ParseSpots(CUIXml& uiXml, const char* path)
 {
-    if (!alignStr || !*alignStr)
-    {
-        return 1;
-    }
-    if (alignStr[0] == 'l' || alignStr[0] == 'L')
-    {
-        return 0;
-    }
-    if (alignStr[0] == 'r' || alignStr[0] == 'R')
-    {
-        return 2;
-    }
-    return 1;
-}
-
-void CUICompassBar::parseSpots(CUIXml& uiXml, const char* path)
-{
-    _spotConfig.show = true;
-    _spotConfig.offsetX = 0.0f;
-    _spotConfig.offsetY = 0.0f;
-    _spotConfig.align = 1;
-    _spotConfig.spotWidth = 16.0f;
-    _spotConfig.spotHeight = 16.0f;
-    _spotConfig.maxDistance = -1.0f;
-    _spotConfig.layer = 1;
+    _spotCfg.show = true;
+    _spotCfg.offsetX = 0.0f;
+    _spotCfg.offsetY = 0.0f;
+    _spotCfg.align = 1;
+    _spotCfg.spotWidth = 14.0f;
+    _spotCfg.spotHeight = 17.0f;
+    _spotCfg.maxDistance = -1.0f;
     if (!uiXml.NavigateToNode(path, 0))
     {
         return;
     }
-    _spotConfig.show = uiXml.ReadAttribInt(path, 0, "show", 1) != 0;
-    _spotConfig.offsetX = uiXml.ReadAttribFlt(path, 0, "x", 0.0f);
-    _spotConfig.offsetY = uiXml.ReadAttribFlt(path, 0, "y", 0.0f);
-    _spotConfig.align = parseAlign(uiXml.ReadAttrib(path, 0, "align", "c"));
-    _spotConfig.maxDistance = uiXml.ReadAttribFlt(path, 0, "max_distance", -1.0f);
-    _spotConfig.layer = uiXml.ReadAttribInt(path, 0, "layer", 1);
+    _spotCfg.show = uiXml.ReadAttribInt(path, 0, "show", 1) != 0;
+    _spotCfg.offsetX = uiXml.ReadAttribFlt(path, 0, "x", 0.0f);
+    _spotCfg.offsetY = uiXml.ReadAttribFlt(path, 0, "y", 0.0f);
+    _spotCfg.align = ParseAlign(uiXml.ReadAttrib(path, 0, "align", "c"));
+    _spotCfg.maxDistance = uiXml.ReadAttribFlt(path, 0, "max_distance", -1.0f);
+    _spotCfg.collectInterval = uiXml.ReadAttribFlt(path, 0, "collect_interval", 0.1f);
+    if (_spotCfg.collectInterval <= 0.0f)
+    {
+        _spotCfg.collectInterval = 0.1f;
+    }
     string_path tmplPath;
     xr_strconcat(tmplPath, path, ":spot_template");
     if (uiXml.NavigateToNode(tmplPath, 0))
     {
-        _spotConfig.spotWidth = uiXml.ReadAttribFlt(tmplPath, 0, "width", 16.0f);
-        _spotConfig.spotHeight = uiXml.ReadAttribFlt(tmplPath, 0, "height", 16.0f);
+        _spotCfg.spotWidth = uiXml.ReadAttribFlt(tmplPath, 0, "width", 14.0f);
+        _spotCfg.spotHeight = uiXml.ReadAttribFlt(tmplPath, 0, "height", 17.0f);
     }
 }
 
-void CUICompassBar::initCompassDial(CUIXml& uiXml, CUIXmlInit& xmlInit)
+void CUICompassBar::InitCompassDial(CUIXml& uiXml, CUIXmlInit& xmlInit)
 {
     const char* stripPath = "compass_bar:strip";
     const char* cardinalsPath = "compass_bar:cardinal_points";
@@ -194,7 +164,20 @@ void CUICompassBar::initCompassDial(CUIXml& uiXml, CUIXmlInit& xmlInit)
         cardinalsPath = "compass_bar:compass_dial:cardinal_points";
     }
     _strip = UIHelper::CreateStatic(uiXml, stripPath, this);
-    _stripTexWidth = uiXml.ReadAttribFlt(stripPath, 0, "tex_width", 771.0f);
+    _stripXmlPath = stripPath;
+    _stripTexWidth = uiXml.ReadAttribFlt(stripPath, 0, "tex_width", _kDefaultStripTexWidth);
+    _stripTexLoop = uiXml.ReadAttribInt(stripPath, 0, "tex_loop", 1) != 0;
+    _stripSvgPath = nullptr;
+    string_path svgNodePath;
+    xr_strconcat(svgNodePath, stripPath, ":svg");
+    if (uiXml.NavigateToNode(svgNodePath, 0))
+    {
+        LPCSTR svgText = uiXml.Read(svgNodePath, 0, "");
+        if (svgText && *svgText)
+        {
+            _stripSvgPath = svgText;
+        }
+    }
     if (_strip)
     {
         _stripWidth = _strip->GetWidth();
@@ -208,52 +191,33 @@ void CUICompassBar::initCompassDial(CUIXml& uiXml, CUIXmlInit& xmlInit)
         defW = uiXml.ReadAttribFlt(cardinalsPath, 0, "width", 16.0f);
         defH = uiXml.ReadAttribFlt(cardinalsPath, 0, "height", 14.0f);
     }
-    string_path nodePath;
-    xr_sprintf(nodePath, "%s:n", cardinalsPath);
-    if (uiXml.NavigateToNode(nodePath, 0))
+    const char* dirs[] = { "n", "e", "s", "w", "ne", "se", "sw", "nw" };
+    _cardinals.clear();
+    _cardinals.reserve(8);
+    for (const char* d : dirs)
     {
-        _cardinalN = initCardinalStatic(uiXml, xmlInit, cardinalsPath, "n", defY, defW, defH);
-    }
-    xr_sprintf(nodePath, "%s:e", cardinalsPath);
-    if (uiXml.NavigateToNode(nodePath, 0))
-    {
-        _cardinalE = initCardinalStatic(uiXml, xmlInit, cardinalsPath, "e", defY, defW, defH);
-    }
-    xr_sprintf(nodePath, "%s:s", cardinalsPath);
-    if (uiXml.NavigateToNode(nodePath, 0))
-    {
-        _cardinalS = initCardinalStatic(uiXml, xmlInit, cardinalsPath, "s", defY, defW, defH);
-    }
-    xr_sprintf(nodePath, "%s:w", cardinalsPath);
-    if (uiXml.NavigateToNode(nodePath, 0))
-    {
-        _cardinalW = initCardinalStatic(uiXml, xmlInit, cardinalsPath, "w", defY, defW, defH);
-    }
-    if (_cardinalN)
-    {
-        AttachChild(_cardinalN);
-    }
-    if (_cardinalE)
-    {
-        AttachChild(_cardinalE);
-    }
-    if (_cardinalS)
-    {
-        AttachChild(_cardinalS);
-    }
-    if (_cardinalW)
-    {
-        AttachChild(_cardinalW);
+        string_path nodePath;
+        xr_sprintf(nodePath, "%s:%s", cardinalsPath, d);
+        if (uiXml.NavigateToNode(nodePath, 0))
+        {
+            CUIStatic* st = InitCardinalStatic(uiXml, xmlInit, cardinalsPath, d, defY, defW, defH);
+            if (st)
+            {
+                AttachChild(st);
+                _cardinals.push_back(st);
+            }
+        }
     }
 }
 
-CUIStatic* CUICompassBar::initCardinalStatic(CUIXml& uiXml, CUIXmlInit& xmlInit, const char* cardinalsPath, const char* directionNode, float defaultY, float defaultW, float defaultH)
+CUIStatic* CUICompassBar::InitCardinalStatic(CUIXml& uiXml, CUIXmlInit& xmlInit, const char* cardinalsPath,
+    const char* directionNode, float defaultY, float defaultW, float defaultH)
 {
     string_path childPath;
-    xr_strconcat(childPath, cardinalsPath, ":", directionNode);
     string_path defaultTextPath;
-    xr_strconcat(defaultTextPath, cardinalsPath, ":text");
     string_path childTextPath;
+    xr_strconcat(childPath, cardinalsPath, ":", directionNode);
+    xr_strconcat(defaultTextPath, cardinalsPath, ":text");
     xr_strconcat(childTextPath, childPath, ":text");
 
     float y = uiXml.ReadAttribFlt(childPath, 0, "y", defaultY);
@@ -285,215 +249,207 @@ CUIStatic* CUICompassBar::initCardinalStatic(CUIXml& uiXml, CUIXmlInit& xmlInit,
             st->SetTextColor(CUIXmlInit::GetColor(uiXml, childPath, 0, 0xFFFFFFFF));
         }
         LPCSTR alignStr = uiXml.ReadAttrib(childPath, 0, "align", nullptr);
-        if (alignStr)
+        if (alignStr && st->TextItemControl())
         {
-            CUILines* lines = st->TextItemControl();
-            if (lines)
+            if (alignStr[0] == 'l' || alignStr[0] == 'L')
             {
-                if (alignStr[0] == 'l' || alignStr[0] == 'L')
-                {
-                    lines->SetTextAlignment(CGameFont::alLeft);
-                }
-                else if (alignStr[0] == 'r' || alignStr[0] == 'R')
-                {
-                    lines->SetTextAlignment(CGameFont::alRight);
-                }
-                else
-                {
-                    lines->SetTextAlignment(CGameFont::alCenter);
-                }
+                st->TextItemControl()->SetTextAlignment(CGameFont::alLeft);
+            }
+            else if (alignStr[0] == 'r' || alignStr[0] == 'R')
+            {
+                st->TextItemControl()->SetTextAlignment(CGameFont::alRight);
+            }
+            else
+            {
+                st->TextItemControl()->SetTextAlignment(CGameFont::alCenter);
             }
         }
     }
     return st;
 }
 
-CUIStatic& CUICompassBar::Background()
+void CUICompassBar::InitActiveTargetWidgets(CUIXml& uiXml)
 {
-    R_ASSERT(_background);
-    return *_background;
+    _activeMarkerFallbackTexture = uiXml.Read("compass_bar:active_target:marker:texture", 0,
+        "ui_inGame2_hint_wnd_main_window");
+    if (uiXml.NavigateToNode("compass_bar:active_target:distance_text", 0))
+    {
+        _activeDistText = UIHelper::CreateStatic(uiXml, "compass_bar:active_target:distance_text", this, false);
+        if (_activeDistText)
+        {
+            _activeDistText->SetAutoDelete(false);
+        }
+    }
+    if (uiXml.NavigateToNode("compass_bar:active_target:marker", 0))
+    {
+        _activeMarker = UIHelper::CreateStatic(uiXml, "compass_bar:active_target:marker", this, false);
+        if (_activeMarker)
+        {
+            _activeMarker->SetAutoDelete(false);
+        }
+    }
 }
 
-CUIWindow* CUICompassBar::GetFrame()
-{
-    return this;
-}
-
-void CUICompassBar::updateStrip(float heading)
+void CUICompassBar::InitStripVectorIcon(CUIXml& uiXml)
 {
     if (!_strip)
     {
         return;
     }
-    const float uvCenter = (heading + kPi) / (2.0f * kPi);
-    const float stripTexW = _stripTexWidth > 0.0f ? _stripTexWidth : 771.0f;
-    const float w = _strip->GetWidth();
-    float u = uvCenter * stripTexW - w * 0.5f;
-    u = clampr(u, 0.0f, stripTexW - w);
-    const float kx = UI().get_current_kx();
-    Frect rect;
-    rect.lt.set(u, 0.0f);
-    rect.rb.set(u + w / kx, _strip->GetHeight());
-    _strip->SetTextureRect(rect);
-}
-
-bool CUICompassBar::getCardinalX(float worldAngleRad, float heading, float& outX) const
-{
-    if (!_strip)
+    LPCSTR pSVG = _stripSvgPath.size() > 0 ? _stripSvgPath.c_str() : nullptr;
+    if (!pSVG && _strip->isSVGPresented())
     {
-        return false;
+        pSVG = _strip->getSVGFilename(uiXml, _stripXmlPath.c_str(), 0);
     }
-    float percent;
-    if (!computeRelativePercent(worldAngleRad, heading, _fov, false, percent))
-    {
-        return false;
-    }
-    const float stripLeft = _strip->GetWndPos().x;
-    const float stripW = _strip->GetWidth();
-    const float halfW = stripW * 0.5f;
-    outX = stripLeft + halfW + percent * halfW;
-    return true;
-}
-
-void CUICompassBar::updateCardinals(float heading)
-{
-    if (!_strip)
+    if (!pSVG || !*pSVG)
     {
         return;
     }
-    const float nAngle = 0.0f;
-    const float eAngle = 0.5f * kPi;
-    const float sAngle = kPi;
-    const float wAngle = -0.5f * kPi;
-    auto updateOneLambda = [this, heading](CUIStatic* st, float worldAngle)
+    const float fW = _stripTexWidth > 0.0f ? _stripTexWidth : _kDefaultStripTexWidth;
+    const float fH = _strip->GetHeight();
+    const ui_shader& shader = UI().GetVectorShader(pSVG, fW, fH);
+    const Frect uvRect = UI().GetVectorUV(pSVG, fW, fH);
+    if (!shader || !shader->inited())
     {
-        if (!st)
-        {
-            return;
-        }
-        float x;
-        if (!getCardinalX(worldAngle, heading, x))
-        {
-            st->Show(false);
-            return;
-        }
-        float cw = st->GetWidth();
-        st->SetWndPos(Fvector2().set(x - cw * 0.5f, st->GetWndPos().y));
-        st->Show(true);
-    };
-    updateOneLambda(_cardinalN, nAngle);
-    updateOneLambda(_cardinalE, eAngle);
-    updateOneLambda(_cardinalS, sAngle);
-    updateOneLambda(_cardinalW, wAngle);
+        return;
+    }
+    _strip->SetShader(shader);
+    _strip->SetTextureRect(uvRect);
 }
 
-bool CUICompassBar::getSpotX(const Fvector2& targetPos, const Fvector2& actorPos, float cameraHeading, float& outX) const
+u8 CUICompassBar::ParseAlign(const char* alignStr)
+{
+    if (!alignStr || !*alignStr)
+    {
+        return 1;
+    }
+    if (alignStr[0] == 'l' || alignStr[0] == 'L')
+    {
+        return 0;
+    }
+    if (alignStr[0] == 'r' || alignStr[0] == 'R')
+    {
+        return 2;
+    }
+    return 1;
+}
+
+bool CUICompassBar::ProjectToStrip(const Fvector& targetPos, const Fvector& actorPos, float camHeading,
+    float& outX, bool clampToEdges) const
 {
     Fvector2 dir;
-    dir.sub(targetPos, actorPos);
+    dir.set(targetPos.x - actorPos.x, targetPos.z - actorPos.z);
     if (dir.square_magnitude() < 0.01f)
     {
-        outX = _stripWidth * 0.5f;
+        outX = 0.0f;
         return true;
     }
     float targetYaw = dir.getH();
-    float percent;
-    if (!computeRelativePercent(targetYaw, cameraHeading, _fov, false, percent))
-    {
-        return false;
-    }
-    float centerX = _stripWidth * 0.5f;
-    outX = centerX + percent * (_stripWidth * 0.5f);
-    return true;
-}
-
-bool CUICompassBar::getActiveTargetSpotX(const Fvector2& targetPos, const Fvector2& actorPos, float cameraHeading, float& outX) const
-{
-    Fvector2 dir;
-    dir.sub(targetPos, actorPos);
-    if (dir.square_magnitude() < 0.01f)
-    {
-        outX = _stripWidth * 0.5f;
-        return true;
-    }
-    float targetYaw = dir.getH();
-    float percent;
-    if (!computeRelativePercent(targetYaw, cameraHeading, _fov, true, percent))
-    {
-        return false;
-    }
-    float centerX = _stripWidth * 0.5f;
-    outX = centerX + percent * (_stripWidth * 0.5f);
-    return true;
-}
-
-bool CUICompassBar::computeRelativePercent(float targetYaw, float actorYaw, float fov, bool clampToEdges, float& outPercent) const
-{
-    float delta = targetYaw - actorYaw;
-    while (delta > kPi)
-    {
-        delta -= 2.0f * kPi;
-    }
-    while (delta < -kPi)
-    {
-        delta += 2.0f * kPi;
-    }
-    float halfFov = fov * 0.5f;
+    float delta = angle_normalize_signed(targetYaw - camHeading);
+    float halfFov = _fov * 0.5f;
     if (!clampToEdges)
     {
-        float absDelta = delta < 0.0f ? -delta : delta;
-        if (absDelta > halfFov)
+        if (delta < -halfFov || delta > halfFov)
         {
             return false;
         }
-        outPercent = delta / halfFov;
-        return true;
-    }
-    if (delta <= -halfFov)
-    {
-        outPercent = -1.0f;
-    }
-    else if (delta >= halfFov)
-    {
-        outPercent = 1.0f;
     }
     else
     {
-        outPercent = delta / halfFov;
+        if (delta < -halfFov)
+        {
+            delta = -halfFov;
+        }
+        else if (delta > halfFov)
+        {
+            delta = halfFov;
+        }
     }
+    float halfW = _stripWidth * 0.5f;
+    outX = (delta / halfFov) * halfW;
     return true;
 }
 
-void CUICompassBar::SetActiveTarget(CMapLocation* loc)
+void CUICompassBar::UpdateStrip(float heading)
 {
-    _activeTargetLoc = loc;
+    if (!_strip)
+    {
+        return;
+    }
+    const float uvCenter = (heading + _kPi) / (2.0f * _kPi);
+    const float stripTexW = _stripTexWidth > 0.0f ? _stripTexWidth : _kDefaultStripTexWidth;
+    const float w = _strip->GetWidth();
+    const float kx = UI().get_current_kx();
+    const float winW = w / kx;
+    float u = uvCenter * stripTexW - winW * 0.5f;
+    if (_stripTexLoop)
+    {
+        u = fmodf(u, stripTexW);
+        if (u < 0.0f)
+        {
+            u += stripTexW;
+        }
+    }
+    else
+    {
+        u = clampr(u, 0.0f, stripTexW - winW);
+    }
+    Frect rect;
+    rect.lt.set(u, 0.0f);
+    rect.rb.set(u + winW, _strip->GetHeight());
+    _strip->SetTextureRect(rect);
 }
 
-void CUICompassBar::collectSpots(const Locations& locs, const shared_str& levelName, CMapLocation* activeTaskLoc,
-    const Fvector& actorPos, xr_vector<SCollectedSpot>& out) const
+void CUICompassBar::UpdateCardinals(float heading)
 {
-    out.clear();
-    out.reserve(kMaxSpotPoolSize);
+    if (!_strip || _cardinals.empty())
+    {
+        return;
+    }
+    const float angles[] = { 0.0f, 0.5f * _kPi, _kPi, -0.5f * _kPi,
+        _kPi * 0.25f, _kPi * 0.75f, -_kPi * 0.75f, -_kPi * 0.25f };
+    SCompassStripGeometry geom = GetStripGeometry();
+    Fvector actorPos = Level().CurrentViewEntity() ? Level().CurrentViewEntity()->Position() : Fvector().set(0, 0, 0);
+    for (size_t i = 0; i < _cardinals.size() && i < 8; ++i)
+    {
+        CUIStatic* st = _cardinals[i];
+        if (!st)
+        {
+            continue;
+        }
+        Fvector fakeTarget;
+        fakeTarget.set(actorPos.x + cosf(angles[i]) * 1000.0f, actorPos.y, actorPos.z + sinf(angles[i]) * 1000.0f);
+        float relX;
+        if (!ProjectToStrip(fakeTarget, actorPos, heading, relX, false))
+        {
+            st->Show(false);
+            continue;
+        }
+        float absX = geom.left + geom.CenterX() + relX;
+        float cw = st->GetWidth();
+        st->SetWndPos(Fvector2().set(absX - cw * 0.5f, st->GetWndPos().y));
+        st->Show(true);
+    }
+}
+
+void CUICompassBar::CollectSpotCandidates(const Fvector& actorPos, const shared_str& levelName)
+{
+    _spotCandidates.clear();
+    if (!_spotCfg.show || !_strip)
+    {
+        return;
+    }
+    CMapLocation* activeTaskLoc = _activeTargetLoc;
+    xrCriticalSectionGuard guard(Level().MapManager().UpdateCS);
+    const Locations& locs = Level().MapManager().Locations();
     for (const SLocationKey& key : locs)
     {
         CMapLocation* loc = key.location;
-        if (!loc || !loc->ShowOnCompass())
+        if (!loc || !loc->ShowOnCompass() || loc == activeTaskLoc)
         {
             continue;
         }
-        if (loc == activeTaskLoc)
-        {
-            continue;
-        }
-        if (loc->GetLevelName() != levelName)
-        {
-            continue;
-        }
-        if (!loc->SpotEnabled())
-        {
-            continue;
-        }
-        if (!loc->Update())
+        if (loc->GetLevelName() != levelName || !loc->SpotEnabled() || !loc->Update())
         {
             continue;
         }
@@ -501,150 +457,120 @@ void CUICompassBar::collectSpots(const Locations& locs, const shared_str& levelN
         {
             continue;
         }
-        if (!_spotConfig.show)
-        {
-            continue;
-        }
         Fvector pos = loc->GetLastPosition();
         float maxDist = loc->GetCompassMaxDist();
         if (maxDist < 0.0f)
         {
-            maxDist = _spotConfig.maxDistance;
+            maxDist = _spotCfg.maxDistance;
         }
-        if (maxDist >= 0.0f)
-        {
-            float d = actorPos.distance_to(pos);
-            if (d > maxDist)
-            {
-                continue;
-            }
-        }
-        out.push_back({ loc, pos });
-    }
-}
-
-void CUICompassBar::layoutSpots(const xr_vector<SCollectedSpot>& collected, const Fvector2& actorPos, float cameraHeading,
-    float stripLeft, float stripTop, float stripCenterY, xr_vector<SSpotLayoutInfo>& out)
-{
-    out.clear();
-    out.reserve(kMaxSpotPoolSize);
-    u32 poolIdx = 0;
-    const SCompassSpotConfig& cfg = _spotConfig;
-    for (u32 i = 0; i < collected.size() && poolIdx < _spotPool.size(); ++i)
-    {
-        const SCollectedSpot& cs = collected[i];
-        Fvector2 targetPos(cs.worldPos.x, cs.worldPos.z);
-        float spotX;
-        if (!getSpotX(targetPos, actorPos, cameraHeading, spotX))
+        if (maxDist >= 0.0f && actorPos.distance_to(pos) > maxDist)
         {
             continue;
         }
-        CUIStatic* spotStatic = _spotPool[poolIdx++];
-        if (!spotStatic)
+        u32 clr = loc->GetCompassSpotColor();
+        if (clr == 0)
         {
-            break;
+            clr = color_rgba(255, 255, 255, 255);
         }
-        spotStatic->SetWndSize(Fvector2().set(cfg.spotWidth, cfg.spotHeight));
-        CUITextureMaster::InitTexture(cs.loc->GetCompassSpotTexture().c_str(), &spotStatic->GetUIStaticItem());
-        u32 spotColor = cs.loc->GetCompassSpotColor();
-        spotStatic->SetTextureColor(spotColor != 0 ? spotColor : color_rgba(255, 255, 255, 255));
-        float posX = spotX + cfg.offsetX;
-        if (cfg.align == 2)
-        {
-            posX -= cfg.spotWidth;
-        }
-        else if (cfg.align == 1)
-        {
-            posX -= cfg.spotWidth * 0.5f;
-        }
-        float absX = stripLeft + posX;
-        float absY = stripTop + stripCenterY + cfg.offsetY - cfg.spotHeight * 0.5f;
-        out.push_back({ spotStatic, absX, absY, cfg.layer });
+        const SCompassParams& cp = loc->GetCompassParams();
+        SSpotCandidate cand;
+        cand.pos = pos;
+        cand.textureName = loc->GetCompassSpotTexture();
+        cand.color = clr;
+        cand.offsetY = cp.fOffsetY;
+        cand.iconSize = cp.bOverrideSize ? cp.vSize : Fvector2().set(_spotCfg.spotWidth, _spotCfg.spotHeight);
+        _spotCandidates.push_back(cand);
     }
 }
 
-void CUICompassBar::applySpotsToUI(const xr_vector<SSpotLayoutInfo>& spotsToShow, u32 poolUsedCount)
+void CUICompassBar::BuildRenderQueueFromCandidates(float camHeading, const Fvector& actorPos)
 {
-    const int layerOverStrip = (int)ECompassLayer::OverStrip;
-    CUIWindow* underStripParent = _background;
-    float bgLeft = 0.0f;
-    float bgTop = 0.0f;
-    if (underStripParent)
-    {
-        Fvector2 bgPos = underStripParent->GetWndPos();
-        bgLeft = bgPos.x;
-        bgTop = bgPos.y;
-    }
-    for (const SSpotLayoutInfo& si : spotsToShow)
-    {
-        if (!si.st)
-        {
-            continue;
-        }
-        CUIWindow* desiredParent = (si.layer < layerOverStrip && underStripParent) ? underStripParent : this;
-        CUIWindow* currentParent = si.st->GetParent();
-        if (currentParent != desiredParent)
-        {
-            if (currentParent)
-            {
-                currentParent->DetachChild(si.st);
-            }
-            desiredParent->AttachChild(si.st);
-        }
-        float posX = si.x;
-        float posY = si.y;
-        if (desiredParent == underStripParent)
-        {
-            posX = si.x - bgLeft;
-            posY = si.y - bgTop;
-        }
-        si.st->SetWndPos(Fvector2().set(posX, posY));
-        si.st->Show(true);
-    }
-    for (u32 i = poolUsedCount; i < _spotPool.size(); ++i)
-    {
-        CUIStatic* s = _spotPool[i];
-        if (!s)
-        {
-            continue;
-        }
-        if (s->GetParent())
-        {
-            s->GetParent()->DetachChild(s);
-            s->Show(false);
-        }
-        else
-        {
-            s->Show(false);
-        }
-    }
-}
-
-void CUICompassBar::updateSpots(const Fvector& actorPos, float cameraHeading, const shared_str& levelName)
-{
-    if (!_strip)
+    _renderQueue.clear();
+    if (!_spotCfg.show || !_strip)
     {
         return;
     }
-    CMapLocation* activeTaskLoc = _activeTargetLoc;
-    xrCriticalSectionGuard guard(Level().MapManager().UpdateCS);
-    const Locations& locs = Level().MapManager().Locations();
-    xr_vector<SCollectedSpot> collected;
-    collectSpots(locs, levelName, activeTaskLoc, actorPos, collected);
-    const float stripLeft = _strip->GetWndPos().x;
-    const float stripTop = _strip->GetWndPos().y;
-    const float stripCenterY = _strip->GetHeight() * 0.5f;
-    const Fvector2 actorPos2(actorPos.x, actorPos.z);
-    xr_vector<SSpotLayoutInfo> spotsToShow;
-    layoutSpots(collected, actorPos2, cameraHeading, stripLeft, stripTop, stripCenterY, spotsToShow);
-    std::sort(spotsToShow.begin(), spotsToShow.end(),
-        [](const SSpotLayoutInfo& a, const SSpotLayoutInfo& b) { return a.layer < b.layer; });
-    applySpotsToUI(spotsToShow, (u32)spotsToShow.size());
+    for (const SSpotCandidate& cand : _spotCandidates)
+    {
+        float relX;
+        if (!ProjectToStrip(cand.pos, actorPos, camHeading, relX, false))
+        {
+            continue;
+        }
+        float dist = actorPos.distance_to(cand.pos);
+        SSpotRenderItem item;
+        item.relX = relX + _spotCfg.offsetX;
+        if (_spotCfg.align == 2)
+        {
+            item.relX -= cand.iconSize.x;
+        }
+        else if (_spotCfg.align == 1)
+        {
+            item.relX -= cand.iconSize.x * 0.5f;
+        }
+        item.sortDist = dist;
+        item.offsetY = cand.offsetY;
+        item.textureName = cand.textureName;
+        item.iconSize = cand.iconSize;
+        item.color = cand.color;
+        _renderQueue.push_back(item);
+    }
 }
 
-void CUICompassBar::updateActiveTarget(const Fvector& actorPos, float cameraHeading, const shared_str& levelName)
+CUIStatic* CUICompassBar::GetSpotFromPool(xr_vector<CUIStatic*>& pool, CUIWindow* parent, size_t index)
 {
-    if (!_activeDistanceText || !_strip)
+    if (index < pool.size())
+    {
+        return pool[index];
+    }
+    CUIStatic* item = new CUIStatic();
+    item->SetAutoDelete(true);
+    item->SetStretchTexture(true);
+    parent->AttachChild(item);
+    pool.push_back(item);
+    return item;
+}
+
+void CUICompassBar::CommitLayout()
+{
+    std::sort(_renderQueue.begin(), _renderQueue.end());
+    SCompassStripGeometry geom = GetStripGeometry();
+    const float baseY = geom.top + geom.CenterY() + _cfg.markersY + _spotCfg.offsetY;
+    size_t idx = 0;
+    for (const SSpotRenderItem& item : _renderQueue)
+    {
+        CUIStatic* wnd = GetSpotFromPool(_poolSpots, _layerFg, idx);
+        if (!wnd || !_layerFg)
+        {
+            ++idx;
+            continue;
+        }
+        if (_poolSpotTextureNames.size() <= idx)
+        {
+            _poolSpotTextureNames.resize(idx + 1);
+        }
+        if (_poolSpotTextureNames[idx] != item.textureName)
+        {
+            CUITextureMaster::InitTexture(item.textureName, &wnd->GetUIStaticItem());
+            _poolSpotTextureNames[idx] = item.textureName;
+        }
+        wnd->SetWndSize(item.iconSize);
+        wnd->SetTextureColor(item.color);
+        const float posX = geom.left + geom.CenterX() + item.relX;
+        const float posY = baseY + item.offsetY - item.iconSize.y * 0.5f;
+        wnd->SetWndPos(Fvector2().set(posX, posY));
+        wnd->Show(true);
+        ++idx;
+    }
+    for (size_t i = idx; i < _poolSpots.size(); ++i)
+    {
+        _poolSpots[i]->Show(false);
+    }
+}
+
+void CUICompassBar::UpdateActiveTarget(const Fvector& actorPos, float camHeading, const shared_str& levelName)
+{
+    if (!_activeDistText || !_strip)
     {
         return;
     }
@@ -652,14 +578,10 @@ void CUICompassBar::updateActiveTarget(const Fvector& actorPos, float cameraHead
     {
         return;
     }
-    _activeDistanceText->Show(false);
-    if (_activeTargetMarker)
+    _activeDistText->Show(false);
+    if (_activeMarker)
     {
-        _activeTargetMarker->Show(false);
-        if (_activeTargetMarker->GetParent())
-        {
-            _activeTargetMarker->GetParent()->DetachChild(_activeTargetMarker);
-        }
+        _activeMarker->Show(false);
     }
     CMapLocation* activeLoc = _activeTargetLoc;
     if (!activeLoc || activeLoc->GetLevelName() != levelName)
@@ -672,62 +594,59 @@ void CUICompassBar::updateActiveTarget(const Fvector& actorPos, float cameraHead
         return;
     }
     const Fvector tgtPos = activeLoc->GetLastPosition();
-    const Fvector2 targetPos2(tgtPos.x, tgtPos.z);
-    const Fvector2 actorPos2(actorPos.x, actorPos.z);
     float spotX;
-    if (!getActiveTargetSpotX(targetPos2, actorPos2, cameraHeading, spotX))
+    if (!ProjectToStrip(tgtPos, actorPos, camHeading, spotX, true))
     {
         return;
     }
-    spotX = clampr(spotX, _activeTargetPadding, _stripWidth - _activeTargetPadding);
+    float stripCenter = _stripWidth * 0.5f;
+    spotX = stripCenter + spotX;
+    spotX = clampr(spotX, _cfg.activePadding, _stripWidth - _cfg.activePadding);
     if (_lastActiveLoc != activeLoc)
     {
-        _curActiveX = spotX;
+        _activeTargetCurX = spotX;
         _lastActiveLoc = activeLoc;
     }
     else
     {
-        const float dt = Device.fTimeDelta;
-        _curActiveX += (spotX - _curActiveX) * (dt * _smoothSpeed);
+        _activeTargetCurX += (spotX - _activeTargetCurX) * (Device.fTimeDelta * _cfg.smoothingSpeed);
     }
-    spotX = _curActiveX;
+    spotX = _activeTargetCurX;
     const float dist = actorPos.distance_to(tgtPos);
     string64 buf;
     xr_sprintf(buf, sizeof(buf), "%.0f m", dist);
-    _activeDistanceText->SetText(buf);
-    const float stripLeft = _strip->GetWndPos().x;
-    const float stripTop = _strip->GetWndPos().y;
-    const float stripCenterY = _strip->GetHeight() * 0.5f;
-    const float baseY = stripTop + stripCenterY + _stripY + _markersY;
-    const float anchorX = stripLeft + spotX + _activeBlockOffsetX;
-    const float anchorY = baseY + _activeBlockOffsetY;
-    const float tw = _activeDistanceText->GetWidth();
-    const float th = _activeDistanceText->GetHeight();
-    if (_activeTargetMarker)
+    _activeDistText->SetText(buf);
+    SCompassStripGeometry geom = GetStripGeometry();
+    const float baseY = geom.top + geom.CenterY() + _cfg.stripY + _cfg.markersY;
+    const float anchorX = geom.left + spotX + _cfg.activeOffsetX;
+    const float anchorY = baseY + _cfg.activeOffsetY;
+    const float tw = _activeDistText->GetWidth();
+    const float th = _activeDistText->GetHeight();
+    if (_activeMarker)
     {
-        LPCSTR texName = activeLoc->GetCompassSpotTexture().size() > 0
-            ? activeLoc->GetCompassSpotTexture().c_str()
-            : kActiveMarkerFallbackTexture;
-        CUITextureMaster::InitTexture(texName, &_activeTargetMarker->GetUIStaticItem());
-        const float mw = _activeTargetMarker->GetWidth();
-        const float mh = _activeTargetMarker->GetHeight();
-        _activeTargetMarker->SetWndPos(Fvector2().set(anchorX - mw * 0.5f, anchorY - mh * 0.5f));
-        _activeTargetMarker->Show(true);
-        if (_activeTargetMarker->GetParent() != this)
+        shared_str texName = activeLoc->GetCompassSpotTexture().size() > 0
+            ? activeLoc->GetCompassSpotTexture()
+            : _activeMarkerFallbackTexture;
+        if (_activeMarkerLastTexture != texName)
         {
-            AttachChild(_activeTargetMarker);
+            CUITextureMaster::InitTexture(texName, &_activeMarker->GetUIStaticItem());
+            _activeMarkerLastTexture = texName;
         }
-        _activeDistanceText->SetWndPos(Fvector2().set(anchorX - tw * 0.5f + _textOffsetX, anchorY - mh * 0.5f + _distTextY - th + _textOffsetY));
+        const float mw = _activeMarker->GetWidth();
+        const float mh = _activeMarker->GetHeight();
+        _activeMarker->SetWndPos(Fvector2().set(anchorX - mw * 0.5f, anchorY - mh * 0.5f));
+        _activeMarker->Show(true);
+        _activeDistText->SetWndPos(Fvector2().set(
+            anchorX - tw * 0.5f + _cfg.textOffsetX,
+            anchorY - mh * 0.5f + _cfg.distY - th + _cfg.textOffsetY));
     }
     else
     {
-        _activeDistanceText->SetWndPos(Fvector2().set(anchorX - tw * 0.5f + _textOffsetX, anchorY + _distTextY - th + _textOffsetY));
+        _activeDistText->SetWndPos(Fvector2().set(
+            anchorX - tw * 0.5f + _cfg.textOffsetX,
+            anchorY + _cfg.distY - th + _cfg.textOffsetY));
     }
-    _activeDistanceText->Show(true);
-    if (_activeDistanceText->GetParent() != this)
-    {
-        AttachChild(_activeDistanceText);
-    }
+    _activeDistText->Show(true);
 }
 
 void CUICompassBar::Draw()
@@ -749,18 +668,69 @@ void CUICompassBar::Update()
     {
         return;
     }
-    CObject* viewEntity = Level().CurrentViewEntity();
-    if (!viewEntity)
+    SCompassFrameContext ctx;
+    if (!BuildFrameContext(ctx))
     {
         CUIWindow::Update();
         return;
     }
-    const Fvector actorPos = viewEntity->Position();
-    const float heading = Device.vCameraDirection.getH();
-    const shared_str levelName = Level().name();
-    updateStrip(heading);
-    updateCardinals(heading);
-    updateSpots(actorPos, heading, levelName);
-    updateActiveTarget(actorPos, heading, levelName);
+    UpdateStrip(ctx.heading);
+    UpdateCardinals(ctx.heading);
+
+    _collectSpotsTimer -= Device.fTimeDelta;
+    if (_collectSpotsTimer <= 0.0f)
+    {
+        _collectSpotsTimer = _spotCfg.collectInterval;
+        CollectSpotCandidates(ctx.actorPos, ctx.levelName);
+    }
+    BuildRenderQueueFromCandidates(ctx.heading, ctx.actorPos);
+    UpdateActiveTarget(ctx.actorPos, ctx.heading, ctx.levelName);
+    CommitLayout();
     CUIWindow::Update();
 }
+
+bool CUICompassBar::BuildFrameContext(SCompassFrameContext& out) const
+{
+    CObject* viewEntity = Level().CurrentViewEntity();
+    if (!viewEntity)
+    {
+        out.isValid = false;
+        return false;
+    }
+    out.actorPos = viewEntity->Position();
+    out.heading = Device.vCameraDirection.getH();
+    out.levelName = Level().name();
+    out.isValid = true;
+    return true;
+}
+
+SCompassStripGeometry CUICompassBar::GetStripGeometry() const
+{
+    SCompassStripGeometry geom;
+    if (_strip)
+    {
+        Fvector2 stripPos = _strip->GetWndPos();
+        geom.left = stripPos.x;
+        geom.top = stripPos.y;
+        geom.width = _strip->GetWidth();
+        geom.height = _strip->GetHeight();
+    }
+    return geom;
+}
+
+CUIStatic& CUICompassBar::Background()
+{
+    R_ASSERT(_background);
+    return *_background;
+}
+
+CUIWindow* CUICompassBar::GetFrame()
+{
+    return this;
+}
+
+void CUICompassBar::SetActiveTarget(CMapLocation* loc)
+{
+    _activeTargetLoc = loc;
+}
+
