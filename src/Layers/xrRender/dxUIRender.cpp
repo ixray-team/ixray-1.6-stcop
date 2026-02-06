@@ -189,3 +189,7 @@ void dxUIRender::zb_enable(u32 val)
 	RCache.set_Z(val);
 }
 
+u32 dxUIRender::VBuffMaxSize()
+{
+	return RCache.Vertex.GetSize();
+}
