@@ -16,6 +16,7 @@ public:
 	PropItem* PItem;
 	UIPropertiesForm* PropertiesFrom;
 	bool IsTexture = false;
+	bool NeedCallback = false;
 
 protected:
 	virtual UITreeItem* CreateItem(shared_str Name);
