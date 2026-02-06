@@ -1448,11 +1448,8 @@ void CActor::PlayRainOnHelmetSound()
 		return;
 	}
 
-	float distance = 5.f;
-	constexpr Fvector direction(0, 1, 0);
-	const Fvector position = Device.vCameraPosition;
-
-	if (g_pGamePersistent->Environment().eff_Rain->RayPick(position, direction, distance, collide::rqtBoth))
+	collide::rq_result RQ;
+	if (g_pGameLevel->ObjectSpace.RayPick(Device.vCameraPosition, { 0.f, 1.f, 0.f }, 5.f, collide::rqtBoth, RQ, this))
 	{
 		m_rainOnHelmetSnd.stop();
 		return;
