@@ -575,7 +575,7 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 			{
 				mstate_wishful |= mcAccel;
 			}
-			else
+			else if (!(mstate_real & mcAccel))
 			{
 				mstate_wishful &= ~mcAccel;
 			}
@@ -631,50 +631,50 @@ void CActor::IR_GamepadKeyPress(int id)
 	if (hud_adj_mode && pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT))
 	{
 		return;
-		}
+	}
 
 	if (Remote())
-		{
+	{
 		return;
-		}
+	}
 
 	if (IsTalking())
-		{
+	{
 		return;
-		}
+	}
 
 	if (m_input_external_handler && !m_input_external_handler->authorized(id))
-		{
+	{
 		return;
-				}
+	}
 
 	if (load_screen_renderer.IsActive())
-				{
+	{
 		return;
-				}
+	}
 
 	if (HudAnimator() != nullptr)
-		{
+	{
 		if (HudAnimator()->InputKeyPress(id))
 		{
 			return;
 		}
-		}
+	}
 
 #ifndef MASTER_GOLD
 	if (psActorFlags.test(AF_NO_CLIP))
-		{
+	{
 		NoClipFly(id);
 		if (m_holder && kUSE != id)
 			m_holder->OnKeyboardPress(id);
 		return;
-		}
+	}
 #endif //DEBUG
 
 	if (!g_Alive()) return;
 
 	if(m_holder && kUSE != id)
-		{
+	{
 		m_holder->OnKeyboardPress			(id);
 		if(m_holder->allowWeapon() && inventory().Action((u16)id, CMD_START))		return;
 		return;
@@ -682,19 +682,27 @@ void CActor::IR_GamepadKeyPress(int id)
 		if(inventory().Action((u16)id, CMD_START))					return;
 
 	if (IsWaunded)
-			{
+	{
 		return;
 	}
 
 	switch (id)
-				{
+	{
 		case kUSE:
-				{
+		{
 			ActorUse();
 			break;
 		}
 		case kCROUCH:
 		{
+			if (mstate_real & mcCrouch && mstate_real & mcAccel)
+			{
+				mstate_wishful &= mcAccel;
+			}
+			else
+			{
+				mstate_wishful ^= mcCrouch;
+			}
 			gamepad_crouch_time_global = Device.dwTimeContinual;
 			break;
 		}
@@ -733,11 +741,6 @@ void CActor::IR_GamepadKeyRelease(int id)
 			mstate_wishful &= ~mcJump;		
 			break;
 		}
-		case kCROUCH:
-		{
-			mstate_wishful &= mcCrouch;
-			break;
-		}
 	}
 }
 
@@ -747,11 +750,10 @@ void CActor::IR_GamepadKeyHold(int id)
 	{
 		case kCROUCH:
 	{
-		if (Device.dwTimeContinual > (gamepad_crouch_time_global + 500))
+		if (Device.dwTimeContinual > (gamepad_crouch_time_global + 1000))
 		{
 			mstate_wishful |= mcAccel;
 		}
-		mstate_wishful |= mcCrouch;
 		break;
 	}
 	}
