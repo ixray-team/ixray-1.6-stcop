@@ -92,12 +92,12 @@ void HudLightTorch::NewTorchlight(const char* section)
 	if (pSettings->line_exist(section, "torch_cone_bones"))
 	{
 		ConeBones.clear();
+		string128 bone_name = {};
+
 		LPCSTR lineStr = pSettings->r_string(section, "torch_cone_bones");
-		for (int j = 0, cnt = _GetItemCount(lineStr); j < cnt; ++j)
+		for (auto i = 0, cnt = _GetItemCount(lineStr); i < cnt; ++i)
 		{
-			string128 bone_name = {};
-			_GetItem(lineStr, j, bone_name);
-			ConeBones.push_back(bone_name);
+			ConeBones.push_back(_GetItem(lineStr, i, bone_name));
 		}
 	}
 }
@@ -131,7 +131,6 @@ void HudLightTorch::UpdateTorchFromObject(CHudItem* item) const
 			return;
 		}
 	}
-
 
 	bool isHudMode = item->GetHUDmode();
 	if (IsRenderLight)
@@ -217,4 +216,179 @@ void HudLightTorch::UpdateTorchFromObject(CHudItem* item) const
 
 	RenderLight->set_active(IsRenderLight);
 	OmniLight->set_active(false);
+}
+
+HudLightLaser::HudLightLaser()
+{
+	IsLightDirByBone = false;
+}
+
+HudLightLaser::~HudLightLaser()
+{
+}
+
+void HudLightLaser::NewTorchlight(const char* section)
+{
+	if (RenderLight)
+	{
+		RenderLight.destroy();
+	}
+
+	if (OmniLight)
+	{
+		OmniLight.destroy();
+	}
+
+	if (!pSettings->line_exist(section, "laser_installed"))
+	{
+		return;
+	}
+
+	Section = section;
+	LightBone = pSettings->r_string(section, "laserdot_attach_bone");
+
+	LaserLightDist = READ_IF_EXISTS(pSettings, r_float, section, "laser_light_distance", 15.0f);
+
+	LaserWorkDist = READ_IF_EXISTS(pSettings, r_float, section, "laser_wrok_distance", LaserLightDist * 0.5f);
+	LaserMaxDist = READ_IF_EXISTS(pSettings, r_float, section, "laser_max_distance", LaserWorkDist);
+
+	LightColor = READ_IF_EXISTS(pSettings, r_fcolor, section, "laser_light_color", LightColor.set(1, 0, 0, 0));
+
+	RenderLight = ::Render->light_create();
+
+	RenderLight->set_color(LightColor);
+	RenderLight->set_range(LaserLightDist);
+	RenderLight->set_type(IRender_Light::SPOT);
+
+	RenderLight->set_shadow(!!READ_IF_EXISTS(pSettings, r_bool, section, "laser_render_shadow", TRUE));
+
+	LightSpotAngle = READ_IF_EXISTS(pSettings, r_fvector2, section, "laser_spot_angle", LightSpotAngle.set(2, 5));
+	LightSpotAngle.mul(M_PI / 180);
+
+	RenderLight->set_cone(LightSpotAngle.x);
+	RenderLight->set_texture(pSettings->r_string(section, "laser_spot_texture"));
+
+	LightOffset.x = READ_IF_EXISTS(pSettings, r_float, section, "laserdot_attach_offset_x", 0.0f);
+	LightOffset.y = READ_IF_EXISTS(pSettings, r_float, section, "laserdot_attach_offset_y", 0.0f);
+	LightOffset.z = READ_IF_EXISTS(pSettings, r_float, section, "laserdot_attach_offset_z", 0.0f);
+
+	LightWorldOffset.x = READ_IF_EXISTS(pSettings, r_float, section, "laserdot_world_attach_offset_x", 0.0f);
+	LightWorldOffset.y = READ_IF_EXISTS(pSettings, r_float, section, "laserdot_world_attach_offset_y", 0.0f);
+	LightWorldOffset.z = READ_IF_EXISTS(pSettings, r_float, section, "laserdot_world_attach_offset_z", 0.0f);
+
+	LightWorldOffset = READ_IF_EXISTS(pSettings, r_fvector3, section, "laserdot_world_attach_offset", LightWorldOffset);
+	LightOffset = READ_IF_EXISTS(pSettings, r_fvector3, section, "laserdot_attach_offset", LightOffset);
+
+	if (pSettings->line_exist(section, "laser_ray_bones"))
+	{
+		ConeBones.clear();
+		string128 bone_name = {};
+
+		LPCSTR lineStr = pSettings->r_string(section, "laser_ray_bones");
+		for (auto i = 0, cnt = _GetItemCount(lineStr); i < cnt; ++i)
+		{
+			ConeBones.push_back(_GetItem(lineStr, i, bone_name));
+		}
+	}
+
+	SetInstalled(true);
+}
+
+void HudLightLaser::UpdateTorchFromObject(CHudItem* item) const
+{
+	if (RenderLight == nullptr || item == nullptr || item->object().Visual() == nullptr)
+	{
+		return;
+	}
+
+	if (item->object().H_Parent())
+	{
+		if (item->GetState() == item->eHidden || item->cast_inventory_item()->CurrPlace() == eItemPlace::eItemPlaceRuck)
+		{
+			RenderLight->set_active(false);
+			return;
+		}
+	}
+
+	if (IsRenderLight)
+	{
+		IKinematics* kin = nullptr;
+		Fmatrix xform;
+
+		Fvector lightPos = { 0, 0, 0 };
+		Fvector lightDir = { 0, 0, 1 };
+
+		u16 lightBoneId = BI_NONE;
+		u16 lightDirBoneId = BI_NONE;
+
+		Fvector up, right;
+		bool isHudMode = item->GetHUDmode();
+
+		if (isHudMode)
+		{
+			xform = item->HudItemData()->m_item_transform;
+			kin = item->HudItemData()->m_model;
+
+			Fvector curr_light_offset = LightOffset;
+
+			if (CWeapon* wpn = item->cast_weapon())
+			{
+				if (wpn->WpnCanShoot() && wpn->GetAimFactor() > 0.001f)
+				{
+					Fvector aim_offset = Device.vCameraPosition;
+					_lerp(curr_light_offset, aim_offset, wpn->GetAimFactor());
+				}
+			}
+
+			lightBoneId = kin->LL_BoneID(LightBone);
+			kin->LL_GetTransform(lightBoneId).transform_tiny(lightPos, curr_light_offset);
+		}
+		else
+		{
+			xform = item->object().XFORM();
+			kin = item->object().Visual()->dcast_PKinematics();
+
+			lightBoneId = kin->LL_BoneID(LightBone);
+			kin->LL_GetTransform(lightBoneId).transform_tiny(lightPos, LightWorldOffset);
+		}
+
+		xform.transform_tiny(lightPos);
+		xform.transform_dir(lightDir);
+
+		if (isHudMode)
+		{
+			Device.transform_hud2world(lightPos, lightDir);
+		}
+
+		Fvector::generate_orthonormal_basis_normalized(lightDir, up, right);;
+
+		collide::rq_result	RQ; RQ.range = LaserMaxDist;
+		collide::rq_target	RT = collide::rqtBoth;
+
+		if (!g_pGameLevel->ObjectSpace.RayPick(lightPos, lightDir, RQ.range, RT, RQ, item->object().H_Root()))
+		{
+			RQ.range = LaserMaxDist;
+		}
+		
+		float CurrentLightSpotAngle = LightSpotAngle.x;
+
+		if (RQ.range > LaserWorkDist)
+		{
+			float ShiftDistance = RQ.range - LaserWorkDist;
+			lightPos.mad(lightDir, ShiftDistance);
+
+			if (isHudMode)
+			{
+				CurrentLightSpotAngle += (LightSpotAngle.y - LightSpotAngle.x) * ShiftDistance / (LaserMaxDist - LaserWorkDist);
+			}
+		}
+
+		RenderLight->set_position(lightPos);
+		RenderLight->set_rotation(lightDir, right);
+		RenderLight->set_cone(CurrentLightSpotAngle);
+
+		RenderLight->set_ignore_object(item->object().H_Root());
+	}
+
+	RenderLight->set_active(IsRenderLight);
 }
