@@ -72,7 +72,6 @@ void UIPropertiesItem::Draw()
 	else
 	{
 		ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, ImGui::GetColorU32(ImGuiCol_TableRowBg));
-		constexpr size_t Flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_SpanFullWidth;
 		if (IsTexture)
 		{
 			MultiChooseValue* Prop = (MultiChooseValue*)PItem->GetFrontValue();
@@ -83,6 +82,7 @@ void UIPropertiesItem::Draw()
 				if (TexName.size() > 0)
 				{
 					ImTextureID Image = GUIManager->LoadTexture(*TexName);
+					ImGui::SetCursorPosX(ImGui::GetCursorPosX() - 12);
 					ImGui::Image(Image, { 100, 100 });
 				}
 			}
