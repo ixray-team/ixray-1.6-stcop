@@ -94,7 +94,7 @@ void UIMainMenuForm::Draw()
                 ImGui::Separator();
 
                 DrawMenuItemI("Synchronize Textures", ICON_FA_REPEAT, COMMAND_REFRESH_TEXTURES);
-                DrawMenuItemI("Cheack New Textures", ICON_FA_CHECK, COMMAND_CHECK_TEXTURES);
+                DrawMenuItemI("Check New Textures", ICON_FA_CHECK, COMMAND_CHECK_TEXTURES);
                 ImGui::Separator();
 
                 DrawMenuItemI("Minimap Editor", ICON_FA_MAP, COMMAND_MINIMAP_EDITOR);

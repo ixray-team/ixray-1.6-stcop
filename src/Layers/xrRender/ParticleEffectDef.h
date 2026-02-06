@@ -154,6 +154,16 @@ namespace PS
 		void   	OnActionsClick		(ButtonValue* sender, bool& bDataModified, bool& bSafe);
         bool   	OnAfterActionNameEdit(PropValue* sender, shared_str& edit_val);
 		void				FillProp		   	(LPCSTR pref, ::PropItemVec& items, void* owner);
+		
+		void OnSpriteFrameClicked(ButtonValue* value, bool& bModif, bool& bSafe);
+		void OnSpriteAnimatedClicked(ButtonValue* value, bool& bModif, bool& bSafe);
+		void OnTimeLimitClicked(ButtonValue* value, bool& bModif, bool& bSafe);
+		void OnSpriteClicked(ButtonValue* value, bool& bModif, bool& bSafe);
+		void OnSpriteCullingClicked(ButtonValue* value, bool& bModif, bool& bSafe);
+		void OnMovementAlignClicked(ButtonValue* value, bool& bModif, bool& bSafe);
+		void OnMovementVelocityClicked(ButtonValue* value, bool& bModif, bool& bSafe);
+		void OnMovementCollisionClicked(ButtonValue* value, bool& bModif, bool& bSafe);
+		
 		void				Copy				(const CPEDef& src);
 		BOOL				Equal				(const CPEDef* pe);
 		void 				Render				(const Fmatrix& parent);
