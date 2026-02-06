@@ -973,7 +973,7 @@ PS::CPGDef*	CParticleTool::FindPG(LPCSTR name)
 void CParticleTool::PlayCurrent(int idx)
 {
 	VERIFY(m_bReady);
-    StopCurrent		(false);
+    StopCurrent(false);
     switch(m_EditMode){
     case emNone:
     case emAnimCurve:
@@ -986,13 +986,29 @@ void CParticleTool::PlayCurrent(int idx)
             break;
         }
     case emEffectSlot:
+        {
+            VERIFY(m_CurrentEf);
+            for (auto& item : m_EditPG->items)
+            {
+                VERIFY(item._effect);
+                auto CastedEffect = (PS::CParticleEffect*)item._effect;
+                if (CastedEffect->m_Def->Name() == m_CurrentEf->m_EffectName)
+                {
+                    m_LibPED = CastedEffect->GetDefinition();
+                    m_EditPE->Compile(m_LibPED);
+                    m_EditPE->Play();
+                    break;
+                }
+            }
+            break;
+        }
     case emGroup:
         {
             if (idx>-1){
                 VERIFY(idx<(int)m_EditPG->items.size());
                 m_LibPED = ((PS::CParticleEffect*)m_EditPG->items[idx]._effect)->GetDefinition();
                 m_EditPE->Compile(m_LibPED);
-                m_EditPE->Play	();
+                m_EditPE->Play();
             }else{
                 // play all
                 m_EditPG->Play();
