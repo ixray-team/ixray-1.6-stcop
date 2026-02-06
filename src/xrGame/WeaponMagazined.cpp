@@ -2355,7 +2355,7 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 	}
 	case kLASER:
 	{
-		if (flags & CMD_START && SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfLASER) && /*IsLaserInstalled() &&*/ !IsZoomed() && GetState() == eIdle)
+		if (flags & CMD_START && SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfLASER) && m_LightLaser.GetTorchInstalled() && !IsZoomed() && GetState() == eIdle)
 		{
 			m_eDevicesFlags.set(EDevicesFlags::df_laser, true);
 			SwitchState(eDevice);
