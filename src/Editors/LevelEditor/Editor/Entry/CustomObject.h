@@ -103,6 +103,7 @@ public:
 	void  	OnMotionCommandsClick	(ButtonValue* value, bool& bModif, bool& bSafe);
 	void  	OnMotionFilesClick		(ButtonValue* value, bool& bModif, bool& bSafe);
 	void  	OnMotionControlClick	(ButtonValue* value, bool& bModif, bool& bSafe);
+	void  	OnMotionControlPlayClick(ButtonValue* value, bool& bModif, bool& bSafe);
 	void  	OnMotionFrameChange		(PropValue* value);
 	void  	OnMotionKeyTimeChange	(PropValue* value);
 
