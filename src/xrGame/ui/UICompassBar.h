@@ -9,23 +9,66 @@ class CUIStatic;
 class CUIXml;
 class CMapLocation;
 
+struct SSpotRenderItem
+{
+    float relX;
+    float sortDist;
+    float offsetY;
+    shared_str textureName;
+    Fvector2 iconSize;
+    u32 color;
+
+    bool operator<(const SSpotRenderItem& other) const
+    {
+        return sortDist > other.sortDist;
+    }
+};
+
+struct SCompassStripGeometry
+{
+    float left = 0.0f;
+    float top = 0.0f;
+    float width = 0.0f;
+    float height = 0.0f;
+
+    float CenterX() const
+    {
+        return width * 0.5f;
+    }
+
+    float CenterY() const
+    {
+        return height * 0.5f;
+    }
+};
+
+struct SCompassFrameContext
+{
+    Fvector actorPos;
+    float heading = 0.0f;
+    shared_str levelName;
+    bool isValid = false;
+};
+
 struct SCompassSpotConfig
 {
     bool show = true;
     float offsetX = 0.0f;
     float offsetY = 0.0f;
     u8 align = 1;
-    float spotWidth = 16.0f;
-    float spotHeight = 16.0f;
+    float spotWidth = 14.0f;
+    float spotHeight = 17.0f;
     float maxDistance = -1.0f;
-    int layer = 1;
+    float collectInterval = 0.1f;
 };
 
-enum class ECompassLayer : int
+struct SSpotCandidate
 {
-    UnderBackground = 0,
-    OnStrip = 1,
-    OverStrip = 2
+    Fvector pos;
+    shared_str textureName;
+    u32 color;
+    float offsetY;
+    Fvector2 iconSize;
 };
 
 class CUICompassBar final : public CUIWindow
@@ -48,68 +91,71 @@ public:
     bool visible = true;
 
 private:
-    void updateStrip(float heading);
-    void updateCardinals(float heading);
-    void updateSpots(const Fvector& actorPos, float cameraHeading, const shared_str& levelName);
-    void updateActiveTarget(const Fvector& actorPos, float cameraHeading, const shared_str& levelName);
-    bool getSpotX(const Fvector2& targetPos, const Fvector2& actorPos, float cameraHeading, float& outX) const;
-    bool getActiveTargetSpotX(const Fvector2& targetPos, const Fvector2& actorPos, float cameraHeading, float& outX) const;
-    bool getCardinalX(float worldAngleRad, float heading, float& outX) const;
-    bool computeRelativePercent(float targetYaw, float actorYaw, float fov, bool clampToEdges, float& outPercent) const;
-    void parseSpots(CUIXml& uiXml, const char* path);
-    void initCompassDial(CUIXml& uiXml, CUIXmlInit& xmlInit);
-    CUIStatic* initCardinalStatic(CUIXml& uiXml, CUIXmlInit& xmlInit, const char* cardinalsPath, const char* directionNode, float defaultY, float defaultW, float defaultH);
-    static u8 parseAlign(const char* alignStr);
-
-    struct SCollectedSpot
+    struct
     {
-        CMapLocation* loc;
-        Fvector worldPos;
-    };
+        float stripY;
+        float markersY;
+        float activePadding;
+        float smoothingSpeed;
+        float distY;
+        float activeOffsetX;
+        float activeOffsetY;
+        float textOffsetX;
+        float textOffsetY;
+    } _cfg;
 
-    struct SSpotLayoutInfo
-    {
-        CUIStatic* st;
-        float x;
-        float y;
-        int layer;
-    };
-
-    void collectSpots(const Locations& locs, const shared_str& levelName, CMapLocation* activeTaskLoc,
-        const Fvector& actorPos, xr_vector<SCollectedSpot>& out) const;
-    void layoutSpots(const xr_vector<SCollectedSpot>& collected, const Fvector2& actorPos, float cameraHeading,
-        float stripLeft, float stripTop, float stripCenterY, xr_vector<SSpotLayoutInfo>& out);
-    void applySpotsToUI(const xr_vector<SSpotLayoutInfo>& spotsToShow, u32 poolUsedCount);
-
-    static void detachAndDelete(CUIWindow* wnd);
-
-    static constexpr u32 kMaxSpotPoolSize = 32u;
-    static constexpr float kDefaultFovDeg = 120.0f;
-    static constexpr float kPi = 3.14159265358979323846f;
-
+    SCompassSpotConfig _spotCfg;
     CUIStatic* _background;
+    CUIWindow* _layerBg;
     CUIStatic* _strip;
-    CUIStatic* _cardinalN;
-    CUIStatic* _cardinalE;
-    CUIStatic* _cardinalS;
-    CUIStatic* _cardinalW;
-    CUIStatic* _activeDistanceText;
-    CUIStatic* _activeTargetMarker;
-    xr_vector<CUIStatic*> _spotPool;
+    xr_vector<CUIStatic*> _cardinals;
+    CUIWindow* _layerFg;
+    CUIStatic* _activeMarker;
+    CUIStatic* _activeDistText;
+    CMapLocation* _activeTargetLoc;
+    CMapLocation* _lastActiveLoc;
+    float _activeTargetCurX;
+    xr_vector<SSpotCandidate> _spotCandidates;
+    xr_vector<SSpotRenderItem> _renderQueue;
+    float _collectSpotsTimer;
+    xr_vector<CUIStatic*> _poolSpots;
+    xr_vector<shared_str> _poolSpotTextureNames;
+    shared_str _activeMarkerFallbackTexture;
+    shared_str _activeMarkerLastTexture;
     float _fov;
     float _stripWidth;
     float _stripTexWidth;
-    float _stripY;
-    float _markersY;
-    float _distTextY;
-    float _smoothSpeed;
-    float _activeTargetPadding;
-    float _activeBlockOffsetX;
-    float _activeBlockOffsetY;
-    float _textOffsetX;
-    float _textOffsetY;
-    float _curActiveX;
-    CMapLocation* _lastActiveLoc;
-    CMapLocation* _activeTargetLoc;
-    SCompassSpotConfig _spotConfig;
+    bool _stripTexLoop;
+    shared_str _stripXmlPath;
+    shared_str _stripSvgPath;
+
+    bool ProjectToStrip(const Fvector& targetPos, const Fvector& actorPos, float camHeading,
+        float& outX, bool clampToEdges) const;
+
+    void UpdateStrip(float heading);
+    void UpdateCardinals(float heading);
+    void CollectSpotCandidates(const Fvector& actorPos, const shared_str& levelName);
+    void BuildRenderQueueFromCandidates(float camHeading, const Fvector& actorPos);
+    void CommitLayout();
+    void UpdateActiveTarget(const Fvector& actorPos, float camHeading, const shared_str& levelName);
+
+    CUIStatic* GetSpotFromPool(xr_vector<CUIStatic*>& pool, CUIWindow* parent, size_t index);
+
+    bool BuildFrameContext(SCompassFrameContext& out) const;
+    SCompassStripGeometry GetStripGeometry() const;
+
+    void InitWindowAndBackground(CUIXml& uiXml, CUIXmlInit& xmlInit);
+    void InitLayoutFromXml(CUIXml& uiXml);
+    void ParseSpots(CUIXml& uiXml, const char* path);
+    void InitCompassDial(CUIXml& uiXml, CUIXmlInit& xmlInit);
+    CUIStatic* InitCardinalStatic(CUIXml& uiXml, CUIXmlInit& xmlInit, const char* cardinalsPath,
+        const char* directionNode, float defaultY, float defaultW, float defaultH);
+    void InitActiveTargetWidgets(CUIXml& uiXml);
+    void InitStripVectorIcon(CUIXml& uiXml);
+    static u8 ParseAlign(const char* alignStr);
+
+    static constexpr float _kPi = 3.14159265358979323846f;
+    static constexpr float _kDefaultFovDeg = 120.0f;
+    static constexpr float _kDefaultStripTexWidth = 1024.0f;
 };
+
