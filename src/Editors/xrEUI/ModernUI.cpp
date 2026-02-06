@@ -34,7 +34,6 @@ XREUI_API bool XRay::ImGui::ToggleFlagButton(const char* Label, uint32_t* Flags,
 	::ImGui::PopStyleColor(3);
 	::ImGui::PopStyleVar();
 
-	// Рисуем левую оконтовку
 	ImDrawList* DrawList = ::ImGui::GetWindowDrawList();
 	ImVec2 Min = ::ImGui::GetItemRectMin();
 	ImVec2 Max = ::ImGui::GetItemRectMax();
@@ -110,15 +109,26 @@ XREUI_API bool XRay::ImGui::InputVector3(const char* Label, float V[3], float St
 XREUI_API bool XRay::ImGui::TumblerButton(const char* Label, bool& State, ImVec2 Size)
 {
 	bool OldState = State;
+
+	const ImVec4 EnabledColor = ImVec4(0.20f, 0.60f, 1.00f, 1.00f);
+	const ImVec4 DisabledColor = ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
+
+	constexpr float StripeWidth = 3.0f;
+	constexpr float Rounding = 5.0f;
+
+	::ImGui::PushID(Label);
+
+	::ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, Rounding);
+
 	if (OldState)
 	{
-		::ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.20f, 0.60f, 1.00f, 1.00f));
-		::ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.30f, 0.70f, 1.00f, 1.00f));
-		::ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.15f, 0.55f, 0.95f, 1.00f));
+		::ImGui::PushStyleColor(ImGuiCol_Button, EnabledColor);
+		::ImGui::PushStyleColor(ImGuiCol_ButtonHovered, EnabledColor);
+		::ImGui::PushStyleColor(ImGuiCol_ButtonActive, EnabledColor);
 	}
 
-	bool OutVal = ::ImGui::Button(Label, Size);
-	if (OutVal)
+	bool Pressed = ::ImGui::Button(Label, Size);
+	if (Pressed)
 	{
 		State = !State;
 	}
@@ -127,6 +137,27 @@ XREUI_API bool XRay::ImGui::TumblerButton(const char* Label, bool& State, ImVec2
 	{
 		::ImGui::PopStyleColor(3);
 	}
+	
+	::ImGui::PopStyleVar();
 
-	return OutVal;
+	if (!OldState)
+	{
+		ImDrawList* DrawList = ::ImGui::GetWindowDrawList();
+		ImVec2 Min = ::ImGui::GetItemRectMin();
+		ImVec2 Max = ::ImGui::GetItemRectMax();
+
+		Min.x += 1.0f;
+
+		DrawList->AddRectFilled
+		(
+			Min,
+			ImVec2(Min.x + StripeWidth, Max.y),
+			::ImGui::ColorConvertFloat4ToU32(EnabledColor),
+			Rounding,
+			ImDrawFlags_RoundCornersLeft
+		);
+	}
+
+	::ImGui::PopID();
+	return Pressed;
 }
