@@ -285,6 +285,8 @@ void CWeapon::Load		(LPCSTR section)
 	inherited::Load					(section);
 	CShootingObject::Load			(section);
 
+	m_LightLaser.NewTorchlight(section);
+
 	m_base_inertion = m_current_inertion;
 
 	m_zoom_inertion.PitchOffsetR = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_aim_pitch_offset_r", 0.0f);
@@ -1608,14 +1610,32 @@ void CWeapon::SwitchTorch(bool status, bool forced)
 
 void CWeapon::UpdateTorch()
 {
-	if (!m_HudLight.GetTorchInstalled())
+	if (m_LightLaser.GetTorchInstalled())
 	{
-		return;
+		m_LightLaser.UpdateTorchFromObject(this);
+		m_LightLaser.SwitchTorchlight(m_bTacticalLaserStatus);
+
+		if (m_LightLaser.GetTorchInstalled())
+		{
+			if (attachable_hud_item* item = HudItemData())
+			{
+				for (const shared_str& bone : m_LightLaser.ConeBones)
+				{
+					item->set_bone_visible(bone, m_LightLaser.GetTorchActive(), TRUE);
+				}
+			}
+		}
 	}
 
 	if (H_Parent() != nullptr && !ParentIsActor())
 	{
 		SwitchTorch(false);
+		m_LightLaser.SwitchTorchlight(false);
+	}
+
+	if (!m_HudLight.GetTorchInstalled())
+	{
+		return;
 	}
 
 	SwitchTorch(m_bTacticalTorchStatus, true);
@@ -2729,6 +2749,14 @@ void CWeapon::UpdateAddonsVisibility()
 		for (const shared_str& bone : m_HudLight.ConeBones)
 		{
 			ChangeBoneVisible(bone, m_HudLight.GetTorchActive());
+		}
+	}
+
+	if (m_LightLaser.GetTorchInstalled())
+	{
+		for (const shared_str& bone : m_LightLaser.ConeBones)
+		{
+			ChangeBoneVisible(bone, m_LightLaser.GetTorchActive());
 		}
 	}
 
