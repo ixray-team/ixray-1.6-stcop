@@ -1,27 +1,30 @@
 <window>
-	<compass_bar x="256" y="30" width="450" height="100" fov_angle="120">
-		<background x="256" y="10" width="450" height="50" stretch="1" alignment="c">
+	<compass_bar x="420" y="35" width="420" height="40" alignment="c" fov_angle="90">
+		<background x="302" y="65" width="400" height="40" stretch="1" alignment="c">
 			<texture>ui_inGame2_compass_bar_window</texture>
 		</background>
 		<compass_dial>
-			<strip x="75" y="15" width="362" height="17" stretch="1" tex_width="771">
+			<strip x="96" y="45" width="400" height="25" stretch="1" tex_width="1024" tex_loop="1">
 				<texture>ui_inGame2_compass_dial</texture>
 			</strip>
-			<cardinal_points y="2" width="16" height="14" alignment="c">
-				<text font="font_rubik_18" color="ui_7" align="c" vert_align="c"/>
+			<cardinal_points y="50" width="10" height="10" alignment="c" label_mode="cardinals">
+				<text font="font_rubik_12" color="ui_1" align="c" vert_align="c"/>
 				<n>N</n>
-				<e color="ui_1" align="r">E</e>
-				<s color="ui_1">S</s>
-				<w color="ui_1" align="l">W</w>
+				<e align="r">E</e>
+				<s>S</s>
+				<w align="l">W</w>
+				<ne>NE</ne>
+				<se>SE</se>
+				<sw>SW</sw>
+				<nw>NW</nw>
 			</cardinal_points>
 		</compass_dial>
-		<!-- distances from map_spots compass_dist; colors from texture r,g,b -->
-		<spots show="1" x="256" y="45" align="c" layer="1">
-			<spot_template width="10" height="14"/>
+		<spots show="1" x="0" y="0" align="c" collect_interval="0.1">
+			<spot_template width="14" height="17"/>
 		</spots>
-		<active_target strip_y="0" markers_y="-10" dist_y="-5" smoothing_speed="15.0" active_target_padding="8" offset_x="0" offset_y="0" text_offset_x="38" text_offset_y="10">
+		<active_target strip_y="0" markers_y="-10" dist_y="-18" smoothing_speed="15" active_target_padding="8" offset_x="0" offset_y="0" text_offset_x="38" text_offset_y="10">
 			<distance_text width="80" height="14" alignment="c">
-				<text font="letterica16" color="ui_7" align="c" vert_align="c"/>
+				<text font="font_rubik_12" color="ui_1" align="c" vert_align="c"/>
 			</distance_text>
 			<marker width="15" height="18" stretch="1">
 				<texture>ui_inGame2_hint_wnd_main_window</texture>

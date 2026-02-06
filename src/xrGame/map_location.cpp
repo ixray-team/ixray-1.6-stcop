@@ -192,6 +192,7 @@ void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 		m_flags.set( ePosToActor, TRUE);
 	}
 	m_fCompassMaxDist = g_uiSpotXml->ReadAttribFlt(path_base, 0, "compass_dist", -1.0f);
+	m_compass_params.fMaxDist = m_fCompassMaxDist;
 	xr_strconcat(path,path_base,":level_map");
 	node = g_uiSpotXml->NavigateToNode(path,0);
 	if ( node )
@@ -239,8 +240,19 @@ void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 		}else{
 			VERIFY( !(bReload && m_minimap_spot) );
 		}
-		if ( g_uiSpotXml->ReadAttribInt(path, 0, "compass", 0) != 0 )
+		m_compass_params.bShow = (g_uiSpotXml->ReadAttribInt(path, 0, "compass", 0) != 0);
+		if ( m_compass_params.bShow )
 			m_flags.set(eShowOnCompass, TRUE);
+		m_compass_params.fOffsetY = g_uiSpotXml->ReadAttribFlt(path, 0, "compass_offset_y", 0.0f);
+		{
+			float w = g_uiSpotXml->ReadAttribFlt(path, 0, "compass_width", -1.0f);
+			float h = g_uiSpotXml->ReadAttribFlt(path, 0, "compass_height", -1.0f);
+			if (w > 0.0f && h > 0.0f)
+			{
+				m_compass_params.vSize.set(w, h);
+				m_compass_params.bOverrideSize = true;
+			}
+		}
 		if ( m_flags.test(eShowOnCompass) && xr_strlen(str) )
 		{
 			string512 buf;

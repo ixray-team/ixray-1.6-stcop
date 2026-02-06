@@ -11,6 +11,20 @@ enum class ECompassSpotKind : u8
     Npc
 };
 
+struct SCompassParams
+{
+    bool bShow = false;
+    float fMaxDist = -1.0f;
+    float fOffsetY = 0.0f;
+    Fvector2 vSize;
+    bool bOverrideSize = false;
+
+    SCompassParams()
+    {
+        vSize.set(-1.0f, -1.0f);
+    }
+};
+
 class CMapSpot;
 class CMiniMapSpot;
 class CMapSpotPointer;
@@ -73,6 +87,7 @@ protected:
 	shared_str				m_compass_spot_texture;
 	u32						m_compass_spot_color;
 	float					m_fCompassMaxDist;
+	SCompassParams			m_compass_params;
 private:
 							CMapLocation					(const CMapLocation&){R_ASSERT(0);} //disable copy ctor
 
@@ -122,6 +137,7 @@ public:
 	const shared_str&		GetCompassSpotTexture			()	const { return m_compass_spot_texture; }
 	IC u32					GetCompassSpotColor				()	const { return m_compass_spot_color; }
 	IC float				GetCompassMaxDist				()	const { return m_fCompassMaxDist; }
+	const SCompassParams&	GetCompassParams				()	const { return m_compass_params; }
 	ECompassSpotKind		GetCompassSpotKind				()	const;
 
 	u16						ObjectID						() {return m_objectID;}
