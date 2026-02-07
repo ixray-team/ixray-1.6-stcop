@@ -2057,10 +2057,22 @@ void PASource::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 					rot_velocity.normalize();
 				}
 			}
-			color.Generate		(col);
-			float ag 			= age + NRand(age_sigma);
+			color.Generate(col);
+			float ag = age + NRand(age_sigma);
 
-			pHolder->AddParticle(pos, pos, siz, rt, vel, rot_velocity, color_argb_f(alpha, col.x, col.y, col.z), ag);
+			pHolder->AddParticle(
+				pos,
+				pos,
+				siz,
+				rt,
+				vel,
+				rot_velocity,
+				color_argb_f(
+					random_alpha ? alpha + (alpha2-alpha)/drand48() : alpha,
+					col.x,
+					col.y,
+					col.z),
+				ag);
 		}
 	}else{
 		for(int i = 0; i < rate; i++){
@@ -2139,9 +2151,17 @@ void* PASource::GetVariableImpl(u8 VarID)
 		{
 			return &color;
 		}
+	case EVariable::random_alpha:
+		{
+			return &random_alpha;
+		}
 	case EVariable::alpha:
 		{
 			return &alpha;
+		}
+	case EVariable::alpha2:
+		{
+			return &alpha2;
 		}
 	case EVariable::particle_rate:
 		{
