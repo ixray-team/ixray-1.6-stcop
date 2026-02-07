@@ -111,9 +111,7 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
 //		E->set_name_replace	(CL->Name);
 	}
 
-	// PROCESS RP;	 3D position/orientation
-	PerformRP				(E);
-	E->s_RP					= 0xFE;	// Use supplied
+	E->s_RP = 0xFE;	// Use supplied
 
 	// Parent-Connect
 	if (!tpExistedEntity) {
