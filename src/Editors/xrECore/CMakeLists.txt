@@ -63,7 +63,6 @@ file(GLOB_RECURSE ECORE_SOURCE_RENDER_FILES CONFIGURE_DEPENDS
 	"../../Layers/xrRender/dxFontRender.*"
 	"../../Layers/xrRender/dxLensFlareRender.*"
 	"../../Layers/xrRender/dxObjectSpaceRender.*"
-	"../../Layers/xrRender/dxParticleCustom.*"
 	"../../Layers/xrRender/dxRainRender.*"
 	"../../Layers/xrRender/dxRenderDeviceRender.*"
 	"../../Layers/xrRender/dxRenderFactory.*"
