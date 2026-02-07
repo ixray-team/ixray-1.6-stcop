@@ -13,16 +13,11 @@ enum class ECompassSpotKind : u8
 
 struct SCompassParams
 {
-    bool bShow = false;
     float fMaxDist = -1.0f;
     float fOffsetY = 0.0f;
-    Fvector2 vSize;
+	Fvector2 vSize = { -1.f, -1.f };
     bool bOverrideSize = false;
-
-    SCompassParams()
-    {
-        vSize.set(-1.0f, -1.0f);
-    }
+	bool bShow = false;
 };
 
 class CMapSpot;
