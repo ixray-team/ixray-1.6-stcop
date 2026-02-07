@@ -17,7 +17,7 @@ void ParticleAction::Save	(IWriter& F)
 	m_Flags.set(EXTENSIONS, true);
 	F.w_u32			(m_Flags.get());
     F.w_u32			(type);
-	F.w_enum(ParticleActionVersion::Extended);
+	F.w_enum(ParticleActionVersion::Current);
 }
 
 void PAAvoid::Load			(IReader& F)
@@ -352,24 +352,32 @@ void PASpeedLimit::Save		(IWriter& F)
 void PASource::Load			(IReader& F)
 {
 	ParticleAction::Load 	(F);
-    F.r				(&position,sizeof(pDomain));
-    F.r				(&velocity,sizeof(pDomain));
-    F.r				(&rot,sizeof(pDomain));
+    F.r(&position,sizeof(pDomain));
+    F.r(&velocity,sizeof(pDomain));
+    F.r(&rot,sizeof(pDomain));
 	if (Version >= ParticleActionVersion::Extended)
 	{
 		AlighRotVelocityToVelocity = F.r_u8();
 		F.r(&rot_vel, sizeof(pDomain));
 	}
-    F.r				(&size,sizeof(pDomain));
-    F.r				(&color,sizeof(pDomain));
-	alpha			= F.r_float();
-	particle_rate	= F.r_float();
-	age				= F.r_float();
-	age_sigma		= F.r_float();
-    F.r_fvector3	(parent_vel);
-    parent_motion	= F.r_float();
-    positionL		= position;
-    velocityL		= velocity;
+    F.r(&size,sizeof(pDomain));
+	F.r(&color,sizeof(pDomain));
+	if (Version >= ParticleActionVersion::SomeVasnyaBranch)
+	{
+		random_alpha = F.r_u8();
+	}
+	alpha = F.r_float();
+	if (Version >= ParticleActionVersion::SomeVasnyaBranch)
+	{
+		alpha2 = F.r_float();
+	}
+	particle_rate = F.r_float();
+	age = F.r_float();
+	age_sigma = F.r_float();
+    F.r_fvector3(parent_vel);
+    parent_motion = F.r_float();
+    positionL = position;
+    velocityL = velocity;
 }
 void PASource::Save			(IWriter& F)
 {
@@ -381,7 +389,9 @@ void PASource::Save			(IWriter& F)
 	F.w(&rot_vel,sizeof(pDomain));
     F.w(&size,sizeof(pDomain));
     F.w(&color,sizeof(pDomain));
+	F.w_u8(random_alpha);
 	F.w_float(alpha);
+	F.w_float(alpha2);
 	F.w_float(particle_rate);
 	F.w_float(age);
 	F.w_float(age_sigma);
