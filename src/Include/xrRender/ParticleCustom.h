@@ -80,4 +80,6 @@ public:
 	virtual BOOL	GetLiveUpdate		()=0;
 
 	virtual PAPI::ParticleAction* FindPA(shared_str PEName, PAPI::PActionEnum Action) = 0;
+
+	virtual IParticleCustom* dcast_ParticleCustom() { return this; }
 };
