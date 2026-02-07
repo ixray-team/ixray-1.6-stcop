@@ -35,8 +35,8 @@ public:
 		void		SetSelectedText					(LPCSTR txt);
 		void		SetImmediateSelection			(bool f);
 
-		void		NextItem						();
-		void		PrevItem						();
+		void		NextItem						(bool selectOnly = false);
+		void		PrevItem						(bool selectOnly = false);
 
 virtual bool		OnMouseAction							(float x, float y, EUIMessages mouse_action);
 virtual void		SendMessage						(CUIWindow* pWnd, s16 msg, void* pData = 0);
@@ -48,7 +48,6 @@ virtual void		SendMessage						(CUIWindow* pWnd, s16 msg, void* pData = 0);
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 	virtual CUIScrollView* ui_cast_scroll_view() { return this; }
-
 protected:
 	CGameFont*		m_pFont;
 	float			m_def_item_height;

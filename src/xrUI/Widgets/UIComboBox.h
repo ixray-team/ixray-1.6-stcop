@@ -49,14 +49,12 @@ public:
 			int			CurrentID				()	{return m_itoken_id;}
 			void		disable_id				(int id);
 			void		enable_id				(int id);
-
+			void		SetHighlighted			(bool val);
 	virtual CUIWindow* ui_cast_window() { return this; }
 
 protected:
 	virtual bool		OnMouseAction					(float x, float y, EUIMessages mouse_action);
 	virtual void		OnBtnClicked			();
-			void		ShowList				(bool bShow);
-			void		OnListItemSelect		();
 	virtual void		Update					();
 	virtual void		Draw					();
 			void		ClearList				();
@@ -79,6 +77,10 @@ protected:
 	u32					m_textColor[2];
 public:
 	CUIListBox			m_list_box;
+	CUIListBox*			GetListBox() { return &m_list_box;}
+			void		OnListItemSelect		();
+			void		ShowList				(bool bShow);
+			bool		IsListShown				() { return m_list_frame.IsShown(); }
 	void				SetTextColor			(u32 color)			{m_textColor[0] = color;};
 	void				SetTextColorD			(u32 color)			{m_textColor[1] = color;};
 
