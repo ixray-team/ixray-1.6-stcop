@@ -191,6 +191,7 @@ void CUIWindow::script_register(lua_State *L)
 		.def("SetWindowName",			&CUIWindow::SetWindowName)
 		.def("SetPPMode",				&CUIWindow::SetPPMode)
 		.def("ResetPPMode",				&CUIWindow::ResetPPMode)
+		.def("GetParent",				&CUIWindow::GetParent)
 	];
 
 	module(L)
@@ -247,7 +248,9 @@ void CUIWindow::script_register(lua_State *L)
 		.def("GetMaxScrollPos",			&CUIScrollView::GetMaxScrollPos)
 		.def("GetCurrentScrollPos",		&CUIScrollView::GetCurrentScrollPos)
 		.def("SetFixedScrollBar", 		&CUIScrollView::SetFixedScrollBar)																
-		.def("SetScrollPos",			&CUIScrollView::SetScrollPos),
+		.def("SetScrollPos",			&CUIScrollView::SetScrollPos)
+		.def("GetPadSize",				&CUIScrollView::GetPadSize)
+		.def("HasWindow",				&CUIScrollView::HasWindow),
 
 		class_<enum_exporter<EUIMessages> >("ui_events")
 			.enum_("events")

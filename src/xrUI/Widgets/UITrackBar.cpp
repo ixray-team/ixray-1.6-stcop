@@ -58,46 +58,57 @@ bool CUITrackBar::OnMouseAction(float x, float y, EUIMessages mouse_action)
 		break;
 	case WINDOW_MOUSE_WHEEL_UP:
 		{
-			if (IsFltMode())
-			{
-				m_f_val -= GetInvert() ? -m_f_step : m_f_step;
-				clamp(m_f_val, m_f_min, m_f_max);
-			}
-			else
-			{
-				if (IsIntMode())
-					m_i_val -= GetInvert() ? -m_i_step : m_i_step;
-				else
-					m_i_val -= GetInvert() ? -1 : 1; // for bool and token it will be 1 always
-				clamp(m_i_val, m_i_min, m_i_max);
-			}
-			GetMessageTarget()->SendMessage(this, BUTTON_CLICKED, nullptr);
-			UpdatePos			();
-			OnChangedOptValue	();
+			StepLeft();
 		}
 		break;
 	case WINDOW_MOUSE_WHEEL_DOWN:
 		{
-			if (IsFltMode())
-			{
-				m_f_val += GetInvert() ? -m_f_step : m_f_step;
-				clamp(m_f_val, m_f_min, m_f_max);
-			}
-			else
-			{
-				if (IsIntMode())
-					m_i_val += GetInvert() ? -m_i_step : m_i_step;
-				else
-					m_i_val += GetInvert() ? -1 : 1;  // for bool and token it will be 1 always
-				clamp(m_i_val, m_i_min, m_i_max);
-			}
-			GetMessageTarget()->SendMessage(this, BUTTON_CLICKED, nullptr);
-			UpdatePos();
-			OnChangedOptValue	();
+			StepRight();
 		}
 		break;
 	};
 	return true;
+}
+
+void CUITrackBar::StepLeft()
+{
+	if (IsFltMode())
+	{
+		m_f_val -= GetInvert() ? -m_f_step : m_f_step;
+		clamp(m_f_val, m_f_min, m_f_max);
+	}
+	else
+	{
+		if (IsIntMode())
+			m_i_val -= GetInvert() ? -m_i_step : m_i_step;
+		else
+			m_i_val -= GetInvert() ? -1 : 1; // for bool and token it will be 1 always
+		clamp(m_i_val, m_i_min, m_i_max);
+	}
+	GetMessageTarget()->SendMessage(this, BUTTON_CLICKED, nullptr);
+	UpdatePos();
+	OnChangedOptValue();
+}
+
+void CUITrackBar::StepRight()
+{
+	if (IsFltMode())
+	{
+		m_f_val += GetInvert() ? -m_f_step : m_f_step;
+		clamp(m_f_val, m_f_min, m_f_max);
+	}
+	else
+	{
+		if (IsIntMode())
+			m_i_val += GetInvert() ? -m_i_step : m_i_step;
+		else
+			m_i_val += GetInvert() ? -1 : 1;  // for bool and token it will be 1 always
+		clamp(m_i_val, m_i_min, m_i_max);
+	}
+	GetMessageTarget()->SendMessage(this, BUTTON_CLICKED, nullptr);
+	UpdatePos();
+	OnChangedOptValue();
+
 }
 
 void CUITrackBar::InitTrackBar(Fvector2 pos, Fvector2 size)
