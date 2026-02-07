@@ -389,7 +389,7 @@ void CUIListBox::SetImmediateSelection(bool f)
 	m_bImmediateSelection = f;
 }
 
-void CUIListBox::NextItem()
+void CUIListBox::NextItem(bool selectOnly)
 {
 	int nextIdx = GetSelectedIDX() + 1;
 	if (nextIdx > m_pad->GetChildWndList().size() - 1)
@@ -398,7 +398,12 @@ void CUIListBox::NextItem()
 		ScrollToBegin();
 	}
 	SetSelectedIDX(nextIdx);
-	GetSelectedItem()->OnMouseDown(MOUSE_1);
+	GetSelectedItem()->SendSelectionCallback();
+	if (!selectOnly)
+	{
+		GetSelectedItem()->SendClickCallback();
+	}
+
 	int pos = GetSelectedIDX() * GetItemHeight();
 	pos -= GetHeight()/2;
 	if (pos < 0)
@@ -407,7 +412,7 @@ void CUIListBox::NextItem()
 	SetScrollPos(pos);
 }
 
-void CUIListBox::PrevItem()
+void CUIListBox::PrevItem(bool selectOnly)
 {
 	int nextIdx = GetSelectedIDX() - 1;
 	if (nextIdx < 0)
@@ -416,7 +421,12 @@ void CUIListBox::PrevItem()
 		ScrollToEnd();
 	}
 	SetSelectedIDX(nextIdx);
-	GetSelectedItem()->OnMouseDown(MOUSE_1);
+	GetSelectedItem()->SendSelectionCallback();
+	if (!selectOnly)
+	{
+		GetSelectedItem()->SendClickCallback();
+	}
+
 	int pos = GetSelectedIDX() * GetItemHeight();
 	pos -= GetHeight() / 2;
 	if (pos < 0)
