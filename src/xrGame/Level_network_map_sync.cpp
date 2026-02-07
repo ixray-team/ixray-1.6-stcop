@@ -1,6 +1,5 @@
 #include "StdAfx.h"
 #include "Level.h"
-#include "xrServerMapSync.h"
 #include "../xrCore/stream_reader.h"
 #include "MainMenu.h"
 #include "../xrEngine/string_table.h"
