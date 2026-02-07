@@ -399,3 +399,9 @@ u32 CUIComboBox::GetSelectedIDX()
 {
 	return m_list_box.GetSelectedIDX();
 }
+
+void CUIComboBox::SetHighlighted(bool val)
+{
+	m_frameLine.SetCurrentState(val ? S_Highlighted : S_Enabled);
+	m_arrow.SetCurrentState(val ? S_Highlighted : S_Enabled);
+}

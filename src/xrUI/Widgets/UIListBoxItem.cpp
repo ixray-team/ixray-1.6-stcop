@@ -54,9 +54,8 @@ bool CUIListBoxItem::OnMouseDown(int mouse_btn)
 {
 	if (mouse_btn == MOUSE_1)
 	{
-		GetParent()->GetParent()->ui_cast_scroll_view()->SetSelected(this);
-		GetMessageTarget()->SendMessage(this, LIST_ITEM_SELECT, &tag);
-		GetMessageTarget()->SendMessage(this, LIST_ITEM_CLICKED, &tag);
+		SendSelectionCallback();
+		SendClickCallback();
 		return true;
 	}
 	else if (mouse_btn == MOUSE_2)
@@ -144,4 +143,15 @@ void CUIListBoxItem::SetText(LPCSTR txt)
 LPCSTR CUIListBoxItem::GetText()							
 {
 	return m_text->GetText();
+}
+
+void CUIListBoxItem::SendSelectionCallback()
+{
+	GetParent()->GetParent()->ui_cast_scroll_view()->SetSelected(this);
+	GetMessageTarget()->SendMessage(this, LIST_ITEM_SELECT, &tag);
+}
+
+void CUIListBoxItem::SendClickCallback()
+{
+	GetMessageTarget()->SendMessage(this, LIST_ITEM_CLICKED, &tag);
 }

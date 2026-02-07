@@ -48,6 +48,7 @@ public:
 	void			SetStateTextColor				(u32 color, IBState state){m_dwTextColor[state] = color; m_bUseTextColor[state] = true;}
 	u32				m_dwTextColor[4];
 	bool			m_bUseTextColor[4]; // note: 0 index will be ignored
+			void	SetHighlighted				(bool val);
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 
@@ -80,5 +81,6 @@ private:
 
 	ref_sound			m_sound_h;
 	ref_sound			m_sound_t;	
+	bool				m_bForceHighlight = false;
 
 }; // class CUI3tButton
