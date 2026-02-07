@@ -21,12 +21,7 @@
 #include "file_transfer.h"
 #include "screenshot_server.h"
 #include "xrServer_info.h"
-
-#pragma warning(push)
-#pragma warning(disable:4995)
-#include <malloc.h>
-#include <functional>
-#pragma warning(pop)
+#include "xrServer_Objects.h"
 
 xrClientData::xrClientData() :
 	IClient(Device.GetTimerGlobal())
@@ -1025,27 +1020,34 @@ void			xrServer::Server_Client_Check	( IClient* CL )
 	}
 };
 
-bool		xrServer::OnCL_QueryHost		() 
+bool xrServer::OnCL_QueryHost() 
 {
-	if (game->Type() == eGameIDSingle) return false;
-	return (GetClientsCount() != 0); 
-};
-
-CSE_Abstract*	xrServer::GetEntity			(u32 Num)
-{
-	xrS_entities::iterator	I=entities.begin(),E=entities.end();
-	for (u32 C=0; I!=E; ++I,++C)
+	if (game->Type() == eGameIDSingle)
 	{
-		if (C == Num) return I->second;
-	};
-	return nullptr;
-};
+		return false;
+	}
 
+	return (GetClientsCount() != 0); 
+}
 
-void		xrServer::OnChatMessage(NET_Packet* P, xrClientData* CL)
+CSE_Abstract* xrServer::GetEntity(u32 Num)
+{
+	if (Num >= entities.size())
+	{
+		return nullptr;
+	}
+
+	auto Iter = entities.begin();
+	std::advance(Iter, Num);
+	return Iter->second;
+}
+
+void xrServer::OnChatMessage(NET_Packet* P, xrClientData* CL)
 {
 	if (!CL->net_Ready)
+	{
 		return;
+	}
 
 	struct MessageSenderController
 	{
@@ -1506,4 +1508,91 @@ void xrServer::PopLastServerScriptEvent()
 u32 xrServer::GetSizeServerScriptEvent()
 {
 	return script_server_events.size();
+}
+
+void xrServer::OnProcessClientMapData(NET_Packet& P, ClientID const& clientID)
+{
+	string128 client_map_name;
+	string128 client_map_version;
+	u32 client_geom_crc32;
+
+	P.r_stringZ_s(client_map_name);
+	P.r_stringZ_s(client_map_version);
+	P.r_u32(client_geom_crc32);
+
+	LPCSTR	server_map_name = Level().get_net_DescriptionData().map_name;
+	LPCSTR	server_map_version = Level().get_net_DescriptionData().map_version;
+
+	NET_Packet responseP;
+	responseP.w_begin(M_SV_MAP_NAME);
+
+	if ((xr_strcmp(server_map_name, client_map_name)) || (xr_strcmp(server_map_version, client_map_version)))
+	{
+		responseP.w_u8(static_cast<u8>(YouHaveOtherMap));
+		Msg("--- Client [0x%08x] has incorrect map [%s] or version [%s]", client_map_name, client_map_version);
+		//here we can make hard disconnect of this client...
+	}
+	else if (!Level().IsChecksumsEqual(client_geom_crc32))
+	{
+		responseP.w_u8(static_cast<u8>(InvalidChecksum));
+	}
+	else
+	{
+		responseP.w_u8(static_cast<u8>(SuccessSync));
+	}
+
+	SendTo(clientID, responseP, net_flags(TRUE, TRUE));
+}
+
+void xrServer::Process_event_activate(NET_Packet& P, const ClientID sender, const u32 time, const u16 id_parent, const u16 id_entity, bool send_message)
+{
+	// Parse message
+	CSE_Abstract* e_parent = game->get_entity_from_eid(id_parent);
+	CSE_Abstract* e_entity = game->get_entity_from_eid(id_entity);
+
+#ifndef MASTER_GOLD
+	Msg("---Artefact activate (parent = %d) (item = %d)", id_parent, id_entity);
+#endif // #ifndef MASTER_GOLD
+
+	if (g_dedicated_server)
+	{
+		if (e_parent == nullptr)
+		{
+			Msg("parent not found. id_parent=%d id_entity=%d frame=%d", id_parent, id_entity, Device.dwFrame);
+			return;
+		}
+
+		if (e_entity == nullptr)
+		{
+			Msg("entity not found. id_parent=%d id_entity=%d frame=%d", id_parent, id_entity, Device.dwFrame);
+			return;
+		}
+	}
+	else
+	{
+		R_ASSERT2(e_parent, make_string<const char*>("parent not found. id_parent=%d id_entity=%d frame=%d", id_parent, id_entity, Device.dwFrame));
+		R_ASSERT2(e_entity, make_string<const char*>("entity not found. id_parent=%d id_entity=%d frame=%d", id_parent, id_entity, Device.dwFrame));
+	}
+
+	if (!game->OnActivate(id_parent, id_entity))
+		return;
+
+
+	if (0xffff == e_entity->ID_Parent)
+	{
+#ifndef MASTER_GOLD
+		Msg("~ ERROR: can't activate independant object. entity[%s:%d], parent[%s:%d], section[%s]",
+			e_entity->name_replace(), id_entity, e_parent->name_replace(), id_parent, *e_entity->s_name);
+#endif // #ifndef MASTER_GOLD
+		return;
+	}
+
+	// Signal to everyone (including sender)
+	if (send_message)
+	{
+		DWORD MODE = net_flags(TRUE, TRUE, FALSE, TRUE);
+		SendBroadcast(BroadcastCID, P, MODE);
+	}
+
+	return;
 }
