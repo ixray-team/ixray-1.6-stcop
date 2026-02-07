@@ -85,6 +85,7 @@ jobs:
           path: |
             build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*.mll
             build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*.dll
+            src/plugins/Maya/xray_re_object_translator_options.mel
 
       - name: Upload symbols
         uses: actions/upload-artifact@v7

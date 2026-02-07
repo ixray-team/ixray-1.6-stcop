@@ -1,0 +1,85 @@
+global proc int xray_re_object_translator_options(string $parent, string $action, string $options, string $callback)
+{
+	string $sdk_ver_params[] = { "1850", "0.4", "0.6"};
+	string $sdk_ver_names[] =  { "ver_1850", "ver_0_4", "ver_0_6" };
+	string $sdk_ver_labels[] = { "1850", "ShoC", "CSky/CoP" };
+	int $i, $j;
+
+	if($action == "post")
+	{
+		setParent $parent;
+		columnLayout -adj true;
+		
+		text -label "Target version:";
+
+		radioCollection "sdk_ver";
+		for($i = 0; $i < size($sdk_ver_params); $i++)
+			radioButton -label $sdk_ver_labels[$i] $sdk_ver_names[$i];
+
+		checkBox -label "Compressed" "compressed";
+		checkBox -label "Use 'Joint Orient' for bind rotation" "use_joint_orient";
+		checkBox -label "Custom normals (export vnormals)" "vnormals";
+
+		string $params[];
+		tokenize($options, ";", $params);
+		for($i = 0; $i < size($params); $i++)
+		{
+			string $kv[];
+			tokenize($params[$i], "=", $kv);
+
+			if(size($kv) < 3)
+				continue;
+			
+			if($kv[0] == "sdk_ver")
+				for($j = 0; $j < size($sdk_ver_params); $j++)
+					if($sdk_ver_params[$j] == $kv[1])
+						radioCollection -edit -select $sdk_ver_names[$j] "sdk_ver";
+
+			if($kv[0] == "compressed")
+				if($kv[1] == "true")
+					checkBox -edit -value true "compressed";
+				else
+					checkBox -edit -value false "compressed";
+
+			if($kv[0] == "vnormals")
+				if($kv[1] == "true")
+					checkBox -edit -value true "vnormals";
+				else
+					checkBox -edit -value false "vnormals";
+
+			if($kv[0] == "use_joint_orient")
+				if($kv[1] == "true")
+					checkBox -edit -value true "use_joint_orient";
+				else
+					checkBox -edit -value false "use_joint_orient";
+		}
+	}
+	else if($action == "query")
+	{
+		$options = "";
+
+		string $sdk_version = `radioCollection -q -sl "sdk_ver"`;
+		for($i = 0; $i < size($sdk_ver_names); $i++)
+			if($sdk_ver_names[$i] == $sdk_version)
+				$options += "sdk_ver=" + $sdk_ver_params[$i] + ";";
+
+		if(`checkBox -q -value "compressed"`)
+			$options += "compressed=true;";
+		else
+			$options += "compressed=false;";
+
+		if(`checkBox -q -value "use_joint_orient"`)
+			$options += "use_joint_orient=true;";
+		else
+			$options += "use_joint_orient=false;";
+
+		if(`checkBox -q -value "vnormals"`)
+			$options += "vnormals=true;";
+		else
+			$options += "vnormals=false;";
+			
+		eval($callback + " \"" + $options + "\"");
+	}
+
+	return 1;
+}
