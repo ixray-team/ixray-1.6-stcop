@@ -171,6 +171,8 @@ namespace PS
 
         virtual u32 		ParticlesCount	();
 		PAPI::ParticleAction* FindPA(shared_str PEName, PAPI::PActionEnum Action) override;
+
+		virtual IParticleCustom* dcast_ParticleCustom() { return this; }
 	};
 
 	namespace PG
