@@ -29,11 +29,17 @@ set(DEP_DIR ${CMAKE_BINARY_DIR}/dep)
 
 # Maya SDK
 if (IXRAY_PLUGINS)
-    set(IXR_MAYA_SDK_ZIP ${DEP_DIR}/Autodesk.Maya.Sdk.2024.zip)
-    set(IXR_MAYA_SDK_URL https://github.com/ixray-team/ixray-packages/releases/download/d2024.5.3/Autodesk.Maya.Sdk.2024.zip)
-    set(IXR_MAYA_SDK_DIR ${DEP_DIR}/maya_sdk)
-    download_and_extract_sdk(${IXR_MAYA_SDK_URL} ${IXR_MAYA_SDK_ZIP} ${IXR_MAYA_SDK_DIR})
-    set(IXR_MAYA_SDK ${IXR_MAYA_SDK_DIR}/)
+    set(IXR_MAYA_SDK_2024_ZIP ${DEP_DIR}/Autodesk.Maya.Sdk.2024.zip)
+    set(IXR_MAYA_SDK_2024_URL https://github.com/ixray-team/ixray-packages/releases/download/d2024.5.3/Autodesk.Maya.Sdk.2024.zip)
+    set(IXR_MAYA_SDK_2024_DIR ${DEP_DIR}/maya_sdk)
+    download_and_extract_sdk(${IXR_MAYA_SDK_2024_URL} ${IXR_MAYA_SDK_2024_ZIP} ${IXR_MAYA_SDK_2024_DIR})
+    set(IXR_MAYA_SDK_2024 ${IXR_MAYA_SDK_2024_DIR}/)
+    
+    set(IXR_MAYA_SDK_2025_ZIP ${DEP_DIR}/Autodesk.Maya.Sdk.2025.zip)
+    set(IXR_MAYA_SDK_2025_URL https://github.com/ixray-team/ixray-packages/releases/download/d2024.5.3/Autodesk.Maya.Sdk.2025.zip)
+    set(IXR_MAYA_SDK_2025_DIR ${DEP_DIR}/maya_sdk_2025)
+    download_and_extract_sdk(${IXR_MAYA_SDK_2025_URL} ${IXR_MAYA_SDK_2025_ZIP} ${IXR_MAYA_SDK_2025_DIR})
+    set(IXR_MAYA_SDK_2025 ${IXR_MAYA_SDK_2025_DIR}/)
 endif()
 
 # LightWave SDK (закомментировано)
