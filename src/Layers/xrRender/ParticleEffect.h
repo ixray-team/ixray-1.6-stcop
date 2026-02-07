@@ -4,15 +4,15 @@
 //---------------------------------------------------------------------------
 
 #include "ParticleEffectDef.h"
-
-#include "FBasicVisual.h"
-#include "dxParticleCustom.h"
 #include "particle_core/particle_holder.h"
+#include "../../Include/xrRender/ParticleCustom.h"
+#include "FBasicVisual.h"
+
+
 namespace PS
 {
-	class ECORE_API CParticleEffect: public dxParticleCustom
+	class ECORE_API CParticleEffect: public dxRender_Visual, public IParticleCustom
 	{
-//		friend void ParticleRenderStream( LPVOID lpvParams );
 		friend class CPEDef;
 	protected:
 		float				m_fElapsedLimit;
@@ -23,6 +23,7 @@ namespace PS
 		xrCriticalSection	onframe_lock;
 	public:
 		CPEDef*				m_Def;
+		ref_geom			geom;
         Fmatrix				m_XFORM;
 		PAPI::ParticleHolder Pholder;
     protected:
@@ -38,8 +39,6 @@ namespace PS
 		};
 		Flags8				m_RT_Flags;
 	protected:
-		BOOL 				SaveActionList		(IWriter& F);
-		BOOL 				LoadActionList		(IReader& F);
 
 		void				RefreshShader		();
 	public:
@@ -48,7 +47,6 @@ namespace PS
 
 		void	 			OnFrame				(u32 dt);
 
-		u32					RenderTO			();
 		virtual void		Render				(float LOD);
 		virtual void		Copy				(dxRender_Visual* pFrom);
 
@@ -59,7 +57,7 @@ namespace PS
 
 		BOOL				Compile				(CPEDef* def);
 
-		IC CPEDef*			GetDefinition		(){return m_Def;}
+		ICF CPEDef*			GetDefinition		(){return m_Def;}
 
 		virtual void		Play				();
 		virtual void		Stop				(BOOL bDefferedStop=TRUE);

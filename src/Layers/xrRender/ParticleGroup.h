@@ -1,9 +1,10 @@
 //---------------------------------------------------------------------------
 #ifndef ParticleGroupH
 #define ParticleGroupH
-class ButtonValue;
+#include "../../Include/xrRender/ParticleCustom.h"
+#include "FBasicVisual.h"
 
-#include "dxParticleCustom.h"
+class ButtonValue;
 
 namespace PS
 {
@@ -77,7 +78,7 @@ namespace PS
 #endif
 	};
 
-	class ECORE_API CParticleGroup: public dxParticleCustom
+	class ECORE_API CParticleGroup: public dxRender_Visual, public IParticleCustom
 	{
 		const CPGDef*		m_Def;
 		float				m_CurrentTime;
