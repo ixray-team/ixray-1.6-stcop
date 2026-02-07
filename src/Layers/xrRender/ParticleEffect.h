@@ -79,6 +79,8 @@ namespace PS
 
 	    virtual u32			ParticlesCount		();
 		PAPI::ParticleAction* FindPA(shared_str PEName, PAPI::PActionEnum Action) override;
+
+		virtual IParticleCustom* dcast_ParticleCustom() { return this; }
 	};
     void OnEffectParticleBirth	(void* owner, u32 param, PAPI::Particle& m, u32 idx);
     void OnEffectParticleDead	(void* owner, u32 param, PAPI::Particle& m, u32 idx);
