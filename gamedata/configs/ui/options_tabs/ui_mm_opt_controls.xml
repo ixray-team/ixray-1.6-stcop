@@ -6,29 +6,29 @@
             <options_item entry="mouse_sens" group="mm_opt_controls"/>
         </track_mousesens>
 
-        <cap_mousesens_ui x="15" y="30" width="135" height="24">
+        <cap_mousesens_ui x="15" y="3" width="135" height="24">
             <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_mouse_sense_ui</text>
         </cap_mousesens_ui>
-        <track_mousesens_ui x="175" y="33" width="235" height="16" step="0.01" show_value="1">
+        <track_mousesens_ui x="175" y="6" width="235" height="16" step="0.01" show_value="1">
             <options_item entry="mouse_sens_ui" group="mm_opt_controls"/>
         </track_mousesens_ui>
 
-        <cap_check_mouseinvert x="15" y="60" width="135" height="24">
+        <cap_check_mouseinvert x="15" y="3" width="135" height="24">
             <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_invert_mouse</text>
         </cap_check_mouseinvert>
-        <check_mouseinvert x="162" y="57" width="44" height="29">
+        <check_mouseinvert x="162" y="0" width="44" height="29">
 	        <texture>ui_inGame2_checkbox</texture>
             <options_item entry="mouse_invert" group="mm_opt_controls"/>
         </check_mouseinvert>
 
-        <cap_keyboardsetup x="0" y="94" width="430" height="15">
+        <cap_keyboardsetup x="0" y="0" width="430" height="15">
             <texture a="150">ui_inGame2_servers_list_button</texture>
             <auto_static x="10" y="0" width="135" height="15">
                 <text r="170" g="170" b="170" font="letterica16" vert_align="c">ui_mm_keyboard_setup</text>
             </auto_static>
         </cap_keyboardsetup>
 
-        <key_binding x="0" y="110" width="430" height="240">
+        <key_binding x="0" y="0" width="430" height="240">
             <header_1 x="0" y="0" width="220" height="15">
                 <texture a="150">ui_inGame2_servers_list_button</texture>
                 <auto_static x="2" y="0" width="220" height="15">

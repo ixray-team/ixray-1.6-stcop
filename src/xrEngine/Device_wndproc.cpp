@@ -181,8 +181,10 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 		}
 		case SDL_EVENT_MOUSE_MOTION:
 		{
-			pInput->MouseMotion(Event.motion.xrel, Event.motion.yrel);
-			pInput->SetControllerMode(false);
+			if (!pInput->GetControllerMode())
+			{
+				pInput->MouseMotion(Event.motion.xrel, Event.motion.yrel);
+			}
 			break;
 		}
 		case SDL_EVENT_MOUSE_WHEEL:

@@ -47,6 +47,7 @@ public:
 	virtual void	Draw				();
 	virtual void	Update				();
 			void	AddWindow			(CUIWindow* pWnd, bool auto_delete);
+			bool	HasWindow			(CUIWindow* pWnd);
 			void	RemoveWindow		(CUIWindow* pWnd);
 			void	Clear				();
 			void	ScrollToBegin		();

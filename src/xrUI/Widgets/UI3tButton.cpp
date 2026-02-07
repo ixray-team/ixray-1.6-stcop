@@ -259,7 +259,7 @@ void CUI3tButton::Update()
 			else if ( m_back_frameline )	{	m_back_frameline->SetCurrentState( S_Touched );	}
 			else if ( m_back_framewindow )	{	m_back_framewindow->SetCurrentState( S_Touched );	}
 		}
-		else if ( m_bCursorOverWindow )
+		else if ( m_bCursorOverWindow || m_bForceHighlight )
 		{
 			if ( m_background )				{	m_background->SetCurrentState( S_Highlighted );		}
 			else if ( m_back_frameline )	{	m_back_frameline->SetCurrentState( S_Highlighted );	}
@@ -287,7 +287,7 @@ void CUI3tButton::Update()
 			m_BtnStatic->TextItemControl()->SetTextColor(m_BtnStaticParams.m_ClrStateT);
 		textColor = m_bUseTextColor[S_Touched] ? m_dwTextColor[S_Touched] : m_dwTextColor[S_Enabled];
 	}
-	else if (m_bCursorOverWindow)
+	else if (m_bCursorOverWindow || m_bForceHighlight)
 	{
 		if (m_BtnStatic && m_BtnStaticParams.m_bNeedClrChanging)
 			m_BtnStatic->TextItemControl()->SetTextColor(m_BtnStaticParams.m_ClrStateH);
@@ -321,4 +321,9 @@ void CUI3tButton::SetBtnStaticClrT(u32 clr)
 void CUI3tButton::SetBtnStaticClrH(u32 clr)
 {
 	m_BtnStaticParams.m_ClrStateH = clr;
+}
+
+void CUI3tButton::SetHighlighted(bool val)
+{
+	m_bForceHighlight = val;
 }
