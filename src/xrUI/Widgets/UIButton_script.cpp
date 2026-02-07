@@ -32,6 +32,12 @@ void SetSystemDepends_script_check(CUICheckButton* btn, int depend)
 	btn->SetSystemDepends((CUIOptionsItem::ESystemDepends)depend);
 }
 
+void CheckButton_Toggle(CUICheckButton* btn)
+{
+	btn->SetCheck(!btn->GetCheck());
+	btn->SendClickCallback();
+}
+
 #pragma optimize("s",on)
 void CUIButton::script_register(lua_State *L)
 {
@@ -45,6 +51,8 @@ void CUIButton::script_register(lua_State *L)
 
 		class_<CUI3tButton, CUIButton>("CUI3tButton")
 		.def(							constructor<>())
+		.def("OnClick",					&CUI3tButton::OnClick)
+		.def("SetHighlighted",			&CUI3tButton::SetHighlighted)
 		,
 
 
@@ -54,7 +62,8 @@ void CUIButton::script_register(lua_State *L)
 		.def("SetCheck",				&CUICheckButton::SetCheck)
 		.def("SetDependControl",		&CUICheckButton::SetDependControl)
 		.def("AssignProps",				&AssignProps_script_check)
-		.def("SetSystemDepends",		&SetSystemDepends_script_check),
+		.def("SetSystemDepends",		&SetSystemDepends_script_check)
+		.def("Toggle",					&CheckButton_Toggle),
 
 		class_<CUICustomSpin, CUIWindow>("CUICustomSpin")
 		.def("GetText",				&CUICustomSpin::GetText),
@@ -87,7 +96,9 @@ void CUIButton::script_register(lua_State *L)
 		.def("GetInvert",				&CUITrackBar::GetInvert)
 		.def("SetInvert",				&CUITrackBar::SetInvert)
 		.def("SetDrawingValue",			&CUITrackBar::SetDrawingValue)
-		.def("SetSystemDepends",		&SetSystemDepends_script_track),
+		.def("SetSystemDepends",		&SetSystemDepends_script_track)
+		.def("StepLeft",				&CUITrackBar::StepLeft)
+		.def("StepRight",				&CUITrackBar::StepRight),
 
 		class_<CUIArrowStepper, CUIWindow>("CUIArrowStepper")
 		.def(							constructor<>())

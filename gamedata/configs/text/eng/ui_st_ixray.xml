@@ -489,4 +489,19 @@
 	<string id="st_manual_save">
 		<text>Manual save - </text>
 	</string>
+	<string id="st_options_save">
+		<text>Accept</text>
+	</string>
+	<string id="st_options_toggle">
+		<text>Toggle</text>
+	</string>
+	<string id="st_options_tune_item">
+		<text>Tune</text>
+	</string>
+	<string id="st_options_advanced">
+		<text>Advanced Video Options</text>
+	</string>
+	<string id="st_options_basic">
+		<text>Basic Video Options</text>
+	</string>
 </string_table>
