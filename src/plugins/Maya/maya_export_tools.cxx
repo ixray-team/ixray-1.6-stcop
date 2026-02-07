@@ -942,8 +942,8 @@ MStatus maya_export_tools::export_skl(const char* path, bool selection_only)
 
 	if (MTime::uiUnit() != MTime::kNTSCFrame)
 	{
-		msg("xray_re: motion export with non-NTSC(30 fps) frame frequency was not tested!");
-		MGlobal::displayWarning("xray_re: motion export with non-NTSC frame frequency was not tested!");
+		msg("xray_re: exporting motion with custom FPS");
+		MGlobal::displayInfo("xray_re: exporting motion with custom FPS");
 	}
 
 	MObject skin_obj;
@@ -954,21 +954,27 @@ MStatus maya_export_tools::export_skl(const char* path, bool selection_only)
 	MFnSkinCluster skin_fn(skin_obj);
 	MDagPathArray joints;
 	skin_fn.influenceObjects(joints, &status);
-	unsigned num_joints = joints.length();
-	if (num_joints == 0) {
+
+	const unsigned num_joints = joints.length();
+	if (num_joints == 0)
+	{
 		msg("xray_re: can't find any influence object");
 		MGlobal::displayError("xray_re: can't find any influence object");
 		return MS::kFailure;
 	}
+
 	xr_bone_motion_vec bmotions(num_joints);
-	for (unsigned i = num_joints; i != 0;) {
+
+	for (unsigned i = num_joints; i != 0;)
+	{
 		MFnIkJoint joint_fn(joints[--i], &status);
-		if (!status) {
+		if (!status)
+		{
 			msg("xray_re: can't handle non-joint node %s", joints[i].partialPathName().asChar());
-			MGlobal::displayWarning(MString("xray_re: can't handle non-joint node ") +
-				joints[i].partialPathName().asChar());
+			MGlobal::displayWarning(MString("xray_re: can't handle non-joint node ") + joints[i].partialPathName().asChar());
 			return status;
 		}
+
 		xr_bone_motion* bmotion = new xr_bone_motion(getRealName(joint_fn).c_str());
 		bmotion->create_envelopes();
 		bmotions[i] = bmotion;
@@ -976,20 +982,28 @@ MStatus maya_export_tools::export_skl(const char* path, bool selection_only)
 
 	MTime saved_time(MAnimControl::currentTime());
 
-	int32_t frame_start = int32_t(MAnimControl::minTime().as(MTime::uiUnit()));
-	int32_t frame_end = int32_t(MAnimControl::maxTime().as(MTime::uiUnit()));
-	msg("xray_re: animation range=%d-%d", frame_start, frame_end);
+	const MTime::Unit ui_unit = MTime::uiUnit();
+	const int32_t frame_start = int32_t(MAnimControl::minTime().as(ui_unit));
+	const int32_t frame_end = int32_t(MAnimControl::maxTime().as(ui_unit));
+
+	const int32_t frame_count = frame_end - frame_start + 1;
+
+	msg("xray_re: animation range=%d-%d (%d frames)", frame_start, frame_end, frame_count);
+
 	MGlobal::displayInfo(MString("xray_re: animation range=") + frame_start + "-" + frame_end);
 
-	MTime	tmNew;
-	tmNew.setUnit(MTime::uiUnit());
+	MTime tm;
+	tm.setUnit(ui_unit);
 
-	for (int32_t frame = frame_start; frame <= frame_end; ++frame) {
-		tmNew.setValue(frame);
-		MGlobal::viewFrame(tmNew);
+	for (int32_t frame = frame_start; frame <= frame_end; ++frame)
+	{
+		tm.setValue(frame);
+		MGlobal::viewFrame(tm);
 
-		float displacedTime = (float)tmNew.as(MTime::kSeconds);
-		for (unsigned i = num_joints; i != 0;) {
+		const float displacedTime = float(tm.as(MTime::kSeconds));
+
+		for (unsigned i = num_joints; i != 0;)
+		{
 			MFnIkJoint joint_fn(joints[--i]);
 			xr_envelope* const* envelopes = bmotions[i]->envelopes();
 
@@ -998,25 +1012,31 @@ MStatus maya_export_tools::export_skl(const char* path, bool selection_only)
 
 			MVector t = mat.getTranslation(MSpace::kTransform, &status);
 			CHECK_MSTATUS(status);
+
 			envelopes[0]->insert_key(displacedTime, float(MDistance(t.x, MDistance::kCentimeters).asMeters()));
 			envelopes[1]->insert_key(displacedTime, float(MDistance(t.y, MDistance::kCentimeters).asMeters()));
 			envelopes[2]->insert_key(displacedTime, float(MDistance(-t.z, MDistance::kCentimeters).asMeters()));
 
 			MEulerRotation r = mat.eulerRotation();
 			r.reorderIt(MEulerRotation::kZXY);
+
 			envelopes[4]->insert_key(displacedTime, float(-r.x));
 			envelopes[3]->insert_key(displacedTime, float(-r.y));
 			envelopes[5]->insert_key(displacedTime, float(r.z));
 		}
 	}
+
 	xr_skl_motion* smotion = new xr_skl_motion;
 
 	char name[_MAX_FNAME];
 	_splitpath_s(path, NULL, 0, NULL, 0, name, sizeof(name), NULL, 0);
 
 	smotion->name() = name;
-	smotion->fps() = (float)(double(1) / MTime(1, MTime::uiUnit()).as(MTime::kSeconds));
-	smotion->set_frame_range(frame_start, frame_end);
+
+	const float fps = float(1.0 / MTime(1, ui_unit).as(MTime::kSeconds));
+	smotion->fps() = fps;
+
+	smotion->set_frame_range(0, frame_count - 1);
 	smotion->bone_motions().swap(bmotions);
 	status = smotion->save_skl(path) ? MS::kSuccess : MS::kFailure;
 	delete smotion;
@@ -1025,6 +1045,7 @@ MStatus maya_export_tools::export_skl(const char* path, bool selection_only)
 
 	return status;
 }
+
 /*
 static MStatus parse_anim_curve(MObject curve, std::vector<xr_key>& keys)
 {
