@@ -492,4 +492,19 @@
 	<string id="st_manual_save">
 		<text>Ручное сохранение - </text>
 	</string>
+	<string id="st_options_save">
+		<text>Принять</text>
+	</string>
+	<string id="st_options_toggle">
+		<text>Переключить</text>
+	</string>
+	<string id="st_options_tune_item">
+		<text>Настроить</text>
+	</string>
+	<string id="st_options_advanced">
+		<text>Дополнительные параметры графики</text>
+	</string>
+	<string id="st_options_basic">
+		<text>Базовые параметры графики</text>
+	</string>
 </string_table>

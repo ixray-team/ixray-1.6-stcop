@@ -47,6 +47,11 @@ void CUIComboBox::script_register(lua_State *L)
 		.def("GetCurrentIdx",		&CUIComboBox::GetSelectedIDX)
 		.def("AssignProps",			&AssignProps_script_combo)
 		.def("SetSystemDepends",	&SetSystemDepends_script_combo)
+		.def("GetListBox",			&CUIComboBox::GetListBox)
+		.def("OnListItemSelect",	&CUIComboBox::OnListItemSelect)
+		.def("ShowList",			&CUIComboBox::ShowList)
+		.def("IsListShown",			&CUIComboBox::IsListShown)
+		.def("SetHighlighted",		&CUIComboBox::SetHighlighted)
 
 	];
 }

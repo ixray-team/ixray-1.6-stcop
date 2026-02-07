@@ -114,6 +114,11 @@ void CUIScrollView::AddWindow			(CUIWindow* pWnd, bool auto_delete)
 	m_flags.set			(eNeedRecalc,TRUE);
 }
 
+bool CUIScrollView::HasWindow		(CUIWindow* pWnd)
+{
+	return m_pad->IsChild(pWnd);
+}
+
 void CUIScrollView::RemoveWindow		(CUIWindow* pWnd)
 {
 	m_pad->DetachChild	(pWnd);

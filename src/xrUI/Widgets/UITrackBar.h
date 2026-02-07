@@ -63,6 +63,9 @@ ETrackBarMode		GetTrackBarMode			() const { return m_mode; }
 			int		CurrentID				() const { return (m_i_val - 1); }
 			void	SetCurrentID			(int val_id) { m_i_val = val_id + 1;}
 
+			void	StepLeft				();
+			void	StepRight				();
+
 public:
 		IC	void	SetDrawingValue			(bool value) { m_b_draw_value = value; }
 
