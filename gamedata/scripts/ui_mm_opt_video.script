@@ -12,66 +12,74 @@ function opt_video:InitControls(x, y, xml, handler)
 	self:SetWndPos(vector2():set(x,y))
 	self:SetWndSize(vector2():set(738,416))
 	self:SetAutoDelete(true)
+	if xml:NodeExist("frame", 0) then
+		self.bk = xml:InitFrame			("frame", self)
+	end
+	
+	self.focusList = {}
 	self.scroll_v = xml:InitScrollView("main_dialog:scroll_v", self)
 
 	local _st
-	local addControl = function(crl)	
-		self.scroll_v:AddWindow(crl, true)
-		crl:SetAutoDelete(false)
-	end
+    local addControl = function(cap, elem, crl)	
+        self.scroll_v:AddWindow(crl, true)
+        crl:SetAutoDelete(false)
+		if cap ~= nil and elem ~= nil then
+			table.insert(self.focusList, {cap, elem, crl} )
+		end
+    end
 
     _st = xml:InitStatic("video_adv:templ_item", nil)
-	xml:InitStatic("tab_video:cap_renderer", _st)
+	local caption = xml:InitStatic("tab_video:cap_renderer", _st)
 	handler.combo_renderer = xml:InitComboBox("tab_video:list_renderer", _st)
 	handler:Register(handler.combo_renderer, "combo_renderer")
-	addControl(_st)
+	addControl(caption, handler.combo_renderer, _st)
 
 	_st = xml:InitStatic("video_adv:templ_item", nil)
-	xml:InitStatic("tab_video:cap_preset", _st)
+	caption = xml:InitStatic("tab_video:cap_preset", _st)
 	handler.combo_preset = xml:InitComboBox("tab_video:list_presets", _st)
 	handler:Register(handler.combo_preset, "combo_preset")
-	addControl(_st)
+	addControl(caption, handler.combo_preset, _st)
 
     _st = xml:InitStatic("video_adv:templ_item", nil)
-	xml:InitStatic("tab_video:cap_resolution",_st)
-	xml:InitComboBox("tab_video:list_resolution",_st)
-	addControl(_st)
+	caption = xml:InitStatic("tab_video:cap_resolution",_st)
+	local element = xml:InitComboBox("tab_video:list_resolution",_st)
+	addControl(caption, element, _st)
 
 	_st = xml:InitStatic("video_adv:templ_item", nil)
-	xml:InitStatic("tab_video:cap_brightness", _st)
-	xml:InitTrackBar("tab_video:track_brightness", _st)
-	addControl(_st)
+	caption = xml:InitStatic("tab_video:cap_brightness", _st)
+	element = xml:InitTrackBar("tab_video:track_brightness", _st)
+	addControl(caption, element, _st)
 
 	_st = xml:InitStatic("video_adv:templ_item", nil)
-	xml:InitStatic("tab_video:cap_contrast", _st)
-	xml:InitTrackBar("tab_video:track_contrast", _st)
-	addControl(_st)
+	caption = xml:InitStatic("tab_video:cap_contrast", _st)
+	element = xml:InitTrackBar("tab_video:track_contrast", _st)
+	addControl(caption, element, _st)
 
 	_st = xml:InitStatic("video_adv:templ_item", nil)
-	xml:InitStatic("tab_video:cap_gamma", _st)
-	xml:InitTrackBar("tab_video:track_gamma", _st)
-	addControl(_st)
+	caption = xml:InitStatic("tab_video:cap_gamma", _st)
+	element = xml:InitTrackBar("tab_video:track_gamma", _st)
+	addControl(caption, element, _st)
 
 	_st = xml:InitStatic("video_adv:templ_item", nil)
-	xml:InitStatic ("tab_video:cap_fullscreen", _st)
-	xml:InitCheck ("tab_video:check_fullscreen", _st)
-	addControl(_st)
+	caption = xml:InitStatic ("tab_video:cap_fullscreen", _st)
+	element = xml:InitCheck ("tab_video:check_fullscreen", _st)
+	addControl(caption, element, _st)
 
 	_st = xml:InitStatic("video_adv:templ_item", nil)
-	xml:InitStatic("tab_video:cap_rs_device_active", _st)
-	xml:InitCheck("tab_video:check_rs_device_active", _st)
-	addControl(_st)
+	caption = xml:InitStatic("tab_video:cap_rs_device_active", _st)
+	element = xml:InitCheck("tab_video:check_rs_device_active", _st)
+	addControl(caption, element, _st)
 
 	_st = xml:InitStatic("video_adv:templ_item", nil)
-	xml:InitStatic("tab_video:cap_vsync", _st)
-	xml:InitCheck("tab_video:check_vsync", _st)
-	addControl(_st)
+	caption = xml:InitStatic("tab_video:cap_vsync", _st)
+	element = xml:InitCheck("tab_video:check_vsync", _st)
+	addControl(caption, element, _st)
 
 	_st = xml:InitStatic("video_adv:templ_item", nil)
-	xml:InitStatic("tab_video:cap_screenshot_format", _st)
-	xml:InitComboBox("tab_video:list_screenshot_format", _st)
-	addControl(_st)
+	caption = xml:InitStatic("tab_video:cap_screenshot_format", _st)
+	element = xml:InitComboBox("tab_video:list_screenshot_format", _st)
+	addControl(caption, element, _st)
 
-	btn = xml:Init3tButton("tab_video:btn_advanced", self)
-	handler:Register(btn, "btn_advanced_graphic")
+	self.btn_advanced = xml:Init3tButton("tab_video:btn_advanced", self)
+	handler:Register(self.btn_advanced, "btn_advanced_graphic")
 end
