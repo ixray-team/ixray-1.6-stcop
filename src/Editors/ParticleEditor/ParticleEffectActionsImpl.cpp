@@ -1353,7 +1353,9 @@ EPASource::EPASource				():EParticleAction(PAPI::PASourceID)
 	appendDomain("Size", PDomain(PDomain::vNum,FALSE));
 	appendBool("Single Size", FALSE);
 	appendDomain("Color", PDomain(PDomain::vColor, FALSE, 0x00000000, PAPI::PDPoint,1.f,1.f,1.f,1.f,1.f,1.f,1.f,1.f,1.f));
+	appendBool("Color\\Random Alpha", false).min_version = EVersion::SomeVasnyaBranch;
 	appendFloat("Color\\Alpha", 0.f, 0.f, 1.f);
+	appendFloat("Color\\Alpha 2", 0.f, 0.f, 1.f).min_version = EVersion::SomeVasnyaBranch;
 	appendFloat("Starting Age", 0.f, -P_MAXFLOAT, P_MAXFLOAT);
 	appendFloat("Age Sigma", 0.f, -P_MAXFLOAT, P_MAXFLOAT);
 	appendFloat("Parent Motion", 0.f, -P_MAXFLOAT, P_MAXFLOAT);
@@ -1371,7 +1373,9 @@ void	EPASource::Compile			(IWriter& F)
 	S.size			= ConvDomain(_domain("Size"));
 	S.rot			= ConvDomain(_domain("Rotation"));
 	S.color			= ConvDomain(_domain("Color"));
+	S.random_alpha			= _bool("Color\\Random Alpha").val;
 	S.alpha			= _float("Color\\Alpha").val;
+	S.alpha2			= _float("Color\\Alpha 2").val;
 	S.age			= _float("Starting Age").val;
 	S.age_sigma		= _float("Age Sigma").val;
 	S.m_Flags.assign(

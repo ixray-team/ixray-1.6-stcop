@@ -9,7 +9,10 @@ namespace PAPI{
 	enum class ParticleActionVersion
 	{
 		Original,
-		Extended
+		Extended,
+		SomeVasnyaBranch,
+		MAX,
+		Current = MAX - 1,
 	};
 	
 	struct ParticleHolder;
@@ -413,7 +416,9 @@ namespace PAPI{
 			rot,
 			size,
 			color,
+			random_alpha,
 			alpha,
+			alpha2,
 			particle_rate,
 			age,
 			age_sigma,
@@ -438,7 +443,9 @@ namespace PAPI{
 		pDomain rot_vel;
 		pDomain size;		// Choose a size in this domain.
 		pDomain color;		// Choose a color in this domain.
-		float alpha;		// Alpha of all generated particles
+		bool random_alpha = false;	// If true, make ramdom number between alpha and alpha2, otherwise just take alpha value
+		float alpha;		// Start alpha of all generated particles
+		float alpha2;		// End alpha of all generated particles
 		float particle_rate;// Particles to generate per unit time
 		float age;			// Initial age of the particles
 		float age_sigma;	// St. dev. of initial age of the particles

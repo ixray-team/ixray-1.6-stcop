@@ -119,7 +119,8 @@ struct EParticleAction
 	{
 		Old,
 		Original,
-		Extended
+		Extended,
+		SomeVasnyaBranch,
 	};
 	
 	PS::CPEDef*		parent = nullptr;
