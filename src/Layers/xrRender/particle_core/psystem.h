@@ -31,21 +31,30 @@ namespace PAPI{
 			ANIMATE_CCW	= (1<<0),
 		};
 
-		Fvector		pos;	
-		Fvector		posB;   
-		Fvector		posI;   
-		Fvector		vel;     	
-		Fvector		velI;
-		Fvector		rot_vel;
-		Fvector		rot_velS;
-		Fvector		size;   
-		Fvector		sizeI;  
-		Rotation	rot;	
-		Rotation	rotI;	
-		u32			color;	
-		float		age;	      
-		u16			frame;	
-		Flags16		flags;	
+		Fvector pos = {};	
+		Fvector posB = {};   
+		Fvector posI = {};   
+		Fvector vel = {};     	
+		Fvector velI = {};
+		Fvector rot_vel = {};
+		Fvector rot_velS = {};
+		Fvector size = {};
+		Fvector sizeMod = {1.0f, 1.0f, 1.0f};
+		Fvector sizeI = {};  
+		Rotation rot;	
+		Rotation rotI;	
+		Fcolor color = {};
+		Fvector4 colorMod = {1.0f, 1.0f, 1.0f, 1.0f};
+		float age = 0.0f;	      
+		u16 frame = 0;	
+		Flags16 flags;
+
+		Particle(){Reset();}
+		void Reset()
+		{
+			sizeMod = {1.0f, 1.0f, 1.0f};
+			colorMod = {1.0f, 1.0f, 1.0f, 1.0f};
+		}
 	};                  	
 
 	typedef void (* OnBirthParticleCB)	(void* owner, u32 param, PAPI::Particle& P, u32 idx);
