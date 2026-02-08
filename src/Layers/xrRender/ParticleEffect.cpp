@@ -424,6 +424,15 @@ void CParticleEffect::UpdateCache()
 			m.velI.inertion(m.vel, dt);
 			m.sizeI.inertion(m.size, dt);
 		}
+				
+		Fvector FinalSize(
+			m.sizeI.x*m.sizeMod.x,
+			m.sizeI.y*m.sizeMod.y,
+			m.sizeI.z*m.sizeMod.z
+			);
+		VERIFY(FinalSize.x >= 0.f && FinalSize.x <= 1000.f);
+		VERIFY(FinalSize.y >= 0.f && FinalSize.y <= 1000.f);
+		VERIFY(FinalSize.z >= 0.f && FinalSize.z <= 1000.f);
 
 		Fvector2 lt, rb;
 		lt.set(0.f, 0.f);
@@ -432,14 +441,21 @@ void CParticleEffect::UpdateCache()
 		if (m_Def->m_Flags.is(CPEDef::dfFramed))
 			m_Def->m_Frame.CalculateTC(iFloor(float(m.frame) / 255.f), lt, rb);
 
-		float r_x = m.sizeI.x * 0.5f;
-		float r_y = m.sizeI.y * 0.5f;
+		float r_x = FinalSize.x * 0.5f;
+		float r_y = FinalSize.y * 0.5f;
 		if (m_Def->m_Flags.is(CPEDef::dfVelocityScale))
 		{
 			float speed = m.velI.magnitude();
 			r_x += speed * m_Def->m_VelocityScale.x;
 			r_y += speed * m_Def->m_VelocityScale.y;
 		}
+		Fcolor FinalColor;
+		FinalColor.set(
+			clampr(m.color.r * m.colorMod.x, 0.0f, 1.0f),
+			clampr(m.color.g * m.colorMod.y, 0.0f, 1.0f),
+			clampr(m.color.b * m.colorMod.z, 0.0f, 1.0f),
+			clampr(m.color.a * m.colorMod.w, 0.0f, 1.0f)
+			);
 		if (m_Def->m_Flags.is(CPEDef::dfAlignToPath))
 		{
 			float speed = m.velI.magnitude();
@@ -452,10 +468,10 @@ void CParticleEffect::UpdateCache()
 					Fvector p;
 					m_XFORM.transform_tiny(p, m.posI);
 					M.mulA_43(m_XFORM);
-					FillSprite(vec, cache_lock, M.k, M.i, p, lt, rb, r_x, r_y, m.color, m.rotI.x);
+					FillSprite(vec, cache_lock, M.k, M.i, p, lt, rb, r_x, r_y, FinalColor.get(), m.rotI.x);
 				}
 				else
-					FillSprite(vec, cache_lock, M.k, M.i, m.posI, lt, rb, r_x, r_y, m.color, m.rotI.x);
+					FillSprite(vec, cache_lock, M.k, M.i, m.posI, lt, rb, r_x, r_y, FinalColor.get(), m.rotI.x);
 
 			}
 			else if ((speed >= EPS_S) && m_Def->m_Flags.is(CPEDef::dfFaceAlign))
@@ -474,10 +490,12 @@ void CParticleEffect::UpdateCache()
 					Fvector p;
 					m_XFORM.transform_tiny(p, m.posI);
 					M.mulA_43(m_XFORM);
-					FillSprite(vec, cache_lock, M.j, M.i, p, lt, rb, r_x, r_y, m.color, m.rotI.x);
+					FillSprite(vec, cache_lock, M.j, M.i, p, lt, rb, r_x, r_y, FinalColor.get(), m.rotI.x);
 				}
 				else
-					FillSprite(vec, cache_lock, M.j, M.i, m.posI, lt, rb, r_x, r_y, m.color, m.rotI.x);
+				{
+					FillSprite(vec, cache_lock, M.j, M.i, m.posI, lt, rb, r_x, r_y, FinalColor.get(), m.rotI.x);
+				}
 			}
 			else
 			{
@@ -493,10 +511,11 @@ void CParticleEffect::UpdateCache()
 					Fvector p, d;
 					m_XFORM.transform_tiny(p, m.posI);
 					m_XFORM.transform_dir(d, dir);
-					FillSprite(vec, cache_lock, p, d, lt, rb, r_x, r_y, m.color, m.rotI.x);
+					FillSprite(vec, cache_lock, p, d, lt, rb, r_x, r_y, FinalColor.get(), m.rotI.x);
 				}
-				else
-					FillSprite(vec, cache_lock, m.posI, dir, lt, rb, r_x, r_y, m.color, m.rotI.x);
+				else{
+					FillSprite(vec, cache_lock, m.posI, dir, lt, rb, r_x, r_y, FinalColor.get(), m.rotI.x);
+				}
 			}
 		}
 		else
@@ -505,10 +524,11 @@ void CParticleEffect::UpdateCache()
 			{
 				Fvector p;
 				m_XFORM.transform_tiny(p, m.posI);
-				FillSprite(vec, cache_lock, RDEVICE.vCameraTop_saved, RDEVICE.vCameraRight_saved, p, lt, rb, r_x, r_y, m.color, m.rotI.x);
+				FillSprite(vec, cache_lock, RDEVICE.vCameraTop_saved, RDEVICE.vCameraRight_saved, p, lt, rb, r_x, r_y, FinalColor.get(), m.rotI.x);
 			}
-			else
-				FillSprite(vec, cache_lock, RDEVICE.vCameraTop_saved, RDEVICE.vCameraRight_saved, m.posI, lt, rb, r_x, r_y, m.color, m.rotI.x);
+			else{
+				FillSprite(vec, cache_lock, RDEVICE.vCameraTop_saved, RDEVICE.vCameraRight_saved, m.posI, lt, rb, r_x, r_y, FinalColor.get(), m.rotI.x);
+			}
 		}
 	}
 }
@@ -648,7 +668,7 @@ void CParticleEffect::Render(float)
 			for (u32 i = 0; i < p_cnt; i++)
 			{
 				PAPI::Particle& m = particles[i];
-
+				
 				if (m_RT_Flags.is(flRT_LiveUpdate))
 				{
 					m.posI.set(m.pos);
@@ -665,6 +685,15 @@ void CParticleEffect::Render(float)
 					m.velI.inertion(m.vel, dt);
 					m.sizeI.inertion(m.size, dt);
 				}
+				
+				Fvector FinalSize(
+					m.sizeI.x*m.sizeMod.x,
+					m.sizeI.y*m.sizeMod.y,
+					m.sizeI.z*m.sizeMod.z
+					);
+				VERIFY(FinalSize.x >= 0.f && FinalSize.x <= 1000.f);
+				VERIFY(FinalSize.y >= 0.f && FinalSize.y <= 1000.f);
+				VERIFY(FinalSize.z >= 0.f && FinalSize.z <= 1000.f);
 
 				Fvector2 lt, rb;
 				lt.set(0.f, 0.f);
@@ -673,30 +702,39 @@ void CParticleEffect::Render(float)
 				if (m_Def->m_Flags.is(CPEDef::dfFramed))
 					m_Def->m_Frame.CalculateTC(iFloor(float(m.frame) / 255.f), lt, rb);
 
-				float r_x = m.sizeI.x * 0.5f;
-				float r_y = m.sizeI.y * 0.5f;
+				float r_x = FinalSize.x*0.5f;
+				float r_y = FinalSize.y*0.5f;
 				if (m_Def->m_Flags.is(CPEDef::dfVelocityScale))
 				{
 					float speed = m.velI.magnitude();
 					r_x += speed * m_Def->m_VelocityScale.x;
 					r_y += speed * m_Def->m_VelocityScale.y;
 				}
+				Fcolor FinalColor;
+				FinalColor.set(
+					clampr(m.color.r * m.colorMod.x, 0.0f, 1.0f),
+					clampr(m.color.g * m.colorMod.y, 0.0f, 1.0f),
+					clampr(m.color.b * m.colorMod.z, 0.0f, 1.0f),
+					clampr(m.color.a * m.colorMod.w, 0.0f, 1.0f)
+					);
 				if (m_Def->m_Flags.is(CPEDef::dfAlignToPath))
 				{
 					float speed = m.velI.magnitude();
 					if ((speed < EPS_S) && m_Def->m_Flags.is(CPEDef::dfWorldAlign))
 					{
-						Fmatrix	M;
-						M.setXYZ(m_Def->m_APDefaultRotation);
-						if (m_RT_Flags.is(flRT_XFORM))
+                    	Fmatrix	M;  	
+                    	M.setXYZ(m_Def->m_APDefaultRotation);
+                        if (m_RT_Flags.is(flRT_XFORM))
 						{
-							Fvector p;
-							m_XFORM.transform_tiny(p, m.posI);
-							M.mulA_43(m_XFORM);
-							FillSprite(pv, M.k, M.i, p, lt, rb, r_x, r_y, m.color, m.rotI.x);
-						}
+                            Fvector p;
+                            m_XFORM.transform_tiny(p,m.posI);
+	                        M.mulA_43(m_XFORM);
+                            FillSprite(pv,M.k,M.i,p,lt,rb,r_x,r_y,FinalColor.get(),m.rotI.x);
+                        }
 						else
-							FillSprite(pv, M.k, M.i, m.posI, lt, rb, r_x, r_y, m.color, m.rotI.x);
+						{
+							FillSprite(pv,M.k,M.i,m.posI,lt,rb,r_x,r_y,FinalColor.get(),m.rotI.x);
+						}
 
 					}
 					else if ((speed >= EPS_S) && m_Def->m_Flags.is(CPEDef::dfFaceAlign))
@@ -712,14 +750,14 @@ void CParticleEffect::Render(float)
 						M.j.crossproduct(M.k, M.i); M.j.normalize();
 						if (m_RT_Flags.is(flRT_XFORM))
 						{
-							Fvector p;
-							m_XFORM.transform_tiny(p, m.posI);
-							M.mulA_43(m_XFORM);
-							FillSprite(pv, M.j, M.i, p, lt, rb, r_x, r_y, m.color, m.rotI.x);
-						}
+                            Fvector p;
+                            m_XFORM.transform_tiny(p,m.posI);
+	                        M.mulA_43(m_XFORM);
+                            FillSprite(pv,M.j,M.i,p,lt,rb,r_x,r_y,FinalColor.get(),m.rotI.x);
+                        }
 						else
-							FillSprite(pv, M.j, M.i, m.posI, lt, rb, r_x, r_y, m.color, m.rotI.x);
-					}
+                            FillSprite(pv,M.j,M.i,m.posI,lt,rb,r_x,r_y,FinalColor.get(),m.rotI.x);
+                    }
 					else
 					{
 						Fvector dir;
@@ -731,25 +769,27 @@ void CParticleEffect::Render(float)
 
 						if (m_RT_Flags.is(flRT_XFORM))
 						{
-							Fvector p, d;
-							m_XFORM.transform_tiny(p, m.posI);
-							m_XFORM.transform_dir(d, dir);
-							FillSprite(pv, p, d, lt, rb, r_x, r_y, m.color, m.rotI.x);
-						}
+                            Fvector p,d;
+                            m_XFORM.transform_tiny(p,m.posI);
+                            m_XFORM.transform_dir(d,dir);
+                            FillSprite(pv,p,d,lt,rb,r_x,r_y,FinalColor.get(),m.rotI.x);
+                        }
 						else
-							FillSprite(pv, m.posI, dir, lt, rb, r_x, r_y, m.color, m.rotI.x);
-					}
+                            FillSprite(pv,m.posI,dir,lt,rb,r_x,r_y,FinalColor.get(),m.rotI.x);
+                    }
 				}
 				else
 				{
 					if (m_RT_Flags.is(flRT_XFORM))
 					{
 						Fvector p;
-						m_XFORM.transform_tiny(p, m.posI);
-						FillSprite(pv, RDEVICE.vCameraTop, RDEVICE.vCameraRight, p, lt, rb, r_x, r_y, m.color, m.rotI.x);
+						m_XFORM.transform_tiny(p,m.posI);
+						FillSprite(pv,RDEVICE.vCameraTop,RDEVICE.vCameraRight,p,lt,rb,r_x,r_y,FinalColor.get(),m.rotI.x);
 					}
 					else
-						FillSprite(pv, RDEVICE.vCameraTop, RDEVICE.vCameraRight, m.posI, lt, rb, r_x, r_y, m.color, m.rotI.x);
+					{
+						FillSprite(pv,RDEVICE.vCameraTop,RDEVICE.vCameraRight,m.posI,lt,rb,r_x,r_y,FinalColor.get(),m.rotI.x);
+					}
 				}
 			}
 			dwCount = u32(pv - pv_start) * 4;
