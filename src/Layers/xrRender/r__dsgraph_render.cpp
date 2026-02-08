@@ -165,8 +165,9 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 								RCache.set_Textures					(Ntex.key);
 								RImplementation.apply_lmaterial		();
 
-								mapMatrixItems&				items	= Ntex.val;
-								for (_MatrixItem& Ni : items)
+								mapMatrixItems& items = Ntex.val;
+								auto& visuals = items.visuals;
+								for (_MatrixItem& Ni : visuals)
 								{
 									if (Ni.pVisual->shader == nullptr)
 									{
@@ -181,7 +182,13 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 									RCache.LOD.set_LOD(LOD);
 #endif
 									Ni.pVisual->Render(LOD);
-								}if(_clear)items.clear();
+								}if(_clear)items.visuals.clear();
+
+								auto& particles = items.particles;
+								for (dxRender_Visual* pVisual : particles)
+									pVisual->Render(0);
+								if (_clear)items.particles.clear();
+
 							}if(_clear) tex.clear();
 						}if(_clear) states.clear();
 					}if(_clear) cs.clear();
