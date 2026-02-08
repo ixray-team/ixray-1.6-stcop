@@ -313,9 +313,15 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic	(dxRender_Visual *pVisual, Fv
 		mapMatrixStates::TNode*		Nstate	= Ncs->val.insert	(pass.state->state);
 		mapMatrixTextures::TNode*	Ntex	= Nstate->val.insert(pass.T._get());
 #if RENDER==R_R1
-		Ntex->val.push_back(item);
+		if (pVisual->dcast_ParticleCustom())
+			Ntex->val.particles.push_back(pVisual);
+		else
+			Ntex->val.visuals.push_back(item);
 #else
-		Ntex->val.push_back({ SSA, RI.val_pObject, pVisual, *RI.val_pTransform });
+		if(pVisual->dcast_ParticleCustom())
+			Ntex->val.particles.push_back(pVisual);
+		else
+			Ntex->val.visuals.push_back({ SSA, RI.val_pObject, pVisual, *RI.val_pTransform });
 #endif
 
 	}
