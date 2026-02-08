@@ -219,6 +219,7 @@ BOOL CPEDef::LoadOriginal(IReader& F)
         for (EPAVecIt it=m_EActionList.begin(); it!=m_EActionList.end(); ++it)
 		{
             PAPI::PActionEnum type		= (PAPI::PActionEnum)F.r_u32();
+    		VERIFY(PAPI::IsValidAction(type));
             (*it)						= pCreateEAction(type);
         	(*it)->parent = this;
 			if ((*it) != nullptr)
@@ -235,7 +236,8 @@ BOOL CPEDef::LoadOriginal(IReader& F)
 
 BOOL CPEDef::LoadExtended(IReader& F)
 {
-	return true;
+	R_ASSERT(false);
+	return false;
 }
 
 BOOL CPEDef::Load2(CInifile& ini)
@@ -311,6 +313,7 @@ BOOL CPEDef::Load2Original(CInifile& ini)
 			string256					sect;
 			xr_sprintf					(sect, sizeof(sect), "action_%04d", action_id);
 			PAPI::PActionEnum type		= (PAPI::PActionEnum)(ini.r_u32(sect,"action_type"));
+    		VERIFY(PAPI::IsValidAction(type));
 			(*it)						= pCreateEAction(type);
 			(*it)->parent = this;
 			(*it)->Load2				(ini, sect);
@@ -339,7 +342,8 @@ BOOL CPEDef::Load2Original(CInifile& ini)
 
 BOOL CPEDef::Load2Entended(CInifile& ini)
 {
-	return true;
+	R_ASSERT(false);
+	return false;
 }
 
 void CPEDef::Save2(CInifile& ini)
@@ -391,6 +395,7 @@ void CPEDef::Save2(CInifile& ini)
     u32					action_id = 0;
 	for (EPAVecIt it=m_EActionList.begin(); it!=m_EActionList.end(); ++it,++action_id)
 	{
+    	VERIFY(PAPI::IsValidAction((*it)->type));
 		string256		sect;
 		xr_sprintf		(sect, sizeof(sect), "action_%04d", action_id);
 		ini.w_u32		(sect, "action_type", (*it)->type);
@@ -402,7 +407,7 @@ void CPEDef::Save2(CInifile& ini)
 void CPEDef::Save(IWriter& F)
 {
 	F.open_chunk	(PS::PE::Chunks::VERSION);
-	F.w_enum		(PS::PE::Version::Latest);
+	F.w_enum		(PS::PE::Version::Original);
 	F.close_chunk	();
 
 	F.open_chunk	(PS::PE::Chunks::NAME);
@@ -467,6 +472,7 @@ void CPEDef::Save(IWriter& F)
 	F.open_chunk	(PS::PE::Chunks::EDATA);
     F.w_u32			(m_EActionList.size());
     for (EPAVecIt it=m_EActionList.begin(); it!=m_EActionList.end(); it++){
+    	VERIFY(PAPI::IsValidAction((*it)->type));
         F.w_u32		((*it)->type);
     	(*it)->Save	(F);
     }

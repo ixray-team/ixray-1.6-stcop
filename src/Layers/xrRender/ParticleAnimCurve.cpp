@@ -193,19 +193,39 @@ Fvector4 PS::CPACDef::GetValueOnTime(float time)
     {
         return key->time;
     };
-    auto FoundIt = std::ranges::lower_bound(m_Keys, time, cmp, proj);
-    if (FoundIt == m_Keys.begin())
+    R_ASSERT(!m_Keys.empty());
+    if (time <= m_Keys[0]->time || time >= m_Keys[m_Keys.size() - 1]->time)
     {
-        return (*FoundIt)->value;
+        return CalculateIntermedialeValue(m_Keys[m_Keys.size() - 1], m_Keys[0], time);
     }
-    auto PrevIt = std::prev(FoundIt);
-    return CalculateIntermedialeValue(*PrevIt, *FoundIt, time);
+#ifdef _EDITOR
+    for (int i = 1; i < m_Keys.size(); i++)
+    {
+        auto key1 = m_Keys[i-1];
+        auto key2 = m_Keys[i];
+        I_ASSERT_M(key1->time < key2->time, "Particle Anim Curve %s contains invalid sorted by time keys!", m_Name.c_str());
+    }
+#endif
+    // if we here, we already know this PAC has at least 2 keys, and we are somewhere between start and end
+    auto FoundIt = std::ranges::lower_bound(m_Keys, time, cmp, proj);
+    VERIFY(FoundIt != m_Keys.begin() || FoundIt == m_Keys.end());
+    return CalculateIntermedialeValue(*std::prev(FoundIt), *FoundIt, time);
 }
 
 Fvector4 PS::CPACDef::CalculateIntermedialeValue(st_PACKey* A, st_PACKey* B, float time)
 {
-    R_ASSERT(A->time <= time && time <= B->time);
-    auto Alpha = (time - A->time)/(B->time - A->time);
+    auto Atime = A->time;
+    auto Btime = B->time;
+    if (Atime > Btime)
+    {
+        Btime = m_MaxTime;
+    }
+    if (time < Atime)
+    {
+        time = m_MaxTime - time;
+    }
+    auto Alpha = (time - Atime)/(Btime - Atime);
+    VERIFY(Alpha >= 0.0f && Alpha <= 1.0f);
     Fvector4 InterValue;
     auto ProcessFunc = [&](int index)
     {
