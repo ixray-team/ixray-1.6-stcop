@@ -130,7 +130,11 @@ namespace R_dsgraph
 
 	// MATRIX
 	using mapMatrixDirect = xr_vector<_MatrixItem,render_allocator::helper<_MatrixItem>::result>;
-	using mapMatrixItems = mapMatrixDirect;
+	struct mapMatrixItems
+	{
+		mapMatrixDirect visuals;
+		xr_vector<dxRender_Visual*, render_allocator::helper<dxRender_Visual*>::result> particles;
+	};
 	using mapMatrixTextures = FixedMAP<STextureList*,mapMatrixItems,render_allocator>;
 	using mapMatrixStates = FixedMAP<ID3DState*,mapMatrixTextures,render_allocator>;
 	using mapMatrixCS = FixedMAP<R_constant_table*,mapMatrixStates,render_allocator>;
