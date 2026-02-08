@@ -250,15 +250,19 @@ void CContentView::Draw()
 	if (IsWndDestroyed)
 		return;
 
+	ImGuiStyle& style = ImGui::GetStyle();
+	float OldChildRound = style.ChildRounding;
+
+	style.ChildRounding = 0.f;
+
 	if (DirCollection.empty() || NeedRescan)
 	{
 		CollectAllFolder();
 	}
 
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(3, 3));
 	if (ImGui::Begin("Content Browser"))
 	{
-		DrawHeader();
-
 		if ((NeedRescan || Files.empty()) && !IsFindResult && !IsSpawnElement && !IsParticles)
 		{
 			RescanDirectory();
@@ -268,35 +272,46 @@ void CContentView::Draw()
 		DrawFolderTree();
 		ImGui::SameLine();
 
-		if (ImGui::BeginChild("##contentbrowserscroll"))
+		//ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+		if (ImGui::BeginChild("##contentbrowserrightside"))
 		{
-			DrawLayout();
-		}
+			DrawHeader();
 
-		if (CurrentItemHint.Active)
-		{
-			ImGui::SetCursorPos(CurrentItemHint.Pos);
-			ImGui::Button(CurrentItemHint.Name.c_str());
-			CurrentItemHint.Active = false;
-		}
+			ImGui::PushStyleColor(ImGuiCol_ChildBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelTint).Value);
+			if (ImGui::BeginChild("##contentbrowserscroll"))
+			{
+				DrawLayout();
+			}
 
+			if (CurrentItemHint.Active)
+			{
+				ImGui::SetCursorPos(CurrentItemHint.Pos);
+				ImGui::Button(CurrentItemHint.Name.c_str());
+				CurrentItemHint.Active = false;
+			}
+
+			ImGui::EndChild();
+			ImGui::PopStyleColor();
+
+			const ImGuiPayload* payload = ImGui::GetDragDropPayload();
+
+			if (payload && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+			{
+				ImDrawList* draw_list = ImGui::GetWindowDrawList();
+				ImVec2 p_min = ImGui::GetItemRectMin();
+				ImVec2 p_max = ImGui::GetItemRectMax();
+				draw_list->AddRectFilled(p_min, p_max, IM_COL32(50, 50, 70, 100));
+				draw_list->AddRect(p_min, p_max, IM_COL32(100, 180, 255, 255));
+			}
+		}
 		ImGui::EndChild();
-		const ImGuiPayload* payload = ImGui::GetDragDropPayload();
-
-		if (payload && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
-		{
-			ImDrawList* draw_list = ImGui::GetWindowDrawList();
-			ImVec2 p_min = ImGui::GetItemRectMin();
-			ImVec2 p_max = ImGui::GetItemRectMax();
-			draw_list->AddRectFilled(p_min, p_max, IM_COL32(50, 50, 70, 100));
-			draw_list->AddRect(p_min, p_max, IM_COL32(100, 180, 255, 255));
-		}
-
 	}
 
 	ImGui::End();
 
+	ImGui::PopStyleVar();
 
+	style.ChildRounding = OldChildRound;
 	ThmPropWnd.Draw();
 }
 
@@ -307,6 +322,7 @@ void CContentView::DrawHeader()
 	BtnSize = (ViewMode == EViewMode::Tile) ? ImVec2(64.f, 64.f) : ImVec2(32.f, 32.f);
 	int FindStartPosX = (int)ImGui::GetWindowSize().x;
 
+	ImColor NavColor = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableTint);
 	// FX: Рисуем подложку
 	{
 		ImDrawList* DrawList = ImGui::GetWindowDrawList();
@@ -325,8 +341,7 @@ void CContentView::DrawHeader()
 
 		BgMax.y += ImGui::GetFrameHeight();
 
-		ImColor BgColor = ImGui::GetStyleColorVec4(ImGuiCol_Button);
-		BgColor.Value.w = 1.f;
+		ImColor BgColor = ImGui::GetColorU32(NavColor.Value);
 
 		DrawList->AddRectFilled(BgMin, BgMax, BgColor, 5);
 
@@ -334,6 +349,8 @@ void CContentView::DrawHeader()
 	}
 
 	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.f);
+	ImGui::PushStyleColor(ImGuiCol_Button, NavColor.Value);
+
 	if (ImGui::Button("root"))
 	{
 		CurrentDir = RootDir;
@@ -451,6 +468,7 @@ void CContentView::DrawHeader()
 
 	ImVec2 IconSize{ 0,0 };
 	ImGui::PopStyleVar();
+	ImGui::PopStyleColor();
 
 	ImGui::SetNextItemWidth(w - IconSize.x*1.5f);
 
@@ -511,7 +529,6 @@ this->MenuIcon.p_ was nullptr.
 	{
 		ImGui::OpenPopup("MenuCBPpp");
 	}
-	ImGui::Separator();
 }
 
 void CContentView::FindFile()
