@@ -10,7 +10,7 @@ namespace PS
 {
 	class CParticleEffect;
 
-	class ECORE_API CPGDef
+	class ECORE_API CPGDef final
 	{
 	public:
 		shared_str			m_Name;
@@ -78,7 +78,7 @@ namespace PS
 #endif
 	};
 
-	class ECORE_API CParticleGroup: public dxRender_Visual, public IParticleCustom
+	class ECORE_API CParticleGroup final : public dxRender_Visual, public IParticleCustom
 	{
 		const CPGDef*		m_Def;
 		float				m_CurrentTime;
@@ -88,7 +88,7 @@ namespace PS
 		using VisualVec = xr_vector<dxRender_Visual*>;
 		using VisualVecIt = VisualVec::iterator;
 
-		struct SItem
+		struct SItem final
 		{
 			dxRender_Visual* _effect;
 			VisualVec _children_related;

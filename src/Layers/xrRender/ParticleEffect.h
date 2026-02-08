@@ -8,10 +8,9 @@
 #include "../../Include/xrRender/ParticleCustom.h"
 #include "FBasicVisual.h"
 
-
 namespace PS
 {
-	class ECORE_API CParticleEffect: public dxRender_Visual, public IParticleCustom
+	class ECORE_API CParticleEffect final: public dxRender_Visual, public IParticleCustom
 	{
 		friend class CPEDef;
 	protected:
@@ -20,11 +19,16 @@ namespace PS
 		s32					m_MemDT;
 
 		Fvector				m_InitialPosition;
-		xrCriticalSection	onframe_lock;
+		xrCriticalSection	onframe_lock, cache_lock;
 	public:
 		CPEDef*				m_Def;
 		ref_geom			geom;
         Fmatrix				m_XFORM;
+
+		struct LITBUFF { FVF::LIT buff[4]; };
+#ifndef _EDITOR
+		xr_vector<LITBUFF> m_ps_cache;
+#endif
 		PAPI::ParticleHolder Pholder;
     protected:
     	DestroyCallback		m_DestroyCallback;
@@ -46,6 +50,9 @@ namespace PS
 		virtual 			~CParticleEffect	();
 
 		void	 			OnFrame				(u32 dt);
+#ifndef _EDITOR
+		void	 			UpdateCache			();
+#endif
 
 		virtual void		Render				(float LOD);
 		virtual void		Copy				(dxRender_Visual* pFrom);
