@@ -1888,7 +1888,8 @@ EPAColorAnimator::EPAColorAnimator(): EParticleAction(PAColorAnimatorID)
 	appendEnum<PAAnimatorType>("AnimatorType", animators_types, PAAnimatorType::Replace).min_version = EVersion::SomeVasnyaBranch;
 	appendString("Animator", "", smPAC);
 	appendBool("Looped", false);
-	appendBool("Reverse", false);     
+	appendBool("Reverse", false);  
+	appendBool("Wrap", false).min_version = EVersion::SomeVasnyaBranch;       
 }
 
 void EPAColorAnimator::Compile(IWriter& F)
@@ -1899,6 +1900,7 @@ void EPAColorAnimator::Compile(IWriter& F)
 	S.Animator = _string("Animator").val;
 	S.Looped = _bool("Looped").val;
 	S.Reverse = _bool("Reverse").val;
+	S.Wrap = _bool("Wrap").val;
 	F.w_u32(S.type);
 	S.Save(F);
 }
@@ -1911,6 +1913,7 @@ EPASizeAnimator::EPASizeAnimator(): EParticleAction(PASizeAnimatorID)
 	appendString("Animator", "", smPAC);
 	appendBool("Looped", false);
 	appendBool("Reverse", false);    
+	appendBool("Wrap", false).min_version = EVersion::SomeVasnyaBranch;    
 }
 
 void EPASizeAnimator::Compile(IWriter& F)
@@ -1921,6 +1924,7 @@ void EPASizeAnimator::Compile(IWriter& F)
 	S.Animator = _string("Animator").val;
 	S.Looped = _bool("Looped").val;
 	S.Reverse = _bool("Reverse").val;
+	S.Wrap = _bool("Wrap").val;
 
 	F.w_u32(S.type);
 	S.Save(F);
@@ -1934,6 +1938,7 @@ EPAVelocityAnimator::EPAVelocityAnimator(): EParticleAction(PAVelocityAnimatorID
 	appendString("Animator", "", smPAC);
 	appendBool("Looped", false);
 	appendBool("Reverse", false);
+	appendBool("Wrap", false).min_version = EVersion::SomeVasnyaBranch;    
 }
 
 void EPAVelocityAnimator::Compile(IWriter& F)
@@ -1944,6 +1949,7 @@ void EPAVelocityAnimator::Compile(IWriter& F)
 	S.Animator = _string("Animator").val;
 	S.Looped = _bool("Looped").val;
 	S.Reverse = _bool("Reverse").val;
+	S.Wrap = _bool("Wrap").val;
 
 	F.w_u32(S.type);
 	S.Save(F);
@@ -1957,6 +1963,7 @@ EPAVelocityRotationAnimator::EPAVelocityRotationAnimator(): EParticleAction(PAVe
 	appendString("Animator", "", smPAC);
 	appendBool("Looped", false);
 	appendBool("Reverse", false);
+	appendBool("Wrap", false).min_version = EVersion::SomeVasnyaBranch;    
 }
 
 void EPAVelocityRotationAnimator::Compile(IWriter& F)
@@ -1967,6 +1974,7 @@ void EPAVelocityRotationAnimator::Compile(IWriter& F)
 	S.Animator = _string("Animator").val;
 	S.Looped = _bool("Looped").val;
 	S.Reverse = _bool("Reverse").val;
+	S.Wrap = _bool("Wrap").val;
 
 	F.w_u32(S.type);
 	S.Save(F);
