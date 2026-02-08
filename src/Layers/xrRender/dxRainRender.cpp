@@ -1,13 +1,6 @@
 #include "stdafx.h"
 #include "dxRainRender.h"
-
 #include "../../xrEngine/Rain.h"
-static Fvector2 Rain_l_UV[2][4]
-{
-	{{0.f,1.f},{0.f,0.f},{1.f,1.f},{1.f,0.f}},
-	{{1.f,0.f},{1.f,1.f},{0.f,0.f},{0.f,1.f}}
-};
-
 
 dxRainRender::dxRainRender()
 {
@@ -39,8 +32,9 @@ void dxRainRender::Copy(IRainRender &_in)
 void dxRainRender::Render(CEffect_Rain &owner)
 {
 	float factor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
-	auto& m_sprites = owner.m_rquads;
-	if (factor<EPS_L || m_sprites.empty())
+	auto& m_sprites = owner.m_sprites;
+	u32 total_sprites = (u32)m_sprites.size();
+	if (factor<EPS_L || total_sprites == 0)
 		return;
 
 	// perform update
@@ -49,43 +43,17 @@ void dxRainRender::Render(CEffect_Rain &owner)
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 	RCache.set_Geometry(hGeom_Rain);
 
-	Fvector& f_rain_color = g_pGamePersistent->Environment().CurrentEnv->rain_color;
-	float factor_visual = factor / 2.f + .5f;
-	u32 u_rain_color = color_rgba_f(f_rain_color.x, f_rain_color.y, f_rain_color.z, factor_visual);
-
-#if RENDER != R_R1
-	f_rain_color.mul(0.9f);
-	factor_visual *= 0.8f;
-#endif // RENDER != R_R1
-
-	struct LITF { struct { Fvector p; u32 color; Fvector2 uv; } buff[4]; };
-
-	u32 MAX_SPRITES = RCache.Vertex.GetSize() / u32(sizeof(LITF));
-	u32 total_sprites = (u32)m_sprites.size();
-
+	u32 MAX_SPRITES = RCache.Vertex.GetSize() / u32(sizeof(CEffect_Rain::rain_sprite));
 	for (u32 start_idx = 0u; start_idx < total_sprites; start_idx += MAX_SPRITES)
 	{
 		u32 batch_size = std::min(MAX_SPRITES, total_sprites - start_idx);
 		u32 vertices_in_batch = batch_size * 4u;
 		u32 vOffset;
-		LITF* verts = (LITF*)RCache.Vertex.Lock(vertices_in_batch, hGeom_Rain->vb_stride, vOffset);
-
+		CEffect_Rain::rain_sprite* buff = (CEffect_Rain::rain_sprite*)RCache.Vertex.Lock(vertices_in_batch, hGeom_Rain->vb_stride, vOffset);
 		for (u32 i = 0u; i < batch_size; ++i)
-		{
-			CEffect_Rain::rain_line& sprite = m_sprites[start_idx + i];
-			u32 s = sprite.uv_set;
-			*verts =
-			{
-				sprite.quad[0],u_rain_color,Rain_l_UV[s][0].x,Rain_l_UV[s][0].y,
-				sprite.quad[1],u_rain_color,Rain_l_UV[s][1].x,Rain_l_UV[s][1].y,
-				sprite.quad[2],u_rain_color,Rain_l_UV[s][2].x,Rain_l_UV[s][2].y,
-				sprite.quad[3],u_rain_color,Rain_l_UV[s][3].x,Rain_l_UV[s][3].y
-			};
-			verts++;
-		}
-
+			buff[i] = m_sprites[start_idx + i];
 		RCache.Vertex.Unlock(vertices_in_batch, hGeom_Rain->vb_stride);
-		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vOffset, 0, vertices_in_batch, 0, vertices_in_batch / 2);
+		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vOffset, 0u, vertices_in_batch, 0u, vertices_in_batch / 2u);
 	}
 
 	// Particles
@@ -97,6 +65,13 @@ void dxRainRender::Render(CEffect_Rain &owner)
 		float dt = Device.fTimeDelta;
 		float particles_time = g_pGamePersistent->Environment().particles_time;
 		int particles_cache = g_pGamePersistent->Environment().particles_cache;
+		Fvector& f_rain_color = g_pGamePersistent->Environment().CurrentEnv->rain_color;
+		float factor_visual = factor / 2.f + .5f;
+		u32 u_rain_color = color_rgba_f(f_rain_color.x, f_rain_color.y, f_rain_color.z, factor_visual);
+#if RENDER != R_R1
+		f_rain_color.mul(0.9f);
+		factor_visual *= 0.8f;
+#endif // RENDER != R_R1
 		_IndexStream& _IS = RCache.Index;
 		RCache.set_Shader(DM_Drop->shader);
 		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
