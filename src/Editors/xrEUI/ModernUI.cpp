@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "ModernUI.h"
 
+static xr_hash_map<XRay::ImGui::EEditorColors, ImColor> EditorColors;
+
 XREUI_API bool XRay::ImGui::ToggleFlagButton(const char* Label, uint32_t* Flags, uint32_t Mask, const ImVec2& Size)
 {
 	bool Enabled = (*Flags & Mask) != 0;
@@ -49,6 +51,85 @@ XREUI_API bool XRay::ImGui::ToggleFlagButton(const char* Label, uint32_t* Flags,
 
 	::ImGui::PopID();
 	return Changed;
+}
+
+std::array<ImColor, 8> DefaultTheme =
+{
+	ImColor(63, 71, 101, 255),
+	ImColor(0.f, 0.f, 0.f, 0.3f),
+	ImColor(0.f, 0.f, 0.f, 0.1f),
+	ImColor(0.f, 0.f, 0.f, 0.8f),
+	ImColor(0.f, 0.f, 0.f, 0.5f),
+	ImColor(0.f, 0.f, 0.f, 0.8f),
+	ImColor(0.f, 0.f, 0.f, 0.3f),
+	ImColor(0.f, 0.f, 0.f, 0.f)
+};
+
+ImColor AlphaBlend(const ImColor& Base, const ImColor& Tint)
+{
+	const float Alpha = Tint.Value.w;
+
+	ImVec4 Out;
+	Out.x = Base.Value.x * (1.0f - Alpha) + Tint.Value.x * Alpha;
+	Out.y = Base.Value.y * (1.0f - Alpha) + Tint.Value.y * Alpha;
+	Out.z = Base.Value.z * (1.0f - Alpha) + Tint.Value.z * Alpha;
+	Out.w = 1.0f;
+
+	return ImColor(Out);
+}
+
+XREUI_API ImColor XRay::ImGui::GetEditorColor(EEditorColors Color)
+{
+	if (EditorColors.contains(Color))
+	{
+		return EditorColors[Color];
+	}
+
+	ImColor Clr = DefaultTheme[(size_t)EEditorColors::Main];
+
+	switch (Color)
+	{
+		case EEditorColors::Main:
+		{
+			EditorColors[Color] = Clr;
+			return EditorColors[Color];
+		}
+		case EEditorColors::ToolbarButtonTint:
+		{
+			EditorColors[Color] = AlphaBlend(Clr, DefaultTheme[(size_t)EEditorColors::ToolbarButtonTint]);
+			return EditorColors[Color];
+		}
+		case EEditorColors::BackgroundTint:
+		{
+			EditorColors[Color] = AlphaBlend(Clr, DefaultTheme[(size_t)EEditorColors::BackgroundTint]);
+			return EditorColors[Color];
+		}
+		case EEditorColors::TableTint:
+		{
+			EditorColors[Color] = AlphaBlend(Clr, DefaultTheme[(size_t)EEditorColors::TableTint]);
+			return EditorColors[Color];
+		}
+		case EEditorColors::ToolbarTint:
+		{
+			EditorColors[Color] = AlphaBlend(Clr, DefaultTheme[(size_t)EEditorColors::ToolbarTint]);
+			return EditorColors[Color];
+		}
+		case EEditorColors::TabBarTint:
+		{
+			EditorColors[Color] = AlphaBlend(Clr, DefaultTheme[(size_t)EEditorColors::TabBarTint]);
+			return EditorColors[Color];
+		}
+		case EEditorColors::PanelTint:
+		{
+			EditorColors[Color] = AlphaBlend(Clr, DefaultTheme[(size_t)EEditorColors::PanelTint]);
+			return EditorColors[Color];
+		}
+		case EEditorColors::ButtonTint:
+		{
+			EditorColors[Color] = AlphaBlend(Clr, DefaultTheme[(size_t)EEditorColors::ButtonTint]);
+			return EditorColors[Color];
+		}
+	}
 }
 
 XREUI_API bool XRay::ImGui::InputVector3(const char* Label, float V[3], float Step)

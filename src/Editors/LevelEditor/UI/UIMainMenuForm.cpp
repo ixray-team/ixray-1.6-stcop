@@ -98,6 +98,7 @@ void UIMainMenuForm::DrawMenuItemI(const char* label, const char* icon, int comm
 
 void UIMainMenuForm::Draw()
 {
+	ImGui::PushStyleColor(ImGuiCol_Button, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::BackgroundTint).Value);
 	if (IXBeginMainMenuBar())
 	{
 		DrawLevelName();
@@ -430,18 +431,6 @@ void UIMainMenuForm::Draw()
 				}
 				ImGui::EndMenu();
 			}
-			/*
-			* FX: нахуй - так нахуй
-			ImGui::Separator();
-			{
-				bool selected = psDeviceFlags.test(rsDrawSafeRect);
-				if (ImGui::MenuItem("Draw Safe Rect", "", &selected))
-				{
-					psDeviceFlags.set(rsDrawSafeRect, selected);
-					UI->RedrawScene();
-				}
-			}
-			*/
 			{
 				bool selected = psDeviceFlags.test(rsDrawGrid);
 				if (ImGui::MenuItemI("Draw Grid", ICON_FA_TABLE_CELLS, "", &selected))
@@ -698,6 +687,8 @@ void UIMainMenuForm::Draw()
 
 		IXEndMainMenuBar();
 	}
+
+	ImGui::PopStyleColor();
 }
 
 void UIMainMenuForm::DrawLevelName()
