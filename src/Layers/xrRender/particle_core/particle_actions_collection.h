@@ -6,7 +6,7 @@
 #include "../../Include/xrRender/ParticleCustom.h"
 
 namespace PAPI{
-	enum class ParticleActionVersion
+	enum class ParticleActionVersion : u32
 	{
 		Original,
 		Extended,
@@ -30,11 +30,12 @@ namespace PAPI{
 		ParticleAction	() : type(action_enum_force_dword) {m_Flags.zero();}
 
 		virtual ~ParticleAction() = default;
-		virtual void 	Execute		(ParticleHolder *pe, const float dt, float& m_max)	= 0;
-		virtual void 	Transform	(const Fmatrix& m)				= 0;
+		virtual void PreExecute(ParticleHolder *pe){}
+		virtual void Execute(ParticleHolder *pe, const float dt, float& m_max) = 0;
+		virtual void Transform	(const Fmatrix& m)				= 0;
 
-		virtual void 	Load		(IReader& F)=0;
-		virtual void 	Save		(IWriter& F)=0;
+		virtual void Load(IReader& F)=0;
+		virtual void Save(IWriter& F)=0;
 
 		template<typename T, typename TEnum>
 		T* GetVariable(TEnum VarID)
@@ -620,6 +621,12 @@ namespace PAPI{
 		_METHODS;
 	};
 
+	enum class PAAnimatorType : u8
+	{
+		Replace,
+		Multiply,
+	};
+
 	struct PAColorAnimator : public ParticleAction
 	{
 		enum class EVariable : u8
@@ -629,14 +636,12 @@ namespace PAPI{
 			Reverse
 		};
 		shared_str Animator;
+		PS::IPAC* AnimPtr = nullptr;
+		PAAnimatorType AnimatorType;
 		bool Looped;
 		bool Reverse;
 
-		PS::IPAC* AnimPtr = nullptr;
-		//float CurrentTime = 0.0f;
-		//size_t CurrentIndex = 0;
-		//Fvector4 PrevValue;
-
+		void PreExecute(ParticleHolder *pe) override;
 		_METHODS;
 	};
 
@@ -649,11 +654,12 @@ namespace PAPI{
 			Reverse
 		};
 		shared_str Animator;
+		PS::IPAC* AnimPtr = nullptr;
+		PAAnimatorType AnimatorType;
 		bool Looped;
 		bool Reverse;
 
-		PS::IPAC* AnimPtr = nullptr;
-
+		void PreExecute(ParticleHolder *pe) override;
 		_METHODS;
 	};
 
@@ -666,10 +672,10 @@ namespace PAPI{
 			Reverse
 		};
 		shared_str Animator;
+		PS::IPAC* AnimPtr = nullptr;
+		PAAnimatorType AnimatorType;
 		bool Looped;
 		bool Reverse;
-
-		PS::IPAC* AnimPtr = nullptr;
 
 		_METHODS;
 	};
@@ -683,10 +689,10 @@ namespace PAPI{
 			Reverse
 		};
 		shared_str Animator;
+		PS::IPAC* AnimPtr = nullptr;
+		PAAnimatorType AnimatorType;
 		bool Looped;
 		bool Reverse;
-
-		PS::IPAC* AnimPtr = nullptr;
 
 		_METHODS;
 	};

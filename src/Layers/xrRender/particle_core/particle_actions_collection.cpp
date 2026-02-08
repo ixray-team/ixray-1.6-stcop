@@ -2058,7 +2058,7 @@ void PASource::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 				}
 			}
 			color.Generate(col);
-			float ag = age + NRand(age_sigma);
+			float ag = std::max(age + NRand(age_sigma), 0.0f);
 
 			pHolder->AddParticle(
 				pos,
@@ -2248,16 +2248,18 @@ void* PASpeedLimit::GetVariableImpl(u8 VarID)
 void PATargetColor::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 {
 	float scaleFac = scale * dt;
-    Fcolor c_p,c_t; 
 	
 	for(u32 i = 0; i < pHolder->p_count; i++)
 	{
 		Particle &m = pHolder->particles[i];
 		if(m.age<timeFrom*tm_max || m.age>timeTo*tm_max ) continue;
 
-        c_p.set	(m.color);
-        c_t.set	(c_p.r+(color.x-c_p.r)*scaleFac, c_p.g+(color.y-c_p.g)*scaleFac, c_p.b+(color.z-c_p.b)*scaleFac, c_p.a+(alpha-c_p.a)*scaleFac);
-        m.color = c_t.get();
+        m.color.set(
+        	m.color.r+(color.x-m.color.r)*scaleFac,
+        	m.color.g+(color.y-m.color.g)*scaleFac,
+        	m.color.b+(color.z-m.color.b)*scaleFac,
+        	m.color.a+(alpha-m.color.a)*scaleFac
+        	);
 	}
 }
 void PATargetColor::Transform(const Fmatrix&){;}
@@ -2660,15 +2662,15 @@ void* PABindSizeValue::GetVariableImpl(u8 VarID)
 }
 void PABindColorValue::Transform(const Fmatrix& m) {}
 void PABindColorValue::Execute(ParticleHolder* effect, const float dt, float& tm_max) {
-	Fcolor c_p, c_t;
+	//Fcolor c_p, c_t;
 
 	for (u32 i = 0; i < effect->p_count; i++)
 	{
 		Particle& m = effect->particles[i];
-
-		c_p.set(m.color);
-		c_t.set(BindValue.x, BindValue.y, BindValue.z, c_p.a);
-		m.color = c_t.get();
+		m.color.set(BindValue.x, BindValue.y, BindValue.z, m.color.a);
+		//c_p.set(m.color);
+		//c_t.set(BindValue.x, BindValue.y, BindValue.z, c_p.a);
+		//m.color = c_t.get();
 	}
 }
 void* PABindColorValue::GetVariableImpl(u8 VarID)
@@ -2683,15 +2685,15 @@ void* PABindColorValue::GetVariableImpl(u8 VarID)
 }
 void PABindColorAlpha::Transform(const Fmatrix& m) {}
 void PABindColorAlpha::Execute(ParticleHolder* effect, const float dt, float& tm_max) {
-	Fcolor c_p, c_t;
+	//Fcolor c_p, c_t;
 
 	for (u32 i = 0; i < effect->p_count; i++)
 	{
 		Particle& m = effect->particles[i];
-
-		c_p.set(m.color);
-		c_t.set(c_p.r, c_p.g, c_p.b, BindValue);
-		m.color = c_t.get();
+		m.color.set(m.color.r, m.color.g, m.color.b, BindValue);
+		//c_p.set(m.color);
+		//c_t.set(c_p.r, c_p.g, c_p.b, BindValue);
+		//m.color = c_t.get();
 	}
 }
 void* PABindColorAlpha::GetVariableImpl(u8 VarID)
@@ -2709,9 +2711,21 @@ void* PABindColorAlpha::GetVariableImpl(u8 VarID)
 void PAColorAnimator::Transform(const Fmatrix& m)
 {
 }
+
+void PAColorAnimator::PreExecute(ParticleHolder* pe)
+{
+	ParticleAction::PreExecute(pe);
+	for (u32 i = 0; i < pe->p_count; i++)
+	{
+		Particle &m = pe->particles[i];
+		m.colorMod.x = 1.0f;
+		m.colorMod.y = 1.0f;
+		m.colorMod.z = 1.0f;
+		m.colorMod.w = 1.0f;
+	}
+}
+
 void PAColorAnimator::Execute(ParticleHolder* effect, const float dt, float& tm_max) {
-	//auto CurrentValue = AnimPtr->FastUpdateValue(CurrentIndex, CurrentTime, dt, Looped, Reverse);
-	Fcolor c_t;
 	for(u32 i = 0; i < effect->p_count; i++)
 	{
 		Particle &m = effect->particles[i];
@@ -2731,13 +2745,27 @@ void PAColorAnimator::Execute(ParticleHolder* effect, const float dt, float& tm_
 			clamp(CurveTime, 0.0f, AnimPtr->GetMaxTime());
 		}
 		Fvector4 CurrentValue = AnimPtr->GetValueOnTime(CurveTime);
-		c_t.set(
-			CurrentValue.x,
-			CurrentValue.y,
-			CurrentValue.z,
-			CurrentValue.w
-		);
-		m.color = c_t.get();
+		switch (AnimatorType)
+		{
+		case PAAnimatorType::Replace:
+			{
+				m.color.set(
+					CurrentValue.x,
+					CurrentValue.y,
+					CurrentValue.z,
+					CurrentValue.w
+				);
+				break;
+			}
+		case PAAnimatorType::Multiply:
+			{
+				m.colorMod.x *= CurrentValue.x;
+				m.colorMod.y *= CurrentValue.y;
+				m.colorMod.z *= CurrentValue.z;
+				m.colorMod.w *= CurrentValue.w;
+				break;
+			}
+		}
 	}
 }
 void* PAColorAnimator::GetVariableImpl(u8 VarID)
@@ -2754,9 +2782,23 @@ void* PAColorAnimator::GetVariableImpl(u8 VarID)
 	R_ASSERT3(false, "Particle action ColorAnimator: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
+
 void PASizeAnimator::Transform(const Fmatrix& m)
 {
 }
+
+void PASizeAnimator::PreExecute(ParticleHolder* pe)
+{
+	ParticleAction::PreExecute(pe);
+	for (u32 i = 0; i < pe->p_count; i++)
+	{
+		Particle &m = pe->particles[i];
+		m.sizeMod.x = 1.0f;
+		m.sizeMod.y = 1.0f;
+		m.sizeMod.z = 1.0f;
+	}
+}
+
 void PASizeAnimator::Execute(ParticleHolder* effect, const float dt, float& tm_max) {
 	//Fvector4 CurrentValue = AnimPtr->FastUpdateValue(CurrentIndex, CurrentTime, dt, Looped, Reverse);
 	for(u32 i = 0; i < effect->p_count; i++)
@@ -2778,9 +2820,26 @@ void PASizeAnimator::Execute(ParticleHolder* effect, const float dt, float& tm_m
 			clamp(CurveTime, 0.0f, AnimPtr->GetMaxTime());
 		}
 		Fvector4 CurrentValue = AnimPtr->GetValueOnTime(CurveTime);
-		m.size.x = CurrentValue.x;
-		m.size.y = CurrentValue.y;
-		m.size.z = CurrentValue.z;
+		switch (AnimatorType)
+		{
+		case PAAnimatorType::Replace:
+			{
+				m.size.x = CurrentValue.x;
+				m.size.y = CurrentValue.y;
+				m.size.z = CurrentValue.z;
+				break;
+			}
+		case PAAnimatorType::Multiply:
+			{
+				m.sizeMod.x *= CurrentValue.x;
+				m.sizeMod.y *= CurrentValue.y;
+				m.sizeMod.z *= CurrentValue.z;
+				VERIFY(m.sizeMod.x >= 0.f && m.sizeMod.x <= 100.f);
+				VERIFY(m.sizeMod.y >= 0.f && m.sizeMod.y <= 100.f);
+				VERIFY(m.sizeMod.z >= 0.f && m.sizeMod.z <= 100.f);
+				break;
+			}
+		}
 	}
 }
 void* PASizeAnimator::GetVariableImpl(u8 VarID)
