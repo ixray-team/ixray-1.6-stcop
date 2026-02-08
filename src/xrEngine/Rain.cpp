@@ -328,11 +328,25 @@ void CEffect_Rain::UpdateItems()
 	float rain_length = env.CurrentEnv->rain_length;
 	float rain_width = env.CurrentEnv->rain_width;
 	float factor_visual = factor / 2.f + .5f;
+	Fvector& f_rain_color = g_pGamePersistent->Environment().CurrentEnv->rain_color;
+	u32 u_rain_color = color_rgba_f(f_rain_color.x, f_rain_color.y, f_rain_color.z, factor_visual);
 	shared_str& rain_type = env.CurrentEnv->rain_type;
+
+	if (psDeviceFlags.test(rsR4) || psDeviceFlags.test(rsR2))
+	{
+		f_rain_color.mul(0.9f);
+		factor_visual *= 0.8f;
+	}
+
+	Fvector2 Sprite_UV[2][4]
+	{
+		{{0.f,1.f},{0.f,0.f},{1.f,1.f},{1.f,0.f}},
+		{{1.f,0.f},{1.f,1.f},{0.f,0.f},{0.f,1.f}}
+	};
 
 	u32 desired_items = iFloor(0.5f * (1.f + factor) * float(env.max_desired_items));
 	items.resize(desired_items);
-	m_rquads.clear(); m_rquads.reserve(items.size());
+	m_sprites.clear(); m_sprites.reserve(items.size());
 
 	// build source plane
 	Fplane src_plane;
@@ -416,14 +430,13 @@ void CEffect_Rain::UpdateItems()
 		camDir.sub(sC, vEye);
 		camDir.normalize();
 		lineTop.crossproduct(camDir, lineD);
-
-		m_rquads.push_back(
+		u32 s = one.uv_set;
+		m_sprites.push_back(
 					{
-				Fvector().mad(pos_trail,lineTop,-rain_width),
-				Fvector().mad(pos_trail,lineTop,rain_width),
-				Fvector().mad(pos_head,lineTop,-rain_width),
-				Fvector().mad(pos_head,lineTop,rain_width),
-				one.uv_set
+				Fvector().mad(pos_trail,lineTop,-rain_width),u_rain_color,Sprite_UV[s][0].x,Sprite_UV[s][0].y,
+				Fvector().mad(pos_trail,lineTop,rain_width)	,u_rain_color,Sprite_UV[s][1].x,Sprite_UV[s][1].y,
+				Fvector().mad(pos_head,lineTop,-rain_width)	,u_rain_color,Sprite_UV[s][2].x,Sprite_UV[s][2].y,
+				Fvector().mad(pos_head,lineTop,rain_width)	,u_rain_color,Sprite_UV[s][3].x,Sprite_UV[s][3].y
 			});
 	}
 }
