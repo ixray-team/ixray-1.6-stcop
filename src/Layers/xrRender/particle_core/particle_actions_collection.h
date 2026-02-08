@@ -637,9 +637,10 @@ namespace PAPI{
 		};
 		shared_str Animator;
 		PS::IPAC* AnimPtr = nullptr;
-		PAAnimatorType AnimatorType;
+		PAAnimatorType AnimatorType = PAAnimatorType::Replace;
 		bool Looped;
 		bool Reverse;
+		bool Wrap = false;
 
 		void PreExecute(ParticleHolder *pe) override;
 		_METHODS;
@@ -655,9 +656,10 @@ namespace PAPI{
 		};
 		shared_str Animator;
 		PS::IPAC* AnimPtr = nullptr;
-		PAAnimatorType AnimatorType;
+		PAAnimatorType AnimatorType = PAAnimatorType::Replace;
 		bool Looped;
 		bool Reverse;
+		bool Wrap = false;
 
 		void PreExecute(ParticleHolder *pe) override;
 		_METHODS;
@@ -673,9 +675,10 @@ namespace PAPI{
 		};
 		shared_str Animator;
 		PS::IPAC* AnimPtr = nullptr;
-		PAAnimatorType AnimatorType;
+		PAAnimatorType AnimatorType = PAAnimatorType::Replace;
 		bool Looped;
 		bool Reverse;
+		bool Wrap = false;
 
 		_METHODS;
 	};
@@ -690,9 +693,10 @@ namespace PAPI{
 		};
 		shared_str Animator;
 		PS::IPAC* AnimPtr = nullptr;
-		PAAnimatorType AnimatorType;
+		PAAnimatorType AnimatorType = PAAnimatorType::Replace;
 		bool Looped;
 		bool Reverse;
+		bool Wrap = false;
 
 		_METHODS;
 	};
