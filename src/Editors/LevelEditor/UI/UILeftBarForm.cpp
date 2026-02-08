@@ -65,6 +65,7 @@ void UILeftBarForm::Draw()
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
 	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0, 0));
 
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelTint).Value);
 	if (ImGui::Begin("Edit Mode", 0, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 	{
 		static ESceneItemsGuids Tools[OBJCLASS_COUNT + 1] = {
@@ -170,7 +171,10 @@ void UILeftBarForm::Draw()
 	}
 
 	if (!bUseSnapList)
+	{
+		ImGui::PopStyleColor();
 		return;
+	}
 
 	if (ImGui::Begin("Snap List", &bUseSnapList))
 	{
@@ -241,4 +245,5 @@ void UILeftBarForm::Draw()
 		ImGui::PopStyleVar(2);
 	}
 	ImGui::End();
+	ImGui::PopStyleColor();
 }
