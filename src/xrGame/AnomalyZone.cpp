@@ -734,6 +734,12 @@ void CAnomalyZone::UpdateIdleLight	()
 	if(!m_pIdleLight || !m_pIdleLight->get_active())
 		return;
 
+	if (m_pIdleLAnim == nullptr)
+	{
+		Msg("! Cant found light animation in %s", cNameSect_str());
+		return;
+	}
+
 
 	VERIFY(m_pIdleLAnim);
 
