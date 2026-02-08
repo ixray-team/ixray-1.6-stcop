@@ -6,6 +6,7 @@ public:
 	UITopBarForm();
 	virtual ~UITopBarForm();
 	virtual void Draw();
+	void DrawBackground(float YOffset);
 	bool VerifySpaceRestrictors()const { return m_VerifySpaceRestrictors; }
 	bool UseCameraPosForActor = false;
 
@@ -43,9 +44,4 @@ private:
 	void ClickPlayCleanGame();
 
 	void ClickPreferences();
-
-private:
-	xr_string_map<xr_string, ImVec2> TableSizes;
-	void ApplyBackground(const xr_string& TableColumName);
-	void CalcTableEndPos(const xr_string& TableColumName);
 };
