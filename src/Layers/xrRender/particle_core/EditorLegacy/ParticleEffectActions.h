@@ -70,6 +70,17 @@ namespace EPALegacy
 		void set(LPCSTR v){val=v;}
 	};
 
+	struct PEnum
+	{
+		xr_token* tokens = nullptr;
+		u32 value = 0;
+		u8 EnumSize = 0;
+		PEnum() = default;
+		PEnum(xr_token* _tokens, u8 _EnumSize):tokens(_tokens),EnumSize(_EnumSize){}
+		PEnum(xr_token* _tokens, u8 _EnumSize, u32 _value):tokens(_tokens),EnumSize(_EnumSize),value(_value){}
+		void set(u32 v){value=v;}
+	};
+
 	struct PDomain final
 	{
 	public:
@@ -118,7 +129,9 @@ namespace EPALegacy
 			Old,
 			Original,
 			Extended,
-			SomeVasnyaBranch
+			SomeVasnyaBranch,
+			MAX,
+			Current = MAX - 1,
 		};
 	
 		PS::CPEDef*		parent = nullptr;
@@ -139,6 +152,7 @@ namespace EPALegacy
 		xr_map<AnsiString, PInt> ints;
 		xr_map<AnsiString, PVector> vectors;
 		xr_map<AnsiString, PString> strings;
+		xr_map<AnsiString, PEnum> enums;
 
 		enum EValType{
 			tpDomain,
@@ -147,7 +161,9 @@ namespace EPALegacy
 			tpBool,
 			tpInt,
 			tpString,
+    		tpEnum,
 		};
+		
 		struct SOrder{
 			EValType	type;
 			xr_string	name;
@@ -174,13 +190,17 @@ namespace EPALegacy
 		SOrder&	appendBool	(LPCSTR name, bool b);
 		SOrder&	appendString(LPCSTR name, const shared_str& v);
 		SOrder&	appendString(LPCSTR name, LPCSTR v);
-		PFloat&			_float		(LPCSTR name){auto 	it=floats.find(name); 	R_ASSERT2(it!=floats.end(),name);	return it->second;}
-		PInt&			_int		(LPCSTR name){auto 	it=ints.find(name); 	R_ASSERT2(it!=ints.end(),name);		return it->second;}
-		PVector&		_vector		(LPCSTR name){auto 	it=vectors.find(name); 	R_ASSERT2(it!=vectors.end(),name);	return it->second;}
-		PDomain&		_domain		(LPCSTR name){auto 	it=domains.find(name); 	R_ASSERT2(it!=domains.end(),name);	return it->second;}
-		PBool&			_bool		(LPCSTR name){auto 	it=bools.find(name); 	R_ASSERT2(it!=bools.end(),name); 	return it->second;}
-		PBool*			_bool_safe	(LPCSTR name){auto 	it=bools.find(name); 	return (it!=bools.end())?&it->second:0;}
-		PString&		_string		(LPCSTR name){auto	it=strings.find(name);	R_ASSERT2(it!=strings.end(),name);	return it->second;}
+		SOrder& appendEnum(LPCSTR name, xr_token* variants, u8 EnumSize, u32 index);
+		template<XRay::Concepts::Enum T>
+		SOrder& appendEnum(LPCSTR name, xr_token* variants, T index){ return appendEnum(name, variants, sizeof(T), (u32)index); }
+		PFloat& _float(LPCSTR name){auto 	it=floats.find(name); 	R_ASSERT2(it!=floats.end(),name);	return it->second;}
+		PInt& _int(LPCSTR name){auto 	it=ints.find(name); 	R_ASSERT2(it!=ints.end(),name);		return it->second;}
+		PVector& _vector(LPCSTR name){auto 	it=vectors.find(name); 	R_ASSERT2(it!=vectors.end(),name);	return it->second;}
+		PDomain& _domain(LPCSTR name){auto 	it=domains.find(name); 	R_ASSERT2(it!=domains.end(),name);	return it->second;}
+		PBool& _bool(LPCSTR name){auto 	it=bools.find(name); 	R_ASSERT2(it!=bools.end(),name); 	return it->second;}
+		PBool* _bool_safe(LPCSTR name){auto 	it=bools.find(name); 	return (it!=bools.end())?&it->second:0;}
+		PString& _string(LPCSTR name){auto	it=strings.find(name);	R_ASSERT2(it!=strings.end(),name);	return it->second;}
+		PEnum& _enum(LPCSTR name){auto it = enums.find(name); bool found = it!=enums.end(); R_ASSERT(found,name); return it->second;}
 	public:
 	
 		virtual void	Compile		(IWriter& F)=0;

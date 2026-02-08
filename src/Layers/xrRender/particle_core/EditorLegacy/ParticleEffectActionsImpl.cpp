@@ -63,7 +63,7 @@ EParticleAction* EPACreator::pCreateEActionImpl(PAPI::PActionEnum type)
 
 void EParticleAction::Load(IReader& F)
 {
-	Version						= F.r_enum<EVersion>();
+	Version = F.r_enum<EVersion>();
 	F.r_stringZ(actionName);
 	flags.assign(F.r_u32());
 
@@ -163,6 +163,7 @@ void EParticleAction::Load(IReader& F)
 		auto FloatStream = ActionsChunk.open_chunk(tpFloat);
 		auto IntStream = ActionsChunk.open_chunk(tpInt);
 		auto StringStream = ActionsChunk.open_chunk(tpString);
+		auto EnumStream = ActionsChunk.open_chunk(tpEnum);
 
 		for (auto& elem : orders)
 		{
@@ -198,6 +199,37 @@ void EParticleAction::Load(IReader& F)
 					StringStream->r_stringZ(strings[elem.name].val);
 					break;
 				}
+			case tpEnum:
+				{
+					auto& CurEnum = enums[elem.name];
+					switch (CurEnum.EnumSize)
+					{
+					case 1:
+						{
+							CurEnum.value = EnumStream->r_u8();
+							break;
+						}
+					case 2:
+						{
+							CurEnum.value = EnumStream->r_u16();
+							break;
+						}
+					case 4:
+						{
+							CurEnum.value = EnumStream->r_u32();
+							break;
+						}
+					case 8:
+						{
+							CurEnum.value = EnumStream->r_u64();
+							break;
+						}
+					default:
+						{
+							FATAL("Invalid enum size");
+						}
+					}
+				}
 			}
 		}
 	}
@@ -205,10 +237,9 @@ void EParticleAction::Load(IReader& F)
 
 void EParticleAction::Load2(CInifile& ini, const shared_str& sect)
 {
-	//u32 ver 					= ini.r_u32(sect.c_str(), "version");
-	Version						= ini.r_enum<EVersion>(sect.c_str(), "version");
-	actionName					= ini.r_string(sect.c_str(), "action_name");
-	flags.assign				(ini.r_u32(sect.c_str(), "flags"));
+	Version = ini.r_enum<EVersion>(sect.c_str(), "version");
+	actionName = ini.r_string(sect.c_str(), "action_name");
+	flags.assign(ini.r_u32(sect.c_str(), "flags"));
 
 	if (Version <= EVersion::Original)
 	{
@@ -414,6 +445,16 @@ void EParticleAction::Load2(CInifile& ini, const shared_str& sect)
 						GenerateKey_Extended(buff, "str", nullptr, elem.name.c_str()));
 					break;
 				}
+			case tpEnum:
+				{
+					auto e_it = enums.find(elem.name);
+					R_ASSERT(e_it != enums.end());
+					e_it->second.value = ini.r_u64(
+						sect.c_str(),
+						GenerateKey_Extended(buff, "enum", nullptr, elem.name.c_str())
+					);
+					break;
+				}
 			}
 		}
 	}
@@ -421,7 +462,7 @@ void EParticleAction::Load2(CInifile& ini, const shared_str& sect)
 }
 void 	EParticleAction::Save		(IWriter& F)
 {
-	F.w_enum(EVersion::Extended);
+	F.w_enum(EVersion::Current);
 	F.w_stringZ(actionName);
 	F.w_u32(flags.get());
 
@@ -431,6 +472,7 @@ void 	EParticleAction::Save		(IWriter& F)
 	CMemoryWriter FloatStream;
 	CMemoryWriter IntStream;
 	CMemoryWriter StringStream;
+	CMemoryWriter EnumStream;
 
 	for (auto& elem : orders)
 	{
@@ -464,6 +506,34 @@ void 	EParticleAction::Save		(IWriter& F)
 		case tpString:
 			{
 				StringStream.w_stringZ(strings[elem.name].val);
+				break;
+			}
+		case tpEnum:
+			{
+				auto& CurEnum = enums[elem.name];
+				switch (CurEnum.EnumSize)
+				{
+				case 1:
+					{
+						EnumStream.w_u8(CurEnum.value);
+						break;
+					}
+				case 2:
+					{
+						EnumStream.w_u16(CurEnum.value);
+						break;
+					}
+				case 4:
+					{
+						EnumStream.w_u32(CurEnum.value);
+						break;
+					}
+				case 8:
+					{
+						EnumStream.w_u64(CurEnum.value);
+						break;
+					}
+				}
 				break;
 			}
 		}
@@ -500,14 +570,19 @@ void 	EParticleAction::Save		(IWriter& F)
 		F.w(StringStream.pointer(), StringStream.size());
 		F.close_chunk();
 	}
+	{
+		F.open_chunk(tpEnum);
+		F.w(EnumStream.pointer(), EnumStream.size());
+		F.close_chunk();
+	}
 	F.close_chunk();
 }
 
 void EParticleAction::Save2(CInifile& ini, const shared_str& sect)
 {
-	ini.w_enum			(sect.c_str(), "version", EVersion::Extended);
-	ini.w_string		(sect.c_str(), "action_name",	actionName.c_str());
-	ini.w_u32			(sect.c_str(), "flags",			flags.get());
+	ini.w_enum(sect.c_str(), "version", EVersion::Current);
+	ini.w_string(sect.c_str(), "action_name", actionName.c_str());
+	ini.w_u32(sect.c_str(), "flags", flags.get());
 	
 	string256 buff;
 	for (auto& elem : orders)
@@ -571,6 +646,17 @@ void EParticleAction::Save2(CInifile& ini, const shared_str& sect)
 					s_it->second.val.c_str());
 				break;
 			}
+		case tpEnum:
+			{
+				auto e_it = enums.find(elem.name);
+				R_ASSERT(e_it != enums.end());
+				ini.w_u64(
+					sect.c_str(),
+					GenerateKey_Extended(buff, "enum", nullptr, elem.name.c_str()),
+					e_it->second.value
+					);
+				break;
+			}
 		}
 	}
 }
@@ -581,50 +667,57 @@ EParticleAction::SOrder::SOrder(EValType _type, xr_string _name, EVersion _min_v
 
 EParticleAction::SOrder& EParticleAction::appendFloat	(LPCSTR name, float v, float mn, float mx)
 {
-	orders.push_back				(SOrder(tpFloat,name));
-	floats[name]					= PFloat(v,mn,mx);
+	orders.push_back(SOrder(tpFloat,name));
+	floats[name] = PFloat(v,mn,mx);
 	return orders.back();
 }
 EParticleAction::SOrder& EParticleAction::appendInt		(LPCSTR name, int v, int mn, int mx)
 {
-	orders.push_back				(SOrder(tpInt,name));
-	ints[name]						= PInt(v,mn,mx);
+	orders.push_back(SOrder(tpInt,name));
+	ints[name] = PInt(v,mn,mx);
 	return orders.back();
 }
 EParticleAction::SOrder& EParticleAction::appendVector	(LPCSTR name, PVector::EType type, float vx, float vy, float vz, float mn, float mx)
 {
-	orders.push_back				(SOrder(tpVector,name));
-	vectors[name]					= PVector(type,Fvector().set(vx,vy,vz),mn,mx);
+	orders.push_back(SOrder(tpVector,name));
+	vectors[name] = PVector(type,Fvector().set(vx,vy,vz),mn,mx);
 	return orders.back();
 }
 EParticleAction::SOrder& EParticleAction::appendDomain	(LPCSTR name, PDomain v)
 {
-	orders.push_back				(SOrder(tpDomain,name));
-	domains[name]					= v;
+	orders.push_back(SOrder(tpDomain,name));
+	domains[name] = v;
 	return orders.back();
 }
 EParticleAction::SOrder& EParticleAction::appendBool	(LPCSTR name, BOOL v)
 {
-	orders.push_back				(SOrder(tpBool,name));
-	bools[name]						= PBool(v);
+	orders.push_back(SOrder(tpBool,name));
+	bools[name] = PBool(v);
 	return orders.back();
 }
 EParticleAction::SOrder& EParticleAction::appendBool	(LPCSTR name, bool v)
 {
-	orders.push_back				(SOrder(tpBool,name));
-	bools[name]						= PBool(v);
+	orders.push_back(SOrder(tpBool,name));
+	bools[name] = PBool(v);
 	return orders.back();
 }
 EParticleAction::SOrder& EParticleAction::appendString(LPCSTR name, const shared_str& v)
 {
-	orders.push_back				(SOrder(tpString,name));
-	strings[name]						= PString(v);
+	orders.push_back(SOrder(tpString,name));
+	strings[name] = PString(v);
 	return orders.back();
 }
 EParticleAction::SOrder& EParticleAction::appendString(LPCSTR name, LPCSTR v)
 {
-	orders.push_back				(SOrder(tpString,name));
-	strings[name]						= PString(v);
+	orders.push_back(SOrder(tpString,name));
+	strings[name] = PString(v);
+	return orders.back();
+}
+
+EParticleAction::SOrder& EParticleAction::appendEnum(LPCSTR name, xr_token* variants, u8 EnumSize, u32 index)
+{
+	orders.push_back(SOrder(tpEnum,name));
+	enums[name] = PEnum(variants,EnumSize,index);
 	return orders.back();
 }
 
@@ -1478,22 +1571,32 @@ void EPABindVelocityValue::Compile(IWriter& F)
 	S.Save(F);
 }
 
+xr_token animators_types[] = {
+	{"Replace", PAAnimatorType::Replace},
+	{"Multiply", PAAnimatorType::Multiply},
+	{0, 0}
+};
+
 EPAColorAnimator::EPAColorAnimator(): EParticleAction(PAPI::PAColorAnimatorID)
 {
 	actionType = "ColorAnimator";
 	actionName = actionType;
+	appendEnum<PAAnimatorType>("AnimatorType", animators_types, PAAnimatorType::Replace).min_version = EVersion::SomeVasnyaBranch;
 	appendString("Animator", "");
 	appendBool("Looped", false);
-	appendBool("Reverse", false);     
+	appendBool("Reverse", false);
+	appendBool("Wrap", false).min_version = EVersion::SomeVasnyaBranch;      
 }
 
 void EPAColorAnimator::Compile(IWriter& F)
 {
 	PAColorAnimator S;
 	S.type = PAColorAnimatorID;
+	S.AnimatorType = (PAAnimatorType)(_enum("AnimatorType").value);
 	S.Animator = _string("Animator").val;
 	S.Looped = _bool("Looped").val;
 	S.Reverse = _bool("Reverse").val;
+	S.Wrap = _bool("Wrap").val;
 
 	F.w_u32(S.type);
 	S.Save(F);
@@ -1503,18 +1606,22 @@ EPASizeAnimator::EPASizeAnimator(): EParticleAction(PAPI::PASizeAnimatorID)
 {
 	actionType = "SizeAnimator";
 	actionName = actionType;
+	appendEnum<PAAnimatorType>("AnimatorType", animators_types, PAAnimatorType::Replace).min_version = EVersion::SomeVasnyaBranch;
 	appendString("Animator", "");
 	appendBool("Looped", false);
-	appendBool("Reverse", false);    
+	appendBool("Reverse", false);
+	appendBool("Wrap", false).min_version = EVersion::SomeVasnyaBranch;     
 }
 
 void EPASizeAnimator::Compile(IWriter& F)
 {
 	PASizeAnimator S;
 	S.type = PASizeAnimatorID;
+	S.AnimatorType = (PAAnimatorType)(_enum("AnimatorType").value);
 	S.Animator = _string("Animator").val;
 	S.Looped = _bool("Looped").val;
 	S.Reverse = _bool("Reverse").val;
+	S.Wrap = _bool("Wrap").val;
 
 	F.w_u32(S.type);
 	S.Save(F);
@@ -1524,18 +1631,22 @@ EPAVelocityAnimator::EPAVelocityAnimator(): EParticleAction(PAPI::PAVelocityAnim
 {
 	actionType = "VelocityAnimator";
 	actionName = actionType;
+	appendEnum<PAAnimatorType>("AnimatorType", animators_types, PAAnimatorType::Replace).min_version = EVersion::SomeVasnyaBranch;
 	appendString("Animator", "");
 	appendBool("Looped", false);
 	appendBool("Reverse", false);
+	appendBool("Wrap", false).min_version = EVersion::SomeVasnyaBranch; 
 }
 
 void EPAVelocityAnimator::Compile(IWriter& F)
 {
 	PAVelocityAnimator S;
 	S.type = PAVelocityAnimatorID;
+	S.AnimatorType = (PAAnimatorType)(_enum("AnimatorType").value);
 	S.Animator = _string("Animator").val;
 	S.Looped = _bool("Looped").val;
 	S.Reverse = _bool("Reverse").val;
+	S.Wrap = _bool("Wrap").val;
 
 	F.w_u32(S.type);
 	S.Save(F);
@@ -1545,18 +1656,22 @@ EPAVelocityRotationAnimator::EPAVelocityRotationAnimator(): EParticleAction(PAPI
 {
 	actionType = "VelocityRotationAnimator";
 	actionName = actionType;
+	appendEnum<PAAnimatorType>("AnimatorType", animators_types, PAAnimatorType::Replace).min_version = EVersion::SomeVasnyaBranch;
 	appendString("Animator", "");
 	appendBool("Looped", false);
 	appendBool("Reverse", false);
+	appendBool("Wrap", false).min_version = EVersion::SomeVasnyaBranch; 
 }
 
 void EPAVelocityRotationAnimator::Compile(IWriter& F)
 {
 	PAVelocityAnimator S;
 	S.type = PAVelocityAnimatorID;
+	S.AnimatorType = (PAAnimatorType)(_enum("AnimatorType").value);
 	S.Animator = _string("Animator").val;
 	S.Looped = _bool("Looped").val;
 	S.Reverse = _bool("Reverse").val;
+	S.Wrap = _bool("Wrap").val;
 
 	F.w_u32(S.type);
 	S.Save(F);

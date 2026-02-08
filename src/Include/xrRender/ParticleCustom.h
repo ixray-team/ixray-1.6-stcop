@@ -50,6 +50,11 @@ namespace PAPI
 		action_enum_force_dword = u32(-1)
 	};
 
+	IC bool IsValidAction(PActionEnum action)
+	{
+		return action != PActionEnum::PACallActionListID_obsolette;
+	}
+
 	struct ParticleAction;
 }
 
