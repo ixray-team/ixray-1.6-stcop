@@ -2729,7 +2729,15 @@ void PAColorAnimator::Execute(ParticleHolder* effect, const float dt, float& tm_
 	for(u32 i = 0; i < effect->p_count; i++)
 	{
 		Particle &m = effect->particles[i];
-		float CurveTime = Reverse ? AnimPtr->GetMaxTime()- m.age*1000 : m.age*1000;
+		float CurveTime;
+		if (Wrap)
+		{
+			CurveTime = (m.age/tm_max)*AnimPtr->GetMaxTime();
+			CurveTime = Reverse ? AnimPtr->GetMaxTime()-CurveTime : CurveTime;
+		} else
+		{
+			CurveTime = Reverse ? AnimPtr->GetMaxTime()- m.age*1000 : m.age*1000;
+		}
 		if (Looped)
 		{
 			while (CurveTime < 0)
@@ -2804,7 +2812,15 @@ void PASizeAnimator::Execute(ParticleHolder* effect, const float dt, float& tm_m
 	for(u32 i = 0; i < effect->p_count; i++)
 	{
 		Particle &m = effect->particles[i];
-		float CurveTime = Reverse ? AnimPtr->GetMaxTime()- m.age*1000 : m.age*1000;
+		float CurveTime;
+		if (Wrap)
+		{
+			CurveTime = (m.age/tm_max)*AnimPtr->GetMaxTime();
+			CurveTime = Reverse ? AnimPtr->GetMaxTime()-CurveTime : CurveTime;
+		} else
+		{
+			CurveTime = Reverse ? AnimPtr->GetMaxTime()- m.age*1000 : m.age*1000;
+		}
 		if (Looped)
 		{
 			while (CurveTime < 0)
@@ -2880,7 +2896,15 @@ void PAVelocityAnimator::Execute(ParticleHolder* effect, const float dt, float& 
 			Cross.normalize();
 			MDir.rotation(Dir, Cross);
 		}
-		float CurveTime = Reverse ? AnimPtr->GetMaxTime()- m.age*1000 : m.age*1000;
+		float CurveTime;
+		if (Wrap)
+		{
+			CurveTime = (m.age/tm_max)*AnimPtr->GetMaxTime();
+			CurveTime = Reverse ? AnimPtr->GetMaxTime()-CurveTime : CurveTime;
+		} else
+		{
+			CurveTime = Reverse ? AnimPtr->GetMaxTime()- m.age*1000 : m.age*1000;
+		}
 		if (Looped)
 		{
 			while (CurveTime < 0)
@@ -2938,7 +2962,15 @@ void PAVelocityRotationAnimator::Execute(ParticleHolder* effect, const float dt,
 			Cross.normalize();
 			MDir.rotation(Dir, Cross);
 		}
-		float CurveTime = Reverse ? AnimPtr->GetMaxTime()- m.age*1000 : m.age*1000;
+		float CurveTime;
+		if (Wrap)
+		{
+			CurveTime = (m.age/tm_max)*AnimPtr->GetMaxTime();
+			CurveTime = Reverse ? AnimPtr->GetMaxTime()-CurveTime : CurveTime;
+		} else
+		{
+			CurveTime = Reverse ? AnimPtr->GetMaxTime()- m.age*1000 : m.age*1000;
+		}
 		if (Looped)
 		{
 			while (CurveTime < 0)

@@ -580,6 +580,10 @@ void PASizeAnimator::Load(IReader& F) {
 	F.r_stringZ(Animator);
 	Looped = F.r_u8();
 	Reverse = F.r_u8();
+	if (Version >= ParticleActionVersion::SomeVasnyaBranch)
+	{
+		Wrap = F.r_u8();
+	}
 	auto Library = PS::CPACLibraryWrapper::GetInstance().GetPACLibrary();
 	VERIFY(Library);
 	AnimPtr = Library->FindIPAC(Animator.c_str());
@@ -590,6 +594,7 @@ void PASizeAnimator::Save(IWriter& F) {
 	F.w_stringZ(Animator);
 	F.w_u8(Looped);
 	F.w_u8(Reverse);
+	F.w_u8(Wrap);
 }
 void PAVelocityAnimator::Load(IReader& F) {
 	ParticleAction::Load(F);
