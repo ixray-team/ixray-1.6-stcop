@@ -110,13 +110,15 @@ EParticleAction* pCreateEActionImpl(PAPI::PActionEnum type)
 //---------------------------------------------------------------------------
 void EParticleAction::Render(const Fmatrix& parent)
 {
-	for (PDomainMapIt it = domains.begin(); it != domains.end(); it++)
-		it->second.Render(it->second.clr, parent);
+	for (auto& elem : domains)
+	{
+		elem.second.Render(elem.second.clr, parent);
+	}
 }
 
 void EParticleAction::Load(IReader& F)
 {
-	Version						= F.r_enum<EVersion>();
+	Version = F.r_enum<EVersion>();
 	F.r_stringZ(actionName);
 	flags.assign(F.r_u32());
 
@@ -210,12 +212,14 @@ void EParticleAction::Load(IReader& F)
 		R_ASSERT(F.r_u32() == DataChunksID);
 		auto ChunkSize = F.r_u32();
 		auto ActionsChunk = IReader(F.pointer(), ChunkSize);
+		F.advance(ChunkSize);
 		auto BoolStream = ActionsChunk.open_chunk(tpBool);
 		auto DomainStream = ActionsChunk.open_chunk(tpDomain);
 		auto VectorStream = ActionsChunk.open_chunk(tpVector);
 		auto FloatStream = ActionsChunk.open_chunk(tpFloat);
 		auto IntStream = ActionsChunk.open_chunk(tpInt);
 		auto StringStream = ActionsChunk.open_chunk(tpString);
+		auto EnumStream = ActionsChunk.open_chunk(tpEnum);
 
 		for (auto& elem : orders)
 		{
@@ -251,6 +255,37 @@ void EParticleAction::Load(IReader& F)
 					StringStream->r_stringZ(strings[elem.name].val);
 					break;
 				}
+			case tpEnum:
+				{
+					auto& CurEnum = enums[elem.name];
+					switch (CurEnum.EnumSize)
+					{
+						case 1:
+							{
+								CurEnum.value = EnumStream->r_u8();
+								break;
+							}
+						case 2:
+							{
+								CurEnum.value = EnumStream->r_u16();
+								break;
+							}
+						case 4:
+							{
+								CurEnum.value = EnumStream->r_u32();
+								break;
+							}
+						case 8:
+							{
+								CurEnum.value = EnumStream->r_u64();
+								break;
+							}
+						default:
+							{
+								FATAL("Invalid enum size");
+							}
+					}
+				}
 			}
 		}
 	}
@@ -258,10 +293,9 @@ void EParticleAction::Load(IReader& F)
 
 void EParticleAction::Load2(CInifile& ini, const shared_str& sect)
 {
-	//u32 ver 					= ini.r_u32(sect.c_str(), "version");
-	Version						= ini.r_enum<EVersion>(sect.c_str(), "version");
-	actionName					= ini.r_string(sect.c_str(), "action_name");
-	flags.assign				(ini.r_u32(sect.c_str(), "flags"));
+	Version = ini.r_enum<EVersion>(sect.c_str(), "version");
+	actionName = ini.r_string(sect.c_str(), "action_name");
+	flags.assign(ini.r_u32(sect.c_str(), "flags"));
 
 	if (Version <= EVersion::Original)
 	{
@@ -467,6 +501,16 @@ void EParticleAction::Load2(CInifile& ini, const shared_str& sect)
 						GenerateKey_Extended(buff, "str", nullptr, elem.name.c_str()));
 					break;
 				}
+			case tpEnum:
+				{
+					auto e_it = enums.find(elem.name);
+					R_ASSERT(e_it != enums.end());
+					e_it->second.value = ini.r_u64(
+						sect.c_str(),
+						GenerateKey_Extended(buff, "enum", nullptr, elem.name.c_str())
+					);
+					break;
+				}
 			}
 		}
 	}
@@ -474,7 +518,7 @@ void EParticleAction::Load2(CInifile& ini, const shared_str& sect)
 }
 void 	EParticleAction::Save		(IWriter& F)
 {
-	F.w_enum(EVersion::Extended);
+	F.w_enum(EVersion::Current);
 	F.w_stringZ(actionName);
 	F.w_u32(flags.get());
 
@@ -484,6 +528,7 @@ void 	EParticleAction::Save		(IWriter& F)
 	CMemoryWriter FloatStream;
 	CMemoryWriter IntStream;
 	CMemoryWriter StringStream;
+	CMemoryWriter EnumStream;
 
 	for (auto& elem : orders)
 	{
@@ -517,6 +562,34 @@ void 	EParticleAction::Save		(IWriter& F)
 		case tpString:
 			{
 				StringStream.w_stringZ(strings[elem.name].val);
+				break;
+			}
+		case tpEnum:
+			{
+				auto& CurEnum = enums[elem.name];
+				switch (CurEnum.EnumSize)
+				{
+				case 1:
+					{
+						EnumStream.w_u8(CurEnum.value);
+						break;
+					}
+				case 2:
+					{
+						EnumStream.w_u16(CurEnum.value);
+						break;
+					}
+				case 4:
+					{
+						EnumStream.w_u32(CurEnum.value);
+						break;
+					}
+				case 8:
+					{
+						EnumStream.w_u64(CurEnum.value);
+						break;
+					}
+				}
 				break;
 			}
 		}
@@ -553,12 +626,17 @@ void 	EParticleAction::Save		(IWriter& F)
 		F.w(StringStream.pointer(), StringStream.size());
 		F.close_chunk();
 	}
+	{
+		F.open_chunk(tpEnum);
+		F.w(EnumStream.pointer(), EnumStream.size());
+		F.close_chunk();
+	}
 	F.close_chunk();
 }
 
 void EParticleAction::Save2(CInifile& ini, const shared_str& sect)
 {
-	ini.w_enum			(sect.c_str(), "version", EVersion::Extended);
+	ini.w_enum			(sect.c_str(), "version", EVersion::Current);
 	ini.w_string		(sect.c_str(), "action_name",	actionName.c_str());
 	ini.w_u32			(sect.c_str(), "flags",			flags.get());
 	
@@ -624,6 +702,17 @@ void EParticleAction::Save2(CInifile& ini, const shared_str& sect)
 					s_it->second.val.c_str());
 				break;
 			}
+		case tpEnum:
+			{
+				auto e_it = enums.find(elem.name);
+				R_ASSERT(e_it != enums.end());
+				ini.w_u64(
+					sect.c_str(),
+					GenerateKey_Extended(buff, "enum", nullptr, elem.name.c_str()),
+					e_it->second.value
+					);
+				break;
+			}
 		}
 	}
 }
@@ -649,18 +738,18 @@ void EParticleAction::FillPropInit(PropItemVec& items, LPCSTR pref)
 void 	EParticleAction::FillProp	(PropItemVec& items, LPCSTR pref, u32 clr)
 {
 	PropValue* V=0;
-	for (OrderVecIt o_it=orders.begin(); o_it!=orders.end(); o_it++)
+	for (auto& order : orders)
 	{
-		LPCSTR name 				= o_it->name.c_str();
-		switch (o_it->type){           
+		LPCSTR name 				= order.name.c_str();
+		switch (order.type){           
 		case tpDomain:
 			{
-				domains[o_it->name].FillProp(items, PrepareKey(pref,name).c_str(),clr);
+				domains[order.name].FillProp(items, PrepareKey(pref,name).c_str(),clr);
 				break;
 			}
 		case tpVector:
 			{ 
-				PVector& vect = vectors[o_it->name];
+				PVector& vect = vectors[order.name];
 				switch (vect.type){
 				case PVector::vNum:
 					{
@@ -682,31 +771,39 @@ void 	EParticleAction::FillProp	(PropItemVec& items, LPCSTR pref, u32 clr)
 			}
 		case tpFloat:
 			{
-				PFloat& flt	= floats[o_it->name];
+				PFloat& flt	= floats[order.name];
 				V=PHelper().CreateFloat		(items,	PrepareKey(pref,name).c_str(), &flt.val, flt.mn, flt.mx, 0.001f, 3);
 				break;
 			}
 		case tpInt:
 			{
-				PInt& el	= ints[o_it->name];
+				PInt& el	= ints[order.name];
 				V=PHelper().CreateS32			(items,	PrepareKey(pref,name).c_str(), &el.val, el.mn, el.mx);
 				break;
 			}
 		case tpBool:
 			{
-				V=PHelper().CreateBool		(items,	PrepareKey(pref,name).c_str(), &bools[o_it->name].val);
+				V=PHelper().CreateBool		(items,	PrepareKey(pref,name).c_str(), &bools[order.name].val);
 				break;
 			}
 		case tpString:
 			{
-				if (o_it->string_type == smCustom)
+				if (order.string_type == smCustom)
 				{
-					V=PHelper().CreateRText(items, PrepareKey(pref,name).c_str(), &strings[o_it->name].val);
+					V=PHelper().CreateRText(items, PrepareKey(pref,name).c_str(), &strings[order.name].val);
 				}
 				else
 				{
-					V=PHelper().CreateChoose(items, PrepareKey(pref,name).c_str(), &strings[o_it->name].val, o_it->string_type);
+					V=PHelper().CreateChoose(items, PrepareKey(pref,name).c_str(), &strings[order.name].val,
+					                         order.string_type);
 				}
+				break;
+			}
+		case tpEnum:
+			{
+				auto& elem = enums[order.name];
+				VERIFY(elem.tokens);
+				V=PHelper().CreateToken32(items, PrepareKey(pref, name).c_str(), &elem.value, elem.tokens);
 			}
 		}
 		if (V) V->Owner()->prop_color	= clr;
@@ -732,50 +829,57 @@ EParticleAction::SOrder::SOrder(EValType _type, xr_string _name, EChooseMode _st
 
 EParticleAction::SOrder& EParticleAction::appendFloat	(LPCSTR name, float v, float mn, float mx)
 {
-	orders.push_back				(SOrder(tpFloat,name));
-	floats[name]					= PFloat(v,mn,mx);
+	orders.push_back(SOrder(tpFloat,name));
+	floats[name] = PFloat(v,mn,mx);
 	return orders.back();
 }
 EParticleAction::SOrder& EParticleAction::appendInt		(LPCSTR name, int v, int mn, int mx)
 {
-	orders.push_back				(SOrder(tpInt,name));
-	ints[name]						= PInt(v,mn,mx);
+	orders.push_back(SOrder(tpInt,name));
+	ints[name] = PInt(v,mn,mx);
 	return orders.back();
 }
 EParticleAction::SOrder& EParticleAction::appendVector	(LPCSTR name, PVector::EType type, float vx, float vy, float vz, float mn, float mx)
 {
-	orders.push_back				(SOrder(tpVector,name));
-	vectors[name]					= PVector(type,Fvector().set(vx,vy,vz),mn,mx);
+	orders.push_back(SOrder(tpVector,name));
+	vectors[name] = PVector(type,Fvector().set(vx,vy,vz),mn,mx);
 	return orders.back();
 }
 EParticleAction::SOrder& EParticleAction::appendDomain	(LPCSTR name, PDomain v)
 {
-	orders.push_back				(SOrder(tpDomain,name));
-	domains[name]					= v;
+	orders.push_back(SOrder(tpDomain,name));
+	domains[name] = v;
 	return orders.back();
 }
 EParticleAction::SOrder& EParticleAction::appendBool	(LPCSTR name, BOOL v)
 {
-	orders.push_back				(SOrder(tpBool,name));
-	bools[name]						= PBool(v);
+	orders.push_back(SOrder(tpBool,name));
+	bools[name] = PBool(v);
 	return orders.back();
 }
 EParticleAction::SOrder& EParticleAction::appendBool	(LPCSTR name, bool v)
 {
-	orders.push_back				(SOrder(tpBool,name));
-	bools[name]						= PBool(v);
+	orders.push_back(SOrder(tpBool,name));
+	bools[name] = PBool(v);
 	return orders.back();
 }
 EParticleAction::SOrder& EParticleAction::appendString(LPCSTR name, const shared_str& v, EChooseMode _string_type)
 {
-	orders.push_back				(SOrder(tpString,name, _string_type));
-	strings[name]						= PString(v);
+	orders.push_back(SOrder(tpString,name, _string_type));
+	strings[name] = PString(v);
 	return orders.back();
 }
 EParticleAction::SOrder& EParticleAction::appendString(LPCSTR name, LPCSTR v, EChooseMode _string_type)
 {
-	orders.push_back				(SOrder(tpString,name, _string_type));
-	strings[name]						= PString(v);
+	orders.push_back(SOrder(tpString,name, _string_type));
+	strings[name] = PString(v);
+	return orders.back();
+}
+
+EParticleAction::SOrder& EParticleAction::appendEnum(LPCSTR name, xr_token* variants, u8 EnumSize, u32 index)
+{
+	orders.push_back(SOrder(tpEnum,name));
+	enums[name] = PEnum(variants,EnumSize,index);
 	return orders.back();
 }
 
@@ -1420,40 +1524,6 @@ EPATargetColor::EPATargetColor		():EParticleAction(PAPI::PATargetColorID)
 	appendFloat						("TimeTo",			1.0f, 0.0f, 1.0f);     
 }
 
-void EPATargetColor::Load(IReader& F)
-{
-	u32 vers = F.r_u32();
-	R_ASSERT(vers <= PARTICLE_ACTION_VERSION_MAX && vers >= PARTICLE_ACTION_VERSION_MIN);
-
-	F.r_stringZ(actionName);
-	flags.assign(F.r_u32());
-
-	if (vers == 0)
-	{
-		constexpr int Count = 2;
-		int Iter = 0;
-		for (PFloatMapIt f_it = floats.begin(); f_it != floats.end(); f_it++)
-		{
-			if (Iter >= Count)
-				break;
-
-			f_it->second.val = F.r_float();
-
-			Iter++;
-		}
-	}
-	else
-	{
-		for (PFloatMapIt f_it = floats.begin(); f_it != floats.end(); f_it++)
-			f_it->second.val = F.r_float();
-	}
-
-	for (PVectorMapIt v_it = vectors.begin(); v_it != vectors.end(); v_it++)	F.r_fvector3(v_it->second.val);
-	for (PDomainMapIt d_it = domains.begin(); d_it != domains.end(); d_it++)	d_it->second.Load(F);
-	for (PBoolMapIt b_it = bools.begin(); b_it != bools.end(); b_it++)	b_it->second.val = F.r_u8();
-	for (PIntMapIt i_it = ints.begin(); i_it != ints.end(); i_it++)	i_it->second.val = F.r_s32();
-}
-
 void EPATargetColor::Compile(IWriter& F)
 {
 	const Fvector& color = _vector("Color").val;
@@ -1805,10 +1875,17 @@ void EPABindVelocityValue::Compile(IWriter& F)
 	S.Save(F);
 }
 
-EPAColorAnimator::EPAColorAnimator(): EParticleAction(PAPI::PAColorAnimatorID)
+xr_token animators_types[] = {
+	{"Replace", PAAnimatorType::Replace},
+	{"Multiply", PAAnimatorType::Multiply},
+	{0, 0}
+};
+
+EPAColorAnimator::EPAColorAnimator(): EParticleAction(PAColorAnimatorID)
 {
 	actionType = "ColorAnimator";
 	actionName = actionType;
+	appendEnum<PAAnimatorType>("AnimatorType", animators_types, PAAnimatorType::Replace).min_version = EVersion::SomeVasnyaBranch;
 	appendString("Animator", "", smPAC);
 	appendBool("Looped", false);
 	appendBool("Reverse", false);     
@@ -1818,18 +1895,19 @@ void EPAColorAnimator::Compile(IWriter& F)
 {
 	PAColorAnimator S;
 	S.type = PAColorAnimatorID;
+	S.AnimatorType = (PAAnimatorType)(_enum("AnimatorType").value);
 	S.Animator = _string("Animator").val;
 	S.Looped = _bool("Looped").val;
 	S.Reverse = _bool("Reverse").val;
-
 	F.w_u32(S.type);
 	S.Save(F);
 }
 
-EPASizeAnimator::EPASizeAnimator(): EParticleAction(PAPI::PASizeAnimatorID)
+EPASizeAnimator::EPASizeAnimator(): EParticleAction(PASizeAnimatorID)
 {
 	actionType = "SizeAnimator";
 	actionName = actionType;
+	appendEnum<PAAnimatorType>("AnimatorType", animators_types, PAAnimatorType::Replace).min_version = EVersion::SomeVasnyaBranch;
 	appendString("Animator", "", smPAC);
 	appendBool("Looped", false);
 	appendBool("Reverse", false);    
@@ -1839,6 +1917,7 @@ void EPASizeAnimator::Compile(IWriter& F)
 {
 	PASizeAnimator S;
 	S.type = PASizeAnimatorID;
+	S.AnimatorType = (PAAnimatorType)(_enum("AnimatorType").value);
 	S.Animator = _string("Animator").val;
 	S.Looped = _bool("Looped").val;
 	S.Reverse = _bool("Reverse").val;
@@ -1847,10 +1926,11 @@ void EPASizeAnimator::Compile(IWriter& F)
 	S.Save(F);
 }
 
-EPAVelocityAnimator::EPAVelocityAnimator(): EParticleAction(PAPI::PAVelocityAnimatorID)
+EPAVelocityAnimator::EPAVelocityAnimator(): EParticleAction(PAVelocityAnimatorID)
 {
 	actionType = "VelocityAnimator";
 	actionName = actionType;
+	appendEnum<PAAnimatorType>("AnimatorType", animators_types, PAAnimatorType::Replace).min_version = EVersion::SomeVasnyaBranch;
 	appendString("Animator", "", smPAC);
 	appendBool("Looped", false);
 	appendBool("Reverse", false);
@@ -1860,6 +1940,7 @@ void EPAVelocityAnimator::Compile(IWriter& F)
 {
 	PAVelocityAnimator S;
 	S.type = PAVelocityAnimatorID;
+	S.AnimatorType = (PAAnimatorType)(_enum("AnimatorType").value);
 	S.Animator = _string("Animator").val;
 	S.Looped = _bool("Looped").val;
 	S.Reverse = _bool("Reverse").val;
@@ -1868,10 +1949,11 @@ void EPAVelocityAnimator::Compile(IWriter& F)
 	S.Save(F);
 }
 
-EPAVelocityRotationAnimator::EPAVelocityRotationAnimator(): EParticleAction(PAPI::PAVelocityRotationAnimatorID)
+EPAVelocityRotationAnimator::EPAVelocityRotationAnimator(): EParticleAction(PAVelocityRotationAnimatorID)
 {
 	actionType = "VelocityRotationAnimator";
 	actionName = actionType;
+	appendEnum<PAAnimatorType>("AnimatorType", animators_types, PAAnimatorType::Replace).min_version = EVersion::SomeVasnyaBranch;
 	appendString("Animator", "", smPAC);
 	appendBool("Looped", false);
 	appendBool("Reverse", false);
@@ -1881,6 +1963,7 @@ void EPAVelocityRotationAnimator::Compile(IWriter& F)
 {
 	PAVelocityAnimator S;
 	S.type = PAVelocityAnimatorID;
+	S.AnimatorType = (PAAnimatorType)(_enum("AnimatorType").value);
 	S.Animator = _string("Animator").val;
 	S.Looped = _bool("Looped").val;
 	S.Reverse = _bool("Reverse").val;

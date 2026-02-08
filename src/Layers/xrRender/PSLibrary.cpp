@@ -379,7 +379,7 @@ bool CPSLibrary::LoadOriginal(IReader& F)
 		IReader* O   		= OBJ->open_chunk(0);
 		for (int count=1; O; count++) {
 			PS::CPEDef*	def	= new PS::CPEDef();
-			if (def->LoadOriginal(*O))
+			if (I_ASSERT(def->LoadOriginal(*O)))
 			{
 				m_all_ps.push_back(def->m_Name);
 				m_PEDs.push_back(def);
@@ -397,7 +397,7 @@ bool CPSLibrary::LoadOriginal(IReader& F)
 		IReader* O   		= OBJ->open_chunk(0);
 		for (int count=1; O; count++) {
 			PS::CPGDef*	def	= new PS::CPGDef();
-			if (def->LoadOriginal(*O))
+			if (I_ASSERT(def->LoadOriginal(*O)))
 			{
 				m_all_ps.push_back(def->m_Name);
 				m_PGDs.push_back(def);
@@ -422,7 +422,7 @@ bool CPSLibrary::LoadExtended(IReader& F)
 		IReader* O   		= OBJ->open_chunk(0);
 		for (int count=1; O; count++) {
 			PS::CPEDef*	def	= new PS::CPEDef();
-			if (def->LoadOriginal(*O))
+			if (I_ASSERT(def->LoadOriginal(*O)))
 			{
 				m_all_ps.push_back(def->m_Name);
 				m_PEDs.push_back(def);
@@ -447,7 +447,7 @@ bool CPSLibrary::LoadExtended(IReader& F)
 		IReader* O   		= OBJ->open_chunk(0);
 		for (int count=1; O; count++) {
 			PS::CPGDef*	def	= new PS::CPGDef();
-			if (def->LoadOriginal(*O))
+			if (I_ASSERT(def->LoadOriginal(*O)))
 			{
 				m_all_ps.push_back(def->m_Name);
 				m_PGDs.push_back(def);
@@ -472,7 +472,7 @@ bool CPSLibrary::LoadExtended(IReader& F)
 		IReader* O   		= OBJ->open_chunk(0);
 		for (int count=1; O; count++) {
 			PS::CPACDef*	def	= new PS::CPACDef();
-			if (def->Load(*O))
+			if (I_ASSERT(def->Load(*O)))
 			{
 				m_all_ps.push_back(def->getName());
 				m_PACDs.push_back(def);
