@@ -27,10 +27,9 @@ public:
 		u32				dwTime_Hit;
 		u32				uv_set;
 	};
-	struct rain_line
+	struct rain_sprite
 	{
-		Fvector quad[4];
-		u32 uv_set;
+		struct { Fvector p; u32 color; Fvector2 uv; } buff[4];
 	};
 	struct	Particle
 	{
@@ -50,7 +49,7 @@ private:
 
 	xr_vector<Item>					items;
 
-	xr_vector<rain_line>			m_rquads;
+	xr_vector<rain_sprite>			m_sprites;
 	States							state;
 
 	// Particles
