@@ -1567,7 +1567,7 @@ void CSpawnPoint::FillProp(LPCSTR pref, PropItemVec& items)
 			static xr_token shape_type[] = {
 				{"Sphere", 	CShapeData::cfSphere},
 				{"Box", 	CShapeData::cfBox},
-				{0}
+				{0, 0}
 			};
 
 			PHelper().CreateToken8	(items, PrepareKey(pref,"Environment Modificator\\Shape Type"),		&m_EM_ShapeType,	shape_type);
