@@ -235,7 +235,8 @@ BOOL CPEDef::LoadOriginal(IReader& F)
 
 BOOL CPEDef::LoadExtended(IReader& F)
 {
-	return true;
+	R_ASSERT(false);
+	return false;
 }
 
 BOOL CPEDef::Load2(CInifile& ini)
@@ -339,7 +340,8 @@ BOOL CPEDef::Load2Original(CInifile& ini)
 
 BOOL CPEDef::Load2Entended(CInifile& ini)
 {
-	return true;
+	R_ASSERT(false);
+	return false;
 }
 
 void CPEDef::Save2(CInifile& ini)
@@ -402,7 +404,7 @@ void CPEDef::Save2(CInifile& ini)
 void CPEDef::Save(IWriter& F)
 {
 	F.open_chunk	(PS::PE::Chunks::VERSION);
-	F.w_enum		(PS::PE::Version::Latest);
+	F.w_enum		(PS::PE::Version::Original);
 	F.close_chunk	();
 
 	F.open_chunk	(PS::PE::Chunks::NAME);

@@ -1,12 +1,18 @@
 #pragma once
 
+#include "Concepts.h"
 #include "_std_c_undefs.h"
 
 // token type definition
 struct XRCORE_API xr_token
 {
-	LPCSTR	name;
-	int 	id;
+	LPCSTR name = nullptr;
+	int id = 0;
+
+	xr_token() = default;
+	xr_token(LPCSTR _name, int _id) : name(_name), id(_id) {}
+	template<XRay::Concepts::Enum enumT>
+	xr_token(LPCSTR _name, enumT _id) : name(_name), id((int)_id) {}
 };
 
 ICF LPCSTR get_token_name(xr_token* tokens, int key)

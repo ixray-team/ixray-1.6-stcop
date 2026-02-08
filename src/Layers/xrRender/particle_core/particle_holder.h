@@ -60,28 +60,35 @@ namespace PAPI
 		IC void RemoveParticle(u32 i)
 		{
 			if (0 == p_count)
+			{
 				return;
+			}
 
 			Particle& m = particles[i];
 			if (d_cb)
+			{
 				d_cb(owner, param, m, i);
+			}
 
 			// �� ������ ������� �������� !!! (dependence ParticleGroup)
 			m = particles[--p_count];
+			particles[p_count].Reset();
 		}
 
 		IC BOOL AddParticle(const Fvector& pos, const Fvector& posB,
-			const Fvector& size, const Fvector& rot, const Fvector& vel, const Fvector& rot_vel, u32 color,
-			const float age = 0.0f, u16 frame = 0, u16 flags = 0)
+			const Fvector& size, const Fvector& rot, const Fvector& vel, const Fvector& rot_vel,
+			u32 color, const float age = 0.0f, u16 frame = 0, u16 flags = 0)
 		{
 			if (p_count >= max_particles)
 				return FALSE;
 
+			VERIFY(age >=0.0f);
 			Particle& P = particles[p_count];
 			P.pos = pos;
 			P.posI = pos;
 			P.posB = posB;
 			P.size = size;
+			P.sizeMod = {1.0f, 1.0f, 1.0f};
 			P.sizeI = size;
 			P.rot.x = rot.x;
 			P.rotI.x = rot.x;
@@ -217,8 +224,14 @@ namespace PAPI
 		{
 			// Step through all the actions in the action list.
 			float kill_old_time = 3.0f;
-			for (ParticleAction* PA : m_actions)
+			for (auto PA : m_actions)
+			{
+				PA->PreExecute(this);
+			}			
+			for (auto PA : m_actions)
+			{
 				PA->Execute(this, dt, kill_old_time);
+			}
 		}
 
 		IC void StopEffect(BOOL deffered)
