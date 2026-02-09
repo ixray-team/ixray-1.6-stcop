@@ -99,9 +99,10 @@ void UIMainMenuForm::DrawMenuItemI(const char* label, const char* icon, int comm
 	}
 }
 
-#define MainMenuList(Name) \
-    if (ImGui::Button(Name)) \
+#define MainMenuList(Name) cp = ImGui::GetCursorPos();\
+    if (ImGui::Button(Name)) {\
         ImGui::OpenPopup(Name"Popup"); \
+		ImGui::SetNextWindowPos({ImGui::GetWindowPos().x + cp.x, ImGui::GetWindowPos().y+ cp.y + UI->GetMenuBarButtonHeight()}); }	\
     if (ImGui::BeginPopup(Name"Popup")) {
 
 #define EndMainMenuList \
