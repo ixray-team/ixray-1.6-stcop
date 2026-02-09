@@ -224,12 +224,19 @@ void CUIThemeManager::Draw()
 void CUIThemeManager::InitDefault(bool Forced)
 {
 	XRay::ImGui::MakeEditorTheme();
-	ImVec4* colors = ImGui::GetStyle().Colors;
+	ImGuiStyle& style = ImGui::GetStyle();
+	ImVec4* colors = style.Colors;
 	colors[ImGuiCol_MenuBarBg] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::BackgroundTint);
 	colors[ImGuiCol_FrameBg] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableTint);
 	colors[ImGuiCol_WindowBg] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToolbarTint);
 	colors[ImGuiCol_ChildBg] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelTint);
 	colors[ImGuiCol_Button] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ButtonTint);
+
+	style.WindowBorderSize = 0.0f;
+	style.ChildBorderSize = 0.0f;
+	style.PopupBorderSize = 0.0f;
+	style.FrameBorderSize = 0.0f;
+	style.TabBorderSize = 0.0f;
 
 	log_color_default = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
 	log_color_error = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
