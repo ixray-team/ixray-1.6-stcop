@@ -307,7 +307,7 @@ void XrUIManager::Draw()
 		int headerSize = 0;
 		ImGuiViewport* viewport = ImGui::GetMainViewport();
 		ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x, viewport->Pos.y + m_MenuBarHeight - headerSize));
-		ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, viewport->Size.y - headerSize));
+		ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, viewport->Size.y - headerSize - m_MenuBarHeight));
 		ImGui::SetNextWindowViewport(viewport->ID);
 		ImGuiWindowFlags window_flags = 0
 			| ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking
