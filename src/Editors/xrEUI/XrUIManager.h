@@ -38,6 +38,10 @@ public:
 	virtual bool 	ApplyShortCut(DWORD Key, TShiftState Shift)=0;
 
 	inline float GetMenuBarHeight()const { return m_MenuBarHeight; }
+
+	inline float GetMenuBarButtonHeight()const { return m_MenuBarButtonHeight; }
+
+
 	inline TShiftState GetShiftState()const { return m_ShiftState; };
 	virtual bool IsPlayInEditor() { return false; }
 	void ApplyShortCutInput(DWORD Key);
@@ -47,6 +51,7 @@ protected:
 
 private:
 	float m_MenuBarHeight;
+	float m_MenuBarButtonHeight;
 	TShiftState m_ShiftState;
 	xr_vector<IEditorWnd*> m_UIArray;
 	string_path m_name_ini;

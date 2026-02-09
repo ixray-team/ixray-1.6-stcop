@@ -13,6 +13,9 @@
 #include "Plugins/PluginManager.h"
 #include "Plugins/PluginsUIRun.h"
 
+#include "../../xrEUI/ModernUI.h"
+
+
 #include "IconsFontAwesome6.h"
 
 UIMainMenuForm::UIMainMenuForm()
@@ -96,15 +99,36 @@ void UIMainMenuForm::DrawMenuItemI(const char* label, const char* icon, int comm
 	}
 }
 
+#define MainMenuListDEL(Name) cp = ImGui::GetCursorPos();\
+    if (ImGui::Button(Name)) {\
+        ImGui::OpenPopup(Name"Popup"); \
+		ImGui::SetNextWindowPos({ImGui::GetWindowPos().x + cp.x, ImGui::GetWindowPos().y+ cp.y + UI->GetMenuBarButtonHeight()+ImGui::GetStyle().WindowPadding.y}); }	\
+    if (ImGui::BeginPopup(Name"Popup")) {
+
+#define MainMenuList(Name) \
+    if (ImGui::Button(Name)) \
+        ImGui::OpenPopup(Name"Popup"); \
+    if (ImGui::BeginPopup(Name"Popup")) {
+
+#define EndMainMenuList \
+    ImGui::EndPopup(); \
+    } \
+    ImGui::SameLine();
+
 void UIMainMenuForm::Draw()
 {
 	ImGui::PushStyleColor(ImGuiCol_Button, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::BackgroundTint).Value);
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+
 	if (IXBeginMainMenuBar())
 	{
+		ImGui::SameLine();
 		DrawLevelName();
+		ImGui::SameLine();
 
-		if (ImGui::BeginMenu("File"))
-		{
+		ImVec2 cp;
+
+		MainMenuList("File")
 			DrawMenuItemI("Clear", ICON_FA_FILE, COMMAND_CLEAR);
 			DrawMenuItemI("Open", ICON_FA_FILE_IMPORT, COMMAND_LOAD);
 			DrawMenuItemI("Save", ICON_FA_FLOPPY_DISK, COMMAND_SAVE, LTools->m_LastFileName);
@@ -138,11 +162,11 @@ void UIMainMenuForm::Draw()
 			ImGui::Separator();
 
 			DrawMenuItemI("Quit", ICON_FA_POWER_OFF, COMMAND_QUIT);
-			ImGui::EndMenu();
-		}
+			//ImGui::EndMenu();
+			EndMainMenuList
+		
 
-		if (ImGui::BeginMenu("Scene"))
-		{
+		MainMenuList("Scene")
 			{
 				bool selected = !MainForm->GetWorldPropertiesFrom()->IsClosed();
 				if (ImGui::MenuItemI("World Properties", ICON_FA_EARTH_EUROPE, "", &selected))
@@ -189,10 +213,9 @@ void UIMainMenuForm::Draw()
 			{
 				Scene->ExportObj(true);
 			}
-			ImGui::EndMenu();
-		}
-		if (ImGui::BeginMenu("Compile"))
-		{
+		EndMainMenuList
+
+		MainMenuList("Compile")
 			if (ImGui::BeginMenuI("Make", ICON_FA_WRENCH))
 			{
 				DrawMenuItem("Make All", COMMAND_BUILD);
@@ -263,10 +286,9 @@ void UIMainMenuForm::Draw()
 			DrawMenuItemI("Import xrAI Error List", ICON_FA_FILE_IMPORT, COMMAND_IMPORT_AICOMPILER_ERROR);
 			DrawMenuItemI("Export Error List", ICON_FA_FILE_EXPORT, COMMAND_EXPORT_COMPILER_ERROR);
 			DrawMenuItemI("Clear Error List", ICON_FA_ERASER, COMMAND_CLEAR_DEBUG_DRAW);
-			ImGui::EndMenu();
-		}
-		if (ImGui::BeginMenu("Objects"))
-		{
+		EndMainMenuList
+
+		MainMenuList("Objects")
 			DrawMenuItemI("Library Editor", ICON_FA_BOOK, COMMAND_LIBRARY_EDITOR);
 			ImGui::Separator();
 
@@ -281,10 +303,9 @@ void UIMainMenuForm::Draw()
 				UI->Push(RefUI);
 			}
 			DrawMenuItemI("Reload", ICON_FA_ARROWS_ROTATE, COMMAND_RELOAD_OBJECTS);
-			ImGui::EndMenu();
-		}
-		if (ImGui::BeginMenu("Images"))
-		{
+		EndMainMenuList
+
+		MainMenuList("Images")
 			DrawMenuItemI("Image Editor", ICON_FA_IMAGE, COMMAND_IMAGE_EDITOR);
 			ImGui::Separator();
 
@@ -311,10 +332,9 @@ void UIMainMenuForm::Draw()
 					xr_delete(TH);
 				}
 			}
-			ImGui::EndMenu();
-		}
-		if (ImGui::BeginMenu("Sounds"))
-		{
+		EndMainMenuList
+
+		MainMenuList("Sounds")
 			DrawMenuItemI("Sound Editor", ICON_FA_MUSIC, COMMAND_SOUND_EDITOR, "");
 			ImGui::Separator();
 
@@ -324,11 +344,9 @@ void UIMainMenuForm::Draw()
 
 			DrawMenuItemI("Refresh Environment Library", ICON_FA_ARROWS_ROTATE, COMMAND_REFRESH_SOUND_ENVS);
 			DrawMenuItemI("Refresh Environment Geometry", ICON_FA_ARROWS_ROTATE, COMMAND_REFRESH_SOUND_ENV_GEOMETRY);
-			ImGui::EndMenu();
-		}
+		EndMainMenuList
 
-		if (ImGui::BeginMenu("Options"))
-		{
+		MainMenuList("Options")
 			if (ImGui::BeginMenu("Render"))
 			{
 				if (ImGui::BeginMenu("Quality"))
@@ -539,11 +557,9 @@ void UIMainMenuForm::Draw()
 					UI->RedrawScene();
 				}
 			}
-			ImGui::EndMenu();
-		}
+		EndMainMenuList
 
-		if (ImGui::BeginMenu("Windows"))
-		{
+		MainMenuList("Windows")
 			DrawMenuItemI("Light Anim Editor", ICON_FA_LIGHTBULB, COMMAND_LIGHTANIM_EDITOR);
 
 			if (ImGui::MenuItemI("Macro Editor", ICON_FA_SQUARE_SHARE_NODES, ""))
@@ -608,12 +624,9 @@ void UIMainMenuForm::Draw()
 						ThemeInstance.Show(false);
 				}
 			}
+		EndMainMenuList
 
-			ImGui::EndMenu();
-		}
-
-		if (ImGui::BeginMenu("Help", ""))
-		{
+		MainMenuList("Help")
 			if (ImGui::MenuItem("Wiki", ""))
 			{
 
@@ -625,11 +638,9 @@ void UIMainMenuForm::Draw()
 				UI->Push(&CUIHelp::Instance(), false);
 			}
 
-			ImGui::EndMenu();
-		}
+		EndMainMenuList
 
-		if (ImGui::BeginMenu("Plugins", ""))
-		{
+		MainMenuList("Plugins", "")
 			CPluginsManagers& PlugMngr = CPluginsManagers::Instance();
 
 			bool NeedReinit = false;
@@ -669,26 +680,30 @@ void UIMainMenuForm::Draw()
 					ImGui::SetTooltip(Plug->Desc.c_str());
 				}
 			}
-			ImGui::EndMenu();
-		}
+		EndMainMenuList
 
-		ImGui::Separator();
-
+		//ImGui::Separator(); <-- tyt this dont work
+		//ImGui::SameLine();
 		{
 			bool selected = UIObjectList::IsOpen();
-			if (ImGui::MenuItem("Object List", "", &selected))
+			
+			//if (ImGui::MenuItem("Object List", "", &selected))
+			ImGui::Checkbox("Object List", &selected);
+			if (&selected)
 			{
 				if (selected)
 					UIObjectList::Show();
 				else
 					UIObjectList::Close();
 			}
+			
 		}
 
 		IXEndMainMenuBar();
 	}
 
 	ImGui::PopStyleColor();
+	ImGui::PopStyleVar();
 }
 
 void UIMainMenuForm::DrawLevelName()
