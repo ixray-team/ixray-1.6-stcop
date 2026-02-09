@@ -120,7 +120,7 @@ void CParticlesObject::Stop(BOOL bDefferedStop)
 void CParticlesObject::Update(u32 _dt)
 {
 	if (m_NeedDestroy || (!m_bPlaying && !m_bAutoRemove)) return;
-
+	PROF_EVENT(__FUNCTION__);
 	if (m_bAutoStop && m_bPlaying && !IsPlaying())
 		Stop(FALSE);
 
