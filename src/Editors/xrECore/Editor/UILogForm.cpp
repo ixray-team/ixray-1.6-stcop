@@ -64,6 +64,7 @@ void UILogForm::Update()
 	bool NeedCopy = false;
 	if (!ImGui::Begin("Log", &bAllowLogCommands))
 	{
+		ImGui::PopStyleVar();
 		ImGui::End();
 		return;
 	}
