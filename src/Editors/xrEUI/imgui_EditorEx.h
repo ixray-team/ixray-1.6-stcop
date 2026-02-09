@@ -123,7 +123,7 @@ void IXEndMainMenuBar()
 
 		ImGui::EndChild();
 
-		ImGui::SetCursorPos(ImGui::GetCursorPos() + ImVec2{ 45.f, 10.f});
+		ImGui::SetCursorPos(ImGui::GetCursorPos() + ImVec2{ UI->GetMenuBarHeight()- style.WindowPadding.x, 10.f});
 
 		if (ImGui::BeginTabBar("#TopBarView"))
 		{
