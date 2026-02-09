@@ -1,34 +1,103 @@
 <window>
-	<compass_bar x="420" y="35" width="420" height="40" alignment="c" fov_angle="90">
-		<background x="302" y="65" width="400" height="40" stretch="1" alignment="c">
-			<texture>ui_inGame2_compass_bar_window</texture>
-		</background>
-		<compass_dial>
-			<strip x="96" y="45" width="400" height="25" stretch="1" tex_width="1024" tex_loop="1">
-				<texture>ui_inGame2_compass_dial</texture>
-			</strip>
-			<cardinal_points y="50" width="10" height="10" alignment="c" label_mode="cardinals">
-				<text font="font_rubik_12" color="ui_1" align="c" vert_align="c"/>
-				<n>N</n>
-				<e align="r">E</e>
-				<s>S</s>
-				<w align="l">W</w>
-				<ne>NE</ne>
-				<se>SE</se>
-				<sw>SW</sw>
-				<nw>NW</nw>
-			</cardinal_points>
-		</compass_dial>
-		<spots show="1" x="0" y="0" align="c" collect_interval="0.1">
-			<spot_template width="14" height="17"/>
-		</spots>
-		<active_target strip_y="0" markers_y="-10" dist_y="-18" smoothing_speed="15" active_target_padding="8" offset_x="0" offset_y="0" text_offset_x="38" text_offset_y="10">
-			<distance_text width="80" height="14" alignment="c">
-				<text font="font_rubik_12" color="ui_1" align="c" vert_align="c"/>
-			</distance_text>
-			<marker width="15" height="18" stretch="1">
-				<texture>ui_inGame2_hint_wnd_main_window</texture>
-			</marker>
-		</active_target>
-	</compass_bar>
+    <compass_bar
+        alignment="c"
+        fov_angle="45"
+        height="0.046"
+        width="0.5"
+        x="0.5"
+        y="0.065"
+    >
+        <background
+            alignment="c"
+            height="0.4"
+            width="0.5"
+            stretch="1"
+            x="0"
+            y="-0.625"
+        >
+            <texture><!-- ui_inGame2_compass_bar_window --></texture>
+        </background>
+
+        <strip
+            height="2"
+            stretch="1"
+            tex_loop="1"
+            tex_width="1024"
+            units="relative"
+            width="1"
+            x="0"
+            y="-0.043"
+        >
+            <texture height="1" width="1" height_px="5" offset_x="0" offset_y="-9"><!-- ui_inGame2_compass_dial --></texture>
+
+            <cardinal_points
+                alignment="c"
+                height="0.28"
+                units="relative"
+                width="0.065"
+                y="0"
+                stretch="1"
+            >
+                <text align="c" font="ui_font_arial_14" vert_align="c" stretch="1"/>
+                <main_cardinals>
+                    <text align="c" font="ui_font_arial_14" color="ui_7" vert_align="c" stretch="1" />
+                    <n>N</n>
+                    <e align="r">E</e>
+                    <s>S</s>
+                    <w align="l">W</w>
+                </main_cardinals>
+                <inter_cardinals>
+                    <text align="c" font="ui_font_arial_14" color="ui_7" vert_align="c" stretch="1" />
+                    <ne>ne</ne>
+                    <se>se</se>
+                    <sw>sw</sw>
+                    <nw>nw</nw>
+                </inter_cardinals>
+            </cardinal_points>
+        </strip>
+
+        <spots
+            align="c"
+            collect_interval="0.15"
+            max_distance="-1"
+            show="1"
+            x="0"
+            y="0"
+            stretch="1"
+        >
+            <spot_template height="8" width="8" stretch="1"/>
+            <spot_types>
+                <default offset_x="0" offset_y="-25" valign="center" stretch="1"/>
+            </spot_types>
+        </spots>
+
+        <active_target
+            height="22"
+            offset_y="-22"
+            padding="8"
+            smoothing_speed="10"
+            width="14"
+            stretch="1"
+        >
+            <marker
+                height="18.5"
+                texture="ui_inGame2_hint_wnd_main_window"
+                width="18.5"
+                x="0"
+                y="0"
+                stretch="1"
+            />
+            <distance_text
+                align="l"
+                color="ui_1"
+                height="14"
+                vert_align="c"
+                width="80"
+                x="0"
+                y="-20"
+            >
+                <text align="l" font="ui_font_arial_14" vert_align="c"/>
+            </distance_text>
+        </active_target>
+    </compass_bar>
 </window>
