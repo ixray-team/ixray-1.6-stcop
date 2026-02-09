@@ -258,6 +258,9 @@ BOOL CParticleEffect::Compile(CPEDef* def)
 		// time limit
 		if (m_Def->m_Flags.is(CPEDef::dfTimeLimit))
 			m_fElapsedLimit 	= m_Def->m_fTimeLimit;
+#ifndef _EDITOR
+		m_ps_cache.reserve(16);
+#endif
 	}
 	if (def)	shader			= def->m_CachedShader;
 	return TRUE;
@@ -379,7 +382,6 @@ void CParticleEffect::UpdateCache()
 	if (!m_Def || !m_Def->m_Flags.test(CPEDef::dfSprite))
 		return;
 
-#ifndef _EDITOR
 	Fvector c = vis.sphere.P;
 	m_XFORM.transform_tiny(c);
 
@@ -393,7 +395,6 @@ void CParticleEffect::UpdateCache()
 		if (!frustum.testSphere_dirty(sphere.P, sphere.R))
 			return;
 	}
-#endif
 
 	// Get a pointer to the particles in gp memory
 	PAPI::Particle* particles = nullptr; u32 p_cnt = 0u;
@@ -514,8 +515,6 @@ void CParticleEffect::UpdateCache()
 
 void CParticleEffect::Render(float )
 {
-	PROF_EVENT(__FUNCTION__);
-
 	if (!m_Def || !m_Def->m_Flags.test(CPEDef::dfSprite))
 		return;
 
