@@ -123,6 +123,20 @@ void IXEndMainMenuBar()
 
 		ImGui::EndChild();
 
+		ImGui::SetCursorPos(ImGui::GetCursorPos() + ImVec2{ 45.f, 10.f});
+
+		if (ImGui::BeginTabBar("#TopBarView"))
+		{
+			if (ImGui::BeginTabItem("Scene View", nullptr, ImGuiTabItemFlags_SetSelected))
+			{
+				ImGui::EndTabItem();
+			}
+			if (ImGui::BeginTabItem("Temp View"))
+			{
+				ImGui::EndTabItem();
+			}
+			ImGui::EndTabBar();
+		}
 
 		if (MaxBut)
 		{
