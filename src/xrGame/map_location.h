@@ -1,4 +1,3 @@
-
 #pragma once
 #include "object_interfaces.h"
 #include "alife_space.h"
@@ -11,15 +10,6 @@ enum class ECompassSpotKind : u8
     Npc
 };
 
-struct SCompassParams
-{
-    float fMaxDist = -1.0f;
-    float fOffsetY = 0.0f;
-	Fvector2 vSize = { -1.f, -1.f };
-    bool bOverrideSize = false;
-	bool bShow = false;
-};
-
 class CMapSpot;
 class CMiniMapSpot;
 class CMapSpotPointer;
@@ -27,7 +17,8 @@ class CComplexMapSpot;
 class CUICustomMap;
 class CInventoryOwner;
 
-class CMapLocation :public IPureDestroyableObject
+class CMapLocation :
+    public IPureDestroyableObject
 {
 public:
 enum ELocationFlags
@@ -81,12 +72,12 @@ protected:
 	SCachedValues			m_cached;
 	shared_str				m_compass_spot_texture;
 	u32						m_compass_spot_color;
+	Fvector2				m_compass_spot_size;
 	float					m_fCompassMaxDist;
-	SCompassParams			m_compass_params;
 private:
 							CMapLocation					(const CMapLocation&){R_ASSERT(0);} //disable copy ctor
 
-protected :
+protected:
 	void					LoadSpot						(LPCSTR type, bool bReload); 
 	void					UpdateSpot						(CUICustomMap* map, CMapSpot* sp );
 	void					UpdateSpotPointer				(CUICustomMap* map, CMapSpotPointer* sp);
@@ -131,8 +122,9 @@ public:
 	IC bool					ShowOnCompass					()	const { return !!m_flags.test(eShowOnCompass); }
 	const shared_str&		GetCompassSpotTexture			()	const { return m_compass_spot_texture; }
 	IC u32					GetCompassSpotColor				()	const { return m_compass_spot_color; }
+	Fvector2				GetCompassSpotSize				()	const { return m_compass_spot_size; }
 	IC float				GetCompassMaxDist				()	const { return m_fCompassMaxDist; }
-	const SCompassParams&	GetCompassParams				()	const { return m_compass_params; }
+	virtual shared_str		GetSpotName					()	const { return m_type; }
 	ECompassSpotKind		GetCompassSpotKind				()	const;
 
 	u16						ObjectID						() {return m_objectID;}
@@ -152,9 +144,9 @@ public:
 
 };
 
-class CRelationMapLocation :public CMapLocation
+class CRelationMapLocation : public CMapLocation
 {
-	typedef CMapLocation inherited;
+	using inherited = CMapLocation;
 	shared_str				m_curr_spot_name;
 	u16						m_pInvOwnerActorID;
 	ALife::ERelationType	m_last_relation;
@@ -170,6 +162,8 @@ public:
 
 	virtual void			UpdateMiniMap					(CUICustomMap* map);
 	virtual void			UpdateLevelMap					(CUICustomMap* map);
+
+	shared_str				GetSpotName					()	const override { return m_curr_spot_name; }
 
 #ifdef DEBUG
 	virtual void			Dump							();
