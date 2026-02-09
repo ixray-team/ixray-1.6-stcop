@@ -102,7 +102,7 @@ std::array<ImColor, 11> DefaultTheme =
 	ImColor(0.f, 0.f, 0.f, 0.1f), // ToolbarTint
 	ImColor(0.f, 0.f, 0.f, 0.8f), // BackgroundTint
 	ImColor(0.f, 0.f, 0.f, 0.5f), // TableTint
-	ImColor(0.f, 0.f, 0.f, 0.8f), // TabBarTint
+	ImColor(0.f, 0.f, 0.f, 0.5f), // TabBarTint
 	ImColor(0.f, 0.f, 0.f, 0.3f), // PanelTint
 	ImColor(0.f, 0.f, 0.f, 0.f),  // ButtonTint
 	ImColor(1.f, 1.f, 1.f, 0.6f), // ContentIconTint

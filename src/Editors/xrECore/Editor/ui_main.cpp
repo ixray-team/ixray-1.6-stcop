@@ -541,6 +541,8 @@ void TUI::Redraw()
 
 			RCache.set_RT(RSwapchainTarget);
 			GRHI->SetDepthStencilView(RDepth);
+			
+			CHK_DX(REDevice->Clear(0, 0, D3DCLEAR_TARGET, D3DCOLOR_RGBA(0, 0, 0, 0), 1, 0));
 
 			RDevice->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, 0);
 			RDevice->SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, 0);
