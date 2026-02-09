@@ -2,7 +2,6 @@
 #include "map_location.h"
 #include "map_spot.h"
 #include "map_manager.h"
-
 #include "Level.h"
 #include "../xrEngine/xr_object.h"
 #include "ai_space.h"
@@ -10,6 +9,7 @@
 #include "xrServer.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/ui_base.h"
 #include "ui/UIMap.h"
 #include "alife_simulator.h"
 #include "graph_engine.h"
@@ -150,13 +150,24 @@ void CMapLocation::InitUserSpot(const shared_str& level_name, const Fvector& pos
 	}
 }
 
-CUIXml*	g_uiSpotXml=nullptr;
+CUIXml* g_uiSpotXml = nullptr;
+
 void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 {
-	if ( !g_uiSpotXml )
+	if (!g_uiSpotXml)
 	{
-		g_uiSpotXml				= new CUIXml();
-		g_uiSpotXml->Load		(CONFIG_PATH, UI_PATH, "map_spots.xml");
+		g_uiSpotXml = new CUIXml();
+		shared_str spotXmlName;
+		if (pGameGlobals && pGameGlobals->section_exist("map_spots") &&
+			pGameGlobals->line_exist("map_spots", "map_spots_file"))
+		{
+			spotXmlName = pGameGlobals->r_string("map_spots", "map_spots_file");
+		}
+		else
+		{
+			spotXmlName = UI().get_xml_name("map_spots.xml");
+		}
+		g_uiSpotXml->Load(CONFIG_PATH, UI_PATH, spotXmlName.c_str());
 	}
 
 	XML_NODE* node = nullptr;
@@ -192,7 +203,6 @@ void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 		m_flags.set( ePosToActor, TRUE);
 	}
 	m_fCompassMaxDist = g_uiSpotXml->ReadAttribFlt(path_base, 0, "compass_dist", -1.0f);
-	m_compass_params.fMaxDist = m_fCompassMaxDist;
 	xr_strconcat(path,path_base,":level_map");
 	node = g_uiSpotXml->NavigateToNode(path,0);
 	if ( node )
@@ -240,20 +250,11 @@ void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 		}else{
 			VERIFY( !(bReload && m_minimap_spot) );
 		}
-		m_compass_params.bShow = (g_uiSpotXml->ReadAttribInt(path, 0, "compass", 0) != 0);
-		if ( m_compass_params.bShow )
-			m_flags.set(eShowOnCompass, TRUE);
-		m_compass_params.fOffsetY = g_uiSpotXml->ReadAttribFlt(path, 0, "compass_offset_y", 0.0f);
+		if (g_uiSpotXml->ReadAttribInt(path, 0, "compass", 0) != 0)
 		{
-			float w = g_uiSpotXml->ReadAttribFlt(path, 0, "compass_width", -1.0f);
-			float h = g_uiSpotXml->ReadAttribFlt(path, 0, "compass_height", -1.0f);
-			if (w > 0.0f && h > 0.0f)
-			{
-				m_compass_params.vSize.set(w, h);
-				m_compass_params.bOverrideSize = true;
-			}
+			m_flags.set(eShowOnCompass, TRUE);
 		}
-		if ( m_flags.test(eShowOnCompass) && xr_strlen(str) )
+		if (m_flags.test(eShowOnCompass) && xr_strlen(str))
 		{
 			string512 buf;
 			xr_strconcat(buf, str, ":texture");
@@ -271,9 +272,21 @@ void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 			}
 			else
 				m_compass_spot_color = 0;
+			if (g_uiSpotXml->NavigateToNode(str, 0))
+			{
+				m_compass_spot_size.x = g_uiSpotXml->ReadAttribFlt(str, 0, "width", 0.0f);
+				m_compass_spot_size.y = g_uiSpotXml->ReadAttribFlt(str, 0, "height", 0.0f);
+			}
+			else
+			{
+				m_compass_spot_size.set(0.0f, 0.0f);
+			}
 		}
 		else
+		{
 			m_compass_spot_color = 0;
+			m_compass_spot_size.set(0.0f, 0.0f);
+		}
 		m_spot_border_names[2] = g_uiSpotXml->ReadAttrib(path, 0, "spot_a", "mini_map_spot_border");
 		m_spot_border_names[3] = g_uiSpotXml->ReadAttrib(path, 0, "spot_na", "");
 
