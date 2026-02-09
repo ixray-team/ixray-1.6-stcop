@@ -196,6 +196,8 @@ void UIPropertiesItem::DrawProp()
 	case PROP_SHORTCUT:
 	{
 		ShortcutValue* V = dynamic_cast<ShortcutValue*>(PItem->GetFrontValue()); R_ASSERT(V);
+		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
+		ImGui::PushStyleColor(ImGuiCol_Button, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableTint).Value);
 		if (ImGui::Button(V->GetDrawText(0).c_str(), ImVec2(-30, 0)))
 		{
 			UIKeyPressForm::Show();
@@ -208,6 +210,8 @@ void UIPropertiesItem::DrawProp()
 			xr_shortcut val;
 			if (V->ApplyValue(val))PropertiesFrom->Modified();
 		}
+		ImGui::PopStyleColor();
+		ImGui::PopStyleVar();
 	}
 	break;
 	case PROP_WAVE:
@@ -383,7 +387,18 @@ void UIPropertiesItem::DrawProp()
 	{
 		MultiChooseValue* Prop = (MultiChooseValue*)PItem->GetFrontValue();
 
-		if (ImGui::BeginTable("##multi_choose_table", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_NoBordersInBody | ImGuiTableFlags_NoPadOuterX | ImGuiTableFlags_Borders))
+		ImVec2 originalCellPadding = ImGui::GetStyle().CellPadding;
+		ImVec2 originalFramePadding = ImGui::GetStyle().FramePadding;
+		ImVec2 originalItemSpacing = ImGui::GetStyle().ItemSpacing;
+
+		// Убираем вертикальные отступы
+		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(originalCellPadding.x, 0));
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(originalFramePadding.x, 0));
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(originalItemSpacing.x, 0));
+		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
+
+		ImGui::PushStyleColor(ImGuiCol_Button, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableTint).Value);
+		if (ImGui::BeginTable("##multi_choose_table", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_NoBordersInBody | ImGuiTableFlags_NoPadOuterX))
 		{
 			ImGui::TableSetupColumn("Key", ImGuiTableColumnFlags_WidthFixed);
 			ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
@@ -414,7 +429,7 @@ void UIPropertiesItem::DrawProp()
 				ImGui::TextUnformatted(text.c_str());
 
 				ImGui::TableSetColumnIndex(1);
-				if (ImGui::Button(TextValue.c_str(), ImVec2(-1, 0)))
+				if (ImGui::Button(TextValue.c_str(), ImVec2(-1, 25)))
 				{
 					ChooseValue* V = dynamic_cast<ChooseValue*>(ChooseItem->Owner()->GetFrontValue());
 					VERIFY(V);
@@ -443,7 +458,8 @@ void UIPropertiesItem::DrawProp()
 
 			ImGui::EndTable();
 		}
-
+		ImGui::PopStyleColor();
+		ImGui::PopStyleVar(4);
 		break;
 	}
 	case PROP_CHOOSE:
@@ -454,6 +470,8 @@ void UIPropertiesItem::DrawProp()
 			text = NONE_CAPTION;
 		}
 
+		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
+		ImGui::PushStyleColor(ImGuiCol_Button, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableTint).Value);
 		if (ImGui::Button(text.c_str(), ImVec2(-1, 0)))
 		{
 			PropItem* prop = PItem;
@@ -474,6 +492,8 @@ void UIPropertiesItem::DrawProp()
 			UIChooseForm::SelectItem(V->m_ChooseID, V->subitem, edit_val.c_str(), 0, V->m_FillParam, 0, !Items.empty() ? &Items : 0, V->m_ChooseFlags);
 			PropertiesFrom->m_EditChooseValue = prop;
 		}
+		ImGui::PopStyleColor();
+		ImGui::PopStyleVar();
 	}
 	break;
 	case PROP_TOKEN:
@@ -617,9 +637,13 @@ void UIPropertiesItem::DrawProp()
 					strrchr(Str, '\n')[0] = 0;
 				}
 				xr_strcat(Str, "...");
+				ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
+				ImGui::PushStyleColor(ImGuiCol_Button, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableTint).Value);
 				if (ImGui::Button(Str, ImVec2(-1, 0)))
 				{
 				}
+				ImGui::PopStyleColor();
+				ImGui::PopStyleVar();
 			}
 			if (ImGui::OpenPopupOnItemClick2("EditText", 0))
 			{
@@ -647,9 +671,13 @@ void UIPropertiesItem::DrawProp()
 					strrchr(Str, '\n')[0] = 0;
 				}
 				xr_strcat(Str, "...");
+				ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
+				ImGui::PushStyleColor(ImGuiCol_Button, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableTint).Value);
 				if (ImGui::Button(Platform::ANSI_TO_UTF8(Str).data(), ImVec2(-1, 0)))
 				{
 				}
+				ImGui::PopStyleColor();
+				ImGui::PopStyleVar();
 
 				if (PItem->Key() != nullptr)
 				{
@@ -722,9 +750,13 @@ void UIPropertiesItem::DrawProp()
 					strrchr(Str, '\n')[0] = 0;
 				}
 				xr_strcat(Str, "...");
+				ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
+				ImGui::PushStyleColor(ImGuiCol_Button, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableTint).Value);
 				if (ImGui::Button(Str, ImVec2(-1, 0)))
 				{
 				}
+				ImGui::PopStyleColor();
+				ImGui::PopStyleVar();
 			}
 			if (ImGui::OpenPopupOnItemClick2("EditText", 0))
 			{
