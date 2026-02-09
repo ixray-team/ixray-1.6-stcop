@@ -231,6 +231,10 @@ void CUIThemeManager::InitDefault(bool Forced)
 	colors[ImGuiCol_WindowBg] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToolbarTint);
 	colors[ImGuiCol_ChildBg] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelTint);
 	colors[ImGuiCol_Button] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ButtonTint);
+	colors[ImGuiCol_Tab] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TabBarTint);
+	colors[ImGuiCol_TabDimmed] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TabBarTint);
+	colors[ImGuiCol_TabDimmedSelected] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToolbarTint);
+	colors[ImGuiCol_TabActive] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToolbarTint);
 
 	style.WindowBorderSize = 0.0f;
 	style.ChildBorderSize = 0.0f;
