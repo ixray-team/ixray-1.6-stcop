@@ -99,12 +99,6 @@ void UIMainMenuForm::DrawMenuItemI(const char* label, const char* icon, int comm
 	}
 }
 
-#define MainMenuListDEL(Name) cp = ImGui::GetCursorPos();\
-    if (ImGui::Button(Name)) {\
-        ImGui::OpenPopup(Name"Popup"); \
-		ImGui::SetNextWindowPos({ImGui::GetWindowPos().x + cp.x, ImGui::GetWindowPos().y+ cp.y + UI->GetMenuBarButtonHeight()+ImGui::GetStyle().WindowPadding.y}); }	\
-    if (ImGui::BeginPopup(Name"Popup")) {
-
 #define MainMenuList(Name) \
     if (ImGui::Button(Name)) \
         ImGui::OpenPopup(Name"Popup"); \
