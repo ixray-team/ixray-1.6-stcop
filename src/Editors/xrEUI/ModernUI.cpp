@@ -10,11 +10,9 @@ XREUI_API bool XRay::ImGui::ToggleFlagButton(const char* Label, uint32_t* Flags,
 
 	::ImGui::PushID(Label);
 
-	const ImVec4 EnabledColor = ImVec4(0.20f, 0.60f, 1.00f, 1.00f);
-	const ImVec4 DisabledColor = ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
-	const ImVec4 BorderColor = Enabled
-		? ImVec4(0.20f, 0.60f, 1.00f, 1.00f)
-		: ImVec4(0.40f, 0.40f, 0.40f, 1.00f);
+	const ImVec4 EnabledColor = GetEditorColor(EEditorColors::ToggleColorActive);
+	const ImVec4 DisabledColor = GetEditorColor(EEditorColors::ButtonTint);
+	const ImVec4 BorderColor = EnabledColor;
 
 	constexpr float StripeWidth = 3.0f;
 	constexpr float Rounding = 5.0f;
@@ -53,16 +51,62 @@ XREUI_API bool XRay::ImGui::ToggleFlagButton(const char* Label, uint32_t* Flags,
 	return Changed;
 }
 
-std::array<ImColor, 8> DefaultTheme =
+XREUI_API bool XRay::ImGui::ToggleButton(const char* Label, bool* Flags, const ImVec2& Size)
+{
+	bool Enabled = *Flags;
+	bool Changed = false;
+
+	const ImVec4 EnabledColor = GetEditorColor(EEditorColors::ToggleColorActive);
+	const ImVec4 DisabledColor = GetEditorColor(EEditorColors::ButtonTint);
+	const ImVec4 BorderColor = EnabledColor;
+
+	constexpr float StripeWidth = 3.0f;
+	constexpr float Rounding = 5.0f;
+
+	::ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, Rounding);
+	::ImGui::PushStyleColor(ImGuiCol_Button, Enabled ? EnabledColor : DisabledColor);
+	::ImGui::PushStyleColor(ImGuiCol_ButtonHovered, Enabled ? EnabledColor : DisabledColor);
+	::ImGui::PushStyleColor(ImGuiCol_ButtonActive, Enabled ? EnabledColor : DisabledColor);
+
+	if (::ImGui::Button(Label, Size))
+	{
+		*Flags = !*Flags;
+		Changed = true;
+		Enabled = !Enabled;
+	}
+
+	::ImGui::PopStyleColor(3);
+	::ImGui::PopStyleVar();
+
+	ImDrawList* DrawList = ::ImGui::GetWindowDrawList();
+	ImVec2 Min = ::ImGui::GetItemRectMin();
+	ImVec2 Max = ::ImGui::GetItemRectMax();
+
+	Min.x += 1;
+	DrawList->AddRectFilled(
+		Min,
+		ImVec2(Min.x + StripeWidth, Max.y),
+		::ImGui::ColorConvertFloat4ToU32(BorderColor),
+		Rounding,
+		ImDrawFlags_RoundCornersLeft
+	);
+
+	return Changed;
+}
+
+std::array<ImColor, 11> DefaultTheme =
 {
 	ImColor(63, 71, 101, 255),
-	ImColor(0.f, 0.f, 0.f, 0.3f),
-	ImColor(0.f, 0.f, 0.f, 0.1f),
-	ImColor(0.f, 0.f, 0.f, 0.8f),
-	ImColor(0.f, 0.f, 0.f, 0.5f),
-	ImColor(0.f, 0.f, 0.f, 0.8f),
-	ImColor(0.f, 0.f, 0.f, 0.3f),
-	ImColor(0.f, 0.f, 0.f, 0.f)
+	ImColor(29, 129, 136, 255),
+	ImColor(0.f, 0.f, 0.f, 0.3f), // ToolbarButtonTint
+	ImColor(0.f, 0.f, 0.f, 0.1f), // ToolbarTint
+	ImColor(0.f, 0.f, 0.f, 0.8f), // BackgroundTint
+	ImColor(0.f, 0.f, 0.f, 0.5f), // TableTint
+	ImColor(0.f, 0.f, 0.f, 0.8f), // TabBarTint
+	ImColor(0.f, 0.f, 0.f, 0.3f), // PanelTint
+	ImColor(0.f, 0.f, 0.f, 0.f),  // ButtonTint
+	ImColor(1.f, 1.f, 1.f, 0.6f), // ContentIconTint
+	ImColor(0.f, 0.f, 0.f, 0.8f)  // PanelBackgroundTint
 };
 
 ImColor AlphaBlend(const ImColor& Base, const ImColor& Tint)
@@ -92,6 +136,11 @@ XREUI_API ImColor XRay::ImGui::GetEditorColor(EEditorColors Color)
 		case EEditorColors::Main:
 		{
 			EditorColors[Color] = Clr;
+			return EditorColors[Color];
+		}
+		case EEditorColors::ToggleColorActive:
+		{
+			EditorColors[Color] = DefaultTheme[(size_t)EEditorColors::ToggleColorActive];
 			return EditorColors[Color];
 		}
 		case EEditorColors::ToolbarButtonTint:
@@ -127,6 +176,16 @@ XREUI_API ImColor XRay::ImGui::GetEditorColor(EEditorColors Color)
 		case EEditorColors::ButtonTint:
 		{
 			EditorColors[Color] = AlphaBlend(Clr, DefaultTheme[(size_t)EEditorColors::ButtonTint]);
+			return EditorColors[Color];
+		}
+		case EEditorColors::ContentIconTint:
+		{
+			EditorColors[Color] = AlphaBlend(Clr, DefaultTheme[(size_t)EEditorColors::ContentIconTint]);
+			return EditorColors[Color];
+		}
+		case EEditorColors::PanelBackgroundTint:
+		{
+			EditorColors[Color] = AlphaBlend(Clr, DefaultTheme[(size_t)EEditorColors::PanelBackgroundTint]);
 			return EditorColors[Color];
 		}
 	}

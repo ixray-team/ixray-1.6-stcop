@@ -275,7 +275,13 @@ void CContentView::Draw()
 		//ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
 		if (ImGui::BeginChild("##contentbrowserrightside"))
 		{
-			DrawHeader();
+			ImGui::PushStyleColor(ImGuiCol_ChildBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToolbarTint).Value);
+			if (ImGui::BeginChild("##contentbrowsersearch", ImVec2(-1, 24)))
+			{
+				DrawHeader();
+			}
+			ImGui::EndChild();
+			ImGui::PopStyleColor();
 
 			ImGui::PushStyleColor(ImGuiCol_ChildBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelTint).Value);
 			if (ImGui::BeginChild("##contentbrowserscroll"))
@@ -1334,8 +1340,8 @@ bool CContentView::DrawItemN(const FileOptData& InitFileName, size_t& HorBtnIter
 	if (!IconPtr->Icon)
 		return false;
 
-	ImVec4* colors = ImGui::GetStyle().Colors;
-	ImVec4 IconColor = IconPtr->UseButtonColor ? colors[ImGuiCol_CheckMark] : ImVec4(1, 1, 1, 1);
+	const ImVec4* colors = style.Colors;
+	ImVec4 IconColor = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ContentIconTint);
 
 	xr_string ButtonId = "##";
 	ButtonId += FileName;
@@ -1344,12 +1350,13 @@ bool CContentView::DrawItemN(const FileOptData& InitFileName, size_t& HorBtnIter
 
 	if (ViewMode == EViewMode::List || Contains(buttonSize))
 	{
+		ImGui::PushStyleColor(ImGuiCol_Button, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelTint).Value);
 		if (!SelectedObjects.empty() && std::find(SelectedObjects.begin(), SelectedObjects.end(), FilePath) != SelectedObjects.end())
 		{
 			inSelectedList = true;
-			ImGui::PushStyleColor(ImGuiCol_Button, colors[ImGuiCol_ButtonActive]);
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, colors[ImGuiCol_ButtonActive]);
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, colors[ImGuiCol_ButtonActive]);
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.f, 1.f, 1.f, 0.5f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.f, 1.f, 1.f, 0.5f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1.f, 1.f, 1.f, 0.5f));
 		}
 
 		ImGui::BeginGroup();
@@ -1555,6 +1562,8 @@ bool CContentView::DrawItemN(const FileOptData& InitFileName, size_t& HorBtnIter
 
 		if (inSelectedList)
 			ImGui::PopStyleColor(3);
+
+		ImGui::PopStyleColor();
 	}
 	else
 	{
