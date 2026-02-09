@@ -311,7 +311,7 @@ void CEffect_Rain::UpdateItems()
 	{
 		return;
 	}
-	xrCriticalSectionGuard guard(&rainCS);
+
 	CEnvironment& env = g_pGamePersistent->Environment();
 	float factor = env.CurrentEnv->rain_density;
 	if (factor < EPS_L)			return;
@@ -361,6 +361,7 @@ void CEffect_Rain::UpdateItems()
 		{
 			if (0 == ::Random.randI(2))
 			{
+				xrCriticalSectionGuard guard(&rainCS);
 				if(CEffect_Rain::Particle* P = p_allocate())
 				{
 					const Fsphere& bv_sphere = m_pRender->GetDropBounds();
@@ -431,6 +432,7 @@ void CEffect_Rain::UpdateItems()
 		camDir.normalize();
 		lineTop.crossproduct(camDir, lineD);
 		u32 s = one.uv_set;
+		xrCriticalSectionGuard guard(&rainCS);
 		m_sprites.push_back(
 					{
 				Fvector().mad(pos_trail,lineTop,-rain_width),u_rain_color,Sprite_UV[s][0].x,Sprite_UV[s][0].y,
