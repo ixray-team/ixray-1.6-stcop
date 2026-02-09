@@ -60,6 +60,7 @@ void UILogForm::Update()
 		return;
 	}
 
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(3, 3));
 	bool NeedCopy = false;
 	if (!ImGui::Begin("Log", &bAllowLogCommands))
 	{
@@ -79,7 +80,9 @@ void UILogForm::Update()
 	}
 
 	ImGui::SameLine();
-	ImGui::Checkbox("Auto Scroll", &bAutoScroll);
+	XRay::ImGui::ToggleButton("Auto Scroll", &bAutoScroll, { 0, 0 });
+	ImGui::SameLine();
+	XRay::ImGui::ToggleButton("Clear In PIE", &bClearInPIE, { 0, 0 });
 
 	ImGui::SameLine();
 	ImGui::SetNextItemWidth(-1);
@@ -93,10 +96,12 @@ void UILogForm::Update()
 		ImGui::SetCursorPos(ImVec2(CursorPos.x - IconSize.x - 10.f, 1 + CursorPos.y + (IconSize.y / 4)));
 		ImGui::Image(GUIManager->SearchIcon, IconSize);
 	}
+	ImGui::PopStyleVar();
 
-	ImGui::Spacing();
-
-	if (ImGui::BeginChild("Log##Child", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()), true))
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+	ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 0.0f);
+	ImGui::PushStyleColor(ImGuiCol_ChildBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelBackgroundTint).Value);
+	if (ImGui::BeginChild("Log##Child", ImVec2(0, -ImGui::GetFrameHeightWithSpacing() - 4), true))
 	{
 		xrCriticalSectionGuard Cs(LogGuard);
 
@@ -121,7 +126,7 @@ void UILogForm::Update()
 
 		ImGuiListClipper Clipper;
 		Clipper.Begin(static_cast<int>(Visible.size()));
-
+		ImGui::Indent(10.f);
 		xr_string CopyLog;
 
 		while (Clipper.Step())
@@ -177,21 +182,23 @@ void UILogForm::Update()
 	}
 	ImGui::EndChild();
 
-	ImGuiInputTextFlags InputTextFlags = ImGuiInputTextFlags_EnterReturnsTrue;
-	if (ImGui::InputTextWithHint("##Exec", "Exec", Exec, IM_ARRAYSIZE(Exec), InputTextFlags))
+	ImGui::PopStyleColor();
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
+	if (ImGui::BeginChild("##LogExecChild"))
 	{
-		if (Exec[0])
+		ImGuiInputTextFlags InputTextFlags = ImGuiInputTextFlags_EnterReturnsTrue;
+		ImGui::SetNextItemWidth(-1);
+		if (ImGui::InputTextWithHint("##Exec", "Execute console command", Exec, IM_ARRAYSIZE(Exec), InputTextFlags))
 		{
-			Msg("~ Exec %s", Exec);
-			Console->Execute(Exec);
+			if (Exec[0])
+			{
+				Msg("~ Exec %s", Exec);
+				Console->Execute(Exec);
+			}
 		}
 	}
-
-	static const float CIPWidth = ImGui::CalcTextSize("Clear in PIE").x;
-	float CheckboxWidth = CIPWidth + ImGui::GetStyle().FramePadding.x * 2 + ImGui::GetStyle().ItemInnerSpacing.x * 2 + 10;
-
-	ImGui::SameLine(ImGui::GetContentRegionAvail().x - CheckboxWidth + ImGui::GetCursorPosX());
-	ImGui::Checkbox("Clear in PIE", &bClearInPIE);
+	ImGui::EndChild();
+	ImGui::PopStyleVar(3);
 
 	ImGui::End();
 }
