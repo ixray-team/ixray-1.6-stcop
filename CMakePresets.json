@@ -76,26 +76,6 @@
             }
         },
         {
-            "name": "Engine-x86-NonUnity",
-            "displayName": "Engine-x86-NonUnity",
-            "inherits": "Engine-Base-NonUnity",
-            "binaryDir": "build/x86/Engine-NonUnity",
-            "cacheVariables": {
-                "IXRAY_UTILS": "OFF",
-                "IXRAY_EDITORS": "OFF",
-                "IXRAY_MP": "OFF",
-                "IXRAY_COMPRESSOR_ONLY": "OFF",
-                "IXRAY_PLUGINS": "OFF",
-                "IXRAY_ASAN": "OFF",
-                "IXRAY_USE_R1": "OFF",
-                "IXRAY_USE_R2": "OFF",
-                "IXRAY_USE_GL": "ON",
-                "IXRAY_UNITYBUILD": "OFF",
-                "CMAKE_C_COMPILER": "clang-14",
-                "CMAKE_CXX_COMPILER": "clang++-14"
-            }
-        },
-        {
             "name": "Engine-x64-NonUnity",
             "displayName": "Engine-x64-NonUnity",
             "inherits": "Engine-Base-NonUnity",
