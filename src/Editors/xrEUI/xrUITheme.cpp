@@ -230,6 +230,8 @@ void CUIThemeManager::InitDefault(bool Forced)
 	colors[ImGuiCol_FrameBg] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableTint);
 	colors[ImGuiCol_WindowBg] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToolbarTint);
 	colors[ImGuiCol_ChildBg] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelTint);
+	colors[ImGuiCol_TableRowBg] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelTint);
+	colors[ImGuiCol_TableRowBgAlt] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ButtonTint);
 	colors[ImGuiCol_Button] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ButtonTint);
 	colors[ImGuiCol_Tab] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TabBarTint);
 	colors[ImGuiCol_TabDimmed] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TabBarTint);
