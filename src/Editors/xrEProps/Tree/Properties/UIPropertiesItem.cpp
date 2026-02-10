@@ -219,6 +219,86 @@ void UIPropertiesItem::DrawItem()
 			ImGui::TextDisabled(PItem->GetDrawText().c_str());
 			break;
 		}
+
+		case PROP_CHOOSE_TEXTURE:
+		{
+			MultiChooseValue* Prop = (MultiChooseValue*)PItem->GetFrontValue();
+
+			ImVec2 originalCellPadding = ImGui::GetStyle().CellPadding;
+			ImVec2 originalFramePadding = ImGui::GetStyle().FramePadding;
+			ImVec2 originalItemSpacing = ImGui::GetStyle().ItemSpacing;
+
+			// Убираем вертикальные отступы
+			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(originalCellPadding.x, 0));
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(originalFramePadding.x, 0));
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(originalItemSpacing.x, 0));
+			ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
+
+			ImGui::PushStyleColor(ImGuiCol_Button, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableTint).Value);
+			if (ImGui::BeginTable("##multi_choose_table", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_NoBordersInBody | ImGuiTableFlags_NoPadOuterX))
+			{
+				ImGui::TableSetupColumn("Key", ImGuiTableColumnFlags_WidthFixed);
+				ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+
+				for (ChooseValue* ChooseItem : Prop->Values)
+				{
+					xr_string text = ChooseItem->Owner()->Key();
+					xr_string TextValue = ChooseItem->Owner()->GetDrawText();
+
+					if (TextValue.empty())
+					{
+						text = NONE_CAPTION;
+						TextValue = NONE_CAPTION;
+					}
+					else
+					{
+						xr_path ExtractName = text;
+						text = ExtractName.xfilename();
+					}
+
+					ImGui::PushID(ChooseItem);
+					ImGui::TableNextRow();
+
+					ImGui::TableSetColumnIndex(0);
+					ImGui::AlignTextToFramePadding();
+
+					ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 2);
+					ImGui::TextUnformatted(text.c_str());
+
+					ImGui::TableSetColumnIndex(1);
+					if (ImGui::Button(TextValue.c_str(), ImVec2(-1, 25)))
+					{
+						ChooseValue* V = dynamic_cast<ChooseValue*>(ChooseItem->Owner()->GetFrontValue());
+						VERIFY(V);
+
+						shared_str edit_val = V->GetValue();
+						if (!edit_val.size())
+						{
+							edit_val = V->m_StartPath;
+						}
+
+						ChooseItem->Owner()->BeforeEdit<ChooseValue, shared_str>(edit_val);
+
+						ChooseItemVec Items;
+						if (!V->OnChooseFillEvent.empty())
+						{
+							V->m_Items = &Items;
+							V->OnChooseFillEvent(V);
+						}
+
+						UIChooseForm::SelectItem(V->m_ChooseID, V->subitem, edit_val.c_str(), 0, V->m_FillParam, 0, !Items.empty() ? &Items : 0, V->m_ChooseFlags);
+						PropertiesFrom->m_EditChooseValue = ChooseItem->Owner();
+					}
+
+					ImGui::PopID();
+				}
+
+				ImGui::EndTable();
+			}
+			ImGui::PopStyleColor();
+			ImGui::PopStyleVar(4);
+			break;
+		}
 		default:
 		{
 			ImGui::PushID(Name.c_str());
