@@ -122,8 +122,8 @@ void IXEndMainMenuBar()
 
 		ImGui::EndChild();
 
-		ImGui::SetCursorPos(ImGui::GetCursorPos() + ImVec2{ UI->GetMenuBarHeight()- style.WindowPadding.x, 10.f});
-
+		ImGui::SetCursorPos(ImGui::GetCursorPos() + ImVec2{ UI->GetMenuBarHeight()- style.WindowPadding.x, 12.f});
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4.0f, 6.0f));
 		if (ImGui::BeginTabBar("#TopBarView"))
 		{
 			if (ImGui::BeginTabItem("Scene View", nullptr, ImGuiTabItemFlags_SetSelected))
@@ -136,6 +136,7 @@ void IXEndMainMenuBar()
 			}
 			ImGui::EndTabBar();
 		}
+		ImGui::PopStyleVar();
 
 		if (MaxBut)
 		{
