@@ -60,7 +60,7 @@ void UILeftBarForm::Draw()
 {
 	ImGuiStyle& Style = ImGui::GetStyle();
 
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(4, 4));
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10.f, 10.f));
 	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.f, 0.f));
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 1.f));
 	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(1.f, 1.f));
