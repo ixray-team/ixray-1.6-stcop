@@ -116,9 +116,9 @@ std::array<ImColor, 11> DarkTheme =
 	ImColor(51, 51, 51, 255),
 	ImColor(121, 113, 189, 255),
 	ImColor(0.f, 0.f, 0.f, 0.0f), //  ToolbarButtonTint
-	ImColor(0.f, 0.f, 0.f, 0.3f), //  ToolbarTint
-	ImColor(0.f, 0.f, 0.f, 0.5f), //  BackgroundTint
-	ImColor(0.f, 0.f, 0.f, 0.4f), //  TableTint
+	ImColor(0.f, 0.f, 0.f, 0.1f), //  ToolbarTint
+	ImColor(0.f, 0.f, 0.f, 0.8f), //  BackgroundTint
+	ImColor(0.f, 0.f, 0.f, 0.6f), //  TableTint
 	ImColor(0.f, 0.f, 0.f, 0.4f), //  TabBarTint
 	ImColor(0.f, 0.f, 0.f, 0.3f), //  PanelTint
 	ImColor(0.f, 0.f, 0.f, 0.f),  //  ButtonTint
@@ -284,8 +284,8 @@ XREUI_API bool XRay::ImGui::TumblerButton(const char* Label, bool& State, ImVec2
 {
 	bool OldState = State;
 
-	const ImVec4 EnabledColor = ImVec4(0.20f, 0.60f, 1.00f, 1.00f);
-	const ImVec4 DisabledColor = ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
+	const ImVec4 EnabledColor = GetEditorColor(EEditorColors::ToggleColorActive);
+	const ImVec4 DisabledColor = GetEditorColor(EEditorColors::ButtonTint);
 
 	constexpr float StripeWidth = 3.0f;
 	constexpr float Rounding = 5.0f;
