@@ -11,7 +11,7 @@
 #include "../Layers/xrRender/dxRenderDeviceRender.h"
 #include "UI_ToolsCustom.h"
 #include "SoundProcessor.h"
-
+#include "device_win_custom.h"
 CEditorRenderDevice 	*	EDevice;
 bool g_bIsEditor;
 
@@ -561,14 +561,74 @@ void CEditorRenderDevice::FrameMove()
 	seqFrame.Process(rp_Frame);
 }
 
+#if _WINDOWS
+
+SDL_HitTestResult SDLCALL HitTest(
+	SDL_Window* window,
+	const SDL_Point* pt,
+	void* data)
+{
+	bool isZoomed = *(bool*)data;
+
+	if (isZoomed)
+		return SDL_HITTEST_NORMAL;
+
+	int w, h;
+	SDL_GetWindowSize(window, &w, &h);
+
+	const int border = 6;
+
+	// TOP LEFT
+	if (pt->x < border && pt->y < border)
+		return SDL_HITTEST_RESIZE_TOPLEFT;
+
+	// TOP RIGHT
+	if (pt->x > w - border && pt->y < border)
+		return SDL_HITTEST_RESIZE_TOPRIGHT;
+
+	// BOTTOM LEFT
+	if (pt->x < border && pt->y > h - border)
+		return SDL_HITTEST_RESIZE_BOTTOMLEFT;
+
+	// BOTTOM RIGHT
+	if (pt->x > w - border && pt->y > h - border)
+		return SDL_HITTEST_RESIZE_BOTTOMRIGHT;
+
+	// TOP
+	if (pt->y < border)
+		return SDL_HITTEST_RESIZE_TOP;
+
+	// BOTTOM
+	if (pt->y > h - border)
+		return SDL_HITTEST_RESIZE_BOTTOM;
+
+	// LEFT
+	if (pt->x < border)
+		return SDL_HITTEST_RESIZE_LEFT;
+
+	// RIGHT
+	if (pt->x > w - border)
+		return SDL_HITTEST_RESIZE_RIGHT;
+
+	// title bar area
+	//if (pt->y < 32)
+	//	return SDL_HITTEST_DRAGGABLE;
+
+	return SDL_HITTEST_NORMAL;
+}
+#endif
+
 void CEditorRenderDevice::InitWindowStyle()
 {
 	UI->InitWindowIcons();
 
 #if _WINDOWS
-	LONG_PTR style = GetWindowLongPtr(GetHWND(), GWL_STYLE);
-	style &= ~WS_CAPTION;
-	SetWindowLongPtr(GetHWND(), GWL_STYLE, style);
+	SDL_SetWindowBordered(g_AppInfo.Window, false);
+
+	win_cheese_layer(GetHWND());
+	SDL_SetWindowHitTest(g_AppInfo.Window, HitTest, &EDevice->isZoomed);
+
+
 #else
 	SDL_SetWindowResizable(g_AppInfo.Window, SDL_TRUE);
 	SDL_SetWindowHitTest(g_AppInfo.Window, HitTestCallback, 0);
