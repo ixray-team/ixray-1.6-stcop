@@ -51,6 +51,7 @@
 
 #include "../../xrUI/Widgets/UIScrollView.h"
 #include "../../xrUI/Widgets/UI3dStatic.h"
+#include "../../xrUI/Widgets/UIProgressShape.h"
 #include "map_hint.h"
 #include "../game_news.h"
 
@@ -60,6 +61,32 @@
 
 void test_draw	();
 void test_key	(int dik);
+
+static CUIStatic* CreateBoosterIndicator(CUIXml& xml, LPCSTR path, CUIWindow* parent)
+{
+	bool isRadial = xml.ReadAttribInt(path, 0, "sector_count", 0) > 0;
+	if (isRadial)
+	{
+		return UIHelper::CreateProgressShape(xml, path, parent);
+	}
+	return UIHelper::CreateStatic(xml, path, parent);
+}
+
+static void UpdateBoosterProgress(CUIStatic* indicator, const SBooster& booster)
+{
+	if (!indicator)
+	{
+		return;
+	}
+
+	CUIProgressShape* shape = indicator->ui_cast_progress_shape();
+	if (shape && booster.fBoostMaxTime > 0.0f)
+	{
+		float ratio = booster.fBoostTime / booster.fBoostMaxTime;
+		clamp(ratio, 0.0f, 1.0f);
+		shape->SetPos(ratio);
+	}
+}
 
 #include "../Include/xrRender/Kinematics.h"
 
@@ -289,42 +316,42 @@ void CUIMainIngameWnd::Init()
 
 	if (uiXml.NavigateToNode("indicator_booster_psy", 0))
 	{
-		m_ind_boost_psy = UIHelper::CreateStatic(uiXml, "indicator_booster_psy", boosterParent);
+		m_ind_boost_psy = CreateBoosterIndicator(uiXml, "indicator_booster_psy", boosterParent);
 		m_ind_boost_psy->Show(false);
 	}
 	if (uiXml.NavigateToNode("indicator_booster_radia", 0))
 	{
-		m_ind_boost_radia = UIHelper::CreateStatic(uiXml, "indicator_booster_radia", boosterParent);
+		m_ind_boost_radia = CreateBoosterIndicator(uiXml, "indicator_booster_radia", boosterParent);
 		m_ind_boost_radia->Show(false);
 	}
 	if (uiXml.NavigateToNode("indicator_booster_chem", 0))
 	{
-		m_ind_boost_chem = UIHelper::CreateStatic(uiXml, "indicator_booster_chem", boosterParent);
+		m_ind_boost_chem = CreateBoosterIndicator(uiXml, "indicator_booster_chem", boosterParent);
 		m_ind_boost_chem->Show(false);
 	}
 	if (uiXml.NavigateToNode("indicator_booster_wound", 0))
 	{
-		m_ind_boost_wound = UIHelper::CreateStatic(uiXml, "indicator_booster_wound", boosterParent);
+		m_ind_boost_wound = CreateBoosterIndicator(uiXml, "indicator_booster_wound", boosterParent);
 		m_ind_boost_wound->Show(false);
 	}
 	if (uiXml.NavigateToNode("indicator_booster_weight", 0))
 	{
-		m_ind_boost_weight = UIHelper::CreateStatic(uiXml, "indicator_booster_weight", boosterParent);
+		m_ind_boost_weight = CreateBoosterIndicator(uiXml, "indicator_booster_weight", boosterParent);
 		m_ind_boost_weight->Show(false);
 	}
 	if (uiXml.NavigateToNode("indicator_booster_health", 0))
 	{
-		m_ind_boost_health = UIHelper::CreateStatic(uiXml, "indicator_booster_health", boosterParent);
+		m_ind_boost_health = CreateBoosterIndicator(uiXml, "indicator_booster_health", boosterParent);
 		m_ind_boost_health->Show(false);
 	}
 	if (uiXml.NavigateToNode("indicator_booster_power", 0))
 	{
-		m_ind_boost_power = UIHelper::CreateStatic(uiXml, "indicator_booster_power", boosterParent);
+		m_ind_boost_power = CreateBoosterIndicator(uiXml, "indicator_booster_power", boosterParent);
 		m_ind_boost_power->Show(false);
 	}
 	if (uiXml.NavigateToNode("indicator_booster_rad", 0))
 	{
-		m_ind_boost_rad = UIHelper::CreateStatic(uiXml, "indicator_booster_rad", boosterParent);
+		m_ind_boost_rad = CreateBoosterIndicator(uiXml, "indicator_booster_rad", boosterParent);
 		m_ind_boost_rad->Show(false);
 	}
 	
@@ -1785,13 +1812,18 @@ void CUIMainIngameWnd::UpdateBoosterIndicators(const xr_map<EBoostParams, SBoost
 				if (m_ind_boost_health && booster.second.fBoostTime > 0.0f)
 				{
 					m_ind_boost_health->Show(true);
+					UpdateBoosterProgress(m_ind_boost_health, booster.second);
 					string16 buf = {};
 					xr_sprintf(buf, "%.0f", booster.second.fBoostTime);
 					m_ind_boost_health->TextItemControl()->SetText(buf);
 					if (booster.second.fBoostTime <= 3.0f)
+					{
 						m_ind_boost_health->SetColorAnimation(str_flag, flags);
+					}
 					else
+					{
 						m_ind_boost_health->ResetColorAnimation();
+					}
 				}
 				}
 				break;
@@ -1800,13 +1832,18 @@ void CUIMainIngameWnd::UpdateBoosterIndicators(const xr_map<EBoostParams, SBoost
 				if (m_ind_boost_power && booster.second.fBoostTime > 0.0f)
 				{
 					m_ind_boost_power->Show(true);
+					UpdateBoosterProgress(m_ind_boost_power, booster.second);
 					string16 buf = {};
 					xr_sprintf(buf, "%.0f", booster.second.fBoostTime);
 					m_ind_boost_power->TextItemControl()->SetText(buf);
 					if (booster.second.fBoostTime <= 3.0f)
+					{
 						m_ind_boost_power->SetColorAnimation(str_flag, flags);
+					}
 					else
+					{
 						m_ind_boost_power->ResetColorAnimation();
+					}
 				}
 				}
 				break;
@@ -1815,13 +1852,18 @@ void CUIMainIngameWnd::UpdateBoosterIndicators(const xr_map<EBoostParams, SBoost
 				if (m_ind_boost_rad && booster.second.fBoostTime > 0.0f)
 				{
 					m_ind_boost_rad->Show(true);
+					UpdateBoosterProgress(m_ind_boost_rad, booster.second);
 					string16 buf = {};
 					xr_sprintf(buf, "%.0f", booster.second.fBoostTime);
 					m_ind_boost_rad->TextItemControl()->SetText(buf);
 					if (booster.second.fBoostTime <= 3.0f)
+					{
 						m_ind_boost_rad->SetColorAnimation(str_flag, flags);
+					}
 					else
+					{
 						m_ind_boost_rad->ResetColorAnimation();
+					}
 				}
 				}
 				break;
@@ -1830,13 +1872,18 @@ void CUIMainIngameWnd::UpdateBoosterIndicators(const xr_map<EBoostParams, SBoost
 				if (m_ind_boost_wound && booster.second.fBoostTime > 0.0f)
 				{
 					m_ind_boost_wound->Show(true);
+					UpdateBoosterProgress(m_ind_boost_wound, booster.second);
 					string16 buf = {};
 					xr_sprintf(buf, "%.0f", booster.second.fBoostTime);
 					m_ind_boost_wound->TextItemControl()->SetText(buf);
 					if (booster.second.fBoostTime <= 3.0f)
+					{
 						m_ind_boost_wound->SetColorAnimation(str_flag, flags);
+					}
 					else
+					{
 						m_ind_boost_wound->ResetColorAnimation();
+					}
 				}
 				}
 				break;
@@ -1845,13 +1892,18 @@ void CUIMainIngameWnd::UpdateBoosterIndicators(const xr_map<EBoostParams, SBoost
 				if (m_ind_boost_weight && booster.second.fBoostTime > 0.0f)
 				{
 					m_ind_boost_weight->Show(true);
+					UpdateBoosterProgress(m_ind_boost_weight, booster.second);
 					string16 buf = {};
 					xr_sprintf(buf, "%.0f", booster.second.fBoostTime);
 					m_ind_boost_weight->TextItemControl()->SetText(buf);
 					if (booster.second.fBoostTime <= 3.0f)
+					{
 						m_ind_boost_weight->SetColorAnimation(str_flag, flags);
+					}
 					else
+					{
 						m_ind_boost_weight->ResetColorAnimation();
+					}
 				}
 				}
 				break;
@@ -1861,13 +1913,18 @@ void CUIMainIngameWnd::UpdateBoosterIndicators(const xr_map<EBoostParams, SBoost
 				if (m_ind_boost_radia && booster.second.fBoostTime > 0.0f)
 				{
 					m_ind_boost_radia->Show(true);
+					UpdateBoosterProgress(m_ind_boost_radia, booster.second);
 					string16 buf = {};
 					xr_sprintf(buf, "%.0f", booster.second.fBoostTime);
 					m_ind_boost_radia->TextItemControl()->SetText(buf);
 					if (booster.second.fBoostTime <= 3.0f)
+					{
 						m_ind_boost_radia->SetColorAnimation(str_flag, flags);
+					}
 					else
+					{
 						m_ind_boost_radia->ResetColorAnimation();
+					}
 				}
 				}
 				break;
@@ -1877,13 +1934,18 @@ void CUIMainIngameWnd::UpdateBoosterIndicators(const xr_map<EBoostParams, SBoost
 				if (m_ind_boost_psy && booster.second.fBoostTime > 0.0f)
 				{
 					m_ind_boost_psy->Show(true);
+					UpdateBoosterProgress(m_ind_boost_psy, booster.second);
 					string16 buf = {};
 					xr_sprintf(buf, "%.0f", booster.second.fBoostTime);
 					m_ind_boost_psy->TextItemControl()->SetText(buf);
 					if (booster.second.fBoostTime <= 3.0f)
+					{
 						m_ind_boost_psy->SetColorAnimation(str_flag, flags);
+					}
 					else
+					{
 						m_ind_boost_psy->ResetColorAnimation();
+					}
 				}
 				}
 				break;
@@ -1893,13 +1955,18 @@ void CUIMainIngameWnd::UpdateBoosterIndicators(const xr_map<EBoostParams, SBoost
 				if (m_ind_boost_chem && booster.second.fBoostTime > 0.0f)
 				{
 					m_ind_boost_chem->Show(true);
+					UpdateBoosterProgress(m_ind_boost_chem, booster.second);
 					string16 buf = {};
 					xr_sprintf(buf, "%.0f", booster.second.fBoostTime);
 					m_ind_boost_chem->TextItemControl()->SetText(buf);
 					if (booster.second.fBoostTime <= 3.0f)
+					{
 						m_ind_boost_chem->SetColorAnimation(str_flag, flags);
+					}
 					else
+					{
 						m_ind_boost_chem->ResetColorAnimation();
+					}
 				}
 				}
 				break;
