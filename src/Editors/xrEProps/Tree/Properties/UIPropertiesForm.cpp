@@ -97,7 +97,8 @@ void UIPropertiesForm::Draw()
 	if (!IsSearchDisabled)
 	{
 		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 8);
+		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
 		string32 FindStr = {};
 		xr_strcpy(FindStr, m_SearchText.c_str());
 
@@ -119,10 +120,10 @@ void UIPropertiesForm::Draw()
 		}
 
 		IsSearchActive = !m_SearchText.empty();
-
-		ImGui::Separator();
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 6);
+		ImGui::PopStyleVar();
 	}
-	static constexpr ImGuiTableFlags DefFlags = ImGuiTableFlags_Borders | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_RowBg | ImGuiTableFlags_NoBordersInBodyUntilResize;
+	static constexpr ImGuiTableFlags DefFlags = ImGuiTableFlags_NoBordersInBody | ImGuiTableFlags_RowBg | ImGuiTableFlags_NoBordersInBodyUntilResize;
 	ImGuiTableFlags Flags = DefFlags;
 	if (IsFitMode)
 	{
@@ -137,7 +138,7 @@ void UIPropertiesForm::Draw()
 	if (ImGui::BeginTable("props", 2, Flags))
 	{
 		ImGui::TableSetupColumn(" Name", ImGuiTableColumnFlags_WidthFixed, 0.0f);
-		ImGui::TableSetupColumn("Prop", ImGuiTableColumnFlags_WidthStretch);
+		ImGui::TableSetupColumn(" Prop", ImGuiTableColumnFlags_WidthStretch);
 		ImGui::TableHeadersRow();
 
 		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0, 1));
