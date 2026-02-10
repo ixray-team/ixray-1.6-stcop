@@ -8,6 +8,8 @@ public:
 	virtual ~CUITextureViewer();
 	virtual void Draw();
 
+	void DrawView();
+
 	IC void Open() { bOpen = true; }
 	IC void Close() { bOpen = false; }
 

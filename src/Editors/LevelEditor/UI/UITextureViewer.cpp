@@ -20,8 +20,18 @@ void CUITextureViewer::Draw()
 	}
 
 	ImGui::SetNextWindowSizeConstraints(ImVec2(650, 512), ImVec2(FLT_MAX, FLT_MAX));
-	ImGui::Begin("Texture Viewer", &bOpen);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+	if (ImGui::Begin(("Texture Viewer##" + CurrentFileName).c_str(), &bOpen))
+	{
+		DrawView();
+	}
+	ImGui::End();
+	ImGui::PopStyleVar();
 
+}
+
+void CUITextureViewer::DrawView()
+{
 	static const ImVec2 buttonSize(22, 22);
 
 	auto DrawButtonLambda = [&](const char* label, u8 bit, ImVec4 color)
@@ -43,71 +53,91 @@ void CUITextureViewer::Draw()
 		ImGui::SameLine(0.0f, 0.0f);
 	};
 
-	DrawButtonLambda("R", Channel_R, ImVec4(1, 0, 0, 1));
-	DrawButtonLambda("G", Channel_G, ImVec4(0, 1, 0, 1));
-	DrawButtonLambda("B", Channel_B, ImVec4(0, 0, 1, 1));
-	DrawButtonLambda("A", Channel_A, ImVec4(1, 1, 1, 1));
-
-	ImVec4 col = GrayMode ? ImVec4(0.7f, 0.7f, 0.7f, 1.0f) : ImVec4(0.3f, 0.3f, 0.3f, 1.0f);
-	ImGui::SameLine(0.0f, 10.0f);
-	ImGui::PushStyleColor(ImGuiCol_Button, col);
-	if (ImGui::Button("Gray", {35, 22}))
+	ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 0.0f);
+	if (ImGui::BeginChild("##TextureViewerTopPanel", {0, 22}))
 	{
-		GrayMode = !GrayMode;
-		UpdateTexture();
+		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
+		DrawButtonLambda("R", Channel_R, ImVec4(1, 0, 0, 1));
+		DrawButtonLambda("G", Channel_G, ImVec4(0, 1, 0, 1));
+		DrawButtonLambda("B", Channel_B, ImVec4(0, 0, 1, 1));
+		DrawButtonLambda("A", Channel_A, ImVec4(1, 1, 1, 1));
+
+		ImVec4 col = GrayMode ? ImVec4(0.7f, 0.7f, 0.7f, 1.0f) : ImVec4(0.3f, 0.3f, 0.3f, 1.0f);
+		ImGui::SameLine(0.0f, 10.0f);
+		ImGui::PushStyleColor(ImGuiCol_Button, col);
+		if (ImGui::Button("Gray", { 35, 22 }))
+		{
+			GrayMode = !GrayMode;
+			UpdateTexture();
+		}
+		ImGui::PopStyleColor();
+
+		ImGui::SameLine(0.0f, 10.0f);
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 1);
+
+		float sliderHeight = 6.0f;
+
+		// перед слайдером
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+
+		// просто задаём через SetNextItemWidth и потом меняем FrameHeight через Style
+		ImGuiStyle& style = ImGui::GetStyle();
+		float oldFrameHeight = style.FramePadding.y;
+		style.FramePadding.y = sliderHeight * 0.5f;
+
+		ImGui::SetNextItemWidth(100.0f);
+		ImGui::SliderFloat("##Zoom", &Zoom, 0.1f, 5.0f, "%.1f");
+
+		style.FramePadding.y = oldFrameHeight;
+		ImGui::PopStyleVar(2);
+
+		ImGui::SameLine();
+		ImGui::Text(ICON_FA_MAGNIFYING_GLASS);
+		ImGui::SameLine();
+		ImGui::Text(*SrcData.Format);
+
+		ImGui::SameLine();
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);
+		if (!CurrentFileName.empty())
+		{
+			ImVec2 WindowPos = ImGui::GetWindowPos();
+			ImVec2 WindowSize = ImGui::GetWindowSize();
+			ImVec2 TextSize = ImGui::CalcTextSize(CurrentFileName.c_str());
+
+			ImGui::SetCursorPosX(WindowSize.x - TextSize.x - 10);
+			ImGui::Text(CurrentFileName.c_str());
+		}
+		ImGui::PopStyleVar();
 	}
-	ImGui::PopStyleColor();
-
-	ImGui::SameLine(0.0f, 10.0f);
-	ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 1);
-
-	ImGui::SetNextItemWidth(100.0f);
-	ImGui::SliderFloat("##Zoom", &Zoom, 0.1f, 5.0f, "%.1f");
-	ImGui::SameLine();
-	ImGui::Text(ICON_FA_MAGNIFYING_GLASS);
-	ImGui::SameLine();
-	ImGui::Text(*SrcData.Format);
-
-	ImGui::SameLine();
-	ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);
-	if (!CurrentFileName.empty())
-	{
-		ImVec2 WindowPos = ImGui::GetWindowPos();
-		ImVec2 WindowSize = ImGui::GetWindowSize();
-		ImVec2 TextSize = ImGui::CalcTextSize(CurrentFileName.c_str());
-
-		ImGui::SetCursorPosX(WindowSize.x - TextSize.x - 10);
-		ImGui::Text(CurrentFileName.c_str());
-	}
-	ImGui::Separator();
+	ImGui::EndChild();
+	ImGui::PopStyleVar();
 
 	if (Texture && Texture->get_SRView()->GetRawSRV())
 	{
 		ImVec2 avail = ImGui::GetContentRegionAvail();
 		ImVec2 textureSize((float)SrcData.W, (float)SrcData.H);
-		
+
 		textureSize.x *= Zoom;
 		textureSize.y *= Zoom;
-		
+
 		if (textureSize.x > avail.x || textureSize.y > avail.y)
 		{
 			float scaleX = avail.x / textureSize.x;
 			float scaleY = avail.y / textureSize.y;
 			float scale = std::min(scaleX, scaleY);
-			
+
 			textureSize.x *= scale;
 			textureSize.y *= scale;
 		}
-		
+
 		ImVec2 pos = ImGui::GetCursorScreenPos();
 		pos.x += (avail.x - textureSize.x) * 0.5f;
 		pos.y += (avail.y - textureSize.y) * 0.5f;
-		
+
 		ImGui::SetCursorScreenPos(pos);
 		ImGui::Image((void*)Texture->get_SRView()->GetRawSRV(), textureSize);
 	}
-
-	ImGui::End();
 }
 
 void CUITextureViewer::LoadFromFile(const xr_path& File)
