@@ -702,6 +702,7 @@ void SMedicineInfluenceValues::Load(const shared_str& sect)
 void SBooster::Load(const shared_str& sect, EBoostParams type)
 {
 	fBoostTime = pSettings->r_float(sect.c_str(), "boost_time");
+	fBoostMaxTime = fBoostTime;
 	m_type = type;
 	switch(type)
 	{
