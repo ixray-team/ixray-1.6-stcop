@@ -15,10 +15,11 @@ public:
 	void				SetPos					(float pos);
 	void				SetTextVisible			(bool b);
 
-	virtual void		Draw					();
+	virtual void		Draw					() override;
 
-	virtual CUIWindow* ui_cast_window() { return this; }
-	virtual CUIStatic* ui_cast_static() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
+	virtual CUIStatic* ui_cast_static() override { return this; }
+	virtual CUIProgressShape* ui_cast_progress_shape() override { return this; }
 
 protected:
 	bool				m_bClockwise;

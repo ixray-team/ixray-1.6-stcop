@@ -24,6 +24,7 @@ class CUIScrollView;
 class CUIFixedScrollBar;
 class CUISelectable;
 class CUIListItemServer;
+class CUIProgressShape;
 
 class UI_API CUIWindow  : 
 	public CUISimpleWindow
@@ -46,6 +47,7 @@ public:
 	virtual CUIFixedScrollBar* ui_cast_fixed_scroll_bar() { return nullptr; }
 	virtual CUISelectable* ui_cast_selectable() { return nullptr; }
 	virtual CUIListItemServer* ui_cast_list_item_server() { return nullptr; }
+	virtual CUIProgressShape* ui_cast_progress_shape() { return nullptr; }
 
 	////////////////////////////////////
 	//работа с дочерними и родительскими окнами
