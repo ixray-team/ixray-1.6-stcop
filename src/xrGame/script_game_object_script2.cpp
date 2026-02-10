@@ -430,6 +430,9 @@ class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject>
 		.def("show_state_animator", &CScriptGameObject::ShowStateAnimator)
 		.def("hide_state_animator", &CScriptGameObject::HideStateAnimator)
 			
+		.def("GetFatigue",						&CScriptGameObject::GetFatigue)
+		.def("SetFatigue",						&CScriptGameObject::SetFatigue)
+			
 		.def("SetCharacterMaxWeight",			&CScriptGameObject::SetCharacterMaxWeight)
 
 		.property("mechanic",					&CScriptGameObject::getMechanic, &CScriptGameObject::setMechanic)

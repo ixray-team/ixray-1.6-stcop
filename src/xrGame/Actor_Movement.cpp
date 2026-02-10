@@ -305,6 +305,7 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 					else
 						scale *= m_fWalk_StrafeFactor;
 				}
+				scale *= (1.0f - m_fFatigue);
 
 				vControlAccel.mul			(scale);
 			}//scale>EPS

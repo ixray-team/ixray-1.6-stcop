@@ -114,3 +114,14 @@ void CSE_ALifeItemArtefact::script_register(lua_State *L)
 		)
 	];
 }
+
+void CSE_ALifeItemBattery::script_register(lua_State* L)
+{
+	module(L)[
+		luabind_class_item1(
+			CSE_ALifeItemBattery,
+			"cse_alife_item_battery",
+			CSE_ALifeItem
+		)
+	];
+}

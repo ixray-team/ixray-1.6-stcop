@@ -516,6 +516,11 @@ public:
 	float					m_fClimbFactor;
 	float					m_fSprintFactor;
 
+	float					m_fFatigue = 0;
+	float					m_fFatigueCritical = 0;
+	float					m_fFatigueAdd = 0;
+	float					m_fFatigueRelax = 0;
+
 	float					m_fWalk_StrafeFactor;
 	float					m_fRun_StrafeFactor;
 
@@ -541,6 +546,11 @@ public:
 	bool					IsActionKeyPressedInGame(const EGameActions& EGameAction) const;
 	void					SetActorKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags mask, bool state, bool ignore_suicide = false);
 	void					ProcessKeys(CHudItem* itm = nullptr);
+
+public:
+	float GetFatigue();
+	void SetFatigue(float value);
+	float GetFatigueCritical();
 
 public:
 	virtual void						g_WeaponBones		(int &L, int &R1, int &R2);

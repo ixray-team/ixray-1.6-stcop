@@ -235,6 +235,10 @@ void CUIMainIngameWnd::Init()
 		m_ind_radiation = UIHelper::CreateStatic(uiXml, "indicator_radiation", indicatorParent);
 	if (uiXml.NavigateToNode("indicator_starvation", 0))
 		m_ind_starvation = UIHelper::CreateStatic(uiXml, "indicator_starvation", indicatorParent);
+
+	if (uiXml.NavigateToNode("indicator_fatigue", 0))
+		m_ind_fatigue = UIHelper::CreateStatic(uiXml, "indicator_fatigue", indicatorParent);
+
 	const static bool enableThirst = EngineExternal()[EEngineExternalGame::EnableThirst];
 	if (enableThirst)
 		m_ind_thirst = UIHelper::CreateStatic(uiXml, "indicator_thirst", indicatorParent);
@@ -1435,6 +1439,21 @@ void CUIMainIngameWnd::UpdateMainIndicators()
 		);
 	}
 
+	// Fatigue icon
+	float fatigue = pActor->GetFatigue();
+	if (fatigue < 0.3f)
+		m_ind_fatigue->Show(false);
+	else
+	{
+		m_ind_fatigue->Show(true);
+		if (fatigue > 0.8f)
+			m_ind_fatigue->InitTexture("ui_inGame2_circle_fatigue_red");
+		else if (fatigue > 0.5f)
+			m_ind_fatigue->InitTexture("ui_inGame2_circle_fatigue_yellow");
+		else
+			m_ind_fatigue->InitTexture("ui_inGame2_circle_fatigue_green");
+	}
+	
 	// Sleepiness icon
 	const static bool EnableSleepiness = EngineExternal()[EEngineExternalGame::EnableSleepiness];
 	if (EnableSleepiness)

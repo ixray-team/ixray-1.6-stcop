@@ -1450,3 +1450,48 @@ BOOL CSE_ALifeItemHelmet::Net_Relevant		()
 {
 	return							(true);
 }
+
+////////////////////////////////////////////////////////////////////////////
+// CSE_ALifeItemBattery
+////////////////////////////////////////////////////////////////////////////
+CSE_ALifeItemBattery::CSE_ALifeItemBattery(LPCSTR caSection) : CSE_ALifeItem(caSection)
+{
+}
+
+CSE_ALifeItemBattery::~CSE_ALifeItemBattery()
+{
+}
+
+void CSE_ALifeItemBattery::STATE_Read(NET_Packet& tNetPacket, u16 size)
+{
+	inherited::STATE_Read(tNetPacket, size);
+}
+
+void CSE_ALifeItemBattery::STATE_Write(NET_Packet& tNetPacket)
+{
+	inherited::STATE_Write(tNetPacket);
+}
+
+void CSE_ALifeItemBattery::UPDATE_Read(NET_Packet& tNetPacket)
+{
+	inherited::UPDATE_Read(tNetPacket);
+	tNetPacket.r_float_q8(m_fCondition, 0.0f, 1.0f);
+}
+
+void CSE_ALifeItemBattery::UPDATE_Write(NET_Packet& tNetPacket)
+{
+	inherited::UPDATE_Write(tNetPacket);
+	tNetPacket.w_float_q8(m_fCondition, 0.0f, 1.0f);
+}
+
+#ifndef XRGAME_EXPORTS
+void CSE_ALifeItemBattery::FillProps(LPCSTR pref, PropItemVec& items)
+{
+	inherited::FillProps(pref, items);
+}
+#endif // #ifndef XRGAME_EXPORTS
+
+BOOL CSE_ALifeItemBattery::Net_Relevant()
+{
+	return							(true);
+}

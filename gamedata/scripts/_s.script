@@ -1,0 +1,121 @@
+--[[--------------------------------------------------
+_s.script
+Authors: Serge!
+Version: 1.0
+2015
+------------------------------------------------------
+Описание:
+Расширение таблицы string стандартной библиотеки Lua "Работа со строками" (string manipulation).
+Для любой "чистой" платформы "Сталкера" с версией Lua не ниже 5.1 и модификаций игр на их основе.
+Вызовы функций производятся способами принятыми при работе со строковыми данными: sting.Метод(str [,arg]) или str:Метод([arg]).
+Все передаваемые аргументы проверяются/приводятся к требуемому типу. 
+Легко расширяется при появлении дополнительных потребностей или, наоборот, урезается до требуемого уровня. Для этого надо просто добавить новые функции или закомментировать/удалить имеющиеся.
+Также допускается выборочное использование отдельных функций или только их содержательного наполнения.
+------------------------------------------------------
+Подключение:
+Поместить данный файл в папку gamedata\scripts\ с установленной игрой. В любой из скриптов, которые запускаются при загрузке/старте игры, или скрипт, где планируется использование этих методов, добавить строки:
+if not sstring then
+    dofile(getFS():update_path("$game_data$","scripts\\_s.script"))
+end
+
+--]]--------------------------------------------------
+
+---- глобальная переменная (флаг подключения)
+sstring = true
+---- локальные переменные
+local tblW = function (str) t = {}; for w in tostring(str):gmatch("%s-(%S+)%s-") do t[#t+1] = w end; return t end
+local ssep = [[!@#$%*.:;,-?/|\]]
+
+---- строка (последовательность символов между началом и концом строки)
+-- Проверить строку на наличие значащих символов (не пустая строка)
+--function string.sNotBlk(s) return (tostring(s):find('%S')) and true or false end
+string.sNotBlk = function(s) return (tostring(s):find('^(%S)')) and true or false end
+-- Отбросить в строке стоящие слева пробелы
+string.sTrimL = function(s) return (tostring(s):gsub("^%s+",'')) or s end
+-- Отбросить в строке стоящие справа пробелы
+string.sTrimR = function(s) return (tostring(s):gsub("%s*$",'')) or s end
+-- Отбросить в строке пробелы, стоящие слева и справа
+string.sTrim = function(s) return (tostring(s):gsub('^%s*(.-)%s*$', '%1')) or s end
+-- Выбрать в строке символы слева
+string.sLeft = function(s, n) return tostring(s):sub(1,tonumber(n)) or s end
+-- Выбрать в строке символы справа
+string.sRight = function(s, n) return tostring(s):sub(tonumber(-n)) or s end
+-- Выбрать подстроку
+string.sMid = function(s, ind ,n) s,ind,n = tostring(s),tonumber(ind),tonumber(n); return (n and s:sub(ind,ind+n-1) or s:sub(ind)) or s end
+-- Преобразовать строку в массив входящих в неё символов
+string.sArrayCh = function(s) t = {}; for w in tostring(s):gmatch('.') do table.insert(t,w) end; return t end
+-- Преобразовать строку в массив кодов входящих в неё символовв 
+string.sArrayCode = function(s) t = {}; for ch in tostring(s):gmatch('.') do table.insert(t,string.byte(ch)) end; return t end
+-- Получить строку кодов входящих в неё символов
+string.sStrCode = function(s) t = {}; for ch in tostring(s):gmatch('.') do table.insert(t,string.byte(ch)) end; return string.sNotBlk(s) and '\\'..table.concat(t,'\\') or t end
+
+---- символ (символ или последовательность любых символов, если противное специально не оговорено)
+-- Получить количество вхождений символа (символов) в строку
+string.sCountCh = function(s, ch) _,b = tostring(s):gsub(tostring(ch), ''); return b or 0 end
+-- Получить первое вхождение символа (подстроки) в строку
+string.sFindCh = function(s, ch) return (tostring(s):find(tostring(ch))) or 0 end
+-- Получить все вхождения символа (последовательности символов) в строку
+string.sFindChAll = function(s, ch, mode) local s,ch,n,t,p = tostring(s),tostring(ch),1,{};
+repeat p = (s:find(ch,n)); if p then table.insert(t,p) n = p+#ch else n = n+#s end until n>#s; 
+return #t>0 and (mode and table.concat(t,',') or t) or (mode and '' or t) 
+end
+-- Получить символ в заданной позиции строки
+string.sGetCh = function(s, ind) return tostring(s):match('.', tonumber(ind)) or '' end
+-- Вставить символ (символы) в заданную позицию строки
+string.sInsCh = function(s, ch, ind) s = tostring(s); ind = tonumber(ind) return s:sLeft(ind-1)..tostring(ch)..s:sRight(#s-ind+1) end
+-- Заменить первое вхождение символа (последовательность символов) в строке на заданный символ (последовательность символов)
+string.sRepCh = function(s, sm, srp) rep = srp and tostring(srp) or ''; return (tostring(s):gsub(tostring(sm), rep, 1)) or s end
+-- Заменить все вхождения символа (или последовательности символов) в строке на заданный символ (последовательность символов)
+string.sRepChAll = function(s, sm, srp) rep = srp and tostring(srp) or ''; return (tostring(s):gsub(tostring(sm), rep)) or s end
+-- Заменить символ (последовательность символов) в заданной позиции строки
+string.sRepChInd = function(s, sm, ind) t = s:sArrayCh(); t[tonumber(ind)] = tostring(sm); return table.concat(t) or s end
+
+-- слово (последовательность символов ограниченная пробелами, а также началом и концом строки)
+string.sCountW = function(s) return #tblW(s) or 0 end
+-- Получить массив слов 
+string.sArrayW = function(s) return tblW(s) end
+-- Получить первое слово 
+string.sFirstW = function(s) return tostring(s):match('^%s?(%S+)%s') or s end 
+-- Получить последнее слово 
+string.sLastW = function(s) return tostring(s):match("(%S+)%s-$") or s end
+-- Получить слово по индексу
+string.sMidW = function(s, ind) id = tonumber(ind); return s:sArrayW()[id <= sCountW(s) and id or 0] or '' end
+-- Удалить первое слово
+string.sclrFirstW = function(s) return tostring(s):gsub("%s-(%S+)%s+",'',1) or s end
+-- Удалить последнее слово
+string.sclrLastW = function(s) return tostring(s):gsub("%s+(%S+)%s-$",'',1) or s end
+-- Удалить слово по индексу
+string.sclrMidW = function(s,ind) t = tblW(s); table.remove(t,tonumber(ind) or 0); return table.concat(t,' ') or s end
+
+-- подстрока
+-- Проверить строку на наличие символов разделителей (из заданного набора)
+string.sIsSep = function(s) return (tostring(s):find('['..ssep..']')) and true or false end
+-- Проверяет есть ли разделитель из заданного набора в определённой позиции строки
+string.sIsSepInd = function(s,ind) return ((ssep:find(tostring(s):match('.',tonumber(ind))))) and true or false end
+-- Проверяет является ли символ в позиции строки из заданного набора
+string.sIsChSep = function(ch) return (ssep:find(tostring(ch))) and true or false end
+-- Получить количество подстрок в строке с разделителем
+string.sCountSep = function(s, ss) _,b = tostring(s):gsub(tostring(ss),''); return b end
+-- Получить массив подстрок из строки с разделителем
+string.sArraySub = function(s, sep) t = {}; sep = sep and tostring(sep) or ','; for w in tostring(s):gfind("%s*([^"..sep.."]+)%s*") do table.insert(t,w:sTrim()) end; return t end
+-- Получить подстроку по индексу из строки с разделителями
+string.sSubInd = function(s, sep, ind) return tostring(s):sArraySub(sep)[tonumber(ind)] or '' end
+-- Вставить подстроку в строку с разделителями в заданную позицию
+string.sInsSub = function(s, sub, ind) t = s:sArraySub(); table.insert(t, tostring(sub), tonumber(id)); return table.concat(t) or s end
+-- Преобразовать строку в массив подстрок заданной длины (без разделения слов)
+string.sText = function(s, n) 
+    local rez = {}
+    for sub in tostring(s):gmatch("([^%\n]+)") do rez[#rez+1] = sub end
+    if not n then return rez end
+    local st, t, len, start, last = {}
+    for _,sub in pairs(rez) do
+        t, len, start, last = sub:sArrayW(), 0, 1, 1
+        while last <= #t do
+            len = len + #t[last] 
+            if len >= n then st[#st+1] = table.concat(t,' ', start, last-1); len, start = 0, last
+            else last = last + 1; len = len + 1 end
+        end
+        st[#st+1] = table.concat(t,' ', start)
+    end
+    return st
+end

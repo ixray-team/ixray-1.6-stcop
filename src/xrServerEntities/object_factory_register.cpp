@@ -25,6 +25,7 @@
 #	include "HUDManager.h"
 #	include "Actor.h"
 #	include "Spectator.h"
+#	include "ActorBattery.h"
 
 #	include "ai/monsters/flesh/flesh.h"
 #	include "ai/monsters/chimera/chimera.h"
@@ -366,6 +367,7 @@ void CObjectFactory::register_classes	()
 	ADD(CMilitaryOutfit			,CSE_ALifeItemCustomOutfit		,CLSID_EQUIPMENT_MILITARY		,"equ_military");
 	ADD(CExoOutfit				,CSE_ALifeItemCustomOutfit		,CLSID_EQUIPMENT_EXO			,"equ_exo");
 	ADD(CHelmet					,CSE_ALifeItem					,CLSID_EQUIPMENT_HELMET			,"helmet");
+	ADD(CBattery,				CSE_ALifeItem,					CLSID_EQUIPMENT_BATTERY,		"equ_battery");
 
 	// Grenades
 	ADD(CF1						,CSE_ALifeItemGrenade			,CLSID_GRENADE_F1				,"wpn_grenade_f1");

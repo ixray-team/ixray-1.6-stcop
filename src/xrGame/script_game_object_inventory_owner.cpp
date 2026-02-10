@@ -2287,6 +2287,23 @@ float CScriptGameObject::GetTotalWeight() const
 	return 0.0f;
 }
 
+float CScriptGameObject::GetFatigue()
+{
+	if (CActor* pActor = smart_cast<CActor*>(&object()))
+		return pActor->GetFatigue();
+
+	Msg("! GetFatigue(): method applicable only for actor!");
+	return 0.f;
+}
+
+void CScriptGameObject::SetFatigue(float value)
+{
+	if (CActor* pActor = smart_cast<CActor*>(&object()))
+		pActor->SetFatigue(value);
+	else
+		Msg("! SetFatigue(): method applicable only for actor!");
+}
+
 // получить вес предмета
 float CScriptGameObject::Weight() const
 {

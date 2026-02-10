@@ -611,6 +611,10 @@ if(!g_dedicated_server)
 	m_fLookOutSpeedAmplDXPow = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "lookout_ampl_dx_pow", 1.0f);
 	m_burn_restore_material_speed = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "burn_restore_material_speed", 0.0f);
 	m_actor_burn_restore_speed = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_burn_restore_speed", 0.000001f);
+	
+	m_fFatigueCritical = READ_IF_EXISTS(pSettings, r_float, section, "fatigue_critical", 1.0f);
+	m_fFatigueAdd = READ_IF_EXISTS(pSettings, r_float, section, "fatigue_add", 0.001f);
+	m_fFatigueRelax = READ_IF_EXISTS(pSettings, r_float, section, "fatigue_relax", 0.002f);
 
 	if (pSettings->line_exist("gunslinger_base", "burn_restore_materials"))
 	{
@@ -2483,6 +2487,17 @@ void CActor::shedule_Update	(u32 DT)
 	UpdateArtefactsOnBeltAndOutfit				();
 	m_pPhysics_support->in_shedule_Update		(DT);
 	Check_for_AutoPickUp						();
+
+	if (AnyMove() || is_jump())
+	{
+		m_fFatigue += m_fFatigueAdd;
+	}
+	else if (m_fFatigue >= m_fFatigueAdd)
+	{
+		m_fFatigue -= m_fFatigueRelax;
+	}
+
+	clamp(m_fFatigue, 0.f, m_fFatigueCritical);
 }
 
 #include "debug_renderer.h"
@@ -3415,4 +3430,19 @@ float CActor::GetMaterialBurnRestoreSpeed(LPCSTR mtl)
 		}
 	}
 	return 0.f;
+}
+float CActor::GetFatigue()
+{
+	return m_fFatigue;
+}
+
+void CActor::SetFatigue(float value)
+{
+	clamp(value, 0.f, m_fFatigueCritical);
+	m_fFatigue = value;
+}
+
+float CActor::GetFatigueCritical()
+{
+	return m_fFatigueCritical;
 }

@@ -324,6 +324,7 @@ void CActorCondition::UpdateCondition()
 	}
 
 	AffectDamage_InjuriousMaterialAndMonstersInfluence();
+	clamp(m_fPower, 0.f, 1.0f - Actor()->GetFatigue());
 }
 
 void CActorCondition::UpdateBoosters()

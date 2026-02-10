@@ -305,6 +305,11 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemHelmet,CSE_ALifeItem)
 	virtual BOOL					Net_Relevant			();
 SERVER_ENTITY_DECLARE_END
 
+SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemBattery,CSE_ALifeItem)
+									CSE_ALifeItemBattery	(LPCSTR caSection);
+	virtual							~CSE_ALifeItemBattery	();
+	virtual BOOL					Net_Relevant			();
+SERVER_ENTITY_DECLARE_END
 #pragma warning(pop)
 
 #endif

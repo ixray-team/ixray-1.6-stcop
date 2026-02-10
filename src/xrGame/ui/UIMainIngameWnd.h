@@ -59,6 +59,7 @@ public:
 	CUIStatic* m_ind_bleeding;
 	CUIStatic* m_ind_radiation;
 	CUIStatic* m_ind_starvation;
+	CUIStatic*			m_ind_fatigue = nullptr;
 
 	CUIStatic* UIStaticDiskIO;
 	CUIStatic*			UIStaticQuickHelp;

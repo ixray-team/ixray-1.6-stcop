@@ -5,6 +5,8 @@
 #include "../xrEngine/CameraBase.h"
 #include "../xrEngine/xr_collide_form.h"
 #include "Inventory.h"
+#include "game_base_space.h"
+#include "ActorBattery.h"
 
 static constexpr float TORCH_INERTION_SPEED_MAX = 7.5f;
 static constexpr float TORCH_INERTION_SPEED_MIN = 0.5f;
@@ -87,20 +89,28 @@ void CTorch::Switch()
 	bool bActive = !m_switched_on;
 	Switch(bActive);
 
-	if (CActor* pA = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
+	CActor* pActor = smart_cast<CActor*>(H_Parent());
+	if (bActive && pActor)
+	{
+		CBattery* pBattery = smart_cast<CBattery*>(pActor->inventory().ItemFromSlot(BATTERY_SLOT));
+		if (!pBattery || !pBattery->IsEnought4Torch())
+			return;
+	}
+
+	if (pActor != nullptr)
 	{
 		if (!m_switched_on)
 		{
 			if (m_sounds.FindSoundItem("soundActivate", false))
 			{
-				m_sounds.PlaySound("soundActivate", pA->Position(), pA, !!pA->HUDview());
+				m_sounds.PlaySound("soundActivate", pActor->Position(), pActor, !!pActor->HUDview());
 			}
 		}
 		else if (m_switched_on)
 		{
 			if (m_sounds.FindSoundItem("soundDeactivate", false))
 			{
-				m_sounds.PlaySound("soundDeactivate", pA->Position(), pA, !!pA->HUDview());
+				m_sounds.PlaySound("soundDeactivate", pActor->Position(), pActor, !!pActor->HUDview());
 			}
 		}
 	}
@@ -222,13 +232,20 @@ void CTorch::UpdateCL()
 	CBoneInstance& BI = PKinematics(Visual())->LL_GetBoneInstance(guid_bone);
 	Fmatrix M;
 
+	CActor* actor = smart_cast<CActor*>(H_Parent());
+	if (actor)
+	{
+		CBattery* pBattery = smart_cast<CBattery*>(actor->inventory().ItemFromSlot(BATTERY_SLOT));
+		if (!pBattery || !pBattery->TryMakeTorchWork())
+		{
+			Switch(false);
+			return;
+		}
+	}
+
 	if (H_Parent())
 	{
-		CActor* actor = H_Parent()->cast_actor();
-		if (actor)
-		{
-			PKinematics(H_Parent()->Visual())->CalculateBones_Invalidate();
-		}
+		if (actor)		PKinematics(H_Parent()->Visual())->CalculateBones_Invalidate	();
 
 		if ((H_Parent()->XFORM().c.distance_to_sqr(Device.vCameraPosition) < _sqr(OPTIMIZATION_DISTANCE) || GameID() != eGameIDSingle))
 		{
@@ -351,8 +368,17 @@ void CTorch::UpdateCL()
 	u32 clr = lanim->CalculateBGR(Device.fTimeGlobal, frame);
 
 	Fcolor fclr;
-	fclr.set((float)color_get_B(clr), (float)color_get_G(clr), (float)color_get_R(clr), 1.0f);
-	fclr.mul_rgb(fBrightness / 255.0f);
+	fclr.set((float)color_get_B(clr),(float)color_get_G(clr),(float)color_get_R(clr),1.f);
+	if (!actor)
+	{
+		fclr.mul_rgb(fBrightness / 255.f);
+	}
+	else
+	{
+		CBattery* pBattery = smart_cast<CBattery*>(actor->inventory().ItemFromSlot(BATTERY_SLOT));
+		fclr.mul_rgb((fBrightness * pBattery->GetCondition()) / 255.f);
+	}
+
 	if (can_use_dynamic_lights())
 	{
 		light_render->set_color(fclr);

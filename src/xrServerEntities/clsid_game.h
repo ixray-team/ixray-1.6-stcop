@@ -209,6 +209,7 @@
 #define CLSID_EQUIPMENT_MILITARY	MK_CLSID('E','Q','U','_','M','L','T','R')
 #define CLSID_EQUIPMENT_EXO			MK_CLSID('E','Q','U','_','E','X','O',' ')
 #define CLSID_EQUIPMENT_HELMET		MK_CLSID('E','Q','_','H','L','M','E','T')
+#define CLSID_EQUIPMENT_BATTERY		MK_CLSID('E','Q','_','B','A','T','T','R')
 
 // Game types
 #define CLSID_SV_GAME_SINGLE				MK_CLSID('S','V','_','S','I','N','G','L')

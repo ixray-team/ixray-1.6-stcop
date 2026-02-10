@@ -1030,6 +1030,9 @@ public:
 			bool IsActorLadder() const;
 	doors::door*				m_door;
 
+	float GetFatigue();
+	void SetFatigue(float value);
+
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
