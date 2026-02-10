@@ -7,8 +7,8 @@
 #include "xrUITheme.h"
 #include "ImGuizmo.h"
 #include "imgui_internal.h"
-#include "font/fa.h"
-#include "IconsFontAwesome6.h"
+#include "font/fa7.h"
+#include "IconsFontAwesome7.h"
 
 XREUI_API XrUIManager* GUIManager = nullptr;
 
@@ -304,9 +304,9 @@ void XrUIManager::Draw()
 
 		m_MenuBarButtonHeight = 26.f;
 
-		int headerSize = 0;
+		int headerSize = ImGui::GetStyle().DisplayWindowPadding.y;
 		ImGuiViewport* viewport = ImGui::GetMainViewport();
-		ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x, viewport->Pos.y + m_MenuBarHeight - headerSize));
+		ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x, viewport->Pos.y + m_MenuBarHeight + headerSize));
 		ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, viewport->Size.y - headerSize - m_MenuBarHeight));
 		ImGui::SetNextWindowViewport(viewport->ID);
 		ImGuiWindowFlags window_flags = 0
@@ -316,7 +316,7 @@ void XrUIManager::Draw()
 			| ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus
 			| ImGuiWindowFlags_NoBackground;
 
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, UIToolBarSize / 2));
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.f));
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3, 2));
