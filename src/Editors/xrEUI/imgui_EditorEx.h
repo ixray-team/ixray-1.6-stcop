@@ -1,6 +1,5 @@
 
-//ImVec2 originalFramePadding{ 0,0 };
-//ImVec4 old_ImGuiCol_ChildBg{};
+#include "IconsFontAwesome7.h"
 
 bool IXBeginMainMenuBar()
 {
@@ -103,22 +102,22 @@ void IXEndMainMenuBar()
 		ImVec2 ControlButtonSize = ImVec2(button_w, button_h);
 		ImVec2 ImageSize = ImVec2(10.f, 10.f);
 
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2((ControlButtonSize.x - ImageSize.x) / 2, (ControlButtonSize.y - ImageSize.y) / 2));
-
 		ImGui::SetCursorPos({ ImGui::GetContentRegionMax().x - button_w * 3 + style.WindowPadding.x, 0 });
-		ImGui::BeginChild("##ControlButtons", { button_w * 3,button_h } );
 
-		if (ImGui::ImageButton("##IXEndMainMenuBar01", UI->m_WinMin->get_SRView()->GetRawSRV(), ImageSize))
+		ImGui::BeginChild("##ControlButtons", { button_w * 3,button_h });
+
+		if (ImGui::Button(ICON_FA_MINUS, ControlButtonSize))
 			SendMessageW(EDevice->GetHWND(), WM_SYSCOMMAND, SC_MINIMIZE, 0);
 
 		ImGui::SameLine();
 
-		if (ImGui::ImageButton("##IXEndMainMenuBar02", (EDevice->isZoomed ? UI->m_WinRes->get_SRView()->GetRawSRV() : UI->m_WinMax->get_SRView()->GetRawSRV()), ImageSize))
+		//if (ImGui::ImageButton("##IXEndMainMenuBar02", (EDevice->isZoomed ? UI->m_WinRes->get_SRView()->GetRawSRV() : UI->m_WinMax->get_SRView()->GetRawSRV()), ImageSize))
+		if (ImGui::Button((EDevice->isZoomed ? ICON_FA_WINDOW_RESTORE : ICON_FA_WINDOW_MAXIMIZE), ControlButtonSize))
 			MaxBut = true;
 
-
 		ImGui::SameLine();
-		if (ImGui::ImageButton("##IXEndMainMenuBar03", UI->m_WinClose->get_SRView()->GetRawSRV(), ImageSize))
+
+		if (ImGui::Button(ICON_FA_XMARK, ControlButtonSize))
 			SendMessageW(EDevice->GetHWND(), WM_CLOSE, 0, 0);
 
 		ImGui::EndChild();
@@ -157,7 +156,7 @@ void IXEndMainMenuBar()
 			SendMessageW(EDevice->GetHWND(), 0xA1, 0x2, 0);
 		}
 
-		ImGui::PopStyleVar(2);
+		ImGui::PopStyleVar();
 
 	}
 	ImGui::PopStyleVar(3);
