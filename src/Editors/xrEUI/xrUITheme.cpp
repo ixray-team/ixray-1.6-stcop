@@ -31,6 +31,19 @@ void CUIThemeManager::Draw()
 		ImVec4* colors = ImGui::GetStyle().Colors;
 		ImVec2 button_size = ImVec2(100.0f, 20.0f);
 
+		if (ImGui::Button("Theme 1"))
+		{
+			XRay::ImGui::SetupColorsList(0);
+			InitDefault();
+		}
+		ImGui::SameLine();
+
+		if (ImGui::Button("Theme 2"))
+		{
+			XRay::ImGui::SetupColorsList(1);
+			InitDefault();
+		}
+
 		ImGui::BeginChild("Theme", ImVec2(0, -ImGui::GetFrameHeightWithSpacing() - 10), true);
 		{
 			// Main Colors
