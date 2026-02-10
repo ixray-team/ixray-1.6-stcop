@@ -18,6 +18,7 @@ namespace XRay::ImGui
 		PanelBackgroundTint,
 	};
 
+	XREUI_API void SetupColorsList(int ID);
 	XREUI_API ImColor GetEditorColor(EEditorColors Color);
 	XREUI_API bool InputVector3(const char* Label, float V[3], float Step);
 	XREUI_API bool TumblerButton(const char* Label, bool& State, ImVec2 Size = {0, 0});
