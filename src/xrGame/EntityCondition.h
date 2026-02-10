@@ -54,6 +54,7 @@ static const LPCSTR ef_boosters_section_names[] =
 struct SBooster
 {
 	float fBoostTime = 0.0f;
+	float fBoostMaxTime = 0.0f;
 	float fBoostValue = 0.0f;
 	EBoostParams m_type = eBoostMaxCount;
 	SBooster() = default;
