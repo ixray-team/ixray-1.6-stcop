@@ -675,6 +675,7 @@ void CActorCondition::load(IReader &input_packet)
 		B.m_type = (EBoostParams)input_packet.r_u8();
 		B.fBoostValue = input_packet.r_float();
 		B.fBoostTime = input_packet.r_float();
+		B.fBoostMaxTime = B.fBoostTime;
 		m_booster_influences[B.m_type] = B;
 		BoostParameters(B);
 	}
