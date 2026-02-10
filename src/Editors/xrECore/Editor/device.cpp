@@ -146,7 +146,8 @@ void CEditorRenderDevice::Initialize()
 		SDL_MaximizeWindow(g_AppInfo.Window);
 	
 	SDL_ShowWindow(g_AppInfo.Window);
-
+	SDL_RaiseWindow(g_AppInfo.Window);
+	
 
 	if (psDeviceFlags.test(mtSound))
 	{
@@ -628,7 +629,7 @@ void CEditorRenderDevice::CreateWindow()
 	int DisplayX = GetSystemMetrics(SM_CXFULLSCREEN);
 	int DisplayY = GetSystemMetrics(SM_CYFULLSCREEN);
 
-	g_AppInfo.Window = SDL_CreateWindow("IX-Ray Editor", DisplayX, DisplayY, SDL_WINDOW_RESIZABLE);
+	g_AppInfo.Window = SDL_CreateWindow("IX-Ray Editor", DisplayX, DisplayY, SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE);
 }
 
 void CEditorRenderDevice::DestryWindow()
