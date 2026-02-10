@@ -60,10 +60,10 @@ void UILeftBarForm::Draw()
 {
 	ImGuiStyle& Style = ImGui::GetStyle();
 
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 4));
-	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
-	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0, 0));
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(4, 4));
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.f, 0.f));
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 1.f));
+	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(1.f, 1.f));
 
 	ImGui::PushStyleColor(ImGuiCol_WindowBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelTint).Value);
 	if (ImGui::Begin("Edit Mode", 0, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
@@ -88,12 +88,15 @@ void UILeftBarForm::Draw()
 			OBJCLASS_PUDDLES, // End right
 			OBJCLASS_force_dword
 		};
-
-		if (ImGui::BeginTable("EditModeTable", 2, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_NoPadOuterX | ImGuiTableFlags_NoPadInnerX))
+		
+		if (ImGui::BeginTable("EditModeTable", 2, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_SizingFixedFit /*| ImGuiTableFlags_NoPadOuterX | ImGuiTableFlags_NoPadInnerX*/))
 		{
 			const float column_width = ImGui::GetContentRegionAvail().x * 0.5f;
 			ImGui::TableSetupColumn("Left", ImGuiTableColumnFlags_WidthFixed, column_width);
 			ImGui::TableSetupColumn("Right", ImGuiTableColumnFlags_WidthFixed, column_width);
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(6.f, 6.f));
+
+			int button_h = 26;
 
 			for (u32 i = 0; Tools[i] != OBJCLASS_force_dword; i++)
 			{
@@ -109,33 +112,97 @@ void UILeftBarForm::Draw()
 				ImGui::BeginDisabled(!tool->IsEnabled());
 
 				const bool IsVisible = tool->IsVisible();
-				const xr_string Icon = IsVisible ? ICON_FA_EYE"##" : ICON_FA_EYE_SLASH"##";
-				ImVec4 IconColor = ImGui::GetStyle().Colors[ImGuiCol_CheckMark];
-				if (!IsVisible) IconColor.w = 0.5f;
-
-				ImGui::PushStyleColor(ImGuiCol_Text, IconColor);
-				if (ImGui::Button(Icon.c_str(), ImVec2(20, 18)))
-				{
-					tool->m_EditFlags.set(ESceneToolBase::flVisible, !IsVisible);
-					UI->RedrawScene();
-				}
-				ImGui::PopStyleColor();
-
-				ImGui::SameLine(0, 0);
+				const xr_string Icon = IsVisible ? ICON_FA_EYE : ICON_FA_EYE_SLASH;
+				ImColor IconColor = IsVisible
+					? XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToggleColorActive)
+					: XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ContentIconTint)
+					;
+				//if (!IsVisible) IconColor.w = 0.5f;
 
 				const bool IsActive = (LTools->GetTarget() == Tools[id]);
-				ImVec4 BtnColor = IsActive ? Style.Colors[ImGuiCol_ButtonActive] : Style.Colors[ImGuiCol_Button];
+				
 
-				ImGui::PushStyleColor(ImGuiCol_Button, BtnColor);
-				if (ImGui::Button(tool->ClassDesc(), ImVec2(-1, 18)))
+				auto cur = ImGui::GetCursorPos();
+				ImGui::BeginGroup();
 				{
-					ExecCommand(COMMAND_CHANGE_TARGET, IsActive ? OBJCLASS_DUMMY : Tools[id]);
+					auto cur = ImGui::GetCursorPos();
+					ImVec2 start = ImGui::GetCursorScreenPos();
+					ImVec2 end = ImGui::GetContentRegionAvail();
+
+					ImDrawList* dl = ImGui::GetWindowDrawList();
+
+					dl->AddRectFilled(
+						start,
+						{ start.x + column_width, start.y + button_h },
+						XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ButtonTint),
+						4.0f);
+
+					dl->AddRectFilled(
+						start,
+						//{ start.x + (IsActive ? end.x:4.f), start.y + button_h },
+						{ start.x + (IsActive ? column_width - 1.f : 4.f), start.y + button_h },
+						XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToggleColorActive),
+						4.0f, (IsActive ? 0 : ImDrawFlags_RoundCornersLeft));
+
+					ImVec2 IconPos = { cur.x + 8.f, cur.y + (button_h - 14.f) / 2 };
+					ImGui::SetCursorPos(IconPos);
+
+					//push colors checkbox
+
+					xr_string i_id = "##" + Icon;
+					if (ImGui::Button(i_id.c_str(), ImVec2(14, 14)))
+					{
+						tool->m_EditFlags.set(ESceneToolBase::flVisible, !IsVisible);
+						UI->RedrawScene();
+					}
+					ImGui::SetWindowFontScale(0.7f);
+					//
+
+					ImVec2 min = ImGui::GetItemRectMin();
+					ImVec2 max = ImGui::GetItemRectMax();
+
+					ImVec2 center =
+					{
+						(min.x + max.x) * 0.5f,
+						(min.y + max.y) * 0.5f 
+					};
+
+					ImVec2 textSize = ImGui::CalcTextSize(Icon.c_str());
+
+					ImVec2 textPos =
+					{
+						center.x - (textSize.x * 0.5f)+1.f,
+						center.y - (textSize.y * 0.5f)+1.f
+					};
+
+					ImGui::GetWindowDrawList()->AddText(
+						textPos,
+						IconColor,
+						Icon.c_str());
+
+
+					ImGui::SetWindowFontScale(1.0f);
+					ImGui::SameLine();
+					ImGui::SetCursorPos(cur);
+
+					if (ImGui::InvisibleButton("##", ImVec2(-1, button_h)))
+					{
+						ExecCommand(COMMAND_CHANGE_TARGET, IsActive ? OBJCLASS_DUMMY : Tools[id]);
+					}
+
+					ImGui::SameLine();
+					ImGui::SetCursorPos({IconPos.x + 4.f + 14.f, cur.y});
+
+					ImGui::Text(tool->ClassDesc());
 				}
-				ImGui::PopStyleColor();
+				ImGui::EndGroup();
 
 				ImGui::EndDisabled();
 				ImGui::PopID();
+				//break;
 			}
+			ImGui::PopStyleVar();
+
 
 			ImGui::EndTable();
 		}
@@ -143,7 +210,7 @@ void UILeftBarForm::Draw()
 	}
 	ImGui::End();
 	ImGui::PopStyleVar(4);
-
+	//ImGui::PopStyleColor();
 	if (LTools->GetToolForm())
 	{
 		if (bUseObjectsTool)
