@@ -20,18 +20,6 @@ void EnableDwmRendering(HWND hwnd)
 		sizeof(enable));
 }
 
-void EnableRoundedCorners(HWND hwnd)
-{
-	if (!hwnd) return;
-
-	DWM_WINDOW_CORNER_PREFERENCE pref = DWMWCP_ROUND;
-
-	DwmSetWindowAttribute(
-		hwnd,
-		DWMWA_WINDOW_CORNER_PREFERENCE,
-		&pref,
-		sizeof(pref));
-}
 void EnableShadow(HWND hwnd)
 {
 	if (!hwnd) return;
@@ -82,7 +70,6 @@ void win_cheese_layer(
 	ExtendFrame(hwnd);
 
 	EnableShadow(hwnd);
-	EnableRoundedCorners(hwnd);
 	
 	LONG style = GetWindowLong(hwnd, GWL_STYLE);
 	style |= WS_THICKFRAME;
