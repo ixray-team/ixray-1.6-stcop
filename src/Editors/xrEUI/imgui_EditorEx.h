@@ -1,5 +1,43 @@
-
+#include <lunasvg.h>
 #include "IconsFontAwesome7.h"
+#include "imgui_EditorEx_Icons.h"
+
+namespace chezze_svg_temporary
+{
+	CTexture* RasterizeSvg(const char* svgText, int width, int height)
+	{
+		auto doc = lunasvg::Document::loadFromData(svgText);
+		if (!doc)
+			throw std::runtime_error("SVG parse failed");
+
+		auto bitmap = doc->renderToBitmap(width, height);
+		
+		CTexture* TempTexture = new CTexture();
+
+		RHITextureDesc Desc;
+		Desc.Width = bitmap.width();
+		Desc.Height = bitmap.height();
+		Desc.Format = ERHI_FORMAT::R8G8B8A8_UNORM;
+		//Desc.MipLevels = 1;
+		//Desc.ArraySize = 1;
+		//Desc.Usage = ERHI_USAGE::USAGE_DEFAULT;
+		//Desc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
+
+		RHISubResource SubResource{};
+		SubResource.Width = bitmap.width();
+		SubResource.Height = bitmap.height();
+		SubResource.TextureFormat = Desc.Format;
+		SubResource.RowPitch = bitmap.width() * 4;
+		SubResource.Data = bitmap.data();
+
+		IRHISurface* Surf = GRHI->CreateTexture2D(Desc, SubResource);
+		
+		TempTexture->surface_set(Surf);
+		return TempTexture;
+	}
+
+}
+
 
 bool IXBeginMainMenuBar()
 {
@@ -102,23 +140,30 @@ void IXEndMainMenuBar()
 		ImVec2 ControlButtonSize = ImVec2(button_w, button_h);
 		ImVec2 ImageSize = ImVec2(10.f, 10.f);
 
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2((ControlButtonSize.x - ImageSize.x) / 2, (ControlButtonSize.y - ImageSize.y) / 2));
+
 		ImGui::SetCursorPos({ ImGui::GetContentRegionMax().x - button_w * 3 + style.WindowPadding.x, 0 });
 
 		ImGui::BeginChild("##ControlButtons", { button_w * 3,button_h });
 
-		if (ImGui::Button(ICON_FA_MINUS, ControlButtonSize))
+		if (ImGui::ImageButton("##IXEndMainMenuBar01", UI->m_WinMin->get_SRView()->GetRawSRV(), ImageSize))
 			SendMessageW(EDevice->GetHWND(), WM_SYSCOMMAND, SC_MINIMIZE, 0);
 
 		ImGui::SameLine();
 
-		//if (ImGui::ImageButton("##IXEndMainMenuBar02", (EDevice->isZoomed ? UI->m_WinRes->get_SRView()->GetRawSRV() : UI->m_WinMax->get_SRView()->GetRawSRV()), ImageSize))
-		if (ImGui::Button((EDevice->isZoomed ? ICON_FA_WINDOW_RESTORE : ICON_FA_WINDOW_MAXIMIZE), ControlButtonSize))
+		if (ImGui::ImageButton("##IXEndMainMenuBar02", (EDevice->isZoomed ? UI->m_WinRes->get_SRView()->GetRawSRV() : UI->m_WinMax->get_SRView()->GetRawSRV()), ImageSize))
+		//if (ImGui::Button((EDevice->isZoomed ? ICON_FA_WINDOW_RESTORE : ICON_FA_WINDOW_MAXIMIZE), ControlButtonSize))
 			MaxBut = true;
 
 		ImGui::SameLine();
 
-		if (ImGui::Button(ICON_FA_XMARK, ControlButtonSize))
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(81.f/255.f,36.f/255.f,40.f/255,1.f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(71.f/255.f,24.f/255.f,28.f/255,1.f));
+
+		if (ImGui::ImageButton("##IXEndMainMenuBar03", UI->m_WinClose->get_SRView()->GetRawSRV(), ImageSize))
 			SendMessageW(EDevice->GetHWND(), WM_CLOSE, 0, 0);
+
+		ImGui::PopStyleColor(2);
 
 		ImGui::EndChild();
 
@@ -157,7 +202,7 @@ void IXEndMainMenuBar()
 			SendMessageW(EDevice->GetHWND(), 0xA1, 0x2, 0);
 		}
 
-		ImGui::PopStyleVar();
+		ImGui::PopStyleVar(2);
 
 	}
 	ImGui::PopStyleVar(3);
