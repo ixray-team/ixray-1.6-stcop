@@ -235,10 +235,13 @@ struct InstanceData
 void	CDetailManager::hw_Render_dump		(ref_constant x_array, u32 var_id, u32 lod_id, light*L)
 {
 #if RENDER==R_R2
-	if (RImplementation.phase == CRender::PHASE_SMAP && var_id == 0)
+	bool phase_shmap = RImplementation.phase == CRender::PHASE_SMAP;
+	if (phase_shmap && var_id == 0)
 		return;
 #endif
-
+#ifndef _EDITOR
+	bool in_outdoor = RImplementation.SectorsCount() <= 1 || (RImplementation.pOutdoorSector && PortalTraverser.i_marker == RImplementation.pOutdoorSector->r_marker);
+#endif 
 	// Matrices and offsets
 	u32		vOffset	=	0;
 	u32		iOffset	=	0;
@@ -247,6 +250,8 @@ void	CDetailManager::hw_Render_dump		(ref_constant x_array, u32 var_id, u32 lod_
 #ifndef _EDITOR 
 	for (CDetail& Object : objects)
 	{
+		if (!in_outdoor)
+			continue;
 #else
 	for (CDetail* D : objects)
 	{
@@ -265,11 +270,11 @@ void	CDetailManager::hw_Render_dump		(ref_constant x_array, u32 var_id, u32 lod_
 			CDetail::SlotItem& Instance = *S.get();
 
 #ifndef _EDITOR
-			if (RImplementation.pOutdoorSector && PortalTraverser.i_marker != RImplementation.pOutdoorSector->r_marker)
+			if (!in_outdoor)
 				continue;
 
 #if RENDER==R_R2
-			if (RImplementation.phase == CRender::PHASE_SMAP && L)
+			if (phase_shmap && L)
 			{
 				if(L->position.distance_to_sqr(Instance.pos) >= _sqr(L->range))
 					continue;
