@@ -50,6 +50,7 @@ class CGrenade;
 class CSilencer;
 class CScope;
 class CGrenadeLauncher;
+class CArmorBase;
 struct SPHNetState;
 struct net_update_IItem;
 
@@ -339,6 +340,7 @@ public:
 	virtual CArtefact* cast_artefact() { return nullptr; }
 	virtual CCustomOutfit* cast_outfit() { return nullptr; }
 	virtual CHelmet* cast_helmet() { return nullptr; }
+	virtual CArmorBase* cast_armorbase() { return nullptr; }
 	virtual CCustomDetector* cast_custom_detector() { return nullptr; }
 	virtual CCustomDevice* cast_custom_device() { return nullptr; }
 	virtual CWeaponBinoculars* cast_weapon_binoculars() { return nullptr; }
