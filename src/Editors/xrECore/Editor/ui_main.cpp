@@ -18,6 +18,9 @@
 #include "../xrEngine/gamefont.h"
 #include "../XrEngine/XR_IOConsole.h"
 
+
+#include "imgui_EditorEx.h"
+
 #define TRelease(x) if (x) x->pSurface->Release()
 
 ECORE_API extern bool bIsLevelEditor;
@@ -843,10 +846,10 @@ void TUI::DestroyViewport(int ID)
 void TUI::InitWindowIcons()
 {
 	m_HeaderLogo	= EDevice->Resources->_CreateTexture("ed\\bar\\win_header_logo");
-	m_WinMin		= EDevice->Resources->_CreateTexture("ed\\bar\\win_header_min");
-	m_WinMax		= EDevice->Resources->_CreateTexture("ed\\bar\\win_header_max");
-	m_WinRes		= EDevice->Resources->_CreateTexture("ed\\bar\\win_header_restore");
-	m_WinClose		= EDevice->Resources->_CreateTexture("ed\\bar\\win_header_close");
+	m_WinMin		= chezze_svg_temporary::RasterizeSvg(IX_MIN_ICON, 10, 10);
+	m_WinMax		= chezze_svg_temporary::RasterizeSvg(IX_MAX_ICON, 10, 10);//EDevice->Resources->_CreateTexture("ed\\bar\\win_header_max");
+	m_WinRes		= chezze_svg_temporary::RasterizeSvg(IX_RESTORE_ICON, 10, 10);//EDevice->Resources->_CreateTexture("ed\\bar\\win_header_restore");
+	m_WinClose		= chezze_svg_temporary::RasterizeSvg(IX_CLOSE_ICON, 10, 10);//EDevice->Resources->_CreateTexture("ed\\bar\\win_header_close");
 }
 
 void TUI::OnDrawUI()
