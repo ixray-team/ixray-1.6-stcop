@@ -2455,6 +2455,7 @@ void LevelInspector::DrawObjectInfo(CGameObject* GO, const Fvector& pos, Fvector
 	IGameGraph& graph = ai().game_graph();
 	constexpr u32 color_green = color_rgba(0, 255, 100, 255);
 	constexpr u32 color_red = color_rgba(255, 100, 0, 255);
+	constexpr u32 color_redred = color_rgba(255, 0, 0, 255);
 	//Fvector C;
 	//GO->Center(C);
 	//C.y += GO->Radius();
@@ -2634,12 +2635,29 @@ void LevelInspector::DrawObjectInfo(CGameObject* GO, const Fvector& pos, Fvector
 		if (CSpaceRestrictor* restrictor = GO->cast_restrictor())
 		{
 			RestrictionSpace::ERestrictorTypes restr_type = RestrictionSpace::ERestrictorTypes(restrictor->m_space_restrictor_type);
-			if(restr_type!=RestrictionSpace::ERestrictorTypes::eRestrictorTypeNone)
+			if(restr_type>=RestrictionSpace::ERestrictorTypes::eDefaultRestrictorTypeNone && 
+				restr_type<=RestrictionSpace::ERestrictorTypes::eRestrictorTypeOut)
 			{
+				if(restr_type != RestrictionSpace::ERestrictorTypes::eRestrictorTypeNone)
+				{
+					if (LPCSTR enmname = magic_enum::enum_name(restr_type).data())
+					{
+						if (text3d)
+							append_text_next(enmname);
+						else
+							text3d = append_text3d(pos, enmname, color_red, CGameFont::alLeft);
+					}
+				}
+			}
+			else
+			{
+				dbg_font->SetColor(color_redred);
+				shared_str str; str.printf("Warning: restrictor type is out of range [%d]", restr_type);
 				if (text3d)
-					append_text_next(magic_enum::enum_name(restr_type).data());
+					append_text_next(str);
 				else
-					text3d = append_text3d(pos, magic_enum::enum_name(restr_type).data(), color_red, CGameFont::alLeft);
+					text3d = append_text3d(pos, str, color_red, CGameFont::alLeft);
+				dbg_font->SetColor(color_red);
 			}
 		}
 
