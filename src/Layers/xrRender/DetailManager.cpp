@@ -54,6 +54,8 @@ CDetailManager::CDetailManager()
 	m_time_rot_2 = 0;
 	m_time_pos	= 0;
 	m_global_time_old = 0;
+	render_key = 0;
+	calc_key = 1;
 
 	cache_Alloc();
 }
@@ -152,9 +154,6 @@ void CDetailManager::Load()
 	swing_desc[1].rot1	= pSettings->r_float("details","swing_fast_rot1");
 	swing_desc[1].rot2	= pSettings->r_float("details","swing_fast_rot2");
 	swing_desc[1].speed	= pSettings->r_float("details","swing_fast_speed");
-
-	render_key = 0;
-	calc_key = 1;
 }
 #endif
 void CDetailManager::Unload		()
@@ -291,23 +290,26 @@ void CDetailManager::Render()
 	if (0 == dtFS)						return;
 	if (!psDeviceFlags.is(rsDetails))	return;
 	if (!hw_BatchSize)	return;
+	bool in_outdoor = RImplementation.SectorsCount() <= 1 || (RImplementation.pOutdoorSector && PortalTraverser.i_marker == RImplementation.pOutdoorSector->r_marker);
+	if(in_outdoor)
 #endif
-
-	Device.details_task.wait();
-	std::swap(render_key, calc_key);
-	Device.details_task.run
-	(
-		[this]()
-		{
+	{
+		Device.details_task.wait();
+		std::swap(render_key, calc_key);
+		Device.details_task.run
+		(
+			[this]()
+			{
 #ifndef _EDITOR
-			if (0 == dtFS)						return;
-			if (!psDeviceFlags.is(rsDetails))	return;
+				if (0 == dtFS)						return;
+				if (!psDeviceFlags.is(rsDetails))	return;
 #endif
-			PROF_START_THREAD("Details async");
-			UpdateVisibleM();
-			PROF_STOP_THREAD();
-		}
-	);
+				PROF_START_THREAD("Details async");
+				UpdateVisibleM();
+				PROF_STOP_THREAD();
+			}
+		);
+	}
 
 #ifndef _EDITOR
 	float _factor = g_pGamePersistent->Environment().wind_strength_factor;
