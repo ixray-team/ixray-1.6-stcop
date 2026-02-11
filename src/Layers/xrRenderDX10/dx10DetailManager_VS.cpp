@@ -99,9 +99,11 @@ void CDetailManager::hw_Render(light*L)
 
 void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave, const Fvector4& wind, const Fvector4& wave_old, const Fvector4& wind_old, u32 var_id, u32 lod_id, light* L)
 {
-    if (RImplementation.phase == CRender::PHASE_SMAP && var_id == 0)
+	bool phase_shmap = RImplementation.phase == CRender::PHASE_SMAP;
+    if (phase_shmap && var_id == 0)
         return;
 
+	bool in_outdoor = RImplementation.SectorsCount()<=1 || (RImplementation.pOutdoorSector && PortalTraverser.i_marker == RImplementation.pOutdoorSector->r_marker);
 	//Render state, shaders & so on [only 1st pass]
 	RCache.set_Element(objects[0].shader->E[lod_id], 0);
 
@@ -117,6 +119,9 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
 
 	for (CDetail& Object : objects)
 	{
+		if (!in_outdoor)
+			continue;
+
 		auto it = DetailInstanceBuffers.lower_bound(Object.m_items[var_id][render_key].size());
 
 		//Use largest buffer possible [should keep HUGE buffer around in those cases]
@@ -143,10 +148,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
 		{
 			CDetail::SlotItem& Instance = *S.get();
 
-			if (RImplementation.pOutdoorSector && PortalTraverser.i_marker != RImplementation.pOutdoorSector->r_marker)
-				continue;
-
-			if (RImplementation.phase == CRender::PHASE_SMAP && L)
+			if (phase_shmap && L)
 			{
 				if(L->position.distance_to_sqr(Instance.pos) >= _sqr(L->range))
 					continue;
