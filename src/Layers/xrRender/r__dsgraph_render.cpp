@@ -21,21 +21,7 @@ extern float		r_ssaGLOD_start,	r_ssaGLOD_end;
 
 ICF float calcLOD	(float ssa/*fDistSq*/, float R)
 {
-	return			_sqrt(clampr((ssa - r_ssaGLOD_end)/(r_ssaGLOD_start-r_ssaGLOD_end),0.f,1.f));
-}
-
-// ALPHA
-void __fastcall sorted_L1		(mapSorted_Node *N)
-{
-	//PROF_EVENT("sorted_L1");
-	VERIFY (N);
-	dxRender_Visual *V				= N->val.pVisual;
-	VERIFY (V && V->shader._get());
-	RCache.set_Element(N->val.se);
-	RCache.set_xform_world(N->val.Matrix);
-	RImplementation.apply_object(N->val.pObject);
-	RImplementation.apply_lmaterial	();
-	V->Render(calcLOD(N->key, V->vis.sphere.R));
+	return _sqrt(clampr((ssa - r_ssaGLOD_end)/(r_ssaGLOD_start-r_ssaGLOD_end),0.f,1.f));
 }
 
 void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
@@ -163,26 +149,29 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 							for (mapMatrixTextures::TNode& Ntex : tex)
 							{
 								RCache.set_Textures					(Ntex.key);
-								RImplementation.apply_lmaterial		();
 
 								mapMatrixItems& items = Ntex.val;
 								auto& visuals = items.visuals;
-								for (_MatrixItem& Ni : visuals)
+								if(!visuals.empty())
 								{
-									if (Ni.pVisual->shader == nullptr)
+									for (_MatrixItem& Ni : visuals)
 									{
-										continue;
-									}
-									RCache.set_xform_world(Ni.Matrix);
-									RImplementation.apply_object(Ni.pObject);
-									RImplementation.apply_lmaterial();
+										if (Ni.pVisual->shader == nullptr)
+										{
+											continue;
+										}
+										RCache.set_xform_world(Ni.Matrix);
+										RImplementation.apply_object(Ni.pObject);
+										RImplementation.apply_lmaterial();
 
-									float LOD = calcLOD(Ni.ssa, Ni.pVisual->vis.sphere.R);
+										float LOD = calcLOD(Ni.ssa, Ni.pVisual->vis.sphere.R);
 #ifdef USE_DX11
-									RCache.LOD.set_LOD(LOD);
+										RCache.LOD.set_LOD(LOD);
 #endif
-									Ni.pVisual->Render(LOD);
-								}if(_clear)items.visuals.clear();
+										Ni.pVisual->Render(LOD);
+									}if (_clear)items.visuals.clear();
+									continue;
+								}
 
 								auto& particles = items.particles;
 								for (dxRender_Visual* pVisual : particles)
@@ -200,41 +189,70 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 	}
 }
 
+ICF void sorted_L1(mapSorted_Node& N)
+{
+	//PROF_EVENT("sorted_L1");
+	dxRender_Visual* V = N.val.pVisual;
+	VERIFY(V && V->shader._get());
+	RCache.set_Element(N.val.se);
+	if (V->dcast_ParticleCustom())
+	{
+		V->Render(0);
+		return;
+	}
+
+	RCache.set_xform_world(N.val.Matrix);
+	RImplementation.apply_object(N.val.pObject);
+	RImplementation.apply_lmaterial();
+	V->Render(calcLOD(N.key, V->vis.sphere.R));
+}
+
 //////////////////////////////////////////////////////////////////////////
 // HUD render
 void R_dsgraph_structure::r_dsgraph_render_ui()
 {
-	mapUI.traverseLR(sorted_L1);
-	mapUI.clear();
+	auto& map = mapUI;
+	for (auto& Node : map)
+		sorted_L1(Node);
+	map.clear();
 }
 
 void R_dsgraph_structure::r_dsgraph_render_sorted_ui()
 {
 #if	RENDER!=R_R1
-	mapUIEmissive.traverseLR(sorted_L1);
-	mapUIEmissive.clear();
+	{
+		auto& map = mapUIEmissive;
+		for (auto& Node : map)
+			sorted_L1(Node);
+		map.clear();
+	}
 #endif
-
-	mapUISorted.traverseLR(sorted_L1);
-	mapUISorted.clear();
+	{
+		auto& map = mapUISorted;
+		for (auto& Node : map)
+			sorted_L1(Node);
+		map.clear();
+	}
 }
 
-void R_dsgraph_structure::r_dsgraph_render_hud	()
+void R_dsgraph_structure::r_dsgraph_render_hud()
 {
 	PROF_EVENT("r_dsgraph_render_hud");
 	CHudInitializer initalizer(true);
 
 	// Rendering
-	rmNear						();
-	mapHUD.traverseLR			(sorted_L1);
-	mapHUD.clear				();
+	rmNear();
+	auto& map = mapHUD;
+	for (auto& Node : map)
+		sorted_L1(Node);
+	map.clear();
 
 #if	RENDER==R_R1
 	if (g_hud && g_hud->RenderActiveItemUIQuery())
-		r_dsgraph_render_hud_ui						();				// hud ui
+		r_dsgraph_render_hud_ui();// hud ui
 #endif
 
-	rmNormal					();
+	rmNormal();
 }
 
 void R_dsgraph_structure::r_dsgraph_render_hud_ui()
@@ -247,30 +265,30 @@ void R_dsgraph_structure::r_dsgraph_render_hud_ui()
 #if	RENDER==R_R2
 	// Targets, use accumulator for temporary storage
 	const ref_rt	rt_null;
-	RCache.set_RT(nullptr,	1);
-	RCache.set_RT(nullptr,	2);
+	RCache.set_RT(nullptr, 1);
+	RCache.set_RT(nullptr, 2);
 	RImplementation.Target->u_setrt(RImplementation.Target->rt_Color, rt_null, rt_null, RDepth);
 #endif
 
-	rmNear						();
-	g_hud->RenderActiveItemUI	();
-	rmNormal					();
+	rmNear();
+	g_hud->RenderActiveItemUI();
+	rmNormal();
 }
 
 //////////////////////////////////////////////////////////////////////////
 // strict-sorted render
-void	R_dsgraph_structure::r_dsgraph_render_sorted	(bool render_hud)
+void	R_dsgraph_structure::r_dsgraph_render_sorted(bool render_hud)
 {
 	PROF_EVENT("r_dsgraph_render_sorted");
 	// Rendering
 	// Sorted (back to front)
+	auto& map = mapSorted;
+	for (auto& Node : map)
+		sorted_L1(Node);
+	map.clear();
 
-	mapSorted.traverseRL	(sorted_L1);
-	mapSorted.clear			();
-
-	if (render_hud) {
+	if (render_hud)
 		r_dsgraph_render_sorted_hud();
-	}
 }
 
 void R_dsgraph_structure::r_dsgraph_render_sorted_hud()
@@ -280,35 +298,43 @@ void R_dsgraph_structure::r_dsgraph_render_sorted_hud()
 	CHudInitializer initalizer(true);
 
 	rmNear();
-	mapHUDSorted.traverseRL(sorted_L1);
-	mapHUDSorted.clear();
+	auto& map = mapHUDSorted;
+	for (auto& Node : map)
+		sorted_L1(Node);
+	map.clear();
 	rmNormal();
 }
 
 //////////////////////////////////////////////////////////////////////////
 // strict-sorted render
-void	R_dsgraph_structure::r_dsgraph_render_emissive	()
+void	R_dsgraph_structure::r_dsgraph_render_emissive()
 {
 	PROF_EVENT("r_dsgraph_render_emissive");
 #if	RENDER!=R_R1
 	// Rendering
 	// Sorted (back to front)
-
-	mapEmissive.traverseLR	(sorted_L1);
-	mapEmissive.clear		();
-
+	{
+		auto& map = mapEmissive;
+		for (auto& Node : map)
+			sorted_L1(Node);
+		map.clear();
+	}
 	//	HACK: Calculate this only once
 	CHudInitializer initalizer(true);
 
 	rmNear();
-	mapHUDEmissive.traverseLR(sorted_L1);
-	mapHUDEmissive.clear();
+	{
+		auto& map = mapHUDEmissive;
+		for (auto& Node : map)
+			sorted_L1(Node);
+		map.clear();
+	}
 	rmNormal();
 #endif
 }
 
 // strict-sorted render
-void R_dsgraph_structure::r_dsgraph_render_scope	()
+void R_dsgraph_structure::r_dsgraph_render_scope()
 {
 #if	RENDER==R_R4
 	GPU_EVENT(SCOPE_BUFFER_RENDER);
@@ -316,39 +342,49 @@ void R_dsgraph_structure::r_dsgraph_render_scope	()
 
 	RImplementation.Target->u_setrt(NULL, NULL, RDepth);
 	CHudInitializer initalizer(true);
-
-	mapHUDScopeMask.traverseLR(sorted_L1);
-	mapHUDScopeMask.clear();
+	auto& map = mapHUDScopeMask;
+	for (auto& Node : map)
+		sorted_L1(Node);
+	map.clear();
 #endif
 }
 
 //////////////////////////////////////////////////////////////////////////
 // strict-sorted render
-void	R_dsgraph_structure::r_dsgraph_render_wmarks	()
+void	R_dsgraph_structure::r_dsgraph_render_wmarks()
 {
 	PROF_EVENT("r_dsgraph_render_wmarks");
 #if	RENDER!=R_R1
 	// Sorted (back to front)
-	mapWmark.traverseLR	(sorted_L1);
-	mapWmark.clear		();
+	auto& map = mapWmark;
+	for (auto& Node : map)
+		sorted_L1(Node);
+	map.clear();
 #endif
 }
 
 //////////////////////////////////////////////////////////////////////////
 // strict-sorted render
-void	R_dsgraph_structure::r_dsgraph_render_distort	()
+void	R_dsgraph_structure::r_dsgraph_render_distort()
 {
 	PROF_EVENT("r_dsgraph_render_distort");
 	// Sorted (back to front)
-	mapDistort.traverseRL	(sorted_L1);
-	mapDistort.clear		();
+	{
+		auto& map = mapDistort;
+		for (auto& Node : map)
+			sorted_L1(Node);
+		map.clear();
+	}
 
 	//	HACK: Calculate this only once
 	CHudInitializer initalizer(true);
-
 	rmNear();
-	mapHUDDistort.traverseLR(sorted_L1);
-	mapHUDDistort.clear();
+	{
+		auto& map = mapHUDDistort;
+		for (auto& Node : map)
+			sorted_L1(Node);
+		map.clear();
+	}
 	rmNormal();
 }
 
