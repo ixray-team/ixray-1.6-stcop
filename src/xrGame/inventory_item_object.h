@@ -30,6 +30,7 @@ class CMissile;
 class CSilencer;
 class CScope;
 class CGrenadeLauncher;
+class CArmorBase;
 
 class CInventoryItemObject : public CInventoryItem, public CPhysicItem
 {
@@ -65,6 +66,7 @@ public:
 	virtual CGrenadeLauncher* cast_addon_grenade_launcher() { return nullptr; }
 	virtual CPhysicItem* cast_physics_item() { return this; }
 	virtual CWeaponShotgun* cast_weapon_shotgun() override { return nullptr; }
+	virtual CArmorBase* cast_armorbase() override { return nullptr; }
 
 public:
 	virtual void Load(LPCSTR section);

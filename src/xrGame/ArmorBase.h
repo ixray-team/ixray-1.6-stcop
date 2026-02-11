@@ -12,6 +12,9 @@ private:
 public:
 							CArmorBase				();
 	virtual					~CArmorBase				();
+
+	virtual CArmorBase* cast_armorbase() override final { return this; }
+
 	
 	//уменьшенная версия хита, для вызова, когда костюм надет на персонажа
 	virtual void			Hit						(float P, ALife::EHitType hit_type);
