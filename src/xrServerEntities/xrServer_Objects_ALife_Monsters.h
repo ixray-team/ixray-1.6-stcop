@@ -587,6 +587,8 @@ public:
 	virtual	CSE_ALifeDynamicObject&			get_object		()			{ return *this; }
 			ALife::_OBJECT_ID		commander_id			();	
 			MEMBERS const&			squad_members			() const;
+			int						get_squad_memberId(int index) const { return m_members.get_key_at(index); }
+			MEMBER*					get_squad_member(int index) const { return m_members.get_value_at(index); }
 			u32						npc_count				() const;
 			void					clear_location_types	();
 			void					add_location_type		(LPCSTR mask);	
