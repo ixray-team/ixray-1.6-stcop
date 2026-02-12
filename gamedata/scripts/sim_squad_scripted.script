@@ -251,7 +251,7 @@ function sim_squad_scripted:update()
 		self.need_to_reset_location_masks = false
 	end
 
-	local cur_lvl = alife():level_name(game_graph():vertex(self.m_game_vertex_id):level_id()) 
+	local cur_lvl = alife():level_name(gg_vertex_level_id(self.m_game_vertex_id))
 	
 	if not (self.last_gvid == self.m_game_vertex_id) then
 		SendScriptCallback("squad_on_after_game_vertex_change", self, self.last_gvid, self.m_game_vertex_id, not (cur_lvl == self.level_name))
@@ -287,7 +287,7 @@ local function can_help_actor(squad)
 	if empty(xr_combat_ignore.fighting_with_actor_npcs) then
 		return false
 	end
-	if game_graph():vertex(squad.m_game_vertex_id):level_id() ~= game_graph():vertex(alife():actor().m_game_vertex_id):level_id() then
+	if gg_vertex_level_id(squad.m_game_vertex_id) ~= gg_vertex_level_id(alife():actor().m_game_vertex_id) then
 		return false
 	end
 	if has_alife_info("sim_duty_help_harder") and squad:get_squad_community() == "duty" then

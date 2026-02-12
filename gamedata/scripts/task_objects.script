@@ -293,7 +293,7 @@ function CGeneralTask:check_level(target)
 	end
 	local s_obj = alife():object(target)
 	if(s_obj) then
-		local target_level = alife():level_name(game_graph():vertex(s_obj.m_game_vertex_id):level_id())
+		local target_level = alife():level_name(gg_vertex_level_id(s_obj.m_game_vertex_id))
 		local level_name = level.name()
 		if(level_name~=target_level) then
 			local guider_id = get_guider(target_level)
