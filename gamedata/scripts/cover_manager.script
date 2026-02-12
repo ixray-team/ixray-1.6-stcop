@@ -147,7 +147,7 @@ function has_smart_cover(se_obj, smrttrn)
 	end
 
 	local npc_obj = npc_storage.object
-	local level_id = game_graph():vertex(smrttrn.m_game_vertex_id):level_id()
+	local level_id = gg_vertex_level_id(smrttrn.m_game_vertex_id)
 
 	local smrt_cover = se_smart_cover.registered_smartcovers_by_lv_id[level_id][cover.cover_vertex_id]
 	if smrt_cover == nil then
@@ -176,7 +176,7 @@ function has_cover(se_obj, smrttrn)
 		end
 
 		local npc_obj = npc_storage.object
-		local level_id = game_graph():vertex(smrttrn.m_game_vertex_id):level_id()
+		local level_id = gg_vertex_level_id(smrttrn.m_game_vertex_id)
 		local smrt_cover = se_smart_cover.registered_smartcovers_by_lv_id[level_id][cover.cover_vertex_id]
 		if smrt_cover == nil then
 			return true
