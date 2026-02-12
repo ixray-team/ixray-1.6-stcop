@@ -44,12 +44,13 @@ function reach_target:make(under_simulation)
 		squad_target:on_reach_target(squad)
 	end
 	
-		--' Пересчитываем Team, Squad, Group  --Добавил Руслан, чтобы отряды, уходящие с базы обнуляли свой TSG и не агрили базу, если игрок решит их атаковать.
-	for k in squad:squad_members() do
-		--log("Squad "..self.squad_id.."     id "..tostring(k.id))
-		if k.object ~= nil then
+	--' Пересчитываем Team, Squad, Group  --Добавил Руслан, чтобы отряды, уходящие с базы обнуляли свой TSG и не агрили базу, если игрок решит их атаковать.
+	local npcCountLast = squad:npc_count() - 1
+	for i = 0, npcCountLast, 1 do
+		local obj = squad:getSquadMember(i)
+		if obj ~= nil then
 --			log(k.object:name() .." ".. k.object.id.." ".. tostring(alife():object(k.object.id) ~= nil))
-			self.board:setup_squad_and_group(k.object)
+			self.board:setup_squad_and_group(obj)
 		end
 	end
 end
