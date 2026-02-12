@@ -76,18 +76,16 @@ end
 
 -- Расстояние до работы
 local function arrived_to_smart(obj, smart)
-	local obj_gv, obj_pos
+	local obj_vertex_id, obj_pos
 
 	local storage = db.storage[obj.id]
 
 	if storage == nil then
-		obj_gv, obj_pos = game_graph():vertex(obj.m_game_vertex_id), obj.position
+		obj_vertex_id, obj_pos = obj.m_game_vertex_id, obj.position
 	else
 		local obj = db.storage[obj.id].object
-		obj_gv, obj_pos = game_graph():vertex(obj:game_vertex_id()), obj:position()
+		obj_vertex_id, obj_pos = obj:game_vertex_id(), obj:position()
 	end
-
-	local smart_gv = game_graph():vertex(smart.m_game_vertex_id)
 
 	if obj.group_id then
 		local squad = smart.board.squads[obj.group_id]
@@ -105,7 +103,7 @@ local function arrived_to_smart(obj, smart)
 		end
 	end
 
-	if obj_gv:level_id() == smart_gv:level_id() then
+	if gg_vertex_level_id(obj_vertex_id) == gg_vertex_level_id(smart.m_game_vertex_id) then
 		return obj_pos:distance_to_sqr(smart.position) <= 10000 --Ближе 100 метров
 	else
 		return false
@@ -136,7 +134,7 @@ function se_smart_terrain:on_before_register()
 	cse_alife_smart_zone.on_before_register(self)
 	self.board = sim_board.get_sim_board()
 	self.board:register_smart(self)
-	self.smart_level	= alife():level_name(game_graph():vertex(self.m_game_vertex_id):level_id())
+	self.smart_level = alife():level_name(gg_vertex_level_id(self.m_game_vertex_id))
 	--printf("SMARTLEVEL %s level %s", self:name(), tostring(self.smart_level))
 end
 
@@ -523,7 +521,7 @@ function se_smart_terrain:load_jobs()
 		end
 
 		v.game_vertex_id = v.alife_task:game_vertex_id()
-		v.level_id		 = game_graph():vertex(v.game_vertex_id):level_id()
+		v.level_id       = gg_vertex_level_id(v.game_vertex_id)
 		v.position       = v.alife_task:position()
 	end
 end
@@ -1161,7 +1159,7 @@ end
 function se_smart_terrain:am_i_reached(squad)
 	local squad_pos, squad_lv_id, squad_gv_id = squad:get_location()
 	local target_pos, target_lv_id, target_gv_id = self:get_location()
-	if game_graph():vertex(squad_gv_id):level_id() ~= game_graph():vertex(target_gv_id):level_id() then
+	if gg_vertex_level_id(squad_gv_id) ~= gg_vertex_level_id(target_gv_id) then
 		return false
 	end
 	if IsMonster(alife():object(squad:commander_id())) and squad:get_script_target() == nil then
@@ -1241,7 +1239,7 @@ function surge_stats()
 		}
 	for k,v in pairs(sim_obj_registry) do
 		if v:clsid() == clsid.smart_terrain and tonumber(v.props["surge"]) > 0 then
-			local level_name = alife():level_name(game_graph():vertex(v.m_game_vertex_id):level_id())
+			local level_name = alife():level_name(gg_vertex_level_id(v.m_game_vertex_id))
 			if sim_smarts[level_name] ~= nil then
 				table.insert(sim_smarts[level_name], v)
 			end
@@ -1251,7 +1249,7 @@ function surge_stats()
 			if squad_params ~= nil then
 				local smart_params = squad_params.smart.surge
 				if smart_params ~= nil then
-					local level_name = alife():level_name(game_graph():vertex(v.m_game_vertex_id):level_id())
+					local level_name = alife():level_name(gg_vertex_level_id(v.m_game_vertex_id))
 					if sim_squads[level_name] ~= nil then
 						table.insert(sim_squads[level_name], v)
 					end

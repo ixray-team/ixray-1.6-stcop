@@ -81,7 +81,7 @@ local function evaluate_prior_by_dist(target, squad)
 end
 
 function is_on_the_same_level(obj1, obj2)
-	return game_graph():vertex(obj1.m_game_vertex_id):level_id() == game_graph():vertex(obj2.m_game_vertex_id):level_id()
+	return gg_vertex_level_id(obj1.m_game_vertex_id) == gg_vertex_level_id(obj2.m_game_vertex_id)
 end
 
 function evaluate_prior(target, squad)

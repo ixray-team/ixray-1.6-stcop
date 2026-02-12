@@ -84,7 +84,7 @@ function se_smart_cover:on_register()
 	SendScriptCallback("server_entity_on_register", self, "se_smart_cover")
 	
 	story_objects.check_spawn_ini_for_story_id(self)
-	local level_id = game_graph():vertex(self.m_game_vertex_id):level_id()
+	local level_id = gg_vertex_level_id(self.m_game_vertex_id)
 	if registered_smartcovers_by_lv_id[level_id] == nil then
 		registered_smartcovers_by_lv_id[level_id] = {}
 	end
@@ -95,7 +95,7 @@ function se_smart_cover:on_unregister()
 	SendScriptCallback("server_entity_on_unregister", self, "se_smart_cover")
 	unregister_story_object_by_id(self.id)
 	registered_smartcovers[self:name()] = nil
-	local level_id = game_graph():vertex(self.m_game_vertex_id):level_id()
+	local level_id = gg_vertex_level_id(self.m_game_vertex_id)
 	registered_smartcovers_by_lv_id[level_id][self.m_level_vertex_id] = nil
 --	printf("smart_cover [%s] is unregistered", self:name())
 	cse_smart_cover.on_unregister(self)

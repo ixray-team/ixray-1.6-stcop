@@ -284,8 +284,8 @@ function motivator_binder:hit_callback(obj, amount, local_direction, who, bone_i
 			for k,v in pairs(sim_board.get_sim_board().smarts) do
 				local smart = v.smrt 
 				if smart.base_on_actor_control ~= nil then
-					local level_id = game_graph():vertex(smart.m_game_vertex_id):level_id()
-					local actor_level_id = game_graph():vertex(alife():actor().m_game_vertex_id):level_id()
+					local level_id = gg_vertex_level_id(smart.m_game_vertex_id)
+					local actor_level_id = gg_vertex_level_id(alife():actor().m_game_vertex_id)
 					if level_id == actor_level_id and db.actor:position():distance_to_sqr(smart.position) <= 6400 then
 						if self.object:relation(db.actor) ~= game_object.enemy then
 							local base_pos = db.zone_by_name[smart.base_on_actor_control.noweap_zone]:position()

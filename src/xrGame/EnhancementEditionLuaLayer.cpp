@@ -60,6 +60,7 @@ void ExportEELayer(lua_State* L)
 	platform_ids["PLATFORM_WIN64"] = 7;
 
 	// GameGraph module
+	// TODO: В идеале вынести это в отдельный класс CGameGraph
 	luabind::module(L)
 	[
 		luabind::def("gg_vertex_level_id", +[](u32 VertexID) 
@@ -72,18 +73,10 @@ void ExportEELayer(lua_State* L)
 			return ai().game_graph().header().levels().size();
 		}),
 			
-		luabind::def("gg_level_id", +[](size_t Index)
+		luabind::def("gg_level_id", +[](size_t index)
 		{
 			const auto& Levels = ai().game_graph().header().levels();
-
-			if (Index >= Levels.size())
-			{
-				return GameGraph::_LEVEL_ID(-1);
-			}
-
-			auto It = Levels.begin();
-			std::advance(It, Index);
-			return It->first;
+			return Levels.get_key_at(index);
 		}),
 
 		luabind::def("gg_distance", +[](u32 LeftVertexID, u32 RightVertexID)
