@@ -14,7 +14,7 @@ function init_smart_names_table()
 end
 
 function get_smart_terrain_name(smart)
-	local level_name = alife():level_name(game_graph():vertex(smart.m_game_vertex_id):level_id())
+	local level_name = alife():level_name(gg_vertex_level_id(smart.m_game_vertex_id))
 	local smart_name = smart:name()
 	if(smart_names_table[level_name]~=nil) and (smart_names_table[level_name][smart_name]~=nil) then
 		return game.translate_string(smart_names_table[level_name][smart_name])	
