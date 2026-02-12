@@ -235,8 +235,9 @@ function sim_board:create_squad(spawn_smart, sq_id)
 	self:assign_squad_to_smart(squad, spawn_smart.id)
 
 	--' Пересчитываем Team, Squad, Group
-	for k in squad:squad_members() do
-		local obj = k.object
+    local npcCount = squad:npc_count() -1
+	for i = 0, npcCount, 1 do
+		local obj = squad:getSquadMember(i)
 		
 		if (obj) then
 			squad.board:setup_squad_and_group(obj)
