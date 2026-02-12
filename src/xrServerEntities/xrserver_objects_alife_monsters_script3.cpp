@@ -106,6 +106,8 @@ void CSE_ALifeOnlineOfflineGroup::script_register(lua_State *L)
 		.def("add_location_type",	&CSE_ALifeOnlineOfflineGroup::add_location_type)
 		.def("clear_location_types",&CSE_ALifeOnlineOfflineGroup::clear_location_types)
 		.def("force_change_position",&CSE_ALifeOnlineOfflineGroup::force_change_position)
+		.def("getSquadMemberId", &CSE_ALifeOnlineOfflineGroup::get_squad_memberId)
+		.def("getSquadMember", &CSE_ALifeOnlineOfflineGroup::get_squad_member)
 #endif //#ifdef XRGAME_EXPORTS
 	];
 }
