@@ -399,10 +399,11 @@ function sim_board:fill_start_position()
 	if self.start_position_filled == true then
 		return
 	end
-	--printf("FILL START POSITION [%s]", self.player_name)
 	self.start_position_filled = true
-	for level in game_graph():levels() do
-		local section_name = "start_position_" .. alife():level_name(level.id)
+	local levelsCount = gg_levels_count()
+	for i = 0, levelsCount - 1, 1 do
+		local levelId = gg_level_id( i )
+		local section_name = "start_position_" .. alife():level_name(levelId)
 
 		if not setting_ini:section_exist(section_name) then
 			return
@@ -410,9 +411,9 @@ function sim_board:fill_start_position()
 
 		local n = setting_ini:line_count(section_name)
 		for i=0,n-1 do
-			local result, id, value	= setting_ini:r_line(section_name,i,"","")
+			local _, id, value	= setting_ini:r_line(section_name,i,"","")
 			local smrt_names = utils.parse_names(value)
-			for k,v in pairs(smrt_names) do
+			for _,v in pairs(smrt_names) do
 				local smart = self.smarts_by_names[v]
 				if smart == nil then
 					abort("Wrong smart name [%s] in start position", tostring(v))

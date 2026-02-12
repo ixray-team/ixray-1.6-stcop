@@ -151,7 +151,7 @@ function Crelease_body:save(packet)
 	for k,v in pairs(self.release_objects_table) do
 		packet:w_u16(v.id)
 	end
-	local level_id = game_graph():vertex(alife():actor().m_game_vertex_id):level_id()
+	local level_id = gg_vertex_level_id(alife():actor().m_game_vertex_id)
 	packet:w_u16(level_id)
 	set_save_marker(packet, "save", true, "Crelease_body")
 end
@@ -166,7 +166,7 @@ function Crelease_body:load(reader)
 		self.release_objects_table[i].id = vid
 	end
 	local level_id = reader:r_u16()
-	if level_id ~= game_graph():vertex(alife():object(0).m_game_vertex_id):level_id() then
+	if level_id ~= gg_vertex_level_id(alife():object(0).m_game_vertex_id) then
 		self.release_objects_table = {}
 	end
 	set_save_marker(reader, "load", true, "Crelease_body")
