@@ -447,9 +447,11 @@ end
 function get_squad_members(squad_id)
 	local npcs_tbl = {}
 	local squad = alife():object(squad_id)
-	if(squad) then
-		for obj in squad:squad_members() do
-			npcs_tbl[obj.id] = true
+	if (squad) then
+		local npcCountLast = squad:npc_count() - 1
+		for i = 0, npcCountLast, 1 do
+			local currentId = squad:getSquadMemberId(i)
+			npcs_tbl[currentId] = true
 		end
 	end
 	return npcs_tbl

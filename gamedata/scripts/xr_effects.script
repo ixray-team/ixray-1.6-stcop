@@ -1449,8 +1449,10 @@ function create_squad(actor, obj, p)
 
 	board:enter_smart(squad, smart.id)
 
-	for k in squad:squad_members() do
-		board:setup_squad_and_group(k.object)
+	local npcCountLast = squad:npc_count() - 1
+	for i = 0, npcCountLast, 1 do
+		local object = squad:getSquadMember(i)
+		board:setup_squad_and_group(object)
 	end
 
 	squad:update()
@@ -1521,11 +1523,13 @@ function kill_squad(actor, obj, p)
 		return
 	end
 	local squad_npcs = {}
-	for k in squad:squad_members() do
-		squad_npcs[k.id] = true
+	local npcCountLast = squad:npc_count() - 1
+	for i = 0, npcCountLast, 1 do
+		local currentId = squad:getSquadMemberId(i)
+		squad_npcs[currentId] = true
 	end
 
-	for k,v in pairs(squad_npcs) do
+	for k, v in pairs(squad_npcs) do
 		local cl_obj = db.storage[k] and db.storage[k].object
 		if cl_obj == nil then
 			alife():object(tonumber(k)):kill()
@@ -1548,8 +1552,11 @@ function heal_squad(actor, obj, p)
 	if squad == nil then
 		return
 	end
-	for k in squad:squad_members() do
-		local cl_obj = db.storage[k.id] and db.storage[k.id].object
+
+	local npcCountLast = squad:npc_count() - 1
+	for i = 0, npcCountLast, 1 do
+		local id = squad:getSquadMemberId(i)
+		local cl_obj = db.storage[id] and db.storage[id].object
 		if cl_obj ~= nil then
 			cl_obj.health = health_mod
 		end
@@ -1901,28 +1908,30 @@ end
 ]]--
 
 function set_level_faction_community(actor, npc, p)
-	if(p[1]~=nil) and (p[2]~= nil) and (p[3]~= nil) then
+	if (p[1] ~= nil) and (p[2] ~= nil) and (p[3] ~= nil) then
 		local faction = sim_board.get_sim_board().players[p[1]]
 		local goodwill = 0
-		if(p[3]=="enemy") then
+		if (p[3] == "enemy") then
 			goodwill = -3000
-		elseif(p[3]=="friend") then
+		elseif (p[3] == "friend") then
 			goodwill = 1000
 		end
-		for k,v in pairs(faction.squads) do
+		for k, v in pairs(faction.squads) do
 			local squad_level = alife():level_name(game_graph():vertex(alife():object(v:commander_id()).m_game_vertex_id):level_id())
-			if(squad_level==p[2]) then
-				for kk in v:squad_members() do
-					local npc = kk.object
+			if (squad_level == p[2]) then
+				local npcCountLast = v:npc_count() - 1
+				for i = 0, npcCountLast, 1 do
+					local currentMember = v:getSquadMember(i)
+					local npc = currentMember
 					local tbl = game_relations.temp_goodwill_table
-					if(tbl.communities==nil) then
+					if (tbl.communities == nil) then
 						tbl.communities = {}
 					end
-					if(tbl.communities[p[1]]==nil) then
+					if (tbl.communities[p[1]] == nil) then
 						tbl.communities[p[1]] = {}
 					end
 					tbl.communities[p[1]][npc.id] = goodwill
-					if(db.storage[npc.id]~=nil) then
+					if (db.storage[npc.id] ~= nil) then
 						game_relations.set_level_faction_community(db.storage[npc.id].object)
 					end
 				end
@@ -1937,14 +1946,17 @@ function make_actor_visible_to_npc(actor,npc,p)
 end
 ]]--
 
-function make_actor_visible_to_squad(actor,npc,p)
+function make_actor_visible_to_squad(actor, npc, p)
 	local story_id = p and p[1]
 	local squad = get_story_squad(story_id)
 	if squad == nil then abort("There is no squad with id[%s]", story_id) end
-	for k in squad:squad_members() do
-		local obj = level.object_by_id(k.id)
+
+	local npcCountLast = squad:npc_count() - 1
+	for i = 0, npcCountLast, 1 do
+		local id = squad:getSquadMemberId(i)
+		local obj = level.object_by_id(id)
 		if obj ~= nil then
-			obj:make_object_visible_somewhen( db.actor )
+			obj:make_object_visible_somewhen(db.actor)
 		end
 	end
 end
@@ -2152,11 +2164,15 @@ function set_squads_enemies(actor, npc, p)
 		return
 	end
 
- 	for k in squad_1:squad_members() do
-		local npc_obj_1 = db.storage[k.id] and db.storage[k.id].object
+	local npcCountLast = squad_1:npc_count() - 1
+	for i = 0, npcCountLast, 1 do
+		local id = squad_1:getSquadMemberId(i)
+		local npc_obj_1 = db.storage[id] and db.storage[id].object
 		if npc_obj_1 ~= nil then
-			for kk in squad_2:squad_members() do
-				local npc_obj_2 = db.storage[kk.id] and db.storage[kk.id].object
+			local npcCountLast2 = squad_2:npc_count() - 1
+			for j = 0, npcCountLast2, 1 do
+				local id_2 = squad_2:getSquadMemberId(j)
+				local npc_obj_2 = db.storage[id_2] and db.storage[id_2].object
 				if npc_obj_2 ~= nil then
 					npc_obj_1:set_relation(game_object.enemy, npc_obj_2)
 					npc_obj_2:set_relation(game_object.enemy, npc_obj_1)
