@@ -391,6 +391,11 @@ void CUIListBox::SetImmediateSelection(bool f)
 
 void CUIListBox::NextItem(bool selectOnly)
 {
+	if (m_pad->GetChildWndList().empty())
+	{
+		return;
+	}
+
 	int nextIdx = GetSelectedIDX() + 1;
 	if (nextIdx > m_pad->GetChildWndList().size() - 1)
 	{
@@ -414,6 +419,11 @@ void CUIListBox::NextItem(bool selectOnly)
 
 void CUIListBox::PrevItem(bool selectOnly)
 {
+	if (m_pad->GetChildWndList().empty())
+	{
+		return;
+	}
+
 	int nextIdx = GetSelectedIDX() - 1;
 	if (nextIdx < 0)
 	{
