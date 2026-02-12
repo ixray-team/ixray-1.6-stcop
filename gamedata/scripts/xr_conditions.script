@@ -893,8 +893,11 @@ function squad_in_zone(actor, npc, p)
 		return false
 	end
 
-	for k in squad:squad_members() do
-		local position = (db.storage[k.id] and db.storage[k.id].object and db.storage[k.id].object:position()) or k.object.position
+	local npcCountLast = squad:npc_count() - 1
+	for i = 0, npcCountLast, 1 do
+		local currentId = squad:getSquadMemberId(i)
+		local currentMember = squad:getSquadMember(i)
+		local position = (db.storage[currentId] and db.storage[currentId].object and db.storage[currentId].object:position()) or currentMember.position
 		if zone:inside(position) then
 			return true
 		end
@@ -916,8 +919,10 @@ function squad_has_enemy(actor, npc, p)
 	end
 
 	local al = alife()
-	for k in squad:squad_members() do
-		local npc_obj = level.object_by_id(k.object.id)
+	local npcCountLast = squad:npc_count() - 1
+	for i = 0, npcCountLast, 1 do
+		local currentMember = squad:getSquadMember(i)
+		local npc_obj = level.object_by_id(currentMember.id)
 		if npc_obj == nil then
 			return false
 		end
@@ -947,8 +952,11 @@ function squad_in_zone_all(actor, npc, p)
 		return false
 	end
 	local al = alife()
-	for k in squad:squad_members() do
-		local position = (db.storage[k.id] and db.storage[k.id].object and db.storage[k.id].object:position()) or k.object.position
+	local npcCountLast = squad:npc_count() - 1
+	for i = 0, npcCountLast, 1 do
+		local currentId = squad:getSquadMemberId(i)
+		local currentMember = squad:getSquadMember(i)
+		local position = (db.storage[currentId] and db.storage[currentId].object and db.storage[currentId].object:position()) or currentMember.position
 		if not zone:inside(position) then
 			return false
 		end
@@ -968,10 +976,12 @@ function squads_in_zone_b41(actor, npc, p)
 		return false
 	end
 
-	for k,v in pairs(sim_board.get_sim_board().smarts[smart.id].squads) do
+	for k, v in pairs(sim_board.get_sim_board().smarts[smart.id].squads) do
 		if v ~= nil then
-			for j in v:squad_members() do
-				if not zone:inside(j.object.position) then
+			local npcCountLast = v:npc_count() - 1
+			for i = 0, npcCountLast, 1 do
+				local currentMember = v:getSquadMember(i)
+				if not zone:inside(currentMember.position) then
 					return false
 				end
 			end
@@ -1440,15 +1450,14 @@ function pas_b400_actor_far_forward(actor, npc)
 
 	local squad = alife():object(alife():object(npc:id()).group_id)
 
-	for k in squad:squad_members() do
-		local other_dist = k.object.position:distance_to_sqr(actor:position())
+	local npcCountLast = squad:npc_count() - 1
+	for i = 0, npcCountLast, 1 do
+		local currentMember = squad:getSquadMember(i)
+		local other_dist = currentMember.position:distance_to_sqr(actor:position())
 		if other_dist < distance then
 			return false
 		end
 	end
-
-	--printf("npc: [%s], actor is far forward - self_dist [%s] distance [%s]", tostring(npc:name()), self_dist, distance)
-
 	return true
 end
 
@@ -1471,14 +1480,14 @@ function pas_b400_actor_far_backward(actor, npc)
 
 	local squad = alife():object(alife():object(npc:id()).group_id)
 
-	for k in squad:squad_members() do
-		local other_dist = k.object.position:distance_to_sqr(actor:position())
+	local npcCountLast = squad:npc_count() - 1
+	for i = 0, npcCountLast, 1 do
+		local object = squad:getSquadMember(i)
+		local other_dist = object.position:distance_to_sqr(actor:position())
 		if other_dist < distance then
 			return false
 		end
 	end
-
-	--printf("npc: [%s], actor is far backward - self_dist [%s] distance [%s]", tostring(npc:name()), self_dist, distance)
 
 	return true
 end
@@ -1487,8 +1496,10 @@ function pri_a28_actor_is_far(actor, npc)
 	local distance = 150 * 150
 	local squad = get_story_squad("pri_a16_military_squad")
 
-	for k in squad:squad_members() do
-		local npc_dist = k.object.position:distance_to_sqr(actor:position())
+	local npcCountLast = squad:npc_count() - 1
+	for i = 0, npcCountLast, 1 do
+		local object = squad:getSquadMember(i)
+		local npc_dist = object.position:distance_to_sqr(actor:position())
 		if npc_dist < distance then
 			return false
 		end
