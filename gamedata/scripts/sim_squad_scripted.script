@@ -396,11 +396,14 @@ end
 --' Удаление персонажей отряда
 function sim_squad_scripted:remove_squad()
 	local squad_npcs = {}
-	for k in self:squad_members() do
-		squad_npcs[k.id] = true
+
+	local npcCount = self:npc_count() -1
+	for i = 0, npcCount, 1 do
+		local currentId = self:getSquadMemberId(i)
+		squad_npcs[currentId] = true
 	end
---
-	for j,v in pairs(squad_npcs) do
+	--
+	for j, v in pairs(squad_npcs) do
 		local obj = alife():object(j)
 		if obj ~= nil then
 			self:unregister_member(j)
@@ -408,7 +411,6 @@ function sim_squad_scripted:remove_squad()
 		end
 	end
 	self:hide()
---	alife():release(self, true)
 end
 
 --' Удаление конкретного персонажа отряда
@@ -466,10 +468,11 @@ end
 function sim_squad_scripted:assign_smart(smart)
 	local old_smart = self.smart_id
 	self.smart_id = smart and smart.id
-	--printf("  squad %s assign smart. old[%s] new[%s]", self.id, tostring(old_smart), tostring(self.smart_id))
-	--callstack()
-	for k in self:squad_members() do
-		self:assign_squad_member_to_smart(k.id, smart, old_smart)
+
+	local npcCountLast = self:npc_count() - 1
+	for i = 0, npcCountLast, 1 do
+		local currentId = self:getSquadMemberId(i)
+		self:assign_squad_member_to_smart(currentId, smart, old_smart)
 	end
 end
 
@@ -479,12 +482,13 @@ function sim_squad_scripted:check_invulnerability()
 	end
 	local invulnerability = xr_logic.pick_section_from_condlist(db.actor, self, self.invulnerability) == "true"
 
-	for k in self:squad_members() do
-		local npc_st = db.storage[k.id]
+	local npcCount = self:npc_count() -1
+	for i = 0, npcCount, 1 do
+		local currentId = self:getSquadMemberId(i)
+		local npc_st = db.storage[currentId]
 		if npc_st ~= nil then
 			local npc = npc_st.object
-			if npc:invulnerable() ~= invulnerabilty and utils.cfg_get_string(npc_st.ini, npc_st.active_section, "invulnerable", npc, false, "", nil) == nil  then
---				printf("RESET INVULNERABILITY. npc[%s] = [%s]", npc:name(), tostring(invulnerability))
+			if npc:invulnerable() ~= invulnerabilty and utils.cfg_get_string(npc_st.ini, npc_st.active_section, "invulnerable", npc, false, "", nil) == nil then
 				npc:invulnerable(invulnerability)
 			end
 		end
@@ -626,16 +630,18 @@ end
 
 function sim_squad_scripted:set_squad_sympathy(sympathy)
 	local symp = sympathy or self.sympathy
-	if(symp~=nil) then
-		for k in self:squad_members() do
-			local npc = db.storage[k.id] and db.storage[k.id].object
-			if(npc) then
+	if (symp ~= nil) then
+		local npcCount = self:npc_count() -1
+		for i = 0, npcCount, 1 do
+			local currentId = self:getSquadMemberId(i)
+			local npc = db.storage[currentId] and db.storage[currentId].object
+			if (npc) then
 				game_relations.set_npc_sympathy(npc, symp)
 			else
-				if(db.goodwill.sympathy==nil) then
+				if (db.goodwill.sympathy == nil) then
 					db.goodwill.sympathy = {}
 				end
-				db.goodwill.sympathy[k.id] = symp
+				db.goodwill.sympathy[currentId] = symp
 			end
 		end
 	end
@@ -657,18 +663,19 @@ end
 
 function sim_squad_scripted:set_squad_relation(relation)
 	local rel = relation or self.relationship
-	if(rel~=nil) then
-		for k in self:squad_members() do
-			local npc = db.storage[k.id] and db.storage[k.id].object
-			if(npc) then
+	if (rel ~= nil) then
+		local npcCountLast = self:npc_count() - 1
+		for i = 0, npcCountLast, 1 do
+			local currentId = self:getSquadMemberId(i)
+			local npc = db.storage[currentId] and db.storage[currentId].object
+			if (npc) then
 				game_relations.set_npcs_relation(npc, db.actor, rel)
 			else
-				set_relation(alife():object(k.id), alife():actor(),rel)
+				set_relation(alife():object(currentId), alife():actor(), rel)
 			end
 		end
 	end
 end
-
 
 local function reset_animation(npc)
 	local state_mgr = db.storage[npc:id()].state_mgr
@@ -706,23 +713,28 @@ function sim_squad_scripted:set_squad_position(position)
 		self:force_change_position(position)
 	end
 
-	for k in self:squad_members() do
-		local cl_object = level.object_by_id(k.id)
-		db.offline_objects[k.id].level_vertex_id = level.vertex_id(position)
+	local npcCountLast = self:npc_count() - 1
+	for i = 0, npcCountLast, 1 do
+		local currentId = self:getSquadMemberId(i)
+		local cl_object = level.object_by_id(currentId)
+		local k = alife():object(currentId)
+		db.offline_objects[currentId].level_vertex_id = level.vertex_id(position)
 		if cl_object then
 			reset_animation(cl_object)
-			printf("teleporting npc [%s]", k.id)
+			printf("teleporting npc [%s]", currentId)
 			cl_object:set_npc_position(position)
-			printf("end of teleporting npc [%s]", k.id)
+			printf("end of teleporting npc [%s]", currentId)
 		else
-			k.object.position = position
+			k.position = position
 		end
 	end
 end
 
 function sim_squad_scripted:has_detector()
-	for k in self:squad_members() do
-		if alife():object(k.id) and  alife():object(k.id):has_detector() then
+	local npcCountLast = self:npc_count() - 1
+	for i = 0, npcCountLast, 1 do
+		local currentId = self:getSquadMemberId(i)
+		if alife():object(currentId) and alife():object(currentId):has_detector() then
 			return true
 		end
 	end
@@ -986,16 +998,20 @@ end
 function sim_squad_scripted:on_after_reach(squad)
 
 end
+
 -- Вызывается 1 раз в момент выбора меня как цели.
 function sim_squad_scripted:on_reach_target(squad)
 	squad:set_location_types()
- 	for k in squad:squad_members() do
-		if db.offline_objects[k.id] ~= nil then
-			db.offline_objects[k.id] = {}
+	local npcCountLast = squad:npc_count() - 1
+	for i = 0, npcCountLast, 1 do
+		local currentId = squad:getSquadMemberId(i)
+		if db.offline_objects[currentId] ~= nil then
+			db.offline_objects[currentId] = {}
 		end
 	end
 	self.board:assign_squad_to_smart(squad, nil)
 end
+
 -- Возвращает CALifeSmartTerrainTask на меня, вызывается из smart_terrain:task()
 function sim_squad_scripted:get_alife_task()
 	--printf("Returning alife task for object [%s] game_vertex [%s] level_vertex [%s] position %s", self.id, self.m_game_vertex_id, self.m_level_vertex_id, vec_to_str(self.position))
