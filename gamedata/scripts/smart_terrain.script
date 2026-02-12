@@ -1172,8 +1172,9 @@ end
 
 -- Вызывается 1 раз после достижения меня отрядом выбравшим меня как цель.
 function se_smart_terrain:on_after_reach(squad)
-	for k in squad:squad_members() do
-		local obj = k.object
+	local npcCountLast = squad:npc_count() - 1
+	for i = 0, npcCountLast, 1 do
+		local obj = squad:getSquadMember(i)
 		squad.board:setup_squad_and_group(obj)
 	end
 	squad.current_target_id = self.id
@@ -1185,9 +1186,11 @@ function se_smart_terrain:on_reach_target(squad)
 --	squad.sound_manager:set_story("squad_begin_attack")
 	squad:set_location_types(self:name())
 	self.board:assign_squad_to_smart(squad, self.id)
-	for k in squad:squad_members() do
-		if db.offline_objects[k.id] ~= nil then
-			db.offline_objects[k.id] = {}
+	local npcCountLast = squad:npc_count() - 1
+	for i = 0, npcCountLast, 1 do
+		local currentId = squad:getSquadMemberId(i)
+		if db.offline_objects[currentId] ~= nil then
+			db.offline_objects[currentId] = {}
 		end
 	end
 --	self.board:exit_smart(squad, squad.smart_id)
@@ -1408,15 +1411,17 @@ function se_smart_terrain:call_respawn()
 		end
 	end
 	if #available_sects > 0 then
-		local sect_to_spawn = available_sects[math.random(1,#available_sects)]
+		local sect_to_spawn = available_sects[math.random(1, #available_sects)]
 		local sect_to_spawn_params = self.respawn_params[sect_to_spawn]
-		local squad = sect_to_spawn_params.squads[math.random(1,#sect_to_spawn_params.squads)]
+		local squad = sect_to_spawn_params.squads[math.random(1, #sect_to_spawn_params.squads)]
 		squad = self.board:create_squad(self, squad)
 		squad.respawn_point_id = self.id
 		squad.respawn_point_prop_section = sect_to_spawn
 		self.board:enter_smart(squad, self.id)
-		for m in squad:squad_members() do
-			self.board:setup_squad_and_group(m.object)
+		local npcCountLast = squad:npc_count() - 1
+		for i = 0, npcCountLast, 1 do
+			local currentMember = squad:getSquadMember(i)
+			self.board:setup_squad_and_group(currentMember)
 		end
 		self.already_spawned[sect_to_spawn].num = self.already_spawned[sect_to_spawn].num + 1
 	end

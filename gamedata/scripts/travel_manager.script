@@ -160,8 +160,10 @@ local teleport_flag = nil
 local traveler_smart_id = nil
 
 function check_squad_for_enemies(squad_obj)
-	for k in squad_obj:squad_members() do
-		if relation_registry.get_general_goodwill_between(k.id, alife():actor().id) <= game_relations.ENEMIES then
+	local npcCountLast = squad_obj:npc_count() - 1
+	for i = 0, npcCountLast, 1 do
+		local currentId = squad_obj:getSquadMemberId(i)
+		if relation_registry.get_general_goodwill_between(currentId, alife():actor().id) <= game_relations.ENEMIES then
 			return true
 		end
 	end
