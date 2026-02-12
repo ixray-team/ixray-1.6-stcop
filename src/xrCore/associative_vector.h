@@ -118,6 +118,23 @@ public:
 	IC		value_compare				value_comp			() const;
 	IC		allocator_type				get_allocator		() const;
 
+	IC const key_type& get_key_at(const size_t index) const
+	{
+		const inherited* obj_inherited = static_cast<const inherited*>(this);
+		return (*obj_inherited)[index].first;
+	}
+
+	IC const mapped_type& get_value_at(const size_t index) const
+	{
+		const inherited* obj_inherited = static_cast<const inherited*>(this);
+		return (*obj_inherited)[index].second;
+	}
+
+	IC mapped_type& get_value_at(const size_t index)
+	{
+		inherited* obj_inherited = static_cast<inherited*>(this);
+		return (*obj_inherited)[index].second;
+	}
 public:
 	IC		mapped_type					&operator[]			(const key_type &key);
 	IC		self_type					&operator=			(const self_type &right);
