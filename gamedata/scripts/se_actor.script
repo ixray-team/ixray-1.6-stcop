@@ -87,13 +87,16 @@ end
 -- Вызывается 1 раз в момент выбора меня как цели.
 function se_actor:on_reach_target(squad)
 	squad:set_location_types()
-	for k in squad:squad_members() do
-		if db.offline_objects[k.id] ~= nil then
-			db.offline_objects[k.id] = {}
+	local npcCount = squad:npc_count() - 1
+	for i = 0, npcCount, 1 do
+		local id = squad:getSquadMemberId(i)
+		if db.offline_objects[id] ~= nil then
+			db.offline_objects[id] = {}
 		end
 	end
 	sim_board.get_sim_board():assign_squad_to_smart(squad, nil)
 end
+
 -- Возвращает CALifeSmartTerrainTask на меня, вызывается из smart_terrain:task()
 function se_actor:get_alife_task()
 	printf("Returning alife task for object [%s] game_vertex [%s] level_vertex [%s] position %s", self.id, self.m_game_vertex_id, self.m_level_vertex_id, vec_to_str(self.position))
