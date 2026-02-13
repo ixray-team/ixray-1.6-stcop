@@ -527,12 +527,10 @@ void CActor::IR_OnMouseMove(int dx, int dy)
 	}
 }
 
-#define DEADZONE_SIZE 0.2f
 void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 {
 	float absValueX = std::abs(value.x);
-	float absValueY = std::abs(value.y);
-	if (id != 2 && absValueX < DEADZONE_SIZE && absValueY < DEADZONE_SIZE)
+	if (id != 2 && fis_zero(value.x) && fis_zero(value.y))
 	{
 		if (id == 0)
 		{
@@ -571,7 +569,7 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 		{
 			mstate_wishful |= (value.y > 0.f) ? mcFwd : mcBack;
 
-			if (absValueY < 0.22f)
+			if (std::abs(value.y) < 0.5f)
 			{
 				mstate_wishful |= mcAccel;
 			}
@@ -591,13 +589,13 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 
 		if (!fis_zero(value.x))
 		{
-			float d = value.x * scale * 8;
+			float d = (value.x-0.2f) * scale * 8;
 			cam_Active()->Move((d < 0) ? kLEFT : kRIGHT, std::abs(d));
 		}
 
 		if (!fis_zero(value.y))
 		{
-			float d = (psGamepadInvert ? -1 : 1) * value.y * scale * 3.f / 4.f;
+			float d = (psGamepadInvert ? -1 : 1) * (value.y-0.2f) * scale * 3.f / 4.f;
 			d *= 8;
 
 			cam_Active()->Move((d > 0) ? kUP : kDOWN, std::abs(d));

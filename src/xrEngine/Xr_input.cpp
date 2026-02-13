@@ -12,7 +12,7 @@ ENGINE_API float	psMouseUISens		= 1.f;
 ENGINE_API float	psMouseSensScale	= 1.f;
 ENGINE_API bool		psMouseInvert		= false;
 
-ENGINE_API float	psGamepadSens		= 0.2f;
+ENGINE_API float	psGamepadSens		= 0.3f;
 ENGINE_API bool		psGamepadInvert		= false;
 
 static bool g_exclusive	= true;
