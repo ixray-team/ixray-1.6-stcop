@@ -3,6 +3,7 @@
 #include "imgui_impl_sdl3.h"
 #include "XR_IOConsole.h"
 
+#define DEADZONE_SIZE 0.2f
 bool CRenderDevice::on_event	(SDL_Event& Event)
 {
 	PROF_EVENT("CRenderDevice::on_event");
@@ -51,7 +52,7 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 		{
 			float Value = std::clamp((float)Event.gaxis.value / 32767.0f, -1.0f, 1.0f);
 
-			if ((Value > 0 && Value < 0.1f) || (Value < 0 && Value > -0.1f))
+			if ((Value > 0 && Value < DEADZONE_SIZE) || (Value < 0 && Value > -DEADZONE_SIZE))
 				Value = 0;
 
 			if (Event.gaxis.axis < 2)
@@ -67,8 +68,10 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 				// L2 & R2 Triggers
 				pInput->AdaptiveTriggerUpdate(Event.gaxis.axis == 4, Value);
 			}
-			pInput->SetControllerMode(true);
-
+			if (Value != 0)
+			{
+				pInput->SetControllerMode(true);
+			}
 			break;
 		}
 		case SDL_GAMEPAD_AXIS_LEFTY:
