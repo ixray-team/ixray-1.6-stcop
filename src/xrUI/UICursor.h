@@ -27,4 +27,5 @@ public:
 	bool			IsVisible					() {return bVisible;}
 	void			Show();
 	void			Hide						() {bVisible = false;}
+	CUIStatic*		m_static_text;
 };
