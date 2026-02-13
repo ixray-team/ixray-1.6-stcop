@@ -66,6 +66,7 @@ ETrackBarMode		GetTrackBarMode			() const { return m_mode; }
 			void	StepLeft				();
 			void	StepRight				();
 
+	virtual void 	OnFocusLost				();
 public:
 		IC	void	SetDrawingValue			(bool value) { m_b_draw_value = value; }
 
