@@ -5,6 +5,17 @@
 
 #include "IconsFontAwesome6.h"
 
+#define MainMenuList(Name) cp = ImGui::GetCursorPos();\
+	if (ImGui::Button(Name)) {\
+		ImGui::OpenPopup(Name"Popup"); \
+		ImGui::SetNextWindowPos({ImGui::GetWindowPos().x + cp.x, ImGui::GetWindowPos().y+ cp.y + UI->GetMenuBarButtonHeight()}); }	\
+	if (ImGui::BeginPopup(Name"Popup")) {
+
+#define EndMainMenuList \
+	ImGui::EndPopup(); \
+	} \
+	ImGui::SameLine();
+
 UIMainMenuForm::UIMainMenuForm()
 {
 }
@@ -80,8 +91,8 @@ void UIMainMenuForm::Draw()
 {
 	if (IXBeginMainMenuBar())
 	{
-		if (ImGui::BeginMenu("File"))
-		{
+		ImVec2 cp;
+		MainMenuList("File")
 			DrawMenuItemI("Clear", ICON_FA_FILE, COMMAND_CLEAR);
 			DrawMenuItemI("Load", ICON_FA_FILE_IMPORT, COMMAND_LOAD);
 			DrawMenuItemI("Save", ICON_FA_FLOPPY_DISK, COMMAND_SAVE, ATools->m_LastFileName, 0);
@@ -122,19 +133,17 @@ void UIMainMenuForm::Draw()
 			ImGui::Separator();
 
 			DrawMenuItemI("Quit", ICON_FA_POWER_OFF, COMMAND_QUIT);
-			ImGui::EndMenu();
-		}
-		if (ImGui::BeginMenu("Preview Object"))
-		{
+		EndMainMenuList;
+
+		MainMenuList("Preview Object")
 			DrawMenuItem("Custom...", COMMAND_SELECT_PREVIEW_OBJ, false);
 			DrawMenuItem("Clear", COMMAND_SELECT_PREVIEW_OBJ, true);
 			ImGui::Separator();
 
 			DrawMenuItem("Preferences", COMMAND_PREVIEW_OBJ_PREF);
-			ImGui::EndMenu();
-		}
-		if (ImGui::BeginMenu("Editors"))
-		{
+		EndMainMenuList;
+
+		MainMenuList("Editors")
 			if (ImGui::BeginMenu("Images"))
 			{
 				DrawMenuItemI("Image Editor", ICON_FA_IMAGE, COMMAND_IMAGE_EDITOR);
@@ -164,11 +173,9 @@ void UIMainMenuForm::Draw()
 			{
 				PPE.OpenState() = true;
 			}
-			ImGui::EndMenu();
-		}
+		EndMainMenuList;
 
-		if (ImGui::BeginMenu("Options"))
-		{
+		MainMenuList("Options")
 			if (ImGui::BeginMenu("Render"))
 			{
 				if (ImGui::BeginMenu("Quality"))
@@ -220,21 +227,6 @@ void UIMainMenuForm::Draw()
 					}
 					ImGui::EndMenu();
 				}
-				//if (ImGui::BeginMenu("Shader Mode"))
-				//{
-				//	bool selected[2] = { EDevice->dwShadeMode == D3DSHADE_FLAT,EDevice->dwShadeMode == D3DSHADE_GOURAUD };
-				//	if (ImGui::MenuItem("Flat", "", &selected[0]))
-				//	{
-				//		EDevice->dwShadeMode = D3DSHADE_FLAT;
-				//		UI->RedrawScene();
-				//	}
-				//	if (ImGui::MenuItem("Gouraud", "", &selected[1]))
-				//	{
-				//		EDevice->dwShadeMode = D3DSHADE_GOURAUD;
-				//		UI->RedrawScene();
-				//	}
-				//	ImGui::EndMenu();
-				//}
 				{
 					bool selected = psDeviceFlags.test(rsEdgedFaces);
 					if (ImGui::MenuItem("Edged Faces", "", &selected))
@@ -252,23 +244,6 @@ void UIMainMenuForm::Draw()
 						UI->Resize();
 					}
 				}
-				//ImGui::Separator();
-				//{
-				//	bool selected = psDeviceFlags.test(rsFilterLinear);
-				//	if (ImGui::MenuItem("Filter Linear", "", &selected))
-				//	{
-				//		psDeviceFlags.set(rsFilterLinear, selected);
-				//		UI->RedrawScene();
-				//	}
-				//}
-				//{
-				//	bool selected = psDeviceFlags.test(rsRenderTextures);
-				//	if (ImGui::MenuItem("Textures", "", &selected))
-				//	{
-				//		psDeviceFlags.set(rsRenderTextures, selected);
-				//		UI->RedrawScene();
-				//	}
-				//}
 				ImGui::EndMenu();
 			}
 			ImGui::Separator();
@@ -351,36 +326,34 @@ void UIMainMenuForm::Draw()
 				}
 
 			}
-			ImGui::EndMenu();
-		}
-		if (ImGui::BeginMenu("Windows"))
-		{
-			{
-				bool selected = AllowLogCommands();
-				
-				if (ImGui::MenuItem("Log", "", &selected)) 
-				{ 
-					ExecCommand(COMMAND_LOG_COMMANDS); 
-				}
+		EndMainMenuList;
 
-				CUIThemeManager& ThemeInstance = CUIThemeManager::Get();
-				bool selected2 = !ThemeInstance.IsClosed();
-				if (ImGui::MenuItemI("Theme", ICON_FA_PAINT_ROLLER, "", &selected2))
-				{
-					if (selected2)
-					{
-						if (!UI->HasWindow<CUIThemeManager>())
-						{
-							UI->Push(&ThemeInstance);
-						}
-						ThemeInstance.Show(true);
-					}
-					else
-						ThemeInstance.Show(false);
-				}
+		MainMenuList("Windows")
+		{
+			bool selected = AllowLogCommands();
+
+			if (ImGui::MenuItem("Log", "", &selected))
+			{
+				ExecCommand(COMMAND_LOG_COMMANDS);
 			}
-			ImGui::EndMenu();
+
+			CUIThemeManager& ThemeInstance = CUIThemeManager::Get();
+			bool selected2 = !ThemeInstance.IsClosed();
+			if (ImGui::MenuItemI("Theme", ICON_FA_PAINT_ROLLER, "", &selected2))
+			{
+				if (selected2)
+				{
+					if (!UI->HasWindow<CUIThemeManager>())
+					{
+						UI->Push(&ThemeInstance);
+					}
+					ThemeInstance.Show(true);
+				}
+				else
+					ThemeInstance.Show(false);
+			}
 		}
+		EndMainMenuList
 
 		IXEndMainMenuBar();
 	}
