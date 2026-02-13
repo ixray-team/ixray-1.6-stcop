@@ -157,7 +157,7 @@ void CParticleTool::Render()
 
 	if (m_EditObject)	m_EditObject->RenderSingle(Fidentity);
 	// draw parent axis
-    DU_impl.DrawObjectAxis			(m_Transform,0.05f,true);
+    DU_impl.DrawObjectAxis(m_Transform,0.05f,true);
 	// draw domains
     switch(m_EditMode){
     case emNone:
@@ -228,15 +228,30 @@ void CParticleTool::OnFrame()
 	if (m_EditObject)
     	m_EditObject->OnFrame();
 
-    if (m_Flags.is(flAnimatedParent)){
-    	m_ParentAnimator->Update(EDevice->fTimeDelta);
-        if (m_ParentAnimator->IsPlaying()){
-        	Fvector new_vel;
-            new_vel.sub (m_ParentAnimator->XFORM().c,m_Transform.c);
-            new_vel.div (EDevice->fTimeDelta);
-            m_Vel.lerp	(m_Vel,new_vel,0.9);
-            m_Transform	= m_ParentAnimator->XFORM();
-            m_Flags.set	(flApplyParent,TRUE);
+    switch (m_PreviewType)
+    {
+    case PreviewTypes::Object:
+        {
+            if (m_Flags.is(flAnimatedParent)){
+                m_ParentAnimator->Update(EDevice->fTimeDelta);
+                if (m_ParentAnimator->IsPlaying()){
+                    Fvector new_vel;
+                    new_vel.sub (m_ParentAnimator->XFORM().c,m_Transform.c);
+                    new_vel.div (EDevice->fTimeDelta);
+                    m_Vel.lerp	(m_Vel,new_vel,0.9);
+                    m_Transform	= m_ParentAnimator->XFORM();
+                    m_Flags.set	(flApplyParent,TRUE);
+                }
+            }
+            break;
+        }
+    case PreviewTypes::Transform:
+        {
+            m_Transform.identity();
+            m_Transform.setHPB(m_Rotation.y, m_Rotation.x, m_Rotation.z);
+            m_Transform.c = m_Position;
+            m_Flags.set(flApplyParent,TRUE);
+            break;
         }
     }
 
@@ -1276,16 +1291,30 @@ void CParticleTool::FillObjectPrefs()
 {
 	PropItemVec		items;
     m_MotionName = m_ParentAnimator->Name();
-	PropValue *V;
-    V = PHelper().CreateChoose(items, "Object", &m_ObjectName, smObject);
-    V->OnChangeEvent.bind       (this, &CParticleTool::OnChangeObject);
-    V=PHelper().CreateFlag32	(items, "Parent\\Allow Animated",	&m_Flags, 		flAnimatedParent);
-	V->OnChangeEvent.bind		(this,&CParticleTool::OnChangeMotion);
-    PHelper().CreateFlag32		(items, "Parent\\Draw Path",		&m_Flags, 		flAnimatedPath);
-    V=PHelper().CreateChoose	(items, "Parent\\Motion",			&m_MotionName, 	smGameAnim);
-	V->OnChangeEvent.bind		(this,&CParticleTool::OnChangeMotion);
-    PHelper().CreateFloat		(items, "Parent\\Motion Speed",		&m_ParentAnimator->Speed(), 0.f, 10000.f);
-    m_ObjectProps->AssignItems				(items);
+
+    static xr_token PreviewTypesArr[] = {
+        {"Object", (int)PreviewTypes::Object},
+        {"Transform", (int)PreviewTypes::Transform},
+        {0, 0}
+    };
+    
+    PHelper().CreateToken8(items, "Preview Type", (u8*)&m_PreviewType, PreviewTypesArr)
+        ->OnChangeEvent.bind(this, &CParticleTool::OnChangeObject);
+    PHelper().CreateChoose(items, "Object\\Mesh", &m_ObjectName, smObject)
+        ->OnChangeEvent.bind(this, &CParticleTool::OnChangeObject);
+    PHelper().CreateFlag32(items, "Object\\Parent\\Allow Animated", &m_Flags, flAnimatedParent)
+        ->OnChangeEvent.bind(this,&CParticleTool::OnChangeMotion);
+    PHelper().CreateFlag32(items, "Object\\Parent\\Draw Path", &m_Flags, flAnimatedPath);
+    PHelper().CreateChoose(items, "Object\\Parent\\Motion", &m_MotionName, smGameAnim)
+        ->OnChangeEvent.bind(this,&CParticleTool::OnChangeMotion);
+    PHelper().CreateFloat(items, "Object\\Parent\\Motion Speed", &m_ParentAnimator->Speed(), 0.f, 10000.f);
+
+    PHelper().CreateVector(items, "Transform\\Position", &m_Position, flt_min, flt_max)
+        ->OnChangeEvent.bind(this, &CParticleTool::OnChangeObject);
+    PHelper().CreateAngle3(items, "Transform\\Rotation", &m_Rotation, -180, 180)
+        ->OnChangeEvent.bind(this,&CParticleTool::OnChangeObject);
+    
+    m_ObjectProps->AssignItems(items);
 }
 
 bool CParticleTool::GetSelectionPosition	(Fmatrix& result)
@@ -1575,6 +1604,8 @@ void CParticleTool::OnParticleItemFocused(ListItem* items)
     ButtonValue* B;
     B = PHelper().CreateButton(props, "Transform\\Edit", "Reset", ButtonValue::flFirstOnly);
     B->OnBtnClickEvent = ButtonValue::TOnBtnClick(this, &CParticleTool::OnControlClick);
+
+    // TODO: Is the difference is whether to apply full transform (if set) or only position (if not)?
     PHelper().CreateFlag32(props, "Transform\\Type", &m_Flags, flSetXFORM, "Update", "Set");
 
     // reset to default
