@@ -1197,7 +1197,7 @@ HRESULT	CRender::shader_compile(
 		);
 
 		if(SUCCEEDED(_result)) {
-			if(/*ps_r__common_flags.test(RFLAG_USE_CACHE)*/1) {
+			if(ps_r__common_flags.test(RFLAG_USE_CACHE)) {
 				IWriter* file = FS.w_open(file_name);
 				u32 const crc = crc32(pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize());
 				file->w_u32(crc);
