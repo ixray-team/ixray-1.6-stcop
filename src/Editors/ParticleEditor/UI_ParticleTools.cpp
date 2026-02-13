@@ -1706,15 +1706,23 @@ void CParticleTool::RealUpdateProperties()
             I->SetPrefix("[PG] ");
             for (auto Effect : (*Pg)->m_Effects)
             {
+                LPCSTR EffectName = nullptr;
+                if (Effect->m_EffectName.c_str())
+                {
+                    EffectName = _GetItem(
+                    Effect->m_EffectName.c_str(),
+                    _GetItemCount(Effect->m_EffectName.c_str(), '\\') - 1,
+                    buffer,
+                    sizeof(buffer),
+                    '\\');
+                } else
+                {
+                    static shared_str InvalidEffectName = "invalid";
+                    EffectName = InvalidEffectName.c_str();
+                }
                 xr_string EffectNameBuilder = *(*Pg)->m_Name;
                 EffectNameBuilder.append("\\");
-                EffectNameBuilder.append(
-                        _GetItem(
-                            Effect->m_EffectName.c_str(),
-                            _GetItemCount(Effect->m_EffectName.c_str(),'\\')-1,
-                            buffer,
-                            sizeof(buffer),
-                            '\\'));
+                EffectNameBuilder.append(EffectName);
                 I = LHelper().CreateItem(items, EffectNameBuilder.c_str(), emEffectSlot, 0, Effect );
                 I->SetPrefix("[EFFECT] ");
             }
