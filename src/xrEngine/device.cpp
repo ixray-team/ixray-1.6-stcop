@@ -179,10 +179,17 @@ void CRenderDevice::on_idle		()
 
 	Device.BeginRender();
 	const bool Minimized = SDL_GetWindowFlags(g_AppInfo.Window) & SDL_WINDOW_MINIMIZED;
-	const bool Focus = psDeviceFlags.test(rsFullscreen) || (!Minimized && !main_menu_active && !CImGuiManager::Instance().IsCapturingInputs());
+	const bool ImGuiCapturing = CImGuiManager::Instance().IsCapturingInputs();
+	const bool Focus = psDeviceFlags.test(rsFullscreen) || (!Minimized && !main_menu_active && !ImGuiCapturing);
 
 	SDL_SetWindowMouseGrab(g_AppInfo.Window, !g_dedicated_server && Focus);
 	SDL_SetWindowRelativeMouseMode(g_AppInfo.Window, !g_dedicated_server && Focus);
+	// On Wine/CrossOver, cursor visibility can desync after focus changes, so enforce state every frame.
+	const bool ShouldHideCursor = !g_dedicated_server && Focus && !ImGuiCapturing;
+	if (ShouldHideCursor)
+		SDL_HideCursor();
+	else
+		SDL_ShowCursor();
 
 	g_bEnableStatGather = psDeviceFlags.test(rsStatistic);
 

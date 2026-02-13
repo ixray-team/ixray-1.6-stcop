@@ -1,128 +1,84 @@
-name: 'Build server'
+name: 'Build game package'
 
 on:
-  push:
-    branches:
-      - '**'
-    paths:
-      - '.github/workflows/**'
-      - 'gamedata/**'
-      - 'sdk/**'
-      - 'src/**'
-      - '**/CMakeLists.txt'
-      - '**/*.ltx'
-      - '**/*.json'
-  pull_request:
-    branches:
-      - '**'
-    paths:
-      - '.github/workflows/**'
-      - 'gamedata/**'
-      - 'sdk/**'
-      - 'src/**'
-      - '**/CMakeLists.txt'
-      - '**/*.ltx'
-      - '**/*.json'
+  workflow_dispatch:
+  release:
+    types:
+      - created
+
+permissions:
+  contents: write
 
 defaults:
   run:
     shell: pwsh
+    working-directory: w
 
 jobs:
-  build-server:
-    name: 'Build server'
-
-    strategy:
-      matrix:
-        system:
-          - windows-latest
-        preset:
-          - Server
-        platform:
-          - x64
-        config:
-          - Debug
-          - RelWithDebInfo
-          - Release
-
-    runs-on: ${{ matrix.system }}
+  build-game:
+    name: 'Build game package'
+    runs-on: [self-hosted, windows, x64, winefixes]
 
     steps:
       - name: Checkout
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          path: w
+
+      - name: Resolve release version
+        id: version
+        run: |
+          $version = "${{ github.ref_name }}"
+          if ("${{ github.event_name }}" -eq "release" -and "${{ github.event.release.tag_name }}" -ne "") {
+            $version = "${{ github.event.release.tag_name }}"
+          }
+          $version = $version -replace "_dev$", ""
+          $version = $version -replace "_", "-"
+          "value=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Map short workspace drive
+        run: |
+          if (Get-PSDrive -Name X -ErrorAction SilentlyContinue) {
+            cmd /c "subst X: /d"
+          }
+          cmd /c "subst X: $env:GITHUB_WORKSPACE\\w"
+
+      - name: Prepare build paths
+        id: paths
+        run: |
+          $sourceDir = "X:\\"
+          $buildDir = "X:\\b\\x64\\s"
+          "source_dir=$sourceDir" >> $env:GITHUB_OUTPUT
+          "build_dir=$buildDir" >> $env:GITHUB_OUTPUT
+          "bin_dir=$buildDir\\bin\\Release" >> $env:GITHUB_OUTPUT
 
       - name: Cache packages
         uses: actions/cache@v5
         with:
-          key: ${{ matrix.preset }}-NuGet-${{ hashFiles('**/Packages.config') }}
+          key: Server-NuGet-${{ hashFiles('**/Packages.config') }}
           restore-keys: |
-            ${{ matrix.preset }}-NuGet-${{ hashFiles('**/Packages.config') }}
-            ${{ matrix.preset }}-NuGet-
+            Server-NuGet-${{ hashFiles('**/Packages.config') }}
+            Server-NuGet-
           path: |
             ~/.nuget/packages
 
+      - name: Reset local package folder
+        run: |
+          $pkgDir = "${{ steps.paths.outputs.build_dir }}\\packages"
+          if (Test-Path $pkgDir) {
+            Remove-Item $pkgDir -Recurse -Force
+          }
+          New-Item -ItemType Directory -Path $pkgDir -Force | Out-Null
+
       - name: Configure server
         run: |
-          cmake `
-            --preset ${{ matrix.preset }}-${{ matrix.platform }}-${{ runner.os }}
+          Push-Location "${{ steps.paths.outputs.source_dir }}"
+          cmake --preset Server-x64-Windows -B "${{ steps.paths.outputs.build_dir }}"
+          Pop-Location
 
       - name: Build server
-        run: |
-          cmake `
-            --build `
-            --preset ${{ matrix.preset }}-${{ matrix.platform }}-${{ runner.os }}-${{ matrix.config }}
-
-      - name: Upload binaries
-        uses: actions/upload-artifact@v6
-        with:
-          name: server-binaries-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
-          path: |
-            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*.exe
-            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*.dll
-
-      - name: Upload symbols
-        uses: actions/upload-artifact@v6
-        if: ${{ matrix.config != 'Release' }}
-        with:
-          name: server-symbols-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
-          path: |
-            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*.pdb
-
-      - name: Upload libraries
-        uses: actions/upload-artifact@v6
-        with:
-          name: server-libraries-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
-          path: |
-            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/lib/${{ matrix.config }}/
-
-      - name: Upload packages
-        uses: actions/upload-artifact@v6
-        if: ${{ (matrix.config == 'Debug' && matrix.platform == 'x64') }}
-        with:
-          name: server-packages-${{ matrix.system }}-${{ github.sha }}
-          path: |
-            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/packages/
-
-  pack-assets:
-    name: 'Pack assets'
-
-    needs:
-      - build-server
-
-    strategy:
-      matrix:
-        system:
-          - windows-latest
-
-    runs-on: ${{ matrix.system }}
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
+        run: cmake --build "${{ steps.paths.outputs.build_dir }}" --config Release --parallel
 
       - name: Setup compressor
         uses: ixray-team/setup-compressor@v0.1
@@ -131,74 +87,71 @@ jobs:
 
       - name: Generate patch
         run: |
-          ${{ github.workspace }}/util/generate-patch.bat `
-            xrCompress.exe
-          type `
-            *.log
-          move `
-            ${{ github.workspace }}/gamedata `
-            ${{ github.workspace }}/gamedata_full
-          move `
-            ${{ github.workspace }}/patch `
-            ${{ github.workspace }}/gamedata
+          Push-Location "${{ steps.paths.outputs.source_dir }}"
+          $compressor = "${{ steps.paths.outputs.bin_dir }}\\xrCompress.exe"
+          if (!(Test-Path $compressor)) {
+            throw "xrCompress.exe not found: $compressor"
+          }
+          ./util/generate-patch.bat "$compressor"
+          if (Test-Path "*.log") {
+            Get-Content *.log
+          }
+          move ./gamedata ./gamedata_full
+          move ./patch ./gamedata
+          Pop-Location
 
-      - name: Upload assets
-        uses: actions/upload-artifact@v6
-        with:
-          name: server-assets-${{ github.sha }}
-          path: |
-            gamedata/
-            .xrignore
-            fsgame.ltx
-          include-hidden-files: true
-
-  publish-server:
-    name: 'Publish server'
-
-    needs:
-      - pack-assets
-
-    strategy:
-      matrix:
-        system:
-          - windows-latest
-        platform:
-          - x64
-        preset:
-          - Server
-        config:
-          - RelWithDebInfo
-
-    runs-on: ${{ matrix.system }}
-
-    steps:
-      - name: Get server
-        uses: actions/download-artifact@v7
-        with:
-          name: server-binaries-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
-          path: build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/
-
-      - name: Get assets
-        uses: actions/download-artifact@v7
-        with:
-          name: server-assets-${{ github.sha }}
-          path: ./
-
-      - name: Move files
+      - name: Pack game archive
+        id: package
         run: |
-          mkdir `
-            ${{ github.workspace }}/bin
-          move `
-            ${{ github.workspace }}/build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*.* `
-            ${{ github.workspace }}/bin
+          $version = "${{ steps.version.outputs.value }}"
+          $sourceDir = "${{ steps.paths.outputs.source_dir }}"
+          $archiveName = "ixray-1.6-$version-engine-x64-game.zip"
+          $publishDir = "$env:GITHUB_WORKSPACE\\publish"
+          $stageDir = "$publishDir\\package-game"
+          $archivePath = "$publishDir\\$archiveName"
 
-      - name: Upload server
+          if (Test-Path $stageDir) {
+            Remove-Item $stageDir -Recurse -Force
+          }
+          if (Test-Path $archivePath) {
+            Remove-Item $archivePath -Force
+          }
+
+          New-Item -ItemType Directory -Path "$stageDir\\bin" -Force | Out-Null
+          Copy-Item "${{ steps.paths.outputs.bin_dir }}\\*.exe" "$stageDir\\bin\\" -Force
+          Copy-Item "${{ steps.paths.outputs.bin_dir }}\\*.dll" "$stageDir\\bin\\" -Force
+          Copy-Item "$sourceDir\\gamedata" "$stageDir\\gamedata" -Recurse -Force
+          Copy-Item "$sourceDir\\fsgame.ltx" "$stageDir\\fsgame.ltx" -Force
+          Copy-Item "$sourceDir\\.xrignore" "$stageDir\\.xrignore" -Force
+
+          $zipTool = "$env:ProgramFiles\\7-Zip\\7z.exe"
+          if (Test-Path $zipTool) {
+            Push-Location $stageDir
+            & $zipTool a -tzip $archivePath "bin" "gamedata" "fsgame.ltx" ".xrignore" -xr!*.pdb
+            Pop-Location
+          } else {
+            Compress-Archive -Path "$stageDir\\*" -DestinationPath $archivePath -Force
+          }
+
+          "archive=$archiveName" >> $env:GITHUB_OUTPUT
+          "path=$archivePath" >> $env:GITHUB_OUTPUT
+
+      - name: Upload package artifact
         uses: actions/upload-artifact@v6
         with:
-          name: server-publish-${{ matrix.system }}-${{ matrix.platform }}-${{ github.sha }}
-          path: |
-            bin/
-            gamedata/
-            .xrignore
-            fsgame.ltx
-          include-hidden-files: true
+          name: ${{ steps.package.outputs.archive }}
+          path: ${{ steps.package.outputs.path }}
+          if-no-files-found: warn
+
+      - name: Upload release asset
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ steps.package.outputs.path }}
+
+      - name: Unmap workspace drive
+        if: always()
+        run: |
+          if (Get-PSDrive -Name X -ErrorAction SilentlyContinue) {
+            cmd /c "subst X: /d"
+          }

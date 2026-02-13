@@ -29,7 +29,10 @@ void PatchConstantsHS(in InputPatch<p_bumped_new, 3> ip, in uint PatchID : SV_Pr
 
     if (doDiscard)
     {
-        Output.Edges[0] = Output.Edges[1] = Output.Edges[2] = Output.Inside = -1;
+        Output.Inside = -1;
+        Output.Edges[0] = -1;
+        Output.Edges[1] = -1;
+        Output.Edges[2] = -1;
     }
     #endif
 #endif

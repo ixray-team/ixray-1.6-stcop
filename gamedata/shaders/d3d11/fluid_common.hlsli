@@ -124,8 +124,8 @@ struct v2g_fluidsim_clip
     float2 LR : TEXCOORD2;
     float2 BT : TEXCOORD3;
     float2 DU : TEXCOORD4;
-    float3 clip0 : SV_ClipDistance0;
-    float3 clip1 : SV_ClipDistance1;
+    float3 clip0 : TEXCOORD5;
+    float3 clip1 : TEXCOORD6;
     float4 pos : SV_POSITION;
 };
 
@@ -136,8 +136,8 @@ struct g2p_fluidsim_clip
     float2 LR : TEXCOORD2; // 3D cell texcoords for the Left and Right neighbors
     float2 BT : TEXCOORD3; // 3D cell texcoords for the Bottom and Top neighbors
     float2 DU : TEXCOORD4; // 3D cell texcoords for the Down and Up neighbors
-    float3 clip0 : SV_ClipDistance0;
-    float3 clip1 : SV_ClipDistance1;
+    float3 clip0 : TEXCOORD5;
+    float3 clip1 : TEXCOORD6;
     float4 pos : SV_POSITION; // 2D slice vertex coordinates in homogenous clip space
     uint RTIndex : SV_RenderTargetArrayIndex; // used to choose the destination slice
 };
@@ -149,8 +149,8 @@ struct p_fluidsim_clip
     float2 LR : TEXCOORD2; // 3D cell texcoords for the Left and Right neighbors
     float2 BT : TEXCOORD3; // 3D cell texcoords for the Bottom and Top neighbors
     float2 DU : TEXCOORD4; // 3D cell texcoords for the Down and Up neighbors
-    float3 clip0 : SV_ClipDistance0;
-    float3 clip1 : SV_ClipDistance1;
+    float3 clip0 : TEXCOORD5;
+    float3 clip1 : TEXCOORD6;
 };
 
 /////////////////////////////////////////////////////////////////
@@ -161,8 +161,8 @@ struct v2g_fluidsim_dyn_aabb
 {
     float3 cell0 : TEXCOORD0;
     float3 velocity : TEXCOORD1;
-    float3 clip0 : SV_ClipDistance0;
-    float3 clip1 : SV_ClipDistance1;
+    float3 clip0 : TEXCOORD2;
+    float3 clip1 : TEXCOORD3;
     float4 pos : SV_POSITION;
 };
 
@@ -170,8 +170,8 @@ struct g2p_fluidsim_dyn_aabb
 {
     float3 cell0 : TEXCOORD0; // 3D cell coordinates (x,y,z in 0-dimension range)
     float3 velocity : TEXCOORD1; // speed of the point in local space
-    float3 clip0 : SV_ClipDistance0;
-    float3 clip1 : SV_ClipDistance1;
+    float3 clip0 : TEXCOORD2;
+    float3 clip1 : TEXCOORD3;
     float4 pos : SV_POSITION; // 2D slice vertex coordinates in homogenous clip space
     uint RTIndex : SV_RenderTargetArrayIndex; // used to choose the destination slice
 };
@@ -180,8 +180,8 @@ struct p_fluidsim_dyn_aabb
 {
     float3 cell0 : TEXCOORD0; // 3D cell coordinates (x,y,z in 0-dimension range)
     float3 velocity : TEXCOORD1;
-    float3 clip0 : SV_ClipDistance0;
-    float3 clip1 : SV_ClipDistance1;
+    float3 clip0 : TEXCOORD2;
+    float3 clip1 : TEXCOORD3;
 };
 
 //--------------------------------------------------------------------------------------

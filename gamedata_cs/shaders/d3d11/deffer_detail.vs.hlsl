@@ -40,17 +40,20 @@ float3x3 setMatrix (float3 hpb)
 
 void main(in v_detail I, out p_bumped_new O, uint instance_id : SV_InstanceID)
 {
-	//LVutner: Read our structured buffer
-	InstanceData det = detail_buffer[instance_id];
+    // Avoid whole-struct copy from StructuredBuffer: vkd3d may fail on this pattern.
+    float3 det_hpb = detail_buffer[instance_id].hpb;
+    float det_scale = detail_buffer[instance_id].scale;
+    float3 det_pos = detail_buffer[instance_id].pos;
+    float det_hemi = detail_buffer[instance_id].hemi;
 
-	float3x3 mmhpb = setMatrix(det.hpb);
+	float3x3 mmhpb = setMatrix(det_hpb);
 
-	float hemi = abs(det.hemi);
-	float sun = sign(det.hemi)*0.25f+0.25f;
+	float hemi = abs(det_hemi);
+	float sun = sign(det_hemi)*0.25f+0.25f;
 
-    float4 m0 = float4(mmhpb[0]*det.scale, det.pos.x);
-    float4 m1 = float4(mmhpb[1]*det.scale, det.pos.y);
-    float4 m2 = float4(mmhpb[2]*det.scale, det.pos.z);
+    float4 m0 = float4(mmhpb[0]*det_scale, det_pos.x);
+    float4 m1 = float4(mmhpb[1]*det_scale, det_pos.y);
+    float4 m2 = float4(mmhpb[2]*det_scale, det_pos.z);
 
     float4 pos, pos_old;
     pos.x = dot(m0, float4(I.pos.xyz, 1.0));
@@ -88,9 +91,9 @@ void main(in v_detail I, out p_bumped_new O, uint instance_id : SV_InstanceID)
 
     N.xyz = mul((float3x3)m_WV, N.xyz);
 
-    O.M1 = N.xxx;
-    O.M2 = N.yyy;
-    O.M3 = N.zzz;
+    O.M1 = float3(N.x, N.x, N.x);
+    O.M2 = float3(N.y, N.y, N.y);
+    O.M3 = float3(N.z, N.z, N.z);
 
     O.hpos = mul(m_WVP, pos);
 
@@ -100,7 +103,8 @@ void main(in v_detail I, out p_bumped_new O, uint instance_id : SV_InstanceID)
 
     O.hpos.xy += m_taa_jitter.xy * O.hpos.w;
 #else
-    O.hpos_curr = O.hpos_old = O.hpos;
+    O.hpos_old = O.hpos;
+    O.hpos_curr = O.hpos;
 #endif
 	O.snow_mask = 0.0;
 }

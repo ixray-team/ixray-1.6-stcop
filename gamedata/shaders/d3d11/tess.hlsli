@@ -32,7 +32,9 @@ float triLOD;
 
 void ComputeTessFactor(out float Edges[3] : SV_TessFactor, out float Inside : SV_InsideTessFactor)
 {
-    Edges[0] = Edges[1] = Edges[2] = triLOD;
+    Edges[0] = triLOD;
+    Edges[1] = triLOD;
+    Edges[2] = triLOD;
     Inside = triLOD;
 }
 
