@@ -158,7 +158,7 @@ void UIMainMenuForm::Draw()
 
 			DrawMenuItemI("Quit", ICON_FA_POWER_OFF, COMMAND_QUIT);
 			//ImGui::EndMenu();
-			EndMainMenuList
+		EndMainMenuList
 		
 
 		MainMenuList("Scene")
