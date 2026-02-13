@@ -110,7 +110,7 @@ public:
 	IC int			VIdatasize	()						{return vindices.size()*sizeof(int);}
 	IC int*			getPIdata	()						{return &*pindices.begin();}
 	IC int			PIdatasize	()						{return pindices.size()*sizeof(int);}
-	IC int			size		()						{return vm.size()/dim;}
+	IC int			size		() const				{return vm.size()/dim;}
 	IC void			resize		(int cnt)				{vm.resize(cnt*dim);vindices.resize(cnt);if (polymap) pindices.resize(cnt); }
 	IC void			appendUV	(const float u, const float v)	{vm.push_back(u);vm.push_back(v);}
 	IC void			appendUV	(const Fvector2& uv)			{appendUV(uv.x,uv.y);}
