@@ -119,7 +119,6 @@ struct v_editor
     float4 P : POSITION;
     float2 tc : TEXCOORD0;
     float3 N : NORMAL;
-    float4 color : COLOR0;
 };
 
 struct v_model
