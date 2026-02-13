@@ -24,6 +24,10 @@ class CParticleTool:
 
     shared_str	        m_MotionName;
     shared_str	        m_ObjectName;
+
+	Fvector m_Position;
+	Fvector m_Rotation;
+	
     // PE variables
     PS::CPEDef*			m_LibPED;
     PS::CParticleEffect*m_EditPE;
@@ -103,6 +107,13 @@ public:
         flSelectEffect		= (1<<6),
         flSetXFORM			= (1<<7),
     };
+
+	enum class PreviewTypes : u8
+	{
+		Object,
+		Transform,
+	};
+	PreviewTypes m_PreviewType;
     Flags32				m_Flags;
 protected:
 	xr_string			sel_eff_name;
