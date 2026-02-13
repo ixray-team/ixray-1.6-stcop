@@ -61,6 +61,12 @@ void CUICursor::InitInternal()
 	}
 
 	m_static->SetWidth(m_static->GetWidth() * UI().get_current_kx());
+
+	m_static_text = new CUIStatic();
+	m_static_text->SetWndSize(Fvector2().set(80.f, 10.f));
+	m_static_text->SetWndPos(Fvector2().set(m_static->GetWidth(), m_static->GetHeight()));
+	m_static_text->TextItemControl()->SetTextComplexMode(true);
+	m_static->AttachChild(m_static_text);
 }
 
 //--------------------------------------------------------------------

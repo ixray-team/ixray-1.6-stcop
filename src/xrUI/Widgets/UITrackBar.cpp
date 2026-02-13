@@ -8,6 +8,7 @@
 #include "../string_table.h"
 #include <sstream> // for std::ostringstream
 #include <iomanip> // for std::setprecision
+#include "../UICursor.h"
 
 #define DEF_CONTROL_HEIGHT		16.0f
 
@@ -42,6 +43,15 @@ bool CUITrackBar::OnMouseAction(float x, float y, EUIMessages mouse_action)
 			{
 				if (pInput->iGetAsyncBtnState(0))
 					UpdatePosRelativeToMouse();
+			}
+
+			if (m_pSlider->GetBtnStatic() && m_pSlider->CursorOverWindow())
+			{
+				GetUICursor().m_static_text->SetText(m_pSlider->GetBtnStatic()->GetText());
+			}
+			else
+			{
+				GetUICursor().m_static_text->SetText("");
 			}
 		}break;
 	case WINDOW_LBUTTON_DOWN:
@@ -559,4 +569,10 @@ void CUITrackBar::SetOptFBounds(float fmin, float fmax)
 		OnChangedOptValue	();
 		GetMessageTarget()->SendMessage(this, TRACK_VALUE_CHANGED, &m_f_val);
 	}
+}
+
+void CUITrackBar::OnFocusLost()
+{
+	CUIWindow::OnFocusLost();
+	GetUICursor().m_static_text->SetText("");
 }
