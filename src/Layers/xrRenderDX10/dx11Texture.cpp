@@ -353,15 +353,15 @@ _DDS_2D:
 			string1024 errorMsg;
 			xr_sprintf(errorMsg, sizeof(errorMsg),
 				"Failed to load texture '%s'\n"
-				"                         Error: %s"
-				"                         Error Code: (0x%08X)\n"
-				"                         Format: %s\n"
-				"                         Dimensions: %dx%d\n"
-				"                         Mip-levels: %d\n"
-				"                         Suggested solutions:\n"
-				"                         1. Check texture conversion settings\n"
-				"                         2. Verify GPU format support\n"
-				"                         3. Use DirectX TexTool for inspection",
+				"\t\t\t\tError: %s"
+				"\t\t\t\tError Code: (0x%08X)\n"
+				"\t\t\t\tFormat: %s\n"
+				"\t\t\t\tDimensions: %dx%d\n"
+				"\t\t\t\tMip-levels: %d\n"
+				"\t\t\t\tSuggested solutions:\n"
+				"\t\t\t\t1. Check texture conversion settings\n"
+				"\t\t\t\t2. Verify GPU format support\n"
+				"\t\t\t\t3. Use DirectX TexTool for inspection",
 				fname,
 				Debug.dxerror2string(hr), hr, formatName,
 				imageInfo.width, imageInfo.height,
