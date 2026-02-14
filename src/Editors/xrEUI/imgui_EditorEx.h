@@ -169,16 +169,29 @@ void IXEndMainMenuBar()
 
 		ImGui::SetCursorPos(ImGui::GetCursorPos() + ImVec2{ UI->GetMenuBarHeight()- style.WindowPadding.x, 12.f});
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4.0f, 6.0f));
-		if (ImGui::BeginTabBar("#TopBarView"))
+
+		if (!UI->GeneralTabs.empty() && ImGui::BeginTabBar("#TopBarView"))
 		{
-			if (ImGui::BeginTabItem("Scene View", nullptr, ImGuiTabItemFlags_SetSelected))
+			for (const auto& [Name, Callback ]: UI->GeneralTabs)
 			{
-				ImGui::EndTabItem();
+				bool ChangedColor = false;
+				if (Callback != nullptr && Callback())
+				{
+					ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 20, 20, 255));
+					ChangedColor = true;
+				}
+
+				if (ImGui::BeginTabItem(*Name, nullptr, ImGuiTabItemFlags_SetSelected))
+				{
+					ImGui::EndTabItem();
+				}
+
+				if (ChangedColor)
+				{
+					ImGui::PopStyleColor();
+				}
 			}
-			if (ImGui::BeginTabItem("Temp View"))
-			{
-				ImGui::EndTabItem();
-			}
+
 			ImGui::EndTabBar();
 		}
 		ImGui::PopStyleVar();

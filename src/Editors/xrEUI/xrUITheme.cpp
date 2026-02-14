@@ -33,15 +33,13 @@ void CUIThemeManager::Draw()
 
 		if (ImGui::Button("Theme 1"))
 		{
-			XRay::ImGui::SetupColorsList(0);
-			InitDefault();
+			InitDefault(0);
 		}
 		ImGui::SameLine();
 
 		if (ImGui::Button("Theme 2"))
 		{
-			XRay::ImGui::SetupColorsList(1);
-			InitDefault();
+			InitDefault(1);
 		}
 
 		ImGui::BeginChild("Theme", ImVec2(0, -ImGui::GetFrameHeightWithSpacing() - 10), true);
@@ -207,6 +205,8 @@ void CUIThemeManager::Draw()
 			ImGui::SliderFloat("Cell Padding X", &style.CellPadding.x, 0.f, 10.f, "%.1f");
 			ImGui::SliderFloat("Cell Padding Y", &style.CellPadding.y, 0.f, 10.f, "%.1f");
 
+			ImGui::SliderFloat("DockingSeparatorSize", &style.DockingSeparatorSize, 0.f, 10.f, "%.1f");
+
 
 			if (!IsDocked)
 				IsDocked = ImGui::IsWindowDocked();
@@ -215,28 +215,20 @@ void CUIThemeManager::Draw()
 		}
 		ImGui::EndChild();
 		ImGui::Spacing();
-
-		if (ImGui::Button("Default", button_size))
-		{
-			InitDefault(true);
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Save to...", button_size))
-		{
-			SaveTo();
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Load from...", button_size))
-		{
-			LoadFrom();
-		}
 	}
 	ImGui::End();
 }
 
-void CUIThemeManager::InitDefault(bool Forced)
+void CUIThemeManager::InitDefault(int InThemeID)
 {
+	if (InThemeID >= 0)
+	{
+		ThemeID = InThemeID;
+	}
+
 	XRay::ImGui::MakeEditorTheme();
+	XRay::ImGui::SetupColorsList(ThemeID);
+
 	ImGuiStyle& style = ImGui::GetStyle();
 	ImVec4* colors = style.Colors;
 	colors[ImGuiCol_MenuBarBg] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::BackgroundTint);
@@ -248,6 +240,7 @@ void CUIThemeManager::InitDefault(bool Forced)
 	colors[ImGuiCol_Button] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ButtonTint);
 	colors[ImGuiCol_TableHeaderBg] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ButtonTint);
 	colors[ImGuiCol_Tab] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TabBarTint);
+	colors[ImGuiCol_TitleBg] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TabBarTint);
 	colors[ImGuiCol_TabDimmed] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TabBarTint);
 	colors[ImGuiCol_TabDimmedSelected] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToolbarTint);
 	colors[ImGuiCol_TabActive] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToolbarTint);
@@ -257,6 +250,8 @@ void CUIThemeManager::InitDefault(bool Forced)
 	style.PopupBorderSize = 0.0f;
 	style.FrameBorderSize = 0.0f;
 	style.TabBorderSize = 0.0f;
+	style.ItemInnerSpacing.x = 2.5f;
+	style.DockingSeparatorSize = 5.f;
 
 	log_color_default = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
 	log_color_error = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
@@ -269,24 +264,4 @@ void CUIThemeManager::InitDefault(bool Forced)
 void CUIThemeManager::Show(bool value)
 {
 	bOpen = value;
-}
-
-void CUIThemeManager::Save()
-{
-}
-
-
-void CUIThemeManager::SaveTo()
-{
-}
-
-
-void CUIThemeManager::LoadFrom()
-{
-	InitDefault(true);
-}
-
-void CUIThemeManager::Load()
-{
-	InitDefault(true);
 }

@@ -139,8 +139,15 @@ void UIObjectList::Update()
 
 void UIObjectList::Show()
 {
-	if (Form == nullptr)Form = new UIObjectList();
-	Refresh();
+	if (Form == nullptr)
+	{
+		Form = new UIObjectList();
+	}
+
+	if (!Form->bOpen)
+	{
+		Refresh();
+	}
 }
 
 void UIObjectList::Close()
