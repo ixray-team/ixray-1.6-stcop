@@ -81,7 +81,10 @@ float UIObjectListItem::Draw()
 			bool bStart = UIObjectList::Form->m_LastSelected && UIObjectList::Form->m_LastSelected->Owner == Owner;
 			if (UIObjectList::Form->m_Filter[0])
 			{
-				if (strstr(UIObjectList::Form->m_LastSelected->Object->GetName(), UIObjectList::Form->m_Filter) == 0)bStart = false;
+				if (UIObjectList::Form->m_LastSelected != nullptr && strstr(UIObjectList::Form->m_LastSelected->Object->GetName(), UIObjectList::Form->m_Filter) == 0)
+				{
+					bStart = false;
+				}
 			}
 			if (bStart)
 			{
@@ -157,31 +160,59 @@ float UIObjectListItem::Draw()
 void UIObjectListItem::DrawRoot()
 {
 	float ScrollPos = -1;
-
 	size_t SelectedObjectsCounter = 0;
 
-	for (UITreeItem* Item : Items)
+	//if (strlen(UIObjectList::Form->m_Filter) != 0)
 	{
-		UIObjectListItem* CastedItem = ((UIObjectListItem*)Item);
-
-		float NewScrollPos = CastedItem->Draw();
-		
-		if (NewScrollPos != -1)
+		for (UITreeItem* Item : Items)
 		{
-			ScrollPos = NewScrollPos;
-		}
+			UIObjectListItem* CastedItem = ((UIObjectListItem*)Item);
 
-		if (CastedItem->Object->Selected())
-		{
-			SelectedObjectsCounter++;
+			float NewScrollPos = CastedItem->Draw();
+
+			if (NewScrollPos != -1)
+			{
+				ScrollPos = NewScrollPos;
+			}
+
+			if (CastedItem->Object->Selected())
+			{
+				SelectedObjectsCounter++;
+			}
 		}
 	}
+	//else
+	//{
+	//	ImGuiListClipper clipper;
+	//	clipper.Begin((int)Items.size());
+	//
+	//	while (clipper.Step())
+	//	{
+	//		for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; ++i)
+	//		{
+	//			UIObjectListItem* CastedItem = (UIObjectListItem*)Items[i];
+	//
+	//			float NewScrollPos = CastedItem->Draw();
+	//
+	//			if (NewScrollPos != -1)
+	//			{
+	//				ScrollPos = NewScrollPos;
+	//			}
+	//
+	//			if (CastedItem->Object->Selected())
+	//			{
+	//				SelectedObjectsCounter++;
+	//			}
+	//		}
+	//	}
+	//}
 
 	if (ScrollPos > 0 && SelectedObjectsCounter < 2)
 	{
 		ImGui::SetScrollY(ScrollPos);
 	}
 }
+
 
 void UIObjectListItem::ClearSelcted(UIObjectListItem* Without)
 {

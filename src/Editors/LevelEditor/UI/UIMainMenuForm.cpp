@@ -118,8 +118,6 @@ void UIMainMenuForm::Draw()
 	if (IXBeginMainMenuBar())
 	{
 		ImGui::SameLine();
-		DrawLevelName();
-		ImGui::SameLine();
 
 		ImVec2 cp;
 
@@ -677,21 +675,20 @@ void UIMainMenuForm::Draw()
 			}
 		EndMainMenuList
 
-		//ImGui::Separator(); <-- tyt this dont work
-		//ImGui::SameLine();
 		{
 			bool selected = UIObjectList::IsOpen();
-			
-			//if (ImGui::MenuItem("Object List", "", &selected))
-			ImGui::Checkbox("Object List", &selected);
-			if (&selected)
+
+			if (ImGui::Checkbox("Object List", &selected))
 			{
-				if (selected)
-					UIObjectList::Show();
-				else
+				if (UIObjectList::IsOpen())
+				{
 					UIObjectList::Close();
+				}
+				else
+				{
+					UIObjectList::Show();
+				}
 			}
-			
 		}
 
 		IXEndMainMenuBar();
@@ -699,33 +696,6 @@ void UIMainMenuForm::Draw()
 
 	ImGui::PopStyleColor();
 	ImGui::PopStyleVar();
-}
-
-void UIMainMenuForm::DrawLevelName()
-{
-	if (Scene->full_name.empty())
-		return;
-
-	ImVec4 CheckMarkColor = ImGui::GetStyle().Colors[ImGuiCol_CheckMark];
-
-	if (Scene->IsUnsaved())
-	{
-		CheckMarkColor = ImColor(255, 22, 22);
-	}
-
-	shared_str LevelPath = xr_path(Scene->full_name).stem().string().c_str();
-	
-
-	ImGui::SameLine();
-	ImGui::SetCursorPosX(ImGui::GetCursorPosX() - 7);
-	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
-	ImGui::PushStyleColor(ImGuiCol_Text, CheckMarkColor);
-	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3, 0));
-	ImGui::Button(*LevelPath, ImVec2(0, 20));
-	ImGui::PopStyleVar();
-	ImGui::PopStyleColor();
-	ImGui::SameLine();
-	//ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 5);
 }
 
 void UIMainMenuForm::ExportLevelAsArchive()
