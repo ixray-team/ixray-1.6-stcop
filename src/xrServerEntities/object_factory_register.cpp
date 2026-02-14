@@ -193,7 +193,11 @@
 #	include "../xrGame/InventoryItems/Dosimeter/Dosimeter.h"
 #	include "InteractiveObject.h"
 
-#include "antigas_filter.h"
+#   include "antigas_filter.h"
+#	include "../xrGame/PowerBank.h"
+#	include "../xrGame/PowerCell.h"
+#	include "nvg.h"
+
 #endif // NO_XR_GAME
 
 #ifndef NO_XR_GAME
@@ -361,7 +365,10 @@ void CObjectFactory::register_classes	()
 	ADD(CExplosiveItem			,CSE_ALifeItemExplosive			,CLSID_IITEM_EXPLOSIVE			,"obj_explosive");
 	
 	ADD(AntigasFilter			,CSE_ALifeItem					,CLSID_IITEM_ANTIGAS_FILTER		,"obj_antigas_filter");
-	
+	ADD(PowerCell				,CSE_ALifeItem					,CLSID_IITEM_POWER_CELL			,"obj_power_cell");
+    ADD(PowerBank				,CSE_ALifeItem					,CLSID_IITEM_POWER_BANK			,"obj_power_bank");
+	ADD(CNVG					,CSE_ALifeItem					,CLSID_IITEM_NIGHT_VISION		,"obj_night_vision");
+
 	//Info Document
 	ADD(CInfoDocument			,CSE_ALifeItemDocument			,CLSID_IITEM_DOCUMENT			,"obj_document");
 	ADD(CInventoryItemObject	,CSE_ALifeItem					,CLSID_IITEM_ATTACH				,"obj_attachable");

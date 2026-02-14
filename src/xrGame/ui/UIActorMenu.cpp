@@ -46,6 +46,8 @@
 #include "UIInvUpgradeInfo.h"
 #include "../../xrUI/Widgets/UIGamepadLegend.h"
 #include "ui_drop_amount.h"
+#include "PowerCell.h"
+#include "PowerBank.h"
 
 void CUIActorMenu::OnSortTabChanged(CUIWindow* w, void* pData)
 {
@@ -824,6 +826,66 @@ void CUIActorMenu::highlight_armament( PIItem item, CUIDragDropListEx* ddlist )
 	highlight_weapons_for_addon( item, ddlist );
 	highlight_related_config_sections(item, ddlist); // FFx001 ++
 	highlight_antigas_for_filter(item, ddlist); // FFx001 ++
+	highlight_power_banks_for_power_cell(item, ddlist); // FFx001 ++
+	highlight_power_manager_for_power_cell(item, ddlist); // FFx001 ++
+}
+
+// FFx0001 ++
+void CUIActorMenu::highlight_power_manager_for_power_cell(PIItem item, CUIDragDropListEx* ddlist)
+{
+	VERIFY(item);
+	VERIFY(ddlist);
+
+	if (PowerCell* oPowerCell = smart_cast<PowerCell*>(item->cast_inventory_item()))
+	{
+		u32 const cnt = ddlist->ItemsCount();
+		for (u32 i = 0; i < cnt; ++i)
+		{
+			CUICellItem* ci = ddlist->GetItemIdx(i);
+			PIItem _item = (PIItem)ci->m_pData;
+			if (!_item)
+			{
+				continue;
+			}
+
+			if (IPowerManager* oPowerManager = smart_cast<IPowerManager*>(_item->cast_inventory_item()))
+			{
+				if (oPowerManager->IsPowerCellInWhiteList(item->m_section_id))
+				{
+					ci->m_select_armament = true;
+				}
+			}
+		}
+	}
+}
+
+// FFx0001 ++
+void CUIActorMenu::highlight_power_banks_for_power_cell(PIItem item, CUIDragDropListEx* ddlist)
+{
+	VERIFY(item);
+	VERIFY(ddlist);
+
+	if (PowerCell* oPowerCell = smart_cast<PowerCell*>(item->cast_inventory_item()))
+	{
+		u32 const cnt = ddlist->ItemsCount();
+		for (u32 i = 0; i < cnt; ++i)
+		{
+			CUICellItem* ci = ddlist->GetItemIdx(i);
+			PIItem _item = (PIItem)ci->m_pData;
+			if (!_item)
+			{
+				continue;
+			}
+
+			if (PowerBank* oPowerBank = smart_cast<PowerBank*>(_item->cast_inventory_item()))
+			{
+				if (oPowerBank->IsPowerCellInWhiteList(item->m_section_id))
+				{
+					ci->m_select_armament = true;
+				}
+			}
+		}
+	}
 }
 
 // FFx0001 ++

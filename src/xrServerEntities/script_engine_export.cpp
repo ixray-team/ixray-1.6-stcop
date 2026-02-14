@@ -33,6 +33,8 @@
 #	include "EnhancementEditionLuaLayer.h"
 #	include "InteractiveObject.h"
 #	include "antigas_filter.h"
+#	include "PowerCell.h"
+#	include "nvg.h"
 #endif
 
 extern void CompatibilityBringeExport(lua_State*);
@@ -291,6 +293,8 @@ void export_classes	(lua_State *L)
 	CInteractiveObject::script_register(L);
 
 	AntigasFilter::script_register(L);
+	PowerCell::script_register(L);
+	CNVG::script_register(L);
 
 	// Ехидна Эдишен
 	ExportEELayer(L);

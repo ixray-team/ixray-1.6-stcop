@@ -12,6 +12,8 @@
 #include "specific_character.h"
 #include "alife_registry_wrappers.h"
 #include "../xrScripts/script_engine.h"
+#include "../ui/UIGameCustom.h"
+#include "../ui/UIPdaWnd.h"
 
 BOOL CPda::net_Spawn(CSE_Abstract* DC)
 {
@@ -40,6 +42,9 @@ void CPda::Load(LPCSTR section)
 
 	m_fRadius = pSettings->r_float(section, "radius");
 	m_functor_str = READ_IF_EXISTS(pSettings, r_string, section, "play_function", "");
+
+	IPowerManager::SetSelfObject(cast_inventory_item(), H_Parent());
+	IPowerManager::Load(section, cast_inventory_item());
 }
 
 void CPda::shedule_Update(u32 dt)
@@ -50,6 +55,23 @@ void CPda::shedule_Update(u32 dt)
 	{
 		return;
 	}
+
+	if (IPowerManager::IsAllow() && strcmp(m_section_id.c_str(), "device_pda") == 0)
+	{
+		if (CUIGameCustom* uic = CurrentGameUI())
+		{
+			bool is_shown_pda = uic->PdaMenu()->IsShown();
+			float left_power = IPowerManager::GetLeftPowerValue();
+			IPowerManager::SetEnabled(is_shown_pda);
+			if (is_shown_pda && left_power <= 0)
+			{
+				uic->HidePdaMenu();
+			}
+
+			Actor()->set_pda_disabled(left_power <= 0);
+		}
+	}
+
 
 	Position().set(H_Parent()->Position());
 
@@ -203,12 +225,14 @@ void CPda::save(NET_Packet& output_packet)
 {
 	inherited::save(output_packet);
 	save_data(m_sFullName, output_packet);
+	IPowerManager::net_save(output_packet);
 }
 
 void CPda::load(IReader& input_packet)
 {
 	inherited::load(input_packet);
 	load_data(m_sFullName, input_packet);
+	IPowerManager::net_load(input_packet);
 }
 
 CObject* CPda::GetOwnerObject()

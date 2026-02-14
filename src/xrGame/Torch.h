@@ -3,10 +3,11 @@
 #include "inventory_item_object.h"
 #include "HudSound.h"
 #include "../xrScripts/script_export_space.h"
+#include "IPowerManager.h"
 
 class CLAItem;
 
-class CTorch final : public CInventoryItemObject
+class CTorch final : public CInventoryItemObject, public IPowerManager
 {
 	using inherited = CInventoryItemObject;
 
@@ -25,6 +26,7 @@ protected:
 	ref_glow glow_render = {};
 	Fvector	m_focus = zero_vel;
 	ref_sound m_switch_sound = {};
+
 private:
 	inline bool can_use_dynamic_lights();
 
@@ -37,6 +39,9 @@ public:
 	virtual void net_Destroy() override;
 	virtual void net_Export(NET_Packet& P) override;				// export to server
 	virtual void net_Import(NET_Packet& P) override;				// import from server
+
+	virtual void save(NET_Packet& output_packet) override;
+	virtual void load(IReader& input_packet) override;
 
 	virtual void OnH_A_Chield() override;
 	virtual void OnH_B_Independent(bool just_before_destroy) override;
