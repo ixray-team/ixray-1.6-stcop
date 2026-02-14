@@ -171,10 +171,10 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 					SetZoomRndSeed(ZoomRndSeed);
 				if (cmd == kWPN_FIRE)
 					SetShotRndSeed(ShotRndSeed);
-				IR_OnKeyboardPress(cmd);
+				IR_OnKeyboardPress(get_action_dik((EGameActions)cmd));
 			}
 			else
-				IR_OnKeyboardRelease(cmd);
+				IR_OnKeyboardRelease(get_action_dik((EGameActions)cmd));
 		}
 		break;
 	case GEG_PLAYER_START_HUD_ANIMATOR:
