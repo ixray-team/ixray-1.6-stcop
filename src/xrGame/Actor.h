@@ -21,6 +21,7 @@
 #include "CustomDevice.h"
 #include "EffectorNightVision.h"
 #include "HudAnimatorManager.h"
+#include "nvg.h"
 
 using namespace ACTOR_DEFS;
 
