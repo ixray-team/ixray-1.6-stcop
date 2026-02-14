@@ -688,9 +688,13 @@ bool SceneBuilder::BuildMesh(	const Fmatrix& parent,
 			break; 
 		}
 		u32 dwInvalidFaces 	= 0;
-		for (IntIt f_it=face_lst.begin(); f_it!=face_lst.end(); ++f_it)
+		for (int& f_it : face_lst)
 		{
-			st_Face& face = mesh->m_Faces[*f_it];
+			if (!IVERIFY(f_it < mesh->m_FaceCount))
+			{
+				continue;
+			}
+			st_Face& face = mesh->m_Faces[f_it];
 			Fvector p0, p1, p2;
 			real_transform.transform_tiny(p0, mesh->m_Vertices[face.pv[0].pindex]);
 			real_transform.transform_tiny(p1, mesh->m_Vertices[face.pv[1].pindex]);
@@ -707,7 +711,7 @@ bool SceneBuilder::BuildMesh(	const Fmatrix& parent,
 			R_ASSERT				(face_it<face_cnt);
 			b_face& first_face 		= faces[face_it];
 			{
-				smgroups[face_it]			= mesh->m_SmoothGroups[*f_it];
+				smgroups[face_it]			= mesh->m_SmoothGroups[f_it];
 				smgroups[face_it]			&= ~(1<<3);
 
 				first_face.dwMaterial 		= (u16)m_id;
@@ -742,7 +746,7 @@ bool SceneBuilder::BuildMesh(	const Fmatrix& parent,
 				b_face& second_face 		= faces[face_it];
 				second_face.dwMaterial 		= first_face.dwMaterial;
 				second_face.dwMaterialGame 	= first_face.dwMaterialGame;
-				smgroups[face_it]			= mesh->m_SmoothGroups[*f_it];
+				smgroups[face_it]			= mesh->m_SmoothGroups[f_it];
 				smgroups[face_it]			|= (1<<3);
 
 				for (int k=0; k<3; ++k)
