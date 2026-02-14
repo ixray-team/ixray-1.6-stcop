@@ -44,7 +44,7 @@ void CWeaponStatMgun::OnKeyboardRelease(int dik)
 	if (Remote())
 		return;
 
-	switch (dik)
+	switch (get_binded_action(dik))
 	{
 	case kWPN_FIRE:
 		FireEnd();
