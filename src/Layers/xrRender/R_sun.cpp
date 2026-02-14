@@ -332,16 +332,7 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 	}
 
 	// Fill the database
-#ifdef USE_DX11
-	if (cascade_ind == (m_sun_cascades.size() - 1) && !!RImplementation.o.offscreen_reflecitons)
-	{
-		r_dsgraph_render_subspace(pOutdoorSector, cull_xform, cull_COP, TRUE);
-	}
-	else 
-#endif
-	{
-		r_dsgraph_render_subspace(pOutdoorSector, &cull_frustum, cull_xform, cull_COP, TRUE);
-	}
+	r_dsgraph_render_subspace(pOutdoorSector, cull_xform, cull_COP, TRUE);
 
 	// Finalize & Cleanup
 	fuckingsun->X.D.combine = cull_xform;
