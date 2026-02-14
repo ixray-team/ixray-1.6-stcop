@@ -271,11 +271,25 @@ void CCustomPreferences::Edit()
 extern bool bAllowLogCommands;
 void CCustomPreferences::Load()
 {
+	if (!JSONData.contains("editor_prefs"))
+	{
+		return;
+	}
+
 	psDeviceFlags.flags = JSONData["editor_prefs"]["device_flags"];
 	psSoundFlags.flags = JSONData["editor_prefs"]["sound_flags"];
 
+	if (JSONData["editor_prefs"].contains("theme"))
+	{
+		CUIThemeManager& ThemeInstance = CUIThemeManager::Get();
+		int ThemeID = JSONData["editor_prefs"]["theme"];
+		ThemeInstance.ThemeID = (ThemeID);
+	}
+
 	if (JSONData["editor_prefs"].contains("sound_volume"))
+	{
 		sound_volume = JSONData["editor_prefs"]["sound_volume"];
+	}
 
 	Tools->m_Settings.flags = JSONData["editor_prefs"]["tools_settings"], Tools->m_Settings.flags;
 
@@ -375,6 +389,9 @@ void CCustomPreferences::Load()
 
 void CCustomPreferences::Save()
 {
+	CUIThemeManager& ThemeInstance = CUIThemeManager::Get();
+
+	JSONData["editor_prefs"]["theme"] = ThemeInstance.ThemeID;
 	JSONData["editor_prefs"]["device_flags"] = psDeviceFlags.flags;
 	JSONData["editor_prefs"]["sound_flags"] = psSoundFlags.flags;
 	JSONData["editor_prefs"]["sound_volume"] = sound_volume;
@@ -457,8 +474,6 @@ void CCustomPreferences::Save()
 	// load shortcuts
 	SaveShortcuts(JSONData);
 	UI->SaveSettings(JSONData);
-
-	CUIThemeManager::Get().Save();
 }
 
 void CCustomPreferences::Draw()
