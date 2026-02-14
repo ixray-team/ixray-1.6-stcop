@@ -93,7 +93,9 @@ protected:
 //HolderCustom
 public:
 	virtual bool			Use					(const Fvector& pos,const Fvector& dir,const Fvector& foot_pos) {return !Owner();};
+	virtual void			OnGamepadAxisMove	(int id, Fvector2 value) {};
 	virtual void			OnMouseMove			(int x, int y);
+	virtual void			OnGamepadKeyPress	(int id){};
 	virtual void			OnKeyboardPress		(int dik);
 	virtual void			OnKeyboardRelease	(int dik);
 	virtual void			OnKeyboardHold		(int dik);
