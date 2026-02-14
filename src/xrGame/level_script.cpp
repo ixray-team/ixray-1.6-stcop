@@ -1668,6 +1668,23 @@ void CLevel::script_register(lua_State *L)
 	class_<CEnvironment>("CEnvironment")
 		.def("current",							current_environment);
 
+	module(L)
+	[
+		class_<CFFxRandom>("FFxRandom")
+			.def(constructor<>())
+			.def(constructor<u32, u32>())
+			.def("is_counter_valid", &CFFxRandom::is_counter_valid)
+			.def("get_seed", &CFFxRandom::get_seed)
+			.def("get_counter", &CFFxRandom::get_counter)
+			.def("set_state", &CFFxRandom::set_state)
+			.def("next_int", &CFFxRandom::next_int)
+			.def("next_int_range", &CFFxRandom::next_int_range)
+			.def("next_float", &CFFxRandom::next_float)
+			.def("next_float_range", &CFFxRandom::next_float_range)
+			.def("next_bool", &CFFxRandom::next_bool)
+			.def("next_bool_probability", &CFFxRandom::next_bool_probability)
+	];
+
 	module(L,"level")
 	[
 		class_<enum_exporter<ESPATIAL_TYPE>>("e_spatial_type")
@@ -1931,6 +1948,7 @@ void CLevel::script_register(lua_State *L)
 		def("remove_from_ranking", &remove_human_from_top_list),
 		def("get_actor_ranking", &get_actor_ranking)
 	];
+
 	module(L)
 	[
 	   class_<CRayPick>("ray_pick")
