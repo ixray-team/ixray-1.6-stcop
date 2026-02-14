@@ -22,22 +22,28 @@ void CEditableMesh::GenerateCFModel()
 
 	// double sided
 	CL.reserve(m_FaceCount);
-	for (SurfFacesPairIt sp_it = m_SurfFaces.begin(); sp_it != m_SurfFaces.end(); sp_it++)
+	for (auto& Surf : m_SurfFaces)
 	{
-		IntVec& face_lst = sp_it->second;
-		for (IntIt it = face_lst.begin(); it != face_lst.end(); it++)
+		for (int face_id : Surf.second)
 		{
-			st_Face& F = m_Faces[*it];
-			CL.add_face_D(m_Vertices[F.pv[0].pindex], m_Vertices[F.pv[1].pindex], m_Vertices[F.pv[2].pindex], *it);
-			if (sp_it->first->m_Flags.is(CSurface::sf2Sided))
+			if (!IVERIFY(face_id >=0 && face_id < m_FaceCount))
 			{
-				CL.add_face_D(m_Vertices[F.pv[2].pindex], m_Vertices[F.pv[1].pindex], m_Vertices[F.pv[0].pindex], *it);
+				Msg("Invalid face id [%d] in surface [%s] in mesh [%s]!", face_id, Surf.first->m_Name.c_str(), m_Name.c_str());
+				continue;
+			}
+			st_Face& F = m_Faces[face_id];
+			CL.add_face_D(m_Vertices[F.pv[0].pindex], m_Vertices[F.pv[1].pindex], m_Vertices[F.pv[2].pindex], face_id);
+			if (Surf.first->m_Flags.is(CSurface::sf2Sided))
+			{
+				CL.add_face_D(m_Vertices[F.pv[2].pindex], m_Vertices[F.pv[1].pindex], m_Vertices[F.pv[0].pindex], face_id);
 			}
 		}
 	}
-
-	m_CFModel = new CDB::MODEL();
-	m_CFModel->build(CL.getV(), CL.getVS(), CL.getT(), CL.getTS(), nullptr, nullptr, nullptr, false, false);
+	if (I_ASSERT(CL.getVS() >= 4 && CL.getTS() >= 2))
+	{
+		m_CFModel = new CDB::MODEL();
+		m_CFModel->build(CL.getV(), CL.getVS(), CL.getT(), CL.getTS(), nullptr, nullptr, nullptr, false, false);
+	}
 }
 
 void CEditableMesh::RayQuery(SPickQuery& pinf)
@@ -108,6 +114,14 @@ bool CEditableMesh::RayPick(float& distance, const Fvector& start, const Fvector
 	{
 		GenerateCFModel();
 		m_CFModel->wait_loading();
+	}
+	if (!m_CFModel)
+	{
+		return false;
+	}
+	if (!m_CFModel)
+	{
+		return false;
 	}
 
 	XRC.ray_options(CDB::OPT_ONLYNEAREST | CDB::OPT_CULL);

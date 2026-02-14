@@ -1521,12 +1521,16 @@ T *CLocatorAPI::r_open_impl	(const char* path, const char* _fname)
 		file_from_cache(R, fname, sizeof(fname), *desc, source_name);
 	}
 	else
+	{
 		file_from_archive	(R,fname,*desc);
+	}
 
 	if (R && m_Flags.is(flBuildCopy|flReady))
+	{
 		copy_file_to_build	(R,source_name);
+	}
 
-	return (R);
+	return R;
 }
 
 CStreamReader* CLocatorAPI::rs_open(const char* path, const char* _fname)
