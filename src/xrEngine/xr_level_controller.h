@@ -91,6 +91,9 @@ enum EGameActions
 	kUSE_BANDAGE,
 	kUSE_MEDKIT,
 	kENGINE,
+	kBRAKE,
+	kTRANSMISSION_UP,
+	kTRANSMISSION_DOWN,
 
 	kCUSTOM1,
 	kCUSTOM2,
@@ -142,16 +145,24 @@ enum _key_group
 	_sp		=	_both | (1<<1)	,
 	_mp		=	_both | (1<<2)	,
 };
+enum _action_group
+{
+	agDefault	=	(1<<0),
+	agTransport	=	(1<<2),
+	agUiGeneral	=	(1<<3),
+};
 
 extern ENGINE_API _key_group g_current_keygroup;
 
 ENGINE_API bool is_group_not_conflicted(_key_group g1, _key_group g2);
+ENGINE_API bool is_action_group_matching(_action_group g1, _action_group g2);
 
 struct _action
 {
 	LPCSTR			action_name;
 	EGameActions	id;
 	_key_group		key_group;
+	_action_group	action_group;
 };
 
 ENGINE_API LPCSTR			dik_to_keyname			(int _dik);
@@ -179,7 +190,7 @@ extern ENGINE_API _binding g_key_bindings[];
 
 ENGINE_API bool				is_binded			(EGameActions action_id, int dik);
 ENGINE_API int					get_action_dik		(EGameActions action_id, int idx=-1);
-ENGINE_API EGameActions		get_binded_action	(int dik);
+ENGINE_API EGameActions		get_binded_action	(int dik, _action_group _ai = agDefault);
 
 ENGINE_API void	 CCC_RegisterInput();
 
