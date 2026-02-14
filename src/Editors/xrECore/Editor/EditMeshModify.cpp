@@ -238,9 +238,14 @@ bool CEditableMesh::OptimizeFace(st_Face& face)
 		}
 	}
 
-	if ((mface[0] == mface[1]) || (mface[1] == mface[2]) || (mface[0] == mface[2]))
-	{
-		Msg("! Optimize: Invalid face found in %s at [%.3f, %.3f, %.3f]. Removed", *m_Name, mface[0], mface[1], mface[2]);
+	if ((mface[0] == mface[1]) || (mface[1] == mface[2]) || (mface[0] == mface[2])){
+		Msg("!Optimize [Obj %s, Mesh %s]: Invalid face found [v1 = [%f, %f, %f], v2 = [%f, %f, %f], v3 = [%f, %f, %f]]. Removed.",
+			m_Parent->m_LibName.c_str(),
+			m_Name.c_str(),
+			points[0].x, points[0].y, points[0].z,
+			points[1].x, points[1].y, points[1].z,
+			points[2].x, points[2].y, points[2].z
+			);
 		return false;
 	}
 	else
@@ -342,6 +347,10 @@ void CEditableMesh::OptimizeMesh(bool NoOpt)
             m_FaceCount	= m_FaceCount-i_del_face;
             xr_free		(old_faces);
             xr_free		(old_sg);
+			I_ASSERT_M(m_FaceCount > 1, "!Optimize [Obj %s, Mesh %s]: Invalid face count after optimize. Is mesh valid?",
+				m_Parent->m_LibName.c_str(),
+				m_Name.c_str()
+			);
 		}
 	}
 }
