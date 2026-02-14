@@ -34,6 +34,11 @@ CUIArtefactDetectorElite& CEliteDetector::ui()
 
 void CEliteDetector::UpdateAf()
 {
+	if (m_ui == nullptr)
+	{
+		return;
+	}
+
 	ui().Clear();
 
 	if (m_artefacts.m_ItemInfos.empty())
@@ -254,6 +259,11 @@ void CScientificDetector::UpdateWork()
 {
 	ui().Clear();
 
+	if (!m_bWorking)
+	{
+		return;
+	}
+
 	CAfList::ItemsMapIt ait_b = m_artefacts.m_ItemInfos.begin();
 	CAfList::ItemsMapIt ait_e = m_artefacts.m_ItemInfos.end();
 	CAfList::ItemsMapIt ait = ait_b;
@@ -297,10 +307,11 @@ void CScientificDetector::shedule_Update(u32 dt)
 {
 	inherited::shedule_Update(dt);
 
-	if (!H_Parent())
+	if (!H_Parent() || !m_bWorking)
 	{
 		return;
 	}
+
 
 	Fvector P;
 	P.set(H_Parent()->Position());
