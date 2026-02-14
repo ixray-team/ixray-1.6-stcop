@@ -559,6 +559,11 @@ void CInventoryOwner::SetIcon(const shared_str& iconName, bool is_outfit_icon)
 
 void CInventoryOwner::OnItemDrop(CInventoryItem* inventory_item, bool just_before_destroy)
 {
+	if (CNVG* nvg = smart_cast<CNVG*>(inventory_item))
+	{
+		nvg->OnItemDrop();
+	}
+
 	CGameObject* object = cast_game_object();
 	VERIFY(object);
 	object->callback(GameObject::eOnItemDrop)(inventory_item->object().lua_game_object());
@@ -575,6 +580,11 @@ void CInventoryOwner::OnItemBelt(CInventoryItem* inventory_item, const SInvItemP
 
 void CInventoryOwner::OnItemRuck(CInventoryItem* inventory_item, const SInvItemPlace& previous_place)
 {
+	if (CNVG* nvg = smart_cast<CNVG*>(inventory_item))
+	{
+		nvg->OnItemRuck();
+	}
+
 	CGameObject* object = cast_game_object();
 	VERIFY(object);
 	object->callback(GameObject::eItemToRuck)(inventory_item->object().lua_game_object());
@@ -584,6 +594,11 @@ void CInventoryOwner::OnItemRuck(CInventoryItem* inventory_item, const SInvItemP
 
 void CInventoryOwner::OnItemSlot(CInventoryItem* inventory_item, const SInvItemPlace& previous_place)
 {
+	if (CNVG* nvg = smart_cast<CNVG*>(inventory_item))
+	{
+		nvg->OnItemToSlot();
+	}
+
 	CGameObject* object = cast_game_object();
 	VERIFY(object);
 	object->callback(GameObject::eItemToSlot)(inventory_item->object().lua_game_object());
