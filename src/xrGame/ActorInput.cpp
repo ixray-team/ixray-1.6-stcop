@@ -47,6 +47,7 @@
 #include "CameraFirstEye.h"
 #include "Grenade.h"
 #include "InteractiveObject.h"
+#include "nvg.h"
 
 extern u32 hud_adj_mode;
 
@@ -1560,7 +1561,10 @@ void CActor::StartNVPPE()
 
 void CActor::SwitchNightVision()
 {
-	bool has_nvg = GetOutfit() && GetOutfit()->GetNV_Sect().size() > 0 || GetHelmet() && GetHelmet()->GetNV_Sect().size() > 0;
+	PIItem item_from_slot = inventory().ItemFromSlot(NVG_SLOT);
+	CNVG* oNVG = item_from_slot != nullptr ? smart_cast<CNVG*>(item_from_slot) : nullptr;
+
+	bool has_nvg = GetOutfit() && GetOutfit()->GetNV_Sect().size() > 0 || GetHelmet() && GetHelmet()->GetNV_Sect().size() > 0 || oNVG;
 
 	if (!has_nvg)
 	{

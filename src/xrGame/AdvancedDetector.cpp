@@ -27,6 +27,27 @@ CUIArtefactDetectorAdv& CAdvancedDetector::ui()
 	return *((CUIArtefactDetectorAdv*)m_ui);
 }
 
+void CAdvancedDetector::shedule_Update(u32 dt)
+{
+	inherited::shedule_Update(dt);
+
+	if (!m_bWorking && m_need_refresh)
+	{
+		if (attachable_hud_item* hid = HudItemData())
+		{
+			if (IKinematics* kin = hid->m_model)
+			{
+				u16 m_screen_bone_id = kin->LL_BoneID("screen_bone");
+				if (kin->LL_GetBoneVisible(m_screen_bone_id))
+				{
+					kin->LL_SetBoneVisible(m_screen_bone_id, FALSE, TRUE);
+				}
+			}
+		}
+	}
+
+}
+
 void CAdvancedDetector::UpdateAf()
 {
 	ui().SetValue(0.0f, zero_vel);
