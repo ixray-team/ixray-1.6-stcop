@@ -75,6 +75,9 @@ void CTorch::Load(LPCSTR section)
 	{
 		m_sounds.LoadSound(section, "sound_deactivate", "soundDeactivate", false, SOUND_TYPE_ITEM_USING);
 	}
+
+	IPowerManager::SetSelfObject(cast_inventory_item(), H_Parent());
+	IPowerManager::Load(section, cast_inventory_item()); // FFx0001 ++
 }
 
 void CTorch::Switch()
@@ -213,10 +216,17 @@ void CTorch::UpdateCL()
 {
 	PROF_EVENT("CTorch::UpdateCL")
 	inherited::UpdateCL();
+	
+	IPowerManager::SetEnabled(m_switched_on);
 
 	if (!m_switched_on)
 	{
 		return;
+	}
+
+	if (IPowerManager::IsAllow() && IPowerManager::GetLeftPowerValue() <= 0)
+	{
+		Switch();
 	}
 
 	CBoneInstance& BI = PKinematics(Visual())->LL_GetBoneInstance(guid_bone);
@@ -450,4 +460,16 @@ void CTorch::enable(bool value)
 		Switch(false);
 	}
 
+}
+
+void CTorch::save(NET_Packet& output_packet)
+{
+	inherited::save(output_packet);
+	IPowerManager::net_save(output_packet);
+}
+
+void CTorch::load(IReader& input_packet)
+{
+	inherited::load(input_packet);
+	IPowerManager::net_load(input_packet);
 }

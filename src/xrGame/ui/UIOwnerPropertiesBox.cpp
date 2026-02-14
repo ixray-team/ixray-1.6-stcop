@@ -81,6 +81,30 @@ void CUIOwnerPropertiesBox::PropertiesBoxForUsing(PIItem item, bool& b_show)
 		}
 	}
 
+	if (PowerBank* oPowerBank = smart_cast<PowerBank*>(item))
+	{
+		if (oPowerBank->OnPropertiesBoxForUsing(m_UIPropertiesBox))
+		{
+			b_show = true;
+		}
+	}
+
+	if (IPowerManager* oPowerManager = smart_cast<IPowerManager*>(item))
+	{
+		if (oPowerManager->OnPropertiesBoxForUsing(m_UIPropertiesBox))
+		{
+			b_show = true;
+		}
+	}
+
+	if (CNVG* oCNVG = smart_cast<CNVG*>(item))
+	{
+		if (oCNVG->OnVNGPropertiesBoxForUsing(m_UIPropertiesBox))
+		{
+			b_show = true;
+		}
+	}
+
 	//1st Custom Use action
 	act_str = READ_IF_EXISTS(pSettings, r_string, section_name, "use1_text", 0);
 	if (act_str)
