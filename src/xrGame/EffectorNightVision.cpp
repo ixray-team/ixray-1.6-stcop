@@ -7,35 +7,52 @@
 #include "ActorEffector.h"
 #include "CustomOutfit.h"
 #include "ActorHelmet.h"
+#include "Actor.h"
+#include "Inventory.h"
+#include "nvg.h"
 
 ENGINE_API extern bool turn_nvg;
 
 void CNightVisionEffector::SwitchNightVision()
 {
 	if (OnClient())
+	{
 		return;
+	}
 
 	SwitchNightVision(!m_bNightVisionOn);	
 }
 
 void CNightVisionEffector::SwitchNightVision(bool vision_on, bool use_sounds)
 {
+	PIItem item_nvg_slot = Actor()->inventory().ItemFromSlot(NVG_SLOT);
+	CNVG* oCNVG = (item_nvg_slot != nullptr) ? smart_cast<CNVG*>(item_nvg_slot) : nullptr;
+
 	if (!vision_on)
 	{
 		if (IsActive())
 		{
 			Stop(100000.0f, use_sounds);
+			if (oCNVG)
+			{
+				oCNVG->StopNvg();
+			}
 		}
+
 		m_bNightVisionOn = false;
+
 		return;
 	}
 
 	CCustomOutfit* outfit = m_pActor->GetOutfit();
 	CHelmet* helmet = m_pActor->GetHelmet();
-	bool has_nvs = helmet && helmet->GetNV_Sect().size() || outfit && outfit->GetNV_Sect().size();
+
+	bool has_nvs = helmet && helmet->GetNV_Sect().size() || outfit && outfit->GetNV_Sect().size() || oCNVG;
 
 	if (!has_nvs)
+	{
 		return;
+	}
 
 	for (auto& map : m_disabled_maps)
 	{
@@ -45,23 +62,35 @@ void CNightVisionEffector::SwitchNightVision(bool vision_on, bool use_sounds)
 			{
 				PlaySounds(EPlaySounds::eBrokeSound);
 			}
+
 			return;
 		}
 	}
 
 	if (IsActive())
+	{
 		return;
+	}
 
-	if (helmet)
+	if (helmet && helmet->GetNV_Sect().size())
 	{
 		Start(helmet->GetNV_Sect(), use_sounds);
+		m_bNightVisionOn = true;
 	}
-	else if (outfit)
+	else if (outfit && outfit->GetNV_Sect().size())
 	{
 		Start(outfit->GetNV_Sect(), use_sounds);
+		m_bNightVisionOn = true;
+	}
+	else if (oCNVG)
+	{
+		if (oCNVG->StartNvg())
+		{
+			m_bNightVisionOn = true;
+		}
 	}
 
-	m_bNightVisionOn = true;
+	
 }
 
 CNightVisionEffector::CNightVisionEffector(CActor* actor)

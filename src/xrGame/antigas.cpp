@@ -457,7 +457,7 @@ bool IAntigas::UninstallFilter()
 
 	return true;
 }
-#pragma optimize("",off)
+
 void IAntigas::UpdateCL()
 {
 	if (!is_condition_applyed && last_filter_id != u32(-1)) {

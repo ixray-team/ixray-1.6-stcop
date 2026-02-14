@@ -195,6 +195,11 @@
 #define CLSID_IITEM_ATTACH			MK_CLSID('I','I','_','A','T','T','C','H')
 #define CLSID_INTERACTIVE_OBJ		MK_CLSID('I','N','T','E','R','A','C','T')
 
+#define CLSID_IITEM_POWER_CELL		MK_CLSID('P','W','R','_','C','E','L','L')
+#define CLSID_IITEM_POWER_BANK		MK_CLSID('P','W','R','_','B','A','N','K')
+
+#define CLSID_IITEM_NIGHT_VISION	MK_CLSID('D','_','N','V','G',' ',' ',' ')
+
 // Grenades
 #define CLSID_GRENADE_F1			MK_CLSID('G','_','F','1',' ',' ',' ',' ')
 #define CLSID_OBJECT_G_RPG7			MK_CLSID('G','_','R','P','G','7',' ',' ')

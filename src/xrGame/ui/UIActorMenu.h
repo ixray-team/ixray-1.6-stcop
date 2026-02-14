@@ -281,6 +281,8 @@ private:
 	void						highlight_weapons_for_addon			(PIItem addon_item, CUIDragDropListEx* ddlist);
 	void						highlight_related_config_sections	(PIItem item, CUIDragDropListEx* ddlist); // FFx001 ++
 	void						highlight_antigas_for_filter (PIItem item, CUIDragDropListEx* ddlist); // FFx001 ++
+	void						highlight_power_banks_for_power_cell(PIItem item, CUIDragDropListEx* ddlist); 
+	void						highlight_power_manager_for_power_cell(PIItem item, CUIDragDropListEx* ddlist);
 
 protected:			
 	void						Construct							();

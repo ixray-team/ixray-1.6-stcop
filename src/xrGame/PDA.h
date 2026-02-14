@@ -6,6 +6,7 @@
 #include "InfoPortionDefs.h"
 
 #include "PdaMsg.h"
+#include "IPowerManager.h"
 
 class CInventoryOwner;
 class CPda;
@@ -15,7 +16,8 @@ using PDA_LIST_it = PDA_LIST::iterator;
 
 class CPda final :
 	public CInventoryItemObject,
-	public Feel::Touch
+	public Feel::Touch,
+	public IPowerManager
 {
 	using inherited = CInventoryItemObject;
 public:
