@@ -61,6 +61,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 
 	UI = new CLevelMain();
 	UI->RegisterCommands();
+	UI->GeneralTabs.push_back({ "Scene View", nullptr });
 
 	LUI = static_cast<CLevelMain*>(UI);
 
