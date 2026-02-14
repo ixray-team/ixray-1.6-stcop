@@ -41,6 +41,8 @@
 #include "../game_sv_single.h"
 #include "ai_object_location.h"
 #include "ui_drop_amount.h"
+#include "PowerBank.h"
+#include "nvg.h"
 
 using namespace luabind; //Alundaio
 
@@ -1292,6 +1294,30 @@ void CUIActorMenu::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 	if (IAntigas* oAntigas = smart_cast<IAntigas*>(item->cast_inventory_item()))
 	{
 		if (oAntigas->OnProcessPropertiesBoxClicked(m_UIPropertiesBox))
+		{
+			return;
+		}
+	}
+
+	if (PowerBank* oPowerBank = smart_cast<PowerBank*>(item->cast_inventory_item()))
+	{
+		if (oPowerBank->OnProcessPropertiesBoxClicked(m_UIPropertiesBox))
+		{
+			return;
+		}
+	}
+
+	if (IPowerManager* oPowerManager = smart_cast<IPowerManager*>(item->cast_inventory_item()))
+	{
+		if (oPowerManager->OnProcessPropertiesBoxClicked(m_UIPropertiesBox))
+		{
+			return;
+		}
+	}
+
+	if (CNVG* oCNVG = smart_cast<CNVG*>(item->cast_inventory_item()))
+	{
+		if (oCNVG->OnVNGPropertiesBoxClicked(m_UIPropertiesBox))
 		{
 			return;
 		}

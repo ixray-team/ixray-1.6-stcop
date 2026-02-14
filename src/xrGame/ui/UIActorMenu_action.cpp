@@ -36,6 +36,10 @@
 #include "antigas.h"
 #include "antigas_filter.h"
 
+#include "PowerBank.h"
+#include "PowerCell.h"
+#include "IPowerManager.h"
+
 bool  CUIActorMenu::AllowItemDrops(EDDListType from, EDDListType to)
 {
 	xr_vector<EDDListType>& v = m_allowed_drops[to];
@@ -119,6 +123,30 @@ bool CUIActorMenu::OnItemDrop(CUICellItem* itm)
 				if (filter != nullptr && antigas != nullptr && antigas->IsFilterInWhiteList(GO1->cNameSect()))
 				{
 					if (antigas->InstallFilter(GO1->cast_inventory_item())) {
+						old_owner->RemoveItem(itm, false);
+						SetCurrentItem(nullptr);
+						return true;
+					}
+				}
+
+				PowerCell* oPowerCell = smart_cast<PowerCell*>(GO1);
+
+				PowerBank* oPowerBank = smart_cast<PowerBank*>(GO2);
+				if (oPowerCell != nullptr && oPowerBank != nullptr)
+				{
+					if (oPowerBank->InsertPowerCell(oPowerCell))
+					{
+						old_owner->RemoveItem(itm, false);
+						SetCurrentItem(nullptr);
+						return true;
+					}
+				}
+
+				IPowerManager* oPowerManager = smart_cast<IPowerManager*>(GO2);
+				if (oPowerCell != nullptr && oPowerManager != nullptr)
+				{
+					if (oPowerManager->IstallPowerCell(oPowerCell))
+					{
 						old_owner->RemoveItem(itm, false);
 						SetCurrentItem(nullptr);
 						return true;
@@ -219,6 +247,29 @@ bool CUIActorMenu::OnItemDrop(CUICellItem* itm)
 			if (filter != nullptr && antigas != nullptr && antigas->IsFilterInWhiteList(GO1->cNameSect()))
 			{
 				if (antigas->InstallFilter(GO1->cast_inventory_item())) {
+					old_owner->RemoveItem(itm, false);
+					SetCurrentItem(nullptr);
+					return true;
+				}
+			}
+
+			PowerCell* oPowerCell = smart_cast<PowerCell*>(GO1);
+			PowerBank* oPowerBank = smart_cast<PowerBank*>(GO2);
+			if (PowerBank* oPowerBank = smart_cast<PowerBank*>(GO2))
+			{
+				if (oPowerBank->InsertPowerCell(oPowerCell))
+				{
+					old_owner->RemoveItem(itm, false);
+					SetCurrentItem(nullptr);
+					return true;
+				}
+			}
+
+			IPowerManager* oPowerManager = smart_cast<IPowerManager*>(GO2);
+			if (oPowerCell != nullptr && oPowerManager != nullptr)
+			{
+				if (oPowerManager->IstallPowerCell(oPowerCell))
+				{
 					old_owner->RemoveItem(itm, false);
 					SetCurrentItem(nullptr);
 					return true;

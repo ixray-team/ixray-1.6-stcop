@@ -44,6 +44,7 @@
 #include "../xrUI/UICursor.h"
 #include "Wound.h"
 #include "inventory_space.h"
+#include "nvg.h"
 
 u16 old_slot = 0;
 bool need_restore_detector = false;
@@ -2851,10 +2852,10 @@ void CActor::OnItemDrop(CInventoryItem *inventory_item, bool just_before_destroy
 
 	CHelmet* helmet = inventory_item->cast_helmet();
 	if (helmet && inventory_item->m_ItemCurrPlace.type == eItemPlaceSlot)
-	{
-		if (GetNightVisionEffector() && GetNightVisionEffector()->GetStatus())
 		{
-			GetNightVisionEffector()->SwitchNightVision(false);
+			if (GetNightVisionEffector() && GetNightVisionEffector()->GetStatus())
+			{
+				GetNightVisionEffector()->SwitchNightVision(false);
 		}
 
 		if (TorchOnlyOutfit)
@@ -2870,7 +2871,12 @@ void CActor::OnItemDrop(CInventoryItem *inventory_item, bool just_before_destroy
 	CWeapon* weapon	= inventory_item->cast_weapon();
 	if(weapon && inventory_item->m_ItemCurrPlace.type==eItemPlaceSlot)
 	{
-		weapon->OnZoomOut();
+			weapon->OnZoomOut();
+	}
+
+	if (CNVG* nvg = smart_cast<CNVG*>(inventory_item))
+	{
+		nvg->OnItemDrop();
 	}
 
 	// Pavel: при продаже в МП граната удаляется у игрока
@@ -2911,18 +2917,23 @@ void CActor::OnItemRuck		(CInventoryItem *inventory_item, const SInvItemPlace& p
 {
 	CInventoryOwner::OnItemRuck(inventory_item, previous_place);
 
-	CArtefact* artefact = inventory_item->cast_artefact();
-	if (artefact && previous_place.type == eItemPlaceBelt)
-		MoveArtefactBelt(artefact, false);
+	if (previous_place.type == eItemPlaceBelt)
+	{
+		if (CArtefact* artefact = inventory_item->cast_artefact())
+		{
+			MoveArtefactBelt(artefact, false);
+		}
+	}
 }
 
 void CActor::OnItemBelt		(CInventoryItem *inventory_item, const SInvItemPlace& previous_place)
 {
 	CInventoryOwner::OnItemBelt(inventory_item, previous_place);
 
-	CArtefact* artefact = inventory_item->cast_artefact();
-	if (artefact)
+	if (CArtefact* artefact = inventory_item->cast_artefact())
+	{
 		MoveArtefactBelt(artefact, true);
+	}
 }
 
 void CActor::MoveArtefactBelt(const CArtefact* artefact, bool on_belt)
