@@ -6,7 +6,6 @@ public:
 	UIMainMenuForm();
 	virtual ~UIMainMenuForm();
 	virtual void Draw();
-	void DrawLevelName();
 	void ExportLevelAsArchive();
 
 private:

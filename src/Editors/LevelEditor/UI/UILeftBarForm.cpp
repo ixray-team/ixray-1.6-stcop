@@ -96,7 +96,7 @@ void UILeftBarForm::Draw()
 			ImGui::TableSetupColumn("Right", ImGuiTableColumnFlags_WidthFixed, column_width);
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(6.f, 6.f));
 
-			int button_h = 26;
+			int button_h = 24;
 
 			for (u32 i = 0; Tools[i] != OBJCLASS_force_dword; i++)
 			{
@@ -191,7 +191,7 @@ void UILeftBarForm::Draw()
 					}
 
 					ImGui::SameLine();
-					ImGui::SetCursorPos({IconPos.x + 4.f + 14.f, cur.y});
+					ImGui::SetCursorPos({IconPos.x + 4.f + 14.f, cur.y - (textSize.y * 0.5f) + 3.f });
 
 					ImGui::Text(tool->ClassDesc());
 				}
