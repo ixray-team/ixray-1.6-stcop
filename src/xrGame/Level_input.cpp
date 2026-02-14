@@ -524,7 +524,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 	if (CURRENT_ENTITY())		
 	{
 		IInputReceiver*		IR	= smart_cast<IInputReceiver*>	(smart_cast<CGameObject*>(CURRENT_ENTITY()));
-		if (IR)				IR->IR_OnKeyboardPress(get_binded_action(key));
+		if (IR)				IR->IR_OnKeyboardPress(key);
 	}
 
 
@@ -566,7 +566,7 @@ void CLevel::IR_OnKeyboardRelease(int key)
 	{
 		IInputReceiver*		IR	= smart_cast<IInputReceiver*>	(smart_cast<CGameObject*>(CURRENT_ENTITY()));
 		if (IR != nullptr) {
-			IR->IR_OnKeyboardRelease(bind);
+			IR->IR_OnKeyboardRelease(key);
 		}
 	}
 }
@@ -632,7 +632,7 @@ void CLevel::IR_OnKeyboardHold(int key)
 		IInputReceiver*	IR	= smart_cast<IInputReceiver*>(smart_cast<CGameObject*>(CURRENT_ENTITY()));
 		if (IR != nullptr)
 		{
-			IR->IR_OnKeyboardHold(bind);
+			IR->IR_OnKeyboardHold(key);
 		}
 	}
 }
@@ -750,7 +750,7 @@ void CLevel::IR_GamepadKeyPress(int id)
 	if (CURRENT_ENTITY())		
 	{
 		IInputReceiver*		IR	= smart_cast<IInputReceiver*>	(smart_cast<CGameObject*>(CURRENT_ENTITY()));
-		if (IR)				IR->IR_GamepadKeyPress(get_binded_action(id));
+		if (IR)				IR->IR_GamepadKeyPress(id);
 	}
 }
 
@@ -787,7 +787,7 @@ void CLevel::IR_GamepadKeyHold(int id)
 		IInputReceiver* IR = smart_cast<IInputReceiver*>(smart_cast<CGameObject*>(CURRENT_ENTITY()));
 		if (IR != nullptr)
 		{
-			IR->IR_GamepadKeyHold(bind);
+			IR->IR_GamepadKeyHold(id);
 		}
 	}
 }
@@ -817,7 +817,7 @@ void CLevel::IR_GamepadKeyRelease(int id)
 		IInputReceiver*		IR	= smart_cast<IInputReceiver*>	(smart_cast<CGameObject*>(CURRENT_ENTITY()));
 		if (IR != nullptr) 
 		{
-			IR->IR_GamepadKeyRelease(bind);
+			IR->IR_GamepadKeyRelease(id);
 		}
 	}
 }
