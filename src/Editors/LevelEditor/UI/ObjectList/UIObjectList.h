@@ -1,6 +1,7 @@
 #pragma once
 class CCustomObject;
-class UIObjectList:public IEditorWnd
+class UIObjectList:
+	public IEditorWnd
 {
 	friend class UIObjectListItem;
 public:

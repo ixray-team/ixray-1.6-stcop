@@ -273,7 +273,9 @@ void UIDOShuffle::FillData(bool ReloadTex)
 					memcpy(rect.pBits, Pixels.data(), Pixels.size());
 					R_CHK(pTexture->UnlockRect(0));
 
-					m_MaskTexture->pSurface = GRHI->CreateTextureFromMemory(pTexture, 0, {});
+					IRHISurface* Surf = GRHI->CreateTextureFromMemory(pTexture, 0, {});
+					m_MaskTexture->surface_set(Surf);
+					Surf->Release();
 				}
 			}
 		}
@@ -321,6 +323,11 @@ void UIDOShuffle::OnItemFocused(const char* name)
 	{
 		IRHISurface* Surface = nullptr;
 		m_Thm->Update(Surface);
+
+		if (m_Texture == nullptr)
+		{
+			m_Texture = new CTexture;
+		}
 		m_Texture->surface_set(Surface);
 		Surface->Release();
 	}
