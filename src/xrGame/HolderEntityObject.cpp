@@ -190,6 +190,43 @@ void CHolderEntityObject::OnMouseMove(int dx, int dy)
 	}
 }
 
+void CHolderEntityObject::OnGamepadAxisMove(int id, Fvector2 value)
+{
+	if (Remote())
+	{
+		return;
+	}
+
+	// left stick
+	if (id == 0)
+	{
+
+	}
+	// right stick
+	else if (id == 1)
+	{
+		CCameraBase* C = camera;
+		float scale = (C->f_fov / g_fov) * psGamepadSens * psMouseSensScale / 50.f;
+		if (value.x)
+		{
+			float d = float(value.x) * scale * 8;
+			C->Move((d < 0) ? kLEFT : kRIGHT, std::abs(d));
+		}
+
+		if (value.y)
+		{
+			float d = (psGamepadInvert ? -1 : 1) * float(value.y) * scale * 3.f / 4.f;
+			d *= 8;
+			C->Move((d > 0) ? kUP : kDOWN, std::abs(d));
+		}
+	}
+	// triggers
+	else if (id == 2)
+	{
+
+	}
+}
+
 void CHolderEntityObject::OnKeyboardPress(int dik)
 {
 	if (Remote())							return;
@@ -201,10 +238,21 @@ void CHolderEntityObject::OnKeyboardPress(int dik)
 	};
 }
 
+void CHolderEntityObject::OnGamepadKeyPress(int id)
+{
+	if (Remote())							return;
+
+	switch (get_binded_action(id))
+	{
+	case kWPN_FIRE:
+		break;
+	};
+}
+
 void CHolderEntityObject::OnKeyboardRelease	(int dik)
 {
 	if (Remote())							return;
-	switch (dik)	
+	switch (get_binded_action(dik))	
 	{
 	case kWPN_FIRE:
 		break;

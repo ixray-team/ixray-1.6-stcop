@@ -42,8 +42,9 @@
 
 extern u32 hud_adj_mode;
 
-void CActor::IR_OnKeyboardPress(int cmd)
+void CActor::IR_OnKeyboardPress(int dik)
 {
+	auto bind = get_binded_action(dik);
 	if (hud_adj_mode && pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT))
 	{
 		return;
@@ -59,7 +60,7 @@ void CActor::IR_OnKeyboardPress(int cmd)
 		return;
 	}
 
-	if (m_input_external_handler && !m_input_external_handler->authorized(cmd))
+	if (m_input_external_handler && !m_input_external_handler->authorized(bind))
 	{
 		return;
 	}
@@ -71,13 +72,13 @@ void CActor::IR_OnKeyboardPress(int cmd)
 
 	if (HudAnimator() != nullptr)
 	{
-		if (HudAnimator()->InputKeyPress(cmd))
+		if (HudAnimator()->InputKeyPress(bind))
 		{
 			return;
 		}
 	}
 
-	switch (cmd)
+	switch (bind)
 	{
 	case kWPN_FIRE:
 		{
@@ -99,29 +100,29 @@ void CActor::IR_OnKeyboardPress(int cmd)
 #ifndef MASTER_GOLD
 	if (psActorFlags.test(AF_NO_CLIP))
 	{
-		NoClipFly(cmd);
-		if (m_holder && kUSE != cmd)
-			m_holder->OnKeyboardPress(cmd);
+		NoClipFly(bind);
+		if (m_holder && kUSE != bind)
+			m_holder->OnKeyboardPress(dik);
 		return;
 	}
 #endif //DEBUG
 
 	if (!g_Alive()) return;
 
-	if(m_holder && kUSE != cmd)
+	if(m_holder && kUSE != bind)
 	{
-		m_holder->OnKeyboardPress			(cmd);
-		if(m_holder->allowWeapon() && inventory().Action((u16)cmd, CMD_START))		return;
+		m_holder->OnKeyboardPress			(dik);
+		if(m_holder->allowWeapon() && inventory().Action((u16)bind, CMD_START))		return;
 		return;
 	}else
-		if(inventory().Action((u16)cmd, CMD_START))					return;
+		if(inventory().Action((u16)bind, CMD_START))					return;
 
 	if (IsWaunded)
 	{
 		return;
 	}
 
-	switch(cmd)
+	switch(bind)
 	{
 	case kJUMP:		
 		{
@@ -211,7 +212,7 @@ void CActor::IR_OnKeyboardPress(int cmd)
 	{
 		if (IsGameTypeSingle())
 		{
-			PIItem itm = inventory().item((cmd == kUSE_BANDAGE) ? CLSID_IITEM_BANDAGE : CLSID_IITEM_MEDKIT);
+			PIItem itm = inventory().item((bind == kUSE_BANDAGE) ? CLSID_IITEM_BANDAGE : CLSID_IITEM_MEDKIT);
 			if (itm)
 			{
 				inventory().Eat(itm);
@@ -227,7 +228,7 @@ void CActor::IR_OnKeyboardPress(int cmd)
 	case kQUICK_USE_3:
 	case kQUICK_USE_4:
 	{
-		ActorQuickSlotUse(cmd);
+		ActorQuickSlotUse(bind);
 	}
 	break;
 	case kSHOW_QUICK_SLOTS:
@@ -274,8 +275,9 @@ void CActor::IR_OnMouseWheel(int direction)
 	}
 }
 
-void CActor::IR_OnKeyboardRelease(int cmd)
+void CActor::IR_OnKeyboardRelease(int dik)
 {
+	auto bind = get_binded_action(dik);
 	if (hud_adj_mode && pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT))
 	{
 		return;
@@ -286,7 +288,7 @@ void CActor::IR_OnKeyboardRelease(int cmd)
 		return;
 	}
 
-	if (m_input_external_handler && !m_input_external_handler->authorized(cmd))
+	if (m_input_external_handler && !m_input_external_handler->authorized(bind))
 	{
 		return;
 	}
@@ -298,7 +300,7 @@ void CActor::IR_OnKeyboardRelease(int cmd)
 
 	if (HudAnimator() != nullptr)
 	{
-		if (HudAnimator()->InputKeyRelease(cmd))
+		if (HudAnimator()->InputKeyRelease(bind))
 		{
 			return;
 		}
@@ -308,16 +310,16 @@ void CActor::IR_OnKeyboardRelease(int cmd)
 	{
 		if(m_holder)
 		{
-			m_holder->OnKeyboardRelease(cmd);
+			m_holder->OnKeyboardRelease(dik);
 			
-			if(m_holder->allowWeapon() && inventory().Action((u16)cmd, CMD_STOP))		return;
+			if(m_holder->allowWeapon() && inventory().Action((u16)bind, CMD_STOP))		return;
 			return;
 		}else
-			if(inventory().Action((u16)cmd, CMD_STOP))		return;
+			if(inventory().Action((u16)bind, CMD_STOP))		return;
 
 
 
-		switch (cmd)
+		switch (bind)
 		{
 		case kJUMP:		mstate_wishful &= ~mcJump;		break;
 		case kDROP:		
@@ -345,8 +347,9 @@ void CActor::IR_OnKeyboardRelease(int cmd)
 	}
 }
 
-void CActor::IR_OnKeyboardHold(int cmd)
+void CActor::IR_OnKeyboardHold(int dik)
 {
+	auto bind = get_binded_action(dik);
 	if (hud_adj_mode && pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT))
 	{
 		if (pInput->iGetAsyncKeyState(SDL_SCANCODE_RIGHT))
@@ -386,7 +389,7 @@ void CActor::IR_OnKeyboardHold(int cmd)
 	{
 		return;
 	}
-	if (m_input_external_handler && !m_input_external_handler->authorized(cmd))
+	if (m_input_external_handler && !m_input_external_handler->authorized(bind))
 	{
 		return;
 	}
@@ -397,10 +400,10 @@ void CActor::IR_OnKeyboardHold(int cmd)
 	}
 
 #ifndef MASTER_GOLD
-	if (psActorFlags.test(AF_NO_CLIP) && (cmd == kFWD || cmd == kBACK || cmd == kL_STRAFE || cmd == kR_STRAFE
-		|| cmd == kJUMP || cmd == kCROUCH))
+	if (psActorFlags.test(AF_NO_CLIP) && (bind == kFWD || bind == kBACK || bind == kL_STRAFE || bind == kR_STRAFE
+		|| bind == kJUMP || bind == kCROUCH))
 	{
-		NoClipFly(cmd);
+		NoClipFly(bind);
 		return;
 	}
 #endif //DEBUG
@@ -412,7 +415,7 @@ void CActor::IR_OnKeyboardHold(int cmd)
 
 	if(m_holder)
 	{
-		m_holder->OnKeyboardHold(cmd);
+		m_holder->OnKeyboardHold(dik);
 		return;
 	}
 
@@ -423,24 +426,24 @@ void CActor::IR_OnKeyboardHold(int cmd)
 
 	if (HudAnimator() != nullptr)
 	{
-		if (HudAnimator()->InputKeyHold(cmd))
+		if (HudAnimator()->InputKeyHold(bind))
 		{
 			return;
 		}
 	}
 
 	float LookFactor = GetLookFactor();
-	switch(cmd)
+	switch(bind)
 	{
 	case kUP:
 	case kDOWN: 
-		cam_Active()->Move( (cmd==kUP) ? kDOWN : kUP, 0, LookFactor);									break;
+		cam_Active()->Move( (bind==kUP) ? kDOWN : kUP, 0, LookFactor);									break;
 	case kCAM_ZOOM_IN: 
 	case kCAM_ZOOM_OUT: 
-		cam_Active()->Move(cmd);												break;
+		cam_Active()->Move(bind);												break;
 	case kLEFT:
 	case kRIGHT:
-		if (eacFreeLook!=cam_active) cam_Active()->Move(cmd, 0, LookFactor);	break;
+		if (eacFreeLook!=cam_active) cam_Active()->Move(bind, 0, LookFactor);	break;
 
 	case kACCEL:	mstate_wishful |= mcAccel;									break;
 	case kL_STRAFE:	mstate_wishful |= mcLStrafe;								break;
@@ -529,6 +532,17 @@ void CActor::IR_OnMouseMove(int dx, int dy)
 
 void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 {
+	if (Remote())
+	{
+		return;
+	}
+
+	if (m_holder)
+	{
+		m_holder->OnGamepadAxisMove(id, value);
+		return;
+	}
+
 	float absValueX = std::abs(value.x);
 	if (id != 2 && fis_zero(value.x) && fis_zero(value.y))
 	{
@@ -605,20 +619,20 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 	{
 		if (!fis_zero(value.x))
 		{
-			IR_OnKeyboardPress(kWPN_ZOOM);
+			IR_OnKeyboardPress(get_binded_action(kWPN_ZOOM));
 		}
 		else if (pInput->GetControllerMode())
 		{
-			IR_OnKeyboardRelease(kWPN_ZOOM);
+			IR_OnKeyboardRelease(get_binded_action(kWPN_ZOOM));
 		}
 
 		if (!fis_zero(value.y))
 		{
-			IR_OnKeyboardPress(kWPN_FIRE);
+			IR_OnKeyboardPress(get_binded_action(kWPN_FIRE));
 		}
 		else if (pInput->GetControllerMode())
 		{
-			IR_OnKeyboardRelease(kWPN_FIRE);
+			IR_OnKeyboardRelease(get_binded_action(kWPN_FIRE));
 		}
 	}
 }
@@ -626,6 +640,7 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 u32 gamepad_crouch_time_global = 0;
 void CActor::IR_GamepadKeyPress(int id)
 {
+	auto bind = get_binded_action(id);
 	if (hud_adj_mode && pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT))
 	{
 		return;
@@ -641,7 +656,7 @@ void CActor::IR_GamepadKeyPress(int id)
 		return;
 	}
 
-	if (m_input_external_handler && !m_input_external_handler->authorized(id))
+	if (m_input_external_handler && !m_input_external_handler->authorized(bind))
 	{
 		return;
 	}
@@ -653,7 +668,7 @@ void CActor::IR_GamepadKeyPress(int id)
 
 	if (HudAnimator() != nullptr)
 	{
-		if (HudAnimator()->InputKeyPress(id))
+		if (HudAnimator()->InputKeyPress(bind))
 		{
 			return;
 		}
@@ -662,29 +677,29 @@ void CActor::IR_GamepadKeyPress(int id)
 #ifndef MASTER_GOLD
 	if (psActorFlags.test(AF_NO_CLIP))
 	{
-		NoClipFly(id);
-		if (m_holder && kUSE != id)
-			m_holder->OnKeyboardPress(id);
+		NoClipFly(bind);
+		if (m_holder && kUSE != bind)
+			m_holder->OnGamepadKeyPress(id);
 		return;
 	}
 #endif //DEBUG
 
 	if (!g_Alive()) return;
 
-	if(m_holder && kUSE != id)
+	if(m_holder && kUSE != bind)
 	{
-		m_holder->OnKeyboardPress			(id);
-		if(m_holder->allowWeapon() && inventory().Action((u16)id, CMD_START))		return;
+		m_holder->OnGamepadKeyPress		(id);
+		if(m_holder->allowWeapon() && inventory().Action((u16)bind, CMD_START))		return;
 		return;
 	}else
-		if(inventory().Action((u16)id, CMD_START))					return;
+		if(inventory().Action((u16)bind, CMD_START))					return;
 
 	if (IsWaunded)
 	{
 		return;
 	}
 
-	switch (id)
+	switch (bind)
 	{
 		case kUSE:
 		{
@@ -725,14 +740,15 @@ void CActor::IR_GamepadKeyPress(int id)
 		case kQUICK_USE_3:
 		case kQUICK_USE_4:
 		{
-			ActorQuickSlotUse(id);
+			ActorQuickSlotUse(bind);
 		}
 	}
 }
 
 void CActor::IR_GamepadKeyRelease(int id)
 {
-	switch (id)
+	auto bind = get_binded_action(id);
+	switch (bind)
 	{
 		case kJUMP:
 		{
@@ -744,7 +760,8 @@ void CActor::IR_GamepadKeyRelease(int id)
 
 void CActor::IR_GamepadKeyHold(int id)
 {
-	switch (id)
+	auto bind = get_binded_action(id);
+	switch (bind)
 	{
 		case kCROUCH:
 	{
@@ -1174,14 +1191,17 @@ void	CActor::OnNextWeaponSlot()
 		{
 			if (SlotsToCheck[i] == ARTEFACT_SLOT) 
 			{
-				IR_OnKeyboardPress(kARTEFACT);
+				IR_OnKeyboardPress(get_action_dik(kARTEFACT));
 			}
 			else if (SlotsToCheck[i] == PISTOL_SLOT_NEW)
 			{
-				IR_OnKeyboardPress(kWPN_7);
+				IR_OnKeyboardPress(get_action_dik(kWPN_7));
 			}
 			else
-				IR_OnKeyboardPress(kWPN_1 + i);
+			{
+				u32 action = kWPN_1 + i;
+				IR_OnKeyboardPress(get_action_dik((EGameActions)action));
+			}
 			return;
 		}
 	}
@@ -1213,14 +1233,17 @@ void	CActor::OnPrevWeaponSlot()
 		{
 			if (SlotsToCheck[i] == ARTEFACT_SLOT) 
 			{
-				IR_OnKeyboardPress(kARTEFACT);
+				IR_OnKeyboardPress(get_binded_action(kARTEFACT));
 			}
 			else if (SlotsToCheck[i] == PISTOL_SLOT_NEW)
 			{
-				IR_OnKeyboardPress(kARTEFACT);
+				IR_OnKeyboardPress(get_binded_action(kARTEFACT));
 			}
 			else
-				IR_OnKeyboardPress(kWPN_1 + i);
+			{
+				u32 action = kWPN_1 + i;
+				IR_OnKeyboardPress(get_binded_action((EGameActions)action));
+			}
 			return;
 		}
 	}
@@ -1252,7 +1275,7 @@ void CActor::set_input_external_handler(CActorInputHandler *handler)
 
 	// release fire button
 	if (handler)
-		IR_OnKeyboardRelease	(kWPN_FIRE);
+		IR_OnKeyboardRelease	(get_binded_action(kWPN_FIRE));
 
 	// set handler
 	m_input_external_handler	= handler;
