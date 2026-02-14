@@ -8,127 +8,130 @@ ENGINE_API _binding	g_key_bindings[bindings_count];
 ENGINE_API _key_group g_current_keygroup = _sp;
 
 ENGINE_API _action  actions[]		= {
-	{ "left",				kLEFT					,_both},	
-	{ "right",				kRIGHT					,_both},	
-	{ "up",					kUP						,_both},	
-	{ "down",				kDOWN					,_both},	
-	{ "jump",				kJUMP					,_both},	
-	{ "crouch",				kCROUCH					,_both},	
-	{ "accel",				kACCEL					,_both},	
-	{ "sprint_toggle",  	kSPRINT_TOGGLE  		,_both},	
+	{ "left",				kLEFT					,_both,			agDefault},
+	{ "right",				kRIGHT					,_both,			agDefault},
+	{ "up",					kUP						,_both,			agDefault},
+	{ "down",				kDOWN					,_both,			agDefault},
+	{ "jump",				kJUMP					,_both,			agDefault},
+	{ "crouch",				kCROUCH					,_both,			agDefault},
+	{ "accel",				kACCEL					,_both,			agDefault},
+	{ "sprint_toggle",  	kSPRINT_TOGGLE  		,_both,			agDefault},
 																
-	{ "forward",			kFWD					,_both},	
-	{ "back",				kBACK					,_both},	
-	{ "lstrafe",			kL_STRAFE				,_both},	
-	{ "rstrafe",			kR_STRAFE				,_both},	
+	{ "forward",			kFWD					,_both,			agDefault},
+	{ "back",				kBACK					,_both,			agDefault},
+	{ "lstrafe",			kL_STRAFE				,_both,			agDefault},
+	{ "rstrafe",			kR_STRAFE				,_both,			agDefault},
 																
-	{ "llookout",			kL_LOOKOUT				,_both},	
-	{ "rlookout",			kR_LOOKOUT				,_both},	
+	{ "llookout",			kL_LOOKOUT				,_both,			agDefault},
+	{ "rlookout",			kR_LOOKOUT				,_both,			agDefault},
 																
-	{ "cam_1",				kCAM_1					,_both},	
-	{ "cam_2",				kCAM_2					,_both},	
-	{ "cam_3",				kCAM_3					,_both},	
-	{ "cam_zoom_in",		kCAM_ZOOM_IN			,_both},	
-	{ "cam_zoom_out",		kCAM_ZOOM_OUT			,_both},	
+	{ "cam_1",				kCAM_1					,_both,			agDefault},
+	{ "cam_2",				kCAM_2					,_both,			agDefault},
+	{ "cam_3",				kCAM_3					,_both,			agDefault},
+	{ "cam_zoom_in",		kCAM_ZOOM_IN			,_both,			agDefault},
+	{ "cam_zoom_out",		kCAM_ZOOM_OUT			,_both,			agDefault},
 															
-	{ "torch",				kTORCH					,_both},	
-	{ "night_vision",		kNIGHT_VISION			,_both},	
-	{ "show_detector",		kDETECTOR				,_both},
+	{ "torch",				kTORCH					,_both,			agDefault},
+	{ "night_vision",		kNIGHT_VISION			,_both,			agDefault},
+	{ "show_detector",		kDETECTOR				,_both,			agDefault},
 
-	{ "wpn_1",				kWPN_1					,_both},	
-	{ "wpn_2",				kWPN_2					,_both},	
-	{ "wpn_3",				kWPN_3					,_both},	
-	{ "wpn_4",				kWPN_4					,_both},	
-	{ "wpn_5",				kWPN_5					,_both},	
-	{ "wpn_6",				kWPN_6					,_both},	
-	{ "wpn_7",				kWPN_7					,_both},
-	{ "artefact",			kARTEFACT				,_both/*_mp*/},
-	{ "wpn_next",			kWPN_NEXT				,_both},	// means next ammo type
-	{ "wpn_fire",			kWPN_FIRE				,_both},	
-	{ "wpn_zoom",			kWPN_ZOOM				,_both},	
-	{ "wpn_zoom_inc",		kWPN_ZOOM_INC			,_both},	
-	{ "wpn_zoom_dec",		kWPN_ZOOM_DEC			,_both},	
-	{ "wpn_reload",			kWPN_RELOAD				,_both},	
-	{ "wpn_func",			kWPN_FUNC				,_both},	
-	{ "wpn_firemode_prev",	kWPN_FIREMODE_PREV		,_both},	
-	{ "wpn_firemode_next",	kWPN_FIREMODE_NEXT		,_both},	
+	{ "wpn_1",				kWPN_1					,_both,			agDefault},
+	{ "wpn_2",				kWPN_2					,_both,			agDefault},
+	{ "wpn_3",				kWPN_3					,_both,			agDefault},
+	{ "wpn_4",				kWPN_4					,_both,			agDefault},
+	{ "wpn_5",				kWPN_5					,_both,			agDefault},
+	{ "wpn_6",				kWPN_6					,_both,			agDefault},
+	{ "wpn_7",				kWPN_7					,_both,			agDefault},
+	{ "artefact",			kARTEFACT				,_both,			agDefault},
+	{ "wpn_next",			kWPN_NEXT				,_both,			agDefault},	// means next ammo type
+	{ "wpn_fire",			kWPN_FIRE				,_both,			agDefault},
+	{ "wpn_zoom",			kWPN_ZOOM				,_both,			agDefault},
+	{ "wpn_zoom_inc",		kWPN_ZOOM_INC			,_both,			agDefault},
+	{ "wpn_zoom_dec",		kWPN_ZOOM_DEC			,_both,			agDefault},
+	{ "wpn_reload",			kWPN_RELOAD				,_both,			agDefault},
+	{ "wpn_func",			kWPN_FUNC				,_both,			agDefault},
+	{ "wpn_firemode_prev",	kWPN_FIREMODE_PREV		,_both,			agDefault},
+	{ "wpn_firemode_next",	kWPN_FIREMODE_NEXT		,_both,			agDefault},
 															
-	{ "pause",				kPAUSE					,_both},	
-	{ "drop",				kDROP					,_both},	
-	{ "use",				kUSE					,_both},	
-	{ "scores",				kSCORES					,_both},	
-	{ "chat",				kCHAT					,_mp},		
-	{ "chat_team",			kCHAT_TEAM				,_mp},		
-	{ "voice_chat",         kVOICE_CHAT             ,_mp},
-	{ "voice_distance",     kVOICE_DISTANCE         ,_mp},
-	{ "screenshot",			kSCREENSHOT				,_both},	
-	{ "quit",				kQUIT					,_both},	
-	{ "console",			kCONSOLE				,_both},	
-	{ "inventory",			kINVENTORY				,_both},	
-	{ "buy_menu",			kBUY					,_mp},		
-	{ "skin_menu",			kSKIN					,_mp},		
-	{ "team_menu",			kTEAM					,_mp},		
-	{ "active_jobs",		kACTIVE_JOBS			,_both},
-	{ "map",				kMAP					,_both},
-	{ "contacts",			kCONTACTS				,_sp},
+	{ "pause",				kPAUSE					,_both,			agDefault},
+	{ "drop",				kDROP					,_both,			agDefault},
+	{ "use",				kUSE					,_both,			agDefault},
+	{ "scores",				kSCORES					,_both,			agDefault},
+	{ "chat",				kCHAT					,_mp,			agDefault},
+	{ "chat_team",			kCHAT_TEAM				,_mp,			agDefault},
+	{ "voice_chat",         kVOICE_CHAT             ,_mp,			agDefault},
+	{ "voice_distance",     kVOICE_DISTANCE         ,_mp,			agDefault},
+	{ "screenshot",			kSCREENSHOT				,_both,			agDefault},
+	{ "quit",				kQUIT					,_both,			agDefault},
+	{ "console",			kCONSOLE				,_both,			agDefault},
+	{ "inventory",			kINVENTORY				,_both,			agDefault},
+	{ "buy_menu",			kBUY					,_mp,			agDefault},
+	{ "skin_menu",			kSKIN					,_mp,			agDefault},
+	{ "team_menu",			kTEAM					,_mp,			agDefault},
+	{ "active_jobs",		kACTIVE_JOBS			,_both,			agDefault},
+	{ "map",				kMAP					,_both,			agDefault},
+	{ "contacts",			kCONTACTS				,_sp,			agDefault},
 
-	{ "vote_begin",			kVOTE_BEGIN				,_mp},		
-	{ "show_admin_menu",	kSHOW_ADMIN_MENU		,_mp},		
-	{ "vote",				kVOTE					,_mp},		
-	{ "vote_yes",			kVOTEYES				,_mp},		
-	{ "vote_no",			kVOTENO					,_mp},		
+	{ "vote_begin",			kVOTE_BEGIN				,_mp,			agDefault},
+	{ "show_admin_menu",	kSHOW_ADMIN_MENU		,_mp,			agDefault},
+	{ "vote",				kVOTE					,_mp,			agDefault},
+	{ "vote_yes",			kVOTEYES				,_mp,			agDefault},
+	{ "vote_no",			kVOTENO					,_mp,			agDefault},
 																
-	{ "next_slot",			kNEXT_SLOT				,_both},	
-	{ "prev_slot",			kPREV_SLOT				,_both},	
+	{ "next_slot",			kNEXT_SLOT				,_both,			agDefault},
+	{ "prev_slot",			kPREV_SLOT				,_both,			agDefault},
 															
-	{ "speech_menu_0",		kSPEECH_MENU_0			,_mp},		
-	{ "speech_menu_1",		kSPEECH_MENU_1			,_mp},		
+	{ "speech_menu_0",		kSPEECH_MENU_0			,_mp,			agDefault},
+	{ "speech_menu_1",		kSPEECH_MENU_1			,_mp,			agDefault},
 																
-	{ "quick_use_1",		kQUICK_USE_1			,_both},		
-	{ "quick_use_2",		kQUICK_USE_2			,_both},
-	{ "quick_use_3",		kQUICK_USE_3			,_both},
-	{ "quick_use_4",		kQUICK_USE_4			,_both},
+	{ "quick_use_1",		kQUICK_USE_1			,_both,			agDefault},
+	{ "quick_use_2",		kQUICK_USE_2			,_both,			agDefault},
+	{ "quick_use_3",		kQUICK_USE_3			,_both,			agDefault},
+	{ "quick_use_4",		kQUICK_USE_4			,_both,			agDefault},
 
-	{ "quick_save",			kQUICK_SAVE				,_sp},		
-	{ "quick_load",			kQUICK_LOAD				,_sp},		
-	{ "alife_command",		kALIFE_CMD				,_sp},		
-	{ "use_bandage",		kUSE_BANDAGE			,_sp},
-	{ "use_medkit",			kUSE_MEDKIT				,_sp},
-	{ "engine",				kENGINE					,_sp},
+	{ "quick_save",			kQUICK_SAVE				,_sp,			agDefault},
+	{ "quick_load",			kQUICK_LOAD				,_sp,			agDefault},
+	{ "alife_command",		kALIFE_CMD				,_sp,			agDefault},
+	{ "use_bandage",		kUSE_BANDAGE			,_sp,			agDefault},
+	{ "use_medkit",			kUSE_MEDKIT				,_sp,			agDefault},
+	{ "turn_engine",		kENGINE					,_sp,			agTransport},
+	{ "brake",				kBRAKE					,_sp,			agTransport},
+	{ "transmission_up",	kTRANSMISSION_UP		,_sp,			agTransport},
+	{ "transmission_down",	kTRANSMISSION_DOWN		,_sp,			agTransport},
 
-	{ "custom1",			kCUSTOM1				,_sp},
-	{ "custom2",			kCUSTOM2				,_sp},
-	{ "custom3",			kCUSTOM3				,_sp},
-	{ "custom4",			kCUSTOM4				,_sp},
-	{ "custom5",			kCUSTOM5				,_sp},
-	{ "custom6",			kCUSTOM6				,_sp},
-	{ "custom7",			kCUSTOM7				,_sp},
-	{ "custom8",			kCUSTOM8				,_sp},
-	{ "custom9",			kCUSTOM9				,_sp},
-	{ "custom10",			kCUSTOM10				,_sp},
-	{ "custom11",			kCUSTOM11				,_sp},
-	{ "custom12",			kCUSTOM12				,_sp},
-	{ "custom13",			kCUSTOM13				,_sp},
-	{ "custom14",			kCUSTOM14				,_sp},
-	{ "custom15",			kCUSTOM15				,_sp},
-	{ "cam_autoaim",		kCAM_AUTOAIM			,_sp},
+	{ "custom1",			kCUSTOM1				,_sp,			agDefault},
+	{ "custom2",			kCUSTOM2				,_sp,			agDefault},
+	{ "custom3",			kCUSTOM3				,_sp,			agDefault},
+	{ "custom4",			kCUSTOM4				,_sp,			agDefault},
+	{ "custom5",			kCUSTOM5				,_sp,			agDefault},
+	{ "custom6",			kCUSTOM6				,_sp,			agDefault},
+	{ "custom7",			kCUSTOM7				,_sp,			agDefault},
+	{ "custom8",			kCUSTOM8				,_sp,			agDefault},
+	{ "custom9",			kCUSTOM9				,_sp,			agDefault},
+	{ "custom10",			kCUSTOM10				,_sp,			agDefault},
+	{ "custom11",			kCUSTOM11				,_sp,			agDefault},
+	{ "custom12",			kCUSTOM12				,_sp,			agDefault},
+	{ "custom13",			kCUSTOM13				,_sp,			agDefault},
+	{ "custom14",			kCUSTOM14				,_sp,			agDefault},
+	{ "custom15",			kCUSTOM15				,_sp,			agDefault},
+	{ "cam_autoaim",		kCAM_AUTOAIM			,_sp,			agDefault},
 
-	{ "clear_gasmask",		kCLEARGASMASK			,_both },
-	{ "wpn_torch",			kTACTICALTORCH			,_both },
-	{ "wpn_laser",			kLASER					,_both },
-	{ "wpn_zoom_alter",		kWPN_ZOOM_ALTER			,_both },
-	{ "scope_brightness_plus",kBRIGHTNESS_PLUS		,_both },
-	{ "scope_brightness_minus",kBRIGHTNESS_MINUS	,_both },
-	{ "quick_grenade",		kQUICK_GRENADE			,_both },
-	{ "quick_kick",			kQUICK_KICK				,_both },
-	{ "wpn_magcheck",		kMAG_CHECK				,_both },
-	{ "wpn_firecheck",		kFIREMODE_CHECK			,_both },
-	{ "show_quick_slots",   kSHOW_QUICK_SLOTS		,_both },
-	{ "wpn_chamber_load",   kWPN_CHAMBER_LOAD		,_both },
-	{ "wpn_chamber_unload", kWPN_CHAMBER_UNLOAD     ,_both },
-	{ "wpn_chamber_check",  kWPN_CHAMBER_CHECK      ,_both },
+	{ "clear_gasmask",		kCLEARGASMASK			,_both,			agDefault},
+	{ "wpn_torch",			kTACTICALTORCH			,_both,			agDefault},
+	{ "wpn_laser",			kLASER					,_both,			agDefault},
+	{ "wpn_zoom_alter",		kWPN_ZOOM_ALTER			,_both,			agDefault},
+	{ "scope_brightness_plus",kBRIGHTNESS_PLUS		,_both,			agDefault},
+	{ "scope_brightness_minus",kBRIGHTNESS_MINUS	,_both,			agDefault},
+	{ "quick_grenade",		kQUICK_GRENADE			,_both,			agDefault},
+	{ "quick_kick",			kQUICK_KICK				,_both,			agDefault},
+	{ "wpn_magcheck",		kMAG_CHECK				,_both,			agDefault},
+	{ "wpn_firecheck",		kFIREMODE_CHECK			,_both,			agDefault},
+	{ "show_quick_slots",   kSHOW_QUICK_SLOTS		,_both,			agDefault},
+	{ "wpn_chamber_load",   kWPN_CHAMBER_LOAD		,_both,			agDefault},
+	{ "wpn_chamber_unload", kWPN_CHAMBER_UNLOAD     ,_both,			agDefault},
+	{ "wpn_chamber_check",  kWPN_CHAMBER_CHECK      ,_both,			agDefault},
 															
-	{ nullptr, 				kLASTACTION				,_both}		
+	{ nullptr, 				kLASTACTION				,_both,			agDefault}
 };															
 
 _keyboard keyboards[] = {
@@ -612,6 +615,11 @@ ENGINE_API bool is_group_not_conflicted(_key_group g1, _key_group g2)
 	return ((g1==_sp && g2==_mp) || (g1==_mp && g2==_sp));
 }
 
+ENGINE_API bool is_action_group_matching(_action_group g1, _action_group g2)
+{
+	return g1 == g2;
+}
+
 bool is_group_matching(_key_group g1, _key_group g2)
 {
 	return ( (g1==g2) || (g1==_both) || (g2==_both) );
@@ -657,7 +665,7 @@ ENGINE_API int get_action_dik(EGameActions _action_id, int idx)
 	return 0;
 }
 
-ENGINE_API EGameActions get_binded_action(int _dik)
+ENGINE_API EGameActions get_binded_action(int _dik, _action_group _ai)
 {
 	for(int idx=0; idx<bindings_count; ++idx)
 	{
@@ -669,15 +677,15 @@ ENGINE_API EGameActions get_binded_action(int _dik)
 
 		if (pInput->GetControllerMode())
 		{
-			if (binding->m_gamepad && binding->m_gamepad->dik == _dik && b_is_group_matching)
+			if (binding->m_gamepad && binding->m_gamepad->dik == _dik && b_is_group_matching && binding->m_action->action_group == _ai)
 				return binding->m_action->id;
 		}
 		else
 		{
-			if (binding->m_keyboard[0] && binding->m_keyboard[0]->dik == _dik && b_is_group_matching)
+			if (binding->m_keyboard[0] && binding->m_keyboard[0]->dik == _dik && b_is_group_matching && binding->m_action->action_group == _ai)
 				return binding->m_action->id;
 
-			if (binding->m_keyboard[1] && binding->m_keyboard[1]->dik == _dik && b_is_group_matching)
+			if (binding->m_keyboard[1] && binding->m_keyboard[1]->dik == _dik && b_is_group_matching && binding->m_action->action_group == _ai)
 				return binding->m_action->id;
 		}
 	}
@@ -768,11 +776,12 @@ public:
 				if(binding==curr_pbinding)	continue;
 
 				bool b_conflict = !is_group_not_conflicted(binding->m_action->key_group, curr_pbinding->m_action->key_group);
+				bool b_action_match = is_action_group_matching(binding->m_action->action_group, curr_pbinding->m_action->action_group);
 
-				if(binding->m_keyboard[0]==pkeyboard && b_conflict)
+				if(binding->m_keyboard[0]==pkeyboard && b_conflict && b_action_match)
 					binding->m_keyboard[0]=nullptr;
 				
-				if(binding->m_keyboard[1]==pkeyboard && b_conflict)
+				if(binding->m_keyboard[1]==pkeyboard && b_conflict && b_action_match)
 					binding->m_keyboard[1]=nullptr;
 			}
 		}
@@ -861,7 +870,7 @@ public:
 
 				bool b_conflict = !is_group_not_conflicted(binding->m_action->key_group, curr_pbinding->m_action->key_group);
 
-				if(binding->m_gamepad==pkeyboard && b_conflict)
+				if(binding->m_gamepad==pkeyboard && b_conflict && is_action_group_matching(binding->m_action->action_group, curr_pbinding->m_action->action_group))
 					binding->m_gamepad=nullptr;
 			}
 		}

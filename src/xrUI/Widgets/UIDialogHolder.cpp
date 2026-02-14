@@ -78,8 +78,8 @@ void CDialogHolder::StartMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
 		};
 		if(A)
 		{	
-			A->IR_OnKeyboardRelease		(kWPN_ZOOM);
-			A->IR_OnKeyboardRelease		(kWPN_FIRE);
+			A->IR_OnKeyboardRelease		(get_binded_action(kWPN_ZOOM));
+			A->IR_OnKeyboardRelease		(get_binded_action(kWPN_FIRE));
 		}
 	}
 }
@@ -298,7 +298,7 @@ bool CDialogHolder::IR_UIOnKeyboardPress(int dik)
 			{
 				EGameActions action = get_binded_action(dik);
 				if (action != kQUICK_USE_1 && action != kQUICK_USE_2 && action != kQUICK_USE_3 && action != kQUICK_USE_4)
-					IR->IR_OnKeyboardPress(action);
+					IR->IR_OnKeyboardPress(dik);
 			}
 			return false;
 		}
@@ -379,7 +379,7 @@ bool CDialogHolder::IR_UIOnKeyboardRelease(int dik)
 		{
 			IInputReceiver* IR = O->GetIIR();
 			if (IR)
-				IR->IR_OnKeyboardRelease(get_binded_action(dik));
+				IR->IR_OnKeyboardRelease(dik);
 			return			(false);
 		}
 	}
@@ -402,7 +402,7 @@ bool CDialogHolder::IR_UIOnKeyboardHold(int dik)
 		{
 			IInputReceiver* IR = O->GetIIR();
 			if(IR)
-				IR->IR_OnKeyboardHold(get_binded_action(dik));
+				IR->IR_OnKeyboardHold(dik);
 			return		false;
 		}
 	}
