@@ -9,13 +9,8 @@ class XREUI_API CUIThemeManager :
 	
 public:
 	static CUIThemeManager& Get();
-	void InitDefault(bool Force = false);
+	void InitDefault(int ThemeID = -1);
 	void Show(bool value);
-
-	void Save();
-	void Load();
-	void SaveTo();
-	void LoadFrom();
 
 protected:
 	virtual void Draw();
@@ -24,6 +19,8 @@ protected:
 public:
 	float TransparentDefault = 1.f;
 	float TransparentUnfocused = 0.33f;
+
+	int ThemeID = 0;
 
 	// St4lker0k765: customizable log message colors
 	ImVec4 log_color_default;

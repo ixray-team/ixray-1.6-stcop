@@ -2,6 +2,7 @@
 #include "UIRenderForm.h"
 #include "ui_main.h"
 #include "../xrEUI/ImGuizmo.h"
+#include <imgui_internal.h>
 
 static int GlobalViewportIndex = 0;
 
@@ -108,6 +109,10 @@ void UIRenderForm::DrawStatistics()
 }
 void UIRenderForm::Draw()
 {
+	ImGuiWindowClass window_class;
+	window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_HiddenTabBar;
+	ImGui::SetNextWindowClass(&window_class);
+
 	if (!ImGui::Begin(ViewportName, nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 	{
 		ImGui::End();
@@ -115,7 +120,6 @@ void UIRenderForm::Draw()
 	}
 
 	DrawVP();
-
 	ImGui::End();
 }
 

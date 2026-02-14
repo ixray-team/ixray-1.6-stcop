@@ -229,11 +229,13 @@ public:
 
 	virtual void	SaveSettings				(nlohmann::json&){}
 	virtual void	LoadSettings				(nlohmann::json&){}
+
 protected:    
 // progress bar
 	using PBVec = xr_vector<SPBItem*>;
 	using PBVecIt = PBVec::iterator;
 	PBVec			m_ProgressItems;
+
 public:
 	SPBItem*		ProgressStart		(float max_val, LPCSTR text);
 	void 			ProgressEnd			(SPBItem*&);
@@ -245,6 +247,8 @@ public:
 	volatile bool IsLoading = false;
 	volatile float ProgressStatus = 0.f;
 	xr_string ProgressStatusName;
+	using ModifierCallback = bool(*)();
+	xr_vector <std::pair<shared_str, ModifierCallback>> GeneralTabs;
 
 	// Render form
 	ref_rt RT;

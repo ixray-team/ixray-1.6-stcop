@@ -182,6 +182,12 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
 	for (int fl_i = start_face; fl_i < start_face + num_face; ++fl_i)
 	{
 		u32 f_index = face_lst[fl_i];
+		if (f_index >= m_FaceCount)
+		{
+			Msg("!Incorrect UV reference in mesh %s", m_Name.c_str());
+			continue;
+		}
+
 		VERIFY(f_index < m_FaceCount);
 		const st_Face& face = m_Faces[f_index];
 
