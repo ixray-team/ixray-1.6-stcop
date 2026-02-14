@@ -14,6 +14,8 @@
 #include "../Actor.h"
 #include "../xrGame/ui/UIInventoryUtilities.h"
 #include "CustomOutfit.h"
+#include "PowerBank.h"
+#include "IPowerManager.h"
 
 CUICellItem* CUICellItem::m_mouse_selected_item = nullptr;
 
@@ -46,16 +48,28 @@ CUICellItem::CUICellItem()
 
 CUICellItem::~CUICellItem()
 {
-	if(m_b_destroy_childs)
-		delete_data	(m_childs);
+	if (m_b_destroy_childs) {
+		PIItem item = (PIItem)m_pData;
+		if (item) {
+			if (PowerBank* oPowerBank = smart_cast<PowerBank*>(item->cast_inventory_item()))
+			{
+				oPowerBank->OnCellsDestroy(this);
+			}
+
+			if (IPowerManager* oPowerManager = smart_cast<IPowerManager*>(item->cast_inventory_item()))
+			{
+				oPowerManager->OnCellsDestroy(this);
+			}
+		}
+
+		delete_data(m_childs);
+	}
 
 	delete_data		(m_custom_draw);
 }
 
 void CUICellItem::init()
 {
-	CUIXml uiXml;
-
 	if (!uiXml.Load(CONFIG_PATH, UI_PATH, "actor_menu_item.xml"))
 	{
 		return;
@@ -201,9 +215,20 @@ void CUICellItem::Update()
 	Ivector2 cell_space = m_pParentList->CellsSpacing();
 
 	if (item) {
+		if (IPowerManager* oPowerManager = smart_cast<IPowerManager*>(item->cast_inventory_item()))
+		{
+			oPowerManager->CellUpdate(this, cell_size, cell_space, itm_grid_size);
+		}
+
+		if (PowerBank* oPowerBank = smart_cast<PowerBank*>(item->cast_inventory_item()))
+		{
+			oPowerBank->CellUpdate(this, cell_size, cell_space, itm_grid_size);
+		}
+
 		if (IAntigas* antigas = smart_cast<IAntigas*>(item->cast_inventory_item()))
 		{
-			if (antigas->IsAllowed() && antigas->IsFilterInstalled()) {
+			if (antigas->IsAllowed() && antigas->IsFilterInstalled()) 
+			{
 				float filter_condition = antigas->GetFilterCondition();
 
 				if (m_pConditionState_filter != nullptr) 
