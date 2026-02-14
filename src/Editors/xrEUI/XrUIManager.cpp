@@ -9,6 +9,7 @@
 #include "imgui_internal.h"
 #include "font/fa7.h"
 #include "IconsFontAwesome7.h"
+#include "../xrEUI/ModernUI.h"
 
 XREUI_API XrUIManager* GUIManager = nullptr;
 
@@ -320,6 +321,7 @@ void XrUIManager::Draw()
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3, 2));
+		ImGui::PushStyleColor(ImGuiCol_WindowBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::BackgroundTint).Value);
 		ImGui::Begin("MyDockspace", NULL, window_flags);
 		ImGuiID dockMain = ImGui::GetID("MyDockspace");
 
@@ -327,6 +329,7 @@ void XrUIManager::Draw()
 
 		ImGui::DockSpace(dockMain);
 		ImGui::End();
+		ImGui::PopStyleColor();
 		ImGui::PopStyleVar(4);
 
 	}
