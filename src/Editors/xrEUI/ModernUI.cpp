@@ -14,7 +14,7 @@ XREUI_API bool XRay::ImGui::ToggleFlagButton(const char* Label, uint32_t* Flags,
 	const ImVec4 DisabledColor = GetEditorColor(EEditorColors::ButtonTint);
 	const ImVec4 BorderColor = EnabledColor;
 
-	constexpr float StripeWidth = 3.0f;
+	constexpr float StripeWidth = 2.0f;
 	constexpr float Rounding = 5.0f;
 
 	::ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, Rounding);
@@ -38,7 +38,11 @@ XREUI_API bool XRay::ImGui::ToggleFlagButton(const char* Label, uint32_t* Flags,
 	ImVec2 Min = ::ImGui::GetItemRectMin();
 	ImVec2 Max = ::ImGui::GetItemRectMax();
 
-	Min.x += 1;
+	if (Enabled)
+	{
+		Min.x += 2;
+	}
+
 	DrawList->AddRectFilled(
 		Min,
 		ImVec2(Min.x + StripeWidth, Max.y),
@@ -60,7 +64,7 @@ XREUI_API bool XRay::ImGui::ToggleButton(const char* Label, bool* Flags, const I
 	const ImVec4 DisabledColor = GetEditorColor(EEditorColors::ButtonTint);
 	const ImVec4 BorderColor = EnabledColor;
 
-	constexpr float StripeWidth = 3.0f;
+	constexpr float StripeWidth = 2.0f;
 	constexpr float Rounding = 5.0f;
 
 	::ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, Rounding);
@@ -287,7 +291,7 @@ XREUI_API bool XRay::ImGui::TumblerButton(const char* Label, bool& State, ImVec2
 	const ImVec4 EnabledColor = GetEditorColor(EEditorColors::ToggleColorActive);
 	const ImVec4 DisabledColor = GetEditorColor(EEditorColors::ButtonTint);
 
-	constexpr float StripeWidth = 3.0f;
+	constexpr float StripeWidth = 2.0f;
 	constexpr float Rounding = 5.0f;
 
 	::ImGui::PushID(Label);
