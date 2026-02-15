@@ -241,6 +241,7 @@ void CUIThemeManager::InitDefault(int InThemeID)
 	colors[ImGuiCol_TableHeaderBg] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ButtonTint);
 	colors[ImGuiCol_Tab] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TabBarTint);
 	colors[ImGuiCol_TitleBg] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TabBarTint);
+	colors[ImGuiCol_TitleBgActive] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TabBarTint);
 	colors[ImGuiCol_TabDimmed] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TabBarTint);
 	colors[ImGuiCol_TabDimmedSelected] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToolbarTint);
 	colors[ImGuiCol_TabActive] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToolbarTint);
@@ -251,7 +252,7 @@ void CUIThemeManager::InitDefault(int InThemeID)
 	style.FrameBorderSize = 0.0f;
 	style.TabBorderSize = 0.0f;
 	style.ItemInnerSpacing.x = 2.5f;
-	style.DockingSeparatorSize = 5.f;
+	style.DockingSeparatorSize = 4.5f;
 
 	log_color_default = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
 	log_color_error = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
