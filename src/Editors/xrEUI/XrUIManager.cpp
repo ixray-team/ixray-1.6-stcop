@@ -302,10 +302,14 @@ void XrUIManager::Draw()
 	//ImGui::DockSpaceOverViewport();
 	{
 		m_MenuBarHeight = 64;
-
 		m_MenuBarButtonHeight = 26.f;
 
-		int headerSize = ImGui::GetStyle().DisplayWindowPadding.y;
+
+		int headerSize = (28.f) 
+			- ImGui::GetStyle().DisplayWindowPadding.y 
+			+ ImGui::GetStyle().DisplaySafeAreaPadding.y; // kak-to rabotaet
+
+
 		ImGuiViewport* viewport = ImGui::GetMainViewport();
 		ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x, viewport->Pos.y + m_MenuBarHeight + headerSize));
 		ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, viewport->Size.y - headerSize - m_MenuBarHeight));
