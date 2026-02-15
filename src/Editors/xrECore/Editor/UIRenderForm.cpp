@@ -110,7 +110,7 @@ void UIRenderForm::DrawStatistics()
 void UIRenderForm::Draw()
 {
 	ImGuiWindowClass window_class;
-	window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_HiddenTabBar;
+	window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_HiddenTabBar | ImGuiDockNodeFlags_NoDockingOverMe;
 	ImGui::SetNextWindowClass(&window_class);
 
 	if (!ImGui::Begin(ViewportName, nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
