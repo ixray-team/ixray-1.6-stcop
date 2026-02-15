@@ -305,9 +305,10 @@ void XrUIManager::Draw()
 		m_MenuBarButtonHeight = 26.f;
 
 
-		int headerSize = (28.f) 
-			- ImGui::GetStyle().DisplayWindowPadding.y 
-			+ ImGui::GetStyle().DisplaySafeAreaPadding.y; // kak-to rabotaet
+		int headerSize = (28.f)
+			- ImGui::GetStyle().DisplayWindowPadding.y
+			+ ImGui::GetStyle().DisplaySafeAreaPadding.y
+			+ ImGui::GetStyle().DockingSeparatorSize;
 
 
 		ImGuiViewport* viewport = ImGui::GetMainViewport();
