@@ -30,21 +30,19 @@ IDirect3DStateBlock9* SimulatorStates::record	()
 #endif
 }
 
-void	SimulatorStates::set_RS	(u32 a, u32 b)
+void	SimulatorStates::set_RS(u32 a, u32 b, u32 c)
 {
-	// Search duplicates
-	for (int t=0; t<int(States.size()); t++)
-	{
-		State& S	= States[t];
-		if ((0==S.type)&&(a==S.v1)) {
-			States.erase(States.begin()+t);
-			break;
-		}
-	}
+	States.erase(std::remove_if(States.begin(), States.end(),
+			[&](auto& S)
+			{
+				return (0 == S.type) && (a == S.v1) && (c == S.v3 || c == u32(-1));
+			}
+		),
+	States.end());
 
 	// Register
-	State		st;
-	st.set_RS	(a,b);
+	State st;
+	st.set_RS(a, b, c);
 	States.push_back(st);
 }
 
@@ -237,52 +235,76 @@ void SimulatorStates::UpdateDesc( D3D_BLEND_DESC &desc ) const
 		const State& S	= States[it];
 		if (S.type==0)
 		{
+			int start_idx = 0;
+			int end_idx = std::size(desc.RenderTarget);
+
+			if (S.v3 != u32(-1))
+			{
+				start_idx = S.v3;
+				end_idx = start_idx + 1;
+
+				desc.IndependentBlendEnable = TRUE;
+			}
+
 			switch (S.v1)
 			{
 			case XRDX10RS_ALPHATOCOVERAGE:
-				for ( int i=0; i<8; ++i)
-					desc.AlphaToCoverageEnable = S.v2?1:0;
+				desc.AlphaToCoverageEnable = S.v2 ? 1 : 0;
 				break;
 				
 			case D3DRS_SRCBLEND:
-				for ( int i=0; i<8; ++i)
+				for (int i = start_idx; i < end_idx; ++i)
+				{
 					desc.RenderTarget[i].SrcBlend = dx10StateUtils::ConvertBlendArg((D3DBLEND)S.v2);
+				}
 				break;
 
 			case D3DRS_DESTBLEND:
-				for ( int i=0; i<8; ++i)
+				for (int i = start_idx; i < end_idx; ++i)
+				{
 					desc.RenderTarget[i].DestBlend = dx10StateUtils::ConvertBlendArg((D3DBLEND)S.v2);
+				}
 				break;
 			
 				//D3DRS_ALPHAFUNC
 
 			case D3DRS_BLENDOP:
-				for ( int i=0; i<8; ++i)
+				for (int i = start_idx; i < end_idx; ++i)
+				{
 					desc.RenderTarget[i].BlendOp = dx10StateUtils::ConvertBlendOp((D3DBLENDOP)S.v2);
+				}
 				break;
 
 			case D3DRS_SRCBLENDALPHA:
-				for ( int i=0; i<8; ++i)
+				for (int i = start_idx; i < end_idx; ++i)
+				{
 					desc.RenderTarget[i].SrcBlendAlpha = dx10StateUtils::ConvertBlendArg((D3DBLEND)S.v2);
+				}
 				break;
 
 			case D3DRS_DESTBLENDALPHA:
-				for ( int i=0; i<8; ++i)
+				for (int i = start_idx; i < end_idx; ++i)
+				{
 					desc.RenderTarget[i].DestBlendAlpha = dx10StateUtils::ConvertBlendArg((D3DBLEND)S.v2);
+				}
 				break;
 
 			case D3DRS_BLENDOPALPHA:
-				for ( int i=0; i<8; ++i)
+				for (int i = start_idx; i < end_idx; ++i)
+				{
 					desc.RenderTarget[i].BlendOpAlpha = dx10StateUtils::ConvertBlendOp((D3DBLENDOP)S.v2);
+				}
 				break;
 
 			case D3DRS_ALPHABLENDENABLE:
-				for ( int i=0; i<8; ++i)
-					desc.RenderTarget[i].BlendEnable = S.v2?1:0;
+				for (int i = start_idx; i < end_idx; ++i)
+				{
+					desc.RenderTarget[i].BlendEnable = S.v2 ? 1 : 0;
+				}
 				break;
 
 			case D3DRS_COLORWRITEENABLE:
-				desc.RenderTarget[0].RenderTargetWriteMask = (u8)S.v2;
+				desc.RenderTarget[start_idx].RenderTargetWriteMask = (u8)S.v2;
 				break;
 
 			case D3DRS_COLORWRITEENABLE1:
