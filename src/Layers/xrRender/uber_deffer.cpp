@@ -316,7 +316,7 @@ void uber_forward(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref,
 		C.r_dx10Texture("s_env", r2_RT_env_temp);
 
 		C.r_dx10Sampler("smp_material");
-	#else
+	#elif RENDER==R_R2
 		C.r_Sampler("s_material", r2_material);
 
 		C.r_Sampler("env_s0", r2_T_envs0);
