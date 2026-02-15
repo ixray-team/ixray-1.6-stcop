@@ -62,9 +62,15 @@ public:
 	void				PassBegin			();
 	u32					Pass				()  { return SH->passes.size(); }
 	void				PassSET_ZB			(BOOL bZTest,	BOOL bZWrite, BOOL bInvertZTest=FALSE);
+	
+	void				PassSET_Blend		(u32 idx, BOOL bABlend, u32 abSRC, u32 abDST, BOOL aTest, u32 aRef);
+	void				PassSET_ablend_mode	(u32 idx, BOOL bABlend,	u32 abSRC, u32 abDST);
+	void				PassSET_ablend_aref	(u32 idx, BOOL aTest,	u32 aRef);
+
+	void				PassSET_Blend(BOOL bABlend, u32 abSRC, u32 abDST, BOOL aTest, u32 aRef);
 	void				PassSET_ablend_mode	(BOOL bABlend,	u32 abSRC, u32 abDST);
 	void				PassSET_ablend_aref	(BOOL aTest,	u32 aRef);
-	void				PassSET_Blend		(BOOL bABlend,	u32 abSRC, u32 abDST, BOOL aTest, u32 aRef);
+
 	void				PassSET_Blend_BLEND	(BOOL bAref=FALSE, u32 ref=0)	{ PassSET_Blend	(TRUE,D3DBLEND_SRCALPHA,D3DBLEND_INVSRCALPHA,bAref,ref);	}
 	void				PassSET_Blend_SET	(BOOL bAref=FALSE, u32 ref=0)	{ PassSET_Blend	(FALSE,D3DBLEND_ONE,D3DBLEND_ZERO,bAref,ref);				}
 	void				PassSET_Blend_ADD	(BOOL bAref=FALSE, u32 ref=0)	{ PassSET_Blend	(TRUE, D3DBLEND_ONE,D3DBLEND_ONE, bAref,ref);				}
@@ -78,16 +84,16 @@ public:
 	void				StageBegin			();
 	u32					Stage				()	{ return dwStage; }
 	void				StageSET_Address	(u32 adr);
-	void				StageSET_XForm		(u32 tf, u32 tc);
-	void				StageSET_Color		(u32 a1, u32 op, u32 a2);
-	void				StageSET_Color3		(u32 a1, u32 op, u32 a2, u32 a3);
-	void				StageSET_Alpha		(u32 a1, u32 op, u32 a2);
 #ifndef USE_DX11
+	void				StageSET_Color(u32 a1, u32 op, u32 a2);
+	void				StageSET_Color3(u32 a1, u32 op, u32 a2, u32 a3);
+	void				StageSET_Alpha(u32 a1, u32 op, u32 a2);
 	void				StageSET_TMC		(LPCSTR T, LPCSTR M, LPCSTR C, int UVW_channel);
 	void				Stage_Texture		(LPCSTR name, u32 address=D3DTADDRESS_WRAP,	u32	 fmin=D3DTEXF_LINEAR, u32 fmip=D3DTEXF_LINEAR,	u32 fmag=D3DTEXF_LINEAR);
 	void				StageTemplate_LMAP0	();
+	void				StageSET_XForm(u32 tf, u32 tc);
+	void				Stage_Matrix(LPCSTR name, int UVW_channel);
 #endif	//	USE_DX11
-	void				Stage_Matrix		(LPCSTR name, int UVW_channel);
 	void				Stage_Constant		(LPCSTR name);
 	void				StageEnd			();
 
