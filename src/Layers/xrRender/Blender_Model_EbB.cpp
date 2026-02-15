@@ -154,18 +154,9 @@ void	CBlender_Model_EbB::Compile(CBlender_Compile& C)
 		switch(C.iElement) {
 			case SE_R2_NORMAL_HQ:
 			case SE_R2_NORMAL_LQ:
-			uber_deffer(C, SE_R2_NORMAL_HQ == C.iElement, "deffer_model", "forward_base", false, 0, true);
-
-			C.PassSET_ZB(TRUE, FALSE);
-			C.PassSET_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, 0);
-
-			C.r_Sampler("s_material", r2_material);
-			C.r_Sampler("env_s0", r2_T_envs0);
-			C.r_Sampler("env_s1", r2_T_envs1);
-			C.r_Sampler("sky_s0", r2_T_sky0);
-			C.r_Sampler("sky_s1", r2_T_sky1);
-
-			C.r_End();
+			{
+				uber_forward(C, SE_R2_NORMAL_HQ == C.iElement, "deffer_model", "forward_base", false, true, 0);
+			}
 			break;
 		}
 	}
@@ -221,21 +212,7 @@ void CBlender_Model_EbB::Compile( CBlender_Compile& C )
 		{
 		case SE_R2_NORMAL_HQ:
 		case SE_R2_NORMAL_LQ:
-			uber_deffer(C, SE_R2_NORMAL_HQ == C.iElement, "deffer_model", "forward_base", true, 0, true);
-
-			C.PassSET_ZB(TRUE, FALSE);
-			C.PassSET_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, 0);
-
-			C.r_dx10Texture("s_material", r2_material);
-			C.r_dx10Texture("env_s0", r2_T_envs0);
-			C.r_dx10Texture("env_s1", r2_T_envs1);
-			C.r_dx10Texture("sky_s0", r2_T_sky0);
-			C.r_dx10Texture("sky_s1", r2_T_sky1);
-
-			C.r_dx10Texture("s_env", r2_RT_env_temp);
-
-			C.r_dx10Sampler("smp_material");
-			C.r_End();
+			uber_forward(C, SE_R2_NORMAL_HQ == C.iElement, "deffer_model", "forward_base", true, true, 0);
 			break;
 		}
 	} 
