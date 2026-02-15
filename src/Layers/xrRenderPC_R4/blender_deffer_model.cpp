@@ -77,29 +77,20 @@ void CBlender_deffer_model::Compile(CBlender_Compile& C)
 		return;
 	}
 
-	if (oStrictSorting.value || (oBlend.value && oAREF.value < 16)) {
+	if (oStrictSorting.value || (oBlend.value && oAREF.value < 16)) 
+	{
 		switch (C.iElement)
 		{
-		case SE_R2_NORMAL_HQ:
-		case SE_R2_NORMAL_LQ:
-			uber_deffer(C, SE_R2_NORMAL_HQ == C.iElement, "deffer_model", "forward_base", true, 0, true);
-
-			C.PassSET_ZB(TRUE, FALSE);
-			C.PassSET_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, oAREF.value);
-
-			C.r_dx10Texture("s_material", r2_material);
-			C.r_dx10Texture("env_s0", r2_T_envs0);
-			C.r_dx10Texture("env_s1", r2_T_envs1);
-			C.r_dx10Texture("sky_s0", r2_T_sky0);
-			C.r_dx10Texture("sky_s1", r2_T_sky1);
-
-			C.r_dx10Texture("s_env", r2_RT_env_temp);
-
-			C.r_dx10Sampler("smp_material");
-			C.r_End();
-			break;
+			case SE_R2_NORMAL_HQ:
+			case SE_R2_NORMAL_LQ:
+			{
+				uber_forward(C, SE_R2_NORMAL_HQ == C.iElement, "deffer_model", "forward_base", true, true, 0);
+				break;
+			}
 		}
-	} else {
+	} 
+	else 
+	{
 		BOOL bAref = oBlend.value;
 
 		C.TessMethod = oTessellation.IDselected;
