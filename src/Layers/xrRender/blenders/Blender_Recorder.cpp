@@ -283,14 +283,12 @@ void	CBlender_Compile::StageSET_Address	(u32 adr)
 	RS.SetSAMP	(Stage(),D3DSAMP_ADDRESSU,	adr);
 	RS.SetSAMP	(Stage(),D3DSAMP_ADDRESSV,	adr);
 }
-#ifdef _EDITOR
+#ifndef USE_DX11
 void	CBlender_Compile::StageSET_XForm	(u32 tf, u32 tc)
 {
 	RS.SetTSS	(Stage(),D3DTSS_TEXTURETRANSFORMFLAGS,	tf);
 	RS.SetTSS	(Stage(),D3DTSS_TEXCOORDINDEX,			tc);
 }
-#endif
-#ifndef USE_DX11
 void	CBlender_Compile::StageSET_Color	(u32 a1, u32 op, u32 a2)
 {
 	RS.SetColor	(Stage(),a1,op,a2);
