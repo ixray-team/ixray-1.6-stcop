@@ -198,32 +198,27 @@ void	CBlender_Tree::Compile	(CBlender_Compile& C)
 
 		break;
 		case SE_R2_SHADOW:
-			if (oBlend.value) {
+		{
+			if (oBlend.value)
+			{
 				RImplementation.addShaderOption("USE_AREF", "1");
 			}
 
 			C.r_Pass("shadow_lod", "shadow_base", FALSE);
+
 			C.r_dx10Texture("s_base", C.L_textures[0]);
 			C.r_dx10Sampler("smp_base");
 			C.r_dx10Sampler("smp_linear");
+
 			C.r_ColorWriteEnable(false, false, false, false);
 			C.r_End();
-
+		}
 		break;
 		case SE_R2_REFLECTIONS:
+		{
 			RImplementation.addShaderOption("USE_LENGTH_BUFFER", "1");
-			uber_deffer(C, false, "deffer_lod", "forward_base", oBlend.value, 0, true);
-
-			C.r_dx10Texture("s_material", r2_material);
-			C.r_dx10Texture("env_s0", r2_T_envs0);
-			C.r_dx10Texture("env_s1", r2_T_envs1);
-			C.r_dx10Texture("sky_s0", r2_T_sky0);
-			C.r_dx10Texture("sky_s1", r2_T_sky1);
-
-			C.r_dx10Texture("s_env", r2_RT_env_temp);
-
-			C.r_dx10Sampler("smp_material");
-			C.r_End();
+			uber_forward(C, false, "deffer_lod", "forward_base", oBlend.value, false, 0);
+		}
 		break;
 	}
 	RImplementation.clearAllShaderOptions();
