@@ -286,7 +286,49 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 	C.r_Sampler("sky_s1", "$user$sky1");
 #endif
 
-	if (!DO_NOT_FINISH) {
+	if (!DO_NOT_FINISH) 
+	{
+		C.r_End();
+	}
+}
+
+void uber_forward(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, BOOL blend, LPCSTR detail_replace, bool DO_NOT_FINISH, bool DO_NOT_START)
+{
+	uber_deffer(C, hq, vs, ps, aref, detail_replace, true, DO_NOT_START);
+
+	if (blend) 
+	{
+		C.PassSET_ZB(TRUE, FALSE);
+		C.PassSET_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, 0);
+	}
+
+#ifndef _EDITOR
+	#ifdef USE_DX11
+		C.r_dx10Texture("s_material", r2_material);
+		C.r_dx10Texture("s_position", r2_RT_P);
+
+		C.r_dx10Texture("env_s0", r2_T_envs0);
+		C.r_dx10Texture("env_s1", r2_T_envs1);
+
+		C.r_dx10Texture("sky_s0", r2_T_sky0);
+		C.r_dx10Texture("sky_s1", r2_T_sky1);
+
+		C.r_dx10Texture("s_env", r2_RT_env_temp);
+
+		C.r_dx10Sampler("smp_material");
+	#elif RENDER==R_R2
+		C.r_Sampler("s_material", r2_material);
+
+		C.r_Sampler("env_s0", r2_T_envs0);
+		C.r_Sampler("env_s1", r2_T_envs1);
+
+		C.r_Sampler("sky_s0", r2_T_sky0);
+		C.r_Sampler("sky_s1", r2_T_sky1);
+	#endif
+#endif
+
+	if(!DO_NOT_FINISH)
+	{
 		C.r_End();
 	}
 }
