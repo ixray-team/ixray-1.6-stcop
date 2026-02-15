@@ -213,41 +213,60 @@ void	CBlender_Compile::PassSET_ZB		(BOOL bZTest, BOOL bZWrite, BOOL bInvertZTest
 	else								RS.SetRS	(D3DRS_ZENABLE,	D3DZB_FALSE);
 	*/
 }
-
-void	CBlender_Compile::PassSET_ablend_mode	(BOOL bABlend,	u32 abSRC, u32 abDST)
+void	CBlender_Compile::PassSET_ablend_mode(u32 idx, BOOL bABlend, u32 abSRC, u32 abDST)
 {
-	if (bABlend && D3DBLEND_ONE==abSRC && D3DBLEND_ZERO==abDST)		bABlend = FALSE;
-	RS.SetRS(D3DRS_ALPHABLENDENABLE,	BC(bABlend));
-	RS.SetRS(D3DRS_SRCBLEND,			bABlend?abSRC:D3DBLEND_ONE	);
-	RS.SetRS(D3DRS_DESTBLEND,			bABlend?abDST:D3DBLEND_ZERO	);
+	if (bABlend && D3DBLEND_ONE == abSRC && D3DBLEND_ZERO == abDST)
+	{
+		bABlend = FALSE;
+	}
+
+	RS.SetRS(idx, D3DRS_ALPHABLENDENABLE, BC(bABlend));
+
+	RS.SetRS(idx, D3DRS_SRCBLEND, bABlend ? abSRC : D3DBLEND_ONE);
+	RS.SetRS(idx, D3DRS_DESTBLEND, bABlend ? abDST : D3DBLEND_ZERO);
 
 #ifdef USE_DX11
-	//	Since in our engine D3DRS_SEPARATEALPHABLENDENABLE state is
-	//	always set to false and in DirectX 10 blend functions for 
-	//	color and alpha are always independent, assign blend options for
-	//	alpha in DX10 identical to color.
-	RS.SetRS(D3DRS_SRCBLENDALPHA,		bABlend?abSRC:D3DBLEND_ONE	);
-	RS.SetRS(D3DRS_DESTBLENDALPHA,		bABlend?abDST:D3DBLEND_ZERO	);
+	RS.SetRS(idx, D3DRS_SRCBLENDALPHA, bABlend ? abSRC : D3DBLEND_ONE);
+	RS.SetRS(idx, D3DRS_DESTBLENDALPHA, bABlend ? abDST : D3DBLEND_ZERO);
 #endif	//	USE_DX11
 }
-void	CBlender_Compile::PassSET_ablend_aref	(BOOL bATest,	u32 aRef)
+
+void CBlender_Compile::PassSET_ablend_mode(BOOL bABlend, u32 abSRC, u32 abDST)
 {
-	clamp		(aRef,0u,255u);
-	RS.SetRS	(D3DRS_ALPHATESTENABLE,		BC(bATest));
-	if (bATest)	RS.SetRS(D3DRS_ALPHAREF,	u32(aRef));
+	PassSET_ablend_mode(u32(-1), bABlend, abSRC, abDST);
 }
 
-void	CBlender_Compile::PassSET_Blend	(BOOL bABlend, u32 abSRC, u32 abDST, BOOL bATest, u32 aRef)
+void CBlender_Compile::PassSET_ablend_aref(u32 idx, BOOL bATest, u32 aRef)
 {
-	PassSET_ablend_mode					(bABlend,abSRC,abDST);
-	PassSET_ablend_aref					(bATest,aRef);
+	clamp(aRef, 0u, 255u);
+	RS.SetRS(idx, D3DRS_ALPHATESTENABLE, BC(bATest));
+
+	if (bATest)	
+	{
+		RS.SetRS(idx, D3DRS_ALPHAREF, u32(aRef));
+	}
 }
 
-void	CBlender_Compile::PassSET_LightFog	(BOOL bLight, BOOL bFog)
+void CBlender_Compile::PassSET_ablend_aref(BOOL bATest, u32 aRef)
 {
-	RS.SetRS(D3DRS_LIGHTING,			BC(bLight));
-	RS.SetRS(D3DRS_FOGENABLE,			BC(bFog));
-	//SH->Flags.bLighting				|= !!bLight;
+	PassSET_ablend_aref(u32(-1), bATest, aRef);
+}
+
+void CBlender_Compile::PassSET_Blend(u32 idx, BOOL bABlend, u32 abSRC, u32 abDST, BOOL bATest, u32 aRef)
+{
+	PassSET_ablend_mode(idx, bABlend, abSRC, abDST);
+	PassSET_ablend_aref(idx, bATest, aRef);
+}
+
+void CBlender_Compile::PassSET_Blend(BOOL bABlend, u32 abSRC, u32 abDST, BOOL bATest, u32 aRef)
+{
+	PassSET_Blend(u32(-1), bABlend, abSRC, abDST, bATest, aRef);
+}
+
+void CBlender_Compile::PassSET_LightFog(BOOL bLight, BOOL bFog)
+{
+	RS.SetRS(D3DRS_LIGHTING, BC(bLight));
+	RS.SetRS(D3DRS_FOGENABLE, BC(bFog));
 }
 
 //
@@ -264,12 +283,11 @@ void	CBlender_Compile::StageSET_Address	(u32 adr)
 	RS.SetSAMP	(Stage(),D3DSAMP_ADDRESSU,	adr);
 	RS.SetSAMP	(Stage(),D3DSAMP_ADDRESSV,	adr);
 }
+#ifndef USE_DX11
 void	CBlender_Compile::StageSET_XForm	(u32 tf, u32 tc)
 {
-#ifdef _EDITOR
 	RS.SetTSS	(Stage(),D3DTSS_TEXTURETRANSFORMFLAGS,	tf);
 	RS.SetTSS	(Stage(),D3DTSS_TEXCOORDINDEX,			tc);
-#endif
 }
 void	CBlender_Compile::StageSET_Color	(u32 a1, u32 op, u32 a2)
 {
@@ -283,7 +301,6 @@ void	CBlender_Compile::StageSET_Alpha	(u32 a1, u32 op, u32 a2)
 {
 	RS.SetAlpha	(Stage(),a1,op,a2);
 }
-#ifndef USE_DX11
 void	CBlender_Compile::StageSET_TMC		(LPCSTR T, LPCSTR M, LPCSTR C, int UVW_channel)
 {
 	Stage_Texture		(T);
@@ -312,11 +329,11 @@ void	CBlender_Compile::Stage_Texture	(LPCSTR name, u32 ,	u32	 fmin, u32 fmip, u3
 //	i_Address				(Stage(),address);
 	i_Filter				(Stage(),fmin,fmip,fmag);
 }
-#endif	//	USE_DX11
-void	CBlender_Compile::Stage_Matrix		(LPCSTR name, int iChannel)
+
+void CBlender_Compile::Stage_Matrix(LPCSTR name, int iChannel)
 {
-	sh_list& lst	= L_matrices; 
-	int id			= ParseName(name);
+	sh_list& lst = L_matrices;
+	int id = ParseName(name);
 	CMatrix* M = DEV->_CreateMatrix((id >= 0 && id < lst.size()) ? *lst[id] : name);
 	passMatrices.push_back(M);
 
@@ -336,7 +353,9 @@ void	CBlender_Compile::Stage_Matrix		(LPCSTR name, int iChannel)
 		StageSET_XForm	(D3DTTFF_DISABLE,D3DTSS_TCI_PASSTHRU|iChannel);	
 	}
 }
-void	CBlender_Compile::Stage_Constant	(LPCSTR name)
+#endif
+
+void CBlender_Compile::Stage_Constant(LPCSTR name)
 {
 	sh_list& lst= L_constants;
 	int id		= ParseName(name);
