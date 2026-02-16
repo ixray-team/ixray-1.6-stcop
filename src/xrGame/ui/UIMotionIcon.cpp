@@ -37,7 +37,7 @@ void CUIMotionIcon::ResetVisibility()
 	m_bchanged				= true;
 }
 
-bool CUIMotionIcon::Init(Frect const& zonemap_rect)
+bool CUIMotionIcon::Init(Frect const& zonemap_rect, bool useCompassBar)
 {
 	CUIXml						uiXml;
 	uiXml.Load					(CONFIG_PATH, UI_PATH, MOTION_ICON_XML);
@@ -79,13 +79,13 @@ bool CUIMotionIcon::Init(Frect const& zonemap_rect)
         m_luminosity_progress_bar = UIHelper::CreateProgressBar(uiXml, "luminosity_progress", this);
         m_noise_progress_bar = UIHelper::CreateProgressBar(uiXml, "noise_progress", this);
     }
-    else
+    else if (!useCompassBar)
     {
-        // Allow only shape or bar, not both
+        // Luminosity and noise shapes are for minimap overlay only
         if (!m_luminosity_progress_bar)
         {
             m_luminosity_progress_shape = UIHelper::CreateProgressShape(uiXml, "luminosity_progress", this);
-            if (m_luminosity_progress_shape && !m_independent)
+            if (m_luminosity_progress_shape)
             {
                 m_luminosity_progress_shape->SetWndSize(sz);
                 m_luminosity_progress_shape->SetWndPos(pos);
@@ -95,7 +95,7 @@ bool CUIMotionIcon::Init(Frect const& zonemap_rect)
         if (!m_noise_progress_bar)
         {
             m_noise_progress_shape = UIHelper::CreateProgressShape(uiXml, "noise_progress", this);
-            if (m_noise_progress_shape && !m_independent)
+            if (m_noise_progress_shape)
             {
                 m_noise_progress_shape->SetWndSize(sz);
                 m_noise_progress_shape->SetWndPos(pos);

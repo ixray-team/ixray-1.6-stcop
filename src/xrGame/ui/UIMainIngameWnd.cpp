@@ -445,9 +445,10 @@ void CUIMainIngameWnd::Init()
 
 	UIMotionIcon = new CUIMotionIcon(); UIMotionIcon->SetAutoDelete(true);
 	bool independent = false;
+	const bool useCompassBar = EngineExternal()[EEngineExternalUI::UseCompassBar];
 	if (UIZoneMap)
 	{
-		independent = UIMotionIcon->Init(UIZoneMap->MapFrame().GetWndRect());
+		independent = UIMotionIcon->Init(UIZoneMap->MapFrame().GetWndRect(), useCompassBar);
 		if (!independent)
 			UIZoneMap->MapFrame().AttachChild(UIMotionIcon);
 		else
@@ -455,7 +456,7 @@ void CUIMainIngameWnd::Init()
 	}
 	else if (UICompassBar)
 	{
-		independent = UIMotionIcon->Init(UICompassBar->GetFrame()->GetWndRect());
+		independent = UIMotionIcon->Init(UICompassBar->GetFrame()->GetWndRect(), useCompassBar);
 		if (!independent)
 			UICompassBar->AttachChild(UIMotionIcon);
 		else
