@@ -175,6 +175,14 @@ void CScriptEngine::setup_auto_load		()
 
 void CScriptEngine::init()
 {
+	for (int Iter = ScriptEngine::EScriptProcessors::eScriptProcessorLevel; Iter <= ScriptEngine::EScriptProcessors::eScriptProcessorHelper; Iter++)
+	{
+		if (CScriptProcess* ScriptProces = script_process((ScriptEngine::EScriptProcessors)Iter))
+		{
+			ScriptProces->DestroyScripts();
+		}
+	}
+
 	CScriptStorage::reinit();
 
 	luabind::open(lua());
