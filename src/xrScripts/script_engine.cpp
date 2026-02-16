@@ -287,7 +287,7 @@ shared_str ParseFolder(LPCSTR file_name, FS_FileSet& SET)
 
 	string_path path_to_file;
 
-	for (auto FOLDER : SET)
+	for (const FS_File& FOLDER : SET)
 	{
 		// GET NAME PATH
 		string128 name_file = { 0 }; 
