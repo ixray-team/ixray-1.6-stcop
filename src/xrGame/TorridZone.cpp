@@ -40,10 +40,10 @@ void CTorridZone::shedule_Update(u32 dt)
 {
 	inherited::shedule_Update(dt);
 
-	if(m_idle_sound.slot())		m_idle_sound.set_position		(XFORM().c);
-	if(m_blowout_sound.slot())		m_blowout_sound.set_position	(XFORM().c);
-	if(m_hit_sound.slot())			m_hit_sound.set_position		(XFORM().c);
-	if(m_entrance_sound.slot())	m_entrance_sound.set_position	(XFORM().c);
+	UpdateSoundsPosition(m_idle_sounds_variants, XFORM().c);
+	UpdateSoundsPosition(m_blowout_sounds_variants, XFORM().c);
+	UpdateSoundsPosition(m_hit_sounds_variants, XFORM().c);
+	UpdateSoundsPosition(m_entrance_sounds_variants, XFORM().c);
 }
 
 bool CTorridZone::Enable()
