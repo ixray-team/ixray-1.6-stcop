@@ -41,11 +41,11 @@ UIMainForm::UIMainForm()
 
 	// Action
 	m_tMenu         = EDevice->Resources->_CreateTexture("ed\\bar\\menu");
-	m_tSelect       = EDevice->Resources->_CreateTexture("ed\\bar\\select");
-	m_tAdd          = EDevice->Resources->_CreateTexture("ed\\bar\\add");
-	m_tMove         = EDevice->Resources->_CreateTexture("ed\\bar\\move");
-	m_tScale        = EDevice->Resources->_CreateTexture("ed\\bar\\scale");
-	m_tRotate       = EDevice->Resources->_CreateTexture("ed\\bar\\rotate");
+	m_tSelect       = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Select");
+	m_tAdd          = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Add");
+	m_tMove         = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Move");
+	m_tScale        = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Scale");
+	m_tRotate       = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Rotate");
 
 	// Snap
 	m_tGSnap        = EDevice->Resources->_CreateTexture("ed\\bar\\gsnap");
@@ -360,7 +360,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 	// Меню
 	{
 		ImGui::BeginGroup();
-		//m_tMenu->Load();
+		m_tMenu->Load();
 		{
 			if (ImGui::BeginPopupContextItem("MenuScene"))
 			{
@@ -545,7 +545,8 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 				}
 				ImGui::EndPopup();
 			}
-			if (ImGui::Button(ICON_FA_BARS))
+			if (ImGui::ImageButton("##DrawRenderToolBar548", m_tMenu->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
+			//if (ImGui::Button(ICON_FA_BARS))
 			{
 				ImGui::OpenPopup("MenuScene");
 			}
@@ -571,8 +572,8 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 				ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
 			}
-
-			if (ImGui::Button(ICON_FA_ARROW_POINTER, ImVec2(22, 20)))
+			if (ImGui::ImageButton("##DrawRenderToolBar574", m_tSelect->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
+			//if (ImGui::Button(ICON_FA_ARROW_POINTER, ImVec2(22, 20)))
 			{
 				LTools->SetAction(etaSelect);
 			}
@@ -625,10 +626,10 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 				ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
 			}
-			//m_tMove->Load();
-			//if (ImGui::ImageButton("##DrawRenderToolBar594", m_tMove->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
+			m_tMove->Load();
+			if (ImGui::ImageButton("##DrawRenderToolBar594", m_tMove->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
 			//
-			if (ImGui::Button(ICON_FA_ARROWS_UP_DOWN_LEFT_RIGHT))
+			//if (ImGui::Button(ICON_FA_ARROWS_UP_DOWN_LEFT_RIGHT))
 			{
 				LTools->SetAction(etaMove);
 			}
@@ -654,8 +655,8 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
 			}
 			//m_tScale->Load();
-			//if (ImGui::ImageButton("##DrawRenderToolBar620", m_tScale->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
-			if (ImGui::Button(ICON_FA_UP_RIGHT_AND_DOWN_LEFT_FROM_CENTER))
+			if (ImGui::ImageButton("##DrawRenderToolBar620", m_tScale->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
+			//if (ImGui::Button(ICON_FA_UP_RIGHT_AND_DOWN_LEFT_FROM_CENTER))
 			{
 				LTools->SetAction(etaScale);
 			}
@@ -681,8 +682,8 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
 			}
 			//m_tRotate->Load();
-			//if (ImGui::ImageButton("##DrawRenderToolBar646", m_tRotate->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
-			if (ImGui::Button(ICON_FA_ROTATE))
+			if (ImGui::ImageButton("##DrawRenderToolBar646", m_tRotate->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
+			//if (ImGui::Button(ICON_FA_ROTATE))
 			{
 				LTools->SetAction(etaRotate);
 			}
