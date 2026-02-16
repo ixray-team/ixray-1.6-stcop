@@ -53,17 +53,77 @@ CAnomalyZone::CAnomalyZone(void)
 	m_zone_flags.set			(eFastMode, TRUE);
 
 	m_eZoneState				= eZoneStateIdle;
+
+	m_idle_sounds_variants.clear();
+	m_awaking_sounds_variants.clear();
+	m_accum_sounds_variants.clear();
+	m_blowout_sounds_variants.clear();
+	m_hit_sounds_variants.clear();
+	m_entrance_sounds_variants.clear();
 }
 
 CAnomalyZone::~CAnomalyZone(void) 
 {	
-	m_idle_sound.destroy		();
-	m_accum_sound.destroy		();
-	m_awaking_sound.destroy		();
-	m_blowout_sound.destroy		();
-	m_hit_sound.destroy			();
-	m_entrance_sound.destroy	();
-	xr_delete					(m_actor_effector);
+	DestroySoundsArray(m_idle_sounds_variants);
+	DestroySoundsArray(m_awaking_sounds_variants);
+	DestroySoundsArray(m_accum_sounds_variants);
+	DestroySoundsArray(m_blowout_sounds_variants);
+	DestroySoundsArray(m_hit_sounds_variants);
+	DestroySoundsArray(m_entrance_sounds_variants);
+
+	xr_delete(m_actor_effector);
+}
+
+void CAnomalyZone::DestroySoundsArray(xr_vector<ref_sound>& soundsArray)
+{	
+	for (ref_sound& sound : soundsArray)
+	{
+		sound.destroy();
+	}
+
+	soundsArray.clear();
+}
+
+void CAnomalyZone::StopAllSounds(xr_vector<ref_sound>& soundsArray)
+{
+	for (ref_sound& sound : soundsArray)
+	{
+		if (sound.is_playing()) {
+			sound.stop();
+		}
+	}
+}
+
+void CAnomalyZone::UpdateSoundsPosition(xr_vector<ref_sound>& soundsArray, const Fvector& pos)
+{
+	for (ref_sound& sound : soundsArray)
+	{
+		if (sound.is_playing()) {
+			// if (sound.slot())
+			if (sound._feedback())
+			{
+				sound.set_position(pos);
+			}
+		}
+	}
+}
+
+void CAnomalyZone::ParseRandomSounds(LPCSTR section, LPCSTR soundParameter, xr_vector<ref_sound> &soundsArray)
+{
+	soundsArray.clear();
+
+	if (pSettings->line_exist(section, soundParameter))
+	{
+		xr_string unsplittedPaths = pSettings->r_string(section, soundParameter);
+		if (!unsplittedPaths.empty()) 
+		{
+			xr_vector<xr_string> paths = unsplittedPaths.RemoveWhitespaces().Split();
+			for (xr_string& sound_path : paths)
+			{
+				soundsArray.emplace_back().create(sound_path.c_str(), st_Effect, sg_SourceType);
+			}
+		}
+	}
 }
 
 void CAnomalyZone::Load(LPCSTR section) 
@@ -89,41 +149,12 @@ void CAnomalyZone::Load(LPCSTR section)
 	
 	LPCSTR sound_str = nullptr;
 	
-	if(pSettings->line_exist(section,"idle_sound")) 
-	{
-		sound_str = pSettings->r_string(section,"idle_sound");
-		m_idle_sound.create(sound_str, st_Effect,sg_SourceType);
-	}
-	
-	if(pSettings->line_exist(section,"accum_sound")) 
-	{
-		sound_str = pSettings->r_string(section,"accum_sound");
-		m_accum_sound.create(sound_str, st_Effect,sg_SourceType);
-	}
-	if(pSettings->line_exist(section,"awake_sound")) 
-	{
-		sound_str = pSettings->r_string(section,"awake_sound");
-		m_awaking_sound.create(sound_str, st_Effect,sg_SourceType);
-	}
-	
-	if(pSettings->line_exist(section,"blowout_sound")) 
-	{
-		sound_str = pSettings->r_string(section,"blowout_sound");
-		m_blowout_sound.create(sound_str, st_Effect,sg_SourceType);
-	}
-	
-	
-	if(pSettings->line_exist(section,"hit_sound")) 
-	{
-		sound_str = pSettings->r_string(section,"hit_sound");
-		m_hit_sound.create(sound_str, st_Effect,sg_SourceType);
-	}
-
-	if(pSettings->line_exist(section,"entrance_sound")) 
-	{
-		sound_str = pSettings->r_string(section,"entrance_sound");
-		m_entrance_sound.create(sound_str, st_Effect,sg_SourceType);
-	}
+	ParseRandomSounds(section, "idle_sound", m_idle_sounds_variants);
+	ParseRandomSounds(section, "accum_sound", m_accum_sounds_variants);
+	ParseRandomSounds(section, "awake_sound", m_awaking_sounds_variants);
+	ParseRandomSounds(section, "blowout_sound", m_blowout_sounds_variants);
+	ParseRandomSounds(section, "hit_sound", m_hit_sounds_variants);
+	ParseRandomSounds(section, "entrance_sound", m_entrance_sounds_variants);
 
 
 	if(pSettings->line_exist(section,"idle_particles")) 
@@ -682,7 +713,11 @@ float CAnomalyZone::Power(float dist, float nearest_shape_radius)
 
 void CAnomalyZone::PlayIdleParticles(bool bIdleLight)
 {
-	m_idle_sound.play_at_pos(0, Position(), sm_Looped);
+	if (!m_idle_sounds_variants.empty()) 
+	{
+		StopAllSounds(m_idle_sounds_variants);
+		GetRandomSound(m_idle_sounds_variants).play_at_pos(0, Position(), sm_Looped);
+	}
 
 	if(*m_sIdleParticles)
 	{
@@ -699,7 +734,7 @@ void CAnomalyZone::PlayIdleParticles(bool bIdleLight)
 
 void CAnomalyZone::StopIdleParticles(bool bIdleLight)
 {
-	m_idle_sound.stop();
+	StopAllSounds(m_idle_sounds_variants);
 
 	if(m_pIdleParticles)
 	{
@@ -770,8 +805,15 @@ void CAnomalyZone::PlayBlowoutParticles()
 
 void CAnomalyZone::PlayHitParticles(CGameObject* pObject)
 {
-	if (!pObject || pObject->getDestroy()) return;
-	m_hit_sound.play_at_pos(0, pObject->Position());
+	if (!pObject || pObject->getDestroy())
+	{
+		return;
+	}
+
+	if (!m_hit_sounds_variants.empty())
+	{
+		GetRandomSound(m_hit_sounds_variants).play_at_pos(0, pObject->Position());
+	}
 
 	shared_str particle_str = nullptr;
 
@@ -800,8 +842,15 @@ void CAnomalyZone::PlayHitParticles(CGameObject* pObject)
 #include "Bolt.h"
 void CAnomalyZone::PlayEntranceParticles(CGameObject* pObject)
 {
-	if (!pObject || pObject->getDestroy()) return;
-	m_entrance_sound.play_at_pos(0, pObject->Position());
+	if (!pObject || pObject->getDestroy()) 
+	{
+		return;
+	}
+
+	if (!m_entrance_sounds_variants.empty())
+	{
+		GetRandomSound(m_entrance_sounds_variants).play_at_pos(0, pObject->Position());
+	}
 
 	LPCSTR particle_str = nullptr;
 
@@ -868,8 +917,11 @@ u8 CAnomalyZone::PlayEntranceSmallParticles(const Fvector& pos, const Fvector& d
 			LPCSTR particles_str = m_sBulletEntranceParticles.size() ? m_sBulletEntranceParticles.c_str() : m_sEntranceParticlesSmall.size() ? m_sEntranceParticlesSmall.c_str() : nullptr;
 			if(particles_str)
 			{
-				if (m_entrance_sound.handle())
-					m_entrance_sound.play_at_pos(0, pos);
+				if (!m_entrance_sounds_variants.empty())
+				{
+					GetRandomSound(m_entrance_sounds_variants).play_at_pos(0, pos);
+				}
+
 
 				CParticlesObject* pParticles = Particles::Details::Create(particles_str, TRUE).get();
 				Fmatrix xform;
@@ -953,7 +1005,10 @@ void CAnomalyZone::PlayBoltEntranceParticles()
 
 void CAnomalyZone::PlayBulletParticles(Fvector& pos)
 {
-	m_entrance_sound.play_at_pos(0, pos);
+	if (!m_entrance_sounds_variants.empty())
+	{
+		GetRandomSound(m_entrance_sounds_variants).play_at_pos(0, pos);
+	}
 
 	if(!m_sEntranceParticlesSmall) return;
 	
@@ -1103,27 +1158,32 @@ void CAnomalyZone::AffectObjects()
 
 void CAnomalyZone::UpdateBlowout()
 {
-	if(m_dwBlowoutParticlesTime>=(u32)m_iPreviousStateTime && 
-		m_dwBlowoutParticlesTime<(u32)m_iStateTime)
+	if(m_dwBlowoutParticlesTime>=(u32)m_iPreviousStateTime &&  m_dwBlowoutParticlesTime<(u32)m_iStateTime)
+	{
 		PlayBlowoutParticles();
+	}
 
-	if(m_dwBlowoutLightTime>=(u32)m_iPreviousStateTime && 
-		m_dwBlowoutLightTime<(u32)m_iStateTime)
-		StartBlowoutLight ();
+	if(m_dwBlowoutLightTime>=(u32)m_iPreviousStateTime && m_dwBlowoutLightTime<(u32)m_iStateTime)
+	{
+		StartBlowoutLight();
+	}
 
-	if(m_dwBlowoutSoundTime>=(u32)m_iPreviousStateTime && 
-		m_dwBlowoutSoundTime<(u32)m_iStateTime)
-		m_blowout_sound.play_at_pos	(0, Position());
+	if (m_dwBlowoutSoundTime >= (u32)m_iPreviousStateTime && m_dwBlowoutSoundTime < (u32)m_iStateTime)
+	{
+		if (!m_blowout_sounds_variants.empty())
+		{
+			GetRandomSound(m_blowout_sounds_variants).play_at_pos(0, Position());
+		}
+	}
 
-	if(m_zone_flags.test(eBlowoutWind) && m_dwBlowoutWindTimeStart>=(u32)m_iPreviousStateTime && 
-		m_dwBlowoutWindTimeStart<(u32)m_iStateTime)
+	if(m_zone_flags.test(eBlowoutWind) && m_dwBlowoutWindTimeStart>=(u32)m_iPreviousStateTime && m_dwBlowoutWindTimeStart<(u32)m_iStateTime)
+	{
 		StartWind();
+	}
 
 	UpdateWind();
 
-
-	if(m_dwBlowoutExplosionTime>=(u32)m_iPreviousStateTime && 
-		m_dwBlowoutExplosionTime<(u32)m_iStateTime)
+	if(m_dwBlowoutExplosionTime>=(u32)m_iPreviousStateTime && m_dwBlowoutExplosionTime<(u32)m_iStateTime)
 	{
 		AffectObjects();
 	}
@@ -1376,9 +1436,11 @@ void CAnomalyZone::PlayAccumParticles()
 		pParticles->UpdateParent(XFORM(),zero_vel);
 		pParticles->Play(false);
 	}
-
-	if (m_accum_sound.handle())
-		m_accum_sound.play_at_pos	(0, Position());
+	
+	if (!m_accum_sounds_variants.empty())
+	{
+		GetRandomSound(m_accum_sounds_variants).play_at_pos(0, Position());
+	}
 }
 
 void CAnomalyZone::PlayAwakingParticles()
@@ -1391,8 +1453,10 @@ void CAnomalyZone::PlayAwakingParticles()
 		pParticles->Play(false);
 	}
 
-	if (m_awaking_sound.handle())
-		m_awaking_sound.play_at_pos	(0, Position());
+	if (!m_awaking_sounds_variants.empty())
+	{
+		GetRandomSound(m_awaking_sounds_variants).play_at_pos(0, Position());
+	}
 }
 
 void CAnomalyZone::UpdateOnOffState()
