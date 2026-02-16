@@ -209,13 +209,15 @@ void CHolderEntityObject::OnGamepadAxisMove(int id, Fvector2 value)
 		float scale = (C->f_fov / g_fov) * psGamepadSens * psMouseSensScale / 50.f;
 		if (value.x)
 		{
-			float d = float(value.x) * scale * 8;
+			float realVal = (value.x > 0.f ? value.x - 0.2f : value.x + 0.2f) / 0.8f;
+			float d = realVal * scale * 8;
 			C->Move((d < 0) ? kLEFT : kRIGHT, std::abs(d));
 		}
 
 		if (value.y)
 		{
-			float d = (psGamepadInvert ? -1 : 1) * float(value.y) * scale * 3.f / 4.f;
+			float realVal = (value.y > 0.f ? value.y - 0.2f : value.y + 0.2f) / 0.8f;
+			float d = (psGamepadInvert ? -1 : 1) * realVal * scale * 3.f / 4.f;
 			d *= 8;
 			C->Move((d > 0) ? kUP : kDOWN, std::abs(d));
 		}
@@ -257,6 +259,12 @@ void CHolderEntityObject::OnKeyboardRelease	(int dik)
 	case kWPN_FIRE:
 		break;
 	};
+}
+
+void CHolderEntityObject::OnGamepadKeyRelease(int id)
+{
+	if (Remote())							
+		return;
 }
 
 void CHolderEntityObject::OnKeyboardHold		(int dik)
