@@ -537,6 +537,11 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 		return;
 	}
 
+	if (load_screen_renderer.IsActive())
+	{
+		return;
+	}
+
 	if (m_holder)
 	{
 		m_holder->OnGamepadAxisMove(id, value);
@@ -572,7 +577,9 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 		return;
 	}
 	// Left stick
-	if (id == 0)
+	switch (id)
+	{
+	case 0:
 	{
 		if (!fis_zero(value.x))
 		{
@@ -592,9 +599,9 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 				mstate_wishful &= ~mcAccel;
 			}
 		}
-	}
+	}break;
 	// Right stick
-	else if (id == 1)
+	case 1:
 	{
 		float LookFactor = GetLookFactor();
 
@@ -603,37 +610,75 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 
 		if (!fis_zero(value.x))
 		{
-			float d = (value.x-0.2f) * scale * 8;
+			float realVal = (value.x > 0.f ? value.x - 0.2f : value.x + 0.2f) / 0.8f;
+			float d = realVal * scale * 8;
 			cam_Active()->Move((d < 0) ? kLEFT : kRIGHT, std::abs(d));
 		}
 
 		if (!fis_zero(value.y))
 		{
-			float d = (psGamepadInvert ? -1 : 1) * (value.y-0.2f) * scale * 3.f / 4.f;
+			float realVal = (value.y > 0.f ? value.y - 0.2f : value.y + 0.2f) / 0.8f;
+			float d = (psGamepadInvert ? -1 : 1) * realVal * scale * 3.f / 4.f;
 			d *= 8;
 
 			cam_Active()->Move((d > 0) ? kUP : kDOWN, std::abs(d));
 		}
-	}
-	else if (id == 2)
+	}break;
+	case 2:
 	{
 		if (!fis_zero(value.x))
 		{
-			IR_OnKeyboardPress(get_binded_action(kWPN_ZOOM));
+			if (!isGamepadZooming)
+			{
+				inventory().Action(kWPN_ZOOM, CMD_START);
+				if (HudAnimator() != nullptr)
+				{
+					if (HudAnimator()->InputKeyPress(kWPN_ZOOM))
+					{
+						return;
+					}
+				}
+				isGamepadZooming = true;
+			}
 		}
 		else if (pInput->GetControllerMode())
 		{
-			IR_OnKeyboardRelease(get_binded_action(kWPN_ZOOM));
+			inventory().Action(kWPN_ZOOM, CMD_STOP);
+			if (HudAnimator() != nullptr)
+			{
+				if (HudAnimator()->InputKeyRelease(kWPN_ZOOM))
+				{
+					return;
+				}
+			}
+			isGamepadZooming = false;
 		}
 
 		if (!fis_zero(value.y))
 		{
-			IR_OnKeyboardPress(get_binded_action(kWPN_FIRE));
+			if (isGamepadShooting)
+				break;
+
+			if ((mstate_wishful & mcLookout) && !IsGameTypeSingle()) 
+				break;
+
+			//-----------------------------
+			if (OnServer())
+			{
+				NET_Packet P;
+				P.w_begin(M_PLAYER_FIRE);
+				P.w_u16(ID());
+				u_EventSend(P);
+			}
+			inventory().Action(kWPN_FIRE, CMD_START);
+			isGamepadShooting = true;
 		}
 		else if (pInput->GetControllerMode())
 		{
-			IR_OnKeyboardRelease(get_binded_action(kWPN_FIRE));
+			inventory().Action(kWPN_FIRE, CMD_STOP);
+			isGamepadShooting = false;
 		}
+	}break;
 	}
 }
 
@@ -748,12 +793,46 @@ void CActor::IR_GamepadKeyPress(int id)
 void CActor::IR_GamepadKeyRelease(int id)
 {
 	auto bind = get_binded_action(id);
-	switch (bind)
+	
+	if (Remote())
 	{
-		case kJUMP:
+		return;
+	}
+
+	if (m_input_external_handler && !m_input_external_handler->authorized(bind))
+	{
+		return;
+	}
+
+	if (IsWaunded)
+	{
+		return;
+	}
+
+	if (HudAnimator() != nullptr)
+	{
+		if (HudAnimator()->InputKeyRelease(bind))
 		{
-			mstate_wishful &= ~mcJump;		
-			break;
+			return;
+		}
+	}
+
+	if (g_Alive())	
+	{
+		if(m_holder)
+		{
+			m_holder->OnGamepadKeyRelease(id);
+			
+			if(m_holder->allowWeapon() && inventory().Action((u16)bind, CMD_STOP))		return;
+			return;
+		}else
+			if(inventory().Action((u16)bind, CMD_STOP))		return;
+
+
+
+		switch (bind)
+		{
+		case kJUMP:		mstate_wishful &= ~mcJump;		break;
 		}
 	}
 }
@@ -761,9 +840,48 @@ void CActor::IR_GamepadKeyRelease(int id)
 void CActor::IR_GamepadKeyHold(int id)
 {
 	auto bind = get_binded_action(id);
+	
+	if (Remote())	
+	{
+		return;
+	}
+	if (m_input_external_handler && !m_input_external_handler->authorized(bind))
+	{
+		return;
+	}
+
+	if (IsTalking())
+	{
+		return;
+	}
+
+	if (!g_Alive())
+	{
+		return;
+	}
+
+	if(m_holder)
+	{
+//		m_holder->OnKeyboardHold(dik);
+		return;
+	}
+
+	if (IsWaunded)
+	{
+		return;
+	}
+
+	if (HudAnimator() != nullptr)
+	{
+		if (HudAnimator()->InputKeyHold(bind))
+		{
+			return;
+		}
+	}
+
 	switch (bind)
 	{
-		case kCROUCH:
+	case kCROUCH:
 	{
 		if (Device.dwTimeContinual > (gamepad_crouch_time_global + 1000))
 		{
