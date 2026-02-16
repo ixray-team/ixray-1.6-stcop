@@ -725,23 +725,23 @@ BOOL CSkeletonX_ext::_PickBone(IKinematics::pick_result& r, float dist, const Fv
 #endif
 
 		if (*Vertices1W)
-			result = _PickBoneSoft1W(r, dist, start, dir, indices + iBase, *faces);
+			result = _PickBoneSoft1W(r, dist, start, dir, indices, *faces);
 		else if (*Vertices2W)
-			result = _PickBoneSoft2W(r, dist, start, dir, indices + iBase, *faces);
+			result = _PickBoneSoft2W(r, dist, start, dir, indices, *faces);
 		else if (*Vertices3W)
-			result = _PickBoneSoft3W(r, dist, start, dir, indices + iBase, *faces);
+			result = _PickBoneSoft3W(r, dist, start, dir, indices, *faces);
 		else {
 			VERIFY(!!(*Vertices4W));
-			result = _PickBoneSoft4W(r, dist, start, dir, indices + iBase, *faces);
+			result = _PickBoneSoft4W(r, dist, start, dir, indices, *faces);
 		}
 
 #ifndef USE_DX11
 		break;
 	case RM_SINGLE:
-	case RM_SKINNING_1B:	result = _PickBoneHW1W(r, dist, start, dir, V, indices + iBase, *faces); break;
-	case RM_SKINNING_2B:	result = _PickBoneHW2W(r, dist, start, dir, V, indices + iBase, *faces);	break;
-	case RM_SKINNING_3B:	result = _PickBoneHW3W(r, dist, start, dir, V, indices + iBase, *faces);	break;
-	case RM_SKINNING_4B:	result = _PickBoneHW4W(r, dist, start, dir, V, indices + iBase, *faces);	break;
+	case RM_SKINNING_1B:	result = _PickBoneHW1W(r, dist, start, dir, V, indices, *faces); break;
+	case RM_SKINNING_2B:	result = _PickBoneHW2W(r, dist, start, dir, V, indices, *faces);	break;
+	case RM_SKINNING_3B:	result = _PickBoneHW3W(r, dist, start, dir, V, indices, *faces);	break;
+	case RM_SKINNING_4B:	result = _PickBoneHW4W(r, dist, start, dir, V, indices, *faces);	break;
 	default: NODEFAULT;
 	}
 	V->p_rm_Indices->Unmap();
