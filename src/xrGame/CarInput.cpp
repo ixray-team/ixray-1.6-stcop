@@ -50,7 +50,7 @@ void CCar::OnGamepadAxisMove(int id, Fvector2 value)
 		{
 			(value.x > 0.f) ? PressRight() : PressLeft();
 		}
-		else
+		else if (pInput->GetControllerMode())
 		{
 			ReleaseLeft();
 			ReleaseRight();
@@ -68,13 +68,15 @@ void CCar::OnGamepadAxisMove(int id, Fvector2 value)
 		float scale = (C->f_fov / g_fov) * psGamepadSens * psMouseSensScale / 50.f;
 		if (value.x)
 		{
-			float d = float(value.x) * scale * 8;
+			float realVal = (value.x > 0.f ? value.x - 0.2f : value.x + 0.2f) / 0.8f;
+			float d = realVal * scale * 8;
 			C->Move((d < 0) ? kLEFT : kRIGHT, std::abs(d));
 		}
 
 		if (value.y)
 		{
-			float d = (psGamepadInvert ? -1 : 1) * float(value.y) * scale * 3.f / 4.f;
+			float realVal = (value.y > 0.f ? value.y - 0.2f : value.y + 0.2f) / 0.8f;
+			float d = (psGamepadInvert ? -1 : 1) * realVal * scale * 3.f / 4.f;
 			d *= 8;
 			C->Move((d > 0) ? kUP : kDOWN, std::abs(d));
 		}
@@ -292,7 +294,6 @@ void CCar::OnKeyboardRelease(int dik)
 
 	switch (get_binded_action(dik))	
 	{
-	case kACCEL:break;
 	case kFWD:		ReleaseForward();			break;
 	case kBACK:		ReleaseBack();				break;
 	case kL_STRAFE:	ReleaseLeft();				if (OwnerActor()) OwnerActor()->steer_Vehicle(0);	break;
@@ -311,6 +312,28 @@ void CCar::OnKeyboardRelease(int dik)
 		P.w_u16(GAME_EVENT_MP_CAR_INPUT);
 		P.w_u16(ID());
 		P.w_u8(dik);
+		P.w_u8(false);
+		CGameObject::u_EventSend(P);
+	}
+}
+
+void CCar::OnGamepadKeyRelease(int id)
+{
+	if (!IsMyCar() && !g_dedicated_server)
+		return;
+
+	switch (get_binded_action(id, agTransport))
+	{
+	case kBRAKE:		ReleaseBreaks();			break;
+	};
+
+	if (OnClient())
+	{
+		NET_Packet P;
+		CGameObject::u_EventGen(P, GE_GAME_EVENT, Owner()->ID());
+		P.w_u16(GAME_EVENT_MP_CAR_INPUT);
+		P.w_u16(ID());
+		P.w_u8(id);
 		P.w_u8(false);
 		CGameObject::u_EventSend(P);
 	}
