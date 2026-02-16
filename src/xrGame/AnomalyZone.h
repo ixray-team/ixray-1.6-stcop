@@ -81,6 +81,13 @@ public:
 	} EZoneState;
 
 	IC ALife::EHitType		GetHitType()	{	return m_eHitTypeBlowout; }
+	void UpdateSoundsPosition(xr_vector<ref_sound>& soundsArray, const Fvector& pos);
+private:
+	void DestroySoundsArray(xr_vector<ref_sound>& soundsArray);
+	void ParseRandomSounds(LPCSTR section, LPCSTR soundPrefix, xr_vector<ref_sound>& soundsArray);
+	ICF ref_sound& GetRandomSound(xr_vector<ref_sound>& soundsArray) { return soundsArray[::Random.randI(soundsArray.size())]; }
+
+	void StopAllSounds(xr_vector<ref_sound>& soundsArray);
 
 protected:
 	enum EZoneFlags{
@@ -226,12 +233,13 @@ protected:
 	shared_str				m_sBoltEntranceParticles;
 	shared_str				m_sBulletEntranceParticles;
 
-	ref_sound				m_idle_sound;
-	ref_sound				m_awaking_sound;
-	ref_sound				m_accum_sound;
-	ref_sound				m_blowout_sound;
-	ref_sound				m_hit_sound;
-	ref_sound				m_entrance_sound;
+	xr_vector<ref_sound>	m_idle_sounds_variants;
+	xr_vector<ref_sound>	m_awaking_sounds_variants;
+	xr_vector<ref_sound>	m_accum_sounds_variants;
+	xr_vector<ref_sound>	m_blowout_sounds_variants;
+	xr_vector<ref_sound>	m_hit_sounds_variants;
+	xr_vector<ref_sound>	m_entrance_sounds_variants;
+
 
 	//объект партиклов обычного состояния зоны
 	xr_shared_ptr<CParticlesObject>		m_pIdleParticles;
