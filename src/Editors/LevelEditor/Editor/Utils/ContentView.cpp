@@ -1065,8 +1065,6 @@ void CContentView::Init()
 	Icons["dialogs"] = { EDevice->Resources->_CreateTexture("ed\\content_browser\\dialogs"),true};
 	Icons["multi"]	= {EDevice->Resources->_CreateTexture("ed\\content_browser\\multi"),	true};
 
-	Icons["search"]= {EDevice->Resources->_CreateTexture("ed\\content_browser\\search"),	false};
-
 	MenuIcon = EDevice->Resources->_CreateTexture("ed\\bar\\menu");
 
 	LoadCustomIcons();
