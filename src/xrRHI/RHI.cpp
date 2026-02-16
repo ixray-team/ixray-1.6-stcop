@@ -42,6 +42,7 @@ CRHI::~CRHI()
 	xr_delete(StateManager);
 	xr_delete(DriverExt);
 	xr_delete(ShaderCompiler);
+	xr_delete(DriverAntiLag);
 }
 
 IRHIDevice* CRHI::CreateDevice(ERHI_API_LAYER NewAPILevel)
@@ -72,21 +73,34 @@ IRHIDevice* CRHI::CreateDevice(ERHI_API_LAYER NewAPILevel)
 	{
 #ifdef IXR_WINDOWS
 		case ERHI_API_LAYER::D3D9:  
+		{
 			DevicePtr = new InternalDevice9;  
 			ShaderResourceCache = new DX9ShaderResourceStateCache;
 			StateManager = new RHIStateManagerDX9();
 			break;
-		case ERHI_API_LAYER::D3D11: 
-			DevicePtr = new InternalDevice11; 
+		}
+		case ERHI_API_LAYER::D3D11:
+		{
+			DevicePtr = new InternalDevice11;
 			ShaderResourceCache = new DX11ShaderResourceStateCache((ID3D11DeviceContext*)GetContext());
 			StateManager = new RHIStateManagerDX11();
+			DriverAntiLag = new CAMDAntiLag();
 			break;
+		}
 #endif
 	}
 
 	ShaderCompiler = new CRHIShaderCompilerShell(APILevel);
 
 	return DevicePtr;
+}
+
+void CRHI::BeginFrame()
+{
+	if (DriverAntiLag != nullptr)
+	{
+		DriverAntiLag->Update();
+	}
 }
 
 void CRHI::ResizeBuffers(u32 Width, u32 Height)
