@@ -17,6 +17,7 @@ public:
 						CXml					();
 	virtual				~CXml					();
 	void				ClearInternal			();
+	static void			InvalidateCache			();
 
 	bool 				Load					(LPCSTR path_alias, LPCSTR path, LPCSTR  xml_filename);
 	void				Save					();
@@ -94,4 +95,7 @@ private:
 
 	typedef tinyxml2::XMLElement						XML_ELEM;
 	tinyxml2::XMLDocument								m_Doc;
+
+    bool m_loaded = false;
+    xr_string m_cache_key;
 };
