@@ -15,52 +15,123 @@ UITopBarForm::UITopBarForm()
     m_tTerminated            = EDevice->Resources->_CreateTexture("ed\\bar\\terminated");
 
     m_tReloadConfigs         = EDevice->Resources->_CreateTexture("ed\\bar\\reload_configs");
-    m_VerifySpaceRestrictors = false;
+    
+	InitIcons();
+
+	m_VerifySpaceRestrictors = false;
     m_Simulate               = false;
 }
 
-UITopBarForm::~UITopBarForm() {}
+UITopBarForm::~UITopBarForm() 
+{
+	Icons.clear();
+}
+inline bool IconButton(
+	const char* id,
+	ImTextureRef texture,
+	ImDrawFlags rounding_flags = ImDrawFlags_RoundCornersAll,
+	float rounding = 6.0f, ImVec2 button_size = {26.f,26.f}, ImVec2 image_size = { 18.0f, 18.0f })
+{
+	ImGuiWindow* window = ImGui::GetCurrentWindow();
+	if (window->SkipItems)
+		return false;
 
-#define IMGUI_HINT_BUTTON(Name, Ptr, Hint, Callback) \
-			Ptr->Load(); \
-			if (ImGui::ImageButton("##" Name, Ptr->get_SRView()->GetRawSRV(), ImVec2(24, 24))) \
-				Callback(); \
-			if (ImGui::IsItemHovered()) \
-			{ \
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand); \
-				ImGui::SetTooltip(Hint); \
-			} \
-			ImGui::SameLine()
+	ImGui::PushID(id);
+	bool pressed = ImGui::InvisibleButton("##icon_btn", button_size);
+	const bool hovered = ImGui::IsItemHovered();
+	const bool active = ImGui::IsItemActive();
 
-#define IMGUI_HINT_BUTTON_EX(Name, Ptr, Timer, Hint, Callback) \
+	// --- colors ---
+	ImU32 col;
+	if (active)
+		col = ImGui::GetColorU32(ImGuiCol_ButtonActive);
+	else if (hovered)
+		col = ImGui::GetColorU32(ImGuiCol_ButtonHovered);
+	else
+		col = ImGui::GetColorU32(ImGuiCol_Button);
+
+	// --- draw background ---
+	ImDrawList* dl = ImGui::GetWindowDrawList();
+	ImVec2 p_min = ImGui::GetItemRectMin();
+	ImVec2 p_max = ImGui::GetItemRectMax();
+
+	dl->AddRectFilled(
+		p_min,
+		p_max,
+		col,
+		rounding,
+		rounding_flags
+	);
+
+	// --- center image ---
+	ImVec2 center = (p_min + p_max) * 0.5f;
+	ImVec2 img_min = center - image_size * 0.5f;
+	ImVec2 img_max = center + image_size * 0.5f;
+
+	dl->AddImage(texture, img_min, img_max);
+
+	ImGui::PopID();
+	return pressed;
+}
+inline bool TextToggleButton(
+	const char* id,
+	const char* text,
+	bool& value,
+	ImVec2 size = ImVec2(-1, 26.0f),
+	ImDrawFlags rounding_flags = ImDrawFlags_RoundCornersAll,
+	float rounding = 6.0f)
+{
+	ImGuiWindow* window = ImGui::GetCurrentWindow();
+	if (window->SkipItems)
+		return false;
+
+	ImGui::PushID(id);
+
+	bool clicked = ImGui::InvisibleButton("##toggle_btn", size);
+	const bool hovered = ImGui::IsItemHovered();
+	const bool active = ImGui::IsItemActive();
+
+	if (clicked)
+		value = !value;
+
+	// --- colors ---
+	ImGuiCol base_col = value ? ImGuiCol_ButtonActive : ImGuiCol_Button;
+
+	ImU32 col;
+	if (active)
+		col = ImGui::GetColorU32(ImGuiCol_ButtonActive);
+	else if (hovered)
+		col = ImGui::GetColorU32(ImGuiCol_ButtonHovered);
+	else
+		col = ImGui::GetColorU32(base_col);
+
+	// --- draw background ---
+	ImDrawList* dl = ImGui::GetWindowDrawList();
+	ImVec2 p_min = ImGui::GetItemRectMin();
+	ImVec2 p_max = ImGui::GetItemRectMax();
+
+	dl->AddRectFilled(
+		p_min,
+		p_max,
+		col,
+		rounding,
+		rounding_flags);
+
+	// --- draw text centered ---
+	ImVec2 text_size = ImGui::CalcTextSize(text);
+	ImVec2 center = (p_min + p_max) * 0.5f;
+	ImVec2 text_pos = center - text_size * 0.5f;
+
+	ImU32 text_col = ImGui::GetColorU32(ImGuiCol_Text);
+	dl->AddText(text_pos, text_col, text);
+
+	ImGui::PopID();
+	return clicked;
+}
+
+#define IMGUI_HINT_BUTTON(Name, Ptr, Hint, dImDrawFlags, Callback) \
 			Ptr->Load(); \
-			if (ImGui::ImageButton("##" Name, Ptr->get_SRView()->GetRawSRV(), ImVec2(20, 20), ImVec2(Timer > EDevice->TimerAsync() ? 0.5 : 0, 0), ImVec2(Timer > EDevice->TimerAsync() ? 1 : 0.5, 1))) \
-			{ \
-				Callback(); \
-				Timer = EDevice->TimerAsync() + 130;\
-			} \
-			if (ImGui::IsItemHovered()) \
-			{ \
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand); \
-				ImGui::SetTooltip(Hint); \
-			} \
-			ImGui::SameLine()
-#define STR_HELPER(x) #x
-#define STR(x) STR_HELPER(x)
-#define IMGUI_HINT_AF_BUTTON_EX(Name, Timer, Hint, Callback) \
-			if (ImGui::Button(Name"##" STR(__LINE__) , ImVec2(yMaxSize, yMaxSize))) \
-			{ \
-				Callback(); \
-				Timer = EDevice->TimerAsync() + 130;\
-			} \
-			if (ImGui::IsItemHovered()) \
-			{ \
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand); \
-				ImGui::SetTooltip(Hint); \
-			} \
-			ImGui::SameLine()
-#define IMGUI_HINT_AF_BUTTON(Name, Hint, Callback) \
-			if (ImGui::Button(Name"##" STR(__LINE__), ImVec2(yMaxSize, yMaxSize))) \
+			if (IconButton("##" Name, Ptr->get_SRView()->GetRawSRV(), dImDrawFlags)) \
 				Callback(); \
 			if (ImGui::IsItemHovered()) \
 			{ \
@@ -73,7 +144,7 @@ void UITopBarForm::Draw()
 {
 	ImGuiViewport* viewport = ImGui::GetMainViewport();
 	ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x, viewport->Pos.y + UI->GetMenuBarHeight()));
-	ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, 28));
+	ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, 34));
 	ImGui::SetNextWindowViewport(viewport->ID);
 
 	ImGuiWindowFlags window_flags = 0
@@ -87,10 +158,10 @@ void UITopBarForm::Draw()
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.f);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(2, 0));
-	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(-2, 0));
-	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(6, 0));
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0, 4));
 	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
-	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.f, 0.f, 0.f, 0.f));
+	ImGui::PushStyleColor(ImGuiCol_Button, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToolbarButtonTint).Value);
 
 	if (ImGui::Begin("TOOLBAR", NULL, window_flags))
 	{
@@ -111,48 +182,44 @@ void UITopBarForm::Draw()
 			ImGui::TableSetupColumn("Preferences");
 
 			auto yMaxSize = ImGui::GetContentRegionAvail().y;
-
 			if (ImGui::TableNextColumn())
 			{
-				DrawBackground(58);
+				IMGUI_HINT_BUTTON("Undo", Icons["undo"], "Undo the last action", ImDrawFlags_RoundCornersLeft, ClickUndo);
+				IMGUI_HINT_BUTTON("Redo", Icons["redo"], "Repeat the last action", ImDrawFlags_RoundCornersRight, ClickRedo);
 
-				IMGUI_HINT_AF_BUTTON_EX(ICON_FA_ROTATE_LEFT, m_timeUndo, "Undo the last action", ClickUndo);
-				IMGUI_HINT_AF_BUTTON_EX(ICON_FA_ROTATE_RIGHT, m_timeRedo, "Repeat the last action", ClickRedo);
 			}
 
 			if (ImGui::TableNextColumn())
 			{
-				DrawBackground(87);
-				IMGUI_HINT_AF_BUTTON(ICON_FA_FILE, "Clear/New Scene", ClickNew);
-				IMGUI_HINT_AF_BUTTON(ICON_FA_FILE_IMPORT, "Open level", ClickOpen);
-				IMGUI_HINT_AF_BUTTON(ICON_FA_FLOPPY_DISK, "Save level", ClickSave);
+				IMGUI_HINT_BUTTON("I_CNS", Icons["new_scene"],"Clear/New Scene", ImDrawFlags_RoundCornersLeft, ClickNew);
+				IMGUI_HINT_BUTTON("I_OL", Icons["open_level"], "Open level", ImDrawFlags_RoundCornersNone, ClickOpen);
+				IMGUI_HINT_BUTTON("I_SL", Icons["save_level"],"Save level", ImDrawFlags_RoundCornersRight, ClickSave);
 			}
 
 			if (ImGui::TableNextColumn())
 			{
-				DrawBackground(88);
-				IMGUI_HINT_AF_BUTTON(ICON_FA_CUBE, "Build CFORM", ClickCForm);
-				IMGUI_HINT_BUTTON("BuildAIMap", m_tAIMap, "Build AI-Map", ClickAIMap);
-				IMGUI_HINT_AF_BUTTON(ICON_FA_DIAGRAM_PROJECT, "Build Game Graph", ClickGGraph);
+				IMGUI_HINT_BUTTON("BuildCFORM", Icons["build_cform"], "Build CFORM", ImDrawFlags_RoundCornersLeft, ClickCForm);
+				IMGUI_HINT_BUTTON("BuildAIMap", Icons["build_ai_map"], "Build AI-Map", ImDrawFlags_RoundCornersNone, ClickAIMap);
+				IMGUI_HINT_BUTTON("BuildGameGraph", Icons["build_game_graph"], "Build Game Graph", ImDrawFlags_RoundCornersRight, ClickGGraph);
 			}
 
 			if (ImGui::TableNextColumn())
 			{
-				DrawBackground(54);
 				if (LTools->IsCompilerRunning() || LTools->IsGameRunning())
 				{
-					IMGUI_HINT_BUTTON("StopPIE", m_tTerminated, "Stop Play in Editor", ClickTerminated);
+					IMGUI_HINT_BUTTON("StopPIE", m_tTerminated, "Stop Play in Editor", ImDrawFlags_RoundCornersLeft, ClickTerminated);
 				}
 				else if (Scene->IsPlayInEditor())
 				{
-					IMGUI_HINT_BUTTON("StopPIE", m_tTerminated, "Stop Play in Editor", Scene->Stop);
+					IMGUI_HINT_BUTTON("StopPIE", m_tTerminated, "Stop Play in Editor", ImDrawFlags_RoundCornersLeft, Scene->Stop);
 				}
 				else
 				{
-					IMGUI_HINT_BUTTON("StartPIE", m_tPlayInEditor, "Start Play in Editor", ClickPlayInEditor);
+					IMGUI_HINT_BUTTON("StartPIE", Icons["play_in_editor"], "Start Play in Editor", ImDrawFlags_RoundCornersLeft, ClickPlayInEditor);
 				}
 
-				if (ImGui::ArrowButton("##PlaySettings", ImGuiDir_Down, ImVec2(ImGui::GetFrameHeight(), 20), 0))
+				Icons["play_in_editor_settings"]->Load();
+				if (IconButton("##PlaySettings", Icons["play_in_editor_settings"]->get_SRView()->GetRawSRV(), ImDrawFlags_RoundCornersRight, 6.f, { 17.f,26.f }, { 9.f, 9.f }))
 				{
 					ImGui::OpenPopup("test");
 				}
@@ -174,26 +241,23 @@ void UITopBarForm::Draw()
 
 			if (ImGui::TableNextColumn())
 			{
-				DrawBackground(60);
 				ImGui::BeginDisabled(LTools->IsCompilerRunning() || LTools->IsGameRunning());
-				IMGUI_HINT_BUTTON("ReloadCfg", m_tReloadConfigs, "Reload Configs", ClickReloadConfigs);
-				IMGUI_HINT_AF_BUTTON(ICON_FA_TROWEL_BRICKS, "Build and Make", ClickBuildAndMake);
+				IMGUI_HINT_BUTTON("ReloadCfg", Icons["reload_configs"], "Reload Configs", ImDrawFlags_RoundCornersLeft, ClickReloadConfigs);
+				IMGUI_HINT_BUTTON("BuildandMake", Icons["build_and_make"], "Build and Make", ImDrawFlags_RoundCornersRight, ClickBuildAndMake);
 				ImGui::EndDisabled();
 			}
 
 			if (ImGui::TableNextColumn())
 			{
-				DrawBackground(62);
 				ImGui::BeginDisabled(LTools->IsCompilerRunning() || LTools->IsGameRunning());
-				IMGUI_HINT_BUTTON("PlayPC", m_tPlayPC, "Play level", ClickPlayPC);
-				IMGUI_HINT_BUTTON("PlayLIG", m_tPlayCleanGame, "Play level in game", ClickPlayCleanGame);
+				IMGUI_HINT_BUTTON("PlayPC", Icons["play_level"], "Play level", ImDrawFlags_RoundCornersLeft, ClickPlayPC);
+				IMGUI_HINT_BUTTON("PlayLIG", Icons["play_level_in_game"], "Play level in game", ImDrawFlags_RoundCornersRight, ClickPlayCleanGame);
 				ImGui::EndDisabled();
 			}
 
 			if (ImGui::TableNextColumn())
 			{
-				DrawBackground(29);
-				IMGUI_HINT_AF_BUTTON(ICON_FA_FOLDER_OPEN, "Open 'gamedata' folder", ClickOpenGameData);
+				IMGUI_HINT_BUTTON("I_OGF", Icons["open_gamedata_folder"],"Open 'gamedata' folder", ImDrawFlags_RoundCornersAll, ClickOpenGameData);
 			}
 
 			if (ImGui::TableNextColumn())
@@ -217,9 +281,11 @@ void UITopBarForm::Draw()
 
 			if (ImGui::TableNextColumn())
 			{
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToggleColorActive).Value);
 				//ApplyBackground("Physics");
-				ImGui::SetCursorPosY(3);
-				if (ImGui::Checkbox("Phys Simulation", &m_Simulate))
+				
+				if (TextToggleButton("PhysSimulation228","Phys Simulation", m_Simulate, {120.f,26.f}, ImDrawFlags_RoundCornersLeft))
+				//if (ImGui::Checkbox("Phys Simulation", &m_Simulate))
 				{
 					ExecCommand(COMMAND_SIMULATE, true);
 				}
@@ -228,13 +294,13 @@ void UITopBarForm::Draw()
 					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 					ImGui::SetTooltip("Activates the physics simulation of the selected objects");
 				}
-				ImGui::SameLine(0, 10);
+				ImGui::SameLine(0, 0);
 
-				ImGui::SetCursorPosY(3);
+				//ImGui::SetCursorPosY(3);
 
-
-				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.f, 0.f, 0.f, 0.15f));
-				if (ImGui::Button("Use Pos"))
+				bool dimmy = false;
+				if (TextToggleButton("UsePos228", "Use Pos", dimmy, { 78.f,26.f }, ImDrawFlags_RoundCornersRight))
+				//if (ImGui::Button("Use Pos"))
 				{
 					ExecCommand(COMMAND_USE_SIMULATE_POSITIONS, true);
 				}
@@ -250,8 +316,7 @@ void UITopBarForm::Draw()
 
 			if (ImGui::TableNextColumn())
 			{
-				DrawBackground(29);
-				IMGUI_HINT_AF_BUTTON(ICON_FA_SLIDERS, "Preferences", ClickPreferences);
+				IMGUI_HINT_BUTTON("I_Preferences", Icons["prefs"], "Preferences", ImDrawFlags_RoundCornersAll, ClickPreferences);
 			}
         }
 		ImGui::EndTable();
@@ -261,21 +326,26 @@ void UITopBarForm::Draw()
 	ImGui::PopStyleVar(6);
 }
 
-void UITopBarForm::DrawBackground(float YOffset)
+void UITopBarForm::InitIcons()
 {
-	constexpr float padding = 2.0f;
-	constexpr float rounding = 6.0f;
-	ImU32 Color = ImGui::GetColorU32(XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToolbarButtonTint).Value);
+	Icons["undo"] = EDevice->Resources->_CreateTexture("ed\\icons\\Edit Undo");
+	Icons["redo"] = EDevice->Resources->_CreateTexture("ed\\icons\\Edit Redo");
+	Icons["new_scene"] = EDevice->Resources->_CreateTexture("ed\\icons\\File New");
+	Icons["open_level"] = EDevice->Resources->_CreateTexture("ed\\icons\\File Open");
+	Icons["save_level"] = EDevice->Resources->_CreateTexture("ed\\icons\\File Save");
+	Icons["build_cform"] = EDevice->Resources->_CreateTexture("ed\\icons\\Build CForm");
+	Icons["build_ai_map"] = EDevice->Resources->_CreateTexture("ed\\icons\\Build AI-Map");
+	Icons["build_game_graph"] = EDevice->Resources->_CreateTexture("ed\\icons\\Build Graph");
+	Icons["play_in_editor"] = EDevice->Resources->_CreateTexture("ed\\icons\\Run PiE");
+	Icons["play_in_editor_settings"] = EDevice->Resources->_CreateTexture("ed\\bar\\arrow");
 
-	ImVec2 TopLeft = ImGui::GetCursorScreenPos();
-	TopLeft.x += padding;
-	TopLeft.y += padding + 1;
+	Icons["reload_configs"] = EDevice->Resources->_CreateTexture("ed\\icons\\Settings Update Configs");
+	Icons["build_and_make"] = EDevice->Resources->_CreateTexture("ed\\icons\\Build and Make");
+	Icons["play_level"] = EDevice->Resources->_CreateTexture("ed\\icons\\Play Level");
+	Icons["play_level_in_game"] = EDevice->Resources->_CreateTexture("ed\\icons\\Play Game");
+	Icons["open_gamedata_folder"] = EDevice->Resources->_CreateTexture("ed\\icons\\File Open Game Data Folder");
+	Icons["prefs"] = EDevice->Resources->_CreateTexture("ed\\icons\\Tab Outliner");
 
-	ImVec2 BottomRight = TopLeft;
-	BottomRight.x += YOffset;
-	BottomRight.y += 25;
-
-	ImGui::GetWindowDrawList()->AddRectFilled(TopLeft, BottomRight, Color, rounding, ImDrawFlags_RoundCornersAll);
 }
 
 void UITopBarForm::ClickUndo()
