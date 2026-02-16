@@ -46,6 +46,7 @@ include("${CMAKE_MODULE_PATHEX}/SteamAudio.cmake")
 
 if(WIN32)
     include("${CMAKE_MODULE_PATHEX}/dirent.cmake")
+    include("${CMAKE_MODULE_PATHEX}/amd_antilag.cmake")
 endif()
 
 if (IXRAY_EDITORS)
