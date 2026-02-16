@@ -44,6 +44,7 @@
 #include "ParticlesObject.h"
 #include "gamespy/GameSpy_Full.h"
 #include "../xrCore/discord/discord.h"
+#include "../xrCore/FormatParsers/XML/xrXMLParser.h"
 #include "ai_debug_variables.h"
 #include "CharacterPhysicsSupport.h"
 #include "../xrPhysics/console_vars.h"
@@ -1266,9 +1267,13 @@ public:
 class CCC_UI_Reload : public IConsole_Command {
 public:
 	CCC_UI_Reload(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
-	virtual void Execute(LPCSTR args) {
+	virtual void Execute(LPCSTR args) override
+	{
+		CXml::InvalidateCache();
 		if (g_pGamePersistent && g_pGameLevel && Level().game)
+		{
 			HUD().OnScreenResolutionChanged();
+		}
 	}
 };
 
