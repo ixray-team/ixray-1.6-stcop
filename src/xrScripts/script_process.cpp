@@ -31,7 +31,17 @@ CScriptProcess::CScriptProcess	(shared_str name, shared_str scripts) :
 
 CScriptProcess::~CScriptProcess()
 {
-	delete_data		(m_scripts);
+	DestroyScripts();
+}
+
+void CScriptProcess::DestroyScripts()
+{
+	if (m_scripts.empty())
+	{
+		return;
+	}
+
+	delete_data(m_scripts);
 }
 
 void CScriptProcess::run_scripts()
