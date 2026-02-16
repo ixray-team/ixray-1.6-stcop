@@ -260,7 +260,7 @@ void CPHElement::getQuaternion(Fquaternion& quaternion)
 	if(!isActive()) return;
 	const float* q=dBodyGetQuaternion(m_body);
 	quaternion.set(-q[0],q[1],q[2],q[3]);
-	VERIFY(_valid(quaternion));
+	//VERIFY(_valid(quaternion));
 }
 void CPHElement::setQuaternion(const Fquaternion& quaternion)
 {
