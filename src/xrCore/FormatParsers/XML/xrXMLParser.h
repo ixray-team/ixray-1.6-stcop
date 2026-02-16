@@ -94,4 +94,8 @@ private:
 
 	typedef tinyxml2::XMLElement						XML_ELEM;
 	tinyxml2::XMLDocument								m_Doc;
+
+    bool m_loaded = false;
+    xr_string m_cache_key;
+	static void InvalidateCache();
 };
