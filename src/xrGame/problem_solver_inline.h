@@ -173,7 +173,10 @@ TEMPLATE_SPECIALIZATION
 IC void CProblemSolverAbstract::add_evaluator(const _condition_type& condition_id, _condition_evaluator_ptr evaluator)
 {
 	THROW(evaluators().end() == evaluators().find(condition_id));
-	m_evaluators.insert(std::make_pair(condition_id, evaluator));
+	if (evaluator)
+	{
+		m_evaluators.insert(std::make_pair(condition_id, evaluator));
+	}
 }
 
 TEMPLATE_SPECIALIZATION
