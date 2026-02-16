@@ -892,6 +892,8 @@ private:
 	float GetMaterialBurnRestoreSpeed(LPCSTR mtl);
 	bool m_need_fire_particle = false;
 	bool m_actor_burning = false;
+	bool isGamepadShooting = false;
+	bool isGamepadZooming = false;
 public:
 	virtual void SetActorSleepiness(const float value);
 	virtual void SetActorSatiety(const float value);
