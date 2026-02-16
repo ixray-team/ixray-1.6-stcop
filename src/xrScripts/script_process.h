@@ -62,6 +62,7 @@ public:
 			void					add_script		(LPCSTR	script_name, bool string, bool reload);
 	IC		const SCRIPT_REGISTRY	&scripts		() const;
 	IC		shared_str				name			() const;
+	void DestroyScripts();
 };
 
 #include "script_process_inline.h"
