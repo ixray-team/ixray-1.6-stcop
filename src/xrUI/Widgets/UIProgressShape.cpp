@@ -150,10 +150,23 @@ void CUIProgressShape::Draw()
 		angle_range = abs( m_angle_end - m_angle_begin );
 	}
 	
-	for ( u32 i = 0; i < m_sectorCount; ++i )
+	float colorR = 1.0f;
+	float colorG = 1.0f;
+	float colorB = 1.0f;
+	float colorA = 1.0f;
+	if (m_pTexture)
 	{
-		float ffff					= calc_color		(i+1, m_sectorCount, m_stage, 1.0f, m_blend);
-		u32 color					= color_argb_f		(ffff,1.0f,1.0f,1.0f); 
+		u32 textureColor = m_pTexture->GetTextureColor();
+		colorR = color_get_R(textureColor) / 255.0f;
+		colorG = color_get_G(textureColor) / 255.0f;
+		colorB = color_get_B(textureColor) / 255.0f;
+		colorA = color_get_A(textureColor) / 255.0f;
+	}
+
+	for (u32 i = 0; i < m_sectorCount; ++i)
+	{
+		float sectorAlpha = calc_color(i + 1, m_sectorCount, m_stage, 1.0f, m_blend);
+		u32 color = color_argb_f(sectorAlpha * colorA, colorR, colorG, colorB);
 
 		UIRender->PushPoint(center_pos.x, center_pos.y, 0, color, center_tex.x, center_tex.y);
 
