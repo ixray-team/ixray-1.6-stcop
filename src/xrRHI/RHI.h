@@ -30,6 +30,7 @@
 #include "RHIDriversExt.h"
 #include "RHIShaderResourceCache.h"
 #include "RHIStateManager.h"
+#include "Drivers/AMDAntiLag.h"
 
 enum
 {
@@ -70,6 +71,8 @@ class RHI_API CRHI final
 public:
 	CRHI();
 	~CRHI();
+
+	void BeginFrame();
 
 	// Drawing methods
 	void SetPrimitiveTopology(ERHI_PRIMITIVE_TOPOLOGY topology);
@@ -149,6 +152,7 @@ public:
 	
 	bool GPUStatsEnable = false;
 	IRHIGPU* DriverExt = nullptr;
+	CAMDAntiLag* DriverAntiLag = nullptr;
 
 private:
 	void* Shaders[RHI_SHADERS_TYPE_SIZE];
