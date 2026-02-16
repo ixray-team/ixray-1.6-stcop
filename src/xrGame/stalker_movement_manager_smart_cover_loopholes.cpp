@@ -55,6 +55,11 @@ float stalker_movement_manager_smart_cover::enter_path					(
 		float					new_value = 0;
 		loophole_path			(cover, (*i)->id(), target_loophole_id, m_temp_loophole_path,&new_value);
 		VERIFY					(!m_temp_loophole_path.empty());
+		if (m_temp_loophole_path.empty())
+		{
+			continue;
+		}
+
 		shared_str const		&loophole_id = m_temp_loophole_path.front();
 		smart_cover::loophole const	&loophole = this->loophole(cover, loophole_id);
 		new_value				+= cover.fov_position(loophole).distance_to(position);

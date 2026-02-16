@@ -74,6 +74,11 @@ void stalker_movement_manager_smart_cover::update	(u32 time_delta)
 	VERIFY							(object().g_Alive());
 	VERIFY							(!current_params().cover() || current_params().cover_loophole());
 
+	if (!object().g_Alive())
+	{
+		return;
+	}
+
 	if (!m_current.cover()) {
 		if (!m_target.cover()) {
 			inherited::update		(time_delta);
@@ -183,11 +188,22 @@ void stalker_movement_manager_smart_cover::reach_enter_location			(u32 const& ti
 
 	VERIFY								(m_target.cover());
 
+	if (!m_target.cover())
+	{
+		return;
+	}
+
 	smart_cover::loophole const&		target_loophole = *m_target.cover_loophole();
 	smart_cover::loophole const&		loophole = target_loophole.enterable() ? target_loophole : nearest_enterable_loophole();
 
+
+	if (!&current_transition() || !m_current_transition)
+	{
+		return;
+	}
+
 	Fvector								position;
-	m_target.cover()->object().XFORM().transform_tiny(position, current_transition().animation().position());
+	m_target.cover()->object().XFORM().transform_tiny(position, m_current_transition->animation().position());
 
 	u32									level_vertex_id	= ai().level_graph().vertex( u32(-1), position);
 	if (!accessible(level_vertex_id) || !accessible(position)) {
@@ -288,6 +304,10 @@ void stalker_movement_manager_smart_cover::enter_smart_cover			(u32 const& time_
 {
 	VERIFY								(!m_current.cover());
 
+	if (m_current.cover())
+	{
+		return;
+	}
 	if (m_entering_smart_cover_with_animation)
 		return;
 
