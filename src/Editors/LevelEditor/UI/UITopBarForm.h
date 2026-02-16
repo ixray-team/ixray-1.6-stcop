@@ -6,11 +6,14 @@ public:
 	UITopBarForm();
 	virtual ~UITopBarForm();
 	virtual void Draw();
-	void DrawBackground(float YOffset);
 	bool VerifySpaceRestrictors()const { return m_VerifySpaceRestrictors; }
 	bool UseCameraPosForActor = false;
 
 private:
+	void InitIcons();
+
+	xr_hash_map<xr_string, ref_texture> Icons;
+
 	u32 m_timeUndo;
 	u32 m_timeRedo;
 
