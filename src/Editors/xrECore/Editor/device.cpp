@@ -394,7 +394,7 @@ void CEditorRenderDevice::Reset(bool)
 
 	UIChooseForm::SetNullTexture(texture_null->get_SRView()->GetRawSRV());
 
-	SearchIcon = EDevice->Resources->_CreateTexture("ed\\content_browser\\search");
+	SearchIcon = EDevice->Resources->_CreateTexture("ed\\content_browser_search");
 	if (SearchIcon)
 	{
 		SearchIcon->Load();
