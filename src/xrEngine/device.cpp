@@ -243,7 +243,7 @@ void CRenderDevice::on_idle		()
 					Statistic->Show();
 
 
-				if (IsFpsShow)
+				if (IsFpsShow && !main_menu_active && !g_bLoaded)
 					pFPSCounter->OnRender();
 
 				End();
