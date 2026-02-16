@@ -4,10 +4,23 @@
 #include "xrXMLParser.h"
 #include "AsureXML.h"
 
+static xr_hash_map<xr_string, xr_shared_ptr<xr_string>>& GetXMLCache()
+{
+	static xr_hash_map<xr_string, xr_shared_ptr<xr_string>> g_xmlCache;
+	return g_xmlCache;
+}
+
+void CXml::InvalidateCache()
+{
+	GetXMLCache().clear();
+	Msg("XML cache invalidated");
+}
+
 CXml::CXml() :	
 	m_root(nullptr), 
 	m_pLocalRoot(nullptr)
-{}
+{
+}
 
 CXml::~CXml()
 {
@@ -126,52 +139,116 @@ void CXml::Save()
 	m_Doc.SaveFile(Path);
 }
 
-//инициализация и загрузка XML файла
 bool CXml::Load(LPCSTR path, LPCSTR xml_filename)
 {
-	xr_strcpy(m_xml_file_name, xml_filename);
-	// Load and parse xml file
+	xr_string cacheKey = xr_string(path) + "\\" + xml_filename;
 
-	IReader* F = FS.r_open(path, xml_filename);
-	if (!F)
-		return false;
-
-	CMemoryWriter W;
-	ParseFile(path, W, F, this);
-	W.w_stringZ("");
-	FS.r_close(F);
-
-	m_Doc.Parse((LPCSTR)W.pointer());
-
-	// Asure initial
-	CXMLOverride XMLOverrider;
-	const FS_FileSet& AsureData = XMLOverrider.GetModifFiles(path, xml_filename);
-	if (!AsureData.empty())
+	if (m_loaded && m_cache_key == cacheKey)
 	{
-		for (const FS_File& File : AsureData)
+		return true;
+	}
+
+	m_cache_key = cacheKey;
+	xr_strcpy(m_xml_file_name, xml_filename);
+
+	xr_shared_ptr<xr_string> cachedContent;
+
+	{
+		auto& Cache = GetXMLCache();
+		auto it = Cache.find(cacheKey);
+		if (it != Cache.end())
 		{
-			IReader* AF = FS.r_open(_game_config_, File.name.c_str());
-
-			CMemoryWriter AW;
-			ParseFile(path, AW, AF, this);
-			AW.w_stringZ("");
-			FS.r_close(AF);
-
-			tinyxml2::XMLDocument ADoc; 
-			ADoc.Parse((LPCSTR)AW.pointer());
-			XMLOverrider.GenerateNewDoc(m_Doc, ADoc);
+			cachedContent = it->second;
 		}
 	}
 
+	if (!cachedContent)
+	{
+		IReader* F = FS.r_open(path, xml_filename);
+		if (!F)
+			return false;
+
+		CMemoryWriter W;
+		ParseFile(path, W, F, this);
+		W.w_stringZ("");
+		FS.r_close(F);
+
+		tinyxml2::XMLDocument baseDoc;
+		baseDoc.Parse((LPCSTR)W.pointer());
+
+		if (baseDoc.Error())
+		{
+			Msg("! XML base parse error: %s (%s)",
+				xml_filename,
+				baseDoc.ErrorStr());
+			return false;
+		}
+
+		CXMLOverride XMLOverrider;
+		const FS_FileSet& modFiles =
+			XMLOverrider.GetModifFiles(path, xml_filename);
+
+		if (!modFiles.empty())
+		{
+			for (const FS_File& file : modFiles)
+			{
+				IReader* AF = FS.r_open(_game_config_, file.name.c_str());
+				if (!AF)
+					continue;
+
+				CMemoryWriter AW;
+				ParseFile(path, AW, AF, this);
+				AW.w_stringZ("");
+				FS.r_close(AF);
+
+				tinyxml2::XMLDocument overrideDoc;
+				overrideDoc.Parse((LPCSTR)AW.pointer());
+
+				if (!overrideDoc.Error())
+				{
+					XMLOverrider.GenerateNewDoc(baseDoc, overrideDoc);
+				}
+				else
+				{
+					Msg("! XML override parse error: %s (%s)",
+						file.name.c_str(),
+						overrideDoc.ErrorStr());
+				}
+			}
+		}
+
+		tinyxml2::XMLPrinter printer;
+		baseDoc.Print(&printer);
+
+		cachedContent = xr_make_shared<xr_string>(printer.CStr());
+		{
+			auto& Cache = GetXMLCache();
+			auto it = Cache.find(cacheKey);
+			if (it == Cache.end())
+			{
+				Cache.emplace(cacheKey, cachedContent);
+			}
+			else
+			{
+				cachedContent = it->second;
+			}
+		}
+	}
+
+	m_Doc.Clear();
+	m_Doc.Parse(cachedContent->c_str());
+
 	if (m_Doc.Error())
 	{
-		Msg("XML file:%s value:%s errDescr:%s", m_xml_file_name, m_Doc.Value(), m_Doc.ErrorStr());
-
+		Msg("! XML file:%s errDescr:%s",
+			m_xml_file_name,
+			m_Doc.ErrorStr());
 		return false;
 	}
 
 	m_root = m_Doc.FirstChildElement();
-	
+	m_loaded = true;
+
 	return true;
 }
 
