@@ -313,6 +313,8 @@ void CRenderDevice::message_loop()
 {
 	while (!quiting)
 	{
+		GRHI->BeginFrame();
+
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
 		{
@@ -325,7 +327,7 @@ void CRenderDevice::message_loop()
 
 		if (!quiting)
 		{
-		on_idle();
+			on_idle();
 		}
 	}
 }

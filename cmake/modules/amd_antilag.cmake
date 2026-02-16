@@ -1,0 +1,1 @@
+download_single_header("https://raw.githubusercontent.com/GPUOpen-LibrariesAndSDKs/AntiLag2-SDK/refs/heads/main/ffx_antilag2_dx11.h" "AMD/AntiLag/ffx_antilag2_dx11.h")
