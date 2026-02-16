@@ -44,8 +44,6 @@ include("${CMAKE_MODULE_PATHEX}/nvapi.cmake")
 include("${CMAKE_MODULE_PATHEX}/stb.cmake")
 include("${CMAKE_MODULE_PATHEX}/SteamAudio.cmake")
 
-include("${CMAKE_MODULE_PATH}/SteamAudio.cmake")
-
 if(WIN32)
     include("${CMAKE_MODULE_PATHEX}/dirent.cmake")
 endif()
