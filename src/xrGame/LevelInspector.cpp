@@ -34,7 +34,6 @@
 #include "patrol_path.h"
 #include "patrol_path_storage.h"
 #include "player_hud.h"
-#include <magic_enum/magic_enum.hpp>
 #include "ImUtils\ImUtils.h"
 Fvector aabb_selection_vertices[]
 {

@@ -1,5 +1,4 @@
 #include "UIEditorMain.h"
-#include "magic_enum/magic_enum.hpp"
 #include "../xrScripts/stdafx.h"
 #include "../xrEngine/IGame_Actor.h"
 #include "../xrScripts/lua_ext.h"
