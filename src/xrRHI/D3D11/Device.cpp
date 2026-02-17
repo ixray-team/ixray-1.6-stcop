@@ -413,6 +413,11 @@ void InternalDevice11::ResizeBuffers(u32 Width, u32 Height)
 
 void InternalDevice11::ClearTarget(void* Target, ERTColor InputColor)
 {
+	if (Target == nullptr)
+	{
+		return;
+	}
+
 	constexpr float ColorTransparent[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	constexpr float ColorRGBA[4] = { 0.5f, 0.5f, 0.5f, 0.5f };
 	constexpr float ColorBlack[4] = { 1.f, 1.f, 1.f, 1.f };
@@ -431,11 +436,20 @@ void InternalDevice11::ClearTarget(void* Target, ERTColor InputColor)
 
 void InternalDevice11::ClearTarget(void* Target, const float* Color)
 {
+	if (Target == nullptr)
+	{
+		return;
+	}
+
 	HWRenderContext->ClearRenderTargetView((ID3D11RenderTargetView*)Target, Color);
 }
 
 void InternalDevice11::ClearDepthStencil(IRHIDepthStencilView* View, ERHI_CLEAR_TARGET TargetFlags, float Depth, u8 Stencil)
 {
+	if (View == nullptr)
+	{
+		return;
+	}
 	HWRenderContext->ClearDepthStencilView((ID3D11DepthStencilView*)View->GetRawDSV(), (u32)TargetFlags, Depth, Stencil);
 }
 

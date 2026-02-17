@@ -89,6 +89,20 @@ class cl_material: public RHIShaderConstant::Setup
 
 static cl_material binder_material;
 
+class cl_tfactor: public RHIShaderConstant::Setup
+{
+	virtual void setup(RHIShaderConstant* C) {RCache.hemi.set_c_tfactor(C);}
+};
+
+static cl_tfactor binder_tfactor;
+
+class cl_selection : public RHIShaderConstant::Setup
+{
+	virtual void setup(RHIShaderConstant* C) {RCache.hemi.set_c_selection(C);}
+};
+
+static cl_selection binder_selection;
+
 class cl_texgen : public RHIShaderConstant::Setup
 {
 	virtual void setup(RHIShaderConstant* C)
@@ -689,7 +703,12 @@ void	CBlender_Compile::SetMapping()
 	r_Constant("c_sun", &tree_binder_c_sun);
 
 	//hemi cube
+#ifdef _EDITOR
+	r_Constant("tfactor", &binder_tfactor);
+	r_Constant("editor_selection", &binder_selection);
+#endif
 	r_Constant("L_material", &binder_material);
+
 	r_Constant("hemi_cube_pos_faces", &binder_hemi_cube_pos_faces);
 	r_Constant("hemi_cube_neg_faces", &binder_hemi_cube_neg_faces);
 

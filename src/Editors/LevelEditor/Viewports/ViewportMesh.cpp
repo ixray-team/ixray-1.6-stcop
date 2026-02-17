@@ -47,7 +47,7 @@ void CViewportMesh::Render()
 	if (ViewMesh != nullptr)
 	{
 		ViewMesh->OnFrame();
-		ViewMesh->RenderSingle(Fidentity);
+		ViewMesh->RenderSingle(NULL, Fidentity);
 	}
 }
 

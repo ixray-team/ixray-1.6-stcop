@@ -189,11 +189,11 @@ void UILeftBarForm::Draw()
         ImGui::SetNextItemOpen(true, ImGuiCond_Once);
         if (XRay::ImGui::BeginExpand("Pick"))
         {
-            ImGui::AlignTextToFramePadding();             // выравниваем текст по середине строки по Y
+            ImGui::AlignTextToFramePadding();             // РІС‹СЂР°РІРЅРёРІР°РµРј С‚РµРєСЃС‚ РїРѕ СЃРµСЂРµРґРёРЅРµ СЃС‚СЂРѕРєРё РїРѕ Y
             XRay::ImGui::TextFramed("Mode:");
             ImGui::SameLine(0, 1.f);
 
-            ImGui::SetNextItemWidth(-0.01);                  // растягиваем combo на всё оставшееся место
+            ImGui::SetNextItemWidth(-0.01);                  // СЂР°СЃС‚СЏРіРёРІР°РµРј combo РЅР° РІСЃС‘ РѕСЃС‚Р°РІС€РµРµСЃСЏ РјРµСЃС‚Рѕ
             static const char* PickModeList[] = { "None", "Surface", "Bone" };
             ImGui::Combo("##Mode", &m_PickMode, PickModeList, IM_ARRAYSIZE(PickModeList));
 

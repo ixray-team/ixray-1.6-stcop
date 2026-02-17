@@ -288,8 +288,15 @@ void CDetailManager::Render()
 					RHIShaderResourceViewDesc srvDesc{};
 					srvDesc.Format = ERHI_FORMAT::UNKNOWN;
 					RHIBufferSubresource vbInit{};
+
+#ifdef _EDITOR
+					for (CDetail* DPtr : objects)
+					{
+						CDetail& D = *DPtr;
+#else
 					for (CDetail& D : objects)
 					{
+#endif
 						auto& ditems = D.m_items[calc_key];
 						auto& buffers = D.DetailGPUBoundBuffers[calc_key];
 						for (u32 i = 0; i < 3; ++i)

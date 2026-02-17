@@ -14,6 +14,7 @@ bool CEditorRenderDevice::MakeScreenshot(U32Vec& pixels, u32 width, u32 height)
     // free managed resource
     Resources->Evict();
 
+#if 0
     IDirect3DSurface9* 	poldZB=nullptr;
    // IDirect3DSurface9* 	pZB=0;
     IDirect3DSurface9* 	pRT=nullptr;
@@ -61,7 +62,7 @@ bool CEditorRenderDevice::MakeScreenshot(U32Vec& pixels, u32 width, u32 height)
     _RELEASE(pFB);
     _RELEASE(pRT);
     _RELEASE(poldRT);
-
+#endif
     return true;
 }
 

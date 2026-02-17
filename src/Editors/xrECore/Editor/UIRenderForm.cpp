@@ -220,7 +220,7 @@ void UIRenderForm::DrawVP()
 		UI->Views[ViewportID].RTSize.set(canvas_size.x, canvas_size.y);
 
 		ImGui::SetCursorScreenPos(canvas_pos);
-		draw_list->AddImage(UI->Views[ViewportID].RTFreez->pSurface->GetRawTexture(), canvas_pos, ImVec2(canvas_pos.x + canvas_size.x, canvas_pos.y + canvas_size.y));
+		draw_list->AddImage(UI->Views[ViewportID].RTFreez->pTexture->get_SRView()->GetRawSRV(), canvas_pos, ImVec2(canvas_pos.x + canvas_size.x, canvas_pos.y + canvas_size.y));
 
 		if (ViewportID != UI->ViewID && ImGui::IsWindowFocused())
 		{

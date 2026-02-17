@@ -790,7 +790,7 @@ void game_sv_GameState::OnEvent (NET_Packet &tNetPacket, u16 type, u32 time, Cli
 	default:
 		{
 			string16 tmp = {};
-			R_ASSERT3	(0,"Game Event not implemented!!!", _itoa(type, tmp, 10));
+			R_ASSERT3(Device.IsEditorMode(), "Game Event not implemented!!!", _itoa(type, tmp, 10));
 		};
 	};
 }

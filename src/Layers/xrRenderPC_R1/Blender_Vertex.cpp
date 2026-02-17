@@ -51,27 +51,12 @@ void CBlender_Vertex::Compile	(CBlender_Compile& C)
 
 	if (C.bEditor)
 	{
-		//// Editor shader
-		//C.PassBegin		();
-		//{
-		//	C.PassSET_ZB			(true,true);
-		//	C.PassSET_Blend			(false,D3DBLEND_ONE,D3DBLEND_ZERO,	false,0);
-		//	C.PassSET_LightFog		(true,true);
-		//	
-		//	// Stage0 - Base texture
-		//	C.StageBegin			();
-		//	C.StageSET_Color		(D3DTA_TEXTURE,	  D3DTOP_MODULATE,	D3DTA_DIFFUSE);
-		//	C.StageSET_Alpha		(D3DTA_TEXTURE,	  D3DTOP_MODULATE,	D3DTA_DIFFUSE);
-		//	C.Stage_Texture			(oT_Name);
-		//	C.Stage_Matrix			(oT_xform,0);
-		//	C.Stage_Constant		("$null");
-		//	C.StageEnd				();
-		//}
-		//C.PassEnd			();
 		uber_deffer(C, true, "deffer_base", "deffer_base", false, nullptr, true);
-
 		C.r_End();
-	} else {
+	}
+#ifndef USE_DX11
+	else
+	{
 		switch (C.iElement)
 		{
 		case SE_R1_NORMAL_HQ:
@@ -116,4 +101,5 @@ void CBlender_Vertex::Compile	(CBlender_Compile& C)
 			break;
 		}
 	}
+#endif
 }

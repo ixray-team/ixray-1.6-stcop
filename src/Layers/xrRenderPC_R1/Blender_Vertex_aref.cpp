@@ -52,31 +52,14 @@ void	CBlender_Vertex_aref::Load(	IReader& fs, u16 version )
 	}
 }
 
-void	CBlender_Vertex_aref::Compile(CBlender_Compile& C)
+void CBlender_Vertex_aref::Compile(CBlender_Compile& C)
 {
 	IBlender::Compile		(C);
 	
 	if (C.bEditor)
 	{
-		//C.PassBegin		();
-		//{
-		//	C.PassSET_ZB		(true,true);
-		//	if (oBlend.value)	C.PassSET_Blend			(true, D3DBLEND_SRCALPHA,D3DBLEND_INVSRCALPHA,	true,oAREF.value);
-		//	else				C.PassSET_Blend			(true, D3DBLEND_ONE, D3DBLEND_ZERO,				true,oAREF.value);
-		//	C.PassSET_LightFog	(true,true);
-		//	
-		//	// Stage1 - Base texture
-		//	C.StageBegin		();
-		//	C.StageSET_Color	(D3DTA_TEXTURE,	  D3DTOP_MODULATE,	D3DTA_DIFFUSE);
-		//	C.StageSET_Alpha	(D3DTA_TEXTURE,	  D3DTOP_MODULATE,	D3DTA_DIFFUSE);
-		//	C.Stage_Texture		(oT_Name);
-		//	C.Stage_Matrix		(oT_xform,	0);
-		//	C.Stage_Constant	("$null");
-		//	C.StageEnd			();
-		//}
-		//C.PassEnd			();
-
-		if (!!oBlend.value) {
+		if (!!oBlend.value)
+		{
 			RImplementation.addShaderOption("FORWARD_ONLY", "1");
 		}
 		uber_deffer(C, true, "deffer_base", "deffer_base", !oBlend.value, nullptr, true);
@@ -88,6 +71,7 @@ void	CBlender_Vertex_aref::Compile(CBlender_Compile& C)
 
 		C.r_End();
 	} 
+#ifndef USE_DX11
 	else 
 	{
 		switch (C.iElement)
@@ -136,4 +120,5 @@ void	CBlender_Vertex_aref::Compile(CBlender_Compile& C)
 			break;
 		}
 	}
+#endif
 }

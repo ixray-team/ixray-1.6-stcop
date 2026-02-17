@@ -144,8 +144,10 @@ bool EngineModel::UpdateVisual(CEditableObject* source, bool bUpdGeom, bool bUpd
 
 void EngineModel::PlayMotion(const char* name, u16 slot)
 {
-	for (int k=0; k<MAX_PARTS; k++)
+	for (int k = 0; k < MAX_PARTS; k++)
+	{
 	   m_BPPlayItems[k].name = "";
+	}
 
 	StopAnimation();
 

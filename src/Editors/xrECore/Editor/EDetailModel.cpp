@@ -185,6 +185,7 @@ bool EDetail::Update(const char* name)
 	Memory.mem_copy(indices, inds.data(), number_indices * sizeof(u16));
 
 	bv_bb.getsphere(bv_sphere.P, bv_sphere.R);
+	LoadGeom();
 
 	OnDeviceCreate();
 

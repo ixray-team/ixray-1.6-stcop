@@ -20,7 +20,13 @@ CXMLBlend::CXMLBlend(const char* FileName)
 	memcpy(File, FixedName, sizeof(FixedName));
 
 	pCompiler = new CBlender_Compile();
-	Parser.Load(_game_shaders_, "d3d11", File);
+	xr_string ValidDir = RImplementation.getShaderPath();
+	if (ValidDir.ends_with('\\'))
+	{
+		ValidDir.pop_back();
+	}
+
+	Parser.Load(_game_shaders_, ValidDir.c_str(), File);
 	pCompiler->detail_texture = nullptr;
 	pCompiler->detail_scaler = nullptr;
 }
@@ -50,9 +56,9 @@ Shader* CXMLBlend::Compile(const char* Texture)
 
 		if (pElement)
 		{
-			dxRenderDeviceRender::Instance().Resources->_ParseList(pCompiler->L_textures, Texture);
+			DEV->_ParseList(pCompiler->L_textures, Texture);
 			pCompiler->iElement = Iter;
-			pCompiler->bDetail = bUseDetail ? dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(pCompiler->L_textures[0], pCompiler->detail_texture, pCompiler->detail_scaler) : false;
+			pCompiler->bDetail = bUseDetail ? DEV->m_textures_description.GetDetailTexture(pCompiler->L_textures[0], pCompiler->detail_texture, pCompiler->detail_scaler) : false;
 
 			pShader->E[Iter] = MakeShader(Texture, pElement);
 		}
@@ -246,7 +252,7 @@ bool CXMLBlend::Check(const char* FileName)
 	xr_strconcat(NewName, NewName, ".xml");
 	string_path PathAndFile;
 
-	FS.update_path(PathAndFile, _game_shaders_, "d3d11\\");
+	FS.update_path(PathAndFile, _game_shaders_, RImplementation.getShaderPath());
 	xr_strconcat(PathAndFile, PathAndFile, NewName);
 
 	return FS.exist(PathAndFile);

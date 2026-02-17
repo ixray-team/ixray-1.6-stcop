@@ -65,7 +65,7 @@ bool EScene::BuildForPCPlay()
 	{
 		if (!BuildCForm())
 		{
-			ELog.DlgMsg(mtError, mbOK, "CForm is empty!\Check log.");
+			ELog.DlgMsg(mtError, mbOK, "CForm is empty!\nCheck log.");
 			return false;
 		}
 	}
@@ -73,7 +73,7 @@ bool EScene::BuildForPCPlay()
 	{
 		if (!BuildAIMap())
 		{
-			ELog.DlgMsg(mtError, mbOK, "AI-Map is empty!\Check log.");
+			ELog.DlgMsg(mtError, mbOK, "AI-Map is empty!\nCheck log.");
 			return false;
 		}
 	}
@@ -81,7 +81,7 @@ bool EScene::BuildForPCPlay()
 	{
 		if (!BuildGameGraph())
 		{
-			ELog.DlgMsg(mtError, mbOK, "Game Graph is empty!\Check log.");
+			ELog.DlgMsg(mtError, mbOK, "Game Graph is empty!\nCheck log.");
 			return false;
 		}
 	}

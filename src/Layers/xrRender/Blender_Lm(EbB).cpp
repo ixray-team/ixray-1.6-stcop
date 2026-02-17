@@ -184,28 +184,17 @@ void	CBlender_LmEbB::Compile(CBlender_Compile& C)
 //////////////////////////////////////////////////////////////////////////
 // R3
 //////////////////////////////////////////////////////////////////////////
-void	CBlender_LmEbB::Compile(CBlender_Compile& C)
+void CBlender_LmEbB::Compile(CBlender_Compile& C)
 {
-#if 0
-	if (oBlend.value)	C.r_Pass	("lmapE","lmapE",true,true,false,true,D3DBLEND_SRCALPHA,	D3DBLEND_INVSRCALPHA,	true,0);
-	else				C.r_Pass	("lmapE","lmapE",true);
-	//C.r_Sampler			("s_base",	C.L_textures[0]	);
-	C.r_dx10Texture			("s_base",	C.L_textures[0]	);
-	C.r_dx10Sampler			("smp_base");
-	//C.r_Sampler			("s_lmap",	C.L_textures[1]	);
-	C.r_dx10Texture			("s_lmap",	C.L_textures[1]	);
-	C.r_dx10Sampler			("smp_linear");
-	//C.r_Sampler_clf		("s_hemi",	*C.L_textures[2]);
-	C.r_dx10Texture			("s_hemi",	*C.L_textures[2]);
-	C.r_dx10Sampler			("smp_rtlinear");
-	//C.r_Sampler			("s_env",	oT2_Name,false,D3DTADDRESS_CLAMP);
-	C.r_dx10Texture			("s_env",	oT2_Name);
-	//C.r_dx10Sampler			("smp_rtlinear");
-	C.r_End				();
-#else
-
 	IBlender::Compile(C);
 
+#ifdef _EDITOR
+	if (C.bEditor) 
+	{
+		uber_deffer(C, true, "deffer_base", "deffer_base", false, 0, true);
+		C.r_End();
+	}
+#else
 	if (oBlend.value)
 	{
 		switch (C.iElement)

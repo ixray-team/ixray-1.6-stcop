@@ -270,18 +270,27 @@ void UIDOShuffle::FillData(bool ReloadTex)
 			if (!Pixels.empty())
 			{
 				m_MaskTexture = new CTexture();
-				ID3DTexture2D* pTexture = nullptr;
-				R_CHK(REDevice->CreateTexture(256, 256, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pTexture, 0));
-				{
-					D3DLOCKED_RECT rect;
-					R_CHK(pTexture->LockRect(0, &rect, 0, D3DLOCK_DISCARD));
-					memcpy(rect.pBits, Pixels.data(), Pixels.size());
-					R_CHK(pTexture->UnlockRect(0));
 
-					IRHISurface* Surf = GRHI->CreateTextureFromMemory(pTexture, 0, {});
-					m_MaskTexture->surface_set(Surf);
-					Surf->Release();
-				}
+				RHITextureDesc textureDesc = {};
+				textureDesc.Width = 256;
+				textureDesc.Height = 256;
+				textureDesc.MipLevels = 1;
+				textureDesc.ArraySize = 1;
+				textureDesc.Format = ERHI_FORMAT::R8G8B8A8_UNORM;
+				textureDesc.Usage = ERHI_USAGE::USAGE_DYNAMIC;
+				textureDesc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
+				textureDesc.CPUAccessFlags = ERHI_CPU_ACCESS_FLAG::ERHI_CPU_ACCESS_FLAG_WRITE;
+
+				RHISubResource subResource = {};
+
+				IRHISurface* Surf = GRHI->CreateTexture2D(textureDesc, subResource);
+
+				u32 Pitch = 0;
+				void* pBits = Surf->Lock(0, &Pitch);
+				memcpy(pBits, Pixels.data(), Pixels.size());
+				Surf->Unlock();
+				m_MaskTexture->surface_set(Surf);
+				Surf->Release();
 			}
 		}
 	}
