@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "AsureXML.h"
-#include <magic_enum/magic_enum.hpp>
 
 CXMLOverride::EOverrideMode CXMLOverride::GetOverrideMode(tinyxml2::XMLElement* Element) const
 {
