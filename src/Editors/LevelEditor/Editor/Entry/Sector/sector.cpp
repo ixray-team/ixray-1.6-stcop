@@ -53,8 +53,11 @@ CSector::~CSector()
 void CSector::OnFrame()
 {
 	inherited::OnFrame();
+
 	if (m_Flags.is(flNeedUpdateVolume))
+	{
 		UpdateVolume();
+	}
 }
 
 
@@ -111,50 +114,49 @@ bool CSector::GetBox( Fbox& box )
 void CSector::Render(int priority, bool strictB2F)
 {
 	if (!IsLoaded)
+	{
 		return;
+	}
 
-	ESceneSectorTool* lt = smart_cast<ESceneSectorTool*>(FParentTools); VERIFY(lt);
+	ESceneSectorTool* lt = smart_cast<ESceneSectorTool*>(FParentTools); 
+	VERIFY(lt);
+
+	Fcolor color;
+
 	if (2==priority)
 	{
 		if (strictB2F)
 		{
-			if (!lt->m_Flags.is(ESceneSectorTool::flDrawSolid)){
-				Fmatrix matrix;
-				Fcolor color;
-				float k = Selected()?0.4f:0.2f;
-				color.set(sector_color.r,sector_color.g,sector_color.b,k);
-				EDevice->SetShader(EDevice->m_SelectionShader);
-				EDevice->SetRS(D3DRS_CULLMODE,D3DCULL_NONE);
-				for (SItemIt it=sector_items.begin();it!=sector_items.end();++it)
+			if (!lt->m_Flags.is(ESceneSectorTool::flDrawSolid))
+			{
+				float k = Selected() ? 0.4f : 0.2f;
+				color.set(sector_color.r, sector_color.g, sector_color.b, k);
+
+				for (auto& it : sector_items)
 				{
-					it->object->GetFullTransformToWorld(matrix);
-					it->mesh->RenderSelection( matrix, 0, color.get() );
+					it.mesh->RenderEdge(it.object, color.get());
 				}
-				EDevice->SetRS(D3DRS_CULLMODE,D3DCULL_CCW);
 			}
 		}
 		else
 		{
-			Fmatrix matrix;
-			Fcolor color;
-			Fcolor color2;
-			float k = Selected()?0.8f:0.5f;
-			float k2 = Selected()?0.5f:0.2f;
-			color.set(sector_color.r*k,sector_color.g*k,sector_color.b*k,1.f);
-			color2.set(sector_color.r*k2,sector_color.g*k2,sector_color.b*k2,1.f);
+			float k = Selected() ? 0.8f : 0.5f;
+
+			color.set(sector_color.r * k, sector_color.g * k, sector_color.b * k, 1.f);
+
 			if (lt->m_Flags.is(ESceneSectorTool::flDrawSolid))
 			{
-				EDevice->SetShader(EDevice->m_WireShader);
-				EDevice->SetRS(D3DRS_CULLMODE,D3DCULL_NONE);
-				for (SItemIt it=sector_items.begin();it!=sector_items.end();++it)
+				for (auto& it : sector_items)
 				{
-					it->object->GetFullTransformToWorld(matrix);
-					it->mesh->RenderSelection( matrix, 0, color.get() );
-					it->mesh->RenderEdge( matrix, 0, color2.get() );
+					it.mesh->RenderEdge(it.object, color.get());
 				}
-				EDevice->SetRS(D3DRS_CULLMODE,D3DCULL_CCW);
 			}
-			if (Selected()){
+
+			if (Selected())
+			{
+				EDevice->SetShader(EDevice->m_WireShader);
+				EDevice->SetRS(D3DRS_CULLMODE, D3DCULL_NONE);
+
 				RCache.set_xform_world(Fidentity);
 				DU_impl.DrawSelectionBoxB(m_SectorBox);
 			}
@@ -162,8 +164,8 @@ void CSector::Render(int priority, bool strictB2F)
 	}
 }
 
-void CSector::Move( Fvector& amount ){
-// internal use only!!!
+void CSector::Move(Fvector& amount)
+{
 	m_SectorCenter.add(amount);
 }
 

@@ -11,7 +11,7 @@ uniform float4x4 L_dynamic_xform;
 
 uniform float4x4 m_plmap_xform;
 uniform float4 m_plmap_clamp[2]; // 0.w = factor
-uniform sampler s_material;
+uniform Texture3D s_material;
 
 #define def_aref 0.5f
 #define def_gloss 0.04f
@@ -19,6 +19,12 @@ uniform sampler s_material;
 #ifndef xmaterial
 #define xmaterial 0.25f
 #endif
+
+sampler smp_nofilter; //	Use D3DTADDRESS_CLAMP,	D3DTEXF_POINT,			D3DTEXF_NONE,	D3DTEXF_POINT
+sampler smp_rtlinear; //	Use D3DTADDRESS_CLAMP,	D3DTEXF_LINEAR,			D3DTEXF_NONE,	D3DTEXF_LINEAR
+sampler smp_linear; //	Use	D3DTADDRESS_WRAP,	D3DTEXF_LINEAR,			D3DTEXF_LINEAR,	D3DTEXF_LINEAR
+sampler smp_base; //	Use D3DTADDRESS_WRAP,	D3DTEXF_ANISOTROPIC, 	D3DTEXF_LINEAR,	D3DTEXF_ANISOTROPIC
+sampler smp_material;
 
 uniform float4 is_lighting_enable;
 
@@ -94,6 +100,15 @@ float4 calc_model_lmap(float3 pos_w)
     return plmap.xyww;
 }
 
+void RemapVector(inout float3 View)
+{
+    float3 ViewPos = abs(View);
+    float ViewPosMax = max(ViewPos.x, max(ViewPos.y, ViewPos.z));
+
+    View *= rcp(ViewPosMax);
+    View.y = View.y * 2.0 - 1.0;
+}
+
 struct v_lmap
 {
     float4 P : POSITION; // (float,float,float,1)
@@ -114,12 +129,40 @@ struct v_vert
     float2 uv : TEXCOORD0; // (u0,v0)
 };
 
-struct v_editor
+struct v2p_TL
+{
+    float2 Tex0 : TEXCOORD0;
+    float4 Color : COLOR;
+    float4 HPos : SV_POSITION; // Clip-space position 	(for rasterization)
+};
+
+struct v_TL_positiont
+{
+    float4 P : POSITIONT;
+    float4 Color : COLOR;
+    float2 Tex0 : TEXCOORD0;
+};
+
+struct v_TL
 {
     float4 P : POSITION;
-    float2 tc : TEXCOORD0;
-    float3 N : NORMAL;
+    float2 Tex0 : TEXCOORD0;
+    float4 Color : COLOR;
 };
+
+struct p_TL
+{
+    float2 Tex0 : TEXCOORD0;
+    float4 Color : COLOR;
+    //	float4 	HPos	: SV_POSITION;	// Clip-space position 	(for rasterization)
+};
+
+// struct v_editor
+// {
+    // float3 P : POSITION;
+    // float2 tc : TEXCOORD0;
+    // float3 N : NORMAL;
+// };
 
 struct v_model
 {
@@ -130,10 +173,12 @@ struct v_model
     float2 tc : TEXCOORD0; // (u,v)
 };
 
+//	Details
 struct v_detail
 {
-    float4 pos : POSITION; // (float,float,float,1)
-    int4 misc : TEXCOORD0; // (u(Q),v(Q),frac,matrix-id)
+    float4 pos : POSITION; // position, frac
+    float2 tc : TEXCOORD0; // texcoord
+    float4 N : NORMAL; // (nx,ny,nz)
 };
 
 struct vf_spot
@@ -156,7 +201,7 @@ struct vf_point
 
 struct p_bumped_new
 {
-    float4 hpos : POSITION;
+    float4 hpos : SV_POSITION;
 
     float4 tcdh : TEXCOORD0; // Texture coordinates, sun_occlusion || lm-hemi
     float4 position : TEXCOORD1; // position + hemi
@@ -165,12 +210,12 @@ struct p_bumped_new
     float3 M3 : TEXCOORD4; // nmap 2 eye - 3
 };
 
-uniform sampler2D s_base;
-uniform samplerCUBE s_env;
-uniform sampler2D s_lmap;
-uniform sampler2D s_hemi;
-uniform sampler2D s_att;
-uniform sampler2D s_detail;
+uniform Texture2D s_base;
+uniform TextureCube s_env;
+uniform Texture2D s_lmap;
+uniform Texture2D s_hemi;
+uniform Texture2D s_att;
+uniform Texture2D s_detail;
 
 #define def_distort float(0.05f) // we get -0.5 .. 0.5 range, this is -512 .. 512 for 1024, so scale it
 
@@ -196,20 +241,18 @@ float3 v_sun_wrap(float3 n, float w)
 
 float3 p_hemi(float2 tc)
 {
-    // float3	t_lmh 	= tex2D		(s_hemi, tc);
-    // return  dot	(t_lmh,1.h/3.h);
-    float4 t_lmh = tex2D(s_hemi, tc);
-    return t_lmh.a;
+    float4 t_lmh = s_hemi.Sample(smp_rtlinear, tc);
+    return t_lmh.w;
 }
 
 struct f_editor_gbuffer
 {
-	float4 Color : COLOR0;
+	float4 Color : SV_Target0;
 	
 #ifndef FORWARD_ONLY
-    float4 Albedo : COLOR1;
-    float4 Normal : COLOR2;
-    float4 PointZ : COLOR3;
+    float4 Albedo : SV_Target1;
+    float4 Normal : SV_Target2;
+    float4 PointZ : SV_Target3;
 #endif
 };
 
@@ -222,7 +265,7 @@ void cotangent_frame(inout p_bumped_new O)
     float2 duv1 = ddx(O.tcdh.xy);
     float2 duv2 = ddy(O.tcdh.xy);
 
-	float3 N = normalize(O.M1);
+	float3 N = normalize(cross(dp1, dp2));//O.M1);
 
     // Solve the linear system
     float3 dp2perp = cross(dp2, N);

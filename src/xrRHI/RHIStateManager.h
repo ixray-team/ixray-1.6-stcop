@@ -34,6 +34,8 @@ public:
 	virtual void* GetCache(ERHI_STATE_CACHE_TYPE Type, void* Desc) { return nullptr; };
 	virtual void OverrideScissoring(bool Override = true, bool Value = true) {};
 
+	virtual void SetRenderState(u32, u32) {};
+
 	ERHI_CULLMODE GetCullMode() const { return CacheCullMode; }
 
 protected:

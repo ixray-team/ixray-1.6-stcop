@@ -340,13 +340,15 @@ public:
 	int 			GetSurfFaceCount		(const char* surf_name);
 
 	// render methods
-	void 			Render					(const Fmatrix& parent, int priority, bool strictB2F,SurfaceVec * surfaces=nullptr);
-	void 			RenderSelection			(const Fmatrix& parent, CEditableMesh* m=nullptr, CSurface* s=nullptr, u32 c=0x40E64646);
-	void 			RenderEdge				(const Fmatrix& parent, CEditableMesh* m=nullptr, CSurface* s=nullptr, u32 c=0xFFC0C0C0);
+	void 			Render					(CCustomObject*, const Fmatrix& parent, int priority, bool strictB2F,SurfaceVec * surfaces=nullptr);
+	
+	void 			RenderSelection			(CCustomObject*, CEditableMesh* m=0, u32 c=0x40E64646);
+	void 			RenderEdge				(CCustomObject*, CEditableMesh* m=0, u32 c=0xFFC0C0C0);
+
 	void 			RenderBones				(const Fmatrix& parent);
 	void 			RenderAnimation			(const Fmatrix& parent);
-	void 			RenderSingle			(const Fmatrix& parent);
-	void 			RenderSkeletonSingle	(const Fmatrix& parent);
+	void 			RenderSingle			(CCustomObject*, const Fmatrix& parent);
+	void 			RenderSkeletonSingle	(CCustomObject*, const Fmatrix& parent);
 	void 			RenderLOD				(const Fmatrix& parent);
 
 	// update methods

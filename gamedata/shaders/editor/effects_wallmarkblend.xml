@@ -1,0 +1,15 @@
+<w>
+    <element_0 vs="stub_default" ps="stub_default_ma" fog="0" zread="1" zwrite="0">
+        <sort status="0" count="1" />
+        <blend status="1" src="srcalpha" dest="invsrcalpha"/>
+        <aref status="1" count="0"/>
+
+        <flags wmark="1"/>
+       
+        <texture name="s_base" rt="t_base" />
+        <sampler name="smp_rtlinear" />
+        <sampler name="smp_linear" />
+        <sampler name="smp_base" />
+        <color r="1" g="1" b="1" a="0"/>
+    </element_0>
+</w>

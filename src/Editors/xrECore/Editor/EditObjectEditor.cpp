@@ -91,13 +91,17 @@ bool CEditableObject::BoxPick(CCustomObject* obj, const Fbox& box, const Fmatrix
 }
 #endif
 
-extern float 	ssaLIMIT;
-extern float	g_fSCREEN;
-static const float ssaLim = 64.f*64.f/(640*480);
-void CEditableObject::Render(const Fmatrix& parent, int priority, bool strictB2F, SurfaceVec* surfaces)
+extern float ssaLIMIT;
+extern float g_fSCREEN;
+static const float ssaLim = 64.f * 64.f / (640 * 480);
+
+void CEditableObject::Render(CCustomObject* pParent, const Fmatrix& parent, int priority, bool strictB2F, SurfaceVec* surfaces)
 {
 	if (!(m_LoadState.is(LS_RBUFFERS)))
+	{
 		DefferedLoadRP();
+	}
+
 	Fvector v;
 	float r;
 	Fbox bb;
@@ -107,40 +111,53 @@ void CEditableObject::Render(const Fmatrix& parent, int priority, bool strictB2F
 	if (EPrefs->object_flags.is(epoDrawLOD) && (m_objectFlags.is(eoUsingLOD) && (CalcSSA(v, r) < ssaLim)))
 	{
 		if ((1 == priority) && (true == strictB2F))
+		{
 			RenderLOD(parent);
+		}
 	}
-	else {
+	else 
+	{
 		RCache.set_xform_world(parent);
+
 		if (m_objectFlags.is(eoHOM))
 		{
 			if ((1 == priority) && (false == strictB2F))
-				RenderEdge(parent, nullptr, nullptr, 0x40B64646);
+			{
+				RenderEdge(pParent, 0, 0x40B64646);
+			}
 
 			if ((2 == priority) && (true == strictB2F))
-				RenderSelection(parent, nullptr, nullptr, 0xA0FFFFFF);
+			{
+				RenderSelection(pParent, 0, 0xA0FFFFFF);
+			}
 
 		}
-		else if (m_objectFlags.is(eoSoundOccluder))
+	//	else 
+		if (m_objectFlags.is(eoSoundOccluder))
 		{
 			if ((1 == priority) && (false == strictB2F))
-				RenderEdge(parent, nullptr, nullptr, 0xFF000000);
+				RenderEdge(pParent, 0, 0xFF000000);
 
 			if ((2 == priority) && (true == strictB2F))
-				RenderSelection(parent, nullptr, nullptr, 0xA00000FF);
+				RenderSelection(pParent, 0, 0xA00000FF);
 		}
-		else 
+	//	else 
 		{
 			if (psDeviceFlags.is(rsEdgedFaces) && (1 == priority) && (false == strictB2F))
-				RenderEdge(parent);
+			{
+		 		RenderEdge(pParent);
+			}
 
 			if (IsSkeleton())
+			{
 				Engine.External.SetSkinningMode(4);
+			}
 
 			size_t s_id = 0;
-			for (SurfaceIt s_it = m_Surfaces.begin(); s_it != m_Surfaces.end(); s_it++)
+			for (auto s_it : m_Surfaces)
 			{
-				int pr = (*s_it)->_Priority();
-				bool strict = (*s_it)->_StrictB2F();
+				int pr = s_it->_Priority();
+				bool strict = s_it->_StrictB2F();
 
 				if ((priority == pr) && (strictB2F == strict))
 				{
@@ -155,15 +172,19 @@ void CEditableObject::Render(const Fmatrix& parent, int priority, bool strictB2F
 					}
 					else
 					{
-						EDevice->SetShader((*s_it)->_Shader());
+						EDevice->SetShader(s_it->_Shader());
 					}
 
-					for (EditMeshIt _M = m_Meshes.begin(); _M != m_Meshes.end(); _M++)
+					for (auto _M : m_Meshes)
 					{
 						if (IsSkeleton())
-							(*_M)->RenderSkeleton(parent, *s_it);
+						{
+							_M->RenderSkeleton(pParent, parent, s_it);
+						}
 						else
-							(*_M)->Render(parent, *s_it);
+						{
+							_M->Render(pParent, parent, s_it);
+						}
 					}
 				}
 				s_id++;
@@ -174,38 +195,57 @@ void CEditableObject::Render(const Fmatrix& parent, int priority, bool strictB2F
 	}
 }
 
-void CEditableObject::RenderSingle(const Fmatrix& parent)
+void CEditableObject::RenderSingle(CCustomObject* pParent, const Fmatrix& parent)
 {
-	for (int i=0; i<4; i++){
-		Render(parent, i, false);
-		Render(parent, i, true);
+	for (int i=0; i<4; i++)
+	{
+		Render(pParent, parent, i, false);
+		Render(pParent, parent, i, true);
 	}
 }
 
-void CEditableObject::RenderAnimation(const Fmatrix&){
+void CEditableObject::RenderAnimation(const Fmatrix&)
+{
 }
 
-void CEditableObject::RenderEdge(const Fmatrix& parent, CEditableMesh* mesh, CSurface* surf, u32 color)
+void CEditableObject::RenderEdge(CCustomObject* parent, CEditableMesh* mesh, u32 color)
 {
-	if (!(m_LoadState.is(LS_RBUFFERS))) DefferedLoadRP();
+	if (!(m_LoadState.is(LS_RBUFFERS)))
+	{
+		DefferedLoadRP();
+	}
 
-	EDevice->SetShader(EDevice->m_WireShader);
-	if(mesh) mesh->RenderEdge(parent, surf, color);
-	else for(EditMeshIt _M = m_Meshes.begin();_M!=m_Meshes.end();_M++)
-			(*_M)->RenderEdge(parent, surf, color);
+	if (mesh)
+	{
+		mesh->RenderEdge(parent, color);
+	}
+	else
+	{
+		for (auto _M : m_Meshes)
+		{
+			_M->RenderEdge(parent, color);
+		}
+	}
 }
 
-void CEditableObject::RenderSelection(const Fmatrix& parent, CEditableMesh* mesh, CSurface* surf, u32 color)
+void CEditableObject::RenderSelection(CCustomObject* parent, CEditableMesh* mesh, u32 color)
 {
-	if (!(m_LoadState.is(LS_RBUFFERS))) DefferedLoadRP();
+	if (!(m_LoadState.is(LS_RBUFFERS)))
+	{
+		DefferedLoadRP();
+	}
 
-	RCache.set_xform_world(parent);
-	EDevice->SetShader(EDevice->m_SelectionShader);
-	EDevice->RenderNearer(0.0005);
-	if(mesh) mesh->RenderSelection(parent, surf, color);
-	else for(EditMeshIt _M = m_Meshes.begin();_M!=m_Meshes.end();_M++)
-			(*_M)->RenderSelection(parent, surf, color);
-	EDevice->ResetNearer();
+	if (mesh)
+	{
+		mesh->RenderSelection(parent, color);
+	}
+	else
+	{
+		for (auto _M : m_Meshes)
+		{
+			_M->RenderSelection(parent, color);
+		}
+	}
 }
 
 IC static void CalculateLODTC(int frame, int w_cnt, int h_cnt, Fvector2& lt, Fvector2& rb)
@@ -326,10 +366,7 @@ void CEditableObject::DefferedLoadRP()
 	if (m_LoadState.is(LS_RBUFFERS)) return;
 
 	// skeleton
-	if (IsSkeleton())
-	{
-		vs_SkeletonGeom.create(dwDecl_4W, std::size(dwDecl_4W), RCache.Vertex.Buffer(), RCache.Index.Buffer());
-	}
+	vs_SkeletonGeom.create(dwDecl_4W, std::size(dwDecl_4W), RCache.Vertex.Buffer(), RCache.Index.Buffer());
 
 	// создать LOD shader
 	xr_string l_name = GetLODTextureName();

@@ -501,11 +501,6 @@ void CSkeletonX::_Load(const char* N, IReader *data, u32& dwVertCount)
 
 				sw_bones_cnt = std::max(sw_bones_cnt, mid);
 			}
-#ifdef _EDITOR
-			// software
-			crc						= crc32	(data->pointer(),size);
-			Vertices1W.create		(crc,dwVertCount,(vertBoned1W*)data->pointer());
-#else
 			if (1 == bids.size())
 			{
 				// HW- single bone
@@ -527,7 +522,6 @@ void CSkeletonX::_Load(const char* N, IReader *data, u32& dwVertCount)
 				Vertices1W.create(crc, dwVertCount, (vertBoned1W*)data->pointer());
 				Engine.External.SetSkinningMode();
 			}
-#endif        
 		}
 		break;
 	case OGF_VERTEXFORMAT_FVF_2L: // 2-Link

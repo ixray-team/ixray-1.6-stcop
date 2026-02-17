@@ -14,6 +14,7 @@ file(GLOB_RECURSE ELE_SOURCE_EDITOR_UTILS_FILES CONFIGURE_DEPENDS "Editor/Utils/
 file(GLOB_RECURSE ELE_SOURCE_ENGINE_FILES CONFIGURE_DEPENDS "Engine/*.*")
 
 file(GLOB_RECURSE ELE_SOURCE_RENDER_FILES CONFIGURE_DECORENDS
+    "../../Layers/xrRenderDX10/dx10DetailManager_VS*"
     "../../Layers/xrRender/DetailManager*"
     "../../Layers/xrRender/stats_manager*"
 )

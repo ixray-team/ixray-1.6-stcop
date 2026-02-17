@@ -420,7 +420,7 @@ void CResourceManager::DeferredUpload()
 			T->Load();
 	}
 
-#ifdef USE_DX11
+#if defined(USE_DX11) && !defined(_EDITOR)
 	FluidManager.Initialize(70, 70, 70);
 	FluidManager.SetScreenSize((u32)RCache.get_width(), (u32)RCache.get_height());
 #endif
@@ -436,7 +436,7 @@ void CResourceManager::DeferredUnload()
 		return;
 #endif
 
-#ifdef USE_DX11
+#if defined(USE_DX11) && !defined(_EDITOR)
 	FluidManager.Destroy();
 #endif
 
