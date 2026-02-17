@@ -8,13 +8,13 @@ namespace
 	class Crc32Initializer final
 	{
 	public:
-		static void init() noexcept 
+		static ICF void init() noexcept
 		{
 			static Crc32Initializer initializer;
 		}
 
 	private:
-		Crc32Initializer() noexcept
+		ICF Crc32Initializer() noexcept
 		{
 			// Инициализация таблицы для software реализации
 			constexpr u32 POLYNOMIAL = 0xEDB88320;
@@ -29,7 +29,7 @@ namespace
 	};
 
 	// Аппаратная реализация с SSE4.2
-	u32 crc32_sse42(const void* P, size_t len, u32 starting_crc = ~0u) noexcept
+	ICF u32 crc32_sse42(const void* P, size_t len, u32 starting_crc = ~0u) noexcept
 	{
 		const u8* buffer = static_cast<const u8*>(P);
 		u32 crc = starting_crc;

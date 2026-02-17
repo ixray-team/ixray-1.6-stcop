@@ -13,10 +13,10 @@ public:
 	T			d = 0;
 public:
 
-	constexpr _plane() = default;
-	constexpr _plane(const _vector3<T>& normal, T distance) : d(distance) { n.set(normal); }
+	ICF _plane() = default;
+	ICF _plane(const _vector3<T>& normal, T distance) : d(distance) { n.set(normal); }
 
-	constexpr _plane(std::initializer_list<T> init)
+	ICF _plane(std::initializer_list<T> init)
 	{
 		n.x = init.size() > 0 ? *(init.begin() + 0) : T(0);
 		n.y = init.size() > 1 ? *(init.begin() + 1) : T(0);
@@ -24,13 +24,13 @@ public:
 		d   = init.size() > 3 ? *(init.begin() + 3) : T(0);
 	}
 
-	IC	SelfRef	set		(Self &P)
+	ICF	SelfRef	set		(Self &P)
 	{
 		n.set	(P.n);
 		d		= P.d;
 		return *this;
 	}
-    IC	 BOOL 	similar (Self &P, T eps_n=EPS, T eps_d=EPS)
+	ICF	 BOOL 	similar (Self &P, T eps_n=EPS, T eps_d=EPS)
 	{
     	return (n.similar(P.n,eps_n)&&(_abs(d-P.d)<eps_d));
     }
@@ -59,12 +59,12 @@ public:
 		d			= - n.set(_n).dotproduct(_p);
 		return *this;
 	}
-	IC	SelfCRef project(_vector3<T> &pdest, _vector3<T> const& psrc) const
+	ICF	SelfCRef project(_vector3<T> &pdest, _vector3<T> const& psrc) const
 	{
 		pdest.mad	(psrc,n,-classify(psrc));
 		return *this;
 	}
-	IC	SelfRef	project(_vector3<T> &pdest, _vector3<T> const& psrc)
+	ICF	SelfRef	project(_vector3<T> &pdest, _vector3<T> const& psrc)
 	{
 		pdest.mad	(psrc,n,-classify(psrc));
 		return *this;
@@ -73,18 +73,18 @@ public:
 	{
 		return n.dotproduct(v)+d;
 	}
-	IC	SelfRef	normalize() 
+	ICF	SelfRef	normalize()
 	{
 		T denom = 1.f / n.magnitude();
 		n.mul(denom);
 		d*=denom;
 		return *this;
 	}
-	IC	T	distance	(const _vector3<T> &v)	
+	ICF	T	distance	(const _vector3<T> &v)
 	{
 		return std::abs(classify(v));
 	}
-	IC BOOL intersectRayDist(const _vector3<T>& P, const _vector3<T>& D, T& dist)
+	ICF BOOL intersectRayDist(const _vector3<T>& P, const _vector3<T>& D, T& dist)
 	{
 		T numer = classify(P);
 		T denom = n.dotproduct(D);
@@ -107,7 +107,7 @@ public:
 			return 		((dist>0.f)||fis_zero(dist));
 		}
 	}
-	IC	BOOL	intersect (
+	ICF	BOOL	intersect (
 		const _vector3<T>& u, const _vector3<T>& v,	// segment
 	    _vector3<T>&	isect)                  // intersection point
 	{
@@ -124,7 +124,7 @@ public:
 		return true;
 	}
 
-	IC	BOOL	intersect_2 (
+	ICF	BOOL	intersect_2 (
 		const _vector3<T>& u, const _vector3<T>& v,				// segment
 	    _vector3<T>& isect)						// intersection point
 	{
@@ -142,7 +142,7 @@ public:
 
 		return true;
 	}
-	IC	SelfRef	transform(_matrix<T>& M)
+	ICF	SelfRef	transform(_matrix<T>& M)
 	{
 		// rotate the normal
 		M.transform_dir		(n);
@@ -156,6 +156,6 @@ typedef _plane<float>	Fplane;
 typedef _plane<double>	Dplane;
 
 template <class T>
-BOOL	_valid			(const _plane<T>& s)		{ return _valid(s.n) && _valid(s.d);	}
+ICF BOOL	_valid			(const _plane<T>& s)		{ return _valid(s.n) && _valid(s.d);	}
 
 #endif

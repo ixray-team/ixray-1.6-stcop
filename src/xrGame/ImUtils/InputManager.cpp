@@ -12,7 +12,6 @@
 
 #include "ImUtils.h"
 
-#include <magic_enum/magic_enum.hpp>
 
 struct InGameEditor_InputManager
 {
