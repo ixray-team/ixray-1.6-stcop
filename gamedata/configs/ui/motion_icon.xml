@@ -7,4 +7,12 @@
 	<noise_progress x="10" y="10" width="10" height="10" stretch="1" alignment="c" sector_count="24" clockwise="0" begin_angle="3.365" end_angle="4.37" blend="0">
 		<texture>ui_inGame2_Radar_blue_bar</texture>
 	</noise_progress>
+	<!--
+	<luminosity_overlay x="0" y="0" width="10" height="10" stretch="1">
+		<texture r="255" g="0" b="0" a="255">ui_hud_vignette_danger</texture>
+	</luminosity_overlay>
+	<noise_overlay x="0" y="0" width="10" height="10" stretch="1">
+		<texture r="200" g="200" b="255" a="255">ui_hud_vignette_noise</texture>
+	</noise_overlay>
+	-->
 </window>

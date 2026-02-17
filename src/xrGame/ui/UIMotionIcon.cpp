@@ -1,12 +1,15 @@
 #include "StdAfx.h"
 #include "UIMainIngameWnd.h"
 #include "UIMotionIcon.h"
+#include "../../xrCore/_color.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/UIHelper.h"
 #include "../../xrEngine/CustomHUD.h"
 #include "../game_cl_single.h"
 
 const LPCSTR MOTION_ICON_XML = "motion_icon.xml";
+static const float OVERLAY_LUMINOSITY_SMOOTH_SPEED = 4.5f;
+static const float OVERLAY_NOISE_SMOOTH_SPEED = 5.5f;
 
 CUIMotionIcon* g_pMotionIcon = nullptr;
 
@@ -23,6 +26,14 @@ CUIMotionIcon::CUIMotionIcon()
 	m_noise_progress_bar = nullptr;
 	m_luminosity_progress_shape = nullptr;
 	m_noise_progress_shape = nullptr;
+	_luminosityOverlay = nullptr;
+	_noiseOverlay = nullptr;
+	_luminosityOverlayBaseColor = 0;
+	_noiseOverlayBaseColor = 0;
+	_luminosityNormalized = 0.f;
+	_noiseNormalized = 0.f;
+	_luminosityOverlayCur = 0.f;
+	_noiseOverlayCur = 0.f;
 }
 
 CUIMotionIcon::~CUIMotionIcon()
@@ -35,6 +46,8 @@ void CUIMotionIcon::ResetVisibility()
 	m_npc_visibility.clear	();
 	m_luminosity			= 0.0f;
 	m_bchanged				= true;
+	_luminosityOverlayCur	= 0.f;
+	_noiseOverlayCur		= 0.f;
 }
 
 bool CUIMotionIcon::Init(Frect const& zonemap_rect, bool useCompassBar)
@@ -73,16 +86,19 @@ bool CUIMotionIcon::Init(Frect const& zonemap_rect, bool useCompassBar)
     if (uiXml.NavigateToNode("power_progress", 0))
         m_power_progress = UIHelper::CreateProgressBar(uiXml, "power_progress", this);
 
-    // Initialization order matters, we should try progress bars first!!!
+    bool useLuminosityOverlay = uiXml.NavigateToNode("luminosity_overlay", 0);
+    bool useNoiseOverlay = uiXml.NavigateToNode("noise_overlay", 0);
+
     if (m_independent)
     {
-        m_luminosity_progress_bar = UIHelper::CreateProgressBar(uiXml, "luminosity_progress", this);
-        m_noise_progress_bar = UIHelper::CreateProgressBar(uiXml, "noise_progress", this);
+        if (!useLuminosityOverlay)
+            m_luminosity_progress_bar = UIHelper::CreateProgressBar(uiXml, "luminosity_progress", this);
+        if (!useNoiseOverlay)
+            m_noise_progress_bar = UIHelper::CreateProgressBar(uiXml, "noise_progress", this);
     }
     else if (!useCompassBar)
     {
-        // Luminosity and noise shapes are for minimap overlay only
-        if (!m_luminosity_progress_bar)
+        if (!useLuminosityOverlay && !m_luminosity_progress_bar)
         {
             m_luminosity_progress_shape = UIHelper::CreateProgressShape(uiXml, "luminosity_progress", this);
             if (m_luminosity_progress_shape)
@@ -91,8 +107,7 @@ bool CUIMotionIcon::Init(Frect const& zonemap_rect, bool useCompassBar)
                 m_luminosity_progress_shape->SetWndPos(pos);
             }
         }
-
-        if (!m_noise_progress_bar)
+        if (!useNoiseOverlay && !m_noise_progress_bar)
         {
             m_noise_progress_shape = UIHelper::CreateProgressShape(uiXml, "noise_progress", this);
             if (m_noise_progress_shape)
@@ -148,6 +163,25 @@ bool CUIMotionIcon::Init(Frect const& zonemap_rect, bool useCompassBar)
 
     ShowState(stNormal);
 
+    if (useLuminosityOverlay)
+    {
+        _luminosityOverlay = UIHelper::CreateStatic(uiXml, "luminosity_overlay", this, false);
+        if (_luminosityOverlay)
+        {
+            _luminosityOverlayBaseColor = _luminosityOverlay->GetTextureColor();
+            _luminosityOverlay->SetTextureColor(subst_alpha(_luminosityOverlayBaseColor, 0));
+        }
+    }
+    if (useNoiseOverlay)
+    {
+        _noiseOverlay = UIHelper::CreateStatic(uiXml, "noise_overlay", this, false);
+        if (_noiseOverlay)
+        {
+            _noiseOverlayBaseColor = _noiseOverlay->GetTextureColor();
+            _noiseOverlay->SetTextureColor(subst_alpha(_noiseOverlayBaseColor, 0));
+        }
+    }
+
     return m_independent;
 }
 
@@ -191,12 +225,20 @@ void CUIMotionIcon::SetNoise(float newPos)
 		float pos = newPos;
 		pos = clampr(pos, 0.f, 100.f);
 		m_noise_progress_shape->SetPos(pos / 100.f);
+		_noiseNormalized = pos / 100.f;
 	}
 	else if (m_noise_progress_bar)
 	{
 		float pos = newPos;
-		pos = clampr(pos, m_noise_progress_bar->GetRange_min(), m_noise_progress_bar->GetRange_max());
+		float rmin = m_noise_progress_bar->GetRange_min();
+		float rmax = m_noise_progress_bar->GetRange_max();
+		pos = clampr(pos, rmin, rmax);
 		m_noise_progress_bar->SetProgressPos(pos);
+		_noiseNormalized = (rmax > rmin) ? (pos - rmin) / (rmax - rmin) : 0.f;
+	}
+	else
+	{
+		_noiseNormalized = clampr(newPos / 100.f, 0.f, 1.f);
 	}
 }
 
@@ -214,6 +256,8 @@ void CUIMotionIcon::SetLuminosity(float newPos)
 		newPos = clampr(newPos, m_luminosity_progress_bar->GetRange_min(), m_luminosity_progress_bar->GetRange_max());
 		m_luminosity = newPos;
 	}
+	if (_luminosityOverlay != nullptr && m_luminosity_progress_shape == nullptr && m_luminosity_progress_bar == nullptr)
+		_luminosityNormalized = clampr(newPos, 0.f, 1.f);
 }
 
 void CUIMotionIcon::Draw()
@@ -273,6 +317,43 @@ void CUIMotionIcon::Update()
 			clamp(m_cur_pos, m_luminosity_progress_bar->GetRange_min(), m_luminosity_progress_bar->GetRange_max());
 			m_luminosity_progress_bar->SetProgressPos(m_cur_pos);
 		}
+	}
+
+	float normLum = 0.f;
+	if (m_luminosity_progress_shape)
+		normLum = m_cur_pos / 100.f;
+	else if (m_luminosity_progress_bar)
+	{
+		float rmin = m_luminosity_progress_bar->GetRange_min();
+		float rmax = m_luminosity_progress_bar->GetRange_max();
+		normLum = (rmax > rmin) ? (m_cur_pos - rmin) / (rmax - rmin) : 0.f;
+	}
+	else if (_luminosityOverlay != nullptr)
+		normLum = _luminosityNormalized;
+
+	if (_luminosityOverlay != nullptr)
+	{
+		float diff = std::abs(normLum - _luminosityOverlayCur);
+		if (normLum > _luminosityOverlayCur)
+			_luminosityOverlayCur += diff * Device.fTimeDelta * OVERLAY_LUMINOSITY_SMOOTH_SPEED;
+		else
+			_luminosityOverlayCur -= diff * Device.fTimeDelta * OVERLAY_LUMINOSITY_SMOOTH_SPEED;
+		clamp(_luminosityOverlayCur, 0.f, 1.f);
+		u32 maxA = color_get_A(_luminosityOverlayBaseColor);
+		u32 alpha = (u32)clampr(iFloor(_luminosityOverlayCur * float(maxA)), 0, 255);
+		_luminosityOverlay->SetTextureColor(subst_alpha(_luminosityOverlayBaseColor, alpha));
+	}
+	if (_noiseOverlay != nullptr)
+	{
+		float diff = std::abs(_noiseNormalized - _noiseOverlayCur);
+		if (_noiseNormalized > _noiseOverlayCur)
+			_noiseOverlayCur += diff * Device.fTimeDelta * OVERLAY_NOISE_SMOOTH_SPEED;
+		else
+			_noiseOverlayCur -= diff * Device.fTimeDelta * OVERLAY_NOISE_SMOOTH_SPEED;
+		clamp(_noiseOverlayCur, 0.f, 1.f);
+		u32 maxA = color_get_A(_noiseOverlayBaseColor);
+		u32 alpha = (u32)clampr(iFloor(_noiseOverlayCur * float(maxA)), 0, 255);
+		_noiseOverlay->SetTextureColor(subst_alpha(_noiseOverlayBaseColor, alpha));
 	}
 }
 
