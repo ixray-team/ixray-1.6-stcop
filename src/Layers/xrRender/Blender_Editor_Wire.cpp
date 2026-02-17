@@ -57,7 +57,8 @@ void CBlender_Editor_Wire::Compile	(CBlender_Compile& C)
 	else 
 #endif //USE_DX11
 	{
-		C.r_Pass	("editor","simple_color",false,true,true);
-		C.r_End		();
+		C.r_Pass("editor", "simple_color", false, true, true);
+		C.r_CullMode(D3DCULL_NONE);
+		C.r_End();
 	}
 }

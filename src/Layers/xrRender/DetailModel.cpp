@@ -121,6 +121,56 @@ void CDetail::transfer	(Fmatrix& mXform, fvfVertexOut* vDest, u32 C, u16* iDest,
 	}
 }
 
+//LVutner: Create vertex and index buffers
+#ifdef USE_DX11
+void CDetail::LoadGeom()
+{
+	xr_vector<Fvector> vNormals(number_vertices, Fidentity.c);
+	Fvector normal;
+
+	for (u32 i = 0; i < number_indices; i += 3)
+	{
+		const auto& idx_0 = indices[i + 0];
+		const auto& idx_1 = indices[i + 1];
+		const auto& idx_2 = indices[i + 2];
+
+		const auto& v_0 = vertices[idx_0].P;
+		const auto& v_1 = vertices[idx_1].P;
+		const auto& v_2 = vertices[idx_2].P;
+
+		normal.mknormal(v_0, v_1, v_2);
+
+		vNormals[idx_0].add(normal);
+		vNormals[idx_1].add(normal);
+		vNormals[idx_2].add(normal);
+	}
+
+	xr_vector<vertHW> pV;
+	vertHW V;
+
+	for (u32 v = 0; v < number_vertices; v++)
+	{
+		V.pos_frac.x = vertices[v].P.x;
+		V.pos_frac.y = vertices[v].P.y;
+		V.pos_frac.z = vertices[v].P.z;
+		V.pos_frac.w = vertices[v].P.y / (bv_bb.max.y - bv_bb.min.y);
+
+		auto& vNormal = vNormals[v].normalize_safe();
+		V.normal = color_rgba(q_N(vNormal.x), q_N(vNormal.y), q_N(vNormal.z), 0);
+
+		V.uv.x = vertices[v].u;
+		V.uv.y = vertices[v].v;
+
+		pV.push_back(V);
+	}
+
+	u32 size_indices = number_indices * sizeof(u16);
+	R_ASSERT(RHIUtils::CreateVertexBuffer(&hw_VB, pV.data(), number_vertices * sizeof(vertHW)));
+	R_ASSERT(RHIUtils::CreateIndexBuffer(&hw_IB, indices, size_indices));
+	hw_Geom.create(dwDecl, std::size(dwDecl), hw_VB, hw_IB);
+}
+#endif
+
 void CDetail::Load(IReader* S)
 {
 	// Shader
@@ -244,6 +294,10 @@ void CDetail::Load(IReader* S)
 
 #ifndef _EDITOR
 	Optimize	();
+#endif
+
+#ifdef USE_DX11
+	LoadGeom();
 #endif
 }
 

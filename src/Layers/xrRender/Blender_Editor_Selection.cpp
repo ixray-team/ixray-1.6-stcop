@@ -56,7 +56,8 @@ void	CBlender_Editor_Selection::Compile	(CBlender_Compile& C)
 	else 
 #endif //USE_DX11
 	{
-		C.r_Pass	("editor","simple_color",false,true,false,true,D3DBLEND_SRCALPHA,D3DBLEND_INVSRCALPHA);
-		C.r_End		();
+		C.r_Pass("editor", "simple_color", false, true, false, true, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA);
+		C.r_CullMode(D3DCULL_NONE);
+		C.r_End();
 	}
 }

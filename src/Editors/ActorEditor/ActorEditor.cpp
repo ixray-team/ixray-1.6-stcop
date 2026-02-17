@@ -109,6 +109,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	CFilewatcher::instance().SetFilewatcherActive(true);
 	Core._initialize("Actor", ELogCallback, 1, fsgame[0] ? fsgame : FSName);
 
+	xrLogger::EnableFastDebugLog();
+
 	splash::SetProgressStatus(20, "Initializing Actor Tools");
 
 	Tools = new CActorTools();
@@ -173,8 +175,11 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 				{
 					if (UI && REDevice)
 					{
-						UI->Resize(Event.window.data1, Event.window.data2, true);
-						EPrefs->SaveConfig();
+						if (Event.window.data1 != DevicePtr->Width || Event.window.data2 != DevicePtr->Height)
+						{
+							UI->Resize(Event.window.data1, Event.window.data2, true);
+							EPrefs->SaveConfig();
+						}
 					}
 				}
 				break;

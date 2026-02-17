@@ -42,30 +42,17 @@ void	CBlender_default::Load(	IReader& fs, u16 version )
 		xrPREAD_PROP(fs,xrPID_TOKEN,oTessellation);
 	}
 }
-void	CBlender_default::Compile(CBlender_Compile& C)
+void CBlender_default::Compile(CBlender_Compile& C)
 {
 	IBlender::Compile(C);
 #ifdef _EDITOR
-	if (C.bEditor)	{
-		uber_deffer(C, true, "deffer_base", "deffer_base", false, nullptr, true);
+	if (C.bEditor)
+	{
+		uber_deffer(C, true, "deffer_base", "deffer_base", false, 0, true);
 		C.r_End();
-		//C.PassBegin		();
-		//{
-		//	C.PassSET_ZB			(true,true);
-		//	C.PassSET_Blend			(false,D3DBLEND_ONE,D3DBLEND_ZERO,false,0);
-		//	C.PassSET_LightFog		(true,true);
-		//	
-		//	// Stage1 - Base texture
-		//	C.StageBegin			();
-		//	C.StageSET_Color		(D3DTA_TEXTURE,	  D3DTOP_MODULATE,		D3DTA_DIFFUSE);
-		//	C.StageSET_Alpha		(D3DTA_TEXTURE,	  D3DTOP_MODULATE,		D3DTA_DIFFUSE);
-		//	C.StageSET_TMC			(oT_Name,oT_xform,"$null",0);
-		//	C.StageEnd				();
-		//}
-		//C.PassEnd			();
 	}
+#else
 	else 
-#endif
 	{
 		if (C.L_textures.size()<3)	Debug.fatal	(DEBUG_INFO,"Not enought textures for shader, base tex: %s",*C.L_textures[0]);
 		switch (C.iElement)
@@ -120,4 +107,5 @@ void	CBlender_default::Compile(CBlender_Compile& C)
 			break;
 		}
 	}
+#endif
 }

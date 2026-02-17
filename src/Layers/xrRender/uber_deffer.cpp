@@ -255,6 +255,11 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 			C.r_Pass(vs, ps, false);
 		}
 	}
+#else
+	{
+		C.r_Pass(vs, ps, FALSE);
+	}
+#endif
 
 	if (ps_r2_ls_flags_ext.test(R2FLAGEXT_WIREFRAME))
 	{
@@ -303,7 +308,9 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 		C.r_dx10Texture("s_specular", Path);
 	}
 
+#ifndef _EDITOR
 	C.r_dx10Texture("s_smap_sun", r2_RT_smap_depth_sun);
+#endif
 	C.r_dx10Sampler("smp_smap");
 
 	C.r_dx10Sampler("smp_base");
@@ -343,11 +350,12 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 #endif
 
 #ifdef _EDITOR
-	C.r_Sampler_clw("s_material", "shaders\\r2_material");
-	C.r_Sampler("env_s0", "$user$env_s0");
-	C.r_Sampler("env_s1", "$user$env_s1");
-	C.r_Sampler("sky_s0", "$user$sky0");
-	C.r_Sampler("sky_s1", "$user$sky1");
+	C.r_dx10Texture("s_material", "shaders\\r2_material");
+	C.r_dx10Texture("env_s0", "$user$env_s0");
+	C.r_dx10Texture("env_s1", "$user$env_s1");
+	C.r_dx10Texture("sky_s0", "$user$sky0");
+	C.r_dx10Texture("sky_s1", "$user$sky1");
+	C.r_dx10Sampler("smp_material");
 #endif
 
 	if (!DO_NOT_FINISH) 
