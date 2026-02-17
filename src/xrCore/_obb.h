@@ -10,7 +10,7 @@ public:
 	typedef _vector3<T>	Tvector;
 	typedef _matrix<T>	Tmatrix;
 protected:
-    static bool		clip		(T fDenom, T fNumer, T& rfT0, T& rfT1)
+    static ICF bool		clip		(T fDenom, T fNumer, T& rfT0, T& rfT1)
     {
         // Return value is 'true' if line segment intersects the current test
         // plane.  Otherwise 'false' is returned in which case the line segment
@@ -28,7 +28,7 @@ protected:
             return fNumer <= 0.0f;
         }
     }
-	static bool 	intersect	(const Tvector& start, const Tvector& dir, const Tvector& extent, T& rfT0, T& rfT1)
+	static ICF bool 	intersect	(const Tvector& start, const Tvector& dir, const Tvector& extent, T& rfT0, T& rfT1)
 	{
 		T fSaveT0 = rfT0, fSaveT1 = rfT1;
 
@@ -47,30 +47,30 @@ public:
 	Tvector			m_translate;
 	Tvector			m_halfsize;
 
-	IC bool operator==(SelfCRef Left)
+    ICF bool operator==(SelfCRef Left)
 	{
 		return Left.m_translate == m_translate && Left.m_rotate == m_rotate && Left.m_halfsize == m_halfsize;
 	}
 
-	IC SelfRef		invalidate() {
+    ICF SelfRef		invalidate() {
 		m_rotate.identity	();
 		m_translate.set		(0,0,0);
 		m_halfsize.set		(0,0,0);
 		return *this;
 	}
-	IC SelfRef		identity() {
+    ICF SelfRef		identity() {
 		invalidate();
 		m_halfsize.set( T(0.5), T(0.5), T(0.5) );
 		return *this;
 	}
-	IC void			xform_get(Tmatrix& D) const
+    ICF void			xform_get(Tmatrix& D) const
 	{
 		D.i.set(m_rotate.i); D._14_ = 0;
 		D.j.set(m_rotate.j); D._24_ = 0;
 		D.k.set(m_rotate.k); D._34_ = 0;
 		D.c.set(m_translate);D._44_ = 1;
 	}
-	IC SelfRef		xform_set(const Tmatrix& S)
+    ICF SelfRef		xform_set(const Tmatrix& S)
 	{
 		m_rotate.i.set	(S.i);
 		m_rotate.j.set	(S.j);
@@ -78,7 +78,7 @@ public:
 		m_translate.set	(S.c);
 		return *this;
 	}
-	IC void			xform_full(Tmatrix& D) const
+    ICF void			xform_full(Tmatrix& D) const
 	{
 		Tmatrix		R,S;
 		xform_get	(R);
@@ -87,7 +87,7 @@ public:
 	}
 
 	// NOTE: Unoptimized
-	IC SelfRef		transform(SelfCRef src, const Tmatrix& M)	
+    ICF SelfRef		transform(SelfCRef src, const Tmatrix& M)
 	{
 		Tmatrix	srcR,destR;
 
@@ -98,7 +98,7 @@ public:
 		return *this;
 	}
 
-    IC bool 		intersect(const Tvector& start, const Tvector& dir, T& dist) const
+    ICF bool 		intersect(const Tvector& start, const Tvector& dir, T& dist) const
     {
         // convert ray to box coordinates
         Tvector kDiff; 
@@ -122,7 +122,7 @@ public:
         return false;
     }
 
-    IC bool contains(const Tvector& point) const
+    ICF bool contains(const Tvector& point) const
     {
         Tvector localPoint;
         localPoint.sub(point, m_translate);
@@ -136,7 +136,7 @@ public:
             (z >= -m_halfsize.z) && (z <= m_halfsize.z);
     }
 
-    IC bool intersectAABB(const _box3<T>& aabb) const
+    ICF bool intersectAABB(const _box3<T>& aabb) const
     {
         Tvector aabbCenter, aabbExtents;
         aabb.get_CD(aabbCenter, aabbExtents);
@@ -144,7 +144,7 @@ public:
     }
 
 
-    IC bool intersectAABB(const Tvector& aabbCenter, const Tvector& aabbExtents) const
+    ICF bool intersectAABB(const Tvector& aabbCenter, const Tvector& aabbExtents) const
     {
         Tvector diff;
         diff.sub(m_translate, aabbCenter);
@@ -186,7 +186,7 @@ public:
         return true;
     }
 
-    IC bool intersectTri(const Tvector* verts, bool bClass3 = true)
+    ICF bool intersectTri(const Tvector* verts, bool bClass3 = true)
     {
         Tvector axes[13];
         u32 total_axes = 3;
@@ -257,7 +257,7 @@ public:
         return true;
     }
 
-    IC void ClampPointOBB(Tvector& clamped_point)
+    ICF void ClampPointOBB(Tvector& clamped_point)
     {
         Tvector local_point;
         local_point.sub(clamped_point, m_translate);
@@ -332,7 +332,7 @@ public:
         clamped_point.mad(m_rotate.k, z);
     }
 
-    IC void FindContactsClipping(Tvector* tri, void (*callback)(const Tvector& contact, void* user_data), void* user_data = nullptr)
+    ICF void FindContactsClipping(Tvector* tri, void (*callback)(const Tvector& contact, void* user_data), void* user_data = nullptr)
     {
         Tvector polygon[12];
         u8 poly_count = 3;
@@ -408,7 +408,7 @@ typedef		_obb<float>		Fobb;
 typedef		_obb<double>	Dobb;
 
 template <class T>
-BOOL	_valid			(const _obb<T>& m)		
+ICF BOOL	_valid			(const _obb<T>& m)
 { 
 	return _valid(m.m_rotate) && _valid(m.m_translate) && _valid(m.m_halfsize);
 }

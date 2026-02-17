@@ -18,15 +18,15 @@ public:
 
 
 public:
-    IC bool operator==(SelfCRef Left)
+    ICF bool operator==(SelfCRef Left)
     {
         return Left.m_center == m_center && Left.m_direction == m_direction && m_height == Left.m_height && m_radius == Left.m_radius;
     }
 
 public:
-	IC SelfRef	invalidate	()	{ m_center.set(0,0,0); m_direction.set(0,0,0); m_height=0; m_radius=0; return *this; }
+	ICF SelfRef	invalidate	()	{ m_center.set(0,0,0); m_direction.set(0,0,0); m_height=0; m_radius=0; return *this; }
 	enum ecode { cyl_cap, cyl_wall, cyl_none };
-    IC int		intersect	(const _vector3<T>& start, const _vector3<T>& dir, T afT[2], ecode code[2] ) const
+    ICF int		intersect	(const _vector3<T>& start, const _vector3<T>& dir, T afT[2], ecode code[2] ) const
     {
         T fEpsilon = 1e-12f;
 
@@ -194,7 +194,7 @@ public:
 		rpOriginOutside	= 2,
 		fcv_forcedword	= u32(-1)
 	};
-    IC ERP_Result	intersect	(const _vector3<T>& start, const _vector3<T>& dir, T& dist) const
+    ICF ERP_Result	intersect	(const _vector3<T>& start, const _vector3<T>& dir, T& dist) const
     {
     	T				afT[2];
 		ecode 			code[2];

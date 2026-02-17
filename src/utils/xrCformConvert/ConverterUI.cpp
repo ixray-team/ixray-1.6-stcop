@@ -9,7 +9,6 @@
 #ifdef IXR_WINDOWS
 #include <psapi.h>
 #endif
-#include <magic_enum/magic_enum.hpp>
 
 using namespace CFormConverter;
 
