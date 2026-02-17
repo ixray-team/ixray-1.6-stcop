@@ -208,7 +208,11 @@ SVS*	CResourceManager::_CreateVS		(const char* _name)
 
 		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)data, size, c_entry, c_target, flags, (void*&)_vs);
 
+#ifdef _EDITOR
+		R_ASSERT3(SUCCEEDED(_hr), "Can't compile shader", cname);
+#else
 		R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug().c_str());
+#endif
 
 		// Оптимизация макросов в шейдрах
 #if 0 //ndef _EDITOR
@@ -302,8 +306,9 @@ SPS*	CResourceManager::_CreatePS			(const char* _name)
 		FS.r_close(R);
 
 		// Select target
-		const char*						c_target	= "ps_2_0";
-		const char*						c_entry		= "main";
+		const char* c_target	= "ps_5_0";
+		const char* c_entry		= "main";
+		
 		if (strstr(data,"main_ps_1_1"))			{ c_target = "ps_1_1"; c_entry = "main_ps_1_1";	}
 		if (strstr(data,"main_ps_1_2"))			{ c_target = "ps_1_2"; c_entry = "main_ps_1_2";	}
 		if (strstr(data,"main_ps_1_3"))			{ c_target = "ps_1_3"; c_entry = "main_ps_1_3";	}
@@ -322,7 +327,11 @@ SPS*	CResourceManager::_CreatePS			(const char* _name)
 
 		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)data, size, c_entry, c_target, flags, (void*&)_ps);
 
+#ifdef _EDITOR
+		R_ASSERT3(SUCCEEDED(_hr), "Can't compile shader", cname);
+#else
 		R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug().c_str());
+#endif
 
 		// Оптимизация макросов в шейдрах
 
@@ -415,7 +424,11 @@ SGS*	CResourceManager::_CreateGS			(const char* _name)
 
 		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, flags, (void*&)_gs);
 
+#ifdef _EDITOR
+		R_ASSERT3(SUCCEEDED(_hr), "Can't compile shader", cname);
+#else
 		R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug().c_str());
+#endif
 
 		FS.r_close				( file );
 

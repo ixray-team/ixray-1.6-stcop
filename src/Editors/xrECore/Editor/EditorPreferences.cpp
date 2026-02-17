@@ -548,8 +548,8 @@ void CCustomPreferences::Save()
 
 	JSONData["render"]["maximized"] = WndFlags & SDL_WINDOW_MAXIMIZED;
 
-	JSONData["render"]["w"] = EDevice->dwRealWidth;
-	JSONData["render"]["h"] = EDevice->dwRealHeight;
+	JSONData["render"]["w"] = EDevice->Width;
+	JSONData["render"]["h"] = EDevice->Height;
 	JSONData["render"]["quality"] = EDevice->m_ScreenQuality;
 
 	int X, Y;
@@ -615,8 +615,8 @@ void CCustomPreferences::LoadConfig()
 		int DisplayX = GetSystemMetrics(SM_CXFULLSCREEN);
 		int DisplayY = GetSystemMetrics(SM_CYFULLSCREEN);
 
-		EDevice->dwRealHeight = DisplayY;
-		EDevice->dwRealWidth = DisplayX;
+		EDevice->Height = DisplayY;
+		EDevice->Width = DisplayX;
 
 		string_path dscfn;
 		FS.update_path(dscfn, "$server_data_root$", "default_shortcuts.json");

@@ -21,10 +21,8 @@ class CResourceManager;
 class ECORE_API CEditorRenderDevice;
 extern ECORE_API CEditorRenderDevice* EDevice;
 
-#define REContext ((IDirect3DDevice9*)EDevice->GetRenderContext())
-#define REDevice ((IDirect3DDevice9*)EDevice->GetRenderDevice())
-#define RETarget ((IDirect3DSurface9*)EDevice->GetRenderTexture())
-#define REDepth ((IDirect3DSurface9*)EDevice->GetDepthTexture())
+#define REContext ((ID3D11DeviceContext*)GRHI->GetContext())
+#define REDevice ((ID3D11Device*)Device.GetRenderDevice())
 
 class ECORE_API CEditorRenderDevice :
 	public CRenderDevice
@@ -45,12 +43,12 @@ private:
 public:
 	ref_shader m_WireShader;
 	ref_shader m_SelectionShader;
+	ref_shader ShaderTL;
 
 	ref_texture texture_null;
 	Fmaterial m_DefaultMat;
 
 	float RenderRadius;
-	u32 dwRealWidth, dwRealHeight;
 	float m_ScreenQuality;
 
 	u32 dwFillMode;
@@ -102,7 +100,7 @@ public:
 	}
 
 	// draw
-	void SetShader(ref_shader sh) { m_CurrentShader = sh; }
+	void SetShader(ref_shader sh);
 	ref_shader GetShader() { return m_CurrentShader; }
 	void DP(ERHI_PRIMITIVE_TOPOLOGY pt, ref_geom geom, u32 startV, u32 pc);
 	void DIP(ERHI_PRIMITIVE_TOPOLOGY pt, ref_geom geom, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC);
@@ -110,34 +108,43 @@ public:
 	IC void SetRS(D3DRENDERSTATETYPE p1, u32 p2)
 	{
 		VERIFY(b_is_Ready);
-		CHK_DX(REDevice->SetRenderState(p1,p2));
+
+		switch (p1)
+		{
+			case D3DRS_TEXTUREFACTOR:
+				RCache.hemi.set_tfactor(p2);
+			break;
+			default:
+				GRHI->StateManager->SetRenderState(p1, p2);
+			break;
+		}
 	}
 
 	IC void SetSS(u32 sampler, D3DSAMPLERSTATETYPE type, u32 value)
 	{
 		VERIFY(b_is_Ready);
-		CHK_DX(REDevice->SetSamplerState(sampler,type,value));
+//		VERIFY2(0, "Implement");
 	}
 
 	// light&material
 	IC void LightEnable(u32 dwLightIndex, bool bEnable)
 	{
-		CHK_DX(REDevice->LightEnable(dwLightIndex, bEnable));
+//		VERIFY2(0, "Implement");
 	}
 
 	IC void SetLight(u32 dwLightIndex, Flight& lpLight)
 	{
-		CHK_DX(REDevice->SetLight(dwLightIndex, (D3DLIGHT9*)&lpLight));
+//		VERIFY2(0, "Implement");
 	}
 
 	IC void SetMaterial(Fmaterial& mat)
 	{
-		CHK_DX(REDevice->SetMaterial((D3DMATERIAL9*)&mat));
+//		VERIFY2(0, "Implement");
 	}
 
 	IC void ResetMaterial()
 	{
-		CHK_DX(REDevice->SetMaterial((D3DMATERIAL9*)&m_DefaultMat));
+//		VERIFY2(0, "Implement");
 	}
 
 	// update
