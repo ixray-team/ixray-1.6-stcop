@@ -2085,7 +2085,19 @@ void CWeaponMagazined::switch2_FireMode()
 	{
 		PlayHUDMotion(SetCurrentStateAnimation("anm_firemode"), EHudMixType::eMixAll, eSwitchMode);
 	}
+
+	if (CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
+	{
+		if (CCustomDevice* dev = pActor->GetDevice())
+		{
+			if (dev->CanFiremode())
+			{
+				dev->SwitchState(CCustomDevice::EDeviceStates::eHandFiremode);
 }
+		}
+	}
+}
+
 void CWeaponMagazined::switch2_LightMis()
 {
 	//SendMessage("gunsl_light_misfire", gd_novice);

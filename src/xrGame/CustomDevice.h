@@ -26,6 +26,7 @@ public:
 		eHandDry,
 		eHandJammed,
 		eHandLightMisfire,
+		eHandFiremode,
 	};
 protected:
 	bool m_bFastAnimMode = false;
@@ -82,6 +83,7 @@ public:
 	bool CanThrowHand() const;
 	bool CanKick() const;
 	bool CanLam() const;
+	bool CanFiremode() const;
 	bool CanShooting(bool dry = false) const;
 	bool CanJammed() const;
 	bool CanLightMisfire() const;
