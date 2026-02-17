@@ -284,13 +284,11 @@ void	CBlender_Compile::StageSET_Address	(u32 adr)
 	RS.SetSAMP	(Stage(),D3DSAMP_ADDRESSU,	adr);
 	RS.SetSAMP	(Stage(),D3DSAMP_ADDRESSV,	adr);
 }
-#ifndef USE_DX11
-void	CBlender_Compile::StageSET_XForm	(u32 tf, u32 tc)
+void CBlender_Compile::StageSET_Color(u32 a1, u32 op, u32 a2)
 {
-	RS.SetTSS	(Stage(),D3DTSS_TEXTURETRANSFORMFLAGS,	tf);
-	RS.SetTSS	(Stage(),D3DTSS_TEXCOORDINDEX,			tc);
+	RS.SetColor(Stage(), a1, op, a2);
 }
-void	CBlender_Compile::StageSET_Color	(u32 a1, u32 op, u32 a2)
+void CBlender_Compile::StageSET_Alpha(u32 a1, u32 op, u32 a2)
 {
 	RS.SetColor	(Stage(),a1,op,a2);
 }
@@ -298,10 +296,7 @@ void	CBlender_Compile::StageSET_Color3	(u32 a1, u32 op, u32 a2, u32 a3)
 {
 	RS.SetColor3(Stage(),a1,op,a2,a3);
 }
-void	CBlender_Compile::StageSET_Alpha	(u32 a1, u32 op, u32 a2)
-{
-	RS.SetAlpha	(Stage(),a1,op,a2);
-}
+
 void	CBlender_Compile::StageSET_TMC		(const char* T, const char* M, const char* C, int UVW_channel)
 {
 	Stage_Texture		(T);
@@ -309,15 +304,7 @@ void	CBlender_Compile::StageSET_TMC		(const char* T, const char* M, const char* 
 	Stage_Constant		(C);
 }
 
-void	CBlender_Compile::StageTemplate_LMAP0	()
-{
-	StageSET_Address	(D3DTADDRESS_CLAMP);
-	StageSET_Color		(D3DTA_TEXTURE,	  D3DTOP_SELECTARG1,	D3DTA_DIFFUSE);
-	StageSET_Alpha		(D3DTA_TEXTURE,	  D3DTOP_SELECTARG1,	D3DTA_DIFFUSE);
-	StageSET_TMC		("$base1","$null","$null",1);
-}
-
-void	CBlender_Compile::Stage_Texture	(const char* name, u32 ,	u32	 fmin, u32 fmip, u32 fmag)
+void CBlender_Compile::Stage_Texture	(const char* name, u32 ,	u32	 fmin, u32 fmip, u32 fmag)
 {
 	sh_list& lst=	L_textures;
 	int id		=	ParseName(name);
@@ -326,9 +313,9 @@ void	CBlender_Compile::Stage_Texture	(const char* name, u32 ,	u32	 fmin, u32 fmi
 		if (id>=int(lst.size()))	Debug.fatal(DEBUG_INFO,"Not enought textures for shader. Base texture: '%s'.",*lst[0]);
 		N = *lst [id];
 	}
-	passTextures.push_back	(std::make_pair( Stage(),ref_texture( DEV->_CreateTexture(N))));
-//	i_Address				(Stage(),address);
-	i_Filter				(Stage(),fmin,fmip,fmag);
+	passTextures.push_back(std::make_pair(Stage(), ref_texture(DEV->_CreateTexture(N))));
+	//	i_Address				(Stage(),address);
+	i_Filter(Stage(), fmin, fmip, fmag);
 }
 
 void CBlender_Compile::Stage_Matrix(const char* name, int iChannel)
@@ -343,17 +330,33 @@ void CBlender_Compile::Stage_Matrix(const char* name, int iChannel)
 	if (M) {
 		switch (M->dwMode)
 		{
-		case CMatrix::modeProgrammable:	StageSET_XForm	(D3DTTFF_COUNT3,D3DTSS_TCI_CAMERASPACEPOSITION|ID);					break;
-		case CMatrix::modeTCM:			StageSET_XForm	(D3DTTFF_COUNT2,D3DTSS_TCI_PASSTHRU|iChannel);						break;
-		case CMatrix::modeC_refl:		StageSET_XForm	(D3DTTFF_COUNT3,D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR|ID);			break;
-		case CMatrix::modeS_refl:		StageSET_XForm	(D3DTTFF_COUNT2,D3DTSS_TCI_CAMERASPACENORMAL|ID);					break;
-		default:						StageSET_XForm	(D3DTTFF_DISABLE,D3DTSS_TCI_PASSTHRU|iChannel);						break;
+		case CMatrix::modeProgrammable:	StageSET_XForm(D3DTTFF_COUNT3, D3DTSS_TCI_CAMERASPACEPOSITION | ID);					break;
+		case CMatrix::modeTCM:			StageSET_XForm(D3DTTFF_COUNT2, D3DTSS_TCI_PASSTHRU | iChannel);						break;
+		case CMatrix::modeC_refl:		StageSET_XForm(D3DTTFF_COUNT3, D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR | ID);			break;
+		case CMatrix::modeS_refl:		StageSET_XForm(D3DTTFF_COUNT2, D3DTSS_TCI_CAMERASPACENORMAL | ID);					break;
+		default:						StageSET_XForm(D3DTTFF_DISABLE, D3DTSS_TCI_PASSTHRU | iChannel);						break;
 		}
-	} else {
+	}
+	else {
 		// No XForm at all
-		StageSET_XForm	(D3DTTFF_DISABLE,D3DTSS_TCI_PASSTHRU|iChannel);	
+		StageSET_XForm(D3DTTFF_DISABLE, D3DTSS_TCI_PASSTHRU | iChannel);
 	}
 }
+void	CBlender_Compile::StageSET_XForm	(u32 tf, u32 tc)
+{
+	RS.SetTSS	(Stage(),D3DTSS_TEXTURETRANSFORMFLAGS,	tf);
+	RS.SetTSS	(Stage(),D3DTSS_TEXCOORDINDEX,			tc);
+}
+
+#ifndef USE_DX11
+void	CBlender_Compile::StageTemplate_LMAP0	()
+{
+	StageSET_Address	(D3DTADDRESS_CLAMP);
+	StageSET_Color		(D3DTA_TEXTURE,	  D3DTOP_SELECTARG1,	D3DTA_DIFFUSE);
+	StageSET_Alpha		(D3DTA_TEXTURE,	  D3DTOP_SELECTARG1,	D3DTA_DIFFUSE);
+	StageSET_TMC		("$base1","$null","$null",1);
+}
+
 #endif
 
 void CBlender_Compile::Stage_Constant(const char* name)

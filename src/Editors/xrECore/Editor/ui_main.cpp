@@ -197,7 +197,6 @@ void TUI::MousePress(TShiftState Shift, int X, int Y)
 				m_CurrentCp = GetRenderMousePosition();
 				m_StartCp = m_CurrentCp;
 				UI->CurrentView().m_Camera.MouseRayFromPoint(m_CurrentRStart, m_CurrentRDir, m_CurrentCp );
-				m_StartRStart = m_CurrentRStart;
 				m_StartRDir = m_CurrentRDir;
 			}
 		   
@@ -353,44 +352,14 @@ void TUI::ShowHint()
 void TUI::PrepareRedraw()
 {
 	VERIFY(m_bReady);
-	if (m_Flags.is(flResize)) 			RealResize();
-// set render state
-	EDevice->SetRS(D3DRS_TEXTUREFACTOR,	0xffffffff);
-	// fog
-	u32 fog_color;
-	float fog_start, fog_end;
-	Tools->GetCurrentFog	(fog_color, fog_start, fog_end);
-
-	EDevice->SetRS( D3DRS_FOGCOLOR,		fog_color			);
-	EDevice->SetRS( D3DRS_RANGEFOGENABLE,	false				);
-	if (Caps.bTableFog)	{
-		EDevice->SetRS( D3DRS_FOGTABLEMODE,	D3DFOG_LINEAR 	);
-		EDevice->SetRS( D3DRS_FOGVERTEXMODE,	D3DFOG_NONE	 	);
-	} else {
-		EDevice->SetRS( D3DRS_FOGTABLEMODE,	D3DFOG_NONE	 	);
-		EDevice->SetRS( D3DRS_FOGVERTEXMODE,	D3DFOG_LINEAR	);
+	if (m_Flags.is(flResize))
+	{
+		RealResize();
 	}
-	EDevice->SetRS( D3DRS_FOGSTART,	*(DWORD *)(&fog_start)	);
-	EDevice->SetRS( D3DRS_FOGEND,		*(DWORD *)(&fog_end)	);
-	// filter
-	for (u32 k=0; k<Caps.raster.dwStages; k++){
-		if( psDeviceFlags.is(rsFilterLinear)){
-			EDevice->SetSS(k,D3DSAMP_MAGFILTER,D3DTEXF_LINEAR);
-			EDevice->SetSS(k,D3DSAMP_MINFILTER,D3DTEXF_LINEAR);
-			EDevice->SetSS(k,D3DSAMP_MIPFILTER,D3DTEXF_LINEAR);
-		} else {
-			EDevice->SetSS(k,D3DSAMP_MAGFILTER,D3DTEXF_POINT);
-			EDevice->SetSS(k,D3DSAMP_MINFILTER,D3DTEXF_POINT);
-			EDevice->SetSS(k,D3DSAMP_MIPFILTER,D3DTEXF_POINT);
-		}
-	}
-	// ligthing
-	EDevice->SetRS(D3DRS_AMBIENT,0xFFFFFFFF);
 
-	EDevice->SetRS			(D3DRS_FILLMODE, EDevice->dwFillMode);
-	EDevice->SetRS			(D3DRS_SHADEMODE,EDevice->dwShadeMode);
-
-	RCache.set_xform_world	(Fidentity);
+	// set render state
+	EDevice->SetRS(D3DRS_TEXTUREFACTOR, 0xffffffff);
+	RCache.set_xform_world(Fidentity);
 }
 
 void TUI::Invalidate()
@@ -400,8 +369,12 @@ void TUI::Invalidate()
 }
 
 extern ENGINE_API xr_atomic_bool g_bRendering;
+ECORE_API xrCriticalSection temp_render_lock;
+
 void TUI::Redraw()
 {
+	xrCriticalSectionGuard guard_lock(temp_render_lock);
+
 	PrepareRedraw();
 
 	Viewport& View = CurrentView();
@@ -427,10 +400,10 @@ void TUI::Redraw()
 			RTDiffuse.create("$user$diffuse", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8A8_UNORM);
 
 			RT.create("$user$rt_color", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8X8_UNORM);
-			View.RTFreez.create(("$user$rt_freez" + xr_string::ToString((u32)UI->ViewID)).c_str(), GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, ERHI_FORMAT::B8G8R8X8_UNORM);
+			View.RTFreez.create(("$user$rt_freez" + xr_string::ToString((u32)UI->ViewID)).c_str(), GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8X8_UNORM);
 			RTCopy.create("$user$rt_color_copy", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8X8_UNORM);
 
-			ZB.create("$user$rt_depth", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::D24_UNORM_S8_UINT);
+			ZB.create("$user$rt_depth", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::R24G8_TYPELESS);
 
 			m_Flags.set(flRedraw, true);
 
@@ -462,18 +435,28 @@ void TUI::Redraw()
 	if (EDevice->Begin())
 	{
 		if (psDeviceFlags.is(rsRenderRealTime))
+		{
 			m_Flags.set(flRedraw, true);
-		if (m_Flags.is(flRedraw) || UI->IsPlayInEditor())
+		}
+
+		static u32 redraw_frame = 0;
+
+		if (m_Flags.is(flRedraw))
+		{
+			redraw_frame = EDevice->dwRenderFrame + 3;
+		}
+
+		if (redraw_frame > EDevice->dwRenderFrame || UI->IsPlayInEditor())
 		{
 			m_Flags.set(flRedraw, false);
+			++EDevice->dwRenderFrame;
 
-			RCache.set_RT(RTNormal->pRT, 0);
-			RCache.set_RT(RTDiffuse->pRT, 1);
-			RCache.set_RT(RTPostion->pRT, 2);
+			float ColorRGBA[4] = { 0.0f,0.0f,0.0f,1 };
+			GRHI->ClearTarget(RTNormal->pRT, ColorRGBA);
+			GRHI->ClearTarget(RTDiffuse->pRT, ColorRGBA);
+			GRHI->ClearTarget(RTPostion->pRT, ColorRGBA);
 
 			GRHI->SetDepthStencilView(nullptr);
-
-			CHK_DX(REDevice->Clear(0, nullptr, D3DCLEAR_TARGET, 0x0, 1, 0));
 
 			RCache.set_RT(RT->pRT);
 			GRHI->SetDepthStencilView(ZB->pZRT);
@@ -526,7 +509,6 @@ void TUI::Redraw()
 
 			EDevice->Statistic->RenderDUMP_RT.End();
 			EDevice->Statistic->Show();
-			EDevice->SetRS(D3DRS_FILLMODE, D3DFILL_SOLID);
 
 			g_FontManager->Render();
 
@@ -538,22 +520,11 @@ void TUI::Redraw()
 				g_pGamePersistent->OnRenderPPUI_main();
 			}
 
-			RCache.set_RT(nullptr, 1);
-			RCache.set_RT(nullptr, 2);
-			RCache.set_RT(nullptr, 3);
-
-			RCache.set_RT(RSwapchainTarget);
-			GRHI->SetDepthStencilView(RDepth);
-			
-			CHK_DX(REDevice->Clear(0, nullptr, D3DCLEAR_TARGET, D3DCOLOR_RGBA(0, 0, 0, 0), 1, 0));
-
-			RDevice->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, 0);
-			RDevice->SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, 0);
-			RDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-			RDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+			RCache.set_RT(0, 1);
+			RCache.set_RT(0, 2);
+			RCache.set_RT(0, 3);
 		}
 
-		EDevice->SetRS(D3DRS_FILLMODE, D3DFILL_SOLID);
 		g_bRendering = false;
 
 		// end draw
@@ -561,6 +532,8 @@ void TUI::Redraw()
 
 		Draw();
 
+		ID3D11RenderTargetView* RTV = (ID3D11RenderTargetView*)RSwapchainTarget->GetRawRTV();
+		RContext->OMSetRenderTargets(1, &RTV, 0);
 		UI->EndFrame();
 		EDevice->End();
 		UI->MDIUpdate();
@@ -738,7 +711,7 @@ bool TUI::OnCreate()
 	RT.create("$user$rt_color", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, ERHI_FORMAT::B8G8R8X8_UNORM);
 	RTCopy.create("$user$rt_color_copy", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, ERHI_FORMAT::B8G8R8X8_UNORM);
 
-	ZB.create("$user$rt_depth", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, ERHI_FORMAT::D24_UNORM_S8_UINT);
+	ZB.create("$user$rt_depth", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, ERHI_FORMAT::R24G8_TYPELESS);
 
 	return true;
 }

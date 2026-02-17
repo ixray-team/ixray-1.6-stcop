@@ -216,6 +216,29 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 	string256 mask;
 	xr_strconcat(mask, C.L_textures[0].c_str(), "_mask");
 
+	if (C.bEditor) {
+		string256 mask;
+		xr_strconcat(mask, C.L_textures[0].c_str(), "_mask");
+
+		//	C.r_Pass("impl_dt", "impl_dt", TRUE);
+		uber_deffer(C, true, "deffer_base", "deffer_impl", false, oT2_Name[0] ? oT2_Name : 0, true);
+		C.r_dx10Texture("s_mask", mask);
+
+		C.r_dx10Texture("s_dt_r", oR_Name);
+		C.r_dx10Texture("s_dt_g", oG_Name);
+		C.r_dx10Texture("s_dt_b", oB_Name);
+		C.r_dx10Texture("s_dt_a", oA_Name);
+
+		C.r_dx10Texture("s_dn_r", xr_strconcat(mask, oR_Name, "_bump"));
+		C.r_dx10Texture("s_dn_g", xr_strconcat(mask, oG_Name, "_bump"));
+		C.r_dx10Texture("s_dn_b", xr_strconcat(mask, oB_Name, "_bump"));
+		C.r_dx10Texture("s_dn_a", xr_strconcat(mask, oA_Name, "_bump"));
+		C.r_dx10Texture("s_detail", oT2_Name);
+
+		C.r_End();
+		return;
+	}
+
 	RImplementation.addShaderOption("USE_LM_HEMI", "1");
 	RImplementation.addShaderOption("USE_TDETAIL_BUMP", "1");
 

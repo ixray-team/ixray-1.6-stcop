@@ -625,6 +625,7 @@ void FlipVertical(xr_vector<u32>& pixels, int width, int height)
 
 bool GetRTDataU32(ref_rt& RT, xr_vector<u32>& outPixels, int& width, int& height)
 {
+#if 0
 	IDirect3DSurface9* pSrc = nullptr;
 	((IDirect3DTexture9*)RT->pTexture->pSurface->GetRawTexture())->GetSurfaceLevel(0, &pSrc);
 	if (!pSrc)
@@ -663,7 +664,8 @@ bool GetRTDataU32(ref_rt& RT, xr_vector<u32>& outPixels, int& width, int& height
 	}
 
 	FlipVertical(outPixels, width, height);
-
+#endif
+#pragma todo("FX to Hozar: Impl")
 	return true;
 }
 
