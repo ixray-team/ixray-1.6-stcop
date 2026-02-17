@@ -159,6 +159,14 @@ IRender_Target* CRender::getTarget()
 
 void CRender::add_Visual(IRenderVisual* V, bool Ignore)
 {
+	if (val_pLocalTransform)
+	{
+		static Fmatrix m_xform = Fidentity;
+		m_xform.mul_43(*val_pLocalTransform, *val_pTransform);
+
+		set_Transform(&m_xform);
+	}
+
 	add_leafs_Dynamic((dxRender_Visual*)V, Ignore);
 }
 
