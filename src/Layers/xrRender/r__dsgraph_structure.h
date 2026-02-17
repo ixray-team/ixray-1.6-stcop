@@ -22,6 +22,7 @@ class	R_dsgraph_structure										: public IRender_interface, public pureFrame
 public:
 	IRenderable*												val_pObject;
 	Fmatrix*													val_pTransform;
+	Fmatrix*													val_pLocalTransform;
 	BOOL														val_bHUD;
 	BOOL														val_bUI;
 	BOOL														val_bInvisible;
@@ -70,6 +71,7 @@ public:
 	BOOL														b_loaded	;
 public:
 	virtual		void					set_Transform			(Fmatrix*	M	)				{ VERIFY(M);	val_pTransform = M;	}
+	virtual		void					set_LocalTransform		(Fmatrix*	M	)				{ VERIFY(M);	val_pLocalTransform = M;	}
 	virtual		void					set_UI					(BOOL 		V	)				{ val_bUI		= V;				}
 	virtual		void					set_HUD					(BOOL 		V	)				{ val_bHUD		= V;				}
 	virtual		BOOL					get_HUD					()								{ return		val_bHUD;			}
