@@ -104,6 +104,7 @@ public:
 
 	// Engine flow-control
 	u32										dwFrame;
+	u32										dwRenderFrame = 0;
 
 	float									fTimeDeltaSmoothing;
 	float									fRealTimeDelta;

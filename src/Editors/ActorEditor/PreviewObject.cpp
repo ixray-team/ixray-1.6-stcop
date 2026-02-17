@@ -85,7 +85,7 @@ void PreviewModel::Render()
 		R.rotateY(angle);
 		T.translate(m_vPosition);
 		T.mulA_43(R);
-		m_pObject->RenderSkeletonSingle(T);
+		m_pObject->RenderSkeletonSingle(NULL, T);
 	}
 }
 

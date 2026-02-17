@@ -54,7 +54,7 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 		p_rm_Indices		= RImplementation.getIB		(ID);
 		p_rm_Indices->AddRef();
 #endif
-#if (RENDER==R_R2) || (RENDER==R_R4)
+#if !defined(_EDITOR) && (RENDER==R_R2 || RENDER==R_R4)
 		// check for fast-vertices
 		if (data->find_chunk(OGF_FASTPATH))
 		{

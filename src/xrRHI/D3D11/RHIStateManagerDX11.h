@@ -30,6 +30,7 @@ public:
 	virtual void SetCullMode(ERHI_CULLMODE Mode) override;
 	virtual void BindAlphaRefCallback(const BindAlphaCallbackDecl& Callback) override;
 	virtual void* GetCache(ERHI_STATE_CACHE_TYPE Type, void* Desc) override;
+	virtual void SetRenderState(u32, u32);
 
 	void SetMultisample(u32 Enable);
 	void SetSampleMask(u32 Mask);

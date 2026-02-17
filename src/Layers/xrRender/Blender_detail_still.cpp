@@ -115,6 +115,13 @@ void CBlender_Detail_Still::Compile	(CBlender_Compile& C)
 {
 	IBlender::Compile(C);
 
+	if (C.bEditor)
+	{
+		uber_deffer(C, false, "deffer_detail", "deffer_base", true, 0, true);
+		C.r_End();
+		return;
+	}
+
 	if(C.iElement == SE_R2_DETAIL_SHADOW_HQ || C.iElement == SE_R2_DETAIL_SHADOW_LQ)
 	{
 		RImplementation.addShaderOption("DISABLE_MOTION_VECTORS", "1");
