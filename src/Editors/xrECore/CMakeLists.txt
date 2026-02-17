@@ -38,7 +38,9 @@ file(GLOB_RECURSE ECORE_SOURCE_RES_FILES
 )
 
 file(GLOB_RECURSE ECORE_SOURCE_RENDER_FILES CONFIGURE_DEPENDS
-	"../../Layers/xrRenderDX9/dx9r_constants_cache.*"
+	"../../Layers/xrRenderDX10/dx10r_constants_cache.*"
+	"../../Layers/xrRenderDX10/dx10r_constants.*"
+	"../../Layers/xrRenderDX10/dx10ConstantBuffer.*"
 	"../../Layers/xrRender/Animation.*"
 	"../../Layers/xrRender/blenders/Blender.*"
 	"../../Layers/xrRender/blenders/Blender_Palette.*"
@@ -80,8 +82,7 @@ file(GLOB_RECURSE ECORE_SOURCE_RENDER_FILES CONFIGURE_DEPENDS
 	"../../Layers/xrRender/FProgressive.*"
 	"../../Layers/xrRender/FSkinned.*"
 	"../../Layers/xrRender/FVisual.*"
-	"../../Layers/xrRenderDX9/dx9HW.*"
-	"../../Layers/xrRenderDX9/dx9HWCaps.*"
+	"../../Layers/xrRenderDX10/dx11HWCaps.*"
 	"../../Layers/xrRender/ModelPool.*"
 	"../../Layers/xrRender/ParticleEffect.*"
 	"../../Layers/xrRender/ParticleEffectDef.*"
@@ -91,9 +92,16 @@ file(GLOB_RECURSE ECORE_SOURCE_RENDER_FILES CONFIGURE_DEPENDS
 	"../../Layers/xrRender/ResourceManager.*"
 	"../../Layers/xrRender/ResourceManager_Loader.*"
 	"../../Layers/xrRender/ResourceManager_Reset.*"
-	"../../Layers/xrRenderDX9/dx9ResourceManager_Resources.*"
-	"../../Layers/xrRenderDX9/dx9ResourceManager_Scripting.*"
+	"../../Layers/xrRenderDX10/dx11ResourceManager_Resources.*"
+	"../../Layers/xrRenderDX10/dx11XMLBlendCompiler.*"
+	"../../Layers/xrRenderDX10/dx11ResourceManager_Scripting.*"
+	"../../Layers/xrRenderDX10/dx10StateUtils.*"
+	"../../Layers/xrRenderDX10/dx10BufferUtils.*"
+	"../../Layers/xrRenderDX10/StateManager/*.*"
 	"../../Layers/xrRender/R_Backend.*"
+	"../../Layers/xrRender/Utils/*.*"
+	"../../Layers/xrRenderPC_R4/R_Backend_LOD.*"
+	"../../Layers/xrRenderPC_R4/OverlayAPI/DLSSWrapper.*"
 	"../../Layers/xrRender/R_Backend_DBG.*"
 	"../../Layers/xrRender/R_Backend_hemi.*"
 	"../../Layers/xrRender/R_Backend_Runtime.*"
@@ -107,7 +115,6 @@ file(GLOB_RECURSE ECORE_SOURCE_RENDER_FILES CONFIGURE_DEPENDS
 	"../../Layers/xrRender/SH_Matrix.*"
 	"../../Layers/xrRender/SH_Texture.*"
 	"../../Layers/xrRender/SH_RT.*"
-	"../../Layers/xrRenderDX9/DDSTextureLoader9.*"
 	"../../Layers/xrRender/SkeletonAnimated.*"
 	"../../Layers/xrRender/SkeletonCustom.*"
 	"../../Layers/xrRender/SkeletonRigid.*"
@@ -115,7 +122,7 @@ file(GLOB_RECURSE ECORE_SOURCE_RENDER_FILES CONFIGURE_DEPENDS
 	"../../Layers/xrRender/RenderPhaseAccumPointGeom.*"
 	"../../Layers/xrRender/RenderPhaseAccumSpotGeom.*"
 	"../../Layers/xrRender/stats_manager.*"
-	"../../Layers/xrRenderDX9/dx9Texture.*"
+	"../../Layers/xrRenderDX10/dx11Texture.*"
 	"../../Layers/xrRender/TextureDescrManager.*"
 	"../../Layers/xrRender/tga.*"
 	"../../Layers/xrRender/tss_def.*"
@@ -205,6 +212,11 @@ target_link_libraries(xrECore PUBLIC OpenAL::OpenAL)
 if (WIN32)
 	target_link_libraries(xrECore PUBLIC DirectX::Mesh)
 	target_link_libraries(xrECore PUBLIC DirectX::Tex)
+	target_link_libraries(xrECore PRIVATE WindowsSDK::D3D11)
+	target_link_libraries(xrECore PRIVATE WindowsSDK::DXGI)
+	target_link_libraries(xrECore PRIVATE WindowsSDK::DXGUID)
+	target_link_libraries(xrECore PRIVATE WindowsSDK::D3DCompiler)
+	target_link_libraries(xrECore PUBLIC NVIDIA::DLSS)
 endif()
 
 target_validate_pch(xrECore ${CMAKE_CURRENT_SOURCE_DIR})

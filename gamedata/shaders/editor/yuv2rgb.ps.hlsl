@@ -1,8 +1,8 @@
 #include "common.hlsli"
 
-float4 main(float2 uv : TEXCOORD0) : COLOR
+float4 main(float2 uv : TEXCOORD0) : SV_Target
 {
-    float3 YUV = tex2D(s_base, uv);
+    float3 YUV = s_base.Sample(smp_base, uv);
 
     float Y = YUV.x;
     float U = YUV.y;

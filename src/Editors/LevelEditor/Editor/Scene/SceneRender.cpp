@@ -82,14 +82,14 @@ void EScene::Render( const Fmatrix& camera )
         {
 			EDevice->SetShader(B ? EDevice->m_SelectionShader : EDevice->m_WireShader);
 			RCache.set_xform_world(Fidentity);
-			try 
-            {
-				(*s_it)->OnRenderRoot(P, B);
-			}
-			catch (...) 
-            {
-				ELog.DlgMsg(mtError, "Please notify AlexMX!!! Critical error has occured in render routine!!! [Type B] - Tools: '%s'", (*s_it)->ClassName()); \
-			}
+			//try 
+            //{
+			//}
+			//catch (...) 
+            //{
+			//	ELog.DlgMsg(mtError, "Please notify AlexMX!!! Critical error has occured in render routine!!! [Type B] - Tools: '%s'", (*s_it)->ClassName()); \
+			//}
+            (*s_it)->OnRenderRoot(P, B);
 		}
 	};;
 

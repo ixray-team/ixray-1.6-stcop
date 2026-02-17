@@ -507,7 +507,7 @@ IC bool	_IsBoxVisible(dxRender_Visual* visual, const Fmatrix& transform)
 }
 IC bool	_IsValidShader(dxRender_Visual* visual, u32 priority, bool strictB2F)
 {
-	if (visual->shader)
+	if (visual->shader && visual->shader->E[0])
         return (priority==visual->shader->E[0]->flags.iPriority)&&(strictB2F==visual->shader->E[0]->flags.bStrictB2F);
     return false;
 }

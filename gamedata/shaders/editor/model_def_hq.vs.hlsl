@@ -5,7 +5,7 @@
 
 struct vf
 {
-    float4 hpos : POSITION;
+    float4 hpos : SV_POSITION;
     float2 tc0 : TEXCOORD0; // base
     float fog : FOG;
 };

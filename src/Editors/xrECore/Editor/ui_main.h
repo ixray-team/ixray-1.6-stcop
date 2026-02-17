@@ -98,7 +98,6 @@ public:
 	Fvector m_ContextRStart;
 	Fvector m_ContextRDir;
 
-	Fvector m_StartRStart;
 	Fvector m_StartRDir;
 
 	// hidden ops
@@ -147,8 +146,8 @@ public:
 	bool            NeedQuit        () const { return m_Flags.test(flNeedQuit);}
 	u32 			&GetRenderWidth	()	{   return EDevice->TargetWidth; }
 	u32&GetRenderHeight	()	{   return EDevice->TargetHeight; }
-	int 			GetRealWidth	()	{   return EDevice->dwRealWidth; }
-	int 			GetRealHeight	()  {   return EDevice->dwRealHeight; }
+	int 			GetRealWidth	()	{   return EDevice->Width; }
+	int 			GetRealHeight	()  {   return EDevice->Height; }
 
 	IC float 		ZFar			()	{	return CurrentView().m_Camera.m_Zfar; }
 	IC TShiftState	GetShiftState 	()	{	return m_ShiftState; }
