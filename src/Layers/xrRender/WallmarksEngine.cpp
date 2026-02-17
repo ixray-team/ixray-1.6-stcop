@@ -245,77 +245,78 @@ CWallmarksEngine::static_wallmark* CWallmarksEngine::AddWallmark_internal	(CDB::
 {
 	// query for polygons in bounding box
 	// calculate adjacency
-	{
-		Fvector				bbc,bbd;
-		matrix_builder.FindBoxCenterAndDim(bbc,bbd);
-		xrc.box_options		(CDB::OPT_FULL_TEST);
-		xrc.box_query		(g_pGameLevel->ObjectSpace.GetStaticModel(),bbc,bbd);
-		u32	triCount		= xrc.r_count	();
-		if (0==triCount)	
-			return nullptr;
 
-		CDB::TRI* tris		= g_pGameLevel->ObjectSpace.GetStaticTris();
-		sml_collector.clear	();
-		sml_collector.add_face_packed_D	(pVerts[pTri->verts[0]],pVerts[pTri->verts[1]],pVerts[pTri->verts[2]],0);
-		for (u32 t=0; t<triCount; t++)	
-		{
-			CDB::TRI*	T	= tris+xrc.r_begin()[t].id;
-			if (T==pTri)	continue;
-			sml_collector.add_face_packed_D		(pVerts[T->verts[0]],pVerts[T->verts[1]],pVerts[T->verts[2]],0);
-		}
-		sml_collector.calc_adjacency	(sml_adjacency);
+	Fvector bbc,bbd;
+	matrix_builder.FindBoxCenterAndDim(bbc,bbd);
+	xrc.box_options(CDB::OPT_FULL_TEST);
+	xrc.box_query(g_pGameLevel->ObjectSpace.GetStaticModel(),bbc,bbd);
+	u32	triCount = xrc.r_count();
+	if (0==triCount)	
+		return nullptr;
+	u32 real_tcnt = triCount + 1u;
+	CDB::TRI* tris = g_pGameLevel->ObjectSpace.GetStaticTris();
+	sml_collector.clear();
+	sml_collector.reserve(real_tcnt);
+	sml_collector.add_face_packed_D(pVerts[pTri->verts[0]],pVerts[pTri->verts[1]],pVerts[pTri->verts[2]],0);
+	for (CDB::RESULT& result : xrc.r_vec())
+	{
+		CDB::TRI* T = tris+result.id;
+		if (T==pTri) continue;
+		sml_collector.add_face_packed_D(pVerts[T->verts[0]],pVerts[T->verts[1]],pVerts[T->verts[2]],0);
 	}
+	sml_collector.calc_adjacency(sml_adjacency);
+
 
 	// calc face normal
 	Fvector	N;
-	N.mknormal			(pVerts[pTri->verts[0]],pVerts[pTri->verts[1]],pVerts[pTri->verts[2]]);
-	sml_normal.set		(N);
+	N.mknormal(pVerts[pTri->verts[0]],pVerts[pTri->verts[1]],pVerts[pTri->verts[2]]);
+	sml_normal.set(N);
 
 	// build 3D ortho-frustum
-	Fmatrix				mView;
+	Fmatrix mView;
 	matrix_builder.CreateMatrix(mView, sml_normal);
-	sml_clipper.CreateFromMatrix	(mView,FRUSTUM_P_LRTB);
+	sml_clipper.CreateFromMatrix(mView,FRUSTUM_P_LRTB);
 
 	// create wallmark
-	static_wallmark* W	= static_wm_allocate();
-	RecurseTri			(0, mView, *W);
+	static_wallmark* W = static_wm_allocate();
+	W->verts.reserve(real_tcnt*3);
+	RecurseTri(0, mView, *W);
 
 	// calc sphere
 	if (W->verts.size()<3) 
 	{ 
 		static_wm_destroy(W); 
 		return nullptr; 
-	}else 
+	}
+	else 
 	{
-		Fbox bb;	bb.invalidate();
-
-		FVF::LIT* I=&*W->verts.begin	();
-		FVF::LIT* E=&*W->verts.end		();
-		for (; I!=E; I++)	bb.modify	(I->p);
-		bb.getsphere					(W->bounds.P, W->bounds.R);
+		Fbox bb; bb.invalidate();
+		FVF::LIT* I=&*W->verts.begin();
+		FVF::LIT* E=&*W->verts.end();
+		for (; I!=E; I++) bb.modify(I->p);
+		bb.getsphere(W->bounds.P, W->bounds.R);
 	}
 
 //	if (W->bounds.R < 1.f)	
 	{
 		// search if similar wallmark exists
-		wm_slot* slot			= FindSlot	(hShader);
+		wm_slot* slot = FindSlot(hShader);
 		if (slot)
 		{
-			StaticWMVecIt it	=	slot->static_items.begin	();
-			StaticWMVecIt end	=	slot->static_items.end	();
+			StaticWMVecIt it = slot->static_items.begin();
+			StaticWMVecIt end =	slot->static_items.end();
 			for (; it!=end; it++)	
 			{
-				static_wallmark* wm		=	*it;
+				static_wallmark* wm = *it;
 				if (wm->bounds.P.similar(W->bounds.P,0.02f))
 				{ // replace
-					static_wm_destroy	(wm);
-					*it					=	W;
+					static_wm_destroy(wm);
+					*it = W;
 					return W;
 				}
 			}
-		} else {
-			slot		= AppendSlot(hShader);
-		}
+		} else
+			slot = AppendSlot(hShader);
 
 		// no similar - register _new_
 		slot->static_items.push_back(W);
