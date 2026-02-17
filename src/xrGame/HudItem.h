@@ -231,6 +231,7 @@ public:
 		af_det_hand_dry = (1 << 24),
 		af_det_hand_jammed = (1 << 25),
 		af_det_hand_lightmis = (1 << 26),
+		af_det_hand_firemode = (1 << 27),
 	};
 
 	enum EBPAnimsFlags : u64
