@@ -229,8 +229,7 @@ Snd_EngineToIPLParams(const sound_reverb_settings& settings)
 }
 #endif
 
-static void
-Snd_AcquireHRTFSlot(u32 slot_idx)
+ICF void Snd_AcquireHRTFSlot(u32 slot_idx)
 {
 	if (!mixer.hrtf_enabled) return;
 
@@ -257,8 +256,7 @@ Snd_AcquireHRTFSlot(u32 slot_idx)
 #endif
 }
 
-static void
-Snd_ReleaseHRTFSlot(u32 slot_idx)
+ICF void Snd_ReleaseHRTFSlot(u32 slot_idx)
 {
 	if (!mixer.hrtf_enabled) return;
 
@@ -293,20 +291,17 @@ MixerNewState(u32 slot, Mixer::State state)
 
 #define in_range(x, start, end) ((x) >= start && (x) <= end)
 
-static u64
-Snd_GetTimestamp()
+ICF u64 Snd_GetTimestamp()
 {
 	return std::chrono::high_resolution_clock::now().time_since_epoch().count();
 }
 
-static u32
-Snd_Milliseconds()
+ICF u32 Snd_Milliseconds()
 {
 	return (float)((Snd_GetTimestamp()) / 1000000);
 }
 
-static void
-Snd_PurgeCacheLine(u32 cache_idx, bool purge_from_entry)
+ICF void Snd_PurgeCacheLine(u32 cache_idx, bool purge_from_entry)
 {
 	auto& line = mixer.cache_lines[cache_idx - 1];
 
@@ -325,8 +320,7 @@ Snd_PurgeCacheLine(u32 cache_idx, bool purge_from_entry)
 	cache_idx = 0;
 }
 
-static void
-Snd_DestroySourceCache(sound_source& source)
+ICF void Snd_DestroySourceCache(sound_source& source)
 {
 	if (source.pub.ref_count == 0) {
 		for (u32& cache_idx : source.cache_lines) {
@@ -338,8 +332,7 @@ Snd_DestroySourceCache(sound_source& source)
 	}
 }
 
-static u32
-Snd_NewCacheLine()
+ICF u32 Snd_NewCacheLine()
 {
 	u32 cache_idx = 0;
 	if (mixer.free_cachelines.empty()) {
@@ -375,8 +368,7 @@ Snd_TellSource(sound_source& source)
 	return ov_pcm_tell(&source.file);
 }
 
-static u32
-Snd_SeekSource(sound_source& source, u32 position, bool precise)
+ICF u32 Snd_SeekSource(sound_source& source, u32 position, bool precise)
 {
 	if (ov_pcm_tell(&source.file) != position) {
 		if (precise) {
@@ -389,8 +381,7 @@ Snd_SeekSource(sound_source& source, u32 position, bool precise)
 	return ov_pcm_tell(&source.file);
 }
 
-static void
-Snd_LoadSource(sound_source& source, const char* name)
+ICF void Snd_LoadSource(sound_source& source, const char* name)
 {
 	PROF_EVENT("Sound: Load ogg");
 
@@ -469,25 +460,22 @@ Snd_LoadSource(sound_source& source, const char* name)
 	source.pub.volume = std::min(source.pub.volume, 1.0f);
 }
 
-static void
-Snd_AcquireSound(const char* name, bool fail_if_not_found)
+ICF void Snd_AcquireSound(const xr_string& name, bool fail_if_not_found)
 {
-	if (strlen(name) == 0) {
+	if (name.empty())
 		return;
-	}
 
 	if (!mixer.sources.contains(name)) {
 		R_ASSERT(!fail_if_not_found);
 		// TODO: async file load?
-		Snd_LoadSource(mixer.sources[name], name);
+		Snd_LoadSource(mixer.sources[name], name.c_str());
 	}
 
 	auto& source = mixer.sources[name];
 	source.pub.ref_count++;
 }
 
-static void
-Snd_ReleaseSound(const char* name)
+ICF void Snd_ReleaseSound(const char* name)
 {
 	if (strlen(name) == 0) {
 		return;
@@ -509,8 +497,7 @@ Snd_ReleaseSound(const char* name)
 	}
 }
 
-static u32
-Snd_ReadFromSource(sound_source& source, float** buffer, u32 frames)
+ICF u32 Snd_ReadFromSource(sound_source& source, float** buffer, u32 frames)
 {
 	PROF_EVENT("Sound: Decode Vorbis");
 
@@ -549,8 +536,7 @@ Snd_ReadFromSource(sound_source& source, float** buffer, u32 frames)
 	return frames - last_frames;
 }
 
-static bool
-Snd_SlotOcclusion(u32 slot_idx, float dt, float* occ_volume)
+ICF bool Snd_SlotOcclusion(u32 slot_idx, float dt, float* occ_volume)
 {
 	auto& slot = mixer.slots[slot_idx - 1];
 	if (slot.state != Mixer::State::Playing) {
@@ -578,8 +564,7 @@ Snd_SlotOcclusion(u32 slot_idx, float dt, float* occ_volume)
 	return true;
 }
 
-static u32
-Snd_FindAvailableCacheLine(sound_source& source, u32 position)
+ICF u32 Snd_FindAvailableCacheLine(sound_source& source, u32 position)
 {
 	u32 needed_frames = std::min((u32)SND_BLOCKSIZE, source.pub.frames_total - position);
 	u32 found_cache_idx = 0;
@@ -597,8 +582,7 @@ Snd_FindAvailableCacheLine(sound_source& source, u32 position)
 	return found_cache_idx;
 }
 
-static void
-Snd_UpdateCache(u32 slot_idx)
+ICF void Snd_UpdateCache(u32 slot_idx)
 {
 	PROF_EVENT("Sound: Update Slot Cache");
 
@@ -607,8 +591,8 @@ Snd_UpdateCache(u32 slot_idx)
 		return;
 	}
 
-	Snd_AcquireSound(slot.sound_name.c_str(), true);
-	auto& source = mixer.sources[slot.sound_name.c_str()];
+	Snd_AcquireSound(slot.sound_name, true);
+	auto& source = mixer.sources[slot.sound_name];
 
 	u32 found_cache_idx = Snd_FindAvailableCacheLine(source, slot.position);
 	if (found_cache_idx == 0 && source.file.datasource != nullptr) {
@@ -681,15 +665,14 @@ Snd_UpdateCache(u32 slot_idx)
 	Snd_ReleaseSound(slot.sound_name.c_str());
 }
 
-static u32
-Snd_ReadSlotData(u32 slot_idx, float** data, u32 frames_count)
+ICF u32 Snd_ReadSlotData(u32 slot_idx, float** data, u32 frames_count)
 {
 	auto& slot = mixer.slots[slot_idx - 1];
 	if (slot.sound_name.c_str() == nullptr || !mixer.sources.contains(slot.sound_name.c_str())) {
 		return frames_count;
 	}
 
-	Snd_AcquireSound(slot.sound_name.c_str(), true);
+	Snd_AcquireSound(slot.sound_name, true);
 
 	u32 frames_to_read = frames_count;
 	do {
@@ -724,8 +707,7 @@ Snd_ReadSlotData(u32 slot_idx, float** data, u32 frames_count)
 	return (u32)std::min(std::max((s64)frames_count- (s64)frames_to_read, (s64)0), (s64)frames_count);
 }
 
-static void
-Snd_ReadSlot(u32 slot_idx, float** data, u32 frames_count)
+ICF void Snd_ReadSlot(u32 slot_idx, float** data, u32 frames_count)
 {
 	auto& slot = mixer.slots[slot_idx - 1];
 	auto& source = mixer.sources.at(slot.sound_name.c_str());
@@ -755,8 +737,7 @@ Snd_ReadSlot(u32 slot_idx, float** data, u32 frames_count)
 	}
 }
 
-static void
-Snd_ProcessSlot(u32 slot_idx, float** data)
+ICF void Snd_ProcessSlot(u32 slot_idx, float** data)
 {
 	auto& slot = mixer.slots[slot_idx - 1];
 	float pitch = slot.parameters[(u32)Mixer::ParameterId::Pitch].x;
@@ -784,8 +765,7 @@ Snd_ProcessSlot(u32 slot_idx, float** data)
 	}
 }
 
-static void
-Snd_PrecacheRenderCallback()
+ICF void Snd_PrecacheRenderCallback()
 {
 	PROF_EVENT("Sound: Precache Stage");
 
@@ -832,8 +812,7 @@ Snd_PrecacheRenderCallback()
 	counter++;
 }
 
-[[maybe_unused]]static void
-Snd_PhononSpatialProcess(float** data, u32 slot_idx)
+ICF void Snd_PhononSpatialProcess(float** data, u32 slot_idx)
 {
 	auto& slot = mixer.slots[slot_idx - 1];
 	if ((slot.flags & (u32)Mixer::Flags::Spatial) == 0) {
@@ -897,8 +876,7 @@ Snd_PhononSpatialProcess(float** data, u32 slot_idx)
 	}
 }
 
-static void
-Snd_MixerRenderCallback(float* buffer)
+ICF void Snd_MixerRenderCallback(float* buffer)
 {
 	PROF_EVENT("Sound: Render Stage");
 
@@ -1316,8 +1294,7 @@ Mixer::Shutdown()
 	mixer.cmd.clear();
 }
 
-static void
-DestroyInternal(int slot)
+ICF void DestroyInternal(int slot)
 {
 	if (slot == 0) {
 		return;
@@ -1821,11 +1798,11 @@ Mixer::GetDuration(u32 slot)
 		return 0.0f;
 	}
 
-	if (!mixer.slots[slot - 1].sound_name.size() || !mixer.sources.contains(mixer.slots[slot - 1].sound_name.c_str())) {
+	if (!mixer.slots[slot - 1].sound_name.size() || !mixer.sources.contains(mixer.slots[slot - 1].sound_name)) {
 		return 0.0f;
 	}
 
-	auto& source = mixer.sources.at(mixer.slots[slot - 1].sound_name.c_str());
+	auto& source = mixer.sources.at(mixer.slots[slot - 1].sound_name);
 	return (float)source.pub.frames_total / (float)SND_SAMPLERATE;
 }
 
@@ -1842,11 +1819,11 @@ Mixer::GetGameType(u32 slot)
 		return 0.0f;
 	}
 
-	if (!mixer.slots[slot - 1].sound_name.size() || !mixer.sources.contains(mixer.slots[slot - 1].sound_name.c_str())) {
+	if (!mixer.slots[slot - 1].sound_name.size() || !mixer.sources.contains(mixer.slots[slot - 1].sound_name)) {
 		return 0.0f;
 	}
 
-	auto& source = mixer.sources.at(mixer.slots[slot - 1].sound_name.c_str());
+	auto& source = mixer.sources.at(mixer.slots[slot - 1].sound_name);
 	return source.pub.game_type;
 }
 
@@ -1910,13 +1887,12 @@ Mixer::AddEditorZone(sound_zone_params& params)
 }
 
 #ifndef DISABLE_RESONANCE_AUDIO
-static inline float DbToLinear(float db)
+ICF float DbToLinear(float db)
 {
 	return powf(10.0f, db / 20.0f);
 }
 
-static void
-Snd_EngineToResonanceParams(const sound_zone_params& s,
+ICF void Snd_EngineToResonanceParams(const sound_zone_params& s,
 	vraudio::ReflectionProperties& out_ref,
 	vraudio::ReverbProperties& out_rev)
 {

@@ -1,6 +1,5 @@
 #include "StdAfx.h"
 #include "xrDXT.h"
-#include <magic_enum/magic_enum.hpp>
 
 #ifdef IXR_WINDOWS
 #include <RedImage/RedImage.hpp>
