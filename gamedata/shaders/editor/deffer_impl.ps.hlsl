@@ -46,27 +46,30 @@
     // O.Color = lerp(O.Color, fog_color, fog);
 // }
 
-uniform sampler2D s_mask;
+uniform Texture2D s_mask;
 
-uniform sampler2D s_dt_r;
-uniform sampler2D s_dt_g;
-uniform sampler2D s_dt_b;
-uniform sampler2D s_dt_a;
+uniform Texture2D s_dt_r;
+uniform Texture2D s_dt_g;
+uniform Texture2D s_dt_b;
+uniform Texture2D s_dt_a;
 
-uniform sampler2D s_dn_r;
-uniform sampler2D s_dn_g;
-uniform sampler2D s_dn_b;
-uniform sampler2D s_dn_a;
+uniform Texture2D s_dn_r;
+uniform Texture2D s_dn_g;
+uniform Texture2D s_dn_b;
+uniform Texture2D s_dn_a;
+
+uniform float4 editor_selection;
 
 void main(p_bumped_new I, out f_editor_gbuffer O)
 {
 	if(is_lighting_enable.x < 0.5f) {
-		O.Color = tex2D(s_base, I.tcdh.xy);
+		O.Color = s_base.Sample(smp_base, I.tcdh.xy);
 
 		float2 tcdbump = I.tcdh.xy * dt_params.xy;
-		float4 Detail = tex2D(s_detail, tcdbump);
+		float4 Detail = s_detail.Sample(smp_base, tcdbump);
 		
 		O.Color.xyz *= Detail.xyz * 2.0f;
+		O.Color.xyz += editor_selection.xyz;
 
 #ifndef FORWARD_ONLY
 		O.Normal = float4(I.M1.xyz, def_gloss);
@@ -84,23 +87,23 @@ void main(p_bumped_new I, out f_editor_gbuffer O)
     M.Hemi = I.tcdh.z;
     M.Point = I.position.xyz;
 
-    M.Color = tex2D(s_base, I.tcdh.xy);
+    M.Color = s_base.Sample(smp_base, I.tcdh.xy);
 
-    float4 Mask = tex2D(s_mask, I.tcdh.xy);
+    float4 Mask = s_mask.Sample(smp_base, I.tcdh.xy);
     Mask /= dot(Mask, 1.0f);
 
     float2 tcdbump = I.tcdh.xy * dt_params.xy;
 
-    float3 Detail_R = tex2D(s_dt_r, tcdbump).xyz * Mask.x;
-    float3 Detail_G = tex2D(s_dt_g, tcdbump).xyz * Mask.y;
-    float3 Detail_B = tex2D(s_dt_b, tcdbump).xyz * Mask.z;
-    float3 Detail_A = tex2D(s_dt_a, tcdbump).xyz * Mask.w;
+    float3 Detail_R = s_dt_r.Sample(smp_base, tcdbump).xyz * Mask.x;
+    float3 Detail_G = s_dt_g.Sample(smp_base, tcdbump).xyz * Mask.y;
+    float3 Detail_B = s_dt_b.Sample(smp_base, tcdbump).xyz * Mask.z;
+    float3 Detail_A = s_dt_a.Sample(smp_base, tcdbump).xyz * Mask.w;
     float3 Detail = Detail_R + Detail_G + Detail_B + Detail_A;
 
-    float4 Normal_R = tex2D(s_dn_r, tcdbump) * Mask.x;
-    float4 Normal_G = tex2D(s_dn_g, tcdbump) * Mask.y;
-    float4 Normal_B = tex2D(s_dn_b, tcdbump) * Mask.z;
-    float4 Normal_A = tex2D(s_dn_a, tcdbump) * Mask.w;
+    float4 Normal_R = s_dn_r.Sample(smp_base, tcdbump) * Mask.x;
+    float4 Normal_G = s_dn_g.Sample(smp_base, tcdbump) * Mask.y;
+    float4 Normal_B = s_dn_b.Sample(smp_base, tcdbump) * Mask.z;
+    float4 Normal_A = s_dn_a.Sample(smp_base, tcdbump) * Mask.w;
 
     float3 Normal = Normal_R.wzy + Normal_G.wzy + Normal_B.wzy + Normal_A.wzy - 0.5;
     Normal.z *= 0.5f;

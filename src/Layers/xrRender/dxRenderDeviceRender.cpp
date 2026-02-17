@@ -19,14 +19,14 @@ dxRenderDeviceRender::dxRenderDeviceRender()
 {}
 #endif
 
-#ifdef USE_DX11
+#if defined(USE_DX11) && !defined(_EDITOR)
 #include "..\xrRenderPC_R4\OverlayAPI\DLSSWrapper.h"
 #include "..\xrRenderPC_R4\OverlayAPI\FSR3Wrapper.h"
 #endif
 
 void dxRenderDeviceRender::GetRenderScale(float& RenderScale)
 {
-#ifdef USE_DX11
+#if defined(USE_DX11) && !defined(_EDITOR)
 	switch(ps_r_scale_mode)
 	{
 		case 2:

@@ -178,6 +178,13 @@ void	CBlender_Tree::Compile	(CBlender_Compile& C)
 {
 	IBlender::Compile	(C);
 
+	if (C.bEditor)
+	{
+		uber_deffer(C, true, "deffer_base", "deffer_base", oBlend.value, 0, true);
+		C.r_End();
+		return;
+	}
+
 	if (!oNotAnTree.value) {
 		RImplementation.addShaderOption("USE_TREEWAVE", "1");
 	}

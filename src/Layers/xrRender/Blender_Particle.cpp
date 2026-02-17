@@ -114,11 +114,29 @@ void	CBlender_Particle::Compile	(CBlender_Compile& C)
 }
 #else
 
-void CBlender_Particle::Compile(CBlender_Compile& C)
+void CBlender_Particle::Compile	(CBlender_Compile& C)
 {
-	IBlender::Compile(C);
+	IBlender::Compile		(C);
+	if (C.bEditor)
+	{
+		switch (oBlend.IDselected)
+		{
+		case 0:	C.r_Pass("particle", "particle", TRUE, TRUE, TRUE, FALSE, D3DBLEND_ONE, D3DBLEND_ZERO, TRUE, 200);	break;	// SET
+		case 1: C.r_Pass("particle", "particle", FALSE, TRUE, FALSE, TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, TRUE, 0);	break;	// BLEND
+		case 2:	C.r_Pass("particle", "particle", FALSE, TRUE, FALSE, TRUE, D3DBLEND_ONE, D3DBLEND_ONE, TRUE, 0);	break;	// ADD
+		case 3:	C.r_Pass("particle", "particle", FALSE, TRUE, FALSE, TRUE, D3DBLEND_DESTCOLOR, D3DBLEND_ZERO, TRUE, 0);	break;	// MUL
+		case 4:	C.r_Pass("particle", "particle", FALSE, TRUE, FALSE, TRUE, D3DBLEND_DESTCOLOR, D3DBLEND_SRCCOLOR, TRUE, 0);	break;	// MUL_2X
+		case 5:	C.r_Pass("particle", "particle", FALSE, TRUE, FALSE, TRUE, D3DBLEND_SRCALPHA, D3DBLEND_ONE, TRUE, 0);	break;	// ALPHA-ADD
+		}
+		C.r_dx10Texture("s_base", C.L_textures[0]);
+		u32 hSampler = C.r_dx10Sampler("smp_base");
+		if (oClamp.value && (hSampler != (u32)-1))
+			C.i_Address(hSampler, D3DTADDRESS_CLAMP);
+		C.r_End();
+		return;
+	}
 
-	switch (C.iElement)
+	switch	(C.iElement) 
 	{
 		case SE_R2_HUD:
 		case SE_R2_NORMAL_HQ:

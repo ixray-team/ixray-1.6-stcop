@@ -107,7 +107,7 @@ void CActorTools::Render()
 		{
 			// update transform matrix
 			if (!IsPhysics())World = m_AVTransform;
-			m_pEditObject->RenderSkeletonSingle(World);
+			m_pEditObject->RenderSkeletonSingle(NULL, World);
 		}
 	}
 
