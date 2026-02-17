@@ -155,7 +155,9 @@ void CBlender_LaEmB::compile_2	(CBlender_Compile& C)
 		
 		// Stage0 - Lightmap
 		C.StageBegin			();
+#ifndef _EDITOR
 		C.StageTemplate_LMAP0	();
+#endif
 		C.StageEnd				();
 		
 		// Stage1 - Environment map
@@ -236,7 +238,9 @@ void CBlender_LaEmB::compile_3	(CBlender_Compile& C)
 		
 		// Stage0 - [=] Lightmap
 		C.StageBegin			();
+#ifndef _EDITOR
 		C.StageTemplate_LMAP0	();
+#endif
 		C.StageEnd				();
 		
 		// Stage1 - [+] Env-map
@@ -301,7 +305,9 @@ void CBlender_LaEmB::compile_L	(CBlender_Compile& C)
 		
 		// Stage0 - Lightmap
 		C.StageBegin			();
+#ifndef _EDITOR
 		C.StageTemplate_LMAP0	();
+#endif
 		C.StageEnd				();
 		
 		// Stage1 - Environment map

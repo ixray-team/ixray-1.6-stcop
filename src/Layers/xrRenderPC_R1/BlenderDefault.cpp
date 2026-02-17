@@ -42,82 +42,69 @@ void	CBlender_default::Load(	IReader& fs, u16 version )
 		xrPREAD_PROP(fs,xrPID_TOKEN,oTessellation);
 	}
 }
-void	CBlender_default::Compile(CBlender_Compile& C)
+void CBlender_default::Compile(CBlender_Compile& C)
 {
 	IBlender::Compile(C);
 #ifdef _EDITOR
-	if (C.bEditor)	{
-		uber_deffer(C, true, "deffer_base", "deffer_base", false, nullptr, true);
-		C.r_End();
-		//C.PassBegin		();
-		//{
-		//	C.PassSET_ZB			(true,true);
-		//	C.PassSET_Blend			(false,D3DBLEND_ONE,D3DBLEND_ZERO,false,0);
-		//	C.PassSET_LightFog		(true,true);
-		//	
-		//	// Stage1 - Base texture
-		//	C.StageBegin			();
-		//	C.StageSET_Color		(D3DTA_TEXTURE,	  D3DTOP_MODULATE,		D3DTA_DIFFUSE);
-		//	C.StageSET_Alpha		(D3DTA_TEXTURE,	  D3DTOP_MODULATE,		D3DTA_DIFFUSE);
-		//	C.StageSET_TMC			(oT_Name,oT_xform,"$null",0);
-		//	C.StageEnd				();
-		//}
-		//C.PassEnd			();
-	}
-	else 
-#endif
+	if (C.bEditor)
 	{
-		if (C.L_textures.size()<3)	Debug.fatal	(DEBUG_INFO,"Not enought textures for shader, base tex: %s",*C.L_textures[0]);
-		switch (C.iElement)
-		{
-		case SE_R1_NORMAL_HQ:
-			// Level view
-			if (C.bDetail_Diffuse)
-			{
-				C.r_Pass	("lmap_dt","lmap_dt",true);
-				C.r_Sampler	("s_base",	C.L_textures[0]);
-				C.r_Sampler	("s_lmap",	C.L_textures[1]);
-				C.r_Sampler	("s_detail",C.detail_texture);
-				C.r_Sampler_clf	("s_hemi",*C.L_textures[2]);
-				C.r_End		();
-			} else
-			{
-				C.r_Pass	("lmap","lmap",true);
-				C.r_Sampler	("s_base",C.L_textures[0]);
-				C.r_Sampler	("s_lmap",C.L_textures[1]);
-				C.r_Sampler_clf	("s_hemi",*C.L_textures[2]);
-				C.r_End		();
-			}
-			break;
-		case SE_R1_NORMAL_LQ:
-			C.r_Pass		("lmap","lmap",true);
-			C.r_Sampler		("s_base",C.L_textures[0]);
-			C.r_Sampler		("s_lmap",C.L_textures[1]);
-			C.r_Sampler_clf	("s_hemi",*C.L_textures[2]);
-			C.r_End			();
-			break;
-		case SE_R1_LPOINT:
-			C.r_Pass		("lmap_point","add_point",false,true,false,true,D3DBLEND_ONE,D3DBLEND_ONE,true);
-			C.r_Sampler		("s_base",	C.L_textures[0]		);
-			C.r_Sampler_clf	("s_lmap",	TEX_POINT_ATT		);
-			C.r_Sampler_clf	("s_att",	TEX_POINT_ATT		);
-			C.r_End			();
-			break;
-		case SE_R1_LSPOT:
-			C.r_Pass		("lmap_spot","add_spot",false,true,false,true,D3DBLEND_ONE,D3DBLEND_ONE,true);
-			C.r_Sampler		("s_base",	C.L_textures[0]);
-			C.r_Sampler_clf	("s_lmap",	"internal\\internal_light_att",		true);
-			C.r_Sampler_clf	("s_att",	TEX_SPOT_ATT		);
-			C.r_End			();
-			break;
-		case SE_R1_LMODELS:
-			// Lighting only, not use alpha-channel
-			C.r_Pass		("lmap_l","lmap_l",false);
-			C.r_Sampler		("s_base",C.L_textures[0]);
-			C.r_Sampler		("s_lmap",C.L_textures[1]);
-			C.r_Sampler_clf	("s_hemi",*C.L_textures[2]);
-			C.r_End			();
-			break;
-		}
+		uber_deffer(C, true, "deffer_base", "deffer_base", false, 0, true);
+		C.r_End();
 	}
+#else
+	if (C.L_textures.size()<3)
+		Debug.fatal	(DEBUG_INFO,"Not enought textures for shader, base tex: %s",*C.L_textures[0]);
+	switch (C.iElement)
+	{
+	case SE_R1_NORMAL_HQ:
+		// Level view
+		if (C.bDetail_Diffuse)
+		{
+			C.r_Pass	("lmap_dt","lmap_dt",true);
+			C.r_Sampler	("s_base",	C.L_textures[0]);
+			C.r_Sampler	("s_lmap",	C.L_textures[1]);
+			C.r_Sampler	("s_detail",C.detail_texture);
+			C.r_Sampler_clf	("s_hemi",*C.L_textures[2]);
+			C.r_End		();
+		} else
+		{
+			C.r_Pass	("lmap","lmap",true);
+			C.r_Sampler	("s_base",C.L_textures[0]);
+			C.r_Sampler	("s_lmap",C.L_textures[1]);
+			C.r_Sampler_clf	("s_hemi",*C.L_textures[2]);
+			C.r_End		();
+		}
+		break;
+	case SE_R1_NORMAL_LQ:
+		C.r_Pass		("lmap","lmap",true);
+		C.r_Sampler		("s_base",C.L_textures[0]);
+		C.r_Sampler		("s_lmap",C.L_textures[1]);
+		C.r_Sampler_clf	("s_hemi",*C.L_textures[2]);
+		C.r_End			();
+		break;
+	case SE_R1_LPOINT:
+		C.r_Pass		("lmap_point","add_point",false,true,false,true,D3DBLEND_ONE,D3DBLEND_ONE,true);
+		C.r_Sampler		("s_base",	C.L_textures[0]		);
+		C.r_Sampler_clf	("s_lmap",	TEX_POINT_ATT		);
+		C.r_Sampler_clf	("s_att",	TEX_POINT_ATT		);
+		C.r_End			();
+		break;
+	case SE_R1_LSPOT:
+		C.r_Pass		("lmap_spot","add_spot",false,true,false,true,D3DBLEND_ONE,D3DBLEND_ONE,true);
+		C.r_Sampler		("s_base",	C.L_textures[0]);
+		C.r_Sampler_clf	("s_lmap",	"internal\\internal_light_att",		true);
+		C.r_Sampler_clf	("s_att",	TEX_SPOT_ATT		);
+		C.r_End			();
+		break;
+	case SE_R1_LMODELS:
+		// Lighting only, not use alpha-channel
+		C.r_Pass		("lmap_l","lmap_l",false);
+		C.r_Sampler		("s_base",C.L_textures[0]);
+		C.r_Sampler		("s_lmap",C.L_textures[1]);
+		C.r_Sampler_clf	("s_hemi",*C.L_textures[2]);
+		C.r_End			();
+		break;
+	}
+
+#endif
 }
