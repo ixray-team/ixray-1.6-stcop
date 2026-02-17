@@ -8,36 +8,36 @@ public:
 	CRandom()			: holdrand(1)				{};
 	CRandom(s32 _seed)	: holdrand(_seed)			{};
 
-	IC 	void	seed	(s32 val)					{ holdrand=val;	}
-	IC 	s32		maxI	()							{ return 32767;	}
+	ICF 	void	seed	(s32 val)					{ holdrand=val;	}
+	ICF 	s32		maxI	()							{ return 32767;	}
 
     ICN	s32		randI	()							{ return(((holdrand = holdrand * 214013L + 2531011L) >> 16) & 0x7fff); }
-	IC 	s32		randI	(size_t max)				{ VERIFY(max);  return randI()% s32(max); }
-	IC 	s32		randI	(s32 min, s32 max)			{ return min+randI(max-min); }
-	IC 	s32		randIs	(s32 range)					{ return randI(-range,range); }
-	IC 	s32		randIs	(s32 range, s32 offs)		{ return offs+randIs(range); }
+	ICF 	s32		randI	(size_t max)				{ VERIFY(max);  return randI()% s32(max); }
+	ICF 	s32		randI	(s32 min, s32 max)			{ return min+randI(max-min); }
+	ICF 	s32		randIs	(s32 range)					{ return randI(-range,range); }
+	ICF 	s32		randIs	(s32 range, s32 offs)		{ return offs+randIs(range); }
 
-	IC 	float	maxF	()							{ return 32767.f;	}
-	IC 	float	randF	()							{ return float(randI())/maxF();	}
-	IC 	float	randF	(float max)					{ return randF()*max; }
-	IC 	float	randF	(float min,float max)		{ return min+randF(max-min); }
-	IC 	float	randFs	(float range)				{ return randF(-range,range); }
-	IC 	float	randFs	(float range, float offs)	{ return offs+randFs(range); }
+	ICF 	float	maxF	()							{ return 32767.f;	}
+	ICF 	float	randF	()							{ return float(randI())/maxF();	}
+	ICF 	float	randF	(float max)					{ return randF()*max; }
+	ICF 	float	randF	(float min,float max)		{ return min+randF(max-min); }
+	ICF 	float	randFs	(float range)				{ return randF(-range,range); }
+	ICF 	float	randFs	(float range, float offs)	{ return offs+randFs(range); }
 };
 
 XRCORE_API extern CRandom	Random;
 
 class CFFxRandom {
 public:
-    CFFxRandom() {
+    ICF CFFxRandom() {
         set_state(static_cast<u32>(std::time(nullptr)), 0);
     };
 
-    CFFxRandom(u32 _seed, u32 _counter) {
+    ICF CFFxRandom(u32 _seed, u32 _counter) {
         set_state(_seed, _counter);
     };
 
-    ~CFFxRandom() = default;
+    ICF ~CFFxRandom() = default;
 
     static constexpr u32 hash_prime_multiplier_1 = 134775813U;
     static constexpr u32 hash_prime_multiplier_2 = 2246822519U;
@@ -60,17 +60,17 @@ public:
         0 
     };
 
-    u32 get_seed()
+    ICF u32 get_seed()
     {
         return seed;
     }
 
-    u32 get_counter()
+    ICF u32 get_counter()
     {
         return counter;
     }
 
-    void set_state(u32 _seed, u32 _counter) {
+    ICF void set_state(u32 _seed, u32 _counter) {
         for (int i = 0; i < cache_size; i++) {
             last_values[i] = 0;
         }
@@ -90,12 +90,12 @@ public:
         }
     }
 
-    bool is_counter_valid()
+    ICF bool is_counter_valid()
     {
         return is_valid_counter;
     }
 
-    u32 next_int() 
+    ICF u32 next_int()
     {
         if (counter >= 4294967295 - 1)
         {
@@ -108,7 +108,7 @@ public:
         return generate_raw();
     }
 
-    u32 next_int_range(u32 min, u32 max)
+    ICF u32 next_int_range(u32 min, u32 max)
     {
         if (min > max) std::swap(min, max);
         u32 range = max - min;
@@ -129,36 +129,36 @@ public:
         return min + (val % (range + 1));
     }
 
-    float next_float()
+    ICF float next_float()
     {
         return static_cast<float>(next_int()) * inv_2pow31;
     }
 
-    float next_float_range(float min, float max)
+    ICF float next_float_range(float min, float max)
     {
         if (min > max) std::swap(min, max);
         return min + next_float() * (max - min);
     }
 
-    bool next_bool()
+    ICF bool next_bool()
     {
         return next_float() < 0.5;
     }
 
-    bool next_bool_probability(float probability = 0.5f)
+    ICF bool next_bool_probability(float probability = 0.5f)
     {
         return next_float() < probability;
     }
 
 private:
-    bool is_recent(u32 val) {
+    ICF bool is_recent(u32 val) {
         for (int i = 0; i < cache_size; i++) {
             if (last_values[i] == val) return true;
         }
         return false;
     }
 
-    u32 generate_raw() {
+    ICF u32 generate_raw() {
         u16 attempts = 0;
 
         do {
@@ -175,7 +175,7 @@ private:
         return state;
     }
 
-    u32 hash(u32 value) {
+    ICF u32 hash(u32 value) {
         u32 x = value * hash_prime_multiplier_1 + hash_prime_addition;
         x ^= x >> 16;
         x *= hash_prime_multiplier_2;

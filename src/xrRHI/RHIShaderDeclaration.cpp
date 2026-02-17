@@ -1,5 +1,4 @@
 #include "RHI.h"
-#include <magic_enum/magic_enum.hpp>
 
 IRHIShaderDeclaration::IRHIShaderDeclaration(const RHIInputElementDesc* DescList, size_t DescCount)
 {
