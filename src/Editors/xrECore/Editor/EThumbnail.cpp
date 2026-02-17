@@ -62,7 +62,7 @@ void EImageThumbnail::Update(IRHISurface*& Texture)
 	RHITextureDesc Desc;
 	Desc.Width = THUMB_WIDTH;
 	Desc.Height = THUMB_HEIGHT;
-	Desc.Format = ERHI_FORMAT::R8G8B8A8_UNORM;
+	Desc.Format = ERHI_FORMAT::B8G8R8A8_UNORM;
 	Desc.MipLevels = 1;
 	Desc.ArraySize = 1;
 	Desc.Usage = ERHI_USAGE::USAGE_DEFAULT;
@@ -87,13 +87,20 @@ void EImageThumbnail::Update(IRHISurface*& Texture)
 	SubResource.DepthPitch = 0;
 
 	xr_vector<u8> FlippedData(THUMB_WIDTH * THUMB_HEIGHT * 4);
-	for (int Y = 0; Y < THUMB_HEIGHT; ++Y)
+	u8* SrcData = (u8*)Pixels();
+	u8* DstData = FlippedData.data();
+	u32 RowSize = THUMB_WIDTH * 4;
+
+	for (u32 y = 0; y < THUMB_HEIGHT; y++)
 	{
-		const u8* Src = (u8*)Pixels() + (THUMB_WIDTH * (THUMB_HEIGHT - Y - 1)) * 4;
-		u8* Dst = FlippedData.data() + Y * THUMB_WIDTH * 4;
-		memcpy(Dst, Src, THUMB_WIDTH * 4);
+		u32 SrcRow = (THUMB_HEIGHT - 1 - y) * RowSize;
+		u32 DstRow = y * RowSize;
+		memcpy(DstData + DstRow, SrcData + SrcRow, RowSize);
 	}
+
 	SubResource.Data = FlippedData.data();
+	SubResource.DataSize = THUMB_WIDTH * 4;
+	SubResource.RowPitch = RowSize;
 
 	if (!Texture)
 	{

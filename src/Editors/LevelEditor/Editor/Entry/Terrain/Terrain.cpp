@@ -16,6 +16,14 @@ void CTerrain::Construct(LPVOID data)
 
 CTerrain::~CTerrain()
 {
+	if (TerrainObject)
+	{
+		for (auto _M : TerrainObject->Meshes())
+		{
+			_M->RemoveColor(this);
+		}
+	}
+
 	xr_delete(TerrainObject);
 }
 
@@ -111,7 +119,7 @@ void CTerrain::Render(int priority, bool strictB2F)
 	}
 	else
 	{
-		TerrainObject->Render(_Transform(), priority, strictB2F);
+		TerrainObject->Render(this, _Transform(), priority, strictB2F);
 	}
 }
 

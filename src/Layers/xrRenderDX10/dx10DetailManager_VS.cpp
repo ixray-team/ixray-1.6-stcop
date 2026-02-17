@@ -38,7 +38,7 @@ void CDetailManager::hw_Unload()
 	}
 }
 
-void CDetailManager::hw_Render(light*L)
+void CDetailManager::hw_Render(light* L)
 {
 	PROF_EVENT("CDetailManager::hw_Render");
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
@@ -88,8 +88,10 @@ void CDetailManager::hw_Render(light*L)
 template<typename T>
 void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, const Fvector4& wave_old, const Fvector4& wind_old, u32 var_id, u32 lod_id, light* L)
 {
+#ifndef _EDITOR
 	//Render state, shaders & so on [only 1st pass]
 	RCache.set_Element(objects[0].shader->E[lod_id], 0);
+#endif
 
 	bool phase_shmap = RImplementation.phase == CRender::PHASE_SMAP;
 	if(!phase_shmap)
@@ -105,17 +107,26 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 	}
 	RCache.FlushConstants();
 
+#ifndef _EDITOR
 	bool in_outdoor = RImplementation.SectorsCount() <= 1 || (RImplementation.pOutdoorSector && PortalTraverser.i_marker == RImplementation.pOutdoorSector->r_marker);
 	if (!in_outdoor)
 		return;
+#endif
 
 	if (phase_shmap && L)
 	{
 		Fvector l_spatial_pos = L->SpatialComponent->sphere.P;
 		float l_range_sqr = _sqr(L->SpatialComponent->sphere.R);
-		
+
+#ifdef _EDITOR
+		for (CDetail* ObjectPtr : objects)
+		{
+			CDetail& Object = *ObjectPtr;
+			RCache.set_Element(Object.shader->E[lod_id], 0);
+#else
 		for (CDetail& Object : objects)
 		{
+#endif
 			auto& items = Object.m_items[render_key][var_id];
 			u32 totalInstances = items.size();
 			if (totalInstances == 0) continue;
@@ -185,8 +196,15 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 	{
 		if (ps_r2_ls_flags.test(R2FLAG_FAST_DETAILS_UPDATE))//experimental
 		{
+#ifdef _EDITOR
+			for (CDetail* DPtr : objects)
+			{
+				CDetail& D = *DPtr;
+				RCache.set_Element(D.shader->E[lod_id], 0);
+#else
 			for (CDetail& D : objects)
 			{
+#endif
 				u32 buff_size = D.m_items[render_key][var_id].size();
 				if (buff_size)
 				{
@@ -198,8 +216,15 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 		}
 		else
 		{
+#ifdef _EDITOR
+			for (CDetail* ObjectPtr : objects)
+			{
+				CDetail& Object = *ObjectPtr;
+				RCache.set_Element(Object.shader->E[lod_id], 0);
+#else
 			for (CDetail& Object : objects)
 			{
+#endif
 				auto& items = Object.m_items[render_key][var_id];
 				u32 totalInstances = items.size();
 				if (u32(0) == totalInstances) continue;

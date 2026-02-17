@@ -1107,7 +1107,7 @@ void CSpawnPoint::Render( int priority, bool strictB2F )
 		ESceneSpawnTool* st		= smart_cast<ESceneSpawnTool*>(FParentTools); VERIFY(st);
 		CEditableObject* v		= st->get_draw_visual(m_RP_TeamID, m_RP_Type, m_GameType); 
 		if(v)
-			v->Render				(FTransformRP, priority, strictB2F);
+			v->Render				(this, FTransformRP, priority, strictB2F);
 	}
 	FTransformRP = SaveTransform;
 }

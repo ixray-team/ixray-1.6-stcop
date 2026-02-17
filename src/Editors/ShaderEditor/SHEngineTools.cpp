@@ -248,7 +248,7 @@ void CSHEngineTools::OnFrame()
 
 void CSHEngineTools::OnRender()
 {
-	if (m_PreviewObject) m_PreviewObject->RenderSingle(Fidentity);
+	if (m_PreviewObject) m_PreviewObject->RenderSingle(NULL, Fidentity);
 }
 
 void CSHEngineTools::ZoomObject(bool bOnlySel)

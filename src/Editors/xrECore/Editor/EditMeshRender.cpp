@@ -11,39 +11,40 @@
 #include "render.h"
 
 #include <FlexibleVertexFormat.h>
+//
+//struct VEditorVertex
+//{
+//	Fvector3 P;
+//	Fvector2 tc;
+//	Fvector  N;
+//};
+//
+//RHIInputElementDesc VEditorVertexDecl[] =
+//{
+//	{ "POSITION", 0, ERHI_FORMAT::R32G32B32_FLOAT, 0, 0,							ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+//	{ "TEXCOORD", 0, ERHI_FORMAT::R32G32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+//	{ "NORMAL", 0,   ERHI_FORMAT::R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+//};
 
-struct VEditorVertex
+struct svertRender
 {
-	Fvector3 P;
-	Fvector2 tc;
-	Fvector  N;
+	Fvector3 P{}; float pad0 = 1.0f;
+	Fvector3 N{}; float weight0 = 0.0f;
+	Fvector3 T{}; float weight1 = 0.0f;
+	Fvector3 B{}; float weight2 = 0.0f;
+	Fvector2 uv { };
+	uint32_t ind = 0;
 };
 
-D3DVERTEXELEMENT9 VEditorVertexDecl[] =
+static RHIInputElementDesc dwDecl_4W[] =
 {
-	{ 0, 0,  D3DDECLTYPE_FLOAT3,  D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
-	{ 0, sizeof(Fvector3), D3DDECLTYPE_FLOAT2,  D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0 },
-	{ 0, sizeof(Fvector3) + sizeof(Fvector2), D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_NORMAL, 0 },
-	D3DDECL_END()
+	{ "POSITION", 0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 0, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+	{ "NORMAL", 0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 16, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+	{ "TANGENT", 0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 32, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+	{ "BINORMAL", 0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 48, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+	{ "TEXCOORD", 0, ERHI_FORMAT::R32G32_FLOAT, 0, 64, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+	{ "TEXCOORD", 1, ERHI_FORMAT::B8G8R8A8_UNORM, 0, 72, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
 };
-
-struct FVFDesc
-{
-	bool HasPosition = false;
-	bool HasNormal = false;
-	bool HasColor = false;
-	u32  TexCount = 0;
-};
-
-static FVFDesc DecodeFVF(u32 fvf)
-{
-	FVFDesc d{};
-	d.HasPosition = (fvf & D3DFVF_XYZ) != 0;
-	d.HasNormal = (fvf & D3DFVF_NORMAL) != 0;
-	d.HasColor = (fvf & D3DFVF_DIFFUSE) != 0;
-	d.TexCount = (fvf & D3DFVF_TEXCOUNT_MASK) >> D3DFVF_TEXCOUNT_SHIFT;
-	return d;
-}
 
 //----------------------------------------------------
 #define F_LIM (10000)
@@ -79,18 +80,18 @@ void CEditableMesh::GenerateRenderBuffers()
 		rb_vec.emplace_back(0, vertex_count);
 		st_RenderBuffer& rb = rb_vec.back();
 
-		const u32 vertex_size = sizeof(VEditorVertex);
+		const u32 vertex_size = sizeof(svertRender);
 		const u32 buffer_size = vertex_size * vertex_count;
 
 		VERIFY2(buffer_size, "Empty buffer size");
 
 		IRHIBuffer* pVB = nullptr;
-		R_ASSERT(RHIUtils::CreateVertexBuffer(&pVB, nullptr, buffer_size));
+		R_ASSERT(RHIUtils::CreateVertexBuffer(&pVB, nullptr, buffer_size, false));
 
-		rb.pGeom.create(VEditorVertexDecl, pVB, nullptr);
+		rb.pGeom.create(dwDecl_4W, std::size(dwDecl_4W), pVB, 0);
 
 		RHIMappedSubresource mapped{};
-		if (pVB->Map(ERHI_BUFFER_MAP::WRITE, 0, &mapped))
+		if (pVB->Map(ERHI_BUFFER_MAP::WRITE_DISCARD, 0, &mapped))
 		{
 			u8* bytes = static_cast<u8*>(mapped.pData);
 			FillRenderBuffer(face_lst, 0, face_count, S, bytes);
@@ -127,7 +128,7 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
 	const u32 dwFVF = surf->_FVF();
 	const u32 dwTexCnt = ((dwFVF & D3DFVF_TEXCOUNT_MASK) >> D3DFVF_TEXCOUNT_SHIFT);
 
-	auto* vtx = reinterpret_cast<VEditorVertex*>(src_data);
+	auto* vtx = reinterpret_cast<svertRender*>(src_data);
 
 	auto ProcessVertex = [&](const st_FaceVert& fv, u32 norm_id, bool invert_normal)
 	{
@@ -162,7 +163,7 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
 			vtx->N.set(0, 1, 0);
 		}
 
-		vtx->tc.set(0, 0);
+		vtx->uv.set(0, 0);
 		if (dwTexCnt > 0 && fv.vmref >= 0)
 		{
 			const auto& vmref = m_VMRefs[fv.vmref];
@@ -183,7 +184,7 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
 					continue;
 				}
 
-				vtx->tc = vmap->getUV(vm_pt.index);
+				vtx->uv = vmap->getUV(vm_pt.index);
 			}
 		}
 
@@ -219,143 +220,99 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
 	}
 }
 
-//----------------------------------------------------
-void CEditableMesh::Render(const Fmatrix& parent, CSurface* S)
+struct SelectionColorRaii
 {
-	if (nullptr==m_RenderBuffers) GenerateRenderBuffers();
-	// visibility test
-	if (!m_Flags.is(flVisible)) return;
-	// frustum test
-	Fbox bb; bb.set(m_Box);
-	bb.xform(parent);
-	if (!::Render->occ_visible(bb)) return;
-	// render
-	RBMapPairIt rb_pair = m_RenderBuffers->find(S);
-	if (rb_pair!=m_RenderBuffers->end()){
-		RBVector& rb_vec = rb_pair->second;
-		for (RBVecIt rb_it=rb_vec.begin(); rb_it!=rb_vec.end(); rb_it++)
-			EDevice->DP(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,rb_it->pGeom,0,rb_it->dwNumVertex/3);
-	}
-}
-//----------------------------------------------------
-#define MAX_VERT_COUNT 0xFFFF
-static Fvector RB[MAX_VERT_COUNT];
-static int RB_cnt=0;
-
-void CEditableMesh::RenderList(const Fmatrix& parent, u32 color, bool bEdge, IntVec& fl)
-{
-//	if (!m_Visible) return;
-//	if (!m_LoadState.is(LS_RBUFFERS)) CreateRenderBuffers();
-
-	if (fl.size()==0) return;
-	RCache.set_xform_world(parent);
-	EDevice->RenderNearer(0.0006);
-	RB_cnt = 0;
-	if (bEdge){
-		EDevice->SetShader(EDevice->m_WireShader);
-		EDevice->SetRS(D3DRS_FILLMODE,D3DFILL_WIREFRAME);
-	}else
-		EDevice->SetShader(EDevice->m_SelectionShader);
-	for (IntIt dw_it=fl.begin(); dw_it!=fl.end(); ++dw_it)
+	SelectionColorRaii(CCustomObject* Parent, CEditableMesh::EditColorMesh& m_color_map)
 	{
-		st_Face& face 		= m_Faces[*dw_it];
-		for (int k=0; k<3; ++k)
-			RB[RB_cnt++].set(m_Vertices[face.pv[k].pindex]);
-
-		if (RB_cnt==MAX_VERT_COUNT)
+		if (!Parent)
 		{
-			DU_impl.DrawPrimitiveL(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,RB_cnt/3,RB,RB_cnt,color,true,false);
-			RB_cnt = 0;
+			RCache.hemi.set_selection(0);
+			return;
 		}
-	}
 
-	if (RB_cnt)
-		DU_impl.DrawPrimitiveL(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,RB_cnt/3,RB,RB_cnt,color,true,false);
+		Fvector4 sum_color; sum_color.set(0, 0, 0, 0);
+		Fvector4 color = sum_color;
 
-	if (bEdge)
-		EDevice->SetRS(D3DRS_FILLMODE,EDevice->dwFillMode);
+		for (auto& [ID, pColor] : m_color_map[Parent])
+		{
+			if (pColor.first < EDevice->dwRenderFrame)
+			{
+				continue;
+			}
 
-	EDevice->ResetNearer();
-}
-
-void CEditableMesh::RenderSelection(const Fmatrix& parent, CSurface* s, u32 color)
-{
-	if (nullptr==m_RenderBuffers) GenerateRenderBuffers();
-//	if (!m_Visible) return;
-	Fbox bb; bb.set(m_Box);
-	bb.xform(parent);
-	if (!::Render->occ_visible(bb)) return;
-	// render
-	RCache.set_xform_world(parent);
-	float bias = -0.00005f;
-	float slopeBias = -1.0f;
-
-	EDevice->SetRS(D3DRS_SLOPESCALEDEPTHBIAS, *(DWORD*)&slopeBias);
-	EDevice->SetRS(D3DRS_DEPTHBIAS, *(DWORD*)&bias);
-	if (s){
-		SurfFacesPairIt sp_it = m_SurfFaces.find(s);
-		if (sp_it!=m_SurfFaces.end()) RenderList(parent,color,false,sp_it->second);
-	}else{
-		EDevice->SetRS(D3DRS_TEXTUREFACTOR,	color);
-		for (RBMapPairIt p_it=m_RenderBuffers->begin(); p_it!=m_RenderBuffers->end(); p_it++){
-			RBVector& rb_vec = p_it->second;
-			for (RBVecIt rb_it=rb_vec.begin(); rb_it!=rb_vec.end(); rb_it++)
-				EDevice->DP(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,rb_it->pGeom,0,rb_it->dwNumVertex/3);
+			color.set(pColor.second.r, pColor.second.g, pColor.second.b, 1.0f);
+			sum_color.add(color.mul(pColor.second.a));
 		}
-		EDevice->SetRS(D3DRS_TEXTUREFACTOR,	0xffffffff);
-	}
-	float zero = 0.0f;
-	EDevice->SetRS(D3DRS_SLOPESCALEDEPTHBIAS, *(DWORD*)&zero);
-	EDevice->SetRS(D3DRS_DEPTHBIAS, *(DWORD*)&zero);
-}
-//----------------------------------------------------
 
-void CEditableMesh::RenderEdge(const Fmatrix& parent, CSurface* s, u32 color)
-{
-	if (nullptr==m_RenderBuffers) GenerateRenderBuffers();
-//	if (!m_Visible) return;
-	RCache.set_xform_world(parent);
-	EDevice->SetShader(EDevice->m_WireShader);
-	EDevice->RenderNearer(0.001);
-	float bias = -0.00005f;
-	float slopeBias = -1.0f;
-	
-	EDevice->SetRS(D3DRS_SLOPESCALEDEPTHBIAS, *(DWORD*)&slopeBias);
-	EDevice->SetRS(D3DRS_DEPTHBIAS, *(DWORD*)&bias);
+		RCache.hemi.set_selection(sum_color);
+	};
 
-	// render
-	EDevice->SetRS(D3DRS_FILLMODE,D3DFILL_WIREFRAME);
-	if (s){
-		SurfFacesPairIt sp_it = m_SurfFaces.find(s);
-		if (sp_it!=m_SurfFaces.end()) RenderList(parent,color,true,sp_it->second);
-	}else{
-		EDevice->SetRS(D3DRS_TEXTUREFACTOR,	color);
-		for (RBMapPairIt p_it=m_RenderBuffers->begin(); p_it!=m_RenderBuffers->end(); p_it++){
-			RBVector& rb_vec = p_it->second;
-			for (RBVecIt rb_it=rb_vec.begin(); rb_it!=rb_vec.end(); rb_it++)
-				EDevice->DP(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,rb_it->pGeom,0,rb_it->dwNumVertex/3);
-		}
-		EDevice->SetRS(D3DRS_TEXTUREFACTOR,	0xffffffff);
-	}
-	EDevice->SetRS(D3DRS_FILLMODE,EDevice->dwFillMode);
-	float zero = 0.0f;
-	EDevice->SetRS(D3DRS_SLOPESCALEDEPTHBIAS, *(DWORD*)&zero);
-	EDevice->SetRS(D3DRS_DEPTHBIAS, *(DWORD*)&zero);
-	EDevice->ResetNearer();
-}
-//----------------------------------------------------
-struct svertRender
-{
-	Fvector3 P; float pad0;
-	Fvector3 N; float weight0;
-	Fvector3 T; float weight1;
-	Fvector3 B; float weight2;
-	Fvector2 uv;
-	uint32_t ind;
+	~SelectionColorRaii()
+	{
+		RCache.hemi.set_selection(0);
+	};
 };
 
-void CEditableMesh::RenderSkeleton(const Fmatrix&, CSurface* S)
+void CEditableMesh::RenderSelection(CCustomObject* parent, u32 Color)
 {
+	SetColor(parent, 0, Color);
+}
+
+void CEditableMesh::RenderEdge(CCustomObject* parent, u32 Color)
+{
+	SetColor(parent, 1, Color);
+}
+
+void CEditableMesh::RemoveColor(CCustomObject* Parent)
+{
+	m_color_map.erase(Parent);
+}
+
+void CEditableMesh::SetColor(CCustomObject* Parent, u8 ID, u32 Color)
+{
+	if (!Parent)
+	{
+		return;
+	}
+
+	m_color_map[Parent][ID] = xr_pair(EDevice->dwRenderFrame + 2, Color);
+}
+
+void CEditableMesh::Render(CCustomObject* pParent, const Fmatrix& parent, CSurface* S)
+{
+	SelectionColorRaii pRenderColor(pParent, m_color_map);
+
+	if (0==m_RenderBuffers) 
+	{
+		GenerateRenderBuffers();
+	}
+
+	if (!m_Flags.is(flVisible)) 
+	{
+		return;
+	}
+
+	Fbox bb; bb.set(m_Box);
+	bb.xform(parent);
+
+	if (!::Render->occ_visible(bb))
+	{
+		return;
+	}
+
+	if (auto rb_pair = m_RenderBuffers->find(S); rb_pair != m_RenderBuffers->end())
+	{
+		for (auto& rb_it : rb_pair->second)
+		{
+			EDevice->DP(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, rb_it.pGeom, 0, rb_it.dwNumVertex / 3);
+		}
+	}
+}
+
+void CEditableMesh::RenderSkeleton(CCustomObject* pParent, const Fmatrix&, CSurface* S)
+{
+	SelectionColorRaii pRenderColor(pParent, m_color_map);
+
 	if (!IsGeneratedSVertices(RENDER_SKELETON_LINKS))
 	{
 		GenerateSVertices(RENDER_SKELETON_LINKS);
@@ -371,101 +328,78 @@ void CEditableMesh::RenderSkeleton(const Fmatrix&, CSurface* S)
 
 	// set model shader from surface (active shader in editor device)
 	ref_shader shader = EDevice->GetShader();
-	RCache.set_Shader(shader);
-
-	// transfer matrices
-	ref_constant array = RCache.get_c("sbones_array");
-
-	const BoneVec& boneVec = m_Parent->m_Bones;
-	u16 count = (u16)std::min(75ull, boneVec.size());
-	for (u16 mid = 0; mid < count; mid++)
-	{
-		u32 id = u32(mid * 3);
-		const Fmatrix& M = boneVec[mid]->_RenderTransform();
-		RCache.set_ca(&*array, id + 0, M._11, M._21, M._31, M._41);
-		RCache.set_ca(&*array, id + 1, M._12, M._22, M._32, M._42);
-		RCache.set_ca(&*array, id + 2, M._13, M._23, M._33, M._43);
-	}
-
-	RCache.set_ca(&*array, 225, Fidentity._11, Fidentity._21, Fidentity._31, Fidentity._41);
-	RCache.set_ca(&*array, 226, Fidentity._12, Fidentity._22, Fidentity._32, Fidentity._42);
-	RCache.set_ca(&*array, 227, Fidentity._13, Fidentity._23, Fidentity._33, Fidentity._43);
+	EDevice->SetShader(shader);
 
 	IntVec& face_lst = sp_it->second;
-	_VertexStream* Stream = &RCache.Vertex;
-	u32 vBase;
-
 	size_t FaceCount = face_lst.size();
+
+	_VertexStream* Stream = &RCache.Vertex;
+
+	u32 vBase = 0;
 
 	svertRender* pv = (svertRender*)Stream->Lock(FaceCount * 3, m_Parent->vs_SkeletonGeom->vb_stride, vBase);
 
-	for (IntIt i_it = face_lst.begin(); i_it != face_lst.end(); i_it++)
+	for (auto& i_it : face_lst)
 	{
 		for (int k = 0; k < 3; k++, pv++)
 		{
-			st_SVert& SV = m_SVertices[*i_it * 3 + k];
+			st_SVert& SV = m_SVertices[i_it * 3 + k];
 			pv->uv = SV.uv;
 			pv->P = SV.offs;
 			pv->N = SV.norm;
+			pv->pad0 = 1;
 
 			u8 bone_count = (u8)SV.bones.size();
 			float total = SV.bones[0].w;
 			float max_weight = SV.bones[0].w + SV.bones[1 % bone_count].w + SV.bones[2 % bone_count].w;
-			u16 max_bone_id = std::max(SV.bones[0].id, std::max(SV.bones[1 % bone_count].id, std::max(SV.bones[2 % bone_count].id, SV.bones[3 % bone_count].id)));
-
-			if (max_bone_id >= 75)
-			{
-				const Fmatrix& M = m_Parent->m_Bones[SV.bones[0].id]->_RenderTransform();
-				M.transform_tiny(pv->P, SV.offs);
-				M.transform_dir(pv->N, SV.norm);
-
-				Fvector P, N;
-
-				for (u8 cnt = 1; cnt < bone_count; cnt++)
-				{
-					total += SV.bones[cnt].w;
-
-					const Fmatrix& M = m_Parent->m_Bones[SV.bones[cnt].id]->_RenderTransform();
-					M.transform_tiny(P, SV.offs);
-					M.transform_dir(N, SV.norm);
-					pv->P.lerp(pv->P, P, SV.bones[cnt].w / total);
-					pv->N.lerp(pv->N, N, SV.bones[cnt].w / total);
-				}
-
-				pv->weight0 = pv->weight1 = pv->weight2 = 0.25f;
-				pv->ind = color_rgba(75 * 3, 75 * 3, 75 * 3, 75 * 3);
-			}
-			else
-			{
-				pv->weight0 = SV.bones[0].w / max_weight;
-				pv->weight1 = SV.bones[1 % bone_count].w / max_weight;
-				pv->weight2 = SV.bones[2 % bone_count].w / max_weight;
-				pv->ind = color_rgba
-				(
-					SV.bones[0].id * 3,
-					SV.bones[1 % bone_count].id * 3,
-					SV.bones[2 % bone_count].id * 3,
-					SV.bones[3 % bone_count].id * 3
-				);
-			}
+		
+			pv->weight0 = SV.bones[0].w / max_weight;
+			pv->weight1 = SV.bones[1 % bone_count].w / max_weight;
+			pv->weight2 = SV.bones[2 % bone_count].w / max_weight;
+			pv->ind = color_rgba(
+				SV.bones[0].id, 
+				SV.bones[1 % bone_count].id,
+				SV.bones[2 % bone_count].id,
+				SV.bones[3 % bone_count].id);
 		}
 	}
 
 	ERHI_CULLMODE OldCullMode = GRHI->StateManager->GetCullMode();
-	if (S->m_Flags.is(CSurface::sf2Sided))
-	{
-		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-	}
 
 	Stream->Unlock(FaceCount * 3, m_Parent->vs_SkeletonGeom->vb_stride);
 
 	if (FaceCount)
 	{
-		EDevice->DP(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, m_Parent->vs_SkeletonGeom, vBase, FaceCount);
-	}
+		u32 dwRequired = shader->E[0]->passes.size();
 
-	if (S->m_Flags.is(CSurface::sf2Sided))
-	{
-		GRHI->StateManager->SetCullMode(OldCullMode);
+		for (u32 dwPass = 0; dwPass < dwRequired; dwPass++)
+		{
+			RCache.set_Shader(shader, dwPass);
+
+			// transfer matrices
+			ref_constant array = RCache.get_c("sbones_array");
+
+			const BoneVec& boneVec = m_Parent->m_Bones;
+			for (u16 mid = 0, count = (u16)boneVec.size(); mid < count; mid++)
+			{
+				u32 id = u32(mid * 3);
+				const Fmatrix& M = boneVec[mid]->_RenderTransform();
+				RCache.set_ca(&*array, id + 0, M._11, M._21, M._31, M._41);
+				RCache.set_ca(&*array, id + 1, M._12, M._22, M._32, M._42);
+				RCache.set_ca(&*array, id + 2, M._13, M._23, M._33, M._43);
+			}
+
+			if (S->m_Flags.is(CSurface::sf2Sided))
+			{
+				GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+			}
+			else
+			{
+				GRHI->StateManager->SetCullMode(OldCullMode);
+			}
+			EDevice->SetRS(D3DRS_FILLMODE, EDevice->dwFillMode);
+			RCache.set_Geometry(m_Parent->vs_SkeletonGeom);
+			RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vBase, FaceCount);
+		}
 	}
 }

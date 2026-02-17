@@ -186,6 +186,24 @@ void CBlender_Model_EbB::Compile(CBlender_Compile& C)
 {
 	IBlender::Compile(C);
 
+	if (C.bEditor)
+	{
+		if (oBlend.value)
+		{
+			RImplementation.addShaderOption("FORWARD_ONLY", "1");
+		}
+
+		uber_deffer(C, true, "deffer_model", "deffer_base", false, 0, true);
+
+		if (oBlend.value) {
+			C.PassSET_ZB(TRUE, FALSE);
+			C.PassSET_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, 0);
+		}
+
+		C.r_End();
+		return;
+	}
+
 	if (C.iElement == SE_R2_UI)
 	{
 		RImplementation.addShaderOption("DISABLE_MOTION_VECTORS", "1");

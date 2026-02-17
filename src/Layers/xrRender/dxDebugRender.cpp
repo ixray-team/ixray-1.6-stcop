@@ -63,7 +63,9 @@ void dxDebugRender::Render()
 		RCache.set_xform_world(Fidentity);
 		RCache.set_xform_view(Device.mView);
 		RCache.set_xform_project(Device.mProject);
+#ifndef _EDITOR
 		RCache.set_RT(RImplementation.Target->rt_BackbufferLUT->pRT);
+#endif
 		RCache.set_Element(m_dbgShaders[dbgShaderWorld]->E[r_debug_render_depth * 4]);
 		RCache.set_Geometry(m_dbgGeom);
 		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST, 0, drawCount * 2);
