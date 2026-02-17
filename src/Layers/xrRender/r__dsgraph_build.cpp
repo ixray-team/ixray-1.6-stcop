@@ -417,7 +417,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static	(dxRender_Visual *pVisual)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void CRender::add_leafs_Dynamic(dxRender_Visual *pVisual, bool IgnoreObject)
 {
-	if (0==pVisual)				return;
+	if (0 == pVisual) return;
 
 	if (!IsValuableToRender(pVisual, false, phase == 1, *val_pTransform, IgnoreObject))
 		return;
