@@ -9,7 +9,7 @@ constexpr u32 color_rgba(u32 r, u32 g, u32 b, u32 a) {
     return color_argb(a, r, g, b);
 }
 
-IC u32 color_argb_f(float a, float r, float g, float b) {
+ICF u32 color_argb_f(float a, float r, float g, float b) {
     s32	 _r = clampr(iFloor(r * 255.f), 0, 255);
     s32	 _g = clampr(iFloor(g * 255.f), 0, 255);
     s32	 _b = clampr(iFloor(b * 255.f), 0, 255);
@@ -17,7 +17,7 @@ IC u32 color_argb_f(float a, float r, float g, float b) {
     return color_argb(_a, _r, _g, _b);
 }
 
-IC u32 color_rgba_f(float r, float g, float b, float a) {
+ICF u32 color_rgba_f(float r, float g, float b, float a) {
     return color_argb_f(a, r, g, b);
 }
 
@@ -76,9 +76,9 @@ public:
         b = f * float((rgba_val >> 0) & 0xff);
     }
 
-    _color& operator=(u32 dw) noexcept { return set(dw); }
+    ICF _color& operator=(u32 dw) noexcept { return set(dw); }
 
-    _color& operator=(const _color& other) 
+    ICF _color& operator=(const _color& other)
     {
         a = other.a;
         r = other.r;
@@ -87,7 +87,8 @@ public:
         return *this;
     }
 
-    constexpr _color& set(u32 dw) {
+    ICF _color& set(u32 dw)
+    {
         constexpr float f = 1.0f / 255.0f;
         a = f * float((dw >> 24) & 0xff);
         r = f * float((dw >> 16) & 0xff);
@@ -96,7 +97,7 @@ public:
         return *this;
     };
 
-    constexpr _color& set(float _r, float _g, float _b, float _a) 
+    ICF _color& set(float _r, float _g, float _b, float _a)
     {
         r = _r;
         g = _g;
@@ -105,7 +106,7 @@ public:
         return *this;
     };
 
-    constexpr _color& set(const _color& dw) 
+    ICF _color& set(const _color& dw)
     {
         r = dw.r;
         g = dw.g;
@@ -114,12 +115,12 @@ public:
         return *this;
     };
 
-    inline u32 get() const 
+    ICF u32 get() const
     {
         return color_rgba_f(r, g, b, a);
     }
 
-    IC u32 get_windows() const 
+    ICF u32 get_windows() const
     {
         BYTE _a, _r, _g, _b;
         _a = (BYTE)(a * 255.0f);
@@ -129,7 +130,7 @@ public:
         return ((u32)(_a << 24) | (_b << 16) | (_g << 8) | (_r));
     };
 
-    constexpr _color& set_windows(u32 dw) 
+    ICF _color& set_windows(u32 dw)
     {
         constexpr float f = 1.0f / 255.0f;
         a = f * (float)(BYTE)(dw >> 24);
@@ -139,7 +140,7 @@ public:
         return *this;
     };
 
-    constexpr _color& adjust_contrast(float f) 
+    ICF _color& adjust_contrast(float f)
     { 
         // >1 - contrast will be increased
         r = 0.5f + f * (r - 0.5f);
@@ -148,7 +149,7 @@ public:
         return *this;
     };
 
-    constexpr _color& adjust_contrast(const _color& in, float f)
+    ICF _color& adjust_contrast(const _color& in, float f)
     {
          // >1 - contrast will be increased
         r = 0.5f + f * (in.r - 0.5f);
@@ -157,7 +158,7 @@ public:
         return *this;
     };
 
-    constexpr _color& adjust_saturation(float s)
+    ICF _color& adjust_saturation(float s)
     {
         // Approximate values for each component's contribution to luminance.
         // Based upon the NTSC standard described in ITU-R Recommendation BT.709.
@@ -168,7 +169,7 @@ public:
         return *this;
     };
 
-    constexpr _color& adjust_saturation(const _color& in, float s)
+    ICF _color& adjust_saturation(const _color& in, float s)
     {
         // Approximate values for each component's contribution to luminance.
         // Based upon the NTSC standard described in ITU-R Recommendation BT.709.
@@ -179,7 +180,7 @@ public:
         return *this;
     };
 
-    constexpr _color& modulate(_color& in)
+    ICF _color& modulate(_color& in)
     {
         r *= in.r;
         g *= in.g;
@@ -188,7 +189,7 @@ public:
         return *this;
     };
 
-    constexpr _color& modulate(const _color& in1, const _color& in2)
+    ICF _color& modulate(const _color& in1, const _color& in2)
     {
         r = in1.r * in2.r;
         g = in1.g * in2.g;
@@ -197,7 +198,7 @@ public:
         return *this;
     };
 
-    constexpr _color& negative(const _color& in)
+    ICF _color& negative(const _color& in)
     {
         r = 1.0f - in.r;
         g = 1.0f - in.g;
@@ -206,7 +207,7 @@ public:
         return *this;
     };
 
-    constexpr _color& negative()
+    ICF _color& negative()
     {
         r = 1.0f - r;
         g = 1.0f - g;
@@ -215,7 +216,7 @@ public:
         return *this;
     };
 
-    constexpr _color& sub_rgb(float s)
+    ICF _color& sub_rgb(float s)
     {
         r -= s;
         g -= s;
@@ -224,7 +225,7 @@ public:
         return *this;
     };
 
-    constexpr _color& add_rgb(float s)
+    ICF _color& add_rgb(float s)
     {
         r += s;
         g += s;
@@ -232,7 +233,7 @@ public:
         return *this;
     };
 
-    constexpr _color& add_rgba(float s)
+    ICF _color& add_rgba(float s)
     {
         r += s;
         g += s;
@@ -241,7 +242,7 @@ public:
         return *this;
     };
 
-    constexpr _color& mul_rgba(float s) 
+    ICF _color& mul_rgba(float s)
     {
         r *= s;
         g *= s;
@@ -250,7 +251,7 @@ public:
         return *this;
     };
 
-    constexpr _color& mul_rgb(float s) 
+    ICF _color& mul_rgb(float s)
     {
         r *= s;
         g *= s;
@@ -258,7 +259,7 @@ public:
         return *this;
     };
 
-    constexpr _color& mul_rgba(const _color& c, float s) 
+    ICF _color& mul_rgba(const _color& c, float s)
     {
         r = c.r * s;
         g = c.g * s;
@@ -267,7 +268,7 @@ public:
         return *this;
     };
 
-    constexpr _color& mul_rgb(const _color& c, float s) 
+    ICF _color& mul_rgb(const _color& c, float s)
     {
         r = c.r * s;
         g = c.g * s;
@@ -276,36 +277,36 @@ public:
     };
 
     // SQ magnitude
-    constexpr float magnitude_sqr_rgb() const 
+    ICF float magnitude_sqr_rgb() const
     {
         return r * r + g * g + b * b;
     }
 
     // magnitude
-    inline float magnitude_rgb() const 
+    ICF float magnitude_rgb() const
     {
         return _sqrt(magnitude_sqr_rgb());
     }
 
-    constexpr float intensity() const 
+    ICF float intensity() const
     {
         return (r + g + b) / 3.0f;
     }
 
     // Normalize
-    inline _color& normalize_rgb()
+    ICF _color& normalize_rgb()
      {
         VERIFY(magnitude_sqr_rgb() > EPS_S);
         return mul_rgb(1.0f / magnitude_rgb());
     }
 
-    inline _color& normalize_rgb(const _color& c) 
+    ICF _color& normalize_rgb(const _color& c)
     {
         VERIFY(c.magnitude_sqr_rgb() > EPS_S);
         return mul_rgb(c, 1.0f / c.magnitude_rgb());
     }
 
-    constexpr _color& lerp(const _color& c1, const _color& c2, float t) 
+    ICF _color& lerp(const _color& c1, const _color& c2, float t)
     {
         float invt = 1.0f - t;
         r = c1.r * invt + c2.r * t;
@@ -315,7 +316,7 @@ public:
         return *this;
     }
 
-    constexpr _color& lerp(const _color& c1, const _color& c2, const _color& c3, float t) 
+    ICF _color& lerp(const _color& c1, const _color& c2, const _color& c3, float t)
     {
         if (t > 0.5f)
          {
@@ -326,18 +327,18 @@ public:
         }
     }
 
-    inline bool similar_rgba(const _color& v, float E = EPS_L) const {
+    ICF bool similar_rgba(const _color& v, float E = EPS_L) const {
         return std::abs(r - v.r) < E && std::abs(g - v.g) < E && std::abs(b - v.b) < E && std::abs(a - v.a) < E;
     };
 
-    inline bool similar_rgb(const _color& v, float E = EPS_L) const {
+    ICF bool similar_rgb(const _color& v, float E = EPS_L) const {
         return std::abs(r - v.r) < E && std::abs(g - v.g) < E && std::abs(b - v.b) < E;
     };
 };
 
 using Fcolor = _color;
 
-inline BOOL _valid(const Fcolor& c) 
+ICF BOOL _valid(const Fcolor& c)
 {
     return _valid(c.r) && _valid(c.g) && _valid(c.b) && _valid(c.a);
 }

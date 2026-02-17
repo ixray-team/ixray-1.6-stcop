@@ -2,7 +2,6 @@
 //
 //////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
-#include <magic_enum/magic_enum.hpp>
 
 #include "DDSTextureLoader9.h"
 using namespace DirectX;

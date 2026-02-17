@@ -9,14 +9,14 @@ struct XRCORE_API xr_token
 	int 	id;
 };
 
-IC LPCSTR get_token_name(xr_token* tokens, int key)
+ICF LPCSTR get_token_name(xr_token* tokens, int key)
 {
     for (int k=0; tokens[k].name; k++)
     	if (key==tokens[k].id) return tokens[k].name;
     return "";
 }
 
-IC int get_token_id(xr_token* tokens, LPCSTR key)
+ICF int get_token_id(xr_token* tokens, LPCSTR key)
 {
     for (int k=0; tokens[k].name; k++)
     	if ( _stricmp(tokens[k].name,key)==0 ) 
@@ -38,17 +38,17 @@ template<typename T>
 consteval T bit_rshift(T value, T n) { return value >> n; }
 
 // generic
-template <class T>	IC T		_sqr	(T a)		{ return a*a;		}
+template <class T>	ICF T		_sqr	(T a)		{ return a*a;		}
 
 // float
-IC float	_sqrt_sse	(float x)
+ICF float	_sqrt_sse	(float x)
 {
     return _mm_cvtss_f32(_mm_sqrt_ss(_mm_set_ps1(x)));
 }
-IC float	_sqrt	(float x)		{ return sqrtf(x); }
+ICF float	_sqrt	(float x)		{ return sqrtf(x); }
 
 // check for: Signaling NaN, Quiet NaN, Negative infinity ( �INF), Positive infinity (+INF), Negative denormalized, Positive denormalized
-IC BOOL _valid(const float x)
+ICF BOOL _valid(const float x)
 {
 	const int cls = std::fpclassify(x);
 	switch (cls)
@@ -65,7 +65,7 @@ IC BOOL _valid(const float x)
 }
 
 // check for: Signaling NaN, Quiet NaN, Negative infinity ( �INF), Positive infinity (+INF), Negative denormalized, Positive denormalized
-IC BOOL _valid(const double x)
+ICF BOOL _valid(const double x)
 {
 	const int cls = std::fpclassify(x);
 	switch (cls)
@@ -81,32 +81,32 @@ IC BOOL _valid(const double x)
 	return true;
 }
 
-IC u32							xr_strlen				( const char* S );
+ICF u32							xr_strlen				( const char* S );
 
 // string management
 
 // return pointer to ".ext"
-IC char*						strext					( const char* S )
+ICF char*						strext					( const char* S )
 {	return (char*) strrchr(S,'.');	}
 
-IC u32							xr_strlen				( const char* S )
+ICF u32							xr_strlen				( const char* S )
 {	return (u32)strlen(S);			}
 
-IC char*						xr_strlwr				(char* S)
+ICF char*						xr_strlwr				(char* S)
 {	return _strlwr(S);				}
 
-IC int							xr_strcmp				( const char* S1, const char* S2 )
+ICF int							xr_strcmp				( const char* S1, const char* S2 )
 {	return (int)strcmp(S1,S2);  }
 
-IC int							xr_strncmp				( const char* S1, const char* S2, int n )
+ICF int							xr_strncmp				( const char* S1, const char* S2, int n )
 {	return (int)strncmp(S1,S2,n);	}
 
-inline errno_t xr_strcpy	( LPSTR destination, size_t const destination_size, LPCSTR source )
+ICF errno_t xr_strcpy	( LPSTR destination, size_t const destination_size, LPCSTR source )
 {
 	return						strncpy_s( destination, destination_size, source, destination_size );
 }
 
-inline errno_t xr_strcat		( LPSTR destination, size_t const buffer_size, LPCSTR source )
+ICF errno_t xr_strcat		( LPSTR destination, size_t const buffer_size, LPCSTR source )
 {
 	size_t const destination_length	= xr_strlen(destination);
 	LPSTR i						= destination + destination_length;
@@ -121,7 +121,7 @@ inline errno_t xr_strcat		( LPSTR destination, size_t const buffer_size, LPCSTR 
 	return						0;
 }
 
-inline int __cdecl xr_sprintf	( LPSTR destination, size_t const buffer_size, LPCSTR format_string, ... )
+ICF int __cdecl xr_sprintf	( LPSTR destination, size_t const buffer_size, LPCSTR format_string, ... )
 {
 	va_list args;
 	va_start					( args, format_string);
@@ -129,7 +129,7 @@ inline int __cdecl xr_sprintf	( LPSTR destination, size_t const buffer_size, LPC
 }
 
 template <int count>
-inline int __cdecl xr_sprintf	( char (&destination)[count], LPCSTR format_string, ... )
+ICF int __cdecl xr_sprintf	( char (&destination)[count], LPCSTR format_string, ... )
 {
 	va_list args;
 	va_start					( args, format_string);
@@ -137,13 +137,13 @@ inline int __cdecl xr_sprintf	( char (&destination)[count], LPCSTR format_string
 }
 
 template <int count>
-inline errno_t xr_strcpy	( char (&destination)[count], LPCSTR source )
+ICF errno_t xr_strcpy	( char (&destination)[count], LPCSTR source )
 {
 	return						xr_strcpy( destination, count, source );
 }
 
 template <int count>
-inline errno_t xr_strcat	( char (&destination)[count], LPCSTR source )
+ICF errno_t xr_strcat	( char (&destination)[count], LPCSTR source )
 {
 	return						xr_strcat( destination, count, source );
 }

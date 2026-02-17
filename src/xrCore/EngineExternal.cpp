@@ -1,7 +1,6 @@
 #include "stdafx.h"
 
 #include "EngineExternal.h"
-#include <magic_enum/magic_enum.hpp>
 
 XRCORE_API CEngineExternal* g_pEngineExternal = nullptr;
 
@@ -89,42 +88,6 @@ const xr_string CEngineExternal::WallmarkLeft() const
 const xr_string CEngineExternal::WallmarkRight() const
 {
 	return READ_IF_EXISTS(pOptions, r_string_wb, "step_wallmark", "right_mark", "").c_str();
-}
-
-bool CEngineExternal::operator[](const EEngineExternalUI& ID) const
-{
-	return READ_IF_EXISTS(pOptions, r_bool, "ui", magic_enum::enum_name(ID).data(), false);
-}
-
-bool CEngineExternal::operator[](const EEngineExternalPhysical& ID) const
-{
-	return READ_IF_EXISTS(pOptions, r_bool, "physics", magic_enum::enum_name(ID).data(), false);
-}
-
-bool CEngineExternal::operator[](const EEngineExternalGame& ID) const
-{
-	return READ_IF_EXISTS(pOptions, r_bool, "gameplay", magic_enum::enum_name(ID).data(), false);
-}
-
-bool CEngineExternal::operator[](const EEngineExternalSpawnSupplies& ID) const
-{
-	return READ_IF_EXISTS(pOptions, r_bool, "spawn_supplies", magic_enum::enum_name(ID).data(), false);
-}
-
-bool CEngineExternal::operator[](const EEngineExternalRender& ID) const
-{
-	return READ_IF_EXISTS(pOptions, r_bool, "render", magic_enum::enum_name(ID).data(), false);
-}
-
-bool CEngineExternal::operator[](const EEngineExternalEnvironment& ID) const {
-	return READ_IF_EXISTS(pOptions, r_bool, "environment", magic_enum::enum_name(ID).data(), false);
-}
-
-bool CEngineExternal::operator[](const EEngineExternalPlatform& ID) const {
-	if (static_cast<unsigned char>(ID) > (static_cast<unsigned char>(sizeof(g_Platforms) / sizeof(g_Platforms[0])) - 1))
-		return false;
-
-	return g_Platforms[static_cast<unsigned char>(ID)] == m_platform_type;
 }
 
 void CEngineExternal::InitPlatform(const char* pPlatformName)

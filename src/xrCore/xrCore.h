@@ -114,7 +114,7 @@
 #include "xr_path.h"
 #include "stack_string.h"
 #include "Combinable.h"
-
+#include <magic_enum/magic_enum.hpp>
 // stl ext
 struct XRCORE_API xr_rtoken
 {

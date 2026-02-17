@@ -114,13 +114,47 @@ public:
 	EEngineExternalPlatform GetCurrentPlatform();
 	shared_str GetInventoryItemCountPrefix();
 
-	bool operator[](const EEngineExternalUI& ID) const;
-	bool operator[](const EEngineExternalPhysical& ID) const;
-	bool operator[](const EEngineExternalGame& ID) const;
-	bool operator[](const EEngineExternalSpawnSupplies& ID) const;
-	bool operator[](const EEngineExternalRender& ID) const;
-	bool operator[](const EEngineExternalEnvironment& ID) const;
-	bool operator[](const EEngineExternalPlatform& ID) const;
+	ICF bool operator[](const EEngineExternalUI& ID) const
+	{
+		return READ_IF_EXISTS(pOptions, r_bool, "ui", magic_enum::enum_name(ID).data(), false);
+	}
+
+	ICF bool operator[](const EEngineExternalPhysical& ID) const
+	{
+		return READ_IF_EXISTS(pOptions, r_bool, "physics", magic_enum::enum_name(ID).data(), false);
+	}
+
+	ICF bool operator[](const EEngineExternalGame& ID) const
+	{
+		return READ_IF_EXISTS(pOptions, r_bool, "gameplay", magic_enum::enum_name(ID).data(), false);
+	}
+
+	ICF bool operator[](const EEngineExternalSpawnSupplies& ID) const
+	{
+		return READ_IF_EXISTS(pOptions, r_bool, "spawn_supplies", magic_enum::enum_name(ID).data(), false);
+	}
+
+	ICF bool operator[](const EEngineExternalRender& ID) const
+	{
+		return READ_IF_EXISTS(pOptions, r_bool, "render", magic_enum::enum_name(ID).data(), false);
+	}
+
+	ICF bool operator[](const EEngineExternalEnvironment& ID) const {
+		return READ_IF_EXISTS(pOptions, r_bool, "environment", magic_enum::enum_name(ID).data(), false);
+	}
+
+	//ICF bool operator[](const EEngineExternalSound& ID) const
+	//{
+	//	return READ_IF_EXISTS(pOptions, r_bool, "sound", magic_enum::enum_name(ID).data(), false);
+	//}
+
+	ICF bool operator[](const EEngineExternalPlatform& ID) const
+	{
+		if (static_cast<unsigned char>(ID) > (static_cast<unsigned char>(sizeof(g_Platforms) / sizeof(g_Platforms[0])) - 1))
+			return false;
+
+		return g_Platforms[static_cast<unsigned char>(ID)] == m_platform_type;
+	}
 
 	xr_string_map<xr_string, xr_string> ShadersOptions;
 	Ivector2 gamesaveSize;

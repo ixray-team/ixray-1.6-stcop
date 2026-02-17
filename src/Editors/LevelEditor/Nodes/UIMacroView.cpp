@@ -3,8 +3,6 @@
 
 #include "../../xrEUI/ImNodeEditor/imnodes.h"
 
-#include <magic_enum/magic_enum.hpp>
-
 std::array<size_t, 13> CommandsOneArgsInt =
 {
 	COMMAND_CHANGE_ACTION,    // u32
