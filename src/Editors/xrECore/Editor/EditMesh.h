@@ -265,6 +265,10 @@ public:
 	st_Face* m_Faces;    // + some array size!!!
 	Fvector* m_Vertices;	// |
 
+	typedef xr_hash_map<u8, xr_pair<u32, Fcolor>> EditColor;
+	typedef xr_hash_map<CCustomObject*, EditColor> EditColorMesh;
+	u32 			m_SVertInfl;
+protected:
 	Fbox			m_Box;
 
 	int				m_FNormalsRefs;
@@ -272,7 +276,6 @@ public:
 	int				m_AdjsRefs;
 	int				m_SVertRefs;
 
-	u32 			m_SVertInfl;
 	
 	u32				m_VertCount;
 	u32				m_FaceCount;
@@ -290,10 +293,11 @@ public:
 	RBMap*			m_RenderBuffers;
 #endif
 
+	EditColorMesh m_color_map;
+
 	void 			FillRenderBuffer		(IntVec& face_lst, int start_face, int num_face, const CSurface* surf, LPBYTE& data);
 
 	void 			RecurseTri				(int id);
-
 
 	// mesh optimize routine
 	bool 			OptimizeFace			(st_Face& face);
@@ -346,11 +350,14 @@ public:
 #endif
 
 	// render routine
-	void 			Render					(const Fmatrix& parent, CSurface* S);
-	void 			RenderSkeleton			(const Fmatrix& parent, CSurface* S);
-	void            RenderList				(const Fmatrix& parent, u32 color, bool bEdge, IntVec& fl);
-	void 			RenderSelection			(const Fmatrix& parent, CSurface* s, u32 color);
-	void 			RenderEdge				(const Fmatrix& parent, CSurface* s, u32 color);
+	void 			Render					(CCustomObject*, const Fmatrix& parent, CSurface* S);
+	void 			RenderSkeleton			(CCustomObject*, const Fmatrix& parent, CSurface* S);
+
+	void 			RenderSelection			(CCustomObject* parent, u32 color);
+	void 			RenderEdge				(CCustomObject* parent, u32 color);
+
+	void			RemoveColor(CCustomObject*);
+	void			SetColor(CCustomObject*, u8 ID, u32 color);
 
 	// statistics methods
 	int 			GetFaceCount			(bool bMatch2Sided=true, bool bIgnoreOCC=true);

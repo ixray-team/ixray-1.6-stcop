@@ -62,40 +62,31 @@ void	CBlender_Model::Load	( IReader& fs, u16 version)
 	}
 }
 
-void	CBlender_Model::Compile	(CBlender_Compile& C)
+void CBlender_Model::Compile(CBlender_Compile& C)
 {
-	IBlender::Compile		(C);
+	IBlender::Compile(C);
 	if (C.bEditor)
 	{
-		//C.PassBegin		();
-		//{
-		//	C.PassSET_ZB		(true,oBlend.value&&(oAREF.value<200)?false:true);
-		//	if (oBlend.value)	C.PassSET_Blend_BLEND	(true,oAREF.value);
-		//	else				C.PassSET_Blend_SET		();
-		//	C.PassSET_LightFog	(true,true);
-		//	C.StageBegin		();
-		//	C.StageSET_Color	(D3DTA_TEXTURE,	  D3DTOP_MODULATE,		D3DTA_DIFFUSE);
-		//	C.StageSET_Alpha	(D3DTA_TEXTURE,	  D3DTOP_SELECTARG1,	D3DTA_DIFFUSE);
-		//	C.StageSET_TMC		(oT_Name,	"$null",	"$null",	0		);
-		//	C.StageEnd			();
-		//}
-		//C.PassEnd			();
-
 		bool is_blend = oBlend.value && oAREF.value < 16;
 
-		if(is_blend) {
+		if (is_blend)
+		{
 			RImplementation.addShaderOption("FORWARD_ONLY", "1");
 		}
 
 		uber_deffer(C, true, "deffer_model", "deffer_base", !is_blend && !!oBlend.value, nullptr, true);
 
-		if(is_blend) {
+		if(is_blend)
+		{
 			C.PassSET_ZB(true, false);
 			C.PassSET_Blend(true, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, 0);
 		}
 
 		C.r_End();
-	} else {
+	} 
+#ifndef USE_DX11
+	else 
+	{
 		const char*	vsname		= nullptr;
 		const char*	psname		= nullptr;
 		switch (C.iElement)
@@ -143,4 +134,5 @@ void	CBlender_Model::Compile	(CBlender_Compile& C)
 			break;
 		}
 	}
+#endif
 }

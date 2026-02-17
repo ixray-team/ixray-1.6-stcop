@@ -24,7 +24,7 @@ public:
 		
 	virtual ~XrUIManager();
 
-	void Initialize(HWND hWnd, IDirect3DDevice9* device,const char*ini_path);
+	void Initialize(HWND hWnd, const char*ini_path);
 	void Destroy();
 
 	bool ProcessEvent(void* Event);

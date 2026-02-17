@@ -167,7 +167,7 @@ void CLevelPreferences::Save()
 	JSONData["Compilers Path"]["xrLC"] = Compiler_xrLC.c_str();
 	JSONData["Compilers Path"]["xrAI"] = Compiler_xrAI.c_str();
 	JSONData["Compilers Path"]["xrDO"] = Compiler_xrDO.c_str();
-	JSONData["Compilers"]["LODsForAllMU"] = Compiler_xrDO.c_str();
+	JSONData["Compilers"]["LODsForAllMU"] = LODsForAllMU;
 
 	JSONData["ContentBrowser"]["CurPath"] = GContentView->CurrentDir;
 	JSONData["ContentBrowser"]["ISEPath"] = GContentView->VirtualPath;
