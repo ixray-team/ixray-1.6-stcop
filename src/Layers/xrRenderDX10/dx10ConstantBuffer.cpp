@@ -86,13 +86,33 @@ void dx10ConstantBuffer::Flush()
 	{
 		RHIMappedSubresource pSubRes;
 		R_ASSERT(m_pBuffer->Map(ERHI_BUFFER_MAP::WRITE_DISCARD, 0, &pSubRes));
-		void*  pData = pSubRes.pData;
 
-		VERIFY(pData);
-		VERIFY(m_pBufferData);
-		CopyMemory(pData, m_pBufferData, m_uiBufferSize);
+		void* dst = pSubRes.pData;
+		void* src = m_pBufferData;
+
+		VERIFY(dst);
+		VERIFY(src);
+
+		u32 buff_size = m_uiBufferSize >> 4u; // m_uiBufferSize / sizeof(Fvector4)
+		if (CPU::ID().hasFeature(CPUFeature::AVX))
+		{
+			for (u32 i = 0u; i < (buff_size>>1u); ++i) // buff_size / 2
+				((__m256*)dst)[i] = ((__m256*)src)[i];
+			if (buff_size&1u)
+				((__m128*)dst)[buff_size-1u] = ((__m128*)src)[buff_size-1u];
+		}
+		else if (CPU::ID().hasFeature(CPUFeature::SSE))
+		{
+			for (u32 i = 0u; i < buff_size; ++i)
+				((__m128*)dst)[i] = ((__m128*)src)[i];
+		}
+		else
+		{
+			for (u32 i = 0u; i < buff_size; ++i)
+				((Fvector4*)dst)[i] = ((Fvector4*)src)[i];
+		}
+
 		m_pBuffer->Unmap();
-
 		m_bChanged = false;
 	}
 }
