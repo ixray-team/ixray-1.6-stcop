@@ -32,7 +32,9 @@ void CBackend::OnFrameBegin	()
 		Invalidate();
 		//	DX9 sets base rt nd base zb by default
 		RImplementation.rmNormal();
-		set_RT				(RImplementation.Target->rt_BackbufferLUT->pRT);
+#ifndef _EDITOR
+		set_RT(RImplementation.Target->rt_BackbufferLUT->pRT);
+#endif
 #endif //USE_DX11
 		Memory.mem_fill		(&stat,0,sizeof(stat));
 		Vertex.Flush		();
@@ -70,6 +72,7 @@ void CBackend::Invalidate	()
 	//	Since constant buffers are unmapped (for DirecX 10)
 	//	transform setting handlers should be unmapped too.
 	xforms.unmap	();
+	hemi.unmap	();
 
 #ifdef USE_DX11
 	m_pInputLayout				= nullptr;

@@ -58,9 +58,9 @@ CEditorRenderDevice::CEditorRenderDevice()
 	psDeviceFlags.assign(rsStatistic|rsFilterLinear|rsFog|rsDrawGrid);
 // default initialization
     m_ScreenQuality = 1.f;
-	//dwMaximized = 0;
-    TargetWidth 		= TargetHeight 	= 256;
-	dwRealWidth = dwRealHeight = 256;
+
+    TargetWidth = TargetHeight 	= 256;
+	Width = Height = 256;
 	mProject.identity();
     mFullTransform.identity();
     mView.identity	();
@@ -241,7 +241,7 @@ bool CEditorRenderDevice::Create()
 			UI->ResetUI();
 		
 		InitRenderDeviceEditor();
-		UI->Initialize(hwnd, RDevice, ini_path);
+		UI->Initialize(hwnd, ini_path);
 	}
 	
 	// after creation
@@ -297,6 +297,7 @@ void CEditorRenderDevice::Destroy()
 void CEditorRenderDevice::_SetupStates()
 {
 	//Caps.Update();
+#if 0
 	for (u32 i=0; i<Caps.raster.dwStages; i++){
 		float fBias = -1.f;
 		CHK_DX(REDevice->SetSamplerState( i, D3DSAMP_MIPMAPLODBIAS, *((LPDWORD) (&fBias))));
@@ -315,7 +316,7 @@ void CEditorRenderDevice::_SetupStates()
 	EDevice->SetRS(D3DRS_SPECULARMATERIALSOURCE,D3DMCS_MATERIAL);
 	EDevice->SetRS(D3DRS_AMBIENTMATERIALSOURCE, D3DMCS_MATERIAL);
 	EDevice->SetRS(D3DRS_EMISSIVEMATERIALSOURCE,D3DMCS_COLOR1	);
-
+#endif
     ResetMaterial();
 }
 //---------------------------------------------------------------------------
@@ -330,8 +331,9 @@ void CEditorRenderDevice::_Create(IReader* F)
 	Resources->OnDeviceCreate	(F);
 	::RImplementation.OnDeviceCreate	();
 
-    m_WireShader.create			("editor\\wire");
-    m_SelectionShader.create	("editor\\selection");
+	m_WireShader.create("editor\\wire");
+	m_SelectionShader.create("editor\\selection");
+	ShaderTL.create("editor\\default");
 
 	texture_null.create("ed\\ed_nodata");
 	texture_null->Load();
@@ -352,6 +354,7 @@ void CEditorRenderDevice::_Destroy(bool	bKeepTextures)
 
 	m_WireShader.destroy		();
 	m_SelectionShader.destroy	();
+	ShaderTL.destroy	();
 	texture_null.destroy		();
 
 	::RImplementation.Models->OnDeviceDestroy	();
@@ -363,10 +366,10 @@ void CEditorRenderDevice::_Destroy(bool	bKeepTextures)
 }
 
 //---------------------------------------------------------------------------
-void  CEditorRenderDevice::Resize(int w, int h, bool maximized)
+void CEditorRenderDevice::Resize(int w, int h, bool maximized)
 {
-	dwRealWidth = w;
-	dwRealHeight = h;
+	Width = w;
+	Height = h;
 
 	Reset(false);
 	UI->RedrawScene();
@@ -382,8 +385,8 @@ void CEditorRenderDevice::Reset(bool)
 	UI->ResetBegin();
 
 	Memory.mem_compact();
-	ResizeBuffers(dwRealWidth, dwRealHeight);
-	SDL_SetWindowSize(g_AppInfo.Window, dwRealWidth, dwRealHeight);
+	ResizeBuffers(Width, Height);
+	SDL_SetWindowSize(g_AppInfo.Window, Width, Height);
 
 	Resources->reset_end();
 	Resources->DeferredUpload();
@@ -449,25 +452,8 @@ bool CEditorRenderDevice::Begin()
 	mProject_saved = mProject;
 	mView_saved = mView;
 	vCameraPosition_saved = vCameraPosition;
-	//HW.Validate		();
-	HRESULT	_hr = REDevice->TestCooperativeLevel();
-	if (FAILED(_hr))
-	{
-		// If the device was lost, do not render until we get it back
-		if (D3DERR_DEVICELOST == _hr) {
-			Sleep(33);
-			return	false;
-		}
 
-		// Check if the device is ready to be reset
-		if (D3DERR_DEVICENOTRESET == _hr)
-		{
-			Reset(false);
-		}
-	}
-
-	VERIFY(false == g_bRendering);
-	(REDevice->BeginScene());
+	VERIFY(FALSE == g_bRendering);
 
 	Clear();
 
@@ -598,13 +584,22 @@ void CEditorRenderDevice::InitWindowStyle()
 #endif
 }
 
+void CEditorRenderDevice::SetShader(ref_shader sh)
+{
+	m_CurrentShader = sh;
+	EDevice->SetRS(D3DRS_FILLMODE, EDevice->dwFillMode);
+}
+
 void CEditorRenderDevice::DP(ERHI_PRIMITIVE_TOPOLOGY pt, ref_geom geom, u32 vBase, u32 pc)
 {
 	ref_shader S 			= m_CurrentShader?m_CurrentShader:m_WireShader;
     u32 dwRequired			= S->E[0]->passes.size();
-    RCache.set_Geometry		(geom);
-    for (u32 dwPass = 0; dwPass<dwRequired; dwPass++){
+
+    for (u32 dwPass = 0; dwPass<dwRequired; dwPass++)
+	{
     	RCache.set_Shader	(S,dwPass);
+		EDevice->SetRS(D3DRS_FILLMODE, EDevice->dwFillMode);
+		RCache.set_Geometry(geom);
 		RCache.Render		(pt,vBase,pc);
     }
 }
@@ -614,8 +609,11 @@ void CEditorRenderDevice::DIP(ERHI_PRIMITIVE_TOPOLOGY pt, ref_geom geom, u32 bas
 	ref_shader S 			= m_CurrentShader?m_CurrentShader:m_WireShader;
     u32 dwRequired			= S->E[0]->passes.size();
     RCache.set_Geometry		(geom);
-    for (u32 dwPass = 0; dwPass<dwRequired; dwPass++){
+
+    for (u32 dwPass = 0; dwPass<dwRequired; dwPass++)
+	{
     	RCache.set_Shader	(S,dwPass);
+		EDevice->SetRS(D3DRS_FILLMODE, EDevice->dwFillMode);
 		RCache.Render		(pt,baseV,startV,countV,startI,PC);
     }
 }

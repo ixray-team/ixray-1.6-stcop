@@ -241,6 +241,11 @@ bool CEditableMesh::LoadMesh(IReader& F){
         GenerateFNormals	();
         GenerateAdjacency	();
 	    GenerateVNormals	(nullptr);
+
+
+		extern ECORE_API xrCriticalSection temp_render_lock;
+		xrCriticalSectionGuard guard_lock(temp_render_lock);
+
 		GenerateRenderBuffers();
         UnloadFNormals		();
         UnloadAdjacency		();

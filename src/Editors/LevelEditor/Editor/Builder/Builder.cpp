@@ -300,7 +300,7 @@ void SceneBuilder::OnRender()
 {
 	if (object_for_render){
         object_for_render->OnFrame();
-        object_for_render->RenderSingle(Fidentity);
+        object_for_render->RenderSingle(NULL, Fidentity);
     }
 }
 

@@ -111,11 +111,11 @@ void SPrimitiveBuffer::CreateFromData(ERHI_PRIMITIVE_TOPOLOGY _pt, u32 _p_cnt, u
     for (u32 k = 0; k < v_cnt; ++k)
         verts[k].set(((Fvector*)vertices)[k], 0xFFFFFFFF);
 
-    R_ASSERT(RHIUtils::CreateVertexBuffer(&pVB, verts.data(), v_cnt * stride));
+    R_ASSERT(RHIUtils::CreateVertexBuffer(&pVB, verts.data(), v_cnt * stride, false));
 
     if (i_cnt)
     {
-        R_ASSERT(RHIUtils::CreateIndexBuffer(&pIB, indices, i_cnt * sizeof(u16)));
+        R_ASSERT(RHIUtils::CreateIndexBuffer(&pIB, indices, i_cnt * sizeof(u16), false));
         OnRender.bind(this, &SPrimitiveBuffer::RenderDIP);
     }
     else
@@ -124,7 +124,7 @@ void SPrimitiveBuffer::CreateFromData(ERHI_PRIMITIVE_TOPOLOGY _pt, u32 _p_cnt, u
     }
 
     RHIMappedSubresource mapped = {};
-    if (pVB->Map(ERHI_BUFFER_MAP::WRITE, 0, &mapped))
+    if (pVB->Map(ERHI_BUFFER_MAP::WRITE_DISCARD, 0, &mapped))
     {
         Memory.mem_copy(mapped.pData, verts.data(), v_cnt * stride);
         pVB->Unmap();
@@ -132,7 +132,7 @@ void SPrimitiveBuffer::CreateFromData(ERHI_PRIMITIVE_TOPOLOGY _pt, u32 _p_cnt, u
 
     if (pIB && i_cnt > 0)
     {
-        if (pIB->Map(ERHI_BUFFER_MAP::WRITE, 0, &mapped))
+        if (pIB->Map(ERHI_BUFFER_MAP::WRITE_DISCARD, 0, &mapped))
         {
             Memory.mem_copy(mapped.pData, indices, i_cnt * sizeof(u16));
             pIB->Unmap();
@@ -378,16 +378,31 @@ void CDrawUtilities::DrawEntity(u32 clr, ref_shader s)
     if (s) DU_DRAW_SH(s);
     {
         // fill VB
-        FVF::LIT*	pv	 = (FVF::LIT*)Stream->Lock(6,vs_LIT->vb_stride,vBase);
-        pv->set		(0.f,1.f,0.f,clr,0.f,0.f);	pv++;
-        pv->set		(0.f,1.f,.5f,clr,1.f,0.f);	pv++;
-        pv->set		(0.f,.5f,.5f,clr,1.f,1.f);	pv++;
-        pv->set		(0.f,.5f,0.f,clr,0.f,1.f);	pv++;
-        pv->set		(0.f,.5f,.5f,clr,1.f,1.f);	pv++;
-        pv->set		(0.f,1.f,.5f,clr,1.f,0.f);	pv++;
-        Stream->Unlock	(6,vs_LIT->vb_stride);
-        // and Render it as line list
-        DU_DRAW_DP		(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_FAN,vs_LIT,vBase,4);
+
+        FVF::LIT* pv = (FVF::LIT*)Stream->Lock(12, vs_LIT->vb_stride, vBase);
+
+        // TRIANGLE 1 (front)
+        pv[0].set(0.f, 1.f, 0.f, clr, 0.f, 0.f); // v0
+        pv[1].set(0.f, 1.f, .5f, clr, 1.f, 0.f); // v1
+        pv[2].set(0.f, .5f, .5f, clr, 1.f, 1.f); // v2
+
+        // TRIANGLE 2 (front)
+        pv[3].set(0.f, 1.f, 0.f, clr, 0.f, 0.f); // v0
+        pv[4].set(0.f, .5f, .5f, clr, 1.f, 1.f); // v2
+        pv[5].set(0.f, .5f, 0.f, clr, 0.f, 1.f); // v3
+
+        // TRIANGLE 1 (back, reversed winding)
+        pv[6].set(0.f, .5f, .5f, clr, 1.f, 1.f); // v2
+        pv[7].set(0.f, 1.f, .5f, clr, 1.f, 0.f); // v1
+        pv[8].set(0.f, 1.f, 0.f, clr, 0.f, 0.f); // v0
+
+        // TRIANGLE 2 (back, reversed winding)
+        pv[9].set(0.f, .5f, 0.f, clr, 0.f, 1.f); // v3
+        pv[10].set(0.f, .5f, .5f, clr, 1.f, 1.f); // v2
+        pv[11].set(0.f, 1.f, 0.f, clr, 0.f, 0.f); // v0
+
+        Stream->Unlock(12, vs_LIT->vb_stride);
+        DU_DRAW_DP(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vs_LIT, vBase, 4);
     }
 }
 
@@ -636,7 +651,10 @@ void CDrawUtilities::dbgDrawPlacement(const Fvector& p, int sz, u32 clr, const c
 	Stream->Unlock(5,vs_TL->vb_stride);
 
 	// Render it as line strip
-    DU_DRAW_DP		(ERHI_PRIMITIVE_TOPOLOGY::LINE_STRIP,vs_TL,vBase,4);
+    ref_shader Shader = EDevice->GetShader();
+    EDevice->SetShader(EDevice->ShaderTL);
+    DU_DRAW_DP(ERHI_PRIMITIVE_TOPOLOGY::LINE_STRIP, vs_TL, vBase, 4);
+    EDevice->SetShader(Shader);
 
     if (caption)
     {
@@ -1071,7 +1089,7 @@ void CDrawUtilities::DrawAxis(const Fmatrix& T)
     UI->CurrentView().m_Camera.MouseRayFromPoint(M.c, dir, pt);
 
     M.c.mad(dir, _kl);
-    m_axis_object->Render	(M, 2, false);
+    m_axis_object->Render(NULL, M, 2, false);
 }
 
 void CDrawUtilities::DrawObjectAxis(const Fmatrix& T, float sz, bool sel)
@@ -1123,7 +1141,7 @@ void CDrawUtilities::DrawObjectAxis(const Fmatrix& T, float sz, bool sel)
 
 	// Render it as line list
 	DU_DRAW_RS	(D3DRS_SHADEMODE,D3DSHADE_GOURAUD);
-	DU_DRAW_SH	(EDevice->m_WireShader);
+	DU_DRAW_SH	(EDevice->ShaderTL);
     DU_DRAW_DP	(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,vs_TL,vBase,3);
 	DU_DRAW_RS	(D3DRS_SHADEMODE,SHADE_MODE);
 
@@ -1158,22 +1176,28 @@ void CDrawUtilities::DrawGrid()
     RCache.stat.polys -= (m_GridPoints.size() / 2);
 }
 
-void CDrawUtilities::DrawSelectionRect(const Ivector2& m_SelStart, const Ivector2& m_SelEnd){
-	VERIFY( EDevice->b_is_Ready );
-	// fill VB
-	_VertexStream*	Stream	= &RCache.Vertex;
+void CDrawUtilities::DrawSelectionRect(const Ivector2& m_SelStart, const Ivector2& m_SelEnd)
+{
+    VERIFY(EDevice->b_is_Ready);
+    _VertexStream* Stream = &RCache.Vertex;
     u32 vBase;
-	FVF::TL* pv	= (FVF::TL*)Stream->Lock(4,vs_TL->vb_stride,vBase);
-    pv->set(m_SelStart.x*SCREEN_QUALITY, m_SelStart.y*SCREEN_QUALITY, m_SelectionRect,0.f,0.f); pv++;
-    pv->set(m_SelStart.x*SCREEN_QUALITY, m_SelEnd.y*SCREEN_QUALITY,   m_SelectionRect,0.f,0.f); pv++;
-    pv->set(m_SelEnd.x*SCREEN_QUALITY,   m_SelEnd.y*SCREEN_QUALITY,   m_SelectionRect,0.f,0.f); pv++;
-    pv->set(m_SelEnd.x*SCREEN_QUALITY,   m_SelStart.y*SCREEN_QUALITY, m_SelectionRect,0.f,0.f); pv++;
-	Stream->Unlock(4,vs_TL->vb_stride);
-	// Render it as triangle list
-    DU_DRAW_RS(D3DRS_CULLMODE,D3DCULL_NONE);
-	DU_DRAW_SH(EDevice->m_SelectionShader);
-    DU_DRAW_DP(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_FAN,vs_TL,vBase,2);
-    DU_DRAW_RS(D3DRS_CULLMODE,D3DCULL_CCW);
+    FVF::TL* pv = (FVF::TL*)Stream->Lock(6, vs_TL->vb_stride, vBase);
+
+    pv->set(m_SelStart.x * SCREEN_QUALITY, m_SelStart.y * SCREEN_QUALITY, m_SelectionRect, 0.f, 0.f); pv++;
+    pv->set(m_SelStart.x * SCREEN_QUALITY, m_SelEnd.y * SCREEN_QUALITY, m_SelectionRect, 0.f, 0.f); pv++;
+    pv->set(m_SelEnd.x * SCREEN_QUALITY, m_SelEnd.y * SCREEN_QUALITY, m_SelectionRect, 0.f, 0.f); pv++;
+
+    pv->set(m_SelStart.x * SCREEN_QUALITY, m_SelStart.y * SCREEN_QUALITY, m_SelectionRect, 0.f, 0.f); pv++;
+    pv->set(m_SelEnd.x * SCREEN_QUALITY, m_SelEnd.y * SCREEN_QUALITY, m_SelectionRect, 0.f, 0.f); pv++;
+    pv->set(m_SelEnd.x * SCREEN_QUALITY, m_SelStart.y * SCREEN_QUALITY, m_SelectionRect, 0.f, 0.f); pv++;
+
+    Stream->Unlock(6, vs_TL->vb_stride);
+
+    const u32 OldFillMode = EDevice->dwFillMode;
+    EDevice->dwFillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
+    DU_DRAW_SH(EDevice->ShaderTL);
+    DU_DRAW_DP(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vs_TL, vBase, 2);
+    EDevice->dwFillMode = OldFillMode;
 }
 
 void CDrawUtilities::DrawPrimitiveL	(ERHI_PRIMITIVE_TOPOLOGY pt, u32 pc, Fvector* vertices, int vc, u32 color, bool bCull, bool bCycle)

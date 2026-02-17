@@ -150,12 +150,7 @@ void UIMainMenuForm::Draw()
 				}
 				if (ImGui::BeginMenu("Fill Mode"))
 				{
-					bool selected[3] = { EDevice->dwFillMode == D3DFILL_POINT,EDevice->dwFillMode == D3DFILL_WIREFRAME,EDevice->dwFillMode == D3DFILL_SOLID };
-					if (ImGui::MenuItem("Point", "", &selected[0]))
-					{
-						EDevice->dwFillMode = D3DFILL_POINT;
-						UI->RedrawScene();
-					}
+					bool selected[3] = { false,EDevice->dwFillMode == D3DFILL_WIREFRAME,EDevice->dwFillMode == D3DFILL_SOLID };
 					if (ImGui::MenuItem("Wireframe", "", &selected[1]))
 					{
 						EDevice->dwFillMode = D3DFILL_WIREFRAME;

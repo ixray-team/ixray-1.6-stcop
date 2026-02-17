@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "../../xrEngine/stdafx.h"
-#include "imgui_impl_dx9.h"
 #include "imgui_impl_sdl3.h"
 #include "spectrum.h"
 #include <SDL3/SDL.h>
@@ -52,7 +51,7 @@ void LoadImGuiFontBase(const char* Font, float scale)
 	}
 }
 
-void XrUIManager::Initialize(HWND hWnd, IDirect3DDevice9* device, const char* ini_path)
+void XrUIManager::Initialize(HWND hWnd, const char* ini_path)
 {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -107,12 +106,12 @@ void XrUIManager::Initialize(HWND hWnd, IDirect3DDevice9* device, const char* in
 
 	//ImGui_ImplWin32_Init(hWnd);
 	ImGui_ImplSDL3_InitForD3D(g_AppInfo.Window);
-	ImGui_ImplDX9_Init(device);
+	RHIUtils::ImGui::Init();
 }
 
 void XrUIManager::Destroy()
 {
-	ImGui_ImplDX9_Shutdown();
+	RHIUtils::ImGui::Destroy();
 	ImGui_ImplSDL3_Shutdown();
 	ImGui::DestroyContext();
 }
@@ -135,13 +134,13 @@ void XrUIManager::BeginFrame()
 	LazyFonts.clear();
 
 	ImGui_ImplSDL3_NewFrame();
-	ImGui_ImplDX9_NewFrame();
+	RHIUtils::ImGui::NewFrame();
 }
 
 void XrUIManager::EndFrame()
 {
 	ImGui::Render();
-	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
+	RHIUtils::ImGui::DrawData();
 
 	for (size_t i = m_UIArray.size(); i > 0; i--)
 	{
@@ -175,13 +174,11 @@ void XrUIManager::ResetBegin()
 		Ptr->ResetBegin();
 	}
 
-	ImGui_ImplDX9_InvalidateDeviceObjects();
+	RHIUtils::ImGui::Reset();
 }
 
 void XrUIManager::ResetEnd(void* NewDevice)
 {
-	ImGui_ImplDX9_CreateDeviceObjects();
-
 	for (auto Ptr : m_UIArray)
 	{
 		Ptr->ResetEnd();

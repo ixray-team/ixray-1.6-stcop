@@ -1,27 +1,30 @@
 #ifndef SHARED_COMMON_H
 #define SHARED_COMMON_H
 
-uniform float3x4 m_W;
-uniform float3x4 m_V;
-uniform float3x4 m_invV;
-uniform float4x4 m_P;
-uniform float3x4 m_WV;
-uniform float4x4 m_VP;
-uniform float4x4 m_WVP;
-uniform float4 timers;
-uniform float4 fog_plane;
-uniform float4 fog_params; // x=near*(1/(far-near)), ?,?, w = -1/(far-near)
-uniform float4 fog_color;
-uniform float4 L_sky_color;
-uniform float3 L_sun_color;
-uniform float3 L_sun_dir_w;
-uniform float3 L_sun_dir_e;
-uniform float4 L_hemi_color;
-uniform float4 L_ambient; // L_ambient.w = skynbox-lerp-factor
-uniform float3 eye_position;
-uniform float3 eye_direction;
-uniform float3 eye_normal;
-uniform float4 dt_params;
+cbuffer static_globals
+{
+    float3x4 m_W;
+    float3x4 m_V;
+    float3x4 m_invV;
+    float4x4 m_P;
+    float3x4 m_WV;
+    float4x4 m_VP;
+    float4x4 m_WVP;
+    float4 timers;
+    float4 fog_plane;
+    float4 fog_params; // x=near*(1/(far-near)), ?,?, w = -1/(far-near)
+    float4 fog_color;
+    float4 L_sky_color;
+    float3 L_sun_color;
+    float3 L_sun_dir_w;
+    float4 L_sun_dir_e;
+    float4 L_hemi_color;
+    float4 L_ambient; // L_ambient.w = skynbox-lerp-factor
+    float3 eye_position;
+    float3 eye_direction;
+    float3 eye_normal;
+    float4 dt_params;
+}
 
 float3 unpack_normal(float3 v)
 {
