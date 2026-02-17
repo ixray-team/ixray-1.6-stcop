@@ -20,7 +20,6 @@
 #else
 #endif
 
-#include <magic_enum/magic_enum.hpp>
 
 CImGuiTextureEditor g_imgui_texture_editor;
 

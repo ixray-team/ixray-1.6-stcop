@@ -24,7 +24,6 @@
 #include "../xrRender/blender_smaa.h"
 #include "BlenderGamma.h"
 #include "../xrRender/dxRenderDeviceRender.h"
-#include "magic_enum/magic_enum.hpp"
 
 #include "OverlayAPI/FSR2Wrapper.h"
 #include "OverlayAPI/DLSSWrapper.h"

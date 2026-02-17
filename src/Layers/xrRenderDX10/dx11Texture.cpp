@@ -2,7 +2,6 @@
 
 #include <memory>
 #include <DirectXTex.h>
-#include <magic_enum/magic_enum.hpp>
 
 using namespace DirectX;
 
