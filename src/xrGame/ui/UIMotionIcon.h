@@ -27,6 +27,15 @@ private:
 	CUIProgressBar* m_luminosity_progress_bar;
 	CUIProgressBar* m_noise_progress_bar;
 
+	CUIStatic* _luminosityOverlay;
+	CUIStatic* _noiseOverlay;
+	u32 _luminosityOverlayBaseColor;
+	u32 _noiseOverlayBaseColor;
+	float _luminosityNormalized;
+	float _noiseNormalized;
+	float _luminosityOverlayCur;
+	float _noiseOverlayCur;
+
 		struct _npc_visibility{
 			u16				id;
 			float				value;
