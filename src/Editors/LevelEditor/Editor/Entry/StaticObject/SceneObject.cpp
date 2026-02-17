@@ -32,6 +32,14 @@ void CSceneObject::ReloadReferences()
 
 CSceneObject::~CSceneObject()
 {
+	if (m_pReference) 
+	{
+		for (auto _M : m_pReference->Meshes())
+		{
+			_M->RemoveColor(this);
+		}
+	}
+
 	for (CSurface* i : m_Surfaces) { i->OnDeviceDestroy(); xr_delete(i); }
 	Lib.RemoveEditObject(m_pReference);
 }
@@ -102,7 +110,9 @@ bool CSceneObject::IsRender()
 void CSceneObject::Render(int priority, bool strictB2F)
 {
 	if (!IsLoaded)
+	{
 		return;
+	}
 
 	if (m_CO_Flags.test(flObjectInGroup))
 	{
@@ -113,44 +123,64 @@ void CSceneObject::Render(int priority, bool strictB2F)
 		}
 	}
 
-	inherited::Render(priority,strictB2F);
-	if (!m_pReference) return;
+	inherited::Render(priority, strictB2F);
 
-	Scene->SelectLightsForObject(this);
-	m_pReference->Render(_Transform(), priority, strictB2F, &m_Surfaces);
-	if (Selected()){
-		if (1==priority){
-			if (false==strictB2F){
+	if (!m_pReference)
+	{
+		return;
+	}
+
+	if (Selected())
+	{
+		if (1 == priority)
+		{
+			if (false == strictB2F)
+			{
 				EDevice->SetShader(EDevice->m_WireShader);
 				RCache.set_xform_world(_Transform());
-				u32 clr = Locked()?0xFFFF0000:0xFFFFFFFF;
-				DU_impl.DrawSelectionBoxB(m_pReference->GetBox(),&clr);
-			}else{
-				RenderBlink	();
+
+				u32 clr = Locked() ? 0xFFFF0000 : 0xFFFFFFFF;
+				DU_impl.DrawSelectionBoxB(m_pReference->GetBox(), &clr);
+			}
+			else
+			{
+				RenderBlink();
 			}
 		}
 	}
+
+	Scene->SelectLightsForObject(this);
+	m_pReference->Render(this, _Transform(), priority, strictB2F, &m_Surfaces);
 }
 
 void CSceneObject::RenderBlink()
 {
-	if (m_iBlinkTime>0){
-		if (m_iBlinkTime>(int)EDevice->dwTimeGlobal){
-			int alpha = iFloor(sqrtf(float(m_iBlinkTime-EDevice->dwTimeGlobal)/BLINK_TIME)*64);
-			m_pReference->RenderSelection(_Transform(),0, m_BlinkSurf, D3DCOLOR_ARGB(alpha,255,255,255));
-			UI->RedrawScene	();
-		}else{
-			m_iBlinkTime 	= 0;
-			m_BlinkSurf		= 0;
+	if (m_iBlinkTime > 0)
+	{
+		if (m_iBlinkTime > (int)EDevice->dwTimeGlobal)
+		{
+			int alpha = iFloor(sqrtf(float(m_iBlinkTime - EDevice->dwTimeGlobal) / BLINK_TIME) * 64);
+			m_pReference->RenderSelection(this, 0, D3DCOLOR_ARGB(alpha, 255, 255, 255));
 		}
+		else
+		{
+			m_iBlinkTime = 0;
+			m_BlinkSurf = 0;
+		}
+
+		UI->RedrawScene();
 	}
 }
 
 void CSceneObject::RenderSingle()
 {
-	if (!m_pReference) 		return;
-	m_pReference->RenderSingle(_Transform());
-	RenderBlink				();
+	if (!m_pReference) 
+	{
+		return;
+	}
+
+	RenderBlink();
+	m_pReference->RenderSingle(this, _Transform());
 }
 
 void CSceneObject::RenderBones()
@@ -162,14 +192,17 @@ void CSceneObject::RenderBones()
 void CSceneObject::RenderEdge(CEditableMesh* mesh, u32 color)
 {
 	if (!m_pReference) return;
+
 	if (::Render->occ_visible(m_TBBox))
-		m_pReference->RenderEdge(_Transform(), mesh, 0, color);
+	{
+		m_pReference->RenderEdge(this, mesh, color);
+	}
 }
 
 void CSceneObject::RenderSelection(u32 color)
 {
 	if (!m_pReference) return;
-	m_pReference->RenderSelection(_Transform(),0, 0, color);
+	m_pReference->RenderSelection(this, 0, color);
 }
 
 bool CSceneObject::FrustumPick(const CFrustum& frustum)

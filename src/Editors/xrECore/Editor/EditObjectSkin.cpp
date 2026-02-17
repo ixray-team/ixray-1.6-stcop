@@ -108,9 +108,9 @@ void CEditableObject::SaveBoneData(IWriter& F)
     F.close_chunk	();
 }
 
-void CEditableObject::RenderSkeletonSingle(const Fmatrix& parent)
+void CEditableObject::RenderSkeletonSingle(CCustomObject* pParent, const Fmatrix& parent)
 {
-	RenderSingle(parent);
+	RenderSingle(pParent, parent);
     RenderBones(parent);
 }
 

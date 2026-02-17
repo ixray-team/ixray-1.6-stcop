@@ -3,10 +3,14 @@
 #include "lmodel.hlsli"
 #include "hmodel.hlsli"
 
-void main(p_bumped_new I, out f_editor_gbuffer O)
+uniform float4 editor_selection;
+
+void main(in p_bumped_new I, out f_editor_gbuffer O)
 {
-	if(is_lighting_enable.x < 0.5f) {
-		O.Color = tex2D(s_base, I.tcdh.xy);
+	if(is_lighting_enable.x < 0.5f) 
+    {
+		O.Color = s_base.Sample(smp_base, I.tcdh.xy);
+		O.Color.xyz += editor_selection.xyz;
 		
 #ifdef USE_AREF
     clip(O.Color.w - def_aref);

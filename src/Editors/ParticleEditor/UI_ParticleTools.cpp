@@ -154,7 +154,7 @@ void CParticleTool::Render()
 
     PrepareLighting		();
 
-	if (m_EditObject)	m_EditObject->RenderSingle(Fidentity);
+	if (m_EditObject)	m_EditObject->RenderSingle(NULL, Fidentity);
 	// draw parent axis
     DU_impl.DrawObjectAxis(m_Transform,0.05f,true);
 	// draw domains
