@@ -5,7 +5,6 @@
 #include "cl_log.h"
 #include <timeapi.h>
 #include <algorithm>
-#include <magic_enum/magic_enum.hpp>
 
 #include "xrLevel.h"
 

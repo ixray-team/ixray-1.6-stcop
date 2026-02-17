@@ -6,9 +6,9 @@ struct _sphere {
 	_vector3<T>	P;
 	T			R = 0;
 public:
-	IC void		set(const _vector3<T> &_P, T _R)	{ P.set(_P); R = _R; }
-	IC void		set(const _sphere<T> &S)			{ P.set(S.P); R=S.R; }
-	IC void		identity()							{ P.set(0,0,0); R=1; }
+	ICF void		set(const _vector3<T> &_P, T _R)	{ P.set(_P); R = _R; }
+	ICF void		set(const _sphere<T> &S)			{ P.set(S.P); R=S.R; }
+	ICF void		identity()							{ P.set(0,0,0); R=1; }
 
 	enum ERP_Result{
 		rpNone			= 0,
@@ -18,7 +18,7 @@ public:
 	};
 
 
-	bool operator==(const _sphere<T>& Left)
+	ICF bool operator==(const _sphere<T>& Left)
 	{
 		return P == Left.P && R == Left.R;
 	}
@@ -95,7 +95,7 @@ public:
 		return			rpNone;
 	}
 
-	IC ERP_Result intersect2(const _vector3<T>& S, const _vector3<T>& D, T& range) const	
+	ICF ERP_Result intersect2(const _vector3<T>& S, const _vector3<T>& D, T& range) const
     {
 		_vector3<T> Q;	Q.sub(P,S);
 	
@@ -128,13 +128,13 @@ public:
 		T SumR = R+S.R;
 		return P.distance_to_sqr(S.P) < SumR*SumR;
 	}
-	IC BOOL		contains(const _vector3<T>& PT) const 
+	ICF BOOL		contains(const _vector3<T>& PT) const
 	{
 		return P.distance_to_sqr(PT) <= (R*R+EPS_S);
 	}
 	
 	// returns true if this wholly contains the argument sphere
-	IC BOOL		contains(const _sphere<T>& S) const	
+	ICF BOOL		contains(const _sphere<T>& S) const
 	{
 		// can't contain a sphere that's bigger than me !
 		const T RDiff		= R - S.R;
@@ -144,7 +144,7 @@ public:
 	}
 
 	// return's volume of sphere
-	IC T		volume	() const
+	ICF T		volume	() const
 	{
 		return T( PI_MUL_4 / 3 ) * (R*R*R);
 	}
@@ -154,7 +154,7 @@ typedef _sphere<float>	Fsphere;
 typedef _sphere<double> Dsphere;
 
 template <class T>
-BOOL	_valid			(const _sphere<T>& s)		{ return _valid(s.P) && _valid(s.R);	}
+ICF BOOL	_valid			(const _sphere<T>& s)		{ return _valid(s.P) && _valid(s.R);	}
 
 void	XRCORE_API		Fsphere_compute		(Fsphere& dest, const Fvector *verts, int count);
 
