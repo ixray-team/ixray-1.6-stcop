@@ -408,6 +408,11 @@ void CCustomDevice::OnStateSwitch(u32 S)
 		}
 		break;
 	}
+	case eHandFiremode:
+	{
+		PlayHUDMotion("anm_hand_firemode", EHudMixType::eMixAll, eHandFiremode);
+		break;
+	}
 	}
 }
 
@@ -499,6 +504,7 @@ void CCustomDevice::OnAnimationEnd(u32 state)
 	case eHandShoot:
 	case eHandJammed:
 	case eHandLightMisfire:
+	case eHandFiremode:
 	{
 		SwitchState(eIdle);
 	} break;
@@ -549,6 +555,12 @@ bool CCustomDevice::CanLam() const
 {
 	return m_eAnimationsFlags.test(EAnimationsFlags::af_det_hand_lam) &&
 		(GetState() == eIdle || GetState() == eHandLam || GetState() == eShowing || GetState() == eSprintEnd || GetState() == eSprintStart || GetState() == eHandDraw || GetState() == eHandHide);
+}
+
+bool CCustomDevice::CanFiremode() const
+{
+	return m_eAnimationsFlags.test(EAnimationsFlags::af_det_hand_firemode) &&
+		(GetState() == eIdle || GetState() == eHandFiremode || GetState() == eShowing || GetState() == eSprintEnd || GetState() == eSprintStart || GetState() == eHandDraw || GetState() == eHandHide);
 }
 
 bool CCustomDevice::CanShooting(bool dry) const
