@@ -1,7 +1,6 @@
 #pragma once
 #include "../xrNetServer/NET_Server.h"
 #include "game_sv_base.h"
-#include "id_generator.h"
 #include "secure_messaging.h"
 #include "xrServer_updates_compressor.h"
 #include "xrClientsPool.h"
@@ -11,7 +10,7 @@ class CSE_Abstract;
 const u32 NET_Latency = 50; // time in (ms)
 
 // t-defs
-using xrS_entities = xr_hash_map<u16, CSE_Abstract*>;
+using xrS_entities = xr_hash_map<ALife::_OBJECT_ID, CSE_Abstract*>;
 
 class xrClientData :
 	public IClient
@@ -79,7 +78,7 @@ class xrServer :
 private:
 	xrS_entities				entities;
 	xr_multiset<svs_respawn>	q_respawn;
-	xr_vector<u16>				conn_spawned_ids;
+	xr_vector<ALife::_OBJECT_ID> conn_spawned_ids;
 	cheaters_t					m_cheaters;
 	
 	file_transfer::server_site*	m_file_transfers;
@@ -137,23 +136,49 @@ private:
 
 	void						SendUpdatesToAll		();
 	void						SendGameUpdateTo		(IClient* client);
+	
 private:
-	typedef 
-		CID_Generator<
-			u32,		// time identifier type
-			u8,			// compressed id type 
-			u16,		// id type
-			u8,			// block id type
-			u16,		// chunk id type
-			0,			// min value
-			u16(-2),	// max value
-			256,		// block size
-			u16(-1)		// invalid id
-		> id_generator_type;
+	// use multiple generators, which allocates only when we need new IDs
+	struct IDChunkSet
+	{
+		struct IDChunkSetLow
+		{
+			union USet // 8 IDs in one set
+			{
+				struct BitSet
+				{
+					u8 n1 : 1;
+					u8 n2 : 1;
+					u8 n3 : 1;
+					u8 n4 : 1;
+					u8 n5 : 1;
+					u8 n6 : 1;
+					u8 n7 : 1;
+					u8 n8 : 1;
+				} bset;
+				u8 set;
+			} pack[255] = {}; // 8 * 255 = 2040 IDs in one low-level chunk
+			u8 empty = 255; // amount of free packs in chunk for fast search
+		} data[255] = {}; // 8*255*255 = 520200 IDs in one chunk (engine will melt down earlier than this will be full)
+		u8 empty = 255; // amout of empty low-level chunks for fast search
+	};
+	xr_vector<xr_unique_ptr<IDChunkSet>> m_id_chunks;
+	xr_queue<xr_pair<ALife::_TIME_ID, ALife::_OBJECT_ID>> m_pending_delete_id_queue;
+	xr_set<ALife::_OBJECT_ID> m_pending_delete_id_set;
+	ALife::_OBJECT_ID m_TopValidID = ALife::INVALID_OBJECT_ID;
+	xrCriticalSection m_id_chunksCS;
+	secure_messaging::seed_generator m_seed_generator;
+	
+	static constexpr size_t i1Shift = size_t(255)*255*8;
+	static constexpr size_t i2Shift = size_t(255)*8;
+	static constexpr size_t i3Shift = 8;
+	static constexpr ALife::_TIME_ID ID_delete_delay = 100000;
 
-private:
-	id_generator_type					m_tID_Generator;
-	secure_messaging::seed_generator	m_seed_generator;
+	void FreeIDImpl(ALife::_OBJECT_ID ID);
+
+#ifdef DEBUG
+	void VerifyIDDebug();
+#endif
 
 protected:
 	void					Server_Client_Check				(IClient* CL);
@@ -164,18 +189,13 @@ public:
 	void					Export_game_type		(IClient* CL);
 	void					Perform_game_export		();
 	
-	IC void					clear_ids				()
-	{
-		m_tID_Generator		= id_generator_type();
-	}
-	IC u16					PerformIDgen			(u16 ID)
-	{
-		return				(m_tID_Generator.tfGetID(ID));
-	}
-	IC void					FreeID					(u16 ID, u32 time)
-	{
-		return				(m_tID_Generator.vfFreeID(ID, time));
-	}
+	void clear_ids();
+	ALife::_OBJECT_ID PerformIDgen(ALife::_OBJECT_ID ID);
+	void FreeID(ALife::_OBJECT_ID ID, u32 time);
+	ALife::_OBJECT_ID TopValidID() const;
+#ifdef DEBUG
+	bool IsIDUsed(ALife::_OBJECT_ID ID);
+#endif
 
 	void					Perform_connect_spawn	(CSE_Abstract* E, xrClientData* to, NET_Packet& P);
 	void					Perform_transfer		(NET_Packet &PR, NET_Packet &PT, CSE_Abstract* what, CSE_Abstract* from, CSE_Abstract* to);
@@ -186,10 +206,10 @@ public:
 	void					Process_update			(NET_Packet& P, ClientID sender);
 	void					Process_save			(NET_Packet& P, ClientID sender);
 	void					Process_event			(NET_Packet& P, ClientID sender);
-	void					Process_event_ownership	(NET_Packet& P, ClientID sender, u32 time, u16 ID, bool bForced = false);
-	bool					Process_event_reject	(NET_Packet& P, const ClientID sender, const u32 time, const u16 id_parent, const u16 id_entity, bool send_message = true);
-	void					Process_event_destroy	(NET_Packet& P, ClientID sender, u32 time, u16 ID, NET_Packet* pEPack);
-	void					Process_event_activate	(NET_Packet& P, const ClientID sender, const u32 time, const u16 id_parent, const u16 id_entity, bool send_message = true);
+	void					Process_event_ownership	(NET_Packet& P, ClientID sender, u32 time, ALife::_OBJECT_ID ID, bool bForced = false);
+	bool					Process_event_reject	(NET_Packet& P, const ClientID sender, const u32 time, const ALife::_OBJECT_ID id_parent, const ALife::_OBJECT_ID id_entity, bool send_message = true);
+	void					Process_event_destroy	(NET_Packet& P, ClientID sender, u32 time, ALife::_OBJECT_ID ID, NET_Packet* pEPack);
+	void					Process_event_activate	(NET_Packet& P, const ClientID sender, const u32 time, const ALife::_OBJECT_ID id_parent, const ALife::_OBJECT_ID id_entity, bool send_message = true);
 	
 	void					SendConnectResult		(IClient* CL, u8 res, u8 res1, char* ResultStr);
 	void			SendConfigFinished		(ClientID const & clientId);
@@ -252,7 +272,7 @@ public:
 	u32 const				GetLastUpdatesSize	() const { return m_last_updates_size; };
 
 	xrClientData*			ID_to_client		(ClientID ID, bool ScanAll = false ) { return (xrClientData*)(IPureServer::ID_to_client( ID, ScanAll)); }
-	CSE_Abstract*			ID_to_entity		(u16 ID);
+	CSE_Abstract*			ID_to_entity		(ALife::_OBJECT_ID ID);
 
 	// main
 	virtual EConnect		Connect				(shared_str& session_name, GameDescriptionData & game_descr);
@@ -285,7 +305,7 @@ public:
 			void PopLastServerScriptEvent();
 			u32 GetSizeServerScriptEvent();
 public:
-	xr_string				ent_name_safe		(u16 eid);
+	xr_string				ent_name_safe		(ALife::_OBJECT_ID eid);
 #ifdef DEBUG
 			bool			verify_entities		() const;
 			void			verify_entity		(const CSE_Abstract *entity) const;
@@ -318,4 +338,4 @@ enum MapSyncResponse
 	SuccessSync = 0,		// in this case, all is OK :)
 	InvalidChecksum = 1,		// in this case, client has corrupted map geometry (checksum error)
 	YouHaveOtherMap = 2			// in this case, client has other map
-}; //enum MapSyncResponse
+}; //enum

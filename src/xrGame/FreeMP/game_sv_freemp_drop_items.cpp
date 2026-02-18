@@ -44,7 +44,7 @@ bool game_sv_freemp::OnTouchPlayersBag(CSE_ActorMP* actor, CSE_Abstract* item)
 	R_ASSERT(actor);
 	R_ASSERT(item);
 
-	if (item->ID_Parent != 0xffff)
+	if (item->ID_Parent != ALife::INVALID_OBJECT_ID)
 	{
 		return true;
 	}
@@ -68,8 +68,7 @@ bool game_sv_freemp::OnTouchPlayersBag(CSE_ActorMP* actor, CSE_Abstract* item)
 				{
 					NET_Packet P;
 					u_EventGen(P, GE_OWNERSHIP_REJECT, item->ID);
-					P.w_u16(e_child_item->ID);
-
+					P << e_child_item->ID;
 					m_server->Process_event_reject(P, m_server->GetServerClient()->ID, 0, item->ID, e_child_item->ID);
 					continue;
 				}
@@ -98,8 +97,6 @@ void game_sv_freemp::OnDetachPlayersBag(CSE_ActorMP* actor, CSE_Abstract* item)
 	R_ASSERT(item);
 
 	//move all items from player to rukzak
-	xr_vector<u16>::const_iterator it_e = actor->children.end();
-
 	xr_vector<CSE_Abstract*>			to_transfer;
 	xr_vector<CSE_Abstract*>			to_destroy;
 	xr_vector<CSE_Abstract*>			to_reject;
@@ -107,15 +104,16 @@ void game_sv_freemp::OnDetachPlayersBag(CSE_ActorMP* actor, CSE_Abstract* item)
 	// may be there is a sense to move next invokation into the ProcessDeath method...
 	FillDeathActorRejectItems(actor, to_reject);
 
-	for (auto it = actor->children.cbegin(); it != it_e; ++it)
+	for(auto ItemID : actor->children)
 	{
-		u16 ItemID = *it;
 		CSE_Abstract* e_item = get_entity_from_eid(ItemID);
 
 		R_ASSERT(e_item->ID_Parent == actor->ID);
 
-		if (std::find(to_reject.begin(), to_reject.end(), e_item) != to_reject.end())
+		if (std::ranges::find(to_reject, e_item) != to_reject.end())
+		{
 			continue;
+		}
 
 		if ((e_item->m_tClassID == CLSID_OBJECT_W_KNIFE) ||
 			(e_item->m_tClassID == CLSID_DEVICE_TORCH) ||
@@ -137,9 +135,9 @@ void game_sv_freemp::OnDetachPlayersBag(CSE_ActorMP* actor, CSE_Abstract* item)
 	NET_Packet PacketTake;
 	EventPack.w_begin(M_EVENT_PACK);
 
-	for (auto it = to_transfer.cbegin(); it != to_transfer.cend(); ++it)
+	for (auto it : to_transfer)
 	{
-		m_server->Perform_transfer(PacketReject, PacketTake, *it, actor, item);
+		m_server->Perform_transfer(PacketReject, PacketTake, it, actor, item);
 		EventPack.w_u8(u8(PacketReject.B.count));
 		EventPack.w(&PacketReject.B.data, PacketReject.B.count);
 		EventPack.w_u8(u8(PacketTake.B.count));
@@ -147,11 +145,17 @@ void game_sv_freemp::OnDetachPlayersBag(CSE_ActorMP* actor, CSE_Abstract* item)
 	}
 
 	if (EventPack.B.count > 2)
+	{
 		u_EventSend(EventPack);
+	}
 
 	for (const auto& el : to_destroy)
+	{
 		DestroyGameItem(el);
+	}
 
 	for (const auto& el : to_reject)
+	{
 		RejectGameItem(el);
+	}
 }

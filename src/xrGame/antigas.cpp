@@ -460,14 +460,14 @@ bool IAntigas::UninstallFilter()
 
 void IAntigas::UpdateCL()
 {
-	if (!is_condition_applyed && last_filter_id != u32(-1)) {
+	if (!is_condition_applyed && last_filter_id != ALife::INVALID_OBJECT_ID) {
 		if (CObject* co = Level().Objects.net_Find(last_filter_id))
 		{
 			if (CInventoryItem* io = co->cast_inventory_item())
 			{
 				io->SetCondition(last_filter_condition);
 				is_condition_applyed = true;
-				last_filter_id = u32(-1);
+				last_filter_id = ALife::INVALID_OBJECT_ID;
 				last_filter_condition = 0.0f;
 			}
 		}

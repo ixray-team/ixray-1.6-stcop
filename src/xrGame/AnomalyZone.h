@@ -119,7 +119,7 @@ protected:
 		eBulletRandom			=(1<<21),
 		DeleteBolts = (1 << 22),
 	};
-	u32					m_owner_id;
+	ALife::_OBJECT_ID					m_owner_id;
 	u32					m_ttl;
 	Flags32				m_zone_flags;
 
@@ -281,8 +281,8 @@ protected:
 	xr_vector<SZoneObjectInfo> m_ObjectInfoMap;
 
 public:
-	void					CreateHit					(	u16 id_to, 
-															u16 id_from, 
+	void					CreateHit					(	ALife::_OBJECT_ID id_to, 
+															ALife::_OBJECT_ID id_from, 
 															const Fvector& hit_dir, 
 															float hit_power, 
 															s16 bone_id, 

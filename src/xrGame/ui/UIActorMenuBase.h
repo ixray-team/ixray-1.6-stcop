@@ -170,12 +170,12 @@ protected:
 
 	EDDListType					GetListType					(CUIDragDropListEx* l);
 
-	void						SendEvent_Item2Slot			(PIItem	pItem, u16 parent, u16 slot_id);
-	void						SendEvent_Item2Belt			(PIItem	pItem, u16 parent);
-	void						SendEvent_Item2Ruck			(PIItem	pItem, u16 parent);
-	void						SendEvent_Item_Drop			(PIItem	pItem, u16 parent);
-	void						SendEvent_Item_Eat			(PIItem	pItem, u16 parent);
-	void						SendEvent_ActivateSlot		(u16 slot, u16 recipient);
+	void						SendEvent_Item2Slot			(PIItem	pItem, ALife::_OBJECT_ID parent, u16 slot_id);
+	void						SendEvent_Item2Belt			(PIItem	pItem, ALife::_OBJECT_ID parent);
+	void						SendEvent_Item2Ruck			(PIItem	pItem, ALife::_OBJECT_ID parent);
+	void						SendEvent_Item_Drop			(PIItem	pItem, ALife::_OBJECT_ID parent);
+	void						SendEvent_Item_Eat			(PIItem	pItem, ALife::_OBJECT_ID parent);
+	void						SendEvent_ActivateSlot		(u16 slot, ALife::_OBJECT_ID recipient);
 	bool						OnItemDropped				(PIItem itm, CUIDragDropListEx* new_owner, CUIDragDropListEx* old_owner);
 
 	bool						OnItemFocusedUpdate			(CUICellItem* itm);
@@ -341,7 +341,7 @@ protected:
 
 	PIItem m_lastFocusRecivedItem = nullptr;
 	CUICellItem* m_cell_lastFocusRecivedItem = nullptr;
-	u16 m_lastFocusLostItem_id = u16(0xffff);
+	ALife::_OBJECT_ID m_lastFocusLostItem_id = ALife::INVALID_OBJECT_ID;
 
 	const char* m_onItemFocusLost = {};
 	bool m_isItemFocusLost = false;

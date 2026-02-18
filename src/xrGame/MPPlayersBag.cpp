@@ -18,11 +18,11 @@ CMPPlayersBag::~CMPPlayersBag()
 void CMPPlayersBag::OnEvent(NET_Packet& P, u16 type) 
 {
 	CInventoryItemObject::OnEvent		(P,type);
-	u16						id;
+	ALife::_OBJECT_ID						id;
 	switch (type) {
 		case GE_OWNERSHIP_TAKE : 
 			{
-				P.r_u16(id);
+				P >> id;
 				CObject* O = Level().Objects.net_Find(id);
 				CInventoryItem*	pIItem		= O->cast_inventory_item();
 				R_ASSERT					(pIItem->m_pInventory==nullptr);
@@ -36,7 +36,7 @@ void CMPPlayersBag::OnEvent(NET_Packet& P, u16 type)
 			}break;
 		case GE_OWNERSHIP_REJECT : 
 			{
-				P.r_u16			(id);
+				P >> id;
 				CObject* O = Level().Objects.net_Find(id);
 				
 #ifdef MP_LOGGING

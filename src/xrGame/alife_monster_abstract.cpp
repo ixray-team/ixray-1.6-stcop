@@ -45,7 +45,7 @@ void CSE_ALifeMonsterAbstract::on_unregister							()
 	inherited1::on_unregister();
 	RELATION_REGISTRY().ClearRelations								(ID);
 	brain().on_unregister					();
-	if (m_group_id != 0xffff)
+	if (m_group_id != ALife::INVALID_OBJECT_ID)
 		ai().alife().groups().object(m_group_id).unregister_member	(ID);
 }
 

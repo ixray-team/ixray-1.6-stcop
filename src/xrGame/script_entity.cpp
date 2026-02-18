@@ -677,10 +677,10 @@ void CScriptEntity::process_sound_callbacks()
 		PROF_EVENT("suund_lua_call");
 		object().callback(GameObject::eSound)(
 			object().lua_game_object(),
-			(*I).m_game_object_id,
-			(*I).m_sound_type,
-			(*I).m_position,
-			(*I).m_sound_power
+			I->m_game_object_id,
+			I->m_sound_type,
+			I->m_position,
+			I->m_sound_power
 		);
 	}
 

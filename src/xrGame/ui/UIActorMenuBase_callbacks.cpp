@@ -42,7 +42,7 @@ bool CUIActorMenuBase::OnItemDrop(CUICellItem* itm)
 			CGameObject* GO1 = CurrentIItem() != nullptr ? CurrentIItem()->cast_game_object() : nullptr;
 			CGameObject* GO2 = nullptr;
 
-			if (m_lastFocusRecivedItem != nullptr && m_lastFocusLostItem_id != u16(0xffff) && m_lastFocusRecivedItem->object_id() != m_lastFocusLostItem_id && m_lastFocusRecivedItem->m_pInventory != nullptr) 
+			if (m_lastFocusRecivedItem != nullptr && m_lastFocusLostItem_id != ALife::INVALID_OBJECT_ID && m_lastFocusRecivedItem->object_id() != m_lastFocusLostItem_id && m_lastFocusRecivedItem->m_pInventory != nullptr) 
 			{
 				GO2 = m_lastFocusRecivedItem->cast_game_object();
 			}
@@ -176,7 +176,7 @@ bool CUIActorMenuBase::OnItemDrop(CUICellItem* itm)
 		CGameObject* GO1 = CurrentIItem() != nullptr ? CurrentIItem()->cast_game_object() : nullptr;
 		CGameObject* GO2 = nullptr;
 
-		if (m_lastFocusRecivedItem != nullptr && m_lastFocusLostItem_id != u16(0xffff) && m_lastFocusRecivedItem->object_id() != m_lastFocusLostItem_id && m_lastFocusRecivedItem->m_pInventory != nullptr)
+		if (m_lastFocusRecivedItem != nullptr && m_lastFocusLostItem_id != ALife::INVALID_OBJECT_ID && m_lastFocusRecivedItem->object_id() != m_lastFocusLostItem_id && m_lastFocusRecivedItem->m_pInventory != nullptr)
 		{
 			GO2 = m_lastFocusRecivedItem->cast_game_object();
 		}
@@ -320,7 +320,7 @@ bool CUIActorMenuBase::OnItemFocusLost(CUICellItem* itm)
 	}
 	else 
 	{
-		m_lastFocusLostItem_id = u16(0xffff);
+		m_lastFocusLostItem_id = ALife::INVALID_OBJECT_ID;
 	}
 
 	InfoCurItem( nullptr );

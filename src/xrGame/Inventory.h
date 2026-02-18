@@ -94,7 +94,7 @@ public:
 	PIItem Get(const char* name, bool bSearchRuck) const;
 
 	// ищет на поясе или в рюкзаке PIItem с указанным именем (id)
-	PIItem Get(const u16  id, bool bSearchRuck) const;
+	PIItem Get(const ALife::_OBJECT_ID id, bool bSearchRuck) const;
 
 	// ищет на поясе или в рюкзаке PIItem с указанным CLS_ID
 	PIItem Get(CLASS_ID cls_id, bool bSearchRuck) const;

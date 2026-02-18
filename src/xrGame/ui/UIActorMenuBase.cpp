@@ -35,16 +35,16 @@
 #include "UIInvUpgradeInfo.h"
 #include "UIMessageBoxEx.h"
 
-void move_item_from_to (u16 from_id, u16 to_id, u16 what_id)
+void move_item_from_to (ALife::_OBJECT_ID from_id, ALife::_OBJECT_ID to_id, ALife::_OBJECT_ID what_id)
 {
 	NET_Packet P;
 	CGameObject::u_EventGen					(P, GE_TRADE_SELL, from_id);
-	P.w_u16									(what_id);
+	P << what_id;
 	CGameObject::u_EventSend				(P);
 
 	//другому инвентарю - взять вещь 
 	CGameObject::u_EventGen					(P, GE_TRADE_BUY, to_id);
-	P.w_u16									(what_id);
+	P << what_id;
 	CGameObject::u_EventSend				(P);
 }
 
@@ -757,7 +757,7 @@ void CUIActorMenuBase::InvalidateAllTransientCellRefs()
 	m_pCurrentCellItem = nullptr;
 	m_cell_lastFocusRecivedItem = nullptr;
 	m_lastFocusRecivedItem = nullptr;
-	m_lastFocusLostItem_id = u16(-1);
+	m_lastFocusLostItem_id = ALife::INVALID_OBJECT_ID;
 	CUICellItem::m_mouse_selected_item = nullptr;
 	InvalidateDerivedCellRefsForList(nullptr);
 	InfoCurItem(nullptr);
