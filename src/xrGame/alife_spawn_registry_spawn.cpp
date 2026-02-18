@@ -87,7 +87,7 @@ void CALifeSpawnRegistry::fill_new_spawns_single		(SPAWN_GRAPH::CVertex *vertex,
 	SPAWN_GRAPH::const_iterator	I = vertex->edges().begin(), B = I;
 	SPAWN_GRAPH::const_iterator	E = vertex->edges().end();
 	for ( ; I != E; ++I)
-		accumulator				+= (*I).weight();
+		accumulator				+= I->weight();
 
 	float						probability = randF(accumulator);
 //	float						group_probability = vertex->data()->object().m_spawn_probability;
@@ -102,7 +102,7 @@ void CALifeSpawnRegistry::fill_new_spawns_single		(SPAWN_GRAPH::CVertex *vertex,
 		accumulator				+= (*I).weight()*group_probability;
 		if (accumulator > probability) {
 //			vertex->data()->object().m_spawn_count++;
-			fill_new_spawns		(m_spawns.vertex((*I).vertex_id()),spawns,game_time,objects);
+			fill_new_spawns		(m_spawns.vertex(I->vertex_id()),spawns,game_time,objects);
 			return;
 		}
 	}
@@ -131,7 +131,7 @@ void CALifeSpawnRegistry::fill_new_spawns				(SPAWN_GRAPH::CVertex *vertex, SPAW
 	SPAWN_GRAPH::const_iterator				E = vertex->edges().end();
 	for ( ; I != E; ++I)
 		if (randF(1.f) < (*I).weight())
-			fill_new_spawns					(m_spawns.vertex((*I).vertex_id()),spawns,game_time,objects);
+			fill_new_spawns					(m_spawns.vertex(I->vertex_id()),spawns,game_time,objects);
 }
 
 void CALifeSpawnRegistry::fill_new_spawns				(SPAWN_IDS &spawns, ALife::_TIME_ID game_time, SPAWN_IDS &objects)

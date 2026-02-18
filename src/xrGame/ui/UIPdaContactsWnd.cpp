@@ -16,7 +16,89 @@
 #include "UICharacterInfo.h"
 #include "PdaConstants.h"
 
-extern CSE_ALifeTraderAbstract* ch_info_get_from_id(u16 id);
+extern CSE_ALifeTraderAbstract* ch_info_get_from_id(ALife::_OBJECT_ID id);
+
+namespace
+{
+// Resolves a contact owner safely from the stable owner id, avoiding dereference of stale m_data pointers
+// after the underlying NPC object was destroyed (death, alife unload) while the PDA window stays open.
+CInventoryOwner* ResolveContactOwnerById(ALife::_OBJECT_ID ownerId)
+{
+	if (ownerId == ALife::INVALID_OBJECT_ID)
+	{
+		return nullptr;
+	}
+
+	CObject* object = Level().Objects.net_Find(ownerId);
+	if (object == nullptr || object->getDestroy())
+	{
+		return nullptr;
+	}
+
+	return object->cast_inventory_owner();
+}
+
+// Ends embedded phrase UI and PDA talk session when the highlighted contact no longer matches the active NPC.
+void StopEmbeddedPhraseUiIfSessionNpcDiffers(CInventoryOwner* highlightedOwner)
+{
+	if (!highlightedOwner)
+	{
+		return;
+	}
+
+	CPdaCommunication& comm = PdaCommunication();
+	if (!comm.IsSessionActive())
+	{
+		return;
+	}
+
+	CInventoryOwner* sessionNpc = comm.GetSessionNpc();
+	if (!sessionNpc || sessionNpc == highlightedOwner)
+	{
+		return;
+	}
+
+	CUIGameCustom* gameUi = CurrentGameUI();
+	if (gameUi && gameUi->TalkMenu)
+	{
+		gameUi->TalkMenu->StopPdaDialog();
+	}
+	else
+	{
+		comm.Stop();
+	}
+}
+
+bool TryLaunchEmbeddedPdaPhraseUi(CUIPdaContactsWnd* contactsWnd)
+{
+    CUIGameCustom* gameUi = CurrentGameUI();
+    if (!gameUi || !gameUi->TalkMenu)
+    {
+        return false;
+    }
+
+    CUITalkWnd* talkWnd = gameUi->TalkMenu;
+    talkWnd->SetPdaMode(true);
+    if (!talkWnd->IsEmbeddedInPda() && contactsWnd)
+    {
+        talkWnd->BeginPdaEmbed(contactsWnd);
+    }
+
+    if (!talkWnd->IsEmbeddedInPda())
+    {
+        talkWnd->StopPdaDialog();
+        return false;
+    }
+
+    const bool isInitialized = talkWnd->InitializeDialogForPda();
+    if (!isInitialized)
+    {
+        talkWnd->StopPdaDialog();
+    }
+
+    return isInitialized;
+}
+} // namespace
 
 #define PDA_CONTACT_HEIGHT 70
 

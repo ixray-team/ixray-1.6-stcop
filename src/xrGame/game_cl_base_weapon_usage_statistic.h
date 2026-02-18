@@ -64,7 +64,7 @@ struct HitData
 	
 	s16		BoneID;
 	shared_str	BoneName;
-	u16		TargetID;
+	ALife::_OBJECT_ID TargetID;
 	shared_str	TargetName;
 	u32		BulletID;
 	bool	Deadly;
@@ -229,7 +229,7 @@ struct WeaponUsageStatistic final
 	//-----------------------------------------------
 	void				OnWeaponBought			(game_PlayerState* ps, const char* WeaponName);
 	void				OnBullet_Fire			(SBullet* pBullet, const CCartridge& cartridge);
-	 void		OnBullet_Hit			(SBullet* pBullet, u16 TargetID, s16 element, Fvector HitLocation);
+	 void		OnBullet_Hit			(SBullet* pBullet, ALife::_OBJECT_ID TargetID, s16 element, Fvector HitLocation);
 	void				OnBullet_Remove			(SBullet* pBullet);
 	//-----------------------------------------------
 	
@@ -252,7 +252,7 @@ struct WeaponUsageStatistic final
 	 void		OnPlayerBringArtefact		(game_PlayerState* ps);
 			void		OnPlayerKillPlayer			(game_PlayerState* ps, KILL_TYPE KillType, SPECIAL_KILL_TYPE SpecialKillType);
 	 void		OnExplosionKill				(game_PlayerState* ps, const SHit& hit);
-			void		OnBleedKill					(game_PlayerState* killer_ps, game_PlayerState* victim_ps, u16 weapon_id);
+			void		OnBleedKill					(game_PlayerState* killer_ps, game_PlayerState* victim_ps, ALife::_OBJECT_ID weapon_id);
 	//-----------------------------------------------
 	void				Update						();
 	void				OnUpdateRequest				(NET_Packet* P);

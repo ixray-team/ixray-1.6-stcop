@@ -19,17 +19,17 @@ struct SHit final
 	void Write_Packet(NET_Packet& P);
 	void Write_Packet_Cont(NET_Packet& P);
 
-	void GenHeader(u16 PacketType, u16 ID);
+	void GenHeader(u16 PacketType, ALife::_OBJECT_ID ID);
 
 	u32 Time = 0;
 	u16 PACKET_TYPE = 0;
-	u16 DestID = 0;
+	ALife::_OBJECT_ID DestID = 0;
 
 	float power = 0.0f;
 	Fvector	dir = zero_vel;
 	CObject* who = nullptr;
-	u16	whoID = 0;
-	u16	weaponID = 0;
+	ALife::_OBJECT_ID whoID = 0;
+	ALife::_OBJECT_ID weaponID = 0;
 	u16	boneID = BI_NONE;
 	Fvector	p_in_bone_space = zero_vel;
 	float impulse = 0.0f;

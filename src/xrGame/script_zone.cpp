@@ -137,7 +137,7 @@ void CScriptZone::OnRender()
 }
 #endif
 
-bool CScriptZone::active_contact(u16 id) const
+bool CScriptZone::active_contact(ALife::_OBJECT_ID id) const
 {
 	xr_vector<CObject*>::const_iterator	I = feel_touch.begin();
 	xr_vector<CObject*>::const_iterator	E = feel_touch.end();

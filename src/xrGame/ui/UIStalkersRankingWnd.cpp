@@ -22,7 +22,7 @@
 #define		STALKERS_RANKING_CHARACTER_XML	"stalkers_ranking_character.xml"
 
 struct SStatData{
-	u16							id;
+	ALife::_OBJECT_ID							id;
 	CSE_ALifeTraderAbstract*	trader;
 	bool operator == (const SStatData& d1){return (id==d1.id) ;}
 };
@@ -119,7 +119,7 @@ bool GreaterRankPred(const SStatData& h1, const SStatData& h2)
 	return (h1.trader->m_rank > h2.trader->m_rank);
 }
 
-extern CSE_ALifeTraderAbstract* ch_info_get_from_id (u16 id);
+extern CSE_ALifeTraderAbstract* ch_info_get_from_id (ALife::_OBJECT_ID id);
 
 int get_actor_ranking()
 {
@@ -178,7 +178,7 @@ void CUIStalkersRankingWnd::FillList()
 	}
 }
 
-void CUIStalkersRankingWnd::ShowHumanInfo(u16 id)
+void CUIStalkersRankingWnd::ShowHumanInfo(ALife::_OBJECT_ID id)
 {
 	UICharacterInfo->InitCharacter(id);
 }
@@ -298,7 +298,7 @@ bool CUIStalkersRankingWnd::OnGamepadKeyHold(int id)
 	return inherited::OnGamepadKeyHold(id);
 }
 
-void add_human_to_top_list(u16 id)
+void add_human_to_top_list(ALife::_OBJECT_ID id)
 {
 	CSE_ALifeTraderAbstract* t	= ch_info_get_from_id(id);
 	SStatData	d;
@@ -316,7 +316,7 @@ void add_human_to_top_list(u16 id)
 //	t->m_rank	=	::Random.randI(20000);
 }
 
-void remove_human_from_top_list(u16 id)
+void remove_human_from_top_list(ALife::_OBJECT_ID id)
 {
 	CSE_ALifeTraderAbstract* t				= ch_info_get_from_id(id);
 	SStatData	d;
@@ -329,7 +329,7 @@ void remove_human_from_top_list(u16 id)
 
 
 CUIStalkerRankingInfoItem::CUIStalkerRankingInfoItem(CUIStalkersRankingWnd* w)
-:m_StalkersRankingWnd(w),m_humanID(u16(-1))
+:m_StalkersRankingWnd(w),m_humanID(ALife::INVALID_OBJECT_ID)
 {
 }
 

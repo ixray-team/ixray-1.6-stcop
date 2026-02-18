@@ -61,7 +61,7 @@ Fvector	CScriptGameObject::Center()
 BIND_FUNCTION10	(&object(),	CScriptGameObject::Position,			CGameObject,	Position,			Fvector,						Fvector());
 BIND_FUNCTION10	(&object(),	CScriptGameObject::Direction,			CGameObject,	Direction,			Fvector,						Fvector());
 BIND_FUNCTION10	(&object(),	CScriptGameObject::Mass,		CPhysicsShellHolder,	GetMass,			float,							float(-1));
-BIND_FUNCTION10	(&object(),	CScriptGameObject::ID,					CGameObject,	ID,					u16,							u16(-1));
+BIND_FUNCTION10	(&object(),	CScriptGameObject::ID,					CGameObject,	ID,					ALife::_OBJECT_ID,							ALife::INVALID_OBJECT_ID);
 BIND_FUNCTION10	(&object(),	CScriptGameObject::getVisible,			CGameObject,	getVisible,			bool,							false);
 //BIND_FUNCTION01	(&object(),	CScriptGameObject::setVisible,			CGameObject,	setVisible,			bool,							bool);
 BIND_FUNCTION10	(&object(),	CScriptGameObject::getEnabled,			CGameObject,	getEnabled,			bool,							false);

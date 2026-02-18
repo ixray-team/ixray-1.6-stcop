@@ -302,7 +302,7 @@ public:
 
 		NET_Packet P;
 		StalkerOwner->u_EventGen(P, GE_OWNERSHIP_REJECT, StalkerOwner->ID());
-		P.w_u16(ItemObject->ID());
+		P << ItemObject->ID();
 		StalkerOwner->u_EventSend(P);
 	}
 
@@ -1473,9 +1473,9 @@ void FRbmkObjectHandlerPlanner::SetGoap(MonsterSpace::EObjectAction ObjectAction
 	}
 }
 
-uint16 FRbmkObjectHandlerPlanner::CurrentActionObjectID() const
+ALife::_OBJECT_ID FRbmkObjectHandlerPlanner::CurrentActionObjectID() const
 {
-	return TargetObject?TargetObject->ID():0xFFFF;
+	return TargetObject?TargetObject->ID():ALife::INVALID_OBJECT_ID;
 }
 
 shared_str FRbmkObjectHandlerPlanner::CurrentActionStateName() const

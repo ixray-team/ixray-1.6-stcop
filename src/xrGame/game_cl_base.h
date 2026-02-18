@@ -77,7 +77,7 @@ public:
 
 	virtual		char*				getTeamSection			(int Team){return NULL;};
 
-				game_PlayerState*	GetPlayerByGameID		(u32 GameID);
+				game_PlayerState*	GetPlayerByGameID		(ALife::_OBJECT_ID GameID);
 				game_PlayerState*	GetPlayerByOrderID		(u32 id);
 				ClientID			GetClientIDByOrderID	(u32 id);
 				u32					GetPlayersCount			() const {return players.size();};
@@ -88,7 +88,7 @@ public:
 
 	virtual		void				shedule_Update			(u32 dt);
 
-	void							u_EventGen				(NET_Packet& P, u16 type, u16 dest);
+	void							u_EventGen				(NET_Packet& P, u16 type, ALife::_OBJECT_ID dest);
 	void							u_EventSend				(NET_Packet& P);
 
 	virtual		void				ChatSay					(const char* phrase, bool bAll)	{};
@@ -119,7 +119,7 @@ public:
 	virtual		void				OnPlayerFlagsChanged	(game_PlayerState* ps)	{};
 	virtual		void				OnNewPlayerConnected	(ClientID const & newClient) {};
 	virtual		void				OnPlayerVoted			(game_PlayerState* ps)	{};
-	virtual		void				SendPickUpEvent			(u16 ID_who, u16 ID_what);
+	virtual		void				SendPickUpEvent			(ALife::_OBJECT_ID ID_who, ALife::_OBJECT_ID ID_what);
 
 	virtual		bool				IsPlayerInTeam			(game_PlayerState* ps, ETeam team) {return ps->team == team;};
 	virtual		void				OnConnected				();

@@ -259,7 +259,7 @@ void CControllerPsyHit::activate()
 	{
 		NET_Packet tmp_packet;
 		CGameObject::u_EventGen(tmp_packet, GE_CONTROLLER_PSY_FIRE, m_object->ID());
-		tmp_packet.w_u16(pActor->ID());
+		tmp_packet << pActor->ID();
 		tmp_packet.w_u8(0);
 		Level().Server->SendBroadcast(BroadcastCID, tmp_packet, net_flags(true, true));
 	}
@@ -777,7 +777,7 @@ void CControllerPsyHit::death_glide_start()
 	{
 		NET_Packet tmp_packet;
 		CGameObject::u_EventGen(tmp_packet, GE_CONTROLLER_PSY_FIRE, m_object->ID());
-		tmp_packet.w_u16(pActor->ID());
+		tmp_packet << pActor->ID();
 		tmp_packet.w_u8(1);
 		Level().Server->SendBroadcast(BroadcastCID, tmp_packet, net_flags(true, true));
 	}
@@ -904,7 +904,7 @@ void CControllerPsyHit::hit()
 		{
 			NET_Packet tmp_packet;
 			CGameObject::u_EventGen(tmp_packet, GE_CONTROLLER_PSY_FIRE, m_object->ID());
-			tmp_packet.w_u16(pActor->ID());
+			tmp_packet << pActor->ID();
 			tmp_packet.w_u8(3);
 			Level().Server->SendBroadcast(BroadcastCID, tmp_packet, net_flags(true, true));
 		}
@@ -943,7 +943,7 @@ void CControllerPsyHit::stop()
 		{
 			NET_Packet tmp_packet;
 			CGameObject::u_EventGen(tmp_packet, GE_CONTROLLER_PSY_FIRE, m_object->ID());
-			tmp_packet.w_u16(pActor->ID());
+			tmp_packet << pActor->ID();
 			tmp_packet.w_u8(2);
 			Level().Server->SendBroadcast(BroadcastCID, tmp_packet, net_flags(true, true));
 		}

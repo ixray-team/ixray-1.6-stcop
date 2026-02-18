@@ -23,7 +23,7 @@
 #include "restriction_space.h"
 #include "../xrEngine/IGame_Persistent.h"
 
-SArtefactActivation::SArtefactActivation(CArtefact* af,u32 owner_id)
+SArtefactActivation::SArtefactActivation(CArtefact* af,ALife::_OBJECT_ID owner_id)
 {
 	m_af			= af;
 	Load			();
@@ -64,7 +64,7 @@ void SArtefactActivation::Start()
 
 	NET_Packet						P;
 	CGameObject::u_EventGen			(P,GE_OWNERSHIP_REJECT, m_af->H_Parent()->ID());
-	P.w_u16							(m_af->ID());
+	P << m_af->ID();
 	if (OnServer())
 		CGameObject::u_EventSend		(P);
 	m_light->set_active				(true);
@@ -183,7 +183,7 @@ void SArtefactActivation::SpawnAnomaly()
 		CSE_Abstract		*object = Level().spawn_item(	zone_sect,
 															pos,
 															(g_dedicated_server)?u32(-1):m_af->ai_location().level_vertex_id(),
-															0xffff,
+															ALife::INVALID_OBJECT_ID,
 															true
 		);
 		CSE_ALifeAnomalousZone*		AlifeZone = smart_cast<CSE_ALifeAnomalousZone*>(object);

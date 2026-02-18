@@ -17,12 +17,12 @@
 using namespace luabind;
 
 
-u16 CMemoryObject::object_id(const CObject* object)
+ALife::_OBJECT_ID CMemoryObject::object_id(const CObject* object)
 {
-	return (object ? u16(object->ID()) : u16(0xffff));
+	return (object ? object->ID() : ALife::INVALID_OBJECT_ID);
 }
 
-bool CMemoryObject::operator==(u16 id) const
+bool CMemoryObject::operator==(ALife::_OBJECT_ID id) const
 {
 	return (object_id(m_object) == id);
 }

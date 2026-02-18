@@ -528,7 +528,7 @@ shared_str CSE_ALifeTraderAbstract::character_profile()
 #ifdef XRGAME_EXPORTS
 
 //для работы с relation system
-u16 CSE_ALifeTraderAbstract::object_id		() const
+ALife::_OBJECT_ID CSE_ALifeTraderAbstract::object_id		() const
 {
 	// in case base gets destroyed but trader isn't
 	if (!base())
@@ -1002,7 +1002,7 @@ CSE_ALifeCreatureAbstract::CSE_ALifeCreatureAbstract(const char* caSection)	: CS
 	m_ef_creature_type			= pSettings->r_u32(caSection,"ef_creature_type");
 	m_ef_weapon_type			= READ_IF_EXISTS(pSettings,r_u32,caSection,"ef_weapon_type",u32(-1));
 	m_ef_detector_type			= READ_IF_EXISTS(pSettings,r_u32,caSection,"ef_detector_type",u32(-1));
-	m_killer_id					= ALife::_OBJECT_ID(-1);
+	m_killer_id					= ALife::INVALID_OBJECT_ID;
 	m_game_death_time			= 0;
 }
 
@@ -1067,8 +1067,8 @@ void CSE_ALifeCreatureAbstract::STATE_Write	(NET_Packet &tNetPacket)
 #endif // XRGAME_EXPORTS
 	save_data					(m_dynamic_out_restrictions,tNetPacket);
 	save_data					(m_dynamic_in_restrictions,tNetPacket);
-	tNetPacket.w_u16			( get_killer_id() );
-	R_ASSERT(!(get_health() > 0.0f && get_killer_id() != u16(-1)));
+	tNetPacket << get_killer_id();
+	R_ASSERT(!(get_health() > 0.0f && get_killer_id() != ALife::INVALID_OBJECT_ID));
 	tNetPacket.w_u64			(m_game_death_time);
 }
 
@@ -1093,7 +1093,16 @@ void CSE_ALifeCreatureAbstract::STATE_Read	(NET_Packet &tNetPacket, u16 size)
 		load_data				(m_dynamic_in_restrictions,tNetPacket);
 	}
 	if (m_wVersion > 94)
-		set_killer_id( tNetPacket.r_u16() );
+	{
+		if (m_wVersion < 130)
+		{
+			auto ID = tNetPacket.r_u16();
+			set_killer_id(ID == 0xffff ? ALife::INVALID_OBJECT_ID : ID);
+		} else
+		{
+			set_killer_id( tNetPacket.r_u32() );
+		}
+	}
 
 	o_torso.pitch				= o_Angle.x;
 	o_torso.yaw					= o_Angle.y;
@@ -1182,7 +1191,7 @@ bool CSE_ALifeCreatureAbstract::can_switch_offline	() const
 
 void CSE_ALifeCreatureAbstract::set_health	(float const health_value)
 {
-	VERIFY( !((get_killer_id() != u16(-1)) && (health_value > 0.f)) );
+	VERIFY( !((get_killer_id() != ALife::INVALID_OBJECT_ID) && (health_value > 0.f)) );
 	fHealth = health_value;
 }
 
@@ -1196,7 +1205,7 @@ void CSE_ALifeCreatureAbstract::set_killer_id	(ALife::_OBJECT_ID const killer_id
 ////////////////////////////////////////////////////////////////////////////
 CSE_ALifeMonsterAbstract::CSE_ALifeMonsterAbstract(const char* caSection)	: CSE_ALifeCreatureAbstract(caSection), CSE_ALifeSchedulable(caSection)
 {
-	m_group_id					= 0xffff;
+	m_group_id					= ALife::INVALID_OBJECT_ID;
 
 
 	m_tNextGraphID				= m_tGraphID;
@@ -1245,8 +1254,8 @@ CSE_ALifeMonsterAbstract::CSE_ALifeMonsterAbstract(const char* caSection)	: CSE_
 
 	m_tpBestDetector			= this;
 
-	m_brain						= 0;
-	m_smart_terrain_id			= 0xffff;
+	m_brain						= nullptr;
+	m_smart_terrain_id			= ALife::INVALID_OBJECT_ID;
 	m_task_reached				= false;
 
 	m_rank						= (pSettings->line_exist(caSection,"rank")) ? pSettings->r_s32(caSection,"rank") : 0;
@@ -1309,7 +1318,7 @@ void CSE_ALifeMonsterAbstract::STATE_Write(NET_Packet& tNetPacket)
 	inherited1::STATE_Write(tNetPacket);
 	tNetPacket.w_stringZ(m_out_space_restrictors);
 	tNetPacket.w_stringZ(m_in_space_restrictors);
-	tNetPacket.w_u16(m_smart_terrain_id);
+	tNetPacket << m_smart_terrain_id;
 
 	if (tNetPacket.inistream)
 		tNetPacket.w_u16((m_task_reached) ? 1 : 0);
@@ -1327,7 +1336,18 @@ void CSE_ALifeMonsterAbstract::STATE_Read(NET_Packet& tNetPacket, u16 size)
 	}
 
 	if (m_wVersion > 111)
-		tNetPacket.r_u16(m_smart_terrain_id);
+	{
+		if (m_wVersion < 130)
+		{
+			u16 ID;
+			tNetPacket.r_u16(ID);
+			m_smart_terrain_id = ID == 0xffff ? ALife::INVALID_OBJECT_ID : ID;
+		}
+		else
+			{
+			tNetPacket.r_u32(m_smart_terrain_id);
+		}
+	}
 
 	if (m_wVersion > 113)
 	{
@@ -1389,18 +1409,19 @@ bool CSE_ALifeMonsterAbstract::need_update	(CSE_ALifeDynamicObject *object)
 #ifdef XRGAME_EXPORTS
 void CSE_ALifeMonsterAbstract::kill						()
 {
-	if (m_group_id != 0xffff)
+	if (m_group_id != ALife::INVALID_OBJECT_ID)
 		ai().alife().groups().object(m_group_id).unregister_member	(ID);
 	set_health(0.f);
 
 }
 bool CSE_ALifeMonsterAbstract::has_detector	()
 {
-	OBJECT_IT			I = this->children.begin();
-	OBJECT_IT			E = this->children.end();
-	for ( ; I != E; ++I){
-		CSE_ALifeItemDetector* detector = smart_cast<CSE_ALifeItemDetector*>(ai().alife().objects().object(*I));
-		if (detector) return true;
+	for (auto ID : children){
+		CSE_ALifeItemDetector* detector = smart_cast<CSE_ALifeItemDetector*>(ai().alife().objects().object(ID));
+		if (detector)
+		{
+			return true;
+		}
 	};
 	return false;
 }
@@ -1420,7 +1441,7 @@ CSE_ALifeCreatureActor::CSE_ALifeCreatureActor	(const char* caSection) : CSE_ALi
 	fRadiation					= 0.f;
 	accel.set					(0.f,0.f,0.f);
 	velocity.set				(0.f,0.f,0.f);
-	m_holderID					=u16(-1);
+	m_holderID					= ALife::INVALID_OBJECT_ID;
 	mstate						= 0;
 	m_script_story_ID = "actor";
 }
@@ -1477,7 +1498,14 @@ void CSE_ALifeCreatureActor::STATE_Read		(NET_Packet	&tNetPacket, u16 size)
 	}
 	if(m_wVersion>88)
 	{
-		m_holderID=tNetPacket.r_u16();
+		if (m_wVersion < 130)
+		{
+			m_holderID=tNetPacket.r_u16();
+			m_holderID = m_holderID == 0xffff ? ALife::INVALID_OBJECT_ID : m_holderID;
+		} else
+		{
+			m_holderID=tNetPacket.r_u32();
+		}
 	}
 };
 
@@ -1486,14 +1514,24 @@ void CSE_ALifeCreatureActor::STATE_Write	(NET_Packet	&tNetPacket)
 	inherited1::STATE_Write		(tNetPacket);
 	inherited2::STATE_Write		(tNetPacket);
 	inherited3::STATE_Write		(tNetPacket);
-	tNetPacket.w_u16(m_holderID);
+	tNetPacket << m_holderID;
 };
 
 void CSE_ALifeCreatureActor::load(NET_Packet &tNetPacket)
 {
 	inherited1::load(tNetPacket);
 	inherited3::load(tNetPacket);
-	m_holderID=tNetPacket.r_u16();
+	if (m_wVersion < 130)
+	{
+		m_holderID=tNetPacket.r_u16();
+		if (m_holderID == 0xffff)
+		{
+			m_holderID = ALife::INVALID_OBJECT_ID;
+		}
+	} else
+	{
+		m_holderID=tNetPacket.r_u32();
+	}
 }
 
 bool CSE_ALifeCreatureActor::Net_Relevant()
@@ -1978,7 +2016,7 @@ void CSE_ALifeMonsterZombie::FillProps		(const char* pref, PropItemVec& items)
 CSE_ALifeMonsterBase::CSE_ALifeMonsterBase	(const char* caSection) : CSE_ALifeMonsterAbstract(caSection),CSE_PHSkeleton(caSection)
 {
     set_visual					(pSettings->r_string(caSection,"visual"));
-	m_spec_object_id			= 0xffff;
+	m_spec_object_id			= ALife::INVALID_OBJECT_ID;
 
 #ifdef XRGAME_EXPORTS
 	physics_state = new net_physics_state;
@@ -1998,16 +2036,25 @@ void CSE_ALifeMonsterBase::STATE_Read		(NET_Packet	&tNetPacket, u16 size)
 	if(m_wVersion>=68)
 		inherited2::STATE_Read		(tNetPacket,size);
 
-	if (m_wVersion>=109)
-		tNetPacket.r_u16			(m_spec_object_id);	
+	if (m_wVersion>=109 && m_wVersion < 130)
+	{
+		u16 ID16;
+		tNetPacket.r_u16(ID16);
+		m_spec_object_id = ID16 == 0xffff ? ALife::INVALID_OBJECT_ID : ID16;
+	} else if (m_wVersion >= 130)
+	{
+		u32 ID32;
+		tNetPacket.r_u32(ID32);
+		m_spec_object_id = ID32;
+	}
+	
 }
 
 void CSE_ALifeMonsterBase::STATE_Write	(NET_Packet	&tNetPacket)
 {
 	inherited1::STATE_Write		(tNetPacket);
 	inherited2::STATE_Write		(tNetPacket);
-	
-	tNetPacket.w_u16			(m_spec_object_id);	
+	tNetPacket << m_spec_object_id;	
 }
 
 void CSE_ALifeMonsterBase::SyncWrite(NET_Packet& Packet)
@@ -2240,7 +2287,11 @@ void CSE_ALifeHumanAbstract::STATE_Read		(NET_Packet &tNetPacket, u16 size)
 	inherited2::STATE_Read		(tNetPacket, size);
 	brain().on_state_read		(tNetPacket);
 	if ((m_wVersion >= 110) && (m_wVersion < 112))
-		tNetPacket.r			(&m_smart_terrain_id,sizeof(m_smart_terrain_id));
+	{
+		u16 ID;
+		tNetPacket.r_u16(ID);
+		m_smart_terrain_id = ID == 0xffff ? ALife::INVALID_OBJECT_ID : ID;
+	}
 }
 
 void CSE_ALifeHumanAbstract::UPDATE_Write	(NET_Packet &tNetPacket)

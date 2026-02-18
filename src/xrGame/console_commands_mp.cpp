@@ -169,7 +169,7 @@ public:
 			NET_Packet					P;
 			l_pPlayer->u_EventGen		(P,GE_GAME_EVENT,l_pPlayer->ID()	);
 			P.w_u16						(GAME_EVENT_PLAYER_KILL);
-			P.w_u16						(u16(l_pPlayer->ID())	);
+			P << l_pPlayer->ID();
 			l_pPlayer->u_EventSend		(P);
 		}
 	}
@@ -214,7 +214,7 @@ public:
 	{
 		
 		u32 SVObjNum	= (OnServer()) ? Level().Server->GetEntitiesNum() : 0;
-		xr_vector<u16>	SObjID;
+		xr_vector<ALife::_OBJECT_ID>	SObjID;
 		for (u32 i=0; i<SVObjNum; i++)
 		{
 			CSE_Abstract* pEntity = Level().Server->GetEntity(i);
@@ -223,7 +223,7 @@ public:
 		std::sort(SObjID.begin(), SObjID.end());
 
 		u32 CLObjNum	= Level().Objects.o_count();
-		xr_vector<u16>	CObjID;
+		xr_vector<ALife::_OBJECT_ID>	CObjID;
 		for (u32 i=0; i<CLObjNum; i++)
 		{
 			CObjID.push_back(Level().Objects.o_get_by_iterator(i)->ID());
