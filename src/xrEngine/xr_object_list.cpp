@@ -24,7 +24,7 @@ public:
 CObjectList::CObjectList() :
 	m_owner_thread_id(std::this_thread::get_id())
 {
-	ZeroMemory				(map_NETID, 0xffff*sizeof(CObject*));
+	map_NETID.resize(0xffff + 1, nullptr);
 }
 
 CObjectList::~CObjectList	( )
@@ -230,7 +230,7 @@ void CObjectList::Update		(bool bForce)
 #endif
 
 			Device.Statistic->UpdateClient_crows	= (u32)crows.size	();
-			Objects* workload			= 0;
+			Objects* workload			= nullptr;
 			if (!psDeviceFlags.test(rsDisableObjectsAsCrows))	
 				workload				= &crows;
 			else {
@@ -242,21 +242,18 @@ void CObjectList::Update		(bool bForce)
 			Device.Statistic->UpdateClient_active	= (u32)objects_active.size();
 			Device.Statistic->UpdateClient_total	= (u32)(objects_active.size() + objects_sleeping.size());
 
-			size_t const objects_count = workload->size();
-			CObject** objects			= (CObject**)_alloca(objects_count*sizeof(CObject*));
-			std::copy					( workload->begin(), workload->end(), objects );
-
+			// I need to make it on heap instead of stack because with too many objects stack overflow occurs
+			objects_iteration = *workload;
 			crows.resize(0);
-
-			CObject** b					= objects;
-			CObject** e					= objects + objects_count;
-			for (CObject** i = b; i != e; ++i) {
-				(*i)->IAmNotACrowAnyMore();
-				(*i)->dwFrame_AsCrow	= u32(-1);
+			for (auto elem : objects_iteration)
+			{
+				elem->IAmNotACrowAnyMore();
+				elem->dwFrame_AsCrow = u32(-1);
 			}
-
-			for (CObject** i = b; i != e; ++i)
-				SingleUpdate			(*i);
+			for (auto elem : objects_iteration)
+			{
+				SingleUpdate(elem);
+			}
 
 			Device.Statistic->UpdateClient.End		();
 		}
@@ -322,42 +319,40 @@ void CObjectList::Update		(bool bForce)
 void CObjectList::net_Register		(CObject* O)
 {
 	R_ASSERT		(O);
-	R_ASSERT		(O->ID() < 0xffff);
+	auto ID = O->ID();
+	R_ASSERT(ID < ALife::INVALID_OBJECT_ID);
 
-	map_NETID[O->ID()] = O;
+	if (ID >= map_NETID.size())
+	{
+		map_NETID.resize(std::max<size_t>(ID+1, map_NETID.size()*2), nullptr);
+	}
 	
-	
-
-//.	map_NETID.insert(std::make_pair(O->ID(),O));
-	//Msg			("-------------------------------- Register: %s",O->cName());
+	map_NETID[ID] = O;
 }
 
 void CObjectList::net_Unregister	(CObject* O)
 {
-	//R_ASSERT		(O->ID() < 0xffff);
-	if (O->ID() < 0xffff)				//demo_spectator can have 0xffff
+	if (O->ID() < ALife::INVALID_OBJECT_ID && IVERIFY(O->ID() < map_NETID.size()))
+	{
+		//demo_spectator can have 0xffff
 		map_NETID[O->ID()] = nullptr;
-/*
-	xr_map<u32,CObject*>::iterator	it = map_NETID.find(O->ID());
-	if ((it!=map_NETID.end()) && (it->second == O))	{
-		// Msg			("-------------------------------- Unregster: %s",O->cName());
-		map_NETID.erase(it);
 	}
-*/
 }
 
 int	g_Dump_Export_Obj = 0;
 
 u32	CObjectList::net_Export			(NET_Packet* _Packet,	u32 start, u32 max_object_size	)
 {
+	PROF_EVENT("CObjectList::net_Export")
 	if (g_Dump_Export_Obj) Msg("---- net_export --- ");
 
 	NET_Packet& Packet	= *_Packet;
 	u32			position;
 	for (; start<objects_active.size() + objects_sleeping.size(); start++)			{
+		PROF_EVENT("CObjectList::net_Export::elem")
 		CObject* P = (start<objects_active.size()) ? objects_active[start] : objects_sleeping[start-objects_active.size()];
 		if (P->net_Relevant() && !P->getDestroy())	{			
-			Packet.w_u16			(u16(P->ID())	);
+			Packet << P->ID();
 			Packet.w_chunk_open8	(position);
 			//Msg						("cl_export: %d '%s'",P->ID(),*P->cName());
 			P->net_Export			(Packet);
@@ -380,10 +375,6 @@ u32	CObjectList::net_Export			(NET_Packet* _Packet,	u32 start, u32 max_object_si
 				Msg("* %s : %d", *(P->cNameSect()), size_);
 			}
 			Packet.w_chunk_close8	(position);
-//			if (0==(--count))		
-//				break;
-			if (max_object_size >= (NET_PacketSizeLimit - Packet.w_tell()))
-				break;
 		}
 	}
 	if (g_Dump_Export_Obj) Msg("------------------- ");
@@ -394,11 +385,14 @@ int	g_Dump_Import_Obj = 0;
 
 void CObjectList::net_Import		(NET_Packet* Packet)
 {
+	PROF_EVENT("CObjectList::net_Import")
 	if (g_Dump_Import_Obj) Msg("---- net_import --- ");
 
 	while (!Packet->r_eof())
 	{
-		u16 ID;		Packet->r_u16	(ID);
+		PROF_EVENT("CObjectList::net_Import::elem")
+		ALife::_OBJECT_ID ID;
+		*Packet >> ID;
 		u8  size;	Packet->r_u8	(size);
 
 		CObject* P  = net_Find		(ID);

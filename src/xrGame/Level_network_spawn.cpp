@@ -61,9 +61,9 @@ void CLevel::g_cl_Spawn		(const char* name, u8 rp, u16 flags, Fvector pos)
 	E->set_name_replace	("");
 //.	E->s_gameid			=	u8(GameID());
 	E->s_RP				=	rp;
-	E->ID				=	0xffff;
-	E->ID_Parent		=	0xffff;
-	E->ID_Phantom		=	0xffff;
+	E->ID				=	ALife::INVALID_OBJECT_ID;
+	E->ID_Parent		=	ALife::INVALID_OBJECT_ID;
+	E->ID_Phantom		=	ALife::INVALID_OBJECT_ID;
 	E->s_flags.assign	(flags);
 	E->RespawnTime		=	0;
 	E->o_Position		= pos;
@@ -100,12 +100,15 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 //	T.Start		();
 	CObject*	O		= Objects.Create	(*E->s_name);
 
-	if (0==O || (!O->net_Spawn	(E))) 
+	if (!O || (!O->net_Spawn	(E))) 
 	{
-		O->net_Destroy			( );
-		if(!g_dedicated_server)
-			client_spawn_manager().clear(O->ID());
-		Objects.Destroy			(O);
+		if (O)
+		{
+			O->net_Destroy			( );
+			if(!g_dedicated_server)
+				client_spawn_manager().clear(O->ID());
+			Objects.Destroy			(O);
+		}
 		Msg						("! Failed to spawn entity '%s'",*E->s_name);
 	} else {
 		if(!g_dedicated_server)
@@ -138,7 +141,7 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 			}
 		}
 
-		if (0xffff != E->ID_Parent)	
+		if (ALife::INVALID_OBJECT_ID != E->ID_Parent)	
 		{
 			/*
 			// Generate ownership-event
@@ -153,7 +156,7 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 			NET_Packet	GEN;
 			GEN.write_start();
 			GEN.read_start();
-			GEN.w_u16			(u16(O->ID()));
+			GEN << O->ID();
 			cl_Process_Event(E->ID_Parent, GE_OWNERSHIP_TAKE, GEN);
 			//*/
 		}
@@ -174,7 +177,7 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 	Game().OnSpawn(O);
 }
 
-CSE_Abstract *CLevel::spawn_item		(const char* section, const Fvector &position, u32 level_vertex_id, u16 parent_id, bool return_item)
+CSE_Abstract *CLevel::spawn_item		(const char* section, const Fvector &position, u32 level_vertex_id, ALife::_OBJECT_ID parent_id, bool return_item)
 {
 	CSE_Abstract			*abstract = F_entity_Create(section);
 	R_ASSERT3				(abstract,"Cannot find item with section",section);
@@ -196,9 +199,9 @@ CSE_Abstract *CLevel::spawn_item		(const char* section, const Fvector &position,
 //.	abstract->s_gameid		= u8(GameID());
 	abstract->o_Position	= position;
 	abstract->s_RP			= 0xff;
-	abstract->ID			= 0xffff;
+	abstract->ID			= ALife::INVALID_OBJECT_ID;
 	abstract->ID_Parent		= parent_id;
-	abstract->ID_Phantom	= 0xffff;
+	abstract->ID_Phantom	= ALife::INVALID_OBJECT_ID;
 	abstract->s_flags.assign(M_SPAWN_OBJECT_LOCAL);
 	abstract->RespawnTime	= 0;
 
@@ -213,7 +216,7 @@ CSE_Abstract *CLevel::spawn_item		(const char* section, const Fvector &position,
 		return				(abstract);
 }
 
-void CLevel::SpawnItem(const char* section, const Fvector& position, u32 level_vertex_id, u16 parent_id) {
+void CLevel::SpawnItem(const char* section, const Fvector& position, u32 level_vertex_id, ALife::_OBJECT_ID parent_id) {
 	spawn_item(section, position, level_vertex_id, parent_id, false);
 }
 

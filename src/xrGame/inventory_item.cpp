@@ -424,16 +424,16 @@ bool CInventoryItem::Detach(const char* item_section_name, bool b_spawn_item)
 		D->set_name_replace("");
 
 		D->s_RP = 0xff;
-		D->ID = 0xffff;
+		D->ID = ALife::INVALID_OBJECT_ID;
 		if (IsGameTypeSingle())
 		{
-			D->ID_Parent = u16(object().H_Parent()->ID());
+			D->ID_Parent = object().H_Parent()->ID();
 		}
 		else	// i'm not sure this is right
 		{		// but it is simpliest way to avoid exception in MP BuyWnd... [Satan]
 			if (object().H_Parent())
 			{
-				D->ID_Parent = u16(object().H_Parent()->ID());
+				D->ID_Parent = object().H_Parent()->ID();
 			}
 			else
 			{
@@ -441,7 +441,7 @@ bool CInventoryItem::Detach(const char* item_section_name, bool b_spawn_item)
 			}
 		}
 
-		D->ID_Phantom = 0xffff;
+		D->ID_Phantom = ALife::INVALID_OBJECT_ID;
 		D->o_Position = object().Position();
 		D->s_flags.assign(M_SPAWN_OBJECT_LOCAL);
 		D->RespawnTime = 0;
@@ -1148,14 +1148,14 @@ void CInventoryItem::setWeight(float value)
 	m_weight = value;
 }
 
-u16 CInventoryItem::object_id()const
+ALife::_OBJECT_ID CInventoryItem::object_id() const
 {
 	return object().ID();
 }
 
-u16 CInventoryItem::parent_id() const
+ALife::_OBJECT_ID CInventoryItem::parent_id() const
 {
-	return (object().H_Parent()) ? object().H_Parent()->ID() : u16(-1);
+	return (object().H_Parent()) ? object().H_Parent()->ID() : ALife::INVALID_OBJECT_ID;
 }
 
 void CInventoryItem::SetDropManual(bool val)

@@ -433,7 +433,7 @@ void CScriptGameObject::DropItem(CScriptGameObject* pItem)
 
 	NET_Packet P;
 	CGameObject::u_EventGen(P,GE_OWNERSHIP_REJECT, object().ID());
-	P.w_u16(pItem->object().ID());
+	P << pItem->object().ID();
 	CGameObject::u_EventSend(P);
 }
 
@@ -462,11 +462,11 @@ void CScriptGameObject::MakeItemActive(CScriptGameObject* pItem)
 	if (CInventoryItem* item_in_slot = owner->inventory().ItemFromSlot(slot))
 	{
 		CGameObject::u_EventGen(P, GEG_PLAYER_ITEM2RUCK, owner->object_id());
-		P.w_u16(item_in_slot->object().ID());
+		P << item_in_slot->object().ID();
 		CGameObject::u_EventSend(P);
 	}
 	CGameObject::u_EventGen(P, GEG_PLAYER_ITEM2SLOT, owner->object_id());
-	P.w_u16(item->object().ID());
+	P << item->object().ID();
 	P.w_u16(slot);
 	CGameObject::u_EventSend(P);
 
@@ -543,12 +543,12 @@ void CScriptGameObject::TransferItem(CScriptGameObject* pItem, CScriptGameObject
 	// выбросить у себя 
 	NET_Packet P;
 	CGameObject::u_EventGen(P, GE_TRADE_SELL, object().ID());
-	P.w_u16(pIItem->object().ID());
+	P << pIItem->object().ID();
 	CGameObject::u_EventSend(P);
 
 	// отдать партнеру
 	CGameObject::u_EventGen(P, GE_TRADE_BUY, pForWho->object().ID());
-	P.w_u16(pIItem->object().ID());
+	P << pIItem->object().ID();
 	CGameObject::u_EventSend(P);
 }
 

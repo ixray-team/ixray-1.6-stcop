@@ -53,7 +53,7 @@ CAnomalyZone::CAnomalyZone(void)
 	m_fBlowoutWindPowerMax = m_fStoreWindPower = 0.f;
 	m_fDistanceToCurEntity		= flt_max;
 	m_ef_weapon_type			= u32(-1);
-	m_owner_id					= u32(-1);
+	m_owner_id					= ALife::INVALID_OBJECT_ID;
 
 	m_actor_effector			= nullptr;
 	m_zone_flags.set			(eIdleObjectParticlesDontStop, false);
@@ -396,7 +396,7 @@ bool CAnomalyZone::net_Spawn(CSE_Abstract* DC)
 	m_fMaxPower					= pSettings->r_float(cNameSect(),"max_start_power");
 	m_fAttenuation				= pSettings->r_float(cNameSect(),"attenuation");
 	m_owner_id					= Z->m_owner_id;
-	if(m_owner_id != u32(-1))
+	if(m_owner_id != ALife::INVALID_OBJECT_ID)
 		m_ttl					= Device.dwTimeGlobal + 40000;// 40 sec
 	else
 		m_ttl					= u32(-1);
@@ -1037,7 +1037,7 @@ bool CAnomalyZone::feel_touch_contact(CObject* O)
 	if (!pGameObject)							return false;
 	if (pGameObject->cast_anomaly_zone())		return false;
 	if (pGameObject->cast_breakable_object())	return false;
-	if (0==PKinematics(O->Visual()))			return false;
+	if (!PKinematics(O->Visual()))			return false;
 
 	if (O->ID() == ID())
 		return		(false);
@@ -1752,8 +1752,8 @@ u32	CAnomalyZone::ef_weapon_type() const
 	return	(m_ef_weapon_type);
 }
 
-void CAnomalyZone::CreateHit	(	u16 id_to, 
-								u16 id_from, 
+void CAnomalyZone::CreateHit	(	ALife::_OBJECT_ID id_to, 
+								ALife::_OBJECT_ID id_from, 
 								const Fvector& hit_dir, 
 								float hit_power, 
 								s16 bone_id, 
@@ -1763,8 +1763,9 @@ void CAnomalyZone::CreateHit	(	u16 id_to,
 {
 	if (OnServer())
 	{
-		if(m_owner_id != u32(-1) )
-			id_from	= (u16)m_owner_id;
+		if(m_owner_id != ALife::INVALID_OBJECT_ID ){
+			id_from	= m_owner_id;
+		}
 
 		NET_Packet			l_P;
 		Fvector hdir		= hit_dir;
@@ -1782,7 +1783,10 @@ void CAnomalyZone::net_Relcase(CObject* O)
 	if(O && O->cast_game_object())
 		SZoneObjectInfo::remove(this, O->cast_game_object());
 
-	if(O->ID()==m_owner_id)	m_owner_id = u32(-1);
+	if(O->ID()==m_owner_id)
+	{
+		m_owner_id = ALife::INVALID_OBJECT_ID;
+	}
 
 	if(m_actor_effector && m_actor_effector->m_pActor && m_actor_effector->m_pActor->ID() == O->ID())
 		m_actor_effector->Stop();

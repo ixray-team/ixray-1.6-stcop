@@ -142,7 +142,7 @@ bool CALifeSwitchManager::synchronize_location(CSE_ALifeDynamicObject *I)
 		return				(true);
 
 	// check if we are not attached
-	if (0xffff != I->ID_Parent)
+	if (ALife::INVALID_OBJECT_ID != I->ID_Parent)
 		return				(true);
 
 	// check if we are not online and have an invalid level vertex id
@@ -156,7 +156,7 @@ void CALifeSwitchManager::try_switch_online	(CSE_ALifeDynamicObject	*I)
 {
 	// so, the object is offline
 	// checking if the object is not attached
-	if (0xffff != I->ID_Parent) {
+	if (ALife::INVALID_OBJECT_ID != I->ID_Parent) {
 		// so, object is attached
 		// checking if parent is offline too
 		return;
@@ -184,7 +184,7 @@ void CALifeSwitchManager::try_switch_offline(CSE_ALifeDynamicObject* I)
 {
 	PROF_EVENT("ALife/try_switch_offline");
 	// checking if the object is not attached
-	if (0xffff != I->ID_Parent)
+	if (ALife::INVALID_OBJECT_ID != I->ID_Parent)
 	{
 		return;
 	}

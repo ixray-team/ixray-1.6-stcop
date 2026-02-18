@@ -15,7 +15,7 @@
 #include "../game_sv_single.h"
 #include "../InventoryWeaponSlotLayout.h"
 
-void move_item_from_to(u16 from_id, u16 to_id, u16 what_id);
+void move_item_from_to(ALife::_OBJECT_ID from_id, ALife::_OBJECT_ID to_id, ALife::_OBJECT_ID what_id);
 
 void CUIActorMenuBase::TryHidePropertiesBox()
 {

@@ -11,7 +11,7 @@
 #include "GameObject.h"
 #include "Explosive.h"
 
-bool CDangerExplosive::operator==(const u16& object_id) const
+bool CDangerExplosive::operator==(const ALife::_OBJECT_ID& object_id) const
 {
 	if (!m_grenade)
 	{

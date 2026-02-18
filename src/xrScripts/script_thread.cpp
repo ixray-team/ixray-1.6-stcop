@@ -22,7 +22,7 @@ CScriptThread::CScriptThread(const char* caNamespaceName, bool do_string, bool r
 
 	try
 	{
-		string4096 S;
+		string4096 S; // Maybe I don't understand something, but 256 symbols in buffer is not enough
 		if (!do_string) {
 			m_script_name = caNamespaceName;
 			g_pScriptEngine->process_file(caNamespaceName, reload);

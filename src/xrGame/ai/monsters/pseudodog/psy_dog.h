@@ -82,7 +82,7 @@ class CPsyDogPhantom final : public CAI_PseudoDog {
 	const char*			m_particles_appear;
 	const char*			m_particles_disappear;
 
-	u16				m_parent_id;
+	ALife::_OBJECT_ID m_parent_id;
 		
 	u32				m_time_spawned;
 
@@ -100,7 +100,7 @@ public:
 private:
 			void	destroy_me					();
 			void	try_to_register_to_parent	();
-			bool	is_wait_to_destroy_object	() {return (m_parent_id == 0xffff);}
+			bool	is_wait_to_destroy_object	() {return (m_parent_id == ALife::INVALID_OBJECT_ID);}
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

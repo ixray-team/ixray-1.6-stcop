@@ -100,7 +100,7 @@ void CActor::IR_OnKeyboardPress(int dik)
 			{
 				NET_Packet P;
 				P.w_begin(M_PLAYER_FIRE); 
-				P.w_u16(ID());
+				P << ID();
 				u_EventSend(P);
 			}
 		}break;
@@ -1517,7 +1517,7 @@ void CActor::ActorUse()
 		CGameObject* GO = m_holder->cast_game_object();
 		NET_Packet P;
 		CGameObject::u_EventGen(P, GEG_PLAYER_DETACH_HOLDER, ID());
-		P.w_u16(GO->ID());
+		P << GO->ID();
 		CGameObject::u_EventSend(P);
 		return;
 	}
@@ -1610,7 +1610,7 @@ void CActor::ActorUse()
 			{
 				NET_Packet P;
 				CGameObject::u_EventGen(P, GEG_PLAYER_ATTACH_HOLDER, ID());
-				P.w_u16(object->ID());
+				P << object->ID();
 				CGameObject::u_EventSend(P);
 				return;
 			}

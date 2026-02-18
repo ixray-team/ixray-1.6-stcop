@@ -117,7 +117,7 @@ void CGameObject::net_Destroy	()
 	inherited::net_Destroy						();
 	setReady									(false);
 	
-	if (Level().IsDemoPlayStarted() && ID() == u16(-1))
+	if (Level().IsDemoPlayStarted() && ID() == ALife::INVALID_OBJECT_ID)
 	{
 		Msg("Destroying demo_spectator object");
 	} else
@@ -129,9 +129,9 @@ void CGameObject::net_Destroy	()
 	{
 		if (!Level().IsDemoPlayStarted())
 		{
-			Level().SetControlEntity			(0);
+			Level().SetControlEntity			(nullptr);
 		}
-		Level().SetEntity						(0);	// do not switch !!!
+		Level().SetEntity						(nullptr);	// do not switch !!!
 	}
 
 	Level().RemoveObject_From_4CrPr(this);
@@ -272,12 +272,14 @@ bool CGameObject::net_Spawn		(CSE_Abstract*	DC)
 		cName_set					(E->name_replace());
 	bool demo_spectator = false;
 	
-	if (Level().IsDemoPlayStarted() && E->ID == u16(-1))
+	if (Level().IsDemoPlayStarted() && E->ID == ALife::INVALID_OBJECT_ID)
 	{
 		Msg("* Spawning demo spectator ...");
 		demo_spectator = true;
-	} else {
-		R_ASSERT(Level().Objects.net_Find(E->ID) == nullptr);
+	} else if (!I_ASSERT(Level().Objects.net_Find(E->ID) == nullptr)){
+		auto RegisteredItem = Level().Objects.net_Find(E->ID);
+		I_ASSERT_M(false, "Attempt to register item [%s] with ID [%d] while there is item [%s] with same ID [%d] already here!",
+			RegisteredItem->cName().c_str(), RegisteredItem->ID(), E->name(), E->ID);
 	}
 
 	setID							(E->ID);
@@ -349,7 +351,9 @@ bool CGameObject::net_Spawn		(CSE_Abstract*	DC)
 
 	setReady						(true);
 	if (!demo_spectator)
+	{
 		g_pGameLevel->Objects.net_Register	(this);
+	}
 
 	m_server_flags.one();
 
@@ -387,7 +391,7 @@ bool CGameObject::net_Spawn		(CSE_Abstract*	DC)
 
 	// if we have a parent
 	if ( ai().get_level_graph() ) {
-		if ( E->ID_Parent == 0xffff ) {
+		if ( E->ID_Parent == ALife::INVALID_OBJECT_ID ) {
 			CSE_ALifeObject* l_tpALifeObject	= E->cast_alife_object();
 			if (l_tpALifeObject && ai().level_graph().valid_vertex_id(l_tpALifeObject->m_tNodeID))
 				ai_location().level_vertex		(l_tpALifeObject->m_tNodeID);
@@ -739,12 +743,12 @@ CObject::SavedPosition CGameObject::ps_Element(u32 ID) const
 	return SP;
 }
 
-void CGameObject::u_EventGen(NET_Packet& P, u32 type, u32 dest)
+void CGameObject::u_EventGen(NET_Packet& P, u32 type, ALife::_OBJECT_ID dest)
 {
 	P.w_begin	(M_EVENT);
 	P.w_u32		(Level().timeServer());
 	P.w_u16		(u16(type&0xffff));
-	P.w_u16		(u16(dest&0xffff));
+	P << dest;
 }
 
 void CGameObject::u_EventSend(NET_Packet& P, u32 dwFlags )

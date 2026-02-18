@@ -554,7 +554,7 @@ void CArtefact::OnAnimationEnd(u8 state)
 				SwitchState		(eHiding);
 				NET_Packet		P;
 				u_EventGen		(P, GEG_PLAYER_ACTIVATEARTEFACT, H_Parent()->ID());
-				P.w_u16			(ID());
+				P << ID();
 				u_EventSend		(P);
 			}
 		}break;

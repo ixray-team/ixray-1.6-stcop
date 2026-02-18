@@ -75,7 +75,7 @@ bool CControllerPsyHit::check_start_conditions()
 		CActor* pA = cast_entity_alive != nullptr ? cast_entity_alive->cast_actor() : nullptr;
 		if (pA) 
 		{
-			m_curent_actor_id = u16(-1);
+			m_curent_actor_id = ALife::INVALID_OBJECT_ID;
 
 			if (pA->Cameras().GetCamEffector(eCEControllerPsyHit))
 				return						false;
@@ -138,7 +138,7 @@ void CControllerPsyHit::activate()
 	if (!IsGameTypeSingle()) {
 		NET_Packet	tmp_packet;
 		CGameObject::u_EventGen(tmp_packet, GE_CONTROLLER_PSY_FIRE, m_object->ID());
-		tmp_packet.w_u16(pActor->ID());
+		tmp_packet << pActor->ID();
 		tmp_packet.w_u8(0);
 		Level().Server->SendBroadcast(BroadcastCID, tmp_packet, net_flags(true, true));
 	}
@@ -360,7 +360,7 @@ void CControllerPsyHit::death_glide_start()
 	else {
 		NET_Packet	tmp_packet;
 		CGameObject::u_EventGen(tmp_packet, GE_CONTROLLER_PSY_FIRE, m_object->ID());
-		tmp_packet.w_u16(pActor->ID());
+		tmp_packet << pActor->ID();
 		tmp_packet.w_u8(1);
 		Level().Server->SendBroadcast(BroadcastCID, tmp_packet, net_flags(true, true));
 	}
@@ -463,7 +463,7 @@ void CControllerPsyHit::hit()
 		{
 			NET_Packet	tmp_packet;
 			CGameObject::u_EventGen(tmp_packet, GE_CONTROLLER_PSY_FIRE, m_object->ID());
-			tmp_packet.w_u16(pActor->ID());
+			tmp_packet << pActor->ID();
 			tmp_packet.w_u8(3);
 			Level().Server->SendBroadcast(BroadcastCID, tmp_packet, net_flags(true, true));
 		}
@@ -496,7 +496,7 @@ void CControllerPsyHit::stop ()
 		{
 			NET_Packet	tmp_packet;
 			CGameObject::u_EventGen(tmp_packet, GE_CONTROLLER_PSY_FIRE, m_object->ID());
-			tmp_packet.w_u16(pActor->ID());
+			tmp_packet << pActor->ID();
 			tmp_packet.w_u8(2);
 			Level().Server->SendBroadcast(BroadcastCID, tmp_packet, net_flags(true, true));
 		}

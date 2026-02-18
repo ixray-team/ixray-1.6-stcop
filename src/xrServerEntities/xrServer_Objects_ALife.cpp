@@ -393,7 +393,7 @@ CSE_ALifeObject::CSE_ALifeObject			(const char* caSection) : CSE_Abstract(caSect
 {
 	m_bOnline					= false;
 	m_fDistance					= 0.0f;
-	ID							= ALife::_OBJECT_ID(-1);
+	ID							= ALife::INVALID_OBJECT_ID;
 	m_tGraphID					= GameGraph::_GRAPH_ID(-1);
 	m_tSpawnID					= ALife::_SPAWN_ID(-1);
 	m_bDirectControl			= true;
@@ -1136,7 +1136,18 @@ void CSE_ALifeObjectPhysic::STATE_Read		(NET_Packet	&tNetPacket, u16 size)
 			tNetPacket.r_u8			(_flags.flags);
 
 		if (m_wVersion>56)
-			tNetPacket.r_u16		(source_id);
+		{
+			if (m_wVersion < 130)
+			{
+				u16 ID;
+				tNetPacket.r_u16(ID);
+				source_id = ID;
+			}
+			else
+				{
+				tNetPacket.r_u32(source_id);
+			}
+		}
 
 		if (m_wVersion>60	&&	_flags.test(flSavedData)) {
 			data_load(tNetPacket);

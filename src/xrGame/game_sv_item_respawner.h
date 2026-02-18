@@ -12,7 +12,7 @@ private:
 	{
 		CSE_Abstract*		item_object;
 		u32					respawn_time;
-		u16					last_game_id;
+		ALife::_OBJECT_ID	last_game_id;
 		u32					last_spawn_time;
 
 		spawn_item();
@@ -38,7 +38,7 @@ private:
 
 
 	struct search_by_id_predicate {
-		bool operator()(spawn_item const & left, u16 right) const;
+		bool operator()(spawn_item const & left, ALife::_OBJECT_ID right) const;
 	};
 	
 	NET_Packet					spawn_packet_store;
@@ -46,7 +46,7 @@ private:
 	respawn_collection			m_respawns;
 	respawn_sections_map		m_respawn_sections_cache;
 	
-	u16						respawn_item				(CSE_Abstract* item_object);
+	ALife::_OBJECT_ID						respawn_item				(CSE_Abstract* item_object);
 	bool					parse_string				(char const* str, u32 str_size, section_item & result);
 	respawn_section_iter	load_respawn_section		(shared_str const & section_name);
 	u32						load_section_items			(CInifile & ini, const char* section_name, section_items* items);
@@ -54,7 +54,7 @@ private:
 
 	CSE_Abstract*			make_respawn_entity			(shared_str const & section_name, u8 addons, u16 count_of_ammo);
 	
-	xr_set<u16>				level_items_respawn;
+	xr_set<ALife::_OBJECT_ID> level_items_respawn;
 	void					clear_level_items			();
 public:
 	item_respawn_manager		();
@@ -66,7 +66,7 @@ public:
 	void clear_respawns			();
 	//void check_to_spawn			(CSE_Abstract* item);
 	void respawn_all_items		();
-	void check_to_delete		(u16 item_id);
+	void check_to_delete		(ALife::_OBJECT_ID item_id);
 	void update					(u32 current_time);
 	void respawn_level_items	();	//level_re.spawn
 };

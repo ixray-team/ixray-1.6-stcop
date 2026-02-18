@@ -20,7 +20,7 @@ private:
 	s32 m_iGoodwill;
 };
 
-using PERSONAL_RELATION_MAP = xr_map<u16, SRelation>;
+using PERSONAL_RELATION_MAP = xr_map<ALife::_OBJECT_ID, SRelation>;
 using PERSONAL_RELATION_MAP_IT = PERSONAL_RELATION_MAP::iterator;
 
 using COMMUNITY_RELATION_MAP = xr_map<s32, SRelation>;

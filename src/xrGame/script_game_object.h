@@ -146,7 +146,7 @@ public:
 	_DECLARE_FUNCTION10	(Position	,	Fvector		);
 	_DECLARE_FUNCTION10	(Direction	,	Fvector		);
 	_DECLARE_FUNCTION10	(Mass		,	float		);
-	_DECLARE_FUNCTION10	(ID			,	u16			);
+	_DECLARE_FUNCTION10	(ID			,	ALife::_OBJECT_ID			);
 	_DECLARE_FUNCTION10	(getVisible	,	bool		);
 	_DECLARE_FUNCTION10	(getEnabled	,	bool		);
 	_DECLARE_FUNCTION10	(story_id	,	ALife::_STORY_ID);
@@ -601,7 +601,7 @@ public:
 			const CCoverPoint	*best_cover				(const Fvector &position, const Fvector &enemy_position, float radius, float min_enemy_distance, float max_enemy_distance);
 			const CCoverPoint	*safe_cover				(const Fvector &position, float radius, float min_distance);
 			CScriptIniFile		*spawn_ini				() const;
-			bool				active_zone_contact		(u16 id);
+			bool				active_zone_contact		(ALife::_OBJECT_ID id);
 
 			///
 			void				add_restrictions		(const char* out, const char* in);

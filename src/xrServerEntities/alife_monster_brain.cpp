@@ -96,7 +96,7 @@ void CALifeMonsterBrain::on_location_change	()
 
 IC	CSE_ALifeSmartZone &CALifeMonsterBrain::smart_terrain	()
 {
-	VERIFY							(object().m_smart_terrain_id != 0xffff);
+	VERIFY							(object().m_smart_terrain_id != ALife::INVALID_OBJECT_ID);
 	if (m_smart_terrain && (object().m_smart_terrain_id == m_smart_terrain->ID))
 		return						(*m_smart_terrain);
 
@@ -115,7 +115,7 @@ void CALifeMonsterBrain::process_task			()
 
 void CALifeMonsterBrain::select_task			()
 {
-	if (object().m_smart_terrain_id != 0xffff)
+	if (object().m_smart_terrain_id != ALife::INVALID_OBJECT_ID)
 		return;
 
 	if (!can_choose_alife_tasks())
@@ -142,7 +142,7 @@ void CALifeMonsterBrain::select_task			()
 		}
 	}
 
-	if (object().m_smart_terrain_id != 0xffff) {
+	if (object().m_smart_terrain_id != ALife::INVALID_OBJECT_ID) {
 		smart_terrain().register_npc	(&object());
 		m_last_search_time				= 0;
 	}
@@ -164,7 +164,7 @@ void CALifeMonsterBrain::update				()
 
 	select_task						();
 	
-	if (object().m_smart_terrain_id != 0xffff)
+	if (object().m_smart_terrain_id != ALife::INVALID_OBJECT_ID)
 		process_task				();
 	else
 		default_behaviour			();

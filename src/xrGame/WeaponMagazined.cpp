@@ -749,7 +749,7 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 	}
 
 	xr_map<shared_str, u16> l_ammo;
-	xr_map< u16, u16> ammos_to_sync;
+	xr_map< ALife::_OBJECT_ID, u16> ammos_to_sync;
 	while(!m_magazine.empty()) 
 	{
 		CCartridge &l_cartridge = m_magazine.back();
@@ -793,12 +793,11 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 	{
 		NET_Packet	P;
 		CGameObject::u_EventGen(P, GE_WPN_UPDATE_AMMO, ID());
-		xr_map<u16, u16>::iterator _it;
+		xr_map<ALife::_OBJECT_ID, u16>::iterator _it;
 		P.w_u32(ammos_to_sync.size());
 		for (_it = ammos_to_sync.begin(); ammos_to_sync.end() != _it; ++_it)
 		{
-			P.w_u16(_it->first);
-			P.w_u16(_it->second);
+			P << _it->first << _it->second;
 		}
 		CGameObject::u_EventSend(P);
 	}
@@ -1738,16 +1737,15 @@ void CWeaponMagazined::OnAnimationEnd(u8 state)
 
 					if (g_pGamePersistent->GameType() == eGameIDFreeMP && m_pCurrentAmmo != nullptr)
 					{
-						xr_map<u16, u16> ammos_to_sync;
+						xr_map<ALife::_OBJECT_ID, u16> ammos_to_sync;
 						ammos_to_sync[m_pCurrentAmmo->ID()] = m_pCurrentAmmo->m_boxCurr;
 						NET_Packet	P;
 						CGameObject::u_EventGen(P, GE_WPN_UPDATE_AMMO, ID());
 						
 						P.w_u32(ammos_to_sync.size());
-						for (xr_map<u16, u16>::iterator _it = ammos_to_sync.begin(); ammos_to_sync.end() != _it; ++_it)
+						for (auto _it = ammos_to_sync.begin(); ammos_to_sync.end() != _it; ++_it)
 						{
-							P.w_u16(_it->first);
-							P.w_u16(_it->second);
+							P << _it->first << _it->second;
 						}
 						CGameObject::u_EventSend(P);
 					}
@@ -3502,7 +3500,8 @@ void CWeaponMagazined::OnEvent(NET_Packet& P, u16 type)
 		u32 count = P.r_u32();
 		for (u16 i = 0; i < count; ++i)
 		{
-			u16 id = P.r_u16();
+			ALife::_OBJECT_ID id;
+			P >> id;
 			u16 boxSize = P.r_u16();
 			CObject* obj = Level().Objects.net_Find(id);
 
@@ -3744,8 +3743,8 @@ void CWeaponMagazined::FireBullet(	const Fvector& pos,
 									const Fvector& shot_dir, 
 									float fire_disp,
 									const CCartridge& cartridge,
-									u16 parent_id,
-									u16 weapon_id,
+									ALife::_OBJECT_ID parent_id,
+									ALife::_OBJECT_ID weapon_id,
 									bool send_hit)
 {
 	if(m_iBaseDispersionedBulletsCount)

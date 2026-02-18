@@ -57,7 +57,7 @@
 #   include "animation_movement_controller.h"
 #endif // DEBUG
 
-void SetActorVisibility(u16 who, float value);
+void SetActorVisibility(ALife::_OBJECT_ID who, float value);
 extern int g_AI_inactive_time;
 
 #ifndef MASTER_GOLD
@@ -672,7 +672,7 @@ bool CCreature::net_Spawn	(CSE_Abstract* DC)
 //		Msg						("%6d : Object [%d][%s][%s] is spawned DEAD",Device.dwTimeGlobal,ID(),*cName(),*cNameSect());
 	}
 
-	if (ai().get_level_graph() && UsedAI_Locations() && (e->ID_Parent == 0xffff)) {
+	if (ai().get_level_graph() && UsedAI_Locations() && (e->ID_Parent == ALife::INVALID_OBJECT_ID)) {
 		if (ai().game_graph().valid_vertex_id(E->m_tGraphID))
 			ai_location().game_vertex				(E->m_tGraphID);
 

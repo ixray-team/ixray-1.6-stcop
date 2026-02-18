@@ -136,7 +136,7 @@ public:
 			void			DestroyDragItem		();
 			static void		EndDragSession		();
 			static void		FlushPendingDragItemDestroy();
-			void			ClearAll(bool bDestroy, xr_vector<u16> IgnoredItemsIds = {}); // FFx0001
+			void			ClearAll(bool bDestroy, xr_vector<ALife::_OBJECT_ID> IgnoredItemsIds = {}); // FFx0001
 			void			Compact				();
 			bool			IsOwner				(CUICellItem* itm);
 			void			clear_select_armament();
@@ -238,7 +238,7 @@ protected:
 
 				void			Grow				();
 				void			Shrink				();
-				void			ClearAll			(bool bDestroy, xr_vector<u16> IgnoredItemsIds = {}); // FFx0001
+				void			ClearAll			(bool bDestroy, xr_vector<ALife::_OBJECT_ID> IgnoredItemsIds = {}); // FFx0001
 				void			clear_select_armament();
 
 				void			ValidateSelector	();

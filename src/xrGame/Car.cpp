@@ -556,11 +556,11 @@ void CCar::SyncRead(NET_Packet& P)
 	u8 engine = BitsIn.test(0);
 	u8 light = BitsIn.test(1);
 
-	u16 owner;
-	P.r_u16(owner);
+	ALife::_OBJECT_ID owner;
+	P >> owner;
 	m_current_transmission_num = P.r_u32();
 
-	if (owner != u16(-1))
+	if (owner != ALife::INVALID_OBJECT_ID)
 	{
 		if (!(IsMyCar()))
 		{
@@ -625,9 +625,9 @@ void CCar::SyncWrite(NET_Packet& P)
 	P.w_u8(static_cast<u8>(BitsOut.to_ulong()));
 
 	if (OwnerActor())
-		P.w_u16(OwnerActor()->ID());
+		P << OwnerActor()->ID();
 	else
-		P.w_u16(u16(-1));
+		P << ALife::INVALID_OBJECT_ID;
 
 	P.w_u32((u32)m_current_transmission_num);
 
@@ -2209,7 +2209,7 @@ DLL_Pure* CCar::_construct()
 	return						(this);
 }
 
-u16 CCar::Initiator()
+ALife::_OBJECT_ID CCar::Initiator()
 {
 	if (g_Alive() && Owner())
 	{

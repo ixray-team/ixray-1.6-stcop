@@ -1,4 +1,5 @@
 #pragma once
+#include "alife_space.h"
 #include "../../../xrPhysics/IPhysicsShellHolder.h"
 
 class ECORE_API CPhysicsShellHolderEditorBase:
@@ -23,7 +24,7 @@ private:
 	virtual	const char*						_BCL	ObjectNameSect						()		const	 { return "unknown"; }
 	virtual	bool						_BCL	ObjectGetDestroy					()		const	 { return false; };
 	virtual ICollisionHitCallback*		_BCL	ObjectGetCollisionHitCallback		()				 { return nullptr;}
-	virtual	u16							_BCL	ObjectID							()		const	 { return u16(-1);}
+	virtual	ALife::_OBJECT_ID			_BCL	ObjectID							()		const	 { return ALife::INVALID_OBJECT_ID;}
 	virtual	ICollisionForm*				_BCL	ObjectCollisionModel				()				 { VERIFY(false);return nullptr; }
 	virtual IDamageSource*				_BCL	ObjectCastIDamageSource				()				 { return nullptr; }
 	virtual	void						_BCL	ObjectProcessingDeactivate			()				 {;}

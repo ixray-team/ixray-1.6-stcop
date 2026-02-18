@@ -744,7 +744,7 @@ void game_sv_Deathmatch::OnPlayerReady(ClientID id)
 }
 
 
-void game_sv_Deathmatch::OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameID)
+void game_sv_Deathmatch::OnPlayerDisconnect(ClientID id_who, LPSTR Name, ALife::_OBJECT_ID GameID)
 {
 	inherited::OnPlayerDisconnect	(id_who, Name, GameID);
 };
@@ -856,7 +856,7 @@ bool	game_sv_Deathmatch::IsBuyableItem			(const char*	ItemName)
 	return true;
 };
 
-void game_sv_Deathmatch::CheckItem(game_PlayerState* ps, PIItem pItem, xr_vector<s16> *pItemsDesired, xr_vector<u16> *pItemsToDelete, bool ExactMatch = false)
+void game_sv_Deathmatch::CheckItem(game_PlayerState* ps, PIItem pItem, xr_vector<s16> *pItemsDesired, xr_vector<ALife::_OBJECT_ID> *pItemsToDelete, bool ExactMatch = false)
 {
 	if (!pItem || !pItemsDesired || !pItemsToDelete) return;
 
@@ -1092,7 +1092,7 @@ void	game_sv_Deathmatch::OnPlayerHitPlayer_Case	(game_PlayerState* ps_hitter, ga
 	}	
 };
 
-void	game_sv_Deathmatch::OnPlayerHitPlayer		(u16 id_hitter, u16 id_hitted, NET_Packet& P)
+void	game_sv_Deathmatch::OnPlayerHitPlayer		(ALife::_OBJECT_ID id_hitter, ALife::_OBJECT_ID id_hitted, NET_Packet& P)
 {
 	CSE_Abstract*		e_hitter		= get_entity_from_eid	(id_hitter	);
 	CSE_Abstract*		e_hitted		= get_entity_from_eid	(id_hitted	);
@@ -1191,7 +1191,7 @@ void	game_sv_Deathmatch::LoadTeamData			(const shared_str& caSection)
 	TeamList.push_back(NewTeam);
 };
 
-void game_sv_Deathmatch::OnDestroyObject			(u16 eid_who)
+void game_sv_Deathmatch::OnDestroyObject			(ALife::_OBJECT_ID eid_who)
 {
 	if (eid_who == m_dwSM_CurViewEntity && m_bSpectatorMode)
 	{
@@ -1432,7 +1432,7 @@ void	game_sv_Deathmatch::Send_EventPack_for_AnomalySet	(u32 AnomalySet, u8 Event
 	if (Anomalies->empty()) return;
 	for (u32 i=0; i<Anomalies->size(); i++)
 	{
-		u16 ID = (*Anomalies)[i];
+		ALife::_OBJECT_ID ID = (*Anomalies)[i];
 		//-----------------------------------
 		NET_Packet P;
 		u_EventGen		(P,GE_ZONE_STATE_CHANGE,ID);
@@ -1487,7 +1487,7 @@ void	game_sv_Deathmatch::StartAnomalies			(int AnomalySet)
 #endif
 };
 
-bool	game_sv_Deathmatch::OnTouch			(u16 eid_who, u16 eid_what, bool bForced)
+bool	game_sv_Deathmatch::OnTouch			(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_what, bool bForced)
 {
 	CSE_Abstract*		e_who	= m_server->ID_to_entity(eid_who);		VERIFY(e_who	);
 	CSE_Abstract*		e_what	= m_server->ID_to_entity(eid_what);		VERIFY(e_what	);	
@@ -1500,14 +1500,20 @@ bool	game_sv_Deathmatch::OnTouch			(u16 eid_who, u16 eid_what, bool bForced)
 		if (W) 
 		{
 			// Weapon
-			xr_vector<u16>&	C			=	A->children;
+			auto&	C			=	A->children;
 			u8 slot						=	W->get_slot	();
-			for (u32 it=0; it<C.size(); ++it)
+			for (auto it : C)
 			{
-				CSE_Abstract*		Et	= m_server->ID_to_entity				(C[it]);
-				if (0==Et)				continue;
+				CSE_Abstract*		Et	= m_server->ID_to_entity				(it);
+				if (!Et)
+				{
+					continue;
+				}
 				CSE_ALifeItemWeapon* T = Et->cast_item_weapon();
-				if (0==T)				continue;
+				if (!T)
+				{
+					continue;
+				}
 				if (slot == T->get_slot())	
 				{
 					if (bForced)
@@ -1516,11 +1522,11 @@ bool	game_sv_Deathmatch::OnTouch			(u16 eid_who, u16 eid_what, bool bForced)
 						//-----------------------------------------------------
 						NET_Packet				P;
 						u_EventGen				(P,GE_OWNERSHIP_REJECT,eid_who);
-						P.w_u16					(T->ID);
+						P << T->ID;
 						Level().Send(P,net_flags(true,true));
 						//-----------------------------------------------------
 						u_EventGen				(P,GE_OWNERSHIP_TAKE,eid_who);
-						P.w_u16					(eid_what);
+						P << eid_what;
 						Level().Send(P,net_flags(true,true));
 						//-----------------------------------------------------						
 					}
@@ -1556,7 +1562,7 @@ bool	game_sv_Deathmatch::OnTouch			(u16 eid_who, u16 eid_what, bool bForced)
 		//---------------------------------------------------------------
 		if (e_what->m_tClassID == CLSID_OBJECT_PLAYERS_BAG)
 		{
-			if (e_what->ID_Parent == 0xffff)
+			if (e_what->ID_Parent == ALife::INVALID_OBJECT_ID)
 			{
 				//-------------------------------
 				//move all items from rukzak to player
@@ -1574,8 +1580,7 @@ bool	game_sv_Deathmatch::OnTouch			(u16 eid_who, u16 eid_what, bool bForced)
 							{
 								NET_Packet			P;
 								u_EventGen			(P,GE_OWNERSHIP_REJECT,e_what->ID);
-								P.w_u16				(e_child_item->ID);
-
+								P << e_child_item->ID;
 								m_server->Process_event_reject	(P,m_server->GetServerClient()->ID,0,e_what->ID,e_child_item->ID);
 								continue;
 							}
@@ -1617,7 +1622,7 @@ bool	game_sv_Deathmatch::OnTouch			(u16 eid_who, u16 eid_what, bool bForced)
 	return false;
 }
 
-void game_sv_Deathmatch::OnDetach(u16 eid_who, u16 eid_what)
+void game_sv_Deathmatch::OnDetach(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_what)
 {	
 	CSE_Abstract*		e_parent	= get_entity_from_eid	(eid_who);
 	CSE_Abstract*		e_entity	= get_entity_from_eid	(eid_what);
@@ -1627,22 +1632,19 @@ void game_sv_Deathmatch::OnDetach(u16 eid_who, u16 eid_what)
 	{
 	
 		//move all items from player to rukzak
-		xr_vector<u16>::const_iterator it = e_parent->children.begin();
-		xr_vector<u16>::const_iterator it_e = e_parent->children.end();
 		xr_vector<CSE_Abstract*>			to_transfer;
 		xr_vector<CSE_Abstract*>			to_destroy;
 		xr_vector<CSE_Abstract*>			to_reject;
 
 		FillDeathActorRejectItems(actor, to_reject);
 
-		for ( ;it!=it_e; ++it)
+		for (auto ItemID : e_parent->children)
 		{
-			u16 ItemID					= *it;
 			CSE_Abstract* e_item		= get_entity_from_eid(ItemID);
 
 			R_ASSERT(e_item->ID_Parent == e_parent->ID);
 			
-			if (std::find(to_reject.begin(), to_reject.end(), e_item) != to_reject.end())
+			if (std::ranges::find(to_reject, e_item) != to_reject.end())
 				continue;
 
 			if ((e_item->m_tClassID == CLSID_OBJECT_W_KNIFE) ||
@@ -1655,18 +1657,14 @@ void game_sv_Deathmatch::OnDetach(u16 eid_who, u16 eid_what)
 					to_transfer.push_back(e_item);
 			}
 		}
-
-		xr_vector<CSE_Abstract*>::const_iterator tr_it		= to_transfer.begin();
-		xr_vector<CSE_Abstract*>::const_iterator tr_it_e	= to_transfer.end();
-
 		NET_Packet							EventPack;
 		NET_Packet							PacketReject;
 		NET_Packet							PacketTake;
 		EventPack.w_begin					(M_EVENT_PACK);
 		
-		for( ;tr_it!=tr_it_e; ++tr_it)
+		for(auto Item : to_transfer)
 		{
-			m_server->Perform_transfer		(PacketReject, PacketTake, *tr_it, e_parent, e_entity);
+			m_server->Perform_transfer		(PacketReject, PacketTake, Item, e_parent, e_entity);
 			EventPack.w_u8					(u8(PacketReject.B.count));
 			EventPack.w						(&PacketReject.B.data, PacketReject.B.count);
 			EventPack.w_u8					(u8(PacketTake.B.count));
@@ -1676,11 +1674,11 @@ void game_sv_Deathmatch::OnDetach(u16 eid_who, u16 eid_what)
 		if (EventPack.B.count > 2)	
 			u_EventSend						(EventPack);
 
-		std::for_each(to_reject.begin(), to_reject.end(),
-			[this](CSE_Abstract* item) {
-				game_sv_mp::RejectGameItem(item);
-			});
-	};
+		std::ranges::for_each(to_reject,
+		                      [this](CSE_Abstract* item) {
+			                      game_sv_mp::RejectGameItem(item);
+		                      });
+	}
 }
 
 void game_sv_Deathmatch::OnPlayerConnect(ClientID id_who)
@@ -1905,13 +1903,13 @@ bool game_sv_Deathmatch::OnPreCreate(CSE_Abstract* E)
 	return true;
 };
 
-void game_sv_Deathmatch::OnCreate(u16 eid_who)
+void game_sv_Deathmatch::OnCreate(ALife::_OBJECT_ID eid_who)
 {
 	inherited::OnCreate(eid_who);
 
 };
 
-void game_sv_Deathmatch::OnPostCreate(u16 eid_who)
+void game_sv_Deathmatch::OnPostCreate(ALife::_OBJECT_ID eid_who)
 {
 	inherited::OnPostCreate(eid_who);
 
@@ -1966,7 +1964,7 @@ void game_sv_Deathmatch::Send_Anomaly_States(ClientID id_who)
 		if (Anomalies->empty()) return;
 		for (u32 i=0; i<Anomalies->size(); i++)
 		{
-			u16 ID = (*Anomalies)[i];
+			auto ID = (*Anomalies)[i];
 			//-----------------------------------
 			NET_Packet P;
 			u_EventGen		(P,GE_ZONE_STATE_CHANGE,ID);

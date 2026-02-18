@@ -194,7 +194,7 @@ bool CBaseMonster::bfAssignMovement (CScriptEntityAction *tpEntityAction)
 			CSE_ALifeOnlineOfflineGroup& group = ai().alife().groups().object(i_am->m_group_id);
 
 			ALife::_OBJECT_ID leader_id = group.commander_id();
-			bool const should_follow_leader = leader_id != (ALife::_OBJECT_ID)(-1) && leader_id != ID();
+			bool const should_follow_leader = leader_id != ALife::INVALID_OBJECT_ID && leader_id != ID();
 			CObject* finded_item = Level().Objects.net_Find(leader_id);
 			CCreature* const leader = should_follow_leader ? finded_item != nullptr ? finded_item->cast_creature() : nullptr : nullptr;
 

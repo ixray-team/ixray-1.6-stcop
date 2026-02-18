@@ -381,8 +381,8 @@ IC	void CPlanner::save	(NET_Packet &packet)
 		typename CConditionStorage::const_iterator	I = m_storage.m_storage.begin();
 		typename CConditionStorage::const_iterator	E = m_storage.m_storage.end();
 		for ( ; I != E; ++I) {
-			packet.w				(&(*I).m_condition,sizeof((*I).m_condition));
-			packet.w				(&(*I).m_value,sizeof((*I).m_value));
+			packet.w				(&I->m_condition,sizeof(I->m_condition));
+			packet.w				(&I->m_value,sizeof(I->m_value));
 		}
 	}
 }

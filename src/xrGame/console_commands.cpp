@@ -1912,7 +1912,7 @@ public:
 			Fvector3 point = point.mad(Device.vCameraPosition, Device.vCameraDirection, HUD().GetCurrentRayQuery().range);
 
 			for (size_t i = 0; i < count; i++) {
-				auto item = Level().Server->game->alife().spawn_item(nameSection, point, 0, actor->ai_location().game_vertex_id(), u16(-1));
+				auto item = Level().Server->game->alife().spawn_item(nameSection, point, 0, actor->ai_location().game_vertex_id(), ALife::INVALID_OBJECT_ID);
 				item->cast_alife_object()->use_ai_locations(false);
 
 				auto anomaly = item->cast_anomalous_zone();

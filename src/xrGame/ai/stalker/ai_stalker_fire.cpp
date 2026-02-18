@@ -1015,7 +1015,7 @@ void CAI_Stalker::notify_on_wounded_or_killed	(CObject *object)
 void CAI_Stalker::notify_on_wounded_or_killed	()
 {
 	ALife::_OBJECT_ID					last_hit_object_id = memory().hit().last_hit_object_id();
-	if (last_hit_object_id == ALife::_OBJECT_ID(-1))
+	if (last_hit_object_id == ALife::INVALID_OBJECT_ID)
 		return;
 
 	CObject								*object = Level().Objects.net_Find(last_hit_object_id);

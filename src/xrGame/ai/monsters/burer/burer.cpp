@@ -702,7 +702,7 @@ void CBurer::StartGraviPrepare()
 		NET_Packet tmp_packet;
 		CGameObject::u_EventGen(tmp_packet, GE_BURER_GRAVI_PARTICLES, ID());
 		tmp_packet.w_u8(1);
-		tmp_packet.w_u16(pA->ID());
+		tmp_packet << pA->ID();
 		Level().Server->SendBroadcast(BroadcastCID, tmp_packet, net_flags(true, true));
 	}
 }
@@ -739,7 +739,7 @@ void CBurer::StopGraviPrepare()
 		NET_Packet tmp_packet;
 		CGameObject::u_EventGen(tmp_packet, GE_BURER_GRAVI_PARTICLES, ID());
 		tmp_packet.w_u8(0);
-		tmp_packet.w_u16(pA->ID());
+		tmp_packet << pA->ID();
 		Level().Server->SendBroadcast(BroadcastCID, tmp_packet, net_flags(true, true));
 	}
 }
@@ -933,7 +933,7 @@ void CBurer::StartGraviMP()
 
 	NET_Packet tmp_packet;
 	CGameObject::u_EventGen(tmp_packet, GE_BURER_GRAVI_WAVE, ID());
-	tmp_packet.w_u16(EnemyMan.get_enemy()->ID());
+	tmp_packet << EnemyMan.get_enemy()->ID();
 	Level().Server->SendBroadcast(BroadcastCID, tmp_packet, net_flags(true, true));
 }
 

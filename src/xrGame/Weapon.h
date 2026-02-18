@@ -751,7 +751,7 @@ public:
 	virtual void			OnMagazineEmpty		();
 			void			SpawnAmmo			(u32 boxCurr = 0xffffffff, 
 													const char* ammoSect = NULL, 
-													u32 ParentID = 0xffffffff);
+													ALife::_OBJECT_ID ParentID = ALife::INVALID_OBJECT_ID);
 			void			ReturnAmmoToInventory(xr_map<shared_str, u16>& ammo,
 													xr_map<u16, u16>* ammos_to_sync = nullptr);
 	bool					SwitchAmmoType		(u32 flags);

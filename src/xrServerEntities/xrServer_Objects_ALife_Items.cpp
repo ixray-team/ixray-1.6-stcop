@@ -113,7 +113,7 @@ const	u32		CSE_ALifeInventoryItem::random_limit			= 120;
 //if true, then object sends update packet
 bool CSE_ALifeInventoryItem::Net_Relevant()
 {
-	if (base()->ID_Parent != u16(-1))
+	if (base()->ID_Parent != ALife::INVALID_OBJECT_ID)
 		return		false;
 
 	if (!freezed)
@@ -1034,7 +1034,7 @@ void CSE_ALifeItemArtefact::FillProps		(const char* pref, PropItemVec& items)
 
 bool CSE_ALifeItemArtefact::Net_Relevant	()
 {
-	if (base()->ID_Parent == u16(-1))
+	if (base()->ID_Parent == ALife::INVALID_OBJECT_ID)
 		return true;
 
 	return false;
@@ -1045,7 +1045,7 @@ bool CSE_ALifeItemArtefact::Net_Relevant	()
 ////////////////////////////////////////////////////////////////////////////
 CSE_ALifeItemPDA::CSE_ALifeItemPDA		(const char* caSection) : CSE_ALifeItem(caSection)
 {
-	m_original_owner		= 0xffff;
+	m_original_owner		= ALife::INVALID_OBJECT_ID;
 	m_specific_character	= nullptr;
 	m_info_portion			= nullptr;
 }
@@ -1059,7 +1059,17 @@ void CSE_ALifeItemPDA::STATE_Read		(NET_Packet	&tNetPacket, u16 size)
 {
 	inherited::STATE_Read		(tNetPacket,size);
 	if (m_wVersion > 58)
-		tNetPacket.r_u16		(m_original_owner);
+	{
+		if (m_wVersion < 130)
+		{
+			u16 ID;
+			tNetPacket.r_u16(ID);
+			m_original_owner = ID == 0xffff ? ALife::INVALID_OBJECT_ID : ID;
+		} else
+		{
+			tNetPacket.r_u32(m_original_owner);
+		}
+	}
 
 	if (m_wVersion > 89)
 
@@ -1080,7 +1090,7 @@ void CSE_ALifeItemPDA::STATE_Read		(NET_Packet	&tNetPacket, u16 size)
 void CSE_ALifeItemPDA::STATE_Write		(NET_Packet	&tNetPacket)
 {
 	inherited::STATE_Write		(tNetPacket);
-	tNetPacket.w_u16				(m_original_owner);
+	tNetPacket << m_original_owner;
 #ifdef XRGAME_EXPORTS
 	tNetPacket.w_stringZ		(m_specific_character);
 	tNetPacket.w_stringZ		(m_info_portion);

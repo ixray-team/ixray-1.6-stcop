@@ -40,7 +40,7 @@ void CALifeSimulatorBase::register_object	(CSE_ALifeDynamicObject *object, bool 
 		CSE_ALifeDynamicObject			*II = objects().object(item->base()->ID_Parent);
 
 #ifdef DEBUG
-		if (std::find(II->children.begin(),II->children.end(),item->base()->ID) != II->children.end()) {
+		if (std::ranges::find(II->children,item->base()->ID) != II->children.end()) {
 			Msg							("[LSS] Specified item [%s][%d] is already attached to the specified object [%s][%d]",item->base()->name_replace(),item->base()->ID,II->name_replace(),II->ID);
 			FATAL						("[LSS] Cannot recover from the previous error!");
 		}
@@ -72,7 +72,7 @@ void CALifeSimulatorBase::unregister_object	(CSE_ALifeDynamicObject *object, boo
 		scheduled().remove				(object);
 	}
 	else
-		if (object->ID_Parent == 0xffff) {
+		if (object->ID_Parent == ALife::INVALID_OBJECT_ID) {
 //			if (object->used_ai_locations())
 				graph().level().remove	(object,!object->used_ai_locations());
 		}
@@ -90,7 +90,7 @@ void CALifeSimulatorBase::on_death			(CSE_Abstract *killed, CSE_Abstract *killer
 	if (!member)
 		return;
 
-	if (member->m_group_id == 0xffff)
+	if (member->m_group_id == ALife::INVALID_OBJECT_ID)
 		return;
 
 	groups().object(member->m_group_id).notify_on_member_death	(member);

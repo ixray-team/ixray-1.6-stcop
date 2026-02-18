@@ -23,7 +23,7 @@
 #include "Weapon.h"
 #include "../../../ActorCondition.h"
 
-void SetActorVisibility(u16 who, float value);
+void SetActorVisibility(ALife::_OBJECT_ID who, float value);
 
 CPoltergeist::CPoltergeist()
 {

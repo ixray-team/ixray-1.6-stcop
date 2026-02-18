@@ -57,17 +57,17 @@ struct game_PlayerState
 
 	u16			ping;
 
-	u16			GameID;
+	ALife::_OBJECT_ID GameID;
 
-	u16			lasthitter;
-	u16			lasthitweapon;
+	ALife::_OBJECT_ID lasthitter;
+	ALife::_OBJECT_ID lasthitweapon;
 	s8			skin;
 	u32			RespawnTime;
 	u32			DeathTime;
 	s16			money_delta;
 	u8			m_bCurrentVoteAgreed;
 
-	using OLD_GAME_ID = xr_deque<u16>;
+	using OLD_GAME_ID = xr_deque<ALife::_OBJECT_ID>;
 	using OLD_GAME_ID_it = OLD_GAME_ID::iterator;
 
 	OLD_GAME_ID	mOldIDs;
@@ -95,8 +95,8 @@ struct game_PlayerState
 			void	resetFlag				(u16 f);
 			const char*	getName					() const {return m_account.name().c_str();}
 			//void	setName					(const char* s){xr_strcpy(name,s);}
-			void	SetGameID				(u16 NewID);
-			bool	HasOldID				(u16 ID);
+			void	SetGameID				(ALife::_OBJECT_ID NewID);
+			bool	HasOldID				(ALife::_OBJECT_ID ID);
 			bool	IsSkip					() const {return testFlag(GAME_PLAYER_FLAG_SKIP);}
 
 			s16		frags					() const {return m_iRivalKills - m_iSelfKills - m_iTeamKills;} 

@@ -32,13 +32,13 @@ private:
 	Fvector	greenTeamRPos;
 	Fvector	blueTeamRPos;
 
-	u16 greenArtefact;
-	u16 blueArtefact;
+	ALife::_OBJECT_ID greenArtefact;
+	ALife::_OBJECT_ID blueArtefact;
 	bool haveGotUpdate;
 	//bool sendedSpawnMe;
 
-	u16 greenArtefactOwner;	//GameID, if 0, then no body took the artefact
-	u16 blueArtefactOwner;
+	ALife::_OBJECT_ID greenArtefactOwner;	//GameID, if 0, then no body took the artefact
+	ALife::_OBJECT_ID blueArtefactOwner;
 	
 	const shared_str & GetLocalPlayerTeamSection() const;
 	ETeam GetLocalPlayerTeam() const;
@@ -150,14 +150,14 @@ public:
 	
 	virtual	void OnSwitchPhase(u32 old_phase, u32 new_phase);
 	virtual	void OnGameRoundStarted	();
-	u16 GetGreenArtefactOwnerID		() const;
-	u16 GetBlueArtefactOwnerID		() const;
+	ALife::_OBJECT_ID GetGreenArtefactOwnerID		() const;
+	ALife::_OBJECT_ID GetBlueArtefactOwnerID		() const;
 	
 	Fvector const & GetGreenArtefactRPoint	()	const;
 	Fvector const & GetBlueArtefactRPoint	()	const;
 	float			GetBaseRadius			()	const;
-	u16				GetGreenArtefactID		()	const;
-	u16				GetBlueArtefactID		()	const;
+	ALife::_OBJECT_ID GetGreenArtefactID		()	const;
+	ALife::_OBJECT_ID GetBlueArtefactID		()	const;
 	bool			CanActivateArtefact		()	const;
 
 	bool			InWarmUp				()	const;

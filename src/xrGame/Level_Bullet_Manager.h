@@ -40,8 +40,8 @@ struct SBullet
 	Fvector dir;
 	float speed; // текущая скорость
 
-	u16 parent_id; // ID персонажа который иницировал действие
-	u16 weapon_id; // ID оружия из которого была выпущены пуля
+	ALife::_OBJECT_ID parent_id; // ID персонажа который иницировал действие
+	ALife::_OBJECT_ID weapon_id; // ID оружия из которого была выпущены пуля
 
 	float fly_dist; // дистанция которую пуля пролетела
 
@@ -73,7 +73,7 @@ struct SBullet
 	ref_sound m_whine_snd;
 	ref_sound m_mtl_snd;
 
-	u16 targetID;
+	ALife::_OBJECT_ID targetID;
 
 	bool density_mode;
 	float density;
@@ -86,8 +86,8 @@ struct SBullet
 	void Init(const Fvector& position, const Fvector& direction, float start_speed, float power,
 			  //.										float	power_critical,
 			  float impulse,
-			  u16 sender_id,
-			  u16 sendersweapon_id,
+			  ALife::_OBJECT_ID sender_id,
+			  ALife::_OBJECT_ID sendersweapon_id,
 			  ALife::EHitType e_hit_type,
 			  float maximum_distance,
 			  const CCartridge& cartridge,
@@ -237,7 +237,7 @@ public:
 
 	void Load();
 	void Clear();
-	void AddBullet(const Fvector& position, const Fvector& direction, float starting_speed, float power, /*float power_critical,*/ float impulse, u16 sender_id, u16 sendersweapon_id, ALife::EHitType e_hit_type, float maximum_distance, const CCartridge& cartridge, float const air_resistance_factor, bool SendHit, bool AimBullet = false);
+	void AddBullet(const Fvector& position, const Fvector& direction, float starting_speed, float power, /*float power_critical,*/ float impulse, ALife::_OBJECT_ID sender_id, ALife::_OBJECT_ID sendersweapon_id, ALife::EHitType e_hit_type, float maximum_distance, const CCartridge& cartridge, float const air_resistance_factor, bool SendHit, bool AimBullet = false);
 
 	void CommitEvents(); // @ the start of frame
 	void Render();

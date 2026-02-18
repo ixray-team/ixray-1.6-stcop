@@ -36,12 +36,12 @@ IC bool CAI_Stalker::CTradeItem::operator<(const CTradeItem& trade_item) const
 	return m_item->object().ID() < trade_item.m_item->object().ID();
 }
 
-IC bool CAI_Stalker::CTradeItem::operator==(u16 id) const
+IC bool CAI_Stalker::CTradeItem::operator==(ALife::_OBJECT_ID id) const
 {
 	return m_item->object().ID() == id;
 }
 
-bool CAI_Stalker::tradable_item(CInventoryItem* inventory_item, const u16& current_owner_id)
+bool CAI_Stalker::tradable_item(CInventoryItem* inventory_item, const ALife::_OBJECT_ID& current_owner_id)
 {
 	if (!inventory_item->useful_for_NPC())
 	{
@@ -85,12 +85,12 @@ void CAI_Stalker::transfer_item(CInventoryItem* item, CGameObject* old_owner, CG
 	NET_Packet P;
 	CGameObject* O = old_owner;
 	O->u_EventGen(P, GE_TRADE_SELL, O->ID());
-	P.w_u16(u16(item->object().ID()));
+	P << item->object().ID();
 	O->u_EventSend(P);
 
 	O = new_owner;
 	O->u_EventGen(P, GE_TRADE_BUY, O->ID());
-	P.w_u16(u16(item->object().ID()));
+	P << item->object().ID();
 	O->u_EventSend(P);
 }
 
@@ -301,7 +301,7 @@ void CAI_Stalker::update_sell_info()
 	m_temp_items.clear();
 	m_current_trader = 0;
 	m_total_money = get_money();
-	u32	money_delta = fill_items(inventory(), this, ALife::_OBJECT_ID(-1));
+	u32	money_delta = fill_items(inventory(), this, ALife::INVALID_OBJECT_ID);
 	m_total_money += money_delta;
 	std::sort(m_temp_items.begin(), m_temp_items.end());
 	select_items();
@@ -310,7 +310,7 @@ void CAI_Stalker::update_sell_info()
 	{
 		if (!tradable_item(item, ID()))
 		{
-			m_temp_items.push_back(CTradeItem(item, ID(), ID()));
+			m_temp_items.emplace_back(item, ID(), ID());
 		}
 	}
 }
@@ -325,7 +325,7 @@ bool CAI_Stalker::can_sell(CInventoryItem* item)
 	update_sell_info();
 	xr_vector<CTradeItem>::const_iterator I = std::find(m_temp_items.begin(), m_temp_items.end(), item->object().ID());
 	VERIFY(I != m_temp_items.end());
-	return (*I).m_new_owner_id != ID();
+	return I->m_new_owner_id != ID();
 }
 
 bool CAI_Stalker::AllowItemToTrade(CInventoryItem const* item, const SInvItemPlace& place) const

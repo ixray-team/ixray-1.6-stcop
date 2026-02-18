@@ -781,10 +781,9 @@ if (!g_pGameLevel)
 						VERIFY							(e);
 						CSE_ALifeCreatureActor*	s_actor = smart_cast<CSE_ALifeCreatureActor*>(e);
 						VERIFY							(s_actor);
-						xr_vector<u16>::iterator it = s_actor->children.begin();
-						for(;it!=s_actor->children.end();it++)
+						for(auto ID : s_actor->children){
 						{
-							CObject* obj = Level().Objects.net_Find(*it);
+							CObject* obj = Level().Objects.net_Find(ID);
 							if(obj && Engine.Sheduler.Registered(obj))
 							{
 								obj->dbg_update_shedule = 0;

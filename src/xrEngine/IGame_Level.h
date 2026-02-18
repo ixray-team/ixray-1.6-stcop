@@ -123,7 +123,7 @@ public:
     virtual void                SetEnvironmentTimeFactor(float fTimeFactor) = 0;
     virtual u64                 GetEnvironmentGameTime() const = 0;
 
-	virtual	void				SpawnItem(const char* section, const Fvector& position, u32 level_vertex_id, u16 parent_id) = 0;
+	virtual	void				SpawnItem(const char* section, const Fvector& position, u32 level_vertex_id, ALife::_OBJECT_ID parent_id) = 0;
 	virtual IGame_Patrol*		CreatePatrol(const char* patrol) = 0;
 	virtual void				LoadEditor(shared_str LevelName) {};
 

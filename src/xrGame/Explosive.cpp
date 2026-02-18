@@ -53,7 +53,7 @@ CExplosive::CExplosive(void)
 	m_eHitTypeFrag			= ALife::eHitTypeFireWound;
 
 
-	m_iCurrentParentID		= 0xffff;
+	m_iCurrentParentID		= ALife::INVALID_OBJECT_ID;
 
 //	m_bReadyToExplode		= false;
 //	m_bExploding			= false;
@@ -306,7 +306,7 @@ float CExplosive::TestPassEffect(const	Fvector	&source_p,	const	Fvector	&dir,flo
 }
 void CExplosive::Explode()
 {
-	VERIFY(0xffff != Initiator());
+	VERIFY(ALife::INVALID_OBJECT_ID != Initiator());
 	VERIFY(m_explosion_flags.test(flReadyToExplode));//m_bReadyToExplode
 	VERIFY(!physics_world()->Processing());
 	//m_bExploding = true;
@@ -326,7 +326,7 @@ void CExplosive::Explode()
 	OnBeforeExplosion();
 	//играем звук взрыва
 	CObject* who = nullptr;
-	if (Initiator() != ALife::_OBJECT_ID(-1)) {
+	if (Initiator() != ALife::INVALID_OBJECT_ID) {
 		who = Level().Objects.net_Find(Initiator());
 	}
 	m_layered_sounds.PlaySound("sndExplode", pos, who, false, false, true, (u8)-1);
@@ -602,8 +602,8 @@ void CExplosive::OnEvent(NET_Packet& P, u16 type)
 			}
 
 			Fvector pos, normal;
-			u16 parent_id;
-			P.r_u16(parent_id);
+			ALife::_OBJECT_ID parent_id;
+			P >> parent_id;
 			P.r_vec3(pos);
 			P.r_vec3(normal);
 			
@@ -633,11 +633,11 @@ void CExplosive::GenExplodeEvent (const Fvector& pos, const Fvector& normal)
 //	if( m_bExplodeEventSent ) 
 //		return;
 	//VERIFY(!m_explosion_flags.test(flExplodEventSent));//!m_bExplodeEventSent
-	VERIFY(0xffff != Initiator());
+	VERIFY(ALife::INVALID_OBJECT_ID != Initiator());
 
 	NET_Packet		P;
 	cast_game_object()->u_EventGen		(P,GE_GRENADE_EXPLODE,cast_game_object()->ID());	
-	P.w_u16			(Initiator());
+	P << Initiator();
 	P.w_vec3		(pos);
 	P.w_vec3		(normal);
 	cast_game_object()->u_EventSend		(P);
@@ -826,12 +826,12 @@ void CExplosive::net_Relcase(CObject* O)
 	if (IsGameTypeSingle())
 	{
 		if(O->ID()==m_iCurrentParentID)
-			m_iCurrentParentID=u16(-1);
+			m_iCurrentParentID=ALife::INVALID_OBJECT_ID;
 	}
 
 	if (O && O->cast_game_object())
 	{
-		BLASTED_OBJECTS_I I = std::find(m_blasted_objects.begin(), m_blasted_objects.end(), O->cast_game_object()->cast_physics_shell_holder());
+		BLASTED_OBJECTS_I I = std::ranges::find(m_blasted_objects, O->cast_game_object()->cast_physics_shell_holder());
 		if (m_blasted_objects.end() != I)
 		{
 			m_blasted_objects.erase(I);
@@ -839,10 +839,13 @@ void CExplosive::net_Relcase(CObject* O)
 	}
 }
 
-u16	CExplosive::Initiator()
+ALife::_OBJECT_ID CExplosive::Initiator()
 {
-	u16 initiator=CurrentParentID();
-	if(initiator==u16(-1))initiator=cast_game_object()->ID();
+	ALife::_OBJECT_ID initiator=CurrentParentID();
+	if(initiator==ALife::INVALID_OBJECT_ID)
+	{
+		initiator=cast_game_object()->ID();
+	}
 	return initiator;
 }
 

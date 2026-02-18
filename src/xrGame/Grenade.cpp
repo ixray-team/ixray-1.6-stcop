@@ -93,7 +93,7 @@ bool CGrenade::CheckGrenadeExplosionByHit(SHit* SHit)
 
 void CGrenade::Hit(SHit* pHDS)
 {
-	if (CExplosive::Initiator() == u16(-1) || CheckGrenadeExplosionByHit(pHDS))
+	if (CExplosive::Initiator() == ALife::INVALID_OBJECT_ID || CheckGrenadeExplosionByHit(pHDS))
 	{
 		CExplosive::SetCurrentParentID(pHDS->who->ID());
 		Destroy();
@@ -291,7 +291,7 @@ void CGrenade::PutNextToSlot()
 		m_pInventory->Ruck(this);
 
 		this->u_EventGen(P, GEG_PLAYER_ITEM2RUCK, this->H_Parent()->ID());
-		P.w_u16(this->ID());
+		P << this->ID();
 		this->u_EventSend(P);
 	}
 	else
@@ -315,7 +315,7 @@ void CGrenade::PutNextToSlot()
 		if (pNext && m_pInventory->Slot(pNext->BaseSlot(), pNext))
 		{
 			pNext->u_EventGen(P, GEG_PLAYER_ITEM2SLOT, pNext->H_Parent()->ID());
-			P.w_u16(pNext->ID());
+			P << pNext->ID();
 			P.w_u16(pNext->BaseSlot());
 			pNext->u_EventSend(P);
 			m_pInventory->SetActiveSlot(pNext->BaseSlot());

@@ -1086,7 +1086,7 @@ bool CWeaponKnife::victim_filter::operator()(spartial_base_t::value_type const &
 }
 
 CWeaponKnife::best_victim_selector::best_victim_selector(
-		u16 except_id,
+		ALife::_OBJECT_ID except_id,
 		Fvector const & pos,
 		float const query_distance,
 		spartial_base_t::value_type & dest_result) :

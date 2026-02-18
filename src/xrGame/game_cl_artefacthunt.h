@@ -26,12 +26,12 @@ protected:
 	virtual			void				OnBuySpawnMenu_Ok		();	
 public:
 	u8									artefactsNum;//ah
-	u16									artefactBearerID;//ah,ZoneMap
-	u16									old_artefactBearerID;
+	ALife::_OBJECT_ID					artefactBearerID;//ah,ZoneMap
+	ALife::_OBJECT_ID					old_artefactBearerID;
 	u8									teamInPossession;//ah,ZoneMap
 	u8									old_teamInPossession;
-	u16									artefactID;
-	u16									old_artefactID;
+	ALife::_OBJECT_ID artefactID;
+	ALife::_OBJECT_ID old_artefactID;
 	s32									iReinforcementTime;
 	s32									dReinforcementTime;
 
@@ -53,7 +53,7 @@ public :
 
 	virtual			void				OnSpawn					(CObject* pObj);
 	virtual			void				OnDestroy				(CObject* pObj);	
-	virtual			void				SendPickUpEvent			(u16 ID_who, u16 ID_what);
+	virtual			void				SendPickUpEvent			(ALife::_OBJECT_ID ID_who, ALife::_OBJECT_ID ID_what);
 	virtual		void					OnConnected				();
 
 	virtual game_cl_mp* cast_game_cl_mp() override { return this; }

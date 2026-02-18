@@ -83,7 +83,7 @@ public:
 				void				CheckPlayerName			(xrClientData* CL);
 public:
 	virtual		void				OnPlayerConnect			(ClientID id_who);
-	virtual		void				OnPlayerDisconnect		(ClientID id_who, LPSTR Name, u16 GameID);
+	virtual		void				OnPlayerDisconnect		(ClientID id_who, LPSTR Name, ALife::_OBJECT_ID GameID);
 	virtual		void				OnPlayerReady			(ClientID id_who)							   {};
 	virtual		void				OnPlayerEnteredGame		(ClientID id_who)	{};
 	virtual		void				OnPlayerConnectFinished	(ClientID id_who)	{};
@@ -112,18 +112,18 @@ public:
 									game_sv_GameState		();
 	virtual							~game_sv_GameState		();
 	// Main accessors
-	virtual		game_PlayerState*	get_eid					(u16 id);
-	virtual		void*				get_client				(u16 id); //if exist
+	virtual		game_PlayerState*	get_eid					(ALife::_OBJECT_ID id);
+	virtual		void*				get_client				(ALife::_OBJECT_ID id); //if exist
 	//virtual		game_PlayerState*	get_it					(u32 it);
 	virtual		game_PlayerState*	get_id					(ClientID id);
 	
 	//virtual		const char*				get_name_it				(u32 it);
 	virtual		const char*				get_name_id				(ClientID id);								
 				const char*				get_player_name_id		(ClientID id);								
-	virtual		u16					get_id_2_eid			(ClientID id);
+	virtual		ALife::_OBJECT_ID					get_id_2_eid			(ClientID id);
 	//virtual		ClientID			get_it_2_id				(u32 it);*/
 	virtual		u32					get_players_count		();
-				CSE_Abstract*		get_entity_from_eid		(u16 id);
+				CSE_Abstract*		get_entity_from_eid		(ALife::_OBJECT_ID id);
 				RPoint				getRP					(u16 team_idx, u32 rp_idx);
 				u32					getRPcount				(u16 team_idx);
 	// Signals
@@ -145,22 +145,22 @@ public:
 	s32								get_option_i			(const char* lst, const char* name, s32 def = 0);
 	const char*							get_option_s			(const char* lst, const char* name, const char* def = 0);
 	virtual		u32					get_alive_count			(u32 team);
-	virtual		xr_vector<u16>*		get_children			(ClientID id_who);
-	void							u_EventGen				(NET_Packet& P, u16 type, u16 dest	);
+	virtual		xr_vector<ALife::_OBJECT_ID>*		get_children			(ClientID id_who);
+	void							u_EventGen				(NET_Packet& P, u16 type, ALife::_OBJECT_ID dest	);
 	void							u_EventSend				(NET_Packet& P, u32 dwFlags = DPNSEND_GUARANTEED);
 
 	// Events
 	virtual		bool				OnPreCreate				(CSE_Abstract* E)				{return true;};
-	virtual		void				OnCreate				(u16 id_who)					{};
-	virtual		void				OnPostCreate			(u16 id_who)					{};
-	virtual		bool				OnTouch					(u16 eid_who, u16 eid_target, bool bForced = false)	= 0;			// true=allow ownership, false=denied
-	virtual		void				OnDetach				(u16 eid_who, u16 eid_target)	= 0;
-	virtual		bool				OnActivate				(u16 eid_who, u16 eid_target)	{return true;};
+	virtual		void				OnCreate				(ALife::_OBJECT_ID id_who)					{};
+	virtual		void				OnPostCreate			(ALife::_OBJECT_ID id_who)					{};
+	virtual		bool				OnTouch					(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_target, bool bForced = false)	= 0;			// true=allow ownership, false=denied
+	virtual		void				OnDetach				(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_target)	= 0;
+	virtual		bool				OnActivate				(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_target)	{return true;};
 
-	virtual		void				OnDestroyObject			(u16 eid_who);			
+	virtual		void				OnDestroyObject			(ALife::_OBJECT_ID eid_who);			
 
-	virtual		void				OnHit					(u16 id_hitter, u16 id_hitted, NET_Packet& P);	//кто-то получил Hit
-	virtual		void				OnPlayerHitPlayer		(u16 id_hitter, u16 id_hitted, NET_Packet& P){}; //игрок получил Hit
+	virtual		void				OnHit					(ALife::_OBJECT_ID id_hitter, ALife::_OBJECT_ID id_hitted, NET_Packet& P);	//кто-то получил Hit
+	virtual		void				OnPlayerHitPlayer		(ALife::_OBJECT_ID id_hitter, ALife::_OBJECT_ID id_hitted, NET_Packet& P){}; //игрок получил Hit
 
 	// Main
 	virtual		void				Create					(shared_str& options);
@@ -178,16 +178,16 @@ public:
 				void				AddDelayedEvent			(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender );
 				void				ProcessDelayedEvent		();
 				//this method will delete all events for entity that already not exist (in case when player was kicked)
-				void				CleanDelayedEventFor	(u16 id_entity_victim);
+				void				CleanDelayedEventFor	(ALife::_OBJECT_ID id_entity_victim);
 				void				CleanDelayedEventFor	(ClientID const & clientId);
 				void				CleanDelayedEvents		();
 
 	virtual		bool				isFriendlyFireEnabled	()	{return false;};
 	virtual		bool				CanHaveFriendlyFire		()	= 0;
-	virtual		void				teleport_object			(NET_Packet &packet, u16 id);
-	virtual		void				add_restriction			(NET_Packet &packet, u16 id);
-	virtual		void				remove_restriction		(NET_Packet &packet, u16 id);
-	virtual		void				remove_all_restrictions	(NET_Packet &packet, u16 id);
+	virtual		void				teleport_object			(NET_Packet &packet, ALife::_OBJECT_ID id);
+	virtual		void				add_restriction			(NET_Packet &packet, ALife::_OBJECT_ID id);
+	virtual		void				remove_restriction		(NET_Packet &packet, ALife::_OBJECT_ID id);
+	virtual		void				remove_all_restrictions	(NET_Packet &packet, ALife::_OBJECT_ID id);
 	virtual		bool				custom_sls_default		() {return false;};
 	virtual		void				sls_default				() {};
 	virtual		shared_str			level_name				(const shared_str &server_options) const;

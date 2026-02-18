@@ -214,8 +214,8 @@ protected:
         								 const Fvector& dir, 
 										 float fire_disp,
 										 const CCartridge& cartridge,
-										 u16 parent_ids,
-										 u16 weapon_id,
+										 ALife::_OBJECT_ID parent_ids,
+										 ALife::_OBJECT_ID weapon_id,
 										 bool send_hit) final override;
 
 };

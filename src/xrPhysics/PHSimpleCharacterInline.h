@@ -23,7 +23,7 @@ void CPHSimpleCharacter::UpdateStaticDamage(dContact* c,SGameMtl* tri_material,b
 					m_collision_damage_info.m_dmc_type			=	SCollisionDamageInfo::ctStatic;
 					m_collision_damage_info.m_damege_contact	=	*c;
 					//m_collision_damage_info.m_object			=	0;
-					m_collision_damage_info.m_obj_id				=	u16(-1);
+					m_collision_damage_info.m_obj_id				=	ALife::INVALID_OBJECT_ID;
 				}
 }
 

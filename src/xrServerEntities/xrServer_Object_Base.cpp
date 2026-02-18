@@ -70,16 +70,16 @@ CSE_Abstract::CSE_Abstract					(const char* caSection)
 	m_editor_flags.zero			();
 	RespawnTime					= 0;
 	net_Ready					= false;
-	ID							= 0xffff;
-	ID_Parent					= 0xffff;
-	ID_Phantom					= 0xffff;
-	owner						= 0;
+	ID							= ALife::INVALID_OBJECT_ID;
+	ID_Parent					= ALife::INVALID_OBJECT_ID;
+	ID_Phantom					= ALife::INVALID_OBJECT_ID;
+	owner						= nullptr;
 	m_gameType.SetDefaults		();
 //.	s_gameid					= 0;
 	s_RP						= 0xFE;			// Use supplied coords
 	s_flags.assign				(0);
 	s_name						= caSection;
-	s_name_replace				= 0;			//xr_strdup("");
+	s_name_replace				= nullptr;			//xr_strdup("");
 	o_Angle.set					(0.f,0.f,0.f);
 	o_Position.set				(0.f,0.f,0.f);
 	m_bALifeControl				= false;
@@ -105,7 +105,7 @@ CSE_Abstract::CSE_Abstract					(const char* caSection)
 
 	if (pSettings->line_exist(caSection,"custom_data")) {
 		const char* const raw_file_name	= pSettings->r_string(caSection,"custom_data");
-		IReader const* config	= 0;
+		IReader const* config	= nullptr;
 #ifdef XRGAME_EXPORTS
 		if ( ai().get_alife() )
 			config				= ai().alife().get_config( raw_file_name );
@@ -194,9 +194,9 @@ void CSE_Abstract::Spawn_Write				(NET_Packet	&tNetPacket, bool bLocal)
 	tNetPacket.w_vec3			(o_Position		);
 	tNetPacket.w_vec3			(o_Angle		);
 	tNetPacket.w_u16			(RespawnTime	);
-	tNetPacket.w_u16			(ID				);
-	tNetPacket.w_u16			(ID_Parent		);
-	tNetPacket.w_u16			(ID_Phantom		);
+	tNetPacket.w_u16(ID&0xffff);
+	tNetPacket.w_u16(ID_Parent&0xffff);
+	tNetPacket.w_u16(ID_Phantom&0xffff);
 
 	s_flags.set					(M_SPAWN_VERSION,true);
 	if (bLocal)
@@ -205,6 +205,10 @@ void CSE_Abstract::Spawn_Write				(NET_Packet	&tNetPacket, bool bLocal)
 		tNetPacket.w_u16		(u16(s_flags.flags&~(M_SPAWN_OBJECT_LOCAL|M_SPAWN_OBJECT_ASPLAYER)));
 	
 	tNetPacket.w_u16			(SPAWN_VERSION);
+
+	tNetPacket.w_u16			(ID>>16);
+	tNetPacket.w_u16			(ID_Parent>>16);
+	tNetPacket.w_u16			(ID_Phantom>>16);
 
 	tNetPacket.w_u16			(m_gameType.m_GameType.get());
 	
@@ -275,15 +279,35 @@ bool CSE_Abstract::Spawn_Read				(NET_Packet	&tNetPacket)
 	tNetPacket.r_vec3			(o_Position		);
 	tNetPacket.r_vec3			(o_Angle		);
 	tNetPacket.r_u16			(RespawnTime	);
-	tNetPacket.r_u16			(ID				);
-	tNetPacket.r_u16			(ID_Parent		);
-	tNetPacket.r_u16			(ID_Phantom		);
+	u16 OldType_ID, OldType_ID_Parent, OldType_ID_Phantom;
+	tNetPacket.r_u16(OldType_ID);
+	tNetPacket.r_u16(OldType_ID_Parent);
+	tNetPacket.r_u16(OldType_ID_Phantom);
 
-	tNetPacket.r_u16			(s_flags.flags	); 
+	tNetPacket.r_u16(s_flags.flags	); 
 	
 	// dangerous!!!!!!!!!
 	if (s_flags.is(M_SPAWN_VERSION))
-		tNetPacket.r_u16		(m_wVersion);
+	{
+		tNetPacket.r_u16(m_wVersion);
+	}
+
+	if (m_wVersion >= 130)
+	{
+		ID = (tNetPacket.r_u16() << 16)&0xffff0000;
+		ID |= OldType_ID;
+		
+		ID_Parent = (tNetPacket.r_u16() << 16)&0xffff0000;
+		ID_Parent |= OldType_ID_Parent;
+		
+		ID_Phantom = (tNetPacket.r_u16() << 16)&0xffff0000;
+		ID_Phantom |= OldType_ID_Phantom;
+	} else
+	{
+		ID = OldType_ID == 0xffff ? ALife::INVALID_OBJECT_ID : OldType_ID;
+		ID_Parent = OldType_ID_Parent == 0xffff ? ALife::INVALID_OBJECT_ID : OldType_ID_Parent;
+		ID_Phantom = OldType_ID_Phantom == 0xffff ? ALife::INVALID_OBJECT_ID : OldType_ID_Phantom;
+	}
 	
 	if(m_wVersion > 120)
 	{

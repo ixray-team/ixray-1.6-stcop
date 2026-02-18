@@ -60,34 +60,26 @@ u32					game_sv_GameState::get_players_count		()
 	return				m_server->GetClientsCount();
 }
 
-u16					game_sv_GameState::get_id_2_eid				(ClientID id)
+ALife::_OBJECT_ID					game_sv_GameState::get_id_2_eid				(ClientID id)
 {
 	xrClientData*	C	= (xrClientData*)m_server->ID_to_client	(id);
-	if (0==C)			return 0xffff;
+	if (!C)			return ALife::INVALID_OBJECT_ID;
 	CSE_Abstract*	E	= C->owner;
-	if (0==E)			return 0xffff;
+	if (!E)			return ALife::INVALID_OBJECT_ID;
 	return E->ID;
 }
 
-game_PlayerState*	game_sv_GameState::get_eid (u16 id) //if exist
+game_PlayerState*	game_sv_GameState::get_eid (ALife::_OBJECT_ID id) //if exist
 {
 	CSE_Abstract* entity = get_entity_from_eid(id);
 
-	if (entity)
-	{
-		if (entity->owner)
-		{
-			if(entity->owner->ps)
-			{
-				if (entity->owner->ps->GameID == id)
-					return entity->owner->ps;
-			}
-		}
+	if (entity && entity->owner && entity->owner->ps && (entity->owner->ps->GameID == id)){
+		return entity->owner->ps;
 	}
 	//-------------------------------------------------
 	struct id_searcher
 	{
-		u16 id_to_search;
+		ALife::_OBJECT_ID id_to_search;
 		bool operator()(IClient* client)
 		{
 			xrClientData* tmp_client = static_cast<xrClientData*>(client);
@@ -105,14 +97,14 @@ game_PlayerState*	game_sv_GameState::get_eid (u16 id) //if exist
 	return nullptr;
 }
 
-void* game_sv_GameState::get_client (u16 id) //if exist
+void* game_sv_GameState::get_client (ALife::_OBJECT_ID id) //if exist
 {
 	CSE_Abstract* entity = get_entity_from_eid(id);
 	if (entity && entity->owner && entity->owner->ps && entity->owner->ps->GameID == id)
 		return entity->owner;
 	struct client_searcher
 	{
-		u16 binded_id;
+		ALife::_OBJECT_ID binded_id;
 		bool operator()(IClient* client)
 		{
 			xrClientData* tmp_client = static_cast<xrClientData*>(client);
@@ -126,7 +118,7 @@ void* game_sv_GameState::get_client (u16 id) //if exist
 	return m_server->FindClient(searcher_predicate);
 }
 
-CSE_Abstract*		game_sv_GameState::get_entity_from_eid		(u16 id)
+CSE_Abstract*		game_sv_GameState::get_entity_from_eid		(ALife::_OBJECT_ID id)
 {
 	return				m_server->ID_to_entity(id);
 }
@@ -157,12 +149,18 @@ u32					game_sv_GameState::get_alive_count(u32 team)
 	return tmp_counter.count;
 }
 
-xr_vector<u16>*		game_sv_GameState::get_children				(ClientID id)
+xr_vector<ALife::_OBJECT_ID>*		game_sv_GameState::get_children				(ClientID id)
 {
 	xrClientData*	C	= (xrClientData*)m_server->ID_to_client	(id);
-	if (0==C)			return 0;
+	if (!C)
+	{
+		return nullptr;
+	}
 	CSE_Abstract* E	= C->owner;
-	if (0==E)			return 0;
+	if (!E)
+	{
+		return nullptr;
+	}
 	return	&(E->children);
 }
 
@@ -330,7 +328,7 @@ void game_sv_GameState::OnPlayerConnect			(ClientID /**id_who/**/)
 	signal_Syncronize	();
 }
 
-void game_sv_GameState::OnPlayerDisconnect		(ClientID id_who, LPSTR, u16 )
+void game_sv_GameState::OnPlayerDisconnect		(ClientID id_who, LPSTR, ALife::_OBJECT_ID )
 {
 	signal_Syncronize	();
 }
@@ -570,9 +568,9 @@ CSE_Abstract*		game_sv_GameState::spawn_begin				(const char* N)
 	A->s_name			=   N;							// ltx-def
 //.	A->s_gameid			=	u8(m_type);							// game-type
 	A->s_RP				=	0xFE;								// use supplied
-	A->ID				=	0xffff;								// server must generate ID
-	A->ID_Parent		=	0xffff;								// no-parent
-	A->ID_Phantom		=	0xffff;								// no-phantom
+	A->ID				=	ALife::INVALID_OBJECT_ID;								// server must generate ID
+	A->ID_Parent		=	ALife::INVALID_OBJECT_ID;								// no-parent
+	A->ID_Phantom		=	ALife::INVALID_OBJECT_ID;								// no-phantom
 	A->RespawnTime		=	0;									// no-respawn
 	return A;
 }
@@ -594,12 +592,12 @@ void game_sv_GameState::GenerateGameMessage (NET_Packet &P)
 	P.w_begin(M_GAMEMESSAGE); 
 };
 
-void game_sv_GameState::u_EventGen(NET_Packet& P, u16 type, u16 dest)
+void game_sv_GameState::u_EventGen(NET_Packet& P, u16 type, ALife::_OBJECT_ID dest)
 {
 	P.w_begin	(M_EVENT);
 	P.w_u32		(Level().timeServer());//Device.TimerAsync());
 	P.w_u16		(type);
-	P.w_u16		(dest);
+	P << dest;
 }
 
 void game_sv_GameState::u_EventSend(NET_Packet& P, u32 dwFlags)
@@ -635,7 +633,7 @@ void game_sv_GameState::Update()
 	}
 }
 
-void game_sv_GameState::OnDestroyObject(u16 eid_who)
+void game_sv_GameState::OnDestroyObject(ALife::_OBJECT_ID eid_who)
 {
 }
 
@@ -692,7 +690,7 @@ void game_sv_GameState::switch_distance (NET_Packet &net_packet, ClientID sender
 {
 }
 
-void game_sv_GameState::OnHit (u16 id_hitter, u16 id_hitted, NET_Packet& P)
+void game_sv_GameState::OnHit (ALife::_OBJECT_ID id_hitter, ALife::_OBJECT_ID id_hitted, NET_Packet& P)
 {
 	CSE_Abstract*		e_hitter		= get_entity_from_eid	(id_hitter	);
 	CSE_Abstract*		e_hitted		= get_entity_from_eid	(id_hitted	);
@@ -734,9 +732,9 @@ void game_sv_GameState::OnEvent (NET_Packet &tNetPacket, u16 type, u32 time, Cli
 		}break	;
 	case GAME_EVENT_ON_HIT:
 		{
-			u16		id_dest				= tNetPacket.r_u16();
-			u16     id_src				= tNetPacket.r_u16();
-			CSE_Abstract*	e_src		= get_entity_from_eid	(id_src	);
+			ALife::_OBJECT_ID id_dest, id_src;
+			tNetPacket >> id_dest >> id_src;
+			CSE_Abstract* e_src = get_entity_from_eid(id_src);
 
 			if(!e_src)  // && !IsGameTypeSingle() added by andy because of Phantom does not have server entity
 			{
@@ -860,14 +858,14 @@ void game_sv_GameState::ProcessDelayedEvent		()
 class EventDeleterPredicate
 {
 private:
-	u16 id_entity_victim;
+	ALife::_OBJECT_ID id_entity_victim;
 public:
 	EventDeleterPredicate()
 	{
-		id_entity_victim = u16(-1);
+		id_entity_victim = ALife::INVALID_OBJECT_ID;
 	}
 
-	EventDeleterPredicate(u16 id_entity)
+	EventDeleterPredicate(ALife::_OBJECT_ID id_entity)
 	{
 		id_entity_victim = id_entity;
 	}
@@ -881,7 +879,8 @@ public:
 			case GAME_EVENT_PLAYER_HITTED:
 				{
 					u32 tmp_pos			= ge->P.r_tell();
-					u16 id_entity_for	= ge->P.r_u16();
+					ALife::_OBJECT_ID id_entity_for;
+					ge->P >> id_entity_for;
 					if (id_entity_for == id_entity_victim)
 						ret_val = true;
 					ge->P.r_seek(tmp_pos);
@@ -897,7 +896,7 @@ public:
 
 };
 
-void game_sv_GameState::CleanDelayedEventFor(u16 id_entity_victim)
+void game_sv_GameState::CleanDelayedEventFor(ALife::_OBJECT_ID id_entity_victim)
 {
 	EventDeleterPredicate event_deleter(id_entity_victim);
 	m_event_queue->EraseEvents(
@@ -963,19 +962,19 @@ RPoint game_sv_GameState::getRP (u16 team_idx, u32 rp_idx)
 		return RPoint();
 };
 
-void game_sv_GameState::teleport_object	(NET_Packet &packet, u16 id)
+void game_sv_GameState::teleport_object	(NET_Packet &packet, ALife::_OBJECT_ID id)
 {
 }
 
-void game_sv_GameState::add_restriction	(NET_Packet &packet, u16 id)
+void game_sv_GameState::add_restriction	(NET_Packet &packet, ALife::_OBJECT_ID id)
 {
 }
 
-void game_sv_GameState::remove_restriction(NET_Packet &packet, u16 id)
+void game_sv_GameState::remove_restriction(NET_Packet &packet, ALife::_OBJECT_ID id)
 {
 }
 
-void game_sv_GameState::remove_all_restrictions	(NET_Packet &packet, u16 id)
+void game_sv_GameState::remove_all_restrictions	(NET_Packet &packet, ALife::_OBJECT_ID id)
 {
 }
 
@@ -1100,7 +1099,7 @@ void game_sv_GameState::on_death	(CSE_Abstract *e_dest, CSE_Abstract *e_src)
 	if (!creature)
 		return;
 
-	VERIFY						(creature->get_killer_id() == ALife::_OBJECT_ID(-1));
+	VERIFY						(creature->get_killer_id() == ALife::INVALID_OBJECT_ID);
 	creature->set_killer_id		( e_src->ID );
 }
 

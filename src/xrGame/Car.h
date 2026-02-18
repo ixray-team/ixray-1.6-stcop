@@ -525,7 +525,7 @@ public:
 	// Hits
 	virtual void			HitSignal					(float /**HitAmount/**/,	Fvector& /**local_dir/**/, CObject* /**who/**/, s16 /**element/**/)	{};
 	virtual void			HitImpulse					(float /**amount/**/,		Fvector& /**vWorldDir/**/, Fvector& /**vLocalDir/**/)			{};
-	virtual u16				Initiator					();
+	virtual ALife::_OBJECT_ID				Initiator					();
 	// HUD
 	virtual void			OnHUDDraw					(CCustomHUD* hud);
 	
