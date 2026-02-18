@@ -24,6 +24,7 @@ class CUIMainIngameWnd;
 class CUIMessagesWindow;
 class CUIInventoryWnd;
 class CUICarBodyWnd;
+class CUIRadialMenuWeapon;
 
 struct SDrawStaticStruct :public IPureDestroyableObject
 {
@@ -133,6 +134,7 @@ protected:
 	CUIInventoryWnd*	m_InventoryMenu;
 	CUICarBodyWnd*		m_CarBodyMenu;
 	CUIPdaWnd*			m_PdaMenu;
+	CUIRadialMenuWeapon* m_RadialMenuWeapon;
 
 	bool				m_bShowGameIndicators;
 public:
@@ -158,6 +160,7 @@ public:
 	IC CUIInventoryWnd*	InventoryWnd			() const { return m_InventoryMenu; }
 	IC CUICarBodyWnd*	CarBodyWnd				() const { return m_CarBodyMenu; }
 	IC CUIPdaWnd*		PdaMenu					() const { return m_PdaMenu;   }
+	IC CUIRadialMenuWeapon*	RadialMenuWeapon	() const { return m_RadialMenuWeapon;   }
 			bool		ShowActorMenu			();
 			void		HideActorMenu			();
 			void		UpdateActorMenu			(); //Alundaio
@@ -166,6 +169,8 @@ public:
 			void		HidePdaMenu				();
 			void		ShowMessagesWindow		();
 			void		HideMessagesWindow		();
+			bool		ShowRadialMenuWeapon	();
+			void		HideRadialMenuWeapon	();
 
 	virtual void		ShowGameIndicators		(bool b) override {m_bShowGameIndicators	= b;};
 	virtual bool		GameIndicatorsShown		() const override {return m_bShowGameIndicators;};
