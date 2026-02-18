@@ -128,6 +128,8 @@ enum EGameActions
 	kWPN_CHAMBER_UNLOAD,
 	kWPN_CHAMBER_CHECK,
 
+	kWPN_RADIAL_MENU,
+
 	kLASTACTION,
 	kNOTBINDED,
 	kFORCEDWORD		= u32(-1)
@@ -149,7 +151,8 @@ enum _action_group
 {
 	agDefault	=	(1<<0),
 	agTransport	=	(1<<2),
-	agUiGeneral	=	(1<<3),
+	agUIGeneral	=	(1<<3),
+	agUIRadialWeapon = (1<<4),
 };
 
 extern ENGINE_API _key_group g_current_keygroup;
