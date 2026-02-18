@@ -15,6 +15,7 @@
 #include "Actor.h"
 #include "UIInventoryWnd.h"
 #include "../../xrEngine/string_table.h"
+#include "UIRadialMenuWeapon.h"
 
 extern ENGINE_API BOOL bShowPauseString;
 
@@ -468,6 +469,11 @@ bool CUISequencer::ButtonPress(int id)
 			return false;
 		}
 
+		if (CurrentGameUI()->RadialMenuWeapon() && CurrentGameUI()->RadialMenuWeapon()->IsShown())
+		{
+			CurrentGameUI()->HideRadialMenuWeapon();
+			return false;
+		}
 		if (CurrentGameUI()->PdaMenu()->IsShown())
 		{
 			CurrentGameUI()->HidePdaMenu();
