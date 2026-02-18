@@ -1092,6 +1092,8 @@ bool CWeaponMagazinedWGrenade::install_upgrade_ammo_class(LPCSTR section, bool t
 
 	result2 = process_if_exists(section, "ammo_mag_size", &CInifile::r_s32, current_size, test);
 
+	iMagazineSize2 = iMagazineSize;
+
 	result2 = process_if_exists_set(section, "ammo_class", &CInifile::r_string, str, test);
 	if (result2 && !test)
 	{
