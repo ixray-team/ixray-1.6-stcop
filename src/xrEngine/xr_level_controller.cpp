@@ -32,7 +32,7 @@ ENGINE_API _action  actions[]		= {
 	{ "cam_zoom_out",		kCAM_ZOOM_OUT			,_both,			agDefault},
 															
 	{ "torch",				kTORCH					,_both,			agDefault},
-	{ "night_vision",		kNIGHT_VISION			,_both,			agDefault},
+	{ "night_vision",		kNIGHT_VISION			,_both,			agUIRadialWeapon},
 	{ "show_detector",		kDETECTOR				,_both,			agDefault},
 
 	{ "wpn_1",				kWPN_1					,_both,			agDefault},
@@ -43,18 +43,18 @@ ENGINE_API _action  actions[]		= {
 	{ "wpn_6",				kWPN_6					,_both,			agDefault},
 	{ "wpn_7",				kWPN_7					,_both,			agDefault},
 	{ "artefact",			kARTEFACT				,_both,			agDefault},
-	{ "wpn_next",			kWPN_NEXT				,_both,			agDefault},	// means next ammo type
+	{ "wpn_next",			kWPN_NEXT				,_both,			agUIRadialWeapon},	// means next ammo type
 	{ "wpn_fire",			kWPN_FIRE				,_both,			agDefault},
 	{ "wpn_zoom",			kWPN_ZOOM				,_both,			agDefault},
 	{ "wpn_zoom_inc",		kWPN_ZOOM_INC			,_both,			agDefault},
 	{ "wpn_zoom_dec",		kWPN_ZOOM_DEC			,_both,			agDefault},
 	{ "wpn_reload",			kWPN_RELOAD				,_both,			agDefault},
-	{ "wpn_func",			kWPN_FUNC				,_both,			agDefault},
+	{ "wpn_func",			kWPN_FUNC				,_both,			agUIRadialWeapon},
 	{ "wpn_firemode_prev",	kWPN_FIREMODE_PREV		,_both,			agDefault},
-	{ "wpn_firemode_next",	kWPN_FIREMODE_NEXT		,_both,			agDefault},
+	{ "wpn_firemode_next",	kWPN_FIREMODE_NEXT		,_both,			agUIRadialWeapon},
 															
 	{ "pause",				kPAUSE					,_both,			agDefault},
-	{ "drop",				kDROP					,_both,			agDefault},
+	{ "drop",				kDROP					,_both,			agUIRadialWeapon},
 	{ "use",				kUSE					,_both,			agDefault},
 	{ "scores",				kSCORES					,_both,			agDefault},
 	{ "chat",				kCHAT					,_mp,			agDefault},
@@ -130,7 +130,9 @@ ENGINE_API _action  actions[]		= {
 	{ "wpn_chamber_load",   kWPN_CHAMBER_LOAD		,_both,			agDefault},
 	{ "wpn_chamber_unload", kWPN_CHAMBER_UNLOAD     ,_both,			agDefault},
 	{ "wpn_chamber_check",  kWPN_CHAMBER_CHECK      ,_both,			agDefault},
-															
+
+	{ "wpn_radial_menu",	kWPN_RADIAL_MENU		,_both,			agDefault },
+
 	{ nullptr, 				kLASTACTION				,_both,			agDefault}
 };															
 
