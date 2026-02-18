@@ -78,8 +78,8 @@ void CHitMemoryManager::Load				(const char* section)
 
 void CHitMemoryManager::reinit				()
 {
-	m_hits					= 0;
-	m_last_hit_object_id	= ALife::_OBJECT_ID(-1);
+	m_hits					= nullptr;
+	m_last_hit_object_id	= ALife::INVALID_OBJECT_ID;
 	m_last_hit_time			= 0;
 }
 
@@ -234,7 +234,7 @@ void CHitMemoryManager::enable			(const CObject *object, bool enable)
 void CHitMemoryManager::remove_links	(CObject *object)
 {
 	if (m_last_hit_object_id == object->ID()) {
-		m_last_hit_object_id	= ALife::_OBJECT_ID(-1);
+		m_last_hit_object_id	= ALife::INVALID_OBJECT_ID;
 		m_last_hit_time			= 0;
 	}
 
@@ -285,21 +285,21 @@ void CHitMemoryManager::save	(NET_Packet &packet) const
 	HITS::const_iterator		I = objects().begin();
 	HITS::const_iterator		E = objects().end();
 	for ( ; I != E; ++I) {
-		VERIFY					((*I).m_object);
-		packet.w_u16			((*I).m_object->ID());
+		VERIFY					(I->m_object);
+		packet << I->m_object->ID();
 		// object params
-		packet.w_u32			((*I).m_object_params.m_level_vertex_id);
-		packet.w_vec3			((*I).m_object_params.m_position);
+		packet.w_u32			(I->m_object_params.m_level_vertex_id);
+		packet.w_vec3			(I->m_object_params.m_position);
 		// self params
-		packet.w_u32			((*I).m_self_params.m_level_vertex_id);
-		packet.w_vec3			((*I).m_self_params.m_position);
+		packet.w_u32			(I->m_self_params.m_level_vertex_id);
+		packet.w_vec3			(I->m_self_params.m_position);
 
-		packet.w_u32			((Device.dwTimeGlobal >= (*I).m_level_time) ? (Device.dwTimeGlobal - (*I).m_level_time) : 0);
-		packet.w_u32			((Device.dwTimeGlobal >= (*I).m_level_time) ? (Device.dwTimeGlobal - (*I).m_last_level_time) : 0);
+		packet.w_u32			((Device.dwTimeGlobal >= I->m_level_time) ? (Device.dwTimeGlobal - I->m_level_time) : 0);
+		packet.w_u32			((Device.dwTimeGlobal >= I->m_level_time) ? (Device.dwTimeGlobal - I->m_last_level_time) : 0);
 
-		packet.w_vec3			((*I).m_direction);
-		packet.w_u16			((*I).m_bone_index);
-		packet.w_float			((*I).m_amount);
+		packet.w_vec3			(I->m_direction);
+		packet.w_u16			(I->m_bone_index);
+		packet.w_float			(I->m_amount);
 	}
 }
 
@@ -315,7 +315,7 @@ void CHitMemoryManager::load	(IReader &packet)
 	int								count = packet.r_u8();
 	for (int i=0; i<count; ++i) {
 		CDelayedHitObject			delayed_object;
-		delayed_object.m_object_id	= packet.r_u16();
+		packet.r(&delayed_object.m_object_id, sizeof(delayed_object.m_object_id));
 
 		CHitObject					&object = delayed_object.m_hit_object;
 		CObject* O = Level().Objects.net_Find(delayed_object.m_object_id);
@@ -370,8 +370,8 @@ void CHitMemoryManager::clear_delayed_objects()
 	DELAYED_HIT_OBJECTS::const_iterator		I = m_delayed_objects.begin();
 	DELAYED_HIT_OBJECTS::const_iterator		E = m_delayed_objects.end();
 	for ( ; I != E; ++I)
-		if (manager.callback((*I).m_object_id,m_object->ID()))
-			manager.remove					((*I).m_object_id,m_object->ID());
+		if (manager.callback(I->m_object_id,m_object->ID()))
+			manager.remove					(I->m_object_id,m_object->ID());
 
 	m_delayed_objects.clear					();
 }
@@ -381,13 +381,13 @@ void CHitMemoryManager::on_requested_spawn	(CObject *object)
 	DELAYED_HIT_OBJECTS::iterator		I = m_delayed_objects.begin();
 	DELAYED_HIT_OBJECTS::iterator		E = m_delayed_objects.end();
 	for ( ; I != E; ++I) {
-		if ((*I).m_object_id != object->ID())
+		if (I->m_object_id != object->ID())
 			continue;
 		
 		if (m_object->g_Alive()) {
-			(*I).m_hit_object.m_object= object ? object->cast_entity_alive() : NULL;
-			VERIFY						((*I).m_hit_object.m_object);
-			add							((*I).m_hit_object);
+			I->m_hit_object.m_object= object ? object->cast_entity_alive() : NULL;
+			VERIFY						(I->m_hit_object.m_object);
+			add							(I->m_hit_object);
 		}
 
 		m_delayed_objects.erase			(I);

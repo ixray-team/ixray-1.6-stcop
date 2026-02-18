@@ -99,21 +99,22 @@ xrServer::~xrServer()
 	xr_delete(m_server_rules);
 }
 
-CSE_Abstract* xrServer::ID_to_entity(u16 ID)
+
+//--------------------------------------------------------------------
+
+CSE_Abstract* xrServer::ID_to_entity(ALife::_OBJECT_ID ID)
 {
-	if (0xffff == ID)
+	// #pragma todo("??? to all : ID_to_entity - must be replaced to 'game->entity_from_eid()'")	
+	if (ALife::INVALID_OBJECT_ID==ID)
 	{
-		return 0;
+		return nullptr;
 	}
 	xrS_entities::iterator I = entities.find(ID);
-	if (entities.end() != I)
+	if (entities.end()!=I)
 	{
 		return I->second;
 	}
-	else
-	{
-		return 0;
-	}
+	return nullptr;
 }
 
 IClient* xrServer::client_Create()
@@ -240,7 +241,11 @@ void xrServer::Update()
 
 	NET_Packet Packet;
 
-	VERIFY(verify_entities());
+#ifdef DEBUG
+#	ifdef SLOW_VERIFY_ENTITIES
+	VERIFY						(verify_entities());
+#	endif
+#endif
 
 	ProceedDelayedPackets();
 	// game update
@@ -255,15 +260,15 @@ void xrServer::Update()
 		svs_respawn R = *q_respawn.begin();
 		q_respawn.erase(q_respawn.begin());
 
-		//
-		CSE_Abstract* E = ID_to_entity(R.phantom);
-		E->Spawn_Write(Packet, false);
-		u16 ID;
-		Packet.r_begin(ID);
-		R_ASSERT(M_SPAWN == ID);
-		ClientID clientID;
-		clientID.set(0xffff);
-		Process_spawn(Packet, clientID);
+		// 
+		CSE_Abstract* E					= ID_to_entity(R.phantom);
+		E->Spawn_Write		(Packet,false);
+		u16								ID;
+		Packet.r_begin		(ID);
+		R_ASSERT(M_SPAWN==ID);
+		ClientID						clientID; 
+		clientID.set(ALife::INVALID_OBJECT_ID);
+		Process_spawn		(Packet,clientID);
 	}
 
 	SendUpdatesToAll();
@@ -273,7 +278,11 @@ void xrServer::Update()
 		Perform_game_export();
 	}
 
+#ifdef DEBUG
+#	ifdef SLOW_VERIFY_ENTITIES
 	VERIFY(verify_entities());
+#	endif
+#endif
 	//-----------------------------------------------------
 
 	PerformCheckClientsForMaxPing();
@@ -588,12 +597,16 @@ void xrServer::SendUpdatesToAll()
 
 #ifdef DEBUG
 		g_sv_SendUpdate = 0;
-#endif
-		if (game->sv_force_sync)
+#endif			
+		if (game->sv_force_sync)	
 		{
 			Perform_game_export();
 		}
+#ifdef DEBUG
+#	ifdef SLOW_VERIFY_ENTITIES
 		VERIFY(verify_entities());
+#	endif
+#endif
 		m_last_update_time = Device.dwTimeGlobal;
 	}
 	if (m_file_transfers)
@@ -614,7 +627,11 @@ u32 xrServer::OnDelayedMessage(NET_Packet& P, ClientID sender) // Non-Zero means
 	u16 type;
 	P.r_begin(type);
 
-	VERIFY(verify_entities());
+#ifdef DEBUG
+#	ifdef SLOW_VERIFY_ENTITIES
+	VERIFY							(verify_entities());
+#	endif
+#endif
 	xrClientData* CL = ID_to_client(sender);
 
 	switch (type)
@@ -672,7 +689,11 @@ u32 xrServer::OnDelayedMessage(NET_Packet& P, ClientID sender) // Non-Zero means
 		}
 		break;
 	}
-	VERIFY(verify_entities());
+#ifdef DEBUG
+#	ifdef SLOW_VERIFY_ENTITIES
+	VERIFY							(verify_entities());
+#	endif
+#endif
 
 	return 0;
 }
@@ -690,8 +711,11 @@ u32 xrServer::OnMessage(NET_Packet& P, ClientID sender) // Non-Zero means broadc
 {
 	u16 type;
 	P.r_begin(type);
-
+#ifdef DEBUG
+#	ifdef SLOW_VERIFY_ENTITIES
 	VERIFY(verify_entities());
+#	endif
+#endif
 	xrClientData* CL = ID_to_client(sender);
 
 	switch (type)
@@ -971,9 +995,11 @@ u32 xrServer::OnMessage(NET_Packet& P, ClientID sender) // Non-Zero means broadc
 		}
 		break;
 	}
-
+#ifdef DEBUG
+#	ifdef SLOW_VERIFY_ENTITIES
 	VERIFY(verify_entities());
-
+#	endif
+#endif
 	return IPureServer::OnMessage(P, sender);
 }
 
@@ -1090,7 +1116,7 @@ void xrServer::entity_Destroy(CSE_Abstract*& P)
 #endif
 	R_ASSERT(P);
 	entities.erase(P->ID);
-	m_tID_Generator.vfFreeID(P->ID, Device.TimerAsync());
+	FreeID(P->ID, Device.TimerAsync());
 
 	if (P->owner && P->owner->owner == P)
 	{
@@ -1295,12 +1321,11 @@ bool xrServer::verify_entities() const
 
 	xrS_entities::const_iterator I = entities.begin();
 	xrS_entities::const_iterator E = entities.end();
-	for (; I != E; ++I)
-	{
-		VERIFY2((*I).first != 0xffff, "SERVER : Invalid entity id as a map key - 0xffff");
-		VERIFY2((*I).second, "SERVER : Null entity object in the map");
-		VERIFY3((*I).first == (*I).second->ID, "SERVER : ID mismatch - map key doesn't correspond to the real entity ID", (*I).second ? (*I).second->name_replace() : "");
-		verify_entity((*I).second);
+	for ( ; I != E; ++I) {
+		VERIFY2(I->first != ALife::INVALID_OBJECT_ID,"SERVER : Invalid entity id as a map key - ALife::INVALID_OBJECT_ID");
+		VERIFY2(I->second,"SERVER : Null entity object in the map");
+		VERIFY3(I->first == I->second->ID,"SERVER : ID mismatch - map key doesn't correspond to the real entity ID", I->second ? I->second->name_replace() : "");
+		verify_entity(I->second);
 	}
 	return (true);
 }
@@ -1314,27 +1339,24 @@ void xrServer::verify_entity(const CSE_Abstract* entity) const
 
 	VERIFY(entity->m_wVersion != 0);
 
-	if (entity->ID_Parent != 0xffff)
+	if (entity->ID_Parent != ALife::INVALID_OBJECT_ID)
 	{
 		xrS_entities::const_iterator J = entities.find(entity->ID_Parent);
 		if (J != entities.end())
 		{
-			VERIFY3((*J).second, "SERVER : Null entity object in the map", entity->name_replace());
-			VERIFY3((*J).first == (*J).second->ID, "SERVER : ID mismatch - map key doesn't correspond to the real entity ID", (*J).second ? (*J).second->name_replace() : "");
-			VERIFY3(std::find((*J).second->children.begin(), (*J).second->children.end(), entity->ID) != (*J).second->children.end(), "SERVER : Parent/Children relationship mismatch - Object has parent, but corresponding parent doesn't have children", (*J).second ? (*J).second->name_replace() : "");
+			VERIFY3(J->second, "SERVER : Null entity object in the map", entity->name_replace());
+			VERIFY3(J->first == J->second->ID, "SERVER : ID mismatch - map key doesn't correspond to the real entity ID", J->second ? J->second->name_replace() : "");
+			VERIFY3(std::ranges::find(J->second->children, entity->ID) != J->second->children.end(), "SERVER : Parent/Children relationship mismatch - Object has parent, but corresponding parent doesn't have children", J->second ? J->second->name_replace() : "");
 		}
 	}
 
-	xr_vector<u16>::const_iterator I = entity->children.begin();
-	xr_vector<u16>::const_iterator E = entity->children.end();
-	for (; I != E; ++I)
-	{
-		VERIFY3(*I != 0xffff, "SERVER : Invalid entity children id - 0xffff", entity->name_replace());
-		xrS_entities::const_iterator J = entities.find(*I);
-		VERIFY3(J != entities.end(), "SERVER : Cannot find children in the map", entity->name_replace());
-		VERIFY3((*J).second, "SERVER : Null entity object in the map", entity->name_replace());
-		VERIFY3((*J).first == (*J).second->ID, "SERVER : ID mismatch - map key doesn't correspond to the real entity ID", (*J).second ? (*J).second->name_replace() : "");
-		VERIFY3((*J).second->ID_Parent == entity->ID, "SERVER : Parent/Children relationship mismatch - Object has children, but children doesn't have parent", (*J).second ? (*J).second->name_replace() : "");
+	for (auto ID : entity->children) {
+		VERIFY3(ID != ALife::INVALID_OBJECT_ID,"SERVER : Invalid entity children id - ALife::INVALID_OBJECT_ID",entity->name_replace());
+		xrS_entities::const_iterator J = entities.find(ID);
+		VERIFY3(J != entities.end(),"SERVER : Cannot find children in the map",entity->name_replace());
+		VERIFY3(J->second,"SERVER : Null entity object in the map",entity->name_replace());
+		VERIFY3(J->first == J->second->ID,"SERVER : ID mismatch - map key doesn't correspond to the real entity ID", J->second ? J->second->name_replace() : "");
+		VERIFY3(J->second->ID_Parent == entity->ID,"SERVER : Parent/Children relationship mismatch - Object has children, but children doesn't have parent", J->second ? J->second->name_replace() : "");
 	}
 }
 
@@ -1688,7 +1710,7 @@ void xrServer::OnProcessClientMapData(NET_Packet& P, ClientID const& clientID)
 	SendTo(clientID, responseP, net_flags(true, true));
 }
 
-void xrServer::Process_event_activate(NET_Packet& P, const ClientID sender, const u32 time, const u16 id_parent, const u16 id_entity, bool send_message)
+void xrServer::Process_event_activate(NET_Packet& P, const ClientID sender, const u32 time, const ALife::_OBJECT_ID id_parent, const ALife::_OBJECT_ID id_entity, bool send_message)
 {
 	// Parse message
 	CSE_Abstract* e_parent = game->get_entity_from_eid(id_parent);
@@ -1724,7 +1746,7 @@ void xrServer::Process_event_activate(NET_Packet& P, const ClientID sender, cons
 	}
 
 
-	if (0xffff == e_entity->ID_Parent)
+	if (ALife::INVALID_OBJECT_ID == e_entity->ID_Parent)
 	{
 #ifndef MASTER_GOLD
 		Msg("~ ERROR: can't activate independant object. entity[%s:%d], parent[%s:%d], section[%s]",
@@ -1750,7 +1772,7 @@ void xrServer::Process_event_activate(NET_Packet& P, const ClientID sender, cons
 void xrServer::Perform_destroy(CSE_Abstract* object, u32 mode)
 {
 	R_ASSERT(object);
-	R_ASSERT(object->ID_Parent == 0xffff);
+	R_ASSERT(object->ID_Parent == ALife::INVALID_OBJECT_ID);
 
 	while (!object->children.empty())
 	{
@@ -1760,14 +1782,14 @@ void xrServer::Perform_destroy(CSE_Abstract* object, u32 mode)
 		Perform_destroy(child, mode);
 	}
 
-	u16 object_id = object->ID;
+	auto object_id = object->ID;
 	entity_Destroy(object);
 
 	NET_Packet P;
 	P.w_begin(M_EVENT);
 	P.w_u32(Device.dwTimeGlobal - 2 * NET_Latency);
 	P.w_u16(GE_DESTROY);
-	P.w_u16(object_id);
+	P << object_id;
 	SendBroadcast(BroadcastCID, P, mode);
 }
 
@@ -1781,7 +1803,7 @@ void xrServer::SLS_Clear()
 		xrS_entities::const_iterator E = entities.end();
 		for (; I != E; ++I)
 		{
-			if ((*I).second->ID_Parent != 0xffff)
+			if ((*I).second->ID_Parent != ALife::INVALID_OBJECT_ID)
 			{
 				continue;
 			}
@@ -1918,7 +1940,7 @@ void xrServer::Export_game_type(IClient* CL)
 void xrServer::Perform_connect_spawn(CSE_Abstract* E, xrClientData* CL, NET_Packet& P)
 {
 	P.B.count = 0;
-	xr_vector<u16>::iterator it = std::find(conn_spawned_ids.begin(), conn_spawned_ids.end(), E->ID);
+	xr_vector<ALife::_OBJECT_ID>::iterator it = std::find(conn_spawned_ids.begin(), conn_spawned_ids.end(), E->ID);
 	if (it != conn_spawned_ids.end())
 	{
 		return;
@@ -2184,7 +2206,7 @@ void xrServer::OnCL_Disconnected(IClient* CL)
 	}
 
 	P.w_stringZ(xrCData->ps->getName());
-	P.w_u16(xrCData->ps->GameID);
+	P << xrCData->ps->GameID;
 	P.r_pos = 0;
 
 	ClientID clientID;
@@ -2525,7 +2547,7 @@ void xrServer::SLS_Save(IWriter& fs)
 
 		// Update
 		P.w_begin(M_UPDATE);
-		P.w_u16(E_->ID);
+		P << E_->ID;
 		P.w_chunk_open8(position);
 		E_->UPDATE_Write(P);
 		P.w_chunk_close8(position);
@@ -2546,15 +2568,15 @@ void xrServer::Perform_transfer(NET_Packet& PR, NET_Packet& PT, CSE_Abstract* wh
 	u32 time = Device.dwTimeGlobal;
 
 	// 2. Detach "FROM"
-	xr_vector<u16>& C = from->children;
-	xr_vector<u16>::iterator c = std::find(C.begin(), C.end(), what->ID);
+	auto& C = from->children;
+	auto c = std::find(C.begin(), C.end(), what->ID);
 	R_ASSERT(C.end() != c);
 	C.erase(c);
 	PR.w_begin(M_EVENT);
 	PR.w_u32(time);
 	PR.w_u16(GE_OWNERSHIP_REJECT);
-	PR.w_u16(from->ID);
-	PR.w_u16(what->ID);
+	PR << from->ID;
+	PR << what->ID;
 
 	// 3. Attach "TO"
 	what->ID_Parent = to->ID;
@@ -2562,8 +2584,8 @@ void xrServer::Perform_transfer(NET_Packet& PR, NET_Packet& PT, CSE_Abstract* wh
 	PT.w_begin(M_EVENT);
 	PT.w_u32(time + 1);
 	PT.w_u16(GE_OWNERSHIP_TAKE);
-	PT.w_u16(to->ID);
-	PT.w_u16(what->ID);
+	PT << to->ID;
+	PT << what->ID;
 }
 
 void xrServer::Perform_reject(CSE_Abstract* what, CSE_Abstract* from, int delta)
@@ -2577,8 +2599,8 @@ void xrServer::Perform_reject(CSE_Abstract* what, CSE_Abstract* from, int delta)
 	P.w_begin(M_EVENT);
 	P.w_u32(time);
 	P.w_u16(GE_OWNERSHIP_REJECT);
-	P.w_u16(from->ID);
-	P.w_u16(what->ID);
+	P << from->ID;
+	P << what->ID;
 	P.w_u8(1);
 
 	Process_event_reject(P, BroadcastCID, time, from->ID, what->ID);
@@ -2592,7 +2614,7 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
 
 	u32 timestamp;
 	u16 type;
-	u16 destination;
+	ALife::_OBJECT_ID destination;
 	u32 MODE = net_flags(true, true);
 
 	// correct timestamp with server-unique-time (note: direct message correction)
@@ -2600,7 +2622,7 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
 
 	// read generic info
 	P.r_u16(type);
-	P.r_u16(destination);
+	P >> destination;
 
 	CSE_Abstract* receiver = game->get_entity_from_eid(destination);
 	if (receiver)
@@ -2713,15 +2735,15 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
 		break;
 		case GE_TRANSFER_AMMO:
 		{
-			u16 id_entity;
-			P.r_u16(id_entity);
-			CSE_Abstract* e_parent = receiver;							   // кто забирает (для своих нужд)
-			CSE_Abstract* e_entity = game->get_entity_from_eid(id_entity); // кто отдает
+			ALife::_OBJECT_ID id_entity;
+			P >> id_entity;
+			CSE_Abstract* e_parent = receiver;							   // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ)
+			CSE_Abstract* e_entity = game->get_entity_from_eid(id_entity); // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 			if (!e_entity)
 			{
 				break;
 			}
-			if (0xffff != e_entity->ID_Parent)
+			if (ALife::INVALID_OBJECT_ID != e_entity->ID_Parent)
 			{
 				break; // this item already taken
 			}
@@ -2740,7 +2762,7 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
 		case GE_HIT:
 		case GE_HIT_STATISTIC:
 		{
-			P.r_pos -= 2;
+			P.r_pos -= sizeof(ALife::_OBJECT_ID);
 			if (type == GE_HIT_STATISTIC)
 			{
 				P.B.count -= 4;
@@ -2751,10 +2773,10 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
 		break;
 		case GE_ASSIGN_KILLER:
 		{
-			u16 id_src;
-			P.r_u16(id_src);
+			ALife::_OBJECT_ID id_src;
+			P >> id_src;
 
-			CSE_Abstract* e_dest = receiver; // кто умер
+			CSE_Abstract* e_dest = receiver; // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 			// this is possible when hit event is sent before destroy event
 			if (!e_dest)
 			{
@@ -2781,8 +2803,8 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
 		case GE_DIE:
 		{
 			// Parse message
-			u16 id_dest = destination, id_src;
-			P.r_u16(id_src);
+			ALife::_OBJECT_ID id_dest = destination, id_src;
+			P >> id_src;
 
 
 			xrClientData* l_pC = ID_to_client(sender);
@@ -2794,7 +2816,7 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
 			}
 #endif // #ifndef MASTER_GOLD
 
-			CSE_Abstract* e_dest = receiver; // кто умер
+			CSE_Abstract* e_dest = receiver; // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 			// this is possible when hit event is sent before destroy event
 			if (!e_dest)
 			{
@@ -2808,7 +2830,7 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
 			}
 #endif // #ifndef MASTER_GOLD
 
-			CSE_Abstract* e_src = game->get_entity_from_eid(id_src); // кто убил
+			CSE_Abstract* e_src = game->get_entity_from_eid(id_src); // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 			if (!e_src)
 			{
 				xrClientData* C = (xrClientData*)game->get_client(id_src);
@@ -2833,7 +2855,7 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
 
 			game->on_death(e_dest, e_src);
 
-			xrClientData* c_src = e_src->owner; // клиент, чей юнит убил
+			xrClientData* c_src = e_src->owner; // пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 
 			if (c_src->owner->ID == id_src)
 			{
@@ -2841,8 +2863,8 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
 				P.w_begin(M_EVENT);
 				P.w_u32(timestamp);
 				P.w_u16(type);
-				P.w_u16(destination);
-				P.w_u16(id_src);
+				P << destination;
+				P << id_src;
 				P.w_clientID(c_src->ID);
 			}
 
@@ -2855,8 +2877,8 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
 				P.w_begin(M_EVENT);
 				P.w_u32(timestamp);
 				P.w_u16(GE_KILL_SOMEONE);
-				P.w_u16(id_src);
-				P.w_u16(destination);
+				P << id_src;
+				P << destination;
 				SendTo(c_src->ID, P, net_flags(true, true));
 			}
 			//////////////////////////////////////////////////////////////////////////
@@ -3027,7 +3049,7 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
 	}
 }
 
-xr_string xrServer::ent_name_safe(u16 eid)
+xr_string xrServer::ent_name_safe(ALife::_OBJECT_ID eid)
 {
 	string1024 buff;
 	CSE_Abstract* e_dest = game->get_entity_from_eid(eid);
@@ -3043,11 +3065,11 @@ xr_string xrServer::ent_name_safe(u16 eid)
 	return buff;
 }
 
-void xrServer::Process_event_destroy(NET_Packet& P, ClientID sender, u32 time, u16 ID, NET_Packet* pEPack)
+void xrServer::Process_event_destroy(NET_Packet& P, ClientID sender, u32 time, ALife::_OBJECT_ID ID, NET_Packet* pEPack)
 {
 	u32 MODE = net_flags(true, true);
 	// Parse message
-	u16 id_dest = ID;
+	auto id_dest = ID;
 #ifdef DEBUG
 	if (dbg_net_Draw_Flags.test(dbg_destroy))
 	{
@@ -3055,7 +3077,7 @@ void xrServer::Process_event_destroy(NET_Packet& P, ClientID sender, u32 time, u
 	}
 #endif
 
-	CSE_Abstract* e_dest = game->get_entity_from_eid(id_dest); // кто должен быть уничтожен
+	CSE_Abstract* e_dest = game->get_entity_from_eid(id_dest); // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	if (!e_dest)
 	{
 #ifndef MASTER_GOLD
@@ -3065,11 +3087,11 @@ void xrServer::Process_event_destroy(NET_Packet& P, ClientID sender, u32 time, u
 	};
 
 	R_ASSERT(e_dest);
-	xrClientData* c_dest = e_dest->owner; // клиент, чей юнит
+	xrClientData* c_dest = e_dest->owner; // пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 	R_ASSERT(c_dest);
-	xrClientData* c_from = ID_to_client(sender); // клиент, кто прислал
+	xrClientData* c_from = ID_to_client(sender); // пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	R_ASSERT(c_dest == c_from);					 // assure client ownership of event
-	u16 parent_id = e_dest->ID_Parent;
+	auto parent_id = e_dest->ID_Parent;
 
 	//---------------------------------------------
 	NET_Packet P2, *pEventPack = pEPack;
@@ -3089,17 +3111,17 @@ void xrServer::Process_event_destroy(NET_Packet& P, ClientID sender, u32 time, u
 		}
 	};
 
-	if (0xffff == parent_id && nullptr == pEventPack)
+	if (ALife::INVALID_OBJECT_ID == parent_id && nullptr == pEventPack)
 	{
 		SendBroadcast(BroadcastCID, P, MODE);
 	}
 	else
 	{
 		NET_Packet tmpP;
-		if (0xffff != parent_id && Process_event_reject(P, sender, time, parent_id, ID, false))
+		if (ALife::INVALID_OBJECT_ID != parent_id && Process_event_reject(P, sender, time, parent_id, ID, false))
 		{
 			game->u_EventGen(tmpP, GE_OWNERSHIP_REJECT, parent_id);
-			tmpP.w_u16(id_dest);
+			tmpP << id_dest;
 			tmpP.w_u8(1);
 
 			if (!pEventPack)
@@ -3149,7 +3171,7 @@ void xrServer::Process_event_destroy(NET_Packet& P, ClientID sender, u32 time, u
 }
 
 
-bool TestObjectValidOnSvClient(u16 id_entity)
+bool TestObjectValidOnSvClient(ALife::_OBJECT_ID id_entity)
 {
 	CObject* tmp_obj = Level().Objects.net_Find(id_entity);
 	if (!tmp_obj)
@@ -3178,17 +3200,17 @@ bool TestObjectValidOnSvClient(u16 id_entity)
 
 void ReplaceOwnershipHeader(NET_Packet& P)
 {
-	// способ очень грубый, но на данный момент иного выбора нет. Заранее приношу извинения
+	// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ. пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	u16 NewType = GE_OWNERSHIP_TAKE;
 	CopyMemory(&P.B.data[6], &NewType, 2);
 };
 
-void xrServer::Process_event_ownership(NET_Packet& P, ClientID sender, u32 time, u16 ID, bool bForced)
+void xrServer::Process_event_ownership(NET_Packet& P, ClientID sender, u32 time, ALife::_OBJECT_ID ID, bool bForced)
 {
 	u32 MODE = net_flags(true, true, false, true);
 
-	u16 id_parent = ID, id_entity;
-	P.r_u16(id_entity);
+	ALife::_OBJECT_ID id_parent = ID, id_entity;
+	P >> id_entity;
 	CSE_Abstract* e_parent = game->get_entity_from_eid(id_parent);
 	CSE_Abstract* e_entity = game->get_entity_from_eid(id_entity);
 
@@ -3215,7 +3237,7 @@ void xrServer::Process_event_ownership(NET_Packet& P, ClientID sender, u32 time,
 		return;
 	}
 
-	if (0xffff != e_entity->ID_Parent)
+	if (ALife::INVALID_OBJECT_ID != e_entity->ID_Parent)
 	{
 		return;
 	}
@@ -3252,7 +3274,7 @@ void xrServer::Process_event_ownership(NET_Packet& P, ClientID sender, u32 time,
 	}
 }
 
-bool xrServer::Process_event_reject(NET_Packet& P, const ClientID sender, const u32 time, const u16 id_parent, const u16 id_entity, bool send_message)
+bool xrServer::Process_event_reject(NET_Packet& P, const ClientID sender, const u32 time, const ALife::_OBJECT_ID id_parent, const ALife::_OBJECT_ID id_entity, bool send_message)
 {
 	// Parse message
 	CSE_Abstract* e_parent = game->get_entity_from_eid(id_parent);
@@ -3272,15 +3294,15 @@ bool xrServer::Process_event_reject(NET_Packet& P, const ClientID sender, const 
 		return false;
 	}
 
-	xr_vector<u16>& C = e_parent->children;
-	xr_vector<u16>::iterator c = std::find(C.begin(), C.end(), id_entity);
+	auto& C = e_parent->children;
+	auto c = std::find(C.begin(), C.end(), id_entity);
 	if (c == C.end())
 	{
 		Msg("! ERROR: SV: can't find children [%d] of parent [%d]", id_entity, e_parent);
 		return false;
 	}
 
-	if (0xffff == e_entity->ID_Parent)
+	if (ALife::INVALID_OBJECT_ID == e_entity->ID_Parent)
 	{
 #ifndef MASTER_GOLD
 		Msg("! ERROR: can't detach independant object. entity[%s][%d], parent[%s][%d], section[%s]",
@@ -3308,7 +3330,7 @@ bool xrServer::Process_event_reject(NET_Packet& P, const ClientID sender, const 
 
 	game->OnDetach(id_parent, id_entity);
 
-	e_entity->ID_Parent = 0xffff;
+	e_entity->ID_Parent = ALife::INVALID_OBJECT_ID;
 
 	if (auto IdToErase = std::find(C.begin(), C.end(), id_entity); IdToErase != C.end())
 	{
@@ -3355,7 +3377,7 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, bool bSpaw
 	}
 
 	CSE_Abstract* e_parent = 0;
-	if (E->ID_Parent != 0xffff)
+	if (E->ID_Parent != ALife::INVALID_OBJECT_ID)
 	{
 		e_parent = ID_to_entity(E->ID_Parent);
 		if (!e_parent)
@@ -3373,13 +3395,13 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, bool bSpaw
 	}
 
 	// check for respawn-capability and create phantom as needed
-	if (E->RespawnTime && (0xffff == E->ID_Phantom))
+	if (E->RespawnTime && (ALife::INVALID_OBJECT_ID == E->ID_Phantom))
 	{
 		// Create phantom
 		CSE_Abstract* Phantom = entity_Create(*E->s_name);
 		R_ASSERT(Phantom);
 		Phantom->Spawn_Read(P);
-		Phantom->ID = PerformIDgen(0xffff);
+		Phantom->ID = PerformIDgen(ALife::INVALID_OBJECT_ID);
 		Phantom->ID_Phantom = Phantom->ID; // Self-linked to avoid phantom-breeding
 		Phantom->owner = nullptr;
 		entities.insert(std::make_pair(Phantom->ID, Phantom));
@@ -3397,7 +3419,7 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, bool bSpaw
 		if (E->s_flags.is(M_SPAWN_OBJECT_PHANTOM))
 		{
 			// Clone from Phantom
-			E->ID = PerformIDgen(0xffff);
+			E->ID = PerformIDgen(ALife::INVALID_OBJECT_ID);
 			E->owner = CL; //		= SelectBestClientToMigrateTo	(E);
 			E->s_flags.set(M_SPAWN_OBJECT_PHANTOM, false);
 			entities.insert(std::make_pair(E->ID, E));
@@ -3431,7 +3453,7 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, bool bSpaw
 	{
 		game->OnCreate(E->ID);
 
-		if (0xffff != E->ID_Parent)
+		if (ALife::INVALID_OBJECT_ID != E->ID_Parent)
 		{
 			R_ASSERT(e_parent);
 
@@ -3490,10 +3512,10 @@ void xrServer::Process_update(NET_Packet& P, ClientID sender)
 	while (!P.r_eof())
 	{
 		// find entity
-		u16 ID;
+		ALife::_OBJECT_ID ID;
 		u8 size;
 
-		P.r_u16(ID);
+		P >> ID;
 		P.r_u8(size);
 		u32 _pos = P.r_tell();
 		CSE_Abstract* E = ID_to_entity(ID);
@@ -3533,10 +3555,10 @@ void xrServer::Process_save(NET_Packet& P, ClientID sender)
 	while (!P.r_eof())
 	{
 		// find entity
-		u16 ID;
+		ALife::_OBJECT_ID ID;
 		u16 size;
 
-		P.r_u16(ID);
+		P >> ID;
 		P.r_u16(size);
 		s32 _pos_start = P.r_tell();
 		CSE_Abstract* E = ID_to_entity(ID);
@@ -3560,3 +3582,295 @@ void xrServer::Process_save(NET_Packet& P, ClientID sender)
 		}
 	}
 }
+
+#ifdef DEBUG
+static size_t debug_num = 0;
+static xr_set<ALife::_OBJECT_ID> UsedIDsDebug = {};
+
+void xrServer::VerifyIDDebug()
+{
+	size_t result = 0;
+	for (auto& elem1 : m_id_chunks)
+	{
+		for (auto& elem2 : elem1->data)
+		{
+			for (auto& elem3 : elem2.pack)
+			{
+				result += elem3.bset.n1;
+				result += elem3.bset.n2;
+				result += elem3.bset.n3;
+				result += elem3.bset.n4;
+				result += elem3.bset.n5;
+				result += elem3.bset.n6;
+				result += elem3.bset.n7;
+				result += elem3.bset.n8;
+			}
+		}
+	}
+	VERIFY(result == debug_num);
+}
+#endif
+
+void xrServer::clear_ids()
+{
+	xrCriticalSectionGuard g(m_id_chunksCS);
+	m_id_chunks.clear();
+#ifdef DEBUG
+	debug_num = 0;
+	UsedIDsDebug.clear();
+#endif
+}
+
+ALife::_OBJECT_ID xrServer::PerformIDgen(ALife::_OBJECT_ID ID)
+{
+	xrCriticalSectionGuard g(m_id_chunksCS);
+	// Clean-up too old pending ID
+	if (m_id_chunks.empty()) // whatever the reason is, this means that all IDs (including pending) are invalidated
+	{
+		m_pending_delete_id_set.clear();
+		while (!m_pending_delete_id_queue.empty()){
+			m_pending_delete_id_queue.pop();
+		}
+	}
+	else
+	{
+		IVERIFY(m_pending_delete_id_queue.size() >= m_pending_delete_id_set.size());
+		while (!m_pending_delete_id_queue.empty())
+		{
+			auto& elem = m_pending_delete_id_queue.front();
+			auto CurTime = Device.TimerAsync();
+			if(elem.first + ID_delete_delay > CurTime)
+			{
+				//Msg("Stop ID [%u] free because timeout is not ready [current time: %u; queue time: %u; timeout: %u]", elem.second, CurTime, elem.first, ID_delete_delay);
+				break;
+			}
+			//Msg("Free ID [%u] because timeout is ready [current time: %u; queue time: %u; timeout: %u]", elem.second, CurTime, elem.first, ID_delete_delay);
+			if (m_pending_delete_id_set.contains(elem.second))
+			{
+				FreeIDImpl(elem.second);
+				m_pending_delete_id_set.erase(elem.second);
+			}
+			m_pending_delete_id_queue.pop();
+		}
+	}
+	
+	// ID generation itself
+	auto Result = ALife::INVALID_OBJECT_ID;
+	size_t i1 = ID/i1Shift;
+	size_t i2 = (ID%i1Shift)/i2Shift;
+	size_t i3 = ((ID%i1Shift)%i2Shift)/i3Shift;
+	const u8 Mod = ((ID%i1Shift)%i2Shift)%i3Shift;
+	if (ID == ALife::INVALID_OBJECT_ID)
+	{
+		for (i1 = 0; i1 < m_id_chunks.size(); ++i1)
+		{
+			VERIFY(i1 < m_id_chunks.size());
+			auto& Chunk = *m_id_chunks[i1];
+			if (!Chunk.empty)
+			{
+				continue;
+			}
+			for (i2 = 0; i2 < 255; ++i2)
+			{
+				auto& LLChunk = Chunk.data[i2];
+				if (!LLChunk.empty)
+				{
+					continue;
+				}
+				for (i3 = 0; i3 < 255; ++i3)
+				{
+					auto& Pack = LLChunk.pack[i3];
+					if (Pack.set == 255)
+					{
+						continue;
+					}
+					auto CalcID = [&](u8 shift) -> ALife::_OBJECT_ID
+					{
+						return ALife::_OBJECT_ID(i1*i1Shift)
+							+ ALife::_OBJECT_ID(i2*i2Shift)
+							+ ALife::_OBJECT_ID(i3*i3Shift)
+							+ shift;
+					};
+#ifdef DEBUG
+#define PackAcquire(num) \
+	if(!Pack.bset.n##num){ \
+		Result = CalcID(num-1);\
+		VERIFY(!UsedIDsDebug.contains(Result)); \
+		Pack.bset.n##num = true; \
+	}
+#else
+#define PackAcquire(num) \
+	if(!Pack.bset.n##num){ \
+	Result = CalcID(num-1);\
+	Pack.bset.n##num = true; \
+}
+#endif
+					PackAcquire(1)
+					else PackAcquire(2)
+					else PackAcquire(3)
+					else PackAcquire(4)
+					else PackAcquire(5)
+					else PackAcquire(6)
+					else PackAcquire(7)
+					else PackAcquire(8)
+#undef PackAcquire
+					if (IVERIFY(Result != ALife::INVALID_OBJECT_ID))
+					{
+						if (Pack.set == 255)
+						{
+							IVERIFY(LLChunk.empty);
+							--LLChunk.empty;
+							if (!LLChunk.empty)
+							{
+								IVERIFY(Chunk.empty);
+								--Chunk.empty;
+							}
+						}
+						break;
+					}
+				}
+				if (IVERIFY(Result != ALife::INVALID_OBJECT_ID))
+				{
+					break;
+				}
+			}
+			if (IVERIFY(Result != ALife::INVALID_OBJECT_ID))
+			{
+				break;
+			}
+		}
+		if (Result == ALife::INVALID_OBJECT_ID)
+		{
+			m_id_chunks.push_back(xr_make_unique<IDChunkSet>());
+			auto& Chunk = *m_id_chunks.back();
+			auto& LLChunk = Chunk.data[0];
+			auto& Pack = LLChunk.pack[0];
+			Pack.bset.n1 = true;
+			Result = i1Shift*(m_id_chunks.size()-1);
+			VERIFY(!UsedIDsDebug.contains(Result));
+		}
+		R_ASSERT(Result != ALife::INVALID_OBJECT_ID);
+		if (Result > m_TopValidID || m_TopValidID == ALife::INVALID_OBJECT_ID)
+		{
+			m_TopValidID = Result;
+		}
+#ifdef DEBUG
+		debug_num++;
+		VerifyIDDebug();
+		UsedIDsDebug.insert(Result);
+#endif
+		return Result;
+	}
+	{
+		if (m_pending_delete_id_set.contains(ID))
+		{
+			m_pending_delete_id_set.erase(ID); // if we here, we need this ID right now, suppose it's safe to use
+			return ID; // we haven't changed storage state for this ID, we can skip update and just return id
+		}
+		while (i1 >= m_id_chunks.size())
+		{
+			m_id_chunks.push_back(xr_make_unique<IDChunkSet>());
+		}
+		auto& Chunk = *(m_id_chunks[i1]);
+		auto& LLChunk = Chunk.data[i2];
+		auto& Pack = LLChunk.pack[i3];
+		if (I_ASSERT_M(!(Pack.set & (1 << Mod)), "ID [%d] is already used!", ID))
+		{
+			Pack.set |= 1 << Mod;
+			Result = ID;
+		}
+		if (Pack.set == 255)
+		{
+			IVERIFY(LLChunk.empty);
+			--LLChunk.empty;
+		}
+		if (!LLChunk.empty)
+		{
+			IVERIFY(Chunk.empty);
+			--Chunk.empty;
+		}
+	}
+#ifdef DEBUG
+	debug_num++;
+	VerifyIDDebug();
+	UsedIDsDebug.insert(Result);
+#endif
+	IVERIFY(ID == Result);
+	if (Result > m_TopValidID || m_TopValidID == ALife::INVALID_OBJECT_ID)
+	{
+		m_TopValidID = Result;
+	}
+	return Result;
+}
+
+void xrServer::FreeID(ALife::_OBJECT_ID ID, u32 time)
+{
+	xrCriticalSectionGuard g(m_id_chunksCS);
+	//Msg("Put ID [%u] in delay free [current time: %u]", ID, time);
+	m_pending_delete_id_set.insert(ID);
+	m_pending_delete_id_queue.emplace(time, ID);
+}
+
+ALife::_OBJECT_ID xrServer::TopValidID() const
+{
+	R_ASSERT(m_TopValidID != ALife::INVALID_OBJECT_ID);
+	return m_TopValidID + 1;
+}
+
+void xrServer::FreeIDImpl(ALife::_OBJECT_ID ID)
+{
+	size_t i1 = ID/i1Shift;
+	size_t i2 = (ID%i1Shift)/i2Shift;
+	size_t i3 = ((ID%i1Shift)%i2Shift)/i3Shift;
+	u8 Mod = ((ID%i1Shift)%i2Shift)%i3Shift;
+	if (IVERIFY(i1 < m_id_chunks.size()))
+	{
+		auto& Chunk = *m_id_chunks[i1];
+		auto& LLChunk = Chunk.data[i2];
+		auto& Pack = LLChunk.pack[i3];
+		bool PackBecameFree = Pack.set == 255;
+		bool LLChunkBecameFree = !LLChunk.empty;
+		if (IVERIFY((Pack.set & (1 << Mod))))
+		{
+			Pack.set &= ~(1 << Mod);
+		}
+		if (PackBecameFree)
+		{
+			++LLChunk.empty;
+		}
+		if (LLChunkBecameFree)
+		{
+			++Chunk.empty;
+		}
+	}
+	
+#ifdef DEBUG
+	debug_num--;
+	VerifyIDDebug();
+	UsedIDsDebug.erase(ID);
+#endif
+}
+
+#ifdef DEBUG
+bool xrServer::IsIDUsed(ALife::_OBJECT_ID ID)
+{
+	xrCriticalSectionGuard g(m_id_chunksCS);
+	size_t i1 = ID/i1Shift;
+	size_t i2 = (ID%i1Shift)/i2Shift;
+	size_t i3 = ((ID%i1Shift)%i2Shift)/i3Shift;
+	u8 Mod = ((ID%i1Shift)%i2Shift)%i3Shift;
+	if (IVERIFY(i1 < m_id_chunks.size()))
+	{
+		auto& Chunk = *m_id_chunks[i1];
+		IVERIFY(Chunk.empty != 255);
+		auto& LLChunk = Chunk.data[i2];
+		IVERIFY(LLChunk.empty != 255);
+		auto& Pack = LLChunk.pack[i3];
+		if (IVERIFY((Pack.set & (1 << Mod))))
+		{
+			return Pack.set & (1 << Mod);
+		}
+	}
+	return false;
+}
+#endif

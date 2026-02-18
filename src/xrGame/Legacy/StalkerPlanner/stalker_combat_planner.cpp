@@ -136,7 +136,7 @@ void CStalkerCombatPlanner::initialize			()
 
 	object().m_clutched_hammer_enabled	= true;
 
-	m_last_enemy_id			= u16(-1);
+	m_last_enemy_id			= ALife::INVALID_OBJECT_ID;
 	m_last_level_time		= 0;
 	m_last_wounded			= false;
 

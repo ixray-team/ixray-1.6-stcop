@@ -118,7 +118,7 @@ void CActor::detach_Vehicle()
 
 	V->PlayCycle(m_anims->m_normal.legs_idle);
 	V->PlayCycle(m_anims->m_normal.m_torso_idle);
-	m_holderID = u16(-1);
+	m_holderID = ALife::INVALID_OBJECT_ID;
 
 	SetWeaponHideState(INV_STATE_BLOCK_ALL, false);
 	this->callback(GameObject::eDetachVehicle)(car->lua_game_object());

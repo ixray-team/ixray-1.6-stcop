@@ -39,7 +39,9 @@ class CGameGraph;
 namespace ALife
 {
 	using _CLASS_ID = u64;		 // Class ID
-	using _OBJECT_ID = u16;		 // Object ID
+	using _OBJECT_ID = u32;		 // Object ID
+	using _HALF_OBJECT_ID = u16;
+	using _QUAD_OBJECT_ID = u8;
 	using _TIME_ID = u64;		 // Time  ID
 	using _EVENT_ID = u32;		 // Event ID
 	using _TASK_ID = u32;		 // Event ID
@@ -48,6 +50,10 @@ namespace ALife
 	using _STORY_ID = u32;		 // Story ID
 	using _SPAWN_STORY_ID = u32; // Spawn Story ID
 
+	static_assert(sizeof(_QUAD_OBJECT_ID)*2 == sizeof(_HALF_OBJECT_ID));
+	static_assert(sizeof(_HALF_OBJECT_ID)*2 == sizeof(_OBJECT_ID));
+
+	constexpr _OBJECT_ID INVALID_OBJECT_ID = ALife::_OBJECT_ID(-1);
 	constexpr _OBJECT_ID _ACTOR_ID = 0; // Actor net id is always 0.
 
 	struct SSumStackCell {

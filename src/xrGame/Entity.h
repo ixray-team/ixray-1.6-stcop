@@ -71,7 +71,7 @@ public:
 	virtual void			Load				(const char* section);
 	virtual void			reinit				();
 	virtual void			reload				(const char* section);
-	virtual bool			net_Spawn			(CSE_Abstract* DC);
+	bool			net_Spawn			(CSE_Abstract* DC) override;
 	virtual void			net_Destroy			();
 	
 	virtual void			shedule_Update		(u32 dt);
@@ -103,7 +103,7 @@ public:
 
 	virtual void			Die					(CObject* who);
 //			void			KillEntity			(CObject* who);
-			void			KillEntity			(u16 whoID, bool bypass_actor_check = false);
+			void			KillEntity			(ALife::_OBJECT_ID whoID, bool bypass_actor_check = false);
 		
 	// Events
 	virtual void			OnEvent				( NET_Packet& P, u16 type		);
@@ -121,7 +121,7 @@ private:
 	ALife::_OBJECT_ID		m_killer_id;
 
 public:
-	IC		u16				killer_id				() const {return m_killer_id;};
+	IC ALife::_OBJECT_ID	killer_id				() const {return m_killer_id;};
 	virtual	bool			use_simplified_visual	() const {return false;};
 
 public:

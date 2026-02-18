@@ -23,7 +23,8 @@ void game_sv_CaptureTheArtefact::OnEvent(NET_Packet & tNetPacket, u16 type, u32 
 		}break;
 	case GAME_EVENT_PLAYER_ENTER_TEAM_BASE:
 		{
-			u16 pl_id = tNetPacket.r_u16();
+			ALife::_OBJECT_ID pl_id;
+			tNetPacket >> pl_id;
 			//warning, in editor green team zone has 1 id, blue team zone has id 2
 			u8 z_t_id = tNetPacket.r_u8();
 			z_t_id--; // :( !!!
@@ -32,7 +33,8 @@ void game_sv_CaptureTheArtefact::OnEvent(NET_Packet & tNetPacket, u16 type, u32 
 
 	case GAME_EVENT_PLAYER_LEAVE_TEAM_BASE:
 		{
- 			u16 pl_id = tNetPacket.r_u16();
+			ALife::_OBJECT_ID pl_id;
+			tNetPacket >> pl_id;
 			u8 z_t_id = tNetPacket.r_u8();
 			z_t_id--;						// :( !!!
 			OnObjectLeaveTeamBase(pl_id, z_t_id);

@@ -45,17 +45,19 @@ void CALifeObjectRegistry::save				(IWriter &memory_stream, CSE_ALifeDynamicObje
 	memory_stream.w_u16			(u16(tNetPacket.B.count));
 	memory_stream.w				(tNetPacket.B.data,tNetPacket.B.count);
 
-	ALife::OBJECT_VECTOR::const_iterator	I = object->children.begin();
-	ALife::OBJECT_VECTOR::const_iterator	E = object->children.end();
-	for ( ; I != E; ++I) {
-		CSE_ALifeDynamicObject	*child = this->object(*I,true);
+	for (auto ID : object->children) {
+		CSE_ALifeDynamicObject* child = this->object(ID,true);
 		if (!child)
+		{
 			continue;
+		}
 
 		if (!child->can_save())
+		{
 			continue;
+		}
 
-		save					(memory_stream,child,object_count);
+		save(memory_stream,child,object_count);
 	}
 }
 
@@ -68,19 +70,23 @@ void CALifeObjectRegistry::save				(IWriter &memory_stream)
 	memory_stream.w_u32			(u32(-1));
 
 	u32							object_count = 0;
-	OBJECT_REGISTRY::iterator	I = m_objects.begin();
-	OBJECT_REGISTRY::iterator	E = m_objects.end();
-	for ( ; I != E; ++I) {
-		if (!(*I).second->can_save())
+	for (auto& obj : m_objects) {
+		if (!obj.second->can_save())
+		{
 			continue;
+		}
 
-		if ((*I).second->redundant())
+		if (obj.second->redundant())
+		{
 			continue;
+		}
 
-		if ((*I).second->ID_Parent != 0xffff)
+		if (obj.second->ID_Parent != ALife::INVALID_OBJECT_ID)
+		{
 			continue;
+		}
 
-		save					(memory_stream,(*I).second, object_count);
+		save(memory_stream,obj.second, object_count);
 	}
 	
 	u32							last_position = memory_stream.tell();
@@ -134,14 +140,11 @@ void CALifeObjectRegistry::load(IReader& file_stream)
 
 	m_objects.clear();
 
-	u32							count = file_stream.r_u32();
-	CSE_ALifeDynamicObject** objects = (CSE_ALifeDynamicObject**)_alloca(count * sizeof(CSE_ALifeDynamicObject*));
-
-	CSE_ALifeDynamicObject** I = objects;
-	CSE_ALifeDynamicObject** E = objects + count;
-	for (; I != E; ++I) {
-		*I = get_object(file_stream);
-		add(*I);
+	u32 count = file_stream.r_u32();
+	for (u32 i = 0; i < count; ++i)
+	{
+		auto Temp = get_object(file_stream);
+		add(Temp);
 	}
 
 	Msg("* %d objects are successfully loaded", count);

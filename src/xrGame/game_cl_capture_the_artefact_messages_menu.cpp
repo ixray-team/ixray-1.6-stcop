@@ -11,7 +11,8 @@
 void game_cl_CaptureTheArtefact::OnSpeechMessage(NET_Packet& P)
 {
 	if (!local_player || local_player->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD)) return;
-	u16	PlayerID = P.r_u16();
+	ALife::_OBJECT_ID PlayerID;
+	P >> PlayerID;
 	game_PlayerState* ps = GetPlayerByGameID(PlayerID);
 	if (!ps) return;
 

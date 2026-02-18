@@ -81,7 +81,7 @@ void CLevel::ClientReceive()
 		m_dwRPS += P->B.count;
 		//-----------------------------------------------------
 		u16			m_type;
-		u16			ID;
+		ALife::_OBJECT_ID ID;
 		P->r_begin	(m_type);
 
 #ifdef _DEBUG
@@ -155,7 +155,7 @@ void CLevel::ClientReceive()
 					break;
 				}
 
-				P->r_u16(ID);
+				(*P) >> ID;
 				u32 Ping = P->r_u32();
 				CObject* finded = Objects.net_Find(ID);
 				CGameObject* O = finded != nullptr ? finded->cast_game_object() : nullptr;
@@ -201,7 +201,8 @@ void CLevel::ClientReceive()
 				u8 Count = P->r_u8();
 				for (u8 i = 0; i < Count; ++i)
 				{
-					u16 ID_ = P->r_u16();
+					ALife::_OBJECT_ID ID_;
+					*(P) >> ID_;
 					Fvector NewPos;
 					P->r_vec3(NewPos);
 					CObject* finded = Objects.net_Find(ID_);
@@ -217,7 +218,7 @@ void CLevel::ClientReceive()
 		//------------------------------------------------
 		case M_CL_INPUT:
 			{
-				P->r_u16		(ID);
+				*P >> ID;
 				CObject*	O	= Objects.net_Find		(ID);
 				if (0 == O)		break;
 				O->net_ImportInput(*P);

@@ -202,7 +202,7 @@ bool CTorch::net_Spawn(CSE_Abstract* DC)
 
 		//включить/выключить фонарик
 		Switch(torch->m_active);
-		VERIFY(!torch->m_active || (torch->ID_Parent != 0xffff));
+		VERIFY(!torch->m_active || (torch->ID_Parent != ALife::INVALID_OBJECT_ID));
 
 		m_delta_h = PI_DIV_2 - atan((range * 0.5f) / std::abs(TORCH_OFFSET.x));
 	}

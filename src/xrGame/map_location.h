@@ -57,7 +57,7 @@ protected:
 	CMapSpot*				m_mini_map_spot_border_na;
 	CMapSpot*				m_complex_spot_border_na;
 
-	u16						m_objectID;
+	ALife::_OBJECT_ID		m_objectID;
 	CSE_ALifeDynamicObject*	m_owner_se_object;
 	int						m_ttl;
 	u32						m_actual_time;
@@ -96,7 +96,7 @@ protected:
 	CMapSpotPointer*		GetSpotPointer					(CMapSpot* sp);
 	CMapSpot*				GetSpotBorder					(CMapSpot* sp);
 public:
-							CMapLocation					(const char* type, u16 object_id, bool is_user_loc = false);
+							CMapLocation					(const char* type, ALife::_OBJECT_ID object_id, bool is_user_loc = false);
 	virtual					~CMapLocation					();
 	virtual void			destroy							();
 
@@ -147,7 +147,7 @@ public:
 	virtual shared_str		GetSpotName					()	const { return m_type; }
 	ECompassSpotKind		GetCompassSpotKind				()	const;
 
-	u16						ObjectID						() const {return m_objectID;}
+	ALife::_OBJECT_ID		ObjectID						() const {return m_objectID;}
 	virtual		bool		Update							();
 	Fvector					GetLastPosition					() {return m_position_global;};
 	bool					Serializable					() const {return !!m_flags.test(eSerailizable);}
@@ -168,7 +168,7 @@ class CRelationMapLocation : public CMapLocation
 {
 	using inherited = CMapLocation;
 	shared_str				m_curr_spot_name;
-	u16						m_pInvOwnerActorID;
+	ALife::_OBJECT_ID		m_pInvOwnerActorID;
 	ALife::ERelationType	m_last_relation;
 	bool					m_b_visible;
 	bool					m_b_minimap_visible;
@@ -176,7 +176,7 @@ class CRelationMapLocation : public CMapLocation
 protected:
 	bool					IsVisible							() const {return m_b_visible;};
 public:
-							CRelationMapLocation			(const shared_str& type, u16 object_id, u16 pInvOwnerActorID);
+							CRelationMapLocation			(const shared_str& type, ALife::_OBJECT_ID object_id, ALife::_OBJECT_ID pInvOwnerActorID);
 	virtual					~CRelationMapLocation			();
 	virtual bool			Update							();
 

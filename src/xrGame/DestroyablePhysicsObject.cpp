@@ -53,7 +53,7 @@ void CDestroyablePhysicsObject::net_Destroy()
 bool CDestroyablePhysicsObject::net_Spawn(CSE_Abstract* DC)
 {
 	CSE_PHSkeleton *l_tpPHSkeleton = smart_cast<CSE_PHSkeleton*>(DC);
-	child_part = l_tpPHSkeleton && l_tpPHSkeleton->source_id != u16(-1);
+	child_part = l_tpPHSkeleton && l_tpPHSkeleton->source_id != ALife::INVALID_OBJECT_ID;
 	bool res=inherited::net_Spawn(DC);
 	IKinematics		*K=PKinematics(Visual());
 	CInifile* ini=K->LL_UserData();

@@ -298,7 +298,7 @@ game_PlayerState* game_cl_GameState::lookat_player()
 	return nullptr;
 }
 
-game_PlayerState* game_cl_GameState::GetPlayerByGameID(u32 GameID)
+game_PlayerState* game_cl_GameState::GetPlayerByGameID(ALife::_OBJECT_ID GameID)
 {
 	PLAYERS_MAP_IT I=players.begin();
 	PLAYERS_MAP_IT E=players.end();
@@ -378,12 +378,12 @@ bool game_cl_GameState::OnKeyboardRelease	(int dik)
 		return false;
 }
 
-void game_cl_GameState::u_EventGen(NET_Packet& P, u16 type, u16 dest)
+void game_cl_GameState::u_EventGen(NET_Packet& P, u16 type, ALife::_OBJECT_ID dest)
 {
 	P.w_begin	(M_EVENT);
 	P.w_u32		(Level().timeServer());
 	P.w_u16		(type);
-	P.w_u16		(dest);
+	P << dest;
 }
 
 void game_cl_GameState::u_EventSend(NET_Packet& P)
@@ -415,14 +415,14 @@ void				game_cl_GameState::OnSwitchPhase			(u32 old_phase, u32 new_phase)
 	}	
 }
 
-void game_cl_GameState::SendPickUpEvent(u16 ID_who, u16 ID_what)
+void game_cl_GameState::SendPickUpEvent(ALife::_OBJECT_ID ID_who, ALife::_OBJECT_ID ID_what)
 {
 	CObject* O		= Level().Objects.net_Find	(ID_what);
 	Level().m_feel_deny.feel_touch_deny			(O, 1000);
 
 	NET_Packet		P;
 	u_EventGen		(P,GE_OWNERSHIP_TAKE, ID_who);
-	P.w_u16			(ID_what);
+	P << ID_what;
 	u_EventSend		(P);
 };
 

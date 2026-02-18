@@ -1623,12 +1623,12 @@ bool CPHSimpleCharacter::IsInitiated()const
 	return m_collision_damage_info.is_initiated;
 }
 
-u16 CPHSimpleCharacter::DamageInitiatorID()const
+ALife::_OBJECT_ID CPHSimpleCharacter::DamageInitiatorID()const
 {
-	u16 ret = u16(-1);
+	auto ret = ALife::INVALID_OBJECT_ID;
 
-	IPhysicsShellHolder* object = 0;
-	if (m_collision_damage_info.m_obj_id != u16(-1))
+	IPhysicsShellHolder* object = nullptr;
+	if (m_collision_damage_info.m_obj_id != ALife::INVALID_OBJECT_ID)
 	{
 		CObject* obj = inl_ph_world().LevelObjects().net_Find(m_collision_damage_info.m_obj_id);
 		VERIFY(!obj || smart_cast<IPhysicsShellHolder*>(obj));
@@ -1640,7 +1640,7 @@ u16 CPHSimpleCharacter::DamageInitiatorID()const
 		if (ds)	ret = ds->Initiator();
 	}
 
-	if (ret == u16(-1)) ret = m_phys_ref_object->ObjectID();
+	if (ret == ALife::INVALID_OBJECT_ID) ret = m_phys_ref_object->ObjectID();
 	return ret;
 }
 
@@ -1650,9 +1650,9 @@ CObject* CPHSimpleCharacter::DamageInitiator() const
 	if (m_collision_damage_info.m_dmc_type == SCollisionDamageInfo::ctStatic)
 		return smart_cast<CObject*> (m_phys_ref_object);
 
-	u16 initiator_id = DamageInitiatorID();
+	auto initiator_id = DamageInitiatorID();
 
-	VERIFY(initiator_id != u16(-1));
+	VERIFY(initiator_id != ALife::INVALID_OBJECT_ID);
 
 	if (initiator_id == m_phys_ref_object->ObjectID())
 		return smart_cast<CObject*> (m_phys_ref_object);
@@ -1686,7 +1686,7 @@ void CPHSimpleCharacter::SCollisionDamageInfo::HitDir(Fvector& dir)	const
 
 void CPHSimpleCharacter::SCollisionDamageInfo::Reinit()
 {
-	m_obj_id =u16(-1);
+	m_obj_id = ALife::INVALID_OBJECT_ID;
 	m_hit_callback=nullptr;
 	m_contact_velocity=0;
 	is_initiated=false;

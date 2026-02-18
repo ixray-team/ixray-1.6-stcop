@@ -460,7 +460,7 @@ void CInventoryOwner::spawn_supplies()
 		CSE_ALifeItemPDA* pda = abstract->cast_item_pda();
 		R_ASSERT(pda);
 
-		pda->m_original_owner = (u16)game_object->ID();
+		pda->m_original_owner = game_object->ID();
 
 		NET_Packet P;
 		abstract->Spawn_Write(P, true);
@@ -471,7 +471,7 @@ void CInventoryOwner::spawn_supplies()
 
 //////////////////////////////////////////////////////////////////////////
 //для работы с relation system
-u16 CInventoryOwner::object_id() const
+ALife::_OBJECT_ID CInventoryOwner::object_id() const
 {
 	CInventoryOwner* This = const_cast<CInventoryOwner*>(this);
 	return This->cast_game_object()->ID();

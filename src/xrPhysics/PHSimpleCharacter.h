@@ -37,7 +37,7 @@ public:
 				void					Reinit						()										;
 				dContact				m_damege_contact;
 				ICollisionHitCallback	*m_hit_callback;
-				u16						m_obj_id;
+				ALife::_OBJECT_ID m_obj_id;
 				float					m_dmc_signum;
 				enum{ctStatic,ctObject}	m_dmc_type;
 				ALife::EHitType			m_hit_type;
@@ -149,7 +149,7 @@ private:
 	virtual		float			 	ContactVelocity				()const				{return m_collision_damage_info.ContactVelocity();}
 	virtual		void			 	HitDir							(Fvector& dir)const	{return m_collision_damage_info.HitDir(dir);}
 	virtual		const Fvector&	 	HitPos							()const				{return m_collision_damage_info.HitPos();}
-	virtual		u16				 	DamageInitiatorID				()const				;
+	ALife::_OBJECT_ID				 	DamageInitiatorID				()const override;
 	virtual		CObject			 	*DamageInitiator				()const				;
 	virtual		ALife::EHitType	 	HitType							()const				{return m_collision_damage_info.m_hit_type; };
 	virtual		void				SetInitiated					();

@@ -11,7 +11,7 @@ public:
 	u16					ID;
 	u32					timestamp;
 	u16					type;
-	u16					destination;
+	ALife::_OBJECT_ID	destination;
 	xr_vector<u8>		data;
 public:
 	void				import		(NET_Packet& P)
@@ -30,7 +30,7 @@ public:
 				P.r_u32			(timestamp	);
 				timestamp += u32(g_dwEventDelay);				
 				P.r_u16			(type		);
-				P.r_u16			(destination);
+				P >> destination;
 			}break;
 		case M_MOVE_PLAYERS:
 		case M_STATISTIC_UPDATE:
@@ -57,7 +57,7 @@ public:
 		P.w_begin		(ID_			);
 		P.w_u32			(timestamp	);
 		P.w_u16			(type		);
-		P.w_u16			(destination);
+		P << destination;
 		if (data.size())	P.w(&*data.begin(),(u32)data.size());
 	}
 	void				implication	(NET_Packet& P) const
@@ -121,7 +121,7 @@ public:
 		/**/
 		return			true;
 	}
-	IC void				get			(u16& ID, u16& dest, u16& type, NET_Packet& P)
+	IC void				get			(u16& ID, ALife::_OBJECT_ID& dest, u16& type, NET_Packet& P)
 	{
 		const NET_Event& E	= *queue.begin();
 		ID					= E.ID;

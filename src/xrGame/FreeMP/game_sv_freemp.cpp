@@ -46,7 +46,7 @@ game_sv_freemp::~game_sv_freemp()
 #endif
 }
 
-void game_sv_freemp::SpawnItemToActor(u16 actorId, const char* name)
+void game_sv_freemp::SpawnItemToActor(ALife::_OBJECT_ID actorId, const char* name)
 {
 	if (!name) return;
 
@@ -319,7 +319,7 @@ void game_sv_freemp::RespawnPlayer(ClientID id_who, bool NoSpectator)
 	}
 }
 
-void game_sv_freemp::OnDetach(u16 eid_who, u16 eid_what)
+void game_sv_freemp::OnDetach(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_what)
 {
 	CSE_ActorMP* e_who = smart_cast<CSE_ActorMP*>(m_server->ID_to_entity(eid_who));
 	if (!e_who)
@@ -340,7 +340,7 @@ void game_sv_freemp::OnDetach(u16 eid_who, u16 eid_what)
 }
 
 // player disconnect
-void game_sv_freemp::OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameID)
+void game_sv_freemp::OnPlayerDisconnect(ClientID id_who, LPSTR Name, ALife::_OBJECT_ID GameID)
 {
 	CActorMP* actor = smart_cast<CActorMP*>(Level().Objects.net_Find(GameID));
 	if (!actor) return;
@@ -439,7 +439,8 @@ void game_sv_freemp::OnPlayerRepairItem(NET_Packet& P, ClientID const& clientID)
 {
 	game_PlayerState* ps = get_id(clientID);
 	if (!ps) return;
-	u16 itemId = P.r_u16();
+	ALife::_OBJECT_ID itemId;
+	P >> itemId;
 	s32 cost = P.r_s32();
 	CObject* finded_object = Level().Objects.net_Find(itemId);
 	PIItem item = finded_object != nullptr ? finded_object->cast_inventory_item() : nullptr;
@@ -451,7 +452,7 @@ void game_sv_freemp::OnPlayerRepairItem(NET_Packet& P, ClientID const& clientID)
 	CGameObject::u_EventSend(NP);
 	GenerateGameMessage(NP);
 	NP.w_u32(GAME_EVENT_MP_REPAIR_SUCCESS);
-	NP.w_u16(itemId);
+	NP << itemId;
 	m_server->SendTo(clientID, NP);
 }
 
@@ -461,7 +462,8 @@ void game_sv_freemp::OnEvent(NET_Packet& P, u16 type, u32 time, ClientID sender)
 	{
 	case GAME_EVENT_PLAYER_KILL:
 	{
-		u16 ID = P.r_u16();
+		ALife::_OBJECT_ID ID;
+		P >> ID;
 		xrClientData* l_pC = (xrClientData*)get_client(ID);
 		if (l_pC)
 		{
@@ -558,7 +560,7 @@ void game_sv_freemp::OnEvent(NET_Packet& P, u16 type, u32 time, ClientID sender)
 						});
 
 						xrCriticalSectionGuard guard(SpawnGuard);
-						DoSpawnList[actor->ID()].push_back((*it).first.c_str());
+						DoSpawnList[actor->ID()].push_back(it->first.c_str());
 					}
 					actor->SetActorPosition(res_data.position);
 					signal_Syncronize();
@@ -593,7 +595,7 @@ void game_sv_freemp::Update()
 	DoSpawnList.clear();
 }
 
-bool game_sv_freemp::OnTouch(u16 eid_who, u16 eid_what, bool bForced)
+bool game_sv_freemp::OnTouch(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_what, bool bForced)
 {
 	CSE_ActorMP* e_who = smart_cast<CSE_ActorMP*>(m_server->ID_to_entity(eid_who));
 	if (!e_who)

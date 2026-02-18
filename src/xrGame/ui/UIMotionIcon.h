@@ -37,9 +37,9 @@ private:
 	float _noiseOverlayCur;
 
 		struct _npc_visibility{
-			u16				id;
-			float				value;
-			bool operator == (const u16& _id){
+			ALife::_OBJECT_ID id;
+			float value;
+			bool operator == (const ALife::_OBJECT_ID& _id){
 				return id == _id;
 			}
 			bool operator < (const _npc_visibility& m) const
@@ -96,7 +96,7 @@ public:
 			void			SetPower			(float Pos);
 			void			SetNoise			(float Pos);
 			void			SetLuminosity		(float newPos);
-			void			SetActorVisibility	(u16 who_id, float value);
+			void			SetActorVisibility	(ALife::_OBJECT_ID who_id, float value);
 			void			ResetVisibility		();
 
 	virtual CUIWindow* ui_cast_window() { return this; }

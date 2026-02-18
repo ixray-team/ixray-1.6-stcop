@@ -511,7 +511,7 @@ ICollisionHitCallback* CPhysicsShellHolder::ObjectGetCollisionHitCallback()
 {
 	return get_collision_hit_callback ();
 }
-u16	CPhysicsShellHolder::ObjectID()const
+ALife::_OBJECT_ID	CPhysicsShellHolder::ObjectID()const
 {
 	return ID();
 }

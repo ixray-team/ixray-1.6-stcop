@@ -201,7 +201,7 @@ CAttachableItem* CAttachmentOwner::attachedItem(CLASS_ID clsid) const
 	return nullptr;
 }
 
-CAttachableItem* CAttachmentOwner::attachedItem(u16 id) const
+CAttachableItem* CAttachmentOwner::attachedItem(ALife::_OBJECT_ID id) const
 {
 	for (CAttachableItem* attachable_item : m_attached_objects)
 	{

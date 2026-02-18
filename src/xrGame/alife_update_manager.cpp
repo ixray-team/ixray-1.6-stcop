@@ -214,7 +214,7 @@ bool CALifeUpdateManager::change_level	(NET_Packet &net_packet)
 	graph().actor()->o_torso.pitch	= graph().actor()->o_Angle.x;
 	graph().actor()->o_torso.roll	= 0.f;
 
-	if (graph().actor()->m_holderID != 0xffff) {
+	if (graph().actor()->m_holderID != ALife::INVALID_OBJECT_ID) {
 		holder						= objects().object(graph().actor()->m_holderID);
 
 		holder_safe_graph_vertex_id	= holder->m_tGraphID;
@@ -243,7 +243,7 @@ bool CALifeUpdateManager::change_level	(NET_Packet &net_packet)
 	graph().actor()->o_Angle		= safe_angles;
 	graph().actor()->o_torso		= safe_torso;
 
-	if (graph().actor()->m_holderID != 0xffff) {
+	if (graph().actor()->m_holderID != ALife::INVALID_OBJECT_ID) {
 		VERIFY						(holder);
 		holder->m_tGraphID			= holder_safe_graph_vertex_id;
 		holder->m_tNodeID			= holder_safe_level_vertex_id;

@@ -321,7 +321,7 @@ void RenderSearchManagerWindow()
 
 						if (pServerObject)
 						{
-							if (pServerObject->ID_Parent == 0xffff)
+							if (pServerObject->ID_Parent == ALife::INVALID_OBJECT_ID)
 							{
 								if (imgui_search_manager.valid(pServerObject->m_tClassID))
 								{
@@ -412,7 +412,7 @@ void RenderSearchManagerWindow()
 
 							if (pServerObject)
 							{
-								if (pServerObject->ID_Parent == 0xffff)
+								if (pServerObject->ID_Parent == ALife::INVALID_OBJECT_ID)
 								{
 									// statistics for search manager must be refactored and counting when object adds or deletes from online/offline, later
 					//				imgui_search_manager.count(pServerObject->m_tClassID);
