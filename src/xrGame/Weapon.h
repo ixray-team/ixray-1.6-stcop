@@ -84,6 +84,8 @@ public:
 	virtual void			OnH_A_Independent	();
 	virtual void			OnEvent				(NET_Packet& P, u16 type);// {inherited::OnEvent(P,type);}
 
+	virtual void			OnMoveToRuck		(const SInvItemPlace& prev) override;
+
 	virtual	void			Hit					(SHit* pHDS);
 
 	virtual void			reinit				();
@@ -288,7 +290,9 @@ protected:
 	void LoadCurrentScopeParams(LPCSTR section);
 	const shared_str& GetSilencerName			() const{return m_sSilencerName;}
 	void UpdateTorch();
+	void UpdateLaser();
 	void SwitchTorch(bool status, bool forced = false);
+	void SwitchLaser(bool status, bool forced = false);
 
 	IC void	ForceUpdateAmmo						()		{ m_BriefInfo_CalcFrame = 0; }
 
@@ -316,6 +320,7 @@ protected:
 
 	conditional_breaking_params CollimatorBreakingParams;
 	conditional_breaking_params TorchBreakingParams;
+	conditional_breaking_params LaserBreakingParams;
 
 	struct light_misfire_params
 	{
@@ -383,6 +388,7 @@ protected:
 	float GetNightPPEFactor();
 
 	float m_fCollimatorLevelsProblem = 0.0f;
+	float m_fLaserLevelsProblem = 0.0f;
 	float m_fMisfireAfterProblemsLevel = 10.0f;
 	float m_fRechargeTime = 0.0f;
 	float m_fLastRechargeTime = 0.0f;
