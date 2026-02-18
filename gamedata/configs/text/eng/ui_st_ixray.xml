@@ -504,4 +504,22 @@
 	<string id="st_options_basic">
 		<text>Basic Video Options</text>
 	</string>
+	<string id="ui_rmw_select">
+		<text>Select Sector</text>
+	</string>
+	<string id="ui_rmw_drop_weapon">
+		<text>Drop Weapon</text>
+	</string>
+	<string id="ui_rmw_night_vision">
+		<text>Night Vision</text>
+	</string>
+	<string id="ui_rmw_wpn_func">
+		<text>Additional Weapon</text>
+	</string>
+	<string id="ui_rmw_fire_mode">
+		<text>Fire Mode</text>
+	</string>
+	<string id="ui_rmw_ammo_next">
+		<text>Ammo Type</text>
+	</string>
 </string_table>
