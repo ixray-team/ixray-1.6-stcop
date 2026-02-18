@@ -756,7 +756,16 @@ bool CWeapon::install_upgrade_torch_laser(LPCSTR section, bool test)
 
 	if (result3 && !test)
 	{
+		m_LightLaser.SetInstalled(value);
 		m_LightLaser.NewTorchlight(section);
+
+		Fvector tmp_vector = { -1.0f, -1.0f, 0.0f };
+		tmp_vector = READ_IF_EXISTS(pSettings, r_fvector3, section, "laser_breaking_params", tmp_vector);
+		LaserBreakingParams.start_condition = tmp_vector.x;
+		LaserBreakingParams.end_condition = tmp_vector.y;
+		LaserBreakingParams.start_probability = tmp_vector.z;
+
+		m_fLaserLevelsProblem = READ_IF_EXISTS(pSettings, r_float, section, "laser_problems_level", m_fLaserLevelsProblem);
 	}
 
 	result |= result3;
