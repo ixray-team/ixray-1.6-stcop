@@ -254,7 +254,7 @@ void CCar::OnKeyboardPress(int dik)
 		NET_Packet P;
 		CGameObject::u_EventGen(P, GE_GAME_EVENT, Owner()->ID());
 		P.w_u16(GAME_EVENT_MP_CAR_INPUT);
-		P.w_u16(ID());
+		P << ID();
 		P.w_u8(dik);
 		P.w_u8(true);
 		CGameObject::u_EventSend(P);
@@ -299,7 +299,7 @@ void CCar::OnGamepadKeyPress(int id)
 		NET_Packet P;
 		CGameObject::u_EventGen(P, GE_GAME_EVENT, Owner()->ID());
 		P.w_u16(GAME_EVENT_MP_CAR_INPUT);
-		P.w_u16(ID());
+		P << ID();
 		P.w_u8(get_binded_action(id));
 		P.w_u8(true);
 		CGameObject::u_EventSend(P);
@@ -329,7 +329,7 @@ void CCar::OnKeyboardRelease(int dik)
 		NET_Packet P;
 		CGameObject::u_EventGen(P, GE_GAME_EVENT, Owner()->ID());
 		P.w_u16(GAME_EVENT_MP_CAR_INPUT);
-		P.w_u16(ID());
+		P << ID();
 		P.w_u8(dik);
 		P.w_u8(false);
 		CGameObject::u_EventSend(P);
@@ -351,7 +351,7 @@ void CCar::OnGamepadKeyRelease(int id)
 		NET_Packet P;
 		CGameObject::u_EventGen(P, GE_GAME_EVENT, Owner()->ID());
 		P.w_u16(GAME_EVENT_MP_CAR_INPUT);
-		P.w_u16(ID());
+		P << ID();
 		P.w_u8(id);
 		P.w_u8(false);
 		CGameObject::u_EventSend(P);

@@ -12,19 +12,19 @@ public:
 									game_sv_mp_script		():inherited(){};
 	virtual							~game_sv_mp_script		(){};
 	virtual		void				Create					(const char* options){};
-	virtual		void				Update					() {inherited::Update();};
-	virtual		void				OnPlayerConnect			(ClientID id_who);
-	virtual		void				OnPlayerDisconnect		(ClientID id_who, LPSTR Name, u16 GameID);
+	void				Update					() override {inherited::Update();};
+	void				OnPlayerConnect			(ClientID id_who) override;
+	void				OnPlayerDisconnect		(ClientID id_who, LPSTR Name, ALife::_OBJECT_ID GameID) override;
 
-	virtual		void				net_Export_State		(NET_Packet& P, ClientID id_to);
-	virtual		void				OnEvent					(NET_Packet &P, u16 type, u32 time, ClientID sender );
-	virtual		game_PlayerState*	createPlayerState(NET_Packet* account_info)		{return inherited::createPlayerState(account_info); };
+	void				net_Export_State		(NET_Packet& P, ClientID id_to) override;
+	void				OnEvent					(NET_Packet &P, u16 type, u32 time, ClientID sender ) override;
+	game_PlayerState*	createPlayerState(NET_Packet* account_info) override {return inherited::createPlayerState(account_info); };
 
 
 	virtual		void				OnPlayerKillPlayer		(ClientID id_killer, ClientID id_killed){};
-	virtual		void				OnPlayerHitPlayer		(u16 id_hitter, u16 id_hitted, NET_Packet& P){}; //игрок получил Hit
-	virtual		bool				OnTouch					(u16 eid_who, u16 eid_target, bool bForced = false){return true;};			// true=allow ownership, false=denied
-	virtual		void				OnDetach				(u16 eid_who, u16 eid_target){};
+	void				OnPlayerHitPlayer		(ALife::_OBJECT_ID id_hitter, ALife::_OBJECT_ID id_hitted, NET_Packet& P) override {}; //игрок получил Hit
+	bool				OnTouch					(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_target, bool bForced = false) override {return true;};			// true=allow ownership, false=denied
+	void				OnDetach				(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_target) override {};
 
 protected:
 				void				SetHitParams			(NET_Packet* P, float impulse, float power);

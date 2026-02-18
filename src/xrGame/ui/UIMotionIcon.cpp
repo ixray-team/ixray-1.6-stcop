@@ -797,7 +797,7 @@ void CUIMotionIcon::Update()
 	}
 }
 
-void SetActorVisibility		(u16 who_id, float value)
+void SetActorVisibility		(ALife::_OBJECT_ID who_id, float value)
 {
 	if(!IsGameTypeSingleCompatible())
 		return;
@@ -806,7 +806,7 @@ void SetActorVisibility		(u16 who_id, float value)
 		g_pMotionIcon->SetActorVisibility(who_id, value);
 }
 
-void CUIMotionIcon::SetActorVisibility		(u16 who_id, float value)
+void CUIMotionIcon::SetActorVisibility		(ALife::_OBJECT_ID who_id, float value)
 {
     if (m_luminosity_progress_shape)
     {
@@ -836,7 +836,7 @@ void CUIMotionIcon::SetActorVisibility		(u16 who_id, float value)
 	}
 	else
 	{
-		(*it).value	= value;
+		it->value	= value;
 	}
 
 	m_bchanged = true;

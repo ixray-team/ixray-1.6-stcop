@@ -192,7 +192,7 @@ void CUIActorMenu::TryRepairItem(CUIWindow* w, void* d)
 		NET_Packet P;
 		CGameObject::u_EventGen(P, GE_GAME_EVENT, item->object().ID());
 		P.w_u16(GAME_EVENT_MP_REPAIR);
-		P.w_u16(item->object().ID());
+		P << item->object().ID();
 		P.w_s32(cost);
 		CGameObject::u_EventSend(P);
 		return;

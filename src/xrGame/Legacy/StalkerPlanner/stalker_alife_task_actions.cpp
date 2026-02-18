@@ -232,7 +232,7 @@ void CStalkerActionSmartTerrain::execute				()
 
 	CSE_ALifeHumanAbstract						*stalker = smart_cast<CSE_ALifeHumanAbstract*>(ai().alife().objects().object(m_object->ID()));
 	VERIFY										(stalker);
-	VERIFY										(stalker->m_smart_terrain_id != 0xffff);
+	VERIFY										(stalker->m_smart_terrain_id != ALife::INVALID_OBJECT_ID);
 
 	CALifeSmartTerrainTask						*task = stalker->brain().smart_terrain().task(stalker);
 	THROW2										(task,"Smart terrain is assigned but returns no task");

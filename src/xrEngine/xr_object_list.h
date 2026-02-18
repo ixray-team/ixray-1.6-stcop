@@ -1,5 +1,6 @@
 #ifndef __XR_OBJECT_LIST_H__
 #define __XR_OBJECT_LIST_H__
+#include "alife_space.h"
 
 // refs
 class	ENGINE_API	CObject;
@@ -10,17 +11,20 @@ class	ENGINE_API 				CObjectList
 private:
 	// data
 //.	xr_map<u32,CObject*>		map_NETID;
-	CObject*					map_NETID[0xffff];
+
+	xr_vector<CObject*> map_NETID;
+
 
 private:
 	typedef xr_vector<CObject*>	Objects;
 
 private:
-	Objects						destroy_queue;
-	Objects						objects_active;
-	Objects						objects_sleeping;
-	Objects						m_crows[2];
-	std::thread::id				m_owner_thread_id;
+	Objects destroy_queue;
+	Objects objects_active;
+	Objects objects_sleeping;
+	Objects objects_iteration;
+	Objects	 m_crows[2];
+	std::thread::id m_owner_thread_id;
 
 public:
 	typedef xr_delegate<void(CObject*)>	RELCASE_CALLBACK;
@@ -60,11 +64,17 @@ public:
 	u32							net_Export			( NET_Packet*	P,		u32 _start, u32 _count	);	// return next start
 	void						net_Import			( NET_Packet*	P		);
 
-	ICF CObject*				net_Find			( u16 ID				) const
+	ICF CObject*				net_Find			( ALife::_OBJECT_ID ID) const
 	{
-		if ( ID == u16(-1) )
-			return				( 0 );
-		
+		if ( ID == ALife::INVALID_OBJECT_ID )
+			return				( nullptr );
+
+		if (ID >= map_NETID.size())
+		{
+			// Don't have this ID registered yet
+			return				( nullptr );
+		}
+		IVERIFY(ID < map_NETID.size());
 		return					( map_NETID[ID] );
 	}
 

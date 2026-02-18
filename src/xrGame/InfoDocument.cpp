@@ -67,7 +67,7 @@ void CInfoDocument::OnH_A_Chield()
 	{
 		NET_Packet		P;
 		u_EventGen		(P,GE_INFO_TRANSFER, H_Parent()->ID());
-		P.w_u16			(ID());						//отправитель
+		P << ID();						//отправитель
 		P.w_stringZ		(m_Info);				//сообщение
 		P.w_u8			(1);						//добавление сообщения
 		u_EventSend		(P);

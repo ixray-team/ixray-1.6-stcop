@@ -89,7 +89,7 @@ void CHitMarker::Hit( const Fvector& dir )
 bool CHitMarker::AddGrenade_ForMark( CGrenade* grn )
 {
 	if ( !grn ) return false;
-	u16 new_id = grn->ID();
+	auto new_id = grn->ID();
 	
 	GRENADEMARKS::iterator	it_b = m_GrenadeMarks.begin();
 	GRENADEMARKS::iterator	it_e = m_GrenadeMarks.end();
@@ -135,7 +135,7 @@ void CHitMarker::Update_GrenadeView( Fvector& pos_actor )
 
 void CHitMarker::net_Relcase( CObject* obj )
 {
-	u16 remove_id = obj->ID();
+	auto remove_id = obj->ID();
 
 	GRENADEMARKS::iterator	it_b = m_GrenadeMarks.begin();
 	GRENADEMARKS::iterator	it_e = m_GrenadeMarks.end();

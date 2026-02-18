@@ -54,7 +54,13 @@ const CALifeObjectRegistry::OBJECT_REGISTRY& alife_objects(const CALifeSimulator
 bool valid_object_id						(const CALifeSimulator *self_, ALife::_OBJECT_ID object_id)
 {
 	VERIFY			(self_);
-	return			(object_id != 0xffff);
+	return			(object_id != ALife::INVALID_OBJECT_ID);
+}
+
+ALife::_OBJECT_ID last_valid_id(const CALifeSimulator *self_)
+{
+	VERIFY(self_);
+	return self_->server().TopValidID();
 }
 
 CSE_ALifeDynamicObject *alife_object		(const CALifeSimulator *self_, const char* name)
@@ -183,7 +189,7 @@ CSE_Abstract *CALifeSimulator__spawn_item		(CALifeSimulator *self_, const char* 
 		g_pScriptEngine->print_stack();
 	}
 
-	return								(self_->spawn_item(section,position,level_vertex_id,game_vertex_id,ALife::_OBJECT_ID(-1)));
+	return								(self_->spawn_item(section,position,level_vertex_id,game_vertex_id,ALife::INVALID_OBJECT_ID));
 }
 
 CSE_Abstract *CALifeSimulator__spawn_item2		(CALifeSimulator *self_, const char* section, const Fvector &position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ALife::_OBJECT_ID id_parent)
@@ -194,7 +200,7 @@ CSE_Abstract *CALifeSimulator__spawn_item2		(CALifeSimulator *self_, const char*
 		g_pScriptEngine->print_stack();
 	}
 
-	if (id_parent == ALife::_OBJECT_ID(-1))
+	if (id_parent == ALife::INVALID_OBJECT_ID)
 		return							(self_->spawn_item(section,position,level_vertex_id,game_vertex_id,id_parent));
 
 	CSE_ALifeDynamicObject				*object = ai().alife().objects().object(id_parent,true);
@@ -216,7 +222,7 @@ CSE_Abstract *CALifeSimulator__spawn_item2		(CALifeSimulator *self_, const char*
 	F_entity_Destroy					(item);
 
 	ClientID							clientID;
-	clientID.set						(0xffff);
+	clientID.set						(ALife::INVALID_OBJECT_ID);
 
 	u16									dummy;
 	packet.r_begin						(dummy);
@@ -236,13 +242,13 @@ CSE_Abstract *CALifeSimulator__spawn_item3(CALifeSimulator *self, const char* se
 		g_pScriptEngine->print_stack();
 	}
 
-	if (id_parent == ALife::_OBJECT_ID(-1))
+	if (id_parent == ALife::INVALID_OBJECT_ID)
 		return							(self->spawn_item(section, position, level_vertex_id, game_vertex_id, id_parent));
 
 	CSE_ALifeDynamicObject				*object = ai().alife().objects().object(id_parent, true);
 	if (!object) {
 		Msg("! invalid parent id [%d] specified", id_parent);
-		return							(0);
+		return							nullptr;
 	}
 
 	if (!object->m_bOnline)
@@ -257,12 +263,12 @@ CSE_Abstract *CALifeSimulator__spawn_ammo		(CALifeSimulator *self_, const char* 
 {
 //	if (id_parent == ALife::_OBJECT_ID(-1))
 //		return							(self->spawn_item(section,position,level_vertex_id,game_vertex_id,id_parent));
-	CSE_ALifeDynamicObject				*object = 0;
-	if (id_parent != ALife::_OBJECT_ID(-1)) {
+	CSE_ALifeDynamicObject				*object = nullptr;
+	if (id_parent != ALife::INVALID_OBJECT_ID) {
 		object							= ai().alife().objects().object(id_parent,true);
 		if (!object) {
 			Msg							("! invalid parent id [%d] specified",id_parent);
-			return						(0);
+			return						nullptr;
 		}
 	}
 
@@ -293,7 +299,7 @@ CSE_Abstract *CALifeSimulator__spawn_ammo		(CALifeSimulator *self_, const char* 
 	F_entity_Destroy					(item);
 
 	ClientID							clientID;
-	clientID.set						(0xffff);
+	clientID.set						(ALife::INVALID_OBJECT_ID);
 
 	u16									dummy;
 	packet.r_begin						(dummy);
@@ -328,7 +334,7 @@ void CALifeSimulator__release(CALifeSimulator* self_, CSE_Abstract* object, bool
 	packet.w_begin(M_EVENT);
 	packet.w_u32(Level().timeServer());
 	packet.w_u16(GE_DESTROY);
-	packet.w_u16(object->ID);
+	packet << object->ID;
 	Level().Send(packet, net_flags(true, true));
 }
 
@@ -431,7 +437,7 @@ CSE_Abstract* reprocess_spawn(CALifeSimulator* self, CSE_Abstract* object)
 	F_entity_Destroy(object);
 
 	ClientID							clientID;
-	clientID.set(0xffff);
+	clientID.set(ALife::INVALID_OBJECT_ID);
 
 	u16									dummy;
 	packet.r_begin(dummy);
@@ -465,7 +471,7 @@ CSE_Abstract* try_to_clone_object(CALifeSimulator* self, CSE_Abstract* object, c
 	return (0);
 }
 
-xr_vector<u16>& get_children(const CALifeSimulator* self, CSE_Abstract* object)
+xr_vector<ALife::_OBJECT_ID>& get_children(const CALifeSimulator* self, CSE_Abstract* object)
 {
 	VERIFY(self);
 	return object->children;
@@ -512,6 +518,7 @@ void CALifeSimulator::script_register			(lua_State *L)
 	module(L)
 	[
 		class_<CALifeSimulator>("alife_simulator")
+			.def("last_valid_id",	&last_valid_id)
 			.def("valid_object_id",			&valid_object_id)
 			.def("level_id",				&get_level_id)
 			.def("level_name",				&get_level_name)
@@ -563,6 +570,12 @@ void CALifeSimulator::script_register			(lua_State *L)
         def("get_marshalized_data", &get_marshalized_data, raw<1>()),
         def("set_marshalized_data", &set_marshalized_data, raw<1>())
 	];
+
+	module(L, "alife_const")[
+		def("dummy_alife", &alife)
+	];
+	object alife_consts = get_globals(L)["alife_const"];
+	alife_consts["invalid_object_id"] = ALife::INVALID_OBJECT_ID;
 
 	{
 		if (story_ids.empty())

@@ -36,7 +36,7 @@ class game_sv_mp : public game_sv_GameState
 
 protected:
 	//список трупов для удаления
-	using CORPSE_LIST = xr_deque<u16>;
+	using CORPSE_LIST = xr_deque<ALife::_OBJECT_ID>;
 	using CORPSE_LIST_it = CORPSE_LIST::iterator;
 
 	CORPSE_LIST						m_CorpseList;
@@ -73,12 +73,12 @@ protected:
 
 protected:
 
-	virtual		void				SendPlayerKilledMessage	(u16 KilledID, KILL_TYPE KillType, u16 KillerID, u16 WeaponID, SPECIAL_KILL_TYPE SpecialKill);
+	virtual		void				SendPlayerKilledMessage	(ALife::_OBJECT_ID KilledID, KILL_TYPE KillType, ALife::_OBJECT_ID KillerID, ALife::_OBJECT_ID WeaponID, SPECIAL_KILL_TYPE SpecialKill);
 	virtual		void				RespawnPlayer			(ClientID id_who, bool NoSpectator);
 	virtual		void				SetSkin					(CSE_Abstract* E, u16 Team, u16 ID);
 				bool				GetPosAngleFromActor	(ClientID id, Fvector& Pos, Fvector &Angle);				
-				void				AllowDeadBodyRemove		(ClientID id, u16 GameID);
-				void				SpawnWeapon4Actor		(u16 actorId,  const char* N, u8 Addons, game_PlayerState::PLAYER_ITEMS_LIST & playerItems);
+				void				AllowDeadBodyRemove		(ClientID id, ALife::_OBJECT_ID GameID);
+				void				SpawnWeapon4Actor		(ALife::_OBJECT_ID actorId,  const char* N, u8 Addons, game_PlayerState::PLAYER_ITEMS_LIST & playerItems);
 	virtual		bool				CanChargeFreeAmmo		(char const * ammo_section) { return false; };
 				//void				SpawnWeaponForActor		(u16 actorId,  const char* N, bool isScope, bool isGrenadeLauncher, bool isSilencer);
 				void				SetCanOpenBuyMenu		(ClientID id);
@@ -88,7 +88,7 @@ protected:
 	virtual		void				SetAmmoForWeapon		(CSE_ALifeItemWeapon* weapon, u8 Addons, game_PlayerState::PLAYER_ITEMS_LIST & playerItems, ammo_diff_t & ammo_diff);
 				void				ChargeAmmo				(CSE_ALifeItemWeapon* weapon, const char* ammo_string, game_PlayerState::PLAYER_ITEMS_LIST & playerItems, ammo_diff_t & ammo_diff);
 				void				ChargeGrenades			(CSE_ALifeItemWeapon* weapon, const char* grenades_string, game_PlayerState::PLAYER_ITEMS_LIST & playerItems);
-				void				SpawnAmmoDifference		(u16 actorId, ammo_diff_t const & ammo_diff);
+				void				SpawnAmmoDifference		(ALife::_OBJECT_ID actorId, ammo_diff_t const & ammo_diff);
 // ----------------
 
 //	virtual		bool				GetTeamItem_ByID		(WeaponDataStruct** pRes, TEAM_WPN_LIST* pWpnList, u16 ItemID);
@@ -110,34 +110,34 @@ protected:
 public:
 									game_sv_mp				();
 				virtual				~game_sv_mp				();
-	virtual		void				Create					(shared_str &options);
-	virtual		void				OnPlayerConnect			(ClientID id_who);
-	virtual		void				OnPlayerDisconnect		(ClientID id_who, LPSTR Name, u16 GameID);
-	virtual		bool				OnTouch					(u16 eid_who, u16 eid_target, bool bForced = false){return true;};			// true=allow ownership, false=denied
-	virtual		void				OnDetach				(u16 eid_who, u16 eid_target){};
+	void				Create					(shared_str &options) override;
+	void				OnPlayerConnect			(ClientID id_who) override;
+	void				OnPlayerDisconnect		(ClientID id_who, LPSTR Name, ALife::_OBJECT_ID GameID) override;
+	bool				OnTouch					(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_target, bool bForced = false) override {return true;};			// true=allow ownership, false=denied
+	void				OnDetach				(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_target) override {};
 	virtual		void				OnPlayerKillPlayer		(game_PlayerState* ps_killer, game_PlayerState* ps_killed, KILL_TYPE KillType, SPECIAL_KILL_TYPE SpecialKillType, CSE_Abstract* pWeaponA){};
 	virtual		void				OnPlayerKilled			(NET_Packet P);
 	virtual		bool				CheckTeams				() { return false; };
 	virtual		void				OnPlayerHitted			(NET_Packet P);
-	virtual		void				OnPlayerEnteredGame		(ClientID id_who);
+	void				OnPlayerEnteredGame		(ClientID id_who) override;
 
-	virtual		void				OnDestroyObject			(u16 eid_who);			
+	void				OnDestroyObject			(ALife::_OBJECT_ID eid_who) override;
 
-	virtual		void				net_Export_State		(NET_Packet& P, ClientID id_to);
+	void				net_Export_State		(NET_Packet& P, ClientID id_to) override;
 
-	virtual		void				OnRoundStart			();												// старт раунда
-	virtual		void				OnRoundEnd				();	//round_end_reason							// конец раунда
-	virtual		bool				OnNextMap				();
-	virtual		void				OnPrevMap				();
-	
-	virtual		void				OnVoteStart				(const char* VoteCommand, ClientID sender);
+	void				OnRoundStart			() override;												// старт раунда
+	void				OnRoundEnd				() override;	//round_end_reason							// конец раунда
+	bool				OnNextMap				() override;
+	void				OnPrevMap				() override;
+
+	void				OnVoteStart				(const char* VoteCommand, ClientID sender) override;
 				void				SendActiveVotingTo		(ClientID const & receiver);
-	virtual		bool				IsVotingActive			()	{ return m_bVotingActive; };
-	virtual		void				SetVotingActive			( bool Active )	{ m_bVotingActive = Active; };
+	bool				IsVotingActive			() override { return m_bVotingActive; };
+	void				SetVotingActive			( bool Active ) override { m_bVotingActive = Active; };
 	virtual		void				UpdateVote				();
 	virtual		void				OnVoteYes				(ClientID sender);
 	virtual		void				OnVoteNo				(ClientID sender);
-	virtual		void				OnVoteStop				();
+	void				OnVoteStop				() override;
 	
 	virtual		void				OnPlayerChangeName		(NET_Packet& P, ClientID sender);
 	virtual		void				OnPlayerSpeechMessage	(NET_Packet& P, ClientID sender);
@@ -147,19 +147,19 @@ public:
 	virtual		void				OnPlayerSelectTeam		(NET_Packet& P, ClientID sender) {};
 	virtual		void				OnPlayerSelectSkin		(NET_Packet& P, ClientID sender) {};
 	virtual		void				OnPlayerBuySpawn		(ClientID sender)					{};
-	
-	virtual		void				OnEvent					(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender );
-	virtual		void				Update					();
-				void				KillPlayer				(ClientID id_who, u16 GameID);
-	virtual		bool				CanHaveFriendlyFire		()	{return true;};
+
+	void				OnEvent					(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender ) override;
+	void				Update					() override;
+				void				KillPlayer				(ClientID id_who, ALife::_OBJECT_ID GameID);
+	bool				CanHaveFriendlyFire		() override {return true;};
 	
 	virtual		void				ClearPlayerState		(game_PlayerState* ps);
 	virtual		void				ClearPlayerItems		(game_PlayerState* ps);
 	virtual		void				SetPlayersDefItems		(game_PlayerState* ps);
 
-	virtual		void				ReadOptions				(shared_str &options);
-	virtual		void				ConsoleCommands_Create	();
-	virtual		void				ConsoleCommands_Clear	();
+	void				ReadOptions				(shared_str &options) override;
+	void				ConsoleCommands_Create	() override;
+	void				ConsoleCommands_Clear	() override;
 
 	virtual		u32					GetTeamCount			()	{return (u32)TeamList.size();};
 				TeamStruct*			GetTeamData				(u32 Team);
@@ -167,7 +167,7 @@ public:
 	virtual		u8					GetSpectatorModes		() {return m_u8SpectatorModes;};
 	virtual		u32					GetNumTeams				() {return 0;};
 
-	virtual		void				DumpOnlineStatistic		();
+	void				DumpOnlineStatistic		() override;
 				void				DestroyGameItem(CSE_Abstract* entity);
 				void				RejectGameItem(CSE_Abstract* entity);
 				
@@ -214,7 +214,7 @@ public:
 	virtual		void				Player_AddMoney			(game_PlayerState* ps, s32 MoneyAmount);
 				void				SpawnPlayer				(ClientID id, const char* N);
 
-				bool				SpawnItem(const char* section, u16 parent);
+				bool				SpawnItem(const char* section, ALife::_OBJECT_ID parent);
 				bool				SpawnItemToPos(const char* section, Fvector3 position);
 
 	IC xrServer& server() const

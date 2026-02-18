@@ -37,7 +37,7 @@ public:
 	virtual void feel_touch_delete(CObject* O) override;
 	virtual bool feel_touch_contact(CObject* O) override;
 
-	virtual u16	GetOriginalOwnerID() { return m_idOriginalOwner; }
+	virtual ALife::_OBJECT_ID	GetOriginalOwnerID() { return m_idOriginalOwner; }
 	virtual CInventoryOwner* GetOriginalOwner();
 	virtual CObject* GetOwnerObject();
 
@@ -67,7 +67,7 @@ protected:
 	xr_vector<CObject*>	m_active_contacts = {};
 	float m_fRadius = 0.0f;
 
-	u16	m_idOriginalOwner = u16(-1);
+	ALife::_OBJECT_ID	m_idOriginalOwner = ALife::INVALID_OBJECT_ID;
 	shared_str m_SpecificChracterOwner = nullptr;
 	xr_string m_sFullName;
 

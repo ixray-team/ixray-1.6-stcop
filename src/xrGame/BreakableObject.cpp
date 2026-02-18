@@ -222,9 +222,9 @@ void CBreakableObject::SendDestroy()
 }
 
 
-void CBreakableObject::CollisionHit( u16 source_id, u16 bone_id, float c_damage, const Fvector &dir, Fvector &pos )
+void CBreakableObject::CollisionHit( ALife::_OBJECT_ID source_id, u16 bone_id, float c_damage, const Fvector &dir, Fvector &pos )
 {
-	VERIFY(source_id == u16(-1) );
+	VERIFY(source_id == ALife::INVALID_OBJECT_ID );
 	VERIFY(bone_id == u16(-1) );
 	VERIFY( m_pUnbrokenObject );
 

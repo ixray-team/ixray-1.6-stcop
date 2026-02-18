@@ -25,7 +25,7 @@ public:
 public:
 	IC					CDangerExplosive	(const CExplosive *grenade, const CGameObject *game_object, CAI_Stalker *reactor, u32 time);
 	IC	bool			operator==			(const CExplosive *grenade) const;
-		bool			operator==			(const u16 &id) const;
+		bool			operator==			(const ALife::_OBJECT_ID &id) const;
 };
 
 #include "danger_explosive_inline.h"
