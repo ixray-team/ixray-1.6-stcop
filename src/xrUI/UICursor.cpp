@@ -2,15 +2,20 @@
 #include "UICursor.h"
 #include "../xrEngine/xr_input.h"
 #include "Widgets/UIStatic.h"
+#include "Widgets/UI3dStatic.h"
 #include "Widgets/UIBtnHint.h"
 #include "UIXmlInit.h"
 #include <UIHelper.h>
+#include "../xrEngine/Render.h"
+#include "../Include/xrRender/KinematicsAnimated.h"
 
+ENGINE_API extern bool ui_3d_cursor;
 extern ENGINE_API float	psMouseSens;
 extern ENGINE_API float	psMouseUISens;
 
 CUICursor::CUICursor()
-	: m_static(nullptr)
+    : m_static(nullptr),
+    m_3dstatic(nullptr)
 {    
 	bVisible				= false;
 	vPrevPos.set			(0.0f, 0.0f);
@@ -18,19 +23,21 @@ CUICursor::CUICursor()
 	InitInternal			();
 	Device.seqRender.Add	(this,-1023/*2*/);
 	Device.seqResolutionChanged.Add(this);
-}	
+}
 //--------------------------------------------------------------------
 CUICursor::~CUICursor	()
 {
-	xr_delete				(m_static);
-	Device.seqRender.Remove	(this);
-	Device.seqResolutionChanged.Remove(this);
+    xr_delete(m_static);
+    xr_delete(m_3dstatic);
+    Device.seqRender.Remove(this);
+    Device.seqResolutionChanged.Remove(this);
 }
 
 void CUICursor::OnScreenResolutionChanged()
 {
-	xr_delete					(m_static);
-	InitInternal				();
+    xr_delete(m_static);
+    xr_delete(m_3dstatic);
+    InitInternal();
 }
 
 void CUICursor::Show()
@@ -59,7 +66,6 @@ void CUICursor::InitInternal()
 		m_static->SetWidth(m_static->GetWidth() * UI().get_current_kx());
 		m_static->SetHeight(m_static->GetHeight() * UI().get_current_kx());
 	}
-
 	m_static->SetWidth(m_static->GetWidth() * UI().get_current_kx());
 
 	m_static_text = new CUIStatic();
@@ -67,6 +73,28 @@ void CUICursor::InitInternal()
 	m_static_text->SetWndPos(Fvector2().set(m_static->GetWidth(), m_static->GetHeight()));
 	m_static_text->TextItemControl()->SetTextComplexMode(true);
 	m_static->AttachChild(m_static_text);
+
+	if (xml_doc.NavigateToNode("cursor_3d", 0))
+	{
+		m_3dstatic = UIHelper::Create3dStatic(xml_doc, "cursor_3d", nullptr);
+		bool bUseModel = xml_doc.ReadAttribBool("cursor_3d", 0, "use_model", true);
+		if (bUseModel)
+		{
+			XML_NODE* pNode = xml_doc.NavigateToNode("cursor_3d");
+			xml_doc.SetLocalRoot(pNode);
+			LPCSTR model = xml_doc.Read("visual", 0, nullptr);
+			float scale = xml_doc.ReadAttribFlt(pNode, "visual", 0, "scale", 1.f);
+			m_3dstatic->SetVisual(model);
+			m_3dstatic->SetScaleFactor(scale);
+		}
+		bool native_scale_3d = xml_doc.ReadAttribBool("cursor_3d", 0, "native_scale", false);
+		if (native_scale_3d)
+		{
+			m_3dstatic->SetWidth(m_3dstatic->GetWidth() * UI().get_current_kx());
+			m_3dstatic->SetHeight(m_3dstatic->GetHeight() * UI().get_current_kx());
+		}
+		m_3dstatic->SetWidth(m_3dstatic->GetWidth() * UI().get_current_kx());
+	}
 }
 
 //--------------------------------------------------------------------
@@ -103,9 +131,18 @@ void CUICursor::OnRender	()
 	}
 #endif
 
-	m_static->SetWndPos	(vPos);
-	m_static->Update	();
-	m_static->Draw		();
+    if (ui_3d_cursor && m_3dstatic != nullptr)
+    {
+        m_3dstatic->SetWndPos(vPos);
+        m_3dstatic->Update();
+        m_3dstatic->Draw();
+    }
+    else
+    {
+        m_static->SetWndPos(vPos);
+        m_static->Update();
+        m_static->Draw();
+    }
 }
 
 Fvector2 CUICursor::GetCursorPosition()
