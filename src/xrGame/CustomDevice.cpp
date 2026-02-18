@@ -782,3 +782,19 @@ void CCustomDevice::SwitchZoom()
 		SwitchState(eHandAimStart);
 	}
 }
+
+bool CCustomDevice::NeedMovementBlend() const
+{
+	const EDeviceStates state = static_cast<EDeviceStates>(GetState());
+	if (m_bIsZoomed || state == EDeviceStates::eHandAimEnd || state == EDeviceStates::eHandAimStart)
+	{
+		return false;
+	}
+
+	if (g_player_hud->attached_item(0) != nullptr && (IsShowing() || IsHiding()))
+	{
+		return false;
+	}
+
+	return inherited::NeedMovementBlend();
+}
