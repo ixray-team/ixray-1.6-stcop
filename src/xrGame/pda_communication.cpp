@@ -20,7 +20,7 @@
 CPdaCommunication::CPdaCommunication() :
     _npc(nullptr),
     _actorOwner(nullptr),
-    _npcId(u16(-1)),
+    _npcId(ALife::INVALID_OBJECT_ID),
     _active(false),
     _pdaTalkConfigLoaded(false),
     _pdaTalkEnabledCached(false),
@@ -116,7 +116,7 @@ float CPdaCommunication::GetTalkDistance() const
 
 CInventoryOwner* CPdaCommunication::ResolveSessionNpc() const
 {
-    if (_npcId == u16(-1))
+    if (_npcId == ALife::INVALID_OBJECT_ID)
     {
         return nullptr;
     }
@@ -189,7 +189,7 @@ bool CPdaCommunication::OpenDialog(CInventoryOwner* npc)
     _actorOwner = actor ? actor->cast_inventory_owner() : nullptr;
     _npc = npc;
     CGameObject* npcGameObject = npc ? npc->cast_game_object() : nullptr;
-    _npcId = npcGameObject ? npcGameObject->ID() : u16(-1);
+    _npcId = npcGameObject ? npcGameObject->ID() : ALife::INVALID_OBJECT_ID;
     _active = true;
     PDA_LOG("[PDA] Session started with %s", npc ? npc->Name() : "?");
     return true;
@@ -226,7 +226,7 @@ void CPdaCommunication::EndPdaSession()
 
     // Touch the NPC side only when the object is still live in the level (covers both alive sessions and the
     // synchronous call coming from CInventoryOwner::net_Destroy where the object is mid-destroy).
-    CObject* npcObject = (_npcId != u16(-1)) ? Level().Objects.net_Find(_npcId) : nullptr;
+    CObject* npcObject = (_npcId != ALife::INVALID_OBJECT_ID) ? Level().Objects.net_Find(_npcId) : nullptr;
     if (npcObject != nullptr && !npcObject->getDestroy() && _npc->GetTalkPartner() == actor)
     {
         _npc->SetTalkPartner(nullptr);
@@ -239,7 +239,7 @@ void CPdaCommunication::Stop()
     _active = false;
     _npc = nullptr;
     _actorOwner = nullptr;
-    _npcId = u16(-1);
+    _npcId = ALife::INVALID_OBJECT_ID;
 }
 
 bool CPdaCommunication::IsSessionActive() const

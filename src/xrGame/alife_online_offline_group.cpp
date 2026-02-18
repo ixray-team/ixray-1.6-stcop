@@ -94,7 +94,7 @@ void CSE_ALifeOnlineOfflineGroup::register_member						(ALife::_OBJECT_ID member
 	if (!object->m_bOnline) {	
 		if (m_bOnline) {
 			object->switch_online();
-			VERIFY							(object->ID_Parent == 0xffff);
+			VERIFY							(object->ID_Parent == ALife::INVALID_OBJECT_ID);
 			alife().graph().level().remove	(object);	
 		}
 		else {
@@ -106,10 +106,10 @@ void CSE_ALifeOnlineOfflineGroup::register_member						(ALife::_OBJECT_ID member
 		if (!m_bOnline) {
 			switch_online();
 		}
-		VERIFY							(object->ID_Parent == 0xffff);
+		VERIFY							(object->ID_Parent == ALife::INVALID_OBJECT_ID);
 		alife().graph().level().remove	(object);	
 	}
-	VERIFY						((monster->m_group_id == 0xffff) || (monster->m_group_id == ID));
+	VERIFY						((monster->m_group_id == ALife::INVALID_OBJECT_ID) || (monster->m_group_id == ID));
 	monster->m_group_id			= ID;
 	m_members.insert			(std::make_pair(member_id,monster));
 
@@ -133,7 +133,7 @@ void CSE_ALifeOnlineOfflineGroup::unregister_member						(ALife::_OBJECT_ID memb
 	MEMBERS::iterator			I = m_members.find(member_id);
 	VERIFY						(I != m_members.end());
 	VERIFY						((*I).second->m_group_id == ID);
-	(*I).second->m_group_id		= 0xffff;
+	(*I).second->m_group_id		= ALife::INVALID_OBJECT_ID;
 
 	graph.update				((*I).second);
 	alife().scheduled().add		((*I).second);
@@ -312,7 +312,7 @@ ALife::_OBJECT_ID CSE_ALifeOnlineOfflineGroup::commander_id ( )
 {
 	if (!m_members.empty()) 
 		return (*m_members.begin()).first;
-	return 0xffff;	
+	return ALife::INVALID_OBJECT_ID;	
 }
 
 CSE_ALifeOnlineOfflineGroup::MEMBERS const& CSE_ALifeOnlineOfflineGroup::squad_members ( ) const

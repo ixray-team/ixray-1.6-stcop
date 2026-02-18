@@ -561,7 +561,7 @@ void WeaponUsageStatistic::OnBullet_Fire(SBullet* pBullet, const CCartridge& car
 //	Msg("! OnBullet Fire ID[%d]", pBullet->m_dwID);
 }
 
-void WeaponUsageStatistic::OnBullet_Hit(SBullet* pBullet, u16 TargetID, s16 element, Fvector HitLocation)
+void WeaponUsageStatistic::OnBullet_Hit(SBullet* pBullet, ALife::_OBJECT_ID TargetID, s16 element, Fvector HitLocation)
 {
 	statistic_sync_quard syncg(m_mutex);
 	if (!pBullet || !pBullet->flags.allow_sendhit) return;
@@ -848,7 +848,7 @@ void WeaponUsageStatistic::OnExplosionKill(game_PlayerState* ps, const SHit& hit
 	WeaponIt->add_hit(NewHit);
 }
 
-void WeaponUsageStatistic::OnBleedKill(game_PlayerState* killer_ps, game_PlayerState* victim_ps, u16 weapon_id)
+void WeaponUsageStatistic::OnBleedKill(game_PlayerState* killer_ps, game_PlayerState* victim_ps, ALife::_OBJECT_ID weapon_id)
 {
 	statistic_sync_quard syncg(m_mutex);
 	if (!killer_ps || !victim_ps)

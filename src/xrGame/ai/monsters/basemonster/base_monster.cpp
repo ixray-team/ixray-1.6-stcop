@@ -933,12 +933,12 @@ void CBaseMonster::OnEvent(NET_Packet& P, u16 type)
 	inherited::OnEvent			(P,type);
 	CInventoryOwner::OnEvent	(P,type);
 
-	u16			id;
+	ALife::_OBJECT_ID			id;
 	switch (type) {
 	case GE_TRADE_BUY:
 	case GE_OWNERSHIP_TAKE:
 		{
-			P.r_u16		(id);
+			P >> id;
 			CObject		*O	= Level().Objects.net_Find	(id);
 			VERIFY		(O);
 
@@ -954,7 +954,7 @@ void CBaseMonster::OnEvent(NET_Packet& P, u16 type)
 	case GE_TRADE_SELL:
 	case GE_OWNERSHIP_REJECT:
 		{
-			P.r_u16		(id);
+			P >> id;
 			CObject* O	= Level().Objects.net_Find	(id);
 			VERIFY		(O);
 
@@ -971,7 +971,7 @@ void CBaseMonster::OnEvent(NET_Packet& P, u16 type)
 		break;
 
 	case GE_KILL_SOMEONE:
-		P.r_u16		(id);
+		P >> id;
 		CObject* O	= Level().Objects.net_Find	(id);
 
 		if (O)  {
@@ -1140,7 +1140,7 @@ bool   CBaseMonster::is_paused () const
 	bool monsters_result		=	false;	
 	ai_dbg::get_var					("monsters_paused", monsters_result);
 
-	u32 const id				=	ID();
+	ALife::_OBJECT_ID const id				=	ID();
 	char id_paused_var_name			[128];
 	xr_sprintf						(id_paused_var_name, sizeof(id_paused_var_name), "%d_paused", id);
 

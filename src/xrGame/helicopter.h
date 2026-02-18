@@ -23,7 +23,7 @@ enum EHeliHuntState{eEnemyNone,eEnemyPoint,eEnemyEntity};
 struct SHeliEnemy{
 	EHeliHuntState					type;
 	Fvector							destEnemyPos;
-	u16								destEnemyID;
+	ALife::_OBJECT_ID destEnemyID;
 	float							fire_trail_length_curr;
 	float							fire_trail_length_des;
 	bool							bUseFireTrail;

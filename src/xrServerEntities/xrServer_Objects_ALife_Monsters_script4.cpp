@@ -32,7 +32,7 @@ CALifeHumanBrain *human_brain		(CSE_ALifeHumanAbstract *human)
 void clear_smart_terrain			(CSE_ALifeMonsterAbstract *monster)
 {
 	THROW						(monster);
-	monster->m_smart_terrain_id	= 0xffff;
+	monster->m_smart_terrain_id	= ALife::INVALID_OBJECT_ID;
 }
 
 void smart_terrain_task_activate	(CSE_ALifeMonsterAbstract *monster)
