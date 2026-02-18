@@ -8,7 +8,7 @@
 
 #include "object_broker.h"
 #include "../xrEngine/string_table.h"
-
+#include "UIRadialMenuWeapon.h"
 #include "InventoryOwner.h"
 #include "ui/UIActorMenu.h"
 #include "ui/UIPdaWnd.h"
@@ -53,6 +53,7 @@ CUIGameCustom::CUIGameCustom()
 	m_window(nullptr), 
 	UIMainIngameWnd(nullptr), 
 	m_pMessagesWnd(nullptr), 
+	m_RadialMenuWeapon(nullptr),
 	TalkMenu(nullptr)
 {
 	ShowGameIndicators		(true);
@@ -372,6 +373,25 @@ void CUIGameCustom::HidePdaMenu()
 	}
 }
 
+bool CUIGameCustom::ShowRadialMenuWeapon()
+{
+	if (!m_RadialMenuWeapon->isInitialized)
+		return false;
+
+	HidePdaMenu();
+	HideActorMenu();
+	m_RadialMenuWeapon->ShowDialog(true);
+	return true;
+}
+
+void CUIGameCustom::HideRadialMenuWeapon()
+{
+	if ( m_RadialMenuWeapon->IsShown() )
+	{
+		m_RadialMenuWeapon->HideDialog();
+	}
+}
+
 void  CUIGameCustom::StartTrade(CInventoryOwner* pActorInv, CInventoryOwner* pOtherOwner)
 {
 	//.	if( MainInputReceiver() )	return;
@@ -490,6 +510,7 @@ void CUIGameCustom::UnLoad()
 	xr_delete					(UIMainIngameWnd);
 	xr_delete					(m_pMessagesWnd);
 	xr_delete					(TalkMenu);
+	xr_delete					(m_RadialMenuWeapon);
 }
 
 void CUIGameCustom::Load()
@@ -530,6 +551,8 @@ void CUIGameCustom::Load()
 		R_ASSERT				(nullptr==m_pMessagesWnd);
 		m_pMessagesWnd			= new CUIMessagesWindow();
 
+		R_ASSERT				(nullptr==m_RadialMenuWeapon);
+		m_RadialMenuWeapon		= new CUIRadialMenuWeapon();
 		
 		Init					(0);
 		Init					(1);

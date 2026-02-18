@@ -39,6 +39,7 @@
 #include "../xrEngine/XR_IOConsole.h"
 #include "UIMainIngameWnd.h"
 #include "../xrEngine/CustomHUD.h"
+#include "ui/UIRadialMenuWeapon.h"
 
 extern u32 hud_adj_mode;
 
@@ -109,14 +110,19 @@ void CActor::IR_OnKeyboardPress(int dik)
 
 	if (!g_Alive()) return;
 
+	auto bindRadial = get_binded_action(dik, agUIRadialWeapon);
 	if(m_holder && kUSE != bind)
 	{
 		m_holder->OnKeyboardPress			(dik);
 		if(m_holder->allowWeapon() && inventory().Action((u16)bind, CMD_START))		return;
 		return;
-	}else
-		if(inventory().Action((u16)bind, CMD_START))					return;
+	}
+	else
+	{
 
+		if (inventory().Action(bindRadial == kNOTBINDED ? (u16)bind : (u16)bindRadial, CMD_START))
+			return;
+	}
 	if (IsWaunded)
 	{
 		return;
@@ -146,11 +152,6 @@ void CActor::IR_OnKeyboardPress(int dik)
 			cam_Set(eacFirstEye);
 		break;
 	case kCAM_3:	cam_Set			(eacFreeLook);				break;
-	case kNIGHT_VISION:
-		{
-			SwitchNightVision();
-			break;
-		}
 	case kTORCH:
 		{
 			SwitchTorch();
@@ -243,6 +244,21 @@ void CActor::IR_OnKeyboardPress(int dik)
 		}
 	}
 	break;
+	case kWPN_RADIAL_MENU:
+	{
+		CUIRadialMenuWeapon* RMW = CurrentGameUI()->RadialMenuWeapon();
+		if (RMW->isInitialized && !RMW->IsShown())
+			RMW->ShowDialog(false);
+		break;
+	}
+	}
+	switch (bindRadial)
+	{
+	case kNIGHT_VISION:
+	{
+		SwitchNightVision();
+		break;
+	}
 	}
 }
 
@@ -308,24 +324,24 @@ void CActor::IR_OnKeyboardRelease(int dik)
 
 	if (g_Alive())	
 	{
+		auto bindRadial = get_binded_action(dik, agUIRadialWeapon);
 		if(m_holder)
 		{
 			m_holder->OnKeyboardRelease(dik);
 			
 			if(m_holder->allowWeapon() && inventory().Action((u16)bind, CMD_STOP))		return;
 			return;
-		}else
-			if(inventory().Action((u16)bind, CMD_STOP))		return;
-
+		}
+		else
+		{
+			if (inventory().Action(bindRadial == kNOTBINDED ? (u16)bind : (u16)bindRadial, CMD_STOP))
+				return;
+		}
 
 
 		switch (bind)
 		{
 		case kJUMP:		mstate_wishful &= ~mcJump;		break;
-		case kDROP:		
-			if (GAME_PHASE_INPROGRESS == Game().Phase() && !CImGuiManager::Instance().IsCapturingInputs()) 
-				g_PerformDrop();				
-			break;
 		case kSHOW_QUICK_SLOTS:
 		{
 			// Only process if hide quick slots option is enabled
@@ -343,6 +359,21 @@ void CActor::IR_OnKeyboardRelease(int dik)
 			}
 		}
 		break;
+		case kWPN_RADIAL_MENU:
+			CUIRadialMenuWeapon* RMW = CurrentGameUI()->RadialMenuWeapon();
+			if (RMW->isInitialized && RMW->IsShown())
+			{
+				RMW->TryActivateSelectedSector();
+				RMW->HideDialog();
+			}
+			break;
+		}
+		switch (bindRadial)
+		{
+		case kDROP:		
+			if (GAME_PHASE_INPROGRESS == Game().Phase() && !CImGuiManager::Instance().IsCapturingInputs()) 
+				g_PerformDrop();				
+			break;
 		}
 	}
 }
@@ -787,6 +818,13 @@ void CActor::IR_GamepadKeyPress(int id)
 		{
 			ActorQuickSlotUse(bind);
 		}
+		case kWPN_RADIAL_MENU:
+		{
+			CUIRadialMenuWeapon* RMW = CurrentGameUI()->RadialMenuWeapon();
+			if (RMW->isInitialized && !RMW->IsShown())
+				RMW->ShowDialog(false);
+			break;
+		}
 	}
 }
 
@@ -832,7 +870,17 @@ void CActor::IR_GamepadKeyRelease(int id)
 
 		switch (bind)
 		{
-		case kJUMP:		mstate_wishful &= ~mcJump;		break;
+		case kJUMP:		
+			mstate_wishful &= ~mcJump;		
+			break;
+		case kWPN_RADIAL_MENU:
+			CUIRadialMenuWeapon* RMW = CurrentGameUI()->RadialMenuWeapon();
+			if (RMW->isInitialized && RMW->IsShown())
+			{
+				RMW->TryActivateSelectedSector();
+				RMW->HideDialog();
+			}
+			break;
 		}
 	}
 }
