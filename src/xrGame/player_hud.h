@@ -4,17 +4,29 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "../Include/xrRender/KinematicsAnimated.h"
 #include "actor_defs.h"
+#include "../xrEngine/ObjectAnimator.h"
 
 class player_hud;
 class CHudItem;
 class CMotionDef;
 class CHudAnimatorBase;
+class CObjectAnimator;
 
 enum EHudMixType : u8
 {
 	eNoMix = 0,
 	eMixHands,
 	eMixAll
+};
+
+enum EMovementLayers : u8
+{
+	eWalk = 0,
+	eWalkSlow,
+	eCrouch,
+	eCrouchSlow,
+	eSprint,
+	eLayersCount
 };
 
 struct motion_descr
@@ -276,6 +288,77 @@ struct animator_item
 	void			setup_firedeps		(firedeps& fd);
 };
 
+struct movement_layer
+{
+	Fmatrix m_XFORM;
+
+	float anim_speed = 1.0f;
+	float power = 1.0f;
+	float blend_scale = 0.0f;
+
+	bool playing = false;
+
+	CObjectAnimator* anim = nullptr;
+
+	movement_layer()
+	{
+		m_XFORM.identity();
+		anim = new CObjectAnimator();
+	}
+
+	~movement_layer()
+	{
+		m_XFORM.identity();
+		xr_delete(anim);
+	}
+
+	const Fmatrix& XFORM()
+	{
+		m_XFORM.set(anim->XFORM());
+		m_XFORM.mul(blend_scale * power);
+		m_XFORM.m[0][0] = 1.0f;
+		m_XFORM.m[1][1] = 1.0f;
+		m_XFORM.m[2][2] = 1.0f;
+
+		return m_XFORM;
+	}
+
+	void Load(LPCSTR anim_name)
+	{
+		anim->Load(anim_name);
+	}
+
+	void Play(bool loop = true)
+	{
+		if (!anim->Name())
+		{
+			return;
+		}
+
+		if (anim->IsPlaying())
+		{
+			playing = true;
+			return;
+		}
+
+		playing = true;
+		anim->Speed() = anim_speed;
+		anim->Play(loop);
+	}
+
+	void Stop(bool bForce = false)
+	{
+		if (bForce)
+		{
+			anim->Stop();
+			blend_scale = 0.0f;
+			m_XFORM.identity();
+		}
+
+		playing = false;
+	}
+};
+
 class player_hud
 {
 public: 
@@ -327,11 +410,13 @@ public:
 	s32				m_show_legs = 1;
 	bool			m_need_reload = true;
 	shared_str		NextHUDSect;
+	movement_layer* m_movement_layers[EMovementLayers::eLayersCount] = {};
 
 	IKinematicsAnimated* GetModel() { return m_model; }
 	animator_item* create_animator_item(CHudAnimatorBase* animator, const shared_str& section);
 	void			delete_animator_item();
 	animator_item* GetAnimator() { return m_animator_item; }
+	void UpdateMovementLayers();
 
 private:
 	void			update_inertion		(Fmatrix& trans);

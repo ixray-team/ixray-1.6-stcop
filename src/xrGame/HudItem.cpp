@@ -285,6 +285,8 @@ void CHudItem::OnStateSwitch(u32 S)
 	{
 		m_bSwitchSprint = false;
 	}
+
+	g_player_hud->UpdateMovementLayers();
 }
 
 void CHudItem::switch2_Bore()
@@ -1035,7 +1037,7 @@ bool CHudItem::SetKeyRepeatFlag(u32 kfACTTYPE)
 
 		const static bool isDelayedWeaponActions = EngineExternal()[EEngineExternalGame::EnableDelayedWeaponActions];
 
-		if (isDelayedWeaponActions && (Actor()->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcSprint || m_bSwitchSprint)
+		if ((isDelayedWeaponActions || m_eAnimationsFlags.test(EAnimationsFlags::af_aim_in_out) && (kfACTTYPE & kfUNZOOM) != 0) && (Actor()->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcSprint || m_bSwitchSprint)
 		|| pDevice != nullptr && (pDevice->GetState() != CCustomDevice::eIdle && pDevice->GetState() != CCustomDevice::EDeviceStates::eHandAimStart && pDevice->GetState() != CCustomDevice::EDeviceStates::eHandAimEnd
 		&& !pDevice->IsHidden() || pDevice->NeedActivation()) && ((kfACTTYPE & kfRELOAD) != 0 || (kfACTTYPE & kfNEXTAMMO) != 0))
 		{
@@ -1052,4 +1054,10 @@ void CHudItem::PlayBonePartAnim(const shared_str& anim, BOOL bMixIn)
 	{
 		hid->anim_play_bonepart(anim, bMixIn);
 	}
+}
+
+bool CHudItem::NeedMovementBlend() const
+{
+	const CHUDState::EHudStates state = static_cast<CHUDState::EHudStates>(GetState());
+	return state != CHUDState::EHudStates::eIdle && state != CHUDState::EHudStates::eSprintStart && state != CHUDState::EHudStates::eSprintEnd;
 }
