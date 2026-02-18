@@ -357,7 +357,6 @@
     <string id="SO_HLAMP">
         <text>Hanging lamp</text>
     </string>
-
     <string id="ui_mm_screenshot_format">
         <text>Screenshot format</text>
     </string>
@@ -463,7 +462,6 @@
 	<string id="ui_mm_shoot_volume">
 		<text>Shots volume</text>
 	</string>
-
 	<string id="ui_pda_tabs">
 		<text>Tabs</text>
 	</string>
@@ -484,5 +482,41 @@
 	</string>
 	<string id="ui_mm_select_difficulty">
 		<text>Select difficulty</text>
+	</string>
+	<string id="st_manual_save">
+		<text>Manual save - </text>
+	</string>
+	<string id="st_options_save">
+		<text>Accept</text>
+	</string>
+	<string id="st_options_toggle">
+		<text>Toggle</text>
+	</string>
+	<string id="st_options_tune_item">
+		<text>Tune</text>
+	</string>
+	<string id="st_options_advanced">
+		<text>Advanced Video Options</text>
+	</string>
+	<string id="st_options_basic">
+		<text>Basic Video Options</text>
+	</string>
+	<string id="ui_rmw_select">
+		<text>Select Sector</text>
+	</string>
+	<string id="ui_rmw_drop_weapon">
+		<text>Drop Weapon</text>
+	</string>
+	<string id="ui_rmw_night_vision">
+		<text>Night Vision</text>
+	</string>
+	<string id="ui_rmw_wpn_func">
+		<text>Additional Weapon</text>
+	</string>
+	<string id="ui_rmw_fire_mode">
+		<text>Fire Mode</text>
+	</string>
+	<string id="ui_rmw_ammo_next">
+		<text>Ammo Type</text>
 	</string>
 </string_table>

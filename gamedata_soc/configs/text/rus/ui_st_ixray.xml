@@ -24,7 +24,6 @@
     <string id="autosave">
         <text>автоматическое сохранение</text>
     </string>
-
     <string id="ui_mm_r_actor_shadow">
         <text>Тень от протагониста</text>
     </string>
@@ -418,9 +417,6 @@
 	<string id="ui_mm_r2_use_rain_drops">
 		<text>Капли на стекле</text>
 	</string>
-	<string id="ui_mm_mouse_sense_ui">
-		<text>Чувствительность мыши в UI</text>
-	</string>
 	<string id="st_drop_amount">
 		<text>выбросить кол-во</text>
 	</string>
@@ -481,7 +477,6 @@
 	<string id="ui_mm_shoot_volume">
 		<text>Громкость выстрелов</text>
 	</string>
-	
 	<string id="ui_pda_tabs">
 		<text>Вкладки</text>
 	</string>
@@ -502,5 +497,41 @@
 	</string>
 	<string id="ui_mm_select_difficulty">
 		<text>Выбрать уровень сложности</text>
+	</string>
+	<string id="st_manual_save">
+		<text>Ручное сохранение - </text>
+	</string>
+	<string id="st_options_save">
+		<text>Принять</text>
+	</string>
+	<string id="st_options_toggle">
+		<text>Переключить</text>
+	</string>
+	<string id="st_options_tune_item">
+		<text>Настроить</text>
+	</string>
+	<string id="st_options_advanced">
+		<text>Дополнительные параметры графики</text>
+	</string>
+	<string id="st_options_basic">
+		<text>Базовые параметры графики</text>
+	</string>
+	<string id="ui_rmw_select">
+		<text>Выбрать сектор</text>
+	</string>
+	<string id="ui_rmw_drop_weapon">
+		<text>Бросить оружие</text>
+	</string>
+	<string id="ui_rmw_night_vision">
+		<text>Ночное видение</text>
+	</string>
+	<string id="ui_rmw_wpn_func">
+		<text>Дополнительное оружие</text>
+	</string>
+	<string id="ui_rmw_fire_mode">
+		<text>Режим огня</text>
+	</string>
+	<string id="ui_rmw_ammo_next">
+		<text>Тип боеприпасов</text>
 	</string>
 </string_table>
