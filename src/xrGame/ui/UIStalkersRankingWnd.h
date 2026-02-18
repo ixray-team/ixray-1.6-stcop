@@ -42,7 +42,7 @@ protected:
 
 public:
 	CUIScrollView&			GetTopList			()			{return *UIList;}
-	void					ShowHumanInfo		(u16 id);
+	void					ShowHumanInfo		(ALife::_OBJECT_ID id);
 	virtual void			Reset				();
 	
 	virtual bool			OnGamepadKeyAction	(int id, EUIMessages gamepad_action);
@@ -58,7 +58,7 @@ class CUIStalkerRankingInfoItem :public UIHintWindow, public CUISelectable
 	CUIStalkersRankingWnd* m_StalkersRankingWnd;
 	u32						m_stored_alpha;
 public:
-	u16						m_humanID;
+	ALife::_OBJECT_ID						m_humanID;
 	CUIStatic*				m_text1;
 	CUIStatic*				m_text2;
 	CUIStatic*				m_text3;

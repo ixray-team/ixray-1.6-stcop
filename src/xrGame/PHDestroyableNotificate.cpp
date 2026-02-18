@@ -12,12 +12,18 @@ void CPHDestroyableNotificate::spawn_notificate(CSE_Abstract* so)
 {
 	CPHDestroyableNotificator* D	=nullptr;
 	CSE_PHSkeleton			 * po	=smart_cast<CSE_PHSkeleton*>(so);
-	u16						 id		=u16(-1);
+	ALife::_OBJECT_ID id = ALife::INVALID_OBJECT_ID;
 	if(po)
-							id		=po->get_source_id();
-	if(id!=u16(-1))
+	{
+		id = po->get_source_id();
+	}
+	if(id!=ALife::INVALID_OBJECT_ID)
+	{
 		D= smart_cast<CPHDestroyableNotificator*>(Level().Objects.net_Find(id));
+	}
 	if(D)
+	{
 		D->NotificateDestroy(this);
-	po->source_id=BI_NONE;
+	}
+	po->source_id=ALife::INVALID_OBJECT_ID;
 }

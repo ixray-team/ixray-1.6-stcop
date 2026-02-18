@@ -67,9 +67,9 @@ public:
 	u16								m_script_version;
 	u16								RespawnTime;
 
-	u16								ID;				// internal ID
-	u16								ID_Parent;		// internal ParentID, 0xffff means no parent
-	u16								ID_Phantom;		// internal PhantomID, 0xffff means no phantom
+	ALife::_OBJECT_ID				ID;				// internal ID
+	ALife::_OBJECT_ID				ID_Parent;		// internal ParentID, ALife::INVALID_OBJECT_ID means no parent
+	ALife::_OBJECT_ID				ID_Phantom;		// internal PhantomID, ALife::INVALID_OBJECT_ID means no phantom
 	xrClientData*					owner;
 
 	// spawn data
@@ -78,7 +78,7 @@ public:
 	GameTypeChooser					m_gameType;
 	u8								s_RP;
 	Flags16							s_flags;		// state flags
-	xr_vector<u16>					children;
+	xr_vector<ALife::_OBJECT_ID>	children;
 
 	// update data
 	Fvector							o_Position;

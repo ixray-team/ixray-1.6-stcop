@@ -426,7 +426,7 @@ int	CLevel::get_RPID(const char* /**name/**/)
 bool		g_bDebugEvents = false	;
 
 
-void CLevel::cl_Process_Event				(u16 dest, u16 type, NET_Packet& P)
+void CLevel::cl_Process_Event				(ALife::_OBJECT_ID dest, u16 type, NET_Packet& P)
 {
 	//			Msg				("--- event[%d] for [%d]",type,dest);
 	CObject*	 O	= Objects.net_Find	(dest);
@@ -460,13 +460,14 @@ void CLevel::cl_Process_Event				(u16 dest, u16 type, NET_Packet& P)
 	}
 	else { // handle GE_DESTROY_REJECT here
 		u32				pos = P.r_tell();
-		u16				id = P.r_u16();
+		ALife::_OBJECT_ID id;
+		P >> id;
 		P.r_seek		(pos);
 
 		bool			ok = true;
 
 		CObject			*D	= Objects.net_Find	(id);
-		if (0==D)		{
+		if (!D)		{
 #ifndef MASTER_GOLD
 			Msg			("! ERROR: c_EVENT[%d] : unknown dest",id);
 #endif // #ifndef MASTER_GOLD
@@ -505,7 +506,8 @@ void CLevel::ProcessGameEvents		()
 
 		while	(game_events->available(svT))
 		{
-			u16 ID,dest,type;
+			u16 ID,type;
+			ALife::_OBJECT_ID dest;
 			game_events->get	(ID,dest,type,P);
 
 			switch (ID)
@@ -528,7 +530,8 @@ void CLevel::ProcessGameEvents		()
 					u8 Count = P.r_u8();
 					for (u8 i = 0; i < Count; i++)
 					{
-						u16 ID_ = P.r_u16();					
+						ALife::_OBJECT_ID ID_;
+						P >> ID_;					
 						Fvector NewPos, NewDir;
 						P.r_vec3(NewPos);
 						P.r_vec3(NewDir);

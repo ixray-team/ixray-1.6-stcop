@@ -1137,7 +1137,7 @@ bool   CBaseMonster::is_paused () const
 	bool monsters_result		=	false;	
 	ai_dbg::get_var					("monsters_paused", monsters_result);
 
-	u32 const id				=	ID();
+	ALife::_OBJECT_ID const id				=	ID();
 	char id_paused_var_name			[128];
 	xr_sprintf						(id_paused_var_name, sizeof(id_paused_var_name), "%d_paused", id);
 

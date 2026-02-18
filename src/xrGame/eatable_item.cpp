@@ -195,7 +195,7 @@ bool CEatableItem::UseBy(CEntityAlive* entity_alive)
 	{
 		NET_Packet tmp_packet;
 		CGameObject::u_EventGen(tmp_packet, GEG_PLAYER_USE_BOOSTER, entity_alive->ID());
-		tmp_packet.w_u16(object_id());
+		tmp_packet << object_id();
 		Level().Send(tmp_packet);
 	}
 

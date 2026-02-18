@@ -13,37 +13,37 @@ public:
 									game_sv_Single			();
 	virtual							~game_sv_Single			();
 
-	virtual		const char*				type_name				() const { return "single";};
-	virtual		void				Create					(shared_str& options);
+	const char*				type_name				() const override { return "single";};
+	void				Create					(shared_str& options) override;
 //	virtual		CSE_Abstract*		get_entity_from_eid		(u16 id);
 
 
-	virtual		void				OnCreate				(u16 id_who);
-	virtual		bool				OnTouch					(u16 eid_who, u16 eid_what, bool bForced = false);
-	virtual		void				OnDetach				(u16 eid_who, u16 eid_what);
+	void				OnCreate				(ALife::_OBJECT_ID id_who) override;
+	bool				OnTouch					(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_what, bool bForced = false) override;
+	void				OnDetach				(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_what) override;
 
 	// Main
-	virtual		void				Update					();
-	virtual		void				SetGameTimeFactor		(const float fTimeFactor);
+	void				Update					() override;
+	void				SetGameTimeFactor		(const float fTimeFactor) override;
 
-	virtual		ALife::_TIME_ID		GetEnvironmentGameTime	();
-	virtual		float				GetEnvironmentGameTimeFactor		();
-	virtual		void				SetEnvironmentGameTimeFactor		(const float fTimeFactor);
+	ALife::_TIME_ID		GetEnvironmentGameTime	() override;
+	float				GetEnvironmentGameTimeFactor		() override;
+	void				SetEnvironmentGameTimeFactor		(const float fTimeFactor) override;
 
-	virtual		bool				change_level			(NET_Packet &net_packet, ClientID sender);
-	virtual		void				save_game				(NET_Packet &net_packet, ClientID sender);
-	virtual		bool				load_game				(NET_Packet &net_packet, ClientID sender);
-	virtual		void				reload_game				(NET_Packet &net_packet, ClientID sender);
-	virtual		void				switch_distance			(NET_Packet &net_packet, ClientID sender);
-	virtual		bool				CanHaveFriendlyFire		()	{return false;}
-	virtual		void				teleport_object			(NET_Packet &packet, u16 id);
-	virtual		void				add_restriction			(NET_Packet &packet, u16 id);
-	virtual		void				remove_restriction		(NET_Packet &packet, u16 id);
-	virtual		void				remove_all_restrictions	(NET_Packet &packet, u16 id);
-	virtual		bool				custom_sls_default		() {return !!m_alife_simulator;};
-	virtual		void				sls_default				();
-	virtual		shared_str			level_name				(const shared_str &server_options) const;
-	virtual		void				on_death				(CSE_Abstract *e_dest, CSE_Abstract *e_src);
+	bool				change_level			(NET_Packet &net_packet, ClientID sender) override;
+	void				save_game				(NET_Packet &net_packet, ClientID sender) override;
+	bool				load_game				(NET_Packet &net_packet, ClientID sender) override;
+	void				reload_game				(NET_Packet &net_packet, ClientID sender) override;
+	void				switch_distance			(NET_Packet &net_packet, ClientID sender) override;
+	bool				CanHaveFriendlyFire		() override {return false;}
+	void				teleport_object			(NET_Packet &packet, ALife::_OBJECT_ID id) override;
+	void				add_restriction			(NET_Packet &packet, ALife::_OBJECT_ID id) override;
+	void				remove_restriction		(NET_Packet &packet, ALife::_OBJECT_ID id) override;
+	void				remove_all_restrictions	(NET_Packet &packet, ALife::_OBJECT_ID id) override;
+	bool				custom_sls_default		() override {return !!m_alife_simulator;};
+	void				sls_default				() override;
+	shared_str			level_name				(const shared_str &server_options) const override;
+	void				on_death				(CSE_Abstract *e_dest, CSE_Abstract *e_src) override;
 				void				restart_simulator		(const char* saved_game_name);
 
 	IC			xrServer			&server					() const

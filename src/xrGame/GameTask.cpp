@@ -23,7 +23,7 @@
 #include "pda_communication.h"
 
 ALife::_STORY_ID	story_id(const char* story_id);
-u16					storyId2GameId(ALife::_STORY_ID);
+ALife::_OBJECT_ID storyId2GameId(ALife::_STORY_ID);
 
 using namespace luabind;
 CUIXml* g_gameTaskXml = nullptr;
@@ -46,12 +46,12 @@ ALife::_STORY_ID	story_id	(const char* story_id)
 	return ALife::_STORY_ID(res);
 }
 
-u16 storyId2GameId	(ALife::_STORY_ID id)
+ALife::_OBJECT_ID storyId2GameId	(ALife::_STORY_ID id)
 {
 	if(ai().get_alife())
 	{ 
 		CSE_ALifeDynamicObject* so = ai().alife().story_objects().object(id, true);
-		return (so)?so->ID:u16(-1);
+		return (so)?so->ID:ALife::INVALID_OBJECT_ID;
 	}
 	else
 	{
@@ -63,7 +63,7 @@ u16 storyId2GameId	(ALife::_STORY_ID id)
 			if(GO->story_id()==id)
 				return GO->ID();
 		}
-		return u16(-1);
+		return ALife::INVALID_OBJECT_ID;
 	}
 }
 
@@ -74,7 +74,7 @@ SGameTaskObjective::SGameTaskObjective()
 {
 	m_linked_map_location = nullptr;
 	m_parent = nullptr;
-	m_map_object_id = u16(-1);
+	m_map_object_id = ALife::INVALID_OBJECT_ID;
 	m_def_location_enabled = false;
 	m_ReceiveTime = 0;
 	m_FinishTime = 0;
@@ -91,7 +91,7 @@ SGameTaskObjective::SGameTaskObjective(CGameTask* parent, u16 idx)
       m_idx(idx) 
 {
 	m_linked_map_location = nullptr;
-	m_map_object_id = u16(-1);
+	m_map_object_id = ALife::INVALID_OBJECT_ID;
 	m_def_location_enabled = false;
 	m_ReceiveTime = 0;
 	m_FinishTime = 0;
@@ -209,7 +209,7 @@ void CGameTask::Load(const shared_str& id)
 			objective.m_Description.c_str());
 
 		//.
-		objective.m_map_object_id = u16(-1);
+		objective.m_map_object_id = ALife::INVALID_OBJECT_ID;
 
 		//.
 		objective.m_map_hint = g_gameTaskXml->ReadAttrib(l_root, "map_location_type", 0, "hint", nullptr);
@@ -468,12 +468,12 @@ CMapLocation* CGameTask::LinkedMapLocation()
 bool CGameTask::HasActiveMapTarget() const
 {
 	const SGameTaskObjective& objective = Objective(ActiveObjectiveIdx());
-	return objective.m_map_object_id != u16(-1) && objective.m_map_location.size() > 0;
+	return objective.m_map_object_id != ALife::INVALID_OBJECT_ID && objective.m_map_location.size() > 0;
 }
 
 void SGameTaskObjective::CreateMapLocation( bool on_load )
 {
-	if ( m_map_object_id == u16(-1) || m_map_location.size() == 0 )
+	if ( m_map_object_id == ALife::INVALID_OBJECT_ID || m_map_location.size() == 0 )
 	{
 		return;
 	}
@@ -527,10 +527,10 @@ void SGameTaskObjective::RemoveMapLocations(bool notify)
 
 	m_map_location			= nullptr;
 	m_linked_map_location	= nullptr;
-	m_map_object_id			= u16(-1);
+	m_map_object_id			= ALife::INVALID_OBJECT_ID;
 }
 
-void SGameTaskObjective::ChangeMapLocation( const char* new_map_location, u16 new_map_object_id )
+void SGameTaskObjective::ChangeMapLocation( const char* new_map_location, ALife::_OBJECT_ID new_map_object_id )
 {
 	RemoveMapLocations	( false );
 

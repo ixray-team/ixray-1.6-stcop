@@ -46,8 +46,8 @@ protected:
         										const Fvector& dir, 
 												float fire_disp,
 												const CCartridge& cartridge,
-												u16 parent_id,
-												u16 weapon_id,
+												ALife::_OBJECT_ID parent_id,
+												ALife::_OBJECT_ID weapon_id,
 												bool send_hit);
 	void					SetBulletSpeed(float new_speed) {m_fStartBulletSpeed = new_speed;}
 	float					GetBulletSpeed()				{return m_fStartBulletSpeed;}
@@ -178,6 +178,6 @@ public:
 	virtual void DumpActiveParams(shared_str const& section_name, CInifile& dst_ini) const;
 
 	void SetInitiator(ALife::_OBJECT_ID id) override { initiator_id = id; }
-	u16 Initiator() override { return initiator_id; }
+	ALife::_OBJECT_ID Initiator() override { return initiator_id; }
 	IDamageSource* cast_IDamageSource() override { return this; }
 };

@@ -332,8 +332,8 @@ public:
 public:
 	virtual DLL_Pure* _construct();
 	IC CPhysicsShellHolder& object() const { VERIFY(m_object); return (*m_object); }
-	u16	object_id() const;
-	u16	parent_id() const;
+	ALife::_OBJECT_ID object_id() const;
+	ALife::_OBJECT_ID parent_id() const;
 	virtual void on_activate_physic_shell() { R_ASSERT2(0, "failed call of virtual function!"); }
 
 protected:

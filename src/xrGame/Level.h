@@ -313,7 +313,7 @@ public:
 	virtual	shared_str			OpenDemoFile			(const char* demo_file_name);
 	virtual void				net_StartPlayDemo		();
 
-	void						cl_Process_Event		(u16 dest, u16 type, NET_Packet& P);
+	void						cl_Process_Event		(ALife::_OBJECT_ID dest, u16 type, NET_Packet& P);
 	void						cl_Process_Spawn		(NET_Packet& P);
 	void						ProcessGameEvents		( );
 	void						ProcessGameSpawns		( );
@@ -427,8 +427,8 @@ public:
 	//by Mad Max 
 			bool			IsServer					();
 			bool			IsClient					();
-			CSE_Abstract	*spawn_item					(const char* section, const Fvector &position, u32 level_vertex_id, u16 parent_id, bool return_item = false);
-	virtual	void			SpawnItem(const char* section, const Fvector &position, u32 level_vertex_id, u16 parent_id) override;
+			CSE_Abstract	*spawn_item					(const char* section, const Fvector &position, u32 level_vertex_id, ALife::_OBJECT_ID parent_id, bool return_item = false);
+	virtual	void			SpawnItem(const char* section, const Fvector &position, u32 level_vertex_id, ALife::_OBJECT_ID parent_id) override;
 	virtual IGame_Patrol*	CreatePatrol(const char* patrol) override;
 			
 protected:

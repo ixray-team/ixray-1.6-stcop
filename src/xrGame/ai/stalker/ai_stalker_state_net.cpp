@@ -72,7 +72,7 @@ void aistalker_state_net::CSE_StateWrite(NET_Packet& tNetPacket)
 	tNetPacket.w_u8((u8)u_active_slot);													// 6 + 5 = 11
  	if (u_active_slot != 0)
 	{
-		tNetPacket.w_u16(u_active_id);
+ 		tNetPacket << u_active_id;
 		tNetPacket.w_u8(u_active_stripped);
 	}
 
@@ -122,7 +122,7 @@ void aistalker_state_net::CSE_StateRead(NET_Packet& tNetPacket)
 	u_active_slot = tNetPacket.r_u8();
 	if (u_active_slot != 0)
 	{
-		tNetPacket.r_u16(u_active_id);
+		tNetPacket >> u_active_id;
 		tNetPacket.r_u8(u_active_stripped);
 	}
  

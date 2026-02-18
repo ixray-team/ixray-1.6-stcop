@@ -49,12 +49,12 @@ void CBolt::activate_physic_shell()
 	m_pPhysicsShell->SetAirResistance(.0001f);
 }
 
-void CBolt::SetInitiator(u16 id)
+void CBolt::SetInitiator(ALife::_OBJECT_ID id)
 {
 	m_thrower_id = id;
 }
 
-u16	CBolt::Initiator()
+ALife::_OBJECT_ID	CBolt::Initiator()
 {
 	return m_thrower_id;
 }

@@ -738,9 +738,10 @@ void game_cl_mp::OnPlayerKilled			(NET_Packet& P)
 {
 	//-----------------------------------------------------------
 	KILL_TYPE KillType = KILL_TYPE(P.r_u8());
-	u16 KilledID = P.r_u16();
-	u16 KillerID = P.r_u16();
-	u16	WeaponID = P.r_u16();
+	ALife::_OBJECT_ID KilledID;
+	ALife::_OBJECT_ID KillerID;
+	ALife::_OBJECT_ID WeaponID;
+	P >> KilledID >> KillerID >> WeaponID;
 	SPECIAL_KILL_TYPE SpecialKill = SPECIAL_KILL_TYPE(P.r_u8());
 	//-----------------------------------------------------------
 	
@@ -987,7 +988,8 @@ extern	void	WritePlayerName_ToRegistry	(LPSTR name);
 
 void	game_cl_mp::OnPlayerChangeName		(NET_Packet& P)
 {
-	u16 ObjID = P.r_u16();
+	ALife::_OBJECT_ID ObjID;
+	P >> ObjID;
 	s16 Team = P.r_s16();
 	string1024 OldName, NewName;
 	P.r_stringZ(OldName);

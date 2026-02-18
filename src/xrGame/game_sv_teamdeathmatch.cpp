@@ -329,7 +329,7 @@ void game_sv_TeamDeathmatch::OnPlayerChangeTeam(ClientID id_who, s16 team)
 //	P.w_begin			(M_GAMEMESSAGE);
 	GenerateGameMessage (P);
 	P.w_u32				(PLAYER_CHANGE_TEAM);
-	P.w_u16				(ps_who->GameID);
+	P << ps_who->GameID;
 	P.w_u16				(ps_who->team);
 	P.w_u16				(team);
 	u_EventSend(P);
@@ -493,7 +493,7 @@ void game_sv_TeamDeathmatch::OnPlayerHitPlayer_Case(game_PlayerState* ps_hitter,
 	inherited::OnPlayerHitPlayer_Case(ps_hitter, ps_hitted, pHitS);
 };
 
-void game_sv_TeamDeathmatch::OnPlayerHitPlayer(u16 id_hitter, u16 id_hitted, NET_Packet& P)
+void game_sv_TeamDeathmatch::OnPlayerHitPlayer(ALife::_OBJECT_ID id_hitter, ALife::_OBJECT_ID id_hitted, NET_Packet& P)
 {
 	inherited::OnPlayerHitPlayer(id_hitter, id_hitted, P);	
 };
@@ -616,7 +616,7 @@ bool game_sv_TeamDeathmatch::OnTouchItem(CSE_ActorMP *actor, CSE_Abstract *item)
 	VERIFY(actor);
 	VERIFY(item);
 	
-	if ((item->m_tClassID == CLSID_OBJECT_PLAYERS_BAG) && (item->ID_Parent == 0xffff))
+	if ((item->m_tClassID == CLSID_OBJECT_PLAYERS_BAG) && (item->ID_Parent == ALife::INVALID_OBJECT_ID))
 	{
 		//-------------------------------
 		//move all items from rukzak to player
@@ -637,7 +637,7 @@ bool game_sv_TeamDeathmatch::OnTouchItem(CSE_ActorMP *actor, CSE_Abstract *item)
 					{
 						NET_Packet P;
 						u_EventGen(P,GE_OWNERSHIP_REJECT, item->ID);
-						P.w_u16(e_child_item->ID);
+						P << e_child_item->ID;
 
 						m_server->Process_event_reject(P, m_server->GetServerClient()->ID, 0, item->ID, e_child_item->ID);
 						continue;
@@ -677,23 +677,19 @@ void game_sv_TeamDeathmatch::OnDetachItem(CSE_ActorMP *actor, CSE_Abstract *item
 	if (item->m_tClassID == CLSID_OBJECT_PLAYERS_BAG)
 	{
 		//move all items from player to rukzak
-		xr_vector<u16>::const_iterator it_e = actor->children.end();
-		
 		xr_vector<CSE_Abstract*>			to_transfer;
 		xr_vector<CSE_Abstract*>			to_destroy;
 		xr_vector<CSE_Abstract*>			to_reject;
 		// may be there is a sense to move next invokation into the ProcessDeath method...
 		FillDeathActorRejectItems(actor, to_reject);
 
-		for (xr_vector<u16>::const_iterator it = actor->children.begin();
-			it != it_e; ++it)
+		for (auto ItemID : actor->children)
 		{
-			u16 ItemID					= *it;
 			CSE_Abstract* e_item		= get_entity_from_eid(ItemID);
 
 			R_ASSERT(e_item->ID_Parent == actor->ID);
 			
-			if (std::find(to_reject.begin(), to_reject.end(), e_item) != to_reject.end())
+			if (std::ranges::find(to_reject, e_item) != to_reject.end())
 				continue;
 
 			if ((e_item->m_tClassID == CLSID_OBJECT_W_KNIFE) ||
@@ -709,17 +705,14 @@ void game_sv_TeamDeathmatch::OnDetachItem(CSE_ActorMP *actor, CSE_Abstract *item
 			}
 		}
 
-		xr_vector<CSE_Abstract*>::const_iterator tr_it_e	= to_transfer.end();
-
 		NET_Packet							EventPack;
 		NET_Packet							PacketReject;
 		NET_Packet							PacketTake;
 		EventPack.w_begin					(M_EVENT_PACK);
 		
-		for(xr_vector<CSE_Abstract*>::const_iterator tr_it = to_transfer.begin();
-			tr_it != tr_it_e; ++tr_it)
+		for(auto Item : to_transfer)
 		{
-			m_server->Perform_transfer(PacketReject, PacketTake, *tr_it, actor, item);
+			m_server->Perform_transfer(PacketReject, PacketTake, Item, actor, item);
 			EventPack.w_u8(u8(PacketReject.B.count));
 			EventPack.w(&PacketReject.B.data, PacketReject.B.count);
 			EventPack.w_u8(u8(PacketTake.B.count));
@@ -743,7 +736,7 @@ void game_sv_TeamDeathmatch::OnDetachItem(CSE_ActorMP *actor, CSE_Abstract *item
 }
 
 
-bool game_sv_TeamDeathmatch::OnTouch(u16 eid_who, u16 eid_what, bool bForced)
+bool game_sv_TeamDeathmatch::OnTouch(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_what, bool bForced)
 {
 	CSE_ActorMP *e_who = smart_cast<CSE_ActorMP*>(m_server->ID_to_entity(eid_who));
 	if (!e_who)
@@ -756,7 +749,7 @@ bool game_sv_TeamDeathmatch::OnTouch(u16 eid_who, u16 eid_what, bool bForced)
 	return OnTouchItem(e_who, e_entity);
 }
 
-void game_sv_TeamDeathmatch::OnDetach(u16 eid_who, u16 eid_what)
+void game_sv_TeamDeathmatch::OnDetach(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_what)
 {
 	CSE_ActorMP *e_who = smart_cast<CSE_ActorMP*>(m_server->ID_to_entity(eid_who));
 	if (!e_who)
@@ -769,7 +762,7 @@ void game_sv_TeamDeathmatch::OnDetach(u16 eid_who, u16 eid_what)
 	OnDetachItem(e_who, e_entity);
 }
 
-void game_sv_TeamDeathmatch::OnObjectEnterTeamBase(u16 id, u16 zone_team)
+void game_sv_TeamDeathmatch::OnObjectEnterTeamBase(ALife::_OBJECT_ID id, u16 zone_team)
 {
 	CSE_Abstract*			e_who	= m_server->ID_to_entity(id);
 	VERIFY(e_who);
@@ -787,7 +780,7 @@ void game_sv_TeamDeathmatch::OnObjectEnterTeamBase(u16 id, u16 zone_team)
 	}
 }
 
-void game_sv_TeamDeathmatch::OnObjectLeaveTeamBase(u16 id, u16 zone_team)
+void game_sv_TeamDeathmatch::OnObjectLeaveTeamBase(ALife::_OBJECT_ID id, u16 zone_team)
 {
 	CSE_Abstract*			e_who	= m_server->ID_to_entity(id);
 	if (!e_who)

@@ -167,7 +167,7 @@ private:
 
 	static bool		RayQueryCallback		(collide::rq_result& result, LPVOID this_ptr);
 	collide::rq_results				m_ray_query_results;
-	u16								m_except_id;
+	ALife::_OBJECT_ID								m_except_id;
 	CObject*						m_last_picked_obj;
 
 	typedef xr_vector<ISpatialShared>			spartial_base_t;
@@ -175,10 +175,10 @@ private:
 	struct	victim_bone_data
 	{
 		CCF_Skeleton::SElement const *	m_bone_element;
-		u16								m_victim_id;
+		ALife::_OBJECT_ID								m_victim_id;
 		u16								m_shots_count;
 	};//struct	victim_bone_data
-	typedef associative_vector<u16, u16>						victims_hits_count_t;
+	typedef associative_vector<ALife::_OBJECT_ID, u16>						victims_hits_count_t;
 	typedef buffer_vector<std::pair<victim_bone_data, float> >	victims_shapes_list_t;
 
 	spartial_base_t					m_spartial_query_res;
@@ -203,7 +203,7 @@ private:
 	class best_victim_selector
 	{
 	public:
-		best_victim_selector	(u16 except_id,
+		best_victim_selector	(ALife::_OBJECT_ID except_id,
 								 Fvector const & pos,
 								 float query_distance,
 								 spartial_base_t::value_type & dest_result);
@@ -216,7 +216,7 @@ private:
 		Fvector			m_start_pos;
 		float			m_min_dist;
 		float			m_query_distance;
-		u16				m_except_id;
+		ALife::_OBJECT_ID				m_except_id;
 		spartial_base_t::value_type & m_dest_result;
 	};//struct best_victim_selector
 

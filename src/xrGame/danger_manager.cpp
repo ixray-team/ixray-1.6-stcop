@@ -245,7 +245,7 @@ void CDangerManager::add			(const CVisibleObject &object)
 	PROF_EVENT("DangerManager::add_VisibleObject");
 	CGameObject* GO = const_cast<CGameObject*>(object.m_object);
 	const CEntityAlive		*obj = GO->cast_entity_alive();
-	if (obj && !obj->g_Alive() && (obj->killer_id() != ALife::_OBJECT_ID(-1))) {
+	if (obj && !obj->g_Alive() && (obj->killer_id() != ALife::INVALID_OBJECT_ID)) {
 		add					(CDangerObject(obj,obj->Position(),object.m_level_time,CDangerObject::eDangerTypeFreshEntityCorpse,CDangerObject::eDangerPerceiveTypeVisual));
 		return;
 	}

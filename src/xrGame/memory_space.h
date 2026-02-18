@@ -68,8 +68,8 @@ namespace MemorySpace
 		Flags64 m_squad_mask;
 
 		IC			CMemoryObject();
-		    bool	operator==(u16 id) const; 
-	 static u16		object_id(const CObject* object);
+		    bool	operator==(ALife::_OBJECT_ID id) const; 
+	 static ALife::_OBJECT_ID		object_id(const CObject* object);
 		IC	void	fill(const CGameObject* game_object, const CGameObject* self, const u64& mask);
 	};
 

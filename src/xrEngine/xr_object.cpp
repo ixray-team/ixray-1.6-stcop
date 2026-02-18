@@ -191,6 +191,7 @@ CObject::CObject() :
 	dwFrame_AsCrow (u32(-1))
 {
 	// Transform
+	Props.net_ID = ALife::INVALID_OBJECT_ID;
 	Props.storage				= 0;
 
 	Parent						= nullptr;
@@ -434,15 +435,15 @@ CObject* CObject::H_SetParent	(CObject* new_parent, bool just_before_destroy)
 
 	CObject* old_parent	= Parent; 
 	
-	VERIFY2((new_parent==0)||(old_parent==0),"Before set parent - execute H_SetParent(0)");
+	IVERIFY_M((!new_parent)||(!old_parent),"%s", "Before set parent - execute H_SetParent(nullptr)");
 
 	// if (Parent) Parent->H_ChildRemove	(this);
-	if (0==old_parent)	OnH_B_Chield		();	// before attach
+	if (!old_parent)	OnH_B_Chield		();	// before attach
 	else				OnH_B_Independent	(just_before_destroy); // before detach
 	if (new_parent)		spatial_unregister	();
 	else				spatial_register	();
 	Parent				= new_parent;
-	if (0==old_parent)	OnH_A_Chield		();	// after attach
+	if (!old_parent)	OnH_A_Chield		();	// after attach
 	else				OnH_A_Independent	(); // after detach
 	// if (Parent)	Parent->H_ChildAdd		(this);
 	MakeMeCrow			();

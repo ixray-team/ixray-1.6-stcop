@@ -117,7 +117,7 @@ void CTeamBaseZone::feel_touch_new	(CObject *tpObject)
 
 		u_EventGen			(P_,GE_GAME_EVENT,ID()	);
 		P_.w_u16			(GAME_EVENT_PLAYER_ENTER_TEAM_BASE);
-		P_.w_u16			( tpObject->ID() );
+		P_ << tpObject->ID();
 		P_.w_u8				( GetZoneTeam() );
 		u_EventSend			(P_,net_flags(true,true));
 	};
@@ -130,7 +130,7 @@ void CTeamBaseZone::feel_touch_delete	(CObject *tpObject)
 		NET_Packet			P_;
 		u_EventGen			(P_,GE_GAME_EVENT,ID()	);
 		P_.w_u16			(GAME_EVENT_PLAYER_LEAVE_TEAM_BASE );
-		P_.w_u16			( tpObject->ID() );
+		P_ << tpObject->ID();
 		P_.w_u8				( GetZoneTeam() );
 		u_EventSend			(P_,net_flags(true,true));
 	};

@@ -762,9 +762,9 @@ void CController::OnEvent(NET_Packet& P, u16 type)
 	switch (type)
 	{
 	case GE_CONTROLLER_PSY_FIRE: {
-		u16 actor_id;
+		ALife::_OBJECT_ID actor_id;
 		u8 state;
-		P.r_u16(actor_id);
+		P >> actor_id;
 		P.r_u8(state);
 
 		if (state == 0 && actor_id == Actor()->ID())

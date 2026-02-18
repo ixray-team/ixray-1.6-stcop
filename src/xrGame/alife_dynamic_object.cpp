@@ -28,7 +28,7 @@ void CSE_ALifeDynamicObject::on_spawn()
 void CSE_ALifeDynamicObject::on_register()
 {
 	CSE_ALifeObject* object = this;
-	while (object->ID_Parent != ALife::_OBJECT_ID(-1))
+	while (object->ID_Parent != ALife::INVALID_OBJECT_ID)
 	{
 		object = ai().alife().objects().object(object->ID_Parent);
 		VERIFY(object);
@@ -195,10 +195,8 @@ void CSE_ALifeInventoryBox::add_online	(const bool &update_registries)
 	ClientID					clientID;
 	clientID.set				(object->alife().server().GetServerClient() ? object->alife().server().GetServerClient()->ID.value() : 0);
 
-	ALife::OBJECT_IT			I = object->children.begin();
-	ALife::OBJECT_IT			E = object->children.end();
-	for ( ; I != E; ++I) {
-		CSE_ALifeDynamicObject	*l_tpALifeDynamicObject = ai().alife().objects().object(*I);
+	for (auto ID : object->children) {
+		CSE_ALifeDynamicObject	*l_tpALifeDynamicObject = ai().alife().objects().object(ID);
 		CSE_ALifeInventoryItem	*l_tpALifeInventoryItem = smart_cast<CSE_ALifeInventoryItem*>(l_tpALifeDynamicObject);
 		R_ASSERT2				(l_tpALifeInventoryItem,"Non inventory item object has parent?!");
 		l_tpALifeInventoryItem->base()->s_flags.bor(M_SPAWN_UPDATE);
@@ -299,12 +297,9 @@ void CSE_ALifeCar::add_online(const bool& update_registries)
 	NET_Packet					tNetPacket;
 	ClientID					clientID;
 	clientID.set(object->alife().server().GetServerClient() ? object->alife().server().GetServerClient()->ID.value() : 0);
-
-
-	ALife::OBJECT_IT			I = object->children.begin();
-	ALife::OBJECT_IT			E = object->children.end();
-	for (; I != E; ++I) {
-		CSE_ALifeDynamicObject* l_tpALifeDynamicObject = ai().alife().objects().object(*I);
+	
+	for (auto ID : object->children) {
+		CSE_ALifeDynamicObject* l_tpALifeDynamicObject = ai().alife().objects().object(ID);
 		CSE_ALifeInventoryItem* l_tpALifeInventoryItem = smart_cast<CSE_ALifeInventoryItem*>(l_tpALifeDynamicObject);
 		R_ASSERT2(l_tpALifeInventoryItem, "Non inventory item object has parent?!");
 		l_tpALifeInventoryItem->base()->s_flags.bor(M_SPAWN_UPDATE);

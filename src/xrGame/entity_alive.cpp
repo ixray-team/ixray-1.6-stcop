@@ -246,7 +246,7 @@ void CEntityAlive::shedule_Update(u32 dt)
 	{
 		DestroyObject();
 
-		g_ai_space->get_alife()->spawn_item(cNameSect_str(), Position(), ai_location().level_vertex_id(), ai_location().game_vertex_id(), ALife::_OBJECT_ID(-1));
+		g_ai_space->get_alife()->spawn_item(cNameSect_str(), Position(), ai_location().level_vertex_id(), ai_location().game_vertex_id(), ALife::INVALID_OBJECT_ID);
 	}
 
 	inherited::shedule_Update	(dt);
@@ -386,7 +386,7 @@ void CEntityAlive::Die	(CObject* who)
 	if (!getDestroy() && (IsGameTypeSingle())) {
 		NET_Packet		P;
 		u_EventGen		(P,GE_ASSIGN_KILLER,ID());
-		P.w_u16			(u16(who->ID()));
+		P << who->ID();
 		u_EventSend		(P);
 	}
 

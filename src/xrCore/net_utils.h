@@ -104,15 +104,20 @@ public:
 
 	// read/write operators
 	template <typename T>
-	void operator<<(const T& value)
+	NET_Packet& operator<<(const T& value)
 	{
 		w(&value, (u32)sizeof(T));
+		return *this;
 	}
 
+	template<>
+	NET_Packet& operator<<<u8>(const u8& value);
+
 	template <typename T>
-	void operator>>(T& value)
+	NET_Packet& operator>>(T& value)
 	{
 		r(&value, (u32)sizeof(T));
+		return *this;
 	}
 
 	void w_seek	(u32 pos, const void* p, u32 count);
@@ -285,6 +290,162 @@ public:
 	void		r_matrix		(Fmatrix& M);
 	void		r_clientID		(ClientID& C);
 };
+
+// explicit template specialization for in operator for SDK
+template <>
+inline NET_Packet& NET_Packet::operator<<<u8>(const u8& value)
+{
+	w_u8(value);
+	return *this;
+}
+
+template <>
+inline NET_Packet& NET_Packet::operator<<<s8>(const s8& value)
+{
+	w_s8(value);
+	return *this;
+}
+
+template <>
+inline NET_Packet& NET_Packet::operator<<<u16>(const u16& value)
+{
+	w_u16(value);
+	return *this;
+}
+
+template <>
+inline NET_Packet& NET_Packet::operator<<<s16>(const s16& value)
+{
+	w_s16(value);
+	return *this;
+}
+
+template <>
+inline NET_Packet& NET_Packet::operator<<<u32>(const u32& value)
+{
+	w_u32(value);
+	return *this;
+}
+
+template <>
+inline NET_Packet& NET_Packet::operator<<<s32>(const s32& value)
+{
+	w_s32(value);
+	return *this;
+}
+
+template <>
+inline NET_Packet& NET_Packet::operator<<<u64>(const u64& value)
+{
+	w_u64(value);
+	return *this;
+}
+
+template <>
+inline NET_Packet& NET_Packet::operator<<<s64>(const s64& value)
+{
+	w_s64(value);
+	return *this;
+}
+
+template <>
+inline NET_Packet& NET_Packet::operator<<<Fvector>(const Fvector& value)
+{
+	w_vec3(value);
+	return *this;
+}
+
+template <>
+inline NET_Packet& NET_Packet::operator<<<Fvector4>(const Fvector4& value)
+{
+	w_vec4(value);
+	return *this;
+}
+
+template <>
+inline NET_Packet& NET_Packet::operator<<<float>(const float& value)
+{
+	w_float(value);
+	return *this;
+}
+
+// explicit template specialization for out operator for SDK
+template <>
+inline NET_Packet& NET_Packet::operator>><u8>(u8& value)
+{
+	r_u8(value);
+	return *this;
+}
+
+template <>
+inline NET_Packet& NET_Packet::operator>><s8>(s8& value)
+{
+	r_s8(value);
+	return *this;
+}
+
+template <>
+inline NET_Packet& NET_Packet::operator>><u16>(u16& value)
+{
+	r_u16(value);
+	return *this;
+}
+
+template <>
+inline NET_Packet& NET_Packet::operator>><s16>(s16& value)
+{
+	r_s16(value);
+	return *this;
+}
+
+template <>
+inline NET_Packet& NET_Packet::operator>><u32>(u32& value)
+{
+	r_u32(value);
+	return *this;
+}
+
+template <>
+inline NET_Packet& NET_Packet::operator>><s32>(s32& value)
+{
+	r_s32(value);
+	return *this;
+}
+
+template <>
+inline NET_Packet& NET_Packet::operator>><u64>(u64& value)
+{
+	r_u64(value);
+	return *this;
+}
+
+template <>
+inline NET_Packet& NET_Packet::operator>><s64>(s64& value)
+{
+	r_s64(value);
+	return *this;
+}
+
+template <>
+inline NET_Packet& NET_Packet::operator>><Fvector>(Fvector& value)
+{
+	r_vec3(value);
+	return *this;
+}
+
+template <>
+inline NET_Packet& NET_Packet::operator>><Fvector4>(Fvector4& value)
+{
+	r_vec4(value);
+	return *this;
+}
+
+template <>
+inline NET_Packet& NET_Packet::operator>><float>(float& value)
+{
+	r_float(value);
+	return *this;
+}
 
 #pragma pack(pop)
 

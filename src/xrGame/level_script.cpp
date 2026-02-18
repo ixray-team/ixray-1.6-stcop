@@ -204,14 +204,14 @@ CScriptGameObject* get_object_by_name(const char* caObjectName)
 }
 #endif
 
-CScriptGameObject *get_object_by_id(u16 id)
+CScriptGameObject *get_object_by_id(ALife::_OBJECT_ID id)
 {
 	CObject* finded_object = Level().Objects.net_Find(id);
 	CGameObject* pGameObject = finded_object != nullptr ? finded_object->cast_game_object() : nullptr;
 	if (!pGameObject)
 	{
 		//g_pScriptEngine->print_stack();
-		return 0;
+		return nullptr;
 	}
 
 	return pGameObject->lua_game_object();
@@ -420,7 +420,7 @@ Fvector vertex_position(u32 level_vertex_id)
 	return			(ai().level_graph().vertex_position(level_vertex_id));
 }
 
-void map_add_object_spot(u16 id, const char* spot_type, const char* text)
+void map_add_object_spot(ALife::_OBJECT_ID id, const char* spot_type, const char* text)
 {
 	CMapLocation* ml = Level().MapManager().AddMapLocation(spot_type,id);
 	if ( xr_strlen(text) )
@@ -429,7 +429,7 @@ void map_add_object_spot(u16 id, const char* spot_type, const char* text)
 	}
 }
 
-void map_add_object_spot_ser(u16 id, const char* spot_type, const char* text)
+void map_add_object_spot_ser(ALife::_OBJECT_ID id, const char* spot_type, const char* text)
 {
 	CMapLocation* ml = Level().MapManager().AddMapLocation(spot_type,id);
 
@@ -439,19 +439,19 @@ void map_add_object_spot_ser(u16 id, const char* spot_type, const char* text)
 	ml->SetSerializable(true);
 }
 
-void map_change_spot_hint(u16 id, const char* spot_type, const char* text)
+void map_change_spot_hint(ALife::_OBJECT_ID id, const char* spot_type, const char* text)
 {
 	CMapLocation* ml	= Level().MapManager().GetMapLocation(spot_type, id);
 	if(!ml)				return;
 	ml->SetHint			(text);
 }
 
-void map_remove_object_spot(u16 id, const char* spot_type)
+void map_remove_object_spot(ALife::_OBJECT_ID id, const char* spot_type)
 {
 	Level().MapManager().RemoveMapLocation(spot_type, id);
 }
 
-u16 map_has_object_spot(u16 id, const char* spot_type)
+bool map_has_object_spot(ALife::_OBJECT_ID id, const char* spot_type)
 {
 	return Level().MapManager().HasMapLocation(spot_type, id);
 }
@@ -663,7 +663,7 @@ void enable_mouse_move()
 
 void spawn_phantom(const Fvector &position)
 {
-	Level().spawn_item("m_phantom", position, u32(-1), u16(-1), false);
+	Level().spawn_item("m_phantom", position, u32(-1), ALife::INVALID_OBJECT_ID, false);
 }
 
 Fbox get_bounding_volume()
@@ -779,8 +779,8 @@ int get_actor_points(const char* sect)
 	return Actor()->StatisticMgr().GetSectionPoints(sect);
 }
 extern int get_actor_ranking();
-extern void add_human_to_top_list(u16 id);
-extern void remove_human_from_top_list(u16 id);
+extern void add_human_to_top_list(ALife::_OBJECT_ID id);
+extern void remove_human_from_top_list(ALife::_OBJECT_ID id);
 
 #include "ActorEffector.h"
 void add_complex_effector(const char* section, int id)
@@ -825,12 +825,12 @@ void set_pp_effector_factor2(int id, float f)
 
 #include "relation_registry.h"
 
-int g_community_goodwill(const char* _community, int _entity_id)
+int g_community_goodwill(const char* _community, ALife::_OBJECT_ID _entity_id)
  {
 	 CHARACTER_COMMUNITY c;
 	 c.set					(_community);
 
- 	return RELATION_REGISTRY().GetCommunityGoodwill(c.index(), u16(_entity_id));
+ 	return RELATION_REGISTRY().GetCommunityGoodwill(c.index(), _entity_id);
  }
 
 void g_set_community_goodwill(const char* _community, int _entity_id, int val)
@@ -867,7 +867,7 @@ void g_set_community_relation( const char* comm_from, const char* comm_to, int v
 	RELATION_REGISTRY().SetCommunityRelation( community_from.index(), community_to.index(), value );
 }
 
-int g_get_general_goodwill_between ( u16 from, u16 to)
+int g_get_general_goodwill_between ( ALife::_OBJECT_ID from, ALife::_OBJECT_ID to)
 {
 	s32 presonal_goodwill		= RELATION_REGISTRY().GetGoodwill(from, to); VERIFY(presonal_goodwill != -type_max(s32));
 
@@ -987,7 +987,7 @@ void u_event_send(NET_Packet& P)
 }
 
 //can spawn entities like bolts, phantoms, ammo, etc. which normally crash when using alife():create()
-void spawn_section(const char* sSection, Fvector3 vPosition, u32 LevelVertexID, u16 ParentID, bool bReturnItem = false)
+void spawn_section(const char* sSection, Fvector3 vPosition, u32 LevelVertexID, ALife::_OBJECT_ID ParentID, bool bReturnItem = false)
 {
 	Level().spawn_item(sSection, vPosition, LevelVertexID, ParentID, bReturnItem);
 }
@@ -1357,7 +1357,7 @@ CScriptGameObject* get_object_by_client(u32 clientID)
 	return pGameObject->lua_game_object();
 }
 
-int get_local_player_id()
+ALife::_OBJECT_ID get_local_player_id()
 {
 	return Game().local_player->GameID;
 }
@@ -1518,7 +1518,7 @@ void spawn_anomaly(const char* str, int level_vertex_id, const Fvector& position
 	CSE_Abstract* object = Level().spawn_item(zone_sect,
 		position,
 		level_vertex_id,
-		0xffff,
+		ALife::INVALID_OBJECT_ID,
 		true
 	);
 	CSE_ALifeAnomalousZone* AlifeZone = smart_cast<CSE_ALifeAnomalousZone*>(object);

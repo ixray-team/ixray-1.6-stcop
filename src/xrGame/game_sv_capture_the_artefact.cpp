@@ -438,7 +438,7 @@ void game_sv_CaptureTheArtefact::OnPlayerConnectFinished(ClientID id_who)
 	xrCData->net_Ready = true;
 }
 
-void game_sv_CaptureTheArtefact::OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameID)
+void game_sv_CaptureTheArtefact::OnPlayerDisconnect(ClientID id_who, LPSTR Name, ALife::_OBJECT_ID GameID)
 {
 	CSE_Abstract* actor = m_server->ID_to_entity(GameID);
 	if (!actor)
@@ -1470,7 +1470,7 @@ void game_sv_CaptureTheArtefact::OnGiveBonus(KILL_RES KillResult, game_PlayerSta
 }
 
 // copy past :(
-void	game_sv_CaptureTheArtefact::OnPlayerHitPlayer		(u16 id_hitter, u16 id_hitted, NET_Packet& P)
+void	game_sv_CaptureTheArtefact::OnPlayerHitPlayer		(ALife::_OBJECT_ID id_hitter, ALife::_OBJECT_ID id_hitted, NET_Packet& P)
 {
 	CSE_Abstract*		e_hitter		= get_entity_from_eid	(id_hitter	);
 	CSE_Abstract*		e_hitted		= get_entity_from_eid	(id_hitted	);
@@ -1543,7 +1543,7 @@ void game_sv_CaptureTheArtefact::DropArtefact(CSE_ActorMP *aOwner, CSE_ALifeItem
 	VERIFY2(artefact, "bad parameter");
 	NET_Packet				P;
 	u_EventGen				(P,GE_OWNERSHIP_REJECT, aOwner->ID);
-	P.w_u16					(artefact->ID);
+	P << artefact->ID;
 	if (dropPosition)
 	{
 		P.w_u8(0);
@@ -1624,7 +1624,7 @@ void game_sv_CaptureTheArtefact::ReSpawnArtefacts()
 }
 
 // true=allow ownership, false=denied
-bool game_sv_CaptureTheArtefact::OnTouch(u16 eid_who, u16 eid_target, bool bForced)
+bool game_sv_CaptureTheArtefact::OnTouch(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_target, bool bForced)
 {
 	CSE_ActorMP *e_who = smart_cast<CSE_ActorMP*>(m_server->ID_to_entity(eid_who));
 	
@@ -1728,7 +1728,7 @@ bool game_sv_CaptureTheArtefact::OnTouchItem(CSE_ActorMP *actor, CSE_Abstract *i
 	VERIFY(actor);
 	VERIFY(item);
 	
-	if ((item->m_tClassID == CLSID_OBJECT_PLAYERS_BAG) && (item->ID_Parent == 0xffff))
+	if ((item->m_tClassID == CLSID_OBJECT_PLAYERS_BAG) && (item->ID_Parent == ALife::INVALID_OBJECT_ID))
 	{
 		//-------------------------------
 		//move all items from rukzak to player
@@ -1749,8 +1749,7 @@ bool game_sv_CaptureTheArtefact::OnTouchItem(CSE_ActorMP *actor, CSE_Abstract *i
 					{
 						NET_Packet P;
 						u_EventGen(P,GE_OWNERSHIP_REJECT, item->ID);
-						P.w_u16(e_child_item->ID);
-
+						P << e_child_item->ID;
 						m_server->Process_event_reject(P, m_server->GetServerClient()->ID, 0, item->ID, e_child_item->ID);
 						continue;
 					}
@@ -1782,13 +1781,13 @@ bool game_sv_CaptureTheArtefact::OnTouchItem(CSE_ActorMP *actor, CSE_Abstract *i
 	return true;
 }
 
-void game_sv_CaptureTheArtefact::OnDetach(u16 eid_who, u16 eid_target)
+void game_sv_CaptureTheArtefact::OnDetach(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_target)
 {
 	TeamsMap::iterator te = teams.end();
-	TeamsMap::iterator artefactOfTeam = std::find_if(teams.begin(), teams.end(), 
-		[eid_target](const auto& team) {
-			return SearchArtefactIdFunctor()(team, eid_target);
-		});
+	TeamsMap::iterator artefactOfTeam = std::ranges::find_if(teams, 
+	                                                         [eid_target](const auto& team) {
+		                                                         return SearchArtefactIdFunctor()(team, eid_target);
+	                                                         });
 	
 	CSE_ActorMP *e_who = smart_cast<CSE_ActorMP*>(m_server->ID_to_entity(eid_who));
 	CSE_Abstract *e_item = m_server->ID_to_entity(eid_target);
@@ -1821,13 +1820,13 @@ void game_sv_CaptureTheArtefact::OnDetach(u16 eid_who, u16 eid_target)
 	OnDetachItem(e_who, e_item);
 }
 
-bool game_sv_CaptureTheArtefact::OnActivate(u16 eid_who, u16 eid_target)
+bool game_sv_CaptureTheArtefact::OnActivate(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_target)
 {
 	TeamsMap::iterator te = teams.end();
-	TeamsMap::iterator artefactOfTeam = std::find_if(teams.begin(), teams.end(),
-		[eid_target](const auto& team) {
-			return SearchArtefactIdFunctor()(team, eid_target);
-		});
+	TeamsMap::iterator artefactOfTeam = std::ranges::find_if(teams,
+	                                                         [eid_target](const auto& team) {
+		                                                         return SearchArtefactIdFunctor()(team, eid_target);
+	                                                         });
 	
 	CSE_ActorMP *e_who = smart_cast<CSE_ActorMP*>(m_server->ID_to_entity(eid_who));
 	CSE_Abstract *e_item = m_server->ID_to_entity(eid_target);
@@ -1906,7 +1905,7 @@ void game_sv_CaptureTheArtefact::OnDetachItem(CSE_ActorMP *actor, CSE_Abstract *
 	if (item->m_tClassID == CLSID_OBJECT_PLAYERS_BAG)
 	{
 		//move all items from player to rukzak
-		xr_vector<u16>::const_iterator it_e = actor->children.end();
+		auto it_e = actor->children.end();
 		
 		xr_vector<CSE_Abstract*>			to_transfer;
 		xr_vector<CSE_Abstract*>			to_destroy;
@@ -1914,15 +1913,15 @@ void game_sv_CaptureTheArtefact::OnDetachItem(CSE_ActorMP *actor, CSE_Abstract *
 		// may be there is a sense to move next invokation into the ProcessDeath method...
 		FillDeathActorRejectItems(actor, to_reject);
 
-		for (xr_vector<u16>::const_iterator it = actor->children.begin();
+		for (auto it = actor->children.begin();
 			it != it_e; ++it)
 		{
-			u16 ItemID					= *it;
+			auto ItemID					= *it;
 			CSE_Abstract* e_item		= get_entity_from_eid(ItemID);
 
 			R_ASSERT(e_item->ID_Parent == actor->ID);
 			
-			if (std::find(to_reject.begin(), to_reject.end(), e_item) != to_reject.end())
+			if (std::ranges::find(to_reject, e_item) != to_reject.end())
 				continue;
 
 			if ((e_item->m_tClassID == CLSID_OBJECT_W_KNIFE) ||
@@ -1958,15 +1957,15 @@ void game_sv_CaptureTheArtefact::OnDetachItem(CSE_ActorMP *actor, CSE_Abstract *
 		if (EventPack.B.count > 2)	
 			u_EventSend(EventPack);
 
-		std::for_each(to_destroy.begin(), to_destroy.end(),
-			[this](CSE_Abstract* item) {
-				DestroyGameItem(item);
-			});
+		std::ranges::for_each(to_destroy,
+		                      [this](CSE_Abstract* item) {
+			                      DestroyGameItem(item);
+		                      });
 
-		std::for_each(to_reject.begin(), to_reject.end(),
-			[this](CSE_Abstract* item) {
-				RejectGameItem(item);
-			});
+		std::ranges::for_each(to_reject,
+		                      [this](CSE_Abstract* item) {
+			                      RejectGameItem(item);
+		                      });
 
 	};
 }
@@ -2094,7 +2093,7 @@ void game_sv_CaptureTheArtefact::RespawnDeadPlayers()
 	m_server->ForEachClientDoSender(tmp_functor);
 }
 
-void game_sv_CaptureTheArtefact::OnObjectEnterTeamBase(u16 id, u16 zone_team)
+void game_sv_CaptureTheArtefact::OnObjectEnterTeamBase(ALife::_OBJECT_ID id, u16 zone_team)
 {
 	CSE_Abstract*			e_who	= m_server->ID_to_entity(id);
 	VERIFY(e_who);
@@ -2108,7 +2107,7 @@ void game_sv_CaptureTheArtefact::OnObjectEnterTeamBase(u16 id, u16 zone_team)
 	}
 }
 
-void game_sv_CaptureTheArtefact::OnObjectLeaveTeamBase(u16 id, u16 zone_team)
+void game_sv_CaptureTheArtefact::OnObjectLeaveTeamBase(ALife::_OBJECT_ID id, u16 zone_team)
 {
 	CSE_Abstract*			e_who	= m_server->ID_to_entity(id);
 	if (!e_who)
@@ -2145,7 +2144,7 @@ void game_sv_CaptureTheArtefact::ActorDeliverArtefactOnBase(CSE_ActorMP *actor, 
 	GenerateGameMessage(P);
 	P.w_u32(GAME_EVENT_ARTEFACT_ONBASE);
 	P.w_u8(static_cast<u8>(actorTeam));
-	P.w_u16(xrCData->ps->GameID);
+	P << xrCData->ps->GameID;
 	u_EventSend(P);
 	
 	R_ASSERT2(teams.find(actorTeam) != teams.end(), "actor team not found");
@@ -2436,12 +2435,12 @@ bool game_sv_CaptureTheArtefact::OnPreCreate(CSE_Abstract* E)
 	return inherited::OnPreCreate(E);
 }
 
-void game_sv_CaptureTheArtefact::OnCreate(u16 eid_who)
+void game_sv_CaptureTheArtefact::OnCreate(ALife::_OBJECT_ID eid_who)
 {
 	inherited::OnCreate					(eid_who);
 }
 
-void game_sv_CaptureTheArtefact::OnDestroyObject(u16 eid_who)
+void game_sv_CaptureTheArtefact::OnDestroyObject(ALife::_OBJECT_ID eid_who)
 {
 	if (eid_who == m_dwSM_CurViewEntity && m_bSpectatorMode)
 	{
@@ -2451,7 +2450,7 @@ void game_sv_CaptureTheArtefact::OnDestroyObject(u16 eid_who)
 	m_item_respawner.check_to_delete(eid_who);
 }
 
-void game_sv_CaptureTheArtefact::OnPostCreate(u16 id_who)
+void game_sv_CaptureTheArtefact::OnPostCreate(ALife::_OBJECT_ID id_who)
 {
 	inherited::OnPostCreate(id_who);
 	CSE_Abstract*			entity = get_entity_from_eid(id_who);

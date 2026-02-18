@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 
+#include "alife_space.h"
 #include "icollisiondamagereceiver.h"
 #include "IPhysicsShellHolder.h"
 
@@ -23,7 +24,7 @@ void DamageReceiverCollisionCallback(bool& do_colide,bool bo1,dContact& c,SGameM
 	VERIFY						(ud_self);
 	IPhysicsShellHolder			*o_self			=	ud_self->ph_ref_object;
 	IPhysicsShellHolder			*o_damager		=	nullptr;if(ud_damager)o_damager=ud_damager->ph_ref_object;
-	u16							source_id		=	o_damager ? o_damager->ObjectID():u16(-1);
+	auto							source_id		=	o_damager ? o_damager->ObjectID():ALife::INVALID_OBJECT_ID;
 
 	//CPHCollisionDamageReceiver	*dr	= static_cast<CPhysicsShellHolder*>( o_self )->PHCollisionDamageReceiver();
 	ICollisionDamageReceiver	*dr	= ( o_self )->ObjectPhCollisionDamageReceiver();
@@ -120,7 +121,7 @@ void BreakableObjectCollisionCallback(bool&/**do_colide/**/,bool bo1,dContact& c
 	Fvector dir	= Fvector().set(-c.geom.normal[0]*norm_sign,-c.geom.normal[1]*norm_sign,-c.geom.normal[2]*norm_sign);
 	Fvector pos	= Fvector().set(c.geom.pos[0],c.geom.pos[1],c.geom.pos[2]);
 
-	damag_receiver->CollisionHit( u16(-1), u16(-1), c_damage, dir, pos );
+	damag_receiver->CollisionHit( ALife::INVALID_OBJECT_ID, u16(-1), c_damage, dir, pos );
 	
 	//VERIFY( this_object->m_pUnbrokenObject );
 

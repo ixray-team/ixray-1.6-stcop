@@ -1,6 +1,7 @@
 #ifndef __XR_OBJECT_H__
 #define __XR_OBJECT_H__
 
+#include "../xrEngine/AI/alife_space.h"
 #include "../xrCore/Collision/ISpatial.h"
 #include "ISheduled.h"
 #include "IRenderable.h"
@@ -96,22 +97,25 @@ public:
 		u32			dwTime;
 		Fvector		vPosition;
 	};
-	union	ObjectProperties
+	struct ObjectProperties
 	{
-		struct 
+		ALife::_OBJECT_ID net_ID;
+		union
 		{
-			u32	net_ID			:	16;
-			u32	bActiveCounter	:	8;
-			u32	bEnabled		:	1;
-			u32	bVisible		:	1;
-			u32	bDestroy		:	1;
-			u32	net_Local		:	1;
-			u32	net_Ready		:	1;
-			u32 net_SV_Update	:	1;
-			u32 crow			:	1;
-			u32	bPreDestroy		:	1;
+			struct 
+			{
+				u16	bActiveCounter	:	8;
+				u16	bEnabled		:	1;
+				u16	bVisible		:	1;
+				u16	bDestroy		:	1;
+				u16	net_Local		:	1;
+				u16	net_Ready		:	1;
+				u16 net_SV_Update	:	1;
+				u16 crow			:	1;
+				u16	bPreDestroy		:	1;
+			};
+			u16 storage;
 		};
-		u32	storage;
 	};
 
 private:
@@ -154,8 +158,8 @@ public:
 	// Network
 	ICF bool							Local				()			const	{ return Props.net_Local;	}
 	ICF bool							Remote				()			const	{ return !Props.net_Local;	}
-	ICF u16								ID					()			const	{ return Props.net_ID;		}
-	ICF void							setID				(u16 _ID)			{ Props.net_ID = _ID;		}
+	ICF ALife::_OBJECT_ID				ID					()			const	{ return Props.net_ID;		}
+	ICF void							setID				(ALife::_OBJECT_ID _ID)	{ Props.net_ID = _ID;		}
 	virtual bool						Ready				()					{ return Props.net_Ready;	}
 	bool								GetTmpPreDestroy		()		const	{ return Props.bPreDestroy;	}
 	void								SetTmpPreDestroy	(bool b)			{ Props.bPreDestroy = b;}

@@ -169,7 +169,7 @@ public:
 			NET_Packet					P;
 			l_pPlayer->u_EventGen		(P,GE_GAME_EVENT,l_pPlayer->ID()	);
 			P.w_u16						(GAME_EVENT_PLAYER_KILL);
-			P.w_u16						(u16(l_pPlayer->ID())	);
+			P << l_pPlayer->ID();
 			l_pPlayer->u_EventSend		(P);
 		}
 	}

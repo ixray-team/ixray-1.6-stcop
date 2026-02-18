@@ -93,7 +93,7 @@ void CALifeSimulatorBase::reload			(const char* section)
 	m_initialized				= true;
 }
 
-CSE_Abstract *CALifeSimulatorBase::spawn_item	(const char* section, const Fvector &position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, u16 parent_id, bool registration)
+CSE_Abstract *CALifeSimulatorBase::spawn_item	(const char* section, const Fvector &position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ALife::_OBJECT_ID parent_id, bool registration)
 {
 	CSE_Abstract				*abstract = F_entity_Create(section);
 	R_ASSERT3					(abstract,"Cannot find item with section",section);
@@ -101,9 +101,20 @@ CSE_Abstract *CALifeSimulatorBase::spawn_item	(const char* section, const Fvecto
 	abstract->s_name			= section;
 //.	abstract->s_gameid			= u8(GAME_SINGLE);
 	abstract->s_RP				= 0xff;
-	abstract->ID				= server().PerformIDgen(0xffff);
+	abstract->ID				= server().PerformIDgen(ALife::INVALID_OBJECT_ID);
+
+	{
+		auto ExistingEntity = Level().Objects.net_Find(abstract->ID);
+		IVERIFY_M(!ExistingEntity,
+			"New generated ID [%d] for [%s] is already used by client object [%s]!",
+			abstract->ID,
+			section,
+			ExistingEntity->cName().c_str()
+			);
+	}
+
 	abstract->ID_Parent			= parent_id;
-	abstract->ID_Phantom		= 0xffff;
+	abstract->ID_Phantom		= ALife::INVALID_OBJECT_ID;
 	abstract->o_Position		= position;
 	abstract->m_wVersion		= SPAWN_VERSION;
 	
@@ -129,7 +140,7 @@ CSE_Abstract *CALifeSimulatorBase::spawn_item	(const char* section, const Fvecto
 
 	dynamic_object->m_tNodeID	= level_vertex_id;
 	dynamic_object->m_tGraphID	= game_vertex_id;
-	dynamic_object->m_tSpawnID	= u16(-1);
+	dynamic_object->m_tSpawnID	= ALife::INVALID_OBJECT_ID;
 
 	if (registration)
 		register_object				(dynamic_object,true);
@@ -159,7 +170,7 @@ CSE_Abstract *CALifeSimulatorBase::create(CSE_ALifeGroupAbstract *tpALifeGroupAb
 	k->UPDATE_Read				(tNetPacket);
 	k->s_name					= S;
 	k->m_tSpawnID				= j->m_tSpawnID;
-	k->ID						= server().PerformIDgen(0xffff);
+	k->ID						= server().PerformIDgen(ALife::INVALID_OBJECT_ID);
 	k->m_bDirectControl			= false;
 	k->m_bALifeControl			= true;
 	
@@ -203,7 +214,7 @@ void CALifeSimulatorBase::create(CSE_ALifeDynamicObject *&i, CSE_ALifeDynamicObj
 	if (!graph().actor() && smart_cast<CSE_ALifeCreatureActor*>(i))
 		i->ID					= 0;
 	else
-		i->ID					= server().PerformIDgen(0xffff);
+		i->ID					= server().PerformIDgen(ALife::INVALID_OBJECT_ID);
 
 	register_object				(i,true);
 	i->m_bALifeControl			= true;
@@ -244,14 +255,14 @@ void CALifeSimulatorBase::create	(CSE_ALifeObject *object)
 //	Msg							("Creating object from client spawn [%d][%d][%s][%s]",dynamic_object->ID,dynamic_object->ID_Parent,dynamic_object->name(),dynamic_object->name_replace());
 #endif
 
-	if (0xffff != dynamic_object->ID_Parent) {
-		u16							id = dynamic_object->ID_Parent;
+	if (ALife::INVALID_OBJECT_ID != dynamic_object->ID_Parent) {
+		auto id = dynamic_object->ID_Parent;
 		CSE_ALifeDynamicObject		*parent = objects().object(id);
 		VERIFY						(parent);
 		dynamic_object->m_tGraphID	= parent->m_tGraphID;
 		dynamic_object->o_Position	= parent->o_Position;
 		dynamic_object->m_tNodeID	= parent->m_tNodeID;
-		dynamic_object->ID_Parent	= 0xffff;
+		dynamic_object->ID_Parent	= ALife::INVALID_OBJECT_ID;
 		register_object				(dynamic_object,true);
 		dynamic_object->ID_Parent	= id;
 	}
@@ -270,19 +281,14 @@ void CALifeSimulatorBase::release	(CSE_Abstract *abstract, bool alife_query)
 	VERIFY							(object);
 
 	if (!object->children.empty()) {
-		u32							children_count = (u32)object->children.size();
-		u32							bytes = children_count*sizeof(ALife::_OBJECT_ID);
-		ALife::_OBJECT_ID			*children = (ALife::_OBJECT_ID*)_alloca(bytes);
-		CopyMemory					(children,&*object->children.begin(),bytes);
-
-		ALife::_OBJECT_ID			*I = children;
-		ALife::_OBJECT_ID			*E = children + children_count;
-		for ( ; I != E; ++I) {
-			CSE_ALifeDynamicObject	*child = objects().object(*I,true);
+		for(auto ID : object->children)
+		{
+			CSE_ALifeDynamicObject	*child = objects().object(ID,true);
 			if (!child)
+			{
 				continue;
-
-			release					(child,alife_query);
+			}
+			release(child,alife_query);
 		}
 	}
 
@@ -296,12 +302,12 @@ void CALifeSimulatorBase::release	(CSE_Abstract *abstract, bool alife_query)
 
 void CALifeSimulatorBase::append_item_vector(OBJECT_VECTOR &tObjectVector, ITEM_P_VECTOR &tItemList)
 {
-	OBJECT_IT	I = tObjectVector.begin();
-	OBJECT_IT	E = tObjectVector.end();
-	for ( ; I != E; ++I) {
-		CSE_ALifeInventoryItem *l_tpALifeInventoryItem = objects().object(*I)->cast_inventory_item();
+	for (auto ID : tObjectVector) {
+		CSE_ALifeInventoryItem *l_tpALifeInventoryItem = objects().object(ID)->cast_inventory_item();
 		if (l_tpALifeInventoryItem)
-			tItemList.push_back		(l_tpALifeInventoryItem);
+		{
+			tItemList.push_back(l_tpALifeInventoryItem);
+		}
 	}
 }
 
@@ -330,10 +336,10 @@ void CALifeSimulatorBase::assign_death_position(CSE_ALifeCreatureAbstract *tpALi
 		Msg									("[LSS] Generated death position %s[%f][%f][%f] -> [%f][%f][%f] : [%d]",tpALifeCreatureAbstract->name_replace(),VPUSH(tpALifeCreatureAbstract->o_Position),VPUSH((*i).level_point()),(*i).level_vertex_id());
 	}
 #endif
-	tpALifeCreatureAbstract->o_Position		= (*i).level_point();
-	tpALifeCreatureAbstract->m_tNodeID		= (*i).level_vertex_id();
-	R_ASSERT2								((ai().game_graph().vertex(tGraphID)->level_id() != graph().level().level_id()) || ai().level_graph().valid_vertex_id(tpALifeCreatureAbstract->m_tNodeID),"Invalid vertex");
-	tpALifeCreatureAbstract->m_fDistance	= (*i).distance();
+	tpALifeCreatureAbstract->o_Position		= i->level_point();
+	tpALifeCreatureAbstract->m_tNodeID		= i->level_vertex_id();
+	R_ASSERT2								(ai().game_graph().vertex(tGraphID)->level_id() != graph().level().level_id() || ai().level_graph().valid_vertex_id(tpALifeCreatureAbstract->m_tNodeID),"Invalid vertex");
+	tpALifeCreatureAbstract->m_fDistance	= i->distance();
 	CSE_ALifeMonsterAbstract* l_tpALifeMonsterAbstract = tpALifeCreatureAbstract->cast_monster_abstract();
 	if (l_tpALifeMonsterAbstract)
 		l_tpALifeMonsterAbstract->m_tPrevGraphID = l_tpALifeMonsterAbstract->m_tNextGraphID = l_tpALifeMonsterAbstract->m_tGraphID;

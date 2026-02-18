@@ -42,9 +42,9 @@ protected:
 
 	const char*							pWinnigPlayerName;
 
-	virtual		void				ReadOptions				(shared_str &options);
-	virtual		void				ConsoleCommands_Create	();
-	virtual		void				ConsoleCommands_Clear	();
+	void				ReadOptions				(shared_str &options) override;
+	void				ConsoleCommands_Create	() override;
+	void				ConsoleCommands_Clear	() override;
 	
 	/////////////////////////////////////////////////////////////
 	
@@ -60,7 +60,7 @@ protected:
 	u32								m_dwLastAnomalySetID;
 	u32								m_dwLastAnomalyStartTime;	
 	
-	using ANOMALIES_ID = xr_vector<u16>;
+	using ANOMALIES_ID = xr_vector<ALife::_OBJECT_ID>;
 	using ANOMALIES_ID_it = ANOMALIES_ID::iterator;
 
 	using ANOMALY_SETS_ID = xr_vector<ANOMALIES_ID>;
@@ -93,13 +93,13 @@ protected:
 
 	virtual		void				OnPlayerBuyFinished		(ClientID id_who, NET_Packet& P);
 
-	virtual		void				CheckItem				(game_PlayerState*	ps, PIItem pItem, xr_vector<s16> *pItemsDesired, xr_vector<u16> *pItemsToDelete, bool ExactMatch);
+	virtual		void				CheckItem				(game_PlayerState*	ps, PIItem pItem, xr_vector<s16> *pItemsDesired, xr_vector<ALife::_OBJECT_ID> *pItemsToDelete, bool ExactMatch);
 	virtual		bool				HasChampion				();
 
 	virtual		void				check_Player_for_Invincibility	(game_PlayerState* ps);
 
 	virtual		void				Check_ForClearRun		(game_PlayerState* ps);
-	virtual		void				FillDeathActorRejectItems(CSE_ActorMP *actor, xr_vector<CSE_Abstract*> & to_reject);
+	void				FillDeathActorRejectItems(CSE_ActorMP *actor, xr_vector<CSE_Abstract*> & to_reject) override;
 
 	u32								m_dwWarmUp_CurTime;
 	bool							m_bInWarmUp;
@@ -109,66 +109,66 @@ protected:
 public:
 									game_sv_Deathmatch		();
 				virtual				~game_sv_Deathmatch		();
-	virtual		void				Create					(shared_str &options);
+	void				Create					(shared_str &options) override;
 
-	virtual		const char*				type_name				() const { return "deathmatch";};
-	virtual		void				net_Export_State		(NET_Packet& P, ClientID id_to);
+	const char*				type_name				() const override { return "deathmatch";};
+	void				net_Export_State		(NET_Packet& P, ClientID id_to) override;
 
-	virtual		void				OnEvent					(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender );
+	void				OnEvent					(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender ) override;
 
 	virtual		void				OnTeamScore				(u32 /**team/**/, bool)						;		// команда выиграла
 	virtual		void				OnTeamsInDraw			()								{};		// ничья
 
 	// Events
-	virtual		void				OnRoundStart			();												// старт раунда
-	virtual		void				OnRoundEnd				();	// round_end_reason							// конец раунда
+	void				OnRoundStart			() override;												// старт раунда
+	void				OnRoundEnd				() override;	// round_end_reason							// конец раунда
 	virtual		void				OnDelayedRoundEnd		( ERoundEnd_Result reason );
 	virtual		void				OnDelayedTeamEliminated();
 
-	virtual		void				OnPlayerHitPlayer		(u16 id_hitter, u16 id_hitted, NET_Packet& P); //игрок получил Hit
-	virtual		void				OnPlayerHitPlayer_Case	(game_PlayerState* ps_hitter, game_PlayerState* ps_hitted, SHit* pHitS);	
+	virtual void OnPlayerHitPlayer(ALife::_OBJECT_ID id_hitter, ALife::_OBJECT_ID id_hitted, NET_Packet& P) override; //игрок получил Hit
+	virtual		void				OnPlayerHitPlayer_Case	(game_PlayerState* ps_hitter, game_PlayerState* ps_hitted, SHit* pHitS);
 
-	virtual		bool				OnTouch					(u16 eid_who, u16 eid_what, bool bForced = false);
-	virtual		void				OnDetach				(u16 eid_who, u16 eid_what);
+	bool				OnTouch					(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_what, bool bForced = false) override;
+	void				OnDetach				(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_what) override;
 
-	virtual		bool				OnPreCreate				(CSE_Abstract* E);
-	virtual		void				OnCreate				(u16 eid_who);
-	virtual		void				OnPostCreate			(u16 id_who);
+	bool				OnPreCreate				(CSE_Abstract* E) override;
+	void				OnCreate				(ALife::_OBJECT_ID eid_who) override;
+	void				OnPostCreate			(ALife::_OBJECT_ID id_who) override;
 
-	virtual		void				OnPlayerConnect			(ClientID id_who);
-	virtual		void				OnPlayerConnectFinished	(ClientID id_who);
-	virtual		void				OnPlayerDisconnect		(ClientID id_who, LPSTR Name, u16 GameID);
-	virtual		void				OnPlayerReady			(ClientID id_who);
+	void				OnPlayerConnect			(ClientID id_who) override;
+	void				OnPlayerConnectFinished	(ClientID id_who) override;
+	void				OnPlayerDisconnect		(ClientID id_who, LPSTR Name, ALife::_OBJECT_ID GameID) override;
+	void				OnPlayerReady			(ClientID id_who) override;
 	virtual		KILL_RES			GetKillResult			(game_PlayerState* pKiller, game_PlayerState* pVictim);
 	virtual		bool				OnKillResult			(KILL_RES KillResult, game_PlayerState* pKiller, game_PlayerState* pVictim);
 	virtual		void				OnGiveBonus				(KILL_RES KillResult, game_PlayerState* pKiller, game_PlayerState* pVictim, KILL_TYPE KillType, SPECIAL_KILL_TYPE SpecialKillType, CSE_Abstract* pWeaponA);
 	virtual		void				Processing_Victim		(game_PlayerState* pVictim, game_PlayerState* pKiller);
 	virtual		void				Victim_Exp				(game_PlayerState* pVictim);
-	virtual		bool				CheckTeams				() { return false; };
-	virtual		void				OnPlayerKillPlayer		(game_PlayerState* ps_killer, game_PlayerState* ps_killed, KILL_TYPE KillType, SPECIAL_KILL_TYPE SpecialKillType, CSE_Abstract* pWeaponA);
-		
-	virtual		void				OnPlayer_Sell_Item		(ClientID id_who, NET_Packet &P);
-	
-	virtual		void				OnPlayerSelectSkin		(NET_Packet& P, ClientID sender);
+	bool				CheckTeams				() override { return false; };
+	void				OnPlayerKillPlayer		(game_PlayerState* ps_killer, game_PlayerState* ps_killed, KILL_TYPE KillType, SPECIAL_KILL_TYPE SpecialKillType, CSE_Abstract* pWeaponA) override;
+
+	void				OnPlayer_Sell_Item		(ClientID id_who, NET_Packet &P) override;
+
+	void				OnPlayerSelectSkin		(NET_Packet& P, ClientID sender) override;
 	virtual		void				OnPlayerChangeSkin		(ClientID id_who, s8 skin);
 	
 	virtual		void				OnFraglimitExceed		();
 	virtual		void				OnTimelimitExceed		();
 				void				OnPlayerScores			();
-	virtual		void				OnDestroyObject			(u16 eid_who);
-	virtual		void				OnPlayerFire (ClientID id_who, NET_Packet &P);
+	void				OnDestroyObject			(ALife::_OBJECT_ID eid_who) override;
+	void				OnPlayerFire (ClientID id_who, NET_Packet &P) override;
 	// Main
-	virtual		void				Update					();
+	void				Update					() override;
 				bool				AllPlayers_Ready		();
 
-	virtual		void				assign_RP				(CSE_Abstract* E, game_PlayerState* ps_who);
+	void				assign_RP				(CSE_Abstract* E, game_PlayerState* ps_who) override;
 	virtual		u32					RP_2_Use				(CSE_Abstract* E);
 
 #ifdef DEBUG_DRAW
 	virtual		void				OnRender				();
 #endif
 
-	virtual		void				SetSkin					(CSE_Abstract* E, u16 Team, u16 ID);//	{};
+	void				SetSkin					(CSE_Abstract* E, u16 Team, u16 ID) override;//	{};
 
 	virtual		void				SpawnWeaponsForActor	(CSE_Abstract* pE, game_PlayerState*	ps);
 

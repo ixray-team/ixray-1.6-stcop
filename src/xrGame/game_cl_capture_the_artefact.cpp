@@ -570,9 +570,9 @@ void game_cl_CaptureTheArtefact::OnPlayerLeaveBase()
 void game_cl_CaptureTheArtefact::net_import_state(NET_Packet& P)
 {
 	inherited::net_import_state(P);
-		
-	P.r_u16(greenArtefact);
-	P.r_u16(blueArtefact);
+
+	P >> greenArtefact;
+	P >> blueArtefact;
 
 	P.r_vec3(greenTeamRPos);
 	P.r_vec3(blueTeamRPos);
@@ -1452,13 +1452,13 @@ void game_cl_CaptureTheArtefact::OnSwitchPhase(u32 old_phase, u32 new_phase)
 	}
 }
 
-u16 game_cl_CaptureTheArtefact::GetGreenArtefactOwnerID() const
+ALife::_OBJECT_ID game_cl_CaptureTheArtefact::GetGreenArtefactOwnerID() const
 {
 	R_ASSERT2(haveGotUpdate, "synchronization problem: not received client update, while try to get values");
 	return greenArtefactOwner;
 }
 
-u16 game_cl_CaptureTheArtefact::GetBlueArtefactOwnerID() const
+ALife::_OBJECT_ID game_cl_CaptureTheArtefact::GetBlueArtefactOwnerID() const
 {
 	R_ASSERT2(haveGotUpdate, "synchronization problem: not received client update, while try to get values");
 	return blueArtefactOwner;
@@ -1481,13 +1481,13 @@ float game_cl_CaptureTheArtefact::GetBaseRadius() const
 	R_ASSERT2(haveGotUpdate, "synchronization problem: not received client update, while try to get values");
 	return m_baseRadius;
 }
-u16 game_cl_CaptureTheArtefact::GetGreenArtefactID() const
+ALife::_OBJECT_ID game_cl_CaptureTheArtefact::GetGreenArtefactID() const
 {
 	R_ASSERT2(haveGotUpdate, "synchronization problem: not received client update, while try to get values");
 	return greenArtefact;
 }
 
-u16 game_cl_CaptureTheArtefact::GetBlueArtefactID() const
+ALife::_OBJECT_ID game_cl_CaptureTheArtefact::GetBlueArtefactID() const
 {
 	R_ASSERT2(haveGotUpdate, "synchronization problem: not received client update, while try to get values");
 	return blueArtefact;
@@ -1564,9 +1564,9 @@ bool game_cl_CaptureTheArtefact::PlayerCanSprint(CActor* pActor)
 	if (m_bBearerCantSprint)
 		return true;
 
-	u16 greenArtefactOwner_ = GetGreenArtefactOwnerID();
-	u16 blueArtefactOwner_ = GetBlueArtefactOwnerID();
-	u16 myID = pActor->ID();
+	auto greenArtefactOwner_ = GetGreenArtefactOwnerID();
+	auto blueArtefactOwner_ = GetBlueArtefactOwnerID();
+	auto myID = pActor->ID();
 	if ((myID == greenArtefactOwner_) ||
 		(myID == blueArtefactOwner_))
 	{

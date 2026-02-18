@@ -77,7 +77,7 @@ public:
 
 	IC		bool					attached	() const
 	{
-		return						(base()->ID_Parent < 0xffff);
+		return						(base()->ID_Parent < ALife::INVALID_OBJECT_ID);
 	}
 	virtual bool					bfUseful();
 
@@ -248,7 +248,7 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemArtefact,CSE_ALifeItem)
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemPDA,CSE_ALifeItem)
-	u16								m_original_owner;
+	ALife::_OBJECT_ID				m_original_owner;
 	shared_str						m_specific_character;
 	shared_str						m_info_portion;
 

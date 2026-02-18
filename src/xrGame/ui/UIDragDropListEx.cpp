@@ -441,7 +441,7 @@ void CUIDragDropListEx::GetClientArea(Frect& r)
 }
 
 // FFx0001
-void CUIDragDropListEx::ClearAll(bool bDestroy, xr_vector<u16> IgnoredItemsIds)
+void CUIDragDropListEx::ClearAll(bool bDestroy, xr_vector<ALife::_OBJECT_ID> IgnoredItemsIds)
 {
 	if (bDestroy)
 	{
@@ -1168,7 +1168,7 @@ bool CUICellContainer::ValidCell(const Ivector2& pos) const
 }
 
 // FFx0001 add support ignore items by ids
-void CUICellContainer::ClearAll(bool bDestroy, xr_vector<u16> IgnoredItemsIds)
+void CUICellContainer::ClearAll(bool bDestroy, xr_vector<ALife::_OBJECT_ID> IgnoredItemsIds)
 {
 	m_selectorArea = { 0,0,1,1 };
 
@@ -1189,7 +1189,7 @@ void CUICellContainer::ClearAll(bool bDestroy, xr_vector<u16> IgnoredItemsIds)
 			{
 				if (PIItem item = (PIItem)(ci->m_pData))
 				{
-					u16 ItemId = item->object_id();
+					auto ItemId = item->object_id();
 					for (size_t i = 0; i < cnt; i++)
 					{
 						if (IgnoredItemsIds[i] == ItemId)
@@ -1225,7 +1225,7 @@ void CUICellContainer::ClearAll(bool bDestroy, xr_vector<u16> IgnoredItemsIds)
 
 		bool IsIgnored = false;
 		if (DeepSearch) {
-			u16 ItemId = ((PIItem)(wc->m_pData))->object_id();
+			auto ItemId = ((PIItem)(wc->m_pData))->object_id();
 			for (size_t i = 0; i < cnt; i++)
 			{
 				if (IgnoredItemsIds[i] == ItemId)

@@ -82,7 +82,8 @@ void CSE_ALifeDynamicObject::attach	(CSE_ALifeInventoryItem *tpALifeInventoryIte
 	if (!bAddChildren)
 		return;
 
-	R_ASSERT2			(std::find(children.begin(),children.end(),tpALifeInventoryItem->base()->ID) == children.end(),"Item is already inside the inventory");
+	R_ASSERT2(std::ranges::find(children,tpALifeInventoryItem->base()->ID) == children.end(),
+	          "Item is already inside the inventory");
 	children.push_back	(tpALifeInventoryItem->base()->ID);
 }
 
@@ -98,7 +99,7 @@ void CSE_ALifeDynamicObject::detach(CSE_ALifeInventoryItem *tpALifeInventoryItem
 	if (!bALifeRequest)
 		return;
 
-	tpALifeInventoryItem->base()->ID_Parent	= 0xffff;
+	tpALifeInventoryItem->base()->ID_Parent	= ALife::INVALID_OBJECT_ID;
 
 	if (I) {
 		children.erase			(*I);
@@ -108,7 +109,7 @@ void CSE_ALifeDynamicObject::detach(CSE_ALifeInventoryItem *tpALifeInventoryItem
 	if (!bRemoveChildren)
 		return;
 
-	ALife::OBJECT_IT			i = std::find(children.begin(),children.end(),tpALifeInventoryItem->base()->ID);
+	ALife::OBJECT_IT			i = std::ranges::find(children,tpALifeInventoryItem->base()->ID);
 	R_ASSERT2					(children.end() != i,"Can't detach an item which is not on my own");
 	children.erase				(i);
 }
@@ -119,21 +120,25 @@ void add_online_impl						(CSE_ALifeDynamicObject *object, const bool &update_re
 	ClientID					clientID;
 	clientID.set				(object->alife().server().GetServerClient() ? object->alife().server().GetServerClient()->ID.value() : 0);
 
-	ALife::OBJECT_IT			I = object->children.begin();
-	ALife::OBJECT_IT			E = object->children.end();
-	for ( ; I != E; ++I) {
+	for (auto ID : object->children) {
 		//Alundaio:
-		if (*I == ai().alife().graph().actor()->ID)
+		if (ID == ai().alife().graph().actor()->ID)
+		{
 			continue;
+		}
 		//-Alundaio
 
-		CSE_ALifeDynamicObject	*l_tpALifeDynamicObject = ai().alife().objects().object(*I);
+		CSE_ALifeDynamicObject	*l_tpALifeDynamicObject = ai().alife().objects().object(ID);
 		if (!l_tpALifeDynamicObject)
+		{
 			continue;
+		}
 
 		CSE_ALifeInventoryItem* l_tpALifeInventoryItem = smart_cast<CSE_ALifeInventoryItem*>(l_tpALifeDynamicObject);
 		if (!l_tpALifeInventoryItem)
+		{
 			continue;
+		}
 
 		//R_ASSERT2				(l_tpALifeInventoryItem,"Non inventory item object has parent?!");
 

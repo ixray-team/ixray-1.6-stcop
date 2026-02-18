@@ -106,7 +106,7 @@ void CWeaponRPG7::FireTrace(const Fvector& P, const Fvector& D)
 		{
 			NET_Packet P;
 			u_EventGen(P, GE_LAUNCH_ROCKET, ID());
-			P.w_u16(u16(getCurrentRocket()->ID()));
+			P << getCurrentRocket()->ID();
 			u_EventSend(P);
 		}
 	}
@@ -326,17 +326,17 @@ void CWeaponRPG7::ReactiveHit()
 void CWeaponRPG7::OnEvent(NET_Packet& P, u16 type) 
 {
 	inherited::OnEvent(P,type);
-	u16 id;
+	ALife::_OBJECT_ID id;
 	switch (type) {
 		case GE_OWNERSHIP_TAKE : {
-			P.r_u16(id);
+			P >> id;
 			CRocketLauncher::AttachRocket(id, this);
 		} break;
 		case GE_OWNERSHIP_REJECT:
 		case GE_LAUNCH_ROCKET	: 
 			{
 			bool bLaunch = (type==GE_LAUNCH_ROCKET);
-			P.r_u16(id);
+			P >> id;
 			CRocketLauncher::DetachRocket(id, bLaunch);
 			if(bLaunch)
 				UpdateMissileVisibility();
