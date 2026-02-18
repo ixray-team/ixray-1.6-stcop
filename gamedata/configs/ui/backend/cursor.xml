@@ -3,4 +3,7 @@
     <cursor x="0" y="0" width="40" height="40" stretch="1" native_scale="false">
         <texture x="0" y="0" width="45" height="45" shader="hud\cursor">ui\ui_ani_cursor</texture>
     </cursor>
+    <cursor_3d x="0" y="0" width="42.7" height="41" stretch="1" native_scale="false" use_model="true">
+        <visual scale="1.35">dynamics\interface\ui_3d_cursor\ui_3d_cursor.ogf</visual>
+    </cursor_3d>
 </w>
