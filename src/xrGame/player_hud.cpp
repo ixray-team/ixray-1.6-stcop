@@ -1271,6 +1271,32 @@ player_hud::player_hud(bool invert)
 	m_blocked_part_idx = u16(-1);
 	m_bhands_visible = false;
 	m_legs_model = nullptr;
+
+	//Movement Layers
+
+	if (!pSettings->section_exist("hud_movement_layers"))
+	{
+		return;
+	}
+
+	shared_str layer_name;
+
+	for (u8 i = 0; i < EMovementLayers::eLayersCount; i++)
+	{
+		movement_layer* anm = new movement_layer();
+		layer_name.printf("movement_layer_%d", (EMovementLayers)i);
+		LPCSTR layer_line = pSettings->r_string("hud_movement_layers", *layer_name);
+
+		string128 buff = {};
+		_GetItem(layer_line, 0, buff);
+		anm->Load(buff);
+		_GetItem(layer_line, 1, buff);
+		anm->anim->Speed() = (atof(buff) ? atof(buff) : 1.0f);
+		_GetItem(layer_line, 2, buff);
+		anm->power = (atof(buff) ? atof(buff) : 1.0f);
+
+		m_movement_layers[i] = anm;
+	}
 }
 
 player_hud::~player_hud()
@@ -1289,6 +1315,8 @@ player_hud::~player_hud()
 	m_pool.clear				();
 
 	xr_delete(m_animator_item);
+
+	delete_data(m_movement_layers);
 }
 
 void player_hud::load(const shared_str& player_hud_sect)
@@ -1605,6 +1633,42 @@ void player_hud::update(const Fmatrix& cam_trans)
 	m_model->dcast_PKinematics()->CalculateBones_Invalidate();
 	m_model->dcast_PKinematics()->CalculateBones(TRUE);
 
+	bool need_blend_0 = m_attached_items[0] != nullptr && m_attached_items[0]->m_parent_hud_item->NeedMovementBlend();
+	bool need_blend_1 = m_attached_items[1] != nullptr && m_attached_items[1]->m_parent_hud_item->NeedMovementBlend();
+
+	for (movement_layer* anm : m_movement_layers)
+	{
+		if (anm == nullptr || anm->anim == nullptr || !anm->playing && anm->blend_scale <= 0.0f)
+		{
+			continue;
+		}
+
+		if (anm->playing && (need_blend_0 || need_blend_1))
+		{
+			anm->blend_scale += Device.fTimeDelta / 0.4f;
+		}
+		else
+		{
+			anm->blend_scale -= Device.fTimeDelta / 0.4f;
+		}
+
+		clamp(anm->blend_scale, 0.0f, 1.0f);
+
+		if (anm->blend_scale > 0.0f)
+		{
+			anm->anim->Update(Device.fTimeDelta);
+			m_transform.mulB_43(anm->XFORM());
+			m_transformL.mulB_43(anm->XFORM());
+		}
+		else
+		{
+			if (anm->playing)
+			{
+				anm->Stop(true);
+			}
+		}
+	}
+
 	if(m_attached_items[0])
 		m_attached_items[0]->update(true);
 
@@ -1807,23 +1871,32 @@ bool player_hud::allow_activation(CHudItem* item)
 
 void player_hud::attach_item(CHudItem* item)
 {
-	attachable_hud_item* pi			= create_hud_item(item->HudSection());
-	int item_idx					= pi->m_attach_place_idx;
-	
-	if (m_attached_items[item_idx] != pi || pi->m_parent_hud_item != item) {
-		if(m_attached_items[item_idx])
+	attachable_hud_item* pi = create_hud_item(item->HudSection());
+	int item_idx = pi->m_attach_place_idx;
+
+	if (m_attached_items[item_idx] != pi || pi->m_parent_hud_item != item)
+	{
+		if (m_attached_items[item_idx])
+		{
 			m_attached_items[item_idx]->m_parent_hud_item->on_b_hud_detach();
+		}
 
-		m_attached_items[item_idx]						= pi;
-		pi->m_parent_hud_item							= item;
+		m_attached_items[item_idx] = pi;
+		pi->m_parent_hud_item = item;
 
-		if(item_idx==0 && m_attached_items[1])
+		if (item_idx == 0 && m_attached_items[1])
+		{
 			m_attached_items[1]->m_parent_hud_item->CheckCompatibility(item);
+		}
 
 		item->on_a_hud_attach();
 	}
-	pi->m_parent_hud_item							= item;
+
+	pi->m_parent_hud_item = item;
+
+	g_player_hud->UpdateMovementLayers();
 }
+
 void player_hud::RestoreHandBlends(LPCSTR ignored_part)
 {
 	u16 part_id			= m_model->partitions().part_id(ignored_part);
@@ -1888,6 +1961,49 @@ void player_hud::calc_transform(u16 attach_slot_idx, const Fmatrix& offset, Fmat
 	Fmatrix ancor_m			= m_model->dcast_PKinematics()->LL_GetTransform(m_ancors[attach_slot_idx]);
 	result.mul				(m_transform, ancor_m);
 	result.mulB_43			(offset);
+}
+
+void player_hud::UpdateMovementLayers()
+{
+	CObject* current_entity = Level().CurrentEntity();
+	CActor* pActor = current_entity != nullptr ? current_entity->cast_actor() : nullptr;
+
+	if (pActor == nullptr)
+	{
+		return;
+	}
+
+	for (movement_layer* anm : m_movement_layers)
+	{
+		anm->Stop(false);
+	}
+
+	bool need_blend_0 = m_attached_items[0] != nullptr && m_attached_items[0]->m_parent_hud_item->NeedMovementBlend();
+	bool need_blend_1 = m_attached_items[1] != nullptr && m_attached_items[1]->m_parent_hud_item->NeedMovementBlend();
+
+	if (pActor->AnyMove() && (need_blend_0 || need_blend_1))
+	{
+		if ((pActor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & ACTOR_DEFS::EMoveCommand::mcSprint) != 0)
+		{
+			m_movement_layers[EMovementLayers::eSprint]->Play();
+		}
+		else if ((pActor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & ACTOR_DEFS::EMoveCommand::mcAccel) != 0 && (pActor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & ACTOR_DEFS::EMoveCommand::mcCrouch) == 0)
+		{
+			m_movement_layers[EMovementLayers::eWalkSlow]->Play();
+		}
+		else if ((pActor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & ACTOR_DEFS::EMoveCommand::mcAccel) == 0 && (pActor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & ACTOR_DEFS::EMoveCommand::mcCrouch) != 0)
+		{
+			m_movement_layers[EMovementLayers::eCrouch]->Play();
+		}
+		else if ((pActor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & mcAccel) != 0 && (pActor->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcCrouch) != 0)
+		{
+			m_movement_layers[EMovementLayers::eCrouchSlow]->Play();
+		}
+		else
+		{
+			m_movement_layers[EMovementLayers::eWalk]->Play();
+		}
+	}
 }
 
 void player_hud::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
@@ -1973,6 +2089,8 @@ void player_hud::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
 			}
 		}
 	}
+
+	UpdateMovementLayers();
 }
 
 bool player_hud::check_anim(const shared_str& anim_name, u16 place_idx)
