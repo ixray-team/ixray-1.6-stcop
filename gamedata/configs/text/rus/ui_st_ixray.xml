@@ -507,4 +507,22 @@
 	<string id="st_options_basic">
 		<text>Базовые параметры графики</text>
 	</string>
+	<string id="ui_rmw_select">
+		<text>Выбрать сектор</text>
+	</string>
+	<string id="ui_rmw_drop_weapon">
+		<text>Бросить оружие</text>
+	</string>
+	<string id="ui_rmw_night_vision">
+		<text>Ночное видение</text>
+	</string>
+	<string id="ui_rmw_wpn_func">
+		<text>Дополнительное оружие</text>
+	</string>
+	<string id="ui_rmw_fire_mode">
+		<text>Режим огня</text>
+	</string>
+	<string id="ui_rmw_ammo_next">
+		<text>Тип боеприпасов</text>
+	</string>
 </string_table>

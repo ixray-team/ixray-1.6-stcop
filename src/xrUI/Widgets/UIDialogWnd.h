@@ -26,6 +26,7 @@ public:
 			void SetHolder						(CDialogHolder* h)				{m_pParentHolder = h;};
 	virtual bool StopAnyMove					()								{return true;}
 	virtual bool NeedCursor						()const							{return true;}
+	virtual bool ForceCursorInput				()								{return false;}
 	virtual bool NeedCenterCursor				()const							{return true;}
 	virtual bool WorkInPause					()const							{return m_bWorkInPause;}
 	virtual bool Dispatch						(int cmd, int param)			{return true;}

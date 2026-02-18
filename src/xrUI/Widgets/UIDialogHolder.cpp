@@ -426,7 +426,7 @@ bool CDialogHolder::IR_UIOnMouseMove(int dx, int dy)
 	CUIDialogWnd* TIR		= TopInputReceiver();
 	if(!TIR)				return false;
 	if(!TIR->IR_process())	return false;
-	if (GetUICursor().IsVisible())
+	if (GetUICursor().IsVisible() || TIR->ForceCursorInput())
 	{ 
 		GetUICursor().UpdateCursorPosition(dx, dy);
 		Fvector2 cPos			= GetUICursor().GetCursorPosition();
