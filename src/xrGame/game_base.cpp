@@ -110,8 +110,8 @@ void game_PlayerState::net_Export(NET_Packet& P, bool Full)
 	P.w_u8(af_count);
 	P.w_u16(flags__);
 	P.w_u16(ping);
-
-	P.w_u16(GameID);
+	
+	P << GameID;
 	P.w_s8(skin);
 	P.w_u8(m_bCurrentVoteAgreed);
 
@@ -139,7 +139,7 @@ void	game_PlayerState::net_Import(NET_Packet& P)
 	P.r_u16			(	flags__	);
 	P.r_u16			(	ping	);
 
-	P.r_u16			(	GameID	);
+	P >> GameID;
 	P.r_s8			(	skin	);
 	P.r_u8			(	m_bCurrentVoteAgreed	);
 
@@ -167,7 +167,8 @@ void	game_PlayerState::skip_Import(NET_Packet& P)
 	P.r_u16			();//	flags__	);
 	P.r_u16			();//	ping	);
 
-	P.r_u16			();//	GameID	);
+	ALife::_OBJECT_ID DummyGameID;
+	P >> DummyGameID;//	GameID	);
 	P.r_s8			();//	skin	);
 	P.r_u8			();//	m_bCurrentVoteAgreed	);
 
@@ -178,7 +179,7 @@ void	game_PlayerState::skip_Import(NET_Packet& P)
 	}
 }
 
-void	game_PlayerState::SetGameID				(u16 NewID)
+void	game_PlayerState::SetGameID				(ALife::_OBJECT_ID NewID)
 {
 	if (mOldIDs.size()>=10)
 	{
@@ -187,9 +188,9 @@ void	game_PlayerState::SetGameID				(u16 NewID)
 	mOldIDs.push_back(GameID);
 	GameID = NewID;
 }
-bool	game_PlayerState::HasOldID				(u16 ID)
+bool	game_PlayerState::HasOldID				(ALife::_OBJECT_ID ID)
 {
-	OLD_GAME_ID_it ID_i = std::find(mOldIDs.begin(), mOldIDs.end(), ID);
+	OLD_GAME_ID_it ID_i = std::ranges::find(mOldIDs, ID);
 	if (ID_i != mOldIDs.end() && *(ID_i)== ID)
 		return true;
 	return false;

@@ -2157,7 +2157,7 @@ void CWeapon::setCrosshairInertion(float value)
 	m_crosshair_inertion = value;
 }
 
-void CWeapon::SpawnAmmo(u32 boxCurr, const char* ammoSect, u32 ParentID) 
+void CWeapon::SpawnAmmo(u32 boxCurr, const char* ammoSect, ALife::_OBJECT_ID ParentID) 
 {
 	if(!m_ammoTypes.size())			return;
 	if (OnClient())					return;
@@ -2172,9 +2172,9 @@ void CWeapon::SpawnAmmo(u32 boxCurr, const char* ammoSect, u32 ParentID)
 	l_type							%= m_ammoTypes.size();
 
 	CObject* parentObj = nullptr;
-	if (ParentID != 0xffffffff)
+	if (ParentID != ALife::INVALID_OBJECT_ID)
 	{
-		parentObj = Level().Objects.net_Find((u16)ParentID);
+		parentObj = Level().Objects.net_Find(ParentID);
 	}
 	if (!parentObj)
 	{
@@ -2191,11 +2191,11 @@ void CWeapon::SpawnAmmo(u32 boxCurr, const char* ammoSect, u32 ParentID)
 		D->s_name					= ammoSect;
 		D->set_name_replace			("");
 		D->s_RP						= 0xff;
-		D->ID						= 0xffff;
+		D->ID						= ALife::INVALID_OBJECT_ID;
 		R_ASSERT					(parentObj);
-		D->ID_Parent				= (u16)parentObj->ID();
+		D->ID_Parent				= parentObj->ID();
 
-		D->ID_Phantom				= 0xffff;
+		D->ID_Phantom				= ALife::INVALID_OBJECT_ID;
 		D->s_flags.assign			(M_SPAWN_OBJECT_LOCAL);
 		D->RespawnTime				= 0;
 
@@ -2230,7 +2230,7 @@ void CWeapon::SpawnAmmo(u32 boxCurr, const char* ammoSect, u32 ParentID)
 	F_entity_Destroy				(D);
 }
 
-void CWeapon::ReturnAmmoToInventory(xr_map<shared_str, u16>& ammo, xr_map<u16, u16>* ammos_to_sync)
+void CWeapon::ReturnAmmoToInventory(xr_map<shared_str, u16>& ammo, xr_map<ALife::_OBJECT_ID, u16>* ammos_to_sync)
 {
 	if (unlimited_ammo())
 	{
@@ -2297,7 +2297,7 @@ void CWeapon::ReturnAmmoToInventory(xr_map<shared_str, u16>& ammo, xr_map<u16, u
 
 		if (entry.second)
 		{
-			u32 parentId = 0xffffffff;
+			ALife::_OBJECT_ID parentId = ALife::INVALID_OBJECT_ID;
 			if (CObject* parent = H_Parent())
 			{
 				parentId = parent->ID();

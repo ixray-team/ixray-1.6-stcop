@@ -43,7 +43,7 @@ void TParticlesPlayer::SBoneInfo::StopParticles(const shared_str& ps_name, bool 
 	}
 }
 
-void TParticlesPlayer::SBoneInfo::StopParticles(u16 sender_id, bool bDestroy)
+void TParticlesPlayer::SBoneInfo::StopParticles(ALife::_OBJECT_ID sender_id, bool bDestroy)
 {
 	for (ParticlesInfoListIt it=particles.begin(); it!=particles.end(); it++)
 		if (it->sender_id==sender_id){
@@ -156,14 +156,14 @@ TParticlesPlayer::SBoneInfo* TParticlesPlayer::get_nearest_bone_info(IKinematics
 	return get_bone_info(play_bone);
 }
 
-void TParticlesPlayer::StartParticles(const shared_str& particles_name, u16 bone_num, const Fvector& dir, u16 sender_id, int life_time, bool auto_stop)
+void TParticlesPlayer::StartParticles(const shared_str& particles_name, u16 bone_num, const Fvector& dir, ALife::_OBJECT_ID sender_id, int life_time, bool auto_stop)
 {
 	Fmatrix xform;
 	generate_orthonormal_basis(dir,xform);
 	StartParticles(particles_name,bone_num,xform,sender_id,life_time,auto_stop);
 }
 
-void TParticlesPlayer::StartParticles(const shared_str& particles_name, u16 bone_num, const Fmatrix& xform, u16 sender_id, int life_time, bool auto_stop)
+void TParticlesPlayer::StartParticles(const shared_str& particles_name, u16 bone_num, const Fmatrix& xform, ALife::_OBJECT_ID sender_id, int life_time, bool auto_stop)
 {
 	VERIFY(fis_zero(xform.c.magnitude()));
 	R_ASSERT(*particles_name);
@@ -190,7 +190,7 @@ void TParticlesPlayer::StartParticles(const shared_str& particles_name, u16 bone
 	m_bActiveBones = true;
 }
 
-void TParticlesPlayer::StartParticles(const shared_str& ps_name, const Fmatrix& xform, u16 sender_id, int life_time, bool auto_stop)
+void TParticlesPlayer::StartParticles(const shared_str& ps_name, const Fmatrix& xform, ALife::_OBJECT_ID sender_id, int life_time, bool auto_stop)
 {
 	for (BoneInfoVecIt it = m_Bones.begin(); it != m_Bones.end(); it++)
 	{
@@ -213,7 +213,7 @@ void TParticlesPlayer::StartParticles(const shared_str& ps_name, const Fmatrix& 
 	m_bActiveBones = true;
 }
 
-void TParticlesPlayer::StartParticles(const shared_str& ps_name, const Fvector& dir, u16 sender_id, int life_time, bool auto_stop)
+void TParticlesPlayer::StartParticles(const shared_str& ps_name, const Fvector& dir, ALife::_OBJECT_ID sender_id, int life_time, bool auto_stop)
 {
 	Fmatrix xform;
 	generate_orthonormal_basis(dir,xform);
@@ -221,7 +221,7 @@ void TParticlesPlayer::StartParticles(const shared_str& ps_name, const Fvector& 
 }
 
 
-void TParticlesPlayer::StopParticles(u16 sender_id, u16 bone_id, bool bDestroy)
+void TParticlesPlayer::StopParticles(ALife::_OBJECT_ID sender_id, u16 bone_id, bool bDestroy)
 {
 	if (BI_NONE==bone_id){
 		for(BoneInfoVecIt it=m_Bones.begin(); it!=m_Bones.end(); it++)

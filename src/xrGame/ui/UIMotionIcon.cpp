@@ -1296,7 +1296,7 @@ void CUIMotionIcon::Update()
 	UpdateStatusGlow();
 }
 
-void SetActorVisibility		(u16 who_id, float value)
+void SetActorVisibility		(ALife::_OBJECT_ID who_id, float value)
 {
 	if(!IsGameTypeSingleCompatible())
 		return;
@@ -1353,7 +1353,7 @@ bool CUIMotionIcon::IsStatusSafeZone(const Fvector& pos) const
 	return false;
 }
 
-void CUIMotionIcon::SetActorVisibility		(u16 who_id, float value)
+void CUIMotionIcon::SetActorVisibility		(ALife::_OBJECT_ID who_id, float value)
 {
     if (m_luminosity_progress_shape)
     {
@@ -1383,7 +1383,7 @@ void CUIMotionIcon::SetActorVisibility		(u16 who_id, float value)
 	}
 	else
 	{
-		(*it).value	= value;
+		it->value	= value;
 	}
 
 	m_bchanged = true;

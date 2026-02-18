@@ -13,7 +13,7 @@ void CStateMonsterSmartTerrainTaskGraphWalkAbstract::initialize()
 
 	CSE_ALifeMonsterAbstract	*monster = smart_cast<CSE_ALifeMonsterAbstract*>(ai().alife().objects().object(this->object->ID()));
 	VERIFY						(monster);
-	VERIFY						(monster->m_smart_terrain_id != 0xffff);
+	VERIFY						(monster->m_smart_terrain_id != ALife::INVALID_OBJECT_ID);
 
 	// get task
 	m_task						= monster->brain().smart_terrain().task(monster);
@@ -27,7 +27,7 @@ bool CStateMonsterSmartTerrainTaskGraphWalkAbstract::check_start_conditions()
 	CSE_ALifeMonsterAbstract		*monster = smart_cast<CSE_ALifeMonsterAbstract*>(ai().alife().objects().object(this->object->ID()));
 	VERIFY							(monster);
 
-	if (monster->m_smart_terrain_id == 0xffff) return false;
+	if (monster->m_smart_terrain_id == ALife::INVALID_OBJECT_ID) return false;
 	
 	m_task							= monster->brain().smart_terrain().task(monster);	
 	VERIFY3							(m_task, "Smart terrain selected, but task was not set for monster ", *this->object->cName());

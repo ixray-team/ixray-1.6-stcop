@@ -6,15 +6,15 @@ class CBolt final : public CMissile,
 	public IDamageSource
 {
 	using inherited = CMissile;
-	u16	m_thrower_id = u16(-1);
+	ALife::_OBJECT_ID m_thrower_id = ALife::INVALID_OBJECT_ID;
 public:
 	CBolt() = default;
 	virtual ~CBolt() = default;
 
 	virtual void OnH_A_Chield		();
-	
-	virtual	void SetInitiator		(u16 id);
-	virtual	u16	 Initiator			();
+
+	void SetInitiator		(ALife::_OBJECT_ID id) override;
+	ALife::_OBJECT_ID	 Initiator			() override;
 
 	virtual void Throw				();
 	virtual bool Action				(u16 cmd, u32 flags);

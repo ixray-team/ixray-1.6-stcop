@@ -19,7 +19,7 @@ public:
 	u32 PhysicDwTime = 0;
   
 	u16								u_active_slot = 0;
-	u16								u_active_id = 0;
+	ALife::_OBJECT_ID				u_active_id = 0;
 	u8								u_active_stripped = 0;
 	
 	StalkerMotionData				motions_data;

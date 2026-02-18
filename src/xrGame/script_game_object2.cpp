@@ -60,7 +60,7 @@ void CScriptGameObject::explode(u32 level_time)
 	}
 }
 
-bool CScriptGameObject::active_zone_contact(u16 id)
+bool CScriptGameObject::active_zone_contact(ALife::_OBJECT_ID id)
 {
 	if (CScriptZone* script_zone = object().cast_script_zone())
 	{

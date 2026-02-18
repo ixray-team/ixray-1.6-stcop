@@ -554,7 +554,7 @@ bool			CSpectator::SelectNextPlayerToLook	(bool const search_next)
 		{
 			if (ps->team != PS->team && !PS->testFlag(GAME_PLAYER_FLAG_SPECTATOR)) continue;
 		};
-		u16 id = ps->GameID;
+		auto id = ps->GameID;
 		CObject* pObject = Level().Objects.net_Find(id);
 		if (!pObject)
 		{

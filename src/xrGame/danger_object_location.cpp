@@ -10,7 +10,7 @@
 #include "danger_object_location.h"
 #include "GameObject.h"
 
-static bool IsObjectValid(const CGameObject* object, u16 object_id)
+static bool IsObjectValid(const CGameObject* object, ALife::_OBJECT_ID object_id)
 {
 	if (object == nullptr)
 	{

@@ -80,7 +80,7 @@ struct
 
 	bool modal_icon_selection_window{};
 
-	u16 weapon_id{ u16(-1) };
+	ALife::_OBJECT_ID weapon_id{ ALife::INVALID_OBJECT_ID };
 
 	int current_slot{ NO_ACTIVE_SLOT };
 
