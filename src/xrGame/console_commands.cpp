@@ -67,9 +67,9 @@ extern float air_resistance_epsilon;
 extern	u64		g_qwStartGameTime;
 extern	u64		g_qwEStartGameTime;
 
-ENGINE_API
-extern	float	psHUD_FOV_def;
-ENGINE_API extern  bool	g_3d_scopes;
+ENGINE_API extern  float psHUD_FOV_def;
+ENGINE_API extern  bool  ui_3d_cursor;
+ENGINE_API extern  bool  g_3d_scopes;
 extern	float	psSqueezeVelocity;
 extern	int		psLUA_GCSTEP;
 
@@ -2532,6 +2532,9 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask32, "hud_draw", &psHUD_Flags, HUD_DRAW);
 	CMD3(CCC_Mask32, "hud_minimap", &psHUD_Flags, HUD_MINIMAP);
 	CMD3(CCC_Mask32, "hud_hide_quick_slots", &psHUD_Flags, HUD_HIDE_QUICK_SLOTS);
+
+    // Cursor
+    CMD2(CCC_Boolean, "ui_3d_cursor", &ui_3d_cursor);
 
 	// hud
 	psHUD_Flags.set(HUD_CROSSHAIR, true);

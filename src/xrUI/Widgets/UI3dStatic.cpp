@@ -209,6 +209,11 @@ void CUI3dStatic::SetVisual(const shared_str& cVisualName)
 
     pCurrentVisual = ::Render->model_Create(name);
 
+	if (pCurrentVisual == nullptr)
+	{
+		return;
+	}
+
 	if (auto pKa = pCurrentVisual->dcast_PKinematicsAnimated())
 	{
 		auto MotionID = pKa->ID_Cycle_Safe("idle");
