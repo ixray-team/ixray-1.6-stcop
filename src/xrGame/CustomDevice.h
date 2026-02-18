@@ -90,6 +90,8 @@ public:
 
 	virtual CCustomDevice* cast_custom_device() { return this; }
 
+	virtual bool NeedMovementBlend() const final override;
+
 protected:
 	bool CheckCompatibilityInt(CHudItem* itm, u16* slot_to_activate);
 	void UpdateVisibility();

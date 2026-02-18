@@ -190,6 +190,8 @@ public:
 	ALife::EWeaponAddonStatus	get_ScopeStatus				() const { return m_eScopeStatus; }
 	ALife::EWeaponAddonStatus	get_SilencerStatus			() const { return m_eSilencerStatus; }
 
+	virtual bool NeedMovementBlend() const override;
+
 	virtual bool UseScopeTexture();
 
 	struct SAmmoBonesParams

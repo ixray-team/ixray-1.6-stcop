@@ -193,6 +193,8 @@ public:
 	bool CanStartAction(CActor* pActor);
 	bool SetKeyRepeatFlag(u32 kfACTTYPE);
 
+	virtual bool NeedMovementBlend() const;
+
 	enum EDevicesFlags
 	{
 		df_torch = (1 << 0),
