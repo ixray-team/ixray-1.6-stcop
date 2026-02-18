@@ -2900,7 +2900,7 @@ bool CWeapon::CanAimNow()
 
 	const static bool isDelayedWeaponActions = EngineExternal()[EEngineExternalGame::EnableDelayedWeaponActions];
 
-	if (!isDelayedWeaponActions)
+	if (!isDelayedWeaponActions && !m_eAnimationsFlags.test(EAnimationsFlags::af_aim_in_out))
 	{
 		return true;
 	}
@@ -2952,7 +2952,7 @@ bool CWeapon::CanLeaveAimNow()
 
 	const static bool isDelayedWeaponActions = EngineExternal()[EEngineExternalGame::EnableDelayedWeaponActions];
 
-	if (!isDelayedWeaponActions)
+	if (!isDelayedWeaponActions && !m_eAnimationsFlags.test(EAnimationsFlags::af_aim_in_out))
 	{
 		return true;
 	}
@@ -5129,4 +5129,14 @@ bool CWeapon::IsAutoAimHaveTarget()
 	}
 
 	return is_aim_exist;
+}
+
+bool CWeapon::NeedMovementBlend() const
+{
+	if (IsZoomed())
+	{
+		return false;
+	}
+
+	return inherited::NeedMovementBlend();
 }
