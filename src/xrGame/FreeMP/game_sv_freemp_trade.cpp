@@ -9,8 +9,10 @@ void game_sv_freemp::OnPlayerTrade(NET_Packet& P, ClientID const& clientID)
 	game_PlayerState* ps = get_id(clientID);
 	if (!ps) return;
 	bool isSelling = P.r_u8();
-	u16 traderID = P.r_u16();
-	u16 playerID = P.r_u16();
+	ALife::_OBJECT_ID traderID;
+	P >> traderID;
+	ALife::_OBJECT_ID playerID;
+	P >> playerID;
 	s32 totalPrice = P.r_s32();
 
 	CObject* finded_object = Level().Objects.net_Find(playerID);
@@ -69,7 +71,7 @@ void game_sv_freemp::OnPlayerTrade(NET_Packet& P, ClientID const& clientID)
 			P.w_begin(M_EVENT);
 			P.w_u32(Device.dwTimeGlobal - 2 * NET_Latency);
 			P.w_u16(GE_DESTROY);
-			P.w_u16(pItem->object_id());
+			P << pItem->object_id();
 			Level().Send(P, net_flags(true, true));
 
 			CSE_Abstract* E = spawn_begin(pItem->m_section_id.c_str());
@@ -120,7 +122,7 @@ void game_sv_freemp::OnPlayerTrade(NET_Packet& P, ClientID const& clientID)
 				P.w_begin(M_EVENT);
 				P.w_u32(Device.dwTimeGlobal - 2 * NET_Latency);
 				P.w_u16(GE_DESTROY);
-				P.w_u16(pItem->object_id());
+				P << pItem->object_id();
 				Level().Send(P, net_flags(true, true));
 			}
 		}

@@ -1,4 +1,7 @@
-#pragma once 
+#pragma once
+
+#include "../xrEngine/AI/alife_space.h"
+
 class ICollisionDamageInfo;
 class IDamageSource;
 //class IKinematics;
@@ -32,6 +35,7 @@ public:
 class IPhysicsShellHolder
 {
 	public:
+	virtual ~IPhysicsShellHolder() = default;
 
 	virtual	Fmatrix&					_BCL	ObjectXFORM						()						=0;
 	virtual	Fvector&					_BCL	ObjectPosition						()						=0;
@@ -40,7 +44,7 @@ class IPhysicsShellHolder
 	virtual	const char*						_BCL	ObjectNameSect						()		const			=0;
 	virtual	bool						_BCL	ObjectGetDestroy					()		const			=0;
 	virtual ICollisionHitCallback*		_BCL	ObjectGetCollisionHitCallback		()						=0;
-	virtual	u16							_BCL	ObjectID							()		const			=0;
+	virtual	ALife::_OBJECT_ID			_BCL	ObjectID							()		const			=0;
 	virtual	ICollisionForm*				_BCL	ObjectCollisionModel				()						=0;
 //	virtual	IRenderVisual*				_BCL	ObjectVisual						()						=0;
 	virtual	IKinematics*				_BCL	ObjectKinematics					()						=0;

@@ -32,9 +32,9 @@ void CRocketLauncher::SpawnRocket(const shared_str& rocket_section, CGameObject*
 	D->set_name_replace("");
 
 	D->s_RP = 0xff;
-	D->ID = 0xffff;
+	D->ID = ALife::INVALID_OBJECT_ID;
 	D->ID_Parent = parent_rocket_launcher->ID();
-	D->ID_Phantom = 0xffff;
+	D->ID_Phantom = ALife::INVALID_OBJECT_ID;
 	D->s_flags.assign(M_SPAWN_OBJECT_LOCAL);
 	D->RespawnTime = 0;
 
@@ -44,7 +44,7 @@ void CRocketLauncher::SpawnRocket(const shared_str& rocket_section, CGameObject*
 	F_entity_Destroy(D);
 }
 
-void CRocketLauncher::AttachRocket(u16 rocket_id, CGameObject* parent_rocket_launcher)
+void CRocketLauncher::AttachRocket(ALife::_OBJECT_ID rocket_id, CGameObject* parent_rocket_launcher)
 {
 	CObject* finded_object = Level().Objects.net_Find(rocket_id);
 	CCustomRocket* pRocket = finded_object != nullptr ? finded_object->cast_custom_rocket() : nullptr;
@@ -62,7 +62,7 @@ void CRocketLauncher::AttachRocket(u16 rocket_id, CGameObject* parent_rocket_lau
 	m_rockets.push_back(pRocket);
 }
 
-void CRocketLauncher::DetachRocket(u16 rocket_id, bool bLaunch)
+void CRocketLauncher::DetachRocket(ALife::_OBJECT_ID rocket_id, bool bLaunch)
 {
 	CObject* finded_object = Level().Objects.net_Find(rocket_id);
 	CCustomRocket* pRocket = finded_object != nullptr ? finded_object->cast_custom_rocket() : nullptr;
@@ -73,8 +73,8 @@ void CRocketLauncher::DetachRocket(u16 rocket_id, bool bLaunch)
 	}
 
 	VERIFY(pRocket);
-	ROCKETIT It = std::find(m_rockets.begin(), m_rockets.end(), pRocket);
-	ROCKETIT It_l = std::find(m_launched_rockets.begin(), m_launched_rockets.end(), pRocket);
+	ROCKETIT It = std::ranges::find(m_rockets, pRocket);
+	ROCKETIT It_l = std::ranges::find(m_launched_rockets, pRocket);
 
 	if (OnServer())
 	{

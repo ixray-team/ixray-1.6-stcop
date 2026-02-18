@@ -169,7 +169,7 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 	m_fFeelGrenadeTime      =	1.0f;
 	
 	m_holder				=	nullptr;
-	m_holderID				=	u16(-1);
+	m_holderID				=	ALife::INVALID_OBJECT_ID;
 
 
 #ifdef DEBUG
@@ -204,8 +204,8 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 	m_anims					= new SActorMotions();
 	m_vehicle_anims			= new SActorVehicleAnims();
 	m_entity_condition		= nullptr;
-	m_iLastHitterID			= u16(-1);
-	m_iLastHittingWeaponID	= u16(-1);
+	m_iLastHitterID			= ALife::INVALID_OBJECT_ID;
+	m_iLastHittingWeaponID	= ALife::INVALID_OBJECT_ID;
 	m_statistic_manager		= nullptr;
 	//-----------------------------------------------------------------------------------
 	m_memory				= new CActorMemory(this);

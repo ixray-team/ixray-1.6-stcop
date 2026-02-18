@@ -145,10 +145,10 @@ void CALifeStorageManager::load(void* buffer, const u32& buffer_size, const char
 	CALifeObjectRegistry::OBJECT_REGISTRY::iterator	E = objects().objects().end();
 	CALifeObjectRegistry::OBJECT_REGISTRY::iterator	I;
 	for (I = B; I != E; ++I) {
-		ALife::_OBJECT_ID id = (*I).second->ID;
-		(*I).second->ID = server().PerformIDgen(id);
-		VERIFY(id == (*I).second->ID);
-		register_object((*I).second, false);
+		ALife::_OBJECT_ID id = I->second->ID;
+		I->second->ID = server().PerformIDgen(id);
+		VERIFY(id == I->second->ID);
+		register_object(I->second, false);
 	}
 
 	registry().load(source);
@@ -156,7 +156,7 @@ void CALifeStorageManager::load(void* buffer, const u32& buffer_size, const char
 	can_register_objects(true);
 
 	for (I = B; I != E; ++I)
-		(*I).second->on_register();
+		I->second->on_register();
 
 	if (!g_pGameLevel)
 		return;

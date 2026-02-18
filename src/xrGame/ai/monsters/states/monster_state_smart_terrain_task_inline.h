@@ -36,7 +36,7 @@ void CStateMonsterSmartTerrainTaskAbstract::initialize()
 	// save current task
 	CSE_ALifeMonsterAbstract		*monster = smart_cast<CSE_ALifeMonsterAbstract*>(ai().alife().objects().object(this->object->ID()));
 	VERIFY							(monster);
-	VERIFY							(monster->m_smart_terrain_id != 0xffff);
+	VERIFY							(monster->m_smart_terrain_id != ALife::INVALID_OBJECT_ID);
 
 	m_current_task					= monster->brain().smart_terrain().task(monster);
 }
@@ -57,7 +57,7 @@ bool CStateMonsterSmartTerrainTaskAbstract::check_start_conditions()
 	monster->brain().select_task	();
 	
 	// there is no any available smart terrains
-	if (monster->m_smart_terrain_id == 0xffff) return false;
+	if (monster->m_smart_terrain_id == ALife::INVALID_OBJECT_ID) return false;
 
 	// we dont need to reach task
 	if (monster->m_task_reached) return false;
@@ -71,7 +71,7 @@ bool CStateMonsterSmartTerrainTaskAbstract::check_completion()
 	CSE_ALifeMonsterAbstract		*monster = smart_cast<CSE_ALifeMonsterAbstract*>(ai().alife().objects().object(this->object->ID()));
 	VERIFY							(monster);
 
-	if (monster->m_smart_terrain_id == 0xffff) return true;
+	if (monster->m_smart_terrain_id == ALife::INVALID_OBJECT_ID) return true;
 
 	// if we already reach the task
 	if (monster->m_task_reached) return true;
@@ -148,7 +148,7 @@ void CStateMonsterSmartTerrainTaskAbstract::check_force_state()
 	CSE_ALifeMonsterAbstract		*monster = smart_cast<CSE_ALifeMonsterAbstract*>(ai().alife().objects().object(this->object->ID()));
 	VERIFY							(monster);
 
-	if ((monster->m_smart_terrain_id == 0xffff) || monster->m_task_reached) {
+	if ((monster->m_smart_terrain_id == ALife::INVALID_OBJECT_ID) || monster->m_task_reached) {
 		this->select_state(eStateSmartTerrainTaskWaitCapture);
 		return;
 	}

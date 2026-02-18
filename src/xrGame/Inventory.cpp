@@ -284,7 +284,7 @@ void CInventory::Take(CGameObject* pObj, bool bNotActivate, bool strict_placemen
 
 	if (current_entity != nullptr)
 	{
-		u16 actor_id = current_entity->ID();
+		auto actor_id = current_entity->ID();
 		if (GetOwner()->object_id() == actor_id && this->m_pOwner->object_id() == actor_id) // actors inventory
 		{
 			CWeaponMagazined* pWeapon = pIItem->cast_weapon_magazined();
@@ -542,7 +542,7 @@ bool CInventory::Slot(u16 slot_id, PIItem pIItem, bool bNotActivate, bool strict
 
 	if (!IsGameTypeSingle())
 	{
-		u16 real_parent = pIItem->object().H_Parent() ? pIItem->object().H_Parent()->ID() : u16(-1);
+		auto real_parent = pIItem->object().H_Parent() ? pIItem->object().H_Parent()->ID() : ALife::INVALID_OBJECT_ID;
 		if (GetOwner()->object_id() != real_parent)
 		{
 			Msg("! WARNING: CL: actor [%d] tries to place to slot not own item [%d], that has parent [%d]", GetOwner()->object_id(), pIItem->object_id(), real_parent);
@@ -583,7 +583,7 @@ bool CInventory::Slot(u16 slot_id, PIItem pIItem, bool bNotActivate, bool strict
 		}
 		else
 		{
-			u16 real_parent = pIItem->object().H_Parent() ? pIItem->object().H_Parent()->ID() : u16(-1);
+			auto real_parent = pIItem->object().H_Parent() ? pIItem->object().H_Parent()->ID() : ALife::INVALID_OBJECT_ID;
 			R_ASSERT2(GetOwner()->object_id() == real_parent,
 				make_string<const char*>("! ERROR: CL: actor [%d] doesn't contain [%d], real parent is [%d]",
 					GetOwner()->object_id(), pIItem->object_id(), real_parent)
@@ -697,7 +697,7 @@ bool CInventory::Ruck(PIItem pIItem, bool strict_placement)
 
 	if (!IsGameTypeSingle())
 	{
-		u16 real_parent = pIItem->object().H_Parent() ? pIItem->object().H_Parent()->ID() : u16(-1);
+		auto real_parent = pIItem->object().H_Parent() ? pIItem->object().H_Parent()->ID() : ALife::INVALID_OBJECT_ID;
 		if (GetOwner()->object_id() != real_parent)
 		{
 			Msg("! WARNING: CL: actor [%d] tries to place to ruck not own item [%d], that has parent [%d]", GetOwner()->object_id(), pIItem->object_id(), real_parent);
@@ -727,8 +727,8 @@ bool CInventory::Ruck(PIItem pIItem, bool strict_placement)
 
 		if (!IsGameTypeSingle())
 		{
-			u16 item_parent_id = pIItem->object().H_Parent() ? pIItem->object().H_Parent()->ID() : u16(-1);
-			u16 inventory_owner_id = GetOwner()->object_id();
+			auto item_parent_id = pIItem->object().H_Parent() ? pIItem->object().H_Parent()->ID() : ALife::INVALID_OBJECT_ID;
+			auto inventory_owner_id = GetOwner()->object_id();
 			R_ASSERT2(item_parent_id == inventory_owner_id,
 				make_string<const char*>("! ERROR: CL: Actor[%d] tries to place to ruck not own item [%d], real item owner is [%d]",
 					inventory_owner_id, pIItem->object_id(), item_parent_id)
@@ -1202,7 +1202,7 @@ void CInventory::UpdateDropItem(PIItem pIItem)
 		{
 			NET_Packet P;
 			pIItem->object().u_EventGen(P, GE_OWNERSHIP_REJECT, pIItem->object().H_Parent()->ID());
-			P.w_u16(u16(pIItem->object().ID()));
+			P << pIItem->object().ID();
 			pIItem->object().u_EventSend(P);
 		}
 	}
@@ -1277,7 +1277,7 @@ PIItem CInventory::Get(CLASS_ID cls_id, bool bSearchRuck) const
 	return nullptr;
 }
 
-PIItem CInventory::Get(const u16 id, bool bSearchRuck) const
+PIItem CInventory::Get(const ALife::_OBJECT_ID id, bool bSearchRuck) const
 {
 	const TIItemContainer& list = bSearchRuck ? m_ruck : m_belt;
 
@@ -1552,7 +1552,7 @@ bool CInventory::ClientEat(PIItem pIItem)
 
 	NET_Packet P;
 	CGameObject::u_EventGen(P, GEG_PLAYER_ITEM_EAT, pIItem->parent_id());
-	P.w_u16(pIItem->object().ID());
+	P << pIItem->object().ID();
 	CGameObject::u_EventSend(P);
 	return true;
 }

@@ -59,7 +59,7 @@ public:
     // map
     shared_str m_map_hint;
     shared_str m_map_location;
-    u16 m_map_object_id;
+    ALife::_OBJECT_ID m_map_object_id;
     bool m_def_location_enabled;
     CMapLocation* m_linked_map_location;
 
@@ -113,7 +113,7 @@ protected:
 
 public:
     void RemoveMapLocations(bool notify);
-    void ChangeMapLocation(const char* new_map_location, u16 new_map_object_id);
+    void ChangeMapLocation(const char* new_map_location, ALife::_OBJECT_ID new_map_object_id);
 
     // for scripting access
     auto GetType_script() const { return m_task_type; }
@@ -137,7 +137,7 @@ public:
     // map
     void SetMapHint_script(const char* hint) { m_map_hint = hint; }
     void SetMapLocation_script(const char* mls) { m_map_location = mls; }
-    void SetMapObjectID_script(int id) { m_map_object_id = (u16)id; }
+    void SetMapObjectID_script(ALife::_OBJECT_ID id) { m_map_object_id = id; }
 
     // callbacks and infos
     void AddCompleteInfo_script(const char* str);

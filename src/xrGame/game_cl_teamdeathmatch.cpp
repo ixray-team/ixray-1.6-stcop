@@ -196,7 +196,7 @@ void game_cl_TeamDeathmatch::GetMapEntities(xr_vector<SZoneMapEntityData>& dst)
 	PLAYERS_MAP_IT it = players.begin();
 	for(;it!=players.end();++it){
 		if(local_team == it->second->team){
-			u16 id = it->second->GameID;
+			auto id = it->second->GameID;
 			CObject* pObject = Level().Objects.net_Find(id);
 			if (pObject == nullptr || pObject->cast_actor() == nullptr) continue;
 
@@ -518,7 +518,7 @@ void	game_cl_TeamDeathmatch::OnRender				()
 		for(;it!=players.end();++it)
 		{
 			game_PlayerState* ps = it->second;
-			u16 id = ps->GameID;
+			auto id = ps->GameID;
 			if (ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD)) continue;
 			CObject* pObject = Level().Objects.net_Find(id);
 			if (pObject == nullptr || pObject->cast_actor() == nullptr) continue;
@@ -637,7 +637,7 @@ void game_cl_TeamDeathmatch::UpdateMapLocations		()
 		for(;it!=players.end();++it)
 		{
 			game_PlayerState* ps = it->second;			
-			u16 id = ps->GameID;
+			auto id = ps->GameID;
 			if (ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD)) 
 			{
 				Level().MapManager().RemoveMapLocation(FRIEND_LOCATION, id);

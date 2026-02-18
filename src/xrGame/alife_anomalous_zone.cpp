@@ -106,7 +106,7 @@ void CSE_ALifeAnomalousZone::spawn_artefacts				()
 		}
 
 		if (p < n) {
-			CSE_Abstract		*l_tpSE_Abstract = alife().spawn_item(*weights[p].first,position(),m_tNodeID,m_tGraphID,0xffff);
+			CSE_Abstract		*l_tpSE_Abstract = alife().spawn_item(*weights[p].first,position(),m_tNodeID,m_tGraphID,ALife::INVALID_OBJECT_ID);
 			R_ASSERT3			(l_tpSE_Abstract,"Can't spawn artefact ",*weights[p].first);
 			CSE_ALifeDynamicObject	*i = smart_cast<CSE_ALifeDynamicObject*>(l_tpSE_Abstract);
 			R_ASSERT2			(i,"Non-ALife object in the 'game.spawn'");

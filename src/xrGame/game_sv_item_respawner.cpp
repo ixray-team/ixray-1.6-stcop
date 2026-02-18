@@ -10,13 +10,13 @@ item_respawn_manager::spawn_item::spawn_item()
 	item_object = nullptr;
 	respawn_time = 0;
 	last_spawn_time = 0;
-	last_game_id = u16(-1);
+	last_game_id = ALife::INVALID_OBJECT_ID;
 }
 item_respawn_manager::spawn_item::spawn_item(u32 r_time)
 {
 	item_object = nullptr;
 	respawn_time = r_time;
-	last_game_id = u16(-1);
+	last_game_id = ALife::INVALID_OBJECT_ID;
 	last_spawn_time = 0;
 }
 
@@ -28,7 +28,7 @@ item_respawn_manager::spawn_item::spawn_item(spawn_item const & clone)
 	last_spawn_time = clone.last_spawn_time;
 }
 
-bool item_respawn_manager::search_by_id_predicate::operator()(spawn_item const & left, u16 right) const
+bool item_respawn_manager::search_by_id_predicate::operator()(spawn_item const & left, ALife::_OBJECT_ID right) const
 {
 	if (left.last_game_id == right)
 		return true;
@@ -110,9 +110,9 @@ CSE_Abstract* item_respawn_manager::make_respawn_entity(shared_str const & secti
 	R_ASSERT2(temp_entity, make_string<const char*>("failed to create entity [%s]",
 		section_name.c_str()));
 
-	temp_entity->ID					=	0xffff;								// server must generate ID
-	temp_entity->ID_Parent			=	0xffff;								// no-parent
-	temp_entity->ID_Phantom			=	0xffff;								// no-phantom
+	temp_entity->ID					=	ALife::INVALID_OBJECT_ID;								// server must generate ID
+	temp_entity->ID_Parent			=	ALife::INVALID_OBJECT_ID;								// no-parent
+	temp_entity->ID_Phantom			=	ALife::INVALID_OBJECT_ID;								// no-phantom
 	temp_entity->RespawnTime		=	0;									// no-respawn
 	CSE_ALifeItemWeapon* pWeapon = temp_entity->cast_item_weapon();
 	
@@ -283,7 +283,7 @@ void item_respawn_manager::add_new_rpoint(shared_str profile_sect, RPoint const 
 	}
 }
 
-void item_respawn_manager::check_to_delete(u16 item_id)
+void item_respawn_manager::check_to_delete(ALife::_OBJECT_ID item_id)
 {
 	respawn_iter temp_iter = std::find_if(m_respawns.begin(), m_respawns.end(),
 		[item_id](const auto& respawn) {
@@ -295,7 +295,7 @@ void item_respawn_manager::check_to_delete(u16 item_id)
 		temp_iter->last_spawn_time = Level().timeServer();
 	}
 
-	xr_set<u16>::iterator temp_li_iter = level_items_respawn.find(item_id);
+	auto temp_li_iter = level_items_respawn.find(item_id);
 	if (temp_li_iter != level_items_respawn.end())
 	{
 		level_items_respawn.erase(temp_li_iter);
@@ -327,7 +327,7 @@ void item_respawn_manager::respawn_all_items()
 	}
 }
 
-u16 item_respawn_manager::respawn_item(CSE_Abstract* item_object)
+ALife::_OBJECT_ID item_respawn_manager::respawn_item(CSE_Abstract* item_object)
 {
 	R_ASSERT(item_object);
 	spawn_packet_store.write_start();
@@ -346,14 +346,14 @@ u16 item_respawn_manager::respawn_item(CSE_Abstract* item_object)
 
 void item_respawn_manager::clear_level_items()
 {
-	xr_set<u16>::iterator ie = level_items_respawn.end();
-	for (xr_set<u16>::iterator i = level_items_respawn.begin(); i != ie; ++i)
+	auto ie = level_items_respawn.end();
+	for (auto i = level_items_respawn.begin(); i != ie; ++i)
 	{
 		CSE_Abstract* entity = m_server->ID_to_entity(*i);
 		if (!entity)
 			continue;		// this can be in case ending of a round...
 		//VERIFY2(entity, make_string("entity not found [%d]", *i).c_str());
-		if (entity->ID_Parent != u16(-1))
+		if (entity->ID_Parent != ALife::INVALID_OBJECT_ID)
 			continue;
 #ifndef MASTER_GOLD
 		Msg("---Destroying level item [%d] before respawn...", *i);

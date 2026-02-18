@@ -390,7 +390,7 @@ void CScriptGameObject::start_particles(const char* pname, const char* bone)
 	if (K->LL_GetBoneVisible(play_bone))
 	{
 		TParticlesPlayer* PPlayer = object().GetOrCreateComponent<TParticlesPlayer>();
-		PPlayer->StartParticles(pname, play_bone, Fvector().set(0, 1, 0), 9999);
+		PPlayer->StartParticles(pname, play_bone, Fvector().set(0, 1, 0), ALife::INVALID_OBJECT_ID);
 	}
 	else
 	{

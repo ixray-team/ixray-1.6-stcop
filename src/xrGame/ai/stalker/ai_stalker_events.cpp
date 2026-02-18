@@ -32,8 +32,8 @@ void CAI_Stalker::OnEvent		(NET_Packet& P, u16 type)
 		case GE_TRADE_BUY :
 		case GE_OWNERSHIP_TAKE : {
 
-			u16			id;
-			P.r_u16		(id);
+			ALife::_OBJECT_ID id;
+			P >> id;
 			CObject		*O = Level().Objects.net_Find	(id);
 
 			R_ASSERT	(O);
@@ -69,7 +69,7 @@ void CAI_Stalker::OnEvent		(NET_Packet& P, u16 type)
 //				DropItemSendMessage(O);
 				NET_Packet				P_;
 				u_EventGen				(P_,GE_OWNERSHIP_REJECT,ID());
-				P_.w_u16					(u16(O->ID()));
+				P_ << O->ID();
 				u_EventSend				(P_);
 
 #ifndef SILENCE
@@ -80,8 +80,8 @@ void CAI_Stalker::OnEvent		(NET_Packet& P, u16 type)
 		}
 		case GE_TRADE_SELL :
 		case GE_OWNERSHIP_REJECT : {
-			u16 id;
-			P.r_u16		(id);
+			ALife::_OBJECT_ID id;
+			P >> id;
 
 			CObject		*O = Level().Objects.net_Find(id);
 
@@ -140,7 +140,7 @@ void CAI_Stalker::generate_take_event			( CObject const* const object ) const
 {
 	NET_Packet		packet;
 	u_EventGen		( packet, GE_OWNERSHIP_TAKE, ID() );
-	packet.w_u16	( object->ID() );
+	packet << object->ID();
 	u_EventSend		( packet );
 }
 
@@ -155,7 +155,7 @@ void CAI_Stalker::DropItemSendMessage	(CObject *O)
 	// We doesn't have similar weapon - pick up it
 	NET_Packet				P;
 	u_EventGen				(P,GE_OWNERSHIP_REJECT,ID());
-	P.w_u16					(u16(O->ID()));
+	P << O->ID();
 	u_EventSend				(P);
 }
 

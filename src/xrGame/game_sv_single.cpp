@@ -46,7 +46,7 @@ CSE_Abstract*		game_sv_Single::get_entity_from_eid		(u16 id)
 }
 /**/
 
-void	game_sv_Single::OnCreate		(u16 id_who)
+void	game_sv_Single::OnCreate		(ALife::_OBJECT_ID id_who)
 {
 	if (!ai().get_alife())
 		return;
@@ -62,7 +62,7 @@ void	game_sv_Single::OnCreate		(u16 id_who)
 
 	alife_object->m_bOnline	= true;
 
-	if (alife_object->ID_Parent != 0xffff) {
+	if (alife_object->ID_Parent != ALife::INVALID_OBJECT_ID) {
 		CSE_ALifeDynamicObject			*parent = ai().alife().objects().object(alife_object->ID_Parent,true);
 		if (parent) {
 			CSE_ALifeTraderAbstract		*trader = smart_cast<CSE_ALifeTraderAbstract*>(parent);
@@ -83,7 +83,7 @@ void	game_sv_Single::OnCreate		(u16 id_who)
 		alife().create					(alife_object);
 }
 
-bool	game_sv_Single::OnTouch			(u16 eid_who, u16 eid_what, bool bForced)
+bool	game_sv_Single::OnTouch			(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_what, bool bForced)
 {
 	CSE_Abstract*		e_who	= get_entity_from_eid(eid_who);		VERIFY(e_who	);
 	CSE_Abstract*		e_what	= get_entity_from_eid(eid_what);	VERIFY(e_what	);
@@ -110,7 +110,7 @@ bool	game_sv_Single::OnTouch			(u16 eid_who, u16 eid_what, bool bForced)
 	return true;
 }
 
-void game_sv_Single::OnDetach(u16 eid_who, u16 eid_what)
+void game_sv_Single::OnDetach(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_what)
 {
 	if (ai().get_alife()) 
 	{
@@ -133,8 +133,8 @@ void game_sv_Single::OnDetach(u16 eid_who, u16 eid_what)
 			alife().graph().detach(*e_who,l_tpALifeInventoryItem,l_tpDynamicObject->m_tGraphID,false,false);
 		else {
 			if (!ai().alife().objects().object(e_what->ID,true)) {
-				u16				id = l_tpALifeInventoryItem->base()->ID_Parent;
-				l_tpALifeInventoryItem->base()->ID_Parent	= 0xffff;
+				auto id = l_tpALifeInventoryItem->base()->ID_Parent;
+				l_tpALifeInventoryItem->base()->ID_Parent	= ALife::INVALID_OBJECT_ID;
 				
 				CSE_ALifeDynamicObject *dynamic_object = smart_cast<CSE_ALifeDynamicObject*>(e_what);
 				VERIFY			(dynamic_object);
@@ -231,7 +231,7 @@ void game_sv_Single::switch_distance			(NET_Packet &net_packet, ClientID sender)
 	alife().set_switch_distance	(net_packet.r_float());
 }
 
-void game_sv_Single::teleport_object			(NET_Packet &net_packet, u16 id)
+void game_sv_Single::teleport_object			(NET_Packet &net_packet, ALife::_OBJECT_ID id)
 {
 	if (!ai().get_alife())
 		return;
@@ -247,13 +247,13 @@ void game_sv_Single::teleport_object			(NET_Packet &net_packet, u16 id)
 	alife().teleport_object (id,game_vertex_id,level_vertex_id,position);
 }
 
-void game_sv_Single::add_restriction			(NET_Packet &packet, u16 id)
+void game_sv_Single::add_restriction			(NET_Packet &packet, ALife::_OBJECT_ID id)
 {
 	if (!ai().get_alife())
 		return;
 
 	ALife::_OBJECT_ID		restriction_id;
-	packet.r				(&restriction_id,sizeof(restriction_id));
+	packet >> restriction_id;
 
 	RestrictionSpace::ERestrictorTypes	restriction_type;
 	packet.r				(&restriction_type,sizeof(restriction_type));
@@ -261,13 +261,13 @@ void game_sv_Single::add_restriction			(NET_Packet &packet, u16 id)
 	alife().add_restriction (id,restriction_id,restriction_type);
 }
 
-void game_sv_Single::remove_restriction			(NET_Packet &packet, u16 id)
+void game_sv_Single::remove_restriction			(NET_Packet &packet, ALife::_OBJECT_ID id)
 {
 	if (!ai().get_alife())
 		return;
 
 	ALife::_OBJECT_ID		restriction_id;
-	packet.r				(&restriction_id,sizeof(restriction_id));
+	packet >> restriction_id;
 
 	RestrictionSpace::ERestrictorTypes	restriction_type;
 	packet.r				(&restriction_type,sizeof(restriction_type));
@@ -275,7 +275,7 @@ void game_sv_Single::remove_restriction			(NET_Packet &packet, u16 id)
 	alife().remove_restriction (id,restriction_id,restriction_type);
 }
 
-void game_sv_Single::remove_all_restrictions	(NET_Packet &packet, u16 id)
+void game_sv_Single::remove_all_restrictions	(NET_Packet &packet, ALife::_OBJECT_ID id)
 {
 	if (!ai().get_alife())
 		return;

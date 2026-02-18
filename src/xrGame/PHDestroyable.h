@@ -56,7 +56,7 @@ public:
 			void						Init						()																											;
 			void						RespawnInit					()																											;
 			void						SetFatalHit					(const SHit& hit)																							;
-			void						Destroy						(u16 ref_id=u16(-1),const char* section="ph_skeleton_object")													;	
+			void						Destroy						(ALife::_OBJECT_ID ref_id=ALife::INVALID_OBJECT_ID,const char* section="ph_skeleton_object")													;	
 			SHit						&FatalHit					(){return m_fatal_hit;}
 			void						Load						(const char* section)																							;
 			void						Load						(CInifile* ini,const char* section)																				;
@@ -67,7 +67,7 @@ IC			bool						Destroyed					()										{return !!m_flags.test(fl_destroyed);}
 IC			bool						CanDestroy					()										{return m_flags.test(fl_destroyable)&&!m_flags.test(fl_destroyed)	;}
 virtual		bool						CanRemoveObject				()																								{return true;}
 virtual		void						SheduleUpdate				(u32 dt)																									;
-virtual		void						GenSpawnReplace				(u16 source_id,const char* section,shared_str visual_name)														;
+virtual		void						GenSpawnReplace				(ALife::_OBJECT_ID source_id,const char* section,shared_str visual_name)														;
 virtual		void						InitServerObject			(CSE_Abstract*				D)																				;
 private:
 			void						NotificatePart				(CPHDestroyableNotificate *dn)																				;

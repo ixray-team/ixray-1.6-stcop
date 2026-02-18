@@ -366,14 +366,14 @@ void CAgentEnemyManager::permutate_enemies		()
 			ENEMIES::iterator	e = m_enemies.end();
 			for ( ; i != e; ++i) {
 				if (visual.visible_now((*i).m_object)) {
-					(*i).m_distribute_mask.assign((*i).m_distribute_mask.get() | object().member().mask(&(*I_)->object()));
+					(*i).m_distribute_mask.assign(i->m_distribute_mask.get() | object().member().mask(&(*I_)->object()));
 					continue;
 				}
 
-				if (hit.last_hit_object_id() != (*i).m_object->ID())
+				if (hit.last_hit_object_id() != i->m_object->ID())
 					continue;
 
-				(*i).m_distribute_mask.assign((*i).m_distribute_mask.get() | object().member().mask(&(*I_)->object()));
+				(*i).m_distribute_mask.assign(i->m_distribute_mask.get() | object().member().mask(&(*I_)->object()));
 			}
 		}
 	}
@@ -384,8 +384,8 @@ IC	void CAgentEnemyManager::setup_mask			(xr_vector<T> &objects, CMemberEnemy &e
 {
 	auto I = std::find(objects.begin(),objects.end(),enemy.m_object->ID());
 	if (I != objects.end()) {
-		(*I).m_squad_mask.assign	(
-			(*I).m_squad_mask.get() |
+		I->m_squad_mask.assign	(
+			I->m_squad_mask.get() |
 			enemy.m_distribute_mask.get()
 		);
 	}
@@ -460,7 +460,7 @@ void CAgentEnemyManager::assign_wounded			()
 			if ((*I).first->Position().distance_to_sqr((*i)->object().Position()) > _sqr(wounded_enemy_reached_distance))
 				continue;
 
-			if (wounded_processor((*J).m_object) != ALife::_OBJECT_ID(-1))
+			if (wounded_processor((*J).m_object) != ALife::INVALID_OBJECT_ID)
 				continue;
 
 			wounded_processor			((*J).m_object,(*I).second.first);
@@ -561,7 +561,7 @@ void CAgentEnemyManager::assign_wounded			()
 		if (!enemy)
 			return;
 
-		if (wounded_processor(enemy->m_object) == ALife::_OBJECT_ID(-1))
+		if (wounded_processor(enemy->m_object) == ALife::INVALID_OBJECT_ID)
 			wounded_processor		(enemy->m_object,processor->ID());
 
 		u64				mask = object().member().mask(processor);
@@ -638,7 +638,7 @@ ALife::_OBJECT_ID CAgentEnemyManager::wounded_processor	(const CEntityAlive *obj
 			return					((*I).second.first);
 	}
 
-	return							(ALife::_OBJECT_ID(-1));
+	return							(ALife::INVALID_OBJECT_ID);
 }
 
 class find_wounded_predicate {
@@ -677,7 +677,7 @@ void CAgentEnemyManager::wounded_processed		(const CEntityAlive *object, bool va
 	WOUNDED_ENEMIES::iterator		I = std::find_if(m_wounded.begin(),m_wounded.end(),find_wounded_predicate(object));
 	if (I == m_wounded.end())
 		return;
-	VERIFY							((*I).second.first != ALife::_OBJECT_ID(-1));
+	VERIFY							((*I).second.first != ALife::INVALID_OBJECT_ID);
 //	VERIFY							(!(*I).second.second);
 	(*I).second.second				= true;
 }

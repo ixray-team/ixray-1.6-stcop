@@ -313,7 +313,7 @@ void CAI_Stalker::debug_text			()
 		DBG_OutText	("%s%sobjects     : %d",indent,indent,memory().hit().objects().size());
 		ALife::_OBJECT_ID					object_id = memory().hit().last_hit_object_id();
 		DBG_OutText	("%s%slast hit object id   : %d",indent,indent,object_id);
-		CObject								*object = (object_id == ALife::_OBJECT_ID(-1)) ? 0 : Level().Objects.net_Find(object_id);
+		CObject								*object = (object_id == ALife::INVALID_OBJECT_ID) ? 0 : Level().Objects.net_Find(object_id);
 		DBG_OutText	("%s%slast hit object name : %s",indent,indent,object ? *object->cName() : "");
 #ifdef USE_SELECTED_HIT
 		if (memory().hit().hit()) {

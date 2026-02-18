@@ -115,7 +115,7 @@ CGameTask*	CGameTaskManager::GiveGameTaskToActor(CGameTask* t, u32 timeToComplet
 	t->m_TimeToComplete				= t->m_ReceiveTime + timeToComplete * 1000; //ms
 	t->m_timer_finish				= t->m_ReceiveTime + timer_ttl      * 1000; //ms
 
-	std::stable_sort				(GetGameTasks().begin(), GetGameTasks().end(), task_prio_pred);
+	std::ranges::stable_sort(GetGameTasks(), task_prio_pred);
 	
 	ARTICLE_VECTOR& article_vector = Actor()->encyclopedia_registry->registry().objects();
 
@@ -127,7 +127,7 @@ CGameTask*	CGameTaskManager::GiveGameTaskToActor(CGameTask* t, u32 timeToComplet
 		if(obj->m_article_id.size())
 		{
 			FindArticleByIDPred pred(obj->m_article_id);
-			if( std::find_if(article_vector.begin(), article_vector.end(), pred) == article_vector.end() )
+			if( std::ranges::find_if(article_vector, pred) == article_vector.end() )
 			{
 				CEncyclopediaArticle article;
 				article.Load(obj->m_article_id);
@@ -135,7 +135,7 @@ CGameTask*	CGameTaskManager::GiveGameTaskToActor(CGameTask* t, u32 timeToComplet
 			}
 		}
 
-		if(obj->m_map_object_id!=u16(-1) && obj->m_map_location.size() && obj->m_def_location_enabled)
+		if(obj->m_map_object_id!=ALife::INVALID_OBJECT_ID && obj->m_map_location.size() && obj->m_def_location_enabled)
 		{
 			CMapLocation* ml =	Level().MapManager().AddMapLocation(obj->m_map_location, obj->m_map_object_id);
 			if(obj->m_map_hint.size())	
@@ -196,7 +196,7 @@ void CGameTaskManager::SetTaskState(CGameTask* t, ETaskState state, u16 objectiv
 			{
 				Level().MapManager().RemoveMapLocation(o->m_map_location, o->m_map_object_id);
 				o->m_map_location = nullptr;
-				o->m_map_object_id = u16(-1);
+				o->m_map_object_id = ALife::INVALID_OBJECT_ID;
 			}
 		}
 	}
@@ -208,7 +208,7 @@ void CGameTaskManager::SetTaskState(CGameTask* t, ETaskState state, u16 objectiv
 		{
 			Level().MapManager().RemoveMapLocation(o->m_map_location, o->m_map_object_id);
 			o->m_map_location = nullptr;
-			o->m_map_object_id = u16(-1);
+			o->m_map_object_id = ALife::INVALID_OBJECT_ID;
 		}
 	}
     t->SetTaskState(state, objective_id);
@@ -417,7 +417,7 @@ void CGameTaskManager::UpdateActiveTask()
 					(obj.GetTaskState() == eTaskStateInProgress) &&
 					(activeTask->Objective(i - 1).GetTaskState() == eTaskStateCompleted))
 				{
-					if (obj.m_map_object_id != u16(-1) && *obj.m_map_location)
+					if (obj.m_map_object_id != ALife::INVALID_OBJECT_ID && *obj.m_map_location)
 					{
 						CMapLocation* ml = Level().MapManager().AddMapLocation(obj.m_map_location, obj.m_map_object_id);
 						if (obj.m_map_hint.size())

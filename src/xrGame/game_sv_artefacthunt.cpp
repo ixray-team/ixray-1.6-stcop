@@ -388,7 +388,7 @@ void	game_sv_ArtefactHunt::assign_RP(CSE_Abstract* E, game_PlayerState* ps_who)
 		NET_Packet		P;
 		pPlayer->u_EventGen		(P,GE_GAME_EVENT,pPlayer->ID()	);
 		P.w_u16						(GAME_EVENT_PLAYER_KILL);
-		P.w_u16			(u16(pPlayer->ID())	);
+		P << pPlayer->ID();
 		pPlayer->u_EventSend		(P);
 	}
 	else
@@ -490,7 +490,7 @@ void	game_sv_ArtefactHunt::LoadTeams			()
 	LoadTeamData("artefacthunt_team2");
 };
 
-bool	game_sv_ArtefactHunt::OnTouch				(u16 eid_who, u16 eid_what, bool bForced)
+bool	game_sv_ArtefactHunt::OnTouch				(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_what, bool bForced)
 {
 	CSE_Abstract*		e_who	= m_server->ID_to_entity(eid_who);		VERIFY(e_who	);
 	CSE_Abstract*		e_what	= m_server->ID_to_entity(eid_what);	VERIFY(e_what	);
@@ -515,7 +515,7 @@ bool	game_sv_ArtefactHunt::OnTouch				(u16 eid_who, u16 eid_what, bool bForced)
 				//P.w_begin			(M_GAMEMESSAGE);
 				GenerateGameMessage	(P);
 				P.w_u32				(GAME_EVENT_ARTEFACT_TAKEN);
-				P.w_u16				(ps_who->GameID);
+				P << ps_who->GameID;
 				P.w_u16				(ps_who->team);
 				u_EventSend(P);
 				//-- Artefact is taken for first time
@@ -564,7 +564,7 @@ bool	game_sv_ArtefactHunt::OnTouch				(u16 eid_who, u16 eid_what, bool bForced)
 	return inherited::OnTouch(eid_who, eid_what, bForced);
 };
 
-void game_sv_ArtefactHunt::OnDetach(u16 eid_who, u16 eid_what)
+void game_sv_ArtefactHunt::OnDetach(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_what)
 {
 	CSE_Abstract*		e_who			= m_server->ID_to_entity(eid_who);	VERIFY(e_who);
 	CSE_Abstract*		e_what			= m_server->ID_to_entity(eid_what);	VERIFY(e_what);
@@ -590,7 +590,7 @@ void game_sv_ArtefactHunt::OnDetach(u16 eid_who, u16 eid_what)
 				NET_Packet			P;
 				GenerateGameMessage (P);
 				P.w_u32				(GAME_EVENT_ARTEFACT_DROPPED);
-				P.w_u16				(ps_who->GameID);
+				P << ps_who->GameID;
 				P.w_u16				(ps_who->team);
 				u_EventSend			(P);
 			};
@@ -600,7 +600,7 @@ void game_sv_ArtefactHunt::OnDetach(u16 eid_who, u16 eid_what)
 	inherited::OnDetach(eid_who, eid_what);
 };
 
-void		game_sv_ArtefactHunt::OnObjectEnterTeamBase	(u16 id, u16 zone_team)
+void		game_sv_ArtefactHunt::OnObjectEnterTeamBase	(ALife::_OBJECT_ID id, u16 zone_team)
 {
 	CSE_Abstract*		e_who	= m_server->ID_to_entity(id);		VERIFY(e_who	);
 	CSE_ALifeCreatureActor* eActor = smart_cast<CSE_ALifeCreatureActor*> (e_who);
@@ -613,8 +613,8 @@ void		game_sv_ArtefactHunt::OnObjectEnterTeamBase	(u16 id, u16 zone_team)
 
 			signal_Syncronize();
 
-			xr_vector<u16>& C			= eActor->children;
-			xr_vector<u16>::iterator c	= std::find	(C.begin(),C.end(),m_dwArtefactID);
+			auto& C = eActor->children;
+			auto c	= std::ranges::find	(C,m_dwArtefactID);
 			if (C.end()!=c)
 			{
 				OnArtefactOnBase		(eActor->owner->ID);
@@ -624,7 +624,7 @@ void		game_sv_ArtefactHunt::OnObjectEnterTeamBase	(u16 id, u16 zone_team)
 	};
 };
 
-void		game_sv_ArtefactHunt::OnObjectLeaveTeamBase	(u16 id, u16 zone_team)
+void		game_sv_ArtefactHunt::OnObjectLeaveTeamBase	(ALife::_OBJECT_ID id, u16 zone_team)
 {
 	CSE_Abstract*		e_who	= m_server->ID_to_entity(id);		
 	if (!e_who)			return;
@@ -718,7 +718,7 @@ void game_sv_ArtefactHunt::OnArtefactOnBase(ClientID id_who)
 	P.w_begin			(M_EVENT);
 	P.w_u32				(Device.dwTimeGlobal);
 	P.w_u16				(GE_DESTROY);
-	P.w_u16				(m_dwArtefactID);
+	P << m_dwArtefactID;
 
 	Level().Send(P,net_flags(true,true));
 	//-----------------------------------------------
@@ -727,7 +727,7 @@ void game_sv_ArtefactHunt::OnArtefactOnBase(ClientID id_who)
 //	P.w_begin			(M_GAMEMESSAGE);
 	GenerateGameMessage (P);
 	P.w_u32				(GAME_EVENT_ARTEFACT_ONBASE);
-	P.w_u16				(ps->GameID);
+	P << ps->GameID;
 	P.w_u16				(ps->team);
 	u_EventSend(P);
 	//-----------------------------------------------
@@ -791,7 +791,7 @@ void game_sv_ArtefactHunt::RemoveArtefact()
 		//-----------------------------------------------
 		GenerateGameMessage (P);
 		P.w_u32				(GAME_EVENT_ARTEFACT_DESTROYED);
-		P.w_u16				(m_dwArtefactID);
+		P << m_dwArtefactID;
 		u_EventSend(P);
 		//-----------------------------------------------
 		u_EventGen(P, GE_DESTROY, m_dwArtefactID);
@@ -900,7 +900,7 @@ bool game_sv_ArtefactHunt::ArtefactSpawn_Allowed()
 	return true;
 };
 
-void game_sv_ArtefactHunt::OnCreate(u16 id_who)
+void game_sv_ArtefactHunt::OnCreate(ALife::_OBJECT_ID id_who)
 {
 	inherited::OnCreate(id_who);
 
@@ -961,9 +961,9 @@ void game_sv_ArtefactHunt::net_Export_State(NET_Packet& P, ClientID id_to)
 {
 	inherited::net_Export_State(P, id_to);
 	P.w_u8			(u8(Get_ArtefactsCount()));
-	P.w_u16			(artefactBearerID);
+	P << artefactBearerID;
 	P.w_u8			(teamInPossession);
-	P.w_u16			(m_dwArtefactID);
+	P << m_dwArtefactID;
 	P.w_u8			((u8)Get_BearerCantSprint());
 
 	P.w_s32			(Get_ReinforcementTime());
@@ -1184,7 +1184,7 @@ void	game_sv_ArtefactHunt::MoveAllAlivePlayers			()
 			m_server->SendTo(l_pC->ID,P,net_flags(true,true));		
 			//------------------------------------------------
 			P.B.count = 0;
-			tmpP.w_u16(pA->ID);
+			tmpP << pA->ID;
 			tmpP.w_vec3(pA->o_Position);
 			tmpP.w_vec3(pA->o_Angle);
 			//------------------------------------------------
@@ -1460,7 +1460,7 @@ void	game_sv_ArtefactHunt::OnPlayerHitPlayer_Case	(game_PlayerState* ps_hitter, 
 	inherited::OnPlayerHitPlayer_Case(ps_hitter, ps_hitted, pHitS);
 };
 
-void	game_sv_ArtefactHunt::OnPlayerHitPlayer		(u16 id_hitter, u16 id_hitted, NET_Packet& P)
+void	game_sv_ArtefactHunt::OnPlayerHitPlayer		(ALife::_OBJECT_ID id_hitter, ALife::_OBJECT_ID id_hitted, NET_Packet& P)
 {
 	inherited::OnPlayerHitPlayer(id_hitter, id_hitted, P);
 

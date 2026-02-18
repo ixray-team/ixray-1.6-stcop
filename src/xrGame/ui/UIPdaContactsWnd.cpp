@@ -20,15 +20,15 @@
 #include "UITalkWnd.h"
 #include "PdaConstants.h"
 
-extern CSE_ALifeTraderAbstract* ch_info_get_from_id(u16 id);
+extern CSE_ALifeTraderAbstract* ch_info_get_from_id(ALife::_OBJECT_ID id);
 
 namespace
 {
 // Resolves a contact owner safely from the stable owner id, avoiding dereference of stale m_data pointers
 // after the underlying NPC object was destroyed (death, alife unload) while the PDA window stays open.
-CInventoryOwner* ResolveContactOwnerById(u16 ownerId)
+CInventoryOwner* ResolveContactOwnerById(ALife::_OBJECT_ID ownerId)
 {
-	if (ownerId == u16(-1))
+	if (ownerId == ALife::INVALID_OBJECT_ID)
 	{
 		return nullptr;
 	}

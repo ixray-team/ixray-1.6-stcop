@@ -208,12 +208,12 @@ public:
 	CInifile				*m_ini_file;
 
 	// Utilities
-	static void				u_EventGen			(NET_Packet& P, u32 type, u32 dest	);
+	static void				u_EventGen			(NET_Packet& P, u32 type, ALife::_OBJECT_ID dest	);
 	static void				u_EventSend			(NET_Packet& P, u32 dwFlags = DPNSEND_GUARANTEED	);
 	
 	// Methods
 	virtual void			Load				(const char* section);
-	virtual bool			net_Spawn			(CSE_Abstract* DC);
+	bool			net_Spawn			(CSE_Abstract* DC) override;
 	virtual void			net_Destroy			();
 	virtual	void			net_Relcase			( CObject* O );	
 	virtual void			UpdateCL			( );

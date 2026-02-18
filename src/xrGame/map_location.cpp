@@ -30,7 +30,7 @@
 #include "Inventory.h"
 #include "HudPdaAnimator.h"
 
-CMapLocation::CMapLocation(const char* type, u16 object_id, bool is_user_loc)
+CMapLocation::CMapLocation(const char* type, ALife::_OBJECT_ID object_id, bool is_user_loc)
 {
 	m_flags.zero			();
 
@@ -980,7 +980,7 @@ CMapSpot* CMapLocation::GetSpotBorder(CMapSpot* sp)
 }
 
 
-CRelationMapLocation::CRelationMapLocation(const shared_str& type, u16 object_id, u16 pInvOwnerActorID)
+CRelationMapLocation::CRelationMapLocation(const shared_str& type, ALife::_OBJECT_ID object_id, ALife::_OBJECT_ID pInvOwnerActorID)
 :CMapLocation(*type,object_id)
 {
 	m_curr_spot_name	= type;

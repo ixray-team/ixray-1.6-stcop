@@ -85,7 +85,7 @@ void	game_sv_mp::Update	()
 	{
 		if (m_CorpseList.size() <= g_dwMaxCorpses) break;
 		
-		u16 CorpseID = m_CorpseList[i];
+		auto CorpseID = m_CorpseList[i];
 		
 		CSE_Abstract* pCorpseObj = get_entity_from_eid(CorpseID);
 		
@@ -183,7 +183,7 @@ void game_sv_mp::OnRoundStart()
 	signal_Syncronize();
 }
 
-bool game_sv_mp::SpawnItem(const char* section, u16 parent)
+bool game_sv_mp::SpawnItem(const char* section, ALife::_OBJECT_ID parent)
 {
 	if (!pSettings->section_exist(section))
 	{
@@ -220,7 +220,7 @@ bool game_sv_mp::SpawnItemToPos(const char* section, Fvector3 position)
 		u32 LV = ai().get_level_graph()->vertex_id(position);
 
 		if (ai().get_level_graph()->valid_vertex_id(LV))
-			alife().spawn_item(section, position, ai().get_level_graph()->vertex_id(position), 0, 0xffff);
+			alife().spawn_item(section, position, ai().get_level_graph()->vertex_id(position), 0, ALife::INVALID_OBJECT_ID);
 		else
 			Msg("! Level vertex incorrect");
 
@@ -317,7 +317,7 @@ struct real_sender
 	}
 };
 
-void	game_sv_mp::KillPlayer				(ClientID id_who, u16 GameID)
+void	game_sv_mp::KillPlayer				(ClientID id_who, ALife::_OBJECT_ID GameID)
 {
 	CObject* pObject =  Level().Objects.net_Find(GameID);
 	if (pObject == nullptr)
@@ -358,7 +358,7 @@ void	game_sv_mp::KillPlayer				(ClientID id_who, u16 GameID)
 		pActor->set_death_time		();
 	}
 	//-------------------------------------------------------
-	u16 PlayerID = (xrCData != 0) ? xrCData->ps->GameID : GameID;
+	ALife::_OBJECT_ID PlayerID = (xrCData != nullptr) ? xrCData->ps->GameID : GameID;
 	//-------------------------------------------------------
 	SendPlayerKilledMessage(PlayerID, KT_HIT, PlayerID, 0, SKT_NONE);
 	//-------------------------------------------------------
@@ -367,7 +367,7 @@ void	game_sv_mp::KillPlayer				(ClientID id_who, u16 GameID)
 	// Kill Player on all clients
 	NET_Packet			P;
 	u_EventGen(P, GE_DIE, PlayerID);
-	P.w_u16				(PlayerID);
+	P << PlayerID;
 	P.w_clientID		(id_who);
 
 	u_EventSend(P, net_flags(true, true, false, true));
@@ -705,7 +705,7 @@ void game_sv_mp::SpawnPlayer(ClientID id, const char* N)
 	signal_Syncronize();
 }
 
-void game_sv_mp::AllowDeadBodyRemove(ClientID id, u16 GameID)
+void game_sv_mp::AllowDeadBodyRemove(ClientID id, ALife::_OBJECT_ID GameID)
 {
 	CSE_Abstract* pSObject = get_entity_from_eid(GameID);
 
@@ -731,7 +731,7 @@ void game_sv_mp::OnPlayerConnect			(ClientID id_who)
 	inherited::OnPlayerConnect (id_who);
 }
 
-void game_sv_mp::OnPlayerDisconnect		(ClientID id_who, LPSTR Name, u16 GameID)
+void game_sv_mp::OnPlayerDisconnect		(ClientID id_who, LPSTR Name, ALife::_OBJECT_ID GameID)
 {
 	//---------------------------------------------------
 	NET_Packet					P;
@@ -966,7 +966,7 @@ void	game_sv_mp::SetAmmoForWeapon(CSE_ALifeItemWeapon* weapon,
 	}
 }
 
-void	game_sv_mp::SpawnAmmoDifference(u16 actorId, ammo_diff_t const & ammo_diff)
+void	game_sv_mp::SpawnAmmoDifference(ALife::_OBJECT_ID actorId, ammo_diff_t const & ammo_diff)
 {
 	if (!ammo_diff.first.size() || !ammo_diff.second)
 		return;
@@ -979,7 +979,7 @@ void	game_sv_mp::SpawnAmmoDifference(u16 actorId, ammo_diff_t const & ammo_diff)
 	spawn_end(ammo_entity,m_server->GetServerClient()->ID);
 }
 
-void	game_sv_mp::SpawnWeapon4Actor(u16 actorId,  const char* N, u8 Addons, game_PlayerState::PLAYER_ITEMS_LIST & playerItems)
+void	game_sv_mp::SpawnWeapon4Actor(ALife::_OBJECT_ID actorId,  const char* N, u8 Addons, game_PlayerState::PLAYER_ITEMS_LIST & playerItems)
 {
 	if (!N) return;
 	
@@ -1001,7 +1001,7 @@ void	game_sv_mp::SpawnWeapon4Actor(u16 actorId,  const char* N, u8 Addons, game_
 	SpawnAmmoDifference		(actorId, ammo_diff);
 };
 
-void game_sv_mp::OnDestroyObject			(u16 eid_who)
+void game_sv_mp::OnDestroyObject			(ALife::_OBJECT_ID eid_who)
 {
 	CORPSE_LIST_it it = std::find(m_CorpseList.begin(), m_CorpseList.end(), eid_who);
 	if (it != m_CorpseList.end())
@@ -1506,10 +1506,13 @@ void game_sv_mp::ClearPlayerState(game_PlayerState* ps)
 
 void game_sv_mp::OnPlayerKilled(NET_Packet P)
 {
-	u16 KilledID = P.r_u16();
+	ALife::_OBJECT_ID KilledID;
+	P >> KilledID;
 	KILL_TYPE KillType = KILL_TYPE(P.r_u8());
-	u16 KillerID = P.r_u16();
-	u16	WeaponID = P.r_u16();
+	ALife::_OBJECT_ID KillerID;
+	P >> KillerID;
+	ALife::_OBJECT_ID WeaponID;
+	P >> WeaponID;
 	SPECIAL_KILL_TYPE SpecialKill = SPECIAL_KILL_TYPE(P.r_u8());
 
 	game_PlayerState* ps_killer = get_eid(KillerID);
@@ -1546,8 +1549,9 @@ void game_sv_mp::OnPlayerKilled(NET_Packet P)
 
 void game_sv_mp::OnPlayerHitted(NET_Packet P)
 {
-	u16		id_hitted = P.r_u16();
-	u16     id_hitter = P.r_u16();
+	ALife::_OBJECT_ID id_hitted;
+	ALife::_OBJECT_ID id_hitter;
+	P >> id_hitted >> id_hitter;
 	float	dHealth = P.r_float()*100;
 	game_PlayerState* PSHitter		=	get_eid			(id_hitter);
 	if (!PSHitter) return;
@@ -1561,7 +1565,7 @@ void game_sv_mp::OnPlayerHitted(NET_Packet P)
 	};
 };
 	
-void	game_sv_mp::SendPlayerKilledMessage	(u16 KilledID, KILL_TYPE KillType, u16 KillerID, u16 WeaponID, SPECIAL_KILL_TYPE SpecialKill)
+void	game_sv_mp::SendPlayerKilledMessage	(ALife::_OBJECT_ID KilledID, KILL_TYPE KillType, ALife::_OBJECT_ID KillerID, ALife::_OBJECT_ID WeaponID, SPECIAL_KILL_TYPE SpecialKill)
 {
 #ifndef MASTER_GOLD
 	Msg("---Server: sending player [%d] killed message...", KillerID);
@@ -1571,9 +1575,7 @@ void	game_sv_mp::SendPlayerKilledMessage	(u16 KilledID, KILL_TYPE KillType, u16 
 	P.w_u32				(GAME_EVENT_PLAYER_KILLED);
 
 	P.w_u8	(u8(KillType));
-	P.w_u16	(KilledID);
-	P.w_u16	(KillerID);
-	P.w_u16	(WeaponID);
+	P << KilledID << KillerID << WeaponID;
 	P.w_u8	(u8(SpecialKill));
 
 	struct player_killed_sender
@@ -1609,7 +1611,7 @@ void		game_sv_mp::OnPlayerSpeechMessage	(NET_Packet& P, ClientID sender)
 		NET_Packet			NP;
 		GenerateGameMessage(NP);
 		NP.w_u32(GAME_EVENT_SPEECH_MESSAGE);
-		NP.w_u16(ps->GameID);
+		NP << ps->GameID;
 		NP.w_u8(P.r_u8());
 		NP.w_u8(P.r_u8());
 		NP.w_u8(P.r_u8());
@@ -1961,7 +1963,7 @@ void game_sv_mp::RejectGameItem(CSE_Abstract* entity)
 
 	NET_Packet P;
 	u_EventGen(P, GE_OWNERSHIP_REJECT, e_parent->ID);
-	P.w_u16(entity->ID);
+	P << entity->ID;
 	Level().Send(P, net_flags(true, true));
 }
 
@@ -2261,7 +2263,7 @@ void game_sv_mp::DestroyAllPlayerItems(ClientID id_who)	//except rukzak
 	{
 		R_ASSERT2(item, make_string<const char*>("PIItem in player`s inventory not found. Destroy all items of actor[%d]", ps->GameID));
 
-		u16 object_id = item->object().ID();
+		auto object_id = item->object().ID();
 		CSE_Abstract* tempEntity = m_server->ID_to_entity(object_id);
 
 		VERIFY2(tempEntity, make_string<const char*>("entity not found [%d]. Destroy all items of actor[%d]", object_id, ps->GameID));

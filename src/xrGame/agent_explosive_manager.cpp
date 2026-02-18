@@ -8,6 +8,8 @@
 
 #include "StdAfx.h"
 #include "agent_explosive_manager.h"
+
+#include <algorithm>
 #include "agent_manager.h"
 #include "agent_location_manager.h"
 #include "agent_member_manager.h"
@@ -31,7 +33,7 @@ struct CRemoveExplosivesPredicate {
 
 void CAgentExplosiveManager::remove_links	(CObject *object)
 {
-	TO_BE_DESTROYED::iterator		I = std::find(m_explosives_to_remove.begin(),m_explosives_to_remove.end(),object->ID());
+	TO_BE_DESTROYED::iterator		I = std::ranges::find(m_explosives_to_remove,object->ID());
 	if (I != m_explosives_to_remove.end())
 		m_explosives_to_remove.erase(I);
 
@@ -51,7 +53,7 @@ void CAgentExplosiveManager::register_explosive(const CExplosive* explosive, con
 	}
 
 	{
-		TO_BE_DESTROYED::iterator I = std::find(m_explosives_to_remove.begin(), m_explosives_to_remove.end(), game_object->ID());
+		TO_BE_DESTROYED::iterator I = std::ranges::find(m_explosives_to_remove, game_object->ID());
 		if (I != m_explosives_to_remove.end())
 		{
 			return;
@@ -59,7 +61,7 @@ void CAgentExplosiveManager::register_explosive(const CExplosive* explosive, con
 	}
 
 	m_explosives_to_remove.push_back(game_object->ID());
-	m_explosives.push_back(CDangerExplosive(explosive, game_object, 0, Device.dwTimeGlobal));
+	m_explosives.push_back(CDangerExplosive(explosive, game_object, nullptr, Device.dwTimeGlobal));
 
 	u32	interval = AFTER_GRENADE_DESTROYED_INTERVAL;
 	CExplosive* explo = const_cast<CExplosive*>(explosive);

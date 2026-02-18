@@ -231,7 +231,7 @@ void CLevel::ClientSend()
 			{				
 				P.w_begin		(M_CL_UPDATE);
 				
-				P.w_u16			(u16(pObj->ID()));
+				P << pObj->ID();
 				P.w_u32			(0);	//reserved place for client's ping
 
 				pObj->net_Export			(P);
@@ -289,7 +289,7 @@ void CLevel::ClientSave()
 		if (!GO || !GO->net_SaveRelevant())
 			continue;
 
-		Packet.w_u16(u16(GO->ID()));
+		Packet << GO->ID();
 		Packet.w_chunk_open16(ChunkID);
 		GO->net_Save(Packet);
 		Packet.w_chunk_close16(ChunkID);
@@ -557,8 +557,7 @@ void			CLevel::ClearAllObjects				()
 			//---------------------------------------------		
 			GEN.w_u32			(Level().timeServer());
 			GEN.w_u16			(GE_OWNERSHIP_REJECT);
-			GEN.w_u16			(pObj->H_Parent()->ID());
-			GEN.w_u16			(u16(pObj->ID()));
+			GEN << pObj->H_Parent()->ID() << pObj->ID();
 			game_events->insert	(GEN);
 			if (g_bDebugEvents)	ProcessGameEvents();
 			//-------------------------------------------------------------
@@ -593,7 +592,7 @@ void			CLevel::ClearAllObjects				()
 		//---------------------------------------------		
 		GEN.w_u32			(Level().timeServer());
 		GEN.w_u16			(GE_DESTROY);
-		GEN.w_u16			(u16(pObj->ID()));
+		GEN << pObj->ID();
 		game_events->insert	(GEN);
 		if (g_bDebugEvents)	ProcessGameEvents();
 		//-------------------------------------------------------------
