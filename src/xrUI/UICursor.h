@@ -2,8 +2,9 @@
 #include "ui_base.h"
 
 class UI_API CUIStatic;
+class UI_API CUI3dStatic;
 
-class UI_API CUICursor :	
+class UI_API CUICursor :
 	public pureRender,
 	public pureScreenResolutionChanged
 {
@@ -11,6 +12,7 @@ class UI_API CUICursor :
 	Fvector2		vPos;
 	Fvector2		vPrevPos;
 	CUIStatic*		m_static;
+    CUI3dStatic*    m_3dstatic;
 	void			InitInternal				();
 public:
 					CUICursor					();
