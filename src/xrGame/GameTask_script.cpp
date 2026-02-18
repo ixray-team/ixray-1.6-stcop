@@ -12,7 +12,7 @@ void CGameTask::AddObjective_script(SGameTaskObjective* O)
     O->CommitScriptHelperContents();
     m_Objectives.emplace_back(*O);
 
-    if (O->m_map_location.size() && O->m_map_object_id != u16(-1))
+    if (O->m_map_location.size() && O->m_map_object_id != ALife::INVALID_OBJECT_ID)
     {
         Level().MapManager().AddMapLocation(O->m_map_location, O->m_map_object_id);
         O->LinkedMapLocation()->SetHint(O->m_map_hint);

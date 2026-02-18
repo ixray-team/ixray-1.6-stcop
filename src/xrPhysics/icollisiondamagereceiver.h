@@ -4,7 +4,7 @@ class ICollisionDamageReceiver
 {
 public:
 
-	virtual		void	CollisionHit( u16 source_id, u16 bone_id, float power, const Fvector &dir, Fvector &pos )	=0;
+	virtual		void	CollisionHit( ALife::_OBJECT_ID source_id, u16 bone_id, float power, const Fvector &dir, Fvector &pos )	=0;
 protected:
 	virtual				~ICollisionDamageReceiver()	{};
 };

@@ -167,11 +167,11 @@ IReader const* CALifeSimulator::get_config	( shared_str config ) const
 namespace detail
 {
 
-bool object_exists_in_alife_registry (u32 id)
+bool object_exists_in_alife_registry (ALife::_OBJECT_ID id)
 {
 	if ( ai().get_alife() )
 	{
-		return ai().alife().objects().object((ALife::_OBJECT_ID)id, true) != 0;
+		return ai().alife().objects().object(id, true) != nullptr;
 	}
 	return false;
 }

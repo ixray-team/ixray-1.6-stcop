@@ -18,8 +18,8 @@ private:
 		}
 	};
 
-	typedef xr_map<u16, IStreamPlayer*> SOUND_PLAYERS;
-	typedef xr_map<u16, SVoiceIconInfo> PLAYERS_VOICE_TIME;
+	typedef xr_map<ALife::_OBJECT_ID, IStreamPlayer*> SOUND_PLAYERS;
+	typedef xr_map<ALife::_OBJECT_ID, SVoiceIconInfo> PLAYERS_VOICE_TIME;
 
 public:
 	CVoiceChat();
@@ -42,7 +42,7 @@ public:
 private:
 	const ui_shader& GetVoiceIndicatorShader();
 
-	IStreamPlayer* GetStreamPlayer(u16 clientId);
+	IStreamPlayer* GetStreamPlayer(ALife::_OBJECT_ID clientId);
 
 	void CheckAndClearPlayers(SOUND_PLAYERS& players);
 

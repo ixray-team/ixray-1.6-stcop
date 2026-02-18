@@ -177,7 +177,7 @@ void CAI_Trader::OnEvent(NET_Packet& P, u16 type)
 	inherited::OnEvent(P, type);
 	CInventoryOwner::OnEvent(P, type);
 
-	u16 id;
+	ALife::_OBJECT_ID id;
 	CObject* Obj;
 
 	switch (type)
@@ -185,7 +185,7 @@ void CAI_Trader::OnEvent(NET_Packet& P, u16 type)
 	case GE_TRADE_BUY:
 	case GE_OWNERSHIP_TAKE:
 	{
-		P.r_u16(id);
+		P >> id;
 		Obj = Level().Objects.net_Find(id);
 		if (inventory().CanTakeItem(Obj->cast_inventory_item()))
 		{
@@ -196,7 +196,7 @@ void CAI_Trader::OnEvent(NET_Packet& P, u16 type)
 		{
 			NET_Packet P_;
 			u_EventGen(P_, GE_OWNERSHIP_REJECT, ID());
-			P_.w_u16(u16(Obj->ID()));
+			P_ << Obj->ID();
 			u_EventSend(P_);
 		}
 		break;
@@ -204,7 +204,7 @@ void CAI_Trader::OnEvent(NET_Packet& P, u16 type)
 	case GE_TRADE_SELL:
 	case GE_OWNERSHIP_REJECT:
 	{
-		P.r_u16(id);
+		P >> id;
 		Obj = Level().Objects.net_Find(id);
 		bool just_before_destroy = !P.r_eof() && P.r_u8();
 		bool dont_create_shell = (type == GE_TRADE_SELL) || just_before_destroy;
@@ -238,7 +238,7 @@ void CAI_Trader::feel_touch_new(CObject* O)
 		Msg("Taking item %s!", *I->object().cName());
 		NET_Packet P;
 		u_EventGen(P, GE_OWNERSHIP_TAKE, ID());
-		P.w_u16(u16(I->object().ID()));
+		P << I->object().ID();
 		u_EventSend(P);
 	}
 }
@@ -252,7 +252,7 @@ void CAI_Trader::DropItemSendMessage(CObject *O)
 	// We doesn't have similar weapon - pick up it
 	NET_Packet				P;
 	u_EventGen				(P,GE_OWNERSHIP_REJECT,ID());
-	P.w_u16					(u16(O->ID()));
+	P << O->ID();
 	u_EventSend				(P);
 }
 

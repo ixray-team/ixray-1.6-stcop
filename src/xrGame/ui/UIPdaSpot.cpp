@@ -20,7 +20,7 @@ CUIPdaSpot::CUIPdaSpot()
 	m_levelName = nullptr;
 	m_position = Fvector();
 
-	m_spotID = u16(-1);
+	m_spotID = ALife::_OBJECT_ID(-1);
 
 	m_spotType = READ_IF_EXISTS(pSettings, r_string, "user_spots", "spot_type", "treasure");
 	// FFx0001 override spot section from global config
@@ -41,13 +41,13 @@ CUIPdaSpot::~CUIPdaSpot()
 {
 }
 
-void CUIPdaSpot::Init(u16 spot_id, const char* level_name, Fvector pos, bool main_wnd)
+void CUIPdaSpot::Init(ALife::_OBJECT_ID spot_id, const char* level_name, Fvector pos, bool main_wnd)
 {
 	m_mainWnd = main_wnd;
 	m_levelName = level_name;
 	m_position = pos;
 
-	m_spotID = !m_mainWnd ? spot_id : u16(-1);
+	m_spotID = !m_mainWnd ? spot_id : ALife::_OBJECT_ID(-1);
 
 	if (!m_mainWnd)
 	{
@@ -131,7 +131,7 @@ void CUIPdaSpot::Exit()
 	m_mainWnd = false;
 	m_levelName = nullptr;
 	m_position = Fvector();
-	m_spotID = u16(-1);
+	m_spotID = ALife::_OBJECT_ID(-1);
 
 	m_editBox->ClearText();
 
