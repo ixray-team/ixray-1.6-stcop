@@ -12,7 +12,7 @@ class CInventoryBox final : public CGameObject
 	bool m_closed = false;
 
 public:
-	xr_vector<u16> m_items = {};
+	xr_vector<ALife::_OBJECT_ID> m_items = {};
 
 public:
 	CInventoryBox() = default;

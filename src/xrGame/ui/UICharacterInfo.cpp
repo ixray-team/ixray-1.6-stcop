@@ -23,7 +23,7 @@
 
 using namespace InventoryUtilities;
 
-CSE_ALifeTraderAbstract* ch_info_get_from_id (u16 id)
+CSE_ALifeTraderAbstract* ch_info_get_from_id (ALife::_OBJECT_ID id)
 {
 	if( ai().get_alife() && ai().get_game_graph() )
 	{
@@ -34,7 +34,7 @@ CSE_ALifeTraderAbstract* ch_info_get_from_id (u16 id)
 }
 
 CUICharacterInfo::CUICharacterInfo()
-	: m_ownerID(u16(-1)),
+	: m_ownerID(ALife::INVALID_OBJECT_ID),
 	pUIBio(nullptr)
 {
 	ZeroMemory			(m_icons,sizeof(m_icons));
@@ -241,7 +241,7 @@ void CUICharacterInfo::InitCharacter(CInventoryOwner* invOwner)
 
 }
 
-void CUICharacterInfo::InitCharacter(u16 id)
+void CUICharacterInfo::InitCharacter(ALife::_OBJECT_ID id)
 {
 	m_ownerID = id;
 	CCharacterInfo chInfo;
@@ -436,7 +436,7 @@ void CUICharacterInfo::UpdateRelation()
 
 namespace detail
 { // helper function implemented in file alife_simulator.cpp
-	bool object_exists_in_alife_registry (u32 id);
+	bool object_exists_in_alife_registry (ALife::_OBJECT_ID id);
 } // namespace detail
 
 void CUICharacterInfo::Update()
@@ -455,7 +455,7 @@ void CUICharacterInfo::Update()
 
 		if(nullptr == T)
 		{
-			m_ownerID = u16(-1);
+			m_ownerID = ALife::INVALID_OBJECT_ID;
 			return;
 		}
 		else

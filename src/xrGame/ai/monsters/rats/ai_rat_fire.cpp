@@ -38,8 +38,8 @@ void CAI_Rat::Exec_Action(float /**dt/**/)
 					VERIFY			(entity_alive);
 
 //					entity_alive->Hit(m_fHitPower,tDirection,this,0,position_in_bone_space,0);
-					u16			id_to = entity_alive->ID();
-					u16			id_from = ID();
+					auto			id_to = entity_alive->ID();
+					auto			id_from = ID();
 					NET_Packet	l_P;
 					SHit		HS;
 					HS.GenHeader(GE_HIT, id_to);					//					u_EventGen	(l_P,GE_HIT, id_to);

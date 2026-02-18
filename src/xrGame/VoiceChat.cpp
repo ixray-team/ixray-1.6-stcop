@@ -96,7 +96,7 @@ void CVoiceChat::OnRender()
 		for (auto it = players.begin(); it != players.end(); ++it)
 		{
 			game_PlayerState* ps = it->second;
-			u16 id = ps->GameID;
+			ALife::_OBJECT_ID id = ps->GameID;
 
 			if (ps == local_player || ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD) /* || ps->testFlag(GAME_PLAYER_MP_INVIS) */)
 				continue;
@@ -131,7 +131,8 @@ void CVoiceChat::ReceiveMessage(NET_Packet* P)
 
 	u8 voiceDistance = P->r_u8();
 
-	u16 clientId = P->r_u16();
+	ALife::_OBJECT_ID clientId;
+	*P >> clientId;
 	CObject* obj = Level().Objects.net_Find(clientId);
 	if (!obj)
 	{
@@ -171,7 +172,7 @@ const ui_shader& CVoiceChat::GetVoiceIndicatorShader()
 	return m_voiceIndicatorShader;
 }
 
-IStreamPlayer* CVoiceChat::GetStreamPlayer(u16 clientId)
+IStreamPlayer* CVoiceChat::GetStreamPlayer(ALife::_OBJECT_ID clientId)
 {
 	IStreamPlayer* player = m_soundPlayersMap[clientId];
 	if (!player)

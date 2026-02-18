@@ -16,8 +16,8 @@ void CInventoryBox::OnEvent(NET_Packet& P, u16 type)
 	case GE_TRADE_BUY:
 	case GE_OWNERSHIP_TAKE:
 	{
-		u16 id;
-		P.r_u16(id);
+		ALife::_OBJECT_ID id;
+		P >> id;
 		CObject* itm = Level().Objects.net_Find(id);
 		VERIFY(itm);
 		m_items.push_back(id);
@@ -43,12 +43,11 @@ void CInventoryBox::OnEvent(NET_Packet& P, u16 type)
 	case GE_TRADE_SELL:
 	case GE_OWNERSHIP_REJECT:
 	{
-		u16 id;
-		P.r_u16(id);
+		ALife::_OBJECT_ID id;
+		P >> id;
 		CObject* itm = Level().Objects.net_Find(id);
 		VERIFY(itm);
-		xr_vector<u16>::iterator it;
-		it = std::find(m_items.begin(), m_items.end(), id);
+		auto it = std::find(m_items.begin(), m_items.end(), id);
 		VERIFY(it != m_items.end());
 		m_items.erase(it);
 
@@ -114,7 +113,7 @@ void CInventoryBox::net_Relcase(CObject* O)
 
 void CInventoryBox::AddAvailableItems(TIItemContainer& items_container) const
 {
-	for (const u16& item : m_items)
+	for (auto item : m_items)
 	{
 		CObject* finded_object = Level().Objects.net_Find(item);
 		PIItem itm = finded_object->cast_inventory_item();

@@ -143,9 +143,9 @@ void game_cl_ArtefactHunt::net_import_state	(NET_Packet& P)
 	inherited::net_import_state	(P);
 	
 	P.r_u8	(artefactsNum);
-	P.r_u16	(artefactBearerID);
+	P >> artefactBearerID;
 	P.r_u8	(teamInPossession);
-	P.r_u16	(artefactID);
+	P >> artefactID;
 	bBearerCantSprint = !!P.r_u8();
 
 	iReinforcementTime = P.r_s32();
@@ -173,8 +173,9 @@ void game_cl_ArtefactHunt::TranslateGameMessage	(u32 msg, NET_Packet& P)
 //-------------------UI MESSAGES
 	case GAME_EVENT_ARTEFACT_TAKEN: //ahunt
 		{
-			u16 PlayerID, Team;
-			P.r_u16 (PlayerID);
+			ALife::_OBJECT_ID PlayerID;
+			u16 Team;
+			P >> PlayerID;
 			P.r_u16 (Team);
 
 			game_PlayerState* pPlayer = GetPlayerByGameID(PlayerID);
@@ -201,8 +202,9 @@ void game_cl_ArtefactHunt::TranslateGameMessage	(u32 msg, NET_Packet& P)
 		}break;
 	case GAME_EVENT_ARTEFACT_DROPPED: //ahunt
 		{
-			u16 PlayerID, Team;
-			P.r_u16 (PlayerID);
+			ALife::_OBJECT_ID PlayerID;
+			u16 Team;
+			P >> PlayerID;
 			P.r_u16 (Team);
 
 			game_PlayerState* pPlayer = GetPlayerByGameID(PlayerID);
@@ -222,8 +224,9 @@ void game_cl_ArtefactHunt::TranslateGameMessage	(u32 msg, NET_Packet& P)
 		}break;
 	case GAME_EVENT_ARTEFACT_ONBASE: //ahunt
 		{
-			u16 PlayerID, Team;
-			P.r_u16 (PlayerID);
+			ALife::_OBJECT_ID PlayerID;
+			u16 Team;
+			P >> PlayerID;
 			P.r_u16 (Team);
 
 			game_PlayerState* pPlayer = GetPlayerByGameID(PlayerID);
@@ -258,7 +261,8 @@ void game_cl_ArtefactHunt::TranslateGameMessage	(u32 msg, NET_Packet& P)
 		{
 			xr_sprintf(Text, "%s%s", 
 				Color_Main, *g_pStringTable->translate("mp_art_destroyed"));
-			u16 ArtefactID = P.r_u16();
+			ALife::_OBJECT_ID ArtefactID;
+			P >> ArtefactID;
 			//-------------------------------------------
 			CObject* pObj = Level().Objects.net_Find(ArtefactID);
 			if (pObj && xr_strlen(m_Eff_Af_Disappear))
@@ -736,12 +740,12 @@ void	game_cl_ArtefactHunt::OnSellItemsFromRuck		()
 	for ( ; IRuck != ERuck; ++IRuck) 
 	{		
 		PIItem pItem = *IRuck;
-		P.w_u16		(pItem->object().ID());		
+		P << pItem->object().ID();
 	};	
 	pCurActor->u_EventSend(P);
 };
 
-void game_cl_ArtefactHunt::SendPickUpEvent		(u16 ID_who, u16 ID_what)
+void game_cl_ArtefactHunt::SendPickUpEvent		(ALife::_OBJECT_ID ID_who, ALife::_OBJECT_ID ID_what)
 {
 	game_cl_GameState::SendPickUpEvent(ID_who, ID_what);
 };

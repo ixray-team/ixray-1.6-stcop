@@ -109,8 +109,8 @@ void CWeapon::FireTrace		(const Fvector& P, const Fvector& D)
 		}
 	}
 
-	u16 weapon_id = ID();
-	u16 initiator_id = H_Parent() ? H_Parent()->ID() : Initiator();
+	ALife::_OBJECT_ID weapon_id = ID();
+	ALife::_OBJECT_ID initiator_id = H_Parent() ? H_Parent()->ID() : Initiator();
 	bool SendHit = SendHitAllowed(H_Parent() ? H_Parent() : this);
 
 	//выстерлить пулю (с учетом возможной стрельбы дробью)
@@ -214,8 +214,8 @@ void CWeapon::FireTraceChamber(const Fvector& P, const Fvector& D)
 		}
 	}
 
-	u16 weapon_id = ID();
-	u16 initiator_id = H_Parent() ? H_Parent()->ID() : Initiator();
+	ALife::_OBJECT_ID weapon_id = ID();
+	ALife::_OBJECT_ID initiator_id = H_Parent() ? H_Parent()->ID() : Initiator();
 	bool SendHit = SendHitAllowed(H_Parent() ? H_Parent() : this);
 	
 	for (int i = 0; i < l_cartridge.param_s.buckShot; ++i)

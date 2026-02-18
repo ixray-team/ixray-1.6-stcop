@@ -24,7 +24,7 @@ protected:
 	u32								m_dwArtefactRemoveTime;
 
 	u16								m_ArtefactsSpawnedTotal;
-	u16								m_dwArtefactID;	
+	ALife::_OBJECT_ID				m_dwArtefactID;	
 
 	ARTEFACT_STATE					m_eAState;
 	bool							m_bArtefactWasTaken;
@@ -35,8 +35,8 @@ protected:
 //.	u8								m_LastRespawnPointID;
 	CRandom							ArtefactChooserRandom;
 
-	u16								artefactBearerID;//ah,ZoneMap
-	u16								m_iAfBearerMenaceID;
+	ALife::_OBJECT_ID artefactBearerID;//ah,ZoneMap
+	ALife::_OBJECT_ID m_iAfBearerMenaceID;
 	u8								teamInPossession;//ah,ZoneMap
 
 	bool							bNoLostMessage;
@@ -55,57 +55,57 @@ protected:
 	void							UpdatePlayersNotSendedMoveRespond();
 	void							ReplicatePlayersStateToPlayer(ClientID CID);
 
-	virtual		void				check_Player_for_Invincibility	(game_PlayerState* ps);
-	virtual		void				Check_ForClearRun		(game_PlayerState* ps);
+	void				check_Player_for_Invincibility	(game_PlayerState* ps) override;
+	void				Check_ForClearRun		(game_PlayerState* ps) override;
 
-	virtual		void				ReadOptions				(shared_str &options);
-	virtual		void				ConsoleCommands_Create	();
-	virtual		void				ConsoleCommands_Clear	();
+	void				ReadOptions				(shared_str &options) override;
+	void				ConsoleCommands_Create	() override;
+	void				ConsoleCommands_Clear	() override;
 
-	virtual		bool				Player_Check_Rank		(game_PlayerState* ps);
+	bool				Player_Check_Rank		(game_PlayerState* ps) override;
 	//virtual		void			DestroyAllPlayerItems(ClientID id_who);
 
 	bool		assign_rp_tmp		(game_PlayerState* ps_who, xr_vector<RPoint>& points_vec, xr_vector<u32>& dest, xr_vector<u32>& rpIDEnemy, xr_vector<ClientID>& EnemyIt,  bool use_safe_dist);
 public:
 
 									game_sv_ArtefactHunt	(){m_type = eGameIDArtefactHunt;}
-	virtual		void				Create					(shared_str& options);
+	void				Create					(shared_str& options) override;
 
-	virtual		const char*				type_name			() const { return "artefacthunt";};
+	const char*				type_name			() const override { return "artefacthunt";};
 	// Events	
-	virtual		void				OnEvent					(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender );
-	virtual		void				OnRoundStart			();							// старт раунда
-	virtual		KILL_RES			GetKillResult			(game_PlayerState* pKiller, game_PlayerState* pVictim);
-	virtual		bool				OnKillResult			(KILL_RES KillResult, game_PlayerState* pKiller, game_PlayerState* pVictim);
-	virtual		void				OnGiveBonus				(KILL_RES KillResult, game_PlayerState* pKiller, game_PlayerState* pVictim, KILL_TYPE KillType, SPECIAL_KILL_TYPE SpecialKillType, CSE_Abstract* pWeaponA);
-	virtual		void				OnPlayerHitPlayer		(u16 id_hitter, u16 id_hitted, NET_Packet& P);
-	virtual		void				OnPlayerHitPlayer_Case	(game_PlayerState* ps_hitter, game_PlayerState* ps_hitted, SHit* pHitS);	
-	virtual		void				OnPlayerKillPlayer		(game_PlayerState* ps_killer, game_PlayerState* ps_killed, KILL_TYPE KillType, SPECIAL_KILL_TYPE SpecialKillType, CSE_Abstract* pWeaponA);
-	virtual		void				OnPlayerFire			(ClientID id_who, NET_Packet &P) {};
-	virtual		void				Victim_Exp				(game_PlayerState* pVictim) {};
-	virtual		void				UpdateTeamScore			(game_PlayerState* ps_killer, s16 OldKills) {};
-	virtual		void				OnPlayerReady			(ClientID id_who);
-	virtual		void				OnPlayerBuySpawn		(ClientID sender);
+	void				OnEvent					(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender ) override;
+	void				OnRoundStart			() override;							// старт раунда
+	KILL_RES			GetKillResult			(game_PlayerState* pKiller, game_PlayerState* pVictim) override;
+	bool				OnKillResult			(KILL_RES KillResult, game_PlayerState* pKiller, game_PlayerState* pVictim) override;
+	void				OnGiveBonus				(KILL_RES KillResult, game_PlayerState* pKiller, game_PlayerState* pVictim, KILL_TYPE KillType, SPECIAL_KILL_TYPE SpecialKillType, CSE_Abstract* pWeaponA) override;
+	void				OnPlayerHitPlayer		(ALife::_OBJECT_ID id_hitter, ALife::_OBJECT_ID id_hitted, NET_Packet& P) override;
+	void				OnPlayerHitPlayer_Case	(game_PlayerState* ps_hitter, game_PlayerState* ps_hitted, SHit* pHitS) override;
+	void				OnPlayerKillPlayer		(game_PlayerState* ps_killer, game_PlayerState* ps_killed, KILL_TYPE KillType, SPECIAL_KILL_TYPE SpecialKillType, CSE_Abstract* pWeaponA) override;
+	void				OnPlayerFire			(ClientID id_who, NET_Packet &P) override {};
+	void				Victim_Exp				(game_PlayerState* pVictim) override {};
+	void				UpdateTeamScore			(game_PlayerState* ps_killer, s16 OldKills) override {};
+	void				OnPlayerReady			(ClientID id_who) override;
+	void				OnPlayerBuySpawn		(ClientID sender) override;
 
-	virtual		void				OnTimelimitExceed		();
+	void				OnTimelimitExceed		() override;
 
-	virtual		void				assign_RP				(CSE_Abstract* E, game_PlayerState* ps_who);
-	virtual		u32					RP_2_Use				(CSE_Abstract* E);	
+	void				assign_RP				(CSE_Abstract* E, game_PlayerState* ps_who) override;
+	u32					RP_2_Use				(CSE_Abstract* E) override;	
 	virtual		void				CheckRPUnblock			();
 	virtual		void				SetRP					(CSE_Abstract* E, RPoint* pRP);
 
-	virtual		void				LoadTeams				();
+	void				LoadTeams				() override;
 
-	virtual		char*				GetAnomalySetBaseName	() {return (char*) "artefacthunt_game_anomaly_sets";};
+	char*				GetAnomalySetBaseName	() override {return (char*) "artefacthunt_game_anomaly_sets";};
 
-	virtual		void				OnObjectEnterTeamBase	(u16 id, u16 zone_team);
-	virtual		void				OnObjectLeaveTeamBase	(u16 id, u16 zone_team);
+	void				OnObjectEnterTeamBase	(ALife::_OBJECT_ID id, u16 zone_team) override;
+	void				OnObjectLeaveTeamBase	(ALife::_OBJECT_ID id, u16 zone_team) override;
 	
 	void							OnArtefactOnBase		(ClientID id_who);
 
-	virtual		bool				OnTouch					(u16 eid_who, u16 eid_what, bool bForced = false);
-	virtual		void				OnDetach				(u16 eid_who, u16 eid_what);
-	virtual		void				OnCreate				(u16 id_who);
+	bool				OnTouch					(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_what, bool bForced = false) override;
+	void				OnDetach				(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_what) override;
+	void				OnCreate				(ALife::_OBJECT_ID id_who) override;
 
 
 	virtual		void				Update					();

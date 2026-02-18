@@ -36,14 +36,14 @@ void CALifeSurgeManager::spawn_new_spawns			()
 			continue;
 		auto& AbstarctObject = vertex_ptr->data()->object();
 		if (smart_cast<CSE_ALifeCreatureActor*>(&AbstarctObject)) {
-			u16 ID = *Iter;
+			auto ID = *Iter;
 			m_temp_spawns.erase(Iter);
 			m_temp_spawns.emplace(m_temp_spawns.begin(), ID);
 			break;
 		}
 	}
 
-	for (u16 ObjectID : m_temp_spawns) {
+	for (auto ObjectID : m_temp_spawns) {
 		CSE_ALifeDynamicObject* object = nullptr;
 		auto* vertex_ptr = spawns().spawns().vertex(ObjectID);
 		if (!vertex_ptr)

@@ -9,57 +9,56 @@ private:
 	bool	teams_swaped;
 
 protected:
+	bool				checkForFragLimit		() override;
+	bool				HasChampion				() override;
 
-	virtual		bool				checkForFragLimit		();
-	virtual		bool				HasChampion				();
-		
-	virtual		void				ReadOptions				(shared_str &options);
-	virtual		void				ConsoleCommands_Create	();
-	virtual		void				ConsoleCommands_Clear	();
+	void				ReadOptions				(shared_str &options) override;
+	void				ConsoleCommands_Create	() override;
+	void				ConsoleCommands_Clear	() override;
 
 public:	
 									game_sv_TeamDeathmatch	(){m_type = eGameIDTeamDeathmatch;}
-	virtual		void				Create					(shared_str& options);
+	void				Create					(shared_str& options) override;
 
-	virtual		void				OnEvent					(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender );
+	void				OnEvent					(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender ) override;
 
-	virtual		const char*				type_name			() const { return "teamdeathmatch";};
+	const char*				type_name			() const override { return "teamdeathmatch";};
 
-	virtual		void				Update					();
-	virtual		void				net_Export_State		(NET_Packet& P, ClientID id_to);				// full state
+	void				Update					() override;
+	void				net_Export_State		(NET_Packet& P, ClientID id_to) override;				// full state
 	// Events	
-	virtual		void				OnPlayerConnect			(ClientID id_who);
-	virtual		void				OnPlayerConnectFinished	(ClientID id_who);
+	void				OnPlayerConnect			(ClientID id_who) override;
+	void				OnPlayerConnectFinished	(ClientID id_who) override;
 
-	virtual		void				OnPlayerSelectTeam		(NET_Packet& P, ClientID sender);
+	void				OnPlayerSelectTeam		(NET_Packet& P, ClientID sender) override;
 	virtual		void				OnPlayerChangeTeam		(ClientID id_who, s16 team);
-	virtual		KILL_RES			GetKillResult			(game_PlayerState* pKiller, game_PlayerState* pVictim);
-	virtual		bool				OnKillResult			(KILL_RES KillResult, game_PlayerState* pKiller, game_PlayerState* pVictim);
-	virtual		void				OnPlayerKillPlayer		(game_PlayerState* ps_killer, game_PlayerState* ps_killed, KILL_TYPE KillType, SPECIAL_KILL_TYPE SpecialKillType, CSE_Abstract* pWeaponA);
+	KILL_RES			GetKillResult			(game_PlayerState* pKiller, game_PlayerState* pVictim) override;
+	bool				OnKillResult			(KILL_RES KillResult, game_PlayerState* pKiller, game_PlayerState* pVictim) override;
+	void				OnPlayerKillPlayer		(game_PlayerState* ps_killer, game_PlayerState* ps_killed, KILL_TYPE KillType, SPECIAL_KILL_TYPE SpecialKillType, CSE_Abstract* pWeaponA) override;
 	virtual		void				UpdateTeamScore			(game_PlayerState* ps_killer, s16 OldKills);
-	virtual		bool				CheckTeams				() { return true; };
+	bool				CheckTeams				() override { return true; };
 
-	virtual		void				OnPlayerHitPlayer		(u16 id_hitter, u16 id_hitted, NET_Packet& P);
-	virtual		void				OnPlayerHitPlayer_Case	(game_PlayerState* ps_hitter, game_PlayerState* ps_hitted, SHit* pHitS);
+	void				OnPlayerHitPlayer		(ALife::_OBJECT_ID id_hitter, ALife::_OBJECT_ID id_hitted, NET_Packet& P) override;
+	void				OnPlayerHitPlayer_Case	(game_PlayerState* ps_hitter, game_PlayerState* ps_hitted, SHit* pHitS) override;
 
-	virtual		void				OnRoundStart			();
-	virtual		void				OnRoundEnd				();
+	void				OnRoundStart			() override;
+	void				OnRoundEnd				() override;
 	virtual		void				AutoBalanceTeams		();
 	virtual		void				AutoSwapTeams			();
 
 	virtual		u8					AutoTeam				( );
 	virtual		u32					GetPlayersCountInTeams	(u8 team);
 	virtual		bool				TeamSizeEqual			();
-	virtual		u32					RP_2_Use				(CSE_Abstract* E);
+	u32					RP_2_Use				(CSE_Abstract* E) override;
 
-	virtual		void				LoadTeams				();
+	void				LoadTeams				() override;
 
-	virtual		char*				GetAnomalySetBaseName	()	{return (char*) "teamdeathmatch_game_anomaly_sets";};	
-	virtual		bool				CanHaveFriendlyFire		()	{return true;}
-	virtual		void				OnFraglimitExceed		();
-	virtual		void				OnTimelimitExceed		();
+	char*				GetAnomalySetBaseName	() override {return (char*) "teamdeathmatch_game_anomaly_sets";};
+	bool				CanHaveFriendlyFire		() override {return true;}
+	void				OnFraglimitExceed		() override;
+	void				OnTimelimitExceed		() override;
 
-	virtual		bool				isFriendlyFireEnabled	();
+	bool				isFriendlyFireEnabled	() override;
 	virtual		float				GetFriendlyFire			();
 
 	virtual		bool				Get_AutoTeamBalance		();
@@ -72,18 +71,18 @@ public:
 
 				bool				OnTouchItem(CSE_ActorMP *actor, CSE_Abstract *item);
 				void				OnDetachItem(CSE_ActorMP *actor, CSE_Abstract *item);
-	
-	virtual		bool				OnTouch					(u16 eid_who, u16 eid_what, bool bForced = false);
-	virtual		void				OnDetach				(u16 eid_who, u16 eid_what);
 
-				void				OnObjectEnterTeamBase	(u16 id, u16 zone_team);
-				void				OnObjectLeaveTeamBase	(u16 id, u16 zone_team);
-	virtual		void				RespawnPlayer			(ClientID id_who, bool NoSpectator);
+	bool OnTouch(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_what, bool bForced = false) override;
+	void OnDetach(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_what) override;
+
+	virtual void				OnObjectEnterTeamBase	(ALife::_OBJECT_ID id, u16 zone_team);
+	virtual void				OnObjectLeaveTeamBase	(ALife::_OBJECT_ID id, u16 zone_team);
+	void				RespawnPlayer			(ClientID id_who, bool NoSpectator) override;
 
 	virtual game_sv_mp* cast_game_sv_mp() override { return this; }
 	virtual game_sv_Deathmatch* cast_game_sv_deathmatch() override { return this; }
 	virtual game_sv_TeamDeathmatch* cast_game_sv_teamdeathmatch() override { return this; }
 
 protected:
-	virtual		void				WriteGameState			(CInifile& ini, const char* sect, bool bRoundResult);
+	void				WriteGameState			(CInifile& ini, const char* sect, bool bRoundResult) override;
 };

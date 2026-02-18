@@ -21,11 +21,11 @@ protected:
 	void				SetRelation				(ALife::ERelationType relation, s32 goodwill);
 	void				ResetAllStrings			();
 	void				UpdateRelation			();
-	bool				hasOwner()			{return (m_ownerID!=u16(-1));}
+	bool				hasOwner()			{return (m_ownerID!=ALife::INVALID_OBJECT_ID);}
 	// Biography
 	CUIScrollView*		pUIBio;
 	bool				m_bForceUpdate;
-	u16					m_ownerID;
+	ALife::_OBJECT_ID					m_ownerID;
 
 
 	enum UIItemType
@@ -67,7 +67,7 @@ public:
 	void				Init_StrInfoItem		(CUIXml& xml_doc, const char* item_str, UIItemType type);
 	void				Init_IconInfoItem		(CUIXml& xml_doc, const char* item_str, UIItemType type, bool enableStretchByDefault = false);
 
-	void				InitCharacter			(u16 id);
+	void				InitCharacter			(ALife::_OBJECT_ID id);
 	void				ClearInfo				();
 
 	void				InitCharacter			(CInventoryOwner* invOwner);
@@ -75,7 +75,7 @@ public:
 
 	virtual void		Update					();
 
-	u16					OwnerID					()	const	{	return m_ownerID;	}
+	ALife::_OBJECT_ID					OwnerID					()	const	{	return m_ownerID;	}
 	CUIStatic&			UIIcon					()	const	{	VERIFY(m_icons[eIcon]);			return *m_icons[eIcon];	}
 	CUIStatic&			UIName					()	const	{	VERIFY(m_icons[eName]);			return *m_icons[eName];	}
 	CUIStatic&			UICommunity				()	const	{	VERIFY(m_icons[eCommunity]);	return *m_icons[eCommunity];	}

@@ -381,7 +381,7 @@ bool CEnemyManager::need_update				(const bool &only_wounded) const
 	u32	last_hit_time			= m_object->memory().hit().last_hit_time();
 	if (last_hit_time && (last_hit_time > m_last_enemy_change) ) {
 		ALife::_OBJECT_ID		enemy_id	= m_object->memory().hit().last_hit_object_id();
-		VERIFY					( enemy_id != ALife::_OBJECT_ID(-1) );
+		VERIFY					( enemy_id != ALife::INVALID_OBJECT_ID );
 		CObject* enemy	= Level().Objects.net_Find(enemy_id);
 		VERIFY					(enemy);
 		CEntityAlive const*		alive_enemy = enemy->cast_entity_alive();
