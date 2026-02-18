@@ -335,7 +335,7 @@ void SHeliEnemy::reinit()
 {
 	type					= eEnemyNone;
 	destEnemyPos.set		(0.0f,0.0f,0.0f);
-	destEnemyID				=u16(-1);
+	destEnemyID				= ALife::INVALID_OBJECT_ID;
 	fStartFireTime			=-1.0f;
 }
 
@@ -359,7 +359,7 @@ void SHeliEnemy::save(NET_Packet &output_packet)
 {
 	output_packet.w_s16		((s16)type);
 	output_packet.w_vec3	(destEnemyPos);
-	output_packet.w_u16		(destEnemyID);
+	output_packet << destEnemyID;
 
 	output_packet.w_float	(fire_trail_length_des);
 	output_packet.w_u8		(bUseFireTrail ? 1 : 0);
@@ -369,7 +369,7 @@ void SHeliEnemy::load(IReader &input_packet)
 {
 	type				= (EHeliHuntState)input_packet.r_s16();
 	input_packet.r_fvector3	(destEnemyPos);
-	destEnemyID			= input_packet.r_u16();
+	input_packet.r(&destEnemyID, sizeof(destEnemyID));
 
 	fire_trail_length_des	= input_packet.r_float();
 	bUseFireTrail		= !!input_packet.r_u8();

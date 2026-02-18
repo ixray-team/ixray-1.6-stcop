@@ -80,7 +80,7 @@ void game_sv_CaptureTheArtefact::MyTeam::OnPlayerDetachArtefact(
 	freeArtefactTimeStart = Level().timeServer();
 }
 
-void game_sv_CaptureTheArtefact::MyTeam::OnPlayerActivateArtefact(u16 eid_who)
+void game_sv_CaptureTheArtefact::MyTeam::OnPlayerActivateArtefact(ALife::_OBJECT_ID eid_who)
 {
 	activationArtefactTimeStart = Level().timeServer();
 	artefactActivated = true;
@@ -117,7 +117,7 @@ bool game_sv_CaptureTheArtefact::MinPlayersFunctor::operator()(
 
 bool game_sv_CaptureTheArtefact::SearchArtefactIdFunctor::operator()(
 	const TeamPair & tr, 
-	u16 artefactId) const
+	ALife::_OBJECT_ID artefactId) const
 {
 	if (tr.second.artefact)
 	{
@@ -131,7 +131,7 @@ bool game_sv_CaptureTheArtefact::SearchArtefactIdFunctor::operator()(
 
 bool game_sv_CaptureTheArtefact::SearchOwnerIdFunctor::operator()(
 	const TeamPair & tr, 
-	u16 actorId) const
+	ALife::_OBJECT_ID actorId) const
 {
 	if (tr.second.artefactOwner)
 	{

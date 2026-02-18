@@ -47,7 +47,7 @@ bool CAI_Stalker::useful		(const CItemManager *manager, const CGameObject *objec
 	if (explosive && GO->cast_inventory_item())
 		agent_manager().location().add	(new CDangerObjectLocation(object,Device.dwTimeGlobal,DANGER_INFINITE_INTERVAL,DANGER_EXPLOSIVE_DISTANCE));
 
-	if (explosive && (explosive->CurrentParentID() != 0xffff))
+	if (explosive && (explosive->CurrentParentID() != ALife::INVALID_OBJECT_ID))
 	{
 		agent_manager().explosive().register_explosive(explosive,object);
 		if(CObject* O = Level().Objects.net_Find(explosive->CurrentParentID()))

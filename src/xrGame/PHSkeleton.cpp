@@ -87,7 +87,7 @@ bool CPHSkeleton::Spawn(CSE_Abstract *D)
 		source->UnsplitSingle(this);
 		m_flags.set				(CSE_PHSkeleton::flSpawnCopy,false);
 		po->_flags.set				(CSE_PHSkeleton::flSpawnCopy,false);
-		po->source_id				=BI_NONE;
+		po->source_id				=ALife::INVALID_OBJECT_ID;
 		return true;
 	}
 	else 
@@ -464,15 +464,15 @@ void CPHSkeleton::InitServerObject(CSE_Abstract * D)
 	l_tpALifeDynamicObject->m_tNodeID	= obj->ai_location().level_vertex_id();
 	l_tpALifePhysicObject->set_visual	(*obj->cNameVisual());
 
-	l_tpALifePhysicObject->source_id	= u16(obj->ID());
+	l_tpALifePhysicObject->source_id	= obj->ID();
 	l_tpALifePhysicObject->startup_animation=m_startup_anim;
 	D->s_name			= "ph_skeleton_object";//*cNameSect()
 	D->set_name_replace	("");
 //.	D->s_gameid			=	u8(GameID());
 	D->s_RP				=	0xff;
-	D->ID				=	0xffff;
-	D->ID_Parent		=	0xffff;//u16(ID());//
-	D->ID_Phantom		=	0xffff;
+	D->ID				=	ALife::INVALID_OBJECT_ID;
+	D->ID_Parent		=	ALife::INVALID_OBJECT_ID;//u16(ID());//
+	D->ID_Phantom		=	ALife::INVALID_OBJECT_ID;
 	D->o_Position		=	obj->Position();
 	if (ai().get_alife())
 		l_tpALifeDynamicObject->m_tGraphID = ai().game_graph().current_level_vertex();

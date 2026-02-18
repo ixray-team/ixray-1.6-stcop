@@ -47,7 +47,7 @@ CPHDestroyable::CPHDestroyable()
 	m_depended_objects=0;
 }
 /////////spawn object representing destroyed item//////////////////////////////////////////////////////////////////////////////////
-void CPHDestroyable::GenSpawnReplace(u16 ref_id,const char* section,shared_str visual_name)
+void CPHDestroyable::GenSpawnReplace(ALife::_OBJECT_ID ref_id,const char* section,shared_str visual_name)
 {
 
 	CSE_Abstract				*D	= F_entity_Create(section);//*cNameSect()
@@ -61,7 +61,7 @@ void CPHDestroyable::GenSpawnReplace(u16 ref_id,const char* section,shared_str v
 
 	// Send
 	D->s_name			= section;//*cNameSect()
-	D->ID_Parent		= u16(-1);
+	D->ID_Parent		= ALife::INVALID_OBJECT_ID;
 	InitServerObject	(D);
 	if (OnServer())
 	{
@@ -90,9 +90,9 @@ void CPHDestroyable::InitServerObject(CSE_Abstract* D)
 	D->set_name_replace	("");
 //.	D->s_gameid			=	u8(GameID());
 	D->s_RP				=	0xff;
-	D->ID				=	0xffff;
+	D->ID				=	ALife::INVALID_OBJECT_ID;
 
-	D->ID_Phantom		=	0xffff;
+	D->ID_Phantom		=	ALife::INVALID_OBJECT_ID;
 	D->o_Position		=	obj->Position();
 	if (ai().get_alife())
 		l_tpALifeDynamicObject->m_tGraphID = ai().game_graph().current_level_vertex();
@@ -135,7 +135,7 @@ void CPHDestroyable::PhysicallyRemovePart(CPHDestroyableNotificate *dn)
 							s					->DisableCollision			()		;
 }
 
-void CPHDestroyable::Destroy(u16 source_id/*=u16(-1)*/,const char* section/*="ph_skeleton_object"*/)
+void CPHDestroyable::Destroy(ALife::_OBJECT_ID source_id/*=u16(-1)*/,const char* section/*="ph_skeleton_object"*/)
 {
 	
 	if(!CanDestroy())return ;

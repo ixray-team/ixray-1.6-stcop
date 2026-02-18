@@ -98,7 +98,7 @@ public:
 	virtual void			deactivate_physics_shell ();
 
 	virtual void			net_Destroy			();
-	virtual bool			net_Spawn			(CSE_Abstract*	DC);
+	bool			net_Spawn			(CSE_Abstract*	DC) override;
 	virtual void			save				(NET_Packet &output_packet);
 	virtual void			load				(IReader &input_packet);
 			void			init				();
@@ -121,7 +121,7 @@ private://IPhysicsShellHolder
 	virtual	const char*					_BCL					ObjectNameSect						()		const			;
 	virtual	bool					_BCL					ObjectGetDestroy					()		const			;
 	virtual ICollisionHitCallback*	_BCL 					ObjectGetCollisionHitCallback		()						;
-	virtual	u16						_BCL					ObjectID							()		const			;
+	virtual	ALife::_OBJECT_ID						_BCL	ObjectID							()		const			;
 	virtual	ICollisionForm*			_BCL					ObjectCollisionModel				()						;
 	virtual	IKinematics*			_BCL					ObjectKinematics					()						;
 	virtual IDamageSource*			_BCL					ObjectCastIDamageSource				()						;

@@ -129,7 +129,8 @@ void game_cl_freemp::TranslateGameMessage(u32 msg, NET_Packet& P)
 	{
 		if (m_game_ui && m_game_ui->ActorMenu()->IsShown() && m_game_ui->ActorMenu()->GetMenuMode() == mmUpgrade)
 		{
-			u16 itemId = P.r_u16();
+			ALife::_OBJECT_ID itemId;
+			P >> itemId;
 			CObject* finded_item = Level().Objects.net_Find(itemId);
 
 			if (PIItem item = finded_item != nullptr ? finded_item->cast_inventory_item() : nullptr)

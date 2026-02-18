@@ -57,7 +57,7 @@ SERVER_ENTITY_DECLARE_BEGIN0(CSE_ALifeTraderAbstract)
 
 #ifdef XRGAME_EXPORTS
 	//для работы с relation system
-	u16								object_id				() const;
+	ALife::_OBJECT_ID								object_id				() const;
 	s32		Community				() const;
 	const char*							CommunityName			() const;
 	s32			Rank					();
@@ -322,7 +322,7 @@ SERVER_ENTITY_DECLARE_BEGIN3(CSE_ALifeCreatureActor,CSE_ALifeCreatureAbstract,CS
 	bool							IsWaunded;
 	///////////////////////////////////////////
 	u16								m_u16NumItems;
-	u16								m_holderID;
+	ALife::_OBJECT_ID				m_holderID;
 
 	//using PH_STATES = xr_deque<SPHNetState>;
 	//using PH_STATES_it = PH_STATES::iterator;
@@ -427,7 +427,7 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeMonsterZombie,CSE_ALifeMonsterAbstract)
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterBase,CSE_ALifeMonsterAbstract,CSE_PHSkeleton)
-	u16								m_spec_object_id;
+	ALife::_OBJECT_ID m_spec_object_id;
 
 	float f_health = 1.0f;
 	u16 u_motion_idx = u16(-1);

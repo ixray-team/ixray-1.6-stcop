@@ -35,7 +35,7 @@ public:
 		void		Load		(const char* section, const char* name);
 	};
 
-	SArtefactActivation			(CArtefact* af, u32 owner_id);
+	SArtefactActivation			(CArtefact* af, ALife::_OBJECT_ID owner_id);
 	virtual ~SArtefactActivation		();
 	CArtefact*					m_af;
 	FixedVector<SStateDef,eMax>		m_activation_states;
@@ -45,7 +45,7 @@ public:
 	ref_light					m_light;
 	ref_sound					m_snd;
 	
-	u32							m_owner_id;
+	ALife::_OBJECT_ID							m_owner_id;
 
 	virtual		void			UpdateActivation				();
 	virtual		void			Load							();

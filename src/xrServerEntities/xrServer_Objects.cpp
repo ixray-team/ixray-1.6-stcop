@@ -9,6 +9,7 @@
 #include "StdAfx.h"
 #include "xrServer_Objects.h"
 #include "game_base_space.h"
+#include "xrServer_Objects_ALife.h"
 
 ////////////////////////////////////////////////////////////////////////////
 // CSE_Shape
@@ -219,7 +220,7 @@ void CSE_SpawnGroup::FillProps				(const char* pref, PropItemVec& values)
 ////////////////////////////////////////////////////////////////////////////
 CSE_PHSkeleton::CSE_PHSkeleton(const char* caSection)
 {
-	source_id					= u16(-1);
+	source_id					= ALife::INVALID_OBJECT_ID;
 	_flags.zero					();
 }
 
@@ -234,7 +235,21 @@ void CSE_PHSkeleton::STATE_Read		(NET_Packet	&tNetPacket, u16 size)
 	R_ASSERT				(visual);
 	tNetPacket.r_stringZ	(visual->startup_animation);
 	tNetPacket.r_u8			(_flags.flags);
-	tNetPacket.r_u16		(source_id);
+	
+	auto self = dynamic_cast<CSE_ALifeDynamicObjectVisual*>(this); // I need to access netpacket version here
+	R_ASSERT(self);
+	
+	if(self->m_wVersion < 130)
+	{
+		u16 ID16;
+		tNetPacket.r_u16(ID16);
+		source_id = ID16 == 0xffff ? ALife::INVALID_OBJECT_ID : ID16;
+	} else
+	{
+		u32 ID32;
+		tNetPacket.r_u32(ID32);
+		source_id = ID32;
+	}
 	if (_flags.test(flSavedData)) {
 		data_load(tNetPacket);
 	}
@@ -246,7 +261,7 @@ void CSE_PHSkeleton::STATE_Write		(NET_Packet	&tNetPacket)
 	R_ASSERT				(visual);
 	tNetPacket.w_stringZ	(visual->startup_animation);
 	tNetPacket.w_u8			(_flags.flags);
-	tNetPacket.w_u16		(source_id);
+	tNetPacket << source_id;
 	////////////////////////saving///////////////////////////////////////
 	if(_flags.test(flSavedData))
 	{
@@ -271,9 +286,9 @@ void CSE_PHSkeleton::data_save(NET_Packet &tNetPacket)
 
 void CSE_PHSkeleton::load(NET_Packet &tNetPacket)
 {
-	_flags.assign				(tNetPacket.r_u8());
-	data_load					(tNetPacket);
-	source_id					=u16(-1);//.
+	_flags.assign(tNetPacket.r_u8());
+	data_load(tNetPacket);
+	source_id = ALife::INVALID_OBJECT_ID;
 }
 void CSE_PHSkeleton::UPDATE_Write(NET_Packet &tNetPacket)
 {
