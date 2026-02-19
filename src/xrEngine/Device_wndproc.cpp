@@ -55,20 +55,80 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 			if ((Value > 0 && Value < DEADZONE_SIZE) || (Value < 0 && Value > -DEADZONE_SIZE))
 				Value = 0;
 
+			bool zeroVal = fis_zero(Value);
 			if (Event.gaxis.axis < 2)
 			{
-				pInput->LeftAxisUpdate(Event.gaxis.axis == 0, Value);
+				bool isX = Event.gaxis.axis == 0;
+				int dik = 0;
+				if (isX)
+				{
+					if (Value < 0.0f)
+					{
+						dik = DIK_LSTICK_LEFT;
+					}
+					else
+					{
+						dik = DIK_LSTICK_RIGHT;
+					}
+				}
+				else
+				{
+					if (Value < 0.0f)
+					{
+						dik = DIK_LSTICK_DOWN;
+					}
+					else
+					{
+						dik = DIK_LSTICK_UP;
+					}
+
+				}
+				pInput->GamepadButtonUpdate(dik, !zeroVal);
+				pInput->LeftAxisUpdate(isX, Value);
 			}
 			else if (Event.gaxis.axis < 4)
 			{
-				pInput->RightAxisUpdate(Event.gaxis.axis == 2, Value);
+				bool isX = Event.gaxis.axis == 2;
+				int dik = 0;
+				if (isX)
+				{
+					if (Value < 0.0f)
+					{
+						dik = DIK_RSTICK_LEFT;
+					}
+					else
+					{
+						dik = DIK_RSTICK_RIGHT;
+					}
+				}
+				else
+				{
+					if (Value < 0.0f)
+					{
+						dik = DIK_RSTICK_DOWN;
+					}
+					else
+					{
+						dik = DIK_RSTICK_UP;
+					}
+
+				}
+				pInput->GamepadButtonUpdate(dik, !zeroVal);
+				pInput->RightAxisUpdate(isX, Value);
 			}
 			else
 			{
+				bool isX = Event.gaxis.axis == 4;
+				int dik = DIK_RTRIGGER;
+				if (isX)
+				{
+					dik = DIK_LTRIGGER;
+				}
+				pInput->GamepadButtonUpdate(dik, !zeroVal);
 				// L2 & R2 Triggers
-				pInput->AdaptiveTriggerUpdate(Event.gaxis.axis == 4, Value);
+				pInput->AdaptiveTriggerUpdate(isX, Value);
 			}
-			if (Value != 0)
+			if (!zeroVal)
 			{
 				pInput->SetControllerMode(true);
 			}
