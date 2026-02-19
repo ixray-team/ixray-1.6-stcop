@@ -274,54 +274,64 @@ struct SRP
 };
 void TParticlesPlayer::UpdateParticles()
 {
-	if	(!m_bActiveBones)	return;
-	m_bActiveBones			= false;
+	if (!m_bActiveBones)	return;
+	m_bActiveBones = false;
 
-    CObject* object			= m_self_object;
-	VERIFY	(object);
+	VERIFY(m_self_object);
 
-	for(auto b_it=m_Bones.begin(); b_it!=m_Bones.end(); b_it++){
-		SBoneInfo& b_info	= *b_it;
+	if (m_self_object == nullptr)
+	{
+		return;
+	}
 
-		for (auto p_it=b_info.particles.begin(); p_it!=b_info.particles.end(); p_it++){
-			SParticlesInfo& p_info	= *p_it;
-			if(!p_info.ps) continue;
+	for (SBoneInfo& b_info : m_Bones)
+	{
+		for (SParticlesInfo& p_info : b_info.particles)
+		{
+			if (!p_info.ps)
+				continue;
+
 			//обновить позицию партиклов
 			Fmatrix xform;
-			xform.setHPB(p_info.angles.x,p_info.angles.y,p_info.angles.z);
-			GetBonePos(object,b_info.index,b_info.offset,xform.c);
+			xform.setHPB(p_info.angles.x, p_info.angles.y, p_info.angles.z);
+			GetBonePos(m_self_object, b_info.index, b_info.offset, xform.c);
 			p_info.ps->UpdateParent(xform, parent_vel);
 
 			//обновить время существования
-			if(p_info.life_time!=u32(-1))
+			if (p_info.life_time != u32(-1))
 			{
-				if(p_info.life_time>Device.dwTimeDelta)	p_info.life_time-=Device.dwTimeDelta;
-				else 
+				if (p_info.life_time > Device.dwTimeDelta)	p_info.life_time -= Device.dwTimeDelta;
+				else
 				{
 					p_info.ps->Stop();
-					p_info.life_time=u32(-1);
+					p_info.life_time = u32(-1);
 				}
 			}
-			if(!p_info.ps->IsPlaying()){
+
+			if (!p_info.ps->IsPlaying())
+			{
 				Particles::Details::Destroy(p_info.ps);
 			}
 			else
-				m_bActiveBones  = true;
+			{
+				m_bActiveBones = true;
+			}
 		}
 
-		const auto RI = std::remove_if(b_info.particles.begin(), b_info.particles.end(), [](const SParticlesInfo &pi) {
+		const auto RI = std::remove_if(b_info.particles.begin(), b_info.particles.end(), [](const SParticlesInfo& pi)
+		{
 			return pi.ps == nullptr;
 		});
-		b_info.particles.erase(RI,b_info.particles.end());
+
+		b_info.particles.erase(RI, b_info.particles.end());
 	}
 }
 
-
-void TParticlesPlayer::GetBonePos	(CObject* pObject, u16 bone_id, const Fvector& offset, Fvector& result)
+void TParticlesPlayer::GetBonePos(CObject* pObject, u16 bone_id, const Fvector& offset, Fvector& result)
 {
 	VERIFY(pObject);
 	IKinematics* pKinematics = PKinematics(pObject->Visual()); VERIFY(pKinematics);
-	CBoneInstance&		l_tBoneInstance = pKinematics->LL_GetBoneInstance(bone_id);
+	CBoneInstance& l_tBoneInstance = pKinematics->LL_GetBoneInstance(bone_id);
 
 	result = offset;
 	l_tBoneInstance.mTransform.transform_tiny(result);
