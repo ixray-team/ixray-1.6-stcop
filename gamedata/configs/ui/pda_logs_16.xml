@@ -6,59 +6,29 @@
 	</background>
 
 	<gamepad_legend x="0" y="724" width="819" height="30" spacing="5">
-		<gp_bind x="0" y="0" width="30" height="30" stretch="1">
-			<texture>controller_lb</texture>
-		</gp_bind>
-		<auto_static x="0" y="0" width="22" height="30">
-			<text font="graffiti19" vert_align="c">/</text>
-		</auto_static>
-		<gp_bind x="0" y="0" width="30" height="30" stretch="1">
-			<texture>controller_rb</texture>
-		</gp_bind>
 		<auto_static x="0" y="0" width="22" height="30">
 			<text font="graffiti19" vert_align="c">ui_pda_tabs</text>
 		</auto_static>
-		<gp_bind x="0" y="0" width="22" height="30" stretch="1">
-			<texture>controller_dpadu</texture>
-		</gp_bind>
 		<auto_static x="0" y="0" width="22" height="30">
 			<text font="graffiti19" vert_align="c">ui_pda_log_to_start</text>
 		</auto_static>
-		<gp_bind x="0" y="0" width="22" height="30" stretch="1">
-			<texture>controller_dpadd</texture>
-		</gp_bind>
 		<auto_static x="0" y="0" width="22" height="30">
 			<text font="graffiti19" vert_align="c">ui_pda_log_to_end</text>
 		</auto_static>
-		<gp_bind x="0" y="0" width="22" height="30" stretch="1">
-			<texture>controller_dpadl</texture>
-		</gp_bind>
 		<auto_static x="0" y="0" width="22" height="30">
 			<text font="graffiti19" vert_align="c">ui_pda_log_date_prev</text>
 		</auto_static>
-		<gp_bind x="0" y="0" width="22" height="30" stretch="1">
-			<texture>controller_dpadr</texture>
-		</gp_bind>
 		<auto_static x="0" y="0" width="22" height="30">
 			<text font="graffiti19" vert_align="c">ui_pda_log_date_next</text>
 		</auto_static>
-		<gp_bind x="0" y="0" width="22" height="30" stretch="1">
-			<texture>controller_y</texture>
-		</gp_bind>
 		<auto_static x="0" y="0" width="22" height="30">
-			<text font="graffiti19" vert_align="c">pda_filter_news</text>
+			<text font="graffiti19" vert_align="c">ui_pda_log_show_news</text>
 		</auto_static>
-		<gp_bind x="0" y="0" width="22" height="30" stretch="1">
-			<texture>controller_a</texture>
-		</gp_bind>
 		<auto_static x="0" y="0" width="22" height="30">
-			<text font="graffiti19" vert_align="c">pda_filter_talk</text>
+			<text font="graffiti19" vert_align="c">ui_pda_log_show_dialogs</text>
 		</auto_static>
-		<gp_bind x="0" y="0" width="22" height="30" stretch="1">
-			<texture>controller_b</texture>
-		</gp_bind>
 		<auto_static x="0" y="0" width="22" height="30">
-			<text font="graffiti19" vert_align="c">ui_mm_back</text>
+			<text font="graffiti19" vert_align="c">ui_mm_back_gp</text>
 		</auto_static>
 	</gamepad_legend>
 
