@@ -378,31 +378,19 @@ void CMainMenu::IR_GamepadKeyPress(int id)
 	CDialogHolder::IR_UIOnGamepadKeyPress(id);
 }
 
-bool isMMGamepadAxisMoved = false;
+void CMainMenu::IR_GamepadKeyHold(int id)
+{
+	if (!IsActive())
+		return;
+
+	CDialogHolder::IR_UIOnGamepadKeyHold(id);
+}
+
 void CMainMenu::IR_GamepadUpdateStick(int id, Fvector2 value)
 {
 	if (!IsActive()) 
 		return;
 
-	if (id == 0)
-	{
-		if (std::abs(value.y) < 0.5f)
-		{
-			CDialogHolder::IR_UIOnGamepadUpdateStick(id, value);
-			isMMGamepadAxisMoved = false;
-			return;
-		}
-		if (!isMMGamepadAxisMoved && value.y > 0.5f)
-		{
-			IR_UIOnKeyboardPress(SDL_SCANCODE_UP);
-			isMMGamepadAxisMoved = true;
-		}
-		else if (!isMMGamepadAxisMoved && value.y < -0.5f)
-		{
-			IR_UIOnKeyboardPress(SDL_SCANCODE_DOWN);
-			isMMGamepadAxisMoved = true;
-		}
-	}
 	CDialogHolder::IR_UIOnGamepadUpdateStick(id, value);
 }
 

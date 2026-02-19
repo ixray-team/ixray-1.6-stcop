@@ -20,24 +20,15 @@
 		</auto_static>
 	</background>
 	<gamepad_legend x="0" y="724" width="1024" height="30" spacing="5">
-		<gp_bind x="0" y="0" width="22" height="30" stretch="1">
-			<texture>controller_a</texture>
-		</gp_bind>
 		<auto_static x="0" y="0" width="22" height="30">
-			<text font="graffiti19" vert_align="c">ui_mm_load</text>
+			<text font="graffiti19" vert_align="c">ui_mm_load_gp</text>
 		</auto_static>
-		<gp_bind x="0" y="0" width="22" height="30" stretch="1">
-			<texture>controller_x</texture>
-		</gp_bind>
 		<auto_static x="0" y="0" width="22" height="30">
 			<window_name>gp_delete_text</window_name>
-			<text font="graffiti19" vert_align="c">ui_mm_delete</text>
+			<text font="graffiti19" vert_align="c">ui_mm_delete_gp</text>
 		</auto_static>
-		<gp_bind x="0" y="0" width="22" height="30" stretch="1">
-			<texture>controller_b</texture>
-		</gp_bind>
 		<auto_static x="0" y="0" width="22" height="30">
-			<text font="graffiti19" vert_align="c">ui_mm_back</text>
+			<text font="graffiti19" vert_align="c">ui_mm_back_gp</text>
 		</auto_static>
 	</gamepad_legend>
     <file_item>

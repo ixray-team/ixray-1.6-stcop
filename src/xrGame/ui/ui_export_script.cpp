@@ -23,6 +23,7 @@
 #include "ScriptXMLInit.h"
 #include "../xrUI/Widgets/UIArrow.h"
 #include "../xrEngine/xr_input.h"
+#include "../xrUI/Widgets/UIActionRepeaters.h"
 
 using namespace luabind;
 
@@ -46,6 +47,8 @@ float get_current_kx()
 #pragma optimize("s",on)
 void UIRegistrator::script_register(lua_State *L)
 {
+	CUIActionRepeatersOwner::script_register(L);
+	CUIActionRepeatersManager::script_register(L);
 	CUIWindow::script_register(L);
 	CUIMMShniaga::script_register(L);
 	CUIStatic::script_register(L);

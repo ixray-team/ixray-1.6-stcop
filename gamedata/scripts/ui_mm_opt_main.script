@@ -18,13 +18,20 @@ function options_dialog:__init() super()
 		--highlight current element in focusIndex
 		self:OnElementSetSelected(self:GetCurTabWnd(), self.focusIndex, true)
 	end
+	action_repeaters():Register(self, key_bindings.kUI_TAB_LEFT, 250, 250)
+	action_repeaters():Register(self, key_bindings.kUI_TAB_RIGHT, 250, 250)
+	action_repeaters():Register(self, key_bindings.kUI_UP, 0, 0)
+	action_repeaters():Register(self, key_bindings.kUI_DOWN, 0, 0)
+	action_repeaters():Register(self, key_bindings.kUI_LEFT, 0, 0)
+	action_repeaters():Register(self, key_bindings.kUI_RIGHT, 0, 0)
 	
 	SendScriptCallback("opt_menu_on_init", self)
 end
 
 function options_dialog:__finalize()
-
+	action_repeaters():UnregisterOwner(self)
 end
+
 
 function options_dialog:InitControls()
 	self:SetWndRect				(Frect():set(0,0,1024,768))
@@ -316,9 +323,10 @@ function options_dialog:OnGamepadKey(dik, gamepad_action)
 	if res==false then
 
 		local bind = dik_to_bind(dik)
+		local bindUI = dik_to_bind(dik, action_groups.agUIGeneral)
 
 		if gamepad_action == ui_events.WINDOW_KEY_PRESSED then
-			if dik == gamepad_keys.BUTTON_B or dik == gamepad_keys.BUTTON_START then
+			if bindUI == key_bindings.kUI_BACK or bind == key_bindings.kQUIT then
 				local curTab = self:GetCurTabWnd()
 				local element = curTab.focusList[self.focusIndex][2]
 				local elementInfo = class_info(element)
@@ -331,11 +339,13 @@ function options_dialog:OnGamepadKey(dik, gamepad_action)
 				else
 					self:OnBtnAccept()
 				end
-			elseif dik == gamepad_keys.BUTTON_A then
+				return true
+			elseif bindUI == key_bindings.kUI_ACCEPT then
 				local curTab = self:GetCurTabWnd()
 				local element = curTab.focusList[self.focusIndex][2]
 				self:OnElementAbuttonPress(element)
-			elseif dik == gamepad_keys.BUTTON_Y then
+				return true
+			elseif bindUI == key_bindings.kUI_ACTION_2 then
 				local tabId = self.tab:GetActiveId()
 				if tabId == 'video' then
 					if not self.dlg_video_adv:IsShown() then
@@ -344,7 +354,8 @@ function options_dialog:OnGamepadKey(dik, gamepad_action)
 						self:OnSimplyGraphic()
 					end
 				end
-			elseif dik == gamepad_keys.BUTTON_DPAD_UP then
+				return true
+			elseif bindUI == key_bindings.kUI_UP then
 				local curTab = self:GetCurTabWnd()
 				local element = curTab.focusList[self.focusIndex][2]
 				local elementInfo = class_info(element)
@@ -354,7 +365,9 @@ function options_dialog:OnGamepadKey(dik, gamepad_action)
 				else
 					self:OnElementChangeSelection(curTab, -1, true)
 				end
-			elseif dik == gamepad_keys.BUTTON_DPAD_DOWN then
+				action_repeaters():SetActionStarted(self, key_bindings.kUI_UP)
+				return true
+			elseif bindUI == key_bindings.kUI_DOWN then
 				local curTab = self:GetCurTabWnd()
 				local element = curTab.focusList[self.focusIndex][2]
 				local elementInfo = class_info(element)
@@ -364,74 +377,34 @@ function options_dialog:OnGamepadKey(dik, gamepad_action)
 				else
 					self:OnElementChangeSelection(curTab, 1, true)
 				end
-			elseif dik == gamepad_keys.BUTTON_DPAD_LEFT then
+				action_repeaters():SetActionStarted(self, key_bindings.kUI_DOWN)
+				return true
+			elseif bindUI == key_bindings.kUI_LEFT then
 				local curTab = self:GetCurTabWnd()
 				local element = curTab.focusList[self.focusIndex][2]
 				self:OnElementGpadPress(element, false)
-			elseif dik == gamepad_keys.BUTTON_DPAD_RIGHT then
+				action_repeaters():SetActionStarted(self, key_bindings.kUI_LEFT)
+				return true
+			elseif bindUI == key_bindings.kUI_RIGHT then
 				local curTab = self:GetCurTabWnd()
 				local element = curTab.focusList[self.focusIndex][2]
 				self:OnElementGpadPress(element, true)
-			elseif dik == gamepad_keys.BUTTON_LSHOULDER then
+				action_repeaters():SetActionStarted(self, key_bindings.kUI_RIGHT)
+				return true
+			elseif bindUI == key_bindings.kUI_TAB_LEFT then
 				self.tab:PrevTab()
-			elseif dik == gamepad_keys.BUTTON_RSHOULDER then
+				action_repeaters():SetActionStarted(self, key_bindings.kUI_TAB_LEFT)
+				return true
+			elseif bindUI == key_bindings.kUI_TAB_RIGHT then
 				self.tab:NextTab()			
+				action_repeaters():SetActionStarted(self, key_bindings.kUI_TAB_RIGHT)
+				return true
 			end
 		end
 	end
 
 	return res
 end
-
---[[
-function options_dialog:OnGamepadStick(dik, val, gamepad_action)
-	local res = CUIScriptWnd.OnGamepadStick(self,dik,val,gamepad_action)
-
-	if res==false then
-		if time_global() % 5 then
-			return false
-		end
-
-		local bind = dik_to_bind(dik)
-
-		if gamepad_action == ui_events.WINDOW_KEY_PRESSED 
-		and math.abs(val.x) > 0.2 and math.abs(val.y) > 0.2 
-		then
-			if val.y > 0.5 then
-				local curTab = self:GetCurTabWnd()
-				local element = curTab.focusList[self.focusIndex][2]
-				local elementInfo = class_info(element)
-				local elementClass = elementInfo.name
-				if elementClass == 'CUIComboBox' and element:IsListShown() then
-					element:GetListBox():PrevItem(true)
-				else
-					self:OnElementChangeSelection(curTab, -1, true)
-				end
-			elseif val.y < -0.5 then
-				local curTab = self:GetCurTabWnd()
-				local element = curTab.focusList[self.focusIndex][2]
-				local elementInfo = class_info(element)
-				local elementClass = elementInfo.name
-				if elementClass == 'CUIComboBox' and element:IsListShown() then
-					element:GetListBox():NextItem(true)
-				else
-					self:OnElementChangeSelection(curTab, 1, true)
-				end
-			elseif val.x < -0.5 then
-				local curTab = self:GetCurTabWnd()
-				local element = curTab.focusList[self.focusIndex][2]
-				self:OnElementGpadPress(element, false)
-			elseif val.x > 0.5 then
-				local curTab = self:GetCurTabWnd()
-				local element = curTab.focusList[self.focusIndex][2]
-				self:OnElementGpadPress(element, true)
-			end
-		end
-	end
-
-	return res
-end
---]]
 
 function options_dialog:Update()
 	CUIScriptWnd.Update(self)
@@ -744,5 +717,86 @@ function options_dialog:DeselectAllTabElements(tabObject)
 		local focusRecord = tabObject.focusList[i]
 		local caption = focusRecord[1]:TextControl()
 		caption:SetTextColor(self.default_text_color)
+	end
+end
+
+function options_dialog:OnGamepadKeyHold(dik)
+	local bindUI = dik_to_bind(dik, action_groups.agUIGeneral)
+	if bindUI == key_bindings.kUI_TAB_LEFT then
+		if action_repeaters():CanRepeatActionNow(self, key_bindings.kUI_TAB_LEFT) 
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_TAB_RIGHT) then
+			self.tab:PrevTab()
+		end
+		return true
+		
+	elseif bindUI == key_bindings.kUI_TAB_RIGHT then
+		if action_repeaters():CanRepeatActionNow(self, key_bindings.kUI_TAB_RIGHT) 
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_TAB_LEFT) then
+			self.tab:NextTab()
+		end
+		return true
+			
+	elseif bindUI == key_bindings.kUI_DOWN then
+		if action_repeaters():CanRepeatActionNow(self, key_bindings.kUI_DOWN) 
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_UP) then
+			local curTab = self:GetCurTabWnd()
+			local element = curTab.focusList[self.focusIndex][2]
+			local elementInfo = class_info(element)
+			local elementClass = elementInfo.name
+			if elementClass == 'CUIComboBox' and element:IsListShown() then
+				element:GetListBox():NextItem(true)
+			else
+				self:OnElementChangeSelection(curTab, 1, false)
+			end
+		end
+		return true
+			
+	elseif bindUI == key_bindings.kUI_UP then
+		if action_repeaters():CanRepeatActionNow(self, key_bindings.kUI_UP) 
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_DOWN) then
+			local curTab = self:GetCurTabWnd()
+			local element = curTab.focusList[self.focusIndex][2]
+			local elementInfo = class_info(element)
+			local elementClass = elementInfo.name
+			if elementClass == 'CUIComboBox' and element:IsListShown() then
+				element:GetListBox():PrevItem(true)
+			else
+				self:OnElementChangeSelection(curTab, -1, false)
+			end
+		end
+		return true
+			
+	elseif bindUI == key_bindings.kUI_LEFT then
+		if action_repeaters():CanRepeatActionNow(self, key_bindings.kUI_LEFT) 
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_RIGHT) then
+			local curTab = self:GetCurTabWnd()
+			local element = curTab.focusList[self.focusIndex][2]
+			self:OnElementGpadHold(element, false)
+		end
+		return true
+			
+	elseif bindUI == key_bindings.kUI_RIGHT then	
+		if action_repeaters():CanRepeatActionNow(self, key_bindings.kUI_RIGHT) 
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_LEFT) then
+			local curTab = self:GetCurTabWnd()
+			local element = curTab.focusList[self.focusIndex][2]
+			self:OnElementGpadHold(element, true)
+		end
+		return true
+	end
+
+	return CUIScriptWnd.OnGamepadKeyHold(self,dik)
+end
+
+function options_dialog:OnElementGpadHold(element, right)
+	local elementInfo = class_info(element)
+	local elementClass = elementInfo.name
+		
+	if elementClass == 'CUITrackBar' then
+		if right then
+			element:StepRight()
+		else
+			element:StepLeft()
+		end
 	end
 end

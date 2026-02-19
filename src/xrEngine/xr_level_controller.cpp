@@ -116,6 +116,15 @@ ENGINE_API _action  actions[]		= {
 	{ "ui_action_1",		kUI_ACTION_1,			_both,			agUIGeneral},
 	{ "ui_action_2",		kUI_ACTION_2,			_both,			agUIGeneral},
 
+	{ "pda_log_to_start",	kPDA_LOG_TO_START,		_both,			agUILogMenu},
+	{ "pda_log_to_end",	 	kPDA_LOG_TO_END,		_both,			agUILogMenu},
+	{ "pda_log_scroll_down",kPDA_LOG_SCROLL_DOWN,	_both,			agUILogMenu},
+	{ "pda_log_scroll_up",	kPDA_LOG_SCROLL_UP,		_both,			agUILogMenu},
+	{ "pda_log_date_prev",	kPDA_LOG_DATE_PREV,		_both,			agUILogMenu},
+	{ "pda_log_date_next",	kPDA_LOG_DATE_NEXT,		_both,			agUILogMenu},
+	{ "pda_log_show_news", 	kPDA_LOG_SHOW_NEWS,		_both,			agUILogMenu},
+	{ "pda_log_show_dialogs", 	kPDA_LOG_SHOW_DIALOGS, _both,		agUILogMenu},
+
 	{ "custom1",			kCUSTOM1				,_sp,			agDefault},
 	{ "custom2",			kCUSTOM2				,_sp,			agDefault},
 	{ "custom3",			kCUSTOM3				,_sp,			agDefault},
@@ -464,13 +473,13 @@ _keyboard gamepads[] =
 	{ "cLTRIGGER",				DIK_LTRIGGER,					  "LT" },
 	{ "cRTRIGGER",				DIK_RTRIGGER,					  "RT" },
 
-	{ "cLSTICK_DOWN",			DIK_LSTICK_DOWN,				  "LS Up" },
-	{ "cLSTICK_UP",				DIK_LSTICK_UP,					  "LS Down" },
+	{ "cLSTICK_UP",				DIK_LSTICK_UP,					  "LS Up" },
+	{ "cLSTICK_DOWN",			DIK_LSTICK_DOWN,				  "LS Down" },
 	{ "cLSTICK_LEFT",			DIK_LSTICK_LEFT,				  "LS Left" },
 	{ "cLSTICK_RIGHT",			DIK_LSTICK_RIGHT,				  "LS Right" },
 
-	{ "cRSTICK_DOWN",			DIK_RSTICK_DOWN,				  "RS Up" },
-	{ "cRSTICK_UP",				DIK_RSTICK_UP,					  "RS Down" },
+	{ "cRSTICK_UP",				DIK_RSTICK_UP,					  "RS Up" },
+	{ "cRSTICK_DOWN",			DIK_RSTICK_DOWN,				  "RS Down" },
 	{ "cRSTICK_LEFT",			DIK_RSTICK_LEFT,				  "RS Left" },
 	{ "cRSTICK_RIGHT",			DIK_RSTICK_RIGHT,				  "RS Right" },
 
@@ -786,9 +795,52 @@ ENGINE_API void GetActionAllBinding(LPCSTR _action, char* dst_buff, int dst_buff
 		&& !pbinding->m_gamepad[0] && !pbinding->m_gamepad[1])
 		xr_sprintf(dst_buff, dst_buff_sz, "%s", g_pStringTable->translate("st_key_notbinded").c_str());
 	else if (pInput->GetControllerMode())
-		xr_sprintf(dst_buff, dst_buff_sz, "%s%s%s", gp_prim[0] ? gp_prim : "", (gp_sec[0] && gp_prim[0]) ? " , " : "", gp_sec[0] ? gp_sec : "");
+	{
+		string128 additionalBind;
+		additionalBind[0] = 0;
+		if (pbinding->m_action->action_group == agUIRadialWeapon)
+		{
+			_binding* pbinding_radial = &g_key_bindings[kWPN_RADIAL_MENU];
+			if (pbinding->m_gamepad[0])
+				xr_strcpy(additionalBind, pbinding_radial->m_gamepad[0]->key_local_name.c_str());
+
+			if (pbinding->m_gamepad[1])
+				xr_strcpy(additionalBind, pbinding_radial->m_gamepad[1]->key_local_name.c_str());
+
+			xr_strconcat(additionalBind, " + ");
+		}
+
+		xr_sprintf(dst_buff, dst_buff_sz, "%s%s%s%s", 
+			additionalBind[0] ? additionalBind : "", 
+			gp_prim[0] ? gp_prim : "", 
+			(gp_sec[0] && gp_prim[0]) ? " , " : "", 
+			gp_sec[0] ? gp_sec : "");
+	}
 	else
 		xr_sprintf(dst_buff, dst_buff_sz, "%s%s%s", prim[0] ? prim : "", (sec[0] && prim[0]) ? " , " : "", sec[0] ? sec : "");
+}
+
+ENGINE_API bool any_binded_key_for_action_pressed_c(int actionId)
+{
+	int bindingsCnt = kLASTACTION;
+	for (int i = 0; i < bindingsCnt; ++i)
+	{
+		if (g_key_bindings[i].m_action->id == actionId)
+		{
+			for (int k = 0; k < 2; ++k)
+			{
+				if (g_key_bindings[i].m_gamepad[k])
+				{
+					int dik = g_key_bindings[i].m_gamepad[k]->dik;
+					if (pInput->iGetAsyncGamepadKeyState(dik))
+						return true;
+				}
+			}
+			return false;
+		}
+	}
+
+	return false;
 }
 
 ENGINE_API ConsoleBindCmds bindConsoleCmds;
