@@ -39,6 +39,9 @@ CUIMMShniaga::CUIMMShniaga()
 
 	m_selected_btn	= -1;
 	m_page			= epi_none;
+
+	ActionRepeaters()->Register(this, kUI_UP);
+	ActionRepeaters()->Register(this, kUI_DOWN);
 }
 
 CUIMMShniaga::~CUIMMShniaga()
@@ -50,6 +53,8 @@ CUIMMShniaga::~CUIMMShniaga()
 
 	delete_data(m_buttons);
 	delete_data(m_buttons_new);
+
+	ActionRepeaters()->UnregisterOwner(this);
 }
 
 void CUIMMShniaga::InitShniaga(CUIXml& xml_doc, LPCSTR path)
@@ -375,21 +380,24 @@ bool CUIMMShniaga::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
 {
 	if (WINDOW_KEY_PRESSED == gamepad_action)
 	{
-		switch (id)
+		switch (get_binded_action(id, agUIGeneral))
 		{
-			case SDL_GAMEPAD_BUTTON_DPAD_UP:
-				if (m_selected_btn > 0)
+			case kUI_UP:
+				if (!any_binded_key_for_action_pressed_c(kUI_DOWN) && m_selected_btn > 0)
 					SelectBtn(m_selected_btn - 1);
+				ActionRepeaters()->SetActionStarted(this, kUI_UP);
 				return true;
-			case SDL_GAMEPAD_BUTTON_DPAD_DOWN:
-				if (m_selected_btn < BtnCount() - 1)
+			case kUI_DOWN:
+				if (!any_binded_key_for_action_pressed_c(kUI_UP) && m_selected_btn < BtnCount() - 1)
 					SelectBtn(m_selected_btn + 1);
+				ActionRepeaters()->SetActionStarted(this, kUI_DOWN);
 				return true;
-			case SDL_GAMEPAD_BUTTON_SOUTH:
+			case kUI_ACCEPT:
+				ActionRepeaters()->ResetAll();
 				OnBtnClick();
 				return true;
-			case SDL_GAMEPAD_BUTTON_EAST:
-			case SDL_GAMEPAD_BUTTON_START:
+			case kUI_BACK:
+				ActionRepeaters()->ResetAll();
 				if (m_page != epi_main)
 					ShowMain();
 				return true;
@@ -398,6 +406,26 @@ bool CUIMMShniaga::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
 
 
 	return CUIWindow::OnGamepadKeyAction(id, gamepad_action);
+}
+
+bool CUIMMShniaga::OnGamepadKeyHold(int id)
+{
+	switch (get_binded_action(id, agUIGeneral))
+	{
+		case kUI_UP:
+		{
+			if (ActionRepeaters()->CanRepeatActionNow(this, kUI_UP) && !any_binded_key_for_action_pressed_c(kUI_DOWN) && m_selected_btn > 0)
+				SelectBtn(m_selected_btn - 1);
+			return true;
+		}
+		case kUI_DOWN:
+		{
+			if (ActionRepeaters()->CanRepeatActionNow(this, kUI_DOWN) && !any_binded_key_for_action_pressed_c(kUI_UP) && m_selected_btn < BtnCount() - 1)
+				SelectBtn(m_selected_btn + 1);
+			return true;
+		}
+	}
+	return false;
 }
 
 int CUIMMShniaga::BtnCount()
