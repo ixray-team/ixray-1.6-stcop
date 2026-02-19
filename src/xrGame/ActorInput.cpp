@@ -655,7 +655,7 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 			cam_Active()->Move((d > 0) ? kUP : kDOWN, std::abs(d));
 		}
 	}break;
-	case 2:
+/*	case 2:
 	{
 		if (!fis_zero(value.x))
 		{
@@ -709,7 +709,7 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 			inventory().Action(kWPN_FIRE, CMD_STOP);
 			isGamepadShooting = false;
 		}
-	}break;
+	}break;*/
 	}
 }
 

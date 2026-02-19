@@ -2,6 +2,7 @@
 #include "pch_script.h"
 #include "key_binding_registrator.h"
 #include "../xrEngine/xr_level_controller.h"
+#include "../xrEngine/xr_input.h"
 
 using namespace luabind;
 
@@ -122,6 +123,24 @@ void key_binding_registrator::script_register(lua_State *L)
 				value("kWPN_CHAMBER_LOAD",	        int(kWPN_CHAMBER_LOAD)),
 				value("kWPN_CHAMBER_UNLOAD",        int(kWPN_CHAMBER_UNLOAD)),
 				value("kWPN_CHAMBER_CHECK",	        int(kWPN_CHAMBER_CHECK)),
+                
+				value("kUI_TAB_LEFT",	            int(kUI_TAB_LEFT)),
+				value("kUI_TAB_RIGHT",	            int(kUI_TAB_RIGHT)),
+				value("kUI_LEFT",	                int(kUI_LEFT)),
+				value("kUI_RIGHT",	                int(kUI_RIGHT)),
+				value("kUI_UP",	                    int(kUI_UP)),
+				value("kUI_DOWN",	                int(kUI_DOWN)),
+				value("kUI_SECONDARY_LEFT",	        int(kUI_SECONDARY_LEFT)),
+				value("kUI_SECONDARY_RIGHT",        int(kUI_SECONDARY_RIGHT)),
+				value("kUI_SECONDARY_UP",	        int(kUI_SECONDARY_UP)),
+				value("kUI_SECONDARY_DOWN",	        int(kUI_SECONDARY_DOWN)),
+				value("kUI_ACCEPT",	                int(kUI_ACCEPT)),
+				value("kUI_BACK",	                int(kUI_BACK)),
+				value("kUI_HINT",	                int(kUI_HINT)),
+				value("kUI_CONTEXT_MENU",	        int(kUI_CONTEXT_MENU)),
+				value("kUI_ACTION_1",	            int(kUI_ACTION_1)),
+				value("kUI_ACTION_2",	            int(kUI_ACTION_2)),
+
 				value("kDETECTOR",				    int(kDETECTOR))
 			],
 		class_<key_binding_registrator >("DIK_keys")
@@ -435,7 +454,20 @@ void key_binding_registrator::script_register(lua_State *L)
                 value("BUTTON_MISC3", int(SDL_GAMEPAD_BUTTON_MISC3)),
                 value("BUTTON_MISC4", int(SDL_GAMEPAD_BUTTON_MISC4)),
                 value("BUTTON_MISC5", int(SDL_GAMEPAD_BUTTON_MISC5)),
-                value("BUTTON_MISC6", int(SDL_GAMEPAD_BUTTON_MISC6))
+                value("BUTTON_MISC6", int(SDL_GAMEPAD_BUTTON_MISC6)),
+
+                value("BUTTON_LTRIGGER", int(DIK_LTRIGGER)),
+                value("BUTTON_RTRIGGER", int(DIK_RTRIGGER)),
+
+                value("BUTTON_LSTICK_UP", int(DIK_LSTICK_UP)),
+                value("BUTTON_LSTICK_DOWN", int(DIK_LSTICK_DOWN)),
+                value("BUTTON_LSTICK_LEFT", int(DIK_LSTICK_LEFT)),
+                value("BUTTON_LSTICK_RIGHT", int(DIK_LSTICK_RIGHT)),
+
+                value("BUTTON_RSTICK_UP", int(DIK_RSTICK_UP)),
+                value("BUTTON_RSTICK_DOWN", int(DIK_RSTICK_DOWN)),
+                value("BUTTON_RSTICK_LEFT", int(DIK_RSTICK_LEFT)),
+                value("BUTTON_RSTICK_RIGHT", int(DIK_RSTICK_RIGHT))
             ]
 
 	];
