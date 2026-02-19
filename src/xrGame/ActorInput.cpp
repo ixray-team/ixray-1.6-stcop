@@ -541,7 +541,7 @@ void CActor::IR_OnMouseMove(int dx, int dy)
 
 	if (CWeapon* wpn = iitem != nullptr ? iitem->cast_weapon() : nullptr)
 	{
-		if (!wpn->IsGrenadeMode() && wpn->IsLensedScopeInstalled())
+		if (!wpn->IsGrenadeMode() && wpn->IsLensedScopeInstalled() && !wpn->IsAltZoomed())
 		{
 			float zoom_scale = scale * (wpn->GetLensFOV() * 0.02f);
 			scale = _lerp(scale, zoom_scale, wpn->GetAimFactor());
