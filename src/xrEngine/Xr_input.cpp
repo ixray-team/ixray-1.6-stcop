@@ -262,6 +262,14 @@ bool CInput::get_dik_name(int dik, LPSTR dest_str, int dest_sz)
 #define MOUSE_1		(SDL_SCANCODE_COUNT + 100)
 #define MOUSE_8		(SDL_SCANCODE_COUNT + 107)
 
+bool CInput::iGetAsyncGamepadKeyState( int dik )
+{
+	if(dik<COUNT_GP_BUTTONS)
+		return !!GPState[dik];
+
+	return false;
+}
+
 BOOL CInput::iGetAsyncKeyState( int dik )
 {
 	if(dik<COUNT_KB_BUTTONS)
