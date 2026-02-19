@@ -116,6 +116,15 @@ enum EGameActions
 	kUI_ACTION_1,
 	kUI_ACTION_2,
 
+	kPDA_LOG_TO_START,
+	kPDA_LOG_TO_END,
+	kPDA_LOG_SCROLL_DOWN,
+	kPDA_LOG_SCROLL_UP,
+	kPDA_LOG_DATE_PREV,
+	kPDA_LOG_DATE_NEXT,
+	kPDA_LOG_SHOW_NEWS,
+	kPDA_LOG_SHOW_DIALOGS,
+
 	kCUSTOM1,
 	kCUSTOM2,
 	kCUSTOM3,
@@ -174,6 +183,7 @@ enum _action_group
 	agTransport	=	(1<<2),
 	agUIGeneral	=	(1<<3),
 	agUIRadialWeapon = (1<<4),
+	agUILogMenu	=	(1<<5),
 };
 
 extern ENGINE_API _key_group g_current_keygroup;
@@ -215,6 +225,7 @@ extern ENGINE_API _binding g_key_bindings[];
 ENGINE_API bool				is_binded			(EGameActions action_id, int dik);
 ENGINE_API int					get_action_dik		(EGameActions action_id, int idx=-1);
 ENGINE_API EGameActions		get_binded_action	(int dik, _action_group _ai = agDefault);
+ENGINE_API bool any_binded_key_for_action_pressed_c(int actionId);
 
 ENGINE_API void	 CCC_RegisterInput();
 

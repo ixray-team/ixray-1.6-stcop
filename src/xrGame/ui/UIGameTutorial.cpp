@@ -436,7 +436,7 @@ bool CUISequencer::ButtonPress(int id)
 	if (m_sequencer_items.size()) b &= m_sequencer_items.front()->AllowKey(id);
 
 	bool binded = is_binded(kQUIT, id);
-	bool secondaryQuit = pInput->GetControllerMode() ? id == SDL_GAMEPAD_BUTTON_EAST : false;
+	bool secondaryQuit = pInput->GetControllerMode() ? is_binded(kUI_BACK, id) : false;
 	if (b && (binded || secondaryQuit))
 	{
 		Stop();

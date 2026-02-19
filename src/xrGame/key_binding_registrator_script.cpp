@@ -6,8 +6,9 @@
 
 using namespace luabind;
 
-int dik_to_bind(int dik){
-	return get_binded_action(dik);
+int dik_to_bind(int dik, int ag)
+{
+	return get_binded_action(dik, (_action_group)ag);
 }
 
 #pragma optimize("s",on)
@@ -16,6 +17,11 @@ void key_binding_registrator::script_register(lua_State *L)
 	module(L)
 	[
 		def("dik_to_bind",		&dik_to_bind),
+        def("dik_to_bind",      +[](int dik)
+            {
+                return dik_to_bind(dik, agDefault);
+            }),
+        def("any_binded_key_for_action_pressed_c", &any_binded_key_for_action_pressed_c),
 
 		class_<enum_exporter<EGameActions> >("key_bindings")
 			.enum_("commands")
@@ -142,6 +148,14 @@ void key_binding_registrator::script_register(lua_State *L)
 				value("kUI_ACTION_2",	            int(kUI_ACTION_2)),
 
 				value("kDETECTOR",				    int(kDETECTOR))
+			],
+		class_<enum_exporter<_action_group> >("action_groups")
+			.enum_("actions")
+			[
+				value("agDefault",					int(agDefault)),
+				value("agTransport",				int(agTransport)),
+				value("agUIGeneral",				int(agUIGeneral)),
+				value("agUIRadialWeapon",			int(agUIRadialWeapon))
 			],
 		class_<key_binding_registrator >("DIK_keys")
 			.enum_("dik_keys")

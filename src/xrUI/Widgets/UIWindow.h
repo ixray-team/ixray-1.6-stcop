@@ -11,6 +11,7 @@ class CUIWindow;
 #include "UIMessages.h"
 #include "../../xrScripts/script_export_space.h"
 #include "../uiabstract.h"
+#include "UIActionRepeaters.h"
 
 class CUIStatic;
 class CUICellItem;
@@ -27,7 +28,8 @@ class CUIListItemServer;
 class CUIProgressShape;
 
 class UI_API CUIWindow  : 
-	public CUISimpleWindow
+	public CUISimpleWindow,
+	public CUIActionRepeatersOwner
 {
 public:
 				CUIWindow						();
