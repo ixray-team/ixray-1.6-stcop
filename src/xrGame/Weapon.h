@@ -405,7 +405,6 @@ protected:
 	bool m_bUseSilHud = false;
 	bool m_bUseScopeHud = false;
 	bool m_bUseGLHud = false;
-	bool m_bHideColimSightInAlter;
 	bool m_bIsAimStarted = false;
 	bool m_bRestGlSil = false;
 	bool m_bTacticalTorchStatus = false;
@@ -429,6 +428,7 @@ protected:
 	bool m_bGaussScreen = false;
 	BOOL m_bUseRevolverScheme = false;
 	BOOL m_bUseMosinScheme = false;
+	bool m_AlterZoomAllowed = false;
 
 	bool m_bHaveShell = false;
 	bool m_bNeedPumpState = false;
@@ -479,14 +479,16 @@ protected:
 		bool			m_bHideCrosshairInZoom;
 //		bool			m_bZoomDofEnabled;
 
-		bool			m_bIsZoomModeNow;		//когда режим приближения включен
+		bool			m_bIsZoomModeNow = false;		//когда режим приближения включен
+		bool			m_bIsAltZoomModeNow = false;		//когда режим приближения включен
 		float			m_fCurrentZoomFactor;	//текущий фактор приближения
 		float			m_fZoomRotateTime;		//время приближения
 	
 		float			m_fIronSightZoomFactor;	//коэффициент увеличения прицеливания
 		float			m_fScopeZoomFactor;		//коэффициент увеличения прицела
 
-		float			m_fZoomRotationFactor;
+		float			m_fZoomRotationFactor = 0.0f;
+		float			m_fZoomRotationFactor2 = 0.0f;
 		
 //		Fvector			m_ZoomDof;
 		Fvector4		m_ReloadDof;
@@ -535,7 +537,8 @@ public:
 	virtual	void			ZoomDec				();
 	virtual void			OnZoomIn			();
 	virtual void			OnZoomOut			();
-	IC		bool			IsZoomed			()	const		{return m_zoom_params.m_bIsZoomModeNow;};
+	IC		bool			IsZoomed			()	const		{return m_zoom_params.m_bIsZoomModeNow;}
+	IC		bool			IsAltZoomed			()	const		{return m_zoom_params.m_bIsAltZoomModeNow;}
 	CUIStatic*				ZoomTexture			();	
 
 	CWeaponNightVision*		GetNightVision()	{ return m_zoom_params.m_pNight_vision; }
@@ -601,6 +604,7 @@ protected:
 	virtual void UpdatePosition_alt(const Fmatrix& transform);
 	virtual void			UpdateXForm				();
 
+	void					AddOffset(Fmatrix& trans, const u8 idx, float& factor, const float rotate_time, const bool inc);
 	virtual void			UpdateHudAdditonal		(Fmatrix&);
 	IC		void			UpdateFireDependencies	()			{ if (dwFP_Frame==Device.dwFrame) return; UpdateFireDependencies_internal(); };
 
@@ -893,6 +897,7 @@ public:
 	bool bScopeIsHasTexture{};
 
 	float GetAimFactor() const { return m_zoom_params.m_fZoomRotationFactor; }
+	float GetAltAimFactor() const { return m_zoom_params.m_fZoomRotationFactor2; }
 	bool GetScopeBack();
 	void UpdateCollimatorSight();
 };
