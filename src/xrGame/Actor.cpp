@@ -1552,12 +1552,14 @@ void CActor::UpdateLensFOV(CWeapon* wpn, float value)
 		return;
 	}
 
-	if (!g_3d_scopes)
+	const float aim_factor = wpn->GetAimFactor();
+	bool use_smooth = g_3d_scopes && aim_factor > 0.0f && aim_factor <= 1.0f;
+	const float alt_aim_factor = wpn->GetAltAimFactor();
+	if ((use_smooth || aim_factor > 0.999f && alt_aim_factor == 0.0f) && !wpn->IsGrenadeMode() && wpn->IsLensedScopeInstalled() && !wpn->IsAltZoomed())
 	{
-		if (wpn->GetAimFactor() > 0.999f && !wpn->IsGrenadeMode() && wpn->IsLensedScopeInstalled()/* && !IsAlterZoomMode()*/)
-		{
-			value = wpn->GetLensFOV();
-		}
+		float old_value = value;
+		const float dec_factor = alt_aim_factor > 0.0f && alt_aim_factor <= 1.0f ? 1.0f - alt_aim_factor : 1.0f;
+		value = _lerp(old_value, wpn->GetLensFOV(), use_smooth ? aim_factor * dec_factor : 1.0f);
 	}
 
 	Cameras().SetCameraFov(value);
@@ -1838,7 +1840,7 @@ void CActor::UpdateCL()
 			psHUD_Flags.set( HUD_DRAW_RT,		pWeapon->show_indicators() );
 			Device.hudViewportData.renderZoomFactor = pWeapon->GetZoomFactor();
 			Device.hudViewportData.renderZoomRotateFactor = pWeapon->GetAimFactor();
-			Device.hudViewportData.isRenderActive = pWeapon->IsScopeAttached() && (pWeapon->GetAimFactor() > 0.0f) && (pWeapon->GetZoomFactor() > 0.0f);
+			Device.hudViewportData.isRenderActive = !pWeapon->IsGrenadeMode() && pWeapon->IsScopeAttached() && (pWeapon->GetAimFactor() > 0.0f) && (pWeapon->GetZoomFactor() > 0.0f);
 			Device.hudViewportData.ActorWeaponCondition = pWeapon->GetCondition();
 			Device.hudViewportData.renderScopeBrightnessValue = pWeapon->m_lens_night_brightness.cur_value;
 			Device.hudViewportData.renderScopeBrightnessJitterValue = pWeapon->m_lens_night_brightness.jitter;
