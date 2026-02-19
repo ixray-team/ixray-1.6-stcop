@@ -237,7 +237,7 @@ void CRenderDevice::on_idle		()
 					Statistic->Show();
 
 
-				if (IsFpsShow && !main_menu_active && !g_bLoaded)
+				if (IsFpsShow && g_pGameLevel && !main_menu_active && !load_screen_renderer.IsActive())
 					pFPSCounter->OnRender();
 
 				End();
