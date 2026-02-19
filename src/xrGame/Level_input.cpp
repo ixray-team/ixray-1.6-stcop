@@ -681,28 +681,6 @@ void CLevel::IR_GamepadUpdateStick(int id, Fvector2 value)
 	if (Device.Paused())
 		return;
 
-	if (id == 2)
-	{
-		if (!fis_zero(value.x))
-		{
-			if (CurrentGameUI() && CurrentGameUI()->TopInputReceiver() == CurrentGameUI()->PdaMenu())
-			{
-				CObject* current_entity = CurrentEntity();
-				if (CActor* pActor = current_entity != nullptr ? current_entity->cast_actor() : nullptr)
-				{
-					if (pActor->HudAnimator() != nullptr && pActor->HudAnimator()->PdaAnimator() != nullptr)
-					{
-						if (pActor->HudAnimator()->PdaAnimator()->InputKeyPress(kWPN_ZOOM))
-						{
-							return;
-						}
-					}
-				}
-			}
-		}
-
-	}
-
 	if (CurrentGameUI() && CurrentGameUI()->IR_UIOnGamepadUpdateStick(id, value)) return;
 
 	if (g_actor != nullptr && g_actor->g_Alive())
@@ -762,6 +740,24 @@ void CLevel::IR_GamepadKeyPress(int id)
 			}
 			return;
 		}break;
+	case kWPN_ZOOM:
+	{
+		if (b_ui_exist && CurrentGameUI()->TopInputReceiver() == CurrentGameUI()->PdaMenu())
+		{
+			CObject* current_entity = CurrentEntity();
+			if (CActor* pActor = current_entity != nullptr ? current_entity->cast_actor() : nullptr)
+			{
+				if (pActor->HudAnimator() != nullptr && pActor->HudAnimator()->PdaAnimator() != nullptr)
+				{
+					if (pActor->HudAnimator()->PdaAnimator()->InputKeyPress(kWPN_ZOOM))
+					{
+						return;
+					}
+				}
+			}
+		}
+		break;
+	}
 	};
 
 	if ( !bReady || !b_ui_exist )			return;

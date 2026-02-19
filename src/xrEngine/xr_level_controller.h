@@ -95,6 +95,27 @@ enum EGameActions
 	kTRANSMISSION_UP,
 	kTRANSMISSION_DOWN,
 
+	// Controller UI actions
+	kUI_TAB_LEFT,
+	kUI_TAB_RIGHT,
+
+	kUI_LEFT,
+	kUI_RIGHT,
+	kUI_UP,
+	kUI_DOWN,
+	kUI_SECONDARY_LEFT,
+	kUI_SECONDARY_RIGHT,
+	kUI_SECONDARY_UP,
+	kUI_SECONDARY_DOWN,
+
+	kUI_ACCEPT,
+	kUI_BACK,
+	kUI_HINT,
+	kUI_CONTEXT_MENU,
+
+	kUI_ACTION_1,
+	kUI_ACTION_2,
+
 	kCUSTOM1,
 	kCUSTOM2,
 	kCUSTOM3,
@@ -186,7 +207,7 @@ struct _binding
 {
 	_action*		m_action;
 	_keyboard*		m_keyboard[2];
-	_keyboard*		m_gamepad;
+	_keyboard*		m_gamepad[2];
 };
 
 extern ENGINE_API _binding g_key_bindings[];
