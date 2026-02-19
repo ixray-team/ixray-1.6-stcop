@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "FPSCounter.h"
 
+int fps_update_per_second = 2;
+float fps_smoothing_alpha = 1.f / 3.f;
 ENGINE_API XRay::Hardware::FPSCounter* pFPSCounter = nullptr;
 
 XRay::Hardware::FPSCounter::FPSCounter()
@@ -37,7 +39,7 @@ void XRay::Hardware::FPSCounter::OnRender()
 	smoothed_fps = static_cast<float>(raw_fps) * fps_smoothing_alpha + 
 				   smoothed_fps * (1.f - fps_smoothing_alpha);
 
-	if (time_point now = clock::now(); now - last_time_ >= std::chrono::milliseconds(1000 / 2))
+	if (time_point now = clock::now(); now - last_time_ >= std::chrono::milliseconds(1000 / fps_update_per_second))
 	{
 		visible_fps = smoothed_fps;
 		last_time_ = now;
