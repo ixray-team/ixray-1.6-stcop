@@ -779,20 +779,28 @@ bool CUIPdaWnd::OnGamepadKeyAction(int key, EUIMessages gamepad_action)
 {
 	if (WINDOW_KEY_PRESSED == gamepad_action)
 	{
-		switch (key)
+		switch (get_binded_action(key))
 		{
-			case SDL_GAMEPAD_BUTTON_EAST:
-			case SDL_GAMEPAD_BUTTON_BACK:
+			case kACTIVE_JOBS:
 			{
 				HideDialog();
 				break;
 			}
-			case SDL_GAMEPAD_BUTTON_LEFT_SHOULDER:
+			return true;
+		}
+		switch (get_binded_action(key, agUIGeneral))
+		{
+			case kUI_BACK:
+			{
+				HideDialog();
+				break;
+			}
+			case kUI_TAB_LEFT:
 			{
 				UITabControl->PrevTab();
 				break;
 			}
-			case SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER:
+			case kUI_TAB_RIGHT:
 			{
 				UITabControl->NextTab();
 				break;
