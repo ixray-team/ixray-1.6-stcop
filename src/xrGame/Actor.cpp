@@ -1671,6 +1671,13 @@ void CActor::UpdateCL()
 			dik = get_action_dik(kUSE, 1);
 			if(dik && pInput->iGetAsyncKeyState(dik))
 				pPickup->SetPickupMode(true);
+
+			if (pInput->GetControllerMode())
+			{
+				dik = get_action_dik(kUSE);
+				if (dik && pInput->iGetAsyncGamepadKeyState(dik))
+					pPickup->SetPickupMode(true);
+			}
 		}
 	}
 
