@@ -83,7 +83,7 @@ public:
 	virtual bool		OnKeyboardAction	(int dik, EUIMessages keyboard_action);
 	virtual bool		OnKeyboardHold		(int dik);
 	virtual bool		OnGamepadKeyAction	(int key, EUIMessages gamepad_action);
-	virtual bool		OnGamepadStickAction(int key, Fvector2 value, EUIMessages gamepad_action);
+	virtual bool		OnGamepadKeyHold	(int key);
 
 	IC		void		UpdateNews			()	{ m_need_reload = true; }
 	void		PerformWork			();
