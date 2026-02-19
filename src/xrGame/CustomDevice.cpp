@@ -741,6 +741,8 @@ void CCustomDevice::SwitchZoom()
 		return;
 	}
 
+	StopCurrentAnimWithoutCallback();
+
 	if (m_bIsZoomed)
 	{
 		m_bIsZoomed = false;
