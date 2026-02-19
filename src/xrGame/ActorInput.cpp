@@ -655,61 +655,6 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 			cam_Active()->Move((d > 0) ? kUP : kDOWN, std::abs(d));
 		}
 	}break;
-/*	case 2:
-	{
-		if (!fis_zero(value.x))
-		{
-			if (!isGamepadZooming)
-			{
-				inventory().Action(kWPN_ZOOM, CMD_START);
-				if (HudAnimator() != nullptr)
-				{
-					if (HudAnimator()->InputKeyPress(kWPN_ZOOM))
-					{
-						return;
-					}
-				}
-				isGamepadZooming = true;
-			}
-		}
-		else if (pInput->GetControllerMode())
-		{
-			inventory().Action(kWPN_ZOOM, CMD_STOP);
-			if (HudAnimator() != nullptr)
-			{
-				if (HudAnimator()->InputKeyRelease(kWPN_ZOOM))
-				{
-					return;
-				}
-			}
-			isGamepadZooming = false;
-		}
-
-		if (!fis_zero(value.y))
-		{
-			if (isGamepadShooting)
-				break;
-
-			if ((mstate_wishful & mcLookout) && !IsGameTypeSingle()) 
-				break;
-
-			//-----------------------------
-			if (OnServer())
-			{
-				NET_Packet P;
-				P.w_begin(M_PLAYER_FIRE);
-				P.w_u16(ID());
-				u_EventSend(P);
-			}
-			inventory().Action(kWPN_FIRE, CMD_START);
-			isGamepadShooting = true;
-		}
-		else if (pInput->GetControllerMode())
-		{
-			inventory().Action(kWPN_FIRE, CMD_STOP);
-			isGamepadShooting = false;
-		}
-	}break;*/
 	}
 }
 

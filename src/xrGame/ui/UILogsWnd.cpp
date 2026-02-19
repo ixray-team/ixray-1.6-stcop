@@ -370,38 +370,48 @@ bool CUILogsWnd::OnGamepadKeyAction(int key, EUIMessages gamepad_action)
 {
 	if (WINDOW_KEY_PRESSED == gamepad_action)
 	{
-		switch (key)
+		switch (get_binded_action(key, agUILogMenu))
 		{
-			case SDL_GAMEPAD_BUTTON_DPAD_UP:
+			case kPDA_LOG_TO_START:
 			{
 				m_list->ScrollToBegin();
 				break;
 			}
-			case SDL_GAMEPAD_BUTTON_DPAD_DOWN:
+			case kPDA_LOG_TO_END:
 			{
 				m_list->ScrollToEnd();
 				break;
 			}
-			case SDL_GAMEPAD_BUTTON_DPAD_LEFT:
+			case kPDA_LOG_DATE_PREV:
 			{
 				m_prev_period->OnClick();
 				break;
 			}
-			case SDL_GAMEPAD_BUTTON_DPAD_RIGHT:
+			case kPDA_LOG_DATE_NEXT:
 			{
 				m_next_period->OnClick();
 				break;
 			}
-			case SDL_GAMEPAD_BUTTON_SOUTH:
+			case kPDA_LOG_SHOW_DIALOGS:
 			{
 				m_filter_talk->SetCheck(!m_filter_talk->GetCheck());
 				m_filter_talk->SendClickCallback();
 				break;
 			}
-			case SDL_GAMEPAD_BUTTON_NORTH:
+			case kPDA_LOG_SHOW_NEWS:
 			{
 				m_filter_news->SetCheck(!m_filter_news->GetCheck());
 				m_filter_news->SendClickCallback();
+				break;
+			}
+			case kPDA_LOG_SCROLL_UP:
+			{
+				on_scroll_keys(SDL_SCANCODE_UP, 64);
+				break;
+			}
+			case kPDA_LOG_SCROLL_DOWN:
+			{
+				on_scroll_keys(SDL_SCANCODE_DOWN, 64);
 				break;
 			}
 			return true;
@@ -411,25 +421,24 @@ bool CUILogsWnd::OnGamepadKeyAction(int key, EUIMessages gamepad_action)
 	return inherited::OnGamepadKeyAction(key, gamepad_action);
 }
 
-bool CUILogsWnd::OnGamepadStickAction(int key, Fvector2 value, EUIMessages gamepad_action)
+bool CUILogsWnd::OnGamepadKeyHold(int key)
 {
-	if (key != 2)
+	switch (get_binded_action(key, agUILogMenu))
 	{
-		float absoluteVal = std::abs(value.y);
-		if (absoluteVal < 0.5f)
+		case kPDA_LOG_SCROLL_UP:
 		{
-			return inherited::OnGamepadStickAction(key, value, gamepad_action);
+			on_scroll_keys(SDL_SCANCODE_UP, 64);
+			break;
 		}
-		if (value.y > 0.5f)
+		case kPDA_LOG_SCROLL_DOWN:
 		{
-			on_scroll_keys(key == 1 ? SDL_SCANCODE_DOWN : SDL_SCANCODE_UP, 32 * absoluteVal);
+			on_scroll_keys(SDL_SCANCODE_DOWN, 64);
+			break;
 		}
-		else if (value.y < -0.5f)
-		{
-			on_scroll_keys(key == 1 ? SDL_SCANCODE_UP : SDL_SCANCODE_DOWN, 32 * absoluteVal);
-		}
+		return true;
 	}
-	return inherited::OnGamepadStickAction(key, value, gamepad_action);
+
+	return inherited::OnGamepadKeyHold(key);
 }
 
 void CUILogsWnd::on_scroll_keys( int dik, int step )

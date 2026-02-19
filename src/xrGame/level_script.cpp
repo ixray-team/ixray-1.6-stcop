@@ -55,7 +55,7 @@
 #include "../xrEngine/Rain.h"
 #include "../xrEngine/thunderbolt.h"
 #include "material_manager.h"
-
+#include "../xrUI/Widgets/UIActionRepeaters.h"
 #include "ElectronicsProblemsManager.h"
 
 using namespace luabind;
@@ -1993,7 +1993,8 @@ void CLevel::script_register(lua_State *L)
 		def("IsDedicated",						&is_dedicated),
 		def("OnClient",							&OnClient),
 		def("OnServer",							&OnServer),
-		def("EngineBuildId", &get_build_id)
+		def("EngineBuildId",					&get_build_id),
+		def("action_repeaters",					&ActionRepeaters)
 	];
 
 	module(L,"relation_registry")

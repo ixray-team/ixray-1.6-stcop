@@ -17,24 +17,13 @@
 	    </auto_static>
   </background>
 	<gamepad_legend x="0" y="724" width="1024" height="30" spacing="5">
-		<gp_bind x="0" y="0" width="22" height="30" stretch="1">
-			<texture>controller_a</texture>
-		</gp_bind>
 		<auto_static x="0" y="0" width="22" height="30">
-			<window_name>gp_select_default</window_name>
+			<window_name>gp_select</window_name>
 			<text font="graffiti19" vert_align="c">ui_mm_select</text>
 		</auto_static>
 		<auto_static x="0" y="0" width="22" height="30">
-			<window_name>gp_select_difficulty</window_name>
-			<text font="graffiti19" vert_align="c">ui_mm_select_difficulty</text>
-		</auto_static>
-		<gp_bind x="0" y="0" width="22" height="30" stretch="1">
-			<texture>controller_b</texture>
-			<window_name>gp_icon_back</window_name>
-		</gp_bind>
-		<auto_static x="0" y="0" width="22" height="30">
-			<text font="graffiti19" vert_align="c">ui_mm_back</text>
-			<window_name>gp_text_back</window_name>
+			<text font="graffiti19" vert_align="c">ui_mm_back_gp</text>
+			<window_name>gp_back</window_name>
 		</auto_static>
 	</gamepad_legend>
 	<shniaga_wnd x="134" y="320" width="216" height="380">

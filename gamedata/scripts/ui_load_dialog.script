@@ -20,11 +20,15 @@ end
 class "load_dialog" (CUIScriptWnd)
 
 function load_dialog:__init() super()
-	 self:InitControls()
-	 self:InitCallBacks()
+	self:InitControls()
+	self:InitCallBacks()
+	 
+	action_repeaters():Register(self, key_bindings.kUI_DOWN,0,0)
+	action_repeaters():Register(self, key_bindings.kUI_UP,0,0)
 end
 
 function load_dialog:__finalize()
+	action_repeaters():UnregisterOwner(self)
 end
 
 function load_dialog:FillList()
@@ -82,14 +86,14 @@ function load_dialog:InitControls()
 	self.list_box:ShowSelectedItem	(true)
 	self:Register			(self.list_box, "list_window")
 
-	ctrl					= xml:Init3tButton("form:btn_load",	self.form)
-	self:Register			(ctrl, "button_load")
+	self.btn_load			= xml:Init3tButton("form:btn_load",	self.form)
+	self:Register			(self.btn_load, "button_load")
 
-	ctrl = xml:Init3tButton	("form:btn_delete",	self.form)
-	self:Register			(ctrl, "button_del")
+	self.btn_delete 		= xml:Init3tButton	("form:btn_delete",	self.form)
+	self:Register			(self.btn_delete, "button_del")
 
-	ctrl = xml:Init3tButton	("form:btn_cancel",	self.form)
-	self:Register			(ctrl, "button_back")
+	self.btn_back 			= xml:Init3tButton("form:btn_cancel",	self.form)
+	self:Register			(self.btn_back, "button_back")
 
 	self.message_box		= CUIMessageBoxEx()
 	self:Register			(self.message_box,"message_box")
@@ -365,20 +369,47 @@ end
 
 function load_dialog:OnGamepadKey(key, gamepad_action)  --virtual function
 	CUIScriptWnd.OnGamepadKey(self,key,gamepad_action)
+	local bind = dik_to_bind(key)
+	local bindUI = dik_to_bind(key, action_groups.agUIGeneral)
 	if gamepad_action == ui_events.WINDOW_KEY_PRESSED then
-		if key == gamepad_keys.BUTTON_A then
+		if bindUI == key_bindings.kUI_ACCEPT then
 			self:OnButton_load_clicked()		
-		elseif key == gamepad_keys.BUTTON_B or key == gamepad_keys.BUTTON_START then
+		elseif bind == key_bindings.kQUIT or bindUI == key_bindings.kUI_BACK then
 			self:OnButton_back_clicked()		
-		elseif key == gamepad_keys.BUTTON_X then
+		elseif bindUI == key_bindings.kUI_ACTION_1 then
 			self:OnButton_del_clicked()		
-		elseif key == gamepad_keys.BUTTON_DPAD_UP then
-			self.list_box:PrevItem()
-		elseif key == gamepad_keys.BUTTON_DPAD_DOWN then
-			self.list_box:NextItem()
+		elseif bindUI == key_bindings.kUI_UP then
+			action_repeaters():SetActionStarted(self, key_bindings.kUI_UP)
+			if not any_binded_key_for_action_pressed_c(key_bindings.kUI_DOWN) then
+				self.list_box:PrevItem()
+			end
+		elseif bindUI == key_bindings.kUI_DOWN then
+			action_repeaters():SetActionStarted(self, key_bindings.kUI_DOWN)
+			if not any_binded_key_for_action_pressed_c(key_bindings.kUI_UP) then
+				self.list_box:NextItem()
+			end
 		end
 	end
 	return true
+end
+
+function load_dialog:OnGamepadKeyHold(key)
+	local bindUI = dik_to_bind(key, action_groups.agUIGeneral)
+	if bindUI == key_bindings.kUI_DOWN then
+		if action_repeaters():CanRepeatActionNow(self, key_bindings.kUI_DOWN)
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_UP) then
+			self.list_box:NextItem()
+		end
+		return true
+	elseif bindUI == key_bindings.kUI_UP then
+		if action_repeaters():CanRepeatActionNow(self, key_bindings.kUI_UP)
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_DOWN) then
+			self.list_box:PrevItem()
+		end
+		return true
+	end
+
+	return CUIScriptWnd.OnGamepadKeyHold(self,key)
 end
 
 function load_dialog:AddItemToList(file_name, date_time)
@@ -400,4 +431,11 @@ function load_dialog:AddItemToList(file_name, date_time)
 end
 
 
+function load_dialog:Update()
+	CUIScriptWnd.Update(self)
+	
+	self.btn_load:Show(not main_menu.in_controller_mode())
+	self.btn_delete:Show(not main_menu.in_controller_mode())
+	self.btn_back:Show(not main_menu.in_controller_mode())
+end
 

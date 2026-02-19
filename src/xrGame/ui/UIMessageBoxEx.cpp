@@ -93,15 +93,26 @@ bool CUIMessageBoxEx::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
 	if(keyboard_action==WINDOW_KEY_PRESSED)
 	{
-		if ( dik == SDL_SCANCODE_KP_ENTER || dik == SDL_SCANCODE_RETURN || dik == SDL_SCANCODE_SPACE)
+		switch (get_binded_action(dik, agUIGeneral))
 		{
-			m_pMessageBox->OnYesOk();
-			return true;
+			case kUI_ACCEPT:
+			{
+				m_pMessageBox->OnYesOk();
+				return true;
+			}
+			case kUI_BACK:
+			{
+				m_pMessageBox->OnNo();
+				return true;
+			}
 		}
-		else if (dik == SDL_SCANCODE_ESCAPE)
+		switch (get_binded_action(dik))
 		{
-			m_pMessageBox->OnNo();
-			return true;
+			case kQUIT:
+			{
+				m_pMessageBox->OnNo();
+				return true;
+			}
 		}
 	}
 	return CUIDialogWnd::OnKeyboardAction(dik, keyboard_action);
@@ -111,15 +122,26 @@ bool CUIMessageBoxEx::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
 {
 	if(gamepad_action == WINDOW_KEY_PRESSED)
 	{
-		if ( id == SDL_GAMEPAD_BUTTON_SOUTH )
+		switch (get_binded_action(id, agUIGeneral))
 		{
-			m_pMessageBox->OnYesOk();
-			return true;
+			case kUI_ACCEPT:
+			{
+				m_pMessageBox->OnYesOk();
+				return true;
+			}
+			case kUI_BACK:
+			{
+				m_pMessageBox->OnNo();
+				return true;
+			}
 		}
-		else if (id == SDL_GAMEPAD_BUTTON_EAST)
+		switch (get_binded_action(id))
 		{
-			m_pMessageBox->OnNo();
-			return true;
+			case kQUIT:
+			{
+				m_pMessageBox->OnNo();
+				return true;
+			}
 		}
 	}
 	return CUIDialogWnd::OnKeyboardAction(id, gamepad_action);

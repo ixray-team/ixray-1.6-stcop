@@ -788,11 +788,6 @@ void CLevel::IR_GamepadKeyHold(int id)
 		return;
 	}
 
-	if (Device.Paused())
-	{
-		return;
-	}
-
 	if (CurrentGameUI() && CurrentGameUI()->IR_UIOnGamepadKeyHold(id)) return;
 
 	if (Device.Paused() && !Level().IsDemoPlay()

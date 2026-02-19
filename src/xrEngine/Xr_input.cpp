@@ -96,6 +96,7 @@ void CInput::GamepadButtonUpdate(int SDLCode, bool IsPressed)
 	GPState[SDLCode] = IsPressed;
 }
 
+#define DEADZONE_RADIUS_UI 0.5f
 void CInput::LeftAxisUpdate(bool IsX, float value)
 {
 	if (IsX)
@@ -105,6 +106,38 @@ void CInput::LeftAxisUpdate(bool IsX, float value)
 	else
 	{
 		LeftAxis.y = value * -1;
+	}
+
+	if (LeftAxis.x < -DEADZONE_RADIUS_UI)
+	{
+		pInput->GamepadButtonUpdate(DIK_LSTICK_LEFT, true);
+	}
+	else if (LeftAxis.x > DEADZONE_RADIUS_UI)
+	{
+		pInput->GamepadButtonUpdate(DIK_LSTICK_RIGHT, true);
+	}
+	else
+	{
+		if (GPState[DIK_LSTICK_LEFT])
+			pInput->GamepadButtonUpdate(DIK_LSTICK_LEFT, false);
+		if (GPState[DIK_LSTICK_RIGHT])
+			pInput->GamepadButtonUpdate(DIK_LSTICK_RIGHT, false);
+	}
+
+	if (LeftAxis.y < -DEADZONE_RADIUS_UI)
+	{
+		pInput->GamepadButtonUpdate(DIK_LSTICK_DOWN, true);
+	}
+	else if (LeftAxis.y > DEADZONE_RADIUS_UI)
+	{
+		pInput->GamepadButtonUpdate(DIK_LSTICK_UP, true);
+	}
+	else
+	{
+		if (GPState[DIK_LSTICK_DOWN])
+			pInput->GamepadButtonUpdate(DIK_LSTICK_DOWN, false);
+		if (GPState[DIK_LSTICK_UP])
+			pInput->GamepadButtonUpdate(DIK_LSTICK_UP, false);
 	}
 }
 
@@ -117,6 +150,38 @@ void CInput::RightAxisUpdate(bool IsX, float value)
 	else
 	{
 		RightAxis.y = value;
+	}
+
+	if (RightAxis.x < -DEADZONE_RADIUS_UI)
+	{
+		pInput->GamepadButtonUpdate(DIK_RSTICK_LEFT, true);
+	}
+	else if (RightAxis.x > DEADZONE_RADIUS_UI)
+	{
+		pInput->GamepadButtonUpdate(DIK_RSTICK_RIGHT, true);
+	}
+	else
+	{
+		if (GPState[DIK_RSTICK_LEFT])
+			pInput->GamepadButtonUpdate(DIK_RSTICK_LEFT, false);
+		if (GPState[DIK_RSTICK_RIGHT])
+			pInput->GamepadButtonUpdate(DIK_RSTICK_RIGHT, false);
+	}
+
+	if (RightAxis.y < -DEADZONE_RADIUS_UI)
+	{
+		pInput->GamepadButtonUpdate(DIK_RSTICK_UP, true);
+	}
+	else if (RightAxis.y > DEADZONE_RADIUS_UI)
+	{
+		pInput->GamepadButtonUpdate(DIK_RSTICK_DOWN, true);
+	}
+	else
+	{
+		if (GPState[DIK_RSTICK_DOWN])
+			pInput->GamepadButtonUpdate(DIK_RSTICK_DOWN, false);
+		if (GPState[DIK_RSTICK_UP])
+			pInput->GamepadButtonUpdate(DIK_RSTICK_UP, false);
 	}
 }
 
