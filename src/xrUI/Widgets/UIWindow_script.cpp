@@ -136,7 +136,7 @@ void CUIWindow::script_register(lua_State *L)
 		def("GetTextureRect",			&get_texture_rect),
 		def("GetTextureInfo",			&get_texture_info),
 
-		class_<CUIWindow>("CUIWindow")
+		class_<CUIWindow, CUIActionRepeatersOwner>("CUIWindow")
 		.def(							constructor<>())
 		.def("AttachChild",				&CUIWindow::AttachChild, adopt<2>())
 		.def("DetachChild",				&CUIWindow::DetachChild)

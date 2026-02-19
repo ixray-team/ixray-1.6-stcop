@@ -469,60 +469,78 @@
 		<text>Громкость выстрелов</text>
 	</string>
 	<string id="ui_pda_tabs">
-		<text>Вкладки</text>
+		<text>$$ACTION_UI_TAB_LEFT$$/$$ACTION_UI_TAB_RIGHT$$ Вкладки</text>
 	</string>
 	<string id="ui_pda_log_to_start">
-		<text>В начало</text>
+		<text>$$ACTION_PDA_LOG_SCROLL_UP$$ В начало</text>
 	</string>
 	<string id="ui_pda_log_to_end">
-		<text>В конец</text>
+		<text>$$ACTION_PDA_LOG_SCROLL_DOWN$$ В конец</text>
 	</string>
 	<string id="ui_pda_log_date_prev">
-		<text>Предыдущая дата</text>
+		<text>$$ACTION_PDA_LOG_DATE_PREV$$ Предыдущая дата</text>
 	</string>
 	<string id="ui_pda_log_date_next">
-		<text>Следующая дата</text>
+		<text>$$ACTION_PDA_LOG_DATE_NEXT$$ Следующая дата</text>
+	</string>
+	<string id="ui_pda_log_show_news">
+		<text>$$ACTION_PDA_LOG_SHOW_NEWS$$ Показать новости</text>
+	</string>
+	<string id="ui_pda_log_show_dialogs">
+		<text>$$ACTION_PDA_LOG_SHOW_DIALOGS$$ Показать диалоги</text>
 	</string>
 	<string id="ui_mm_select">
-		<text>Выбрать пункт меню</text>
+		<text>$$ACTION_UI_ACCEPT$$ Выбрать пункт меню</text>
 	</string>
 	<string id="ui_mm_select_difficulty">
-		<text>Выбрать уровень сложности</text>
+		<text>$$ACTION_UI_ACCEPT$$ Выбрать уровень сложности</text>
+	</string>
+	<string id="ui_mm_load_gp">
+		<text>$$ACTION_UI_ACCEPT$$ Загрузить</text>
+	</string>
+	<string id="ui_mm_save_gp">
+		<text>$$ACTION_UI_ACCEPT$$ Сохранить</text>
+	</string>
+	<string id="ui_mm_delete_gp">
+		<text>$$ACTION_UI_ACTION_1$$ Удалить</text>
+	</string>
+	<string id="ui_mm_back_gp">
+		<text>$$ACTION_UI_BACK$$ Назад</text>
 	</string>
 	<string id="st_manual_save">
 		<text>Ручное сохранение - </text>
 	</string>
 	<string id="st_options_save">
-		<text>Принять</text>
+		<text>$$ACTION_UI_ACCEPT$$ Принять</text>
 	</string>
 	<string id="st_options_toggle">
-		<text>Переключить</text>
+		<text>$$ACTION_UI_ACCEPT$$ Переключить</text>
 	</string>
 	<string id="st_options_tune_item">
 		<text>Настроить</text>
 	</string>
 	<string id="st_options_advanced">
-		<text>Дополнительные параметры графики</text>
+		<text>$$ACTION_UI_ACTION_2$$ Дополнительные параметры графики</text>
 	</string>
 	<string id="st_options_basic">
-		<text>Базовые параметры графики</text>
+		<text>$$ACTION_UI_ACTION_2$$ Базовые параметры графики</text>
 	</string>
 	<string id="ui_rmw_select">
 		<text>Выбрать сектор</text>
 	</string>
 	<string id="ui_rmw_drop_weapon">
-		<text>Бросить оружие</text>
+		<text>$$ACTION_DROP$$ Бросить оружие</text>
 	</string>
 	<string id="ui_rmw_night_vision">
-		<text>Ночное видение</text>
+		<text>$$ACTION_NIGHT_VISION$$ Ночное видение</text>
 	</string>
 	<string id="ui_rmw_wpn_func">
-		<text>Дополнительное оружие</text>
+		<text>$$ACTION_WPN_FUNC$$ Дополнительное оружие</text>
 	</string>
 	<string id="ui_rmw_fire_mode">
-		<text>Режим огня</text>
+		<text>$$ACTION_WPN_FIREMODE_NEXT$$ Режим огня</text>
 	</string>
 	<string id="ui_rmw_ammo_next">
-		<text>Тип боеприпасов</text>
+		<text>$$ACTION_WPN_NEXT$$ Тип боеприпасов</text>
 	</string>
 </string_table>
