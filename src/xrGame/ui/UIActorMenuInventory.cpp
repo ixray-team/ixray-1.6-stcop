@@ -163,45 +163,67 @@ void CUIActorMenu::DropAllCurrentItem(u32 item_amount)
 {
 	if ( CurrentIItem() && !CurrentIItem()->IsQuestItem() )
 	{
-		for( u32 i = 0; i < item_amount; ++i )
+		u32 childCount = CurrentItem()->ChildsCount();
+		u32 toPop = (item_amount < childCount) ? item_amount : childCount;
+		for ( u32 i = 0; i < toPop; ++i )
 		{
 			CUICellItem*	itm  = CurrentItem()->PopChild(nullptr);
 			PIItem			iitm = (PIItem)itm->m_pData;
 			SendEvent_Item_Drop( iitm, m_pActorInvOwner->object_id() );
 		}
 
-		SendEvent_Item_Drop( CurrentIItem(), m_pActorInvOwner->object_id() );
+		if ( item_amount > childCount )
+			SendEvent_Item_Drop( CurrentIItem(), m_pActorInvOwner->object_id() );
 	}
 	SetCurrentItem								(nullptr);
 }
 
 void CUIActorMenu::TakeAllCurrentItem(u32 item_amount)
 {
-	for( u32 i = 0; i < item_amount; ++i )
-	{
-		CUICellItem*	child_itm  = CurrentItem()->PopChild(nullptr);
-		PIItem			child_iitm = (PIItem)child_itm->m_pData;
-		move_item_from_to(child_iitm->parent_id(), m_pActorInvOwner->object_id(), child_iitm->object_id());
-	}
-	move_item_from_to(CurrentIItem()->parent_id(), m_pActorInvOwner->object_id(), CurrentIItem()->object_id());
+	CUIDragDropListEx* deadBodyList = GetListByType(iDeadBodyBag);
+	u32 const childCount = CurrentItem()->ChildsCount();
+	u32 const totalCount = 1 + childCount;
+	u32 const toTake = (item_amount > totalCount) ? totalCount : item_amount;
+	u32 const childrenToTake = (toTake < childCount) ? toTake : childCount;
 
-	// St4lker0k765: мега уёбищный костыль, но я хз почему по дефолту предмет остаётся в исходном инвентаре
-	if (!CurrentItem()->ChildsCount())
-		GetListByType(iDeadBodyBag)->RemoveItem(CurrentItem(), true);
-	else
-		CurrentItem()->PopChild(nullptr);
+	for (u32 i = 0; i < childrenToTake; ++i)
+	{
+		CUICellItem* child_itm = CurrentItem()->PopChild(nullptr);
+		PIItem child_iitm = (PIItem)child_itm->m_pData;
+		move_item_from_to(child_iitm->parent_id(), m_pActorInvOwner->object_id(), child_iitm->object_id());
+		m_pInventoryBagList->SetItem(child_itm);
+	}
+
+	if (toTake > childCount)
+	{
+		CUICellItem* parent_itm = CurrentItem();
+		PIItem parent_iitm = CurrentIItem();
+		move_item_from_to(parent_iitm->parent_id(), m_pActorInvOwner->object_id(), parent_iitm->object_id());
+		parent_itm = deadBodyList->RemoveItem(parent_itm, true);
+		if (parent_itm)
+			m_pInventoryBagList->SetItem(parent_itm);
+	}
+
+	UpdateDeadBodyBag();
 }
 
 void CUIActorMenu::MoveAllCurrentItem(u32 item_amount)
 {
 	auto ownerID = m_pPartnerInvOwner ? m_pPartnerInvOwner->object_id() : m_pInvBox->ID();
-	for (u32 i = 0; i < item_amount; ++i)
+	u32 const childCount = CurrentItem()->ChildsCount();
+	u32 const totalCount = 1 + childCount;
+	u32 const toMove = (item_amount > totalCount) ? totalCount : item_amount;
+	// Move children first: min(toMove, childCount)
+	u32 const childrenToMove = (toMove < childCount) ? toMove : childCount;
+	for (u32 i = 0; i < childrenToMove; ++i)
 	{
 		CUICellItem* child_itm = CurrentItem()->Child(i);
 		PIItem child_iitm = (PIItem)child_itm->m_pData;
 		move_item_from_to(CurrentIItem()->parent_id(), ownerID, child_iitm->object_id());
-	};
-	move_item_from_to(CurrentIItem()->parent_id(), ownerID, CurrentIItem()->object_id());
+	}
+	// Move parent only when moving entire stack (toMove > childCount)
+	if (toMove > childCount)
+		move_item_from_to(CurrentIItem()->parent_id(), ownerID, CurrentIItem()->object_id());
 }
 
 bool CUIActorMenu::DropAllItemsFromRuck( bool quest_force )
@@ -358,8 +380,8 @@ void CUIActorMenu::OnInventoryAction(PIItem pItem, u16 action_type)
 				}
 
 				CUICellItem* ci = nullptr;
-				if(GetMenuMode()==mmDeadBodySearch && FindItemInList(m_pDeadBodyBagList, pItem, ci))
-					break;
+				if (GetMenuMode() == mmDeadBodySearch && FindItemInList(m_pDeadBodyBagList, pItem, ci))
+					RemoveItemFromList(m_pDeadBodyBagList, pItem);
 
 				if ( !b_already )
 				{
@@ -386,12 +408,8 @@ void CUIActorMenu::OnInventoryAction(PIItem pItem, u16 action_type)
 					}
 				}
 
-				if (!IsGameTypeSingle() && pItem->parent_id() != m_pActorInvOwner->object_id())
-				{
-					CUIDragDropListEx* lst_to_remove = NULL;
-					lst_to_remove = GetListByType(iDeadBodyBag);
-					RemoveItemFromList(lst_to_remove, pItem);
-				}
+				if (GetMenuMode() == mmDeadBodySearch && RemoveItemFromList(m_pDeadBodyBagList, pItem))
+					;
 				else
 				{
 					u32 i = 0;
@@ -399,11 +417,11 @@ void CUIActorMenu::OnInventoryAction(PIItem pItem, u16 action_type)
 					{
 						CUIDragDropListEx* curr = all_lists[i];
 						if (RemoveItemFromList(curr, pItem))
-						{
 							break;
-						}
 						++i;
 					}
+					if (!IsGameTypeSingle() && pItem->parent_id() != m_pActorInvOwner->object_id())
+						RemoveItemFromList(GetListByType(iDeadBodyBag), pItem);
 				}
 				
 				for (u8 i = 1; i <= m_slot_count; ++i)
@@ -1434,12 +1452,12 @@ void CUIActorMenu::PropertiesBoxForDrop(CUICellItem* cell_item, PIItem item, boo
 			}
 		}
 		else {
-			if(item->parent_id() == m_pActorInvOwner->object_id()) 
+			if(item->parent_id() == m_pActorInvOwner->object_id())
 			{
 				m_UIPropertiesBox->AddItem("st_move_to", nullptr, INVENTORY_DROP_ACTION);
 				b_show = true;
 
-				if(cell_item->ChildsCount()) 
+				if(cell_item->ChildsCount())
 				{
 					m_UIPropertiesBox->AddItem("st_move_amount", (void*)77, INVENTORY_DROP_ACTION);
 					m_UIPropertiesBox->AddItem("st_move_all", (void*)33, INVENTORY_DROP_ACTION);
@@ -1580,11 +1598,11 @@ void CUIActorMenu::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 			{
 				if(d_ == (void*)33) 
 				{
-					DropAllCurrentItem(cell_item->ChildsCount());
+					DropAllCurrentItem(cell_item->ChildsCount() + 1);
 				}
 				else if (d_ == (void*)77)
 				{
-					m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeDrop);
+					m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeDrop, item);
 				}
 				else
 				{
@@ -1600,11 +1618,11 @@ void CUIActorMenu::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 
 					if(d_ == (void*)33 && isAllowPlace) 
 					{
-						MoveAllCurrentItem(cell_item->ChildsCount());
+						MoveAllCurrentItem(cell_item->ChildsCount() + 1);
 					}
 					else if (d_ == (void*)77 && isAllowPlace)
 					{
-						m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeMove);
+						m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeMove, item);
 					}
 					else if (isAllowPlace) 
 					{
@@ -1615,11 +1633,11 @@ void CUIActorMenu::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 				{
 					if(d_ == (void*)33) 
 					{
-						TakeAllCurrentItem(cell_item->ChildsCount());
+						TakeAllCurrentItem(cell_item->ChildsCount() + 1);
 					}
 					else if (d_ == (void*)77)
 					{
-						m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeTake);
+						m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeTake, item);
 					}
 					else
 					{

@@ -2,6 +2,7 @@
 
 #include "UICustomEdit.h"
 #include "UILines.h"
+#include "UIStatic.h"
 
 #include "../../xrEngine/line_edit_control.h"
 #include "../../xrEngine/xr_input.h"
@@ -23,6 +24,7 @@ CUICustomEdit::CUICustomEdit()
 	m_force_update = true;
 	m_last_key_state_time = 0;
 	m_next_focus_capturer = nullptr;
+	m_pPlaceholder = nullptr;
 }	
 
 
@@ -93,6 +95,30 @@ void CUICustomEdit::InitCustomEdit( Fvector2 pos, Fvector2 size )
 void CUICustomEdit::SetPasswordMode( bool mode )
 {
 	TextItemControl()->SetPasswordMode( mode );
+}
+
+void CUICustomEdit::SetPlaceholder( LPCSTR stId, bool blink )
+{
+	if ( !stId || !stId[0] )
+		return;
+	if ( m_pPlaceholder )
+		return;
+	m_pPlaceholder = new CUIStatic();
+	m_pPlaceholder->SetAutoDelete( true );
+	AttachChild( m_pPlaceholder );
+	m_pPlaceholder->SetWndPos( Fvector2().set( 0, 0 ) );
+	m_pPlaceholder->SetWndSize( GetWndSize() );
+	m_pPlaceholder->TextureOff();
+	m_pPlaceholder->SetTextST( stId );
+	m_pPlaceholder->TextItemControl()->SetVTextAlignment( TextItemControl()->GetVTextAlignment() );
+	m_pPlaceholder->TextItemControl()->SetTextAlignment( TextItemControl()->GetTextAlignment() );
+	if ( TextItemControl()->GetFont() )
+		m_pPlaceholder->SetFont( TextItemControl()->GetFont() );
+	u32 color = TextItemControl()->GetTextColor();
+	m_pPlaceholder->SetTextColor( color );
+	if ( blink )
+		m_pPlaceholder->SetColorAnimation( "ui_slow_blinking_alpha", LA_CYCLIC | LA_ONLYALPHA | LA_TEXTCOLOR );
+	m_pPlaceholder->Show( xr_strlen( GetText() ) == 0 );
 }
 
 void CUICustomEdit::OnFocusLost()
@@ -170,6 +196,9 @@ void CUICustomEdit::Update()
 	{
 		m_last_key_state_time = Device.dwTimeGlobal;
 	}
+
+	if ( m_pPlaceholder )
+		m_pPlaceholder->Show( xr_strlen( GetText() ) == 0 );
 
 	inherited::Update();
 }
@@ -254,6 +283,8 @@ void  CUICustomEdit::Draw()
 void CUICustomEdit::Show( bool status )
 {
 	m_force_update = true;
+	if ( m_pPlaceholder )
+		m_pPlaceholder->Show( status && xr_strlen( GetText() ) == 0 );
 	inherited::Show( status );
 }
 
