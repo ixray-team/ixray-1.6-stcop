@@ -153,13 +153,13 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked	()
 	case INVENTORY_DROP_ACTION:
 		{
 			void* d_ = UIPropertiesBox.GetClickedItem()->GetData();
-			if(d_ == (void*)33) 
+			if(d_ == (void*)33)
 			{
-				DropAllCurrentItem(cell_item->ChildsCount());
+				DropAllCurrentItem(cell_item->ChildsCount() + 1);
 			}
 			else if (d_ == (void*)77)
 			{
-				m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeDrop);
+				m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeDrop, item);
 			}
 			else
 			{

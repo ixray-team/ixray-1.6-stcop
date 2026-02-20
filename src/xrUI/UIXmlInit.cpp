@@ -952,6 +952,12 @@ bool CUIXmlInit::InitCustomEdit(CUIXml& xml_doc, LPCSTR path, int index, CUICust
 	{
 		pWnd->SetPasswordMode();
 	}
+
+	LPCSTR placeholderText = xml_doc.ReadAttrib(path, index, "placeholder_text", "");
+	bool placeholderBlink = (xml_doc.ReadAttribInt(path, index, "placeholder_blink", 0) != 0);
+	if (placeholderText && placeholderText[0])
+		pWnd->SetPlaceholder(placeholderText, placeholderBlink);
+
 	return true;
 }
 

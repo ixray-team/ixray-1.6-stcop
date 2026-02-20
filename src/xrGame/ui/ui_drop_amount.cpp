@@ -1,168 +1,508 @@
 ////////////////////////////////////////////////////////////////////////////
 //	Module 		: ui_drop_amount.h
 //	Created 	: 25.07.2025
-//	Author		: St4lker0k765
+//	Author		: St4lker0k765, Desert_Cliff (21.02.2026)
 //	Description : Implementation for custom amount of items for drop
 ////////////////////////////////////////////////////////////////////////////
 #include "StdAfx.h"
-#include "../../xrUI/xrUIXmlParser.h"
 #include "ui_drop_amount.h"
-#include "../../xrUI/Widgets/UIStatic.h"
-#include "../../xrUI/UIXmlInit.h"
-#include "../../xrUI/UIHelper.h"
-#include "../../xrUI/Widgets/UITrackBar.h"
-#include "../../xrUI/Widgets/UI3tButton.h"
-#include "UIGameCustom.h"
 #include "UIActorMenu.h"
+#include "UIGameCustom.h"
 #include "UIInventoryWnd.h"
 #include "UICarBodyWnd.h"
+#include "inventory_item.h"
+#include "../../xrUI/UIHelper.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
+#include "../../xrUI/Widgets/UIEditBox.h"
+#include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrUI/Widgets/UITrackBar.h"
+#include "../../xrUI/xrUIXmlParser.h"
+#include "../../xrCore/xr_ini.h"
+#include "../../xrEngine/string_table.h"
 
 CUIItemDropAmountWnd::CUIItemDropAmountWnd()
+    : _background(nullptr)
+    , _staticPicture(nullptr)
+    , _staticText(nullptr)
+    , _buttonYes(nullptr)
+    , _buttonNo(nullptr)
+    , _trackBar(nullptr)
+    , _staticValueMin(nullptr)
+    , _staticValueMax(nullptr)
+    , _titleText(nullptr)
+    , _itemNameText(nullptr)
+    , _weightText(nullptr)
+    , _editAmount(nullptr)
+    , _btnDec(nullptr)
+    , _btnInc(nullptr)
+    , _btnHalf(nullptr)
+    , _btnAll(nullptr)
+    , _btnCancel(nullptr)
+    , _btnAccept(nullptr)
+    , _dropMode(eModeDrop)
+    , _extendedLayout(false)
+    , _simpleDropMode(false)
+    , _currentAmount(1)
+    , _maxAmount(1)
+    , _pItem(nullptr)
 {
-	m_UIStaticPicture	= nullptr;
-	m_UIStaticText		= nullptr;
-	m_UIButtonYes		= nullptr;
-	m_UIButtonNo		= nullptr;
-	m_UITrackBar		= nullptr;
-	m_UIStaticValueMin	= nullptr;
-	m_UIStaticValueMax	= nullptr;
-	m_dropMode			= eModeDrop;
+    m_bWorkInPause = true;
 }
 
 void CUIItemDropAmountWnd::InitDropAmount()
 {
-	CUIXml							uiXml;
-	uiXml.Load(CONFIG_PATH, UI_PATH, "custom_drop_amount.xml");
+    CUIXml uiXml;
+    uiXml.Load(CONFIG_PATH, UI_PATH, "custom_drop_amount.xml");
 
-	SetWndPos(Fvector2().set(0, 0));
-	SetWndSize(Fvector2().set(UI_BASE_WIDTH, UI_BASE_HEIGHT));
+    SetWndPos(Fvector2().set(0, 0));
+    SetWndSize(Fvector2().set(UI_BASE_WIDTH, UI_BASE_HEIGHT));
 
-	LPCSTR base = "custom_drop";
-	m_UIBackground = UIHelper::CreateStatic(uiXml, base, this);
+    LPCSTR base = nullptr;
+    if (uiXml.NavigateToNode("split_item", 0))
+    {
+        _extendedLayout = true;
+        base = "split_item";
+    }
+    else
+    {
+        _extendedLayout = false;
+        base = "custom_drop";
+    }
 
-	string512 str;
+    _background = UIHelper::CreateStatic(uiXml, base, this);
+    string512 str;
 
-	xr_strconcat(str, base, ":picture");
-	if (uiXml.NavigateToNode(str, 0)) 
-	{
-		m_UIStaticPicture = UIHelper::CreateStatic(uiXml, str, m_UIBackground);
-	}
+    if (_extendedLayout)
+    {
+        xr_strconcat(str, base, ":item_title");
+        if (uiXml.NavigateToNode(str, 0))
+            _titleText = UIHelper::CreateStatic(uiXml, str, _background);
 
-	xr_strconcat(str, base, ":text_hint");
-	m_UIStaticText = UIHelper::CreateStatic(uiXml, str, m_UIBackground);
+        xr_strconcat(str, base, ":item_name");
+        if (uiXml.NavigateToNode(str, 0))
+            _itemNameText = UIHelper::CreateStatic(uiXml, str, _background);
 
-	xr_strconcat(str, base, ":button_yes");
-	m_UIButtonYes = UIHelper::Create3tButton(uiXml, str, m_UIBackground);
-	Register(m_UIButtonYes);
-	AddCallback(m_UIButtonYes, BUTTON_CLICKED, CUIWndCallback::void_function(this, &CUIItemDropAmountWnd::OnBtnYesClicked));
+        xr_strconcat(str, base, ":weight_text");
+        if (uiXml.NavigateToNode(str, 0))
+            _weightText = UIHelper::CreateStatic(uiXml, str, _background);
 
-	xr_strconcat(str, base, ":button_no");
-	m_UIButtonNo = UIHelper::Create3tButton(uiXml, str, m_UIBackground);
-	Register(m_UIButtonNo);
-	AddCallback(m_UIButtonNo, BUTTON_CLICKED, CUIWndCallback::void_function(this, &CUIItemDropAmountWnd::OnBtnNoClicked));
+        xr_strconcat(str, base, ":edit_amount");
+        if (uiXml.NavigateToNode(str, 0))
+        {
+            _editAmount = UIHelper::CreateEditBox(uiXml, str, _background);
+            Register(_editAmount);
+            AddCallback(_editAmount, EDIT_TEXT_COMMIT, CUIWndCallback::void_function(this, &CUIItemDropAmountWnd::OnEditCommit));
+        }
 
-	xr_strconcat(str, base, ":trackbar");
-	m_UITrackBar = UIHelper::CreateTrackBar(uiXml, str, m_UIBackground);
-	m_UITrackBar->SetCurrentID(0);
-	m_UITrackBar->SaveBackUpOptValue();
+        xr_strconcat(str, base, ":button_decrement");
+        if (uiXml.NavigateToNode(str, 0))
+        {
+            _btnDec = UIHelper::Create3tButton(uiXml, str, _background);
+            Register(_btnDec);
+            AddCallback(_btnDec, BUTTON_CLICKED, CUIWndCallback::void_function(this, &CUIItemDropAmountWnd::OnBtnDecClicked));
+        }
 
-	xr_strconcat(str, base, ":value_min");
-	m_UIStaticValueMin = UIHelper::CreateStatic(uiXml, str, m_UIBackground);
+        xr_strconcat(str, base, ":button_increment");
+        if (uiXml.NavigateToNode(str, 0))
+        {
+            _btnInc = UIHelper::Create3tButton(uiXml, str, _background);
+            Register(_btnInc);
+            AddCallback(_btnInc, BUTTON_CLICKED, CUIWndCallback::void_function(this, &CUIItemDropAmountWnd::OnBtnIncClicked));
+        }
+    }
+    else
+    {
+        xr_strconcat(str, base, ":picture");
+        if (uiXml.NavigateToNode(str, 0))
+            _staticPicture = UIHelper::CreateStatic(uiXml, str, _background);
 
-	xr_strconcat(str, base, ":value_max");
-	m_UIStaticValueMax = UIHelper::CreateStatic(uiXml, str, m_UIBackground);
+        xr_strconcat(str, base, ":text_hint");
+        _staticText = UIHelper::CreateStatic(uiXml, str, _background);
+
+        xr_strconcat(str, base, ":button_yes");
+        _buttonYes = UIHelper::Create3tButton(uiXml, str, _background);
+        Register(_buttonYes);
+        AddCallback(_buttonYes, BUTTON_CLICKED, CUIWndCallback::void_function(this, &CUIItemDropAmountWnd::OnBtnYesClicked));
+
+        xr_strconcat(str, base, ":button_no");
+        _buttonNo = UIHelper::Create3tButton(uiXml, str, _background);
+        Register(_buttonNo);
+        AddCallback(_buttonNo, BUTTON_CLICKED, CUIWndCallback::void_function(this, &CUIItemDropAmountWnd::OnBtnNoClicked));
+    }
+
+    xr_strconcat(str, base, ":trackbar");
+    _trackBar = UIHelper::CreateTrackBar(uiXml, str, _background);
+    _trackBar->SetCurrentID(0);
+    _trackBar->SaveBackUpOptValue();
+    if (_extendedLayout)
+    {
+        Register(_trackBar);
+        AddCallback(_trackBar, TRACK_VALUE_CHANGED, CUIWndCallback::void_function(this, &CUIItemDropAmountWnd::OnTrackChanged));
+        AddCallback(_trackBar, BUTTON_CLICKED, CUIWndCallback::void_function(this, &CUIItemDropAmountWnd::OnTrackChanged));
+    }
+
+    xr_strconcat(str, base, ":value_min");
+    if (uiXml.NavigateToNode(str, 0))
+        _staticValueMin = UIHelper::CreateStatic(uiXml, str, _background);
+
+    xr_strconcat(str, base, ":value_max");
+    if (uiXml.NavigateToNode(str, 0))
+        _staticValueMax = UIHelper::CreateStatic(uiXml, str, _background);
+
+    if (_extendedLayout)
+    {
+        xr_strconcat(str, base, ":button_half");
+        if (uiXml.NavigateToNode(str, 0))
+        {
+            _btnHalf = UIHelper::Create3tButton(uiXml, str, _background);
+            Register(_btnHalf);
+            AddCallback(_btnHalf, BUTTON_CLICKED, CUIWndCallback::void_function(this, &CUIItemDropAmountWnd::OnBtnHalfClicked));
+        }
+
+        xr_strconcat(str, base, ":button_all");
+        if (uiXml.NavigateToNode(str, 0))
+        {
+            _btnAll = UIHelper::Create3tButton(uiXml, str, _background);
+            Register(_btnAll);
+            AddCallback(_btnAll, BUTTON_CLICKED, CUIWndCallback::void_function(this, &CUIItemDropAmountWnd::OnBtnAllClicked));
+        }
+
+        xr_strconcat(str, base, ":button_cancel");
+        if (uiXml.NavigateToNode(str, 0))
+        {
+            _btnCancel = UIHelper::Create3tButton(uiXml, str, _background);
+            Register(_btnCancel);
+            AddCallback(_btnCancel, BUTTON_CLICKED, CUIWndCallback::void_function(this, &CUIItemDropAmountWnd::OnBtnCancelClicked));
+        }
+
+        xr_strconcat(str, base, ":button_accept");
+        if (uiXml.NavigateToNode(str, 0))
+        {
+            _btnAccept = UIHelper::Create3tButton(uiXml, str, _background);
+            Register(_btnAccept);
+            AddCallback(_btnAccept, BUTTON_CLICKED, CUIWndCallback::void_function(this, &CUIItemDropAmountWnd::OnBtnAcceptClicked));
+        }
+    }
 }
 
-void CUIItemDropAmountWnd::ShowDropAmount(u32 max, EDropMode mode)
+void CUIItemDropAmountWnd::RecalculateLayout(CInventoryItem* pItem)
 {
-	ShowDialog(false);
+    (void)pItem;
+}
 
-	m_UITrackBar->SetOptIBounds(1, max + 1);
-	m_UITrackBar->UndoOptValue();
+void CUIItemDropAmountWnd::ShowDropAmount(u32 max, EDropMode mode, CInventoryItem* pItem)
+{
+    _simpleDropMode = true;
+    _maxAmount = (int)max;
+    _pItem = pItem;
+    _currentAmount = 1;
 
-	m_dropMode = mode;
+    Enable(true);
+    ShowDialog(false);
 
-	string256 hint_str;
-	xr_sprintf(hint_str, "st_custom_drop_hint_%d", m_dropMode);
-	m_UIStaticText->SetTextST(hint_str);
+    _trackBar->SetOptIBounds(1, max + 1);
+    _trackBar->SetIValue(1);
+    _trackBar->UndoOptValue();
+    _currentAmount = _trackBar->GetIValue();
 
-	string32 cnt;
-	xr_sprintf(cnt, "%d", max + 1);
-	m_UIStaticValueMax->SetText(cnt);
+    _dropMode = mode;
+
+    if (_titleText && _extendedLayout)
+    {
+        _titleText->SetTextST("st_drop_amount_title");
+    }
+
+    if (_staticText)
+    {
+        string256 hintStr;
+        xr_sprintf(hintStr, "st_custom_drop_hint_%d", _dropMode);
+        _staticText->SetTextST(hintStr);
+        if (_staticText->IsColorAnimationPresent())
+            _staticText->ResetColorAnimation();
+    }
+    else if (_itemNameText && _extendedLayout)
+    {
+        if (_pItem)
+        {
+            shared_str invName = pSettings->line_exist(_pItem->m_section_id.c_str(), "inv_name")
+                ? pSettings->r_string(_pItem->m_section_id.c_str(), "inv_name")
+                : _pItem->m_section_id;
+            _itemNameText->SetTextST(invName.c_str());
+        }
+        else
+        {
+            string256 hintStr;
+            xr_sprintf(hintStr, "st_custom_drop_hint_%d", _dropMode);
+            _itemNameText->SetTextST(hintStr);
+        }
+        if (_itemNameText->IsColorAnimationPresent())
+            _itemNameText->ResetColorAnimation();
+    }
+
+    if (_editAmount && _extendedLayout)
+    {
+        _editAmount->ClearText();
+        SyncValueToEdit();
+    }
+
+    if (_staticValueMax)
+    {
+        string32 cnt;
+        xr_sprintf(cnt, "%d", max + 1);
+        _staticValueMax->SetText(cnt);
+    }
+
+    UpdateWeightText();
+}
+
+void CUIItemDropAmountWnd::Show(CInventoryItem* pItem, int maxAmount, std::function<void(int)> callback)
+{
+    if (!_extendedLayout || !callback)
+        return;
+
+    _simpleDropMode = false;
+    _pItem = pItem;
+    _maxAmount = maxAmount;
+    _callback = std::move(callback);
+    _currentAmount = 1;
+
+    Enable(true);
+    ShowDialog(false);
+
+    _trackBar->SetOptIBounds(1, maxAmount + 1);
+    _trackBar->SetIValue(1);
+    _trackBar->SaveBackUpOptValue();
+
+    if (_itemNameText && pItem)
+    {
+        shared_str invName = pSettings->line_exist(pItem->m_section_id.c_str(), "inv_name")
+            ? pSettings->r_string(pItem->m_section_id.c_str(), "inv_name")
+            : pItem->m_section_id;
+        _itemNameText->SetTextST(invName.c_str());
+        if (_itemNameText->IsColorAnimationPresent())
+            _itemNameText->ResetColorAnimation();
+    }
+
+    if (_editAmount)
+        _editAmount->ClearText();
+
+    UpdateWeightText();
+
+    if (_staticValueMax)
+    {
+        string32 cnt;
+        xr_sprintf(cnt, "%d", maxAmount + 1);
+        _staticValueMax->SetText(cnt);
+    }
+
+    RecalculateLayout(pItem);
+}
+
+void CUIItemDropAmountWnd::SyncValueToEdit()
+{
+    if (_editAmount)
+    {
+        string32 buf;
+        xr_sprintf(buf, "%d", _currentAmount);
+        _editAmount->SetText(buf);
+    }
+    UpdateWeightText();
+}
+
+void CUIItemDropAmountWnd::SyncEditToValue()
+{
+    if (!_editAmount)
+        return;
+    LPCSTR text = _editAmount->GetText();
+    int val = 1;
+    if (text && xr_strlen(text) > 0)
+        val = atoi(text);
+    clamp(val, 1, _maxAmount + 1);
+    _currentAmount = val;
+    _trackBar->SetIValue(val);
+    UpdateWeightText();
+}
+
+void CUIItemDropAmountWnd::UpdateWeightText()
+{
+    if (!_weightText || !_pItem)
+        return;
+    float weight = _pItem->Weight() * _currentAmount;
+    LPCSTR weightLabel = g_pStringTable->translate("st_weight").c_str();
+    LPCSTR kgLabel = g_pStringTable->translate("st_kg").c_str();
+    string128 buf;
+    xr_sprintf(buf, "%s: %.2f %s", weightLabel, weight, kgLabel);
+    _weightText->SetText(buf);
 }
 
 void CUIItemDropAmountWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	CUIWndCallback::OnEvent(pWnd, msg, pData);
+    CUIWndCallback::OnEvent(pWnd, msg, pData);
 }
 
 void CUIItemDropAmountWnd::PerformDrop()
 {
-	switch (m_dropMode)
-	{
-	case eModeDrop:
-	{
-		if (CurrentGameUI()->ActorMenu())
-		{
-			CurrentGameUI()->ActorMenu()->DropAllCurrentItem(m_UITrackBar->GetIValue() - 1);
-		}
-		else
-		{
-			CurrentGameUI()->InventoryWnd()->DropAllCurrentItem(m_UITrackBar->GetIValue() - 1);
-		}
-		break;
-	}
-	case eModeMove:
-	{
-		if (CurrentGameUI()->ActorMenu())
-		{
-			CurrentGameUI()->ActorMenu()->MoveAllCurrentItem(m_UITrackBar->GetIValue() - 1);
-		}
-		else
-		{
-			CurrentGameUI()->CarBodyWnd()->MoveAllCurrentItem(m_UITrackBar->GetIValue() - 1);
-		}
-		break;
-	}
-	case eModeTake:
-	{
-		if (CurrentGameUI()->ActorMenu())
-		{
-			CurrentGameUI()->ActorMenu()->TakeAllCurrentItem(m_UITrackBar->GetIValue() - 1);
-		}
-		else
-		{
-			CurrentGameUI()->CarBodyWnd()->TakeAllCurrentItem(m_UITrackBar->GetIValue() - 1);
-		}
-		break;
-	}
-	}
+    int amount = _extendedLayout ? _currentAmount : _trackBar->GetIValue();
+    if (amount < 1)
+        amount = 1;
+
+    switch (_dropMode)
+    {
+    case eModeDrop:
+    {
+        if (CurrentGameUI()->ActorMenu())
+            CurrentGameUI()->ActorMenu()->DropAllCurrentItem((u32)amount);
+        else
+            CurrentGameUI()->InventoryWnd()->DropAllCurrentItem((u32)amount);
+        break;
+    }
+    case eModeMove:
+    {
+        if (CurrentGameUI()->ActorMenu())
+            CurrentGameUI()->ActorMenu()->MoveAllCurrentItem((u32)amount);
+        else
+            CurrentGameUI()->CarBodyWnd()->MoveAllCurrentItem((u32)amount);
+        break;
+    }
+    case eModeTake:
+    {
+        if (CurrentGameUI()->ActorMenu())
+            CurrentGameUI()->ActorMenu()->TakeAllCurrentItem((u32)amount);
+        else
+            CurrentGameUI()->CarBodyWnd()->TakeAllCurrentItem((u32)amount);
+        break;
+    }
+    }
 }
 
 void CUIItemDropAmountWnd::OnBtnYesClicked(CUIWindow* w, void* d)
 {
-	PerformDrop();
-	HideDialog();
+    (void)w;
+    (void)d;
+    PerformDrop();
+    HideDialog();
 }
 
 void CUIItemDropAmountWnd::OnBtnNoClicked(CUIWindow* w, void* d)
 {
-	HideDialog();
+    (void)w;
+    (void)d;
+    HideDialog();
 }
 
-bool CUIItemDropAmountWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
+void CUIItemDropAmountWnd::OnBtnAcceptClicked(CUIWindow* w, void* d)
 {
-	if ( is_binded(kUSE, dik) || is_binded(kINVENTORY, dik) || is_binded(kQUIT, dik) )
-	{
-		if ( WINDOW_KEY_PRESSED == keyboard_action )
-		{
-			HideDialog();
-		}
-		return true;
-	}	
+    (void)w;
+    (void)d;
+    if (_editAmount && _extendedLayout)
+        SyncEditToValue();
+    if (_simpleDropMode)
+    {
+        PerformDrop();
+        HideDialog();
+        return;
+    }
+    SyncEditToValue();
+    const int amount = _currentAmount;
+    std::function<void(int)> callback = std::move(_callback);
+    _callback = nullptr;
 
-	if( CUIDialogWnd::OnKeyboardAction(dik,keyboard_action) )
-		return true;
+    HideDialog();
 
-	return false;
+    if (callback)
+        callback(amount);
+}
+
+void CUIItemDropAmountWnd::OnBtnCancelClicked(CUIWindow* w, void* d)
+{
+    (void)w;
+    (void)d;
+    HideDialog();
+}
+
+void CUIItemDropAmountWnd::OnBtnDecClicked(CUIWindow* w, void* d)
+{
+    (void)w;
+    (void)d;
+    _currentAmount--;
+    clamp(_currentAmount, 1, _maxAmount + 1);
+    _trackBar->SetIValue(_currentAmount);
+    SyncValueToEdit();
+}
+
+void CUIItemDropAmountWnd::OnBtnIncClicked(CUIWindow* w, void* d)
+{
+    (void)w;
+    (void)d;
+    _currentAmount++;
+    clamp(_currentAmount, 1, _maxAmount + 1);
+    _trackBar->SetIValue(_currentAmount);
+    SyncValueToEdit();
+}
+
+void CUIItemDropAmountWnd::OnBtnHalfClicked(CUIWindow* w, void* d)
+{
+    (void)w;
+    (void)d;
+    _currentAmount = (_maxAmount + 2) / 2;
+    clamp(_currentAmount, 1, _maxAmount + 1);
+    _trackBar->SetIValue(_currentAmount);
+    SyncValueToEdit();
+}
+
+void CUIItemDropAmountWnd::OnBtnAllClicked(CUIWindow* w, void* d)
+{
+    (void)w;
+    (void)d;
+    _currentAmount = _maxAmount + 1;
+    _trackBar->SetIValue(_currentAmount);
+    SyncValueToEdit();
+}
+
+void CUIItemDropAmountWnd::OnEditCommit(CUIWindow* w, void* d)
+{
+    (void)w;
+    (void)d;
+    SyncEditToValue();
+}
+
+void CUIItemDropAmountWnd::OnTrackChanged(CUIWindow* w, void* d)
+{
+    (void)w;
+    (void)d;
+    _currentAmount = _trackBar->GetIValue();
+    SyncValueToEdit();
+}
+
+bool CUIItemDropAmountWnd::OnKeyboardAction(int dik, EUIMessages keyboardAction)
+{
+    if (_extendedLayout && !_simpleDropMode)
+    {
+        if (keyboardAction == WINDOW_KEY_PRESSED)
+        {
+            if (dik == SDL_SCANCODE_RETURN || dik == SDL_SCANCODE_KP_ENTER)
+            {
+                OnBtnAcceptClicked(nullptr, nullptr);
+                return true;
+            }
+            if (dik == SDL_SCANCODE_ESCAPE)
+            {
+                OnBtnCancelClicked(nullptr, nullptr);
+                return true;
+            }
+        }
+    }
+
+    if (is_binded(kUSE, dik) || is_binded(kINVENTORY, dik) || is_binded(kQUIT, dik))
+    {
+        if (WINDOW_KEY_PRESSED == keyboardAction)
+            HideDialog();
+        return true;
+    }
+
+    if (CUIDialogWnd::OnKeyboardAction(dik, keyboardAction))
+        return true;
+
+    return false;
 }
