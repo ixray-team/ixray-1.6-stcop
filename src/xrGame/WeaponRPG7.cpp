@@ -8,6 +8,8 @@
 #include "HUDManager.h"
 #include "Inventory.h"
 #include "InventoryOwner.h"
+#include "Level_Bullet_Manager.h"
+#include "../xrEngine/GameMtlLib.h"
 
 CWeaponRPG7::CWeaponRPG7()
 {
@@ -30,6 +32,19 @@ void CWeaponRPG7::Load	(LPCSTR section)
 	m_rocket_explode_params.end_tr = READ_IF_EXISTS(pSettings, r_float, section, "rocket_misfunc_end_condition", 0.0f);
 	m_rocket_explode_params.start_prob = READ_IF_EXISTS(pSettings, r_float, section, "rocket_misfunc_start_probability", 0.0f);
 	m_rocket_explode_params.end_prob = READ_IF_EXISTS(pSettings, r_float, section, "rocket_misfunc_end_probability", 0.0f);
+
+	m_reactive_hit_params.dist = READ_IF_EXISTS(pSettings, r_float, section, "reactive_hit_dist", 0.0f);
+	m_reactive_hit_params.power = READ_IF_EXISTS(pSettings, r_float, section, "reactive_hit_power", 0.0f);
+	m_reactive_hit_params.impulse = READ_IF_EXISTS(pSettings, r_float, section, "reactive_hit_impulse", 0.0f);
+	m_reactive_hit_params.buck = READ_IF_EXISTS(pSettings, r_u32, section, "reactive_hit_buck", 1);
+	m_reactive_hit_params.reverse_buck = READ_IF_EXISTS(pSettings, r_u32, section, "reactive_hit_reverse_buck", 1);
+	m_reactive_hit_params.buck_disp = READ_IF_EXISTS(pSettings, r_float, section, "reactive_hit_buck_disp", 1.0f);
+	m_reactive_hit_params.reverse_disp = READ_IF_EXISTS(pSettings, r_float, section, "reactive_hit_reverse_disp", 0.1f);
+	m_reactive_hit_params.reverse_disp2 = READ_IF_EXISTS(pSettings, r_float, section, "reactive_hit_reverse_disp2", 0.1f);
+	m_reactive_hit_params.reverse_power = READ_IF_EXISTS(pSettings, r_float, section, "reactive_hit_reverse_power", m_reactive_hit_params.power);
+	m_reactive_hit_params.type = (ALife::EHitType)READ_IF_EXISTS(pSettings, r_u32, section, "reactive_hit_type", ALife::eHitTypeExplosion);
+	m_reactive_hit_params.reverse_k = READ_IF_EXISTS(pSettings, r_float, section, "reactive_hit_reverse_k", 1.0f);
+	m_reactive_hit_params.bullet_material = READ_IF_EXISTS(pSettings, r_string, section, "reactive_hit_bullet_material", "default");
 }
 
 bool CWeaponRPG7::AllowBore()
@@ -222,7 +237,90 @@ void CWeaponRPG7::FireStart()
 		return;
 	}
 
+	ReactiveHit();
 	inherited::FireStart();
+}
+
+void CWeaponRPG7::ReactiveHit()
+{
+	//При стрельбе НПС не применяем поражение реактивной струей
+	if (H_Parent() && !H_Parent()->cast_actor())
+	{
+		return;
+	}
+
+	if (m_reactive_hit_params.dist <= 0 || m_reactive_hit_params.power <= 0 || m_reactive_hit_params.impulse <= 0 || m_reactive_hit_params.buck <= 0)
+	{
+		return;
+	}
+
+	Fvector3 pos = get_LastFP();
+	Fvector3 dir = get_LastFD();
+	dir.mul(-1);
+
+	CCartridge cartridge;
+	cartridge.param_s.kAP = 1.f;
+	cartridge.param_s.kAirRes = 1.f;
+	cartridge.param_s.fWallmarkSize = 0.05f;
+	cartridge.m_LocalAmmoType = 0;
+	cartridge.bullet_material_idx = GMLib.GetMaterialIdx(m_reactive_hit_params.bullet_material);
+	cartridge.m_InvShortName = "";
+	cartridge.m_flags.zero();
+
+	for (int i = 0; i < m_reactive_hit_params.buck - 1; i++)
+	{
+		Fvector3 tgt_dir;
+		// Хитуем тех, кто сзади
+		tgt_dir.random_dir(dir, m_reactive_hit_params.buck_disp);
+
+		u16 id = ID();
+		if (H_Parent())
+		{
+			id = H_Parent()->ID();
+		};
+		Level().BulletManager().AddBullet(pos, tgt_dir, 330, m_reactive_hit_params.power, m_reactive_hit_params.impulse, id, ID(), m_reactive_hit_params.type, m_reactive_hit_params.dist, cartridge, 1, true, false);
+
+		//имитируем отражение струи в стрелка при близком препятствии - для этого используем disp2
+		tgt_dir.random_dir(dir, m_reactive_hit_params.reverse_disp);
+		collide::rq_result rqr;
+		if (Level().ObjectSpace.RayPick(pos, tgt_dir, m_reactive_hit_params.dist, collide::rqtStatic, rqr, H_Parent()))
+		{
+			//За стрелком обнаружилось препятствие, хитуем стрелка
+			for (int j = 0; j < m_reactive_hit_params.reverse_buck - 1; j++)
+			{
+				Fvector3 point = pos;
+				Fvector3 dir2 = tgt_dir;
+
+				dir2.mul(rqr.range * 0.9);
+				point.add(dir2);
+
+				dir2 = pos;
+				dir2.sub(point);
+				dir2.normalize();
+				Fvector3 tgt_dir2;
+				tgt_dir2.random_dir(dir2, m_reactive_hit_params.reverse_disp2);
+
+				// Вычисляем хит отраженной струи
+				float rdist = m_reactive_hit_params.dist - rqr.range;
+				if (rdist < 0)
+				{
+					rdist = 0;
+				}
+				float rhit_cur = m_reactive_hit_params.reverse_power * rdist / m_reactive_hit_params.dist;
+
+				// Вычисляем дистанцию полета отраженной струи
+				rdist = m_reactive_hit_params.dist - rqr.range;
+				if (rdist < 0)
+				{
+					rdist = 0;
+				}
+				rdist = rdist / m_reactive_hit_params.dist;
+				rdist = m_reactive_hit_params.dist * m_reactive_hit_params.reverse_k * rdist;
+
+				Level().BulletManager().AddBullet(point, tgt_dir2, 330, rhit_cur, m_reactive_hit_params.impulse, ID(), ID(), m_reactive_hit_params.type, rdist * (0.9 + Random.randF() * 0.15), cartridge, 1, true, true);
+			};
+		};
+  }
 }
 
 void CWeaponRPG7::OnEvent(NET_Packet& P, u16 type) 
