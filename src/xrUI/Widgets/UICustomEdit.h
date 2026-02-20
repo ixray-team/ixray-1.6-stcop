@@ -43,6 +43,7 @@ public:
 	virtual void	Enable			(bool status);
 			
 			void	SetPasswordMode	(bool mode = true);
+			void	SetPlaceholder	(LPCSTR stId, bool blink = false);
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 	virtual CUIStatic* ui_cast_static() { return this; }
@@ -72,4 +73,5 @@ protected:
 	bool	m_read_mode;
 
 	CUICustomEdit*	m_next_focus_capturer;
+	CUIStatic*		m_pPlaceholder;
 };
