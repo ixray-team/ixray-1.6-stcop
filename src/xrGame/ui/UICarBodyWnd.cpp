@@ -1351,11 +1351,11 @@ void CUICarBodyWnd::ProcessPropertiesBoxClicked()
 
 				if(d_ == (void*)33) 
 				{
-					MoveAllCurrentItem(cell_item->ChildsCount());
+					MoveAllCurrentItem(cell_item->ChildsCount() + 1);
 				}
 				else if (d_ == (void*)77)
 				{
-					m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeMove);
+					m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeMove, item);
 				}
 				else
 				{
@@ -1366,11 +1366,11 @@ void CUICarBodyWnd::ProcessPropertiesBoxClicked()
 			{
 				if(d_ == (void*)33) 
 				{
-					TakeAllCurrentItem(cell_item->ChildsCount());
+					TakeAllCurrentItem(cell_item->ChildsCount() + 1);
 				}
 				else if (d_ == (void*)77)
 				{
-					m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeTake);
+					m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeTake, item);
 				}
 				else
 				{
@@ -1549,31 +1549,45 @@ void CUICarBodyWnd::UnloadWeapon(CWeaponMagazined* pWpn)
 
 void CUICarBodyWnd::TakeAllCurrentItem(u32 item_amount)
 {
-	for( u32 i = 0; i < item_amount; ++i )
-	{
-		CUICellItem*	child_itm  = CurrentItem()->PopChild(nullptr);
-		PIItem			child_iitm = (PIItem)child_itm->m_pData;
-		move_item_from_to(child_iitm->parent_id(), m_pOurObject->object_id(), child_iitm->object_id());
-	}
-	move_item_from_to(CurrentIItem()->parent_id(), m_pOurObject->object_id(), CurrentIItem()->object_id());
+	u32 const childCount = CurrentItem()->ChildsCount();
+	u32 const totalCount = 1 + childCount;
+	u32 const toTake = (item_amount > totalCount) ? totalCount : item_amount;
+	u32 const childrenToTake = (toTake < childCount) ? toTake : childCount;
 
-	// St4lker0k765: мега уёбищный костыль, но я хз почему по дефолту предмет остаётся в исходном инвентаре
-	if (!CurrentItem()->ChildsCount())
-		m_pUIOthersBagList->RemoveItem(CurrentItem(), true);
-	else
-		CurrentItem()->PopChild(nullptr);
+	for (u32 i = 0; i < childrenToTake; ++i)
+	{
+		CUICellItem* child_itm = CurrentItem()->PopChild(nullptr);
+		PIItem child_iitm = (PIItem)child_itm->m_pData;
+		move_item_from_to(child_iitm->parent_id(), m_pOurObject->object_id(), child_iitm->object_id());
+		m_pUIOurBagList->SetItem(child_itm);
+	}
+
+	if (toTake > childCount)
+	{
+		CUICellItem* parent_itm = CurrentItem();
+		PIItem parent_iitm = CurrentIItem();
+		move_item_from_to(parent_iitm->parent_id(), m_pOurObject->object_id(), parent_iitm->object_id());
+		parent_itm = m_pUIOthersBagList->RemoveItem(parent_itm, true);
+		if (parent_itm)
+			m_pUIOurBagList->SetItem(parent_itm);
+	}
 }
 
 void CUICarBodyWnd::MoveAllCurrentItem(u32 item_amount)
 {
 	auto ownerID = m_pOthersObject ? m_pOthersObject->object_id() : m_pInventoryBox->ID();
-	for (u32 i = 0; i < item_amount; ++i)
+	u32 const childCount = CurrentItem()->ChildsCount();
+	u32 const totalCount = 1 + childCount;
+	u32 const toMove = (item_amount > totalCount) ? totalCount : item_amount;
+	u32 const childrenToMove = (toMove < childCount) ? toMove : childCount;
+	for (u32 i = 0; i < childrenToMove; ++i)
 	{
 		CUICellItem* child_itm = CurrentItem()->Child(i);
 		PIItem child_iitm = (PIItem)child_itm->m_pData;
 		move_item_from_to(CurrentIItem()->parent_id(), ownerID, child_iitm->object_id());
-	};
-	move_item_from_to(CurrentIItem()->parent_id(), ownerID, CurrentIItem()->object_id());
+	}
+	if (toMove > childCount)
+		move_item_from_to(CurrentIItem()->parent_id(), ownerID, CurrentIItem()->object_id());
 }
 
 bool CUICarBodyWnd::TryUseItem( CUICellItem* cell_itm )
