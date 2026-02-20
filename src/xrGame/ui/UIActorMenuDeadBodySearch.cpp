@@ -219,11 +219,7 @@ bool CUIActorMenu::ToDeadBodyBag(CUICellItem* itm, bool b_use_cursor_pos)
 	}
 	else // box
 	{
-		if (!m_pInvBox->can_take())
-		{
-			return false;
-		}
-
+		// can_take: affects taking FROM box; placing INTO open box is always allowed
 		if (m_isCanTake)
 		{
 			luabind::functor<bool> funct;
