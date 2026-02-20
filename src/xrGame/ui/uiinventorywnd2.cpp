@@ -707,14 +707,17 @@ void CUIInventoryWnd::DropAllCurrentItem(u32 item_amount)
 	CInventoryOwner* pInvOwner = current_entity != nullptr ? current_entity->cast_inventory_owner() : nullptr;
 	if ( CurrentIItem() && !CurrentIItem()->IsQuestItem() )
 	{
-		for( u32 i = 0; i < item_amount; ++i )
+		u32 childCount = CurrentItem()->ChildsCount();
+		u32 toPop = (item_amount < childCount) ? item_amount : childCount;
+		for ( u32 i = 0; i < toPop; ++i )
 		{
 			CUICellItem*	itm  = CurrentItem()->PopChild(nullptr);
 			PIItem			iitm = (PIItem)itm->m_pData;
 			SendEvent_Item_Drop( iitm, pInvOwner->object_id() );
 		}
 
-		SendEvent_Item_Drop( CurrentIItem(), pInvOwner->object_id() );
+		if ( item_amount > childCount )
+			SendEvent_Item_Drop( CurrentIItem(), pInvOwner->object_id() );
 	}
 	SetCurrentItem								(nullptr);
 }
