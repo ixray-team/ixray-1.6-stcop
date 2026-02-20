@@ -858,7 +858,7 @@ retval: float
 ## level
 ```lua
 --// Поиск онлайн обьектов по eSpatial в сфере
-level.get_online_objects(center_position, radius, table_spatial_types)
+level.search_online_objects_by_sphere(center_position, radius, table_spatial_types)
 retval: none
 args: 
   center_position (vector3),
@@ -950,7 +950,7 @@ local spatial_types = {
 }
 
 --// Поиск и печать списка найденных онлайн обьектов
-for obj in level.get_online_objects(center, radius, spatial_types) do
+for obj in level.search_online_objects_by_sphere(center, radius, spatial_types) do
     if obj then
       SemiLog(tostring( obj:name() )) --// Распечатать имена обьектов из результата поиска
     end
