@@ -32,6 +32,7 @@ public:
 	virtual CRocketLauncher* cast_rocket_launcher() override { return this; }
 
 	bool CheckRLMisfireRocket();
+	void ReactiveHit();
 
 protected:
 	shared_str	m_sGrenadeBoneName;
@@ -45,6 +46,22 @@ protected:
 		float start_prob = 0.0f;
 		float end_prob = 0.0f;
 	} m_rocket_explode_params;
+
+	struct
+	{
+		float dist = 0.0f;
+		float power = 0.0f;
+		float impulse = 0.0f;
+		int buck = 1;
+		int reverse_buck = 1;
+		float buck_disp = 1.0f;
+		float reverse_disp = 0.1f;
+		float reverse_disp2 = 0.1f;
+		float reverse_power = 0.0f;
+		ALife::EHitType type = ALife::eHitTypeExplosion;
+		float reverse_k = 1.0f;
+		LPCSTR bullet_material = "default";
+	} m_reactive_hit_params;
 
 	shared_str	m_sRocketSection;
 
