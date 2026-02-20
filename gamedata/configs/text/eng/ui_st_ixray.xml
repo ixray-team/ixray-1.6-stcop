@@ -432,6 +432,24 @@
 	<string id="st_custom_drop_hint_2">
 		<text>Specify amount of items to take</text>
 	</string>
+	<string id="st_drop_amount_title">
+		<text>Drop</text>
+	</string>
+	<string id="st_drop_amount_placeholder">
+		<text>Specify the number of items to drop</text>
+	</string>
+	<string id="st_split_item_half">
+		<text>Half</text>
+	</string>
+	<string id="st_split_item_all">
+		<text>All</text>
+	</string>
+	<string id="st_split_item_cancel">
+		<text>Cancel</text>
+	</string>
+	<string id="st_split_item_accept">
+		<text>Accept</text>
+	</string>
 	<string id="st_gameplay_settings">
 		<text>Gameplay</text>
 	</string>
