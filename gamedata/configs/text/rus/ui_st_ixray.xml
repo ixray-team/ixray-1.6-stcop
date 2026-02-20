@@ -435,6 +435,24 @@
 	<string id="st_custom_drop_hint_2">
 		<text>Укажите количество предметов для взятия</text>
 	</string>
+	<string id="st_drop_amount_title">
+		<text>Сбросить</text>
+	</string>
+	<string id="st_drop_amount_placeholder">
+		<text>Укажите количество предметов на выброс</text>
+	</string>
+	<string id="st_split_item_half">
+		<text>Половина</text>
+	</string>
+	<string id="st_split_item_all">
+		<text>Все</text>
+	</string>
+	<string id="st_split_item_cancel">
+		<text>Отмена</text>
+	</string>
+	<string id="st_split_item_accept">
+		<text>Принять</text>
+	</string>
 	<string id="st_gameplay_settings">
 		<text>Игровой процесс</text>
 	</string>

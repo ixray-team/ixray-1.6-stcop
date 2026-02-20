@@ -1,9 +1,8 @@
 <w>
-
   <custom_drop x="240" y="256" width="541" height="255" stretch="1">
     <texture>ui_inGame2_message_box</texture>
 
-    <text_hint x="49" y="78" width="461" height="150" complex_mode="1">
+    <text_hint x="49" y="78" width="461" height="150" complex_mode="1" light_anim="ui_slow_blinking_alpha" la_cyclic="1" la_text="1" la_alpha="1">
       <text font="letterica18" align="c">st_custom_drop_hint</text>
     </text_hint>
 
@@ -26,5 +25,53 @@
 	    <texture>ui_inGame2_Mp_bigbuttone</texture>
 	</button_no>
   </custom_drop>
-  
+<!--
+  <split_item x="240" y="200" width="541" height="280" stretch="1">
+    <texture>ui_split_item_background</texture>
+    <item_title x="49" y="8" width="443" height="24" complex_mode="1">
+      <text font="letterica18" align="c">st_drop_amount_title</text>
+    </item_title>
+    <item_name x="49" y="36" width="443" height="24" complex_mode="1">
+      <text font="letterica18" align="c"></text>
+    </item_name>
+    <weight_text x="49" y="56" width="443" height="20" complex_mode="1">
+      <text font="letterica18" align="c"></text>
+    </weight_text>
+    <edit_amount x="120" y="82" width="301" height="28" max_symb_count="8" num_only="1" placeholder_text="st_drop_amount_placeholder" placeholder_blink="1">
+      <text font="letterica18" r="255" g="255" b="255" align="c"></text>
+      <texture>ui_inGame2_edit_box_2</texture>
+    </edit_amount>
+    <button_decrement x="49" y="82" width="28" height="28" check_mode="0">
+      <text font="letterica18">-</text>
+      <texture>ui_inGame2_Mp_bigbuttone</texture>
+    </button_decrement>
+    <button_increment x="464" y="82" width="28" height="28" check_mode="0">
+      <text font="letterica18">+</text>
+      <texture>ui_inGame2_Mp_bigbuttone</texture>
+    </button_increment>
+    <trackbar x="54" y="116" width="451" height="20" mode="integer" step="1" show_value="1"/>
+    <value_min x="49" y="136" width="50" height="20" complex_mode="1">
+      <text font="letterica18" align="l">1</text>
+    </value_min>
+    <value_max x="465" y="136" width="50" height="20" complex_mode="1">
+      <text font="letterica18" align="r">999</text>
+    </value_max>
+    <button_half x="49" y="162" width="101" height="28" check_mode="0">
+      <text font="letterica18">st_split_item_half</text>
+      <texture>ui_inGame2_Mp_bigbuttone</texture>
+    </button_half>
+    <button_all x="155" y="162" width="101" height="28" check_mode="0">
+      <text font="letterica18">st_split_item_all</text>
+      <texture>ui_inGame2_Mp_bigbuttone</texture>
+    </button_all>
+    <button_cancel x="261" y="162" width="101" height="28" check_mode="0">
+      <text font="letterica18">st_split_item_cancel</text>
+      <texture>ui_inGame2_Mp_bigbuttone</texture>
+    </button_cancel>
+    <button_accept x="367" y="162" width="101" height="28" check_mode="0">
+      <text font="letterica18">st_split_item_accept</text>
+      <texture>ui_inGame2_Mp_bigbuttone</texture>
+    </button_accept>
+  </split_item>
+-->
 </w>
