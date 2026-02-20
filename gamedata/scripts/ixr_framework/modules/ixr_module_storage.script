@@ -230,7 +230,7 @@ end
 
 function ixr_store.get_var(cell_name, var_name, def_value)
 	if editor() then
-		ixr_store.save_log("GET VALUE [" .. tostring(cell_name) .. " key: (" var_name .. ") USED EDITOR MODE SKIP STORAGE LOGIC", true)
+		ixr_store.save_log("GET VALUE [" .. tostring(cell_name) .. " key: (" .. var_name .. ") USED EDITOR MODE SKIP STORAGE LOGIC", true)
 		return def_value
 	end
 	if not ixr_store.is_storage_loaded() then
@@ -261,7 +261,7 @@ end
 
 function ixr_store.set_var(cell_name, var_name, var_value, var_type)
 	if editor() then
-		ixr_store.save_log("SET VALUE [" .. tostring(cell_name) .. " key: (" var_name .. ") USED EDITOR MODE SKIP STORAGE LOGIC", true)
+		ixr_store.save_log("SET VALUE [" .. tostring(cell_name) .. " key: (" .. var_name .. ") USED EDITOR MODE SKIP STORAGE LOGIC", true)
 		return false
 	end
 
@@ -310,7 +310,7 @@ end
 
 function ixr_store.remove_var(cell_name, var_name)
 	if editor() then
-		ixr_store.save_log("RM VALUE [" .. tostring(cell_name) .. " key: (" var_name .. ") USED EDITOR MODE SKIP STORAGE LOGIC", true)
+		ixr_store.save_log("RM VALUE [" .. tostring(cell_name) .. " key: (" .. var_name .. ") USED EDITOR MODE SKIP STORAGE LOGIC", true)
 		return
 	end
 	
@@ -329,7 +329,7 @@ end
 
 function ixr_store.has_var(cell_name, var_name)
 	if editor() then
-		ixr_store.save_log("HAS VALUE [" .. tostring(cell_name) .. " key: (" var_name .. ") USED EDITOR MODE SKIP STORAGE LOGIC", true)
+		ixr_store.save_log("HAS VALUE [" .. tostring(cell_name) .. " key: (" .. var_name .. ") USED EDITOR MODE SKIP STORAGE LOGIC", true)
 		return false
 	end
 	
