@@ -1119,7 +1119,7 @@ void CBulletManager::Render	()
 			//void** buffer = UIRender->StartPrimitive(batch_size * VERTICES_PER_TRACER, IUIRender::ptTriList, IUIRender::pttL);
 			// 2d tracer
 			IUIRender::r_vertLIT<VERTICES_PER_TRACER>** buffer = (IUIRender::r_vertLIT<VERTICES_PER_TRACER>**)UIRender->StartPrimitive(batch_size * VERTICES_PER_TRACER, IUIRender::ptTriList, IUIRender::pttLIT);
-
+			IUIRender::r_vertLIT<VERTICES_PER_TRACER>* buff = *buffer;
 			for (u32 i = 0; i < batch_size; ++i)
 			{
 				SBullet* bullet = visible_tracers[start_idx + i];
@@ -1240,7 +1240,7 @@ void CBulletManager::Render	()
 					Fvector a_s_vert{ a_sprite + center_sprite };
 					Fvector c_s_vert{ c_sprite + center_sprite };
 				
-					*(*buffer) =
+					buff[i] =
 					{
 						d_circle + center_circle,color,{crcuv.min.x,crcuv.max.y},
 						a_c_vert,color,a_c_uf,
@@ -1256,8 +1256,8 @@ void CBulletManager::Render	()
 						a_s_vert,color,a_s_uf,
 						b_sprite + center_sprite,color,{spruv.max.x,spruv.min.y},
 					};
-					(*buffer)++;
 				}
+				*buffer += batch_size;
 			}
 
 			UIRender->FlushPrimitive();
@@ -1285,18 +1285,18 @@ void CBulletManager::Render	()
 		{
 			u32 batch_size = std::min(MAX_LINES, total_lines - start_idx);
 			IUIRender::r_vertL<2u>** buffer = (IUIRender::r_vertL<2u>**)UIRender->StartPrimitive(batch_size * 2u, IUIRender::ptLineList, IUIRender::pttL);
-
+			IUIRender::r_vertL<2u>* buff = *buffer;
 			for (u32 i = 0u; i < batch_size; ++i)
 			{
 				auto& line = all_lines[start_idx + i];
 
-				*(*buffer) =
+				buff[i] =
 				{
 					line.first,DEFAULT_COLOR,
 					line.second,DEFAULT_COLOR
 				};
-				(*buffer)++;
 			}
+			*buffer += batch_size;
 
 			UIRender->FlushPrimitive();
 		}

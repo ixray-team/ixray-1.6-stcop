@@ -707,17 +707,18 @@ void LevelInspector::OnRender()
 			{
 				u32 batch_size = std::min(MAX_TRIS, total_tris - start_idx);
 				IUIRender::r_vertL<3>** buffer = (IUIRender::r_vertL<3>**)UIRender->StartPrimitive(batch_size * 3u, IUIRender::ptTriList, IUIRender::pttL);
-				for (size_t i = 0u; i < batch_size; ++i)
+				IUIRender::r_vertL<3>* buff = *buffer;
+				for (u32 i = 0u; i < batch_size; ++i)
 				{
 					tvertex& tri = tris[start_idx + i];
-					*(*buffer) =
+					buff[i] =
 					{ 
 						tri.v1,tri.color,
 						tri.v2,tri.color,
 						tri.v3,tri.color
 					};
-					(*buffer)++;
 				}
+				*buffer += batch_size;
 
 				UIRender->FlushPrimitive();
 			}
@@ -734,18 +735,18 @@ void LevelInspector::OnRender()
 			{
 				u32 batch_size = std::min(MAX_LINES, total_lines - start_idx);
 				IUIRender::r_vertL<2>** buffer = (IUIRender::r_vertL<2>**)UIRender->StartPrimitive(batch_size * 2u, IUIRender::ptLineList, IUIRender::pttL);
-
+				IUIRender::r_vertL<2>* buff = *buffer;
 				for (u32 i = 0u; i < batch_size; ++i)
 				{
 					lvertex& line = lines[start_idx + i];
 
-					*(*buffer) =
+					buff[i] =
 					{ 
 						line.v1,line.color,
 						line.v2,line.color
 					};
-					(*buffer)++;
 				}
+				*buffer += batch_size;
 
 				UIRender->FlushPrimitive();
 			}
@@ -2138,13 +2139,10 @@ void LevelInspector::DrawLevelGraph()
 		{
 			u32 batch_size = std::min(MAX_NODES, total_nodes - start_idx);
 			IUIRender::r_vertL<6>** buffer = (IUIRender::r_vertL<6>**)UIRender->StartPrimitive(batch_size * 6u, IUIRender::ptTriList, IUIRender::pttL);
-
+			IUIRender::r_vertL<6>* buff = *buffer;
 			for (u32 i = 0u; i < batch_size; ++i)
-			{
-				*(*buffer) = nodes[start_idx + i];
-				(*buffer)++;
-			}
-
+				buff[i] = nodes[start_idx + i];
+			*buffer += batch_size;
 			UIRender->FlushPrimitive();
 		}
 	}
