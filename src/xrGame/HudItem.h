@@ -329,6 +329,7 @@ public:
 	} m_jitter_params;
 
 	jitter_params& GetCurJitterParams() { return m_jitter_params; }
+	HudLightTorch* GetHudLight() { return &m_HudLight; }
 
 protected:
 
