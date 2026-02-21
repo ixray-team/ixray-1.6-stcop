@@ -8,6 +8,8 @@
 #include "../../xrUI/ui_base.h"
 #include "ImUtils.h"
 #include "../game_news.h"
+#include "../HudTorchLight.h"
+#include "../Weapon.h"
 
 extern bool hud_adj_crosshair;
 extern bool forceFPDraw;
@@ -16,6 +18,8 @@ extern bool forceSPDraw;
 extern bool b_toggle_weapon_aim;
 extern float _delta_pos;
 extern float _delta_rot;
+extern bool forceLPDraw;
+extern bool forceTPDraw;
 
 void RenderHUDAdjustManager()
 {
@@ -37,7 +41,20 @@ void RenderHUDAdjustManager()
 	if (!g_player_hud)
 		return;
 
+	HudLightLaser* ll = nullptr;
+	HudLightTorch* lt = nullptr;
 	CInventoryItem* p_item = g_actor->inventory().ActiveItem();
+	if (p_item)
+	{
+		if (p_item->cast_hud_item())
+		{
+			lt = p_item->cast_hud_item()->GetHudLight();
+		}
+		if (p_item->cast_weapon())
+		{
+			ll = p_item->cast_weapon()->GetLightLaser();
+		}
+	}
 
 	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, kGeneralAlphaLevelForImGuiWindows));
 
@@ -147,7 +164,7 @@ void RenderHUDAdjustManager()
 			{
 				const char* p_hand = "single hand";
 				bool two_hands = false;
-				if (g_player_hud->attached_item(0) && g_player_hud->attached_item(1))
+				if (g_player_hud->attached_item(1))
 				{
 					p_hand = "two hands";
 					two_hands = true;
@@ -160,12 +177,14 @@ void RenderHUDAdjustManager()
 				ImGui::Checkbox("Show fire point box", &forceFPDraw);
 				ImGui::Checkbox("Show fire point 2 box", &forceFP2Draw);
 				ImGui::Checkbox("Show shell point box", &forceSPDraw);
+				ImGui::Checkbox("Show laser point box", &forceLPDraw);
+				ImGui::Checkbox("Show torch point box", &forceTPDraw);
 				ImGui::SetNextItemWidth(80.0f);
 				ImGui::InputFloat("Position step", &_delta_pos, 0, 0, "%.6f");
 				ImGui::SetNextItemWidth(80.0f);
 				ImGui::InputFloat("Rotation step", &_delta_rot, 0, 0, "%.6f");
 
-				auto p_draw_info_hud_item = [](attachable_hud_item* p_item, u8 index) -> void {
+				auto p_draw_info_hud_item = [](attachable_hud_item* p_item, u8 index, HudLightLaser* ll, HudLightTorch* lt) -> void {
 					if (p_item)
 					{
 						string16 name = "";
@@ -437,17 +456,100 @@ void RenderHUDAdjustManager()
 							}
 
 						}
+						if (lt && lt->GetTorchInstalled())
+						{
+							if (ImGui::CollapsingHeader("Torch params"))
+							{
+								ImGui::SeparatorText("Position##TL");
+
+								Fvector& position = lt->LightOffset;
+
+								if (ImGui::Button("Reset##TLOffset"))
+								{
+									position.x = READ_IF_EXISTS(pSettings, r_float, lt->Section, "torch_attach_offset_x", 0.0f);
+									position.y = READ_IF_EXISTS(pSettings, r_float, lt->Section, "torch_attach_offset_y", 0.0f);
+									position.z = READ_IF_EXISTS(pSettings, r_float, lt->Section, "torch_attach_offset_z", 0.0f);
+								}
+
+								if (ImGui::BeginTable("Data##TLOffset", 1))
+								{
+									ImGui::TableNextRow();
+
+									ImGui::TableNextColumn();
+
+									ImGui::DragFloat("X##TLOffset", &position.x, _delta_pos, -1.0f, 1.0f, "%.6f");
+									ImGui::DragFloat("Y##TLOffset", &position.y, _delta_pos, -1.0f, 1.0f, "%.6f");
+									ImGui::DragFloat("Z##TLOffset", &position.z, _delta_pos, -1.0f, 1.0f, "%.6f");
+
+									ImGui::EndTable();
+								}
+							}
+						}
+						if (ll && ll->GetTorchInstalled())
+						{
+							if (ImGui::CollapsingHeader("Laser params"))
+							{
+								ImGui::SeparatorText("Position##TL");
+
+								Fvector& position = ll->LightOffset;
+
+								if (ImGui::Button("Reset##TLOffset"))
+								{
+									position.x = READ_IF_EXISTS(pSettings, r_float, ll->Section, "laserdot_attach_offset_x", 0.0f);
+									position.y = READ_IF_EXISTS(pSettings, r_float, ll->Section, "laserdot_attach_offset_y", 0.0f);
+									position.z = READ_IF_EXISTS(pSettings, r_float, ll->Section, "laserdot_attach_offset_z", 0.0f);
+
+									position = READ_IF_EXISTS(pSettings, r_fvector3, ll->Section, "laserdot_attach_offset", position);
+								}
+
+								if (ImGui::BeginTable("Data##TLOffset", 1))
+								{
+									ImGui::TableNextRow();
+
+									ImGui::TableNextColumn();
+
+									ImGui::DragFloat("X##TLOffset", &position.x, _delta_pos, -1.0f, 1.0f, "%.6f");
+									ImGui::DragFloat("Y##TLOffset", &position.y, _delta_pos, -1.0f, 1.0f, "%.6f");
+									ImGui::DragFloat("Z##TLOffset", &position.z, _delta_pos, -1.0f, 1.0f, "%.6f");
+
+									ImGui::EndTable();
+								}
+
+								ImGui::SeparatorText("Rotation##TL");
+
+								Fvector2& angle = ll->LightSpotAngle;
+								if (ImGui::Button("Reset##TLAngle"))
+								{
+									angle = READ_IF_EXISTS(pSettings, r_fvector2, ll->Section, "laser_spot_angle", angle.set(2, 5));
+									angle.mul(M_PI / 180);
+								}
+
+								if (ImGui::BeginTable("Data##TLAngle", 1))
+								{
+									ImGui::TableNextRow();
+
+									ImGui::TableNextColumn();
+
+									ImGui::DragFloat("X##TLAngle", &angle.x, _delta_rot, -360.0f, 360.0f, "%.6f");
+									ImGui::DragFloat("Y##TLAngle", &angle.y, _delta_rot, -360.0f, 360.0f, "%.6f");
+									ImGui::TableNextColumn();
+
+									ImGui::EndTable();
+								}
+							}
+						}
 					}
 				};
 
 				attachable_hud_item* p_hud_item_first = g_player_hud->attached_item(0);
 
-				p_draw_info_hud_item(p_hud_item_first, 0);
+				p_draw_info_hud_item(p_hud_item_first, 0, ll, lt);
 
 				if (two_hands)
 				{
 					attachable_hud_item* p_hud_item_second = g_player_hud->attached_item(1);
-					p_draw_info_hud_item(p_hud_item_second, 1);
+					lt = p_hud_item_second->m_parent_hud_item->GetHudLight();
+					p_draw_info_hud_item(p_hud_item_second, 1, nullptr, lt);
 				}
 			}
 		}
