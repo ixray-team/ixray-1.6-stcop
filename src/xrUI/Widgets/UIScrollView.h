@@ -51,6 +51,7 @@ public:
 			void	RemoveWindow		(CUIWindow* pWnd);
 			void	Clear				();
 			void	ScrollToBegin		();
+			void	ScrollToItem		(CUIWindow *pItem, int addVerticalOffset);
 			void	ScrollToEnd			();
 			bool	GetVertFlip			()									{return !!m_flags.test(eVertFlip);}
 			bool	Empty				()
