@@ -5,6 +5,7 @@
 #include "Weapon.h"
 #include "Actor.h"
 #include "Inventory.h"
+#include "../debug_renderer.h"
 
 HudLightTorch::~HudLightTorch()
 {
@@ -114,6 +115,7 @@ void HudLightTorch::SwitchTorchlight(bool isActive)
 	}
 }
 
+bool forceTPDraw = false;
 void HudLightTorch::UpdateTorchFromObject(CHudItem* item) const
 {
 	if (RenderLight == nullptr || OmniLight == nullptr || item == nullptr || item->object().Visual() == nullptr)
@@ -212,6 +214,25 @@ void HudLightTorch::UpdateTorchFromObject(CHudItem* item) const
 		RenderLight->set_rotation(lightDir, right);
 
 		RenderLight->set_ignore_object(item->object().H_Root());
+		if (isHudMode)
+		{
+			Fobb obb;
+			Fmatrix trans = item->HudItemData()->m_item_transform;
+			obb.m_rotate.i.set(trans.i);
+			obb.m_rotate.j.set(trans.j);
+			obb.m_rotate.k.set(trans.k);
+			obb.m_halfsize.set(0.005f, 0.005f, 0.005f);
+
+#ifdef DEBUG_DRAW
+			if (forceTPDraw)
+			{
+				Fvector posDebug = lightPos;
+				obb.m_translate.set(posDebug);
+				obb.xform_full(trans);
+				Level().debug_renderer().draw_obb(trans, color_xrgb(255, 0, 0));
+			}
+#endif
+		}
 	}
 
 	RenderLight->set_active(IsRenderLight);
@@ -294,6 +315,7 @@ void HudLightLaser::NewTorchlight(const char* section)
 	SetInstalled(true);
 }
 
+bool forceLPDraw = false;
 void HudLightLaser::UpdateTorchFromObject(CHudItem* item) const
 {
 	if (RenderLight == nullptr || item == nullptr || item->object().Visual() == nullptr)
@@ -388,6 +410,25 @@ void HudLightLaser::UpdateTorchFromObject(CHudItem* item) const
 		RenderLight->set_cone(CurrentLightSpotAngle);
 
 		RenderLight->set_ignore_object(item->object().H_Root());
+		if (isHudMode)
+		{
+			Fobb obb;
+			Fmatrix trans = item->HudItemData()->m_item_transform;
+			obb.m_rotate.i.set(trans.i);
+			obb.m_rotate.j.set(trans.j);
+			obb.m_rotate.k.set(trans.k);
+			obb.m_halfsize.set(0.005f, 0.005f, 0.005f);
+
+#ifdef DEBUG_DRAW
+			if (forceLPDraw)
+			{
+				Fvector posDebug = lightPos;
+				obb.m_translate.set(posDebug);
+				obb.xform_full(trans);
+				Level().debug_renderer().draw_obb(trans, color_xrgb(255, 0, 0));
+			}
+#endif
+		}
 	}
 
 	RenderLight->set_active(IsRenderLight);
