@@ -10,61 +10,90 @@ UIDOTool::~UIDOTool()
 
 void UIDOTool::Draw()
 {
-	if (ImGui::Button("First Initialize", ImVec2(-1, 0)))
+	ImGuiStyle& Style = ImGui::GetStyle();
+
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 2));
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(2, 2));
+
+	float fullWidth = ImGui::GetContentRegionAvail().x;
+	float buttonWidth = (fullWidth - Style.ItemSpacing.x) * 0.5f;
+
+	auto Button2 = [&](const char* label, std::function<void()> fn)
+	{
+		if (ImGui::Button(label, ImVec2(buttonWidth, 0)))
+		{
+			fn();
+		}
+	};
+
+	Button2("First Init", [&]
 	{
 		if (DM->Initialize())
 			Scene->UndoSave();
-	}
+	});
 
-	if (ImGui::Button("Reinitialize All", ImVec2(-1, 0)))
+	ImGui::SameLine();
+
+	Button2("Reinit All", [&]
 	{
 		if (DM->Reinitialize())
 			Scene->UndoSave();
-	}
+	});
 
-	if (ImGui::Button("Reinitialize Objects Only", ImVec2(-1, 0)))
+	Button2("Reinit Objects Only", [&]
 	{
 		if (DM->UpdateObjects(true, false))
 			Scene->UndoSave();
-	}
+	});
 
-	if (ImGui::Button("Reinitialize Selected Slot Objects", ImVec2(-1, 0)))
+	ImGui::SameLine();
+
+	Button2("Reinit Selected Slot Objects", [&]
 	{
 		if (DM->UpdateObjects(false, true))
 			Scene->UndoSave();
-	}
+	});
+
 	ImGui::Separator();
 
-	if (ImGui::Button("Update Renderer", ImVec2(-1, 0)))
+	Button2("Clear Slots", [&]
 	{
-		DM->InvalidateCache();
-		Scene->UndoSave();
-	}
-	ImGui::Separator();
-
-	if (ImGui::Button("Clear Slots", ImVec2(-1, 0)))
-	{
-		if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to reset slots?") == mrYes) {
+		if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to reset slots?") == mrYes)
+		{
 			DM->ClearSlots();
 			Scene->UndoSave();
 		}
-	}
+	});
 
-	if (ImGui::Button("Clear Details", ImVec2(-1, 0)))
+	ImGui::SameLine();
+
+	Button2("Clear Details", [&]
 	{
-		if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to clear details?") == mrYes) {
+		if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to clear details?") == mrYes)
+		{
 			ExecCommand(COMMAND_UPDATE_PROPERTIES);
 			DM->Clear();
 			Scene->UndoSave();
 		}
-	}
+	});
+
 	ImGui::Separator();
 
-	if (ImGui::Button("Object List", ImVec2(-1, 0)))
+	Button2("Object List", [&]
 	{
 		m_DOShuffle = true;
 		UIDOShuffle::Show(DM);
-	}
+	});
+
+	ImGui::SameLine();
+
+	Button2("Update Renderer", [&]
+	{
+		DM->InvalidateCache();
+		Scene->UndoSave();
+	});
+
 	ImGui::Separator();
 
 	ImGui::Text("Base Texture");
@@ -100,6 +129,8 @@ void UIDOTool::Draw()
 	}
 
 	HandleDragDrop();
+
+	ImGui::PopStyleVar(3);
 }
 
 void UIDOTool::HandleDragDrop()
