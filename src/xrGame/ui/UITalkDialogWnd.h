@@ -13,6 +13,8 @@
 class CUIScrollView;
 class CUIXml;
 class CUITalkWnd;
+class CUIGamepadLegend;
+class CUIQuestionItem;
 
 class CUITalkDialogWnd final :
 	public CUIWindow, 
@@ -38,7 +40,10 @@ public:
 	u32			GetOurReplicsColor()	{ return m_uOurReplicsColor; }
 
 	bool				mechanic_mode; // for inventory upgrades
-	
+
+	bool				m_break_enabled = false;
+	bool				m_trade_enabled = false;
+
 	//номер выбранного вопроса
 	shared_str			m_ClickedQuestionID;
 
@@ -59,6 +64,8 @@ public:
 	CUIStatic* UIOthersIcon;
 	CUICharacterInfo	UICharacterInfoLeft;
 	CUICharacterInfo	UICharacterInfoRight;
+	CUIGamepadLegend*	m_gamepad_legend = nullptr;
+
 	bool				swapCharacterNames = false;
 
 	void				AddQuestion			(LPCSTR str, LPCSTR value, int number, SPhraseInfo &phInfo);
@@ -73,6 +80,20 @@ public:
 	void				UpdateButtonsLayout	(bool b_disable_break, bool trade_enabled);
 
 	virtual CUIWindow* ui_cast_window() { return this; }
+
+	void				SetFirstQuestionSelected();
+	bool				OffsetQuestionSelection(bool next, bool bLoop);
+	void				ResetQuestionSelection();
+	void				UpdateQuestionSelection();
+	bool				HasQuestionWithID(shared_str questionID);
+	void				ScrollSelectionIntoView();
+	void				ScrollLogUp();
+	void				ScrollLogDown();
+	bool				TryClickFinalizerQuestion();
+
+protected:
+	CUIQuestionItem*	GetQuestionItemByID(shared_str questionID);
+	void				UpdateGamepadLegend();
 
 private:
 	CUIScrollView*			UIQuestionsList;
@@ -95,6 +116,7 @@ class CUIQuestionItem final :public CUIWindow, public CUIWndCallback
 {
 	typedef CUIWindow inherited;
 	float			m_min_height;
+	bool			m_is_finalizer = false;
 public:
 	CUIStatic*		m_num_text;
 	CUI3tButton*	m_text;
@@ -103,7 +125,9 @@ public:
 	Fvector2		m_icon_size;
 	float			m_fOffsetAfterIcon;
 					CUIQuestionItem			(CUIXml* xml_doc, LPCSTR path);
-	void			Init					(LPCSTR val, LPCSTR text);
+	void			Init					(LPCSTR val, LPCSTR text, bool isFinalizer);
+	virtual void Update();
+	bool			IsFinalizer() const		{ return m_is_finalizer;  }
 
 	virtual void	SendMessage				(CUIWindow* pWnd, s16 msg, void* pData = NULL);
 	void 	OnTextClicked			(CUIWindow* w, void*);

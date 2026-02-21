@@ -250,11 +250,11 @@ void CInput::GamepadUpdate()
 
 			if (Pressed)
 			{
-				cbStack.back()->IR_GamepadKeyPress((int)i);
+				KeyHolder->IR_GamepadKeyPress((int)i);
 			}
 			else
 			{
-				cbStack.back()->IR_GamepadKeyRelease((int)i);
+				KeyHolder->IR_GamepadKeyRelease((int)i);
 			}
 		}
 	}
@@ -263,7 +263,7 @@ void CInput::GamepadUpdate()
 	{
 		if (GPState[i])
 		{
-			cbStack.back()->IR_GamepadKeyHold((int)i);
+			KeyHolder->IR_GamepadKeyHold((int)i);
 		}
 	}
 }
