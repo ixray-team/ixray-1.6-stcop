@@ -334,7 +334,20 @@ bool CDialogHolder::IR_UIOnGamepadUpdateStick(int id, Fvector2 value)
 	if (TIR->OnGamepadStickAction(id, value, WINDOW_KEY_PRESSED))
 		return true;
 
-	// TODO: add customizable bindings for gamepad
+
+	if (!TIR->StopAnyMove() && g_pGameLevel)
+	{
+		CObject* O = g_pGameLevel->CurrentEntity();
+		if (O)
+		{
+			IInputReceiver* IR = O->GetIIR();
+			if (IR)
+			{
+				IR->IR_GamepadUpdateStick(id, value);
+			}
+			return false;
+		}
+	}
 	return true;
 };
 
