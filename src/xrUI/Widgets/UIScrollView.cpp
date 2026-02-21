@@ -373,6 +373,21 @@ void CUIScrollView::ScrollToEnd			()
 	OnScrollV(nullptr,nullptr);
 }
 
+void CUIScrollView::ScrollToItem(CUIWindow *pItem, int addVerticalOffset)
+{
+	if (m_flags.test(eNeedRecalc))
+		RecalcSize();
+
+	// Check we have this item on the list
+	WINDOW_LIST &items = m_pad->GetChildWndList();
+	WINDOW_LIST_it it = std::find(items.begin(), items.end(), pItem);
+	if (it != items.end())
+	{
+		const Fvector2&	pos = pItem->GetWndPos();
+		SetScrollPos(m_upIndent + pos.y + addVerticalOffset);
+	}
+}
+
 void CUIScrollView::SetRightIndention	(float val)
 {
 	m_rightIndent		= val;
