@@ -4,7 +4,24 @@
       <texture>ui_inGame2_dialog_main_window</texture>
     </auto_static>
   </main>
-
+  
+	<gamepad_legend x="0" y="724" width="1024" height="30" spacing="5">
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_talk_reply</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_talk_log</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>trade_hint</window_name>
+			<text font="graffiti19" vert_align="c">ui_talk_open_trade</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>back_hint</window_name>
+			<text font="graffiti19" vert_align="c">ui_mm_back_gp</text>
+		</auto_static>
+	</gamepad_legend>
+	
   <button x="384" y="734" width="256" height="24" stretch="1" hint="ui_st_exit_hint">
     <texture>ui_inGame2_big_inventory_button</texture>
     <text font="graffiti22" align="c">ui_st_trade</text>
@@ -30,7 +47,7 @@
       <text_color>
         <t r="231" g="168" b="12"/>
         <e color="ui_2"/>
-        <h color="ui_1"/>
+        <h color="ui_7"/>
       </text_color>
     </content_text>
   </question_item>
