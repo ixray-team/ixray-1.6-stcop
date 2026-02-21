@@ -306,6 +306,8 @@ public:
 		sf_pump_aim_empty = (1 << 21),
 		sf_bore_empty = (1 << 22),
 		sf_bore_jammed = (1 << 23),
+		sf_sprint_start = (1 << 24),
+		sf_sprint_end = (1 << 25),
 	};
 
 	Flags32 m_eDevicesFlags;
