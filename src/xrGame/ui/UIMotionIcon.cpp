@@ -163,7 +163,7 @@ bool CUIMotionIcon::Init(Frect const& zonemap_rect, bool useCompassBar)
 
     ShowState(stNormal);
 
-    if (useLuminosityOverlay)
+    if (useLuminosityOverlay && !useCompassBar)
     {
         _luminosityOverlay = UIHelper::CreateStatic(uiXml, "luminosity_overlay", this, false);
         if (_luminosityOverlay)
@@ -172,7 +172,7 @@ bool CUIMotionIcon::Init(Frect const& zonemap_rect, bool useCompassBar)
             _luminosityOverlay->SetTextureColor(subst_alpha(_luminosityOverlayBaseColor, 0));
         }
     }
-    if (useNoiseOverlay)
+    if (useNoiseOverlay && !useCompassBar)
     {
         _noiseOverlay = UIHelper::CreateStatic(uiXml, "noise_overlay", this, false);
         if (_noiseOverlay)
