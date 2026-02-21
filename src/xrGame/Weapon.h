@@ -565,6 +565,7 @@ public:
     virtual EHandDependence		HandDependence		()	const		{	return eHandDependence;}
 			bool				IsSingleHanded		()	const		{	return m_bIsSingleHanded; }
 			void				SetMisfireStatus	(bool b)		{ bMisfire = b; }
+			HudLightLaser*		GetLightLaser		()				{	return &m_LightLaser;}
 
 public:
 	int m_strap_bone0_id;
