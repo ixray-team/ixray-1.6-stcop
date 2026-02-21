@@ -164,3 +164,9 @@ IC String make_string(const char* format, Args... args)
 // Support: xr_string and shared_str
 template<typename Key, typename Value>
 using xr_string_map = std::unordered_map<Key, Value, std::hash<Key>, std::equal_to<>>;
+
+namespace XRay::Concepts
+{
+	template <typename T>
+	concept XRayString = std::same_as<std::remove_cvref_t<T>, xr_string> || std::same_as<std::remove_cvref_t<T>, shared_str>;
+}
