@@ -129,6 +129,18 @@ void CHudItem::LoadSounds(LPCSTR section)
 		m_eSoundsFlags.set(ESoundsFlags::sf_finish_detector, TRUE);
 		m_sounds.LoadSound(section, "snd_finish_detector", "sndFinishDet", false);
 	}
+
+	if (SoundExist(section, "snd_sprint_start"))
+	{
+		m_eSoundsFlags2.set(ESoundsFlags2::sf_sprint_start, true);
+		m_sounds.LoadSound(section, "snd_sprint_start", "sndSprintStart", false);
+	}
+
+	if (SoundExist(section, "snd_sprint_end"))
+	{
+		m_eSoundsFlags2.set(ESoundsFlags2::sf_sprint_end, true);
+		m_sounds.LoadSound(section, "snd_sprint_end", "sndSprintEnd", false);
+	}
 }
 
 void CHudItem::PlaySound(LPCSTR alias, const Fvector& position, bool allowOverlap)
@@ -243,6 +255,10 @@ void CHudItem::OnStateSwitch(u32 S)
 		m_bSwitchSprint = true;
 		SetPending(true);
 		PlayHUDMotion(SetCurrentStateAnimation("anm_idle_sprint_start"), EHudMixType::eMixAll, eSprintStart);
+		if (m_eSoundsFlags2.test(ESoundsFlags2::sf_sprint_start))
+		{
+			PlaySound("sndSprintStart", m_object->Position());
+		}
 		break;
 	}
 	case eSprintEnd:
@@ -250,6 +266,10 @@ void CHudItem::OnStateSwitch(u32 S)
 		m_bSwitchSprint = false;
 		SetPending(true);
 		PlayHUDMotion(SetCurrentStateAnimation("anm_idle_sprint_end"), EHudMixType::eMixAll, eSprintEnd);
+		if (m_eSoundsFlags2.test(ESoundsFlags2::sf_sprint_end))
+		{
+			PlaySound("sndSprintEnd", m_object->Position());
+		}
 		break;
 	}
 	case eDeviceSwitch:
