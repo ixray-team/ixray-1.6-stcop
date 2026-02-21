@@ -558,4 +558,16 @@
 	<string id="ui_rmw_ammo_next">
 		<text>$$ACTION_WPN_NEXT$$ Ammo Type</text>
 	</string>
+	<string id="ui_talk_reply">
+		<text>$$ACTION_UI_ACCEPT$$ Talk</text>
+	</string>
+	<string id="ui_talk_log">
+		<text>$$ACTION_UI_SEC_UP$$/$$ACTION_UI_SEC_DOWN$$ Log</text>
+	</string>
+	<string id="ui_talk_open_trade">
+		<text>$$ACTION_UI_ACTION_2$$ Trade</text>
+	</string>
+	<string id="ui_talk_open_upgrade">
+		<text>$$ACTION_UI_ACTION_2$$ Repair/modifications</text>
+	</string>
 </string_table>

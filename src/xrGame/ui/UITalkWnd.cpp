@@ -47,6 +47,11 @@ CUITalkWnd::CUITalkWnd()
 	InitTalkWnd				();
 	m_bNeedToUpdateQuestions = false;
 	b_disable_break			= false;
+	
+	ActionRepeaters()->Register(this, kUI_UP);
+	ActionRepeaters()->Register(this, kUI_DOWN);
+	ActionRepeaters()->Register(this, kUI_SECONDARY_UP, 1, 50);
+	ActionRepeaters()->Register(this, kUI_SECONDARY_DOWN, 1, 50);
 }
 
 CUITalkWnd::~CUITalkWnd()
@@ -112,6 +117,7 @@ void CUITalkWnd::InitTalkDialog()
 
 	//очистить лог сообщений
 	UITalkDialogWnd->ClearAll();
+	UITalkDialogWnd->ResetQuestionSelection();
 
 	InitOthersStartDialog();
 	NeedUpdateQuestions();
@@ -278,7 +284,13 @@ void CUITalkWnd::Update()
 	if (m_bNeedToUpdateQuestions)
 	{
 		UpdateQuestions();
+
+		if (!UITalkDialogWnd->m_ClickedQuestionID.size() || !UITalkDialogWnd->HasQuestionWithID(UITalkDialogWnd->m_ClickedQuestionID))
+			UITalkDialogWnd->SetFirstQuestionSelected();
+
+		UITalkDialogWnd->ScrollSelectionIntoView();
 	}
+	UITalkDialogWnd->UpdateQuestionSelection();
 
 	inherited::Update();
 	UpdateCameraDirection(m_pOthersInvOwner->cast_game_object(), m_pOthersInvOwner->GetFocusingOnNpc());
@@ -303,6 +315,7 @@ void CUITalkWnd::Show(bool status)
 	inherited::Show					(status);
 	if(status)
 	{
+		ActionRepeaters()->ResetAll(nullptr);
 		InitTalkDialog				();
 
 		if (m_pOthersInvOwner->GetFocusingOnNpc())
@@ -467,6 +480,110 @@ bool CUITalkWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 	}
 
 	return inherited::OnKeyboardAction(dik,keyboard_action);
+}
+
+bool CUITalkWnd::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
+{
+	if (gamepad_action==WINDOW_KEY_PRESSED)
+	{
+		switch (get_binded_action(id, agUIGeneral))
+		{
+			case kUI_BACK:
+			{
+				if (!b_disable_break)
+				{
+					HideDialog();
+					return true;
+				}
+				else
+				{
+					// Exiting without picking a question is disabled
+					// So we need to pick a question with finalizer mark (if there is one) and select it
+					// In kbd mode this question(btn) has an accelerator key (ESC) tied to it
+					return UITalkDialogWnd->TryClickFinalizerQuestion();
+				}
+			}
+			case kUI_ACTION_2:
+			{
+				if (UITalkDialogWnd->mechanic_mode)
+					SwitchToUpgrade();
+				else
+					SwitchToTrade();
+				return true;
+			}
+			case kUI_UP:
+			{
+				if (!any_binded_key_for_action_pressed_c(kUI_DOWN))
+					UITalkDialogWnd->OffsetQuestionSelection(false, true);
+				ActionRepeaters()->SetActionStarted(this, kUI_UP);
+				return true;
+			}
+			case kUI_DOWN:
+			{
+				if (!any_binded_key_for_action_pressed_c(kUI_UP))
+					UITalkDialogWnd->OffsetQuestionSelection(true, true);
+				ActionRepeaters()->SetActionStarted(this, kUI_DOWN);
+				return true;
+			}
+			case kUI_SECONDARY_DOWN:
+			{
+				ActionRepeaters()->SetActionStarted(this, kUI_SECONDARY_DOWN);
+				return true;
+			}
+			case kUI_SECONDARY_UP:
+			{
+				ActionRepeaters()->SetActionStarted(this, kUI_SECONDARY_UP);
+				return true;
+			}
+			case kUI_ACCEPT:
+			{
+				VERIFY(UITalkDialogWnd->m_ClickedQuestionID != "");
+				if (UITalkDialogWnd->m_ClickedQuestionID != "")
+				{
+					SendMessage(UITalkDialogWnd, TALK_DIALOG_QUESTION_CLICKED);
+				}
+				return true;
+			}
+		}
+	}
+
+	return inherited::OnGamepadKeyAction(id,gamepad_action);
+}
+
+bool CUITalkWnd::OnGamepadKeyHold(int id)
+{
+	if (!IR_process()) 
+		return false;
+
+	switch (get_binded_action(id, agUIGeneral))
+	{
+		case kUI_SECONDARY_UP: 
+		{
+			if (ActionRepeaters()->CanRepeatActionNow(this, kUI_SECONDARY_UP) && !any_binded_key_for_action_pressed_c(kUI_SECONDARY_DOWN))
+				UITalkDialogWnd->ScrollLogUp();
+			return true;
+		}
+		case kUI_SECONDARY_DOWN:
+		{
+			if (ActionRepeaters()->CanRepeatActionNow(this, kUI_SECONDARY_DOWN) && !any_binded_key_for_action_pressed_c(kUI_SECONDARY_UP))
+				UITalkDialogWnd->ScrollLogDown();
+			return true;
+		}
+		case kUI_UP:
+		{
+			if (ActionRepeaters()->CanRepeatActionNow(this, kUI_UP) && !any_binded_key_for_action_pressed_c(kUI_DOWN))
+				UITalkDialogWnd->OffsetQuestionSelection(false, false);
+			return true;
+		}
+		case kUI_DOWN:
+		{
+			if (ActionRepeaters()->CanRepeatActionNow(this, kUI_DOWN) && !any_binded_key_for_action_pressed_c(kUI_UP))
+				UITalkDialogWnd->OffsetQuestionSelection(true, false);
+			return true;
+		}
+	}
+
+	return inherited::OnGamepadKeyHold(id);
 }
 
 void CUITalkWnd::PlaySnd(LPCSTR text)

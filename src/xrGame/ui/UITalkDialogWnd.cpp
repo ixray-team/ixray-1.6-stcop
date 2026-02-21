@@ -14,6 +14,8 @@
 #include "../Actor.h"
 #include "../alife_registry_wrappers.h"
 #include "../../xrUI/UIHelper.h"
+#include "../../xrEngine/xr_input.h"
+#include "../../xrUI/Widgets/UIGamepadLegend.h"
 
 #define				TALK_XML				"talk.xml"
 
@@ -168,6 +170,8 @@ void CUITalkDialogWnd::InitTalkDialogWnd()
 	{
 		AddCallback(UIToExitButton, BUTTON_CLICKED, CUIWndCallback::void_function(this, &CUITalkDialogWnd::OnExitClicked));
 	}
+
+	m_gamepad_legend = UIHelper::CreateGamepadLegend(*m_uiXml, "gamepad_legend", this, false);
 }
 
 	
@@ -245,7 +249,7 @@ void CUITalkDialogWnd::ClearQuestions()
 void CUITalkDialogWnd::AddQuestion(LPCSTR str, LPCSTR value, int number, SPhraseInfo &phInfo)
 {
 	CUIQuestionItem* itm			= new CUIQuestionItem(m_uiXml,"question_item");
-	itm->Init						(value, str);
+	itm->Init						(value, str, phInfo.bFinalizer);
 	++number; //zero-based index
 
 	string16 buff;
@@ -265,6 +269,7 @@ void CUITalkDialogWnd::AddQuestion(LPCSTR str, LPCSTR value, int number, SPhrase
 	{
 		itm->m_text->SetAccelerator		(kQUIT, 2);
 		itm->m_text->SetAccelerator		(kUSE, 3);
+		itm->m_text->SetAccelerator		(kUI_BACK, 4);
 	}
 	if (phInfo.sIconName.size() > 1)
 	{
@@ -298,6 +303,7 @@ void CUITalkDialogWnd::AddQuestion(LPCSTR str, LPCSTR value, int number, SPhrase
 		pBtnStatic->SetStretchTexture(true);
 	}
 	itm->m_text->SetTextX			(x_offset);
+	m_break_enabled = phInfo.bFinalizer;
 
 	itm->SetWindowName				("question_item");
 	UIQuestionsList->AddWindow		(itm, true);
@@ -392,7 +398,7 @@ void CUITalkDialogWnd::SetOsoznanieMode(bool b)
 	else if (UIDialogFrame)
 		UIDialogFrame->Show(!b);
 
-	UIToTradeButton.Show(!b);
+	UIToTradeButton.Show(!b && !pInput->GetControllerMode());
 	if ( mechanic_mode )
 	{
 		UIToTradeButton.m_hint_text = "ui_st_upgrade_hint";
@@ -407,11 +413,12 @@ void CUITalkDialogWnd::SetOsoznanieMode(bool b)
 
 void CUITalkDialogWnd::UpdateButtonsLayout(bool b_disable_break, bool trade_enabled)
 {
-	UIToTradeButton.Show		(trade_enabled);
+	m_trade_enabled = trade_enabled;
+	UIToTradeButton.Show		(m_trade_enabled && !pInput->GetControllerMode());
 
 	if (UIToExitButton)
 	{
-		UIToExitButton->Show(!b_disable_break);
+		UIToExitButton->Show(!b_disable_break && !pInput->GetControllerMode());
 
 		if (UIToExitButton->IsShown() && UIToTradeButton.IsShown())
 		{
@@ -427,6 +434,7 @@ void CUITalkDialogWnd::UpdateButtonsLayout(bool b_disable_break, bool trade_enab
 			UIToTradeButton.SetWndPos(m_btn_pos[2]);
 		}
 	}
+	UpdateGamepadLegend();
 }
 
 void CUIQuestionItem::SendMessage				(CUIWindow* pWnd, s16 msg, void* pData)
@@ -459,8 +467,16 @@ CUIQuestionItem::CUIQuestionItem(CUIXml* xml_doc, LPCSTR path)
 		m_num_text = UIHelper::CreateStatic(*xml_doc, str, this);
 }
 
-void CUIQuestionItem::Init			(LPCSTR val, LPCSTR text)
+void CUIQuestionItem::Update()
 {
+	inherited::Update();
+	if (m_num_text)
+		m_num_text->Show(!pInput->GetControllerMode());
+}
+
+void CUIQuestionItem::Init			(LPCSTR val, LPCSTR text, bool isFinalizer)
+{
+	m_is_finalizer					= isFinalizer;
 	m_s_value						= val;
 	m_text->TextItemControl()->SetText(g_pStringTable->ParseStringFromScript(text).c_str());
 	m_text->AdjustHeightToText		();
@@ -540,4 +556,176 @@ void CUIAnswerItemIconed::Init(LPCSTR text, LPCSTR texture_name, Frect texture_r
 	m_icon->GetUIStaticItem().SetTextureRect(texture_rect_);
 	m_icon->TextureOn();
 	m_icon->SetStretchTexture(true);
+}
+
+// return true if we moved selection
+bool CUITalkDialogWnd::OffsetQuestionSelection(bool next, bool bLoop)
+{
+	if (!UIQuestionsList)
+		return false;
+
+	WINDOW_LIST& questions = UIQuestionsList->Items();
+	if (questions.empty())
+	{
+		m_ClickedQuestionID = "";
+		return false;
+	}
+
+	CUIQuestionItem* pQuestion = GetQuestionItemByID(m_ClickedQuestionID);
+	if (!pQuestion)
+	{
+		SetFirstQuestionSelected();
+		return false;
+	}
+
+	WINDOW_LIST::iterator it = std::find(questions.begin(), questions.end(), pQuestion);
+	if (next)
+	{
+		it++;
+		if (it == questions.end())
+		{
+			if (bLoop)
+				it = questions.begin();
+			else
+				return false;
+		}
+	}
+	else
+	{
+		if (it == questions.begin())
+		{
+			if (bLoop)
+				it = --questions.end();
+			else
+				return false;
+		}
+		else
+			--it;
+	}
+
+	m_ClickedQuestionID = static_cast<CUIQuestionItem*>(*it)->m_s_value;
+
+	UpdateQuestionSelection();
+
+	ScrollSelectionIntoView();
+	return true;
+}
+
+void CUITalkDialogWnd::ResetQuestionSelection()
+{
+	m_ClickedQuestionID = "";
+	UpdateQuestionSelection();
+}
+
+void CUITalkDialogWnd::SetFirstQuestionSelected()
+{
+	WINDOW_LIST& questions = UIQuestionsList->Items();
+	if (!questions.empty())
+	{
+		m_ClickedQuestionID = static_cast<CUIQuestionItem*>(*questions.begin())->m_s_value;
+		UpdateQuestionSelection();
+	}
+}
+
+void CUITalkDialogWnd::UpdateQuestionSelection()
+{
+	WINDOW_LIST& questions = UIQuestionsList->Items();
+	for (WINDOW_LIST::iterator it = questions.begin(); it != questions.end(); ++it)
+	{
+		CUIQuestionItem* pQuestion = static_cast<CUIQuestionItem*>(*it);
+		pQuestion->m_text->SetHighlighted(pQuestion->m_s_value == m_ClickedQuestionID && pInput->GetControllerMode());
+	}
+}
+
+CUIQuestionItem*	CUITalkDialogWnd::GetQuestionItemByID(shared_str questionID)
+{
+	if (!UIQuestionsList)
+		return NULL;
+
+	WINDOW_LIST& questions = UIQuestionsList->Items();
+	for (WINDOW_LIST::iterator it = questions.begin(); it != questions.end(); ++it)
+	{
+		CUIQuestionItem* pQuestion = static_cast<CUIQuestionItem*>(*it);
+		if (pQuestion && pQuestion->m_s_value == questionID)
+			return pQuestion;
+	}
+	return NULL;
+}
+
+bool CUITalkDialogWnd::HasQuestionWithID(shared_str questionID)
+{
+	return GetQuestionItemByID(questionID) != NULL;
+}
+
+void CUITalkDialogWnd::ScrollSelectionIntoView()
+{
+	if (m_ClickedQuestionID.size())
+	{
+		CUIQuestionItem* pQuestion = GetQuestionItemByID(m_ClickedQuestionID);
+		if (pQuestion)
+		{
+			UIQuestionsList->ScrollToItem(pQuestion, iFloor(-UIQuestionsList->ScrollBar()->GetHeight()/2.0f + pQuestion->GetWndRect().height()/2.0f));
+		}
+	}
+}
+
+void CUITalkDialogWnd::ScrollLogUp()
+{
+	if (UIAnswersList)
+	{
+		CUIScrollBar* scrollbar = UIAnswersList->ScrollBar();
+		if (scrollbar)
+			scrollbar->TryScrollDec();
+	}
+}
+
+void CUITalkDialogWnd::ScrollLogDown()
+{
+	if (UIAnswersList)
+	{
+		CUIScrollBar* scrollbar = UIAnswersList->ScrollBar();
+		if (scrollbar)
+			scrollbar->TryScrollInc();
+	}
+}
+
+void CUITalkDialogWnd::UpdateGamepadLegend()
+{
+	if (!m_gamepad_legend)
+	{
+		return;
+	}
+
+	//UIInputLegend->AddItem("legend_ui_talk_replies", UIQuestionsList->Items().size() > 1);
+
+	CUIWindow* tradeHint = m_gamepad_legend->FindChild("trade_hint");
+	if (tradeHint)
+	{
+		tradeHint->Show(m_trade_enabled);
+		if (tradeHint->ui_cast_static())
+		{
+			tradeHint->ui_cast_static()->SetTextST(mechanic_mode ? "ui_talk_open_upgrade" : "ui_talk_open_trade");
+		}
+	}
+	CUIWindow* backHint = m_gamepad_legend->FindChild("back_hint");
+	if (backHint)
+	{
+		backHint->Show(m_break_enabled);
+	}
+}
+
+bool CUITalkDialogWnd::TryClickFinalizerQuestion()
+{
+	WINDOW_LIST& questions = UIQuestionsList->Items();
+	for (WINDOW_LIST::iterator it = questions.begin(); it != questions.end(); ++it)
+	{
+		CUIQuestionItem* pQuestion = static_cast<CUIQuestionItem*>(*it);
+		if (pQuestion && pQuestion->IsFinalizer())
+		{
+			m_ClickedQuestionID = pQuestion->m_s_value;
+			GetMessageTarget()->SendMessage(this, TALK_DIALOG_QUESTION_CLICKED);
+			return true;
+		}
+	}
+	return false;
 }

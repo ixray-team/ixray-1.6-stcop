@@ -561,4 +561,16 @@
 	<string id="ui_rmw_ammo_next">
 		<text>$$ACTION_WPN_NEXT$$ Тип боеприпасов</text>
 	</string>
+	<string id="ui_talk_reply">
+		<text>$$ACTION_UI_ACCEPT$$ Поговорить</text>
+	</string>
+	<string id="ui_talk_log">
+		<text>$$ACTION_UI_SEC_UP$$/$$ACTION_UI_SEC_DOWN$$ Журнал</text>
+	</string>
+	<string id="ui_talk_open_trade">
+		<text>$$ACTION_UI_ACTION_2$$ Торговать</text>
+	</string>
+	<string id="ui_talk_open_upgrade">
+		<text>$$ACTION_UI_ACTION_2$$ Ремонт/модификация</text>
+	</string>
 </string_table>
