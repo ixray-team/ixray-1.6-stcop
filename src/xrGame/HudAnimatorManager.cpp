@@ -271,6 +271,17 @@ void CHudStateAnimator::Load()
 		m_sounds.LoadSound(*m_section, "snd_gasmask", "sndGasmask", false);
 	}
 
+	if (pSettings->line_exist(m_section, "snd_sprint_start"))
+	{
+		m_eSoundsFlags.set(ESoundsFlags::sf_sprint_start, true);
+		m_sounds.LoadSound(*m_section, "snd_sprint_start", "sndSprintStart", false);
+	}
+	if (pSettings->line_exist(m_section, "snd_sprint_end"))
+	{
+		m_eSoundsFlags.set(ESoundsFlags::sf_sprint_end, true);
+		m_sounds.LoadSound(*m_section, "snd_sprint_end", "sndSprintEnd", false);
+	}
+
 	m_bDisableBore = READ_IF_EXISTS(pSettings, r_bool, m_section, "disable_bore", true);
 }
 
@@ -562,12 +573,20 @@ void CHudStateAnimator::OnStateSwitch(u32 state)
 	{
 		m_bSwitchSprint = true;
 		PlayMotion(SetCurrentStateAnimation("anm_idle_sprint_start"), true, eSprintStart);
+		if (m_sounds.FindSoundItem("sndSprintStart", false))
+		{
+			m_sounds.PlaySound("sndSprintStart", zero_vel, m_manager->Parent(), true);
+		}
 		break;
 	}
 	case eSprintEnd:
 	{
 		m_bSwitchSprint = false;
 		PlayMotion(SetCurrentStateAnimation("anm_idle_sprint_end"), true, eSprintEnd);
+		if (m_sounds.FindSoundItem("sndSprintEnd", false))
+		{
+			m_sounds.PlaySound("sndSprintEnd", zero_vel, m_manager->Parent(), true);
+		}
 		break;
 	}
 	case eDeviceSwitch:

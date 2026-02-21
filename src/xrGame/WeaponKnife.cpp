@@ -95,7 +95,6 @@ void CWeaponKnife::LoadSounds(LPCSTR section)
 		m_eSoundsFlags.set(ESoundsFlags::sf_holster, TRUE);
 		m_sounds.LoadSound(section, "snd_holster", "SndHide", false, ESoundTypes(SOUND_TYPE_ITEM_HIDING));
 	}
-
 }
 
 void CWeaponKnife::OnStateSwitch	(u32 S)

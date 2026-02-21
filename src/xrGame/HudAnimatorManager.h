@@ -108,6 +108,8 @@ protected:
 	{
 		sf_headlamp = (1 << 0),
 		sf_nv = (1 << 1),
+		sf_sprint_start = (1 << 2),
+		sf_sprint_end = (1 << 3),
 	};
 
 	Flags64 m_eSoundsFlags;
