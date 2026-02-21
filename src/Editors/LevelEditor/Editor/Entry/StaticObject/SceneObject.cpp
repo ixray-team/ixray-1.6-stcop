@@ -26,75 +26,7 @@ void CSceneObject::ReloadReferences()
 {
 	if (m_Flags.test(flUseSurface))
 	{
-		if (!m_pReference)
-			return;
-
-		auto& OwnerSurfaces = m_pReference->Surfaces();
-		xr_vector<CSurface*> SurfacesToDelete;
-
-		m_Surfaces.erase
-		(
-			std::remove_if
-			(
-				m_Surfaces.begin(),
-				m_Surfaces.end(),
-				[&](CSurface* Surf)
-				{
-					auto it = std::find_if
-					(
-						OwnerSurfaces.begin(),
-						OwnerSurfaces.end(),
-						[&](CSurface* OwnerSurf)
-						{
-							return xr_strcmp(Surf->_Name(), OwnerSurf->_Name()) == 0;
-						}
-					);
-
-					bool ShouldRemove = (it == OwnerSurfaces.end());
-					if (ShouldRemove)
-					{
-						SurfacesToDelete.push_back(Surf);
-					}
-					return ShouldRemove;
-				}
-			),
-			m_Surfaces.end()
-		);
-
-		for (CSurface* surf : SurfacesToDelete) 
-		{
-			xr_delete(surf);
-		}
-
-		for (CSurface* OwnerSurf : OwnerSurfaces)
-		{
-			auto it = std::find_if
-			(
-				m_Surfaces.begin(),
-				m_Surfaces.end(),
-				[&](CSurface* Surf)
-				{
-					return xr_strcmp(Surf->_Name(), OwnerSurf->_Name()) == 0;
-				}
-			);
-
-			if (it == m_Surfaces.end())
-			{
-				CSurface* NewSurf = new CSurface();
-				NewSurf->CopyFrom(OwnerSurf);
-
-				m_Surfaces.push_back(NewSurf);
-			}
-		}
-	}
-	else
-	{
-		m_Surfaces.clear();
-
-		if (m_pReference)
-		{
-			m_Surfaces = m_pReference->Surfaces();
-		}
+		ClearSurface();
 	}
 }
 
@@ -303,30 +235,11 @@ void CSceneObject::GetFullTransformToLocal( Fmatrix& m )
 
 CEditableObject* CSceneObject::UpdateReference()
 {
-	for (CSurface* i : m_Surfaces) { i->OnDeviceDestroy(); xr_delete(i); }
-	m_Surfaces.clear();
 	Lib.RemoveEditObject(m_pReference);
-	m_pReference		= (m_ReferenceName.size())?Lib.CreateEditObject(*m_ReferenceName):0;
-	UpdateTransform		();
-	if (m_pReference)
-	{
-		for (size_t i = 0; i < m_pReference->SurfaceCount(); i++)
-		{
-			CSurface* surf = new CSurface();
-			surf->CopyFrom(m_pReference->Surfaces()[i]);
-			m_Surfaces.push_back(surf);
-			if (surf->IsVoid())
-			{
-				if (m_pReference->IsSkeleton())
-					Engine.External.SetSkinningMode(4);
+	m_pReference = (m_ReferenceName.size()) ? Lib.CreateEditObject(*m_ReferenceName) : 0;
+	UpdateTransform();
 
-				surf->OnDeviceCreate();
-
-				if (m_pReference->IsSkeleton())
-					Engine.External.SetSkinningMode();
-			}
-		}
-	}
+	ClearSurface();
 
 	return m_pReference;
 }
@@ -375,24 +288,29 @@ void CSceneObject::ReferenceChange(PropValue* sender)
 		}
 	}
 }
+
 void CSceneObject::OnChangeShader(PropValue* sender)
 {
 	OnChangeSurface(sender);
 	for (CSurface* i : m_Surfaces) { i->OnDeviceDestroy(); }
 }
+
 void CSceneObject::OnChangeSurface(PropValue* sender)
 {
 	m_Flags.set(flUseSurface, 1);
 }
+
 bool CSceneObject::AfterEditGameMtl(PropValue* sender,shared_str&str)
 {
 	return str != "materials\\occ";
 }
+
 void CSceneObject::OnClickClearSurface(ButtonValue*, bool&, bool&)
 {
 	Scene->UndoSave();
 	ClearSurface();
 }
+
 void CSceneObject::FillProp(LPCSTR pref, PropItemVec& items)
 {
 	static shared_str occ_name = "materials\\occ";
@@ -523,20 +441,22 @@ void CSceneObject::Blink(CSurface* surf)
 	m_iBlinkTime	= EDevice->dwTimeGlobal+BLINK_TIME+EDevice->dwTimeDelta;
 }
 
-
 bool CSceneObject::Validate(bool bMsg)
 {
 	CEditableObject* E 	= GetReference(); R_ASSERT(E);
 	return E->Validate();
 }
 
-
-
-
 void CSceneObject::ClearSurface()
 {
-	for (CSurface* i : m_Surfaces) { i->OnDeviceDestroy(); xr_delete(i); }
+	for (CSurface* i : m_Surfaces)
+	{
+		i->OnDeviceDestroy(); 
+		xr_delete(i);
+	}
+
 	m_Surfaces.clear();
+
 	if (m_pReference)
 	{
 		for (size_t i = 0; i < m_pReference->SurfaceCount(); i++)
@@ -545,7 +465,15 @@ void CSceneObject::ClearSurface()
 			surf->CopyFrom(m_pReference->Surfaces()[i]);
 			m_Surfaces.push_back(surf);
 			if (surf->IsVoid())
+			{
+				if (m_pReference->IsSkeleton())
+					Engine.External.SetSkinningMode(4);
+
 				surf->OnDeviceCreate();
+
+				if (m_pReference->IsSkeleton())
+					Engine.External.SetSkinningMode();
+			}
 		}
 	}
 	m_Flags.set(flUseSurface, 0);
