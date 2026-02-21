@@ -683,9 +683,11 @@ void CLevel::IR_GamepadUpdateStick(int id, Fvector2 value)
 
 	if (CurrentGameUI() && CurrentGameUI()->IR_UIOnGamepadUpdateStick(id, value)) return;
 
-	if (g_actor != nullptr && g_actor->g_Alive())
+	if (CURRENT_ENTITY())
 	{
-		g_actor->IR_GamepadUpdateStick(id, value);
+		IInputReceiver* IR = smart_cast<IInputReceiver*>	(smart_cast<CGameObject*>(CURRENT_ENTITY()));
+		if (IR)
+			IR->IR_GamepadUpdateStick(id, value);
 	}
 }
 
