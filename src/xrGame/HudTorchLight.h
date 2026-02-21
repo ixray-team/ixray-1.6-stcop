@@ -44,9 +44,10 @@ class HudLightLaser : public HudLightTorch
 	float LaserLightDist = 15.0f;
 	float LaserWorkDist = 7.5f;
 	float LaserMaxDist = 15.0f;
-	Fvector2 LightSpotAngle = {2, 5};
 
 public:
+	Fvector2 LightSpotAngle = {2, 5};
+
 	HudLightLaser();
 	virtual ~HudLightLaser();
 	virtual void NewTorchlight(const char* section);
