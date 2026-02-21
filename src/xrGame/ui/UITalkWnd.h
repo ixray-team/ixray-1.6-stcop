@@ -52,6 +52,8 @@ public:
 	//инициализации начального диалога собеседника
 	void				InitOthersStartDialog	();
 	virtual bool		OnKeyboardAction				(int dik, EUIMessages keyboard_action);
+	virtual bool		OnGamepadKeyAction		(int id, EUIMessages gamepad_action) override;
+	virtual bool		OnGamepadKeyHold		(int id) override;
 	void				SwitchToTrade			();
 	void				SwitchToUpgrade			();
 	void				AddIconedMessage		(LPCSTR caption, LPCSTR text, LPCSTR texture_name, LPCSTR templ_name);
