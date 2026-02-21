@@ -407,10 +407,28 @@ void CUISequencer::IR_OnKeyboardHold		(int dik)
 		m_pStoredInputReceiver->IR_OnKeyboardHold(dik);
 }
 
+void CUISequencer::IR_GamepadUpdateStick(int id, Fvector2 value)
+{
+	if (!GrabInput() && m_pStoredInputReceiver)
+		m_pStoredInputReceiver->IR_GamepadUpdateStick(id, value);
+}
+
 void CUISequencer::IR_GamepadKeyPress(int id)
 {
 	if(ButtonPress(id) && !GrabInput() && m_pStoredInputReceiver)
 		m_pStoredInputReceiver->IR_GamepadKeyPress	(id);
+}
+
+void CUISequencer::IR_GamepadKeyHold		(int id)
+{
+	if(!GrabInput()&&m_pStoredInputReceiver)
+		m_pStoredInputReceiver->IR_GamepadKeyHold(id);
+}
+
+void CUISequencer::IR_GamepadKeyRelease(int id)
+{
+	if (!GrabInput() && m_pStoredInputReceiver)
+		m_pStoredInputReceiver->IR_GamepadKeyRelease(id);
 }
 
 bool CUISequencer::ButtonPress(int id)
