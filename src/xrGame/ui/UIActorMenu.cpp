@@ -1272,7 +1272,7 @@ eUIDirection4 CUIActorMenu::GetNaviDirection(CUIWindow* pWndFrom, CUIWindow* pWn
 
 void CUIActorMenu::SetAreaSelectionTo(CUIWindow* pSelection)
 {
-	if (pSelection == m_ui_navigation_selection || !pInput->GetControllerMode())
+	if (pSelection == m_ui_navigation_selection || !pInput->GetControllerMode() || !m_ui_navigation_selector)
 		return;
 
 	InfoCurItem(nullptr);
@@ -1403,24 +1403,27 @@ void CUIActorMenu::SetAuxMode(eActorMenuControllerAuxMode mode)
 	{
 	case eActorMenuControllerAuxMode::eAuxMode_Upgrade:
 		{
-			Fvector2 frmSize = m_pUpgradeWnd->GetWndSize();
-			Fvector2 frmPos = m_pUpgradeWnd->GetWndPos();
-
-			if (frmSize.x > 0 && frmSize.y > 0)
+			if (m_ui_aux_selector)
 			{
-				m_ui_aux_selector->SetWndSize(frmSize);
-				m_ui_aux_selector->SetWndPos(frmPos);
-				m_ui_aux_selector->SetVisible(true);
-			}
-			else
-				m_ui_aux_selector->SetVisible(false);
+				Fvector2 frmSize = m_pUpgradeWnd->GetWndSize();
+				Fvector2 frmPos = m_pUpgradeWnd->GetWndPos();
 
+				if (frmSize.x > 0 && frmSize.y > 0)
+				{
+					m_ui_aux_selector->SetWndSize(frmSize);
+					m_ui_aux_selector->SetWndPos(frmPos);
+					m_ui_aux_selector->SetVisible(true);
+				}
+				else
+					m_ui_aux_selector->SetVisible(false);
+			}
 			m_pUpgradeWnd->SetActiveForController(true);
 			m_upgrade_info->init_upgrade(nullptr, nullptr);
 		}
 		break;
 	default:
-		m_ui_aux_selector->SetVisible(false);
+		if (m_ui_aux_selector)
+			m_ui_aux_selector->SetVisible(false);
 		m_pUpgradeWnd->SetActiveForController(false);
 	}
 }
