@@ -37,8 +37,8 @@ namespace inventory { namespace upgrade {
 	class Upgrade;
 } } // namespace upgrade, inventory
 
-const unsigned int INVENTORY_ALL_CODE = 33;
-const unsigned int INVENTORY_AMOUNT_CODE = 77;
+const u64 INVENTORY_ALL_CODE = 33;
+const u64 INVENTORY_AMOUNT_CODE = 77;
 
 enum EDDListType{
 		iInvalid,
