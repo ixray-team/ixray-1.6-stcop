@@ -14,44 +14,12 @@ BOOL g_b_COD_PickUpMode = TRUE;
 
 void CActor::feel_touch_new(CObject* O)
 {
-	if (O == nullptr || O->getDestroy())
-	{
-		return;
-	}
 
-	CGameObject* GO = O->cast_game_object();
-	if (GO == nullptr)
-	{
-		return;
-	}
-
-	CPhysicsShellHolder* sh = GO->cast_physics_shell_holder();
-
-	if (sh != nullptr && sh->character_physics_support())
-	{
-		m_feel_touch_characters++;
-	}
 }
 
 void CActor::feel_touch_delete(CObject* O)
 {
-	if (O == nullptr || O->getDestroy())
-	{
-		return;
-	}
 
-	CGameObject* GO = O->cast_game_object();
-	if (GO == nullptr)
-	{
-		return;
-	}
-
-	CPhysicsShellHolder* sh = GO->cast_physics_shell_holder();
-
-	if (sh != nullptr && sh->character_physics_support())
-	{
-		m_feel_touch_characters--;
-	}
 }
 
 BOOL CActor::feel_touch_contact(CObject* O)
