@@ -112,7 +112,6 @@ ENGINE_API _action  actions[]		= {
 	{ "ui_accept",			kUI_ACCEPT,				_both,			agUIGeneral},
 	{ "ui_back",			kUI_BACK,				_both,			agUIGeneral},
 	{ "ui_hint",			kUI_HINT,				_both,			agUIGeneral},
-	{ "ui_context_menu",	kUI_CONTEXT_MENU,		_both,			agUIGeneral},
 	{ "ui_action_1",		kUI_ACTION_1,			_both,			agUIGeneral},
 	{ "ui_action_2",		kUI_ACTION_2,			_both,			agUIGeneral},
 
@@ -157,7 +156,8 @@ ENGINE_API _action  actions[]		= {
 	{ "wpn_chamber_unload", kWPN_CHAMBER_UNLOAD     ,_both,			agDefault},
 	{ "wpn_chamber_check",  kWPN_CHAMBER_CHECK      ,_both,			agDefault},
 
-	{ "wpn_radial_menu",	kWPN_RADIAL_MENU		,_both,			agDefault },
+	{ "wpn_radial_menu",	kWPN_RADIAL_MENU		,_both,			agDefault},
+	{ "actormenu_action",	kACTORMENU_ACTION		,_both,			agUIGeneral},
 
 	{ nullptr, 				kLASTACTION				,_both,			agDefault}
 };															

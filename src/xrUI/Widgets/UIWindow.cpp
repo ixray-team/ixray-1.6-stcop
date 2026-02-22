@@ -759,3 +759,40 @@ UI_API bool fit_in_rect(CUIWindow* w, Frect const& vis_rect, float border, float
 	w->SetWndPos( rect.lt );
 	return true;
 }
+
+// we need this func for controller UI
+// to display info window next to the item icon
+UI_API bool fit_infownd_in_rect(CUIWindow* wInfo, Frect & stick_to_rect, Frect fit_in_rect, float border, float dx16pos)
+{
+	//float const cursor_height = 0;// 43.0f;
+	if (UI().is_widescreen())
+	{
+		stick_to_rect.x1 -= dx16pos;
+	}
+
+	fit_in_rect.shrink(border, border);
+
+	if (!fit_in_rect.intersected(stick_to_rect))
+	{
+		return false;
+	}
+
+	Frect	rect;
+	rect.set(0, 0, wInfo->GetWidth(), wInfo->GetHeight());
+	rect.add(fit_in_rect.x1, fit_in_rect.y1);
+
+	// Check horizontally
+	if (stick_to_rect.x2 + wInfo->GetWidth() > fit_in_rect.x2)
+		rect.set(stick_to_rect.x1 - wInfo->GetWidth(), rect.y1, stick_to_rect.x1, rect.y2 ); // on the left
+	else
+		rect.set(stick_to_rect.x2, rect.y1, stick_to_rect.x2 + wInfo->GetWidth(), rect.y2); // on the right
+
+	// Check vertically
+	if (stick_to_rect.y1 + wInfo->GetHeight() > fit_in_rect.y2)
+		rect.set(rect.x1, fit_in_rect.y2 - wInfo->GetHeight(), rect.x2, fit_in_rect.y2);
+	else
+		rect.set(rect.x1, stick_to_rect.y1, rect.x2, stick_to_rect.y1 + wInfo->GetHeight());
+
+	wInfo->SetWndPos(rect.lt);
+	return true;
+}

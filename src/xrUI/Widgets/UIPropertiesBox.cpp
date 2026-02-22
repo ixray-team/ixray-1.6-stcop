@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "UIPropertiesBox.h"
-
+#include "../../xrEngine/xr_input.h"
 #include "UIListBoxItem.h"
 #include "../UIXmlInit.h"
 #include "../UIFontDefines.h"
@@ -19,12 +19,17 @@ CUIPropertiesBox::CUIPropertiesBox(CUIPropertiesBox* sub_property_box)
 	m_item_sub_menu_initiator	= nullptr;
 	if (m_sub_property_box)
 		m_sub_property_box->SetParentSubMenu(this);
+
+	ActionRepeaters()->Register(this, kUI_UP);
+	ActionRepeaters()->Register(this, kUI_DOWN);
 }
 
 CUIPropertiesBox::~CUIPropertiesBox()
 {
 	R_ASSERT2(!m_sub_property_box || (!m_sub_property_box->IsShown()),
 		"child sub menu is in shown mode - he'll tries to hide this menu");
+
+	ActionRepeaters()->UnregisterOwner(this);
 }
 
 
@@ -167,7 +172,15 @@ void CUIPropertiesBox::Show(const Frect& parent_rect, const Fvector2& point)
 	ResetAll						();
 
 	GetParent()->SetCapture			(this, true);
+	ActionRepeaters()->ResetAll(nullptr);
 	m_UIListWnd.Reset();
+	
+	if (pInput->GetControllerMode())
+	{
+		// Auto select first item
+		if (m_UIListWnd.Items().size() > 0)
+			m_UIListWnd.SetSelectedIDX(0);
+	}
 }
 
 void CUIPropertiesBox::Hide()
@@ -175,6 +188,7 @@ void CUIPropertiesBox::Hide()
 	CUIWindow::Show(false);
 	CUIWindow::Enable(false);
 
+	ActionRepeaters()->ResetAll(nullptr);
 	m_pMouseCapturer = nullptr;
 	
 	if(GetParent()->GetMouseCapturer() == this)
@@ -235,5 +249,112 @@ void CUIPropertiesBox::Draw()
 
 bool CUIPropertiesBox::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
+	return true;
+}
+
+bool CUIPropertiesBox::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
+{
+	if (gamepad_action == WINDOW_KEY_PRESSED)
+	{
+		switch (get_binded_action(id, agUIGeneral))
+		{
+			case kUI_DOWN:
+			{
+				if (!any_binded_key_for_action_pressed_c(kUI_UP))
+					MoveSelectionDown(false);
+				ActionRepeaters()->SetActionStarted(this, kUI_DOWN);
+				return true;
+			}
+			case kUI_UP:
+			{
+				if (!any_binded_key_for_action_pressed_c(kUI_DOWN))
+					MoveSelectionUp(false);
+				ActionRepeaters()->SetActionStarted(this, kUI_UP);
+				return true;
+			}
+			case kUI_ACCEPT:
+			{
+				CUIListBoxItem* pItem = m_UIListWnd.GetSelectedItem();
+				if (pItem)
+				{
+					u32 tag = pItem->GetTAG();
+					m_UIListWnd.SendMessage(pItem, LIST_ITEM_CLICKED, (void*)&tag);
+				}
+				return true;
+			}
+			case kUI_BACK:
+			{
+				Hide();
+				return true;
+			}
+		}
+	}
+	return true;
+}
+
+bool CUIPropertiesBox::OnGamepadKeyHold(int id)
+{
+	switch (get_binded_action(id, agUIGeneral))
+	{
+		case kUI_DOWN:
+		{
+			if (ActionRepeaters()->CanRepeatActionNow(this, kUI_DOWN) && !any_binded_key_for_action_pressed_c(kUI_UP))
+				MoveSelectionDown(false);
+			return true;
+		}
+		case kUI_UP:
+		{
+			if (ActionRepeaters()->CanRepeatActionNow(this, kUI_UP) && !any_binded_key_for_action_pressed_c(kUI_DOWN))
+				MoveSelectionUp(false);
+			return true;
+		}
+	}
+
+	return true;
+}
+
+bool CUIPropertiesBox::MoveSelectionDown(bool bLoop)
+{
+	int itemCount = m_UIListWnd.Items().size();
+	if (itemCount == 0)
+		return false;
+	u32 currentIdx = m_UIListWnd.GetSelectedIDX();
+	if (currentIdx == u32(-1))
+		currentIdx = 0;
+	else
+	{
+		currentIdx++;
+		if (currentIdx >= itemCount)
+		{
+			if (bLoop)
+				currentIdx = 0;
+			else
+				return false;
+		}
+	}
+	m_UIListWnd.SetSelectedIDX(currentIdx);
+	return true;
+}
+
+bool CUIPropertiesBox::MoveSelectionUp(bool bLoop)
+{
+	int itemCount = m_UIListWnd.Items().size();
+	if (itemCount == 0)
+		return false;
+	int currentIdx = m_UIListWnd.GetSelectedIDX();
+	if (currentIdx == u32(-1))
+		currentIdx = 0;
+	else
+	{
+		if (currentIdx == 0 && bLoop)
+			currentIdx = itemCount - 1;
+		else
+		{
+			currentIdx--;
+			if (currentIdx < 0)
+				return false;
+		}
+	}
+	m_UIListWnd.SetSelectedIDX(currentIdx);
 	return true;
 }

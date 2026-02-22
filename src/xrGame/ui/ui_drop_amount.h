@@ -16,6 +16,7 @@ class CUITrackBar;
 class CUI3tButton;
 class CUIEditBox;
 class CInventoryItem;
+class CUIGamepadLegend;
 
 class CUIItemDropAmountWnd final :
     public CUIDialogWnd,
@@ -30,7 +31,7 @@ public:
     };
 
     CUIItemDropAmountWnd();
-    ~CUIItemDropAmountWnd() override = default;
+    ~CUIItemDropAmountWnd();
 
     void InitDropAmount();
     void ShowDropAmount(u32 max, EDropMode mode, CInventoryItem* pItem = nullptr);
@@ -40,6 +41,9 @@ public:
     void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr) override;
     bool OnKeyboardAction(int dik, EUIMessages keyboardAction) override;
     CUIWindow* ui_cast_window() override { return this; }
+    bool OnGamepadKeyAction(int id, EUIMessages gamepadAction) override;
+    bool OnGamepadKeyHold(int id) override;
+    void Update() override;
 
 private:
     CUIStatic* _background;
@@ -61,6 +65,7 @@ private:
     CUI3tButton* _btnAll;
     CUI3tButton* _btnCancel;
     CUI3tButton* _btnAccept;
+    CUIGamepadLegend* _gamepadLegend = nullptr;
 
     EDropMode _dropMode;
     bool _extendedLayout;

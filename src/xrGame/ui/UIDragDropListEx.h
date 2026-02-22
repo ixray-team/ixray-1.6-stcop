@@ -2,12 +2,14 @@
 
 #include "../../xrUI/Widgets/UIWindow.h"
 #include "../../xrUI/Widgets/UIWndCallback.h"
+#include "../../xrUI/ui_defs.h"
 
 class CUICellContainer;
 class CUIScrollBar;
 class CUIStatic;
 class CUICellItem;
 class CUIDragItem;
+class CUIFrameWindow;
 
 enum EListType{
 		iwSlot,
@@ -52,6 +54,7 @@ protected:
 	CUICellItem*			m_selected_item;
 	CUICellContainer*		m_container;
 	CUIScrollBar*			m_vScrollBar;
+	CUIFrameWindow*			m_selectorFrame = nullptr;
 
 	virtual void			OnScrollV				(CUIWindow* w, void* pData);
 	virtual void			OnItemStartDragging		(CUIWindow* w, void* pData);
@@ -86,6 +89,7 @@ public:
 
 	u32						back_color;
 
+			bool			HasCells			() const;
 	const	Ivector2&		CellsCapacity		();
 			void			SetCellsCapacity	(const Ivector2 c);
 			void			SetStartCellsCapacity(const Ivector2 c){m_orig_cell_capacity=c;SetCellsCapacity(c);};
@@ -138,6 +142,8 @@ public:
 			Ivector2		PickCell			(const Fvector2& abs_pos);
 			CUICell&		GetCellAt			(const Ivector2& pos);
 			CUICellContainer* GetContainer		() { return m_container; }; //Alundaio
+			CUICellItem*	GetSelectedItem		(){ return m_selected_item; }
+			void			DeselectSelected	();
 
 public:
 	//UIWindow overriding
@@ -147,7 +153,14 @@ public:
 	virtual		void		SendMessage			(CUIWindow* pWnd, s16 msg, void* pData = NULL);
 
 				void		OnDragEvent			(CUIDragItem* drag_item, bool b_receive);
-
+				
+	// Controller UI
+				bool		MoveSelector		(eUIDirection4 dir);
+				bool		MoveSelectorToItem	(CUICellItem* pItem);
+				void		InitSelector		(LPCSTR texture_name);
+				void		SetControllerFocusIn(Irect selectorPos);
+				void		SetControllerFocusOut();
+				void		UpdateSelector		();
 	virtual CUIWindow* ui_cast_window() { return this; }
 };
 
@@ -164,6 +177,9 @@ protected:
 	CUIDragDropListEx*			m_pParentDragDropList;
 	bool						m_isInventoryGridDisabled;
 
+	// Selector for controller
+	Irect						m_selectorArea; // Selector can occupy 1 or several cells
+
 	Ivector2					m_cellsCapacity;			//count		(col,	row)
 	Ivector2					m_cellSize;					//pixels	(width, height)
 	Ivector2					m_cellSpacing;				//pixels	(width, height)
@@ -177,6 +193,16 @@ protected:
 public:							
 								CUICellContainer	(CUIDragDropListEx* parent);
 	virtual						~CUICellContainer	();
+	
+	// ovorontsov: beware cellcontainer could have no cells at all
+				bool			HasCells			() const { return m_cells.size() > 0; }
+				void			ResetSelector		();
+				void			TrySetSelector		(const Irect& selector);
+				bool			MoveSelector		(eUIDirection4 dir);
+				const Irect&	GetSelectorArea		() const { R_ASSERT(HasCells());  return m_selectorArea; }
+
+	IC const	Ivector2&		CellsCapacity		()								{return m_cellsCapacity;};	
+
 				CUICell&		GetCellAt			(const Ivector2& pos);
 				Ivector2		PickCell			(const Fvector2& abs_pos);
 				bool			ValidCell			(const Ivector2& pos) const;
@@ -186,7 +212,6 @@ public:
 protected:
 	virtual		void			Draw				();
 
-	IC const	Ivector2&		CellsCapacity		()								{return m_cellsCapacity;};	
 				void			SetCellsCapacity	(const Ivector2& c);
 	IC const	Ivector2&		CellSize			()								{return m_cellSize;};	
 				void			SetCellSize			(const Ivector2& new_sz);
@@ -209,5 +234,5 @@ protected:
 				void			ClearAll			(bool bDestroy, xr_vector<u16> IgnoredItemsIds = {}); // FFx0001
 				void			clear_select_armament();
 
-
+				void			ValidateSelector	();
 };

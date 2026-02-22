@@ -43,4 +43,77 @@ public:
 	sPoly2D*	ClipPoly		(sPoly2D& S, sPoly2D& D) const;
 };
 
+enum eUIDirection4
+{
+	eUIDirection4_None = 0,
+	eUIDirection4_Left = 1,
+	eUIDirection4_Right,
+	eUIDirection4_Up,
+	eUIDirection4_Down
+};
+
+enum eUIDirection8
+{
+	eUIDirection8_None = 0,
+	eUIDirection8_Left = eUIDirection4_Left,
+	eUIDirection8_Right = eUIDirection4_Right,
+	eUIDirection8_Top = eUIDirection4_Up,
+	eUIDirection8_Bottom = eUIDirection4_Down,
+	eUIDirection8_TopLeft,
+	eUIDirection8_TopRight,
+	eUIDirection8_BottomLeft,
+	eUIDirection8_BottomRight
+};
+
+
+template<class T>
+bool MoveSelectionUp(xr_vector<T*>& wlist, T* pOldSelected, T*& pNewSelection, bool bAllowLoop)
+{
+	if (wlist.size() < 2)
+		return false;
+	if (!pOldSelected)
+		return false;
+
+	typename xr_vector<T*>::iterator fIt = std::find(wlist.begin(), wlist.end(), pOldSelected);
+	R_ASSERT(fIt != wlist.end());
+	if (fIt == wlist.begin())
+	{
+		if (bAllowLoop)
+		{
+			fIt = --wlist.end();
+		}
+		else
+			return false;
+	}
+	else
+		--fIt;
+
+	pNewSelection = *fIt;
+	return true;
+}
+
+template<class T>
+bool MoveSelectionDown(xr_vector<T*>& wlist, T* pOldSelected, T*& pNewSelection, bool bAllowLoop)
+{
+	if (wlist.size() < 2)
+		return false;
+	if (!pOldSelected)
+		return false;
+
+	typename xr_vector<T*>::iterator fIt = std::find(wlist.begin(), wlist.end(), pOldSelected);
+	R_ASSERT(fIt != wlist.end());
+	++fIt;
+	if (fIt == wlist.end())
+	{
+		if (bAllowLoop)
+		{
+			fIt = wlist.begin();
+		}
+		else
+			return false;
+	}
+
+	pNewSelection = *fIt;
+	return true;
+}
 extern ENGINE_API xr_atomic_bool g_bRendering; 
