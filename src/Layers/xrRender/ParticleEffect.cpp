@@ -442,7 +442,7 @@ void CParticleEffect::UpdateCache()
 			m_Def->m_Frame.CalculateTC(iFloor(float(m.frame) / 255.f), lt, rb);
 
 		float r_x = FinalSize.x * 0.5f;
-		float r_y = FinalSize.x * 0.5f;
+		float r_y = FinalSize.y * 0.5f;
 		if (m_Def->m_Flags.is(CPEDef::dfVelocityScale))
 		{
 			float speed = m.velI.magnitude();
@@ -691,9 +691,9 @@ void CParticleEffect::Render(float)
 					m.sizeI.y*m.sizeMod.y,
 					m.sizeI.z*m.sizeMod.z
 					);
-				VERIFY(FinalSize.x >= 0.f && FinalSize.x <= 100.f);
-				VERIFY(FinalSize.y >= 0.f && FinalSize.y <= 100.f);
-				VERIFY(FinalSize.z >= 0.f && FinalSize.z <= 100.f);
+				VERIFY(FinalSize.x >= 0.f && FinalSize.x <= 1000.f);
+				VERIFY(FinalSize.y >= 0.f && FinalSize.y <= 1000.f);
+				VERIFY(FinalSize.z >= 0.f && FinalSize.z <= 1000.f);
 
 				Fvector2 lt, rb;
 				lt.set(0.f, 0.f);
