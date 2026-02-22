@@ -218,26 +218,26 @@ void UILeftBarForm::Draw()
 		}
 		ImGui::PopStyleVar(2);
 		ObjectList* lst = Scene->GetSnapList(true);
-		
-		float ListBoxHeight = ImGui::GetWindowSize().y - ImGui::GetCursorPosY() - 10;
-		ListBoxHeight /= 15.3f;
+
+		float ListBoxHeight = ImGui::GetContentRegionAvail().y;
+		ListBoxHeight /= 17.5f;
 
 		ImGui::SetNextItemWidth(-1);
 		ImGui::ListBox
 		(
-			"##snap_list_box", 
-			&m_SnapItem_Current, 
-			[](void* data, int ind, const char** out)->bool 
+			"##snap_list_box",
+			&m_SnapItem_Current,
+			[](void* data, int ind, const char** out)->bool
 			{
-				auto item = reinterpret_cast<ObjectList*>(data)->begin(); std::advance(item, ind);
-				*out = (*item)->GetName(); 
-				return true; 
-			}, 
-			reinterpret_cast<void*>(lst), 
-			lst->size(), 
+				auto item = reinterpret_cast<ObjectList*>(data)->begin();
+				std::advance(item, ind);
+				*out = (*item)->GetName();
+				return true;
+			},
+			reinterpret_cast<void*>(lst),
+			lst->size(),
 			ListBoxHeight
 		);
-
 		ImGui::PopStyleVar(2);
 	}
 	ImGui::End();
