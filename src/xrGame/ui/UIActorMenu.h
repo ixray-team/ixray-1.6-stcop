@@ -5,6 +5,8 @@
 #include "../../xrServerEntities/inventory_space.h"
 #include "../../xrUI/Widgets/UIHint.h"
 #include "../../xrUI/Widgets/UITabControl.h"
+#include "../../xrUI/ui_defs.h"
+#include "../../xrUI/Widgets/UIFocusSystem.h"
 #include "InventorySorter.h"
 
 #include "../script_game_object.h" //Alundaio
@@ -29,10 +31,14 @@ class CUIPropertiesBox;
 class CTrade;
 class CUIProgressBar;
 class CUIItemDropAmountWnd;
+class CUIGamepadLegend;
 
 namespace inventory { namespace upgrade {
 	class Upgrade;
 } } // namespace upgrade, inventory
+
+const unsigned int INVENTORY_ALL_CODE = 33;
+const unsigned int INVENTORY_AMOUNT_CODE = 77;
 
 enum EDDListType{
 		iInvalid,
@@ -75,6 +81,13 @@ protected:
 								eDetachAddon,
 								eItemUse,
 								eSndMax};
+	
+	enum eActorMenuControllerAuxMode {
+		eAuxMode_None = 0,
+		eAuxMode_Upgrade,
+		eAuxMode_QuickSlot,
+		eAuxMode_BeltSlot
+	};
 
 	EMenuMode					m_currMenuMode;
 	ref_sound					sounds					[eSndMax];
@@ -84,7 +97,7 @@ protected:
 	CUIItemInfo*				m_ItemInfo;
 	CUICellItem*				m_InfoCellItem;
 	u32							m_InfoCellItem_timer;
-	CUICellItem*				m_pCurrentCellItem;
+	CUICellItem*				m_pCurrentCellItem = nullptr;
 	CUICellItem*				m_upgrade_selected;
 	CUIPropertiesBox*			m_UIPropertiesBox;
 
@@ -185,7 +198,19 @@ protected:
 	bool						m_item_info_view;
 	bool						m_highlight_clear;
 	u32							m_trade_partner_inventory_state;
+	
+	// Controller UI
+	xr_map<EMenuMode, xr_vector<WND_SELECTOR_INFO>>	m_ui_navigation_lists;
+	CUIWindow*					m_ui_navigation_selection;
+	CUIFrameWindow*				m_ui_navigation_selector;
+	bool						m_bShowInfoWnds = false;
 
+	eActorMenuControllerAuxMode	m_AuxMode= eAuxMode_None;
+	CUIFrameWindow*				m_ui_aux_selector; // For upgrades, and picking item for a quickslot or belt
+
+	float						m_selectorPadding = 4.0f;
+
+	CUIGamepadLegend*			m_gamepad_legend = nullptr;
 private:
 	const char* m_onItemDropped = {};
 	bool m_isItemDropped = false;
@@ -237,7 +262,7 @@ public:
 	virtual CUIWindow* ui_cast_window() { return this; }
 
 private:
-	void						PropertiesBoxForSlots		(PIItem item, bool& b_show);
+	void						PropertiesBoxForSlots		(CUICellItem* cell_item, PIItem item, bool& b_show);
 	void						PropertiesBoxForWeapon		(CUICellItem* cell_item, PIItem item, bool& b_show);
 	void						PropertiesBoxForAddon		(PIItem item, bool& b_show);
 	void						PropertiesBoxForUsing		(PIItem item, bool& b_show);
@@ -246,6 +271,8 @@ private:
 	void						PropertiesBoxForRepair		(PIItem item, bool& b_show);
 	void						PropertiesBoxForParse		(PIItem item, bool& b_show);
 	void						PropertiesBoxForDonate		(PIItem item, bool& b_show); //Alundaio
+	void						PropertiesBoxForUpgrade		(PIItem item, bool& b_show);
+	void						PropertiesBoxForTrade		(CUICellItem* cell_item, PIItem item, bool& b_show);
 
 private:
 	void						clear_highlight_lists		();
@@ -322,6 +349,7 @@ protected:
 	bool						ToSlotScript				(CScriptGameObject* GO, bool force_place, u16 slot_id);
 	bool						ToSlot						(CUICellItem* itm, bool force_place, u16 slot_id);
 	bool						ToBag						(CUICellItem* itm, bool b_use_cursor_pos);
+	void						ToBagAll					(CUICellItem* itm);
 	bool						ToBeltScript				(CScriptGameObject* GO, bool b_use_cursor_pos);
 	bool						ToBelt						(CUICellItem* itm, bool b_use_cursor_pos);
 	bool						TryUseItem					(CUICellItem* cell_itm);
@@ -337,8 +365,11 @@ protected:
 	bool						CanUpgradeItem				(PIItem item);
 
 	bool						ToActorTrade				(CUICellItem* itm, bool b_use_cursor_pos);
+	void						ToActorTradeAll				(CUICellItem* itm);
 	bool						ToPartnerTrade				(CUICellItem* itm, bool b_use_cursor_pos);
+	void						ToPartnerTradeAll			(CUICellItem* itm);
 	bool						ToPartnerTradeBag			(CUICellItem* itm, bool b_use_cursor_pos);
+	void						ToPartnerTradeBagAll		(CUICellItem* itm);
 	bool						ToDeadBodyBag				(CUICellItem* itm, bool b_use_cursor_pos);
 	bool						IsAllowTakeFromInvBox		(CUICellItem* itm); // FFx0001
 	bool						IsAllowPlaceToInvBox		(CUICellItem* itm); // FFx0001
@@ -368,6 +399,13 @@ protected:
 	void						TransferItems				(CUIDragDropListEx* pSellList, CUIDragDropListEx* pBuyList, CTrade* pTrade, bool bBuying);
 	void						TransferItemsMp             (CUIDragDropListEx* pSellList, CUIDragDropListEx* pBuyList, CTrade* pTrade, bool bBuying);
 
+	// Controller UI
+	bool						MoveAreaSelector			(eUIDirection4 dir);
+	void						MoveSelector				(eUIDirection4 dir, bool bAllowAreaExit);
+	void						SetAreaSelectionTo			(CUIWindow* pList);
+	void						SetAuxMode					(eActorMenuControllerAuxMode mode);
+	eUIDirection4				GetNaviDirection			(CUIWindow* pWndFrom, CUIWindow* pWndTo);
+
 public:
 								CUIActorMenu				();
 	virtual						~CUIActorMenu				();
@@ -382,9 +420,12 @@ public:
 	virtual void				Draw						();
 	virtual void				Update						();
 	virtual void				Show						(bool status);
+			void				CheckSelectors				();
 
 	virtual bool				OnKeyboardAction					(int dik, EUIMessages keyboard_action);
 	virtual bool				OnMouseAction						(float x, float y, EUIMessages mouse_action);
+	virtual bool				OnGamepadKeyAction					(int id, EUIMessages gamepad_action);
+	virtual bool				OnGamepadKeyHold					(int id);
 
 	void						CallMessageBoxYesNo			(LPCSTR text);
 	void						CallMessageBoxOK			(LPCSTR text);
@@ -403,6 +444,7 @@ public:
 	void						UpdateDeadBodyBag			();
 	void						RefreshCurrentItemCell		();
 	void						DonateCurrentItem			(CUICellItem* cell_item); //Alundaio: Donate item via context menu while in trade menu
+	void						UpdateGamepadLegend			();
 
     void						OnBtnPerformTrade			(CUIWindow* w, void* d);
 	void						OnBtnPerformTradeBuy		(CUIWindow* w, void* d);
@@ -419,6 +461,11 @@ public:
 	const UIInvUpgradeInfo* GetUpgradeInfo() const { return m_upgrade_info; }
 
 	IC	UIHint*					get_hint_wnd				() { return m_hint_wnd; }
+
+	
+	void						UpdateInfoWindowVisibility	();
+	bool						NeedToShowInfos				() const { return m_bShowInfoWnds; }
+	bool						AnyInfoWindowOpen			() const;
 
 	void HighlightSectionInSlot(LPCSTR section, u8 type, u16 slot_id = 0);
 	CScriptGameObject* GetCurrentItemAsGameObject();
