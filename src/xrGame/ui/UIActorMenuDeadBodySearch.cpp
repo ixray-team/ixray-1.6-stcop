@@ -120,6 +120,7 @@ void CUIActorMenu::InitDeadBodySearchMode()
 		known_infos.clear	();
 	}
 	UpdateDeadBodyBag();
+	SetAreaSelectionTo(m_pDeadBodyBagList);
 }
 
 void CUIActorMenu::DeInitDeadBodySearchMode()
