@@ -41,6 +41,8 @@
 #include "../xrEngine/CustomHUD.h"
 #include "ui/UIRadialMenuWeapon.h"
 #include "ui/UIPdaWnd.h"
+#include "ActorEffector.h"
+#include "PostprocessAnimator.h"
 
 extern u32 hud_adj_mode;
 
@@ -1396,6 +1398,16 @@ void CActor::set_input_external_handler(CActorInputHandler *handler)
 	m_input_external_handler	= handler;
 }
 
+void CActor::StartNVPPE()
+{
+	if (Cameras().GetPPEffector(EEffectorPPType(10337)) == nullptr)
+	{
+		CPostprocessAnimator* pp = new CPostprocessAnimator(10337, false);
+		pp->Load("night_vision.ppe");
+		Cameras().AddPPEffector(pp);
+	}
+}
+
 void CActor::SwitchNightVision()
 {
 	bool has_nvg = GetOutfit() && GetOutfit()->GetNV_Sect().size() > 0 || GetHelmet() && GetHelmet()->GetNV_Sect().size() > 0;
@@ -1500,6 +1512,7 @@ void CActor::SwitchNightVision()
 			{
 				StartAnimator(m_sNVGAnimator);
 				HudAnimator()->ItemAnimator()->SetLeftCallback({ GetNightVisionEffector(), &CNightVisionEffector::SwitchNightVision });
+				HudAnimator()->ItemAnimator()->SetRightCallback({ this, &CActor::StartNVPPE });
 			}
 		}
 		else
