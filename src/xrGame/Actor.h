@@ -273,8 +273,6 @@ protected:
 	s32						m_ShotRndSeed;
 
 	bool					m_bOutBorder;
-	//сохраняет счетчик объектов в feel_touch, для которых необходимо обновлять размер колижена с актером 
-	u32						m_feel_touch_characters;
 private:
 	void					SwitchOutBorder(bool new_border_state);
 
