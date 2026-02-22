@@ -796,22 +796,7 @@ ENGINE_API void GetActionAllBinding(LPCSTR _action, char* dst_buff, int dst_buff
 		xr_sprintf(dst_buff, dst_buff_sz, "%s", g_pStringTable->translate("st_key_notbinded").c_str());
 	else if (pInput->GetControllerMode())
 	{
-		string128 additionalBind;
-		additionalBind[0] = 0;
-		if (pbinding->m_action->action_group == agUIRadialWeapon)
-		{
-			_binding* pbinding_radial = &g_key_bindings[kWPN_RADIAL_MENU];
-			if (pbinding->m_gamepad[0])
-				xr_strcpy(additionalBind, pbinding_radial->m_gamepad[0]->key_local_name.c_str());
-
-			if (pbinding->m_gamepad[1])
-				xr_strcpy(additionalBind, pbinding_radial->m_gamepad[1]->key_local_name.c_str());
-
-			xr_strconcat(additionalBind, " + ");
-		}
-
 		xr_sprintf(dst_buff, dst_buff_sz, "%s%s%s%s", 
-			additionalBind[0] ? additionalBind : "", 
 			gp_prim[0] ? gp_prim : "", 
 			(gp_sec[0] && gp_prim[0]) ? " , " : "", 
 			gp_sec[0] ? gp_sec : "");
