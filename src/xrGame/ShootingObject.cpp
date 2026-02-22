@@ -161,12 +161,22 @@ void CShootingObject::LoadLights		(LPCSTR section, LPCSTR prefix)
 		light_var_range		= pSettings->r_float		(section, xr_strconcat(full_name, prefix, "light_var_range")	);
 		light_lifetime		= pSettings->r_float		(section, xr_strconcat(full_name, prefix, "light_time")		);
 		light_time			= -1.f;
+
+		m_bLightShotEnabled = light_var_range + light_base_range <= 0.f ? false : true;
 	}
 }
 
 void CShootingObject::Light_Start	()
 {
-	if(!light_render)		Light_Create();
+	if (!m_bLightShotEnabled)
+	{
+		return;
+	}
+
+	if(!light_render)
+	{
+		Light_Create();
+	}
 
 	if (Device.dwFrame	!= light_frame)
 	{
@@ -174,12 +184,17 @@ void CShootingObject::Light_Start	()
 		light_time					= light_lifetime;
 		
 		light_build_color.set		(Random.randFs(light_var_color,light_base_color.r),Random.randFs(light_var_color,light_base_color.g),Random.randFs(light_var_color,light_base_color.b),1);
-		light_build_range			= Random.randFs(light_var_range,light_base_range);
+		light_build_range			= Random.randFs(std::min(light_var_range, light_base_range), std::max(light_var_range, light_base_range));
 	}
 }
 
 void CShootingObject::Light_Render	(const Fvector& P)
 {
+	if (!m_bLightShotEnabled)
+	{
+		return;
+	}
+
 	float light_scale			= light_time/light_lifetime;
 	R_ASSERT(light_render);
 
