@@ -17,7 +17,7 @@
 #include "Artefact.h"
 #include "CustomOutfit.h"
 #include "ActorBackpack.h"
-
+#include "../xrEngine/xr_input.h"
 #include "../xrScripts/script_callback_ex.h"
 
 #ifdef DEBUG
@@ -665,7 +665,7 @@ bool CActor::CanRun()
 	bool can_run = !IsZoomAimingMode() && !(mstate_real & mcLookout);
 	if (isSprintWhileOverweightDisabled)
 	{
-		can_run = !IsZoomAimingMode() && !(mstate_real & mcLookout) && (inventory().TotalWeight() < (MaxWalkWeight() - 10.0f));
+		can_run ^= inventory().TotalWeight() < (MaxWalkWeight() - 10.0f);
 	}
 	return can_run;
 }
@@ -674,6 +674,10 @@ bool CActor::CanSprint()
 {
 	bool is_animator = (HudAnimator() != nullptr && (HudAnimator()->IsAnyAnimatorActive() && HudAnimator()->CanSprint() || !HudAnimator()->IsAnyAnimatorActive()) || HudAnimator() == nullptr);
 	bool can_Sprint = CanAccelerate() && !conditions().IsCantSprint() && Game().PlayerCanSprint(this) && !(mstate_real & mcBack && (mstate_real & mcLStrafe || mstate_real & mcRStrafe)) && CanRun() && InventoryAllowSprint() && !bBlockSprint && is_animator;
+	if (!pInput->GetControllerMode())
+	{
+		can_Sprint ^= (mstate_real & mcLStrafe || mstate_real & mcRStrafe);
+	}
 
 	return can_Sprint && (m_block_sprint_counter<=0);
 }
