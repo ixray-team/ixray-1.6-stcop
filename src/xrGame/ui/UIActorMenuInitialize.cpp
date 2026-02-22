@@ -352,21 +352,31 @@ void CUIActorMenu::Construct()
 	m_ActorStateInfo->SetAutoDelete		(true);
 	AttachChild							(m_ActorStateInfo); 
 	
-	m_ui_navigation_selection = nullptr;
-
 	m_ui_navigation_selector = new CUIFrameWindow();
-	m_ui_navigation_selector->SetWidth(0);
-	m_ui_navigation_selector->SetHeight(0);
-	m_ui_navigation_selector->InitTexture("ui_inv_item_selector");
-	m_ui_navigation_selector->SetVisible(pInput->GetControllerMode() && m_ui_navigation_selection);
-	AttachChild(m_ui_navigation_selector);
+	if (m_ui_navigation_selector->InitTexture("ui_inv_item_selector"))
+	{
+		m_ui_navigation_selector->SetWidth(0);
+		m_ui_navigation_selector->SetHeight(0);
+		m_ui_navigation_selector->SetVisible(pInput->GetControllerMode() && m_ui_navigation_selection);
+		AttachChild(m_ui_navigation_selector);
+	}
+	else
+	{
+		xr_delete(m_ui_navigation_selector);
+	}
 
 	m_ui_aux_selector = new CUIFrameWindow();
-	m_ui_aux_selector->SetWidth(0);
-	m_ui_aux_selector->SetHeight(0);
-	m_ui_aux_selector->InitTexture("ui_inv_item_selector_tri");
-	m_ui_aux_selector->SetVisible(false);
-	AttachChild(m_ui_aux_selector);
+	if (m_ui_aux_selector->InitTexture("ui_inv_item_selector_tri", false))
+	{
+		m_ui_aux_selector->SetWidth(0);
+		m_ui_aux_selector->SetHeight(0);
+		m_ui_aux_selector->SetVisible(false);
+		AttachChild(m_ui_aux_selector);
+	}
+	else
+	{
+		xr_delete(m_ui_aux_selector);
+	}
 
 	stored_root							= uiXml.GetLocalRoot	();
 	uiXml.SetLocalRoot					(uiXml.NavigateToNode	("action_sounds",0));
