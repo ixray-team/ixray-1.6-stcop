@@ -164,7 +164,6 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 	m_memory				= new CActorMemory(this);
 	m_bOutBorder			= false;
 	m_hit_probability		= 1.f;
-	m_feel_touch_characters = 0;
 	//-----------------------------------------------------------------------------------
 	m_dwILastUpdateTime		= 0;
 
@@ -1684,19 +1683,7 @@ void CActor::UpdateCL()
 	}
 
 	UpdateInventoryOwner(Device.dwTimeDelta);
-
-	if (m_feel_touch_characters > 0)
-	{
-		for (CObject* object : feel_touch)
-		{
-			CPhysicsShellHolder* sh = object->cast_physics_shell_holder();
-			if (sh != nullptr && sh->character_physics_support())
-			{
-				sh->character_physics_support()->movement()->UpdateObjectBox(character_physics_support()->movement()->PHCharacter());
-			}
-		}
-	}
-
+	
 	float current_fov = currentFOV();
 
 	if (g_Alive() && m_holder == nullptr)
