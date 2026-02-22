@@ -17,6 +17,8 @@ public:
 	virtual void		SendMessage							(CUIWindow *pWnd, s16 msg, void *pData);
 	virtual bool		OnMouseAction								(float x, float y, EUIMessages mouse_action);
 	virtual bool		OnKeyboardAction							(int dik, EUIMessages keyboard_action);
+	virtual bool		OnGamepadKeyAction							(int id, EUIMessages gamepad_action);
+	virtual bool		OnGamepadKeyHold							(int id);
 
 	bool				AddItem								(LPCSTR  str, void* pData = NULL, u32 tag_value = 0);
 	bool				AddItem_script						(LPCSTR  str){return AddItem(str);};
@@ -35,8 +37,11 @@ public:
 	void				AutoUpdateSize						();
 	
 	void				ShowSubMenu							();
-	void		OnItemReceivedFocus					(CUIWindow* w, void* d);
+	void				OnItemReceivedFocus					(CUIWindow* w, void* d);
 protected:
+	bool				MoveSelectionDown					(bool bLoop);
+	bool				MoveSelectionUp						(bool bLoop);
+
 	CUIListBox			m_UIListWnd;
 private:
 	//I must not hide this menu, and my child sub menu must hide me...

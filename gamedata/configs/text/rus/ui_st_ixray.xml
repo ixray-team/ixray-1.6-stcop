@@ -573,4 +573,73 @@
 	<string id="ui_talk_open_upgrade">
 		<text>$$ACTION_UI_ACTION_2$$ Ремонт/модификация</text>
 	</string>
+	<string id="ui_am_actions">
+		<text>$$ACTION_UI_ACTION_1$$ Действия</text>
+	</string>
+	<string id="ui_am_use">
+		<text>$$ACTION_UI_ACCEPT$$ Использовать</text>
+	</string>
+	<string id="ui_am_info">
+		<text>$$ACTION_UI_HINT$$ Информация</text>
+	</string>
+	<string id="ui_am_take_all">
+		<text>$$ACTION_actormenu_action$$ Взять всё</text>
+	</string>
+	<string id="ui_am_put_all">
+		<text>$$ACTION_actormenu_action$$ Сложить всё</text>
+	</string>
+	<string id="ui_am_trade">
+		<text>$$ACTION_actormenu_action$$ Торговать</text>
+	</string>
+	<string id="ui_am_propbox_select">
+		<text>$$ACTION_UI_ACCEPT$$ Выбрать</text>
+	</string>
+	<string id="ui_am_repair">
+		<text>$$ACTION_actormenu_action$$ Починить</text>
+	</string>
+	<string id="ui_am_upgrade">
+		<text>$$ACTION_UI_ACCEPT$$ Улучшить</text>
+	</string>
+	<string id="st_move_to_offer">
+		<text>предложить</text>
+	</string>
+	<string id="st_move_to_offer_amount">
+		<text>предложить кол-во</text>
+	</string>
+	<string id="st_move_to_offer_all">
+		<text>предложить всё</text>
+	</string>
+	<string id="st_remove_from_offer">
+		<text>убрать</text>
+	</string>
+	<string id="st_remove_from_offer_amount">
+		<text>убрать кол-во</text>
+	</string>
+	<string id="st_remove_from_offer_all">
+		<text>убрать всё</text>
+	</string>
+	<string id="st_move_to_cart">
+		<text>выбрать</text>
+	</string>
+	<string id="st_move_to_cart_amount">
+		<text>выбрать кол-во</text>
+	</string>
+	<string id="st_move_to_cart_all">
+		<text>выбрать всё</text>
+	</string>
+	<string id="st_remove_from_cart">
+		<text>убрать</text>
+	</string>
+	<string id="st_remove_from_cart_amount">
+		<text>убрать кол-во</text>
+	</string>
+	<string id="st_remove_from_cart_all">
+		<text>убрать всё</text>
+	</string>
+	<string id="st_split_item_half_gp">
+		<text>$$ACTION_UI_ACTION_1$$ Половина</text>
+	</string>
+	<string id="st_split_item_all_gp">
+		<text>$$ACTION_UI_ACTION_2$$ Все</text>
+	</string>
 </string_table>

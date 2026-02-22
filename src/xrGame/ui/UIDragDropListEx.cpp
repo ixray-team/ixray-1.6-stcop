@@ -5,7 +5,8 @@
 #include "UICellItem.h"
 #include "../../xrUI/UICursor.h"
 #include "../Inventory.h"
-
+#include "../../xrUI/Widgets/UIFrameWindow.h"
+#include "../../xrEngine/xr_input.h"
 
 CUIDragItem* CUIDragDropListEx::m_drag_item = nullptr;
 
@@ -30,6 +31,10 @@ CUIDragDropListEx::CUIDragDropListEx()
 	m_vScrollBar->SetAutoDelete	(true);
 	m_selected_item				= nullptr;
 	m_bConditionProgBarVisible	= false;
+
+	m_selectorFrame				= new CUIFrameWindow();
+	m_selectorFrame->SetVisible(false);
+	AttachChild					(m_selectorFrame);
 
 	SetCellSize					(Ivector2().set(50,50));
 	SetCellsCapacity			(Ivector2().set(0,0));
@@ -58,6 +63,8 @@ CUIDragDropListEx::~CUIDragDropListEx()
 	DestroyDragItem		();
 
 	delete_data					(m_container);
+
+	xr_delete					(m_selectorFrame);
 }
 
 void CUIDragDropListEx::SetAutoGrow(bool b)						
@@ -108,6 +115,59 @@ void CUIDragDropListEx::SetVirtualCells(bool b)
 bool CUIDragDropListEx::GetVirtualCells()
 {
 	return !!m_flags.test(flVirtualCells);
+}
+
+void CUIDragDropListEx::UpdateSelector()
+{
+	if (!HasCells())
+	{
+		return;
+	}
+
+	m_container->ValidateSelector();
+	m_selected_item = m_container->GetCellAt(m_container->GetSelectorArea().lt).m_item;
+
+	// Check if selector is visible
+	const Irect& selectorArea = m_container->GetSelectorArea();
+	const int selAreaW = selectorArea.width();
+	const int selAreaH = selectorArea.height();
+	const Ivector2& cellSize = CellSize();
+	const Ivector2& cellSpacing = CellsSpacing();
+	const Ivector2& capacity = m_container->CellsCapacity();
+
+	Frect wndRect = { 0, 0, GetWndSize().x, GetWndSize().y };
+	wndRect.grow(1, 1);
+
+	Frect selectorBare;
+	selectorBare.x1 = selectorArea.x1 * (cellSize.x + cellSpacing.x);
+	selectorBare.y1 = selectorArea.y1 * (cellSize.y + cellSpacing.y);
+	selectorBare.x2 = selectorBare.x1 + selAreaW * cellSize.x + (selAreaW - 1) * cellSpacing.x;
+	selectorBare.y2 = selectorBare.y1 + selAreaH * cellSize.y + (selAreaH - 1) * cellSpacing.y;
+
+	Frect selector = selectorBare;
+	selector.add(m_container->GetWndPos().x, m_container->GetWndPos().y);
+
+	// If not fully visible, need to autoscroll
+	if (!(wndRect.in(selector.lt) && wndRect.in(selector.rb)))
+	{
+		if (selector.y1 > 0) // Scroll down
+			m_vScrollBar->SetScrollPos(selectorBare.y2 - GetWndSize().y); 
+		else
+			m_vScrollBar->SetScrollPos(selectorBare.y1); // Scroll up
+
+		m_container->SetWndPos(Fvector2().set(m_container->GetWndPos().x, float(-m_vScrollBar->GetScrollPos())));
+	}
+
+	// Update frame size and position
+	m_selectorFrame->SetWidth(selectorBare.width());
+	m_selectorFrame->SetHeight(selectorBare.height());
+
+	Fvector2 cellPos = { 
+		selectorArea.x1 * cellSize.x + selectorArea.x1 * cellSpacing.x, 
+		selector.y1 
+	};
+	m_selectorFrame->SetWndPos(cellPos);
+
 }
 
 void CUIDragDropListEx::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
@@ -403,6 +463,11 @@ bool CUIDragDropListEx::OnMouseAction(float x, float y, EUIMessages mouse_action
 	return b;
 }
 
+bool CUIDragDropListEx::HasCells() const
+{
+	return m_container->HasCells();
+}
+
 const Ivector2& CUIDragDropListEx::CellsCapacity()
 {
 	return m_container->CellsCapacity();
@@ -411,6 +476,12 @@ const Ivector2& CUIDragDropListEx::CellsCapacity()
 void CUIDragDropListEx::SetCellsCapacity(const Ivector2 c)
 {
 	m_container->SetCellsCapacity(c);
+
+	// Autohide selector if we are empty now
+	if (!m_container->HasCells())
+	{
+		m_selectorFrame->SetVisible(false);
+	}
 }
 
 const Ivector2& CUIDragDropListEx::CellSize()
@@ -491,6 +562,9 @@ bool CUIDragDropListEx::CanSetItem(CUICellItem* itm){
 
 CUICellItem* CUIDragDropListEx::RemoveItem(CUICellItem* itm, bool force_root)
 {
+	if (pInput->GetControllerMode() && itm == m_selected_item && itm->ChildsCount() == 0)
+		DeselectSelected();
+
 	CUICellItem* i				= m_container->RemoveItem		(itm, force_root);
 	i->SetOwnerList				((CUIDragDropListEx*)nullptr);
 	return						i;
@@ -559,6 +633,68 @@ CUICell& CUIDragDropListEx::GetCellAt(const Ivector2& pos)
 {
 	return m_container->GetCellAt(pos);
 };
+
+bool CUIDragDropListEx::MoveSelector(eUIDirection4 dir)
+{
+	R_ASSERT(HasCells());
+
+	bool bResult = m_container->MoveSelector(dir);
+	UpdateSelector();
+	return bResult;
+}
+
+bool CUIDragDropListEx::MoveSelectorToItem(CUICellItem* pItem)
+{
+	R_ASSERT(HasCells());
+
+	if (!pItem || !m_container->IsChild(pItem))
+		return false;
+
+	Irect newSelector;
+	const Ivector2& itemSize = pItem->GetGridSize();
+	newSelector.lt = m_container->GetItemPos(pItem);
+	newSelector.x2 = newSelector.x1 + itemSize.x;
+	newSelector.y2 = newSelector.y1 + itemSize.y;
+
+	m_container->TrySetSelector(newSelector);
+	return true;
+}
+
+void CUIDragDropListEx::InitSelector(LPCSTR texture_name)
+{
+	m_selectorFrame->InitTexture(texture_name);
+}
+
+void CUIDragDropListEx::SetControllerFocusIn(Irect selector)
+{
+	if (m_container->HasCells())
+	{
+		m_container->TrySetSelector(selector);
+		UpdateSelector();
+		m_selectorFrame->SetVisible(true);
+	}
+	else
+	{
+		m_selectorFrame->SetVisible(false);
+	}
+}
+void CUIDragDropListEx::SetControllerFocusOut()
+{
+	DeselectSelected();
+	m_selectorFrame->SetVisible(false);
+}
+
+
+void CUIDragDropListEx::DeselectSelected()
+{
+	if (m_selected_item)
+	{
+		if (m_f_item_focus_lost)
+			m_f_item_focus_lost(m_selected_item);
+		m_selected_item = nullptr;
+	}
+}
+
 // =================================================================================================
 
 CUICellContainer::CUICellContainer(CUIDragDropListEx* parent)
@@ -575,6 +711,11 @@ CUICellContainer::CUICellContainer(CUIDragDropListEx* parent)
 	}
 //	hShader_selected->create	( "hud\\fog_of_war", "ui_grid_selected" );
 	m_cellSpacing.set			( 0, 0 );
+
+	m_selectorArea.left = 0;
+	m_selectorArea.top = 0;
+	m_selectorArea.right = 1;
+	m_selectorArea.bottom = 1;
 }
 
 CUICellContainer::~CUICellContainer()
@@ -812,6 +953,7 @@ void CUICellContainer::GetTexUVLT(Fvector2& uv, u32 col, u32 row, u8 select_mode
 
 void CUICellContainer::SetCellsCapacity(const Ivector2& c)
 {
+	R_ASSERT(c.x >= 0 && c.y >= 0);
 	m_cellsCapacity				= c;
 	m_cells.resize				(c.x*c.y);
 	ReinitSize					();
@@ -875,6 +1017,11 @@ void CUICellContainer::ReinitSize()
 
 	SetWndSize							(Fvector2().set(sz.x,sz.y));
 	m_pParentDragDropList->ReinitScroll	();
+
+	if (HasCells())
+	{
+		ResetSelector();
+	}
 }
 
 void CUICellContainer::Grow()
@@ -894,6 +1041,8 @@ bool CUICellContainer::ValidCell(const Ivector2& pos) const
 // FFx0001 add support ignore items by ids
 void CUICellContainer::ClearAll(bool bDestroy, xr_vector<u16> IgnoredItemsIds)
 {
+	m_selectorArea = { 0,0,1,1 };
+
 	bool DeepSearch = false;
 	size_t cnt = IgnoredItemsIds.size();
 
@@ -1133,6 +1282,170 @@ void CUICellContainer::clear_select_armament()
 		if ( cell.m_item )
 		{
 			cell.m_item->m_select_armament = false;
+		}
+	}
+}
+
+void CUICellContainer::ResetSelector()
+{
+	R_ASSERT(m_cells.size() > 0 && m_cellsCapacity.x > 0 && m_cellsCapacity.y > 0);
+
+	CUICell& ui_cell = GetCellAt({ 0, 0 });
+	if (!ui_cell.m_item)
+	{
+		m_selectorArea = {0,0,1,1};
+	}
+	else
+	{
+		const Ivector2 itemSize = ui_cell.m_item->GetGridSize();
+		m_selectorArea = { 0,0,itemSize.x,itemSize.y };
+	}
+}
+
+
+void CUICellContainer::TrySetSelector(const Irect& selector)
+{
+	R_ASSERT(m_cells.size() > 0 && m_cellsCapacity.x > 0 && m_cellsCapacity.y > 0);
+
+	m_selectorArea = selector;
+	ValidateSelector();
+}
+
+// Return true if selector has been moved
+bool CUICellContainer::MoveSelector(eUIDirection4 dir)
+{
+	R_ASSERT(m_cells.size() > 0 && m_cellsCapacity.x > 0 && m_cellsCapacity.y > 0);
+
+	Ivector2 selectorPos = m_selectorArea.lt;
+	CUICell& ui_cell = GetCellAt(selectorPos);
+
+	int newX = m_selectorArea.x1;
+	int newY = m_selectorArea.y1;
+
+	if (m_selectorArea.width() > 1 && dir == eUIDirection4_Right)
+		newX += m_selectorArea.width() - 1;
+
+	if (m_selectorArea.height() > 1 && dir == eUIDirection4_Down)
+		newY += m_selectorArea.height() - 1;
+
+	switch (dir)
+	{
+	case eUIDirection4_Down: 
+		newY += 1;
+		break;
+	case eUIDirection4_Up:
+		newY += -1;
+		break;
+	case eUIDirection4_Left:
+		newX += -1;
+		break;
+	case eUIDirection4_Right:
+		newX += 1;
+		break;
+	}
+
+	if (newX < 0)
+		newX = 0;
+	else if (newX >= m_cellsCapacity.x)
+		newX = m_cellsCapacity.x - 1;
+
+	if (newY < 0)
+		newY = 0;
+	else if (newY >= m_cellsCapacity.y)
+		newY = m_cellsCapacity.y - 1;
+
+
+	CUICell& ui_cell_new = GetCellAt({ newX, newY });
+	if (ui_cell.m_item == ui_cell_new.m_item && ui_cell.m_item != NULL)
+		return false;
+
+	Irect oldSelectorArea = m_selectorArea;
+
+	if (ui_cell_new.Empty())
+	{
+		m_selectorArea.x1 = newX;
+		m_selectorArea.y1 = newY;
+		m_selectorArea.x2 = m_selectorArea.x1 + 1;
+		m_selectorArea.y2 = m_selectorArea.y1 + 1;
+	}
+	else
+	{
+		// Check object in this cell and how much cells it occupies
+		m_selectorArea.lt = GetItemPos(ui_cell_new.m_item);
+		const Ivector2 itemSize = ui_cell_new.m_item->GetGridSize();
+		m_selectorArea.x2 = m_selectorArea.x1 + itemSize.x;
+		m_selectorArea.y2 = m_selectorArea.y1 + itemSize.y;
+	}
+
+	return !oldSelectorArea.cmp(m_selectorArea);
+}
+
+void CUICellContainer::ValidateSelector()
+{
+	// Check selector is still inside of the bounds (width, height)
+	if (m_selectorArea.x1 >= m_cellsCapacity.x)
+		m_selectorArea.x1 = m_cellsCapacity.x-1;
+
+	if (m_selectorArea.y1 >= m_cellsCapacity.y)
+		m_selectorArea.y1 = m_cellsCapacity.y-1;
+
+	if (m_selectorArea.x2 > m_cellsCapacity.x)
+		m_selectorArea.x2 = m_cellsCapacity.x;
+
+	if (m_selectorArea.y2 > m_cellsCapacity.y)
+		m_selectorArea.y2 = m_cellsCapacity.y;
+
+	R_ASSERT(m_selectorArea.valide());
+
+	// Check that all cells have the same item in them
+	bool bAllTheSame = true;
+	Ivector2 pos = { m_selectorArea.x1, m_selectorArea.y1 };
+	CUICellItem* pFirstCellItem = GetCellAt(pos).m_item;
+	for (; pos.x < m_selectorArea.x2 && bAllTheSame; ++pos.x)
+	{
+		for (; pos.y < m_selectorArea.y2; ++pos.y)
+		{
+			R_ASSERT(ValidCell(pos));
+			CUICell& c = m_cells[m_cellsCapacity.x * pos.y + pos.x];
+			if (c.m_item != pFirstCellItem)
+			{
+				bAllTheSame = false;
+				break;
+			}
+		}
+	}
+
+	if (!bAllTheSame)
+	{
+		if (pFirstCellItem == nullptr)
+		{
+			m_selectorArea = { m_selectorArea.x1, m_selectorArea.y1, m_selectorArea.x1 + 1, m_selectorArea.y1 + 1 };
+		}
+		else
+		{
+			m_selectorArea.lt = GetItemPos(pFirstCellItem);
+			const Ivector2 itemSize = pFirstCellItem->GetGridSize();
+			m_selectorArea.x2 = m_selectorArea.x1 + itemSize.x;
+			m_selectorArea.y2 = m_selectorArea.y1 + itemSize.y;
+		}
+	}
+	else
+	{
+		if (pFirstCellItem)
+		{
+			// Wrap selector around this object
+			Ivector2 itemPos = GetItemPos(pFirstCellItem);
+			Ivector2 itemSize = pFirstCellItem->GetGridSize();
+			m_selectorArea.lt = itemPos;
+			m_selectorArea.x2 = m_selectorArea.x1 + itemSize.x;
+			m_selectorArea.y2 = m_selectorArea.y1 + itemSize.y;
+		}
+		else
+		{
+			// All the same but empty - shrink to 1 cell
+			// this might be a feature (dont shrink)
+			if (m_selectorArea.width() > 1 || m_selectorArea.height() > 1)
+				m_selectorArea = { m_selectorArea.x1, m_selectorArea.y1, m_selectorArea.x1 + 1, m_selectorArea.y1 + 1 };
 		}
 	}
 }

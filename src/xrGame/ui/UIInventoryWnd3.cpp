@@ -379,7 +379,7 @@ void CUIInventoryWnd::PropertiesBoxForSlots( PIItem item, bool& b_show )
 	if (	!pOutfit && !pHelmet &&
 			cur_slot != NO_ACTIVE_SLOT &&
 			!inv->SlotIsPersistent(cur_slot) &&
-			inv->CanPutInSlot(item, cur_slot) )
+			inv->CanPutInSlot(item, cur_slot, true) )
 	{
 		UIPropertiesBox.AddItem( "st_move_to_slot",  nullptr, INVENTORY_TO_SLOT_ACTION );
 		b_show = true;
