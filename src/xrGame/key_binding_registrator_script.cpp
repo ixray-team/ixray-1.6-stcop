@@ -143,7 +143,6 @@ void key_binding_registrator::script_register(lua_State *L)
 				value("kUI_ACCEPT",	                int(kUI_ACCEPT)),
 				value("kUI_BACK",	                int(kUI_BACK)),
 				value("kUI_HINT",	                int(kUI_HINT)),
-				value("kUI_CONTEXT_MENU",	        int(kUI_CONTEXT_MENU)),
 				value("kUI_ACTION_1",	            int(kUI_ACTION_1)),
 				value("kUI_ACTION_2",	            int(kUI_ACTION_2)),
 

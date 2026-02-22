@@ -10,7 +10,7 @@
 #include "UICellItem.h"
 #include "UIInventoryUtilities.h"
 #include "UICellItemFactory.h"
-
+#include "../../xrEngine/xr_input.h"
 #include "../InventoryOwner.h"
 #include "../Inventory.h"
 #include "../trade.h"
@@ -78,6 +78,8 @@ void CUIActorMenu::InitTradeMode()
 	m_partner_trade->StartTradeEx	( m_pActorInvOwner );
 
 	UpdatePrices();
+
+	SetAreaSelectionTo(m_pTradeActorBagList);
 }
 bool is_item_in_list(CUIDragDropListEx* pList, PIItem item)
 {
@@ -221,6 +223,16 @@ bool CUIActorMenu::ToActorTrade(CUICellItem* itm, bool b_use_cursor_pos)
 	}
 }
 
+void CUIActorMenu::ToActorTradeAll(CUICellItem* itm)
+{
+	while (itm->ChildsCount())
+	{
+		if (!ToActorTrade(itm->Child(0), false))
+			return;
+	}
+	ToActorTrade(itm, false);
+}
+
 bool CUIActorMenu::ToPartnerTrade(CUICellItem* itm, bool b_use_cursor_pos)
 {
 	//Перенос в список для покупки.
@@ -257,11 +269,21 @@ bool CUIActorMenu::ToPartnerTrade(CUICellItem* itm, bool b_use_cursor_pos)
 	return true;
 }
 
+void CUIActorMenu::ToPartnerTradeAll(CUICellItem* itm)
+{
+	while (itm->ChildsCount())
+	{
+		if (!ToPartnerTrade(itm->Child(0), false))
+			return;
+	}
+	ToPartnerTrade(itm, false);
+}
+
 bool CUIActorMenu::ToPartnerTradeBag(CUICellItem* itm, bool b_use_cursor_pos)
 {
 	// Перенос назад в список предметов NPC
 	CUIDragDropListEx* old_owner = itm->OwnerList();
-	CUIDragDropListEx* new_owner = NULL;
+	CUIDragDropListEx* new_owner = nullptr;
 
 	if (b_use_cursor_pos)
 	{
@@ -277,6 +299,16 @@ bool CUIActorMenu::ToPartnerTradeBag(CUICellItem* itm, bool b_use_cursor_pos)
 		new_owner->SetItem(i);
 
 	return true;
+}
+
+void CUIActorMenu::ToPartnerTradeBagAll(CUICellItem* itm)
+{
+	while (itm->ChildsCount())
+	{
+		if (!ToPartnerTradeBag(itm->Child(0), false))
+			return;
+	}
+	ToPartnerTradeBag(itm, false);
 }
 
 float CUIActorMenu::CalcItemsWeight(CUIDragDropListEx* pList)
@@ -487,6 +519,9 @@ void CUIActorMenu::OnBtnPerformTrade(CUIWindow* w, void* d)
 
 		TransferItems(m_pTradeActorList, m_pTradePartnerBagList, m_partner_trade, true);
 		TransferItems(m_pTradePartnerList, m_pTradeActorBagList, m_partner_trade, false);
+
+		if (pInput->GetControllerMode())
+			SetCurrentItem(nullptr);
 	}
 	else
 	{
@@ -503,7 +538,8 @@ void CUIActorMenu::OnBtnPerformTrade(CUIWindow* w, void* d)
 			CallMessageBoxOK("trade_dont_make");
 		}
 	}
-	SetCurrentItem(nullptr);
+	if (!pInput->GetControllerMode())
+		SetCurrentItem(nullptr);
 
 	UpdateItemsPlace();
 }
@@ -530,6 +566,12 @@ void CUIActorMenu::OnBtnPerformTradeBuy(CUIWindow* w, void* d)
 
 //		TransferItems( m_pTradeActorList,   m_pTradePartnerBagList, m_partner_trade, true );
 		TransferItems( m_pTradePartnerList,	m_pTradeActorBagList,	m_partner_trade, false );
+
+		// we clear current selection here since the item is transferred.
+		// Only allow calling OnBtnPerformTradeBuy when current selection is inside the list of items to transfer
+		// otherwise we can clear selection for another area 
+		if (pInput->GetControllerMode())
+			SetCurrentItem(nullptr);
 	}
 	else
 	{
@@ -546,7 +588,8 @@ void CUIActorMenu::OnBtnPerformTradeBuy(CUIWindow* w, void* d)
 			CallMessageBoxOK( "trade_dont_make" );
 		}
 	}
-	SetCurrentItem					( nullptr );
+	if (!pInput->GetControllerMode())
+		SetCurrentItem				( nullptr );
 
 	UpdateItemsPlace				();
 }
@@ -573,6 +616,9 @@ void CUIActorMenu::OnBtnPerformTradeSell(CUIWindow* w, void* d)
 		m_partner_trade->OnPerformTrade(partner_price, actor_price);
 
 		TransferItems(m_pTradeActorList, m_pTradePartnerBagList, m_partner_trade, true);
+
+		if (pInput->GetControllerMode())
+			SetCurrentItem(nullptr);
 	}
 	else
 	{
@@ -585,8 +631,8 @@ void CUIActorMenu::OnBtnPerformTradeSell(CUIWindow* w, void* d)
 			CallMessageBoxOK("trade_dont_make");
 		}
 	}
-
-	SetCurrentItem(nullptr);
+	if (!pInput->GetControllerMode())
+		SetCurrentItem(nullptr);
 
 	UpdateItemsPlace();
 }

@@ -312,15 +312,6 @@
     <string id="SM_DOG_F">
         <text>PsyDog (Phantom)</text>
     </string>
-    <string id="ui_mm_lights_details">
-        <text>Extended grass shadows</text>
-    </string>
-    <string id="ui_mm_puddles">
-        <text>Volumetric puddles</text>
-    </string>
-    <string id="ui_mm_grass_distance">
-        <text>Grass distance</text>
-    </string>
     <string id="SCRPTART">
         <text>Artefact</text>
     </string>
@@ -357,6 +348,15 @@
     <string id="SO_HLAMP">
         <text>Hanging lamp</text>
     </string>
+	<string id="ui_mm_lights_details">
+		<text>Extended grass shadows</text>
+	</string>
+	<string id="ui_mm_puddles">
+		<text>Volumetric puddles</text>
+	</string>
+	<string id="ui_mm_grass_distance">
+		<text>Grass distance</text>
+	</string>
     <string id="ui_mm_screenshot_format">
         <text>Screenshot format</text>
     </string>
@@ -393,14 +393,26 @@
 	<string id="st_dress_backpack">
 		<text>put on backpack</text>
 	</string>
+	<string id="ui_mm_bobbing_factor">
+		<text>Camera bobbing factor</text>
+	</string>
+	<string id="ui_mm_hit_slowmo">
+		<text>Slowdown after damage</text>
+	</string>
+	<string id="ui_mm_wpn_aim_toggle">
+		<text>Toggle Aim</text>
+	</string>
+	<string id="kb_clear_gasmask">
+		<text>Wipe mask</text>
+	</string>
+	<string id="ui_mm_mouse_sense_ui">
+		<text>Mouse sensitivity in UI</text>
+	</string>
 	<string id="ui_mm_r4_use_gasmask">
 		<text>Glass mask effect</text>
 	</string>
 	<string id="ui_mm_r2_use_rain_drops">
 		<text>Drops on Glass</text>
-	</string>
-	<string id="ui_mm_mouse_sense_ui">
-		<text>Mouse sensitivity in UI</text>
 	</string>
 	<string id="st_drop_amount">
 		<text>drop amount</text>
@@ -420,14 +432,23 @@
 	<string id="st_custom_drop_hint_2">
 		<text>Specify amount of items to take</text>
 	</string>
-	<string id="ui_mm_bobbing_factor">
-		<text>Camera bobbing factor</text>
+	<string id="st_drop_amount_title">
+		<text>Drop</text>
 	</string>
-	<string id="ui_mm_hit_slowmo">
-		<text>Slowdown after damage</text>
+	<string id="st_drop_amount_placeholder">
+		<text>Specify the number of items to drop</text>
 	</string>
-	<string id="ui_mm_wpn_aim_toggle">
-		<text>Toggle Aim</text>
+	<string id="st_split_item_half">
+		<text>Half</text>
+	</string>
+	<string id="st_split_item_all">
+		<text>All</text>
+	</string>
+	<string id="st_split_item_cancel">
+		<text>Cancel</text>
+	</string>
+	<string id="st_split_item_accept">
+		<text>Accept</text>
 	</string>
     <string id="st_gameplay_settings">
         <text>Gameplay</text>
@@ -463,60 +484,159 @@
 		<text>Shots volume</text>
 	</string>
 	<string id="ui_pda_tabs">
-		<text>Tabs</text>
+		<text>$$ACTION_UI_TAB_LEFT$$/$$ACTION_UI_TAB_RIGHT$$ Tabs</text>
 	</string>
 	<string id="ui_pda_log_to_start">
-		<text>First</text>
+		<text>$$ACTION_PDA_LOG_SCROLL_UP$$ First</text>
 	</string>
 	<string id="ui_pda_log_to_end">
-		<text>Last</text>
+		<text>$$ACTION_PDA_LOG_SCROLL_DOWN$$ Last</text>
 	</string>
 	<string id="ui_pda_log_date_prev">
-		<text>Previous date</text>
+		<text>$$ACTION_PDA_LOG_DATE_PREV$$ Previous date</text>
 	</string>
 	<string id="ui_pda_log_date_next">
-		<text>Next date</text>
+		<text>$$ACTION_PDA_LOG_DATE_NEXT$$ Next date</text>
+	</string>
+	<string id="ui_pda_log_show_news">
+		<text>$$ACTION_PDA_LOG_SHOW_NEWS$$ Show news</text>
+	</string>
+	<string id="ui_pda_log_show_dialogs">
+		<text>$$ACTION_PDA_LOG_SHOW_DIALOGS$$ Show dialogs</text>
 	</string>
 	<string id="ui_mm_select">
-		<text>Select menu item</text>
+		<text>$$ACTION_UI_ACCEPT$$ Select menu item</text>
 	</string>
 	<string id="ui_mm_select_difficulty">
-		<text>Select difficulty</text>
+		<text>$$ACTION_UI_ACCEPT$$ Select difficulty</text>
+	</string>
+	<string id="ui_mm_load_gp">
+		<text>$$ACTION_UI_ACCEPT$$ Load</text>
+	</string>
+	<string id="ui_mm_save_gp">
+		<text>$$ACTION_UI_ACCEPT$$ Save</text>
+	</string>
+	<string id="ui_mm_delete_gp">
+		<text>$$ACTION_UI_ACTION_1$$ Delete</text>
+	</string>
+	<string id="ui_mm_back_gp">
+		<text>$$ACTION_UI_BACK$$ Back</text>
 	</string>
 	<string id="st_manual_save">
 		<text>Manual save - </text>
 	</string>
 	<string id="st_options_save">
-		<text>Accept</text>
+		<text>$$ACTION_UI_ACCEPT$$ Accept</text>
 	</string>
 	<string id="st_options_toggle">
-		<text>Toggle</text>
+		<text>$$ACTION_UI_ACCEPT$$ Toggle</text>
 	</string>
 	<string id="st_options_tune_item">
 		<text>Tune</text>
 	</string>
 	<string id="st_options_advanced">
-		<text>Advanced Video Options</text>
+		<text>$$ACTION_UI_ACTION_2$$ Advanced Video Options</text>
 	</string>
 	<string id="st_options_basic">
-		<text>Basic Video Options</text>
+		<text>$$ACTION_UI_ACTION_2$$ Basic Video Options</text>
 	</string>
 	<string id="ui_rmw_select">
 		<text>Select Sector</text>
 	</string>
 	<string id="ui_rmw_drop_weapon">
-		<text>Drop Weapon</text>
+		<text>$$ACTION_DROP$$ Drop Weapon</text>
 	</string>
 	<string id="ui_rmw_night_vision">
-		<text>Night Vision</text>
+		<text>$$ACTION_NIGHT_VISION$$ Night Vision</text>
 	</string>
 	<string id="ui_rmw_wpn_func">
-		<text>Additional Weapon</text>
+		<text>$$ACTION_WPN_FUNC$$ Additional Weapon</text>
 	</string>
 	<string id="ui_rmw_fire_mode">
-		<text>Fire Mode</text>
+		<text>$$ACTION_WPN_FIREMODE_NEXT$$ Fire Mode</text>
 	</string>
 	<string id="ui_rmw_ammo_next">
-		<text>Ammo Type</text>
+		<text>$$ACTION_WPN_NEXT$$ Ammo Type</text>
+	</string>
+	<string id="ui_talk_reply">
+		<text>$$ACTION_UI_ACCEPT$$ Talk</text>
+	</string>
+	<string id="ui_talk_log">
+		<text>$$ACTION_UI_SEC_UP$$/$$ACTION_UI_SEC_DOWN$$ Log</text>
+	</string>
+	<string id="ui_talk_open_trade">
+		<text>$$ACTION_UI_ACTION_2$$ Trade</text>
+	</string>
+	<string id="ui_talk_open_upgrade">
+		<text>$$ACTION_UI_ACTION_2$$ Repair/modifications</text>
+	</string>
+	<string id="ui_am_actions">
+		<text>$$ACTION_UI_ACTION_1$$ Actions</text>
+	</string>
+	<string id="ui_am_use">
+		<text>$$ACTION_UI_ACCEPT$$ Use</text>
+	</string>
+	<string id="ui_am_info">
+		<text>$$ACTION_UI_HINT$$ Information</text>
+	</string>
+	<string id="ui_am_take_all">
+		<text>$$ACTION_actormenu_action$$ Take all</text>
+	</string>
+	<string id="ui_am_put_all">
+		<text>$$ACTION_actormenu_action$$ Stash all</text>
+	</string>
+	<string id="ui_am_trade">
+		<text>$$ACTION_actormenu_action$$ Trade</text>
+	</string>
+	<string id="ui_am_propbox_select">
+		<text>$$ACTION_UI_ACCEPT$$ Select</text>
+	</string>
+	<string id="ui_am_repair">
+		<text>$$ACTION_actormenu_action$$ Repair</text>
+	</string>
+	<string id="ui_am_upgrade">
+		<text>$$ACTION_UI_ACCEPT$$ Upgrade</text>
+	</string>
+	<string id="st_move_to_offer">
+		<text>offer</text>
+	</string>
+	<string id="st_move_to_offer_amount">
+		<text>offer multiple</text>
+	</string>
+	<string id="st_move_to_offer_all">
+		<text>offer all</text>
+	</string>
+	<string id="st_remove_from_offer">
+		<text>remove</text>
+	</string>
+	<string id="st_remove_from_offer_amount">
+		<text>remove multiple</text>
+	</string>
+	<string id="st_remove_from_offer_all">
+		<text>remove all</text>
+	</string>
+	<string id="st_move_to_cart">
+		<text>select</text>
+	</string>
+	<string id="st_move_to_cart_amount">
+		<text>select multiple</text>
+	</string>
+	<string id="st_move_to_cart_all">
+		<text>select all</text>
+	</string>
+	<string id="st_remove_from_cart">
+		<text>remove</text>
+	</string>
+	<string id="st_remove_from_cart_amount">
+		<text>remove multiple</text>
+	</string>
+	<string id="st_remove_from_cart_all">
+		<text>remove all</text>
+	</string>
+	<string id="st_split_item_half_gp">
+		<text>$$ACTION_UI_ACTION_1$$ Half</text>
+	</string>
+	<string id="st_split_item_all_gp">
+		<text>$$ACTION_UI_ACTION_2$$ All</text>
 	</string>
 </string_table>

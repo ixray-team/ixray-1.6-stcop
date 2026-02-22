@@ -10,7 +10,7 @@
 #include "pch_script.h"
 #include "object_broker.h"
 #include "../../xrEngine/string_table.h"
-
+#include "../../xrEngine/xr_input.h"
 #include "UIInvUpgrade.h"
 
 #include "../../xrUI/xrUIXmlParser.h"
@@ -259,13 +259,16 @@ bool UIUpgrade::OverrideFreeButtonState(const UIUpgrade::Upgrade_type* my_upgrad
 
 void UIUpgrade::update_upgrade_state()
 {
-	if (m_bCursorOverWindow || m_point && m_point->CursorOverWindow())
+	if (!pInput->GetControllerMode())
 	{
-		on_over_window();
-	}
-	else
-	{
-		m_button_state = BUTTON_FREE;
+		if (m_bCursorOverWindow || m_point && m_point->CursorOverWindow())
+		{
+			on_over_window();
+		}
+		else
+		{
+			m_button_state = BUTTON_FREE;
+		}
 	}
 
 	if (m_state_lock)
@@ -375,6 +378,11 @@ bool UIUpgrade::OnMouseAction(float x, float y, EUIMessages mouse_action)
 
 void UIUpgrade::OnFocusReceive()
 {
+	if (pInput->GetControllerMode())
+	{
+		return;
+	}
+
 	inherited::OnFocusReceive();
 	update_mask();
 	highlight_relation(true);
@@ -382,11 +390,35 @@ void UIUpgrade::OnFocusReceive()
 
 void UIUpgrade::OnFocusLost()
 {
+	if (pInput->GetControllerMode())
+	{
+		return;
+	}
+
 	inherited::OnFocusLost();
 	highlight_relation(false);
 
 	m_parent_wnd->set_info_cur_upgrade(nullptr);
 	m_button_state = BUTTON_FREE;
+}
+
+void UIUpgrade::SetSelected(bool status)
+{
+	if (status)
+	{
+		m_button_state = BUTTON_FOCUSED;
+		update_upgrade_state();
+		update_mask();
+		highlight_relation(true);
+	}
+	else
+	{
+		highlight_relation(false);
+		m_parent_wnd->set_info_cur_upgrade(nullptr);
+		m_button_state = BUTTON_FREE;
+		update_upgrade_state();
+		update_mask();
+	}
 }
 
 void UIUpgrade::OnClick()

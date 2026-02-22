@@ -20,6 +20,7 @@
 #include "../../xrUI/xrUIXmlParser.h"
 #include "../../xrCore/xr_ini.h"
 #include "../../xrEngine/string_table.h"
+#include "../../xrEngine/xr_input.h"
 
 CUIItemDropAmountWnd::CUIItemDropAmountWnd()
     : _background(nullptr)
@@ -48,6 +49,11 @@ CUIItemDropAmountWnd::CUIItemDropAmountWnd()
     , _pItem(nullptr)
 {
     m_bWorkInPause = true;
+}
+
+CUIItemDropAmountWnd::~CUIItemDropAmountWnd()
+{
+    ActionRepeaters()->UnregisterOwner(this);
 }
 
 void CUIItemDropAmountWnd::InitDropAmount()
@@ -184,11 +190,17 @@ void CUIItemDropAmountWnd::InitDropAmount()
             AddCallback(_btnAccept, BUTTON_CLICKED, CUIWndCallback::void_function(this, &CUIItemDropAmountWnd::OnBtnAcceptClicked));
         }
     }
+
+    xr_strconcat(str, base, ":gamepad_legend");
+    _gamepadLegend = UIHelper::CreateGamepadLegend(uiXml, str, this, false);
+
+    ActionRepeaters()->Register(this, kUI_LEFT);
+    ActionRepeaters()->Register(this, kUI_RIGHT);
 }
 
 void CUIItemDropAmountWnd::RecalculateLayout(CInventoryItem* pItem)
 {
-    (void)pItem;
+    // WTF?
 }
 
 void CUIItemDropAmountWnd::ShowDropAmount(u32 max, EDropMode mode, CInventoryItem* pItem)
@@ -378,23 +390,17 @@ void CUIItemDropAmountWnd::PerformDrop()
 
 void CUIItemDropAmountWnd::OnBtnYesClicked(CUIWindow* w, void* d)
 {
-    (void)w;
-    (void)d;
     PerformDrop();
     HideDialog();
 }
 
 void CUIItemDropAmountWnd::OnBtnNoClicked(CUIWindow* w, void* d)
 {
-    (void)w;
-    (void)d;
     HideDialog();
 }
 
 void CUIItemDropAmountWnd::OnBtnAcceptClicked(CUIWindow* w, void* d)
 {
-    (void)w;
-    (void)d;
     if (_editAmount && _extendedLayout)
         SyncEditToValue();
     if (_simpleDropMode)
@@ -416,15 +422,11 @@ void CUIItemDropAmountWnd::OnBtnAcceptClicked(CUIWindow* w, void* d)
 
 void CUIItemDropAmountWnd::OnBtnCancelClicked(CUIWindow* w, void* d)
 {
-    (void)w;
-    (void)d;
     HideDialog();
 }
 
 void CUIItemDropAmountWnd::OnBtnDecClicked(CUIWindow* w, void* d)
 {
-    (void)w;
-    (void)d;
     _currentAmount--;
     clamp(_currentAmount, 1, _maxAmount + 1);
     _trackBar->SetIValue(_currentAmount);
@@ -433,8 +435,6 @@ void CUIItemDropAmountWnd::OnBtnDecClicked(CUIWindow* w, void* d)
 
 void CUIItemDropAmountWnd::OnBtnIncClicked(CUIWindow* w, void* d)
 {
-    (void)w;
-    (void)d;
     _currentAmount++;
     clamp(_currentAmount, 1, _maxAmount + 1);
     _trackBar->SetIValue(_currentAmount);
@@ -443,8 +443,6 @@ void CUIItemDropAmountWnd::OnBtnIncClicked(CUIWindow* w, void* d)
 
 void CUIItemDropAmountWnd::OnBtnHalfClicked(CUIWindow* w, void* d)
 {
-    (void)w;
-    (void)d;
     _currentAmount = (_maxAmount + 2) / 2;
     clamp(_currentAmount, 1, _maxAmount + 1);
     _trackBar->SetIValue(_currentAmount);
@@ -453,8 +451,6 @@ void CUIItemDropAmountWnd::OnBtnHalfClicked(CUIWindow* w, void* d)
 
 void CUIItemDropAmountWnd::OnBtnAllClicked(CUIWindow* w, void* d)
 {
-    (void)w;
-    (void)d;
     _currentAmount = _maxAmount + 1;
     _trackBar->SetIValue(_currentAmount);
     SyncValueToEdit();
@@ -462,15 +458,11 @@ void CUIItemDropAmountWnd::OnBtnAllClicked(CUIWindow* w, void* d)
 
 void CUIItemDropAmountWnd::OnEditCommit(CUIWindow* w, void* d)
 {
-    (void)w;
-    (void)d;
     SyncEditToValue();
 }
 
 void CUIItemDropAmountWnd::OnTrackChanged(CUIWindow* w, void* d)
 {
-    (void)w;
-    (void)d;
     _currentAmount = _trackBar->GetIValue();
     SyncValueToEdit();
 }
@@ -505,4 +497,88 @@ bool CUIItemDropAmountWnd::OnKeyboardAction(int dik, EUIMessages keyboardAction)
         return true;
 
     return false;
+}
+
+bool CUIItemDropAmountWnd::OnGamepadKeyAction(int id, EUIMessages gamepadAction)
+{
+    if (gamepadAction == WINDOW_KEY_PRESSED)
+    {
+        switch (get_binded_action(id, agUIGeneral))
+        {
+            case kUI_ACCEPT:
+            {
+                OnBtnAcceptClicked(this, nullptr);
+                return true;
+            }
+            case kUI_BACK:
+            {
+                OnBtnCancelClicked(this, nullptr);
+                return true;
+            }
+            case kUI_ACTION_1:
+            {
+                OnBtnHalfClicked(this, nullptr);
+                return true;
+            }
+            case kUI_ACTION_2:
+            {
+                OnBtnAllClicked(this, nullptr);
+                return true;
+            }
+            case kUI_LEFT:
+            {
+                ActionRepeaters()->SetActionStarted(this, kUI_LEFT);
+                if (!any_binded_key_for_action_pressed_c(kUI_RIGHT))
+                    _trackBar->StepLeft();
+                return true;
+            }
+            case kUI_RIGHT:
+            {
+                ActionRepeaters()->SetActionStarted(this, kUI_RIGHT);
+                if (!any_binded_key_for_action_pressed_c(kUI_LEFT))
+                    _trackBar->StepRight();
+                return true;
+            }
+        }
+    }
+
+    return CUIDialogWnd::OnGamepadKeyAction(id, gamepadAction);
+}
+
+bool CUIItemDropAmountWnd::OnGamepadKeyHold(int id)
+{
+    switch (get_binded_action(id, agUIGeneral))
+    {
+        case kUI_LEFT:
+        {
+            if (ActionRepeaters()->CanRepeatActionNow(this, kUI_LEFT) && !any_binded_key_for_action_pressed_c(kUI_RIGHT))
+                _trackBar->StepLeft();
+            return true;
+        }
+        case kUI_RIGHT:
+        {
+            if (ActionRepeaters()->CanRepeatActionNow(this, kUI_RIGHT) && !any_binded_key_for_action_pressed_c(kUI_LEFT))
+                _trackBar->StepRight();
+            return true;
+        }
+    }
+
+    return CUIDialogWnd::OnGamepadKeyHold(id);
+}
+
+void CUIItemDropAmountWnd::Update()
+{
+    CUIDialogWnd::Update();
+
+    if (_btnAccept)
+        _btnAccept->Show(!pInput->GetControllerMode());
+
+    if (_btnCancel)
+        _btnCancel->Show(!pInput->GetControllerMode());
+
+    if (_btnHalf)
+        _btnHalf->Show(!pInput->GetControllerMode());
+
+    if (_btnAll)
+        _btnAll->Show(!pInput->GetControllerMode());
 }

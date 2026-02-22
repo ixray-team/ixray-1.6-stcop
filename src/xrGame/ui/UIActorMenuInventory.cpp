@@ -16,7 +16,7 @@
 #include "UIMainIngameWnd.h"
 #include "UIGameCustom.h"
 #include "eatable_item_object.h"
-
+#include "../../xrEngine/xr_input.h"
 #include "../Silencer.h"
 #include "../Scope.h"
 #include "../GrenadeLauncher.h"
@@ -68,6 +68,8 @@ void CUIActorMenu::InitInventoryMode()
 		m_clock_value->Show(true);
 
 	InitInventoryContents(m_pInventoryBagList);
+
+	SetAreaSelectionTo(m_pInventoryBagList);
 
 	VERIFY(CurrentGameUI());
 	CurrentGameUI()->UIMainIngameWnd->ShowZoneMap(true);
@@ -924,6 +926,18 @@ bool CUIActorMenu::ToBelt(CUICellItem* itm, bool b_use_cursor_pos)
 	}
 }
 
+void CUIActorMenu::ToBagAll(CUICellItem* itm)
+{
+	while (itm->ChildsCount())
+	{
+		CUICellItem* childItem = itm->Child(0);
+		if (!ToBag(childItem, false))
+			return;
+	}
+
+	ToBag(itm, false);
+}
+
 CUIDragDropListEx* CUIActorMenu::GetSlotList(u16 slot_idx)
 {
 	if (slot_idx == NO_ACTIVE_SLOT)
@@ -1055,8 +1069,7 @@ void CUIActorMenu::ActivatePropertiesBox()
 
 	if(m_currMenuMode == mmInventory || m_currMenuMode == mmDeadBodySearch) 
 	{
-		PropertiesBoxForSlots(item, b_show);
-		PropertiesBoxForWeapon(cell_item, item, b_show);
+		PropertiesBoxForSlots(cell_item, item, b_show);
 		PropertiesBoxForAddon(item, b_show);
 		PropertiesBoxForUsing(item, b_show);
 		PropertiesBoxForPlaying(item, b_show);
@@ -1066,14 +1079,21 @@ void CUIActorMenu::ActivatePropertiesBox()
 	else if(m_currMenuMode == mmUpgrade) 
 	{
 		PropertiesBoxForRepair(item, b_show);
+		PropertiesBoxForUpgrade(item, b_show);
 	}
-	//Alundaio: Ability to donate item to npc during trade
-	else if (m_isDonateCurrentItem && m_currMenuMode == mmTrade)
+	else if (m_currMenuMode == mmTrade)
 	{
-		CUIDragDropListEx* invlist = GetListByType(iActorBag);
-		if (invlist->IsOwner(cell_item))
-			PropertiesBoxForDonate(item, b_show);
+		PropertiesBoxForTrade(cell_item, item, b_show);
+		if (m_isDonateCurrentItem)
+		{
+			CUIDragDropListEx* invlist = GetListByType(iActorBag);
+			if (invlist->IsOwner(cell_item))
+				PropertiesBoxForDonate(item, b_show);
+		}
 	}
+	if (!(m_currMenuMode == mmTrade && (m_pTradePartnerBagList->IsOwner(cell_item) || m_pTradePartnerList->IsOwner(cell_item))))
+		PropertiesBoxForWeapon(cell_item, item, b_show);
+
 	//-Alundaio
 
 	if(b_show) 
@@ -1083,14 +1103,19 @@ void CUIActorMenu::ActivatePropertiesBox()
 		Fvector2 cursor_pos_;
 		Frect vis_rect;
 		GetAbsoluteRect(vis_rect);
-		cursor_pos_ = GetUICursor().GetCursorPosition();
+
+		if (!pInput->GetControllerMode())
+			cursor_pos_ = GetUICursor().GetCursorPosition();
+		else
+			cell_item->GetAbsolutePos(cursor_pos_);
+		
 		cursor_pos_.sub(vis_rect.lt);
 		m_UIPropertiesBox->Show(vis_rect, cursor_pos_);
 		PlaySnd(eProperties);
 	}
 }
 
-void CUIActorMenu::PropertiesBoxForSlots(PIItem item, bool& b_show)
+void CUIActorMenu::PropertiesBoxForSlots(CUICellItem* cell_item, PIItem item, bool& b_show)
 {
 	if (item->parent_id() != m_pActorInvOwner->object_id())
 	{
@@ -1111,7 +1136,7 @@ void CUIActorMenu::PropertiesBoxForSlots(PIItem item, bool& b_show)
 		return;
 	}
 
-	if (!pOutfit && !pHelmet && !pBackpack && cur_slot != NO_ACTIVE_SLOT && !inv.SlotIsPersistent(cur_slot) && inv.CanPutInSlot(item, cur_slot))
+	if (!pOutfit && !pHelmet && !pBackpack && cur_slot != NO_ACTIVE_SLOT && !inv.SlotIsPersistent(cur_slot) && inv.CanPutInSlot(item, cur_slot, true))
 	{
 		m_UIPropertiesBox->AddItem("st_move_to_slot", nullptr, INVENTORY_TO_SLOT_ACTION);
 		b_show = true;
@@ -1168,6 +1193,47 @@ void CUIActorMenu::PropertiesBoxForSlots(PIItem item, bool& b_show)
 	{
 		m_UIPropertiesBox->AddItem("st_dress_backpack", nullptr, INVENTORY_TO_SLOT_ACTION);
 		b_show = true;
+	}
+}
+
+void CUIActorMenu::PropertiesBoxForTrade(CUICellItem* cell_item, PIItem item, bool& b_show)
+{
+	CUIDragDropListEx* pOwnerList = cell_item->OwnerList();
+	if (pOwnerList == m_pTradeActorList)
+	{
+		m_UIPropertiesBox->AddItem("st_remove_from_offer", nullptr, INVENTORY_TO_BAG_ACTION);
+		if (cell_item->ChildsCount())
+			m_UIPropertiesBox->AddItem("st_remove_from_offer_all", (void*)INVENTORY_ALL_CODE, INVENTORY_TO_BAG_ACTION);
+		b_show = true;
+	}
+	else if (pOwnerList == m_pTradeActorBagList)
+	{
+		if (CanMoveToPartner(item))
+		{
+			m_UIPropertiesBox->AddItem("st_move_to_offer", nullptr, INVENTORY_SHOP_OFFER_ITEM_ACTION);
+			if (cell_item->ChildsCount())
+				m_UIPropertiesBox->AddItem("st_move_to_offer_all", (void*)INVENTORY_ALL_CODE, INVENTORY_SHOP_OFFER_ITEM_ACTION);
+			b_show = true;
+		}
+	}
+	else if (pOwnerList == m_pTradePartnerList)
+	{
+		m_UIPropertiesBox->AddItem("st_remove_from_cart", nullptr, INVENTORY_SHOP_UNCHOOSE_ITEM_ACTION);
+		if (cell_item->ChildsCount())
+			m_UIPropertiesBox->AddItem("st_remove_from_cart_all", (void*)INVENTORY_ALL_CODE, INVENTORY_SHOP_UNCHOOSE_ITEM_ACTION);
+		b_show = true;
+	}
+	else if (pOwnerList == m_pTradePartnerBagList)
+	{
+		SInvItemPlace	pl;
+		pl.type = eItemPlaceRuck;
+		if (m_pPartnerInvOwner->AllowItemToTrade(item, pl))
+		{
+			m_UIPropertiesBox->AddItem("st_move_to_cart", nullptr, INVENTORY_SHOP_CHOOSE_ITEM_ACTION);
+			if (cell_item->ChildsCount())
+				m_UIPropertiesBox->AddItem("st_move_to_cart_all", (void*)INVENTORY_ALL_CODE, INVENTORY_SHOP_CHOOSE_ITEM_ACTION);
+			b_show = true;
+		}
 	}
 }
 
@@ -1447,8 +1513,8 @@ void CUIActorMenu::PropertiesBoxForDrop(CUICellItem* cell_item, PIItem item, boo
 
 			if(cell_item->ChildsCount()) 
 			{
-				m_UIPropertiesBox->AddItem("st_drop_amount", (void*)77, INVENTORY_DROP_ACTION);
-				m_UIPropertiesBox->AddItem("st_drop_all", (void*)33, INVENTORY_DROP_ACTION);
+				m_UIPropertiesBox->AddItem("st_drop_amount", (void*)INVENTORY_AMOUNT_CODE, INVENTORY_DROP_ACTION);
+				m_UIPropertiesBox->AddItem("st_drop_all", (void*)INVENTORY_ALL_CODE, INVENTORY_DROP_ACTION);
 			}
 		}
 		else {
@@ -1459,8 +1525,8 @@ void CUIActorMenu::PropertiesBoxForDrop(CUICellItem* cell_item, PIItem item, boo
 
 				if(cell_item->ChildsCount())
 				{
-					m_UIPropertiesBox->AddItem("st_move_amount", (void*)77, INVENTORY_DROP_ACTION);
-					m_UIPropertiesBox->AddItem("st_move_all", (void*)33, INVENTORY_DROP_ACTION);
+					m_UIPropertiesBox->AddItem("st_move_amount", (void*)INVENTORY_AMOUNT_CODE, INVENTORY_DROP_ACTION);
+					m_UIPropertiesBox->AddItem("st_move_all", (void*)INVENTORY_ALL_CODE, INVENTORY_DROP_ACTION);
 				}
 			}
 		}
@@ -1472,8 +1538,8 @@ void CUIActorMenu::PropertiesBoxForDrop(CUICellItem* cell_item, PIItem item, boo
 
 		if(cell_item->ChildsCount()) 
 		{
-			m_UIPropertiesBox->AddItem("st_take_amount", (void*)77, INVENTORY_DROP_ACTION);
-			m_UIPropertiesBox->AddItem("st_take_all", (void*)33, INVENTORY_DROP_ACTION);
+			m_UIPropertiesBox->AddItem("st_take_amount", (void*)INVENTORY_AMOUNT_CODE, INVENTORY_DROP_ACTION);
+			m_UIPropertiesBox->AddItem("st_take_all", (void*)INVENTORY_ALL_CODE, INVENTORY_DROP_ACTION);
 		}
 	}
 }
@@ -1486,7 +1552,16 @@ void CUIActorMenu::PropertiesBoxForRepair(PIItem item, bool& b_show)
 
 	if ( (pOutfit || pWeapon || pHelmet) && item->GetCondition() < 0.99f )
 	{
-		m_UIPropertiesBox->AddItem( "ui_inv_repair", nullptr, INVENTORY_REPAIR );
+		m_UIPropertiesBox->AddItem( "st_repair", nullptr, INVENTORY_REPAIR );
+		b_show = true;
+	}
+}
+
+void CUIActorMenu::PropertiesBoxForUpgrade(PIItem item, bool& b_show)
+{
+	if (CanUpgradeItem(item))
+	{
+		m_UIPropertiesBox->AddItem("st_upgrade", nullptr, INVENTORY_UPGRADE);
 		b_show = true;
 	}
 }
@@ -1517,20 +1592,41 @@ void CUIActorMenu::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 		return;
 	}
 	CWeapon* weapon = item->cast_weapon();
+	
+	// we dont want to clear selection all the time. If for example DROP-ONE was selected
+	// for a stack of items and we still have remaining items (we need that selection).
+	// So for dropall we clear selection, for drop 1 item we check how many items are left in stack.
+	// Same for eat, use, move
+	bool bClearCurrentItem = true;
 
 	switch ( m_UIPropertiesBox->GetClickedItem()->GetTAG() )
 	{
 	case INVENTORY_TO_SLOT_ACTION:	ToSlot( cell_item, true, item->BaseSlot() );		break;
-	case INVENTORY_TO_BELT_ACTION:	ToBelt( cell_item, false );		break;
-	case INVENTORY_TO_BAG_ACTION:	ToBag ( cell_item, false );		break;
+	case INVENTORY_TO_BELT_ACTION:	
+		ToBelt( cell_item, false );		break;
+	case INVENTORY_TO_BAG_ACTION:
+	{
+		void* d = m_UIPropertiesBox->GetClickedItem()->GetData();
+		if (d == (void*)INVENTORY_ALL_CODE)
+		{
+			ToBagAll(cell_item);
+		}
+		else
+		{
+			ToBag(cell_item, false);
+		}
+		break;
+	}
 	case INVENTORY_DONATE_ACTION:
 	{
 		DonateCurrentItem(cell_item);
 		break;
 	}
 	case INVENTORY_EAT_ACTION:
-		TryUseItem( cell_item );
-		break;	
+	{
+		TryUseItem(cell_item);
+		break;
+	}
 	case INVENTORY_EAT2_ACTION:
 	{
 		CGameObject* GO = item->cast_game_object();
@@ -1596,11 +1692,11 @@ void CUIActorMenu::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 			void* d_ = m_UIPropertiesBox->GetClickedItem()->GetData();
 			if(m_currMenuMode != mmDeadBodySearch) 
 			{
-				if(d_ == (void*)33) 
+				if(d_ == (void*)INVENTORY_ALL_CODE)
 				{
 					DropAllCurrentItem(cell_item->ChildsCount() + 1);
 				}
-				else if (d_ == (void*)77)
+				else if (d_ == (void*)INVENTORY_AMOUNT_CODE)
 				{
 					m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeDrop, item);
 				}
@@ -1616,11 +1712,11 @@ void CUIActorMenu::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 					auto ownerID = m_pPartnerInvOwner ? m_pPartnerInvOwner->object_id() : m_pInvBox->ID();
 					bool isAllowPlace = IsAllowPlaceToInvBox(cell_item);
 
-					if(d_ == (void*)33 && isAllowPlace) 
+					if(d_ == (void*)INVENTORY_ALL_CODE && isAllowPlace)
 					{
 						MoveAllCurrentItem(cell_item->ChildsCount() + 1);
 					}
-					else if (d_ == (void*)77 && isAllowPlace)
+					else if (d_ == (void*)INVENTORY_AMOUNT_CODE && isAllowPlace)
 					{
 						m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeMove, item);
 					}
@@ -1631,11 +1727,11 @@ void CUIActorMenu::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 				}
 				else 
 				{
-					if(d_ == (void*)33) 
+					if(d_ == (void*)INVENTORY_ALL_CODE)
 					{
 						TakeAllCurrentItem(cell_item->ChildsCount() + 1);
 					}
-					else if (d_ == (void*)77)
+					else if (d_ == (void*)INVENTORY_AMOUNT_CODE)
 					{
 						m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeTake, item);
 					}
@@ -1753,6 +1849,13 @@ void CUIActorMenu::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 			return;
 			break;
 		}
+	case INVENTORY_UPGRADE:
+	{
+		SetAuxMode(eAuxMode_Upgrade);
+		if (pInput->GetControllerMode()) 
+			return;
+		break;
+	}
 	case INVENTORY_PLAY_ACTION:
 		{
 			if (CPda* pPda = item->cast_pda())
@@ -1798,6 +1901,46 @@ void CUIActorMenu::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 		}
 		item->object().DestroyObject();
 	}break;
+	case INVENTORY_SHOP_OFFER_ITEM_ACTION:
+	{
+		void* d = m_UIPropertiesBox->GetClickedItem()->GetData();
+		if (d == (void*)INVENTORY_ALL_CODE)
+		{
+			ToActorTradeAll(cell_item);
+		}
+		else
+		{
+			ToActorTrade(cell_item, false);
+		}
+	}
+	break;
+	case INVENTORY_SHOP_CHOOSE_ITEM_ACTION:
+	{
+		void* d = m_UIPropertiesBox->GetClickedItem()->GetData();
+		if (d == (void*)INVENTORY_ALL_CODE)
+		{
+			ToPartnerTradeAll(cell_item);
+		}
+		else
+		{
+			ToPartnerTrade(cell_item, false);
+		}
+	}
+	break;
+	case INVENTORY_SHOP_UNCHOOSE_ITEM_ACTION:
+	{
+		void* d = m_UIPropertiesBox->GetClickedItem()->GetData();
+		if (d == (void*)INVENTORY_ALL_CODE)
+		{
+			ToPartnerTradeBagAll(cell_item);
+		}
+		else
+		{
+			ToPartnerTradeBag(cell_item, false);
+		}
+	}
+	break;
+
 	}//switch
 
 //	SetCurrentItem( nullptr );

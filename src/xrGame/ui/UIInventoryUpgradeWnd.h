@@ -12,6 +12,7 @@
 #include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrUI/Widgets/UI3dStatic.h"
 #include "UIInvUpgrade.h"
+#include "../../xrUI/ui_defs.h"
 
 extern const LPCSTR g_inventory_upgrade_xml;
 #define MAX_UI_UPGRADE_CELLS 25
@@ -79,6 +80,14 @@ public:
 
 	virtual CUIWindow* ui_cast_window() { return this; }
     virtual bool OnMouseAction(float x, float y, EUIMessages mouse_action);
+	// Controller UI
+	bool SelectorMove(eUIDirection4 dir);
+	void SetActiveForController(bool status);
+	bool CanApplySelectedUpgrade();
+	void ApplySelectedUpgrade();
+	void SetInfoVisible(bool status);
+protected:
+	void SetUpgradeSelected(UIUpgrade* pUpgrade);
 
 private:
 	void LoadCellsBacks(CUIXml& uiXml);
@@ -112,6 +121,10 @@ protected:
 	Scheme* m_current_scheme = nullptr;
 	LPCSTR m_cur_upgrade_id;
 	CUIWindow* m_scheme_wnd = nullptr;
+
+	CUIFrameWindow* m_selectorFrame = nullptr;
+	UIUpgrade* m_selectedUpgrade = nullptr;
+
 public:
 	ui_shader* m_WeaponIconsShader = nullptr;
 	ui_shader* m_OutfitIconsShader = nullptr;
