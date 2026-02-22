@@ -2028,7 +2028,7 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 		}break;
 		case kWPN_ZOOM_ALTER:
 		{
-			if (flags & CMD_START && m_AlterZoomAllowed && !IsPending() && (GetState() == eIdle || GetState() == eFire))
+			if (flags & CMD_START && m_AlterZoomAllowed && !IsPending() && (GetState() == eIdle || GetState() == eFire) && !IsGrenadeMode())
 			{
 				m_zoom_params.m_bIsAltZoomModeNow = !m_zoom_params.m_bIsAltZoomModeNow;
 				return true;
@@ -3534,7 +3534,7 @@ void CWeapon::UpdateHudAdditonal(Fmatrix& trans)
 	}
 
 	AddOffset(trans, GetCurrentHudOffsetIdx(), m_zoom_params.m_fZoomRotationFactor, m_zoom_params.m_fZoomRotateTime, IsZoomed());
-	AddOffset(trans, 3, m_zoom_params.m_fZoomRotationFactor2, m_zoom_params.m_fZoomRotateTime, IsAltZoomed() && IsZoomed());
+	AddOffset(trans, 3, m_zoom_params.m_fZoomRotationFactor2, m_zoom_params.m_fZoomRotateTime, IsAltZoomed() && IsZoomed() && !IsGrenadeMode());
 }
 
 void CWeapon::SetAmmoElapsed(int ammo_count)
