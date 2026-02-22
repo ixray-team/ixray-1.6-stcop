@@ -433,38 +433,52 @@ void CHudStateAnimator::UpdateAnimation()
 
 void CHudStateAnimator::OnMotionMark(const motion_marks& mark, u32 state)
 {
-	if (state == eDeviceSwitch && mark.name == "Left")
+	if (state == eDeviceSwitch)
 	{
-		if (m_eDevicesFlags.test(EDevicesFlags::df_torch))
+		if (mark.name == "Right")
 		{
-			if (CActor* pActor = m_manager->Parent())
+			if (m_eDevicesFlags.test(EDevicesFlags::df_nvg))
 			{
-				PIItem torch_item = pActor->inventory().ItemFromSlot(TORCH_SLOT);
-				if (CTorch* pTorch = torch_item != nullptr ? torch_item->cast_torch() : nullptr)
+				if (CActor* pActor = m_manager->Parent())
 				{
-					pTorch->Switch();
+					pActor->StartNVPPE();
 				}
-			}
-		}
-		else if (m_eDevicesFlags.test(EDevicesFlags::df_nvg))
-		{
-			if (CActor* pActor = m_manager->Parent())
-			{
-				if (pActor->GetNightVisionEffector() != nullptr)
-				{
-					pActor->GetNightVisionEffector()->SwitchNightVision();
-				}
-			}
-		}
-		else if (m_eDevicesFlags.test(EDevicesFlags::df_clear_mask))
-		{
-			if (CActor* pActor = m_manager->Parent())
-			{
-				pActor->ClearMaskCB();
 			}
 		}
 
-		m_eDevicesFlags.zero();
+		if (mark.name == "Left")
+		{
+			if (m_eDevicesFlags.test(EDevicesFlags::df_torch))
+			{
+				if (CActor* pActor = m_manager->Parent())
+				{
+					PIItem torch_item = pActor->inventory().ItemFromSlot(TORCH_SLOT);
+					if (CTorch* pTorch = torch_item != nullptr ? torch_item->cast_torch() : nullptr)
+					{
+						pTorch->Switch();
+					}
+				}
+			}
+			else if (m_eDevicesFlags.test(EDevicesFlags::df_nvg))
+			{
+				if (CActor* pActor = m_manager->Parent())
+				{
+					if (pActor->GetNightVisionEffector() != nullptr)
+					{
+						pActor->GetNightVisionEffector()->SwitchNightVision();
+					}
+				}
+			}
+			else if (m_eDevicesFlags.test(EDevicesFlags::df_clear_mask))
+			{
+				if (CActor* pActor = m_manager->Parent())
+				{
+					pActor->ClearMaskCB();
+				}
+			}
+
+			m_eDevicesFlags.zero();
+		}
 	}
 }
 
