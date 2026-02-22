@@ -939,42 +939,57 @@ void CHudItem::SetMultipleBonesStatus(const char* section, const char* line, BOO
 
 void CHudItem::OnMotionMark(u32 state, const motion_marks& mark)
 {
-	if (state == eDeviceSwitch && mark.name == "Left")
+	if (state == eDeviceSwitch)
 	{
 		if (g_player_hud->attached_item(1) != nullptr && g_player_hud->attached_item(1) == HudItemData() && g_player_hud->attached_item(0) != nullptr)
 		{
 			m_eDevicesFlags.zero();
 		}
 
-		if (m_eDevicesFlags.test(EDevicesFlags::df_torch))
+		if (mark.name == "Right")
 		{
-			if (CActor* pActor = m_object->H_Parent() ? m_object->H_Parent()->cast_actor() : nullptr)
+			if (m_eDevicesFlags.test(EDevicesFlags::df_nvg))
 			{
-				if (CTorch* pTorch = smart_cast<CTorch*>(pActor->inventory().ItemFromSlot(TORCH_SLOT)))
+				if (CActor* pActor = m_object->H_Parent() ? m_object->H_Parent()->cast_actor() : nullptr)
 				{
-					pTorch->Switch();
+					pActor->StartNVPPE();
 				}
-			}
-		}
-		else if (m_eDevicesFlags.test(EDevicesFlags::df_nvg))
-		{
-			if (CActor* pActor = m_object->H_Parent() ? m_object->H_Parent()->cast_actor() : nullptr)
-			{
-				if (pActor->GetNightVisionEffector() != nullptr)
-				{
-					pActor->GetNightVisionEffector()->SwitchNightVision();
-				}
-			}
-		}
-		else if (m_eDevicesFlags.test(EDevicesFlags::df_clear_mask))
-		{
-			if (CActor* pActor = m_object->H_Parent() ? m_object->H_Parent()->cast_actor() : nullptr)
-			{
-				pActor->ClearMaskCB();
 			}
 		}
 
-		m_eDevicesFlags.zero();
+		if (mark.name == "Left")
+		{
+			if (m_eDevicesFlags.test(EDevicesFlags::df_torch))
+			{
+				if (CActor* pActor = m_object->H_Parent() ? m_object->H_Parent()->cast_actor() : nullptr)
+				{
+					PIItem item_from_slot = pActor->inventory().ItemFromSlot(TORCH_SLOT);
+					if (CTorch* pTorch = item_from_slot != nullptr ? item_from_slot->cast_torch() : nullptr)
+					{
+						pTorch->Switch();
+					}
+				}
+			}
+			else if (m_eDevicesFlags.test(EDevicesFlags::df_nvg))
+			{
+				if (CActor* pActor = m_object->H_Parent() ? m_object->H_Parent()->cast_actor() : nullptr)
+				{
+					if (pActor->GetNightVisionEffector() != nullptr)
+					{
+						pActor->GetNightVisionEffector()->SwitchNightVision();
+					}
+				}
+			}
+			else if (m_eDevicesFlags.test(EDevicesFlags::df_clear_mask))
+			{
+				if (CActor* pActor = m_object->H_Parent() ? m_object->H_Parent()->cast_actor() : nullptr)
+				{
+					pActor->ClearMaskCB();
+				}
+			}
+
+			m_eDevicesFlags.zero();
+		}
 	}
 
 	if (state == ePrepareDetector && mark.name == "Left")
