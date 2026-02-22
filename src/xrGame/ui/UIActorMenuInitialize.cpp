@@ -11,7 +11,7 @@
 #include "UIMessageBoxEx.h"
 #include "../../xrUI/Widgets/UIPropertiesBox.h"
 #include "../../xrUI/Widgets/UI3tButton.h"
-
+#include "../../xrEngine/xr_input.h"
 #include "UIInventoryUpgradeWnd.h"
 #include "UIInvUpgradeInfo.h"
 #include "InventorySorter.h"
@@ -57,6 +57,9 @@ CUIActorMenu::~CUIActorMenu()
 	xr_delete			(m_ItemInfo);
 	xr_delete			(m_pInventorySorter);
 
+	xr_delete			(m_ui_navigation_selector);
+	xr_delete			(m_ui_aux_selector);
+
 	for (size_t i = 0; i < m_ArtefactSlotsHighlight.size(); i++)
 	{
 		m_ArtefactSlotsHighlight[i] = nullptr;
@@ -64,6 +67,8 @@ CUIActorMenu::~CUIActorMenu()
 	}
 
 	ClearAllLists		();
+
+	ActionRepeaters()->UnregisterOwner(this);
 }
 
 void CUIActorMenu::Construct()
@@ -252,6 +257,16 @@ void CUIActorMenu::Construct()
 		}
 	}
 
+	const char* pSelectorTextureName = "ui_inv_item_selector_sec";
+	m_pInventoryBagList->InitSelector(pSelectorTextureName);
+	m_pInventoryBeltList->InitSelector(pSelectorTextureName);
+	m_pTradeActorBagList->InitSelector(pSelectorTextureName);
+	m_pTradeActorList->InitSelector(pSelectorTextureName);
+	m_pTradePartnerBagList->InitSelector(pSelectorTextureName);
+	m_pTradePartnerList->InitSelector(pSelectorTextureName);
+	m_pDeadBodyBagList->InitSelector(pSelectorTextureName);
+	//m_pQuickSlot->InitSelector(pSelectorTextureName);
+
 	m_pTrashList				= UIHelperGame::CreateDragDropListEx		(uiXml, "dragdrop_trash", this);
 	m_pTrashList->m_f_item_drop	= CUIDragDropListEx::DRAG_CELL_EVENT	(this,&CUIActorMenu::OnItemDrop);
 	m_pTrashList->m_f_drag_event= CUIDragDropListEx::DRAG_ITEM_EVENT	(this,&CUIActorMenu::OnDragItemOnTrash);
@@ -336,6 +351,22 @@ void CUIActorMenu::Construct()
 	m_ActorStateInfo->init_from_xml		(uiXml, "actor_state_info");
 	m_ActorStateInfo->SetAutoDelete		(true);
 	AttachChild							(m_ActorStateInfo); 
+	
+	m_ui_navigation_selection = nullptr;
+
+	m_ui_navigation_selector = new CUIFrameWindow();
+	m_ui_navigation_selector->SetWidth(0);
+	m_ui_navigation_selector->SetHeight(0);
+	m_ui_navigation_selector->InitTexture("ui_inv_item_selector");
+	m_ui_navigation_selector->SetVisible(pInput->GetControllerMode() && m_ui_navigation_selection);
+	AttachChild(m_ui_navigation_selector);
+
+	m_ui_aux_selector = new CUIFrameWindow();
+	m_ui_aux_selector->SetWidth(0);
+	m_ui_aux_selector->SetHeight(0);
+	m_ui_aux_selector->InitTexture("ui_inv_item_selector_tri");
+	m_ui_aux_selector->SetVisible(false);
+	AttachChild(m_ui_aux_selector);
 
 	stored_root							= uiXml.GetLocalRoot	();
 	uiXml.SetLocalRoot					(uiXml.NavigateToNode	("action_sounds",0));
@@ -398,6 +429,8 @@ void CUIActorMenu::Construct()
 	AttachChild							(m_UIPropertiesBox);
 	m_UIPropertiesBox->Hide				();
 	m_UIPropertiesBox->SetWindowName	( "property_box" );
+
+	m_gamepad_legend					= UIHelper::CreateGamepadLegend(uiXml, "gamepad_legend", this, false);
 
 	InitCallbacks						();
 
@@ -468,6 +501,36 @@ void CUIActorMenu::Construct()
 	DeInitTradeMode					();
 	DeInitUpgradeMode				();
 	DeInitDeadBodySearchMode		();
+	
+	// Controller mode
+	xr_map<xr_string, CUIWindow*> wndPointers;
+	wndPointers["TradeActorBagList"]	= m_pTradeActorBagList;
+	wndPointers["BeltList"]				= m_pInventoryBeltList;
+	wndPointers["PistolList"]			= m_pInvList[INV_SLOT_2];
+	wndPointers["AutomaticList"]		= m_pInvList[INV_SLOT_3];
+	wndPointers["OutfitList"]			= m_pInvList[OUTFIT_SLOT];
+	wndPointers["HelmetList"]			= m_pInvList[HELMET_SLOT];
+	wndPointers["DetectorList"]			= m_pInvList[DEVICE_SLOT];
+	wndPointers["BagList"]				= m_pInventoryBagList;
+	wndPointers["TradeActorList"]		= m_pTradeActorList;
+	wndPointers["TradePartnerBagList"]	= m_pTradePartnerBagList;
+	wndPointers["TradePartnerList"]		= m_pTradePartnerList;
+	wndPointers["DeadBodyBagList"]		= m_pDeadBodyBagList;
+	wndPointers["QuickSlot"]			= m_pQuickSlot;
+	//wndPointers["UpgradeWnd"]			= m_pUpgradeWnd;
+
+	ReadWndSelectorsInfo(uiXml, "ui_c_navi_inventory",	m_ui_navigation_lists[mmInventory], wndPointers);
+	ReadWndSelectorsInfo(uiXml, "ui_c_navi_deadbody",	m_ui_navigation_lists[mmDeadBodySearch], wndPointers);
+	ReadWndSelectorsInfo(uiXml, "ui_c_navi_trade",		m_ui_navigation_lists[mmTrade], wndPointers);
+	ReadWndSelectorsInfo(uiXml, "ui_c_navi_upgrade",	m_ui_navigation_lists[mmUpgrade], wndPointers);
+
+	EGameActions repeatActions[] = {
+		kUI_LEFT, kUI_RIGHT, kUI_UP, kUI_DOWN,
+		kUI_SECONDARY_LEFT, kUI_SECONDARY_RIGHT, kUI_SECONDARY_UP, kUI_SECONDARY_DOWN
+	};
+
+	for (int i = 0; i < sizeof(repeatActions) / sizeof(repeatActions[0]); ++i)
+		ActionRepeaters()->Register(this, repeatActions[i]);
 }
 
 void CUIActorMenu::BindDragDropListEvents(CUIDragDropListEx* lst)

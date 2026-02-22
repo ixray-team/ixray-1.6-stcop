@@ -40,8 +40,12 @@
 #include "UIMainIngameWnd.h"
 #include "../trade.h"
 #include "Car.h"
-#include "../xrEngine/string_table.h"
+#include "../../xrEngine/string_table.h"
 #include "InventorySorter.h"
+#include "../../xrEngine/xr_input.h"
+#include "UIInvUpgradeInfo.h"
+#include "../../xrUI/Widgets/UIGamepadLegend.h"
+#include "ui_drop_amount.h"
 
 void CUIActorMenu::OnSortTabChanged(CUIWindow* w, void* pData)
 {
@@ -186,7 +190,10 @@ void CUIActorMenu::SetInvBox(CInventoryBox* box)
 
 void CUIActorMenu::SetMenuMode(EMenuMode mode)
 {
-	SetCurrentItem( nullptr );
+	if (!pInput->GetControllerMode())
+	{
+		SetCurrentItem(nullptr);
+	}
 	m_hint_wnd->set_text( nullptr );
 	
 	if ( mode != m_currMenuMode )
@@ -289,6 +296,11 @@ void CUIActorMenu::Show(bool status)
 		SetMenuMode							(m_currMenuMode);
 		PlaySnd								(eSndOpen);
 		m_ActorStateInfo->UpdateActorInfo	(m_pActorInvOwner);
+
+		if (pInput->GetControllerMode())
+		{
+			m_bShowInfoWnds = false;
+		}
 	}else
 	{
 		PlaySnd								(eSndClose);
@@ -308,8 +320,33 @@ void CUIActorMenu::Draw()
 	m_hint_wnd->Draw();
 }
 
+void CUIActorMenu::CheckSelectors()
+{
+	CUIDragDropListEx* pDragDrop = dynamic_cast<CUIDragDropListEx*>(m_ui_navigation_selection);
+	if (pDragDrop && pDragDrop->HasCells())
+	{
+		pDragDrop->UpdateSelector();
+
+		CUICellItem* pDDSelected = pDragDrop->GetSelectedItem();
+		if (pDDSelected != m_pCurrentCellItem)
+		{
+			SetCurrentItem(pDDSelected);
+		}
+	}
+	else
+	{
+		SetCurrentItem(nullptr);
+	}
+}
+
 void CUIActorMenu::Update()
 {	
+	if (pInput->GetControllerMode())
+	{
+		CheckSelectors();
+		UpdateInfoWindowVisibility();
+	}
+
 	{ // all mode
 		m_last_time = Device.dwTimeGlobal;
 		m_ActorStateInfo->UpdateActorInfo( m_pActorInvOwner );
@@ -347,7 +384,9 @@ void CUIActorMenu::Update()
 		}
 	case mmDeadBodySearch:
 		{
-			//CheckDistance();
+			m_takeall_button->Show(!pInput->GetControllerMode());
+			if (m_putall_button)
+				m_putall_button->Show(!pInput->GetControllerMode());
 			break;
 		}
 	default: R_ASSERT(0); break;
@@ -356,6 +395,8 @@ void CUIActorMenu::Update()
 	inherited::Update();
 	m_ItemInfo->Update();
 	m_hint_wnd->Update();
+	m_exit_button->Show(!pInput->GetControllerMode());
+	UpdateGamepadLegend();
 }
 
 bool CUIActorMenu::StopAnyMove()  // true = актёр не идёт при открытом меню
@@ -363,7 +404,7 @@ bool CUIActorMenu::StopAnyMove()  // true = актёр не идёт при от
 	switch ( m_currMenuMode )
 	{
 	case mmInventory:
-		return false;
+		return pInput->GetControllerMode();
 	case mmUndefined:
 	case mmTrade:
 	case mmUpgrade:
@@ -468,11 +509,26 @@ PIItem CUIActorMenu::CurrentIItem()
 
 void CUIActorMenu::SetCurrentItem(CUICellItem* itm)
 {
+	if (pInput->GetControllerMode())
+	{
+		if (m_pCurrentCellItem)
+			OnItemFocusLost(m_pCurrentCellItem);
+		if (!itm)
+			m_bShowInfoWnds = false;
+	}
 	m_repair_mode = 0;
 	m_pCurrentCellItem = itm;
 	if ( !itm )
 	{
 		InfoCurItem( nullptr );
+	}
+	else
+	{
+		if (pInput->GetControllerMode())
+		{
+			OnItemFocusReceive(itm);
+			set_highlight_item(itm);
+		}
 	}
 	TryHidePropertiesBox();
 
@@ -547,7 +603,15 @@ void CUIActorMenu::InfoCurItem( CUICellItem* cell_item )
 
 //	m_ItemInfo->InitItem	( current_item, compare_item );
 	float dx_pos = GetWndRect().left;
-	fit_in_rect(m_ItemInfo, Frect().set( 0.0f, 0.0f, UI_BASE_WIDTH - dx_pos, UI_BASE_HEIGHT ), 10.0f, dx_pos );
+	if (!pInput->GetControllerMode())
+		fit_in_rect(m_ItemInfo, Frect().set( 0.0f, 0.0f, UI_BASE_WIDTH - dx_pos, UI_BASE_HEIGHT ), 10.0f, dx_pos );
+	else
+	{
+		Frect stickToRect;
+		cell_item->GetAbsoluteRect(stickToRect);
+		const float border = 10.0f;
+		fit_infownd_in_rect(m_ItemInfo, stickToRect, Frect().set(0, 0, UI_BASE_WIDTH - dx_pos, UI_BASE_HEIGHT), border, dx_pos);
+	}
 }
 
 void CUIActorMenu::UpdateItemsPlace()
@@ -1010,6 +1074,7 @@ void CUIActorMenu::ResetMode()
 	m_pMouseCapturer = nullptr;
 	m_UIPropertiesBox->Hide();
 	SetCurrentItem(nullptr);
+	SetAreaSelectionTo(nullptr);
 
 	m_currentSortCategory = EInventorySortCategory::All;
 	m_currentSortCategoryId = "";
@@ -1130,4 +1195,308 @@ void CUIActorMenu::HideDialog()
 	}
 
 	GetHolder()->StopDialog(this);
+}
+
+// Controller UI
+
+bool CUIActorMenu::MoveAreaSelector(eUIDirection4 dir)
+{
+	xr_vector<WND_SELECTOR_INFO>& uiNaviList = m_ui_navigation_lists[m_currMenuMode];
+	for (xr_vector<WND_SELECTOR_INFO>::iterator it = uiNaviList.begin(); it != uiNaviList.end(); ++it)
+	{
+		const WND_SELECTOR_INFO& wsinfo = *it;
+		if (wsinfo.pWnd == m_ui_navigation_selection)
+		{
+			switch (dir)
+			{
+				case eUIDirection4_Left:
+				{
+					if (wsinfo.pWndLeft)
+					{
+						SetAreaSelectionTo(wsinfo.pWndLeft);
+						return true;
+					}
+					break;
+				}
+				case eUIDirection4_Right:
+				{
+					if (wsinfo.pWndRight)
+					{
+						SetAreaSelectionTo(wsinfo.pWndRight);
+						return true;
+					}
+					break;
+				}
+				case eUIDirection4_Up:
+				{
+					if (wsinfo.pWndTop)
+					{
+						SetAreaSelectionTo(wsinfo.pWndTop);
+						return true;
+					}
+					break;
+				}
+				case eUIDirection4_Down:
+				{
+					if (wsinfo.pWndBottom)
+					{
+						SetAreaSelectionTo(wsinfo.pWndBottom);
+						return true;
+					}
+					break;
+				}
+			}
+			return false;
+		}
+	}
+	return false;
+}
+
+eUIDirection4 CUIActorMenu::GetNaviDirection(CUIWindow* pWndFrom, CUIWindow* pWndTo)
+{
+	xr_vector<WND_SELECTOR_INFO>& naviList = m_ui_navigation_lists[m_currMenuMode];
+	for (xr_vector<WND_SELECTOR_INFO>::iterator it = naviList.begin(); it != naviList.end(); ++it)
+	{
+		if (it->pWnd == pWndFrom)
+		{
+			if (it->pWndLeft == pWndTo) return eUIDirection4::eUIDirection4_Left;
+			else if (it->pWndRight == pWndTo) return eUIDirection4::eUIDirection4_Right;
+			else if (it->pWndTop == pWndTo) return eUIDirection4::eUIDirection4_Up;
+			else if (it->pWndBottom == pWndTo) return eUIDirection4::eUIDirection4_Down;
+		}
+	}
+
+	return eUIDirection4::eUIDirection4_None;
+}
+
+
+void CUIActorMenu::SetAreaSelectionTo(CUIWindow* pSelection)
+{
+	if (pSelection == m_ui_navigation_selection || !pInput->GetControllerMode())
+		return;
+
+	InfoCurItem(nullptr);
+
+	// Deselect old wnd
+	CUIWindow* pOldNavSelection = m_ui_navigation_selection;
+	if (m_ui_navigation_selection)
+	{
+		CUIDragDropListEx* pDragDropList = dynamic_cast<CUIDragDropListEx*>(m_ui_navigation_selection);
+		if (pDragDropList)
+			pDragDropList->SetControllerFocusOut();
+	}
+
+	m_ui_navigation_selection = pSelection;
+
+	// Update selector frame
+	if (m_ui_navigation_selection != nullptr)
+	{
+		Fvector2 frmSize = { 0, 0 };
+		Fvector2 frmPos = { 0, 0 };
+
+		CUIDragDropListEx* pDragDropList = dynamic_cast<CUIDragDropListEx*>(m_ui_navigation_selection);
+		if (pDragDropList)
+		{
+			frmSize = pSelection->GetWndSize();
+			frmSize.add(m_selectorPadding * 2);
+			frmPos = pSelection->GetWndPos();
+			frmPos.sub(m_selectorPadding);
+
+			// If previous selection was a CUIDragDropListEx too
+			// try placing an internal selector close to the internal selector of the old list
+			// for slots move selector to the only 1 item that is in the list
+			bool bSetDefaultSelectorPos = true;
+			if (GetListType(pDragDropList) == EDDListType::iActorSlot)
+			{
+				if (pDragDropList->ItemsCount() > 0)
+				{
+					CUICellItem* pItem = pDragDropList->GetItemIdx(0);
+					R_ASSERT(pItem);
+					if (pItem && pDragDropList->MoveSelectorToItem(pItem))
+					{
+						bSetDefaultSelectorPos = false;
+					}
+				}
+			}
+			else
+			{
+				CUIDragDropListEx* pOldList = dynamic_cast<CUIDragDropListEx*>(pOldNavSelection);
+				if (pOldList && pOldList->HasCells() && pDragDropList->HasCells())
+				{
+					CUICellContainer* pOldContainer = pOldList->GetContainer();
+					CUICellContainer* pNewContainer = pDragDropList->GetContainer();
+
+					Irect oldSelectorArea = pOldContainer->GetSelectorArea();
+					Ivector2 selectorPos = { 0,0 };
+
+					// direction they moved to reach us
+					eUIDirection4 dir = GetNaviDirection(pOldList, pDragDropList);
+					switch (dir)
+					{
+						case eUIDirection4::eUIDirection4_Left:
+						{
+							selectorPos.y = oldSelectorArea.y1;
+							selectorPos.x = pNewContainer->CellsCapacity().x - 1;
+							bSetDefaultSelectorPos = false;
+							break;
+						}
+						case eUIDirection4::eUIDirection4_Right:
+						{
+							selectorPos.y = oldSelectorArea.y1;
+							selectorPos.x = 0;
+							bSetDefaultSelectorPos = false;
+							break;
+						}
+						case eUIDirection4::eUIDirection4_Down:
+						{
+							selectorPos.x = oldSelectorArea.x1;
+							selectorPos.y = 0;
+							bSetDefaultSelectorPos = false;
+							break;
+						}
+						case eUIDirection4::eUIDirection4_Up:
+						{
+							selectorPos.x = oldSelectorArea.x1;
+							selectorPos.y = pNewContainer->CellsCapacity().y - 1;
+							bSetDefaultSelectorPos = false;
+							break;
+						}
+					}
+
+					if (!bSetDefaultSelectorPos)
+					{
+						Irect selector;
+						selector.lt = selectorPos;
+						selector.x2 = selector.x1 + 1;
+						selector.y2 = selector.y1 + 1;
+						pDragDropList->SetControllerFocusIn(selector);
+					}
+				}
+			}
+			
+			if (bSetDefaultSelectorPos)
+			{
+				pDragDropList->SetControllerFocusIn({ 0,0,1,1 });
+			}
+		}
+
+		if (frmSize.x > 0 && frmSize.y > 0)
+		{
+			m_ui_navigation_selector->SetWndSize(frmSize);
+			m_ui_navigation_selector->SetWndPos(frmPos);
+			m_ui_navigation_selector->SetVisible(true);
+		}
+		else
+			m_ui_navigation_selector->SetVisible(false);
+	}
+	else
+	{
+		m_ui_navigation_selector->SetVisible(false);
+	}
+}
+
+void CUIActorMenu::SetAuxMode(eActorMenuControllerAuxMode mode)
+{
+	m_AuxMode = mode;
+
+	switch (mode)
+	{
+	case eActorMenuControllerAuxMode::eAuxMode_Upgrade:
+		{
+			Fvector2 frmSize = m_pUpgradeWnd->GetWndSize();
+			Fvector2 frmPos = m_pUpgradeWnd->GetWndPos();
+
+			if (frmSize.x > 0 && frmSize.y > 0)
+			{
+				m_ui_aux_selector->SetWndSize(frmSize);
+				m_ui_aux_selector->SetWndPos(frmPos);
+				m_ui_aux_selector->SetVisible(true);
+			}
+			else
+				m_ui_aux_selector->SetVisible(false);
+
+			m_pUpgradeWnd->SetActiveForController(true);
+			m_upgrade_info->init_upgrade(nullptr, nullptr);
+		}
+		break;
+	default:
+		m_ui_aux_selector->SetVisible(false);
+		m_pUpgradeWnd->SetActiveForController(false);
+	}
+}
+
+void CUIActorMenu::UpdateGamepadLegend()
+{
+	if (!m_gamepad_legend)
+		return;
+
+	m_gamepad_legend->Show(!m_pItemDropAmountWnd->IsShown());
+	CUIWindow* amAction = m_gamepad_legend->FindChild("am_action");
+	if (amAction)
+	{
+		amAction->Show(!m_UIPropertiesBox->IsShown() && m_currMenuMode != mmInventory);
+		CUIStatic* amActionS = amAction->ui_cast_static();
+		if (amActionS)
+		{
+			switch (m_currMenuMode)
+			{
+			case mmDeadBodySearch:
+			{
+				CUIDragDropListEx* pDragDropList = dynamic_cast<CUIDragDropListEx*>(m_ui_navigation_selection);
+				if (pDragDropList && pDragDropList == m_pInventoryBagList)
+				{
+					amActionS->SetTextST("ui_am_put_all");
+				}
+				else
+				{
+					amActionS->SetTextST("ui_am_take_all");
+				}
+				break;
+			}
+			case mmUpgrade:
+			{
+				amActionS->SetTextST("ui_am_repair");
+				break;
+			}
+			case mmTrade:
+			{
+				amActionS->SetTextST("ui_am_trade");
+				break;
+			}
+			}
+		}
+	}
+
+	CUIWindow* amInfo = m_gamepad_legend->FindChild("am_info");
+	if (amInfo)
+	{
+		amInfo->Show(!m_UIPropertiesBox->IsShown());
+	}
+
+	CUIWindow* amActions = m_gamepad_legend->FindChild("am_actions");
+	if (amActions)
+	{
+		amActions->Show(!m_UIPropertiesBox->IsShown());
+	}
+
+	CUIWindow* amUse = m_gamepad_legend->FindChild("am_use");
+	if (amUse)
+	{
+		CUIStatic* amUseS = amUse->ui_cast_static();
+		if (amUseS)
+		{
+			if (m_UIPropertiesBox->IsShown())
+			{
+				amUseS->SetTextST("ui_am_propbox_select");
+			}
+			else if (m_currMenuMode == mmUpgrade)
+			{
+				amUseS->SetTextST("ui_am_upgrade");
+			}
+			else
+			{
+				amUseS->SetTextST("ui_am_use");
+			}
+		}
+	}
 }

@@ -4,7 +4,7 @@
 #include "UIActorMenu.h"
 #include "UIInventoryUpgradeWnd.h"
 #include "UIInvUpgradeInfo.h"
-
+#include "../../xrEngine/xr_input.h"
 #include "UIDragDropListEx.h"
 #include "UIDragDropReferenceList.h"
 #include "UICharacterInfo.h"
@@ -31,6 +31,8 @@ void CUIActorMenu::InitUpgradeMode()
 	InitInventoryContents( m_pInventoryBagList );
 	if (m_pPartnerInvOwner)
 		m_pPartnerInvOwner->StartTrading();
+
+	SetAreaSelectionTo(m_pInventoryBagList);
 //-	UpdateUpgradeItem();
 }
 
@@ -74,6 +76,13 @@ void CUIActorMenu::SetupUpgradeItem()
 		m_upgrade_selected->Mark( true );
 		can_upgrade = CanUpgradeItem( item );
 	}
+	else
+	{
+		if (pInput->GetControllerMode())
+		{
+			m_upgrade_selected = nullptr;
+		}
+	}
 
 	m_pUpgradeWnd->InitInventory(CurrentItem(), can_upgrade);
 	if ( m_upgrade_info )
@@ -107,7 +116,18 @@ bool CUIActorMenu::SetInfoCurUpgrade( Upgrade_type* upgrade_type, CInventoryItem
 		return false;
 	}
 	
-	fit_in_rect(m_upgrade_info, Frect().set( 0.0f, 0.0f, UI_BASE_WIDTH, UI_BASE_HEIGHT ), 0.0f, GetWndRect().left );
+	if (!pInput->GetControllerMode())
+		fit_in_rect(m_upgrade_info, Frect().set( 0.0f, 0.0f, UI_BASE_WIDTH, UI_BASE_HEIGHT ), 0.0f, GetWndRect().left );
+	else
+	{
+		UIUpgrade* uiu = m_pUpgradeWnd->FindUIUpgrade(upgrade_type);
+		if (uiu)
+		{
+			Frect stickToRect;
+			uiu->GetAbsoluteRect(stickToRect);
+			fit_infownd_in_rect(m_upgrade_info, stickToRect, Frect().set(0.0f, 0.0f, UI_BASE_WIDTH, UI_BASE_HEIGHT), 10.0f);
+		}
+	}
 	return res;
 }
 
@@ -129,13 +149,10 @@ void CUIActorMenu::SeparateUpgradeItem()
 		return;
 	}
 
-//	if ( m_upgrade_selected->ChildsCount() > 0 )
-//	{
-		//PIItem item = get_upgrade_item();
-		m_upgrade_selected->Mark( false );
-		CUICellItem* ci = list_owner->RemoveItem( m_upgrade_selected, false );
-		list_owner->SetItem( ci );
-//		m_upgrade_selected = ci;
-//		m_upgrade_selected->Mark( true );
-//	}
+	if (!pInput->GetControllerMode())
+	{
+		m_upgrade_selected->Mark(false);
+		CUICellItem* ci = list_owner->RemoveItem(m_upgrade_selected, false);
+		list_owner->SetItem(ci);
+	}
 }
