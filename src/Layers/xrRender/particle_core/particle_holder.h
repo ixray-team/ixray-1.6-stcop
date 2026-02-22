@@ -22,6 +22,10 @@ namespace PAPI
 		IC ParticleHolder()
 		{
 			particles = xr_alloc<Particle>(max_particles);
+			for (u32 i = 0; i < max_particles; i++)
+			{
+				particles[i] = {};
+			}
 		}
 
 		virtual ~ParticleHolder()
@@ -49,6 +53,11 @@ namespace PAPI
 			Particle* new_particles = xr_alloc<Particle>(max_count);
 
 			std::memcpy(new_particles, particles, p_count * sizeof(Particle));
+			for (u32 i = p_count; i < max_count; i++)
+			{
+				new_particles[i] = {};
+			}
+			
 			xr_free(particles);
 
 			particles = new_particles;
