@@ -163,7 +163,7 @@ void CUIDragDropListEx::UpdateSelector()
 	m_selectorFrame->SetHeight(selectorBare.height());
 
 	Fvector2 cellPos = { 
-		selectorArea.x1 * cellSize.x + selectorArea.x1 * cellSpacing.x, 
+		(float)selectorArea.x1 * (float)cellSize.x + (float)selectorArea.x1 * (float)cellSpacing.x, 
 		selector.y1 
 	};
 	m_selectorFrame->SetWndPos(cellPos);
