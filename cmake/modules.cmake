@@ -15,6 +15,10 @@ include("${CMAKE_MODULE_PATHEX}/lzo.cmake")
 include("${CMAKE_MODULE_PATHEX}/tbb.cmake")
 include("${CMAKE_MODULE_PATHEX}/lunasvg.cmake")
 
+if (IXRAY_PROFILER_TRACY)
+    include("${CMAKE_MODULE_PATHEX}/Tracy.cmake")
+endif()
+
 if (IXRAY_MP)
     include("${CMAKE_MODULE_PATHEX}/GameNetworkingSockets.cmake")
     include("${CMAKE_MODULE_PATHEX}/Opus.cmake")
