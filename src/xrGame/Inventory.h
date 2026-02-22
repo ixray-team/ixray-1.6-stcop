@@ -56,7 +56,7 @@ public:
 	bool InBelt(const CInventoryItem* pIItem) const;
 	bool InRuck(const CInventoryItem* pIItem) const;
 
-	bool CanPutInSlot(PIItem pIItem, u16 slot_id) const;
+	bool CanPutInSlot(PIItem pIItem, u16 slot_id, bool bAllowReplacement = false) const;
 	bool CanPutInBelt(PIItem pIItem);
 	bool CanPutInRuck(PIItem pIItem) const;
 
