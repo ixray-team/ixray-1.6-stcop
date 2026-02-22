@@ -1257,9 +1257,8 @@ void CBulletManager::Render	()
 						b_sprite + center_sprite,color,{spruv.max.x,spruv.min.y},
 					};
 				}
-				*buffer += batch_size;
 			}
-
+			*buffer += batch_size;
 			UIRender->FlushPrimitive();
 		}
 
