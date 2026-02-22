@@ -56,7 +56,10 @@ float4 main(v2p_volume I) : SV_Target
     }
 #endif
 
+#ifdef USE_SUNMASK
     Shadow *= sunmask(Point);
+#endif
+    
 	Shadow = PushGamma(Shadow);
 	
     return float4(Light * Shadow, Shadow);
