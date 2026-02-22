@@ -200,7 +200,7 @@ namespace EPALegacy
 		PBool& _bool(LPCSTR name){auto 	it=bools.find(name); 	R_ASSERT2(it!=bools.end(),name); 	return it->second;}
 		PBool* _bool_safe(LPCSTR name){auto 	it=bools.find(name); 	return (it!=bools.end())?&it->second:0;}
 		PString& _string(LPCSTR name){auto	it=strings.find(name);	R_ASSERT2(it!=strings.end(),name);	return it->second;}
-		PEnum& _enum(LPCSTR name){auto it = enums.find(name); R_ASSERT(it!=enums.end(),name); return it->second;}
+		PEnum& _enum(LPCSTR name){auto it = enums.find(name); bool found = it!=enums.end(); R_ASSERT(found,name); return it->second;}
 	public:
 	
 		virtual void	Compile		(IWriter& F)=0;
