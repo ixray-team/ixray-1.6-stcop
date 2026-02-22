@@ -99,6 +99,7 @@ public:
 	virtual	void Draw() override;
 	virtual	void Update() override;
 	virtual	void Reset() override;
+	bool CanBeApplied() const { return m_state == STATE_ENABLED || m_state == STATE_FOCUSED || m_state == STATE_TOUCHED; }
 
 	void update_upgrade_state();
 	bool OverrideFreeButtonState(const UIUpgrade::Upgrade_type* my_upgrade, const UIUpgrade::Upgrade_type* active_upgrade, ViewState& new_state);
@@ -111,7 +112,8 @@ public:
 	void OnClick();
 	virtual bool OnDbClick() override;
 	void OnRClick();
-				 
+	void SetSelected(bool status);
+
 	void on_over_window();
 				 
 	void highlight_relation(bool enable);

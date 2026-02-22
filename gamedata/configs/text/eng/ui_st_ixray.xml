@@ -570,4 +570,73 @@
 	<string id="ui_talk_open_upgrade">
 		<text>$$ACTION_UI_ACTION_2$$ Repair/modifications</text>
 	</string>
+	<string id="ui_am_actions">
+		<text>$$ACTION_UI_ACTION_1$$ Actions</text>
+	</string>
+	<string id="ui_am_use">
+		<text>$$ACTION_UI_ACCEPT$$ Use</text>
+	</string>
+	<string id="ui_am_info">
+		<text>$$ACTION_UI_HINT$$ Information</text>
+	</string>
+	<string id="ui_am_take_all">
+		<text>$$ACTION_actormenu_action$$ Take all</text>
+	</string>
+	<string id="ui_am_put_all">
+		<text>$$ACTION_actormenu_action$$ Stash all</text>
+	</string>
+	<string id="ui_am_trade">
+		<text>$$ACTION_actormenu_action$$ Trade</text>
+	</string>
+	<string id="ui_am_propbox_select">
+		<text>$$ACTION_UI_ACCEPT$$ Select</text>
+	</string>
+	<string id="ui_am_repair">
+		<text>$$ACTION_actormenu_action$$ Repair</text>
+	</string>
+	<string id="ui_am_upgrade">
+		<text>$$ACTION_UI_ACCEPT$$ Upgrade</text>
+	</string>
+	<string id="st_move_to_offer">
+		<text>offer</text>
+	</string>
+	<string id="st_move_to_offer_amount">
+		<text>offer multiple</text>
+	</string>
+	<string id="st_move_to_offer_all">
+		<text>offer all</text>
+	</string>
+	<string id="st_remove_from_offer">
+		<text>remove</text>
+	</string>
+	<string id="st_remove_from_offer_amount">
+		<text>remove multiple</text>
+	</string>
+	<string id="st_remove_from_offer_all">
+		<text>remove all</text>
+	</string>
+	<string id="st_move_to_cart">
+		<text>select</text>
+	</string>
+	<string id="st_move_to_cart_amount">
+		<text>select multiple</text>
+	</string>
+	<string id="st_move_to_cart_all">
+		<text>select all</text>
+	</string>
+	<string id="st_remove_from_cart">
+		<text>remove</text>
+	</string>
+	<string id="st_remove_from_cart_amount">
+		<text>remove multiple</text>
+	</string>
+	<string id="st_remove_from_cart_all">
+		<text>remove all</text>
+	</string>
+	<string id="st_split_item_half_gp">
+		<text>$$ACTION_UI_ACTION_1$$ Half</text>
+	</string>
+	<string id="st_split_item_all_gp">
+		<text>$$ACTION_UI_ACTION_2$$ All</text>
+	</string>
 </string_table>
