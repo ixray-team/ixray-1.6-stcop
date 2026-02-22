@@ -797,6 +797,7 @@ public:
 	virtual void				OnNextWeaponSlot				();
 	virtual void				OnPrevWeaponSlot				();
 			void				SwitchNightVision				();
+			void				StartNVPPE						();
 			void				SwitchTorch						();
 			void				ClearMask						();
 			void				ClearMaskCB						();
