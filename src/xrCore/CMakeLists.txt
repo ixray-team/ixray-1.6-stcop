@@ -174,7 +174,7 @@ target_compile_definitions(xrCore PRIVATE XRCORE_EXPORTS)
 target_compile_definitions(xrCore PRIVATE _USRDLL)
 
 # Profiler
-if (IXRAY_PROFILER)
+if (IXRAY_PROFILER AND NOT IXRAY_PROFILER_TRACY)
 	target_include_directories(xrCore PUBLIC "${CORE_OPT}build/native/include/")
 	target_link_directories(xrCore PUBLIC "${CORE_OPT}runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/")
 	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
@@ -182,6 +182,9 @@ if (IXRAY_PROFILER)
 	)
 	target_compile_definitions(xrCore PUBLIC "IXRAY_PROFILER")
 	target_link_libraries(xrCore PUBLIC "OptickCore")
+elseif (IXRAY_PROFILER_TRACY)
+	target_compile_definitions(xrCore PUBLIC "IXRAY_PROFILER_TRACY")
+	target_link_libraries(xrCore PUBLIC TracyClient)
 endif()
 
 # Linker list
