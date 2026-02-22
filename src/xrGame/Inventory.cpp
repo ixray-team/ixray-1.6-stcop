@@ -1363,7 +1363,7 @@ bool CInventory::InRuck(const CInventoryItem* pIItem) const
 	return pIItem->CurrPlace() == eItemPlaceRuck;
 }
 
-bool CInventory::CanPutInSlot(PIItem pIItem, u16 slot_id) const
+bool CInventory::CanPutInSlot(PIItem pIItem, u16 slot_id, bool bAllowReplacement) const
 {
 	if (!m_bSlotsUseful)
 	{
@@ -1384,9 +1384,11 @@ bool CInventory::CanPutInSlot(PIItem pIItem, u16 slot_id) const
 		}
 	}
 
-	if (slot_id != NO_ACTIVE_SLOT && nullptr == ItemFromSlot(slot_id))
+	if (slot_id != NO_ACTIVE_SLOT)
 	{
-		return true;
+		PIItem pItemInSlot = ItemFromSlot(slot_id);
+		if (!pItemInSlot || (bAllowReplacement && pItemInSlot != pIItem))
+			return true;
 	}
 
 	return false;

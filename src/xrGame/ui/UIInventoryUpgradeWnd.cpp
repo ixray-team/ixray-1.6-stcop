@@ -55,6 +55,7 @@ CUIInventoryUpgradeWnd::Scheme::~Scheme()
 CUIInventoryUpgradeWnd::~CUIInventoryUpgradeWnd()
 {
 	delete_data(m_schemes);
+	xr_delete(m_selectorFrame);
 }
 
 void CUIInventoryUpgradeWnd::Init()
@@ -116,6 +117,11 @@ void CUIInventoryUpgradeWnd::Init()
 
 	LoadCellsBacks(uiXml);
 	LoadSchemes(uiXml);
+
+	m_selectorFrame = new CUIFrameWindow();
+	m_selectorFrame->InitTexture("ui_inv_item_selector_tri");
+	m_selectorFrame->SetVisible(false);
+	AttachChild(m_selectorFrame);
 }
 
 void CUIInventoryUpgradeWnd::InitInventory(CUICellItem* cellItem, bool can_upgrade)
@@ -460,7 +466,7 @@ void CUIInventoryUpgradeWnd::set_info_cur_upgrade(Upgrade_type* upgrade)
 	UIUpgrade* uiu = FindUIUpgrade(upgrade);
 	if (uiu)
 	{
-		if (Device.dwTimeContinual < uiu->FocusReceiveTime() + (m_item_info ? m_item_info->delay : 0))
+		if (!pInput->GetControllerMode() && Device.dwTimeContinual < uiu->FocusReceiveTime() + (m_item_info ? m_item_info->delay : 0))
 		{
 			upgrade = nullptr; // visible = false
 		}
@@ -538,4 +544,191 @@ bool CUIInventoryUpgradeWnd::OnMouseAction(float x, float y, EUIMessages mouse_a
 		}
 	}
 	return inherited::OnMouseAction(x, y, mouse_action);
+}
+
+// Controller UI
+
+//  Uses wnd angles and midside points to find nearest point and switch to closest nearby window in the needed direction
+bool CUIInventoryUpgradeWnd::SelectorMove(eUIDirection4 dir)
+{
+	if (!m_selectedUpgrade)
+		return false;
+
+	Fvector2 aSrcPoint;
+	Fvector2 srcPoint;
+	m_selectedUpgrade->GetAbsolutePos(aSrcPoint);
+	srcPoint = aSrcPoint;
+
+	switch (dir)
+	{
+	case eUIDirection4_Left:
+		{
+			srcPoint.y += m_selectedUpgrade->GetHeight() / 2.0f;
+		}
+		break;
+	case eUIDirection4_Right:
+		{
+			srcPoint.y += m_selectedUpgrade->GetHeight() / 2.0f;
+			srcPoint.x += m_selectedUpgrade->GetWidth();
+		}
+		break;
+	case eUIDirection4_Up:
+		{
+			srcPoint.x += m_selectedUpgrade->GetWidth() / 2.0f;
+		}
+		break;
+	case eUIDirection4_Down:
+		{
+			srcPoint.x += m_selectedUpgrade->GetWidth() / 2.0f;
+			srcPoint.y += m_selectedUpgrade->GetHeight();
+		}
+		break;
+	}
+	
+	// Find the closest object
+	double minDistSquared = pow(5000.0, 2);
+	xr_vector<CUIWindow*>& wndList = m_scheme_wnd->GetChildWndList();
+	UIUpgrade* pDstWnd = nullptr;
+	for (xr_vector<CUIWindow*>::iterator it = wndList.begin(); it != wndList.end(); ++it)
+	{
+		CUIWindow* pWnd = *it;
+		if (pWnd == m_selectedUpgrade || !dynamic_cast<UIUpgrade*>(pWnd))
+			continue;
+
+		Fvector2 dstPos;
+		pWnd->GetAbsolutePos(dstPos);
+		float dstWidth = pWnd->GetWidth();
+		float dstHeight = pWnd->GetHeight();
+		float dstHalfWidth = dstWidth / 2.0f;
+		float dstHalfHeight = dstHeight / 2.0f;
+
+		Fvector2 points[] = {
+			// 4 Angles
+			{dstPos.x, dstPos.y},
+			{dstPos.x + dstWidth, dstPos.y},
+			{dstPos.x + dstWidth, dstPos.y + dstHeight},
+			{dstPos.x, dstPos.y + dstHeight},
+
+			// and 4 side - middles
+			{dstPos.x + dstHalfWidth, dstPos.y},
+			{dstPos.x + dstWidth, dstPos.y + dstHalfHeight},
+			{dstPos.x + dstHalfWidth, dstPos.y + dstHeight},
+			{dstPos.x, dstPos.y + dstHalfHeight},
+		};
+
+		// Get the distance to closest point from the list
+		double dstDistanceSqr = pow(5000.0, 2);
+		for (int i = 0; i < 8; ++i)
+		{
+			float diffX = points[i].x - srcPoint.x;
+			float diffY = points[i].y - srcPoint.y;
+
+			if (dir == eUIDirection4_Up || dir == eUIDirection4_Down)
+			{
+				if ((diffY < 0 && dir == eUIDirection4_Down) || (diffY > 0 && dir == eUIDirection4_Up))
+					continue;
+				if (fabs(diffX) > 0.15f * fabs(diffY))
+					continue;
+				if (fabs(diffX) > fabs(diffY))
+					continue;
+			}
+			else if (dir == eUIDirection4_Left || dir == eUIDirection4_Right)
+			{
+				if ((diffX < 0 && dir == eUIDirection4_Right) || (diffX > 0 && dir == eUIDirection4_Left))
+					continue;
+				if (fabs(diffY) > fabs(diffX))
+					continue;
+			}
+
+			float distanceSquared = pow(diffX, 2) + pow(diffY, 2);
+			if (distanceSquared < dstDistanceSqr)
+				dstDistanceSqr = distanceSquared;
+		}
+		if (dstDistanceSqr < minDistSquared)
+		{
+			minDistSquared = dstDistanceSqr;
+			pDstWnd = static_cast<UIUpgrade*>(pWnd);
+		}
+	}
+
+	if (pDstWnd)
+	{
+		SetUpgradeSelected(pDstWnd);
+
+		CUIActorMenu* pMenu = static_cast<CUIActorMenu*>(GetParent());
+		SetInfoVisible(true && pMenu->NeedToShowInfos());
+		return true;
+	}
+
+	return false;
+}
+
+void CUIInventoryUpgradeWnd::SetUpgradeSelected(UIUpgrade* pUpgrade)
+{
+	if (m_selectedUpgrade == pUpgrade)
+		return;
+
+	if (m_selectedUpgrade)
+	{
+		m_selectedUpgrade->SetSelected(false);
+	}
+
+	m_selectedUpgrade = pUpgrade;
+
+	if (pUpgrade)
+	{
+		m_selectedUpgrade->SetSelected(true);
+
+		// Update frame
+		Fvector2 frmSize = pUpgrade->GetWndSize();
+		Fvector2 frmPos = pUpgrade->GetWndPos();
+		frmPos.add(m_scheme_wnd->GetWndPos());
+		m_selectorFrame->SetWndSize(frmSize);
+		m_selectorFrame->SetWndPos(frmPos);
+		m_selectorFrame->SetVisible(true);
+	}
+	else
+	{
+		m_selectorFrame->SetVisible(false);
+	}
+}
+
+
+void CUIInventoryUpgradeWnd::SetActiveForController(bool status)
+{
+	if (status)
+	{
+		if (m_current_scheme->cells.size() > 0)
+		{
+			SetUpgradeSelected(m_current_scheme->cells.front());
+			CUIActorMenu* pMenu = static_cast<CUIActorMenu*>(GetParent());
+			SetInfoVisible(true && pMenu->NeedToShowInfos());
+		}
+	}
+	else
+	{
+		SetUpgradeSelected(nullptr);
+		SetInfoVisible(false);
+	}
+}
+
+
+bool CUIInventoryUpgradeWnd::CanApplySelectedUpgrade()
+{
+	return (m_selectedUpgrade && m_selectedUpgrade->CanBeApplied());
+}
+
+void CUIInventoryUpgradeWnd::ApplySelectedUpgrade()
+{
+	m_selectedUpgrade->OnClick();
+}
+
+void CUIInventoryUpgradeWnd::SetInfoVisible(bool status)
+{
+	if (!status)
+		set_info_cur_upgrade(nullptr);
+	else if (m_selectedUpgrade)
+	{
+		set_info_cur_upgrade(m_selectedUpgrade->get_upgrade());
+	}
 }

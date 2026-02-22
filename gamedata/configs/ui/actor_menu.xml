@@ -13,6 +13,28 @@
 	    </auto_static>
 	</main>
 
+	<gamepad_legend x="0" y="730" width="1024" height="30" spacing="5">
+		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>am_use</window_name>
+			<text font="graffiti19" vert_align="c">ui_am_use</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>am_actions</window_name>
+			<text font="graffiti19" vert_align="c">ui_am_actions</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>am_info</window_name>
+			<text font="graffiti19" vert_align="c">ui_am_info</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>am_action</window_name>
+			<text font="graffiti19" vert_align="c">ui_am_take_all</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_mm_back_gp</text>
+		</auto_static>
+	</gamepad_legend>
+	
 	<left_background x="0" y="0" width="330" height="768">
 		<texture>ui_inGame2_left_side</texture>
 	</left_background>
@@ -501,4 +523,54 @@
 	        </state_progress>
 	    </power_sensor>
 	</actor_state_info>
+
+	<ui_c_navi_inventory>
+		<wnd_selector_info wnd="BagList" 		wnd_l="AutomaticList" />
+		<wnd_selector_info wnd="AutomaticList" 	wnd_l="OutfitList"	wnd_r="BagList" 		wnd_t="" 			wnd_b="QuickSlot"/>
+		<wnd_selector_info wnd="OutfitList" 	wnd_l="PistolList"	wnd_r="AutomaticList" 	wnd_t="HelmetList" 	wnd_b="DetectorList" />
+		<wnd_selector_info wnd="PistolList" 	wnd_l="" 			wnd_r="OutfitList" 		wnd_t="" 			wnd_b="QuickSlot"/>
+		<wnd_selector_info wnd="DetectorList" 	wnd_l="PistolList" 	wnd_r="AutomaticList" 	wnd_t="OutfitList" 	wnd_b="QuickSlot"/>
+		<wnd_selector_info wnd="HelmetList" 	wnd_l="PistolList" 	wnd_r="AutomaticList" 	wnd_t="" 			wnd_b="OutfitList"/>
+		<wnd_selector_info wnd="QuickSlot" 		wnd_l="" 			wnd_r="BagList" 		wnd_t="DetectorList" wnd_b="BeltList"/>
+		<wnd_selector_info wnd="BeltList" 		wnd_l="" 			wnd_r="BagList" 		wnd_t="QuickSlot" 	wnd_b=""/>
+	</ui_c_navi_inventory>
+	
+	<ui_c_navi_deadbody>
+		<wnd_selector_info wnd="BagList"			wnd_l="AutomaticList"	wnd_r=""				wnd_t=""				wnd_b=""/>
+		<wnd_selector_info wnd="AutomaticList"		wnd_l="OutfitList"		wnd_r="BagList"			wnd_t=""				wnd_b="QuickSlot"/>
+		<wnd_selector_info wnd="OutfitList"			wnd_l="PistolList"		wnd_r="AutomaticList"	wnd_t="HelmetList"		wnd_b="DetectorList"/>
+		<wnd_selector_info wnd="PistolList"			wnd_l="DeadBodyBagList"	wnd_r="OutfitList"		wnd_t=""				wnd_b="QuickSlot"/>
+		<wnd_selector_info wnd="DetectorList"		wnd_l="PistolList"		wnd_r="AutomaticList"	wnd_t="OutfitList"		wnd_b="QuickSlot"/>
+		<wnd_selector_info wnd="HelmetList"			wnd_l="PistolList"		wnd_r="AutomaticList"	wnd_t=""				wnd_b="OutfitList"/>
+		<wnd_selector_info wnd="QuickSlot"			wnd_l="DeadBodyBagList"	wnd_r="BagList"			wnd_t="DetectorList"	wnd_b="BeltList"/>
+		<wnd_selector_info wnd="BeltList"			wnd_l="DeadBodyBagList"	wnd_r="BagList"			wnd_t="QuickSlot"		wnd_b=""/>
+		<wnd_selector_info wnd="DeadBodyBagList"	wnd_l=""				wnd_r="PistolList"		wnd_t=""				wnd_b=""/>
+	</ui_c_navi_deadbody>
+	
+	<ui_c_navi_trade>
+		<wnd_selector_info wnd="AutomaticList"			wnd_l="OutfitList"			wnd_r="TradeActorList"		wnd_t=""					wnd_b="QuickSlot"/>
+		<wnd_selector_info wnd="OutfitList"				wnd_l="PistolList"			wnd_r="AutomaticList"		wnd_t="HelmetList"			wnd_b="DetectorList"/>
+		<wnd_selector_info wnd="PistolList"				wnd_l="TradePartnerList"	wnd_r="OutfitList"			wnd_t=""					wnd_b="QuickSlot"/>
+		<wnd_selector_info wnd="DetectorList"			wnd_l="PistolList"			wnd_r="AutomaticList"		wnd_t="OutfitList"			wnd_b="QuickSlot"/>
+		<wnd_selector_info wnd="HelmetList"				wnd_l="PistolList"			wnd_r="AutomaticList"		wnd_t=""					wnd_b="OutfitList"/>
+		<wnd_selector_info wnd="QuickSlot"				wnd_l="TradePartnerBagList"	wnd_r="TradeActorBagList"	wnd_t="DetectorList"		wnd_b="BeltList"/>
+		<wnd_selector_info wnd="BeltList"				wnd_l="TradePartnerBagList"	wnd_r="TradeActorBagList"	wnd_t="QuickSlot"			wnd_b=""/>
+
+		<wnd_selector_info wnd="TradePartnerList"		wnd_l=""					wnd_r="PistolList"			wnd_t=""					wnd_b="TradePartnerBagList"/>
+		<wnd_selector_info wnd="TradePartnerBagList"	wnd_l=""					wnd_r="TradeActorBagList"	wnd_t="TradePartnerList"	wnd_b=""/>
+		<wnd_selector_info wnd="TradeActorList"			wnd_l="AutomaticList"		wnd_r=""					wnd_t=""					wnd_b="TradeActorBagList"/>
+		<wnd_selector_info wnd="TradeActorBagList"		wnd_l="TradePartnerBagList"	wnd_r=""					wnd_t="TradeActorList"		wnd_b=""/>
+	</ui_c_navi_trade>
+	
+	<ui_c_navi_upgrade>		
+		<wnd_selector_info wnd="BagList" 		wnd_l="AutomaticList" />
+		<wnd_selector_info wnd="AutomaticList" 	wnd_l="OutfitList"	wnd_r="BagList" 		wnd_t="" 			wnd_b="QuickSlot"/>
+		<wnd_selector_info wnd="OutfitList" 	wnd_l="PistolList"	wnd_r="AutomaticList" 	wnd_t="HelmetList" 	wnd_b="DetectorList" />
+		<wnd_selector_info wnd="PistolList" 	wnd_l="" 			wnd_r="OutfitList" 		wnd_t="" 			wnd_b="QuickSlot"/>
+		<wnd_selector_info wnd="DetectorList" 	wnd_l="PistolList" 	wnd_r="AutomaticList" 	wnd_t="OutfitList" 	wnd_b="QuickSlot"/>
+		<wnd_selector_info wnd="HelmetList" 	wnd_l="PistolList" 	wnd_r="AutomaticList" 	wnd_t="" 			wnd_b="OutfitList"/>
+		<wnd_selector_info wnd="QuickSlot" 		wnd_l="" 			wnd_r="BagList" 		wnd_t="DetectorList" wnd_b="BeltList"/>
+		<wnd_selector_info wnd="BeltList" 		wnd_l="" 			wnd_r="BagList" 		wnd_t="QuickSlot" 	wnd_b=""/>
+	</ui_c_navi_upgrade>
+	
 </w>

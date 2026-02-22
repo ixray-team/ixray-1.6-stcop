@@ -40,6 +40,7 @@
 #include "UIMainIngameWnd.h"
 #include "../xrEngine/CustomHUD.h"
 #include "ui/UIRadialMenuWeapon.h"
+#include "ui/UIPdaWnd.h"
 
 extern u32 hud_adj_mode;
 
@@ -580,7 +581,9 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 	}
 
 	float absValueX = std::abs(value.x);
-	if (id != 2 && fis_zero(value.x) && fis_zero(value.y) || (CurrentGameUI() && CurrentGameUI()->RadialMenuWeapon()->isInitialized && CurrentGameUI()->RadialMenuWeapon()->IsShown()))
+	if (id != 2 && fis_zero(value.x) && fis_zero(value.y) || 
+		(CurrentGameUI() && CurrentGameUI()->RadialMenuWeapon()->isInitialized && CurrentGameUI()->RadialMenuWeapon()->IsShown())
+		|| ((HudAnimator() && HudAnimator()->PdaAnimator()) ? HudAnimator()->PdaAnimator()->IsActive() : CurrentGameUI()->PdaMenu()->IsShown()))
 	{
 		if (id == 0)
 		{
@@ -620,15 +623,16 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 		if (!fis_zero(value.y))
 		{
 			mstate_wishful |= (value.y > 0.f) ? mcFwd : mcBack;
+		}
 
-			if (std::abs(value.y) < 0.5f)
-			{
-				mstate_wishful |= mcAccel;
-			}
-			else if (!(mstate_real & mcAccel))
-			{
-				mstate_wishful &= ~mcAccel;
-			}
+		if (std::abs(value.y) < 0.5f
+			&& std::abs(value.x) < 0.5f)
+		{
+			mstate_wishful |= mcAccel;
+		}
+		else if (!(mstate_real & mcAccel))
+		{
+			mstate_wishful &= ~mcAccel;
 		}
 	}break;
 	// Right stick
