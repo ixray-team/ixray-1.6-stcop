@@ -1,13 +1,13 @@
 #include "StdAfx.h"
 #include "light.h"
 
-const	u32	delay_small_min			= 1;
-const	u32	delay_small_max			= 3;
-const	u32	delay_large_min			= 10;
-const	u32	delay_large_max			= 20;
-const	u32	cullfragments			= 4;
+constexpr u32 delay_small_min = 1;
+constexpr u32 delay_small_max = 3;
+constexpr u32 delay_large_min = 10;
+constexpr u32 delay_large_max = 20;
+constexpr u32 cullfragments = 4;
 
-void	light::vis_prepare			()
+void light::vis_prepare()
 {
 	//	. test is sheduled for future	= keep old result
 	//	. test time comes :)
@@ -36,7 +36,9 @@ void	light::vis_prepare			()
 	//	TODO: DX10: Remove this pessimization
 	//skiptest	= true;
 
-	if (skiptest || Device.vCameraPosition.distance_to(SpatialComponent->spatial.sphere.P)<=(SpatialComponent->spatial.sphere.R*1.01f+safe_area + (SpatialComponent->spatial.sphere.R * 0.1f)))	
+	vis.distance = Device.vCameraPosition.distance_to(SpatialComponent->spatial.sphere.P);
+
+	if (skiptest || vis.distance <= (SpatialComponent->spatial.sphere.R * 1.01f + safe_area + (SpatialComponent->spatial.sphere.R * 0.1f)))
 	{	
 		// small error
 		vis.visible		=	true;
