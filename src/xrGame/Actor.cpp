@@ -789,6 +789,10 @@ void	CActor::Hit(SHit* pHDS)
 		}
 	}
 
+	if (Level().CurrentControlEntity() == this)
+	{
+		pInput->feedback(65535 * pHDS->damage(), 65535 * pHDS->damage(), 0.1f);
+	}
 	
 	//slow actor, only when he gets hit
 	m_hit_slowmo = conditions().HitSlowmo(pHDS);
