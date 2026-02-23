@@ -119,9 +119,15 @@ void CUIInventoryUpgradeWnd::Init()
 	LoadSchemes(uiXml);
 
 	m_selectorFrame = new CUIFrameWindow();
-	m_selectorFrame->InitTexture("ui_inv_item_selector_tri");
-	m_selectorFrame->SetVisible(false);
-	AttachChild(m_selectorFrame);
+	if (m_selectorFrame->InitTexture("ui_inv_item_selector_tri", false))
+	{
+		m_selectorFrame->SetVisible(false);
+		AttachChild(m_selectorFrame);
+	}
+	else
+	{
+		xr_delete(m_selectorFrame);
+	}
 }
 
 void CUIInventoryUpgradeWnd::InitInventory(CUICellItem* cellItem, bool can_upgrade)
@@ -656,7 +662,7 @@ bool CUIInventoryUpgradeWnd::SelectorMove(eUIDirection4 dir)
 		SetUpgradeSelected(pDstWnd);
 
 		CUIActorMenu* pMenu = static_cast<CUIActorMenu*>(GetParent());
-		SetInfoVisible(true && pMenu->NeedToShowInfos());
+		SetInfoVisible(pMenu->NeedToShowInfos());
 		return true;
 	}
 
@@ -674,6 +680,11 @@ void CUIInventoryUpgradeWnd::SetUpgradeSelected(UIUpgrade* pUpgrade)
 	}
 
 	m_selectedUpgrade = pUpgrade;
+
+	if (!m_selectorFrame)
+	{
+		return;
+	}
 
 	if (pUpgrade)
 	{
@@ -702,7 +713,7 @@ void CUIInventoryUpgradeWnd::SetActiveForController(bool status)
 		{
 			SetUpgradeSelected(m_current_scheme->cells.front());
 			CUIActorMenu* pMenu = static_cast<CUIActorMenu*>(GetParent());
-			SetInfoVisible(true && pMenu->NeedToShowInfos());
+			SetInfoVisible(pMenu->NeedToShowInfos());
 		}
 	}
 	else
