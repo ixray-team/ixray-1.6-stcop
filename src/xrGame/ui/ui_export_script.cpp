@@ -44,6 +44,11 @@ float get_current_kx()
 	return UI().get_current_kx();
 }
 
+bool is_widescreen()
+{
+	return UI().is_widescreen();
+}
+
 #pragma optimize("s",on)
 void UIRegistrator::script_register(lua_State *L)
 {
@@ -110,7 +115,8 @@ void UIRegistrator::script_register(lua_State *L)
 	];
 	module(L,"ui")
 	[
-		def("get_current_kx",				&get_current_kx)
+		def("get_current_kx",				&get_current_kx),
+		def("is_widescreen",				&is_widescreen)
 	];
 
 	CMapManager::script_register(L);
