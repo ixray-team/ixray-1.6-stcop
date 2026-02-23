@@ -303,6 +303,7 @@ void CUIRankingWnd::Init()
 	}
 
 	xml.SetLocalRoot(stored_root);
+	m_gamepad_legend = UIHelper::CreateGamepadLegend(xml, "gamepad_legend", this, false);
 }
 
 void CUIRankingWnd::add_faction(CUIXml& xml, shared_str const& faction_id)
@@ -559,4 +560,66 @@ void CUIRankingWnd::ResetAll()
 	//-Alundaio 
 
 	inherited::ResetAll();
+}
+
+#define RANKING_WND_SCROLL_STEP_SIZE 16.0f
+bool CUIRankingWnd::OnGamepadKeyAction(int key, EUIMessages gamepad_action)
+{
+	if (gamepad_action == WINDOW_KEY_PRESSED)
+	{
+		switch (get_binded_action(key, agUILogMenu))
+		{
+			case kPDA_LOG_SCROLL_UP:
+			{
+				CUIScrollView* scroll = m_achievements ? m_achievements : m_factions_list;
+				int orig = scroll->ScrollBar()->GetStepSize();
+				scroll->ScrollBar()->SetStepSize(RANKING_WND_SCROLL_STEP_SIZE);
+				scroll->ScrollBar()->TryScrollDec();
+				scroll->ScrollBar()->SetStepSize(orig);
+				return true;
+			}
+			case kPDA_LOG_SCROLL_DOWN:
+			{
+				CUIScrollView* scroll = m_achievements ? m_achievements : m_factions_list;
+				int orig = scroll->ScrollBar()->GetStepSize();
+				scroll->ScrollBar()->SetStepSize(RANKING_WND_SCROLL_STEP_SIZE);
+				scroll->ScrollBar()->TryScrollInc();
+				scroll->ScrollBar()->SetStepSize(orig);
+				return true;
+			}
+		}
+	}
+	return inherited::OnGamepadKeyAction(key, gamepad_action);
+}
+
+bool CUIRankingWnd::OnGamepadKeyHold(int key)
+{
+	switch (get_binded_action(key, agUILogMenu))
+	{
+		case kPDA_LOG_SCROLL_UP:
+		{
+			if (!any_binded_key_for_action_pressed_c(kPDA_LOG_SCROLL_DOWN))
+			{
+				CUIScrollView* scroll = m_achievements ? m_achievements : m_factions_list;
+				int orig = scroll->ScrollBar()->GetStepSize();
+				scroll->ScrollBar()->SetStepSize(RANKING_WND_SCROLL_STEP_SIZE);
+				scroll->ScrollBar()->TryScrollDec();
+				scroll->ScrollBar()->SetStepSize(orig);
+			}
+			return true;
+		}
+		case kPDA_LOG_SCROLL_DOWN:
+		{
+			if (!any_binded_key_for_action_pressed_c(kPDA_LOG_SCROLL_UP))
+			{
+				CUIScrollView* scroll = m_achievements ? m_achievements : m_factions_list;
+				int orig = scroll->ScrollBar()->GetStepSize();
+				scroll->ScrollBar()->SetStepSize(RANKING_WND_SCROLL_STEP_SIZE);
+				scroll->ScrollBar()->TryScrollInc();
+				scroll->ScrollBar()->SetStepSize(orig);
+			}
+			return true;
+		}
+	}
+	return inherited::OnGamepadKeyHold(key);
 }
