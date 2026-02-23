@@ -249,6 +249,7 @@ public:
 	bool RuckDefault() { return !!m_flags.test(FRuckDefault); }
 
 	virtual bool CanTake() const { return !!m_flags.test(FCanTake); }
+	virtual void SetCanTake(bool state) { m_flags.set(FCanTake, state); }
 	bool CanTrade() const;
 	void AllowTrade() { m_flags.set(FCanTrade, m_can_trade); };
 	void DenyTrade() { m_flags.set(FCanTrade, false); };

@@ -723,3 +723,29 @@ dotp_c_easy = 0.9
 ; no weapon, aiming at chars to talk to them
 ; a-b works as easy
 ; b-c targets are ignored
+
+![m_poltergeist_normal_tele] ;m_poltergeist.ltx
+Tele_Time_Object_Keep					= 10000
+Tele_Object_Min_Mass					= 0
+Tele_Object_Max_Mass					= 10000
+
+Tele_Shooting_From_Weapon_Enable        = on;                   Разрешает возможность стрелять с оружия по врагу.
+Tele_Activate_N_Throw_Grenade           = on;                   Разрешает выдрать чеку и кинуть гранату во врага.
+Tele_Max_Pickuped_Weapons				= 2; 					Кол-во стреляющего оружия, которое может быть захвачено телекинезом.
+Tele_AutoAim_Torque_Factor				= 0.5; 			    Множитель угловой скорости оружия. Чем больше - тем быстрее поворачивается оружие при автонаведении. (типа инерция)
+Tele_Delay_Before_First_Shoot			= 0; 				    Задержка перед первым выстрелом. (in ms)
+Particle_Tele_Object					= static\fire_distort
+
+
+![m_burer_e] ;m_burer.ltx
+Tele_Time_To_Hold		 				= 10000
+Tele_Object_Min_Mass					= 1
+Tele_Object_Max_Mass					= 10000
+
+Tele_Shooting_From_Weapon_Enable        = on;                   Разрешает возможность стрелять с оружия по врагу.
+Tele_Activate_N_Throw_Grenade           = on;                   Разрешает выдрать чеку и кинуть гранату во врага.
+Tele_Max_Pickuped_Weapons				= 2; 					Кол-во стреляющего оружия, которое может быть захвачено телекинезом.
+Tele_AutoAim_Torque_Factor				= 0.5; 			    Множитель угловой скорости оружия. Чем больше - тем быстрее поворачивается оружие при автонаведении. (типа инерция)
+Tele_Delay_Before_First_Shoot			= 0; 				    Задержка перед первым выстрелом. (in ms)
+Particle_Tele_Object					= static\fire_distort
+
