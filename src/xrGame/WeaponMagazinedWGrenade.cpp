@@ -561,15 +561,12 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 		Fvector	p1, d;
 		p1.set(get_LastFP2());
 		d.set(get_LastFD());
-		if (!H_Parent()) return;
-		CGameObject* GO = H_Parent()->cast_game_object();
-		if (!GO || GO->getDestroy()) return;
-		CEntity* entity = GO->cast_entity();
-		if (!entity) return;
-		CInventoryOwner* inventory_owner = entity->cast_inventory_owner();
-		if (!inventory_owner || !inventory_owner->m_inventory) return;
+		
 
-		entity->g_fireParams(this, p1, d);
+		if (CEntity* entity = H_Parent() ? H_Parent()->cast_entity() : nullptr)
+		{
+			entity->g_fireParams(this, p1, d);
+		}
 
 		if (IsGameTypeSingle())
 			p1.set(get_LastFP2());
@@ -581,7 +578,7 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 
 		launch_matrix.c.set(p1);
 
-		if (IsGameTypeSingle() && IsZoomed() && GO->cast_actor())
+		if (IsGameTypeSingle() && IsZoomed() && H_Parent() && H_Parent()->cast_actor())
 		{
 			collide::rq_result RQ;
 			bool HasPick = Level().ObjectSpace.RayPick(p1, d, 300.0f, collide::rqtStatic, RQ, H_Parent());
@@ -628,7 +625,7 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 		}
 
 		VERIFY(pGrenade);
-		pGrenade->SetInitiator(H_Parent()->ID());
+		pGrenade->SetInitiator(H_Parent() ? H_Parent()->ID() : ID());
 
 		if (Local() && OnServer())
 		{
@@ -703,7 +700,9 @@ void CWeaponMagazinedWGrenade::OnEvent(NET_Packet& P, u16 type)
 				m_layered_sounds.PlaySound("sndShotG", get_LastFP2(), H_Root(), !!GetHUDmode(), false, true);
 			}
 
-			AddShotEffector();
+			if (H_Parent())
+				AddShotEffector();
+			
 			StartFlameParticle();
 		}
 		break;

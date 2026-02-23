@@ -27,7 +27,7 @@ void CMincer::OnStateSwitch(EZoneState new_state)
 			if (info.object && !info.object->getDestroy())
 			{
 				if (CPhysicsShellHolder* GO = info.object->cast_physics_shell_holder())
-					Telekinesis().activate(GO, m_fThrowInImpulse, m_fTeleHeight, 100000);
+					Telekinesis().append_tobject(new CTeleWhirlwindObject(&m_telekinetics, GO, m_fThrowInImpulse, m_fTeleHeight, 100000, true));
 			}
 		}
 	}
@@ -73,8 +73,8 @@ void CMincer::feel_touch_new				(CObject* O)
 	inherited::feel_touch_new(O);
 	if( m_eZoneState==eZoneStateBlowout && (m_dwBlowoutExplosionTime>(u32)m_iStateTime) )
 	{
-		CPhysicsShellHolder * GO = smart_cast<CPhysicsShellHolder *>(O);
-		Telekinesis().activate(GO, m_fThrowInImpulse, m_fTeleHeight, 100000);
+		if(CPhysicsShellHolder * GO = O&&!O->getDestroy() ? O->cast_physics_shell_holder() : nullptr)
+			Telekinesis().append_tobject(new CTeleWhirlwindObject(&m_telekinetics, GO, m_fThrowInImpulse, m_fTeleHeight, 100000, true));
 	}
 }
 bool CMincer::feel_touch_contact(CObject* O)

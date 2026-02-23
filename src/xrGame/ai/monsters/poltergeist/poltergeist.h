@@ -3,333 +3,370 @@
 #include "../telekinesis.h"
 #include "../energy_holder.h"
 #include "../../../../xrScripts/script_export_space.h"
+#include "Grenade.h"
 
 class CPhysicsShellHolder;
 class CStateManagerPoltergeist;
 class CPoltergeisMovementManager;
-class CPolterSpecialAbility;
-class CPolterTele;
+class IPolter;
+class CTelekineticPoltergeist;
+class CWeaponMagazined;
+class CGrenade;
 
-//////////////////////////////////////////////////////////////////////////
-
-
-class CPoltergeist final :	public CBaseMonster ,
-						public CTelekinesis,
-						public CEnergyHolder {
-	
-	typedef		CBaseMonster	inherited;
-	typedef		CEnergyHolder	Energy;
+class CPoltergeist final : public CBaseMonster,
+                           public CTelekinesis,
+                           public CEnergyHolder,
+						   public ITelekineticEnemy
+{
+	using inherited = CBaseMonster;
+	using Energy = CEnergyHolder;
 
 	friend class CPoltergeisMovementManager;
-	friend class CPolterTele;
+	friend class CTelekineticPoltergeist;
 
-	float					m_height;
-	bool					m_disable_hide;
+	static constexpr f32 IMPULSE				= 10.0f;
+	static constexpr f32 IMPULSE_RADIUS			= 5.0f;
+	static constexpr f32 TRACE_DISTANCE			= 10.0f;
+	static constexpr u32 TRACE_ATTEMPT_COUNT	= 3;
+	
+	float m_height;
+	bool m_disable_hide;
 
-	SMotionVel				invisible_vel;
+	SMotionVel invisible_vel;
 
+	IPolter* m_poltergeist;
+	
 
-	CPolterSpecialAbility	*m_flame;
-	CPolterSpecialAbility	*m_tele;
-	xr_vector<CObject*>		tele_objects;
-	bool					m_actor_ignore;
+	xr_vector<CObject*> tele_objects;
+	bool m_actor_ignore;
 
-	TTime					m_last_detection_time;
-	Fvector					m_last_actor_pos;
-	char const*				m_detection_pp_effector_name;
-	u32						m_detection_pp_type_index;
-	float					m_detection_near_range_factor;
-	float					m_detection_far_range_factor;
-	float					m_detection_far_range;
-	float					m_detection_speed_factor;
-	float					m_detection_loose_speed;
-	float					m_current_detection_level;
-	float					m_detection_success_level;
-	float					m_detection_max_level;
+	TTime m_last_detection_time;
+	Fvector m_last_actor_pos;
+	const char* m_detection_pp_effector_name;
+	u32 m_detection_pp_type_index;
+	float m_detection_near_range_factor;
+	float m_detection_far_range_factor;
+	float m_detection_far_range;
+	float m_detection_speed_factor;
+	float m_detection_loose_speed;
+	float m_current_detection_level;
+	float m_detection_success_level;
+	float m_detection_max_level;
 
-	bool					m_enable_corpse_on_death;
+	bool m_enable_corpse_on_death;
 
 public:
-	bool					m_detect_without_sight;
-
-public:
-					CPoltergeist		();
-	virtual			~CPoltergeist		();	
-
-	virtual void	Load				(const char* section);
-	virtual void	reload				(const char* section);
-	virtual void	reinit				();
-
-	virtual bool	net_Spawn			(CSE_Abstract* DC);
-	virtual void	net_Destroy			();
-	virtual void	net_Relcase			(CObject *O);
-
-	virtual void	UpdateCL			();
-	virtual	void	shedule_Update		(u32 dt);
-	virtual bool	AlwaysTheCrow();
-
-			void	set_actor_ignore	(bool const actor_ignore) { m_actor_ignore = actor_ignore; }
-			bool	get_actor_ignore	() const { return m_actor_ignore; }
-
-	virtual void	Die					(CObject* who);
-
-	virtual CMovementManager *create_movement_manager();
+	bool m_detect_without_sight;
 	
-	virtual void	ForceFinalAnimation	();
+	CPoltergeist();
+	~CPoltergeist() override;
 
-	virtual	void	on_activate			();
-	virtual	void	on_deactivate		();
-	virtual	void	Hit					(SHit* pHDS);
-	virtual	char*	get_monster_class_name () { return (char*)"poltergeist"; }
+	virtual void Load(const char* section) override;
+	virtual void reload(const char* section) override;
+	virtual void reinit() override;
 
-			bool	detected_enemy		();
-			float	get_fly_around_distance	() const { return m_fly_around_distance; }
-			float	get_fly_around_change_direction_time() const { return m_fly_around_change_direction_time; }
+	virtual bool net_Spawn(CSE_Abstract* DC) override;
+	virtual void net_Destroy() override;
+	virtual void net_Relcase(CObject* O) override;
 
-	virtual	void	renderable_Render	();
+	virtual void UpdateCL() override;
+	virtual void shedule_Update(u32 dt) override;
+	virtual bool AlwaysTheCrow() override;
 
-	IC		CPolterSpecialAbility		*ability() {return (m_flame ? m_flame : m_tele);}
-	
-	
+	void set_actor_ignore(const bool actor_ignore) { m_actor_ignore = actor_ignore; }
+	bool get_actor_ignore() const { return m_actor_ignore; }
 
-	IC		bool	is_hidden			() {return state_invisible;}
+	void Die(CObject* who) override;
 
-	
+	CMovementManager* create_movement_manager() override;
+
+	void ForceFinalAnimation() override;
+
+	void on_activate() override;
+	void on_deactivate() override;
+	void Hit(SHit* pHDS) override;
+	char* get_monster_class_name() override { return (char*)"poltergeist"; }
+
+	bool detected_enemy();
+	float get_fly_around_distance() const { return m_fly_around_distance; }
+	float get_fly_around_change_direction_time() const { return m_fly_around_change_direction_time; }
+
+	void renderable_Render() override;
+
+	IC IPolter* ability() { return m_poltergeist; }
+
+
+	IC bool is_hidden() { return state_invisible; }
+
+
 	// Poltergeist ability
-			void	PhysicalImpulse		(const Fvector &position);
-			void	StrangeSounds		(const Fvector &position);
-			
-			ref_sound m_strange_sound;
-	
+	void PhysicalImpulse(const Fvector& position);
+	void StrangeSounds(const Fvector& position);
+
+	ref_sound m_strange_sound;
+
 	// Movement
-			Fvector m_current_position;		// Позиция на ноде
+	Fvector m_current_position; // Позиция на ноде
 
 	// Dynamic Height
-			u32		time_height_updated;
-			float	target_height;
+	u32 time_height_updated;
+	float target_height;
 
-			void	UpdateHeight			();
+	void UpdateHeight();
 
 	// Invisibility 
 
-			void	EnableHide				(){m_disable_hide = false;}
-			void	DisableHide				(){m_disable_hide = true;}
+	void EnableHide() { m_disable_hide = false; }
+	void DisableHide() { m_disable_hide = true; }
+	
+	CEntityAlive* get_enemy() override
+	{
+		const CEntityAlive* entity_alive = EnemyMan.get_enemy();
+		return entity_alive ? const_cast<CEntityAlive*>(entity_alive) : nullptr;
+	}
+	
+	float get_tele_distance() override;
+	u32 get_tele_keep_time() override;
+	CBaseMonster* get_self() override;
 
 public:
-	virtual bool	run_home_point_when_enemy_inaccessible () const { return false; }
-	
+	bool run_home_point_when_enemy_inaccessible() const override { return false; }
+
 private:
-			void	Hide					();
-			void	Show					();
+	void Hide();
+	void Show();
 
-			float	m_height_change_velocity;
-			u32		m_height_change_min_time;
-			u32		m_height_change_max_time;
-			float	m_height_min;
-			float	m_height_max;
-			
-			float	m_fly_around_level;
-			float	m_fly_around_distance;
-			float	m_fly_around_change_direction_time;
+	float m_height_change_velocity;
+	u32 m_height_change_min_time;
+	u32 m_height_change_max_time;
+	float m_height_min;
+	float m_height_max;
 
-			float	get_current_detection_level			() const { return m_current_detection_level; }
-			bool	check_work_condition				() const;
-			void    remove_pp_effector					();
-			void	update_detection					();
+	float m_fly_around_level;
+	float m_fly_around_distance;
+	float m_fly_around_change_direction_time;
 
-			float	get_detection_near_range_factor		();
-			float	get_detection_far_range_factor		();
-			float	get_detection_loose_speed			();
-			float	get_detection_far_range				();
-			float	get_detection_speed_factor			();
-			float	get_detection_success_level			();
-			float    get_post_process_factor	() const;
+	float get_current_detection_level() const { return m_current_detection_level; }
+	bool check_work_condition() const;
+	void remove_pp_effector();
+	void update_detection();
+
+	float get_detection_near_range_factor();
+	float get_detection_far_range_factor();
+	float get_detection_loose_speed();
+	float get_detection_far_range();
+	float get_detection_speed_factor();
+	float get_detection_success_level();
+	float get_post_process_factor() const;
 
 public:
 #ifdef DEBUG
-			virtual CBaseMonster::SDebugInfo show_debug_info();
+	virtual CBaseMonster::SDebugInfo show_debug_info();
 #endif
-	
 
-			friend class CPolterFlame;
+
+	friend class CFlamePoltergeist;
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
-//////////////////////////////////////////////////////////////////////////
-// Interface
-//////////////////////////////////////////////////////////////////////////
+class IPolter
+{
+	ref_sound		  m_sound_base;
+	CParticlesObject* m_particles_object;
+	CParticlesObject* m_particles_object_electro;
+	
+	LPCSTR m_particles_hidden;
+	LPCSTR m_particles_damage;
+	LPCSTR m_particles_death;
+	LPCSTR m_particles_idle;
 
-class CPolterSpecialAbility {
+	u32 m_last_hit_frame;
 
-	CParticlesObject	*m_particles_object;
-	CParticlesObject	*m_particles_object_electro;
+public:
+	CPoltergeist* m_poltergeist;
+	
+	IPolter(CPoltergeist* polter);
+	virtual ~IPolter();
 
-	const char*				m_particles_hidden;
-	const char*				m_particles_damage;
-	const char*				m_particles_death;
-	const char*				m_particles_idle;
+	virtual void load(const char* section);
+	virtual void update_schedule();
+	virtual void update_frame();
+	virtual void on_hide();
+	virtual void on_show();
 
-	ref_sound			m_sound_base;
-	u32					m_last_hit_frame;
+	virtual void on_destroy()
+	{
+	}
 
-protected:
-	CPoltergeist		*m_object;	
+	virtual void on_die();
+	virtual void on_hit(SHit* pHDS);
 
-public:			
-					CPolterSpecialAbility		(CPoltergeist *polter);
-	virtual			~CPolterSpecialAbility		();
+	virtual void UpdateCL()
+	{
+	}
 
-	virtual void	load						(const char* section);
-	virtual void	update_schedule				();
-	virtual void	update_frame				();
-	virtual void	on_hide						();
-	virtual void	on_show						();
-	virtual void	on_destroy					(){}
-	virtual void	on_die						();
-	virtual void	on_hit						(SHit* pHDS);
+	virtual CTelekineticPoltergeist* cast_to_polter_tele() { return nullptr; }
+	virtual CFlamePoltergeist* cast_to_polter_flame() { return nullptr; }
 };
 
+class CFlamePoltergeist final : public IPolter
+{
+	using inherited = IPolter;
+
+	ref_sound m_sound;
+	LPCSTR m_particles_prepare;
+	LPCSTR m_particles_fire;
+	LPCSTR m_particles_stop;
+	u32 m_time_fire_delay;
+	u32 m_time_fire_play;
+
+	float m_length;
+	float m_hit_value;
+	u32 m_hit_delay;
+
+	u32 m_count;
+	u32 m_delay; // between 2 flames
+
+	u32 m_time_flame_started;
+
+	float m_min_flame_dist;
+	float m_max_flame_dist;
+	float m_min_flame_height;
+	float m_max_flame_height;
+
+	float m_pmt_aura_radius;
 
 
-//////////////////////////////////////////////////////////////////////////
-// Flame
-//////////////////////////////////////////////////////////////////////////
-class CPolterFlame final : public CPolterSpecialAbility {
-
-	typedef CPolterSpecialAbility inherited;
-
-	ref_sound				m_sound;
-	const char*					m_particles_prepare;
-	const char*					m_particles_fire;
-	const char*					m_particles_stop;
-	u32						m_time_fire_delay;
-	u32						m_time_fire_play;
-
-	float					m_length;
-	float					m_hit_value;
-	u32						m_hit_delay;
-
-	u32						m_count;
-	u32						m_delay;	// between 2 flames
-
-	u32						m_time_flame_started;
-
-	float					m_min_flame_dist;
-	float					m_max_flame_dist;
-	float					m_min_flame_height;
-	float					m_max_flame_height;
-
-	float					m_pmt_aura_radius;
-
-	
 	// Scanner
-	float					m_scan_radius;
-	u32						m_scan_delay_min;
-	u32						m_scan_delay_max;
-	
-	SPPInfo					m_scan_effector_info;
-	float					m_scan_effector_time;
-	float					m_scan_effector_time_attack;
-	float					m_scan_effector_time_release;
-	ref_sound				m_scan_sound;
+	float m_scan_radius;
+	u32 m_scan_delay_min;
+	u32 m_scan_delay_max;
 
-	bool					m_state_scanning;
-	u32						m_scan_next_time;
+	SPPInfo m_scan_effector_info;
+	float m_scan_effector_time;
+	float m_scan_effector_time_attack;
+	float m_scan_effector_time_release;
+	ref_sound m_scan_sound;
+
+	bool m_state_scanning;
+	u32 m_scan_next_time;
 
 
-	enum EFlameState {
+	enum EFlameState
+	{
 		ePrepare,
 		eFire,
 		eStop
 	};
 
-
 public:
-	struct SFlameElement {
-		const CObject		*target_object;
-		Fvector				position;
-		Fvector				target_dir;
-		u32					time_started;
-		ref_sound			sound;
-		CParticlesObject	*particles_object;
-		EFlameState			state;
-		u32					time_last_hit;
+	struct SFlameElement
+	{
+		const CObject* target_object;
+		Fvector position;
+		Fvector target_dir;
+		u32 time_started;
+		ref_sound sound;
+		CParticlesObject* particles_object;
+		EFlameState state;
+		u32 time_last_hit;
 	};
-
 
 private:
 	using FLAME_ELEMS_VEC = xr_vector<SFlameElement*>;
 	using FLAME_ELEMS_IT = FLAME_ELEMS_VEC::iterator;
 
-	FLAME_ELEMS_VEC			m_flames;
+	FLAME_ELEMS_VEC m_flames;
 
-public:	
-					CPolterFlame				(CPoltergeist *polter);
-	virtual			~CPolterFlame				();
+public:
+	CFlamePoltergeist(CPoltergeist* polter);
+	~CFlamePoltergeist() override;
 
-	virtual void	load						(const char* section);
-	virtual void	update_schedule				();
-	virtual void	on_destroy					();
-	virtual void	on_die						();
+	virtual void load(const char* section) override;
+	virtual void update_schedule() override;
+	virtual void on_destroy() override;
+	virtual void on_die() override;
+	virtual void UpdateCL() override;
+	
+	virtual CFlamePoltergeist* cast_to_polter_flame() override { return this; }
 
 private:
-			void	select_state				(SFlameElement *elem, EFlameState state);
-			bool	get_valid_flame_position	(const CObject *target_object, Fvector &res_pos);
-			void	create_flame				(const CObject *target_object);
+	void select_state(SFlameElement* elem, EFlameState state);
+	bool get_valid_flame_position(const CObject* target_object, Fvector& res_pos);
+	void create_flame(const CObject* target_object);
 };
 
-
-//////////////////////////////////////////////////////////////////////////
-// TELE
-//////////////////////////////////////////////////////////////////////////
-class CPolterTele final : public CPolterSpecialAbility {
-	typedef CPolterSpecialAbility inherited;
+class CTelekineticPoltergeist final : public IPolter
+{
+public:
+	using inherited = IPolter;
 
 	xr_vector<ISpatialShared> m_nearest;
 
+	ref_sound m_sound_tele_hold;
+	ref_sound m_sound_tele_throw;
+
 	// external params
-	float				m_pmt_radius;
-	float				m_pmt_object_min_mass;
-	float				m_pmt_object_max_mass;
-	u32					m_pmt_object_count;
-	u32					m_pmt_time_to_hold;
-	u32					m_pmt_time_to_wait;
-	u32					m_pmt_time_to_wait_in_objects;
-	u32					m_pmt_raise_time_to_wait_in_objects;
-	float				m_pmt_distance;
-	float				m_pmt_object_height;
-	u32					m_pmt_time_object_keep;
-	float				m_pmt_raise_speed;
-	float				m_pmt_fly_velocity;
+	float m_pmt_radius;
+	float m_pmt_object_min_mass;
+	float m_pmt_object_max_mass;
+	float m_pmt_distance;
+	float m_pmt_object_height;
+	float m_pmt_raise_speed;
+	float m_pmt_fly_velocity;
+	float m_pmt_object_collision_damage;
 
-	float				m_pmt_object_collision_damage;
+	// Максимальное количество объектов, которые полтергейст может одновременно держать в воздухе (телекинез)
+	u32 m_pmt_object_count;
 
-	ref_sound			m_sound_tele_hold;
-	ref_sound			m_sound_tele_throw;
+	// Сколько времени (мс) полтергейст удерживает все поднятые объекты в "подвешенном" состоянии 
+	// перед тем, как начать их бросать (фаза MAIN_PHASE / удержание перед атакой)
+	u32 m_pmt_time_to_hold;
 
-	enum ETeleState {
-		eStartRaiseObjects,
-		eRaisingObjects,
-		eFireObjects,
-		eWait
+	// Время паузы / отдыха (мс) после того, как полтергейст выкидал почти все объекты 
+	// (переход в состояние WAIT -> следующая атака начинается только после этой паузы)
+	u32 m_pmt_time_to_wait;
+
+	// Минимальная / базовая задержка (мс) между поднятием двух последовательных объектов
+	// во время фазы RAISE_OBJECTS (чем больше — тем медленнее подъём)
+	u32 m_pmt_time_to_wait_in_objects;
+
+	// Задержка (мс) между поднятием объектов в фазе RAISE_OBJECTS.
+	// За счёт этого объекты поднимаются друг за другом в случайное время.
+	u32 m_pmt_raise_time_to_wait_in_objects;
+	u32 m_pmt_time_object_keep;
+	
+	enum class ETeleState : u8
+	{
+		RAISE_OBJECTS,
+		MAIN_PHASE,
+		WAIT
 	} m_state;
+	
+	u32 m_state_start_time;
+	u32 m_state_next_update;
+	
+	u32 m_pmt_max_pickuped_weapons;
+	float m_pmt_autoaim_torque_factor;
+	u32 m_pmt_delay_before_first_shot;
+	shared_str m_pmt_particle_tele_object;
+	bool m_pmt_shooting_from_weapon_enable;
+	bool m_pmt_activate_n_throw_grenade;
 
-	u32					m_time;
-	u32					m_time_next;
+	CTelekineticPoltergeist(CPoltergeist* polter);
+	~CTelekineticPoltergeist() override;
 
-public:	
-					CPolterTele						(CPoltergeist *polter);
-	virtual			~CPolterTele					();
+	virtual void load(const char* section) override;
+	virtual void update_schedule() override;
+	virtual void update_frame() override;
+	virtual void UpdateCL() override;
 
-	virtual void	load							(const char* section);
-	virtual void	update_schedule					();
-	virtual void	update_frame					();
+	virtual CTelekineticPoltergeist* cast_to_polter_tele() override { return this; }
 
 private:
-			void	tele_find_objects				(xr_vector<CObject*> &objects, const Fvector &pos);
-			bool	tele_raise_objects				();
-			void	tele_fire_objects				();
+	void tele_find_objects(xr_vector<CObject*>& objects, const Fvector& pos);
+	bool tele_raise_objects();
+	void throw_objects();
 
-			bool	trace_object					(CObject *obj, const Fvector &target);
+	bool trace_object(CObject* ignore_object, const Fvector& target);
 };
-
