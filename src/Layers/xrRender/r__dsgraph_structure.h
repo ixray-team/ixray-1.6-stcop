@@ -79,6 +79,9 @@ public:
 				void					set_Feedback			(R_feedback*V, u32	id)			{ val_feedback_breakp = id; val_feedback = V;		}
 				void					get_Counters			(u32&	s,	u32& d)				{ s=counter_S; d=counter_D;			}
 				void					clear_Counters			()								{ counter_S=counter_D=0; 			}
+
+				virtual CDB::MODEL* GetHOMModel();
+				virtual xr_vector<u32>* GetHOMInvaltids();
 public:
 	R_dsgraph_structure	()
 	{
