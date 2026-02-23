@@ -9,6 +9,7 @@
 #include "alife_space.h"
 #include "../xrEngine/Render.h"
 #include "anticheat_dumpable_object.h"
+#include "../xrPhysics/DamageSource.h"
 
 class CCartridge;
 class CParticlesObject;
@@ -16,7 +17,7 @@ class IRender_Sector;
 
 #define WEAPON_MATERIAL_NAME "objects\\bullet"
 
-class CShootingObject : public IAnticheatDumpable
+class CShootingObject : public IAnticheatDumpable, public IDamageSource
 {
 protected:
 	CShootingObject();
@@ -170,6 +171,12 @@ protected:
 	xr_shared_ptr<CParticlesObject> m_pFlameSilencerParticles;
 	xr_shared_ptr<CParticlesObject> m_pFlameGlaucherParticles;
 
+	ALife::_OBJECT_ID initiator_id;
+
 public:
-	virtual void				DumpActiveParams		(shared_str const & section_name, CInifile & dst_ini) const;
+	virtual void DumpActiveParams(shared_str const& section_name, CInifile& dst_ini) const;
+
+	void SetInitiator(ALife::_OBJECT_ID id) override { initiator_id = id; }
+	u16 Initiator() override { return initiator_id; }
+	IDamageSource* cast_IDamageSource() override { return this; }
 };

@@ -563,7 +563,7 @@ void CWeaponMagazined::FireStart()
 				SetAutoAimStartTime(0);
 
 				inherited::FireStart();
-				R_ASSERT(parent);
+				//R_ASSERT(parent);
 				SwitchState(eFire);
 			}
 		}
@@ -1256,22 +1256,10 @@ void CWeaponMagazined::state_Fire(float dt)
 		Fvector					p1, d; 
 		p1.set(get_LastFP());
 		d.set(get_LastFD());
-
-		if (!H_Parent())
-		{
-			StopShooting();
-			return;
-		}
-		CGameObject* GO = H_Parent()->cast_game_object();
-		if (!GO || GO->getDestroy())
-		{
-			StopShooting();
-			return;
-		}
-
+		
 		if(!IsGameTypeSingle())
 		{
-			if (smart_cast<CMPPlayersBag*>(GO) != nullptr)
+			if (smart_cast<CMPPlayersBag*>(H_Parent()) != nullptr)
 			{
 				Msg("! WARNING: state_Fire of object [%d][%s] while parent is CMPPlayerBag...", ID(), cNameSect().c_str());
 				{
@@ -1281,28 +1269,19 @@ void CWeaponMagazined::state_Fire(float dt)
 			}
 		}
 
-		CEntity* entity = GO->cast_entity();
-		if (!entity)
+		if (CEntity* entity = H_Parent() ? H_Parent()->cast_entity() : nullptr)
 		{
-			StopShooting();
-			return;
+			entity->g_fireParams(this, p1,d);
+			
+			if (!entity->g_stateFire())
+				StopShooting();
 		}
-		CInventoryOwner* inventory_owner = entity->cast_inventory_owner();
-		if (!inventory_owner || !inventory_owner->m_inventory)
-		{
-			StopShooting();
-			return;
-		}
-		entity->g_fireParams	(this, p1,d);
-
-		if( !entity->g_stateFire() )
-			StopShooting();
-
+		
 		if (m_iShotNum == 0)
 		{
 			m_vStartPos = p1;
 			m_vStartDir = d;
-		};
+		}
 		
 		VERIFY(!m_magazine.empty());
 
@@ -1378,7 +1357,7 @@ void CWeaponMagazined::state_Fire(float dt)
 
 	if (iAmmoElapsed == 0 ||
 		(m_iQueueSize > 0 && m_iShotNum >= m_iQueueSize) ||
-		!IsWorking())
+		!IsWorking() && H_Parent())
 	{
 		StopShotEffector(); 
 	}
@@ -1409,27 +1388,15 @@ void CWeaponMagazined::state_FireChamber(float dt)
 	{
 		VERIFY(fOneShotTime > 0.f);
 
-		Fvector					p1, d;
+		Fvector p1, d;
 		p1.set(get_LastFP());
 		d.set(get_LastFD());
 
-		if (!H_Parent())
-		{
-			StopShooting();
-			return;
-		}
-		CGameObject* GO = H_Parent()->cast_game_object();
-		if (!GO || GO->getDestroy())
-		{
-			StopShooting();
-			return;
-		}
-
 		if (!IsGameTypeSingle())
 		{
-			if (smart_cast<CMPPlayersBag*>(GO) != nullptr)
+			if (smart_cast<CMPPlayersBag*>(H_Parent()) != nullptr)
 			{
-				Msg("! WARNING: state_Fire of object [%d][%s] while parent is CMPPlayerBag...", ID(), cNameSect().c_str());
+				Msg("! WARNING: state_FireChamber of object [%d][%s] while parent is CMPPlayerBag...", ID(), cNameSect().c_str());
 				{
 					StopShooting();
 					return;
@@ -1437,29 +1404,21 @@ void CWeaponMagazined::state_FireChamber(float dt)
 			}
 		}
 
-		CEntity* entity = GO->cast_entity();
-		if (!entity)
+		if (CEntity* entity = H_Parent() ? H_Parent()->cast_entity() : nullptr)
 		{
-			StopShooting();
-			return;
-		}
-		CInventoryOwner* inventory_owner = entity->cast_inventory_owner();
-		if (!inventory_owner || !inventory_owner->m_inventory)
-		{
-			StopShooting();
-			return;
-		}
+			entity->g_fireParams(this, p1, d);
 
-		entity->g_fireParams(this, p1, d);
-
-		if (!entity->g_stateFire())
-			StopShooting();
+			if (!entity->g_stateFire())
+			{
+				StopShooting();
+			}
+		}
 
 		if (m_iShotNum == 0)
 		{
 			m_vStartPos = p1;
 			m_vStartDir = d;
-		};
+		}
 
 		VERIFY(!m_chamber.empty());
 
@@ -1525,7 +1484,7 @@ void CWeaponMagazined::state_FireChamber(float dt)
 
 	if (iAmmoElapsed == 0 ||
 		(m_iQueueSize > 0 && m_iShotNum >= m_iQueueSize) ||
-		!IsWorking())
+		!IsWorking() && H_Parent())
 	{
 		StopShotEffector(); 
 	}
@@ -1647,7 +1606,8 @@ void CWeaponMagazined::OnShot()
 
 	ApplyPattern();
 	// Camera	
-	AddShotEffector();
+	if (H_Parent()) 
+		AddShotEffector();
 
 	if (H_Parent() && H_Parent() == Level().CurrentControlEntity())
 		pInput->feedback(65535, 65535, 0.1f);
@@ -1864,19 +1824,9 @@ void CWeaponMagazined::switch2_Idle	()
 #ifdef DEBUG
 #include "ai/stalker/ai_stalker.h"
 #endif
+
 void CWeaponMagazined::switch2_Fire	()
 {
-	if (!H_Parent()) return;
-	CInventoryOwner* io		= H_Parent()->cast_inventory_owner();
-	CInventoryItem* ii		= cast_inventory_item();
-#ifdef DEBUG
-	if (!io)
-		return;
-	//VERIFY2					(io,make_string("no inventory owner, item %s",*cName()));
-
-	if (ii != io->inventory().ActiveItem())
-		Msg					("! not an active item, item %s, owner %s, active item %s",*cName(),*H_Parent()->cName(),io->inventory().ActiveItem() ? *io->inventory().ActiveItem()->object().cName() : "no_active_item");
-
 #if USE_OLD_OBJECT_PLANNER
 	if ( !(io && (ii == io->inventory().ActiveItem())) ) 
 	{
@@ -1889,26 +1839,12 @@ void CWeaponMagazined::switch2_Fire	()
 		}
 	}
 #endif
-#else
-	if (!io)
-		return;
-#endif // DEBUG
-
-//
-//	VERIFY2(
-//		io && (ii == io->inventory().ActiveItem()),
-//		make_string(
-//			"item[%s], parent[%s]",
-//			*cName(),
-//			H_Parent() ? *H_Parent()->cName() : "no_parent"
-//		)
-//	);
-
+	
 	m_bStopedAfterQueueFired = false;
 	m_bFireSingleShot = true;
 	m_iShotNum = 0;
 
-    if((OnClient() || Level().IsDemoPlay())&& !IsWorking())
+    if ((OnClient() || Level().IsDemoPlay())&& !IsWorking())
 		FireStart();
 
 }
@@ -3485,7 +3421,7 @@ void CWeaponMagazined::SwitchGaussScreen()
 void CWeaponMagazined::OnH_A_Chield()
 {
 	SetQueueSize(H_Parent() && H_Parent()->cast_actor() ? GetCurrentFireMode() : -1);
-
+	StopShooting();
 	inherited::OnH_A_Chield();
 };
 

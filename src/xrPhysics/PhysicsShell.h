@@ -174,7 +174,7 @@ public:
 	virtual		CPHFracture						&Fracture								(u16 num)																											= 0;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	virtual		u16								numberOfGeoms							()const																												= 0;
-//	virtual				dBodyID					get_body								()																													= 0;
+	//virtual				dBodyID					get_body								()																													= 0;
 	virtual		const	Fvector					&mass_Center							()const																												= 0;
 	virtual		const	Fvector					&local_mass_Center						()																													= 0;
 	virtual		float							getRadius								()																													= 0;
