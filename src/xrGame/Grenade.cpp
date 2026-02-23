@@ -160,6 +160,10 @@ void CGrenade::State(u8 state)
 				SndPos.set(H_Parent()->Position());
 
 			PlaySound("sndCheckout", SndPos);
+		} 
+		else
+		{
+			PlaySound("sndCheckout", Position());
 		}
 	}break;
 	case eThrowEnd:
@@ -249,6 +253,9 @@ void CGrenade::Destroy()
 		m_destroy_callback	=	destroy_callback(nullptr);
 	}
 
+	if (H_Parent() == nullptr)
+		SetInitiator(ID());
+	
 	FindNormal					(normal);
 	CExplosive::GenExplodeEvent	(Position(), normal);
 }

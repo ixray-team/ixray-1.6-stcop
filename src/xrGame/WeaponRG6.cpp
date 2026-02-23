@@ -53,16 +53,9 @@ void CWeaponRG6::FireTrace(const Fvector& P, const Fvector& D)
 	p1.set(P); 
 	d.set(D);
 
-	if (!H_Parent()) return;
-	CGameObject* GO = H_Parent()->cast_game_object();
-	if (!GO || GO->getDestroy()) return;
-	CEntity* entity = GO->cast_entity();
-	if (!entity) return;
-	CInventoryOwner* inventory_owner = entity->cast_inventory_owner();
-	if (!inventory_owner || !inventory_owner->m_inventory) return;
-
-	entity->g_fireParams (this, p1,d);
-
+	if (CEntity* entity = H_Parent() ? H_Parent()->cast_entity() : nullptr)
+		entity->g_fireParams (this, p1,d);
+	
 	Fmatrix launch_matrix;
 	launch_matrix.identity();
 	launch_matrix.k.set(d);
@@ -70,7 +63,7 @@ void CWeaponRG6::FireTrace(const Fvector& P, const Fvector& D)
 										launch_matrix.j, launch_matrix.i);
 	launch_matrix.c.set(p1);
 
-	if (IsGameTypeSingle() && IsZoomed() && GO->cast_actor())
+	if (IsGameTypeSingle() && IsZoomed() && H_Parent() && H_Parent()->cast_actor())
 	{
 		collide::rq_result RQ;
 		bool HasPick = Level().ObjectSpace.RayPick(p1, d, 300.0f, collide::rqtStatic, RQ, H_Parent());
@@ -96,7 +89,7 @@ void CWeaponRG6::FireTrace(const Fvector& P, const Fvector& D)
 	if (CExplosiveRocket* pGrenade = getCurrentRocket()->cast_explosive_rocket())
 	{
 		VERIFY(pGrenade);
-		pGrenade->SetInitiator(H_Parent()->ID());
+		pGrenade->SetInitiator(H_Parent() ? H_Parent()->ID() : ID());
 	}
 
 	if (OnServer())
