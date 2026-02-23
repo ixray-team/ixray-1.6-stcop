@@ -585,7 +585,7 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 	float absValueX = std::abs(value.x);
 	if (id != 2 && fis_zero(value.x) && fis_zero(value.y) || 
 		(CurrentGameUI() && CurrentGameUI()->RadialMenuWeapon()->isInitialized && CurrentGameUI()->RadialMenuWeapon()->IsShown())
-		|| ((HudAnimator() && HudAnimator()->PdaAnimator()) ? HudAnimator()->PdaAnimator()->IsActive() : CurrentGameUI()->PdaMenu()->IsShown()))
+		|| ((HudAnimator() && HudAnimator()->PdaAnimator()) ? HudAnimator()->PdaAnimator()->IsZoomed() : CurrentGameUI()->PdaMenu()->IsShown()))
 	{
 		if (id == 0)
 		{

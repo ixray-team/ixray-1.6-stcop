@@ -3,6 +3,7 @@
 #include "UIXmlInit.h"
 #include "UIHint.h"
 #include "UIStatic.h"
+#include "../../xrEngine/xr_input.h"
 
 CUI3tButton::CUI3tButton()
 {
@@ -285,7 +286,13 @@ void CUI3tButton::Update()
 	{
 		if (m_BtnStatic && m_BtnStaticParams.m_bNeedClrChanging)
 			m_BtnStatic->TextItemControl()->SetTextColor(m_BtnStaticParams.m_ClrStateT);
-		textColor = m_bUseTextColor[S_Touched] ? m_dwTextColor[S_Touched] : m_dwTextColor[S_Enabled];
+
+		if (pInput->GetControllerMode() && m_bForceHighlight && m_bUseTextColor[S_Highlighted])
+		{
+			textColor = m_dwTextColor[S_Highlighted];
+		}
+		else
+			textColor = m_bUseTextColor[S_Touched] ? m_dwTextColor[S_Touched] : m_dwTextColor[S_Enabled];
 	}
 	else if (m_bCursorOverWindow || m_bForceHighlight)
 	{
