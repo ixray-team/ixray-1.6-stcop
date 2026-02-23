@@ -1,45 +1,117 @@
-#include <lunasvg.h>
+#include "stdafx.h"
+#include <imgui.h>
+#include <imgui_internal.h>
+#include "imgui_EditorEx.h"
 #include "IconsFontAwesome7.h"
-#include "imgui_EditorEx_Icons.h"
+#include "ModernUI.h"
 
-namespace chezze_svg_temporary
+//extern XRE_API TUI* UI;
+//extern XREUI_API CEditorRenderDevice* EDevice;
+
+inline ECORE_API bool IconButton(
+	const char* id,
+	ImTextureRef texture,
+	ImDrawFlags rounding_flags,
+	float rounding, ImVec2 button_size, ImVec2 image_size)
 {
-	CTexture* RasterizeSvg(const char* svgText, int width, int height)
-	{
-		auto doc = lunasvg::Document::loadFromData(svgText);
-		if (!doc)
-			throw std::runtime_error("SVG parse failed");
+	ImGuiWindow* window = ImGui::GetCurrentWindow();
+	if (window->SkipItems)
+		return false;
 
-		auto bitmap = doc->renderToBitmap(width, height);
-		
-		CTexture* TempTexture = new CTexture();
+	ImGui::PushID(id);
+	bool pressed = ImGui::InvisibleButton("##icon_btn", button_size);
+	const bool hovered = ImGui::IsItemHovered();
+	const bool active = ImGui::IsItemActive();
 
-		RHITextureDesc Desc;
-		Desc.Width = bitmap.width();
-		Desc.Height = bitmap.height();
-		Desc.Format = ERHI_FORMAT::R8G8B8A8_UNORM;
-		//Desc.MipLevels = 1;
-		//Desc.ArraySize = 1;
-		//Desc.Usage = ERHI_USAGE::USAGE_DEFAULT;
-		//Desc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
+	// --- colors ---
+	ImU32 col;
+	if (active)
+		col = ImGui::GetColorU32(ImGuiCol_ButtonActive);
+	else if (hovered)
+		col = ImGui::GetColorU32(ImGuiCol_ButtonHovered);
+	else
+		col = ImGui::GetColorU32(ImGuiCol_Button);
 
-		RHISubResource SubResource{};
-		SubResource.Width = bitmap.width();
-		SubResource.Height = bitmap.height();
-		SubResource.TextureFormat = Desc.Format;
-		SubResource.RowPitch = bitmap.width() * 4;
-		SubResource.Data = bitmap.data();
+	// --- draw background ---
+	ImDrawList* dl = ImGui::GetWindowDrawList();
+	ImVec2 p_min = ImGui::GetItemRectMin();
+	ImVec2 p_max = ImGui::GetItemRectMax();
 
-		IRHISurface* Surf = GRHI->CreateTexture2D(Desc, SubResource);
-		
-		TempTexture->surface_set(Surf);
-		return TempTexture;
-	}
+	dl->AddRectFilled(
+		p_min,
+		p_max,
+		col,
+		rounding,
+		rounding_flags
+	);
 
+	// --- center image ---
+	ImVec2 center = (p_min + p_max) * 0.5f;
+	ImVec2 img_min = center - image_size * 0.5f;
+	ImVec2 img_max = center + image_size * 0.5f;
+
+	dl->AddImage(texture, img_min, img_max);
+
+	ImGui::PopID();
+	return pressed;
+}
+inline ECORE_API bool TextToggleButton(
+	const char* id,
+	const char* text,
+	bool& value,
+	ImVec2 size,
+	ImDrawFlags rounding_flags,
+	float rounding)
+{
+	ImGuiWindow* window = ImGui::GetCurrentWindow();
+	if (window->SkipItems)
+		return false;
+
+	ImGui::PushID(id);
+
+	bool clicked = ImGui::InvisibleButton("##toggle_btn", size);
+	const bool hovered = ImGui::IsItemHovered();
+	const bool active = ImGui::IsItemActive();
+
+	if (clicked)
+		value = !value;
+
+	// --- colors ---
+	ImGuiCol base_col = value ? ImGuiCol_ButtonActive : ImGuiCol_Button;
+
+	ImU32 col;
+	if (active)
+		col = ImGui::GetColorU32(ImGuiCol_ButtonActive);
+	else if (hovered)
+		col = ImGui::GetColorU32(ImGuiCol_ButtonHovered);
+	else
+		col = ImGui::GetColorU32(base_col);
+
+	// --- draw background ---
+	ImDrawList* dl = ImGui::GetWindowDrawList();
+	ImVec2 p_min = ImGui::GetItemRectMin();
+	ImVec2 p_max = ImGui::GetItemRectMax();
+
+	dl->AddRectFilled(
+		p_min,
+		p_max,
+		col,
+		rounding,
+		rounding_flags);
+
+	// --- draw text centered ---
+	ImVec2 text_size = ImGui::CalcTextSize(text);
+	ImVec2 center = (p_min + p_max) * 0.5f;
+	ImVec2 text_pos = center - text_size * 0.5f;
+
+	ImU32 text_col = ImGui::GetColorU32(ImGuiCol_Text);
+	dl->AddText(text_pos, text_col, text);
+
+	ImGui::PopID();
+	return clicked;
 }
 
-
-bool IXBeginMainMenuBar()
+ECORE_API bool IXBeginMainMenuBar()
 {
 	float UIMainMenuSize = UI->GetMenuBarHeight();
 	ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -103,7 +175,7 @@ bool IXBeginMainMenuBar()
 	return true;
 }
 
-void IXEndMainMenuBar()
+ECORE_API void IXEndMainMenuBar()
 {
 
 	ImGuiStyle& style = ImGui::GetStyle();
