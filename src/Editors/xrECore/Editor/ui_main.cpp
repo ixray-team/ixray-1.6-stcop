@@ -18,8 +18,7 @@
 #include "../xrEngine/gamefont.h"
 #include "../XrEngine/XR_IOConsole.h"
 
-
-#include "imgui_EditorEx.h"
+#include "imgui_EditorEx_Icons.h"
 
 #define TRelease(x) if (x) x->pSurface->Release()
 
