@@ -498,7 +498,6 @@ LevelInspector::LevelInspector(BOOL hm) : hud_mode(hm)
 				ImGui::Begin("LevelInspector", &isOpen);
 				if(ImGui::CollapsingHeader("Main"))
 				{
-					ImGui::CheckboxFlags("Draw Inspector", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW);
 					ImGui::CheckboxFlags("Draw All Spatials", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_ALL_SPATIALS);
 					ImGui::CheckboxFlags("Draw HUD", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_HUD);
 					ImGui::CheckboxFlags("Draw Objects", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_OBJECTS);
@@ -508,6 +507,7 @@ LevelInspector::LevelInspector(BOOL hm) : hud_mode(hm)
 					ImGui::CheckboxFlags("Draw GameGraph", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_G_GRID);
 					ImGui::CheckboxFlags("Draw WayPoints", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_W_GRID);
 					ImGui::CheckboxFlags("Draw LevelGraph", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_L_GRID);
+					ImGui::CheckboxFlags("Draw HOM", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_HOM);
 
 					ImGui::Separator();
 
@@ -650,9 +650,10 @@ LevelInspector::~LevelInspector()
 void LevelInspector::OnRender()
 {
 	PROF_EVENT(__FUNCTION__);
+	bool tris_empty = tris.empty();
+	bool lines_empty = lines.empty();
 
-
-	if (!hud_mode && !m_flags.test(ESCENE_FLAGS::ESF_DRAW))
+	if (!hud_mode && m_flags.flags == ESCENE_FLAGS::ESF_NONE && tris_empty && lines_empty)
 		return;
 
 	zbuffer_enable = !pInput->iGetAsyncKeyState(zbuffer_key);
@@ -667,20 +668,21 @@ void LevelInspector::OnRender()
 	{
 		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_HUD))
 			hud_prims->OnRender();
-		if(m_flags.test(ESCENE_FLAGS::ESF_DRAW) && m_flags.test(ESCENE_FLAGS::ESF_DRAW_AI_PATHS))
+		if(m_flags.test(ESCENE_FLAGS::ESF_DRAW_AI_PATHS))
 			DrawAIPaths();
-		if(m_flags.test(ESCENE_FLAGS::ESF_DRAW) && m_flags.test(ESCENE_FLAGS::ESF_DRAW_SELECTION))
+		if(m_flags.test(ESCENE_FLAGS::ESF_DRAW_SELECTION))
 			DrawObjectsInfo();
 		if(psDeviceFlags.test(rsDrawDynamic))
 			DrawObjects();
-		if(m_flags.test(ESCENE_FLAGS::ESF_DRAW) && m_flags.test(ESCENE_FLAGS::ESF_DRAW_G_GRID))
+		if(m_flags.test(ESCENE_FLAGS::ESF_DRAW_G_GRID))
 			DrawGameGraph();
-		if(m_flags.test(ESCENE_FLAGS::ESF_DRAW) && m_flags.test(ESCENE_FLAGS::ESF_DRAW_W_GRID))
+		if(m_flags.test(ESCENE_FLAGS::ESF_DRAW_W_GRID))
 			DrawWayPoints();
+		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_HOM))
+			DrawHOM();
 	}
 
-	bool tris_empty = tris.empty();
-	bool lines_empty = lines.empty();
+
 	if (!tris_empty || !lines_empty)
 	{
 		if (hud_mode)
@@ -3172,5 +3174,35 @@ void LevelInspector::DrawObjects()
 
 			}
 		}
+	}
+}
+
+void LevelInspector::DrawHOM()
+{
+	CDB::TRI* hom_tris = Render->GetHOMModel()->get_tris();
+	Fvector* hom_verts = Render->GetHOMModel()->get_verts();
+	u32 hom_tris_cnt = Render->GetHOMModel()->get_tris_count();
+
+	constexpr u32 hom_lclr = color_rgba(20, 20, 20, 255);
+	for (u32 i = 0; i < hom_tris_cnt; i++)
+	{
+		auto& verts = hom_tris[i].verts;
+		Fvector& v0 = hom_verts[verts[0]];
+		Fvector& v1 = hom_verts[verts[1]];
+		Fvector& v2 = hom_verts[verts[2]];
+
+		append_tri({ v0, v1, v2, color_rgba(150, 150, 150, 100) });
+		append_line({ v0, v1, hom_lclr });
+		append_line({ v0, v2, hom_lclr });
+		append_line({ v2, v1, hom_lclr });
+	}
+
+	xr_vector<u32>& inv_v = *Render->GetHOMInvaltids();
+	for (u32 i : inv_v)
+	{
+		Fvector& v0 = hom_verts[hom_tris[i].verts[0]];
+		append_text3d(v0 + Fvector{ 0.f, 0.1f, 0.f }, "invalid face", color_rgba(255, 0, 0, 200));
+		Fbox box; box.setb(v0, { 0.06f, 0.06f, 0.06f });
+		append_aabb(box, color_rgba(255, 0, 0, 255));
 	}
 }
