@@ -198,3 +198,34 @@ dotp_c_easy = 0.9
 ; no weapon, aiming at chars to talk to them
 ; a-b works as easy
 ; b-c targets are ignored
+
+![m_poltergeist_normal_tele] ;m_poltergeist.ltx
+Tele_Time_Object_Keep					= 10000
+Tele_Object_Min_Mass					= 0
+Tele_Object_Max_Mass					= 10000
+
+Tele_Shooting_From_Weapon_Enable        = on;                   –азрешает возможность стрел€ть с оружи€ по врагу.
+Tele_Activate_N_Throw_Grenade           = on;                   –азрешает выдрать чеку и кинуть гранату во врага.
+Tele_Max_Pickuped_Weapons				= 2; 					 ол-во стрел€ющего оружи€, которое может быть захвачено телекинезом.
+Tele_Weapon_Slide_Enable				= off; 					—лайды влево-право стрел€ющего оружи€.
+Tele_Min_Slide_Delay					= 1000; 				Ќижний порог дл€ случайного времени слайда оружи€. (in ms)
+Tele_Max_Slide_Delay  					= 1500; 				¬ерхний порог дл€ случайного времени слайда оружи€. (in ms)
+Tele_AutoAim_Torque_Factor				= 0.33; 			    ћножитель угловой скорости оружи€. „ем больше - тем быстрее поворачиваетс€ оружие при автонаведении. (типа инерци€)
+Tele_Delay_Before_First_Shoot			= 0; 				    «адержка перед первым выстрелом. (in ms)
+Particle_Tele_Object					= static\fire_distort
+
+
+![m_burer_e] ;m_burer.ltx
+Tele_Time_To_Hold		 				= 10000
+Tele_Object_Min_Mass					= 1
+Tele_Object_Max_Mass					= 10000
+
+Tele_Shooting_From_Weapon_Enable        = on;                   –азрешает возможность стрел€ть с оружи€ по врагу.
+Tele_Activate_N_Throw_Grenade           = on;                   –азрешает выдрать чеку и кинуть гранату во врага.
+Tele_Max_Pickuped_Weapons				= 2; 					 ол-во стрел€ющего оружи€, которое может быть захвачено телекинезом.
+Tele_Weapon_Slide_Enable				= off; 					—лайды влево-право стрел€ющего оружи€.
+Tele_Min_Slide_Delay					= 1000; 				Ќижний порог дл€ случайного времени слайда оружи€. (in ms)
+Tele_Max_Slide_Delay  					= 1500; 				¬ерхний порог дл€ случайного времени слайда оружи€. (in ms)
+Tele_AutoAim_Torque_Factor				= 0.33; 			    ћножитель угловой скорости оружи€. „ем больше - тем быстрее поворачиваетс€ оружие при автонаведении. (типа инерци€)
+Tele_Delay_Before_First_Shoot			= 0; 				    «адержка перед первым выстрелом. (in ms)
+Particle_Tele_Object					= static\fire_distort

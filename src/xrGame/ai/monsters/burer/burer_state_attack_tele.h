@@ -1,7 +1,5 @@
 #pragma once
 #include "../state.h"
-#include "../../../Grenade.h"
-
 
 template<typename Object>
 class CStateBurerAttackTele : public CState<Object> {

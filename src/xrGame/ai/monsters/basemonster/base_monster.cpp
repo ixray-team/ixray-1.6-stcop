@@ -806,28 +806,25 @@ void CBaseMonster::net_Relcase(CObject *O)
 {
 	inherited::net_Relcase(O);
 	
-	if (OnServer() && O->cast_entity_alive())
+	if (OnServer())
 	{
 		StateMan->remove_links(O);
 		com_man().remove_links(O);
 	}
 	 
 	// TODO: do not clear, remove only object O
-	if (g_Alive() && OnServer()) 
+	if (OnServer()) 
 	{
-		if (O->cast_entity_alive())
-		{
-			EnemyMemory.remove_links(O);
-			SoundMemory.remove_links(O);
-			HitMemory.remove_hit_info(O);
- 			EnemyMan.remove_links(O);
-			CorpseMan.remove_links(O);
- 			monster_squad().remove_links(O);
-		}
+		EnemyMemory.remove_links(O);
+		SoundMemory.remove_links(O);
+		HitMemory.remove_hit_info(O);
+ 		EnemyMan.remove_links(O);
+		CorpseMan.remove_links(O);
+ 		monster_squad().remove_links(O);
 	}
 
-	if (OnServer() && O->cast_entity_alive())
-		CorpseMemory.remove_links		(O);
+	if (OnServer())
+		CorpseMemory.remove_links(O);
 
 	m_pPhysics_support->in_NetRelcase(O);
 }
