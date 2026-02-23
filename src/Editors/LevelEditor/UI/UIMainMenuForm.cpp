@@ -8,7 +8,7 @@
 #include "../../xrEUI/Windows/Help.h"
 #include "../../xrECore/Editor/EThumbnail.h"
 
-#include "../../xrEUI/imgui_EditorEx.h"
+#include "../xrECore/Editor/imgui_EditorEx.h"
 
 #include "Plugins/PluginManager.h"
 #include "Plugins/PluginsUIRun.h"
