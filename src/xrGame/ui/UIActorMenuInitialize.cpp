@@ -353,7 +353,7 @@ void CUIActorMenu::Construct()
 	AttachChild							(m_ActorStateInfo); 
 	
 	m_ui_navigation_selector = new CUIFrameWindow();
-	if (m_ui_navigation_selector->InitTexture("ui_inv_item_selector"))
+	if (m_ui_navigation_selector->InitTexture("ui_inv_item_selector", false))
 	{
 		m_ui_navigation_selector->SetWidth(0);
 		m_ui_navigation_selector->SetHeight(0);
