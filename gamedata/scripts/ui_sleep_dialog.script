@@ -3,7 +3,8 @@ local wide = false
 class "sleep_dialog" (CUIScriptWnd)
 function sleep_dialog:__init() super()
 	self:SetWndRect(Frect():set(0,0,1024,768))
-	if(device().width/device().height>(1024/768+0.01)) then
+
+	if (ui.is_widescreen()) then
 		wide = true
 	end
 
@@ -38,6 +39,13 @@ function sleep_dialog:__init() super()
 	self:AddCallback("btn_sleep", ui_events.BUTTON_CLICKED, self.OnButtonSleep, self)
 	self:AddCallback("btn_cancel", ui_events.BUTTON_CLICKED, self.OnButtonCancel, self)
 	self:AddCallback("sleep_mb", ui_events.MESSAGE_BOX_OK_CLICKED, self.OnMessageBoxOk, self)
+	
+	action_repeaters():Register(self, key_bindings.kUI_LEFT, 0,0)
+	action_repeaters():Register(self, key_bindings.kUI_RIGHT, 0,0)
+end
+
+function sleep_dialog:__finalize()
+	action_repeaters():UnregisterOwner(self)
 end
 
 function sleep_dialog:Initialize()
@@ -82,6 +90,7 @@ function sleep_dialog:TestAndShow()
 		else
 			self.sleep_mb:SetText("sleep_warning_radiation")
 		end
+		self:Initialize()
 		self.sleep_mb:ShowDialog(true)
 	else
 		self:Initialize()
@@ -128,6 +137,61 @@ function sleep_dialog:OnMessageBoxOk()
 	db.actor:give_info_portion("tutorial_sleep")
 	disable_info("sleep_active")
 end
+
+function sleep_dialog:OnGamepadKey(id, gamepad_action)
+	local res = CUIScriptWnd.OnGamepadKey(self,id,gamepad_action)
+
+	if res==false then
+
+		if gamepad_action == ui_events.WINDOW_KEY_PRESSED then
+			local bindUI = dik_to_bind(id, action_groups.agUIGeneral)	
+			if bindUI == key_bindings.kUI_BACK then
+				self:OnButtonCancel()
+				res = true
+				
+			elseif bindUI == key_bindings.kUI_LEFT then
+				if not any_binded_key_for_action_pressed_c(key_bindings.kUI_RIGHT) then
+					self.time_track:StepLeft()
+				end
+				action_repeaters():SetActionStarted(self, key_bindings.kUI_LEFT)
+				res = true
+				
+			elseif bindUI == key_bindings.kUI_RIGHT then
+				if not any_binded_key_for_action_pressed_c(key_bindings.kUI_LEFT) then
+					self.time_track:StepRight()
+				end
+				action_repeaters():SetActionStarted(self, key_bindings.kUI_RIGHT)
+				res = true
+			
+			elseif bindUI == key_bindings.kUI_ACCEPT then
+				self:OnButtonSleep()
+				res = true
+				
+			end
+		end
+	end
+
+	return res
+end
+
+function sleep_dialog:OnGamepadKeyHold(id)
+	local bindUI = dik_to_bind(id, action_groups.agUIGeneral)	
+	if bindUI == key_bindings.kUI_LEFT then
+		if action_repeaters():CanRepeatActionNow(self, key_bindings.kUI_LEFT) 
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_RIGHT) then
+			self.time_track:StepLeft()
+		end
+		return true		
+	elseif bindUI == key_bindings.kUI_RIGHT then
+		if action_repeaters():CanRepeatActionNow(self, key_bindings.kUI_RIGHT) 
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_LEFT) then
+			self.time_track:StepRight()
+		end
+		return true
+	end
+	
+	return false
+end
 --------------------------------------------------------------------------------
 function dream_callback()
 	local hours = sleep_control.time_track:GetIValue()
@@ -165,6 +229,7 @@ function sleep()
 	end
 	sleep_control.time_track:SetCurrentValue()
 	sleep_control:TestAndShow()
+	action_repeaters():ResetAll(sleep_control)
 end
 
 function main()
