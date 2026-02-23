@@ -796,7 +796,7 @@ ENGINE_API void GetActionAllBinding(LPCSTR _action, char* dst_buff, int dst_buff
 		xr_sprintf(dst_buff, dst_buff_sz, "%s", g_pStringTable->translate("st_key_notbinded").c_str());
 	else if (pInput->GetControllerMode())
 	{
-		xr_sprintf(dst_buff, dst_buff_sz, "%s%s%s%s", 
+		xr_sprintf(dst_buff, dst_buff_sz, "%s%s%s", 
 			gp_prim[0] ? gp_prim : "", 
 			(gp_sec[0] && gp_prim[0]) ? " , " : "", 
 			gp_sec[0] ? gp_sec : "");

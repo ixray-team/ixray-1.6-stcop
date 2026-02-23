@@ -1067,9 +1067,17 @@ void CUIActorMenu::ActivatePropertiesBox()
 	m_UIPropertiesBox->RemoveAll();
 	bool b_show = false;
 
-	if(m_currMenuMode == mmInventory || m_currMenuMode == mmDeadBodySearch) 
+	bool invOrDeadbody = m_currMenuMode == mmInventory || m_currMenuMode == mmDeadBodySearch;
+	if (invOrDeadbody)
 	{
 		PropertiesBoxForSlots(cell_item, item, b_show);
+	}
+	if (!(m_currMenuMode == mmTrade && (m_pTradePartnerBagList->IsOwner(cell_item) || m_pTradePartnerList->IsOwner(cell_item))))
+	{
+		PropertiesBoxForWeapon(cell_item, item, b_show);
+	}
+	if (invOrDeadbody)
+	{
 		PropertiesBoxForAddon(item, b_show);
 		PropertiesBoxForUsing(item, b_show);
 		PropertiesBoxForPlaying(item, b_show);
@@ -1091,8 +1099,6 @@ void CUIActorMenu::ActivatePropertiesBox()
 				PropertiesBoxForDonate(item, b_show);
 		}
 	}
-	if (!(m_currMenuMode == mmTrade && (m_pTradePartnerBagList->IsOwner(cell_item) || m_pTradePartnerList->IsOwner(cell_item))))
-		PropertiesBoxForWeapon(cell_item, item, b_show);
 
 	//-Alundaio
 
