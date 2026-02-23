@@ -5,16 +5,16 @@ struct LevelInspector final
 	enum ESCENE_FLAGS
 	{
 		ESF_NONE				= 0U,
-		ESF_DRAW				= bit_lshift(0U),
-		ESF_DRAW_L_GRID			= bit_lshift(1U),
-		ESF_DRAW_G_GRID			= bit_lshift(2U),
-		ESF_DRAW_W_GRID			= bit_lshift(3U),
-		ESF_DRAW_OBJECTS		= bit_lshift(4U),
-		ESF_DRAW_ZONES			= bit_lshift(5U),
-		ESF_DRAW_AI_PATHS		= bit_lshift(6U),
-		ESF_DRAW_SELECTION		= bit_lshift(7U),
-		ESF_DRAW_HUD			= bit_lshift(8U),
-		ESF_DRAW_ALL_SPATIALS	= bit_lshift(9U),
+		ESF_DRAW_L_GRID			= bit_lshift(0U),
+		ESF_DRAW_G_GRID			= bit_lshift(1U),
+		ESF_DRAW_W_GRID			= bit_lshift(2U),
+		ESF_DRAW_OBJECTS		= bit_lshift(3U),
+		ESF_DRAW_ZONES			= bit_lshift(4U),
+		ESF_DRAW_AI_PATHS		= bit_lshift(5U),
+		ESF_DRAW_SELECTION		= bit_lshift(6U),
+		ESF_DRAW_HUD			= bit_lshift(7U),
+		ESF_DRAW_ALL_SPATIALS	= bit_lshift(8U),
+		ESF_DRAW_HOM			= bit_lshift(9U),
 	};
 	
 	enum ESELECTION_FLAGS
@@ -425,6 +425,7 @@ struct LevelInspector final
 	void DrawGameGraph();
 	void DrawWayPoints();
 	void DrawObjects();
+	void DrawHOM();
 
 	void DrawLevelGraph();
 
