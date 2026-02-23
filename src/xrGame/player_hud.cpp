@@ -1971,6 +1971,11 @@ void player_hud::UpdateMovementLayers()
 
 	for (movement_layer* anm : m_movement_layers)
 	{
+		if (!anm)
+		{
+			return;
+		}
+
 		anm->Stop(false);
 	}
 
