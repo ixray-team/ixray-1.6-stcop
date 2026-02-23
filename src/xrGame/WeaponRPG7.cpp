@@ -100,7 +100,7 @@ void CWeaponRPG7::FireTrace(const Fvector& P, const Fvector& D)
 
 		CExplosiveRocket* pGrenade = getCurrentRocket()->cast_explosive_rocket();
 		VERIFY(pGrenade);
-		pGrenade->SetInitiator(H_Parent()->ID());
+		pGrenade->SetInitiator(H_Parent() ? H_Parent()->ID() : ID());
 
 		if (OnServer())
 		{

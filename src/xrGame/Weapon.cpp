@@ -3182,8 +3182,9 @@ void CWeapon::SwitchState(u8 S)
 	}
 #endif // #ifndef MASTER_GOLD
 
-	SetNextState		( S );
-	if (CHudItem::object().Local() && !CHudItem::object().getDestroy() && m_pInventory && OnServer())	
+	SetPending(pending);
+	SetNextState(S);
+	if (CHudItem::object().Local() && !CHudItem::object().getDestroy() && m_pInventory && OnServer())
 	{
 		// !!! Just single entry for given state !!!
 		NET_Packet		P;

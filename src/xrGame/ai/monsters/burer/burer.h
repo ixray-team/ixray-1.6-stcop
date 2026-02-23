@@ -9,7 +9,7 @@ class CCharacterPhysicsSupport;
 class CBurerFastGravi;
 
 class CBurer final :	public CBaseMonster,
-				public CTelekinesis 
+				public CTelekinesis, public ITelekineticEnemy
 {
 
 	typedef		CBaseMonster				inherited;
@@ -57,9 +57,9 @@ public:
 
 	} m_gravi_object;
 
-	const char*	 particle_gravi_wave;
-	const char*   particle_gravi_prepare;
-	const char*	 particle_tele_object;
+	const char*	particle_gravi_wave;
+	const char* particle_gravi_prepare;
+	shared_str	particle_tele_object;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Sounds
@@ -124,6 +124,12 @@ public:
 
 	CBurerFastGravi	*m_fast_gravi;
 	bool m_use_three_gravi_anims{};
+	
+	bool m_shooting_from_weapon_enable;
+	bool m_activate_n_throw_grenade;
+	u32 m_max_pickuped_weapons;
+	float m_autoaim_torque_factor;
+	u32 m_delay_before_first_shot;
 
 public:
 					CBurer				();
@@ -154,9 +160,6 @@ public:
 			void	StartGraviPrepare	();
 			void	StopGraviPrepare	();
 
-			void	StartTeleObjectParticle(CGameObject *pO);
-			void	StopTeleObjectParticle(CGameObject *pO);
-
 			void	ActivateShield		();
 			void	DeactivateShield	();
 
@@ -164,6 +167,11 @@ public:
 
 	virtual bool	ability_distant_feel() {return true;}
 	virtual	char*	get_monster_class_name () { return (char*) "burer"; }
+
+	CEntityAlive* get_enemy() override;
+	float get_tele_distance() override;
+	u32 get_tele_keep_time() override;
+	CBaseMonster* get_self() override;
 
 #ifdef DEBUG
 	virtual CBaseMonster::SDebugInfo show_debug_info();
