@@ -234,7 +234,13 @@ void	CRender::render_lights	(light_Package& LP)
 				{
 					Target->accum_spot(L_spot_s[it]);
 					if (ps_r2_ls_flags.is(R2FLAG_VOLUMETRIC_LIGHTS))
+					{
+#ifdef USE_DX11
+						Target->accum_volumetric_lv(L_spot_s[it]);
+#else
 						Target->accum_volumetric(L_spot_s[it]);
+#endif
+					}
 				}
 
 				L_spot_s.clear();
