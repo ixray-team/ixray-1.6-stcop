@@ -2,7 +2,7 @@
 #include "UITopBarForm.h"
 #include <shellapi.h>
 #include "IconsFontAwesome6.h"
-#include <imgui_internal.h>
+#include "../xrECore/Editor/imgui_EditorEx.h"
 
 UITopBarForm::UITopBarForm()
 {
@@ -26,108 +26,7 @@ UITopBarForm::~UITopBarForm()
 {
 	Icons.clear();
 }
-inline bool IconButton(
-	const char* id,
-	ImTextureRef texture,
-	ImDrawFlags rounding_flags = ImDrawFlags_RoundCornersAll,
-	float rounding = 6.0f, ImVec2 button_size = {26.f,26.f}, ImVec2 image_size = { 18.0f, 18.0f })
-{
-	ImGuiWindow* window = ImGui::GetCurrentWindow();
-	if (window->SkipItems)
-		return false;
 
-	ImGui::PushID(id);
-	bool pressed = ImGui::InvisibleButton("##icon_btn", button_size);
-	const bool hovered = ImGui::IsItemHovered();
-	const bool active = ImGui::IsItemActive();
-
-	// --- colors ---
-	ImU32 col;
-	if (active)
-		col = ImGui::GetColorU32(ImGuiCol_ButtonActive);
-	else if (hovered)
-		col = ImGui::GetColorU32(ImGuiCol_ButtonHovered);
-	else
-		col = ImGui::GetColorU32(ImGuiCol_Button);
-
-	// --- draw background ---
-	ImDrawList* dl = ImGui::GetWindowDrawList();
-	ImVec2 p_min = ImGui::GetItemRectMin();
-	ImVec2 p_max = ImGui::GetItemRectMax();
-
-	dl->AddRectFilled(
-		p_min,
-		p_max,
-		col,
-		rounding,
-		rounding_flags
-	);
-
-	// --- center image ---
-	ImVec2 center = (p_min + p_max) * 0.5f;
-	ImVec2 img_min = center - image_size * 0.5f;
-	ImVec2 img_max = center + image_size * 0.5f;
-
-	dl->AddImage(texture, img_min, img_max);
-
-	ImGui::PopID();
-	return pressed;
-}
-inline bool TextToggleButton(
-	const char* id,
-	const char* text,
-	bool& value,
-	ImVec2 size = ImVec2(-1, 26.0f),
-	ImDrawFlags rounding_flags = ImDrawFlags_RoundCornersAll,
-	float rounding = 6.0f)
-{
-	ImGuiWindow* window = ImGui::GetCurrentWindow();
-	if (window->SkipItems)
-		return false;
-
-	ImGui::PushID(id);
-
-	bool clicked = ImGui::InvisibleButton("##toggle_btn", size);
-	const bool hovered = ImGui::IsItemHovered();
-	const bool active = ImGui::IsItemActive();
-
-	if (clicked)
-		value = !value;
-
-	// --- colors ---
-	ImGuiCol base_col = value ? ImGuiCol_ButtonActive : ImGuiCol_Button;
-
-	ImU32 col;
-	if (active)
-		col = ImGui::GetColorU32(ImGuiCol_ButtonActive);
-	else if (hovered)
-		col = ImGui::GetColorU32(ImGuiCol_ButtonHovered);
-	else
-		col = ImGui::GetColorU32(base_col);
-
-	// --- draw background ---
-	ImDrawList* dl = ImGui::GetWindowDrawList();
-	ImVec2 p_min = ImGui::GetItemRectMin();
-	ImVec2 p_max = ImGui::GetItemRectMax();
-
-	dl->AddRectFilled(
-		p_min,
-		p_max,
-		col,
-		rounding,
-		rounding_flags);
-
-	// --- draw text centered ---
-	ImVec2 text_size = ImGui::CalcTextSize(text);
-	ImVec2 center = (p_min + p_max) * 0.5f;
-	ImVec2 text_pos = center - text_size * 0.5f;
-
-	ImU32 text_col = ImGui::GetColorU32(ImGuiCol_Text);
-	dl->AddText(text_pos, text_col, text);
-
-	ImGui::PopID();
-	return clicked;
-}
 
 #define IMGUI_HINT_BUTTON(Name, Ptr, Hint, dImDrawFlags, Callback) \
 			Ptr->Load(); \
