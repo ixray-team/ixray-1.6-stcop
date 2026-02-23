@@ -42,13 +42,36 @@ enum EWindowAlignment
 	waCenter	=16
 };
 
+// Anchor system. Uses normalized coordinates: (0,0) top-left, (1,1) bottom-right of parent.
+// offset_min: offset of left-top corner from anchor_min point (pixels).
+// offset_max: offset of right-bottom corner from anchor_max point (pixels).
+struct UI_API SAnchorData
+{
+	Fvector2	anchorMin;
+	Fvector2	anchorMax;
+	Fvector2	offsetMin;
+	Fvector2	offsetMax;
+	bool		useAnchors;
+
+	SAnchorData()
+		: anchorMin(0.0f, 0.0f)
+		, anchorMax(0.0f, 0.0f)
+		, offsetMin(0.0f, 0.0f)
+		, offsetMax(0.0f, 0.0f)
+		, useAnchors(false)
+	{
+	}
+};
+
+UI_API void ComputeAnchoredRect(const Frect& parentRect, const SAnchorData& anchor, Frect& result);
+
 class UI_API CUISimpleWindow
 {
 public:
 	CUISimpleWindow(const CUISimpleWindow& other) = delete;
 	CUISimpleWindow& operator=(const CUISimpleWindow& other) = delete;
 
-							CUISimpleWindow		()											{m_alignment=waNone; m_wndPos.set(0,0); m_wndSize.set(0,0);}
+							CUISimpleWindow		()											{m_alignment=waNone; m_wndPos.set(0,0); m_wndSize.set(0,0); m_scaleMode=UI_SCALE_MODE_DEFAULT; m_sizeModeWidth=UI_SIZE_MODE_FIXED; m_sizeModeHeight=UI_SIZE_MODE_FIXED; m_minWidth=0.0f; m_minHeight=0.0f;}
 	virtual void			SetWndPos			(const Fvector2& pos)						{m_wndPos.set(pos.x,pos.y);}
 	IC const Fvector2&		GetWndPos			()						const				{return m_wndPos;}
 	virtual void			SetWndSize			(const Fvector2& size)						{m_wndSize = size;}
@@ -77,6 +100,28 @@ public:
 	IC		bool			GetVisible			()						const				{return m_bShowMe;}
 	IC		void			SetAlignment		(EWindowAlignment al)						{m_alignment = al;};
 	IC	EWindowAlignment	GetAlignment		()						const				{return m_alignment;};
+
+	void					SetUseAnchors	(bool use)									{m_anchorData.useAnchors = use;}
+	bool					GetUseAnchors	()						const				{return m_anchorData.useAnchors;}
+	SAnchorData&			GetAnchorData	()											{return m_anchorData;}
+	const SAnchorData&		GetAnchorData	()						const				{return m_anchorData;}
+
+	void					SetScaleMode		(u8 mode)								{m_scaleMode = mode;}
+	u8						GetScaleMode		()						const				{return m_scaleMode;}
+
+	void					SetSizeMode		(u8 widthMode, u8 heightMode)			{m_sizeModeWidth = widthMode; m_sizeModeHeight = heightMode;}
+	u8						GetSizeModeWidth	()						const				{return m_sizeModeWidth;}
+	u8						GetSizeModeHeight	()						const				{return m_sizeModeHeight;}
+
+	void					SetMinSize		(float minW, float minH)					{m_minWidth = minW; m_minHeight = minH;}
+	float					GetMinWidth		()						const				{return m_minWidth;}
+	float					GetMinHeight		()						const				{return m_minHeight;}
+
+	virtual Fvector2		GetPreferredSize	()											{return m_wndSize;}
+	virtual void			ResolveAutoSize		();
+
+	void					SetSizeModeWidth	(u8 mode)								{m_sizeModeWidth = mode;}
+	void					SetSizeModeHeight	(u8 mode)								{m_sizeModeHeight = mode;}
 
 	IC		Frect			GetWndRect			()						const				{Frect r; GetWndRect(r); return r;}
 	IC		void			GetWndRect			(Frect& res)			const
@@ -112,6 +157,12 @@ protected:
 	Fvector2				m_wndPos;
 	Fvector2				m_wndSize;
 	EWindowAlignment		m_alignment;
+	SAnchorData				m_anchorData;
+	u8						m_scaleMode;
+	u8						m_sizeModeWidth;
+	u8						m_sizeModeHeight;
+	float					m_minWidth;
+	float					m_minHeight;
 };
 
 class UI_API CUISelectable

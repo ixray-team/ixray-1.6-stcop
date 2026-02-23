@@ -9,6 +9,15 @@ typedef	FactoryPtr<IUIShader>	ui_shader;
 #define UI_BASE_WIDTH	1024.0f
 #define UI_BASE_HEIGHT	768.0f
 
+// 0=default, 1=widescreen (apply kx), 2=none
+constexpr u8 UI_SCALE_MODE_DEFAULT = 0;
+constexpr u8 UI_SCALE_MODE_WIDESCREEN = 1;
+constexpr u8 UI_SCALE_MODE_NONE = 2;
+
+// 0=fixed (use explicit size), 1=auto (wrap to content)
+constexpr u8 UI_SIZE_MODE_FIXED = 0;
+constexpr u8 UI_SIZE_MODE_AUTO = 1;
+
 enum EUIItemAlign
 {
 	alNone	= 0x0000,

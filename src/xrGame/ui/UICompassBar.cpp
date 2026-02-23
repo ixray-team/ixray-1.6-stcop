@@ -474,6 +474,10 @@ void CUICompassBar::ApplyRelativeLayout()
 
 void CUICompassBar::ApplyMainWindowLayout()
 {
+    if (GetUseAnchors())
+    {
+        return;
+    }
     Fvector2 temp;
     const float k = UI().get_current_kx();
     if (WndRectIsProbablyRelative())

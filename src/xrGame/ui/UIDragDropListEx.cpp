@@ -656,7 +656,10 @@ bool CUIDragDropListEx::MoveSelectorToItem(CUICellItem* pItem)
 
 void CUIDragDropListEx::InitSelector(LPCSTR texture_name)
 {
-	m_selectorFrame->InitTexture(texture_name, false);
+	if (!m_selectorFrame->InitTexture(texture_name, false))
+	{
+		m_selectorFrame->InitTexture("ui_inv_item_selector", false);
+	}
 }
 
 void CUIDragDropListEx::SetControllerFocusIn(Irect selector)

@@ -11,7 +11,10 @@ public:
 	bool						visible;
 	bool						disabled;
 
+	CUIWindow*					GetRootContainer	()						{ return &m_zoneMapRoot; }
+
 private:
+	CUIWindow					m_zoneMapRoot;
 	CUIMiniMap*					m_activeMap;
 
 	CUIStatic					m_background;

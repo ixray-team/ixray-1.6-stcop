@@ -108,6 +108,17 @@ void CUIListWnd::SetWidth(float width)
     */
 }
 
+Fvector2 CUIListWnd::GetPreferredSize()
+{
+    float w = GetWidth();
+    if (w <= 0.0f)
+    {
+        w = m_iItemWidth;
+    }
+    float h = (float)m_ItemList.size() * m_iItemHeight;
+    return Fvector2().set(w, h);
+}
+
 void CUIListWnd::RemoveItem(int index)
 {
     if (index < 0 || index >= (int)m_ItemList.size())

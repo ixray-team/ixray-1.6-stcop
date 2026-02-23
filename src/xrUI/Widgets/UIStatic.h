@@ -121,7 +121,8 @@ public:
 			void 			AdjustHeightToText		();
 			void 			AdjustWidthToText		();
 
-	
+	Fvector2				GetPreferredSize		() override;
+
 			void			SetShader				(const ui_shader& sh);
 			CUIStaticItem&	GetUIStaticItem			()						{return m_UIStaticItem;}
 

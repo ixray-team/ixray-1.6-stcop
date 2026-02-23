@@ -584,6 +584,7 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp )
 					sp->SetHeading(h_);
 				}
 			}
+			sp->SetScaleMode(map->GetScaleMode());
 			map->AttachChild(sp);
 		}
 		//update heading if needed
@@ -605,6 +606,7 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp )
 		if (s)
 		{
 			s->SetWndPos(sp->GetWndPos());
+			s->SetScaleMode(map->GetScaleMode());
 			map->AttachChild(s);
 		}
 
@@ -713,6 +715,7 @@ void CMapLocation::UpdateSpotPointer(CUICustomMap* map, CMapSpotPointer* sp)
 	{
 		sp->SetWndPos(pointer_pos);
 		sp->SetHeading(heading);
+		sp->SetScaleMode(map->GetScaleMode());
 
 		map->AttachChild(sp);
 

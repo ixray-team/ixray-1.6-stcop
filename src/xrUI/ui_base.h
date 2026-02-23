@@ -33,6 +33,9 @@ class UI_API ui_core:
 	ui_shader m_empty_default;
 public:
 	xr_stack<Frect> m_Scissors;
+#ifdef DEBUG_DRAW
+	xr_vector<Frect> m_ScissorsForDebug;
+#endif
 
 #ifdef DEBUG_DRAW
 	xr_hash_set<CUIWindow*> LastFrameWidgets;
@@ -44,13 +47,19 @@ public:
 	CFontManager&	Font							()								{return *g_FontManager;}
 	CUICursor&		GetUICursor						()								{return *m_pUICursor;}
 
-	IC float		ClientToScreenScaledX			(float left)	const			{return left * m_current_scale->x;};
+	float			ClientToScreenScaledX			(float left)	const;
 	IC float		ClientToScreenScaledY			(float top)		const			{return top * m_current_scale->y;};
+
+	void			SetCurrentScaleMode				(u8 mode)						{m_currentScaleMode = mode;}
+	u8				GetCurrentScaleMode				()						const	{return m_currentScaleMode;}
 	void			ClientToScreenScaled			(Fvector2& dest, float left, float top)	const;
 	void			ClientToScreenScaled			(Fvector2& src_and_dest)const;
 	void			ClientToScreenScaledWidth		(float& src_and_dest)	const;
 	void			ClientToScreenScaledHeight		(float& src_and_dest)	const;
 	void			AlignPixel						(float& src_and_dest)	const;
+
+	void			SetSafeAreaInset					(float left, float top, float right, float bottom);
+	void			GetSafeAreaRootRect				(Frect& outRect)		const;
 
 	const C2DFrustum& ScreenFrustum					()	const						{return (m_bPostprocess)?m_2DFrustumPP:m_2DFrustum;}
 	C2DFrustum&		ScreenFrustumLIT				()								{return m_FrustumLIT;}
@@ -75,8 +84,26 @@ public:
 	Frect GetVectorUV(const std::string_view& subpath, float requested_width, float requested_height);
 	
 	IUIRender::ePointType		m_currentPointType;
+	u8							m_currentScaleMode;
+
+	float						_safeAreaInsetLeft;
+	float						_safeAreaInsetTop;
+	float						_safeAreaInsetRight;
+	float						_safeAreaInsetBottom;
 };
 
+class UI_API UIScaleModeScope
+{
+	ui_core* _ui = nullptr;
+	u8 _prevMode = UI_SCALE_MODE_DEFAULT;
+
+public:
+	UIScaleModeScope(ui_core* ui, u8 mode);
+	~UIScaleModeScope();
+
+	UIScaleModeScope(const UIScaleModeScope&) = delete;
+	UIScaleModeScope& operator=(const UIScaleModeScope&) = delete;
+};
 
 extern UI_API CUICursor&		GetUICursor				();
 extern UI_API ui_core&			UI						();

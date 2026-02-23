@@ -4,6 +4,9 @@
 #include "../xrEngine/Render.h"
 #include "UICursor.h"
 #include "Widgets/UIWindow.h"
+#include "ui_defs.h"
+#include "uiabstract.h"
+#include "UILayout.h"
 
 #include "../xrEngine/IGame_Persistent.h"
 #include "../xrEngine/XR_IOConsole.h"
@@ -121,6 +124,23 @@ void ui_core::OnDeviceReset()
 												));
 }
 
+float ui_core::ClientToScreenScaledX(float left) const
+{
+	float result;
+	if (m_currentScaleMode == UI_SCALE_MODE_NONE)
+	{
+		// Use Y scale for X too - preserve aspect ratio (keep squares square)
+		result = left * m_current_scale->y;
+	}
+	else
+	{
+		result = left * m_current_scale->x;
+		if (m_currentScaleMode == UI_SCALE_MODE_WIDESCREEN)
+			result *= get_current_kx();
+	}
+	return result;
+}
+
 void ui_core::ClientToScreenScaled(Fvector2& dest, float left, float top)	const
 {
 	if(m_currentPointType!=IUIRender::pttLIT)
@@ -173,6 +193,9 @@ void ui_core::PushScissor(const Frect& r_tgt, bool overlapped)
 		VERIFY(result.x1>=0&&result.y1>=0&&result.x2<=UI_BASE_WIDTH&&result.y2<=UI_BASE_HEIGHT);
 	}
 	m_Scissors.push		(result);
+#ifdef DEBUG_DRAW
+	m_ScissorsForDebug.push_back(result);
+#endif
 
 	result.lt.x 		= ClientToScreenScaledX(result.lt.x);
 	result.lt.y 		= ClientToScreenScaledY(result.lt.y);
@@ -194,7 +217,7 @@ void ui_core::PopScissor()
 
 	VERIFY(!m_Scissors.empty());
 	m_Scissors.pop		();
-	
+
 	if(m_Scissors.empty())
 		UIRender->SetScissor(nullptr);
 	else{
@@ -212,11 +235,84 @@ void ui_core::PopScissor()
 #ifdef DEBUG_DRAW
 
 #define ArrowMoveStep 0.5f
+#define AnchorPointHitRadius 12.0f
+
+static const char* GetWindowTypeName(CUIWindow* wnd)
+{
+	if (!wnd)
+	{
+		return "?";
+	}
+	if (wnd->ui_cast_list() != nullptr)
+	{
+		return "ListWnd";
+	}
+	if (wnd->ui_cast_scroll_view() != nullptr)
+	{
+		return "ScrollView";
+	}
+	if (wnd->ui_cast_static() != nullptr)
+	{
+		return "Static";
+	}
+	if (wnd->ui_cast_texture_owner() != nullptr)
+	{
+		return "Frame";
+	}
+	return "Window";
+}
+
+static CUIWindow* FindWindowAtPoint(const xr_vector<CUIWindow*>& roots, const xr_hash_set<CUIWindow*>& widgets, float clientX, float clientY)
+{
+	Fvector2 pt;
+	pt.set(clientX, clientY);
+
+	auto findHit = [&](CUIWindow* wnd, auto& findHitLambda) -> CUIWindow*
+	{
+		if (!widgets.count(wnd))
+		{
+			return nullptr;
+		}
+		Frect r;
+		wnd->GetAbsoluteRect(r);
+		if (!r.in(pt))
+		{
+			return nullptr;
+		}
+		auto& children = wnd->GetChildWndList();
+		for (int i = (int)children.size() - 1; i >= 0; --i)
+		{
+			CUIWindow* hit = findHitLambda(children[i], findHitLambda);
+			if (hit)
+			{
+				return hit;
+			}
+		}
+		return wnd;
+	};
+
+	for (int r = (int)roots.size() - 1; r >= 0; --r)
+	{
+		CUIWindow* hit = findHit(roots[r], findHit);
+		if (hit)
+		{
+			return hit;
+		}
+	}
+	return nullptr;
+}
 
 void ui_core::RenderUIDebugger()
 {
 	static CUIWindow* Selected = nullptr;
 	static xr_vector<CUIWindow*> Roots;
+	static char filterBuf[256] = "";
+	static bool showLayoutBounds = false;
+	static bool showHidden = false;
+	static bool showClipping = false;
+	static bool showSafeArea = false;
+	static int g_previewResIndex = 0;
+	static int g_exportFormat = 0;
 
 	if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::UI_General)])
 	{
@@ -224,62 +320,157 @@ void ui_core::RenderUIDebugger()
 		return;
 	}
 
-	auto BuildTree = [&]()
+	auto BuildTree = [&](const xr_hash_set<CUIWindow*>& widgetSet)
 	{
 		Roots.clear();
-		Roots.reserve(LastFrameWidgets.size());
-
-		for (CUIWindow* Window : LastFrameWidgets)
+		Roots.reserve(widgetSet.size());
+		for (CUIWindow* window : widgetSet)
 		{
-			CUIWindow* Parent = Window->GetParent();
-
-			if (Parent == nullptr || LastFrameWidgets.count(Parent) == 0)
+			CUIWindow* parent = window->GetParent();
+			if (parent == nullptr || widgetSet.count(parent) == 0)
 			{
-				Roots.push_back(Window);
+				Roots.push_back(window);
 			}
 		}
 	};
 
-	auto GetWndName = [](CUIWindow* WndPtr)->shared_str
+	auto GetWndName = [](CUIWindow* wndPtr) -> shared_str
 	{
-		if (WndPtr->WindowName().size() > 0)
+		if (wndPtr->WindowName().size() > 0)
 		{
-			return WndPtr->WindowName();
+			return wndPtr->WindowName();
 		}
-
-		return WndPtr->WindowNodeName();
+		return wndPtr->WindowNodeName();
 	};
 
-	std::function<void(CUIWindow*)> DrawNode = [&](CUIWindow* Window)
+	static xr_hash_set<CUIWindow*> s_debuggerWidgets;
+	static bool s_lastShowHidden = false;
+	bool needRebuild = (Roots.empty() || (showHidden != s_lastShowHidden));
+	s_debuggerWidgets = LastFrameWidgets;
+	if (showHidden)
 	{
-		if (!LastFrameWidgets.contains(Window))
+		s_lastShowHidden = true;
+		xr_hash_set<CUIWindow*> rootsSet;
+		for (CUIWindow* w : LastFrameWidgets)
 		{
-			return;
+			CUIWindow* p = w;
+			while (p && p->GetParent())
+			{
+				p = p->GetParent();
+			}
+			if (p)
+			{
+				rootsSet.insert(p);
+			}
+		}
+		std::function<void(CUIWindow*)> addRecursive = [&](CUIWindow* w)
+		{
+			if (!w || s_debuggerWidgets.count(w))
+			{
+				return;
+			}
+			s_debuggerWidgets.insert(w);
+			for (CUIWindow* child : w->GetChildWndList())
+			{
+				addRecursive(child);
+			}
+		};
+		for (CUIWindow* r : rootsSet)
+		{
+			addRecursive(r);
+		}
+	}
+	else
+	{
+		s_lastShowHidden = false;
+	}
+	const xr_hash_set<CUIWindow*>& debuggerWidgets = s_debuggerWidgets;
+
+	if (needRebuild)
+	{
+		BuildTree(debuggerWidgets);
+	}
+
+	float screenToClientX = UI_BASE_WIDTH / (float)Device.TargetWidth;
+	float screenToClientY = UI_BASE_HEIGHT / (float)Device.TargetHeight;
+	ImVec2 mousePos = ImGui::GetIO().MousePos;
+	float clientX = mousePos.x * screenToClientX;
+	float clientY = mousePos.y * screenToClientY;
+
+	bool imguiWantsMouse = ImGui::GetIO().WantCaptureMouse;
+	CUIWindow* hoveredWnd = imguiWantsMouse ? nullptr : FindWindowAtPoint(Roots, debuggerWidgets, clientX, clientY);
+	if (!imguiWantsMouse && ImGui::IsMouseClicked(ImGuiMouseButton_Left) && hoveredWnd != nullptr)
+	{
+		Selected = hoveredWnd;
+	}
+
+	std::function<bool(CUIWindow*, const xr_string&)> DrawNode = [&](CUIWindow* window, const xr_string& filterLower) -> bool
+	{
+		if (!debuggerWidgets.contains(window))
+		{
+			return false;
+		}
+		shared_str wndName = GetWndName(window);
+		shared_str nodeName = window->WindowNodeName();
+		const char* typeName = GetWindowTypeName(window);
+		string512 displayBuf;
+		xr_sprintf(displayBuf, "%s [%s] (%s)", wndName.c_str(), nodeName.c_str(), typeName);
+		if (!filterLower.empty())
+		{
+			xr_string displayLower = displayBuf;
+			for (size_t i = 0; i < displayLower.size(); ++i)
+			{
+				displayLower[i] = (char)tolower(displayLower[i]);
+			}
+			if (displayLower.find(filterLower) == xr_string::npos)
+			{
+				bool hasMatchingChild = false;
+				for (CUIWindow* child : window->GetChildWndList())
+				{
+					if (DrawNode(child, filterLower))
+					{
+						hasMatchingChild = true;
+					}
+				}
+				if (!hasMatchingChild)
+				{
+					return false;
+				}
+			}
 		}
 
-		ImGuiTreeNodeFlags Flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
-
-		if (Window == Selected)
+		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
+		if (window == Selected)
 		{
-			Flags |= ImGuiTreeNodeFlags_Selected;
+			flags |= ImGuiTreeNodeFlags_Selected;
 		}
-
-		bool IsOpen = ImGui::TreeNodeEx(Window, Flags, "%s (%p)", GetWndName(Window).c_str(), Window);
-
+		if (window == hoveredWnd)
+		{
+			ImGui::PushStyleColor(ImGuiCol_Header, IM_COL32(80, 120, 180, 255));
+		}
+		bool hasChildren = !window->GetChildWndList().empty();
+		if (!hasChildren)
+		{
+			flags |= ImGuiTreeNodeFlags_Leaf;
+		}
+		bool isOpen = ImGui::TreeNodeEx(window, flags, "%s", displayBuf);
+		if (window == hoveredWnd)
+		{
+			ImGui::PopStyleColor();
+		}
 		if (ImGui::IsItemClicked())
 		{
-			Selected = Window;
+			Selected = window;
 		}
-
-		if (IsOpen)
+		if (isOpen)
 		{
-			for (CUIWindow* Child : Window->GetChildWndList())
+			for (CUIWindow* child : window->GetChildWndList())
 			{
-				DrawNode(Child);
+				DrawNode(child, filterLower);
 			}
-
 			ImGui::TreePop();
 		}
+		return true;
 	};
 
 	if (!ImGui::Begin("UI Debugger", &Engine.External.EditorStates[static_cast<u8>(EditorUI::UI_General)]))
@@ -291,105 +482,686 @@ void ui_core::RenderUIDebugger()
 
 	if (ImGui::Button("Rebuild Tree"))
 	{
-		BuildTree();
+		BuildTree(debuggerWidgets);
 	}
 	ImGui::SameLine();
-
 	if (ImGui::Button("Reload UI"))
 	{
 		Console->Execute("ui_reload");
 	}
-
-	ImGui::Separator();
-
-	for (CUIWindow* Root : Roots)
+	struct SPreviewResolution
 	{
-		DrawNode(Root);
+		const char* label;
+		int width;
+		int height;
+	};
+	static const SPreviewResolution g_previewResolutions[] =
+	{
+		{"Current", 0, 0},
+		{"640 x 480 (4:3)", 640, 480},
+		{"800 x 600 (4:3)", 800, 600},
+		{"1024 x 768 (4:3)", 1024, 768},
+		{"1280 x 960 (4:3)", 1280, 960},
+		{"1280 x 1024 (5:4)", 1280, 1024},
+		{"1280 x 720 (16:9)", 1280, 720},
+		{"1366 x 768 (16:9)", 1366, 768},
+		{"1600 x 900 (16:9)", 1600, 900},
+		{"1920 x 1080 (16:9)", 1920, 1080},
+		{"2560 x 1440 (16:9)", 2560, 1440},
+		{"3840 x 2160 (16:9)", 3840, 2160},
+		{"1280 x 800 (16:10)", 1280, 800},
+		{"1680 x 1050 (16:10)", 1680, 1050},
+		{"1920 x 1200 (16:10)", 1920, 1200},
+		{"2560 x 1080 (21:9)", 2560, 1080},
+		{"3440 x 1440 (21:9)", 3440, 1440},
+		{"3840 x 1080 (32:9)", 3840, 1080},
+		{"5120 x 1440 (32:9)", 5120, 1440},
+	};
+
+	auto getDebuggerZx = [&]() -> float
+	{
+		if (g_previewResIndex <= 0 || g_previewResolutions[g_previewResIndex].width <= 0)
+		{
+			return get_current_zx();
+		}
+		return float(g_previewResolutions[g_previewResIndex].width) / UI_BASE_WIDTH;
+	};
+	auto getDebuggerZy = [&]() -> float
+	{
+		if (g_previewResIndex <= 0 || g_previewResolutions[g_previewResIndex].height <= 0)
+		{
+			return get_current_zy();
+		}
+		return float(g_previewResolutions[g_previewResIndex].height) / UI_BASE_HEIGHT;
+	};
+
+	int previewW = (g_previewResIndex > 0) ? g_previewResolutions[g_previewResIndex].width : Device.TargetWidth;
+	int previewH = (g_previewResIndex > 0) ? g_previewResolutions[g_previewResIndex].height : Device.TargetHeight;
+	ImGui::Text("Resolution: %d x %d | zx: %.2f zy: %.2f kx: %.2f",
+		Device.TargetWidth, Device.TargetHeight,
+		get_current_zx(), get_current_zy(), get_current_kx());
+	ImGui::SetNextItemWidth(120.0f);
+	ImGui::Combo("Preview resolution", &g_previewResIndex,
+		[](void* data, int idx, const char** out)
+		{
+			*out = g_previewResolutions[idx].label;
+			return true;
+		},
+		nullptr, sizeof(g_previewResolutions) / sizeof(g_previewResolutions[0]));
+
+	ImGui::Checkbox("Show layout bounds", &showLayoutBounds);
+	ImGui::SameLine();
+	ImGui::Checkbox("Show hidden", &showHidden);
+	ImGui::SameLine();
+	ImGui::Checkbox("Show clipping", &showClipping);
+	ImGui::SameLine();
+	ImGui::Checkbox("Show safe area", &showSafeArea);
+
+	if (ImGui::Button("Export hierarchy"))
+	{
+		xr_string output;
+		std::function<void(CUIWindow*, int, bool)> appendWindow;
+		appendWindow = [&output, &appendWindow, &GetWndName](CUIWindow* wnd, int depth, bool asJson) -> void
+		{
+			if (!wnd)
+			{
+				return;
+			}
+			shared_str name = GetWndName(wnd);
+			shared_str nodeName = wnd->WindowNodeName();
+			Fvector2 pos = wnd->GetWndPos();
+			Fvector2 size = wnd->GetWndSize();
+			bool visible = wnd->IsShown();
+			for (int i = 0; i < depth; ++i)
+			{
+				output += asJson ? "  " : "  ";
+			}
+			if (asJson)
+			{
+				char buf[512];
+				xr_sprintf(buf, "{\"name\":\"%s\",\"node\":\"%s\",\"x\":%.1f,\"y\":%.1f,\"w\":%.1f,\"h\":%.1f,\"visible\":%s",
+					name.c_str(), nodeName.c_str(), pos.x, pos.y, size.x, size.y, visible ? "true" : "false");
+				output += buf;
+				auto& children = wnd->GetChildWndList();
+				if (children.empty())
+				{
+					output += "}";
+				}
+				else
+				{
+					output += ",\"children\":[";
+					for (size_t i = 0; i < children.size(); ++i)
+					{
+						if (i > 0)
+						{
+							output += ",";
+						}
+						output += "\n";
+						appendWindow(children[i], depth + 1, true);
+					}
+					output += "\n";
+					for (int i = 0; i < depth; ++i)
+					{
+						output += "  ";
+					}
+					output += "]}";
+				}
+			}
+			else
+			{
+				char buf[256];
+				xr_sprintf(buf, "%s [%s] pos(%.0f,%.0f) size(%.0f,%.0f) %s\n",
+					name.c_str(), nodeName.c_str(), pos.x, pos.y, size.x, size.y, visible ? "visible" : "hidden");
+				output += buf;
+				for (CUIWindow* child : wnd->GetChildWndList())
+				{
+					appendWindow(child, depth + 1, false);
+				}
+			}
+		};
+
+		xr_hash_set<CUIWindow*> debuggerWidgets;
+		xr_vector<CUIWindow*> exportRoots;
+		{
+			xr_hash_set<CUIWindow*> rootsSet;
+			for (CUIWindow* w : LastFrameWidgets)
+			{
+				CUIWindow* p = w;
+				while (p && p->GetParent())
+				{
+					p = p->GetParent();
+				}
+				if (p)
+				{
+					rootsSet.insert(p);
+				}
+			}
+			std::function<void(CUIWindow*)> addRecursive = [&](CUIWindow* w)
+			{
+				if (!w || debuggerWidgets.count(w))
+				{
+					return;
+				}
+				debuggerWidgets.insert(w);
+				for (CUIWindow* child : w->GetChildWndList())
+				{
+					addRecursive(child);
+				}
+			};
+			for (CUIWindow* r : rootsSet)
+			{
+				exportRoots.push_back(r);
+				addRecursive(r);
+			}
+		}
+
+		bool asJson = (g_exportFormat != 0);
+		if (asJson)
+		{
+			output += "[\n";
+		}
+		for (size_t i = 0; i < exportRoots.size(); ++i)
+		{
+			appendWindow(exportRoots[i], 1, asJson);
+			if (asJson && i + 1 < exportRoots.size())
+			{
+				output += ",\n";
+			}
+		}
+		if (asJson)
+		{
+			output += "\n]";
+		}
+		ImGui::SetClipboardText(output.c_str());
+	}
+	ImGui::SameLine();
+	ImGui::SetNextItemWidth(80.0f);
+	ImGui::Combo("Export format", &g_exportFormat, "Text\0JSON\0");
+
+	ImGui::SetNextItemWidth(-80.0f);
+	ImGui::InputTextWithHint("##filter", "Filter by name...", filterBuf, sizeof(filterBuf));
+	xr_string filterLower = filterBuf;
+	for (size_t i = 0; i < filterLower.size(); ++i)
+	{
+		filterLower[i] = (char)tolower(filterLower[i]);
 	}
 
 	ImGui::Separator();
 
-	if (Selected != nullptr && LastFrameWidgets.contains(Selected))
+	for (CUIWindow* root : Roots)
+	{
+		DrawNode(root, filterLower);
+	}
+
+	ImGui::Separator();
+
+	if (Selected != nullptr && debuggerWidgets.contains(Selected))
 	{
 		ImGui::Text("Selected: %s", GetWndName(Selected).c_str());
+		ImGui::Text("Mode: %s", Selected->GetUseAnchors() ? "Anchored" : "Legacy");
 
-		Fvector2 Position = Selected->GetWndPos();
-		Fvector2 Size = Selected->GetWndSize();
-
-		if (ImGui::DragFloat2("Position", reinterpret_cast<float*>(&Position), 1.0f))
+		Fvector2 position = Selected->GetWndPos();
+		Fvector2 size = Selected->GetWndSize();
+		if (ImGui::DragFloat2("Position (x, y)", reinterpret_cast<float*>(&position), 1.0f))
 		{
-			Selected->SetWndPos(Position);
+			Selected->SetWndPos(position);
 		}
-
-		if (ImGui::DragFloat2("Size", reinterpret_cast<float*>(&Size), 1.0f))
+		if (ImGui::DragFloat2("Size (width, height)", reinterpret_cast<float*>(&size), 1.0f))
 		{
-			Selected->SetWndSize(Size);
+			Selected->SetWndSize(size);
+		}
+		Frect absRect;
+		Selected->GetAbsoluteRect(absRect);
+		ImGui::Text("Absolute: (%.1f, %.1f) - (%.1f, %.1f)",
+			absRect.x1, absRect.y1, absRect.x2, absRect.y2);
+
+		if (Selected->GetUseAnchors())
+		{
+			SAnchorData& ad = Selected->GetAnchorData();
+			ImGui::Separator();
+			ImGui::Text("Anchors (0-1 normalized)");
+			if (ImGui::DragFloat2("anchor_min", reinterpret_cast<float*>(&ad.anchorMin), 0.01f, 0.0f, 1.0f, "%.2f"))
+			{
+				ad.anchorMin.x = (ad.anchorMin.x < 0.0f) ? 0.0f : (ad.anchorMin.x > 1.0f ? 1.0f : ad.anchorMin.x);
+				ad.anchorMin.y = (ad.anchorMin.y < 0.0f) ? 0.0f : (ad.anchorMin.y > 1.0f ? 1.0f : ad.anchorMin.y);
+			}
+			if (ImGui::DragFloat2("anchor_max", reinterpret_cast<float*>(&ad.anchorMax), 0.01f, 0.0f, 1.0f, "%.2f"))
+			{
+				ad.anchorMax.x = (ad.anchorMax.x < 0.0f) ? 0.0f : (ad.anchorMax.x > 1.0f ? 1.0f : ad.anchorMax.x);
+				ad.anchorMax.y = (ad.anchorMax.y < 0.0f) ? 0.0f : (ad.anchorMax.y > 1.0f ? 1.0f : ad.anchorMax.y);
+			}
+			if (ImGui::DragFloat2("offset_min", reinterpret_cast<float*>(&ad.offsetMin), 1.0f))
+			{
+			}
+			if (ImGui::DragFloat2("offset_max", reinterpret_cast<float*>(&ad.offsetMax), 1.0f))
+			{
+			}
+			if (ImGui::Button("Copy coordinates"))
+			{
+				string512 buf;
+				xr_sprintf(buf, "anchor_min=\"%.2f,%.2f\" anchor_max=\"%.2f,%.2f\" offset_x=\"%.0f\" offset_y=\"%.0f\" width=\"%.0f\" height=\"%.0f\"",
+					ad.anchorMin.x, ad.anchorMin.y, ad.anchorMax.x, ad.anchorMax.y,
+					ad.offsetMin.x, ad.offsetMin.y, Selected->GetWidth(), Selected->GetHeight());
+				ImGui::SetClipboardText(buf);
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Copy legacy (x,y,w,h)"))
+			{
+				string512 buf;
+				xr_sprintf(buf, "x=\"%.0f\" y=\"%.0f\" width=\"%.0f\" height=\"%.0f\"",
+					position.x, position.y, Selected->GetWidth(), Selected->GetHeight());
+				ImGui::SetClipboardText(buf);
+			}
+		}
+		else
+		{
+			if (ImGui::Button("Copy coordinates"))
+			{
+				string512 buf;
+				xr_sprintf(buf, "x=\"%.0f\" y=\"%.0f\" width=\"%.0f\" height=\"%.0f\"",
+					position.x, position.y, Selected->GetWidth(), Selected->GetHeight());
+				ImGui::SetClipboardText(buf);
+			}
 		}
 	}
 	else
 	{
-		ImGui::Text("No UI window selected.");
+		ImGui::Text("No UI window selected. Click on element or use tree.");
 	}
 
 	ImGui::End();
 
-	if (Selected != nullptr && LastFrameWidgets.contains(Selected))
+	imguiWantsMouse = ImGui::GetIO().WantCaptureMouse;
+	if (Selected != nullptr && debuggerWidgets.contains(Selected))
 	{
-		Fvector2 AbsPos;
-		Selected->GetAbsolutePos(AbsPos);
+		Fvector2 absPos;
+		Selected->GetAbsolutePos(absPos);
+		Fvector2 size = Selected->GetWndSize();
+		absPos.x *= getDebuggerZx();
+		size.x *= getDebuggerZx();
+		absPos.y *= getDebuggerZy();
+		size.y *= getDebuggerZy();
 
-		Fvector2 Size = Selected->GetWndSize();
+		bool inside = !imguiWantsMouse && (mousePos.x >= absPos.x && mousePos.x <= (absPos.x + size.x) &&
+			mousePos.y >= absPos.y && mousePos.y <= (absPos.y + size.y));
 
-		AbsPos.x	*= get_current_zx();
-		Size.x		*= get_current_zx();
-		AbsPos.y	*= get_current_zy();
-		Size.y		*= get_current_zy();
+		static int draggingAnchor = 0;
+		if (imguiWantsMouse)
+		{
+			draggingAnchor = 0;
+		}
+		else if (Selected->GetUseAnchors())
+		{
+			Frect parentRectForDrag;
+			if (Selected->GetParent() != nullptr)
+			{
+				Selected->GetParent()->GetAbsoluteRect(parentRectForDrag);
+			}
+			else
+			{
+				UI().GetSafeAreaRootRect(parentRectForDrag);
+			}
+			const float pw = parentRectForDrag.width();
+			const float ph = parentRectForDrag.height();
+			const float zx = getDebuggerZx();
+			const float zy = getDebuggerZy();
+			float aMinX = (parentRectForDrag.x1 + Selected->GetAnchorData().anchorMin.x * pw) * zx;
+			float aMinY = (parentRectForDrag.y1 + Selected->GetAnchorData().anchorMin.y * ph) * zy;
+			float aMaxX = (parentRectForDrag.x1 + Selected->GetAnchorData().anchorMax.x * pw) * zx;
+			float aMaxY = (parentRectForDrag.y1 + Selected->GetAnchorData().anchorMax.y * ph) * zy;
+			float distMin = (mousePos.x - aMinX) * (mousePos.x - aMinX) + (mousePos.y - aMinY) * (mousePos.y - aMinY);
+			float distMax = (mousePos.x - aMaxX) * (mousePos.x - aMaxX) + (mousePos.y - aMaxY) * (mousePos.y - aMaxY);
+			float hitR2 = AnchorPointHitRadius * AnchorPointHitRadius;
+			bool overMin = (distMin <= hitR2);
+			bool overMax = (distMax <= hitR2);
 
-		ImDrawList* Draw = ImGui::GetForegroundDrawList();
+			if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+			{
+				draggingAnchor = overMin ? 1 : (overMax ? 2 : 0);
+			}
+			if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+			{
+				draggingAnchor = 0;
+			}
+			if (draggingAnchor != 0 && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+			{
+				ImVec2 delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Left);
+				if (delta.x != 0.0f || delta.y != 0.0f)
+				{
+					SAnchorData& ad = Selected->GetAnchorData();
+					float dNormX = (delta.x / zx) / pw;
+					float dNormY = (delta.y / zy) / ph;
+					if (draggingAnchor == 1)
+					{
+						ad.anchorMin.x += dNormX;
+						ad.anchorMin.y += dNormY;
+						ad.anchorMin.x = (ad.anchorMin.x < 0.0f) ? 0.0f : (ad.anchorMin.x > 1.0f ? 1.0f : ad.anchorMin.x);
+						ad.anchorMin.y = (ad.anchorMin.y < 0.0f) ? 0.0f : (ad.anchorMin.y > 1.0f ? 1.0f : ad.anchorMin.y);
+					}
+					else
+					{
+						ad.anchorMax.x += dNormX;
+						ad.anchorMax.y += dNormY;
+						ad.anchorMax.x = (ad.anchorMax.x < 0.0f) ? 0.0f : (ad.anchorMax.x > 1.0f ? 1.0f : ad.anchorMax.x);
+						ad.anchorMax.y = (ad.anchorMax.y < 0.0f) ? 0.0f : (ad.anchorMax.y > 1.0f ? 1.0f : ad.anchorMax.y);
+					}
+					ImGui::ResetMouseDragDelta(ImGuiMouseButton_Left);
+				}
+			}
+			else
+			{
+				bool rectInside = inside && !overMin && !overMax;
+				UIDebuggerMouseMove(Selected, rectInside);
+			}
+		}
+		else
+		{
+			draggingAnchor = 0;
+			UIDebuggerMouseMove(Selected, inside);
+		}
 
-		bool a = 
-			UIDebuggerMouseMove(Selected, 
-			(ImGui::GetIO().MousePos.x >= (AbsPos.x) && ImGui::GetIO().MousePos.x <= (AbsPos.x + Size.x) &&
-			ImGui::GetIO().MousePos.y >= (AbsPos.y) && ImGui::GetIO().MousePos.y <= (AbsPos.y + Size.y)));
+		ImDrawList* draw = ImGui::GetForegroundDrawList();
+		ImU32 selectedCol = inside ? IM_COL32(255, 50, 50, 220) : IM_COL32(50, 255, 50, 220);
+		draw->AddRect(
+			ImVec2(absPos.x, absPos.y),
+			ImVec2(absPos.x + size.x, absPos.y + size.y),
+			selectedCol, 0.0f, 0, 2.0f);
 
-		ImU32 col = a ?
-			IM_COL32(255, 50, 50, 220) :
-			IM_COL32(50, 255, 500, 220);
+		CUIWindow* parent = Selected->GetParent();
+		float parentAlpha = 0.6f;
+		while (parent != nullptr && debuggerWidgets.contains(parent))
+		{
+			Frect parentRect;
+			parent->GetAbsoluteRect(parentRect);
+			Fvector2 parentSize = parent->GetWndSize();
+			parentRect.lt.x *= getDebuggerZx();
+			parentRect.rb.x = parentRect.lt.x + parentSize.x * getDebuggerZx();
+			parentRect.lt.y *= getDebuggerZy();
+			parentRect.rb.y = parentRect.lt.y + parentSize.y * getDebuggerZy();
+			draw->AddRect(
+				ImVec2(parentRect.lt.x, parentRect.lt.y),
+				ImVec2(parentRect.rb.x, parentRect.rb.y),
+				IM_COL32(100, 100, 255, (u32)(255 * parentAlpha)), 0.0f, 0, 1.0f);
+			parentAlpha *= 0.7f;
+			parent = parent->GetParent();
+		}
 
-		auto ArrowMove = [](ImGuiKey key, auto operation, char axis)
+		if (Selected->GetUseAnchors())
+		{
+			Frect parentRect;
+			if (Selected->GetParent() != nullptr)
+			{
+				Selected->GetParent()->GetAbsoluteRect(parentRect);
+			}
+			else
+			{
+				parentRect.set(0.0f, 0.0f, UI_BASE_WIDTH, UI_BASE_HEIGHT);
+			}
+			const SAnchorData& ad = Selected->GetAnchorData();
+			const float pw = parentRect.width();
+			const float ph = parentRect.height();
+			const float zx = getDebuggerZx();
+			const float zy = getDebuggerZy();
+
+			float anchorMinScreenX = (parentRect.x1 + ad.anchorMin.x * pw) * zx;
+			float anchorMinScreenY = (parentRect.y1 + ad.anchorMin.y * ph) * zy;
+			float anchorMaxScreenX = (parentRect.x1 + ad.anchorMax.x * pw) * zx;
+			float anchorMaxScreenY = (parentRect.y1 + ad.anchorMax.y * ph) * zy;
+			float pivotScreenX = (absPos.x + size.x * 0.5f);
+			float pivotScreenY = (absPos.y + size.y * 0.5f);
+
+			const ImU32 colMin = IM_COL32(255, 80, 80, 255);
+			const ImU32 colMax = IM_COL32(80, 80, 255, 255);
+			const ImU32 colPivot = IM_COL32(255, 255, 80, 255);
+			const float pointRadius = 5.0f;
+
+			draw->AddLine(ImVec2(anchorMinScreenX, anchorMinScreenY), ImVec2(absPos.x, absPos.y), colMin, 2.0f);
+			draw->AddLine(ImVec2(anchorMaxScreenX, anchorMaxScreenY), ImVec2(absPos.x + size.x, absPos.y + size.y), colMax, 2.0f);
+			draw->AddCircleFilled(ImVec2(anchorMinScreenX, anchorMinScreenY), pointRadius, colMin);
+			draw->AddCircleFilled(ImVec2(anchorMaxScreenX, anchorMaxScreenY), pointRadius, colMax);
+			draw->AddCircleFilled(ImVec2(pivotScreenX, pivotScreenY), pointRadius, colPivot);
+		}
+
+		auto arrowMove = [&](ImGuiKey key, float dx, float dy) -> bool
 		{
 			if (ImGui::IsKeyPressed(key))
 			{
-				Fvector2 NPosition = Selected->GetWndPos();
-				if constexpr (std::is_same_v<decltype(operation), std::minus<>>)
-				{
-					if (axis == 'x') NPosition.x -= ArrowMoveStep;
-					else if (axis == 'y') NPosition.y -= ArrowMoveStep;
-				}
-				else if constexpr (std::is_same_v<decltype(operation), std::plus<>>)
-				{
-					if (axis == 'x') NPosition.x += ArrowMoveStep;
-					else if (axis == 'y') NPosition.y += ArrowMoveStep;
-				}
-				Selected->SetWndPos(NPosition);
+				Fvector2 newPos = Selected->GetWndPos();
+				newPos.x += dx;
+				newPos.y += dy;
+				Selected->SetWndPos(newPos);
 				return true;
 			}
 			return false;
 		};
-
-		if (ArrowMove(ImGuiKey_UpArrow, std::minus{}, 'y')) {}
-		else if (ArrowMove(ImGuiKey_DownArrow, std::plus{}, 'y')) {}
-		else if (ArrowMove(ImGuiKey_LeftArrow, std::minus{}, 'x')) {}
-		else if (ArrowMove(ImGuiKey_RightArrow, std::plus{}, 'x')) {}
-
-		Draw->AddRect
-		(
-			ImVec2(AbsPos.x, AbsPos.y),
-			ImVec2(AbsPos.x + Size.x, AbsPos.y + Size.y),
-			col, 0.0f, 0, 2.0f
-		);
+		arrowMove(ImGuiKey_UpArrow, 0.0f, -ArrowMoveStep);
+		arrowMove(ImGuiKey_DownArrow, 0.0f, ArrowMoveStep);
+		arrowMove(ImGuiKey_LeftArrow, -ArrowMoveStep, 0.0f);
+		arrowMove(ImGuiKey_RightArrow, ArrowMoveStep, 0.0f);
 	}
 
+	if (showLayoutBounds)
+	{
+		ImDrawList* layoutDraw = ImGui::GetForegroundDrawList();
+		const float zx = getDebuggerZx();
+		const float zy = getDebuggerZy();
+		const ImU32 colStackBounds = IM_COL32(100, 200, 100, 180);
+		const ImU32 colSpacing = IM_COL32(255, 200, 100, 200);
+		const ImU32 colGrid = IM_COL32(150, 150, 255, 150);
+		const ImU32 colOverflow = IM_COL32(255, 0, 0, 180);
+
+		for (CUIWindow* wnd : debuggerWidgets)
+		{
+			if (!wnd)
+			{
+				continue;
+			}
+			ILayoutProvider* layout = wnd->GetLayout();
+			if (!layout)
+			{
+				continue;
+			}
+			Frect parentAbs;
+			wnd->GetAbsoluteRect(parentAbs);
+			const float pLtX = parentAbs.x1 * zx;
+			const float pLtY = parentAbs.y1 * zy;
+			const float pW = wnd->GetWidth() * zx;
+			const float pH = wnd->GetHeight() * zy;
+
+			if (layout->GetLayoutType() == EUILayoutType::Stack)
+			{
+				CUIStackLayout* stackLayout = static_cast<CUIStackLayout*>(layout);
+				const float pl = stackLayout->GetPaddingLeft() * zx;
+				const float pt = stackLayout->GetPaddingTop() * zy;
+				const float pr = stackLayout->GetPaddingRight() * zx;
+				const float pb = stackLayout->GetPaddingBottom() * zy;
+				const float contentL = pLtX + pl;
+				const float contentT = pLtY + pt;
+				const float contentR = pLtX + pW - pr;
+				const float contentB = pLtY + pH - pb;
+				layoutDraw->AddRect(ImVec2(contentL, contentT), ImVec2(contentR, contentB), colStackBounds, 0.0f, 0, 1.5f);
+
+				const float spacing = stackLayout->GetSpacing() * (stackLayout->GetDirection() == EUIStackLayoutDir::Horizontal ? zx : zy);
+				auto& children = wnd->GetChildWndList();
+				float cursor = (stackLayout->GetDirection() == EUIStackLayoutDir::Horizontal) ? contentL : contentT;
+				for (size_t i = 0; i < children.size(); ++i)
+				{
+					CUIWindow* child = children[i];
+					if (!child || !child->IsShown() || child->GetCustomDraw())
+					{
+						continue;
+					}
+					Frect childRect;
+					child->GetAbsoluteRect(childRect);
+					float cL = childRect.x1 * zx;
+					float cT = childRect.y1 * zy;
+					float cW = child->GetWidth() * zx;
+					float cH = child->GetHeight() * zy;
+
+					if (stackLayout->GetDirection() == EUIStackLayoutDir::Horizontal)
+					{
+						cursor += cW;
+						if (i + 1 < children.size() && spacing > 0.0f)
+						{
+							layoutDraw->AddLine(ImVec2(cursor, contentT), ImVec2(cursor, contentB), colSpacing, 2.0f);
+							cursor += spacing;
+						}
+					}
+					else
+					{
+						cursor += cH;
+						if (i + 1 < children.size() && spacing > 0.0f)
+						{
+							layoutDraw->AddLine(ImVec2(contentL, cursor), ImVec2(contentR, cursor), colSpacing, 2.0f);
+							cursor += spacing;
+						}
+					}
+				}
+			}
+			else if (layout->GetLayoutType() == EUILayoutType::Grid)
+			{
+				CUIGridLayout* gridLayout = static_cast<CUIGridLayout*>(layout);
+				const int cols = gridLayout->GetCols();
+				const int rows = gridLayout->GetRows();
+				if (cols <= 0)
+				{
+					continue;
+				}
+				const float pl = gridLayout->GetPaddingLeft() * zx;
+				const float pt = gridLayout->GetPaddingTop() * zy;
+				const float csx = gridLayout->GetCellSpacingX() * zx;
+				const float csy = gridLayout->GetCellSpacingY() * zy;
+				float cellW = gridLayout->GetCellWidth() * zx;
+				float cellH = gridLayout->GetCellHeight() * zy;
+				if (cellW <= 0.0f || cellH <= 0.0f)
+				{
+					for (CUIWindow* ch : wnd->GetChildWndList())
+					{
+						if (ch && ch->IsShown() && !ch->GetCustomDraw())
+						{
+							if (cellW <= 0.0f)
+							{
+								cellW = ch->GetWidth() * zx;
+							}
+							if (cellH <= 0.0f)
+							{
+								cellH = ch->GetHeight() * zy;
+							}
+							if (cellW > 0.0f && cellH > 0.0f)
+							{
+								break;
+							}
+						}
+					}
+				}
+				int visibleChildren = 0;
+				for (CUIWindow* ch : wnd->GetChildWndList())
+				{
+					if (ch && ch->IsShown() && !ch->GetCustomDraw())
+					{
+						++visibleChildren;
+					}
+				}
+				const int rowCount = (rows > 0) ? rows : (visibleChildren + cols - 1) / cols;
+				for (int row = 0; row <= rowCount; ++row)
+				{
+					float y = pLtY + pt + row * (cellH + csy);
+					layoutDraw->AddLine(ImVec2(pLtX + pl, y), ImVec2(pLtX + pW, y), colGrid, 1.0f);
+				}
+				for (int col = 0; col <= cols; ++col)
+				{
+					float x = pLtX + pl + col * (cellW + csx);
+					layoutDraw->AddLine(ImVec2(x, pLtY + pt), ImVec2(x, pLtY + pH), colGrid, 1.0f);
+				}
+			}
+		}
+
+		for (CUIWindow* wnd : LastFrameWidgets)
+		{
+			CUIWindow* parent = wnd->GetParent();
+			if (!parent || !debuggerWidgets.contains(parent))
+			{
+				continue;
+			}
+			Frect parentAbs;
+			parent->GetAbsoluteRect(parentAbs);
+			Frect childAbs;
+			wnd->GetAbsoluteRect(childAbs);
+			float cL = childAbs.x1;
+			float cT = childAbs.y1;
+			float cR = childAbs.x2;
+			float cB = childAbs.y2;
+			float pL = parentAbs.x1;
+			float pT = parentAbs.y1;
+			float pR = parentAbs.x2;
+			float pB = parentAbs.y2;
+			bool overflows = (cL < pL || cT < pT || cR > pR || cB > pB);
+			if (overflows)
+			{
+				float scL = cL * zx;
+				float scT = cT * zy;
+				float scR = cR * zx;
+				float scB = cB * zy;
+				layoutDraw->AddRect(ImVec2(scL, scT), ImVec2(scR, scB), colOverflow, 0.0f, 0, 2.0f);
+			}
+		}
+	}
+
+	if (showHidden)
+	{
+		ImDrawList* hiddenDraw = ImGui::GetForegroundDrawList();
+		const float zx = getDebuggerZx();
+		const float zy = getDebuggerZy();
+		const ImU32 colHidden = IM_COL32(128, 128, 255, 100);
+		for (CUIWindow* wnd : debuggerWidgets)
+		{
+			if (!wnd || wnd->IsShown())
+			{
+				continue;
+			}
+			Frect r;
+			wnd->GetAbsoluteRect(r);
+			float x1 = r.x1 * zx;
+			float y1 = r.y1 * zy;
+			float x2 = r.x2 * zx;
+			float y2 = r.y2 * zy;
+			hiddenDraw->AddRect(ImVec2(x1, y1), ImVec2(x2, y2), colHidden, 0.0f, 0, 1.5f);
+		}
+	}
+
+	if (showClipping)
+	{
+		ImDrawList* clipDraw = ImGui::GetForegroundDrawList();
+		const float zx = getDebuggerZx();
+		const float zy = getDebuggerZy();
+		const ImU32 colScissor = IM_COL32(255, 200, 0, 150);
+		for (u32 i = 0; i < m_ScissorsForDebug.size(); ++i)
+		{
+			const Frect& r = m_ScissorsForDebug[i];
+			float x1 = r.x1 * zx;
+			float y1 = r.y1 * zy;
+			float x2 = r.x2 * zx;
+			float y2 = r.y2 * zy;
+			clipDraw->AddRect(ImVec2(x1, y1), ImVec2(x2, y2), colScissor, 0.0f, 0, 2.0f);
+		}
+	}
+
+	if (showSafeArea)
+	{
+		Frect safeRect;
+		GetSafeAreaRootRect(safeRect);
+		ImDrawList* safeDraw = ImGui::GetForegroundDrawList();
+		const float zx = getDebuggerZx();
+		const float zy = getDebuggerZy();
+		const ImU32 colSafeArea = IM_COL32(0, 200, 255, 120);
+		float x1 = safeRect.x1 * zx;
+		float y1 = safeRect.y1 * zy;
+		float x2 = safeRect.x2 * zx;
+		float y2 = safeRect.y2 * zy;
+		safeDraw->AddRect(ImVec2(x1, y1), ImVec2(x2, y2), colSafeArea, 0.0f, 0, 2.0f);
+	}
+
+	m_ScissorsForDebug.clear();
 	LastFrameWidgets.clear();
 }
 
@@ -451,6 +1223,12 @@ ui_core::ui_core()
 
 	m_current_scale				= &m_scale_;
 	m_currentPointType			= IUIRender::pttTL;
+	m_currentScaleMode			= UI_SCALE_MODE_DEFAULT;
+
+	_safeAreaInsetLeft			= 0.0f;
+	_safeAreaInsetTop			= 0.0f;
+	_safeAreaInsetRight			= 0.0f;
+	_safeAreaInsetBottom		= 0.0f;
 
 #ifdef DEBUG_DRAW
 	if (!Device.IsEditorMode())
@@ -463,6 +1241,42 @@ ui_core::ui_core()
 ui_core::~ui_core()
 {
 	xr_delete						(m_pUICursor);
+}
+
+UIScaleModeScope::UIScaleModeScope(ui_core* ui, u8 mode)
+	: _ui(ui)
+	, _prevMode(ui != nullptr ? ui->GetCurrentScaleMode() : UI_SCALE_MODE_DEFAULT)
+{
+	if (_ui != nullptr && mode != UI_SCALE_MODE_DEFAULT)
+	{
+		_ui->SetCurrentScaleMode(mode);
+	}
+}
+
+UIScaleModeScope::~UIScaleModeScope()
+{
+	if (_ui != nullptr)
+	{
+		_ui->SetCurrentScaleMode(_prevMode);
+	}
+}
+
+void ui_core::SetSafeAreaInset(float left, float top, float right, float bottom)
+{
+	_safeAreaInsetLeft	= (left >= 0.0f) ? left : 0.0f;
+	_safeAreaInsetTop	= (top >= 0.0f) ? top : 0.0f;
+	_safeAreaInsetRight	= (right >= 0.0f) ? right : 0.0f;
+	_safeAreaInsetBottom= (bottom >= 0.0f) ? bottom : 0.0f;
+}
+
+void ui_core::GetSafeAreaRootRect(Frect& outRect) const
+{
+	outRect.set(
+		_safeAreaInsetLeft,
+		_safeAreaInsetTop,
+		UI_BASE_WIDTH - _safeAreaInsetRight,
+		UI_BASE_HEIGHT - _safeAreaInsetBottom
+	);
 }
 
 void ui_core::pp_start()

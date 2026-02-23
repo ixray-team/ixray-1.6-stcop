@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "UIXmlInit.h"
+#include "uiabstract.h"
+#include "UILayout.h"
 #include "../../xrEngine/IGame_Level.h"
 #include "UIFontDefines.h"
 #include "../../xrEngine/string_table.h"
@@ -27,7 +29,22 @@
 #include "UITextureMaster.h"
 #include "Widgets/UITabButtonMP.h"
 #include "Widgets/UILines.h"
+#include "ui_defs.h"
 //////////////////////////////////////////////////////////////////////////
+
+// Parse width/height attribute. Returns (value, isAuto). "auto" sets isAuto=true, value=0.
+static void ParseSizeAttr(CUIXml& xml_doc, LPCSTR path, int index, LPCSTR attrib, float& outValue, bool& outIsAuto)
+{
+	LPCSTR str = xml_doc.ReadAttrib(path, index, attrib, nullptr);
+	if (str && xr_strcmp(str, "auto") == 0)
+	{
+		outValue = 0.0f;
+		outIsAuto = true;
+		return;
+	}
+	outValue = xml_doc.ReadAttribFlt(path, index, attrib, 0.0f);
+	outIsAuto = false;
+}
 
 const char * const		COLOR_DEFINITIONS					= "color_defs.xml";
 CUIXmlInit::ColorDefs		*CUIXmlInit::m_pColorDefs			= nullptr;
@@ -71,6 +88,323 @@ Frect CUIXmlInit::GetFRect(CUIXml& xml_doc, LPCSTR path, int index)
 	return rect;
 }
 
+static bool ParseAnchorPreset(const char* preset, Fvector2& anchorMin, Fvector2& anchorMax)
+{
+	if (!preset || !preset[0])
+	{
+		return false;
+	}
+	if (xr_strcmp(preset, "top-left") == 0)
+	{
+		anchorMin.set(0.0f, 0.0f);
+		anchorMax.set(0.0f, 0.0f);
+		return true;
+	}
+	if (xr_strcmp(preset, "top-center") == 0)
+	{
+		anchorMin.set(0.5f, 0.0f);
+		anchorMax.set(0.5f, 0.0f);
+		return true;
+	}
+	if (xr_strcmp(preset, "top-right") == 0)
+	{
+		anchorMin.set(1.0f, 0.0f);
+		anchorMax.set(1.0f, 0.0f);
+		return true;
+	}
+	if (xr_strcmp(preset, "center-left") == 0)
+	{
+		anchorMin.set(0.0f, 0.5f);
+		anchorMax.set(0.0f, 0.5f);
+		return true;
+	}
+	if (xr_strcmp(preset, "center") == 0)
+	{
+		anchorMin.set(0.5f, 0.5f);
+		anchorMax.set(0.5f, 0.5f);
+		return true;
+	}
+	if (xr_strcmp(preset, "center-right") == 0)
+	{
+		anchorMin.set(1.0f, 0.5f);
+		anchorMax.set(1.0f, 0.5f);
+		return true;
+	}
+	if (xr_strcmp(preset, "bottom-left") == 0)
+	{
+		anchorMin.set(0.0f, 1.0f);
+		anchorMax.set(0.0f, 1.0f);
+		return true;
+	}
+	if (xr_strcmp(preset, "bottom-center") == 0)
+	{
+		anchorMin.set(0.5f, 1.0f);
+		anchorMax.set(0.5f, 1.0f);
+		return true;
+	}
+	if (xr_strcmp(preset, "bottom-right") == 0)
+	{
+		anchorMin.set(1.0f, 1.0f);
+		anchorMax.set(1.0f, 1.0f);
+		return true;
+	}
+	if (xr_strcmp(preset, "stretch-h") == 0)
+	{
+		anchorMin.set(0.0f, 0.5f);
+		anchorMax.set(1.0f, 0.5f);
+		return true;
+	}
+	if (xr_strcmp(preset, "stretch-v") == 0)
+	{
+		anchorMin.set(0.5f, 0.0f);
+		anchorMax.set(0.5f, 1.0f);
+		return true;
+	}
+	if (xr_strcmp(preset, "stretch-full") == 0)
+	{
+		anchorMin.set(0.0f, 0.0f);
+		anchorMax.set(1.0f, 1.0f);
+		return true;
+	}
+	return false;
+}
+
+static bool ParseVector2(LPCSTR str, Fvector2& out)
+{
+	if (!str || !str[0])
+	{
+		return false;
+	}
+	float x = 0.0f;
+	float y = 0.0f;
+	if (sscanf(str, "%f,%f", &x, &y) == 2)
+	{
+		out.set(x, y);
+		return true;
+	}
+	return false;
+}
+
+// Parses offset attribute: "x,y" | "L,T,R,B" | "L,T" | "V". Thickness-style like XAML.
+static bool ParseOffsetAttr(LPCSTR str, float& outLeft, float& outTop, float& outRight, float& outBottom)
+{
+	if (!str || !str[0])
+	{
+		return false;
+	}
+	float v1 = 0.0f, v2 = 0.0f, v3 = 0.0f, v4 = 0.0f;
+	const int n = sscanf(str, "%f,%f,%f,%f", &v1, &v2, &v3, &v4);
+	if (n == 4)
+	{
+		outLeft = v1;
+		outTop = v2;
+		outRight = v3;
+		outBottom = v4;
+		return true;
+	}
+	if (n == 2)
+	{
+		outLeft = v1;
+		outTop = v2;
+		outRight = 0.0f;
+		outBottom = 0.0f;
+		return true;
+	}
+	if (sscanf(str, "%f", &v1) == 1)
+	{
+		outLeft = outTop = outRight = outBottom = v1;
+		return true;
+	}
+	return false;
+}
+
+bool CUIXmlInit::InitAnchoredWindow(CUIXml& xml_doc, LPCSTR path, int index, CUIWindow* pWnd, bool fatal)
+{
+	bool validNode = xml_doc.NavigateToNode(path, index);
+	if (!validNode)
+	{
+		R_ASSERT4(!fatal, "XML node not found", path, xml_doc.m_xml_file_name);
+		return false;
+	}
+
+	SAnchorData& anchorData = pWnd->GetAnchorData();
+	anchorData.useAnchors = true;
+
+	LPCSTR anchorPreset = xml_doc.ReadAttrib(path, index, "anchor", nullptr);
+	if (anchorPreset && ParseAnchorPreset(anchorPreset, anchorData.anchorMin, anchorData.anchorMax))
+	{
+		// Preset applied
+	}
+	else
+	{
+		LPCSTR anchorMinStr = xml_doc.ReadAttrib(path, index, "anchor_min", nullptr);
+		LPCSTR anchorMaxStr = xml_doc.ReadAttrib(path, index, "anchor_max", nullptr);
+		if (anchorMinStr)
+		{
+			ParseVector2(anchorMinStr, anchorData.anchorMin);
+		}
+		if (anchorMaxStr)
+		{
+			ParseVector2(anchorMaxStr, anchorData.anchorMax);
+		}
+		else if (anchorMinStr)
+		{
+			anchorData.anchorMax.set(anchorData.anchorMin);
+		}
+	}
+
+	float offsetLeft = 0.0f;
+	float offsetTop = 0.0f;
+	float offsetRight = 0.0f;
+	float offsetBottom = 0.0f;
+
+	LPCSTR offsetStr = xml_doc.ReadAttrib(path, index, "offset", nullptr);
+	if (offsetStr != nullptr && offsetStr[0] != '\0')
+	{
+		ParseOffsetAttr(offsetStr, offsetLeft, offsetTop, offsetRight, offsetBottom);
+	}
+	else
+	{
+		const float offsetX = xml_doc.ReadAttribFlt(path, index, "offset_x", 0.0f);
+		const float offsetY = xml_doc.ReadAttribFlt(path, index, "offset_y", 0.0f);
+		offsetLeft = xml_doc.ReadAttribFlt(path, index, "offset_left", offsetX);
+		offsetTop = xml_doc.ReadAttribFlt(path, index, "offset_top", offsetY);
+		offsetRight = xml_doc.ReadAttribFlt(path, index, "offset_right", 0.0f);
+		offsetBottom = xml_doc.ReadAttribFlt(path, index, "offset_bottom", 0.0f);
+	}
+
+	bool widthAuto = false;
+	bool heightAuto = false;
+	float width = 0.0f;
+	float height = 0.0f;
+	ParseSizeAttr(xml_doc, path, index, "width", width, widthAuto);
+	ParseSizeAttr(xml_doc, path, index, "height", height, heightAuto);
+
+	float minW = xml_doc.ReadAttribFlt(path, index, "min_width", 0.0f);
+	float minH = xml_doc.ReadAttribFlt(path, index, "min_height", 0.0f);
+	pWnd->SetMinSize(minW, minH);
+	pWnd->SetSizeModeWidth(widthAuto ? UI_SIZE_MODE_AUTO : UI_SIZE_MODE_FIXED);
+	pWnd->SetSizeModeHeight(heightAuto ? UI_SIZE_MODE_AUTO : UI_SIZE_MODE_FIXED);
+
+	bool isStretchH = (anchorData.anchorMin.x != anchorData.anchorMax.x);
+	bool isStretchV = (anchorData.anchorMin.y != anchorData.anchorMax.y);
+
+	if (isStretchH && isStretchV)
+	{
+		anchorData.offsetMin.set(offsetLeft, offsetTop);
+		anchorData.offsetMax.set(-offsetRight, -offsetBottom);
+	}
+	else if (isStretchH)
+	{
+		float halfH = height * 0.5f;
+		anchorData.offsetMin.set(offsetLeft, -halfH);
+		anchorData.offsetMax.set(-offsetRight, halfH);
+	}
+	else if (isStretchV)
+	{
+		float halfW = width * 0.5f;
+		anchorData.offsetMin.set(-halfW, offsetTop);
+		anchorData.offsetMax.set(halfW, -offsetBottom);
+	}
+	else
+	{
+		anchorData.offsetMin.set(offsetLeft, offsetTop);
+		anchorData.offsetMax.set(offsetLeft + width, offsetTop + height);
+	}
+
+	pWnd->SetAlignment(waNone);
+	pWnd->SetWndPos(Fvector2().set(0.0f, 0.0f));
+	pWnd->SetWndSize(Fvector2().set(width, height));
+
+	LPCSTR anchorToStr = xml_doc.ReadAttrib(path, index, "anchor_to", nullptr);
+	if (anchorToStr && anchorToStr[0])
+	{
+		pWnd->SetAnchorTo(anchorToStr);
+	}
+
+	LPCSTR scaleModeStr = xml_doc.ReadAttrib(path, index, "scale_mode", nullptr);
+	if (scaleModeStr && xr_strcmp(scaleModeStr, "widescreen") == 0)
+	{
+		pWnd->SetScaleMode(UI_SCALE_MODE_WIDESCREEN);
+	}
+	else if (scaleModeStr && xr_strcmp(scaleModeStr, "none") == 0)
+	{
+		pWnd->SetScaleMode(UI_SCALE_MODE_NONE);
+	}
+
+	const char* expressionStr = xml_doc.ReadAttrib(path, index, "expression");
+	if (expressionStr != nullptr)
+	{
+		xr_string expression(expressionStr);
+		if (!expression.empty())
+		{
+			pWnd->m_expression.CompileExpression(expression);
+		}
+	}
+
+	string512 buf;
+	xr_strconcat(buf, path, ":window_name");
+	if (xml_doc.NavigateToNode(buf, index))
+	{
+		pWnd->SetWindowName(xml_doc.Read(buf, index, nullptr));
+	}
+
+	InitAutoStaticGroup(xml_doc, path, index, pWnd);
+	InitLayout(xml_doc, path, index, pWnd);
+	pWnd->SetWindowNodeName(path);
+	return true;
+}
+
+void CUIXmlInit::InitLayout(CUIXml& xml_doc, LPCSTR path, int index, CUIWindow* pWnd)
+{
+	LPCSTR layoutAttr = xml_doc.ReadAttrib(path, index, "layout", nullptr);
+	if (!layoutAttr || !layoutAttr[0])
+	{
+		return;
+	}
+
+	float spacing = xml_doc.ReadAttribFlt(path, index, "spacing", 0.0f);
+	float paddingLeft = xml_doc.ReadAttribFlt(path, index, "padding_left", 0.0f);
+	float paddingTop = xml_doc.ReadAttribFlt(path, index, "padding_top", 0.0f);
+	float paddingRight = xml_doc.ReadAttribFlt(path, index, "padding_right", 0.0f);
+	float paddingBottom = xml_doc.ReadAttribFlt(path, index, "padding_bottom", 0.0f);
+	bool reverse = xml_doc.ReadAttribBool(path, index, "layout_reverse", false);
+
+	CUIStackLayout* stackLayout = nullptr;
+
+	if (xr_strcmp(layoutAttr, "stack_h") == 0)
+	{
+		stackLayout = new CUIStackLayout(EUIStackLayoutDir::Horizontal, spacing,
+			paddingLeft, paddingTop, paddingRight, paddingBottom, reverse);
+	}
+	else if (xr_strcmp(layoutAttr, "stack_v") == 0)
+	{
+		stackLayout = new CUIStackLayout(EUIStackLayoutDir::Vertical, spacing,
+			paddingLeft, paddingTop, paddingRight, paddingBottom, reverse);
+	}
+
+	if (stackLayout)
+	{
+		pWnd->SetLayout(stackLayout);
+		return;
+	}
+
+	if (xr_strcmp(layoutAttr, "grid") == 0)
+	{
+		int cols = xml_doc.ReadAttribInt(path, index, "cols", 1);
+		int rows = xml_doc.ReadAttribInt(path, index, "rows", 0);
+		float cellSpacingX = xml_doc.ReadAttribFlt(path, index, "cell_spacing_x", 0.0f);
+		float cellSpacingY = xml_doc.ReadAttribFlt(path, index, "cell_spacing_y", 0.0f);
+		float cellWidth = xml_doc.ReadAttribFlt(path, index, "cell_width", 0.0f);
+		float cellHeight = xml_doc.ReadAttribFlt(path, index, "cell_height", 0.0f);
+
+		CUIGridLayout* gridLayout = new CUIGridLayout(cols, rows,
+			cellSpacingX, cellSpacingY, cellWidth, cellHeight,
+			paddingLeft, paddingTop, paddingRight, paddingBottom);
+		pWnd->SetLayout(gridLayout);
+	}
+}
+
 bool CUIXmlInit::InitWindow(CUIXml& xml_doc, LPCSTR path, 	
 							int index, CUIWindow* pWnd, bool fatal)
 {
@@ -80,14 +414,41 @@ bool CUIXmlInit::InitWindow(CUIXml& xml_doc, LPCSTR path,
 		R_ASSERT4(!fatal, "XML node not found", path, xml_doc.m_xml_file_name);
 		return false;
 	}
+
+	LPCSTR anchorAttr = xml_doc.ReadAttrib(path, index, "anchor", nullptr);
+	LPCSTR anchorMinAttr = xml_doc.ReadAttrib(path, index, "anchor_min", nullptr);
+	if (anchorAttr != nullptr || anchorMinAttr != nullptr)
+	{
+		return InitAnchoredWindow(xml_doc, path, index, pWnd, fatal);
+	}
+
 	Fvector2 pos, size;
 	pos.x = xml_doc.ReadAttribFlt(path, index, "x");
 	pos.y = xml_doc.ReadAttribFlt(path, index, "y");
 	InitAlignment(xml_doc, path, index, pos.x, pos.y, pWnd);
-	size.x = xml_doc.ReadAttribFlt(path, index, "width");
-	size.y = xml_doc.ReadAttribFlt(path, index, "height");
+
+	bool widthAuto = false;
+	bool heightAuto = false;
+	ParseSizeAttr(xml_doc, path, index, "width", size.x, widthAuto);
+	ParseSizeAttr(xml_doc, path, index, "height", size.y, heightAuto);
 	pWnd->SetWndPos(pos);
 	pWnd->SetWndSize(size);
+	pWnd->SetSizeModeWidth(widthAuto ? UI_SIZE_MODE_AUTO : UI_SIZE_MODE_FIXED);
+	pWnd->SetSizeModeHeight(heightAuto ? UI_SIZE_MODE_AUTO : UI_SIZE_MODE_FIXED);
+
+	float minW = xml_doc.ReadAttribFlt(path, index, "min_width", 0.0f);
+	float minH = xml_doc.ReadAttribFlt(path, index, "min_height", 0.0f);
+	pWnd->SetMinSize(minW, minH);
+
+	LPCSTR scaleModeStr = xml_doc.ReadAttrib(path, index, "scale_mode", nullptr);
+	if (scaleModeStr && xr_strcmp(scaleModeStr, "widescreen") == 0)
+	{
+		pWnd->SetScaleMode(UI_SCALE_MODE_WIDESCREEN);
+	}
+	else if (scaleModeStr && xr_strcmp(scaleModeStr, "none") == 0)
+	{
+		pWnd->SetScaleMode(UI_SCALE_MODE_NONE);
+	}
 
 	const char* expressionStr = xml_doc.ReadAttrib(path, index, "expression");
 	if (expressionStr != nullptr)
@@ -106,6 +467,7 @@ bool CUIXmlInit::InitWindow(CUIXml& xml_doc, LPCSTR path,
 		pWnd->SetWindowName		( xml_doc.Read(buf, index, nullptr) );
 
 	InitAutoStaticGroup			(xml_doc, path, index, pWnd);
+	InitLayout					(xml_doc, path, index, pWnd);
 
 	pWnd->SetWindowNodeName		(path);
 	return true;

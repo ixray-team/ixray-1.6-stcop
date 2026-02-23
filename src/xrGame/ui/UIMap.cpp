@@ -6,6 +6,7 @@
 #include "UIMap.h"
 #include "UIMapWnd.h"
 #include "../../xrEngine/xr_input.h"		//remove me !!!
+#include "../../xrUI/ui_defs.h"
 
 const u32			activeLocalMapColor			= 0xffffffff;//0xffc80000;
 const u32			inactiveLocalMapColor		= 0xffffffff;//0xff438cd1;
@@ -661,9 +662,9 @@ void  CUIMiniMap::Draw()
 	u32 color					= m_UIStaticItem.GetTextureColor();
 	float angle					= GetHeading();
 
-
-
-	float kx =	UI().get_current_kx();
+	const bool uniformScale		= (GetScaleMode() == UI_SCALE_MODE_NONE);
+	const float kx				= uniformScale ? 1.0f : UI().get_current_kx();
+	const float scale			= uniformScale ? (float(Device.TargetHeight) / UI_BASE_HEIGHT) : 0.0f;
 
 	// clip poly
 	sPoly2D					S;
@@ -697,8 +698,16 @@ void  CUIMiniMap::Draw()
 		S[idx].uv.add		(tt_offset);
 		S[idx].pt.add		(center);
 
-		S[idx].pt.x			*= m_scale_.x;
-		S[idx].pt.y			*= m_scale_.y;
+		if (uniformScale)
+		{
+			S[idx].pt.x		*= scale;
+			S[idx].pt.y		*= scale;
+		}
+		else
+		{
+			S[idx].pt.x		*= m_scale_.x;
+			S[idx].pt.y		*= m_scale_.y;
+		}
 	}
 
 	for (u32 idx=0; idx<segments_count-2; ++idx)
@@ -729,7 +738,7 @@ bool CUIMiniMap::GetPointerTo(const Fvector2& src, float item_radius, Fvector2& 
 	direction.sub		(clip_center, src);
 	heading				= -direction.getH();
 
-	float kx			= UI().get_current_kx();
+	const float kx		= (GetScaleMode() == UI_SCALE_MODE_NONE) ? 1.0f : UI().get_current_kx();
 	float cosPT			= std::cos(heading);
 	float sinPT			= std::sin(heading);
 	pos.set				(-map_radius*sinPT*kx,		-map_radius*cosPT);

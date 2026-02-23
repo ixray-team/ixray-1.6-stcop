@@ -173,13 +173,25 @@ CUIMainIngameWnd::~CUIMainIngameWnd()
 
 void CUIMainIngameWnd::Init()
 {
+	CInifile* opts = EngineExternal().GetIniFile();
+	if (opts != nullptr && opts->section_exist("ui"))
+	{
+		float left = READ_IF_EXISTS(opts, r_float, "ui", "safe_area_inset_left", 0.0f);
+		float top = READ_IF_EXISTS(opts, r_float, "ui", "safe_area_inset_top", 0.0f);
+		float right = READ_IF_EXISTS(opts, r_float, "ui", "safe_area_inset_right", 0.0f);
+		float bottom = READ_IF_EXISTS(opts, r_float, "ui", "safe_area_inset_bottom", 0.0f);
+		UI().SetSafeAreaInset(left, top, right, bottom);
+	}
+
 	CUIXml						uiXml;
 	uiXml.Load(CONFIG_PATH, UI_PATH, MAININGAME_XML);
 
 	CUIXmlInit					xml_init;
 	
 	if (uiXml.NavigateToNode("main"))
+	{
 		xml_init.InitWindow(uiXml, "main", 0, this);
+	}
 
 	Enable(false);
 
@@ -207,7 +219,10 @@ void CUIMainIngameWnd::Init()
 	//---------------------------------------------------------
 
 	if (UIZoneMap)
+	{
 		UIZoneMap->Init();
+		AttachChild(UIZoneMap->GetRootContainer());
+	}
 	if (UICompassBar)
 	{
 		UICompassBar->Init();
@@ -502,28 +517,108 @@ void CUIMainIngameWnd::Init()
 		UIStaticDiskIO->SetStretchTexture(true);
 	}
 
-	for (int i = 0; i < 4; i++)
+	const bool useContainer = uiXml.NavigateToNode("quick_slots_container", 0);
+	const char* iconsPath = useContainer ? "quick_slots_container:quick_slots_icons_panel" : "quick_slots_icons_panel";
+	const char* textPath = useContainer ? "quick_slots_container:quick_slots_text_panel" : "quick_slots_text_panel";
+	const bool useIconsLayout = uiXml.NavigateToNode(iconsPath, 0);
+	const bool useTextLayout = uiXml.NavigateToNode(textPath, 0);
+
+	CUIWindow* quickSlotsParent = this;
+	if (useContainer)
 	{
-		string32 path;
-		xr_sprintf(path, "quick_slot%d", i);
-		if (uiXml.NavigateToNode(path))
+		CUIWindow* container = new CUIWindow();
+		container->SetAutoDelete(true);
+		xml_init.InitWindow(uiXml, "quick_slots_container", 0, container);
+		AttachChild(container);
+		quickSlotsParent = container;
+	}
+
+	if (useIconsLayout)
+	{
+		CUIWindow* iconsPanel = new CUIWindow();
+		iconsPanel->SetAutoDelete(true);
+		xml_init.InitWindow(uiXml, iconsPath, 0, iconsPanel);
+		for (int i = 0; i < 4; i++)
 		{
-			m_quick_slots_icons.push_back(new CUI3dStatic());
-			m_quick_slots_icons.back()->SetAutoDelete(true);
-			AttachChild(m_quick_slots_icons.back());
-			CUIXmlInit::InitStatic(uiXml, path, 0, m_quick_slots_icons.back());
-			xr_sprintf(path, "%s:counter", path);
-			UIHelper::CreateStatic(uiXml, path, m_quick_slots_icons.back());
+			string512 path;
+			xr_sprintf(path, "%s:quick_slot%d", iconsPath, i);
+			if (uiXml.NavigateToNode(path))
+			{
+				m_quick_slots_icons.push_back(new CUI3dStatic());
+				m_quick_slots_icons.back()->SetAutoDelete(true);
+				iconsPanel->AttachChild(m_quick_slots_icons.back());
+				CUIXmlInit::InitStatic(uiXml, path, 0, m_quick_slots_icons.back());
+				xr_sprintf(path, "%s:quick_slot%d:counter", iconsPath, i);
+				UIHelper::CreateStatic(uiXml, path, m_quick_slots_icons.back(), false);
+			}
+		}
+		quickSlotsParent->AttachChild(iconsPanel);
+	}
+	else
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			string64 path;
+			xr_sprintf(path, "quick_slot%d", i);
+			if (uiXml.NavigateToNode(path))
+			{
+				m_quick_slots_icons.push_back(new CUI3dStatic());
+				m_quick_slots_icons.back()->SetAutoDelete(true);
+				AttachChild(m_quick_slots_icons.back());
+				CUIXmlInit::InitStatic(uiXml, path, 0, m_quick_slots_icons.back());
+				xr_sprintf(path, "%s:counter", path);
+				UIHelper::CreateStatic(uiXml, path, m_quick_slots_icons.back(), false);
+			}
 		}
 	}
-	if (uiXml.NavigateToNode("quick_slot0_text", 0))
-		m_QuickSlotText1 = UIHelper::CreateStatic(uiXml, "quick_slot0_text", this);
-	if (uiXml.NavigateToNode("quick_slot1_text", 0))
-		m_QuickSlotText2 = UIHelper::CreateStatic(uiXml, "quick_slot1_text", this);
-	if (uiXml.NavigateToNode("quick_slot2_text", 0))
-		m_QuickSlotText3 = UIHelper::CreateStatic(uiXml, "quick_slot2_text", this);
-	if (uiXml.NavigateToNode("quick_slot3_text", 0))
-		m_QuickSlotText4 = UIHelper::CreateStatic(uiXml, "quick_slot3_text", this);
+
+	if (useTextLayout)
+	{
+		CUIWindow* textPanel = new CUIWindow();
+		textPanel->SetAutoDelete(true);
+		xml_init.InitWindow(uiXml, textPath, 0, textPanel);
+		string512 path;
+		xr_sprintf(path, "%s:quick_slot0_text", textPath);
+		if (uiXml.NavigateToNode(path, 0))
+		{
+			m_QuickSlotText1 = UIHelper::CreateStatic(uiXml, path, textPanel);
+		}
+		xr_sprintf(path, "%s:quick_slot1_text", textPath);
+		if (uiXml.NavigateToNode(path, 0))
+		{
+			m_QuickSlotText2 = UIHelper::CreateStatic(uiXml, path, textPanel);
+		}
+		xr_sprintf(path, "%s:quick_slot2_text", textPath);
+		if (uiXml.NavigateToNode(path, 0))
+		{
+			m_QuickSlotText3 = UIHelper::CreateStatic(uiXml, path, textPanel);
+		}
+		xr_sprintf(path, "%s:quick_slot3_text", textPath);
+		if (uiXml.NavigateToNode(path, 0))
+		{
+			m_QuickSlotText4 = UIHelper::CreateStatic(uiXml, path, textPanel);
+		}
+		quickSlotsParent->AttachChild(textPanel);
+	}
+	else
+	{
+		if (uiXml.NavigateToNode("quick_slot0_text", 0))
+		{
+			m_QuickSlotText1 = UIHelper::CreateStatic(uiXml, "quick_slot0_text", this);
+		}
+		if (uiXml.NavigateToNode("quick_slot1_text", 0))
+		{
+			m_QuickSlotText2 = UIHelper::CreateStatic(uiXml, "quick_slot1_text", this);
+		}
+		if (uiXml.NavigateToNode("quick_slot2_text", 0))
+		{
+			m_QuickSlotText3 = UIHelper::CreateStatic(uiXml, "quick_slot2_text", this);
+		}
+		if (uiXml.NavigateToNode("quick_slot3_text", 0))
+		{
+			m_QuickSlotText4 = UIHelper::CreateStatic(uiXml, "quick_slot3_text", this);
+		}
+	}
 
 	HUD_SOUND_ITEM::LoadSound("maingame_ui", "snd_new_contact", m_contactSnd, SOUND_TYPE_IDLE);
 

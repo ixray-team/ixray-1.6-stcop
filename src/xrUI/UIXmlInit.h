@@ -46,6 +46,7 @@ public:
 	virtual			~CUIXmlInit				();
 		
 	static bool 	InitWindow				(CUIXml& xml_doc, LPCSTR path, int index, CUIWindow* pWnd, bool fatal = true);
+	static bool 	InitAnchoredWindow		(CUIXml& xml_doc, LPCSTR path, int index, CUIWindow* pWnd, bool fatal = true);
 	static bool 	InitFrameWindow			(CUIXml& xml_doc, LPCSTR path, int index, CUIFrameWindow* pWnd, bool fatal = true);
 	static bool 	InitFrameLine			(CUIXml& xml_doc, LPCSTR path, int index, CUIFrameLineWnd* pWnd, bool fatal = true);
 	static bool 	InitCustomEdit			(CUIXml& xml_doc, LPCSTR paht, int index, CUICustomEdit* pWnd);
@@ -104,6 +105,9 @@ public:
 	static void		InitColorDefs				();
 	static void		DeleteColorDefs				()	{ xr_delete(m_pColorDefs); }
 	static void		AssignColor					(LPCSTR name, u32 clr);
+
+	static void		InitLayout					(CUIXml& xml_doc, LPCSTR path, int index, CUIWindow* pWnd);
+
 private:
 	static	ColorDefs			*m_pColorDefs;
 

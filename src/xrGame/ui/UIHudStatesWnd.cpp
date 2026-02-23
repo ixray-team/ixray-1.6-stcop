@@ -112,10 +112,12 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 	}
 
 	if (xml.NavigateToNode("back"))
-		m_back            = UIHelper::CreateStatic( xml, "back", this );
+		m_back = UIHelper::CreateStatic(xml, "back", this);
 
 	if (xml.NavigateToNode("static_weapon"))
 		m_static_weapon = UIHelper::CreateStatic(xml, "static_weapon", this);
+
+	const bool useBackPanelLayout = (m_back != nullptr && xml.NavigateToNode("back:progress_bar_health") != nullptr);
 
 	CUIWindow* healthBarParent = this;
 	if (xml.NavigateToNode("static_health"))
@@ -124,8 +126,10 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 		healthBarParent = m_static_health;
 	}
 
-	m_ui_health_bar   = UIHelper::CreateProgressBar( xml, "progress_bar_health", healthBarParent);
-	m_ui_health_bar->IsExpressionSystem = xml.ReadAttrib("progress_bar_health", 0, "expression", nullptr) != nullptr;
+	const char* healthBarPath = useBackPanelLayout ? "back:progress_bar_health" : "progress_bar_health";
+	CUIWindow* healthBarParentActual = useBackPanelLayout ? (CUIWindow*)m_back : (CUIWindow*)healthBarParent;
+	m_ui_health_bar = UIHelper::CreateProgressBar(xml, healthBarPath, healthBarParentActual);
+	m_ui_health_bar->IsExpressionSystem = xml.ReadAttrib(healthBarPath, 0, "expression", nullptr) != nullptr;
 
 	if (xml.NavigateToNode("back_v", 0))
 	{
@@ -177,23 +181,33 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 		m_ui_weapon_sign_ammo = UIHelper::CreateStatic(xml, "static_ammo", ammoSignParent);
 	}
 
-	if (xml.NavigateToNode("static_cur_ammo", 0))
+	if (xml.NavigateToNode("static_cur_ammo", 0) || xml.NavigateToNode("back:static_cur_ammo", 0))
 	{
-		m_ui_weapon_cur_ammo = UIHelper::CreateStatic(xml, "static_cur_ammo", this);
+		const char* nodePath = useBackPanelLayout ? "back:static_cur_ammo" : "static_cur_ammo";
+		CUIWindow* parent = useBackPanelLayout ? (CUIWindow*)m_back : (CUIWindow*)this;
+		m_ui_weapon_cur_ammo = UIHelper::CreateStatic(xml, nodePath, parent);
 	}
 
-	if (xml.NavigateToNode("static_fmj_ammo", 0))
+	if (xml.NavigateToNode("static_fmj_ammo", 0) || xml.NavigateToNode("back:static_fmj_ammo", 0))
 	{
-		m_ui_weapon_fmj_ammo = UIHelper::CreateStatic(xml, "static_fmj_ammo", this);
+		const char* nodePath = useBackPanelLayout ? "back:static_fmj_ammo" : "static_fmj_ammo";
+		CUIWindow* parent = useBackPanelLayout ? (CUIWindow*)m_back : (CUIWindow*)this;
+		m_ui_weapon_fmj_ammo = UIHelper::CreateStatic(xml, nodePath, parent);
 	}
-	if (xml.NavigateToNode("static_ap_ammo", 0))
+	if (xml.NavigateToNode("static_ap_ammo", 0) || xml.NavigateToNode("back:static_ap_ammo", 0))
 	{
-		m_ui_weapon_ap_ammo = UIHelper::CreateStatic(xml, "static_ap_ammo", this);
+		const char* nodePath = useBackPanelLayout ? "back:static_ap_ammo" : "static_ap_ammo";
+		CUIWindow* parent = useBackPanelLayout ? (CUIWindow*)m_back : (CUIWindow*)this;
+		m_ui_weapon_ap_ammo = UIHelper::CreateStatic(xml, nodePath, parent);
 	}
 
 	//Alundaio: Option to display a third ammo type
-	if (xml.NavigateToNode("static_third_ammo", 0))
-		m_ui_weapon_third_ammo = UIHelper::CreateStatic(xml, "static_third_ammo", this);
+	if (xml.NavigateToNode("static_third_ammo", 0) || xml.NavigateToNode("back:static_third_ammo", 0))
+	{
+		const char* nodePath = useBackPanelLayout ? "back:static_third_ammo" : "static_third_ammo";
+		CUIWindow* parent = useBackPanelLayout ? (CUIWindow*)m_back : (CUIWindow*)this;
+		m_ui_weapon_third_ammo = UIHelper::CreateStatic(xml, nodePath, parent);
+	}
 	//-Alundaio
 
 	if (xml.NavigateToNode("static_ammo_adaptive", 0))
@@ -234,16 +248,16 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 
 	
 	// Check if fire mode icon mode is enabled
-	if (xml.NavigateToNode("static_fire_mode", 0))
+	if (xml.NavigateToNode("static_fire_mode", 0) || xml.NavigateToNode("back:static_fire_mode", 0))
 	{
-		m_fire_mode = UIHelper::CreateStatic( xml, "static_fire_mode", this );
-		int use_icon = xml.ReadAttribInt("static_fire_mode", 0, "use_icon", 0);
+		const char* fireModePath = useBackPanelLayout ? "back:static_fire_mode" : "static_fire_mode";
+		CUIWindow* fireModeParent = useBackPanelLayout ? (CUIWindow*)m_back : (CUIWindow*)this;
+		m_fire_mode = UIHelper::CreateStatic(xml, fireModePath, fireModeParent);
+		int use_icon = xml.ReadAttribInt(fireModePath, 0, "use_icon", 0);
 		if (use_icon == 1)
 		{
 			m_use_fire_mode_icons = true;
-			
-			// Create icon widget using same position as text widget
-			m_ui_fire_mode_icon = UIHelper::CreateStatic(xml, "static_fire_mode", this);
+			m_ui_fire_mode_icon = UIHelper::CreateStatic(xml, fireModePath, fireModeParent);
 			m_ui_fire_mode_icon->SetShader(GetEquipmentIconsShader());
 			m_ui_fire_mode_icon->Show(false);
 			
@@ -252,7 +266,7 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 			
 			// Initialize fire mode icon mapping
 			// Check for custom mappings in XML
-			XML_NODE* fire_mode_node = xml.NavigateToNode("static_fire_mode", 0);
+			XML_NODE* fire_mode_node = xml.NavigateToNode(fireModePath, 0);
 			if (fire_mode_node)
 			{
 				int mapping_count = xml.GetNodesNum(fire_mode_node, "mode_mapping");
@@ -283,27 +297,31 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 		}
 	}
 	
-	if (xml.NavigateToNode("static_grenade", 0))
+	if (xml.NavigateToNode("static_grenade", 0) || xml.NavigateToNode("back:static_grenade", 0))
 	{
-		m_ui_grenade = UIHelper::CreateStatic(xml, "static_grenade", this);
+		const char* grenadePath = useBackPanelLayout ? "back:static_grenade" : "static_grenade";
+		CUIWindow* grenadeParent = useBackPanelLayout ? (CUIWindow*)m_back : (CUIWindow*)this;
+		m_ui_grenade = UIHelper::CreateStatic(xml, grenadePath, grenadeParent);
 	}
-	
-	CUIWindow* wpnIconParent = this;
+
+	CUIWindow* wpnIconParent = (CUIWindow*)this;
 	if (m_static_weapon)
-		wpnIconParent = m_static_weapon;
+		wpnIconParent = (CUIWindow*)m_static_weapon;
+	if (useBackPanelLayout)
+		wpnIconParent = (CUIWindow*)m_back;
 	
-	m_ui_weapon_icon			= UIHelper::Create3dStatic( xml, "static_wpn_icon", wpnIconParent);
+	const char* wpnIconPath = useBackPanelLayout ? "back:static_wpn_icon" : "static_wpn_icon";
+	m_ui_weapon_icon = UIHelper::Create3dStatic( xml, wpnIconPath, wpnIconParent);
 	m_ui_weapon_icon->SetShader( GetEquipmentIconsShader() );
 	// Apply text style from ammo_text:text if present (display_mode="text", addon layouts)
 	if (xml.NavigateToNode("static_wpn_icon:ammo_text:text", 0))
 	{
 		CUIXmlInit::InitText(xml, "static_wpn_icon:ammo_text:text", 0, m_ui_weapon_icon);
 	}
-//	m_ui_weapon_icon->Enable	( false );
-	m_ui_weapon_icon_rect		= m_ui_weapon_icon->GetWndRect();
+	m_ui_weapon_icon_rect = m_ui_weapon_icon->GetWndRect();
 	
 	// Check if text mode is enabled for weapon icon
-	LPCSTR displayMode = xml.ReadAttrib("static_wpn_icon", 0, "display_mode", nullptr);
+	LPCSTR displayMode = xml.ReadAttrib(wpnIconPath, 0, "display_mode", nullptr);
 	if (displayMode && xr_strcmp(displayMode, "text") == 0)
 	{
 		m_weapon_icon_text_mode = true;
@@ -313,9 +331,9 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 
 	if (xml.NavigateToNode("progress_bar_armor", 0))
 	{
-		CUIWindow* armorBarParent = this;
+		CUIWindow* armorBarParent = (CUIWindow*)this;
 		if (xml.GetLocalRoot() == stored_root)
-			armorBarParent = m_static_armor;
+			armorBarParent = (CUIWindow*)m_static_armor;
 
 		m_ui_armor_bar = UIHelper::CreateProgressBar(xml, "progress_bar_armor", armorBarParent);
 		m_ui_armor_bar->IsExpressionSystem = xml.ReadAttrib("progress_bar_armor", 0, "expression", nullptr) != nullptr;
@@ -345,10 +363,12 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 	{
 		m_back_over_arrow = UIHelper::CreateStatic(xml, "back_over_arrow", this);
 	}
-	if (xml.NavigateToNode("progress_bar_stamina", 0))
+	if (xml.NavigateToNode("progress_bar_stamina", 0) || xml.NavigateToNode("back:progress_bar_stamina", 0))
 	{
-		m_ui_stamina_bar = UIHelper::CreateProgressBar(xml, "progress_bar_stamina", this);
-		m_ui_stamina_bar->IsExpressionSystem = xml.ReadAttrib("progress_bar_stamina", 0, "expression", nullptr) != nullptr;
+		const char* staminaPath = useBackPanelLayout ? "back:progress_bar_stamina" : "progress_bar_stamina";
+		CUIWindow* staminaParent = useBackPanelLayout ? (CUIWindow*)m_back : (CUIWindow*)this;
+		m_ui_stamina_bar = UIHelper::CreateProgressBar(xml, staminaPath, staminaParent);
+		m_ui_stamina_bar->IsExpressionSystem = xml.ReadAttrib(staminaPath, 0, "expression", nullptr) != nullptr;
 	}
 	
 	if (xml.NavigateToNode("bleeding", 0))

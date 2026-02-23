@@ -90,6 +90,8 @@ public:
     void SetFont(CGameFont* pFont);
     CGameFont* GetFont();
 
+    Fvector2 GetPreferredSize() override;
+
     //делает активными (как кнопки) элементы списка
     void ActivateList(bool activity);
     bool IsListActive() { return m_bListActivity; }

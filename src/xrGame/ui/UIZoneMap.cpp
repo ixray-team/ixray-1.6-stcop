@@ -15,9 +15,36 @@
 #include "ui/UIMap.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/UIHelper.h"
+#include "../../xrUI/uiabstract.h"
 #include "ui/UIInventoryUtilities.h"
 #include "../map_manager.h"
 #include "../game_cl_single.h"
+
+static bool ParseFrameInset(LPCSTR str, float& insetLeft, float& insetTop, float& insetRight, float& insetBottom)
+{
+	if (!str || !str[0])
+	{
+		return false;
+	}
+	int n = sscanf(str, "%f,%f,%f,%f", &insetLeft, &insetTop, &insetRight, &insetBottom);
+	if (n == 4)
+	{
+		return true;
+	}
+	if (n == 2)
+	{
+		insetRight = insetLeft;
+		insetBottom = insetTop;
+		return true;
+	}
+	if (n == 1)
+	{
+		insetTop = insetRight = insetBottom = insetLeft;
+		return true;
+	}
+	return false;
+}
+
 //////////////////////////////////////////////////////////////////////////
 
 CUIZoneMap::CUIZoneMap()
@@ -41,8 +68,81 @@ void CUIZoneMap::Init()
 	uiXml.Load						(CONFIG_PATH, UI_PATH, "zone_map.xml");
 
 	CUIXmlInit						xml_init;
-	xml_init.InitStatic				(uiXml, "minimap:background",	0, &m_background);
-	xml_init.InitWindow				(uiXml, "minimap:level_frame",	0, &m_clipFrame);
+
+	float dummyInsets[4];
+	const LPCSTR frameInsetStr = uiXml.ReadAttrib("minimap", 0, "frame_inset", nullptr);
+	const bool useFrameInset = frameInsetStr && ParseFrameInset(frameInsetStr, dummyInsets[0], dummyInsets[1], dummyInsets[2], dummyInsets[3]);
+
+	if (useFrameInset)
+	{
+		float insetL, insetT, insetR, insetB;
+		ParseFrameInset(frameInsetStr, insetL, insetT, insetR, insetB);
+
+		xml_init.InitWindow(uiXml, "minimap", 0, &m_background);
+		xml_init.InitTexture(uiXml, "minimap:background", 0, &m_background, true);
+
+		const float explicitLevelW = uiXml.ReadAttribFlt("minimap", 0, "level_frame_width", 0.0f);
+		const float explicitLevelH = uiXml.ReadAttribFlt("minimap", 0, "level_frame_height", 0.0f);
+		const bool useExplicitLevelFrame = (explicitLevelW > 0.0f && explicitLevelH > 0.0f);
+
+		SAnchorData& bgAnchor = m_background.GetAnchorData();
+		if (bgAnchor.useAnchors)
+		{
+			SAnchorData& clipAnchor = m_clipFrame.GetAnchorData();
+			clipAnchor = bgAnchor;
+			if (useExplicitLevelFrame)
+			{
+				const float bgW = uiXml.ReadAttribFlt("minimap", 0, "width", 226.0f);
+				const float bgH = uiXml.ReadAttribFlt("minimap", 0, "height", 226.0f);
+				const float offsetX = uiXml.ReadAttribFlt("minimap", 0, "offset_x", 0.0f);
+				const float offsetY = uiXml.ReadAttribFlt("minimap", 0, "offset_y", 0.0f);
+				const float levelOffsetX = uiXml.ReadAttribFlt("minimap", 0, "level_frame_offset_x", 0.0f);
+				const float levelOffsetY = uiXml.ReadAttribFlt("minimap", 0, "level_frame_offset_y", 0.0f);
+				const float padL = (bgW - explicitLevelW) * 0.5f + levelOffsetX;
+				const float padT = (bgH - explicitLevelH) * 0.5f + levelOffsetY;
+				clipAnchor.offsetMin.x = offsetX + padL;
+				clipAnchor.offsetMin.y = offsetY + padT;
+				clipAnchor.offsetMax.x = offsetX + padL + explicitLevelW;
+				clipAnchor.offsetMax.y = offsetY + padT + explicitLevelH;
+			}
+			else
+			{
+				const float levelOffsetX = uiXml.ReadAttribFlt("minimap", 0, "level_frame_offset_x", 0.0f);
+				const float levelOffsetY = uiXml.ReadAttribFlt("minimap", 0, "level_frame_offset_y", 0.0f);
+				clipAnchor.offsetMin.x += insetL + levelOffsetX;
+				clipAnchor.offsetMin.y += insetT + levelOffsetY;
+				clipAnchor.offsetMax.x -= insetR - levelOffsetX;
+				clipAnchor.offsetMax.y -= insetB - levelOffsetY;
+			}
+			m_clipFrame.SetAlignment(m_background.GetAlignment());
+			m_clipFrame.SetScaleMode(m_background.GetScaleMode());
+		}
+		else
+		{
+			Fvector2 pos = m_background.GetWndPos();
+			Fvector2 size = m_background.GetWndSize();
+			if (useExplicitLevelFrame)
+			{
+				const float levelOffsetX = uiXml.ReadAttribFlt("minimap", 0, "level_frame_offset_x", 0.0f);
+				const float levelOffsetY = uiXml.ReadAttribFlt("minimap", 0, "level_frame_offset_y", 0.0f);
+				const float padL = (size.x - explicitLevelW) * 0.5f + levelOffsetX;
+				const float padT = (size.y - explicitLevelH) * 0.5f + levelOffsetY;
+				m_clipFrame.SetWndPos(Fvector2().set(pos.x + padL, pos.y + padT));
+				m_clipFrame.SetWndSize(Fvector2().set(explicitLevelW, explicitLevelH));
+			}
+			else
+			{
+				m_clipFrame.SetWndPos(Fvector2().set(pos.x + insetL, pos.y + insetT));
+				m_clipFrame.SetWndSize(Fvector2().set(size.x - insetL - insetR, size.y - insetT - insetB));
+			}
+		}
+	}
+	else
+	{
+		xml_init.InitStatic				(uiXml, "minimap:background",	0, &m_background);
+		xml_init.InitWindow				(uiXml, "minimap:level_frame",	0, &m_clipFrame);
+	}
+
 	xml_init.InitStatic				(uiXml, "minimap:center",		0, &m_center);
 	
 	if (uiXml.NavigateToNode("minimap:clock_wnd", 0))
@@ -56,10 +156,13 @@ void CUIZoneMap::Init()
 	m_activeMap						= new CUIMiniMap();
 	m_clipFrame.AttachChild			(m_activeMap);
 	m_activeMap->SetAutoDelete		(true);
+	m_activeMap->SetScaleMode		(m_clipFrame.GetScaleMode());
 
-	m_activeMap->EnableHeading		(true);  
+	m_activeMap->EnableHeading		(true);
 
-	m_activeMap->SetRounded(m_background.WndSizeIsProbablyRelative());
+	int roundedAttr = uiXml.ReadAttribInt(useFrameInset ? "minimap" : "minimap:level_frame", 0, "rounded", -1);
+	bool isRounded = (roundedAttr >= 0) ? (roundedAttr != 0) : m_background.WndSizeIsProbablyRelative();
+	m_activeMap->SetRounded(isRounded);
 
 	legacyMapMode = !uiXml.NavigateToNode("minimap:static_counter"); // St4lker0k765: может есть варианты и получше, 
 																				   // но пока это единственное что приходит на ум, увы
@@ -69,13 +172,19 @@ void CUIZoneMap::Init()
 		m_background.AttachChild		(&m_compass);
 
 	m_clipFrame.AttachChild			(&m_center);
+	m_center.SetScaleMode			(m_clipFrame.GetScaleMode());
+
+	m_zoneMapRoot.SetWindowName		("zone_map");
+	m_zoneMapRoot.Show				(false);
+	m_zoneMapRoot.AttachChild		(&m_background);
+	m_zoneMapRoot.AttachChild		(&m_clipFrame);
 
 	visible = true;
 
 	Fvector2 temp;
 	const float k = UI().get_current_kx();
 
-	if (m_clipFrame.WndRectIsProbablyRelative())
+	if (!m_clipFrame.GetUseAnchors() && m_clipFrame.WndRectIsProbablyRelative())
 	{
 		temp = m_clipFrame.GetWndSize();
 		temp.y *= UI_BASE_HEIGHT * k;
@@ -87,7 +196,7 @@ void CUIZoneMap::Init()
 		m_clipFrame.SetWndPos(temp.mul(UI_BASE_HEIGHT));
 	}
 
-	if (m_background.WndSizeIsProbablyRelative())
+	if (!m_background.GetUseAnchors() && m_background.WndSizeIsProbablyRelative())
 	{
 		m_background.SetHeight(m_background.GetHeight() * UI_BASE_HEIGHT);
 		m_background.SetWidth(m_background.GetHeight() * k);
@@ -144,8 +253,7 @@ void CUIZoneMap::Render			()
 
 	xrCriticalSectionGuard guard(Level().MapManager().UpdateCS);
 
-	m_clipFrame.Draw	();
-	m_background.Draw	();
+	m_zoneMapRoot.Draw();
 }
 
 void CUIZoneMap::Update()
@@ -203,6 +311,10 @@ void CUIZoneMap::UpdateRadar		(Fvector pos)
 {
 	m_clipFrame.Update();
 	m_background.Update();
+
+	Fvector2 clipSize = m_clipFrame.GetWndSize();
+	m_center.SetWndPos(Fvector2().set(clipSize.x * 0.5f, clipSize.y * 0.5f));
+
 	m_activeMap->SetActivePoint( pos );
 
 	if (m_pointerDistanceText)
@@ -236,6 +348,9 @@ bool CUIZoneMap::ZoomOut()
 void CUIZoneMap::SetupCurrentMap()
 {
 	m_activeMap->Initialize			(Level().name(), "hud\\default");
+
+	m_clipFrame.Update();
+	m_background.Update();
 
 	Frect r;
 	m_clipFrame.GetAbsoluteRect		(r);	

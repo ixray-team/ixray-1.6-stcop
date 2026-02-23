@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "UIWindow.h"
 #include "../UICursor.h"
+#include "../ui_base.h"
+#include "../ui_defs.h"
+#include "../UILayout.h"
 
 #include "../Include/xrRender/DebugRender.h"
 #include "../Include/xrRender/UIRender.h"
@@ -104,7 +107,8 @@ m_bAutoDelete(false),
 m_bCursorOverWindow(false),
 m_bPP(false),
 m_dwFocusReceiveTime(0),
-m_bCustomDraw(false)
+m_bCustomDraw(false),
+m_pLayout(nullptr)
 {
 	Show					(true);
 	Enable					(true);
@@ -133,6 +137,8 @@ CUIWindow::~CUIWindow()
 	if (GetPPMode() && g_pGamePersistent != nullptr)
 		g_pGamePersistent->m_pMainMenu->UnregisterPPDraw(this);
 
+	xr_delete(m_pLayout);
+
 #ifdef LOG_ALL_WNDS
 	xr_vector<DBGList>::iterator _it = dbg_list_wnds.begin();
 	bool bOK = false;
@@ -158,6 +164,7 @@ CUIWindow::~CUIWindow()
 void CUIWindow::Draw()
 {
 	xrCriticalSectionGuard guard(csUi);
+	UIScaleModeScope scaleModeScope(&UI(), GetScaleMode());
 
 #ifdef DEBUG_DRAW
 	if (IsShown())
@@ -192,6 +199,65 @@ void CUIWindow::Draw(float x, float y)
 
 void CUIWindow::Update()
 {
+	// Resolve auto size for non-anchored elements (layout resolves its children)
+	if (!GetUseAnchors() && (GetSizeModeWidth() == UI_SIZE_MODE_AUTO || GetSizeModeHeight() == UI_SIZE_MODE_AUTO))
+	{
+		ResolveAutoSize();
+	}
+
+	if (m_pLayout)
+	{
+		m_pLayout->LayoutChildren(this);
+	}
+
+	// Resolve auto size and update anchor offsets for anchored elements with wrap content
+	if (GetUseAnchors() && (GetSizeModeWidth() == UI_SIZE_MODE_AUTO || GetSizeModeHeight() == UI_SIZE_MODE_AUTO))
+	{
+		ResolveAutoSize();
+		SAnchorData& ad = GetAnchorData();
+		bool stretchH = (ad.anchorMin.x != ad.anchorMax.x);
+		bool stretchV = (ad.anchorMin.y != ad.anchorMax.y);
+		if (!stretchH && !stretchV)
+		{
+			float w = GetWidth();
+			float h = GetHeight();
+			ad.offsetMax.x = ad.offsetMin.x + w;
+			ad.offsetMax.y = ad.offsetMin.y + h;
+		}
+	}
+
+	if (GetUseAnchors() && GetParent())
+	{
+		Frect anchorRect;
+		if (m_anchorToWindowName.size() > 0)
+		{
+			CUIWindow* sibling = GetParent()->FindChild(m_anchorToWindowName);
+			if (sibling != nullptr && sibling != this)
+				sibling->GetAbsoluteRect(anchorRect);
+			else
+				GetParent()->GetAbsoluteRect(anchorRect);
+		}
+		else
+		{
+			GetParent()->GetAbsoluteRect(anchorRect);
+		}
+		Frect parentRect;
+		GetParent()->GetAbsoluteRect(parentRect);
+		Frect ourRect;
+		ComputeAnchoredRect(anchorRect, GetAnchorData(), ourRect);
+		SetWndPos(Fvector2().set(ourRect.x1 - parentRect.x1, ourRect.y1 - parentRect.y1));
+		SetWndSize(Fvector2().set(ourRect.width(), ourRect.height()));
+	}
+	else if (GetUseAnchors() && !GetParent())
+	{
+		Frect parentRect;
+		UI().GetSafeAreaRootRect(parentRect);
+		Frect ourRect;
+		ComputeAnchoredRect(parentRect, GetAnchorData(), ourRect);
+		SetWndPos(Fvector2().set(ourRect.x1, ourRect.y1));
+		SetWndSize(Fvector2().set(ourRect.width(), ourRect.height()));
+	}
+
 	if (GetUICursor().IsVisible())
 	{
 		bool cursor_on_window;
@@ -278,20 +344,54 @@ void CUIWindow::DetachAll()
 	}
 }
 
-void CUIWindow::GetAbsoluteRect(Frect& r) 
+void CUIWindow::GetAbsoluteRect(Frect& r)
 {
-	if(GetParent() == nullptr){
-		GetWndRect		(r);
+	if (GetParent() == nullptr)
+	{
+		if (GetUseAnchors())
+		{
+			Frect parentRect;
+			UI().GetSafeAreaRootRect(parentRect);
+			ComputeAnchoredRect(parentRect, GetAnchorData(), r);
+		}
+		else
+		{
+			GetWndRect(r);
+		}
 		return;
 	}
+
+	if (GetUseAnchors())
+	{
+		Frect anchorRect;
+		if (m_anchorToWindowName.size() > 0)
+		{
+			CUIWindow* sibling = GetParent()->FindChild(m_anchorToWindowName);
+			if (sibling != nullptr && sibling != this)
+			{
+				sibling->GetAbsoluteRect(anchorRect);
+			}
+			else
+			{
+				GetParent()->GetAbsoluteRect(anchorRect);
+			}
+		}
+		else
+		{
+			GetParent()->GetAbsoluteRect(anchorRect);
+		}
+		ComputeAnchoredRect(anchorRect, GetAnchorData(), r);
+		return;
+	}
+
 	GetParent()->GetAbsoluteRect(r);
 
-	Frect			rr;
-	GetWndRect		(rr);
-	r.left			+= rr.left;
-	r.top			+= rr.top;
-	r.right			= r.left + GetWidth();
-	r.bottom		= r.top	+ GetHeight();
+	Frect rr;
+	GetWndRect(rr);
+	r.left += rr.left;
+	r.top += rr.top;
+	r.right = r.left + GetWidth();
+	r.bottom = r.top + GetHeight();
 }
 
 //реакция на мышь

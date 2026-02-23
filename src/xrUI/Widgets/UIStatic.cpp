@@ -5,6 +5,7 @@
 #include "../../xrEngine/LightAnimLibrary.h"
 #include "UILines.h"
 #include "../ui_base.h"
+#include "../ui_defs.h"
 
 #include "../Include/xrRender/UIRender.h"
 
@@ -124,6 +125,7 @@ bool CUIStatic::InitTextureEx(const char* texture, const char* shader, bool fata
 
 void CUIStatic::Draw()
 {
+	UIScaleModeScope scaleModeScope(&UI(), GetScaleMode());
 	DrawTexture();
 	inherited::Draw();
 	DrawText();
@@ -321,6 +323,38 @@ void CUIStatic::AdjustWidthToText()
 	float _len		= m_pTextControl->GetFont()->SizeOf_(m_pTextControl->GetText());
 	UI().ClientToScreenScaledWidth(_len);
 	SetWidth		(_len);
+}
+
+Fvector2 CUIStatic::GetPreferredSize()
+{
+	Fvector2 result = inherited::GetPreferredSize();
+	if (!m_pTextControl || !m_bTextEnable)
+	{
+		return result;
+	}
+
+	CGameFont* font = m_pTextControl->GetFont();
+	if (!font)
+	{
+		return result;
+	}
+
+	LPCSTR text = m_pTextControl->GetText();
+	if (text && text[0])
+	{
+		float textW = font->SizeOf_(text);
+		UI().ClientToScreenScaledWidth(textW);
+		result.x = textW;
+
+		float wrapWidth = (GetWidth() > 0.0f) ? GetWidth() : UI_BASE_WIDTH;
+		if (!fsimilar(TextItemControl()->m_wndSize.x, wrapWidth))
+		{
+			TextItemControl()->m_wndSize.x = wrapWidth;
+			TextItemControl()->ParseText(true);
+		}
+		result.y = TextItemControl()->GetVisibleHeight();
+	}
+	return result;
 }
 
 void CUIStatic::ColorAnimationSetTextureColor(u32 color, bool only_alpha)

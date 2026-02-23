@@ -13,6 +13,8 @@ class CUIWindow;
 #include "../uiabstract.h"
 #include "UIActionRepeaters.h"
 
+class ILayoutProvider;
+
 class CUIStatic;
 class CUICellItem;
 class CUIListBoxItem;
@@ -161,6 +163,8 @@ public:
 	// Name of the window
 	const shared_str		WindowName			() const					{ return m_windowName; }
 	void					SetWindowName		(LPCSTR wn)					{ m_windowName = wn; }
+	void					SetAnchorTo			(LPCSTR targetName)			{ m_anchorToWindowName = targetName ? targetName : ""; }
+	const shared_str&		GetAnchorTo			() const					{ return m_anchorToWindowName; }
 	LPCSTR					WindowName_script	()							{return m_windowName.c_str();}
 	CUIWindow*				FindChild			(const shared_str name);
 	// Name of the window by node from XML
@@ -173,6 +177,9 @@ public:
 	IC bool					GetCustomDraw		() const					{return m_bCustomDraw;}
 	IC void					SetCustomDraw		(bool b) 					{m_bCustomDraw = b;}
 
+	void					SetLayout			(ILayoutProvider* layout)	{m_pLayout = layout;}
+	ILayoutProvider*		GetLayout			()							{return m_pLayout;}
+
 public:
 	// Expression that provide data for this widget
 	CExpression             m_expression;
@@ -182,6 +189,7 @@ protected:
 
 	shared_str				m_windowName;
 	shared_str				m_windowNodeName;
+	shared_str				m_anchorToWindowName;
 	//список дочерних окон
 	WINDOW_LIST				m_ChildWndList;
 	
@@ -216,6 +224,8 @@ protected:
 	// Если курсор над окном
 	bool					m_bCursorOverWindow;
 	bool					m_bCustomDraw;
+
+	ILayoutProvider*		m_pLayout;
 
 #ifdef DEBUG
 	int m_dbg_id;
