@@ -31,7 +31,7 @@ void UIPropertiesItem::Draw()
 	if (!Items.empty())
 	{
 		ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, ImGui::GetColorU32(ImGuiCol_TableRowBgAlt));
-		constexpr ImGuiTreeNodeFlags FloderFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap;
+		constexpr ImGuiTreeNodeFlags FolderFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap;
 		if (IsSelect)
 		{
 			ImVec4 TextColor = ImGui::GetStyle().Colors[ImGuiCol_Text];
@@ -44,7 +44,7 @@ void UIPropertiesItem::Draw()
 		}
 
 		//float LastCursorPosX = ImGui::GetCursorPosX();
-		bool open = ImGui::TreeNodeEx((xr_string("##") + *Name).c_str(), FloderFlags);
+		bool open = ImGui::TreeNodeEx((xr_string("##") + *Name).c_str(), FolderFlags);
 		
 		if (IsSelect)
 		{
