@@ -9,14 +9,14 @@ enum class ENodeMoveActionSlot : u8
 	MAX,
 };
 
-template<class C,bool FloderAsItem=false>
+template<class C,bool FolderAsItem=false>
 class FolderHelper
 {
 public:
-	enum EFloderNodeType
+	enum EFolderNodeType
 	{
 		FNT_Root,
-		FNT_Floder,
+		FNT_Folder,
 		FNT_Object
 	};
 	struct Node
@@ -24,14 +24,14 @@ public:
 		Node() :Object(nullptr), Type(FNT_Root), Selected(false) {}
 		~Node() {  }
 		bool Selected;
-		EFloderNodeType Type;
+		EFolderNodeType Type;
 		shared_str Name;
 		shared_str Path;
 		shared_str Prefix = "";
 		xr_vector<Node> Nodes;
 		mutable C* Object;
 		IC bool IsObject() { return Type == FNT_Object; }
-		IC bool IsFolder() { return Type == FNT_Floder || Type == FNT_Root; }
+		IC bool IsFolder() { return Type == FNT_Folder || Type == FNT_Root; }
 	};
 	FolderHelper() {}
 	inline ~FolderHelper() {}
@@ -55,7 +55,7 @@ public:
 		}
 		for (Node& node : N->Nodes)
 		{
-			if (FloderAsItem)
+			if (FolderAsItem)
 			{
 				if (node.Name == path && node.Object)
 				{
@@ -160,9 +160,9 @@ public:
 		{
 			if (node.Name == path)
 			{
-				if constexpr (FloderAsItem)
+				if constexpr (FolderAsItem)
 				{
-					node.Type = FNT_Floder;
+					node.Type = FNT_Folder;
 					return &node;
 				}
 				else
@@ -174,7 +174,7 @@ public:
 			}
 		}
 		Node NewNode;
-		NewNode.Type = FNT_Floder;
+		NewNode.Type = FNT_Folder;
 		NewNode.Name = path;
 		if (N->Path.size() == 0)
 		{
@@ -221,7 +221,7 @@ public:
 		{
 			if (node.Name == path)
 			{
-				if constexpr (FloderAsItem)
+				if constexpr (FolderAsItem)
 				{
 					if (node.Object)
 						return &node;
@@ -348,12 +348,12 @@ public:
 		{
 			if (N->Selected)ImGui::SetNextItemOpen(true);
 			ImGui::AlignTextToFramePadding();
-			ImGuiTreeNodeFlags FloderFlags = ImGuiTreeNodeFlags_OpenOnArrow;
-			if (IsFolderBullet(N))FloderFlags |= ImGuiTreeNodeFlags_Bullet;
-			if (IsFolderSelected(N))FloderFlags |= ImGuiTreeNodeFlags_Selected;
+			ImGuiTreeNodeFlags FolderFlags = ImGuiTreeNodeFlags_OpenOnArrow;
+			if (IsFolderBullet(N))FolderFlags |= ImGuiTreeNodeFlags_Bullet;
+			if (IsFolderSelected(N))FolderFlags |= ImGuiTreeNodeFlags_Selected;
 			xr_string builder = N->Prefix.c_str();
 			builder.append(N->Name.c_str());
-			if (ImGui::TreeNodeEx(builder.c_str(), FloderFlags))
+			if (ImGui::TreeNodeEx(builder.c_str(), FolderFlags))
 			{
 				DrawAfterFolderNode(true, N);
 				if (ImGui::IsItemClicked() && N->Object)
