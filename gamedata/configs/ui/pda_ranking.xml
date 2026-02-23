@@ -14,6 +14,15 @@
 		</auto_frameline>
 	</background>
 
+	<gamepad_legend x="0" y="724" width="1024" height="30" spacing="5">
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_pda_tabs</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_mm_back_gp</text>
+		</auto_static>
+	</gamepad_legend>
+	
 	<actor_ch_info x="70" y="92" width="169" height="138">
 		<name_static x="2" y="112" width="165" height="26">
 			<text align="c" vert_align="c" font="graffiti19" color="ui_2"/>
