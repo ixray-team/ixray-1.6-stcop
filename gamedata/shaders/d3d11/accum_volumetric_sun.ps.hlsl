@@ -47,9 +47,9 @@ float4 main(PSInput I) : SV_Target
     IXrayGbuffer O;
     GbufferUnpack(I.texcoord.xy, I.hpos.xy, O);
 
-    float3 P = O.Point;
+    float3 P = O.Point * 0.996f;
     // swaped old GSC jitter for bluenoise. N = tex * 2 - 1 (so noise jumps both ways)
-    float4 J0 = blue_noise.Sample(smp_nofilter, float3(frac(I.hpos.xy / JITTER_TEXTURE_SIZE), 0.5)) * 2.f - 1.f;
+    float3 J0 = blue_noise[uint3(uint2(I.hpos.xy) % 128, uint(m_taa_jitter.w) % 32)].xyz * 2.0f - 1.0f;
 	//float coeff = (RAY_SAMPLES - J0.x) / (RAY_SAMPLES * RAY_SAMPLES);
     float3 delta = P / (RAY_SAMPLES);
     float3 start = delta * (J0.x * 0.5);
