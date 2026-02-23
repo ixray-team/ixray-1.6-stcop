@@ -14,7 +14,10 @@ class CHOM
 private:
 	xrXRC xrc;
 	CDB::MODEL* m_pModel;
-	occTri* m_pTris;
+	CDB::Collector CL;
+	xr_vector<u32> adjacency;
+	xr_vector<u32> invaltids;
+	xr_vector<occTri> m_pTris;
 	bool bEnabled;
 	Fmatrix m_xform;
 	Fmatrix m_xform_01;
@@ -36,6 +39,9 @@ public:
 	void Enable();
 
 	void MT_RENDER();
+
+	CDB::MODEL* GetHOMModel() { return m_pModel; }
+	xr_vector<u32>* get_invaltids() { return &invaltids; }
 
 	ICF	bool xform_b0(Fvector2& min, Fvector2& max, float& minz, Fmatrix& X, float _x, float _y, float _z)
 	{

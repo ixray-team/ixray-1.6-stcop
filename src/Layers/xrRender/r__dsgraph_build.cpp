@@ -690,3 +690,12 @@ void CRender::add_Static(dxRender_Visual *pVisual, u32 planes)
 		break;
 	}
 }
+
+CDB::MODEL* R_dsgraph_structure::GetHOMModel()
+{
+	return RImplementation.HOM.GetHOMModel();
+}
+xr_vector<u32>* R_dsgraph_structure::GetHOMInvaltids()
+{
+	return RImplementation.HOM.get_invaltids();
+};
