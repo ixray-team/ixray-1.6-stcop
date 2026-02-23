@@ -344,6 +344,8 @@ public:
 	void						accum_reflected			(light* L);
 	//	Igor: for volumetric lights
 	void						accum_volumetric		(light* L);
+	void						accum_volumetric_lv		(light* L);
+
 	void						phase_bloom				();
 	void						phase_luminance			();
 	void						phase_combine			();

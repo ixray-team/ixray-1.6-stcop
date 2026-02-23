@@ -234,7 +234,9 @@ void	CRender::render_lights	(light_Package& LP)
 				{
 					Target->accum_spot(L_spot_s[it]);
 					if (ps_r2_ls_flags.is(R2FLAG_VOLUMETRIC_LIGHTS))
-						Target->accum_volumetric(L_spot_s[it]);
+					{
+						Target->accum_volumetric_lv(L_spot_s[it]);
+					}
 				}
 
 				L_spot_s.clear();
