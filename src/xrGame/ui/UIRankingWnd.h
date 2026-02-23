@@ -19,6 +19,7 @@ class CUIFrameLineWnd;
 class CUIFrameWindow;
 class CUICharacterInfo;
 class CUIScrollView;
+class CUIGamepadLegend;
 
 class CUIRankingWnd final :
 	public CUIWindow,
@@ -85,6 +86,7 @@ private:
 	LPCSTR				m_last_monster_icon_back;
 	LPCSTR				m_last_monster_icon;
 	LPCSTR				m_last_weapon_icon;
+	CUIGamepadLegend*	m_gamepad_legend = nullptr;
 
 	bool m_isGetRankingsArraySize = false;
 	const char* m_onGetRankingsArraySize = {};
@@ -100,6 +102,9 @@ public:
 
 			void		Init					();
 			void		update_info				();
+
+			bool		OnGamepadKeyAction		(int key, EUIMessages gamepad_action) override;
+			bool		OnGamepadKeyHold		(int key) override;
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 
