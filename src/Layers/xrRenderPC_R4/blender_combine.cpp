@@ -51,8 +51,9 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 		C.r_dx10Sampler("smp_rtlinear");
 		C.r_End();
 		break;
-	case 2:
 
+	case 2:
+	{
 		auto is_loot_present = !!FS.exist(_game_textures_, "shaders\\lut.dds");
 		is_loot_present |= !!FS.exist("$level$", "shaders\\lut.dds");
 
@@ -61,23 +62,34 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 			RImplementation.addShaderOption("USE_LUT_TEXTURE", "1");
 		}
 
-		C.r_Pass ("stub_fullscreen_triangle","combine_2",	FALSE,	FALSE,	FALSE);
+		C.r_Pass("stub_fullscreen_triangle", "combine_2", FALSE, FALSE, FALSE);
 
-		C.r_dx10Texture		("s_position",		r2_RT_upscaled_depth);
-		C.r_dx10Texture		("s_normal",		r2_RT_N);
-		C.r_dx10Texture		("s_bloom",			r2_RT_bloom1);
-		C.r_dx10Texture		("s_image",			r2_RT_generic);
-		C.r_dx10Texture		("s_tonemap",		r2_RT_luminance_cur);
+		C.r_dx10Texture("s_position", r2_RT_upscaled_depth);
+		C.r_dx10Texture("s_normal", r2_RT_N);
+		C.r_dx10Texture("s_bloom", r2_RT_bloom1);
+		C.r_dx10Texture("s_image", r2_RT_generic);
+		C.r_dx10Texture("s_tonemap", r2_RT_luminance_cur);
 
-		if (is_loot_present) 
+		if (is_loot_present)
 		{
 			C.r_dx10Texture("s_lut", "shaders\\lut");
 		}
 
-		C.r_dx10Sampler		("smp_nofilter");
-		C.r_dx10Sampler		("smp_rtlinear");
-		C.r_End				();
+		C.r_dx10Sampler("smp_nofilter");
+		C.r_dx10Sampler("smp_rtlinear");
+		C.r_End();
 		break;
+	}
+	case 3:
+		C.r_Pass("pfx_volumetric_light", "pfx_volumetric_light", false, FALSE, FALSE, TRUE, D3DBLEND_ONE, D3DBLEND_ONE);
+		
+		C.r_dx10Texture("s_position", r2_RT_P);
+		C.r_dx10Texture("s_smap", r2_RT_smap_depth);
+		
+		C.r_dx10Sampler("smp_rtlinear");
+		C.r_dx10Sampler("smp_smap");
+		C.r_dx10Sampler("smp_nofilter");
+		C.r_End();
 	}
 	RImplementation.clearAllShaderOptions();
 }
