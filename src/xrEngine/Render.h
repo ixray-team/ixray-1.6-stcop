@@ -301,7 +301,8 @@ public:
 	virtual BOOL					occ_visible				(vis_data&	V)								{return false;};
 	virtual BOOL					occ_visible				(Fbox&		B)								{return false;};
 	virtual BOOL					occ_visible				(sPoly&		P)								{return false;};
-
+	virtual CDB::MODEL* GetHOMModel() { return nullptr; }
+	virtual xr_vector<u32>* GetHOMInvaltids() { return nullptr; }
 	// Main
 	virtual void					Calculate				()											= 0;
 	virtual void					Render					()											= 0;

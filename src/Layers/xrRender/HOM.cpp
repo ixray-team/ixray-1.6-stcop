@@ -33,7 +33,6 @@ CHOM::CHOM()
 {
 	bEnabled		= FALSE;
 	m_pModel		= 0;
-	m_pTris			= 0;
 #ifdef DEBUG_DRAW
 	Device.seqRender.Add(this,REG_PRIORITY_LOW-1000);
 #endif
@@ -54,16 +53,6 @@ struct HOM_poly
 };
 #pragma pack(pop)
 
-IC float	Area		(Fvector& v0, Fvector& v1, Fvector& v2)
-{
-	float	e1 = v0.distance_to(v1);
-	float	e2 = v0.distance_to(v2);
-	float	e3 = v1.distance_to(v2);
-	
-	float	p  = (e1+e2+e3)/2.f;
-	return	_sqrt( p*(p-e1)*(p-e2)*(p-e3) );
-}
-
 void CHOM::Load()
 {
 	// Find and open file
@@ -81,45 +70,57 @@ void CHOM::Load()
 
 	u32 crc = crc32(fs->pointer(), fs->length());
 
-	// Load tris and merge them
-	CDB::Collector CL;
-	while (!S->eof())
-	{
-		HOM_poly P;
-		S->r(&P, sizeof(P));
+	u32 tris_size_euristic = S->length() / sizeof(HOM_poly);
+	CL.reserve(tris_size_euristic);
 
+	// Load tris and merge them
+	HOM_poly* poly_data = (HOM_poly*)S->pointer();
+	for(u32 i=0; i<tris_size_euristic; i++)
+	{
+		HOM_poly& P = poly_data[i];
 		CL.add_face_packed_D(P.v1, P.v2, P.v3, P.flags, 0.01f);
 	}
 
 	// Determine adjacency
-	xr_vector<u32> adjacency;
 	CL.calc_adjacency(adjacency);
 
 	// Create RASTER-triangles
-	m_pTris = xr_alloc<occTri>(CL.getTS());
-	for (size_t it = 0; it < CL.getTS(); it++)
+	CDB::TRI* tris = CL.getT();
+	Fvector* verts = CL.getV();
+	size_t tris_size = CL.getTS();
+	m_pTris.resize(tris_size);
+	occTri* data = m_pTris.data();
+	for (size_t it = 0; it < tris_size; it++)
 	{
-		CDB::TRI& clT = CL.getT()[it];
+		CDB::TRI& clT = tris[it];
+		auto& vidxs = clT.verts;
 		occTri& rT = m_pTris[it];
 
-		Fvector& v0 = CL.getV()[clT.verts[0]];
-		Fvector& v1 = CL.getV()[clT.verts[1]];
-		Fvector& v2 = CL.getV()[clT.verts[2]];
+		Fvector& v0 = verts[vidxs[0]];
+		Fvector& v1 = verts[vidxs[1]];
+		Fvector& v2 = verts[vidxs[2]];
 
-		rT.adjacent[0] = (0xffffffff == adjacency[3 * it + 0]) ? ((occTri*)(-1)) : (m_pTris + adjacency[3 * it + 0]);
-		rT.adjacent[1] = (0xffffffff == adjacency[3 * it + 1]) ? ((occTri*)(-1)) : (m_pTris + adjacency[3 * it + 1]);
-		rT.adjacent[2] = (0xffffffff == adjacency[3 * it + 2]) ? ((occTri*)(-1)) : (m_pTris + adjacency[3 * it + 2]);
+		rT.adjacent[0] = (0xffffffff == adjacency[3 * it + 0]) ? ((occTri*)(-1)) : (data + adjacency[3 * it + 0]);
+		rT.adjacent[1] = (0xffffffff == adjacency[3 * it + 1]) ? ((occTri*)(-1)) : (data + adjacency[3 * it + 1]);
+		rT.adjacent[2] = (0xffffffff == adjacency[3 * it + 2]) ? ((occTri*)(-1)) : (data + adjacency[3 * it + 2]);
 		rT.flags = clT.dummy;
-		rT.area = Area(v0, v1, v2);
+
+		float e1 = v0.distance_to(v1);
+		float e2 = v0.distance_to(v2);
+		float e3 = v1.distance_to(v2);
+		
+		float p = (e1+e2+e3)*0.5f;
+		rT.area = _sqrt(p*(p-e1)*(p-e2)*(p-e3));
 
 		if (rT.area < EPS_L) 
 		{
 			Msg("! Invalid HOM triangle (%f,%f,%f)-(%f,%f,%f)-(%f,%f,%f)", VPUSH(v0), VPUSH(v1), VPUSH(v2));
+			invaltids.push_back(it);
 		}
 
 		rT.plane.build(v0, v1, v2);
 		rT.skip = 0;
-		rT.center.add(v0, v1).add(v2).div(3.f);
+		rT.center.set(v0 + v1 + v2).div(3.f);
 	}
 
 	// Make cache
@@ -159,7 +160,10 @@ void CHOM::Load()
 void CHOM::Unload()
 {
 	xr_delete(m_pModel);
-	xr_free(m_pTris);
+	CL.clear();
+	adjacency.clear();
+	m_pTris.clear();
+	invaltids.clear();
 	bEnabled = FALSE;
 
 	auto I = std::find(Device.seqParallelRender.begin(), Device.seqParallelRender.end(), xr_make_delegate(this, &CHOM::MT_RENDER));
@@ -170,11 +174,11 @@ void CHOM::Unload()
 
 class	pred_fb	{
 public:
-	occTri*		m_pTris	;
+	xr_vector<occTri>&		m_pTris	;
 	Fvector		camera	;
 public:
-	pred_fb		(occTri* _t) : m_pTris(_t)	{}
-	pred_fb		(occTri* _t, Fvector& _c) : m_pTris(_t), camera(_c)	{}
+	pred_fb(xr_vector<occTri>& _t) : m_pTris(_t) {}
+	pred_fb(xr_vector<occTri>& _t, Fvector& _c) : m_pTris(_t), camera(_c) {}
 	ICF bool	operator()		(const CDB::RESULT& _1, const CDB::RESULT& _2) const {
 		occTri&	t0	= m_pTris	[_1.id];
 		occTri&	t1	= m_pTris	[_2.id];
