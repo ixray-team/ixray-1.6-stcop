@@ -5,6 +5,7 @@
 #include "Level.h"
 #include "ElectronicsProblemsManager.h"
 #include "UIPdaWnd.h"
+#include "../xrEngine/xr_input.h"
 
 extern bool m_AnimatorForceHideItems;
 
@@ -350,6 +351,11 @@ bool CHudPdaAnimator::SwitchZoom()
 
 	if (m_bIsZoomed)
 	{
+		if (pInput->GetControllerMode())
+		{
+			return false;
+		}
+
 		m_bIsZoomed = false;
 		m_bIsEnabled = false;
 		SetState(eAimEnd);
