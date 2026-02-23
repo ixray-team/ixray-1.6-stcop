@@ -1415,7 +1415,7 @@ bool CParticleTool::VerifyParticleRenameItem(UIItemListForm::Node* Node)
     {
         return false;
     }
-    if (Node->Type == FolderHelper<ListItem, true>::FNT_Floder)
+    if (Node->Type == FolderHelper<ListItem, true>::FNT_Folder)
     {
         return true;
     }
