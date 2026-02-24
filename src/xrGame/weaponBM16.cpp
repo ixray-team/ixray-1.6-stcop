@@ -253,6 +253,14 @@ shared_str CWeaponBM16::SetCurrentStateAnimation(const shared_str& first_name)
 			AddSuffixName(anim, "_jammed", new_suffix);
 		}
 
+		if (const CActor* pActor = Level().CurrentControlEntity()->cast_actor())
+		{
+			if (pActor->IsSafemode())
+			{
+				AddSuffixName(anim, "_safemode", new_suffix);
+			}
+		}
+
 		AddSuffixName(anim, new_suffix);
 	}
 	else
