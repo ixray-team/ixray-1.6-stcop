@@ -269,7 +269,6 @@ void CUITalkDialogWnd::AddQuestion(LPCSTR str, LPCSTR value, int number, SPhrase
 	{
 		itm->m_text->SetAccelerator		(kQUIT, 2);
 		itm->m_text->SetAccelerator		(kUSE, 3);
-		itm->m_text->SetAccelerator		(kUI_BACK, 4);
 	}
 	if (phInfo.sIconName.size() > 1)
 	{
