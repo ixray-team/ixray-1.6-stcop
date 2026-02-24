@@ -1,5 +1,8 @@
 #include "stdafx.h"
 #include "WaveForm.h"
+#include "imgui_internal.h"
+
+using namespace XRay::ImGui;
 
 UIPropertiesItem::UIPropertiesItem(shared_str Name, UIPropertiesForm* propertiesFrom):
 	UITreeItem(Name),
@@ -19,46 +22,40 @@ void UIPropertiesItem::Draw()
 
 	if (PItem&&PItem->m_Flags.test(PropItem::flShowCB))
 	{
-		const char* CheckName = make_string<const char*>("##value_%s", PItem->Key());
-		if (ImGui::CheckboxFlags(CheckName, &PItem->m_Flags.flags, PropItem::flCBChecked))
-		{
-			PItem->OnChange();
-			PropertiesFrom->Modified();
-		}
-		ImGui::SameLine(0, 2);
+			const char* CheckName = make_string<const char*>("##value_%s", PItem->Key());
+			if (ImGui::CheckboxFlags(CheckName, &PItem->m_Flags.flags, PropItem::flCBChecked))
+			{
+				PItem->OnChange();
+				PropertiesFrom->Modified();
+			}
+			ImGui::SameLine(0, 2);
 	}
 
 	if (!Items.empty())
 	{
+		ImGuiWindow* window = ImGui::GetCurrentWindow();
+		float indent_x = window->DC.Indent.x;
+
 		ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, ImGui::GetColorU32(ImGuiCol_TableRowBgAlt));
-		constexpr ImGuiTreeNodeFlags FolderFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap;
-		if (IsSelect)
-		{
-			ImVec4 TextColor = ImGui::GetStyle().Colors[ImGuiCol_Text];
-			TextColor.x = 1;
-			TextColor.y = 0.1;
-			TextColor.z = 0.1;
-			TextColor.w = 0.7f;
 
-			ImGui::PushStyleColor(ImGuiCol_Text, TextColor);
-		}
-
-		//float LastCursorPosX = ImGui::GetCursorPosX();
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(GetEditorSize(EEditorSizes::ButtonPaddingW), GetEditorSize(EEditorSizes::TextFieldPadding)));
+		ImVec2 node_cursor = ImGui::GetCursorScreenPos();
+		constexpr ImGuiTreeNodeFlags FolderFlags = 
+			ImGuiTreeNodeFlags_SpanAllColumns | 
+			ImGuiTreeNodeFlags_DefaultOpen |
+			ImGuiTreeNodeFlags_FramePadding |
+			ImGuiTreeNodeFlags_AllowOverlap;
 		bool open = ImGui::TreeNodeEx((xr_string("##") + *Name).c_str(), FolderFlags);
-		
-		if (IsSelect)
-		{
-			ImGui::PopStyleColor();
-		}
+		ImGui::PopStyleVar();
 
 		ImDrawList* DrawList = ImGui::GetWindowDrawList();
 		ImVec2 row_min = ImGui::GetItemRectMin();
-		ImVec2 text_pos = row_min;
-		text_pos.x += 19;
+		row_min.x += indent_x + ImGui::GetTreeNodeToLabelSpacing();
+		row_min.y += GetEditorSize(EEditorSizes::TextFieldPadding);
 
-		DrawList->AddText(text_pos, ImGui::GetColorU32(ImGuiCol_Text), *Name);
+		DrawList->AddText(row_min, ImGui::GetColorU32(ImGuiCol_Text), *Name);
 		ImGui::TableNextColumn();
-		DrawList->AddText(text_pos, ImGui::GetColorU32(ImGuiCol_Text), *Name);
+		DrawList->AddText(row_min, ImGui::GetColorU32(ImGuiCol_Text), *Name);
 
 		if (open)
 		{
@@ -89,10 +86,9 @@ void UIPropertiesItem::Draw()
 		}
 		else
 		{
-			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 2);
-			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3);
+			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + GetEditorSize(EEditorSizes::ButtonPaddingW));
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + GetEditorSize(EEditorSizes::TextFieldPadding));
 			ImGui::TextUnformatted(*Name);
-			//ImGui::TreeNodeEx(*Name, Flags | ImGuiTreeNodeFlags_SelectableDontClosePopup);
 		}
 
 		ImGui::TableNextColumn();
@@ -195,7 +191,7 @@ void UIPropertiesItem::DrawItem()
 					for (RStringVecIt it = V->value.begin(); it != V->value.end(); it++)
 					{
 						int k = it - V->value.begin();
-						if (ImGui::Button(it->c_str(), ImVec2(dx + offset, 0)))
+						if (ImGui::Button(it->c_str(), ImVec2(dx + offset, XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize))))
 						{
 							V->btn_num = k;
 
@@ -228,7 +224,7 @@ void UIPropertiesItem::DrawItem()
 			ImVec2 originalFramePadding = ImGui::GetStyle().FramePadding;
 			ImVec2 originalItemSpacing = ImGui::GetStyle().ItemSpacing;
 
-			// Óáèðàåì âåðòèêàëüíûå îòñòóïû
+			// Ã“Ã¡Ã¨Ã°Ã Ã¥Ã¬ Ã¢Ã¥Ã°Ã²Ã¨ÃªÃ Ã«Ã¼Ã­Ã»Ã¥ Ã®Ã²Ã±Ã²Ã³Ã¯Ã»
 			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(originalCellPadding.x, 0));
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(originalFramePadding.x, 0));
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(originalItemSpacing.x, 0));
@@ -325,15 +321,19 @@ void UIPropertiesItem::DrawItem()
 			{
 				if (PItem->m_Flags.test(PropItem::flDisabled))
 				{
-					if (type == PROP_FLAG)
-					{
-						FlagValueCustom* V = dynamic_cast<FlagValueCustom*>(PItem->GetFrontValue()); VERIFY(V);
-						ImGui::TextDisabled(V->GetValueEx() ? "true" : "false");
-					}
-					else
-					{
-						ImGui::TextDisabled(PItem->GetDrawText().c_str());
-					}
+					//if (type == PROP_FLAG)
+					//{
+					//	FlagValueCustom* V = dynamic_cast<FlagValueCustom*>(PItem->GetFrontValue()); VERIFY(V);
+					//	ImGui::TextDisabled(V->GetValueEx() ? "true" : "false");
+					//}
+					//else
+					//{
+						ImGui::PushItemWidth(-1);
+						ImGui::BeginDisabled();
+						DrawProp();
+						ImGui::EndDisabled();
+                        ImGui::PopItemWidth();
+					//}
 				}
 				else
 				{

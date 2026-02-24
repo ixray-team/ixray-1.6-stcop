@@ -10,17 +10,24 @@ XREUI_API bool XRay::ImGui::ToggleFlagButton(const char* Label, uint32_t* Flags,
 
 	::ImGui::PushID(Label);
 
-	const ImVec4 EnabledColor = GetEditorColor(EEditorColors::ToggleColorActive);
-	const ImVec4 DisabledColor = GetEditorColor(EEditorColors::ButtonTint);
-	const ImVec4 BorderColor = EnabledColor;
+	const ImVec4 EnabledColor	= GetEditorColor(EEditorColors::ToggleColorActive);
+	const ImVec4 DisabledColor	= GetEditorColor(EEditorColors::ButtonTint);
+	const ImVec4 BorderColor	= GetEditorColor(EEditorColors::ButtonBorderTint);
+	const ImVec4 HoverColor		= GetEditorColor(EEditorColors::HoverTint);
+	const ImVec4 ActiveColor	= GetEditorColor(EEditorColors::ActiveTint);
+	const ImVec4 FlagColor		= EnabledColor;
 
-	constexpr float StripeWidth = 2.0f;
-	constexpr float Rounding = 5.0f;
+	const float StripeWidth		= GetEditorSize(EEditorSizes::IndicatorWidth);
+	const float Rounding		= GetEditorSize(EEditorSizes::ButtonRadius);
 
 	::ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, Rounding);
 	::ImGui::PushStyleColor(ImGuiCol_Button, Enabled ? EnabledColor : DisabledColor);
-	::ImGui::PushStyleColor(ImGuiCol_ButtonHovered, Enabled ? EnabledColor : DisabledColor);
-	::ImGui::PushStyleColor(ImGuiCol_ButtonActive, Enabled ? EnabledColor : DisabledColor);
+	::ImGui::PushStyleColor(ImGuiCol_ButtonHovered, Enabled ? AlphaBlend(EnabledColor, HoverColor).Value : AlphaBlend(DisabledColor, HoverColor).Value);
+	::ImGui::PushStyleColor(ImGuiCol_ButtonActive, Enabled ? AlphaBlend(EnabledColor, ActiveColor).Value : AlphaBlend(DisabledColor, ActiveColor).Value);
+	::ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f);
+	::ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, {0, 0.5});
+	::ImGui::PushStyleColor(ImGuiCol_BorderShadow, ImVec4(0,0,0,0));
+	::ImGui::PushStyleColor(ImGuiCol_Border, BorderColor);
 
 	const char* Text = Enabled ? "Enable" : "Disable";
 
@@ -31,25 +38,23 @@ XREUI_API bool XRay::ImGui::ToggleFlagButton(const char* Label, uint32_t* Flags,
 		Enabled = !Enabled;
 	}
 
-	::ImGui::PopStyleColor(3);
-	::ImGui::PopStyleVar();
+	::ImGui::PopStyleColor(5);
+	::ImGui::PopStyleVar(3);
 
 	ImDrawList* DrawList = ::ImGui::GetWindowDrawList();
 	ImVec2 Min = ::ImGui::GetItemRectMin();
 	ImVec2 Max = ::ImGui::GetItemRectMax();
 
-	if (Enabled)
+	if (!Enabled)
 	{
-		Min.x += 2;
+		DrawList->AddRectFilled(
+			Min,
+			ImVec2(Min.x + StripeWidth, Max.y),
+			::ImGui::ColorConvertFloat4ToU32(FlagColor),
+			Rounding,
+			ImDrawFlags_RoundCornersLeft
+		);
 	}
-
-	DrawList->AddRectFilled(
-		Min,
-		ImVec2(Min.x + StripeWidth, Max.y),
-		::ImGui::ColorConvertFloat4ToU32(BorderColor),
-		Rounding,
-		ImDrawFlags_RoundCornersLeft
-	);
 
 	::ImGui::PopID();
 	return Changed;
@@ -98,9 +103,9 @@ XREUI_API bool XRay::ImGui::ToggleButton(const char* Label, bool* Flags, const I
 	return Changed;
 }
 
-std::array<ImColor, 11>* CurrentTheme = nullptr;
+std::array<ImColor, 14>* CurrentTheme = nullptr;
 
-std::array<ImColor, 11> PurpleTheme =
+std::array<ImColor, 14> PurpleTheme =
 {
 	ImColor(63, 71, 101, 255),
 	ImColor(29, 129, 136, 255),
@@ -111,11 +116,14 @@ std::array<ImColor, 11> PurpleTheme =
 	ImColor(0.f, 0.f, 0.f, 0.5f), // TabBarTint
 	ImColor(0.f, 0.f, 0.f, 0.3f), // PanelTint
 	ImColor(0.f, 0.f, 0.f, 0.f),  // ButtonTint
+	ImColor(1.f, 1.f, 1.f, 0.1f), // ButtonBorderTint
 	ImColor(1.f, 1.f, 1.f, 0.6f), // ContentIconTint
-	ImColor(0.f, 0.f, 0.f, 0.8f)  // PanelBackgroundTint
+	ImColor(0.f, 0.f, 0.f, 0.8f), // PanelBackgroundTint
+	ImColor(1.f, 1.f, 1.f, 0.1f), // HoverTint
+	ImColor(1.f, 1.f, 1.f, 0.05f) // ActiveTint
 };
 
-std::array<ImColor, 11> DarkTheme =
+std::array<ImColor, 14> DarkTheme =
 {
 	ImColor(51, 51, 51, 255),
 	ImColor(121, 113, 189, 255),
@@ -126,8 +134,11 @@ std::array<ImColor, 11> DarkTheme =
 	ImColor(0.f, 0.f, 0.f, 0.4f), //  TabBarTint
 	ImColor(0.f, 0.f, 0.f, 0.3f), //  PanelTint
 	ImColor(0.f, 0.f, 0.f, 0.f),  //  ButtonTint
+	ImColor(1.f, 1.f, 1.f, 0.1f), // ButtonBorderTint
 	ImColor(1.f, 1.f, 1.f, 0.6f), //  ContentIconTint
-	ImColor(0.f, 0.f, 0.f, 0.8f)  // PanelBackgroundTint
+	ImColor(0.f, 0.f, 0.f, 0.8f), // PanelBackgroundTint
+	ImColor(1.f, 1.f, 1.f, 0.1f), // HoverTint
+	ImColor(1.f, 1.f, 1.f, 0.05f) // ActiveTint
 };
 
 ImColor AlphaBlend(const ImColor& Base, const ImColor& Tint)
@@ -165,7 +176,7 @@ XREUI_API ImColor XRay::ImGui::GetEditorColor(EEditorColors Color)
 	{
 		CurrentTheme = &PurpleTheme;
 	}
-	std::array<ImColor, 11>& DefaultTheme = *CurrentTheme;
+	std::array<ImColor, 14>& DefaultTheme = *CurrentTheme;
 
 	ImColor Clr = DefaultTheme[(size_t)EEditorColors::Main];
 
@@ -216,6 +227,11 @@ XREUI_API ImColor XRay::ImGui::GetEditorColor(EEditorColors Color)
 			EditorColors[Color] = AlphaBlend(Clr, DefaultTheme[(size_t)EEditorColors::ButtonTint]);
 			return EditorColors[Color];
 		}
+		case EEditorColors::ButtonBorderTint:
+		{
+			EditorColors[Color] = DefaultTheme[(size_t)EEditorColors::ButtonBorderTint];
+			return EditorColors[Color];
+		}
 		case EEditorColors::ContentIconTint:
 		{
 			EditorColors[Color] = AlphaBlend(Clr, DefaultTheme[(size_t)EEditorColors::ContentIconTint]);
@@ -226,7 +242,43 @@ XREUI_API ImColor XRay::ImGui::GetEditorColor(EEditorColors Color)
 			EditorColors[Color] = AlphaBlend(Clr, DefaultTheme[(size_t)EEditorColors::PanelBackgroundTint]);
 			return EditorColors[Color];
 		}
+		case EEditorColors::HoverTint:
+		{
+			EditorColors[Color] = DefaultTheme[(size_t)EEditorColors::HoverTint];
+			return EditorColors[Color];
+		}
+		case EEditorColors::ActiveTint:
+		{
+			EditorColors[Color] = DefaultTheme[(size_t)EEditorColors::ActiveTint];
+			return EditorColors[Color];
+		}
 	}
+}
+
+std::array<float, 7> Sizes =
+{
+	26.0f, 								// ButtonSize
+	1.0f, 								// ButtonBorderSize
+	4.0f, 								// ButtonRadius
+	8.0f, 								// ButtonPaddingW
+	4.0f, 								// ButtonPaddingH
+	0.0f,								// TextFieldPadding
+	4.0f								// IndicatorWidth
+};
+//ImGui::GetFontSize();
+XREUI_API float XRay::ImGui::GetEditorSize(EEditorSizes Size)
+{
+	switch(Size)
+	{
+		case EEditorSizes::TextFieldPadding:
+		{
+			return (Sizes[static_cast<std::size_t>(EEditorSizes::ButtonSize)] - ::ImGui::GetFontSize()) / 2;
+		}
+		default:
+		{
+			return Sizes[static_cast<std::size_t>(Size)];
+		}
+    }
 }
 
 XREUI_API bool XRay::ImGui::InputVector3(const char* Label, float V[3], float Step)
