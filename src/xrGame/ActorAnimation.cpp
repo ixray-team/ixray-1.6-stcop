@@ -123,6 +123,31 @@ void STorsoWpn::Create(IKinematicsAnimated* K, LPCSTR base0, LPCSTR base1)
 		moving[eSprint] = K->ID_Cycle_Safe(xr_strconcat(buf, base0, "_torso", base1, "_escape_0"));
 	}
 
+	moving_safemode[eIdle] = K->ID_Cycle_Safe(xr_strconcat(buf, base0, "_torso", base1, "_idle_1"));
+	moving_safemode[eWalk] = K->ID_Cycle_Safe(xr_strconcat(buf, base0, "_torso", base1, "_walk_1"));
+	moving_safemode[eRun] = K->ID_Cycle_Safe(xr_strconcat(buf, base0, "_torso", base1, "_run_1"));
+	moving_safemode[eSprint] = K->ID_Cycle_Safe(xr_strconcat(buf, base0, "_torso", base1, "_escape_0"));
+
+	if (!moving_safemode[eIdle].valid())
+	{
+		moving_safemode[eIdle] = moving[eIdle];
+	}
+
+	if (!moving_safemode[eWalk].valid())
+	{
+		moving_safemode[eWalk] = moving[eWalk];
+	}
+
+	if (!moving_safemode[eRun].valid())
+	{
+		moving_safemode[eRun] = moving[eRun];
+	}
+
+	if (!moving_safemode[eSprint].valid())
+	{
+		moving_safemode[eSprint] = moving[eSprint];
+	}
+
 	zoom			= K->ID_Cycle_Safe(xr_strconcat(buf,base0,"_torso",base1,"_aim_0"));
 	holster			= K->ID_Cycle_Safe(xr_strconcat(buf,base0,"_torso",base1,"_holster_0"));
 	draw			= K->ID_Cycle_Safe(xr_strconcat(buf,base0,"_torso",base1,"_draw_0"));
@@ -398,19 +423,24 @@ void CActor::g_SetAnimation( u32 mstate_rl )
 	// Legs
 	if		(mstate_rl&mcLanding)	M_legs	= ST->landing[0];
 	else if (mstate_rl&mcLanding2)	M_legs	= ST->landing[1];
-	else if ((mstate_rl & mcTurn) && !(mstate_rl & mcClimb)) {
-		if (!_i && !(mstate_rl & mcCrouch)) {
+	else if ((mstate_rl & mcTurn) && !(mstate_rl & mcClimb))
+	{
+		if ((!_i || IsSafemode()) && !(mstate_rl & mcCrouch))
+		{
 			M_legs = Visual()->dcast_PKinematicsAnimated()->ID_Cycle("norm_turn_right_1");
 		}
-		else {
+		else
+		{
 			M_legs = ST->legs_turn;
 		}
 	}
 	else if (mstate_rl & mcFall)
 		M_legs	= ST->jump_idle;
 	else if (mstate_rl&mcJump)		M_legs	= ST->jump_begin;
-	else if (mstate_rl & mcFwd) {
-		if (!_i && !(mstate_rl & mcCrouch) && !(mstate_rl & mcClimb)) {
+	else if (mstate_rl & mcFwd)
+	{
+		if ((!_i || IsSafemode()) && !(mstate_rl & mcCrouch) && !(mstate_rl & mcClimb))
+		{
 			if (bAccelerated) {
 				M_legs = Visual()->dcast_PKinematicsAnimated()->ID_Cycle("norm_run_fwd_1");
 			}
@@ -536,7 +566,17 @@ void CActor::g_SetAnimation( u32 mstate_rl )
 								switch (W->GetState())
 								{
 								case CWeapon::eIdle:
-									M_torso = W->IsZoomed() ? TW->zoom : TW->moving[moving_idx];
+								case CWeapon::eSafemodeSwitch:
+									if (IsSafemode())
+									{
+										MotionID motion_safemode = TW->moving_safemode[moving_idx];
+										M_torso = motion_safemode.valid() ? motion_safemode : TW->moving[moving_idx];
+										M_head = ST->m_head_idle;
+									}
+									else
+									{
+										M_torso = W->IsZoomed() ? TW->zoom : TW->moving[moving_idx];
+									}
 									break;
 								case CWeapon::eFire:
 									M_torso = W->IsZoomed() ? TW->attack_zoom : TW->attack;
@@ -686,7 +726,7 @@ void CActor::g_SetAnimation( u32 mstate_rl )
 		{
 			M_legs = Visual()->dcast_PKinematicsAnimated()->ID_Cycle("cr_idle_1");
 		}
-		else if (!_i && !(mstate_rl & mcCrouch) && !(mstate_rl & mcClimb))
+		else if ((!_i || IsSafemode()) && !(mstate_rl & mcCrouch) && !(mstate_rl & mcClimb))
 			M_legs = Visual()->dcast_PKinematicsAnimated()->ID_Cycle("norm_idle_1");
 		else
 			M_legs = ST->legs_idle; // norm_idle_0/ cl_idle_1

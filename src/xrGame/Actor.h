@@ -306,6 +306,8 @@ private:
 
 	float m_fNoclipSpeedScale = 3.0f;
 
+	bool m_bIsSafemode = false;
+
 public:
 	bool					m_bAllowDeathRemove;
 	float					m_fLegs_shift;
@@ -401,6 +403,8 @@ public:
 	virtual	float			ffGetFov			()	const	{ return 90.f;		}	
 	virtual	float			ffGetRange			()	const	{ return 500.f;		}
 
+	IC bool IsSafemode() const { return m_bIsSafemode; }
+	IC void SetSafemodeStatus(bool status) { m_bIsSafemode = status; }
 	
 public:
 	bool					HasCameraEffector	() const { return m_pActorEffector != nullptr; };
