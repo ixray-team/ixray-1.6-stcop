@@ -80,7 +80,9 @@ public:
 		bool isRenderActive{};
 		bool isRenderProcess{};
 
-		bool IsElectronicsProblemsDecreasing{};
+		float renderScopeBrightnessValue = 0.0f;
+
+		bool IsElectronicsProblemsDecreasing = false;
 		float CurrentElectronicsProblemsCnt = 0.0f;
 		float TargetElectronicsProblemsCnt = 0.0f;
 
