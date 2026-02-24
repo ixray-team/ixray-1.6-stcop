@@ -4,6 +4,7 @@
 #include "Inventory.h"
 #include "BoneProtections.h"
 #include "../Include/xrRender/Kinematics.h"
+#include "Torch.h"
 
 void CHelmet::Load(LPCSTR section)
 {
@@ -26,6 +27,17 @@ void CHelmet::OnMoveToRuck(const SInvItemPlace& previous_place)
 		if (pActor != nullptr && pActor->GetNightVisionEffector())
 		{
 			pActor->GetNightVisionEffector()->SwitchNightVision(false);
+		}
+
+		static const bool TorchOnlyOutfit = EngineExternal()[EEngineExternalGame::EnableTorchOnlyInOutfit];
+
+		if (TorchOnlyOutfit)
+		{
+			CTorch* pTorch = static_cast<CTorch*>(pActor->inventory().ItemFromSlot(TORCH_SLOT));
+			if (pTorch != nullptr)
+			{
+				pTorch->Switch(false);
+			}
 		}
 	}
 }

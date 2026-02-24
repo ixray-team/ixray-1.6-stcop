@@ -1524,6 +1524,14 @@ void CActor::SwitchNightVision()
 
 void CActor::SwitchTorch()
 {
+	static const bool TorchOnlyInOutfit = EngineExternal()[EEngineExternalGame::EnableTorchOnlyInOutfit];
+	bool has_torch = TorchOnlyInOutfit && (GetOutfit() && GetOutfit()->IsTorchAvailable() || GetHelmet() && GetHelmet()->IsTorchAvailable()) || !TorchOnlyInOutfit;
+
+	if (!has_torch)
+	{
+		return;
+	}
+
 	PIItem item_from_slot = inventory().ItemFromSlot(TORCH_SLOT);
 
 	if (CTorch* torch = item_from_slot ? item_from_slot->cast_torch() : nullptr)
