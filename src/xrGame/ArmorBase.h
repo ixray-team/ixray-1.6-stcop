@@ -16,7 +16,7 @@ public:
 	virtual CArmorBase* cast_armorbase() override final { return this; }
 
 	
-	//уменьшенная версия хита, для вызова, когда костюм надет на персонажа
+	//СѓРјРµРЅСЊС€РµРЅРЅР°СЏ РІРµСЂСЃРёСЏ С…РёС‚Р°, РґР»СЏ РІС‹Р·РѕРІР°, РєРѕРіРґР° РєРѕСЃС‚СЋРј РЅР°РґРµС‚ РЅР° РїРµСЂСЃРѕРЅР°Р¶Р°
 	virtual void			Hit						(float P, ALife::EHitType hit_type);
 	virtual void			Load					(LPCSTR section);
 
@@ -34,6 +34,8 @@ public:
 	virtual shared_str		GetNV_Sect				() const { return m_NightVisionSect; }
 	virtual bool			IsHudGasMaskAvailable	() { return bIsHudGasMaskAvailable; }
 	virtual bool			IsHudRainDropsAvailable	() { return bIsHudRainDropsAvailable; }
+
+	bool IsTorchAvailable() const { return m_bTorchAvailable; }
 
 	bool					GlassPresent = false;
 	float					m_fPowerLoss = 0.0f;
@@ -53,4 +55,6 @@ protected:
 
 	shared_str				m_BonesProtectionSect;
 	shared_str				m_NightVisionSect;
+
+	bool					m_bTorchAvailable = false;
 };

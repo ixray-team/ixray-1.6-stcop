@@ -55,6 +55,7 @@ enum class EEngineExternalGame
 	EnableLegacyUpgradeSystem,
 	EnableEngineArtefactSpawn,
 	Enable3DPDA,
+	EnableTorchOnlyInOutift,
 };
 
 enum class EEngineExternalRender 
