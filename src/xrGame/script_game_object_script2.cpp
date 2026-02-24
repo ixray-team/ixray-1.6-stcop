@@ -432,6 +432,9 @@ class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject>
 		.def("set_hud_animator_force_hide_items", &CScriptGameObject::SetAnimatorForceHideItems)
 		.def("show_state_animator", &CScriptGameObject::ShowStateAnimator)
 		.def("hide_state_animator", &CScriptGameObject::HideStateAnimator)
+
+		.def("IsSafemode", (bool (CScriptGameObject::*)() const)& CScriptGameObject::IsActorSafemode)
+		.def("SetSafemode", &CScriptGameObject::SetActorSafemode)
 			
 		.def("SetCharacterMaxWeight",			&CScriptGameObject::SetCharacterMaxWeight)
 

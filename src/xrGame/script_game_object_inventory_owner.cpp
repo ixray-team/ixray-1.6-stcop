@@ -2633,3 +2633,29 @@ float CScriptGameObject::GetGasmaskCondition()
 	//return 0.f;
 	return 1.f;
 }
+
+bool CScriptGameObject::IsActorSafemode() const
+{
+	CActor* pActor = object().cast_actor();
+
+	if (pActor == nullptr)
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CActor : cannot access class member IsActorSafemode!");
+		return false;
+	}
+
+	return pActor->IsSafemode();
+}
+
+void CScriptGameObject::SetActorSafemode(bool status)
+{
+	CActor* pActor = object().cast_actor();
+
+	if (pActor == nullptr)
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CActor : cannot access class member SetActorSafemode!");
+		return;
+	}
+
+	pActor->SetSafemodeStatus(status);
+}

@@ -1030,8 +1030,10 @@ public:
 	void HideStateAnimator();
 	bool IsInCar();
 	void IterateFeelTouch(const luabind::functor<bool>& functor);
-			bool IsActorLadder() const;
-	doors::door*				m_door;
+	bool IsActorLadder() const;
+	bool IsActorSafemode() const;
+	void SetActorSafemode(bool status);
+	doors::door* m_door;
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
