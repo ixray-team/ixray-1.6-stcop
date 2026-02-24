@@ -1782,6 +1782,11 @@ void CActor::UpdateCL()
 
 	bBlockSprint = isDelayedWeaponActions && m_iKeyFlags != 0 || pWeapon != nullptr && pWeapon->NeedBlockSprint() || dev != nullptr && dev->NeedBlockSprint() || pMissile != nullptr && pMissile->NeedBlockSprint();
 
+	if (pWeapon == nullptr || !pWeapon->AllowSafemode())
+	{
+		m_bIsSafemode = false;
+	}
+
 	if (pWeapon)
 	{
 

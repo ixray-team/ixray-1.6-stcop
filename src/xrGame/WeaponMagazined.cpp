@@ -510,6 +510,13 @@ void CWeaponMagazined::LoadSounds(LPCSTR section)
 		m_eSoundsFlags2.set(ESoundsFlags2::sf_bore_jammed, true);
 		m_sounds.LoadSound(section, "snd_bore_misfire", "sndBoreMis", false, m_eSoundHide);
 	}
+
+	if (SoundExist(section, "snd_safemode_in"))
+	{
+		m_eSoundsFlags2.set(ESoundsFlags2::sf_safemode_in_out, true);
+		m_sounds.LoadSound(section, "snd_safemode_in", "sndSafemodeIn", false, m_eSoundHide);
+		m_sounds.LoadSound(section, "snd_safemode_out", "sndSafemodeOut", false, m_eSoundShow);
+	}
 }
 
 void CWeaponMagazined::FireStart()
@@ -1154,6 +1161,11 @@ void CWeaponMagazined::OnStateSwitch	(u32 S)
 		switch2_Pump();
 		break;
 	}
+	case eSafemodeSwitch:
+	{
+		switch2_Safemode();
+		break;
+	}
 	}
 
 	if (S == eIdle)
@@ -1190,6 +1202,7 @@ void CWeaponMagazined::UpdateCL			()
 		case eUnloadChamber:
 		case eChamberCheck:
 		case ePump:
+		case eSafemodeSwitch:
 			{
 				fShotTimeCounter	-=	dt;
 				clamp				(fShotTimeCounter, 0.0f, flt_max);
@@ -1730,6 +1743,7 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 		case eKick:
 		case eMagCheck:
 		case eFiremodeCheck:
+		case eSafemodeSwitch:
 		{
 			if (state == eSwitchMode)
 			{
@@ -1999,6 +2013,26 @@ void CWeaponMagazined::switch2_Bore()
 	else
 	{
 		PlaySound("sndBore", root->Position());
+	}
+}
+
+void CWeaponMagazined::switch2_Safemode()
+{
+	SetPending(true);
+
+	CObject* parent = H_Parent();
+
+	if (CActor* pActor = parent != nullptr ? parent->cast_actor() : nullptr)
+	{
+		const bool status = pActor->IsSafemode();
+		pActor->SetSafemodeStatus(!status);
+
+		PlayHUDMotion(SetCurrentStateAnimation(status ? "anm_safemode_out" : "anm_safemode_in"), EHudMixType::eMixAll, eSafemodeSwitch);
+
+		if (m_eSoundsFlags2.test(ESoundsFlags2::sf_safemode_in_out))
+		{
+			PlaySound(status ? "sndSafemodeOut" : "sndSafemodeIn", get_LastFP());
+		}
 	}
 }
 
@@ -2919,6 +2953,14 @@ shared_str CWeaponMagazined::SetCurrentStateAnimation(const shared_str& first_na
 		else if (m_bJustAfterReload)
 		{
 			AddSuffixName(anim, "_first");
+		}
+
+		if (const CActor* pActor = Level().CurrentControlEntity()->cast_actor())
+		{
+			if (pActor->IsSafemode())
+			{
+				AddSuffixName(anim, "_safemode");
+			}
 		}
 
 		if (ScopeAttachable() && !IsScopeAttached())

@@ -234,6 +234,7 @@ public:
 		af_det_hand_jammed = (1 << 25),
 		af_det_hand_lightmis = (1 << 26),
 		af_det_hand_firemode = (1 << 27),
+		af_safemode_in_out = (1 << 28),
 	};
 
 	enum EBPAnimsFlags : u64
