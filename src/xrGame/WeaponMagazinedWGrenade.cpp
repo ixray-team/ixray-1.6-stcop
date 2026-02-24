@@ -965,6 +965,14 @@ shared_str CWeaponMagazinedWGrenade::SetCurrentStateAnimation(const shared_str& 
 			AddSuffixName(anim, "_empty", end_suffix);
 		}
 
+		if (const CActor* pActor = Level().CurrentControlEntity()->cast_actor())
+		{
+			if (pActor->IsSafemode())
+			{
+				AddSuffixName(anim, "_safemode", end_suffix);
+			}
+		}
+
 		AddSuffixName(anim, end_suffix);
 
 		if (ScopeAttachable() && !IsScopeAttached())

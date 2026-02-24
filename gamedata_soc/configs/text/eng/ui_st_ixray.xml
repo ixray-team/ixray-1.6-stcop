@@ -639,4 +639,7 @@
 	<string id="st_split_item_all_gp">
 		<text>$$ACTION_UI_ACTION_2$$ All</text>
 	</string>
+	<string id="kb_safemode">
+		<text>Safemode</text>
+	</string>
 </string_table>

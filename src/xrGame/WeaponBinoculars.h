@@ -34,7 +34,7 @@ public:
 	virtual void	UpdateCL			();
 	virtual void	render_item_ui		();
 	virtual bool	render_item_ui_query();
-	virtual bool	use_crosshair		()	const {return false;}
+	virtual bool	use_crosshair()	const override { return false; }
 	virtual bool	GetBriefInfo		(II_BriefInfo& info);
 	virtual void	net_Relcase			(CObject *object);
 

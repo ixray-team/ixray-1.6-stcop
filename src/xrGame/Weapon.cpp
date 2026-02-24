@@ -566,6 +566,9 @@ void CWeapon::Load		(LPCSTR section)
 		return reached_sect;
 	};
 
+	pSettings->read_if_exists(m_bAllowSafemode, section, "allow_safemode");
+	pSettings->read_if_exists(m_fSafeModeRotateTime, section, "safemode_rotate_time");
+
 	m_AlterZoomAllowed = READ_IF_EXISTS(pSettings, r_bool, ReachInAllSections("alter_zoom_allowed"), "alter_zoom_allowed", false);
 
 	m_bUseSilHud = READ_IF_EXISTS(pSettings, r_bool, section, "hud_when_silencer_is_attached", false);
@@ -1552,8 +1555,8 @@ void CWeapon::UpdateCL		()
 	{
 		if (GetNextState() == GetState() && IsGameTypeSingle() && H_Parent() == Level().CurrentEntity())
 		{
-			CActor* pActor	= H_Parent() ? H_Parent()->cast_actor() : NULL;
-			if(pActor && !pActor->AnyMove() && this==pActor->inventory().ActiveItem())
+			CActor* pActor = H_Parent() ? H_Parent()->cast_actor() : nullptr;
+			if (pActor != nullptr && !pActor->AnyMove() && !pActor->IsSafemode() && this == pActor->inventory().ActiveItem())
 			{
 				if (hud_adj_mode == 0 && GetState() == eIdle && (Device.dwTimeGlobal - m_dw_curr_substate_time > 20000) && !IsZoomed() && g_player_hud->attached_item(1) == nullptr)
 				{
@@ -1985,6 +1988,27 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 					return false;
 				}
 
+				if (flags & CMD_START && ParentIsActor())
+				{
+					if (CActor* pActor = H_Parent()->cast_actor())
+					{
+						if (pActor->IsSafemode())
+						{
+							ResetSubStateTime();
+
+							if (m_eAnimationsFlags.test(EAnimationsFlags::af_safemode_in_out))
+							{
+								SwitchState(eSafemodeSwitch);
+							}
+							else
+							{
+								pActor->SetSafemodeStatus(false);
+							}
+							return false;
+						}
+					}
+				}
+
 				if (flags&CMD_START) 
 				{
 					m_bAutoAimNeedReleaseShot = false;
@@ -2051,6 +2075,32 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 
 			return true;
 		}break;
+		case kSAFEMODE:
+		{
+			if (flags & CMD_START && ParentIsActor() && m_bAllowSafemode && (GetState() == eIdle && !IsPending() || GetState() == eSafemodeSwitch))
+			{
+				if (CActor* pActor = H_Parent()->cast_actor())
+				{
+					if (IsZoomed())
+					{
+						OnZoomOut();
+					}
+
+					ResetSubStateTime();
+
+					if (m_eAnimationsFlags.test(EAnimationsFlags::af_safemode_in_out))
+					{
+						SwitchState(eSafemodeSwitch);
+					}
+					else
+					{
+						pActor->SetSafemodeStatus(!pActor->IsSafemode());
+					}
+					return true;
+				}
+			}
+			break;
+		}
 		case kWPN_ZOOM:
 		{
 			if (IsZoomEnabled())
@@ -2059,6 +2109,18 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 				{
 					if (flags & CMD_START)
 					{
+						if (ParentIsActor())
+						{
+							if (CActor* pActor = H_Parent()->cast_actor())
+							{
+								if (pActor->IsSafemode())
+								{
+									ResetSubStateTime();
+									pActor->SetSafemodeStatus(false);
+								}
+							}
+						}
+
 						if (!IsZoomed())
 						{
 							if (!IsPending())
@@ -2102,6 +2164,18 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 				{
 					if (flags & CMD_START)
 					{
+						if (ParentIsActor())
+						{
+							if (CActor* pActor = H_Parent()->cast_actor())
+							{
+								if (pActor->IsSafemode())
+								{
+									ResetSubStateTime();
+									pActor->SetSafemodeStatus(false);
+								}
+							}
+						}
+
 						if (!CanAimNow())
 						{
 							CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
@@ -3529,8 +3603,15 @@ void CWeapon::UpdateHudAdditonal(Fmatrix& trans)
 		return;
 	}
 
+	attachable_hud_item* hi = HudItemData();
+	if (hi == nullptr)
+	{
+		return;
+	}
+
 	AddOffset(trans, GetCurrentHudOffsetIdx(), m_zoom_params.m_fZoomRotationFactor, m_zoom_params.m_fZoomRotateTime, IsZoomed());
 	AddOffset(trans, 3, m_zoom_params.m_fZoomRotationFactor2, m_zoom_params.m_fZoomRotateTime, IsAltZoomed() && IsZoomed() && !IsGrenadeMode());
+	AddOffset(trans, 4, m_fSafeModeRotationFactor, m_fSafeModeRotateTime, pActor->IsSafemode() && !IsZoomed());
 }
 
 void CWeapon::SetAmmoElapsed(int ammo_count)
@@ -3715,7 +3796,22 @@ extern bool hud_adj_crosshair;
 bool CWeapon::show_crosshair()
 {
 	const u8 NextState = GetNextState();
-	return hud_adj_crosshair || !m_bTacticalLaserStatus && (!IsPending() || NextState == eEmptyClick || NextState == eSprintStart || NextState == eSprintEnd || NextState == ePump) && NextState != eHidden && (!IsZoomed() || !ZoomHideCrosshair());
+	return hud_adj_crosshair || !m_bTacticalLaserStatus && (!IsPending() || NextState == eEmptyClick || NextState == eSprintStart || NextState == eSprintEnd || NextState == ePump || NextState == eSafemodeSwitch) && NextState != eHidden && (!IsZoomed() || !ZoomHideCrosshair());
+}
+
+bool CWeapon::use_crosshair() const
+{
+	CObject* parent = const_cast<CObject*>(H_Parent());
+
+	if (const CActor* pActor = parent != nullptr ? parent->cast_actor() : nullptr)
+	{
+		if (pActor->IsSafemode())
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
 
 bool CWeapon::show_indicators()
@@ -5181,4 +5277,10 @@ bool CWeapon::NeedMovementBlend() const
 	}
 
 	return inherited::NeedMovementBlend();
+}
+
+bool CWeapon::AllowSafemode() const
+{
+	const u32 state = GetState();
+	return m_bAllowSafemode && (state == eIdle || state == eSafemodeSwitch || state == eSwitchMode);
 }
