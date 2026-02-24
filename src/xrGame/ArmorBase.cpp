@@ -94,6 +94,8 @@ void CArmorBase::Load(LPCSTR section)
 		m_NightVisionSect = pSettings->r_string(section, "nightvision_sect");
 	}
 
+	pSettings->read_if_exists(m_bTorchAvailable, section, "torch_available");
+
 	m_fHealthRestoreSpeed = READ_IF_EXISTS(pSettings, r_float, section, "health_restore_speed", 0.0f);
 	m_fRadiationRestoreSpeed = READ_IF_EXISTS(pSettings, r_float, section, "radiation_restore_speed", 0.0f);
 	m_fSatietyRestoreSpeed = READ_IF_EXISTS(pSettings, r_float, section, "satiety_restore_speed", 0.0f);
@@ -170,6 +172,14 @@ bool CArmorBase::install_upgrade_impl(LPCSTR section, bool test)
 	if (result2 && !test)
 	{
 		m_NightVisionSect._set(str);
+	}
+	result |= result2;
+
+	BOOL value = {};
+	result2 = process_if_exists_set(section, "torch_available", &CInifile::r_bool, value, test);
+	if (result2 && !test)
+	{
+		m_bTorchAvailable = !!value;
 	}
 	result |= result2;
 

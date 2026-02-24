@@ -2777,6 +2777,8 @@ void CActor::OnItemDrop(CInventoryItem *inventory_item, bool just_before_destroy
 {
 	CInventoryOwner::OnItemDrop(inventory_item, just_before_destroy);
 
+	static const bool TorchOnlyOutfit = EngineExternal()[EEngineExternalGame::EnableTorchOnlyInOutfit];
+
 	CCustomOutfit* outfit = inventory_item->cast_outfit();
 	if (outfit && inventory_item->m_ItemCurrPlace.type == eItemPlaceSlot)
 	{
@@ -2786,6 +2788,15 @@ void CActor::OnItemDrop(CInventoryItem *inventory_item, bool just_before_destroy
 		{
 			GetNightVisionEffector()->SwitchNightVision(false);
 		}
+
+		if (TorchOnlyOutfit && !outfit->bIsHelmetAvaliable)
+		{
+			CTorch* pTorch = static_cast<CTorch*>(inventory().ItemFromSlot(TORCH_SLOT));
+			if (pTorch != nullptr)
+			{
+				pTorch->Switch(false);
+			}
+		}
 	}
 
 	CHelmet* helmet = inventory_item->cast_helmet();
@@ -2794,6 +2805,15 @@ void CActor::OnItemDrop(CInventoryItem *inventory_item, bool just_before_destroy
 		if (GetNightVisionEffector() && GetNightVisionEffector()->GetStatus())
 		{
 			GetNightVisionEffector()->SwitchNightVision(false);
+		}
+
+		if (TorchOnlyOutfit)
+		{
+			CTorch* pTorch = static_cast<CTorch*>(inventory().ItemFromSlot(TORCH_SLOT));
+			if (pTorch != nullptr)
+			{
+				pTorch->Switch(false);
+			}
 		}
 	}
 
