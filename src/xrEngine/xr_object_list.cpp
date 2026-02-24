@@ -263,23 +263,39 @@ void CObjectList::Update		(bool bForce)
 	{
 		// Info
 		for (Objects::iterator oit=objects_active.begin(); oit!=objects_active.end(); oit++)
-			for (int it = (int)destroy_queue.size()-1; it>=0; it--){
-				(*oit)->net_Relcase		(destroy_queue[it]);
+		{
+			for (int it = (int)destroy_queue.size() - 1; it >= 0; it--)
+			{
+				CObject* obj = destroy_queue[it];
+				(*oit)->net_Relcase(obj);
+				g_pGameLevel->SoundEvent_net_Relcase(obj);
+			}
 			}
 		for (Objects::iterator oit=objects_sleeping.begin(); oit!=objects_sleeping.end(); oit++)
-			for (int it = (int)destroy_queue.size()-1; it>=0; it--)	(*oit)->net_Relcase	(destroy_queue[it]);
+		{
+			for (int it = (int)destroy_queue.size() - 1; it >= 0; it--)
+			{
+				CObject* obj = destroy_queue[it];
+				(*oit)->net_Relcase(obj);
+				g_pGameLevel->SoundEvent_net_Relcase(obj);
+			}
+		}
 
 		for (int it = (int)destroy_queue.size()-1; it>=0; it--)	Sound->object_relcase	(destroy_queue[it]);
 		
 		RELCASE_CALLBACK_VEC::iterator It	= m_relcase_callbacks.begin();
 		RELCASE_CALLBACK_VEC::iterator Ite	= m_relcase_callbacks.end();
-		for(;It!=Ite; ++It)	{
+		for(;It!=Ite; ++It)
+		{
 			VERIFY			(*(*It).m_ID==(It-m_relcase_callbacks.begin()));
 			Objects::iterator dIt	= destroy_queue.begin();
 			Objects::iterator dIte	= destroy_queue.end();
-			for (;dIt!=dIte; ++dIt) {
-				(*It).m_Callback(*dIt);
-				g_hud->net_Relcase	(*dIt);
+			for (;dIt!=dIte; ++dIt)
+			{
+				CObject* obj = *dIt;
+				(*It).m_Callback(obj);
+				g_hud->net_Relcase(obj);
+				g_pGameLevel->SoundEvent_net_Relcase(obj);
 			}
 		}
 
