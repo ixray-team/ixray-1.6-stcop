@@ -33,7 +33,8 @@
 		<command id="kb_reload"						exe="wpn_reload"/>
 		<command id="kb_func"						  exe="wpn_func"/>
 		<command id="kb_firemode_next"		exe="wpn_firemode_next"/>
-		<command id="kb_firemode_prev"		exe="wpn_firemode_prev"/>		
+		<command id="kb_firemode_prev"		exe="wpn_firemode_prev"/>	
+		<command id="kb_safemode"		exe="safemode"/>	
 	</group>
 	<group name="kb_grp_inventory">
 		<command id="kb_inventory"				exe="inventory"/>
