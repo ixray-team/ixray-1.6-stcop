@@ -542,6 +542,13 @@ static class cl_m_hud_params : public RHIShaderConstant::Setup
 	}
 }    binder_m_hud_params;
 
+static class cl_m_zoom_deviation : public RHIShaderConstant::Setup
+{
+	virtual void setup(RHIShaderConstant* C) {
+		RCache.set_c(C, 0.0f, 0.0f, RDEVICE.hudViewportData.renderScopeBrightnessValue, 0.0f);
+	}
+}    binder_m_zoom_deviation;
+
 static class cl_affects : public RHIShaderConstant::Setup
 {
 	virtual void setup(RHIShaderConstant* C)
@@ -703,6 +710,7 @@ void	CBlender_Compile::SetMapping()
 
 	//LVutner: Gunslinger...
 	r_Constant("m_hud_params", &binder_m_hud_params);
+	r_Constant("m_zoom_deviation", &binder_m_zoom_deviation);
 	r_Constant("m_affects", &binder_affects);
 	r_Constant("m_actor_params", &binder_actor_states);
 	r_Constant("m_timearrow", &binder_m_timearrow);
