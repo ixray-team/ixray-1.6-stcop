@@ -1833,6 +1833,7 @@ void CActor::UpdateCL()
 			Device.hudViewportData.renderZoomRotateFactor = pWeapon->GetAimFactor();
 			Device.hudViewportData.isRenderActive = !pWeapon->IsGrenadeMode() && pWeapon->IsScopeAttached() && (pWeapon->GetAimFactor() > 0.0f) && (pWeapon->GetZoomFactor() > 0.0f);
 			Device.hudViewportData.ActorWeaponCondition = pWeapon->GetCondition();
+			Device.hudViewportData.renderScopeBrightnessValue = pWeapon->m_lens_night_brightness.cur_value;
 		}
 	}
 	else
@@ -1846,6 +1847,7 @@ void CActor::UpdateCL()
 			Device.hudViewportData.renderZoomRotateFactor = 0.0f;
 			Device.hudViewportData.isRenderActive = false;
 			Device.hudViewportData.ActorWeaponCondition = -1.0f;
+			Device.hudViewportData.renderScopeBrightnessValue = 0.0f;
 
 			// Switch back to third-person if was forced
 			if (bLook_cam_fp_zoom && cam_active == eacFirstEye) {
