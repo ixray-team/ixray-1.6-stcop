@@ -2,6 +2,8 @@
 #include "WaveForm.h"
 #define TSTRING_COUNT 10
 
+using namespace XRay::ImGui;
+
 const LPCSTR TEXTUREString[TSTRING_COUNT] = { "Custom...","$null","$base0", "$base1" ,"$base2" ,"$base3" ,"$base4","$base5" ,"$base6" ,"$base7" };
 
 xr_string FloatTimeToStrTime(float time)
@@ -37,8 +39,9 @@ inline bool DrawNumeric(PropItem* item, bool& change, bool read_only)
 		item->BeforeEdit<NumericValue<T>, T>(value);
 		data = static_cast<int>(value);
 	}
-
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(GetEditorSize(ButtonPaddingH), GetEditorSize(TextFieldPadding)));
 	change = ImGui::InputInt("##value", &data, read_only ? ImGuiInputTextFlags_ReadOnly : 0);
+	ImGui::PopStyleVar();
 	if (change)
 	{
 		if (int(V->lim_mn) > data)
@@ -67,7 +70,9 @@ inline bool DrawNumeric<float>(PropItem* item, bool& change, bool read_only)
 	if (!V)					return false;
 	float temp = *V->value;
 	item->BeforeEdit<NumericValue<float>, float>(temp);
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(GetEditorSize(ButtonPaddingH), GetEditorSize(TextFieldPadding)));
 	change = ImGui::InputFloat("##value", &temp, 0.01, 0.1, V->dec, read_only ? ImGuiInputTextFlags_ReadOnly : 0);
+	ImGui::PopStyleVar();
 	if (change)
 	{
 		if (!isinf(V->lim_mn) &&V->lim_mn > temp)
@@ -155,7 +160,7 @@ BOOL FlagOnEdit(PropItem* prop, bool& change)
 	prop->BeforeEdit<FlagValue<_flags<T> >, _flags<T> >(new_val);
 	u32 u = new_val.get();
 
-	if (XRay::ImGui::ToggleFlagButton("##value", &u, V->mask, {-1, 0}))
+	if (XRay::ImGui::ToggleFlagButton("##value", &u, V->mask, {-1, XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize)}))
 	{
 		new_val.assign(u);
 		if (prop->AfterEdit<FlagValue<_flags<T> >, _flags<T> >(new_val))
@@ -672,12 +677,13 @@ void UIPropertiesItem::DrawProp()
 				}
 				xr_strcat(Str, "...");
 				ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
+				ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, { 0.0f, 0.5f });
 				ImGui::PushStyleColor(ImGuiCol_Button, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableTint).Value);
-				if (ImGui::Button(Platform::ANSI_TO_UTF8(Str).data(), ImVec2(-1, 0)))
+				if (ImGui::Button(Platform::ANSI_TO_UTF8(Str).data(), ImVec2(-1, XRay::ImGui::GetEditorSize(ButtonSize))))
 				{
 				}
 				ImGui::PopStyleColor();
-				ImGui::PopStyleVar();
+				ImGui::PopStyleVar(2);
 
 				if (PItem->Key() != nullptr)
 				{
@@ -751,8 +757,8 @@ void UIPropertiesItem::DrawProp()
 				}
 				xr_strcat(Str, "...");
 				ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
-				ImGui::PushStyleColor(ImGuiCol_Button, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableTint).Value);
-				if (ImGui::Button(Str, ImVec2(-1, 0)))
+				ImGui::PushStyleColor(ImGuiCol_Button, XRay::ImGui::GetEditorColor(EEditorColors::TableTint).Value);
+				if (ImGui::Button(Str, ImVec2(-1, XRay::ImGui::GetEditorSize(ButtonSize))))
 				{
 				}
 				ImGui::PopStyleColor();
