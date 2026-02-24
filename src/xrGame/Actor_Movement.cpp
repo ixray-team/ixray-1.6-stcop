@@ -592,8 +592,10 @@ void CActor::g_cl_Orientate	(u32 mstate_rl, float dt)
 		r_torso.pitch	=	unaffected_r_torso.pitch + dangle.x;
 	}
 	
-	if (eacLookAt == cam_active && inventory().GetActiveSlot() == NO_ACTIVE_SLOT)
-		r_torso.pitch = 0;
+	if (inventory().GetActiveSlot() == NO_ACTIVE_SLOT || IsSafemode())
+	{
+		r_torso.pitch = 0.0f;
+	}
 
 	// если есть движение - выровнять модель по камере
 	if(mstate_rl & mcAnyMove || (g_player_hud && g_player_hud->m_legs_model)) {
