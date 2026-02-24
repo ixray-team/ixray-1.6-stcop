@@ -331,4 +331,11 @@ void   IGame_Level::SoundEvent_OnDestDestroy (Feel::Sound* obj)
 		snd_Events.erase(std::remove_if(snd_Events.begin(), snd_Events.end(), [obj](const _esound_delegate& d) {return d.dest == obj; }), snd_Events.end() );
 }
 
+void   IGame_Level::SoundEvent_net_Relcase(CObject* obj)
+{
+	PROF_EVENT("IGame_Level::SoundEvent_net_Relcase");
+	if (!snd_Events.empty())
+		snd_Events.erase(std::remove_if(snd_Events.begin(), snd_Events.end(), [obj](const _esound_delegate& d) {return d.source->g_object == obj; }), snd_Events.end());
+}
+
 
