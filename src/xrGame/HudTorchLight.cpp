@@ -351,8 +351,19 @@ void HudLightLaser::UpdateTorchFromObject(CHudItem* item) const
 			xform = item->HudItemData()->m_item_transform;
 			kin = item->HudItemData()->m_model;
 
+			Fvector curr_light_offset = LightOffset;
+
+			if (CWeapon* wpn = item->cast_weapon())
+			{
+				if (wpn->WpnCanShoot() && wpn->GetAimFactor() > 0.001f)
+				{
+					Fvector aim_offset = Device.vCameraPosition;
+					_lerp(curr_light_offset, aim_offset, wpn->GetAimFactor());
+				}
+			}
+
 			lightBoneId = kin->LL_BoneID(LightBone);
-			kin->LL_GetTransform(lightBoneId).transform_tiny(lightPos, LightOffset);
+			kin->LL_GetTransform(lightBoneId).transform_tiny(lightPos, curr_light_offset);
 		}
 		else
 		{
