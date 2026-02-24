@@ -479,6 +479,11 @@ void hud_item_measures::hud_hands_positions::Load(const shared_str& section, boo
 	xr_strconcat(val_name, "alter_aim_hud_offset_rot", _prefix);
 	hands_offsets[1][3] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[1][3] : zero_vel);
 
+	xr_strconcat(val_name, "safemode_hud_offset_pos", _prefix);
+	hands_offsets[0][4] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[0][4] : zero_vel);
+	xr_strconcat(val_name, "safemode_hud_offset_rot", _prefix);
+	hands_offsets[1][4] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[1][4] : zero_vel);
+
 	memcpy(hands_offsets_tune, hands_offsets, sizeof(hands_offsets_tune));
 }
 

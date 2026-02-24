@@ -234,6 +234,7 @@ public:
 		af_det_hand_jammed = (1 << 25),
 		af_det_hand_lightmis = (1 << 26),
 		af_det_hand_firemode = (1 << 27),
+		af_safemode_in_out = (1 << 28),
 	};
 
 	enum EBPAnimsFlags : u64
@@ -308,6 +309,7 @@ public:
 		sf_bore_jammed = (1 << 23),
 		sf_sprint_start = (1 << 24),
 		sf_sprint_end = (1 << 25),
+		sf_safemode_in_out = (1 << 26),
 	};
 
 	Flags32 m_eDevicesFlags;

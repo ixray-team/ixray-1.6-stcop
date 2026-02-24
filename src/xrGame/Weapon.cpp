@@ -566,6 +566,9 @@ void CWeapon::Load		(LPCSTR section)
 		return reached_sect;
 	};
 
+	pSettings->read_if_exists(m_bAllowSafemode, section, "allow_safemode");
+	pSettings->read_if_exists(m_fSafeModeRotateTime, section, "safemode_rotate_time");
+
 	m_AlterZoomAllowed = READ_IF_EXISTS(pSettings, r_bool, ReachInAllSections("alter_zoom_allowed"), "alter_zoom_allowed", false);
 
 	m_bUseSilHud = READ_IF_EXISTS(pSettings, r_bool, section, "hud_when_silencer_is_attached", false);
@@ -1995,6 +1998,18 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 					return false;
 				}
 
+				if (flags & CMD_START && ParentIsActor())
+				{
+					if (CActor* pActor = H_Parent()->cast_actor())
+					{
+						if (pActor->IsSafemode())
+						{
+							pActor->SetSafemodeStatus(false);
+							return false;
+						}
+					}
+				}
+
 				if (flags&CMD_START) 
 				{
 					m_bAutoAimNeedReleaseShot = false;
@@ -2060,6 +2075,24 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 				return true;
 			}
 		}break;
+		case kSAFEMODE:
+		{
+			if (flags & CMD_START && ParentIsActor() && m_bAllowSafemode && (GetState() == eIdle && !IsPending() || GetState() == eSafemodeSwitch))
+			{
+				if (CActor* pActor = H_Parent()->cast_actor())
+				{
+					pActor->SetSafemodeStatus(!pActor->IsSafemode());
+				}
+
+				if (m_eAnimationsFlags.test(EAnimationsFlags::af_safemode_in_out))
+				{
+					SwitchState(eSafemodeSwitch);
+				}
+
+				return true;
+			}
+			break;
+		}
 		case kWPN_ZOOM:
 		{
 			if (IsZoomEnabled())
@@ -3533,8 +3566,15 @@ void CWeapon::UpdateHudAdditonal(Fmatrix& trans)
 		return;
 	}
 
+	attachable_hud_item* hi = HudItemData();
+	if (hi == nullptr)
+	{
+		return;
+	}
+
 	AddOffset(trans, GetCurrentHudOffsetIdx(), m_zoom_params.m_fZoomRotationFactor, m_zoom_params.m_fZoomRotateTime, IsZoomed());
 	AddOffset(trans, 3, m_zoom_params.m_fZoomRotationFactor2, m_zoom_params.m_fZoomRotateTime, IsAltZoomed() && IsZoomed() && !IsGrenadeMode());
+	AddOffset(trans, 4, m_fSafeModeRotationFactor, m_fSafeModeRotateTime, pActor->IsSafemode() && !IsZoomed());
 }
 
 void CWeapon::SetAmmoElapsed(int ammo_count)
@@ -5175,4 +5215,10 @@ bool CWeapon::NeedMovementBlend() const
 	}
 
 	return inherited::NeedMovementBlend();
+}
+
+bool CWeapon::AllowSafemode() const
+{
+	const u32 state = GetState();
+	return m_bAllowSafemode && (state == eIdle || state == eSafemodeSwitch || state == eSwitchMode) && !m_bSwitchSprint;
 }

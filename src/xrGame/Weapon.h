@@ -147,6 +147,7 @@ public:
 		eUnloadChamber,
 		eChamberCheck,
 		ePump,
+		eSafemodeSwitch,
 	};
 
 	enum EWeaponSubStates
@@ -191,6 +192,7 @@ public:
 	ALife::EWeaponAddonStatus	get_SilencerStatus			() const { return m_eSilencerStatus; }
 
 	virtual bool NeedMovementBlend() const override;
+	bool AllowSafemode() const;
 
 	virtual bool UseScopeTexture();
 
@@ -391,6 +393,8 @@ protected:
 	float m_fMisfireAfterProblemsLevel = 10.0f;
 	float m_fRechargeTime = 0.0f;
 	float m_fLastRechargeTime = 0.0f;
+	float m_fSafeModeRotationFactor = 0.0f;
+	float m_fSafeModeRotateTime = 0.3f;
 
 	bool bUpdateHUDBonesVisibility = false;
 	u32 _last_update_time;
@@ -426,6 +430,7 @@ protected:
 	BOOL m_bUseRevolverScheme = false;
 	BOOL m_bUseMosinScheme = false;
 	bool m_AlterZoomAllowed = false;
+	bool m_bAllowSafemode = false;
 
 	bool m_bHaveShell = false;
 	bool m_bNeedPumpState = false;
