@@ -73,6 +73,17 @@ void CCustomOutfit::OnMoveToRuck(const SInvItemPlace& prev)
 			{
 				pActor->GetNightVisionEffector()->SwitchNightVision(false);
 			}
+
+			static const bool TorchOnlyOutfit = EngineExternal()[EEngineExternalGame::EnableTorchOnlyInOutfit];
+
+			if (TorchOnlyOutfit && !bIsHelmetAvaliable)
+			{
+				CTorch* pTorch = static_cast<CTorch*>(pActor->inventory().ItemFromSlot(TORCH_SLOT));
+				if (pTorch != nullptr)
+				{
+					pTorch->Switch(false);
+				}
+			}
 		}
 	}
 }
