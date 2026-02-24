@@ -115,7 +115,7 @@ public:
 	void						SoundEvent_Register		( ref_sound_data_ptr S, float range );
 	void						SoundEvent_Dispatch		( );
 	void                        SoundEvent_OnDestDestroy (Feel::Sound*);
-
+	void                        SoundEvent_net_Relcase	(CObject* obj);
 	// Loader interface
     virtual float               GetEnvironmentGameDayTimeSec() const = 0;
     virtual void                SetEnvironmentGameTimeFactor(u64 const& GameTime, float const& fTimeFactor) = 0;
