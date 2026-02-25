@@ -36,13 +36,13 @@ void CUIInventoryWnd::SetCurrentItem(CUICellItem* itm)
 
 void CUIInventoryWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 {
-	if(pWnd == &UIPropertiesBox &&	msg==PROPERTY_CLICKED)
+	if (pWnd == m_UIPropertiesBox && msg == PROPERTY_CLICKED)
 	{
-		ProcessPropertiesBoxClicked	();
-	}else 
-	if (UIExitButton == pWnd && BUTTON_CLICKED == msg)
+		ProcessPropertiesBoxClicked();
+	}
+	else if (UIExitButton == pWnd && BUTTON_CLICKED == msg)
 	{
-		GetHolder()->StartStopMenu			(this,true);
+		GetHolder()->StartStopMenu(this, true);
 	}
 
 	CUIWindow::SendMessage(pWnd, msg, pData);
@@ -54,15 +54,16 @@ void CUIInventoryWnd::InitInventory_delayed()
 	m_b_need_reinit = true;
 }
 
-void CUIInventoryWnd::InitInventory() 
+void CUIInventoryWnd::InitInventory()
 {
 	CObject* current_entity = Level().CurrentEntity();
 	CInventoryOwner* pInvOwner = current_entity != nullptr ? current_entity->cast_inventory_owner() : nullptr;
 	if(!pInvOwner)				return;
 
 	m_pInv						= &pInvOwner->inventory();
+	m_pInvOwner					= pInvOwner;
 
-	UIPropertiesBox.Hide		();
+	m_UIPropertiesBox->Hide		();
 	ClearAllLists				();
 	m_pMouseCapturer			= nullptr;
 	SetCurrentItem				(nullptr);
