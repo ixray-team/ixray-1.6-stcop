@@ -195,7 +195,7 @@ target_link_libraries(xrECore PUBLIC "d3dcompiler.lib")
 
 target_link_libraries(xrECore PRIVATE Ogg::ogg)
 target_link_libraries(xrECore PRIVATE Vorbis::vorbis)
-#target_link_libraries(xrECore PRIVATE Vorbis::vorbisfile)
+target_link_libraries(xrECore PRIVATE Vorbis::vorbisfile)
 target_link_libraries(xrECore PRIVATE OpenAL::OpenAL)
 
 target_validate_pch(xrECore ${CMAKE_CURRENT_SOURCE_DIR})
