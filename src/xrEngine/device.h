@@ -69,6 +69,7 @@ public:
 		bool isRenderProcess = false;
 
 		float renderScopeBrightnessValue = 0.0f;
+		float renderScopeBrightnessJitterValue = 0.0f;
 
 		bool IsElectronicsProblemsDecreasing = false;
 		float CurrentElectronicsProblemsCnt = 0.0f;
