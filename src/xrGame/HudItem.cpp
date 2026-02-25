@@ -130,13 +130,13 @@ void CHudItem::LoadSounds(LPCSTR section)
 
 void CHudItem::PlaySound(LPCSTR alias, const Fvector& position, bool allowOverlap)
 {
-	m_sounds.PlaySound(alias, position, object().H_Root(), !!GetHUDmode(), false, allowOverlap);
+	m_sounds.PlaySound(alias, position, object().H_Root(), !!GetHUDSoundMode(), false , allowOverlap);
 }
 
 void CHudItem::renderable_Render()
 {
 	UpdateXForm					();
-	BOOL _hud_render			= ::Render->get_HUD() && GetHUDmode();
+	BOOL _hud_render			= ::Render->get_HUD() && GetHUDSoundMode();
 	
 	if(_hud_render  && !IsHidden())
 	{ 
@@ -238,7 +238,7 @@ void CHudItem::OnStateSwitch(u32 S)
 		if(HudItemData())
 		{
 			Fvector P		= HudItemData()->m_item_transform.c;
-			m_sounds.PlaySound("sndBore", P, object().H_Root(), !!GetHUDmode(), false, m_started_rnd_anim_idx);
+			m_sounds.PlaySound("sndBore", P, object().H_Root(), !!GetHUDSoundMode(), false, m_started_rnd_anim_idx);
 		}
 
 		break;
@@ -588,13 +588,22 @@ void CHudItem::StopCurrentAnimWithoutCallback()
 
 BOOL CHudItem::GetHUDmode()
 {
-	if (m_object && m_object->H_Parent())
-	{
+	if (m_object && m_object->H_Parent()) {
 		CActor* A = m_object->H_Parent()->cast_actor();
 		return (A && A->HUDview() && HudItemData());
 	}
-	else
-		return FALSE;
+		
+	return FALSE;
+}
+
+BOOL CHudItem::GetHUDSoundMode()
+{
+	if (m_object && m_object->H_Parent()) {
+		CActor* A = m_object->H_Parent()->cast_actor();
+		return (A && A->HUDview()) || HudItemData();
+	} 
+
+	return FALSE;
 }
 
 void CHudItem::PlayAnimIdle()
@@ -829,6 +838,15 @@ float CHudItem::GetHudFov()
 	}
 
 	return m_nearwall_last_hud_fov * m_fHudFovFactor;
+}
+
+void CHudItem::PlaySoundIfExist(LPCSTR alias, const Fvector& position, bool allowOverlap)
+{
+	HUD_SOUND_ITEM* SndIter = m_sounds.FindSoundItem(alias, false);
+	if (SndIter != nullptr)
+	{
+		m_sounds.PlaySound(SndIter, position, object().H_Root(), !!GetHUDSoundMode(), false, allowOverlap, u8(-1));
+	}
 }
 
 void CHudItem::SetModelBoneStatus(const char* bone, BOOL show)
