@@ -31,7 +31,7 @@ public:
 						CUITalkWnd();
 	virtual				~CUITalkWnd();
 
-	IC		bool		playing_sound			()		 { return !!m_sound._feedback(); }
+	IC		bool		playing_sound			()		 { return m_sound.is_playing(); }
 	IC	CInventoryOwner*OthersInvOwner			() const { return m_pOthersInvOwner;	 };
 
 			void		InitTalkWnd				();

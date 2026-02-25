@@ -110,7 +110,9 @@ public:
 							~ref_sound				(){ }
 
 	IC CSound_source*		_handle					()		const			{return _p?_p->handle:NULL;}
-	IC CSound_emitter*		_feedback				()						{return _p?_p->feedback:0;}
+	IC CSound_emitter*		_feedback()										{ return _p ? _p->feedback : 0; }
+	IC CSound_source*		handle					()		const			{return _p?_p->handle:NULL;}
+	IC bool					is_playing()						{return _p?_p->feedback:0;}
 	IC CObject*				_g_object				()						{VERIFY(_p); return _p->g_object;}
 	IC int					_g_type					()						{VERIFY(_p); return _p->g_type;}
 	IC esound_type			_sound_type				()						{VERIFY(_p); return _p->s_type;}
@@ -135,7 +137,7 @@ public:
 	IC void					set_volume				( float vol );
 	IC void					set_priority			( float vol );
 
-	IC const CSound_params*	get_params				( );
+	IC CSound_params	get_params				( );
     IC void					set_params				( CSound_params* p );
 	IC float				get_length_sec			() const						{return _p?_p->get_length_sec():0.0f;};
 };
@@ -187,7 +189,7 @@ public:
 	virtual void					set_volume				(float vol)													= 0;
 	virtual void					set_priority			(float vol)													= 0;
 	virtual void					stop					(BOOL bDeffered)											= 0;
-	virtual	const CSound_params*	get_params				( )															= 0;
+	virtual	CSound_params			get_params				( )															= 0;
 	virtual u32						play_time				( )															= 0;
 };
 
@@ -312,7 +314,16 @@ IC void	ref_sound::set_volume					( float vol )											{	VERIFY(!::Sound->i_l
 IC void	ref_sound::set_priority					( float p )												{	VERIFY(!::Sound->i_locked()); 	if (_feedback())	_feedback()->set_priority(p);								}
 IC void	ref_sound::stop							( )														{	VERIFY(!::Sound->i_locked()); 	if (_feedback())	_feedback()->stop(FALSE);									}
 IC void	ref_sound::stop_deffered				( )														{	VERIFY(!::Sound->i_locked()); 	if (_feedback())	_feedback()->stop(TRUE);									}
-IC const CSound_params*	ref_sound::get_params	( )														{	VERIFY(!::Sound->i_locked()); 	if (_feedback())	return _feedback()->get_params(); else return NULL;			}
+IC CSound_params ref_sound::get_params()
+{
+	VERIFY(!::Sound->i_locked());
+	if (_feedback())
+	{
+		auto params = _feedback()->get_params();
+		return params;
+	}
+	else return {};
+}
 IC void	ref_sound::set_params					( CSound_params* p )									
 {	
 	VERIFY(!::Sound->i_locked()); 	
