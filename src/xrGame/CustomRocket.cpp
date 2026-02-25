@@ -551,7 +551,7 @@ void CCustomRocket::PhTune					(float step)
 
 void CCustomRocket::UpdateParticles()
 {
-	if(m_flyingSound._handle() && m_flyingSound._feedback())
+	if (m_flyingSound.is_playing())
 		m_flyingSound.set_position( XFORM().c );
 
 	if(!m_pEngineParticles && !m_pFlyParticles) return;
@@ -599,7 +599,7 @@ void CCustomRocket::StopEngineParticles()
 }
 void CCustomRocket::StartFlyParticles()
 {
-	if(m_flyingSound._handle())
+	if (m_flyingSound.handle())
 		m_flyingSound.play_at_pos(0, XFORM().c, sm_Looped );
 
 	VERIFY(m_pFlyParticles == nullptr);
@@ -615,7 +615,7 @@ void CCustomRocket::StartFlyParticles()
 }
 void CCustomRocket::StopFlyParticles()
 {
-	if(m_flyingSound._handle())
+	if (m_flyingSound.is_playing())
 		m_flyingSound.stop();
 
 	if(m_pFlyParticles == nullptr) return;
