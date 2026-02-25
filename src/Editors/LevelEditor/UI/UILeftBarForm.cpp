@@ -114,7 +114,7 @@ void UILeftBarForm::Draw()
 				const bool IsVisible = tool->IsVisible();
 				const xr_string Icon = IsVisible ? ICON_FA_EYE : ICON_FA_EYE_SLASH;
 				ImColor IconColor = IsVisible
-					? XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToggleColorActive)
+					? XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::Accent)
 					: XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ContentIconTint)
 					;
 				//if (!IsVisible) IconColor.w = 0.5f;
@@ -141,7 +141,7 @@ void UILeftBarForm::Draw()
 						start,
 						//{ start.x + (IsActive ? end.x:4.f), start.y + button_h },
 						{ start.x + (IsActive ? column_width - 1.f : 4.f), start.y + button_h },
-						XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToggleColorActive),
+						XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::Accent),
 						4.0f, (IsActive ? 0 : ImDrawFlags_RoundCornersLeft));
 
 					ImVec2 IconPos = { cur.x + 8.f, cur.y + (button_h - 14.f) / 2 };
