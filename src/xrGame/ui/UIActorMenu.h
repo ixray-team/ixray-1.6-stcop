@@ -8,6 +8,7 @@
 #include "../../xrUI/ui_defs.h"
 #include "../../xrUI/Widgets/UIFocusSystem.h"
 #include "InventorySorter.h"
+#include "UIOwnerPropertiesBox.h"
 
 #include "../script_game_object.h" //Alundaio
 #include <WeaponMagazined.h>
@@ -32,13 +33,11 @@ class CTrade;
 class CUIProgressBar;
 class CUIItemDropAmountWnd;
 class CUIGamepadLegend;
+class CUIOwnerPropertiesBox;
 
 namespace inventory { namespace upgrade {
 	class Upgrade;
 } } // namespace upgrade, inventory
-
-const u64 INVENTORY_ALL_CODE = 33;
-const u64 INVENTORY_AMOUNT_CODE = 77;
 
 enum EDDListType{
 		iInvalid,
@@ -64,7 +63,8 @@ enum EMenuMode{
 };
 
 class CUIActorMenu final :	public CUIDialogWnd, 
-						public CUIWndCallback
+						public CUIWndCallback,
+						public CUIOwnerPropertiesBox
 {
 	typedef CUIDialogWnd		inherited;
 	typedef inventory::upgrade::Upgrade 	Upgrade_type;
@@ -81,7 +81,7 @@ protected:
 								eDetachAddon,
 								eItemUse,
 								eSndMax};
-	
+
 	enum eActorMenuControllerAuxMode {
 		eAuxMode_None = 0,
 		eAuxMode_Upgrade,
@@ -99,7 +99,6 @@ protected:
 	u32							m_InfoCellItem_timer;
 	CUICellItem*				m_pCurrentCellItem = nullptr;
 	CUICellItem*				m_upgrade_selected;
-	CUIPropertiesBox*			m_UIPropertiesBox;
 
 	ui_actor_state_wnd*			m_ActorStateInfo;
 	CUICharacterInfo*			m_ActorCharacterInfo;
@@ -250,212 +249,204 @@ public:
 	CUIDragDropReferenceList*	m_pQuickSlot;
 
 public:
-	void						SetMenuMode					(EMenuMode mode);
-	EMenuMode					GetMenuMode					() {return m_currMenuMode;};
-	void						SetActor					(CInventoryOwner* io);
-	void						ReloadActorInfo				();
-	void						SetPartner					(CInventoryOwner* io);
-	CInventoryOwner*			GetPartner					() {return m_pPartnerInvOwner;};
-	void						SetInvBox					(CInventoryBox* box);
-	CInventoryBox*				GetInvBox					() {return m_pInvBox;};
+	void						SetMenuMode							(EMenuMode mode);
+	EMenuMode					GetMenuMode							() {return m_currMenuMode;}
+	void						SetActor							(CInventoryOwner* io);
+	void						ReloadActorInfo						();
+	void						SetPartner							(CInventoryOwner* io);
+	CInventoryOwner*			GetPartner							() {return m_pPartnerInvOwner;}
+	void						SetInvBox							(CInventoryBox* box);
+	CInventoryBox*				GetInvBox							() {return m_pInvBox;}
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow*			ui_cast_window						() { return this; }
 
-private:
-	void						PropertiesBoxForSlots		(CUICellItem* cell_item, PIItem item, bool& b_show);
-	void						PropertiesBoxForWeapon		(CUICellItem* cell_item, PIItem item, bool& b_show);
-	void						PropertiesBoxForAddon		(PIItem item, bool& b_show);
-	void						PropertiesBoxForUsing		(PIItem item, bool& b_show);
-	void						PropertiesBoxForPlaying		(PIItem item, bool& b_show);
-	void						PropertiesBoxForDrop		(CUICellItem* cell_item, PIItem item, bool& b_show);
-	void						PropertiesBoxForRepair		(PIItem item, bool& b_show);
-	void						PropertiesBoxForParse		(PIItem item, bool& b_show);
-	void						PropertiesBoxForDonate		(PIItem item, bool& b_show); //Alundaio
-	void						PropertiesBoxForUpgrade		(PIItem item, bool& b_show);
-	void						PropertiesBoxForTrade		(CUICellItem* cell_item, PIItem item, bool& b_show);
+protected:
+	virtual void				PropertiesBoxForDrop				(CUICellItem* cell_item, PIItem item, bool& b_show);
+	void						PropertiesBoxForDonate				(PIItem item, bool& b_show); //Alundaio
+	void						PropertiesBoxForUpgrade				(PIItem item, bool& b_show);
+	void						PropertiesBoxForRepair				(PIItem item, bool& b_show);
+	void						PropertiesBoxForTrade				(CUICellItem* cell_item, PIItem item, bool& b_show);
 
 private:
-	void						clear_highlight_lists		();
-	void						set_highlight_item			(CUICellItem* cell_item);
-	void						highlight_item_slot			(CUICellItem* cell_item);
-	void						highlight_armament			(PIItem item, CUIDragDropListEx* ddlist);
-	void						highlight_ammo_for_weapon	(PIItem weapon_item, CUIDragDropListEx* ddlist);
-	void						highlight_weapons_for_ammo	(PIItem ammo_item, CUIDragDropListEx* ddlist);
-	bool						highlight_addons_for_weapon	(PIItem weapon_item, CUICellItem* ci);
-	void						highlight_weapons_for_addon	(PIItem addon_item, CUIDragDropListEx* ddlist);
-	void						highlight_related_config_sections (PIItem item, CUIDragDropListEx* ddlist); // FFx001 ++
+	void						clear_highlight_lists				();
+	void						set_highlight_item					(CUICellItem* cell_item);
+	void						highlight_item_slot					(CUICellItem* cell_item);
+	void						highlight_armament					(PIItem item, CUIDragDropListEx* ddlist);
+	void						highlight_ammo_for_weapon			(PIItem weapon_item, CUIDragDropListEx* ddlist);
+	void						highlight_weapons_for_ammo			(PIItem ammo_item, CUIDragDropListEx* ddlist);
+	bool						highlight_addons_for_weapon			(PIItem weapon_item, CUICellItem* ci);
+	void						highlight_weapons_for_addon			(PIItem addon_item, CUIDragDropListEx* ddlist);
+	void						highlight_related_config_sections	(PIItem item, CUIDragDropListEx* ddlist); // FFx001 ++
 
 protected:			
-	void						Construct					();
-	void						InitCallbacks				();
+	void						Construct							();
+	void						InitCallbacks						();
 
-	void						InitCellForSlot				(u16 slot_idx);
-	void						InitInventoryContents		(CUIDragDropListEx* pBagList);
-	void						UpdateActorBagList			();
-	void						OnSortTabChanged			(CUIWindow* w, void* pData);
-	void						ClearAllLists				();
-	void						BindDragDropListEvents		(CUIDragDropListEx* lst);
+	void						InitCellForSlot						(u16 slot_idx);
+	void						InitInventoryContents				(CUIDragDropListEx* pBagList);
+	void						UpdateActorBagList					();
+	void						OnSortTabChanged					(CUIWindow* w, void* pData);
+	void						ClearAllLists						();
+	void						BindDragDropListEvents				(CUIDragDropListEx* lst);
 	
-	EDDListType					GetListType					(CUIDragDropListEx* l);
-	CUIDragDropListEx*			GetListByType				(EDDListType t);
-	CUIDragDropListEx*			GetSlotList					(u16 slot_idx);
-	bool						CanSetItemToList			(PIItem item, CUIDragDropListEx* l, u16& ret_slot);
+	EDDListType					GetListType							(CUIDragDropListEx* l);
+	CUIDragDropListEx*			GetListByType						(EDDListType t);
+	CUIDragDropListEx*			GetSlotList							(u16 slot_idx);
+	bool						CanSetItemToList					(PIItem item, CUIDragDropListEx* l, u16& ret_slot);
 	
-	xr_vector<EDDListType>		m_allowed_drops				[iListTypeMax];
-	bool						AllowItemDrops				(EDDListType from, EDDListType to);
+	xr_vector<EDDListType>		m_allowed_drops						[iListTypeMax];
+	bool						AllowItemDrops						(EDDListType from, EDDListType to);
 
-	bool				OnItemDrop					(CUICellItem* itm);
-	bool				OnItemStartDrag				(CUICellItem* itm);
-	bool				OnItemDbClick				(CUICellItem* itm);
-	bool				OnItemSelected				(CUICellItem* itm);
-	bool				OnItemRButtonClick			(CUICellItem* itm);
-	bool				OnItemFocusReceive			(CUICellItem* itm);
-	bool				OnItemFocusLost				(CUICellItem* itm);
-	bool				OnItemFocusedUpdate			(CUICellItem* itm);
-	void				OnDragItemOnTrash			(CUIDragItem* item, bool b_receive);
-	bool						OnItemDropped				(PIItem itm, CUIDragDropListEx* new_owner, CUIDragDropListEx* old_owner);
+	bool						OnItemDrop							(CUICellItem* itm);
+	bool						OnItemStartDrag						(CUICellItem* itm);
+	bool						OnItemDbClick						(CUICellItem* itm);
+	bool						OnItemSelected						(CUICellItem* itm);
+	bool						OnItemRButtonClick					(CUICellItem* itm);
+	bool						OnItemFocusReceive					(CUICellItem* itm);
+	bool						OnItemFocusLost						(CUICellItem* itm);
+	bool						OnItemFocusedUpdate					(CUICellItem* itm);
+	void						OnDragItemOnTrash					(CUIDragItem* item, bool b_receive);
+	bool						OnItemDropped						(PIItem itm, CUIDragDropListEx* new_owner, CUIDragDropListEx* old_owner);
 
-	void						ResetMode					();
-	void						InitInventoryMode			();
-	void						DeInitInventoryMode			();
-	void						InitTradeMode				();
-	void						DeInitTradeMode				();
-	void						InitUpgradeMode				();
-	void						DeInitUpgradeMode			();
-	void						InitDeadBodySearchMode		();
-	void						DeInitDeadBodySearchMode	();
+	void						ResetMode							();
+	void						InitInventoryMode					();
+	void						DeInitInventoryMode					();
+	void						InitTradeMode						();
+	void						DeInitTradeMode						();
+	void						InitUpgradeMode						();
+	void						DeInitUpgradeMode					();
+	void						InitDeadBodySearchMode				();
+	void						DeInitDeadBodySearchMode			();
 
-	void						CurModeToScript				();
-	void						RepairEffect_CurItem		();
-	void						PerformDisassemble			();
+	void						CurModeToScript						();
+	void						RepairEffect_CurItem				();
+	void						PerformDisassemble					();
 
-	PIItem						CurrentIItem				();
+	PIItem						CurrentIItem						();
 
-	void						InfoCurItem					(CUICellItem* cell_item); //on update item
+	void						InfoCurItem							(CUICellItem* cell_item); //on update item
 
-	void						ActivatePropertiesBox		();
-	void						TryHidePropertiesBox		();
-	void				        ProcessPropertiesBoxClicked	(CUIWindow* w, void* d);
+	void						ActivatePropertiesBox				();
+	virtual	void				ProcessPropertiesBoxClicked			(CUIWindow* w, void* d);
 	
-	void						CheckDistance				();
-	void						UpdateItemsPlace			();
+	void						CheckDistance						();
+	void						UpdateItemsPlace					();
 
-	void						SetupUpgradeItem			();
-	void						UpdateUpgradeItem			();
-	void						TrySetCurUpgrade			();
-	void						UpdateButtonsLayout			();
+	void						SetupUpgradeItem					();
+	void						UpdateUpgradeItem					();
+	void						TrySetCurUpgrade					();
+	void						UpdateButtonsLayout					();
 
 	// inventory
-	bool						ToSlotScript				(CScriptGameObject* GO, bool force_place, u16 slot_id);
-	bool						ToSlot						(CUICellItem* itm, bool force_place, u16 slot_id);
-	bool						ToBag						(CUICellItem* itm, bool b_use_cursor_pos);
-	void						ToBagAll					(CUICellItem* itm);
-	bool						ToBeltScript				(CScriptGameObject* GO, bool b_use_cursor_pos);
-	bool						ToBelt						(CUICellItem* itm, bool b_use_cursor_pos);
-	bool						TryUseItem					(CUICellItem* cell_itm);
-	bool						ToQuickSlot					(CUICellItem* itm);
+	bool						ToSlotScript						(CScriptGameObject* GO, bool force_place, u16 slot_id);
+	bool						ToSlot								(CUICellItem* itm, bool force_place, u16 slot_id);
+	bool						ToBag								(CUICellItem* itm, bool b_use_cursor_pos);
+	void						ToBagAll							(CUICellItem* itm);
+	bool						ToBeltScript						(CScriptGameObject* GO, bool b_use_cursor_pos);
+	bool						ToBelt								(CUICellItem* itm, bool b_use_cursor_pos);
+	bool						TryUseItem							(CUICellItem* cell_itm);
+	bool						ToQuickSlot							(CUICellItem* itm);
 
 	void						SetActorInfoMP();
 	void						UpdateActorMoneyMP();
-	void						UpdateOutfit				();
-	void						MoveArtefactsToBag			();
-	bool						TryActiveSlot				(CUICellItem* itm);
-	void						TryRepairItem				(CUIWindow* w, void* d);
-	void						TryDisassembleItem			(CUIWindow* w, void* d);
-	bool						CanUpgradeItem				(PIItem item);
+	void						UpdateOutfit						();
+	void						MoveArtefactsToBag					();
+	bool						TryActiveSlot						(CUICellItem* itm);
+	void						TryRepairItem						(CUIWindow* w, void* d);
+	void						TryDisassembleItem					(CUIWindow* w, void* d);
+	bool						CanUpgradeItem						(PIItem item);
 
-	bool						ToActorTrade				(CUICellItem* itm, bool b_use_cursor_pos);
-	void						ToActorTradeAll				(CUICellItem* itm);
-	bool						ToPartnerTrade				(CUICellItem* itm, bool b_use_cursor_pos);
-	void						ToPartnerTradeAll			(CUICellItem* itm);
-	bool						ToPartnerTradeBag			(CUICellItem* itm, bool b_use_cursor_pos);
-	void						ToPartnerTradeBagAll		(CUICellItem* itm);
-	bool						ToDeadBodyBag				(CUICellItem* itm, bool b_use_cursor_pos);
-	bool						IsAllowTakeFromInvBox		(CUICellItem* itm); // FFx0001
-	bool						IsAllowPlaceToInvBox		(CUICellItem* itm); // FFx0001
+	bool						ToActorTrade						(CUICellItem* itm, bool b_use_cursor_pos);
+	void						ToActorTradeAll						(CUICellItem* itm);
+	bool						ToPartnerTrade						(CUICellItem* itm, bool b_use_cursor_pos);
+	void						ToPartnerTradeAll					(CUICellItem* itm);
+	bool						ToPartnerTradeBag					(CUICellItem* itm, bool b_use_cursor_pos);
+	void						ToPartnerTradeBagAll				(CUICellItem* itm);
+	bool						ToDeadBodyBag						(CUICellItem* itm, bool b_use_cursor_pos);
+	bool						IsAllowTakeFromInvBox				(CUICellItem* itm); // FFx0001
+	bool						IsAllowPlaceToInvBox				(CUICellItem* itm); // FFx0001
 
-	void						AttachAddon					(PIItem item_to_upgrade);
-	void						DetachAddon					(LPCSTR addon_name, PIItem itm = NULL);
+	void						AttachAddon							(PIItem item_to_upgrade);
+	void						DetachAddon							(LPCSTR addon_name, PIItem itm = NULL);
+	
+	void						UnloadWeapon						(CWeaponMagazined* pWnp);
 
-	void						UnloadWeapon				(CWeaponMagazined* pWnp);
-
-	//void						UnloadWeapon				(CWeaponMagazined* pWnp);
-
-	void						SendEvent_Item2Slot			(PIItem	pItem, u16 parent, u16 slot_id);
-	void						SendEvent_Item2Belt			(PIItem	pItem, u16 parent);
-	void						SendEvent_Item2Ruck			(PIItem	pItem, u16 parent);
-	void						SendEvent_Item_Drop			(PIItem	pItem, u16 parent);
-	void						SendEvent_Item_Eat			(PIItem	pItem, u16 parent);
-	void						SendEvent_ActivateSlot		(u16 slot, u16 recipient);
-	void						OnPressUserKey				();
+	void						SendEvent_Item2Slot					(PIItem	pItem, u16 parent, u16 slot_id);
+	void						SendEvent_Item2Belt					(PIItem	pItem, u16 parent);
+	void						SendEvent_Item2Ruck					(PIItem	pItem, u16 parent);
+	void						SendEvent_Item_Drop					(PIItem	pItem, u16 parent);
+	void						SendEvent_Item_Eat					(PIItem	pItem, u16 parent);
+	void						SendEvent_ActivateSlot				(u16 slot, u16 recipient);
+	void						OnPressUserKey						();
 
 	// trade
-	void						InitPartnerInventoryContents();
-	void						ColorizeItem				(CUICellItem* itm, bool colorize);
-	float						CalcItemsWeight				(CUIDragDropListEx* pList);
-	u32							CalcItemsPrice				(CUIDragDropListEx* pList, CTrade* pTrade, bool bBuying);
-	void						UpdatePrices				();
-	bool						CanMoveToPartner			(PIItem pItem);
-	void						TransferItems				(CUIDragDropListEx* pSellList, CUIDragDropListEx* pBuyList, CTrade* pTrade, bool bBuying);
-	void						TransferItemsMp             (CUIDragDropListEx* pSellList, CUIDragDropListEx* pBuyList, CTrade* pTrade, bool bBuying);
+	void						InitPartnerInventoryContents		();
+	void						ColorizeItem						(CUICellItem* itm, bool colorize);
+	float						CalcItemsWeight						(CUIDragDropListEx* pList);
+	u32							CalcItemsPrice						(CUIDragDropListEx* pList, CTrade* pTrade, bool bBuying);
+	void						UpdatePrices						();
+	bool						CanMoveToPartner					(PIItem pItem);
+	void						TransferItems						(CUIDragDropListEx* pSellList, CUIDragDropListEx* pBuyList, CTrade* pTrade, bool bBuying);
+	void						TransferItemsMp						(CUIDragDropListEx* pSellList, CUIDragDropListEx* pBuyList, CTrade* pTrade, bool bBuying);
 
 	// Controller UI
-	bool						MoveAreaSelector			(eUIDirection4 dir);
-	void						MoveSelector				(eUIDirection4 dir, bool bAllowAreaExit);
-	void						SetAreaSelectionTo			(CUIWindow* pList);
-	void						SetAuxMode					(eActorMenuControllerAuxMode mode);
-	eUIDirection4				GetNaviDirection			(CUIWindow* pWndFrom, CUIWindow* pWndTo);
+	bool						MoveAreaSelector					(eUIDirection4 dir);
+	void						MoveSelector						(eUIDirection4 dir, bool bAllowAreaExit);
+	void						SetAreaSelectionTo					(CUIWindow* pList);
+	virtual void				SetAuxMode							(eActorMenuControllerAuxMode mode);
+	eUIDirection4				GetNaviDirection					(CUIWindow* pWndFrom, CUIWindow* pWndTo);
 
 public:
-								CUIActorMenu				();
-	virtual						~CUIActorMenu				();
+								CUIActorMenu						();
+	virtual						~CUIActorMenu						();
 
-	void						DropAllCurrentItem			(u32 item_amount);
-	void						MoveAllCurrentItem			(u32 item_amount);
-	void						TakeAllCurrentItem			(u32 item_amount);
-	CUICellItem*				CurrentItem					();
-	void						SetCurrentItem				(CUICellItem* itm);
-	virtual bool				StopAnyMove					();
-	virtual void				SendMessage					(CUIWindow* pWnd, s16 msg, void* pData = NULL);
-	virtual void				Draw						();
-	virtual void				Update						();
-	virtual void				Show						(bool status);
-			void				CheckSelectors				();
+	virtual CInventory*			GetInventory						();
+	virtual CInventoryOwner*	GetInventoryOwner					() { return m_pActorInvOwner; }
+	virtual void				DropAllCurrentItem					(u32 item_amount);
+	virtual void				MoveAllCurrentItem					(u32 item_amount);
+	virtual void				TakeAllCurrentItem					(u32 item_amount);
+	CUICellItem*				CurrentItem							();
+	void						SetCurrentItem						(CUICellItem* itm);
+	virtual bool				StopAnyMove							();
+	virtual void				SendMessage							(CUIWindow* pWnd, s16 msg, void* pData = NULL);
+	virtual void				Draw								();
+	virtual void				Update								();
+	virtual void				Show								(bool status);
+			void				CheckSelectors						();
 
 	virtual bool				OnKeyboardAction					(int dik, EUIMessages keyboard_action);
 	virtual bool				OnMouseAction						(float x, float y, EUIMessages mouse_action);
 	virtual bool				OnGamepadKeyAction					(int id, EUIMessages gamepad_action);
 	virtual bool				OnGamepadKeyHold					(int id);
 
-	void						CallMessageBoxYesNo			(LPCSTR text);
-	void						CallMessageBoxOK			(LPCSTR text);
-	void				OnMesBoxYes					(CUIWindow*, void*);
-	void				OnMesBoxNo					(CUIWindow*, void*);
+	void						CallMessageBoxYesNo					(LPCSTR text);
+	void						CallMessageBoxOK					(LPCSTR text);
+	void						OnMesBoxYes							(CUIWindow*, void*);
+	void						OnMesBoxNo							(CUIWindow*, void*);
 
-	void						OnInventoryAction			(PIItem pItem, u16 action_type);
-	void						ShowRepairButton			(bool status);
-	bool						SetInfoCurUpgrade			(Upgrade_type* upgrade_type, CInventoryItem* inv_item );
-	void						SeparateUpgradeItem			();
-	PIItem						get_upgrade_item			();
-	bool						DropAllItemsFromRuck		(bool quest_force = false); //debug func
+	void						OnInventoryAction					(PIItem pItem, u16 action_type);
+	bool						SetInfoCurUpgrade					(Upgrade_type* upgrade_type, CInventoryItem* inv_item );
+	void						SeparateUpgradeItem					();
+	PIItem						get_upgrade_item					();
+	bool						DropAllItemsFromRuck				(bool quest_force = false); //debug func
 
-	void						UpdateActor					();
-	void						UpdatePartnerBag			();
-	void						UpdateDeadBodyBag			();
-	void						RefreshCurrentItemCell		();
-	void						DonateCurrentItem			(CUICellItem* cell_item); //Alundaio: Donate item via context menu while in trade menu
-	void						UpdateGamepadLegend			();
+	void						UpdateActor							();
+	void						UpdatePartnerBag					();
+	void						UpdateDeadBodyBag					();
+	void						RefreshCurrentItemCell				();
+	virtual void				DonateCurrentItem					(CUICellItem* cell_item); //Alundaio: Donate item via context menu while in trade menu
+	void						UpdateGamepadLegend					();
 
-    void						OnBtnPerformTrade			(CUIWindow* w, void* d);
-	void						OnBtnPerformTradeBuy		(CUIWindow* w, void* d);
-	void						OnBtnPerformTradeSell		(CUIWindow* w, void* d);
-	void						OnBtnExitClicked			(CUIWindow* w, void* d);
-	void						TakeAllFromPartner			(CUIWindow* w, void* d);
-	void						PutAllToPartner				(CUIWindow* w, void* d);
-	void						TakeAllFromInventoryBox		();
-	void						UpdateConditionProgressBars	();
+	void						OnBtnPerformTrade					(CUIWindow* w, void* d);
+	void						OnBtnPerformTradeBuy				(CUIWindow* w, void* d);
+	void						OnBtnPerformTradeSell				(CUIWindow* w, void* d);
+	void						OnBtnExitClicked					(CUIWindow* w, void* d);
+	void						TakeAllFromPartner					(CUIWindow* w, void* d);
+	void						PutAllToPartner						(CUIWindow* w, void* d);
+	void						TakeAllFromInventoryBox				();
+	void						UpdateConditionProgressBars			();
 
-	virtual void				HideDialog() override;
+	virtual void				HideDialog							();
 
 	void OnSuccessRepairMP(PIItem item);
 	const UIInvUpgradeInfo* GetUpgradeInfo() const { return m_upgrade_info; }
