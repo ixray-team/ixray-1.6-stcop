@@ -232,7 +232,7 @@ void CPolterFlame::on_destroy()
 
 	// Пройти по всем объектам и проверить на хит врага
 	for ( ;I != E; ++I) {
-		if ((*I)->sound._feedback()) (*I)->sound.stop();
+		if ((*I)->sound.is_playing()) (*I)->sound.stop();
 		if ((*I)->particles_object) Particles::Details::Destroy((*I)->particles_object);
 
 		xr_delete((*I));
@@ -240,13 +240,13 @@ void CPolterFlame::on_destroy()
 	
 	m_flames.clear();
 
-	if (m_scan_sound._feedback()) m_scan_sound.stop();
+	if (m_scan_sound.is_playing()) m_scan_sound.stop();
 }
 
 void CPolterFlame::on_die()
 {
 	inherited::on_die();
-	if (m_scan_sound._feedback()) m_scan_sound.stop();
+	if (m_scan_sound.is_playing()) m_scan_sound.stop();
 }
 
 

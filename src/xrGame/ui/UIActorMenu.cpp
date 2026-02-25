@@ -218,8 +218,8 @@ void CUIActorMenu::SetMenuMode(EMenuMode mode)
 
 void CUIActorMenu::PlaySnd(eActorMenuSndAction a)
 {
-	if (sounds[a]._handle())
-        sounds[a].play					(nullptr, sm_2D);
+	if (sounds[a].handle())
+        sounds[a].play(nullptr, sm_2D);
 }
 
 void CUIActorMenu::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)

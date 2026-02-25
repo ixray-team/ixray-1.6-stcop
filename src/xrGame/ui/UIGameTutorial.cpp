@@ -142,7 +142,6 @@ void CUISequencer::Start(LPCSTR tutor_name)
 	if (snd_name && snd_name[0])
 	{
 		m_global_sound.create	(snd_name, st_Effect,sg_Undefined);	
-		VERIFY					(m_global_sound._handle() || Core.ParamsData.test(ECoreParams::nosound));
 	}
 	m_start_lua_function		= uiXml.Read("function_on_start", 0, "");
 	m_stop_lua_function			= uiXml.Read("function_on_stop", 0, "");
@@ -181,7 +180,7 @@ void CUISequencer::Start(LPCSTR tutor_name)
 	if(m_flags.test(etsNeedPauseOff) && m_flags.test(etsStoredPauseState))
 		Device.Pause			(FALSE, TRUE, FALSE, "tutorial_start");
 
-	if (m_global_sound._handle())		
+	if (m_global_sound.handle())
 		m_global_sound.play(nullptr, sm_2D);
 
 	if(m_start_lua_function.size())

@@ -176,8 +176,7 @@ void CCar::SCarSound::Drive()
 void CCar::SCarSound::TransmissionSwitch()
 {
 	VERIFY(!physics_world()->Processing());
-	if(snd_transmission._handle()&&eCarSound!=sndOff)
-	{
+	if (snd_transmission.handle() && eCarSound!=sndOff) {
 		snd_transmission.play(pcar);
 		SetSoundPosition(snd_transmission);
 	}
