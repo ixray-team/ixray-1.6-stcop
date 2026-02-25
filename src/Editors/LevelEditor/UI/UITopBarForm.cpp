@@ -180,7 +180,7 @@ void UITopBarForm::Draw()
 
 			if (ImGui::TableNextColumn())
 			{
-				ImGui::PushStyleColor(ImGuiCol_ButtonActive, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToggleColorActive).Value);
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::Accent).Value);
 				//ApplyBackground("Physics");
 				
 				if (TextToggleButton("PhysSimulation228","Phys Simulation", m_Simulate, {120.f,26.f}, ImDrawFlags_RoundCornersLeft))
