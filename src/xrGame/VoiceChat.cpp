@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "VoiceChat.h"
 #include "Level.h"
+
 #include "../xrSound/Recorder/SoundVoiceChat.h"
 #include "game_cl_mp.h"
 #include "Actor.h"
