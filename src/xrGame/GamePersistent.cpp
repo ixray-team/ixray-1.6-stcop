@@ -57,7 +57,7 @@ CGamePersistent::CGamePersistent(void)
 	ambient_effect_wind_out_time= 0.f;
 	ambient_effect_wind_on		= false;
 
-	ambient_sound_next_time.reserve(32);
+	ambient_sound_next_time.resize(32);
 
 
 	m_pUI_core					= nullptr;
@@ -294,11 +294,6 @@ void CGamePersistent::WeathersUpdate()
 			
 			for (size_t idx = 0; I != E; ++I, ++idx)
 			{
-				if (ambient_sound_next_time.empty())
-				{
-					break;
-				}
-
 				CEnvAmbient::SSndChannel& ch = **I;
 				if (ambient_sound_next_time[idx] == 0)
 				{
@@ -317,6 +312,8 @@ void CGamePersistent::WeathersUpdate()
 					pos.z = _sin(angle);
 					pos.normalize().mul(ch.get_rnd_sound_dist()).add(Device.vCameraPosition);
 					pos.y += 10.f;
+					snd._p->g_type = ESoundTypes::SOUND_TYPE_WORLD_AMBIENT;
+
 					snd.play_at_pos(0, pos);
 
 					if (!snd._handle() || Core.ParamsData.test(ECoreParams::nosound))
