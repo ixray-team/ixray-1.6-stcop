@@ -130,10 +130,10 @@ void CUICarBodyWnd::Init()
 	xml_init.InitAutoStaticGroup	(uiXml, "", 0, this);
 
 
-	m_pUIPropertiesBox				= new CUIPropertiesBox(); m_pUIPropertiesBox->SetAutoDelete(true);
-	AttachChild						(m_pUIPropertiesBox);
-	m_pUIPropertiesBox->InitPropertiesBox(Fvector2().set(0,0),Fvector2().set(300,300));
-	m_pUIPropertiesBox->Hide		();
+	m_UIPropertiesBox				= new CUIPropertiesBox(); m_UIPropertiesBox->SetAutoDelete(true);
+	AttachChild						(m_UIPropertiesBox);
+	m_UIPropertiesBox->InitPropertiesBox(Fvector2().set(0,0),Fvector2().set(300,300));
+	m_UIPropertiesBox->Hide		();
 
 	SetCurrentItem					(nullptr);
 	m_pUIStaticDesc->SetText		(nullptr);
@@ -176,7 +176,7 @@ void CUICarBodyWnd::Init()
 
 void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, CInventoryBox* pInvBox)
 {
-    m_pOurObject									= pOur;
+	m_pOurObject									= pOur;
 	m_pOthersObject									= nullptr;
 	m_pInventoryBox									= pInvBox;
 	m_pInventoryBox->set_in_use						(true);
@@ -184,16 +184,21 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, CInventoryBox* pInvBox)
 	m_pUICharacterInfoLeft->InitCharacter			(m_pOurObject);
 	m_pUIOthersIcon->Show							(false);
 	m_pUICharacterInfoRight->ClearInfo				();
-	m_pUIPropertiesBox->Hide						();
+	m_UIPropertiesBox->Hide							();
 	EnableAll										();
 	UpdateLists										();
 
 }
 
+CInventory* CUICarBodyWnd::GetInventory()
+{
+	return &m_pOurObject->inventory();
+}
+
 void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, CInventoryOwner* pOthers)
 {
 
-    m_pOurObject									= pOur;
+	m_pOurObject									= pOur;
 	m_pOthersObject									= pOthers;
 	m_pInventoryBox									= nullptr;
 	
@@ -217,7 +222,7 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, CInventoryOwner* pOthers)
 		}
 	}
 
-	m_pUIPropertiesBox->Hide						();
+	m_UIPropertiesBox->Hide						();
 	EnableAll										();
 	UpdateLists										();
 
@@ -300,7 +305,7 @@ void CUICarBodyWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 			PutAll();
 		}
 	}
-	else if(pWnd == m_pUIPropertiesBox &&	msg == PROPERTY_CLICKED)
+	else if(pWnd == m_UIPropertiesBox &&	msg == PROPERTY_CLICKED)
 	{
 		ProcessPropertiesBoxClicked();
 	}
@@ -537,8 +542,8 @@ void CUICarBodyWnd::ActivatePropertiesBox()
 	}
 
 	CUICellItem* cell_item = CurrentItem();
-	m_pUIPropertiesBox->RemoveAll();
-    bool b_show = false;
+	m_UIPropertiesBox->RemoveAll();
+	bool b_show = false;
 
 	PropertiesBoxForWeapon(cell_item, item, b_show);
 	PropertiesBoxForAddon(item, b_show);
@@ -549,7 +554,7 @@ void CUICarBodyWnd::ActivatePropertiesBox()
 
 	if(b_show)
 	{
-		m_pUIPropertiesBox->AutoUpdateSize	();
+		m_UIPropertiesBox->AutoUpdateSize	();
 
 		Fvector2						cursor_pos;
 		Frect							vis_rect;
@@ -557,7 +562,7 @@ void CUICarBodyWnd::ActivatePropertiesBox()
 		GetAbsoluteRect					(vis_rect);
 		cursor_pos						= GetUICursor().GetCursorPosition();
 		cursor_pos.sub					(vis_rect.lt);
-		m_pUIPropertiesBox->Show		(vis_rect, cursor_pos);
+		m_UIPropertiesBox->Show		(vis_rect, cursor_pos);
 		PlaySnd(eProperties);
 	}
 }
@@ -956,314 +961,32 @@ void CUICarBodyWnd::highlight_weapons_for_addon( PIItem addon_item, CUIDragDropL
 	}//for i
 }
 
-void CUICarBodyWnd::TryHidePropertiesBox()
-{
-	if (m_pUIPropertiesBox->IsShown())
-	{
-		m_pUIPropertiesBox->Hide();
-	}
-}
-
-void CUICarBodyWnd::PropertiesBoxForWeapon( CUICellItem* cell_item, PIItem item, bool& b_show )
-{
-	//отсоединение аддонов от вещи
-	CWeapon* pWeapon = item->cast_weapon();
-	if (!pWeapon)
-	{
-		return;
-	}
-
-	if ( pWeapon->GrenadeLauncherAttachable() )
-	{
-		if ( pWeapon->IsGrenadeLauncherAttached() )
-		{
-			m_pUIPropertiesBox->AddItem( "st_detach_gl",  nullptr, INVENTORY_DETACH_GRENADE_LAUNCHER_ADDON );
-			b_show			= true;
-		}
-		else
-		{
-		}
-	}
-	if ( pWeapon->ScopeAttachable() )
-	{
-		if ( pWeapon->IsScopeAttached() )
-		{
-			m_pUIPropertiesBox->AddItem( "st_detach_scope",  nullptr, INVENTORY_DETACH_SCOPE_ADDON );
-			b_show			= true;
-		}
-		else
-		{
-		}
-	}
-	if ( pWeapon->SilencerAttachable() )
-	{
-		if ( pWeapon->IsSilencerAttached() )
-		{
-			m_pUIPropertiesBox->AddItem( "st_detach_silencer",  nullptr, INVENTORY_DETACH_SILENCER_ADDON );
-			b_show			= true;
-		}
-		else
-		{
-		}
-	}
-	if (pWeapon->cast_weapon_magazined() != nullptr && IsGameTypeSingleCompatible())
-	{
-		bool b = (pWeapon->GetAmmoElapsed() || pWeapon->IsChamber() && pWeapon->GetAmmoChamberElapsed());
-		if (!b)
-		{
-			for (u32 i = 0; i < cell_item->ChildsCount(); ++i)
-			{
-				CWeapon* weapon = (CWeapon*)cell_item->Child(i)->m_pData;
-				CWeaponMagazined* weap_mag = weapon != nullptr ? weapon->cast_weapon_magazined() : nullptr;
-				if (weap_mag != nullptr && (weap_mag->GetAmmoElapsed() || weap_mag->IsChamber() && weap_mag->GetAmmoChamberElapsed()))
-				{
-					b = true;
-					break; // for
-				}
-			}
-		}
-		if (b)
-		{
-			m_pUIPropertiesBox->AddItem("st_unload_magazine", nullptr, INVENTORY_UNLOAD_MAGAZINE);
-			b_show = true;
-		}
-	}
-}
-#include "../../xrEngine/string_table.h"
-void CUICarBodyWnd::PropertiesBoxForAddon( PIItem item, bool& b_show )
-{
-	//присоединение аддонов к активному слоту (2 или 3)
-
-	CScope* pScope = item->cast_addon_scope();
-	CSilencer* pSilencer = item->cast_addon_silencer();
-	CGrenadeLauncher* pGrenadeLauncher = item->cast_addon_grenade_launcher();
-	CInventory* inv = &m_pOurObject->inventory();
-
-	PIItem	item_in_slot_2 = inv->ItemFromSlot(INV_SLOT_2);
-	PIItem	item_in_slot_3 = inv->ItemFromSlot(INV_SLOT_3);
-	PIItem	item_in_slot_pistol_new = inv->ItemFromSlot(PISTOL_SLOT_NEW);
-
-	if(!item_in_slot_2 && !item_in_slot_3)	return;
-
-	if ( pScope )
-	{
-		if (item_in_slot_pistol_new && item_in_slot_pistol_new->CanAttach(pScope))
-		{
-			shared_str str = g_pStringTable->translate("st_attach_scope_to_pistol");
-			str.printf("%s %s", str.c_str(), item_in_slot_pistol_new->m_name.c_str());
-			m_pUIPropertiesBox->AddItem(str.c_str(), (void*)item_in_slot_pistol_new, INVENTORY_ATTACH_ADDON);
-			b_show = true;
-		}
-		if ( item_in_slot_2 && item_in_slot_2->CanAttach(pScope) )
-		{
-			shared_str str = g_pStringTable->translate("st_attach_scope_to_pistol");
-			str.printf("%s %s", str.c_str(), item_in_slot_2->m_name.c_str());
-			m_pUIPropertiesBox->AddItem( str.c_str(),  (void*)item_in_slot_2, INVENTORY_ATTACH_ADDON );
-//			m_UIPropertiesBox->AddItem( "st_attach_scope_to_pistol",  (void*)item_in_slot_2, INVENTORY_ATTACH_ADDON );
-			b_show			= true;
-		}
-		if ( item_in_slot_3 && item_in_slot_3->CanAttach(pScope) )
-		{
-			shared_str name = g_pStringTable->translate("st_attach_scope_to_rifle");
-			shared_str add_name = g_pStringTable->translate("st_attach_scope_to_pistol");
-			shared_str str;
-			if (!xr_strcmp(name, "st_attach_scope_to_rifle") &&
-				xr_strcmp(add_name, "st_attach_scope_to_pistol"))
-			{
-				str = add_name;
-			}
-			else
-				str = name;
-
-			str.printf("%s %s", str.c_str(), item_in_slot_3->m_name.c_str());
-			m_pUIPropertiesBox->AddItem( str.c_str(),  (void*)item_in_slot_3, INVENTORY_ATTACH_ADDON );
-//			m_UIPropertiesBox->AddItem( "st_attach_scope_to_rifle",  (void*)item_in_slot_3, INVENTORY_ATTACH_ADDON );
-			b_show			= true;
-		}
-		return;
-	}
-
-	if ( pSilencer )
-	{
-		if (item_in_slot_pistol_new && item_in_slot_pistol_new->CanAttach(pSilencer))
-		{
-			shared_str str = g_pStringTable->translate("st_attach_silencer_to_pistol");
-			str.printf("%s %s", str.c_str(), item_in_slot_pistol_new->m_name.c_str());
-			m_pUIPropertiesBox->AddItem(str.c_str(), (void*)item_in_slot_pistol_new, INVENTORY_ATTACH_ADDON);
-			b_show = true;
-		}
-		if ( item_in_slot_2 && item_in_slot_2->CanAttach(pSilencer) )
-		{
-			shared_str str = g_pStringTable->translate("st_attach_silencer_to_pistol");
-			str.printf("%s %s", str.c_str(), item_in_slot_2->m_name.c_str());
-			m_pUIPropertiesBox->AddItem( str.c_str(),  (void*)item_in_slot_2, INVENTORY_ATTACH_ADDON );
-			b_show			= true;
-		}
-		if ( item_in_slot_3 && item_in_slot_3->CanAttach(pSilencer) )
-		{
-			shared_str name = g_pStringTable->translate("st_attach_silencer_to_rifle");
-			shared_str add_name = g_pStringTable->translate("st_attach_silencer_to_pistol");
-			shared_str str;
-			if (!xr_strcmp(name, "st_attach_silencer_to_rifle") &&
-				xr_strcmp(add_name, "st_attach_silencer_to_pistol"))
-			{
-				str = add_name;
-			}
-			else
-				str = name;
-
-			str.printf("%s %s", str.c_str(), item_in_slot_3->m_name.c_str());
-			m_pUIPropertiesBox->AddItem( str.c_str(),  (void*)item_in_slot_3, INVENTORY_ATTACH_ADDON );
-			b_show			= true;
-		}
-		return;
-	}
-
-	if ( pGrenadeLauncher )
-	{
-		if (item_in_slot_pistol_new && item_in_slot_pistol_new->CanAttach(item_in_slot_pistol_new))
-		{
-			shared_str str = g_pStringTable->translate("st_attach_gl_to_rifle");
-			str.printf("%s %s", str.c_str(), item_in_slot_pistol_new->m_name.c_str());
-			m_pUIPropertiesBox->AddItem(str.c_str(), (void*)item_in_slot_pistol_new, INVENTORY_ATTACH_ADDON);
-			b_show = true;
-		}
-		if ( item_in_slot_2 && item_in_slot_2->CanAttach(pGrenadeLauncher) )
-		{
-			shared_str str = g_pStringTable->translate("st_attach_gl_to_rifle");
-			str.printf("%s %s", str.c_str(), item_in_slot_2->m_name.c_str());
-			m_pUIPropertiesBox->AddItem( str.c_str(),  (void*)item_in_slot_2, INVENTORY_ATTACH_ADDON );
-//			m_UIPropertiesBox->AddItem( "st_attach_gl_to_pistol",  (void*)item_in_slot_2, INVENTORY_ATTACH_ADDON );
-			b_show			= true;
-		}
-		if ( item_in_slot_3 && item_in_slot_3->CanAttach(pGrenadeLauncher) )
-		{
-			shared_str str = g_pStringTable->translate("st_attach_gl_to_rifle");
-			str.printf("%s %s", str.c_str(), item_in_slot_3->m_name.c_str());
-			m_pUIPropertiesBox->AddItem( str.c_str(),  (void*)item_in_slot_3, INVENTORY_ATTACH_ADDON );
-//			m_UIPropertiesBox->AddItem( "st_attach_gl_to_rifle",  (void*)item_in_slot_3, INVENTORY_ATTACH_ADDON );
-			b_show			= true;
-		}
-	}
-}
-
-void CUICarBodyWnd::PropertiesBoxForUsing( PIItem item, bool& b_show )
-{
-	LPCSTR act_str = nullptr;
-	CGameObject* GO = item->cast_game_object();
-	shared_str	section_name = GO->cNameSect();
-
-	//ability to set eat string from settings
-	act_str = READ_IF_EXISTS(pSettings, r_string, section_name, "default_use_text", 0);
-	if (act_str)
-	{
-		m_pUIPropertiesBox->AddItem(act_str, nullptr, INVENTORY_EAT_ACTION);
-		b_show = true;
-	}
-	else {
-		CMedkit*		pMedkit			= smart_cast<CMedkit*>		(item);
-		CAntirad*		pAntirad		= smart_cast<CAntirad*>		(item);
-		CEatableItem*	pEatableItem	= smart_cast<CEatableItem*>	(item);
-		CBottleItem*	pBottleItem		= smart_cast<CBottleItem*>	(item);
-
-		if ( pMedkit || pAntirad )
-		{
-			act_str = "st_use";
-		}
-		else if ( pBottleItem )
-		{
-			act_str = "st_drink";
-		}
-		else if ( pEatableItem )
-		{
-			act_str = *pEatableItem->UseText;
-		}
-		if ( act_str )
-		{
-			m_pUIPropertiesBox->AddItem( act_str,  nullptr, INVENTORY_EAT_ACTION );
-			b_show			= true;
-		}
-	}
-
-	//1st Custom Use action
-	act_str = READ_IF_EXISTS(pSettings, r_string, section_name, "use1_text", 0);
-	if (act_str)
-	{
-		m_pUIPropertiesBox->AddItem(act_str, NULL, INVENTORY_EAT2_ACTION);
-		b_show = true;
-	}
-
-	//2nd Custom Use action
-	act_str = READ_IF_EXISTS(pSettings, r_string, section_name, "use2_text", 0);
-	if (act_str)
-	{
-		m_pUIPropertiesBox->AddItem(act_str, NULL, INVENTORY_EAT3_ACTION);
-		b_show = true;
-	}
-	
-	//3rd Custom Use action
-	act_str = READ_IF_EXISTS(pSettings, r_string, section_name, "use3_text", 0);
-	if (act_str)
-	{
-		m_pUIPropertiesBox->AddItem(act_str, NULL, INVENTORY_EAT4_ACTION);
-		b_show = true;
-	}
-
-	//4th Custom Use action
-	act_str = READ_IF_EXISTS(pSettings, r_string, section_name, "use4_text", 0);
-	if (act_str)
-	{
-		m_pUIPropertiesBox->AddItem(act_str, NULL, INVENTORY_EAT5_ACTION);
-		b_show = true;
-	}
-}
-
-void CUICarBodyWnd::PropertiesBoxForPlaying(PIItem item, bool& b_show)
-{
-	CPda* pPda = item->cast_pda();
-	if(!pPda || !pPda->CanPlayScriptFunction())
-		return;
-
-	LPCSTR act_str = "st_play";
-	m_pUIPropertiesBox->AddItem(act_str,  nullptr, INVENTORY_PLAY_ACTION);
-	b_show = true;
-}
-
 void CUICarBodyWnd::PropertiesBoxForDrop(CUICellItem* cell_item, PIItem item, bool& b_show)
 {
-	if(!item->IsQuestItem())
+	if (!item->IsQuestItem())
 	{
-		if(item->parent_id() == m_pOurObject->object_id())
+		if (item->parent_id() == m_pOurObject->object_id())
 		{
-			m_pUIPropertiesBox->AddItem("st_move_to", nullptr, INVENTORY_DROP_ACTION);
+			m_UIPropertiesBox->AddItem("st_move_to", nullptr, INVENTORY_DROP_ACTION);
 			b_show = true;
 
-			if(cell_item->ChildsCount()) 
+			if (cell_item->ChildsCount())
 			{
-				m_pUIPropertiesBox->AddItem("st_move_amount", (void*)77, INVENTORY_DROP_ACTION);
-				m_pUIPropertiesBox->AddItem("st_move_all", (void*)33, INVENTORY_DROP_ACTION);
+				m_UIPropertiesBox->AddItem("st_move_amount", (void*)77, INVENTORY_DROP_ACTION);
+				m_UIPropertiesBox->AddItem("st_move_all", (void*)33, INVENTORY_DROP_ACTION);
 			}
 		}
 	}
-	if(item->parent_id() != m_pOurObject->object_id())
+	if (item->parent_id() != m_pOurObject->object_id())
 	{
-		m_pUIPropertiesBox->AddItem("st_take_to", nullptr, INVENTORY_DROP_ACTION);
+		m_UIPropertiesBox->AddItem("st_take_to", nullptr, INVENTORY_DROP_ACTION);
 		b_show = true;
 
-		if(cell_item->ChildsCount()) 
+		if (cell_item->ChildsCount())
 		{
-			m_pUIPropertiesBox->AddItem("st_take_amount", (void*)77, INVENTORY_DROP_ACTION);
-			m_pUIPropertiesBox->AddItem("st_take_all", (void*)33, INVENTORY_DROP_ACTION);
+			m_UIPropertiesBox->AddItem("st_take_amount", (void*)77, INVENTORY_DROP_ACTION);
+			m_UIPropertiesBox->AddItem("st_take_all", (void*)33, INVENTORY_DROP_ACTION);
 		}
-	}
-}
-
-void CUICarBodyWnd::PropertiesBoxForParse(PIItem item, bool& b_show)
-{
-	if (pSettings->line_exist(item->m_section_id, "parse_spawn_items") && pSettings->line_exist(item->m_section_id, "parse_spawn_chances"))
-	{
-		m_pUIPropertiesBox->AddItem("st_parse", nullptr, INVENTORY_PARSE_ITEM);
-		b_show = true;
 	}
 }
 
@@ -1271,13 +994,13 @@ void CUICarBodyWnd::ProcessPropertiesBoxClicked()
 {
 	PIItem			item		= CurrentIItem();
 	CUICellItem*	cell_item	= CurrentItem();
-	if ( !m_pUIPropertiesBox->GetClickedItem() || !item || !cell_item || !cell_item->OwnerList() )
+	if ( !m_UIPropertiesBox->GetClickedItem() || !item || !cell_item || !cell_item->OwnerList() )
 	{
 		return;
 	}
 	CWeapon* weapon = item->cast_weapon();
 
-	switch (m_pUIPropertiesBox->GetClickedItem()->GetTAG() )
+	switch (m_UIPropertiesBox->GetClickedItem()->GetTAG() )
 	{
 	case INVENTORY_EAT_ACTION:
 		TryUseItem( cell_item );
@@ -1344,7 +1067,7 @@ void CUICarBodyWnd::ProcessPropertiesBoxClicked()
 	}
 	case INVENTORY_DROP_ACTION:
 		{
-			void* d_ = m_pUIPropertiesBox->GetClickedItem()->GetData();
+			void* d_ = m_UIPropertiesBox->GetClickedItem()->GetData();
 			if(item->parent_id() == m_pOurObject->object_id()) 
 			{
 				auto ownerID = m_pOthersObject ? m_pOthersObject->object_id() : m_pInventoryBox->ID();
@@ -1657,8 +1380,8 @@ bool CUICarBodyWnd::ToBag(CUICellItem* itm, bool b_use_cursor_pos)
 	if(m_pOurObject->inventory().CanPutInRuck(iitem) || (b_already && (new_owner!=old_owner)) )
 	{
 		// Pavel: если предмет в iActorTrade, то он уже должен находиться в рюкзаке
-	    // Проверка нужна для того, чтобы не сбрасывалась граната в МП,
-     	// при перекладывании из iActorTrade
+		// Проверка нужна для того, чтобы не сбрасывалась граната в МП,
+		// при перекладывании из iActorTrade
 		bool result = b_already || (!b_own_item || m_pOurObject->inventory().Ruck(iitem));
 		R_ASSERT(result);
 
@@ -1696,7 +1419,7 @@ void CUICarBodyWnd::SendEvent_Item2Ruck(PIItem pItem, u16 recipient)
 void CUICarBodyWnd::PlaySnd(eCarBodySndAction a)
 {
 	if (sounds[a].handle())
-        sounds[a].play					(nullptr, sm_2D);
+		sounds[a].play					(nullptr, sm_2D);
 }
 
 void CUICarBodyWnd::ColorizeItem(CUICellItem* itm)
