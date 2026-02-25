@@ -154,6 +154,9 @@ public:
 
 protected:
 	bool					m_path_actuality;
+	bool					m_extrapolate_path;
+	bool					m_build_at_once;
+	bool					m_wait_for_distributed_computation;
 
 private:
 	EPathState				m_path_state;
@@ -161,9 +164,6 @@ private:
 	bool					m_enabled;
 	Fvector					m_on_disable_object_position;
 	float					m_old_desirable_speed;
-	bool					m_extrapolate_path;
-	bool					m_build_at_once;
-	bool					m_wait_for_distributed_computation;
 
 public:
 	CGameVertexParams		*m_base_game_selector;

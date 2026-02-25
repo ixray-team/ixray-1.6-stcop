@@ -1,6 +1,6 @@
 #ifndef I_COLLISION_DAMAGE_INFO_H
 #define I_COLLISION_DAMAGE_INFO_H
-//struct SCollisionHitCallback;
+
 class ICollisionHitCallback;
 class ICollisionDamageInfo
 {
