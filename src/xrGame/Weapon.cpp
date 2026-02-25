@@ -3507,7 +3507,7 @@ bool CWeapon::show_crosshair()
 
 bool CWeapon::show_indicators()
 {
-	if (!IsGrenadeMode() && IsZoomed())
+	if (!IsGrenadeMode() && !IsRotatingToZoom())
 	{
 		if (bUseAltScope && bScopeIsHasTexture && IsScopeAttached() && (ZoomTexture() != nullptr || g_3d_scopes))
 		{
@@ -3779,15 +3779,15 @@ bool CWeapon::IsUIForceHiding()
 {
 	CWeaponBinoculars* bino = cast_weapon_binoculars();
 
-	if (bino && IsZoomed())
+	if (bino && !IsRotatingToZoom())
 	{
 		return READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "zoom_hide_ui", true);
 	}
-	else if (get_ScopeStatus() == 1 && IsZoomed())
+	else if (get_ScopeStatus() == 1 && !IsRotatingToZoom())
 	{
 		return READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "zoom_hide_ui", true);
 	}
-	else if (get_ScopeStatus() == 2 && IsScopeAttached() && IsZoomed())
+	else if (get_ScopeStatus() == 2 && IsScopeAttached() && !IsRotatingToZoom())
 	{
 		return READ_IF_EXISTS(pSettings, r_bool, GetScopeName(), "zoom_hide_ui", true);
 	}
