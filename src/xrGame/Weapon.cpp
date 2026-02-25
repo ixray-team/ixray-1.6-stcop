@@ -3760,6 +3760,21 @@ bool CWeapon::show_crosshair()
 	return (!m_bTacticalLaserStatus || hud_adj_crosshair) && (!IsPending() || GetState() == eEmptyClick || GetState() == eSprintStart || GetState() == eSprintEnd || GetState() == ePump) && (!IsZoomed() || !ZoomHideCrosshair());
 }
 
+bool CWeapon::use_crosshair() const
+{
+	CObject* parent = const_cast<CObject*>(H_Parent());
+
+	if (const CActor* pActor = parent != nullptr ? parent->cast_actor() : nullptr)
+	{
+		if (pActor->IsSafemode())
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
 bool CWeapon::show_indicators()
 {
 	if (!IsGrenadeMode() && IsZoomed())
