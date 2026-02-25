@@ -1,5 +1,4 @@
-#ifndef EXTENDED_GEOM
-#define EXTENDED_GEOM
+#pragma once
 
 #ifndef	dSINGLE
  #define dSINGLE
@@ -14,96 +13,94 @@
 #include "debug_output.h"
 #endif
 
-
-#ifdef DEBUG
-//extern	u32				dbg_total_saved_tries					;
-#endif
 class IPhysicsShellHolder;
-
-
-
-
 
 class CObjectContactCallback
 {
-	
-			CObjectContactCallback				*next			;
-			ObjectContactCallbackFun			*callback		;
-	public:
-		CObjectContactCallback		(ObjectContactCallbackFun			*c)
-			:callback(c)
-		{
-			next=NULL; VERIFY(c);
-		}
-		~CObjectContactCallback()
-		{
-			xr_delete(next);
-		}
-	void Add(ObjectContactCallbackFun		*c)
+	CObjectContactCallback* next;
+	ObjectContactCallbackFun* callback;
+public:
+	CObjectContactCallback(ObjectContactCallbackFun* c)
+		:callback(c)
+	{
+		next = NULL; VERIFY(c);
+	}
+
+	~CObjectContactCallback()
+	{
+		xr_delete(next);
+	}
+
+	void Add(ObjectContactCallbackFun* c)
 	{
 		VERIFY(c);
-		VERIFY(callback!=c);
-	
-		if(next)
+		VERIFY(callback != c);
+
+		if (next)
 		{
 			next->Add(c);
 		}
 		else
 		{
-			next=new CObjectContactCallback(c);
+			next = new CObjectContactCallback(c);
 		}
 	}
-	bool	HasCallback(ObjectContactCallbackFun		*c)
+
+	bool HasCallback(ObjectContactCallbackFun* c)
 	{
-		for(CObjectContactCallback*i=this;i;i=i->next)
+		for (CObjectContactCallback* i = this; i; i = i->next)
 		{
 			VERIFY(i->callback);
-			if(c==i->callback) return true;
+			if (c == i->callback) return true;
 		}
 		return false;
 	}
 
-static	void RemoveCallback(CObjectContactCallback*	&callbacks,ObjectContactCallbackFun	*c)
+	static void RemoveCallback(CObjectContactCallback*& callbacks, ObjectContactCallbackFun* c)
 	{
-		if(!callbacks) return;
+		if (!callbacks)
+			return;
+
 		VERIFY(c);
 		VERIFY(callbacks->callback);
 
-			if(c==callbacks->callback)
+		if (c == callbacks->callback)
+		{
+			CObjectContactCallback* del = callbacks;
+			callbacks = callbacks->next;
+			del->next = NULL;
+			xr_delete(del);
+			VERIFY(!callbacks || !callbacks->HasCallback(c));
+		}
+		else
+		{
+			for (CObjectContactCallback* i = callbacks->next, *p = callbacks; i;)
 			{
-				CObjectContactCallback	*del=callbacks;
-				callbacks=callbacks->next;
-				del->next=NULL;
-				xr_delete(del);
-				VERIFY(!callbacks||!callbacks->HasCallback(c));
-			} else{
-				for(CObjectContactCallback	*i=callbacks->next,*p=callbacks;i;)
+
+				VERIFY(p->callback);
+				VERIFY(i->callback);
+				VERIFY(i);
+				VERIFY(p);
+				if (c == i->callback)
 				{
-					
-					VERIFY(p->callback);
-					VERIFY(i->callback);
-					VERIFY(i);
-					VERIFY(p);
-					if(c==i->callback)
-					{
-						CObjectContactCallback	*del=i;
-						p->next=i->next;del->next=NULL;xr_delete(del);
-						VERIFY(!callbacks->HasCallback(c));
-						break;
-					}
-					i=i->next;
-					p=p->next;
-					VERIFY(p->next==i);
+					CObjectContactCallback* del = i;
+					p->next = i->next; del->next = NULL; xr_delete(del);
+					VERIFY(!callbacks->HasCallback(c));
+					break;
 				}
+				i = i->next;
+				p = p->next;
+				VERIFY(p->next == i);
 			}
+		}
 	}
 
-	void	Call(bool& do_colide,bool bo1,dContact& c,SGameMtl* material_1,SGameMtl* material_2)
+	void	Call(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
 	{
-		for(CObjectContactCallback*i=this;i;i=i->next)
+		for (CObjectContactCallback* i = this; i; i = i->next)
 		{
 			VERIFY(i->callback);
-			i->callback(do_colide,bo1,c,material_1,material_2);
+			i->callback(do_colide, bo1, c, material_1, material_2);
 		}
 	}
 };
@@ -112,31 +109,20 @@ class CGameObject;
 struct dxGeomUserData
 {
 	dVector3					last_pos										;
-	bool						pushing_neg,pushing_b_neg,b_static_colide		;
 	CDB::TRI					*neg_tri,*b_neg_tri								;
 	CPHObject					*ph_object										;
 	IPhysicsShellHolder			*ph_ref_object									;
 	u16							material										;
 	u16							tri_material									;
-	ContactCallbackFun			*callback										;
-	void						*callback_data									;
-//	ObjectContactCallbackFun	*object_callback								;
-	CObjectContactCallback		*object_callbacks								;
 	u16							element_position								;
 	u16							bone_id											;
+	ContactCallbackFun			*callback										;
+	void						*callback_data									;
+	CObjectContactCallback		*object_callbacks								;
 	xr_vector<int>				cashed_tries									;
 	Fvector						last_aabb_size									;
 	Fvector						last_aabb_pos									;
-
-//	struct ContactsParameters
-//	{
-//	dReal damping;
-//	dReal spring;
-//	dReal bonce;
-//	dReal bonce_vel;
-//	dReal mu;
-//	unsigned int maxc;
-//	};
+	bool						pushing_neg, pushing_b_neg, b_static_colide;
 };
 
 IC dxGeomUserData* dGeomGetUserData(dxGeom* geom)
@@ -144,28 +130,22 @@ IC dxGeomUserData* dGeomGetUserData(dxGeom* geom)
 	return (dxGeomUserData*) dGeomGetData(geom);
 }
 
-//XRPHYSICS_API dxGeomUserData* PHGeomGetUserData( dxGeom* geom );
-
 
 IC dGeomID retrieveGeom(dGeomID geom)
 {
-	if(dGeomGetClass(geom)==dGeomTransformClass)
+	if (dGeomGetClass(geom) == dGeomTransformClass)
 		return dGeomTransformGetGeom(geom);
 	else
 		return geom;
 }
+
 XRPHYSICS_API dxGeomUserData* PHRetrieveGeomUserData(dGeomID geom);
 IC dxGeomUserData* retrieveGeomUserData(dGeomID geom)
 {
-			return dGeomGetUserData(retrieveGeom(geom));
-			//if(dGeomGetClass(geom)==dGeomTransformClass)
-			//	return dGeomGetUserData(dGeomTransformGetGeom(geom));
-			//else
-			//	return dGeomGetUserData(geom);
+	return dGeomGetUserData(retrieveGeom(geom));
 }
 
 XRPHYSICS_API void	get_user_data( dxGeomUserData* &gd1, dxGeomUserData* &gd2, bool bo1, const dContactGeom &geom );
-
 
 IC IPhysicsShellHolder* retrieveRefObject(dGeomID geom)
 {
@@ -173,38 +153,32 @@ IC IPhysicsShellHolder* retrieveRefObject(dGeomID geom)
 	if(ud)return ud->ph_ref_object;
 	else return NULL;
 }
+
 IC void dGeomCreateUserData(dxGeom* geom)
 {
-	if(!geom) return;
-	dGeomSetData(geom,new dxGeomUserData());
-	(dGeomGetUserData(geom))->pushing_neg=false;
-	(dGeomGetUserData(geom))->pushing_b_neg=false;
-	(dGeomGetUserData(geom))->b_static_colide=true;
+	if (!geom) return;
+	dGeomSetData(geom, new dxGeomUserData());
+	(dGeomGetUserData(geom))->pushing_neg = false;
+	(dGeomGetUserData(geom))->pushing_b_neg = false;
+	(dGeomGetUserData(geom))->b_static_colide = true;
 
-	(dGeomGetUserData(geom))->last_pos[0]=-dInfinity;
-	(dGeomGetUserData(geom))->last_pos[1]=-dInfinity;
-	(dGeomGetUserData(geom))->last_pos[2]=-dInfinity;
+	(dGeomGetUserData(geom))->last_pos[0] = -dInfinity;
+	(dGeomGetUserData(geom))->last_pos[1] = -dInfinity;
+	(dGeomGetUserData(geom))->last_pos[2] = -dInfinity;
 
 
-	(dGeomGetUserData(geom))->ph_object=NULL;
-	(dGeomGetUserData(geom))->material=0;
-	(dGeomGetUserData(geom))->tri_material=0;
-	(dGeomGetUserData(geom))->callback=NULL;
-	(dGeomGetUserData(geom))->object_callbacks=NULL;
-	(dGeomGetUserData(geom))->ph_ref_object=NULL;
-	(dGeomGetUserData(geom))->element_position=u16(-1);
-	(dGeomGetUserData(geom))->bone_id=u16(-1);
-	(dGeomGetUserData(geom))->callback_data=NULL;
+	(dGeomGetUserData(geom))->ph_object = NULL;
+	(dGeomGetUserData(geom))->material = 0;
+	(dGeomGetUserData(geom))->tri_material = 0;
+	(dGeomGetUserData(geom))->callback = NULL;
+	(dGeomGetUserData(geom))->object_callbacks = NULL;
+	(dGeomGetUserData(geom))->ph_ref_object = NULL;
+	(dGeomGetUserData(geom))->element_position = u16(-1);
+	(dGeomGetUserData(geom))->bone_id = u16(-1);
+	(dGeomGetUserData(geom))->callback_data = NULL;
 
-	(dGeomGetUserData(geom))->last_aabb_size.set(0,0,0);
-	//((dxGeomUserData*)dGeomGetData(geom))->ContactsParameters::mu=1.f;
-	//((dxGeomUserData*)dGeomGetData(geom))->ContactsParameters::damping=1.f;
-	//((dxGeomUserData*)dGeomGetData(geom))->ContactsParameters::spring=1.f;
-	//((dxGeomUserData*)dGeomGetData(geom))->ContactsParameters::bonce=0.f;
-	//((dxGeomUserData*)dGeomGetData(geom))->ContactsParameters::bonce_vel=0.f;
+	(dGeomGetUserData(geom))->last_aabb_size.set(0, 0, 0);
 }
-
-
 
 IC void dGeomDestroyUserData(dxGeom* geom)
 {
@@ -261,8 +235,6 @@ IC void dGeomUserDataRemoveObjectContactCallback(dxGeom* geom,ObjectContactCallb
 	CObjectContactCallback::RemoveCallback((dGeomGetUserData(geom))->object_callbacks,(obj_callback));
 }
 
-//XRPHYSICS_API bool dGeomUserDataHasCallback(dxGeom* geom,ObjectContactCallbackFun	*obj_callback);
-
 IC void dGeomUserDataSetElementPosition(dxGeom* geom,u16 e_pos)
 {
 	(dGeomGetUserData(geom))->element_position=e_pos;
@@ -293,8 +265,7 @@ IC void dGeomUserDataClearCashedTries(dxGeom* geom)
 	P->cashed_tries.clear();
 	P->last_aabb_size.set(0.f,0.f,0.f);
 }
+
 #ifdef DEBUG
 XRPHYSICS_API	bool	IsCyliderContact(const dContact& c);
-#endif
-
 #endif

@@ -10,7 +10,9 @@
 
 class CAI_Stalker;
 
-class CStalkerSoundData : public CSound_UserData {
+class CStalkerSoundData : 
+	public CSound_UserData
+{
 private:
 	CAI_Stalker			*m_object;
 
