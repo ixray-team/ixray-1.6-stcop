@@ -4,6 +4,10 @@
 #include "SoundManager.h"
 #include "../../../xrSound/stdafx.h"
 #include "../../../xrSound/SoundRender_Source.h"
+
+#include <ogg/ogg.h>
+#include <vorbis/vorbisfile.h>
+
 UISoundEditorForm *UISoundEditorForm::Form = nullptr;
 
 UISoundEditorForm::UISoundEditorForm()
@@ -213,6 +217,28 @@ void UISoundEditorForm::InitItemList()
     m_ItemList->AssignItems(items/*, false, true*/);
 }
 
+float UISoundEditorForm::GetOGGDurationInSeconds(const char* filename)
+{
+    OggVorbis_File vf;
+    if (ov_fopen(filename, &vf) < 0)
+    {
+        Msg("! Error: not an Ogg Vorbis file: %s", filename);
+        return -1.0f;
+    }
+
+    // ������������ � ��������
+    double duration = ov_time_total(&vf, -1);
+
+    ov_clear(&vf);
+    return static_cast<float>(duration);
+}
+
+size_t UISoundEditorForm::GetFileSizeInBytes(const char* filename)
+{
+    time_t t = {};
+    return Platform::Stat(filename, t);
+}
+
 void UISoundEditorForm::OnItemsFocused(ListItem* item)
 {
     PropItemVec props;
@@ -237,9 +263,10 @@ void UISoundEditorForm::OnItemsFocused(ListItem* item)
     if (m_THM_Current.size() == 1)
     {
         ESoundThumbnail* thm = m_THM_Current.back();
-        u32 size = 0;
-        u32 time = 0;
-        PlaySound(thm->SrcName(), size, time);
+        PlaySound(thm->SrcName());
+
+        string_path OggFilename;
+        FS.update_path(OggFilename, _game_sounds_, EFS.ChangeFileExt(thm->SrcName(), ".ogg").c_str());
 
         CanvasValue* C = 0;
         C = PHelper().CreateCanvas(props, "Attenuation", "", 64);
@@ -249,9 +276,15 @@ void UISoundEditorForm::OnItemsFocused(ListItem* item)
         B = PHelper().CreateButton(props, "Auto Att", "By Min,By Max", ButtonValue::flFirstOnly);
         B->OnBtnClickEvent.bind(this, &UISoundEditorForm::OnAttClick);
 
-        PHelper().CreateCaption(props, "File Length", shared_str().printf("%.2f Kb", float(size) / 1024.f));
-        PHelper().CreateCaption(props, "Total Time", shared_str().printf("%.2f sec", float(time) / 1000.f));
-        if (!m_Flags.is(flReadOnly)) {
+        // NOTE: not supported in new sound
+        float FileTime = GetOGGDurationInSeconds(OggFilename);
+        size_t TotalSize = GetFileSizeInBytes(OggFilename);
+
+        PHelper().CreateCaption(props, "File Length", shared_str().printf("%.2f Kb", float(TotalSize) / 1024.f));
+        PHelper().CreateCaption(props, "Total Time", shared_str().printf("%.2f sec", FileTime));
+
+        if (!m_Flags.is(flReadOnly))
+        {
             B = PHelper().CreateButton(props, "Control", "Play,Stop", ButtonValue::flFirstOnly);
             B->OnBtnClickEvent.bind(this, &UISoundEditorForm::OnControlClick);
         }
@@ -270,7 +303,7 @@ void UISoundEditorForm::OnItemsFocused(ListItem* item)
 
     m_ItemProps->AssignItems(props);
 }
-void UISoundEditorForm::PlaySound(LPCSTR name, u32& size, u32& time)
+void UISoundEditorForm::PlaySound(LPCSTR name)
 {
     string_path fname;
     FS.update_path(fname, _game_sounds_, EFS.ChangeFileExt(name, ".ogg").c_str());
@@ -285,9 +318,6 @@ void UISoundEditorForm::PlaySound(LPCSTR name, u32& size, u32& time)
 
         m_Snd.create(FileName.c_str(), st_Effect, sg_Undefined);
         m_Snd.play(0, sm_2D);
-        CSoundRender_Source* src = (CSoundRender_Source*)m_Snd._handle(); VERIFY(src);
-        size = F.size;
-        time = iFloor(src->fTimeTotal / 1000.0f);
         if (!bAutoPlay)		m_Snd.stop();
     }
 }
