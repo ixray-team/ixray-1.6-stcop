@@ -92,14 +92,19 @@ class CGameObject :
 	public CScriptBinder
 {
 	typedef CObject inherited;
-	bool							m_spawned;
-	Flags32							m_server_flags;
-	CAI_ObjectLocation				*m_ai_location;
-	ALife::_STORY_ID				m_story_id;
-	animation_movement_controller	*m_anim_mov_ctrl;
 protected:
+
+	CAI_ObjectLocation				*m_ai_location;
+	animation_movement_controller	*m_anim_mov_ctrl;
+	ALife::_STORY_ID				m_story_id;
+	bool							m_spawned;
 	//время удаления объекта
 	bool					m_bObjectRemoved;
+	bool					m_bCrPr_Activated;
+	u32						m_dwCrPr_ActivationStep;
+	Flags32					m_server_flags;
+	int						m_script_clsid;
+	u32						m_spawn_time;
 public:
 	CGameObject();
 	virtual ~CGameObject();
@@ -247,10 +252,6 @@ const animation_movement_controller* animation_movement		( ) const	{ return	m_an
 	virtual	void			reload				(LPCSTR section);
 	///////////////////// network /////////////////////////////////////////
 	bool					object_removed		() const { return m_bObjectRemoved; };
-private:
-	bool					m_bCrPr_Activated;
-	u32						m_dwCrPr_ActivationStep;
-
 public:
 	virtual void			make_Interpolation	() {}; // interpolation from last visible to corrected position/rotation
 	virtual void			PH_B_CrPr			() {}; // actions & operations before physic correction-prediction steps
@@ -300,7 +301,6 @@ public:
 
 private:
 	mutable CScriptGameObject	*m_lua_game_object;
-	int						m_script_clsid;
 public:
 			CScriptGameObject	*lua_game_object() const;
 			int				clsid			() const
@@ -322,9 +322,6 @@ public:
 		VERIFY				(m_ai_location);
 		return				(*m_ai_location);
 	}
-
-private:
-	u32						m_spawn_time;
 
 public:
 	IC		u32				spawn_time			() const

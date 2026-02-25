@@ -38,12 +38,11 @@ void	t_get_box( const geom_type*	shell, const	Fmatrix& form,	Fvector&	sz, Fvecto
 	}
 }
 
-enum ERestrictionType
+enum ERestrictionType : u8
 {
-
-	rtStalker						=0	,
-	rtStalkerSmall						,
-	rtMonsterMedium						,
-	rtNone								,
+	rtStalker = 0,
+	rtStalkerSmall,
+	rtMonsterMedium,
+	rtNone,
 	rtActor
 };

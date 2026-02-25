@@ -25,12 +25,12 @@ public:
 #endif // USE_HEAD_BONE_PART_FAKE
 
 public:
-	typedef xr_vector<float>						ANIMATION_WEIGHTS;
-	typedef std::pair<LPCSTR,LPCSTR>				BLEND_ID;
+	using ANIMATION_WEIGHTS = xr_vector<float>;
+	using BLEND_ID = std::pair<LPCSTR, LPCSTR>;
 
 public:
-	typedef xr_delegate<void()>		CALLBACK_ID;
-	typedef xr_vector<CALLBACK_ID>					CALLBACKS;
+	using CALLBACK_ID = xr_delegate<void()>;
+	using CALLBACKS = xr_vector<CALLBACK_ID>;
 
 private:
 	MotionID				m_animation;
@@ -38,22 +38,19 @@ private:
 	bool					m_actual;
 	bool					m_step_dependence;
 	bool					m_global_animation;
-	const ANIM_VECTOR		*m_array;
+	bool					m_callback_on_collision;
 	MotionID				m_array_animation;
+	const ANIM_VECTOR		*m_array;
 	CALLBACKS				m_callbacks;
 	Fmatrix					*m_target_matrix;
-	bool					m_callback_on_collision;
 	CAI_Stalker*			m_object;
+
+	LPCSTR					m_object_name;
+	LPCSTR					m_animation_type_name;
 
 public:
 	bool					m_just_started;
 	Fmatrix					m_target_matrix_impl;
-
-#ifdef DEBUG
-private:
-	LPCSTR					m_object_name;
-	LPCSTR					m_animation_type_name;
-#endif // DEBUG
 
 private:
 			void			select_animation		(const ANIM_VECTOR &array, const ANIMATION_WEIGHTS *weights);

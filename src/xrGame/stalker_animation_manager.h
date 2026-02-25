@@ -24,13 +24,13 @@ class CStalkerAnimationData;
 class CStalkerAnimationManager
 {
 public:
-	typedef xr_deque<CStalkerAnimationScript>					SCRIPT_ANIMATIONS;
-	typedef MonsterSpace::EMovementDirection					EMovementDirection;
-	typedef MonsterSpace::EBodyState							EBodyState;
-	typedef GraphEngineSpace::_solver_value_type				_value_type;
-	typedef GraphEngineSpace::_solver_condition_type			_condition_type;
-	typedef CStalkerAnimationPair::BLEND_ID						BLEND_ID;
-	typedef BLEND_ID											ANIMATION_ID;
+	using SCRIPT_ANIMATIONS		= xr_deque<CStalkerAnimationScript>;
+	using EMovementDirection	= MonsterSpace::EMovementDirection;
+	using EBodyState			= MonsterSpace::EBodyState;
+	using _value_type			= GraphEngineSpace::_solver_value_type;
+	using _condition_type		= GraphEngineSpace::_solver_condition_type;
+	using BLEND_ID				= CStalkerAnimationPair::BLEND_ID;
+	using ANIMATION_ID			= BLEND_ID;
 
 private:
 	const CStalkerAnimationData		*m_data_storage;
@@ -56,21 +56,17 @@ private:
 private:
 	int								m_crouch_state_config;
 	int								m_crouch_state;
-	bool							m_no_move_actual;
 
-private:
 	CAI_Stalker						*m_object;
 	IRenderVisual					*m_visual;
 	IKinematicsAnimated				*m_skeleton_animated;
-
-private:
 	CWeapon							*m_weapon;
 	CMissile						*m_missile;
 
-private:
 	bool							m_call_script_callback;
 	bool							m_call_global_callback;
 	bool							m_start_new_script_animation;
+	bool							m_no_move_actual;
 
 #ifdef USE_HEAD_BONE_PART_FAKE
 private:
