@@ -274,11 +274,23 @@ void CHudItemAnimator::OnAnimationEnd()
 
 	StopAnimator();
 
+	if (!g_player_hud->m_need_reload)
+	{
+		return;
+	}
+
 	u8& restore_slot = m_manager->SlotToRestore();
 	bool& restore_device = m_manager->RestoreDevice();
 
-	if (restore_slot > 0 && m_manager->Parent()->inventory().ItemFromSlot(restore_slot))
+	PIItem item_to_restore = m_manager->Parent()->inventory().ItemFromSlot(restore_slot);
+	if (restore_slot > 0 && item_to_restore != nullptr)
 	{
+		u16 real_slot = item_to_restore->BaseSlot();
+		if (real_slot != INV_SLOT_2 && real_slot != KNIFE_SLOT && real_slot != BOLT_SLOT && real_slot != PISTOL_SLOT_NEW)
+		{
+			restore_device = false;
+		}
+
 		m_manager->Parent()->inventory().Activate(restore_slot);
 		restore_slot = 0;
 	}
