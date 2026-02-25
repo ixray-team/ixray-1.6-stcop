@@ -110,6 +110,7 @@ void UIRenderForm::DrawStatistics()
 void UIRenderForm::Draw()
 {
 	ImGuiWindowClass window_class;
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 	window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_HiddenTabBar | ImGuiDockNodeFlags_NoDockingOverMe;
 	ImGui::SetNextWindowClass(&window_class);
 
@@ -119,6 +120,7 @@ void UIRenderForm::Draw()
 		return;
 	}
 
+	ImGui::PopStyleVar();
 	DrawVP();
 	ImGui::End();
 }
