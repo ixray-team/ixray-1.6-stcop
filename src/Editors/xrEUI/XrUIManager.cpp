@@ -305,7 +305,7 @@ void XrUIManager::Draw()
 		m_MenuBarButtonHeight = 26.f;
 
 
-		int headerSize = (34.f)
+		int headerSize = (30.f)
 			- ImGui::GetStyle().DisplayWindowPadding.y
 			+ ImGui::GetStyle().DisplaySafeAreaPadding.y
 			//+ ImGui::GetStyle().DockingSeparatorSize
@@ -321,13 +321,14 @@ void XrUIManager::Draw()
 			| ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse
 			| ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove
 			| ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus
-			| ImGuiWindowFlags_NoBackground;
-
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.f));
+			/*| ImGuiWindowFlags_NoBackground*/;
+        float separatorSize = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::DockingGap) + 1;
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(separatorSize, separatorSize));
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3, 2));
+		//ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3, 2));
 		ImGui::PushStyleColor(ImGuiCol_WindowBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::BackgroundTint).Value);
+		ImGui::PushStyleColor(ImGuiCol_Border, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::BackgroundTint).Value);
 		ImGui::Begin("MyDockspace", NULL, window_flags);
 		ImGuiID dockMain = ImGui::GetID("MyDockspace");
 
@@ -335,8 +336,8 @@ void XrUIManager::Draw()
 
 		ImGui::DockSpace(dockMain);
 		ImGui::End();
-		ImGui::PopStyleColor();
-		ImGui::PopStyleVar(4);
+		ImGui::PopStyleColor(2);
+		ImGui::PopStyleVar(3);
 
 	}
 
