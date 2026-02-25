@@ -474,7 +474,7 @@ void CUITalkWnd::StopSnd()
 {
 	if (m_pActor && m_pActor->OnDialogSoundHandlerStop(m_pOthersInvOwner)) return;
 
-	if(m_sound._feedback()) 
+	if(m_sound.is_playing()) 
 		m_sound.stop	();
 }
 

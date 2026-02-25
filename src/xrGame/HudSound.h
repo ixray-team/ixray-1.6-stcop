@@ -20,7 +20,10 @@ struct HUD_SOUND_ITEM
 
 	ICF BOOL playing()
 	{
-        return m_activeSnd != nullptr && m_activeSnd->snd._feedback() ? TRUE : FALSE;
+        if (m_activeSnd)
+            return m_activeSnd->snd.is_playing();
+		else
+            return false;
 	}
 
     ICF void set_position(const Fvector& pos)

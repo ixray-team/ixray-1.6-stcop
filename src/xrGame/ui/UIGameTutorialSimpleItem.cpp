@@ -56,7 +56,6 @@ void CUISequenceSimpleItem::Load(CUIXml* xml, int idx)
 	LPCSTR m_snd_name		= xml->Read				("sound",0,""			);
 	if (m_snd_name&&m_snd_name[0]){
 		m_sound.create		(m_snd_name,st_Effect,sg_Undefined);	
-		VERIFY				(m_sound._handle() || Core.ParamsData.test(ECoreParams::nosound));
 	}
 	m_time_length			= xml->ReadFlt			("length_sec",0,0		);
 	m_desired_cursor_pos.x	= xml->ReadAttribFlt	("cursor_pos",0,"x",0);
@@ -246,7 +245,9 @@ void CUISequenceSimpleItem::Start()
 
 	m_owner->MainWnd()->AttachChild	(m_UIWindow);
 
-	if (m_sound._handle())		m_sound.play(nullptr, sm_2D);
+	if (m_sound.handle()) {
+		m_sound.play(nullptr, sm_2D);
+	}
 
 	if (g_pGameLevel)
 	{

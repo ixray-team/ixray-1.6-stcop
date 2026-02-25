@@ -140,8 +140,8 @@ void CSoundPlayer::update_playing_sounds()
 	xr_vector<CSoundSingle>::iterator	I = m_playing_sounds.begin();
 	xr_vector<CSoundSingle>::iterator	E = m_playing_sounds.end();
 	for ( ; I != E; ++I) {
-		if ((*I).m_sound->_feedback())
-			(*I).m_sound->_feedback()->set_position(compute_sound_point(*I));
+		if ((*I).m_sound->is_playing())
+			(*I).m_sound->set_position(compute_sound_point(*I));
 		else
 			if (!(*I).started() && (Device.dwTimeGlobal >= (*I).m_start_time))
 				(*I).play_at_pos		(m_object,compute_sound_point(*I));
@@ -153,7 +153,7 @@ bool CSoundPlayer::need_bone_data	() const
 	xr_vector<CSoundSingle>::const_iterator	I = m_playing_sounds.begin();
 	xr_vector<CSoundSingle>::const_iterator	E = m_playing_sounds.end();
 	for ( ; I != E; ++I) {
-		if ((*I).m_sound->_feedback())
+		if ((*I).m_sound->is_playing())
 			return					(true);
 		else
 			if (!(*I).started() && (Device.dwTimeGlobal >= (*I).m_start_time))
@@ -208,7 +208,6 @@ void CSoundPlayer::play				(u32 internal_type, u32 max_start_time, u32 min_start
 
 	sound_single.m_sound->_p->g_object		= m_object;
 	sound_single.m_sound->_p->g_userdata	= (*I).second.first.m_data;
-	VERIFY						(sound_single.m_sound->_handle());
 
 	VERIFY						(max_start_time >= min_start_time);
 	VERIFY						(max_stop_time >= min_stop_time);
@@ -275,7 +274,7 @@ CSoundPlayer::CSoundCollection::~CSoundCollection	()
 	xr_vector<ref_sound*>::iterator	E = m_sounds.end();
 	for ( ; I != E; ++I) {
 		VERIFY						(*I);
-		VERIFY						(!(*I)->_feedback());
+		VERIFY						(!(*I)->is_playing());
 	}
 #endif
 	delete_data						(m_sounds);

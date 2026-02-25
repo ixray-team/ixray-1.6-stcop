@@ -277,7 +277,7 @@ void ESoundSource::SaveStream(IWriter& F)
 
 void ESoundSource::OnChangeWAV	(PropValue* prop)
 {
-	BOOL bPlay 		= !!m_Source._feedback();
+	BOOL bPlay 		= m_Source.is_playing();
 	ResetSource		();
 	if (bPlay) 		Play();
 }
@@ -363,7 +363,7 @@ void ESoundSource::OnFrame()
 			((g_pGamePersistent->Environment().GetGameTime() > m_ActiveTime.x) &&
 			 (g_pGamePersistent->Environment().GetGameTime() < m_ActiveTime.y)))
 		{
-			if (0 == m_Source._feedback())
+			if (!m_Source.is_playing())
 			{
 				if (fis_zero(m_RandomPause.x) && fis_zero(m_RandomPause.y))
 				{
@@ -401,7 +401,7 @@ void ESoundSource::OnFrame()
 		}
 		else
 		{
-			if (0 != m_Source._feedback())
+			if (m_Source.is_playing())
 				m_Source.stop_deffered();
 		}
 	}

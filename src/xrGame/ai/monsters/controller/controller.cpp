@@ -352,7 +352,7 @@ void CController::play_control_sound_start()
 	Fvector pos = EnemyMan.get_enemy()->Position();
 	pos.y += 1.5f;
 
-	if (control_start_sound._feedback()) control_start_sound.stop();
+	if (control_start_sound.is_playing()) control_start_sound.stop();
 	control_start_sound.play_at_pos(const_cast<CEntityAlive*>(EnemyMan.get_enemy()),pos);
 }
 
@@ -361,7 +361,7 @@ void CController::play_control_sound_hit()
 	Fvector pos = EnemyMan.get_enemy()->Position();
 	pos.y += 1.5f;
 	
-	if (control_hit_sound._feedback()) control_hit_sound.stop();
+	if (control_hit_sound.is_playing()) control_hit_sound.stop();
 	control_hit_sound.play_at_pos(const_cast<CEntityAlive*>(EnemyMan.get_enemy()),pos);
 }
 
@@ -786,7 +786,7 @@ void CController::OnEvent(NET_Packet& P, u16 type)
 				Fvector pos = Actor()->Position();
 				pos.y += 1.5f;
 
-				if (control_hit_sound._feedback()) control_hit_sound.stop();
+				if (control_hit_sound.is_playing()) control_hit_sound.stop();
 				control_hit_sound.play_at_pos(Actor(), pos);
 
 				dir.sub(src_pos, target_pos);
@@ -796,7 +796,7 @@ void CController::OnEvent(NET_Packet& P, u16 type)
 				dir.setHP(h, p + PI_DIV_3);
 				Actor()->character_physics_support()->movement()->ApplyImpulse(dir, Actor()->GetMass() * 530.f);
 
-				if (m_sound_tube_prepare._feedback())	m_sound_tube_prepare.stop();
+				if (m_sound_tube_prepare.is_playing())	m_sound_tube_prepare.stop();
 
 				m_sound_tube_start.play_at_pos(Actor(), Fvector().set(0.f, 0.f, 0.f), sm_2D);
 				m_sound_tube_pull.play_at_pos(Actor(), Fvector().set(0.f, 0.f, 0.f), sm_2D);
@@ -852,9 +852,9 @@ void CController::OnEvent(NET_Packet& P, u16 type)
 
 		if (state == 3 && Actor()->ID() == actor_id)
 		{
-			if (m_sound_tube_start._feedback())	m_sound_tube_start.stop();
-			if (m_sound_tube_pull._feedback())	m_sound_tube_pull.stop();
-			if (m_sound_tube_prepare._feedback())	m_sound_tube_prepare.stop();
+			if (m_sound_tube_start.is_playing())	m_sound_tube_start.stop();
+			if (m_sound_tube_pull.is_playing())	m_sound_tube_pull.stop();
+			if (m_sound_tube_prepare.is_playing())	m_sound_tube_prepare.stop();
 		}
 		break;
 	}

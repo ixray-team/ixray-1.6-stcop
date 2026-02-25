@@ -28,7 +28,7 @@ void SStaticSound::Load(IReader& F)
 void SStaticSound::Update(u32 game_time, u32 global_time)
 {
 	if ((0==m_ActiveTime.x)&&(0==m_ActiveTime.y)||((int(game_time)>=m_ActiveTime.x)&&(int(game_time)<m_ActiveTime.y))){
-		if (0==m_Source._feedback()){
+		if (!m_Source.is_playing()){
 			if ((0==m_PauseTime.x)&&(0==m_PauseTime.y)){    
 				m_Source.play_at_pos	(0,m_Position,sm_Looped);
 				m_Source.set_volume		(m_Volume);
@@ -54,7 +54,7 @@ void SStaticSound::Update(u32 game_time, u32 global_time)
 				m_Source.stop_deffered();
 		}
 	}else{
-		if (0!=m_Source._feedback())
+		if (!m_Source.is_playing())
 			m_Source.stop_deffered();
 	}
 }
@@ -110,8 +110,7 @@ void SMusicTrack::Play()
 
 BOOL SMusicTrack::IsPlaying()
 {
-	BOOL  ret = (nullptr!=m_SourceStereo._feedback());
-	return ret;
+	return m_SourceStereo.is_playing();
 }
 
 void SMusicTrack::SetVolume(float volume)
