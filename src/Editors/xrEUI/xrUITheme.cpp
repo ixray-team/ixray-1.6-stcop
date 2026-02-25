@@ -6,6 +6,8 @@
 void LoadImGuiFont(const char* Font);
 extern xr_string ImCurrentFont;
 
+using namespace XRay::ImGui;
+
 CUIThemeManager::CUIThemeManager()
 {
 	bOpen = false;
@@ -231,28 +233,40 @@ void CUIThemeManager::InitDefault(int InThemeID)
 
 	ImGuiStyle& style = ImGui::GetStyle();
 	ImVec4* colors = style.Colors;
-	colors[ImGuiCol_MenuBarBg] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::BackgroundTint);
-	colors[ImGuiCol_FrameBg] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableTint);
-	colors[ImGuiCol_WindowBg] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToolbarTint);
-	colors[ImGuiCol_ChildBg] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelTint);
-	colors[ImGuiCol_TableRowBg] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelTint);
-	colors[ImGuiCol_TableRowBgAlt] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ButtonTint);
-	colors[ImGuiCol_Button] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ButtonTint);
-	colors[ImGuiCol_TableHeaderBg] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ButtonTint);
-	colors[ImGuiCol_Tab] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TabBarTint);
-	colors[ImGuiCol_TitleBg] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TabBarTint);
-	colors[ImGuiCol_TitleBgActive] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TabBarTint);
-	colors[ImGuiCol_TabDimmed] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TabBarTint);
-	colors[ImGuiCol_TabDimmedSelected] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToolbarTint);
-	colors[ImGuiCol_TabActive] = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToolbarTint);
+	colors[ImGuiCol_MenuBarBg]				= GetEditorColor(EEditorColors::BackgroundTint);
+	colors[ImGuiCol_FrameBg]				= GetEditorColor(EEditorColors::TableTint);
+	colors[ImGuiCol_WindowBg]				= GetEditorColor(EEditorColors::ToolbarTint);
+	//colors[ImGuiCol_Border]				= GetEditorColor(EEditorColors::PanelBorderTint);
+	colors[ImGuiCol_ChildBg]				= GetEditorColor(EEditorColors::PanelTint);
+	colors[ImGuiCol_TableRowBg]				= GetEditorColor(EEditorColors::PanelTint);
+	colors[ImGuiCol_TableRowBgAlt]			= GetEditorColor(EEditorColors::ButtonTint);
+	colors[ImGuiCol_Button]					= GetEditorColor(EEditorColors::ButtonTint);
+	colors[ImGuiCol_TableHeaderBg]			= GetEditorColor(EEditorColors::ButtonTint);
+	colors[ImGuiCol_Tab]					= GetEditorColor(EEditorColors::TabBarTint);
+	colors[ImGuiCol_TitleBg]				= GetEditorColor(EEditorColors::TabBarTint);
+	colors[ImGuiCol_TitleBgActive]			= GetEditorColor(EEditorColors::TabBarTint);
+	colors[ImGuiCol_TabDimmed]				= GetEditorColor(EEditorColors::TabBarTint);
+	colors[ImGuiCol_TabDimmedSelected]		= GetEditorColor(EEditorColors::ToolbarTint);
+	colors[ImGuiCol_TabActive]				= GetEditorColor(EEditorColors::ToolbarTint);
+	colors[ImGuiCol_BorderShadow]			= ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+	colors[ImGuiCol_Button]					= GetEditorColor(EEditorColors::ButtonTint);
+	colors[ImGuiCol_ButtonHovered]			= GetEditorColor(EEditorColors::ButtonHover);
+	colors[ImGuiCol_ButtonActive]			= GetEditorColor(EEditorColors::ButtonActive);
+	//colors[ImGuiCol_DockingEmptyBg]		= GetEditorColor(EEditorColors::Accent);
+	//colors[ImGuiCol_Separator]			= GetEditorColor(EEditorColors::Accent);
+	//colors[ImGuiCol_SeparatorHovered]		= GetEditorColor(EEditorColors::Accent);
+	//colors[ImGuiCol_SeparatorActive]		= GetEditorColor(EEditorColors::Accent);
 
-	style.WindowBorderSize = 0.0f;
-	style.ChildBorderSize = 0.0f;
-	style.PopupBorderSize = 0.0f;
-	style.FrameBorderSize = 0.0f;
+
+	//style.ChildBorderSize = 0.0f;
+	//style.PopupBorderSize = 0.0f;
 	style.TabBorderSize = 0.0f;
-	style.ItemInnerSpacing.x = 2.5f;
-	style.DockingSeparatorSize = 4.5f;
+	style.WindowBorderSize					= 1.0f;
+	style.FrameBorderSize					= 0.0f;
+	style.ItemInnerSpacing.x				= 2.5f;
+	style.DockingSeparatorSize				= GetEditorSize(EEditorSizes::DockingGap);
+    style.IndentSpacing						= 8.0f;
+	style.WindowMenuButtonPosition			= ImGuiDir_Right;
 
 	log_color_default = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
 	log_color_error = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);

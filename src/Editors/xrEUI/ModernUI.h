@@ -4,24 +4,32 @@ namespace XRay::ImGui
 {
 	enum class EEditorColors
 	{
+        // Base Colors
 		Main,
-		ToggleColorActive,
-
+		Accent,
+		// Tints
 		ToolbarButtonTint,
 		ToolbarTint,
 		BackgroundTint,
 		TableTint,
 		TabBarTint,
 		PanelTint,
+		PanelBorderTint,
 		ButtonTint,
 		ButtonBorderTint,
 		ContentIconTint,
 		PanelBackgroundTint,
 		HoverTint,
 		ActiveTint,
+		// Derived Colors
+		ButtonHover,
+        ButtonActive,
+        ToggleHover,
+        ToggleActive,
 	};
 	enum EEditorSizes
 	{
+        DockingGap,
 		ButtonSize,
 		ButtonBorderSize,
 		ButtonRadius,
