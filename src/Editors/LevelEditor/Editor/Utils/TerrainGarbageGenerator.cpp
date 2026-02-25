@@ -6,7 +6,7 @@
 void EGarbageGenerator::Generate(CSceneObject* terrain)
 {
 	ESceneObjectTool* ot = smart_cast<ESceneObjectTool*>(Scene->GetTool(OBJCLASS_SCENEOBJECT));
-	if (!ot->m_AppendRandomObjects.size()) 
+	if (!ot->m_AppendRandomObjects.size())
 	{
 		ELog.DlgMsg(mtError, "Append random object list is empty!");
 		return;
@@ -22,7 +22,7 @@ void EGarbageGenerator::Generate(CSceneObject* terrain)
 
 	Scene->SelectObjects(false, OBJCLASS_SCENEOBJECT);
 
-	for (int i = 0; i < nobjects;) 
+	for (int i = 0; i < nobjects;)
 	{
 		float rnd_x = ::Random.randF() * (bbox.x2 - bbox.x1) + bbox.x1;
 		float rnd_z = ::Random.randF() * (bbox.z2 - bbox.z1) + bbox.z1;
@@ -37,7 +37,7 @@ void EGarbageGenerator::Generate(CSceneObject* terrain)
 		);
 		terrain->RayQuery(PQ);
 
-		if (PQ.r_count()) 
+		if (PQ.r_count())
 		{
 			Fvector pos = start;
 			pos.mad(dir, PQ.r_begin()->range);
@@ -62,31 +62,26 @@ void EGarbageGenerator::Generate(CSceneObject* terrain)
 				return;
 			}
 
-			if (ot->IsAppendRandomRotationActive()) 
-			{
-				Fvector p;
-				p.set(::Random.randF(ot->m_AppendRandomMinRotation.x, ot->m_AppendRandomMaxRotation.x),
-					::Random.randF(ot->m_AppendRandomMinRotation.y, ot->m_AppendRandomMaxRotation.y),
-					::Random.randF(ot->m_AppendRandomMinRotation.z, ot->m_AppendRandomMaxRotation.z));
-				obj->SetRotation(p);
-			}
+			Fvector p;
+			p.set(::Random.randF(ot->m_AppendRandomMinRotation.x, ot->m_AppendRandomMaxRotation.x),
+				::Random.randF(ot->m_AppendRandomMinRotation.y, ot->m_AppendRandomMaxRotation.y),
+				::Random.randF(ot->m_AppendRandomMinRotation.z, ot->m_AppendRandomMaxRotation.z));
+			obj->SetRotation(p);
 
-			if (ot->IsAppendRandomScaleActive())
+			Fvector s;
+			if (ot->IsAppendRandomScaleProportional())
 			{
-				Fvector s;
-				if (ot->IsAppendRandomScaleProportional())
-				{
-					s.x = ::Random.randF(ot->m_AppendRandomMinScale.x, ot->m_AppendRandomMaxScale.x);
-					s.set(s.x, s.x, s.x);
-				}
-				else 
-				{
-					s.set(::Random.randF(ot->m_AppendRandomMinScale.x, ot->m_AppendRandomMaxScale.x),
-						::Random.randF(ot->m_AppendRandomMinScale.y, ot->m_AppendRandomMaxScale.y),
-						::Random.randF(ot->m_AppendRandomMinScale.z, ot->m_AppendRandomMaxScale.z));
-				}
-				obj->SetScale(s);
+				s.x = ::Random.randF(ot->m_AppendRandomMinScale.x, ot->m_AppendRandomMaxScale.x);
+				s.set(s.x, s.x, s.x);
 			}
+			else
+			{
+				s.set(::Random.randF(ot->m_AppendRandomMinScale.x, ot->m_AppendRandomMaxScale.x),
+					::Random.randF(ot->m_AppendRandomMinScale.y, ot->m_AppendRandomMaxScale.y),
+					::Random.randF(ot->m_AppendRandomMinScale.z, ot->m_AppendRandomMaxScale.z));
+			}
+			obj->SetScale(s);
+
 			obj->MoveTo(pos, up);
 			//obj->Select(TRUE);
 			Scene->AppendObject(obj, false);
