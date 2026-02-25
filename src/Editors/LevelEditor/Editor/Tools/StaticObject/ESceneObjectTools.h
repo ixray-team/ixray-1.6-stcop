@@ -12,8 +12,6 @@ protected:
     	flAppendRandomUpdateProps		= (1<<27),
     	flAppendRandomScaleProportional	= (1<<28),
     	flAppendRandom					= (1<<29),
-    	flAppendRandomScale				= (1<<30),
-    	flAppendRandomRotation			= (1<<31),
     };
 	bool 				ExportBreakableObjects	(SExportStreams* F);
 	bool 				ExportClimableObjects	(SExportStreams* F);
@@ -61,8 +59,6 @@ public:
     bool			    FillAppendRandomPropertiesEnd   ();
     void				ActivateAppendRandom		(BOOL val){m_Flags.set(flAppendRandom,val);}
     BOOL				IsAppendRandomActive		(){return m_Flags.is(flAppendRandom);}
-    BOOL				IsAppendRandomScaleActive	(){return m_Flags.is(flAppendRandomScale);}
-    BOOL				IsAppendRandomRotationActive(){return m_Flags.is(flAppendRandomRotation);}
     BOOL				IsAppendRandomScaleProportional(){return m_Flags.is(flAppendRandomScaleProportional);}
 
     // tools
