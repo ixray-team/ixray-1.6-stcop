@@ -44,6 +44,9 @@
 #include "../xrUI/UICursor.h"
 #include "Wound.h"
 
+u16 old_slot = 0;
+bool need_restore_detector = false;
+
 using namespace luabind;
 
 const u32		patch_frames	= 50;
@@ -218,6 +221,9 @@ CActor::~CActor()
 	xr_delete				(m_night_vision);
 	xr_delete				(m_hud_animator);
 	m_rainOnHelmetSnd.destroy();
+
+	old_slot = NO_ACTIVE_SLOT;
+	need_restore_detector = false;
 }
 
 void CActor::reinit	()
@@ -1439,8 +1445,6 @@ float CActor::currentFOV()
 float	NET_Jump = 0;
 static bool bLook_cam_fp_zoom = false;
 extern ENGINE_API int m_look_cam_fp_zoom;
-u16 old_slot = 0;
-bool need_restore_detector = false;
 
 void CActor::PlayRainOnHelmetSound()
 {
@@ -1644,24 +1648,43 @@ void CActor::UpdateCL()
 			{
 				g_player_hud->load_default();
 			}
-	
-			u16 saved_old_slot = NO_ACTIVE_SLOT;
-	
-			if (old_slot > 0 && inventory().ItemFromSlot(old_slot) != nullptr)
-			{
-				saved_old_slot = inventory().ItemFromSlot(old_slot)->BaseSlot();
-				inventory().Activate(old_slot);
-				old_slot = 0;
-			}
 
-			bool bres = (saved_old_slot == NO_ACTIVE_SLOT || saved_old_slot == INV_SLOT_2 || saved_old_slot == PISTOL_SLOT_NEW || saved_old_slot == KNIFE_SLOT || saved_old_slot == BOLT_SLOT);
-
-			if (bres && need_restore_detector && GetDevice(true) != nullptr)
+			if (HudAnimator()->TargetAnimator() == nullptr)
 			{
-				need_restore_detector = false;
-				GetDevice(true)->switch_device();
+				u16 saved_old_slot = NO_ACTIVE_SLOT;
+
+				if (HudAnimator()->SlotToRestore() > saved_old_slot)
+				{
+					old_slot = HudAnimator()->SlotToRestore();
+					HudAnimator()->SlotToRestore() = saved_old_slot;
+				}
+
+				if (HudAnimator()->RestoreDevice())
+				{
+					need_restore_detector = true;
+					HudAnimator()->RestoreDevice() = false;
+				}
+
+				if (old_slot > 0 && inventory().ItemFromSlot(old_slot) != nullptr)
+				{
+					saved_old_slot = inventory().ItemFromSlot(old_slot)->BaseSlot();
+					inventory().Activate(old_slot);
+					old_slot = 0;
+				}
+
+				bool bres = (saved_old_slot == NO_ACTIVE_SLOT || saved_old_slot == INV_SLOT_2 || saved_old_slot == PISTOL_SLOT_NEW || saved_old_slot == KNIFE_SLOT || saved_old_slot == BOLT_SLOT);
+
+				if (!bres)
+				{
+					need_restore_detector = false;
+				}
+
+				if (need_restore_detector && GetDevice(true) != nullptr)
+				{
+					need_restore_detector = false;
+					GetDevice(true)->switch_device();
+				}
 			}
-	
 		}
 	}
 
