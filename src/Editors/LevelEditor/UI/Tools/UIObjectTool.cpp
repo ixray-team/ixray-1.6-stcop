@@ -23,6 +23,8 @@ UIObjectTool::UIObjectTool()
 	m_Props->SetFitMode(true);
 	m_Props->DisableSearch(true);
 	RefreshList();
+
+	PropsRandomAppend.DisableSearch(true);
 }
 
 UIObjectTool::~UIObjectTool()
