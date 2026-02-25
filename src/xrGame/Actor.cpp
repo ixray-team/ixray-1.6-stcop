@@ -1647,6 +1647,18 @@ void CActor::UpdateCL()
 	
 			u16 saved_old_slot = NO_ACTIVE_SLOT;
 	
+			if (HudAnimator()->SlotToRestore() > saved_old_slot)
+			{
+				old_slot = HudAnimator()->SlotToRestore();
+				HudAnimator()->SlotToRestore() = saved_old_slot;
+			}
+
+			if (HudAnimator()->RestoreDevice())
+			{
+				need_restore_detector = true;
+				HudAnimator()->RestoreDevice() = false;
+			}
+
 			if (old_slot > 0 && inventory().ItemFromSlot(old_slot) != nullptr)
 			{
 				saved_old_slot = inventory().ItemFromSlot(old_slot)->BaseSlot();
@@ -1656,7 +1668,12 @@ void CActor::UpdateCL()
 
 			bool bres = (saved_old_slot == NO_ACTIVE_SLOT || saved_old_slot == INV_SLOT_2 || saved_old_slot == PISTOL_SLOT_NEW || saved_old_slot == KNIFE_SLOT || saved_old_slot == BOLT_SLOT);
 
-			if (bres && need_restore_detector && GetDevice(true) != nullptr)
+			if (!bres)
+			{
+				need_restore_detector = false;
+			}
+
+			if (need_restore_detector && GetDevice(true) != nullptr)
 			{
 				need_restore_detector = false;
 				GetDevice(true)->switch_device();
