@@ -11,6 +11,7 @@ class CInventory;
 #include "UIOutfitSlot.h"
 
 #include "UIOutfitInfo.h"
+#include "UIOwnerPropertiesBox.h"
 #include "UIItemInfo.h"
 #include "inventory_space.h"
 
@@ -20,36 +21,35 @@ class CUIDragDropListEx;
 class CUICellItem;
 class CUIItemDropAmountWnd;
 
-class CUIInventoryWnd: public CUIDialogWnd
+class CUIInventoryWnd: public CUIDialogWnd, public CUIOwnerPropertiesBox
 {
 private:
 	typedef CUIDialogWnd	inherited;
 	bool					m_b_need_reinit;
 public:
-							CUIInventoryWnd				();
-	virtual					~CUIInventoryWnd			();
+							CUIInventoryWnd					();
+	virtual					~CUIInventoryWnd				();
 
-	virtual void			Init						();
+	virtual void			Init							();
 
-	void					InitInventory				();
-	void					InitInventory_delayed		();
-	virtual bool			StopAnyMove					()					{return false;}
+	void					InitInventory					();
+	void					InitInventory_delayed			();
+	virtual bool			StopAnyMove						() { return false; }
 
-	virtual void			SendMessage					(CUIWindow *pWnd, s16 msg, void *pData);
-	virtual bool			OnMouseAction						(float x, float y, EUIMessages mouse_action);
-	virtual bool			OnKeyboardAction					(int dik, EUIMessages keyboard_action);
+	virtual void			SendMessage						(CUIWindow *pWnd, s16 msg, void *pData);
+	virtual bool			OnMouseAction					(float x, float y, EUIMessages mouse_action);
+	virtual bool			OnKeyboardAction				(int dik, EUIMessages keyboard_action);
 
+	virtual CInventory*		GetInventory					() { return m_pInv; }
 
-	IC CInventory*			GetInventory				()					{return m_pInv;}
+	virtual void			Update							();
+	virtual void			Draw							();
 
-	virtual void			Update						();
-	virtual void			Draw						();
+	virtual void			Show							(bool status);
 
-	virtual void			Show						(bool status);
+	void					AddItemToBag					(PIItem pItem);
 
-	void					AddItemToBag				(PIItem pItem);
-
-	void					DropAllCurrentItem			(u32 item_amount);
+	void					DropAllCurrentItem				(u32 item_amount);
 protected:
 	enum eInventorySndAction{	eInvSndOpen	=0,
 								eInvSndClose,
@@ -63,8 +63,8 @@ protected:
 								eInvItemUse,
 								eInvSndMax};
 
-	ref_sound					sounds					[eInvSndMax];
-	void						PlaySnd					(eInventorySndAction a);
+	ref_sound					sounds						[eInvSndMax];
+	void						PlaySnd						(eInventorySndAction a);
 
 	CUIStatic					UIBeltSlots;
 	CUIStatic					UIBack;
@@ -100,30 +100,29 @@ protected:
 	EListType					GetType						(CUIDragDropListEx* l);
 	CUIDragDropListEx*			GetSlotList					(u32 slot_idx);
 
-	bool				OnItemDrop					(CUICellItem* itm);
-	bool				OnItemStartDrag				(CUICellItem* itm);
-	bool				OnItemDbClick				(CUICellItem* itm);
-	bool				OnItemSelected				(CUICellItem* itm);
-	bool				OnItemRButtonClick			(CUICellItem* itm);
-	bool				OnItemFocusReceive			(CUICellItem* itm);
-	bool				OnItemFocusLost				(CUICellItem* itm);
-	bool				OnItemFocusedUpdate			(CUICellItem* itm);
+	bool						OnItemDrop					(CUICellItem* itm);
+	bool						OnItemStartDrag				(CUICellItem* itm);
+	bool						OnItemDbClick				(CUICellItem* itm);
+	bool						OnItemSelected				(CUICellItem* itm);
+	bool						OnItemRButtonClick			(CUICellItem* itm);
+	bool						OnItemFocusReceive			(CUICellItem* itm);
+	bool						OnItemFocusLost				(CUICellItem* itm);
+	bool						OnItemFocusedUpdate			(CUICellItem* itm);
 
 
 	CUIStatic					UIProgressBack;
 	CUIStatic					UIProgressBack_rank;
-	CUIProgressBar				UIProgressBarHealth;	
+	CUIProgressBar				UIProgressBarHealth;
 	CUIProgressBar				UIProgressBarPsyHealth;
 	CUIProgressBar				UIProgressBarRadiation;
 	CUIProgressBar				UIProgressBarRank;
-
-	CUIPropertiesBox			UIPropertiesBox;
 	
 	//информация о персонаже
 	CUIOutfitInfo				UIOutfitInfo;
 	CUIItemInfo					UIItemInfo;
 
 	CInventory*					m_pInv;
+	CInventoryOwner*			m_pInvOwner;
 
 	CUICellItem*				m_pCurrentCellItem;
 
@@ -141,7 +140,6 @@ protected:
 
 	void						ProcessPropertiesBoxClicked	();
 	void						ActivatePropertiesBox		();
-	void						TryHidePropertiesBox		();
 
 	void						clear_highlight_lists		();
 	void						set_highlight_item			(CUICellItem* cell_item);
@@ -161,7 +159,7 @@ protected:
 
 
 	void						AttachAddon					(PIItem item_to_upgrade);
-	void						DetachAddon					(LPCSTR addon_name, PIItem itm = NULL);
+	void						DetachAddon					(LPCSTR addon_name, PIItem itm = nullptr);
 
 	void						UnloadWeapon				(CWeaponMagazined* pWnp);
 
@@ -172,13 +170,7 @@ protected:
 	TIItemContainer				ruck_list;
 	u32							m_iCurrentActiveSlot;
 
-private:
-	void						PropertiesBoxForSlots		(PIItem item, bool& b_show);
-	void						PropertiesBoxForWeapon		(CUICellItem* cell_item, PIItem item, bool& b_show);
-	void						PropertiesBoxForAddon		(PIItem item, bool& b_show);
-	void						PropertiesBoxForUsing		(PIItem item, bool& b_show);
-	void						PropertiesBoxForPlaying		(PIItem item, bool& b_show);
-	void						PropertiesBoxForDrop		(CUICellItem* cell_item, PIItem item, bool& b_show);
-	void						PropertiesBoxForParse		(PIItem item, bool& b_show);
+protected:
+	virtual	void				PropertiesBoxForDrop		(CUICellItem* cell_item, PIItem item, bool& b_show);
 
 };
