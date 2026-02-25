@@ -2081,15 +2081,14 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 			{
 				if (CActor* pActor = H_Parent()->cast_actor())
 				{
+					if (m_eAnimationsFlags.test(EAnimationsFlags::af_safemode_in_out))
+					{
+						SwitchState(eSafemodeSwitch);
+					}
+
 					pActor->SetSafemodeStatus(!pActor->IsSafemode());
+					return true;
 				}
-
-				if (m_eAnimationsFlags.test(EAnimationsFlags::af_safemode_in_out))
-				{
-					SwitchState(eSafemodeSwitch);
-				}
-
-				return true;
 			}
 			break;
 		}
