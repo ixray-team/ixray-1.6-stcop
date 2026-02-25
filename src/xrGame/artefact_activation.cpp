@@ -131,7 +131,7 @@ void SArtefactActivation::ChangeEffects()
 	VERIFY(!physics_world()->Processing());
 	SStateDef& state_def = m_activation_states[(int)m_cur_activation_state];
 	
-	if(m_snd._feedback())
+	if(m_snd.is_playing())
 		m_snd.stop();
 	
 	if(state_def.m_snd.size()){
@@ -163,7 +163,7 @@ void SArtefactActivation::ChangeEffects()
 void SArtefactActivation::UpdateEffects()
 {
 	VERIFY(!physics_world()->Processing());
-	if(m_snd._feedback())
+	if(m_snd.is_playing())
 		m_snd.set_position( m_af->Position() );
 	
 	m_light->set_position(m_af->Position());

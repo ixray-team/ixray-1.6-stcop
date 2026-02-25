@@ -124,7 +124,7 @@ CSHSoundEnvTools::~CSHSoundEnvTools()
 void CSHSoundEnvTools::OnChangeWAV	(PropValue* prop)
 {
 
-	BOOL bPlay 		= !!m_PreviewSnd._feedback();
+	BOOL bPlay 		= m_PreviewSnd.is_playing();
 	m_PreviewSnd.destroy();
 	if (m_SoundName.size()){
 		m_PreviewSnd.create				(*m_SoundName,st_Effect,sg_Undefined);
@@ -194,7 +194,7 @@ void CSHSoundEnvTools::OnFrame()
 
 void CSHSoundEnvTools::OnRender()
 {
-	if (m_PreviewSnd._handle()){	
+	if (m_PreviewSnd.is_playing()){	
 		RCache.set_xform_world	(Fidentity);
 		EDevice->SetShader	(EDevice->m_WireShader);
 		u32 clr0			= SOUND_SEL0_COLOR;

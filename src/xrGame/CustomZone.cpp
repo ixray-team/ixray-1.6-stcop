@@ -1316,7 +1316,7 @@ void CCustomZone::PlayAccumParticles()
 		pParticles->Play(false);
 	}
 
-	if(m_accum_sound._handle())
+	if (m_accum_sound.handle())
 		m_accum_sound.play_at_pos	(0, Position());
 }
 
@@ -1330,7 +1330,7 @@ void CCustomZone::PlayAwakingParticles()
 		pParticles->Play(false);
 	}
 
-	if(m_awaking_sound._handle())
+	if (m_awaking_sound.handle())
 		m_awaking_sound.play_at_pos	(0, Position());
 }
 

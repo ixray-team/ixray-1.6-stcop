@@ -76,7 +76,7 @@ public:
 				void	destroy					()
 		{
 			VERIFY								(m_sound);
-			if (m_sound->_feedback())
+			if (m_sound->is_playing())
 				m_sound->stop					();
 
 			xr_delete							(m_sound);
@@ -107,7 +107,7 @@ public:
 			bool		result = 
 				(sound.m_synchro_mask & m_sound_mask) || 
 				(
-					!sound.m_sound->_feedback() && 
+					!sound.m_sound->is_playing() && 
 					(sound.m_stop_time <= Device.dwTimeGlobal)
 				);
 			if (result)

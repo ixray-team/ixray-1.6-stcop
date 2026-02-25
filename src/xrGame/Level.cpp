@@ -781,7 +781,7 @@ extern UI_API void draw_wnds_rects();
 
 void CLevel::OnRender()
 {
-	inherited::OnRender	();
+	inherited::OnRender();
 
 	if (!game)
 		return;
@@ -795,9 +795,9 @@ void CLevel::OnRender()
 
 #ifdef DEBUG
 	draw_wnds_rects();
-	physics_world()->OnRender	();
+	physics_world()->OnRender();
 
-	if (ai().get_level_graph()&&dynamic_cast<CLevelGraph*>(&ai().level_graph()))
+	if (ai().get_level_graph() && dynamic_cast<CLevelGraph*>(&ai().level_graph()))
 		dynamic_cast<CLevelGraph*>(&ai().level_graph())->render();
 
 #endif // DEBUG

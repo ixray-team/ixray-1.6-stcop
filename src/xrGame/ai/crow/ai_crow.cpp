@@ -56,7 +56,7 @@ void CAI_Crow::SSound::Load	(LPCSTR prefix)
 void CAI_Crow::SSound::SetPosition	(const Fvector& pos)
 {
 	for (int i=0; i<(int)m_Sounds.size(); ++i)
-		if (m_Sounds[i]._feedback())
+		if (m_Sounds[i].is_playing())
 			m_Sounds[i].set_position(pos);
 }
 
