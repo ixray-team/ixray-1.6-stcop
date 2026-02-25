@@ -545,7 +545,7 @@ static class cl_m_hud_params : public RHIShaderConstant::Setup
 static class cl_m_zoom_deviation : public RHIShaderConstant::Setup
 {
 	virtual void setup(RHIShaderConstant* C) {
-		RCache.set_c(C, 0.0f, 0.0f, RDEVICE.hudViewportData.renderScopeBrightnessValue, 0.0f);
+		RCache.set_c(C, 0.0f, 0.0f, RDEVICE.hudViewportData.renderScopeBrightnessValue, RDEVICE.hudViewportData.renderScopeBrightnessJitterValue);
 	}
 }    binder_m_zoom_deviation;
 
