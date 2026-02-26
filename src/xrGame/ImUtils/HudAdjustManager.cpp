@@ -41,8 +41,8 @@ void RenderHUDAdjustManager()
 	if (!g_player_hud)
 		return;
 
-	HudLightLaser* ll = nullptr;
-	HudLightTorch* lt = nullptr;
+	THudLightLaser* ll = nullptr;
+	THudLightTorch* lt = nullptr;
 	CInventoryItem* p_item = g_actor->inventory().ActiveItem();
 	if (p_item)
 	{
@@ -184,7 +184,7 @@ void RenderHUDAdjustManager()
 				ImGui::SetNextItemWidth(80.0f);
 				ImGui::InputFloat("Rotation step", &_delta_rot, 0, 0, "%.6f");
 
-				auto p_draw_info_hud_item = [](attachable_hud_item* p_item, u8 index, HudLightLaser* ll, HudLightTorch* lt) -> void {
+				auto p_draw_info_hud_item = [](attachable_hud_item* p_item, u8 index, THudLightLaser* ll, THudLightTorch* lt) -> void {
 					if (p_item)
 					{
 						string16 name = "";

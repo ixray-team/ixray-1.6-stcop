@@ -2391,7 +2391,7 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 	}break;
 	case kTACTICALTORCH:
 	{
-		if (flags & CMD_START && SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfTACTICALTORCH) && m_HudLight.GetTorchInstalled() && !IsZoomed() && GetState() == eIdle)
+		if (flags & CMD_START && SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfTACTICALTORCH) && GetComponent<THudLightTorch>() != nullptr && !IsZoomed() && GetState() == eIdle)
 		{
 			m_eDevicesFlags.set(EDevicesFlags::df_tacticaltorch, true);
 			SwitchState(eDevice);
@@ -2401,7 +2401,7 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 	}
 	case kLASER:
 	{
-		if (flags & CMD_START && SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfLASER) && m_LightLaser.GetTorchInstalled() && !IsZoomed() && GetState() == eIdle)
+		if (flags & CMD_START && SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfLASER) && GetComponent<THudLightLaser>() != nullptr && !IsZoomed() && GetState() == eIdle)
 		{
 			m_eDevicesFlags.set(EDevicesFlags::df_laser, true);
 			SwitchState(eDevice);

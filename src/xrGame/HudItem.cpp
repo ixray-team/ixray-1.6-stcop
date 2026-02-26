@@ -78,8 +78,11 @@ void CHudItem::Load(LPCSTR section)
 
 	m_bDisableBore = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "disable_bore", false);
 
-	m_HudLight.SetInstalled(READ_IF_EXISTS(pSettings, r_bool, section, "torch_installed", false));
-	m_HudLight.NewTorchlight(section);
+	if (READ_IF_EXISTS(pSettings, r_bool, section, "torch_installed", false))
+	{
+		THudLightTorch& LightTorch = m_object->CreateComponent<THudLightTorch>();
+		LightTorch.NewTorchlight(section);
+	}
 
 	LoadSounds(section);
 }
@@ -363,7 +366,11 @@ void CHudItem::DeactivateItem()
 void CHudItem::OnMoveToRuck(const SInvItemPlace& prev)
 {
 	SwitchState(eHidden);
-	m_HudLight.UpdateTorchFromObject(this);
+
+	if (THudLightTorch* LightTorch = m_object->GetComponent<THudLightTorch>())
+	{
+		LightTorch->UpdateTorchFromObject(this);
+	}
 }
 
 bool CHudItem::SendDeactivateItem(bool Force)
@@ -437,7 +444,10 @@ void CHudItem::UpdateCL()
 		}
 	}
 
-	m_HudLight.UpdateTorchFromObject(this);
+	if (THudLightTorch* LightTorch = m_object->GetComponent<THudLightTorch>())
+	{
+		LightTorch->UpdateTorchFromObject(this);
+	}
 }
 
 void CHudItem::OnH_A_Chield		()
@@ -452,7 +462,11 @@ void CHudItem::OnH_B_Independent	(bool just_before_destroy)
 {
 	m_sounds.StopAllSounds	();
 	UpdateXForm				();
-	m_HudLight.UpdateTorchFromObject(this);
+
+	if (THudLightTorch* LightTorch = m_object->GetComponent<THudLightTorch>())
+	{
+		LightTorch->UpdateTorchFromObject(this);
+	}
 	
 	// next code was commented 
 	/*
@@ -1096,4 +1110,9 @@ bool CHudItem::NeedMovementBlend() const
 {
 	const CHUDState::EHudStates state = static_cast<CHUDState::EHudStates>(GetState());
 	return state != CHUDState::EHudStates::eIdle && state != CHUDState::EHudStates::eSprintStart && state != CHUDState::EHudStates::eSprintEnd;
+}
+
+THudLightTorch* CHudItem::GetHudLight()
+{
+	return m_object->GetComponent<THudLightTorch>();
 }
