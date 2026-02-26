@@ -162,14 +162,14 @@ bool CInventoryItem::verify_upgrade(LPCSTR section)
 
 bool CInventoryItem::install_upgrade_impl(LPCSTR section, bool test)
 {
-	bool result = process_if_exists(section, "cost", &CInifile::r_u32, m_cost, test);
-	result |= process_if_exists(section, "inv_weight", &CInifile::r_float, m_weight, test);
+	bool result = process_if_exists(section, "cost", m_cost, test);
+	result |= process_if_exists(section, "inv_weight", m_weight, test);
 
 	bool result2 = false;
 	if (BaseSlot() != NO_ACTIVE_SLOT)
 	{
-		BOOL value = m_flags.test(FRuckDefault);
-		result2 = process_if_exists_set(section, "default_to_ruck", &CInifile::r_bool, value, test);
+		bool value = m_flags.test(FRuckDefault);
+		result2 = process_if_exists_set(section, "default_to_ruck", value, test);
 		if (result2 && !test)
 		{
 			m_flags.set(FRuckDefault, value);
@@ -177,7 +177,7 @@ bool CInventoryItem::install_upgrade_impl(LPCSTR section, bool test)
 		result |= result2;
 
 		value = m_flags.test(FAllowSprint);
-		result2 = process_if_exists_set(section, "sprint_allowed", &CInifile::r_bool, value, test);
+		result2 = process_if_exists_set(section, "sprint_allowed", value, test);
 
 		if (result2 && !test)
 		{
@@ -186,17 +186,17 @@ bool CInventoryItem::install_upgrade_impl(LPCSTR section, bool test)
 
 		result |= result2;
 
-		result |= process_if_exists(section, "control_inertion_factor", &CInifile::r_float, m_fControlInertionFactor, test);
+		result |= process_if_exists(section, "control_inertion_factor", m_fControlInertionFactor, test);
 	}
 
 	LPCSTR str;
-	result2 = process_if_exists_set(section, "immunities_sect", &CInifile::r_string, str, test);
+	result2 = process_if_exists_set(section, "immunities_sect", str, test);
 	if (result2 && !test)
 	{
 		CHitImmunity::LoadImmunities(str, pSettings);
 	}
 
-	result2 = process_if_exists_set(section, "immunities_sect_add", &CInifile::r_string, str, test);
+	result2 = process_if_exists_set(section, "immunities_sect_add", str, test);
 	if (result2 && !test)
 	{
 		CHitImmunity::AddImmunities(str, pSettings);
