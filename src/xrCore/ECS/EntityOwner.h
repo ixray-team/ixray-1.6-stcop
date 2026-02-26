@@ -22,6 +22,13 @@ public:
 	}
 
 	template <typename T>
+	const T* GetComponent() const
+	{
+		CECSComponentStorage<T>& Storage = GECSManager->GetOrCreateStorage<T>();
+		return Storage.Get(this);
+	}
+
+	template <typename T>
 	void DestroyComponent()
 	{
 		CECSComponentStorage<T>& Storage = GECSManager->GetOrCreateStorage<T>();
