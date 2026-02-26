@@ -36,6 +36,8 @@ CMovementManager::CMovementManager	(CCreature *object)
 {
 	VERIFY						(object);
 	m_object					= object;
+
+	m_nearest_objects.reserve(128);
 }
 
 CMovementManager::~CMovementManager	()
