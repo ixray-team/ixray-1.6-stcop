@@ -7,7 +7,12 @@
 #include "Inventory.h"
 #include "../debug_renderer.h"
 
-HudLightTorch::~HudLightTorch()
+void THudLightTorch::BeginComponent(IECSOwner* O)
+{
+	SetInstalled(true);
+}
+
+void THudLightTorch::EndComponent()
 {
 	if (RenderLight != nullptr)
 	{
@@ -20,7 +25,7 @@ HudLightTorch::~HudLightTorch()
 	}
 }
 
-void HudLightTorch::NewTorchlight(const char* section)
+void THudLightTorch::NewTorchlight(const char* section)
 {
 	if (!IsTorchInstalled)
 		return;
@@ -101,9 +106,16 @@ void HudLightTorch::NewTorchlight(const char* section)
 			ConeBones.push_back(_GetItem(lineStr, i, bone_name));
 		}
 	}
+
+	Fvector tmp_vector = { -1.0f, -1.0f, 0.0f };
+
+	tmp_vector = READ_IF_EXISTS(pSettings, r_fvector3, section, "torch_breaking_params", tmp_vector);
+	BreakingParams.start_condition = tmp_vector.x;
+	BreakingParams.end_condition = tmp_vector.y;
+	BreakingParams.start_probability = tmp_vector.z;
 }
 
-void HudLightTorch::SwitchTorchlight(bool isActive)
+void THudLightTorch::SwitchTorchlight(bool isActive)
 {
 	if (IsTorchInstalled)
 	{
@@ -116,7 +128,7 @@ void HudLightTorch::SwitchTorchlight(bool isActive)
 }
 
 bool forceTPDraw = false;
-void HudLightTorch::UpdateTorchFromObject(CHudItem* item) const
+void THudLightTorch::UpdateTorchFromObject(CHudItem* item) const
 {
 	if (RenderLight == nullptr || OmniLight == nullptr || item == nullptr || item->object().Visual() == nullptr)
 	{
@@ -239,16 +251,13 @@ void HudLightTorch::UpdateTorchFromObject(CHudItem* item) const
 	OmniLight->set_active(false);
 }
 
-HudLightLaser::HudLightLaser()
+void THudLightLaser::BeginComponent(IECSOwner* O)
 {
+	THudLightTorch::BeginComponent(O);
 	IsLightDirByBone = false;
 }
 
-HudLightLaser::~HudLightLaser()
-{
-}
-
-void HudLightLaser::NewTorchlight(const char* section)
+void THudLightLaser::NewTorchlight(const char* section)
 {
 	if (RenderLight)
 	{
@@ -312,11 +321,17 @@ void HudLightLaser::NewTorchlight(const char* section)
 		}
 	}
 
-	SetInstalled(true);
+	Fvector tmp_vector = { -1.0f, -1.0f, 0.0f };
+
+	tmp_vector = READ_IF_EXISTS(pSettings, r_fvector3, section, "laser_breaking_params", tmp_vector);
+	BreakingParams.start_condition = tmp_vector.x;
+	BreakingParams.end_condition = tmp_vector.y;
+	BreakingParams.start_probability = tmp_vector.z;
+	BreakingParams.levels_problem = READ_IF_EXISTS(pSettings, r_float, section, "laser_problems_level", 0.0f);
 }
 
 bool forceLPDraw = false;
-void HudLightLaser::UpdateTorchFromObject(CHudItem* item) const
+void THudLightLaser::UpdateTorchFromObject(CHudItem* item) const
 {
 	if (RenderLight == nullptr || item == nullptr || item->object().Visual() == nullptr)
 	{
