@@ -119,16 +119,7 @@ void CInventoryItemObject::OnChangeVisual()
 bool CInventoryItemObject::install_upgrade_impl(LPCSTR section, bool test)
 {
 	bool result = CInventoryItem::install_upgrade_impl(section, test);
-
-	bool result2 = false;
-	LPCSTR str = {};
-
-	result2 = process_if_exists_set(section, "visual", &CInifile::r_string, str, test);
-	if (result2 && !test)
-	{
-		m_sNewVisualName = str;
-	}
-	result |= result2;
+	result |= process_if_exists_set(section, "visual", m_sNewVisualName, test);
 
 	return result;
 }
