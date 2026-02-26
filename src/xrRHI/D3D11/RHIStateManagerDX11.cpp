@@ -1,8 +1,17 @@
 #include "RHIStateManagerDX11.h"
 
-RHIStateManagerDX11::RHIStateManagerDX11() :
+RHIStateManagerDX11::RHIStateManagerDX11(ID3D11DeviceContext* InContext) :
 	StateCache(static_cast<ID3D11Device*>(GRHI->DevicePtr->RawDevice))
 {
+	if (InContext)
+	{
+		D3DContext = InContext;
+	}
+	else
+	{
+		D3DContext = static_cast<ID3D11DeviceContext*>(GRHI->GetContext());
+	}
+
 	Reset();
 }
 
@@ -101,9 +110,15 @@ void RHIStateManagerDX11::UnmapConstants()
 	AlphaRef = 0;
 }
 
+void RHIStateManagerDX11::SetContext(ID3D11DeviceContext* InContext)
+{
+	D3DContext = InContext;
+}
+
 void RHIStateManagerDX11::Apply()
 {
-	ID3D11DeviceContext* Context = static_cast<ID3D11DeviceContext*>(GRHI->GetContext());
+	ID3D11DeviceContext* Context = D3DContext;
+	R_ASSERT(Context);
 
 	if (bRSNeedApply || bRSChanged)
 	{
