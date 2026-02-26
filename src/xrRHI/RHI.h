@@ -86,6 +86,11 @@ public:
 	void* GetContext();
 	void* GetSwapchain();
 
+	// D3D11 multicontext helpers (immediate/deferred)
+	void* GetImmediateContext();
+	void* CreateDeferredContext();
+	void  ReleaseDeferredContext(void* context);
+
 	void ClearRawTarget(void* Target, ERTColor Transparent = ERTColor::Transparent);
 	void ClearTarget(IRHIRenderTargetView* Target, ERTColor Transparent = ERTColor::Transparent);
 	void ClearTarget(IRHIRenderTargetView* Target, const float* Color);
@@ -141,6 +146,10 @@ public:
 	);
 
 	void EvictManagedResources();
+
+	// State manager helpers (for multi-context use)
+	IRHIStateManager* CreateStateManager(void* context = nullptr);
+	void DestroyStateManager(IRHIStateManager* manager);
 
 public:
 	IRHIDevice* DevicePtr = nullptr;
