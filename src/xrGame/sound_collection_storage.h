@@ -21,6 +21,7 @@ private:
 	OBJECTS								m_objects;
 
 public:
+	CSoundCollectionStorage											();
 	virtual								~CSoundCollectionStorage	();
 			const SOUND_COLLECTION_PAIR	&object						(const CSoundCollectionParams &params);
 };

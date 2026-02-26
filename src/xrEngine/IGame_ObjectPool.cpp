@@ -10,6 +10,7 @@ IGame_ObjectPool::IGame_ObjectPool(void)
 
 IGame_ObjectPool::~IGame_ObjectPool(void)
 {
+	clear();
 	R_ASSERT			(m_PrefetchObjects.empty());
 }
 
