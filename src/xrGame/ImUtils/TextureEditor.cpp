@@ -804,7 +804,6 @@ void PrintHelp()
 			ImGui::Text("");
 			ImGui::Separator();
 			ImGui::Text("Contributors:");
-			//ImGui::Text("\t1)  ");
 			ImGui::Text("\t*");
 			ImGui::SameLine();
 			ImGui::TextColored(kContributorsTextColor, "@v2v3v4");
