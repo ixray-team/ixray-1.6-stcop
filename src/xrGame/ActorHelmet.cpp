@@ -46,7 +46,7 @@ bool CHelmet::install_upgrade_impl(LPCSTR section, bool test)
 {
 	bool result = inherited::install_upgrade_impl(section, test);
 
-	result |= process_if_exists(section, "nearest_enemies_show_dist", &CInifile::r_float, m_fShowNearestEnemiesDistance, test);
+	result |= process_if_exists(section, "nearest_enemies_show_dist", m_fShowNearestEnemiesDistance, test);
 
 	return result;
 }

@@ -156,50 +156,40 @@ void CArmorBase::ReloadBonesProtection()
 bool CArmorBase::install_upgrade_impl(LPCSTR section, bool test)
 {
 	bool result = inherited::install_upgrade_impl(section, test);
-
-	result |= process_if_exists(section, "burn_protection", &CInifile::r_float, m_HitTypeProtection[ALife::eHitTypeBurn], test);
-	result |= process_if_exists(section, "shock_protection", &CInifile::r_float, m_HitTypeProtection[ALife::eHitTypeShock], test);
-	result |= process_if_exists(section, "strike_protection", &CInifile::r_float, m_HitTypeProtection[ALife::eHitTypeStrike], test);
-	result |= process_if_exists(section, "wound_protection", &CInifile::r_float, m_HitTypeProtection[ALife::eHitTypeWound], test);
-	result |= process_if_exists(section, "radiation_protection", &CInifile::r_float, m_HitTypeProtection[ALife::eHitTypeRadiation], test);
-	result |= process_if_exists(section, "telepatic_protection", &CInifile::r_float, m_HitTypeProtection[ALife::eHitTypeTelepatic], test);
-	result |= process_if_exists(section, "chemical_burn_protection", &CInifile::r_float, m_HitTypeProtection[ALife::eHitTypeChemicalBurn], test);
-	result |= process_if_exists(section, "explosion_protection", &CInifile::r_float, m_HitTypeProtection[ALife::eHitTypeExplosion], test);
-	result |= process_if_exists(section, "fire_wound_protection", &CInifile::r_float, m_HitTypeProtection[ALife::eHitTypeFireWound], test);
-
+	bool result2 = false;
 	LPCSTR str = {};
-	bool result2 = process_if_exists_set(section, "nightvision_sect", &CInifile::r_string, str, test);
-	if (result2 && !test)
-	{
-		m_NightVisionSect._set(str);
-	}
-	result |= result2;
 
-	BOOL value = {};
-	result2 = process_if_exists_set(section, "torch_available", &CInifile::r_bool, value, test);
-	if (result2 && !test)
-	{
-		m_bTorchAvailable = !!value;
-	}
-	result |= result2;
+	result |= process_if_exists(section, "burn_protection", m_HitTypeProtection[ALife::eHitTypeBurn], test);
+	result |= process_if_exists(section, "shock_protection", m_HitTypeProtection[ALife::eHitTypeShock], test);
+	result |= process_if_exists(section, "strike_protection", m_HitTypeProtection[ALife::eHitTypeStrike], test);
+	result |= process_if_exists(section, "wound_protection", m_HitTypeProtection[ALife::eHitTypeWound], test);
+	result |= process_if_exists(section, "radiation_protection", m_HitTypeProtection[ALife::eHitTypeRadiation], test);
+	result |= process_if_exists(section, "telepatic_protection", m_HitTypeProtection[ALife::eHitTypeTelepatic], test);
+	result |= process_if_exists(section, "chemical_burn_protection", m_HitTypeProtection[ALife::eHitTypeChemicalBurn], test);
+	result |= process_if_exists(section, "explosion_protection", m_HitTypeProtection[ALife::eHitTypeExplosion], test);
+	result |= process_if_exists(section, "fire_wound_protection", m_HitTypeProtection[ALife::eHitTypeFireWound], test);
 
-	result |= process_if_exists(section, "health_restore_speed", &CInifile::r_float, m_fHealthRestoreSpeed, test);
-	result |= process_if_exists(section, "radiation_restore_speed", &CInifile::r_float, m_fRadiationRestoreSpeed, test);
-	result |= process_if_exists(section, "satiety_restore_speed", &CInifile::r_float, m_fSatietyRestoreSpeed, test);
-	result |= process_if_exists(section, "thirst_restore_speed", &CInifile::r_float, m_fThirstRestoreSpeed, test);
-	result |= process_if_exists(section, "power_restore_speed", &CInifile::r_float, m_fPowerRestoreSpeed, test);
-	result |= process_if_exists(section, "bleeding_restore_speed", &CInifile::r_float, m_fBleedingRestoreSpeed, test);
+	result |= process_if_exists_set(section, "nightvision_sect", m_NightVisionSect, test);
 
-	result |= process_if_exists(section, "power_loss", &CInifile::r_float, m_fPowerLoss, test);
+	result |= process_if_exists_set(section, "torch_available", m_bTorchAvailable, test);
+
+	result |= process_if_exists(section, "health_restore_speed", m_fHealthRestoreSpeed, test);
+	result |= process_if_exists(section, "radiation_restore_speed", m_fRadiationRestoreSpeed, test);
+	result |= process_if_exists(section, "satiety_restore_speed", m_fSatietyRestoreSpeed, test);
+	result |= process_if_exists(section, "thirst_restore_speed", m_fThirstRestoreSpeed, test);
+	result |= process_if_exists(section, "power_restore_speed", m_fPowerRestoreSpeed, test);
+	result |= process_if_exists(section, "bleeding_restore_speed", m_fBleedingRestoreSpeed, test);
+
+	result |= process_if_exists(section, "power_loss", m_fPowerLoss, test);
 	clamp(m_fPowerLoss, 0.0f, 1.0f);
 
-	result2 = process_if_exists_set(section, "bones_koeff_protection", &CInifile::r_string, str, test);
+	result2 = process_if_exists_set(section, "bones_koeff_protection", str, test);
 	if (result2 && !test)
 	{
 		m_BonesProtectionSect = str;
 		ReloadBonesProtection();
 	}
-	result2 = process_if_exists_set(section, "bones_koeff_protection_add", &CInifile::r_string, str, test);
+	result2 = process_if_exists_set(section, "bones_koeff_protection_add", str, test);
 	if (result2 && !test)
 	{
 		AddBonesProtection(str);
