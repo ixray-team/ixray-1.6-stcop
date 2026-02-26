@@ -3484,7 +3484,7 @@ bool CWeaponMagazined::install_upgrade_impl(LPCSTR section, bool test)
 
 	LPCSTR str = {};
 
-	bool result2 = process_if_exists_set(section, "fire_modes", &CInifile::r_string, str, test);
+	bool result2 = process_if_exists_set(section, "fire_modes", str, test);
 	if (result2 && !test)
 	{
 		int ModesCount = _GetItemCount(str);
@@ -3499,25 +3499,25 @@ bool CWeaponMagazined::install_upgrade_impl(LPCSTR section, bool test)
 	}
 	result |= result2;
 
-	result |= process_if_exists_set(section, "base_dispersioned_bullets_count", &CInifile::r_s32, m_iBaseDispersionedBulletsCount, test);
-	result |= process_if_exists_set(section, "base_dispersioned_bullets_speed", &CInifile::r_float, m_fBaseDispersionedBulletsSpeed, test);
+	result |= process_if_exists_set(section, "base_dispersioned_bullets_count", m_iBaseDispersionedBulletsCount, test);
+	result |= process_if_exists_set(section, "base_dispersioned_bullets_speed", m_fBaseDispersionedBulletsSpeed, test);
 
-	result2 = process_if_exists_set(section, "snd_draw", &CInifile::r_string, str, test);
+	result2 = process_if_exists_set(section, "snd_draw", str, test);
 	if (result2 && !test) { m_sounds.LoadSound(section, "snd_draw", "sndShow", false, m_eSoundShow); }
 	result |= result2;
 
-	result2 = process_if_exists_set(section, "snd_holster", &CInifile::r_string, str, test);
+	result2 = process_if_exists_set(section, "snd_holster", str, test);
 	if (result2 && !test) { m_sounds.LoadSound(section, "snd_holster", "sndHide", false, m_eSoundHide); }
 	result |= result2;
 
-	result2 = process_if_exists_set(section, "snd_shoot", &CInifile::r_string, str, test);
+	result2 = process_if_exists_set(section, "snd_shoot", str, test);
 	if (result2 && !test)
 	{
 		m_layered_sounds.LoadSound(section, "snd_shoot", "sndShot", false, m_eSoundShot);
 	}
 	result |= result2;
 
-	result2 = process_if_exists_set(section, "snd_shoot_actor", &CInifile::r_string, str, test);
+	result2 = process_if_exists_set(section, "snd_shoot_actor", str, test);
 	if (result2 && !test)
 	{
 		m_eSoundsFlags.set(ESoundsFlags::sf_shoot_actor, TRUE);
@@ -3525,7 +3525,7 @@ bool CWeaponMagazined::install_upgrade_impl(LPCSTR section, bool test)
 	}
 	result |= result2;
 
-	result2 = process_if_exists_set(section, "snd_shot_last", &CInifile::r_string, str, test);
+	result2 = process_if_exists_set(section, "snd_shot_last", str, test);
 	if (result2 && !test)
 	{
 		m_eSoundsFlags.set(ESoundsFlags::sf_shoot_last, TRUE);
@@ -3533,7 +3533,7 @@ bool CWeaponMagazined::install_upgrade_impl(LPCSTR section, bool test)
 	}
 	result |= result2;
 
-	result2 = process_if_exists_set(section, "snd_shot_last_actor", &CInifile::r_string, str, test);
+	result2 = process_if_exists_set(section, "snd_shot_last_actor", str, test);
 	if (result2 && !test)
 	{
 		m_eSoundsFlags.set(ESoundsFlags::sf_shoot_actor_last, TRUE);
@@ -3541,32 +3541,32 @@ bool CWeaponMagazined::install_upgrade_impl(LPCSTR section, bool test)
 	}
 	result |= result2;
 
-	result2 = process_if_exists_set(section, "snd_empty", &CInifile::r_string, str, test);
+	result2 = process_if_exists_set(section, "snd_empty", str, test);
 	if (result2 && !test) { m_sounds.LoadSound(section, "snd_empty", "sndEmptyClick", false, m_eSoundEmptyClick); }
 	result |= result2;
 
-	result2 = process_if_exists_set(section, "snd_reload", &CInifile::r_string, str, test);
+	result2 = process_if_exists_set(section, "snd_reload", str, test);
 	if (result2 && !test) { m_sounds.LoadSound(section, "snd_reload", "sndReload", true, m_eSoundReload); }
 	result |= result2;
 
 	if (m_eSilencerStatus == ALife::eAddonAttachable || m_eSilencerStatus == ALife::eAddonPermanent)
 	{
 		LPCSTR sil_ps = nullptr;
-		result |= process_if_exists_set(section, "silencer_flame_particles", &CInifile::r_string, sil_ps, test);
+		result |= process_if_exists_set(section, "silencer_flame_particles", sil_ps, test);
 		if(sil_ps)
 			LoadParticle(section, sil_ps, m_pFlameSilencerParticles);
-		result |= process_if_exists_set(section, "silencer_smoke_particles", &CInifile::r_string, sil_ps, test);
+		result |= process_if_exists_set(section, "silencer_smoke_particles", sil_ps, test);
 		if (sil_ps)
 			LoadParticle(section, sil_ps, m_pSmokeSilencerParticles);
 
-		result2 = process_if_exists_set(section, "snd_silncer_shot", &CInifile::r_string, str, test);
+		result2 = process_if_exists_set(section, "snd_silncer_shot", str, test);
 		if (result2 && !test)
 		{
 			m_layered_sounds.LoadSound(section, "snd_silncer_shot", "sndSilencerShot", false, m_eSoundShot);
 		}
 		result |= result2;
 
-		result2 = process_if_exists_set(section, "snd_silncer_shot_actor", &CInifile::r_string, str, test);
+		result2 = process_if_exists_set(section, "snd_silncer_shot_actor", str, test);
 		if (result2 && !test)
 		{
 			m_eSoundsFlags.set(ESoundsFlags::sf_shoot_actor_sil, TRUE);
@@ -3574,7 +3574,7 @@ bool CWeaponMagazined::install_upgrade_impl(LPCSTR section, bool test)
 		}
 		result |= result2;
 
-		result2 = process_if_exists_set(section, "snd_silencer_shot_last", &CInifile::r_string, str, test);
+		result2 = process_if_exists_set(section, "snd_silencer_shot_last", str, test);
 		if (result2 && !test)
 		{
 			m_eSoundsFlags.set(ESoundsFlags::sf_shoot_last_sil, TRUE);
@@ -3582,7 +3582,7 @@ bool CWeaponMagazined::install_upgrade_impl(LPCSTR section, bool test)
 		}
 		result |= result2;
 
-		result2 = process_if_exists_set(section, "snd_silencer_shot_last_actor", &CInifile::r_string, str, test);
+		result2 = process_if_exists_set(section, "snd_silencer_shot_last_actor", str, test);
 		if (result2 && !test)
 		{
 			m_eSoundsFlags.set(ESoundsFlags::sf_shoot_actor_last_sil, TRUE);
@@ -3591,17 +3591,17 @@ bool CWeaponMagazined::install_upgrade_impl(LPCSTR section, bool test)
 		result |= result2;
 	}
 
-	result |= process_if_exists(section, "ironsight_zoom_factor", &CInifile::r_float, m_zoom_params.m_fIronSightZoomFactor, test);
+	result |= process_if_exists(section, "ironsight_zoom_factor", m_zoom_params.m_fIronSightZoomFactor, test);
 
 	if (IsScopeAttached())
 	{
-		result |= process_if_exists(section, "scope_zoom_factor", &CInifile::r_float, m_zoom_params.m_fScopeZoomFactor, test);
+		result |= process_if_exists(section, "scope_zoom_factor", m_zoom_params.m_fScopeZoomFactor, test);
 	}
 	else
 	{
 		if (IsZoomEnabled())
 		{
-			result |= process_if_exists(section, "scope_zoom_factor", &CInifile::r_float, m_zoom_params.m_fIronSightZoomFactor, test);
+			result |= process_if_exists(section, "scope_zoom_factor", m_zoom_params.m_fIronSightZoomFactor, test);
 		}
 	}
 

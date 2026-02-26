@@ -430,8 +430,8 @@ protected:
 	bool m_bNeedPumpReloadEnd = false;
 	bool m_bGaussScheme = false;
 	bool m_bGaussScreen = false;
-	BOOL m_bUseRevolverScheme = false;
-	BOOL m_bUseMosinScheme = false;
+	bool m_bUseRevolverScheme = false;
+	bool m_bUseMosinScheme = false;
 	bool m_AlterZoomAllowed = false;
 	bool m_bAllowSafemode = false;
 
@@ -440,14 +440,14 @@ protected:
 	bool m_bIsPumpEnabled = false;
 
 	s32	m_iAutoAimTime = 0;
-	BOOL m_bAutoAimOnlyAlive = false;
-	BOOL m_bAutoAimIgnoreDead = false;
-	BOOL m_bAutoAimShotAfterKeyReleased = false;
+	bool m_bAutoAimOnlyAlive = false;
+	bool m_bAutoAimIgnoreDead = false;
+	bool m_bAutoAimShotAfterKeyReleased = false;
 	bool m_bAutoAimNeedReleaseShot = false;
 	bool m_bAutoAimNeedAutoShot = false;
 	bool m_bAutoAimShooted = false;
 	s32 m_iAutoAimValidTime = 0;
-	BOOL m_bAutoAimAutoShot = false;
+	bool m_bAutoAimAutoShot = false;
 
 	bool	IsAutoAimHaveTarget();
 	s32		GetAutoAimPeriod() const;
