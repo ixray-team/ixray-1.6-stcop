@@ -6,7 +6,7 @@ class RHIStateManagerDX11 :
 	public IRHIStateManager
 {
 public:
-	RHIStateManagerDX11();
+	explicit RHIStateManagerDX11(ID3D11DeviceContext* InContext = nullptr);
 	~RHIStateManagerDX11();
 
 	virtual void Reset() override;
@@ -36,12 +36,16 @@ public:
 
 	virtual void OverrideScissoring(bool Override = true, bool Value = true) override;
 
+	// Bind to a specific D3D11 device context (immediate or deferred)
+	void SetContext(ID3D11DeviceContext* InContext);
+
 private:
 	void ValidateRDesc();
 	void ValidateDSDesc();
 	void ValidateBDesc();
 
 private:
+	ID3D11DeviceContext* D3DContext = nullptr;
 	RHIStateCache StateCache;
 	ID3D11RasterizerState* RasterizerState;
 	ID3D11DepthStencilState* DepthStencilState;
