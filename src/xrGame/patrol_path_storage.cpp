@@ -20,6 +20,15 @@ CPatrolPathStorage::~CPatrolPathStorage		()
 	delete_data					(m_registry);
 }
 
+void CPatrolPathStorage::unload()
+{
+	for (auto& [key, value] : m_registry)
+	{
+		xr_delete(value);
+	}
+	m_registry.clear();
+}
+
 void CPatrolPathStorage::load_raw			(const ILevelGraph *level_graph, const IGameLevelCrossTable *cross, const IGameGraph *game_graph, IReader &stream)
 {
 	IReader						*chunk = stream.open_chunk(WAY_PATROLPATH_CHUNK);
@@ -62,7 +71,7 @@ void CPatrolPathStorage::load				(IReader &stream)
 	u32							size = chunk->r_u32();
 	chunk->close				();
 
-	m_registry.clear			();
+	unload();
 
 	PATROL_REGISTRY::value_type	pair;
 

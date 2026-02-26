@@ -15,6 +15,13 @@
 moving_objects::moving_objects				() :
 	m_tree					(0)
 {
+	m_nearest_static.reserve(128);
+	m_nearest_moving.reserve(128);
+	m_collision_emitters.reserve(128);
+	m_visited_emitters.reserve(128);
+	m_collisions.reserve(128);
+	m_previous_collisions.reserve(128);
+	m_spatial_objects.reserve(128);
 }
 
 moving_objects::~moving_objects				()
