@@ -293,10 +293,6 @@ protected:
 	void LoadOriginalScopesParams(LPCSTR section);
 	void LoadCurrentScopeParams(LPCSTR section);
 	const shared_str& GetSilencerName			() const{return m_sSilencerName;}
-	void UpdateTorch();
-	void UpdateLaser();
-	void SwitchTorch(bool status, bool forced = false);
-	void SwitchLaser(bool status, bool forced = false);
 
 	IC void	ForceUpdateAmmo						()		{ m_BriefInfo_CalcFrame = 0; }
 
@@ -323,8 +319,6 @@ protected:
 	};
 
 	conditional_breaking_params CollimatorBreakingParams;
-	conditional_breaking_params TorchBreakingParams;
-	conditional_breaking_params LaserBreakingParams;
 
 	struct light_misfire_params
 	{
@@ -392,7 +386,6 @@ protected:
 	float GetNightPPEFactor();
 
 	float m_fCollimatorLevelsProblem = 0.0f;
-	float m_fLaserLevelsProblem = 0.0f;
 	float m_fMisfireAfterProblemsLevel = 10.0f;
 	float m_fRechargeTime = 0.0f;
 	float m_fLastRechargeTime = 0.0f;
@@ -570,7 +563,7 @@ public:
     virtual EHandDependence		HandDependence		()	const		{	return eHandDependence;}
 			bool				IsSingleHanded		()	const		{	return m_bIsSingleHanded; }
 			void				SetMisfireStatus	(bool b)		{ bMisfire = b; }
-			HudLightLaser*		GetLightLaser		()				{	return &m_LightLaser;}
+			THudLightLaser*		GetLightLaser		();
 
 public:
 	int m_strap_bone0_id;
@@ -594,7 +587,6 @@ protected:
 	// 0-используется без участия рук, 1-одна рука, 2-две руки
 	EHandDependence			eHandDependence;
 	bool					m_bIsSingleHanded;
-	HudLightLaser			m_LightLaser;
 
 public:
 	//загружаемые параметры

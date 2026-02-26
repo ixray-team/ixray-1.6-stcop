@@ -707,36 +707,21 @@ bool CWeapon::install_upgrade_torch_laser(LPCSTR section, bool test)
 
 	bool value = false;
 	bool result2 = process_if_exists_set(section, "torch_installed", value, test);
-	if (result2 && !test)
+	if (result2 && !test && value)
 	{
-		m_HudLight.SetInstalled(value);
-		m_HudLight.NewTorchlight(section);
-
-		Fvector tmp_vector = { -1.0f, -1.0f, 0.0f };
-		tmp_vector = READ_IF_EXISTS(pSettings, r_fvector3, section, "torch_breaking_params", tmp_vector);
-		TorchBreakingParams.start_condition = tmp_vector.x;
-		TorchBreakingParams.end_condition = tmp_vector.y;
-		TorchBreakingParams.start_probability = tmp_vector.z;
+		THudLightTorch& LightTorch = CreateComponent<THudLightTorch>();
+		LightTorch.NewTorchlight(section);
 	}
 	result |= result2;
 
-	bool result3 = process_if_exists_set(section, "laser_installed", value, test);
-
-	if (result3 && !test)
+	result2 = process_if_exists_set(section, "laser_installed", value, test);
+	if (result2 && !test && value)
 	{
-		m_LightLaser.SetInstalled(value);
-		m_LightLaser.NewTorchlight(section);
-
-		Fvector tmp_vector = { -1.0f, -1.0f, 0.0f };
-		tmp_vector = READ_IF_EXISTS(pSettings, r_fvector3, section, "laser_breaking_params", tmp_vector);
-		LaserBreakingParams.start_condition = tmp_vector.x;
-		LaserBreakingParams.end_condition = tmp_vector.y;
-		LaserBreakingParams.start_probability = tmp_vector.z;
-
-		m_fLaserLevelsProblem = READ_IF_EXISTS(pSettings, r_float, section, "laser_problems_level", m_fLaserLevelsProblem);
+		THudLightLaser& LightLaser = CreateComponent<THudLightLaser>();
+		LightLaser.NewTorchlight(section);
 	}
 
-	result |= result3;
+	result |= result2;
 
 	return result;
 }
