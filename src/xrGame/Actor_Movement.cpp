@@ -675,11 +675,11 @@ bool CActor::CanRun()
 bool CActor::CanSprint()
 {
 	bool is_animator = (HudAnimator() != nullptr && (HudAnimator()->IsAnyAnimatorActive() && HudAnimator()->CanSprint() || !HudAnimator()->IsAnyAnimatorActive()) || HudAnimator() == nullptr);
-	bool can_Sprint = CanAccelerate() && !conditions().IsCantSprint() && Game().PlayerCanSprint(this) && !(mstate_real & mcBack && (mstate_real & mcLStrafe || mstate_real & mcRStrafe)) && CanRun() && InventoryAllowSprint() && !bBlockSprint && is_animator;
-	if (!pInput->GetControllerMode())
-	{
-		can_Sprint ^= (mstate_real & mcLStrafe || mstate_real & mcRStrafe);
-	}
+	bool can_Sprint = CanAccelerate() && !conditions().IsCantSprint() && Game().PlayerCanSprint(this) && (mstate_real & mcLStrafe) == 0 && (mstate_real & mcRStrafe) == 0 && CanRun() && InventoryAllowSprint() && !bBlockSprint && is_animator;
+	//if (!pInput->GetControllerMode())
+	//{
+	//	can_Sprint ^= (mstate_real & mcLStrafe || mstate_real & mcRStrafe);
+	//}
 
 	return can_Sprint && (m_block_sprint_counter<=0);
 }
