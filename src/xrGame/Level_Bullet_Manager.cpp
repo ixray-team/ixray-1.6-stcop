@@ -216,6 +216,7 @@ void CBulletManager::Clear		()
 	m_Bullets.clear();
 	m_Events.clear();
 	m_Bullets_Tracers.clear();
+	m_WhineSounds.clear();
 }
 
 void CBulletManager::AddBullet(const Fvector& position,
