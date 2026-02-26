@@ -6,7 +6,7 @@ class CFlashlight final : public CCustomDevice
 	using inherited = CCustomDevice;
 
 	bool m_bFlashlightStatus = false;
-	Fvector2 m_fElectronicProblems;
+	Fvector2 m_fElectronicProblems = { 0.0f, 0.5f };
 
 public:
 	CFlashlight() = default;

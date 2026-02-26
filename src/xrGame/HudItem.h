@@ -332,7 +332,7 @@ public:
 	} m_jitter_params;
 
 	jitter_params& GetCurJitterParams() { return m_jitter_params; }
-	HudLightTorch* GetHudLight() { return &m_HudLight; }
+	THudLightTorch* GetHudLight();
 
 protected:
 
@@ -349,7 +349,6 @@ protected:
 	HUD_SOUND_COLLECTION		m_sounds;
 	HUD_SOUND_COLLECTION_LAYERED m_layered_sounds;
 	InertionData				m_current_inertion;
-	HudLightTorch				m_HudLight;
 	float						m_nearwall_dist_max;
 	float						m_nearwall_dist_min;
 	float						m_nearwall_last_hud_fov;

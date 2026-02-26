@@ -285,7 +285,11 @@ void CWeapon::Load		(LPCSTR section)
 	inherited::Load					(section);
 	CShootingObject::Load			(section);
 
-	m_LightLaser.NewTorchlight(section);
+	if (pSettings->line_exist(section, "laser_installed") && pSettings->r_bool(section, "laser_installed"))
+	{
+		THudLightLaser& LaserLight = CreateComponent<THudLightLaser>();
+		LaserLight.NewTorchlight(section);
+	}
 
 	m_base_inertion = m_current_inertion;
 
@@ -647,19 +651,7 @@ void CWeapon::Load		(LPCSTR section)
 	CollimatorBreakingParams.end_condition = tmp_vector.y;
 	CollimatorBreakingParams.start_probability = tmp_vector.z;
 
-	tmp_vector = READ_IF_EXISTS(pSettings, r_fvector3, section, "torch_breaking_params", tmp_vector);
-	TorchBreakingParams.start_condition = tmp_vector.x;
-	TorchBreakingParams.end_condition = tmp_vector.y;
-	TorchBreakingParams.start_probability = tmp_vector.z;
-
 	m_fCollimatorLevelsProblem = READ_IF_EXISTS(pSettings, r_float, section, "collimator_problems_level", 0.0f);
-
-	tmp_vector = READ_IF_EXISTS(pSettings, r_fvector3, section, "laser_breaking_params", tmp_vector);
-	LaserBreakingParams.start_condition = tmp_vector.x;
-	LaserBreakingParams.end_condition = tmp_vector.y;
-	LaserBreakingParams.start_probability = tmp_vector.z;
-
-	m_fLaserLevelsProblem = READ_IF_EXISTS(pSettings, r_float, section, "laser_problems_level", 0.0f);
 
 	m_fRechargeTime = READ_IF_EXISTS(pSettings, r_float, section, "recharge_time", 0.0f);
 
@@ -1265,7 +1257,7 @@ void CWeapon::save(NET_Packet &output_packet)
 	//save_data(m_bHaveShell, output_packet);
 	//save_data(m_bNeedPumpState, output_packet);
 	//save_data(m_bGaussScreen, output_packet);
-	//save_data(m_bTacticalLaserStatus,				output_packet);
+	save_data(m_bTacticalLaserStatus,				output_packet);
 }
 
 void CWeapon::load(IReader &input_packet)
@@ -1288,7 +1280,7 @@ void CWeapon::load(IReader &input_packet)
 	//load_data(m_bHaveShell, input_packet);
 	//load_data(m_bNeedPumpState, input_packet);
 	//load_data(m_bGaussScreen, input_packet);
-	//load_data(m_bTacticalLaserStatus,				input_packet);
+	load_data(m_bTacticalLaserStatus,				input_packet);
 
 	if (m_zoom_params.m_bIsZoomModeNow)	
 	{
@@ -1299,7 +1291,6 @@ void CWeapon::load(IReader &input_packet)
 		OnZoomOut();
 	}
 
-	UpdateTorch();
 	UpdateAddonsVisibility();
 	UpdateHUDAddonsVisibility();
 	ProcessScope();
@@ -1369,13 +1360,21 @@ void CWeapon::OnH_B_Independent	(bool just_before_destroy)
 	m_zoom_params.m_bIsZoomModeNow	= false;
 	bDisablePrepareAnimation = false;
 	UpdateXForm					();
-	m_LightLaser.UpdateTorchFromObject(this);
+
+	if (THudLightLaser* LaserLight = GetComponent<THudLightLaser>())
+	{
+		LaserLight->UpdateTorchFromObject(this);
+	}
 }
 
 void CWeapon::OnMoveToRuck(const SInvItemPlace& prev)
 {
 	inherited::OnMoveToRuck(prev);
-	m_LightLaser.UpdateTorchFromObject(this);
+
+	if (THudLightLaser* LaserLight = GetComponent<THudLightLaser>())
+	{
+		LaserLight->UpdateTorchFromObject(this);
+	}
 }
 
 void CWeapon::OnH_A_Independent	()
@@ -1493,8 +1492,16 @@ void CWeapon::UpdateCL		()
 	}
 
 	UpdateCollimatorSight();
-	UpdateTorch();
-	UpdateLaser();
+
+	if (THudLightTorch* LightTorch = GetComponent<THudLightTorch>())
+	{
+		LightTorch->UpdateTorch(this, m_bTacticalTorchStatus);
+	}
+
+	if (THudLightLaser* LaserLight = GetComponent<THudLightLaser>())
+	{
+		LaserLight->UpdateLaser(this, m_bTacticalLaserStatus);
+	}
 
 	inherited::UpdateCL		();
 
@@ -1618,166 +1625,6 @@ void CWeapon::ForceUpdateHUD()
 	UpdateShellBones(m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType());
 	UpdateLiteAmmoBones(iAmmoElapsed + iAmmoChamberElapsed);
 	UpdateBonePartAnimations();
-}
-
-void CWeapon::SwitchTorch(bool status, bool forced)
-{
-	if (!m_HudLight.GetTorchInstalled())
-	{
-		return;
-	}
-
-	if (!forced && status == m_bTacticalTorchStatus)
-	{
-		return;
-	}
-
-	m_bTacticalTorchStatus = status;
-
-	m_HudLight.SwitchTorchlight(status);
-}
-
-void CWeapon::SwitchLaser(bool status, bool forced)
-{
-	if (!m_LightLaser.GetTorchInstalled())
-	{
-		return;
-	}
-
-	if (!forced && status == m_bTacticalLaserStatus)
-	{
-		return;
-	}
-
-	m_bTacticalLaserStatus = status;
-
-	m_LightLaser.SwitchTorchlight(status);
-}
-
-void CWeapon::UpdateLaser()
-{
-	if (!m_LightLaser.GetTorchInstalled())
-	{
-		return;
-	}
-
-	SwitchLaser(m_bTacticalLaserStatus, true);
-
-	bool is_broken = false;
-	const float current_condition = GetCondition();
-	const int current_problems_cnt = Level().GetElectronicsProblemsManager()->CurrentElectronicsProblemsCnt();
-	const int target_problems_cnt = Level().GetElectronicsProblemsManager()->TargetElectronicsProblemsCnt();
-
-	if (current_condition < LaserBreakingParams.end_condition)
-	{
-		is_broken = true;
-	}
-	else if (current_condition < LaserBreakingParams.start_condition || m_fLaserLevelsProblem > 0.0f && current_problems_cnt >= m_fLaserLevelsProblem)
-	{
-		float probability = 0.0f;
-
-		if (target_problems_cnt >= m_fLaserLevelsProblem)
-		{
-			probability = 1.0f;
-		}
-		else if (LaserBreakingParams.start_condition == LaserBreakingParams.end_condition)
-		{
-			probability = LaserBreakingParams.start_condition;
-		}
-		else
-		{
-			probability = LaserBreakingParams.start_probability + (LaserBreakingParams.start_condition - current_condition) * (1.0f - LaserBreakingParams.start_probability) / (LaserBreakingParams.start_condition - LaserBreakingParams.end_condition);
-		}
-
-		is_broken = !!(::Random.randF(0.0f, 1.0f) < probability);
-	}
-
-	if (is_broken)
-	{
-		m_LightLaser.SwitchTorchlight(false);
-	}
-
-	if (m_LightLaser.GetTorchInstalled())
-	{
-		auto SetVisible = [&](IKinematics* kin, const shared_str& bone_name, BOOL status)
-		{
-			if (kin != nullptr)
-			{
-				u16 bone_id = kin->LL_BoneID(bone_name);
-				if (bone_id != BI_NONE)
-				{
-					kin->LL_SetBoneVisible(bone_id, status, FALSE);
-				}
-			}
-		};
-
-		attachable_hud_item* HID = HudItemData();
-		IKinematics* hud_kin = HID != nullptr ? HID->m_model : nullptr;
-		IKinematics* world_kin = Visual() != nullptr ? PKinematics(Visual()) : nullptr;
-
-		for (const shared_str& bone : m_LightLaser.ConeBones)
-		{
-			SetVisible(hud_kin, bone, m_LightLaser.GetTorchActive());
-			SetVisible(world_kin, bone, m_LightLaser.GetTorchActive());
-		}
-	}
-
-	m_LightLaser.UpdateTorchFromObject(this);
-}
-
-void CWeapon::UpdateTorch()
-{
-	if (!m_HudLight.GetTorchInstalled())
-	{
-		return;
-	}
-
-	SwitchTorch(m_bTacticalTorchStatus, true);
-
-	bool is_broken = false;
-	const float current_condition = GetCondition();
-
-	if (current_condition < TorchBreakingParams.end_condition)
-	{
-		is_broken = true;
-	}
-	else if (current_condition < TorchBreakingParams.start_condition)
-	{
-		is_broken = (::Random.randF(0.0f, 1.0f) < TorchBreakingParams.start_probability +
-			(TorchBreakingParams.start_condition - current_condition) *
-			(1.0f - TorchBreakingParams.start_probability) /
-			(TorchBreakingParams.start_condition - TorchBreakingParams.end_condition));
-	}
-
-	if (is_broken)
-	{
-		m_HudLight.SwitchTorchlight(false);
-	}
-
-	if (m_HudLight.GetTorchInstalled())
-	{
-		auto SetVisible = [&](IKinematics* kin, const shared_str& bone_name, BOOL status)
-		{
-			if (kin != nullptr)
-			{
-				u16 bone_id = kin->LL_BoneID(bone_name);
-				if (bone_id != BI_NONE)
-				{
-					kin->LL_SetBoneVisible(bone_id, status, FALSE);
-				}
-			}
-		};
-
-		attachable_hud_item* HID = HudItemData();
-		IKinematics* hud_kin = HID != nullptr ? HID->m_model : nullptr;
-		IKinematics* world_kin = Visual() != nullptr ? PKinematics(Visual()) : nullptr;
-
-		for (const shared_str& bone : m_HudLight.ConeBones)
-		{
-			SetVisible(hud_kin, bone, m_HudLight.GetTorchActive());
-			SetVisible(world_kin, bone, m_HudLight.GetTorchActive());
-		}
-	}
 }
 
 void CWeapon::LoadUpgradeBonesToHide(const char* section, const char* line)
@@ -2928,22 +2775,6 @@ void CWeapon::UpdateAddonsVisibility()
 		for (auto& bone : m_bDefHideBonesGLAttached)
 		{
 			ChangeBoneVisible(bone, false, false);
-		}
-	}
-
-	if (m_HudLight.GetTorchInstalled())
-	{
-		for (const shared_str& bone : m_HudLight.ConeBones)
-		{
-			ChangeBoneVisible(bone, m_HudLight.GetTorchActive());
-		}
-	}
-
-	if (m_LightLaser.GetTorchInstalled())
-	{
-		for (const shared_str& bone : m_LightLaser.ConeBones)
-		{
-			ChangeBoneVisible(bone, m_LightLaser.GetTorchActive());
 		}
 	}
 
@@ -5283,4 +5114,9 @@ bool CWeapon::AllowSafemode() const
 {
 	const u32 state = GetState();
 	return m_bAllowSafemode && (state == eIdle || state == eSafemodeSwitch || state == eSwitchMode);
+}
+
+THudLightLaser* CWeapon::GetLightLaser()
+{
+	return GetComponent<THudLightLaser>();
 }
