@@ -139,6 +139,11 @@ void CAI_Space::unload				(bool reload)
 
 	if(!Device.IsEditorMode()) xr_delete(m_level_graph);
 
+	m_cover_manager->clear();
+	if (!reload)
+	{
+		m_patrol_path_storage->unload();
+	}
 }
 
 #ifdef DEBUG

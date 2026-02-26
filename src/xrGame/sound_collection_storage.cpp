@@ -32,6 +32,11 @@ public:
 	}
 };
 
+CSoundCollectionStorage::CSoundCollectionStorage()
+{
+	m_objects.reserve(512);
+}
+
 CSoundCollectionStorage::~CSoundCollectionStorage	()
 {
 	delete_data				(m_objects);

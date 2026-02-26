@@ -277,7 +277,7 @@ CLevel::~CLevel()
 #endif
 	xr_delete					(game);
 	xr_delete					(game_events);
-
+	xr_delete					(Server);
 
 	//by Dandy
 	//destroy fog of war

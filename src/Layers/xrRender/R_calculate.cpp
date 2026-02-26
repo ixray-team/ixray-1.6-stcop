@@ -53,4 +53,7 @@ void CRender::Calculate		()
 
 	//
 	Lights.Update();
+
+	lstRenderables.resize(0);
+	lstRenderables.reserve(4096);
 }

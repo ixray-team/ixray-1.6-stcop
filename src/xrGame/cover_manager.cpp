@@ -147,6 +147,10 @@ void CCoverManager::clear					()
 	m_covers->clear			();
 	xr_delete				(m_smart_covers_storage);
 	m_smart_covers.clear	();
+	if (m_covers)
+	{
+		xr_delete(m_covers);
+	}
 }
 
 namespace smart_cover {

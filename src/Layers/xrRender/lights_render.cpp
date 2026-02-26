@@ -87,6 +87,7 @@ void	CRender::render_lights	(light_Package& LP)
 		{
 			// if (has_spot_shadowed)
 			xr_vector<light*>	L_spot_s;
+			L_spot_s.reserve(LP.v_shadowed.size());
 			stats.s_used++;
 
 			// generate spot shadowmap
