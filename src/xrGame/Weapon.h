@@ -380,7 +380,7 @@ protected:
 		bool bBlockQKGLM = false;
 	} m_fast_kick_params;
 
-	bool IsLensedScopeInstalled() const { return m_lens_zoom_params.need_lens_frame || bUseAltScope && bScopeIsHasTexture; }
+	bool IsLensedScopeInstalled() const { return m_lens_zoom_params.need_lens_frame; }
 	float GetLensFOV() const;
 	void LoadNightBrightnessParamsFromSection(shared_str sect);
 	void ChangeNightBrightness(int steps);
