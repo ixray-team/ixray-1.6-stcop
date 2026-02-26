@@ -45,6 +45,11 @@ public:
     virtual void DrawIndexedInstanced(u32 baseVertex, u32 startVertex, u32 vertexCount, u32 startIndex, u32 primitiveCount, u32 instanceCount, u32 startInstanceLocation) override;
     virtual void DrawNoInputAssembly(u32 vertexCount) override;
 
+    // Context helpers
+    ID3D11DeviceContext* GetImmediateContext() const;
+    ID3D11DeviceContext* CreateDeferredContext();
+    void ReleaseDeferredContext(ID3D11DeviceContext* context);
+
 private:
     D3D_PRIMITIVE_TOPOLOGY d3dTopology;
     ERHI_PRIMITIVE_TOPOLOGY currentTopology;
