@@ -8,6 +8,10 @@
 
 struct STextureParams;
 
+constexpr ImVec4 kAuthorTextColor = ImVec4(0.063f, 0.788f, 0.196f, 1.0f);
+constexpr ImVec4 kContributorsTextColor = ImVec4(0.306f, 0.745f, 0.878f, 1.0f);
+
+
 struct clsid_manager
 {
 	void add_mp_stuff(CLASS_ID id);

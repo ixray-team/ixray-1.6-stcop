@@ -773,6 +773,49 @@ void PrintErrorStatus(
 	ImGui::TextColored(color, status_name);
 }
 
+void PrintHelp()
+{
+	// Get available content region width
+	float availableWidth = ImGui::GetContentRegionAvail().x;
+
+	// Calculate text width
+	constexpr const char* text = "(?)";
+	float textWidth = ImGui::CalcTextSize(text).x;
+
+	// Move cursor to right position
+	ImGui::SetCursorPosX(ImGui::GetCursorPosX() + availableWidth - textWidth);
+
+	// Draw text
+	ImGui::Text("%s", text);
+
+	if (ImGui::IsItemHovered())
+	{
+		if (ImGui::BeginItemTooltip())
+		{
+			ImGui::Text("Author:");
+			ImGui::SameLine();
+			ImGui::TextColored(kAuthorTextColor, "@wh1t3lord");
+			ImGui::Separator();
+			ImGui::Text("");
+
+			ImGui::Text("Description:");
+			ImGui::Text("\tEditor for previewing textures and editing thms");
+			
+			ImGui::Text("");
+			ImGui::Separator();
+			ImGui::Text("Contributors:");
+			//ImGui::Text("\t1)  ");
+			ImGui::Text("\t*");
+			ImGui::SameLine();
+			ImGui::TextColored(kContributorsTextColor, "@v2v3v4");
+			ImGui::SameLine();
+			ImGui::Text(" - improved threading;");
+
+			ImGui::EndTooltip();
+		}
+	}
+}
+
 template<typename T, u32 TokenSize>
 void ListBoxToken(T(&p_token)[TokenSize], const char* pListBoxName, u32* p_data)
 {
@@ -883,6 +926,8 @@ void RenderTextureEditor()
 
 	if (ImGui::Begin("Texture Editor", 0, ImGuiWindowFlags_AlwaysAutoResize))
 	{
+		PrintHelp();
+
 		if (ImGui::BeginTabBar("##TETB"))
 		{
 			if (ImGui::BeginTabItem("All"))
@@ -1670,6 +1715,7 @@ void RenderTextureEditor()
 
 void TextureEditor_OnPressed(int key)
 {
+	// todo: replace with input events (don't hardcode with direct device-key mappings
 	switch (key)
 	{
 	case SDL_Scancode::SDL_SCANCODE_ESCAPE:
