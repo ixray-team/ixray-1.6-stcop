@@ -650,29 +650,23 @@ LevelInspector::~LevelInspector()
 void LevelInspector::OnRender()
 {
 	PROF_EVENT(__FUNCTION__);
-	bool tris_empty = tris.empty();
-	bool lines_empty = lines.empty();
-
-	if (!hud_mode && m_flags.flags == ESCENE_FLAGS::ESF_NONE && tris_empty && lines_empty)
-		return;
-
-	zbuffer_enable = !pInput->iGetAsyncKeyState(zbuffer_key);
-	if (!hud_mode)
-		visible_currents = pInput->iGetAsyncKeyState(visible_currents_key);
 
 	if (hud_mode)
 	{
-		DrawHud();
+		if(m_skeleton_flags.flags != 0u)
+			DrawHud();
 	}
 	else
 	{
+		visible_currents = pInput->iGetAsyncKeyState(visible_currents_key);
+
 		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_HUD))
 			hud_prims->OnRender();
 		if(m_flags.test(ESCENE_FLAGS::ESF_DRAW_AI_PATHS))
 			DrawAIPaths();
 		if(m_flags.test(ESCENE_FLAGS::ESF_DRAW_SELECTION))
 			DrawObjectsInfo();
-		if(psDeviceFlags.test(rsDrawDynamic))
+		if(m_skeleton_flags.flags != 0u || m_zone_flags.flags != 0u || m_spatials_mask!=ESPATIAL_TYPE::NONE)
 			DrawObjects();
 		if(m_flags.test(ESCENE_FLAGS::ESF_DRAW_G_GRID))
 			DrawGameGraph();
@@ -682,7 +676,13 @@ void LevelInspector::OnRender()
 			DrawHOM();
 	}
 
+	bool tris_empty = tris.empty();
+	bool lines_empty = lines.empty();
 
+	if (m_flags.flags == 0u && tris_empty && lines_empty)
+		return;
+
+	zbuffer_enable = !pInput->iGetAsyncKeyState(zbuffer_key);
 	if (!tris_empty || !lines_empty)
 	{
 		if (hud_mode)
@@ -2714,8 +2714,8 @@ void LevelInspector::DrawObjectsInfo()
 
 		if (!result.O && result.element >=0)
 		{
-			CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + result.element;
-			SGameMtl* pMtl = GMLib.GetMaterialByIdx(T->material);
+			CDB::TRI& T = Level().ObjectSpace.GetStaticTris()[result.element];
+			SGameMtl* pMtl = GMLib.GetMaterialByIdx(T.material);
 			if (pMtl != nullptr && (pMtl->Flags.is(SGameMtl::flPassable) || pMtl->Flags.is(SGameMtl::flActorObstacle)))
 				return TRUE;
 		}
@@ -2932,213 +2932,217 @@ void LevelInspector::DrawObjects()
 			(m_zone_flags.test(EZONE_INFO::EZI_SIM_FACTION) ? ESPATIAL_TYPE::SIM_FACTION : ESPATIAL_TYPE::NONE))
 		: ESPATIAL_TYPE::NONE;
 
-	g_SpatialSpace->q_frustum(m_objects, 0, dyn_flags | zone_flags, Render->ViewBase);
-
-	for (ISpatialShared& spatial : m_objects)
+	if(dyn_flags!=ESPATIAL_TYPE::NONE || zone_flags!=ESPATIAL_TYPE::NONE)
 	{
-		if (!spatial.get()) continue;
 
-		float opt_dist = cam_pos.distance_to_sqr(spatial->spatial.sphere.P);
-		float fog_dist = visible_currents ? 50000.f : g_pGamePersistent->pEnvironment->CurrentEnv->fog_distance;
-		if (opt_dist >= _sqr(fog_dist + spatial->spatial.sphere.R))
-			continue;
+		g_SpatialSpace->q_frustum(m_objects, 0, dyn_flags | zone_flags, Render->ViewBase);
 
-		CObject* _O = spatial->dcast_CObject();
-		CGameObject* GO = (_O && !_O->getDestroy()) ? _O->cast_game_object() : nullptr;
-		if (!GO) continue;
-
-		if (GO->Visual() && m_flags.test(ESCENE_FLAGS::ESF_DRAW_OBJECTS))
+		for (ISpatialShared& spatial : m_objects)
 		{
-			if (!m_skeleton_flags.test(ESKELETON_INFO::ESI_ACTOR) && g_actor == GO->cast_actor())
+			if (!spatial.get()) continue;
+
+			float opt_dist = cam_pos.distance_to_sqr(spatial->spatial.sphere.P);
+			float fog_dist = visible_currents ? 50000.f : g_pGamePersistent->pEnvironment->CurrentEnv->fog_distance;
+			if (opt_dist >= _sqr(fog_dist + spatial->spatial.sphere.R))
 				continue;
 
-			DrawSkeleton(GO->Visual()->dcast_PKinematics(), GO->XFORM(), GO);
+			CObject* _O = spatial->dcast_CObject();
+			CGameObject* GO = (_O && !_O->getDestroy()) ? _O->cast_game_object() : nullptr;
+			if (!GO) continue;
 
-			if (((spatial->spatial.type & ESPATIAL_TYPE::STALKER_ALIVE) != ESPATIAL_TYPE::NONE ||
-				(spatial->spatial.type & ESPATIAL_TYPE::ACTOR_ALIVE) != ESPATIAL_TYPE::NONE))
+			if (GO->Visual() && m_flags.test(ESCENE_FLAGS::ESF_DRAW_OBJECTS))
 			{
-				if (CInventoryOwner* IO = smart_cast<CInventoryOwner*>(GO))
+				if (!m_skeleton_flags.test(ESKELETON_INFO::ESI_ACTOR) && g_actor == GO->cast_actor())
+					continue;
+
+				DrawSkeleton(GO->Visual()->dcast_PKinematics(), GO->XFORM(), GO);
+
+				if (((spatial->spatial.type & ESPATIAL_TYPE::STALKER_ALIVE) != ESPATIAL_TYPE::NONE ||
+					(spatial->spatial.type & ESPATIAL_TYPE::ACTOR_ALIVE) != ESPATIAL_TYPE::NONE))
 				{
-					for (CAttachableItem* item : IO->attached_objects())
-						DrawSkeleton(item->object().Visual()->dcast_PKinematics(), item->object().XFORM(), &item->object());
-
-					if (PIItem item = IO->inventory().ActiveItem())
-						DrawSkeleton(item->object().Visual()->dcast_PKinematics(), item->object().XFORM(), &item->object());
-
-					if (CEntityAlive* CurrEntity = GO->cast_entity_alive(); CurrEntity == Actor())
+					if (CInventoryOwner* IO = smart_cast<CInventoryOwner*>(GO))
 					{
-						PIItem rWeapon = IO->inventory().ItemFromSlot(INV_SLOT_3);
-						bool rValid = rWeapon ? rWeapon->BaseSlot() == INV_SLOT_3 : false;
-						if (rWeapon && rValid && rWeapon != IO->inventory().ActiveItem())
-							DrawSkeleton(rWeapon->object().Visual()->dcast_PKinematics(), rWeapon->object().XFORM(), &rWeapon->object());
+						for (CAttachableItem* item : IO->attached_objects())
+							DrawSkeleton(item->object().Visual()->dcast_PKinematics(), item->object().XFORM(), &item->object());
 
-						PIItem lWeapon = IO->inventory().ItemFromSlot(INV_SLOT_2);
-						bool lValid = lWeapon ? lWeapon->BaseSlot() == INV_SLOT_3 : false;
-						if (lWeapon && lValid && lWeapon != IO->inventory().ActiveItem())
-							DrawSkeleton(lWeapon->object().Visual()->dcast_PKinematics(), lWeapon->object().XFORM(), &lWeapon->object());
+						if (PIItem item = IO->inventory().ActiveItem())
+							DrawSkeleton(item->object().Visual()->dcast_PKinematics(), item->object().XFORM(), &item->object());
 
-						auto lWeapon2 = IO->inventory().ItemFromSlot(PISTOL_SLOT_NEW);
-						bool lValid2 = lWeapon2 ? lWeapon2->BaseSlot() == INV_SLOT_3 : false;
-						if (lWeapon2 && lValid2 && lWeapon2 != IO->inventory().ActiveItem())
-							DrawSkeleton(lWeapon2->object().Visual()->dcast_PKinematics(), lWeapon2->object().XFORM(), &lWeapon2->object());
+						if (CEntityAlive* CurrEntity = GO->cast_entity_alive(); CurrEntity == Actor())
+						{
+							PIItem rWeapon = IO->inventory().ItemFromSlot(INV_SLOT_3);
+							bool rValid = rWeapon ? rWeapon->BaseSlot() == INV_SLOT_3 : false;
+							if (rWeapon && rValid && rWeapon != IO->inventory().ActiveItem())
+								DrawSkeleton(rWeapon->object().Visual()->dcast_PKinematics(), rWeapon->object().XFORM(), &rWeapon->object());
+
+							PIItem lWeapon = IO->inventory().ItemFromSlot(INV_SLOT_2);
+							bool lValid = lWeapon ? lWeapon->BaseSlot() == INV_SLOT_3 : false;
+							if (lWeapon && lValid && lWeapon != IO->inventory().ActiveItem())
+								DrawSkeleton(lWeapon->object().Visual()->dcast_PKinematics(), lWeapon->object().XFORM(), &lWeapon->object());
+
+							auto lWeapon2 = IO->inventory().ItemFromSlot(PISTOL_SLOT_NEW);
+							bool lValid2 = lWeapon2 ? lWeapon2->BaseSlot() == INV_SLOT_3 : false;
+							if (lWeapon2 && lValid2 && lWeapon2 != IO->inventory().ActiveItem())
+								DrawSkeleton(lWeapon2->object().Visual()->dcast_PKinematics(), lWeapon2->object().XFORM(), &lWeapon2->object());
+						}
 					}
 				}
 			}
-		}
-		//if ((spatial->spatial.type & ESPATIAL_TYPE::STALKER_ALIVE) != ESPATIAL_TYPE::NONE)
-		//{
-		//	if (CAI_Stalker* stlk = GO->cast_stalker())
-		//	{
-		//		for (auto& feelobject : stlk->feel_visible)
-		//		{
-		//			Fvector C1, C2;
-		//			stlk->Center(C1);
-		//			feelobject.O->Center(C2);
-		//
-		//			append_text3d(C2, shared_str().printf("fuzzy: %f", feelobject.fuzzy));
-		//			append_text_next(shared_str().printf("Cache_vis: %f", feelobject.Cache_vis));
-		//			append_text_next(shared_str().printf("bone: %s", PKinematics(feelobject.O->Visual())->LL_BoneName_dbg(feelobject.bone_id)));
-		//			append_line({ C1, C2, color_rgba(255, 0, 0, 255) });
-		//		}
-		//	}
-		//}
-		
-		if ((spatial->spatial.type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE && (spatial->spatial.type & zone_flags) != ESPATIAL_TYPE::NONE)
-		{
-			if(CCF_Shape* ccfshape = GO->CFORM() ? GO->CFORM()->cast_shape() : nullptr)
+			//if ((spatial->spatial.type & ESPATIAL_TYPE::STALKER_ALIVE) != ESPATIAL_TYPE::NONE)
+			//{
+			//	if (CAI_Stalker* stlk = GO->cast_stalker())
+			//	{
+			//		for (auto& feelobject : stlk->feel_visible)
+			//		{
+			//			Fvector C1, C2;
+			//			stlk->Center(C1);
+			//			feelobject.O->Center(C2);
+			//
+			//			append_text3d(C2, shared_str().printf("fuzzy: %f", feelobject.fuzzy));
+			//			append_text_next(shared_str().printf("Cache_vis: %f", feelobject.Cache_vis));
+			//			append_text_next(shared_str().printf("bone: %s", PKinematics(feelobject.O->Visual())->LL_BoneName_dbg(feelobject.bone_id)));
+			//			append_line({ C1, C2, color_rgba(255, 0, 0, 255) });
+			//		}
+			//	}
+			//}
+
+			if ((spatial->spatial.type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE && (spatial->spatial.type & zone_flags) != ESPATIAL_TYPE::NONE)
 			{
-				u32 line_color = pSettings->line_exist(GO->cNameSect_str(), "shape_edge_color") ? pSettings->r_color(GO->cNameSect_str(), "shape_edge_color") : color_rgba(32, 32, 32, 255);
-				u32 tri_color = pSettings->line_exist(GO->cNameSect_str(), "shape_transp_color") ? pSettings->r_color(GO->cNameSect_str(), "shape_transp_color") : color_rgba(128, 128, 128, 60);
-				auto& shapes = ccfshape->shapes;
-
-				for (int i = 0; i < shapes.size(); ++i)
+				if (CCF_Shape* ccfshape = GO->CFORM() ? GO->CFORM()->cast_shape() : nullptr)
 				{
-					u32 tritmp_color = tri_color;
-					if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_SELECTION) && RQ.O == GO)
-					{
-						if (RQ.element == i)
-						{
-							Fcolor t_clr;
-							t_clr.set(tri_color);
-							t_clr.mul_rgba(1.5f);
-							tritmp_color = t_clr.get();
-						}
-						else
-						{
-							Fcolor t_clr;
-							t_clr.set(tri_color);
-							t_clr.mul_rgba(1.2f);
-							tritmp_color = t_clr.get();
-						}
-					}
+					u32 line_color = pSettings->line_exist(GO->cNameSect_str(), "shape_edge_color") ? pSettings->r_color(GO->cNameSect_str(), "shape_edge_color") : color_rgba(32, 32, 32, 255);
+					u32 tri_color = pSettings->line_exist(GO->cNameSect_str(), "shape_transp_color") ? pSettings->r_color(GO->cNameSect_str(), "shape_transp_color") : color_rgba(128, 128, 128, 60);
+					auto& shapes = ccfshape->shapes;
 
-					CCF_Shape::shape_def& shape = shapes[i];
-					switch (shape.type)
+					for (int i = 0; i < shapes.size(); ++i)
 					{
-					case 0:
-					{
-						Fsphere sphere = shape.data.sphere;
-						GO->XFORM().transform_tiny(sphere.P);
-						append_sphere(sphere, line_color, tritmp_color);
-						if (visible_currents && m_selection_flags.test(ESELECTION_FLAGS::ESLF_Z))
+						u32 tritmp_color = tri_color;
+						if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_SELECTION) && RQ.O == GO)
 						{
-							Fvector C = sphere.P;
-							C.y += sphere.R;
-							DrawObjectInfo(GO, C, { 0.f, 0.f });
+							if (RQ.element == i)
+							{
+								Fcolor t_clr;
+								t_clr.set(tri_color);
+								t_clr.mul_rgba(1.5f);
+								tritmp_color = t_clr.get();
+							}
+							else
+							{
+								Fcolor t_clr;
+								t_clr.set(tri_color);
+								t_clr.mul_rgba(1.2f);
+								tritmp_color = t_clr.get();
+							}
 						}
-					}break;
-					case 1:
-					{
-						Fmatrix matrix = shape.data.box;
-						matrix.mulA_43(GO->XFORM());
-						Fobb obb; obb.xform_set(matrix);
-						obb.m_halfsize.set(0.5f, 0.5f, 0.5f);
-						append_obb(obb, line_color, tritmp_color);
-						if (visible_currents && m_selection_flags.test(ESELECTION_FLAGS::ESLF_Z))
+
+						CCF_Shape::shape_def& shape = shapes[i];
+						switch (shape.type)
 						{
-							Fvector C = obb.m_translate;
-							C.y += obb.m_rotate.j.magnitude() * 0.5f;
-							DrawObjectInfo(GO, C, { 0.f, 0.f });
+						case 0:
+						{
+							Fsphere sphere = shape.data.sphere;
+							GO->XFORM().transform_tiny(sphere.P);
+							append_sphere(sphere, line_color, tritmp_color);
+							if (visible_currents && m_selection_flags.test(ESELECTION_FLAGS::ESLF_Z))
+							{
+								Fvector C = sphere.P;
+								C.y += sphere.R;
+								DrawObjectInfo(GO, C, { 0.f, 0.f });
+							}
+						}break;
+						case 1:
+						{
+							Fmatrix matrix = shape.data.box;
+							matrix.mulA_43(GO->XFORM());
+							Fobb obb; obb.xform_set(matrix);
+							obb.m_halfsize.set(0.5f, 0.5f, 0.5f);
+							append_obb(obb, line_color, tritmp_color);
+							if (visible_currents && m_selection_flags.test(ESELECTION_FLAGS::ESLF_Z))
+							{
+								Fvector C = obb.m_translate;
+								C.y += obb.m_rotate.j.magnitude() * 0.5f;
+								DrawObjectInfo(GO, C, { 0.f, 0.f });
+							}
+						}break;
+						default: NODEFAULT;
 						}
-					}break;
-					default: NODEFAULT;
 					}
 				}
 			}
-		}
-		else
-		{
-			if ((!GO->Visual() || !GO->CFORM()) && (spatial->spatial.type & ESPATIAL_TYPE::LADDER) == ESPATIAL_TYPE::NONE)
+			else
 			{
-				u32 line_color = pSettings->line_exist(GO->cNameSect_str(), "shape_edge_color") ? pSettings->r_color(GO->cNameSect_str(), "shape_edge_color") : color_rgba(32, 32, 32, 255);
-				u32 tri_color = pSettings->line_exist(GO->cNameSect_str(), "shape_transp_color") ? pSettings->r_color(GO->cNameSect_str(), "shape_transp_color") : color_rgba(128, 128, 128, 60);
-
-				Fsphere sphere;
-				GO->Center(sphere.P);
-				float rad = GO->Radius();
-				sphere.R = rad < .15f ? .15f : rad;
-				append_sphere(sphere, line_color, tri_color);
-
-				if(m_selection_flags.test(ESELECTION_FLAGS::ESLF_O) && sphere.intersect2(RD.start, RD.dir, RD.range))
+				if ((!GO->Visual() || !GO->CFORM()) && (spatial->spatial.type & ESPATIAL_TYPE::LADDER) == ESPATIAL_TYPE::NONE)
 				{
-					sphere.P.y += sphere.R;
-					DrawObjectInfo(GO, sphere.P, { 0.f, 0.f });
+					u32 line_color = pSettings->line_exist(GO->cNameSect_str(), "shape_edge_color") ? pSettings->r_color(GO->cNameSect_str(), "shape_edge_color") : color_rgba(32, 32, 32, 255);
+					u32 tri_color = pSettings->line_exist(GO->cNameSect_str(), "shape_transp_color") ? pSettings->r_color(GO->cNameSect_str(), "shape_transp_color") : color_rgba(128, 128, 128, 60);
+
+					Fsphere sphere;
+					GO->Center(sphere.P);
+					float rad = GO->Radius();
+					sphere.R = rad < .15f ? .15f : rad;
+					append_sphere(sphere, line_color, tri_color);
+
+					if (m_selection_flags.test(ESELECTION_FLAGS::ESLF_O) && sphere.intersect2(RD.start, RD.dir, RD.range))
+					{
+						sphere.P.y += sphere.R;
+						DrawObjectInfo(GO, sphere.P, { 0.f, 0.f });
+					}
+				}
+
+				if (visible_currents && m_selection_flags.test(ESELECTION_FLAGS::ESLF_O))
+				{
+					Fvector C;
+					GO->Center(C);
+					C.y += GO->Radius();
+					DrawObjectInfo(GO, C, { 0.f, 0.f });
 				}
 			}
 
-			if (visible_currents && m_selection_flags.test(ESELECTION_FLAGS::ESLF_O))
+			if ((spatial->spatial.type & ESPATIAL_TYPE::LADDER) != ESPATIAL_TYPE::NONE)
 			{
-				Fvector C;
-				GO->Center(C);
-				C.y += GO->Radius();
-				DrawObjectInfo(GO, C, { 0.f, 0.f });
+				CClimableObject* ladder = GO->cast_climable_object();
+				Fobb obb = ladder->BBox();
+				Fmatrix trans;
+				obb.xform_get(trans);
+				trans.mulA_43(ladder->XFORM());
+				obb.xform_set(trans);
+				u32 tri_color = color_rgba(0, 255, 0, 10);
+				if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_SELECTION) && m_selection_flags.test(ESELECTION_FLAGS::ESLF_O) && obb.intersect(RD.start, RD.dir, RD.range))
+				{
+					Fvector C;
+					GO->Center(C);
+					C.y += GO->Radius();
+					DrawObjectInfo(GO->cast_game_object(), C, { 0.f, 0.f });
+
+					Fcolor t_clr;
+					t_clr.set(tri_color);
+					t_clr.mul_rgba(1.5f);
+					tri_color = t_clr.get();
+				}
+
+				append_obb(obb, color_rgba(0, 255, 0, 255), tri_color);
+
+				Fvector p1, p2, d;
+				d.set(ladder->Axis());
+				p1.add(ladder->XFORM().c, d);
+				p2.sub(ladder->XFORM().c, d);
+				append_line({ p1, p2, color_rgba(255, 0, 0, 255) });
+
+				d.set(ladder->Side());
+				p1.add(ladder->XFORM().c, d);
+				p2.sub(ladder->XFORM().c, d);
+				append_line({ p1, p2, color_rgba(255, 0, 0, 255) });
+
+				d.set(ladder->Norm());
+				d.mul(trans.j.magnitude() * 2.f);
+				p1.add(ladder->XFORM().c, d);
+				p2.set(ladder->XFORM().c);
+				append_line({ p1, p2, color_rgba(0, 255, 0, 255) });
 			}
-		}
-		
-		if ((spatial->spatial.type & ESPATIAL_TYPE::LADDER) != ESPATIAL_TYPE::NONE)
-		{
-			CClimableObject* ladder = GO->cast_climable_object();
-			Fobb obb = ladder->BBox();
-			Fmatrix trans;
-			obb.xform_get(trans);
-			trans.mulA_43(ladder->XFORM());
-			obb.xform_set(trans);
-			u32 tri_color = color_rgba(0, 255, 0, 10);
-			if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_SELECTION) && m_selection_flags.test(ESELECTION_FLAGS::ESLF_O) && obb.intersect(RD.start, RD.dir, RD.range))
-			{
-				Fvector C;
-				GO->Center(C);
-				C.y += GO->Radius();
-				DrawObjectInfo(GO->cast_game_object(), C, { 0.f, 0.f });
-
-				Fcolor t_clr;
-				t_clr.set(tri_color);
-				t_clr.mul_rgba(1.5f);
-				tri_color = t_clr.get();
-			}
-
-			append_obb(obb, color_rgba(0, 255, 0, 255), tri_color);
-
-			Fvector p1, p2, d;
-			d.set(ladder->Axis());
-			p1.add(ladder->XFORM().c, d);
-			p2.sub(ladder->XFORM().c, d);
-			append_line({ p1, p2, color_rgba(255, 0, 0, 255) });
-
-			d.set(ladder->Side());
-			p1.add(ladder->XFORM().c, d);
-			p2.sub(ladder->XFORM().c, d);
-			append_line({ p1, p2, color_rgba(255, 0, 0, 255) });
-
-			d.set(ladder->Norm());
-			d.mul(trans.j.magnitude() * 2.f);
-			p1.add(ladder->XFORM().c, d);
-			p2.set(ladder->XFORM().c);
-			append_line({ p1, p2, color_rgba(0, 255, 0, 255) });
 		}
 	}
 
-	if(m_flags.test(ESCENE_FLAGS::ESF_DRAW_ALL_SPATIALS))
+	if(m_flags.test(ESCENE_FLAGS::ESF_DRAW_ALL_SPATIALS) && m_spatials_mask!=ESPATIAL_TYPE::NONE)
 	{
 		g_SpatialSpace->q_frustum(m_objects, 0, m_spatials_mask, Render->ViewBase);
 
