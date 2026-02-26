@@ -62,6 +62,13 @@ public:
 		return Iter != Lookup.end() ? &Components[Iter->second] : nullptr;
 	}
 
+	const T* Get(const IECSOwner* Owner) const
+	{
+		xrSRWLockGuard guard(RWMutex, false);
+		auto Iter = Lookup.find(const_cast<IECSOwner*>(Owner));
+		return Iter != Lookup.end() ? &Components[Iter->second] : nullptr;
+	}
+
 	virtual void Destroy(IECSOwner* Owner) override
 	{
 		xrSRWLockGuard guard(RWMutex, false);
@@ -108,5 +115,5 @@ private:
 	xr_vector<T> Components;
 	xr_vector<void*> Owners;
 	xr_hash_map<void*, size_t> Lookup;
-	xrSRWLock RWMutex;
+	mutable xrSRWLock RWMutex;
 };
