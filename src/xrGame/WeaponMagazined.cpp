@@ -2195,6 +2195,18 @@ void CWeaponMagazined::InitAddons()
 			m_lens_zoom_params.force_zoom_sound = READ_IF_EXISTS(pSettings, r_bool, get_scope_section, "force_zoom_sound", false);
 
 			LoadNightBrightnessParamsFromSection(get_scope_section);
+
+			get_scope_section = GetNameWithAttachmentScope();
+
+			if (SoundExist(get_scope_section.c_str(), "snd_reload"))
+			{
+				m_sounds.LoadSound(get_scope_section.c_str(), "snd_reload", "sndReload", true, m_eSoundReload);
+			}
+
+			if (SoundExist(get_scope_section.c_str(), "snd_reload_empty"))
+			{
+				m_sounds.LoadSound(get_scope_section.c_str(), "snd_reload_empty", "sndReloadEmpty", true, m_eSoundReload);
+			}
 		}
 	}
 	else
@@ -2224,6 +2236,16 @@ void CWeaponMagazined::InitAddons()
 		m_lens_zoom_params.force_zoom_sound = READ_IF_EXISTS(pSettings, r_bool, get_scope_section, "force_zoom_sound", false);
 
 		LoadNightBrightnessParamsFromSection(get_scope_section);
+
+		if (SoundExist(get_scope_section.c_str(), "snd_reload"))
+		{
+			m_sounds.LoadSound(get_scope_section.c_str(), "snd_reload", "sndReload", true, m_eSoundReload);
+		}
+
+		if (SoundExist(get_scope_section.c_str(), "snd_reload_empty"))
+		{
+			m_sounds.LoadSound(get_scope_section.c_str(), "snd_reload_empty", "sndReloadEmpty", true, m_eSoundReload);
+		}
 	}
 
 	if (IsSilencerAttached())
