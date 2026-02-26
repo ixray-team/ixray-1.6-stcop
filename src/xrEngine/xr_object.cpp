@@ -255,11 +255,13 @@ BOOL CObject::net_Spawn			(CSE_Abstract* data)
 void CObject::net_Destroy		()
 {
 	VERIFY						(getDestroy());
+	PositionStack.clear();
 	xr_delete					(collidable.model);
 	if (register_schedule())
 		shedule_unregister		();
 
 	spatial_unregister			();
+	processing_deactivate();
 //	setDestroy					(true);
 	// remove visual
 	cNameVisual_set				( 0 );

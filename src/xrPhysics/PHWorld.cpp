@@ -119,6 +119,8 @@ CPHWorld::CPHWorld() :
 	b_processing = false;
 	m_gravity = default_world_gravity;
 	b_exist = false;
+
+	r_spatial.reserve(128);
 }
 
 void CPHWorld::SetStep(float s)

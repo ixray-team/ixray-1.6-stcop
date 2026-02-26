@@ -29,6 +29,7 @@ CObjectList::CObjectList() :
 
 CObjectList::~CObjectList	( )
 {
+	Unload();
 	R_ASSERT				( objects_active.empty()	);
 	R_ASSERT				( objects_sleeping.empty()	);
 	R_ASSERT				( destroy_queue.empty()		);
