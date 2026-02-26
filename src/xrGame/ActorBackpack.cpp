@@ -53,9 +53,9 @@ bool CBackpack::install_upgrade_impl(LPCSTR section, bool test)
 {
     bool result = inherited::install_upgrade_impl(section, test);
 
-    result |= process_if_exists(section, "additional_inventory_weight", &CInifile::r_float, m_additional_weight, test);
-    result |= process_if_exists(section, "additional_inventory_weight2", &CInifile::r_float, m_additional_weight2, test);
-    result |= process_if_exists(section, "power_restore_speed", &CInifile::r_float, m_fPowerRestoreSpeed, test);
+    result |= process_if_exists(section, "additional_inventory_weight", m_additional_weight, test);
+    result |= process_if_exists(section, "additional_inventory_weight2", m_additional_weight2, test);
+    result |= process_if_exists(section, "power_restore_speed", m_fPowerRestoreSpeed, test);
 
     return result;
 }
