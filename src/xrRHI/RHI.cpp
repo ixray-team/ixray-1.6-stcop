@@ -83,7 +83,7 @@ IRHIDevice* CRHI::CreateDevice(ERHI_API_LAYER NewAPILevel)
 		{
 			DevicePtr = new InternalDevice11;
 			ShaderResourceCache = new DX11ShaderResourceStateCache((ID3D11DeviceContext*)GetContext());
-			StateManager = new RHIStateManagerDX11();
+			StateManager = new RHIStateManagerDX11(static_cast<ID3D11DeviceContext*>(GetContext()));
 			DriverAntiLag = new CAMDAntiLag();
 			break;
 		}
@@ -123,6 +123,63 @@ void* CRHI::GetContext()
 
 	VERIFY(!"Unsupported");
 	return nullptr;
+}
+
+void* CRHI::GetImmediateContext()
+{
+	return GetContext();
+}
+
+void* CRHI::CreateDeferredContext()
+{
+#ifdef IXR_WINDOWS
+	if (APILevel == ERHI_API_LAYER::D3D11)
+	{
+		return ((InternalDevice11*)DevicePtr)->CreateDeferredContext();
+	}
+#endif
+
+	VERIFY(!"Unsupported");
+	return nullptr;
+}
+
+void CRHI::ReleaseDeferredContext(void* context)
+{
+#ifdef IXR_WINDOWS
+	if (APILevel == ERHI_API_LAYER::D3D11)
+	{
+		((InternalDevice11*)DevicePtr)->ReleaseDeferredContext((ID3D11DeviceContext*)context);
+		return;
+	}
+#endif
+
+	VERIFY(!"Unsupported");
+}
+
+IRHIStateManager* CRHI::CreateStateManager(void* context)
+{
+#ifdef IXR_WINDOWS
+	if (APILevel == ERHI_API_LAYER::D3D11)
+	{
+		auto* dxContext = context
+			? static_cast<ID3D11DeviceContext*>(context)
+			: static_cast<ID3D11DeviceContext*>(GetContext());
+
+		return new RHIStateManagerDX11(dxContext);
+	}
+	else if (APILevel == ERHI_API_LAYER::D3D9)
+	{
+		return new RHIStateManagerDX9();
+	}
+#endif
+
+	VERIFY(!"Unsupported");
+	return nullptr;
+}
+
+void CRHI::DestroyStateManager(IRHIStateManager* manager)
+{
+	xr_delete(manager);
 }
 
 void* CRHI::GetSwapchain()

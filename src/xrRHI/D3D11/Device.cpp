@@ -626,3 +626,24 @@ void InternalDevice11::SetScissorRect(Irect* R)
 		HWRenderContext->RSSetScissorRects(0, nullptr);
 	}
 }
+
+ID3D11DeviceContext* InternalDevice11::GetImmediateContext() const
+{
+	return HWRenderContext;
+}
+
+ID3D11DeviceContext* InternalDevice11::CreateDeferredContext()
+{
+	ID3D11DeviceContext* deferredContext = nullptr;
+	HRESULT hr = DX11Device->CreateDeferredContext(0, &deferredContext);
+	R_CHK(hr);
+	return deferredContext;
+}
+
+void InternalDevice11::ReleaseDeferredContext(ID3D11DeviceContext* context)
+{
+	if (context)
+	{
+		context->Release();
+	}
+}
