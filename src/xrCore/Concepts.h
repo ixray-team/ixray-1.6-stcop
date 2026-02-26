@@ -16,6 +16,9 @@ namespace XRay::Concepts
 	concept Arithmetic = std::integral<T> || std::floating_point<T>;
 
 	template <typename T>
+	concept FloatPoint = std::floating_point<T>;
+
+	template <typename T>
 	concept FixedType = std::is_arithmetic_v<T> || std::is_enum_v<T>;
 
 	template <typename T>
