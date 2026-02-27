@@ -13,7 +13,10 @@ include("${CMAKE_MODULE_PATHEX}/yamlcpp.cmake")
 include("${CMAKE_MODULE_PATHEX}/lzo.cmake")
 include("${CMAKE_MODULE_PATHEX}/tbb.cmake")
 include("${CMAKE_MODULE_PATHEX}/lunasvg.cmake")
-include("${CMAKE_MODULE_PATHEX}/Tracy.cmake")
+
+if (IXRAY_PROFILER_TRACY)
+    include("${CMAKE_MODULE_PATHEX}/Tracy.cmake")
+endif()
 
 # Resonance Audio 3rd
 include("${CMAKE_MODULE_PATHEX}/eigen.cmake")
