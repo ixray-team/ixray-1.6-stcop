@@ -724,6 +724,12 @@ void CSHEngineTools::CollapseMatrix(LPSTR name)
 	if (*name=='$') return;
 	R_ASSERT(name&&name[0]);
 	CMatrix* M = FindMatrix(name); VERIFY(M);
+
+	if (M == nullptr)
+	{
+		return;
+	}
+
 	M->dwReference--;
 	for (MatrixPairIt m=m_OptMatrices.begin(); m!=m_OptMatrices.end(); m++){
 		if (m->second->Similar(*M)){
