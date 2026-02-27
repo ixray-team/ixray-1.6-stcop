@@ -812,7 +812,7 @@ bool EScene::LoadLTX(LPCSTR map_name, bool bUndo)
 	}
 
 	shared_str LevelPath = xr_path(map_name).stem().string().c_str();
-	UI->GeneralTabs[0] = { LevelPath, []()->bool {return Scene->IsModified(); } };
+	UI->GeneralTabs[0] = { LevelPath, []()->bool {return Scene->IsUnsaved(); } };
 	full_name = map_name;
 
 	ELog.Msg( mtInformation, "EScene: loading '%s'", map_name);
