@@ -331,7 +331,7 @@ void EScene::Clear(BOOL bEditableToolsOnly)
 
 	if (!bEditableToolsOnly)
 	{
-		UI->GeneralTabs[0] = { "Scene View", []()->bool {return Scene->IsModified(); }};
+		UI->GeneralTabs[0] = { "Scene View", []()->bool {return Scene->IsUnsaved(); }};
 		SDL_SetWindowTitle(g_AppInfo.Window, "IX-Ray Level Editor");
 	}
 }
