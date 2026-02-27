@@ -568,7 +568,15 @@ void CSHEngineTools::RealRenameItem(LPCSTR old_full_name, LPCSTR new_full_name)
 
 void CSHEngineTools::AddMatrixRef(LPSTR name)
 {
-	CMatrix* M = FindMatrix(name); R_ASSERT(M);
+	CMatrix* M = FindMatrix(name); 
+
+	if (M == nullptr)
+	{
+		Msg("! Not found matrix: %s", name);
+		return;
+	}
+
+
 	M->dwReference++;
 }
 
@@ -723,7 +731,13 @@ void CSHEngineTools::CollapseMatrix(LPSTR name)
 {
 	if (*name=='$') return;
 	R_ASSERT(name&&name[0]);
-	CMatrix* M = FindMatrix(name); VERIFY(M);
+	CMatrix* M = FindMatrix(name);
+
+	if (M == nullptr)
+	{
+		return;
+	}
+
 	M->dwReference--;
 	for (MatrixPairIt m=m_OptMatrices.begin(); m!=m_OptMatrices.end(); m++){
 		if (m->second->Similar(*M)){
@@ -762,9 +776,16 @@ void CSHEngineTools::CollapseConstant(LPSTR name)
 
 void CSHEngineTools::UpdateMatrixRefs(LPSTR name)
 {
-	if (*name=='$') return;
-	R_ASSERT(name&&name[0]);
-	CMatrix* M = FindMatrix(name); R_ASSERT(M);
+	if (*name == '$') return;
+	R_ASSERT(name && name[0]);
+	CMatrix* M = FindMatrix(name);
+
+	if (M == nullptr)
+	{
+		Msg("! Not found matrix: %s", name);
+		return;
+	}
+
 	M->dwReference++;
 }
 
