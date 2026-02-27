@@ -8,11 +8,12 @@
 		- https://michaldrobot.com/2014/08/13/hraa-siggraph-2014-slides-available/
 		- https://gpuopen.com/learn/optimized-reversible-tonemapper-for-resolve/
 		- https://research.activision.com/publications/2020-03/dynamic-temporal-antialiasing-and-upsampling-in-call-of-duty
+		- https://dl.acm.org/doi/10.1145/3681758.3697996
 
-        Author:
-        - LVutner
+		Author:
+		- LVutner
 
-        ---IX-Ray Engine---
+		---IX-Ray Engine---
 */
 
 #include "common.hlsli"
@@ -21,21 +22,18 @@ Texture2D s_image_prev; //Previous rt_generic_0
 float4 scaled_screen_res; //Render resolution
 
 //Settings...
-#define TAA_ALT_PATH //Different min-max estimation. Old path may be slower [todo: check]
-#define TAA_BLEND_WEIGHT 0.925 //Blend weight
-#define TAA_HISTORY_SHARPNESS 0.75 //Sharpness factor for history filtering
-#define TAA_DEVIATION 1.75 //Deviation. 1.75 pix
+#define TAA_BLEND_WEIGHT 0.9 //Blend weight
+#define TAA_HISTORY_SHARPNESS 0.5 //Sharpness factor for history filtering
 
-//From Timothy Lottes
+//don't touch it unless you KNOW what you're doing. 
 float3 Lottes_Tonemap(float3 c)
-{
-	return saturate(c * rcp(1.0f + c));
+{ 
+	return c * rcp(max(c.x, max(c.y, c.z)) + 1.0);
 }
 
 float3 Lottes_Tonemap_Inverse(float3 c)
 {
-	c = saturate(c);
-	return c * rcp(1.00001f - c);
+	return c * rcp(1.0 - max(c.x, max(c.y, c.z)));
 }
 
 static const int2 offset_3x3[9] =
@@ -87,8 +85,6 @@ void get_3x3_depth(float2 texcoord, float2 gather_texcoord, inout float d_3x3[9]
 	d_3x3[8] = d_gather0.y;
 }
 
-//SM_5 path, we save 1 sample
-#ifdef SM_5
 void get_3x3_color(float2 texcoord, float2 gather_texcoord, inout float3 c_3x3[9])
 {
 	float4 c_gather0_r = s_image.GatherRed(smp_nofilter, gather_texcoord);
@@ -105,7 +101,65 @@ void get_3x3_color(float2 texcoord, float2 gather_texcoord, inout float3 c_3x3[9
 	c_3x3[7] = float3(c_gather0_r.x, c_gather0_g.x, c_gather0_b.x);
 	c_3x3[8] = float3(c_gather0_r.y, c_gather0_g.y, c_gather0_b.y);
 }
-#endif
+
+//you feel fancy? bake new coeffs. those are for "asphalt" scene
+static const float3 kdop_axes[8] = 
+{
+	float3(0.997167, -0.054820, 0.051500),
+	float3(0.043682, -0.727663, 0.684542),
+	float3(-0.451553, 0.808335, -0.377751),
+	float3(-0.003001, 0.615645, -0.788018),
+	float3(0.130192, -0.063137, -0.989476),
+	float3(0.775079, -0.584236, -0.240668),
+	float3(0.589837, 0.171644, -0.789070),
+	float3(0.898010, -0.436338, -0.056459)
+};
+
+float3 kdop_clipping(float3 mean, float3 prev_color, float3 colors[9], float gamma)
+{
+	float3 dir = prev_color - mean;
+	
+	float2 near_far = -10000.0;
+	near_far.y = -near_far.x;
+
+	[unroll]
+	for(int a = 0; a < 8; a++)
+	{
+		float3 axis = kdop_axes[a];
+
+		float2 moments = (0.0).xx;
+
+		[unroll (9)]
+		for(int n = 0; n < 9; ++n)
+		{
+			float t = dot(colors[n], axis);
+			moments += float2(t, t * t);
+		}
+		moments *= 1.0 / 9.0;
+
+		float sigma = max(sqrt(moments.y - moments.x * moments.x), 1e-5);
+		float proj_pos = dot(mean, axis);
+		
+		float2 extent;
+		extent.x = min(moments.x - gamma * sigma, proj_pos);
+		extent.y = max(moments.x + gamma * sigma, proj_pos);
+
+		float inv_dir = 1.0 / dot(dir, axis);
+		
+		float2 t_01 = (extent.xy - proj_pos) * inv_dir;
+
+		near_far.x = max(near_far.x, min(t_01.x, t_01.y));
+		near_far.y = min(near_far.y, max(t_01.x, t_01.y));
+	}
+
+	if(near_far.x <= near_far.y && (near_far.x > 0.0f || near_far.y > 0.0f))
+	{
+		float t = saturate(near_far.x > 0.0f ? near_far.x : near_far.y);
+		return mean + t * dir;
+	}
+
+	return mean;
+}
 
 float4 main(PSInputFullscreen I) : SV_Target
 {
@@ -118,33 +172,18 @@ float4 main(PSInputFullscreen I) : SV_Target
 
 	//Fetch 3x3 color neighborhood
 	float3 c_3x3[9];
-	#ifdef SM_5
-		get_3x3_color(I.texcoord.xy, gather_texcoord, c_3x3);
-	#endif
+	get_3x3_color(I.texcoord.xy, gather_texcoord, c_3x3);
+	
+	float3 mean = (float3)0.0;
 
 	int2 depth_offset = int2(0, 0);
 	float depth_closest = 1.0;
 
-	#ifdef TAA_ALT_PATH
-		float3 c_m = (0.0).xxx;
-		float3 c_m2 = (0.0).xxx;
-	#endif
-
 	[unroll]
 	for (int i = 0; i < 9; i++)
 	{
-		#ifdef SM_5
-			c_3x3[i] = Lottes_Tonemap(c_3x3[i]);
-		#else
-			int2 offset_hpos = clamp(I.hpos.xy + offset_3x3[i], 0, scaled_screen_res.xy - 1);
-			c_3x3[i] = Lottes_Tonemap(s_image[offset_hpos].xyz);
-		#endif
-
-		//Accumulate moments
-		#ifdef TAA_ALT_PATH
-			c_m += c_3x3[i] * (1.0 / 9.0);
-			c_m2 += c_3x3[i] * c_3x3[i] * (1.0 / 9.0);
-		#endif
+		c_3x3[i] = Lottes_Tonemap(c_3x3[i]);
+		mean += c_3x3[i] * (1.0 / 9.0);
 
 		float sampled_depth = d_3x3[i];
 
@@ -155,24 +194,7 @@ float4 main(PSInputFullscreen I) : SV_Target
 			depth_offset = offset_3x3[i];
 		}
 	}
-
-	//Get min and max color of 3x3 neighborhood
-	#ifdef TAA_ALT_PATH
-		//1.75 is for stability
-		float3 c_stddev = sqrt(max(c_m2 - c_m * c_m, 0.0));
-		float3 c_min = c_m - c_stddev * TAA_DEVIATION;
-		float3 c_max = c_m + c_stddev * TAA_DEVIATION;
-	#else
-		//Soft window
-		float3 c_min = min(c_3x3[0], min(c_3x3[1], min(c_3x3[2], min(c_3x3[3], min(c_3x3[4], min(c_3x3[5], min(c_3x3[6], min(c_3x3[7], c_3x3[8]))))))));
-		c_min += min(c_3x3[1], min(c_3x3[3], min(c_3x3[4], min(c_3x3[5], c_3x3[7]))));
-		c_min *= 0.5;
-
-		float3 c_max = max(c_3x3[0], max(c_3x3[1], max(c_3x3[2], max(c_3x3[3], max(c_3x3[4], max(c_3x3[5], max(c_3x3[6], max(c_3x3[7], c_3x3[8]))))))));
-		c_max += max(c_3x3[1], max(c_3x3[3], max(c_3x3[4], max(c_3x3[5], c_3x3[7]))));
-		c_max *= 0.5;
-	#endif
-
+	
 	//Fetch motion vectors and reproject
 	float2 motion_vector = s_velocity[clamp(I.hpos.xy + depth_offset, 0, scaled_screen_res.xy - 1)].xy * float2(0.5, -0.5);
 	float2 reprojected_tc = I.texcoord.xy - motion_vector;
@@ -187,24 +209,15 @@ float4 main(PSInputFullscreen I) : SV_Target
 	//Spatio-temporal bicubic filter
 	p_4 = SMAABicubicFilter(c_3x3[1], c_3x3[7], c_3x3[3], c_3x3[5], c_3x3[4], p_4, frac(reprojected_tc * scaled_screen_res.xy - 0.5));
 
-	//Clamp history
-	p_4 = clamp(p_4, c_min, c_max);
+	//K-DOP clipping; bigger window for static objects
+	float gamma = 1.0 - min(1.0, length(motion_vector * scaled_screen_res.xy * 0.2)) + 0.5;
 
-	//SMAA-ish velocity weighting. Something better should be used...
-	float2 p_motion_vector = s_velocity[reprojected_tc * scaled_screen_res.xy].xy * float2(0.5, -0.5);
+	p_4 = kdop_clipping(mean, p_4, c_3x3, gamma);
 
-	float2 mags = (0.0).xx;
-	mags.x = sqrt(5.0 * length(motion_vector));
-	mags.y = sqrt(5.0 * length(p_motion_vector));
+	//because yall still using rgba16, i don't care enough to change blending logic
+	float3 reprojected_color = lerp(c_3x3[4], p_4, TAA_BLEND_WEIGHT);
 
-	float delta = abs(mags.x * mags.x - mags.y * mags.y) * (1.0 / 5.0);
-	float weight = TAA_BLEND_WEIGHT * saturate(1.0 - sqrt(delta) * 8.0);
-
-	//Simple lerp is ok, RGBA16F lmao
-	float3 reprojected_color = lerp(c_3x3[4], p_4, weight);
-
-	reprojected_color = max(reprojected_color, 0.0);
 	reprojected_color = Lottes_Tonemap_Inverse(reprojected_color);
-
+    reprojected_color = max(reprojected_color, 1e-7); //to prevent NaNs, although you should debug the pipeline and see where NaNs occurs
 	return float4(reprojected_color, 1.0);
 }
