@@ -3,6 +3,7 @@
 //#include "HudItem.h"
 
 class CHudItem;
+class CHudItemObject;
 
 struct THudLightTorch
 {
@@ -45,6 +46,9 @@ public:
 
 	IC bool GetTorchActive() const { return IsRenderLight; }
 	IC bool GetTorchInstalled() const { return IsTorchInstalled; }
+
+	void UpdateTorch(CHudItemObject* item, bool& saved_status);
+	void SwitchTorch(bool& saved_status, bool status, bool forced = false);
 
 private:
 	ECS_COMPONENT(THudLightTorch)
@@ -98,6 +102,9 @@ public:
 
 	virtual void NewTorchlight(const char* section) override;
 	virtual void UpdateTorchFromObject(CHudItem* item) const override;
+
+	void UpdateLaser(CHudItemObject* item, bool& saved_status);
+	void SwitchLaser(bool& saved_status, bool status, bool forced = false);
 
 private:
 	ECS_COMPONENT(THudLightLaser)

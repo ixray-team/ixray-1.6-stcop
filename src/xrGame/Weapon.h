@@ -293,10 +293,6 @@ protected:
 	void LoadOriginalScopesParams(LPCSTR section);
 	void LoadCurrentScopeParams(LPCSTR section);
 	const shared_str& GetSilencerName			() const{return m_sSilencerName;}
-	void UpdateTorch();
-	void UpdateLaser();
-	void SwitchTorch(bool status, bool forced = false);
-	void SwitchLaser(bool status, bool forced = false);
 
 	IC void	ForceUpdateAmmo						()		{ m_BriefInfo_CalcFrame = 0; }
 

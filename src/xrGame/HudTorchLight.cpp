@@ -6,6 +6,7 @@
 #include "Actor.h"
 #include "Inventory.h"
 #include "../debug_renderer.h"
+#include "ElectronicsProblemsManager.h"
 
 void THudLightTorch::BeginComponent(IECSOwner* O)
 {
@@ -251,6 +252,69 @@ void THudLightTorch::UpdateTorchFromObject(CHudItem* item) const
 	OmniLight->set_active(false);
 }
 
+void THudLightTorch::SwitchTorch(bool& saved_status, bool status, bool forced)
+{
+	if (!forced && status == saved_status)
+	{
+		return;
+	}
+
+	saved_status = status;
+
+	SwitchTorchlight(status);
+}
+
+void THudLightTorch::UpdateTorch(CHudItemObject* item, bool& saved_status)
+{
+	SwitchTorch(saved_status, saved_status, true);
+
+	bool is_broken = false;
+	const float current_condition = item->GetCondition();
+
+	const THudLightTorch::breaking_params& BreakingParams = this->BreakingParams;
+
+	if (current_condition < BreakingParams.end_condition)
+	{
+		is_broken = true;
+	}
+	else if (current_condition < BreakingParams.start_condition)
+	{
+		is_broken = (::Random.randF(0.0f, 1.0f) < BreakingParams.start_probability +
+			(BreakingParams.start_condition - current_condition) *
+			(1.0f - BreakingParams.start_probability) /
+			(BreakingParams.start_condition - BreakingParams.end_condition));
+	}
+
+	if (is_broken)
+	{
+		SwitchTorchlight(false);
+	}
+
+	auto SetVisible = [&](IKinematics* kin, const shared_str& bone_name, BOOL status)
+	{
+		if (kin != nullptr)
+		{
+			u16 bone_id = kin->LL_BoneID(bone_name);
+			if (bone_id != BI_NONE)
+			{
+				kin->LL_SetBoneVisible(bone_id, status, FALSE);
+			}
+		}
+	};
+
+	attachable_hud_item* HID = item->HudItemData();
+	IKinematics* hud_kin = HID != nullptr ? HID->m_model : nullptr;
+	IKinematics* world_kin = item->Visual() != nullptr ? PKinematics(item->Visual()) : nullptr;
+
+	for (const shared_str& bone : ConeBones)
+	{
+		SetVisible(hud_kin, bone, GetTorchActive());
+		SetVisible(world_kin, bone, GetTorchActive());
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void THudLightLaser::BeginComponent(IECSOwner* O)
 {
 	THudLightTorch::BeginComponent(O);
@@ -447,4 +511,81 @@ void THudLightLaser::UpdateTorchFromObject(CHudItem* item) const
 	}
 
 	RenderLight->set_active(IsRenderLight);
+}
+
+void THudLightLaser::SwitchLaser(bool& saved_status, bool status, bool forced)
+{
+	if (!forced && status == saved_status)
+	{
+		return;
+	}
+
+	saved_status = status;
+
+	SwitchTorchlight(status);
+}
+
+void THudLightLaser::UpdateLaser(CHudItemObject* item, bool& saved_status)
+{
+	SwitchLaser(saved_status, saved_status, true);
+
+	bool is_broken = false;
+	const float current_condition = item->GetCondition();
+	const int current_problems_cnt = Level().GetElectronicsProblemsManager()->CurrentElectronicsProblemsCnt();
+	const int target_problems_cnt = Level().GetElectronicsProblemsManager()->TargetElectronicsProblemsCnt();
+
+	const THudLightLaser::breaking_params& BreakingParams = this->BreakingParams;
+
+	if (current_condition < BreakingParams.end_condition)
+	{
+		is_broken = true;
+	}
+	else if (current_condition < BreakingParams.start_condition || BreakingParams.levels_problem > 0.0f && current_problems_cnt >= BreakingParams.levels_problem)
+	{
+		float probability = 0.0f;
+
+		if (target_problems_cnt >= BreakingParams.levels_problem)
+		{
+			probability = 1.0f;
+		}
+		else if (BreakingParams.start_condition == BreakingParams.end_condition)
+		{
+			probability = BreakingParams.start_condition;
+		}
+		else
+		{
+			probability = BreakingParams.start_probability + (BreakingParams.start_condition - current_condition) * (1.0f - BreakingParams.start_probability) / (BreakingParams.start_condition - BreakingParams.end_condition);
+		}
+
+		is_broken = !!(::Random.randF(0.0f, 1.0f) < probability);
+	}
+
+	if (is_broken)
+	{
+		SwitchTorchlight(false);
+	}
+
+	auto SetVisible = [&](IKinematics* kin, const shared_str& bone_name, BOOL status)
+	{
+		if (kin != nullptr)
+		{
+			u16 bone_id = kin->LL_BoneID(bone_name);
+			if (bone_id != BI_NONE)
+			{
+				kin->LL_SetBoneVisible(bone_id, status, FALSE);
+			}
+		}
+	};
+
+	attachable_hud_item* HID = item->HudItemData();
+	IKinematics* hud_kin = HID != nullptr ? HID->m_model : nullptr;
+	IKinematics* world_kin = item->Visual() != nullptr ? PKinematics(item->Visual()) : nullptr;
+
+	for (const shared_str& bone : ConeBones)
+	{
+		SetVisible(hud_kin, bone, GetTorchActive());
+		SetVisible(world_kin, bone, GetTorchActive());
+	}
+
+	UpdateTorchFromObject(item);
 }
