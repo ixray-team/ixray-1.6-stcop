@@ -15,7 +15,10 @@ void CFlashlight::Load(LPCSTR section)
 {
 	inherited::Load(section);
 
-	CreateComponent<THudLightTorch>();
+	if (THudLightTorch* LightTorch = GetOrCreateComponent<THudLightTorch>())
+	{
+		LightTorch->NewTorchlight(section);
+	}
 
 	m_fElectronicProblems.x = READ_IF_EXISTS(pSettings, r_float, section, "electronic_problems_level", 0.0f);
 	m_fElectronicProblems.y = READ_IF_EXISTS(pSettings, r_float, section, "electronic_problems_freq", 0.5f);
