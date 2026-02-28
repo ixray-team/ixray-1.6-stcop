@@ -56,7 +56,13 @@ CMapLocation::CMapLocation(LPCSTR type, u16 object_id, bool is_user_loc)
 
 	m_objectID				= object_id;
 	m_actual_time			= 0;
-	m_fCompassMaxDist		= -1.0f;
+	m_compassOverrideSize.set(0.0f, 0.0f);
+	m_compassOverrideColor = 0;
+	m_compassOverrideOffsetX = 0.0f;
+	m_compassOverrideOffsetY = 0.0f;
+	m_compassOverrideMaxDist = 0.0f;
+	m_compassOverrideVertAlign = valCenter;
+	m_hasCompassOverride = false;
 	m_owner_se_object = (ai().get_alife() && !IsUserDefined()) ? ai().alife().objects().object(m_objectID, true) : nullptr;
 	m_flags.set				(eHintEnabled, TRUE);
 	LoadSpot				(type, false);
@@ -202,7 +208,6 @@ void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 	{
 		m_flags.set( ePosToActor, TRUE);
 	}
-	m_fCompassMaxDist = g_uiSpotXml->ReadAttribFlt(path_base, 0, "compass_dist", -1.0f);
 	xr_strconcat(path,path_base,":level_map");
 	node = g_uiSpotXml->NavigateToNode(path,0);
 	if ( node )
@@ -254,7 +259,7 @@ void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 		{
 			m_flags.set(eShowOnCompass, TRUE);
 		}
-		if (m_flags.test(eShowOnCompass) && xr_strlen(str))
+		if (xr_strlen(str))
 		{
 			string512 buf;
 			xr_strconcat(buf, str, ":texture");
@@ -287,6 +292,62 @@ void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 			m_compass_spot_color = 0;
 			m_compass_spot_size.set(0.0f, 0.0f);
 		}
+		
+		string512 compassPath;
+		bool hasCompassNode = false;
+		if (xr_strlen(str))
+		{
+			xr_strconcat(compassPath, str, ":compass");
+			hasCompassNode = g_uiSpotXml->NavigateToNode(compassPath, 0);
+			if (hasCompassNode)
+			{
+				m_hasCompassOverride = true;
+				m_compassOverrideTexture = g_uiSpotXml->Read(compassPath, 0, "");
+				m_compassOverrideOffsetX = g_uiSpotXml->ReadAttribFlt(compassPath, 0, "x", 0.0f);
+				m_compassOverrideOffsetY = g_uiSpotXml->ReadAttribFlt(compassPath, 0, "y", 0.0f);
+				m_compassOverrideSize.x = g_uiSpotXml->ReadAttribFlt(compassPath, 0, "width", 0.0f);
+				m_compassOverrideSize.y = g_uiSpotXml->ReadAttribFlt(compassPath, 0, "height", 0.0f);
+				m_compassOverrideMaxDist = g_uiSpotXml->ReadAttribFlt(compassPath, 0, "max_dist", 0.0f);
+				// max_dist: not specified or 0.0f = infinite distance, > 0.0f = distance in game meters
+				
+				LPCSTR colorName = g_uiSpotXml->ReadAttrib(compassPath, 0, "color", nullptr);
+				if (colorName && xr_strlen(colorName) > 0)
+				{
+					CUIXmlInit::ColorDefs::const_iterator colorIt = CUIXmlInit::GetColorDefs()->find(colorName);
+					m_compassOverrideColor = (colorIt != CUIXmlInit::GetColorDefs()->end()) ? colorIt->second : 0;
+				}
+				else
+				{
+					m_compassOverrideColor = 0;
+				}
+				
+				LPCSTR vertAlignStr = g_uiSpotXml->ReadAttrib(compassPath, 0, "vert_align", nullptr);
+				if (vertAlignStr && xr_strlen(vertAlignStr) > 0)
+				{
+					if (_stricmp(vertAlignStr, "top") == 0)
+					{
+						m_compassOverrideVertAlign = valTop;
+					}
+					else if (_stricmp(vertAlignStr, "bottom") == 0)
+					{
+						m_compassOverrideVertAlign = valBotton;
+					}
+					else
+					{
+						m_compassOverrideVertAlign = valCenter;
+					}
+				}
+				else
+				{
+					m_compassOverrideVertAlign = valCenter;
+				}
+			}
+		}
+		if (!hasCompassNode)
+		{
+			m_hasCompassOverride = false;
+		}
+		
 		m_spot_border_names[2] = g_uiSpotXml->ReadAttrib(path, 0, "spot_a", "mini_map_spot_border");
 		m_spot_border_names[3] = g_uiSpotXml->ReadAttrib(path, 0, "spot_na", "");
 
@@ -1042,4 +1103,48 @@ void CMapLocation::HighlightSpot(bool state, const Fcolor& color)
 		if (st->GetTextureColor() != 0xffffffff)
 			st->SetTextureColor(0xffffffff);
 	}
+}
+
+const shared_str& CMapLocation::GetCompassTexture() const
+{
+	if (m_hasCompassOverride)
+	{
+		return m_compassOverrideTexture.size() > 0 ? m_compassOverrideTexture : m_compass_spot_texture;
+	}
+	return m_compass_spot_texture;
+}
+
+Fvector2 CMapLocation::GetCompassSize() const
+{
+	if (m_hasCompassOverride && m_compassOverrideSize.magnitude() > 0.0f)
+	{
+		return m_compassOverrideSize;
+	}
+	return m_compass_spot_size;
+}
+
+u32 CMapLocation::GetCompassColor() const
+{
+	return (m_hasCompassOverride && m_compassOverrideColor != 0) ? 
+		m_compassOverrideColor : m_compass_spot_color;
+}
+
+float CMapLocation::GetCompassOffsetX() const
+{
+	return m_hasCompassOverride ? m_compassOverrideOffsetX : 0.0f;
+}
+
+float CMapLocation::GetCompassOffsetY() const
+{
+	return m_hasCompassOverride ? m_compassOverrideOffsetY : 0.0f;
+}
+
+float CMapLocation::GetCompassMaxDist() const
+{
+	return m_hasCompassOverride ? m_compassOverrideMaxDist : 0.0f;
+}
+
+EVTextAlignment CMapLocation::GetCompassVertAlign() const
+{
+	return m_hasCompassOverride ? m_compassOverrideVertAlign : valCenter;
 }
