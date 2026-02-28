@@ -2,7 +2,7 @@
 #include "UIMapWnd.h"
 #include "UIMap.h"
 #include "../../xrUI/UIXmlInit.h"
-
+#include "../../xrEngine/xr_input.h"
 #include "../../xrUI/Widgets/UI3tButton.h"
 #include "../../xrUI/UIHelper.h"
 #include "UITaskWnd.h"
@@ -56,6 +56,10 @@ void CUIMapWnd::init_xml_nav( CUIXml& xml, LPCSTR start_from )
 
 void CUIMapWnd::UpdateNav()
 {
+	if (m_btn_nav_parent)
+	{
+		m_btn_nav_parent->Show(!pInput->GetControllerMode());
+	}
 	if ( Device.dwTimeGlobal - m_nav_timing < 10 )
 	{
 		return;

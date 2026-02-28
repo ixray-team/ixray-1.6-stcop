@@ -124,6 +124,18 @@ enum EGameActions
 	kPDA_LOG_SHOW_NEWS,
 	kPDA_LOG_SHOW_DIALOGS,
 
+	kPDA_TASKS_TOGGLE_LIST,
+	kPDA_TASKS_TOGGLE_LEGEND,
+	kPDA_TASKS_NEXT,
+	kPDA_TASKS_PREV,
+	kPDA_TASKS_TOGGLE_MAP,
+	kPDA_TASKS_MAP_SHOW_ME,
+	kPDA_TASKS_MAP_ZOOM_IN,
+	kPDA_TASKS_MAP_ZOOM_OUT,
+	kPDA_TASKS_FILTER_NEXT,
+	kPDA_TASKS_FILTER_PREV,
+	kPDA_TASKS_FILTER_TOGGLE,
+
 	kCUSTOM1,
 	kCUSTOM2,
 	kCUSTOM3,
@@ -185,6 +197,7 @@ enum _action_group
 	agUIGeneral	=	(1<<3),
 	agUIRadialWeapon = (1<<4),
 	agUILogMenu	=	(1<<5),
+	agUITaskMenu	=	(1<<6),
 };
 
 extern ENGINE_API _key_group g_current_keygroup;
