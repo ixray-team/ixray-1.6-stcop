@@ -415,6 +415,10 @@ function motivator_binder:update(delta)
 	local object_alive = object:alive()
 	local actor = db.actor
 
+	if object_alive then
+		xr_sound.update(object:id())
+	end
+
 	-- Переключение логики.
 	update_logic(object)
 
@@ -457,9 +461,6 @@ function motivator_binder:update(delta)
 	end
 
 	if object_alive then
-		--' Апдейт саундменеджера
-		xr_sound.update(object:id())
-
 		--' Апдейт юзабилити персонажа
 		xr_meet.process_npc_usability(object)
 		
