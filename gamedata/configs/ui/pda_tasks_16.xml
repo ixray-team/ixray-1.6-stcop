@@ -3,6 +3,35 @@
 		<window_name>pda_tasks</window_name>
 	</main_wnd>
 
+	<gamepad_legend x="0" y="724" width="1024" height="30" spacing="5">
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_pda_tabs</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>show_missions</window_name>
+			<text font="graffiti19" vert_align="c">ui_pda_show_mission</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_tasks_filter_next</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>action_accept</window_name>
+			<text font="graffiti19" vert_align="c">ui_tasks_filter_toggle</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_pda_toggle_legend</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_tasks_map_show_me</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_tasks_map_zoom</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_mm_back_gp</text>
+		</auto_static>
+	</gamepad_legend>
+	
 	<background x="28" y="41" width="764" height="90" stretch="1">
         <texture>ui_inGame2_pda_buttons_background</texture>
 	</background>
@@ -83,7 +112,7 @@
         <texture>ui_inGame2_pda_smallbutton</texture>
 		<text x="-179" y="0" align="c" vert_align="c" font="letterica16">filter_treasures_text</text>
         <text_color>
-            <t r="255" g="255" b="255"/>
+            <t r="120" g="120" b="120"/>
             <d r="255" g="255" b="255"/>
             <e r="170" g="170" b="170"/>
             <h r="255" g="255" b="255"/>
@@ -94,7 +123,7 @@
         <texture>ui_inGame2_pda_smallbutton</texture>
 		<text x="-179" y="0" align="c" vert_align="c" font="letterica16">filter_primary_objects_text</text>
         <text_color>
-            <t r="255" g="255" b="255"/>
+            <t r="120" g="120" b="120"/>
             <d r="255" g="255" b="255"/>
             <e r="170" g="170" b="170"/>
             <h r="255" g="255" b="255"/>
@@ -105,7 +134,7 @@
         <texture>ui_inGame2_pda_smallbutton</texture>
 		<text x="-179" y="0" align="c" vert_align="c" font="letterica16">filter_secondary_tasks_text</text>
         <text_color>
-            <t r="255" g="255" b="255"/>
+            <t r="120" g="120" b="120"/>
             <d r="255" g="255" b="255"/>
             <e r="170" g="170" b="170"/>
             <h r="255" g="255" b="255"/>
@@ -116,7 +145,7 @@
         <texture>ui_inGame2_pda_smallbutton</texture>
 		<text x="-179" y="0" align="c" vert_align="c" font="letterica16">filter_quest_npcs_text</text>
         <text_color>
-            <t r="255" g="255" b="255"/>
+            <t r="120" g="120" b="120"/>
             <d r="255" g="255" b="255"/>
             <e r="170" g="170" b="170"/>
             <h r="255" g="255" b="255"/>

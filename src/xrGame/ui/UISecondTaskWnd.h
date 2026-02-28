@@ -36,6 +36,8 @@ public:
 
 	virtual bool	OnMouseAction		( float x, float y, EUIMessages mouse_action );
 	virtual void 	OnMouseScroll		(float iDirection);
+	virtual bool	OnGamepadKeyAction	(int id, EUIMessages gamepad_action);
+	virtual bool	OnGamepadKeyHold	(int id);
 	virtual void	Show				( bool status );
 	virtual void 	OnFocusReceive		();
 	virtual void	OnFocusLost			();
@@ -48,8 +50,9 @@ public:
 	virtual CUIWindow* ui_cast_window() { return this; }
 
 protected:
-	void 	OnBtnClose			( CUIWindow* w, void* d);
-	bool 	SortingLessFunction	( CUIWindow* left, CUIWindow* right );
+	void 			OnBtnClose			( CUIWindow* w, void* d);
+	bool 			SortingLessFunction	( CUIWindow* left, CUIWindow* right );
+	bool			SelectNextToSelected( bool bNext );
 
 //			void	UpdateCounter		();
 public:
@@ -82,6 +85,7 @@ public:
 
 			bool	init_task			( CGameTask* task, UITaskListWnd* parent );
 	IC		u32		get_priority_task	() const;
+	CGameTask*		get_task			() { return m_task; }
 
 	virtual void 	OnFocusReceive		();
 	virtual void	OnFocusLost			();
@@ -91,8 +95,9 @@ public:
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 
-private:
+			void	showHint			();
 			void	hide_hint			();
+private:
 			void	update_view			();
 			void	update_visible_map_spot();
 
