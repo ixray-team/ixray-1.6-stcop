@@ -34,7 +34,7 @@ inline bool Surface_Detect(string_path& F, LPSTR N)
 // INTEL SELECTION
 #include "embree_raytracing/EmbreeRayTrace.h"
 #include "../xrForms/CompilersUI.h"
-void global_claculation_data::xrLoad()
+void global_claculation_data::xrLoad(bool skipThm)
 {
 	string_path					N;
 	FS.update_path				( N, "$game_data$", "shaders_xrlc.xr" );
@@ -242,8 +242,11 @@ void global_claculation_data::xrLoad()
 				g_textures.push_back	(BT);
 			}
 
-			R_ASSERT2(!is_thm_missing, "Some of required thm's are missing. See log for details.");
-			R_ASSERT2(!is_tga_missing, "Some of required tga_textures are missing. See log for details.");
+			if (!skipThm)
+			{
+				R_ASSERT2(!is_thm_missing, "Some of required thm's are missing. See log for details.");
+				R_ASSERT2(!is_tga_missing, "Some of required tga_textures are missing. See log for details.");
+			}
 		}
 	}
 }
