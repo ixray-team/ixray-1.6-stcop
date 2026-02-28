@@ -2,46 +2,21 @@
 #include "../../xrCore/vector.h"
 #include "../../xrUI/Widgets/UIWindow.h"
 #include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/uiabstract.h"
+#include "../../xrUI/ui_defs.h"
 #include "../map_location_defs.h"
 
 class CUIStatic;
 class CUIXml;
 class CMapLocation;
 
-enum class EUILayoutUnits : u8
-{
-    Auto,
-    Relative,
-    Px
-};
-
-enum class EVAlign : u8
-{
-    Top = 0,
-    Center,
-    Bottom
-};
-
-struct SCompassSpotParams
-{
-    Fvector2 size;
-    EVAlign valign;
-    float offsetY;
-    float offsetX;
-    float maxDist;
-
-    SCompassSpotParams()
-        : size(8.f, 8.f), valign(EVAlign::Center), offsetY(0.f), offsetX(0.f), maxDist(-1.f)
-    {
-    }
-};
-
 struct SSpotRenderItem
 {
+    CMapLocation* sourceLoc;
     float relX;
     float sortDist;
     float offsetY;
-    EVAlign valign;
+    EVTextAlignment valign;
     const shared_str* textureName;
     Fvector2 iconSize;
     u32 color;
@@ -83,23 +58,23 @@ struct SCompassSpotConfig
     bool show = true;
     float offsetX = 0.0f;
     float offsetY = 0.0f;
-    u8 align = 1;
+    EUIItemAlign align = alCenter;
     float spotWidth = 0.0f;
     float spotHeight = 0.0f;
-    float maxDistance = -1.0f;
     float collectInterval = 0.1f;
     u32 defaultSpotColor = 0;
 };
 
 struct SSpotCandidate
 {
+    CMapLocation* sourceLoc;
     Fvector pos;
     shared_str textureName;
     u32 color;
     float offsetY;
     float offsetX;
     Fvector2 iconSize;
-    EVAlign valign;
+    EVTextAlignment valign;
 };
 
 class CUICompassClipWindow final :
@@ -148,24 +123,24 @@ private:
 
     struct
     {
-        float markersY;
         float activePadding;
         float smoothingSpeed;
         float activeOffsetY;
+        float fadeInSpeed;
+        float fadeOutSpeed;
+        float minVisibleAlpha;
     } _cfg;
 
     SCompassSpotConfig _spotCfg;
-    xr_map<shared_str, SCompassSpotParams> _spotConfigs;
-    SCompassSpotParams _defaultSpotConfig;
 
     CUIStatic* _background;
     CUIWindow* _layerBg;
     CUIStatic* _strip;
     CUICompassClipWindow* _stripContainer;
-    EUILayoutUnits _stripUnits;
-    EUILayoutUnits _cardinalsUnits;
     xr_vector<Fvector3> _cardinalLayout;
     xr_vector<CUIStatic*> _cardinals;
+    xr_vector<float> _cardinalAlpha;
+    xr_vector<u32> _cardinalBaseTextColor;
     CUIWindow* _layerFg;
     CUIWindow* _activeTargetContainer;
     CUIStatic* _activeMarker;
@@ -179,7 +154,10 @@ private:
     xr_vector<SSpotRenderItem> _renderQueue;
     float _collectSpotsTimer;
     xr_vector<CUIStatic*> _poolSpots;
+    xr_vector<CMapLocation*> _poolSpotOwners;
     xr_vector<shared_str> _poolSpotTextureNames;
+    xr_vector<float> _poolSpotAlpha;
+    xr_vector<u32> _poolSpotBaseColor;
 
     shared_str _activeMarkerFallbackTexture;
     shared_str _activeMarkerLastTexture;
@@ -192,10 +170,6 @@ private:
     float _stripTextureScaleY;
     float _stripTextureOffsetX;
     float _stripTextureOffsetY;
-    /** If >= 0, texture height in UI units (pixels); otherwise use scale. */
-    float _stripTextureHeightPx;
-    /** If >= 0, texture width in UI units (pixels); otherwise use scale. */
-    float _stripTextureWidthPx;
 
     bool _isGameTypeSingleCompatible;
     mutable SCompassStripGeometry _cachedStripGeometry;
@@ -214,8 +188,7 @@ private:
     CUIStatic* GetSpotFromPool(xr_vector<CUIStatic*>& pool, CUIWindow* parent, u32 index);
     bool ShouldShowSpot(CMapLocation* loc, const Fvector& actorPos, const shared_str& levelName,
         CMapLocation* activeTaskLoc) const;
-    float GetSpotMaxDistance(const SCompassSpotParams& params, CMapLocation* loc) const;
-    SSpotCandidate CreateSpotCandidate(CMapLocation* loc, const SCompassSpotParams& params) const;
+    SSpotCandidate CreateSpotCandidate(CMapLocation* loc) const;
 
     void CalculateActiveTargetPosition(const Fvector& actorPos, float camHeading, const Fvector& tgtPos,
         float& outX) const;
@@ -229,11 +202,9 @@ private:
     void InitWindowAndBackground(CUIXml& uiXml, CUIXmlInit& xmlInit);
     void InitLayoutFromXml(CUIXml& uiXml);
     void ParseSpots(CUIXml& uiXml, const char* path);
-    void ParseSpotType(CUIXml& uiXml, tinyxml2::XMLElement* child, const SCompassSpotParams& defaultParams);
     void InitCompassDial(CUIXml& uiXml, CUIXmlInit& xmlInit);
     CUIStatic* InitCardinalStatic(CUIXml& uiXml, CUIXmlInit& xmlInit, const char* cardinalsPath, const char* groupPath,
-        const char* directionNode, float defaultY, float defaultW, float defaultH, EUILayoutUnits units,
-        xr_vector<Fvector3>* outLayout);
+        const char* directionNode, float defaultY, float defaultW, float defaultH, xr_vector<Fvector3>* outLayout);
     void InitActiveTargetWidgets(CUIXml& uiXml, CUIXmlInit& xmlInit);
     void CreateDefaultActiveTargetWidgets(CUIXml& uiXml);
 
@@ -243,6 +214,9 @@ private:
     void ApplyStripLayout();
     void ApplyCardinalsLayout();
 
-    static u8 ParseAlign(const char* alignStr);
+    static EUIItemAlign ParseAlign(const char* alignStr);
+    float UpdateFadeAlpha(float alpha, bool isVisible, float fadeInSpeed, float fadeOutSpeed) const;
+    float CalculateFovEdgeFade(float relX, float stripWidth) const;
+    void EnsureFadeStorage();
     void CacheGameTypeCompatibility();
 };
