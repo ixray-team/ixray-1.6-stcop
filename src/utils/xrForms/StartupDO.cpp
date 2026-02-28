@@ -41,7 +41,7 @@ void StartupDO()
 		FS.get_path("$level$")->_set(name);
 
 		Phase("Loading level...");
-		gl_data.xrLoad();
+		gl_data.xrLoad(gCompilerMode.SkipTHM);
 
 		Phase("Lighting nodes...");
 		xrLight_Details();

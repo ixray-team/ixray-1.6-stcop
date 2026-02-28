@@ -23,7 +23,7 @@ struct global_claculation_data
 	xr_vector<b_rc_face>			g_rc_faces;//---------===============
 
 			global_claculation_data		(): g_shaders_xrlc( 0 ) {}
-	void	xrLoad						( );
+	void	xrLoad						(bool skipThm);
 };
 
 extern global_claculation_data	gl_data;
