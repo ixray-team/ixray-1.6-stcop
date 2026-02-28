@@ -169,9 +169,13 @@ void CUIInventoryWnd::Init()
 	AttachChild							(UIExitButton);
 	xml_init.Init3tButton				(uiXml, "exit_button", 0, UIExitButton);
 	
-	m_pItemDropAmountWnd				= new CUIItemDropAmountWnd();
-	m_pItemDropAmountWnd->SetAutoDelete	(true);
-	m_pItemDropAmountWnd->InitDropAmount();
+	CUIXml uiDropAmountXml;
+	if (uiDropAmountXml.Load(CONFIG_PATH, UI_PATH, "custom_drop_amount.xml"))
+	{
+		m_pItemDropAmountWnd = new CUIItemDropAmountWnd();
+		m_pItemDropAmountWnd->SetAutoDelete(true);
+		m_pItemDropAmountWnd->InitDropAmount(uiDropAmountXml);
+	}
 
 //Load sounds
 
