@@ -632,7 +632,7 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 		{
 			mstate_wishful |= mcAccel;
 		}
-		else if (!(mstate_real & mcAccel))
+		else if (!(mstate_real & mcAccel) && !isActorAccelerated(mstate_real, IsZoomAimingMode()))
 		{
 			mstate_wishful &= ~mcAccel;
 		}

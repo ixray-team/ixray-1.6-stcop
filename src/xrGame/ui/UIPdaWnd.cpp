@@ -5,7 +5,7 @@
 #include "../../xrUI/xrUIXmlParser.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "UIInventoryUtilities.h"
-
+#include "../../xrEngine/xr_input.h"
 #include "../Level.h"
 #include "UIGameCustom.h"
 #include "UIStalkersRankingWnd.h"
@@ -874,4 +874,9 @@ void RearrangeTabButtonsLegacy(CUITabControl* pTab, xr_vector<Fvector2>& vec_sig
 		pos.x					+= btn_text_len+3.0f;
 	}
 
+}
+
+bool CUIPdaWnd::StopAnyMove() 
+{ 
+	return pInput->GetControllerMode(); 
 }
