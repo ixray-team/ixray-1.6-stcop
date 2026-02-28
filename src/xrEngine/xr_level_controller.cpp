@@ -124,6 +124,18 @@ ENGINE_API _action  actions[]		= {
 	{ "pda_log_show_news", 	kPDA_LOG_SHOW_NEWS,		_both,			agUILogMenu},
 	{ "pda_log_show_dialogs", 	kPDA_LOG_SHOW_DIALOGS, _both,		agUILogMenu},
 
+	{ "pda_tasks_toggle_list",		kPDA_TASKS_TOGGLE_LIST,			_both, agUITaskMenu},
+	{ "pda_tasks_toggle_legend",	kPDA_TASKS_TOGGLE_LEGEND,		_both, agUITaskMenu},
+	{ "pda_tasks_next",				kPDA_TASKS_NEXT,				_both, agUITaskMenu},
+	{ "pda_tasks_prev",				kPDA_TASKS_PREV,				_both, agUITaskMenu},
+	{ "pda_tasks_toggle_map",		kPDA_TASKS_TOGGLE_MAP,			_both, agUITaskMenu},
+	{ "pda_tasks_map_show_me",		kPDA_TASKS_MAP_SHOW_ME,			_both, agUITaskMenu},
+	{ "pda_tasks_map_zoom_in",		kPDA_TASKS_MAP_ZOOM_IN,			_both, agUITaskMenu},
+	{ "pda_tasks_map_zoom_out",		kPDA_TASKS_MAP_ZOOM_OUT,		_both, agUITaskMenu},
+	{ "pda_tasks_filter_next",		kPDA_TASKS_FILTER_NEXT,			_both, agUITaskMenu},
+	{ "pda_tasks_filter_prev",		kPDA_TASKS_FILTER_PREV,			_both, agUITaskMenu},
+	{ "pda_tasks_filter_toggle",	kPDA_TASKS_FILTER_TOGGLE,		_both, agUITaskMenu},
+
 	{ "custom1",			kCUSTOM1				,_sp,			agDefault},
 	{ "custom2",			kCUSTOM2				,_sp,			agDefault},
 	{ "custom3",			kCUSTOM3				,_sp,			agDefault},
