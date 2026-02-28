@@ -137,7 +137,7 @@ extern xr_vector<b_BuildTexture>	g_textures		;
 extern xr_vector<b_rc_face>			g_rc_faces		;
 
 // phases
-void	xrLoad			(LPCSTR name, bool draft_mode);
+void	xrLoad			(LPCSTR name, bool draft_mode, bool skipThm);
 void	xrCover			(bool pure_covers);
 void	xrMerge			();
 void	xrConvertAndLink();

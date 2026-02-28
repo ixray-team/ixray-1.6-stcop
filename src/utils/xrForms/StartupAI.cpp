@@ -28,7 +28,7 @@ extern LPCSTR LEVEL_GRAPH_NAME;
 extern LPCSTR GAME_CONFIG;
 
 extern void clear_temp_folder();
-extern void	xrCompiler(LPCSTR name, bool draft_mode, bool pure_covers, LPCSTR out_name);
+extern void	xrCompiler(LPCSTR name, bool draft_mode, bool pure_covers, bool skipThm, LPCSTR out_name);
 extern void	verify_level_graph(LPCSTR name, bool verbose);
 
 #include "CompilersUI.h"
@@ -66,7 +66,7 @@ void StartupAI()
 
 			char* output = (pstr)LEVEL_GRAPH_NAME;
 
-			xrCompiler(prjName, gCompilerMode.AI_Draft, gCompilerMode.AI_PureCovers, output);
+			xrCompiler(prjName, gCompilerMode.AI_Draft, gCompilerMode.AI_PureCovers, gCompilerMode.SkipTHM, output);
 		}
 
 		if (gCompilerMode.AI_Verify)
