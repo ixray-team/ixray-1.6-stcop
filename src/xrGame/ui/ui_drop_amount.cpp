@@ -56,11 +56,8 @@ CUIItemDropAmountWnd::~CUIItemDropAmountWnd()
     ActionRepeaters()->UnregisterOwner(this);
 }
 
-void CUIItemDropAmountWnd::InitDropAmount()
+void CUIItemDropAmountWnd::InitDropAmount(CUIXml& uiXml)
 {
-    CUIXml uiXml;
-    uiXml.Load(CONFIG_PATH, UI_PATH, "custom_drop_amount.xml");
-
     SetWndPos(Fvector2().set(0, 0));
     SetWndSize(Fvector2().set(UI_BASE_WIDTH, UI_BASE_HEIGHT));
 
