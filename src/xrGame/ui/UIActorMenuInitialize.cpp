@@ -406,9 +406,13 @@ void CUIActorMenu::Construct()
 		m_upgrade_info->init_from_xml		("actor_menu_item.xml");
 	}
 
-	m_pItemDropAmountWnd				= new CUIItemDropAmountWnd();
-	m_pItemDropAmountWnd->SetAutoDelete	(true);
-	m_pItemDropAmountWnd->InitDropAmount();
+	CUIXml uiDropAmountXml;
+	if (uiDropAmountXml.Load(CONFIG_PATH, UI_PATH, "custom_drop_amount.xml"))
+	{
+		m_pItemDropAmountWnd = new CUIItemDropAmountWnd();
+		m_pItemDropAmountWnd->SetAutoDelete(true);
+		m_pItemDropAmountWnd->InitDropAmount(uiDropAmountXml);
+	}
 
 	m_pInventorySorter					= new CInventorySorter();
 	m_pInventorySorter->Initialize();

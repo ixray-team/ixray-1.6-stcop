@@ -33,7 +33,7 @@ public:
     CUIItemDropAmountWnd();
     ~CUIItemDropAmountWnd();
 
-    void InitDropAmount();
+    void InitDropAmount(CUIXml& uiXml);
     void ShowDropAmount(u32 max, EDropMode mode, CInventoryItem* pItem = nullptr);
     void Show(CInventoryItem* pItem, int maxAmount, std::function<void(int)> callback);
     bool IsExtendedLayout() const { return _extendedLayout; }
