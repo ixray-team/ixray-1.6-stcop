@@ -882,7 +882,7 @@ void CUICompassBar::CommitLayout()
         _poolSpotTextureNames.reserve(_renderQueue.size());
     }
     SCompassStripGeometry geom = GetStripGeometry();
-    const float globalY = _spotCfg.offsetY;
+    const float compassBarHeight = GetHeight();
     const float kx = UI().get_current_kx();
     EnsureFadeStorage();
     xr_vector<u8> poolSlotUsed;
@@ -914,7 +914,7 @@ void CUICompassBar::CommitLayout()
     for (const SSpotRenderItem& item : _renderQueue)
     {
         const u32 poolIdx = allocatePoolSlotLambda(item.sourceLoc);
-        CUIStatic* wnd = GetSpotFromPool(_poolSpots, _stripContainer, poolIdx);
+        CUIStatic* wnd = GetSpotFromPool(_poolSpots, this, poolIdx);
         if (!wnd)
         {
             continue;
@@ -955,20 +955,20 @@ void CUICompassBar::CommitLayout()
         {
             case valTop:
             {
-                posY = globalY + item.offsetY;
+                posY = item.offsetY;
                 break;
             }
 
             case valBotton:
             {
-                posY = geom.height + globalY + item.offsetY - item.iconSize.y;
+                posY = compassBarHeight + item.offsetY - item.iconSize.y;
                 break;
             }
 
             case valCenter:
             default:
             {
-                posY = geom.CenterY() + globalY + item.offsetY - item.iconSize.y * 0.5f;
+                posY = compassBarHeight * 0.5f + item.offsetY - item.iconSize.y * 0.5f;
                 break;
             }
         }
