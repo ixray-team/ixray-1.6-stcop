@@ -58,7 +58,7 @@ void transfer(const char *name, xr_vector<T> &dest, IReader& F, u32 chunk)
 	if (O)		O->close	();
 }
 
-void xrLoad(LPCSTR name, bool draft_mode)
+void xrLoad(LPCSTR name, bool draft_mode, bool skipThm)
 {
 	FS.get_path("$level$")->_set((LPSTR)name);
 	string256					N;
@@ -216,8 +216,11 @@ void xrLoad(LPCSTR name, bool draft_mode)
 					g_textures.push_back(BT);
 				}
 
-				R_ASSERT2(!is_thm_missing, "Some of required thm's are missing. See log for details.");
-				R_ASSERT2(!is_tga_missing, "Some of required tga_textures are missing. See log for details.");
+				if (!skipThm)
+				{
+					R_ASSERT2(!is_thm_missing, "Some of required thm's are missing. See log for details.");
+					R_ASSERT2(!is_tga_missing, "Some of required tga_textures are missing. See log for details.");
+				}
 			}
 		}
 	}
