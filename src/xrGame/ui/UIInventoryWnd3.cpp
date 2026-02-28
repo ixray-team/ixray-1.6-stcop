@@ -157,7 +157,7 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked()
 			{
 				DropAllCurrentItem(cell_item->ChildsCount() + 1);
 			}
-			else if (d_ == (void*)77)
+			else if (m_pItemDropAmountWnd != nullptr && d_ == (void*)77)
 			{
 				m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeDrop, item);
 			}
@@ -357,7 +357,10 @@ void CUIInventoryWnd::PropertiesBoxForDrop(CUICellItem* cell_item, PIItem item, 
 
 		if (cell_item->ChildsCount())
 		{
-			m_UIPropertiesBox->AddItem("st_drop_amount", (void*)77, INVENTORY_DROP_ACTION);
+			if (m_pItemDropAmountWnd != nullptr)
+			{
+				m_UIPropertiesBox->AddItem("st_drop_amount", (void*)77, INVENTORY_DROP_ACTION);
+			}
 			m_UIPropertiesBox->AddItem("st_drop_all", (void*)33, INVENTORY_DROP_ACTION);
 		}
 	}
