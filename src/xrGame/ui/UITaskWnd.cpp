@@ -10,7 +10,7 @@
 #include "UIMapLegend.h"
 #include "../../xrUI/UIHelper.h"
 #include "../../xrUI/Widgets/UIHint.h"
-
+#include "../../xrEngine/xr_input.h"
 #include "../GameTask.h"
 #include "../map_location.h"
 #include "../map_location_defs.h"
@@ -21,6 +21,7 @@
 #include "../Actor.h"
 #include "../../xrUI/Widgets/UICheckButton.h"
 #include "../../xrEngine/string_table.h"
+#include "../../xrUI/Widgets/UIGamepadLegend.h"
 
 CUITaskWnd::CUITaskWnd()
 	: m_background(nullptr), m_background2(nullptr),
@@ -30,17 +31,26 @@ CUITaskWnd::CUITaskWnd()
 	m_BtnTaskListWnd(nullptr), m_second_task_index(nullptr),
 	m_devider(nullptr), m_actual_frame(0),
 	m_btn_focus(nullptr), m_btn_focus2(nullptr),
-	m_cbTreasures(nullptr), m_cbQuestNpcs(nullptr),
-	m_cbSecondaryTasks(nullptr), m_cbPrimaryObjects(nullptr),
 	m_bTreasuresEnabled(false), m_bQuestNpcsEnabled(false),
 	m_bSecondaryTasksEnabled(false), m_bPrimaryObjectsEnabled(false),
 	m_task_wnd(nullptr), m_task_wnd_show(false),
 	m_map_legend_wnd(nullptr), hint_wnd(nullptr)
 {
+	for (int i = 0; i < MAP_MARKS_FILTER_MAX; ++i)
+		m_cbFilters[i] = nullptr;
+
+	ActionRepeaters()->Register(this, kPDA_TASKS_FILTER_NEXT);
+	ActionRepeaters()->Register(this, kPDA_TASKS_FILTER_PREV);
 }
+
 CUITaskWnd::~CUITaskWnd()
 {
 	delete_data						(m_pMapWnd);
+
+	for (int i = 0; i < MAP_MARKS_FILTER_MAX; ++i)
+		m_cbFilters[i] = nullptr;
+
+	ActionRepeaters()->UnregisterOwner(this);
 }
 
 void CUITaskWnd::Init()
@@ -60,33 +70,33 @@ void CUITaskWnd::Init()
 
 	if (xml.NavigateToNode("filter_treasures"))
 	{
-		m_cbTreasures = UIHelper::CreateCheck(xml, "filter_treasures", this);
-		m_cbTreasures->SetCheck(true);
-		AddCallback(m_cbTreasures, BUTTON_CLICKED, CUIWndCallback::void_function(this, &CUITaskWnd::OnShowTreasures));
+		m_cbFilters[MAP_MARKS_FILTER_TREASURES] = UIHelper::CreateCheck(xml, "filter_treasures", this);
+		m_cbFilters[MAP_MARKS_FILTER_TREASURES]->SetCheck(true);
+		AddCallback(m_cbFilters[MAP_MARKS_FILTER_TREASURES], BUTTON_CLICKED, CUIWndCallback::void_function(this, &CUITaskWnd::OnShowTreasures));
 	}
 	m_bTreasuresEnabled = true;
 
 	if (xml.NavigateToNode("filter_primary_objects"))
 	{
-		m_cbPrimaryObjects = UIHelper::CreateCheck(xml, "filter_primary_objects", this);
-		m_cbPrimaryObjects->SetCheck(true);
-		AddCallback(m_cbPrimaryObjects, BUTTON_CLICKED, CUIWndCallback::void_function(this, &CUITaskWnd::OnShowPrimaryObjects));
+		m_cbFilters[MAP_MARKS_FILTER_PRIMARY_OBJECTS] = UIHelper::CreateCheck(xml, "filter_primary_objects", this);
+		m_cbFilters[MAP_MARKS_FILTER_PRIMARY_OBJECTS]->SetCheck(true);
+		AddCallback(m_cbFilters[MAP_MARKS_FILTER_PRIMARY_OBJECTS], BUTTON_CLICKED, CUIWndCallback::void_function(this, &CUITaskWnd::OnShowPrimaryObjects));
 	}
 	m_bPrimaryObjectsEnabled		= true;
 
 	if (xml.NavigateToNode("filter_secondary_tasks"))
 	{
-		m_cbSecondaryTasks = UIHelper::CreateCheck(xml, "filter_secondary_tasks", this);
-		m_cbSecondaryTasks->SetCheck(true);
-		AddCallback(m_cbSecondaryTasks, BUTTON_CLICKED, CUIWndCallback::void_function(this, &CUITaskWnd::OnShowSecondaryTasks));
+		m_cbFilters[MAP_MARKS_FILTER_SECONDARY_TASKS] = UIHelper::CreateCheck(xml, "filter_secondary_tasks", this);
+		m_cbFilters[MAP_MARKS_FILTER_SECONDARY_TASKS]->SetCheck(true);
+		AddCallback(m_cbFilters[MAP_MARKS_FILTER_SECONDARY_TASKS], BUTTON_CLICKED, CUIWndCallback::void_function(this, &CUITaskWnd::OnShowSecondaryTasks));
 	}
 	m_bSecondaryTasksEnabled		= true;
 
 	if (xml.NavigateToNode("filter_quest_npcs"))
 	{
-		m_cbQuestNpcs = UIHelper::CreateCheck(xml, "filter_quest_npcs", this);
-		m_cbQuestNpcs->SetCheck(true);
-		AddCallback(m_cbQuestNpcs, BUTTON_CLICKED, CUIWndCallback::void_function(this, &CUITaskWnd::OnShowQuestNpcs));
+		m_cbFilters[MAP_MARKS_FILTER_NPCS] = UIHelper::CreateCheck(xml, "filter_quest_npcs", this);
+		m_cbFilters[MAP_MARKS_FILTER_NPCS]->SetCheck(true);
+		AddCallback(m_cbFilters[MAP_MARKS_FILTER_NPCS], BUTTON_CLICKED, CUIWndCallback::void_function(this, &CUITaskWnd::OnShowQuestNpcs));
 	}
 	m_bQuestNpcsEnabled				= true;
 	
@@ -151,6 +161,8 @@ void CUITaskWnd::Init()
 	m_pMapWnd->AttachChild				(m_map_legend_wnd);
 	m_map_legend_wnd->SetMessageTarget	(this);
 	m_map_legend_wnd->Show				(false);
+
+	m_gamepad_legend			= UIHelper::CreateGamepadLegend(xml, "gamepad_legend", this, false);
 }
 
 void CUITaskWnd::Update()
@@ -173,6 +185,8 @@ void CUITaskWnd::Update()
 	{
 		m_pMapWnd->HideCurHint();
 	}
+	UpdateFilterHighlight();
+	UpdateGamepadLegend();
 	inherited::Update				();
 }
 
@@ -236,7 +250,7 @@ void CUITaskWnd::ReloadTaskInfo()
         m_pSecondaryTaskItem->InitTask(additionalTask);
     }
 
-    if (!storyTask || (storyTask->m_map_object_id == u16(-1) || storyTask->m_map_location.size() == 0))
+    if (!storyTask || (storyTask->m_map_object_id == u16(-1) || storyTask->m_map_location.size() == 0) || pInput->GetControllerMode())
 		m_btn_focus->Show(false);
 	else
 		m_btn_focus->Show(true);
@@ -441,6 +455,153 @@ void CUITaskWnd::OnShowQuestNpcs(CUIWindow* ui, void* d)
 	m_bQuestNpcsEnabled = !m_bQuestNpcsEnabled;
 	ReloadTaskInfo();
 }
+
+bool CUITaskWnd::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
+{
+	if (gamepad_action == WINDOW_KEY_PRESSED)
+	{
+		switch (get_binded_action(id, agUITaskMenu))
+		{
+			case kPDA_TASKS_MAP_SHOW_ME:
+			{
+				if (!m_task_wnd->IsShown())
+				{
+					m_pMapWnd->ViewActor();
+					return true;
+				}
+				break;
+			}
+			case kPDA_TASKS_TOGGLE_LIST:
+			{
+				OnShowTaskListWnd(this, nullptr);
+				return true;
+			}
+			case kPDA_TASKS_TOGGLE_LEGEND:
+			{
+				Switch_ShowMapLegend();
+				return true;
+			}
+			case kPDA_TASKS_FILTER_NEXT:
+			{
+				if (!any_binded_key_for_action_pressed_c(kPDA_TASKS_FILTER_PREV))
+					SwitchToNextFilter(false);
+				ActionRepeaters()->SetActionStarted(this, kPDA_TASKS_FILTER_NEXT);
+				return true;
+			}
+			case kPDA_TASKS_FILTER_PREV:
+			{
+				if (!any_binded_key_for_action_pressed_c(kPDA_TASKS_FILTER_NEXT))
+					SwitchToPrevFilter(false);
+				ActionRepeaters()->SetActionStarted(this, kPDA_TASKS_FILTER_PREV);
+				return true;
+			}
+			case kPDA_TASKS_FILTER_TOGGLE:
+			{
+				if (!m_task_wnd->IsShown())
+				{
+					CUICheckButton* pChkButton = m_cbFilters[m_currentFilterIndex];
+					if (pChkButton)
+					{
+						pChkButton->SetCheck(!pChkButton->GetCheck());
+						GetMessageTarget()->SendMessage(pChkButton, BUTTON_CLICKED, nullptr);
+					}
+					return true;
+				}
+				break;
+			}
+		}
+	}
+
+	return inherited::OnGamepadKeyAction(id, gamepad_action);
+}
+
+bool CUITaskWnd::OnGamepadKeyHold(int id)
+{
+	switch (get_binded_action(id, agUITaskMenu))
+	{
+		case kPDA_TASKS_FILTER_NEXT:
+		{
+			if (ActionRepeaters()->CanRepeatActionNow(this, kPDA_TASKS_FILTER_NEXT) && !any_binded_key_for_action_pressed_c(kPDA_TASKS_FILTER_PREV))
+				SwitchToNextFilter(false);
+			return true;
+		}
+		case kPDA_TASKS_FILTER_PREV:
+		{
+			if (ActionRepeaters()->CanRepeatActionNow(this, kPDA_TASKS_FILTER_PREV) && !any_binded_key_for_action_pressed_c(kPDA_TASKS_FILTER_NEXT))
+				SwitchToPrevFilter(false);
+			return true;
+		}
+	}
+
+	return inherited::OnGamepadKeyHold(id);
+}
+
+bool CUITaskWnd::SwitchToNextFilter(bool bLoop)
+{
+	int newFilterIndex = m_currentFilterIndex + 1;
+	if (newFilterIndex >= MAP_MARKS_FILTER_MAX)
+	{
+		if (bLoop)
+			newFilterIndex = 0;
+		else
+			return false;
+	}
+	m_currentFilterIndex = newFilterIndex;
+	return true;
+}
+
+bool CUITaskWnd::SwitchToPrevFilter(bool bLoop)
+{
+	int newFilterIndex = m_currentFilterIndex - 1;
+	if (newFilterIndex < 0)
+	{
+		if (bLoop)
+			newFilterIndex = MAP_MARKS_FILTER_MAX - 1;
+		else
+			return false;
+	}
+	m_currentFilterIndex = newFilterIndex;
+	return true;
+}
+
+void CUITaskWnd::UpdateFilterHighlight()
+{
+	for (int i = 0; i < MAP_MARKS_FILTER_MAX; ++i)
+	{
+		if (m_cbFilters[i])
+		{
+			m_cbFilters[i]->SetHighlighted(i == m_currentFilterIndex && pInput->GetControllerMode());
+		}
+	}
+
+}
+
+void CUITaskWnd::UpdateGamepadLegend()
+{
+	if (!m_gamepad_legend)
+	{
+		return;
+	}
+
+	CUIWindow* actionAccept = m_gamepad_legend->FindChild("action_accept");
+	if (actionAccept)
+	{
+		if (CUIStatic* actionAcceptS = actionAccept->ui_cast_static())
+		{
+			actionAcceptS->SetTextST(m_task_wnd->IsShown() ? "ui_tasks_show_on_map" : "ui_tasks_filter_toggle");
+		}
+	}
+
+	CUIWindow* showMissions = m_gamepad_legend->FindChild("show_missions");
+	if (showMissions)
+	{
+		if (CUIStatic* showMissionsS = showMissions->ui_cast_static())
+		{
+			showMissionsS->SetTextST(m_task_wnd->IsShown() ? "ui_pda_hide_mission" : "ui_pda_show_mission");
+		}
+	}
+}
+
 // --------------------------------------------------------------------------------------------------
 CUITaskItem::CUITaskItem() : m_owner(nullptr), show_hint_can(false), show_hint(false), m_hint_wt(500) {}
 

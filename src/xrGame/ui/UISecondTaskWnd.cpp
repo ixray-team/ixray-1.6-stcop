@@ -34,10 +34,14 @@
 UITaskListWnd::UITaskListWnd()
 	: hint_wnd(nullptr), m_background(nullptr), m_list(nullptr),
 	m_caption(nullptr), m_bt_close(nullptr), m_orig_h(0), m_show_only_secondary_tasks(false) 
-{}
+{
+	ActionRepeaters()->Register(this, kPDA_TASKS_NEXT);
+	ActionRepeaters()->Register(this, kPDA_TASKS_PREV);
+}
 
 UITaskListWnd::~UITaskListWnd()
 {
+	ActionRepeaters()->UnregisterOwner(this);
 }
 
 void UITaskListWnd::init_from_xml( CUIXml& xml, LPCSTR path )
@@ -162,18 +166,121 @@ bool UITaskListWnd::SortingLessFunction( CUIWindow* left, CUIWindow* right )
 	return ( lpi->get_priority_task() > rpi->get_priority_task() );
 }
 
-/*
-void UITaskListWnd::UpdateCounter()
-{
-	u32  m_progress_task_count = Level().GameTaskManager()->GetTaskCount( eTaskStateInProgress );
-	CGameTask* act_task = Level().GameTaskManager()->ActiveTask();
-	u32 task2_index     = Level().GameTaskManager()->GetTaskIndex( act_task, eTaskStateInProgress );
 
-	string32 buf;
-	xr_sprintf( buf, sizeof(buf), "%d / %d", task2_index, m_progress_task_count );
-	m_counter->SetText( buf );
+bool UITaskListWnd::SelectNextToSelected(bool bNext)
+{
+	CGameTaskManager* taskManager = Level().GameTaskManager();
+	CGameTask* pActiveTask = taskManager->ActiveTask();
+	if (pActiveTask)
+	{
+		WINDOW_LIST& wndList = m_list->Items();
+		for (WINDOW_LIST_it it = wndList.begin(); it != wndList.end(); ++it)
+		{
+			UITaskListWndItem* item = static_cast<UITaskListWndItem*>(*it);
+			if (item->get_task() == pActiveTask)
+			{
+				if (bNext)
+				{
+					if (it + 1 != wndList.end())
+					{
+						UITaskListWndItem* nextToItem = static_cast<UITaskListWndItem*>(*(it + 1));
+						taskManager->SetActiveTask(nextToItem->get_task());
+						m_list->ScrollToItem(nextToItem, iFloor(-m_list->ScrollBar()->GetHeight() / 2.0f + nextToItem->GetWndRect().height() / 2.0f));
+						return true;
+					}
+				}
+				else
+				{
+					if (it != wndList.begin())
+					{
+						UITaskListWndItem* nextToItem = static_cast<UITaskListWndItem*>(*(it - 1));
+						taskManager->SetActiveTask(nextToItem->get_task());
+						m_list->ScrollToItem(nextToItem, iFloor(-m_list->ScrollBar()->GetHeight() / 2.0f + nextToItem->GetWndRect().height() / 2.0f));
+						return true;
+					}
+				}
+			}
+		}
+	}
+	return false;
 }
-*/
+
+bool UITaskListWnd::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
+{
+	if (IsShown() && gamepad_action == WINDOW_KEY_PRESSED)
+	{
+		if (is_binded(kPDA_TASKS_NEXT, id))
+		{
+			if (!any_binded_key_for_action_pressed_c(kPDA_TASKS_PREV))
+				SelectNextToSelected(true);
+			ActionRepeaters()->SetActionStarted(this, kPDA_TASKS_NEXT);
+			return true;
+		}
+		else if (is_binded(kPDA_TASKS_PREV, id))
+		{
+			if (!any_binded_key_for_action_pressed_c(kPDA_TASKS_NEXT))
+				SelectNextToSelected(false);
+			ActionRepeaters()->SetActionStarted(this, kPDA_TASKS_PREV);
+			return true;
+		}
+		else if (is_binded(kPDA_TASKS_FILTER_TOGGLE, id))
+		{
+			CGameTaskManager* taskManager = Level().GameTaskManager();
+			CGameTask* pActiveTask = taskManager->ActiveTask();
+			if (pActiveTask)
+			{
+				GetMessageTarget()->SendMessage(this, PDA_TASK_SET_TARGET_MAP, (void*)pActiveTask);
+			}
+			return true;
+		}
+		else if (is_binded(kUI_HINT, id))
+		{
+			CGameTaskManager* taskManager = Level().GameTaskManager();
+			CGameTask* pActiveTask = taskManager->ActiveTask();
+			if (pActiveTask)
+			{
+				WINDOW_LIST& wndList = m_list->Items();
+				for (WINDOW_LIST_it it = wndList.begin(); it != wndList.end(); ++it)
+				{
+					UITaskListWndItem* item = static_cast<UITaskListWndItem*>(*it);
+					if (item->get_task() == pActiveTask)
+					{
+						if (item->show_hint)
+						{
+							item->hide_hint();
+						}
+						else
+						{
+							item->showHint();
+						}
+						break;
+					}
+				}
+			}
+			return true;
+		}
+	}
+
+	return inherited::OnGamepadKeyAction(id, gamepad_action);
+}
+
+bool UITaskListWnd::OnGamepadKeyHold(int id)
+{
+	if (is_binded(kPDA_TASKS_NEXT, id))
+	{
+		if (ActionRepeaters()->CanRepeatActionNow(this, kPDA_TASKS_NEXT) && !any_binded_key_for_action_pressed_c(kPDA_TASKS_PREV))
+			SelectNextToSelected(true);
+		return true;
+	}
+	else if (is_binded(kPDA_TASKS_PREV, id))
+	{
+		if (ActionRepeaters()->CanRepeatActionNow(this, kPDA_TASKS_PREV) && !any_binded_key_for_action_pressed_c(kPDA_TASKS_NEXT))
+			SelectNextToSelected(false);
+		return true;
+	}
+	return inherited::OnGamepadKeyHold(id);
+}
+
 // - -----------------------------------------------------------------------------------------------
 
 UITaskListWndItem::UITaskListWndItem()
@@ -231,6 +338,13 @@ void UITaskListWndItem::hide_hint()
 	GetMessageTarget()->SendMessage( this, PDA_TASK_HIDE_HINT, nullptr );
 }
 
+void UITaskListWndItem::showHint()
+{
+	show_hint_can   = true;
+	show_hint       = true;
+	GetMessageTarget()->SendMessage( this, PDA_TASK_SHOW_HINT, (void*)m_task );
+}
+
 void UITaskListWndItem::Update()
 {
 	inherited::Update();
@@ -240,8 +354,7 @@ void UITaskListWndItem::Update()
 	{
 		if ( Device.dwTimeContinual > ( m_name->FocusReceiveTime() + 700 ) )
 		{
-			show_hint = true;
-			GetMessageTarget()->SendMessage( this, PDA_TASK_SHOW_HINT, (void*)m_task );
+			showHint();
 			return;
 		}
 	}

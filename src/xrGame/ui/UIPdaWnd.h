@@ -111,7 +111,7 @@ public:
 
 			void			SetActiveSubdialog	(const shared_str& section);
 			void			SetActiveSubdialog_script(LPCSTR section)				{ SetActiveSubdialog((const shared_str&)section); };
-	virtual bool			StopAnyMove			(){return false;}
+	virtual bool			StopAnyMove			();
 			void			PdaContentsChanged	(pda_section::part type);
 
 			void			UpdatePda			();

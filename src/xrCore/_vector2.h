@@ -109,6 +109,7 @@ public:
 			else
 				return		(-atanf(x/y));
 	}
+	IC	SelfRef	invert()								{ x=-x; y=-y;												return *this; }
 };
 
 typedef _vector2<float>		Fvector2;
