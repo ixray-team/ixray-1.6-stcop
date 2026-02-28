@@ -164,15 +164,16 @@
         </level_changer_left_up_spot>
 
 
-        <treasure hint="st_ui_pda_secret" compass_dist="50">
+        <treasure hint="st_ui_pda_secret">
                 <level_map spot="treasure_spot" pointer="quest_pointer"/>
-                <mini_map compass="1" spot="treasure_spot_mini"/>
+                <mini_map spot="treasure_spot_mini"/>
         </treasure>
         <treasure_spot width="20" height="20" alignment="c" stretch="1">
                 <texture>ui_inGame2_PDA_icon_secret</texture>
         </treasure_spot>
         <treasure_spot_mini width="17" height="17" alignment="c" stretch="1">
                 <texture>ui_inGame2_PDA_icon_secret</texture>
+                <compass max_dist="50" vert_align="center"></compass>
         </treasure_spot_mini>
 
 
@@ -698,59 +699,64 @@
 
 
         <!-- level_spot -->
-        <ui_pda2_mechanic_location hint="st_ui_pda_legend_mechanic" compass_dist="150">
+        <ui_pda2_mechanic_location hint="st_ui_pda_legend_mechanic">
                 <level_map spot="ui_pda2_mechanic_location_spot"/>
-                <mini_map compass="1" spot="ui_pda2_mechanic_location_mini_spot"/>
+                <mini_map spot="ui_pda2_mechanic_location_mini_spot"/>
         </ui_pda2_mechanic_location>
         <ui_pda2_mechanic_location_spot width="19" height="19" stretch="1" alignment="c" location_level="-1" scale_min="3">
                 <texture>ui_inGame2_PDA_icon_Stalker_machanik</texture>
         </ui_pda2_mechanic_location_spot>
         <ui_pda2_mechanic_location_mini_spot width="14" height="14" stretch="1" alignment="c" location_level="-1">
                 <texture>ui_inGame2_PDA_icon_Stalker_machanik_small</texture>
+                <compass max_dist="150" vert_align="center"></compass>
         </ui_pda2_mechanic_location_mini_spot>
 
-        <ui_pda2_trader_location hint="st_ui_pda_legend_trader" compass_dist="150">
+        <ui_pda2_trader_location hint="st_ui_pda_legend_trader">
                 <level_map spot="ui_pda2_trader_location_spot"/>
-				<mini_map compass="1" spot="ui_pda2_trader_location_mini_spot" pointer="quest_pointer"/>
+				<mini_map spot="ui_pda2_trader_location_mini_spot" pointer="quest_pointer"/>
         </ui_pda2_trader_location>
         <ui_pda2_trader_location_spot width="19" height="19" stretch="1" alignment="c" location_level="-1" scale_min="3">
                 <texture>ui_inGame2_PDA_icon_Stalker_Trader</texture>
         </ui_pda2_trader_location_spot>
         <ui_pda2_trader_location_mini_spot width="14" height="14" stretch="1" alignment="c" location_level="-1">
                 <texture>ui_inGame2_PDA_icon_Stalker_Trader_small</texture>
+                <compass max_dist="150" vert_align="center"></compass>
         </ui_pda2_trader_location_mini_spot>
 
-        <ui_pda2_scout_location hint="st_ui_pda_legend_scout" compass_dist="150">
+        <ui_pda2_scout_location hint="st_ui_pda_legend_scout">
                 <level_map spot="ui_pda2_scout_location_spot"/>
-                <mini_map compass="1" spot="ui_pda2_scout_location_mini_spot"/>
+                <mini_map spot="ui_pda2_scout_location_mini_spot"/>
         </ui_pda2_scout_location>
         <ui_pda2_scout_location_spot width="19" height="19" stretch="1" alignment="c" location_level="-1" scale_min="3">
                 <texture>ui_inGame2_PDA_icon_Stalker_guide</texture>
         </ui_pda2_scout_location_spot>
         <ui_pda2_scout_location_mini_spot width="14" height="14" stretch="1" alignment="c" location_level="-1">
                 <texture>ui_inGame2_PDA_icon_Stalker_guide_small</texture>
+                <compass max_dist="150" vert_align="center"></compass>
         </ui_pda2_scout_location_mini_spot>
 
-        <ui_pda2_quest_npc_location hint="st_ui_pda_legend_vip" compass_dist="150">
+        <ui_pda2_quest_npc_location hint="st_ui_pda_legend_vip">
                 <level_map spot="ui_pda2_quest_npc_location_spot"/>
-                <mini_map compass="1" spot="ui_pda2_quest_npc_location_mini_spot"/>
+                <mini_map spot="ui_pda2_quest_npc_location_mini_spot"/>
         </ui_pda2_quest_npc_location>
         <ui_pda2_quest_npc_location_spot width="19" height="19" stretch="1" alignment="c" location_level="-1" scale_min="3">
                 <texture>ui_inGame2_PDA_icon_Stalker_VIP</texture>
         </ui_pda2_quest_npc_location_spot>
         <ui_pda2_quest_npc_location_mini_spot width="14" height="14" stretch="1" alignment="c" location_level="-1">
                 <texture>ui_inGame2_PDA_icon_Stalker_VIP</texture>
+                <compass max_dist="150" vert_align="center"></compass>
         </ui_pda2_quest_npc_location_mini_spot>
 
-        <ui_pda2_medic_location hint="st_ui_pda_legend_medic" compass_dist="150">
+        <ui_pda2_medic_location hint="st_ui_pda_legend_medic">
                 <level_map spot="ui_pda2_medic_location_spot"/>
-                <mini_map compass="1" spot="ui_pda2_medic_location_mini_spot"/>
+                <mini_map spot="ui_pda2_medic_location_mini_spot"/>
         </ui_pda2_medic_location>
         <ui_pda2_medic_location_spot width="19" height="19" stretch="1" alignment="c" location_level="-1" scale_min="3">
                 <texture>ui_inGame2_PDA_icon_Stalker_Medic</texture>
         </ui_pda2_medic_location_spot>
         <ui_pda2_medic_location_mini_spot width="14" height="14" stretch="1" alignment="c" location_level="-1">
                 <texture>ui_inGame2_PDA_icon_Stalker_Medic_small</texture>
+                <compass max_dist="150" vert_align="center"></compass>
         </ui_pda2_medic_location_mini_spot>
 
         <ui_pda2_actor_box_location hint="st_ui_pda_actor_box">
