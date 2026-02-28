@@ -212,6 +212,7 @@ void EParticleAction::Load(IReader& F)
 		R_ASSERT(F.r_u32() == DataChunksID);
 		auto ChunkSize = F.r_u32();
 		auto ActionsChunk = IReader(F.pointer(), ChunkSize);
+		F.advance(ChunkSize);
 		auto BoolStream = ActionsChunk.open_chunk(tpBool);
 		auto DomainStream = ActionsChunk.open_chunk(tpDomain);
 		auto VectorStream = ActionsChunk.open_chunk(tpVector);
@@ -1521,54 +1522,6 @@ EPATargetColor::EPATargetColor		():EParticleAction(PAPI::PATargetColorID)
 	appendFloat						("Scale",			1.f, 0.01f, P_MAXFLOAT);     
 	appendFloat						("TimeFrom",		0.0f, 0.0f, 1.0f);     
 	appendFloat						("TimeTo",			1.0f, 0.0f, 1.0f);     
-}
-
-void EPATargetColor::Load(IReader& F)
-{
-	u32 vers = F.r_u32();
-	R_ASSERT(vers <= PARTICLE_ACTION_VERSION_MAX && vers >= PARTICLE_ACTION_VERSION_MIN);
-
-	F.r_stringZ(actionName);
-	flags.assign(F.r_u32());
-
-	if (vers == 0)
-	{
-		constexpr int Count = 2;
-		int Iter = 0;
-		for (auto& f_it : floats)
-		{
-			if (Iter >= Count)
-			{
-				break;
-			}
-			f_it.second.val = F.r_float();
-			Iter++;
-		}
-	}
-	else
-	{
-		for (auto& f_it : floats)
-		{
-			f_it.second.val = F.r_float();
-		}
-	}
-
-	for (auto& vector : vectors)
-	{
-		F.r_fvector3(vector.second.val);
-	}
-	for (auto& domain : domains)
-	{
-		domain.second.Load(F);
-	}
-	for (auto& b_it : bools)
-	{
-		b_it.second.val = F.r_u8();
-	}
-	for (auto& i_it : ints)
-	{
-		i_it.second.val = F.r_s32();
-	}
 }
 
 void EPATargetColor::Compile(IWriter& F)
