@@ -2,6 +2,7 @@
 #include "object_interfaces.h"
 #include "alife_space.h"
 #include "game_graph_space.h"
+#include "../xrUI/uiabstract.h"
 
 enum class ECompassSpotKind : u8
 {
@@ -73,7 +74,14 @@ protected:
 	shared_str				m_compass_spot_texture;
 	u32						m_compass_spot_color;
 	Fvector2				m_compass_spot_size;
-	float					m_fCompassMaxDist;
+	shared_str				m_compassOverrideTexture;
+	Fvector2				m_compassOverrideSize;
+	u32						m_compassOverrideColor;
+	float					m_compassOverrideOffsetX;
+	float					m_compassOverrideOffsetY;
+	float					m_compassOverrideMaxDist;
+	EVTextAlignment			m_compassOverrideVertAlign;
+	bool					m_hasCompassOverride;
 private:
 							CMapLocation					(const CMapLocation&){R_ASSERT(0);} //disable copy ctor
 
@@ -120,10 +128,17 @@ public:
 	IC LPCSTR				GetLPLevelName					()	{return m_cached.m_LevelName.c_str();}
 	const Fvector2&			GetPosition						()	{return m_cached.m_Position;}
 	IC bool					ShowOnCompass					()	const { return !!m_flags.test(eShowOnCompass); }
+	IC bool					HasCompassConfig				()	const { return m_hasCompassOverride; }
 	const shared_str&		GetCompassSpotTexture			()	const { return m_compass_spot_texture; }
 	IC u32					GetCompassSpotColor				()	const { return m_compass_spot_color; }
 	Fvector2				GetCompassSpotSize				()	const { return m_compass_spot_size; }
-	IC float				GetCompassMaxDist				()	const { return m_fCompassMaxDist; }
+	const shared_str&		GetCompassTexture				()	const;
+	Fvector2				GetCompassSize					()	const;
+	u32						GetCompassColor					()	const;
+	float					GetCompassOffsetX				()	const;
+	float					GetCompassOffsetY				()	const;
+	float					GetCompassMaxDist				()	const; // not specified or 0.0f = infinite, > 0.0f = distance in meters
+	EVTextAlignment			GetCompassVertAlign				()	const;
 	virtual shared_str		GetSpotName					()	const { return m_type; }
 	ECompassSpotKind		GetCompassSpotKind				()	const;
 
