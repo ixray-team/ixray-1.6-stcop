@@ -74,7 +74,9 @@ private:
 	};
 	CUI3tButton*				m_btn_nav[max_btn_nav];
 	CUIStatic*					m_btn_nav_parent;
+	CUIStatic*					m_controller_cursor = nullptr;
 	u32							m_nav_timing;
+	Fvector2					m_controller_cursor_pos = { 0, 0 };
 
 	void						UpdateNav				();
 
@@ -98,6 +100,7 @@ private:
 	void						OnToolPrevMapClicked	(CUIWindow*, void*);
 
 	void						ResetActionPlanner		();
+	void						UpdateControllerCursor	();
 
 	CMapLocation* m_cur_location;
 	CUIPropertiesBox* m_UIPropertiesBox;
@@ -145,9 +148,10 @@ public:
 
 		
 			void				MoveMap					(Fvector2 const& pos_delta);
+			void				MoveControllerCursor	(Fvector2 const& pos_delta);
 			float				GetZoom					()	{return m_currentZoom;}
 			void				SetZoom					(float value);
-			bool				UpdateZoom				(bool b_zoom_in);
+			bool				UpdateZoom				(bool b_zoom_in, bool b_use_dt = false);
 
 
 			void				ShowHintStr				(CUIWindow* parent, LPCSTR text);
@@ -162,6 +166,9 @@ public:
 	virtual bool				OnMouseAction					(float x, float y, EUIMessages mouse_action);
 	virtual bool				OnKeyboardAction				(int dik, EUIMessages keyboard_action);
 	virtual bool				OnKeyboardHold			(int dik);
+	virtual bool				OnGamepadKeyAction		(int id, EUIMessages gamepad_action);
+	virtual bool				OnGamepadKeyHold		(int id);
+	virtual bool				OnGamepadStickAction	(int id, Fvector2 value, EUIMessages gamepad_action);
 
 	virtual void				SendMessage				(CUIWindow* pWnd, s16 msg, void* pData = NULL);
 
