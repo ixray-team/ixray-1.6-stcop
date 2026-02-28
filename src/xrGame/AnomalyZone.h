@@ -16,7 +16,7 @@ class CAnomalyZone :		public CSpaceRestrictor,
 {
 private:
     typedef	CSpaceRestrictor inherited;
-
+	bool isErrorAnimSend = false;
 public:
 	CZoneEffector*		m_actor_effector;
 
