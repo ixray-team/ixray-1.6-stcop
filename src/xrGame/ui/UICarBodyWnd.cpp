@@ -149,9 +149,13 @@ void CUICarBodyWnd::Init()
 		xml_init.Init3tButton(uiXml, "put_all_btn", 0, m_pUIPutAll);
 	}
 	
-	m_pItemDropAmountWnd			= new CUIItemDropAmountWnd();
-	m_pItemDropAmountWnd->SetAutoDelete	(true);
-	m_pItemDropAmountWnd->InitDropAmount();
+	CUIXml uiDropAmountXml;
+	if (uiDropAmountXml.Load(CONFIG_PATH, UI_PATH, "custom_drop_amount.xml"))
+	{
+		m_pItemDropAmountWnd = new CUIItemDropAmountWnd();
+		m_pItemDropAmountWnd->SetAutoDelete(true);
+		m_pItemDropAmountWnd->InitDropAmount(uiDropAmountXml);
+	}
 	
 	XML_NODE* stored_root							= uiXml.GetLocalRoot	();
 	uiXml.SetLocalRoot					(uiXml.NavigateToNode	("action_sounds",0));
@@ -1076,7 +1080,7 @@ void CUICarBodyWnd::ProcessPropertiesBoxClicked()
 				{
 					MoveAllCurrentItem(cell_item->ChildsCount() + 1);
 				}
-				else if (d_ == (void*)77)
+				else if (m_pItemDropAmountWnd != nullptr && d_ == (void*)77)
 				{
 					m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeMove, item);
 				}
@@ -1091,7 +1095,7 @@ void CUICarBodyWnd::ProcessPropertiesBoxClicked()
 				{
 					TakeAllCurrentItem(cell_item->ChildsCount() + 1);
 				}
-				else if (d_ == (void*)77)
+				else if (m_pItemDropAmountWnd != nullptr && d_ == (void*)77)
 				{
 					m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeTake, item);
 				}
