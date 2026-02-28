@@ -1572,8 +1572,8 @@ void CWeapon::UpdateCL		()
 	{
 		if (GetNextState() == GetState() && IsGameTypeSingle() && H_Parent() == Level().CurrentEntity())
 		{
-			CActor* pActor	= H_Parent() ? H_Parent()->cast_actor() : NULL;
-			if(pActor && !pActor->AnyMove() && this==pActor->inventory().ActiveItem())
+			CActor* pActor = H_Parent() ? H_Parent()->cast_actor() : nullptr;
+			if (pActor != nullptr && !pActor->AnyMove() && !pActor->IsSafemode() && this == pActor->inventory().ActiveItem())
 			{
 				if (hud_adj_mode == 0 && GetState() == eIdle && (Device.dwTimeGlobal - m_dw_curr_substate_time > 20000) && !IsZoomed() && g_player_hud->attached_item(1) == nullptr)
 				{
@@ -1849,6 +1849,12 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 				{
 					if (CActor* pActor = H_Parent()->cast_actor())
 					{
+						ResetSubStateTime();
+						if (m_eAnimationsFlags.test(EAnimationsFlags::af_safemode_in_out))
+						{
+							SwitchState(eSafemodeSwitch);
+						}
+
 						if (pActor->IsSafemode())
 						{
 							pActor->SetSafemodeStatus(false);

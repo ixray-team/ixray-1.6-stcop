@@ -27,9 +27,7 @@ void CActor::script_register(lua_State* L)
 	module(L)
 		[
 			class_<CActor, CGameObject>("CActor")
-				.def(constructor<>())
-				.def("IsSafemode", &CActor::IsSafemode)
-				.def("SetSafemodeStatus", &CActor::SetSafemodeStatus),
+				.def(constructor<>()),
 				class_<CLevelChanger, CGameObject>("CLevelChanger")
 				.def(constructor<>()),
 				def("is_first_person", isFirstPerson),
