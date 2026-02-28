@@ -53,6 +53,9 @@ CUIMapWnd::CUIMapWnd()
 	hint_wnd				= nullptr;
 	m_text_hint				= nullptr;
 	g_map_wnd				= this;
+
+	ActionRepeaters()->Register(this, kPDA_TASKS_MAP_ZOOM_IN, 1, 1);
+	ActionRepeaters()->Register(this, kPDA_TASKS_MAP_ZOOM_OUT, 1, 1);
 }
 
 CUIMapWnd::~CUIMapWnd()
@@ -250,6 +253,17 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 	m_UIPropertiesBox->Hide();
 	m_UIPropertiesBox->SetWindowName("property_box");
 
+	m_controller_cursor = new CUIStatic();
+	m_controller_cursor->InitTexture("ui_cur_task");
+	m_controller_cursor->SetWndSize(Fvector2().set(19.f, 19.f));
+	m_controller_cursor->SetStretchTexture(true);
+	m_controller_cursor->SetWidth(m_controller_cursor->GetWidth()*UI().get_current_kx());
+	m_UILevelFrame->AttachChild(m_controller_cursor);
+
+	Fvector2 controllerCursorPos = { (m_UILevelFrame->GetWidth() / 2) - (m_controller_cursor->GetWidth() / 2),
+									(m_UILevelFrame->GetHeight() / 2) - (m_controller_cursor->GetHeight() / 2) };
+	m_controller_cursor_pos = controllerCursorPos;
+
 	m_UserSpotWnd = new CUIPdaSpot();
 	m_UserSpotWnd->SetAutoDelete(true);
 	//AttachChild(m_UserSpotWnd);
@@ -383,19 +397,30 @@ void CUIMapWnd::MoveMap( Fvector2 const& pos_delta )
 	HideCurHint();
 }
 
+void CUIMapWnd::MoveControllerCursor( Fvector2 const& pos_delta )
+{
+	MoveMap(pos_delta);
+/* St4lker0k765: TODO: add proper implementation for corner cursor positions
+	if (fis_zero(GlobalMap()->GetWndPos().x) ||
+		fis_zero(GlobalMap()->GetWndPos().y) ||
+		(GlobalMap()->WorkingArea().left + GlobalMap()->WorkingArea().right) == GlobalMap()->BoundRect().right ||
+		(GlobalMap()->WorkingArea().top + GlobalMap()->WorkingArea().bottom) == GlobalMap()->BoundRect().bottom)
+	{
+		Fvector2 posD_UI = pos_delta;
+		UI().ClientToScreenScaledX(posD_UI.x);
+		UI().ClientToScreenScaledY(posD_UI.y);
+		m_controller_cursor_pos.sub(posD_UI);
+	}*/
+
+	clamp(m_controller_cursor_pos.x, m_UILevelFrame->GetWndPos().x - (m_controller_cursor->GetWidth() / 2), m_UILevelFrame->GetWidth());
+	clamp(m_controller_cursor_pos.y, m_UILevelFrame->GetWndPos().y - (m_controller_cursor->GetHeight() / 2), m_UILevelFrame->GetHeight());
+}
+
 void CUIMapWnd::Draw()
 {
 	inherited::Draw();
 	if (m_text_hint)
 		m_text_hint->Draw();
-	/*
-#ifdef DEBUG
-	m_dbg_text_hint->Draw	();
-	m_dbg_info->Draw		();
-#endif // DEBUG/**/
-
-	if (m_btn_nav_parent)
-		m_btn_nav_parent->Draw();
 }
 
 void CUIMapWnd::MapLocationRelcase(CMapLocation* ml)
@@ -493,10 +518,8 @@ bool CUIMapWnd::OnMouseAction(float x, float y, EUIMessages mouse_action)
 		case WINDOW_MOUSE_MOVE:
 			if( pInput->iGetAsyncBtnState(0) )
 			{
-				GlobalMap()->MoveWndDelta		(GetUICursor().GetCursorPositionDelta());
-				UpdateScroll					();
-				HideCurHint						();
-				return							true;
+				MoveMap(GetUICursor().GetCursorPositionDelta());
+				return true;
 			}
 		break;
 
@@ -515,18 +538,93 @@ bool CUIMapWnd::OnMouseAction(float x, float y, EUIMessages mouse_action)
 	return false;
 }
 
-bool CUIMapWnd::UpdateZoom( bool b_zoom_in )
+bool CUIMapWnd::OnGamepadKeyAction				(int id, EUIMessages gamepad_action)
+{
+	if (gamepad_action == WINDOW_KEY_PRESSED)
+	{
+		switch (get_binded_action(id, agUITaskMenu))
+		{
+			case kPDA_TASKS_MAP_ZOOM_IN:
+			{
+				if (!any_binded_key_for_action_pressed_c(kPDA_TASKS_MAP_ZOOM_OUT))
+					UpdateZoom(true, true);
+				ActionRepeaters()->SetActionStarted(this, kPDA_TASKS_MAP_ZOOM_IN);
+				return true;
+			}
+			case kPDA_TASKS_MAP_ZOOM_OUT:
+			{
+				if (!any_binded_key_for_action_pressed_c(kPDA_TASKS_MAP_ZOOM_IN))
+					UpdateZoom(false, true);
+				ActionRepeaters()->SetActionStarted(this, kPDA_TASKS_MAP_ZOOM_OUT);
+				return true;
+			}
+		}
+	}
+	
+	return inherited::OnGamepadKeyAction	(id, gamepad_action);
+}
+
+bool CUIMapWnd::OnGamepadStickAction(int key, Fvector2 value, EUIMessages gamepad_action)
+{
+	if (key == 1)
+	{
+		Fvector2 valReal = {0, 0};
+		if (!fis_zero(value.x))
+			valReal.x = (value.x > 0.f ? value.x - 0.2f : value.x + 0.2f);
+
+		if (!fis_zero(value.y))
+			valReal.y = (value.y > 0.f ? value.y - 0.2f : value.y + 0.2f);
+
+		valReal.mul(0.8f);
+		valReal.mul(m_map_move_step);
+		valReal.invert();
+
+		if (!fis_zero(value.x) || !fis_zero(value.y))
+			MoveControllerCursor(valReal);
+	}
+	return inherited::OnGamepadStickAction(key, value, gamepad_action);
+}
+
+
+bool CUIMapWnd::OnGamepadKeyHold(int id)
+{
+	switch (get_binded_action(id, agUITaskMenu))
+	{
+		case kPDA_TASKS_MAP_ZOOM_IN:
+		{
+			if (ActionRepeaters()->CanRepeatActionNow(this, kPDA_TASKS_MAP_ZOOM_IN) && !any_binded_key_for_action_pressed_c(kPDA_TASKS_MAP_ZOOM_OUT))
+				UpdateZoom(true, true);
+			return true;
+		}
+		case kPDA_TASKS_MAP_ZOOM_OUT:
+		{
+			if (ActionRepeaters()->CanRepeatActionNow(this, kPDA_TASKS_MAP_ZOOM_OUT) && !any_binded_key_for_action_pressed_c(kPDA_TASKS_MAP_ZOOM_IN))
+				UpdateZoom(false, true);
+			return true;
+		}
+	}
+
+	return inherited::OnGamepadKeyHold(id);
+}
+
+bool CUIMapWnd::UpdateZoom( bool b_zoom_in, bool b_use_dt )
 {
 	float prev_zoom = GetZoom();
 	float z = 0.0f;
 	if ( b_zoom_in )
 	{	
-		z = GetZoom() * 1.2f;
+		if (!b_use_dt)
+			z = GetZoom() * 1.2f;
+		else
+			z = GetZoom() * (1 + 0.6f * Device.fTimeDelta);
 		SetZoom( z );
 	}
 	else					
 	{
-		z = GetZoom() / 1.2f;
+		if (!b_use_dt)
+			z = GetZoom() / 1.2f;
+		else
+			z = GetZoom() * (1 - 0.6f * Device.fTimeDelta);
 		SetZoom( z );
 	}
 
@@ -689,6 +787,30 @@ void CUIMapWnd::Update()
 	inherited::Update			();
 	m_ActionPlanner->Update		();
 	UpdateNav					();
+	UpdateControllerCursor		();
+}
+
+void CUIMapWnd::UpdateControllerCursor()
+{
+	Fvector2 controllerCursorPos = m_controller_cursor_pos;
+	controllerCursorPos.sub(Fvector2().set(m_controller_cursor->GetWidth() / 2, m_controller_cursor->GetHeight() / 2));
+	m_controller_cursor->SetWndPos(controllerCursorPos);
+
+	bool cm = pInput->GetControllerMode();
+	m_controller_cursor->Show(cm);
+	if (cm)
+	{
+		Fvector2 cursorPos = controllerCursorPos;
+		CUIWindow* levelFrameParent = this;
+		if (m_use_legacy_map)
+		{
+			levelFrameParent = m_UIMainFrame;
+		}
+		cursorPos.add(levelFrameParent->GetWndPos());
+		cursorPos.add(m_UILevelFrame->GetWndPos());
+		cursorPos.add(Fvector2().set(m_controller_cursor->GetWidth() / 2, m_controller_cursor->GetHeight() / 2));
+		GetUICursor().SetUICursorPosition(cursorPos);
+	}
 }
 
 void CUIMapWnd::SetZoom(float value)
@@ -739,6 +861,9 @@ void CUIMapWnd::ViewActor()
 	}
 
 	SetTargetMap				(lm, m_prev_actor_pos, true);
+	Fvector2 controllerCursorPos = { (m_UILevelFrame->GetWidth() / 2) - (m_controller_cursor->GetWidth() / 2),
+									(m_UILevelFrame->GetHeight() / 2) - (m_controller_cursor->GetHeight() / 2) };
+	m_controller_cursor_pos = controllerCursorPos;
 }
 
 void CUIMapWnd::ShowHintStr(CUIWindow* parent, LPCSTR text) //map name
