@@ -771,7 +771,12 @@ void CAnomalyZone::UpdateIdleLight	()
 
 	if (m_pIdleLAnim == nullptr)
 	{
-		Msg("! Cant found light animation in %s", cNameSect_str());
+		if (!isErrorAnimSend)
+		{
+			Msg("! Error Cant found light animation in %s", cNameSect_str());
+			isErrorAnimSend = true;
+		}
+
 		return;
 	}
 
