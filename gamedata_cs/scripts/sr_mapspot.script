@@ -22,7 +22,7 @@ function action_mapspot:update(delta)
 		return
 	end
 
-	if level.map_has_object_spot(self.object:id(), self.st.location) == 0 and self.object:inside(actor:position()) then
+	if not level.map_has_object_spot(self.object:id(), self.st.location) and self.object:inside(actor:position()) then
 		level.map_add_object_spot(self.object:id(), self.st.location, self.st.hint)
 	end
 

@@ -321,10 +321,10 @@ function CGeneralTask:check_level(target)
 				guider_spot = "secondary_task_on_guider"
 				guider_spot2 = "storyline_task_on_guider"
 			end
-			if(level.map_has_object_spot(guider_id, guider_spot2)~=0) then
+			if level.map_has_object_spot(guider_id, guider_spot2) then
 				level.map_remove_object_spot(guider_id, guider_spot2)
 			end
-			if(guider_id and level.map_has_object_spot(guider_id, guider_spot)==0) then
+			if guider_id and not level.map_has_object_spot(guider_id, guider_spot) then
 				level.map_add_object_spot(guider_id, guider_spot, "")
 			end
 		else
@@ -339,10 +339,10 @@ function CGeneralTask:remove_guider_spot(target)
 	for k,v in pairs(guiders_by_level[level.name()]) do
 		local guider_id = get_story_object_id(v)
 		if(guider_id) then
-			if(level.map_has_object_spot(guider_id, "storyline_task_on_guider")~=0) then
+			if level.map_has_object_spot(guider_id, "storyline_task_on_guider") then
 				level.map_remove_object_spot(guider_id, "storyline_task_on_guider")
 			end
-			if(level.map_has_object_spot(guider_id, "secondary_task_on_guider")~=0) then
+			if level.map_has_object_spot(guider_id, "secondary_task_on_guider") then
 				level.map_remove_object_spot(guider_id, "secondary_task_on_guider")
 			end
 		end

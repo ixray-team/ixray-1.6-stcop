@@ -105,7 +105,7 @@ function is_map_spot_present(sid, location)
 	local sim = alife()
 	if sim then
 		local obj = sim:story_object(sid)
-		if obj and level.map_has_object_spot(obj.id, location) ~= 0 then
+		if obj and level.map_has_object_spot(obj.id, location) then
 		   return true
 		end
 	end
