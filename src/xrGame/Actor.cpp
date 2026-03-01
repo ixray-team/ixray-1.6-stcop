@@ -2018,46 +2018,18 @@ void CActor::UpdatePlayerView()
 
 	if (IsFocused())
 	{
-		BOOL bHudView = HUDview();
-		if (bHudView)
-		{
-			CInventoryItem* pInvItem = inventory().ActiveItem();
-			if (pInvItem)
-			{
-				CHudItem* pHudItem = pInvItem->cast_hud_item();
-				if (pHudItem)
-				{
-					if (pHudItem->IsHidden())
-					{
-						g_player_hud->detach_item(pHudItem);
-					}
-					else
-					{
-						g_player_hud->attach_item(pHudItem);
-					}
-				}
-			}
-			else
-			{
-				g_player_hud->detach_item_idx(0);
-			}
+		PIItem pActiveItem = inventory().ActiveItem();
+		CHudItem* pHudItem = pActiveItem != nullptr ? pActiveItem->cast_hud_item() : nullptr;
+		CCustomDevice* pDevice = GetDevice(true);
 
-			CCustomDevice* pDevice = GetDevice(true);
-			if (pDevice != nullptr)
-			{
-				if (pDevice->IsHidden())
-				{
-					g_player_hud->detach_item(pDevice->cast_hud_item());
-				}
-				else if (!g_player_hud->attached_item(1))
-				{
-					g_player_hud->attach_item(pDevice->cast_hud_item());
-				}
-			}
-		}
-		else
+		if (g_player_hud->attached_item(0) != nullptr && (pHudItem == nullptr || pHudItem->IsHidden()))
 		{
-			g_player_hud->detach_all_items();
+			g_player_hud->detach_item_idx(0);
+		}
+
+		if (g_player_hud->attached_item(1) != nullptr && (pDevice == nullptr || pDevice->IsHidden()))
+		{
+			g_player_hud->detach_item_idx(1);
 		}
 	}
 

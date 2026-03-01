@@ -247,7 +247,7 @@ void CWeapon::UpdateFireDependencies_internal()
 
 	UpdateXForm			();
 
-	if ( GetHUDmode() )
+	if (GetHUDmode() && HudItemData() != nullptr)
 	{
 		HudItemData()->setup_firedeps(m_current_firedeps);
 		VERIFY(_valid(m_current_firedeps.m_FireParticlesXForm));
@@ -1484,7 +1484,7 @@ void CWeapon::UpdateCL		()
 	u32 delta = Device.GetTimeDeltaSafe(_last_update_time);
 
 	bool need_update_hud = false;
-	bool isHudItemData = HudItemData() != nullptr;
+	bool isHudItemData = !!GetHUDmode() && HudItemData() != nullptr;
 	
 	if (isHudItemData && !bUpdateHUDBonesVisibility)
 	{
@@ -1540,7 +1540,10 @@ void CWeapon::UpdateCL		()
 	}
 
 	//подсветка от выстрела
-	UpdateEffects();
+	if (HudItemData() != nullptr)
+	{
+		UpdateEffects();
+	}
 
 	if(!IsGameTypeSingle())
 		make_Interpolation		();
@@ -1627,6 +1630,11 @@ void CWeapon::UpdateCL		()
 
 void CWeapon::ForceUpdateHUD()
 {
+	if (HudItemData() == nullptr)
+	{
+		return;
+	}
+
 	UpdateScopePosition();
 	UpdateHUDAddonsVisibility();
 	ProcessScope();
@@ -3797,7 +3805,7 @@ bool CWeapon::MovingAnimAllowedNow()
 
 bool CWeapon::IsHudModeNow()
 {
-	return (HudItemData()!=nullptr);
+	return !!GetHUDmode();
 }
 
 void CWeapon::ZoomInc()
