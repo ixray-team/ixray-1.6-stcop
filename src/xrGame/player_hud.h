@@ -163,6 +163,7 @@ struct hud_item_measures
 	{
 		void Load(const shared_str& section, bool is_16x9);
 		Fvector hands_offsets[2][5]; //pos,rot //normal, aim, gl, alt-aim, safemode
+		Fvector hands_offsets_saved[2]; //pos,rot
 		Fvector hands_offsets_tune[2][5];
 		bool bIs16x9 = false;
 		shared_str sSection;
