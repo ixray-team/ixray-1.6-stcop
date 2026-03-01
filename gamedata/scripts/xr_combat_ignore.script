@@ -141,11 +141,11 @@ function action_process_enemy:enemy_callback( obj, enemy )
 		local se_enemy			= alife():object(enemy:id())
 		if se_obj and se_enemy then
 			local sim_obj_registry 	= simulation_objects.get_sim_obj_registry()
-			if 	se_obj.group_id ~= alife_const.invalid_object_id 	and sim_obj_registry.objects[se_obj.group_id] ~= nil and
-				se_enemy.group_id ~= alife_const.invalid_object_id 	and sim_obj_registry.objects[se_enemy.group_id] == nil and
+			if 	se_obj.group_id ~= alife_const.invalid_object_id and sim_obj_registry.objects[se_obj.group_id] ~= nil and
+				se_enemy.group_id ~= alife_const.invalid_object_id and sim_obj_registry.objects[se_enemy.group_id] == nil and
+				se_obj.position:distance_to_sqr(se_enemy.position) > 900 then
 				--[bug] Фиксим игнор атак актора с дистанции более 30 метров (подсмотрено в неофициальном 1.6.03)
 				--[TODO] Учет глушителя?
-				se_obj.position:distance_to_sqr(se_enemy.position) > MAX_REACTION_DISTANCE_SQR then
 				return false
 			end
 		end

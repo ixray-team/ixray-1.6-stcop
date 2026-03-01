@@ -147,7 +147,7 @@ function treasure_empty(box, box_story_id)
 	        v:reset_treasure()
 		end
 	end
-	if level.map_has_object_spot(box:id(), "treasure") ~= 0 then
+	if level.map_has_object_spot(box:id(), "treasure") then
 		level.map_remove_object_spot(box:id(), "treasure")
 	end
     xr_statistic.inc_founded_secrets_counter()
