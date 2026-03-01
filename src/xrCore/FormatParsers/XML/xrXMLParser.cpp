@@ -4,25 +4,23 @@
 #include "xrXMLParser.h"
 #include "AsureXML.h"
 
-static xr_hash_map<xr_string, xr_shared_ptr<xr_string>>* g_xmlCache;
+static xr_hash_map<xr_string, xr_shared_ptr<xr_string>> g_xmlCache;
 
 void CXml::InvalidateCache()
 {
-	if (g_xmlCache != nullptr)
-		g_xmlCache->clear();
+	g_xmlCache.clear();
+	Msg("XML cache invalidated");
 }
 
 CXml::CXml() :	
 	m_root(nullptr), 
 	m_pLocalRoot(nullptr)
 {
-	g_xmlCache = new std::remove_pointer_t<decltype(g_xmlCache)>;
 }
 
 CXml::~CXml()
 {
 	ClearInternal();
-	xr_delete(g_xmlCache);
 }
 
 void CXml::ClearInternal()
@@ -152,8 +150,8 @@ bool CXml::Load(LPCSTR path, LPCSTR xml_filename)
 	xr_shared_ptr<xr_string> cachedContent;
 
 	{
-		auto it = g_xmlCache->find(cacheKey);
-		if (it != g_xmlCache->end())
+		auto it = g_xmlCache.find(cacheKey);
+		if (it != g_xmlCache.end())
 		{
 			cachedContent = it->second;
 		}
@@ -219,10 +217,10 @@ bool CXml::Load(LPCSTR path, LPCSTR xml_filename)
 
 		cachedContent = xr_make_shared<xr_string>(printer.CStr());
 		{
-			auto it = g_xmlCache->find(cacheKey);
-			if (it == g_xmlCache->end())
+			auto it = g_xmlCache.find(cacheKey);
+			if (it == g_xmlCache.end())
 			{
-				g_xmlCache->emplace(cacheKey, cachedContent);
+				g_xmlCache.emplace(cacheKey, cachedContent);
 			}
 			else
 			{
