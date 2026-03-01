@@ -946,38 +946,53 @@ end
 
 
 -------------------------------------------------------------------------------------------
+function get_object_community(obj)
+	if type(obj.id) == "function" then
+		return character_community(obj)
+	else
+		return alife_character_community(obj)
+	end
+end
+
+function character_community (obj)
+	if IsStalker(obj) then
+		return obj:character_community()
+	end
+	return "monster"
+end
+
+function alife_character_community (obj)
+	if IsStalker(obj, obj:clsid()) then
+		return obj:community()
+	end
+	return "monster"
+end
+
+-- получить геймобжект по стори_айди.
 function level_object_by_sid( sid )
 	local sim = alife()
-
 	if sim then
 		local se_obj = sim:story_object( sid )
 		if se_obj then
 			return level.object_by_id( se_obj.id )
 		end
 	end
-
 	return nil
 end
-
+-- Получить айдишник обьекта по стори айди.
 function id_by_sid( sid )
 	local sim = alife()
-
 	if sim then
 		local se_obj = sim:story_object( sid )
 		if se_obj then
 			return se_obj.id
 		end
 	end
-
 	return nil
 end
 
 -- Крешнуть игру (после вывода сообщения об ошибке в лог)
 function abort(fmt, ...)
-	local reason = string.format(fmt, ...)
-	assert("ERROR: " .. reason)
-	error_log("ERROR: " .. reason)
-	log(string.format("%s",nil))
 end
 
 function set_postprocess(name_ini_file)
