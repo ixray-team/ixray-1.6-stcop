@@ -22,8 +22,8 @@ ENGINE_API _action  actions[]		= {
 	{ "lstrafe",			kL_STRAFE				,_both,			agDefault},
 	{ "rstrafe",			kR_STRAFE				,_both,			agDefault},
 																
-	{ "llookout",			kL_LOOKOUT				,_both,			agDefault},
-	{ "rlookout",			kR_LOOKOUT				,_both,			agDefault},
+	{ "llookout",			kL_LOOKOUT				,_both,			agAiming},
+	{ "rlookout",			kR_LOOKOUT				,_both,			agAiming},
 																
 	{ "cam_1",				kCAM_1					,_both,			agDefault},
 	{ "cam_2",				kCAM_2					,_both,			agDefault},
@@ -46,8 +46,8 @@ ENGINE_API _action  actions[]		= {
 	{ "wpn_next",			kWPN_NEXT				,_both,			agUIRadialWeapon},	// means next ammo type
 	{ "wpn_fire",			kWPN_FIRE				,_both,			agDefault},
 	{ "wpn_zoom",			kWPN_ZOOM				,_both,			agDefault},
-	{ "wpn_zoom_inc",		kWPN_ZOOM_INC			,_both,			agDefault},
-	{ "wpn_zoom_dec",		kWPN_ZOOM_DEC			,_both,			agDefault},
+	{ "wpn_zoom_inc",		kWPN_ZOOM_INC			,_both,			agAiming},
+	{ "wpn_zoom_dec",		kWPN_ZOOM_DEC			,_both,			agAiming},
 	{ "wpn_reload",			kWPN_RELOAD				,_both,			agDefault},
 	{ "wpn_func",			kWPN_FUNC				,_both,			agUIRadialWeapon},
 	{ "wpn_firemode_prev",	kWPN_FIREMODE_PREV		,_both,			agDefault},
@@ -1142,16 +1142,23 @@ public:
 		CCC_UnBindAll::Execute(args);
 		string_path				_cfg;
 		string_path				cmd;
-		if (FS.exist(_game_config_, "ixray_settings\\default_controls.ltx"))
+		LPCSTR file_dir = "ixray_settings\\default_controls.ltx";
+		if (!FS.exist(_game_config_, file_dir))
 		{
-			FS.update_path(_cfg, _game_config_, "ixray_settings\\default_controls.ltx");
+			file_dir = "default_controls.ltx";
 		}
-		else
-		{
-			FS.update_path(_cfg, _game_config_, "default_controls.ltx");
-		}
+		FS.update_path(_cfg, _game_config_, file_dir);
 		xr_strconcat(cmd,"cfg_load", " ", _cfg);
 		Console->Execute		(cmd);
+
+		string_path platformFileDir;
+		xr_strconcat(platformFileDir, "ixray_settings\\default_controls_", EngineExternal().GetCurrentPlatformName(), ".ltx");
+		if (FS.exist(_game_config_, platformFileDir))
+		{
+			FS.update_path(_cfg, _game_config_, platformFileDir);
+			xr_strconcat(cmd, "cfg_load ", _cfg);
+			Console->Execute(cmd);
+		}
 	}
 };
 

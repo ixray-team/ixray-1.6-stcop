@@ -57,6 +57,8 @@ void CUIListWnd::script_register(lua_State* L)
 				.def("SetFocusedItem", &CUIListWnd::SetFocusedItem)
 				.def("GetFocusedItem", &CUIListWnd::GetFocusedItem)
 				.def("ShowSelectedItem", &CUIListWnd::ShowSelectedItem)
+				.def("PrevItem", &CUIListWnd::PrevItem)
+				.def("NextItem", &CUIListWnd::NextItem)
 
 				.def("GetSelectedItem", &CUIListWnd::GetSelectedItem)
 				.def("ResetFocusCapture", &CUIListWnd::ResetFocusCapture),

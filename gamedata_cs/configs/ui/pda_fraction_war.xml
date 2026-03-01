@@ -5,6 +5,15 @@
         <texture>ui_pda2_fr</texture>
     </background>
 
+	<gamepad_legend x="0" y="724" width="1024" height="30" spacing="5">
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_pda_tabs</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_mm_back_gp</text>
+		</auto_static>
+	</gamepad_legend>
+	
     <center_background x="35" y="340" width="955" height="103">
         <texture>ui_pda2_fr_delimiter_fraction</texture>
     </center_background>
