@@ -642,4 +642,28 @@
 	<string id="kb_safemode">
 		<text>Safemode</text>
 	</string>
+	<string id="ui_tasks_show_on_map">
+		<text>$$ACTION_pda_tasks_filter_toggle$$ Show on map</text>
+	</string>
+	<string id="ui_tasks_map_show_me">
+		<text>$$ACTION_pda_tasks_map_show_me$$ Current location</text>
+	</string>
+	<string id="ui_tasks_map_zoom">
+		<text>$$ACTION_pda_tasks_map_zoom_out$$/$$ACTION_pda_tasks_map_zoom_in$$ Zoom level</text>
+	</string>
+	<string id="ui_tasks_filter_toggle">
+		<text>$$ACTION_pda_tasks_filter_toggle$$ Toggle filter</text>
+	</string>
+	<string id="ui_pda_show_mission">
+		<text>$$ACTION_pda_tasks_toggle_list$$ Show tasks</text>
+	</string>
+	<string id="ui_pda_hide_mission">
+		<text>$$ACTION_pda_tasks_toggle_list$$ Hide tasks</text>
+	</string>
+	<string id="ui_pda_toggle_legend">
+		<text>$$ACTION_pda_tasks_toggle_legend$$ Legend</text>
+	</string>
+	<string id="legend_ui_tasks_filter_next">
+		<text>$$ACTION_pda_tasks_filter_prev$$/$$ACTION_pda_tasks_filter_next$$ Spot filters</text>
+	</string>
 </string_table>
