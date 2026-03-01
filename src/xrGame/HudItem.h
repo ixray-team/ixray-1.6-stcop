@@ -115,7 +115,7 @@ public:
 	virtual bool				Action				(u16 cmd, u32 flags)			{return false;}
 			void				OnMovementChanged	(ACTOR_DEFS::EMoveCommand cmd)	;
 	
-	virtual	u8					GetCurrentHudOffsetIdx () const {return 0;}
+	virtual	EHudOffsetType		GetCurrentHudOffsetIdx () const {return EHudOffsetType::eDefault;}
 
 	BOOL						GetHUDmode			();
 	BOOL						GetHUDSoundMode		();
