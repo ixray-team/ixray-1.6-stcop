@@ -3390,7 +3390,7 @@ function jup_b200_count_found(actor)
 			local parent = material_obj:parent()
 			if parent then
 				local parent_id = parent:id()
-				if parent_id ~= 65535 and parent_id == actor:id() then
+				if parent_id ~= alife_const.invalid_object_id and parent_id == actor:id() then
 					cnt = cnt + 1
 				end
 			end

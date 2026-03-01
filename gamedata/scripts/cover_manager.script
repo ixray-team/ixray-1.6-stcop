@@ -86,7 +86,7 @@ function CCover_manager:save(packet)
         end
         packet:w_u8(n)
         for k,v in pairs(self.cover_table) do
-            packet:w_u16(k)
+            packet:w_u32(k)
             packet:w_u32(v.cover_vertex_id)
             packet:w_float(v.cover_position.x)
             packet:w_float(v.cover_position.y)
@@ -109,7 +109,7 @@ function CCover_manager:load(packet)
     
         local n = packet:r_u8()
         for i = 1,n do
-            local npc_id = packet:r_u16()
+            local npc_id = packet:r_u32()
             local cover_vertex_id = packet:r_u32()
             local cover_position = vector():set(0,0,0)
             cover_position.x = packet:r_float()

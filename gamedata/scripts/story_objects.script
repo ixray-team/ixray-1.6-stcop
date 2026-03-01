@@ -60,7 +60,7 @@ function story_objects_registry:save(packet)
 	packet:w_u16(count)
 	for k,v in pairs(self.id_by_story_id) do
 		packet:w_stringZ(k)
-		packet:w_u16(v)
+		packet:w_u32(v)
 	end
 	set_save_marker(packet, "save", true, "story_objects")
 end
@@ -70,7 +70,7 @@ function story_objects_registry:load(packet)
 	local count = packet:r_u16()
 	for i = 1, count do
 		local story_id 	= packet:r_stringZ()
-		local obj_id	= packet:r_u16()
+		local obj_id	= packet:r_u32()
 		self.id_by_story_id[story_id] 	= obj_id
 		self.story_id_by_id[obj_id]		= story_id
 	end

@@ -159,7 +159,7 @@ function actor_save(thread)
         end
         thread:w_u16(n)
         for k,v in pairs(sound_table) do
-            thread:w_u16(k)
+            thread:w_u32(k)
     --[[
             if(type(v.section)~="string") then
                 thread:w_stringZ(v)
@@ -174,7 +174,7 @@ function actor_save(thread)
         end
         thread:w_u16(n)
         for k,v in pairs(looped_sound) do
-            thread:w_u16(k)
+            thread:w_u32(k)
                     n = 0
             for kk,vv in pairs(looped_sound[k]) do
                 n = n + 1
@@ -204,7 +204,7 @@ function actor_load(thread)
         sound_table = {}
         local n = thread:r_u16()
         for i = 1,n do
-            local id = thread:r_u16()
+            local id = thread:r_u32()
             local theme = thread:r_stringZ()
     --		sound_table[id] = thread:r_stringZ()
                     sound_table[id] = sound_theme.theme[theme]
@@ -212,7 +212,7 @@ function actor_load(thread)
         looped_sound = {}
         n = thread:r_u16()
         for i = 1,n do
-            local id = thread:r_u16()
+            local id = thread:r_u32()
             looped_sound[id] = {}
             n = thread:r_u16()
             for i = 1,n do

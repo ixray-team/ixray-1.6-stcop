@@ -131,20 +131,20 @@ function reset_show_spot(npc, scheme, st, section)
 	            map_location = "ui_pda2_quest_npc_location"
 	            hint = "st_ui_pda_legend_vip"
 	        end
-			if level.map_has_object_spot(npc_id, map_location) ~= 0 then
+			if level.map_has_object_spot(npc_id, map_location) then
 		        level.map_remove_object_spot(npc_id, map_location)
 			end
             if db.actor and npc and npc:general_goodwill(db.actor) > -1000 then
 				level.map_add_object_spot(npc_id, map_location, hint)
 			end
 		else
-	        if level.map_has_object_spot(npc_id, "ui_pda2_trader_location") ~= 0 then
+	        if level.map_has_object_spot(npc_id, "ui_pda2_trader_location") then
 		        level.map_remove_object_spot(npc_id, "ui_pda2_trader_location")
-	        elseif level.map_has_object_spot(npc_id, "ui_pda2_mechanic_location") ~= 0 then
+	        elseif level.map_has_object_spot(npc_id, "ui_pda2_mechanic_location") then
 		        level.map_remove_object_spot(npc_id, "ui_pda2_mechanic_location")
-	        elseif level.map_has_object_spot(npc_id, "ui_pda2_scout_location") ~= 0 then
+	        elseif level.map_has_object_spot(npc_id, "ui_pda2_scout_location") then
 		        level.map_remove_object_spot(npc_id, "ui_pda2_scout_location")
-	        elseif level.map_has_object_spot(npc_id, "ui_pda2_quest_npc_location") ~= 0 then
+	        elseif level.map_has_object_spot(npc_id, "ui_pda2_quest_npc_location") then
 		        level.map_remove_object_spot(npc_id, "ui_pda2_quest_npc_location")
 	        end
 		end
@@ -179,7 +179,7 @@ function remove_level_spot(npc, st)
 	        elseif map_spot == "quest_npc" then
 	            map_location = "ui_pda2_quest_npc_location"
 	        end
-			if level.map_has_object_spot(npc_id, map_location) ~= 0 then
+			if level.map_has_object_spot(npc_id, map_location) then
 		        level.map_remove_object_spot(npc_id, map_location)
 			end
 		end
