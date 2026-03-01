@@ -2019,49 +2019,37 @@ void CActor::UpdatePlayerView()
 	}
 
 	setVisible(has_visible, has_shadow_only);
-
 	if (IsFocused())
 	{
-		BOOL bHudView = HUDview();
-		if (bHudView)
+		if (CInventoryItem* pInvItem = inventory().ActiveItem())
 		{
-			CInventoryItem* pInvItem = inventory().ActiveItem();
-			if (pInvItem)
+			if (CHudItem* pHudItem = pInvItem->cast_hud_item())
 			{
-				CHudItem* pHudItem = pInvItem->cast_hud_item();
-				if (pHudItem)
+				if (pHudItem->IsHidden())
 				{
-					if (pHudItem->IsHidden())
-					{
-						g_player_hud->detach_item(pHudItem);
-					}
-					else
-					{
-						g_player_hud->attach_item(pHudItem);
-					}
+					g_player_hud->detach_item(pHudItem);
 				}
-			}
-			else
-			{
-				g_player_hud->detach_item_idx(0);
-			}
-
-			CCustomDevice* pDevice = GetDevice(true);
-			if (pDevice != nullptr)
-			{
-				if (pDevice->IsHidden())
+				else
 				{
-					g_player_hud->detach_item(pDevice->cast_hud_item());
-				}
-				else if (!g_player_hud->attached_item(1))
-				{
-					g_player_hud->attach_item(pDevice->cast_hud_item());
+					g_player_hud->attach_item(pHudItem);
 				}
 			}
 		}
 		else
 		{
-			g_player_hud->detach_all_items();
+			g_player_hud->detach_item_idx(0);
+		}
+
+		if (CCustomDevice* pDevice = GetDevice(true))
+		{
+			if (pDevice->IsHidden())
+			{
+				g_player_hud->detach_item(pDevice->cast_hud_item());
+			}
+			else if (!g_player_hud->attached_item(1))
+			{
+				g_player_hud->attach_item(pDevice->cast_hud_item());
+			}
 		}
 	}
 

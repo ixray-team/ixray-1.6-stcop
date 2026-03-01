@@ -371,6 +371,11 @@ void CHudItem::OnMoveToRuck(const SInvItemPlace& prev)
 	{
 		LightTorch->UpdateTorchFromObject(this);
 	}
+
+	if (HudItemData() != nullptr && object().H_Parent() != nullptr && object().H_Parent() == Level().CurrentEntity())
+	{
+		g_player_hud->detach_item(this);
+	}
 }
 
 bool CHudItem::SendDeactivateItem(bool Force)
@@ -467,26 +472,20 @@ void CHudItem::OnH_B_Independent	(bool just_before_destroy)
 	{
 		LightTorch->UpdateTorchFromObject(this);
 	}
-	
-	// next code was commented 
-	/*
-	if(HudItemData() && !just_before_destroy)
-	{
-		object().XFORM().set( HudItemData()->m_item_transform );
-	}
-	
-	if (HudItemData())
+
+	if (HudItemData() != nullptr && object().H_Parent() != nullptr && object().H_Parent() == Level().CurrentEntity())
 	{
 		g_player_hud->detach_item(this);
-		Msg("---Detaching hud item [%s][%d]", this->HudSection().c_str(), this->object().ID());
-	}*/
-	//SetHudItemData			(nullptr);
+	}
 }
 
-void CHudItem::OnH_A_Independent	()
+void CHudItem::OnH_A_Independent()
 {
-	if(HudItemData())
+	if (HudItemData() != nullptr && object().H_Parent() != nullptr && object().H_Parent() == Level().CurrentEntity())
+	{
 		g_player_hud->detach_item(this);
+	}
+
 	StopCurrentAnimWithoutCallback();
 }
 
@@ -635,7 +634,7 @@ BOOL CHudItem::GetHUDmode()
 {
 	if (m_object && m_object->H_Parent()) {
 		CActor* A = m_object->H_Parent()->cast_actor();
-		return (A && A->HUDview() && HudItemData());
+		return (A && A->HUDview());
 	}
 		
 	return FALSE;
