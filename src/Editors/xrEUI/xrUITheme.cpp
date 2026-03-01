@@ -8,6 +8,8 @@ extern xr_string ImCurrentFont;
 
 using namespace XRay::ImGui;
 
+bool show_demo_window = false;				// Dear ImGui Demo Window bool
+
 CUIThemeManager::CUIThemeManager()
 {
 	bOpen = false;
@@ -46,6 +48,9 @@ void CUIThemeManager::Draw()
 
 		ImGui::BeginChild("Theme", ImVec2(0, -ImGui::GetFrameHeightWithSpacing() - 10), true);
 		{
+			// ImGui Demo Windiow for calling the Style Editor for tinkering things.
+			XRay::ImGui::ToggleButton("Dear ImGui Demo Window", &show_demo_window, { -1, 0 });
+			if(show_demo_window) ImGui::ShowDemoWindow(&show_demo_window);
 			// Main Colors
 			ImGui::SeparatorText("Main Colors");
 			ImGui::ColorEdit4("Window Background", (float*)&colors[ImGuiCol_WindowBg]);
@@ -235,23 +240,34 @@ void CUIThemeManager::InitDefault(int InThemeID)
 	ImVec4* colors = style.Colors;
 	colors[ImGuiCol_MenuBarBg]				= GetEditorColor(EEditorColors::BackgroundTint);
 	colors[ImGuiCol_FrameBg]				= GetEditorColor(EEditorColors::TableTint);
-	colors[ImGuiCol_WindowBg]				= GetEditorColor(EEditorColors::ToolbarTint);
-	//colors[ImGuiCol_Border]				= GetEditorColor(EEditorColors::PanelBorderTint);
+	colors[ImGuiCol_WindowBg]				= GetEditorColor(EEditorColors::PanelBorderTint);
+	colors[ImGuiCol_Border]					= GetEditorColor(EEditorColors::PanelBorderTint);
 	colors[ImGuiCol_ChildBg]				= GetEditorColor(EEditorColors::PanelTint);
 	colors[ImGuiCol_TableRowBg]				= GetEditorColor(EEditorColors::PanelTint);
 	colors[ImGuiCol_TableRowBgAlt]			= GetEditorColor(EEditorColors::ButtonTint);
+	colors[ImGuiCol_TableBorderLight]		= GetEditorColor(EEditorColors::BackgroundTint);
+	colors[ImGuiCol_TableBorderStrong]		= GetEditorColor(EEditorColors::BackgroundTint);
 	colors[ImGuiCol_Button]					= GetEditorColor(EEditorColors::ButtonTint);
 	colors[ImGuiCol_TableHeaderBg]			= GetEditorColor(EEditorColors::ButtonTint);
+
 	colors[ImGuiCol_Tab]					= GetEditorColor(EEditorColors::TabBarTint);
-	colors[ImGuiCol_TitleBg]				= GetEditorColor(EEditorColors::TabBarTint);
-	colors[ImGuiCol_TitleBgActive]			= GetEditorColor(EEditorColors::TabBarTint);
+	colors[ImGuiCol_TabSelected]			= GetEditorColor(EEditorColors::PanelBorderTint);
+
+	colors[ImGuiCol_TabActive]				= GetEditorColor(EEditorColors::PanelBorderTint);
+	colors[ImGuiCol_TabHovered]				= GetEditorColor(EEditorColors::TabHover);
+
 	colors[ImGuiCol_TabDimmed]				= GetEditorColor(EEditorColors::TabBarTint);
-	colors[ImGuiCol_TabDimmedSelected]		= GetEditorColor(EEditorColors::ToolbarTint);
-	colors[ImGuiCol_TabActive]				= GetEditorColor(EEditorColors::ToolbarTint);
-	colors[ImGuiCol_BorderShadow]			= ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+	colors[ImGuiCol_TabDimmedSelected]		= GetEditorColor(EEditorColors::PanelBorderTint);
+
+	colors[ImGuiCol_TitleBg]				= GetEditorColor(EEditorColors::BackgroundTint);
+	colors[ImGuiCol_TitleBgActive]			= GetEditorColor(EEditorColors::BackgroundTint);
+	colors[ImGuiCol_BorderShadow]			= ImVec4(0.f, 0.f, 0.f, 0.f);
 	colors[ImGuiCol_Button]					= GetEditorColor(EEditorColors::ButtonTint);
 	colors[ImGuiCol_ButtonHovered]			= GetEditorColor(EEditorColors::ButtonHover);
 	colors[ImGuiCol_ButtonActive]			= GetEditorColor(EEditorColors::ButtonActive);
+	colors[ImGuiCol_Header]					= GetEditorColor(EEditorColors::PanelBorderTint);
+	colors[ImGuiCol_HeaderHovered]			= GetEditorColor(EEditorColors::TabHover);
+	colors[ImGuiCol_HeaderActive]			= GetEditorColor(EEditorColors::TabActive);
 	//colors[ImGuiCol_DockingEmptyBg]		= GetEditorColor(EEditorColors::Accent);
 	//colors[ImGuiCol_Separator]			= GetEditorColor(EEditorColors::Accent);
 	//colors[ImGuiCol_SeparatorHovered]		= GetEditorColor(EEditorColors::Accent);
@@ -262,11 +278,15 @@ void CUIThemeManager::InitDefault(int InThemeID)
 	//style.PopupBorderSize = 0.0f;
 	style.TabBorderSize = 0.0f;
 	style.WindowBorderSize					= 1.0f;
+	style.WindowPadding						= { WindowPadding, WindowPadding };
 	style.FrameBorderSize					= 0.0f;
+	style.FrameRounding						= GetEditorSize(EEditorSizes::ButtonRadius);
 	style.ItemInnerSpacing.x				= 2.5f;
 	style.DockingSeparatorSize				= GetEditorSize(EEditorSizes::DockingGap);
     style.IndentSpacing						= 8.0f;
 	style.WindowMenuButtonPosition			= ImGuiDir_Right;
+
+    style.CellPadding						= { GetEditorSize(ButtonTextPaddingY), GetEditorSize(TableTextPaddingY) };
 
 	log_color_default = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
 	log_color_error = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);

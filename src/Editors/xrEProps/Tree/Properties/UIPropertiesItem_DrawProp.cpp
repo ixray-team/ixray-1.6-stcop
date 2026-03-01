@@ -39,7 +39,7 @@ inline bool DrawNumeric(PropItem* item, bool& change, bool read_only)
 		item->BeforeEdit<NumericValue<T>, T>(value);
 		data = static_cast<int>(value);
 	}
-	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(GetEditorSize(ButtonPaddingH), GetEditorSize(TextFieldPadding)));
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(GetEditorSize(ButtonPaddingH), GetEditorSize(TableTextPaddingY)));
 	change = ImGui::InputInt("##value", &data, read_only ? ImGuiInputTextFlags_ReadOnly : 0);
 	ImGui::PopStyleVar();
 	if (change)
@@ -70,7 +70,7 @@ inline bool DrawNumeric<float>(PropItem* item, bool& change, bool read_only)
 	if (!V)					return false;
 	float temp = *V->value;
 	item->BeforeEdit<NumericValue<float>, float>(temp);
-	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(GetEditorSize(ButtonPaddingH), GetEditorSize(TextFieldPadding)));
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(GetEditorSize(ButtonPaddingH), GetEditorSize(TableTextPaddingY)));
 	change = ImGui::InputFloat("##value", &temp, 0.01, 0.1, V->dec, read_only ? ImGuiInputTextFlags_ReadOnly : 0);
 	ImGui::PopStyleVar();
 	if (change)
@@ -111,12 +111,14 @@ BOOL TokenOnEdit(PropItem* prop, bool& change)
 			index = cnt;
 		}
 	}
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { GetEditorSize(ButtonPaddingH), GetEditorSize(TableTextPaddingY) });
 	if (ImGui::Combo("##value", &index, [](void* data, int idx, const char** out_text)->bool {*out_text = reinterpret_cast<xr_token*>(data)[idx].name;return true;},reinterpret_cast<void*>(token_list),cnt))
 	{
 		T new_val = token_list[index].id;
 		if (prop->AfterEdit<TokenValue<T>, T>(new_val))
 			change = prop->ApplyValue<TokenValue<T>, T>(new_val);
 	}
+	ImGui::PopStyleVar();
 	return TRUE;
 }
 //-----------------------------------------------------------------------------------------
@@ -139,12 +141,14 @@ BOOL RTokenOnEdit(PropItem* prop, bool& change)
 			index = cnt;
 		}
 	}
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { GetEditorSize(ButtonPaddingH), GetEditorSize(TableTextPaddingY) });
 	if (ImGui::Combo("##value", &index, [](void* data, int idx, const char** out_text)->bool {*out_text = reinterpret_cast<xr_rtoken*>(data)[idx].name.c_str(); return true; }, reinterpret_cast<void*>(token_list), V->token_count))
 	{
 		T new_val = token_list[index].id;
 		if (prop->AfterEdit<RTokenValue<T>, T>(new_val))
 			change = prop->ApplyValue<RTokenValue<T>, T>(new_val);
 	}
+	ImGui::PopStyleVar();
 	return TRUE;
 }
 //-----------------------------------------------------------------------------------------
@@ -160,7 +164,7 @@ BOOL FlagOnEdit(PropItem* prop, bool& change)
 	prop->BeforeEdit<FlagValue<_flags<T> >, _flags<T> >(new_val);
 	u32 u = new_val.get();
 
-	if (XRay::ImGui::ToggleFlagButton("##value", &u, V->mask, {-1, XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize)}))
+	if (XRay::ImGui::ToggleFlagButton("##value", &u, V->mask, {-1, XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableRowHeight)}))
 	{
 		new_val.assign(u);
 		if (prop->AfterEdit<FlagValue<_flags<T> >, _flags<T> >(new_val))
@@ -477,7 +481,7 @@ void UIPropertiesItem::DrawProp()
 
 		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
 		ImGui::PushStyleColor(ImGuiCol_Button, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableTint).Value);
-		if (ImGui::Button(text.c_str(), ImVec2(-1, 0)))
+		if (ImGui::Button(text.c_str(), ImVec2(-1, GetEditorSize(TableRowHeight))))
 		{
 			PropItem* prop = PItem;
 
@@ -679,7 +683,7 @@ void UIPropertiesItem::DrawProp()
 				ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
 				ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, { 0.0f, 0.5f });
 				ImGui::PushStyleColor(ImGuiCol_Button, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableTint).Value);
-				if (ImGui::Button(Platform::ANSI_TO_UTF8(Str).data(), ImVec2(-1, XRay::ImGui::GetEditorSize(ButtonSize))))
+				if (ImGui::Button(Platform::ANSI_TO_UTF8(Str).data(), ImVec2(-1, XRay::ImGui::GetEditorSize(TableRowHeight))))
 				{
 				}
 				ImGui::PopStyleColor();
