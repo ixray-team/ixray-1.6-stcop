@@ -500,7 +500,7 @@ function sim_squad_scripted:assign_squad_member_to_smart(member_id, smart, old_s
                 return
             end
     
-            if obj.m_smart_terrain_id ~= 65535 and old_smart_id ~= nil and (obj.m_smart_terrain_id == old_smart_id) and self.board.smarts[old_smart_id] ~= nil then
+            if obj.m_smart_terrain_id ~= alife_const.invalid_object_id and old_smart_id ~= nil and (obj.m_smart_terrain_id == old_smart_id) and self.board.smarts[old_smart_id] ~= nil then
                 self.board.smarts[old_smart_id].smrt:unregister_npc(obj)
             end
     
@@ -982,7 +982,7 @@ function sim_squad_scripted:show()
         local spot_exists = false
         local cmd_id = self:commander_id()
         for k, v in pairs(spots_show_disabled) do
-            if level.map_has_object_spot(cmd_id, v) ~= 0 then
+            if level.map_has_object_spot(cmd_id, v) then
                 spot_exists = true
                 break
             end

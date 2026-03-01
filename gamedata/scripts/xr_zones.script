@@ -60,7 +60,7 @@ function arena_zone_binder:save(packet)
 	local num = #self.saved_obj
 	packet:w_u8(num)
 	for k,v in pairs(self.saved_obj) do
-		packet:w_u16(k)
+		packet:w_u32(k)
 	end
 	set_save_marker(packet, "save", true, "arena_zone_binder")
 end
@@ -72,7 +72,7 @@ function arena_zone_binder:load(packet)
 
 	local num = packet:r_u8()	
 	for i=1,num do
-		self.saved_obj[packet:r_u16()] = true
+		self.saved_obj[packet:r_u32()] = true
 	end	
 	set_save_marker(packet, "load", true, "arena_zone_binder")
 end

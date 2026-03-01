@@ -941,7 +941,7 @@ function se_smart_terrain:show()
 		else
 ]]
 					if(self.smrt_showed_spot~=nil) and
-				(level.map_has_object_spot(self.id, "alife_presentation_smart_"..self.sim_type.."_"..self.smrt_showed_spot)~=0)
+				level.map_has_object_spot(self.id, "alife_presentation_smart_"..self.sim_type.."_"..self.smrt_showed_spot)
 			then
 							level.map_remove_object_spot(self.id, "alife_presentation_smart_base_"..self.smrt_showed_spot)
 					end

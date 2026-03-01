@@ -230,7 +230,7 @@ function motivator_binder:net_spawn(sobject)
             elseif db.offline_objects[se_obj.id] ~= nil and db.offline_objects[se_obj.id].level_vertex_id ~= nil then
                 printf("changing position for object[%s] from %s to %s : level vertex [%s] to [%s]", se_obj:name(), vec_to_str(se_obj.position), vec_to_str(level.vertex_position(db.offline_objects[se_obj.id].level_vertex_id)), tostring(se_obj.m_level_vertex_id), tostring(db.offline_objects[se_obj.id].level_vertex_id))
                 self.object:set_npc_position(level.vertex_position(db.offline_objects[se_obj.id].level_vertex_id))
-            elseif se_obj.m_smart_terrain_id ~= 65535 then
+            elseif se_obj.m_smart_terrain_id ~= alife_const.invalid_object_id then
                 local smart_terrain = alife():object(se_obj.m_smart_terrain_id)
                 if smart_terrain.arriving_npc[se_obj.id] == nil then
                     
@@ -586,7 +586,7 @@ function motivator_binder:save(packet)
         end
         packet:w_u8(i)
         for k,v in pairs(self.opened_doors) do
-            packet:w_u16(k)
+            packet:w_u32(k)
         end
     
         set_save_marker(packet, "save", true, "motivator_binder")
@@ -606,7 +606,7 @@ function motivator_binder:load(reader)
     
         local i = reader:r_u8()
         for k = 1,i do
-            local key = reader:r_u16()
+            local key = reader:r_u32()
             self.opened_doors[key] = true
         end
     

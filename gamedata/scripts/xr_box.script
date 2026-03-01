@@ -128,7 +128,7 @@ function create_items(obj, section, number, rnd)
 							position,
 						obj:level_vertex_id(),
 						obj:game_vertex_id(),
-						65535,
+						65535*65535,
 						number)
 			end
 		end
