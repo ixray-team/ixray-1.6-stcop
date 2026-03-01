@@ -260,9 +260,9 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 	m_controller_cursor->SetWidth(m_controller_cursor->GetWidth()*UI().get_current_kx());
 	m_UILevelFrame->AttachChild(m_controller_cursor);
 
-	Fvector2 controllerCursorPos = { (m_UILevelFrame->GetWidth() / 2) - (m_controller_cursor->GetWidth() / 2),
+	m_controller_cursor_pos_initial = { (m_UILevelFrame->GetWidth() / 2) - (m_controller_cursor->GetWidth() / 2),
 									(m_UILevelFrame->GetHeight() / 2) - (m_controller_cursor->GetHeight() / 2) };
-	m_controller_cursor_pos = controllerCursorPos;
+	m_controller_cursor_pos = m_controller_cursor_pos_initial;
 
 	m_UserSpotWnd = new CUIPdaSpot();
 	m_UserSpotWnd->SetAutoDelete(true);
@@ -399,18 +399,68 @@ void CUIMapWnd::MoveMap( Fvector2 const& pos_delta )
 
 void CUIMapWnd::MoveControllerCursor( Fvector2 const& pos_delta )
 {
-	MoveMap(pos_delta);
-/* St4lker0k765: TODO: add proper implementation for corner cursor positions
-	if (fis_zero(GlobalMap()->GetWndPos().x) ||
-		fis_zero(GlobalMap()->GetWndPos().y) ||
-		(GlobalMap()->WorkingArea().left + GlobalMap()->WorkingArea().right) == GlobalMap()->BoundRect().right ||
-		(GlobalMap()->WorkingArea().top + GlobalMap()->WorkingArea().bottom) == GlobalMap()->BoundRect().bottom)
+	if (m_controller_cursor_pos.similar(m_controller_cursor_pos_initial, 5.f))
+	{
+		m_controller_cursor_pos = m_controller_cursor_pos_initial;
+		MoveMap(pos_delta);
+	}
+
+	bool isInLeft = fis_zero(GlobalMap()->GetWndPos().x);
+	bool isInTop = fis_zero(GlobalMap()->GetWndPos().y);
+	bool isInRight = (m_UIMainScrollH->GetScrollPos() + m_UIMainScrollH->GetPageSize()) >= m_UIMainScrollH->GetMaxRange();
+	bool isInBottom = (m_UIMainScrollV->GetScrollPos() + m_UIMainScrollV->GetPageSize()) >= m_UIMainScrollV->GetMaxRange();
+
+	if (isInLeft && 
+		(m_controller_cursor_pos.x - pos_delta.x) < m_controller_cursor_pos_initial.x)
 	{
 		Fvector2 posD_UI = pos_delta;
 		UI().ClientToScreenScaledX(posD_UI.x);
 		UI().ClientToScreenScaledY(posD_UI.y);
-		m_controller_cursor_pos.sub(posD_UI);
-	}*/
+		m_controller_cursor_pos.x -= posD_UI.x;
+		if (!isInTop && !isInBottom)
+		{
+			MoveMap(Fvector2().set(0.f, pos_delta.y));
+		}
+	}
+
+	if (isInTop &&
+		(m_controller_cursor_pos.y - pos_delta.y) < m_controller_cursor_pos_initial.y)
+	{
+		Fvector2 posD_UI = pos_delta;
+		UI().ClientToScreenScaledX(posD_UI.x);
+		UI().ClientToScreenScaledY(posD_UI.y);
+		if (!isInLeft && !isInRight)
+		{
+			MoveMap(Fvector2().set(pos_delta.x, 0.f));
+		}
+		m_controller_cursor_pos.y -= posD_UI.y;
+	}
+	
+	if (isInRight &&
+		(m_controller_cursor_pos.x - pos_delta.x) > m_controller_cursor_pos_initial.x)
+	{
+		Fvector2 posD_UI = pos_delta;
+		UI().ClientToScreenScaledX(posD_UI.x);
+		UI().ClientToScreenScaledY(posD_UI.y);
+		m_controller_cursor_pos.x -= posD_UI.x;
+		if (!isInTop && !isInBottom)
+		{
+			MoveMap(Fvector2().set(0.f, pos_delta.y));
+		}
+	}
+
+	if (isInBottom &&
+		(m_controller_cursor_pos.y - pos_delta.y) > m_controller_cursor_pos_initial.y)
+	{
+		Fvector2 posD_UI = pos_delta;
+		UI().ClientToScreenScaledX(posD_UI.x);
+		UI().ClientToScreenScaledY(posD_UI.y);
+		if (!isInLeft && !isInRight)
+		{
+			MoveMap(Fvector2().set(pos_delta.x, 0.f));
+		}
+		m_controller_cursor_pos.y -= posD_UI.y;
+	}
 
 	clamp(m_controller_cursor_pos.x, m_UILevelFrame->GetWndPos().x - (m_controller_cursor->GetWidth() / 2), m_UILevelFrame->GetWidth());
 	clamp(m_controller_cursor_pos.y, m_UILevelFrame->GetWndPos().y - (m_controller_cursor->GetHeight() / 2), m_UILevelFrame->GetHeight());
@@ -861,9 +911,7 @@ void CUIMapWnd::ViewActor()
 	}
 
 	SetTargetMap				(lm, m_prev_actor_pos, true);
-	Fvector2 controllerCursorPos = { (m_UILevelFrame->GetWidth() / 2) - (m_controller_cursor->GetWidth() / 2),
-									(m_UILevelFrame->GetHeight() / 2) - (m_controller_cursor->GetHeight() / 2) };
-	m_controller_cursor_pos = controllerCursorPos;
+	m_controller_cursor_pos = m_controller_cursor_pos_initial;
 }
 
 void CUIMapWnd::ShowHintStr(CUIWindow* parent, LPCSTR text) //map name
