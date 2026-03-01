@@ -114,13 +114,14 @@ void UIMainMenuForm::Draw()
 {
 	ImGui::PushStyleColor(ImGuiCol_Button, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::BackgroundTint).Value);
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+	//ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.f, 8.f));
 
 	if (IXBeginMainMenuBar())
 	{
-		ImGui::SameLine();
-
 		ImVec2 cp;
-
+		// I don't know why should I do this сrutches to move the whole menu bar down. And I forgot was it lower befor my edits. Make it lower the right way if you know how.
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + (UI->GetMenuBarButtonHeight() - ImGui::GetFontSize()) - ImGui::GetStyle().FramePadding.y);
+		ImGui::BeginChild("MENUBAR");
 		MainMenuList("File")
 			DrawMenuItemI("Clear", ICON_FA_FILE, COMMAND_CLEAR);
 			DrawMenuItemI("Open", ICON_FA_FILE_IMPORT, COMMAND_LOAD);
@@ -690,12 +691,13 @@ void UIMainMenuForm::Draw()
 				}
 			}
 		}
+		ImGui::EndChild();
 
 		IXEndMainMenuBar();
 	}
 
 	ImGui::PopStyleColor();
-	ImGui::PopStyleVar();
+	ImGui::PopStyleVar(1);
 }
 
 void UIMainMenuForm::ExportLevelAsArchive()
