@@ -262,9 +262,11 @@ void player_hud::tune(Fvector _values)
 		
 		float _curr_dr	= _delta_rot;
 
-		u8 idx			= m_attached_items[hud_adj_item_idx]->m_parent_hud_item->GetCurrentHudOffsetIdx();
-		if(idx)
-			_curr_dr	/= 20.0f;
+		EHudOffsetType idx = m_attached_items[hud_adj_item_idx]->m_parent_hud_item->GetCurrentHudOffsetIdx();
+		if (idx)
+		{
+			_curr_dr /= 20.0f;
+		}
 
 		Fvector& pos_ = m_attached_items[hud_adj_item_idx]->m_measures.m_hands_positions.hands_offsets_tune[0][idx];
 		Fvector& rot_ = m_attached_items[hud_adj_item_idx]->m_measures.m_hands_positions.hands_offsets_tune[1][idx];
@@ -290,29 +292,44 @@ void player_hud::tune(Fvector _values)
 		}
 		if( (values.x)||(values.y)||(values.z) )
 		{
-			if(idx==0)
+			if (idx == EHudOffsetType::eDefault)
 			{
 				Msg("[%s]", m_attached_items[hud_adj_item_idx]->m_sect_name.c_str());
 				Msg("hands_position%s				= %f,%f,%f",(is_16x9)?"_16x9":"", pos_.x, pos_.y, pos_.z);
 				Msg("hands_orientation%s			= %f,%f,%f",(is_16x9)?"_16x9":"", rot_.x, rot_.y, rot_.z);
 				Log("-----------");
 			}else
-			if(idx==1)
+			if (idx == EHudOffsetType::eAim)
 			{
 				Msg("[%s]", m_attached_items[hud_adj_item_idx]->m_sect_name.c_str());
 				Msg("aim_hud_offset_pos%s				= %f,%f,%f",(is_16x9)?"_16x9":"",  pos_.x, pos_.y, pos_.z);
 				Msg("aim_hud_offset_rot%s				= %f,%f,%f",(is_16x9)?"_16x9":"",  rot_.x, rot_.y, rot_.z);
 				Log("-----------");
 			}else
-			if(idx==2)
+			if (idx == EHudOffsetType::eAimGL)
 			{
 				Msg("[%s]", m_attached_items[hud_adj_item_idx]->m_sect_name.c_str());
 				Msg("gl_hud_offset_pos%s				= %f,%f,%f",(is_16x9)?"_16x9":"",  pos_.x, pos_.y, pos_.z);
 				Msg("gl_hud_offset_rot%s				= %f,%f,%f",(is_16x9)?"_16x9":"",  rot_.x, rot_.y, rot_.z);
 				Log("-----------");
 			}
+			else if (idx == EHudOffsetType::eAimAlt)
+			{
+				Msg("[%s]", m_attached_items[hud_adj_item_idx]->m_sect_name.c_str());
+				Msg("alter_aim_hud_offset_pos%s				= %f,%f,%f", (is_16x9) ? "_16x9" : "", pos_.x, pos_.y, pos_.z);
+				Msg("alter_aim_hud_offset_rot%s				= %f,%f,%f", (is_16x9) ? "_16x9" : "", rot_.x, rot_.y, rot_.z);
+				Log("-----------");
+			}
+			else if (idx == EHudOffsetType::eSafemode)
+			{
+				Msg("[%s]", m_attached_items[hud_adj_item_idx]->m_sect_name.c_str());
+				Msg("safemode_hud_offset_pos%s				= %f,%f,%f", (is_16x9) ? "_16x9" : "", pos_.x, pos_.y, pos_.z);
+				Msg("safemode_hud_offset_rot%s				= %f,%f,%f", (is_16x9) ? "_16x9" : "", rot_.x, rot_.y, rot_.z);
+				Log("-----------");
+			}
 		}
-	}else
+	}
+	else
 	if(hud_adj_mode==8 || hud_adj_mode==9)
 	{
 		if(hud_adj_mode==8 && (values.z) )
