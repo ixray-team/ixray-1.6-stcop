@@ -3357,30 +3357,30 @@ bool CWeapon::ready_to_kill() const
 	return (!IsMisfire() && ((GetState() == eIdle) || (GetState() == eFire) || (GetState() == eFire2)) && (GetAmmoElapsed() + GetAmmoChamberElapsed()) > 0);
 }
 
-u8 CWeapon::GetCurrentHudOffsetIdx() const
+EHudOffsetType CWeapon::GetCurrentHudOffsetIdx() const
 {
 	CObject* parent = const_cast<CObject*>(H_Parent());
 	const CActor* pActor = parent != nullptr ? parent->cast_actor() : nullptr;
-	if (!pActor)
+	if (pActor == nullptr)
 	{
-		return 0;
+		return EHudOffsetType::eDefault;
 	}
 
 	if (!IsZoomed())
 	{
-		return pActor->IsSafemode() ? 4 : 0;
+		return pActor->IsSafemode() ? EHudOffsetType::eSafemode : EHudOffsetType::eDefault;
 	}
 	else if (IsGrenadeMode())
 	{
-		return 2;
+		return EHudOffsetType::eAimGL;
 	}
 	else if (IsAltZoomed())
 	{
-		return 3;
+		return EHudOffsetType::eAimAlt;
 	}
 	else
 	{
-		return 1;
+		return EHudOffsetType::eAim;
 	}
 }
 
@@ -3398,14 +3398,14 @@ void CWeapon::UpdateHudAdditonal(Fmatrix& trans)
 		return;
 	}
 
-	u8 idx = GetCurrentHudOffsetIdx();
+	const EHudOffsetType idx = GetCurrentHudOffsetIdx();
 
 	Fvector curr_offs = hi->m_measures.m_hands_positions.hands_offsets[0][idx];//pos,aim
 	Fvector curr_rot = hi->m_measures.m_hands_positions.hands_offsets[1][idx];//rot,aim
 	Fvector& saved_offs = hi->m_measures.m_hands_positions.hands_offsets_saved[0];
 	Fvector& saved_rot = hi->m_measures.m_hands_positions.hands_offsets_saved[1];
 
-	if (idx == 0)
+	if (idx == EHudOffsetType::eDefault)
 	{
 		curr_offs.set(zero_vel);
 		curr_rot.set(zero_vel);
@@ -3413,7 +3413,7 @@ void CWeapon::UpdateHudAdditonal(Fmatrix& trans)
 
 	float factor = Device.fTimeDelta / m_zoom_params.m_fZoomRotateTime;
 
-	if (idx == 4 || m_fSafeModeRotationFactor > 0.0f)
+	if (idx == EHudOffsetType::eSafemode || m_fSafeModeRotationFactor > 0.0f)
 	{
 		factor = Device.fTimeDelta / m_fSafeModeRotateTime;
 	}
