@@ -856,8 +856,9 @@ void CUIMapWnd::UpdateControllerCursor()
 		{
 			levelFrameParent = m_UIMainFrame;
 		}
-		cursorPos.add(levelFrameParent->GetWndPos());
-		cursorPos.add(m_UILevelFrame->GetWndPos());
+		Fvector2 absolutePos;
+		m_UILevelFrame->GetAbsolutePos(absolutePos);
+		cursorPos.add(absolutePos);
 		cursorPos.add(Fvector2().set(m_controller_cursor->GetWidth() / 2, m_controller_cursor->GetHeight() / 2));
 		GetUICursor().SetUICursorPosition(cursorPos);
 	}
