@@ -183,7 +183,7 @@ function Crelease_body:save(packet)
         local count = #self.release_objects_table
         packet:w_u16(count)
         for k,v in pairs(self.release_objects_table) do
-            packet:w_u16(v.id)
+            packet:w_u32(v.id)
         end
         local level_id = gg_vertex_level_id(alife():actor().m_game_vertex_id)
         packet:w_u16(level_id)
@@ -197,7 +197,7 @@ function Crelease_body:load(reader)
         local count = reader:r_u16()
         self.release_objects_table = {}
         for i = 1, count do
-            local vid = reader:r_u16()
+            local vid = reader:r_u32()
             self.release_objects_table[i] = {}
             self.release_objects_table[i].id = vid
         end

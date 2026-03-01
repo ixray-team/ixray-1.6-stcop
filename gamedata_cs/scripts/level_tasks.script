@@ -106,7 +106,7 @@ function is_map_spot_present(sid, location)
 	if sim then
 		local obj = sim:story_object(sid)
         if(_G.dev_debug) then
-	        if obj and level.map_has_object_spot(obj.id, location) ~= 0 then
+	        if obj and level.map_has_object_spot(obj.id, location) then
 	           return true
 	        end
 		end
@@ -242,12 +242,12 @@ function set_lchanger_mapspot(obj, spot, hint)
         local ce_obj = level.object_by_id(obj_id)
         if ce_obj then
             if ce_obj:is_level_changer_enabled() then
-	            if level.map_has_object_spot(obj_id, spot) == 0 then
+	            if not level.map_has_object_spot(obj_id, spot) then
 	                level.map_add_object_spot(obj_id, spot, hint)
 	            end
             end
         else
-            if level.map_has_object_spot(obj_id, spot) == 0 then
+            if not level.map_has_object_spot(obj_id, spot) then
                 level.map_add_object_spot(obj_id, spot, hint)
             end
         end
@@ -278,7 +278,7 @@ function del_lchanger_mapspot(sid)
 		elseif sid == 527 or sid == 1266 then
 			spot = "level_changer_left_up"
 		end
-		if level.map_has_object_spot(ce_obj:id(), spot) ~= 0 then
+		if level.map_has_object_spot(ce_obj:id(), spot) then
             level.map_remove_object_spot(ce_obj:id(), spot)
         end
     end
