@@ -3366,64 +3366,22 @@ u8 CWeapon::GetCurrentHudOffsetIdx() const
 		return 0;
 	}
 
-	bool b_aiming = ((IsZoomed() && m_zoom_params.m_fZoomRotationFactor <= 1.f) || (!IsZoomed() && m_zoom_params.m_fZoomRotationFactor > 0.f));
-
-	if (!b_aiming)
+	if (!IsZoomed())
 	{
-		return 0;
+		return pActor->IsSafemode() ? 4 : 0;
 	}
 	else if (IsGrenadeMode())
 	{
 		return 2;
 	}
+	else if (IsAltZoomed())
+	{
+		return 3;
+	}
 	else
 	{
 		return 1;
 	}
-}
-
-void CWeapon::AddOffset(Fmatrix& trans, const u8 idx, float& factor, const float rotate_time, const bool inc)
-{
-	attachable_hud_item* hi = HudItemData();
-	if (hi == nullptr)
-	{
-		return;
-	}
-
-	Fvector curr_offs = hi->m_measures.m_hands_positions.hands_offsets[0][idx];//pos,aim
-	Fvector curr_rot = hi->m_measures.m_hands_positions.hands_offsets[1][idx];//rot,aim
-
-	const float dec_factor = idx == GetCurrentHudOffsetIdx() && m_zoom_params.m_fZoomRotationFactor2 > 0.0f && m_zoom_params.m_fZoomRotationFactor2 <= 1.0f ? 1.0f - m_zoom_params.m_fZoomRotationFactor2 : 1.0f;
-
-	curr_offs.mul(factor * dec_factor);
-	curr_rot.mul(factor * dec_factor);
-
-	Fmatrix	hud_rotation;
-	hud_rotation.identity();
-	hud_rotation.rotateX(curr_rot.x);
-
-	Fmatrix	hud_rotation_y;
-	hud_rotation_y.identity();
-	hud_rotation_y.rotateY(curr_rot.y);
-	hud_rotation.mulA_43(hud_rotation_y);
-
-	hud_rotation_y.identity();
-	hud_rotation_y.rotateZ(curr_rot.z);
-	hud_rotation.mulA_43(hud_rotation_y);
-
-	hud_rotation.translate_over(curr_offs);
-	trans.mulB_43(hud_rotation);
-
-	if (inc)
-	{
-		factor += Device.fTimeDelta / rotate_time;
-	}
-	else
-	{
-		factor -= Device.fTimeDelta / rotate_time;
-	}
-
-	clamp(factor, 0.0f, 1.0f);
 }
 
 void CWeapon::UpdateHudAdditonal(Fmatrix& trans)
@@ -3440,9 +3398,94 @@ void CWeapon::UpdateHudAdditonal(Fmatrix& trans)
 		return;
 	}
 
-	AddOffset(trans, GetCurrentHudOffsetIdx(), m_zoom_params.m_fZoomRotationFactor, m_zoom_params.m_fZoomRotateTime, IsZoomed());
-	AddOffset(trans, 3, m_zoom_params.m_fZoomRotationFactor2, m_zoom_params.m_fZoomRotateTime, IsAltZoomed() && IsZoomed() && !IsGrenadeMode());
-	AddOffset(trans, 4, m_fSafeModeRotationFactor, m_fSafeModeRotateTime, pActor->IsSafemode() && !IsZoomed());
+	u8 idx = GetCurrentHudOffsetIdx();
+
+	Fvector curr_offs = hi->m_measures.m_hands_positions.hands_offsets[0][idx];//pos,aim
+	Fvector curr_rot = hi->m_measures.m_hands_positions.hands_offsets[1][idx];//rot,aim
+	Fvector& saved_offs = hi->m_measures.m_hands_positions.hands_offsets_saved[0];
+	Fvector& saved_rot = hi->m_measures.m_hands_positions.hands_offsets_saved[1];
+
+	if (idx == 0)
+	{
+		curr_offs.set(zero_vel);
+		curr_rot.set(zero_vel);
+	}
+
+	float factor = Device.fTimeDelta / m_zoom_params.m_fZoomRotateTime;
+
+	if (idx == 4 || m_fSafeModeRotationFactor > 0.0f)
+	{
+		factor = Device.fTimeDelta / m_fSafeModeRotateTime;
+	}
+
+	static constexpr float SPEED_FACTOR = 3.0f;
+
+	if (curr_offs.similar(saved_offs, EPS))
+	{
+		saved_offs.set(curr_offs);
+	}
+	else
+	{
+		saved_offs.add(Fvector().sub(curr_offs, saved_offs).mul(factor * SPEED_FACTOR));
+	}
+
+	if (curr_rot.similar(saved_rot, EPS))
+	{
+		saved_rot.set(curr_rot);
+	}
+	else
+	{
+		saved_rot.add(Fvector().sub(curr_rot, saved_rot).mul(factor * SPEED_FACTOR));
+	}
+
+	Fmatrix	hud_rotation;
+	hud_rotation.identity();
+	hud_rotation.rotateX(saved_rot.x);
+
+	Fmatrix	hud_rotation_y;
+	hud_rotation_y.identity();
+	hud_rotation_y.rotateY(saved_rot.y);
+	hud_rotation.mulA_43(hud_rotation_y);
+
+	hud_rotation_y.identity();
+	hud_rotation_y.rotateZ(saved_rot.z);
+	hud_rotation.mulA_43(hud_rotation_y);
+
+	hud_rotation.translate_over(saved_offs);
+	trans.mulB_43(hud_rotation);
+
+	if (IsZoomed())
+	{
+		m_zoom_params.m_fZoomRotationFactor += factor;
+	}
+	else
+	{
+		m_zoom_params.m_fZoomRotationFactor -= factor;
+	}
+
+	clamp(m_zoom_params.m_fZoomRotationFactor, 0.0f, 1.0f);
+
+	if (pActor->IsSafemode())
+	{
+		m_fSafeModeRotationFactor += factor;
+	}
+	else
+	{
+		m_fSafeModeRotationFactor -= factor;
+	}
+
+	clamp(m_fSafeModeRotationFactor, 0.0f, 1.0f);
+
+	if (IsAltZoomed() && IsZoomed() && !IsGrenadeMode())
+	{
+		m_zoom_params.m_fZoomRotationFactor2 += factor;
+	}
+	else
+	{
+		m_zoom_params.m_fZoomRotationFactor2 -= factor;
+	}
+
+	clamp(m_zoom_params.m_fZoomRotationFactor2, 0.0f, 1.0f);
 }
 
 void CWeapon::SetAmmoElapsed(int ammo_count)
