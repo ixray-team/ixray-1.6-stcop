@@ -382,17 +382,17 @@ bool CHudPdaAnimator::SwitchZoom()
 	return true;
 }
 
-u8 CHudPdaAnimator::GetCurrentHudOffsetIdx() const
+EHudOffsetType CHudPdaAnimator::GetCurrentHudOffsetIdx() const
 {
 	bool b_aiming = ((m_bIsZoomed && m_fZoomRotationFactor <= 1.0f) || (!m_bIsZoomed && m_fZoomRotationFactor > 0.0f));
 
 	if (!b_aiming)
 	{
-		return 0;
+		return EHudOffsetType::eDefault;
 	}
 	else
 	{
-		return 1;
+		return EHudOffsetType::eAim;
 	}
 }
 
