@@ -54,21 +54,22 @@ void UITopBarForm::Draw()
 		| ImGuiWindowFlags_NoScrollbar
 		| ImGuiWindowFlags_NoScrollWithMouse
 		;
+	float toolbarPadding = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ToolbarPadding);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.f);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(2, 0));
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
-	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0, 4));
+	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(toolbarPadding * 0.5f, toolbarPadding));
 	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
 	ImGui::PushStyleColor(ImGuiCol_Button, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToolbarButtonTint).Value);
 
 	if (ImGui::Begin("TOOLBAR", NULL, window_flags))
 	{
-		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 6);
+		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + toolbarPadding);
 
-		if (ImGui::BeginTable("##ToolbarTable", 11, ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ContextMenuInBody | ImGuiTableFlags_Hideable))
+		if (ImGui::BeginTable("##ToolbarTable", 11, ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ContextMenuInBody | ImGuiTableFlags_Hideable | ImGuiTableFlags_NoBordersInBodyUntilResize))
 		{
-			ImGui::TableSetupColumn("Actions");
+			ImGui::TableSetupColumn("Actions", ImGuiTableColumnFlags_WidthFixed);
 			ImGui::TableSetupColumn("File");
 			ImGui::TableSetupColumn("PIE Pre-Build");
 			ImGui::TableSetupColumn("PIE Actions");
