@@ -104,7 +104,7 @@ function generic_physics_binder:net_spawn(data)
 end
 
 function generic_physics_binder:net_destroy()
-    if level.map_has_object_spot(self.object:id(), "ui_pda2_actor_box_location") ~= 0 then
+    if level.map_has_object_spot(self.object:id(), "ui_pda2_actor_box_location") then
         level.map_remove_object_spot(self.object:id(), "ui_pda2_actor_box_location")
     end
 	xr_sound.stop_sounds_by_id(self.object:id())

@@ -275,8 +275,8 @@ function CTreasureManager:save(package)
         end
         package:w_u16(num)
         for k,v in pairs(self.items_from_secrets) do
-            package:w_u16(k)
-            package:w_u16(v)
+            package:w_u32(k)
+            package:w_u32(v)
         end
     
         num = 0
@@ -286,9 +286,9 @@ function CTreasureManager:save(package)
         package:w_u16(num)
         for k,v in pairs(self.secrets) do
             if not(self.secret_restrs[k]) then
-                package:w_u16(-1)
+                package:w_u32(-1)
             else
-                package:w_u16(self.secret_restrs[k])
+                package:w_u32(self.secret_restrs[k])
             end
             package:w_bool(v.given)
             package:w_bool(v.checked)
@@ -305,14 +305,14 @@ function CTreasureManager:load(package)
         self.items_from_secrets = {}
         local num = package:r_u16()
         for i=1,num do
-            local k = package:r_u16()
-            local v = package:r_u16()
+            local k = package:r_u32()
+            local v = package:r_u32()
             self.items_from_secrets[k] = v
         end
     
         local num = package:r_u16()
         for i=1,num do
-            local id = package:r_u16()
+            local id = package:r_u32()
             for k,v in pairs(self.secret_restrs) do
                 if(v==id) then
                     id = k
@@ -322,7 +322,7 @@ function CTreasureManager:load(package)
             local given = package:r_bool()
             local checked = package:r_bool()
             local to_find = package:r_u8()
-            if(id~=65535 and self.secrets[id]) then
+            if(id ~= alife_const.invalid_object_id and self.secrets[id]) then
                 self.secrets[id].given = given
                 self.secrets[id].checked = checked
                 self.secrets[id].to_find = to_find

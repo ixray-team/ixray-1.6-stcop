@@ -229,7 +229,7 @@ function actor_binder:on_item_take(obj, m_last_dropped_owner_id)
 		SendScriptCallback("on_item_take", obj, db.actor ~= nil)
 		
 		if db.actor then
-			local is_take_from_ground = (m_last_dropped_owner_id == 65535 or m_last_dropped_owner_id == db.actor:id())
+			local is_take_from_ground = (m_last_dropped_owner_id == alife_const.invalid_object_id or m_last_dropped_owner_id == db.actor:id())
 			local before_transfer_parent_id = nil
 			
 			if not is_take_from_ground then
@@ -597,7 +597,7 @@ function actor_binder:save(packet)
         end
         packet:w_u8(n)
         for k,v in pairs (db.script_ids) do
-            packet:w_u16(k)
+            packet:w_u32(k)
             packet:w_stringZ(v)
         end
         task_manager.get_task_manager():save(packet)
@@ -671,7 +671,7 @@ function actor_binder:load(reader)
         treasure_manager.get_treasure_manager():load(reader)
         n = reader:r_u8()
         for i = 1,n do
-            db.script_ids[reader:r_u16()] = reader:r_stringZ()
+            db.script_ids[reader:r_u32()] = reader:r_stringZ()
         end
     
         task_manager.get_task_manager():load(reader)

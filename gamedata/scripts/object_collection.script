@@ -64,7 +64,7 @@ function object_collection:save(packet)
         
         
         packet:w_u16(self.m_count)	
-        packet:w_u16(self.m_last_id)
+        packet:w_u32(self.m_last_id)
     
         local n = 0
         for k,v in pairs(self.m_free) do
@@ -72,7 +72,7 @@ function object_collection:save(packet)
         end		
         packet:w_u16(n)
         for k,v in pairs(self.m_free) do
-            packet:w_u16(k)
+            packet:w_u32(k)
         end
     
         n = 0
@@ -81,7 +81,7 @@ function object_collection:save(packet)
         end		
         packet:w_u16(n)
         for k,v in pairs(self.m_given) do
-            packet:w_u16(k)
+            packet:w_u32(k)
         end
         
         set_save_marker(packet, "save", true, "object_collection")
@@ -97,19 +97,19 @@ function object_collection:load(packet)
         callstack()
     
         self.m_count = packet:r_u16()	
-        self.m_last_id = packet:r_u16()
+        self.m_last_id = packet:r_u32()
         
         local n = packet:r_u16()
         self.m_free = {}
         for i = 1,n do
-            local id = packet:r_u16()
+            local id = packet:r_u32()
             self.m_free[id] = 1
         end	
     
         n = packet:r_u16()
         self.m_given = {}
         for i = 1,n do
-            local id = packet:r_u16()
+            local id = packet:r_u32()
             self.m_given[id] = true
         end	
         
