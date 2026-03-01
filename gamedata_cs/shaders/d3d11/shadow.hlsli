@@ -16,6 +16,7 @@ SamplerComparisonState smp_smap;
 SamplerState smp_jitter;
 Texture2D jitter0;
 Texture2D jitter1;
+Texture3D blue_noise;
 
 //Calculates cascade indices
 bool calc_cascades(in float3 position, in float4x4 smap_vp_matrix[3], inout int cascade_index, inout float3 smap_texcoord)

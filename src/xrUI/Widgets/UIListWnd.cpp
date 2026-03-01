@@ -690,3 +690,69 @@ void CUIListWnd::destroy_active_back()
     if (!m_bShowSelectedItem && !m_bActiveBackground)
         xr_delete(m_ActiveBackgroundFrame);
 }
+
+void CUIListWnd::NextItem(bool selectOnly)
+{
+	if (m_ItemList.empty())
+	{
+		return;
+	}
+
+	int nextIdx = GetSelectedItem() + 1;
+	if (nextIdx > m_ItemList.size() - 1)
+	{
+		nextIdx = 0;
+		ScrollToBegin();
+	}
+	SetSelectedItem(nextIdx);
+    CUIListItem* pListItem = GetItem(GetSelectedItem());
+    pListItem->SetHighlightText(true);
+    pListItem->SendMessage(this, LIST_ITEM_SELECT, 0);
+    m_iSelectedItemGroupID = pListItem->GetGroupID();
+    if (!selectOnly)
+	{
+        GetMessageTarget()->SendMessage(this, LIST_ITEM_CLICKED, pListItem);
+    }
+
+    int pos = GetSelectedItem();
+	pos -= m_iRowNum/2;
+	if (pos < 0)
+		pos = 0;
+
+    m_ScrollBar->SetScrollPos(pos);
+    m_iFirstShownIndex = m_ScrollBar->GetScrollPos();
+    UpdateList();
+}
+
+void CUIListWnd::PrevItem(bool selectOnly)
+{
+    if (m_ItemList.empty())
+    {
+        return;
+    }
+
+    int nextIdx = GetSelectedItem() - 1;
+    if (nextIdx < 0)
+    {
+        nextIdx = m_ItemList.size() - 1;
+        ScrollToEnd();
+    }
+    SetSelectedItem(nextIdx);
+    CUIListItem* pListItem = GetItem(GetSelectedItem());
+    pListItem->SetHighlightText(true);
+    pListItem->SendMessage(this, LIST_ITEM_SELECT, 0);
+    m_iSelectedItemGroupID = pListItem->GetGroupID();
+    if (!selectOnly)
+    {
+        GetMessageTarget()->SendMessage(this, LIST_ITEM_CLICKED, pListItem);
+    }
+
+    int pos = GetSelectedItem();
+    pos -= m_iRowNum / 2;
+    if (pos < 0)
+        pos = 0;
+
+    m_ScrollBar->SetScrollPos(pos);
+    m_iFirstShownIndex = m_ScrollBar->GetScrollPos();
+    UpdateList();
+}
