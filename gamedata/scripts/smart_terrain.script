@@ -755,7 +755,7 @@ function se_smart_terrain:STATE_Write(packet)
         end
         packet:w_u8(n)
         for k,v in pairs(self.arriving_npc) do
-            packet:w_u16(k)
+            packet:w_u32(k)
         end
     
     
@@ -767,7 +767,7 @@ function se_smart_terrain:STATE_Write(packet)
     
         packet:w_u8(n)
         for k,v in pairs(self.npc_info) do
-            packet:w_u16(k)
+            packet:w_u32(k)
             packet:w_u8(v.job_prior)
             packet:w_u8(v.job_id)
             packet:w_bool(v.begin_job)
@@ -839,7 +839,7 @@ function se_smart_terrain:STATE_Read(packet, size)
         local n = packet:r_u8()
         self.arriving_npc = {}
         for i = 1,n do
-            local id = packet:r_u16()
+            local id = packet:r_u32()
             self.arriving_npc[id] = false
         end
     
@@ -848,7 +848,7 @@ function se_smart_terrain:STATE_Read(packet, size)
         --printf("load %s npc", tostring(n))
         self.npc_info = {}
         for i = 1,n do
-            local id = packet:r_u16()
+            local id = packet:r_u32()
             --printf("__ id %s", tostring(id))
             self.npc_info[id] = {}
             local npc_info = self.npc_info[id]
@@ -1174,7 +1174,7 @@ function setup_gulag_and_logic_on_spawn(obj, st, sobject, stype, loaded)
             local strn_id = sobject.m_smart_terrain_id
             printf( "setup_gulag_and_logic_on_spawn obj=%s, strn_id=%s, loaded=%s", obj:name(), tostring(strn_id), tostring(loaded))
     
-            if strn_id ~= nil and strn_id ~= 65535 then
+            if strn_id ~= nil and strn_id ~= alife_const.invalid_object_id then
                 local strn                   = sim:object(strn_id)
                 local need_setup_logic       = (not loaded) and (strn.npc_info[obj:id()] and strn.npc_info[obj:id()].begin_job == true)
     
@@ -1200,7 +1200,7 @@ function on_death(obj)
             local obj = sim:object(obj.id)
             if obj == nil then return end
             local strn_id = obj:smart_terrain_id()
-            if strn_id ~= 65535 then
+            if strn_id ~= alife_const.invalid_object_id then
                 printf("clear dead object %s", obj:name())
                 sim:object(strn_id):clear_dead(obj)
             end

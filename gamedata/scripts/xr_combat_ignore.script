@@ -71,7 +71,7 @@ function is_enemy(obj, enemy, st, not_check_sim)
 	end
 
 	local se_enemy = alife():object(enemy:id())
-	if se_enemy ~= nil and se_enemy.m_smart_terrain_id ~= nil and se_enemy.m_smart_terrain_id ~= 65535 then
+	if se_enemy ~= nil and se_enemy.m_smart_terrain_id ~= nil and se_enemy.m_smart_terrain_id ~= alife_const.invalid_object_id then
 		local enemy_smart = alife():object(se_enemy.m_smart_terrain_id)
 		local smart_name = enemy_smart:name()
 		if ignored_smart[smart_name] == true then
@@ -125,7 +125,7 @@ function action_process_enemy:enemy_callback( obj, enemy )
 	local is_obj_enemy = is_enemy( obj, enemy, self.st, false )
 	if is_obj_enemy == true then
 		local se_obj = alife():object(obj:id())
-		if se_obj and se_obj.m_smart_terrain_id ~= 65535 then
+		if se_obj and se_obj.m_smart_terrain_id ~= alife_const.invalid_object_id then
 			local smart_obj = alife():object(se_obj.m_smart_terrain_id)
 
 			--[bug] Фиксим объявление тревоги в лагере даже в том случае, когда мы нападаем на обитателй, ушедших достаточно далеко - подсмотрено в неофициальном 1.6.03
@@ -141,11 +141,11 @@ function action_process_enemy:enemy_callback( obj, enemy )
 		local se_enemy			= alife():object(enemy:id())
 		if se_obj and se_enemy then
 			local sim_obj_registry 	= simulation_objects.get_sim_obj_registry()
-			if 	se_obj.group_id ~= 65535 	and sim_obj_registry.objects[se_obj.group_id] ~= nil and
-				se_enemy.group_id ~= 65535 	and sim_obj_registry.objects[se_enemy.group_id] == nil and
+			if 	se_obj.group_id ~= alife_const.invalid_object_id and sim_obj_registry.objects[se_obj.group_id] ~= nil and
+				se_enemy.group_id ~= alife_const.invalid_object_id and sim_obj_registry.objects[se_enemy.group_id] == nil and
+				se_obj.position:distance_to_sqr(se_enemy.position) > 900 then
 				--[bug] Фиксим игнор атак актора с дистанции более 30 метров (подсмотрено в неофициальном 1.6.03)
 				--[TODO] Учет глушителя?
-				se_obj.position:distance_to_sqr(se_enemy.position) > MAX_REACTION_DISTANCE_SQR then
 				return false
 			end
 		end
