@@ -28,7 +28,7 @@ public:
 
 	virtual bool InputKeyPress(int cmd) override;
 
-	virtual u8 GetCurrentHudOffsetIdx() const;
+	virtual EHudOffsetType GetCurrentHudOffsetIdx() const;
 	virtual void UpdateHudAdditonal(Fmatrix&) override;
 
 	virtual CHudPdaAnimator* cast_pda_animator() { return this; }
