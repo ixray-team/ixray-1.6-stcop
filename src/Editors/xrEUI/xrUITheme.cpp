@@ -280,6 +280,7 @@ void CUIThemeManager::InitDefault(int InThemeID)
 	style.WindowBorderSize					= 1.0f;
 	style.WindowPadding						= { WindowPadding, WindowPadding };
 	style.FrameBorderSize					= 0.0f;
+	style.FramePadding						= { GetEditorSize(EEditorSizes::ButtonPaddingW), GetEditorSize(EEditorSizes::ButtonPaddingH) };
 	style.FrameRounding						= GetEditorSize(EEditorSizes::ButtonRadius);
 	style.ItemInnerSpacing.x				= 2.5f;
 	style.DockingSeparatorSize				= GetEditorSize(EEditorSizes::DockingGap);
