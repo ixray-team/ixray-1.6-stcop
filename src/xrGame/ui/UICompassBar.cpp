@@ -1001,7 +1001,9 @@ void CUICompassBar::CommitLayout()
             continue;
         }
         _poolSpotAlpha[i] = UpdateFadeAlpha(_poolSpotAlpha[i], false, _cfg.fadeInSpeed, _cfg.fadeOutSpeed);
-        if (_poolSpotAlpha[i] > _cfg.minVisibleAlpha)
+        const float lastPosX = wnd->GetWndPos().x;
+        const bool isWithinStrip = (lastPosX >= geom.left) && (lastPosX <= geom.left + geom.width);
+        if (_poolSpotAlpha[i] > _cfg.minVisibleAlpha && isWithinStrip)
         {
             u32 baseColor = (i < _poolSpotBaseColor.size()) ? _poolSpotBaseColor[i] : _kDefaultColorWhite;
             u32 alpha = (u32)clampr(iFloor(float(color_get_A(baseColor)) * _poolSpotAlpha[i]), 0, 255);
