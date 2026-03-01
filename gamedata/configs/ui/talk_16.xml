@@ -10,6 +10,7 @@
 			<text font="graffiti19" vert_align="c">ui_talk_reply</text>
 		</auto_static>
 		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>log_hint</window_name>
 			<text font="graffiti19" vert_align="c">ui_talk_log</text>
 		</auto_static>
 		<auto_static x="0" y="0" width="22" height="30">
