@@ -669,4 +669,7 @@
 	<string id="ui_tasks_filter_next">
 		<text>$$ACTION_pda_tasks_filter_prev$$/$$ACTION_pda_tasks_filter_next$$ Фильтр меток</text>
 	</string>
+	<string id="ui_tasks_show_on_map_main">
+		<text>$$ACTION_pda_tasks_filter_toggle$$ Показать главное задание</text>
+	</string>
 </string_table>
