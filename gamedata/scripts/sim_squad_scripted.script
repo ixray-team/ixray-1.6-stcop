@@ -982,7 +982,7 @@ function sim_squad_scripted:show()
         local spot_exists = false
         local cmd_id = self:commander_id()
         for k, v in pairs(spots_show_disabled) do
-            if level.map_has_object_spot(cmd_id, v) ~= 0 then
+            if level.map_has_object_spot(cmd_id, v) then
                 spot_exists = true
                 break
             end

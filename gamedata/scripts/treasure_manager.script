@@ -322,7 +322,7 @@ function CTreasureManager:load(package)
             local given = package:r_bool()
             local checked = package:r_bool()
             local to_find = package:r_u8()
-            if(id~=alife_const.invalid_object_id and self.secrets[id]) then
+            if(id ~= alife_const.invalid_object_id and self.secrets[id]) then
                 self.secrets[id].given = given
                 self.secrets[id].checked = checked
                 self.secrets[id].to_find = to_find

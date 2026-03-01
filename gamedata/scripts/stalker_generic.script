@@ -147,7 +147,7 @@ function reset_show_spot(npc, scheme, st, section)
                     hint = map_spots[map_spot].hint
                 end
         
-                if level.map_has_object_spot(npc_id, map_location) ~= 0 then
+                if level.map_has_object_spot(npc_id, map_location) then
                     level.map_remove_object_spot(npc_id, map_location)
                 end
                 
@@ -156,7 +156,7 @@ function reset_show_spot(npc, scheme, st, section)
                 end
             else
                 for k, v in pairs(map_spots) do
-                    if level.map_has_object_spot(npc_id, v.map_location) ~= 0 then
+                    if level.map_has_object_spot(npc_id, v.map_location) then
                         level.map_remove_object_spot(npc_id, v.map_location)
                     end
                 end
@@ -184,7 +184,7 @@ function remove_level_spot(npc, st)
         if obj then
             local npc_id = npc:id()
             if map_spot ~= "" and map_spot ~= nil and map_spots[map_spot] ~= nil then
-                if level.map_has_object_spot(npc_id, map_spots[map_spot].map_location) ~= 0 then
+                if level.map_has_object_spot(npc_id, map_spots[map_spot].map_location) then
                     level.map_remove_object_spot(npc_id, map_spots[map_spot].map_location)
                 end
             end
