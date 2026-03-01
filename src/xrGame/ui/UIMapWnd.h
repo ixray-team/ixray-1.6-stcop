@@ -77,6 +77,7 @@ private:
 	CUIStatic*					m_controller_cursor = nullptr;
 	u32							m_nav_timing;
 	Fvector2					m_controller_cursor_pos = { 0, 0 };
+	Fvector2					m_controller_cursor_pos_initial = { 0, 0 };
 
 	void						UpdateNav				();
 
