@@ -71,8 +71,9 @@ inline bool DrawNumeric<float>(PropItem* item, bool& change, bool read_only)
 	float temp = *V->value;
 	item->BeforeEdit<NumericValue<float>, float>(temp);
 	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(GetEditorSize(ButtonPaddingH), GetEditorSize(TableTextPaddingY)));
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, { 1.f, 1.f });
 	change = ImGui::InputFloat("##value", &temp, 0.01, 0.1, V->dec, read_only ? ImGuiInputTextFlags_ReadOnly : 0);
-	ImGui::PopStyleVar();
+	ImGui::PopStyleVar(2);
 	if (change)
 	{
 		if (!isinf(V->lim_mn) &&V->lim_mn > temp)
