@@ -9,7 +9,6 @@ namespace XRay::ImGui
 		Accent,
 		// Tints
 		ToolbarButtonTint,
-		ToolbarTint,
 		BackgroundTint,
 		TableTint,
 		TabBarTint,
@@ -26,17 +25,27 @@ namespace XRay::ImGui
         ButtonActive,
         ToggleHover,
         ToggleActive,
+        TabHover,
+        TabActive,
 	};
 	enum EEditorSizes
 	{
-        DockingGap,
+        FontSize,
+		DockingGap,
+		WindowPadding,
+		PanelPadding,
 		ButtonSize,
 		ButtonBorderSize,
 		ButtonRadius,
 		ButtonPaddingW,
 		ButtonPaddingH,
-		TextFieldPadding,
 		IndicatorWidth,
+		TableRowHeight,
+		TableBorder,
+		ToolbarPadding,
+        // Derived Sizes
+		ButtonTextPaddingY,
+		TableTextPaddingY,
 	};
 
 	XREUI_API void SetupColorsList(int ID);
@@ -46,5 +55,6 @@ namespace XRay::ImGui
 	XREUI_API bool TumblerButton(const char* Label, bool& State, ImVec2 Size = {0, 0});
 	XREUI_API bool ToggleFlagButton(const char* Label, uint32_t* Flags, uint32_t Mask, const ImVec2& Size);
 	XREUI_API bool ToggleButton(const char* Label, bool* Flags, const ImVec2& Size);
+	XREUI_API bool Button(const char* Label, const ImVec2& Size = ImVec2(0, 0));
 }
 ImColor AlphaBlend(const ImColor& Base, const ImColor& Tint);
