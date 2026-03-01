@@ -247,10 +247,10 @@ void CWeapon::UpdateFireDependencies_internal()
 
 	UpdateXForm			();
 
-		if ( GetHUDmode() )
-		{
-			HudItemData()->setup_firedeps		(m_current_firedeps);
-			VERIFY(_valid(m_current_firedeps.m_FireParticlesXForm));
+	if (GetHUDmode() && HudItemData() != nullptr)
+	{
+		HudItemData()->setup_firedeps(m_current_firedeps);
+		VERIFY(_valid(m_current_firedeps.m_FireParticlesXForm));
 	}
 	else 
 		{
@@ -1474,7 +1474,7 @@ void CWeapon::UpdateCL		()
 	u32 delta = Device.GetTimeDeltaSafe(_last_update_time);
 
 	bool need_update_hud = false;
-	bool isHudItemData = HudItemData() != nullptr;
+	bool isHudItemData = !!GetHUDmode() && HudItemData() != nullptr;
 	
 	if (isHudItemData && !bUpdateHUDBonesVisibility)
 	{
@@ -1617,6 +1617,11 @@ void CWeapon::UpdateCL		()
 
 void CWeapon::ForceUpdateHUD()
 {
+	if (HudItemData() == nullptr)
+	{
+		return;
+	}
+
 	UpdateScopePosition();
 	UpdateHUDAddonsVisibility();
 	ProcessScope();
@@ -1624,7 +1629,11 @@ void CWeapon::ForceUpdateHUD()
 	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, type_to_update);
 	UpdateShellBones(m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType());
 	UpdateLiteAmmoBones(iAmmoElapsed + iAmmoChamberElapsed);
-	UpdateBonePartAnimations();
+
+	if (GetState() == eShowing || GetState() == eIdle)
+	{
+		UpdateBonePartAnimations();
+	}
 }
 
 void CWeapon::LoadUpgradeBonesToHide(const char* section, const char* line)
@@ -2562,7 +2571,14 @@ static const char* wpn_grenade_launcher = "wpn_launcher";
 void CWeapon::UpdateHUDAddonsVisibility()
 {
 	if (!GetHUDmode())
+	{
 		return;
+	}
+
+	if (HudItemData() == nullptr)
+	{
+		return;
+	}
 
 	bool test = !!(get_ScopeStatus() == 2 && IsScopeAttached() || get_ScopeStatus() == 1);
 
@@ -3825,7 +3841,7 @@ bool CWeapon::MovingAnimAllowedNow()
 
 bool CWeapon::IsHudModeNow()
 {
-	return (HudItemData()!=nullptr);
+	return !!GetHUDmode();
 }
 
 void CWeapon::ZoomInc()
