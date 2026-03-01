@@ -2,48 +2,66 @@
 #include "ModernUI.h"
 
 static xr_hash_map<XRay::ImGui::EEditorColors, ImColor> EditorColors;
+static xr_hash_map<XRay::ImGui::EEditorSizes, float> EditorSizes;
 
 XREUI_API bool XRay::ImGui::ToggleFlagButton(const char* Label, uint32_t* Flags, uint32_t Mask, const ImVec2& Size)
 {
 	bool Enabled = (*Flags & Mask) != 0;
 	bool Changed = false;
 
-	::ImGui::PushID(Label);
-
-	const ImVec4 EnabledColor	= GetEditorColor(EEditorColors::Accent);
-	const ImVec4 EnabledHover	= GetEditorColor(EEditorColors::ToggleHover);
-	const ImVec4 EnabledActive	= GetEditorColor(EEditorColors::ToggleActive);
-	const ImVec4 DisabledColor	= GetEditorColor(EEditorColors::ButtonTint);
-	const ImVec4 DisabledHover	= GetEditorColor(EEditorColors::ButtonHover);
-	const ImVec4 DisabledActive	= GetEditorColor(EEditorColors::ButtonActive);
-	const ImVec4 BorderColor	= GetEditorColor(EEditorColors::ButtonBorderTint);
-	const ImVec4 HoverColor		= GetEditorColor(EEditorColors::HoverTint);
-	const ImVec4 ActiveColor	= GetEditorColor(EEditorColors::ActiveTint);
-	const ImVec4 FlagColor		= EnabledColor;
-
-	const float StripeWidth		= GetEditorSize(EEditorSizes::IndicatorWidth);
-	const float Rounding		= GetEditorSize(EEditorSizes::ButtonRadius);
-
-	::ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, Rounding);
-	::ImGui::PushStyleColor(ImGuiCol_Button, Enabled ? EnabledColor : DisabledColor);
-	::ImGui::PushStyleColor(ImGuiCol_ButtonHovered, Enabled ? EnabledHover : DisabledHover);
-	::ImGui::PushStyleColor(ImGuiCol_ButtonActive, Enabled ? EnabledActive : DisabledActive);
-	::ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f);
-	::ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, {0, 0.5});
-	//::ImGui::PushStyleColor(ImGuiCol_BorderShadow, ImVec4(0,0,0,0));
-	::ImGui::PushStyleColor(ImGuiCol_Border, BorderColor);
-
 	const char* Text = Enabled ? "Enable" : "Disable";
 
-	if (::ImGui::Button(Text, Size))
+	//if (::ImGui::Button(Text, Size))
+	if (ToggleButton(Text, &Enabled, Size))
 	{
 		*Flags ^= Mask;
 		Changed = true;
 		Enabled = !Enabled;
 	}
+	::ImGui::PushID(Label);
+	::ImGui::PopID();
+	return Changed;
+}
 
-	::ImGui::PopStyleColor(4);
+XREUI_API bool XRay::ImGui::ToggleButton(const char* Label, bool* Flags, const ImVec2& Size)
+{
+	bool Enabled = *Flags;
+	bool Changed = false;
+
+	const ImVec4 EnabledColor = GetEditorColor(EEditorColors::Accent);
+	const ImVec4 EnabledHover = GetEditorColor(EEditorColors::ToggleHover);
+	const ImVec4 EnabledActive = GetEditorColor(EEditorColors::ToggleActive);
+	const ImVec4 DisabledColor = GetEditorColor(EEditorColors::ButtonTint);
+	const ImVec4 DisabledHover = GetEditorColor(EEditorColors::ButtonHover);
+	const ImVec4 DisabledActive = GetEditorColor(EEditorColors::ButtonActive);
+	const ImVec4 BorderColor = GetEditorColor(EEditorColors::ButtonBorderTint);
+	const ImVec4 HoverColor = GetEditorColor(EEditorColors::HoverTint);
+	const ImVec4 ActiveColor = GetEditorColor(EEditorColors::ActiveTint);
+	const ImVec4 FlagColor = EnabledColor;
+
+	const float ButtonPaddingY = GetEditorSize(EEditorSizes::ButtonPaddingH);
+	const float StripeWidth = GetEditorSize(EEditorSizes::IndicatorWidth);
+	const float BorderSize = GetEditorSize(EEditorSizes::ButtonBorderSize);
+	const float Rounding = GetEditorSize(EEditorSizes::ButtonRadius);
+
+	::ImGui::PushStyleColor(ImGuiCol_Button, Enabled ? EnabledColor : DisabledColor);
+	::ImGui::PushStyleColor(ImGuiCol_ButtonHovered, Enabled ? EnabledHover : DisabledHover);
+	::ImGui::PushStyleColor(ImGuiCol_ButtonActive, Enabled ? EnabledActive : DisabledActive);
+	::ImGui::PushStyleColor(ImGuiCol_Border, BorderColor);
+	::ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { ButtonPaddingY + StripeWidth, ::ImGui::GetStyle().FramePadding.y });
+	::ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, BorderSize);
+	//::ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, Rounding);
+	::ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, { 0, 0.5 });
+
+	if (::ImGui::Button(Label, Size))
+	{
+		*Flags = !*Flags;
+		Changed = true;
+		Enabled = !Enabled;
+	}
+
 	::ImGui::PopStyleVar(3);
+	::ImGui::PopStyleColor(4);
 
 	ImDrawList* DrawList = ::ImGui::GetWindowDrawList();
 	ImVec2 Min = ::ImGui::GetItemRectMin();
@@ -60,61 +78,41 @@ XREUI_API bool XRay::ImGui::ToggleFlagButton(const char* Label, uint32_t* Flags,
 		);
 	}
 
-	::ImGui::PopID();
 	return Changed;
 }
-
-XREUI_API bool XRay::ImGui::ToggleButton(const char* Label, bool* Flags, const ImVec2& Size)
+XREUI_API bool XRay::ImGui::Button(const char* Label, const ImVec2& Size)
 {
-	bool Enabled = *Flags;
-	bool Changed = false;
+	const ImVec4 BackgroundColor = GetEditorColor(EEditorColors::ButtonTint);
+	const ImVec4 BackgroundHover = GetEditorColor(EEditorColors::ButtonHover);
+	const ImVec4 BackgroundActive = GetEditorColor(EEditorColors::ButtonActive);
+	const ImVec4 BorderColor = GetEditorColor(EEditorColors::ButtonBorderTint);
 
-	const ImVec4 EnabledColor = GetEditorColor(EEditorColors::Accent);
-	const ImVec4 DisabledColor = GetEditorColor(EEditorColors::ButtonTint);
-	const ImVec4 BorderColor = EnabledColor;
+	const float BorderSize = GetEditorSize(EEditorSizes::ButtonBorderSize);
+	const float Rounding = GetEditorSize(EEditorSizes::ButtonRadius);
 
-	constexpr float StripeWidth = 2.0f;
-	constexpr float Rounding = 5.0f;
+	::ImGui::PushStyleColor(ImGuiCol_Button, BackgroundColor);
+	::ImGui::PushStyleColor(ImGuiCol_ButtonHovered, BackgroundHover);
+	::ImGui::PushStyleColor(ImGuiCol_ButtonActive, BackgroundActive);
+	::ImGui::PushStyleColor(ImGuiCol_Border, BorderColor);
+	::ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, BorderSize);
+	//::ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, Rounding);
+	::ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, { 0, 0.5 });
 
-	::ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, Rounding);
-	::ImGui::PushStyleColor(ImGuiCol_Button, Enabled ? EnabledColor : DisabledColor);
-	::ImGui::PushStyleColor(ImGuiCol_ButtonHovered, Enabled ? EnabledColor : DisabledColor);
-	::ImGui::PushStyleColor(ImGuiCol_ButtonActive, Enabled ? EnabledColor : DisabledColor);
+    bool button = ::ImGui::Button(Label, Size);
 
-	if (::ImGui::Button(Label, Size))
-	{
-		*Flags = !*Flags;
-		Changed = true;
-		Enabled = !Enabled;
-	}
+	::ImGui::PopStyleVar(2);
+	::ImGui::PopStyleColor(4);
 
-	::ImGui::PopStyleColor(3);
-	::ImGui::PopStyleVar();
-
-	ImDrawList* DrawList = ::ImGui::GetWindowDrawList();
-	ImVec2 Min = ::ImGui::GetItemRectMin();
-	ImVec2 Max = ::ImGui::GetItemRectMax();
-
-	Min.x += 1;
-	DrawList->AddRectFilled(
-		Min,
-		ImVec2(Min.x + StripeWidth, Max.y),
-		::ImGui::ColorConvertFloat4ToU32(BorderColor),
-		Rounding,
-		ImDrawFlags_RoundCornersLeft
-	);
-
-	return Changed;
+	return button;
 }
 
-std::array<ImColor, 19>* CurrentTheme = nullptr;
+std::array<ImColor, 21>* CurrentTheme = nullptr;
 
-std::array<ImColor, 19> PurpleTheme =
+std::array<ImColor, 21> PurpleTheme =
 {
 	ImColor(63, 71, 101, 255),	  // Base Color
 	ImColor(29, 129, 136, 255),	  // Accent Color
 	ImColor(0.f, 0.f, 0.f, 0.3f), // ToolbarButtonTint
-	ImColor(0.f, 0.f, 0.f, 0.1f), // ToolbarTint
 	ImColor(0.f, 0.f, 0.f, 0.8f), // BackgroundTint
 	ImColor(0.f, 0.f, 0.f, 0.5f), // TableTint
 	ImColor(0.f, 0.f, 0.f, 0.5f), // TabBarTint
@@ -128,12 +126,11 @@ std::array<ImColor, 19> PurpleTheme =
 	ImColor(1.f, 1.f, 1.f, 0.05f) // ActiveTint
 };
 
-std::array<ImColor, 19> DarkTheme =
+std::array<ImColor, 21> DarkTheme =
 {
 	ImColor(51, 51, 51, 255),	  // Base Color
 	ImColor(121, 113, 189, 255),  // Accent Color
 	ImColor(0.f, 0.f, 0.f, 0.0f), //  ToolbarButtonTint
-	ImColor(0.f, 0.f, 0.f, 0.1f), //  ToolbarTint
 	ImColor(0.f, 0.f, 0.f, 0.8f), //  BackgroundTint
 	ImColor(0.f, 0.f, 0.f, 0.6f), //  TableTint
 	ImColor(0.f, 0.f, 0.f, 0.4f), //  TabBarTint
@@ -182,7 +179,7 @@ XREUI_API ImColor XRay::ImGui::GetEditorColor(EEditorColors Color)
 	{
 		CurrentTheme = &PurpleTheme;
 	}
-	std::array<ImColor, 19>& DefaultTheme = *CurrentTheme;
+	std::array<ImColor, 21>& DefaultTheme = *CurrentTheme;
 
 	ImColor Clr = DefaultTheme[(size_t)EEditorColors::Main];
 
@@ -211,11 +208,6 @@ XREUI_API ImColor XRay::ImGui::GetEditorColor(EEditorColors Color)
 		case EEditorColors::TableTint:
 		{
 			EditorColors[Color] = AlphaBlend(Clr, DefaultTheme[(size_t)EEditorColors::TableTint]);
-			return EditorColors[Color];
-		}
-		case EEditorColors::ToolbarTint:
-		{
-			EditorColors[Color] = AlphaBlend(Clr, DefaultTheme[(size_t)EEditorColors::ToolbarTint]);
 			return EditorColors[Color];
 		}
 		case EEditorColors::TabBarTint:
@@ -283,32 +275,56 @@ XREUI_API ImColor XRay::ImGui::GetEditorColor(EEditorColors Color)
 			EditorColors[Color] = AlphaBlend(EditorColors[EEditorColors::Accent], DefaultTheme[(size_t)EEditorColors::ActiveTint]);
 			return EditorColors[Color];
 		}
+		case EEditorColors::TabHover:
+		{
+			EditorColors[Color] = AlphaBlend(EditorColors[EEditorColors::PanelBorderTint], DefaultTheme[(size_t)EEditorColors::HoverTint]);
+			return EditorColors[Color];
+		}
+		case EEditorColors::TabActive:
+		{
+			EditorColors[Color] = AlphaBlend(EditorColors[EEditorColors::PanelBorderTint], DefaultTheme[(size_t)EEditorColors::ActiveTint]);
+			return EditorColors[Color];
+		}
 	}
 }
 
-std::array<float, 8> Sizes =
+std::array<float, 13> Sizes =
 {
+    16.f,								// FontSize
     4.0f,								// DockingGap
+    2.0f,								// WindowPadding
+    4.0f,								// PanelPadding
 	26.0f, 								// ButtonSize
 	1.0f, 								// ButtonBorderSize
 	4.0f, 								// ButtonRadius
 	8.0f, 								// ButtonPaddingW
 	4.0f, 								// ButtonPaddingH
-	0.0f,								// TextFieldPadding
-	4.0f								// IndicatorWidth
+	4.0f,								// IndicatorWidth
+	22.0f,								// TableRowHeight
+	2.0f,								// TableBorder
+	4.0f								// ToolbarPadding
 };
 //ImGui::GetFontSize();
 XREUI_API float XRay::ImGui::GetEditorSize(EEditorSizes Size)
 {
+    if (EditorSizes.contains(Size))
+	{
+		return EditorSizes[Size];
+	}
+
 	switch(Size)
 	{
-		case EEditorSizes::TextFieldPadding:
+		case EEditorSizes::ButtonTextPaddingY:
 		{
-			return (Sizes[static_cast<std::size_t>(EEditorSizes::ButtonSize)] - ::ImGui::GetFontSize()) / 2;
+			return EditorSizes[Size] = (Sizes[static_cast<std::size_t>(ButtonSize)] - Sizes[static_cast<std::size_t>(FontSize)]) / 2;
+		}
+		case EEditorSizes::TableTextPaddingY:
+		{
+			return EditorSizes[Size] = (Sizes[static_cast<std::size_t>(TableRowHeight)] - Sizes[static_cast<std::size_t>(FontSize)]) / 2;
 		}
 		default:
 		{
-			return Sizes[static_cast<std::size_t>(Size)];
+			return EditorSizes[Size] = Sizes[static_cast<std::size_t>(Size)];
 		}
     }
 }
