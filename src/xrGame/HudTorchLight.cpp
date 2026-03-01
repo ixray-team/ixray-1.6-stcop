@@ -147,7 +147,7 @@ void THudLightTorch::UpdateTorchFromObject(CHudItem* item) const
 		}
 	}
 
-	bool isHudMode = item->GetHUDmode();
+	bool isHudMode = item->GetHUDmode() && item->HudItemData();
 	if (IsRenderLight)
 	{
 		IKinematics* kin = nullptr;
@@ -423,7 +423,7 @@ void THudLightLaser::UpdateTorchFromObject(CHudItem* item) const
 		u16 lightDirBoneId = BI_NONE;
 
 		Fvector up, right;
-		bool isHudMode = item->GetHUDmode();
+		bool isHudMode = item->GetHUDmode() && item->HudItemData() != nullptr;
 
 		if (isHudMode)
 		{
