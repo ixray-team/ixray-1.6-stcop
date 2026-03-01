@@ -100,6 +100,7 @@ void UIMainMenuForm::DrawMenuItemI(const char* label, const char* icon, int comm
 }
 
 #define MainMenuList(Name) cp = ImGui::GetCursorPos();\
+	ImGui::SetCursorPosY((UI->GetMenuBarButtonHeight() - ImGui::GetFontSize()) - ImGui::GetStyle().FramePadding.y);\
     if (ImGui::Button(Name)) {\
         ImGui::OpenPopup(Name"Popup"); \
 		ImGui::SetNextWindowPos({ImGui::GetWindowPos().x + cp.x, ImGui::GetWindowPos().y+ cp.y + UI->GetMenuBarButtonHeight()}); }	\
@@ -119,9 +120,6 @@ void UIMainMenuForm::Draw()
 	if (IXBeginMainMenuBar())
 	{
 		ImVec2 cp;
-		// I don't know why should I do this сrutches to move the whole menu bar down. And I forgot was it lower befor my edits. Make it lower the right way if you know how.
-		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + (UI->GetMenuBarButtonHeight() - ImGui::GetFontSize()) - ImGui::GetStyle().FramePadding.y);
-		ImGui::BeginChild("MENUBAR");
 		MainMenuList("File")
 			DrawMenuItemI("Clear", ICON_FA_FILE, COMMAND_CLEAR);
 			DrawMenuItemI("Open", ICON_FA_FILE_IMPORT, COMMAND_LOAD);
@@ -678,6 +676,7 @@ void UIMainMenuForm::Draw()
 
 		{
 			bool selected = UIObjectList::IsOpen();
+			ImGui::SetCursorPosY((UI->GetMenuBarButtonHeight() - ImGui::GetFontSize()) - ImGui::GetStyle().FramePadding.y);
 
 			if (ImGui::Checkbox("Object List", &selected))
 			{
@@ -691,7 +690,6 @@ void UIMainMenuForm::Draw()
 				}
 			}
 		}
-		ImGui::EndChild();
 
 		IXEndMainMenuBar();
 	}
