@@ -64,6 +64,8 @@ public:
     void SetAlwaysShowScroll(bool flag = true) { m_bAlwaysShowScroll = flag; }
     void EnableAlwaysShowScroll(bool flag) { m_bAlwaysShowScroll_enable = flag; }
 
+    void NextItem(bool selectOnly = false);
+	void PrevItem(bool selectOnly = false);
 
     int GetItemsCount() { return m_ItemList.size(); }
 

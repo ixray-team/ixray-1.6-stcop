@@ -12,6 +12,7 @@
 			<text font="graffiti19" vert_align="c">ui_pda_show_mission</text>
 		</auto_static>
 		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>filter_next</window_name>
 			<text font="graffiti19" vert_align="c">ui_tasks_filter_next</text>
 		</auto_static>
 		<auto_static x="0" y="0" width="22" height="30">
