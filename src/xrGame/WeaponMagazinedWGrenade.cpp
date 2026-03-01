@@ -1020,8 +1020,10 @@ void CWeaponMagazinedWGrenade::UpdateSounds()
 
 void CWeaponMagazinedWGrenade::UpdateGrenadeVisibility(bool visibility)
 {
-	if (!GetHUDmode())							return;
+	if (HudItemData() != nullptr)
+	{
 	HudItemData()->set_bone_visible("grenade", visibility, TRUE);
+}
 }
 
 void CWeaponMagazinedWGrenade::save(NET_Packet& output_packet)

@@ -125,7 +125,7 @@ void CWeaponRPG7::UpdateMissileVisibility()
 	vis_hud = (!!iAmmoElapsed || GetState() == eReload);
 	vis_weap = !!iAmmoElapsed;
 
-	if (GetHUDmode())
+	if (HudItemData() != nullptr)
 	{
 		HudItemData()->set_bone_visible(m_sHudGrenadeBoneName, vis_hud, TRUE);
 	}
@@ -243,7 +243,7 @@ void CWeaponRPG7::FireStart()
 
 void CWeaponRPG7::ReactiveHit()
 {
-	//Ïðè ñòðåëüáå ÍÏÑ íå ïðèìåíÿåì ïîðàæåíèå ðåàêòèâíîé ñòðóåé
+	//ÐŸÑ€Ð¸ ÑÑ‚Ñ€ÐµÐ»ÑŒÐ±Ðµ ÐÐŸÐ¡ Ð½Ðµ Ð¿Ñ€Ð¸Ð¼ÐµÐ½ÑÐµÐ¼ Ð¿Ð¾Ñ€Ð°Ð¶ÐµÐ½Ð¸Ðµ Ñ€ÐµÐ°ÐºÑ‚Ð¸Ð²Ð½Ð¾Ð¹ ÑÑ‚Ñ€ÑƒÐµÐ¹
 	if (H_Parent() && !H_Parent()->cast_actor())
 	{
 		return;
@@ -270,7 +270,7 @@ void CWeaponRPG7::ReactiveHit()
 	for (int i = 0; i < m_reactive_hit_params.buck - 1; i++)
 	{
 		Fvector3 tgt_dir;
-		// Õèòóåì òåõ, êòî ñçàäè
+		// Ð¥Ð¸Ñ‚ÑƒÐµÐ¼ Ñ‚ÐµÑ…, ÐºÑ‚Ð¾ ÑÐ·Ð°Ð´Ð¸
 		tgt_dir.random_dir(dir, m_reactive_hit_params.buck_disp);
 
 		u16 id = ID();
@@ -280,12 +280,12 @@ void CWeaponRPG7::ReactiveHit()
 		};
 		Level().BulletManager().AddBullet(pos, tgt_dir, 330, m_reactive_hit_params.power, m_reactive_hit_params.impulse, id, ID(), m_reactive_hit_params.type, m_reactive_hit_params.dist, cartridge, 1, true, false);
 
-		//èìèòèðóåì îòðàæåíèå ñòðóè â ñòðåëêà ïðè áëèçêîì ïðåïÿòñòâèè - äëÿ ýòîãî èñïîëüçóåì disp2
+		//Ð¸Ð¼Ð¸Ñ‚Ð¸Ñ€ÑƒÐµÐ¼ Ð¾Ñ‚Ñ€Ð°Ð¶ÐµÐ½Ð¸Ðµ ÑÑ‚Ñ€ÑƒÐ¸ Ð² ÑÑ‚Ñ€ÐµÐ»ÐºÐ° Ð¿Ñ€Ð¸ Ð±Ð»Ð¸Ð·ÐºÐ¾Ð¼ Ð¿Ñ€ÐµÐ¿ÑÑ‚ÑÑ‚Ð²Ð¸Ð¸ - Ð´Ð»Ñ ÑÑ‚Ð¾Ð³Ð¾ Ð¸ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÐµÐ¼ disp2
 		tgt_dir.random_dir(dir, m_reactive_hit_params.reverse_disp);
 		collide::rq_result rqr;
 		if (Level().ObjectSpace.RayPick(pos, tgt_dir, m_reactive_hit_params.dist, collide::rqtStatic, rqr, H_Parent()))
 		{
-			//Çà ñòðåëêîì îáíàðóæèëîñü ïðåïÿòñòâèå, õèòóåì ñòðåëêà
+			//Ð—Ð° ÑÑ‚Ñ€ÐµÐ»ÐºÐ¾Ð¼ Ð¾Ð±Ð½Ð°Ñ€ÑƒÐ¶Ð¸Ð»Ð¾ÑÑŒ Ð¿Ñ€ÐµÐ¿ÑÑ‚ÑÑ‚Ð²Ð¸Ðµ, Ñ…Ð¸Ñ‚ÑƒÐµÐ¼ ÑÑ‚Ñ€ÐµÐ»ÐºÐ°
 			for (int j = 0; j < m_reactive_hit_params.reverse_buck - 1; j++)
 			{
 				Fvector3 point = pos;
@@ -300,7 +300,7 @@ void CWeaponRPG7::ReactiveHit()
 				Fvector3 tgt_dir2;
 				tgt_dir2.random_dir(dir2, m_reactive_hit_params.reverse_disp2);
 
-				// Âû÷èñëÿåì õèò îòðàæåííîé ñòðóè
+				// Ð’Ñ‹Ñ‡Ð¸ÑÐ»ÑÐµÐ¼ Ñ…Ð¸Ñ‚ Ð¾Ñ‚Ñ€Ð°Ð¶ÐµÐ½Ð½Ð¾Ð¹ ÑÑ‚Ñ€ÑƒÐ¸
 				float rdist = m_reactive_hit_params.dist - rqr.range;
 				if (rdist < 0)
 				{
@@ -308,7 +308,7 @@ void CWeaponRPG7::ReactiveHit()
 				}
 				float rhit_cur = m_reactive_hit_params.reverse_power * rdist / m_reactive_hit_params.dist;
 
-				// Âû÷èñëÿåì äèñòàíöèþ ïîëåòà îòðàæåííîé ñòðóè
+				// Ð’Ñ‹Ñ‡Ð¸ÑÐ»ÑÐµÐ¼ Ð´Ð¸ÑÑ‚Ð°Ð½Ñ†Ð¸ÑŽ Ð¿Ð¾Ð»ÐµÑ‚Ð° Ð¾Ñ‚Ñ€Ð°Ð¶ÐµÐ½Ð½Ð¾Ð¹ ÑÑ‚Ñ€ÑƒÐ¸
 				rdist = m_reactive_hit_params.dist - rqr.range;
 				if (rdist < 0)
 				{
