@@ -1849,15 +1849,18 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 				{
 					if (CActor* pActor = H_Parent()->cast_actor())
 					{
-						ResetSubStateTime();
-						if (m_eAnimationsFlags.test(EAnimationsFlags::af_safemode_in_out))
-						{
-							SwitchState(eSafemodeSwitch);
-						}
-
 						if (pActor->IsSafemode())
 						{
-							pActor->SetSafemodeStatus(false);
+							ResetSubStateTime();
+
+							if (m_eAnimationsFlags.test(EAnimationsFlags::af_safemode_in_out))
+							{
+								SwitchState(eSafemodeSwitch);
+							}
+							else
+							{
+								pActor->SetSafemodeStatus(false);
+							}
 							return false;
 						}
 					}
@@ -1938,8 +1941,10 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 					{
 						SwitchState(eSafemodeSwitch);
 					}
-
-					pActor->SetSafemodeStatus(!pActor->IsSafemode());
+					else
+					{
+						pActor->SetSafemodeStatus(!pActor->IsSafemode());
+					}
 					return true;
 				}
 			}
@@ -3637,7 +3642,7 @@ float CWeapon::Weight() const
 extern bool hud_adj_crosshair;
 bool CWeapon::show_crosshair()
 {
-	return (!m_bTacticalLaserStatus || hud_adj_crosshair) && (!IsPending() || GetState() == eEmptyClick || GetState() == eSprintStart || GetState() == eSprintEnd || GetState() == ePump) && (!IsZoomed() || !ZoomHideCrosshair());
+	return (!m_bTacticalLaserStatus || hud_adj_crosshair) && (!IsPending() || GetState() == eEmptyClick || GetState() == eSprintStart || GetState() == eSprintEnd || GetState() == ePump || GetState() == eSafemodeSwitch) && (!IsZoomed() || !ZoomHideCrosshair());
 }
 
 bool CWeapon::use_crosshair() const
@@ -5114,7 +5119,7 @@ bool CWeapon::NeedMovementBlend() const
 bool CWeapon::AllowSafemode() const
 {
 	const u32 state = GetState();
-	return m_bAllowSafemode && (state == eIdle || state == eSafemodeSwitch || state == eSwitchMode) && !m_bSwitchSprint;
+	return m_bAllowSafemode && (state == eIdle || state == eSafemodeSwitch || state == eSwitchMode);
 }
 
 THudLightLaser* CWeapon::GetLightLaser()

@@ -2016,6 +2016,7 @@ void CWeaponMagazined::switch2_Safemode()
 	if (CActor* pActor = parent != nullptr ? parent->cast_actor() : nullptr)
 	{
 		const bool status = pActor->IsSafemode();
+		pActor->SetSafemodeStatus(!status);
 
 		PlayHUDMotion(status ? "anm_safemode_out" : "anm_safemode_in", EHudMixType::eMixAll, eSafemodeSwitch);
 
@@ -2025,7 +2026,6 @@ void CWeaponMagazined::switch2_Safemode()
 		}
 	}
 }
-
 
 void CWeaponMagazined::switch2_Hidden()
 {
