@@ -600,6 +600,13 @@ void CUITaskWnd::UpdateGamepadLegend()
 			showMissionsS->SetTextST(m_task_wnd->IsShown() ? "ui_pda_hide_mission" : "ui_pda_show_mission");
 		}
 	}
+
+	CUIWindow* filterNext = m_gamepad_legend->FindChild("filter_next");
+	if (filterNext)
+	{
+		filterNext->Show(m_cbFilters[MAP_MARKS_FILTER_TREASURES] != nullptr);
+	}
+
 }
 
 // --------------------------------------------------------------------------------------------------

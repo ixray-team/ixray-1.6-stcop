@@ -9,25 +9,53 @@ end
 
 function opt_sound:InitControls(x, y, xml, handler)
 
-	self:SetWndPos(vector2():set(x,y))
-	self:SetWndSize(vector2():set(738,416))
-	self:SetAutoDelete(true)
+    self:SetWndPos(vector2():set(x,y))
+    self:SetWndSize(vector2():set(738,416))
+    self:SetAutoDelete(true)
+	if xml:NodeExist("frame", 0) then
+		self.bk = xml:InitFrame("frame", self)
+	end
+ 	self.focusList = {}
+    self.scroll_v = xml:InitScrollView("main_dialog:scroll_v", self)
+
+    local _st
+    local addControl = function(cap, elem, crl)	
+        self.scroll_v:AddWindow(crl, true)
+        crl:SetAutoDelete(false)
+		if cap ~= nil and elem ~= nil then
+			table.insert(self.focusList, {cap, elem, crl} )
+		end
+    end
+
+    _st = xml:InitStatic("video_adv:templ_item", nil)
+    local caption = xml:InitStatic("tab_sound:cap_mastervolume", _st)
+    local element = xml:InitTrackBar("tab_sound:track_mastervolume", _st)
+    addControl(caption, element, _st)
+
+    --_st = xml:InitStatic("video_adv:templ_item", nil)
+    --caption = xml:InitStatic("tab_sound:cap_shootvolume", _st)
+    --element = xml:InitTrackBar("tab_sound:track_shootvolume", _st)
+    --addControl(caption, element, _st)
+
+    _st = xml:InitStatic("video_adv:templ_item", nil)
+    caption = xml:InitStatic("tab_sound:cap_musicvolume", _st)
+    element = xml:InitTrackBar("tab_sound:track_musicvolume", _st)
+    addControl(caption, element, _st)
+
+    _st = xml:InitStatic("video_adv:templ_item", nil)
+    caption = xml:InitStatic("tab_sound:cap_snd_device", _st)
+    element = xml:InitComboBox("tab_sound:list_snd_device", _st)
+    addControl(caption, element, _st)
+
+	if not is_soc() then
+		_st = xml:InitStatic("video_adv:templ_item", nil)
+		caption = xml:InitStatic("tab_sound:cap_check_dynamic_music", _st)
+		element = xml:InitCheck("tab_sound:check_dynamic_music", _st)
+		addControl(caption, element, _st)
+	end
 	
-	self.bk = xml:InitFrame("frame", self)
-	
-	xml:InitStatic("tab_sound:cap_mastervolume",		self)
-	xml:InitStatic("tab_sound:cap_musicvolume",			self)
-
-	
-	xml:InitCheck("tab_sound:check_eax",				self)
-	xml:InitCheck("tab_sound:check_dynamic_music",		self)
-
-	
-	xml:InitTrackBar				("tab_sound:track_musicvolume",	self)
-	xml:InitTrackBar				("tab_sound:track_mastervolume",self)
-
-
-	xml:InitStatic					("tab_sound:cap_snd_device",		self)
-	xml:InitComboBox				("tab_sound:list_snd_device",	self)
-
+    _st = xml:InitStatic("video_adv:templ_item", nil)
+    caption = xml:InitStatic("tab_sound:cap_check_eax", _st)
+    element = xml:InitCheck("tab_sound:check_eax", _st)
+    addControl(caption, element, _st)
 end

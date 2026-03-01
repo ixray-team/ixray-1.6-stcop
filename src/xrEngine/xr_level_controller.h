@@ -198,6 +198,7 @@ enum _action_group
 	agUIRadialWeapon = (1<<4),
 	agUILogMenu	=	(1<<5),
 	agUITaskMenu	=	(1<<6),
+	agAiming	=	(1<<7),
 };
 
 extern ENGINE_API _key_group g_current_keygroup;

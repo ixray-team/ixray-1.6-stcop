@@ -46,30 +46,33 @@ OnSkipKillActor = xr_effects.enable_ui
 OnStartAttack = sim_combat.start_attack
 
 ; Call of Chernobyl
-;OnCanTake = _G.CInventoryBox_CanTake
-;OnInvBoxCanTakeItem = _G.CInventoryBox_OnInvBoxCanTakeItem
-;OnInvBoxCanPlaceItem = _G.CInventoryBox_OnInvBoxCanPlaceItem
-;OnBeforeHit = _G.CActor__BeforeHitCallback
-;OnUnregister = _G.CSE_ALifeDynamicObject_on_unregister
-;OnInventoryEat = _G.CInventory__eat
-;OnBeforeChangeLevel = _G.CALifeUpdateManager__on_before_change_level
-;OnItemDropped = actor_menu_inventory.CUIActorMenu_OnItemDropped
-;OnItemFocusReceive = actor_menu_inventory.CUIActorMenu_OnItemFocusReceive
-;OnItemFocusLost = actor_menu_inventory.CUIActorMenu_OnItemFocusLost
-;OnCanMoveToPartner = actor_menu_inventory.CUIActorMenu_CanMoveToPartner
-;OnItemAvailableToTrade = actor_menu_inventory.CInventory_ItemAvailableToTrade
-;OnPropertyBoxClicked = pda.property_box_clicked
-;OnPropertyBoxAddProperties = pda.property_box_add_properties
-;OnSetActiveSubdialog = pda.set_active_subdialog
-;OnGetRankingsArraySize = pda.get_rankings_array_size
-;OnKeyPress = level_input.on_key_press
-;OnGetVisibleValue = visual_memory_manager.get_visible_value
-;OnUpdateBestWeapon = ai_stalker.update_best_weapon
+;OnCanTake 					= ___ixr_engine_callbacks.CInventoryBox_CanTake; BUGS by ALUN
+;OnInvBoxCanTakeItem 		= ___ixr_engine_callbacks.CInventoryBox_OnInvBoxCanTakeItem
+;OnInvBoxCanPlaceItem 		= ___ixr_engine_callbacks.CInventoryBox_OnInvBoxCanPlaceItem
+;OnBeforeHit 				= ___ixr_engine_callbacks.CActor__BeforeHitCallback
+;OnUnregister 				= ___ixr_engine_callbacks.CSE_ALifeDynamicObject_on_unregister
+;OnInventoryEat 				= ___ixr_engine_callbacks.CInventory__eat
+;OnBeforeChangeLevel 		= ___ixr_engine_callbacks.CALifeUpdateManager__on_before_change_level
+;OnItemDropped 				= ___ixr_engine_callbacks.CUIActorMenu_OnItemDropped
+;OnItemFocusReceive 			= ___ixr_engine_callbacks.CUIActorMenu_OnItemFocusReceive
+;OnItemFocusLost 			= ___ixr_engine_callbacks.CUIActorMenu_OnItemFocusLost
+;OnCanMoveToPartner 			= ___ixr_engine_callbacks.CUIActorMenu_CanMoveToPartner
+;OnItemAvailableToTrade 		= ___ixr_engine_callbacks.CInventory_ItemAvailableToTrade
+;OnKeyPress 					= ___ixr_engine_callbacks.level_on_key_press
+;OnPropertyBoxClicked 		= pda.property_box_clicked
+;OnPropertyBoxAddProperties 	= pda.property_box_add_properties
+;OnSetActiveSubdialog 		= pda.set_active_subdialog
+;OnGetRankingsArraySize 	= pda.get_rankings_array_size
+;OnGetVisibleValue 			= visual_memory_manager.get_visible_value
+;OnUpdateBestWeapon 		= ai_stalker.update_best_weapon
 
 ; Improved Weapon Pack
-;OnZoneTouch = _G.CZone_Touch
+;OnZoneTouch 				= ___ixr_engine_callbacks.CZone_Touch
 
 ; GUNSLINGER Mod
-;OnCanDisassembleItem = inventory_upgrades.gunsl_can_disassemble_item
-;OnQuestionDisassembleItem = inventory_upgrades.gunsl_question_disassemble_item
-;OnEffectDisassemble = inventory_upgrades.gunsl_effect_disassemble
+;OnCanDisassembleItem       = inventory_upgrades.gunsl_can_disassemble_item
+;OnQuestionDisassembleItem  = inventory_upgrades.gunsl_question_disassemble_item
+;OnEffectDisassemble        = inventory_upgrades.gunsl_effect_disassemble
+
+; 2055
+; OnSaveStatus = mod_saves.GetStatus

@@ -17,6 +17,7 @@ class CGameTask;
 class CUIXml;
 class CUIProgressBar;
 class CUIFrameLineWnd;
+class CUIGamepadLegend;
 
 class CUIFactionWarWnd final : public CUIWindow, public CUIWndCallback
 {
@@ -76,6 +77,7 @@ private:
 	enum				{ max_bonuce = 6 };
 	CUIStatic*			m_our_bonuces[max_bonuce];
 	CUIStatic*			m_enemy_bonuces[max_bonuce];
+	CUIGamepadLegend*	m_gamepad_legend = nullptr;
 
 	// ----------------------------------------
 	//shared_str			m_our_faction_id;
