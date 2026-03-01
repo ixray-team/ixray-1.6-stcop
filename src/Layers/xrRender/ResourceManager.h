@@ -9,9 +9,10 @@
 #include "Shader.h"
 #include	"tss_def.h"
 #include	"TextureDescrManager.h"
+#include "../xrRenderDX10/dx11XMLBlendCompiler.h"
+
 // refs
 struct		lua_State;
-
 class dx10ConstantBuffer;
 class CSVGStorage;
 
@@ -273,6 +274,20 @@ private:
 	void DestroyShader(const T* sh);
 
 #endif //USE_DX11
+private:
+#ifdef USE_DX11
+
+	struct XMLBlendCacheEntry
+	{
+#ifndef MASTER_GOLD
+		u32 crc = 0;
+#endif
+		Shader* shader = nullptr;
+	};
+
+	xr_hash_map<xr_string, XMLBlendCacheEntry> m_xmlBlendCache;
+	void ClearXMLBlendCache();
+#endif
 };
 
 #endif //ResourceManagerH

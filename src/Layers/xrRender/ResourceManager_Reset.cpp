@@ -113,6 +113,10 @@ CResourceManager::~CResourceManager		()
 #ifdef DEBUG
 	Dump(false);
 #endif
+
+#ifdef USE_DX11
+	m_xmlBlendCache.clear();
+#endif
 }
 
 void CResourceManager::Dump(bool bBrief)
