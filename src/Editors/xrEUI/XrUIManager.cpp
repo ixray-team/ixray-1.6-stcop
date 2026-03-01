@@ -302,7 +302,7 @@ void XrUIManager::Draw()
 	//ImGui::DockSpaceOverViewport();
 	{
 		m_MenuBarHeight = 64;
-		m_MenuBarButtonHeight = 26.f;
+		m_MenuBarButtonHeight = 28.f;
 
 
 		int headerSize = (30.f)
