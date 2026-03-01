@@ -139,7 +139,9 @@ void	CUIRadialMenuWeapon::Draw()
 
 		CInventory& inventory = owner->inventory();
 		u16 activeSlot = inventory.GetActiveSlot();
-		CCustomDevice* dev = inventory.ItemFromSlot(DEVICE_SLOT)->cast_custom_device();
+		CCustomDevice* dev = nullptr;
+		if (inventory.ItemFromSlot(DEVICE_SLOT))
+			dev = inventory.ItemFromSlot(DEVICE_SLOT)->cast_custom_device();
 
 		float current_angle = starting_angle;
 

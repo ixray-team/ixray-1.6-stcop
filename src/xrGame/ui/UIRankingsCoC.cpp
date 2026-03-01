@@ -136,7 +136,7 @@ void CUIRankingsCoC::SetDescription(LPCSTR desc)
 
 void CUIRankingsCoC::SetHint(LPCSTR hint)
 {
-	m_hint->set_text(CStringTable().translate(hint).c_str());
+	m_hint->set_text(g_pStringTable->translate(hint).c_str());
 }
 
 void CUIRankingsCoC::SetIcon(LPCSTR icon)
