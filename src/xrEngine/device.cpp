@@ -19,6 +19,7 @@
 
 #include "../xrCore/FS_impl.h"
 #include "IGame_Persistent.h"
+#include "IGame_Actor.h"
 
 ENGINE_API CRenderDevice* DevicePtr = nullptr;
 ENGINE_API CLoadScreenRenderer load_screen_renderer;
@@ -228,6 +229,11 @@ void CRenderDevice::on_idle		()
 				it();
 
 			Device.seqParallelBeforRender.clear();
+		}
+
+		if (g_pIGameActor != nullptr)
+		{
+			g_pIGameActor->UpdatePlayerHud();
 		}
 
 		secondary_tasks.run(&XRay::Engine::PreRenderThread);

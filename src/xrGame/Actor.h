@@ -342,6 +342,9 @@ public:
 	bool					use_HolderEx			(CHolderCustom* object, bool bForce);
 
 	virtual bool			can_attach				(const CInventoryItem *inventory_item) const;
+
+	virtual void UpdatePlayerHud() final override;
+
 protected:
 	CHolderCustom*			m_holder;
 	u16						m_holderID;

@@ -1675,6 +1675,33 @@ void CActor::UpdateCL()
 	clamp(fSprintFactor, 0.0f, 1.0f);
 }
 
+void CActor::UpdatePlayerHud()
+{
+	if (IsFocused())
+	{
+		CInventoryItem* pInvItem = inventory().ActiveItem();
+		if (pInvItem)
+		{
+			CHudItem* pHudItem = smart_cast<CHudItem*>(pInvItem);
+			if (pHudItem)
+			{
+				if (pHudItem->IsHidden())
+				{
+					g_player_hud->detach_item(pHudItem);
+				}
+				else
+				{
+					g_player_hud->attach_item(pHudItem);
+				}
+			}
+		}
+		else
+		{
+			g_player_hud->detach_item_idx(0);
+		}
+	}
+}
+
 void CActor::CheckFlyhack()
 {
 	if ((mstate_real & (mcFall)) && !(mstate_real & (mcJump | mcLanding | mcLanding2)))
@@ -1757,51 +1784,6 @@ void CActor::UpdatePlayerView()
 	}
 
 	setVisible(has_visible, has_shadow_only);
-
-	if (IsFocused())
-	{
-		BOOL bHudView = HUDview();
-		if (bHudView)
-		{
-			CInventoryItem* pInvItem = inventory().ActiveItem();
-			if (pInvItem)
-			{
-				CHudItem* pHudItem = pInvItem->cast_hud_item();
-				if (pHudItem)
-				{
-					if (pHudItem->IsHidden())
-					{
-						g_player_hud->detach_item(pHudItem);
-					}
-					else
-					{
-						g_player_hud->attach_item(pHudItem);
-					}
-				}
-			}
-			else
-			{
-				g_player_hud->detach_item_idx(0);
-			}
-
-			CCustomDevice* pDevice = GetDevice(true);
-			if (pDevice != nullptr)
-			{
-				if (pDevice->IsHidden())
-				{
-					g_player_hud->detach_item(pDevice->cast_hud_item());
-				}
-				else if (!g_player_hud->attached_item(1))
-				{
-					g_player_hud->attach_item(pDevice->cast_hud_item());
-				}
-			}
-		}
-		else
-		{
-			g_player_hud->detach_all_items();
-		}
-	}
 
 	float dt = Device.fTimeDelta;
 
