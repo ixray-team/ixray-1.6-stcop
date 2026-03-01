@@ -250,7 +250,7 @@ void CUITaskWnd::ReloadTaskInfo()
         m_pSecondaryTaskItem->InitTask(additionalTask);
     }
 
-    if (!storyTask || (storyTask->m_map_object_id == u16(-1) || storyTask->m_map_location.size() == 0) || pInput->GetControllerMode())
+    if (!storyTask || (storyTask->m_map_object_id == u16(-1) || storyTask->m_map_location.size() == 0))
 		m_btn_focus->Show(false);
 	else
 		m_btn_focus->Show(true);
@@ -499,11 +499,18 @@ bool CUITaskWnd::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
 			{
 				if (!m_task_wnd->IsShown())
 				{
-					CUICheckButton* pChkButton = m_cbFilters[m_currentFilterIndex];
-					if (pChkButton)
+					if (m_cbFilters[m_currentFilterIndex])
 					{
-						pChkButton->SetCheck(!pChkButton->GetCheck());
-						GetMessageTarget()->SendMessage(pChkButton, BUTTON_CLICKED, nullptr);
+						CUICheckButton* pChkButton = m_cbFilters[m_currentFilterIndex];
+						if (pChkButton)
+						{
+							pChkButton->SetCheck(!pChkButton->GetCheck());
+							GetMessageTarget()->SendMessage(pChkButton, BUTTON_CLICKED, nullptr);
+						}
+					}
+					else
+					{
+						OnTask1DbClicked(this, nullptr);
 					}
 					return true;
 				}
@@ -588,7 +595,7 @@ void CUITaskWnd::UpdateGamepadLegend()
 	{
 		if (CUIStatic* actionAcceptS = actionAccept->ui_cast_static())
 		{
-			actionAcceptS->SetTextST(m_task_wnd->IsShown() ? "ui_tasks_show_on_map" : "ui_tasks_filter_toggle");
+			actionAcceptS->SetTextST(m_task_wnd->IsShown() ? "ui_tasks_show_on_map" : m_cbFilters[MAP_MARKS_FILTER_TREASURES] ? "ui_tasks_filter_toggle" : "ui_tasks_show_on_map_main");
 		}
 	}
 
