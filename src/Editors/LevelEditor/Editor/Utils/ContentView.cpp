@@ -118,7 +118,7 @@ void CContentView::CollectAllFolder()
 
 void CContentView::DrawFolderNode(FolderNode& Node)
 {
-	ImGuiTreeNodeFlags Flags = ImGuiTreeNodeFlags_SpanFullWidth;
+	ImGuiTreeNodeFlags Flags = ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_DrawLinesToNodes;
 	Flags |= Node.Children.empty() ? ImGuiTreeNodeFlags_Leaf : ImGuiTreeNodeFlags_OpenOnArrow;
 
 	bool Open = ImGui::TreeNodeEx(Node.Name.c_str(), Flags);
@@ -185,7 +185,8 @@ void CContentView::DrawFolderTree()
 		}
 		ImGui::EndChild();
 
-
+        // Need a variable for indent spacing from themes.
+		ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 18.0f);
 		if (ImGui::BeginChild("##cntbrwslftview", ImVec2(0, 0)))
 		{
 			for (auto& Child : Root.Children)
@@ -194,6 +195,7 @@ void CContentView::DrawFolderTree()
 			}
 		}
 		ImGui::EndChild();
+		ImGui::PopStyleVar();
 	}
 
 	ImGui::EndChild();
@@ -275,7 +277,7 @@ void CContentView::Draw()
 		//ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
 		if (ImGui::BeginChild("##contentbrowserrightside"))
 		{
-			ImGui::PushStyleColor(ImGuiCol_ChildBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToolbarTint).Value);
+			ImGui::PushStyleColor(ImGuiCol_ChildBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelBorderTint).Value);
 			if (ImGui::BeginChild("##contentbrowsersearch", ImVec2(-1, 24)))
 			{
 				DrawHeader();
