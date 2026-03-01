@@ -19,6 +19,16 @@ enum EHudMixType : u8
 	eMixAll
 };
 
+enum EHudOffsetType : u8
+{
+	eDefault,
+	eAim,
+	eAimGL,
+	eAimAlt,
+	eSafemode,
+	eHudOffsetsMax
+};
+
 enum EMovementLayers : u8
 {
 	eWalk = 0,
@@ -162,9 +172,9 @@ struct hud_item_measures
 	struct hud_hands_positions
 	{
 		void Load(const shared_str& section, bool is_16x9);
-		Fvector hands_offsets[2][5]; //pos,rot //normal, aim, gl, alt-aim, safemode
+		Fvector hands_offsets[2][EHudOffsetType::eHudOffsetsMax]; //pos,rot //normal, aim, gl, alt-aim, safemode
 		Fvector hands_offsets_saved[2]; //pos,rot
-		Fvector hands_offsets_tune[2][5];
+		Fvector hands_offsets_tune[2][EHudOffsetType::eHudOffsetsMax];
 		bool bIs16x9 = false;
 		shared_str sSection;
 	} m_hands_positions;
