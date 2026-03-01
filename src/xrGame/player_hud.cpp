@@ -485,6 +485,9 @@ void hud_item_measures::hud_hands_positions::Load(const shared_str& section, boo
 	hands_offsets[1][4] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[1][4] : zero_vel);
 
 	memcpy(hands_offsets_tune, hands_offsets, sizeof(hands_offsets_tune));
+
+	hands_offsets_saved[0] = zero_vel;
+	hands_offsets_saved[1] = zero_vel;
 }
 
 bool  attachable_hud_item::need_renderable()
