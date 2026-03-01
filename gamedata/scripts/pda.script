@@ -427,11 +427,11 @@ function fill_sleep_zones()
                     local distance = opt.sobj.position:distance_to(actor_pos)
         
                     if distance <= distance_draw_sleep_zones then
-                        if has_actor_sleep_location == 0 then
+                        if not has_actor_sleep_location then
                             level.map_add_object_spot(opt.id, actor_sleep_location_name, opt.hint)
                         end
                     else
-                        if has_actor_sleep_location == 1 then
+                        if has_actor_sleep_location then
                             level.map_remove_object_spot(opt.id, actor_sleep_location_name)
                         end
                     end
@@ -469,7 +469,7 @@ function change_anomalies_names()
         for k,v in pairs(change_objects_tbl) do
             if v.enabled then
                 local obj_id = get_story_object_id(v.target)
-                if (obj_id) and (level.map_has_object_spot(obj_id, "primary_object") ~= 0) then
+                if (obj_id) and level.map_has_object_spot(obj_id, "primary_object") then
                     level.map_remove_object_spot(obj_id, "primary_object")
                 end
                 local hint = game.translate_string(v.hint).."\\n".." \\n"
@@ -484,7 +484,7 @@ function change_anomalies_names()
                 else
                     hint = hint..game.translate_string("st_jup_b32_no_af")
                 end
-                if (obj_id) and level.map_has_object_spot(obj_id, "primary_object") == 0 then
+                if (obj_id) and not level.map_has_object_spot(obj_id, "primary_object") then
                     level.map_add_object_spot(obj_id, "primary_object", hint)
                 end
             end
