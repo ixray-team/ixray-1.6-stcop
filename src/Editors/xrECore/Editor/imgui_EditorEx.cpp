@@ -240,7 +240,8 @@ ECORE_API void IXEndMainMenuBar()
 		ImGui::EndChild();
 
 		ImGui::SetCursorPos(ImGui::GetCursorPos() + ImVec2{ UI->GetMenuBarHeight()- style.WindowPadding.x, 12.f});
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4.0f, 6.0f));
+		ImVec2 padding = ImVec2(XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonPaddingW), XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonPaddingH));
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, padding);
 
 		if (!UI->GeneralTabs.empty() && ImGui::BeginTabBar("#TopBarView"))
 		{
