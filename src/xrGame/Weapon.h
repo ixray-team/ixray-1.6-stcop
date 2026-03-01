@@ -390,7 +390,7 @@ protected:
 	float m_fRechargeTime = 0.0f;
 	float m_fLastRechargeTime = 0.0f;
 	float m_fSafeModeRotationFactor = 0.0f;
-	float m_fSafeModeRotateTime = 0.3f;
+	float m_fSafeModeRotateTime = 0.25f;
 
 	bool bUpdateHUDBonesVisibility = false;
 	u32 _last_update_time;
@@ -602,7 +602,6 @@ protected:
 	virtual void UpdatePosition_alt(const Fmatrix& transform);
 	virtual void			UpdateXForm				();
 
-	void					AddOffset(Fmatrix& trans, const u8 idx, float& factor, const float rotate_time, const bool inc);
 	virtual void			UpdateHudAdditonal		(Fmatrix&);
 	IC		void			UpdateFireDependencies	()			{ if (dwFP_Frame==Device.dwFrame) return; UpdateFireDependencies_internal(); };
 
