@@ -42,7 +42,7 @@ void LoadImGuiFontBase(const char* Font, float scale)
 	{
 		if (!FontsStorage.contains(Font))
 		{
-			FontsStorage[Font] = ImGui::GetIO().Fonts->AddFontFromFileTTF(Platform::ANSI_TO_UTF8(FullPath).c_str(), scale * 16.0f, &FontConfig, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
+			FontsStorage[Font] = ImGui::GetIO().Fonts->AddFontFromFileTTF(Platform::ANSI_TO_UTF8(FullPath).c_str(), XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::FontSize), &FontConfig, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
 		}
 
 		ImCurrentFont = Font;
@@ -320,13 +320,9 @@ void XrUIManager::Draw()
 			| ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking
 			| ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse
 			| ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove
-			| ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus
-			/*| ImGuiWindowFlags_NoBackground*/;
+			| ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
         float separatorSize = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::DockingGap) + 1;
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(separatorSize, separatorSize));
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-		//ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3, 2));
 		ImGui::PushStyleColor(ImGuiCol_WindowBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::BackgroundTint).Value);
 		ImGui::PushStyleColor(ImGuiCol_Border, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::BackgroundTint).Value);
 		ImGui::Begin("MyDockspace", NULL, window_flags);
@@ -337,7 +333,7 @@ void XrUIManager::Draw()
 		ImGui::DockSpace(dockMain);
 		ImGui::End();
 		ImGui::PopStyleColor(2);
-		ImGui::PopStyleVar(3);
+		ImGui::PopStyleVar(1);
 
 	}
 

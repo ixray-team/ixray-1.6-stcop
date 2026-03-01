@@ -17,8 +17,9 @@ UIPropertiesItem::~UIPropertiesItem()
 
 void UIPropertiesItem::Draw()
 {
-	ImGui::TableNextRow();
+	ImGui::TableNextRow(ImGuiTableRowFlags_None, GetEditorSize(EEditorSizes::TableRowHeight) + 1.f);	// Important inner border size compensation
 	ImGui::TableNextColumn();
+	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f);												// Important move away from horizontal inner border
 
 	if (PItem&&PItem->m_Flags.test(PropItem::flShowCB))
 	{
@@ -31,31 +32,27 @@ void UIPropertiesItem::Draw()
 			ImGui::SameLine(0, 2);
 	}
 
+	// ---------------------- //
+	// Table Collapse buttons //
+	// ---------------------- //
 	if (!Items.empty())
 	{
-		ImGuiWindow* window = ImGui::GetCurrentWindow();
-		float indent_x = window->DC.Indent.x;
-
-		ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, ImGui::GetColorU32(ImGuiCol_TableRowBgAlt));
-
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(GetEditorSize(EEditorSizes::ButtonPaddingW), GetEditorSize(EEditorSizes::TextFieldPadding)));
+		ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, GetEditorColor(EEditorColors::PanelBorderTint));
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(GetEditorSize(ButtonTextPaddingY), GetEditorSize(TableTextPaddingY)));
+		ImGui::PushStyleColor(ImGuiCol_Header, GetEditorColor(EEditorColors::PanelBorderTint).Value);
 		ImVec2 node_cursor = ImGui::GetCursorScreenPos();
-		constexpr ImGuiTreeNodeFlags FolderFlags = 
-			ImGuiTreeNodeFlags_SpanAllColumns | 
-			ImGuiTreeNodeFlags_DefaultOpen |
-			ImGuiTreeNodeFlags_FramePadding |
-			ImGuiTreeNodeFlags_AllowOverlap;
-		bool open = ImGui::TreeNodeEx((xr_string("##") + *Name).c_str(), FolderFlags);
+		constexpr ImGuiTreeNodeFlags FolderFlags = 0
+			| ImGuiTreeNodeFlags_Framed
+			| ImGuiTreeNodeFlags_FramePadding
+			| ImGuiTreeNodeFlags_SpanAllColumns
+			| ImGuiTreeNodeFlags_LabelSpanAllColumns
+			| ImGuiTreeNodeFlags_DefaultOpen
+			;
+
+		bool open = ImGui::TreeNodeEx(*Name, FolderFlags);
+
+		ImGui::PopStyleColor();
 		ImGui::PopStyleVar();
-
-		ImDrawList* DrawList = ImGui::GetWindowDrawList();
-		ImVec2 row_min = ImGui::GetItemRectMin();
-		row_min.x += indent_x + ImGui::GetTreeNodeToLabelSpacing();
-		row_min.y += GetEditorSize(EEditorSizes::TextFieldPadding);
-
-		DrawList->AddText(row_min, ImGui::GetColorU32(ImGuiCol_Text), *Name);
-		ImGui::TableNextColumn();
-		DrawList->AddText(row_min, ImGui::GetColorU32(ImGuiCol_Text), *Name);
 
 		if (open)
 		{
@@ -68,7 +65,6 @@ void UIPropertiesItem::Draw()
 	}
 	else
 	{
-		ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, ImGui::GetColorU32(ImGuiCol_TableRowBg));
 		if (IsTexture)
 		{
 			MultiChooseValue* Prop = (MultiChooseValue*)PItem->GetFrontValue();
@@ -78,20 +74,27 @@ void UIPropertiesItem::Draw()
 				shared_str TexName = Prop->Values[0]->value ? Prop->Values[0]->GetValue() : "";
 				if (TexName.size() > 0)
 				{
+					float TexSize = (GetEditorSize(TableRowHeight) + 1.f) * 4.f;
+					//ImVec2 Rect = ImGui::GetCurrentTable().;
+					float CellWhdth = ImGui::GetContentRegionMax().x;
+
 					ImTextureID Image = GUIManager->LoadTexture(*TexName);
-					ImGui::SetCursorPosX(ImGui::GetCursorPosX() - 12);
-					ImGui::Image(Image, { 100, 100 });
+					//ImGui::SetCursorPosX(ImGui::GetCursorPosX());
+					ImGui::SetCursorPosX((CellWhdth - TexSize) / 2.f);
+					ImGui::Image(Image, { TexSize, TexSize });
 				}
 			}
 		}
 		else
 		{
-			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + GetEditorSize(EEditorSizes::ButtonPaddingW));
-			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + GetEditorSize(EEditorSizes::TextFieldPadding));
+			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + GetEditorSize(ButtonTextPaddingY));
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + GetEditorSize(TableTextPaddingY));
 			ImGui::TextUnformatted(*Name);
 		}
 
 		ImGui::TableNextColumn();
+		ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, ImGui::GetColorU32(GetEditorColor(EEditorColors::TableTint).Value));
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f); // Important move away from horizontal inner border
 		DrawItem();
 	}
 }
@@ -126,7 +129,7 @@ void UIPropertiesItem::DrawItem()
 				GUIManager->Push(CWaveForm::form, false);
 			}
 			ImGui::PushID(V);
-			if (ImGui::Button("[Wave]"))
+			if (XRay::ImGui::Button("[Wave]"))
 			{
 				CWaveForm::form->ItemKey = PItem->Key();
 				CWaveForm::form->Run(&edit_val);
@@ -184,20 +187,21 @@ void UIPropertiesItem::DrawItem()
 				{
 					ImGui::PushItemWidth(-1);
 					float size = float(ImGui::CalcItemWidth());
-					float dx = floorf(size / float(V->value.size()));
-					float offset = size - (dx * V->value.size());
+					//float dx = floorf(size / float(V->value.size()));
+					//float offset = size - (dx * V->value.size());
+					float buttonSize = size / float(V->value.size());
 					V->btn_num = V->value.size();
 
 					for (RStringVecIt it = V->value.begin(); it != V->value.end(); it++)
 					{
-						int k = it - V->value.begin();
-						if (ImGui::Button(it->c_str(), ImVec2(dx + offset, XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize))))
+						int k = it - V->value.begin();				// dx + offset
+						if (XRay::ImGui::Button(it->c_str(), ImVec2(buttonSize - 1.f, XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableRowHeight))))
 						{
 							V->btn_num = k;
 
 							bRes |= V->OnBtnClick(bSafe);
 						}
-						offset = 0;
+						//offset = 0;
 						ImGui::SameLine(0, 2);
 					}
 				}
@@ -212,6 +216,7 @@ void UIPropertiesItem::DrawItem()
 		}
 		case PROP_CAPTION:
 		{
+			ImGui::SetCursorPos(ImGui::GetCursorPos() + ImVec2(GetEditorSize(ButtonPaddingH), GetEditorSize(TableTextPaddingY)));
 			ImGui::TextDisabled(PItem->GetDrawText().c_str());
 			break;
 		}
@@ -230,10 +235,12 @@ void UIPropertiesItem::DrawItem()
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(originalItemSpacing.x, 0));
 			ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
 
+			ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, ImGui::GetColorU32(GetEditorColor(EEditorColors::PanelTint).Value));
 			ImGui::PushStyleColor(ImGuiCol_Button, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableTint).Value);
-			if (ImGui::BeginTable("##multi_choose_table", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_NoBordersInBody | ImGuiTableFlags_NoPadOuterX))
+
+			if (ImGui::BeginTable("##multi_choose_table", 2, ImGuiTableFlags_BordersInner))
 			{
-				ImGui::TableSetupColumn("Key", ImGuiTableColumnFlags_WidthFixed);
+				ImGui::TableSetupColumn("Key", ImGuiTableColumnFlags_WidthFixed, 80.f);
 				ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
 
 				for (ChooseValue* ChooseItem : Prop->Values)
@@ -253,16 +260,15 @@ void UIPropertiesItem::DrawItem()
 					}
 
 					ImGui::PushID(ChooseItem);
-					ImGui::TableNextRow();
+					ImGui::TableNextRow(ImGuiTableRowFlags_None, GetEditorSize(EEditorSizes::TableRowHeight) + 1.f);	// Important inner border size compensation
 
 					ImGui::TableSetColumnIndex(0);
-					ImGui::AlignTextToFramePadding();
-
-					ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 2);
+					ImGui::SetCursorPos(ImGui::GetCursorPos() + ImVec2(GetEditorSize(EEditorSizes::ButtonPaddingH), GetEditorSize(EEditorSizes::TableTextPaddingY)));
 					ImGui::TextUnformatted(text.c_str());
 
 					ImGui::TableSetColumnIndex(1);
-					if (ImGui::Button(TextValue.c_str(), ImVec2(-1, 25)))
+					ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f);												// Important move away from horizontal inner border
+					if (ImGui::Button(TextValue.c_str(), ImVec2(-1, GetEditorSize(EEditorSizes::TableRowHeight))))
 					{
 						ChooseValue* V = dynamic_cast<ChooseValue*>(ChooseItem->Owner()->GetFrontValue());
 						VERIFY(V);
@@ -312,7 +318,7 @@ void UIPropertiesItem::DrawItem()
 			}
 			else if (PItem->m_Flags.test(PropItem::flMixed) && !PItem->m_Flags.test(PropItem::flIgnoreMixed))
 			{
-				if (ImGui::Button("(Mixed)", ImVec2(-1, 0)))
+				if (XRay::ImGui::Button("(Mixed)", ImVec2(-1, 0)))
 				{
 					RemoveMixed();
 				}
