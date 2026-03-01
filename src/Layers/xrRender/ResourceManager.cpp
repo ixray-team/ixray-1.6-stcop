@@ -8,13 +8,45 @@
 #include "blenders/Blender.h"
 #include "blenders/Blender_Recorder.h"
 #include <execution>
-#include "../xrRenderDX10/dx11XMLBlendCompiler.h"
 
 #ifdef USE_DX11
 #include "../xrRenderDX10/3DFluid/dx103DFluidManager.h"
 #endif
 //	Already defined in Texture.cpp
 void fix_texture_name(LPSTR fn);
+static xrCriticalSection ResSafe;
+
+#ifndef MASTER_GOLD
+static u32 CalculateXMLCRC(LPCSTR path)
+{
+	IReader* reader = FS.r_open(path);
+	if (!reader)
+	{
+		return 0;
+	}
+
+	u32 crc = crc32(reader->pointer(), reader->length());
+	FS.r_close(reader);
+	return crc;
+}
+
+#endif
+
+#ifdef USE_DX11
+static xr_string MakeXMLBlendKey(LPCSTR s_shader, LPCSTR s_textures)
+{
+	xr_string key = s_shader ? s_shader : "";
+	key += "|";
+	key += s_textures ? s_textures : "";
+	return key;
+}
+
+void CResourceManager::ClearXMLBlendCache()
+{
+	xrCriticalSectionGuard guard(ResSafe);
+	m_xmlBlendCache.clear();
+}
+#endif
 
 //--------------------------------------------------------------------------------------------------------------
 template <class T>
@@ -249,7 +281,6 @@ Shader*CResourceManager::Create(IBlender* B, LPCSTR s_shader, LPCSTR s_textures,
 	return nullptr;
 }
 
-static xrCriticalSection ResSafe;
 Shader* CResourceManager::Create	(LPCSTR s_shader,	LPCSTR s_textures,	LPCSTR s_constants,	LPCSTR s_matrices)
 {
 	xrCriticalSectionGuard guard(ResSafe);
@@ -260,9 +291,39 @@ Shader* CResourceManager::Create	(LPCSTR s_shader,	LPCSTR s_textures,	LPCSTR s_c
 #ifdef USE_DX11
 		if (CXMLBlend::Check(s_shader))
 		{
-			CXMLBlend* BlendXML = new CXMLBlend(s_shader);
+			xr_string key = MakeXMLBlendKey(s_shader, s_textures);
+			auto it = m_xmlBlendCache.find(key);
+
+#ifndef MASTER_GOLD
+			u32 current_crc = CalculateXMLCRC(s_shader);
+#endif
+
+			if (it != m_xmlBlendCache.end())
+			{
+#ifndef MASTER_GOLD
+				if (it->second.crc == current_crc)
+					return it->second.shader;
+#else
+				return it->second.shader;
+#endif
+			}
+
+			// Компиляция
+			xr_unique_ptr<CXMLBlend> BlendXML = xr_make_unique<CXMLBlend>(s_shader);
 			Shader* pShader = BlendXML->Compile(s_textures);
-			xr_delete(BlendXML);
+
+			if (pShader)
+			{
+				XMLBlendCacheEntry entry;
+				entry.shader = pShader;
+
+#ifndef MASTER_GOLD
+				entry.crc = current_crc;
+#endif
+
+				m_xmlBlendCache[key] = entry;
+			}
+
 			return pShader;
 		}
 		else if	(_lua_HasShader(s_shader))		
@@ -301,10 +362,20 @@ void CResourceManager::Delete(const Shader* S)
 
 	xrCriticalSectionGuard guard(creationGuard);
 
-	if (reclaim(v_shaders,S))
+#ifdef USE_DX11
+	for (auto it = m_xmlBlendCache.begin(); it != m_xmlBlendCache.end(); )
+	{
+		if (it->second.shader == S)
+			it = m_xmlBlendCache.erase(it);
+		else
+			++it;
+	}
+#endif
+
+	if (reclaim(v_shaders, S))
 		return;
 
-	Msg	("! ERROR: Failed to find complete shader");
+	Msg("! ERROR: Failed to find complete shader");
 }
 
 void CResourceManager::DeferredUpload()
