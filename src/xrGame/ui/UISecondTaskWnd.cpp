@@ -170,7 +170,8 @@ bool UITaskListWnd::SortingLessFunction( CUIWindow* left, CUIWindow* right )
 bool UITaskListWnd::SelectNextToSelected(bool bNext)
 {
 	CGameTaskManager* taskManager = Level().GameTaskManager();
-	CGameTask* pActiveTask = taskManager->ActiveTask();
+	ETaskType taskType = taskManager->IsMultipleTask() ? eTaskTypeAdditional : eTaskTypeStoryline;
+	CGameTask* pActiveTask = taskManager->ActiveTask(taskType);
 	if (pActiveTask)
 	{
 		WINDOW_LIST& wndList = m_list->Items();
@@ -226,7 +227,8 @@ bool UITaskListWnd::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
 		else if (is_binded(kPDA_TASKS_FILTER_TOGGLE, id))
 		{
 			CGameTaskManager* taskManager = Level().GameTaskManager();
-			CGameTask* pActiveTask = taskManager->ActiveTask();
+			ETaskType taskType = taskManager->IsMultipleTask() ? eTaskTypeAdditional : eTaskTypeStoryline;
+			CGameTask* pActiveTask = taskManager->ActiveTask(taskType);
 			if (pActiveTask)
 			{
 				GetMessageTarget()->SendMessage(this, PDA_TASK_SET_TARGET_MAP, (void*)pActiveTask);
