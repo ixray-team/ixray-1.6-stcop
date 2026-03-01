@@ -160,6 +160,7 @@ void CUIFactionWarWnd::Init()
 	}
 	int delay = xml.ReadAttribInt( "main_wnd", 0, "update_delay", 3000 );
 	m_update_delay = (0 < delay)? (u32)delay : 0;
+	m_gamepad_legend = UIHelper::CreateGamepadLegend(xml, "gamepad_legend", this, false);
 }
 
 void CUIFactionWarWnd::ShowInfo( bool status )

@@ -45,11 +45,11 @@ function on_change_value(group, name, value)
 end
 
 function on_inv_box_can_take_item(box_game_object, item_game_object, flags_table)
-	--ffx_dump_utils.send_message(script_name() .. ":: + on_inv_box_can_take_item:  box:" .. tostring(box_game_object:section()) .. " item:" .. tostring(item_game_object:section()))
+	ffx_dump_utils.send_message(script_name() .. ":: + on_inv_box_can_take_item:  box:" .. tostring(box_game_object:section()) .. " item:" .. tostring(item_game_object:section()))
 end
 
 function on_inv_box_can_palce_item(box_game_object, item_game_object, flags_table)
-	--ffx_dump_utils.send_message(script_name() .. ":: - on_inv_box_can_palce_item:  box:" .. tostring(box_game_object:section()) .. " item:" .. tostring(item_game_object:section()))
+	ffx_dump_utils.send_message(script_name() .. ":: - on_inv_box_can_palce_item:  box:" .. tostring(box_game_object:section()) .. " item:" .. tostring(item_game_object:section()))
 end
 
 

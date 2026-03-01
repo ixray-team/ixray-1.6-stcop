@@ -29,11 +29,18 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	if xml:NodeExist("frame_videoadv", 0) then
 		xml:InitFrame("frame_videoadv", self)
 	end
+	self.focusList = {}
 	self.scroll_v = xml:InitScrollView("video_adv:scroll_v", self)
     handler.scroll_v = self.scroll_v
-
-	btn = xml:Init3tButton("video_adv:btn_to_simply", self)
-	handler:Register(btn, "btn_simply_graphic")
+	
+    local addControl = function(cap, elem, crl)	
+		if cap ~= nil and elem ~= nil then
+			table.insert(self.focusList, {cap, elem, crl} )
+		end
+    end
+	
+	self.btn_simply = xml:Init3tButton("video_adv:btn_to_simply", self)
+	handler:Register(self.btn_simply, "btn_simply_graphic")
 	
 	local ctl = nil
     local _st = nil
@@ -44,7 +51,8 @@ function opt_video_adv:InitControls(x, y, xml, handler)
         local tempText = xml:InitTextWnd("video_adv:cap_header_setup", temp)
         table.insert(handler.m_preconditions, {func=prec, control=static})
         tempText:SetTextST(text)
-    end
+		addControl(nil, nil, static)
+   end
 	
 	local reloadControls = function()
 		local pos = handler.scroll_v:GetCurrentScrollPos()
@@ -83,11 +91,12 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 		end
 		temp:SetStep(step)
         tempText:SetTextST(text)
+		addControl(tempText, temp, _st)
 		return temp
     end
 
     local addCheck = function (prec, text, command, depend, reg_name)
-	_st = xml:InitStatic("video_adv:templ_item", nil)
+		_st = xml:InitStatic("video_adv:templ_item", nil)
         local temp = xml:InitCheck("video_adv:check_template", _st)
         local tempText = xml:InitTextWnd("video_adv:cap_template", _st)
 		if prec then
@@ -99,6 +108,7 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 			handler:Register(temp, reg_name)
 		end
 		tempText:SetTextST(text)
+		addControl(tempText, temp, _st)
 		return temp
     end
 
@@ -115,6 +125,7 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 			handler:Register(temp, reg_name)
 		end
 		tempText:SetTextST(text)
+		addControl(tempText, temp, _st)
 		return temp
     end
 	
@@ -129,7 +140,7 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	addTrack(all_modes, "ui_mm_vis_distance", "rs_vis_distance", 0.1, false, "float", false, "sdNothing")
 	addTrack(all_modes, "ui_mm_geometry_lod", "r__geometry_lod", 0.1, false, "float", false, "sdNothing")
 
------------------------------------------------------------------------------
+	-----------------------------------------------------------------------------
 	-----------------------------------------------------------------------------
 	-----------------------------------------------------------------------------
 	

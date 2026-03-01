@@ -222,7 +222,7 @@ void CActor::IR_OnKeyboardPress(int dik)
 				inventory().Eat(itm);
 				SDrawStaticStruct* _s = CurrentGameUI()->AddCustomStatic("item_used", true, 3.0f);
 				string1024					str;
-				xr_strconcat(str, *CStringTable().translate("st_item_used"), ": ", itm->NameItem());
+				xr_strconcat(str, g_pStringTable->translate("st_item_used").c_str(), ": ", itm->NameItem());
 				_s->wnd()->TextItemControl()->SetText(str);
 			}
 		}
@@ -482,6 +482,18 @@ void CActor::IR_OnKeyboardHold(int dik)
 	case kACCEL:	mstate_wishful |= mcAccel;									break;
 	case kL_STRAFE:	mstate_wishful |= mcLStrafe;								break;
 	case kR_STRAFE:	mstate_wishful |= mcRStrafe;								break;
+	case kFWD:		mstate_wishful |= mcFwd;									break;
+	case kBACK:		mstate_wishful |= mcBack;									break;
+	case kCROUCH:
+		{
+			if( !psActorFlags.test(AF_CROUCH_TOGGLE) )
+					mstate_wishful |= mcCrouch;
+
+		}break;
+	}
+
+	switch (get_binded_action(dik, agAiming))
+	{
 	case kL_LOOKOUT:
 		if (eacLookAt != cam_active)
 			mstate_wishful |= mcLLookout;
@@ -494,14 +506,6 @@ void CActor::IR_OnKeyboardHold(int dik)
 		else
 			psActorFlags.set(AF_RIGHT_SHOULDER, false);
 		break;
-	case kFWD:		mstate_wishful |= mcFwd;									break;
-	case kBACK:		mstate_wishful |= mcBack;									break;
-	case kCROUCH:
-		{
-			if( !psActorFlags.test(AF_CROUCH_TOGGLE) )
-					mstate_wishful |= mcCrouch;
-
-		}break;
 	}
 }
 
@@ -589,7 +593,7 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 	{
 		if (id == 0)
 		{
-			if (mstate_wishful & mcAccel && !isActorAccelerated(mstate_real, IsZoomAimingMode()))
+			if (mstate_wishful & mcAccel)
 			{
 				mstate_wishful &= ~mcAccel;
 			}
@@ -762,18 +766,54 @@ void CActor::IR_GamepadKeyPress(int id)
 			SwitchTorch();
 			break;
 		}
+		case kUSE_BANDAGE:
+		case kUSE_MEDKIT:
+		{
+			if (IsGameTypeSingle())
+			{
+				PIItem itm = inventory().item((bind == kUSE_BANDAGE) ? CLSID_IITEM_BANDAGE : CLSID_IITEM_MEDKIT);
+				if (itm)
+				{
+					inventory().Eat(itm);
+					SDrawStaticStruct* _s = CurrentGameUI()->AddCustomStatic("item_used", true, 3.0f);
+					string1024					str;
+					xr_strconcat(str, g_pStringTable->translate("st_item_used").c_str(), ": ", itm->NameItem());
+					_s->wnd()->TextItemControl()->SetText(str);
+				}
+			}
+		}break;
 		case kQUICK_USE_1:
 		case kQUICK_USE_2:
 		case kQUICK_USE_3:
 		case kQUICK_USE_4:
 		{
-			ActorQuickSlotUse(bind);
+			if (!IsZoomAimingMode())
+				ActorQuickSlotUse(bind);
+			break;
 		}
 		case kWPN_RADIAL_MENU:
 		{
-			CUIRadialMenuWeapon* RMW = CurrentGameUI()->RadialMenuWeapon();
-			if (RMW->isInitialized && !RMW->IsShown())
-				RMW->ShowDialog(false);
+			if (!IsZoomAimingMode())
+			{
+				CUIRadialMenuWeapon* RMW = CurrentGameUI()->RadialMenuWeapon();
+				if (RMW->isInitialized && !RMW->IsShown())
+					RMW->ShowDialog(false);
+			}
+			break;
+		}
+	}
+
+	EGameActions bindAim = get_binded_action(id, agAiming);
+	switch (bindAim)
+	{
+		case kWPN_ZOOM_INC:
+		case kWPN_ZOOM_DEC:
+		{
+			if (IsZoomAimingMode())
+			{
+				if (inventory().Action((u16)bindAim, CMD_START))
+					return;
+			}
 			break;
 		}
 	}
@@ -880,14 +920,40 @@ void CActor::IR_GamepadKeyHold(int id)
 
 	switch (bind)
 	{
-	case kCROUCH:
-	{
-		if (Device.dwTimeContinual > (gamepad_crouch_time_global + 1000))
+		case kCROUCH:
 		{
-			mstate_wishful |= mcAccel;
+			if (Device.dwTimeContinual > (gamepad_crouch_time_global + 1000))
+			{
+				mstate_wishful |= mcAccel;
+			}
+			break;
 		}
-		break;
 	}
+
+	switch (get_binded_action(id, agAiming))
+	{
+		case kL_LOOKOUT:
+		{
+			if (IsZoomAimingMode())
+			{
+				if (eacLookAt != cam_active)
+					mstate_wishful |= mcLLookout;
+				else
+					psActorFlags.set(AF_RIGHT_SHOULDER, true);
+			}
+			break;
+		}
+		case kR_LOOKOUT:
+		{
+			if (IsZoomAimingMode())
+			{
+				if (eacLookAt != cam_active)
+					mstate_wishful |= mcRLookout;
+				else
+					psActorFlags.set(AF_RIGHT_SHOULDER, false);
+			}
+			break;
+		}
 	}
 }
 

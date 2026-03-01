@@ -6,7 +6,7 @@
 
 void main(in v_editor I, out p_bumped_new O)
 {
-    float3 Pe = mul(m_WV, I.P);
+    float3 Pe = mul(m_WV, float4(I.P.xyz, 1.f)).xyz;
 
     O.tcdh = float4(I.tc.xy, 0.7f, 0.5f);
     O.position = float4(Pe, 1.0f);

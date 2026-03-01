@@ -105,7 +105,7 @@ void CUITalkDialogWnd::InitTalkDialogWnd()
 		UIDialogFrameTop = UIHelper::CreateStatic(*m_uiXml, "frame_top", this);
 		answersParent = UIDialogFrameTop;
 	}
-	if (m_uiXml->NavigateToNode("frame_line_window"))
+	else if (m_uiXml->NavigateToNode("frame_line_window"))
 	{
 		//основной фрейм диалога
 		UIDialogFrame = new CUIFrameLineWnd();
@@ -695,8 +695,6 @@ void CUITalkDialogWnd::UpdateGamepadLegend()
 		return;
 	}
 
-	//UIInputLegend->AddItem("legend_ui_talk_replies", UIQuestionsList->Items().size() > 1);
-
 	CUIWindow* tradeHint = m_gamepad_legend->FindChild("trade_hint");
 	if (tradeHint)
 	{
@@ -706,10 +704,18 @@ void CUITalkDialogWnd::UpdateGamepadLegend()
 			tradeHint->ui_cast_static()->SetTextST(mechanic_mode ? "ui_talk_open_upgrade" : "ui_talk_open_trade");
 		}
 	}
+
 	CUIWindow* backHint = m_gamepad_legend->FindChild("back_hint");
 	if (backHint)
 	{
 		backHint->Show(m_break_enabled);
+	}
+
+	CUIWindow* logHint = m_gamepad_legend->FindChild("log_hint");
+	if (logHint)
+	{
+		bool showLogHint = UIAnswersList->IsShown();
+		logHint->Show(showLogHint);
 	}
 }
 

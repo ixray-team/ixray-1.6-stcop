@@ -38,6 +38,7 @@ local ixr_autoloader = {
 			ignored = {},
 			not_autoload = {},
 			autoload = {},
+			all = {},
 		},
 	},
 }
@@ -187,20 +188,41 @@ function ixr_autoloader.is_initialized()
 end
 
 function ixr_autoloader.register_script_files()
-	ixr_autoloader.on_register_script_files()
+	if not level.is_exists_named_stash_string_vector("ixr_framework_scripts") then
+		ixr_autoloader.on_register_script_files()
+		
+		local fs = getFS()
+		local fs_flags = FS.FS_ListFiles
+		local fs_filter = "*" .. ixr_autoloader.fs_scripts_extension
+		local scripts = fs:file_list_open_ex(ixr_autoloader.fs_scripts_path, FS.FS_ListFiles, fs_filter)
+		local scripts_count = scripts:Size()
+		
+		for	scripts_index = 0, scripts_count - 1 do
+			local script_file = scripts:GetAt(scripts_index)
+			ixr_autoloader.register_script(ixr_autoloader.parse_script_name(script_file:NameFull()), tostring(script_file:NameFull()), script_file:Size())
+		end
 	
-	local fs = getFS()
-	local fs_flags = FS.FS_ListFiles
-	local fs_filter = "*" .. ixr_autoloader.fs_scripts_extension
-	local scripts = fs:file_list_open_ex(ixr_autoloader.fs_scripts_path, FS.FS_ListFiles, fs_filter)
-	local scripts_count = scripts:Size()
-	
-	for	scripts_index = 0, scripts_count - 1 do
-		local script_file = scripts:GetAt(scripts_index)
-		ixr_autoloader.register_script(ixr_autoloader.parse_script_name(script_file:NameFull()), tostring(script_file:NameFull()), script_file:Size())
+		ixr_autoloader.sort_script_files()
+		
+		level.set_named_stash_string_vector("ixr_framework_scripts", {"parsed"})
+		level.set_named_stash_string_vector("ixr_framework_ignored_scripts", ixr_autoloader.dynamic_vars.scripts_groups.ignored)
+		level.set_named_stash_string_vector("ixr_framework_not_autoload_scripts", ixr_autoloader.dynamic_vars.scripts_groups.not_autoload)
+		level.set_named_stash_string_vector("ixr_framework_autoload_scripts", ixr_autoloader.dynamic_vars.scripts_groups.autoload)
+		level.set_named_stash_string_vector("ixr_framework_all_scripts", ixr_autoloader.dynamic_vars.scripts_groups.all)
+	else
+		ixr_autoloader.on_register_old_script_files()
+		ixr_autoloader.dynamic_vars.scripts_groups.ignored = level.get_named_stash_string_vector("ixr_framework_ignored_scripts")
+		ixr_autoloader.dynamic_vars.scripts_groups.not_autoload = level.get_named_stash_string_vector("ixr_framework_not_autoload_scripts")
+		ixr_autoloader.dynamic_vars.scripts_groups.autoload = level.get_named_stash_string_vector("ixr_framework_autoload_scripts")
+		ixr_autoloader.dynamic_vars.scripts_groups.all = level.get_named_stash_string_vector("ixr_framework_all_scripts")
 	end
 	
-	ixr_autoloader.sort_script_files()
+	local tmp_scripts = {}
+	for k, v in pairs(ixr_autoloader.dynamic_vars.scripts_groups.all) do
+		tmp_scripts[v] = v
+	end
+	ixr_autoloader.dynamic_vars.scripts_groups.all = {}
+	ixr_autoloader.dynamic_vars.scripts_groups.all = tmp_scripts
 end
 
 function ixr_autoloader.is_script_ignored(script_name)
@@ -282,11 +304,13 @@ function ixr_autoloader.sort_script_files()
 		else
 			table.insert(ixr_autoloader.dynamic_vars.scripts_groups.autoload, v.script_name)
 		end
+		
+		table.insert(ixr_autoloader.dynamic_vars.scripts_groups.all, v.script_name)
 	end
 end
 
 function ixr_autoloader.is_script_registered(script_name)
-	return ixr_autoloader.dynamic_vars.all_registered_scripts[script_name] ~= nil
+	return ixr_autoloader.dynamic_vars.scripts_groups.all[script_name] ~= nil
 end
 
 function ixr_autoloader.call_entry_point(script_name)
@@ -366,7 +390,11 @@ function ixr_autoloader.on_ignore_set(script_name)
 end
 
 function ixr_autoloader.on_register_script_files()
-	ixr_autoloader.toLog("\n ::: load scripts :::\n")
+	ixr_autoloader.toLog("\n ::: load fs scripts :::\n")
+end
+
+function ixr_autoloader.on_register_old_script_files()
+	ixr_autoloader.toLog("\n ::: load cashed scripts :::\n")
 end
 
 function ixr_autoloader.on_register_script(is_file_ignored, is_file_autoloaded, is_file_skip, script_name, full_name)

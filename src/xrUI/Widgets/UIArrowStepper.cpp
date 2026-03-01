@@ -203,11 +203,11 @@ void CUIArrowStepper::UpdateText()
 		{
 			xr_token* tok = GetOptToken();
 			LPCSTR cur_val = get_token_name(tok, m_i_val - 1);
-			out_str = *CStringTable().translate(cur_val);
+			out_str = g_pStringTable->translate(cur_val);
 		}break;
 		case eStepperModeBool:
 		{
-			out_str = m_i_val == m_i_min ? *CStringTable().translate("st_track_opt_off") : *CStringTable().translate("st_track_opt_on");
+			out_str = m_i_val == m_i_min ? g_pStringTable->translate("st_track_opt_off").c_str() : g_pStringTable->translate("st_track_opt_on").c_str();
 		}break;
 	}
 	m_TextVal->SetText(out_str.c_str());

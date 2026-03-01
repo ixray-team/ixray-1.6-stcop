@@ -229,6 +229,10 @@ function ixr_store.default_storage()
 end
 
 function ixr_store.get_var(cell_name, var_name, def_value)
+	if editor() then
+		ixr_store.save_log("GET VALUE [" .. tostring(cell_name) .. " key: (" .. var_name .. ") USED EDITOR MODE SKIP STORAGE LOGIC", true)
+		return def_value
+	end
 	if not ixr_store.is_storage_loaded() then
 		ffx_dump_utils.AssertWithCaller(5, "IXR_STORAGE", "FAILURE CALL GET VALUE BEFORE LOADING STORAGE")
 	end
@@ -256,6 +260,11 @@ function ixr_store.get_var(cell_name, var_name, def_value)
 end
 
 function ixr_store.set_var(cell_name, var_name, var_value, var_type)
+	if editor() then
+		ixr_store.save_log("SET VALUE [" .. tostring(cell_name) .. " key: (" .. var_name .. ") USED EDITOR MODE SKIP STORAGE LOGIC", true)
+		return false
+	end
+
 	if not ixr_store.is_storage_loaded() then
 		ffx_dump_utils.AssertWithCaller(5, "IXR_STORAGE", "FAILURE CALL SET VALUE BEFORE LOADING STORAGE")
 	end
@@ -300,6 +309,11 @@ function ixr_store.set_var(cell_name, var_name, var_value, var_type)
 end
 
 function ixr_store.remove_var(cell_name, var_name)
+	if editor() then
+		ixr_store.save_log("RM VALUE [" .. tostring(cell_name) .. " key: (" .. var_name .. ") USED EDITOR MODE SKIP STORAGE LOGIC", true)
+		return
+	end
+	
 	if ixr_store.dynamic_vars.m_storage == nil then
 		return
 	end
@@ -314,6 +328,11 @@ function ixr_store.remove_var(cell_name, var_name)
 end
 
 function ixr_store.has_var(cell_name, var_name)
+	if editor() then
+		ixr_store.save_log("HAS VALUE [" .. tostring(cell_name) .. " key: (" .. var_name .. ") USED EDITOR MODE SKIP STORAGE LOGIC", true)
+		return false
+	end
+	
 	if ixr_store.dynamic_vars.m_storage == nil then
 		return false
 	end

@@ -666,7 +666,7 @@
 	<string id="ui_pda_toggle_legend">
 		<text>$$ACTION_pda_tasks_toggle_legend$$ Легенда</text>
 	</string>
-	<string id="legend_ui_tasks_filter_next">
-		<text>$$ACTION_pda_tasks_filter_prev$$/$$ACTION_pda_tasks_filter_next$$ Фильтр заданий</text>
+	<string id="ui_tasks_filter_next">
+		<text>$$ACTION_pda_tasks_filter_prev$$/$$ACTION_pda_tasks_filter_next$$ Фильтр меток</text>
 	</string>
 </string_table>
