@@ -42,7 +42,7 @@ XREUI_API bool XRay::ImGui::ToggleButton(const char* Label, bool* Flags, const I
 	const float ButtonPaddingY = GetEditorSize(EEditorSizes::ButtonPaddingH);
 	const float StripeWidth = GetEditorSize(EEditorSizes::IndicatorWidth);
 	const float BorderSize = GetEditorSize(EEditorSizes::ButtonBorderSize);
-	const float Rounding = GetEditorSize(EEditorSizes::ButtonRadius);
+	const float Rounding = ::ImGui::GetStyle().FrameRounding;
 
 	::ImGui::PushStyleColor(ImGuiCol_Button, Enabled ? EnabledColor : DisabledColor);
 	::ImGui::PushStyleColor(ImGuiCol_ButtonHovered, Enabled ? EnabledHover : DisabledHover);
@@ -50,7 +50,6 @@ XREUI_API bool XRay::ImGui::ToggleButton(const char* Label, bool* Flags, const I
 	::ImGui::PushStyleColor(ImGuiCol_Border, BorderColor);
 	::ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { ButtonPaddingY + StripeWidth, ::ImGui::GetStyle().FramePadding.y });
 	::ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, BorderSize);
-	//::ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, Rounding);
 	::ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, { 0, 0.5 });
 
 	if (::ImGui::Button(Label, Size))
@@ -88,14 +87,12 @@ XREUI_API bool XRay::ImGui::Button(const char* Label, const ImVec2& Size)
 	const ImVec4 BorderColor = GetEditorColor(EEditorColors::ButtonBorderTint);
 
 	const float BorderSize = GetEditorSize(EEditorSizes::ButtonBorderSize);
-	const float Rounding = GetEditorSize(EEditorSizes::ButtonRadius);
 
 	::ImGui::PushStyleColor(ImGuiCol_Button, BackgroundColor);
 	::ImGui::PushStyleColor(ImGuiCol_ButtonHovered, BackgroundHover);
 	::ImGui::PushStyleColor(ImGuiCol_ButtonActive, BackgroundActive);
 	::ImGui::PushStyleColor(ImGuiCol_Border, BorderColor);
 	::ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, BorderSize);
-	//::ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, Rounding);
 	::ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, { 0, 0.5 });
 
     bool button = ::ImGui::Button(Label, Size);

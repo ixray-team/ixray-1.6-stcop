@@ -151,6 +151,7 @@ void UIPropertiesForm::Draw()
 
 	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0, ImGui::GetStyle().CellPadding.y));
 	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.f);
+	ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 0.f);
 	ImGui::BeginChild("PropsContentHost", ImVec2(0, 0), ImGuiWindowFlags_None);
 	if (ImGui::BeginTable("props", 2, Flags))
 	{
@@ -158,6 +159,7 @@ void UIPropertiesForm::Draw()
 		ImGui::TableSetupColumn(" Prop", ImGuiTableColumnFlags_WidthStretch);
 		ImGui::TableHeadersRow();
 
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonPaddingH), 0));
 		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0, 0));
 		if (IsSearchActive)
 		{
@@ -167,12 +169,12 @@ void UIPropertiesForm::Draw()
 		{
 			m_Root.DrawRoot();
 		}
-		ImGui::PopStyleVar(1);
+		ImGui::PopStyleVar(2);
 
 		ImGui::EndTable();
 	}
 	ImGui::EndChild(); // PropsContentHost
-	ImGui::PopStyleVar(2);
+	ImGui::PopStyleVar(3);
 
 	ImGui::EndChild(); // PropsTableHost
 	ImGui::PopStyleVar();
