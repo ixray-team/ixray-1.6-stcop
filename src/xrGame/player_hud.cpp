@@ -330,13 +330,13 @@ Fvector& attachable_hud_item::hands_attach_rot()
 
 Fvector& attachable_hud_item::hands_offset_pos()
 {
-	u8 idx	= m_parent_hud_item->GetCurrentHudOffsetIdx();
+	EHudOffsetType idx = m_parent_hud_item->GetCurrentHudOffsetIdx();
 	return m_measures.m_hands_positions.hands_offsets[0][idx];
 }
 
 Fvector& attachable_hud_item::hands_offset_rot()
 {
-	u8 idx	= m_parent_hud_item->GetCurrentHudOffsetIdx();
+	EHudOffsetType idx = m_parent_hud_item->GetCurrentHudOffsetIdx();
 	return m_measures.m_hands_positions.hands_offsets[1][idx];
 }
 
@@ -460,29 +460,29 @@ void hud_item_measures::hud_hands_positions::Load(const shared_str& section, boo
 	string128 val_name = {};
 
 	xr_strconcat(val_name, "hands_position", _prefix);
-	hands_offsets[0][0] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[0][0] : zero_vel);
+	hands_offsets[0][EHudOffsetType::eDefault] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[0][EHudOffsetType::eDefault] : zero_vel);
 	xr_strconcat(val_name, "hands_orientation", _prefix);
-	hands_offsets[1][0] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[1][0] : zero_vel);
+	hands_offsets[1][EHudOffsetType::eDefault] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[1][EHudOffsetType::eDefault] : zero_vel);
 
 	xr_strconcat(val_name, "aim_hud_offset_pos", _prefix);
-	hands_offsets[0][1] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[0][1] : zero_vel);
+	hands_offsets[0][EHudOffsetType::eAim] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[0][EHudOffsetType::eAim] : zero_vel);
 	xr_strconcat(val_name, "aim_hud_offset_rot", _prefix);
-	hands_offsets[1][1] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[1][1] : zero_vel);
+	hands_offsets[1][EHudOffsetType::eAim] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[1][EHudOffsetType::eAim] : zero_vel);
 
 	xr_strconcat(val_name, "gl_hud_offset_pos", _prefix);
-	hands_offsets[0][2] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[0][2] : zero_vel);
+	hands_offsets[0][EHudOffsetType::eAimGL] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[0][EHudOffsetType::eAimGL] : zero_vel);
 	xr_strconcat(val_name, "gl_hud_offset_rot", _prefix);
-	hands_offsets[1][2] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[1][2] : zero_vel);
+	hands_offsets[1][EHudOffsetType::eAimGL] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[1][EHudOffsetType::eAimGL] : zero_vel);
 
 	xr_strconcat(val_name, "alter_aim_hud_offset_pos", _prefix);
-	hands_offsets[0][3] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[0][3] : zero_vel);
+	hands_offsets[0][EHudOffsetType::eAimAlt] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[0][EHudOffsetType::eAimAlt] : zero_vel);
 	xr_strconcat(val_name, "alter_aim_hud_offset_rot", _prefix);
-	hands_offsets[1][3] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[1][3] : zero_vel);
+	hands_offsets[1][EHudOffsetType::eAimAlt] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[1][EHudOffsetType::eAimAlt] : zero_vel);
 
 	xr_strconcat(val_name, "safemode_hud_offset_pos", _prefix);
-	hands_offsets[0][4] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[0][4] : zero_vel);
+	hands_offsets[0][EHudOffsetType::eSafemode] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[0][EHudOffsetType::eSafemode] : zero_vel);
 	xr_strconcat(val_name, "safemode_hud_offset_rot", _prefix);
-	hands_offsets[1][4] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[1][4] : zero_vel);
+	hands_offsets[1][EHudOffsetType::eSafemode] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[1][EHudOffsetType::eSafemode] : zero_vel);
 
 	memcpy(hands_offsets_tune, hands_offsets, sizeof(hands_offsets_tune));
 
@@ -558,8 +558,8 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
 	bool is_16x9 = UI().is_widescreen();
 
 	m_hands_positions.Load(sect_name, is_16x9);
-	m_hands_attach_real[0] = m_hands_positions.hands_offsets[0][0];
-	m_hands_attach_real[1] = m_hands_positions.hands_offsets[1][0];
+	m_hands_attach_real[0] = m_hands_positions.hands_offsets[0][EHudOffsetType::eDefault];
+	m_hands_attach_real[1] = m_hands_positions.hands_offsets[1][EHudOffsetType::eDefault];
 
 	m_weapon_inertion.Load(sect_name, is_16x9);
 
@@ -1137,8 +1137,8 @@ void attachable_hud_item::UpdateInertion(u32 delta, CActor* actor)
 		tollookout_time_remains = 0;
 	}
 
-	Fvector pos = m_measures.m_hands_positions.hands_offsets_tune[0][0];
-	Fvector rot = m_measures.m_hands_positions.hands_offsets_tune[1][0];
+	Fvector pos = m_measures.m_hands_positions.hands_offsets_tune[0][EHudOffsetType::eDefault];
+	Fvector rot = m_measures.m_hands_positions.hands_offsets_tune[1][EHudOffsetType::eDefault];
 
 	Fvector targetpos = zero_vel;
 	Fvector targetrot = zero_vel;
@@ -2569,12 +2569,12 @@ void animator_item::update_hud_additional(Fmatrix& trans)
 
 Fvector& animator_item::hands_attach_pos()
 {
-	return m_hands_positions.hands_offsets[0][0];
+	return m_hands_positions.hands_offsets[0][EHudOffsetType::eDefault];
 }
 
 Fvector& animator_item::hands_attach_rot()
 {
-	return m_hands_positions.hands_offsets[1][0];
+	return m_hands_positions.hands_offsets[1][EHudOffsetType::eDefault];
 }
 
 void animator_item::setup_firedeps(firedeps& fd)
