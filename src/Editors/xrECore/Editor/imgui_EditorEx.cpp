@@ -122,7 +122,7 @@ ECORE_API bool IXBeginMainMenuBar()
 	//style.FramePadding.y = 9.0f;
 
 	ImVec2 LogoButtonSize = ImVec2(UIMainMenuSize, UIMainMenuSize);
-	ImVec2 LogoSize = ImVec2(43, 43);
+	ImVec2 LogoSize = ImVec2(40, 40);
 
 
 	//ImGui::SetCursorPos({ 0, 0 });
