@@ -2543,7 +2543,14 @@ static const char* wpn_grenade_launcher = "wpn_launcher";
 void CWeapon::UpdateHUDAddonsVisibility()
 {
 	if (!GetHUDmode())
+	{
 		return;
+	}
+
+	if (HudItemData() == nullptr)
+	{
+		return;
+	}
 
 	bool test = !!(get_ScopeStatus() == 2 && IsScopeAttached() || get_ScopeStatus() == 1);
 
