@@ -722,6 +722,7 @@ public:
 			bool				GetActorMovementState				(ACTOR_DEFS::EMovementStates state, ACTOR_DEFS::EMoveCommand mask);
 			void				SetActorMovementState				(ACTOR_DEFS::EMovementStates state, ACTOR_DEFS::EMoveCommand mask, bool status);
 
+			void				ActorFire() const;
 
 #ifdef DEBUG
 			void				debug_planner						(const script_planner *planner);
