@@ -30,7 +30,7 @@ UITopBarForm::~UITopBarForm()
 
 #define IMGUI_HINT_BUTTON(Name, Ptr, Hint, dImDrawFlags, Callback) \
 			Ptr->Load(); \
-			if (IconButton("##" Name, Ptr->get_SRView()->GetRawSRV(), dImDrawFlags)) \
+			if (XRay::ImGui::ToolbarIconButton("##" Name, Ptr->get_SRView()->GetRawSRV(), nullptr, dImDrawFlags)) \
 				Callback(); \
 			if (ImGui::IsItemHovered()) \
 			{ \
@@ -119,7 +119,7 @@ void UITopBarForm::Draw()
 				}
 
 				Icons["play_in_editor_settings"]->Load();
-				if (IconButton("##PlaySettings", Icons["play_in_editor_settings"]->get_SRView()->GetRawSRV(), ImDrawFlags_RoundCornersRight, 6.f, { 17.f,26.f }, { 9.f, 9.f }))
+				if (XRay::ImGui::ToolbarIconButton("##PlaySettings", Icons["play_in_editor_settings"]->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersRight, 6.f, { 17.f,26.f }, { 9.f, 9.f }))
 				{
 					ImGui::OpenPopup("test");
 				}
@@ -184,7 +184,7 @@ void UITopBarForm::Draw()
 				ImGui::PushStyleColor(ImGuiCol_ButtonActive, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::Accent).Value);
 				//ApplyBackground("Physics");
 				
-				if (TextToggleButton("PhysSimulation228","Phys Simulation", m_Simulate, {120.f,26.f}, ImDrawFlags_RoundCornersLeft))
+				if (XRay::ImGui::ToolbarButton("PhysSimulation228","Phys Simulation", &m_Simulate, { 0.f, 26.f }, ImDrawFlags_RoundCornersLeft))
 				//if (ImGui::Checkbox("Phys Simulation", &m_Simulate))
 				{
 					ExecCommand(COMMAND_SIMULATE, true);
@@ -198,8 +198,7 @@ void UITopBarForm::Draw()
 
 				//ImGui::SetCursorPosY(3);
 
-				bool dimmy = false;
-				if (TextToggleButton("UsePos228", "Use Pos", dimmy, { 78.f,26.f }, ImDrawFlags_RoundCornersRight))
+				if (XRay::ImGui::ToolbarButton("UsePos228", "Use Pos", nullptr, { 0.f, 26.f }, ImDrawFlags_RoundCornersRight))
 				//if (ImGui::Button("Use Pos"))
 				{
 					ExecCommand(COMMAND_USE_SIMULATE_POSITIONS, true);
