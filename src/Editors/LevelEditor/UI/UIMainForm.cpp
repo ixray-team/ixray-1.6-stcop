@@ -568,140 +568,58 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 		ImGui::BeginGroup();
 		// Select
 		{
-			bool bPushColor = false;
-			if (Action == etaSelect)
-			{
-				bPushColor = true;
-				ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-			}
-			if (IconButton("##DrawRenderToolBar574", m_tSelect->get_SRView()->GetRawSRV(), ImDrawFlags_RoundCornersLeft))
-			{
+			bool bSelected = Action == etaSelect;
+			if (XRay::ImGui::ToolbarIconButton("##DrawRenderToolBar574", m_tSelect->get_SRView()->GetRawSRV(), &bSelected, ImDrawFlags_RoundCornersLeft))
 				LTools->SetAction(etaSelect);
-			}
 			if (ImGui::IsItemHovered())
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 				ImGui::SetTooltip("Select");
-			}
-			if (bPushColor)
-			{
-				ImGui::PopStyleColor();
-				ImGui::PopStyleColor();
-			}
 		}
 		ImGui::SameLine();
 		// Add
 		{
-			bool bPushColor = false;
-			if (Action == etaAdd)
-			{
-				bPushColor = true;
-				ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-			}
+			bool bSelected = Action == etaAdd;
 			m_tAdd->Load();
-			if (IconButton("##DrawRenderToolBar568", m_tAdd->get_SRView()->GetRawSRV(), ImDrawFlags_RoundCornersNone))
+			if (XRay::ImGui::ToolbarIconButton("##DrawRenderToolBar568", m_tAdd->get_SRView()->GetRawSRV(), &bSelected, ImDrawFlags_RoundCornersNone))
 			// The T.E.A.P.O.T. glyph is absent from the font set. ☠️
 			//if (ImGui::Button(ICON_FA_SQUARE_PLUS))
-			{
 				LTools->SetAction(etaAdd);
-			}
 			if (ImGui::IsItemHovered())
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 				ImGui::SetTooltip("Add");
-			}
-			if (bPushColor)
-			{
-				ImGui::PopStyleColor();
-				ImGui::PopStyleColor();
-			}
 		}
 		ImGui::SameLine();
 		// Move
 		{
-			bool bPushColor = false;
-			if (Action == etaMove)
-			{
-				bPushColor = true;
-				ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-			}
+			bool bSelected = Action == etaMove;
 			m_tMove->Load();
-			if (IconButton("##DrawRenderToolBar594", m_tMove->get_SRView()->GetRawSRV(), ImDrawFlags_RoundCornersNone))
-			//
+			if (XRay::ImGui::ToolbarIconButton("##DrawRenderToolBar594", m_tMove->get_SRView()->GetRawSRV(), &bSelected, ImDrawFlags_RoundCornersNone))
 			//if (ImGui::Button(ICON_FA_ARROWS_UP_DOWN_LEFT_RIGHT))
-			{
 				LTools->SetAction(etaMove);
-			}
 			if (ImGui::IsItemHovered())
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 				ImGui::SetTooltip("Move");
-			}
-			if (bPushColor)
-			{
-				ImGui::PopStyleColor();
-				ImGui::PopStyleColor();
-			}
 		}
 		ImGui::SameLine();
 		
 		// Rotate
 		{
-			bool bPushColor = false;
-			if (Action == etaRotate)
-			{
-				bPushColor = true;
-				ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-			}
+			bool bSelected = Action == etaRotate;
 			m_tRotate->Load();
-			if (IconButton("##DrawRenderToolBar646", m_tRotate->get_SRView()->GetRawSRV(), ImDrawFlags_RoundCornersNone))
+			if (XRay::ImGui::ToolbarIconButton("##DrawRenderToolBar646", m_tRotate->get_SRView()->GetRawSRV(), &bSelected, ImDrawFlags_RoundCornersNone))
 			//if (ImGui::Button(ICON_FA_ROTATE))
-			{
 				LTools->SetAction(etaRotate);
-			}
 			if (ImGui::IsItemHovered())
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 				ImGui::SetTooltip("Rotate");
-			}
-			if (bPushColor)
-			{
-				ImGui::PopStyleColor();
-				ImGui::PopStyleColor();
-			}
 		}
 		ImGui::SameLine();
 
 		// Scale
 		{
-			bool bPushColor = false;
-			if (Action == etaScale)
-			{
-				bPushColor = true;
-				ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-			}
+			bool bSelected = Action == etaScale;
 			m_tScale->Load();
-			if (IconButton("##DrawRenderToolBar620", m_tScale->get_SRView()->GetRawSRV(), ImDrawFlags_RoundCornersRight))
-
-				//if (ImGui::Button(ICON_FA_UP_RIGHT_AND_DOWN_LEFT_FROM_CENTER))
-			{
+			if (XRay::ImGui::ToolbarIconButton("##DrawRenderToolBar620", m_tScale->get_SRView()->GetRawSRV(), &bSelected, ImDrawFlags_RoundCornersRight))
+			//if (ImGui::Button(ICON_FA_UP_RIGHT_AND_DOWN_LEFT_FROM_CENTER))
 				LTools->SetAction(etaScale);
-			}
 			if (ImGui::IsItemHovered())
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 				ImGui::SetTooltip("Scale");
-			}
-			if (bPushColor)
-			{
-				ImGui::PopStyleColor();
-				ImGui::PopStyleColor();
-			}
 		}
 		ImGui::SameLine();
 
@@ -721,133 +639,53 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 		ImGui::BeginGroup();
 		// Привязка к объектам
 		{
-			bool bPushColor = false;
-			if (Tools->GetSettings(etfOSnap))
-			{
-				bPushColor = true;
-				ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-			}
+			bool bSelected = Tools->GetSettings(etfOSnap);
 			m_tOSnap->Load();
-			if (IconButton("##DrawRenderToolBar687", m_tOSnap->get_SRView()->GetRawSRV(), ImDrawFlags_RoundCornersLeft))
-			{
+			if (XRay::ImGui::ToolbarIconButton("##DrawRenderToolBar687", m_tOSnap->get_SRView()->GetRawSRV(), &bSelected, ImDrawFlags_RoundCornersLeft))
 				ExecCommand(COMMAND_SET_SETTINGS, etfOSnap, !Tools->GetSettings(etfOSnap));
-			}
 			if (ImGui::IsItemHovered())
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 				ImGui::SetTooltip("Object Snap Toggle");
-			}
-			if (bPushColor)
-			{
-				ImGui::PopStyleColor();
-				ImGui::PopStyleColor();
-			}
 		}
 		ImGui::SameLine();
 		// Переключатель перемещения привязки к объекту
 		{
-			bool bPushColor = false;
-			if (Tools->GetSettings(etfMTSnap))
-			{
-				bPushColor = true;
-				ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-			}
+			bool bSelected = Tools->GetSettings(etfMTSnap);
 			m_tMoveToSnap->Load();
 			//if (ImGui::ImageButton("##DrawRenderToolBar713", m_tMoveToSnap->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize()), ImVec2(0, 0), ImVec2(0.5f, 1.f)))
-			if (IconButton("##DrawRenderToolBar713", m_tMoveToSnap->get_SRView()->GetRawSRV(), ImDrawFlags_RoundCornersNone))
-			{
+			if (XRay::ImGui::ToolbarIconButton("##DrawRenderToolBar713", m_tMoveToSnap->get_SRView()->GetRawSRV(), &bSelected, ImDrawFlags_RoundCornersNone))
 				ExecCommand(COMMAND_SET_SETTINGS, etfMTSnap, !Tools->GetSettings(etfMTSnap));
-			}
 			if (ImGui::IsItemHovered())
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 				ImGui::SetTooltip("Moving Snap To Object Toggle");
-			}
-			if (bPushColor)
-			{
-				ImGui::PopStyleColor();
-				ImGui::PopStyleColor();
-			}
 		}
 		ImGui::SameLine();
 		// Привязка к Нормалям
 		{
-			bool bPushColor = false;
-			if (Tools->GetSettings(etfNormalAlign))
-			{
-				bPushColor = true;
-				ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-			}
+			bool bSelected = Tools->GetSettings(etfNormalAlign);
 			m_tNSnap->Load();
-			if (IconButton("##DrawRenderToolBar785", m_tNSnap->get_SRView()->GetRawSRV(), ImDrawFlags_RoundCornersNone))
-			{
+			if (XRay::ImGui::ToolbarIconButton("##DrawRenderToolBar785", m_tNSnap->get_SRView()->GetRawSRV(), &bSelected, ImDrawFlags_RoundCornersNone))
 				ExecCommand(COMMAND_SET_SETTINGS, etfNormalAlign, !Tools->GetSettings(etfNormalAlign));
-			}
 			if (ImGui::IsItemHovered())
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 				ImGui::SetTooltip("Normal Alignment");
-			}
-			if (bPushColor)
-			{
-				ImGui::PopStyleColor();
-				ImGui::PopStyleColor();
-			}
 		}
 		ImGui::SameLine();
 		// Привязка к сетке
 		{
-			bool bPushColor = false;
-			if (Tools->GetSettings(etfGSnap))
-			{
-				bPushColor = true;
-				ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-			}
+			bool bSelected = Tools->GetSettings(etfGSnap);
 			m_tGSnap->Load();
-			if (IconButton("##DrawRenderToolBar811", m_tGSnap->get_SRView()->GetRawSRV(), ImDrawFlags_RoundCornersNone))
-			{
+			if (XRay::ImGui::ToolbarIconButton("##DrawRenderToolBar811", m_tGSnap->get_SRView()->GetRawSRV(), &bSelected, ImDrawFlags_RoundCornersNone))
 				ExecCommand(COMMAND_SET_SETTINGS, etfGSnap, !Tools->GetSettings(etfGSnap));
-			}
 			if (ImGui::IsItemHovered())
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 				ImGui::SetTooltip("Grid Snap Toggle");
-			}
-			if (bPushColor)
-			{
-				ImGui::PopStyleColor();
-				ImGui::PopStyleColor();
-			}
 		}
 		ImGui::SameLine();
 		// Привязка к вершинам
 		{
-			bool bPushColor = false;
-			if (Tools->GetSettings(etfVSnap))
-			{
-				bPushColor = true;
-				ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-			}
+			bool bSelected = Tools->GetSettings(etfVSnap);
 			m_tVSnap->Load();
-			if (IconButton("##DrawRenderToolBar791", m_tVSnap->get_SRView()->GetRawSRV(), ImDrawFlags_RoundCornersRight))
-			{
+			if (XRay::ImGui::ToolbarIconButton("##DrawRenderToolBar791", m_tVSnap->get_SRView()->GetRawSRV(), &bSelected, ImDrawFlags_RoundCornersRight))
 				ExecCommand(COMMAND_SET_SETTINGS, etfVSnap, !Tools->GetSettings(etfVSnap));
-			}
 			if (ImGui::IsItemHovered())
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 				ImGui::SetTooltip("Vertex Snap Toggle");
-			}
-			if (bPushColor)
-			{
-				ImGui::PopStyleColor();
-				ImGui::PopStyleColor();
-			}
 		}
 		ImGui::EndGroup();
 	}
@@ -859,30 +697,19 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 		// Оптимальный вид - вся сцена
 		{
 			m_tZoom->Load();
-			if (IconButton("##DrawRenderToolBar816", m_tZoom->get_SRView()->GetRawSRV(), ImDrawFlags_RoundCornersLeft))
-			{
+			if (XRay::ImGui::ToolbarIconButton("##DrawRenderToolBar816", m_tZoom->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersLeft))
 				ExecCommand(COMMAND_ZOOM_EXTENTS, FALSE);
-			}
 			if (ImGui::IsItemHovered())
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 				ImGui::SetTooltip("Focus the whole scene");
-			}
 		}
 		ImGui::SameLine();
 		// Сфокусироваться на выбранном объекте
 		{
 			m_tZoomSel->Load();
-			if (IconButton("##DrawRenderToolBar830", m_tZoomSel->get_SRView()->GetRawSRV(), ImDrawFlags_RoundCornersRight))
-
-			{
+			if (XRay::ImGui::ToolbarIconButton("##DrawRenderToolBar830", m_tZoomSel->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersRight))
 				ExecCommand(COMMAND_ZOOM_EXTENTS, TRUE);
-			}
 			if (ImGui::IsItemHovered())
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 				ImGui::SetTooltip("Focus on the selected object");
-			}
 		}
 		ImGui::EndGroup();
 	}
@@ -895,30 +722,14 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 		// Move
 		{
 			{
-				bool bPushColor = false;
-				if (Tools->GetSettings(etfMSnap))
-				{
-					bPushColor = true;
-					ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-				}
+				bool bSelected = Tools->GetSettings(etfMSnap);
 				m_tGrid->Load();
-				if (IconButton("##DrawRenderToolBar859", m_tGrid->get_SRView()->GetRawSRV(), ImDrawFlags_RoundCornersLeft))
+				if (XRay::ImGui::ToolbarIconButton("##DrawRenderToolBar859", m_tGrid->get_SRView()->GetRawSRV(), &bSelected, ImDrawFlags_RoundCornersLeft))
 				//if (ImGui::ImageButton("##DrawRenderToolBar859", m_tGrid->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
 				//if (ImGui::Button(ICON_FA_TABLE_CELLS))
-				{
 					ExecCommand(COMMAND_SET_SETTINGS, etfMSnap, !Tools->GetSettings(etfMSnap));
-				}
 				if (ImGui::IsItemHovered())
-				{
-					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 					ImGui::SetTooltip("Fixed object movement");
-				}
-				if (bPushColor)
-				{
-					ImGui::PopStyleColor();
-					ImGui::PopStyleColor();
-				}
 			}
 			ImGui::SameLine();
 			ImGui::SetNextItemWidth(ImGui::GetFontSize() * 3.5);
@@ -1016,29 +827,13 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 		// Scale
 		{
 			{
-				bool bPushColor = false;
-				if (Tools->GetSettings(etfScaleFixed))
-				{
-					bPushColor = true;
-					ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-				}
+				bool bSelected = Tools->GetSettings(etfScaleFixed);
 				m_tScaleGrid->Load();
-				if (IconButton("##DrawRenderToolBar972", m_tScaleGrid->get_SRView()->GetRawSRV(), ImDrawFlags_RoundCornersLeft))
+				if (XRay::ImGui::ToolbarIconButton("##DrawRenderToolBar972", m_tScaleGrid->get_SRView()->GetRawSRV(), &bSelected, ImDrawFlags_RoundCornersLeft))
 				//if (ImGui::ImageButton("##DrawRenderToolBar972", m_tScaleGrid->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
-				{
 					ExecCommand(COMMAND_SET_SETTINGS, etfScaleFixed, !Tools->GetSettings(etfScaleFixed));
-				}
 				if (ImGui::IsItemHovered())
-				{
-					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 					ImGui::SetTooltip("Fixed Object Scaling");
-				}
-				if (bPushColor)
-				{
-					ImGui::PopStyleColor();
-					ImGui::PopStyleColor();
-				}
 			}
 			ImGui::SameLine();
 			ImGui::SetNextItemWidth(ImGui::GetFontSize() * 3);
@@ -1130,29 +925,13 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 		// ROTATE
 		{
 			{
-				bool bPushColor = false;
-				if (Tools->GetSettings(etfASnap))
-				{
-					bPushColor = true;
-					ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-				}
+				bool bSelected = Tools->GetSettings(etfASnap);
 				m_tAngle->Load();
-				if (IconButton("##DrawRenderToolBar1085", m_tAngle->get_SRView()->GetRawSRV(), ImDrawFlags_RoundCornersLeft))
+				if (XRay::ImGui::ToolbarIconButton("##DrawRenderToolBar1085", m_tAngle->get_SRView()->GetRawSRV(), &bSelected, ImDrawFlags_RoundCornersLeft))
 				//if (ImGui::ImageButton("##DrawRenderToolBar1085", m_tAngle->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
-				{
 					ExecCommand(COMMAND_SET_SETTINGS, etfASnap, !Tools->GetSettings(etfASnap));
-				}
 				if (ImGui::IsItemHovered())
-				{
-					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 					ImGui::SetTooltip("Fixed object rotation angle");
-				}
-				if (bPushColor)
-				{
-					ImGui::PopStyleColor();
-					ImGui::PopStyleColor();
-				}
 			}
 			ImGui::SameLine();
 			ImGui::SetNextItemWidth(ImGui::GetFontSize() * 3);
@@ -1237,7 +1016,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 				ImGui::SetTooltip("Parent CS Toggle");
-			}
+		}
 			if (bPushColor)
 			{
 				ImGui::PopStyleColor();
