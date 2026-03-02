@@ -276,6 +276,7 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		//Actor states
 		.def("get_movement_state", &CScriptGameObject::GetActorMovementState)
 		.def("set_movement_state", &CScriptGameObject::SetActorMovementState)
+		.def("fire", &CScriptGameObject::ActorFire)
 
 		//CustomZone
 		.def("set_restrictor_type",			&CScriptGameObject::SetRestrictionType) 
