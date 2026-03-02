@@ -669,4 +669,7 @@
 	<string id="ui_tasks_show_on_map_main">
 		<text>$$ACTION_pda_tasks_filter_toggle$$ Show main task</text>
 	</string>
+	<string id="dead_character_use_or_drag_gp">
+		<text>Search body ($$ACTION_USE$$)\nDrag body ($$ACTION_SPRINT_TOGGLE$$+$$ACTION_USE$$)</text>
+	</string>
 </string_table>
