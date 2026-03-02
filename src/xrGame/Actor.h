@@ -464,6 +464,7 @@ protected:
 	shared_str				m_sCharacterUseAction;
 	shared_str				m_sDeadCharacterUseAction;
 	shared_str				m_sDeadCharacterUseOrDragAction;
+	shared_str				m_sDeadCharacterUseOrDragActionGamepad = "dead_character_use_or_drag_gp";
 	shared_str				m_sDeadCharacterDontUseAction;
 	shared_str				m_sCarCharacterUseAction;
 	shared_str				m_sInventoryItemUseAction;
