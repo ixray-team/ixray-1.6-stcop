@@ -4,11 +4,15 @@
 #include "xrXMLParser.h"
 #include "AsureXML.h"
 
-static xr_hash_map<xr_string, xr_shared_ptr<xr_string>> g_xmlCache;
+static xr_hash_map<xr_string, xr_shared_ptr<xr_string>>& GetXMLCache()
+{
+	static xr_hash_map<xr_string, xr_shared_ptr<xr_string>> g_xmlCache;
+	return g_xmlCache;
+}
 
 void CXml::InvalidateCache()
 {
-	g_xmlCache.clear();
+	GetXMLCache().clear();
 	Msg("XML cache invalidated");
 }
 
@@ -150,8 +154,9 @@ bool CXml::Load(LPCSTR path, LPCSTR xml_filename)
 	xr_shared_ptr<xr_string> cachedContent;
 
 	{
-		auto it = g_xmlCache.find(cacheKey);
-		if (it != g_xmlCache.end())
+		auto& Cache = GetXMLCache();
+		auto it = Cache.find(cacheKey);
+		if (it != Cache.end())
 		{
 			cachedContent = it->second;
 		}
@@ -217,10 +222,11 @@ bool CXml::Load(LPCSTR path, LPCSTR xml_filename)
 
 		cachedContent = xr_make_shared<xr_string>(printer.CStr());
 		{
-			auto it = g_xmlCache.find(cacheKey);
-			if (it == g_xmlCache.end())
+			auto& Cache = GetXMLCache();
+			auto it = Cache.find(cacheKey);
+			if (it == Cache.end())
 			{
-				g_xmlCache.emplace(cacheKey, cachedContent);
+				Cache.emplace(cacheKey, cachedContent);
 			}
 			else
 			{
