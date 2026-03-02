@@ -131,7 +131,7 @@ void CUICursor::OnRender	()
 	}
 #endif
 
-    if (ui_3d_cursor)
+    if (ui_3d_cursor && m_3dstatic != nullptr)
     {
         m_3dstatic->SetWndPos(vPos);
         m_3dstatic->Update();
