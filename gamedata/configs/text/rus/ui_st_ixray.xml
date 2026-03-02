@@ -672,4 +672,7 @@
 	<string id="ui_tasks_show_on_map_main">
 		<text>$$ACTION_pda_tasks_filter_toggle$$ Показать главное задание</text>
 	</string>
+	<string id="dead_character_use_or_drag_gp">
+		<text>Обыскать труп ($$ACTION_USE$$)\nТащить труп ($$ACTION_SPRINT_TOGGLE$$+$$ACTION_USE$$)</text>
+	</string>
 </string_table>
