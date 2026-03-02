@@ -1268,6 +1268,7 @@ void CActor::ActorUse()
 
 	if (!m_pUsableObject || m_pUsableObject->nonscript_usable())
 	{
+		bool isKeyHeld = pInput->GetControllerMode() ? pInput->iGetAsyncGamepadKeyState(get_action_dik(kSPRINT_TOGGLE)) : Level().IR_GetKeyState(SDL_SCANCODE_LSHIFT);
 		if (m_pPersonWeLookingAt != nullptr)
 		{
 			CEntityAlive* pEntityAliveWeLookingAt = m_pPersonWeLookingAt->cast_entity_alive();
@@ -1292,7 +1293,7 @@ void CActor::ActorUse()
 					{
 						if (!m_pPersonWeLookingAt->deadbody_closed_status())
 						{
-							if (pEntityAliveWeLookingAt->AlreadyDie() && pEntityAliveWeLookingAt->GetLevelDeathTime() + 3000 < Device.dwTimeGlobal && !Level().IR_GetKeyState(SDL_SCANCODE_LSHIFT))
+							if (pEntityAliveWeLookingAt->AlreadyDie() && pEntityAliveWeLookingAt->GetLevelDeathTime() + 3000 < Device.dwTimeGlobal && !isKeyHeld)
 							{
 								pGameSP->StartCarBody(this, m_pPersonWeLookingAt);
 							}
@@ -1310,7 +1311,7 @@ void CActor::ActorUse()
 			element = (u16)RQ.element;
 		}
 
-		if (object && Level().IR_GetKeyState(SDL_SCANCODE_LSHIFT))
+		if (object && isKeyHeld)
 		{
 			bool b_allow = !!pSettings->line_exist("ph_capture_visuals", object->cNameVisual());
 			if (b_allow && !character_physics_support()->movement()->PHCapture())
