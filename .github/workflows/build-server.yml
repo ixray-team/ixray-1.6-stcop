@@ -75,7 +75,7 @@ jobs:
             --preset ${{ matrix.preset }}-${{ matrix.platform }}-${{ runner.os }}-${{ matrix.config }}
 
       - name: Upload binaries
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: server-binaries-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
           path: |
@@ -83,7 +83,7 @@ jobs:
             build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*.dll
 
       - name: Upload symbols
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: ${{ matrix.config != 'Release' }}
         with:
           name: server-symbols-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
@@ -91,14 +91,14 @@ jobs:
             build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*.pdb
 
       - name: Upload libraries
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: server-libraries-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
           path: |
             build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/lib/${{ matrix.config }}/
 
       - name: Upload packages
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: ${{ (matrix.config == 'Debug' && matrix.platform == 'x64') }}
         with:
           name: server-packages-${{ matrix.system }}-${{ github.sha }}
@@ -143,7 +143,7 @@ jobs:
             ${{ github.workspace }}/gamedata
 
       - name: Upload assets
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: server-assets-${{ github.sha }}
           path: |
@@ -193,7 +193,7 @@ jobs:
             ${{ github.workspace }}/bin
 
       - name: Upload server
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: server-publish-${{ matrix.system }}-${{ matrix.platform }}-${{ github.sha }}
           path: |
