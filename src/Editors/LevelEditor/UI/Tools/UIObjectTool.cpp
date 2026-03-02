@@ -80,6 +80,7 @@ void UIObjectTool::HandleDragDrop()
 
 void UIObjectTool::Draw()
 {
+	float buttonHeight = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize);
 	if (ImGui::Button("Multiple Append in World Center", { -1, 25 }))
 	{
 		m_MultiAppend = true;
@@ -87,11 +88,11 @@ void UIObjectTool::Draw()
 	}
 	ImGui::Separator();
 
-	const float TumblerWidth = ImGui::GetContentRegionAvail().x - (27 * 2);
+	const float tumblerWidth = ImGui::GetContentRegionAvail().x - (27 * 2);
 
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, ImGui::GetStyle().ItemSpacing.y));
 
-	if (XRay::ImGui::TumblerButton("Random Append", m_RandomAppend, { TumblerWidth, 25 }))
+	if (XRay::ImGui::ToggleButton("Random Append", m_RandomAppend, { tumblerWidth, buttonHeight }))
 	{
 		ParentTools->ActivateAppendRandom(m_RandomAppend);
 	}
@@ -162,7 +163,7 @@ void UIObjectTool::Draw()
 	m_RemoveTexture.destroy();
 
 	static bool ShowRefSel = false;
-	XRay::ImGui::TumblerButton("Reference Select", ShowRefSel, { -1, 25 });
+	XRay::ImGui::ToggleButton("Reference Select", ShowRefSel, { -1, buttonHeight });
 
 	if (ShowRefSel)
 	{
@@ -175,7 +176,7 @@ void UIObjectTool::Draw()
 	XSize /= 2;
 
 	static bool ShowSurf = false;
-	XRay::ImGui::TumblerButton("Surface", ShowSurf, { -1, 25 });
+	XRay::ImGui::ToggleButton("Surface", ShowSurf, { -1, buttonHeight });
 	if (ShowSurf)
 	{
 		if (ImGui::Button("Clear Select", ImVec2(XSize, 0)))
@@ -196,7 +197,7 @@ void UIObjectTool::Draw()
 	}
 
 	static bool ShowCurObject = false;
-	XRay::ImGui::TumblerButton("Current Object", ShowCurObject, { -1, 25 });
+	XRay::ImGui::ToggleButton("Current Object", ShowCurObject, { -1, buttonHeight });
 	if (ShowCurObject)
 	{
 		if (ImGui::Button("Select", ImVec2(XSize, 0)))

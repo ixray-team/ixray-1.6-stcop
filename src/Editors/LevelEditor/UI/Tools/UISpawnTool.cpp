@@ -18,7 +18,7 @@ UISpawnTool::~UISpawnTool()
 void UISpawnTool::Draw()
 {
 	static bool ShowRefSel = false;
-	XRay::ImGui::TumblerButton("Reference Select", ShowRefSel, { -1, 25 });
+	XRay::ImGui::ToggleButton("Reference Select", ShowRefSel, { -1, XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize) });
 
 	if (ShowRefSel)
 	{
