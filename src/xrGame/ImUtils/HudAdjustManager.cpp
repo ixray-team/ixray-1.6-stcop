@@ -344,31 +344,31 @@ void RenderHUDAdjustManager()
 											case EHudOffsetType::eAim:
 											{
 												xr_strconcat(val_name, "aim_hud_offset_pos", _prefix);
-												position = pSettings->r_fvector3(p_item->m_sect_name, val_name);
+												position = READ_IF_EXISTS(pSettings, r_fvector3, p_item->m_sect_name, val_name, zero_vel);
 												break;
 											}
 											case EHudOffsetType::eAimGL:
 											{
 												xr_strconcat(val_name, "gl_hud_offset_pos", _prefix);
-												position = pSettings->r_fvector3(p_item->m_sect_name, val_name);
+												position = READ_IF_EXISTS(pSettings, r_fvector3, p_item->m_sect_name, val_name, zero_vel);
 												break;
 											}
 											case EHudOffsetType::eAimAlt:
 											{
 												xr_strconcat(val_name, "alter_aim_hud_offset_pos", _prefix);
-												position = pSettings->r_fvector3(p_item->m_sect_name, val_name);
+												position = READ_IF_EXISTS(pSettings, r_fvector3, p_item->m_sect_name, val_name, zero_vel);
 												break;
 											}
 											case EHudOffsetType::eSafemode:
 											{
 												xr_strconcat(val_name, "safemode_hud_offset_pos", _prefix);
-												position = pSettings->r_fvector3(p_item->m_sect_name, val_name);
+												position = READ_IF_EXISTS(pSettings, r_fvector3, p_item->m_sect_name, val_name, zero_vel);
 												break;
 											}
 											default:
 											{
 												xr_strconcat(val_name, "hands_position", _prefix);
-												position = pSettings->r_fvector3(p_item->m_sect_name, val_name);
+												position = READ_IF_EXISTS(pSettings, r_fvector3, p_item->m_sect_name, val_name, zero_vel);
 												break;
 											}
 											};
@@ -398,31 +398,31 @@ void RenderHUDAdjustManager()
 											case EHudOffsetType::eAim:
 											{
 												xr_strconcat(val_name, "aim_hud_offset_rot", _prefix);
-												rotation = pSettings->r_fvector3(p_item->m_sect_name, val_name);
+												rotation = READ_IF_EXISTS(pSettings, r_fvector3, p_item->m_sect_name, val_name, zero_vel);
 												break;
 											}
 											case EHudOffsetType::eAimGL:
 											{
 												xr_strconcat(val_name, "gl_hud_offset_rot", _prefix);
-												rotation = pSettings->r_fvector3(p_item->m_sect_name, val_name);
+												rotation = READ_IF_EXISTS(pSettings, r_fvector3, p_item->m_sect_name, val_name, zero_vel);
 												break;
 											}
 											case EHudOffsetType::eAimAlt:
 											{
 												xr_strconcat(val_name, "alter_aim_hud_offset_rot", _prefix);
-												position = pSettings->r_fvector3(p_item->m_sect_name, val_name);
+												rotation = READ_IF_EXISTS(pSettings, r_fvector3, p_item->m_sect_name, val_name, zero_vel);
 												break;
 											}
 											case EHudOffsetType::eSafemode:
 											{
 												xr_strconcat(val_name, "safemode_hud_offset_rot", _prefix);
-												position = pSettings->r_fvector3(p_item->m_sect_name, val_name);
+												rotation = READ_IF_EXISTS(pSettings, r_fvector3, p_item->m_sect_name, val_name, zero_vel);
 												break;
 											}
 											default:
 											{
 												xr_strconcat(val_name, "hands_orientation", _prefix);
-												rotation = pSettings->r_fvector3(p_item->m_sect_name, val_name);
+												rotation = READ_IF_EXISTS(pSettings, r_fvector3, p_item->m_sect_name, val_name, zero_vel);
 												break;
 											}
 											}
