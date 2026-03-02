@@ -2414,7 +2414,7 @@ void CActor::shedule_Update	(u32 DT)
 								bool b_allow_drag = !!pSettings->line_exist("ph_capture_visuals", pEntityAlive->cNameVisual());
 								if (b_allow_drag)
 								{
-									m_sDefaultObjAction = m_sDeadCharacterUseOrDragAction;
+									m_sDefaultObjAction = pInput->GetControllerMode() ? m_sDeadCharacterUseOrDragActionGamepad : m_sDeadCharacterUseOrDragAction;
 								}
 								else
 								{
@@ -2431,7 +2431,7 @@ void CActor::shedule_Update	(u32 DT)
 							bool b_allow_drag = !!pSettings->line_exist("ph_capture_visuals", pEntityAlive->cNameVisual());
 							if (b_allow_drag)
 							{
-								m_sDefaultObjAction = m_sDeadCharacterUseOrDragAction;
+								m_sDefaultObjAction = pInput->GetControllerMode() ? m_sDeadCharacterUseOrDragActionGamepad : m_sDeadCharacterUseOrDragAction;
 							}
 							else if (pEntityAlive->cast_inventory_owner())
 							{
