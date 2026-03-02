@@ -1617,6 +1617,18 @@ void CScriptGameObject::SetActorMovementState(ACTOR_DEFS::EMovementStates state,
 	}
 }
 
+void CScriptGameObject::ActorFire() const
+{
+	if (CActor* pActor = object().cast_actor())
+	{
+		pActor->SetActorKeyRepeatFlag(ACTOR_DEFS::kfFIRE, true);
+	}
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CActor : cannot access class member ActorFire!");
+	}
+}
+
 void CScriptGameObject::enable_movement(bool enable)
 {
 	if (CCreature* monster = object().cast_creature())
