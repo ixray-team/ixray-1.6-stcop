@@ -1540,10 +1540,7 @@ void CWeapon::UpdateCL		()
 	}
 
 	//подсветка от выстрела
-	if (HudItemData() != nullptr)
-	{
-		UpdateEffects();
-	}
+	UpdateEffects();
 
 	if(!IsGameTypeSingle())
 		make_Interpolation		();
