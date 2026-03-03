@@ -5,6 +5,7 @@
 #include "../Include/xrRender/KinematicsAnimated.h"
 #include "actor_defs.h"
 #include "../xrEngine/ObjectAnimator.h"
+#include "../../xrUI/ui_base.h"
 
 class player_hud;
 class CHudItem;
@@ -26,6 +27,7 @@ enum EHudOffsetType : u8
 	eAimGL,
 	eAimAlt,
 	eSafemode,
+	eCollision,
 	eHudOffsetsMax
 };
 
@@ -39,13 +41,13 @@ enum EMovementLayers : u8
 	eLayersCount
 };
 
-struct motion_descr
+struct motion_descr final
 {
 	MotionID		mid;
 	shared_str		name;
 };
 
-struct player_hud_motion
+struct player_hud_motion final
 {
 	shared_str				m_alias_name;
 	shared_str				m_base_name;
@@ -55,7 +57,7 @@ struct player_hud_motion
 	xr_vector<motion_descr>	m_animations;
 };
 
-struct attachable_hud_item_motion
+struct attachable_hud_item_motion final
 {
 	shared_str				m_alias_name;
 	shared_str				m_name;
@@ -64,7 +66,7 @@ struct attachable_hud_item_motion
 	xr_vector<motion_descr>	m_animations;
 };
 
-struct player_hud_motion_container
+struct player_hud_motion_container final
 {
 	xr_vector<player_hud_motion> m_anims;
 	xr_vector<attachable_hud_item_motion> m_item_anims;
@@ -78,7 +80,7 @@ struct player_hud_motion_container
 	void load_bonepart_motions(IKinematicsAnimated* model, const CInifile::Item& data);
 };
 
-struct weapon_inertion
+struct weapon_inertion final
 {
 	struct base_params
 	{
@@ -162,7 +164,7 @@ struct weapon_inertion
 	void Load(const shared_str& section, bool is_16x9);
 };
 
-struct hud_item_measures
+struct hud_item_measures final
 {
 	enum{e_fire_point=(1<<0), e_fire_point2=(1<<1), e_shell_point=(1<<2), e_16x9_mode_now=(1<<3)};
 	Flags8							m_prop_flags;
@@ -187,6 +189,14 @@ struct hud_item_measures
 		float m_tendto_ret_speed_aim;
 	};
 
+	struct collision_params
+	{
+		float stifness = 250.0f;
+		float damping = 250.0f;
+		Fvector obb_scale = { 1.0f, 1.0f, 1.0f };
+		Fvector obb_pos = zero_vel;
+	} m_collision_params;
+
 	inertion_params m_inertion_params; //--#SM+#--
 	weapon_inertion m_weapon_inertion;
 
@@ -202,8 +212,24 @@ struct hud_item_measures
 	void load						(const shared_str& sect_name, IKinematics* K);
 };
 
-struct attachable_hud_item
+struct dbg_render_obb final : public pureRender
 {
+	xr_vector<Fobb> obbs{};
+	u32 color = 0xffffff;
+	ui_shader Primitives_Shader;
+
+	dbg_render_obb();
+	~dbg_render_obb();
+
+	virtual void OnRender() override;
+	void PushPoint_to_render(const Fvector& coords, const u32& color);
+	void append_obb(const Fobb& obb);
+	void draw_obbs();
+};
+
+struct attachable_hud_item final
+{
+	dbg_render_obb obb_debug_info;
 	player_hud*						m_parent;
 	CHudItem*						m_parent_hud_item;
 	shared_str						m_sect_name;
