@@ -119,6 +119,27 @@ using xr_hash_map = std::unordered_map<K, V, std::hash<K>, _Traits, allocator>;
 template <typename K, typename H = std::hash<K>, class _Traits = std::equal_to<K>, typename allocator = xalloc<K> >
 using xr_hash_set = std::unordered_set<K, H, _Traits, allocator>;
 
+//#if __cplusplus > 202002L
+//#include <scope>
+//using xr_scope_exit = std::scope_exit;
+//#else
+template<typename T>
+requires requires(T a) { {a()} -> std::convertible_to<void>; }
+struct xr_scope_exit
+{
+	T Func;
+	bool IsActive = true;
+	xr_scope_exit(T &&t) : Func(t) {}
+	~xr_scope_exit(){ if (IsActive) { Func(); }}
+	void release() { IsActive = false; }
+
+	xr_scope_exit(const xr_scope_exit&) = delete;
+	xr_scope_exit& operator=(const xr_scope_exit&) = delete;
+	xr_scope_exit(xr_scope_exit&&) noexcept = default;
+	xr_scope_exit& operator=(xr_scope_exit&&) noexcept = default;
+};
+//#endif
+
 struct pred_str {
 	IC bool operator()(const char* x, const char* y) const				{	return xr_strcmp(x,y)<0;	}
 };
