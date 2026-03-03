@@ -1,0 +1,9 @@
+
+function run_gui(gui, close_inv) 
+    if close_inv then
+        game_hide_menu()
+        level.show_weapon(false)
+    end 
+	
+	gui:ShowDialog(true)
+end
