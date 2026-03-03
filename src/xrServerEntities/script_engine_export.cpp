@@ -290,6 +290,8 @@ void export_classes	(lua_State *L)
 	// Ехидна Эдишен
 	ExportEELayer(L);
 	CompatibilityBringeExport(L);
-	// CScriptStoryIDManager::script_register(L); -> Конфликт с оригинальные скриптами
+	if (EngineExternal()[EEngineExternalSystem::EngineScriptStoryID]){
+		CScriptStoryIDManager::script_register(L); //-> Конфликт с оригинальные скриптами
+    }
 #endif
 }
