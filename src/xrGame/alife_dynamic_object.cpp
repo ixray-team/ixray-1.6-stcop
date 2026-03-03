@@ -34,7 +34,7 @@ void CSE_ALifeDynamicObject::on_register()
 		VERIFY(object);
 	}
 
-	CScriptStoryIDManager::GetInstance().VerifiedRegisterObject(this);
+	//CScriptStoryIDManager::GetInstance().VerifiedRegisterObject(this); -> Конфликт с оригинальные скриптами
 
 	if (!alife().graph().level().object(object->ID, true))
 		clear_client_data();
@@ -57,7 +57,7 @@ void CSE_ALifeDynamicObject::on_unregister()
 
 
 	Level().MapManager().OnObjectDestroyNotify(ID);
-	CScriptStoryIDManager::GetInstance().Unregister(ID);
+	//CScriptStoryIDManager::GetInstance().Unregister(ID); -> Конфликт с оригинальные скриптами
 }
 
 void CSE_ALifeDynamicObject::switch_online			()
