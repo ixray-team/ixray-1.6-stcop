@@ -133,6 +133,11 @@ void RenderHUDAdjustManager()
 				file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[0][EHudOffsetType::eSafemode]);
 				xr_strconcat(val_name, "safemode_hud_offset_rot", _prefix);
 				file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[1][EHudOffsetType::eSafemode]);
+
+				xr_strconcat(val_name, "collision_hud_offset_pos", _prefix);
+				file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[0][EHudOffsetType::eCollision]);
+				xr_strconcat(val_name, "collision_hud_offset_rot", _prefix);
+				file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[1][EHudOffsetType::eCollision]);
 			};
 
 			if (p_hud_item_first)
@@ -317,6 +322,11 @@ void RenderHUDAdjustManager()
 										fmt = "safemode";
 										break;
 									}
+									case EHudOffsetType::eCollision:
+									{
+										fmt = "collision";
+										break;
+									}
 									default:
 									{
 										fmt = "default";
@@ -362,6 +372,12 @@ void RenderHUDAdjustManager()
 											case EHudOffsetType::eSafemode:
 											{
 												xr_strconcat(val_name, "safemode_hud_offset_pos", _prefix);
+												position = READ_IF_EXISTS(pSettings, r_fvector3, p_item->m_sect_name, val_name, zero_vel);
+												break;
+											}
+											case EHudOffsetType::eCollision:
+											{
+												xr_strconcat(val_name, "collision_hud_offset_pos", _prefix);
 												position = READ_IF_EXISTS(pSettings, r_fvector3, p_item->m_sect_name, val_name, zero_vel);
 												break;
 											}
@@ -419,6 +435,12 @@ void RenderHUDAdjustManager()
 												rotation = READ_IF_EXISTS(pSettings, r_fvector3, p_item->m_sect_name, val_name, zero_vel);
 												break;
 											}
+											case EHudOffsetType::eCollision:
+											{
+												xr_strconcat(val_name, "collision_hud_offset_rot", _prefix);
+												rotation = READ_IF_EXISTS(pSettings, r_fvector3, p_item->m_sect_name, val_name, zero_vel);
+												break;
+											}
 											default:
 											{
 												xr_strconcat(val_name, "hands_orientation", _prefix);
@@ -441,6 +463,44 @@ void RenderHUDAdjustManager()
 											ImGui::TableNextColumn();
 
 											ImGui::EndTable();
+										}
+
+										if (attach_idx == EHudOffsetType::eCollision)
+										{
+											ImGui::SeparatorText("Box Scale##OBBS");
+											if (ImGui::BeginTable("Data##OBBS", 1))
+											{
+												ImGui::TableNextRow();
+
+												ImGui::TableNextColumn();
+
+												Fvector& obb_scale = p_item->m_measures.m_collision_params.obb_scale;
+
+												ImGui::DragFloat("X##OBBS", &obb_scale.x, _delta_pos, -360.0f, 360.0f, "%.6f");
+												ImGui::DragFloat("Y##OBBS", &obb_scale.y, _delta_pos, -360.0f, 360.0f, "%.6f");
+												ImGui::DragFloat("Z##OBBS", &obb_scale.z, _delta_pos, -360.0f, 360.0f, "%.6f");
+												ImGui::TableNextColumn();
+
+												ImGui::EndTable();
+											}
+
+											ImGui::SeparatorText("Box Center##OBBC");
+
+											if (ImGui::BeginTable("Data##OBBC", 1))
+											{
+												ImGui::TableNextRow();
+
+												ImGui::TableNextColumn();
+
+												Fvector& obb_center = p_item->m_measures.m_collision_params.obb_pos;
+
+												ImGui::DragFloat("X##OBBC", &obb_center.x, _delta_pos, -360.0f, 360.0f, "%.6f");
+												ImGui::DragFloat("Y##OBBC", &obb_center.y, _delta_pos, -360.0f, 360.0f, "%.6f");
+												ImGui::DragFloat("Z##OBBC", &obb_center.z, _delta_pos, -360.0f, 360.0f, "%.6f");
+												ImGui::TableNextColumn();
+
+												ImGui::EndTable();
+											}
 										}
 									};
 
@@ -467,6 +527,11 @@ void RenderHUDAdjustManager()
 								if (ImGui::CollapsingHeader("Offset 4 (safemode)"))
 								{
 									drawHudParameters(p_item, EHudOffsetType::eSafemode);
+								}
+
+								if (ImGui::CollapsingHeader("Offset 5 (collision)"))
+								{
+									drawHudParameters(p_item, EHudOffsetType::eCollision);
 								}
 							}
 						}
