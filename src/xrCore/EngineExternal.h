@@ -85,6 +85,7 @@ enum class EEngineExternalPlatform : u8
 
 enum class EEngineExternalSystem : u8
 {
+	EngineScriptStoryID,
 	CustomMessageInClipboardOnCrash,
 	None
 };
