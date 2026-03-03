@@ -651,3 +651,21 @@ end
 function has_cmd_arg(arg_name)
 	return string.find(get_cmd_args(), arg_name) or string.find(get_cmd_args(), "-"..arg_name)
 end
+
+function run_gui(gui, close_inv) 
+    ffx_gui_utils.run_gui(gui, close_inv) 
+end
+
+function add_art(zone_name, art_section)
+	if zone_name == nil then 
+		return 
+	end
+	
+    local binder = db.anomaly_by_name[zone_name] or false
+	if binder then
+		if art_section then
+			binder:set_forced_override(art_section)
+		end
+		binder:spawn_artefact_randomly()
+	end
+end
