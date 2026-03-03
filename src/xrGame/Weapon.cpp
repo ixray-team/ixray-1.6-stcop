@@ -1942,6 +1942,13 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 			{
 				if (CActor* pActor = H_Parent()->cast_actor())
 				{
+					if (IsZoomed())
+					{
+						OnZoomOut();
+					}
+
+					ResetSubStateTime();
+
 					if (m_eAnimationsFlags.test(EAnimationsFlags::af_safemode_in_out))
 					{
 						SwitchState(eSafemodeSwitch);
@@ -1963,6 +1970,18 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 				{
 					if (flags & CMD_START)
 					{
+						if (ParentIsActor())
+						{
+							if (CActor* pActor = H_Parent()->cast_actor())
+							{
+								if (pActor->IsSafemode())
+								{
+									ResetSubStateTime();
+									pActor->SetSafemodeStatus(false);
+								}
+							}
+						}
+
 						if (!IsZoomed())
 						{
 							if (!IsPending())
@@ -2006,6 +2025,18 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 				{
 					if (flags & CMD_START)
 					{
+						if (ParentIsActor())
+						{
+							if (CActor* pActor = H_Parent()->cast_actor())
+							{
+								if (pActor->IsSafemode())
+								{
+									ResetSubStateTime();
+									pActor->SetSafemodeStatus(false);
+								}
+							}
+						}
+
 						if (!CanAimNow())
 						{
 							CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
