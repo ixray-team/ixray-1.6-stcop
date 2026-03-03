@@ -1,7 +1,6 @@
 #include "StdAfx.h"
 #include "player_hud.h"
 #include "HudItem.h"
-#include "../../xrUI/ui_base.h"
 #include "Actor.h"
 #include "physic_item.h"
 #include "ActorEffector.h"
@@ -9,6 +8,7 @@
 #include "InertionData.h"
 #include "Inventory.h"
 #include "WeaponBinoculars.h"
+#include "../xrEngine/GameMtlLib.h"
 
 player_hud* g_player_hud = nullptr;
 player_hud* g_player_hud2 = nullptr;
@@ -483,6 +483,11 @@ void hud_item_measures::hud_hands_positions::Load(const shared_str& section, boo
 	hands_offsets[0][EHudOffsetType::eSafemode] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[0][EHudOffsetType::eSafemode] : zero_vel);
 	xr_strconcat(val_name, "safemode_hud_offset_rot", _prefix);
 	hands_offsets[1][EHudOffsetType::eSafemode] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[1][EHudOffsetType::eSafemode] : zero_vel);
+
+	xr_strconcat(val_name, "collision_hud_offset_pos", _prefix);
+	hands_offsets[0][EHudOffsetType::eCollision] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[0][EHudOffsetType::eCollision] : zero_vel);
+	xr_strconcat(val_name, "collision_hud_offset_rot", _prefix);
+	hands_offsets[1][EHudOffsetType::eCollision] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[1][EHudOffsetType::eCollision] : zero_vel);
 
 	memcpy(hands_offsets_tune, hands_offsets, sizeof(hands_offsets_tune));
 
@@ -1529,7 +1534,6 @@ void player_hud::render_hud()
 	}
 }
 
-
 #include "../xrEngine/motion.h"
 
 u32 player_hud::motion_length(const shared_str& anim_name, const shared_str& hud_name, const CMotionDef*& md)
@@ -1626,19 +1630,129 @@ void player_hud::update(const Fmatrix& cam_trans)
 	update_inertion					(trans);
 	update_additional				(trans);
 
+	auto CheckCollision = [&](const hud_item_measures::collision_params& collide_params, dbg_render_obb& obb_render)
+	{
+		Fobb obb;
+		obb.m_halfsize = collide_params.obb_scale;
+		trans.transform_tiny(obb.m_translate, collide_params.obb_pos);
+		obb.m_rotate.set(trans);
+
+		obb_render.append_obb(obb);
+		obb_render.color = color_rgba(0, 255, 0, 150);
+
+		static xrXRC xrc;
+		xrc.obb_options(CDB::OPT_FULL_TEST);
+		xrc.obb_query(Level().ObjectSpace.GetStaticModel(), obb);
+
+		float nearest_obb_dist = 1000.0f;
+
+		for (CDB::RESULT& result : xrc.r_vec())
+		{
+			SGameMtl* pMtl = GMLib.GetMaterialByIdx(result.material);
+			if (pMtl != nullptr && (pMtl->Flags.is(SGameMtl::flPassable) || pMtl->Flags.is(SGameMtl::flActorObstacle)))
+			{
+				continue;
+			}
+
+			obb.FindContactsClipping(result.verts, [](const Fvector& contact, void* user_data)
+			{
+				float& nearest_obb_dist = *(float*)user_data;
+				float to_cam_dist = Device.vCameraPosition.distance_to(contact);
+				if (to_cam_dist < nearest_obb_dist)
+				{
+					nearest_obb_dist = to_cam_dist;
+				}
+
+			}, &nearest_obb_dist);
+		}
+
+		clamp(nearest_obb_dist, 0.0f, 1.0f);
+		float target = (nearest_obb_dist - 1.0f);
+
+		return target;
+	};
+
+	float dist = 0.0f;
+
+	if (m_attached_items[0] != nullptr)
+	{
+		dist = CheckCollision(m_attached_items[0]->m_measures.m_collision_params, m_attached_items[0]->obb_debug_info);
+	}
 
 	{
-		m_attach_offsetr.setHPB(VPUSH(Fvector(attach_rot()).mul(PI / 180.f)));//generate and set Euler angles
-		m_attach_offsetr.c.set(attach_pos());
+		Fvector default_pos = attach_pos();
+		Fvector target_pos = default_pos;
+
+		Fvector default_ypr = Fvector(attach_rot()).mul(PI / 180.0f);
+		Fvector target_ypr = default_ypr;
+
+		static Fvector current_pos = default_pos;
+		static Fvector current_ypr = default_ypr;
+
+		static Fvector current_ypr_velocity = zero_vel;
+		static Fvector current_pos_velocity = zero_vel;
+
+		if (m_attached_items[0] != nullptr)
+		{
+			target_pos += Fvector().set(m_attached_items[0]->m_measures.m_hands_positions.hands_offsets[0][EHudOffsetType::eCollision]).mul(dist);
+			target_ypr += Fvector().set(m_attached_items[0]->m_measures.m_hands_positions.hands_offsets[1][EHudOffsetType::eCollision]).mul(dist);
+		}
+		else if (m_animator_item != nullptr && m_animator_item->IsPlaying)
+		{
+			//const float dist = CheckCollision(m_attached_items[0]->m_measures.m_collision_params, m_attached_items[0]->obb_debug_info);
+			//target_pos += Fvector().set(m_attached_items[0]->m_measures.m_hands_positions.hands_offsets[0][EHudOffsetType::eCollision]).mul(dist);
+			//target_ypr += Fvector().set(m_attached_items[0]->m_measures.m_hands_positions.hands_offsets[1][EHudOffsetType::eCollision]).mul(dist);
+		}
+
+		current_ypr.spring_inertion(target_ypr, current_ypr_velocity, Device.fTimeDelta, 300.f, 30.f);
+		current_pos.spring_inertion(target_pos, current_pos_velocity, Device.fTimeDelta, 250.f, 25.f);
+
+		m_attach_offsetr.setHPB(VPUSH(current_ypr));//generate and set Euler angles
+		m_attach_offsetr.c.set(current_pos);
 		m_transform.mul(trans, m_attach_offsetr);
 	}
 
 	{
 		bool left_hand_active = m_attached_items[1];
 
+
+		Fvector default_pos = left_hand_active ? m_attached_items[1]->hands_attach_pos() : attach_pos();
+		Fvector target_pos = default_pos;
+
+		Fvector default_ypr = (VPUSH(Fvector(left_hand_active ? m_attached_items[1]->hands_attach_rot() : attach_rot()).mul(PI / 180.0f)));
+		Fvector target_ypr = default_ypr;
+
+		static Fvector current_pos = default_pos;
+		static Fvector current_ypr = default_ypr;
+
+		static Fvector current_ypr_velocity = zero_vel;
+		static Fvector current_pos_velocity = zero_vel;
+
+		if (left_hand_active)
+		{
+			dist = CheckCollision(m_attached_items[1]->m_measures.m_collision_params, m_attached_items[1]->obb_debug_info);
+			target_pos += Fvector().set(m_attached_items[1]->m_measures.m_hands_positions.hands_offsets[0][EHudOffsetType::eCollision]).mul(dist);
+			target_ypr += Fvector().set(m_attached_items[1]->m_measures.m_hands_positions.hands_offsets[1][EHudOffsetType::eCollision]).mul(dist);
+
+			current_ypr.spring_inertion(target_ypr, current_ypr_velocity, Device.fTimeDelta, 300.f, 30.f);
+			current_pos.spring_inertion(target_pos, current_pos_velocity, Device.fTimeDelta, 250.f, 25.f);
+		}
+		else if (m_attached_items[0] != nullptr)
+		{
+			target_pos += Fvector().set(m_attached_items[0]->m_measures.m_hands_positions.hands_offsets[0][EHudOffsetType::eCollision]).mul(dist);
+			target_ypr += Fvector().set(m_attached_items[0]->m_measures.m_hands_positions.hands_offsets[1][EHudOffsetType::eCollision]).mul(dist);
+
+			current_ypr.spring_inertion(target_ypr, current_ypr_velocity, Device.fTimeDelta, 300.f, 30.f);
+			current_pos.spring_inertion(target_pos, current_pos_velocity, Device.fTimeDelta, 250.f, 25.f);
+		}
+		else if (m_animator_item != nullptr && m_animator_item->IsPlaying)
+		{
+
+		}
+
 		Fmatrix attach_offset;
-		attach_offset.setHPB(VPUSH(Fvector(left_hand_active ? m_attached_items[1]->hands_attach_rot() : attach_rot()).mul(PI / 180.f)));//generate and set Euler angles
-		attach_offset.c.set(left_hand_active ? m_attached_items[1]->hands_attach_pos() : attach_pos());
+		attach_offset.setHPB(VPUSH(Fvector(current_ypr)));//generate and set Euler angles
+		attach_offset.c.set(current_pos);
 		m_transformL.mul(trans, left_hand_active ? m_attach_offsetl.set(attach_offset) : m_attach_offsetl.inertion(attach_offset, 1 - Device.fTimeDelta * 10.f));
 	}
 
