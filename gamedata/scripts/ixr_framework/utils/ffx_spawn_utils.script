@@ -1,8 +1,77 @@
 
+function actor_multiple_spawn_to_backpack(section, count)
+    if not ffx_ltx_utils.has_section(section) then
+		SemiLog(script_name() .. "::actor_multiple_spawn_to_backpack(...) missing section: [" .. tostring(section).."]")
+		
+		return false
+	end
+	
+	if count==nil then 
+		count = 1 
+	end
+	
+	local s_objects = {}
+	
+    for i=1, count do
+		local sobj = actor_spawn_to_backpack(section)
+        if sobj then
+			table.insert(s_objects, sobj)
+		end
+    end
+	
+	if #s_objects > 0 then
+		return s_objects
+	end
+	
+	return false
+end
 
+function create_item_on_story_object(section, story_id, count, spawn_into)
+	if section == nil then
+		SemiLog(script_name() .. "::create_item_on_story_object(...) missing section variable")
+		return false
+	end
+
+    if count==nil then count=1 end
+	if spawn_into == nil then spawn_into = false then
+	
+	if not ffx_ltx_utils.has_section(section) then
+		SemiLog(script_name() .. "::create_item_on_story_object(...) missing section: [" .. tostring(section).."]")
+		
+		return false
+	end
+	
+	local obj = false
+	if story_id then
+		obj = get_story_object(story_id)
+	end
+	
+	local s_objects = {}
+	
+	if obj then
+		for i=1, count do
+			if spawn_into then
+				local sobj = alife():create(section, obj:position(), obj:level_vertex_id(), obj:game_vertex_id(), obj:id())
+			else
+				local sobj = alife():create(section, obj:position(), obj:level_vertex_id(), obj:game_vertex_id())
+			end
+			
+			if sobj then
+				table.insert(s_objects, sobj)
+			end
+		end
+	end
+	
+	if #s_objects > 0 then
+		return s_objects
+	end
+	
+	return false
+end
 
 function actor_spawn_random_section_to_backpack(items_sections)
 	if type(items_sections) ~= "table" or #items_sections == 0 then
+		SemiLog(script_name() .. "::actor_spawn_random_section_to_backpack(...) missing items_sections variable")
 		return false
 	end
 	
