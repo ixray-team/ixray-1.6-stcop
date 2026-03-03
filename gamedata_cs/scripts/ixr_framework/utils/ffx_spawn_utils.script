@@ -1,7 +1,45 @@
 
+function spawn_on_ground_by_actor_pos(section, count)
+	if section == nil then
+		SemiLog(script_name() .. "::spawn_on_ground_by_actor_pos(...) missing section variable")
+		return false
+	end
+	
+	if not ffx_object_utils.has_actor() then
+		SemiLog(script_name() .. "::spawn_on_ground_by_actor_pos(...) section: [" .. tostring(section).."] missing actor object")
+		
+		return false
+	end
+	
+	if count==nil then 
+		count = 1 
+	end
+	
+	local s_objects = {}
+	
+    for i=1, count do
+		local sobj = spawn_on_ground_for_current_level(section, db.actor:position())
+        if sobj then
+			table.insert(s_objects, sobj)
+		end
+    end
+	
+	if #s_objects > 0 then
+		return s_objects
+	end
+	
+	return false
+end
+
 function actor_multiple_spawn_to_backpack(section, count)
     if not ffx_ltx_utils.has_section(section) then
 		SemiLog(script_name() .. "::actor_multiple_spawn_to_backpack(...) missing section: [" .. tostring(section).."]")
+		
+		return false
+	end
+	
+	if not ffx_object_utils.has_actor() then
+		SemiLog(script_name() .. "::actor_multiple_spawn_to_backpack(...) section: [" .. tostring(section).."] missing actor object")
 		
 		return false
 	end
