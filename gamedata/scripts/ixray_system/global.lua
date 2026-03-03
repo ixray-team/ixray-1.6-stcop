@@ -653,12 +653,7 @@ function has_cmd_arg(arg_name)
 end
 
 function run_gui(gui, close_inv) 
-    if close_inv then
-        game_hide_menu()
-        level.show_weapon(false)
-    end 
-	
-	gui:ShowDialog(true)
+    ffx_gui_utils.run_gui(gui, close_inv) 
 end
 
 function add_art(zone_name, art_section)
