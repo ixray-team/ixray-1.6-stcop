@@ -614,7 +614,8 @@ void RenderHUDAdjustManager()
 				if (two_hands)
 				{
 					attachable_hud_item* p_hud_item_second = g_player_hud->attached_item(1);
-					p_draw_info_hud_item(p_hud_item_second, 1, nullptr, nullptr);
+					lt = p_hud_item_second->m_parent_hud_item->GetHudLight();
+					p_draw_info_hud_item(p_hud_item_second, 1, nullptr, lt);
 				}
 			}
 		}
