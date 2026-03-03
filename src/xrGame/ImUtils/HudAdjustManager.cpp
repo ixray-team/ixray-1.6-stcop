@@ -171,7 +171,7 @@ void RenderHUDAdjustManager()
 			{
 				const char* p_hand = "single hand";
 				bool two_hands = false;
-				if (g_player_hud->attached_item(0) && g_player_hud->attached_item(1))
+				if (g_player_hud->attached_item(1))
 				{
 					p_hand = "two hands";
 					two_hands = true;
