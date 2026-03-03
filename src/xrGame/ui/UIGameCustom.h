@@ -110,6 +110,7 @@ public:
 	virtual bool		WorkInPause()const { return true; }
 	virtual void		Show(bool status);
 	virtual bool		OnKeyboardAction(int dik, EUIMessages keyboard_action);
+	virtual bool		OnGamepadKeyAction(int id, EUIMessages gamepad_action);
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 };
