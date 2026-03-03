@@ -611,7 +611,7 @@ function CCombat_manager:update_squad(id, data)
 						end
 
 						local attack_squad_obj = self.board.squads[attack_squad]
-						if attack_squad_obj.squad_power >= squad.squad_power then
+						if attack_squad_obj and attack_squad_obj.squad_power >= squad.squad_power then
 							local player = self.board.players[squad.player_id]
 							local task = task_manager.get_task_manager():select_task("defend_smart", self.smart, player.player_name)
 
