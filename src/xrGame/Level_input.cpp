@@ -715,8 +715,6 @@ void CLevel::IR_GamepadKeyPress(int id)
 		}
 		return;
 	}
-	if (Device.Paused())
-		return;
 
 	switch ( _curr ) 
 	{
@@ -766,6 +764,8 @@ void CLevel::IR_GamepadKeyPress(int id)
 
 	if (b_ui_exist && CurrentGameUI()->IR_UIOnGamepadKeyPress(id)) return;
 
+	if (Device.Paused())
+		return;
 
 	if (CURRENT_ENTITY())		
 	{
