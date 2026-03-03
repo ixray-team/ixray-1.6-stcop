@@ -893,6 +893,27 @@ bool CChangeLevelWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 	return inherited::OnKeyboardAction(dik, keyboard_action);
 }
 
+bool CChangeLevelWnd::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
+{
+	if (gamepad_action == WINDOW_KEY_PRESSED)
+	{
+		switch (get_binded_action(id, agUIGeneral))
+		{
+			case kUI_ACCEPT:
+			{
+				OnOk();
+				return true;
+			}
+			case kUI_BACK:
+			{
+				OnCancel();
+				return true;
+			}
+		}
+	}
+	return inherited::OnGamepadKeyAction(id, gamepad_action);
+}
+
 bool g_block_pause = false;
 void CChangeLevelWnd::Show(bool status)
 {
