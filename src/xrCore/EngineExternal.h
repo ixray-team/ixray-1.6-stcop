@@ -26,7 +26,8 @@ enum class EEngineExternalSpawnSupplies
 	EnableLoadoutsSupplies,
 	EnableSpawnFullRandomLoadout,
 	EnableSpawnOnceRandomItemPerEachLoadouts,
-	EnableSpawnOnceRandomitemByRandomLoadout
+	EnableSpawnOnceRandomitemByRandomLoadout,
+	None
 };
 
 enum class EEngineExternalGame
@@ -50,6 +51,7 @@ enum class EEngineExternalGame
 	EnableEngineArtefactSpawn,
 	Enable3DPDA,
 	EnableTorchOnlyInOutfit,
+	None
 };
 
 enum class EEngineExternalRender 
@@ -91,6 +93,22 @@ static_assert((sizeof(g_Platforms) / sizeof(g_Platforms[0])) == (sizeof(g_Platfo
 
 class XRCORE_API CEngineExternal final
 {
+	template<XRay::Concepts::Enum Enum>
+	bool CachedGetSettings(CInifile* File, xr_string_view Type, Enum ID) const
+	{
+		using ntype = std::underlying_type_t<Enum>;
+		static xr_array<bool, (size_t)Enum::None> Cache = [File, &Type]()
+		{
+			xr_array<bool, (size_t)Enum::None> Cache = {};
+			for (ntype i = 0; i < (ntype)Enum::None; i++)
+			{
+				Cache[i] = READ_IF_EXISTS(File, r_bool, Type.data(), magic_enum::enum_name((Enum)i).data(), false);
+			}
+			return Cache;
+		}();
+		return Cache[(ntype)ID];
+	}
+	
 public:
 	CEngineExternal();
 	~CEngineExternal();
@@ -117,36 +135,43 @@ public:
 
 	ICF bool operator[](const EEngineExternalUI& ID) const
 	{
-		return READ_IF_EXISTS(pOptions, r_bool, "ui", magic_enum::enum_name(ID).data(), false);
+		static xr_stack_string16 Type = "ui";
+		return CachedGetSettings<EEngineExternalUI>(pOptions, Type, ID);
 	}
 
 	ICF bool operator[](const EEngineExternalPhysical& ID) const
 	{
-		return READ_IF_EXISTS(pOptions, r_bool, "physics", magic_enum::enum_name(ID).data(), false);
+		static xr_stack_string16 Type = "physics";
+		return CachedGetSettings<EEngineExternalPhysical>(pOptions, Type, ID);
 	}
 
 	ICF bool operator[](const EEngineExternalGame& ID) const
 	{
-		return READ_IF_EXISTS(pOptions, r_bool, "gameplay", magic_enum::enum_name(ID).data(), false);
+		static xr_stack_string16 Type = "gameplay";
+		return CachedGetSettings<EEngineExternalGame>(pOptions, Type, ID);
 	}
 
 	ICF bool operator[](const EEngineExternalSpawnSupplies& ID) const
 	{
-		return READ_IF_EXISTS(pOptions, r_bool, "spawn_supplies", magic_enum::enum_name(ID).data(), false);
+		static xr_stack_string16 Type = "spawn_supplies";
+		return CachedGetSettings<EEngineExternalSpawnSupplies>(pOptions, Type, ID);
 	}
 
 	ICF bool operator[](const EEngineExternalRender& ID) const
 	{
-		return READ_IF_EXISTS(pOptions, r_bool, "render", magic_enum::enum_name(ID).data(), false);
+		static xr_stack_string16 Type = "render";
+		return CachedGetSettings<EEngineExternalRender>(pOptions, Type, ID);
 	}
 
 	ICF bool operator[](const EEngineExternalEnvironment& ID) const {
-		return READ_IF_EXISTS(pOptions, r_bool, "environment", magic_enum::enum_name(ID).data(), false);
+		static xr_stack_string16 Type = "environment";
+		return CachedGetSettings<EEngineExternalEnvironment>(pOptions, Type, ID);
 	}
 
 	//ICF bool operator[](const EEngineExternalSound& ID) const
 	//{
-	//	return READ_IF_EXISTS(pOptions, r_bool, "sound", magic_enum::enum_name(ID).data(), false);
+	//	static xr_stack_string16 Type = "sound";
+	//	return CachedGetSettings<EEngineExternalSound>(pOptions, Type, ID);
 	//}
 
 	ICF bool operator[](const EEngineExternalPlatform& ID) const
