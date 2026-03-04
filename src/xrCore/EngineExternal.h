@@ -51,6 +51,7 @@ enum class EEngineExternalGame
 	EnableEngineArtefactSpawn,
 	Enable3DPDA,
 	EnableTorchOnlyInOutfit,
+	EnableBurerShieldPenetrationWithGauss,
 	None
 };
 
