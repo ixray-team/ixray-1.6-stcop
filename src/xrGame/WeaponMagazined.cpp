@@ -3396,7 +3396,7 @@ bool CWeaponMagazined::GetBriefInfo( II_BriefInfo& info )
 
 	info.cur_ammo = int_str;
 
-	if (infinite_fire())
+	if (infinite_fire() || unlimited_ammo())
 	{
 		info.cur_ammo = "∞";
 	}
