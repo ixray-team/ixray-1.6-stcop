@@ -56,6 +56,7 @@ private:
 	bool				m_cur_state_LA[it_max];
 	bool				m_b_force_update;
 	bool				m_weapon_icon_text_mode = false;
+	bool				m_weapon_icon_show_weapon_name = false;
 	bool				m_use_adaptive_ammo_widget = false;
 	bool				m_use_fire_mode_icons = false;
 
