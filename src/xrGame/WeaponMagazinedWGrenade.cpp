@@ -1240,7 +1240,7 @@ bool CWeaponMagazinedWGrenade::GetBriefInfo(II_BriefInfo& info)
 	xr_sprintf(int_str, "%d", ae);
 	info.cur_ammo._set(int_str);
 
-	if (infinite_fire())
+	if (infinite_fire() || unlimited_ammo())
 	{
 		info.cur_ammo = "∞";
 	}
