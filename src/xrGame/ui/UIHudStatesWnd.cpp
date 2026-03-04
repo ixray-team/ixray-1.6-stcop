@@ -25,6 +25,8 @@
 #include "WeaponMagazinedWGrenade.h"
 #include "../Weapon.h"
 #include "../WeaponKnife.h"
+#include "../WeaponBinoculars.h"
+#include "../Bolt.h"
 #include "../../xrEngine/string_table.h"
 
 using namespace InventoryUtilities;
@@ -292,15 +294,22 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 	
 	m_ui_weapon_icon			= UIHelper::Create3dStatic( xml, "static_wpn_icon", wpnIconParent);
 	m_ui_weapon_icon->SetShader( GetEquipmentIconsShader() );
+	// Apply text style from ammo_text:text if present (display_mode="text", addon layouts)
+	if (xml.NavigateToNode("static_wpn_icon:ammo_text:text", 0))
+	{
+		CUIXmlInit::InitText(xml, "static_wpn_icon:ammo_text:text", 0, m_ui_weapon_icon);
+	}
 //	m_ui_weapon_icon->Enable	( false );
 	m_ui_weapon_icon_rect		= m_ui_weapon_icon->GetWndRect();
 	
 	// Check if text mode is enabled for weapon icon
-	LPCSTR display_mode = xml.ReadAttrib("static_wpn_icon", 0, "display_mode", nullptr);
-	if (display_mode && xr_strcmp(display_mode, "text") == 0)
+	LPCSTR displayMode = xml.ReadAttrib("static_wpn_icon", 0, "display_mode", nullptr);
+	if (displayMode && xr_strcmp(displayMode, "text") == 0)
 	{
 		m_weapon_icon_text_mode = true;
 	}
+	// When set, show weapon name instead of ammo (caliber) name in text mode
+	m_weapon_icon_show_weapon_name = (xml.ReadAttribInt("static_wpn_icon", 0, "show_weapon_name", 0) != 0);
 
 	if (xml.NavigateToNode("progress_bar_armor", 0))
 	{
@@ -487,8 +496,17 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 		if (item->cast_weapon_knife())
 		{
 			m_item_info.clear();
-			m_ui_weapon_icon->Show(false);
-			m_ui_weapon_icon->SetText("");
+			if (m_weapon_icon_text_mode && m_ui_weapon_icon)
+			{
+				m_ui_weapon_icon->SetTextureColor(color_rgba(255, 255, 255, 0));
+				m_ui_weapon_icon->SetText(item->NameShort());
+				m_ui_weapon_icon->Show(true);
+			}
+			else if (m_ui_weapon_icon)
+			{
+				m_ui_weapon_icon->Show(false);
+				m_ui_weapon_icon->SetText("");
+			}
 			if (m_static_weapon)
 			{
 				m_static_weapon->SetText("");
@@ -595,38 +613,53 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 			}
 		}
 		
-		// If text mode is enabled, display ammo name instead of icon
+		// If text mode is enabled, display item name instead of icon
 		if (m_weapon_icon_text_mode)
 		{
-			CWeapon* weapon = item->cast_weapon();
-			if (weapon && weapon->m_ammoTypes.size() > 0)
+			shared_str displayText;
+
+			if (item->cast_weapon_binoculars())
 			{
-				// Get current ammo type
-				u8 currAmmoType = weapon->GetAmmoType();
-				if (currAmmoType < weapon->m_ammoTypes.size())
+				displayText._set(item->NameShort());
+			}
+			else if (item->cast_grenade())
+			{
+				displayText._set(item->NameShort());
+			}
+			else if (item->cast_bolt())
+			{
+				displayText._set(item->NameShort());
+			}
+			else
+			{
+				CWeapon* weapon = item->cast_weapon();
+				if (weapon)
 				{
-					LPCSTR ammo_section = weapon->m_ammoTypes[currAmmoType].c_str();
-					if (pSettings->section_exist(ammo_section))
+					if (m_weapon_icon_show_weapon_name)
 					{
-						// Read inv_name_short from config
-						shared_str inv_name_short_id = pSettings->r_string(ammo_section, "inv_name_short");
-						// Translate through CStringTable
-						shared_str translated_name = g_pStringTable->translate(inv_name_short_id);
-						
-						// Hide texture by making it transparent, show text instead
-						m_ui_weapon_icon->SetTextureColor(color_rgba(255, 255, 255, 0));
-						m_ui_weapon_icon->SetText(translated_name.c_str());
-						m_ui_weapon_icon->Show(true);
+						displayText._set(item->NameShort());
 					}
-					else
+					else if (weapon->m_ammoTypes.size() > 0)
 					{
-						m_ui_weapon_icon->Show(false);
+						u8 currAmmoType = weapon->GetAmmoType();
+						if (currAmmoType < weapon->m_ammoTypes.size())
+						{
+							LPCSTR ammoSection = weapon->m_ammoTypes[currAmmoType].c_str();
+							if (pSettings->section_exist(ammoSection))
+							{
+								shared_str invNameShortId = pSettings->r_string(ammoSection, "inv_name_short");
+								displayText._set(g_pStringTable->translate(invNameShortId));
+							}
+						}
 					}
 				}
-				else
-				{
-					m_ui_weapon_icon->Show(false);
-				}
+			}
+
+			if (displayText.size())
+			{
+				m_ui_weapon_icon->SetTextureColor(color_rgba(255, 255, 255, 0));
+				m_ui_weapon_icon->SetText(displayText.c_str());
+				m_ui_weapon_icon->Show(true);
 			}
 			else
 			{
@@ -643,27 +676,71 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 
 		if (m_use_adaptive_ammo_widget && m_ui_adaptive_clip && m_ui_adaptive_total)
 		{
+			CGrenade* grenade = item->cast_grenade();
+			if (grenade)
+			{
+				const int clipCount = 1;
+				int totalCount = m_item_info.cur_ammo.size() ? atoi(m_item_info.cur_ammo.c_str()) : 0;
+				const bool isTotalInfinity = (xr_strcmp(m_item_info.cur_ammo.c_str(), "∞") == 0);
+				totalCount = (totalCount >= 0) ? totalCount : 0;
+
+				string64 clipBuf;
+				string64 totalBuf;
+				xr_sprintf(clipBuf, "%d", clipCount);
+				if (isTotalInfinity)
+					xr_strcpy(totalBuf, "/ ∞");
+				else
+					xr_sprintf(totalBuf, "/ %d", totalCount);
+
+				m_ui_adaptive_clip->SetText(clipBuf);
+				m_ui_adaptive_clip->Show(true);
+				m_ui_adaptive_total->SetText(totalBuf);
+				m_ui_adaptive_total->Show(true);
+
+				if (m_ui_weapon_cur_ammo)
+					m_ui_weapon_cur_ammo->Show(false);
+				if (m_ui_weapon_fmj_ammo)
+					m_ui_weapon_fmj_ammo->Show(false);
+				if (m_ui_weapon_ap_ammo)
+					m_ui_weapon_ap_ammo->Show(false);
+				if (m_ui_weapon_third_ammo)
+					m_ui_weapon_third_ammo->Show(false);
+				if (m_ui_grenade)
+					m_ui_grenade->Show(false);
+				return;
+			}
+
 			CWeapon* weapon = item->cast_weapon();
-			if (weapon)
+			if (weapon && !weapon->cast_weapon_binoculars())
 			{
 				int clipCount = 0;
 				int totalCount = 0;
+				bool isClipInfinity = false;
+				bool isTotalInfinity = false;
 
 				CWeaponMagazinedWGrenade* wpnGL = item->cast_weapon_magazined_w_grenade();
 				if (wpnGL && wpnGL->m_bGrenadeMode)
 				{
-					clipCount = m_item_info.cur_ammo.size() ? atoi(m_item_info.cur_ammo.c_str()) : 0;
-					totalCount = m_item_info.grenade.size() ? atoi(m_item_info.grenade.c_str()) : 0;
+					isClipInfinity = (xr_strcmp(m_item_info.cur_ammo.c_str(), "∞") == 0);
+					isTotalInfinity = (xr_strcmp(m_item_info.grenade.c_str(), "∞") == 0);
+					if (!isClipInfinity)
+						clipCount = m_item_info.cur_ammo.size() ? atoi(m_item_info.cur_ammo.c_str()) : 0;
+					if (!isTotalInfinity)
+						totalCount = m_item_info.grenade.size() ? atoi(m_item_info.grenade.c_str()) : 0;
 				}
 				else
 				{
 					CWeaponMagazined* wpnM = item->cast_weapon_magazined();
 					if (wpnM)
 					{
-						if (m_item_info.cur_ammo.size())
-							clipCount = atoi(m_item_info.cur_ammo.c_str());
-						else
-							clipCount = wpnM->GetAmmoElapsed() + wpnM->GetAmmoChamberElapsed();
+						isClipInfinity = (xr_strcmp(m_item_info.cur_ammo.c_str(), "∞") == 0);
+						if (!isClipInfinity)
+						{
+							if (m_item_info.cur_ammo.size())
+								clipCount = atoi(m_item_info.cur_ammo.c_str());
+							else
+								clipCount = wpnM->GetAmmoElapsed() + wpnM->GetAmmoChamberElapsed();
+						}
 						const char* ammoStr = nullptr;
 						if (wpnM->m_ammoType == 0 && m_item_info.fmj_ammo.size())
 							ammoStr = m_item_info.fmj_ammo.c_str();
@@ -672,7 +749,11 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 						else if (wpnM->m_ammoType == 2 && m_item_info.third_ammo.size())
 							ammoStr = m_item_info.third_ammo.c_str();
 						if (ammoStr)
-							totalCount = atoi(ammoStr);
+						{
+							isTotalInfinity = (xr_strcmp(ammoStr, "∞") == 0);
+							if (!isTotalInfinity)
+								totalCount = atoi(ammoStr);
+						}
 					}
 				}
 
@@ -681,8 +762,14 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 
 				string64 clipBuf;
 				string64 totalBuf;
-				xr_sprintf(clipBuf, "%d", clipCount);
-				xr_sprintf(totalBuf, "/ %d", totalCount);
+				if (isClipInfinity)
+					xr_strcpy(clipBuf, "∞");
+				else
+					xr_sprintf(clipBuf, "%d", clipCount);
+				if (isTotalInfinity)
+					xr_strcpy(totalBuf, "/ ∞");
+				else
+					xr_sprintf(totalBuf, "/ %d", totalCount);
 
 				m_ui_adaptive_clip->SetText(clipBuf);
 				m_ui_adaptive_clip->Show(true);
