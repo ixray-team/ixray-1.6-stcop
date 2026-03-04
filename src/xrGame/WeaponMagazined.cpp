@@ -2018,7 +2018,7 @@ void CWeaponMagazined::switch2_Safemode()
 		const bool status = pActor->IsSafemode();
 		pActor->SetSafemodeStatus(!status);
 
-		PlayHUDMotion(status ? "anm_safemode_out" : "anm_safemode_in", EHudMixType::eMixAll, eSafemodeSwitch);
+		PlayHUDMotion(SetCurrentStateAnimation(status ? "anm_safemode_out" : "anm_safemode_in"), EHudMixType::eMixAll, eSafemodeSwitch);
 
 		if (m_eSoundsFlags2.test(ESoundsFlags2::sf_safemode_in_out))
 		{
