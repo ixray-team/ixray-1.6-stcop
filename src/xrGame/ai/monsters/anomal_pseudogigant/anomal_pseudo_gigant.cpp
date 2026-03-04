@@ -56,6 +56,9 @@ void CAnomalPseudoGigant::Load(LPCSTR section)
 	m_shield_time = READ_IF_EXISTS(pSettings, r_u32, section, "shield_time", 3000);
 	m_shield_keep_particle = READ_IF_EXISTS(pSettings, r_string, section, "shield_keep_particle", 0);
 	m_shield_keep_particle_period = READ_IF_EXISTS(pSettings, r_u32, section, "shield_keep_particle_period", 1000);
+	
+	m_shield_penetration_border = READ_IF_EXISTS(pSettings, r_float, section, "shield_penetration_border", m_shield_penetration_border);
+	m_shield_penetration_damage_coeff = READ_IF_EXISTS(pSettings, r_float, section, "shield_penetration_damage_coeff", m_shield_penetration_damage_coeff);
 
 	SVelocityParam& velocity_turn = move().get_velocity(MonsterMovement::eVelocityParameterStand);
 
@@ -273,8 +276,15 @@ void	CAnomalPseudoGigant::Hit(SHit* pHDS)
 		GamePersistent().ps_needtoplay.push_back(ps);
 
 	}
-	else if (!m_shield_active)
+	bool IsGaussHit = EngineExternal()[EEngineExternalGame::EnableBurerShieldPenetrationWithGauss]
+						&& pHDS->hit_type == ALife::eHitTypeFireWound
+						&& pHDS->armor_piercing > m_shield_penetration_border;
+	if (!m_shield_active || IsGaussHit)
 	{
+		if (IsGaussHit)
+		{
+			pHDS->power *= m_shield_penetration_damage_coeff;
+		}
 		inherited::Hit(pHDS);
 	}
 
