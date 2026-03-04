@@ -118,6 +118,8 @@ public:
 	bool	m_shield_active;
 	LPCSTR	m_shield_keep_particle;
 	TTime	m_shield_keep_particle_period;
+	float	m_shield_penetration_border = 4.0f;
+	float	m_shield_penetration_damage_coeff = 0.25f;
 	LPCSTR	particle_fire_shield;
 
 	CBurerFastGravi	*m_fast_gravi;
