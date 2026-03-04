@@ -49,6 +49,9 @@ end
 
 function anomaly_field_binder:update(delta)
 	object_binder.update(self, delta)
+	
+	SendScriptCallback("anomaly_field_on_update", self, self.object)
+	
 	if(time_global()-self.last_update<10000) then
 		return
 	end
