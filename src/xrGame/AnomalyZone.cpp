@@ -408,6 +408,7 @@ BOOL CAnomalyZone::net_Spawn(CSE_Abstract* DC)
 		m_zone_flags.set(eAlwaysFastmode, spawn_ini()->r_bool("fast_mode","always_fast"));
 	}
 	SpatialComponent->spatial.type |= ESPATIAL_TYPE::ANOMALY_ZONE;
+	SpatialComponent->spatial.type |= ESPATIAL_TYPE::COLLIDEABLE;
 	SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::SPACE_RESTRICTOR;
 	if (Visual())
 		setEnabled(TRUE);
