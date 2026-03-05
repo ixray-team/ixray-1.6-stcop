@@ -142,7 +142,7 @@ public:
 	virtual shared_str		GetSpotName					()	const { return m_type; }
 	ECompassSpotKind		GetCompassSpotKind				()	const;
 
-	u16						ObjectID						() {return m_objectID;}
+	u16						ObjectID						() const {return m_objectID;}
 	virtual		bool		Update							();
 	Fvector					GetLastPosition					() {return m_position_global;};
 	bool					Serializable					() const {return !!m_flags.test(eSerailizable);}
