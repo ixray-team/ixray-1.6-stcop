@@ -20,6 +20,7 @@ public:
 private:
     void DrawContextMenu();
     void DrawRenderToolBar(ImVec2 Pos, ImVec2 Size);
+    void DrawMenuSettings();
     void RenderOldCameraButtons();
     void RenderAxisButtons();
 
@@ -62,6 +63,8 @@ private:
 
     ref_texture m_tCsLocal;
     ref_texture m_tNuScale;
+    ref_texture TransformLocalOrWorld;
+    ref_texture TransformLocalOrWorld2;
 
     // Axis
     ref_texture m_tX;
