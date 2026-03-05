@@ -7,6 +7,8 @@ class CCameraFirstEye : public CCameraBase
 {
 	typedef CCameraBase inherited;
 	Fvector			lookat_point;
+	float			turn_speed_min = 1.0f; // Angle per second
+	float			turn_speed_max = PI;
 	bool			lookat_active;
 	void			UpdateLookat	();
 public:
@@ -21,7 +23,10 @@ public:
 
 	virtual float	GetWorldYaw		( )	{ return -yaw;	};
 	virtual float	GetWorldPitch	( )	{ return pitch; };
-			void	LookAtPoint		(Fvector p){lookat_point=p;lookat_active=true;}
+
+			void	LookAtPoint		(Fvector p, float turnSpeedMin = 1.0f, float turnSpeedMax = PI);
+			void	StopLookingAtPoint() { lookat_active = false;  }
+			bool	IsLookingAtPoint() const { return lookat_active; }
 
 			void save(NET_Packet& output_packet) override;
 			void load(IReader& input_packet) override;
