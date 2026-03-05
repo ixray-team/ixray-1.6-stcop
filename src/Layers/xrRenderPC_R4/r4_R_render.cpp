@@ -390,6 +390,8 @@ void CRender::RenderUI(bool is_debug)
 	RImplementation.rmNormal();
 
 	Target->phase_ui_postprocess();
+
+	++marker;
 }
 
 bool is_render_cubemap = false;
