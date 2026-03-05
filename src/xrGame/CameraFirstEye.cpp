@@ -54,14 +54,14 @@ void CCameraFirstEye::UpdateLookat()
 		lookat_active = false;
 
 	yaw				= angle_inertion_var(	yaw, xyz.y,
-											1.0f,
-											PI,
+											turn_speed_min,
+											turn_speed_max,
 											PI,
 											Device.fTimeDelta);
 
 	pitch			= angle_inertion_var(	pitch, xyz.x,
-											1.0f,
-											PI,
+											turn_speed_min,
+											turn_speed_max,
 											PI,
 											Device.fTimeDelta);
 
@@ -126,4 +126,12 @@ void CCameraFirstEye::OnActivate( CCameraBase* old_cam )
 		if (m_Flags.is(flKeepPitch))
 			pitch = (old_cam)->pitch;
 	}
+}
+
+void CCameraFirstEye::LookAtPoint(Fvector p, float turnSpeedMin, float turnSpeedMax)
+{
+	lookat_point = p;
+	turn_speed_min = turnSpeedMin;
+	turn_speed_max = turnSpeedMax;
+	lookat_active = true;
 }
