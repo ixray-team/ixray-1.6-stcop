@@ -592,7 +592,7 @@ void CActor::g_cl_Orientate	(u32 mstate_rl, float dt)
 		r_torso.pitch	=	unaffected_r_torso.pitch + dangle.x;
 	}
 	
-	if (eacLookAt == cam_active && inventory().GetActiveSlot() == NO_ACTIVE_SLOT || IsSafemode())
+	if (inventory().GetActiveSlot() == NO_ACTIVE_SLOT || IsSafemode())
 	{
 		r_torso.pitch = 0.0f;
 	}
