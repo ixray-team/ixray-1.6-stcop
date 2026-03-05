@@ -180,20 +180,29 @@ void GetLM_BBox(Fbox &bb, int Step)
 
 void CDemoRecord::MakeLevelMapProcess()
 {
+	static float psOldVidMode[2];
+
 	switch (m_Stage)
 	{
 	case 0:
 		{
-			s_dev_flags			= psDeviceFlags;
-			s_hud_flag.assign	(psHUD_Flags);
-			psDeviceFlags.zero	();
-			psDeviceFlags.set	(rsClearBB|rsFullscreen|rsDrawStatic,TRUE);
-			if (!psDeviceFlags.equal(s_dev_flags,rsFullscreen))
-				Device.Reset();
+			s_dev_flags = psDeviceFlags;
+			s_hud_flag.assign(psHUD_Flags);
+
+			psDeviceFlags.zero();
+			psDeviceFlags.set(rsFullscreen, FALSE);
+			psDeviceFlags.set(rsClearBB | rsDrawStatic, TRUE);
+
+			psOldVidMode[0] = psCurrentVidMode[0];
+			psOldVidMode[1] = psCurrentVidMode[1];
+
+			psCurrentVidMode[0] = psCurrentVidMode[1] = 4096.0f;
+
+			Device.Reset();
 
 		}break;
 
-	case DEVICE_RESET_PRECACHE_FRAME_COUNT+30:
+	case DEVICE_RESET_PRECACHE_FRAME_COUNT+60:
 		{
 			setup_lm_screenshot_matrices		();
 
@@ -215,17 +224,20 @@ void CDemoRecord::MakeLevelMapProcess()
 				}
 			}
 
-			Render->Screenshot			(IRender_interface::SM_FOR_LEVELMAP,tmp);
+			Render->Screenshot(IRender_interface::SM_FOR_LEVELMAP, tmp);
 
 			if(m_iLMScreenshotFragment==-1 || m_iLMScreenshotFragment==4)
 			{
-				psHUD_Flags.assign			(s_hud_flag);
+				psHUD_Flags.assign(s_hud_flag);
+				psDeviceFlags = s_dev_flags;
 
-				BOOL bDevReset				= !psDeviceFlags.equal(s_dev_flags,rsFullscreen);
-				psDeviceFlags				= s_dev_flags;
-				if (bDevReset)				Device.Reset();
-				m_bMakeLevelMap				= FALSE;
-				m_iLMScreenshotFragment		= -1;
+				psCurrentVidMode[0] = psOldVidMode[0];
+				psCurrentVidMode[1] = psOldVidMode[1];
+
+				Device.Reset();
+
+				m_bMakeLevelMap = FALSE;
+				m_iLMScreenshotFragment = -1;
 			}
 		}break;
 	default:
