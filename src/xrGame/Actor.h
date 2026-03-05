@@ -429,6 +429,7 @@ protected:
 	Fvector					vPrevCamDir;
 	float					fCurAVelocity;
 	CEffectorBobbing*		pCamBobbing;
+	u32						lastTimeAutoAimStarted = 0;
 
 
 	//менеджер эффекторов, есть у каждого актрера
