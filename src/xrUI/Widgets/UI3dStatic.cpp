@@ -144,7 +144,7 @@ void CUI3dStatic::Draw()
 		
 		::Render->set_UI(true);
 
-		pCurrentVisual->getVisData().marker = 0;
+		pCurrentVisual->getVisData().marker = u32(-1);
 
 		::Render->set_Transform(&matrix);
 		::Render->add_Visual(pCurrentVisual, true);
