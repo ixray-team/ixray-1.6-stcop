@@ -30,7 +30,10 @@ function main_menu:Update()
 	if self.gamepad_legend then
 		local text_back		= self:GetStatic("gp_back")	
 		if text_back then
-			text_back:Show(level.present() or self.shniaga:GetPage() == CUIMMShniaga.epi_new_game)
+			text_back:Show((level.present()	and ((db.actor ~= nil)and(db.actor:alive())
+			or not IsGameTypeSingle())) or 
+			self.shniaga:GetPage() == CUIMMShniaga.epi_new_game
+			)
 		end
 
 		local text_select		= self:GetStatic("gp_select")	
