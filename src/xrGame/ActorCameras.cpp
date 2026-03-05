@@ -8,7 +8,7 @@
 #include "Actor.h"
 #include "GamePersistent.h"
 #include "Level.h"
-
+#include "CameraFirstEye.h"
 #include "Hit.h"
 #include "PHDestroyable.h"
 #include "Car.h"
@@ -571,6 +571,18 @@ void CActor::cam_Update(float dt, float fFOV)
 		else
 		{
 			Cameras().ApplyDevice(Device.fViewportNear);
+		}
+
+		if (eacFirstEye == cam_active)
+		{
+			// Stop auto-aiming after a period of time
+			const u32 autoAimStopPeriod = 600;
+			if (Device.dwTimeContinual > lastTimeAutoAimStarted + autoAimStopPeriod)
+			{
+				CCameraFirstEye* pCam = smart_cast<CCameraFirstEye*>(cameras[cam_active]);
+				if (pCam && pCam->IsLookingAtPoint())
+					pCam->StopLookingAtPoint();
+			}
 		}
 	}
 }
