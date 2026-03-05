@@ -49,6 +49,12 @@ public:
 	IBlender*					b_gamma;
 	IBlender*					b_nvg;
 
+	//============== new bloom and lum ============
+	IBlender*					b_bloom_downsample;
+	IBlender*					b_bloom_upsample;
+	IBlender*					b_new_adaptation;
+	//=============================================
+
 #ifdef DEBUG
 	struct		dbg_line_t		{
 		Fvector	P0,P1;
@@ -100,6 +106,30 @@ public:
 	ref_rt						rt_LUM_pool[2]	;	// 1xfp32,1x1,		exp-result -> scaler
 	ref_texture				t_LUM_src		;	// source
 	ref_texture				t_LUM_dest		;	// destination & usage for current frame
+
+	//==================================================
+	ref_rt						rt_Bloom_A;			// 32bit, dim		(r,g,b,?)
+	ref_rt						rt_Bloom_B;			// 32bit, dim/2		(r,g,b,?)
+	ref_rt						rt_Bloom_C;			// 32bit, dim/4		(r,g,b,?)
+	ref_rt						rt_Bloom_D;			// 32bit, dim/8		(r,g,b,?)
+	ref_rt						rt_Bloom_E;			// 32bit, dim/16	(r,g,b,?)
+	ref_rt						rt_Bloom_F;			// 32bit, dim/32	(r,g,b,?)
+	ref_rt						rt_Bloom_G;			// 32bit, dim/64
+	ref_rt						rt_Bloom_A2;			// 32bit, dim		(r,g,b,?)
+	ref_rt						rt_Bloom_B2;			// 32bit, dim/2		(r,g,b,?)
+	ref_rt						rt_Bloom_C2;			// 32bit, dim/4		(r,g,b,?)
+	ref_rt						rt_Bloom_D2;			// 32bit, dim/8		(r,g,b,?)
+	ref_rt						rt_Bloom_E2;			// 32bit, dim/16	(r,g,b,?)
+	ref_rt						rt_Bloom_F2;			// 32bit, dim/32	(r,g,b,?)
+
+	ref_rt						rt_LUM_A;			// 32bit, 1024x1024,log-average in all components
+	ref_rt						rt_LUM_B;			// 32bit, 128x128,	log-average in all components
+	ref_rt						rt_LUM_C;			// 32bit, 16x16,	log-average in all components
+	ref_rt						rt_LUM_D;			// 64bit, 1x1,		log-average in all components
+	ref_rt						rt_LUM_Prev;		// 64bit, 1x1,		prev frame log-average in all components
+	//==================================================
+
+
 
 	// env
 	ref_texture				t_envmap_0		;	// env-0
@@ -200,6 +230,14 @@ private:
 	// Luminance
 	ref_shader			s_luminance;
 	float						f_luminance_adapt;
+
+	//================= new bloom and lum =================
+	ref_shader					s_bloom_downsample;
+	ref_shader					s_bloom_upsample;
+	ref_shader					s_lum_copy;
+	ref_shader					s_lum_downsample;
+	ref_shader					s_lum_calc;
+	//=====================================================
 
 	// FX: ScreenQuad
 	ref_geom FSTriangleGeom;
@@ -351,6 +389,12 @@ public:
 	void						phase_combine			();
 	void						phase_combine_volumetric();
 	void						phase_pp				();
+	//==========================================================
+	void						phase_bloom_downsample();
+	void						phase_bloom_upsample();
+	void						phase_new_luminance();
+	//==========================================================
+
 
 	virtual void				set_blur				(float	f)		{ param_blur=f;						}
 	virtual void				set_gray				(float	f)		{ param_gray=f;						}

@@ -57,18 +57,35 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 		auto is_loot_present = !!FS.exist(_game_textures_, "shaders\\lut.dds");
 		is_loot_present |= !!FS.exist("$level$", "shaders\\lut.dds");
 
-		if (is_loot_present) {
-
+		if (is_loot_present) 
+		{
 			RImplementation.addShaderOption("USE_LUT_TEXTURE", "1");
 		}
-
+		if (ps_r2_new_autoexposure)
+		{
+			RImplementation.addShaderOption("USE_NEW_ADAPT", "1");
+		}
+		if (ps_r2_new_bloom_tonemap)
+		{
+			RImplementation.addShaderOption("USE_NEW_BLOOM_TONEMAP", "1");
+		}
+		if (ps_r2_crossfeed)
+		{
+			RImplementation.addShaderOption("USE_CROSSFEED", "1");
+		}
+		if (ps_r2_vibrance)
+		{
+			RImplementation.addShaderOption("USE_VIBRANCE", "1");
+		}
 		C.r_Pass("stub_fullscreen_triangle", "combine_2", FALSE, FALSE, FALSE);
 
-		C.r_dx10Texture("s_position", r2_RT_upscaled_depth);
-		C.r_dx10Texture("s_normal", r2_RT_N);
-		C.r_dx10Texture("s_bloom", r2_RT_bloom1);
-		C.r_dx10Texture("s_image", r2_RT_generic);
-		C.r_dx10Texture("s_tonemap", r2_RT_luminance_cur);
+		C.r_dx10Texture		("s_position",		r2_RT_upscaled_depth);
+		C.r_dx10Texture		("s_normal",		r2_RT_N);
+		C.r_dx10Texture		("s_bloom",			r2_RT_bloom1);
+		C.r_dx10Texture		("s_image",			r2_RT_generic);
+		C.r_dx10Texture		("s_tonemap",		r2_RT_luminance_cur);
+		C.r_dx10Texture		("n_bloom",			r2_RT_bloomA2);
+		C.r_dx10Texture		("s_adapt",			r2_RT_lumD);
 
 		if (is_loot_present)
 		{
