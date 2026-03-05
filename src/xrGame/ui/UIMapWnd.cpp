@@ -563,7 +563,7 @@ bool CUIMapWnd::OnMouseAction(float x, float y, EUIMessages mouse_action)
 		switch ( mouse_action )
 		{
 		case WINDOW_RBUTTON_UP:
-			ActivatePropertiesBox(nullptr);
+			ActivatePropertiesBox(GetCurrentMouseHandler());
 			break;
 		case WINDOW_MOUSE_MOVE:
 			if( pInput->iGetAsyncBtnState(0) )
@@ -726,6 +726,16 @@ void CUIMapWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 				m_cur_location = nullptr;
 				break;
 			}
+			case MAP_SET_NAV_SPOT_ACT:
+			{
+				Level().MapManager().SetActiveUserNavigationLocation(m_cur_location);
+				break;
+			}
+			case MAP_UNSET_NAV_SPOT_ACT:
+			{
+				Level().MapManager().ClearActiveUserNavigationLocation();
+				break;
+			}
 		}
 	}
 }
@@ -734,7 +744,17 @@ void CUIMapWnd::ActivatePropertiesBox(CUIWindow* w)
 {
 	m_UIPropertiesBox->RemoveAll();
 
-	CMapSpot* sp = smart_cast<CMapSpot*>(w);
+	CMapSpot* sp = nullptr;
+	CUIWindow* currentWindow = w;
+	while (currentWindow)
+	{
+		sp = smart_cast<CMapSpot*>(currentWindow);
+		if (sp)
+			break;
+
+		currentWindow = currentWindow->GetParent();
+	}
+
 	if (!sp)
 	{
 		return;
@@ -754,6 +774,10 @@ void CUIMapWnd::ActivatePropertiesBox(CUIWindow* w)
 	{
 		m_UIPropertiesBox->AddItem("st_pda_change_spot_hint", NULL, MAP_CHANGE_SPOT_HINT_ACT);
 		m_UIPropertiesBox->AddItem("st_pda_delete_spot", NULL, MAP_REMOVE_SPOT_ACT);
+		if (Level().MapManager().IsUserNavigationLocation(m_cur_location))
+			m_UIPropertiesBox->AddItem("st_pda_unset_navigation_spot", NULL, MAP_UNSET_NAV_SPOT_ACT);
+		else
+			m_UIPropertiesBox->AddItem("st_pda_set_navigation_spot", NULL, MAP_SET_NAV_SPOT_ACT);
 	}
 
 	if (m_UIPropertiesBox->GetItemsCount() > 0)
@@ -1018,6 +1042,7 @@ void CUIMapWnd::SpotSelected( CUIWindow* w )
 	CGameTask* t	= Level().GameTaskManager()->HasGameTask( sp->MapLocation(), true );
 	if ( t )
 	{
+		Level().MapManager().ClearActiveUserNavigationLocation();
 		Level().GameTaskManager()->SetActiveTask( t );
 	}
 }
