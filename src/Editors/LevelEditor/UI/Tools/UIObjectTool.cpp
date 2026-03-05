@@ -395,7 +395,10 @@ void UIObjectTool::DrawObjectsList()
 			{
 				ImGui::Image(m_RealTexture ? m_RealTexture->get_SRView()->GetRawSRV() : (m_TextureNull->get_SRView()->GetRawSRV()), ImVec2(128, 128));
 				ImGui::SameLine();
+				ImGui::BeginChild("##EGIProps", { 0, 128 });
 				m_Props->Draw();
+				ImGui::EndChild();
+
 				ImGui::Separator();
 			}
 			//ImGui::EndChild();
