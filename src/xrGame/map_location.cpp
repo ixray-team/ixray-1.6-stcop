@@ -722,7 +722,7 @@ void CMapLocation::UpdateSpotPointer(CUICustomMap* map, CMapSpotPointer* sp)
 
 		float dist_to_target = Level().CurrentEntity()->Position().distance_to(ttt);
 		CGameTask* task = Level().GameTaskManager()->HasGameTask(this, true);
-		if (task)
+		if (task || Level().MapManager().IsUserNavigationLocation(this))
 		{
 			map->SetPointerDistance(dist_to_target);
 		}
