@@ -52,23 +52,8 @@ namespace PAPI{
 		Particle(){Reset();}
 		void Reset()
 		{
-			pos = {};	
-			posB = {};   
-			posI = {};   
-			vel = {};     	
-			velI = {};
-			rot_vel = {};
-			rot_velS = {};
-			size = {};
 			sizeMod = {1.0f, 1.0f, 1.0f};
-			sizeI = {};  
-			rot = {};	
-			rotI = {};	
-			color = {};
 			colorMod = {1.0f, 1.0f, 1.0f, 1.0f};
-			age = 0.0f;	      
-			frame = 0;	
-			flags.zero();
 		}
 	};                  	
 
