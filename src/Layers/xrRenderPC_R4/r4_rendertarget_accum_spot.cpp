@@ -346,7 +346,7 @@ void CRenderTarget::accum_volumetric_lv(light* L)
 	//LV: Point lights will be fixed later... I hope
 	if (L == nullptr)
 		return;
-
+	GPU_EVENT(accum_volumetric_lv);
 	// [ SSS ] Fade through distance volumetric lights.
 	if (ps_ssfx_volumetric.x > 0)
 	{

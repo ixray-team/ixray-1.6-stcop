@@ -19,6 +19,10 @@
 #include "BlenderGasMask.h"
 #include "blender_nvg.h"
 
+#include "blender_bloom_downsample.h"
+#include "blender_bloom_upsample.h"
+#include "blender_new_adaptation.h"
+
 #include "../xrRenderDX10/DX10 Rain/dx10RainBlender.h"
 #include "../xrRender/blender_fxaa.h"
 #include "../xrRender/blender_smaa.h"
@@ -428,6 +432,26 @@ CRenderTarget::CRenderTarget()
 		DisplayRT(rt_ssao_temp);
 		DisplayRT(rt_Velocity);
 		DisplayRT(rt_ui_pda);
+		DisplayRT(rt_Bloom_A);
+		DisplayRT(rt_Bloom_A2);
+		DisplayRT(rt_Bloom_B);
+		DisplayRT(rt_Bloom_B2);
+		DisplayRT(rt_Bloom_C);
+		DisplayRT(rt_Bloom_C2);
+		DisplayRT(rt_Bloom_D);
+		DisplayRT(rt_Bloom_D2);
+		DisplayRT(rt_Bloom_E);
+		DisplayRT(rt_Bloom_E2);
+		DisplayRT(rt_Bloom_F);
+		DisplayRT(rt_Bloom_F2);
+		DisplayRT(rt_Bloom_G);
+		DisplayRT(rt_LUM_A);
+		DisplayRT(rt_LUM_B);
+		DisplayRT(rt_LUM_C);
+		DisplayRT(rt_LUM_D);
+		DisplayRT(rt_LUM_Prev);
+
+
 #undef DisplayRT
 
 		static int stack_levels = 0;
@@ -732,6 +756,56 @@ CRenderTarget::CRenderTarget()
 		u_setrt(Device.TargetWidth, Device.TargetHeight, rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr);
 	}
 
+	// New BLOOM and LUM
+	{
+		ERHI_FORMAT	fmt = ERHI_FORMAT::R11G11B10_FLOAT;
+		u32 BW_A = Device.TargetWidth / 2, BH_A = Device.TargetHeight / 2; // ок
+		u32 BW_B = BW_A / 2, BH_B = BH_A / 2;
+		u32 BW_C = BW_A / 4, BH_C = BH_A / 4;
+		u32 BW_D = BW_A / 8, BH_D = BH_A / 8;
+		u32 BW_E = BW_A / 16, BH_E = BH_A / 16;
+		u32 BW_F = BW_A / 32, BH_F = BH_A / 32;
+		u32 BW_G = BW_A / 64, BH_G = BH_A / 64;
+		b_bloom_downsample = new CBlender_bloom_downsample();
+		b_bloom_upsample = new CBlender_bloom_upsample();
+		s_bloom_downsample.create(b_bloom_downsample);
+		s_bloom_upsample.create(b_bloom_upsample);
+		
+		rt_Bloom_A.create(	"$user$bloomA",		BW_A, BH_A, fmt);
+		rt_Bloom_A2.create(	"$user$bloomA2",	BW_A, BH_A, fmt);
+		rt_Bloom_B.create(	"$user$bloomB",		BW_B, BH_B, fmt);
+		rt_Bloom_B2.create(	"$user$bloomB2",	BW_B, BH_B, fmt);
+		rt_Bloom_C.create(	"$user$bloomC",		BW_C, BH_C, fmt);
+		rt_Bloom_C2.create(	"$user$bloomC2",	BW_C, BH_C, fmt);
+		rt_Bloom_D.create(	"$user$bloomD",		BW_D, BH_D, fmt);
+		rt_Bloom_D2.create(	"$user$bloomD2",	BW_D, BH_D, fmt);
+		rt_Bloom_E.create(	"$user$bloomE",		BW_E, BH_E, fmt);
+		rt_Bloom_E2.create(	"$user$bloomE2",	BW_E, BH_E, fmt);
+		rt_Bloom_F.create(	"$user$bloomF",		BW_F, BH_F, fmt);
+		rt_Bloom_F2.create(	"$user$bloomF2",	BW_F, BH_F, fmt);
+		rt_Bloom_G.create(	"$user$bloomG",		BW_G, BH_G, fmt);
+
+		fmt = ERHI_FORMAT::R32_FLOAT;
+		u32 LW_A = 1024, LH_A = 1024;
+		u32 LW_B = LW_A / 8, LH_B = LH_A / 8;	// 128x128
+		u32 LW_C = LW_B / 8, LH_C = LH_B / 8;	// 16x16
+		u32 LW_D = 1, LH_D = 1;					// 1x1
+
+		b_new_adaptation = new CBlender_new_adaptation(); // когда будут пбр текстуры - буду на входе ловить "светлячков" для адаптации - плохо так вот - может быть на этапе комбайна резделить спекуляр и диффуз? сейчас я вынужден делать "костыль"
+		s_lum_copy.create(b_new_adaptation);
+
+		rt_LUM_A.create("$user$lum_A", LW_A, LH_A, fmt);
+		rt_LUM_B.create("$user$lum_B", LW_B, LH_B, fmt);
+		rt_LUM_C.create("$user$lum_C", LW_C, LH_C, fmt);
+		rt_LUM_D.create("$user$lum_D", LW_D, LH_D, fmt);
+		rt_LUM_Prev.create("$user$lum_Prev", LW_D, LH_D, fmt);
+
+		//FLOAT ColorRGBA[4] = { 127.0f / 255.0f, 127.0f / 255.0f, 127.0f / 255.0f, 127.0f / 255.0f }; // хуйня - исправить, нужен 1мерный вектор, а не 4
+		GRHI->ClearTarget(rt_LUM_D->pRT, ERTColor::Gray);
+		GRHI->ClearTarget(rt_LUM_Prev->pRT, ERTColor::Gray);
+	}
+
+
 	// HBAO
 	{
 		u32 w = s_dwWidth / 2;
@@ -1030,6 +1104,9 @@ CRenderTarget::~CRenderTarget	()
 	xr_delete(b_gtao);
 	xr_delete(b_taa);
 	xr_delete(b_nvg);
+	xr_delete(b_bloom_downsample);
+	xr_delete(b_bloom_upsample);
+	xr_delete(b_new_adaptation);
 
 	g_Fsr2Wrapper.Destroy();
 	g_DLSSWrapper.Destroy();
