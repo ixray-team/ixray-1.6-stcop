@@ -66,6 +66,28 @@
 #define		r2_RT_luminance_cur	"$user$tonemap"			// --- result
 #define		r2_RT_luminance_pool "$user$luminance"		// --- pool
 
+//===================================================================
+#define		r2_RT_bloomA		"$user$bloomA"			// ---
+#define		r2_RT_bloomB		"$user$bloomB"			// ---
+#define		r2_RT_bloomC		"$user$bloomC"			// ---
+#define		r2_RT_bloomD		"$user$bloomD"			// ---
+#define		r2_RT_bloomE		"$user$bloomE"			// ---
+#define		r2_RT_bloomF		"$user$bloomF"			// ---
+#define		r2_RT_bloomG		"$user$bloomG"			// ---
+#define		r2_RT_bloomA2		"$user$bloomA2"			// ---
+#define		r2_RT_bloomB2		"$user$bloomB2"			// ---
+#define		r2_RT_bloomC2		"$user$bloomC2"			// ---
+#define		r2_RT_bloomD2		"$user$bloomD2"			// ---
+#define		r2_RT_bloomE2		"$user$bloomE2"			// ---
+#define		r2_RT_bloomF2		"$user$bloomF2"			// ---
+
+#define		r2_RT_lumA			"$user$lum_A"			// --- temp
+#define		r2_RT_lumB			"$user$lum_B"			// --- temp
+#define		r2_RT_lumC			"$user$lum_C"			// --- temp
+#define		r2_RT_lumD			"$user$lum_D"			// --- temp
+#define		r2_RT_lumPrev		"$user$lum_Prev"		// --- temp
+//===================================================================
+
 #define		r2_RT_smap_surf		"$user$smap_surf"		// --- directional
 #define		r2_RT_smap_depth	"$user$smap_depth"		// ---directional
 #define		r2_RT_smap_depth_sun	"$user$smap_depth_sun"
