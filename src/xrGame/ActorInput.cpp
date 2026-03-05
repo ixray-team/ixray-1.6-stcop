@@ -43,6 +43,8 @@
 #include "ui/UIPdaWnd.h"
 #include "ActorEffector.h"
 #include "PostprocessAnimator.h"
+#include "ControllerAutoaim.h"
+#include "CameraFirstEye.h"
 
 extern u32 hud_adj_mode;
 
@@ -722,9 +724,53 @@ void CActor::IR_GamepadKeyPress(int id)
 		m_holder->OnGamepadKeyPress		(id);
 		if(m_holder->allowWeapon() && inventory().Action((u16)bind, CMD_START))		return;
 		return;
-	}else
-		if(inventory().Action((u16)bind, CMD_START))					return;
+	}
+	else if(inventory().Action((u16)bind, CMD_START))	
+	{
+		if (bind == kWPN_ZOOM)
+		{
+			CInventoryItem* activeItem = inventory().ActiveItem();
+			CWeapon* wpn = nullptr;
+			if (activeItem)
+				wpn = activeItem->cast_weapon();
 
+			if (wpn)
+			{
+				CEntityAlive* pAim = nullptr;
+				flags32 flags;
+				flags.zero();
+				float minSpeed, maxSpeed;
+				if (inventory().GetActiveSlot() == NO_ACTIVE_SLOT)
+				{
+					flags.set(Feel::eFlagsPickAutoAim::eFlagsPickAutoAim_NoWeapon, true);
+					flags.set(Feel::eFlagsPickAutoAim::eFlagsPickAutoAim_NonEnemies, true);
+					minSpeed = maxSpeed = PI;
+				}
+				else
+				{
+					flags.set(Feel::eFlagsPickAutoAim::eFlagsPickAutoAim_Enemies, true);
+					minSpeed = PI_DIV_2;
+					maxSpeed = PI;
+				}
+
+				if (Feel::auto_aim_pick_target(this, m_memory, pAim, flags))
+				{
+					CCameraFirstEye* pCamera = smart_cast<CCameraFirstEye*>(cam_Active());
+					if (pCamera)
+					{
+						float heightFraction = READ_IF_EXISTS(pSettings, r_float, "auto_aiming", "height_fraction", 0.71f);
+
+						Fvector pos;
+						Feel::look_at_pos_for_aiming(pos, pAim, heightFraction);
+						pCamera->LookAtPoint(pos, minSpeed, maxSpeed);
+
+						lastTimeAutoAimStarted = Device.dwTimeContinual;
+					}
+				}
+			}
+		}
+		return;
+	}
 	if (IsWaunded)
 	{
 		return;
