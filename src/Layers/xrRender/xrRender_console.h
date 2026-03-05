@@ -129,6 +129,33 @@ extern  float					ps_r__test_exp_to_shaders_2;
 extern  float					ps_r__test_exp_to_shaders_3;
 extern  float					ps_r__test_exp_to_shaders_4;
 
+// papa_doenitz: these are now used by the new tonemapping/adaptation/bloom code.
+extern ECORE_API bool		ps_r2_new_autoexposure;						// auto exposure (0 - disable, 1 - enable)
+extern ECORE_API float		ps_r2_autoexposure_key;					// papa_doenitz - middlegray/key, default 0.18f, 0.148f for "unreal like"
+extern ECORE_API float		ps_r2_autoexposure_min;					// exposure minimum, f-stop (for auto exposure only, make it higher if brightness is too low in bright areas)
+extern ECORE_API float		ps_r2_autoexposure_max;					// exposure maximum, f-stop (for auto exposure only, make it lower if brightness is too high in lowlight areas)
+extern ECORE_API float      ps_r2_autoexposure_bias;				// exposure bias, s-stop (for auto exposure only, make it higher if brightness is too low in general, or lower if brightness is too high in general)
+extern ECORE_API float		ps_r2_autoexposure_speed;				// autoexposure adaptation speed (for auto exposure only, make it higher if brightness changes too slowly, or lower if brightness changes too quickly)
+extern ECORE_API bool 		ps_r2_autoexposure_center_weight ;		// autoexposure center weighted (for auto exposure only, make it TRUE if you want to give more weight to the center of the screen for auto exposure, or FALSE to give equal weight to the whole screen)
+extern ECORE_API float		ps_r2_autoexposure_min_weight;			// autoexposure minimum weight (for center weighted auto exposure)
+extern ECORE_API float		ps_r2_autoexposure_gaussian;			// autoexposure gaussian factor (for center weighted auto exposure)
+extern ECORE_API bool		ps_r2_autoexposure_soft_log;			// autoexposure soft log (for auto exposure only, make it TRUE to use soft log for auto exposure, or FALSE to use simple log2 auto exposure)
+extern ECORE_API float		ps_r2_autoexposure_soft_log_k;			// autoexposure soft log acceptance in EV (for soft log)
+extern ECORE_API float		ps_r2_autoexposure_soft_limiter;		// autoexposure soft limiter in EV (for soft log)
+extern ECORE_API float		ps_r2_autoexposure_sensitivity;			// autoexposure sensitivity (for soft log)
+extern ECORE_API float		ps_r2_bloom_amount;						// bloom amount, exposure independant (0.04f)
+extern ECORE_API float		ps_r2_bloom_desaturation;				// bloom desaturation (0.1f)
+extern ECORE_API float		ps_r2_bloom_tint_amount;				// bloom tint amount (0.1f)
+extern ECORE_API Fvector3   ps_r2_bloom_tint_color;					// bloom tint color 
+extern ECORE_API bool		ps_r2_new_bloom_tonemap;				// enable new bloom/tonemap code (0 - disable, 1 - enable)
+extern ECORE_API float		ps_r2_tonemap_compression;				// tonemap compression, point where liear part ends (0.8 - 0.04)
+extern ECORE_API float 		ps_r2_tonemap_desaturation;				// tonemap highlights desaturation (0.15)
+extern ECORE_API bool		ps_r2_crossfeed;						// rbg crossfeed enable
+extern ECORE_API float		ps_r2_tonemap_crossfeed;				// rbg crossfeed (optional, 0.01 - 0.5)
+extern ECORE_API bool		ps_r2_vibrance;						// tonemap vibrance enable
+extern ECORE_API float 		ps_r2_tonemap_vibrance;					// tonemap vibrance (optional, 0.0 - 1.0)
+// new tonemapping/adaptation/bloom end
+
 extern bool UseGasmak;
 extern bool UseRainDrops;
 
