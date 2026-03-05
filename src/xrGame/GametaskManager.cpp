@@ -314,16 +314,23 @@ void CGameTaskManager::UpdateTasks						()
         }
     }
 	
-
-	for (int i = 0; i < eTaskTypeCount; ++i)
+	CMapLocation* userNavigationLocation = Level().MapManager().GetActiveUserNavigationLocation();
+	if (userNavigationLocation)
 	{
-		CGameTask* activeTask = ActiveTask(static_cast<ETaskType>(i));
-		if (activeTask)
+		userNavigationLocation->EnablePointer();
+	}
+	else
+	{
+		for (int i = 0; i < eTaskTypeCount; ++i)
 		{
-			SGameTaskObjective obj = activeTask->ActiveObjective();
-			CMapLocation* ml = obj.LinkedMapLocation();
-			if (ml && !ml->PointerEnabled())
-				ml->EnablePointer();
+			CGameTask* activeTask = ActiveTask(static_cast<ETaskType>(i));
+			if (activeTask)
+			{
+				SGameTaskObjective obj = activeTask->ActiveObjective();
+				CMapLocation* ml = obj.LinkedMapLocation();
+				if (ml && !ml->PointerEnabled())
+					ml->EnablePointer();
+			}
 		}
 	}
 
@@ -443,7 +450,7 @@ void CGameTaskManager::SetActiveTask(CGameTask* task, u16 objective_id)
 
 
 		Level().MapManager().DisableAllPointers();
-		if (ActiveObjective())
+		if (ActiveObjective() && !Level().MapManager().HasActiveUserNavigationLocation())
 		{
 			CMapLocation* ml = ActiveObjective()->LinkedMapLocation();
 			if (ml)
