@@ -97,11 +97,11 @@ float4 main(PSInput I) : SV_Target
 #endif
 
 #ifdef USE_OFFSCREEN_REFLECTIONS
-	env.xyz = lerp(env, PopGamma(vslr.xyz), vslr.w);
+	env.xyz = lerp(env, LinearToGamma(vslr.xyz), vslr.w);
 #endif
 	
 #ifdef USE_SSLR_ON_WATER
-	env = lerp(env, PopGamma(sslr.xyz), sslr.w);
+	env = lerp(env, LinearToGamma(sslr.xyz), sslr.w);
 #endif
 
     float power = pow(fresnel, 5.0f);
@@ -145,6 +145,6 @@ float4 main(PSInput I) : SV_Target
 	final += SpecularPhong(v2point, Nw, L_sun_dir_w.xyz) * Shadow;
 #endif
 	
-	return PushGamma(lerp(float4(final, PopGamma(alpha)), fog_color, calc_fogging(I.world_position)));
+	return GammaToLinear(lerp(float4(final, LinearToGamma(alpha)), fog_color, calc_fogging(I.world_position)));
 }
 

@@ -39,6 +39,9 @@ cbuffer shader_params
 cbuffer static_globals
 {
     uniform float3x4 m_invV;
+	
+    uniform float4x4 m_invP;
+    uniform float4x4 m_invP_hud;
 
     uniform float3x4 m_V;
     uniform float4x4 m_P;
@@ -62,12 +65,9 @@ cbuffer static_globals
 
     uniform float3 eye_position;
 
-    uniform float4 pos_decompression_params;
     uniform float4 pos_decompression_params2;
-    uniform float4 pos_decompression_params_hud;
-    uniform float4 depth_unpack;
-    uniform float def_aref;
     uniform float4 parallax;
+    uniform float def_aref;
 }
 
 float calc_cyclic(float x)

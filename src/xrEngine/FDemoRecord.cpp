@@ -25,31 +25,41 @@ CDemoRecord::force_position CDemoRecord:: g_position = { false, { 0, 0, 0 } };
 Fbox curr_lm_fbox;
 void setup_lm_screenshot_matrices()
 {
-	psHUD_Flags.assign	(0);
+	psHUD_Flags.assign(0);
 
-	// build camera matrix
-	Fbox bb								= curr_lm_fbox;
-	bb.getcenter						(Device.vCameraPosition);
+	Fbox bb = curr_lm_fbox;
+	bb.getcenter(Device.vCameraPosition);
 
-	Device.vCameraDirection.set			( 0.f,-1.f,0.f	);
-	Device.vCameraTop.set				( 0.f,0.f,1.f	);
-	Device.vCameraRight.set				( 1.f,0.f,0.f	);
-	Device.mView.build_camera_dir		(Device.vCameraPosition,Device.vCameraDirection,Device.vCameraTop);
+	Device.vCameraDirection.set(0.f, -1.f, 0.f);
+	Device.vCameraRight.set(1.f, 0.f, 0.f);
+	Device.vCameraTop.set(0.f, 0.f, 1.f);
 
-	bb.xform					(Device.mView);
-	// build project matrix
-	Device.mProject.build_projection_ortho(	bb.max.x-bb.min.x,
-											bb.max.y-bb.min.y,
-											bb.min.z,
-											bb.max.z);
+	Device.mView.build_camera_dir(Device.vCameraPosition, Device.vCameraDirection, Device.vCameraTop);
+
+	bb.xform(Device.mView);
+
+	Device.mProject.build_projection_ortho
+	(
+		bb.max.x - bb.min.x,
+		bb.max.y - bb.min.y,
+		bb.min.z,
+		bb.max.z
+	);
+
+	Device.mProject_saved = Device.mProject;
+	Device.mProject_old = Device.mProject;
+	Device.mView_saved = Device.mView;
+	Device.mView_old = Device.mView;
 }
 
 Fbox get_level_screenshot_bound()
 {
-	Fbox res			=  g_pGameLevel->ObjectSpace.GetBoundingVolume();
-	if(g_pGameLevel->pLevel->section_exist("level_map"))
+	Fbox res = g_pGameLevel->ObjectSpace.GetBoundingVolume();
+
+	if (g_pGameLevel->pLevel->section_exist("level_map"))
 	{
-		Fvector4 res2d = g_pGameLevel->pLevel->r_fvector4("level_map","bound_rect");
+		Fvector4 res2d = g_pGameLevel->pLevel->r_fvector4("level_map", "bound_rect");
+
 		res.min.x = res2d.x;
 		res.min.z = res2d.y;
 
@@ -147,34 +157,31 @@ void CDemoRecord::MakeScreenshotFace()
 
 void GetLM_BBox(Fbox &bb, int Step)
 {
-	float half_x = bb.min.x + (bb.max.x - bb.min.x)/2;
-	float half_z = bb.min.z + (bb.max.z - bb.min.z)/2;
+	float half_x = bb.min.x + (bb.max.x - bb.min.x) / 2;
+	float half_z = bb.min.z + (bb.max.z - bb.min.z) / 2;
+
 	switch (Step)
 	{
-	case 0:
+		case 0:
 		{
 			bb.max.x = half_x;
 			bb.min.z = half_z;
 		}break;
-	case 1:
+		case 1:
 		{
 			bb.min.x = half_x;
 			bb.min.z = half_z;
 		}break;
-	case 2:
+		case 2:
 		{
 			bb.max.x = half_x;
 			bb.max.z = half_z;
 		}break;
-	case 3:
+		case 3:
 		{
 			bb.min.x = half_x;
 			bb.max.z = half_z;
 		}break;
-	default:
-		{			
-		}break;
-		
 	}
 };
 
@@ -525,7 +532,7 @@ void CDemoRecord::MakeScreenshot	()
 
 void CDemoRecord::MakeLevelMapScreenshot(bool bHQ)
 {
-	Console->Execute("run_string level.set_weather(\"map\",true)");
+//	Console->Execute("run_string level.set_weather(\"map\",true)");
 
 	if(!bHQ)
 		m_iLMScreenshotFragment = -1;

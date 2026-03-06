@@ -103,6 +103,7 @@ static_assert(std::size(g_PlatformNames) == static_cast<u8>(EEngineExternalPlatf
 static_assert(std::size(g_Platforms) == static_cast<u8>(EEngineExternalPlatform::EnumSize), "must be equal, probably you forgot to register a new platform in enum or you forgot to add platform to g_Platforms");
 static_assert(std::size(g_Platforms) == std::size(g_PlatformNames), "must be equal!");
 
+using ShaderExternalMap = xr_string_map<xr_string, xr_string>;
 
 class XRCORE_API CEngineExternal final
 {
@@ -201,7 +202,7 @@ public:
 		return CachedGetSettings<EEngineExternalSystem>(pOptions, Type, ID);
 	}
 
-	xr_string_map<xr_string, xr_string> ShadersOptions;
+	ShaderExternalMap ShadersOptions;
 	Ivector2 gamesaveSize;
 
 	CInifile* GetIniFile();

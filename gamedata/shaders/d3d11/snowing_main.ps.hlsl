@@ -7,12 +7,12 @@ struct PSInput
 	float2 texcoord : TEXCOORD0;
 };
 
-void main(PSInput _I, out IXrayGbufferPack O)
+void main(PSInput _I, out IXRayGbufferPack O)
 {
-    IXrayGbuffer G;
+    IXRayGbuffer G = (IXRayGbuffer)NULL;
     p_bumped_new I;
 
-    GbufferUnpack(_I.texcoord.xy, _I.hpos.xy, G);
+    GbufferUnpack((uint2)_I.hpos.xy, G);
 	
 	clip(G.SnowMask - 0.00001f);
 	clip(0.9999f - G.Depth);
@@ -39,9 +39,15 @@ void main(PSInput _I, out IXrayGbufferPack O)
     I.M1 = xform[0];
     I.M2 = xform[1];
     I.M3 = xform[2];
+	
+	I.hpos = _I.hpos;
+	
+#ifndef DISABLE_MOTION_VECTORS
+    I.hpos_curr = I.hpos_old = I.hpos;
+    O.Velocity = 0.0f;
+#endif
 
-    I.hpos_curr = I.hpos_old = I.hpos = _I.hpos;
-    IXrayMaterial M;
+    IXRayMaterial M = (IXRayMaterial)NULL;
 
     M.Sun = G.SSS;
     M.Hemi = G.Hemi;
@@ -52,13 +58,15 @@ void main(PSInput _I, out IXrayGbufferPack O)
     SloadNew(I, M);
 
 	M.Normal = mul(xform, M.Normal);
-
     M.Normal = lerp(G.Normal, M.Normal, I.snow_mask);
-    M.Roughness = lerp(G.Roughness, M.Roughness, I.snow_mask);
-
 	M.Normal = normalize(M.Normal);
+	
+#ifndef USE_LEGACY_LIGHT
+    M.Roughness = lerp(G.Roughness, M.Roughness, I.snow_mask);
+#else
+    M.Gloss = lerp(G.Gloss, M.Gloss, I.snow_mask);
+#endif
 
-    O.Velocity = 0.0f;
     GbufferPack(O, M);
 	
 	O.Color.w = I.snow_mask;

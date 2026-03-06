@@ -6,13 +6,20 @@ extern Fvector3 ps_r_taa_jitter_full;
 
 void CRenderTarget::init_dlss()
 {
-	g_DLSSWrapper.Destroy();
-
 	DLSSWrapper::ContextParameters initParams;
 	initParams.device = RDevice;
-	initParams.displaySize = { (int)RCache.get_target_width(), (int)RCache.get_target_height() };
-	initParams.renderSize = { (int)RCache.get_width(), (int)RCache.get_height() };
-	g_DLSSWrapper.Create(initParams);
+
+	initParams.displaySize = { 
+		(int)RCache.get_target_width(),
+		(int)RCache.get_target_height() 
+	};
+
+	initParams.renderSize = { 
+		(int)RCache.get_width(),
+		(int)RCache.get_height() 
+	};
+
+	g_DLSSWrapper.Resize(initParams);
 }
 
 bool CRenderTarget::phase_dlss()
