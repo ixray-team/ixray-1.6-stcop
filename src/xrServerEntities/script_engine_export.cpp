@@ -33,6 +33,8 @@
 #	include "EnhancementEditionLuaLayer.h"
 #endif
 
+extern void CompatibilityBringeExport(lua_State*);
+
 void export_classes	(lua_State *L)
 {
 	CScriptEngine::script_register(L);
@@ -287,6 +289,7 @@ void export_classes	(lua_State *L)
 
 	// Ехидна Эдишен
 	ExportEELayer(L);
+	CompatibilityBringeExport(L);
 	// CScriptStoryIDManager::script_register(L); -> Конфликт с оригинальные скриптами
 #endif
 }
