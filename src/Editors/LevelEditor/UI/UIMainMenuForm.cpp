@@ -14,6 +14,7 @@
 #include "Plugins/PluginsUIRun.h"
 
 #include "../../xrEUI/ModernUI.h"
+#include "UIWidgetsTest.h"
 
 
 #include "IconsFontAwesome6.h"
@@ -615,6 +616,21 @@ void UIMainMenuForm::Draw()
 					else
 						ThemeInstance.Show(false);
 				}
+			}
+
+			ImGui::Separator();
+
+			{
+				if (ImGui::MenuItemI("UI Widgets Test", ICON_FA_FLASK, ""))
+				{
+					auto& W = CUIWidgetsTest::Instance();
+
+					if (!UI->HasWindow<CUIWidgetsTest>())
+						UI->Push(&W, false);      // false = не удалять UI менеджером
+
+					W.Show(true);
+				}
+
 			}
 		EndMainMenuList
 
