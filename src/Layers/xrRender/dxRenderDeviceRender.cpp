@@ -18,6 +18,22 @@ dxRenderDeviceRender::dxRenderDeviceRender()
 {}
 #endif
 
+#ifdef USE_DX11
+#include "..\xrRenderPC_R4\OverlayAPI\DLSSWrapper.h"
+#endif
+
+void dxRenderDeviceRender::GetRenderScale(float& RenderScale)
+{
+#ifdef USE_DX11
+	if (ps_r_scale_mode == 2)
+	{
+		g_DLSSWrapper.GetRenderScale(RenderScale);
+	}
+#else
+	RenderScale = 1.0f;
+#endif
+}
+
 void dxRenderDeviceRender::Copy(IRenderDeviceRender &_in)
 {
 	*this = *(dxRenderDeviceRender*)&_in;
@@ -80,21 +96,32 @@ void dxRenderDeviceRender::DestroyHW()
 #endif
 }
 
+xr_task_group thm_reload_task;
+
 void  dxRenderDeviceRender::Reset(SDL_Window* window, u32 &dwWidth, u32 &dwHeight)
 {
 #ifndef _EDITOR
 	Resources->reset_begin	();
 	Memory.mem_compact		();
+
+	thm_reload_task.run
+	(
+		[this]()
+		{
+			OnAssetsChanged();
+		}
+	);
+
 	ResourcesDeferredUnload();
 
 	CImGuiManager::Instance().Reset();
-	
 	Device.ResizeWindow(psCurrentVidMode[0], psCurrentVidMode[1]);
+
+	thm_reload_task.wait();
 	ResourcesDeferredUpload();
 
 	dwWidth = Device.GetSwapchainWidth();
 	dwHeight = Device.GetSwapchainHeight();
-
 	Resources->reset_end();
 #endif
 }

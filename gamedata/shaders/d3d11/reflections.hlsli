@@ -7,44 +7,40 @@
 
 #define USE_VASYAN_CUTOFF
 
-// #define VSLR_SLOW_BREAK
+// #define VSLR_SLOW_BREAK	
 // #define SSLR_SLOW_BREAK
 
 uniform float4 scaled_screen_res;
 
-float get_depth_fast(float2 tc)
-{
-    float P = s_position.SampleLevel(smp_rtlinear, tc, 0).x;
-    return depth_unpack.x * rcp(P - depth_unpack.y);
-}
-
 float3 gbuf_unpack_position(float2 uv)
 {
-    float depth = get_depth_fast(uv);
-    uv = uv * 2.0f - 1.0f;
-    return float3(uv * pos_decompression_params.xy, 1.0f) * depth;
-}
-
-float3 gbuf_unpack_position(float2 uv, float depth)
-{
-    uv = uv * 2.0f - 1.0f;
-    return float3(uv * pos_decompression_params.xy, 1.0f) * depth;
+	float4 Point = float4
+	(
+		uv,	s_position.SampleLevel(smp_rtlinear, uv, 0).x, 1.0f
+	);
+	
+	Point.x = Point.x * 2.0f - 1.0f;
+	Point.y = 1.0f - Point.y * 2.0f;
+	
+    return mul(m_invP, Point).xyz;
 }
 
 float2 gbuf_unpack_uv(float3 position)
 {
-    position.xy *= rcp(pos_decompression_params.xy * position.z);
-    return saturate(position.xy * 0.5 + 0.5);
+	float4 Point = mul(m_P, float4(position, 1.0f));
+	Point.xy = Point.xy * float2(0.5f, -0.5f) * rcp(Point.w) + 0.5f;
+	
+    return saturate(Point.xy);
 }
 
 #define SSLR_STEPS 30
-#define MAX_FIND_STEP 5
+#define MAX_FIND_STEP 3
 
 float BinaryRefinement(inout float3 EndProj, float3 Reflect)
 {
 	float HitDepth = 0.0f;
 	
-	[unroll(MAX_FIND_STEP)]
+	[unroll]
 	for(int i = 0; i < MAX_FIND_STEP; ++i)
 	{
 		HitDepth = s_env.SampleLevel(smp_nofilter, EndProj.xyz, 0).w;
@@ -64,7 +60,7 @@ float BinaryRefinementHUD(inout float3 EndProj, float3 Reflect)
 {
 	float HitDepth = 0.0f;
 	
-	[unroll(MAX_FIND_STEP)]
+	[unroll]
 	for(int i = 0; i < MAX_FIND_STEP; ++i)
 	{
 		HitDepth = s_position.SampleLevel(smp_nofilter, EndProj.xy, 0).x;
@@ -98,7 +94,9 @@ float4 FastViewReflections(float3 Point, float3 Reflect)
 	Step *= fog_params.z - length(Point); //sqrt((RadiusS - DistanceS) * rcp(DirectionS));
 	
 	float Fade = 0;
+	
 	float Delta = 0.0f;
+	float OldDelta = 0.0f;
 	
 	[loop]
 	for(uint i = 0; i < SSLR_STEPS; ++i)
@@ -115,7 +113,8 @@ float4 FastViewReflections(float3 Point, float3 Reflect)
 		
 		Delta = dot(SamplePoint, SamplePoint) - SampleHitPointLen;
 		
-		if (Delta > 0 /*&& Delta <= JStep * 0.8f*/)
+		
+		if (Delta > 0 && OldDelta <= 0)
 		{
 			float3 JReflect = Reflect * JStep * 0.5f;
 			SamplePoint.xyz -= JReflect;
@@ -129,9 +128,12 @@ float4 FastViewReflections(float3 Point, float3 Reflect)
 #endif
 			break;
 		}
+		
+		OldDelta = Delta;
 	}
 	
 	SamplePoint = normalize(SamplePoint) * sqrt(SampleHitPointLen);
+	
 	return float4(SamplePoint, Fade);
 }
 
@@ -199,9 +201,16 @@ float4 FastViewReflectionsSSR(float3 Point, float3 Reflect, bool is_hud)
 #endif
 			break;
 		}
+#ifdef USE_OFFSCREEN_REFLECTIONS
+		else if(!is_hud && HitDepth < 0.02f)
+		{
+			return 0.0f;
+		}
+#endif
 	}
 	
-	if(is_hud) {
+	if(is_hud)
+	{
 		Fade = Fade && EndProj.z < 0.02f;
 	
 #ifdef USE_BASE_HUD_REFLECTIONS
@@ -215,7 +224,9 @@ float4 FastViewReflectionsSSR(float3 Point, float3 Reflect, bool is_hud)
 			Fade = GetBorderAtten(EndProj.xy) && EndProj.z > 0.02f && EndProj.z < 1.0f;
 		}
 #endif
-	} else {
+	}
+	else
+	{
 		Fade = Fade && EndProj.z < 1.0f && EndProj.z > 0.02f;
 	}
 	
@@ -237,7 +248,7 @@ float4 ScreenSpaceLocalReflections(float3 Point, float3 Reflect)
        return 0.0f;
     }
 	
-    [unroll(15)]
+    [loop]
     for (int i = 0; i < 15; i++)
     {
        TestPos = Point + Reflect * L;

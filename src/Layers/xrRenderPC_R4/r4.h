@@ -57,8 +57,10 @@ public:
 		u32 volumetricfog		: 1;
 		u32 offscreen_reflecitons	: 1;
 		u32 deffered_reflecitons	: 1;
-		    
+
+		u32 dx11_use_legacy_light : 1;
 		u32 dx11_enable_tessellation : 1;
+		u32 dx11_disable_motion_vectors : 1;
 	} o;
 
 	struct _stats
@@ -181,11 +183,30 @@ public:
 		VERIFY				(RC_dx10texture		== C->type);
 		CTexture*		T	= RCache.get_ActiveTexture	(u32(C->samp.index));
 		VERIFY				(T);
-		float	mtl			= T->m_material;
+
+		float mtl = T->m_material;
+
 #ifdef	DEBUG_DRAW
-		if (ps_r2_ls_flags.test(R2FLAG_GLOBALMATERIAL))	mtl=ps_r2_gmaterial;
+		if (ps_r2_ls_flags.test(R2FLAG_GLOBALMATERIAL))	
+		{
+			mtl = ps_r2_gmaterial;
+		}
 #endif
-		RCache.hemi.set_material (o_hemi,o_sun,0,(mtl+.5f)/4.f);
+
+		mtl += 0.50f;
+		mtl *= 0.25f;
+
+		if (!o.dx11_use_legacy_light)
+		{
+			mtl = mtl - std::floor(mtl);
+
+			//mtl = (((17.77777778f * mtl - 32.0f) * mtl + 20.22222222f) * mtl - 6.0f) * mtl + 1.0f;
+			mtl = std::max(1.0f - 4.0f * mtl, (mtl - 0.25f) / 0.75f);
+
+			mtl = mtl * mtl * (3.0f - 2.0f * mtl);
+		}
+
+		RCache.hemi.set_material (o_hemi,o_sun,0, mtl);
 		RCache.hemi.set_pos_faces(o_hemi_cube[CROS_impl::CUBE_FACE_POS_X],
 			o_hemi_cube[CROS_impl::CUBE_FACE_POS_Y],
 			o_hemi_cube[CROS_impl::CUBE_FACE_POS_Z]);
@@ -321,7 +342,7 @@ public:
 	virtual size_t					SectorsCount				() { return Sectors.size(); }
 
 private:
-	xr_string_map<xr_string, xr_string>							m_ShaderOptions;
+	ShaderExternalMap				m_ShaderOptions;
 
 protected:
 	virtual	void					ScreenshotImpl				(ScreenshotMode mode, const char* name, CMemoryWriter* memory_writer);

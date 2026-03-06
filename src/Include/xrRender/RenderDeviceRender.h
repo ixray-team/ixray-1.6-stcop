@@ -26,6 +26,8 @@ public:
 	virtual void	setContrast(float fGamma) = 0;
 	virtual void	updateGamma() = 0;
 
+	virtual void GetRenderScale(float& RenderScale) = 0;
+
 	//	Destroy
 	virtual void	OnDeviceDestroy( bool bKeepTextures) = 0;
 	virtual void	ValidateHW() = 0;

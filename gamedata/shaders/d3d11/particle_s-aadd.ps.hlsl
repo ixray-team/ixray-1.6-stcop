@@ -12,5 +12,5 @@ float4 main(v2p I) : SV_Target
     float4 c = I.c * s_base.Sample(smp_base, I.tc0);
     c.xyz *= c.w;
     float3 r = float3(1, 1, 1) - c.xyz + c.xyz * c.xyz;
-    return float4(PushGamma(r), 1);
+    return float4(GammaToLinear(r), 1);
 }

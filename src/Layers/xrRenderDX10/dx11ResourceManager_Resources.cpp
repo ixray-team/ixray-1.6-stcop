@@ -91,34 +91,40 @@ void		CResourceManager::_DeleteState		(const SState* state)
 }
 
 //--------------------------------------------------------------------------------------------------------------
-SPass*		CResourceManager::_CreatePass			(const SPass& proto)
+SPass* CResourceManager::_CreatePass(const SPass& proto)
 {
 	xrCriticalSectionGuard guard(creationGuard);
+
 	for (u32 it=0; it<v_passes.size(); it++)
+	{
 		if (v_passes[it]->equal(proto))
+		{
 			return v_passes[it];
+		}
+	}
 
-	SPass*	P					=	new SPass();
-	P->dwFlags					|=	xr_resource_flagged::RF_REGISTERED;
-	P->state					=	proto.state;
-	P->ps						=	proto.ps;
-	P->vs						=	proto.vs;
-	P->gs						=	proto.gs;
-	P->hs						=	proto.hs;
-	P->ds						=	proto.ds;
-	P->cs						=	proto.cs;
-	P->constants				=	proto.constants;
-	P->T						=	proto.T;
+	SPass* P = new SPass();
+	P->dwFlags |= xr_resource_flagged::RF_REGISTERED;
+	P->state = proto.state;
+	P->ps = proto.ps;
+	P->vs = proto.vs;
+	P->gs = proto.gs;
+	P->hs = proto.hs;
+	P->ds = proto.ds;
+	P->cs = proto.cs;
+	P->constants = proto.constants;
+	P->iPriority = proto.iPriority;
+	P->T = proto.T;
 #ifdef _EDITOR
-	P->M						=	proto.M;
+	P->M = proto.M;
 #endif
-	P->C						=	proto.C;
+	P->C = proto.C;
 
-	v_passes.push_back			(P);
+	v_passes.push_back(P);
 	return v_passes.back();
 }
 
-void		CResourceManager::_DeletePass			(const SPass* P)
+void CResourceManager::_DeletePass(const SPass* P)
 {
 	if (0==(P->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	xrCriticalSectionGuard guard(creationGuard);

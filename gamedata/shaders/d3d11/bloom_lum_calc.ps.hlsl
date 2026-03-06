@@ -12,10 +12,12 @@ Unreal Engine Documentation, "Auto Exposure / Eye Adaptation"
 
 #include "common.hlsli"
 
-uniform Texture2D b_image;
 uniform Texture2D p_image;
+
 float4 adapt_params; // x - ps_r2_autoexposure_min_weight, y - ps_r2_autoexposure_gaussian, z - ps_r2_autoexposure_speed
 float4 adapt_params2; // x - ps_r2_autoexposure_soft_log_k, y - ps_r2_autoexposure_soft_limiter, z- ps_r2_autoexposure_sensitivity
+
+float4 MiddleGray;
 /*
 constants buffer descr:
     autoexposure_min_weight - minimum weight for farthest pixels, can be tweaked, higher value means more even weight distribution, lower value means more center weighted distribution
@@ -30,9 +32,13 @@ constants buffer descr:
 //#define USE_CENTER_WEIGHTED_LUMA
 //#define USE_SOFT_LOG
 
-float main(PSInputFullscreen I) : SV_Target
+#if defined(USE_CLASSIQUE_TONEMAP) && defined(USE_SOFT_LOG)
+	#undef USE_SOFT_LOG
+#endif
+
+float4 main(PSInputFullscreen I) : SV_Target
 {
-    float2 uv = I.texcoord.xy ;
+    float2 uv = I.texcoord.xy;
     float4 temp;
     float LumaCurr = 0.f, tempCurr = 0.f, weight = 1.f, weightsumm = 0.f, sumExp = 0.f;  
     // here we perform weighed average summ
@@ -43,7 +49,7 @@ float main(PSInputFullscreen I) : SV_Target
         {
             // sample location of 16x16 tex
             uv = (float2(x,y) + 0.5) / 16.f;
-            tempCurr = b_image.Sample(smp_nofilter, uv).r;
+            tempCurr = s_image.Sample(smp_rtlinear, uv).r;
             #ifndef USE_CENTER_WEIGHTED_LUMA
                 LumaCurr += tempCurr; 
             #else   // USE_CENTER_WEIGHTED_LUMA
@@ -74,10 +80,15 @@ float main(PSInputFullscreen I) : SV_Target
         logSoft = min(logSoft, LumaCurr + adapt_params2.y);
         LumaCurr = lerp(LumaCurr, logSoft, adapt_params2.z);
     #endif
-    
-    float LumaPrev = p_image.Sample(smp_rtlinear, 0.5f).r;
-    float a = 1.f - exp(-(timers.x - timers.y) / adapt_params.z);
-    LumaCurr = lerp(LumaPrev, LumaCurr, a);
    
-    return LumaCurr;
+#ifndef USE_CLASSIQUE_TONEMAP
+	return float2(LumaCurr, adapt_params.z).xxxy;
+#else
+    LumaCurr = MiddleGray.x * rcp(LumaCurr * MiddleGray.y + MiddleGray.z);
+    LumaCurr = clamp(LumaCurr, 1.f / 128.f, 20.0f);
+	LumaCurr = GammaToLinear(LumaCurr);
+	
+    return float2(LumaCurr, MiddleGray.w).xxxy;
+#endif
 }
+

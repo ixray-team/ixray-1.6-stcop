@@ -113,6 +113,8 @@ struct	  ECORE_API		SPass			: public xr_resource_flagged									{
 
 	ref_texture_list					T;
 	ref_constant_list					C;
+	u8 iPriority = u8(-1);
+
 #ifdef _EDITOR
 	ref_matrix_list						M;
 #endif

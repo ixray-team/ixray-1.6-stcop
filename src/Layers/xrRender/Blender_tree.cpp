@@ -217,6 +217,7 @@ void	CBlender_Tree::Compile	(CBlender_Compile& C)
 		case SE_R2_REFLECTIONS:
 		{
 			RImplementation.addShaderOption("USE_LENGTH_BUFFER", "1");
+			RImplementation.addShaderOption("DISABLE_MOTION_VECTORS", "1");
 			uber_forward(C, false, "deffer_lod", "forward_base", oBlend.value, false, 0);
 		}
 		break;
