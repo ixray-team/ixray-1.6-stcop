@@ -1,6 +1,5 @@
 
 local weapon_hide = {}
-local primary_objects_filled = false
 local game_difficulty_by_num = {
 	[0] = "gd_novice",
 	[1] = "gd_stalker",
@@ -546,12 +545,6 @@ function actor_binder:update(delta)
 	--	self.loaded = true
 	--end
 	treasure_manager.get_treasure_manager():update()
-
-	if not(primary_objects_filled) then
-		pda.fill_primary_objects()
-		primary_objects_filled = true
-	end
-	pda.fill_sleep_zones()
 	
 	if self.first_update then
 		self.first_update = false
