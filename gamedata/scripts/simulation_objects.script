@@ -67,9 +67,7 @@ end
 
 
 function sim_dist_to(obj1 , obj2)
-	local pos1,lv1,gv1 = obj1:get_location()
-	local pos2,lv2,gv2 = obj2:get_location()
-	return utils.graph_distance(gv1, gv2)
+	return sim.dist_to(obj1, obj2)
 end
 
 local function evaluate_prior_by_dist(target, squad)
