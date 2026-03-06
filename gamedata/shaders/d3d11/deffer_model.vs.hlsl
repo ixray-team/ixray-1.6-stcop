@@ -1,6 +1,5 @@
 #include "common.hlsli"
 #include "skin.hlsli"
-#include "hair.hlsli"
 
 void skinned_main(in v_model I, out p_bumped_new O)
 {
@@ -17,10 +16,11 @@ void skinned_main(in v_model I, out p_bumped_new O)
 #endif
 
     float3 Pe = mul(m_WV, I.P);
-    float3 N = I.N * 2.0f;
 
     O.position = float4(Pe, 1.0f);
 
+    float3 N = I.N * 2.0f;
+	
 #if defined(USE_BUMP) || defined(USE_TDETAIL_BUMP)
     float3 T = I.T * 2.0f;
     float3 B = I.B * 2.0f;
@@ -42,14 +42,14 @@ void skinned_main(in v_model I, out p_bumped_new O)
 #endif
 
     O.hpos = mul(m_WVP, I.P);
-    
+
+#ifndef DISABLE_MOTION_VECTORS
     O.hpos_curr = O.hpos;
     O.hpos_old = mul(m_WVP_old, I.P_old);
+#endif
 
     O.hpos.xy += m_taa_jitter.xy * O.hpos.w;
 	
-    // Для НПС раскомментировать (не рекомендую)
-    // O.snow_mask = normalize(mul((float3x3)m_W, N)).y;
     O.snow_mask = 0.0f;
 }
 

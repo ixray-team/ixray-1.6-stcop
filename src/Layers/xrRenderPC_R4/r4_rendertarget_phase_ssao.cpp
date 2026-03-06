@@ -1,33 +1,17 @@
 #include "stdafx.h"
 
-void set_viewport(ID3DDeviceContext* dev, float w, float h)
-{
-	RHIViewport Viewport =
-	{
-		0.f, 0.f, w, h, 0.f, 1.f
-	};
-	GRHI->SetViewport(Viewport);
-}
-
 void CRenderTarget::phase_ssao()
 {
-	// low/hi RTs
 	u_setrt(rt_ssao_temp, 0, 0, 0);
-
 	RCache.set_Stencil(false);
 
-	float _w = RCache.get_width();
-	float _h = RCache.get_height();
+	RImplementation.rmNormal();
 
-	set_viewport(RContext, _w, _h);
-
-	// Draw
 	RCache.set_Element(s_ssao->E[0]);
 	RCache.set_Geometry(FSTriangleGeom);
 
 	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
-	set_viewport(RContext, RCache.get_width(), RCache.get_height());
-
+	
 	RCache.set_Stencil(false);
 }
 

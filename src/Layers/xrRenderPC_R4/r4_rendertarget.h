@@ -107,16 +107,7 @@ public:
 	//	Igor: for volumetric lights
 	ref_rt						rt_Generic_2;		// 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
 	ref_rt						rt_BackbufferLUT;		// 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
-	ref_rt						rt_Bloom_1;			// 32bit, dim/4	(r,g,b,?)
-	ref_rt						rt_Bloom_2;			// 32bit, dim/4	(r,g,b,?)
-	ref_rt						rt_LUM_64;			// 64bit, 64x64,	log-average in all components
-	ref_rt						rt_LUM_8;			// 64bit, 8x8,		log-average in all components
 
-	ref_rt						rt_LUM_pool[2]	;	// 1xfp32,1x1,		exp-result -> scaler
-	ref_texture				t_LUM_src		;	// source
-	ref_texture				t_LUM_dest		;	// destination & usage for current frame
-
-	//==================================================
 	ref_rt						rt_Bloom_A;			// 32bit, dim		(r,g,b,?)
 	ref_rt						rt_Bloom_B;			// 32bit, dim/2		(r,g,b,?)
 	ref_rt						rt_Bloom_C;			// 32bit, dim/4		(r,g,b,?)
@@ -135,7 +126,6 @@ public:
 	ref_rt						rt_LUM_B;			// 32bit, 128x128,	log-average in all components
 	ref_rt						rt_LUM_C;			// 32bit, 16x16,	log-average in all components
 	ref_rt						rt_LUM_D;			// 64bit, 1x1,		log-average in all components
-	ref_rt						rt_LUM_Prev;		// 64bit, 1x1,		prev frame log-average in all components
 	//==================================================
 
 	//============== new Depth of Field ==============
@@ -231,12 +221,6 @@ private:
 
 	ID3DBlendState*			g_debug_blend_state = nullptr;
 
-	// Bloom
-	ref_geom					g_bloom_build;
-	ref_geom					g_bloom_filter;
-	ref_shader				s_bloom_dbg_1;
-	ref_shader				s_bloom_dbg_2;
-	ref_shader				s_bloom;
 	float							f_bloom_factor;
 
 	// Luminance
@@ -270,9 +254,6 @@ private:
 	ref_geom					g_combine_2UV;
 	ref_geom					g_combine_cuboid;
 	ref_geom					g_aa_AA;
-	ref_shader				s_combine_dbg_0;
-	ref_shader				s_combine_dbg_1;
-	ref_shader				s_combine_dbg_Accumulator;
 	ref_shader				s_combine;
 	ref_shader				s_combine_volumetric;
 public:
@@ -353,6 +334,7 @@ public:
 
 	void						phase_gtao				();
 	void						phase_sslr				();
+	void						pharse_velocity			();
 
 	void						phase_nvg				();
 

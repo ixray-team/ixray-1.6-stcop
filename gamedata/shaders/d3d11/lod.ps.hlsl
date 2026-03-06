@@ -17,7 +17,7 @@ void sample_Textures(inout float4 D, inout float4 H, float2 tc1, float2 tc0, flo
     H.w *= af.x;
 }
 
-void main(in p_bilbord I, out IXrayGbufferPack O)
+void main(in p_bilbord I, out IXRayGbufferPack O)
 {
     float4 D, H;
     sample_Textures(D, H, I.tc1, I.tc0, I.af);
@@ -27,7 +27,7 @@ void main(in p_bilbord I, out IXrayGbufferPack O)
 
     float Sun = saturate(H.w * 2.0f);
 
-    IXrayMaterial M;
+    IXRayMaterial M = (IXRayMaterial)NULL;
     M.Depth = I.position.z;
 
     M.Point = I.position.xyz;
@@ -50,7 +50,11 @@ void main(in p_bilbord I, out IXrayGbufferPack O)
 #endif
 
 	M.SnowMask = 0.95f;
+	
+#ifndef DISABLE_MOTION_VECTORS
     O.Velocity = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
+#endif
 	
     GbufferPack(O, M);
 }
+

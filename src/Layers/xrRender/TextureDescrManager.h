@@ -23,6 +23,7 @@ class CTextureDescrMngr
 		float				m_material;
 		bool				m_use_steep_parallax;
 		bool				m_use_pbr;
+		ShaderExternalMap	ShadersOptions;
 	};
 	struct texture_desc{
 		texture_assoc*		m_assoc;
@@ -56,5 +57,7 @@ public:
 	bool		GetDetailTexture(const shared_str& tex_name, const char*& res, RHIShaderConstant::Setup* &CS) const;
 	bool		UseSteepParallax(const shared_str& tex_name) const;
 	bool		UsePBRTexures	(const shared_str& tex_name) const;
+
+	ShaderExternalMap* GetShaderExternal(const shared_str& tex_name) const;
 };
 #endif

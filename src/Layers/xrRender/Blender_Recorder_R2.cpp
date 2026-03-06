@@ -324,6 +324,8 @@ void CBlender_Compile::r_Pass(const char* _vs, const char* _gs, const char* _ps,
         RS.SetTSS(0, D3DTSS_COLOROP, D3DTOP_DISABLE);
         RS.SetTSS(0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
     }
+
+    SetPassPriority(-1);
 }
 
 #ifdef USE_DX11
@@ -353,15 +355,25 @@ void CBlender_Compile::r_End(bool clear)
     dest.constants = DEV->_CreateConstantTable(ctable);
     dest.state = DEV->_CreateState(RS.GetContainer());
     dest.T = DEV->_CreateTextureList(passTextures);
+	
     dest.C = nullptr;
     ref_matrix_list temp(nullptr);
+	
 #ifdef _EDITOR
     dest.M = nullptr;
 #endif
+
     SH->passes.push_back(DEV->_CreatePass(dest));
 
     if (clear)
     {
         RImplementation.clearAllShaderOptions();
     }
+
+    SetPassPriority(-1);
+}
+
+void CBlender_Compile::SetPassPriority(int iPriority)
+{
+    dest.iPriority = u8(iPriority);
 }
