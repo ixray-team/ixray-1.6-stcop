@@ -260,17 +260,19 @@ bool UIChooseForm::GetResult(bool& change, shared_str& result)
 			int i = 0;
 			for (auto& item : Form->m_SelectedItems)
 			{
+				if (reuslt_temp.size() + item->name.size() + 1 >= 4096)
+				{
+					Msg("! Error: out string len > 4096");
+					break;
+				}
+
 				if (i != 0)
 				{
 					reuslt_temp.append(",");
 				}
+
 				reuslt_temp.append(item->name.c_str());
 				i++;
-			}
-
-			if (reuslt_temp.size() >= 4096)
-			{
-				Msg("! Error: out string len > 4096");
 			}
 
 			result = reuslt_temp.c_str();
