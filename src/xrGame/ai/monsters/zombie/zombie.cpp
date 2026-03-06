@@ -7,6 +7,56 @@
 
 #include "../control_animation_base.h"
 #include "../control_movement_base.h"
+#include "../../../sound_player.h"
+#include "CharacterPhysicsSupport.h"
+
+void CZombie::StartFakeDeathRagdoll()
+{
+	active_triple_idx = u8(Random.randI(FAKE_DEATH_TYPES_COUNT));
+	com_man().ta_activate(anim_triple_death[active_triple_idx]);
+	move().stop();
+				
+	IsSpatialReactSound = (SpatialComponent->type & ESPATIAL_TYPE::REACTTOSOUND) != ESPATIAL_TYPE::NONE;
+	IsSpatialPhysMove = (SpatialComponent->type & ESPATIAL_TYPE::PHYSIC_MOVEMENT) != ESPATIAL_TYPE::NONE;
+				
+	SpatialComponent->type &= ~ESPATIAL_TYPE::REACTTOSOUND;
+	SpatialComponent->type &= ~ESPATIAL_TYPE::PHYSIC_MOVEMENT;
+
+	auto PhysicsSupport = character_physics_support();
+	if(PhysicsSupport)
+	{
+		PhysicsSupport->ActivateRagdoll();
+	}
+					
+	IsFakeDeathActive = true;
+}
+
+void CZombie::StartFakeDeathVanilla()
+{
+	active_triple_idx			= u8(Random.randI(FAKE_DEATH_TYPES_COUNT));
+	com_man().ta_activate		(anim_triple_death[active_triple_idx]);
+	move().stop					();
+
+	IsFakeDeathActive = true;
+}
+
+void CZombie::StopFakeDeathRagdoll()
+{
+	if (IsSpatialReactSound)
+	{
+		SpatialComponent->type |= ESPATIAL_TYPE::REACTTOSOUND;
+	}
+	if (IsSpatialPhysMove)
+	{
+		SpatialComponent->type |= ESPATIAL_TYPE::PHYSIC_MOVEMENT;
+	}
+
+	auto PhysicsSupport = character_physics_support();
+	if(PhysicsSupport)
+	{
+		PhysicsSupport->DeactivateRagdoll();
+	}
+}
 
 CZombie::CZombie()
 {
@@ -20,15 +70,23 @@ CZombie::~CZombie()
 	xr_delete		(StateMan);
 }
 
-void CZombie::Load(const char* section)
+constexpr u32 default_time_fake_death = 5000;
+constexpr u32 default_time_resurrect_restore = 2000;
+constexpr u32 default_time_out_frustum_timeout = 1000;
+
+void CZombie::Load(LPCSTR section)
 {
 	inherited::Load	(section);
 
 	anim().accel_load			(section);
 	anim().accel_chain_add		(eAnimWalkFwd,		eAnimRun);
 
-	fake_death_count		= 1 + u8(Random.randI(pSettings->r_u8(section,"FakeDeathCount")));
+	fake_death_count = 1 + u8(Random.randI(pSettings->r_u8(section,"FakeDeathCount")));
 	health_death_threshold	= pSettings->r_float(section,"StartFakeDeathHealthThreshold");
+
+	time_dead_duration = READ_IF_EXISTS(pSettings, r_float, section, "time_dead_duration", default_time_fake_death);
+	time_resurrect_duration = READ_IF_EXISTS(pSettings, r_float, section, "time_resurrect_duration", default_time_resurrect_restore);
+	time_out_frustum_duration = READ_IF_EXISTS(pSettings, r_float, section, "time_out_frustum_duration", default_time_out_frustum_timeout);
 
 	SVelocityParam &velocity_none		= move().get_velocity(MonsterMovement::eVelocityParameterIdle);	
 	SVelocityParam &velocity_turn		= move().get_velocity(MonsterMovement::eVelocityParameterStand);
@@ -120,6 +178,70 @@ void CZombie::vfAssignBones()
 	Bones.AddBone(bone_head, AXIS_Z);	Bones.AddBone(bone_head, AXIS_Y);
 }
 
+void CZombie::Die(CObject* who)
+{
+	if (EngineExternal()[EEngineExternalGame::EnableRagdolledZombiePseudodeath] && IsFakeDeathActive)
+	{
+		
+		StopFakeDeathRagdoll();
+		//com_man().ta_pointbreak();
+	
+		IsFakeDeathActive = false;
+	}
+	inherited::Die(who);
+}
+
+void CZombie::save(NET_Packet& output_packet)
+{
+	inherited::save(output_packet);
+	output_packet.w_u8(IsFakeDeathActive);
+	output_packet.w_u32(time_dead_start);
+}
+
+void CZombie::load(IReader& input_packet)
+{
+	inherited::load(input_packet);
+	IsFakeDeathActive = input_packet.r_u8();
+	time_dead_start = input_packet.r_u32();
+	if (IsFakeDeathActive && !com_man().ta_is_active())
+	{
+		if (EngineExternal()[EEngineExternalGame::EnableRagdolledZombiePseudodeath])
+		{
+			StartFakeDeathRagdoll();
+		} else
+		{
+			StartFakeDeathVanilla();
+		}
+		if (time_dead_start)
+		{
+			time_dead_start = Device.dwTimeGlobal;
+		}
+	}
+}
+
+void CZombie::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CZombie")
+	{
+		inherited::Serialize(Object);
+		Object << IsFakeDeathActive << time_dead_start;
+		if (!Object.IsSave() && IsFakeDeathActive && !com_man().ta_is_active())
+		{
+			if (EngineExternal()[EEngineExternalGame::EnableRagdolledZombiePseudodeath])
+			{
+				StartFakeDeathRagdoll();
+			} else
+			{
+				StartFakeDeathVanilla();
+			}
+			if (time_dead_start)
+			{
+				time_dead_start = Device.dwTimeGlobal;
+			}
+		}
+	}
+}
+
 bool CZombie::net_Spawn (CSE_Abstract* DC) 
 {
 	if (!inherited::net_Spawn(DC))
@@ -130,29 +252,42 @@ bool CZombie::net_Spawn (CSE_Abstract* DC)
 	return(true);
 }
 
-#define TIME_FAKE_DEATH			5000
-#define TIME_RESURRECT_RESTORE	2000
-
-//void CZombie::Hit(float P,Fvector &dir,CObject*who,s16 element,Fvector p_in_object_space,float impulse, ALife::EHitType hit_type)
-void	CZombie::Hit								(SHit* pHDS)
+void CZombie::net_Destroy()
 {
-//	inherited::Hit(P,dir,who,element,p_in_object_space,impulse,hit_type);
+	IsFakeDeathActive = false;
+	CBaseMonster::net_Destroy();
+}
+
+void CZombie::Hit(SHit* pHDS)
+{
 	inherited::Hit(pHDS);
 
 	if (!g_Alive()) return;
 	
 	if ((pHDS->hit_type == ALife::eHitTypeFireWound) && (Device.dwFrame != last_hit_frame)) {
-		if (!com_man().ta_is_active() && (time_resurrect + TIME_RESURRECT_RESTORE < Device.dwTimeGlobal) && (conditions().GetHealth() < health_death_threshold)) {
-			if (conditions().GetHealth() < (health_death_threshold - float(fake_death_count - fake_death_left) * health_death_threshold / fake_death_count)) {
-				active_triple_idx			= u8(Random.randI(FAKE_DEATH_TYPES_COUNT));
-				com_man().ta_activate		(anim_triple_death[active_triple_idx]);
-				move().stop					();
-				time_dead_start				= Device.dwTimeGlobal;
+		if (EngineExternal()[EEngineExternalGame::EnableRagdolledZombiePseudodeath])
+		{
+			if (!IsFakeDeathActive && (time_resurrect + time_resurrect_duration < Device.dwTimeGlobal) && (conditions().GetHealth() < health_death_threshold))
+			{
+				time_dead_start = Device.dwTimeGlobal;
 				
-				if (fake_death_left == 0)	fake_death_left = 1;
-				fake_death_left--;
+				StartFakeDeathRagdoll();
+				
+				sound().play(MonsterSound::eMonsterSoundDie);
 			}
-		} 
+		} else
+		{
+			if (!IsFakeDeathActive && !com_man().ta_is_active() && (time_resurrect + time_resurrect_duration < Device.dwTimeGlobal) && (conditions().GetHealth() < health_death_threshold)) {
+				if (conditions().GetHealth() < (health_death_threshold - float(fake_death_count - fake_death_left) * health_death_threshold / fake_death_count)) {
+					time_dead_start				= Device.dwTimeGlobal;
+
+					StartFakeDeathVanilla();
+				
+					if (fake_death_left == 0)	fake_death_left = 1;
+					fake_death_left--;
+				}
+			}
+		}
 	}
 
 	last_hit_frame = Device.dwFrame;
@@ -163,13 +298,42 @@ void CZombie::shedule_Update(u32 dt)
 {
 	inherited::shedule_Update(dt);
 
-	if (time_dead_start != 0) {
-		if (time_dead_start + TIME_FAKE_DEATH < Device.dwTimeGlobal) {
-			time_dead_start  = 0;
+	if (g_Alive() && time_dead_start != 0) {
+		bool CanWakeUp = time_dead_start + time_dead_duration < Device.dwTimeGlobal;
+		if (EngineExternal()[EEngineExternalGame::EnableRagdolledZombiePseudodeath])
+		{
+			CFrustum CameraFrustum;  
+			CameraFrustum.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB | FRUSTUM_P_FAR);  
 
-			com_man().ta_pointbreak();	
+			CanWakeUp = !CameraFrustum.testSphere_dirty(SpatialComponent->sphere.P, SpatialComponent->sphere.R);
+			if (CanWakeUp)
+			{
+				if (!time_out_frustum)
+				{
+					time_out_frustum = Device.dwTimeGlobal;
+				}
+				if (time_out_frustum + time_out_frustum_duration >= Device.dwTimeGlobal)
+				{
+					CanWakeUp = false;
+				}
+			} else
+			{
+				time_out_frustum = 0;
+			}
+		}
+		if (CanWakeUp) {
+			time_dead_start = 0;
+			time_out_frustum = 0;
+
+			if (EngineExternal()[EEngineExternalGame::EnableRagdolledZombiePseudodeath])
+			{
+				StopFakeDeathRagdoll();
+			}
+			com_man().ta_pointbreak();
 
 			time_resurrect = Device.dwTimeGlobal;
+
+			IsFakeDeathActive = false;
 		}
 	}
 }
@@ -179,8 +343,13 @@ bool CZombie::fake_death_fall_down()
 {
 	if (com_man().ta_is_active()) return false;
 
-	com_man().ta_activate		(anim_triple_death[u8(Random.randI(FAKE_DEATH_TYPES_COUNT))]);
-	move().stop					();
+	if (EngineExternal()[EEngineExternalGame::EnableRagdolledZombiePseudodeath])
+	{
+		StartFakeDeathRagdoll();
+	} else
+	{
+		StartFakeDeathVanilla();
+	}
 
 	return true;
 }
@@ -196,8 +365,14 @@ void CZombie::fake_death_stand_up()
 		}
 	}
 	if (!active) return;
-	
+
+	if (EngineExternal()[EEngineExternalGame::EnableRagdolledZombiePseudodeath])
+	{
+		StopFakeDeathRagdoll();
+	}
 	com_man().ta_pointbreak();
+	
+	IsFakeDeathActive = false;
 }
 
 

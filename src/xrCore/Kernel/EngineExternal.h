@@ -71,6 +71,7 @@ enum class EEngineExternalGame
 	EnableWindEffectOnABullet,
 	EnableSaveOnNewGame,
 	EnableSuicideByController,
+	EnableRagdolledZombiePseudodeath,
 	None
 };
 

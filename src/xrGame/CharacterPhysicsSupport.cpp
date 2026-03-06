@@ -25,6 +25,7 @@
 #include "InventoryOwner.h"
 #include "Inventory.h"
 #include "stalker_movement_manager_smart_cover.h"
+#include "src/xrPhysics/PHShell.h"
 
 #ifdef DEBUG
 #	include "PHDebug.h"
@@ -1205,6 +1206,47 @@ void CCharacterPhysicsSupport::FlyTo(const Fvector& disp)
 	m_pPhysicsShell->set_CallbackData(cd);
 	m_pPhysicsShell->remove_ObjectContactCallback(StaticEnvironmentCB);
 	physics_world()->UnFreeze();
+}
+
+void CCharacterPhysicsSupport::ActivateRagdoll()
+{
+	bool is_actor_holder = false;
+	if (m_eType == etActor)
+	{
+		CActor* A = m_EntityAlife.cast_actor();
+		if (A->Holder())
+		{
+			is_actor_holder = true;
+		}
+	}
+	if (!is_actor_holder)
+	{
+		ActivateShell(nullptr);
+		auto CastedShell = smart_cast<CPHShell*>(m_pPhysicsShell);
+		VERIFY(CastedShell);
+		CastedShell->vis_update_activate();
+	}
+}
+
+void CCharacterPhysicsSupport::DeactivateRagdoll()
+{
+	if (m_pPhysicsShell) {  
+		m_pPhysicsShell->Deactivate();  
+		xr_delete(m_pPhysicsShell);  
+	}
+
+	m_flags.set(fl_skeleton_in_shell, FALSE);  
+    m_eState = esAlive;
+
+	CreateCharacterSafe();
+
+	if (m_physics_skeleton) {  
+		m_physics_skeleton->Deactivate();  
+		xr_delete(m_physics_skeleton);  
+	} 
+	
+	CPHSkeleton::RespawnInit();  
+	CPHDestroyable::RespawnInit(); 
 }
 
 void CCharacterPhysicsSupport::on_create_anim_mov_ctrl()
