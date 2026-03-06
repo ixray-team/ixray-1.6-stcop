@@ -1,5 +1,5 @@
 local function printf				(fmt,...)
-	log								(string.format(fmt,...))
+	SemiLog (string.format(fmt,...))
 end
 
 local								Counters = {}
