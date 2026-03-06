@@ -110,7 +110,7 @@ void CRenderTarget::draw_rain(light& RainSetup) {
 
 		u_setrt(rt_Accumulator, nullptr, nullptr, RDepth);
 
-		RCache.set_Element(s_rain->E[1]);
+		RCache.set_Element(s_rain->E[0]);
 		RCache.set_c("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0);
 		RCache.set_c("WorldX", W_dirX.x, W_dirX.y, W_dirX.z, 0);
 		RCache.set_c("WorldZ", W_dirZ.x, W_dirZ.y, W_dirZ.z, 0);
@@ -122,7 +122,7 @@ void CRenderTarget::draw_rain(light& RainSetup) {
 		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 4, 0, 2);
 
 		//	Apply normal
-		RCache.set_Element(s_rain->E[2]);
+		RCache.set_Element(s_rain->E[1]);
 		RCache.set_c("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0);
 		RCache.set_c("m_shadow", m_shadow);
 		RCache.set_c("m_sunmask", m_clouds_shadow);
@@ -133,7 +133,7 @@ void CRenderTarget::draw_rain(light& RainSetup) {
 		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 4, 0, 2);
 
 		//	Apply gloss
-		RCache.set_Element(s_rain->E[3]);
+		RCache.set_Element(s_rain->E[2]);
 		RCache.set_c("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0);
 		RCache.set_c("m_shadow", m_shadow);
 		RCache.set_c("m_sunmask", m_clouds_shadow);

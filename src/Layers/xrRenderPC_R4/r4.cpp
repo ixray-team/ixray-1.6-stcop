@@ -17,6 +17,7 @@
 
 #include "../xrRender/RenderInterfaceShared.h"
 #include "../xrRender/WristwatchVisual.h"
+#include "OverlayAPI/DLSSWrapper.h"
 
 CRender RImplementation;
 
@@ -55,75 +56,58 @@ ShaderElement* CRender::rimp_select_sh_dynamic(dxRender_Visual* pVisual, float c
 
 	if (CRender::PHASE_NORMAL == RImplementation.phase)
 	{
-		id = ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range) ? SE_R2_NORMAL_HQ : SE_R2_NORMAL_LQ;
+		id = ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range || psDeviceFlags.test(rsClearBB)) ? SE_R2_NORMAL_HQ : SE_R2_NORMAL_LQ;
 	}
 	else if (CRender::PHASE_REFLECT == RImplementation.phase) 
 	{
 		Msg("! This is no implemented");
 		id = SE_R2_NORMAL_LQ;
 	}
+
 	return pVisual->shader->E[id]._get();
 }
-//////////////////////////////////////////////////////////////////////////
-ShaderElement*			CRender::rimp_select_sh_static	(dxRender_Visual	*pVisual, float cdist_sq)
+
+ShaderElement* CRender::rimp_select_sh_static(dxRender_Visual* pVisual, float cdist_sq)
 {
-	int		id	= SE_R2_SHADOW;
-	if	(CRender::PHASE_NORMAL == RImplementation.phase)
+	int id = SE_R2_SHADOW;
+
+	if (CRender::PHASE_NORMAL == RImplementation.phase)
 	{
-		id = ((_sqrt(cdist_sq)-pVisual->vis.sphere.R)<r_dtex_range)?SE_R2_NORMAL_HQ:SE_R2_NORMAL_LQ;
+		id = ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range || psDeviceFlags.test(rsClearBB)) ? SE_R2_NORMAL_HQ : SE_R2_NORMAL_LQ;
 	}
-	else if(CRender::PHASE_REFLECT == RImplementation.phase) {
+	else if (CRender::PHASE_REFLECT == RImplementation.phase)
+	{
 		id = SE_R2_REFLECTIONS;
 	}
+
 	return pVisual->shader->E[id]._get();
 }
-static class cl_parallax		: public RHIShaderConstant::Setup		{	virtual void setup	(RHIShaderConstant* C)
-{
-	float			h			=	ps_r2_df_parallax_h;
-	RCache.set_c	(C,h,-h/2.f,1.f/r_dtex_range,1.f/r_dtex_range);
-}}	binder_parallax;
 
-static class cl_LOD		: public RHIShaderConstant::Setup
+static class cl_parallax : public RHIShaderConstant::Setup 
 {
-	virtual void setup	(RHIShaderConstant* C)
+	virtual void setup(RHIShaderConstant* C)
+	{
+		float h = ps_r2_df_parallax_h;
+		RCache.set_c(C, h, -h / 2.f, 1.f / r_dtex_range, 1.f / r_dtex_range);
+	}
+} binder_parallax;
+
+static class cl_LOD : public RHIShaderConstant::Setup
+{
+	virtual void setup(RHIShaderConstant* C)
 	{
 		RCache.LOD.set_LOD(C);
 	}
 } binder_LOD;
 
-static class cl_pos_decompress_params : public RHIShaderConstant::Setup {
-	virtual void setup(RHIShaderConstant* C) {
-
-		float VertTan = 1.0f / Device.mProject._22;
-		float HorzTan = VertTan / Device.fASPECT;
-
-		RCache.set_c(C, HorzTan, -VertTan, (2.0f * HorzTan) / RCache.get_width(), -(2.0f * VertTan) / RCache.get_height());
-	}
-}	binder_pos_decompress_params;
-
-extern ENGINE_API float psHUD_FOV;
-static class cl_pos_decompress_params_hud : public RHIShaderConstant::Setup {
-	virtual void setup(RHIShaderConstant* C) {
-		float VertTan = -1.0f * tanf(deg2rad(psHUD_FOV / 2.0f));
-		float HorzTan = -VertTan / Device.fASPECT;
-
-		RCache.set_c(C, HorzTan, VertTan, (2.0f * HorzTan) / RCache.get_width(), (2.0f * VertTan) / RCache.get_height());
-
-	}
-}	binder_pos_decompress_params_hud;
-
-static class cl_pos_decompress_params2		: public RHIShaderConstant::Setup		{	virtual void setup	(RHIShaderConstant* C)
+static class cl_pos_decompress_params2 : public RHIShaderConstant::Setup
 {
-	RCache.set_c	(C, RCache.get_width(), RCache.get_height(), 1.0f / RCache.get_width(), 1.0f / RCache.get_height());
+	virtual void setup(RHIShaderConstant* C)
+	{
+		RCache.set_c(C, RCache.get_width(), RCache.get_height(), 1.0f / RCache.get_width(), 1.0f / RCache.get_height());
 
-}}	binder_pos_decompress_params2;
-
-static class cl_depth_unpack : public RHIShaderConstant::Setup {
-	virtual void setup(RHIShaderConstant* C) {
-		RCache.set_c(C, Device.mProject_saved._43, Device.mProject_saved._33,
-			Device.mProject_hud._43, Device.mProject_hud._33);
 	}
-} binder_depth_unpack;
+} binder_pos_decompress_params2;
 
 static class cl_water_intensity : public RHIShaderConstant::Setup		
 {	
@@ -131,9 +115,44 @@ static class cl_water_intensity : public RHIShaderConstant::Setup
 	{
 		CEnvDescriptor&	E = *g_pGamePersistent->Environment().CurrentEnv;
 		float fValue = E.m_fWaterIntensity;
-		RCache.set_c	(C, fValue, fValue, fValue, 0);
+
+		RCache.set_c(C, fValue, fValue, fValue, 0);
 	}
 }	binder_water_intensity;
+
+static class cl_invP : public RHIShaderConstant::Setup
+{
+	u32 marker = 0;
+	Fmatrix result{};
+
+	virtual void setup(RHIShaderConstant* C)
+	{
+		if (Device.dwFrame != marker)
+		{
+			result.invert44(Device.mProject);
+			marker = Device.dwFrame;
+		}
+
+		RCache.set_c(C, result);
+	}
+}	binder_invP;
+
+static class cl_invP_hud : public RHIShaderConstant::Setup
+{
+	u32 marker = 0;
+	Fmatrix result{};
+
+	virtual void setup(RHIShaderConstant* C)
+	{
+		if (Device.dwFrame != marker)
+		{
+			result.invert44(Device.mProject_hud);	// result.row[2].mul(50.0f);
+			marker = Device.dwFrame;
+		}
+
+		RCache.set_c(C, result);
+	}
+}	binder_invP_hud;
 
 static class cl_sun_shafts_intensity : public RHIShaderConstant::Setup		
 {	
@@ -141,7 +160,7 @@ static class cl_sun_shafts_intensity : public RHIShaderConstant::Setup
 	{
 		CEnvDescriptor&	E = *g_pGamePersistent->Environment().CurrentEnv;
 		float fValue = E.m_fSunShaftsIntensity;
-		RCache.set_c	(C, fValue, fValue, fValue, 0);
+		RCache.set_c(C, fValue, fValue, fValue, 0);
 	}
 }	binder_sun_shafts_intensity;
 
@@ -183,8 +202,7 @@ class cl_m_env_view : public RHIShaderConstant::Setup
 	{
 		RCache.xforms.set_c_env_view(C);
 	}
-};
-
+} binder_m_env_view;
 
 class cl_m_env_view_inv : public RHIShaderConstant::Setup
 {
@@ -192,7 +210,7 @@ class cl_m_env_view_inv : public RHIShaderConstant::Setup
 	{
 		RCache.xforms.set_c_env_view_inv(C);
 	}
-};
+} binder_m_env_view_inv;
 
 //////////////////////////////////////////////////////////////////////////
 // Just two static storage
@@ -233,31 +251,31 @@ void CRender::create()
 	{
 		o.deffered_reflecitons = !!ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WORLD);
 		o.offscreen_reflecitons = !!ps_r2_ls_flags_ext.test(R4FLAG_OFFSCREEN_REFLECTIONS);
+		o.dx11_use_legacy_light = false;
 	}
 	else
 	{
 		o.deffered_reflecitons = o.offscreen_reflecitons = false;
+		o.dx11_use_legacy_light = true;
 	}
 
+	o.dx11_disable_motion_vectors = !!EngineExternal().ShadersOptions.contains(xr_string("DISABLE_MOTION_VECTORS"));
 	o.dx11_enable_tessellation = RFeatureLevel >= D3D_FEATURE_LEVEL_11_0 && ps_r2_ls_flags_ext.test(R2FLAGEXT_ENABLE_TESSELLATION);
 
 	// constants
-	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("parallax", &binder_parallax);
-	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("water_intensity", &binder_water_intensity);
-	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("sun_shafts_intensity", &binder_sun_shafts_intensity);
-	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("m_AlphaRef", &binder_alpha_ref);
-	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("pos_decompression_params", &binder_pos_decompress_params);
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("pos_decompression_params2", &binder_pos_decompress_params2);
-	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("pos_decompression_params_hud", &binder_pos_decompress_params_hud);
-	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("depth_unpack", &binder_depth_unpack);
-	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("triLOD", &binder_LOD);
+	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("sun_shafts_intensity", &binder_sun_shafts_intensity);
+	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("water_intensity", &binder_water_intensity);
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("m_shadow_sun", &binder_m_shadow_sun);
+	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("m_AlphaRef", &binder_alpha_ref);
+	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("parallax", &binder_parallax);
+	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("triLOD", &binder_LOD);
+
+	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("m_invP_hud", &binder_invP_hud);
+	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("m_invP", &binder_invP);
 
 	if (o.offscreen_reflecitons)
 	{
-		static cl_m_env_view binder_m_env_view;
-		static cl_m_env_view_inv binder_m_env_view_inv;
-
 		dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("m_env_view", &binder_m_env_view);
 		dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("m_env_view_inv", &binder_m_env_view_inv);
 	}
@@ -266,6 +284,8 @@ void CRender::create()
 	c_sbase = "s_base";
 
 	m_bMakeAsyncSS = false;
+
+	g_DLSSWrapper.Create();
 
 	Target = new CRenderTarget();	// Main target
 
@@ -299,6 +319,8 @@ void CRender::destroy()
 	Device.seqFrame.Remove(this);
 	r_dsgraph_destroy();
 	Device.ModelDefferClear = nullptr;
+
+	g_DLSSWrapper.Destroy();
 }
 
 void CRender::reset_begin() {
@@ -716,6 +738,18 @@ static HRESULT create_shader(
 		NODEFAULT;
 	}
 
+	if (disasm) 
+	{
+		ID3DBlob* disasm_ = 0;
+		D3DDisassemble(buffer, buffer_size, FALSE, 0, &disasm_);
+		string_path		dname;
+		xr_strconcat(dname, "disasm\\", file_name, ('v' == pTarget[0]) ? ".vs.hlsl" : ('p' == pTarget[0]) ? ".ps.hlsl" : ".gs.hlsl");
+		IWriter* W = FS.w_open("$logs$", dname);
+		W->w(disasm_->GetBufferPointer(), (u32)disasm_->GetBufferSize());
+		FS.w_close(W);
+		_RELEASE(disasm_);
+	}
+
 	return _result;
 }
 
@@ -1073,6 +1107,8 @@ HRESULT	CRender::shader_compile(
 
 	u32 const RealCodeCRC = crc32(pSrcData, SrcDataLen);
 
+	Flags |= D3DCOMPILE_OPTIMIZATION_LEVEL3;
+
 	if(FS.exist(file_name) && ps_r__common_flags.test(RFLAG_USE_CACHE)) {
 #ifdef DEBUG
 		Msg("compilied shader library found %s", file_name);
@@ -1101,7 +1137,7 @@ HRESULT	CRender::shader_compile(
 		_result = D3DCompile(
 			pSrcData,
 			SrcDataLen,
-			"",//nullptr, //const char* pFileName,	//	NVPerfHUD bug workaround.
+			name,
 			defines, &Includer, pFunctionName,
 			pTarget,
 			Flags, 0,
@@ -1109,8 +1145,10 @@ HRESULT	CRender::shader_compile(
 			&pErrorBuf
 		);
 
-		if(SUCCEEDED(_result)) {
-			if(/*ps_r__common_flags.test(RFLAG_USE_CACHE)*/1) {
+		if(SUCCEEDED(_result))
+		{
+			if(/*ps_r__common_flags.test(RFLAG_USE_CACHE)*/1) 
+			{
 				IWriter* file = FS.w_open(file_name);
 				u32 const crc = crc32(pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize());
 				file->w_u32(crc);
@@ -1118,17 +1156,18 @@ HRESULT	CRender::shader_compile(
 				file->w(pShaderBuf->GetBufferPointer(), (u32)pShaderBuf->GetBufferSize());
 				FS.w_close(file);
 			}
+
 			_result = create_shader(pTarget, (DWORD*)pShaderBuf->GetBufferPointer(), (u32)pShaderBuf->GetBufferSize(), file_name, result, o.disasm);
 		}
-		else {
-			Msg("! %s", file_name);
 
-			if(pErrorBuf) {
-				Msg("! error: %s", (const char*)pErrorBuf->GetBufferPointer());
-			}
-			else {
-				Msg("Can't compile shader hr=0x%08x", _result);
-			}
+		if (pErrorBuf)
+		{
+			Msg("! error: %s\n%s", file_name, (LPCSTR)pErrorBuf->GetBufferPointer());
+		}
+
+		if (FAILED(_result) && !pErrorBuf)
+		{
+			Msg("Can't compile shader [%s] hr=0x%08x", file_name, _result);
 		}
 	}
 

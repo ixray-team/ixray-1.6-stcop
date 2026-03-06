@@ -41,9 +41,8 @@ void main(in v_detail I, out p_bumped_new O, uint instance_id : SV_InstanceID)
 {
     InstanceData det = detail_buffer[instance_id];
 
-    float3 qv = det.quat;
-    float w = sqrt(max(0.0, 1.0 - dot(qv, qv)));
-    float3x3 m_rotate = QuaternionToMatrix(float4(qv, w));
+    float w = sqrt(max(0.0, 1.0 - dot(det.quat, det.quat)));
+    float3x3 m_rotate = QuaternionToMatrix(float4(det.quat, w));
 
     float3 pos_world = mul(m_rotate, I.pos.xyz * det.scale) + det.pos;
     float3 N = mul(m_rotate, unpack_normal(I.N.zyx));
@@ -79,14 +78,17 @@ void main(in v_detail I, out p_bumped_new O, uint instance_id : SV_InstanceID)
     O.M3 = N_world.zzz;
     
     O.hpos = mul(m_WVP, pos);
-    
-#ifndef DETAIL_SHADOW_PASS
-    O.hpos_curr = O.hpos;
-    O.hpos_old = mul(m_VP_old, pos_old);
-    O.hpos.xy += m_taa_jitter.xy * O.hpos.w;
-#else
-    O.hpos_curr = O.hpos_old = O.hpos;
+
+#ifndef DISABLE_MOTION_VECTORS
+	#ifndef DETAIL_SHADOW_PASS
+		O.hpos_curr = O.hpos;
+		O.hpos_old = mul(m_VP_old, pos_old);
+
+		O.hpos.xy += m_taa_jitter.xy * O.hpos.w;
+	#else
+		O.hpos_curr = O.hpos_old = O.hpos;
+	#endif
 #endif
-    
-    O.snow_mask = 0.0;
+
+	O.snow_mask = 0.0;
 }

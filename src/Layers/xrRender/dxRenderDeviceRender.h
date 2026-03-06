@@ -19,6 +19,7 @@ public:
 
 	dxRenderDeviceRender();
 
+	void GetRenderScale(float& RenderScale) override;
 	void Copy(IRenderDeviceRender &_in) override;
 	void setGamma(float fGamma) override;
 	void setBrightness(float fGamma) override;

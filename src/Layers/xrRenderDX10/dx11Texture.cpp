@@ -19,33 +19,7 @@ void fix_texture_name(LPSTR fn)
 
 int get_texture_load_lod(const char* fn)
 {
-	auto& sect = pSettings->r_section("reduce_lod_texture_list");
-
-	for (const auto& data : sect.Data)
-	{
-		if (strstr(fn, data.first.c_str()))
-		{
-			if (psTextureLOD < 1)
-			{
-				return 0;
-			}
-			if (psTextureLOD < 3)
-			{
-				return 1;
-			}
-			return 2;
-		}
-	}
-
-	if (psTextureLOD < 2)
-	{
-		return 0;
-	}
-	if (psTextureLOD < 4)
-	{
-		return 1;
-	}
-	return 2;
+	return psTextureLOD;
 }
 
 u32 calc_texture_size(int lod, u32 mip_cnt, u32 orig_size)

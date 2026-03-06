@@ -59,8 +59,14 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 		}
 	}
 
-	if(lmap) {
+	if(lmap) 
+	{
 		RImplementation.addShaderOption("USE_LM_HEMI", "1");
+	}
+
+	if (ps_r2_ls_flags_ext.test(R2FLAGEXT_WIREFRAME))
+	{
+		aref = false;
 	}
 
 	if(aref)
@@ -135,16 +141,25 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 
 	static bool UseWinterPass = EngineExternal()[EEngineExternalRender::UseDynamicSnowMask];
 	bool snow_texture = UseWinterPass && FS.exist(temp, _textures_, C.L_textures[0].c_str(), "_snowmask.dds");
-	bool hair_texture = FS.exist(temp, _textures_, C.L_textures[0].c_str(), "_hairmask.dds");
 
 	if (snow_texture)
 	{
 		RImplementation.addShaderOption("USE_SNOW_TEXTURE", "1");
 	}
+	
+	bool hair_texture = FS.exist(temp, _textures_, C.L_textures[0].c_str(), "_hairmask.dds");
 
 	if (hair_texture)
 	{
 		RImplementation.addShaderOption("USE_HAIRMASK", "1");
+	}
+	
+	bool specular_texture = FS.exist(temp, "$textures$", C.L_textures[0].c_str(), "_spec.dds");
+	specular_texture = specular_texture || FS.exist(temp, "$level$", C.L_textures[0].c_str(), "_spec.dds");
+
+	if (specular_texture)
+	{
+		RImplementation.addShaderOption("USE_IOR_TEXTURE", "1");
 	}
 
 	if(bHasDetailBump)
@@ -156,41 +171,58 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 		R_ASSERT3(texDetailBumpX[0] && xr_strlen(texDetailBumpX), errorMsg, "Missing detail texture");
 	}
 
+	if (auto pShaderOptions = DEV->m_textures_description.GetShaderExternal(fname))
+	{
+		for (auto& [Name, Value] : *pShaderOptions)
+		{
+			RImplementation.addShaderOption(Name.data(), Value.data());
+		}
+
+		if (hq && pShaderOptions->contains(xr_string("USE_PARRALAX_INTERIOR")))
+		{
+			C.r_Pass(vs, "forwrad_interior", FALSE, TRUE, FALSE, TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA);
+			C.RS.SetRS(D3DRS_ZFUNC, D3D11_COMPARISON_EQUAL);
+			C.SetPassPriority(3);
+
+			C.r_dx10Texture("s_base", C.L_textures[0]);
+			C.r_dx10Texture("s_env", "newsky_reflection_lobby_room");
+
+			C.r_dx10Texture("env_s0", r2_T_envs0);
+			C.r_dx10Texture("env_s1", r2_T_envs1);
+
+			if (lmap) 
+			{
+				C.r_dx10Texture("s_hemi", C.L_textures[2]);
+			}
+
+			C.r_dx10Texture("s_smap_sun", r2_RT_smap_depth_sun);
+			C.r_dx10Sampler("smp_smap");
+		
+			C.r_dx10Sampler("smp_base");
+			C.r_dx10Sampler("smp_linear");
+		
+			C.r_End(false);
+		}
+	}
+
+	C.RS.SetRS(D3DRS_ZFUNC, D3D11_COMPARISON_LESS_EQUAL);
+
 #ifdef USE_DX11
-	if (bump && hq && RImplementation.o.dx11_enable_tessellation && C.TessMethod != 0) {
+	if (bump && hq && RImplementation.o.dx11_enable_tessellation && C.TessMethod != CBlender_Compile::NO_TESS)
+	{
 		string256 hs = "tess", ds = "tess";
 
-		if (C.TessMethod == CBlender_Compile::TESS_PN || C.TessMethod == CBlender_Compile::TESS_PN_HM) {
+		if (C.TessMethod & CBlender_Compile::TESS_PN) 
+		{
 			RImplementation.addShaderOption("TESS_PN", "1");
 		}
 
-		if (C.TessMethod == CBlender_Compile::TESS_HM || C.TessMethod == CBlender_Compile::TESS_PN_HM) {
+		if (C.TessMethod & CBlender_Compile::TESS_HM) 
+		{
 			RImplementation.addShaderOption("TESS_HM", "1");
 		}
 
-		C.r_TessPass(vs, hs, ds, "null", ps, false);
-
-		u32 stage = C.r_dx10Sampler("smp_bump_ds");
-		if (stage != u32(-1)) {
-			C.i_Address(stage, D3DTADDRESS_WRAP);
-			C.i_FilterAnizo(stage, true);
-		}
-
-		if (ps_r2_ls_flags_ext.test(R2FLAGEXT_WIREFRAME))
-		{
-			C.R().SetRS(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
-		}
-
-		if(bump)
-		{
-			C.r_dx10Texture("s_tbump", fnameA);
-			C.r_dx10Texture("s_tbumpX", fnameB);
-		}
-
-		if (bHasDetailBump)
-		{
-			C.r_dx10Texture("s_tdetailBumpX", texDetailBumpX);
-		}
+		C.r_TessPass(vs, hs, ds, "null", ps, FALSE);
 	}
 	else if (!DO_NOT_START)
 	{
@@ -202,6 +234,11 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 		{
 			C.r_Pass(vs, ps, false);
 		}
+	}
+
+	if (ps_r2_ls_flags_ext.test(R2FLAGEXT_WIREFRAME))
+	{
+		C.R().SetRS(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 	}
 
 	C.r_dx10Texture("s_base", C.L_textures[0]);
@@ -225,9 +262,10 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 		C.r_dx10Texture("s_hemi", C.L_textures[2]);
 	}
 
+	string256 Path = {};
+
 	if (snow_texture)
 	{
-		string256 Path = {};
 		xr_strconcat(Path, *C.L_textures[0], "_snowmask");
 		C.r_dx10Texture("s_snow", Path);
 	}
@@ -237,6 +275,12 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 		string256 Path = {};
 		xr_strconcat(Path, *C.L_textures[0], "_hairmask");
 		C.r_dx10Texture("s_hair", Path);
+	}
+
+	if (specular_texture)
+	{
+		xr_strconcat(Path, *C.L_textures[0], "_spec");
+		C.r_dx10Texture("s_specular", Path);
 	}
 
 	C.r_dx10Texture("s_smap_sun", r2_RT_smap_depth_sun);

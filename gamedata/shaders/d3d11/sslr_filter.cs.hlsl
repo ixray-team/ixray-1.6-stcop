@@ -2,6 +2,8 @@
 #include "reflections.hlsli"
 #include "metalic_roughness_light.hlsli"
 
+uniform float4 scaled_screen_res;
+
 #define mirror(x) saturate(1.0 - abs(abs(x) - 1.0))
 
 #define DISK32_RADIUS8 2.443279f
@@ -60,8 +62,8 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	I.hpos.zw = float2(0.0, 1.0);
 	I.texcoord = I.hpos.xy * pos_decompression_params2.zw;
 
-    IXrayGbuffer O;
-    GbufferUnpack(I.texcoord.xy, I.hpos.xy, O);
+    IXRayGbuffer O = (IXRayGbuffer)NULL;
+    GbufferUnpack((uint2)I.hpos.xy, O);
 
 	float isHUDRender = O.Depth < 0.02f ? 1.0f : 0.0f;
 	
@@ -77,7 +79,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	float4 FinalColor = 0.0f;
 	float FinalWeight = 0.0;
 
-	[unroll(NUM_SAMPLES)]
+	[loop]
 	for(uint i = 0; i < NUM_SAMPLES; ++i)
 	{
 		float2 offset = Disk32_Normalized[i] * scaled_screen_res.zw * DISK32_RADIUS;
@@ -95,10 +97,13 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 
 		float NdotH = max(0.0f, dot(O.Normal, -Half));
 		
-		float D = DistributionGGX(NdotH, O.Roughness);
-
+#ifndef USE_LEGACY_LIGHT
 		//LVutner: it just works.
+		float D = DistributionGGX(NdotH, O.Roughness);
 		float SampleWeight = max(D * NdotH * SSLR.w, 1e-5);
+#else
+		float SampleWeight = NdotL * rcp(NdotH + EPS);
+#endif
 		
 		//HUD weight
 		SampleWeight *= 1.0f - abs(Color.w - isHUDRender);

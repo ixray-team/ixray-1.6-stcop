@@ -167,7 +167,7 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 void Fvisual::Render(float)
 {
 #if (RENDER==R_R2) || (RENDER==R_R4)
-	if (m_fast && RImplementation.phase == CRender::PHASE_SMAP && !RCache.is_TessEnabled())
+	if (m_fast && RImplementation.phase == CRender::PHASE_SMAP)
 	{
 		RCache.set_Geometry(m_fast->rm_geom);
 		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, m_fast->vBase, 0, m_fast->vCount, m_fast->iBase, m_fast->dwPrimitives);
@@ -175,9 +175,9 @@ void Fvisual::Render(float)
 		return;
 	}
 #endif
-	RCache.set_Geometry			(rm_geom);
-	RCache.Render				(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,vBase,0,vCount,iBase,dwPrimitives);
-	RCache.stat.r.s_static.add	(vCount);
+	RCache.set_Geometry(rm_geom);
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vBase, 0, vCount, iBase, dwPrimitives);
+	RCache.stat.r.s_static.add(vCount);
 }
 
 #define PCOPY(a)	a = pFrom->a

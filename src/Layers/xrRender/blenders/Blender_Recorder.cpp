@@ -144,16 +144,15 @@ void	CBlender_Compile::SetParams		(int iPriority, bool bStrictB2F)
 	//SH->Flags.bLighting		= false;
 }
 
-//
-void	CBlender_Compile::PassBegin		()
+void	CBlender_Compile::PassBegin()
 {
-	RS.Invalidate			();
-	passTextures.clear		();
-	passMatrices.clear		();
-	passConstants.clear		();
-	xr_strcpy					(pass_ps,"null");
-	xr_strcpy					(pass_vs,"null");
-	dwStage					= 0;
+	RS.Invalidate();
+	passTextures.clear();
+	passMatrices.clear();
+	passConstants.clear();
+	xr_strcpy(pass_ps, "null");
+	xr_strcpy(pass_vs, "null");
+	dwStage = 0;
 }
 
 void	CBlender_Compile::PassEnd			()
@@ -205,7 +204,6 @@ void	CBlender_Compile::PassSET_VS		(const char* name)
 
 void	CBlender_Compile::PassSET_ZB		(bool bZTest, bool bZWrite, bool bInvertZTest)
 {
-	if (Pass())	bZWrite = false;
 	RS.SetRS	(D3DRS_ZFUNC,			bZTest?(bInvertZTest?D3DCMP_GREATER:D3DCMP_LESSEQUAL):D3DCMP_ALWAYS);
 	RS.SetRS	(D3DRS_ZWRITEENABLE,	BC(bZWrite));
 	/*

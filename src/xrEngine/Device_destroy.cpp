@@ -89,7 +89,8 @@ void CRenderDevice::Reset(bool precache)
 	{
 		static float ScalePresets[] = {1.0f, 1.5f, 1.724f, 2.0f, 3.0f};
 		GRHI->DevicePtr->RenderScale = 1.0f / ScalePresets[ps_render_scale_preset];
-		ps_render_scale = GRHI->DevicePtr->RenderScale;
+
+		m_pRender->GetRenderScale(GRHI->DevicePtr->RenderScale);
 	}
 	else
 	{
@@ -102,10 +103,13 @@ void CRenderDevice::Reset(bool precache)
 	{
 		g_pGamePersistent->Environment().bNeed_re_create_env = true;
 	}
+
 	_SetupStates();
 	
 	if (precache)
+	{
 		PreCache(20, true, false);
+	}
 
 	u32 tm_end = TimerAsync();
 	Msg("*** RESET [%d ms]", tm_end - tm_start);
