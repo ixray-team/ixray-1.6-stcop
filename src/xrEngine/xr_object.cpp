@@ -112,17 +112,28 @@ void CObject::cNameVisual_set	(shared_str N)
 }
 
 // flagging
-void CObject::processing_activate	()
+void CObject::processing_activate()
 {
-	VERIFY3	(255!= Props.bActiveCounter, "Invalid sequence of processing enable/disable calls: overflow",*cName());
-	Props.bActiveCounter			++;
-	if (0==(Props.bActiveCounter-1))	g_pGameLevel->Objects.o_activate	(this);
+	Props.bActiveCounter++;
+	if (0 == (Props.bActiveCounter - 1))
+	{
+		g_pGameLevel->Objects.o_activate(this);
+	}
 }
-void CObject::processing_deactivate	()
+
+void CObject::processing_deactivate()
 {
-	VERIFY3	(0	!= Props.bActiveCounter, "Invalid sequence of processing enable/disable calls: underflow",*cName());
-	Props.bActiveCounter			--;
-	if (0==Props.bActiveCounter)		g_pGameLevel->Objects.o_sleep		(this);
+	if (Props.bActiveCounter == 0)
+	{
+		return;
+	}
+
+	Props.bActiveCounter--;
+
+	if (0 == Props.bActiveCounter)
+	{
+		g_pGameLevel->Objects.o_sleep(this);
+	}
 }
 
 void CObject::setEnabled(BOOL _enabled)
