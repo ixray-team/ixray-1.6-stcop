@@ -60,12 +60,12 @@ void UILeftBarForm::Draw()
 {
 	ImGuiStyle& Style = ImGui::GetStyle();
 
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10.f, 10.f));
-	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.f, 0.f));
-	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 1.f));
+	ImVec2	WindowPadding	= ImGui::GetStyle().WindowPadding;
+	float	PannelPadding	= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::PanelPadding);
+	float	TablePadding	= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableBorder);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, WindowPadding + ImVec2(PannelPadding, PannelPadding));
 	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(1.f, 1.f));
 
-	ImGui::PushStyleColor(ImGuiCol_WindowBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelTint).Value);
 	if (ImGui::Begin("Edit Mode", 0, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 	{
 		static ESceneItemsGuids Tools[OBJCLASS_COUNT + 1] = {
@@ -89,7 +89,7 @@ void UILeftBarForm::Draw()
 			OBJCLASS_force_dword
 		};
 		
-		if (ImGui::BeginTable("EditModeTable", 2, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_SizingFixedFit /*| ImGuiTableFlags_NoPadOuterX | ImGuiTableFlags_NoPadInnerX*/))
+		if (ImGui::BeginTable("EditModeTable", 2, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_NoBordersInBody ))
 		{
 			const float column_width = ImGui::GetContentRegionAvail().x * 0.5f;
 			ImGui::TableSetupColumn("Left", ImGuiTableColumnFlags_WidthFixed, column_width);
@@ -209,18 +209,29 @@ void UILeftBarForm::Draw()
 
 	}
 	ImGui::End();
-	ImGui::PopStyleVar(4);
-	//ImGui::PopStyleColor();
+	ImGui::PopStyleVar(2);
 	if (LTools->GetToolForm())
 	{
 		if (bUseObjectsTool)
 		{
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, WindowPadding + ImVec2(PannelPadding, PannelPadding));
 			if (ImGui::Begin("Object Tools", &bUseObjectsTool))
 			{
 				if (LTools->GetToolForm())
+				{
+					ImGui::BeginChild("##Container");
+
+					XRay::ImGui::BeginDarkChild("ObjectToolsBorder", { 0, 0 }, ImGuiChildFlags_AutoResizeY);
+
 					LTools->GetToolForm()->Draw();
+
+					XRay::ImGui::EndDarkChild();
+
+					ImGui::EndChild();
+				}
 			}
 			ImGui::End();
+            ImGui::PopStyleVar();
 
 			if (UIObjectTool* pTool = smart_cast<UIObjectTool*>(LTools->GetToolForm()))
 			{
@@ -312,5 +323,4 @@ void UILeftBarForm::Draw()
 		ImGui::PopStyleVar(2);
 	}
 	ImGui::End();
-	ImGui::PopStyleColor();
 }
