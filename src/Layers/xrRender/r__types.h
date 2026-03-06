@@ -7,6 +7,9 @@
 #define		r2_RT_S				"$user$surface"			      // MRT
 #define		r2_RT_albedo		"$user$albedo"			      // MRT
 #define		r2_RT_velocity		"$user$velocity"			  // MRT
+
+#define		r2_RT_N_temp		"$user$normal_temp"		      // MRT
+#define		r2_RT_S_temp		"$user$surface_temp"	      // MRT
 #else
 #define		r2_RT_depth			"$user$depth"			// MRT
 #define		r2_RT_P				"$user$position"		// MRT
@@ -50,43 +53,40 @@
 #define		r2_RT_half_depth	"$user$half_depth"		//temporary rt for hbao calculation
 
 #if USE_DX11
-#define		r2_RT_generic		"$user$generic"		// ---
-#define		r2_RT_backbuffer_final "$user$backbuffer"
-#define		r2_RT_backbuffer_lut "$user$backbufferlut"
-#define		r2_RT_backbuffer_AA "$user$backbuffer_aa"
+	#define r2_RT_generic "$user$generic"
+	#define r2_RT_backbuffer_final "$user$backbuffer"
+	#define r2_RT_backbuffer_lut "$user$backbufferlut"
+	#define r2_RT_backbuffer_AA "$user$backbuffer_aa"
+
+	#define r2_RT_bloomA  "$user$bloomA"
+	#define r2_RT_bloomB  "$user$bloomB"
+	#define r2_RT_bloomC  "$user$bloomC"
+	#define r2_RT_bloomD  "$user$bloomD"
+	#define r2_RT_bloomE  "$user$bloomE"
+	#define r2_RT_bloomF  "$user$bloomF"
+	#define r2_RT_bloomG  "$user$bloomG"
+	#define r2_RT_bloomA2 "$user$bloomA2"
+	#define r2_RT_bloomB2 "$user$bloomB2"
+	#define r2_RT_bloomC2 "$user$bloomC2"
+	#define r2_RT_bloomD2 "$user$bloomD2"
+	#define r2_RT_bloomE2 "$user$bloomE2"
+	#define r2_RT_bloomF2 "$user$bloomF2"
+
+	#define r2_RT_lumA "$user$lum_A"
+	#define r2_RT_lumB "$user$lum_B"
+	#define r2_RT_lumC "$user$lum_C"
+#else
+	#define r2_RT_bloom1 "$user$bloom1"
+	#define r2_RT_bloom2 "$user$bloom2"
+
+	#define r2_RT_luminance_t64	"$user$lum_t64"
+	#define r2_RT_luminance_t8 "$user$lum_t8"
+	#define r2_RT_luminance_src	"$user$tonemap_src"
+	#define r2_RT_luminance_pool "$user$luminance"
 #endif //USE_DX11
 
-#define		r2_RT_bloom1		"$user$bloom1"			// ---
-#define		r2_RT_bloom2		"$user$bloom2"			// ---
+#define r2_RT_luminance_cur	"$user$tonemap"
 
-#define		r2_RT_luminance_t64	"$user$lum_t64"			// --- temp
-#define		r2_RT_luminance_t8	"$user$lum_t8"			// --- temp
-
-#define		r2_RT_luminance_src	"$user$tonemap_src"		// --- prev-frame-result
-#define		r2_RT_luminance_cur	"$user$tonemap"			// --- result
-#define		r2_RT_luminance_pool "$user$luminance"		// --- pool
-
-//===================================================================
-#define		r2_RT_bloomA		"$user$bloomA"			// ---
-#define		r2_RT_bloomB		"$user$bloomB"			// ---
-#define		r2_RT_bloomC		"$user$bloomC"			// ---
-#define		r2_RT_bloomD		"$user$bloomD"			// ---
-#define		r2_RT_bloomE		"$user$bloomE"			// ---
-#define		r2_RT_bloomF		"$user$bloomF"			// ---
-#define		r2_RT_bloomG		"$user$bloomG"			// ---
-#define		r2_RT_bloomA2		"$user$bloomA2"			// ---
-#define		r2_RT_bloomB2		"$user$bloomB2"			// ---
-#define		r2_RT_bloomC2		"$user$bloomC2"			// ---
-#define		r2_RT_bloomD2		"$user$bloomD2"			// ---
-#define		r2_RT_bloomE2		"$user$bloomE2"			// ---
-#define		r2_RT_bloomF2		"$user$bloomF2"			// ---
-
-#define		r2_RT_lumA			"$user$lum_A"			// --- temp
-#define		r2_RT_lumB			"$user$lum_B"			// --- temp
-#define		r2_RT_lumC			"$user$lum_C"			// --- temp
-#define		r2_RT_lumD			"$user$lum_D"			// --- temp
-#define		r2_RT_lumPrev		"$user$lum_Prev"		// --- temp
-//===================================================================
 #define		r2_RT_dof_focus			"$user$dof_focus"		// --- 24 bit, 1x1, current focus distance
 #define		r2_RT_dof_focus_prev	"$user$dof_focus_prev"	// --- 24 bit, 1x1, previous frame focus distance
 #define		r2_RT_dof_coc			"$user$dof_coc"			// --- 16 bit, dim, circle of confusion

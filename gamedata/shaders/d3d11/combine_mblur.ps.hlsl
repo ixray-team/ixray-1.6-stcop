@@ -46,7 +46,7 @@ void main(in PSInputFullscreen I, out float3 Color : SV_Target)
 	
 	if(VelSize > PixelSize)
 	{
-		[unroll(MBLUR_SAMPLES)]
+		[loop]
 		for(uint i = 0; i < MBLUR_SAMPLES; ++i)
 		{
 			L += Step;

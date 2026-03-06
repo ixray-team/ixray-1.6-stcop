@@ -25,10 +25,10 @@ public:
 	ShaderElement*		SH;
 #ifdef USE_DX11
 	enum {
-		NO_TESS    = 0,
-		TESS_PN    = 1,
-		TESS_HM    = 2,
-		TESS_PN_HM = 3
+		NO_TESS = 0,
+		TESS_PN = 1 << 0,
+		TESS_HM = 1 << 1,
+		TESS_PN_HM = TESS_PN | TESS_HM
 	};
 	u32	TessMethod;
 #endif
@@ -57,7 +57,7 @@ public:
 	
 	void				SetParams			(int iPriority, bool bStrictB2F);
 	void				SetMapping			();
-
+	void				SetPassPriority		(int iPriority);
 	// R1-compiler
 	void				PassBegin			();
 	u32					Pass				()  { return SH->passes.size(); }

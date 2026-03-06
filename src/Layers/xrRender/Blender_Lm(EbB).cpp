@@ -245,6 +245,7 @@ void	CBlender_LmEbB::Compile(CBlender_Compile& C)
 			break;
 		case SE_R2_REFLECTIONS:
 			RImplementation.addShaderOption("USE_LENGTH_BUFFER", "1");
+			RImplementation.addShaderOption("DISABLE_MOTION_VECTORS", "1");
 			uber_forward(C, false, "deffer_base", "forward_base", true, false, 0);
 			break;
 		}

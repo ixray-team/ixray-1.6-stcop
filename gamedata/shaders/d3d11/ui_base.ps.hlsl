@@ -7,7 +7,7 @@
 
 void main(p_bumped_new I, out float4 Color : SV_Target)
 {
-    IXrayMaterial M = (IXrayMaterial)0;
+    IXRayMaterial M = (IXRayMaterial)NULL;
 	
     M.Depth = I.position.z;
     M.Point = I.position.xyz;
@@ -18,7 +18,7 @@ void main(p_bumped_new I, out float4 Color : SV_Target)
 	clip(M.Color.w - def_aref);
 	
     #ifdef USE_DXT1_HACK
-		M.Color.xyz *= rcp(max(0.0001f, M.Color.w));
+		M.Color.xyz *= M.Color.w > 0.0f ? rcp(M.Color.w) : 0.0f;
     #endif
 #endif
 
@@ -29,13 +29,6 @@ void main(p_bumped_new I, out float4 Color : SV_Target)
 #endif
 
     M.Normal = normalize(M.Normal);
-    M.Color.xyz = PushGamma(saturate(M.Color.xyz));
-
-#ifndef USE_PBR
-	float3 F0 = 0.0f;
-#else
-	float3 F0 = 0.04f;
-#endif
 
 #ifdef USE_LEGACY_LIGHT
     #ifndef USE_PBR
@@ -43,12 +36,19 @@ void main(p_bumped_new I, out float4 Color : SV_Target)
     #else
 		M.Color.xyz *= M.AO;
 		M.AO = 1.0f;
+		
 		float Specular = M.Metalness * dot(M.Color.xyz, LUMINANCE_VECTOR);
 		M.Color.xyz = lerp(M.Color.xyz, 0.04f, M.Metalness);
+		
 		M.Metalness = 0.5f - M.Roughness * M.Roughness * 0.5f;
 		M.Roughness = Specular;
     #endif
 #endif
+
+    M.Color.xyz = GammaToLinear(saturate(M.Color.xyz));
+	
+	float3 Diffuse = M.Color.xyz * float(1.0f - M.Metalness);
+	float3 Specular = lerp(M.Specular, M.Color.xyz, M.Metalness);
 
 	float4 LightColor = float2(1.0f, 0.0f).xxxy;
 	float3 View = float2(1.0f, 0.0f).yyx;
@@ -56,8 +56,8 @@ void main(p_bumped_new I, out float4 Color : SV_Target)
 	float3 LightDirection = float2(1.0f, 0.0f).yyx;
 	LightDirection = normalize(LightDirection);
 	
-    float3 Light = DirectLight(LightColor, LightDirection, M.Normal, View, M.Color.xyz, M.Metalness, M.Roughness, F0);
-    float3 Ambient = PushGamma(M.AO) * AmbientLightingUI(View, M.Normal, M.Color.xyz, M.Metalness, M.Roughness, M.Hemi, F0);
+    float3 Light = DirectLight(LightColor, LightDirection, M.Normal, View, Diffuse, Specular, M.Roughness);
+    float3 Ambient = GammaToLinear(M.AO) * AmbientLightingUI(View, M.Normal, Diffuse, Specular, M.Roughness);
 	
     Color.xyz = Ambient + Light.xyz;
     Color.w = saturate(M.Color.w + EPS_L);

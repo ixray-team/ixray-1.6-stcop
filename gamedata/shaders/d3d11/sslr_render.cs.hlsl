@@ -18,9 +18,9 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	I.hpos.zw = float2(0.0, 1.0);
 	I.texcoord = I.hpos.xy * pos_decompression_params2.zw;
 
-	IXrayGbuffer O;
-    GbufferUnpack(I.texcoord.xy, I.hpos.xy, O);
-
+    IXRayGbuffer O = (IXRayGbuffer)NULL;
+    GbufferUnpack((uint2)I.hpos.xy, O);
+	
 	if(O.Depth >= 1.0f)
 	{
 		u_sslr[DTid.xy] = (0.0).xxxx;
@@ -69,7 +69,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	else
 	{
 		VSLR.xyz = mul(m_env_view, float4(Point.xyz, 1.0f));
-		Point.xyz = Reflection.xyz * s_env.SampleLevel(smp_linear, Point.xyz, 0.0f).w;
+		Point.xyz = Reflection.xyz * s_env.SampleLevel(smp_linear, VSLR.xyz, 0.0f).w;
 #endif
 	}
 	
@@ -99,7 +99,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	
 	Final.xyz = lerp(Color.xyz, Final.xyz, SSLR.w);
 	Point.xyz = lerp(Point.xyz, SSLR.xyz, SSLR.w);
-	Final.xyz = PopGamma(Final.xyz);
+	Final.xyz = LinearToGamma(Final.xyz);
 	
 	Hemi.w = max(length(Point.xyz), length(StartPoint.xyz) + length(Point.xyz - StartPoint.xyz));
 	Hemi.w = saturate(Hemi.w * fog_params.w + fog_params.x);

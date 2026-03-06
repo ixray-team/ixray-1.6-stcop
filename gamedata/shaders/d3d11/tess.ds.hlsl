@@ -66,12 +66,9 @@ void main(in HS_CONSTANT_DATA_OUTPUT input,
 
     output.hpos = mul(m_P, float4(output.position.xyz, 1));
 
+#ifndef DISABLE_MOTION_VECTORS
     output.hpos_curr = bp[0].hpos_curr * w + bp[1].hpos_curr * v + bp[2].hpos_curr * u; 
     output.hpos_old = bp[0].hpos_old * w + bp[1].hpos_old * v + bp[2].hpos_old * u;
-
-#if 0
-	output.hpos_curr = mul(m_P, float4(output.position.xyz, 1.0));
-	output.hpos_old = mul(m_VP_old, float4(mul(m_invV, float4(output.position.xyz, 1.0)).xyz, 1.0));
 #endif
 
     output.hpos.xy += m_taa_jitter.xy * output.hpos.w;

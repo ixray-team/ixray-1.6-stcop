@@ -222,18 +222,21 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 	switch(C.iElement) {
 	case SE_R2_NORMAL_HQ:
 	case SE_R2_NORMAL_LQ:
-		C.SH->flags.bLandscape = true;
-		C.r_Pass("deffer_base", "dumb", false, true, true);
-		C.r_ColorWriteEnable(false, false, false, false);
-		C.r_End(false);
+		C.SH->flags.bLandscape = false;
+
+		//C.r_Pass("deffer_base", "dumb", FALSE, TRUE, TRUE);
+		//C.r_ColorWriteEnable(false, false, false, false);
+		//C.r_End(false);
 
 		C.bDetail_Bump = C.bDetail_Diffuse;
-		if(C.iElement == SE_R2_NORMAL_HQ) {
+
+		if(C.iElement == SE_R2_NORMAL_HQ)
+		{
 			RImplementation.addShaderOption("USE_4_BUMP", "");
 		}
 
 		uber_deffer(C, true, "deffer_base", "deffer_impl", false, oT2_Name[0] ? oT2_Name : 0, true);
-		C.RS.SetRS(D3DRS_ZFUNC, D3D11_COMPARISON_EQUAL);
+	//	C.RS.SetRS(D3DRS_ZFUNC, D3D11_COMPARISON_EQUAL);
 
 		C.r_dx10Texture("s_lmap", C.L_textures[1]);
 
@@ -250,7 +253,6 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 			C.r_dx10Texture("s_dn_b", xr_strconcat(mask, oB_Name, "_bump"));
 			C.r_dx10Texture("s_dn_a", xr_strconcat(mask, oA_Name, "_bump"));
 
-			//LVutner: Maybe load these only when PBR flag is detected?
 			C.r_dx10Texture("s_dn_rX", xr_strconcat(mask, oR_Name, "_bump#"));
 			C.r_dx10Texture("s_dn_gX", xr_strconcat(mask, oG_Name, "_bump#"));
 			C.r_dx10Texture("s_dn_bX", xr_strconcat(mask, oB_Name, "_bump#"));
@@ -276,6 +278,8 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 		C.bDetail_Bump = C.bDetail_Diffuse = C.bDetail;
 
 		RImplementation.addShaderOption("USE_LENGTH_BUFFER", "1");
+		RImplementation.addShaderOption("DISABLE_MOTION_VECTORS", "1");
+
 		uber_deffer(C, true, "deffer_base", "deffer_impl", false, oT2_Name[0] ? oT2_Name : 0, true);
 
 		C.r_dx10Texture("s_lmap", C.L_textures[1]);

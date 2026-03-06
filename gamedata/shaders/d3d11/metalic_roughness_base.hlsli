@@ -4,87 +4,109 @@
 #include "common.hlsli"
 #define PI 3.141592653589793f
 
-struct IXrayMaterial
+struct IXRayMaterial
 {
+#ifndef USE_LEGACY_LIGHT
 	float Metalness;
 	float Roughness;
-
+	float Specular;
+	
+    float AO;
+#else
+	float Gloss;
+	float Material;
+#endif
+    float SSS;
+	
 	float3 Normal;
 	float3 Point;
+	
 	float4 Color;
-
 	float Depth;
-
+	
 	float Hemi;
 	float Sun;
-
-    float SSS;
-    float AO;
 	
 	float SnowMask;
 };
 
-struct IXrayGbufferPack
+struct IXRayGbuffer
 {
-	float4 Color : SV_Target0;
-
-	float4 Normal : SV_Target1;
-	float4 Material : SV_Target2;
-
-	float2 Velocity : SV_Target3;
-};
-
-struct IXrayGbuffer
-{
-	float Metalness;
-	float Roughness;
-
 	float3 Normal;
 	float3 Color;
-	float3 F0;
-
+	
+#ifndef USE_LEGACY_LIGHT
+	float Roughness;
+	float3 Specular;
+	
+	float AO;
+#else
+	float Gloss;
+	float Material;
+#endif
+	
 	float Depth;
 	float Hemi;
+	
+#ifdef USE_R2_STATIC_SUN
+	float Sun;
+#endif
 
+	float SSS;
+	
 	float3 Point;
 	float3 PointHud;
 	float3 PointReal;
-
+	
 	float3 View;
 	float ViewDist;
-
-	float SSS;
-	float AO;
+	
 	float SnowMask;
 };
 
-float2 PackNormalVector(float3 Vector) {
+struct IXRayGbufferPack
+{
+	float4 Color : SV_Target0;
+	float4 Normal : SV_Target1;
+	
+	#ifdef DISABLE_MOTION_VECTORS
+		float4 Material : SV_Target2;
+	#else
+		float2 Velocity : SV_Target2;
+		float4 Material : SV_Target3;
+	#endif
+};
+
+inline float2 PackNormalVector(float3 Vector)
+{
 	float PackedZ = 0.5f + 0.5f * Vector.z;
 	float Scale = rcp(dot(Vector.xy, Vector.xy));
 	return Vector.xy * sqrt(PackedZ * Scale);
 }
 
-float3 UnPackNormalVector(float2 Packed) {
+inline float3 UnPackNormalVector(float2 Packed)
+{
 	float PackedZ = dot(Packed, Packed);
 	
 	float3 Vector;
-	
 	Vector.z = PackedZ * 2.0f - 1.0f;
 	Vector.xy = Packed * sqrt(1.0f - PackedZ) * 2.0f;
 	
 	return Vector;
 }
 
-float2 NormalEncode(float3 Normal)
+inline float2 NormalEncode(float3 Normal)
 {
+	Normal.z = -Normal.z;
+	
     Normal *= rcp(abs(Normal.x) + abs(Normal.y) + abs(Normal.z));
     float Shift = saturate(-Normal.z);
+	
     Normal.xy += Normal.xy > 0.0f ? Shift : -Shift;
-
     return Normal.xy * 0.5f + 0.5f;
 }
 
-float3 NormalDecode(float2 InNormal)
+inline float3 NormalDecode(float2 InNormal)
 {
     InNormal = InNormal * 2.0f - 1.0f;
 
@@ -92,140 +114,186 @@ float3 NormalDecode(float2 InNormal)
     float Shift = saturate(-Normal.z);
 
     Normal.xy -= Normal.xy > 0.0f ? Shift : -Shift;
-
+	Normal.z = -Normal.z;
+	
     return normalize(Normal);
 }
 
-void GbufferPack(inout IXrayGbufferPack O, inout IXrayMaterial M)
+inline void GbufferPack(inout IXRayGbufferPack O, inout IXRayMaterial M)
 {
-    O.Normal.xy = NormalEncode(M.Normal.xyz);
-    O.Normal.z = M.Roughness;
-    O.Normal.w = M.SnowMask;
-
     O.Color.xyz = M.Color.xyz;
-    O.Color.w = M.SSS;
-    
-#ifdef USE_R2_STATIC_SUN
-    O.Color.w = M.Sun;
-#endif
-
-    O.Material.x = M.Metalness;
-    O.Material.y = M.Hemi;
-
-    O.Material.z = M.AO;
 	
-#ifndef USE_PBR
-    O.Material.w = 0.0f;
+    O.Normal.xy = NormalEncode(M.Normal.xyz);
+	O.Normal.w = M.SnowMask;
+	O.Normal.z = M.Hemi;
+	
+	float3 Jitter = Hash33(M.Point * timers.x) - 0.5f;
+	Jitter *= rcp(1024.0f);
+	
+	O.Normal.xyz += Jitter;
+	
+#ifdef USE_LEGACY_LIGHT
+	O.Color.w = M.Gloss;
+	
+	O.Material.x = M.SSS;
+	O.Material.y = M.Material;
+	
+	#ifdef USE_R2_STATIC_SUN
+		M.Material.x = M.Sun;
+	#endif
+	
+	O.Material.zw = 0.0f;
 #else
-    O.Material.w = 1.0f;
+	O.Color.w = M.AO;
+
+	O.Material.x = M.Roughness;
+	O.Material.y = M.Metalness;
+	O.Material.z = M.Specular;
+	O.Material.w = M.SSS;
+	
+	#ifdef USE_R2_STATIC_SUN
+		O.Color.xyz *= O.Color.w;
+		O.Material.z *= O.Color.w;
+
+		O.Color.w = M.Sun;
+	#endif
 #endif
 }
 
-float4 GbufferGetPoint(in float2 HPos)
+inline float4 GbufferGetPoint(in float2 HPos)
 {
-	float Depth = s_position.Load(int3(HPos, 0)).x;
-	HPos = HPos - m_taa_jitter.xy * float2(0.5f, -0.5f) * pos_decompression_params2.xy;
-	float3 Point = float3(HPos * pos_decompression_params.zw - pos_decompression_params.xy, 1.0f);
-    Point *= depth_unpack.x * rcp(Depth - depth_unpack.y);
-    return float4(Point, 1.0f);
+	float4 Point = float4
+	(
+		HPos * pos_decompression_params2.zw,
+		s_position.Load(int3(HPos, 0)).x,
+		1.0f
+	);
+	
+	Point.x = Point.x * 2.0f - 1.0f;
+	Point.y = 1.0f - Point.y * 2.0f;
+	
+	Point.xy -= m_taa_jitter.xy;
+	
+	Point = mul(m_invP, Point);
+    return Point / Point.w;
 }
 
-float3 GbufferGetPointRealUnjitter(in float2 TexCoord, in float Depth)
+inline float3 GbufferGetPointRealUnjitter(in float2 TexCoord, in float Depth)
 {
-	float3 Point = float3(TexCoord * 2.0f - 1.0f, 1.0f);
+	float4 Point = float4(TexCoord, Depth, 1.0f);
 	
-	if(Depth < 0.02f) {
-		Point.z = depth_unpack.z * rcp(Depth * 50.0f - depth_unpack.w);
-		Point.xy *= pos_decompression_params_hud.xy * Point.z;
-	} else {
-		Point.z = depth_unpack.x * rcp(Depth - depth_unpack.y);
-		Point.xy *= pos_decompression_params.xy * Point.z;
+	Point.x = Point.x * 2.0f - 1.0f;
+	Point.y = 1.0f - Point.y * 2.0f;
+	
+	if(Point.z < 0.02f)
+	{
+		Point.z *= 50.0f;
+		Point = mul(m_invP_hud, Point);
+	}
+	else
+	{
+		Point = mul(m_invP, Point);
 	}
 	
-	return Point;
+    return Point.xyz / Point.w;
 }
 
-float3 GbufferGetPointRealUnjitter(in float2 TexCoord)
+inline float3 GbufferGetPointRealUnjitter(in float2 TexCoord)
 {
 	float Depth = s_position.Load(int3(TexCoord * pos_decompression_params2.xy, 0)).x;
 	return GbufferGetPointRealUnjitter(TexCoord, Depth);
 }
 
-void GbufferUnpack(in float2 TexCoord, in float2 HPos, inout IXrayGbuffer O)
+inline void GbufferUnpackNormal(in uint2 TexCoord, inout IXRayGbuffer O)
 {
-    float4 NormalHemi = s_normal.Load(int3(HPos, 0));
+    float4 Sample = s_normal.Load(uint3(TexCoord, 0));
 	
-    float4 Material = s_surface.Load(int3(HPos, 0));
-    float4 ColorSSS = s_diffuse.Load(int3(HPos, 0));
+	O.Normal.xyz = NormalDecode(Sample.xy);
+	O.SnowMask = Sample.w;
+	O.Hemi = Sample.z;
+	
+#ifdef USE_LEGACY_LIGHT
+	float4 Surface = s_surface.Load(uint3(TexCoord, 0));
+	O.Material = Surface.y;
+	
+	#ifdef USE_R2_STATIC_SUN
+		O.Sun = Surface.x;
+	#else
+		O.SSS = Surface.x;
+	#endif
+#endif
+}
 
-    O.Depth = s_position.Load(int3(HPos, 0)).x;
-    
-    HPos = HPos - m_taa_jitter.xy * float2(0.5f, -0.5f) * pos_decompression_params2.xy;
+inline void GbufferUnpackColor(in uint2 TexCoord, inout IXRayGbuffer O)
+{
+    float4 Sample = s_diffuse.Load(uint3(TexCoord, 0));
+	
+#ifdef USE_LEGACY_LIGHT
+	O.Color = GammaToLinear(Sample.xyz);
+	O.Gloss = Sample.w;
+#else
+	Sample.xyz = GammaToLinear(Sample.xyz);
 
-    float3 P = float3(HPos * pos_decompression_params.zw - pos_decompression_params.xy, 1.0f);
-    float3 P_hud = float3(HPos * pos_decompression_params_hud.zw - pos_decompression_params_hud.xy, 1.0f);
+	#ifdef USE_R2_STATIC_SUN
+		O.Sun = Sample.w;
+		O.AO = 1.0f;
+	#else
+		O.AO = GammaToLinear(Sample.w);
+	#endif
 
-    O.Point = P * depth_unpack.x * rcp(O.Depth - depth_unpack.y);
-    O.PointHud = P_hud * depth_unpack.z * rcp(O.Depth * 50.0f - depth_unpack.w);
+	float4 Surface = s_surface.Load(uint3(TexCoord, 0));
+	Surface.z = GammaToLinear(Surface.z);
+	
+	O.SSS = Surface.w;
+	O.Roughness = Surface.x;
+	
+	O.Specular = lerp(Surface.z, Sample.xyz, Surface.y);
+	O.Color = Sample.xyz * float(1.0f - Surface.y);
+#endif
+}
+
+inline void GbufferUnpackDepth(in uint2 HPos, inout IXRayGbuffer O)
+{
+    float2 TexCoord = HPos * pos_decompression_params2.zw;
+    O.Depth = s_position.Load(uint3(HPos, 0)).x;
+	
+	float4 Point = float4(TexCoord, O.Depth, 1.0f);
+	
+	Point.x = Point.x * 2.0f - 1.0f;
+	Point.y = 1.0f - Point.y * 2.0f;
+	
+	Point.xy -= m_taa_jitter.xy;
+	
+	float4 Proj = mul(m_invP, Point);
+	O.Point = Proj.xyz / Proj.w;
+	
+	Point.z *= 50.0f;
+	
+	Proj = mul(m_invP_hud, Point);	
+	O.PointHud = Proj.xyz / Proj.w;
 
     O.PointReal = O.Depth < 0.02f ? O.PointHud : O.Point;
 	
 	O.ViewDist = length(O.PointReal);
 	O.View = O.PointReal * rcp(O.ViewDist);
-
-    O.Normal.xyz = NormalDecode(NormalHemi.xy);
-    O.Hemi = Material.y;
-
-    O.Color.xyz = PushGamma(ColorSSS.xyz);
-    O.SSS = ColorSSS.w;
-
-    O.Metalness = Material.x;
-    O.Roughness = NormalHemi.z;
-	
-	O.AO = PushGamma(Material.z);
-	O.F0 = 0.002f + 0.028f * Material.w;
-
-	O.SnowMask = NormalHemi.w;
 }
 
-void GbufferUnpack(in float2 TexCoord, inout IXrayGbuffer O)
+inline void GbufferUnpack(in uint2 HPos, inout IXRayGbuffer O)
 {
-	float2 HPos = TexCoord * pos_decompression_params2.xy;
-	
-    float4 NormalHemi = s_normal.SampleLevel(smp_rtlinear, TexCoord, 0);
-	
-    float4 Material = s_surface.SampleLevel(smp_rtlinear, TexCoord, 0);
-    float4 ColorSSS = s_diffuse.SampleLevel(smp_rtlinear, TexCoord, 0);
-
-    O.Depth = s_position.Load(int3(HPos, 0)).x;
-	
-    HPos = HPos - m_taa_jitter.xy * float2(0.5f, -0.5f) * pos_decompression_params2.xy;
-
-    float3 P = float3(HPos * pos_decompression_params.zw - pos_decompression_params.xy, 1.0f);
-    float3 P_hud = float3(HPos * pos_decompression_params_hud.zw - pos_decompression_params_hud.xy, 1.0f);
-
-    O.Point = P * depth_unpack.x * rcp(O.Depth - depth_unpack.y);
-    O.PointHud = P_hud * depth_unpack.z * rcp(O.Depth * 50.0f - depth_unpack.w);
-
-    O.PointReal = O.Depth < 0.02f ? O.PointHud : O.Point;
-	
-	O.ViewDist = length(O.PointReal);
-	O.View = O.PointReal * rcp(O.ViewDist);
-
-    O.Normal.xyz = NormalDecode(NormalHemi.xy);
-    O.Hemi = Material.y;
-
-    O.Color.xyz = PushGamma(ColorSSS.xyz);
-    O.SSS = ColorSSS.w;
-
-    O.Metalness = Material.x;
-    O.Roughness = NormalHemi.z;
-	
-	O.AO = PushGamma(Material.z);
-	O.F0 = 0.002f + 0.028f * Material.w;
-
-	O.SnowMask = NormalHemi.w;
+	GbufferUnpackColor(HPos, O);
+	GbufferUnpackDepth(HPos, O);
+	GbufferUnpackNormal(HPos, O);
 }
+
+#define WrapFunction(F) inline void F(in float2 TexCoord, inout IXRayGbuffer O) { F(uint2(TexCoord * pos_decompression_params2.xy), O); }
+
+WrapFunction(GbufferUnpackColor);
+WrapFunction(GbufferUnpackDepth);
+WrapFunction(GbufferUnpackNormal);
+
+WrapFunction(GbufferUnpack);
+
+#undef WrapFunction
 
 #endif
 

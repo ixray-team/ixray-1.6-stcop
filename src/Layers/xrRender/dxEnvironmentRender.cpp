@@ -154,15 +154,17 @@ void dxEnvDescriptorRender::OnDeviceCreate(CEnvDescriptor& owner) {
 		clouds_texture.create(owner.clouds_texture_name.c_str());
 }
 
-void dxEnvDescriptorRender::OnDeviceDestroy() {
+void dxEnvDescriptorRender::OnDeviceDestroy() 
+{
 	sky_texture.destroy();
 	sky_texture_env.destroy();
 	clouds_texture.destroy();
 }
 
-dxEnvironmentRender::dxEnvironmentRender() {
-	tsky0 = DEV->_CreateTexture("$user$sky0");
-	tsky1 = DEV->_CreateTexture("$user$sky1");
+dxEnvironmentRender::dxEnvironmentRender() 
+{
+	tsky0 = DEV->_CreateTexture(r2_T_sky0);
+	tsky1 = DEV->_CreateTexture(r2_T_sky1);
 }
 
 void dxEnvironmentRender::OnFrame(CEnvironment& env) {
@@ -202,12 +204,20 @@ void dxEnvironmentRender::OnFrame(CEnvironment& env) {
 #endif
 }
 
-void dxEnvironmentRender::OnLoad() {}
-void dxEnvironmentRender::OnUnload() {}
+void dxEnvironmentRender::OnLoad()
+{
+}
 
-void dxEnvironmentRender::RenderSky(CEnvironment& env) {
+void dxEnvironmentRender::OnUnload() 
+{
+}
+
+void dxEnvironmentRender::RenderSky(CEnvironment& env) 
+{
 	PROF_EVENT("EnvironmentRender::RenderSky");
-	if(env.bNeed_re_create_env) {
+
+	if(env.bNeed_re_create_env)
+	{
 		OnDeviceDestroy();
 		OnDeviceCreate();
 
@@ -215,6 +225,7 @@ void dxEnvironmentRender::RenderSky(CEnvironment& env) {
 
 		env.bNeed_re_create_env = false;
 	}
+
 	::Render->rmFar();
 
 	dxEnvDescriptorMixerRender& mixRen = *(dxEnvDescriptorMixerRender*)&*env.CurrentEnv->m_pDescriptorMixer;
@@ -237,7 +248,8 @@ void dxEnvironmentRender::RenderSky(CEnvironment& env) {
 	// Fill vertex buffer
 	v_skybox* pv = (v_skybox*)RCache.Vertex.Lock(12, sh_2geom->vb_stride, v_offset);
 
-	for(u32 v = 0; v < 12; v++) {
+	for(u32 v = 0; v < 12; v++) 
+	{
 		pv[v].set(hbox_verts[v * 2], C, hbox_verts[v * 2 + 1]);
 	}
 
@@ -261,7 +273,8 @@ void dxEnvironmentRender::RenderSky(CEnvironment& env) {
 	::Render->rmNormal();
 }
 
-void dxEnvironmentRender::RenderClouds(CEnvironment& env) {
+void dxEnvironmentRender::RenderClouds(CEnvironment& env)
+{
 	PROF_EVENT("EnvironmentRender::RenderClouds");
 	::Render->rmFar();
 

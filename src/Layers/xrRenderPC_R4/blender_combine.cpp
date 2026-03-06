@@ -13,9 +13,9 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 	switch (C.iElement)
 	{
 	case 0:	// combine
-		C.r_Pass			("stub_fullscreen_triangle",		"combine_1",		false,	false,	false, true, D3DBLEND_INVSRCALPHA, D3DBLEND_SRCALPHA);	//. MRT-blend?
-		C.r_Stencil			(true,D3DCMP_LESSEQUAL,0xff,0x00);	// stencil should be >= 1
-		C.r_StencilRef		(0x01);
+		C.r_Pass("stub_fullscreen_triangle", "combine_1", false, false,	false, true, D3DBLEND_INVSRCALPHA, D3DBLEND_SRCALPHA);
+		C.r_Stencil(TRUE, D3DCMP_LESSEQUAL, 0xff, 0x00);
+		C.r_StencilRef(0x01);
 
 		C.r_dx10Texture		("s_position",		r2_RT_P				);
 		C.r_dx10Texture		("s_normal",		r2_RT_N				);
@@ -31,6 +31,7 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 		C.r_dx10Texture		("s_occ",			r2_RT_ssao_temp		);
 		C.r_dx10Texture		("s_half_depth",	r2_RT_half_depth	);
 		C.r_dx10Texture		("s_refl",			r2_RT_sslr			);
+
 		jitter(C);
 
 		C.r_dx10Sampler		("smp_nofilter");
@@ -61,31 +62,34 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 		{
 			RImplementation.addShaderOption("USE_LUT_TEXTURE", "1");
 		}
+
 		if (ps_r2_new_autoexposure)
 		{
 			RImplementation.addShaderOption("USE_NEW_ADAPT", "1");
 		}
+
 		if (ps_r2_new_bloom_tonemap)
 		{
-			RImplementation.addShaderOption("USE_NEW_BLOOM_TONEMAP", "1");
+			RImplementation.addShaderOption("USE_NEW_BLOOM", "1");
 		}
+
 		if (ps_r2_crossfeed)
 		{
 			RImplementation.addShaderOption("USE_CROSSFEED", "1");
 		}
+
 		if (ps_r2_vibrance)
 		{
 			RImplementation.addShaderOption("USE_VIBRANCE", "1");
 		}
+		
 		C.r_Pass("stub_fullscreen_triangle", "combine_2", false, false, false);
-
-		C.r_dx10Texture		("s_position",		r2_RT_upscaled_depth);
-		C.r_dx10Texture		("s_normal",		r2_RT_N);
-		C.r_dx10Texture		("s_bloom",			r2_RT_bloom1);
-		C.r_dx10Texture		("s_image",			r2_RT_generic);
-		C.r_dx10Texture		("s_tonemap",		r2_RT_luminance_cur);
-		C.r_dx10Texture		("n_bloom",			r2_RT_bloomA2);
-		C.r_dx10Texture		("s_adapt",			r2_RT_lumD);
+		
+		C.r_dx10Texture("s_position", r2_RT_upscaled_depth);
+		C.r_dx10Texture("s_normal", r2_RT_N);
+		C.r_dx10Texture("s_image", r2_RT_generic);
+		C.r_dx10Texture("s_tonemap", r2_RT_luminance_cur);
+		C.r_dx10Texture("s_bloom", r2_RT_bloomA2);
 
 		if (is_loot_present)
 		{
@@ -102,7 +106,7 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 		
 		C.r_dx10Texture("s_position", r2_RT_P);
 		C.r_dx10Texture("s_smap", r2_RT_smap_depth);
-		C.r_dx10Texture("blue_noise", "shaders\\blue_noise_3x3");
+		C.r_dx10Texture("s_blue_noise", "shaders\\blue_noise_3x3");
 		
 		C.r_dx10Sampler("smp_rtlinear");
 		C.r_dx10Sampler("smp_smap");

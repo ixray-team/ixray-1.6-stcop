@@ -11,7 +11,8 @@ public:
 	enum CRTCreationFlags
 	{
 		USE_UAV_FLAG = u32(1 << 0),
-		MIPPED_RT_FLAG = u32(1 << 1)
+		MIPPED_RT_FLAG = u32(1 << 1),
+		AUTOGEN_MIP_MAPS = u32(1 << 2),
 	};
 
 	void create(const char* Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount = 1, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)0);
