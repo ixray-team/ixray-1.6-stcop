@@ -32,7 +32,7 @@ public:
 	// Scissor rect
 	void SetScissorRect(Irect* R) override;
 
-	void SetRenderTargets(u32 NumViews, IRHIRenderTargetView* const* ppRenderTargetViews) override;
+	void SetRenderTargets(u32 NumViews, IRHIRenderTargetView* const* ppRenderTargetViews, IRHIUnorderedAccessView* const* ppRenderUAViews) override;
 	void SetDSV(IRHIDepthStencilView* pDepthStencilView) override;
 
 	// Readback helper
