@@ -2025,9 +2025,6 @@ void CLevel::script_register(lua_State *L)
 		def("get_size_server_events", &get_size_server_events)
 	];
 
-	luabind::object script_events = luabind::get_globals(L)["script_events"];
-	script_events["M_SCRIPT_EVENT"] = M_SCRIPT_EVENT;
-
 	module(L,"game")
 	[
 		class_< xrTime >("CTime")
