@@ -50,11 +50,14 @@ p_bumped_new main(in InputPatch<p_bumped_new, 3> ip, in uint i : SV_OutputContro
     ouput.M2 = ip[i].M2;
     ouput.M3 = ip[i].M3;
 
+#ifndef DISABLE_MOTION_VECTORS
     ouput.hpos_curr = ip[i].hpos_curr;
     ouput.hpos_old = ip[i].hpos_old;
+#endif
 
     ouput.hpos = ip[i].hpos;
     ouput.snow_mask = ip[i].snow_mask;
 
     return ouput;
 }
+

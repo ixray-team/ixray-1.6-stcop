@@ -34,14 +34,16 @@ void main(p_bumped_new I,
 #ifdef FIX_CULL_NORMAL
 	in bool is_front_face : SV_IsFrontFace,
 #endif
-	out IXrayGbufferPack O
+	out IXRayGbufferPack O
 )
 {
-    IXrayMaterial M;
+    IXRayMaterial M = (IXRayMaterial)NULL;
     M.Depth = I.position.z;
 	
-#ifdef USE_CLIP_NEAR_PLANE
-	clip(I.hpos_curr.z - I.hpos_curr.w * 0.02f);
+#ifndef DISABLE_MOTION_VECTORS
+	#ifdef USE_CLIP_NEAR_PLANE
+		clip(I.hpos_curr.z - I.hpos_curr.w * 0.02f);
+	#endif
 #endif
 
 #ifdef FIX_CULL_NORMAL
@@ -85,16 +87,7 @@ void main(p_bumped_new I,
 #endif
 
 #ifdef USE_LEGACY_LIGHT
-    #ifndef USE_PBR
-		M.Metalness = L_material.w;
-    #else
-		M.Color.xyz *= M.AO;
-		M.AO = 1.0f;
-		float Specular = M.Metalness * dot(M.Color.xyz, LUMINANCE_VECTOR);
-		M.Color.xyz = lerp(M.Color.xyz, 0.04f, M.Metalness);
-		M.Metalness = 0.5f - M.Roughness * M.Roughness * 0.5f;
-		M.Roughness = Specular;
-    #endif
+	M.Material = L_material.w;
 #endif
 
 #ifdef IGNORE_SNOW_MASK
@@ -108,7 +101,10 @@ void main(p_bumped_new I,
 	M.SnowMask = 0.0f;
 #endif
 
+#ifndef DISABLE_MOTION_VECTORS
     O.Velocity = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
+#endif
+
     GbufferPack(O, M);
 }
 

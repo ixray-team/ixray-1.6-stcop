@@ -845,7 +845,6 @@ void	CBlender_Compile::SetMapping()
 	r_Constant("hemi_cube_pos_faces", &binder_hemi_cube_pos_faces);
 	r_Constant("hemi_cube_neg_faces", &binder_hemi_cube_neg_faces);
 
-	//	Igor	temp solution for the texgen functionality in the shader
 	r_Constant("m_texgen", &binder_texgen);
 	r_Constant("mVPTexgen", &binder_VPtexgen);
 
@@ -879,9 +878,8 @@ void	CBlender_Compile::SetMapping()
 	r_Constant("target_screen_res", &binder_target_screen_res);
 
 	r_Constant("screen_scale", &binder_screen_scale);
-	
-	// Rain
-	r_Constant				("rain_params",		&binder_rain_params);
+
+	r_Constant("rain_params", &binder_rain_params);
 
 	//LVutner: Gunslinger...
 	r_Constant("m_hud_params", &binder_m_hud_params);
@@ -903,18 +901,13 @@ void	CBlender_Compile::SetMapping()
 	r_Constant("m_wristwatch_font_colon", &binder_m_wristwatch_font_colon);
 	r_Constant("m_wristwatch_font_eight", &binder_m_wristwatch_font_eight);
 
-	// detail
-	//if (bDetail	&& detail_scaler)
-	//	Igor: bDetail can be overridden by no_detail_texture option.
-	//	But shader can be deatiled implicitly, so try to set this parameter
-	//	anyway.
 	if (detail_scaler)
-		r_Constant			("dt_params",		detail_scaler);
-
-	// other common
-	for (u32 it=0; it<DEV->v_constant_setup.size(); it++)
 	{
-		std::pair<shared_str,RHIShaderConstant::Setup*>	cs	= DEV->v_constant_setup[it];
-		r_Constant			(*cs.first,cs.second);
+		r_Constant("dt_params", detail_scaler);
+	}
+
+	for (const auto& [Name, Setup] : DEV->v_constant_setup)
+	{
+		r_Constant(*Name, Setup);
 	}
 }

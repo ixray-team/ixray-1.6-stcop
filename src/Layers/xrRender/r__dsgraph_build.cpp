@@ -141,7 +141,7 @@ ICF	float CalcSSA(float& distSQ, Fvector& C, float R)
 	return	R / distSQ;
 }
 
-void R_dsgraph_structure::r_dsgraph_insert_dynamic	(dxRender_Visual *pVisual, Fvector& Center)
+void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fvector& Center)
 {
 	CRender& RI = RImplementation;
 
@@ -186,30 +186,9 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic	(dxRender_Visual *pVisual, Fv
 	}
 
 	ShaderElement* sh = RImplementation.rimp_select_sh_dynamic(pVisual, distSQ);
-	if (0 == sh) return;
 
-	if (!pmask[sh->flags.iPriority / 2] && !RI.val_bUI) return;
-
-	//// Create common node
-	// NOTE: Invisible elements exist only in R1
-
-	// HUD rendering
-	if (RI.val_bHUD)			
+	if (!sh || RI.val_bInvisible)
 	{
-		if (sh->flags.bStrictB2F)	
-		{
-			mapHUDSorted.insertInAnyWay(distSQ, { SSA, RI.val_pObject, pVisual, *RI.val_pTransform, sh });
-		} 
-		else 
-		{
-			mapHUD.insertInAnyWay(distSQ, { SSA, RI.val_pObject, pVisual, *RI.val_pTransform, sh });
-#if RENDER!=R_R1
-			if (sh->flags.bEmissive) 
-			{
-				mapHUDEmissive.insertInAnyWay(distSQ, { SSA, RI.val_pObject, pVisual, *RI.val_pTransform, sh_d });
-			}
-#endif	//	RENDER!=R_R1
-		}
 		return;
 	}
 
@@ -230,40 +209,60 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic	(dxRender_Visual *pVisual, Fv
 			}
 #endif	//	RENDER!=R_R1
 		}
+
 		return;
 	}
 
-	// Shadows registering
-#if RENDER==R_R1
-	_MatrixItem		item = { SSA,RI.val_pObject,pVisual,*RI.val_pTransform };
-	RI.L_Shadows->add_element	(item);
-#endif
-	if (RI.val_bInvisible)		return;
-
-	// strict-sorting selection
-	if (sh->flags.bStrictB2F && !pVisual->dcast_ParticleCustom())
+	if (pmask[sh->flags.iPriority / 2])
 	{
-		mapSorted.insertInAnyWay(distSQ, { SSA, RI.val_pObject, pVisual, *RI.val_pTransform, sh });
-		return;
-	}
+		// HUD rendering
+		if (RI.val_bHUD)
+		{
+			if (sh->flags.bStrictB2F)
+			{
+				mapHUDSorted.insertInAnyWay(distSQ, { SSA, RI.val_pObject, pVisual, *RI.val_pTransform, sh });
+			}
+			else
+			{
+				mapHUD.insertInAnyWay(distSQ, { SSA, RI.val_pObject, pVisual, *RI.val_pTransform, sh });
+#if RENDER!=R_R1
+				if (sh->flags.bEmissive)
+				{
+					mapHUDEmissive.insertInAnyWay(distSQ, { SSA, RI.val_pObject, pVisual, *RI.val_pTransform, sh_d });
+				}
+#endif	//	RENDER!=R_R1
+			}
+			return;
+		}
+
+		// Shadows registering
+#if RENDER==R_R1
+		_MatrixItem		item = { SSA,RI.val_pObject,pVisual,*RI.val_pTransform };
+		RI.L_Shadows->add_element(item);
+#endif
+
+		// strict-sorting selection
+		if (sh->flags.bStrictB2F && !pVisual->dcast_ParticleCustom())
+		{
+			mapSorted.insertInAnyWay(distSQ, { SSA, RI.val_pObject, pVisual, *RI.val_pTransform, sh });
+			return;
+		}
 
 #if RENDER!=R_R1
-	// Emissive geometry should be marked and R2 special-cases it
-	// a) Allow to skeep already lit pixels
-	// b) Allow to make them 100% lit and really bright
-	// c) Should not cast shadows
-	// d) Should be rendered to accumulation buffer in the second pass
-	if (sh->flags.bEmissive)
-		mapEmissive.insertInAnyWay(distSQ, { SSA, RI.val_pObject, pVisual, *RI.val_pTransform, sh_d });
+		if (sh->flags.bEmissive)
+		{
+			mapEmissive.insertInAnyWay(distSQ, { SSA, RI.val_pObject, pVisual, *RI.val_pTransform, sh_d });
+		}
 
-	if (sh->flags.bWmark && pmask[2])
-	{
-		mapWmark.insertInAnyWay(distSQ, { SSA, RI.val_pObject, pVisual, *RI.val_pTransform, sh });						
-		return;
-	}
+		if (sh->flags.bWmark && pmask[2])
+		{
+			mapWmark.insertInAnyWay(distSQ, { SSA, RI.val_pObject, pVisual, *RI.val_pTransform, sh });
+			return;
+		}
 #endif
+	}
 
-	for ( u32 iPass = 0; iPass<sh->passes.size(); ++iPass)
+	for (u32 iPass = 0; iPass < sh->passes.size(); ++iPass)
 	{
 		// the most common node
 		if (sh->passes[iPass] == nullptr)
@@ -271,12 +270,16 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic	(dxRender_Visual *pVisual, Fv
 			continue;
 		}
 
-		//SPass&						pass	= *sh->passes.front	();
-		//mapMatrix_T&				map		= mapMatrix			[sh->flags.iPriority/2];
-		SPass&						pass	= *sh->passes[iPass];
-		mapMatrix_T&				map		= mapMatrixPasses	[sh->flags.iPriority/2][iPass];
-		
+		SPass& pass = *sh->passes[iPass];
+		u32 iPriority = pass.iPriority != u8(-1) ? pass.iPriority : sh->flags.iPriority;
 
+		if (!pmask[iPriority / 2])
+		{
+			continue;
+		}
+
+		mapMatrix_T& map = mapMatrixPasses[iPriority / 2][iPass];
+		
 #ifdef USE_RESOURCE_DEBUGGER
 	#ifdef USE_DX11
 		mapMatrixVS::TNode*			Nvs		= map.insert		(pass.vs);
@@ -327,67 +330,98 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic	(dxRender_Visual *pVisual, Fv
 	}
 }
 
-void R_dsgraph_structure::r_dsgraph_insert_static	(dxRender_Visual *pVisual)
+void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
 {
-	CRender&	RI				=	RImplementation;
+	CRender& RI = RImplementation;
 
-	if (pVisual->vis.marker		==	RI.marker)	return	;
-	pVisual->vis.marker			=	RI.marker			;
+	if (pVisual->vis.marker == RI.marker)	
+	{
+		return;
+	}
+
+	pVisual->vis.marker = RI.marker;
 
 #if RENDER==R_R1
-	if (RI.o.vis_intersect &&	(pVisual->vis.accept_frame!=Device.dwFrame))	return;
-	pVisual->vis.accept_frame	=	Device.dwFrame		;
+	if (RI.o.vis_intersect && (pVisual->vis.accept_frame != Device.dwFrame))
+	{
+		return;
+	}
+
+	pVisual->vis.accept_frame = Device.dwFrame;
 #endif
 
 	float distSQ;
-	float SSA					=	CalcSSA		(distSQ,pVisual->vis.sphere.P,pVisual);
-	if (SSA<=r_ssaDISCARD)		return;
+
+	float SSA = CalcSSA(distSQ, pVisual->vis.sphere.P, pVisual);
+	if (SSA <= r_ssaDISCARD)
+	{
+		return;
+	}
 
 	// Distortive geometry should be marked and R2 special-cases it
 	// a) Allow to optimize RT order
 	// b) Should be rendered to special distort buffer in another pass
 	if (!pVisual->shader._get()) return;
-	ShaderElement*		sh_d	= pVisual->shader->E[4] ? &*pVisual->shader->E[4] : nullptr;
+	ShaderElement* sh_d = pVisual->shader->E[4] ? &*pVisual->shader->E[4] : nullptr;
+
 	if (RImplementation.o.distortion && sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority/2] && !psDeviceFlags.test(rsClearBB))
+	{
 		mapDistort.insertInAnyWay(distSQ, { SSA, nullptr, pVisual, Fidentity, sh_d });
+	}
 
 	// Select shader
-	ShaderElement*		sh		= RImplementation.rimp_select_sh_static(pVisual,distSQ);
-	if (0==sh)								return;
-	if (!pmask[sh->flags.iPriority/2])		return;
-
-	// strict-sorting selection
-	if (sh->flags.bStrictB2F)
+	ShaderElement* sh = RImplementation.rimp_select_sh_static(pVisual, distSQ);
+	if (!sh) 
 	{
-		mapSorted.insertInAnyWay(distSQ, { SSA, nullptr, pVisual, Fidentity, sh });
 		return;
 	}
+
+	if (pmask[sh->flags.iPriority / 2])
+	{
+		// strict-sorting selection
+		if (sh->flags.bStrictB2F)
+		{
+			mapSorted.insertInAnyWay(distSQ, { SSA, nullptr, pVisual, Fidentity, sh });
+			return;
+		}
 
 #if RENDER!=R_R1
-	// Emissive geometry should be marked and R2 special-cases it
-	// a) Allow to skeep already lit pixels
-	// b) Allow to make them 100% lit and really bright
-	// c) Should not cast shadows
-	// d) Should be rendered to accumulation buffer in the second pass
-	if (sh->flags.bEmissive)
-		mapEmissive.insertInAnyWay(distSQ, { SSA, nullptr, pVisual, Fidentity, sh_d });
+		if (sh->flags.bEmissive)
+		{
+			mapEmissive.insertInAnyWay(distSQ, { SSA, nullptr, pVisual, Fidentity, sh_d });
+		}
 
-	if (sh->flags.bWmark && pmask[2])
-	{
-		mapWmark.insertInAnyWay(distSQ, {SSA, nullptr, pVisual, Fidentity, sh});						
-		return;
-	}
+		if (sh->flags.bWmark && pmask[2])
+		{
+			mapWmark.insertInAnyWay(distSQ, { SSA, nullptr, pVisual, Fidentity, sh });
+			return;
+		}
 #endif
 
-	if	(val_feedback && counter_S==val_feedback_breakp)	val_feedback->rfeedback_static(pVisual);
-	counter_S					++;
+		if (val_feedback && counter_S == val_feedback_breakp)
+		{
+			val_feedback->rfeedback_static(pVisual);
+		}
 
-	for ( u32 iPass = 0; iPass<sh->passes.size(); ++iPass)
+		counter_S++;
+	}
+
+	for (u32 iPass = 0; iPass < sh->passes.size(); ++iPass)
 	{
-		//SPass&						pass	= *sh->passes.front	();
-		//mapNormal_T&				map		= mapNormal			[sh->flags.iPriority/2];
-		SPass&						pass	= *sh->passes[iPass];
-		mapNormal_T&				map		= mapNormalPasses[sh->flags.iPriority/2][iPass];
+		if (sh->passes[iPass] == nullptr)
+		{
+			continue;
+		}
+
+		SPass& pass = *sh->passes[iPass];
+		u32 iPriority = pass.iPriority != u8(-1) ? pass.iPriority : sh->flags.iPriority;
+
+		if (!pmask[iPriority / 2])
+		{
+			continue;
+		}
+
+		mapNormal_T& map = mapNormalPasses[iPriority / 2][iPass];
 
 #ifdef USE_DX11
 		mapNormalVS::TNode*			Nvs		= map.insert		(&*pass.vs);
@@ -420,8 +454,10 @@ void R_dsgraph_structure::add_leafs_Dynamic(dxRender_Visual *pVisual, bool Ignor
 	if (0 == pVisual) return;
 
 	if (!IsValuableToRender(pVisual, false, phase == CRender::PHASE_SMAP, *val_pTransform, IgnoreObject))
+	{
 		return;
-
+	}
+	
 	// Visual is 100% visible - simply add it
 	switch (pVisual->Type)
 	{
@@ -568,7 +604,9 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 {
 	//PROF_EVENT("add_Static")
 	if (!pVisual->IsIgnoreOptimize && !IsValuableToRender(pVisual, true, phase == CRender::PHASE_SMAP, *val_pTransform))
+	{
 		return;
+	}
 
 	// Check frustum visibility and calculate distance to visual's center
 	EFC_Visible	VIS;

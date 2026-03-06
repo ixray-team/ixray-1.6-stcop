@@ -184,10 +184,12 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 		}
 	}
 	// update player accel
-	if (mstate_wf&mcFwd)		vControlAccel.z +=  1;
-	if (mstate_wf&mcBack)		vControlAccel.z += -1;
-	if (mstate_wf&mcLStrafe)	vControlAccel.x += -1;
-	if (mstate_wf&mcRStrafe)	vControlAccel.x +=  1;
+	if (mstate_wf & mcFwd) vControlAccel.z += 1;
+	if (mstate_wf & mcBack) vControlAccel.z += -1;
+	if (mstate_wf & mcRStrafe) vControlAccel.x += 1;
+	if (mstate_wf & mcLStrafe) vControlAccel.x += -1;
+
+	vControlAccel.normalize_safe();
 
 	CPHMovementControl::EEnvironment curr_env = character_physics_support()->movement()->Environment();
 	if(curr_env==CPHMovementControl::peOnGround || curr_env==CPHMovementControl::peAtWall)
