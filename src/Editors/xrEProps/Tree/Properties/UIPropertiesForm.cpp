@@ -100,10 +100,6 @@ void UIPropertiesForm::Draw()
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { borderSize, borderSize });
 
 	ImGui::PushStyleColor(ImGuiCol_FrameBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::BackgroundTint).Value);
-	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { borderSize, borderSize });
-	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0);
-	ImGui::BeginChild("PropsTableHost", ImVec2(0, 0), ImGuiChildFlags_FrameStyle, ImGuiWindowFlags_None);
-	ImGui::PopStyleVar(2);
 	ImGui::PopStyleColor();
 	if (!IsSearchDisabled)
 	{
@@ -150,9 +146,6 @@ void UIPropertiesForm::Draw()
 	}
 
 	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0, ImGui::GetStyle().CellPadding.y));
-	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.f);
-	ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 0.f);
-	ImGui::BeginChild("PropsContentHost", ImVec2(0, 0), ImGuiWindowFlags_None);
 	if (ImGui::BeginTable("props", 2, Flags))
 	{
 		ImGui::TableSetupColumn(" Name", ImGuiTableColumnFlags_WidthFixed, 0.0f);
@@ -160,6 +153,7 @@ void UIPropertiesForm::Draw()
 		ImGui::TableHeadersRow();
 
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonPaddingH), 0));
+		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.f);
 		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0, 0));
 		if (IsSearchActive)
 		{
@@ -169,14 +163,12 @@ void UIPropertiesForm::Draw()
 		{
 			m_Root.DrawRoot();
 		}
-		ImGui::PopStyleVar(2);
+		ImGui::PopStyleVar(3);
 
 		ImGui::EndTable();
 	}
-	ImGui::EndChild(); // PropsContentHost
-	ImGui::PopStyleVar(3);
+	ImGui::PopStyleVar();
 
-	ImGui::EndChild(); // PropsTableHost
 	ImGui::PopStyleVar();
 }
 
