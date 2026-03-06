@@ -97,6 +97,7 @@ public:
 	virtual CInventoryOwner				*cast_inventory_owner		() override {return this;}
 	virtual CGameObject*				cast_game_object			() override {return this;}
 	virtual CAttachmentOwner*			cast_attachment_owner	() override {return this;}
+	virtual bool ShouldMarkAsEnemy() {return true;}
 
 public:
 	

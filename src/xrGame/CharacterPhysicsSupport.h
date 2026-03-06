@@ -135,6 +135,10 @@ IC		CPHSoundPlayer					*ph_sound_player				( )	{ return &m_ph_sound_player; }
 		void							in_NetSave						( NET_Packet& P )																									;
 		void							in_ChangeVisual					( );
 		void							in_Die							( );
+
+	void ActivateRagdoll();
+	void DeactivateRagdoll();
+	
 		void							on_create_anim_mov_ctrl			( );
 		void							on_destroy_anim_mov_ctrl		( );
 		void							PHGetLinearVell					( Fvector& velocity );

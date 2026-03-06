@@ -67,6 +67,7 @@ enum class EEngineExternalGame
 	NewDemoRecordInputSchema,
 	EnablePolterStaminaLooseOnHit,
 	EnablePolterDrop,
+	EnableRagdolledZombiePseudodeath,
 	None
 };
 
