@@ -2,18 +2,46 @@
 #include "GameObject.h"
 #include "ai_object_location.h"
 #include "../../xrServerEntities/xrMessages.h"
+#include "../../xrServerEntities/xrServer_Objects_ALife.h"
 
 #include <luabind/luabind.hpp>
 
-float SimDistTo(CGameObject* obj1, CGameObject* obj2)
+float SimDistTo(luabind::object Left, luabind::object Right)
 {
-	if (obj1 == nullptr || obj2 == nullptr)
+	CGameObject* ClientObject1 = luabind::object_cast_nothrow<CGameObject*>(Left).value_or(nullptr);
+	CGameObject* ClientObject2 = luabind::object_cast_nothrow<CGameObject*>(Right).value_or(nullptr);
+
+	CSE_ALifeObject* ServerObject1 = ClientObject1 != nullptr ? nullptr : luabind::object_cast_nothrow<CSE_ALifeObject*>(Left).value_or(nullptr);
+	CSE_ALifeObject* ServerObject2 = ClientObject2 != nullptr ? nullptr : luabind::object_cast_nothrow<CSE_ALifeObject*>(Right).value_or(nullptr);
+
+	if ((ServerObject1 == nullptr && ClientObject1 == nullptr) || (ServerObject2 == nullptr && ClientObject2 == nullptr))
 	{
 		return FLT_MAX;
 	}
 
-	const CGameGraph::CVertex* v1 = ai().game_graph().vertex(obj1->ai_location().game_vertex_id());
-	const CGameGraph::CVertex* v2 = ai().game_graph().vertex(obj2->ai_location().game_vertex_id());
+	u16 VertexIDLeft = u16(-1);
+	u16 VertexIDRight = u16(-1);
+	
+	if (ClientObject1 != nullptr)
+	{
+		VertexIDLeft = ClientObject1->ai_location().game_vertex_id();
+	}
+	else if (ServerObject1 != nullptr)
+	{
+		VertexIDLeft = ai().cross_table().vertex(ServerObject1->m_tNodeID).game_vertex_id();
+	}
+
+	if (ClientObject2 != nullptr)
+	{
+		VertexIDRight = ClientObject2->ai_location().game_vertex_id();
+	}
+	else if (ServerObject2 != nullptr)
+	{
+		VertexIDRight = ai().cross_table().vertex(ServerObject2->m_tNodeID).game_vertex_id();
+	}
+
+	const CGameGraph::CVertex* v1 = ai().game_graph().vertex(VertexIDLeft);
+	const CGameGraph::CVertex* v2 = ai().game_graph().vertex(VertexIDRight);
 
 	if (v1 == nullptr || v2 == nullptr)
 	{
