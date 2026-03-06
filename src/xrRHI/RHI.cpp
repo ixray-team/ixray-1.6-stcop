@@ -687,6 +687,13 @@ void CRHI::SetScissorRect(Irect* R)
 	DevicePtr->SetScissorRect(R);
 }
 
+void CRHI::SetUnorderedAccessViews(IRHIUnorderedAccessView* View, u32 ID, bool bForce)
+{
+#ifdef IXR_WINDOWS
+	GRHIRenderViewManager.SetUnorderedAccessViews(View, ID, bForce);
+#endif
+}
+
 void CRHI::SetRenderTargetView(IRHIRenderTargetView* pRenderTargetView, u32 ID, bool bForce)
 {
 #ifdef IXR_WINDOWS
