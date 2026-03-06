@@ -6,6 +6,7 @@
 #include "R_sun_support.h"
 
 #include <DirectXMath.h>
+#include <src/xrEngine/xr_ioc_cmd.h>
 
 using namespace DirectX;
 
@@ -64,6 +65,12 @@ void CRender::render_sun_cascades()
 	bool b_need_to_render_sunshafts = RImplementation.Target->need_to_render_sunshafts();
 	bool last_cascade_chain_mode = m_sun_cascades.back().reset_chain;
 
+	if (psDeviceFlags.test(rsClearBB))
+	{
+		m_sun_cascades[2].size = 1000.0f;
+		b_need_to_render_sunshafts = true;
+	}
+
 #ifdef USE_DX11
 //	b_need_to_render_sunshafts |= !!RImplementation.o.offscreen_reflecitons;
 #endif
@@ -106,6 +113,12 @@ void CRender::render_sun_cascades()
 	{
 		m_sun_cascades[m_sun_cascades.size() - 1].reset_chain = last_cascade_chain_mode;
 	}
+
+	if (psDeviceFlags.test(rsClearBB))
+	{
+		m_sun_cascades[2].size = 160.0f;
+		b_need_to_render_sunshafts = true;
+	}
 }
 
 void CRender::render_sun_cascade(u32 cascade_ind)
@@ -116,16 +129,16 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 	Fvector cam_dir = Device.vCameraDirection;
 
 #ifdef USE_DX11
-	if (cascade_ind == (m_sun_cascades.size() - 1) && !!RImplementation.o.offscreen_reflecitons) 
+	if (cascade_ind == (m_sun_cascades.size() - 1) && !!RImplementation.o.offscreen_reflecitons && !psDeviceFlags.test(rsClearBB))
 	{
 		cam_dir.mad(Fidentity.c, fuckingsun->direction, -1.0f);
 	}
 #endif
 
-	CFrustum					cull_frustum;
-	xr_vector<Fplane>			cull_planes;
-	Fvector3					cull_COP;
-	Fmatrix						cull_xform;
+	CFrustum cull_frustum;
+	xr_vector<Fplane> cull_planes;
+	Fvector3 cull_COP;
+	Fmatrix cull_xform;
 	{
 		PROF_EVENT("Render Cascade: Prepass");
 
@@ -348,7 +361,7 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 			Target->phase_smap_direct(fuckingsun, SE_SUN_FAR);
 #else
 			GRHI->ClearDepthStencil(Target->rt_smap_depth_sun_dsv[cascade_ind], ERHI_CLEAR_TARGET::DEPTH, 1.f, 0);
-			Target->u_setrt(nullptr, nullptr, nullptr, Target->rt_smap_depth_sun_dsv[cascade_ind]);
+			Target->u_setrt(Target->rt_smap_surf, nullptr, nullptr, Target->rt_smap_depth_sun_dsv[cascade_ind]);
 #endif
 			RCache.set_xform_world(Fidentity);
 			RCache.set_xform_view(Fidentity);

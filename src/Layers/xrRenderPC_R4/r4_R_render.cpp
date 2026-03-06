@@ -13,7 +13,6 @@
 #include "../../xrEngine/x_ray.h"
 #include "../xrRender/SkeletonCustom.h"
 #include "../../xrEngine/IGame_Actor.h"
-#include "../../Include/xrRender/UIRender.h"
 
 ICF	float	CalcSSADynamic				(const Fvector& C, float R)
 {
@@ -119,16 +118,18 @@ void CRender::render_main	(bool deffered, bool zfill)
 
 			if (dont_test_sectors)
 			{
-				CSector*	sector		= (CSector*)Sectors[0];
-				set_Frustum			(&ViewBase);
-				add_Geometry		(sector->root());
+				CSector* sector = (CSector*)Sectors[0];
+				set_Frustum(&ViewBase);
+				add_Geometry(sector->root());
 			}
 			else
 			{
 				if (psDeviceFlags.test(rsClearBB))
 				{
 					for (auto visual : Visuals)
+					{
 						r_dsgraph_insert_static(visual);
+					}
 				}
 				else
 				{
@@ -136,7 +137,9 @@ void CRender::render_main	(bool deffered, bool zfill)
 					{
 						CSector* sector = (CSector*)PortalTraverser.r_sectors[s_it];
 						dxRender_Visual* root = sector->root();
-						for (u32 v_it = 0; v_it < sector->r_frustums.size(); v_it++) {
+
+						for (u32 v_it = 0; v_it < sector->r_frustums.size(); v_it++) 
+						{
 							set_Frustum(&(sector->r_frustums[v_it]));
 							add_Geometry(root);
 						}
@@ -359,7 +362,11 @@ void CRender::render_menu() {
 	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 4, 0, 2);
 }
 
-Fvector ps_r_taa_jitter_full = {0,0,0};
+Fvector3 ps_r_taa_jitter_full = {0,0,0};
+
+#include "../../Include/xrRender/UIRender.h"
+#include <src/xrEngine/xr_ioc_cmd.h>
+
 void CRender::RenderUI(bool is_debug)
 {
 	ps_r_taa_jitter.set(0, 0, -1);
@@ -403,7 +410,7 @@ bool is_render_cubemap = false;
 void CRender::Render()
 {
 	GPU_EVENT(CRender_Render);
-
+	
 	VERIFY					(0==mapDistort.size() + mapHUDDistort.size());
 
 //	rmNormal();
@@ -431,105 +438,125 @@ void CRender::Render()
 
 	if(RImplementation.o.offscreen_reflecitons && RImplementation.o.deffered_reflecitons && pLastSector)
 	{
-		GPU_EVENT(FORWARD_REFLECTIONS);
+		static int& FaceCount = CCC_Integer::FastCommand("r_fce_count", 1, 1, 7);
 
-		static Fvector EnvPosition;
-		static Fmatrix EnvViewReal;
-
-		static Fmatrix EnvProject;
-
-		static Fmatrix EnvView[6](Fidentity);
-		static Fmatrix EnvFullTransform[6](Fidentity);
-
-		static Fvector cmNorm[6] = {
-			{0.f, +1.f, 0.f},
-			{0.f, +1.f, 0.f},
-			{0.f, 0.f, -1.f},
-			{0.f, 0.f, +1.f},
-			{0.f, +1.f, 0.f},
-			{0.f, +1.f, 0.f}
-		};
-
-		static Fvector cmDir[6] = {
-			{+1.f, 0.f, 0.f},
-			{-1.f, 0.f, 0.f},
-			{0.f, +1.f, 0.f},
-			{0.f, -1.f, 0.f},
-			{0.f, 0.f, +1.f},
-			{0.f, 0.f, -1.f}
-		};
-
-		static int iFace = 6;
-
-		if (iFace == 6)
+		for (auto i = 0; i < FaceCount; ++i)
 		{
-			GPU_EVENT(FORWARD_REFLECTION_COMPOSE);
+			GPU_EVENT(FORWARD_REFLECTIONS);
 
-			CEnvDescriptorMixer* CurrentEnv = g_pGamePersistent->Environment().CurrentEnv;
+			static Fvector EnvPosition;
+			static Fmatrix EnvViewReal;
 
-			EnvProject.build_projection(PI_DIV_2, 1.0f,	Device.fViewportNear, 
-			CurrentEnv->far_plane * ps_r4_vslr_distance);
+			static Fmatrix EnvProject;
 
-			Fvector4 fog_color4 = {
-				CurrentEnv->fog_color.x / (1.0f + CurrentEnv->fog_color.x),
-				CurrentEnv->fog_color.y / (1.0f + CurrentEnv->fog_color.y),
-				CurrentEnv->fog_color.z / (1.0f + CurrentEnv->fog_color.z),
-				CurrentEnv->fog_far
+			static Fmatrix EnvView[6](Fidentity);
+			static Fmatrix EnvFullTransform[6](Fidentity);
+
+			static Fvector cmNorm[6] = {
+				{0.f, +1.f, 0.f},
+				{0.f, +1.f, 0.f},
+				{0.f, 0.f, -1.f},
+				{0.f, 0.f, +1.f},
+				{0.f, +1.f, 0.f},
+				{0.f, +1.f, 0.f}
 			};
 
-			EnvPosition.set(Device.vCameraPosition);
+			static Fvector cmDir[6] = {
+				{+1.f, 0.f, 0.f},
+				{-1.f, 0.f, 0.f},
+				{0.f, +1.f, 0.f},
+				{0.f, -1.f, 0.f},
+				{0.f, 0.f, +1.f},
+				{0.f, 0.f, -1.f}
+			};
 
-			GRHI->CopySurface(Target->rt_Reflection_temp->pSurface, Target->rt_Reflection->pSurface);
-			GRHI->GenerateMips(Target->rt_Reflection_temp->pTexture->get_SRView());
+			static int iFace = 6;
 
-			RCache.xforms.set_env_view(EnvView[4]);
-
-			for (auto i = 0; i < 6; ++i)
+			if (psDeviceFlags.test(rsClearBB))
 			{
-				EnvView[i].build_camera_dir(EnvPosition, cmDir[i], cmNorm[i]);
-				EnvFullTransform[i].mul(EnvProject, EnvView[i]);
-
-				GRHI->ClearTarget(Target->rt_Reflection->pRT[i], (FLOAT*)&fog_color4);
+				iFace = 6;
 			}
+
+			if (iFace == 6)
+			{
+				GPU_EVENT(FORWARD_REFLECTION_COMPOSE);
+
+				CEnvDescriptorMixer* CurrentEnv = g_pGamePersistent->Environment().CurrentEnv;
+
+				EnvProject.build_projection(PI_DIV_2, 1.0f, Device.fViewportNear,
+					CurrentEnv->far_plane * ps_r4_vslr_distance);
+
+				Fvector4 fog_color4 = {
+					CurrentEnv->fog_color.x / (1.0f + CurrentEnv->fog_color.x),
+					CurrentEnv->fog_color.y / (1.0f + CurrentEnv->fog_color.y),
+					CurrentEnv->fog_color.z / (1.0f + CurrentEnv->fog_color.z),
+					CurrentEnv->fog_far
+				};
+
+				EnvPosition.set(Device.vCameraPosition);
+
+				if (!psDeviceFlags.test(rsClearBB))
+				{
+					GRHI->CopySurface(Target->rt_Reflection_temp->pSurface, Target->rt_Reflection->pSurface);
+					GRHI->GenerateMips(Target->rt_Reflection_temp->pTexture->get_SRView());
+				}
+
+				RCache.xforms.set_env_view(EnvView[4]);
+
+				for (auto i = 0; i < 6; ++i)
+				{
+					EnvView[i].build_camera_dir(EnvPosition, cmDir[i], cmNorm[i]);
+					EnvFullTransform[i].mul(EnvProject, EnvView[i]);
+
+					GRHI->ClearTarget(Target->rt_Reflection->pRT[i], (FLOAT*)&fog_color4);
+				}
+
+				if (psDeviceFlags.test(rsClearBB))
+				{
+					GRHI->CopySurface(Target->rt_Reflection_temp->pSurface, Target->rt_Reflection->pSurface);
+					GRHI->GenerateMips(Target->rt_Reflection_temp->pTexture->get_SRView());
+					break;
+				}
+			}
+			else
+			{
+				GPU_EVENT(FORWARD_REFLECTION_SIDE);
+
+				phase = PHASE_REFLECT;
+				r_pmask(true, false, true);
+
+				is_render_cubemap = true;
+
+				ps_r_taa_jitter.set(0, 0, -1);
+				ps_r_taa_jitter_full.set(ps_r_taa_jitter);
+
+				r_dsgraph_render_subspace(pLastSector, EnvFullTransform[iFace], EnvPosition, false, false);
+
+				RCache.set_xform_project(EnvProject);
+				RCache.set_xform_view(EnvView[iFace]);
+
+				mapWmark.clear();
+
+				u32 dwSize = Target->rt_Reflection->dwSize;
+				GRHI->ClearDepthStencil(Target->rt_Depth->pZRT, ERHI_CLEAR_TARGET::DEPTH, 1.0f, 0L);
+				Target->u_setrt(dwSize, dwSize, Target->rt_Reflection->pRT[iFace], NULL, NULL, Target->rt_Depth->pZRT);
+
+				RImplementation.rmNormal();
+
+				RCache.set_Stencil(FALSE);
+				RCache.set_ColorWriteEnable();
+
+				r_dsgraph_render_graph(0);
+
+				RCache.set_xform_project(Device.mProject);
+				RCache.set_xform_view(Device.mView);
+
+				is_render_cubemap = false;
+				phase = PHASE_NORMAL;
+			}
+
+			iFace = (iFace + 1) % 7;
 		}
-		else
-		{
-			GPU_EVENT(FORWARD_REFLECTION_SIDE);
-
-			phase = PHASE_REFLECT;
-			r_pmask(true, false, true);
-
-			is_render_cubemap = true;
-
-			ps_r_taa_jitter.set(0, 0, -1);
-			ps_r_taa_jitter_full.set(ps_r_taa_jitter);
-
-			r_dsgraph_render_subspace(pLastSector, EnvFullTransform[iFace], EnvPosition, false, false);
-
-			RCache.set_xform_project(EnvProject);
-			RCache.set_xform_view(EnvView[iFace]);
-
-			mapWmark.clear();
-
-			u32 dwSize = Target->rt_Reflection->dwSize;
-			GRHI->ClearDepthStencil(Target->rt_Depth->pZRT, ERHI_CLEAR_TARGET::DEPTH, 1.0f, 0L);
-			Target->u_setrt(dwSize, dwSize, Target->rt_Reflection->pRT[iFace], NULL, NULL, Target->rt_Depth->pZRT);
-
-			RImplementation.rmNormal();
-
-			RCache.set_Stencil(false);
-			RCache.set_ColorWriteEnable();
-
-			r_dsgraph_render_graph(0);
-
-			RCache.set_xform_project(Device.mProject);
-			RCache.set_xform_view(Device.mView);
-
-			is_render_cubemap = false;
-			phase = PHASE_NORMAL;
-		}
-
-		iFace = (iFace + 1) % 7;
 	}
 
 	if(ps_r_scale_mode > 1 || ps_r2_aa_type == 3)
@@ -577,7 +604,8 @@ void CRender::Render()
 	ViewBase.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
 	View = 0;
 
-	if(!ps_r2_ls_flags.test(R2FLAG_EXP_MT_CALC)) {
+	if(!ps_r2_ls_flags.test(R2FLAG_EXP_MT_CALC))
+	{
 		HOM.Enable();
 		HOM.Render(ViewBase);
 	}
@@ -730,6 +758,10 @@ void CRender::Render()
 	}
 
 	Target->copy_position();
+
+	if (!!o.dx11_disable_motion_vectors) {
+		Target->pharse_velocity();
+	}
 
 	static bool UseWinterPass = EngineExternal()[EEngineExternalRender::UseDynamicSnowMask];
 	if(UseWinterPass && g_pGameLevel->UseSnowmask)

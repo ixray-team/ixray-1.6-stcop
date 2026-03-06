@@ -42,8 +42,8 @@ float3 GetWaterNMap(Texture2D s_texture, float2 tc)
 
 float4 main(float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1, float4 Color : COLOR, float4 pos2d : SV_POSITION) : SV_Target
 {
-    IXrayGbuffer O;
-    GbufferUnpack(tc, pos2d.xy, O);
+    IXRayGbuffer O = (IXRayGbuffer)NULL;
+    GbufferUnpack((uint2)pos2d.xy, O);
 
     float4 P = float4(O.PointReal, 1.0f);
     float3 N = O.Normal;
@@ -112,7 +112,7 @@ float4 main(float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1, float4 Color : COLOR,
     N.xy = NormalEncode(N);
 
 #ifdef USE_LEGACY_LIGHT
-    N.z = 0.8f * s + O.Roughness;
+    N.z = 0.8f * s + O.Gloss;
 #else
     N.z = lerp(O.Roughness, 0.01f, saturate(s * 4.0f)); 
 #endif

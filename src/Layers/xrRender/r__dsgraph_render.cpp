@@ -193,8 +193,10 @@ ICF void sorted_L1(mapSorted_Node& N)
 {
 	//PROF_EVENT("sorted_L1");
 	dxRender_Visual* V = N.val.pVisual;
+
 	VERIFY(V && V->shader._get());
 	RCache.set_Element(N.val.se);
+
 	if (V->dcast_ParticleCustom())
 	{
 		V->Render(0);
@@ -202,9 +204,11 @@ ICF void sorted_L1(mapSorted_Node& N)
 	}
 
 	RCache.set_xform_world(N.val.Matrix);
+
 	RImplementation.apply_object(N.val.pObject);
 	RImplementation.apply_lmaterial();
-	V->Render(calcLOD(N.key, V->vis.sphere.R));
+
+	V->Render(calcLOD(N.val.ssa, V->vis.sphere.R));
 }
 
 //////////////////////////////////////////////////////////////////////////

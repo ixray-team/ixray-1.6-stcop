@@ -58,6 +58,7 @@ void CBlender_deffer_model::Compile(CBlender_Compile& C)
 
 	if (C.iElement == SE_R2_UI)
 	{
+		RImplementation.addShaderOption("DISABLE_MOTION_VECTORS", "1");
 		uber_deffer(C, true, "deffer_model", "ui_base", !!oBlend.value, 0, true);
 
 		if (oStrictSorting.value || (oBlend.value && oAREF.value < 16)) 

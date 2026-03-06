@@ -10,17 +10,21 @@ The Real MJP https://mynameismjp.wordpress.com/2011/08/10/average-luminance-comp
 
 #include "common.hlsli"
 
-uniform Texture2D b_image;
-float4 adapt_params;
-
 float main(PSInputFullscreen I) : SV_Target
-{   
-    float res = 0.f;
-    float2 center = I.texcoord.xy ;
-    float3 a = b_image.Sample(smp_rtlinear, float2 (center.x, center.y)).rgb;
-    res = dot(a, LUMINANCE_VECTOR);
-    res = clamp(res, 0.0065, 2.0); // just protec low before log, slightly shifts final exposure lower
-    res = log2(res);
+{
+    float3 Color = s_image.Sample(smp_rtlinear, I.texcoord.xy).rgb;
+	
+#ifdef USE_CLASSIQUE_TONEMAP
+	Color = LinearToGamma(Color);
+#endif
 
-    return res;
+    float Final = dot(Color, LUMINANCE_VECTOR);
+	
+#ifndef USE_CLASSIQUE_TONEMAP
+    Final = max(Final, 0.001); // just protec low before log
+    Final = log2(Final);
+#endif
+
+    return Final;
 }
+

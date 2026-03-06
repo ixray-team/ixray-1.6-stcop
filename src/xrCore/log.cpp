@@ -159,7 +159,7 @@ void xrLogger::InternalCloseLog()
 }
 
 xrLogger::xrLogger()
-	: logFile(nullptr), bFastDebugLog(false), bFlushRequested(false)
+	: logFile(nullptr), bFastDebugLog(true), bFlushRequested(false)
 {}
 
 xrLogger::~xrLogger()

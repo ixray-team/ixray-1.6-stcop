@@ -166,16 +166,17 @@ void CTextureDescrMngr::LoadTHM(const char* initial)
 			STextureParams::ttTerrain	== tp.type ||
 			STextureParams::ttNormalMap	== tp.type	)
 		{
-			texture_desc&	desc	= m_texture_details[fn];
-			cl_dt_scaler*&	dts		= m_detail_scalers[fn];
+			texture_desc& desc = m_texture_details[fn];
+			cl_dt_scaler*& dts = m_detail_scalers[fn];
 
-			if( tp.detail_name.size() &&
-				tp.flags.is_any(STextureParams::flDiffuseDetail|STextureParams::flBumpDetail) )
+			if (tp.detail_name.size() &&
+				tp.flags.is_any(STextureParams::flDiffuseDetail | STextureParams::flBumpDetail))
 			{
 #ifndef MASTER_GOLD
 				string_path src_detail_name;
 				FS.update_path(src_detail_name, _game_textures_, tp.detail_name.c_str());
 				xr_strcat(src_detail_name, ".dds");
+
 				if (!FS.exist(src_detail_name))
 				{
 					Msg("! Detail texture not found\n"
@@ -190,31 +191,59 @@ void CTextureDescrMngr::LoadTHM(const char* initial)
 #endif // !MASTER_GOLD
 
 				if(desc.m_assoc)
-					xr_delete				(desc.m_assoc);
+				{
+					xr_delete(desc.m_assoc);
+				}
 
-				desc.m_assoc				= new texture_assoc();
-				desc.m_assoc->detail_name	= tp.detail_name;
+				desc.m_assoc = new texture_assoc();
+				desc.m_assoc->detail_name = tp.detail_name;
+
 				if (dts)
+				{
 					dts->scale = tp.detail_scale;
+				}
 				else
-					/*desc.m_assoc->cs*/dts	= new cl_dt_scaler(tp.detail_scale);
+				{
+					dts = new cl_dt_scaler(tp.detail_scale);
+				}
 
-				desc.m_assoc->usage			= 0;
-				
-				if( tp.flags.is(STextureParams::flDiffuseDetail) )
-					desc.m_assoc->usage		|= (1<<0);
-				
-				if( tp.flags.is(STextureParams::flBumpDetail) )
-					desc.m_assoc->usage		|= (1<<1);
+				desc.m_assoc->usage = 0;
 
+				if (tp.flags.is(STextureParams::flDiffuseDetail))
+				{
+					desc.m_assoc->usage |= (1 << 0);
+				}
+
+				if (tp.flags.is(STextureParams::flBumpDetail))
+				{
+					desc.m_assoc->usage |= (1 << 1);
+				}
 			}
-			if(desc.m_spec)
-				xr_delete				(desc.m_spec);
 
-			desc.m_spec					= new texture_spec();
-			desc.m_spec->m_material		= (float)tp.material+tp.material_weight;
+			if (desc.m_spec)
+			{
+				xr_delete(desc.m_spec);
+			}
+
+			desc.m_spec = new texture_spec();
+			desc.m_spec->m_material = static_cast<float>(tp.material) + tp.material_weight;
 			desc.m_spec->m_use_steep_parallax = tp.bump_mode == STextureParams::tbmUseParallax;
 			desc.m_spec->m_use_pbr = (tp.material == STextureParams::tmPBR_Material);
+
+			string_path thm_overrider;
+
+			if (FS.exist(thm_overrider, initial, fn, ".ltx"))
+			{
+				CInifile pOptions(thm_overrider);
+
+				if (pOptions.section_exist("shaders_options"))
+				{
+					for (auto& Line : pOptions.r_section("shaders_options").Data)
+					{
+						desc.m_spec->ShadersOptions[*Line.first] = *Line.second;
+					}
+				}
+			}
 			
 			if (tp.bump_mode == STextureParams::tbmUse || tp.bump_mode == STextureParams::tbmUseParallax)
 			{
@@ -323,6 +352,16 @@ bool CTextureDescrMngr::UsePBRTexures(const shared_str& tex_name) const {
 		}
 	}
 	return false;
+}
+
+ShaderExternalMap* CTextureDescrMngr::GetShaderExternal(const shared_str& tex_name) const
+{
+	if (auto I = m_texture_details.find(tex_name); I != m_texture_details.end())
+	{
+		return &I->second.m_spec->ShadersOptions;
+	}
+
+	return NULL;
 }
 
 float CTextureDescrMngr::GetMaterial(const shared_str& tex_name) const

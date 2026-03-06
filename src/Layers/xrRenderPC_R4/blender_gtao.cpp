@@ -108,5 +108,15 @@ void CBlender_gtao::Compile(CBlender_Compile& C)
         C.r_End();
 
         break;
+    case 5:
+        C.r_Pass("stub_fullscreen_triangle", "combine_velocity", FALSE, FALSE, FALSE);
+
+        C.r_dx10Texture("s_position", r2_RT_P);
+
+        C.r_dx10Sampler("smp_rtlinear");
+        C.r_dx10Sampler("smp_nofilter");
+
+        C.r_End();
+        break;
     }
 }

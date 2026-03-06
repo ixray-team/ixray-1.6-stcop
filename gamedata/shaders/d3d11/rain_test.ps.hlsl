@@ -10,5 +10,5 @@ float4 main(p_TL I) : SV_Target
 {
     float4 res = 1.f;
     float4 t = s_base.Sample(smp_base, I.Tex0) * I.Color;
-    return PushGamma(t);
+    return GammaToLinear(t);
 }

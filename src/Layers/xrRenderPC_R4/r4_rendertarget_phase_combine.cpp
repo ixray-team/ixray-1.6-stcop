@@ -47,19 +47,6 @@ void CRenderTarget::phase_combine()
 	u32 Offset = 0;
 	Fvector2 p0, p1;
 
-	//*** exposure-pipeline
-	{
-		if (t_LUM_src != rt_LUM_pool[0]->pTexture)
-		{
-			t_LUM_src->surface_set(rt_LUM_pool[0]->pSurface);
-		}
-
-		if (t_LUM_dest != rt_LUM_pool[1]->pTexture)
-		{
-			t_LUM_dest->surface_set(rt_LUM_pool[1]->pSurface);
-		}
-	}
-
 	{
 		PROF_EVENT("PHASE_AMBIENT_OCCLUSION");
 
@@ -71,6 +58,8 @@ void CRenderTarget::phase_combine()
 		}
 	}
 
+	RImplementation.rmNormal();
+
 	if(RImplementation.o.deffered_reflecitons)
 	{
 		phase_sslr();
@@ -79,12 +68,12 @@ void CRenderTarget::phase_combine()
 	u_setrt(rt_Generic_0, 0, 0, RDepth);
 
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-	RCache.set_Stencil(false);
+	RCache.set_Stencil(FALSE);
 
 	// draw skybox
 	g_pGamePersistent->Environment().RenderClouds();
 
-	RCache.set_Stencil(true, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);	// stencil should be >= 1
+	RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);	// stencil should be >= 1
 
 	if (RImplementation.o.nvstencil) {
 		u_stencil_optimize(CRenderTarget::SO_Combine);
@@ -171,7 +160,7 @@ void CRenderTarget::phase_combine()
 		phase_scene_forward();
 
 		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
-		RCache.set_Stencil (false);
+		RCache.set_Stencil (FALSE);
 		RCache.set_ColorWriteEnable ();
 
 		RImplementation.render_forward	();
@@ -188,7 +177,7 @@ void CRenderTarget::phase_combine()
 	{
 		u32 count = RImplementation.mapDistort.size() + RImplementation.mapHUDDistort.size();
 		if((count < 1 && !_menu_pp)) {
-			bDistort= false;
+			bDistort= FALSE;
 		}
 		if(bDistort) {
 			GPU_EVENT(render_distort_objects);
@@ -197,7 +186,7 @@ void CRenderTarget::phase_combine()
 			RImplementation.rmNormal();
 			GRHI->ClearTarget(rt_Generic_1->pRT, ERTColor::Gray);
 			GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
-			RCache.set_Stencil(false);
+			RCache.set_Stencil(FALSE);
 			RCache.set_ColorWriteEnable();
 			RImplementation.r_dsgraph_render_distort();
 
@@ -232,14 +221,14 @@ void CRenderTarget::phase_combine()
 			GPU_EVENT(phase_fxaa);
 			phase_fxaa();
 
-			RCache.set_Stencil(false);
+			RCache.set_Stencil(FALSE);
 		}
 		else if(ps_r2_aa_type == 2) 
 		{
 			GPU_EVENT(phase_smaa);
 			phase_smaa();
 
-			RCache.set_Stencil(false);
+			RCache.set_Stencil(FALSE);
 		}
 		else if(ps_r2_aa_type == 3)
 		{
@@ -289,38 +278,20 @@ void CRenderTarget::phase_combine()
 
 	dwWidth = get_target_width();
 	dwHeight = get_target_height();
-
 	RImplementation.rmNormal();
 
-	// HDR RT invalidated here
-	// Perform blooming filter and distortion if needed
-	RCache.set_Stencil(false);
-	phase_bloom();
+	RCache.set_Stencil(FALSE);
 
-	{
-		GPU_EVENT(phase_bloom_downsample);
-		phase_bloom_downsample();
-	}
-	{
-		GPU_EVENT(phase_bloom_upsample);
-		phase_bloom_upsample();
-	}
-	{
-		GPU_EVENT(phase_new_luminance);
-		phase_new_luminance();
-	}
-	{
-		GPU_EVENT(phase_new_dof);
-		phase_new_dof();
-	}
+	phase_bloom_downsample();
+	phase_bloom_upsample();
+	phase_new_luminance();
 
-
-	u_setrt(rt_Back_Buffer, 0, 0, 0);			// LDR RT
-
+	u_setrt(rt_Back_Buffer, 0, 0, 0);
 	RImplementation.rmNormal();
 
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-	RCache.set_Stencil(false);
+	RCache.set_Stencil(FALSE);
+
 	{
 		GPU_EVENT(combine_2);
 
@@ -344,7 +315,7 @@ void CRenderTarget::phase_combine()
 		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 3, 0, 1);
 	}
 
-	RCache.set_Stencil		(false);
+	RCache.set_Stencil		(FALSE);
 
 	//	if FP16-BLEND !not! supported - draw flares here, overwise they are already in the bloom target
 	g_pGamePersistent->Environment().RenderFlares();	// lens-flares
@@ -394,14 +365,7 @@ void CRenderTarget::phase_combine()
 	}
 	
 	//	Re-adapt luminance
-	RCache.set_Stencil(false);
-
-	//*** exposure-pipeline-clear
-	{
-		std::swap(rt_LUM_pool[0], rt_LUM_pool[1]);
-		t_LUM_src->surface_set		(nullptr);
-		t_LUM_dest->surface_set		(nullptr);
-	}
+	RCache.set_Stencil(FALSE);
 
 #ifdef DEBUG
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
@@ -448,7 +412,7 @@ void CRenderTarget::phase_wallmarks()
 	// Targets
 	u_setrt(rt_Color, nullptr, nullptr, RDepth);
 	// Stencil	- draw only where stencil >= 0x1
-	RCache.set_Stencil(true, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
+	RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 	RCache.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE);
 }

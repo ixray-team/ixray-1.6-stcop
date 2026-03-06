@@ -93,13 +93,26 @@ void CRT::create(const char* Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount,
 		{
 			auto dwSize = std::min(dwWidth, dwHeight);
 
-			while((dwSize /= 2) >= 4)
+			while ((dwSize /= 2) >= 4)
+			{
+				++desc.MipLevels;
+			}
+
+			// It is convenient to have 
+			// an even number of MIP levels.
+
+			if (desc.MipLevels % 2 == 0) 
 			{
 				++desc.MipLevels;
 			}
 		}
 
-		if(SampleCount == 1 && CreationFlags & CRTCreationFlags::USE_UAV_FLAG)
+		if (CreationFlags & CRT::CRTCreationFlags::AUTOGEN_MIP_MAPS)
+		{
+			desc.MiscFlags |= D3D_RESOURCE_MISC_GENERATE_MIPS;
+		}
+
+		if (SampleCount == 1 && CreationFlags & CRTCreationFlags::USE_UAV_FLAG)
 		{
 			desc.BindFlags |= ERHI_BIND_FLAG::UNORDERED_ACCESS;
 		}
@@ -177,6 +190,7 @@ void CRT::create(const char* Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount,
 			if(CreationFlags & CRTCreationFlags::USE_UAV_FLAG)
 			{
 				RHIUAVDesc uavDesc = {};
+
 				uavDesc.Format = fmt;
 				uavDesc.ViewDimension = ERHI_VIEW_DIMENSION::Texture2D;
 				uavDesc.NumElements = dwWidth * dwHeight;
@@ -184,16 +198,19 @@ void CRT::create(const char* Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount,
 				pUAView = GRHI->CreateUAV(pSurface, uavDesc);
 			}
 
-			pMippedRT.resize(desc.MipLevels);
-			pMippedRT[0] = pRT; pRT->AddRef();
+			pMippedRT.resize(0);
+
+			if (CreationFlags & CRTCreationFlags::MIPPED_RT_FLAG)
+			{
+				pMippedRT.resize(desc.MipLevels);
+				pMippedRT[0] = pRT; pRT->AddRef();
+			}
 		}
 
-		for(UINT mip_level = 1; mip_level < desc.MipLevels; ++mip_level)
+		for(UINT mip_level = 1, count = pMippedRT.size(); mip_level < count; ++mip_level)
 		{
-			// Create a copy of rtvDesc for each mip level
-			RHIRenderTargetViewDesc mipRtvDesc = rtvDesc;
-			mipRtvDesc.MipSlice = mip_level;
-			pMippedRT[mip_level] = GRHI->CreateRenderTargetView(pSurface, mipRtvDesc);
+			rtvDesc.MipSlice = mip_level;
+			pMippedRT[mip_level] = GRHI->CreateRenderTargetView(pSurface, rtvDesc);
 		}
 	}
 
@@ -282,8 +299,12 @@ void CRTC::create(const char* Name, u32 size, ERHI_FORMAT f, CRT::CRTCreationFla
 
 	if(CreationFlags & CRT::CRTCreationFlags::MIPPED_RT_FLAG)
 	{
-		desc.MiscFlags |= D3D_RESOURCE_MISC_GENERATE_MIPS;
 		desc.MipLevels = log2(dwSize) + 1;
+	}
+
+	if(CreationFlags & CRT::CRTCreationFlags::AUTOGEN_MIP_MAPS)
+	{
+		desc.MiscFlags |= D3D_RESOURCE_MISC_GENERATE_MIPS;
 	}
 
 	pSurface = GRHI->CreateRenderTarget(desc);

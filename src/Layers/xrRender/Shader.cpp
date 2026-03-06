@@ -61,6 +61,7 @@ bool SPass::equal(const SPass& other)
 	if (cs			!= other.cs)			return false;
 #endif //USE_DX11
 	if (constants	!= other.constants)		return false;	// is this nessesary??? (ps+vs already combines)
+	if (iPriority	!= other.iPriority)		return false;
 
 	if (T != other.T)					return false;
 	if (C != other.C)					return false;

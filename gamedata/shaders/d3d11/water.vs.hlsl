@@ -88,7 +88,6 @@ void main(in v_vert v, out vf o)
     o.hpos.xy += m_taa_jitter.xy * o.hpos.w;
 
     //	Igor: for additional depth dest
-    o.tctexgen = mul(m_texgen, P);
-    o.tctexgen.z = mul(m_V, P).z;
+    o.tctexgen = mul(m_V, P).xyzz;
 }
 
