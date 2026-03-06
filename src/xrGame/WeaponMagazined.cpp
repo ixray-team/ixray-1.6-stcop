@@ -1738,6 +1738,7 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 		{
 			if (state == eSwitchMode)
 			{
+				SetQueueSize(GetCurrentFireMode());
 				UpdateFiremodeAnimations();
 			}
 			else if (state == eFire || state == eReload || state == eMisfire)
@@ -2093,13 +2094,13 @@ void CWeaponMagazined::switch2_FireMode()
 		anim_name.printf("%s%d_to_", *anim_name, m_iPrevFireMode);
 	}
 
-	if (GetQueueSize() == -1)
+	if (GetCurrentFireMode() == -1)
 	{
 		anim_name.printf("%s%s", *anim_name, "a");
 	}
 	else
 	{
-		anim_name.printf("%s%d", *anim_name, GetQueueSize());
+		anim_name.printf("%s%d", *anim_name, GetCurrentFireMode());
 	}
 
 	if (HudAnimationExist(anim_name))
@@ -3282,11 +3283,13 @@ void CWeaponMagazined::ChangeFireMode(u16 cmd)
 		m_iCurFireMode = (m_iCurFireMode - 1 + m_aFireModes.size()) % (s8)m_aFireModes.size();
 	}
 
-	SetQueueSize(GetCurrentFireMode());
-
 	if (m_eAnimationsFlags.test(EAnimationsFlags::af_firemode))
 	{
 		SwitchState(eSwitchMode);
+	}
+	else
+	{
+		SetQueueSize(GetCurrentFireMode());
 	}
 };
 
@@ -3676,6 +3679,11 @@ void CWeaponMagazined::OnMotionMark(u32 state, const motion_marks& mark)
 		}
 
 		m_eDevicesFlags.zero();
+	}
+
+	if (state == eSwitchMode && mark.name == "Right")
+	{
+		SetQueueSize(GetCurrentFireMode());
 	}
 }
 
