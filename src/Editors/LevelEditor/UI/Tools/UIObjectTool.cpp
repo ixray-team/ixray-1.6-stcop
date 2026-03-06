@@ -80,24 +80,23 @@ void UIObjectTool::HandleDragDrop()
 
 void UIObjectTool::Draw()
 {
-	float buttonHeight = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize);
-	if (ImGui::Button("Multiple Append in World Center", { -1, 25 }))
+	const float buttonHeight		= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize);
+	const float	itemSpacingX		= ImGui::GetStyle().ItemSpacing.x;
+	const float	itemInnerSpacingX	= ImGui::GetStyle().ItemInnerSpacing.x;
+
+	if (XRay::ImGui::Button("Multiple Append in World Center", { -0.01, buttonHeight }))
 	{
 		m_MultiAppend = true;
 		UIChooseForm::SelectItem(smObject, 512, 0);
 	}
-	ImGui::Separator();
+	XRay::ImGui::Separator();
 
-	const float tumblerWidth = ImGui::GetContentRegionAvail().x - (27 * 2);
-
-	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, ImGui::GetStyle().ItemSpacing.y));
-
-	if (XRay::ImGui::ToggleButton("Random Append", m_RandomAppend, { tumblerWidth, buttonHeight }))
+	if (XRay::ImGui::ToggleButton("Random Append", m_RandomAppend, { -(buttonHeight + itemInnerSpacingX) * 2, buttonHeight }))
 	{
 		ParentTools->ActivateAppendRandom(m_RandomAppend);
 	}
-	ImGui::SameLine(0, 1);
-	if (ImGui::Button(ICON_FA_FILE_IMPORT, { 25, 25 }))
+	ImGui::SameLine(0, itemInnerSpacingX);
+	if (XRay::ImGui::Button(ICON_FA_FILE_IMPORT, { buttonHeight, buttonHeight }))
 	{
 		xr_string Outfile;
 
@@ -107,8 +106,8 @@ void UIObjectTool::Draw()
 		}
 	}
 
-	ImGui::SameLine(0, 1);
-	if (ImGui::Button(ICON_FA_FLOPPY_DISK, { 25, 25 }))
+	ImGui::SameLine(0, itemInnerSpacingX);
+	if (XRay::ImGui::Button(ICON_FA_FLOPPY_DISK, { buttonHeight, buttonHeight }))
 	{
 		xr_string Outfile;
 
@@ -144,48 +143,45 @@ void UIObjectTool::Draw()
 		}
 		}
 
-	ImGui::PopStyleVar();
-
 	if (m_RandomAppend)
 	{
 		ParentTools->FillAppendRandomPropertiesBegin(PropsRandomAppend);
 
-		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 6);
 		PropsRandomAppend.Draw();
 
-		if (ImGui::Button("Random Append in Selected Object", {-1, 0}))
+		if (XRay::ImGui::Button("Random Append in Selected Object", { -0.01, buttonHeight }))
 		{
 			GenerateGarbage();
 		}
-		ImGui::Separator();
+		XRay::ImGui::Separator();
 	}
 
 	m_RemoveTexture.destroy();
 
 	static bool ShowRefSel = false;
-	XRay::ImGui::ToggleButton("Reference Select", ShowRefSel, { -1, buttonHeight });
+	XRay::ImGui::ToggleButton("Reference Select", ShowRefSel, { -0.01, buttonHeight });
 
 	if (ShowRefSel)
 	{
 		ImGui::Text("Select by Current: "); ImGui::SameLine(); if (ImGui::Button(" +")) { SelByRefObject(true); } ImGui::SameLine(); if (ImGui::Button(" -")) { SelByRefObject(false); }
 		ImGui::Text("Select by Selected:"); ImGui::SameLine(); if (ImGui::Button("=%")) { MultiSelByRefObject(true); } ImGui::SameLine(); if (ImGui::Button("+%")) { MultiSelByRefObject(false); } ImGui::SameLine(); ImGui::SetNextItemWidth(-ImGui::GetTextLineHeight() - 8); ImGui::DragFloat("%", &m_selPercent, 1, 0, 100, "%.1f");
-		ImGui::Separator();
+		XRay::ImGui::Separator();
 	}
 
-	float XSize = ImGui::GetWindowSize().x - 25;
+	float XSize = ImGui::GetContentRegionAvail().x - itemInnerSpacingX;
 	XSize /= 2;
 
 	static bool ShowSurf = false;
-	XRay::ImGui::ToggleButton("Surface", ShowSurf, { -1, buttonHeight });
+	XRay::ImGui::ToggleButton("Surface", ShowSurf, { -0.01, buttonHeight });
 	if (ShowSurf)
 	{
-		if (ImGui::Button("Clear Select", ImVec2(XSize, 0)))
+		if (XRay::ImGui::Button("Clear Select", ImVec2(XSize, 0)))
 		{
 			Scene->UndoSave();
 			ClearSurface(true);
 		}
-		ImGui::SameLine();
-		if (ImGui::Button("Clear Level", ImVec2(XSize, 0)))
+		ImGui::SameLine(0, itemInnerSpacingX);
+		if (XRay::ImGui::Button("Clear Level", ImVec2(XSize, 0)))
 		{
 			if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to reset surface in level?") == mrYes)
 			{
@@ -193,24 +189,24 @@ void UIObjectTool::Draw()
 				ClearSurface(false);
 			}
 		}
-		ImGui::Separator();
+		XRay::ImGui::Separator();
 	}
 
 	static bool ShowCurObject = false;
-	XRay::ImGui::ToggleButton("Current Object", ShowCurObject, { -1, buttonHeight });
+	XRay::ImGui::ToggleButton("Current Object", ShowCurObject, { -0.01, buttonHeight });
 	if (ShowCurObject)
 	{
-		if (ImGui::Button("Select", ImVec2(XSize, 0)))
+		if (XRay::ImGui::Button("Select", ImVec2(XSize, 0)))
 		{
 			UIChooseForm::SelectItem(smObject, 1, m_Current, 0, 0, 0, 0, 0);
 			m_Selection = true;
 		}
-		ImGui::SameLine();
-		if (ImGui::Button("Refresh", ImVec2(XSize, 0)))
+		ImGui::SameLine(0, itemInnerSpacingX);
+		if (XRay::ImGui::Button("Refresh", ImVec2(XSize, 0)))
 		{
 			RefreshList();
 		}
-		ImGui::Separator();
+		XRay::ImGui::Separator();
 	}
 }
 
