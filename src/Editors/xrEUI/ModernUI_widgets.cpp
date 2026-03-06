@@ -3,6 +3,33 @@
 #include <imgui_internal.h>
 #include "IconsFontAwesome7.h"
 
+XREUI_API bool XRay::ImGui::BeginDarkChild(const char* str_id, const ImVec2& size, ImGuiChildFlags child_flags, ImGuiWindowFlags window_flags)
+{
+    float	TableBorder = GetEditorSize(EEditorSizes::TableBorder);
+            child_flags    |= ImGuiChildFlags_AlwaysUseWindowPadding;
+    ::ImGui::PushStyleColor(ImGuiCol_ChildBg, GetEditorColor(EEditorColors::PanelBackgroundTint).Value);
+    ::ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, TableBorder });
+    bool Opened;
+    if(::ImGui::BeginChild(str_id, size, child_flags, window_flags)) {
+        Opened = true; 
+        ::ImGui::PopStyleVar();
+        ::ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { TableBorder, 0 });
+        ::ImGui::BeginChild("##content", size, child_flags, window_flags);
+        ::ImGui::PopStyleVar();
+        ::ImGui::PopStyleColor();
+    }
+    else {
+        Opened = false;
+        ::ImGui::PopStyleVar();
+        ::ImGui::PopStyleColor();
+    }
+    return Opened;
+}
+XREUI_API void XRay::ImGui::EndDarkChild()
+{
+    ::ImGui::EndChild();
+    ::ImGui::EndChild();
+}
 
 XREUI_API bool XRay::ImGui::InputVector3(const char* Label, float V[3], float Step)
 {
@@ -62,14 +89,16 @@ XREUI_API bool XRay::ImGui::InputVector3(const char* Label, float V[3], float St
 XREUI_API bool XRay::ImGui::Button(const char* Label, const ImVec2& Size, bool* Toggle)
 {
     // --- Styling ---
-    const ImVec4 EnabledColor = GetEditorColor(EEditorColors::Accent);
-    const ImVec4 EnabledHover = GetEditorColor(EEditorColors::ToggleHover);
-    const ImVec4 EnabledActive = GetEditorColor(EEditorColors::ToggleActive);
-    const ImVec4 DisabledColor = GetEditorColor(EEditorColors::ButtonTint);
-    const ImVec4 DisabledHover = GetEditorColor(EEditorColors::ButtonHover);
+    const ImVec4 EnabledColor   = GetEditorColor(EEditorColors::Accent);
+    const ImVec4 EnabledHover   = GetEditorColor(EEditorColors::ToggleHover);
+    const ImVec4 EnabledActive  = GetEditorColor(EEditorColors::ToggleActive);
+    const ImVec4 DisabledColor  = GetEditorColor(EEditorColors::ButtonTint);
+    const ImVec4 DisabledHover  = GetEditorColor(EEditorColors::ButtonHover);
     const ImVec4 DisabledActive = GetEditorColor(EEditorColors::ButtonActive);
-    const ImVec4 BorderColor = GetEditorColor(EEditorColors::ButtonBorderTint);
-    const float  BorderSize = GetEditorSize(EEditorSizes::ButtonBorderSize);
+    const ImVec4 BorderColor    = GetEditorColor(EEditorColors::ButtonBorderTint);
+    const float  BorderSize     = GetEditorSize(EEditorSizes::ButtonBorderSize);
+    const ImVec2 FramePadding   = ImVec2(GetEditorSize(EEditorSizes::ButtonPaddingW), GetEditorSize(EEditorSizes::ButtonPaddingH));
+
 
     if (Toggle) {
         ::ImGui::PushStyleColor(ImGuiCol_Button, *Toggle ? EnabledColor : DisabledColor);
@@ -83,10 +112,11 @@ XREUI_API bool XRay::ImGui::Button(const char* Label, const ImVec2& Size, bool* 
     }
     ::ImGui::PushStyleColor(ImGuiCol_Border, BorderColor);
     ::ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, BorderSize);
+    ::ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, FramePadding);
 
     bool button = ::ImGui::Button(Label, Size);
 
-    ::ImGui::PopStyleVar();
+    ::ImGui::PopStyleVar(2);
     ::ImGui::PopStyleColor(4);
 
     return button;
