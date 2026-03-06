@@ -71,6 +71,7 @@ enum class EEngineExternalGame
 	EnableSaveOnNewGame,
 	EnableSuicideByController,
 	Enable3DIcons,
+	EnableRagdolledZombiePseudodeath,
 	None
 };
 
