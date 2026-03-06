@@ -298,16 +298,16 @@ void CRenderTarget::phase_combine()
 	phase_bloom();
 
 	{
-		GPU_EVENT(phase_bloom_downsample)
+		GPU_EVENT(phase_bloom_downsample);
 		phase_bloom_downsample();
 	}
 	{
-		GPU_EVENT(phase_bloom_upsample)
+		GPU_EVENT(phase_bloom_upsample);
 		phase_bloom_upsample();
 	}
 	{
-		GPU_EVENT(phase_new_luminance)
-			phase_new_luminance();
+		GPU_EVENT(phase_new_luminance);
+		phase_new_luminance();
 	}
 	
 
