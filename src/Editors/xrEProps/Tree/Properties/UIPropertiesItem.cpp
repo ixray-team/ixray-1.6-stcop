@@ -16,6 +16,7 @@ UIPropertiesItem::~UIPropertiesItem()
 void UIPropertiesItem::Draw()
 {
 	const float   TableRowHeight	= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableRowHeight);
+	const ImColor RowColor0			= XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelTint);
 	const ImColor RowColor1			= XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelBorderTint);
 	const ImColor RowColor2			= XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableTint);
 	const ImVec2  CellPadding		= ImVec2(XRay::ImGui::GetEditorSize(XRay::ImGui::ButtonTextPaddingY), XRay::ImGui::GetEditorSize(XRay::ImGui::TableTextPaddingY));
@@ -85,6 +86,7 @@ void UIPropertiesItem::Draw()
 		}
 		else
 		{
+			ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, ImGui::GetColorU32(RowColor0.Value));
 			ImGui::SetCursorPos(ImGui::GetCursorPos() + CellPadding);
 			ImGui::TextUnformatted(*Name);
 		}
