@@ -97,10 +97,8 @@ void UIPropertiesForm::Draw()
 	float borderSize		= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableBorder);
 	float padding			= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableTextPaddingY);
 	float buttonPaddingX	= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonPaddingH);
-	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { borderSize, borderSize });
 
-	ImGui::PushStyleColor(ImGuiCol_FrameBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::BackgroundTint).Value);
-	ImGui::PopStyleColor();
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { borderSize, borderSize });
 	if (!IsSearchDisabled)
 	{
 
@@ -122,7 +120,6 @@ void UIPropertiesForm::Draw()
 
 			ImGui::SameLine();
 			ImVec2 cursorPos = ImGui::GetCursorPos();
-			//ImGui::SetCursorPos(ImVec2(cursorPos.x - IconSize.x - 10.f, 1 + cursorPos.y + (IconSize.y / 4)));
 			ImGui::SetCursorPos(ImVec2(cursorPos.x - IconSize.x - borderSize - padding, cursorPos.y + borderSize + padding));
 
 			ImGui::Image(GUIManager->SearchIcon, IconSize);
@@ -131,6 +128,10 @@ void UIPropertiesForm::Draw()
 		IsSearchActive = !m_SearchText.empty();
 
 		ImGui::PopStyleVar(2);
+
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::BackgroundTint).Value);
+		ImGui::BeginChild("##Scroll");
+		ImGui::BeginChild("##Content", { -2.f, 0.f }, ImGuiChildFlags_AutoResizeY);
 	}
 	static constexpr ImGuiTableFlags DefFlags =
 		ImGuiTableFlags_BordersInner |
@@ -168,7 +169,12 @@ void UIPropertiesForm::Draw()
 		ImGui::EndTable();
 	}
 	ImGui::PopStyleVar();
-
+	if (!IsSearchDisabled)
+	{
+		ImGui::EndChild();
+		ImGui::EndChild();
+		ImGui::PopStyleColor();
+	}
 	ImGui::PopStyleVar();
 }
 
