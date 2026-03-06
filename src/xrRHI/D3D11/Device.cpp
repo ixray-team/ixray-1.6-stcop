@@ -155,18 +155,46 @@ void InternalDevice11::SetDSV(IRHIDepthStencilView* pDepthStencilView)
 	DepthStencilView = pDepthStencilView;
 }
 
-void InternalDevice11::SetRenderTargets(u32 NumViews, IRHIRenderTargetView* const* ppRenderTargetViews)
+void InternalDevice11::SetRenderTargets(u32 NumViews, IRHIRenderTargetView* const* ppRenderTargetViews, IRHIUnorderedAccessView* const* ppRenderUAViews)
 {
-	static ID3D11RenderTargetView* s_RenderTargetView11[RHI_MAX_RENDER_TARGETS];
+	static ID3D11RenderTargetView* s_RTV[RHI_MAX_RENDER_TARGETS];
+	static ID3D11UnorderedAccessView* s_UAV[RHI_MAX_RENDER_TARGETS];
 
-	R_ASSERT(NumViews >= RHI_MAX_RENDER_TARGETS);
+	R_ASSERT(NumViews <= RHI_MAX_RENDER_TARGETS);
 
-	for (int i = 0; i < NumViews; i++)
+	for (u32 i = 0; i < NumViews; i++)
 	{
-		s_RenderTargetView11[i] = reinterpret_cast<ID3D11RenderTargetView*>(ppRenderTargetViews[i] ? ppRenderTargetViews[i]->GetRawRTV() : nullptr);
+		s_RTV[i] = ppRenderTargetViews[i] ? (ID3D11RenderTargetView*)ppRenderTargetViews[i]->GetRawRTV() : nullptr;
+		s_UAV[i] = ppRenderUAViews[i] ? (ID3D11UnorderedAccessView*)ppRenderUAViews[i]->GetRaw() : nullptr;
 	}
 
-	HWRenderContext->OMSetRenderTargets(NumViews, s_RenderTargetView11, DepthStencilView ? (ID3D11DepthStencilView*)DepthStencilView->GetRawDSV() : nullptr);
+	ID3D11DepthStencilView* dsv = DepthStencilView ? (ID3D11DepthStencilView*)DepthStencilView->GetRawDSV() : nullptr;
+
+	bool hasUAVs = false;
+	for (u32 i = 0; i < NumViews; i++)
+	{
+		if (s_UAV[i] != nullptr)
+		{
+			hasUAVs = true;
+			break;
+		}
+	}
+
+	if (hasUAVs)
+	{
+		HWRenderContext->OMSetRenderTargetsAndUnorderedAccessViews
+		(
+			NumViews, s_RTV, dsv,
+			0,            // UAV start slot
+			NumViews,     // number of UAVs
+			s_UAV,
+			nullptr
+		);
+	}
+	else
+	{
+		HWRenderContext->OMSetRenderTargets(NumViews, s_RTV, dsv);
+	}
 }
 
 #if 0

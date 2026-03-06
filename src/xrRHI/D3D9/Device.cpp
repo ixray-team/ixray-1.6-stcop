@@ -90,7 +90,7 @@ void InternalDevice9::SetDSV(IRHIDepthStencilView* pDepthStencilView)
 	DX9Device->SetDepthStencilSurface(pDepthStencilView ? static_cast<IDirect3DSurface9*>(pDepthStencilView->GetRawDSV()) : nullptr);
 }
 
-void InternalDevice9::SetRenderTargets(u32 NumViews, IRHIRenderTargetView* const* ppRenderTargetViews)
+void InternalDevice9::SetRenderTargets(u32 NumViews, IRHIRenderTargetView* const* ppRenderTargetViews, IRHIUnorderedAccessView* const*)
 {
 	// unrolled loop :p
 	DX9Device->SetRenderTarget(0, ppRenderTargetViews[0] ? static_cast<IDirect3DSurface9*>(ppRenderTargetViews[0]->GetRawRTV()) : nullptr);

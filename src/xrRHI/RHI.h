@@ -121,6 +121,7 @@ public:
 	void SetViewport(RHIViewport& VP);
 	void SetScissorRect(Irect* R);
 
+	void SetUnorderedAccessViews(IRHIUnorderedAccessView* View, u32 ID, bool bForce = false);
 	void SetRenderTargetView(IRHIRenderTargetView* pRenderTargetView, u32 ID, bool bForce = false);
 	void SetDepthStencilView(IRHIDepthStencilView* pDepthStencilView, bool bForce = false);
 	void ApplyRenderTargetChange();
