@@ -217,9 +217,12 @@ void CHUDTarget::Render()
 
 			if (E_ && E_->g_Alive())
 			{
-				if (E_->cast_base_monster())
+				if (auto BaseMonster = E_->cast_base_monster(); BaseMonster)
 				{
-					C = E_->CLS_ID == CLSID_AI_SCAVENGER_CROW ? colorNeutral : colorEnemy;
+					if (BaseMonster->ShouldMarkAsEnemy())
+					{
+						C = E_->CLS_ID == CLSID_AI_SCAVENGER_CROW ? colorNeutral : colorEnemy;
+					}
 				}
 				else if (!pActor || (pActor && IsGameTypeSingleCompatible()))
 				{
