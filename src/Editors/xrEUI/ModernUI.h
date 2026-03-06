@@ -56,6 +56,9 @@ namespace XRay::ImGui
 
 	// This button is made to be reused in toggles, so it has an optional bool* Toggle
 	// Needs to reduce the code copypaste 
+    XREUI_API	bool			BeginDarkChild(const char* str_id, const ImVec2& size = ImVec2(0, 0), ImGuiChildFlags child_flags = 0, ImGuiWindowFlags window_flags = 0);
+	XREUI_API	void            EndDarkChild();
+
 	XREUI_API	bool			Button(const char* Label, const ImVec2& Size = ImVec2(0, 0), bool* Toggle = nullptr);
 	XREUI_API	bool			ToggleButton(const char* Label, bool* Flags, const ImVec2& Size);
 	   inline	bool			ToggleButton(const char* Label, bool& State, const ImVec2& Size) { return ToggleButton(Label, &State, Size); }
