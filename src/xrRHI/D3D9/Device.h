@@ -24,7 +24,7 @@ public:
 
 	IRHIBuffer* CreateBuffer(const RHIBufferDesc& desc, const RHIBufferSubresource* pSubresource) override;
 
-	void SetRenderTargets(u32 NumViews, IRHIRenderTargetView* const* ppRenderTargetViews) override;
+	void SetRenderTargets(u32 NumViews, IRHIRenderTargetView* const* ppRenderTargetViews, IRHIUnorderedAccessView* const* ppRenderUAViews) override;
 	void SetDSV(IRHIDepthStencilView* pDepthStencilView) override;
 
 	// Readback helper
