@@ -62,6 +62,7 @@ void UITopBarForm::Draw()
 	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(toolbarPadding * 0.5f, toolbarPadding));
 	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
 	ImGui::PushStyleColor(ImGuiCol_Button, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToolbarButtonTint).Value);
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelBorderTint).Value);
 
 	if (ImGui::Begin("TOOLBAR", NULL, window_flags))
 	{
@@ -221,7 +222,7 @@ void UITopBarForm::Draw()
 		ImGui::EndTable();
 	}
 	ImGui::End();
-	ImGui::PopStyleColor();
+	ImGui::PopStyleColor(2);
 	ImGui::PopStyleVar(6);
 }
 
