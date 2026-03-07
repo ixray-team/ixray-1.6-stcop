@@ -36,7 +36,6 @@ public:
     void InitDropAmount(CUIXml& uiXml);
     void ShowDropAmount(u32 max, EDropMode mode, CInventoryItem* pItem = nullptr);
     void Show(CInventoryItem* pItem, int maxAmount, std::function<void(int)> callback);
-    bool IsExtendedLayout() const { return _extendedLayout; }
 
     void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr) override;
     bool OnKeyboardAction(int dik, EUIMessages keyboardAction) override;
@@ -46,33 +45,28 @@ public:
     void Update() override;
 
 private:
-    CUIStatic* _background;
-    CUIStatic* _staticPicture;
-    CUIStatic* _staticText;
-    CUI3tButton* _buttonYes;
-    CUI3tButton* _buttonNo;
-    CUITrackBar* _trackBar;
-    CUIStatic* _staticValueMin;
-    CUIStatic* _staticValueMax;
+    CUIStatic* _background = nullptr;
+    CUITrackBar* _trackBar = nullptr;
+    CUIStatic* _staticValueMin = nullptr;
+    CUIStatic* _staticValueMax = nullptr;
 
-    CUIStatic* _titleText;
-    CUIStatic* _itemNameText;
-    CUIStatic* _weightText;
-    CUIEditBox* _editAmount;
-    CUI3tButton* _btnDec;
-    CUI3tButton* _btnInc;
-    CUI3tButton* _btnHalf;
-    CUI3tButton* _btnAll;
-    CUI3tButton* _btnCancel;
-    CUI3tButton* _btnAccept;
+    CUIStatic* _titleText = nullptr;
+    CUIStatic* _itemNameText = nullptr;
+    CUIStatic* _weightText = nullptr;
+    CUIEditBox* _editAmount = nullptr;
+    CUI3tButton* _btnDec = nullptr;
+    CUI3tButton* _btnInc = nullptr;
+    CUI3tButton* _btnHalf = nullptr;
+    CUI3tButton* _btnAll = nullptr;
+    CUI3tButton* _btnCancel = nullptr;
+    CUI3tButton* _btnAccept = nullptr;
     CUIGamepadLegend* _gamepadLegend = nullptr;
 
-    EDropMode _dropMode;
-    bool _extendedLayout;
-    bool _simpleDropMode;
-    int _currentAmount;
-    int _maxAmount;
-    CInventoryItem* _pItem;
+    EDropMode _dropMode = eModeDrop;
+    bool _simpleDropMode = false;
+    int _currentAmount = 1;
+    int _maxAmount = 1;
+    CInventoryItem* _pItem = nullptr;
     std::function<void(int)> _callback;
 
     void PerformDrop();
