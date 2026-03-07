@@ -361,10 +361,14 @@ void UIMainForm::DrawContextMenu()
 
 void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 {
-	ImGui::BeginChild("##RenderFormToolbar", { 0, 32 }, 0, ImGuiWindowFlags_NoScrollbar);
+	const	float	ButtonSize		= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize);
+	const	float	ToolbarPadding	= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ToolbarPadding);
+	ImGui::PushStyleColor(ImGuiCol_ChildBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelBorderTint).Value);
+	ImGui::BeginChild("##RenderFormToolbar", { 0, ButtonSize + ToolbarPadding * 2 }, 0, ImGuiWindowFlags_NoScrollbar);
+	ImGui::PopStyleColor();
 
 	// Параметры таблицы, которые может настроить пользователь
-	static ImVec2 cellPadding = ImVec2(8, 4); // Отступы внутри ячеек
+	static ImVec2 cellPadding = ImVec2(ToolbarPadding * 0.5f, ToolbarPadding); // Отступы внутри ячеек
 	static ImVec2 minColumnWidth = ImVec2(100, 0); // Минимальная ширина колонок (0 = авто)
 	static bool stretchColumns = true; // Растягивать ли колонки
 
@@ -434,13 +438,13 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 	};
 
 	// Настройки флагов таблицы
-	ImGuiTableFlags tableFlags = ImGuiTableFlags_Resizable | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ContextMenuInBody;
+	ImGuiTableFlags tableFlags = ImGuiTableFlags_Resizable | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ContextMenuInBody | ImGuiTableFlags_NoBordersInBodyUntilResize;
 
+	// Применяем отступы в ячейках
+	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, cellPadding);
 	// Создаем таблицу с 9 колонками (8 для групп + 1 для DrawMenuSettings)
-	if (ImGui::BeginTable("##ToolbarGroups", 6, tableFlags))
+	if (ImGui::BeginTable("##ToolbarGroups", 7, tableFlags))
 	{
-		// Применяем отступы в ячейках
-		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, cellPadding);
 
 		// Устанавливаем минимальную ширину колонок
 		if (minColumnWidth.x > 0)
@@ -474,7 +478,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 
 		ImGui::TableSetColumnIndex(2);
 		ImGui::BeginGroup();
-		DrawSettingsButton("##DrawRenderToolBar1173", m_tCsLocal, etfCSParent, "Parent CS Toggle", ImDrawFlags_RoundCornersLeft);
+		DrawSettingsButton("##DrawRenderToolBar1173", m_tCsLocal, etfCSParent, "Parent Constraint Toggle", ImDrawFlags_RoundCornersLeft);
 		ImGui::SameLine();
 		DrawSettingsButton("##DrawRenderToolBar1200", m_tNuScale, etfNUScale, "Scaling by Axes only", ImDrawFlags_RoundCornersRight);
 		ImGui::EndGroup();
@@ -558,9 +562,12 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 		DrawSnapCombo("##rotate", Tools->m_RotateSnapAngle, angleValues, 7, "Set a fixed rotation angle of the object (in degrees)", true);
 		ImGui::EndGroup();
 
-		ImGui::PopStyleVar(); // CellPadding
+		ImGui::TableSetColumnIndex(6);
+		XRay::ImGui::ToolbarButton("##1", ICON_FA_LIGHTBULB, &MainForm->GetRenderForm()->UseHint, { ButtonSize, ButtonSize }, ImDrawFlags_RoundCornersAll);
+
 		ImGui::EndTable();
 	}
+	ImGui::PopStyleVar(); // CellPadding
 
 	ImGui::PopStyleVar(); // ItemSpacing
 	ImGui::NewLine();
@@ -728,7 +735,8 @@ void UIMainForm::DrawMenuSettings()
 			ImGui::EndPopup();
 		}
 
-		if (ImGui::ImageButton("##DrawRenderToolBar548", m_tMenu->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
+		//if (ImGui::ImageButton("##DrawRenderToolBar548", m_tMenu->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
+		if (XRay::ImGui::ToolbarIconButton("##DrawRenderToolBar548", m_tMenu->get_SRView()->GetRawSRV()))
 		{
 			ImGui::OpenPopup("MenuScene");
 		}
