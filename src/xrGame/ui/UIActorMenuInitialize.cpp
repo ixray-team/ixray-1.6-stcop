@@ -357,7 +357,7 @@ void CUIActorMenu::Construct()
 	{
 		m_ui_navigation_selector->SetWidth(0);
 		m_ui_navigation_selector->SetHeight(0);
-		m_ui_navigation_selector->SetVisible(pInput->GetControllerMode() && m_ui_navigation_selection);
+		m_ui_navigation_selector->SetVisible(false);
 		AttachChild(m_ui_navigation_selector);
 	}
 	else
