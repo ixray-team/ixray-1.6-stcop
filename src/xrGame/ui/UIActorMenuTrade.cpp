@@ -223,14 +223,23 @@ bool CUIActorMenu::ToActorTrade(CUICellItem* itm, bool b_use_cursor_pos)
 	}
 }
 
-void CUIActorMenu::ToActorTradeAll(CUICellItem* itm)
+void CUIActorMenu::ToActorTradeAll(u32 item_amount)
 {
-	while (itm->ChildsCount())
+	CUICellItem* itm = CurrentItem();
+	u32 const childCount = CurrentItem()->ChildsCount();
+	u32 const totalCount = 1 + childCount;
+	u32 const toMove = (item_amount > totalCount) ? totalCount : item_amount;
+	// Move children first: min(toMove, childCount)
+	u32 const childrenToMove = (toMove < childCount) ? toMove : childCount;
+	for (int i = 0; i < childrenToMove; ++i)
 	{
 		if (!ToActorTrade(itm->Child(0), false))
 			return;
 	}
-	ToActorTrade(itm, false);
+
+	// Move parent only when moving entire stack (toMove > childCount)
+	if (toMove > childCount)
+		ToActorTrade(itm, false);
 }
 
 bool CUIActorMenu::ToPartnerTrade(CUICellItem* itm, bool b_use_cursor_pos)
@@ -269,14 +278,22 @@ bool CUIActorMenu::ToPartnerTrade(CUICellItem* itm, bool b_use_cursor_pos)
 	return true;
 }
 
-void CUIActorMenu::ToPartnerTradeAll(CUICellItem* itm)
+void CUIActorMenu::ToPartnerTradeAll(u32 item_amount)
 {
-	while (itm->ChildsCount())
+	CUICellItem* itm = CurrentItem();
+	u32 const childCount = CurrentItem()->ChildsCount();
+	u32 const totalCount = 1 + childCount;
+	u32 const toMove = (item_amount > totalCount) ? totalCount : item_amount;
+	// Move children first: min(toMove, childCount)
+	u32 const childrenToMove = (toMove < childCount) ? toMove : childCount;
+	for (int i = 0; i < childrenToMove; ++i)
 	{
 		if (!ToPartnerTrade(itm->Child(0), false))
 			return;
 	}
-	ToPartnerTrade(itm, false);
+	// Move parent only when moving entire stack (toMove > childCount)
+	if (toMove > childCount)
+		ToPartnerTrade(itm, false);
 }
 
 bool CUIActorMenu::ToPartnerTradeBag(CUICellItem* itm, bool b_use_cursor_pos)
@@ -301,14 +318,22 @@ bool CUIActorMenu::ToPartnerTradeBag(CUICellItem* itm, bool b_use_cursor_pos)
 	return true;
 }
 
-void CUIActorMenu::ToPartnerTradeBagAll(CUICellItem* itm)
+void CUIActorMenu::ToPartnerTradeBagAll(u32 item_amount)
 {
-	while (itm->ChildsCount())
+	CUICellItem* itm = CurrentItem();
+	u32 const childCount = CurrentItem()->ChildsCount();
+	u32 const totalCount = 1 + childCount;
+	u32 const toMove = (item_amount > totalCount) ? totalCount : item_amount;
+	// Move children first: min(toMove, childCount)
+	u32 const childrenToMove = (toMove < childCount) ? toMove : childCount;
+	for (int i = 0; i < childrenToMove; ++i)
 	{
 		if (!ToPartnerTradeBag(itm->Child(0), false))
 			return;
 	}
-	ToPartnerTradeBag(itm, false);
+	// Move parent only when moving entire stack (toMove > childCount)
+	if (toMove > childCount)
+		ToPartnerTradeBag(itm, false);
 }
 
 float CUIActorMenu::CalcItemsWeight(CUIDragDropListEx* pList)
