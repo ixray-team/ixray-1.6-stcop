@@ -202,10 +202,12 @@ protected:
 	xr_map<EMenuMode, xr_vector<WND_SELECTOR_INFO>>	m_ui_navigation_lists;
 	CUIWindow*					m_ui_navigation_selection;
 	CUIFrameWindow*				m_ui_navigation_selector = nullptr;
+	bool						m_ui_navigation_selector_shown = false;
 	bool						m_bShowInfoWnds = false;
 
 	eActorMenuControllerAuxMode	m_AuxMode= eAuxMode_None;
 	CUIFrameWindow*				m_ui_aux_selector = nullptr; // For upgrades, and picking item for a quickslot or belt
+	bool						m_ui_aux_selector_shown = false;
 
 	float						m_selectorPadding = 4.0f;
 
