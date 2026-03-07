@@ -257,6 +257,35 @@ void CUIItemDropAmountWnd::PerformDrop()
             CurrentGameUI()->CarBodyWnd()->TakeAllCurrentItem((u32)amount);
         break;
     }
+    case eModeFromOffer:
+    {
+        if (CurrentGameUI()->ActorMenu())
+            CurrentGameUI()->ActorMenu()->ToBagAll((u32)amount);
+        break;
+    }
+    case eModeToOffer:
+    {
+        if (CurrentGameUI()->ActorMenu())
+            CurrentGameUI()->ActorMenu()->ToActorTradeAll((u32)amount);
+        break;
+    }
+    case eModeToCart:
+    {
+        if (CurrentGameUI()->ActorMenu())
+            CurrentGameUI()->ActorMenu()->ToPartnerTradeAll((u32)amount);
+        break;
+    }
+    case eModeFromCart:
+    {
+        if (CurrentGameUI()->ActorMenu())
+            CurrentGameUI()->ActorMenu()->ToPartnerTradeAll((u32)amount);
+        break;
+    }
+    default:
+    {
+        R_ASSERT(false, "Drop menu mode not implemented :(", make_string<const char*>("%s", _dropMode));
+        break;
+    }
     }
 }
 

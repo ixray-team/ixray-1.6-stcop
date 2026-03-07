@@ -931,16 +931,24 @@ bool CUIActorMenu::ToBelt(CUICellItem* itm, bool b_use_cursor_pos)
 	}
 }
 
-void CUIActorMenu::ToBagAll(CUICellItem* itm)
+void CUIActorMenu::ToBagAll(u32 item_amount)
 {
-	while (itm->ChildsCount())
+	CUICellItem* itm = CurrentItem();
+	u32 const childCount = CurrentItem()->ChildsCount();
+	u32 const totalCount = 1 + childCount;
+	u32 const toMove = (item_amount > totalCount) ? totalCount : item_amount;
+	// Move children first: min(toMove, childCount)
+	u32 const childrenToMove = (toMove < childCount) ? toMove : childCount;
+	for (int i = 0; i < childrenToMove; ++i)
 	{
 		CUICellItem* childItem = itm->Child(0);
 		if (!ToBag(childItem, false))
 			return;
 	}
 
-	ToBag(itm, false);
+	// Move parent only when moving entire stack (toMove > childCount)
+	if (toMove > childCount)
+		ToBag(itm, false);
 }
 
 CUIDragDropListEx* CUIActorMenu::GetSlotList(u16 slot_idx)
@@ -1125,7 +1133,13 @@ void CUIActorMenu::PropertiesBoxForTrade(CUICellItem* cell_item, PIItem item, bo
 	{
 		m_UIPropertiesBox->AddItem("st_remove_from_offer", nullptr, INVENTORY_TO_BAG_ACTION);
 		if (cell_item->ChildsCount())
+		{
+			if (m_pItemDropAmountWnd)
+			{
+				m_UIPropertiesBox->AddItem("st_remove_from_offer_amount", (void*)INVENTORY_AMOUNT_CODE, INVENTORY_TO_BAG_ACTION);
+			}
 			m_UIPropertiesBox->AddItem("st_remove_from_offer_all", (void*)INVENTORY_ALL_CODE, INVENTORY_TO_BAG_ACTION);
+		}
 		b_show = true;
 	}
 	else if (pOwnerList == m_pTradeActorBagList)
@@ -1134,7 +1148,13 @@ void CUIActorMenu::PropertiesBoxForTrade(CUICellItem* cell_item, PIItem item, bo
 		{
 			m_UIPropertiesBox->AddItem("st_move_to_offer", nullptr, INVENTORY_SHOP_OFFER_ITEM_ACTION);
 			if (cell_item->ChildsCount())
+			{
+				if (m_pItemDropAmountWnd)
+				{
+					m_UIPropertiesBox->AddItem("st_move_to_offer_amount", (void*)INVENTORY_AMOUNT_CODE, INVENTORY_SHOP_OFFER_ITEM_ACTION);
+				}
 				m_UIPropertiesBox->AddItem("st_move_to_offer_all", (void*)INVENTORY_ALL_CODE, INVENTORY_SHOP_OFFER_ITEM_ACTION);
+			}
 			b_show = true;
 		}
 	}
@@ -1142,7 +1162,13 @@ void CUIActorMenu::PropertiesBoxForTrade(CUICellItem* cell_item, PIItem item, bo
 	{
 		m_UIPropertiesBox->AddItem("st_remove_from_cart", nullptr, INVENTORY_SHOP_UNCHOOSE_ITEM_ACTION);
 		if (cell_item->ChildsCount())
+		{
+			if (m_pItemDropAmountWnd)
+			{
+				m_UIPropertiesBox->AddItem("st_remove_from_cart_amount", (void*)INVENTORY_AMOUNT_CODE, INVENTORY_SHOP_UNCHOOSE_ITEM_ACTION);
+			}
 			m_UIPropertiesBox->AddItem("st_remove_from_cart_all", (void*)INVENTORY_ALL_CODE, INVENTORY_SHOP_UNCHOOSE_ITEM_ACTION);
+		}
 		b_show = true;
 	}
 	else if (pOwnerList == m_pTradePartnerBagList)
@@ -1153,7 +1179,13 @@ void CUIActorMenu::PropertiesBoxForTrade(CUICellItem* cell_item, PIItem item, bo
 		{
 			m_UIPropertiesBox->AddItem("st_move_to_cart", nullptr, INVENTORY_SHOP_CHOOSE_ITEM_ACTION);
 			if (cell_item->ChildsCount())
+			{
+				if (m_pItemDropAmountWnd)
+				{
+					m_UIPropertiesBox->AddItem("st_move_to_cart_amount", (void*)INVENTORY_AMOUNT_CODE, INVENTORY_SHOP_CHOOSE_ITEM_ACTION);
+				}
 				m_UIPropertiesBox->AddItem("st_move_to_cart_all", (void*)INVENTORY_ALL_CODE, INVENTORY_SHOP_CHOOSE_ITEM_ACTION);
+			}
 			b_show = true;
 		}
 	}
@@ -1267,7 +1299,11 @@ void CUIActorMenu::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 		void* d = m_UIPropertiesBox->GetClickedItem()->GetData();
 		if (d == (void*)INVENTORY_ALL_CODE)
 		{
-			ToBagAll(cell_item);
+			ToBagAll(cell_item->ChildsCount() + 1);
+		}
+		else if (d == (void*)INVENTORY_AMOUNT_CODE)
+		{
+			m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeFromOffer, item);
 		}
 		else
 		{
@@ -1564,7 +1600,11 @@ void CUIActorMenu::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 		void* d = m_UIPropertiesBox->GetClickedItem()->GetData();
 		if (d == (void*)INVENTORY_ALL_CODE)
 		{
-			ToActorTradeAll(cell_item);
+			ToActorTradeAll(cell_item->ChildsCount() + 1);
+		}
+		else if (d == (void*)INVENTORY_AMOUNT_CODE)
+		{
+			m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeToOffer, item);
 		}
 		else
 		{
@@ -1577,7 +1617,11 @@ void CUIActorMenu::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 		void* d = m_UIPropertiesBox->GetClickedItem()->GetData();
 		if (d == (void*)INVENTORY_ALL_CODE)
 		{
-			ToPartnerTradeAll(cell_item);
+			ToPartnerTradeAll(cell_item->ChildsCount() + 1);
+		}
+		else if (d == (void*)INVENTORY_AMOUNT_CODE)
+		{
+			m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeToCart, item);
 		}
 		else
 		{
@@ -1590,7 +1634,11 @@ void CUIActorMenu::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 		void* d = m_UIPropertiesBox->GetClickedItem()->GetData();
 		if (d == (void*)INVENTORY_ALL_CODE)
 		{
-			ToPartnerTradeBagAll(cell_item);
+			ToPartnerTradeBagAll(cell_item->ChildsCount() + 1);
+		}
+		else if (d == (void*)INVENTORY_AMOUNT_CODE)
+		{
+			m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeFromCart, item);
 		}
 		else
 		{
