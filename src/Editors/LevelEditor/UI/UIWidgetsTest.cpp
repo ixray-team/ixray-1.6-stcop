@@ -7,6 +7,30 @@
 static CUIWidgetsTest* g_UIWidgetsTest = nullptr;
 static bool show_demo_window = false;				// Dear ImGui Demo Window bool
 
+//static xr_hash_map<xr_string, ref_texture>& Icons = CUIWidgetsTest::Instance().Icons;
+
+void CUIWidgetsTest::InitIcons()
+{
+	Icons["undo"]                       = EDevice->Resources->_CreateTexture("ed\\icons\\Edit Undo");
+	Icons["redo"]                       = EDevice->Resources->_CreateTexture("ed\\icons\\Edit Redo");
+	Icons["new_scene"]                  = EDevice->Resources->_CreateTexture("ed\\icons\\File New");
+	Icons["open_level"]                 = EDevice->Resources->_CreateTexture("ed\\icons\\File Open");
+	Icons["save_level"]                 = EDevice->Resources->_CreateTexture("ed\\icons\\File Save");
+	Icons["build_cform"]                = EDevice->Resources->_CreateTexture("ed\\icons\\Build CForm");
+	Icons["build_ai_map"]               = EDevice->Resources->_CreateTexture("ed\\icons\\Build AI-Map");
+	Icons["build_game_graph"]           = EDevice->Resources->_CreateTexture("ed\\icons\\Build Graph");
+	Icons["play_in_editor"]             = EDevice->Resources->_CreateTexture("ed\\icons\\Run PiE");
+	Icons["play_in_editor_settings"]    = EDevice->Resources->_CreateTexture("ed\\bar\\arrow");
+
+	Icons["reload_configs"]             = EDevice->Resources->_CreateTexture("ed\\icons\\Settings Update Configs");
+	Icons["build_and_make"]             = EDevice->Resources->_CreateTexture("ed\\icons\\Build and Make");
+	Icons["play_level"]                 = EDevice->Resources->_CreateTexture("ed\\icons\\Play Level");
+	Icons["play_level_in_game"]         = EDevice->Resources->_CreateTexture("ed\\icons\\Play Game");
+	Icons["open_gamedata_folder"]       = EDevice->Resources->_CreateTexture("ed\\icons\\File Open Game Data Folder");
+	Icons["prefs"]                      = EDevice->Resources->_CreateTexture("ed\\icons\\Tab Outliner");
+
+}
+
 // Helper to wire demo markers located in code to an interactive browser
 typedef void (*ImGuiDemoMarkerCallback)(const char* file, int line, const char* section, void* user_data);
 extern ImGuiDemoMarkerCallback      GImGuiDemoMarkerCallback;
@@ -31,6 +55,8 @@ static void HelpMarker(const char* desc)
 
 CUIWidgetsTest::CUIWidgetsTest()
 {
+    InitIcons();
+
     bOpen = false;
 }
 
@@ -58,10 +84,14 @@ static void DemoWindowWidgetsInputs()
         ImGui::TreePop();
     }
 }
-static void DemoWindowWidgetsButtons()
+void CUIWidgetsTest::DemoWindowWidgetsButtons()
 {
     ImGuiStyle  style               = ImGui::GetStyle();
         ImVec2  itemInnerSpacing    = style.ItemInnerSpacing;
+        float   buttonSize          = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize);
+        float   buttonPaddingX      = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonPaddingW);
+        float   tableRowHeight      = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableRowHeight);
+        float   tableTextPaddingY   = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableTextPaddingY);
 
     IMGUI_DEMO_MARKER("Widgets/Buttons");
     if (XRay::ImGui::TreeNodeEx("Buttons", ImGuiTreeNodeFlags_Framed))
@@ -71,7 +101,9 @@ static void DemoWindowWidgetsButtons()
         static bool t1 = true;
         static uint32_t flags = 0;
 
-        if (XRay::ImGui::TreeNode("Buttons"))
+        ImGuiTreeNodeFlags treeFlags = ImGuiTreeNodeFlags_SpanAvailWidth;
+
+        if (XRay::ImGui::TreeNodeEx("Buttons", treeFlags))
         {
             ImGui::PushStyleColor(ImGuiCol_ChildBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::BackgroundTint).Value);
             ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableBorder));
@@ -81,16 +113,37 @@ static void DemoWindowWidgetsButtons()
                 ImGui::PopStyleColor();
 
                 XRay::ImGui::Button("ModernUI Button", {-0.01, 0});
-                XRay::ImGui::Button("Short Button");
+
+                XRay::ImGui::Button("Short Button##1");
                 ImGui::SameLine(0, itemInnerSpacing.x);
-                XRay::ImGui::Button(ICON_FA_FLOPPY_DISK);
+                XRay::ImGui::Button("Short Button##2", { 0, buttonSize });
+                ImGui::SameLine(0, itemInnerSpacing.x);
+                XRay::ImGui::Button(ICON_FA_FLOPPY_DISK "##1");
+                ImGui::SameLine(0, itemInnerSpacing.x);
+                XRay::ImGui::Button(ICON_FA_FLOPPY_DISK "##2", { buttonSize, buttonSize });
+                ImGui::SameLine(0, itemInnerSpacing.x);
+                XRay::ImGui::IconButton("##3", Icons["save_level"]->get_SRView()->GetRawSRV(), { buttonSize, buttonSize });
+
+                ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { buttonPaddingX, tableTextPaddingY });
+                ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0);
+                XRay::ImGui::Button("Short Button##3");
+                ImGui::SameLine(0, itemInnerSpacing.x);
+                XRay::ImGui::Button("Short Button##4", { 0, tableRowHeight });
+                ImGui::SameLine(0, itemInnerSpacing.x);
+                XRay::ImGui::Button(ICON_FA_FLOPPY_DISK "##11");
+                ImGui::SameLine(0, itemInnerSpacing.x);
+                XRay::ImGui::Button(ICON_FA_FLOPPY_DISK "##12", { tableRowHeight, tableRowHeight });
+                ImGui::SameLine(0, itemInnerSpacing.x);
+                XRay::ImGui::IconButton("##13", Icons["save_level"]->get_SRView()->GetRawSRV(), { tableRowHeight, tableRowHeight });
+                ImGui::PopStyleVar(2);
+
 
                 ImGui::EndChild();
             }
             ImGui::TreePop();
         }
 
-        if (XRay::ImGui::TreeNode("ToggleButtons"))
+        if (XRay::ImGui::TreeNodeEx("ToggleButtons", treeFlags))
         {
             XRay::ImGui::ToggleButton("Toggle A", &t0, ImVec2(0, 0));
             ImGui::SameLine(0, itemInnerSpacing.x);
