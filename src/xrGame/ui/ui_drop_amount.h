@@ -28,6 +28,10 @@ public:
         eModeDrop,
         eModeMove,
         eModeTake,
+        eModeToOffer,
+        eModeFromOffer,
+        eModeToCart,
+        eModeFromCart,
     };
 
     CUIItemDropAmountWnd();
