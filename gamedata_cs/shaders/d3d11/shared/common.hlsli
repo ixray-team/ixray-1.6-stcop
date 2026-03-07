@@ -48,7 +48,7 @@ cbuffer static_globals
     uniform float4x4 m_P_old;
     uniform float4x4 m_VP_old;
 
-    uniform float4 timers;
+    uniform float4 timers; // x - curr time, y - time - deltaframe, t / 10, sin(t)
 
     uniform float4 fog_plane;
     uniform float4 fog_params; // (-n/(r-n), n, f, 1/(r-n) // near = (1.0f - fog_density) * 0.85 * fog_distance // fog_distance = fog_far
