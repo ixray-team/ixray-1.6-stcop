@@ -582,19 +582,30 @@ function pick_section_from_condlist(actor, npc, condlist)
 					break
 				end
 			elseif infop.func then
-				--printf("_bp: infop.func = %s", infop.func)
-				if not xr_conditions[infop.func] then
-					if type(npc.name) == "function" then
+				local splitted = ffx_string_utils.explode(infop.func, ".")
+				local func_ref = nil
+				if #splitted == 1 then
+				    if not xr_conditions[infop.func] then
+					    if type(npc.name) == "function" then
+					    	abort("object '%s': pick_section_from_condlist: function '%s' is " ..
+					    		"not defined in xr_conditions.script", npc:name(), infop.func)
+					    else
+					    	abort("object '%s': pick_section_from_condlist: function '%s' is " ..
+					    		"not defined in xr_conditions.script", tostring(npc.name), infop.func)
+					    end
+				    end
+					func_ref = xr_conditions[infop.func]
+				else
+					local namespace = splitted[1]
+					local func = splitted[2]
+					if not _G[namespace] or not _G[namespace][func] then
 						abort("object '%s': pick_section_from_condlist: function '%s' is " ..
-							"not defined in xr_conditions.script", npc:name(), infop.func)
-					else
-						abort("object '%s': pick_section_from_condlist: function '%s' is " ..
-							"not defined in xr_conditions.script", tostring(npc.name), infop.func)
+							"not defined in %s.script", if_then_else(npc, npc:name(), "nil"), func, namespace)
 					end
+					func_ref = _G[namespace][func]
 				end
-				--if xr_conditions[infop.func](actor, npc) then
 				if infop.params then
-					if xr_conditions[infop.func](actor, npc, infop.params) then
+					if func_ref(actor, npc, infop.params) then
 						if not infop.expected then
 							infop_conditions_met = false -- инфопоршен есть, но не должен присутствовать
 							break
@@ -606,7 +617,7 @@ function pick_section_from_condlist(actor, npc, condlist)
 						end
 					end
 				else
-					if xr_conditions[infop.func](actor, npc) then
+					if func_ref(actor, npc) then
 						if not infop.expected then
 							infop_conditions_met = false -- инфопоршен есть, но не должен присутствовать
 							break
@@ -645,14 +656,27 @@ function pick_section_from_condlist(actor, npc, condlist)
 					abort("TRYING TO SET INFOS THEN ACTOR IS NIL")
 				end
 				if infop.func then
-					if not xr_effects[infop.func] then
-						abort("object '%s': pick_section_from_condlist: function '%s' is " ..
-							"not defined in xr_effects.script", if_then_else(npc, npc:name(), "nil"), infop.func)
+					local splitted = ffx_string_utils.explode(infop.func, ".")
+					local func_ref = nil
+					if #splitted == 1 then
+					    if not xr_effects[infop.func] then
+						    abort("object '%s': pick_section_from_condlist: function '%s' is " ..
+						    	"not defined in xr_effects.script", if_then_else(npc, npc:name(), "nil"), infop.func)
+						end
+						func_ref = xr_effects[infop.func]
+					else
+						local namespace = splitted[1]
+						local func = splitted[2]
+						if not _G[namespace] or not _G[namespace][func] then
+							abort("object '%s': pick_section_from_condlist: function '%s' is " ..
+								"not defined in %s.script", if_then_else(npc, npc:name(), "nil"), func, namespace)
+						end
+						func_ref = _G[namespace][func]
 					end
 					if infop.params then
-						xr_effects[infop.func](actor, npc, infop.params)
+						func_ref(actor, npc, infop.params)
 					else
-						xr_effects[infop.func](actor, npc)
+						func_ref(actor, npc)
 					end
 				elseif infop.required then
 					if not has_alife_info(infop.name) then
