@@ -86,55 +86,124 @@ XREUI_API bool XRay::ImGui::InputVector3(const char* Label, float V[3], float St
 	return Changed;
 }
 
-XREUI_API bool XRay::ImGui::Button(const char* Label, const ImVec2& Size, bool* Toggle)
-{
-    // --- Styling ---
-    const ImVec4 EnabledColor   = GetEditorColor(EEditorColors::Accent);
-    const ImVec4 EnabledHover   = GetEditorColor(EEditorColors::ToggleHover);
-    const ImVec4 EnabledActive  = GetEditorColor(EEditorColors::ToggleActive);
-    const ImVec4 DisabledColor  = GetEditorColor(EEditorColors::ButtonTint);
-    const ImVec4 DisabledHover  = GetEditorColor(EEditorColors::ButtonHover);
-    const ImVec4 DisabledActive = GetEditorColor(EEditorColors::ButtonActive);
-    const ImVec4 BorderColor    = GetEditorColor(EEditorColors::ButtonBorderTint);
-    const float  BorderSize     = GetEditorSize(EEditorSizes::ButtonBorderSize);
-    const ImVec2 FramePadding   = ImVec2(GetEditorSize(EEditorSizes::ButtonPaddingW), GetEditorSize(EEditorSizes::ButtonPaddingH));
-
-
-    if (Toggle) {
-        ::ImGui::PushStyleColor(ImGuiCol_Button, *Toggle ? EnabledColor : DisabledColor);
-        ::ImGui::PushStyleColor(ImGuiCol_ButtonHovered, *Toggle ? EnabledHover : DisabledHover);
-        ::ImGui::PushStyleColor(ImGuiCol_ButtonActive, *Toggle ? EnabledActive : DisabledActive);
-    }
-    else {
-        ::ImGui::PushStyleColor(ImGuiCol_Button, DisabledColor);
-        ::ImGui::PushStyleColor(ImGuiCol_ButtonHovered, DisabledHover);
-        ::ImGui::PushStyleColor(ImGuiCol_ButtonActive, DisabledActive);
-    }
-    ::ImGui::PushStyleColor(ImGuiCol_Border, BorderColor);
-    ::ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, BorderSize);
-    ::ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, FramePadding);
-
-    bool button = ::ImGui::Button(Label, Size);
-
-    ::ImGui::PopStyleVar(2);
-    ::ImGui::PopStyleColor(4);
-
-    return button;
-}
-
 XREUI_API void XRay::ImGui::Separator(float thickness)
 {
-    ImGuiContext& g = *GImGui;
-    ImGuiWindow* window = g.CurrentWindow;
-    if (window->SkipItems)
-        return;
+    const   ImGuiContext&   g       = *GImGui;
+    const   ImGuiWindow*    window  = g.CurrentWindow;
+            if (window->SkipItems)
+                return;
 
-    ImGuiSeparatorFlags flags = (window->DC.LayoutType == ImGuiLayoutType_Horizontal) ? ImGuiSeparatorFlags_Vertical : ImGuiSeparatorFlags_Horizontal;
+            ImGuiSeparatorFlags flags = (window->DC.LayoutType == ImGuiLayoutType_Horizontal) ? ImGuiSeparatorFlags_Vertical : ImGuiSeparatorFlags_Horizontal;
 
-    if (window->DC.CurrentColumns)
-        flags |= ImGuiSeparatorFlags_SpanAllColumns;
+            if (window->DC.CurrentColumns)
+                flags |= ImGuiSeparatorFlags_SpanAllColumns;
 
     ::ImGui::SeparatorEx(flags, thickness);
+}
+
+// ===========
+//   BUTTONS
+// ===========
+
+// - Uses X-Ray hardcoded color style variables
+// - Draws only background
+// - Includes `bool* toggle` to switch disabled/enabled color
+//   - but does not include logic to switch bool
+XREUI_API   bool        XRay::ImGui::ButtonBackground(const char* id, bool* toggle, const ImVec2& size, ImDrawFlags	rounding_flags)
+{
+    // --- Initial Constants
+    const   ImGuiContext&   g       = *GImGui;
+    const   ImGuiStyle&     style   = g.Style;
+            ImGuiWindow*    window  = ::ImGui::GetCurrentWindow();
+            if (window->SkipItems)
+                return false;
+    const   ImGuiID buttonID        = window->GetID(id);
+
+    // --- Size ---
+    const   float   BorderSize      = GetEditorSize(EEditorSizes::ButtonBorderSize);
+
+    // --- Styling ---
+    const   ImVec4  EnabledColor    = GetEditorColor(EEditorColors::Accent);
+    const   ImVec4  EnabledHover    = GetEditorColor(EEditorColors::ToggleHover);
+    const   ImVec4  EnabledActive   = GetEditorColor(EEditorColors::ToggleActive);
+    const   ImVec4  DisabledColor   = GetEditorColor(EEditorColors::ButtonTint);
+    const   ImVec4  DisabledHover   = GetEditorColor(EEditorColors::ButtonHover);
+    const   ImVec4  DisabledActive  = GetEditorColor(EEditorColors::ButtonActive);
+    const   ImVec4  BorderColor     = GetEditorColor(EEditorColors::ButtonBorderTint);
+
+            ImGuiButtonFlags flags  = 0;
+
+			bool    Clicked	        = ::ImGui::InvisibleButton(id, size);
+	const	bool    Hovered	        = ::ImGui::IsItemHovered();
+	const	bool    Active          = ::ImGui::IsItemActive();
+            ImVec4  ButtonColor;
+            if (toggle) {
+                ButtonColor = (Active) ? *toggle ? EnabledActive : DisabledActive :
+                               Hovered ? *toggle ? EnabledHover  : DisabledHover :
+                                         *toggle ? EnabledColor  : DisabledColor;
+            }
+            else {
+                ButtonColor = (Active) ? DisabledColor :
+                               Hovered ? DisabledHover :
+                                         DisabledActive;
+}
+
+    // --- draw background ---
+    ImDrawList*     dl              = ::ImGui::GetWindowDrawList();
+    ImVec2		    p_min           = ::ImGui::GetItemRectMin();
+    ImVec2		    p_max           = ::ImGui::GetItemRectMax();
+
+                    dl->AddRectFilled   (p_min, p_max, ::ImGui::GetColorU32(ButtonColor), style.FrameRounding, rounding_flags);
+                    dl->AddRect         (p_min, p_max, ::ImGui::GetColorU32(BorderColor), style.FrameRounding, rounding_flags, BorderSize);
+
+    return  Clicked;
+}
+
+// Renders text 
+XREUI_API bool XRay::ImGui::Button(const char* label, const ImVec2& size, bool* toggle, ImDrawFlags	rounding_flags)
+{
+            ImGuiStyle& style       = ::ImGui::GetStyle();
+
+    // --- size ---
+    const   char*   TextEnd       = ::ImGui::FindRenderedTextEnd(label);;
+            ImVec2  TextSize        = ::ImGui::CalcTextSize(label, TextEnd);
+    const   ImVec2  ButtonSize      = ::ImGui::CalcItemSize(size, TextSize.x + style.FramePadding.x * 2.0f, TextSize.y + style.FramePadding.y * 2.0f);
+    const   ImVec2  FramePadding    = ImMin(style.FramePadding, (ButtonSize - TextSize) * 0.5);
+    const   ImVec2  TextAlign       = style.ButtonTextAlign;
+
+    bool    Clicked                 = ButtonBackground(label, toggle, ButtonSize, rounding_flags);
+
+	// --- draw text centered ---
+	        ImDrawList* dl			= ::ImGui::GetWindowDrawList();
+	        ImVec2		p_min		= ::ImGui::GetItemRectMin();
+	        ImVec2		p_max		= ::ImGui::GetItemRectMax();
+            ImVec4      clip_rect   = ImVec4(p_min.x, p_min.y, p_max.x, p_max.y);
+            ImVec2		text_pos    = p_min + FramePadding + (ButtonSize - TextSize - FramePadding * 2) * TextAlign;
+	        ImU32       text_col    = ::ImGui::GetColorU32(ImGuiCol_Text);
+                        dl->AddText(NULL, 0.f, text_pos, text_col, label, TextEnd, 0.f, &clip_rect);
+
+    return  Clicked;
+}
+XREUI_API bool XRay::ImGui::IconButton(const char* id, ImTextureRef texture, const ImVec2& button_size, const ImVec2& image_size, bool* toggle, ImDrawFlags	rounding_flags)
+{
+    ImGuiStyle& style = ::ImGui::GetStyle();
+
+    // --- size ---
+    const   ImVec2  ButtonSize      = ::ImGui::CalcItemSize(button_size, image_size.x + style.FramePadding.x * 2.0f, image_size.y + style.FramePadding.y * 2.0f);
+    const   ImVec2  FramePadding    = ImMin(style.FramePadding, (ButtonSize - button_size) * 0.5);
+
+            bool    Clicked         = ButtonBackground(id, toggle, ButtonSize, rounding_flags);
+
+    // --- center image ---
+            ImDrawList* dl          = ::ImGui::GetWindowDrawList();
+            ImVec2  p_min           = ::ImGui::GetItemRectMin();
+            ImVec2  p_max           = ::ImGui::GetItemRectMax();
+            ImVec2  center          = (p_min + p_max) * 0.5f;
+            ImVec2  img_min         = center - image_size * 0.5f;
+            ImVec2  img_max         = center + image_size * 0.5f;
+
+                    dl->AddImage(texture, img_min, img_max);
+    return  Clicked;
 }
 
 XREUI_API bool XRay::ImGui::ToggleButton(const char* Label, bool* Flags, const ImVec2& Size)
@@ -170,7 +239,7 @@ XREUI_API bool XRay::ImGui::ToggleButton(const char* Label, bool* Flags, const I
 			ImDrawFlags_RoundCornersLeft
 		);
 	}
-	return Changed;
+	return  Changed;
 }
 
 XREUI_API bool XRay::ImGui::ToggleFlagButton(const char* Label, uint32_t* Flags, uint32_t Mask, const ImVec2& Size)
@@ -196,9 +265,9 @@ XREUI_API bool XRay::ImGui::ToolbarIconButton(
 			ImTextureRef	texture,
 			bool*			toggle,
 			ImDrawFlags		rounding_flags,
-			float	rounding,
-			ImVec2	button_size,
-			ImVec2	image_size)
+			float	        rounding,
+			ImVec2	        button_size,
+			ImVec2	        image_size)
 {
 	ImGuiWindow* window = ::ImGui::GetCurrentWindow();
 	if (window->SkipItems)
@@ -207,12 +276,12 @@ XREUI_API bool XRay::ImGui::ToolbarIconButton(
 	::ImGui::PushID(id);
 
 	// --- draw background ---
-	bool		clicked		= ToolbarButtonBackground("##icon_btn", toggle, button_size, rounding_flags, rounding);
+	bool		Clicked		= ToolbarButtonBackground("##icon_btn", toggle, button_size, rounding_flags, rounding);
+
+	// --- center image ---
 	ImDrawList*	dl			= ::ImGui::GetWindowDrawList();
 	ImVec2		p_min		= ::ImGui::GetItemRectMin();
 	ImVec2		p_max		= ::ImGui::GetItemRectMax();
-
-	// --- center image ---
 	ImVec2		center		= (p_min + p_max) * 0.5f;
 	ImVec2		img_min		= center - image_size * 0.5f;
 	ImVec2		img_max		= center + image_size * 0.5f;
@@ -220,7 +289,7 @@ XREUI_API bool XRay::ImGui::ToolbarIconButton(
 	dl->AddImage(texture, img_min, img_max);
 
 	::ImGui::PopID();
-	return clicked;
+	return      Clicked;
 }
 
 XREUI_API bool XRay::ImGui::ToolbarButton(
@@ -238,27 +307,27 @@ XREUI_API bool XRay::ImGui::ToolbarButton(
 	::ImGui::PushID(id);
 
 	// --- size calc stolen from imgui_widgets.cpp ---
-	const	ImGuiStyle& style = ::ImGui::GetStyle();
-	const	ImVec2 label_size = ::ImGui::CalcTextSize(label, NULL, true);
-			ImVec2 sizeCalced = ::ImGui::CalcItemSize(size, label_size.x + style.FramePadding.x * 2.0f, label_size.y + style.FramePadding.y * 2.0f);
+	const	ImGuiStyle& style       = ::ImGui::GetStyle();
+    const   char*   TextEnd         = ::ImGui::FindRenderedTextEnd(label);;
+            ImVec2  TextSize        = ::ImGui::CalcTextSize(label, TextEnd);
+			ImVec2  ButtonSize      = ::ImGui::CalcItemSize(size, TextSize.x + style.FramePadding.x * 2.0f, TextSize.y + style.FramePadding.y * 2.0f);
+    const   ImVec2  FramePadding    = ImMin(style.FramePadding, (ButtonSize - TextSize) * 0.5);
+    const   ImVec2  TextAlign       = style.ButtonTextAlign;
 
 	// --- draw background ---
-	bool clicked = ToolbarButtonBackground("##toggle_btn", toggle, sizeCalced, rounding_flags, rounding);
-
-	ImDrawList* dl			= ::ImGui::GetWindowDrawList();
-	ImVec2		p_min		= ::ImGui::GetItemRectMin();
-	ImVec2		p_max		= ::ImGui::GetItemRectMax();
+	        bool    Clicked         = ToolbarButtonBackground("##toggle_btn", toggle, ButtonSize, rounding_flags, rounding);
 
 	// --- draw text centered ---
-	ImVec2		text_size	= ::ImGui::CalcTextSize(label);
-	ImVec2		center		= (p_min + p_max) * 0.5f;
-	ImVec2		text_pos	= center - text_size * 0.5f;
-
-	ImU32 text_col = ::ImGui::GetColorU32(ImGuiCol_Text);
-	dl->AddText(text_pos, text_col, label);
+	        ImDrawList* dl			= ::ImGui::GetWindowDrawList();
+	        ImVec2		p_min		= ::ImGui::GetItemRectMin();
+	        ImVec2		p_max		= ::ImGui::GetItemRectMax();
+            ImVec4      clip_rect   = ImVec4(p_min.x, p_min.y, p_max.x, p_max.y);
+            ImVec2		text_pos    = p_min + FramePadding + (ButtonSize - TextSize - FramePadding * 2) * TextAlign;
+            ImU32       text_col    = ::ImGui::GetColorU32(ImGuiCol_Text);
+	                    dl->AddText(NULL, 0.f, text_pos, text_col, label, TextEnd, 0.f, &clip_rect);
 
 	::ImGui::PopID();
-	return clicked;
+	return  Clicked;
 }
 
 XREUI_API bool XRay::ImGui::ToolbarButtonBackground(
@@ -272,31 +341,31 @@ XREUI_API bool XRay::ImGui::ToolbarButtonBackground(
 	if (window->SkipItems)
 		return false;
 
-			bool clicked	= ::ImGui::InvisibleButton(id, size);
-	const	bool hovered	= ::ImGui::IsItemHovered();
-	const	bool active		= ::ImGui::IsItemActive();
+			bool    Clicked	    = ::ImGui::InvisibleButton(id, size);
+	const	bool    Hovered	    = ::ImGui::IsItemHovered();
+	const	bool    Active		= ::ImGui::IsItemActive();
 
-			ImVec4 Color	= XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToolbarButtonTint);
-			ImVec4 Hover	= XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ButtonHover);
-			ImVec4 Active	= XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ButtonActive);
+			ImVec4  Color	    = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToolbarButtonTint);
+			ImVec4  ColorHover	= XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ButtonHover);
+			ImVec4  ColorActive	= XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ButtonActive);
 
 	// --- toggle logic ---
 	if (toggle) {
-		if (clicked)
+		if (Clicked)
 			*toggle = !*toggle;
 		if (*toggle == true) {
-			Color	= XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::Accent);
-			Hover	= XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToggleHover);
-			Active	= XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToggleActive);
+			Color	    = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::Accent);
+            ColorHover  = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToggleHover);
+            ColorActive = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToggleActive);
 		}
 	}
 
 	// --- colors ---
 	ImU32 col;
-	if (active)
-		col = ::ImGui::GetColorU32(Active);
-	else if (hovered)
-		col = ::ImGui::GetColorU32(Hover);
+	if (Active)
+		col = ::ImGui::GetColorU32(ColorActive);
+	else if (Hovered)
+		col = ::ImGui::GetColorU32(ColorHover);
 	else
 		col = ::ImGui::GetColorU32(Color);
 
@@ -305,14 +374,9 @@ XREUI_API bool XRay::ImGui::ToolbarButtonBackground(
 	ImVec2		p_min	= ::ImGui::GetItemRectMin();
 	ImVec2		p_max	= ::ImGui::GetItemRectMax();
 
-	dl->AddRectFilled(
-		p_min,
-		p_max,
-		col,
-		rounding,
-		rounding_flags);
+	dl->AddRectFilled(p_min, p_max, col, rounding, rounding_flags);
 
-	return clicked;
+	return Clicked;
 }
 
 static void RenderArrow(ImDrawList* draw_list, ImVec2 pos, ImU32 col, ImGuiDir dir, float scale)
