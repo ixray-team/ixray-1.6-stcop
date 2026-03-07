@@ -55,6 +55,7 @@ protected:
 	CUICellContainer*		m_container;
 	CUIScrollBar*			m_vScrollBar;
 	CUIFrameWindow*			m_selectorFrame = nullptr;
+	bool					m_selector_shown = false;
 
 	virtual void			OnScrollV				(CUIWindow* w, void* pData);
 	virtual void			OnItemStartDragging		(CUIWindow* w, void* pData);
