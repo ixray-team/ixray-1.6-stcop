@@ -409,6 +409,14 @@ void CUIActorMenu::Update()
 	m_ItemInfo->Update();
 	m_hint_wnd->Update();
 	m_exit_button->Show(!pInput->GetControllerMode());
+	if (m_ui_navigation_selector)
+	{
+		m_ui_navigation_selector->SetVisible(m_ui_navigation_selection && m_ui_navigation_selector_shown && pInput->GetControllerMode());
+	}
+	if (m_ui_aux_selector)
+	{
+		m_ui_aux_selector->SetVisible(m_ui_aux_selector_shown && pInput->GetControllerMode());
+	}
 	UpdateGamepadLegend();
 }
 
@@ -1397,14 +1405,16 @@ void CUIActorMenu::SetAreaSelectionTo(CUIWindow* pSelection)
 		{
 			m_ui_navigation_selector->SetWndSize(frmSize);
 			m_ui_navigation_selector->SetWndPos(frmPos);
-			m_ui_navigation_selector->SetVisible(true);
+			m_ui_navigation_selector_shown = true;
 		}
 		else
-			m_ui_navigation_selector->SetVisible(false);
+		{
+			m_ui_navigation_selector_shown = false;
+		}
 	}
 	else
 	{
-		m_ui_navigation_selector->SetVisible(false);
+		m_ui_navigation_selector_shown = false;
 	}
 }
 
@@ -1425,18 +1435,17 @@ void CUIActorMenu::SetAuxMode(eActorMenuControllerAuxMode mode)
 				{
 					m_ui_aux_selector->SetWndSize(frmSize);
 					m_ui_aux_selector->SetWndPos(frmPos);
-					m_ui_aux_selector->SetVisible(true);
+					m_ui_aux_selector_shown = true;
 				}
 				else
-					m_ui_aux_selector->SetVisible(false);
+					m_ui_aux_selector_shown = false;
 			}
 			m_pUpgradeWnd->SetActiveForController(true);
 			m_upgrade_info->init_upgrade(nullptr, nullptr);
 		}
 		break;
 	default:
-		if (m_ui_aux_selector)
-			m_ui_aux_selector->SetVisible(false);
+		m_ui_aux_selector_shown = false;
 		m_pUpgradeWnd->SetActiveForController(false);
 	}
 }

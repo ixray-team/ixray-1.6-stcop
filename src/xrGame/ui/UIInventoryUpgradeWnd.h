@@ -123,6 +123,7 @@ protected:
 	CUIWindow* m_scheme_wnd = nullptr;
 
 	CUIFrameWindow* m_selectorFrame = nullptr;
+	bool m_selector_shown = false;
 	UIUpgrade* m_selectedUpgrade = nullptr;
 
 public:
