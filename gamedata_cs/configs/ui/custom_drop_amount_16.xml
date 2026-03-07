@@ -1,34 +1,74 @@
 <w>
 
-  <custom_drop x="252" y="250" width="425" height="206" stretch="1">
+  <split_item x="252" y="250" width="425" height="206" stretch="1">
     <texture>ui_frame_error</texture>
 
-    <picture x="29" y="65" width="64" height="77" stretch="1">
-      <texture>ui_frame_error_sign_alarm</texture>
-    </picture>
+	<gamepad_legend x="0" y="730" width="1024" height="30" spacing="5">
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">st_options_save</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">st_split_item_half_gp</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">st_split_item_all_gp</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_mm_back_gp</text>
+		</auto_static>
+	</gamepad_legend>
+	
+    <item_title x="77" y="10" width="100" height="24" complex_mode="1">
+      <text font="graffiti19" r="216" g="186" b="140" a="192" align="l">st_drop_amount_title</text>
+    </item_title>
 
-    <text_hint x="141" y="40" width="258" height="60" complex_mode="1">
+    <item_name x="141" y="40" width="258" height="60" complex_mode="1">
       <text r="216" g="186" b="140" font="letterica18" align="c">st_custom_drop_hint</text>
-    </text_hint>
+    </item_name>
 
-    <trackbar x="146" y="60" width="248" height="20" mode="integer" step="1" show_value="1"/>
+    <weight_text x="141" y="60" width="258" height="60" complex_mode="1">
+      <text r="216" g="186" b="140" font="letterica18" align="c">st_custom_drop_hint</text>
+    </weight_text>
 
-    <value_min x="141" y="80" width="258" height="20" complex_mode="1">
-      <text r="216" g="186" b="140" font="letterica18" align="l">1</text>
+    <edit_amount x="156" y="100" width="228" height="20" max_symb_count="8" num_only="1" placeholder_text="st_drop_amount_placeholder" placeholder_blink="1">
+      <text font="letterica16" r="255" g="255" b="255" a="255" align="c"></text>
+      <texture>ui_linetext_e</texture>
+    </edit_amount>
+
+    <button_decrement x="141" y="100" width="15" height="20" check_mode="0">
+      <texture>ui_beltbut_min</texture>
+    </button_decrement>
+
+    <button_increment x="384" y="100" width="15" height="20" check_mode="0">
+      <texture>ui_beltbut_plus</texture>
+    </button_increment>
+
+    <trackbar x="156" y="80" width="228" height="20" mode="integer" step="1" show_value="1"/>
+
+    <value_min x="126" y="80" width="30" height="20" complex_mode="1">
+      <text r="216" g="186" b="140" font="letterica18" align="r" vert_align="c">1</text>
     </value_min>
 
-    <value_max x="141" y="80" width="258" height="20" complex_mode="1">
-      <text r="216" g="186" b="140" font="letterica18" align="r">999</text>
+    <value_max x="384" y="80" width="30" height="20" complex_mode="1">
+      <text r="216" g="186" b="140" font="letterica18" align="l" vert_align="c">999</text>
     </value_max>
 
-    <button_yes x="208" y="154" width="98" height="29" check_mode="0">
-      <text font="letterica16"  r="216" g="186" b="140" >ui_st_btn_yes</text>
+    <button_half x="8" y="154" width="98" height="29" check_mode="0">
+      <text font="letterica16"  r="216" g="186" b="140" >st_split_item_half</text>
       <texture>ui_button_ordinary</texture>
-    </button_yes>
-    <button_no x="308" y="154" width="98" height="29" check_mode="0">
-      <text font="letterica16"  r="216" g="186" b="140" >ui_st_btn_no</text>
+    </button_half>
+    <button_all x="108" y="154" width="98" height="29" check_mode="0">
+      <text font="letterica16"  r="216" g="186" b="140" >st_split_item_all</text>
       <texture>ui_button_ordinary</texture>
-    </button_no>
-  </custom_drop>
+    </button_all>
+    <button_accept x="208" y="154" width="98" height="29" check_mode="0">
+      <text font="letterica16"  r="216" g="186" b="140" >st_split_item_accept</text>
+      <texture>ui_button_ordinary</texture>
+    </button_accept>
+    <button_cancel x="308" y="154" width="98" height="29" check_mode="0">
+      <text font="letterica16"  r="216" g="186" b="140" >st_split_item_cancel</text>
+      <texture>ui_button_ordinary</texture>
+    </button_cancel>
+  </split_item>
   
 </w>
