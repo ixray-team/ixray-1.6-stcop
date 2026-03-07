@@ -1170,7 +1170,7 @@ void CUIActorMenu::PropertiesBoxForDrop(CUICellItem* cell_item, PIItem item, boo
 
 			if (cell_item->ChildsCount())
 			{
-				if (m_pItemDropAmountWnd != nullptr)
+				if (m_pItemDropAmountWnd)
 				{
 					m_UIPropertiesBox->AddItem("st_drop_amount", (void*)INVENTORY_AMOUNT_CODE, INVENTORY_DROP_ACTION);
 				}
@@ -1186,7 +1186,10 @@ void CUIActorMenu::PropertiesBoxForDrop(CUICellItem* cell_item, PIItem item, boo
 
 				if (cell_item->ChildsCount())
 				{
-					m_UIPropertiesBox->AddItem("st_move_amount", (void*)INVENTORY_AMOUNT_CODE, INVENTORY_DROP_ACTION);
+					if (m_pItemDropAmountWnd)
+					{
+						m_UIPropertiesBox->AddItem("st_move_amount", (void*)INVENTORY_AMOUNT_CODE, INVENTORY_DROP_ACTION);
+					}
 					m_UIPropertiesBox->AddItem("st_move_all", (void*)INVENTORY_ALL_CODE, INVENTORY_DROP_ACTION);
 				}
 			}
@@ -1199,7 +1202,10 @@ void CUIActorMenu::PropertiesBoxForDrop(CUICellItem* cell_item, PIItem item, boo
 
 		if (cell_item->ChildsCount())
 		{
-			m_UIPropertiesBox->AddItem("st_take_amount", (void*)INVENTORY_AMOUNT_CODE, INVENTORY_DROP_ACTION);
+			if (m_pItemDropAmountWnd)
+			{
+				m_UIPropertiesBox->AddItem("st_take_amount", (void*)INVENTORY_AMOUNT_CODE, INVENTORY_DROP_ACTION);
+			}
 			m_UIPropertiesBox->AddItem("st_take_all", (void*)INVENTORY_ALL_CODE, INVENTORY_DROP_ACTION);
 		}
 	}
