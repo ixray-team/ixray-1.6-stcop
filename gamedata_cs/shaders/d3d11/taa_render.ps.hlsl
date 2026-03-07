@@ -218,6 +218,6 @@ float4 main(PSInputFullscreen I) : SV_Target
 	float3 reprojected_color = lerp(c_3x3[4], p_4, TAA_BLEND_WEIGHT);
 
 	reprojected_color = Lottes_Tonemap_Inverse(reprojected_color);
-
+    reprojected_color = max(reprojected_color, 1e-7); //to prevent NaNs, although you should debug the pipeline and see where NaNs occurs
 	return float4(reprojected_color, 1.0);
 }
