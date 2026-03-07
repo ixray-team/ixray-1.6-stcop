@@ -396,7 +396,6 @@ end
 -- 													IXR TIMERS
 --  ####################################################################################################################
 
-
 --[[
 Description: Create timer.
 Parameters:
@@ -416,6 +415,37 @@ Returns: (functions):
 function TimerCreate(name, loop, auto_paly, left_milliseconds, callable_fn, ...)
 	if IsModuleLoaded("ixr_timers") then
 		return GetModule("ixr_timers").timer_create(name, loop, auto_paly, left_milliseconds, callable_fn, ...)
+	end
+	
+	return false
+end
+
+--[[
+Description: Create timer with free name without overlappind.
+Parameters:
+  name (string)(required) - name of timer.
+  loop (bool)(required) - use auto repeat on left time.
+  auto_paly (bool)(required) - use auto start timer after create.
+  left_milliseconds (int)(required) - time left to run callable in milliseconds.
+  callable_fn (function|string)(required) - callable payload for timer.
+  ... (args) - callable args.
+Returns: (functions):
+	self:name(): string
+	self:exists(): bool
+	self:play(): bool
+	self:stop(): bool
+	self:delete(): bool
+--]]
+function TimerCreateWithNextFreeName(name, left_milliseconds, callable_fn, ...)
+	if IsModuleLoaded("ixr_timers") then
+		return GetModule("ixr_timers").timer_create(
+			GetModule("ixr_timers").get_free_timer_name(name),
+			false,
+			true,
+			left_milliseconds,
+			callable_fn,
+			...
+		)
 	end
 	
 	return false
