@@ -414,6 +414,7 @@ void CUIDragDropListEx::Update()
 			if( this==m_drag_item->BackList() )
 				m_drag_item->SetBackList(nullptr);
 	}
+	m_selectorFrame->SetVisible(m_selector_shown && pInput->GetControllerMode());
 }
 
 void CUIDragDropListEx::ReinitScroll()
@@ -480,7 +481,7 @@ void CUIDragDropListEx::SetCellsCapacity(const Ivector2 c)
 	// Autohide selector if we are empty now
 	if (!m_container->HasCells())
 	{
-		m_selectorFrame->SetVisible(false);
+		m_selector_shown = false;
 	}
 }
 
@@ -671,17 +672,17 @@ void CUIDragDropListEx::SetControllerFocusIn(Irect selector)
 	{
 		m_container->TrySetSelector(selector);
 		UpdateSelector();
-		m_selectorFrame->SetVisible(true);
+		m_selector_shown = true;
 	}
 	else
 	{
-		m_selectorFrame->SetVisible(false);
+		m_selector_shown = false;
 	}
 }
 void CUIDragDropListEx::SetControllerFocusOut()
 {
 	DeselectSelected();
-	m_selectorFrame->SetVisible(false);
+	m_selector_shown = false;
 }
 
 

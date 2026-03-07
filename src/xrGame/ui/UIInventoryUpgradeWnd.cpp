@@ -240,6 +240,10 @@ void CUIInventoryUpgradeWnd::Show(bool status)
 void CUIInventoryUpgradeWnd::Update()
 {
 	inherited::Update();
+	if (m_selectorFrame)
+	{
+		m_selectorFrame->SetVisible(pInput->GetControllerMode() && m_selector_shown);
+	}
 }
 
 void CUIInventoryUpgradeWnd::Reset()
@@ -696,11 +700,11 @@ void CUIInventoryUpgradeWnd::SetUpgradeSelected(UIUpgrade* pUpgrade)
 		frmPos.add(m_scheme_wnd->GetWndPos());
 		m_selectorFrame->SetWndSize(frmSize);
 		m_selectorFrame->SetWndPos(frmPos);
-		m_selectorFrame->SetVisible(true);
+		m_selector_shown = true;
 	}
 	else
 	{
-		m_selectorFrame->SetVisible(false);
+		m_selector_shown = false;
 	}
 }
 
