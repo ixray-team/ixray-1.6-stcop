@@ -285,7 +285,7 @@ void CUIThemeManager::InitDefault(int InThemeID)
 
 	style.WindowPadding						= { WindowPadding, WindowPadding };
 	style.FrameBorderSize					= 0.0f;
-	style.FramePadding						= { GetEditorSize(EEditorSizes::ButtonPaddingW), GetEditorSize(EEditorSizes::ButtonPaddingH) };
+	style.FramePadding						= { GetEditorSize(EEditorSizes::ButtonPaddingW), (GetEditorSize(EEditorSizes::ButtonSize) - GetEditorSize(EEditorSizes::FontSize)) / 2 };
 	style.FrameRounding						= GetEditorSize(EEditorSizes::ButtonRadius);
 	style.ChildRounding						= 0.0f;
 	style.ItemSpacing						= ImVec2(4.f, 2.f);
