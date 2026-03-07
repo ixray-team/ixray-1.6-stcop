@@ -682,9 +682,13 @@ function options_dialog:OnElementSetSelected(curTab, eltIndex, on)
 	local elementInfo = class_info(element)
 	local elementClass = elementInfo.name
 	
---	if elementClass == "CUI3tButton" or elementClass == "CUIComboBox" then -- MTB_Jakub_Jurek [JUD-283]
---		element:SetHighlighted(on)
---	end
+	if elementClass == "CUI3tButton" 
+	or elementClass == "CUIComboBox" 
+	or elementClass == "CUICheckButton" 
+	or elementClass == "CUITrackBar" 
+	then
+		element:SetHighlighted(on)
+	end
 	
 	local caption = focusRecord[1]:TextControl()
 	

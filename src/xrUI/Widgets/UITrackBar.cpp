@@ -176,22 +176,22 @@ void CUITrackBar::Draw()
 	m_pSlider->Draw();
 }
 
-// ‘орматирование текущего значени€
+// Форматирование текущего значения
 static std::string FormatFloatWithStep(float value, int num_of_signs)
 {
-	// ¬ычисл€ем множитель на основе количества знаков после зап€той
+	// Вычисляем множитель на основе количества знаков после запятой
 	float multiplier = std::pow(10.0f, num_of_signs);
 
-	// ќкругл€ем значение с учетом заданной точности
+	// Округляем значение с учетом заданной точности
 	float rounded_value = std::round(value * multiplier) / multiplier;
 
-	// ѕровер€ем, €вл€етс€ ли округлЄнное значение целым
+	// Проверяем, является ли округлённое значение целым
 	if (std::fabs(std::floor(rounded_value) - rounded_value) < 0.00001f)
 	{
-		return std::to_string(static_cast<int>(rounded_value)); // ѕреобразуем в строку как целое число
+		return std::to_string(static_cast<int>(rounded_value)); // преобразуем в строку как целое число
 	}
 
-	// ≈сли дробна€ часть есть, форматируем с указанной точностью
+	// Если дробная часть есть, форматируем с указанной точностью
 	std::ostringstream oss;
 	oss << std::fixed << std::setprecision(num_of_signs) << rounded_value;
 	return oss.str();
@@ -575,4 +575,9 @@ void CUITrackBar::OnFocusLost()
 {
 	CUIWindow::OnFocusLost();
 	GetUICursor().m_static_text->SetText("");
+}
+
+void CUITrackBar::SetHighlighted(bool value)
+{
+	m_pSlider->SetHighlighted(value);
 }
