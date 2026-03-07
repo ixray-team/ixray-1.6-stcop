@@ -875,7 +875,31 @@ function try_switch_to_another_section(npc, st, actor)
 				if not utils.npc_in_zone(actor, npc) then
 					switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
 				end
-			else
+			elseif cond_name(c.name, "on_npc_inside") then
+			    local other_npc = level.object_by_id(tonumber(c.npc_id))
+			    if not other_npc then
+			    	abort("Invalid NPC [%d] for on_npc_inside in [%s]", c.npc_id, npc:name())
+			    end
+			    if utils.npc_in_zone(other_npc, npc) then
+			    	switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
+			    end
+		    elseif cond_name(c.name, "on_npc_outside") then
+			    local other_npc = level.object_by_id(tonumber(c.npc_id))
+			    if not other_npc then
+			    	abort("Invalid NPC [%d] for on_npc_outside in [%s]", c.npc_id, npc:name())
+			    end
+			    if not utils.npc_in_zone(other_npc, npc) then
+			    	switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
+			    end
+		    elseif cond_name(c.name, "on_self_in_zone") then
+			    if utils.npc_in_zone(npc, db.zone_by_name[c.zone_id]) then
+			    	switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
+			    end
+		    elseif cond_name(c.name, "on_self_not_in_zone") then
+			    if not utils.npc_in_zone(npc, db.zone_by_name[c.zone_id]) then
+			    	switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
+			    end
+		    else
 				abort(
 					"WARNING: object '%s': try_switch_to_another_section: unknown condition '%s' encountered",
 					npc:name(), c.name)
@@ -1213,7 +1237,11 @@ function cfg_get_switch_conditions(ini, section, npc)
         add_conditions( cfg_get_condlist           , "on_actor_outside"      )
         add_conditions( cfg_get_npc_and_zone       , "on_npc_in_zone"        )
         add_conditions( cfg_get_npc_and_zone       , "on_npc_not_in_zone"    )
-    
+    	add_conditions( cfg_get_npc				   , "on_npc_inside"		 )
+	    add_conditions( cfg_get_npc				   , "on_npc_outside"		 )
+	    add_conditions( cfg_get_zone			   , "on_self_in_zone"		 )
+	    add_conditions( cfg_get_zone			   , "on_self_not_in_zone"	 )
+
         return l
     end)
 end
