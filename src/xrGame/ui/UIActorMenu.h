@@ -343,7 +343,6 @@ protected:
 	bool						ToSlotScript						(CScriptGameObject* GO, bool force_place, u16 slot_id);
 	bool						ToSlot								(CUICellItem* itm, bool force_place, u16 slot_id);
 	bool						ToBag								(CUICellItem* itm, bool b_use_cursor_pos);
-	void						ToBagAll							(CUICellItem* itm);
 	bool						ToBeltScript						(CScriptGameObject* GO, bool b_use_cursor_pos);
 	bool						ToBelt								(CUICellItem* itm, bool b_use_cursor_pos);
 	bool						TryUseItem							(CUICellItem* cell_itm);
@@ -359,11 +358,8 @@ protected:
 	bool						CanUpgradeItem						(PIItem item);
 
 	bool						ToActorTrade						(CUICellItem* itm, bool b_use_cursor_pos);
-	void						ToActorTradeAll						(CUICellItem* itm);
 	bool						ToPartnerTrade						(CUICellItem* itm, bool b_use_cursor_pos);
-	void						ToPartnerTradeAll					(CUICellItem* itm);
 	bool						ToPartnerTradeBag					(CUICellItem* itm, bool b_use_cursor_pos);
-	void						ToPartnerTradeBagAll				(CUICellItem* itm);
 	bool						ToDeadBodyBag						(CUICellItem* itm, bool b_use_cursor_pos);
 	bool						IsAllowTakeFromInvBox				(CUICellItem* itm); // FFx0001
 	bool						IsAllowPlaceToInvBox				(CUICellItem* itm); // FFx0001
@@ -407,6 +403,10 @@ public:
 	virtual void				DropAllCurrentItem					(u32 item_amount);
 	virtual void				MoveAllCurrentItem					(u32 item_amount);
 	virtual void				TakeAllCurrentItem					(u32 item_amount);
+	void						ToBagAll							(u32 item_amount);
+	void						ToActorTradeAll						(u32 item_amount);
+	void						ToPartnerTradeAll					(u32 item_amount);
+	void						ToPartnerTradeBagAll				(u32 item_amount);
 	CUICellItem*				CurrentItem							();
 	void						SetCurrentItem						(CUICellItem* itm);
 	virtual bool				StopAnyMove							();
