@@ -42,8 +42,10 @@ UITopBarForm::~UITopBarForm()
 void UITopBarForm::Draw()
 {
 	ImGuiViewport* viewport = ImGui::GetMainViewport();
+	const float ButtonSize = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize);
+	const float ToolbarPadding = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ToolbarPadding);
 	ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x, viewport->Pos.y + UI->GetMenuBarHeight()));
-	ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, 34));
+	ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, ButtonSize + ToolbarPadding * 2));
 	ImGui::SetNextWindowViewport(viewport->ID);
 
 	ImGuiWindowFlags window_flags = 0
@@ -54,19 +56,18 @@ void UITopBarForm::Draw()
 		| ImGuiWindowFlags_NoScrollbar
 		| ImGuiWindowFlags_NoScrollWithMouse
 		;
-	float toolbarPadding = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ToolbarPadding);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.f);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(2, 0));
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
-	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(toolbarPadding * 0.5f, toolbarPadding));
+	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(ToolbarPadding * 0.5f, ToolbarPadding));
 	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
 	ImGui::PushStyleColor(ImGuiCol_Button, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToolbarButtonTint).Value);
 	ImGui::PushStyleColor(ImGuiCol_WindowBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelBorderTint).Value);
 
 	if (ImGui::Begin("TOOLBAR", NULL, window_flags))
 	{
-		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + toolbarPadding);
+		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ToolbarPadding);
 
 		if (ImGui::BeginTable("##ToolbarTable", 11, ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ContextMenuInBody | ImGuiTableFlags_Hideable | ImGuiTableFlags_NoBordersInBodyUntilResize))
 		{
@@ -160,7 +161,7 @@ void UITopBarForm::Draw()
 			{
 				IMGUI_HINT_BUTTON("I_OGF", Icons["open_gamedata_folder"],"Open 'gamedata' folder", ImDrawFlags_RoundCornersAll, ClickOpenGameData);
 			}
-
+/*
 			if (ImGui::TableNextColumn())
 			{
 				//ApplyBackground("Hint");
@@ -168,12 +169,13 @@ void UITopBarForm::Draw()
 				ImGui::Checkbox("Hint ", &MainForm->GetRenderForm()->UseHint);
 				//CalcTableEndPos("Hint");
 			}
+*/
 
 			if (ImGui::TableNextColumn())
 			{
 				//ApplyBackground("Sound Preferences");
 				ImGui::BeginDisabled(psDeviceFlags.is(rsMuteSounds));
-				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3);
+				//ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3);
 				ImGui::SetNextItemWidth(150);
 				ImGui::SliderFloat(!psDeviceFlags.is(rsMuteSounds) ? ICON_FA_VOLUME_HIGH : ICON_FA_VOLUME_XMARK, &EPrefs->sound_volume, 0, 1, "%.2f");
 				ImGui::EndDisabled();
