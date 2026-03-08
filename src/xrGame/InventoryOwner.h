@@ -128,6 +128,7 @@ public:
 
 	//игровое имя 
 	virtual LPCSTR Name() const { return m_game_name.c_str(); }
+	LPCSTR NameReal() const { return m_game_name_str.c_str(); }
 	void SetName(LPCSTR name) { m_game_name = name; }
 	LPCSTR IconName() const { return CharacterInfo().IconName().c_str(); }
 	u32 get_money() const { return m_money; }
