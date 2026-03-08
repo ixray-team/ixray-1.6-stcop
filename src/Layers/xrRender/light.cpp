@@ -278,7 +278,8 @@ void light::spatial_move()
 
 #if (RENDER==R_R2) || (RENDER==R_R4)
 	svis.invalidate();
-	get_sectors();
+	if((SpatialComponent->spatial.type&ESPATIAL_TYPE::LIGHTSOURCE)!=ESPATIAL_TYPE::NONE)
+		get_sectors();
 #endif // (RENDER==R_R2) || (RENDER==R_R4)
 }
 
