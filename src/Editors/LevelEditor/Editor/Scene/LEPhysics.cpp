@@ -166,7 +166,7 @@ bool CScenePhysics::CreateObjectSpace(bool b_selected_only)
 	}
 
 	CDB::Collector CL;
-
+	CL.reserve(build_data.l_face_cnt);
 	for (u32 i = 0; i < build_data.l_face_cnt; ++i)
 	{
 		CDB::TRI& F = build_data.l_faces[i];

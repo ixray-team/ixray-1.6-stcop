@@ -245,15 +245,17 @@ void CPseudoGigant::on_activate_control(ControlCom::EControlType type)
 void CPseudoGigant::on_threaten_execute()
 {
 	// разбросить объекты
-	m_nearest.resize(0);
-	Level().ObjectSpace.GetNearest	(m_nearest,Position(), 15.f, nullptr); 
-	for (u32 i=0;i<m_nearest.size();i++)
+	g_SpatialSpace->q_sphere(m_nearest,0,ESPATIAL_TYPE::COLLIDEABLE,Position(),15.f);
+	for (ISpatialShared& SS : m_nearest)
 	{
-		CPhysicsShellHolder* obj = m_nearest[i] != nullptr ? m_nearest[i]->cast_physics_shell_holder() : nullptr;
+		ISpatial* S = SS.get();
+		if (!S) continue;
+		CObject* O = S->dcast_CObject();
+		if (!O || O->getDestroy()) continue;
+
+		CPhysicsShellHolder* obj = O->cast_physics_shell_holder();
 		if (!obj || !obj->m_pPhysicsShell)
-		{
 			continue;
-		}
 
 		Fvector dir;
 		Fvector pos;

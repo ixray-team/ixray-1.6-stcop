@@ -475,13 +475,17 @@ void CBurer::UpdateGraviObject()
 	ps->Play(false);
 	
 	// hit objects
-	m_nearest.clear();
-	Level().ObjectSpace.GetNearest	(m_nearest,m_gravi_object.cur_pos, m_gravi.radius, nullptr); 
+	g_SpatialSpace->q_sphere(m_nearest,0,ESPATIAL_TYPE::COLLIDEABLE,m_gravi_object.cur_pos,m_gravi.radius);
 	//xr_vector<CObject*> &m_nearest = Level().ObjectSpace.q_nearest;
 
-	for (u32 i=0;i<m_nearest.size();i++)
+	for (ISpatialShared& SS : m_nearest)
 	{
-		CPhysicsShellHolder  *obj = m_nearest[i]->cast_physics_shell_holder();
+		ISpatial* S = SS.get();
+		if (!S) continue;
+		CObject* O = S->dcast_CObject();
+		if (!O || O->getDestroy()) continue;
+
+		CPhysicsShellHolder  *obj = O->cast_physics_shell_holder();
 		if (!obj || !obj->m_pPhysicsShell) continue;
 		
 		Fvector dir_;

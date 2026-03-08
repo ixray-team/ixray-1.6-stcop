@@ -19,7 +19,7 @@ using namespace	collide;
 
 namespace CObjectSpaceThreadData
 {
-	thread_local xrXRC xrc;
+	thread_local CDB::COLLIDER xrc;
 	thread_local collide::rq_results r_temp;
 	thread_local xr_vector<ISpatialShared> r_spatial;
 }
@@ -95,7 +95,7 @@ BOOL CObjectSpace::_RayTest(const Fvector& start, const Fvector& dir, float rang
 				cache->set(start, dir, range, TRUE);
 				CDB::RESULT* R = CObjectSpaceThreadData::xrc.r_begin();
 				CDB::TRI& T = Static.get_tris()[R->id];
-				Fvector* V = Static.get_verts();
+				xr_vector<Fvector>& V = Static.get_verts();
 				cache->verts[0].set(V[T.verts[0]]);
 				cache->verts[1].set(V[T.verts[1]]);
 				cache->verts[2].set(V[T.verts[2]]);
@@ -536,18 +536,4 @@ bool CObjectSpace::BoxQuery(Fvector const& box_center,
 	}
 
 	return !!CObjectSpaceThreadData::xrc.r_count();
-}
-
-
-//----------------------------------------------------------------------
-int CObjectSpace::GetNearest(xr_vector<CObject*>& q_nearest, const Fvector& point, float range, CObject* ignore_object)
-{
-	return GetNearest
-	(
-		CObjectSpaceThreadData::r_spatial,
-		q_nearest,
-		point,
-		range,
-		ignore_object
-	);
 }

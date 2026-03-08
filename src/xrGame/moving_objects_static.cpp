@@ -15,10 +15,14 @@
 
 bool moving_objects::collided_static		(const Fvector &position, const float &radius)
 {
-	NEAREST_STATIC::const_iterator	I = m_nearest_static.begin();
-	NEAREST_STATIC::const_iterator	E = m_nearest_static.end();
-	for ( ; I != E; ++I) {
-		if (collided(*I,position,radius))
+	for (ISpatialShared& SS : m_spatial_objects)
+	{
+		ISpatial* S = SS.get();
+		if (!S) continue;
+		CObject* O = S->dcast_CObject();
+		if (!O || O->getDestroy()) continue;
+
+		if (collided(O,position,radius))
 			return			(true);
 	}
 
@@ -55,21 +59,30 @@ bool moving_objects::collided_static		(moving_object *object, const Fvector &des
 
 void moving_objects::fill_static			(obstacles_query &query)
 {
-	NEAREST_STATIC::const_iterator	I = m_nearest_static.begin();
-	NEAREST_STATIC::const_iterator	E = m_nearest_static.end();
-	for ( ; I != E; ++I)
-		query.add			((*I)->cast_game_object());
+	for (ISpatialShared& SS : m_spatial_objects)
+	{
+		ISpatial* S = SS.get();
+		if (!S) continue;
+		CObject* O = S->dcast_CObject();
+		if (!O || O->getDestroy()) continue;
+
+		query.add(O->cast_game_object());
+	}
 }
 
 void moving_objects::fill_static			(obstacles_query &query, const Fvector &position, const float &radius)
 {
-	NEAREST_STATIC::const_iterator	I = m_nearest_static.begin();
-	NEAREST_STATIC::const_iterator	E = m_nearest_static.end();
-	for ( ; I != E; ++I) {
-		if (!collided(*I,position,radius))
+	for (ISpatialShared& SS : m_spatial_objects)
+	{
+		ISpatial* S = SS.get();
+		if (!S) continue;
+		CObject* O = S->dcast_CObject();
+		if (!O || O->getDestroy()) continue;
+
+		if (!collided(O,position,radius))
 			continue;
 
-		query.add			((*I)->cast_game_object());
+		query.add(O->cast_game_object());
 	}
 }
 
@@ -117,24 +130,27 @@ public:
 	}
 };
 
-void moving_objects::fill_nearest_list		(const Fvector &position, const float &radius, moving_object *object)
+void moving_objects::fill_nearest_list		(const Fvector &position, const float &radius, moving_object * m_object)
 {
-	Level().ObjectSpace.GetNearest	(
-		m_spatial_objects,
-		m_nearest_static,
-		position,
-		radius,
-		const_cast<CEntityAlive*>(&object->object())
-	);
+	g_SpatialSpace->q_sphere(m_spatial_objects,0,ESPATIAL_TYPE::COLLIDEABLE, position, radius);
 
-	m_nearest_static.erase	(
-		std::remove_if(
-			m_nearest_static.begin(),
-			m_nearest_static.end(),
-			ignore_predicate(object)
-		),
-		m_nearest_static.end()
-	);
+	m_spatial_objects.erase(std::remove_if(m_spatial_objects.begin(),m_spatial_objects.end(),
+		[m_object](const ISpatialShared& SS)
+		{
+			ISpatial* S = SS.get();
+			if (!S) return true;
+			CObject* object = S->dcast_CObject();
+			if (!object || object->getDestroy()) return true;
+
+			if (m_object->ignored(object))
+				return true;
+
+			CGameObject* game_object = object ? object->cast_game_object() : NULL;
+			if (game_object && !game_object->is_ai_obstacle())
+				return true;
+
+			return false;
+		}),m_spatial_objects.end());
 }
 
 void moving_objects::query_action_static	(moving_object *object, const Fvector &_start_position, const Fvector &dest_position)
@@ -148,7 +164,7 @@ void moving_objects::query_action_static	(moving_object *object, const Fvector &
 		object
 	);
 
-	if (m_nearest_static.empty())
+	if (m_spatial_objects.empty())
 		return;
 
 	if (!collided_static(object,dest_position))

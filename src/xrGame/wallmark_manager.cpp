@@ -25,13 +25,13 @@ void CWalmarkManager::AddWallmark(const Fvector& dir, const Fvector& start_pos,
 								  float range, float wallmark_size,
 								  IWallMarkArray& wallmarks_vector,int t)
 {
-	CDB::TRI*	pTri	= Level().ObjectSpace.GetStaticTris()+t;//result.element;
-	SGameMtl*	pMaterial = GMLib.GetMaterialByIdx(pTri->material);
+	CDB::TRI&	pTri	= Level().ObjectSpace.GetStaticTris()[t];//result.element;
+	SGameMtl*	pMaterial = GMLib.GetMaterialByIdx(pTri.material);
 
 	if(pMaterial->Flags.is(SGameMtl::flBloodmark))
 	{
 		//вычислить нормаль к пораженной поверхности
-		Fvector*	pVerts	= Level().ObjectSpace.GetStaticVerts();
+        xr_vector<Fvector>& pVerts	= Level().ObjectSpace.GetStaticVerts();
 
 		//вычислить точку попадания
 		Fvector end_point;
@@ -40,7 +40,7 @@ void CWalmarkManager::AddWallmark(const Fvector& dir, const Fvector& start_pos,
 
 		if (!wallmarks_vector.empty())
 		{		
-			::Render->add_StaticWallmark(&wallmarks_vector, end_point, wallmark_size, pTri, pVerts);
+			::Render->add_StaticWallmark(&wallmarks_vector, end_point, wallmark_size, &pTri, pVerts.data());
 		}
 
 		/*
@@ -96,12 +96,12 @@ void CWalmarkManager::StartWorkflow(const shared_str& sect, bool UseCamDir)
     float m_wallmark_size = pSettings->r_float(sect, "size");
     u32 max_wallmarks_count = pSettings->r_u32(sect, "max_count");
 
-
+    thread_local CDB::COLLIDER XRC;
     XRC.box_options(0);
     XRC.box_query(Level().ObjectSpace.GetStaticModel(), m_pos, Fvector().set(m_trace_dist, m_trace_dist, m_trace_dist));
 
-    CDB::TRI* T_array = Level().ObjectSpace.GetStaticTris();
-    Fvector* V_array = Level().ObjectSpace.GetStaticVerts();
+    xr_vector<CDB::TRI>& T_array = Level().ObjectSpace.GetStaticTris();
+    xr_vector<Fvector>& V_array = Level().ObjectSpace.GetStaticVerts();
     CDB::RESULT* R_begin = XRC.r_begin();
     CDB::RESULT* R_end = XRC.r_end();
 
@@ -119,11 +119,11 @@ void CWalmarkManager::StartWorkflow(const shared_str& sect, bool UseCamDir)
 
         Fvector _tri[3];
 
-        CDB::TRI* _t = T_array + Res->id;
+        CDB::TRI& _t = T_array[Res->id];
 
-        _tri[0] = V_array[_t->verts[0]];
-        _tri[1] = V_array[_t->verts[1]];
-        _tri[2] = V_array[_t->verts[2]];
+		_tri[0] = V_array[_t.verts[0]];
+		_tri[1] = V_array[_t.verts[1]];
+		_tri[2] = V_array[_t.verts[2]];
 
         float dist = Distance(m_pos, _tri, pfSParam, pfTParam, end_point, pdir);
         float test = dist - EPS_L;
@@ -142,7 +142,7 @@ void CWalmarkManager::StartWorkflow(const shared_str& sect, bool UseCamDir)
 
         if (dist <= m_trace_dist)
         {
-            ::Render->add_StaticWallmark(&*m_wallmarks, end_point, m_wallmark_size, _t, V_array, UseCamDir);
+            ::Render->add_StaticWallmark(&*m_wallmarks, end_point, m_wallmark_size, &_t, V_array.data(), UseCamDir);
             ++wm_count;
         }
     }

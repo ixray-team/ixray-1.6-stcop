@@ -154,6 +154,7 @@
 				vp.Vertex[K] = (const IceMaths::Point*)(((ubyte*)mVerts) + (ind) * mVertexStride);
 		#else
 			//! UTILITY macro for shorter code when using double-precision vertices 
+			thread_local IceMaths::Point VertexCache[3];
 			#define OPC_COPY_VERTEX(K)				\
 					VertexCache[K].x = (float)v[0];	\
 					VertexCache[K].x = (float)v[1];	\
@@ -423,7 +424,6 @@
 	#endif
 
 		private:
-						static IceMaths::Point VertexCache[3];
 #endif
 	};
 

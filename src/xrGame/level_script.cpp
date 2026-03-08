@@ -1081,11 +1081,10 @@ void set_active_cam(u8 mode)
 
 namespace level_nearest
 {
-	xr_vector<CObject*> ObjectList;
+	xr_vector<ISpatialShared> ObjectList;
 	void Set(float Radius, const Fvector& Pos)
 	{
-		//ObjectList.clear();
-		g_pGameLevel->ObjectSpace.GetNearest(ObjectList, Pos, Radius, nullptr);
+		g_SpatialSpace->q_sphere(ObjectList, 0, ESPATIAL_TYPE::COLLIDEABLE, Pos, Radius);
 	}
 
 	u32 Size()
@@ -1099,8 +1098,18 @@ namespace level_nearest
 		{
 			return 0;
 		}
+		ISpatialShared& SS = ObjectList[Idx];
+		if(!SS.get())
+		{
+			return 0;
+		}
+		CObject* O = SS->dcast_CObject();
+		if(!O || O->getDestroy() || !O->cast_game_object())
+		{
+			return 0;
+		}
 
-		CGameObject* pObj = ObjectList[Idx]->cast_game_object();
+		CGameObject* pObj = O->cast_game_object();
 		return pObj->lua_game_object();
 	}
 }

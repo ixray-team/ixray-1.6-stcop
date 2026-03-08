@@ -139,12 +139,8 @@ private:
 		
 		ePathStateDummy = u32(-1),
 	};
-
 protected:
-	typedef xr_vector<CObject*>	NEAREST_OBJECTS;
-
-protected:
-	NEAREST_OBJECTS			m_nearest_objects;
+	xr_vector<ISpatialShared>	m_nearest_objects;
 
 protected:
 	float					m_speed;

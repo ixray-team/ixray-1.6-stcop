@@ -190,12 +190,16 @@ bool CStateBurerAttackTele<Object>::check_completion()
 //////////////////////////////////////////////////////////////////////////
 
 template <typename Object>
-void CStateBurerAttackTele<Object>::FindFreeObjects(xr_vector<CObject*>& tpObjects, const Fvector& pos)
+void CStateBurerAttackTele<Object>::FindFreeObjects(xr_vector<ISpatialShared>& tpObjects, const Fvector& pos)
 {
-	Level().ObjectSpace.GetNearest(tpObjects, pos, this->object->m_tele_find_radius, NULL);
-
-	for (CObject* object : tpObjects)
+	g_SpatialSpace->q_sphere(tpObjects, 0,ESPATIAL_TYPE::COLLIDEABLE, pos, this->object->m_tele_find_radius);
+	for (ISpatialShared& SS : tpObjects)
 	{
+		ISpatial* S = SS.get();
+		if (!S) continue;
+		CObject* object = S->dcast_CObject();
+		if (!object || object->getDestroy()) continue;
+
 		CPhysicsShellHolder* obj = object->cast_physics_shell_holder();
 		CCreature* custom_monster = object->cast_creature();
 		CGrenade* grenade = object->cast_grenade();
@@ -474,11 +478,13 @@ void CStateBurerAttackTele<Object>::HandleGrenades()
 		return;
 	}
 
-	m_nearest.resize(0);
-	Level().ObjectSpace.GetNearest(m_nearest, this->object->Position(), this->object->m_tele_find_radius, NULL);
-
-	for (CObject* object : m_nearest)
+	g_SpatialSpace->q_sphere(m_nearest, 0, ESPATIAL_TYPE::COLLIDEABLE, this->object->Position(), this->object->m_tele_find_radius);
+	for (ISpatialShared& SS : m_nearest)
 	{
+		ISpatial* S = SS.get();
+		if (!S) continue;
+		CObject* object = S->dcast_CObject();
+		if (!object || object->getDestroy()) continue;
 		CGrenade* grenade = object->cast_grenade();
 
 		if (!grenade ||
