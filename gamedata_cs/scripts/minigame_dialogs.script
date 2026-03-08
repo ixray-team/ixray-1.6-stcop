@@ -326,17 +326,17 @@ function get_weapons_name(fs, dn, pi)
 	local tbl = {}
     local str = ""
 	if(p==1) then
-    	str = game.translate_string("st_wpn_pm")
+    	str = "st_wpn_pm"
 	elseif(p==2) then
-    	str = game.translate_string("st_wpn_beretta")
+    	str = "st_wpn_beretta"
 	elseif(p==3) then
-    	str = game.translate_string("st_wpn_ak74u")
+    	str = "st_wpn_ak74u"
 	elseif(p==4) then
-    	str = game.translate_string("st_wpn_mp5")
+    	str = "st_wpn_mp5"
 	elseif(p==5) then
-    	str = game.translate_string("st_wpn_sig550")
+    	str = "st_wpn_sig550"
 	elseif(p==6) then
-    	str = game.translate_string("st_wpn_val")
+    	str = "st_wpn_val"
 	end
 	return str
 end
@@ -350,16 +350,13 @@ function get_shooting_bet_phrase()
 	local dist = m:get_minigame_param(shooting, "distance")
 	local win = m:get_minigame_param(shooting, "win")
 	if(gt=="training") or (gt=="three_hit_training") then
-		string = game.translate_string("agr_duty_tir_dialog_hello_tht_phrase").." "..win.."."
---		string = "Удачной стрельбы! Тебе надо набрать очков не меньше, чем "..win.."."
+		string = "#agr_duty_tir_dialog_hello_tht_phrase# "..win.."."
 	elseif(gt=="points") or (gt=="two_seconds_standing") then
 		local mult = shooting_money_table[gt][wt].multiplier[dist]
-		string = game.translate_string("agr_duty_tir_dialog_hello_tss_phrase_part_1").." "..win..". "..game.translate_string("agr_duty_tir_dialog_hello_tss_phrase_part_2").." "..win*mult.." "..game.translate_string("st_rubles")
---		string = "Тебе нужно набить за отведённое время очков не меньше, чем "..win..". Моя ставка на то, что ты не справишься: "..win*mult.."."
+		string = "#agr_duty_tir_dialog_hello_tss_phrase_part_1# "..win.." #agr_duty_tir_dialog_hello_tss_phrase_part_2# "..win*mult.." #st_rubles#"
 	elseif(gt=="count") or (gt=="all_targets") or (gt=="count_on_time") or (gt=="ten_targets") then
 		local mult = shooting_money_table[gt][wt].multiplier[dist]
-		string = game.translate_string("agr_duty_tir_dialog_hello_cot_phrase_part_1").." "..win..". "..game.translate_string("agr_duty_tir_dialog_hello_cot_phrase_part_2").." "..win*mult.." "..game.translate_string("st_rubles")
---		string = "Тебе нужно сбить за отведённое время мишеней не меньше, чем "..win..". Моя ставка на то, что ты не справишься: "..win*mult.."."
+		string = "#agr_duty_tir_dialog_hello_cot_phrase_part_1# "..win..". #agr_duty_tir_dialog_hello_cot_phrase_part_2# "..win*mult.." #st_rubles#"
 	end
 	return string
 end
@@ -398,20 +395,16 @@ function get_shooting_win_phrase(fs, ss)
 	local win = m:get_minigame_param(shooting, "win")
 	if(gt=="training") or (gt=="three_hit_training") then
 		if(win==true) then
-			string = game.translate_string("agr_duty_tir_dialog_hello_tht_answer_good").." "..shooting_money_table[gt][wt].distance[dist].."."
---			string = "Можешь смело переходить к игре на деньги. Ты набил больше "..shooting_money_table[gt][wt].distance[dist].."."
+			string = "#agr_duty_tir_dialog_hello_tht_answer_good# "..shooting_money_table[gt][wt].distance[dist].."."
 		else
-			string = game.translate_string("agr_duty_tir_dialog_hello_tht_answer_bad").." "..shooting_money_table[gt][wt].distance[dist].."."
---			string = "Попробуй еще потренироваться, тебе рановато играть на деньги. Ты набрал меньше "..shooting_money_table[gt][wt].distance[dist].."."
+			string = "#agr_duty_tir_dialog_hello_tht_answer_bad# "..shooting_money_table[gt][wt].distance[dist].."."
 		end
 	elseif(gt=="points") or (gt=="count") or (gt=="all_targets") or (gt=="count_on_time") or (gt=="ten_targets") or (gt=="two_seconds_standing") then
 		if(win==true) then
-			string = game.translate_string("agr_duty_tir_dialog_hello_answer_good")
---			string = "Недооценил я тебя! Держи свои деньги - честно заработал."
+			string = "agr_duty_tir_dialog_hello_answer_good"
 			dialogs.relocate_money(fs, shooting_money_table[gt][wt].distance[dist]*shooting_money_table[gt][wt].multiplier[dist], "in")
 		else
-			string = game.translate_string("agr_duty_tir_dialog_hello_answer_bad")
---			string = "Ха, я опять не ошибся и выиграл. Ну, не расстраивайся — повезет в другой раз."
+			string = "agr_duty_tir_dialog_hello_answer_bad"
 			dialogs.relocate_money(fs, shooting_money_table[gt][wt].distance[dist]*shooting_money_table[gt][wt].multiplier[dist], "out")
 		end
 	end
@@ -482,10 +475,10 @@ function get_crows_to_kill_count(fs, dn, pi)
 	if(pi=="1111") or (pi=="1112") or (pi=="1113") or (pi=="1114") then
 -- if game type is training or money
 		local i = tonumber(string.sub(pi, -1))
-		string = game.translate_string("crowkiller_dialog_crows_per_minute")..", "..tostring(m:get_minigame_param(crowkiller, "crows_to_kill")[i])
+		string = "#crowkiller_dialog_crows_per_minute#, "..tostring(m:get_minigame_param(crowkiller, "crows_to_kill")[i])
 	elseif(pi=="1") then
 -- if game type is highscore
-		string = game.translate_string("crowkiller_dialog_record_crows").." "..tostring(m:get_minigame_param(crowkiller, "highscore"))
+		string = "#crowkiller_dialog_record_crows# "..tostring(m:get_minigame_param(crowkiller, "highscore"))
 	end
     return string
 end
@@ -504,13 +497,13 @@ end
 function how_much_crowkiller_money()
 	local m = minigames_manager.get_minigames_manager()
 	local crowkiller = m:get_current_crowkiller()
-	return game.translate_string("crowkiller_dialog_money_stake").." "..tostring(m:get_minigame_param(crowkiller, "selected")*m:get_minigame_param(crowkiller, "money_multiplier"))
+	return "#crowkiller_dialog_money_stake# "..tostring(m:get_minigame_param(crowkiller, "selected")*m:get_minigame_param(crowkiller, "money_multiplier"))
 end
 --!!! Get phrase with reward money
 function how_much_crowkiller_champ_money()
 	local m = minigames_manager.get_minigames_manager()
 	local crowkiller = m:get_current_crowkiller()
-	return game.translate_string("crowkiller_dialog_record_stake").." "..tostring(m:get_minigame_param(crowkiller, "highscore")*m:get_minigame_param(crowkiller, "champion_multiplier"))
+	return "#crowkiller_dialog_record_stake# "..tostring(m:get_minigame_param(crowkiller, "highscore")*m:get_minigame_param(crowkiller, "champion_multiplier"))
 end
 -- Does actor have money
 function no_crowkiller_money()
