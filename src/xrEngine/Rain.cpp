@@ -21,6 +21,7 @@ CEffect_Rain::CEffect_Rain()
 {
 	state = stIdle;
 	snd_Ambient.create("ambient\\rain", st_Effect, sg_Undefined);
+	snd_Rain_On_Outfit.create("ambient\\rain_on_outfit", st_Effect, sg_Undefined);
 
 	string_path RainSounds = {};
 	FS.update_path(RainSounds, "$game_sounds$", "ambient\\rain_drops_roof.ogg");
@@ -40,6 +41,7 @@ CEffect_Rain::CEffect_Rain()
 CEffect_Rain::~CEffect_Rain()
 {
 	snd_Ambient.destroy();
+	snd_Rain_On_Outfit.destroy();
 	snd_RoofDroplets.destroy();
 	snd_RoofDropletsHard.destroy();
 	m_rainVolume = 0.0f;
@@ -233,6 +235,8 @@ void CEffect_Rain::OnFrame()
 				snd_Ambient.stop();
 				m_rainVolume = 0.0f;
 			}
+			if (snd_Rain_On_Outfit._feedback())
+				snd_Rain_On_Outfit.stop();
 			return;
 		}
 
@@ -247,6 +251,16 @@ void CEffect_Rain::OnFrame()
 			snd_Ambient.set_position(Fvector().set(0, 0, 0));
 			snd_Ambient.set_range(g_pGamePersistent->Environment().source_offset, g_pGamePersistent->Environment().source_offset * 2.f);
 		}
+		if (snd_Rain_On_Outfit._handle() != nullptr)
+		{
+			snd_Rain_On_Outfit.play(nullptr, sm_Looped);
+			if (!Device.IsEditorMode() || (Device.IsEditorMode() && bIsSndOnRoof))
+				CurDropSnd.play(nullptr, sm_Looped);
+			else
+				CurDropSnd.stop();
+			snd_Rain_On_Outfit.set_position(Fvector().set(0, 0, 0));
+			snd_Rain_On_Outfit.set_range(g_pGamePersistent->Environment().source_offset, g_pGamePersistent->Environment().source_offset * 2.f);
+		}
 
 		break;
 	}
@@ -255,6 +269,7 @@ void CEffect_Rain::OnFrame()
 		{
 			state				= stIdle;
 			snd_Ambient.stop	();
+			snd_Rain_On_Outfit.stop();
 			m_rainVolume = 0.0f;
 			snd_RoofDroplets.stop();
 			snd_RoofDropletsHard.stop();
@@ -268,6 +283,11 @@ void CEffect_Rain::OnFrame()
 	{
 		m_rainVolume = _max(0.1f, factor) * hemi_factor;
 		snd_Ambient.set_volume(m_rainVolume);
+	}
+
+	// Rain On Outfit Sound
+	if (snd_Rain_On_Outfit._feedback()) {
+		snd_Rain_On_Outfit.set_volume(_max(0.0f, hemi_factor) * factor);
 	}
 
 	if (CurDropSnd._feedback())

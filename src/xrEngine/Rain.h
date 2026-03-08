@@ -68,6 +68,7 @@ private:
 
 	// Sounds
 	ref_sound						snd_Ambient;
+	ref_sound						snd_Rain_On_Outfit;
 	ref_sound						snd_RoofDroplets;
 	ref_sound						snd_RoofDropletsHard;
 	xrCriticalSection				rainCS;
