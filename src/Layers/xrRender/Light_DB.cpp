@@ -55,14 +55,15 @@ void CLight_DB::Load			(IReader *fs)
 				sun_original		= L;
 				L->set_type			(IRender_Light::DIRECT);
 				L->set_shadow		(true);
-				L->set_rotation		(Ldata.direction,tmp_R);
-				
+				L->direction.set(Ldata.direction);
+				L->right.set(tmp_R);
 				// copy to env-sun
 				sun_adapted			=	L		= Create();
 				L->flags.bStatic	=	true;
 				L->set_type			(IRender_Light::DIRECT);
 				L->set_shadow		(true);
-				L->set_rotation		(Ldata.direction,tmp_R);
+				L->direction.set(Ldata.direction);
+				L->right.set(tmp_R);
 			}
 			else
 			{
@@ -72,11 +73,12 @@ void CLight_DB::Load			(IReader *fs)
 
 				// point
 				v_static.push_back	(L);
-				L->set_position		(Ldata.position		);
-				L->set_rotation		(tmp_D, tmp_R		);
-				L->set_range		(Ldata.range		);
-				L->set_color		(Ldata.diffuse		);
-				L->set_active		(true				);
+				L->position.set(Ldata.position);
+				L->direction.set(tmp_D);
+				L->right.set(tmp_R);
+				L->range = Ldata.range;
+				L->color.set(Ldata.diffuse);
+				L->set_active(true);
 			}
 		}
 
@@ -130,6 +132,7 @@ void	CLight_DB::LoadHemi	()
 					//if (Ldata.type!=0)
 					{
 						light*		L				= Create	();
+						L->SpatialComponent->spatial.type = ESPATIAL_TYPE::LIGHTSOURCEHEMI;
 						L->flags.bStatic			= true;
 						L->set_type					(IRender_Light::POINT);
 
@@ -138,14 +141,14 @@ void	CLight_DB::LoadHemi	()
 						tmp_R.set			(1,0,0);	// right
 
 						// point
-						v_hemi.push_back	(L);
-						L->set_position		(Ldata.position		);
-						L->set_rotation		(tmp_D, tmp_R		);
-						L->set_range		(Ldata.range		);
-						L->set_color		(Ldata.diffuse.x, Ldata.diffuse.y, Ldata.diffuse.z);
-						L->set_active		(true				);
+						v_hemi.push_back(L);
+						L->position.set(Ldata.position);
+						L->direction.set(tmp_D);
+						L->right.set(tmp_R);
+						L->range = Ldata.range;
+						L->color.set(Ldata.diffuse.x, Ldata.diffuse.y, Ldata.diffuse.z, 1.f);
+						L->set_active(true);
 						L->set_attenuation_params(Ldata.attenuation0, Ldata.attenuation1, Ldata.attenuation2, Ldata.falloff);
-						L->SpatialComponent->spatial.type = ESPATIAL_TYPE::LIGHTSOURCEHEMI;
 					}
 				}
 
