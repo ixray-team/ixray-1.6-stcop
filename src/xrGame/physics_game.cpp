@@ -149,7 +149,7 @@ public:
 		//добавить отметку на материале
 		::Render->add_StaticWallmark(pWallmarkShader,pos, 
 			0.09f, T,
-			Level().ObjectSpace.GetStaticVerts());
+			Level().ObjectSpace.GetStaticVerts().data());
 	};
 	virtual bool 			obsolete						()const{return false;}
 };

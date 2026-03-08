@@ -71,6 +71,10 @@ void CPEDef::ExecuteAnimate(Particle *particles, u32 p_cnt, float dt)
 void CPEDef::ExecuteCollision(PAPI::Particle* particles, u32 p_cnt, float dt, CParticleEffect* owner, CollisionCallback cb)
 {
 	Fvector pt,n;
+#ifndef _EDITOR
+	xr_vector<CDB::TRI>& tris = g_pGameLevel->ObjectSpace.GetStaticTris();
+	xr_vector<Fvector>& verts = g_pGameLevel->ObjectSpace.GetStaticVerts();
+#endif
 	// Must traverse list in reverse order so Remove will work
 	for(int i = p_cnt-1; i >= 0; i--){
 		Particle &m = particles[i];
@@ -89,16 +93,17 @@ void CPEDef::ExecuteCollision(PAPI::Particle* particles, u32 p_cnt, float dt, CP
 				//if (false)
 				{
 #else
-				collide::rq_result	RQ;
-                collide::rq_target	RT = m_Flags.is(dfCollisionDyn)?collide::rqtBoth:collide::rqtStatic;
-				if (g_pGameLevel->ObjectSpace.RayPick(m.posB,dir,dist,RT,RQ,nullptr)){	
-					pt.mad	(m.posB,dir,RQ.range);
-					if (RQ.O){
+				collide::rq_result RQ;
+                collide::rq_target RT = m_Flags.is(dfCollisionDyn)?collide::rqtBoth:collide::rqtStatic;
+				if (g_pGameLevel->ObjectSpace.RayPick(m.posB,dir,dist,RT,RQ,nullptr))
+				{	
+					pt.mad(m.posB,dir,RQ.range);
+					if (RQ.O)
 						n.set(0.f,1.f,0.f);
-					}else{
-						CDB::TRI*	T		=  	g_pGameLevel->ObjectSpace.GetStaticTris()+RQ.element;
-						Fvector*	verts	=	g_pGameLevel->ObjectSpace.GetStaticVerts();
-						n.mknormal(verts[T->verts[0]],verts[T->verts[1]],verts[T->verts[2]]);
+					else
+					{
+						auto& Tidxs = tris[RQ.element].verts;
+						n.mknormal(verts[Tidxs[0]],verts[Tidxs[1]],verts[Tidxs[2]]);
 					}
 #endif
 					pick_cnt++;

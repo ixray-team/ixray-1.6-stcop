@@ -7,7 +7,6 @@
 #include "Level.h"
 #include "game_cl_base.h"
 #include "../xrEngine/x_ray.h"
-#include "../xrEngine/GameMtlLib.h"
 #include "../xrPhysics/PhysicsCommon.h"
 #include "level_sounds.h"
 #include "GamePersistent.h"
@@ -189,95 +188,6 @@ BOOL CLevel::Load_GameSpecific_After()
 	g_pGamePersistent->Environment().SetGameTime	(GetEnvironmentGameDayTimeSec(),game->GetEnvironmentGameTimeFactor());
 
 	return TRUE;
-}
-
-struct translation_pair
-{
-	u32 m_id;
-	u16 m_index;
-
-	IC translation_pair(u32 id, u16 index)
-	{
-		m_id = id;
-		m_index = index;
-	}
-
-	IC bool operator==(const u16& id) const
-	{
-		return (m_id == id);
-	}
-
-	IC bool operator<(const translation_pair& pair) const
-	{
-		return (m_id < pair.m_id);
-	}
-
-	IC bool operator<(const u16& id) const
-	{
-		return (m_id < id);
-	}
-};
-
-void CLevel::Load_GameSpecific_CFORM(CDB::TRI* tris, size_t count)
-{
-	typedef xr_vector<translation_pair>	ID_INDEX_PAIRS;
-	ID_INDEX_PAIRS						translator;
-	translator.reserve					(GMLib.CountMaterial());
-	u16									default_id = (u16)GMLib.GetMaterialIdx("default");
-	translator.push_back				(translation_pair(u32(-1),default_id));
-
-	u16									index = 0, static_mtl_count = 1;
-	int max_ID							= 0;
-	int max_static_ID					= 0;
-	for (GameMtlIt I=GMLib.FirstMaterial(); GMLib.LastMaterial()!=I; ++I, ++index) {
-		if (!(*I)->Flags.test(SGameMtl::flDynamic)) {
-			++static_mtl_count;
-			if(Device.IsEditorMode())
-				translator.push_back(translation_pair((*I)->GetID(), (*I)->GetID()));
-			else
-			translator.push_back		(translation_pair((*I)->GetID(),index));
-			if ((*I)->GetID()>max_static_ID)	max_static_ID	= (*I)->GetID(); 
-		}
-		if ((*I)->GetID()>max_ID)				max_ID			= (*I)->GetID(); 
-	}
-	// Msg("* Material remapping ID: [Max:%d, StaticMax:%d]",max_ID,max_static_ID);
-	VERIFY(max_static_ID<0xFFFF);
-	
-	if (static_mtl_count < 128) {
-		CDB::TRI						*I = tris;
-		CDB::TRI						*E = tris + count;
-		for ( ; I != E; ++I) {
-			ID_INDEX_PAIRS::iterator	i = std::find(translator.begin(),translator.end(),(u16)(*I).material);
-			if (i != translator.end()) {
-				(*I).material			= (*i).m_index;
-				SGameMtl* mtl			= GMLib.GetMaterialByIdx	((*i).m_index);
-				(*I).suppress_shadows	= mtl->Flags.is(SGameMtl::flSuppressShadows);
-				(*I).suppress_wm		= mtl->Flags.is(SGameMtl::flSuppressWallmarks);
-				continue;
-			}
-			if(Device.IsEditorMode()==false)
-			Debug.fatal					(DEBUG_INFO,"Game material '%d' not found",(*I).material);
-		}
-		return;
-	}
-
-	std::sort							(translator.begin(),translator.end());
-	{
-		CDB::TRI						*I = tris;
-		CDB::TRI						*E = tris + count;
-		for ( ; I != E; ++I) {
-			ID_INDEX_PAIRS::iterator	i = std::lower_bound(translator.begin(),translator.end(),(u16)(*I).material);
-			if ((i != translator.end()) && ((*i).m_id == (*I).material)) {
-				(*I).material			= (*i).m_index;
-				SGameMtl* mtl			= GMLib.GetMaterialByIdx	((*i).m_index);
-				(*I).suppress_shadows	= mtl->Flags.is(SGameMtl::flSuppressShadows);
-				(*I).suppress_wm		= mtl->Flags.is(SGameMtl::flSuppressWallmarks);
-				continue;
-			}
-			if (Device.IsEditorMode() == false)
-			Debug.fatal					(DEBUG_INFO,"Game material '%d' not found",(*I).material);
-		}
-	}
 }
 
 void CLevel::BlockCheatLoad()

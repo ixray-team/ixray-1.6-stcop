@@ -219,15 +219,19 @@ IC BOOL material_callback(collide::rq_result& result, LPVOID params)
 		IKinematics*K=PKinematics(result.O->renderable.visual);
 		if (K&&(result.element>0))
 			vis		= g_pGamePersistent->MtlTransparent(K->LL_GetData(u16(result.element)).game_mtl_idx);
-	}else{
-		CDB::TRI* T	= g_pGameLevel->ObjectSpace.GetStaticTris()+result.element;
-		vis			= g_pGamePersistent->MtlTransparent(T->material);
-		if (fis_zero(vis)){
-			Fvector* V	= g_pGameLevel->ObjectSpace.GetStaticVerts();
-			fp->pray_cache->set				(fp->P,fp->D,fp->f,TRUE);
-			fp->pray_cache->verts[0].set	(V[T->verts[0]]);
-			fp->pray_cache->verts[1].set	(V[T->verts[1]]);
-			fp->pray_cache->verts[2].set	(V[T->verts[2]]);
+	}
+	else
+	{
+		CDB::TRI& T	= g_pGameLevel->ObjectSpace.GetStaticTris()[result.element];
+		vis = g_pGamePersistent->MtlTransparent(T.material);
+		if (fis_zero(vis))
+		{
+			xr_vector<Fvector>& V = g_pGameLevel->ObjectSpace.GetStaticVerts();
+			auto& Tidxs = T.verts;
+			fp->pray_cache->set(fp->P,fp->D,fp->f,TRUE);
+			fp->pray_cache->verts[0] = V[Tidxs[0]];
+			fp->pray_cache->verts[1] = V[Tidxs[1]];
+			fp->pray_cache->verts[2] = V[Tidxs[2]];
 		}
 	}
 	fp->vis			*=vis;

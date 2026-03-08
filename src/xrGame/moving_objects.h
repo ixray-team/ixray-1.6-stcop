@@ -20,7 +20,6 @@ struct boxes;
 class moving_objects {
 private:
 	typedef CQuadTree<moving_object>					TREE;
-	typedef xr_vector<CObject*>							NEAREST_STATIC;
 
 public:
 	enum possible_actions {
@@ -36,17 +35,12 @@ public:
 	typedef std::pair<float,COLLISION_ACTION>			COLLISION_TIME;
 	typedef xr_vector<COLLISION_TIME>					COLLISIONS;
 
-private:
-	typedef xr_vector<ISpatialShared>					Spatials;
-
-
 public:
 	typedef obstacles_query								query;
 	typedef obstacles_query::AREA						AREA;
 
 private:
 	TREE						*m_tree;
-	NEAREST_STATIC				m_nearest_static;
 
 private:
 	NEAREST_MOVING				m_nearest_moving;
@@ -54,7 +48,7 @@ private:
 	NEAREST_MOVING				m_visited_emitters;
 	COLLISIONS					m_collisions;
 	COLLISIONS					m_previous_collisions;
-	Spatials					m_spatial_objects;
+	xr_vector<ISpatialShared>	m_spatial_objects;
 
 #ifdef DEBUG
 private:

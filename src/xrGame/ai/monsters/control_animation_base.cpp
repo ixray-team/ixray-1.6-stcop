@@ -672,8 +672,8 @@ ICF static BOOL check_hit_trace_callback(collide::rq_result& result, LPVOID para
 	}
 	else
 	{
-		CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + result.element;
-		if (GMLib.GetMaterialByIdx(T->material)->Flags.is(SGameMtl::flPassable))
+		CDB::TRI& T = Level().ObjectSpace.GetStaticTris()[result.element];
+		if (GMLib.GetMaterialByIdx(T.material)->Flags.is(SGameMtl::flPassable))
 		{
 			return TRUE;
 		}
