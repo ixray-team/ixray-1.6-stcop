@@ -12,6 +12,10 @@ group_id_by_levels = {zaton = 1,
 							labx8 = 4,
 							jupiter_underground = 5}
 
+function add_group_id_by_level(level, id)
+    group_id_by_levels[level] = id
+end
+
 local board = nil
 
 simulation_activities = {
