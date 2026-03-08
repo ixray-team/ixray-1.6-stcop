@@ -93,8 +93,8 @@ bool CPickUpManager::CanPickItem(const CFrustum& frustum, const Fvector& from, C
 				else
 				{
 					//получить треугольник и узнать его материал
-					CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + result.element;
-					if (GMLib.GetMaterialByIdx(T->material)->Flags.is(SGameMtl::flPassable))
+					CDB::TRI& T = Level().ObjectSpace.GetStaticTris()[result.element];
+					if (GMLib.GetMaterialByIdx(T.material)->Flags.is(SGameMtl::flPassable))
 						return TRUE;
 				}
 

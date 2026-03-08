@@ -10,7 +10,7 @@
 #include "xrLevel.h"
 #include "xr_object.h"
 #include "x_ray.h"
-
+#include "GameMtlLib.h"
 #include "../xrGame/AnimNotify/AnimNotifyGame.h"
 
 ENGINE_API	IGame_Level*	g_pGameLevel	= nullptr;
@@ -85,9 +85,94 @@ void  _sound_event		(ref_sound_data_ptr S, float range)
 {
 	if ( g_pGameLevel && S && S->feedback )	g_pGameLevel->SoundEvent_Register	(S,range);
 }
-static void 	build_callback	(Fvector* V, size_t Vcnt, CDB::TRI* T, size_t Tcnt, void* params)
+
+void IGame_Level::Load_GameSpecific_CFORM(CDB::TRI* tris, size_t count)
 {
-	g_pGameLevel->Load_GameSpecific_CFORM( T, Tcnt );
+	struct translation_pair
+	{
+		u32 m_id;
+		u16 m_index;
+
+		IC translation_pair(u32 id, u16 index)
+		{
+			m_id = id;
+			m_index = index;
+		}
+
+		IC bool operator==(const u16& id) const
+		{
+			return (m_id == id);
+		}
+
+		IC bool operator<(const translation_pair& pair) const
+		{
+			return (m_id < pair.m_id);
+		}
+
+		IC bool operator<(const u16& id) const
+		{
+			return (m_id < id);
+		}
+	};
+
+	typedef xr_vector<translation_pair>	ID_INDEX_PAIRS;
+	ID_INDEX_PAIRS						translator;
+	translator.reserve(GMLib.CountMaterial());
+	u16									default_id = (u16)GMLib.GetMaterialIdx("default");
+	translator.push_back(translation_pair(u32(-1), default_id));
+
+	u16									index = 0, static_mtl_count = 1;
+	int max_ID = 0;
+	int max_static_ID = 0;
+	for (GameMtlIt I = GMLib.FirstMaterial(); GMLib.LastMaterial() != I; ++I, ++index) {
+		if (!(*I)->Flags.test(SGameMtl::flDynamic)) {
+			++static_mtl_count;
+			if (Device.IsEditorMode())
+				translator.push_back(translation_pair((*I)->GetID(), (*I)->GetID()));
+			else
+				translator.push_back(translation_pair((*I)->GetID(), index));
+			if ((*I)->GetID() > max_static_ID)	max_static_ID = (*I)->GetID();
+		}
+		if ((*I)->GetID() > max_ID)				max_ID = (*I)->GetID();
+	}
+	// Msg("* Material remapping ID: [Max:%d, StaticMax:%d]",max_ID,max_static_ID);
+	VERIFY(max_static_ID < 0xFFFF);
+
+	if (static_mtl_count < 128) {
+		CDB::TRI* I = tris;
+		CDB::TRI* E = tris + count;
+		for (; I != E; ++I) {
+			ID_INDEX_PAIRS::iterator	i = std::find(translator.begin(), translator.end(), (u16)(*I).material);
+			if (i != translator.end()) {
+				(*I).material = (*i).m_index;
+				SGameMtl* mtl = GMLib.GetMaterialByIdx((*i).m_index);
+				(*I).suppress_shadows = mtl->Flags.is(SGameMtl::flSuppressShadows);
+				(*I).suppress_wm = mtl->Flags.is(SGameMtl::flSuppressWallmarks);
+				continue;
+			}
+			if (Device.IsEditorMode() == false)
+				Debug.fatal(DEBUG_INFO, "Game material '%d' not found", (*I).material);
+		}
+		return;
+	}
+
+	std::sort(translator.begin(), translator.end());
+	{
+		CDB::TRI* I = tris;
+		CDB::TRI* E = tris + count;
+		for (; I != E; ++I) {
+			ID_INDEX_PAIRS::iterator	i = std::lower_bound(translator.begin(), translator.end(), (u16)(*I).material);
+			if ((i != translator.end()) && ((*i).m_id == (*I).material)) {
+				(*I).material = (*i).m_index;
+				SGameMtl* mtl = GMLib.GetMaterialByIdx((*i).m_index);
+				(*I).suppress_shadows = mtl->Flags.is(SGameMtl::flSuppressShadows);
+				(*I).suppress_wm = mtl->Flags.is(SGameMtl::flSuppressWallmarks);
+				continue;
+			}
+			if (Device.IsEditorMode() == false)
+				Debug.fatal(DEBUG_INFO, "Game material '%d' not found", (*I).material);
+		}
+	}
 }
 
 BOOL IGame_Level::Load			(u32 dwNum) 
@@ -120,7 +205,15 @@ BOOL IGame_Level::Load			(u32 dwNum)
 	// CForms
 	g_pGamePersistent->SetLoadStageTitle("st_loading_cform");
 	g_pGamePersistent->LoadTitle	();
-	ObjectSpace.Load			( build_callback );
+
+	ObjectSpace.Load
+	(
+		[](Fvector * V, size_t Vcnt, CDB::TRI * T, size_t Tcnt, void* params)
+		{
+			g_pGameLevel->Load_GameSpecific_CFORM(T, Tcnt);
+		}
+	);
+
 	//Sound->set_geometry_occ		( &Static );
 	Sound->set_geometry_occ		(ObjectSpace.GetStaticModel	());
 	Sound->set_handler			( _sound_event );

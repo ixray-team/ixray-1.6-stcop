@@ -4,7 +4,7 @@
 #include "../Include/xrRender/DrawUtils.h"
 //#include "xr_effgamma.h"
 #include "Render.h"
-#include "../xrCore/Collision/xrXRC.h"
+#include "../xrCore/Collision/xrCDB.h"
 
 extern XRCORE_API BOOL *cdb_bDebug;
 
@@ -69,9 +69,6 @@ void CRenderDevice::Create	()
 	Statistic			= new CStats();
 
 #ifdef	DEBUG
-	cdb_clRAY		= &Statistic->clRAY;				// total: ray-testing
-	cdb_clBOX		= &Statistic->clBOX;				// total: box query
-	cdb_clFRUSTUM	= &Statistic->clFRUSTUM;			// total: frustum query
 	cdb_bDebug		= &bDebug;
 #endif
 

@@ -17,8 +17,8 @@ namespace Feel
 		xr_vector<DenyTouch>	feel_touch_disable;
 
 	public:
-		xr_vector<CObject*>		feel_touch;
-		xr_vector<CObject*>		q_nearest;
+		xr_vector<CObject*> feel_touch;
+		xr_vector<ISpatialShared> q_nearest;
 		
 		void 			feel_touch_relcase			(CObject* O);
 		

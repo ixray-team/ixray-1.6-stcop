@@ -57,9 +57,9 @@ bool ignore_tri( CDB::TRI &tri )
 
 bool ignore_static_tri( int tri )
 {
-	VERIFY(Level( ).ObjectSpace.GetStaticModel()->get_tris_count() > tri );
-	CDB::TRI	* triangle	= Level( ).ObjectSpace.GetStaticTris( ) + tri;
-	return ignore_tri( *triangle );
+	VERIFY(Level( ).ObjectSpace.GetStaticModel()->get_tris().size() > tri );
+	CDB::TRI& triangle	= Level( ).ObjectSpace.GetStaticTris( )[tri];
+	return ignore_tri( triangle );
 }
 
 IC bool ignore_object( CObject	*O )
@@ -90,7 +90,7 @@ IC void tri_plane(const Fvector &v0, const Fvector &v1, const Fvector &v2, Fplan
 
 IC void tri_plane(const CDB::TRI &tri, Fplane &p )
 {
-	Fvector*	pVerts	= Level().ObjectSpace.GetStaticVerts();
+	xr_vector<Fvector>& pVerts	= Level().ObjectSpace.GetStaticVerts();
 	tri_plane( pVerts[tri.verts[0]], pVerts[tri.verts[1]], pVerts[tri.verts[2]] , p );
 }
 
@@ -98,20 +98,20 @@ IC bool	get_plane_static(  ik_pick_result &r, Fvector &next_pos, float &next_ran
 {
 	
 	
-	VERIFY( Level( ).ObjectSpace.GetStaticModel()->get_tris_count() > R.element );
-	CDB::TRI	* tri	= Level( ).ObjectSpace.GetStaticTris( ) + R.element;
-	Fvector*	pVerts	= Level().ObjectSpace.GetStaticVerts();
+	VERIFY( Level( ).ObjectSpace.GetStaticModel()->get_tris().size() > R.element );
+	CDB::TRI& tri	= Level( ).ObjectSpace.GetStaticTris( )[R.element];
+	xr_vector<Fvector>& pVerts	= Level().ObjectSpace.GetStaticVerts();
 
-	r.triangle[0] = pVerts[tri->verts[0]];
-	r.triangle[1] = pVerts[tri->verts[1]];
-	r.triangle[2] = pVerts[tri->verts[2]];
+	r.triangle[0] = pVerts[tri.verts[0]];
+	r.triangle[1] = pVerts[tri.verts[1]];
+	r.triangle[2] = pVerts[tri.verts[2]];
 
 	tri_plane( r.triangle[0], r.triangle[1], r.triangle[2], r.p );
 
 	r.position.add(pos, Fvector().mul( pick_v, R.range  ) );
 	next_pos.set( r.position );
 	next_range = pick_dist - R.range;
-	if( ignore_tri( *tri ) )
+	if( ignore_tri( tri ) )
 	{
 		next_pos.add( Fvector().mul( pick_v, EPS_L  ) );
 		float dot = pick_v.dotproduct( r.p.n );
@@ -206,13 +206,10 @@ bool Pick( ik_pick_result &r, const ik_pick_query &q , CObject* ignore_object)
 #ifdef DEBUG
 	if( ph_dbg_draw_mask1.test( phDbgDrawIKCollision ) && collided && !R.O )
 	{
-		CDB::TRI	*tri	= Level( ).ObjectSpace.GetStaticTris( ) + R.element;
+		CDB::TRI& tri = Level( ).ObjectSpace.GetStaticTris()[R.element];
 		Fvector p = q.pos();p.add( Fvector( ).mul( q.dir(), range ) );
 		DBG_DrawLine(pos, p, color_xrgb(255, 0, 0));
-		if( tri )
-		{
-			DBG_DrawTri(tri, Level().ObjectSpace.GetStaticVerts(), color_xrgb(255, 0, 0));
-		}
+		DBG_DrawTri(&tri, Level().ObjectSpace.GetStaticVerts().data(), color_xrgb(255, 0, 0));
 	}
 #endif
 	return collided;

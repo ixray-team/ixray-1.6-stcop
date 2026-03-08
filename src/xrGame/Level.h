@@ -300,7 +300,6 @@ public:
 
 	virtual BOOL				Load_GameSpecific_Before( );
 	virtual BOOL				Load_GameSpecific_After ( );
-	virtual void				Load_GameSpecific_CFORM	( CDB::TRI* T, size_t count ) override;
 
 	// Events
 	virtual void				OnEvent					( EVENT E, u64 P1, u64 P2 );
