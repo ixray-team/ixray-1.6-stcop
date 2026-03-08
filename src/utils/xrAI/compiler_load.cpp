@@ -83,7 +83,7 @@ void xrLoad(LPCSTR name, bool draft_mode, bool skipThm)
 			Fvector* verts = (Fvector*)fs->pointer();
 			CDB::TRI* tris = (CDB::TRI*)(verts + H.vertcount);
 			LevelPtr->build(verts, H.vertcount, tris, H.facecount);
-			LevelPtr->syncronize();
+			LevelPtr->wait_loading();
 			Msg("* Level CFORM: %dK", LevelPtr->memory() / 1024);
 
 			g_rc_faces.resize(H.facecount);

@@ -79,7 +79,7 @@ public:
 	u32															uLastLTRACK;
 	xr_vector<IRender_Portal*>									Portals;
 	xr_vector<IRender_Sector*>									Sectors;
-	xrXRC														Sectors_xrc;
+	CDB::COLLIDER												Sectors_xrc;
 	CDB::MODEL*													rmPortals;
 	CHOM														HOM;
 	R_occlusion													HWOCC;

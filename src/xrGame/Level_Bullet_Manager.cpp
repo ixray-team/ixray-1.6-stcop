@@ -806,7 +806,7 @@ BOOL CBulletManager::firetrace_callback	(collide::rq_result& result, LPVOID para
 
 	//статический объект
 	if (!result.O) {
-		CDB::TRI const& triangle	= *(Level().ObjectSpace.GetStaticTris() + result.element);
+		CDB::TRI& triangle	= Level().ObjectSpace.GetStaticTris()[result.element];
 		bullet_manager.RegisterEvent(EVENT_HIT, FALSE, &bullet, collide_position, result, triangle.material);
 		return						(FALSE);
 	}

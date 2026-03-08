@@ -12,8 +12,8 @@ using namespace Opcode;
 struct cform_frustum_collider final
 {
 	COLLIDER* dest;
-	TRI* tris;
-	Fvector* verts;
+	const xr_vector<TRI>& tris;
+	const xr_vector<Fvector>& verts;
 	const CFrustum& F;
 
 	bool bClass3, bFirst;
@@ -91,11 +91,11 @@ struct cform_frustum_collider final
 
 void COLLIDER::frustum_query(const MODEL* m_def, const CFrustum& F)
 {
-	PROF_EVENT("COLLIDER::frustum_query")
-	if (!m_def)
-		return;
+	PROF_EVENT("COLLIDER::frustum_query");
+	m_def->wait_loading();
 
-	m_def->syncronize();
+	if (!m_def || m_def->tree == nullptr)
+		return;
 
 	// Get nodes
 	const AABBNoLeafNode* pNodes = ((AABBNoLeafTree*)m_def->tree->GetTree())->GetNodes();

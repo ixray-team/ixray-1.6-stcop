@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "../Terrain/ESceneTerrainTools.h"
-
+#include"../xrCore/Collision/cl_intersect.h"
 static SPickQuery	PQ;
 
 IC void SnapXZ	(Fvector&	V, float ps)
@@ -111,7 +111,7 @@ BOOL ESceneAIMapTool::CreateNode(Fvector& vAt, SAINode& N, bool bIC)
 			float	range,u,v;
 			for (DWORD i=0; i<DWORD(tris.size()); i++)
 			{
-				if (XRay::Collision::TestRayTriA(P,D,tris[i].v,u,v,range,false))
+				if (CDB::TestRayTri(P,D,tris[i].v,u,v,range,false))
 				{
 					if (range<tri_min_range)
 					{
@@ -196,7 +196,7 @@ BOOL ESceneAIMapTool::CreateNode(Fvector& vAt, SAINode& N, bool bIC)
 				int		tri_selected	= -1;
 				float	range,u,v;
 				for (size_t i=0; i<tris.size(); i++){
-					if (XRay::Collision::TestRayTriA(P,D,tris[i].v,u,v,range,false)){
+					if (CDB::TestRayTri(P,D,tris[i].v,u,v,range,false)){
 						if (range<tri_min_range){
 							tri_min_range	= range;
 							tri_selected	= i;
@@ -654,6 +654,7 @@ bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 
 						// collect tris
 						const IntVec& face_lst = sp_it->second;
+						CL.reserve(face_lst.size());
 						for (IntVec::const_iterator it = face_lst.begin(); it != face_lst.end(); it++)
 						{
 							E->GetFaceWorld((*o_it)->_Transform(), *m_it, *it, verts);

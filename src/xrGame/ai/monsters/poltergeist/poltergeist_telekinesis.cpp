@@ -193,10 +193,14 @@ bool CPolterTele::trace_object(CObject *obj, const Fvector &target)
 void CPolterTele::tele_find_objects(xr_vector<CObject*> &objects, const Fvector &pos) 
 {
 	objects.clear();
-	Level().ObjectSpace.GetNearest(m_nearest, pos, m_pmt_radius, nullptr);
-
-	for (CObject* pObject : m_nearest)
+	g_SpatialSpace->q_sphere(m_nearest,0,ESPATIAL_TYPE::COLLIDEABLE, pos, m_pmt_radius);
+	for (ISpatialShared& SS : m_nearest)
 	{
+		ISpatial* S = SS.get();
+		if (!S) continue;
+		CObject* pObject = S->dcast_CObject();
+		if (!pObject || pObject->getDestroy()) continue;
+
 		CPhysicsShellHolder* obj = pObject->cast_physics_shell_holder();
 		CMonsterEnemyManager& enemy = this->m_object->EnemyMan;
 		

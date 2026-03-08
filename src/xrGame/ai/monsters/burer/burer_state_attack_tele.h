@@ -9,7 +9,7 @@ class CStateBurerAttackTele : public CState<Object> {
 
 	xr_vector<CPhysicsShellHolder *>	tele_objects;
 	CPhysicsShellHolder					*selected_object;
-	xr_vector<CObject*>					m_nearest;
+	xr_vector<ISpatialShared> m_nearest;
 	
 	u32									time_started;
 
@@ -53,7 +53,7 @@ private:
 			void		SelectObjects			();
 
 			// internal for FindObjects
-			void		FindFreeObjects			(xr_vector<CObject*> &tpObjects, const Fvector &pos);
+			void		FindFreeObjects			(xr_vector<ISpatialShared>& tpObjects, const Fvector &pos);
 			void  OnGrenadeDestroyed	(CGrenade* const grenade);
 
 			void		FireAllToEnemy			();

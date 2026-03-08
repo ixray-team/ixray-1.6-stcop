@@ -201,7 +201,7 @@ int dcTriListCollider::dTriSphere(const dReal* v0,const dReal* v1,const dReal* v
 	 else
 	 {
 		//VERIFY( g_pGameLevel );
-		CDB::TRI*       T_array      = inl_ph_world().ObjectSpace().GetStaticTris();
+		CDB::TRI*       T_array      = inl_ph_world().ObjectSpace().GetStaticTris().data();
 		flags8& gl_state=gl_cl_tries_state[I-B];
 		if(gl_state.test(fl_engaged_s0)||gl_state.test(fl_engaged_s1)||gl_state.test(fl_engaged_s2))	
 			return 0;

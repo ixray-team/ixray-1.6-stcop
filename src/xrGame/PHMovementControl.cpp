@@ -1232,7 +1232,7 @@ BOOL CPHMovementControl::BorderTraceCallback(collide::rq_result& result, LPVOID 
 	else
 	{
 		//получить треугольник и узнать его материал
-		T = Level().ObjectSpace.GetStaticTris() + result.element;
+		T = &Level().ObjectSpace.GetStaticTris()[result.element];
 		mtl_idx = T->material;
 	}
 
@@ -1242,7 +1242,7 @@ BOOL CPHMovementControl::BorderTraceCallback(collide::rq_result& result, LPVOID 
 	if (mtl->Flags.test(SGameMtl::flInjurious))
 	{
 		Fvector tri_norm;
-		GetNormal(T, tri_norm, Level().ObjectSpace.GetStaticVerts());
+		GetNormal(T, tri_norm, Level().ObjectSpace.GetStaticVerts().data());
 
 		if (p.m_dir.dotproduct(tri_norm) < 0.f)
 			p.m_movement->in_dead_area_count++;

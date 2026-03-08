@@ -347,8 +347,8 @@ bool detail_slot_calculate( u32 _x, u32 _z, DetailSlot&	DS, DWORDVec& box_result
 		return false; 
 		//continue;
 
-	CDB::TRI*	tris	= gl_data.RCAST_Model.get_tris();
-	Fvector*	verts	= gl_data.RCAST_Model.get_verts();
+	CDB::TRI*	tris	= gl_data.RCAST_Model.get_tris().data();
+	Fvector*	verts	= gl_data.RCAST_Model.get_verts().data();
 
 	// select lights
 	Selected.select		( gl_data.g_lights, S.P, S.R );

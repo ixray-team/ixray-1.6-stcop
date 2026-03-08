@@ -93,8 +93,8 @@ ICF static BOOL GetPickDist_Callback(collide::rq_result& result, LPVOID params)
 	}
 	else
 	{
-		CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + result.element;
-		SGameMtl* pMtl = GMLib.GetMaterialByIdx(T->material);
+		CDB::TRI& T = Level().ObjectSpace.GetStaticTris()[result.element];
+		SGameMtl* pMtl = GMLib.GetMaterialByIdx(T.material);
 		if (pMtl != nullptr && (pMtl->Flags.is(SGameMtl::flPassable) || pMtl->Flags.is(SGameMtl::flActorObstacle)))
 		{
 			return TRUE;
