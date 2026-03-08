@@ -275,9 +275,10 @@ void CMovementManager::move_along_path		(CPHMovementControl *movement_control, F
 	Device.Statistic->Physics.Begin	();
 
 	// получить физ. объекты в радиусе
-	m_nearest_objects.resize(0);
-	Level().ObjectSpace.GetNearest		(m_nearest_objects,dest_position,DISTANCE_PHISICS_ENABLE_CHARACTERS + (movement_control->IsCharacterEnabled() ? 0.5f : 0.f),&object()); 
+	g_SpatialSpace->q_sphere(m_nearest_objects,0,ESPATIAL_TYPE::COLLIDEABLE, dest_position, DISTANCE_PHISICS_ENABLE_CHARACTERS + (movement_control->IsCharacterEnabled() ? 0.5f : 0.f));
 
+	if (m_nearest_objects.size()==1 && m_nearest_objects.back()->dcast_CObject() == &object())
+		m_nearest_objects.clear();
 	// установить позицию
 	VERIFY				(dist >= 0.f);
 	VERIFY				(dist_to_target >= 0.f);

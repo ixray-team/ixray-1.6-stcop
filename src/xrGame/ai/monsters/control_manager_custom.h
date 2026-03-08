@@ -17,7 +17,7 @@ class CEntityAlive;
 class CControlManagerCustom : public CControl_ComBase {
 	typedef					CControl_ComBase	inherited;
 
-	xr_vector<CObject*>		m_nearest;
+	xr_vector<ISpatialShared> m_nearest;
 
 	CAnimationSequencer		*m_sequencer;
 	CAnimationTriple		*m_triple_anim;

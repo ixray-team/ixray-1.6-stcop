@@ -15,7 +15,7 @@ class CBurer final :	public CBaseMonster,
 	typedef		CBaseMonster				inherited;
 
 private:
-	xr_vector<CObject*>	m_nearest;
+	xr_vector<ISpatialShared> m_nearest;
 
 public:
 	static		bool	can_scan;

@@ -191,11 +191,11 @@ void Vision::o_trace(Fvector& P, float dt, float vis_threshold) {
 						fp->vis *= vis;
 						if (nullptr == result.O && fis_zero(vis))
 						{
-							CDB::TRI* T = g_pGameLevel->ObjectSpace.GetStaticTris() + result.element;
-							Fvector* V = g_pGameLevel->ObjectSpace.GetStaticVerts();
-							fp->item->Cache.verts[0].set(V[T->verts[0]]);
-							fp->item->Cache.verts[1].set(V[T->verts[1]]);
-							fp->item->Cache.verts[2].set(V[T->verts[2]]);
+							auto& Tidxs = g_pGameLevel->ObjectSpace.GetStaticTris()[result.element].verts;
+							xr_vector<Fvector>& V = g_pGameLevel->ObjectSpace.GetStaticVerts();
+							fp->item->Cache.verts[0] = V[Tidxs[0]];
+							fp->item->Cache.verts[1] = V[Tidxs[1]];
+							fp->item->Cache.verts[2] = V[Tidxs[2]];
 						}
 						return BOOL(fp->vis > fp->vis_threshold);
 					}, &feel_params, nullptr, m_owner))

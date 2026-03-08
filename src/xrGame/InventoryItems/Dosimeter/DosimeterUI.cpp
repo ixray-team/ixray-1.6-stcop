@@ -65,8 +65,12 @@ void CUIDosimeter::update()
 	float rad = 0.0f;
 	if (pActor)
 	{
-		for (CObject* pFeelObject : pActor->q_nearest)
+		for (ISpatialShared& SS : pActor->q_nearest)
 		{
+			ISpatial* S = SS.get();
+			if (!S) continue;
+			CObject* pFeelObject = S->dcast_CObject();
+			if (!pFeelObject || pFeelObject->getDestroy()) continue;
 			if (CRadioactiveZone* pRadZone = pFeelObject != nullptr ? pFeelObject->cast_radioactive_zone() : nullptr)
 			{
 				rad += pRadZone->fHitPower;

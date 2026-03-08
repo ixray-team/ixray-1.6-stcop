@@ -458,8 +458,13 @@ void CActorCondition::UpdateRadiation()
 	if (m_object)
 	{
 		m_fRadiationZonePower = 0;
-		for (CObject* pFeelObject : m_object->q_nearest)
+		for (ISpatialShared& SS : m_object->q_nearest)
 		{
+			ISpatial* S = SS.get();
+			if (!S) continue;
+			CObject* pFeelObject = S->dcast_CObject();
+			if (!pFeelObject || pFeelObject->getDestroy()) continue;
+
 			if (pFeelObject == nullptr || pFeelObject->getDestroy() || pFeelObject->CLS_ID == 0) 
 			{
 				continue;

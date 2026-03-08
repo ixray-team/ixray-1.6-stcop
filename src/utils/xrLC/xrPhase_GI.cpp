@@ -88,8 +88,8 @@ public:
 		CDB::COLLIDER		xrc;
 		xrc.ray_options		(CDB::OPT_CULL|CDB::OPT_ONLYNEAREST);
 		CDB::MODEL*	model	= lc_global_data()->RCAST_Model();
-		CDB::TRI*	tris	= lc_global_data()->RCAST_Model()->get_tris();
-		Fvector*	verts	= lc_global_data()->RCAST_Model()->get_verts();
+		CDB::TRI*	tris	= lc_global_data()->RCAST_Model()->get_tris().data();
+		Fvector*	verts	= lc_global_data()->RCAST_Model()->get_verts().data();
 
 		// full iteration
 		for (;;)	

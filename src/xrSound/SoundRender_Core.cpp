@@ -417,21 +417,21 @@ CSoundRender_Environment* CSoundRender_Core::get_environment(const Fvector& P)
 		if (geom_DB.r_count()) 
 		{
 			CDB::RESULT* r = geom_DB.r_begin();
-			CDB::TRI* T = geom_ENV->get_tris() + r->id;
-			Fvector* V = geom_ENV->get_verts();
+			CDB::TRI& T = geom_ENV->get_tris()[r->id];
+			xr_vector<Fvector>& V = geom_ENV->get_verts();
 
 			Fvector tri_norm;
-			tri_norm.mknormal(V[T->verts[0]], V[T->verts[1]], V[T->verts[2]]);
+			tri_norm.mknormal(V[T.verts[0]], V[T.verts[1]], V[T.verts[2]]);
 
 			float dot = dir.dotproduct(tri_norm);
 			if (dot < 0)
 			{
-				u16 id_front = (u16)((T->dummy & 0x0000ffff) >> 0);	//	front face
+				u16 id_front = (u16)((T.dummy & 0x0000ffff) >> 0);	//	front face
 				return s_environment->Get(id_front);
 			}
 			else
 			{
-				u16 id_back = (u16)((T->dummy & 0xffff0000) >> 16);	//	back face
+				u16 id_back = (u16)((T.dummy & 0xffff0000) >> 16);	//	back face
 				return s_environment->Get(id_back);
 			}
 		}

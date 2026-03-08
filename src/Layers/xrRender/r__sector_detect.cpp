@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "FHierrarhyVisual.h" 
 
-thread_local xrXRC sectors_detect_xrc;
+thread_local CDB::COLLIDER sectors_detect_xrc;
 
 int CRender::translateSector(IRender_Sector* pSector)
 {
@@ -24,15 +24,13 @@ int CRender::translateSector(IRender_Sector* pSector)
 
 IRender_Sector* CRender::detectSector(const Fvector& P)
 {
-	IRender_Sector*	S	= nullptr;	
-	Fvector			dir; 
-
-	dir.set				(0,-1,0);
-	S					= detectSector(P,dir);
-	if (nullptr==S)		
+	IRender_Sector*	S = nullptr;
+	Fvector dir; dir.set(0,-1,0);
+	S = detectSector(P,dir);
+	if (nullptr==S)
 	{
-		dir.set				(0,1,0);
-		S					= detectSector(P,dir);
+		dir.set(0,1,0);
+		S = detectSector(P,dir);
 	}
 	return S;
 }
@@ -44,15 +42,16 @@ IRender_Sector* CRender::detectLastSector(const Fvector& P)
 
 	auto detectSector = [&](const Fvector& P, Fvector& dir) -> IRender_Sector*
 	{
-		sectors_detect_xrc.ray_options		(CDB::OPT_ONLYNEAREST);
+		sectors_detect_xrc.ray_options(CDB::OPT_ONLYNEAREST);
 		// Portals model
 		if (rmPortals)	
 		{
-			sectors_detect_xrc.ray_query	(rmPortals,P,dir,1000.f);
-			if (sectors_detect_xrc.r_count()) {
+			sectors_detect_xrc.ray_query(rmPortals,P,dir,1000.f);
+			if (sectors_detect_xrc.r_count())
+			{
 				CDB::RESULT *RP = sectors_detect_xrc.r_begin();
-				CDB::TRI*	pTri	= rmPortals->get_tris() + RP->id;
-				CPortal*	pPortal	= (CPortal*) Portals[pTri->dummy];
+				CDB::TRI& pTri = rmPortals->get_tris()[RP->id];
+				CPortal* pPortal = (CPortal*) Portals[pTri.dummy];
 				CSector* S = pPortal->getSectorFacing(P);
 				FHierrarhyVisual* pV = (FHierrarhyVisual*)S->root();
 				if(pV)
@@ -64,8 +63,9 @@ IRender_Sector* CRender::detectLastSector(const Fvector& P)
 		}
 
 		// Geometry model
-		sectors_detect_xrc.ray_query	(g_pGameLevel->ObjectSpace.GetStaticModel(),P,dir,1000.f);
-		if (sectors_detect_xrc.r_count()) {
+		sectors_detect_xrc.ray_query(g_pGameLevel->ObjectSpace.GetStaticModel(),P,dir,1000.f);
+		if (sectors_detect_xrc.r_count())
+		{
 			CDB::RESULT *RP = sectors_detect_xrc.r_begin();
 			return getSector(RP->sector);
 		}
@@ -73,15 +73,13 @@ IRender_Sector* CRender::detectLastSector(const Fvector& P)
 		return nullptr;
 	};
 
-	IRender_Sector*	S	= nullptr;	
-	Fvector			dir; 
-
-	dir.set				(0,-1,0);
-	S					= detectSector(P,dir);
+	IRender_Sector*	S = nullptr;	
+	Fvector dir; dir.set(0,-1,0);
+	S = detectSector(P,dir);
 	if (nullptr==S)		
 	{
-		dir.set				(0,1,0);
-		S					= detectSector(P,dir);
+		dir.set(0,1,0);
+		S = detectSector(P,dir);
 	}
 	return S;
 
@@ -92,45 +90,51 @@ IRender_Sector* CRender::detectSector(const Fvector& P, Fvector& dir)
 	if(SectorsCount()==1)
 		return pOutdoorSector;
 
-	sectors_detect_xrc.ray_options		(CDB::OPT_ONLYNEAREST);
+	sectors_detect_xrc.ray_options(CDB::OPT_ONLYNEAREST);
 	// Portals model
-	int		id1		= -1;
-	float	range1	= 500.f;
+	int id1 = -1;
+	float range1 = 500.f;
 	if (rmPortals)	
 	{
-		sectors_detect_xrc.ray_query	(rmPortals,P,dir,range1);
-		if (sectors_detect_xrc.r_count()) {
+		sectors_detect_xrc.ray_query(rmPortals,P,dir,range1);
+		if (sectors_detect_xrc.r_count())
+		{
 			CDB::RESULT *RP1 = sectors_detect_xrc.r_begin();
 			id1 = RP1->id; range1 = RP1->range; 
 		}
 	}
 
 	// Geometry model
-	int		id2		= -1;
-	float	range2	= range1;
-	sectors_detect_xrc.ray_query	(g_pGameLevel->ObjectSpace.GetStaticModel(),P,dir,range2);
-	if (sectors_detect_xrc.r_count()) {
+	int id2 = -1;
+	float range2 = range1;
+	sectors_detect_xrc.ray_query(g_pGameLevel->ObjectSpace.GetStaticModel(),P,dir,range2);
+	if (sectors_detect_xrc.r_count())
+	{
 		CDB::RESULT *RP2 = sectors_detect_xrc.r_begin();
 		id2 = RP2->id; range2 = RP2->range;
 	}
 
 	// Select ID
 	int ID;
-	if (id1>=0) {
+	if (id1>=0)
+	{
 		if (id2>=0) ID = (range1<=range2+EPS)?id1:id2;	// both was found
 		else ID = id1;									// only id1 found
 	} else if (id2>=0) ID = id2;						// only id2 found
 	else return 0;
 
-	if (ID==id1) {
+	if (ID==id1)
+	{
 		// Take sector, facing to our point from portal
-		CDB::TRI*	pTri	= rmPortals->get_tris() + ID;
-		CPortal*	pPortal	= (CPortal*) Portals[pTri->dummy];
+		CDB::TRI& pTri = rmPortals->get_tris()[ID];
+		CPortal* pPortal = (CPortal*)Portals[pTri.dummy];
 		return pPortal->getSectorFacing(P);
-	} else {
+	}
+	else
+	{
 		// Take triangle at ID and use it's Sector
-		CDB::TRI*	pTri	= g_pGameLevel->ObjectSpace.GetStaticTris()+ID;
-		return getSector(pTri->sector);
+		CDB::TRI& pTri = g_pGameLevel->ObjectSpace.GetStaticTris()[ID];
+		return getSector(pTri.sector);
 	}
 }
 

@@ -184,8 +184,8 @@ ICF static BOOL grenade_hit_callback(collide::rq_result& result, LPVOID params)
 		}
 	}else{
 		//получить треугольник и узнать его материал
-		CDB::TRI* T		= Level().ObjectSpace.GetStaticTris()+result.element;
-		mtl_idx			= T->material;
+		CDB::TRI& T		= Level().ObjectSpace.GetStaticTris()[result.element];
+		mtl_idx			= T.material;
 	}	
 	SGameMtl* mtl		= GMLib.GetMaterialByIdx(mtl_idx);
 	float shoot_factor = 1.f - mtl->fShootFactor;
@@ -660,11 +660,12 @@ void CExplosive::FindNormal(Fvector& normal)
 		normal.set(0,1,0);
 	//если лежим на статике
 	//найти треугольник и вычислить нормаль по нему
-	}else
+	}
+	else
 	{
-		Fvector*	pVerts	= Level().ObjectSpace.GetStaticVerts();
-		CDB::TRI*	pTri	= Level().ObjectSpace.GetStaticTris() + RQ.element;
-		normal.mknormal	(pVerts[pTri->verts[0]],pVerts[pTri->verts[1]],pVerts[pTri->verts[2]]);
+		xr_vector<Fvector>& pVerts	= Level().ObjectSpace.GetStaticVerts();
+		CDB::TRI& pTri = Level().ObjectSpace.GetStaticTris()[RQ.element];
+		normal.mknormal	(pVerts[pTri.verts[0]],pVerts[pTri.verts[1]],pVerts[pTri.verts[2]]);
 	}
 }
 

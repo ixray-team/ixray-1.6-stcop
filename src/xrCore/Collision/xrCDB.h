@@ -26,9 +26,8 @@ class CDB_Model;
 namespace CDB
 {
 	// Triangle
-	class XRCORE_API TRI						//*** 16 bytes total (was 32 :)
+	struct XRCORE_API TRI final						//*** 16 bytes total (was 32 :)
 	{
-	public:
 		u32				verts	[3];		// 3*4 = 12b
 		union	
 		{
@@ -41,8 +40,7 @@ namespace CDB
 				u32		sector:16;			// 
 			};
 		};
-	public:
-		IC u32			IDvert	(u32 ID)		{ return verts[ID];	}
+		ICF u32			IDvert	(u32 ID)		{ return verts[ID];	}
 	};
 
 	// Build callback
@@ -52,7 +50,7 @@ namespace CDB
 	XRCORE_API IReader* GetModelCache(string_path Name, u32 crc);
 	XRCORE_API IReader* GetModelCache(const xr_stack_string_path& Name, u32 crc);
 	
-	class XRCORE_API MODEL
+	class XRCORE_API MODEL final
 	{
 		friend class COLLIDER;
 		enum
@@ -63,44 +61,30 @@ namespace CDB
 			S_forcedword		= u32(-1)
 		};
 	private:
-		xrCriticalSection		cs;
-		CDB_Model*	tree;
-		u32						status;		// 0=ready, 1=init, 2=building
-
-		// tris
-		TRI*					tris;
-		u32						tris_count;
-		Fvector*				verts;
-		u32					verts_count;
+		CDB_Model* tree = nullptr;
+		xr_vector<TRI> tris;
+		xr_vector<Fvector> verts;
+		mutable xr_atomic_u32 status = S_INIT;		// 0=ready, 1=init, 2=building
+		mutable xr_task_group load_task;
 	public:
-		MODEL();
 		~MODEL();
 
-		IC Fvector*				get_verts		()			{ return verts;		}
-		IC const Fvector*		get_verts		()	const	{ return verts;		}
-		IC int					get_verts_count	()	const	{ return verts_count;}
-		IC const TRI*			get_tris		()	const 	{ return tris;		}
-		IC TRI*					get_tris		()			{ return tris;		}
-		IC int					get_tris_count	()	const	{ return tris_count;}
-		IC void					syncronize		()	const
-		{
-			if (S_READY!=status)
-			{
-				Log						("! WARNING: syncronized CDB::query");
-				xrCriticalSection*	C	= (xrCriticalSection*) &cs;
-				C->Enter				();
-				C->Leave				();
-			}
-		}
+		ICF xr_vector<Fvector>& get_verts() { return verts; }
+		ICF xr_vector<TRI>& get_tris() { return tris; }
 
-		void					CreateNewTree	(IWriter* CacheWriter);
-		void					build_internal	(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_callback* bc=nullptr, void* bcp=nullptr, void* pRW = nullptr, bool RWMode = false);
-		void					build			(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_callback* bc=nullptr, void* bcp=nullptr, void* pRW = nullptr, bool RWMode = false);
-		u32						memory			();
+		ICF void wait_loading() const
+		{
+			if (S_READY==status.load())
+				return;
+
+			load_task.wait();
+		}
+		void build(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_callback* bc=nullptr, void* bcp=nullptr, void* pRW = nullptr, bool RWMode = false);
+		u32 memory();
 	};
 
 	// Collider result
-	struct XRCORE_API RESULT
+	struct XRCORE_API RESULT final
 	{
 		Fvector			verts	[3];
 		union	{
@@ -126,19 +110,16 @@ namespace CDB
 	};
 
 	// Collider itself
-	class XRCORE_API COLLIDER
+	class XRCORE_API COLLIDER final
 	{
 		// Ray data and methods
-		u32				ray_mode;
-		u32				box_mode;
-		u32				frustum_mode;
-		u32				obb_mode;
+		u32 ray_mode = 0;
+		u32 box_mode = 0;
+		u32 frustum_mode = 0;
+		u32 obb_mode = 0;
 		// Result management
-		xr_vector<RESULT>	rd;
+		xr_vector<RESULT> rd;
 	public:
-		COLLIDER		();
-		~COLLIDER		();
-
  		// Older
 		ICF void		ray_options		(u32 f)	{	ray_mode = f;		}
 		void			ray_query		(const MODEL *m_def, const Fvector& r_start,  const Fvector& r_dir, float r_range = 10000.f);
@@ -155,14 +136,13 @@ namespace CDB
 		ICF RESULT*		r_begin			(){return &*rd.begin();};
 		ICF RESULT*		r_end			(){return &*rd.end();};
 		ICF RESULT&		r_add			(){return rd.emplace_back();}
-		ICF void		r_free			(){rd.clear();}
 		ICF int			r_count			(){return (u32)rd.size();};
 		ICF void		r_clear			(){rd.clear();};
 		ICF auto&		r_vec			(){return rd;};
 	};
 
 	//
-	class XRCORE_API Collector
+	class XRCORE_API Collector final
 	{
 	public:
 #pragma pack(push,1)
@@ -259,8 +239,3 @@ namespace CDB
 };
 
 #pragma pack(pop)
-
-namespace XRay::Collision
-{
-	XRCORE_API bool TestRayTriA(const Fvector& C, const Fvector& D, Fvector** p, float& u, float& v, float& range, bool bCull);
-}

@@ -19,12 +19,15 @@ bool CTrade::CanTrade()
 {
 	CEntity* pEntity;
 
-	m_nearest.resize(0);
-	Level().ObjectSpace.GetNearest(m_nearest, pThis.base->Position(), 2.f, nullptr);
+	g_SpatialSpace->q_sphere(m_nearest, 0, ESPATIAL_TYPE::STALKER_ALIVE, pThis.base->Position(), 2.f);
 	if (!m_nearest.empty())
 	{
-		for (CObject* object : m_nearest)
+		for (ISpatialShared& SS : m_nearest)
 		{
+			ISpatial* S = SS.get();
+			if (!S) continue;
+			CObject* object = S->dcast_CObject();
+			if (!object || object->getDestroy()) continue;
 			// Может ли объект торговать
 			pEntity = object->cast_entity();
 			if (pEntity && !pEntity->g_Alive())

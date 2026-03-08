@@ -61,6 +61,7 @@ void CDetailManager::cache_Decompress(Slot* S)
 	D.vis.box.get_CD(bC, bD);
 
 #ifdef _EDITOR
+	extern ECORE_API CDB::COLLIDER XRC;
 	XRC.box_options(CDB::OPT_FULL_TEST);
 	// Select polygons
 	SBoxPickInfoVec		pinf;
@@ -68,10 +69,11 @@ void CDetailManager::cache_Decompress(Slot* S)
 	u32	triCount		= pinf.size();
 #else
 	xrc.box_options(CDB::OPT_FULL_TEST);
-	xrc.box_query		(g_pGameLevel->ObjectSpace.GetStaticModel(),bC,bD);
-	u32	triCount		= xrc.r_count	();
-	CDB::TRI*	tris	= g_pGameLevel->ObjectSpace.GetStaticTris();
-	Fvector*	verts	= g_pGameLevel->ObjectSpace.GetStaticVerts();
+	xrc.box_query(g_pGameLevel->ObjectSpace.GetStaticModel(),bC,bD);
+	u32	triCount = xrc.r_count();
+	xr_vector<CDB::TRI>& tris = g_pGameLevel->ObjectSpace.GetStaticTris();
+	xr_vector<Fvector>& verts = g_pGameLevel->ObjectSpace.GetStaticVerts();
+	xr_vector<CDB::RESULT>& results = xrc.r_vec();
 #endif
 
 	if (0==triCount)	return;
@@ -164,7 +166,7 @@ RDEVICE.Statistic->TEST0.End		();
 					}
 				}
 #else
-				CDB::TRI& T = tris[xrc.r_begin()[tid].id];
+				CDB::TRI& T = tris[results[tid].id];
 				SGameMtl* mtl = GMLib.GetMaterialByIdx(T.material);
 
 				if(mtl->Flags.test(SGameMtl::flPassable))	
@@ -180,15 +182,17 @@ RDEVICE.Statistic->TEST0.End		();
 						break;
 					}
 				}
-
-				Fvector		Tv[3]	= { verts[T.verts[0]],verts[T.verts[1]],verts[T.verts[2]] };
+				auto& vids = T.verts;
+				Fvector Tv[3] = { verts[vids[0]],verts[vids[1]],verts[vids[2]] };
 				if (CDB::TestRayTri(Item_P,dir,Tv,r_u,r_v,r_range,TRUE))
 				{
-					if (r_range>=0)	{
-						float y_test	= Item_P.y - r_range;
-						if (y_test>y)	y = y_test;
+					if (r_range>=0)
+					{
+						float y_test = Item_P.y - r_range;
+						if (y_test>y)
+							y = y_test;
 					}
-					normal.mknormal(verts[T.verts[0]], verts[T.verts[1]], verts[T.verts[2]]);
+					normal.mknormal(verts[vids[0]], verts[vids[1]], verts[vids[2]]);
 					break;
 				}
 #endif
@@ -197,7 +201,7 @@ RDEVICE.Statistic->TEST0.End		();
 			if (y<D.vis.box.min.y)
 				continue;
 
-			Item_P.y	= y;
+			Item_P.y = y;
 
 			// Angles and scale
 			Item.scale = r_scale.randF(Dobj.m_fMinScale * 0.5f, Dobj.m_fMaxScale * 0.9f);

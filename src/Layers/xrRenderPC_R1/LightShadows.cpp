@@ -414,8 +414,8 @@ void CLightShadows::render	()
 {
 	// Gain access to collision-DB
 	CDB::MODEL*		DB		= g_pGameLevel->ObjectSpace.GetStaticModel();
-	CDB::TRI*		TRIS	= DB->get_tris();
-	Fvector*		VERTS	= DB->get_verts();
+	xr_vector<CDB::TRI>& TRIS	= DB->get_tris();
+	xr_vector<Fvector>& VERTS	= DB->get_verts();
 
 	int			slot_line	= S_rt_size/S_size;
 	
@@ -497,7 +497,7 @@ void CLightShadows::render	()
 			tess.clear				();
 			for (CDB::RESULT* p = xrc.r_begin(); p!=xrc.r_end(); p++)
 			{
-				VERIFY((p->id>=0)&&(p->id<DB->get_tris_count()));
+				VERIFY((p->id>=0)&&(p->id<DB->get_tris().size()));
 				// 
 				CDB::TRI&	t		= TRIS[p->id];
 				if (t.suppress_shadows) continue;

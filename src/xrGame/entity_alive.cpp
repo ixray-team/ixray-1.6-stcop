@@ -437,13 +437,13 @@ void CEntityAlive::PlaceBloodWallmark(const Fvector& dir, const Fvector& start_p
 	//если кровь долетела до статического объекта
 	if(reach_wall)
 	{
-		CDB::TRI*	pTri	= Level().ObjectSpace.GetStaticTris()+result.element;
-		SGameMtl*	pMaterial = GMLib.GetMaterialByIdx(pTri->material);
+		CDB::TRI&	pTri	= Level().ObjectSpace.GetStaticTris()[result.element];
+		SGameMtl*	pMaterial = GMLib.GetMaterialByIdx(pTri.material);
 
 		if(pMaterial->Flags.is(SGameMtl::flBloodmark))
 		{
 			//вычислить нормаль к пораженной поверхности
-			Fvector*	pVerts	= Level().ObjectSpace.GetStaticVerts();
+			xr_vector<Fvector>& pVerts = Level().ObjectSpace.GetStaticVerts();
 
 			//вычислить точку попадания
 			Fvector end_point;
@@ -456,7 +456,7 @@ void CEntityAlive::PlaceBloodWallmark(const Fvector& dir, const Fvector& start_p
 			{
 				//добавить отметку на материале
 				//::Render->add_StaticWallmark(wallmarkShader, end_point, wallmark_size, pTri, pVerts);
-				::Render->add_StaticWallmark(pwallmarks_vector, end_point, wallmark_size, pTri, pVerts);
+				::Render->add_StaticWallmark(pwallmarks_vector, end_point, wallmark_size, &pTri, pVerts.data());
 			}
 		}
 	}

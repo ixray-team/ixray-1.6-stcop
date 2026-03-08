@@ -50,7 +50,7 @@ void CDetailManager::cache_Initialize	()
 	        Slot* slt = &cache_pool[i * dm_cache_line + j];
 	
 	        cache[i][j] = slt;
-	        cache_Task(j, i, slt);
+	        cache_Task(j, i, slt, true);
 	    }
 	}
 	VERIFY	(cache_Validate());
@@ -82,7 +82,7 @@ CDetailManager::Slot*	CDetailManager::cache_Query	(int r_x, int r_z)
 	return		cache	[gz][gx];
 }
 
-void 	CDetailManager::cache_Task		(int gx, int gz, Slot* D)
+void 	CDetailManager::cache_Task		(int gx, int gz, Slot* D, bool init)
 {
 	int sx					= cg2w_X	(gx);
 	int sz					= cg2w_Z	(gz);
@@ -113,7 +113,12 @@ void 	CDetailManager::cache_Task		(int gx, int gz, Slot* D)
 	{
 		VERIFY		(stPending == D->type);
 		if (ps_r2_ls_flags.test(R2FLAG_FAST_DETAILS_UPDATE))
-			cache_Decompress(D);
+		{
+			if(!init)
+				cache_Decompress(D);
+			else
+				D->type = stReady;
+		}
 		else
 			cache_task.push_back(D);
 	}
