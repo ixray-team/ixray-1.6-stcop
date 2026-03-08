@@ -315,7 +315,9 @@ void CRender::LoadSectors(IReader* fs) {
 	// load portals
 	if (count)
 	{
-		CDB::Collector	CL;
+		static CDB::Collector CL;
+		CL.clear();
+		CL.reserve(count * 4);
 		fs->find_chunk(fsL_PORTALS);
 		for (u32 i = 0; i < count; i++)
 		{

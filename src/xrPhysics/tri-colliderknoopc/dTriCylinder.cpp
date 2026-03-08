@@ -628,7 +628,7 @@ if(9!=code)
 ///if we get to this poit tri touches cylinder///////////////////////
 /////////////////////////////////////////////////////////////////////
 //VERIFY( g_pGameLevel );
-CDB::TRI*       T_array      = inl_ph_world().ObjectSpace().GetStaticTris();
+CDB::TRI*       T_array      = inl_ph_world().ObjectSpace().GetStaticTris().data();
 dVector3 norm;
 unsigned int ret;
 flags8& gl_state=gl_cl_tries_state[I-B];

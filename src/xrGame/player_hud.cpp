@@ -1638,7 +1638,7 @@ void player_hud::update(const Fmatrix& cam_trans)
 		obb_render.append_obb(obb);
 		obb_render.color = color_rgba(0, 255, 0, 150);
 
-		static xrXRC xrc;
+		static CDB::COLLIDER xrc;
 		xrc.obb_options(CDB::OPT_FULL_TEST);
 		xrc.obb_query(Level().ObjectSpace.GetStaticModel(), obb);
 

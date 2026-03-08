@@ -12,7 +12,7 @@ class CHOM
 #endif
 {
 private:
-	xrXRC xrc;
+	CDB::COLLIDER xrc;
 	CDB::MODEL* m_pModel;
 	CDB::Collector CL;
 	xr_vector<u32> adjacency;

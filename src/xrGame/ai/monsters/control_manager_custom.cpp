@@ -481,11 +481,16 @@ void CControlManagerCustom::check_jump_over_physics()
 		const DetailPathManager::STravelPathPoint &travel_point = m_man->path_builder().detail().path()[i];
 
 		// получить список объектов вокруг врага
-		m_nearest.resize(0);
-		Level().ObjectSpace.GetNearest	(m_nearest,travel_point.position, m_object->Radius(), nullptr);
+		g_SpatialSpace->q_sphere(m_nearest, 0, ESPATIAL_TYPE::COLLIDEABLE, travel_point.position, m_object->Radius());
 
-		for (u32 k=0;k<m_nearest.size();k++) {
-			CPhysicsShellHolder *obj = m_nearest[k]->cast_physics_shell_holder();
+		for (ISpatialShared& SS : m_nearest)
+		{
+			ISpatial* S = SS.get();
+			if (!S) continue;
+			CObject* O = S->dcast_CObject();
+			if(!O || O->getDestroy()) continue;
+
+			CPhysicsShellHolder *obj = O->cast_physics_shell_holder();
 			if (!obj || !obj->PPhysicsShell() || !obj->PPhysicsShell()->isActive() || (obj->Radius() < 0.5f)) continue;
 			if (m_object->Position().distance_to(obj->Position()) < MAX_DIST_SUM / 2) continue;
 

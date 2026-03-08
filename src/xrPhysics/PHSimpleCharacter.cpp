@@ -40,8 +40,8 @@ float IC sgn(float v)
 bool test_sides(const Fvector& center, const Fvector& side_dir, const Fvector& fv_dir, const Fvector& box, int tri_id)
 {
 	Triangle tri;
-	CalculateInitTriangle(inl_ph_world().ObjectSpace().GetStaticTris() + tri_id, tri, inl_ph_world().ObjectSpace().GetStaticVerts());
-	Fvector* verts = inl_ph_world().ObjectSpace().GetStaticVerts();
+	CalculateInitTriangle(&inl_ph_world().ObjectSpace().GetStaticTris()[tri_id], tri, inl_ph_world().ObjectSpace().GetStaticVerts().data());
+	xr_vector<Fvector>& verts = inl_ph_world().ObjectSpace().GetStaticVerts();
 	{
 		float dist = cast_fv(tri.norm).dotproduct(center) - tri.dist;
 
@@ -845,7 +845,7 @@ bool CPHSimpleCharacter::ValidateWalkOnMesh()
 	tmp.grow		(AABB_						);
 	query.merge		(tmp);
 	query.get_CD	(q_c,q_d);
-
+	thread_local CDB::COLLIDER XRC;
 	XRC.box_options(0);
 	XRC.box_query(inl_ph_world().ObjectSpace().GetStaticModel(),q_c,q_d);
 
@@ -1819,9 +1819,8 @@ IC bool valide_res( u16& res_material_idx, const collide::rq_result	&R )
 {
 	if(!R.O)
 	{
-		CDB::TRI	* tri	= inl_ph_world().ObjectSpace().GetStaticTris( ) + R.element;
-		VERIFY( tri );
-		res_material_idx	= tri->material;
+		CDB::TRI& tri = inl_ph_world().ObjectSpace().GetStaticTris()[R.element];
+		res_material_idx	= tri.material;
 		return !ignore_material( res_material_idx );
 	}
 
