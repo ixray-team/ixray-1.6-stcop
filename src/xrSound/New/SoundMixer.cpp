@@ -1388,26 +1388,30 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
 
 					CDB::MODEL* env_model = ::Sound->get_geometry_env();
 					CDB::COLLIDER* collider = ::Sound->get_geometry_db();
-					if (env_model != nullptr) {
+					if (env_model != nullptr)
+					{
 						Fvector	dir = { 0,-1,0 };
 						collider->ray_options(CDB::OPT_ONLYNEAREST);
 						collider->ray_query(env_model, pos, dir, 1000.f);
-						if (collider->r_count()) {
+						xr_vector<Fvector>& Verts = env_model->get_verts();
+						xr_vector<CDB::TRI>& Tris = env_model->get_tris();
+						if (collider->r_count())
+						{
 							CDB::RESULT* r = collider->r_begin();
-							CDB::TRI* T = env_model->get_tris() + r->id;
-							Fvector* V = env_model->get_verts();
+							CDB::TRI& T = Tris[r->id];
+							auto& verts = T.verts;
 
 							Fvector tri_norm;
-							tri_norm.mknormal(V[T->verts[0]], V[T->verts[1]], V[T->verts[2]]);
+							tri_norm.mknormal(Verts[verts[0]], Verts[verts[1]], Verts[verts[2]]);
 
-							R_ASSERT(T->dummy < mixer.zones.size());
-							slot.zone_idx = T->dummy + 1;
-						} else {
-							slot.zone_idx = 0;
+							R_ASSERT(T.dummy < mixer.zones.size());
+							slot.zone_idx = T.dummy + 1;
 						}
-					} else {
-						slot.zone_idx = 0;
+						else
+							slot.zone_idx = 0;
 					}
+					else
+						slot.zone_idx = 0;
 				}
 			}
 		}

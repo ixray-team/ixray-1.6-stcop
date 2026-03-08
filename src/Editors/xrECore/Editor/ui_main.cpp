@@ -684,6 +684,7 @@ bool TUI::OnCreate()
 
 	EDevice->Initialize();
 	// Creation
+	extern CDB::COLLIDER XRC;
 	XRC.ray_options(CDB::OPT_ONLYNEAREST | CDB::OPT_CULL);
 
 	pInput			= new CInput(FALSE, all_device_key);

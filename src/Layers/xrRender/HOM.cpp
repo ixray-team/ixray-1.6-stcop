@@ -244,8 +244,8 @@ void CHOM::Render_DB			(CFrustum& base)
 		{ T.skip=next; continue; }
 
 		// Access to triangle vertices
-		CDB::TRI& t		= m_pModel->get_tris()	[it->id];
-		Fvector*  v		= m_pModel->get_verts();
+		CDB::TRI& t		= m_pModel->get_tris()[it->id];
+		xr_vector<Fvector>& v = m_pModel->get_verts();
 		src.clear		();	dst.clear	();
 		src.push_back	(v[t.verts[0]]);
 		src.push_back	(v[t.verts[1]]);
@@ -305,23 +305,23 @@ void CHOM::OnRender()
 	{
 		if (m_pModel)
 		{
-			xr_vector<u32> pairs;
-			pairs.resize(m_pModel->get_tris_count() * 6);
-			for (size_t i = 0; i < m_pModel->get_tris_count(); i++)
+			xr_vector<CDB::TRI>& tris = m_pModel->get_tris();
+			size_t tris_size = tris.size();
+			xr_vector<u32> pairs(tris_size * 6);			
+			for (size_t i = 0; i < tris_size; i++)
 			{
-				CDB::TRI* T = m_pModel->get_tris() + i;
-				Fvector* verts = m_pModel->get_verts();
-				pairs[(i * 6) + 0] = T->verts[0];
-				pairs[(i * 6) + 1] = T->verts[1];
-				pairs[(i * 6) + 2] = T->verts[1];
-				pairs[(i * 6) + 3] = T->verts[2];
-				pairs[(i * 6) + 4] = T->verts[2];
-				pairs[(i * 6) + 5] = T->verts[0];
+				auto& indices = tris[i].verts;
+				pairs[(i * 6) + 0] = indices[0];
+				pairs[(i * 6) + 1] = indices[1];
+				pairs[(i * 6) + 2] = indices[1];
+				pairs[(i * 6) + 3] = indices[2];
+				pairs[(i * 6) + 4] = indices[2];
+				pairs[(i * 6) + 5] = indices[0];
 			}
 
 			DebugRenderImpl.add_lines
 			(
-				m_pModel->get_verts(), m_pModel->get_verts_count(),
+				m_pModel->get_verts().data(), m_pModel->get_verts().size(),
 				pairs.data(), (u32)pairs.size() / 2, 0xFFFFFFFF
 			);
 		}
@@ -338,7 +338,7 @@ void CHOM::stats()
 		F.OutNext(" **** HOM-occ ****");
 		F.OutNext("  visible:  %2d", tris_in_frame_visible);
 		F.OutNext("  frustum:  %2d", tris_in_frame);
-		F.OutNext("    total:  %2d", m_pModel->get_tris_count());
+		F.OutNext("    total:  %2d", m_pModel->get_tris().size());
 	}
 }
 #endif

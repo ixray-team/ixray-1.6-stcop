@@ -151,7 +151,7 @@ class CCustomObject;
 
 		SRayPickInfo			(){ Reset(); visual_inf.bone_id = u16(-1); }
 		IC void Reset			(){ ZeroMemory(this,sizeof(SRayPickInfo));inf.range = 5000;}
-		IC void SetRESULT		(CDB::MODEL* M, CDB::RESULT* R){inf=*R;inf.id=(M->get_tris()+inf.id)->dummy;}
+		IC void SetRESULT		(CDB::MODEL* M, CDB::RESULT* R){inf=*R;inf.id=(&M->get_tris()[inf.id])->dummy;}
 	};
     using BPInfVec = xr_vector<CDB::RESULT>;
     using BPInfIt = BPInfVec::iterator;
@@ -163,7 +163,7 @@ class CCustomObject;
 		CEditableMesh*		e_mesh;
 		SBoxPickInfo		(){Reset();}
 		IC void Reset		(){ZeroMemory(this,sizeof(SBoxPickInfo));}
-		IC void AddRESULT	(CDB::MODEL* M, CDB::RESULT* R){inf.push_back(*R); inf.back().id=(M->get_tris()+inf.back().id)->dummy;}
+		IC void AddRESULT	(CDB::MODEL* M, CDB::RESULT* R){inf.push_back(*R); inf.back().id=(&M->get_tris()[inf.back().id])->dummy;}
 	};
     using SBoxPickInfoVec = xr_vector<SBoxPickInfo>;
     using SBoxPickInfoIt = SBoxPickInfoVec::iterator;

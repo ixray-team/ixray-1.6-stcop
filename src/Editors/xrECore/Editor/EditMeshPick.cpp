@@ -8,6 +8,7 @@
 static IntVec		sml_processed;
 static Fvector		sml_normal;
 static float		m_fSoftAngle;
+ECORE_API CDB::COLLIDER XRC;
 //----------------------------------------------------
 
 //----------------------------------------------------
@@ -16,9 +17,10 @@ static float		m_fSoftAngle;
 void CEditableMesh::GenerateCFModel()
 {
 	UnloadCForm();
-	CDB::Collector CL;
+	thread_local CDB::Collector CL; CL.clear();
 
 	// double sided
+	CL.reserve(m_FaceCount);
 	for (SurfFacesPairIt sp_it = m_SurfFaces.begin(); sp_it != m_SurfFaces.end(); sp_it++)
 	{
 		IntVec& face_lst = sp_it->second;
@@ -46,7 +48,12 @@ void CEditableMesh::RayQuery(SPickQuery& pinf)
 void CEditableMesh::RayQuery(const Fmatrix& parent, const Fmatrix& inv_parent, SPickQuery& pinf)
 {
 	if (!m_CFModel) GenerateCFModel();
-	XRC.ray_query(inv_parent, m_CFModel, pinf.m_Start, pinf.m_Direction, pinf.m_Dist);
+
+	Fvector S, D;
+	inv_parent.transform_tiny(S, pinf.m_Start);
+	inv_parent.transform_dir(D, pinf.m_Direction);
+
+	XRC.ray_query(m_CFModel, S, D, pinf.m_Dist);
 	for (int r=0; r< XRC.r_count(); r++)
 		pinf.append_mtx(parent, XRC.r_begin()+r,m_Parent,this);
 }
@@ -54,7 +61,14 @@ void CEditableMesh::RayQuery(const Fmatrix& parent, const Fmatrix& inv_parent, S
 void CEditableMesh::BoxQuery(const Fmatrix& parent, const Fmatrix& inv_parent, SPickQuery& pinf)
 {
 	if (!m_CFModel) GenerateCFModel();
-	XRC.box_query(inv_parent, m_CFModel, pinf.m_BB);
+
+	Fbox dest;
+	dest.xform(pinf.m_BB, inv_parent);
+	Fvector c, d;
+	dest.getcenter(c);
+	dest.getradius(d);
+
+	XRC.box_query(m_CFModel, c, d);
 	for (int r=0; r< XRC.r_count(); r++)
 		pinf.append_mtx(parent, XRC.r_begin()+r,m_Parent,this);
 }
@@ -70,7 +84,12 @@ bool CEditableMesh::RayPick(float& distance, const Fvector& start, const Fvector
 		GenerateCFModel();
 
 	XRC.ray_options(CDB::OPT_ONLYNEAREST | CDB::OPT_CULL);
-	XRC.ray_query(inv_parent, m_CFModel, start, direction, _sqrt_flt_max);
+
+	Fvector S, D;
+	inv_parent.transform_tiny(S, start);
+	inv_parent.transform_dir(D, direction);
+
+	XRC.ray_query(m_CFModel, S, D, _sqrt_flt_max);
 
 	if (XRC.r_count())
 	{
@@ -172,7 +191,13 @@ bool CEditableMesh::BoxPick(const Fbox& box, const Fmatrix& inv_parent, SBoxPick
 		GenerateCFModel();
 	}
 
-	XRC.box_query(inv_parent, m_CFModel, box);
+	Fbox dest;
+	dest.xform(box, inv_parent);
+	Fvector c, d;
+	dest.getcenter(c);
+	dest.getradius(d);
+
+	XRC.box_query(m_CFModel, c, d);
 	if (XRC.r_count())
 	{
 		pinf.push_back(SBoxPickInfo());

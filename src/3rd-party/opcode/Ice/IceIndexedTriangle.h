@@ -41,7 +41,7 @@
 		inline_					~IndexedTriangle()									{}
 		
 		//! Vertex-references
-				dTriIndex		mVRef[3];
+				dTriIndex		mVRef[4];
 
 		// Methods
 				void			Flip();
