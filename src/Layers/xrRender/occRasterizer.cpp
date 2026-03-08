@@ -12,18 +12,7 @@
 
 occRasterizer	Raster;
 
-void  fillDW_8x	(void* _p, u32 size, u32 value)
-{
-	LPDWORD ptr = LPDWORD	(_p);
-	LPDWORD end = ptr+size;
-	for (; ptr!=end; ptr+=2)
-	{
-		ptr[0]	= value;
-		ptr[1]	= value;
-	}
-}
-
-IC void propagade_depth			(LPVOID p_dest, LPVOID p_src, int dim)
+ICF void propagade_depth(LPVOID p_dest, LPVOID p_src, int dim)
 {
 	occD*	dest = (occD*)p_dest;
 	occD*	src	 = (occD*)p_src;
