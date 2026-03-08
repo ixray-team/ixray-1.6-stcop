@@ -71,7 +71,7 @@ void CAI_PhraseDialogManager::AnswerPhrase (DIALOG_SHARED_PTR& phrase_dialog)
 		
 		if (CurrentGameUI() == nullptr)
 			return;
-		CurrentGameUI()->TalkMenu->AddAnswer	(phrase_dialog->GetPhraseText(phrase_id), pInvOwner->Name());
+		CurrentGameUI()->TalkMenu->AddAnswer	(phrase_dialog->GetPhraseText(phrase_id), pInvOwner->NameReal());
 
 		CPhraseDialogManager::SayPhrase(phrase_dialog, phrase_id);
 	}
