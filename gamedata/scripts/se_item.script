@@ -118,8 +118,11 @@ function se_flamethrower:on_register()
 	end
 
 	self.secret_item = treasure_manager.get_treasure_manager():register_item(self)
+
+	SendScriptCallback("server_entity_on_register", self, "se_flamethrower")
 end
 function se_flamethrower:on_unregister()
+	SendScriptCallback("server_entity_on_unregister", self, "se_flamethrower")
 	--' Отрегистрация в таскменеджере
 	unregister_story_object_by_id(self.id)
 	cse_alife_item_flamethrower.on_unregister( self )
@@ -428,9 +431,12 @@ function se_flame_canister:on_register()
 	story_objects.check_spawn_ini_for_story_id(self)
 
 	self.secret_item = treasure_manager.get_treasure_manager():register_item(self)
+
+	SendScriptCallback("server_entity_on_register", self, "se_flame_canister")
 end
 
 function se_flame_canister:on_unregister()
+	SendScriptCallback("server_entity_on_unregister", self, "se_flame_canister")
 	unregister_story_object_by_id(self.id)
 	cse_alife_item_fuel.on_unregister(self)
 end
