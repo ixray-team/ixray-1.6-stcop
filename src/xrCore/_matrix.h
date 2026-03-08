@@ -52,6 +52,11 @@ public:
     		Tvector c;	T	_44_;
         };
 		T m[4][4];					// Array
+		T mm[16];
+#ifdef IXR_WINDOWS
+		__m128 xmm[4];
+#endif
+		_vector4<T> row[4];
 	};
 
 	ICF _matrix()
@@ -149,9 +154,35 @@ public:
 	ICF	SelfRef	mk_xform	(const _quaternion<T> &Q, const Tvector &V);
 
 	// Multiply RES = A[4x4]*B[4x4] (WITH projection)
-	ICF	SelfRef	mul			(const Self &A,const Self &B)
+	ICF SelfRef	mul			(const Self &A,const Self &B)
 	{
 		VERIFY	((this!=&A)&&(this!=&B));
+#ifdef IXR_WINDOWS
+		static constexpr unsigned int shuffle_constants[4] = { 0x00U, 0x55U, 0xaaU, 0xffU };
+		if (CPU::ID().hasFeature(CPUFeature::FMA))
+		{
+			for (int i = 0; i < 4; i++)
+				xmm[i] = _mm_fmadd_ps(_mm_shuffle_ps(B.xmm[i], B.xmm[i], shuffle_constants[0]), A.xmm[0],
+						_mm_fmadd_ps(_mm_shuffle_ps(B.xmm[i], B.xmm[i], shuffle_constants[1]), A.xmm[1],
+						_mm_fmadd_ps(_mm_shuffle_ps(B.xmm[i], B.xmm[i], shuffle_constants[2]), A.xmm[2],
+						_mm_mul_ps(_mm_shuffle_ps(B.xmm[i], B.xmm[i], shuffle_constants[3]), A.xmm[3]))));
+		}
+		else if (CPU::ID().hasFeature(CPUFeature::SSE))
+		{
+			for (int i = 0; i < 4; i++)
+				xmm[i] = _mm_add_ps(_mm_add_ps(_mm_add_ps(
+					_mm_mul_ps(_mm_shuffle_ps(B.xmm[i], B.xmm[i], shuffle_constants[0]), A.xmm[0]),
+					_mm_mul_ps(_mm_shuffle_ps(B.xmm[i], B.xmm[i], shuffle_constants[1]), A.xmm[1])),
+					_mm_mul_ps(_mm_shuffle_ps(B.xmm[i], B.xmm[i], shuffle_constants[2]), A.xmm[2])),
+					_mm_mul_ps(_mm_shuffle_ps(B.xmm[i], B.xmm[i], shuffle_constants[3]), A.xmm[3]));
+		}
+		else
+		{
+			for (int i = 0; i < 4; i++)
+				for (int j = 0; j < 4; j++)
+					m[i][j] = A.m[i][0] * B.m[0][j] + A.m[i][1] * B.m[1][j] + A.m[i][2] * B.m[2][j] + A.m[i][3] * B.m[3][j];
+		}
+#else
 		m[0][0] = A.m[0][0] * B.m[0][0] + A.m[1][0] * B.m[0][1] + A.m[2][0] * B.m[0][2] + A.m[3][0] * B.m[0][3];
 		m[0][1] = A.m[0][1] * B.m[0][0] + A.m[1][1] * B.m[0][1] + A.m[2][1] * B.m[0][2] + A.m[3][1] * B.m[0][3];
 		m[0][2] = A.m[0][2] * B.m[0][0] + A.m[1][2] * B.m[0][1] + A.m[2][2] * B.m[0][2] + A.m[3][2] * B.m[0][3];
@@ -171,6 +202,7 @@ public:
 		m[3][1] = A.m[0][1] * B.m[3][0] + A.m[1][1] * B.m[3][1] + A.m[2][1] * B.m[3][2] + A.m[3][1] * B.m[3][3];
 		m[3][2] = A.m[0][2] * B.m[3][0] + A.m[1][2] * B.m[3][1] + A.m[2][2] * B.m[3][2] + A.m[3][2] * B.m[3][3];
 		m[3][3] = A.m[0][3] * B.m[3][0] + A.m[1][3] * B.m[3][1] + A.m[2][3] * B.m[3][2] + A.m[3][3] * B.m[3][3];
+#endif
 		return *this;
 	}
 
