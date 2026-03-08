@@ -107,14 +107,17 @@ void CPolterSpecialAbility::on_hit(SHit* pHDS)
 
 void CPoltergeist::PhysicalImpulse	(const Fvector &position)
 {
-	m_nearest.resize(0);
-	Level().ObjectSpace.GetNearest	(m_nearest,position, IMPULSE_RADIUS, nullptr); 
-	//xr_vector<CObject*> &m_nearest = Level().ObjectSpace.q_nearest;
-	if (m_nearest.empty())			return;
+	g_SpatialSpace->q_sphere(m_nearest,0,ESPATIAL_TYPE::COLLIDEABLE,position,IMPULSE_RADIUS);
+	if (m_nearest.empty()) return;
 	
-	u32 index = Random.randI		(m_nearest.size());
+	u32 index = Random.randI(m_nearest.size());
+
+	ISpatial* S = m_nearest[index].get();
+	if (!S) return;
+	CObject* O = S->dcast_CObject();
+	if (!O || O->getDestroy()) return;
 	
-	CPhysicsShellHolder  *obj = m_nearest[index] != nullptr ? m_nearest[index]->cast_physics_shell_holder() : nullptr;
+	CPhysicsShellHolder  *obj = O->cast_physics_shell_holder();
 	if (!obj || !obj->m_pPhysicsShell) return;
 
 	Fvector dir;
@@ -139,8 +142,8 @@ void CPoltergeist::StrangeSounds(const Fvector &position)
 			if (l_rq.range < TRACE_DISTANCE) {
 
 				// Получить пару материалов
-				CDB::TRI*	pTri	= Level().ObjectSpace.GetStaticTris() + l_rq.element;
-				SGameMtlPair* mtl_pair = GMLib.GetMaterialPair(material().self_material_idx(),pTri->material);
+				CDB::TRI&	pTri	= Level().ObjectSpace.GetStaticTris()[l_rq.element];
+				SGameMtlPair* mtl_pair = GMLib.GetMaterialPair(material().self_material_idx(),pTri.material);
 				if (!mtl_pair) continue;
 
 				// Играть звук

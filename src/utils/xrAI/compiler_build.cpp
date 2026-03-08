@@ -48,8 +48,8 @@ BOOL CreateNode(Fvector& vAt, vertex& N)
 	for (u32 i=0; i<dwCount; i++)
 	{
 		tri&		D = tris.last();
-		CDB::RESULT	&rp = IXRC.r_begin()[i];
-		CDB::TRI&	T = *(LevelPtr->get_tris()+rp.id);
+		CDB::RESULT	&rp = IXRC.r_vec()[i];
+		CDB::TRI&	T = LevelPtr->get_tris()[rp.id];
 
 		D.v[0].set	(rp.verts[0]);
 		D.v[1].set	(rp.verts[1]);

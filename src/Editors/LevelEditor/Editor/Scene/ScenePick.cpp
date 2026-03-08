@@ -38,7 +38,7 @@ int EScene::SpherePick( const Fvector& center, float radius, ObjClassID classfil
 
 	return count;
 }
-
+extern ECORE_API CDB::COLLIDER XRC;
 int EScene::RayQuery(SPickQuery& PQ, const Fvector& start, const Fvector& dir, float dist, u32 flags, ObjectList* snap_list)
 {
 	VERIFY			(snap_list);
@@ -67,7 +67,7 @@ int EScene::RayQuery(SPickQuery& PQ, const Fvector& start, const Fvector& dir, f
 	PQ.prepare_rq	(start,dir,dist,flags);
 	XRC.ray_options	(flags);
 	XRC.ray_query	(model,start,dir,dist);
-	for (int r=0; r<XRC.r_count(); r++)
+	for (int r=0; r< XRC.r_count(); r++)
 		PQ.append	(XRC.r_begin()+r,0,0);
 	return PQ.r_count();
 }
@@ -80,7 +80,7 @@ int EScene::BoxQuery(SPickQuery& PQ, const Fbox& bb, u32 flags, CDB::MODEL* mode
 	bb.getcenter	(c);
 	bb.getradius	(d);
 	XRC.box_query	(model,c,d);
-	for (int r=0; r<XRC.r_count(); r++)
+	for (int r=0; r< XRC.r_count(); r++)
 		PQ.append	(XRC.r_begin()+r,0,0);
 	return PQ.r_count();
 }

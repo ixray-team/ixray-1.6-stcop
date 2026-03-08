@@ -3183,9 +3183,9 @@ void LevelInspector::DrawObjects()
 
 void LevelInspector::DrawHOM()
 {
-	CDB::TRI* hom_tris = Render->GetHOMModel()->get_tris();
-	Fvector* hom_verts = Render->GetHOMModel()->get_verts();
-	u32 hom_tris_cnt = Render->GetHOMModel()->get_tris_count();
+	xr_vector<CDB::TRI>& hom_tris = Render->GetHOMModel()->get_tris();
+	xr_vector<Fvector>& hom_verts = Render->GetHOMModel()->get_verts();
+	u32 hom_tris_cnt = Render->GetHOMModel()->get_tris().size();
 
 	constexpr u32 hom_lclr = color_rgba(20, 20, 20, 255);
 	for (u32 i = 0; i < hom_tris_cnt; i++)

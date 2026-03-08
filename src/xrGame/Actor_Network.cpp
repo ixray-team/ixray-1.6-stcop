@@ -825,16 +825,9 @@ void CActor::net_Relcase(CObject* O)
 		memory().remove_links(O);
 
 	m_pPhysics_support->in_NetRelcase(O);
-	HUD().net_Relcase	(O);
+	HUD().net_Relcase(O);
 
-	if (OnClient() || IsGameTypeSingle())
-	{
-		auto Iter = std::find(q_nearest.begin(), q_nearest.end(), O);
-		if (Iter != q_nearest.end())
-		{
-			q_nearest.erase(Iter);
-		}
-	}
+	feel_touch_relcase(O);
 }
 
 BOOL	CActor::net_Relevant		()				// relevant for export to server

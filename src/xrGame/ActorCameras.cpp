@@ -328,7 +328,7 @@ void	CActor::cam_Lookout	( const Fmatrix &xform, float camera_height )
 			get_cam_oob( bc, bd, mat, xform, r_torso, alpha, radius, c );
 
 			/*
-			xrXRC				xrc			;
+			CDB::COLLIDER		xrc			;
 			xrc.box_options		(0)			;
 			xrc.box_query		(Level().ObjectSpace.GetStaticModel(), bc, bd)		;
 			u32 tri_count		= xrc.r_count();

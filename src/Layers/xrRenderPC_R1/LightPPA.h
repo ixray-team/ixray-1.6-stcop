@@ -11,7 +11,7 @@ struct	CLightR_Vertex
 
 class	CLightR_Manager
 {
-	xrXRC							xrc;
+	CDB::COLLIDER					xrc;
 	xr_vector<light*>				selected_point;
 	xr_vector<light*>				selected_spot;
 public:

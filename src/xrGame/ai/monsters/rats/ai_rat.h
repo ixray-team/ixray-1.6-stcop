@@ -181,6 +181,7 @@ protected:
 	ERatAction					m_tAction;
 	bool						m_turning;
 
+	xr_vector<ISpatialShared>	m_nearest;
 	// FSM
 	xr_stack<ERatStates>		m_tStateStack;
 	ERatStates					m_eCurrentState;

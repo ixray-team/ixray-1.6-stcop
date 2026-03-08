@@ -34,47 +34,6 @@ CObjectSpace::~CObjectSpace()
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
-int CObjectSpace::GetNearest(xr_vector<ISpatialShared>& q_spatial, xr_vector<CObject*>& q_nearest, const Fvector& point, float range, CObject* ignore_object)
-{
-	// Query objects
-	q_nearest.clear();
-
-	Fsphere Q;	
-	Q.set(point, range);
-
-	Fvector B;	
-	B.set(range, range, range);
-
-	g_SpatialSpace->q_box(q_spatial, 0, ESPATIAL_TYPE::COLLIDEABLE, point, B);
-
-	// Iterate
-	auto it = q_spatial.begin();
-	auto end = q_spatial.end();
-	for (; it != end; it++)
-	{
-		CObject* O = (*it)->dcast_CObject();
-		if (0 == O)
-			continue;
-
-		if (O == ignore_object)	
-			continue;
-
-		Fsphere mS = { O->SpatialComponent->spatial.sphere.P, O->SpatialComponent->spatial.sphere.R };
-		if (Q.intersect(mS))
-			q_nearest.push_back(O);
-	}
-
-	return (int)q_nearest.size();
-}
-
-//----------------------------------------------------------------------
-IC int CObjectSpace::GetNearest(xr_vector<CObject*>& q_nearest, ICollisionForm* obj, float range)
-{
-	CObject* O = obj->Owner();
-	return GetNearest(q_nearest, O->SpatialComponent->spatial.sphere.P, range + O->SpatialComponent->spatial.sphere.R, O);
-}
-
-//----------------------------------------------------------------------
 void CObjectSpace::Load(CDB::build_callback build_callback)
 {
 	
@@ -174,8 +133,8 @@ void CObjectSpace::Create(const XRay::CForm::IFormat& Data, CDB::build_callback 
 	case CFormVersions::Vanilla:
 	case CFormVersions::VanillaChunked:
 		{
-			xr_vector<Fvector> Verts;
-			xr_vector<CDB::TRI> Tris;
+			xr_vector<Fvector>& Verts = Static.get_verts();
+			xr_vector<CDB::TRI>& Tris = Static.get_tris();
 			Data.GetStaticGeom(Verts, Tris);
 			Static.build(Verts.data(), Verts.size(), Tris.data(), Tris.size(), build_callback, nullptr, pRW, RWMode);
 			break;

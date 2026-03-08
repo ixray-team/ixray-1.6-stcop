@@ -105,7 +105,7 @@ public:
 #ifndef _EDITOR    
 	using DetailIt = xr_vector<CDetail>::iterator;
 	xr_vector<CDetail>				objects;
-	xrXRC							xrc;
+	CDB::COLLIDER							xrc;
 #else
 	using DetailIt = xr_vector<CDetail*>::iterator;
 	xr_vector<CDetail*>				objects;
@@ -160,7 +160,7 @@ public:
     
 	void							cache_Initialize();
 	void							cache_Update	(Fvector& view);
-	void							cache_Task		(int gx, int gz, Slot* D);
+	void							cache_Task		(int gx, int gz, Slot* D, bool init = false);
 	Slot*			cache_Query		(int sx, int sz);
 	void							cache_Decompress(Slot* D);
 	BOOL							cache_Validate	();

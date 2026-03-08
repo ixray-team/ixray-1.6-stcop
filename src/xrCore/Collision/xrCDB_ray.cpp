@@ -9,28 +9,28 @@ struct cform_ray_collider final
 {
 	Fvector pos, fwd_dir;
   	COLLIDER* dest;
-	TRI* tris;
-	Fvector* verts;
+	const xr_vector<TRI>& tris;
+	const xr_vector<Fvector>& verts;
 	float rRange, rRange2;
 
 	bool bCull = false;
 	bool bFirst = false;
 	bool bNearest = false;
 
-	ICF bool _tri(u32* p, float& u, float& v, float& range)
+	ICF bool _tri(Fvector* tri, float& u, float& v, float& range)
 	{
 		Fvector edge1, edge2, tvec, pvec, qvec;
-		float	det,inv_det;
+		float det,inv_det;
 		
 		// find vectors for two edges sharing vert0
-		Fvector&			p0	= verts[ p[0] ];
-		Fvector&			p1	= verts[ p[1] ];
-		Fvector&			p2	= verts[ p[2] ];
-		edge1.sub			(p1, p0);
-		edge2.sub			(p2, p0);
+		const Fvector& p0 = tri[0];
+		const Fvector& p1 = tri[1];
+		const Fvector& p2 = tri[2];
+		edge1.sub(p1, p0);
+		edge2.sub(p2, p0);
 		// begin calculating determinant - also used to calculate U parameter
 		// if determinant is near zero, ray lies in plane of triangle
-		pvec.crossproduct	(fwd_dir, edge2);
+		pvec.crossproduct(fwd_dir, edge2);
 		det = edge1.dotproduct(pvec);
 
 		if (bCull)
@@ -65,52 +65,63 @@ struct cform_ray_collider final
 	
 	ICF void _prim(DWORD prim)
 	{
-		float	u,v,r;
-		if (!_tri(tris[prim].verts, u, v, r))	return;
-		if (r<=0 || r>rRange)					return;
-		
+		float u,v,r;
+		auto& Tri = tris[prim];
+		auto& TriVerts = Tri.verts;
+		Fvector tri_verts[3] = { verts[TriVerts[0]], verts[TriVerts[1]], verts[TriVerts[2]] };
+
+		if (!_tri(tri_verts, u, v, r))
+			return;
+
+		if (r<=0 || r>rRange)
+			return;
+
+		u32 dummy = Tri.dummy;
 		if (bNearest)	
 		{
 			if (dest->r_count())	
 			{
 				RESULT& R = *dest->r_begin();
-				if (r<R.range)	{
+				if (r<R.range)
+				{
 					R.id		= prim;
 					R.range		= r;
 					R.u			= u;
 					R.v			= v;
-					R.verts	[0]	= verts[tris[prim].verts[0]];
-					R.verts	[1]	= verts[tris[prim].verts[1]];
-					R.verts	[2]	= verts[tris[prim].verts[2]];
-					R.dummy		= tris[prim].dummy;
+					R.verts	[0]	= tri_verts[0];
+					R.verts	[1]	= tri_verts[1];
+					R.verts	[2]	= tri_verts[2];
+					R.dummy		= dummy;
 					rRange		= r;
 					rRange2		= r*r;
 				}
-			} else {
+			}
+			else
+			{
 				RESULT& R	= dest->r_add();
 				R.id		= prim;
 				R.range		= r;
 				R.u			= u;
 				R.v			= v;
-				R.verts	[0]	= verts[tris[prim].verts[0]];
-				R.verts	[1]	= verts[tris[prim].verts[1]];
-				R.verts	[2]	= verts[tris[prim].verts[2]];
-				R.dummy		= tris[prim].dummy;
+				R.verts	[0]	= tri_verts[0];
+				R.verts	[1]	= tri_verts[1];
+				R.verts	[2]	= tri_verts[2];
+				R.dummy		= dummy;
 				rRange		= r;
 				rRange2		= r*r;
 			}
 		}
 		else
  		{
-			RESULT& R	= dest->r_add();				// РџРѕ РїРѕСЂСЏРґРєСѓ СЃРѕР·РґР°РµС‚ RESULT
+			RESULT& R	= dest->r_add();				// По порядку создает RESULT
 			R.id		= prim;
 			R.range		= r;
 			R.u			= u;
 			R.v			= v;
-			R.verts	[0]	= verts[tris[prim].verts[0]];
-			R.verts	[1]	= verts[tris[prim].verts[1]];
-			R.verts	[2]	= verts[tris[prim].verts[2]];
-			R.dummy		= tris[prim].dummy;
+			R.verts	[0]	= tri_verts[0];
+			R.verts	[1]	= tri_verts[1];
+			R.verts	[2]	= tri_verts[2];
+			R.dummy		= dummy;
 		}
 	}
 
@@ -146,12 +157,10 @@ struct cform_ray_collider final
 void COLLIDER::ray_query(const MODEL* m_def, const Fvector& r_start, const Fvector& r_dir, float r_range)
 {
 	PROF_EVENT("COLLIDER::ray_query");
-	if (!m_def || m_def->tree == nullptr)
-	{
-		return;
-	}
+	m_def->wait_loading();
 
-	m_def->syncronize();
+	if (!m_def || m_def->tree == nullptr)
+		return;
 
 	// Get nodes
 	const AABBNoLeafTree* T = (const AABBNoLeafTree*)m_def->tree->GetTree();
@@ -175,43 +184,4 @@ void COLLIDER::ray_query(const MODEL* m_def, const Fvector& r_start, const Fvect
 		!!(ray_mode & OPT_ONLYNEAREST)
 	};
 	RC._stab(N);
-}
- 
-bool XRay::Collision::TestRayTriA(const Fvector& C, const Fvector& D, Fvector** p, float& u, float& v, float& range, bool bCull)
-{
-	Fvector edge1, edge2, tvec, pvec, qvec;
-	float det, inv_det;
-	// find vectors for two edges sharing vert0
-	edge1.sub(*p[1], *p[0]);
-	edge2.sub(*p[2], *p[0]);
-	// begin calculating determinant - also used to calculate U parameter
-	pvec.crossproduct(D, edge2);
-	// if determinant is near zero, ray lies in plane of triangle
-	det = edge1.dotproduct(pvec);
-	if (bCull) {						// define TEST_CULL if culling is desired
-		if (det < EPS)  return false;
-		tvec.sub(C, *p[0]);							// calculate distance from vert0 to ray origin
-		u = tvec.dotproduct(pvec);			// calculate U parameter and test bounds
-		if (u < 0.0 || u > det) return false;
-		qvec.crossproduct(tvec, edge1);				// prepare to test V parameter
-		v = D.dotproduct(qvec);			// calculate V parameter and test bounds
-		if (v < 0.0 || u + v > det) return false;
-		range = edge2.dotproduct(qvec);		// calculate t, scale parameters, ray intersects triangle
-		inv_det = 1.0f / det;
-		range *= inv_det;
-		u *= inv_det;
-		v *= inv_det;
-	}
-	else {											// the non-culling branch
-		if (det > -EPS && det < EPS) return false;
-		inv_det = 1.0f / det;
-		tvec.sub(C, *p[0]);							// calculate distance from vert0 to ray origin
-		u = tvec.dotproduct(pvec) * inv_det;	// calculate U parameter and test bounds
-		if (u < 0.0f || u > 1.0f)    return false;
-		qvec.crossproduct(tvec, edge1);				// prepare to test V parameter
-		v = D.dotproduct(qvec) * inv_det;	// calculate V parameter and test bounds
-		if (v < 0.0f || u + v > 1.0f) return false;
-		range = edge2.dotproduct(qvec) * inv_det;// calculate t, ray intersects triangle
-	}
-	return true;
 }

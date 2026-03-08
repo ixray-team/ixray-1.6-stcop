@@ -49,8 +49,8 @@ BOOL CDynamicWallmarkZone::trace_callback(collide::rq_result& result, LPVOID par
 	
     Fvector collide_position = Fvector().mad(wm_trace_data->StartPos, wm_trace_data->Dir, result.range);
 	
-    Fvector*	pVerts	= Level().ObjectSpace.GetStaticVerts();
-    CDB::TRI*	pTri	= Level().ObjectSpace.GetStaticTris()+result.element;
+    xr_vector<Fvector>& pVerts	= Level().ObjectSpace.GetStaticVerts();
+    CDB::TRI&	pTri	= Level().ObjectSpace.GetStaticTris()[result.element];
 
     wm_trace_data->self->handler = ::Render->add_DynamicWallmark(
         CDynamicWallmarkRegistry::Instance().GetWallmarkShader(wm_trace_data->self->shader, wm_trace_data->self->texture),
@@ -58,7 +58,7 @@ BOOL CDynamicWallmarkZone::trace_callback(collide::rq_result& result, LPVOID par
         wm_trace_data->self->w,
         wm_trace_data->self->h,
         wm_trace_data->self->r,
-        pTri, pVerts);
+        &pTri, pVerts.data());
 
 	return false;
 }

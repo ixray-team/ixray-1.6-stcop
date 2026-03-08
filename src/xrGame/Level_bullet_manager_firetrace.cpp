@@ -214,13 +214,13 @@ void CBulletManager::FireShotmark (SBullet* bullet, const Fvector& vDir, const F
 	else 
 	{
 		//вычислить нормаль к пораженной поверхности
-		Fvector*	pVerts	= Level().ObjectSpace.GetStaticVerts();
-		CDB::TRI*	pTri	= Level().ObjectSpace.GetStaticTris()+R.element;
+		xr_vector<Fvector>& pVerts	= Level().ObjectSpace.GetStaticVerts();
+		CDB::TRI&	pTri	= Level().ObjectSpace.GetStaticTris()[R.element];
 
 		if (mtl_pair && !mtl_pair->m_pCollideMarks->empty() && ShowMark)
 		{
 			//добавить отметку на материале
-			::Render->add_StaticWallmark	(&*mtl_pair->m_pCollideMarks, vEnd, bullet->wallmark_size, pTri, pVerts);
+			::Render->add_StaticWallmark	(&*mtl_pair->m_pCollideMarks, vEnd, bullet->wallmark_size, &pTri, pVerts.data());
 		}
 	}
 
@@ -400,9 +400,9 @@ bool CBulletManager::ObjectHit( SBullet_Hit* hit_res, SBullet* bullet, const Fve
 	else
 	{
 		//вычислить нормаль к поверхности
-		Fvector*	pVerts	=  Level().ObjectSpace.GetStaticVerts();
-		CDB::TRI*	pTri	= Level().ObjectSpace.GetStaticTris()+R.element;
-		hit_normal.mknormal	(pVerts[pTri->verts[0]],pVerts[pTri->verts[1]],pVerts[pTri->verts[2]]);
+		xr_vector<Fvector>& pVerts	=  Level().ObjectSpace.GetStaticVerts();
+		CDB::TRI&	pTri	= Level().ObjectSpace.GetStaticTris()[R.element];
+		hit_normal.mknormal	(pVerts[pTri.verts[0]],pVerts[pTri.verts[1]],pVerts[pTri.verts[2]]);
 		if ( bullet->density_mode )
 		{
 			Fvector new_pos;

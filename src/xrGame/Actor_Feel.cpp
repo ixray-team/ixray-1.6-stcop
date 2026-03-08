@@ -324,24 +324,17 @@ void CActor::Feel_Grenade_Update(float rad)
 	Fvector pos_actor;
 	Center(pos_actor);
 
-	g_pGameLevel->ObjectSpace.GetNearest(q_nearest, pos_actor, rad, nullptr);
-
 	// select only grenade
-	for (CObject* O : q_nearest)
+	g_SpatialSpace->q_sphere(q_nearest, 0, ESPATIAL_TYPE::COLLIDEABLE|ESPATIAL_TYPE::MISSILE, pos_actor, rad);
+	for (ISpatialShared& SS : q_nearest)
 	{
-		if (!O || O->getDestroy())
-		{
-			continue;
-		}
+		ISpatial* S = SS.get();
+		if (!S) continue;
+		CObject* O = S->dcast_CObject();
+		if (!O || O->getDestroy()) continue;
 
-		CGameObject* GO = O->cast_game_object();
-		if (GO == nullptr)
-		{
-			continue;
-		}
-
-		CGrenade* grn = GO->cast_grenade();
-		if (grn == nullptr || grn->Initiator() == ID() || grn->Useful())
+		CGrenade* grn = O->cast_grenade();
+		if (grn == nullptr || grn->Initiator() == ID() || grn->Useful() || grn->IsExploding())
 		{
 			continue;
 		}

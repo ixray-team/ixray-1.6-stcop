@@ -31,9 +31,9 @@ bool CRayPick::query()
 	if (Level().ObjectSpace.RayPick(start_position, direction, range, flags, R, ignore))
 	{
 		result.set(R);
-		const CDB::TRI* Triangle = Level().ObjectSpace.GetStaticTris() + R.element;
+		const CDB::TRI& Triangle = Level().ObjectSpace.GetStaticTris()[R.element];
 
-		material = (u16)Triangle->material;
+		material = (u16)Triangle.material;
 		return true;
 	}
 

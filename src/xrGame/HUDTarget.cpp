@@ -112,9 +112,9 @@ ICF static BOOL pick_trace_callback(collide::rq_result& result, LPVOID params)
 	}else
 	{
 		//получить треугольник и узнать его материал
-		CDB::TRI* T		= Level().ObjectSpace.GetStaticTris()+result.element;
+		CDB::TRI& T		= Level().ObjectSpace.GetStaticTris()[result.element];
 		
-		SGameMtl* mtl = GMLib.GetMaterialByIdx(T->material);
+		SGameMtl* mtl = GMLib.GetMaterialByIdx(T.material);
 		pp->power		*= mtl->fVisTransparencyFactor;
 		if(pp->power>0.34f)
 		{

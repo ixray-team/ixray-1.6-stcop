@@ -54,7 +54,7 @@ private:
 	xr_vector<shadow>		shadows;
 	xr_vector<tess_tri>		tess;
 	xr_vector<cache_item>	cache;
-	xrXRC					xrc;
+	CDB::COLLIDER			xrc;
 
 	ref_rt					RT;
 	ref_rt					RT_temp;

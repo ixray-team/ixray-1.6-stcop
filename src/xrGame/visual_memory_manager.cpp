@@ -566,8 +566,8 @@ float CVisualMemoryManager::feel_vision_mtl_transp(CObject* O, u32 element)
 			vis				= GMLib.GetMaterialByIdx(B.game_mtl_idx)->fVisTransparencyFactor;
 		}
 	}else{
-		CDB::TRI* T			= Level().ObjectSpace.GetStaticTris()+element;
-		vis					= GMLib.GetMaterialByIdx(T->material)->fVisTransparencyFactor;
+		CDB::TRI& T			= Level().ObjectSpace.GetStaticTris()[element];
+		vis					= GMLib.GetMaterialByIdx(T.material)->fVisTransparencyFactor;
 	}
 	return vis;
 }
