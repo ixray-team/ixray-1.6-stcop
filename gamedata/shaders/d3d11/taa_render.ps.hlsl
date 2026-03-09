@@ -26,14 +26,16 @@ float4 scaled_screen_res; //Render resolution
 #define TAA_HISTORY_SHARPNESS 0.5 //Sharpness factor for history filtering
 
 //don't touch it unless you KNOW what you're doing. 
+//edit: restored Hozar's tnmp. there are NaNs being feed into TAA, fix them plz.
 float3 Lottes_Tonemap(float3 c)
-{ 
-	return c * rcp(max(c.x, max(c.y, c.z)) + 1.0);
+{
+	return saturate(c * rcp(1.0f + c));
 }
 
 float3 Lottes_Tonemap_Inverse(float3 c)
 {
-	return c * rcp(1.0 - max(c.x, max(c.y, c.z)));
+	c = saturate(c);
+	return c * rcp(1.00001f - c);
 }
 
 static const int2 offset_3x3[9] =
