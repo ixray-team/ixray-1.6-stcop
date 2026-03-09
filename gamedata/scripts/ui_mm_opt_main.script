@@ -222,7 +222,7 @@ function options_dialog:OnBtnAccept()
 	SendScriptCallback("opt_menu_on_accept", self, opt, console)
 
 	if opt:NeedVidRestart() then
-		_G.b_discard_settings_shown = true
+		SetRegistryValue("main_menu", "b_discard_settings_shown", true)
 		self.message_box:InitMessageBox("message_box_yes_no")
 		self.message_box:SetText(string.format("%s %d% s", game.translate_string("ui_mm_confirm_changes"), 15, game.translate_string("mp_si_sec")))
 		self.message_box:ShowDialog(true)
@@ -464,7 +464,7 @@ function options_dialog:Update()
 		self.download_progress:Show				(false)
 		self.btn_cancel_download:Show			(false)
 	end
-	if(_G.b_discard_settings_shown) then
+	if(GetRegistryValue("main_menu", "b_discard_settings_shown", false)) then
 		local tg = math.floor(time_global_async()/1000)
 		if(self.timer==nil) then
 			self.timer = tg
@@ -484,7 +484,7 @@ end
 
 function options_dialog:OnApplyChanges()
     self.timer = nil
-    _G.b_discard_settings_shown = false
+	SetRegistryValue("main_menu", "b_discard_settings_shown", false)
 
 	self.owner:ShowDialog(true)
 	self:HideDialog()
@@ -502,7 +502,7 @@ end
 
 function options_dialog:OnDiscardChanges()
     self.timer = nil
-    _G.b_discard_settings_shown = false
+   SetRegistryValue("main_menu", "b_discard_settings_shown", false)
 
 	local c = get_console()
    	c:execute("cfg_load tmp")
@@ -514,7 +514,7 @@ function options_dialog:OnDiscardChanges()
 end
 
 function options_dialog:OnMenuReloaded()
-	if(_G.b_discard_settings_shown) then
+	if(GetRegistryValue("main_menu", "b_discard_settings_shown", false)) then
 	    self.message_box:InitMessageBox("message_box_yes_no")
 	    self.message_box:SetText(string.format("%s %d% s", game.translate_string("ui_mm_confirm_changes"), 15, game.translate_string("mp_si_sec")))
 	    self.message_box:ShowDialog(true)
