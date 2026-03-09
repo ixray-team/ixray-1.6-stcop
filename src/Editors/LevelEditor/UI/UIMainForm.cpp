@@ -442,14 +442,13 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 
 	// Применяем отступы в ячейках
 	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, cellPadding);
-	// Создаем таблицу с 9 колонками (8 для групп + 1 для DrawMenuSettings)
-	if (ImGui::BeginTable("##ToolbarGroups", 7, tableFlags))
-	{
 
-		// Устанавливаем минимальную ширину колонок
+	const int MaxTableIndex = EPrefs->ShowAxisButtons + EPrefs->ShowOldCameraButtons + 5;
+	if (ImGui::BeginTable("##ToolbarGroups", MaxTableIndex + 1, tableFlags))
+	{
 		if (minColumnWidth.x > 0)
 		{
-			for (int i = 0; i < 6; i++)
+			for (int i = 0; i < MaxTableIndex; i++)
 			{
 				ImGui::TableSetupColumn(std::format("##col_{}", i).c_str(), ImGuiTableColumnFlags_WidthFixed, minColumnWidth.x);
 			}
@@ -480,21 +479,21 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 		ImGui::BeginGroup();
 		DrawSettingsButton("##DrawRenderToolBar1173", m_tCsLocal, etfCSParent, "Parent Constraint Toggle", ImDrawFlags_RoundCornersLeft);
 		ImGui::SameLine();
-		DrawSettingsButton("##DrawRenderToolBar1200", m_tNuScale, etfNUScale, "Scaling by Axes only", ImDrawFlags_RoundCornersRight);
-		ImGui::EndGroup();
+		DrawSettingsButton("##DrawRenderToolBar1200", m_tNuScale, etfNUScale, "Scaling by Axes only", ImDrawFlags_RoundCornersNone);
 		
-		ImGui::SameLine(0, 4);
+		ImGui::SameLine(0);
 		const ETAction action = LTools->GetAction();
 		ImGui::BeginDisabled(action == etaScale || action == etaSelect || action == etaAdd);
 
 		bool UseLocal = !!imManipulator.MatrixMode;
 		ref_texture& CurrentCoordsView = UseLocal ? TransformLocalOrWorld2 : TransformLocalOrWorld;
-		if (XRay::ImGui::ToolbarIconButton("##LocalOrWorldTransform", CurrentCoordsView->get_SRView()->GetRawSRV(), &UseLocal))
+		if (XRay::ImGui::ToolbarIconButton("##LocalOrWorldTransform", CurrentCoordsView->get_SRView()->GetRawSRV(), &UseLocal, ImDrawFlags_RoundCornersRight))
 		{
 			imManipulator.MatrixMode = UseLocal;
 		}
 
 		ImGui::EndDisabled();
+		ImGui::EndGroup();
 		ImGui::EndGroup();
 
 		// Группа привязок
@@ -534,6 +533,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 
 		if (ImGui::IsItemHovered())
 			ImGui::SetTooltip("Focus on the selected object");
+
 		ImGui::EndGroup();
 
 		ImGui::TableSetColumnIndex(5);
@@ -562,27 +562,23 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 		DrawSnapCombo("##rotate", Tools->m_RotateSnapAngle, angleValues, 7, "Set a fixed rotation angle of the object (in degrees)", true);
 		ImGui::EndGroup();
 
-		ImGui::TableSetColumnIndex(6);
-		XRay::ImGui::ToolbarButton("##1", ICON_FA_LIGHTBULB, &MainForm->GetRenderForm()->UseHint, { ButtonSize, ButtonSize }, ImDrawFlags_RoundCornersAll);
+		int Idx = 5;
+
+		if (EPrefs->ShowAxisButtons)
+		{
+			ImGui::TableSetColumnIndex(++Idx);
+			RenderAxisButtons();
+		}
+
+		if (EPrefs->ShowOldCameraButtons)
+		{
+			ImGui::TableSetColumnIndex(++Idx);
+			RenderOldCameraButtons();
+		}
 
 		ImGui::EndTable();
 	}
-	ImGui::PopStyleVar(); // CellPadding
-
-	ImGui::PopStyleVar(); // ItemSpacing
-	ImGui::NewLine();
-
-	// Прочее...
-	if (EPrefs->ShowAxisButtons)
-	{
-		RenderAxisButtons();
-	}
-
-	if (EPrefs->ShowOldCameraButtons)
-	{
-		RenderOldCameraButtons();
-	}
-
+	ImGui::PopStyleVar(2);
 	ImGui::EndChild();
 
 	if (UI->ViewID == 0)
@@ -736,9 +732,17 @@ void UIMainForm::DrawMenuSettings()
 		}
 
 		//if (ImGui::ImageButton("##DrawRenderToolBar548", m_tMenu->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
-		if (XRay::ImGui::ToolbarIconButton("##DrawRenderToolBar548", m_tMenu->get_SRView()->GetRawSRV()))
+		if (XRay::ImGui::ToolbarIconButton("##DrawRenderToolBar548", m_tMenu->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersLeft))
 		{
 			ImGui::OpenPopup("MenuScene");
+		}
+
+		ImGui::SameLine();
+		const float ButtonSize = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize);
+		XRay::ImGui::ToolbarButton("##HintButton", ICON_FA_LIGHTBULB, &MainForm->GetRenderForm()->UseHint, { ButtonSize, ButtonSize }, ImDrawFlags_RoundCornersRight);
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip("Hint");
 		}
 
 		if (ImGui::IsItemHovered())
@@ -753,326 +757,187 @@ void UIMainForm::DrawMenuSettings()
 
 void UIMainForm::RenderOldCameraButtons()
 {
+	ImGui::BeginGroup();
+	if (XRay::ImGui::ToolbarIconButton("##ViewFront", m_tVFront->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersLeft))
 	{
-		ImGui::BeginGroup();
-		// Вид спереди.
-		{
-			m_tVFront->Load();
-			{
-				if (ImGui::ImageButton("##DrawRenderToolBar1241", m_tVFront->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
-				{
-					UI->CurrentView().m_Camera.ViewFront();
-					UI->RedrawScene();
-				}
-			}
-			if (ImGui::IsItemHovered())
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Front View");
-			}
-		}
-		ImGui::Spacing();
-		// Вид сзади.
-		{
-			m_tVBack->Load();
-			{
-				if (ImGui::ImageButton("##DrawRenderToolBar1258", m_tVBack->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
-				{
-					UI->CurrentView().m_Camera.ViewBack();
-					UI->RedrawScene();
-				}
-			}
-			if (ImGui::IsItemHovered())
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Back View");
-			}
-		}
-		ImGui::Spacing();
-		// Вид слева.
-		{
-			m_tVLeft->Load();
-			{
-				if (ImGui::ImageButton("##DrawRenderToolBar1275", m_tVLeft->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
-				{
-					UI->CurrentView().m_Camera.ViewLeft();
-					UI->RedrawScene();
-				}
-			}
-			if (ImGui::IsItemHovered())
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Left View");
-			}
-		}
-		ImGui::Spacing();
-		// Вид справа.
-		{
-			m_tVRight->Load();
-			{
-				if (ImGui::ImageButton("##DrawRenderToolBar1292", m_tVRight->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
-				{
-					UI->CurrentView().m_Camera.ViewRight();
-					UI->RedrawScene();
-				}
-			}
-			if (ImGui::IsItemHovered())
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Right View");
-			}
-		}
-		ImGui::Spacing();
-		// Вид сверху.
-		{
-			m_tVTop->Load();
-			{
-				if (ImGui::ImageButton("##DrawRenderToolBar1309", m_tVTop->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
-				{
-					UI->CurrentView().m_Camera.ViewTop();
-					UI->RedrawScene();
-				}
-			}
-			if (ImGui::IsItemHovered())
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Top View");
-			}
-		}
-		ImGui::Spacing();
-		// Вид снизу.
-		{
-			m_tVBottom->Load();
-			{
-				if (ImGui::ImageButton("##DrawRenderToolBar1326", m_tVBottom->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
-				{
-					UI->CurrentView().m_Camera.ViewBottom();
-					UI->RedrawScene();
-				}
-			}
-			if (ImGui::IsItemHovered())
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Bottom View");
-			}
-		}
-		ImGui::Spacing();
-		// Сбросить Вид.
-		{
-			m_tVReset->Load();
-			{
-				if (ImGui::ImageButton("##DrawRenderToolBar1343", m_tVReset->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
-				{
-					UI->CurrentView().m_Camera.ViewReset();
-					UI->RedrawScene();
-				}
-			}
-			if (ImGui::IsItemHovered())
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Reset View");
-			}
-		}
-		ImGui::EndGroup();
+		UI->CurrentView().m_Camera.ViewFront();
+		UI->RedrawScene();
 	}
-	ImGui::NewLine();
-	// --------------------------------------------------------------------------------------------
-	// Camera
+	if (ImGui::IsItemHovered())
 	{
-		ImGui::BeginGroup();
-		ECameraStyle Camera = UI->CurrentView().m_Camera.GetStyle();
-		// Свободный режим камеры
-		{
-			bool bPushColor = false;
-			if (Camera == csPlaneMove)
-			{
-				bPushColor = true;
-				ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-			}
-			m_tPlaneMove->Load();
-			if (ImGui::ImageButton("##DrawRenderToolBar1373", m_tPlaneMove->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
-			{
-				UI->CurrentView().m_Camera.SetStyle(csPlaneMove);
-				UI->RedrawScene();
-			}
-			if (ImGui::IsItemHovered())
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Free camera mode");
-			}
-			if (bPushColor)
-			{
-				ImGui::PopStyleColor();
-				ImGui::PopStyleColor();
-			}
-		}
-		ImGui::Spacing();
-		// Привязка камеры к центру координат|сцены
-		{
-			bool bPushColor = false;
-			if (Camera == cs3DArcBall)
-			{
-				bPushColor = true;
-				ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-			}
-			m_tArcBall->Load();
-			if (ImGui::ImageButton("##DrawRenderToolBar1400", m_tArcBall->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
-			{
-				UI->CurrentView().m_Camera.SetStyle(cs3DArcBall);
-				UI->RedrawScene();
-			}
-			if (ImGui::IsItemHovered())
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Snap the camera to the center of coordinates|scene");
-			}
-			if (bPushColor)
-			{
-				ImGui::PopStyleColor();
-				ImGui::PopStyleColor();
-			}
-		}
-		ImGui::Spacing();
-		// Автооблёт сцены камерой
-		{
-			bool bPushColor = false;
-			if (Camera == csFreeFly)
-			{
-				bPushColor = true;
-				ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-			}
-			m_tFreeFly->Load();
-			if (ImGui::ImageButton("##DrawRenderToolBar1427", m_tFreeFly->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
-			{
-				UI->CurrentView().m_Camera.SetStyle(csFreeFly);
-				UI->RedrawScene();
-			}
-			if (ImGui::IsItemHovered())
-			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Automatic camera flyover of the scene");
-			}
-			if (bPushColor)
-			{
-				ImGui::PopStyleColor();
-				ImGui::PopStyleColor();
-			}
-		}
-		ImGui::EndGroup();
+		ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+		ImGui::SetTooltip("Front View");
 	}
+	ImGui::SameLine();
+
+	if (XRay::ImGui::ToolbarIconButton("##ViewBack", m_tVBack->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersNone))
+	{
+		UI->CurrentView().m_Camera.ViewBack();
+		UI->RedrawScene();
+	}
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+		ImGui::SetTooltip("Back View");
+	}
+	ImGui::SameLine();
+
+	if (XRay::ImGui::ToolbarIconButton("##ViewLeft", m_tVLeft->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersNone))
+	{
+		UI->CurrentView().m_Camera.ViewLeft();
+		UI->RedrawScene();
+	}
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+		ImGui::SetTooltip("Left View");
+	}
+	ImGui::SameLine();
+
+	if (XRay::ImGui::ToolbarIconButton("##ViewRight", m_tVRight->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersNone))
+	{
+		UI->CurrentView().m_Camera.ViewRight();
+		UI->RedrawScene();
+	}
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+		ImGui::SetTooltip("Right View");
+	}
+	ImGui::SameLine();
+
+	if (XRay::ImGui::ToolbarIconButton("##ViewBottom", m_tVBottom->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersNone))
+	{
+		UI->CurrentView().m_Camera.ViewBottom();
+		UI->RedrawScene();
+	}
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+		ImGui::SetTooltip("Bottom View");
+	}
+	ImGui::SameLine();
+
+	if (XRay::ImGui::ToolbarIconButton("##ViewTop", m_tVTop->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersRight))
+	{
+		UI->CurrentView().m_Camera.ViewTop();
+		UI->RedrawScene();
+	}
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+		ImGui::SetTooltip("Top View");
+	}
+	ImGui::SameLine();
+
+	// Сбросить Вид.
+	//{
+	//	m_tVReset->Load();
+	//	{
+	//		if (ImGui::ImageButton("##DrawRenderToolBar1343", m_tVReset->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
+	//		{
+	//			UI->CurrentView().m_Camera.ViewReset();
+	//			UI->RedrawScene();
+	//		}
+	//	}
+	//	if (ImGui::IsItemHovered())
+	//	{
+	//		ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+	//		ImGui::SetTooltip("Reset View");
+	//	}
+	//}
+	ImGui::EndGroup();
+
+	ImGui::SameLine(0, 4);
+
+	ImGui::BeginGroup();
+	ECameraStyle Camera = UI->CurrentView().m_Camera.GetStyle();
+
+	bool CamPlane = Camera == csPlaneMove;
+	bool CamArcBall = Camera == cs3DArcBall;
+	bool CamFly = Camera == csFreeFly;
+
+	if (XRay::ImGui::ToolbarIconButton("##CamPlane", m_tPlaneMove->get_SRView()->GetRawSRV(), &CamPlane, ImDrawFlags_RoundCornersLeft))
+	{
+		UI->CurrentView().m_Camera.SetStyle(csPlaneMove);
+		UI->RedrawScene();
+	}
+
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+		ImGui::SetTooltip("Free camera mode");
+	}
+
+	ImGui::SameLine();
+
+	if (XRay::ImGui::ToolbarIconButton("##CamArcBall", m_tArcBall->get_SRView()->GetRawSRV(), &CamArcBall, ImDrawFlags_RoundCornersNone))
+	{
+		UI->CurrentView().m_Camera.SetStyle(cs3DArcBall);
+		UI->RedrawScene();
+	}
+
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+		ImGui::SetTooltip("Snap the camera to the center of coordinates|scene");
+	}
+
+	ImGui::SameLine();
+
+	if (XRay::ImGui::ToolbarIconButton("##CamFreeFly", m_tFreeFly->get_SRView()->GetRawSRV(), &CamArcBall, ImDrawFlags_RoundCornersRight))
+	{
+		UI->CurrentView().m_Camera.SetStyle(csFreeFly);
+		UI->RedrawScene();
+	}
+
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+		ImGui::SetTooltip("Automatic camera flyover of the scene");
+	}
+	ImGui::EndGroup();
 }
 
 void UIMainForm::RenderAxisButtons()
 {
 	ImGui::BeginGroup();
-	// --------------------------------------------------------------------------------------------
+
 	ETAxis Axis = LTools->GetAxis();
-	// Ось X
+
+	m_tX->Load();
+	m_tY->Load();
+	m_tZ->Load();
+	m_tZX->Load();
+
+	bool AxisX = Axis == etAxisX;
+	bool AxisY = Axis == etAxisY;
+	bool AxisZ = Axis == etAxisZ;
+	bool AxisZX = Axis == etAxisZX;
+
+	if (XRay::ImGui::ToolbarIconButton("##AxisX", m_tX->get_SRView()->GetRawSRV(), &AxisX, ImDrawFlags_RoundCornersLeft))
 	{
-		bool bPushColor = false;
-		if (Axis == etAxisX)
-		{
-			bPushColor = true;
-			ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-		}
-		m_tX->Load();
-		if (ImGui::ImageButton("##DrawRenderToolBar1462", m_tX->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
-		{
-			ExecCommand(COMMAND_CHANGE_AXIS, etAxisX, !LTools->GetSettings(etAxisX));
-		}
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-			ImGui::SetTooltip("Select X Axis");
-		}
-		if (bPushColor)
-		{
-			ImGui::PopStyleColor();
-			ImGui::PopStyleColor();
-		}
+		ExecCommand(COMMAND_CHANGE_AXIS, etAxisX, !LTools->GetSettings(etAxisX));
 	}
-	ImGui::Spacing();
-	// Ось Y
+
+	ImGui::SameLine();
+	if (XRay::ImGui::ToolbarIconButton("##AxisY", m_tY->get_SRView()->GetRawSRV(), &AxisY, ImDrawFlags_RoundCornersNone))
 	{
-		bool bPushColor = false;
-		if (Axis == etAxisY)
-		{
-			bPushColor = true;
-			ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-		}
-		m_tY->Load();
-		if (ImGui::ImageButton("##DrawRenderToolBar1488", m_tY->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
-		{
-			ExecCommand(COMMAND_CHANGE_AXIS, etAxisY, !LTools->GetSettings(etAxisY));
-		}
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-			ImGui::SetTooltip("Select Y Axis");
-		}
-		if (bPushColor)
-		{
-			ImGui::PopStyleColor();
-			ImGui::PopStyleColor();
-		}
+		ExecCommand(COMMAND_CHANGE_AXIS, etAxisY, !LTools->GetSettings(etAxisY));
 	}
-	ImGui::Spacing();
-	// Ось Z
+
+	ImGui::SameLine();
+	if (XRay::ImGui::ToolbarIconButton("##AxisZ", m_tZ->get_SRView()->GetRawSRV(), &AxisY, ImDrawFlags_RoundCornersNone))
 	{
-		bool bPushColor = false;
-		if (Axis == etAxisZ)
-		{
-			bPushColor = true;
-			ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-		}
-		m_tZ->Load();
-		if (ImGui::ImageButton("##DrawRenderToolBar1514", m_tZ->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
-		{
-			ExecCommand(COMMAND_CHANGE_AXIS, etAxisZ, !LTools->GetSettings(etAxisZ));
-		}
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-			ImGui::SetTooltip("Select Z Axis");
-		}
-		if (bPushColor)
-		{
-			ImGui::PopStyleColor();
-			ImGui::PopStyleColor();
-		}
+		ExecCommand(COMMAND_CHANGE_AXIS, etAxisZ, !LTools->GetSettings(etAxisZ));
 	}
-	ImGui::Spacing();
-	// Ось ZX
+
+	ImGui::SameLine();
+	if (XRay::ImGui::ToolbarIconButton("##AxisZX", m_tZX->get_SRView()->GetRawSRV(), &AxisY, ImDrawFlags_RoundCornersRight))
 	{
-		bool bPushColor = false;
-		if (Axis == etAxisZX)
-		{
-			bPushColor = true;
-			ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-		}
-		m_tZX->Load();
-		if (ImGui::ImageButton("##DrawRenderToolBar1540", m_tZX->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
-		{
-			ExecCommand(COMMAND_CHANGE_AXIS, etAxisZX, !LTools->GetSettings(etAxisZX));
-		}
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-			ImGui::SetTooltip("Select ZX Axis");
-		}
-		if (bPushColor)
-		{
-			ImGui::PopStyleColor();
-			ImGui::PopStyleColor();
-		}
+		ExecCommand(COMMAND_CHANGE_AXIS, etAxisZX, !LTools->GetSettings(etAxisZX));
 	}
+
 	ImGui::EndGroup();
 	ImGui::NewLine();
 }
