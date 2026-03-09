@@ -85,6 +85,66 @@ function cfg_parse_separated_strings(section, parameter, def_value)
 	return strings_list
 end
 
+function cfg_parse_separated_numbers(section, parameter, def_value)
+	if not has_line_in_section(section, parameter) then
+		return def_value
+	end
+	
+	local string_with_separators = cfg_get_string(section, parameter, false)
+	if not string_with_separators then
+		return def_value
+	end
+		
+    local cleaned = string.gsub(string_with_separators, "[^%d%,%.]", "")
+    
+    local numbers_list = {}
+    for num in string.gmatch(cleaned, "([^,]+)") do
+        if num and num ~= "" then
+            local number = tonumber(num)
+            if number then
+                table.insert(numbers_list, number)
+            end
+        end
+    end
+    
+    if #numbers_list == 0 then
+        return def_value
+    end
+    
+    return numbers_list
+end
+
+function cfg_parse_separated_bools(section, parameter, def_value)
+	if not has_line_in_section(section, parameter) then
+		return def_value
+	end
+	
+	local string_with_values = cfg_get_string(section, parameter, false)
+	if not string_with_values then
+		return def_value
+	end
+		
+     local cleaned = string.lower(string_with_values)
+    cleaned = string.gsub(cleaned, "[^%w%,]", "")
+    
+    local boolean_list = {}
+    for val in string.gmatch(cleaned, "([^,]+)") do
+        if val and val ~= "" then
+            if val == "true" or val == "1" or val == "yes" or val == "on" then
+                table.insert(boolean_list, true)
+            elseif val == "false" or val == "0" or val == "no" or val == "off" then
+                table.insert(boolean_list, false)
+            end
+        end
+    end
+    
+    if #boolean_list == 0 then
+        return def_value
+    end
+    
+    return boolean_list
+end
+
 -- safe
 function translate(str)
 	return game.translate_string(tostring(str)) or tostring(str)
