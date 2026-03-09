@@ -233,7 +233,7 @@ void UIRenderForm::DrawVP()
 				float calcSide = (canvas_size.x > canvas_size.y) ? canvas_size.y : canvas_size.x;
 
 				ImVec2 size{ calcSide * 0.15f, calcSide * 0.15f };
-				ImVec2 pos{ canvas_pos.x + canvas_size.x - size.x, canvas_pos.y };
+				ImVec2 pos{ canvas_pos.x + canvas_size.x - size.x, canvas_pos.y+25.f };
 
 				//Device.mView for only read
 				Fmatrix TempViewMatrix = Device.mView;
