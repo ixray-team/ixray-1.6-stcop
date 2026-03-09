@@ -88,6 +88,11 @@ protected:
 
 	xr_vector<shared_str>	m_sCheckoutBones;
 
+	bool					m_bNeedQuick = false;
+
+	static u8				m_uSlotToRestore;
+	static bool				m_bNeedRestoreDevice;
+
 	//параметры броска
 	
 	float m_fMinForce, m_fConstForce, m_fMaxForce, m_fForceGrowSpeed;
@@ -108,6 +113,7 @@ public:
 	virtual void			create_physic_shell		();
 	IC		void			set_destroy_time		(u32 delta_destroy_time) {m_dwDestroyTime = delta_destroy_time + Device.dwTimeGlobal;}
 	virtual void			PH_A_CrPr				();
+	virtual void			SetQuickThrow			();
 
 protected:
 	u32						m_ef_weapon_type;
