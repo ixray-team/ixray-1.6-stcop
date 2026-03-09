@@ -100,6 +100,7 @@ CNightVisionEffector::~CNightVisionEffector()
 	m_pActor = nullptr;
 	m_disabled_maps = {};
 	m_bNightVisionOn = false;
+	turn_nvg = false;
 }
 
 void CNightVisionEffector::Start(const shared_str& sect, bool play_sound)
