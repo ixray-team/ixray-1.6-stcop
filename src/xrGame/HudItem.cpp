@@ -550,7 +550,9 @@ bool CHudItem::HudAnimationExist(const shared_str& anim_name)
 	}
 	else
 	{
-		return g_player_hud->motion_length(anim_name, HudSection(), m_current_motion_def) > 100;
+		bool res = g_player_hud->motion_length(anim_name, HudSection(), m_current_motion_def) > 100;
+		m_current_motion_def = nullptr;
+		return res;
 	}
 }
 
