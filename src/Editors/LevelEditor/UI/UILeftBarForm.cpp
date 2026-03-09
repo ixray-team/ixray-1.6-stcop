@@ -221,11 +221,11 @@ void UILeftBarForm::Draw()
 				{
 					ImGui::BeginChild("##Container");
 
-					XRay::ImGui::BeginDarkChild("ObjectToolsBorder", { 0, 0 }, ImGuiChildFlags_AutoResizeY);
+					bool Opened = XRay::ImGui::BeginDarkChild("ObjectToolsBorder", { 0, 0 }, ImGuiChildFlags_AutoResizeY);
 
 					LTools->GetToolForm()->Draw();
 
-					XRay::ImGui::EndDarkChild();
+					XRay::ImGui::EndDarkChild(Opened);
 
 					ImGui::EndChild();
 				}
