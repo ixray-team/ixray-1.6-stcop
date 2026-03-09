@@ -206,8 +206,10 @@ void CGrenade::DiscardState()
 bool CGrenade::SendDeactivateItem(bool Force)
 {
 	CActor* pActor = m_pInventory->GetOwner() ? m_pInventory->GetOwner()->cast_actor() : nullptr;
-	if (pActor && (GetState() == eReady || GetState() == eThrow))
+	if (pActor && (GetState() == eReady || GetState() == eThrow || m_bNeedQuick))
+	{
 		return false;
+	}
 
 	return inherited::SendDeactivateItem(Force);
 }
@@ -327,7 +329,77 @@ void CGrenade::OnAnimationEnd(u32 state)
 {
 	switch(state)
 	{
-	case eThrowEnd: SwitchState(eHidden);	break;
+	case eThrowEnd:
+	{
+		SwitchState(eHidden);
+		break;
+	}
+	case eShowing:
+	{
+		if (m_bNeedQuick)
+		{
+			if (m_thrown)
+			{
+				if (m_pPhysicsShell != nullptr)
+				{
+					m_pPhysicsShell->Deactivate();
+				}
+
+				xr_delete(m_pPhysicsShell);
+				m_dwDestroyTime = 0xffffffff;
+
+				//PutNextToSlot();
+
+				if (Local())
+				{
+					DestroyObject();
+				}
+			}
+
+			u16 saved_old_slot = NO_ACTIVE_SLOT;
+
+			if (m_pInventory != nullptr)
+			{
+				if (m_uSlotToRestore != NO_ACTIVE_SLOT && m_pInventory->ItemFromSlot(m_uSlotToRestore) != nullptr)
+				{
+					saved_old_slot = m_pInventory->ItemFromSlot(m_uSlotToRestore)->BaseSlot();
+				}
+
+				m_pInventory->SetActiveSlot(m_uSlotToRestore);
+				m_uSlotToRestore = NO_ACTIVE_SLOT;
+			}
+
+			bool bres = (saved_old_slot == NO_ACTIVE_SLOT || saved_old_slot == INV_SLOT_2 || saved_old_slot == PISTOL_SLOT_NEW || saved_old_slot == KNIFE_SLOT || saved_old_slot == BOLT_SLOT);
+
+			if (!bres)
+			{
+				m_bNeedRestoreDevice = false;
+			}
+
+			if (m_bNeedRestoreDevice)
+			{
+				if (CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
+				{
+					if (CCustomDevice* pDevice = pActor->GetDevice(true))
+					{
+						pDevice->switch_device();
+					}
+				}
+
+				m_bNeedRestoreDevice = false;
+			}
+
+			SwitchState(eHidden);
+			SetState(eHidden);
+			m_bNeedQuick = false;
+		}
+		else
+		{
+			setVisible(TRUE);
+			SwitchState(eIdle);
+		}
+		break;
+	}
 	default : inherited::OnAnimationEnd(state);
 	}
 }
