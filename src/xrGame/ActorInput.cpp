@@ -677,7 +677,7 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 		float LookFactor = GetLookFactor();
 
 		CCameraBase* C = cameras[cam_active];
-		float scale = (C->f_fov / g_fov) * psGamepadSens * psMouseSensScale / 50.f / LookFactor;
+		float scale = (C->f_fov / g_fov) * psGamepadSens * Device.fTimeDelta * psMouseSensScale / LookFactor;
 
 		if (!fis_zero(value.x))
 		{
