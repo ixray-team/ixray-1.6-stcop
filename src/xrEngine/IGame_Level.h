@@ -79,7 +79,7 @@ public:	// deferred sound events
 public:
 	// Main, global functions
 	IGame_Level					();
-	virtual ~IGame_Level		();
+	virtual ~IGame_Level		() noexcept override;
 
 	virtual shared_str			name					() const = 0;
 	virtual void				GetLevelInfo			( CServerInfo* si ) = 0;
