@@ -46,6 +46,7 @@
 #include "ControllerAutoaim.h"
 #include "CameraFirstEye.h"
 #include "Grenade.h"
+#include "InteractiveObject.h"
 
 extern u32 hud_adj_mode;
 
@@ -1326,6 +1327,14 @@ void CActor::ActorUse()
 	if (m_pUsableObject && nullptr == m_pObjectWeLookingAt->cast_inventory_item())
 	{
 		m_pUsableObject->use(this);
+	}
+
+	if (m_pObjectWeLookingAt != nullptr)
+	{
+		if (CInteractiveObject* oCInteractiveObject = smart_cast<CInteractiveObject*>(m_pObjectWeLookingAt))
+		{
+			oCInteractiveObject->OnUse();
+		}
 	}
 	
 	if (m_pInvBoxWeLookingAt && m_pInvBoxWeLookingAt->nonscript_usable() && m_use_disabled == false)
