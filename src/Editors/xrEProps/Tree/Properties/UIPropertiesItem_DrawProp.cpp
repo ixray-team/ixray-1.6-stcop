@@ -261,7 +261,8 @@ void UIPropertiesItem::DrawProp()
 				TypeID new_val_as_BOOL = V->GetValue();
 				PItem->BeforeEdit<RangeCast, TypeID>(new_val_as_BOOL);
 				bool new_val = new_val_as_BOOL;
-				if (ImGui::Checkbox("##value", &new_val))
+
+				if (XRay::ImGui::ToggleButton(new_val ? "Enable" : "Disable", new_val, {-1, XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableRowHeight)}))
 				{
 					new_val_as_BOOL = new_val;
 					if (PItem->AfterEdit<RangeCast, TypeID>(new_val_as_BOOL))
