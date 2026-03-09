@@ -1236,21 +1236,11 @@ void CScriptGameObject::attachable_item_load_attach(LPCSTR section)
 
 void CScriptGameObject::RestoreWeapon()
 {
-#ifdef DEBUG
-	ai().script_engine().script_log(eLuaMessageTypeMessage,"CScriptGameObject::RestoreWeapon called!!!");
-	ai().script_engine().print_stack();
-#endif //#ifdef DEBUG
-
 	Actor()->SetWeaponHideState(INV_STATE_BLOCK_ALL, false);
 }
 
 void CScriptGameObject::HideWeapon()
 {
-#ifdef DEBUG
-	ai().script_engine().script_log(eLuaMessageTypeMessage,"CScriptGameObject::HideWeapon called!!!");
-	ai().script_engine().print_stack();
-#endif //#ifdef DEBUG
-
 	Actor()->SetWeaponHideState(INV_STATE_BLOCK_ALL, true);
 }
 
