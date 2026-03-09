@@ -31,6 +31,7 @@
 #	include "ScriptsSubsystems/Condlist/script_xr_logic.h"
 #	include "ScriptsSubsystems/StoryID/StoryIDManager.h"
 #	include "EnhancementEditionLuaLayer.h"
+#	include "InteractiveObject.h"
 #endif
 
 extern void CompatibilityBringeExport(lua_State*);
@@ -286,6 +287,7 @@ void export_classes	(lua_State *L)
 	game_sv_mp::script_register(L);
 	game_sv_mp_script::script_register(L);
 	CScriptXRParser::script_register(L);
+	CInteractiveObject::script_register(L);
 
 	// Ехидна Эдишен
 	ExportEELayer(L);
