@@ -206,7 +206,7 @@ void CHolderEntityObject::OnGamepadAxisMove(int id, Fvector2 value)
 	else if (id == 1)
 	{
 		CCameraBase* C = camera;
-		float scale = (C->f_fov / g_fov) * psGamepadSens * psMouseSensScale / 50.f;
+		float scale = (C->f_fov / g_fov) * psGamepadSens * Device.fTimeDelta * psMouseSensScale;
 		if (value.x)
 		{
 			float realVal = (value.x > 0.f ? value.x - 0.2f : value.x + 0.2f) / 0.8f;
