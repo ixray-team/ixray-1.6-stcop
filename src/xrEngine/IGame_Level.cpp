@@ -34,7 +34,7 @@ IGame_Level::IGame_Level	()
 #endif // DEBUG
 }
 
-IGame_Level::~IGame_Level()
+IGame_Level::~IGame_Level() noexcept
 {
 	if (Core.ParamsData.test(ECoreParams::nes_texture_storing))
 		Device.m_pRender->ResourcesStoreNecessaryTextures();
