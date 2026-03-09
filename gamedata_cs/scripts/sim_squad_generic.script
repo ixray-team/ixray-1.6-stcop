@@ -107,7 +107,7 @@ function sim_squad_generic:init_box_items(smart)
 	local mul_by_level = {}
 	local level_name = "default"
 		if smart ~= nil then
-				level_name = alife():level_name(game_graph():vertex(smart.m_game_vertex_id):level_id())
+			level_name = alife():level_name(gg_vertex_level_id(smart.m_game_vertex_id))
 		end
 	if not death_ini:section_exist(level_name) then
 		level_name = "default"
@@ -216,7 +216,7 @@ function sim_squad_generic:create_npc(spawn_smart)
 	local custom_resource = nil
 	local min_npc, max_npc = 3,5
 	if self.player_id == "monster" then
-		local level_name = alife():level_name(game_graph():vertex(spawn_smart.m_game_vertex_id):level_id())
+		local level_name = alife():level_name(gg_vertex_level_id(spawn_smart.m_game_vertex_id))
 		local min, max = 0,5
 		if monster_resource_by_level[level_name] ~= nil then
 			min = monster_resource_by_level[level_name][1]
@@ -1295,10 +1295,9 @@ function sim_attack_point:update()
 	--	print_table(squad.squad_npc)
 	--end
 
-	local obj_gv, obj_pos = game_graph():vertex(commander.m_game_vertex_id), commander.position
-	local job_gv          = game_graph():vertex(dest_smart.m_game_vertex_id)
+	local obj_pos = commander.position
 
-	if obj_gv:level_id() ~= job_gv:level_id() then
+	if gg_vertex_level_id(commander.m_game_vertex_id) ~= gg_vertex_level_id(dest_smart.m_game_vertex_id) then
 		--' Стопудова еще не пришли.
 		--printf("    false level")
 		return false

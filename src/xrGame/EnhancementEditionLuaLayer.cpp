@@ -79,6 +79,11 @@ void ExportEELayer(lua_State* L)
 			return Levels.get_key_at(index);
 		}),
 
+		luabind::def("gg_accessible", +[](u32 VertexID, bool Value)
+		{
+			return ai().game_graph().accessible(VertexID, Value);
+		}),
+
 		luabind::def("gg_distance", +[](u32 LeftVertexID, u32 RightVertexID)
 		{
 			auto RightPoint = ai().game_graph().vertex(RightVertexID)->game_point();

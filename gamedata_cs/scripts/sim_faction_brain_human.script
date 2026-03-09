@@ -352,14 +352,11 @@ function faction_brain_human:init_player_task(target_data)
 		return
 	end
 
-	local obj_gv = game_graph():vertex(db.actor:game_vertex_id())
-	local job_gv = game_graph():vertex(smart.m_game_vertex_id )
-	
 	local empty_point 		= smart.player_name == "none" 
 	local enemy_point		= game_relations.is_factions_enemies(self.faction.player_name, smart.player_name)
 	
 	local actor_in_radius 	= db.actor:position():distance_to_sqr(smart.position) <= TASK_DISTANCE
-	local actor_in_level 	= obj_gv:level_id() == job_gv:level_id()
+	local actor_in_level 	= gg_vertex_level_id(db.actor:game_vertex_id()) == gg_vertex_level_id(smart.m_game_vertex_id)
 
 	-- Определяем какой тип таска,  мы должны щас выдать	
 	local task_type = nil

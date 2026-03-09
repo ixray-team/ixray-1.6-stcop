@@ -229,7 +229,7 @@ function generic_physics_binder:death_callback(victim, who)
     end
 
     if self.disable_graph_point ~= nil then
-        game_graph():accessible(self.disable_graph_point, true)
+		gg_accessible(self.disable_graph_point, true)
         printf("GRAPH POINT ENABLED")
     end
 

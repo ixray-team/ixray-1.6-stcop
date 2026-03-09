@@ -365,14 +365,14 @@ function activate_surge(time)
 		end
 		local nearest_cover_id = hide_tbl[1].id
 		local nearest_cover_dist = 0
-		if game_graph():vertex(hide_tbl[1].m_game_vertex_id):level_id()~=alife():level_id() then
+		if gg_vertex_level_id(hide_tbl[1].m_game_vertex_id)~=alife():level_id() then
 			nearest_cover_dist = 10000
 		else
 			nearest_cover_dist = hide_tbl[1].position:distance_to(db.actor:position())
 		end
         for i = 2, n do
             local dist = 0
-            if game_graph():vertex(hide_tbl[i].m_game_vertex_id):level_id()~=alife():level_id() then
+            if gg_vertex_level_id(hide_tbl[i].m_game_vertex_id)~=alife():level_id() then
                 dist = 10000
             else
                 dist = hide_tbl[i].position:distance_to(db.actor:position())

@@ -19,7 +19,7 @@ function evaluator_reached_strn_job_location:evaluate()
 	end
 	return false
 --[[
-	local npc_li  = alife():level_name(game_graph():vertex(self.object:game_vertex_id()):level_id())	
+	local npc_li  = alife():level_name(gg_vertex_level_id(self.object:game_vertex_id()))	
 	local smart_li = smart.smart_level
 
 	if npc_li ~= smart_li then
@@ -31,7 +31,7 @@ function evaluator_reached_strn_job_location:evaluate()
 
 		v.game_vertex_id = patrol:game_vertex_id(0)
 		--printf("5b")
-		v.level_id		 = game_graph():vertex(v.game_vertex_id):level_id()
+		v.level_id		 = gg_vertex_level_id(v.game_vertex_id)
 			
 	if self.object:level_vertex_id() == self.gst.gulag:obj_job_location( self.object:id() ) then
 

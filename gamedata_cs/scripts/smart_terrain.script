@@ -117,7 +117,7 @@ function se_smart_terrain:on_before_register()
 	cse_alife_smart_zone.on_before_register(self)
 	self.board = sim_board.get_sim_board()
 	self.board:register_smart(self)
-	self.smart_level	= alife():level_name(game_graph():vertex(self.m_game_vertex_id):level_id())
+	self.smart_level	= alife():level_name(gg_vertex_level_id(self.m_game_vertex_id))
 	--printf("SMARTLEVEL %s level %s", self:name(), tostring(self.smart_level))
 end
 -- регистрация объекта в симуляторе.
@@ -425,7 +425,7 @@ function se_smart_terrain:load_jobs()
 		--printf("5a %s", tostring(v.alife_path))
 		v.game_vertex_id = patrol:game_vertex_id(0)
 		--printf("5b")
-		v.level_id		 = game_graph():vertex(v.game_vertex_id):level_id()
+		v.level_id		 = gg_vertex_level_id(v.game_vertex_id)
 		--printf("5c")
 		v.position       = patrol:point(0)
 		--printf("5d")
@@ -621,15 +621,13 @@ function se_smart_terrain:distance_to_job_location(obj, job)
 	local storage = db.storage[obj.id]
 
 	if storage == nil then
-		obj_gv, obj_pos = game_graph():vertex(obj.m_game_vertex_id), obj.position
+		obj_idx, obj_pos = obj.m_game_vertex_id, obj.position
 	else
 		local obj = db.storage[obj.id].object
-		obj_gv, obj_pos = game_graph():vertex(obj:game_vertex_id()), obj:position()
+		obj_idx, obj_pos = obj:game_vertex_id(), obj:position()
 	end
 
-	local job_gv = game_graph():vertex(job.game_vertex_id)
-
-	if obj_gv:level_id() == job_gv:level_id() then
+	if gg_vertex_level_id(obj_idx) == gg_vertex_level_id(job.game_vertex_id) then
 		return obj_pos:distance_to(job.position)
 	else
 		return 10000
