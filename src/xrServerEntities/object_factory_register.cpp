@@ -191,6 +191,7 @@
 #	include "../xrGame/HolderEntityObject.h"
 #	include "../xrGame/ActorBackpack.h"
 #	include "../xrGame/InventoryItems/Dosimeter/Dosimeter.h"
+#	include "InteractiveObject.h"
 #endif // NO_XR_GAME
 
 #ifndef NO_XR_GAME
@@ -360,6 +361,8 @@ void CObjectFactory::register_classes	()
 	//Info Document
 	ADD(CInfoDocument			,CSE_ALifeItemDocument			,CLSID_IITEM_DOCUMENT			,"obj_document");
 	ADD(CInventoryItemObject	,CSE_ALifeItem					,CLSID_IITEM_ATTACH				,"obj_attachable");
+
+	ADD(CInteractiveObject		,CSE_ALifeDynamicObjectVisual   ,CLSID_INTERACTIVE_OBJ			,"obj_interactive_object");
 
 	//Equipment outfit
 	ADD(CScientificOutfit		,CSE_ALifeItemCustomOutfit		,CLSID_EQUIPMENT_SCIENTIFIC		,"equ_scientific");
