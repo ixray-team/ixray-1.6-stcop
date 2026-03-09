@@ -634,7 +634,8 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 		}
 
 		if (std::abs(value.y) < 0.5f
-			&& std::abs(value.x) < 0.5f)
+			&& std::abs(value.x) < 0.5f
+			&& !(mstate_real & mcCrouch))
 		{
 			mstate_wishful |= mcAccel;
 		}
