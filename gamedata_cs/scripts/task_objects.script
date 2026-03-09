@@ -2161,7 +2161,7 @@ function CHideFromSurgeTask:check_task(tm)
 	local diff_sec = math.ceil(game.get_game_time():diffSec(self.inited_time)/level.get_time_factor())
 	local tbl = self.hide_tbl
 		local nearest_cover_dist = 0
-		if game_graph():vertex(tbl[1].m_game_vertex_id):level_id()~=alife():level_id() then
+		if gg_vertex_level_id(tbl[1].m_game_vertex_id)~=alife():level_id() then
 			nearest_cover_dist = 10000
 		else
 			nearest_cover_dist = tbl[1].position:distance_to(db.actor:position())
@@ -2169,7 +2169,7 @@ function CHideFromSurgeTask:check_task(tm)
 	local target = tbl[1].id
 	for i = 2, #tbl do
 		local dist = 0
-		if game_graph():vertex(tbl[i].m_game_vertex_id):level_id()~=alife():level_id() then
+		if gg_vertex_level_id(tbl[i].m_game_vertex_id)~=alife():level_id() then
 			dist = 10000
 		else
 			dist = tbl[i].position:distance_to(db.actor:position())

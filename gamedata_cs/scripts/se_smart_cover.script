@@ -19,7 +19,7 @@ function se_smart_cover:on_before_register()
 end
 function se_smart_cover:on_register()
 	cse_smart_cover.on_register( self )
-	local level_id = game_graph():vertex(self.m_game_vertex_id):level_id()
+	local level_id = gg_vertex_level_id(self.m_game_vertex_id)
 	if registered_smartcovers_by_lv_id[level_id] == nil then
 		registered_smartcovers_by_lv_id[level_id] = {}
 	end
@@ -28,7 +28,7 @@ function se_smart_cover:on_register()
 end
 function se_smart_cover:on_unregister()
 	registered_smartcovers[self:name()] = nil
-	local level_id = game_graph():vertex(self.m_game_vertex_id):level_id()
+	local level_id = gg_vertex_level_id(self.m_game_vertex_id)
 	registered_smartcovers_by_lv_id[level_id][self.m_level_vertex_id] = nil
 --	printf("smart_cover [%s] is unregistered", self:name())
 	cse_smart_cover.on_unregister(self)

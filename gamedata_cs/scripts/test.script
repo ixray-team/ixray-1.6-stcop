@@ -77,7 +77,7 @@ function stats()
 		local squads = {}
 		local npc_stats = {}
 		for k,squad in pairs(faction.squads) do
-			local squad_level = alife():level_name(game_graph():vertex(board.smarts[squad.smart_id].smrt.m_game_vertex_id):level_id())
+			local squad_level = alife():level_name(gg_vertex_level_id(board.smarts[squad.smart_id].smrt.m_game_vertex_id))
 
 			if squads[squad_level] == nil then
 				squads[squad_level] = {_total_power = 0}

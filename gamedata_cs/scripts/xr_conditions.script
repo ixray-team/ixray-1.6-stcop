@@ -1096,10 +1096,9 @@ function npc_to_smart_dist(actor, obj, p)
 	local smart = sim_board.get_sim_board():get_smart_by_name(p[1])
 	local dist = tonumber(p[2])
 
-	local obj_gv, obj_pos = game_graph():vertex(obj:game_vertex_id()), obj:position()
-	local job_gv          = game_graph():vertex(smart.m_game_vertex_id)
+	local obj_pos = obj:position()
 
-	if obj_gv:level_id() ~= job_gv:level_id() then
+	if gg_vertex_level_id(obj:game_vertex_id()) ~= gg_vertex_level_id(smart.m_game_vertex_id) then
 		--' Стопудова еще не пришли.
 		return false
 	end
