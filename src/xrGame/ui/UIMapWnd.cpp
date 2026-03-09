@@ -625,8 +625,7 @@ bool CUIMapWnd::OnGamepadStickAction(int key, Fvector2 value, EUIMessages gamepa
 		if (!fis_zero(value.y))
 			valReal.y = (value.y > 0.f ? value.y - 0.2f : value.y + 0.2f);
 
-		valReal.mul(0.8f);
-		valReal.mul(m_map_move_step);
+		valReal.mul(0.8f * m_map_move_step * Device.fTimeDelta * 50.f);
 		valReal.invert();
 
 		if (!fis_zero(value.x) || !fis_zero(value.y))
