@@ -845,11 +845,11 @@ void TUI::DestroyViewport(int ID)
 
 void TUI::InitWindowIcons()
 {
-	m_HeaderLogo	= EDevice->Resources->_CreateTexture("ed\\bar\\win_header_logo");
+	m_HeaderLogo	= chezze_svg_temporary::RasterizeSvg(IX_RAY_LOGO, 64, 64); //EDevice->Resources->_CreateTexture("ed\\bar\\win_header_logo");
 	m_WinMin		= chezze_svg_temporary::RasterizeSvg(IX_MIN_ICON, 10, 10);
-	m_WinMax		= chezze_svg_temporary::RasterizeSvg(IX_MAX_ICON, 10, 10);//EDevice->Resources->_CreateTexture("ed\\bar\\win_header_max");
-	m_WinRes		= chezze_svg_temporary::RasterizeSvg(IX_RESTORE_ICON, 10, 10);//EDevice->Resources->_CreateTexture("ed\\bar\\win_header_restore");
-	m_WinClose		= chezze_svg_temporary::RasterizeSvg(IX_CLOSE_ICON, 10, 10);//EDevice->Resources->_CreateTexture("ed\\bar\\win_header_close");
+	m_WinMax		= chezze_svg_temporary::RasterizeSvg(IX_MAX_ICON, 10, 10);
+	m_WinRes		= chezze_svg_temporary::RasterizeSvg(IX_RESTORE_ICON, 10, 10);
+	m_WinClose		= chezze_svg_temporary::RasterizeSvg(IX_CLOSE_ICON, 10, 10);
 }
 
 void TUI::OnDrawUI()
