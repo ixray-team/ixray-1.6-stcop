@@ -1696,7 +1696,7 @@ function set_level_faction_community(actor, npc, p)
 			goodwill = 1000
 		end
 		for k,v in pairs(faction.squads) do
-			local squad_level = alife():level_name(game_graph():vertex(alife():object(v.commander_id).m_game_vertex_id):level_id())
+			local squad_level = alife():level_name(gg_vertex_level_id(alife():object(v.commander_id).m_game_vertex_id))
 			if(squad_level==p[2]) then
 				for kk,vv in pairs(v.squad_npc) do
 					local npc = alife():object(vv)

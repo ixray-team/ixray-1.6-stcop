@@ -297,7 +297,7 @@ function se_sim_faction:get_spawn_section(spawn_smart, custom_resource)
 
 
 	-- Теперь выбираем, кого мы можем спаунить в зависимости от левела
-	local level_name = alife():level_name(game_graph():vertex(spawn_smart.m_game_vertex_id):level_id())
+	local level_name = alife():level_name(gg_vertex_level_id(spawn_smart.m_game_vertex_id))
 
 	local level_spawn_data = self.spawn_by_level[level_name]
 

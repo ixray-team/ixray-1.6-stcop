@@ -14,7 +14,7 @@ function trade_init(npc, cfg)
 --'	end
 
 	trade_manager[npc:id()].cfg_ltx = cfg
-	trade_manager[npc:id()].config = ini_file(cfg)
+	trade_manager[npc:id()].config = get_cached_ini(cfg)
 
 	-- коэфициенты покупки
 	local str = utils.cfg_get_string(trade_manager[npc:id()].config, "trader", "buy_condition", npc, true, "")
@@ -37,7 +37,7 @@ function trade_init(npc, cfg)
 	end
 
 -- buy_item_condition_factor
-	str = utils.cfg_get_string(trade_manager[npc:id()].config, "trader", "buy_item_condition_factor", npc, false, "", "0.01")
+	str = utils.cfg_get_string(trade_manager[npc:id()].config, "trader", "buy_item_condition_factor", npc, false, "", "0.7")
 	if str ~= nil then
 		trade_manager[npc:id()].buy_item_condition_factor = xr_logic.parse_condlist(npc, "trade_manager", "buy_item_condition_factor", str)
 	end
@@ -48,6 +48,7 @@ function update(npc)
 	local tt = trade_manager[npc:id()]
 
 	if tt == nil then
+		printf("TRADE [%s]:  tt is nil", npc:name())
 		return
 	end
 
@@ -71,17 +72,11 @@ function update(npc)
 		abort("Wrong section in buy_condition condlist for npc [%s]!", npc:name())
 	end
 	if tt.current_sell_condition ~= str then
-		--'printf("TRADE [%s]: sell condition = %s", npc:name(), str)
+		printf("TRADE [%s]: sell condition = %s", npc:name(), str)
 		npc:sell_condition(tt.config, str)
 		tt.current_sell_condition = str
 	else
 		printf("TRADE [%s]: current = %s   sell = %s", npc:name(), tostring(tt.current_sell_condition), tostring(str))
-	end
-
-	str = tonumber(xr_logic.pick_section_from_condlist(db.actor, npc, tt.buy_item_condition_factor))
-	if tt.current_buy_item_condition_factor ~= str then
-		npc:buy_item_condition_factor(str)
-		tt.current_buy_item_condition_factor = str
 	end
 
 	str = tonumber(xr_logic.pick_section_from_condlist(db.actor, npc, tt.buy_item_condition_factor))
@@ -176,7 +171,7 @@ function load(obj, packet)
 	tt.cfg_ltx = packet:r_stringZ()
 	printf("TRADE LOAD [%s]: cfg_ltx = %s", obj:name(), tostring(tt.cfg_ltx))
 
-	tt.config = ini_file(tt.cfg_ltx)
+	tt.config = get_cached_ini(tt.cfg_ltx)
 
 	a = packet:r_stringZ()
 	printf("TRADE LOAD [%s]: current_buy_condition = %s", obj:name(), tostring(a))
