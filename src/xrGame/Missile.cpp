@@ -25,6 +25,8 @@
 #include "PhysicsShellHolder.h"
 
 CUIProgressShape* g_MissileForceShape = nullptr;
+u8 CMissile::m_uSlotToRestore = NO_ACTIVE_SLOT;
+bool CMissile::m_bNeedRestoreDevice = false;
 
 void create_force_progress()
 {
@@ -105,6 +107,11 @@ void CMissile::LoadSounds(LPCSTR section)
 	{
 		m_eSoundsFlags.set(ESoundsFlags::sf_throw, TRUE);
 		m_sounds.LoadSound(section, "snd_throw", "sndThrow", false, ESoundTypes(SOUND_TYPE_ITEM_HIDING));
+	}
+
+	if (SoundExist(section, "snd_throw_quick"))
+	{
+		m_sounds.LoadSound(section, "snd_throw_quick", "sndThrowQuick", false, ESoundTypes(SOUND_TYPE_ITEM_HIDING));
 	}
 }
 
@@ -229,6 +236,8 @@ void CMissile::OnH_B_Independent(bool just_before_destroy)
 		DestroyObject		();
 		return;
 	}
+
+	m_bNeedQuick = false;
 }
 
 extern u32 hud_adj_mode;
@@ -290,6 +299,18 @@ void CMissile::UpdateCL()
 		m_sounds.SetPosition("sndThrowBegin", P);
 }
 
+void CMissile::SetQuickThrow()
+{
+	m_bNeedQuick = true;
+	
+	m_uSlotToRestore = m_pInventory != nullptr ? m_pInventory->GetActiveSlot() : NO_ACTIVE_SLOT;
+
+	if (CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
+	{
+		m_bNeedRestoreDevice = pActor->GetDevice() != nullptr;
+	}
+}
+
 void CMissile::shedule_Update(u32 dt)
 {
 	inherited::shedule_Update(dt);
@@ -309,12 +330,28 @@ void CMissile::State(u32 state)
 {
 	switch(GetState()) 
 	{
-	case eShowing:
-        {
-			SetPending			(TRUE);
-			PlayHUDMotion("anm_show", EHudMixType::eNoMix, GetState());
+		case eShowing:
+		{
+			SetPending(TRUE);
 
-			if (m_eSoundsFlags.test(ESoundsFlags::sf_draw))
+			if (m_bNeedQuick)
+			{
+				m_constpower = true;
+				m_throw = false;
+
+				if (H_Parent() != nullptr && m_fake_missile == nullptr && H_Parent()->cast_missile() == nullptr)
+				{
+					spawn_fake_missile();
+				}
+			}
+
+			PlayHUDMotion(m_bNeedQuick ? "anm_throw_quick" : "anm_show", EHudMixType::eNoMix, GetState());
+
+			if (m_bNeedQuick)
+			{
+				PlaySound("sndThrowQuick", Position());
+			}
+			else if (m_eSoundsFlags.test(ESoundsFlags::sf_draw))
 			{
 				PlaySound("SndShow", Position());
 			}
@@ -339,6 +376,7 @@ void CMissile::State(u32 state)
 	case eHidden:
 		{
 			
+			m_bNeedQuick = false;
 			if (1 /*GetHUD()*/) 
 			{
 				StopCurrentAnimWithoutCallback	();
@@ -440,8 +478,45 @@ void CMissile::OnAnimationEnd(u32 state)
 		} break;
 	case eShowing:
 		{
-			setVisible(TRUE);
-			SwitchState(eIdle);
+			if (m_bNeedQuick)
+			{
+				SwitchState(eHidden);
+				m_bNeedQuick = false;
+
+				u16 saved_old_slot = NO_ACTIVE_SLOT;
+
+				if (m_pInventory != nullptr && m_pInventory->ItemFromSlot(m_uSlotToRestore) != nullptr)
+				{
+					saved_old_slot = m_pInventory->ItemFromSlot(m_uSlotToRestore)->BaseSlot();
+					m_pInventory->SetActiveSlot(m_uSlotToRestore);
+					m_uSlotToRestore = NO_ACTIVE_SLOT;
+				}
+
+				bool bres = (saved_old_slot == NO_ACTIVE_SLOT || saved_old_slot == INV_SLOT_2 || saved_old_slot == PISTOL_SLOT_NEW || saved_old_slot == KNIFE_SLOT || saved_old_slot == BOLT_SLOT);
+
+				if (!bres)
+				{
+					m_bNeedRestoreDevice = false;
+				}
+
+				if (m_bNeedRestoreDevice)
+				{
+					if (CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
+					{
+						if (CCustomDevice* pDevice = pActor->GetDevice(true))
+						{
+							pDevice->switch_device();
+						}
+					}
+
+					m_bNeedRestoreDevice = false;
+				}
+			}
+			else
+			{
+				setVisible(TRUE);
+				SwitchState(eIdle);
+			}
 		} break;
 	case eThrowStart:
 		{
@@ -554,13 +629,14 @@ void CMissile::setup_throw_params()
 void CMissile::OnMotionMark(u32 state, const motion_marks& M)
 {
 	inherited::OnMotionMark(state, M);
-	if(state==eThrow && !m_throw)
+	if ((state == eThrow || state == eShowing && m_bNeedQuick) && !m_throw)
 	{
 		if (H_Parent())
-			Throw	();
+		{
+			Throw();
+		}
 	}
 }
-
 
 void CMissile::Throw() 
 {
@@ -649,7 +725,7 @@ bool CMissile::Action(u16 cmd, u32 flags)
 			m_constpower = true;			
 			if(flags&CMD_START) 
 			{
-				if (GetState() == eIdle || GetState() == eBore)
+				if (!m_bNeedQuick && (GetState() == eIdle || GetState() == eBore))
 				{
 					m_throw = true;
 					SwitchState(eThrowStart);
@@ -660,6 +736,11 @@ bool CMissile::Action(u16 cmd, u32 flags)
 
 	case kWPN_ZOOM:
 		{
+			if (m_bNeedQuick)
+			{
+				return false;
+			}
+
 			m_constpower = false;
         	if(flags&CMD_START) 
 			{

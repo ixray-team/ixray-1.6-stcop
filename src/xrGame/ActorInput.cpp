@@ -45,6 +45,7 @@
 #include "PostprocessAnimator.h"
 #include "ControllerAutoaim.h"
 #include "CameraFirstEye.h"
+#include "Grenade.h"
 
 extern u32 hud_adj_mode;
 
@@ -183,7 +184,7 @@ void CActor::IR_OnKeyboardPress(int dik)
 		PIItem knife_item = inventory().ItemFromSlot(KNIFE_SLOT);
 		if (m_sQuickKickAnimator.size() > 0 && knife_item != nullptr)
 		{
-			if (!HudAnimator()->ItemAnimator()->IsActive())
+			if (!HudAnimator()->IsAnyAnimatorActive())
 			{
 				if (knife_item != inventory().ActiveItem())
 				{
@@ -195,6 +196,32 @@ void CActor::IR_OnKeyboardPress(int dik)
 					knife_item->Action(kWPN_FIRE, CMD_START);
 					knife_item->Action(kWPN_FIRE, CMD_STOP);
 				}
+			}
+		}
+	}break;
+	case kQUICK_GRENADE:
+	{
+		PIItem item_from_slot = inventory().ItemFromSlot(GRENADE_SLOT);
+		CGrenade* grenade_item = item_from_slot != nullptr ? item_from_slot->cast_grenade() : nullptr;
+
+		if (item_from_slot == nullptr)
+		{
+			item_from_slot = inventory().SameSlot(GRENADE_SLOT, nullptr, true);
+			grenade_item = item_from_slot != nullptr ? item_from_slot->cast_grenade() : nullptr;
+			inventory().Slot(GRENADE_SLOT, item_from_slot, true);
+		}
+
+		if (grenade_item != nullptr && !inventory().IsSlotBlocked(grenade_item) && grenade_item->HudAnimationExist("anm_throw_quick"))
+		{
+			if (item_from_slot != inventory().ActiveItem())
+			{
+				grenade_item->SetQuickThrow();
+				inventory().Activate(GRENADE_SLOT);
+			}
+			else
+			{
+				grenade_item->Action(kWPN_FIRE, CMD_START);
+				grenade_item->Action(kWPN_FIRE, CMD_STOP);
 			}
 		}
 	}break;
