@@ -626,6 +626,15 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeTeamBaseZone,CSE_ALifeSpaceRestrictor)
 	u8								m_team;
 SERVER_ENTITY_DECLARE_END
 
+SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeInteractiveObject, CSE_ALifeDynamicObjectVisual)
+bool				m_can_take;
+bool				m_closed;
+shared_str			m_tip_text;
+
+CSE_ALifeInteractiveObject(LPCSTR caSection);
+virtual				~CSE_ALifeInteractiveObject();
+SERVER_ENTITY_DECLARE_END
+
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeInventoryBox,CSE_ALifeDynamicObjectVisual)
 	bool				m_can_take;
 	bool				m_closed;
