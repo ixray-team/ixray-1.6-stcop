@@ -58,9 +58,22 @@ void TParticlesPlayer::SBoneInfo::StopParticles(u16 sender_id, bool bDestroy)
 TParticlesPlayer::TParticlesPlayer() : m_bActiveBones(false)
 {
 	AppendBone(0);
-
 	SetParentVel(zero_vel);
-	m_self_object = nullptr;
+}
+
+void TParticlesPlayer::EndComponent()
+{
+	for (BoneInfoVecIt b_it = m_Bones.begin(); b_it != m_Bones.end(); b_it++)
+	{
+		SBoneInfo& b_info = *b_it;
+
+		for (ParticlesInfoListIt p_it = b_info.particles.begin(); p_it != b_info.particles.end(); p_it++)
+		{
+			SParticlesInfo& p_info = *p_it;
+			Particles::Details::Destroy(p_info.ps);
+		}
+		b_info.particles.clear();
+	}
 }
 
 void TParticlesPlayer::LoadParticles(IKinematics* K)
@@ -70,20 +83,22 @@ void TParticlesPlayer::LoadParticles(IKinematics* K)
 
 	//считать список косточек и соответствующих
 	//офсетов  куда можно вешать партиклы
-	CInifile* ini		= K->LL_UserData();
-	if(ini&&ini->section_exist("particle_bones")){
+	CInifile* ini = K->LL_UserData();
+	if (ini && ini->section_exist("particle_bones"))
+	{
 		bone_mask.zero();
-		CInifile::Sect& data		= ini->r_section("particle_bones");
-		for (CInifile::SectCIt I=data.Data.begin(); I!=data.Data.end(); I++){
-			const CInifile::Item& item	= *I;
-			u16 index				= K->LL_BoneID(*item.first); 
+		CInifile::Sect& data = ini->r_section("particle_bones");
+		for (CInifile::SectCIt I = data.Data.begin(); I != data.Data.end(); I++) {
+			const CInifile::Item& item = *I;
+			u16 index = K->LL_BoneID(*item.first);
 			R_ASSERT3(index != BI_NONE, "Particles bone not found", *item.first);
 			Fvector					offs;
-			sscanf					(*item.second,"%f,%f,%f",&offs.x,&offs.y,&offs.z);
+			sscanf(*item.second, "%f,%f,%f", &offs.x, &offs.y, &offs.z);
 			AppendBone(index, offs);
 		}
 	}
-	if(m_Bones.empty())
+
+	if (m_Bones.empty())
 		AppendBone(K->LL_GetBoneRoot());
 }
 
@@ -131,36 +146,15 @@ void TParticlesPlayer::AppendBone(u16 bone_id, Fvector offs)
 	m_Bones.push_back	(SBoneInfo(bone_id,offs));
 }
 
-//уничтожение партиклов на net_Destroy
-void TParticlesPlayer::net_DestroyParticles	()
-{
-	VERIFY(m_self_object);
-
-	for(BoneInfoVecIt b_it=m_Bones.begin(); b_it!=m_Bones.end(); b_it++)
-	{
-		SBoneInfo& b_info	= *b_it;
-
-		for (ParticlesInfoListIt p_it=b_info.particles.begin(); p_it!=b_info.particles.end(); p_it++)
-		{
-			SParticlesInfo& p_info	= *p_it;
-			Particles::Details::Destroy(p_info.ps);
-		}
-		b_info.particles.clear();
-	}
-
-	m_self_object	= 0;
-}
-
 TParticlesPlayer::SBoneInfo* TParticlesPlayer::get_nearest_bone_info(IKinematics* K, u16 bone_index)
 {
-	u16 play_bone	= bone_index;
-	while((BI_NONE!=play_bone)&&!bone_mask.is(play_bone))
+	u16 play_bone = bone_index;
+	while ((BI_NONE != play_bone) && !bone_mask.is(play_bone))
 	{
-		play_bone	= K->LL_GetData(play_bone).GetParentID();
+		play_bone = K->LL_GetData(play_bone).GetParentID();
 	}
 	return get_bone_info(play_bone);
 }
-
 
 void TParticlesPlayer::StartParticles(const shared_str& particles_name, u16 bone_num, const Fvector& dir, u16 sender_id, int life_time, bool auto_stop)
 {
@@ -168,51 +162,52 @@ void TParticlesPlayer::StartParticles(const shared_str& particles_name, u16 bone
 	generate_orthonormal_basis(dir,xform);
 	StartParticles(particles_name,bone_num,xform,sender_id,life_time,auto_stop);
 }
+
 void TParticlesPlayer::StartParticles(const shared_str& particles_name, u16 bone_num, const Fmatrix& xform, u16 sender_id, int life_time, bool auto_stop)
 {
 	VERIFY(fis_zero(xform.c.magnitude()));
 	R_ASSERT(*particles_name);
-	
-	CObject* object					= m_self_object;
-	VERIFY(object);
 
-	SBoneInfo* pBoneInfo			=  get_nearest_bone_info(PKinematics(object->Visual()),bone_num);
-	if(!pBoneInfo) return;
+	SBoneInfo* pBoneInfo = get_nearest_bone_info(PKinematics(GetComponentOwner()->Visual()), bone_num);
+	if (!pBoneInfo)
+	{
+		return;
+	}
 
-	SParticlesInfo &particles_info	=*pBoneInfo->AppendParticles(object,particles_name);
-	
-	particles_info.sender_id		= sender_id;
+	SParticlesInfo& particles_info = *pBoneInfo->AppendParticles(GetComponentOwner(), particles_name);
 
-	particles_info.life_time=auto_stop ? life_time : u32(-1);
+	particles_info.sender_id = sender_id;
+
+	particles_info.life_time = auto_stop ? life_time : u32(-1);
 	xform.getHPB(particles_info.angles);
 
-	Fmatrix m;m.setHPB(particles_info.angles.x,particles_info.angles.y,particles_info.angles.z);
-	GetBonePos(object,pBoneInfo->index,pBoneInfo->offset,m.c);
-	particles_info.ps->UpdateParent(m,zero_vel);
-	if(!particles_info.ps->IsPlaying())
-		particles_info.ps->Play		(false);
+	Fmatrix m; m.setHPB(particles_info.angles.x, particles_info.angles.y, particles_info.angles.z);
+	GetBonePos(GetComponentOwner(), pBoneInfo->index, pBoneInfo->offset, m.c);
+	particles_info.ps->UpdateParent(m, zero_vel);
+	if (!particles_info.ps->IsPlaying())
+		particles_info.ps->Play(false);
 
 	m_bActiveBones = true;
 }
 
 void TParticlesPlayer::StartParticles(const shared_str& ps_name, const Fmatrix& xform, u16 sender_id, int life_time, bool auto_stop)
 {
-	CObject* object					= m_self_object;
-	VERIFY(object);
-	for(BoneInfoVecIt it = m_Bones.begin(); it!=m_Bones.end(); it++){
-		
-		SParticlesInfo &particles_info	=*it->AppendParticles(object,ps_name);
-		particles_info.sender_id	= sender_id;
+	for (BoneInfoVecIt it = m_Bones.begin(); it != m_Bones.end(); it++)
+	{
+		SParticlesInfo& particles_info = *it->AppendParticles(GetComponentOwner(), ps_name);
+		particles_info.sender_id = sender_id;
 
-		particles_info.life_time=auto_stop ? life_time : u32(-1);
+		particles_info.life_time = auto_stop ? life_time : u32(-1);
 		xform.getHPB(particles_info.angles);
 		//начать играть партиклы
 
-		Fmatrix m;m.set(xform);
-		GetBonePos(object,it->index,it->offset,m.c);
-		particles_info.ps->UpdateParent(m,zero_vel);
-		if(!particles_info.ps->IsPlaying())
-			particles_info.ps->Play	(false);
+		Fmatrix m; m.set(xform);
+		GetBonePos(GetComponentOwner(), it->index, it->offset, m.c);
+		particles_info.ps->UpdateParent(m, zero_vel);
+		if (!particles_info.ps->IsPlaying())
+		{
+			particles_info.ps->Play(false);
+		}
 	}
 
 	m_bActiveBones = true;
@@ -277,13 +272,6 @@ void TParticlesPlayer::UpdateParticles()
 	if (!m_bActiveBones)	return;
 	m_bActiveBones = false;
 
-	VERIFY(m_self_object);
-
-	if (m_self_object == nullptr)
-	{
-		return;
-	}
-
 	for (SBoneInfo& b_info : m_Bones)
 	{
 		for (SParticlesInfo& p_info : b_info.particles)
@@ -294,7 +282,7 @@ void TParticlesPlayer::UpdateParticles()
 			//обновить позицию партиклов
 			Fmatrix xform;
 			xform.setHPB(p_info.angles.x, p_info.angles.y, p_info.angles.z);
-			GetBonePos(m_self_object, b_info.index, b_info.offset, xform.c);
+			GetBonePos(GetComponentOwner(), b_info.index, b_info.offset, xform.c);
 			p_info.ps->UpdateParent(xform, parent_vel);
 
 			//обновить время существования
@@ -355,7 +343,14 @@ u16 TParticlesPlayer::GetNearestBone	(IKinematics* K, u16 bone_id)
 	return play_bone;
 }
 
-void TParticlesPlayer::SetupOwner(IECSOwner* Owner)
+CGameObject* TParticlesPlayer::GetComponentOwner() const
 {
-	m_self_object = smart_cast<CGameObject*>(Owner);
+	if (ComponentOwner == nullptr)
+	{
+		TParticlesPlayer* This = const_cast<TParticlesPlayer*>(this);
+		ComponentOwner = smart_cast<CGameObject*>(GECSManager->GetComponentOwner(This));
+		VERIFY(ComponentOwner);
+	}
+
+	return ComponentOwner;
 }
