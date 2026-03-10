@@ -474,14 +474,20 @@ void CMapLocation::CalcLevelName()
 	if (IsUserDefined())
 		return;
 
-	if(m_owner_se_object && ai().get_game_graph())
+	if (m_owner_se_object && ai().get_game_graph())
 	{
-		if(m_cached.m_graphID != m_owner_se_object->m_tGraphID)
+		GameGraph::_GRAPH_ID gid = m_owner_se_object->m_tGraphID;
+		if (ai().game_graph().valid_vertex_id(gid) && m_cached.m_graphID != gid)
 		{
-			m_cached.m_LevelName	= ai().game_graph().header().level(ai().game_graph().vertex(m_owner_se_object->m_tGraphID)->level_id()).name();
-			m_cached.m_graphID		= m_owner_se_object->m_tGraphID;
+			m_cached.m_LevelName = ai().game_graph().header().level(ai().game_graph().vertex(gid)->level_id()).name();
+			m_cached.m_graphID = gid;
 		}
-	}else
+		else if (!ai().game_graph().valid_vertex_id(gid))
+		{
+			m_cached.m_LevelName = Level().name();
+		}
+	}
+	else
 	{
 		m_cached.m_LevelName = Level().name();
 	}
