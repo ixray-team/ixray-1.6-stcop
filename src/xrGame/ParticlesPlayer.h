@@ -49,8 +49,7 @@ public:
 
 	// список костей
 	VisMask					bone_mask; // используемые кости
-	BoneInfoVec				m_Bones;	
-	CObject					*m_self_object;
+	BoneInfoVec				m_Bones;
 
 protected :
 	bool					m_bActiveBones;	//есть ли косточки на которых играются партиклы
@@ -67,6 +66,8 @@ public:
 	Fvector					parent_vel;
 public:
 	TParticlesPlayer();
+
+	void EndComponent();
 
 	void LoadParticles(IKinematics* K);
 
@@ -98,9 +99,10 @@ public:
 	
 	bool					IsPlaying				() {return m_bActiveBones;}
 
-	void SetupOwner(IECSOwner* Owner);
-
 private:
+	CGameObject* GetComponentOwner() const;
+	mutable CGameObject* ComponentOwner = nullptr;
+
 	ECS_COMPONENT(TParticlesPlayer)
 		for (const SBoneInfo& Bone : m_Bones)
 		{

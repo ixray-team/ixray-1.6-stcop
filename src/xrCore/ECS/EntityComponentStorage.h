@@ -69,6 +69,19 @@ public:
 		return Iter != Lookup.end() ? &Components[Iter->second] : nullptr;
 	}
 
+	IECSOwner* GetOwnerFromComponent(const T* Component) const
+	{
+		xrSRWLockGuard guard(RWMutex, true);
+
+		ptrdiff_t Index = Component - Components.data();
+		if (Index >= 0 && static_cast<size_t>(Index) < Components.size())
+		{
+			return static_cast<IECSOwner*>(Owners[Index]);
+		}
+
+		return nullptr;
+	}
+
 	virtual void Destroy(IECSOwner* Owner) override
 	{
 		xrSRWLockGuard guard(RWMutex, false);
