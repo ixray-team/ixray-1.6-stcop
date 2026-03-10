@@ -116,6 +116,7 @@ private:
     static constexpr float _kDefaultCollectInterval = 0.1f;
     static constexpr float _kDefaultActivePadding = 8.0f;
     static constexpr float _kDefaultSmoothingSpeed = 10.0f;
+    static constexpr float _kDefaultAltitudeDeadzone = 1.8f;
     static constexpr u32 _kMaxCardinalPoints = 8;
     static constexpr u32 _kDefaultColorWhite = 0xFFFFFFFF;
 
@@ -126,6 +127,7 @@ private:
         float activePadding;
         float smoothingSpeed;
         float activeOffsetY;
+        float altitudeDeadzone;
         float fadeInSpeed;
         float fadeOutSpeed;
         float minVisibleAlpha;
@@ -143,8 +145,13 @@ private:
     xr_vector<u32> _cardinalBaseTextColor;
     CUIWindow* _layerFg;
     CUIWindow* _activeTargetContainer;
+    CUIStatic* _activeAltitudeArrow;
     CUIStatic* _activeMarker;
     CUIStatic* _activeDistText;
+
+    shared_str _altitudeArrowTextureUp;
+    shared_str _altitudeArrowTextureDown;
+    shared_str _altitudeArrowLastTexture;
 
     CMapLocation* _activeTargetLoc;
     CMapLocation* _lastActiveLoc;
@@ -194,6 +201,7 @@ private:
         float& outX) const;
     void UpdateActiveTargetMarker(CMapLocation* activeLoc);
     void UpdateActiveTargetText(const Fvector& actorPos, const Fvector& tgtPos);
+    void UpdateActiveAltitudeArrow(const Fvector& actorPos, const Fvector& tgtPos);
 
     bool BuildFrameContext(SCompassFrameContext& out) const;
     SCompassStripGeometry GetStripGeometry() const;
