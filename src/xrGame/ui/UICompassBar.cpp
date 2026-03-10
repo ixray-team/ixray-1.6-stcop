@@ -1087,13 +1087,19 @@ void CUICompassBar::UpdateActiveTarget(const Fvector& actorPos, float camHeading
         _activeMarker->Show(false);
     }
     CMapLocation* activeLoc = _activeTargetLoc;
-    if (!activeLoc || activeLoc->GetLevelName() != levelName)
+    if (!activeLoc)
     {
         _lastActiveLoc = nullptr;
         return;
     }
+    // Update() before GetLevelName() check: m_cached.m_LevelName is empty after load until CalcLevelName() runs
     if (!activeLoc->Update())
     {
+        return;
+    }
+    if (activeLoc->GetLevelName() != levelName)
+    {
+        _lastActiveLoc = nullptr;
         return;
     }
     const Fvector tgtPos = activeLoc->GetLastPosition();
