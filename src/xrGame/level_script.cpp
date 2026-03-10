@@ -1606,7 +1606,71 @@ void RemoveAllNamedStashStringVectors()
 	m_named_stash.clear();
 }
 
-const xr_vector<CScriptGameObject*>& GetOnlineGameObjectsByShapeSpatial(const Fvector& _center, const float _radius, luabind::object const& eSpatialTypes)
+#pragma optimize("",off)
+
+const xr_vector<CScriptGameObject*>& GetOnlineGameObjectsBySphereSpatial(const Fvector& _center, const float _radius, luabind::object const& eSpatialTypes)
+{
+	u64 mask = 0;
+
+	VERIFY(eSpatialTypes.type() == LUA_TTABLE);
+
+	luabind::object::iterator I = eSpatialTypes.begin();
+	luabind::object::iterator E = eSpatialTypes.end();
+
+	for (; I != E; ++I)
+	{
+		luabind::object  tValue = *I;
+		if (tValue.type() == LUA_TNIL || tValue.type() != LUA_TNUMBER)
+		{
+			continue;
+		}
+
+		if (mask == 0)
+		{
+			mask = luabind::object_cast<u64>(tValue);
+		}
+		else
+		{
+			mask |= luabind::object_cast<u64>(tValue);
+		}
+	}
+
+	static xr_vector<CScriptGameObject*> m_objects;
+	m_objects.clear();
+
+	static xr_vector<ISpatialShared> R;
+	R.clear();
+	R.reserve(64);
+
+	g_SpatialSpace->q_sphere(R, 0, ESPATIAL_TYPE(mask), _center, _radius);
+
+	m_objects.reserve(R.size());
+
+	for (ISpatialShared& spatial : R)
+	{
+		if (!spatial.get())
+		{
+			continue;
+		}
+
+		if (CObject* obj = spatial->dcast_CObject())
+		{
+			if (obj->getDestroy() || !obj->cast_game_object())
+			{
+				continue;
+			}
+
+			if (CScriptGameObject* luaobj = obj->cast_game_object()->lua_game_object())
+			{
+				m_objects.push_back(luaobj);
+			}
+		}
+	}
+
+	return m_objects;
+}
+
+const xr_vector<CScriptGameObject*>& GetOnlineGameObjectsByObbBoxSpatial(const Fvector& _center, const Fvector box_halfsize, const Fvector box_direction, luabind::object const& eSpatialTypes)
 {
 	u64 mask = 0;
 
@@ -1639,8 +1703,17 @@ const xr_vector<CScriptGameObject*>& GetOnlineGameObjectsByShapeSpatial(const Fv
 	static xr_vector<ISpatialShared> R;
 	R.clear();
 	R.reserve(64);
+	
+	Fobb obb;
+	obb.identity();
+	obb.m_translate = _center;
+	obb.m_halfsize = box_halfsize;
+	obb.m_rotate.k = box_direction;
+	Fvector::generate_orthonormal_basis_normalized(obb.m_rotate.k, obb.m_rotate.j, obb.m_rotate.i);
 
-	g_SpatialSpace->q_sphere(R, 0, ESPATIAL_TYPE(mask), _center, _radius);
+	g_SpatialSpace->q_obb(R, 0, ESPATIAL_TYPE(mask), obb);
+	
+
 	m_objects.reserve(R.size());
 
 	for(ISpatialShared& spatial :R)
@@ -1764,7 +1837,8 @@ void CLevel::script_register(lua_State *L)
 #endif
 		def("set_time_factor_single", set_time_factor_single), // FNAS
 		
-		def("search_online_objects_by_sphere", &GetOnlineGameObjectsByShapeSpatial, return_stl_iterator),
+		def("search_online_objects_by_sphere", &GetOnlineGameObjectsBySphereSpatial, return_stl_iterator),
+		def("search_online_objects_by_obb_box", &GetOnlineGameObjectsByObbBoxSpatial, return_stl_iterator),
 
 		def("is_exists_named_stash_string_vector", &IsExistsNamedStashStringVector),
 		def("get_named_stash_string_vector", &GetNamedStashStringVector),
