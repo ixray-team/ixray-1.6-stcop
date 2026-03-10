@@ -747,8 +747,9 @@ void CUICompassBar::UpdateCardinals(float heading)
 bool CUICompassBar::ShouldShowSpot(CMapLocation* loc, const Fvector& actorPos, const shared_str& levelName,
     CMapLocation* activeTaskLoc) const
 {
-    return loc && loc != activeTaskLoc && loc->HasCompassConfig() && loc->SpotEnabled() &&
-           loc->Update() && loc->GetLevelName() == levelName && loc->GetCompassTexture().size() > 0;
+    return loc && loc != activeTaskLoc && (loc->ShowOnCompass() || loc->HasCompassConfig()) &&
+           loc->SpotEnabled() && loc->Update() && loc->GetLevelName() == levelName &&
+           loc->GetCompassTexture().size() > 0;
 }
 
 SSpotCandidate CUICompassBar::CreateSpotCandidate(CMapLocation* loc) const
@@ -944,12 +945,13 @@ void CUICompassBar::CommitLayout()
             {
                 posOffsetX = item.iconSize.x * 0.5f * (1.0f - kx);
             }
-            else if (_spotCfg.align == alRight)
-            {
-                posOffsetX = item.iconSize.x * (1.0f - kx);
-            }
+        else if (_spotCfg.align == alRight)
+        {
+            posOffsetX = item.iconSize.x * (1.0f - kx);
         }
-        const float posX = geom.CenterX() + item.relX + posOffsetX;
+        }
+        const float stripCenterX = geom.left + geom.CenterX();
+        const float posX = stripCenterX + item.relX + posOffsetX;
         float posY;
         switch (item.valign)
         {
