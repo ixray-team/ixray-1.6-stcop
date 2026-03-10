@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include "EntityComponentStorage.h"
-#include "EntityDebugView.h"
 
 class XRCORE_API CECSManager final
 {
@@ -38,6 +37,13 @@ public:
 
 	void DestroyAll();
 	void DestroyAllForOwner(IECSOwner* Owner);
+
+	template <typename T>
+	IECSOwner* GetComponentOwner(T Component)
+	{
+		auto& Storage = GetOrCreateStorage<std::remove_pointer_t<T>>();
+		return Storage.GetOwnerFromComponent(Component);
+	}
 
 private:
 	inline ECSComponentTypeID GenerateComponentTypeID()
@@ -106,3 +112,4 @@ public:
 };
 
 extern XRCORE_API CECSManager* GECSManager;
+#include "EntityDebugView.h"
