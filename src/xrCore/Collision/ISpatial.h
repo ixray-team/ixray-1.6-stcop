@@ -369,6 +369,7 @@ public:
 	// query
 	void q_ray(xr_vector<ISpatialShared>& R, u32 _o, ESPATIAL_TYPE _mask_and, const Fvector& _start, const Fvector& _dir, float _range);
 	void q_box(xr_vector<ISpatialShared>& R, u32 _o, ESPATIAL_TYPE _mask_or, const Fvector& _center, const Fvector& _size);
+	void q_obb(xr_vector<ISpatialShared>& R, u32 _o, ESPATIAL_TYPE _mask_or, const Fobb& obb);
 	void q_sphere(xr_vector<ISpatialShared>& R, u32 _o, ESPATIAL_TYPE _mask_or, const Fvector& _center, const float _radius);
 	void q_frustum(xr_vector<ISpatialShared>& R, u32 _o, ESPATIAL_TYPE _mask_or, const CFrustum& _frustum);
 };
