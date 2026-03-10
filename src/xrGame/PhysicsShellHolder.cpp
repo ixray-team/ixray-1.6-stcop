@@ -66,6 +66,7 @@ const IPhysicsElement* CPhysicsShellHolder::physics_character()  const
 	VERIFY( mov );
 	return mov->IElement();
 }
+
 void CPhysicsShellHolder::net_Destroy()
 {
 	//remove calls
@@ -73,10 +74,7 @@ void CPhysicsShellHolder::net_Destroy()
 	Level().ph_commander_scripts().remove_calls(&cmpr);
 
 	//удалить партиклы из ParticlePlayer
-	if (TParticlesPlayer* PPlayer = GetComponent<TParticlesPlayer>())
-	{
-		PPlayer->net_DestroyParticles();
-	}
+	DestroyComponent<TParticlesPlayer>();
 
 	CCharacterPhysicsSupport	*char_support = character_physics_support();
 	if( char_support )
