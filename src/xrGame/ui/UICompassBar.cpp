@@ -47,6 +47,7 @@ CUICompassBar::CUICompassBar()
       _stripContainer(nullptr),
       _layerFg(nullptr),
       _activeTargetContainer(nullptr),
+      _activeAltitudeArrow(nullptr),
       _activeMarker(nullptr),
       _activeDistText(nullptr),
       _activeTargetLoc(nullptr),
@@ -67,6 +68,7 @@ CUICompassBar::CUICompassBar()
     _cfg.activePadding = _kDefaultActivePadding;
     _cfg.smoothingSpeed = _kDefaultSmoothingSpeed;
     _cfg.activeOffsetY = 0.0f;
+    _cfg.altitudeDeadzone = _kDefaultAltitudeDeadzone;
     _cfg.fadeInSpeed = 12.0f;
     _cfg.fadeOutSpeed = 8.0f;
     _cfg.minVisibleAlpha = 0.01f;
@@ -156,10 +158,11 @@ void CUICompassBar::InitLayoutFromXml(CUIXml& uiXml)
     if (uiXml.NavigateToNode("compass_bar:active_target", 0))
     {
         const char* targetPath = "compass_bar:active_target";
-        _cfg.activePadding = uiXml.ReadAttribFlt(targetPath, 0, "padding", 
+        _cfg.activePadding = uiXml.ReadAttribFlt(targetPath, 0, "padding",
             uiXml.ReadAttribFlt(targetPath, 0, "active_target_padding", _kDefaultActivePadding));
         _cfg.smoothingSpeed = uiXml.ReadAttribFlt(targetPath, 0, "smoothing_speed", _kDefaultSmoothingSpeed);
         _cfg.activeOffsetY = uiXml.ReadAttribFlt(targetPath, 0, "y", 0.0f);
+        _cfg.altitudeDeadzone = uiXml.ReadAttribFlt(targetPath, 0, "altitude_deadzone", _kDefaultAltitudeDeadzone);
     }
 }
 
@@ -326,7 +329,9 @@ CUIStatic* CUICompassBar::InitCardinalStatic(CUIXml& uiXml, CUIXmlInit& xmlInit,
         {
             st->SetText(caption);
         }
-        if (uiXml.ReadAttrib(childPath, 0, "color", nullptr))
+        LPCSTR colorAttr = uiXml.ReadAttrib(childPath, 0, "color", nullptr);
+        LPCSTR rAttr = uiXml.ReadAttrib(childPath, 0, "r", nullptr);
+        if (colorAttr || rAttr)
         {
             st->SetTextColor(CUIXmlInit::GetColor(uiXml, childPath, 0, _kDefaultColorWhite));
         }
@@ -383,6 +388,30 @@ void CUICompassBar::InitActiveTargetWidgets(CUIXml& uiXml, CUIXmlInit& xmlInit)
     if (_layerFg)
     {
         _layerFg->AttachChild(_activeTargetContainer);
+    }
+    if (uiXml.NavigateToNode("compass_bar:active_target:altitude_arrow", 0))
+    {
+        const char* arrowPath = "compass_bar:active_target:altitude_arrow";
+        _altitudeArrowTextureUp = uiXml.ReadAttrib(arrowPath, 0, "texture_up", "ui_inGame2_compass_altitude_up");
+        _altitudeArrowTextureDown = uiXml.ReadAttrib(arrowPath, 0, "texture_down", "ui_inGame2_compass_altitude_down");
+        const float deadzone = uiXml.ReadAttribFlt(arrowPath, 0, "altitude_deadzone", _cfg.altitudeDeadzone);
+        if (deadzone > 0.0f)
+        {
+            _cfg.altitudeDeadzone = deadzone;
+        }
+        _activeAltitudeArrow = new CUIStatic();
+        _activeAltitudeArrow->SetAutoDelete(false);
+        if (xmlInit.InitWindow(uiXml, arrowPath, 0, _activeAltitudeArrow))
+        {
+            _activeAltitudeArrow->InitTexture(_altitudeArrowTextureUp.c_str(), false);
+            _activeAltitudeArrow->SetStretchTexture(uiXml.ReadAttribInt(arrowPath, 0, "stretch", 1) != 0);
+            _activeTargetContainer->AttachChild(_activeAltitudeArrow);
+        }
+        else
+        {
+            xr_delete(_activeAltitudeArrow);
+            _activeAltitudeArrow = nullptr;
+        }
     }
     if (uiXml.NavigateToNode("compass_bar:active_target:distance_text", 0))
     {
@@ -467,6 +496,12 @@ void CUICompassBar::ApplyRelativeLayout()
             float w = _activeMarker->GetWidth();
             float h = _activeMarker->GetHeight();
             _activeMarker->SetWndSize(Fvector2().set(w * kx, h));
+        }
+        if (_activeAltitudeArrow)
+        {
+            float w = _activeAltitudeArrow->GetWidth();
+            float h = _activeAltitudeArrow->GetHeight();
+            _activeAltitudeArrow->SetWndSize(Fvector2().set(w * kx, h));
         }
     }
     InvalidateStripGeometry();
@@ -1088,6 +1123,10 @@ void CUICompassBar::UpdateActiveTarget(const Fvector& actorPos, float camHeading
     {
         _activeMarker->Show(false);
     }
+    if (_activeAltitudeArrow)
+    {
+        _activeAltitudeArrow->Show(false);
+    }
     CMapLocation* activeLoc = _activeTargetLoc;
     if (!activeLoc)
     {
@@ -1138,6 +1177,42 @@ void CUICompassBar::UpdateActiveTarget(const Fvector& actorPos, float camHeading
     if (_activeDistText)
     {
         UpdateActiveTargetText(actorPos, tgtPos);
+    }
+    if (_activeAltitudeArrow)
+    {
+        UpdateActiveAltitudeArrow(actorPos, tgtPos);
+    }
+}
+
+void CUICompassBar::UpdateActiveAltitudeArrow(const Fvector& actorPos, const Fvector& tgtPos)
+{
+    if (!_activeAltitudeArrow || !_altitudeArrowTextureUp.size() || !_altitudeArrowTextureDown.size())
+    {
+        return;
+    }
+    const float deltaY = tgtPos.y - actorPos.y;
+    const float dz = _cfg.altitudeDeadzone;
+    if (deltaY < -dz)
+    {
+        if (_altitudeArrowLastTexture != _altitudeArrowTextureUp)
+        {
+            CUITextureMaster::InitTexture(_altitudeArrowTextureUp, &_activeAltitudeArrow->GetUIStaticItem());
+            _altitudeArrowLastTexture = _altitudeArrowTextureUp;
+        }
+        _activeAltitudeArrow->Show(true);
+    }
+    else if (deltaY > dz)
+    {
+        if (_altitudeArrowLastTexture != _altitudeArrowTextureDown)
+        {
+            CUITextureMaster::InitTexture(_altitudeArrowTextureDown, &_activeAltitudeArrow->GetUIStaticItem());
+            _altitudeArrowLastTexture = _altitudeArrowTextureDown;
+        }
+        _activeAltitudeArrow->Show(true);
+    }
+    else
+    {
+        _activeAltitudeArrow->Show(false);
     }
 }
 
