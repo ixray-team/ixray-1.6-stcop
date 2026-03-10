@@ -70,6 +70,74 @@ void ISpatial_DB::q_box(xr_vector<ISpatialShared>& R, u32 _o, ESPATIAL_TYPE _mas
 	W.walk(m_root, m_center, m_bounds);
 }
 
+struct spatial_obb_walker final
+{
+	Fobb			obb;
+	ESPATIAL_TYPE	mask;
+	ISpatial_DB* space;
+	xr_vector<ISpatialShared>& R;
+	bool bFirst = false;
+
+	void xr_vectorcall walk(ISpatial_NODE* N, Fvector& n_C, float n_R)
+	{
+		// box
+		float n_vR = n_R * 2.f;
+		Fbox BB; BB.set(Fvector().sub(n_C, n_vR), Fvector().add(n_C, n_vR));
+		if (!obb.intersectAABB(BB))
+			return;
+
+		// test items
+		for (ISpatialShared& S : N->items)
+		{
+			if (!S.get()) continue;
+			if (ESPATIAL_TYPE::NONE == (S->spatial.type & mask))
+				continue;
+
+			Fvector& sC = S->spatial.sphere.P;
+			float sR = S->spatial.sphere.R;
+			Fbox sB; sB.set(Fvector().sub(sC, sR), Fvector().add(sC, sR));
+			if (!obb.intersectAABB(sB))	continue;
+
+			R.push_back(S);
+			if (bFirst)			return;
+		}
+
+		// recurse
+		float c_R = n_R * 0.5f;
+		for (u32 octant = 0; octant < 8; octant++)
+		{
+			if (0 == N->children[octant])
+				continue;
+
+			walk(N->children[octant], Fvector().mad(n_C, c_spatial_offset[octant], c_R), c_R);
+
+			if (bFirst && !R.empty())
+				return;
+		}
+	}
+};
+
+void ISpatial_DB::q_obb(xr_vector<ISpatialShared>& R, u32 _o, ESPATIAL_TYPE _mask, const Fobb& obb)
+{
+	PROF_EVENT("ISpatial_DB::q_box");
+	xrSRWLockGuard guard(&db_lock, true);
+	if (!m_root)
+		return;
+
+	R.clear();
+	R.reserve(16);
+
+	spatial_obb_walker W
+	{
+		obb,
+		_mask,
+		this,
+		R,
+		!!(_o & O_ONLYFIRST),
+	};
+	W.walk(m_root, m_center, m_bounds);
+}
+
 struct spatial_sphere_walker final
 {
 	Fsphere sphere;        // сфера запроса
