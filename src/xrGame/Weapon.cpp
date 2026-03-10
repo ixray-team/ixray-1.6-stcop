@@ -1253,10 +1253,9 @@ void CWeapon::save(NET_Packet &output_packet)
 	save_data(m_lens_zoom_params.target_position,	output_packet);
 	save_data(m_lens_night_brightness.cur_step,		output_packet);
 
-	//Раскоментить, когда релизнимся
-	//save_data(m_bHaveShell, output_packet);
-	//save_data(m_bNeedPumpState, output_packet);
-	//save_data(m_bGaussScreen, output_packet);
+	save_data(m_bHaveShell, output_packet);
+	save_data(m_bNeedPumpState, output_packet);
+	save_data(m_bGaussScreen, output_packet);
 	save_data(m_bTacticalLaserStatus,				output_packet);
 }
 
@@ -1276,10 +1275,9 @@ void CWeapon::load(IReader &input_packet)
 	load_data(m_lens_zoom_params.target_position,	input_packet);
 	load_data(m_lens_night_brightness.lens_night_brightness_saved_step,	input_packet);
 
-	//Раскоментить, когда релизнимся
-	//load_data(m_bHaveShell, input_packet);
-	//load_data(m_bNeedPumpState, input_packet);
-	//load_data(m_bGaussScreen, input_packet);
+	load_data(m_bHaveShell, input_packet);
+	load_data(m_bNeedPumpState, input_packet);
+	load_data(m_bGaussScreen, input_packet);
 	load_data(m_bTacticalLaserStatus,				input_packet);
 
 	if (m_zoom_params.m_bIsZoomModeNow)	
