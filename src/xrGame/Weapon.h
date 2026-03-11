@@ -897,4 +897,11 @@ public:
 	float GetAltAimFactor() const { return m_zoom_params.m_fZoomRotationFactor2; }
 	bool GetScopeBack();
 	void UpdateCollimatorSight();
+
+	//UIWpnParams stuff
+	float GetRPM() const;
+	float GetDamage() const;
+	float GetDamageMP() const;
+	float GetHandling() const;
+	float GetAccuracy() const;
 };
