@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "IconsFontAwesome6.h"
 
 UIParticlesTool::UIParticlesTool()
 {
@@ -25,37 +26,49 @@ UIParticlesTool::~UIParticlesTool()
 
 void UIParticlesTool::Draw()
 {
-    ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-    if (ImGui::TreeNode("Commands"))
-    {
-        ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
-        {
-            ImGui::Text("Ref's Select:   "); ImGui::SameLine(); if (ImGui::Button("+", ImVec2(ImGui::GetFrameHeight(), ImGui::GetFrameHeight()))) { SelByRef(true); }; ImGui::SameLine(); if (ImGui::Button("-", ImVec2(ImGui::GetFrameHeight(), ImGui::GetFrameHeight()))) { SelByRef(false); };
-            ImGui::Text("Selected:       "); ImGui::SameLine();
-            if (ImGui::ArrowButton("play", ImGuiDir_Right))
-            {
-                ObjectIt _F = Scene->FirstObj(OBJCLASS_PS);
-                ObjectIt _E = Scene->LastObj(OBJCLASS_PS);
-                for (; _F != _E; _F++) {
-                    if ((*_F)->Visible() && (*_F)->Selected())
-                        ((EParticlesObject*)(*_F))->Play();
-                }
-            }ImGui::SameLine(); 
-            if (ImGui::Button("stop", ImVec2(0, ImGui::GetFrameHeight())))
-            {
-                ObjectIt _F = Scene->FirstObj(OBJCLASS_PS);
-                ObjectIt _E = Scene->LastObj(OBJCLASS_PS);
-                for (; _F != _E; _F++) {
-                    if ((*_F)->Visible() && (*_F)->Selected())
-                        ((EParticlesObject*)(*_F))->Stop();
-                }
-            }
-        }
-        ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
-        ImGui::TreePop();
+	const float TableRowHeight = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableRowHeight);
+
+	if (XRay::ImGui::BeginDarkChild("ObjectToolsBorder", { 0, 0 }, ImGuiChildFlags_AutoResizeY))
+	{
+		ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 0.f);
+
+		ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
+		if (XRay::ImGui::BeginExpand("Commands"))
+		{
+			if (XRay::ImGui::BeginTable("##particles_tools", 4, ImGuiTableFlags_BordersInner | ImGuiTableFlags_RowBg))
+			{
+												ImGui::TableSetupColumn("Key", ImGuiTableColumnFlags_WidthFixed);				ImGui::TableSetupColumn("-", ImGuiTableColumnFlags_WidthFixed);																					ImGui::TableSetupColumn("--", ImGuiTableColumnFlags_WidthFixed);													ImGui::TableSetupColumn("---", ImGuiTableColumnFlags_WidthStretch);
+				XRay::ImGui::TableNextRow();	XRay::ImGui::TableNextColumn(); XRay::ImGui::TextFramed("Ref's Select: ");		XRay::ImGui::TableNextColumn(); if (XRay::ImGui::Button("+", { TableRowHeight, TableRowHeight })) { SelByRef(true); }; ImGui::SameLine();		XRay::ImGui::TableNextColumn(); if (XRay::ImGui::Button("-", { TableRowHeight, TableRowHeight })) { SelByRef(false); };
+				XRay::ImGui::TableNextRow();	XRay::ImGui::TableNextColumn(); XRay::ImGui::TextFramed("Selected:       ");
+				XRay::ImGui::TableNextColumn();
+				if (XRay::ImGui::Button(ICON_FA_PLAY, { TableRowHeight, TableRowHeight }))
+				{
+					ObjectIt _F = Scene->FirstObj(OBJCLASS_PS);
+					ObjectIt _E = Scene->LastObj(OBJCLASS_PS);
+					for (; _F != _E; _F++) {
+						if ((*_F)->Visible() && (*_F)->Selected())
+							((EParticlesObject*)(*_F))->Play();
+					}
+				}
+				XRay::ImGui::TableNextColumn();
+				if ((XRay::ImGui::Button(ICON_FA_STOP, { TableRowHeight, TableRowHeight })))
+				{
+					ObjectIt _F = Scene->FirstObj(OBJCLASS_PS);
+					ObjectIt _E = Scene->LastObj(OBJCLASS_PS);
+					for (; _F != _E; _F++) {
+						if ((*_F)->Visible() && (*_F)->Selected())
+							((EParticlesObject*)(*_F))->Stop();
+					}
+				}
+				XRay::ImGui::EndTable();
+			}
+			XRay::ImGui::EndExpand();
+		}
+
+		ImGui::PopStyleVar(); // IndentSpacing
+
+		XRay::ImGui::EndDarkChild();
 	}
-	ImGui::Separator();
-    ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
 }
 
 void UIParticlesTool::DrawObjectsList()

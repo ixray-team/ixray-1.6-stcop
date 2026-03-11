@@ -57,7 +57,15 @@ namespace XRay::ImGui
 	// This button is made to be reused in toggles, so it has an optional bool* Toggle
 	// Needs to reduce the code copypaste 
     XREUI_API	bool			BeginDarkChild(const char* str_id, const ImVec2& size = ImVec2(0, 0), ImGuiChildFlags child_flags = 0, ImGuiWindowFlags window_flags = 0);
-	XREUI_API	void            EndDarkChild(bool Opened);
+	XREUI_API	void            EndDarkChild();
+
+	XREUI_API	bool			BeginTable(const char* str_id, int columns, ImGuiTableFlags flags = 0, const ImVec2& outer_size = ImVec2(0.0f, 0.0f), float inner_width = 0.0f);
+	XREUI_API	void			EndTable();
+	XREUI_API	void			TableNextColumn();
+	XREUI_API	void			TableNextRow(ImGuiTableRowFlags row_flags = 0, float min_row_height = GetEditorSize(EEditorSizes::TableRowHeight));
+	XREUI_API	void			TextFramed(const char* label, const ImVec2 size = { 0, 0 }, const ImVec2 text_align = { 0.f, 0.5f }, const bool draw_background = true, ...);
+	XREUI_API	void			TextFramedV(const char* fmt, const ImVec2 size, const bool draw_background, const ImVec2 text_align, va_list args);
+	XREUI_API	void			TextFramedEx(const char* label, const char* text_end = NULL, const ImVec2 size = { 0, 0 }, const bool draw_background = false, const ImVec2 text_align = { 0.f, 0.5f });
 
 	XREUI_API	bool			Button(
 			const	char*			label,
@@ -80,8 +88,8 @@ namespace XRay::ImGui
 					ImDrawFlags		rounding_flags	= ImDrawFlags_RoundCornersAll
 	);
 
-	XREUI_API	bool			ToggleButton(const char* label, bool* flags, const ImVec2& size);
-	   inline	bool			ToggleButton(const char* label, bool& state, const ImVec2& size) { return ToggleButton(label, &state, size); }
+	XREUI_API	bool			ToggleButton(const char* label, bool* flags, const ImVec2& size = { 0, 0 });
+	   inline	bool			ToggleButton(const char* label, bool& state, const ImVec2& size = { 0, 0 }) { return ToggleButton(label, &state, size); }
 	XREUI_API	bool			ToggleFlagButton(const char* label, uint32_t* flags, uint32_t mask, const ImVec2& size);
 	XREUI_API	void			Separator(float thickness = 2.0f);
 
@@ -116,7 +124,10 @@ namespace XRay::ImGui
 	XREUI_API	bool			TreeNodeEx(const void* ptr_id, ImGuiTreeNodeFlags flags, const char* fmt, ...) IM_FMTARGS(3);
 	XREUI_API	bool			TreeNodeExV(const char* str_id, ImGuiTreeNodeFlags flags, const char* fmt, va_list args);
 	XREUI_API	bool			TreeNodeExV(const void* ptr_id, ImGuiTreeNodeFlags flags, const char* fmt, va_list args) IM_FMTLIST(3);
+
 	XREUI_API	bool			CollapsingHeader(const char* label, ImGuiTreeNodeFlags flags = 0);
+	XREUI_API	bool			BeginExpand(const char* label, ImGuiTreeNodeFlags flags = 0);
+	XREUI_API	void			EndExpand();
 
 
 }
