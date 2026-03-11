@@ -12,7 +12,7 @@ struct CShapeData
 		Fmatrix box;
 	};
 
-	struct shape_def
+	struct shape_def // changing this may break serialization!
 	{
 		u8 type;
 		shape_data	data = {};
