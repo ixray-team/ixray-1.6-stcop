@@ -14,89 +14,80 @@ UIGroupTool::~UIGroupTool()
 }
 void UIGroupTool::Draw()
 {
-	ImGui::Separator();
+	float ItemSpacingX = ImGui::GetStyle().ItemSpacing.x;
+	if (XRay::ImGui::BeginDarkChild("ObjectToolsBorder", { 0, 0 }, ImGuiChildFlags_AutoResizeY))
 	{
-		ImGui::BulletText("Commands", ImGuiDir_Left);
-		if (ImGui::BeginPopupContextItem("Commands", 1))
-		{
-			if (ImGui::MenuItem("Group"))
-			{
-				ParentTools->GroupObjects();
-			}
-			if (ImGui::MenuItem("Ungroup"))
-			{
-				ParentTools->UngroupObjects();
-			}
-			ImGui::Separator();
-			if (ImGui::MenuItem("Make Thumbnail"))
-			{
-				ParentTools->MakeThumbnail();
-			}
-			ImGui::Separator();
-			if (ImGui::MenuItem("Save As ..."))
-			{
-				ParentTools->SaveSelectedObject();
-			}
-			ImGui::EndPopup();
-		}
-		ImGui::OpenPopupOnItemClick("Commands", 0);
-	}
-	ImGui::Separator();
-	ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-	if (ImGui::TreeNode("Current Object"))
-	{
-		ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
-		{
-			ImGui::SetNextItemWidth(-1);
-			float size = float(ImGui::CalcItemWidth());
-			{
-				if (ImGui::Button("Select ...", ImVec2(size / 2, 0))) 
-				{
-					string_path ObjectPath = {};
+		ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 0.f);
 
-					FS.update_path(ObjectPath, _groups_, "");
-					FS.rescan_path(ObjectPath, true);
+		ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
+		if (XRay::ImGui::BeginExpand("Commands"))
+		{
+			float SizeX = (ImGui::GetContentRegionAvail().x - ItemSpacingX) / 2;
+			if (XRay::ImGui::Button("Group", { SizeX, 0 })) ParentTools->GroupObjects();
+			ImGui::SameLine(0, ItemSpacingX);
+			if (XRay::ImGui::Button("Ungroup", { SizeX, 0 })) ParentTools->UngroupObjects();
+			ImGui::Separator();
+			if (XRay::ImGui::Button("Make Thumbnail", { SizeX, 0 })) ParentTools->MakeThumbnail();
+			ImGui::SameLine(0, ItemSpacingX);
+			if (XRay::ImGui::Button("Save As ...", { SizeX, 0 })) ParentTools->SaveSelectedObject();
+			XRay::ImGui::EndExpand();
+		}
 
-					UIChooseForm::SelectItem(smGroup, 1, m_Current.c_str());
-					m_ChooseGroup = true;
-				}
-				ImGui::SameLine(0, 2);
-				if (ImGui::Button("Reload Refs", ImVec2(size / 2, 0))) 
-				{
-					ParentTools->ReloadRefsSelectedObject();
-					//bForceInitListBox = TRUE;
-					Tools->UpdateProperties(TRUE);
-				}
+		ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
+		if (XRay::ImGui::BeginExpand("Current Object"))
+		{
+			float SizeX = (ImGui::GetContentRegionAvail().x - ItemSpacingX) / 2;
+			if (XRay::ImGui::Button("Select ...", { SizeX, 0 }))
+			{
+				string_path ObjectPath = {};
+
+				FS.update_path(ObjectPath, _groups_, "");
+				FS.rescan_path(ObjectPath, true);
+
+				UIChooseForm::SelectItem(smGroup, 1, m_Current.c_str());
+				m_ChooseGroup = true;
 			}
-			ImGui::Text("Current:%s", m_Current.c_str()? m_Current.c_str():"");
+			ImGui::SameLine(0, ItemSpacingX);
+			if (XRay::ImGui::Button("Reload Refs", { SizeX, 0 }))
+			{
+				ParentTools->ReloadRefsSelectedObject();
+				//bForceInitListBox = TRUE;
+				Tools->UpdateProperties(TRUE);
+			}
+			XRay::ImGui::TextFramed("Current: %s", { -0.01, 0 }, { 0, 0.5f}, true, m_Current.c_str() ? m_Current.c_str() : "");
+
+			XRay::ImGui::EndExpand();
 		}
-		ImGui::Separator();
-		ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
-		ImGui::TreePop();
-	}
-	ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-	if (ImGui::TreeNode("Reference Select"))
-	{
-		ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
+
+		ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
+		if (XRay::ImGui::BeginExpand("Reference Select"))
 		{
-			ImGui::Text("Select by Current: "); ImGui::SameLine(); if (ImGui::Button(" +")) { SelByRefObject(true); } ImGui::SameLine(); if (ImGui::Button(" -")) { SelByRefObject(false); }
-			ImGui::Text("Select by Selected:"); ImGui::SameLine(); if (ImGui::Button("=%")) { MultiSelByRefObject(true); } ImGui::SameLine(); if (ImGui::Button("+%")) { MultiSelByRefObject(false); } ImGui::SameLine(); ImGui::SetNextItemWidth(-ImGui::GetTextLineHeight() - 8); ImGui::DragFloat("%", &m_selPercent, 1, 0, 100, "%.1f");
+			if (XRay::ImGui::BeginTable("##objecttools_refselect", 4, ImGuiTableFlags_BordersInner | ImGuiTableFlags_RowBg))
+			{
+												ImGui::TableSetupColumn("Key", ImGuiTableColumnFlags_WidthFixed);					ImGui::TableSetupColumn("-", ImGuiTableColumnFlags_WidthFixed);														ImGui::TableSetupColumn("--", ImGuiTableColumnFlags_WidthFixed);													ImGui::TableSetupColumn("--", ImGuiTableColumnFlags_WidthStretch);
+				XRay::ImGui::TableNextRow();	XRay::ImGui::TableNextColumn();	XRay::ImGui::TextFramed("Select by Current:");		XRay::ImGui::TableNextColumn();		if (XRay::ImGui::Button(" +", { 24.f, -1.f })) { SelByRefObject(true); }		XRay::ImGui::TableNextColumn();		if (XRay::ImGui::Button(" -", { 24.f, -1.f })) { SelByRefObject(false); }
+				XRay::ImGui::TableNextRow();	XRay::ImGui::TableNextColumn();	XRay::ImGui::TextFramed("Select by Selected:");		XRay::ImGui::TableNextColumn();		if (XRay::ImGui::Button("=%", { 24.f, -1.f })) { MultiSelByRefObject(true); }	XRay::ImGui::TableNextColumn();		if (XRay::ImGui::Button("+%", { 24.f, -1.f })) { MultiSelByRefObject(false); }	XRay::ImGui::TableNextColumn();		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 24.f); ImGui::DragFloat("%", &m_selPercent, 1, 0, 100, "%.1f");
+				XRay::ImGui::EndTable();
+			}
+
+			XRay::ImGui::EndExpand();
 		}
-		ImGui::Separator();
-		ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
-		ImGui::TreePop();
-	}
-	ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-	if (ImGui::TreeNode("Pivot Alignment"))
-	{
-		ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
+
+		ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
+		if (XRay::ImGui::BeginExpand("Pivot Alignment"))
 		{
-			if(ImGui::Button("Center To Group", ImVec2(-1, 0))) { ParentTools->CenterToGroup(); }
-			if (ImGui::Button("Align To Object...", ImVec2(-1, 0))) { ParentTools->AlignToObject(); }
+			float SizeX = (ImGui::GetContentRegionAvail().x - ItemSpacingX) / 2;
+			{
+				if (XRay::ImGui::Button("Center To Group", { SizeX, 0 })) { ParentTools->CenterToGroup(); }
+				ImGui::SameLine(0, ItemSpacingX);
+				if (XRay::ImGui::Button("Align To Object...", { SizeX, 0 })) { ParentTools->AlignToObject(); }
+			}
+			XRay::ImGui::EndExpand();
 		}
-		ImGui::Separator();
-		ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
-		ImGui::TreePop();
+
+		ImGui::PopStyleVar(); // IndentSpacing
+
+		XRay::ImGui::EndDarkChild();
 	}
 }
 
