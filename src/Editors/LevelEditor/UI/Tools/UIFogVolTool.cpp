@@ -9,19 +9,24 @@ UIFogVolTool::~UIFogVolTool()
 
 void UIFogVolTool::Draw()
 {
-	ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-	if (ImGui::TreeNode("Commands"))
-	{
-		ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
-		ImGui::PushItemWidth(-1);
-		float size = float(ImGui::CalcItemWidth());
-		{
-			if (ImGui::Button("Group Selected", ImVec2(size / 2, 0)))ParentTools->GroupSelected();
-			ImGui::SameLine(0, 2);
-			if (ImGui::Button("UnGroup Selected", ImVec2(size / 2, 0)))ParentTools->UnGroupCurrent();
-		}
+	float ItemSpacingX = ImGui::GetStyle().ItemSpacing.x;
 
-		ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
-		ImGui::TreePop();
+	if (XRay::ImGui::BeginDarkChild("ObjectToolsBorder", { 0, 0 }, ImGuiChildFlags_AutoResizeY))
+	{
+		ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 0.f);
+		ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
+		if (XRay::ImGui::BeginExpand("Commands"))
+		{
+			float SizeX = (ImGui::GetContentRegionAvail().x - ItemSpacingX) / 2;
+			{
+				if (ImGui::Button("Group Selected", { SizeX, 0.f }))ParentTools->GroupSelected();
+				ImGui::SameLine(0, ItemSpacingX);
+				if (ImGui::Button("UnGroup Selected", { SizeX, 0.f }))ParentTools->UnGroupCurrent();
+			}
+			XRay::ImGui::EndExpand();
+		}
+		ImGui::PopStyleVar(); // IndentSpacing
+
+		XRay::ImGui::EndDarkChild();
 	}
 }

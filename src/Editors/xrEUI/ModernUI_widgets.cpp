@@ -3,43 +3,155 @@
 #include <imgui_internal.h>
 #include "IconsFontAwesome7.h"
 
+//-----------------------------------------------------------------
+// [SECTION] LAYOUT
+//-----------------------------------------------------------------
+// - CalcItemSuze()
+//-----------------------------------------------------------------
+
+// COPYPASTA FROM imgui.cpp
+// [Internal] Calculate full item size given user provided 'size' parameter and default width/height. Default width is often == CalcItemWidth().
+// Those two functions CalcItemWidth vs CalcItemSize are awkwardly named because they are not fully symmetrical.
+// Note that only CalcItemWidth() is publicly exposed.
+// The 4.0f here may be changed to match CalcItemWidth() and/or BeginChild() (right now we have a mismatch which is harmless but undesirable)
+static ImVec2 CalcItemSize(ImVec2 size, float default_w, float default_h)
+{
+    const ImGuiTable* Table = ::ImGui::GetCurrentContext()->CurrentTable;
+    ImVec2 avail;
+    if (size.x < 0.0f || size.y < 0.0f)
+        avail = ::ImGui::GetContentRegionAvail();
+
+    if (Table) {
+        const ImRect CellRect = ::ImGui::TableGetCellBgRect(Table, ::ImGui::TableGetColumnIndex());
+        if (size.y < 0.0f)
+            avail.y = CellRect.Max.y - CellRect.Min.y; // Cell Height
+    }
+
+    if (size.x == 0.0f)
+        size.x = default_w;
+    else if (size.x < 0.0f)
+        size.x = ImMax(4.0f, avail.x + size.x); // <-- size.x is negative here so we are subtracting
+
+    if (size.y == 0.0f)
+        size.y = default_h;
+    else if (size.y < 0.0f)
+        size.y = ImMax(4.0f, avail.y + size.y); // <-- size.y is negative here so we are subtracting
+
+    return size;
+}
+
+//-----------------------------------------------------------------
+// [SECTION] Decoration Widgets
+//-----------------------------------------------------------------
+// Child with PanelBackgroundTint and padding of TableBorder
+// - BeginDarkChild()
+// - EndDarkChild()
+//-----------------------------------------------------------------
+// Table Decoration widgets
+//-----------------------------------------------------------------
+
 XREUI_API bool XRay::ImGui::BeginDarkChild(const char* str_id, const ImVec2& size, ImGuiChildFlags child_flags, ImGuiWindowFlags window_flags)
 {
 	float TableBorder = GetEditorSize(EEditorSizes::TableBorder);
 	child_flags |= ImGuiChildFlags_AlwaysUseWindowPadding;
 
 	::ImGui::PushStyleColor(ImGuiCol_ChildBg, GetEditorColor(EEditorColors::PanelBackgroundTint).Value);
-	::ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, TableBorder });
-	bool Opened;
+	::ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { TableBorder, TableBorder });
 
-	if(::ImGui::BeginChild(str_id, size, child_flags, window_flags))
-	{
-		Opened = true; 
-		::ImGui::PopStyleVar();
-		::ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { TableBorder, 0 });
-		::ImGui::BeginChild("##content", size, child_flags, window_flags);
-		::ImGui::PopStyleVar();
-		::ImGui::PopStyleColor();
-	}
-	else
-	{
-		Opened = false;
-		::ImGui::PopStyleVar();
-		::ImGui::PopStyleColor();
-	}
+	bool Opened = false;
+	if		(::ImGui::BeginChild(str_id, size, child_flags, window_flags)) Opened = true;
+	else	::ImGui::EndChild();
+
+	::ImGui::PopStyleVar();
+	::ImGui::PopStyleColor();
 
 	return Opened;
 }
 
-XREUI_API void XRay::ImGui::EndDarkChild(bool Opened)
+XREUI_API void XRay::ImGui::EndDarkChild()
 {
-	::ImGui::EndChild();
-
-	if (Opened)
-	{
-		::ImGui::EndChild();
-	}
+	::ImGui::EndChild(); // str_id
 }
+
+XREUI_API bool XRay::ImGui::BeginTable(const char* str_id, int columns, ImGuiTableFlags flags, const ImVec2& outer_size, float inner_width)
+{
+	float   TablePaddingY   = GetEditorSize(EEditorSizes::TableTextPaddingY);
+	bool	Rendered		= false;
+
+	::ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 0.f, 0.f });
+	::ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.f);
+	::ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { ::ImGui::GetStyle().FramePadding.x, TablePaddingY });
+	::ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2( GetEditorSize(EEditorSizes::ButtonPaddingW), GetEditorSize(EEditorSizes::ButtonPaddingH) ));
+	if		(::ImGui::BeginTable(str_id, columns, flags, outer_size, inner_width)) Rendered = true;
+	else	::ImGui::PopStyleVar(4); // ItemInnerSpacing, FramePadding, FrameRounding, CellPadding
+
+	return Rendered;
+}
+XREUI_API void XRay::ImGui::EndTable()
+{
+	::ImGui::EndTable();
+	::ImGui::PopStyleVar(4); // ItemInnerSpacing, FramePadding, FrameRounding, CellPadding
+}
+XREUI_API void XRay::ImGui::TableNextColumn()
+{
+	::ImGui::TableNextColumn();
+	if (::ImGui::GetCurrentTable()->CurrentRow > 0)
+		::ImGui::SetCursorPosY(::ImGui::GetCursorPosY() + 1.f);
+}
+XREUI_API void XRay::ImGui::TableNextRow(ImGuiTableRowFlags row_flags, float min_row_height)
+{
+	::ImGui::TableNextRow(row_flags, min_row_height);
+}
+
+void XRay::ImGui::TextFramed(const char* fmt, const ImVec2 size, const ImVec2 text_align, const bool draw_background, ...)
+{
+    va_list args;
+    va_start(args, text_align);
+    TextFramedV(fmt, size, draw_background, text_align, args);
+    va_end(args);
+}
+void XRay::ImGui::TextFramedV(const char* fmt, const ImVec2 size, const bool draw_background, const ImVec2 text_align, va_list args)
+{
+    ImGuiWindow* window = ::ImGui::GetCurrentWindow();
+    if (window->SkipItems)
+        return;
+
+    const char* text, * text_end;
+    ImFormatStringToTempBufferV(&text, &text_end, fmt, args);
+    TextFramedEx(text, text_end, size, draw_background, text_align);
+}
+void XRay::ImGui::TextFramedEx(const char* text, const char* text_end, const ImVec2 size, const bool draw_background, const ImVec2 text_align)
+{
+            ImGuiWindow* window     = ::ImGui::GetCurrentWindow();
+    const   ImGuiID     id          = window->GetID(text);
+            ImGuiStyle& style       = ::ImGui::GetStyle();
+
+    // --- size ---
+            ImVec2  TextSize        = ::ImGui::CalcTextSize(text, text_end);
+            ImVec2  FrameSize;
+                    FrameSize       = CalcItemSize(size, TextSize.x + style.FramePadding.x * 2.0f, TextSize.y + style.FramePadding.y * 2.0f);
+    const   ImVec2  FramePadding    = ImMin(style.FramePadding, (FrameSize - TextSize) * 0.5);
+    const   ImRect  bb              = ImRect(::ImGui::GetCursorScreenPos(), ::ImGui::GetCursorScreenPos() + FrameSize);
+
+    const   ImVec4  FrameColor      = style.Colors[ImGuiCol_TableRowBg];
+
+    ::ImGui::ItemSize(FrameSize, style.FramePadding.y);
+    ::ImGui::ItemAdd(bb, id);
+	// --- draw text centered ---
+	        ImDrawList* dl			= ::ImGui::GetWindowDrawList();
+            ImVec4      clip_rect   = ImVec4(bb.Min.x, bb.Min.y, bb.Max.x, bb.Max.y);
+            ImVec2		text_pos    = bb.Min + FramePadding + (FrameSize - TextSize - FramePadding * 2) * text_align;
+	        ImU32       text_col    = ::ImGui::GetColorU32(ImGuiCol_Text);
+                        if (draw_background) {
+                            dl->AddRectFilled(bb.Min, bb.Max, ::ImGui::GetColorU32(FrameColor), style.FrameRounding);
+                        }
+                        dl->AddText(NULL, 0.f, text_pos, text_col, text, text_end, 0.f, &clip_rect);
+}
+//-------------------------------------------------------------------------
+// [SECTION] Widgets: Numeric Inputs
+//-------------------------------------------------------------------------
+// - InputVector3()
+//-------------------------------------------------------------------------
 
 XREUI_API bool XRay::ImGui::InputVector3(const char* Label, float V[3], float Step)
 {
@@ -96,6 +208,12 @@ XREUI_API bool XRay::ImGui::InputVector3(const char* Label, float V[3], float St
 	return Changed;
 }
 
+//-------------------------------------------------------------------------
+// [SECTION] Widgets: Low-level Layout helpers
+//-------------------------------------------------------------------------
+// - Separator()
+//-------------------------------------------------------------------------
+
 XREUI_API void XRay::ImGui::Separator(float thickness)
 {
 	const   ImGuiContext&   g       = *GImGui;
@@ -111,9 +229,20 @@ XREUI_API void XRay::ImGui::Separator(float thickness)
 	::ImGui::SeparatorEx(flags, thickness);
 }
 
-// ===========
-//   BUTTONS
-// ===========
+// ---------------------------------------------------------------
+// [SECTION] BUTTONS
+// ---------------------------------------------------------------
+// Simple Button:
+// - ButtonBackground()
+// - Button()
+// - IconButton()
+// - ToggleButton()
+// - ToggleFlagButton()
+// 
+// Toolbar Buttons:
+// - ToolbarButtonBackground()
+// - ToolbarButton()
+// - ToolbarIconButton()
 
 // - Uses X-Ray hardcoded color style variables
 // - Draws only background
@@ -174,12 +303,12 @@ XREUI_API bool XRay::ImGui::Button(const char* label, const ImVec2& size, bool* 
 {
 			ImGuiStyle& style       = ::ImGui::GetStyle();
 
-	// --- size ---
-	const   char*   TextEnd       = ::ImGui::FindRenderedTextEnd(label);;
-			ImVec2  TextSize        = ::ImGui::CalcTextSize(label, TextEnd);
-	const   ImVec2  ButtonSize      = ::ImGui::CalcItemSize(size, TextSize.x + style.FramePadding.x * 2.0f, TextSize.y + style.FramePadding.y * 2.0f);
-	const   ImVec2  FramePadding    = ImMin(style.FramePadding, (ButtonSize - TextSize) * 0.5);
-	const   ImVec2  TextAlign       = style.ButtonTextAlign;
+    // --- size ---
+    const   char*   TextEnd         = ::ImGui::FindRenderedTextEnd(label);;
+            ImVec2  TextSize        = ::ImGui::CalcTextSize(label, TextEnd);
+    const   ImVec2  ButtonSize      = CalcItemSize(size, TextSize.x + style.FramePadding.x * 2.0f, TextSize.y + style.FramePadding.y * 2.0f);
+    const   ImVec2  FramePadding    = ImMin(style.FramePadding, (ButtonSize - TextSize) * 0.5);
+    const   ImVec2  TextAlign       = style.ButtonTextAlign;
 
 	bool    Clicked                 = ButtonBackground(label, toggle, ButtonSize, rounding_flags);
 
@@ -218,22 +347,25 @@ XREUI_API bool XRay::ImGui::IconButton(const char* id, ImTextureRef texture, con
 
 XREUI_API bool XRay::ImGui::ToggleButton(const char* Label, bool* Flags, const ImVec2& Size)
 {
+    ImGuiStyle style = ::ImGui::GetStyle();
 	if(!Flags) return false;
 	bool Enabled = *Flags;
 	bool Changed = false;
 
-	::ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, { 0, 0.5 });
+    const ImVec4 FlagColor = GetEditorColor(EEditorColors::Accent);
+    const float StripeWidth = GetEditorSize(EEditorSizes::IndicatorWidth);
+    const float Rounding = style.FrameRounding;
+    
+    ::ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, { 0, 0.5 });
+	::ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { StripeWidth * 2, style.FramePadding.y });
 	if (XRay::ImGui::Button(Label, Size, Flags))
 	{
 		*Flags = !*Flags;
 		Changed = true;
 		Enabled = !Enabled;
 	}
-	::ImGui::PopStyleVar();
+	::ImGui::PopStyleVar(2);
 
-	const ImVec4 FlagColor		= GetEditorColor(EEditorColors::Accent);
-	const float StripeWidth		= GetEditorSize(EEditorSizes::IndicatorWidth);
-	const float Rounding		= ::ImGui::GetStyle().FrameRounding;
 	
 	ImDrawList* DrawList		= ::ImGui::GetWindowDrawList();
 	ImVec2		Min				= ::ImGui::GetItemRectMin();
@@ -270,36 +402,53 @@ XREUI_API bool XRay::ImGui::ToggleFlagButton(const char* Label, uint32_t* Flags,
 	return Changed;
 }
 
-XREUI_API bool XRay::ImGui::ToolbarIconButton(
-	const	char*			id,
-			ImTextureRef	texture,
-			bool*			toggle,
-			ImDrawFlags		rounding_flags,
-			float	        rounding,
-			ImVec2	        button_size,
-			ImVec2	        image_size)
+XREUI_API bool XRay::ImGui::ToolbarButtonBackground(
+    const	char* id,
+    bool* toggle,
+    ImVec2		size,
+    ImDrawFlags	rounding_flags,
+    float		rounding)
 {
-	ImGuiWindow* window = ::ImGui::GetCurrentWindow();
-	if (window->SkipItems)
-		return false;
+    ImGuiWindow* window = ::ImGui::GetCurrentWindow();
+    if (window->SkipItems)
+        return false;
 
-	::ImGui::PushID(id);
+    bool    Clicked = ::ImGui::InvisibleButton(id, size);
+    const	bool    Hovered = ::ImGui::IsItemHovered();
+    const	bool    Active = ::ImGui::IsItemActive();
 
-	// --- draw background ---
-	bool		Clicked		= ToolbarButtonBackground("##icon_btn", toggle, button_size, rounding_flags, rounding);
+    ImVec4  Color = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToolbarButtonTint);
+    ImVec4  ColorHover = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ButtonHover);
+    ImVec4  ColorActive = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ButtonActive);
 
-	// --- center image ---
-	ImDrawList*	dl			= ::ImGui::GetWindowDrawList();
-	ImVec2		p_min		= ::ImGui::GetItemRectMin();
-	ImVec2		p_max		= ::ImGui::GetItemRectMax();
-	ImVec2		center		= (p_min + p_max) * 0.5f;
-	ImVec2		img_min		= center - image_size * 0.5f;
-	ImVec2		img_max		= center + image_size * 0.5f;
+    // --- toggle logic ---
+    if (toggle) {
+        if (Clicked)
+            *toggle = !*toggle;
+        if (*toggle == true) {
+            Color = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::Accent);
+            ColorHover = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToggleHover);
+            ColorActive = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToggleActive);
+        }
+    }
 
-	dl->AddImage(texture, img_min, img_max);
+    // --- colors ---
+    ImU32 col;
+    if (Active)
+        col = ::ImGui::GetColorU32(ColorActive);
+    else if (Hovered)
+        col = ::ImGui::GetColorU32(ColorHover);
+    else
+        col = ::ImGui::GetColorU32(Color);
 
-	::ImGui::PopID();
-	return      Clicked;
+    // --- draw background ---
+    ImDrawList* dl = ::ImGui::GetWindowDrawList();
+    ImVec2		p_min = ::ImGui::GetItemRectMin();
+    ImVec2		p_max = ::ImGui::GetItemRectMax();
+
+    dl->AddRectFilled(p_min, p_max, col, rounding, rounding_flags);
+
+    return Clicked;
 }
 
 XREUI_API bool XRay::ImGui::ToolbarButton(
@@ -340,55 +489,46 @@ XREUI_API bool XRay::ImGui::ToolbarButton(
 	return  Clicked;
 }
 
-XREUI_API bool XRay::ImGui::ToolbarButtonBackground(
-	const	char*		id,
-			bool*		toggle,
-			ImVec2		size,
-			ImDrawFlags	rounding_flags,
-			float		rounding)
+XREUI_API bool XRay::ImGui::ToolbarIconButton(
+    const	char* id,
+    ImTextureRef	texture,
+    bool* toggle,
+    ImDrawFlags		rounding_flags,
+    float	        rounding,
+    ImVec2	        button_size,
+    ImVec2	        image_size)
 {
-	ImGuiWindow* window = ::ImGui::GetCurrentWindow();
-	if (window->SkipItems)
-		return false;
+    ImGuiWindow* window = ::ImGui::GetCurrentWindow();
+    if (window->SkipItems)
+        return false;
 
-			bool    Clicked	    = ::ImGui::InvisibleButton(id, size);
-	const	bool    Hovered	    = ::ImGui::IsItemHovered();
-	const	bool    Active		= ::ImGui::IsItemActive();
+    ::ImGui::PushID(id);
 
-			ImVec4  Color	    = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToolbarButtonTint);
-			ImVec4  ColorHover	= XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ButtonHover);
-			ImVec4  ColorActive	= XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ButtonActive);
+    // --- draw background ---
+    bool		Clicked = ToolbarButtonBackground("##icon_btn", toggle, button_size, rounding_flags, rounding);
 
-	// --- toggle logic ---
-	if (toggle) {
-		if (Clicked)
-			*toggle = !*toggle;
-		if (*toggle == true) {
-			Color	    = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::Accent);
-			ColorHover  = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToggleHover);
-			ColorActive = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToggleActive);
-		}
-	}
+    // --- center image ---
+    ImDrawList* dl = ::ImGui::GetWindowDrawList();
+    ImVec2		p_min = ::ImGui::GetItemRectMin();
+    ImVec2		p_max = ::ImGui::GetItemRectMax();
+    ImVec2		center = (p_min + p_max) * 0.5f;
+    ImVec2		img_min = center - image_size * 0.5f;
+    ImVec2		img_max = center + image_size * 0.5f;
 
-	// --- colors ---
-	ImU32 col;
-	if (Active)
-		col = ::ImGui::GetColorU32(ColorActive);
-	else if (Hovered)
-		col = ::ImGui::GetColorU32(ColorHover);
-	else
-		col = ::ImGui::GetColorU32(Color);
+    dl->AddImage(texture, img_min, img_max);
 
-	// --- draw background ---
-	ImDrawList*	dl		= ::ImGui::GetWindowDrawList();
-	ImVec2		p_min	= ::ImGui::GetItemRectMin();
-	ImVec2		p_max	= ::ImGui::GetItemRectMax();
-
-	dl->AddRectFilled(p_min, p_max, col, rounding, rounding_flags);
-
-	return Clicked;
+    ::ImGui::PopID();
+    return      Clicked;
 }
 
+//--------------------------------
+// [SECTION] Render Helpers
+//--------------------------------
+// Now there's only
+// - RenderArrow()
+//--------------------------------
+
+// Renders not PixelPerfect arrows from FontAwesome
 static void RenderArrow(ImDrawList* draw_list, ImVec2 pos, ImU32 col, ImGuiDir dir, float scale)
 {
 	ImGuiContext& g = *GImGui;
@@ -409,7 +549,18 @@ static void RenderArrow(ImDrawList* draw_list, ImVec2 pos, ImU32 col, ImGuiDir d
 	ImGui::SetWindowFontScale(1.f);
 }
 
+//---------------------------------------------------------
+// [SECTION] Widgets: TreeNode, CollapsingHeader, etc.
+//---------------------------------------------------------
 // COPYPASTA FROM imgui_widgets.cpp
+// - TreeNodeStoreStackData() [Internal]
+// - TreeNodeBehavior()
+// - TreeNode()
+// - TreeNodeEx()
+// - TreeNodeExV()
+// - CollapsingHeader()
+//---------------------------------------------------------
+
 static void TreeNodeStoreStackData(ImGuiTreeNodeFlags flags, float x1)
 {
 	ImGuiContext& g = *GImGui;
@@ -804,5 +955,45 @@ XREUI_API bool XRay::ImGui::CollapsingHeader(const char* label, ImGuiTreeNodeFla
 						| ImGuiTreeNodeFlags_LabelSpanAllColumns
 						;
 
-	return TreeNodeBehavior(id, flags, label, NULL);
+    return TreeNodeBehavior(id, flags, label, NULL);
+}
+
+XREUI_API bool XRay::ImGui::BeginExpand(const char* label, ImGuiTreeNodeFlags flags)
+{
+            ImGuiWindow* window     = ::ImGui::GetCurrentWindow();
+    const   ImGuiID      id         = window->GetID(label);
+    const   ImVec4  BorderColor     = GetEditorColor(EEditorColors::PanelBorderTint);
+
+
+    const   float   Padding         = GetEditorSize(EEditorSizes::TableTextPaddingY);
+    const   float   ButtonPaddingX  = GetEditorSize(EEditorSizes::ButtonPaddingW);
+    const   float   ItemSpacingY    = ::ImGui::GetStyle().ItemSpacing.y;
+    const   float   Border          = GetEditorSize(EEditorSizes::TableBorder);
+    ::ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0);
+    ::ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { Padding, Padding });
+    const   bool    Opened          = CollapsingHeader(label, flags);
+    ::ImGui::PopStyleVar(2); // FramePadding, FrameRounding
+    if (Opened)
+    {
+        ::ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0);
+        ::ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { ButtonPaddingX, Padding });
+
+        ::ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2( Padding, Padding ));
+        ::ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 1);
+        ::ImGui::PushStyleColor(ImGuiCol_ChildBg, GetEditorColor(EEditorColors::PanelBackgroundTint).Value);
+        ::ImGui::PushStyleColor(ImGuiCol_Border, GetEditorColor(EEditorColors::PanelBorderTint).Value);
+
+        ::ImGui::SetCursorPos(::ImGui::GetCursorPos() + ImVec2(0.f, -ItemSpacingY -1));
+        ::ImGui::BeginChild("##border", { ::ImGui::GetContentRegionAvail().x - 0, 0}, ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_Borders );
+        ::ImGui::PopStyleColor(2);
+        ::ImGui::PopStyleVar(2); // WindowBorderSize, WindowPadding
+    }
+
+    return Opened;
+}
+XREUI_API void XRay::ImGui::EndExpand()
+{
+    ::ImGui::EndChild();
+    ::ImGui::PopStyleVar(2); // FramePadding, FrameRounding
+    ::ImGui::TreePop();
 }

@@ -12,67 +12,60 @@ UIShapeTool::~UIShapeTool()
 
 void UIShapeTool::Draw()
 {
-    ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-    if (ImGui::TreeNode("Commands"))
-    {
-        ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
-        {
-            if (ImGui::RadioButton("Sphere", m_SphereMode))
-            {
-                m_SphereMode = true;
-            }ImGui::SameLine();
-            if (ImGui::RadioButton("Box", m_SphereMode==false))
-            {
-                m_SphereMode = false;
-            }
-        }
-        ImGui::Separator();
-        ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
-        ImGui::TreePop();
-    }
-    ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-    if (ImGui::TreeNode("Edit"))
-    {
-        ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
-        {
-            if (ImGui::Checkbox("Attach Shape...", &m_AttachShape))
-            {
-                if(m_AttachShape)
-                ExecCommand(COMMAND_CHANGE_ACTION, etaAdd);
-            }
-            ImGui::SameLine(0, 10);
-            if (ImGui::Button("Detach All", ImVec2(-1, 0)))
-            {
-                ObjectList lst;
-                if (Scene->GetQueryObjects(lst, OBJCLASS_SHAPE, 1, 1, 0)) {
-                    Scene->SelectObjects(false, OBJCLASS_SHAPE);
-                    for (ObjectIt it = lst.begin(); it != lst.end(); it++)
-                        ((CEditShape*)*it)->Detach();
-                }
-            }
-        }
-        ImGui::Separator();
-        ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
-        ImGui::TreePop();
-    }
-    ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-    if (ImGui::TreeNode("Level Bound"))
-    {
-        ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
-        {
-            if (ImGui::Checkbox("Edit Level Bound", &EditLevelBound))
-            {
-                if (EditLevelBound)
-                    Tool->OnEditLevelBounds(false);
-            }
-            if(EditLevelBound)
-            if (ImGui::Button("Recalc", ImVec2(-1, 0)))
-            {
-                Tool->OnEditLevelBounds(true);
-            }
-        }
-        ImGui::Separator();
-        ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
-        ImGui::TreePop();
-    }
+	const   float   ItemSpacingX = ImGui::GetStyle().ItemSpacing.x;
+	bool    ModeSphere = m_SphereMode;
+	bool    ModeBox = !m_SphereMode;
+
+	if (XRay::ImGui::BeginDarkChild("ObjectToolsBorder", { 0, 0 }, ImGuiChildFlags_AutoResizeY))
+	{
+		ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 0.f);
+
+		ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
+		if (XRay::ImGui::BeginExpand("Commands"))
+		{
+			if (XRay::ImGui::ToggleButton("Sphere", &ModeSphere))	m_SphereMode = true;
+			ImGui::SameLine(0, ItemSpacingX);
+			if (XRay::ImGui::ToggleButton("Box", &ModeBox))			m_SphereMode = false;
+
+			XRay::ImGui::EndExpand();
+		}
+		ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
+		if (XRay::ImGui::BeginExpand("Edit"))
+		{
+			const float SizeX = (ImGui::GetContentRegionAvail().x - ItemSpacingX) / 2;
+			if (XRay::ImGui::ToggleButton("Attach Shape...", &m_AttachShape, { SizeX, 0 })) {
+				if (m_AttachShape)
+					ExecCommand(COMMAND_CHANGE_ACTION, etaAdd);
+			}
+			ImGui::SameLine(0, ItemSpacingX);
+			if (ImGui::Button("Detach All", { SizeX, 0 })) {
+				ObjectList lst;
+				if (Scene->GetQueryObjects(lst, OBJCLASS_SHAPE, 1, 1, 0)) {
+					Scene->SelectObjects(false, OBJCLASS_SHAPE);
+					for (ObjectIt it = lst.begin(); it != lst.end(); it++)
+						((CEditShape*)*it)->Detach();
+				}
+			}
+
+			XRay::ImGui::EndExpand();
+		}
+		ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
+		if (XRay::ImGui::BeginExpand("Level Bound"))
+		{
+			if (XRay::ImGui::ToggleButton("Edit Level Bound", &EditLevelBound, { -0.01, 0 })) {
+				if (EditLevelBound)
+					Tool->OnEditLevelBounds(false);
+			}
+			if (EditLevelBound) {
+				if (ImGui::Button("Recalc", { -1, 0 }))
+					Tool->OnEditLevelBounds(true);
+			}
+
+			XRay::ImGui::EndExpand();
+		}
+
+		ImGui::PopStyleVar(); // IndentSpacing
+
+		XRay::ImGui::EndDarkChild();
+	}
 }

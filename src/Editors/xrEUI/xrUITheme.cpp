@@ -239,7 +239,7 @@ void CUIThemeManager::InitDefault(int InThemeID)
 	colors[ImGuiCol_Border]					= GetEditorColor(EEditorColors::PanelBorderTint);
 	colors[ImGuiCol_ChildBg]				= GetEditorColor(EEditorColors::PanelTint);
 	colors[ImGuiCol_TableRowBg]				= GetEditorColor(EEditorColors::PanelTint);
-	colors[ImGuiCol_TableRowBgAlt]			= GetEditorColor(EEditorColors::ButtonTint);
+	colors[ImGuiCol_TableRowBgAlt]			= GetEditorColor(EEditorColors::PanelTint);
 	colors[ImGuiCol_TableBorderLight]		= GetEditorColor(EEditorColors::BackgroundTint);
 	colors[ImGuiCol_TableBorderStrong]		= GetEditorColor(EEditorColors::BackgroundTint);
 	colors[ImGuiCol_TableHeaderBg]			= GetEditorColor(EEditorColors::ButtonTint);
@@ -291,12 +291,12 @@ void CUIThemeManager::InitDefault(int InThemeID)
 	style.ItemSpacing						= ImVec2(4.f, 2.f);
 	style.ItemInnerSpacing					= ImVec2(2.f, 2.f);
 	style.DockingSeparatorSize				= GetEditorSize(EEditorSizes::DockingGap);
-    style.IndentSpacing						= 8.0f;
-    style.SeparatorTextBorderSize			= 2.0f;
-    style.SeparatorTextBorderSize			= 2.0f;
+	style.IndentSpacing						= 8.0f;
+	style.SeparatorTextBorderSize			= 2.0f;
+	style.SeparatorTextBorderSize			= 2.0f;
 	style.WindowMenuButtonPosition			= ImGuiDir_Right;
 
-    style.CellPadding						= { GetEditorSize(ButtonTextPaddingY), GetEditorSize(TableTextPaddingY) };
+	style.CellPadding						= { GetEditorSize(ButtonTextPaddingY), GetEditorSize(TableTextPaddingY) };
 
 	log_color_default = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
 	log_color_error = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
