@@ -58,19 +58,6 @@ void CUIGrenadeParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn
 	if (!initialized)
 		return;
 
-	LPCSTR cur_section = cur_wpn.object().cNameSect().c_str();
-	string2048 str_upgrades;
-	str_upgrades[0] = 0;
-	cur_wpn.get_upgrades_str(str_upgrades);
-
-	if (slot_wpn && (slot_wpn != &cur_wpn))
-	{
-		LPCSTR slot_section = slot_wpn->object().cNameSect().c_str();
-		str_upgrades[0] = 0;
-		slot_wpn->get_upgrades_str(str_upgrades);
-
-	}
-
 	const auto elementColorize = [&](CUIStatic* text, float first, float second)
 	{
 		constexpr u32 red_clr = color_argb(255, 210, 50, 50);
