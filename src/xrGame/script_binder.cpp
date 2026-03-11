@@ -17,6 +17,30 @@
 #include "GameObject.h"
 #include "Level.h"
 
+#if !defined(MASTER_GOLD) && defined(IXR_WINDOWS) && (defined(_MSC_VER) || (defined(__clang__) && defined(_MSC_EXTENSIONS)))
+#include <windows.h> // for EXCEPTION_ACCESS_VIOLATION
+#include <excpt.h>
+
+int ex_filter(unsigned int code, struct _EXCEPTION_POINTERS *ep)
+{
+	if (IsDebuggerPresent())
+	{
+		DebugBreak();
+	}
+	ProcessStackTrace(ep);
+	return EXCEPTION_EXECUTE_HANDLER;
+}
+
+#define Script_ex_begin __try
+#define Script_ex_end __except (ex_filter(GetExceptionCode(), GetExceptionInformation()))
+
+#else
+
+#define Script_ex_begin try
+#define Script_ex_end catch(...)
+
+#endif
+
 CScriptBinder::CScriptBinder		()
 {
 	init					();
@@ -34,11 +58,13 @@ void CScriptBinder::init			()
 
 void CScriptBinder::clear			()
 {
-	try {
+	Script_ex_begin
+	{
 		xr_delete			(m_object);
 	}
-	catch(...) {
-		m_object			= 0;
+	Script_ex_end
+	{
+		m_object = nullptr;
 	}
 	init					();
 }
@@ -46,10 +72,10 @@ void CScriptBinder::clear			()
 void CScriptBinder::reinit			()
 {
 	if (m_object) {
-		try {
+		Script_ex_begin {
 			m_object->reinit	();
 		}
-		catch(...) {
+		Script_ex_end {
 			clear			();
 		}
 	}
@@ -79,12 +105,14 @@ void CScriptBinder::reload(const char* section)
 
 	CGameObject* game_object = smart_cast<CGameObject*>(this);
 
+	//Script_ex_begin
 	try
 	{
 		auto script_obj = game_object ? game_object->lua_game_object() : nullptr;
 		lua_function(script_obj);
 	}
 	catch (...)
+	//Script_ex_end
 	{
 		clear();
 		return;
@@ -93,10 +121,12 @@ void CScriptBinder::reload(const char* section)
 	if (m_object)
 	{
 		try
+		//Script_ex_begin
 		{
 			m_object->reload(section);
 		}
 		catch (...)
+		//Script_ex_end
 		{
 			clear();
 		}
@@ -111,11 +141,11 @@ bool CScriptBinder::net_Spawn(CSE_Abstract* DC)
 
 	if (object && m_object)
 	{
-		try
+		Script_ex_begin
 		{
 			return m_object->net_Spawn(object);
 		}
-		catch (...)
+		Script_ex_end
 		{
 			clear();
 		}
@@ -129,11 +159,11 @@ void CScriptBinder::net_Destroy()
 	PROF_EVENT("CScriptBinder::net_Destroy");
 	if (m_object)
 	{
-		try
+		Script_ex_begin
 		{
 			m_object->net_Destroy();
 		}
-		catch(...)
+		Script_ex_end
 		{
 			clear();
 		}
@@ -161,10 +191,10 @@ void CScriptBinder::shedule_Update(u32 time_delta)
 	PROF_EVENT("CScriptBinder::shedule_Update");
 	if (m_object)
 	{
-		try {
+		Script_ex_begin {
 			m_object->shedule_Update(time_delta);
 		}
-		catch (...) {
+		Script_ex_end {
 			g_pScriptEngine->print_stack();
 			clear();
 		}
@@ -176,10 +206,10 @@ void CScriptBinder::save			(NET_Packet &output_packet)
 {
 	PROF_EVENT("CScriptBinder::save")
 	if (m_object) {
-		try {
+		Script_ex_begin {
 			m_object->save	(&output_packet);
 		}
-		catch(...) {
+		Script_ex_end {
 			clear			();
 		}
 	}
@@ -189,10 +219,10 @@ void CScriptBinder::load			(IReader &input_packet)
 {
 	PROF_EVENT("CScriptBinder::load")
 	if (m_object) {
-		try {
+		Script_ex_begin {
 			m_object->load	(&input_packet);
 		}
-		catch(...) {
+		Script_ex_end {
 			clear			();
 		}
 	}
@@ -201,10 +231,10 @@ void CScriptBinder::load			(IReader &input_packet)
 void CScriptBinder::Serialize(ISaveObject& Object)
 {
 	if (m_object) {
-		try {
+		Script_ex_begin {
 			m_object->Serialize(&Object);
 		}
-		catch (...) {
+		Script_ex_end {
 			clear();
 		}
 	}
@@ -213,10 +243,10 @@ void CScriptBinder::Serialize(ISaveObject& Object)
 bool CScriptBinder::net_SaveRelevant()
 {
 	if (m_object) {
-		try {
+		Script_ex_begin {
 			return			(m_object->net_SaveRelevant());
 		}
-		catch(...) {
+		Script_ex_end {
 			clear			();
 		}
 	}
@@ -228,10 +258,10 @@ void CScriptBinder::net_Relcase		(CObject *object)
 	PROF_EVENT("CScriptBinder::net_Relcase")
 	CGameObject						*game_object = object->cast_game_object();
 	if (m_object && game_object) {
-		try {
+		Script_ex_begin {
 			m_object->net_Relcase	(game_object->lua_game_object());
 		}
-		catch(...) {
+		Script_ex_end {
 			clear			();
 		}
 	}
