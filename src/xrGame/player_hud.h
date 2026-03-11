@@ -134,6 +134,10 @@ struct weapon_inertion final
 	float aim_move_crouch_factor = 1.0f;
 	float aim_move_slow_factor = 1.0f;
 
+	float move_slow_crouch_factor = 1.0f;
+	float move_crouch_factor = 1.0f;
+	float move_slow_factor = 1.0f;
+
 	bool no_other_hud_moving_while_suicide = false;
 
 	u32 to_crouch_time = 0;
