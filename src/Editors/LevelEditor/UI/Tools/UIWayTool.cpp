@@ -12,124 +12,123 @@ UIWayTool::~UIWayTool()
 
 void UIWayTool::Draw()
 {
-    ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-    if (ImGui::TreeNode("Commands"))
-    {
-        ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
-        {
-            if (ImGui::RadioButton("Way Mode", m_WayMode))
-            {
-                LTools->SetTarget(OBJCLASS_WAY, 0);
-                m_WayMode = true;
-            }
-            ImGui::SameLine();
-            if (ImGui::RadioButton("Way Point", m_WayMode == false))
-            {
-                LTools->SetTarget(OBJCLASS_WAY, 1);
-                m_WayMode = false;
-            }
-        }
-        ImGui::Separator();
-        ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
-        ImGui::TreePop();
-    }
-    ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-    if (ImGui::TreeNode("Link Command"))
-    {
-        ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
-        {
-            if (ImGui::Checkbox("Auto Link", &m_AutoLink))
-            {
-               
-            }
-            ImGui::PushItemWidth(-1);
-            float size = float(ImGui::CalcItemWidth());
-            {
-                if (ImGui::Button("Create 1-Link", ImVec2(size / 2, 0))) 
-                {
-                    if (m_WayMode) {
-                        ELog.DlgMsg(mtInformation, "Before editing enter Point Mode.");
-                        return;
-                    }
-                    bool bRes = false;
-                    ObjectList lst;
-                    Scene->GetQueryObjects(lst, OBJCLASS_WAY, 1, 1, 0);
-                    // remove links
-                    for (ObjectIt it = lst.begin(); it != lst.end(); it++) {
-                        ((CWayObject*)(*it))->RemoveLink();
-                        bRes |= ((CWayObject*)(*it))->Add1Link();
-                    }
-                    if (bRes) Scene->UndoSave();
-                    ExecCommand(COMMAND_UPDATE_PROPERTIES);
-                }
-                ImGui::SameLine(0, 2);
-                if (ImGui::Button("Convert to 1-Link", ImVec2(size / 2, 0))) 
-                {
-                    ObjectList lst;
-                    int cnt = Scene->GetQueryObjects(lst, OBJCLASS_WAY, 1, 1, 0);
-                    for (ObjectIt it = lst.begin(); it != lst.end(); it++)
-                        ((CWayObject*)(*it))->Convert1Link();
-                    if (cnt) Scene->UndoSave();
-                    ExecCommand(COMMAND_UPDATE_PROPERTIES);
-                }
+	const float	ItemSpacingX = ImGui::GetStyle().ItemSpacing.x;
+	bool WayMode = m_WayMode;
+	bool WayPoint = !m_WayMode;
 
-                if (ImGui::Button("Create 2-Link", ImVec2(size / 2, 0))) 
-                {
-                    if (m_WayMode) {
-                        ELog.DlgMsg(mtInformation, "Before editing enter Point Mode.");
-                        return;
-                    }
-                    bool bRes = false;
-                    ObjectList lst;
-                    Scene->GetQueryObjects(lst, OBJCLASS_WAY, 1, 1, 0);
-                    for (ObjectIt it = lst.begin(); it != lst.end(); it++)
-                        bRes |= ((CWayObject*)(*it))->Add2Link();
-                    if (bRes) Scene->UndoSave();
-                    ExecCommand(COMMAND_UPDATE_PROPERTIES);
-                }
-                ImGui::SameLine(0, 2);
-                if (ImGui::Button("Convert to 2-Link", ImVec2(size / 2, 0))) 
-                {
-                    ObjectList lst;
-                    int cnt = Scene->GetQueryObjects(lst, OBJCLASS_WAY, 1, 1, 0);
-                    for (ObjectIt it = lst.begin(); it != lst.end(); it++)
-                        ((CWayObject*)(*it))->Convert2Link();
-                    if (cnt) Scene->UndoSave();
-                    ExecCommand(COMMAND_UPDATE_PROPERTIES);
-                }
+	if (XRay::ImGui::BeginDarkChild("ObjectToolsBorder", { 0, 0 }, ImGuiChildFlags_AutoResizeY))
+	{
+		ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 0.f);
 
-                if (ImGui::Button("Invert Link", ImVec2(size / 2, 0))) 
-                {
-                    if (m_WayMode) {
-                        ELog.DlgMsg(mtInformation, "Before editing enter Point Mode.");
-                        return;
-                    }
-                    ObjectList lst;
-                    int cnt = Scene->GetQueryObjects(lst, OBJCLASS_WAY, 1, 1, 0);
-                    for (ObjectIt it = lst.begin(); it != lst.end(); it++)
-                        ((CWayObject*)(*it))->InvertLink();
-                    if (cnt) Scene->UndoSave();
-                    ExecCommand(COMMAND_UPDATE_PROPERTIES);
-                }
-                ImGui::SameLine(0, 2);
-                if (ImGui::Button("Remove Link", ImVec2(size / 2, 0)))
-                {
-                    if (m_WayMode) {
-                        ELog.DlgMsg(mtInformation, "Before editing enter Point Mode.");
-                        return;
-                    }
-                    ObjectList lst;
-                    int cnt = Scene->GetQueryObjects(lst, OBJCLASS_WAY, 1, 1, 0);
-                    for (ObjectIt it = lst.begin(); it != lst.end(); it++)
-                        ((CWayObject*)(*it))->RemoveLink();
-                    if (cnt) Scene->UndoSave();
-                    ExecCommand(COMMAND_UPDATE_PROPERTIES);
-                }
-            }
+		ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
+		if (XRay::ImGui::BeginExpand("Commands"))
+		{
+			float SizeX = (ImGui::GetContentRegionAvail().x - ItemSpacingX) / 2;
+			if (XRay::ImGui::ToggleButton("Way Mode", &WayMode, { SizeX, 0 })) {
+				LTools->SetTarget(OBJCLASS_WAY, 0);
+				m_WayMode = true;
+			}
+			ImGui::SameLine(0, ItemSpacingX);
+			if (XRay::ImGui::ToggleButton("Way Point", &WayPoint, { SizeX, 0 })) {
+				LTools->SetTarget(OBJCLASS_WAY, 1);
+				m_WayMode = false;
+			}
 
-        }
-        ImGui::Separator();
-        ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
-        ImGui::TreePop();
-    }
+			XRay::ImGui::EndExpand();
+		}
+
+		ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
+		if (XRay::ImGui::BeginExpand("Link Command"))
+		{
+			float SizeX = (ImGui::GetContentRegionAvail().x - ItemSpacingX) / 2;
+
+			if (XRay::ImGui::ToggleButton("Auto Link", &m_AutoLink)) {}
+			if (XRay::ImGui::Button("Create 1-Link", { SizeX, 0 }))
+			{
+				if (m_WayMode) {
+					ELog.DlgMsg(mtInformation, "Before editing enter Point Mode.");
+					return;
+				}
+				bool bRes = false;
+				ObjectList lst;
+				Scene->GetQueryObjects(lst, OBJCLASS_WAY, 1, 1, 0);
+				// remove links
+				for (ObjectIt it = lst.begin(); it != lst.end(); it++) {
+					((CWayObject*)(*it))->RemoveLink();
+					bRes |= ((CWayObject*)(*it))->Add1Link();
+				}
+				if (bRes) Scene->UndoSave();
+				ExecCommand(COMMAND_UPDATE_PROPERTIES);
+			}
+			ImGui::SameLine(0, ItemSpacingX);
+			if (XRay::ImGui::Button("Convert to 1-Link", { SizeX, 0 }))
+			{
+				ObjectList lst;
+				int cnt = Scene->GetQueryObjects(lst, OBJCLASS_WAY, 1, 1, 0);
+				for (ObjectIt it = lst.begin(); it != lst.end(); it++)
+					((CWayObject*)(*it))->Convert1Link();
+				if (cnt) Scene->UndoSave();
+				ExecCommand(COMMAND_UPDATE_PROPERTIES);
+			}
+
+			if (XRay::ImGui::Button("Create 2-Link", { SizeX, 0 }))
+			{
+				if (m_WayMode) {
+					ELog.DlgMsg(mtInformation, "Before editing enter Point Mode.");
+					return;
+				}
+				bool bRes = false;
+				ObjectList lst;
+				Scene->GetQueryObjects(lst, OBJCLASS_WAY, 1, 1, 0);
+				for (ObjectIt it = lst.begin(); it != lst.end(); it++)
+					bRes |= ((CWayObject*)(*it))->Add2Link();
+				if (bRes) Scene->UndoSave();
+				ExecCommand(COMMAND_UPDATE_PROPERTIES);
+			}
+			ImGui::SameLine(0, ItemSpacingX);
+			if (XRay::ImGui::Button("Convert to 2-Link", { SizeX, 0 }))
+			{
+				ObjectList lst;
+				int cnt = Scene->GetQueryObjects(lst, OBJCLASS_WAY, 1, 1, 0);
+				for (ObjectIt it = lst.begin(); it != lst.end(); it++)
+					((CWayObject*)(*it))->Convert2Link();
+				if (cnt) Scene->UndoSave();
+				ExecCommand(COMMAND_UPDATE_PROPERTIES);
+			}
+
+			if (XRay::ImGui::Button("Invert Link", { SizeX, 0 }))
+			{
+				if (m_WayMode) {
+					ELog.DlgMsg(mtInformation, "Before editing enter Point Mode.");
+					return;
+				}
+				ObjectList lst;
+				int cnt = Scene->GetQueryObjects(lst, OBJCLASS_WAY, 1, 1, 0);
+				for (ObjectIt it = lst.begin(); it != lst.end(); it++)
+					((CWayObject*)(*it))->InvertLink();
+				if (cnt) Scene->UndoSave();
+				ExecCommand(COMMAND_UPDATE_PROPERTIES);
+			}
+			ImGui::SameLine(0, ItemSpacingX);
+			if (XRay::ImGui::Button("Remove Link", { SizeX, 0 }))
+			{
+				if (m_WayMode) {
+					ELog.DlgMsg(mtInformation, "Before editing enter Point Mode.");
+					return;
+				}
+				ObjectList lst;
+				int cnt = Scene->GetQueryObjects(lst, OBJCLASS_WAY, 1, 1, 0);
+				for (ObjectIt it = lst.begin(); it != lst.end(); it++)
+					((CWayObject*)(*it))->RemoveLink();
+				if (cnt) Scene->UndoSave();
+				ExecCommand(COMMAND_UPDATE_PROPERTIES);
+			}
+
+			XRay::ImGui::EndExpand();
+		}
+		ImGui::PopStyleVar(); // IndentSpacing
+
+		XRay::ImGui::EndDarkChild();
+	}
+
 }

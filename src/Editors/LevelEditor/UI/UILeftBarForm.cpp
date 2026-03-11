@@ -61,8 +61,10 @@ void UILeftBarForm::Draw()
 	ImGuiStyle& Style = ImGui::GetStyle();
 
 	ImVec2	WindowPadding	= ImGui::GetStyle().WindowPadding;
+	ImVec2	ItemSpacing		= ImGui::GetStyle().ItemSpacing;
 	float	PannelPadding	= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::PanelPadding);
 	float	TablePadding	= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableBorder);
+	float	ButtonSize		= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, WindowPadding + ImVec2(PannelPadding, PannelPadding));
 	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(1.f, 1.f));
 
@@ -215,23 +217,16 @@ void UILeftBarForm::Draw()
 		if (bUseObjectsTool)
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, WindowPadding + ImVec2(PannelPadding, PannelPadding));
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(ItemSpacing.y, ItemSpacing.y));
 			if (ImGui::Begin("Object Tools", &bUseObjectsTool))
 			{
 				if (LTools->GetToolForm())
 				{
-					ImGui::BeginChild("##Container");
-
-					bool Opened = XRay::ImGui::BeginDarkChild("ObjectToolsBorder", { 0, 0 }, ImGuiChildFlags_AutoResizeY);
-
 					LTools->GetToolForm()->Draw();
-
-					XRay::ImGui::EndDarkChild(Opened);
-
-					ImGui::EndChild();
 				}
 			}
-			ImGui::End();
-            ImGui::PopStyleVar();
+			ImGui::End(); 
+			ImGui::PopStyleVar(2); // WindowPadding + ItemSpacing
 
 			if (UIObjectTool* pTool = smart_cast<UIObjectTool*>(LTools->GetToolForm()))
 			{
