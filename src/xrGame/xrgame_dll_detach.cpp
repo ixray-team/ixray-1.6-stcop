@@ -61,15 +61,9 @@ void init_game_globals()
 extern CUIXml*	g_uiSpotXml;
 extern CUIXml*	pWpnScopeXml;
 
-extern void destroy_lua_wpn_params	();
-extern void destroy_lua_knife_params();
-
 void clean_game_globals()
 {
 	GECSManager->DestroyAll();
-
-	destroy_lua_wpn_params();
-	destroy_lua_knife_params();
 
 	// destroy object factory
 	xr_delete(g_object_factory);
