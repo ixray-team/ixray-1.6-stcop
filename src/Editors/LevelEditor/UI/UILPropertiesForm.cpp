@@ -14,16 +14,19 @@ void UILPropertiesForm::Draw()
 	{
 		if (ImGui::Begin("Properties", &bOpen))
 		{
-			bool Opened = XRay::ImGui::BeginDarkChild("WorldPropertiesBorder");
-			if (LTools->PropUpdateIsCompleted)
+			if (XRay::ImGui::BeginDarkChild("WorldPropertiesBorder"))
 			{
-				LTools->GetProperties()->Draw();
+				if (LTools->PropUpdateIsCompleted)
+				{
+					LTools->GetProperties()->Draw();
+				}
+				else
+				{
+					ImGui::Text("Async loading...");
+				}
+
+				XRay::ImGui::EndDarkChild();
 			}
-			else
-			{
-				ImGui::Text("Async loading...");
-			}
-			XRay::ImGui::EndDarkChild(Opened);
 		}
 		ImGui::End();
 	}
