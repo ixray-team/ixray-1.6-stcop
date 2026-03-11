@@ -80,133 +80,144 @@ void UIObjectTool::HandleDragDrop()
 
 void UIObjectTool::Draw()
 {
-	const float buttonHeight		= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize);
-	const float	itemSpacingX		= ImGui::GetStyle().ItemSpacing.x;
-	const float	itemInnerSpacingX	= ImGui::GetStyle().ItemInnerSpacing.x;
+	const float ButtonHeight		= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize);
+	const float	ItemSpacingX		= ImGui::GetStyle().ItemSpacing.x;
+	const float TableRowHeight		= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableRowHeight);
 
-	if (XRay::ImGui::Button("Multiple Append in World Center", { -0.01, buttonHeight }))
+	if (XRay::ImGui::BeginDarkChild("ObjectToolsBorder", { 0, 0 }, ImGuiChildFlags_AutoResizeY))
 	{
-		m_MultiAppend = true;
-		UIChooseForm::SelectItem(smObject, 512, 0);
-	}
-	XRay::ImGui::Separator();
-
-	if (XRay::ImGui::ToggleButton("Random Append", m_RandomAppend, { -(buttonHeight + itemInnerSpacingX) * 2, buttonHeight }))
-	{
-		ParentTools->ActivateAppendRandom(m_RandomAppend);
-	}
-	ImGui::SameLine(0, itemInnerSpacingX);
-	if (XRay::ImGui::Button(ICON_FA_FILE_IMPORT, { buttonHeight, buttonHeight }))
-	{
-		xr_string Outfile;
-
-		if (EFS.GetOpenName("$server_data_root$", Outfile, false, 0, -1, "*.rai"))
+		if (XRay::ImGui::Button("Multiple Append in World Center", { -0.01, 0 }))
 		{
-			LoadFromFile(Outfile);
-		}
-	}
-
-	ImGui::SameLine(0, itemInnerSpacingX);
-	if (XRay::ImGui::Button(ICON_FA_FLOPPY_DISK, { buttonHeight, buttonHeight }))
-	{
-		xr_string Outfile;
-
-		if (EFS.GetSaveName("$server_data_root$", Outfile, 0, -1, "*.rai"))
-		{
-			if (!Outfile.ends_with(".rai"))
-			{
-				Outfile += ".rai";
-			}
-
-			IWriter* Stream = FS.w_open(Outfile.data());
-			Stream->w_u8(1);
-
-			Stream->w_fvector3(ParentTools->m_AppendRandomMinScale);
-			Stream->w_fvector3(ParentTools->m_AppendRandomMaxScale);
-			Stream->w_fvector3(ParentTools->m_AppendRandomMinRotation);
-			Stream->w_fvector3(ParentTools->m_AppendRandomMaxRotation);
-			Stream->w_u32(ParentTools->m_Flags.get());
-
-			Stream->w_stringZ(ParentTools->m_AppendRandomObjectsStr);
-
-			Stream->w_u32((u32)ParentTools->m_AppendRandomObjects.size());
-
-			for (const shared_str& str : ParentTools->m_AppendRandomObjects)
-			{
-				Stream->w_stringZ(str);
-			}
-
-			FS.w_close(Stream);
-
-			xr_path File = Outfile;
-			RAIFile = File.xfilename();
-		}
-		}
-
-	if (m_RandomAppend)
-	{
-		ParentTools->FillAppendRandomPropertiesBegin(PropsRandomAppend);
-
-		PropsRandomAppend.Draw();
-
-		if (XRay::ImGui::Button("Random Append in Selected Object", { -0.01, buttonHeight }))
-		{
-			GenerateGarbage();
+			m_MultiAppend = true;
+			UIChooseForm::SelectItem(smObject, 512, 0);
 		}
 		XRay::ImGui::Separator();
-	}
 
-	m_RemoveTexture.destroy();
-
-	static bool ShowRefSel = false;
-	XRay::ImGui::ToggleButton("Reference Select", ShowRefSel, { -0.01, buttonHeight });
-
-	if (ShowRefSel)
-	{
-		ImGui::Text("Select by Current: "); ImGui::SameLine(); if (ImGui::Button(" +")) { SelByRefObject(true); } ImGui::SameLine(); if (ImGui::Button(" -")) { SelByRefObject(false); }
-		ImGui::Text("Select by Selected:"); ImGui::SameLine(); if (ImGui::Button("=%")) { MultiSelByRefObject(true); } ImGui::SameLine(); if (ImGui::Button("+%")) { MultiSelByRefObject(false); } ImGui::SameLine(); ImGui::SetNextItemWidth(-ImGui::GetTextLineHeight() - 8); ImGui::DragFloat("%", &m_selPercent, 1, 0, 100, "%.1f");
-		XRay::ImGui::Separator();
-	}
-
-	float XSize = ImGui::GetContentRegionAvail().x - itemInnerSpacingX;
-	XSize /= 2;
-
-	static bool ShowSurf = false;
-	XRay::ImGui::ToggleButton("Surface", ShowSurf, { -0.01, buttonHeight });
-	if (ShowSurf)
-	{
-		if (XRay::ImGui::Button("Clear Select", ImVec2(XSize, 0)))
+		if (XRay::ImGui::ToggleButton("Random Append", m_RandomAppend, { -(ButtonHeight + ItemSpacingX) * 2, ButtonHeight }))
 		{
-			Scene->UndoSave();
-			ClearSurface(true);
+			ParentTools->ActivateAppendRandom(m_RandomAppend);
 		}
-		ImGui::SameLine(0, itemInnerSpacingX);
-		if (XRay::ImGui::Button("Clear Level", ImVec2(XSize, 0)))
+		ImGui::SameLine(0, ItemSpacingX);
+		if (XRay::ImGui::Button(ICON_FA_FILE_IMPORT, { ButtonHeight, ButtonHeight }))
 		{
-			if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to reset surface in level?") == mrYes)
+			xr_string Outfile;
+
+			if (EFS.GetOpenName("$server_data_root$", Outfile, false, 0, -1, "*.rai"))
+			{
+				LoadFromFile(Outfile);
+			}
+		}
+		ImGui::SameLine(0, ItemSpacingX);
+		if (XRay::ImGui::Button(ICON_FA_FLOPPY_DISK, { ButtonHeight, ButtonHeight }))
+		{
+			xr_string Outfile;
+
+			if (EFS.GetSaveName("$server_data_root$", Outfile, 0, -1, "*.rai"))
+			{
+				if (!Outfile.ends_with(".rai"))
+				{
+					Outfile += ".rai";
+				}
+
+				IWriter* Stream = FS.w_open(Outfile.data());
+				Stream->w_u8(1);
+
+				Stream->w_fvector3(ParentTools->m_AppendRandomMinScale);
+				Stream->w_fvector3(ParentTools->m_AppendRandomMaxScale);
+				Stream->w_fvector3(ParentTools->m_AppendRandomMinRotation);
+				Stream->w_fvector3(ParentTools->m_AppendRandomMaxRotation);
+				Stream->w_u32(ParentTools->m_Flags.get());
+
+				Stream->w_stringZ(ParentTools->m_AppendRandomObjectsStr);
+
+				Stream->w_u32((u32)ParentTools->m_AppendRandomObjects.size());
+
+				for (const shared_str& str : ParentTools->m_AppendRandomObjects)
+				{
+					Stream->w_stringZ(str);
+				}
+
+				FS.w_close(Stream);
+
+				xr_path File = Outfile;
+				RAIFile = File.xfilename();
+			}
+		}
+
+		if (m_RandomAppend)
+		{
+			ParentTools->FillAppendRandomPropertiesBegin(PropsRandomAppend);
+
+			PropsRandomAppend.Draw();
+
+			if (XRay::ImGui::Button("Random Append in Selected Object", { -0.01, 0 }))
+			{
+				GenerateGarbage();
+			}
+			XRay::ImGui::Separator();
+		}
+
+		m_RemoveTexture.destroy();
+
+		ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 0.f);
+
+		if (XRay::ImGui::BeginExpand("Reference Select"))
+		{
+			if (XRay::ImGui::BeginTable("##objecttools_refselect", 4, ImGuiTableFlags_BordersInner | ImGuiTableFlags_RowBg))
+			{
+												ImGui::TableSetupColumn("Key", ImGuiTableColumnFlags_WidthFixed);					ImGui::TableSetupColumn("-", ImGuiTableColumnFlags_WidthFixed);													ImGui::TableSetupColumn("--", ImGuiTableColumnFlags_WidthFixed);												ImGui::TableSetupColumn("--", ImGuiTableColumnFlags_WidthStretch);
+				XRay::ImGui::TableNextRow();	XRay::ImGui::TableNextColumn();	XRay::ImGui::TextFramed("Select by Current: ");		XRay::ImGui::TableNextColumn();		if (XRay::ImGui::Button(" +", { 24.f, 0})) { SelByRefObject(true); }		XRay::ImGui::TableNextColumn();		if (XRay::ImGui::Button(" -", { 24.f, 0})) { SelByRefObject(false); }
+				XRay::ImGui::TableNextRow();	XRay::ImGui::TableNextColumn();	XRay::ImGui::TextFramed("Select by Selected: ");	XRay::ImGui::TableNextColumn();		if (XRay::ImGui::Button("=%", { 24.f, 0})) { MultiSelByRefObject(true); }	XRay::ImGui::TableNextColumn();		if (XRay::ImGui::Button("+%", { 24.f, 0})) { MultiSelByRefObject(false); }	XRay::ImGui::TableNextColumn();		ImGui::SetNextItemWidth(-TableRowHeight); ImGui::DragFloat("%", &m_selPercent, 1, 0, 100, "%.1f");
+				XRay::ImGui::EndTable();
+			}
+
+			XRay::ImGui::EndExpand();
+		}
+
+		static bool ShowSurf = false;
+		if (XRay::ImGui::BeginExpand("Surface"))
+		{
+			float SizeX = (ImGui::GetContentRegionAvail().x - ItemSpacingX) / 2;
+
+			if (XRay::ImGui::Button("Clear Select", { SizeX, 0 }))
 			{
 				Scene->UndoSave();
-				ClearSurface(false);
+				ClearSurface(true);
 			}
-		}
-		XRay::ImGui::Separator();
-	}
+			ImGui::SameLine(0, ItemSpacingX);
+			if (XRay::ImGui::Button("Clear Level", { SizeX, 0 }))
+			{
+				if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to reset surface in level?") == mrYes)
+				{
+					Scene->UndoSave();
+					ClearSurface(false);
+				}
+			}
 
-	static bool ShowCurObject = false;
-	XRay::ImGui::ToggleButton("Current Object", ShowCurObject, { -0.01, buttonHeight });
-	if (ShowCurObject)
-	{
-		if (XRay::ImGui::Button("Select", ImVec2(XSize, 0)))
-		{
-			UIChooseForm::SelectItem(smObject, 1, m_Current, 0, 0, 0, 0, 0);
-			m_Selection = true;
+			XRay::ImGui::EndExpand();
 		}
-		ImGui::SameLine(0, itemInnerSpacingX);
-		if (XRay::ImGui::Button("Refresh", ImVec2(XSize, 0)))
+
+		if (XRay::ImGui::BeginExpand("Current Object"))
 		{
-			RefreshList();
+			float SizeX = (ImGui::GetContentRegionAvail().x - ItemSpacingX) / 2;
+
+			if (XRay::ImGui::Button("Select", { SizeX, 0 }))
+			{
+				UIChooseForm::SelectItem(smObject, 1, m_Current, 0, 0, 0, 0, 0);
+				m_Selection = true;
+			}
+			ImGui::SameLine(0, ItemSpacingX);
+			if (XRay::ImGui::Button("Refresh", { SizeX, 0 }))
+			{
+				RefreshList();
+			}
+
+			XRay::ImGui::EndExpand();
 		}
-		XRay::ImGui::Separator();
+
+		ImGui::PopStyleVar(); // IndentSpacing
+
+		XRay::ImGui::EndDarkChild();
 	}
 }
 

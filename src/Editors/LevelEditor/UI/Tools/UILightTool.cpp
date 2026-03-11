@@ -10,24 +10,30 @@ UILightTool::~UILightTool()
 
 void UILightTool::Draw()
 {
-	ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-	if (ImGui::TreeNode("Affect in D3D"))
-	{
-		ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
-		ImGui::PushItemWidth(-1);
-		float size = float(ImGui::CalcItemWidth());
-		{
-			if(ImGui::Button("Enable Sel",ImVec2(size/2,0)))UseInD3D(false,true);
-			ImGui::SameLine(0, 2);
-			if (ImGui::Button("Enable All", ImVec2(size / 2, 0)))UseInD3D(true, true);
+	float ItemSpacingX	= ImGui::GetStyle().ItemSpacing.x;
 
-			if (ImGui::Button("Disable Sel", ImVec2( size / 2,0)))UseInD3D(false, false);
-			ImGui::SameLine(0, 2);
-			if (ImGui::Button("Disable All", ImVec2(size / 2, 0)))UseInD3D(true, false);
+	if (XRay::ImGui::BeginDarkChild("ObjectToolsBorder", { 0, 0 }, ImGuiChildFlags_AutoResizeY))
+	{
+		ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 0.f);
+
+		ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
+		if (XRay::ImGui::BeginExpand("Affect in D3D"))
+		{
+			float SizeX = (ImGui::GetContentRegionAvail().x - ItemSpacingX) / 2;
+			if (XRay::ImGui::Button("Enable Sel", { SizeX, 0 })) UseInD3D(false, true);
+			ImGui::SameLine(0, ItemSpacingX);
+			if (XRay::ImGui::Button("Enable All", { SizeX, 0 })) UseInD3D(true, true);
+
+			if (XRay::ImGui::Button("Disable Sel", { SizeX, 0 })) UseInD3D(false, false);
+			ImGui::SameLine(0, ItemSpacingX);
+			if (XRay::ImGui::Button("Disable All", { SizeX, 0 })) UseInD3D(true, false);
+
+			XRay::ImGui::EndExpand();
 		}
 
-		ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
-		ImGui::TreePop();
+		ImGui::PopStyleVar(); // IndentSpacing
+
+		XRay::ImGui::EndDarkChild();
 	}
 }
 
