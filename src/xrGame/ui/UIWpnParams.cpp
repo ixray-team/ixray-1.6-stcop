@@ -16,40 +16,6 @@
 
 using namespace InventoryUtilities;
 
-struct SLuaWpnParams
-{
-	luabind::functor<float>		m_functorRPM;
-	luabind::functor<float>		m_functorAccuracy;
-	luabind::functor<float>		m_functorDamage;
-	luabind::functor<float>		m_functorDamageMP;
-	luabind::functor<float>		m_functorHandling;
-
-	SLuaWpnParams();
-	~SLuaWpnParams();
-};
-
-SLuaWpnParams::SLuaWpnParams()
-{
-	bool	functor_exists;
-	functor_exists	= ai().script_engine().functor("ui_wpn_params.GetRPM",		m_functorRPM);		VERIFY(functor_exists);
-	functor_exists	= ai().script_engine().functor("ui_wpn_params.GetDamage",	m_functorDamage);	VERIFY(functor_exists);
-	functor_exists	= ai().script_engine().functor("ui_wpn_params.GetDamageMP", m_functorDamageMP);	VERIFY(functor_exists);
-	functor_exists	= ai().script_engine().functor("ui_wpn_params.GetHandling", m_functorHandling);	VERIFY(functor_exists);
-	functor_exists	= ai().script_engine().functor("ui_wpn_params.GetAccuracy", m_functorAccuracy);	VERIFY(functor_exists);
-}
-
-SLuaWpnParams::~SLuaWpnParams()
-{
-}
-
-SLuaWpnParams* g_lua_wpn_params = nullptr;
-
-void destroy_lua_wpn_params()
-{
-	if(g_lua_wpn_params)
-		xr_delete(g_lua_wpn_params);
-}
-
 // =====================================================================
 
 CUIWpnParams::CUIWpnParams()
@@ -63,10 +29,6 @@ CUIWpnParams::CUIWpnParams()
 	AttachChild(&m_progressDamage);
 	AttachChild(&m_progressHandling);
 	AttachChild(&m_progressRPM);
-}
-
-CUIWpnParams::~CUIWpnParams()
-{
 }
 
 void CUIWpnParams::InitFromXml(CUIXml& xml_doc)
@@ -119,22 +81,15 @@ void CUIWpnParams::InitFromXml(CUIXml& xml_doc)
 
 void CUIWpnParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn)
 {
-	if (!g_lua_wpn_params)
-	{
-		g_lua_wpn_params = new SLuaWpnParams();
-	}
+	CWeapon& weapon = *cur_wpn.cast_weapon();
+	CWeapon* slot_weapon = slot_wpn != nullptr ? slot_wpn->cast_weapon() : nullptr;
 
-	LPCSTR cur_section = cur_wpn.object().cNameSect().c_str();
-	string2048 str_upgrades;
-	str_upgrades[0] = 0;
-	cur_wpn.get_upgrades_str(str_upgrades);
-
-	float cur_rpm = iFloor(g_lua_wpn_params->m_functorRPM(cur_section, str_upgrades) * 53.0f) / 53.0f;
-	float cur_accur = iFloor(g_lua_wpn_params->m_functorAccuracy(cur_section, str_upgrades) * 53.0f) / 53.0f;
-	float cur_hand = iFloor(g_lua_wpn_params->m_functorHandling(cur_section, str_upgrades) * 53.0f) / 53.0f;
+	float cur_rpm = iFloor(weapon.GetRPM() * 53.0f) / 53.0f;
+	float cur_accur = iFloor(weapon.GetAccuracy() * 53.0f) / 53.0f;
+	float cur_hand = iFloor(weapon.GetHandling() * 53.0f) / 53.0f;
 	float cur_damage = (IsGameTypeSingle()) ?
-		iFloor(g_lua_wpn_params->m_functorDamage(cur_section, str_upgrades) * 53.0f) / 53.0f
-		: iFloor(g_lua_wpn_params->m_functorDamageMP(cur_section, str_upgrades) * 53.0f) / 53.0f;
+		iFloor(weapon.GetDamage() * 53.0f) / 53.0f
+		: iFloor(weapon.GetDamageMP() * 53.0f) / 53.0f;
 
 	float slot_rpm = cur_rpm;
 	float slot_accur = cur_accur;
@@ -143,16 +98,12 @@ void CUIWpnParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn)
 
 	if (slot_wpn && (slot_wpn != &cur_wpn))
 	{
-		LPCSTR slot_section = slot_wpn->object().cNameSect().c_str();
-		str_upgrades[0] = 0;
-		slot_wpn->get_upgrades_str(str_upgrades);
-
-		slot_rpm = iFloor(g_lua_wpn_params->m_functorRPM(slot_section, str_upgrades) * 53.0f) / 53.0f;
-		slot_accur = iFloor(g_lua_wpn_params->m_functorAccuracy(slot_section, str_upgrades) * 53.0f) / 53.0f;
-		slot_hand = iFloor(g_lua_wpn_params->m_functorHandling(slot_section, str_upgrades) * 53.0f) / 53.0f;
+		slot_rpm = iFloor(slot_weapon->GetRPM() * 53.0f) / 53.0f;
+		slot_accur = iFloor(slot_weapon->GetAccuracy() * 53.0f) / 53.0f;
+		slot_hand = iFloor(slot_weapon->GetHandling() * 53.0f) / 53.0f;
 		slot_damage = (IsGameTypeSingle()) ?
-			iFloor(g_lua_wpn_params->m_functorDamage(slot_section, str_upgrades) * 53.0f) / 53.0f
-			: iFloor(g_lua_wpn_params->m_functorDamageMP(slot_section, str_upgrades) * 53.0f) / 53.0f;
+			iFloor(slot_weapon->GetDamage() * 53.0f) / 53.0f
+			: iFloor(slot_weapon->GetDamageMP() * 53.0f) / 53.0f;
 	}
 
 	m_progressAccuracy.SetTwoPos(cur_accur, slot_accur);
@@ -162,38 +113,37 @@ void CUIWpnParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn)
 
 	if (IsGameTypeSingle())
 	{
-		CWeapon* weapon = cur_wpn.cast_weapon();
-		if (!weapon)
-			return;
-
-		int ammo_count = weapon->GetAmmoMagSize();
+		int ammo_count = weapon.GetAmmoMagSize();
 		int ammo_count2 = ammo_count;
 
-		if (slot_wpn)
+		if (slot_wpn && slot_weapon)
 		{
-			CWeapon* slot_weapon = slot_wpn->cast_weapon();
-			if (slot_weapon)
-				ammo_count2 = slot_weapon->GetAmmoMagSize();
+			ammo_count2 = slot_weapon->GetAmmoMagSize();
 		}
 
 		if (m_textAmmoCount2)
 		{
 			if (ammo_count == ammo_count2)
+			{
 				m_textAmmoCount2->SetTextColor(color_rgba(170, 170, 170, 255));
+			}
 			else if (ammo_count < ammo_count2)
+			{
 				m_textAmmoCount2->SetTextColor(color_rgba(255, 0, 0, 255));
+			}
 			else
+			{
 				m_textAmmoCount2->SetTextColor(color_rgba(0, 255, 0, 255));
+			}
 
 			string128 str;
 			xr_sprintf(str, sizeof(str), "%d", ammo_count);
 			m_textAmmoCount2->SetText(str);
 		}
 
-		xr_vector<shared_str>& ammo_types = weapon->m_ammoTypes;
+		xr_vector<shared_str>& ammo_types = weapon.m_ammoTypes;
 		if (!ammo_types.empty())
 		{
-
 			if (m_textAmmoUsedType)
 			{
 				string128 str;
@@ -211,7 +161,9 @@ void CUIWpnParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn)
 					m_stAmmoType1->SetScaleFactor(icons_struct._3d_static_scale);
 				}
 				else
+				{
 					m_stAmmoType1->SetVisual(nullptr);
+				}
 
 				m_stAmmoType1->SetShader(GetEquipmentIconsShader(icons_struct.icons_texture));
 				float scaleIcon = icons_struct.scaleIcon;
@@ -230,7 +182,9 @@ void CUIWpnParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn)
 
 			bool enable_ammo_type_2 = ammo_types.size() > 1;
 			if (m_stAmmoType2)
+			{
 				m_stAmmoType2->Show(enable_ammo_type_2);
+			}
 
 			if (enable_ammo_type_2 && m_stAmmoType2)
 			{
@@ -242,7 +196,9 @@ void CUIWpnParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn)
 					m_stAmmoType2->SetScaleFactor(icons_struct._3d_static_scale);
 				}
 				else
+				{
 					m_stAmmoType2->SetVisual(nullptr);
+				}
 
 				m_stAmmoType2->SetShader(GetEquipmentIconsShader(icons_struct.icons_texture));
 				float scaleIcon = icons_struct.scaleIcon;
@@ -261,7 +217,9 @@ void CUIWpnParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn)
 			
 			bool enable_ammo_type_3 = ammo_types.size() > 2;
 			if (m_stAmmoType3)
+			{
 				m_stAmmoType3->Show(enable_ammo_type_3);
+			}
 
 			if (enable_ammo_type_3 && m_stAmmoType3)
 			{
@@ -273,7 +231,9 @@ void CUIWpnParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn)
 					m_stAmmoType3->SetScaleFactor(icons_struct._3d_static_scale);
 				}
 				else
+				{
 					m_stAmmoType3->SetVisual(nullptr);
+				}
 
 				m_stAmmoType3->SetShader(GetEquipmentIconsShader(icons_struct.icons_texture));
 				float scaleIcon = icons_struct.scaleIcon;
@@ -296,6 +256,11 @@ void CUIWpnParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn)
 
 bool CUIWpnParams::Check(CInventoryItem& wpn_section)
 {
+	if (wpn_section.cast_weapon() == nullptr)
+	{
+		return false;
+	}
+
 	LPCSTR wpn_sect = wpn_section.object().cNameSect().c_str();
 	if (pSettings->line_exist(wpn_sect, "fire_dispersion_base"))
 	{
@@ -303,8 +268,6 @@ bool CUIWpnParams::Check(CInventoryItem& wpn_section)
 		if (pSettings->line_exist(wpn_sect, "ammo_mag_size") && pSettings->r_u32(wpn_sect, "ammo_mag_size") == 0)
 			return false;
 
-		if (wpn_section.cast_addon_silencer())
-			return false;
 		if (wpn_section.cast_weapon_binoculars())
 			return false;
 		if (wpn_section.cast_weapon_knife())

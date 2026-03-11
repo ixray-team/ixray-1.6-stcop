@@ -235,6 +235,7 @@ bool CWeapon::install_upgrade_hit(LPCSTR section, bool test)
 	{
 		VERIFY(rpm > 0.0f);
 		fOneShotTime = 60.0f / rpm;
+		fOneShotTimeSaved = rpm;
 	}
 	result |= result2;
 
