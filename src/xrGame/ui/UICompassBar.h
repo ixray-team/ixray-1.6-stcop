@@ -103,6 +103,7 @@ public:
     CUIWindow* GetFrame();
 
     void SetActiveTarget(CMapLocation* loc);
+    void Reset();
 
     bool visible = true;
 

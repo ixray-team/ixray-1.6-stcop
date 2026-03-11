@@ -1243,9 +1243,13 @@ void CUIMainIngameWnd::reset_ui()
 {
 	m_pPickUpItem					= nullptr;
 	UIMotionIcon->ResetVisibility	();
-	if ( m_ui_hud_states )
+	if (m_ui_hud_states)
 	{
 		m_ui_hud_states->reset_ui();
+	}
+	if (UICompassBar)
+	{
+		UICompassBar->Reset();
 	}
 }
 

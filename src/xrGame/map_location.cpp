@@ -420,12 +420,12 @@ Fvector2 CMapLocation::CalcPosition()
 	CObject* pObject = Level().Objects.net_Find(m_objectID);
 	if (!pObject)
 	{
-		if (m_owner_se_object)
+		CSE_ALifeDynamicObject* owner = (ai().get_alife() && !IsUserDefined()) ? ai().alife().objects().object(m_objectID, true) : nullptr;
+		if (owner)
 		{
-			m_position_global = m_owner_se_object->draw_level_position();
+			m_position_global = owner->draw_level_position();
 			pos.set(m_position_global.x, m_position_global.z);
 		}
-
 	}
 	else
 	{
