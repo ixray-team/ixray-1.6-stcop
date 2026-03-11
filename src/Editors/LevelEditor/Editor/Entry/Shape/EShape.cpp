@@ -378,9 +378,21 @@ bool CEditShape::LoadStream(IReader& F)
 
 	inherited::LoadStream	(F);
 
-	R_ASSERT(F.find_chunk(SHAPE_CHUNK_SHAPES));
+	auto Size = F.find_chunk(SHAPE_CHUNK_SHAPES);
+	R_ASSERT(Size);
     shapes.resize	(F.r_u32());
-    F.r				(shapes.data(),shapes.size()*sizeof(shape_def));
+	auto RequiredSize = shapes.size()*sizeof(shape_def);
+	if (RequiredSize > Size-sizeof(u32))
+	{
+		for (auto& shape : shapes)
+		{
+			shape.type = F.r_u8();
+			F.r(&shape.data, sizeof(shape.data));
+		}
+	} else
+	{
+		F.r(shapes.data(),shapes.size()*sizeof(shape_def));
+	}
 
     if(F.find_chunk(SHAPE_CHUNK_DATA))
     	m_shape_type	= F.r_u8();
