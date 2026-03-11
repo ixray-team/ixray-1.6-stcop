@@ -980,10 +980,10 @@ void CUICompassBar::CommitLayout()
             {
                 posOffsetX = item.iconSize.x * 0.5f * (1.0f - kx);
             }
-        else if (_spotCfg.align == alRight)
-        {
-            posOffsetX = item.iconSize.x * (1.0f - kx);
-        }
+            else if (_spotCfg.align == alRight)
+            {
+                posOffsetX = item.iconSize.x * (1.0f - kx);
+            }
         }
         const float stripCenterX = geom.left + geom.CenterX();
         const float posX = stripCenterX + item.relX + posOffsetX;
@@ -1309,6 +1309,17 @@ CUIWindow* CUICompassBar::GetFrame()
 void CUICompassBar::SetActiveTarget(CMapLocation* loc)
 {
     _activeTargetLoc = loc;
+}
+
+void CUICompassBar::Reset()
+{
+    _activeTargetLoc = nullptr;
+    _lastActiveLoc = nullptr;
+    _activeTargetCurX = 0.0f;
+    for (u32 i = 0; i < _poolSpotOwners.size(); ++i)
+    {
+        _poolSpotOwners[i] = nullptr;
+    }
 }
 
 void CUICompassBar::CacheGameTypeCompatibility()
