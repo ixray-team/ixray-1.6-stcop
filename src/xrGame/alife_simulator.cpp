@@ -25,8 +25,6 @@
 
 LPCSTR alife_section = "alife";
 
-extern void destroy_lua_wpn_params	();
-extern void destroy_lua_knife_params();
 XRCORE_API xr_hash_map<xr_string, CInifile*>* cached_ini_map;
 
 void restart_all				()
@@ -37,8 +35,6 @@ void restart_all				()
 		return;
 	}
 
-	destroy_lua_wpn_params		();
-	destroy_lua_knife_params	();
 	MainMenu()->DestroyInternal	(true);
 
 	xr_delete(g_object_factory);

@@ -77,7 +77,8 @@ protected:
 	// Weapon fires now
 	bool					bWorking;
 
-	float					fOneShotTime;
+	float					fOneShotTime = 0.0f;
+	float					fOneShotTimeSaved = 0.0f;
 	Fvector4				fvHitPower;
 	Fvector4				fvHitPowerCritical;
 	float					fHitImpulse;

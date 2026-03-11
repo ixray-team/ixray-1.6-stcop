@@ -15,8 +15,8 @@ class CUIWpnParams final :
 	public CUIWindow 
 {
 public:
-							CUIWpnParams		();
-	virtual					~CUIWpnParams		();
+	CUIWpnParams();
+	virtual ~CUIWpnParams() = default;
 
 	void 					InitFromXml			(CUIXml& xml_doc);
 	void					SetInfo				(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn);
