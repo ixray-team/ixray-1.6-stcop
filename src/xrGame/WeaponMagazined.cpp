@@ -670,7 +670,7 @@ bool CWeaponMagazined::TryReload()
 			SwitchState(eReload);
 			return true;
 		}
-		else if (m_set_next_ammoType_on_reload == undefined_ammo_type && iAmmoElapsed + iAmmoChamberElapsed == 0 || m_set_next_ammoType_on_reload != undefined_ammo_type)
+		else if (m_set_next_ammoType_on_reload == undefined_ammo_type && iAmmoElapsed + (IsGrenadeMode() ? 0 : iAmmoChamberElapsed) == 0 || m_set_next_ammoType_on_reload != undefined_ammo_type)
 		{
 			for (u8 i = 0; i < u8(m_ammoTypes.size()); ++i)
 			{
