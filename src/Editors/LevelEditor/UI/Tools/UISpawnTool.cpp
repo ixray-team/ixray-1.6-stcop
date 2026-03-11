@@ -17,46 +17,51 @@ UISpawnTool::~UISpawnTool()
 
 void UISpawnTool::Draw()
 {
-	static bool ShowRefSel = false;
-	XRay::ImGui::ToggleButton("Reference Select", ShowRefSel, { -1, XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize) });
+	const float ItemSpacingX = ImGui::GetStyle().ItemInnerSpacing.x;
+	const float TableRowHeight = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableRowHeight);
 
-	if (ShowRefSel)
+	if (XRay::ImGui::BeginDarkChild("ObjectToolsBorder", { 0, 0 }, ImGuiChildFlags_AutoResizeY))
 	{
-		ImGui::Text("Select by Current: "); ImGui::SameLine(); if (ImGui::Button(" +")) { SelByRefObject(true); } ImGui::SameLine(); if (ImGui::Button(" -")) { SelByRefObject(false); }
-		ImGui::Text("Select by Selected:"); ImGui::SameLine(); if (ImGui::Button("=%")) { MultiSelByRefObject(true); } ImGui::SameLine(); if (ImGui::Button("+%")) { MultiSelByRefObject(false); } ImGui::SameLine(); ImGui::SetNextItemWidth(-ImGui::GetTextLineHeight() - 8); ImGui::DragFloat("%", &m_selPercent, 1, 0, 100, "%.1f");
-		ImGui::Separator();
-	}
+		ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 0.f);
 
-	ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-	if (ImGui::TreeNode("Commands"))
-	{
-		ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
+		if (XRay::ImGui::BeginExpand("Reference Select"))
 		{
-			float size = float(ImGui::CalcItemWidth());
+			if (XRay::ImGui::BeginTable("##objecttools_refselect", 4, ImGuiTableFlags_BordersInner | ImGuiTableFlags_RowBg))
 			{
-				if (ImGui::Checkbox("Attach Object...", &m_AttachObject))
-				{
-					if (m_AttachObject) ExecCommand(COMMAND_CHANGE_ACTION, etaAdd);
-				}
-				ImGui::SameLine(0, 10);
-				if (ImGui::Button("Detach Object", ImVec2(-1, 0)))
-				{
-					ObjectList lst;
-					if (Scene->GetQueryObjects(lst, OBJCLASS_SPAWNPOINT, 1, 1, 0)) {
-						for (ObjectIt it = lst.begin(); it != lst.end(); it++) {
-							CSpawnPoint* O = smart_cast<CSpawnPoint*>(*it); R_ASSERT(O);
-							O->DetachObject();
-						}
+												ImGui::TableSetupColumn("Key", ImGuiTableColumnFlags_WidthFixed);					ImGui::TableSetupColumn("-", ImGuiTableColumnFlags_WidthFixed);													ImGui::TableSetupColumn("--", ImGuiTableColumnFlags_WidthFixed);												ImGui::TableSetupColumn("--", ImGuiTableColumnFlags_WidthStretch);
+				XRay::ImGui::TableNextRow();	XRay::ImGui::TableNextColumn();	XRay::ImGui::TextFramed("Select by Current: ");		XRay::ImGui::TableNextColumn();		if (XRay::ImGui::Button(" +", { 24.f, 0})) { SelByRefObject(true); }		XRay::ImGui::TableNextColumn();		if (XRay::ImGui::Button(" -", { 24.f, 0})) { SelByRefObject(false); }
+				XRay::ImGui::TableNextRow();	XRay::ImGui::TableNextColumn();	XRay::ImGui::TextFramed("Select by Selected: ");	XRay::ImGui::TableNextColumn();		if (XRay::ImGui::Button("=%", { 24.f, 0})) { MultiSelByRefObject(true); }	XRay::ImGui::TableNextColumn();		if (XRay::ImGui::Button("+%", { 24.f, 0})) { MultiSelByRefObject(false); }	XRay::ImGui::TableNextColumn();		ImGui::SetNextItemWidth(-TableRowHeight); ImGui::DragFloat("%", &m_selPercent, 1, 0, 100, "%.1f");
+				XRay::ImGui::EndTable();
+			}
+
+			XRay::ImGui::EndExpand();
+		}
+
+		ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
+		if (XRay::ImGui::BeginExpand("Commands"))
+		{
+			float size = (ImGui::GetContentRegionAvail().x - ItemSpacingX) / 2;
+			if (XRay::ImGui::ToggleButton("Attach Object...", m_AttachObject, { size, 0 })) {
+				if (m_AttachObject) ExecCommand(COMMAND_CHANGE_ACTION, etaAdd);
+			}
+			ImGui::SameLine(0, ItemSpacingX);
+			if (ImGui::Button("Detach Object", { size, 0 })) {
+				ObjectList lst;
+				if (Scene->GetQueryObjects(lst, OBJCLASS_SPAWNPOINT, 1, 1, 0)) {
+					for (ObjectIt it = lst.begin(); it != lst.end(); it++) {
+						CSpawnPoint* O = smart_cast<CSpawnPoint*>(*it); R_ASSERT(O);
+						O->DetachObject();
 					}
 				}
-
 			}
+
+			XRay::ImGui::EndExpand();
 		}
-		ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
-		ImGui::TreePop();
+
+		ImGui::PopStyleVar(); // IndentSpacing
+
+		XRay::ImGui::EndDarkChild();
 	}
-	ImGui::Separator();
-	ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
 }
 
 void UISpawnTool::DrawObjectsList()

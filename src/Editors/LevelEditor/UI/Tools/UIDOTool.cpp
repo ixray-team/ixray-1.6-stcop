@@ -10,104 +10,83 @@ UIDOTool::~UIDOTool()
 
 void UIDOTool::Draw()
 {
-	ImGuiStyle& Style = ImGui::GetStyle();
+	float ItemSpacingX = ImGui::GetStyle().ItemSpacing.x;
 
-	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
-	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 2));
-	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(2, 2));
-
-	float fullWidth = ImGui::GetContentRegionAvail().x;
-	float buttonWidth = (fullWidth - Style.ItemSpacing.x) * 0.5f;
-
-	auto Button2 = [&](const char* label, std::function<void()> fn)
+	if (XRay::ImGui::BeginDarkChild("ObjectToolsBorder", { 0, 0 }, ImGuiChildFlags_AutoResizeY))
 	{
-		if (ImGui::Button(label, ImVec2(buttonWidth, 0)))
+		ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 0.f);
+
+		ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
+		if (XRay::ImGui::BeginExpand("Affect in D3D"))
 		{
-			fn();
+			float SizeX = (ImGui::GetContentRegionAvail().x - ItemSpacingX) / 2;
+
+			if (XRay::ImGui::Button("First Init", { SizeX, 0 }))
+				if (DM->Initialize()) Scene->UndoSave();
+			ImGui::SameLine(0, ItemSpacingX);
+			if (XRay::ImGui::Button("Reinit All", { SizeX, 0 }))
+				if (DM->Reinitialize()) Scene->UndoSave();
+
+			if (XRay::ImGui::Button("Reinit Objects Only", { SizeX, 0 }))
+				if (DM->UpdateObjects(true, false)) Scene->UndoSave();
+			ImGui::SameLine(0, ItemSpacingX);
+			if (XRay::ImGui::Button("Reinit Selected Slot Objects", { SizeX, 0 }))
+				if (DM->UpdateObjects(false, true)) Scene->UndoSave();
+
+			XRay::ImGui::Separator();
+
+			if (XRay::ImGui::Button("Clear Slots", { SizeX, 0 }))
+				if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to reset slots?") == mrYes)
+				{
+					DM->ClearSlots();
+					Scene->UndoSave();
+				}
+			ImGui::SameLine(0, ItemSpacingX);
+			if (XRay::ImGui::Button("Clear Details", { SizeX, 0 }))
+				if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to clear details?") == mrYes)
+				{
+					ExecCommand(COMMAND_UPDATE_PROPERTIES);
+					DM->Clear();
+					Scene->UndoSave();
+				}
+
+			XRay::ImGui::Separator();
+
+			if (XRay::ImGui::Button("Object List", { SizeX, 0 }))
+			{
+				m_DOShuffle = true;
+				UIDOShuffle::Show(DM);
+			}
+			ImGui::SameLine(0, ItemSpacingX);
+			if (XRay::ImGui::Button("Update Renderer", { SizeX, 0 }))
+			{
+				DM->InvalidateCache();
+				Scene->UndoSave();
+			}
+
+			XRay::ImGui::Separator();
+
+			XRay::ImGui::TextFramed("Base Texture");
+			ImGui::SameLine(0, ItemSpacingX);
+
+			shared_str StrBaseTextureName = "<none>";
+			if (DM->m_Base.name.size() > 0)
+			{
+				StrBaseTextureName = DM->m_Base.name;
+			}
+
+			if (XRay::ImGui::Button(*StrBaseTextureName, ImVec2(-0.01, 0)))
+			{
+				UIChooseForm::SelectItem(smTexture, 1);
+				IsChooseDraw = true;
+			}
+
+			XRay::ImGui::EndExpand();
 		}
-	};
 
-	Button2("First Init", [&]
-	{
-		if (DM->Initialize())
-			Scene->UndoSave();
-	});
+		ImGui::PopStyleVar(); // IndentSpacing
 
-	ImGui::SameLine();
-
-	Button2("Reinit All", [&]
-	{
-		if (DM->Reinitialize())
-			Scene->UndoSave();
-	});
-
-	Button2("Reinit Objects Only", [&]
-	{
-		if (DM->UpdateObjects(true, false))
-			Scene->UndoSave();
-	});
-
-	ImGui::SameLine();
-
-	Button2("Reinit Selected Slot Objects", [&]
-	{
-		if (DM->UpdateObjects(false, true))
-			Scene->UndoSave();
-	});
-
-	ImGui::Separator();
-
-	Button2("Clear Slots", [&]
-	{
-		if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to reset slots?") == mrYes)
-		{
-			DM->ClearSlots();
-			Scene->UndoSave();
-		}
-	});
-
-	ImGui::SameLine();
-
-	Button2("Clear Details", [&]
-	{
-		if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to clear details?") == mrYes)
-		{
-			ExecCommand(COMMAND_UPDATE_PROPERTIES);
-			DM->Clear();
-			Scene->UndoSave();
-		}
-	});
-
-	ImGui::Separator();
-
-	Button2("Object List", [&]
-	{
-		m_DOShuffle = true;
-		UIDOShuffle::Show(DM);
-	});
-
-	ImGui::SameLine();
-
-	Button2("Update Renderer", [&]
-	{
-		DM->InvalidateCache();
-		Scene->UndoSave();
-	});
-
-	ImGui::Separator();
-
-	ImGui::Text("Base Texture");
-
-	shared_str StrBaseTextureName = "<none>";
-	if (DM->m_Base.name.size() > 0)
-	{
-		StrBaseTextureName = DM->m_Base.name;
-	}
-
-	if (ImGui::Button(*StrBaseTextureName, ImVec2(-1, 0)))
-	{
-		UIChooseForm::SelectItem(smTexture, 1);
-		IsChooseDraw = true;
+		XRay::ImGui::EndDarkChild();
 	}
 
 	if (IsChooseDraw)
@@ -129,8 +108,6 @@ void UIDOTool::Draw()
 	}
 
 	HandleDragDrop();
-
-	ImGui::PopStyleVar(3);
 }
 
 void UIDOTool::HandleDragDrop()
