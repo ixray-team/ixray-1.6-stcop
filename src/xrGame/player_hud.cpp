@@ -600,6 +600,10 @@ void weapon_inertion::Load(const shared_str& section, bool is_16x9)
 	aim_move_crouch_factor = READ_IF_EXISTS(pSettings, r_float, section, "hud_aim_move_crouch_factor", 1.0f);
 	aim_move_slow_factor = READ_IF_EXISTS(pSettings, r_float, section, "hud_aim_move_slow_factor", 1.0f);
 
+	aim_move_slow_crouch_factor = READ_IF_EXISTS(pSettings, r_float, section, "hud_move_slow_crouch_factor", 1.0f);
+	aim_move_crouch_factor = READ_IF_EXISTS(pSettings, r_float, section, "hud_move_crouch_factor", 1.0f);
+	aim_move_slow_factor = READ_IF_EXISTS(pSettings, r_float, section, "hud_move_slow_factor", 1.0f);
+
 	no_other_hud_moving_while_suicide = READ_IF_EXISTS(pSettings, r_bool, section, "no_other_hud_moving_while_suicide", false);
 
 	to_crouch_time = floor(READ_IF_EXISTS(pSettings, r_float, section, "to_crouch_time", 0.0f) * 1000.f);
@@ -924,15 +928,15 @@ void attachable_hud_item::GetCurrentTargetOffset(weapon_inertion& inertion_param
 
 	if ((real & mcCrouch) && (real & mcAccel))
 	{
-		koef = inertion_params.aim_move_slow_crouch_factor;
+		koef = inertion_params.move_slow_crouch_factor;
 	}
 	else if (real & mcCrouch)
 	{
-		koef = inertion_params.aim_move_crouch_factor;
+		koef = inertion_params.move_crouch_factor;
 	}
 	else if (real & mcAccel)
 	{
-		koef = inertion_params.aim_move_slow_factor;
+		koef = inertion_params.move_slow_factor;
 	}
 
 	if (tocrouch_time_remains > 0)
@@ -1126,11 +1130,14 @@ void attachable_hud_item::UpdateInertion(u32 delta, CActor* actor)
 
 	float factor = 1.0f;
 
+	bool IsZooming = m_attach_place_idx == 1 && static_cast<CCustomDevice*>(m_parent_hud_item)->IsZoomed()
+		|| ((itm->WpnCanShoot() || itm->cast_weapon_binoculars() != nullptr) && (static_cast<CWeapon*>(itm)->IsZoomed() || static_cast<CWeapon*>(itm)->m_bIsAimStarted));
+
 	if (itm->GetState() == CHUDState::eHiding || det != nullptr && det->GetState() == CHUDState::eHiding)
 	{
 		factor = current_params.move_weaponhide_factor;
 	}
-	else if ((itm->WpnCanShoot() || smart_cast<CWeaponBinoculars*>(itm) != nullptr) && (static_cast<CWeapon*>(itm)->IsZoomed() || static_cast<CWeapon*>(itm)->m_bIsAimStarted))
+	else if (IsZooming)
 	{
 		GetCurrentTargetOffset_aim(current_params, targetpos, targetrot, factor, real);
 		factor = current_params.move_unzoom_factor;

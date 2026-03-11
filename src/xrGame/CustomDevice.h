@@ -85,6 +85,7 @@ public:
 	bool CanShooting(bool dry = false) const;
 	bool CanJammed() const;
 	bool CanLightMisfire() const;
+	bool IsZoomed() const { return m_bIsZoomed; }
 
 	virtual CCustomDevice* cast_custom_device() { return this; }
 
