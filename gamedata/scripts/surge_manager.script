@@ -9,12 +9,15 @@ local surge_shock_pp_eff 	= 1
 local earthquake_cam_eff 	= 2
 local sleep_cam_eff 		= 3
 local sleep_fade_pp_eff		= 4
+local earthquake_end_cam_eff 	= 90
 
 local START_MIN_SURGE_TIME 	= 2*60*60
 local START_MAX_SURGE_TIME 	= 4*60*60
 local MIN_SURGE_TIME 		= 12*60*60
 local MAX_SURGE_TIME 		= 24*60*60
 local prev_sec 				= 0
+
+local AFTERBLOW_TIME = 15
 
 local immuned_to_surge_squads = {
 						["monster_predatory_day"] 	= true,
@@ -52,6 +55,11 @@ function CSurgeManager:initialize()
 	self.inited_time = game.CTime()
 	self.last_surge_time = game.get_game_time()
 	self._delta = math.random(START_MIN_SURGE_TIME, START_MAX_SURGE_TIME) -- global minutes, время между выбросами
+
+	--Sin! - откатим время последнего выброса, дабы сразу после загрузки игры ПДА не начинал глючить
+	dt = game.CTime()
+	dt:setHMSms(2, 0, 0, 0)	 
+	self.last_surge_time:sub(dt);
 
 	self.count = 0
 	self.covers = {}
@@ -157,8 +165,46 @@ function CSurgeManager:update()
 		return
 	end
 	
+	self:ProcessDelayedKills()
+	
 	if not(self.started) then
 		local g_time = game.get_game_time()
+		local diff_sec = math.ceil(g_time:diffSec(self.last_surge_time)/level.get_time_factor())
+
+		if ( diff_sec < AFTERBLOW_TIME ) then
+			xr_sound.set_volume_sound_looped(db.actor:id(), "surge_earthquake_sound_looped", (AFTERBLOW_TIME-diff_sec)/AFTERBLOW_TIME )
+			xr_sound.set_volume_sound_looped(db.actor:id(), "blowout_rumble", (AFTERBLOW_TIME-diff_sec)/AFTERBLOW_TIME)
+
+			if (diff_sec < AFTERBLOW_TIME/3) then
+				level.electronics_reset()
+				level.electronics_break()
+				level.electronics_break()
+				level.electronics_break()
+			elseif (diff_sec < 2*AFTERBLOW_TIME/3) then
+				level.electronics_reset()
+				level.electronics_break()
+				level.electronics_break()
+			else
+				level.electronics_reset()
+				level.electronics_break()
+			end
+		else
+			level.electronics_reset()
+			xr_sound.stop_sound_looped(db.actor:id(), "blowout_rumble")
+			if xr_sound.is_played_sound_looped(db.actor:id(), "surge_earthquake_sound_looped") then
+				xr_sound.stop_sound_looped(db.actor:id(), "surge_earthquake_sound_looped")
+				if(level) then
+					if(level.name()=="zaton") then
+						xr_sound.set_sound_play(db.actor:id(), "zat_a2_stalker_barmen_after_surge")
+					elseif(level.name()=="jupiter") then
+						xr_sound.set_sound_play(db.actor:id(), "jup_a6_stalker_medik_after_surge")
+					elseif not has_alife_info("pri_b305_fifth_cam_end") then
+						xr_sound.set_sound_play(db.actor:id(), "pri_a17_kovalsky_after_surge")
+					end
+				end
+			end
+		end
+
 		if(self.time_forwarded) then
 			log("--->delta="..tostring(self._delta))
 			log("--->diffSec="..tostring(g_time:diffSec(self.last_surge_time)))
@@ -198,33 +244,39 @@ function CSurgeManager:update()
 			return
 		end
 		if(diff_sec>=self.surge_time) then
-			if(level) then
-				if(level.name()=="zaton") then
-					xr_sound.set_sound_play(db.actor:id(), "zat_a2_stalker_barmen_after_surge")
-				elseif(level.name()=="jupiter") then
-					xr_sound.set_sound_play(db.actor:id(), "jup_a6_stalker_medik_after_surge")
-				elseif not has_alife_info("pri_b305_fifth_cam_end") then
-					xr_sound.set_sound_play(db.actor:id(), "pri_a17_kovalsky_after_surge")
-				end
-			end
 			self:end_surge()
 		else
 			if(self.loaded) then
+				if (self.task_given) then
+					level.electronics_break()
+				end
 				if(self.blowout_sound)then
+					level.electronics_break()
 					xr_sound.play_sound_looped(db.actor:id(), "blowout_rumble")
 				end
 				if(self.effector_set) then
+					level.electronics_break()
 					level.add_pp_effector("surge_shock.ppe", surge_shock_pp_eff, true)
 				end
 				if(self.second_message_given) then
+					level.electronics_break()
 					xr_sound.play_sound_looped(db.actor:id(), "surge_earthquake_sound_looped")
 					level.add_cam_effector("camera_effects\\earthquake.anm", earthquake_cam_eff, true, "")
 				end
+				level.electronics_apply();
 				self.loaded = false
 			end
 			self:launch_rockets()
 			if(self.effector_set) then
-				level.set_pp_effector_factor(surge_shock_pp_eff, diff_sec/90, 0.1)
+				--[bug]баг - исправлено наличие постпроцесса в укрытии - Sin!, 26.11.2016
+				local cover = self:get_nearest_cover()
+				if(db.actor and db.actor:alive()) then
+					if (cover and db.storage[cover] and db.storage[cover].object:inside(db.actor:position())) then
+						level.set_pp_effector_factor(surge_shock_pp_eff, 0.001, 1);
+					else
+						level.set_pp_effector_factor(surge_shock_pp_eff, diff_sec/90, 1)
+					end
+				end
 			end
 			if(self.blowout_sound) then
 				xr_sound.set_volume_sound_looped(db.actor:id(), "blowout_rumble", diff_sec/180)
@@ -248,9 +300,10 @@ function CSurgeManager:update()
 				end
                 db.actor:hit(h)
 			end
-			if(diff_sec>=185) and not(self.ui_disabled) then
+			if(diff_sec>=175) and not(self.ui_disabled) then
 				self:kill_all_unhided()
 				self.ui_disabled = true
+				level.electronics_break()
 			elseif(diff_sec>=140) and not(self.second_message_given) then
 				if(level) then
 					if(level.name()=="zaton") then
@@ -263,15 +316,18 @@ function CSurgeManager:update()
 				end
 				xr_sound.play_sound_looped(db.actor:id(), "surge_earthquake_sound_looped")
 				level.add_cam_effector("camera_effects\\earthquake.anm", earthquake_cam_eff, true, "")
+				level.electronics_break()
 				self.second_message_given = true
 			elseif(diff_sec>=100) and not(self.effector_set) then
 				level.add_pp_effector("surge_shock.ppe", surge_shock_pp_eff, true)
 --				level.set_pp_effector_factor(surge_shock_pp_eff, 0, 10)
+				level.electronics_break()
 				self.effector_set = true
 			elseif(diff_sec>=35) and not(self.blowout_sound)then
 				xr_sound.set_sound_play(db.actor:id(), "blowout_begin")
 				xr_sound.play_sound_looped(db.actor:id(), "blowout_rumble")
 				xr_sound.set_volume_sound_looped(db.actor:id(), "blowout_rumble", 0.25)
+				level.electronics_break()
 				self.blowout_sound = true
 			elseif(diff_sec>=0) and not(self.task_given)then
 				if(level) then
@@ -285,6 +341,7 @@ function CSurgeManager:update()
 				end
 				level.set_weather_fx("fx_surge_day_3")
 				self:give_surge_hide_task()
+				level.electronics_break()
 				self.task_given = true
 			end
 		end
@@ -378,16 +435,19 @@ function CSurgeManager:end_surge(manual)
 	self.surge_task_sect 	= ""
 	self.task_given 		= false
 
-	if(self.effector_set) then
-		xr_sound.stop_sound_looped(db.actor:id(), "blowout_rumble")
-	end
-	if(self.second_message_given) then
-		xr_sound.stop_sound_looped(db.actor:id(), "surge_earthquake_sound_looped")
-	end
+	-- Теперь звук затухает еще некоторое время. Sin!, 11.12.16
+	--if(self.effector_set) then
+	--	xr_sound.stop_sound_looped(db.actor:id(), "blowout_rumble")
+	--end
+	--if(self.second_message_given) then
+		--xr_sound.stop_sound_looped(db.actor:id(), "surge_earthquake_sound_looped")
+	--end
+
 	level.remove_pp_effector(surge_shock_pp_eff)
 	level.remove_cam_effector(earthquake_cam_eff)
+	level.add_cam_effector("camera_effects\\earthquake_end.anm", earthquake_end_cam_eff, false, "")
 
-	if(manual or (self.time_forwarded and level_weathers.get_weather_manager().weather_fx)) then
+	if(manual or (self.time_forwarded and level_weathers.get_weather_manager():get_weather_fx())) then
 		level.stop_weather_fx()
 --		level_weathers.get_weather_manager():select_weather(true)
 		level_weathers.get_weather_manager():forced_weather_change()
@@ -505,6 +565,51 @@ function check_squad_smart_props(squad_id)
 	return false	-- can't delete squad in his smart if squad is in cover
 end
 
+local ids_to_kill = {}
+local last_kills_processing_time = 0
+
+function CSurgeManager:DelayedKill(who, is_online)
+	if is_online then
+		table.insert(ids_to_kill, who:id())
+	else
+		table.insert(ids_to_kill, who.id) 
+	end
+end
+
+function CSurgeManager:ProcessDelayedKills()
+	local MAX_KILLS_PER_ONE_ITERATION = 4
+	local PERIOD = 300
+	
+	local now = device():time_global()
+	if now - last_kills_processing_time < PERIOD then
+		return
+	end
+
+	local kills = 0
+	for i=#ids_to_kill, 1, -1 do
+		local id = ids_to_kill[i]
+		
+		local cl_obj = level.object_by_id(id)
+		if cl_obj ~= nil then 
+			cl_obj:kill(cl_obj)
+			kills = kills + 1
+		else
+			local srv_obj = alife():object(id)
+			if srv_obj ~= nil then
+				srv_obj:kill()
+				kills = kills + 1
+			end
+		end
+		
+		table.remove(ids_to_kill, i)
+
+		if kills > MAX_KILLS_PER_ONE_ITERATION then
+			break
+		end
+	end
+	last_kills_processing_time = device():time_global()
+end
+
 function CSurgeManager:kill_all_unhided()
 	local h = hit()
 	h.type = hit.fire_wound
@@ -525,7 +630,8 @@ function CSurgeManager:kill_all_unhided()
 	local board = sim_board.get_sim_board()
 	for k,v in pairs(board.squads) do
 		local squad = v
-		if(check_squad_level(squad.id)) then
+		--[bug] Оптимизация - во избежание переходов онлайн/оффлайн  и лагов убиваем только те сквады, которые в оффлайне (решение подсмотрено в неофициальном 1.6.03)
+		if( (squad~=nil) and (squad:clsid()==clsid.online_offline_group_s) and (squad.online) and check_squad_level(squad.id)) then
 			if(check_squad_community_and_story_id(squad.id)) then
 				local squad_npcs = get_squad_members(squad.id)
 				for kk,vv in pairs(squad_npcs) do
@@ -535,9 +641,9 @@ function CSurgeManager:kill_all_unhided()
 							printf("Releasing npc [%s] from squad [%s] because of surge!",obj:name(), squad:name())
 							local cl_obj = level.object_by_id(obj.id)
 							if cl_obj ~= nil then
-								cl_obj:kill(cl_obj)
+								self:DelayedKill(cl_obj, true)
 							else
-								obj:kill()
+								self:DelayedKill(obj, false)
 							end
 						else
 							local release = true
@@ -551,9 +657,9 @@ function CSurgeManager:kill_all_unhided()
 								printf("Releasing npc [%s] from squad [%s] because of surge!",obj:name(), squad:name())
 								local cl_obj = level.object_by_id(obj.id)
 								if cl_obj ~= nil then
-									cl_obj:kill(cl_obj)
+									self:DelayedKill(cl_obj, true)
 								else
-									obj:kill()
+									self:DelayedKill(obj, false)
 								end
 							end
 						end
@@ -565,27 +671,18 @@ function CSurgeManager:kill_all_unhided()
 
 	local cover = self:get_nearest_cover()
 	if(db.actor and db.actor:alive()) then
+		--[bug]баг - исправлено повторное проигрывание анимы камеры после принятия во время выброса анабиотика - Sin!, 01.10.2015
 		if not(cover and db.storage[cover] and db.storage[cover].object:inside(db.actor:position())) then
 			if has_alife_info("anabiotic_in_process") then
 				local counter_name = "actor_marked_by_zone_cnt"
 				local cnt_value = xr_logic.pstor_retrieve(db.actor, counter_name, 0)
 				xr_logic.pstor_store(db.actor, counter_name, cnt_value + 1)
-			end
---[[
-			local hud = get_hud()
-			hud:HideActorMenu()
-			hud:HidePdaMenu()
-			db.actor:stop_talk()
-			level.disable_input()
-			level.hide_indicators_safe()
-			db.actor:hide_weapon()
-]]--
-			xr_effects.disable_ui_only(db.actor, nil)
-			if(xr_logic.pick_section_from_condlist(get_story_object("actor"), nil, self.survive)~="true") then
+			elseif(xr_logic.pick_section_from_condlist(get_story_object("actor"), nil, self.survive)~="true") then
 				self:kill_all_unhided_after_actor_death()
 				db.actor:kill(db.actor)
 				return
 			else
+				xr_effects.disable_ui_only(db.actor, nil)
 				level.add_cam_effector("camera_effects\\surge_02.anm", sleep_cam_eff, false, "surge_manager.surge_callback")
 				level.add_pp_effector("surge_fade.ppe", sleep_fade_pp_eff, false)
 				db.actor.health = db.actor.health-0.05
@@ -598,7 +695,8 @@ function CSurgeManager:kill_all_unhided_after_actor_death()
 	local board = sim_board.get_sim_board()
 	for k,v in pairs(board.squads) do
 		local squad = v
-		if(check_squad_level(squad.id)) then
+		--[bug] Оптимизация - во избежание переходов онлайн/оффлайн  и лагов убиваем только те сквады, которые в оффлайне (решение подсмотрено в неофициальном 1.6.03)
+		if((squad~=nil) and (squad:clsid()==clsid.online_offline_group_s) and (squad.online) and check_squad_level(squad.id)) then
 			if(check_squad_community(squad.id)) then
 				local squad_npcs = get_squad_members(squad.id)
 				for kk,vv in pairs(squad_npcs) do
@@ -615,9 +713,9 @@ function CSurgeManager:kill_all_unhided_after_actor_death()
 							printf("Releasing npc [%s] from squad [%s] after actors death because of surge!",obj:name(), squad:name())
 							local cl_obj = level.object_by_id(obj.id)
 							if cl_obj ~= nil then
-								cl_obj:kill(cl_obj)
+								self:DelayedKill(cl_obj, true)
 							else
-								obj:kill()
+								self:DelayedKill(obj, false)
 							end
 						end
 					end
