@@ -11,7 +11,7 @@ void CBlender_sslr::Compile(CBlender_Compile& C)
     switch (C.iElement)
     {
     case 0:
-        C.r_Pass("stub_fullscreen_triangle", "sslr_render", FALSE, FALSE, FALSE);
+        C.r_ComputePass("sslr_render");
 
         C.r_dx10Texture("s_position", r2_RT_P);
         C.r_dx10Texture("s_surface", r2_RT_S);
@@ -38,7 +38,7 @@ void CBlender_sslr::Compile(CBlender_Compile& C)
 
         break;
     case 1:
-        C.r_Pass("stub_fullscreen_triangle", "sslr_filter", FALSE, FALSE, FALSE);
+		C.r_ComputePass("sslr_filter");
 
         C.r_dx10Texture("s_position", r2_RT_P);
         C.r_dx10Texture("s_surface", r2_RT_S);
@@ -64,7 +64,7 @@ void CBlender_sslr::Compile(CBlender_Compile& C)
 
         break;
     case 2:
-        C.r_Pass("stub_fullscreen_triangle", "sslr_temporal", FALSE, FALSE, FALSE);
+		C.r_ComputePass("sslr_temporal");
         C.r_dx10Texture("s_position", r2_RT_P);
         C.r_dx10Texture("s_surface", r2_RT_S);
         C.r_dx10Texture("s_normal", r2_RT_N);
