@@ -13,7 +13,7 @@ float4 main(PSInputFullscreen I) : SV_Target
     float3 Light = s_accumulator.Load(int3(I.hpos.xy, 0)).xyz;
 
 #ifdef USE_R2_STATIC_SUN
-    Light += O.SSS * DirectLight(Ldynamic_color, Ldynamic_dir.xyz, O.Normal, O.View.xyz, O.Color, O.Metalness, O.Roughness, 0.04f);
+    Light += O.SSS * DirectLight(Ldynamic_color, Ldynamic_dir.xyz, O.Normal, O.View.xyz, O.Color, O.Metalness, O.Roughness, O.F0);
 #endif
 
     float Occ = O.AO * s_occ.SampleLevel(smp_rtlinear, I.texcoord.xy, 0.0f).x;
@@ -27,9 +27,9 @@ float4 main(PSInputFullscreen I) : SV_Target
 	#endif
 
 	float3 DiffuseIrradance = CompureDiffuseIrradance(O.Normal, O.Hemi) + L_ambient.xyz;	
-    float3 Ambient = AmbientLighting(DiffuseIrradance, SpecularIrradance, max(0.0, dot(O.Normal, -O.View.xyz)), O.Color, O.Metalness, O.Roughness, 0.04f);
+    float3 Ambient = AmbientLighting(DiffuseIrradance, SpecularIrradance, max(0.0, dot(O.Normal, -O.View.xyz)), O.Color, O.Metalness, O.Roughness, O.F0);
 #else
-    float3 Ambient = AmbientLighting(O.View, O.Normal, O.Color, O.Metalness, O.Roughness, O.Hemi, 0.04f);
+    float3 Ambient = AmbientLighting(O.View, O.Normal, O.Color, O.Metalness, O.Roughness, O.Hemi, O.F0);
 #endif
 
     float3 Color = Occ * Ambient + Light;
