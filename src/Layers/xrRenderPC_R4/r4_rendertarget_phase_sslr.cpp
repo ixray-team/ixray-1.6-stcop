@@ -6,6 +6,10 @@ void CRenderTarget::phase_sslr()
 {
 	GPU_EVENT(phase_sslr);
 
+	//groups
+	u32 tgroupsX = (RCache.get_width() + 7u) / 8u;
+	u32 tgroupsY = (RCache.get_height() + 7u) / 8u;
+
 	{
 		GPU_EVENT(sslr_render);
 
@@ -21,7 +25,7 @@ void CRenderTarget::phase_sslr()
 		RContext->CSSetUnorderedAccessViews(0, 2, uavs, nullptr);
 
 		//Dispatch
-		RCache.Compute(8, 8, 1);
+		RCache.Compute(tgroupsX, tgroupsY, 1);
 
 		//Unbind
 		RContext->CSSetUnorderedAccessViews(0, 2, uav_dummy, counts);
@@ -38,7 +42,7 @@ void CRenderTarget::phase_sslr()
 
 		RContext->CSSetUnorderedAccessViews(0, 1, &rt_sslr_temp->pUAView, nullptr);
 
-		RCache.Compute(8, 8, 1);
+		RCache.Compute(tgroupsX, tgroupsY, 1);
 
 		RContext->CSSetUnorderedAccessViews(0, 1, &uav_dummy, nullptr);
 		RContext->CSSetShaderResources(0, 16, srv_dummy);
@@ -54,7 +58,7 @@ void CRenderTarget::phase_sslr()
 
 		RContext->CSSetUnorderedAccessViews(0, 1, &rt_sslr->pUAView, nullptr);
 
-		RCache.Compute(8, 8, 1);
+		RCache.Compute(tgroupsX, tgroupsY, 1);
 
 		RContext->CSSetUnorderedAccessViews(0, 1, &uav_dummy, nullptr);
 		RContext->CSSetShaderResources(0, 16, srv_dummy);
