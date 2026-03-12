@@ -332,6 +332,12 @@ function actor_go_with_squad(actor, npc, dialog_id, phrase_id)
 	npc:stop_talk()
 	--get_console():execute("hud_crosshair 0")
 	--get_console():execute("hud_weapon 0")
+	
+	-- [bug] Фикс возможности увидеть момент телепорта - подсмотрено в 1.6.03 Unofficial
+	xr_effects.disable_actor_nightvision(nil,nil)
+	xr_effects.disable_actor_torch(nil,nil)
+
+	
 	level.disable_input()
 	level.hide_indicators_safe()
 	level.add_pp_effector("fade_in_out.ppe", 613, false)
@@ -490,6 +496,11 @@ function actor_travel_with_squad(actor, npc, dialog_id, phrase_id)
 	npc:stop_talk()
 	--get_console():execute("hud_crosshair 0")
 	--get_console():execute("hud_weapon 0")
+	
+	-- [bug] Фикс возможности увидеть момент телепорта - подсмотрено в 1.6.03 Unofficial
+	xr_effects.disable_actor_nightvision(nil,nil)
+	xr_effects.disable_actor_torch(nil,nil)
+	
 	level.disable_input()
 	level.hide_indicators_safe()
 	level.add_pp_effector("fade_in_out.ppe", 613, false)

@@ -54,7 +54,11 @@ function is_enemy(obj, enemy, st, not_check_sim)
 		-- враг не актер.
 		-- сталкер находится в зоне.
 		-- смарт в котором находится сталкер не в состоянии тревоги.
-	if db.actor and enemy and enemy:id() ~= db.actor:id() then
+	
+	if enemy:id() ~= db.actor:id()
+		--[bug] Фиксим баг с игнором монстров и зомбарей охранниками баз (подсмотрено в неофициальном 1.6.03)
+		and not IsMonster(enemy) and character_community(obj) ~= "zombied" and character_community(enemy) ~= "zombied"
+	then
 		for k,v in pairs (smarts_by_no_assault_zones) do
 			local zone = db.zone_by_name[k]
 			if zone and (utils.npc_in_zone(obj, zone) or utils.npc_in_zone(enemy, zone)) then
@@ -117,29 +121,31 @@ function action_process_enemy:enemy_callback( obj, enemy )
 		fighting_with_actor_npcs[obj:id()] = true
 	end
 
+	local MAX_ALARM_DISTANCE_SQR = 80*80
 	local is_obj_enemy = is_enemy( obj, enemy, self.st, false )
 	if is_obj_enemy == true then
 		local se_obj = alife():object(obj:id())
 		if se_obj and se_obj.m_smart_terrain_id ~= 65535 then
 			local smart_obj = alife():object(se_obj.m_smart_terrain_id)
-			smart_obj:set_alarm()
 
-			if db.actor and enemy and enemy:id() == db.actor:id() and smart_obj.base_on_actor_control ~= nil then
-				-- Fix start for detecting attacking of the base even when attacked npc is not near the base
-				local base_pos = db.zone_by_name[smart_obj.base_on_actor_control.noweap_zone]:position()
-				local distance = obj:position():distance_to(base_pos)
-				if distance < 100 then
+			--[bug] Фиксим объявление тревоги в лагере даже в том случае, когда мы нападаем на обитателй, ушедших достаточно далеко - подсмотрено в неофициальном 1.6.03
+			if smart_obj.position:distance_to_sqr(se_obj.position) < MAX_ALARM_DISTANCE_SQR then
+				smart_obj:set_alarm()
+				if enemy:id() == db.actor:id() and smart_obj.base_on_actor_control ~= nil then
 					smart_obj.base_on_actor_control:actor_attack()
 				end
-				-- Fix end for detecting attacking of the base even when attacked npc is not near the base
 			end
 		end
+
+		local MAX_REACTION_DISTANCE_SQR = 80*80
 		local se_enemy			= alife():object(enemy:id())
 		if se_obj and se_enemy then
 			local sim_obj_registry 	= simulation_objects.get_sim_obj_registry()
 			if 	se_obj.group_id ~= 65535 	and sim_obj_registry.objects[se_obj.group_id] ~= nil and
 				se_enemy.group_id ~= 65535 	and sim_obj_registry.objects[se_enemy.group_id] == nil and
-				se_obj.position:distance_to_sqr(se_enemy.position) > 900 then
+				--[bug] Фиксим игнор атак актора с дистанции более 30 метров (подсмотрено в неофициальном 1.6.03)
+				--[TODO] Учет глушителя?
+				se_obj.position:distance_to_sqr(se_enemy.position) > MAX_REACTION_DISTANCE_SQR then
 				return false
 			end
 		end
