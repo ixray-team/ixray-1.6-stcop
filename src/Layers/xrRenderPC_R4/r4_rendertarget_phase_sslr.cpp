@@ -8,37 +8,58 @@ void CRenderTarget::phase_sslr()
 
 	{
 		GPU_EVENT(sslr_render);
-		//Render the AO and view-z into new rendertarget
-		u_setrt(rt_sslr, rt_sslr_data, nullptr, nullptr);
-		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 
-		//Go go power rangers
-		RCache.set_Element(s_sslr->E0]);
-		RCache.set_Geometry(FSTriangleGeom);
-		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
+		//Dummy
+		ID3D11UnorderedAccessView* uav_dummy[2] = { nullptr, nullptr };
+		ID3D11ShaderResourceView* srv_dummy[16] = {};
+
+		//Shader
+		RCache.set_Element(s_sslr->E[0]);
+
+		//Bind UAVs
+		ID3D11UnorderedAccessView* uavs[] = { rt_sslr->pUAView, rt_sslr_data->pUAView };
+		RContext->CSSetUnorderedAccessViews(0, 2, uavs, nullptr);
+
+		//Dispatch
+		RCache.Compute(8, 8, 1);
+
+		//Unbind
+		RContext->CSSetUnorderedAccessViews(0, 2, uav_dummy, counts);
+		RContext->CSSetShaderResources(0, 16, srv_dummy);
 	}
 
 	{
 		GPU_EVENT(sslr_filter);
-		u_setrt(rt_sslr_temp, nullptr, nullptr, nullptr);
-		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 
-		//Go go power rangers
+		ID3D11UnorderedAccessView* uav_dummy = nullptr;
+		ID3D11ShaderResourceView* srv_dummy[16] = {};
+
 		RCache.set_Element(s_sslr->E[1]);
-		RCache.set_Geometry(FSTriangleGeom);
-		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
+
+		RContext->CSSetUnorderedAccessViews(0, 1, &rt_sslr_temp->pUAView, nullptr);
+
+		RCache.Compute(8, 8, 1);
+
+		RContext->CSSetUnorderedAccessViews(0, 1, &uav_dummy, nullptr);
+		RContext->CSSetShaderResources(0, 16, srv_dummy);
 	}
 
 	{
 		GPU_EVENT(sslr_temporal);
-		u_setrt(rt_sslr, nullptr, nullptr, nullptr);
-		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 
-		//Go go power rangers
+		ID3D11UnorderedAccessView* uav_dummy = nullptr;
+		ID3D11ShaderResourceView* srv_dummy[16] = {};
+
 		RCache.set_Element(s_sslr->E[2]);
-		RCache.set_Geometry(FSTriangleGeom);
-		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
+
+		RContext->CSSetUnorderedAccessViews(0, 1, &rt_sslr->pUAView, nullptr);
+
+		RCache.Compute(8, 8, 1);
+
+		RContext->CSSetUnorderedAccessViews(0, 1, &uav_dummy, nullptr);
+		RContext->CSSetShaderResources(0, 16, srv_dummy);
 	}
 
+	//LVutner: Meh.
 	GRHI->CopySurface(rt_sslr_old->pSurface, rt_sslr->pSurface);
 }

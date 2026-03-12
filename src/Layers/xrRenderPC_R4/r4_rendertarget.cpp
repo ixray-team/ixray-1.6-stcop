@@ -620,11 +620,11 @@ CRenderTarget::CRenderTarget()
 	{
 		if(RImplementation.o.deffered_reflecitons) 
 		{
-			rt_sslr_old.create(r2_RT_sslr_old, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT);
-			rt_sslr.create(r2_RT_sslr, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT);
+			rt_sslr_old.create(r2_RT_sslr_old, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);
+			rt_sslr.create(r2_RT_sslr, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);
 
-			rt_sslr_data.create(r2_RT_sslr_data, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT);
-			rt_sslr_temp.create(r2_RT_sslr_temp, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT);
+			rt_sslr_data.create(r2_RT_sslr_data, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);
+			rt_sslr_temp.create(r2_RT_sslr_temp, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);
 		}
 
 		if(RImplementation.o.offscreen_reflecitons)
