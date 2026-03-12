@@ -450,9 +450,9 @@ function motivator_binder:update(delta)
 		if object_alive then
 			self.st.state_mgr:update()
 			-- Апдейт торговли
-			if self.st.state_mgr.combat == false and
-				 self.st.state_mgr.alife == false --and self.st.state_mgr.planner:current_action_id() == self.st.state_mgr.operators["end"]
-			then
+			--[GUNSL] Фикс появления в продаже у сталкеров гитар, ПДА и прочей требухи при подходе к ним сзади (они в этот момент под self.st.state_mgr.alife и условие на апдейт трейдменеджера не проходит, из-за этого движок не вычитывает конфиги торговли) 
+			if self.object:is_talking() then
+			--[/GUNSL]
 				trade_manager.update(object)
 			end
 		else

@@ -151,15 +151,21 @@ function mob_walker:waypoint_callback(obj, action_type, index)
 		mob_state_mgr.set_state(self.object, db.actor, self.st.state)
 	end
 
+	-- [GUNS] Доработка - в случае одноточечного пути с заданным patrol_look нам не нужны никакие флаги, чтобы понять, что смотреть надо в указанную точку
+	local pt_chosen_idx = nil
 	local search_for = self.path_walk_info[index].flags
-	if search_for:get() == 0 then
+	if  (search_for:get() == 0) and (self.patrol_walk~=nil) and (self.patrol_look~=nil) and (self.patrol_walk:count()==1) and (self.patrol_look~=nil) and (self.patrol_look:count() > 0) then
+		pt_chosen_idx = 0
+	elseif search_for:get() == 0 then
 		-- TODO: запретить одноточечные пути без соответствующего path_look по аналогии с move_mgr
 		printf("_bp: no flags")
 		self:update_movement_state() -- идти дальше
 		return
+	else
+		pt_chosen_idx = move_mgr.choose_look_point(self.patrol_look, self.path_look_info, search_for)	
 	end
 
-	local pt_chosen_idx = move_mgr.choose_look_point(self.patrol_look, self.path_look_info, search_for)
+	
 	if pt_chosen_idx then
 		local suggested_wait_time = self.path_look_info[pt_chosen_idx]["t"]
 		if suggested_wait_time then

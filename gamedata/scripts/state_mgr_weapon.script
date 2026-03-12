@@ -346,5 +346,5 @@ function get_queue_params(npc, target, st)
 		npc:aim_time(npc:best_weapon(), db.storage[npc:id()].old_aim_time)
 		db.storage[npc:id()].old_aim_time = nil
 	end
-	return 3, 1000
+	return math.random(3, 8), 1000
 end
