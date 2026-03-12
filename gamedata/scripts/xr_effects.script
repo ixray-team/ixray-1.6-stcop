@@ -2718,7 +2718,9 @@ function oasis_heal()
 	if(db.actor.bleeding>0) then
 		db.actor.bleeding = d_bleeding
 	end
+	
 		db.actor.satiety = 0.01
+	db.actor.thirst = 0.01
 end
 
 --Функция принимает только одно значение, определяющее для какой групировки запускается. доступные значения [duty, freedom]
