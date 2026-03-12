@@ -145,6 +145,12 @@ float3 b_remap(float3 color, float2 threshold)
     return color * factor;
 }
 
+//[numthreads(64,1,1)]
+uint2 thread_remap_8x8(uint thread)
+{
+    return uint2((thread >> 1u) & 7u, (thread & 1u) | ((thread >> 3u) & 6u));
+}
+
 // Функции генерации случайных чисел [0, 1]
 // START
 
