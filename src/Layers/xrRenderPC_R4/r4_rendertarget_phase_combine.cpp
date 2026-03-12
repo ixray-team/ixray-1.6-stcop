@@ -309,7 +309,10 @@ void CRenderTarget::phase_combine()
 		GPU_EVENT(phase_new_luminance);
 		phase_new_luminance();
 	}
-	
+	{
+		GPU_EVENT(phase_new_dof);
+		phase_new_dof();
+	}
 
 
 	u_setrt(rt_Back_Buffer, 0, 0, 0);			// LDR RT
