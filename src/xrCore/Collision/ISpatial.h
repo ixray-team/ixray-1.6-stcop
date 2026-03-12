@@ -293,9 +293,17 @@ struct ISpatial_NODE
 	IC void _remove(ISpatialShared S)
 	{
 		S->spatial.node_ptr = nullptr;
-		auto it = std::find(items.begin(), items.end(), S);
-		VERIFY(it != items.end());
-		items.erase(it);
+
+		for (size_t i = 0; i < items.size(); ++i)
+		{
+			if (items[i] == S)
+			{
+				if (i != items.size() - 1)
+					items[i] = items.back();
+				items.pop_back();
+				break;
+			}
+		}
 	}
 
 	IC bool _empty() const
