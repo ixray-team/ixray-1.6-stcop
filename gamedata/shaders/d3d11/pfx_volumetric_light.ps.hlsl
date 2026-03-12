@@ -12,8 +12,11 @@ float4 main(PSInput s) : SV_Target
 	uint2 d = uint2(s.hpos.xy);
 	uint m = (d.x ^ d.y) << 1u;
 
-	float n = float((m & 4u | d.y & 2u) >> 1u | (m & 2u | d.y & 1u) << 2u) * .0625;
+	//float n = float((m & 4u | d.y & 2u) >> 1u | (m & 2u | d.y & 1u) << 2u) * .0625;
+    float n = blue_noise.Load(uint4(d % 128, uint(m_taa_jitter.w) % 32, 0)).x; // bluenoise with slices
 	float2 f = s.hpos2d.xy / s.hpos2d.w * float2(.5,-.5) + .5;
+
+    
 
 	float u = s_position.SampleLevel(smp_nofilter,f,0.).x;
 	u = min(u,s.hpos.z);
@@ -40,5 +43,5 @@ float4 main(PSInput s) : SV_Target
 
 	P *= length(z); P = 1. - exp(-P / 8);
 
-	return float4(PushGamma(P * Ldynamic_color.xyz),0.);
+	return float4(PushGamma(P) * Ldynamic_color.xyz,0.);
 }

@@ -87,6 +87,13 @@
 #define		r2_RT_lumD			"$user$lum_D"			// --- temp
 #define		r2_RT_lumPrev		"$user$lum_Prev"		// --- temp
 //===================================================================
+#define		r2_RT_dof_focus			"$user$dof_focus"		// --- 24 bit, 1x1, current focus distance
+#define		r2_RT_dof_focus_prev	"$user$dof_focus_prev"	// --- 24 bit, 1x1, previous frame focus distance
+#define		r2_RT_dof_coc			"$user$dof_coc"			// --- 16 bit, dim, circle of confusion
+#define		r2_RT_dof_coc_prev		"$user$dof_coc_prev"	// --- 16 bit, dim, previous frame circle of confusion
+#define 	r2_RT_dof_blur1			"$user$dof_blur1"		// --- 32 bit, dim, blur pass1
+#define 	r2_RT_dof_blur2			"$user$dof_blur2"		// --- 32 bit, dim, blur pass2
+#define 	r2_RT_dof_blur3			"$user$dof_blur3"		// --- 32 bit, dim, blur pass3
 
 #define		r2_RT_smap_surf		"$user$smap_surf"		// --- directional
 #define		r2_RT_smap_depth	"$user$smap_depth"		// ---directional
