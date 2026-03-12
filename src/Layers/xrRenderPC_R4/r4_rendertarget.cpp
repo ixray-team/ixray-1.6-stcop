@@ -18,6 +18,7 @@
 #include "blender_taa.h"
 #include "BlenderGasMask.h"
 #include "blender_nvg.h"
+#include "blender_sslr.h"
 
 #include "blender_bloom_downsample.h"
 #include "blender_bloom_upsample.h"
@@ -538,26 +539,6 @@ CRenderTarget::CRenderTarget()
 		rt_ui_pda.create(r_ui_pda, get_target_width(), get_target_height(), ERHI_FORMAT::R8G8B8A8_UNORM);
 	}
 
-	if(RImplementation.o.deffered_reflecitons) 
-	{
-		rt_sslr_old.create(r2_RT_sslr_old, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT);
-		rt_sslr.create(r2_RT_sslr, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT);
-
-		rt_sslr_data.create(r2_RT_sslr_data, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT);
-		rt_sslr_temp.create(r2_RT_sslr_temp, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT);
-	}
-
-	if(RImplementation.o.offscreen_reflecitons) {
-		u32 RefSize = 256;
-		auto flags = CRT::CRTCreationFlags::MIPPED_RT_FLAG;
-
-		// TODO: Optimize memory using
-		rt_Reflection.create(r2_RT_env, RefSize, ERHI_FORMAT::R16G16B16A16_FLOAT, flags);
-		rt_Reflection_temp.create(r2_RT_env_temp, RefSize, ERHI_FORMAT::R16G16B16A16_FLOAT, flags);
-
-		rt_Depth.create(r2_RT_env_depth, RefSize, RefSize, ERHI_FORMAT::R24G8_TYPELESS);
-	}
-
 	rt_upscaled_depth.create(r2_RT_upscaled_depth, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16_FLOAT);
 	rt_upscaled_depth_old.create(r2_RT_upscaled_depth_old, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16_FLOAT);
 
@@ -633,6 +614,33 @@ CRenderTarget::CRenderTarget()
 	{
 		b_nvg = new CBlender_nvg();
 		s_nvg.create(b_nvg);
+	}
+
+	//SSLR
+	{
+		if(RImplementation.o.deffered_reflecitons) 
+		{
+			rt_sslr_old.create(r2_RT_sslr_old, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT);
+			rt_sslr.create(r2_RT_sslr, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT);
+
+			rt_sslr_data.create(r2_RT_sslr_data, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT);
+			rt_sslr_temp.create(r2_RT_sslr_temp, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT);
+		}
+
+		if(RImplementation.o.offscreen_reflecitons)
+		{
+			u32 RefSize = 256;
+			auto flags = CRT::CRTCreationFlags::MIPPED_RT_FLAG;
+
+			// TODO: Optimize memory using
+			rt_Reflection.create(r2_RT_env, RefSize, ERHI_FORMAT::R16G16B16A16_FLOAT, flags);
+			rt_Reflection_temp.create(r2_RT_env_temp, RefSize, ERHI_FORMAT::R16G16B16A16_FLOAT, flags);
+
+			rt_Depth.create(r2_RT_env_depth, RefSize, RefSize, ERHI_FORMAT::R24G8_TYPELESS);
+		}
+
+		b_sslr = new CBlender_sslr();
+		s_sslr.create(b_sslr);
 	}
 
 	// OCCLUSION
@@ -1130,6 +1138,7 @@ CRenderTarget::~CRenderTarget	()
 	xr_delete(b_bloom_downsample);
 	xr_delete(b_bloom_upsample);
 	xr_delete(b_new_adaptation);
+	xr_delete(b_sslr);
 
 	g_Fsr2Wrapper.Destroy();
 	g_DLSSWrapper.Destroy();
