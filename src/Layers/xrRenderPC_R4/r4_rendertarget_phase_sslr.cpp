@@ -17,18 +17,24 @@ void CRenderTarget::phase_sslr()
 		ID3D11UnorderedAccessView* uav_dummy[2] = { nullptr, nullptr };
 		ID3D11ShaderResourceView* srv_dummy[16] = {};
 
-		//Shader
-		RCache.set_Element(s_sslr->E[0]);
+		//Shader setup... can't use set_element because of set_PS bullshit
+	    ShaderElement* S;
+        S = (&*(s_sslr->E[0]));
+        SPass& P = *(S->passes[0]);
+        RCache.set_States(P.state);
+        RCache.set_Constants(P.constants);
+        RCache.set_Textures(P.T);
+        RCache.set_CS(P.cs);
 
-		//Bind UAVs
-		ID3D11UnorderedAccessView* uavs[] = { rt_sslr->pUAView, rt_sslr_data->pUAView };
-		RContext->CSSetUnorderedAccessViews(0, 2, uavs, nullptr);
+		//Bind UAVs... using RHI.
+		GRHI->SetUnorderedAccessViews(rt_sslr->pUAView, 0);
+		GRHI->SetUnorderedAccessViews(rt_sslr_data->pUAView, 1);
 
 		//Dispatch
 		RCache.Compute(tgroupsX, tgroupsY, 1);
 
-		//Unbind
-		RContext->CSSetUnorderedAccessViews(0, 2, uav_dummy, counts);
+		//Unbind - is it right for this whole RHI thing? 
+		RContext->CSSetUnorderedAccessViews(0, 2, uav_dummy, nullptr);
 		RContext->CSSetShaderResources(0, 16, srv_dummy);
 	}
 
@@ -37,10 +43,17 @@ void CRenderTarget::phase_sslr()
 
 		ID3D11UnorderedAccessView* uav_dummy = nullptr;
 		ID3D11ShaderResourceView* srv_dummy[16] = {};
+		ID3D11UnorderedAccessView* huj = reinterpret_cast<ID3D11UnorderedAccessView*>(rt_sslr_temp->pUAView);
 
-		RCache.set_Element(s_sslr->E[1]);
+	    ShaderElement* S;
+        S = (&*(s_sslr->E[1]));
+        SPass& P = *(S->passes[0]);
+        RCache.set_States(P.state);
+        RCache.set_Constants(P.constants);
+        RCache.set_Textures(P.T);
+        RCache.set_CS(P.cs);
 
-		RContext->CSSetUnorderedAccessViews(0, 1, &rt_sslr_temp->pUAView, nullptr);
+		GRHI->SetUnorderedAccessViews(rt_sslr_temp->pUAView, 0);
 
 		RCache.Compute(tgroupsX, tgroupsY, 1);
 
@@ -54,9 +67,15 @@ void CRenderTarget::phase_sslr()
 		ID3D11UnorderedAccessView* uav_dummy = nullptr;
 		ID3D11ShaderResourceView* srv_dummy[16] = {};
 
-		RCache.set_Element(s_sslr->E[2]);
+	    ShaderElement* S;
+        S = (&*(s_sslr->E[2]));
+        SPass& P = *(S->passes[0]);
+        RCache.set_States(P.state);
+        RCache.set_Constants(P.constants);
+        RCache.set_Textures(P.T);
+        RCache.set_CS(P.cs);
 
-		RContext->CSSetUnorderedAccessViews(0, 1, &rt_sslr->pUAView, nullptr);
+		GRHI->SetUnorderedAccessViews(rt_sslr->pUAView, 0);
 
 		RCache.Compute(tgroupsX, tgroupsY, 1);
 
