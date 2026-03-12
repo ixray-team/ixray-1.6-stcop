@@ -168,8 +168,8 @@ float		ps_r2_tonemap_middlegray	= 0.8f;				// r2-only
 // papa_doenitz: these are now used by the new tonemapping/adaptation/bloom code.
 bool		ps_r2_new_autoexposure		= false;			// use new autoexposure code (for auto exposure only, make it TRUE to use the new autoexposure code, or FALSE to use the old autoexposure code)
 float		ps_r2_autoexposure_key		= 0.18f;			// papa_doenitz - middlegray/key, default 0.18f, 0.148f for "unreal like"
-float		ps_r2_autoexposure_min		= -4.0f;			// exposure minimum, f-stop (for auto exposure only, make it higher if brightness is too low in bright areas)
-float		ps_r2_autoexposure_max		= 4.0f;				// exposure maximum, f-stop (for auto exposure only, make it lower if brightness is too high in lowlight areas)
+float		ps_r2_autoexposure_min		= -0.5f;			// exposure minimum, f-stop (for auto exposure only, make it higher if brightness is too low in bright areas)
+float		ps_r2_autoexposure_max		= 1.0f;				// exposure maximum, f-stop (for auto exposure only, make it lower if brightness is too high in lowlight areas)
 float       ps_r2_autoexposure_bias		= 0.0f;             // exposure bias, s-stop (for auto exposure only, make it higher if brightness is too low in general, or lower if brightness is too high in general)
 float		ps_r2_autoexposure_speed	= 1.f;				// autoexposure adaptation speed (for auto exposure only, make it higher if brightness changes too slowly, or lower if brightness changes too quickly)
 bool 		ps_r2_autoexposure_center_weight = false;		// autoexposure center weighted (for auto exposure only, make it TRUE if you want to give more weight to the center of the screen for auto exposure, or FALSE to give equal weight to the whole screen)
@@ -189,7 +189,7 @@ float 		ps_r2_tonemap_desaturation	= 0.15f;			// tonemap highlights desaturation
 bool		ps_r2_crossfeed				= false;			// rbg crossfeed enable
 float		ps_r2_tonemap_crossfeed		= 0.05f;			// rbg crossfeed (optional, 0.01 - 0.5)
 bool		ps_r2_vibrance				= false;			// tonemap vibrance enable
-float 		ps_r2_tonemap_vibrance		= 0.15f;			// tonemap vibrance (optional, 0.0 - 1.0)
+float 		ps_r2_tonemap_vibrance		= 0.05f;			// tonemap vibrance (optional, 0.0 - 1.0)
 // new tonemapping/adaptation/bloom end
 float		ps_r2_tonemap_adaptation	= 3.f;				// r2-only
 float		ps_r2_tonemap_low_lum		= 0.01f;			// r2-only
@@ -797,8 +797,8 @@ void		xrRender_initconsole	()
 	CMD2(CCC_Boolean, "r2_vibrance", &ps_r2_vibrance);
 	CMD4(CCC_Float, "r2_tonemap_compression", &ps_r2_tonemap_compression, 0.0f, 10.0f);
 	CMD4(CCC_Float, "r2_tonemap_desaturation", &ps_r2_tonemap_desaturation, 0.0f, 1.0f);
-	CMD4(CCC_Float, "r2_tonemap_vibrance", &ps_r2_tonemap_vibrance, 0.0f, 1.0f);
-	CMD4(CCC_Float, "r2_tonemap_crossfeed", &ps_r2_tonemap_crossfeed, 0.0f, 1.0f);
+	CMD4(CCC_Float, "r2_tonemap_vibrance", &ps_r2_tonemap_vibrance, -1.0f, 1.0f);
+	CMD4(CCC_Float, "r2_tonemap_crossfeed", &ps_r2_tonemap_crossfeed, 0.0f, 0.9f);
 	// end of new tonemapping/bloom/autoexposure settings
 
 
