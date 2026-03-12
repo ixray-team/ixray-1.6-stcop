@@ -48,6 +48,7 @@ public:
 	IBlender*					b_taa;
 	IBlender*					b_gamma;
 	IBlender*					b_nvg;
+	IBlender*					b_sslr;
 
 	//============== new bloom and lum ============
 	IBlender*					b_bloom_downsample;
@@ -177,6 +178,7 @@ private:
 	ref_shader					s_puddles;
 	ref_shader					s_taa;
 	ref_shader					s_nvg;
+	ref_shader					s_sslr;
 
 	// For gamma correction in windowed mode
 	ref_shader					s_gamma;
