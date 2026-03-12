@@ -27,7 +27,7 @@ struct PSInput
 #endif
 
 // --- Medium/scattering tuning knobs ---
-static const float PHASE_G = 0.1f; // Schlick g (0 isotropic, higher = forward)
+static const float PHASE_G = 0.5f; // Schlick g (0 isotropic, higher = forward)
 static const float SCATTER_RATIO = 0.5f; // fraction of extinction that goes to scattering
 static const float ABSORB_TINT_STRENGTH = 0.5f; // 0 = gray absorption, 1 = tinted by fog_color
 
@@ -77,7 +77,7 @@ float4 main(PSInput I) : SV_Target
     float4 current = mul(m_shadow_sun[2], float4(PW, 1.f));
     float4 deltaS = mul(m_shadow_sun[2], float4(deltaW, 0.f));
 
-    float3 fogTint = (fog_color.rgb);
+    float3 fogTint = PushGamma(fog_color.rgb);
     fogTint /= max(max(fogTint.r, fogTint.g), fogTint.b + 1e-6f);
 
     float density = 0.1f * max(sun_shafts_intensity.x, 0.f);

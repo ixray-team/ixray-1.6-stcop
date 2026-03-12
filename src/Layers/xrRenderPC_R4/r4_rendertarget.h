@@ -55,6 +55,9 @@ public:
 	IBlender*					b_new_adaptation;
 	//=============================================
 
+	//============== new Depth of Field ==============
+	IBlender*					b_new_dof;
+
 #ifdef DEBUG
 	struct		dbg_line_t		{
 		Fvector	P0,P1;
@@ -129,7 +132,14 @@ public:
 	ref_rt						rt_LUM_Prev;		// 64bit, 1x1,		prev frame log-average in all components
 	//==================================================
 
-
+	//============== new Depth of Field ==============
+	ref_rt						rt_dof_focus;			// 24bit, 1x1,		current focus distance
+	ref_rt						rt_dof_focus_prev;		// 24bit, 1x1,		prev frame focus distance
+	ref_rt						rt_dof_coc;				// 16bit, dim,		circle of confusion
+	ref_rt						rt_dof_coc_prev;		// 16bit, dim,		circle of confusion
+	ref_rt						rt_dof_blur1;			// 32bit, dim,		blur pass1
+	ref_rt						rt_dof_blur2;			// 32bit, dim,		blur pass2
+	ref_rt						rt_dof_blur3;			// 32bit, dim,		blur pass3
 
 	// env
 	ref_texture				t_envmap_0		;	// env-0
@@ -238,6 +248,14 @@ private:
 	ref_shader					s_lum_downsample;
 	ref_shader					s_lum_calc;
 	//=====================================================
+
+	//============== new Depth of Field ==============
+	ref_shader					s_dof_focus;
+	ref_shader					s_dof_coc;
+	ref_shader					s_dof_blur1;
+	ref_shader					s_dof_blur2;
+	ref_shader					s_dof_blur3;
+	
 
 	// FX: ScreenQuad
 	ref_geom FSTriangleGeom;
@@ -393,6 +411,7 @@ public:
 	void						phase_bloom_downsample();
 	void						phase_bloom_upsample();
 	void						phase_new_luminance();
+	void						phase_new_dof();
 	//==========================================================
 
 
