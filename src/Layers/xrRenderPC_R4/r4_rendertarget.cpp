@@ -22,6 +22,7 @@
 #include "blender_bloom_downsample.h"
 #include "blender_bloom_upsample.h"
 #include "blender_new_adaptation.h"
+#include "blender_new_dof.h"
 
 #include "../xrRenderDX10/DX10 Rain/dx10RainBlender.h"
 #include "../xrRender/blender_fxaa.h"
@@ -759,13 +760,14 @@ CRenderTarget::CRenderTarget()
 	// New BLOOM and LUM
 	{
 		ERHI_FORMAT	fmt = ERHI_FORMAT::R11G11B10_FLOAT;
-		u32 BW_A = Device.TargetWidth / 2, BH_A = Device.TargetHeight / 2; // ок
-		u32 BW_B = BW_A / 2, BH_B = BH_A / 2;
-		u32 BW_C = BW_A / 4, BH_C = BH_A / 4;
-		u32 BW_D = BW_A / 8, BH_D = BH_A / 8;
-		u32 BW_E = BW_A / 16, BH_E = BH_A / 16;
-		u32 BW_F = BW_A / 32, BH_F = BH_A / 32;
-		u32 BW_G = BW_A / 64, BH_G = BH_A / 64;
+		u32 BW_G = Device.TargetWidth / 128, BH_G = Device.TargetHeight / 128; // ок
+		u32 BW_F = BW_G * 2, BH_F = BH_G * 2;
+		u32 BW_E = BW_F * 2, BH_E = BH_F * 2;
+		u32 BW_D = BW_E * 2, BH_D = BH_E * 2;
+		u32 BW_C = BW_D * 2, BH_C = BH_D * 2;
+		u32 BW_B = BW_C * 2, BH_B = BH_C * 2;
+		u32 BW_A = BW_B * 2, BH_A = BH_B * 2;
+
 		b_bloom_downsample = new CBlender_bloom_downsample();
 		b_bloom_upsample = new CBlender_bloom_upsample();
 		s_bloom_downsample.create(b_bloom_downsample);
@@ -804,7 +806,28 @@ CRenderTarget::CRenderTarget()
 		GRHI->ClearTarget(rt_LUM_D->pRT, ERTColor::Gray);
 		GRHI->ClearTarget(rt_LUM_Prev->pRT, ERTColor::Gray);
 	}
+	// new dof
+	
+	{
+		ERHI_FORMAT fmt = ERHI_FORMAT::R32_FLOAT;
+		u32 FW = 1, FH = 1;
+		rt_dof_focus.create(r2_RT_dof_focus, FW, FH, fmt);
+		rt_dof_focus_prev.create(r2_RT_dof_focus_prev, FW, FH, fmt);
 
+		GRHI->ClearTarget(rt_dof_focus->pRT, ERTColor::Gray);
+		GRHI->ClearTarget(rt_dof_focus_prev->pRT, ERTColor::Gray);
+		//fmt = ERHI_FORMAT::R16G16B16A16_FLOAT;
+		u32 CoCW = Device.TargetWidth, CoCH = Device.TargetHeight;
+		rt_dof_coc.create(r2_RT_dof_coc, CoCW, CoCH, fmt);
+		rt_dof_coc_prev.create(r2_RT_dof_coc_prev, CoCW, CoCH, fmt);
+
+		fmt = ERHI_FORMAT::R16G16B16A16_FLOAT;
+		rt_dof_blur1.create(r2_RT_dof_blur1, CoCW, CoCH, fmt);
+
+		b_new_dof = new CBlender_new_dof();
+
+		s_dof_coc.create(b_new_dof);
+	}
 
 	// HBAO
 	{

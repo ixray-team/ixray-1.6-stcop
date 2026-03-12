@@ -102,6 +102,7 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 		
 		C.r_dx10Texture("s_position", r2_RT_P);
 		C.r_dx10Texture("s_smap", r2_RT_smap_depth);
+		C.r_dx10Texture("blue_noise", "shaders\\blue_noise_3x3");
 		
 		C.r_dx10Sampler("smp_rtlinear");
 		C.r_dx10Sampler("smp_smap");
