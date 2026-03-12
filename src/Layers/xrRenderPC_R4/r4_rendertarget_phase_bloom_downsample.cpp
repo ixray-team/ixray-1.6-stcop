@@ -15,10 +15,16 @@ void CRenderTarget::phase_bloom_downsample()
 {
 	//u32 Offset = 0;
 	float rW, rH, W, H;
-	//constexpr u32 vertex_color = color_rgba(0, 0, 0, 255);
+	u32 BW_G = Device.TargetWidth / 128, BH_G = Device.TargetHeight / 128; // ок
+	u32 BW_F = BW_G * 2, BH_F = BH_G * 2;
+	u32 BW_E = BW_F * 2, BH_E = BH_F * 2;
+	u32 BW_D = BW_E * 2, BH_D = BH_E * 2;
+	u32 BW_C = BW_D * 2, BH_C = BH_D * 2;
+	u32 BW_B = BW_C * 2, BH_B = BH_C * 2;
+	u32 BW_A = BW_B * 2, BH_A = BH_B * 2;
 
-	W = float(Device.TargetWidth / 2.0);
-	H = float(Device.TargetHeight / 2.0);
+	W = BW_A;
+	H = BH_A;
 	rW = 1.0f / W;
 	rH = 1.0f / H;
 
@@ -37,8 +43,8 @@ void CRenderTarget::phase_bloom_downsample()
 
 	//==========================================================
 
-	W = float(Device.TargetWidth / 4.0);
-	H = float(Device.TargetHeight / 4.0);
+	W = BW_B;
+	H = BH_B;
 	rW = 1.0f / W;
 	rH = 1.0f / H;
 
@@ -57,8 +63,8 @@ void CRenderTarget::phase_bloom_downsample()
 
 	//==========================================================
 
-	W = float(Device.TargetWidth / 8.0);
-	H = float(Device.TargetHeight / 8.0);
+	W = BW_C;
+	H = BH_C;
 	rW = 1.0f / W;
 	rH = 1.0f / H;
 
@@ -77,8 +83,8 @@ void CRenderTarget::phase_bloom_downsample()
 
 	//==========================================================
 
-	W = float(Device.TargetWidth / 16.0);
-	H = float(Device.TargetHeight / 16.0);
+	W = BW_D;
+	H = BH_D;
 	rW = 1.0f / W;
 	rH = 1.0f / H;
 
@@ -97,8 +103,8 @@ void CRenderTarget::phase_bloom_downsample()
 
 	//==========================================================
 
-	W = float(Device.TargetWidth / 32.0);
-	H = float(Device.TargetHeight / 32.0);
+	W = BW_E;
+	H = BH_E;
 	rW = 1.0f / W;
 	rH = 1.0f / H;
 
@@ -117,8 +123,8 @@ void CRenderTarget::phase_bloom_downsample()
 
 	//==========================================================
 
-	W = float(Device.TargetWidth / 64.0);
-	H = float(Device.TargetHeight / 64.0);
+	W = BW_F;
+	H = BH_F;
 	rW = 1.0f / W;
 	rH = 1.0f / H;
 
@@ -137,8 +143,8 @@ void CRenderTarget::phase_bloom_downsample()
 
 	//==========================================================
 
-	W = float(Device.TargetWidth / 128.0);
-	H = float(Device.TargetHeight / 128.0);
+	W = BW_G;
+	H = BH_G;
 	rW = 1.0f / W;
 	rH = 1.0f / H;
 

@@ -144,7 +144,8 @@ void CRenderTarget::accum_spot(light* L)
 		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::FRONT);
 
 		// Constants
-		float	att_R = L->range * .95f;
+		//float	att_R = L->range * .95f;
+		float	att_R = L->range;
 		float	att_factor = 1.f / (att_R * att_R);
 		RCache.set_c("Ldynamic_pos", L_pos.x, L_pos.y, L_pos.z, att_factor);
 		RCache.set_c("Ldynamic_color", L_clr.x, L_clr.y, L_clr.z, L_spec);
@@ -299,7 +300,7 @@ void CRenderTarget::accum_volumetric(light* L) {
 		RCache.set_Element(shader->E[0]);
 
 		// Constants
-		float	att_R = L->m_volumetric_distance * L->range * .95f;
+		float	att_R = L->m_volumetric_distance * L->range;// *.95f;
 		float	att_factor = 1.f / (att_R * att_R);
 		RCache.set_c("Ldynamic_pos", L_pos.x, L_pos.y, L_pos.z, att_factor);
 		RCache.set_c("Ldynamic_color", L_clr.x, L_clr.y, L_clr.z, L_spec);
