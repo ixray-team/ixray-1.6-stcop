@@ -68,6 +68,11 @@ public:
 	xr_vector<dbg_line_t>										dbg_lines;
 	xr_vector<Fplane>												dbg_planes;
 #endif
+	
+	ref_rt						rt_sslr;
+	ref_rt						rt_sslr_temp;
+	ref_rt						rt_sslr_old;
+	ref_rt						rt_sslr_data;
 
 	// MRT-path
 	ref_rt						rt_Generic;
@@ -189,11 +194,6 @@ private:
 	// SMAA
 	ref_rt						rt_smaa_edgetex;
 	ref_rt						rt_smaa_blendtex;
-
-	ref_rt						rt_sslr;
-	ref_rt						rt_sslr_temp;
-	ref_rt						rt_sslr_old;
-	ref_rt						rt_sslr_data;
 
 	// SSAO
 	ref_rt						rt_ssao_temp;

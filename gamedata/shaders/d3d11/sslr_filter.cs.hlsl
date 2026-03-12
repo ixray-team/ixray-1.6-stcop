@@ -49,26 +49,33 @@ static const float2 Disk32_Normalized[32] = {
 	float2(0.895505f, -0.323214f),
 };
 
-float4 main(PSInputFullscreen I) : SV_Target
+RWTexture2D<float4> u_sslr_temp : register(u0);
+
+[numthreads(8, 8, 1)]
+void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV_GroupIndex)
 {
+	//LVutner: Making my life easier.
+	PSInputFullscreen I;
+	I.hpos.xy = float2(DTid.xy) + 0.5; //half-pix
+	I.hpos.zw = float2(0.0, 1.0);
+	I.texcoord = I.hpos.xy * pos_decompression_params2.zw;
+
     IXrayGbuffer O;
     GbufferUnpack(I.texcoord.xy, I.hpos.xy, O);
 
-	float4 SSLR = s_refl.SampleLevel(smp_nofilter, I.texcoord.xy, 0);
 	float isHUDRender = O.Depth < 0.02f ? 1.0f : 0.0f;
 	
 	if(O.Depth >= 1.0f)
-	{		
-		return 0.0f;
+	{
+		u_sslr_temp[DTid.xy] = (0.0).xxxx;
+		return;
 	}
-		
+
 	float3 ReflectPoint = GbufferGetPointRealUnjitter(I.texcoord.xy, O.Depth);
 	float3 View = normalize(ReflectPoint);
 	
 	float4 FinalColor = 0.0f;
 	float FinalWeight = 0.0;
-	
-    float NdotV = max(0.0f, dot(O.Normal, -View));
 
 	[unroll(NUM_SAMPLES)]
 	for(uint i = 0; i < NUM_SAMPLES; ++i)
@@ -86,13 +93,14 @@ float4 main(PSInputFullscreen I) : SV_Target
 		
 		float3 Half = normalize(Light + View);
 
-		float NdotL = max(0.0f, dot(O.Normal, -Light));
 		float NdotH = max(0.0f, dot(O.Normal, -Half));
 		
 		float D = DistributionGGX(NdotH, O.Roughness);
-		float G = NdotL * GeometrySmithD(NdotL, NdotV, O.Roughness);
+
+		//LVutner: it just works.
+		float SampleWeight = max(D * NdotH * SSLR.w, 1e-5);
 		
-		float SampleWeight = D * G * SSLR.w;
+		//HUD weight
 		SampleWeight *= 1.0f - abs(Color.w - isHUDRender);
 
 		Color.w = Length;
@@ -103,9 +111,8 @@ float4 main(PSInputFullscreen I) : SV_Target
 
 	FinalColor *= rcp(FinalWeight);
 	FinalColor.xyz = saturate(FinalColor.xyz);
-	
-	FinalColor.w += O.ViewDist;
-	
-	return FinalColor;
-}
 
+	FinalColor.w += O.ViewDist;
+
+	u_sslr_temp[DTid.xy] = FinalColor;
+}
