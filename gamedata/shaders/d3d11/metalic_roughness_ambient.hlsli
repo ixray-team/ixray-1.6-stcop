@@ -124,7 +124,7 @@ float3 CompureSpecularIrradance(float3 R, float3 Hemi, float Roughness)
 	SampleRef.xyz *= rcp(1.00001f - SampleRef.xyz);
 	
     float fog = saturate(SampleRef.w * fog_params.w + fog_params.x);
-	Irradance = lerp(PopGamma(SampleRef.xyz), Irradance * saturate(Hemi * 3.0f), fog);
+	Irradance = lerp((SampleRef.xyz), Irradance * saturate(Hemi * 3.0f), fog);
 #else
 	Irradance *= Hemi;
 #endif
@@ -134,8 +134,8 @@ float3 CompureSpecularIrradance(float3 R, float3 Hemi, float Roughness)
 
 float3 AmbientLighting(float3 DiffuseIrradance, float3 SpecularIrradance, float NdotV, float3 Color, float Metalness, float Roughness, float3 F0 = 0.04f)
 {
-	DiffuseIrradance = PushGamma(DiffuseIrradance);
-	SpecularIrradance = PushGamma(SpecularIrradance);
+	DiffuseIrradance = (DiffuseIrradance);
+	SpecularIrradance = (SpecularIrradance);
 
 	DiffuseIrradance *= (1.0f - Metalness) * Color;
 
