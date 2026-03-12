@@ -82,9 +82,11 @@ function play_sound_looped(npc_id, sound)
 		looped_sound[npc_id][sound] = snd_theme
 	end
 end
+
 function stop_sound_looped(npc_id, sound)
 	if sound then
-		if type(looped_sound[npc_id][sound]) ~= "string" then
+		--[bug] баг - не проверили looped_sound[npc_id] на nil. Исправлено 11.12.16. Sin!
+		if looped_sound[npc_id] and (type(looped_sound[npc_id][sound]) ~= "string") then
 					if looped_sound[npc_id][sound] and looped_sound[npc_id][sound]:is_playing(npc_id) then
 							printf("looped sound ["..tostring(sound).."] stop for obj [%s]",npc_id)
 							looped_sound[npc_id][sound]:stop()
@@ -102,6 +104,26 @@ function stop_sound_looped(npc_id, sound)
 					looped_sound[npc_id] = nil
 		end
 	end
+end
+
+-- Добавлена 07.03.17. Sin!
+function is_played_sound_looped(npc_id, sound)
+	if sound then
+		if looped_sound[npc_id] and (type(looped_sound[npc_id][sound]) ~= "string") then
+			if looped_sound[npc_id][sound] and looped_sound[npc_id][sound]:is_playing(npc_id) then
+				return true
+			end
+		end
+	else
+		if looped_sound[npc_id] then
+			for k,v in pairs(looped_sound[npc_id]) do
+				if v and type(v) ~= "string" and v:is_playing(npc_id) then
+					return true
+				end
+			end			
+		end
+	end
+	return false
 end
 
 function set_volume_sound_looped(npc_id, sound, level)

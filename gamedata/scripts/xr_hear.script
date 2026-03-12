@@ -10,6 +10,8 @@ local function get_sound_type(sound_type)
 			s_type = "WPN_hit"
 		elseif bit_and(sound_type, snd_type.weapon_reload) == snd_type.weapon_reload then
 			s_type = "WPN_reload"
+		elseif bit_and(sound_type, snd_type.ambient) == snd_type.ambient then
+			s_type = "WPN_torch"
 		end
 	elseif bit_and(sound_type, snd_type.item) == snd_type.item then
 		s_type = "ITM"
