@@ -14,7 +14,7 @@ function CTreasureManager:initialize()
 	for i=0,n-1 do
 		local result, id, value	= ini:r_line("list",i,"","")
 		if(ini:section_exist(id)) then
-			self.secrets[id] = {items = {}, given = false, empty = nil, refreshing = false, checked = false, to_find = 0}
+			self.secrets[id] = {items = {}, given = false, empty = nil, refreshing = false, checked = false, to_find = 0, spot = nil}
 					local items_count = ini:line_count(id)
 					local item_section = ""
 					for i=0,items_count-1 do
@@ -25,6 +25,10 @@ function CTreasureManager:initialize()
 				elseif(item_section=="refreshing") then
 									local parsed_condlist = xr_logic.parse_condlist(nil, "treasure_manager", "refreshing_cond", str)
 					self.secrets[id].refreshing = parsed_condlist
+				-- [GUNSLINGER mod]
+				elseif (item_section=="spot") then
+					self.secrets[id].spot = ini:r_string(id, "spot")
+				-- [/GUNSLINGER mod]
 				else
 									self.secrets[id].items[item_section] = {}
 									local tbl = utils.parse_spawns(str)
@@ -105,7 +109,13 @@ function CTreasureManager:update()
 		 	if(v.empty) then
 							local sect = xr_logic.pick_section_from_condlist(db.actor, nil, v.empty)
 							if(sect=="true") and not v.checked then
-									level.map_remove_object_spot(self.secret_restrs[k], "treasure")
+								-- [GUNSLINGER mod]
+									local spot_type = v.spot
+									if spot_type == nil then
+										spot_type = "treasure"
+									end	
+									level.map_remove_object_spot(self.secret_restrs[k], spot_type)
+								-- [/GUNSLINGER mod]
 									xr_statistic.inc_founded_secrets_counter()
 									v.empty = nil
 					v.checked = true
@@ -178,7 +188,15 @@ function CTreasureManager:give_treasure(treasure_id, spawn)
 	if(spawn) then
 		self:spawn_treasure(treasure_id)
 	end
-	level.map_add_object_spot_ser(self.secret_restrs[treasure_id], "treasure", "")
+	
+	-- [GUNSLINGER mod]
+	local spot_type = self.secrets[treasure_id].spot
+	if spot_type == nil then
+		spot_type = "treasure"
+	end	
+	level.map_add_object_spot_ser(self.secret_restrs[treasure_id], spot_type, "")
+	-- [/GUNSLINGER mod]
+	
 	self.secrets[treasure_id].given = true
 	news_manager.send_treasure(0)
 	printf("Give secret [%s]", treasure_id)
@@ -209,7 +227,13 @@ function CTreasureManager:on_item_take(obj_id)
 	if(treasure_id) then
 				self.secrets[treasure_id].to_find = self.secrets[treasure_id].to_find - 1
 		if(self.secrets[treasure_id].to_find==0) then
-			level.map_remove_object_spot(self.secret_restrs[treasure_id], "treasure")
+		    -- [GUNSLINGER mod]
+			local spot_type = self.secrets[treasure_id].spot
+			if spot_type == nil then
+				spot_type = "treasure"
+			end	
+			level.map_remove_object_spot(self.secret_restrs[treasure_id], spot_type)
+			-- [/GUNSLINGER mod]
 			xr_statistic.inc_founded_secrets_counter()
 			printf("Secret [%s] now is empty!", treasure_id)
 			self.secrets[treasure_id].checked = true
@@ -219,6 +243,12 @@ function CTreasureManager:on_item_take(obj_id)
 	end
 end
 
+-- [GUNSLINGER mod]
+function CTreasureManager:is_secret_item(obj_id)
+	local restr_id = self.items_from_secrets[obj_id]
+	return restr_id ~= nil
+end
+-- [/GUNSLINGER mod]
 function CTreasureManager:save(package)
 	set_save_marker(package, "save", false, "CTreasureManager")
 	package:w_bool(self.items_spawned)
