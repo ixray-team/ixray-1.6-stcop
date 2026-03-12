@@ -67,15 +67,26 @@ float4 median9(float4 a1, float4 a2, float4 a3, float4 a4, float4 a5, float4 a6,
 	return median5(a2, a4, a5, a7, a9);
 }
 
-float4 main(PSInputFullscreen I) : SV_Target
+RWTexture2D<float4> u_sslr : register(u0);
+
+[numthreads(8, 8, 1)]
+void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV_GroupIndex)
 {
+	//LVutner: Making my life easier.
+	PSInputFullscreen I;
+	I.hpos.xy = float2(DTid.xy) + 0.5; //half-pix
+	I.hpos.zw = float2(0.0, 1.0);
+	I.texcoord = I.hpos.xy * pos_decompression_params2.zw;
+
     IXrayGbuffer O;
     GbufferUnpack(I.texcoord.xy, I.hpos.xy, O);
 	
 	float4 SSLR4 = s_image.SampleLevel(smp_nofilter, I.texcoord, 0);
 	
-	if(O.Depth >= 1.0f) {
-		return float4(SSLR4.xyz, O.Depth);
+	if(O.Depth >= 1.0f)
+	{
+		u_sslr[DTid.xy] = float4(SSLR4.xyz, O.Depth);
+		return;
 	}
 	
 	float4 SSLR0 = s_image.Load(int3(I.hpos.xy + int2(+1, +0), 0));
@@ -118,14 +129,16 @@ float4 main(PSInputFullscreen I) : SV_Target
 	
 	float Fade = 0.98f;
 	float DepthClamp = 1.0f - saturate(50.0f * abs(SSLR_OldDiffyse.w - O.Depth));
-	
+
+	//LVutner: Jesus.
 	if(O.Depth < 0.02f) 
 	{
 		DepthClamp = 1.0f - HistoryClamp(SSLR_OldDiffyse.xyz, SSLRMain.xyz, SSLRBoxMin.xyz, SSLRBoxMax.xyz);
 		SSLRMain.xyz = lerp(SSLRMain.xyz, SSLR4.xyz, GetBorderAtten(PrevDiffuseUV));
 		SSLRMain.xyz = lerp(SSLRMain.xyz, SSLR_OldDiffyse.xyz, DepthClamp * Fade);
-		
-		return saturate(SSLRMain);
+
+		u_sslr[DTid.xy] = saturate(SSLRMain);
+		return;
 	}
 	
 	float4 SSLR_Diffuse = lerp(SSLRMain, SSLR_OldDiffyse, Fade);
@@ -142,6 +155,6 @@ float4 main(PSInputFullscreen I) : SV_Target
 	SSLR_Diffuse.xyz = lerp(SSLR_Specular.xyz, SSLR_Diffuse.xyz, O.Roughness);
 	SSLRMain.xyz = lerp(SSLRMain.xyz, SSLR_Diffuse.xyz, DepthClamp);
 	
-	return saturate(SSLRMain);
+	u_sslr[DTid.xy] = SSLRMain;
 }
 
