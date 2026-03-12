@@ -39,18 +39,32 @@ float4 ImportanceSampleGGX(float3 N, float2 Xi, float Roughness)
     return float4(H, pdf);
 }
 
-void main(PSInputFullscreen I, out float4 Point : SV_Target0, out float4 Final : SV_Target1)
+//LVutner: UAVs. See CPP code
+RWTexture2D<float4> u_sslr : register(u0);
+RWTexture2D<float4> u_sslr_data : register(u1);
+
+[numthreads(8, 8, 1)]
+void main(uint3 DTid : SV_DispatchThreadID)
 {
-    IXrayGbuffer O;
+	//LVutner: Making my life easier.
+	PSInputFullscreen I;
+	I.hpos.xy = float2(DTid.xy) + 0.5; //half-pix
+	I.hpos.zw = float2(0.0, 1.0);
+	I.texcoord = I.hpos.xy * pos_decompression_params2.zw;
+
+	IXrayGbuffer O;
     GbufferUnpack(I.texcoord.xy, I.hpos.xy, O);
-	
+
 	if(O.Depth >= 1.0f)
 	{
-		Point = 0.0f;
-		Final = 0.0f;
-		
+		u_sslr[DTid.xy] = (0.0).xxxx;
+		u_sslr_data[DTid.xy] = (0.0).xxxx;
 		return;
 	}
+
+	//LVutner: Init
+	float4 Final = (0.0).xxxx;
+	float4 Point = (0.0).xxxx;	
 	
 	float3 ReflectPoint = GbufferGetPointRealUnjitter(I.texcoord.xy, O.Depth);
 	float3 ViewVec = normalize(ReflectPoint);
@@ -99,10 +113,10 @@ void main(PSInputFullscreen I, out float4 Point : SV_Target0, out float4 Final :
 	float4 EndProj = mul(O.Depth < 0.02f ? m_P_hud : m_P, float4(SSLR.xyz, 1.0f));
 	EndProj.xy = EndProj.xy * rcp(EndProj.w) * float2(0.5f, -0.5f) + 0.5f;
 	
-	float2 Velocity = s_velocity.Sample(smp_nofilter, EndProj.xy).xy * float2(0.5f, -0.5f);
+	float2 Velocity = s_velocity.SampleLevel(smp_nofilter, EndProj.xy, 0.0).xy * float2(0.5f, -0.5f);
 	float2 PrevSpecularUV = saturate(EndProj.xy - Velocity.xy);
 	
-	Final = s_image.Sample(smp_rtlinear, PrevSpecularUV.xy);
+	Final = s_image.SampleLevel(smp_rtlinear, PrevSpecularUV.xy, 0.0);
 	
 #ifdef USE_OFFSCREEN_REFLECTIONS
 	O.Hemi = isHUDRender ? 1.0f : saturate(O.Hemi * 3.0f);
@@ -133,5 +147,8 @@ void main(PSInputFullscreen I, out float4 Point : SV_Target0, out float4 Final :
 	Final.xyz = saturate(Final.xyz);
 	
 	Final.w = isHUDRender;
-}
 
+	//LVutner: Write to UAVs
+	u_sslr[DTid.xy] = Final;
+	u_sslr_data[DTid.xy] = Point;
+}

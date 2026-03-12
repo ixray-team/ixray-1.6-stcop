@@ -49,8 +49,17 @@ static const float2 Disk32_Normalized[32] = {
 	float2(0.895505f, -0.323214f),
 };
 
-float4 main(PSInputFullscreen I) : SV_Target
+RWTexture2D<float4> u_sslr_temp : register(u0);
+
+[numthreads(8, 8, 1)]
+void main(uint3 DTid : SV_DispatchThreadID)
 {
+	//LVutner: Making my life easier.
+	PSInputFullscreen I;
+	I.hpos.xy = float2(DTid.xy) + 0.5; //half-pix
+	I.hpos.zw = float2(0.0, 1.0);
+	I.texcoord = I.hpos.xy * pos_decompression_params2.zw;
+
     IXrayGbuffer O;
     GbufferUnpack(I.texcoord.xy, I.hpos.xy, O);
 
@@ -58,8 +67,9 @@ float4 main(PSInputFullscreen I) : SV_Target
 	float isHUDRender = O.Depth < 0.02f ? 1.0f : 0.0f;
 	
 	if(O.Depth >= 1.0f)
-	{		
-		return 0.0f;
+	{
+		u_sslr_temp[DTid.xy] = (0.0).xxxx;
+		return;
 	}
 		
 	float3 ReflectPoint = GbufferGetPointRealUnjitter(I.texcoord.xy, O.Depth);
@@ -106,6 +116,6 @@ float4 main(PSInputFullscreen I) : SV_Target
 	
 	FinalColor.w += O.ViewDist;
 	
-	return FinalColor;
+	u_sslr_temp[DTid.xy] = FinalColor;
 }
 
