@@ -214,7 +214,7 @@ bool CEatableItem::UseBy(CEntityAlive* entity_alive)
 				SetCondition(0);
 		}
 
-		if (CurrentGameUI())
+		if (CurrentGameUI() && GetMaxUses() > 1)
 		{
 			CurrentGameUI()->ActorMenu().RefreshCurrentItemCell();
 		}
@@ -267,7 +267,7 @@ void CEatableItem::EatableEffects()
 			SetCondition(0);
 	}
 
-	if (CurrentGameUI())
+	if (CurrentGameUI() && GetMaxUses() > 1)
 	{
 		CurrentGameUI()->ActorMenu().RefreshCurrentItemCell();
 	}

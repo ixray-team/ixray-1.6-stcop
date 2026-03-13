@@ -64,7 +64,7 @@ bool CUIInventoryCellItem::EqualTo(CUICellItem* itm)
 	CEatableItem* CiEatableItem = ci->object()->cast_eatable_item();
 	CEatableItem* EatableItem = object()->cast_eatable_item();
 
-	if (CiEatableItem != nullptr && EatableItem != nullptr && CiEatableItem->GetRemainingUses() != EatableItem->GetRemainingUses())
+	if (CiEatableItem != nullptr && EatableItem != nullptr && CiEatableItem->GetMaxUses() > 1 && EatableItem->GetMaxUses() > 1 && CiEatableItem->GetRemainingUses() != EatableItem->GetRemainingUses())
 	{
 		return false;
 	}
