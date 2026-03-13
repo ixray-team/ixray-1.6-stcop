@@ -6,6 +6,7 @@
 #include "Level.h"
 #include "Actor.h"
 #include "../xrScripts/script_callback_ex.h"
+#include "Weapons/Components/WeaponAmmoBones.h"
 
 CWeaponShotgun::CWeaponShotgun()
 {
@@ -209,8 +210,16 @@ void CWeaponShotgun::OnStateSwitch(u32 S)
 void CWeaponShotgun::switch2_StartReload()
 {
 	u8 type_to_update = m_bUseLastAmmoType && m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType();
-	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, type_to_update);
-	UpdateMagAmmoBones(m_mag_bone_type, type_to_update);
+
+	if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
+	{
+		AmmoBones->UpdateAmmoBones(this, iAmmoElapsed, type_to_update);
+	}
+
+	if (TMagAmmoBones* MagAmmoBones = GetComponent<TMagAmmoBones>())
+	{
+		MagAmmoBones->UpdateMagAmmoBones(this, type_to_update);
+	}
 
 	PlayAnimOpenWeapon();
 	SetPending(TRUE);
@@ -227,8 +236,15 @@ void CWeaponShotgun::switch2_StartReload()
 
 void CWeaponShotgun::switch2_AddCartgidge()
 {
-	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, GetTargetAmmoType());
-	UpdateMagAmmoBones(m_mag_bone_type, GetTargetAmmoType());
+	if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
+	{
+		AmmoBones->UpdateAmmoBones(this, iAmmoElapsed, GetTargetAmmoType());
+	}
+
+	if (TMagAmmoBones* MagAmmoBones = GetComponent<TMagAmmoBones>())
+	{
+		MagAmmoBones->UpdateMagAmmoBones(this, GetTargetAmmoType());
+	}
 	m_bIsReloaded = false;
 
 	if (ParentIsActor() && m_sounds.FindSoundItem("sndAddCartridgeEmpty", false) && iAmmoElapsed + iAmmoChamberElapsed == 0)
@@ -250,8 +266,15 @@ void CWeaponShotgun::switch2_AddCartgidge()
 
 void CWeaponShotgun::switch2_EndReload()
 {
-	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, GetTargetAmmoType());
-	UpdateMagAmmoBones(m_mag_bone_type, GetTargetAmmoType());
+	if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
+	{
+		AmmoBones->UpdateAmmoBones(this, iAmmoElapsed, GetTargetAmmoType());
+	}
+
+	if (TMagAmmoBones* MagAmmoBones = GetComponent<TMagAmmoBones>())
+	{
+		MagAmmoBones->UpdateMagAmmoBones(this, GetTargetAmmoType());
+	}
 	SetPending(TRUE);
 
 	PlayAnimCloseWeapon();
@@ -448,10 +471,26 @@ void CWeaponShotgun::OnMotionMark(u32 state, const motion_marks& mark)
 
 	if (ParentIsActor() && state == eReload && m_bTriStateReload && mark.name == "Left")
 	{
-		u32 current_configuration = iAmmoElapsed + iAmmoChamberElapsed + 1;
-		bool for_grenade = IsGrenadeMode();
-		UpdateAmmoBones(for_grenade ? m_ammo_bones_gl : m_ammo_bones_mag, current_configuration, GetTargetAmmoType(for_grenade));
-		UpdateLiteAmmoBones(current_configuration);
-		UpdateMagAmmoBones(m_mag_bone_type, GetTargetAmmoType(for_grenade));
+		u32 current_configuration = iAmmoElapsed + 1;
+
+		if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
+		{
+			AmmoBones->UpdateAmmoBones(this, current_configuration, GetTargetAmmoType());
+		}
+
+		if (TLiteAmmoBones* LiteAmmoBones = GetComponent<TLiteAmmoBones>())
+		{
+			LiteAmmoBones->UpdateLiteAmmoBones(this, current_configuration);
+		}
+
+		if (TGrenadeLauncherAmmoBones* GLAmmoBones = GetComponent<TGrenadeLauncherAmmoBones>())
+		{
+			GLAmmoBones->UpdateGLAmmoBones(this, GetTargetAmmoType(true));
+		}
+
+		if (TMagAmmoBones* MagAmmoBones = GetComponent<TMagAmmoBones>())
+		{
+			MagAmmoBones->UpdateMagAmmoBones(this, GetTargetAmmoType(IsGrenadeMode()));
+		}
 	}
 }
