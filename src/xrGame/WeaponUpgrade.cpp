@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "Weapon.h"
 #include "Weapons/Components/WeaponAmmoBones.h"
+#include "WeaponBinocularsVision.h"
 
 bool CWeapon::install_upgrade_impl(LPCSTR section, bool test)
 {
@@ -310,6 +311,14 @@ bool CWeapon::install_upgrade_addon(LPCSTR section, bool test)
 	result |= process_if_exists_set(section, "scope_dynamic_zoom", m_zoom_params.m_bUseDynamicZoom, test);
 	result |= process_if_exists_set(section, "scope_nightvision", m_zoom_params.m_sUseZoomPostprocess, test);
 	result |= process_if_exists_set(section, "scope_alive_detector", m_zoom_params.m_sUseBinocularVision, test);
+
+	if (m_zoom_params.m_sUseBinocularVision.size() > 0)
+	{
+		if (TBinocularsVision* Vision = GetOrCreateComponent<TBinocularsVision>())
+		{
+			Vision->Load(m_zoom_params.m_sUseBinocularVision);
+		}
+	}
 
 	result |= result2;
 
