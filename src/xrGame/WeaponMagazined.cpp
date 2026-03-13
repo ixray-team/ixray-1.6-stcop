@@ -2357,6 +2357,29 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 			{
 				if ((iAmmoElapsed < GetMagCapacity() || IsMisfire()))
 				{
+					if (!unlimited_ammo() && !IsMisfire())
+					{
+						PIItem get_any = m_pInventory->GetAny(m_ammoTypes[m_ammoType].c_str());
+
+						if (get_any == nullptr)
+						{
+							if (iAmmoElapsed + iAmmoChamberElapsed > 0)
+							{
+								return false;
+							}
+
+							for (u8 i = 0; i < u8(m_ammoTypes.size()); ++i)
+							{
+								get_any = m_pInventory->GetAny(m_ammoTypes[i].c_str());
+							}
+
+							if (get_any == nullptr || get_any->cast_weapon_ammo() == nullptr)
+							{
+								return false;
+							}
+						}
+					}
+
 					if (!SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfRELOAD))
 					{
 						return false;
