@@ -30,7 +30,6 @@ class CWeaponRPG7;
 class CWeaponRG6;
 class CParticlesObject;
 class CUIStatic;
-class CBinocularsVision;
 class CWeaponNightVision;
 struct TAmmoBones;
 
@@ -469,7 +468,6 @@ protected:
 		BOOL			m_bUseDynamicZoom;
 		shared_str		m_sUseZoomPostprocess;
 		shared_str		m_sUseBinocularVision;
-		CBinocularsVision*		m_pVision;
 		CWeaponNightVision*		m_pNight_vision;
 
 	} m_zoom_params;

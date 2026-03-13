@@ -177,18 +177,12 @@ void SBinocVisibleObj::Update()
 	m_flags.set			(flVisObjNotValid, FALSE);
 }
 
-
-CBinocularsVision::CBinocularsVision(const shared_str& sect)
-{
-	Load(sect);
-}
-
-CBinocularsVision::~CBinocularsVision()
+void TBinocularsVision::EndComponent()
 {
 	delete_data(m_active_objects);
 }
 
-void CBinocularsVision::Update()
+void TBinocularsVision::Update()
 {
 	if (g_dedicated_server)
 		return;
@@ -269,22 +263,24 @@ void CBinocularsVision::Update()
 
 }
 
-void CBinocularsVision::Draw()
+void TBinocularsVision::Draw()
 {
 	VIS_OBJECTS_IT	it = m_active_objects.begin();
 	for(;it!=m_active_objects.end();++it)
 		(*it)->Draw							();
 }
 
-void CBinocularsVision::Load(const shared_str& section)
+void TBinocularsVision::Load(const shared_str& section)
 {
+	m_section = section;
+
 	m_rotating_speed	= pSettings->r_float(section,"vis_frame_speed");
 	m_frame_color		= pSettings->r_fcolor(section,"vis_frame_color");
 	m_sounds.LoadSound	(section.c_str(),"found_snd", "found_snd", false, SOUND_TYPE_NO_SOUND);
 	m_sounds.LoadSound	(section.c_str(),"catch_snd", "catch_snd", false, SOUND_TYPE_NO_SOUND);
 }
 
-void CBinocularsVision::remove_links(CObject *object)
+void TBinocularsVision::remove_links(CObject *object)
 {
 	VIS_OBJECTS::iterator	I = std::find_if(m_active_objects.begin(),m_active_objects.end(),FindVisObjByObject(object));
 	if (I == m_active_objects.end())

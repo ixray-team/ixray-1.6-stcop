@@ -74,7 +74,6 @@ CWeapon::CWeapon()
 
 	m_zoom_params.m_fCurrentZoomFactor			= g_fov;
 	m_zoom_params.m_fZoomRotationFactor			= 0.f;
-	m_zoom_params.m_pVision						= nullptr;
 	m_zoom_params.m_pNight_vision				= nullptr;
 
 	m_pCurrentAmmo			= nullptr;
@@ -536,9 +535,17 @@ void CWeapon::Load		(LPCSTR section)
 	}
 
 	
-	m_zoom_params.m_bUseDynamicZoom				= READ_IF_EXISTS(pSettings,r_bool,section,"scope_dynamic_zoom",FALSE);
-	m_zoom_params.m_sUseZoomPostprocess			= 0;
-	m_zoom_params.m_sUseBinocularVision			= 0;
+	m_zoom_params.m_bUseDynamicZoom	= READ_IF_EXISTS(pSettings,r_bool,section,"scope_dynamic_zoom",FALSE);
+	m_zoom_params.m_sUseZoomPostprocess	= 0;
+	m_zoom_params.m_sUseBinocularVision	= READ_IF_EXISTS(pSettings, r_string, section, "scope_alive_detector", 0);
+
+	if (m_zoom_params.m_sUseBinocularVision.size() > 0)
+	{
+		if (TBinocularsVision* Vision = GetOrCreateComponent<TBinocularsVision>())
+		{
+			Vision->Load(m_zoom_params.m_sUseBinocularVision);
+		}
+	}
 
 	auto ReachInAllSections = [&](LPCSTR param_name)
 	{
@@ -1463,9 +1470,12 @@ void CWeapon::UpdateCL		()
 		}
 	}
 
-	if (m_zoom_params.m_pVision)
+	if (m_zoom_params.m_sUseBinocularVision.size() > 0 && ParentIsActor() && IsZoomed() && !IsRotatingToZoom())
 	{
-		m_zoom_params.m_pVision->Update();
+		if (TBinocularsVision* Vision = GetComponent<TBinocularsVision>())
+		{
+			Vision->Update();
+		}
 	}
 
 	UpdateLensFactor(delta);
@@ -2981,11 +2991,6 @@ void CWeapon::OnZoomIn()
 
 	GamePersistent().SetPickableEffectorDOF(true);
 
-	if (m_zoom_params.m_sUseBinocularVision.size() && IsScopeAttached() && nullptr == m_zoom_params.m_pVision)
-	{
-		m_zoom_params.m_pVision = new CBinocularsVision(m_zoom_params.m_sUseBinocularVision);
-	}
-
 	if (m_zoom_params.m_sUseZoomPostprocess.size() && IsScopeAttached()) 
 	{
 		if (pActor != nullptr && !GetNightVision())
@@ -3014,8 +3019,6 @@ void CWeapon::OnZoomOut()
 	GamePersistent().SetPickableEffectorDOF(false);
 
 	ResetSubStateTime					();
-
-	xr_delete(m_zoom_params.m_pVision);
 
 	if (GetNightVision())
 	{
@@ -3489,8 +3492,13 @@ bool CWeapon::render_item_ui_query()
 
 void CWeapon::render_item_ui()
 {
-	if(m_zoom_params.m_pVision)
-		m_zoom_params.m_pVision->Draw();
+	if (m_zoom_params.m_sUseBinocularVision.size() > 0)
+	{
+		if (TBinocularsVision* Vision = GetComponent<TBinocularsVision>())
+		{
+			Vision->Draw();
+		}
+	}
 
 	ZoomTexture()->Update	();
 	ZoomTexture()->Draw		();
@@ -4115,6 +4123,14 @@ void CWeapon::LoadCurrentScopeParams(LPCSTR section)
 		m_zoom_params.m_bUseDynamicZoom = READ_IF_EXISTS(pSettings, r_bool, section, "scope_dynamic_zoom", FALSE);
 
 		m_zoom_params.m_sUseBinocularVision = READ_IF_EXISTS(pSettings, r_string, section, "scope_alive_detector", 0);
+
+		if (m_zoom_params.m_sUseBinocularVision.size() > 0)
+		{
+			if (TBinocularsVision* Vision = GetOrCreateComponent<TBinocularsVision>())
+			{
+				Vision->Load(m_zoom_params.m_sUseBinocularVision);
+			}
+		}
 	}
 
 	if (m_UIScope)
@@ -4780,10 +4796,10 @@ void CWeapon::net_Relcase(CObject* object)
 {
 	inherited::net_Relcase(object);
 
-	if (!m_zoom_params.m_pVision)
-		return;
-
-	m_zoom_params.m_pVision->remove_links(object);
+	if (TBinocularsVision* Vision = GetComponent<TBinocularsVision>())
+	{
+		Vision->remove_links(object);
+	}
 }
 
 void CWeapon::OnChangeVisual()
