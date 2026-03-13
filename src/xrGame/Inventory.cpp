@@ -1280,7 +1280,7 @@ bool CInventory::Eat(PIItem pIItem)
 
 			if (pItemToEat->IsUsingCondition() && pItemToEat->GetRemainingUses() < 1 && pItemToEat->GetMaxUses() > 1 && pItemToEat->CanDelete())
 			{
-//				CurrentGameUI()->ActorMenu()->RefreshCurrentItemCell();
+				CurrentGameUI()->ActorMenu()->RefreshCurrentItemCell();
 			}
 
 			CurrentGameUI()->ActorMenu()->SetCurrentItem(nullptr);
