@@ -32,11 +32,15 @@ class CParticlesObject;
 class CUIStatic;
 class CBinocularsVision;
 class CWeaponNightVision;
+struct TAmmoBones;
 
 class CWeapon : public CHudItemObject,
 				public CShootingObject
 {
 	using inherited = CHudItemObject;
+
+protected:
+	friend struct TAmmoBones;
 
 public:
 							CWeapon				();
@@ -199,33 +203,6 @@ public:
 
 	virtual bool UseScopeTexture();
 
-	struct SAmmoBonesParams
-	{
-		SAmmoBonesParams(u32 type) : AmmoType(type) {}
-		~SAmmoBonesParams()
-		{
-			for (auto& it : ConfigurationMap)
-			{
-				it.second.second.clear();
-			}
-			ConfigurationMap.clear();
-			AllBones.clear();
-		}
-		u8 AmmoType = undefined_ammo_type;
-		xr_hash_map<u32, std::pair<shared_str, RStringVec>> ConfigurationMap{};
-		RStringVec AllBones{};
-		void Load(const shared_str& section, s32 base_node_count);
-	};
-
-	struct SAmmoBonesLite
-	{
-		xr_hash_map<u32, shared_str> bullet_bones{};
-		u32 bullet_cnt = 0;
-
-	} m_ammo_bones_lite;
-
-	xr_hash_map<u8, RStringVec> m_mag_bone_type{};
-
 	public:
 		struct SRecoilPoint {
 			float x; 
@@ -264,10 +241,6 @@ protected:
 	void UpdateHUDAddonsVisibility();
 	void ProcessScope();
 	void UpdateScopePosition();
-	void UpdateAmmoBones(xr_vector<SAmmoBonesParams*>& lVector, u32 idx, u8 type);
-	void UpdateMagAmmoBones(xr_hash_map<u8, RStringVec>& lVector, u8 type);
-	void UpdateLiteAmmoBones(u32 idx);
-	void UpdateShellBones(u8 type);
 	virtual void UpdateBonePartAnimations() {}
 	//инициализация свойств присоединенных аддонов
 	virtual void InitAddons();
@@ -409,9 +382,6 @@ protected:
 	bool m_bJustAfterReload = false;
 	bool m_bIsPreloaded = false;
 	bool m_bAddCartridgeInOpen = false;
-	bool m_bBlockUpdateAmmoBonesShooting = false;
-	bool m_bUseLastAmmoType = false;
-	bool m_bUseChamberInUpdateBones = false;
 	bool m_bBlockReload = false;
 	bool m_bJamNotShot = true;
 	bool m_bUseLightMis = false;
@@ -450,6 +420,12 @@ protected:
 	shared_str hud_silencer;
 	shared_str hud_scope;
 	shared_str hud_gl;
+
+protected:
+	bool m_bBlockUpdateAmmoBonesShooting = false;
+	bool m_bUseLastAmmoType = false;
+	bool m_bUseChamberInUpdateBones = false;
+
 protected:
 	//состояние подключенных аддонов
 	u8 m_flagsAddOnState;
@@ -509,9 +485,7 @@ protected:
 
 protected:
 
-	u8 m_LastShotAmmoType = undefined_ammo_type;
-
-	xr_vector<SAmmoBonesParams*> m_ammo_bones_mag{}, m_ammo_bones_gl{}, m_shell_bones{};
+	u8 m_LastShotAmmoType = 0;
 
 	RStringVec m_bDefHideBones {}, m_bDefShowBones {}, m_bHideBonesOverride {}, m_bDefHideBonesGLAttached {},
 		m_bHideBonesGLAttached {}, m_bHideBonesSilAttached {}, m_bHideBonesScopeAttached {},

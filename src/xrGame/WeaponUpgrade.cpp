@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "Weapon.h"
+#include "Weapons/Components/WeaponAmmoBones.h"
 
 bool CWeapon::install_upgrade_impl(LPCSTR section, bool test)
 {
@@ -557,145 +558,47 @@ bool CWeapon::install_upgrade_ammo_bones(LPCSTR section, bool test)
 {
 	bool result = false;
 
-	bool need_add[2] = { false };
-
-	if (m_ammo_bones_mag.size() == 1)
+	auto ReachInAllSections = [&](LPCSTR param_name)
 	{
-		if (m_ammo_bones_mag[0]->AmmoType != undefined_ammo_type)
+		LPCSTR reached_sect = section;
+		const shared_str hud_section = HudSection();
+		if (pSettings->line_exist(hud_section, param_name))
 		{
-			need_add[0] = true;
+			reached_sect = hud_section.c_str();
 		}
-	}
+		return reached_sect;
+	};
 
-	if (m_shell_bones.size() == 1)
+	if (pSettings->line_exist(ReachInAllSections("ammo_params_section"), "ammo_params_section") && pSettings->section_exist(pSettings->r_string(ReachInAllSections("ammo_params_section"), "ammo_params_section")))
 	{
-		if (m_shell_bones[0]->AmmoType != undefined_ammo_type)
+		if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
 		{
-			need_add[1] = true;
+			AmmoBones->Load(this, ReachInAllSections("ammo_params_section"));
 		}
-	}
-
-	if (need_add[1])
-	{
-		for (SAmmoBonesParams* param : m_shell_bones)
+		else
 		{
-			xr_delete(param);
+			CreateComponent<TAmmoBones>().Load(this, ReachInAllSections("ammo_params_section"));
 		}
-		m_shell_bones.clear();
-	}
 
-	if (need_add[0])
-	{
-		for (SAmmoBonesParams* param : m_ammo_bones_mag)
-		{
-			xr_delete(param);
-		}
-		m_ammo_bones_mag.clear();
+		result = true;
 	}
-
-	if (need_add[1])
+	else for (int i = 0; i < m_ammoTypes.size(); i++)
 	{
-		if (pSettings->line_exist(hud_sect, "shell_params_section"))
+		static shared_str params_section;
+		params_section.printf("ammo_params_section_%d", i);
+		if (pSettings->line_exist(ReachInAllSections(*params_section), *params_section))
 		{
-			SAmmoBonesParams* bone_params = new SAmmoBonesParams(undefined_ammo_type);
-			bone_params->Load(pSettings->r_string(hud_sect, "shell_params_section"), -1);
-			m_shell_bones.push_back(bone_params);
+			if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
+			{
+				AmmoBones->Load(this, ReachInAllSections(*params_section));
+			}
+			else
+			{
+				CreateComponent<TAmmoBones>().Load(this, ReachInAllSections(*params_section));
+			}
+
 			result = true;
-		}
-		else for (int i = 0; i < m_ammoTypes.size(); i++)
-		{
-			static shared_str params_section;
-			params_section.printf("shell_params_section_%d", i);
-			if (pSettings->line_exist(hud_sect, *params_section))
-			{
-				SAmmoBonesParams* bone_params = new SAmmoBonesParams(i);
-				bone_params->Load(pSettings->r_string(hud_sect, *params_section), -1);
-				m_shell_bones.push_back(bone_params);
-				result = true;
-			}
-		}
-	}
-	else
-	{
-		if (pSettings->line_exist(hud_sect, "shell_params_section"))
-		{
-			for (auto& bone_param : m_shell_bones)
-			{
-				if (bone_param->AmmoType == undefined_ammo_type)
-				{
-					bone_param->Load(pSettings->r_string(hud_sect, "shell_params_section"), -1);
-					result = true;
-				}
-			}
-		}
-		else for (int i = 0; i < m_ammoTypes.size(); i++)
-		{
-			static shared_str params_section;
-			params_section.printf("shell_params_section_%d", i);
-			if (pSettings->line_exist(hud_sect, *params_section))
-			{
-				for (auto& bone_param : m_shell_bones)
-				{
-					if (bone_param->AmmoType == i)
-					{
-						bone_param->Load(pSettings->r_string(hud_sect, *params_section), 1);
-						result = true;
-					}
-				}
-			}
-		}
-	}
-
-	if (need_add[0])
-	{
-		if (pSettings->line_exist(hud_sect, "ammo_params_section") && pSettings->section_exist(pSettings->r_string(hud_sect, "ammo_params_section")))
-		{
-			SAmmoBonesParams* bone_params = new SAmmoBonesParams(undefined_ammo_type);
-			bone_params->Load(pSettings->r_string(hud_sect, "ammo_params_section"), iMagazineSize);
-			m_ammo_bones_mag.push_back(bone_params);
-			result = true;
-		}
-		else for (int i = 0; i < m_ammoTypes.size(); i++)
-		{
-			static shared_str params_section;
-			params_section.printf("ammo_params_section_%d", i);
-			if (pSettings->line_exist(hud_sect, *params_section))
-			{
-				SAmmoBonesParams* bone_params = new SAmmoBonesParams(i);
-				bone_params->Load(pSettings->r_string(hud_sect, *params_section), iMagazineSize);
-				m_ammo_bones_mag.push_back(bone_params);
-				result = true;
-			}
-		}
-	}
-	else
-	{
-		if (pSettings->line_exist(hud_sect, "ammo_params_section") && pSettings->section_exist(pSettings->r_string(hud_sect, "ammo_params_section")))
-		{
-			for (auto& bone_param : m_ammo_bones_mag)
-			{
-				if (bone_param->AmmoType == undefined_ammo_type)
-				{
-					bone_param->Load(pSettings->r_string(hud_sect, "ammo_params_section"), iMagazineSize);
-					result = true;
-				}
-			}
-		}
-		else for (int i = 0; i < m_ammoTypes.size(); i++)
-		{
-			static shared_str params_section;
-			params_section.printf("ammo_params_section_%d", i);
-			if (pSettings->line_exist(hud_sect, *params_section))
-			{
-				for (auto& bone_param : m_ammo_bones_mag)
-				{
-					if (bone_param->AmmoType == i)
-					{
-						bone_param->Load(pSettings->r_string(hud_sect, *params_section), iMagazineSize);
-						result = true;
-					}
-				}
-			}
+			break;
 		}
 	}
 
