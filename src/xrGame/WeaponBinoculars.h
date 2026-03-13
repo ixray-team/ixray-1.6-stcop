@@ -5,7 +5,6 @@
 
 class CUIFrameWindow;
 class CUIStatic;
-class CBinocularsVision;
 
 class CWeaponBinoculars final : public CWeaponCustomPistol
 {
@@ -15,7 +14,7 @@ class CWeaponBinoculars final : public CWeaponCustomPistol
 
 public:
 	CWeaponBinoculars() = default;
-	virtual	~CWeaponBinoculars();
+	virtual	~CWeaponBinoculars() = default;
 
 	virtual void	Load				(LPCSTR section) override;
 	virtual void	LoadSounds			(LPCSTR section) override;
@@ -26,7 +25,7 @@ public:
 	virtual	void	ZoomDec				();
 	virtual void	net_Destroy			();
 	virtual BOOL	net_Spawn			(CSE_Abstract* DC);
-	bool			can_kill			() const;
+	bool			can_kill() const { return false; }
 	virtual void	save				(NET_Packet &output_packet);
 	virtual void	load				(IReader &input_packet);
 
@@ -43,7 +42,6 @@ public:
 	virtual CWeaponBinoculars* cast_weapon_binoculars() { return this; }
 
 protected:
-	CBinocularsVision* m_binoc_vision = nullptr;
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

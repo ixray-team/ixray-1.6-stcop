@@ -31,6 +31,7 @@
 #include "../xrEngine/xr_input.h"
 #include "HUDManager.h"
 #include "Weapons/Components/WeaponAmmoBones.h"
+#include "WeaponBinocularsVision.h"
 
 CUIXml* pWpnScopeXml = nullptr;
 
@@ -2777,6 +2778,20 @@ void CWeaponMagazined::InitAddons()
 		if (IsZoomEnabled())
 		{
 			m_zoom_params.m_fIronSightZoomFactor = pSettings->r_float(get_scope_section, "scope_zoom_factor");
+		}
+
+		m_zoom_params.m_sUseBinocularVision = READ_IF_EXISTS(pSettings, r_string, get_scope_section, "scope_alive_detector", 0);
+
+		if (m_zoom_params.m_sUseBinocularVision.size() <= 0)
+		{
+			DestroyComponent<TBinocularsVision>();
+		}
+		else
+		{
+			if (TBinocularsVision* Vision = GetOrCreateComponent<TBinocularsVision>())
+			{
+				Vision->Load(m_zoom_params.m_sUseBinocularVision);
+			}
 		}
 
 		m_lens_zoom_params.factor_min = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "min_lens_factor", 1.0f);

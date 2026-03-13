@@ -28,23 +28,27 @@ struct SBinocVisibleObj
 	bool operator<(const SBinocVisibleObj& other) const { return m_flags.test(flVisObjNotValid) < other.m_flags.test(flVisObjNotValid); } //move non-actual to tail
 };
 
-class CBinocularsVision final
+struct TBinocularsVision final
 {
 	using VIS_OBJECTS = xr_vector<SBinocVisibleObj*>;
 	using VIS_OBJECTS_IT = VIS_OBJECTS::iterator;
-	VIS_OBJECTS	m_active_objects;
+	VIS_OBJECTS	m_active_objects {};
+
+	Fcolor m_frame_color;
+	float m_rotating_speed = 0.0f;
+	HUD_SOUND_COLLECTION m_sounds;
+	shared_str m_section;
 
 public:
-	CBinocularsVision() = delete;
-	CBinocularsVision(const shared_str& sect);
-	~CBinocularsVision();
+	void EndComponent();
+
+	void Load(const shared_str& section);
 	void Update();
 	void Draw();
 	void remove_links(CObject* object);
 
-protected:
-	Fcolor m_frame_color;
-	float m_rotating_speed;
-	void Load(const shared_str& section);
-	HUD_SOUND_COLLECTION m_sounds;
+private:
+	ECS_COMPONENT(TBinocularsVision)
+		ECS_STRING(m_section.c_str(), "Vision Section");
+	ECS_END
 };
