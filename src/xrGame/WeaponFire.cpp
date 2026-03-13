@@ -15,6 +15,8 @@
 #include "game_cl_mp.h"
 #include "WeaponRPG7.h"
 #include "ParticlesObject.h"
+#include "Weapons/Components/WeaponAmmoBones.h"
+
 #define FLAME_TIME 0.05f
 
 
@@ -132,12 +134,19 @@ void CWeapon::FireTrace		(const Fvector& P, const Fvector& D)
 			m_bHaveShell = true;
 		}
 
-		UpdateLiteAmmoBones(iAmmoElapsed + iAmmoChamberElapsed);
+		if (TLiteAmmoBones* LiteAmmoBones = GetComponent<TLiteAmmoBones>())
+		{
+			LiteAmmoBones->UpdateLiteAmmoBones(this, GetCurrentElapsed() + iAmmoChamberElapsed);
+		}
 
 		if (!m_bBlockUpdateAmmoBonesShooting)
 		{
 			u8 type_to_update = m_bUseLastAmmoType && m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType();
-			UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, type_to_update);
+
+			if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
+			{
+				AmmoBones->UpdateAmmoBones(this, iAmmoElapsed, type_to_update);
+			}
 		}
 	}
 
@@ -223,12 +232,19 @@ void CWeapon::FireTraceChamber(const Fvector& P, const Fvector& D)
 			m_bHaveShell = true;
 		}
 
-		UpdateLiteAmmoBones(iAmmoElapsed + iAmmoChamberElapsed);
+		if (TLiteAmmoBones* LiteAmmoBones = GetComponent<TLiteAmmoBones>())
+		{
+			LiteAmmoBones->UpdateLiteAmmoBones(this, GetCurrentElapsed() + iAmmoChamberElapsed);
+		}
 
 		if (!m_bBlockUpdateAmmoBonesShooting)
 		{
 			u8 type_to_update = m_bUseLastAmmoType && m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType();
-			UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, type_to_update);
+
+			if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
+			{
+				AmmoBones->UpdateAmmoBones(this, iAmmoElapsed, type_to_update);
+			}
 		}
 	}
 
@@ -243,7 +259,11 @@ void CWeapon::StopShooting()
 	}
 
 	u8 type_to_update = m_bUseLastAmmoType && m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType();
-	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, type_to_update);
+
+	if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
+	{
+		AmmoBones->UpdateAmmoBones(this, iAmmoElapsed, type_to_update);
+	}
 
 	StopShotEffector();
 	StopPattern();
