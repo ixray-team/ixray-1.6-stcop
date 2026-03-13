@@ -9,25 +9,29 @@
 #include "object_broker.h"
 #include "Inventory.h"
 
-CWeaponBinoculars::~CWeaponBinoculars()
-{
-	xr_delete(m_binoc_vision);
-}
-
 void CWeaponBinoculars::Load(LPCSTR section)
 {
 	inherited::Load(section);
 
 	// Sounds
 	m_bVision = !!pSettings->r_bool(section, "vision_present");
+
+	if (m_bVision)
+	{
+		if (TBinocularsVision* Vision = GetOrCreateComponent<TBinocularsVision>())
+		{
+			Vision->Load(section);
+		}
+	}
+
 	m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", false));
 }
 
-bool CWeaponBinoculars::Action(u16 cmd, u32 flags) 
+bool CWeaponBinoculars::Action(u16 cmd, u32 flags)
 {
-	switch(cmd) 
+	switch (cmd)
 	{
-	case kWPN_FIRE : 
+	case kWPN_FIRE:
 		return inherited::Action(kWPN_ZOOM, flags);
 	}
 
@@ -53,58 +57,60 @@ void GetZoomData(const float scope_factor, float& delta, float& min_zoom_factor)
 	delta = (delta_factor_total * (1 - min_zoom_k)) / zoom_step_count;
 }
 
-float LastBinocZoomFactor = 0.f;
+static float LastBinocZoomFactor = 0.0f;
 
-void CWeaponBinoculars::OnZoomIn		()
+void CWeaponBinoculars::OnZoomIn()
 {
-	if(H_Parent() && !IsZoomed())
+	if (H_Parent() && !IsZoomed())
 	{
 		m_sounds.StopSound("sndZoomOut");
 		bool b_hud_mode = (Level().CurrentEntity() == H_Parent());
 		m_sounds.PlaySound("sndZoomIn", H_Parent()->Position(), H_Parent(), b_hud_mode);
-		if(m_bVision && !m_binoc_vision) 
-		{
-			m_binoc_vision	= new CBinocularsVision(cNameSect());
-		}
 	}
+
 	inherited::OnZoomIn();
+
 	if (LastBinocZoomFactor)
+	{
 		m_fRTZoomFactor = LastBinocZoomFactor;
+	}
 	else
+	{
 		m_fRTZoomFactor = CurrentZoomFactor();
+	}
+
 	float delta, min_zoom_factor;
 	GetZoomData(m_zoom_params.m_fScopeZoomFactor, delta, min_zoom_factor);
 	clamp(m_fRTZoomFactor, m_zoom_params.m_fScopeZoomFactor, min_zoom_factor);
 	SetZoomFactor(m_fRTZoomFactor);
 }
 
-void CWeaponBinoculars::OnZoomOut		()
+void CWeaponBinoculars::OnZoomOut()
 {
-	if(H_Parent() && IsZoomed() && !IsRotatingToZoom())
+	if (H_Parent() && IsZoomed() && !IsRotatingToZoom())
 	{
 		m_sounds.StopSound("sndZoomIn");
-		bool b_hud_mode = (Level().CurrentEntity() == H_Parent());	
+		bool b_hud_mode = (Level().CurrentEntity() == H_Parent());
 		m_sounds.PlaySound("sndZoomOut", H_Parent()->Position(), H_Parent(), b_hud_mode);
-		xr_delete		(m_binoc_vision);
 	}
-
 
 	inherited::OnZoomOut();
 }
 
 BOOL CWeaponBinoculars::net_Spawn(CSE_Abstract* DC)
 {
-	inherited::net_Spawn	(DC);
+	inherited::net_Spawn(DC);
 	return					TRUE;
 }
 
-void	CWeaponBinoculars::net_Destroy()
+void CWeaponBinoculars::net_Destroy()
 {
 	inherited::net_Destroy();
-	xr_delete(m_binoc_vision);
+	DestroyComponent<TBinocularsVision>();
 }
+
 extern u32 hud_adj_mode;
-void	CWeaponBinoculars::UpdateCL()
+void CWeaponBinoculars::UpdateCL()
 {
 	inherited::UpdateCL();
 
@@ -122,9 +128,12 @@ void	CWeaponBinoculars::UpdateCL()
 	}
 
 	//manage visible entities here...
-	if (H_Parent() && IsZoomed() && !IsRotatingToZoom() && m_binoc_vision)
+	if (m_bVision && H_Parent() && IsZoomed() && !IsRotatingToZoom())
 	{
-		m_binoc_vision->Update();
+		if (TBinocularsVision* Vision = GetComponent<TBinocularsVision>())
+		{
+			Vision->Update();
+		}
 	}
 }
 
@@ -136,9 +145,12 @@ bool CWeaponBinoculars::render_item_ui_query()
 
 void CWeaponBinoculars::render_item_ui()
 {
-	if (m_binoc_vision != nullptr)
+	if (m_bVision)
 	{
-		m_binoc_vision->Draw();
+		if (TBinocularsVision* Vision = GetComponent<TBinocularsVision>())
+		{
+			Vision->Draw();
+		}
 	}
 
 	inherited::render_item_ui();
@@ -146,54 +158,50 @@ void CWeaponBinoculars::render_item_ui()
 
 void CWeaponBinoculars::ZoomInc()
 {
-	float delta,min_zoom_factor;
+	float delta, min_zoom_factor;
 	GetZoomData(m_zoom_params.m_fScopeZoomFactor, delta, min_zoom_factor);
 
-	float f					= GetZoomFactor()-delta;
-	clamp					(f,m_zoom_params.m_fScopeZoomFactor,min_zoom_factor);
-	SetZoomFactor			( f );
+	float f = GetZoomFactor() - delta;
+	clamp(f, m_zoom_params.m_fScopeZoomFactor, min_zoom_factor);
+	SetZoomFactor(f);
 	LastBinocZoomFactor = f;
 }
 
 void CWeaponBinoculars::ZoomDec()
 {
-	float delta,min_zoom_factor;
-	GetZoomData(m_zoom_params.m_fScopeZoomFactor,delta,min_zoom_factor);
+	float delta, min_zoom_factor;
+	GetZoomData(m_zoom_params.m_fScopeZoomFactor, delta, min_zoom_factor);
 
-	float f					= GetZoomFactor()+delta;
-	clamp					(f,m_zoom_params.m_fScopeZoomFactor,min_zoom_factor);
-	SetZoomFactor			( f );
+	float f = GetZoomFactor() + delta;
+	clamp(f, m_zoom_params.m_fScopeZoomFactor, min_zoom_factor);
+	SetZoomFactor(f);
 	LastBinocZoomFactor = f;
 }
-void CWeaponBinoculars::save(NET_Packet &output_packet)
+
+void CWeaponBinoculars::save(NET_Packet& output_packet)
 {
 	inherited::save(output_packet);
-	save_data		(m_fRTZoomFactor,output_packet);
+	save_data(m_fRTZoomFactor, output_packet);
 }
 
-void CWeaponBinoculars::load(IReader &input_packet)
+void CWeaponBinoculars::load(IReader& input_packet)
 {
 	inherited::load(input_packet);
-	load_data		(m_fRTZoomFactor,input_packet);
+	load_data(m_fRTZoomFactor, input_packet);
 }
 
-bool CWeaponBinoculars::GetBriefInfo( II_BriefInfo& info )
+bool CWeaponBinoculars::GetBriefInfo(II_BriefInfo& info)
 {
 	info.clear();
-	info.name._set( m_nameShort );
-	info.icon._set( cNameSect() );
+	info.name._set(m_nameShort);
+	info.icon._set(cNameSect());
 	return true;
 }
 
-void CWeaponBinoculars::net_Relcase	(CObject *object)
+void CWeaponBinoculars::net_Relcase(CObject* object)
 {
-	if (!m_binoc_vision)
-		return;
-
-	m_binoc_vision->remove_links	(object);
-}
-
-bool CWeaponBinoculars::can_kill	() const
-{
-	return			(false);
+	if (TBinocularsVision* Vision = GetComponent<TBinocularsVision>())
+	{
+		Vision->remove_links(object);
+	}
 }
