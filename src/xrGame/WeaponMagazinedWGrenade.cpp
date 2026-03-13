@@ -14,6 +14,7 @@
 #include "Actor_Flags.h"
 #include "Inventory.h"
 #include "InventoryOwner.h"
+#include "Weapons/Components/WeaponAmmoBones.h"
 
 #ifdef DEBUG
 #	include "phdebug.h"
@@ -45,21 +46,25 @@ void CWeaponMagazinedWGrenade::Load(LPCSTR section)
 
 	iMagazineSize2 = iMagazineSize;
 
-	if (pSettings->line_exist(hud_sect, "gl_ammo_params_section") && pSettings->section_exist(pSettings->r_string(hud_sect, "gl_ammo_params_section")))
+	auto ReachInAllSections = [&](LPCSTR param_name)
 	{
-		SAmmoBonesParams* bone_params = new SAmmoBonesParams(undefined_ammo_type);
-		bone_params->Load(pSettings->r_string(hud_sect, "gl_ammo_params_section"), 1);
-		m_ammo_bones_gl.push_back(bone_params);
-	}
-	else for (int i = 0; i < m_ammoTypes2.size(); i++)
-	{
-		static shared_str params_section;
-		params_section.printf("gl_ammo_params_section_%d", i);
-		if (pSettings->line_exist(hud_sect, *params_section))
+		LPCSTR reached_sect = section;
+		const shared_str hud_section = HudSection();
+		if (pSettings->line_exist(hud_section, param_name))
 		{
-			SAmmoBonesParams* bone_params = new SAmmoBonesParams(i);
-			bone_params->Load(pSettings->r_string(hud_sect, *params_section), 1);
-			m_ammo_bones_gl.push_back(bone_params);
+			reached_sect = hud_section.c_str();
+	}
+		return reached_sect;
+	};
+
+	for (u8 i = 0; i < m_ammoTypes2.size(); i++)
+	{
+		shared_str mag_bone_type = shared_str().printf("gl_bone_type_%d", i);
+
+		if (pSettings->line_exist(ReachInAllSections(*mag_bone_type), *mag_bone_type))
+		{
+			CreateComponent<TGrenadeLauncherAmmoBones>();
+			break;
 		}
 	}
 }
@@ -244,7 +249,11 @@ void CWeaponMagazinedWGrenade::switch2_Reload()
 	if (IsGrenadeLauncherAttached() && m_bGrenadeMode)
 	{
 		m_bIsReloaded = false;
-		UpdateAmmoBones(m_ammo_bones_gl, iAmmoElapsed, GetAmmoType(true));
+		if (TGrenadeLauncherAmmoBones* GLAmmoBones = GetComponent<TGrenadeLauncherAmmoBones>())
+		{
+			GLAmmoBones->UpdateGLAmmoBones(this, GetAmmoType(true));
+		}
+
 		if (IsChangeAmmoType() && iAmmoElapsed && m_eSoundsFlags.test(ESoundsFlags::sf_grenade_change))
 		{
 			PlaySound("sndChangeGrenade", get_LastFP2());
@@ -1189,34 +1198,6 @@ bool CWeaponMagazinedWGrenade::install_upgrade_impl(LPCSTR section, bool test)
 	if (result2 && !test) { m_sounds.LoadSound(section, "snd_switch_g", "sndSwitchG", true, m_eSoundReload); }
 	result |= result2;
 
-	RStringVec& gl_types = m_bGrenadeMode ? m_ammoTypes : m_ammoTypes2;
-
-	if (pSettings->line_exist(hud_sect, "gl_ammo_params_section"))
-	{
-		for (auto& bone_param : m_ammo_bones_gl)
-		{
-			if (bone_param->AmmoType == undefined_ammo_type)
-			{
-				bone_param->Load(pSettings->r_string(hud_sect, "gl_ammo_params_section"), 1);
-			}
-		}
-	}
-	else for (int i = 0; i < gl_types.size(); i++)
-	{
-		static shared_str params_section;
-		params_section.printf("gl_ammo_params_section_%d", i);
-		if (pSettings->line_exist(hud_sect, *params_section))
-		{
-			for (auto& bone_param : m_ammo_bones_gl)
-			{
-				if (bone_param->AmmoType == i)
-				{
-					bone_param->Load(pSettings->r_string(hud_sect, *params_section), 1);
-				}
-			}
-		}
-	}
-
 	return result;
 }
 
@@ -1366,8 +1347,10 @@ u8 CWeaponMagazinedWGrenade::GetAmmoType(bool for_grenade_mode) const
 void CWeaponMagazinedWGrenade::ForceUpdateHUD()
 {
 	inherited::ForceUpdateHUD();
-	int ammo_elapsed = m_bGrenadeMode ? iAmmoElapsed : iAmmoElapsed2;
-	UpdateAmmoBones(m_ammo_bones_gl, ammo_elapsed, GetAmmoType(true));
+	if (TGrenadeLauncherAmmoBones* GLAmmoBones = GetComponent<TGrenadeLauncherAmmoBones>())
+	{
+		GLAmmoBones->UpdateGLAmmoBones(this, GetAmmoType(true));
+	}
 }
 
 const xr_vector<shared_str>& CWeaponMagazinedWGrenade::getAmmoTypes(bool for_grenade_mode) const
