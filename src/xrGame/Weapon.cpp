@@ -31,6 +31,7 @@
 #include "ElectronicsProblemsManager.h"
 #include "ai/crow/ai_crow.h"
 #include "ai/monsters/bloodsucker/bloodsucker.h"
+#include "Weapons/Components/WeaponAmmoBones.h"
 
 #include <algorithm>
 
@@ -105,32 +106,12 @@ CWeapon::~CWeapon		()
 {
 	xr_delete				(m_UIScope);
 	delete_data				(m_scopes);
-
-	for (auto& it : m_ammo_bones_mag)
-	{
-		xr_delete(it);
-	}
-	m_ammo_bones_mag.clear();
-
-	for (auto& it : m_ammo_bones_gl)
-	{
-		xr_delete(it);
-	}
-	m_ammo_bones_gl.clear();
-
-	for (auto& it : m_shell_bones)
-	{
-		xr_delete(it);
-	}
-	m_shell_bones.clear();
 }
 
 void CWeapon::Hit					(SHit* pHDS)
 {
 	inherited::Hit(pHDS);
 }
-
-
 
 void CWeapon::UpdateXForm	()
 {
@@ -666,10 +647,6 @@ void CWeapon::Load		(LPCSTR section)
 	
 	m_bAddCartridgeInOpen = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "add_cartridge_in_open", false);
 
-	m_bBlockUpdateAmmoBonesShooting = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "ammo_params_toggle_shooting", false);
-	m_bUseLastAmmoType = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "ammo_params_use_last_cartridge_type", false);
-	m_bUseChamberInUpdateBones = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "ammo_params_use_chamber", false);
-
 	m_bBlockReload = READ_IF_EXISTS(pSettings, r_bool, section, "block_reload", false);
 	m_bBlockFiremodeinGLM = READ_IF_EXISTS(pSettings, r_bool, section, "block_firemode_glm", false);
 
@@ -758,168 +735,54 @@ void CWeapon::Load		(LPCSTR section)
 		}
 	}
 
-	if (pSettings->line_exist(hud_sect, "shell_params_section"))
-	{
-		SAmmoBonesParams* bone_params = new SAmmoBonesParams(undefined_ammo_type);
-		bone_params->Load(pSettings->r_string(hud_sect, "shell_params_section"), -1);
-		m_shell_bones.push_back(bone_params);
-	}
-	else for (int i = 0; i < m_ammoTypes.size(); i++)
-	{
-		static shared_str params_section;
-		params_section.printf("shell_params_section_%d", i);
-		if (pSettings->line_exist(hud_sect, *params_section))
-		{
-			SAmmoBonesParams* bone_params = new SAmmoBonesParams(i);
-			bone_params->Load(pSettings->r_string(hud_sect, *params_section), -1);
-			m_shell_bones.push_back(bone_params);
-		}
-	}
+	m_bBlockUpdateAmmoBonesShooting = READ_IF_EXISTS(pSettings, r_bool, ReachInAllSections("ammo_params_toggle_shooting"), "ammo_params_toggle_shooting", false);
+	m_bUseLastAmmoType = READ_IF_EXISTS(pSettings, r_bool, ReachInAllSections("ammo_params_use_last_cartridge_type"), "ammo_params_use_last_cartridge_type", false);
+	m_bUseChamberInUpdateBones = READ_IF_EXISTS(pSettings, r_bool, ReachInAllSections("ammo_params_use_chamber"), "ammo_params_use_chamber", false);
 
-	if (pSettings->line_exist(hud_sect, "ammo_params_section") && pSettings->section_exist(pSettings->r_string(hud_sect, "ammo_params_section")))
+	if (pSettings->line_exist(ReachInAllSections("ammo_params_section"), "ammo_params_section") && pSettings->section_exist(pSettings->r_string(ReachInAllSections("ammo_params_section"), "ammo_params_section")))
 	{
-		SAmmoBonesParams* bone_params = new SAmmoBonesParams(undefined_ammo_type);
-		bone_params->Load(pSettings->r_string(hud_sect, "ammo_params_section"), iMagazineSize);
-		m_ammo_bones_mag.push_back(bone_params);
+		CreateComponent<TAmmoBones>().Load(this, ReachInAllSections("ammo_params_section"));
 	}
 	else for (int i = 0; i < m_ammoTypes.size(); i++)
 	{
 		static shared_str params_section;
 		params_section.printf("ammo_params_section_%d", i);
-		if (pSettings->line_exist(hud_sect, *params_section))
+		if (pSettings->line_exist(ReachInAllSections(*params_section), *params_section))
 		{
-			SAmmoBonesParams* bone_params = new SAmmoBonesParams(i);
-			bone_params->Load(pSettings->r_string(hud_sect, *params_section), iMagazineSize);
-			m_ammo_bones_mag.push_back(bone_params);
+			CreateComponent<TAmmoBones>().Load(this, ReachInAllSections(*params_section));
+			break;
 		}
 	}
 
-	if (pSettings->line_exist(section, "bullets_count"))
+	if (pSettings->line_exist(ReachInAllSections("bullets_count"), "bullets_count"))
 	{
-		m_ammo_bones_lite.bullet_cnt = pSettings->r_u32(section, "bullets_count");
-	}
-
-	if (m_ammo_bones_lite.bullet_cnt > 0)
-	{
-		shared_str read_bullet_bone_name = pSettings->r_string(section, "bullet_bone_name");
-
-		for (u32 i = 1; i <= m_ammo_bones_lite.bullet_cnt; ++i)
-		{
-			shared_str bullet_bone_name;
-			bullet_bone_name.printf("%s%d", *read_bullet_bone_name, i);
-
-			m_ammo_bones_lite.bullet_bones[i] = bullet_bone_name;
-		}
+		CreateComponent<TLiteAmmoBones>();
 	}
 
 	for (u8 i = 0; i < m_ammoTypes.size(); i++)
 	{
 		shared_str mag_bone_type = shared_str().printf("mag_bone_type_%d", i);
 
-		if (pSettings->line_exist(section, *mag_bone_type))
+		if (pSettings->line_exist(ReachInAllSections(*mag_bone_type), *mag_bone_type))
 		{
-			RStringVec bones = {};
-			LPCSTR read_mag_bone_type = pSettings->r_string(section, *mag_bone_type);
+			CreateComponent<TMagAmmoBones>();
+			break;
+		}
+	}
 
-			for (int i = 0, count = _GetItemCount(read_mag_bone_type); i < count; ++i)
-			{
-				string128 bone_name = {};
-				_GetItem(read_mag_bone_type, i, bone_name);
-				bones.push_back(bone_name);
-			}
+	for (u8 i = 0; i < m_ammoTypes.size(); i++)
+	{
+		shared_str mag_bone_type = shared_str().printf("shell_bone_type_%d", i);
 
-			m_mag_bone_type[i] = bones;
+		if (pSettings->line_exist(ReachInAllSections(*mag_bone_type), *mag_bone_type))
+		{
+			CreateComponent<TShellBones>();
+			break;
 		}
 	}
 
 	// Загрузка паттернов отдачи
 	LoadRecoilPatterns(section);
-}
-
-void CWeapon::SAmmoBonesParams::Load(const shared_str& section, s32 base_node_count)
-{
-	if (!AllBones.empty())
-	{
-		AllBones.clear();
-	}
-	if (pSettings->line_exist(section, "all_bones"))
-	{
-		LPCSTR S = pSettings->r_string(section, "all_bones");
-		if (S && S[0])
-		{
-			string128 Item = {};
-			u32 count = _GetItemCount(S);
-			for (u32 it = 0; it < count; ++it)
-			{
-				_GetItem(S, it, Item);
-				AllBones.push_back(Item);
-			}
-		}
-	}
-
-	static shared_str configuration;
-
-	if (ConfigurationMap.size() > 0)
-	{
-		for (auto& node : ConfigurationMap)
-		{
-			if (!node.second.second.empty())
-			{
-				node.second.second.clear();
-			}
-		}
-	}
-
-	ConfigurationMap.clear();
-
-	s32 i = 0;
-
-	for (; i <= base_node_count; ++i)
-	{
-		configuration.printf("configuration_%d", i);
-
-		auto& node = ConfigurationMap[i];
-		node.first = configuration;
-		node.second = {};
-
-		if (!pSettings->line_exist(section, configuration))
-		{
-			continue;
-		}
-
-		LPCSTR S = pSettings->r_string(section, *configuration);
-		if (S && S[0])
-		{
-			string128 Item = {};
-			u32 count = _GetItemCount(S);
-			for (u32 it = 0; it < count; ++it)
-			{
-				node.second.push_back(_GetItem(S, it, Item));
-			}
-		}
-	}
-
-	configuration.printf("configuration_%d", i);
-
-	while (pSettings->line_exist(section, configuration))
-	{
-		auto& node = ConfigurationMap[i];
-		node.first = configuration;
-		node.second = {};
-
-		LPCSTR S = pSettings->r_string(section, *configuration);
-		if (S && S[0])
-		{
-			string128 Item = {};
-			u32 count = _GetItemCount(S);
-			for (u32 it = 0; it < count; ++it)
-			{
-				node.second.push_back(_GetItem(S, it, Item));
-			}
-		}
-
-		configuration.printf("configuration_%d", ++i);
-	}
 }
 
 void CWeapon::LoadFireParams		(LPCSTR section)
@@ -1102,10 +965,20 @@ BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 	ProcessScope();
 	InitAddons();
 
-	UpdateLiteAmmoBones(iAmmoElapsed + iAmmoChamberElapsed);
-	const bool for_grenade = IsGrenadeMode();
-	const u32 config = for_grenade ? iAmmoElapsed : iAmmoElapsed + iAmmoChamberElapsed;
-	UpdateAmmoBones(for_grenade ? m_ammo_bones_gl : m_ammo_bones_mag, config, GetTargetAmmoType(for_grenade));
+	if (TLiteAmmoBones* LiteAmmoBones = GetComponent<TLiteAmmoBones>())
+	{
+		LiteAmmoBones->UpdateLiteAmmoBones(this, GetCurrentElapsed() + iAmmoChamberElapsed);
+	}
+
+	if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
+	{
+		AmmoBones->UpdateAmmoBones(this, iAmmoElapsed, GetTargetAmmoType());
+	}
+
+	if (TGrenadeLauncherAmmoBones* GLAmmoBones = GetComponent<TGrenadeLauncherAmmoBones>())
+	{
+		GLAmmoBones->UpdateGLAmmoBones(this, GetTargetAmmoType(true));
+	}
 
 	m_dwWeaponIndependencyTime = 0;
 
@@ -1624,9 +1497,31 @@ void CWeapon::ForceUpdateHUD()
 	UpdateHUDAddonsVisibility();
 	ProcessScope();
 	u8 type_to_update = m_bUseLastAmmoType && m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType();
-	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, type_to_update);
-	UpdateShellBones(m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType());
-	UpdateLiteAmmoBones(iAmmoElapsed + iAmmoChamberElapsed);
+
+	if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
+	{
+		AmmoBones->UpdateAmmoBones(this, iAmmoElapsed, type_to_update);
+	}
+
+	if (TShellBones* ShellBones = GetComponent<TShellBones>())
+	{
+		ShellBones->UpdateShellBones(this, m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType());
+	}
+
+	if (TLiteAmmoBones* LiteAmmoBones = GetComponent<TLiteAmmoBones>())
+	{
+		LiteAmmoBones->UpdateLiteAmmoBones(this, GetCurrentElapsed() + iAmmoChamberElapsed);
+	}
+
+	if (TMagAmmoBones* MagAmmoBones = GetComponent<TMagAmmoBones>())
+	{
+		MagAmmoBones->UpdateMagAmmoBones(this, type_to_update);
+	}
+
+	if (TGrenadeLauncherAmmoBones* GLAmmoBones = GetComponent<TGrenadeLauncherAmmoBones>())
+	{
+		GLAmmoBones->UpdateGLAmmoBones(this, GetTargetAmmoType(true));
+	}
 
 	if (GetState() == eShowing || GetState() == eIdle)
 	{
@@ -3783,7 +3678,11 @@ void CWeapon::OnStateSwitch	(u32 S)
 	if (S == eBore)
 	{
 		u8 type_to_update = m_bUseLastAmmoType && m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType();
-		UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, type_to_update);
+
+		if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
+		{
+			AmmoBones->UpdateAmmoBones(this, iAmmoElapsed, type_to_update);
+		}
 	}
 
 	if(EnableDof && GetState()==eReload)
@@ -4342,8 +4241,15 @@ void CWeapon::UnloadChamber(bool spawn_ammo)
 
 	if (!IsGrenadeMode() && m_bUseChamberInUpdateBones && m_bAmmoInChamber)
 	{
-		UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, m_ammoType);
-		UpdateLiteAmmoBones(iAmmoElapsed + iAmmoChamberElapsed);
+		if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
+		{
+			AmmoBones->UpdateAmmoBones(this, iAmmoElapsed, m_ammoType);
+		}
+
+		if (TLiteAmmoBones* LiteAmmoBones = GetComponent<TLiteAmmoBones>())
+		{
+			LiteAmmoBones->UpdateLiteAmmoBones(this, GetCurrentElapsed() + iAmmoChamberElapsed);
+		}
 	}
 }
 
@@ -4429,8 +4335,15 @@ void CWeapon::LoadChamber()
 		m_pCurrentAmmo->SetDropManual(TRUE);
 	}
 
-	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, m_ChamberAmmoType);
-	UpdateLiteAmmoBones(iAmmoElapsed + iAmmoChamberElapsed);
+	if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
+	{
+		AmmoBones->UpdateAmmoBones(this, iAmmoElapsed, m_ChamberAmmoType);
+	}
+
+	if (TLiteAmmoBones* LiteAmmoBones = GetComponent<TLiteAmmoBones>())
+	{
+		LiteAmmoBones->UpdateLiteAmmoBones(this, GetCurrentElapsed() + iAmmoChamberElapsed);
+	}
 
 	m_pCurrentAmmo = nullptr;
 
@@ -4528,184 +4441,34 @@ void CWeapon::OnMotionMark(u32 state, const motion_marks& mark)
 	if (state == eReload && !m_bTriStateReload && mark.name == "Left")
 	{
 		u32 current_configuration = FakeReload();
-		UpdateAmmoBones(for_grenade ? m_ammo_bones_gl : m_ammo_bones_mag, current_configuration, GetTargetAmmoType(for_grenade));
-		UpdateLiteAmmoBones(current_configuration);
+
+		if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
+		{
+			AmmoBones->UpdateAmmoBones(this, current_configuration, GetTargetAmmoType());
+		}
+
+		if (TGrenadeLauncherAmmoBones* GLAmmoBones = GetComponent<TGrenadeLauncherAmmoBones>())
+		{
+			GLAmmoBones->UpdateGLAmmoBones(this, GetTargetAmmoType(true));
+		}
+
+		if (TLiteAmmoBones* LiteAmmoBones = GetComponent<TLiteAmmoBones>())
+		{
+			LiteAmmoBones->UpdateLiteAmmoBones(this, current_configuration);
+		}
 	}
 
 	if (state == eReload && !m_bTriStateReload && mark.name == "Left2")
 	{
-		UpdateMagAmmoBones(m_mag_bone_type, GetTargetAmmoType(for_grenade));
+		if (TMagAmmoBones* MagAmmoBones = GetComponent<TMagAmmoBones>())
+		{
+			MagAmmoBones->UpdateMagAmmoBones(this, GetTargetAmmoType(for_grenade));
+		}
 	}
 
 	if (state == eKick && mark.name == "Left")
 	{
 		MakeWeaponKick(Device.vCameraPosition, Device.vCameraDirection);
-	}
-}
-
-void CWeapon::UpdateAmmoBones(xr_vector<SAmmoBonesParams*>& lVector, u32 idx, u8 type)
-{
-	if (lVector.empty())
-	{
-		return;
-	}
-
-	auto SetVisible = [&](IKinematics* kin, const shared_str& bone_name, BOOL status)
-	{
-		if (kin != nullptr)
-		{
-			u16 bone_id = kin->LL_BoneID(bone_name);
-			if (bone_id != BI_NONE)
-			{
-				kin->LL_SetBoneVisible(bone_id, status, FALSE);
-			}
-		}
-	};
-
-	if (m_bUseChamberInUpdateBones)
-	{
-		idx += iAmmoChamberElapsed;
-	}
-
-	attachable_hud_item* HID = HudItemData();
-	IKinematics* hud_kin = HID != nullptr ? HID->m_model : nullptr;
-	IKinematics* world_kin = Visual() != nullptr ? PKinematics(Visual()) : nullptr;
-
-	for (const auto& bone_param : lVector)
-	{
-		for (const auto& bone_name : bone_param->AllBones)
-		{
-			SetVisible(hud_kin, bone_name, FALSE);
-			SetVisible(world_kin, bone_name, FALSE);
-		}
-	}
-
-	for (const auto& bone_param : lVector)
-	{
-		if (bone_param->AmmoType == type || bone_param->AmmoType == undefined_ammo_type)
-		{
-			auto& Node = bone_param->ConfigurationMap[idx];
-			for (const auto& configuration_bone : Node.second)
-			{
-				SetVisible(hud_kin, configuration_bone, TRUE);
-				SetVisible(world_kin, configuration_bone, TRUE);
-			}
-		}
-	}
-
-	if (world_kin != nullptr)
-	{
-		world_kin->CalculateBones_Invalidate();
-		world_kin->CalculateBones(TRUE);
-	}
-
-	if (hud_kin != nullptr)
-	{
-		hud_kin->CalculateBones_Invalidate();
-		hud_kin->CalculateBones(TRUE);
-	}
-}
-
-void CWeapon::UpdateShellBones(u8 type)
-{
-	auto SetVisible = [&](IKinematics* kin, const shared_str& bone_name, BOOL status)
-	{
-		if (kin != nullptr)
-		{
-			u16 bone_id = kin->LL_BoneID(bone_name);
-			if (bone_id != BI_NONE)
-			{
-				kin->LL_SetBoneVisible(bone_id, status, FALSE);
-			}
-		}
-	};
-
-	attachable_hud_item* HID = HudItemData();
-	IKinematics* hud_kin = HID != nullptr ? HID->m_model : nullptr;
-	IKinematics* world_kin = Visual() != nullptr ? PKinematics(Visual()) : nullptr;
-
-	for (const auto& bone_param : m_shell_bones)
-	{
-		for (const auto& bone_name : bone_param->AllBones)
-		{
-			SetVisible(hud_kin, bone_name, FALSE);
-			SetVisible(world_kin, bone_name, FALSE);
-		}
-	}
-
-	for (const auto& bone_param : m_shell_bones)
-	{
-		if (bone_param->AmmoType == type || bone_param->AmmoType == undefined_ammo_type)
-		{
-				for (const auto& bone_name : bone_param->AllBones)
-				{
-					SetVisible(hud_kin, bone_name, TRUE);
-					SetVisible(world_kin, bone_name, TRUE);
-				}
-			}
-	}
-
-	if (world_kin != nullptr)
-	{
-		world_kin->CalculateBones_Invalidate();
-		world_kin->CalculateBones(TRUE);
-	}
-
-	if (hud_kin != nullptr)
-	{
-		hud_kin->CalculateBones_Invalidate();
-		hud_kin->CalculateBones(TRUE);
-	}
-}
-
-void CWeapon::UpdateLiteAmmoBones(u32 idx)
-{
-	if (m_ammo_bones_lite.bullet_cnt == 0)
-	{
-		return;
-	}
-
-	if (IsGrenadeMode())
-	{
-		return;
-	}
-
-	auto SetVisible = [&](IKinematics* kin, const shared_str& bone_name, BOOL status)
-	{
-		if (kin != nullptr)
-		{
-			u16 bone_id = kin->LL_BoneID(bone_name);
-			if (bone_id != BI_NONE)
-			{
-				kin->LL_SetBoneVisible(bone_id, status, FALSE);
-			}
-		}
-	};
-
-	attachable_hud_item* HID = HudItemData();
-	IKinematics* hud_kin = HID != nullptr ? HID->m_model : nullptr;
-	IKinematics* world_kin = Visual() != nullptr ? PKinematics(Visual()) : nullptr;
-
-	for (const auto& it : m_ammo_bones_lite.bullet_bones)
-	{
-		u32 bullet_idx = it.first;
-		const shared_str& node = it.second;
-
-		BOOL visible = (bullet_idx <= idx);
-		SetVisible(world_kin, node, visible);
-		SetVisible(hud_kin, node, visible);
-	}
-
-	if (world_kin != nullptr)
-	{
-		world_kin->CalculateBones_Invalidate();
-		world_kin->CalculateBones(TRUE);
-	}
-
-	if (hud_kin != nullptr)
-	{
-		hud_kin->CalculateBones_Invalidate();
-		hud_kin->CalculateBones(TRUE);
 	}
 }
 
@@ -4727,52 +4490,6 @@ bool CWeapon::ScopeFit(CScope* pIItem) const
 	}
 
 	return false;
-}
-
-void CWeapon::UpdateMagAmmoBones(xr_hash_map<u8, RStringVec>& lVector, u8 type)
-{
-	if (lVector.empty())
-	{
-		return;
-	}
-
-	auto SetVisible = [&](IKinematics* kin, const shared_str& bone_name, BOOL status)
-	{
-		if (kin != nullptr)
-		{
-			u16 bone_id = kin->LL_BoneID(bone_name);
-			if (bone_id != BI_NONE)
-			{
-				kin->LL_SetBoneVisible(bone_id, status, FALSE);
-			}
-		}
-	};
-
-	attachable_hud_item* HID = HudItemData();
-	IKinematics* hud_kin = HID != nullptr ? HID->m_model : nullptr;
-	IKinematics* world_kin = Visual() != nullptr ? PKinematics(Visual()) : nullptr;
-
-	for (const auto& [ammotype, vec] : lVector)
-	{
-		BOOL status = !!(ammotype == type);
-		for (const auto& bone : vec)
-		{
-			SetVisible(hud_kin, bone, status);
-			SetVisible(world_kin, bone, status);
-		}
-	}
-
-	if (world_kin != nullptr)
-	{
-		world_kin->CalculateBones_Invalidate();
-		world_kin->CalculateBones(TRUE);
-	}
-
-	if (hud_kin != nullptr)
-	{
-		hud_kin->CalculateBones_Invalidate();
-		hud_kin->CalculateBones(TRUE);
-	}
 }
 
 int CWeapon::GetMagCapacity()
@@ -5080,11 +4797,21 @@ void CWeapon::OnChangeVisual()
 
 	UpdateAddonsVisibility();
 	ProcessScope();
-	UpdateLiteAmmoBones(iAmmoElapsed + iAmmoChamberElapsed);
 
-	const bool for_grenade = IsGrenadeMode();
-	const u32 config = for_grenade ? iAmmoElapsed : iAmmoElapsed + iAmmoChamberElapsed;
-	UpdateAmmoBones(for_grenade ? m_ammo_bones_gl : m_ammo_bones_mag, config, GetTargetAmmoType(for_grenade));
+	if (TLiteAmmoBones* LiteAmmoBones = GetComponent<TLiteAmmoBones>())
+	{
+		LiteAmmoBones->UpdateLiteAmmoBones(this, GetCurrentElapsed() + iAmmoChamberElapsed);
+	}
+
+	if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
+	{
+		AmmoBones->UpdateAmmoBones(this, iAmmoElapsed, GetTargetAmmoType());
+	}
+
+	if (TGrenadeLauncherAmmoBones* GLAmmoBones = GetComponent<TGrenadeLauncherAmmoBones>())
+	{
+		GLAmmoBones->UpdateGLAmmoBones(this, GetTargetAmmoType(true));
+	}
 }
 
 void CWeapon::on_a_hud_attach()

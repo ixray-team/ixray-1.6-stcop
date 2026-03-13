@@ -30,6 +30,7 @@
 #include "../xrScripts/script_callback_ex.h"
 #include "../xrEngine/xr_input.h"
 #include "HUDManager.h"
+#include "Weapons/Components/WeaponAmmoBones.h"
 
 CUIXml* pWpnScopeXml = nullptr;
 
@@ -851,8 +852,15 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 
 	if (!IsGrenadeMode())
 	{
-		UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, m_ammoType);
-		UpdateLiteAmmoBones(iAmmoElapsed + iAmmoChamberElapsed);
+		if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
+		{
+			AmmoBones->UpdateAmmoBones(this, iAmmoElapsed, m_ammoType);
+		}
+
+		if (TLiteAmmoBones* LiteAmmoBones = GetComponent<TLiteAmmoBones>())
+		{
+			LiteAmmoBones->UpdateLiteAmmoBones(this, GetCurrentElapsed() + iAmmoChamberElapsed);
+		}
 	}
 }
 
@@ -951,8 +959,15 @@ void CWeaponMagazined::ReloadMagazine()
 
 	if (!IsGrenadeMode())
 	{
-		UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, m_ammoType);
-		UpdateLiteAmmoBones(iAmmoElapsed + iAmmoChamberElapsed);
+		if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
+		{
+			AmmoBones->UpdateAmmoBones(this, iAmmoElapsed, m_ammoType);
+		}
+
+		if (TLiteAmmoBones* LiteAmmoBones = GetComponent<TLiteAmmoBones>())
+		{
+			LiteAmmoBones->UpdateLiteAmmoBones(this, GetCurrentElapsed() + iAmmoChamberElapsed);
+		}
 	}
 
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
@@ -1338,7 +1353,11 @@ void CWeaponMagazined::state_Fire(float dt)
 			if (m_bUseLastAmmoType)
 			{
 				u8 type_to_update = m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType();
-				UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, type_to_update);
+
+				if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
+				{
+					AmmoBones->UpdateAmmoBones(this, iAmmoElapsed, type_to_update);
+				}
 			}
 
 			OnShot					();
@@ -2194,7 +2213,10 @@ void CWeaponMagazined::switch2_ChamberLoad()
 		PlayHUDMotion("anm_chamber_load", EHudMixType::eMixAll, eLoadChamber);
 	}
 
-	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, GetTargetAmmoType());
+	if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
+	{
+		AmmoBones->UpdateAmmoBones(this, iAmmoElapsed, GetTargetAmmoType());
+	}
 }
 
 void CWeaponMagazined::switch2_ChamberUnload()
@@ -2212,7 +2234,10 @@ void CWeaponMagazined::switch2_ChamberUnload()
 			PlayHUDMotion("anm_chamber_unload", EHudMixType::eMixAll, eUnloadChamber);
 		}
 
-	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, m_chamber.back().m_LocalAmmoType);
+	if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
+	{
+		AmmoBones->UpdateAmmoBones(this, iAmmoElapsed, m_chamber.back().m_LocalAmmoType);
+	}
 }
 
 void CWeaponMagazined::switch2_ChamberCheck()
@@ -2253,8 +2278,15 @@ void CWeaponMagazined::switch2_ChamberCheck()
 		}
 	}
 
-	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, is_empty ? undefined_ammo_type : m_bAmmoInChamber ? m_chamber.back().m_LocalAmmoType : m_magazine.back().m_LocalAmmoType);
-	UpdateShellBones(m_bHaveShell ? m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType() : undefined_ammo_type);
+	if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
+	{
+		AmmoBones->UpdateAmmoBones(this, iAmmoElapsed, is_empty ? undefined_ammo_type : m_bAmmoInChamber ? m_chamber.back().m_LocalAmmoType : m_magazine.back().m_LocalAmmoType);
+	}
+
+	if (TShellBones* ShellBones = GetComponent<TShellBones>())
+	{
+		ShellBones->UpdateShellBones(this, m_bHaveShell ? m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType() : undefined_ammo_type);
+	}
 }
 
 shared_str CWeaponMagazined::SetCurrentPumpAnimation()
@@ -3168,11 +3200,17 @@ void CWeaponMagazined::PlayAnimShoot()
 
 	if (m_bAmmoInChamber && !m_chamber.empty())
 	{
-		UpdateShellBones(m_chamber.back().m_LocalAmmoType);
+		if (TShellBones* ShellBones = GetComponent<TShellBones>())
+		{
+			ShellBones->UpdateShellBones(this, m_chamber.back().m_LocalAmmoType);
+		}
 	}
 	else if (!m_magazine.empty())
 	{
-		UpdateShellBones(m_magazine.back().m_LocalAmmoType);
+		if (TShellBones* ShellBones = GetComponent<TShellBones>())
+		{
+			ShellBones->UpdateShellBones(this, m_magazine.back().m_LocalAmmoType);
+		}
 	}
 
 	if (!IsMisfire())
