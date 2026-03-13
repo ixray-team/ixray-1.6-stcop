@@ -1278,9 +1278,9 @@ bool CInventory::Eat(PIItem pIItem)
 				Actor()->callback(GameObject::eUseObject)(pIItem->cast_game_object()->lua_game_object());
 			}
 
-			if (pItemToEat->IsUsingCondition() && pItemToEat->GetRemainingUses() < 1 && pItemToEat->CanDelete())
+			if (pItemToEat->IsUsingCondition() && pItemToEat->GetRemainingUses() < 1 && pItemToEat->GetMaxUses() > 1 && pItemToEat->CanDelete())
 			{
-//				CurrentGameUI()->ActorMenu()->RefreshCurrentItemCell();
+				CurrentGameUI()->ActorMenu()->RefreshCurrentItemCell();
 			}
 
 			CurrentGameUI()->ActorMenu()->SetCurrentItem(nullptr);
