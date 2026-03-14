@@ -11,10 +11,9 @@
 #include "graph_engine_space.h"
 #include "../xrScripts/script_export_space.h"
 
-class CPropertyStorage {
+class CPropertyStorage
+{
 public:
-	typedef GraphEngineSpace::_solver_condition_type	_condition_type;
-	typedef GraphEngineSpace::_solver_value_type		_value_type;
 	typedef GraphEngineSpace::CSolverConditionValue		CConditionValue;
 	typedef GraphEngineSpace::CSolverConditionStorage	CConditionStorage;
 
@@ -23,8 +22,8 @@ public:
 
 public:
 	IC		void				clear			();
-	IC		void				set_property	(const _condition_type &condition_id, const _value_type &value);
-	IC		const _value_type	&property		(const _condition_type &condition_id) const;
+	IC		void				set_property	(const u32 &condition_id, const bool &value);
+	IC		const bool	&property		(const u32 &condition_id) const;
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 #include "property_storage_inline.h"

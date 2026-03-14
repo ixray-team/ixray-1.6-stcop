@@ -23,8 +23,6 @@ protected:
 	typedef	CActionPlanner<_object_type>					inherited_planner;
 	typedef	CActionBase<_object_type>						inherited_action;
 	typedef typename inherited_action::_edge_value_type		_edge_value_type;
-	typedef typename inherited_action::_condition_type		_condition_type;
-	typedef typename inherited_action::_value_type			_value_type;
 	using _world_operator = typename inherited_planner::_world_operator;
 
 public:
@@ -44,8 +42,8 @@ public:
 	virtual void		execute					();
 	virtual void		finalize				();
 	virtual bool		completed				() const;
-	IC		void		add_condition			(_world_operator *action, _condition_type condition_id, _value_type condition_value);
-	IC		void		add_effect				(_world_operator *action, _condition_type condition_id, _value_type condition_value);
+	IC		void		add_condition			(_world_operator *action, u32 condition_id, bool condition_value);
+	IC		void		add_effect				(_world_operator *action, u32 condition_id, bool condition_value);
 
 	virtual	void		save					(NET_Packet &packet) {inherited_planner::save(packet); inherited_action::save(packet);}
 	virtual	void		load					(IReader &packet)	 {inherited_planner::load(packet); inherited_action::load(packet);}

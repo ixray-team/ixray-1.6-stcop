@@ -29,7 +29,7 @@ protected:
 
 public:
 						CStalkerPropertyEvaluatorDangers	(CAI_Stalker *object = 0, LPCSTR evaluator_name = "");
-	virtual _value_type	evaluate							();
+	virtual bool	evaluate							();
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -42,7 +42,7 @@ protected:
 
 public:
 						CStalkerPropertyEvaluatorDangerUnknown	(CAI_Stalker *object = 0, LPCSTR evaluator_name = "");
-	virtual _value_type	evaluate								();
+	virtual bool	evaluate								();
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -55,7 +55,7 @@ protected:
 
 public:
 						CStalkerPropertyEvaluatorDangerInDirection	(CAI_Stalker *object = 0, LPCSTR evaluator_name = "");
-	virtual _value_type	evaluate									();
+	virtual bool	evaluate									();
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -68,7 +68,7 @@ protected:
 
 public:
 						CStalkerPropertyEvaluatorDangerWithGrenade	(CAI_Stalker *object = 0, LPCSTR evaluator_name = "");
-	virtual _value_type	evaluate									();
+	virtual bool	evaluate									();
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -81,7 +81,7 @@ protected:
 
 public:
 						CStalkerPropertyEvaluatorDangerBySound	(CAI_Stalker *object = 0, LPCSTR evaluator_name = "");
-	virtual _value_type	evaluate								();
+	virtual bool	evaluate								();
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -97,7 +97,7 @@ private:
 
 public:
 						CStalkerPropertyEvaluatorDangerUnknownCoverActual	(CAI_Stalker *object = 0, LPCSTR evaluator_name = "");
-	virtual _value_type	evaluate											();
+	virtual bool	evaluate											();
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -110,7 +110,7 @@ protected:
 
 public:
 						CStalkerPropertyEvaluatorDangerGrenadeExploded	(CAI_Stalker *object = 0, LPCSTR evaluator_name = "");
-	virtual _value_type	evaluate										();
+	virtual bool	evaluate										();
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -123,7 +123,7 @@ protected:
 
 public:
 						CStalkerPropertyEvaluatorGrenadeToExplode	(CAI_Stalker *object = 0, LPCSTR evaluator_name = "");
-	virtual _value_type	evaluate									();
+	virtual bool	evaluate									();
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -136,5 +136,5 @@ protected:
 
 public:
 						CStalkerPropertyEvaluatorEnemyWounded	(CAI_Stalker *object = 0, LPCSTR evaluator_name = "");
-	virtual _value_type	evaluate								();
+	virtual bool	evaluate								();
 };

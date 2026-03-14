@@ -210,8 +210,8 @@ IC const typename CProblemSolverAbstract::EVALUATORS&CProblemSolverAbstract::eva
 
 TEMPLATE_SPECIALIZATION
 IC void CProblemSolverAbstract::evaluate_condition(typename xr_vector<COperatorCondition>::const_iterator& I,
-                                                   typename xr_vector<COperatorCondition>::const_iterator& E,
-                                                   const _condition_type& condition_id) const
+												   typename xr_vector<COperatorCondition>::const_iterator& E,
+												   const _condition_type& condition_id) const
 {
 	size_t index = I - m_current_state.conditions().begin();
 	m_current_state.add_condition(I, COperatorCondition(condition_id, evaluator(condition_id)->evaluate()));
@@ -243,9 +243,9 @@ IC const typename CProblemSolverAbstract::_index_type&CProblemSolverAbstract::va
 	if (reverse_search)
 	{
 		if ((*i).m_operator->applicable_reverse((*i).m_operator->effects(), (*i).m_operator->conditions(),
-		                                        vertex_index))
+												vertex_index))
 			m_applied = (*i).m_operator->apply_reverse(vertex_index, (*i).m_operator->effects(), m_temp,
-			                                           (*i).m_operator->conditions());
+													   (*i).m_operator->conditions());
 		else
 			m_applied = false;
 	}
@@ -395,7 +395,7 @@ IC void CProblemSolverAbstract::solve()
 	m_solution_changed = true;
 	m_current_state.clear();
 
-	m_failed = !Search(reverse_search ? target_state() : current_state(), reverse_search ? current_state() : target_state(), m_solution, GraphEngineSpace::_solver_dist_type(-1), GraphEngineSpace::_solver_condition_type(-1), 8000);
+	m_failed = !Search(reverse_search ? target_state() : current_state(), reverse_search ? current_state() : target_state(), m_solution, u16(-1), u32(-1), 8000);
 
 	#endif
 }
@@ -423,9 +423,9 @@ IC bool CProblemSolverAbstract::Search(const CState FromID, const CState& dest_v
 		return estimate_edge_weight(Node1);
 	};
 
-	thread_local xr_vector<std::pair<GraphEngineSpace::_solver_dist_type, CState>> TempPriorityNode;
+	thread_local xr_vector<std::pair<u16, CState>> TempPriorityNode;
 	thread_local xr_map<CState, CState> TempCameFrom;
-	thread_local xr_map<CState, GraphEngineSpace::_solver_dist_type> TempCostSoFar;
+	thread_local xr_map<CState, u16> TempCostSoFar;
 	thread_local xr_map<CState, _edge_type> TempEdges;
 
 	TempPriorityNode.clear();
@@ -502,10 +502,17 @@ IC bool CProblemSolverAbstract::Search(const CState FromID, const CState& dest_v
 				}
 
 				u16 priority = NewCost + Distance;
-				TempPriorityNode.insert(std::upper_bound(TempPriorityNode.begin(), TempPriorityNode.end(),std::pair<GraphEngineSpace::_solver_dist_type, CState>{priority, NeighborID},[](const std::pair<GraphEngineSpace::_solver_dist_type, CState>& Left,const std::pair<GraphEngineSpace::_solver_dist_type, CState>& Right){
-					                                         return Left.first > Right.first;
-				                                         }), {priority, NeighborID});
-
+				TempPriorityNode.insert
+				(
+					std::upper_bound
+					(
+						TempPriorityNode.begin(), TempPriorityNode.end(), std::pair<u16, CState>{priority, NeighborID},[](const std::pair<u16, CState>& Left,const std::pair<u16, CState>& Right)
+						{
+							return Left.first > Right.first;
+						}
+					),
+					{priority, NeighborID}
+				);
 
 				auto TempCameFromIterator = TempCameFrom.find(NeighborID);
 				auto TempEdgesIterator = TempEdges.find(NeighborID);

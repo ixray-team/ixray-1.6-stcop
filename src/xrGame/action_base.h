@@ -21,8 +21,6 @@ class CActionBase : public GraphEngineSpace::CWorldOperator {
 protected:
 	typedef GraphEngineSpace::CWorldOperator			inherited;
 	typedef GraphEngineSpace::CWorldProperty			COperatorCondition;
-	typedef GraphEngineSpace::_solver_condition_type	_condition_type;
-	typedef GraphEngineSpace::_solver_value_type		_value_type;
 
 protected:
 	enum EActionStates {
@@ -71,8 +69,8 @@ public:
 	IC		u32					start_level_time	() const;
 	IC		u32					inertia_time		() const;
 	IC		bool				completed			() const;
-	IC		void				set_property		(const _condition_type &condition_id, const _value_type &value);
-	IC		const _value_type	&property			(const _condition_type &condition_id) const;
+	IC		void				set_property		(const u32 &condition_id, const bool&value);
+	IC		const bool	&property			(const u32 &condition_id) const;
 	IC		void 				set_weight			(const _edge_value_type &weight);
 	IC		bool				first_time			() const;
 
