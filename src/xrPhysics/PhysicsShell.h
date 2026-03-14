@@ -197,13 +197,6 @@ public:
 //	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
-//add_to_type_list(CPhysicsElement)
-//#undef script_type_list
-//#define script_type_list save_type_list(CPhysicsElement)
-
-
-XRPHYSICS_API float NonElasticCollisionEnergy( CPhysicsElement *e1, CPhysicsElement *e2, const Fvector &norm);// norm - from 2 to 1
-
 //ABSTRACT:
 // Joint between two elements 
 

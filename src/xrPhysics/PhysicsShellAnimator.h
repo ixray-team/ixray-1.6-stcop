@@ -1,21 +1,26 @@
 #pragma once
-
 #include "PhysicsShell.h"
-#include "PhysicsShellAnimatorBoneData.h"
+#include "PHShell.h"
+
+//Содержит информацию об целевой матрице анимации
+struct CPhysicsShellAnimatorBoneData
+{
+	dJointID m_anim_fixed_dJointID;
+	CPHElement* m_element;
+};
+
 class animation_movement_controller;
 class CPhysicsShellAnimator
 {
-	friend class CPhysicsShellAnimatorBoneData;
-	xr_vector<CPhysicsShellAnimatorBoneData>		m_bones_data;
-	CPhysicsShell*									m_pPhysicsShell;
-	Fmatrix											m_StartXFORM;
+	xr_vector<CPhysicsShellAnimatorBoneData> m_bones_data;
+	CPhysicsShell* m_pPhysicsShell;
+	Fmatrix m_StartXFORM;
 
-	void											CreateJoints( LPCSTR controled );
-	void											CreateJoint( CPHElement *e );
+	void CreateJoints(LPCSTR controled);
+	void CreateJoint(CPHElement* e);
+
 public:
-													CPhysicsShellAnimator		( CPhysicsShell* _pPhysicsShell, CInifile const * ini, LPCSTR section );
-													~CPhysicsShellAnimator		();
-	void											OnFrame						(bool calculate_bones = true);
+	CPhysicsShellAnimator(CPhysicsShell* _pPhysicsShell, CInifile const* ini, LPCSTR section);
+	~CPhysicsShellAnimator();
+	void OnFrame(bool calculate_bones = true);
 };
-	
-
