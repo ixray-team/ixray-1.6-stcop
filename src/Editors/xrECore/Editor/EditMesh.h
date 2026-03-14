@@ -265,7 +265,6 @@ public:
 	st_Face* m_Faces;    // + some array size!!!
 	Fvector* m_Vertices;	// |
 
-protected:
 	Fbox			m_Box;
 
 	int				m_FNormalsRefs;
