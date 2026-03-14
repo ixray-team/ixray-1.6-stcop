@@ -74,7 +74,6 @@ CWeapon::CWeapon()
 
 	m_zoom_params.m_fCurrentZoomFactor			= g_fov;
 	m_zoom_params.m_fZoomRotationFactor			= 0.f;
-	m_zoom_params.m_pNight_vision				= nullptr;
 
 	m_pCurrentAmmo			= nullptr;
 
@@ -536,7 +535,7 @@ void CWeapon::Load		(LPCSTR section)
 
 	
 	m_zoom_params.m_bUseDynamicZoom	= READ_IF_EXISTS(pSettings,r_bool,section,"scope_dynamic_zoom",FALSE);
-	m_zoom_params.m_sUseZoomPostprocess	= 0;
+	m_zoom_params.m_sUseZoomPostprocess	= READ_IF_EXISTS(pSettings, r_string, section, "scope_nightvision", 0);
 	m_zoom_params.m_sUseBinocularVision	= READ_IF_EXISTS(pSettings, r_string, section, "scope_alive_detector", 0);
 
 	if (m_zoom_params.m_sUseBinocularVision.size() > 0)
@@ -544,6 +543,14 @@ void CWeapon::Load		(LPCSTR section)
 		if (TBinocularsVision* Vision = GetOrCreateComponent<TBinocularsVision>())
 		{
 			Vision->Load(m_zoom_params.m_sUseBinocularVision);
+		}
+	}
+
+	if (m_zoom_params.m_sUseZoomPostprocess.size() > 0)
+	{
+		if (TWeaponNightVision* NightVision = GetOrCreateComponent<TWeaponNightVision>())
+		{
+			NightVision->Load(m_zoom_params.m_sUseZoomPostprocess);
 		}
 	}
 
@@ -1418,19 +1425,22 @@ void CWeapon::UpdateCL		()
 
 	if (ParentIsActor())
 	{
-		if (GetNightVision() && !need_renderable())
+		if (TWeaponNightVision* NightVision = GetComponent<TWeaponNightVision>())
 		{
-			if (!GetNightVision()->IsActive())
+			if (!need_renderable())
 			{
-				GetNightVision()->SwitchNightVision(true);
-			}
-			else
-			{
-				float val = GetNightPPEFactor();
-
-				if (val >= 0.0f)
+				if (!NightVision->IsActive())
 				{
-					set_pp_effector_factor2(effWeaponNightVision, val);
+					NightVision->SwitchNightVision(true);
+				}
+				else
+				{
+					float val = GetNightPPEFactor();
+
+					if (val >= 0.0f)
+					{
+						set_pp_effector_factor2(effWeaponNightVision, val);
+					}
 				}
 			}
 		}
@@ -2990,14 +3000,6 @@ void CWeapon::OnZoomIn()
 	UpdateZoomCrosshairUI();
 
 	GamePersistent().SetPickableEffectorDOF(true);
-
-	if (m_zoom_params.m_sUseZoomPostprocess.size() && IsScopeAttached()) 
-	{
-		if (pActor != nullptr && !GetNightVision())
-		{
-			m_zoom_params.m_pNight_vision = new CWeaponNightVision(m_zoom_params.m_sUseZoomPostprocess, pActor);
-		}
-	}
 }
 
 void CWeapon::OnZoomOut()
@@ -3020,10 +3022,9 @@ void CWeapon::OnZoomOut()
 
 	ResetSubStateTime					();
 
-	if (GetNightVision())
+	if (TWeaponNightVision* NightVision = GetComponent<TWeaponNightVision>())
 	{
-		GetNightVision()->SwitchNightVision(false);
-		xr_delete(m_zoom_params.m_pNight_vision);
+		NightVision->SwitchNightVision(false);
 	}
 }
 
@@ -4129,6 +4130,15 @@ void CWeapon::LoadCurrentScopeParams(LPCSTR section)
 			if (TBinocularsVision* Vision = GetOrCreateComponent<TBinocularsVision>())
 			{
 				Vision->Load(m_zoom_params.m_sUseBinocularVision);
+			}
+		}
+
+		if (m_zoom_params.m_sUseZoomPostprocess.size() > 0)
+		{
+			if (TWeaponNightVision* NightVision = GetOrCreateComponent<TWeaponNightVision>())
+			{
+				NightVision->SwitchNightVision(false);
+				NightVision->Load(m_zoom_params.m_sUseZoomPostprocess);
 			}
 		}
 	}
