@@ -42,7 +42,7 @@ public:
 		xr_string	name;
 		u16			slot;
 	};
-	BPPlayItem		m_BPPlayItems[4];
+	BPPlayItem		m_BPPlayItems[MAX_PARTS];
 public:
 					EngineModel			(){ m_pVisual = 0; m_fLOD=1.f; m_pBlend=0;  /* m_pobject_matrix = Fidentity;*/ }
 
