@@ -77,8 +77,6 @@ void main(uint3 DTid : SV_DispatchThreadID)
 	
 	float4 FinalColor = 0.0f;
 	float FinalWeight = 0.0;
-	
-    float NdotV = max(0.0f, dot(O.Normal, -View));
 
 	[unroll(NUM_SAMPLES)]
 	for(uint i = 0; i < NUM_SAMPLES; ++i)
@@ -96,13 +94,11 @@ void main(uint3 DTid : SV_DispatchThreadID)
 		
 		float3 Half = normalize(Light + View);
 
-		float NdotL = max(0.0f, dot(O.Normal, -Light));
 		float NdotH = max(0.0f, dot(O.Normal, -Half));
 		
 		float D = DistributionGGX(NdotH, O.Roughness);
-		float G = NdotL * GeometrySmithD(NdotL, NdotV, O.Roughness);
-		
-		float SampleWeight = D * G * SSLR.w;
+
+		float SampleWeight = D * NdotH * SSLR.w; //LVutner: This is evil, but works.
 		SampleWeight *= 1.0f - abs(Color.w - isHUDRender);
 
 		Color.w = Length;
