@@ -577,20 +577,13 @@ void UIMainMenuForm::Draw()
 				}
 			}
 			{
-				bool selected = MainForm->GetLeftBarForm()->IsUseObjectsTool();
-				if (ImGui::MenuItem("Objects Tools", "", &selected))
+				bool selected = !MainForm->GetPropertiesForm()->IsClosed();
+				if (ImGui::MenuItemI("Properties", ICON_FA_GEAR, "", &selected))
 				{
-					MainForm->GetLeftBarForm()->ShowObjectsTool(selected);
-				}
-				{
-					bool selected = !MainForm->GetPropertiesForm()->IsClosed();
-					if (ImGui::MenuItemI("Properties", ICON_FA_GEAR, "", &selected))
-					{
-						if (selected)
-							MainForm->GetPropertiesForm()->Open();
-						else
-							MainForm->GetPropertiesForm()->Close();
-					}
+					if (selected)
+						MainForm->GetPropertiesForm()->Open();
+					else
+						MainForm->GetPropertiesForm()->Close();
 				}
 			}
 			{
