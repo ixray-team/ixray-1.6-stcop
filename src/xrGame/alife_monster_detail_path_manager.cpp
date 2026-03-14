@@ -87,41 +87,34 @@ bool CALifeMonsterDetailPathManager::actual					() const
 	return							(true);
 }
 
-bool CALifeMonsterDetailPathManager::failed					() const
+bool CALifeMonsterDetailPathManager::failed() const
 {
 	return							(m_path.empty());
 }
 
-void CALifeMonsterDetailPathManager::update					()
+void CALifeMonsterDetailPathManager::update()
 {
 	ALife::_TIME_ID					current_time = ai().alife().time_manager().game_time();
 	if (current_time <= m_last_update_time)
 		return;
 
-//	if (ai().game_graph().vertex(object().m_tGraphID)->level_id() == ai().level_graph().level_id())
-//		Msg							("[detail::update][%6d][%s]",Device.dwTimeGlobal,object().name_replace());
-
 	ALife::_TIME_ID					time_delta = current_time - m_last_update_time;
-	update							(time_delta);
+	update(time_delta);
 	// we advisedly "lost" time we need to process a query to avoid some undesirable effects
-	m_last_update_time				= ai().alife().time_manager().game_time();
+	m_last_update_time = ai().alife().time_manager().game_time();
 }
 
-void CALifeMonsterDetailPathManager::make_inactual			()
+void CALifeMonsterDetailPathManager::make_inactual()
 {
 	m_path.clear();
 }
 
-void CALifeMonsterDetailPathManager::actualize				()
+void CALifeMonsterDetailPathManager::actualize()
 {
-	m_path.clear					();
+	m_path.clear();
 
-	typedef GraphEngineSpace::CGameVertexParams	CGameVertexParams;
-	CGameVertexParams				temp = CGameVertexParams(object().m_tpaTerrain);
-
-	bool							failed = !ai().game_graph().Search(object().get_object().m_tGraphID,m_destination.m_game_vertex_id,m_path,temp.m_vertex_types,temp.max_range,temp.max_iteration_count,temp.max_visited_node_count);
-
-	
+	SGameVertex temp = SGameVertex(object().m_tpaTerrain);
+	bool failed = !ai().game_graph().Search(object().get_object().m_tGraphID,m_destination.m_game_vertex_id,m_path,temp.m_vertex_types,temp.max_range,temp.max_iteration_count,temp.max_visited_node_count);
 
 #ifdef DEBUG
 	if (failed) {

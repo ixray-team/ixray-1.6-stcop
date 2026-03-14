@@ -4,7 +4,6 @@
 #include "alife_space.h"
 #include "../xrScripts/script_export_space.h"
 #include "../xrCore/client_id.h"
-#include "game_sv_base_console_vars.h"
 #include "game_sv_event_queue.h"
 #include "game_sv_item_respawner.h"
 #include "../xrNetServer/NET_Server.h"

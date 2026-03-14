@@ -63,7 +63,7 @@ void CMovementManager::Load(LPCSTR section)
 	m_restricted_object = create_restricted_object();
 	m_location_manager = new CLocationManager(m_object);
 
-	m_base_game_selector = new CGameVertexParams(locations().vertex_types());
+	m_base_game_selector = new SGameVertex(locations().vertex_types());
 	m_base_level_selector = new CBaseParameters();
 
 	m_game_location_selector = new CGameLocationSelector(m_restricted_object, m_location_manager);
