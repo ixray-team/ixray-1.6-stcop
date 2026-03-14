@@ -27,8 +27,6 @@ public:
 	using SCRIPT_ANIMATIONS		= xr_deque<CStalkerAnimationScript>;
 	using EMovementDirection	= MonsterSpace::EMovementDirection;
 	using EBodyState			= MonsterSpace::EBodyState;
-	using _value_type			= GraphEngineSpace::_solver_value_type;
-	using _condition_type		= GraphEngineSpace::_solver_condition_type;
 	using BLEND_ID				= CStalkerAnimationPair::BLEND_ID;
 	using ANIMATION_ID			= BLEND_ID;
 
@@ -81,7 +79,7 @@ private:
 
 public:
 	typedef xr_delegate<MotionID (bool&)>	AnimationSelector;
-	typedef xr_delegate<void ()>				AnimationCallback;
+	typedef xr_delegate<void ()>			AnimationCallback;
 	typedef xr_delegate<void (CBlend*)>		AnimationModifier;
 
 private:

@@ -8,23 +8,23 @@
 
 #pragma once
 
-IC	void CPropertyStorage::set_property	(const _condition_type &condition_id, const _value_type &value)
+IC void CPropertyStorage::set_property(const u32& condition_id, const bool& value)
 {
-	CConditionStorage::iterator			I = std::find(m_storage.begin(),m_storage.end(),condition_id);
+	auto I = std::find(m_storage.begin(), m_storage.end(), condition_id);
 	if (m_storage.end() != I)
-		(*I).m_value					= value;
+		(*I).m_value = value;
 	else
-		m_storage.push_back				(CConditionValue(condition_id,value));
+		m_storage.push_back(CConditionValue(condition_id, value));
 }
 
-IC	const CPropertyStorage::_value_type	&CPropertyStorage::property	(const _condition_type &condition_id) const
+IC const bool& CPropertyStorage::property(const u32& condition_id) const
 {
-	CConditionStorage::const_iterator	I = std::find(m_storage.begin(),m_storage.end(),condition_id);
-	THROW								(m_storage.end() != I);
-	return								((*I).m_value);
+	auto I = std::find(m_storage.begin(), m_storage.end(), condition_id);
+	THROW(m_storage.end() != I);
+	return ((*I).m_value);
 }
 
-IC	void CPropertyStorage::clear		()
+IC void CPropertyStorage::clear()
 {
-	m_storage.clear						();
+	m_storage.clear();
 }

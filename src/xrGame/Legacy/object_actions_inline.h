@@ -25,7 +25,7 @@ IC	CObjectActionBase<_item_type>::CObjectActionBase(_item_type *item, CAI_Stalke
 }
 
 template <typename _item_type>
-IC	void CObjectActionBase<_item_type>::set_property	(_condition_type condition_id, _value_type value)
+IC	void CObjectActionBase<_item_type>::set_property	(u32 condition_id, _value_type value)
 {
 	VERIFY					(m_storage);
 	m_storage->set_property	(condition_id,value);
@@ -47,14 +47,6 @@ IC	CAI_Stalker &CObjectActionBase<_item_type>::object	() const
 }
 
 template <typename _item_type>
-void CObjectActionBase<_item_type>::prevent_weapon_state_switch_ugly	( )
-{
-	//smart_cast<CHudItem&>(object().inventory().ActiveItem()->object()).SetState		( CHUDState::eIdle );
-	//smart_cast<CHudItem&>(object().inventory().ActiveItem()->object()).SetNextState	( CHUDState::eIdle );
-	//object().inventory().SetActiveSlot												( object().inventory().GetActiveSlot() );
-}
-
-template <typename _item_type>
 void CObjectActionBase<_item_type>::stop_hiding_operation_if_any	( ) const
 {
 	PIItem active_item = object().inventory().ActiveItem();
@@ -72,7 +64,7 @@ void CObjectActionBase<_item_type>::stop_hiding_operation_if_any	( ) const
 //////////////////////////////////////////////////////////////////////////
 
 template <typename _item_type>
-IC	CObjectActionMember<_item_type>::CObjectActionMember	(_item_type *item, CAI_Stalker *owner, CPropertyStorage *storage, _condition_type condition_id, _value_type value, LPCSTR action_name) :
+IC	CObjectActionMember<_item_type>::CObjectActionMember	(_item_type *item, CAI_Stalker *owner, CPropertyStorage *storage, u32 condition_id, _value_type value, LPCSTR action_name) :
 	inherited				(item,owner,storage,action_name),
 	m_condition_id			(condition_id),
 	m_value					(value)
