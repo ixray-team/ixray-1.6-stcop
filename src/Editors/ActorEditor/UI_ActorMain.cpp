@@ -261,11 +261,6 @@ void CAEPreferences::Load()
 
 	g_force16BitTransformQuant = JSONData["ae_prefs"]["anims_bit"]["16"];
 	g_force32BitTransformQuant = JSONData["ae_prefs"]["anims_bit"]["32"];
-
-	if (PrefConfigVer = 2)
-	{
-		IsEdgeSmooth = JSONData["ae_prefs"]["smooth"]["auto"];
-	}
 }
 
 void CAEPreferences::Save()
@@ -279,7 +274,6 @@ void CAEPreferences::Save()
 	JSONData["ae_prefs"]["anims_bit"]["32"] = g_force32BitTransformQuant;
 
 	JSONData["ae_prefs"]["version"] = ConfigVer;
-	JSONData["ae_prefs"]["smooth"]["auto"] = IsEdgeSmooth;
 }
 
 void CAEPreferences::FillProp(PropItemVec& props)

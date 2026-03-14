@@ -140,7 +140,20 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
 
 		if (dwFVF & D3DFVF_NORMAL)
 		{
-			vtx->N = m_VertexNormals ? m_VertexNormals[norm_id] : m_Normals[norm_id];
+			if (EPrefs->SmoothGroup == ESmoothGroup::Normals && m_Normals != nullptr)
+			{
+				vtx->N = m_Normals[norm_id];
+			}
+			else
+			{
+				if (m_VertexNormals == nullptr)
+				{
+					GenerateVNormals(0, true);
+				}
+
+				vtx->N = m_VertexNormals ? m_VertexNormals[norm_id] : m_Normals[norm_id];
+			}
+
 			if (invert_normal)
 			{
 				vtx->N.invert();

@@ -53,9 +53,31 @@ void UILeftBarForm::Draw()
 				UI->RedrawScene();
 			}
 
+			const float ButtonSize = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize) * 0.7f;
+			ImGui::TextUnformatted("Smooth Groups:");
+			ImGui::SameLine();
 
-			ImGui::Checkbox("Auto Smooth", &EPrefs->IsEdgeSmooth);
-			ImGui::SameLine(0, 10);
+			bool SMEdge = EPrefs->SmoothGroup == ESmoothGroup::Edges;
+			bool SMNormals = EPrefs->SmoothGroup == ESmoothGroup::Normals;
+			bool SMOther = EPrefs->SmoothGroup == ESmoothGroup::Other;
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+			if (XRay::ImGui::ToolbarButton("##SmoothEdge", "Edges", &SMEdge, { 0, ButtonSize }, ImDrawFlags_RoundCornersLeft))
+			{
+				EPrefs->SmoothGroup = ESmoothGroup::Edges;
+			}
+			ImGui::SameLine();
+			if (XRay::ImGui::ToolbarButton("##SmoothNormals", "Normals", &SMNormals, {0, ButtonSize}, ImDrawFlags_RoundCornersNone))
+			{
+				EPrefs->SmoothGroup = ESmoothGroup::Normals;
+			}
+			ImGui::SameLine();
+			if (XRay::ImGui::ToolbarButton("##SmoothOther", "Legacy", &SMOther, {0, ButtonSize}, ImDrawFlags_RoundCornersRight))
+			{
+				EPrefs->SmoothGroup = ESmoothGroup::Other;
+			}
+			ImGui::PopStyleVar();
+			//ImGui::Checkbox("Auto Smooth", &EPrefs->IsEdgeSmooth);
+			//ImGui::SameLine(0, 10);
 
 			if (ImGui::Button("Bone View")) 
 			{

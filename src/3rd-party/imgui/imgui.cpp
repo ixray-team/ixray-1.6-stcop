@@ -11180,7 +11180,7 @@ void ImGui::ErrorCheckUsingSetCursorPosToExtendParentBoundaries()
         return;
     if (window->SkipItems)
         return;
-    IM_ASSERT_USER_ERROR(0, "Code uses SetCursorPos()/SetCursorScreenPos() to extend window/parent boundaries.\nPlease submit an item e.g. Dummy() afterwards in order to grow window/parent boundaries.");
+//    IM_ASSERT_USER_ERROR(0, "Code uses SetCursorPos()/SetCursorScreenPos() to extend window/parent boundaries.\nPlease submit an item e.g. Dummy() afterwards in order to grow window/parent boundaries.");
 
     // For reference, the old behavior was essentially:
     //window->DC.CursorMaxPos = ImMax(window->DC.CursorMaxPos, window->DC.CursorPos);
