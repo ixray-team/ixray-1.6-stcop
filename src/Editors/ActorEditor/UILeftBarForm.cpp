@@ -64,16 +64,44 @@ void UILeftBarForm::Draw()
 			if (XRay::ImGui::ToolbarButton("##SmoothEdge", "Edges", &SMEdge, { 0, ButtonSize }, ImDrawFlags_RoundCornersLeft))
 			{
 				EPrefs->SmoothGroup = ESmoothGroup::Edges;
+				if (ATools->CurrentObject() != nullptr)
+				{
+					for (CEditableMesh* Mesh : ATools->CurrentObject()->Meshes())
+					{
+						u32 Count = Mesh->m_SVertInfl;
+						Mesh->UnloadSVertices();
+						Mesh->GenerateSVertices(Count);
+					}
+				}
 			}
 			ImGui::SameLine();
 			if (XRay::ImGui::ToolbarButton("##SmoothNormals", "Normals", &SMNormals, {0, ButtonSize}, ImDrawFlags_RoundCornersNone))
 			{
 				EPrefs->SmoothGroup = ESmoothGroup::Normals;
+
+				if (ATools->CurrentObject() != nullptr)
+				{
+					for (CEditableMesh* Mesh : ATools->CurrentObject()->Meshes())
+					{
+						u32 Count = Mesh->m_SVertInfl;
+						Mesh->UnloadSVertices();
+						Mesh->GenerateSVertices(Count);
+					}
+				}
 			}
 			ImGui::SameLine();
 			if (XRay::ImGui::ToolbarButton("##SmoothOther", "Legacy", &SMOther, {0, ButtonSize}, ImDrawFlags_RoundCornersRight))
 			{
 				EPrefs->SmoothGroup = ESmoothGroup::Other;
+				if (ATools->CurrentObject() != nullptr)
+				{
+					for (CEditableMesh* Mesh : ATools->CurrentObject()->Meshes())
+					{
+						u32 Count = Mesh->m_SVertInfl;
+						Mesh->UnloadSVertices();
+						Mesh->GenerateSVertices(Count);
+					}
+				}
 			}
 			ImGui::PopStyleVar();
 			//ImGui::Checkbox("Auto Smooth", &EPrefs->IsEdgeSmooth);
