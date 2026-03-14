@@ -278,80 +278,61 @@ void	phys_shell_verify_model( IKinematics& K )
 	VERIFY2( has_physics_collision_shapes( K ), make_string<const char*>( "Can not create physics shell for model %s because it has no physics collision shapes set", K.getDebugName().c_str() ) );
 }
 
-void	phys_shell_verify_object_model( IPhysicsShellHolder& O )	
+void phys_shell_verify_object_model(IPhysicsShellHolder& O)
 {
-	IKinematics* K		=O.ObjectKinematics();
-		
-	VERIFY2( K, make_string<const char*>( "Can not create physics shell for object %s, model %s is not skeleton", O.ObjectName(), O.ObjectNameVisual() ) );
+	IKinematics* K = O.ObjectKinematics();
 
-	VERIFY2( has_physics_collision_shapes( *K ), make_string<const char*>( "Can not create physics shell for object %s, model %s has no physics collision shapes set", O.ObjectName(), O.ObjectNameVisual() )/*+ make_string("\n object dump: \n") + dbg_object_full_dump_string( &O )*/  );
-
-	VERIFY2( _valid( O.ObjectXFORM() ), make_string<const char*>( "create physics shell: object matrix is not valid" ) /*+ make_string("\n object dump: \n") + dbg_object_full_dump_string( &O )*/ );
-
-	VERIFY2(valid_pos( O.ObjectXFORM().c ),  dbg_valide_pos_string( O.ObjectXFORM().c, &O, "create physics shell" ).c_str());
+	VERIFY2(K, make_string<const char*>("Can not create physics shell for object %s, model %s is not skeleton", O.ObjectName(), O.ObjectNameVisual()));
+	VERIFY2(has_physics_collision_shapes(*K), make_string<const char*>("Can not create physics shell for object %s, model %s has no physics collision shapes set", O.ObjectName(), O.ObjectNameVisual())/*+ make_string("\n object dump: \n") + dbg_object_full_dump_string( &O )*/);
+	VERIFY2(_valid(O.ObjectXFORM()), make_string<const char*>("create physics shell: object matrix is not valid") /*+ make_string("\n object dump: \n") + dbg_object_full_dump_string( &O )*/);
+	VERIFY2(valid_pos(O.ObjectXFORM().c), dbg_valide_pos_string(O.ObjectXFORM().c, &O, "create physics shell").c_str());
 }
 
-bool 	can_create_phys_shell( string1024 &reason, IPhysicsShellHolder& O )
+bool can_create_phys_shell(string1024& reason, IPhysicsShellHolder& O)
 {
-	xr_strcpy(reason, "ok" );
+	xr_strcpy(reason, "ok");
 	bool result = true;
-	IKinematics* K		=O.ObjectKinematics();
-	if(!K)
+	IKinematics* K = O.ObjectKinematics();
+	if (!K)
 	{
-		xr_strcpy( reason, make_string<const char*>( "Can not create physics shell for object %s, model %s is not skeleton", O.ObjectName(), O.ObjectNameVisual() ));
+		xr_strcpy(reason, make_string<const char*>("Can not create physics shell for object %s, model %s is not skeleton", O.ObjectName(), O.ObjectNameVisual()));
 		return false;
 	}
-	if(!has_physics_collision_shapes( *K ))
+	if (!has_physics_collision_shapes(*K))
 	{
-		xr_strcpy( reason, make_string<const char*>( "Can not create physics shell for object %s, model %s has no physics collision shapes set", O.ObjectName(), O.ObjectNameVisual() ));
+		xr_strcpy(reason, make_string<const char*>("Can not create physics shell for object %s, model %s has no physics collision shapes set", O.ObjectName(), O.ObjectNameVisual()));
 		return false;
 	}
-	if(!_valid( O.ObjectXFORM() ))
+	if (!_valid(O.ObjectXFORM()))
 	{
-		xr_strcpy( reason, make_string<const char*>( "create physics shell: object matrix is not valid" ));
+		xr_strcpy(reason, make_string<const char*>("create physics shell: object matrix is not valid"));
 		return false;
 	}
-	if(!valid_pos( O.ObjectXFORM().c ))
+	if (!valid_pos(O.ObjectXFORM().c))
 	{
 #ifdef	DEBUG
-		xr_strcpy( reason, dbg_valide_pos_string( O.ObjectXFORM().c, &O, "create physics shell" ).c_str() );
+		xr_strcpy(reason, dbg_valide_pos_string(O.ObjectXFORM().c, &O, "create physics shell").c_str());
 #else
-        xr_strcpy(reason, make_string<const char*>("~ create physics shell: object position is not valid, or missing 'level.cform', or the level is not loaded."));
+		xr_strcpy(reason, make_string<const char*>("~ create physics shell: object position is not valid, or missing 'level.cform', or the level is not loaded."));
 #endif
 		return false;
 	}
 	return result;
 }
 
-
-
-
-
-float NonElasticCollisionEnergy( CPhysicsElement *e1, CPhysicsElement *e2, const Fvector &norm)// norm - from 2 to 1
+void StaticEnvironmentCB(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
 {
-	VERIFY( e1 );
-	VERIFY( e2 );
-	dBodyID b1 = static_cast<CPHElement*> (e1)->get_body();
-	VERIFY(b1);
-	dBodyID b2 = static_cast<CPHElement*> (e2)->get_body();
-	VERIFY(b2);
-	return E_NL( b1, b2, cast_fp( norm ) );
-}
+	dJointID contact_joint = dJointCreateContact(0, ContactGroup, &c);
 
-
-void	StaticEnvironmentCB ( bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2 )
-{
-	dJointID contact_joint	= dJointCreateContact(0, ContactGroup, &c);
-
-	if(bo1)
+	if (bo1)
 	{
 		((CPHIsland*)(retrieveGeomUserData(c.geom.g1)->callback_data))->DActiveIsland()->ConnectJoint(contact_joint);
-		dJointAttach			(contact_joint, dGeomGetBody(c.geom.g1), 0);
+		dJointAttach(contact_joint, dGeomGetBody(c.geom.g1), 0);
 	}
 	else
 	{
 		((CPHIsland*)(retrieveGeomUserData(c.geom.g2)->callback_data))->DActiveIsland()->ConnectJoint(contact_joint);
-		dJointAttach			(contact_joint, 0, dGeomGetBody(c.geom.g2));
+		dJointAttach(contact_joint, 0, dGeomGetBody(c.geom.g2));
 	}
-	do_colide=false;
+	do_colide = false;
 }

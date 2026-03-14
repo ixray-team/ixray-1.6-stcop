@@ -48,12 +48,6 @@ template <
 	typename _iteration_type
 >
 struct SBaseParameters;
-
-template <
-	typename _dist_type,
-	typename _index_type,
-	typename _iteration_type
->
 struct SGameVertex;
 
 class CEnemyLocationPredictor;
@@ -85,25 +79,16 @@ protected:
 	typedef MovementManager::EPathType			EPathType;
 	typedef DetailPathManager::STravelPathPoint	CTravelPathPoint;
 	typedef GraphEngineSpace::CBaseParameters 	CBaseParameters;
-	typedef GraphEngineSpace::CGameVertexParams	CGameVertexParams;
 
 	typedef CBaseLocationSelector<
 				IGameGraph,
-				SGameVertex<
-					float,
-					u32,
-					u32
-				>,
+				SGameVertex,
 				u32
 			>		CGameLocationSelector;
 
 	typedef CBasePathManager<
 				IGameGraph,
-				SGameVertex<
-					float,
-					u32,
-					u32
-				>,
+				SGameVertex,
 				u32,
 				u32
 			>		CGamePathManager;
@@ -162,7 +147,7 @@ private:
 	float					m_old_desirable_speed;
 
 public:
-	CGameVertexParams		*m_base_game_selector;
+	SGameVertex				*m_base_game_selector;
 	CBaseParameters			*m_base_level_selector;
 	CGameLocationSelector	*m_game_location_selector;
 	CGamePathManager		*m_game_path_manager;
@@ -237,7 +222,7 @@ public:
 			void	clear_path				();
 
 public:
-	IC		CGameVertexParams		*base_game_params			() const;
+	IC		SGameVertex				*base_game_params			() const;
 	IC		CBaseParameters			*base_level_params			() const;
 	IC		CGameLocationSelector	&game_selector				() const;
 	IC		CGamePathManager		&game_path					() const;
