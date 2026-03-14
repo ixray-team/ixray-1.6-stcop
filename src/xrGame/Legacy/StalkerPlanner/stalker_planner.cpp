@@ -40,7 +40,7 @@ LPCSTR CStalkerPlanner::action2string	(const _action_id_type &action_id)
 	return					(inherited::action2string(action_id));
 }
 
-LPCSTR CStalkerPlanner::property2string	(const _condition_type &property_id)
+LPCSTR CStalkerPlanner::property2string	(const u32 &property_id)
 {
 	return					(inherited::property2string(property_id));
 }

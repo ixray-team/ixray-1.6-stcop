@@ -742,8 +742,8 @@ bool FRbmkGoapPlanner::Search()
 				int32_t  Priority = NewCost + Distance;
 
 				TempPriorityNode.insert(std::ranges::upper_bound(TempPriorityNode,
-				                                                 std::pair<GraphEngineSpace::_solver_dist_type, FRbmkGoapParameters*>{Priority, Neighbor},
-				                                                 [](const std::pair<GraphEngineSpace::_solver_dist_type, FRbmkGoapParameters*>& Left,const std::pair<GraphEngineSpace::_solver_dist_type, FRbmkGoapParameters*>& Right)
+				                                                 std::pair<u16, FRbmkGoapParameters*>{Priority, Neighbor},
+				                                                 [](const std::pair<u16, FRbmkGoapParameters*>& Left,const std::pair<u16, FRbmkGoapParameters*>& Right)
 				                                                 {
 					                                                 return Left.first > Right.first;
 				                                                 }), 

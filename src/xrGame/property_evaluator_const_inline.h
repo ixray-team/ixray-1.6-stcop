@@ -15,7 +15,7 @@
 #define CEvaluator	CPropertyEvaluatorConst<_object_type>
 
 TEMPLATE_SPECIALIZATION
-IC	CEvaluator::CPropertyEvaluatorConst	(inherited::_value_type value, LPCSTR evaluator_name) :
+IC	CEvaluator::CPropertyEvaluatorConst	(bool value, LPCSTR evaluator_name) :
 	m_value			(value)
 {
 #ifdef LOG_ACTION

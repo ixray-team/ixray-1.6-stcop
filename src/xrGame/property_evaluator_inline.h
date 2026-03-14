@@ -45,16 +45,16 @@ void CEvaluator::Load				(LPCSTR section)
 }
 
 TEMPLATE_SPECIALIZATION
-typename CEvaluator::_value_type CEvaluator::evaluate	()
+typename bool CEvaluator::evaluate	()
 {
 	return				(0);
 }
 
 TEMPLATE_SPECIALIZATION
-IC	const typename CEvaluator::_value_type &CEvaluator::property	(const _condition_type &condition_id) const
+IC	const typename bool& CEvaluator::property(const u32& condition_id) const
 {
-	VERIFY				(m_storage);
-	return				(m_storage->property(condition_id));
+	VERIFY(m_storage);
+	return (m_storage->property(condition_id));
 }
 
 #undef TEMPLATE_SPECIALIZATION

@@ -49,8 +49,6 @@ using smart_cover::evaluators::idle_time_interval_passed_evaluator;
 using smart_cover::evaluators::lookout_time_interval_passed_evaluator;
 using smart_cover::animation_planner;
 
-typedef CStalkerPropertyEvaluator::_value_type _value_type;
-
 //////////////////////////////////////////////////////////////////////////
 // in_cover_evaluator
 //////////////////////////////////////////////////////////////////////////
@@ -60,7 +58,7 @@ in_cover_evaluator::in_cover_evaluator				(CAI_Stalker *object, LPCSTR evaluator
 {
 }
 
-_value_type in_cover_evaluator::evaluate			()
+bool in_cover_evaluator::evaluate			()
 {
 	return						(!!object().movement().current_params().cover());
 }
@@ -74,7 +72,7 @@ cover_actual_evaluator::cover_actual_evaluator		(CAI_Stalker *object, LPCSTR eva
 {
 }
 
-_value_type cover_actual_evaluator::evaluate		()
+bool cover_actual_evaluator::evaluate		()
 {
 	VERIFY						(object().movement().current_params().cover());
 	return						(object().movement().current_params().cover() == object().movement().target_params().cover());
@@ -89,7 +87,7 @@ cover_entered_evaluator::cover_entered_evaluator	(CAI_Stalker *object, LPCSTR ev
 {
 }
 
-_value_type cover_entered_evaluator::evaluate		()
+bool cover_entered_evaluator::evaluate		()
 {
 	return						(!!object().movement().current_params().cover());
 }
@@ -106,7 +104,7 @@ loophole_actual_evaluator::loophole_actual_evaluator(CAI_Stalker *object, LPCSTR
 
 }
 
-_value_type loophole_actual_evaluator::evaluate		()
+bool loophole_actual_evaluator::evaluate		()
 {
 	if (object().movement().current_params().cover() != object().movement().target_params().cover())
 		return					(false);
@@ -128,7 +126,7 @@ loophole_hit_long_ago_evaluator::loophole_hit_long_ago_evaluator(animation_plann
 	
 }
 
-_value_type loophole_hit_long_ago_evaluator::evaluate()
+bool loophole_hit_long_ago_evaluator::evaluate()
 {
 	return						((m_object->time_object_hit() + m_time_to_wait) < Device.dwTimeGlobal);
 }
@@ -144,7 +142,7 @@ is_action_available_evaluator::is_action_available_evaluator	(animation_planner 
 
 }
 
-_value_type is_action_available_evaluator::evaluate	()
+bool is_action_available_evaluator::evaluate	()
 {
 	if (!m_object->m_object->movement().current_params().cover())
 		return					(false);
@@ -166,7 +164,7 @@ loophole_planner_const_evaluator::loophole_planner_const_evaluator	(animation_pl
 
 }
 
-_value_type loophole_planner_const_evaluator::evaluate		()
+bool loophole_planner_const_evaluator::evaluate		()
 {
 	return						(m_value);
 }
@@ -181,7 +179,7 @@ loophole_exitable_evaluator::loophole_exitable_evaluator(CAI_Stalker *object, LP
 
 }
 
-_value_type loophole_exitable_evaluator::evaluate			()
+bool loophole_exitable_evaluator::evaluate			()
 {
 	if (!m_object->movement().current_params().cover_loophole())
 		return					(false);
@@ -199,7 +197,7 @@ can_exit_loophole_with_animation::can_exit_loophole_with_animation(CAI_Stalker *
 
 }
 
-_value_type can_exit_loophole_with_animation::evaluate			()
+bool can_exit_loophole_with_animation::evaluate			()
 {
 	stalker_movement_manager_smart_cover& movement = object().movement();
 	stalker_movement_params const& current	= movement.current_params();
@@ -246,7 +244,7 @@ default_behaviour_evaluator::default_behaviour_evaluator		(animation_planner *ob
 
 }
 
-_value_type default_behaviour_evaluator::evaluate			()
+bool default_behaviour_evaluator::evaluate			()
 {
 	return						(
 		m_object->m_object->movement().default_behaviour() ||
@@ -264,7 +262,7 @@ can_fire_at_enemy_evaluator::can_fire_at_enemy_evaluator	(animation_planner *obj
 
 }
 
-_value_type can_fire_at_enemy_evaluator::evaluate			()
+bool can_fire_at_enemy_evaluator::evaluate			()
 {
 	if (!m_object->m_object->movement().default_behaviour())
 		return					(true);
@@ -289,7 +287,7 @@ idle_time_interval_passed_evaluator::idle_time_interval_passed_evaluator(animati
 
 }
 
-_value_type idle_time_interval_passed_evaluator::evaluate		()
+bool idle_time_interval_passed_evaluator::evaluate		()
 {
 	if (!m_object->stay_idle())
 		return					(false);
@@ -320,7 +318,7 @@ lookout_time_interval_passed_evaluator::lookout_time_interval_passed_evaluator(a
 
 }
 
-_value_type lookout_time_interval_passed_evaluator::evaluate		()
+bool lookout_time_interval_passed_evaluator::evaluate		()
 {
 	if (m_object->stay_idle())
 		return					(false);
