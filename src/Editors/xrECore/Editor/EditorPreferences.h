@@ -23,6 +23,13 @@ enum{
 	epoSelectInGroup    = (1<<11),
 };
 
+enum class ESmoothGroup
+{
+	Normals,
+	Edges,
+	Other
+};
+
 class ECORE_API CCustomPreferences:
 	protected IEditorWnd
 {
@@ -45,7 +52,7 @@ public:
 	float			cam_fly_alt;
 	float			cam_sens_rot;
 	float			cam_sens_move;
-	bool            IsEdgeSmooth = true;
+	ESmoothGroup    SmoothGroup = ESmoothGroup::Edges;
 
 	BOOL			ShowAxisButtons = false;
 	BOOL			ShowOldCameraButtons = false;
