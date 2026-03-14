@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "ESceneTerrainTools.h"
-#include "../../../UI/Tools/UIPuddlesTool.h"
 
 ESceneTerrainTool::ESceneTerrainTool() :
 	ESceneCustomOTool(OBJCLASS_TERRAIN)
@@ -75,7 +74,6 @@ bool ESceneTerrainTool::Validate(bool full_test)
 void ESceneTerrainTool::CreateControls()
 {
 	inherited::CreateDefaultControls(estDefault);
-	pForm = new UIPuddleTool();
 }
  
 void ESceneTerrainTool::RemoveControls()

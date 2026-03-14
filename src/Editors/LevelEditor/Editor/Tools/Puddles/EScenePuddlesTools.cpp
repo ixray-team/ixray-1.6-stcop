@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "EScenePuddlesTools.h"
-#include "../../../UI/Tools/UIPuddlesTool.h"
 
 EScenePuddlesTool::EScenePuddlesTool() :
 	ESceneCustomOTool(OBJCLASS_PUDDLES)
@@ -58,7 +57,6 @@ bool EScenePuddlesTool::Validate(bool full_test)
 void EScenePuddlesTool::CreateControls()
 {
 	inherited::CreateDefaultControls(estDefault);
-	pForm = new UIPuddleTool();
 }
  
 void EScenePuddlesTool::RemoveControls()
