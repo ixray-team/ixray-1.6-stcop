@@ -63,9 +63,12 @@ float pdf_vndf_isotropic(float3 n, float3 wi, float3 wo, float alpha)
 RWTexture2D<float4> u_sslr : register(u0);
 RWTexture2D<float4> u_sslr_data : register(u1);
 
-[numthreads(8, 8, 1)]
-void main(uint3 DTid : SV_DispatchThreadID)
+[numthreads(64, 1, 1)]
+void main(uint2 Gid : SV_GroupID, uint GI : SV_GroupIndex)
 {
+    uint2 GTid = thread_remap_8x8(GI);
+    uint2 DTid = Gid * 8 + GTid;
+
 	//LVutner: Making my life easier.
 	PSInputFullscreen I;
 	I.hpos.xy = float2(DTid.xy) + 0.5; //half-pix
