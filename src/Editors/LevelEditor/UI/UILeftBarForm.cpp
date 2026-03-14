@@ -4,7 +4,6 @@
 UILeftBarForm::UILeftBarForm()
 {
 	bUseSnapList = true;
-	bUseObjectsTool = true;
 	bDrawSnapListObjects = static_cast<CLevelPreferences*>(EPrefs)->OpenSnapList;
 	m_SnapListMode = false;
 	m_SnapItem_Current = 0;
@@ -212,36 +211,8 @@ void UILeftBarForm::Draw()
 	}
 	ImGui::End();
 	ImGui::PopStyleVar(2);
-	if (LTools->GetToolForm())
-	{
-		if (bUseObjectsTool)
-		{
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, WindowPadding + ImVec2(PannelPadding, PannelPadding));
-			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(ItemSpacing.y, ItemSpacing.y));
-			if (ImGui::Begin("Object Tools", &bUseObjectsTool))
-			{
-				if (LTools->GetToolForm())
-				{
-					LTools->GetToolForm()->Draw();
-				}
-			}
-			ImGui::End(); 
-			ImGui::PopStyleVar(2); // WindowPadding + ItemSpacing
 
-			if (UIObjectTool* pTool = smart_cast<UIObjectTool*>(LTools->GetToolForm()))
-			{
-				pTool->DrawObjectsList();
-			}
-			else if (UISpawnTool* pTool = smart_cast<UISpawnTool*>(LTools->GetToolForm()))
-			{
-				pTool->DrawObjectsList();
-			}
-			else if (UIParticlesTool* pTool = smart_cast<UIParticlesTool*>(LTools->GetToolForm()))
-			{
-				pTool->DrawObjectsList();
-			}
-		}
-	}
+	DrawObjectTool(WindowPadding, PannelPadding, ItemSpacing);
 
 	if (!bUseSnapList)
 	{
@@ -318,4 +289,37 @@ void UILeftBarForm::Draw()
 		ImGui::PopStyleVar(2);
 	}
 	ImGui::End();
+}
+
+void UILeftBarForm::DrawObjectTool(ImVec2& WindowPadding, float PannelPadding, ImVec2& ItemSpacing)
+{
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, WindowPadding + ImVec2(PannelPadding, PannelPadding));
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(ItemSpacing.y, ItemSpacing.y));
+	if (ImGui::Begin("Object Tools", nullptr))
+	{
+		if (LTools->GetToolForm())
+		{
+			LTools->GetToolForm()->Draw();
+		}
+	}
+	ImGui::End();
+	ImGui::PopStyleVar(2); // WindowPadding + ItemSpacing
+
+	if (UIObjectTool* pTool = smart_cast<UIObjectTool*>(LTools->GetToolForm()))
+	{
+		pTool->DrawObjectsList();
+	}
+	else if (UISpawnTool* pTool = smart_cast<UISpawnTool*>(LTools->GetToolForm()))
+	{
+		pTool->DrawObjectsList();
+	}
+	else if (UIParticlesTool* pTool = smart_cast<UIParticlesTool*>(LTools->GetToolForm()))
+	{
+		pTool->DrawObjectsList();
+	}
+	else
+	{
+		ImGui::Begin("Edit Group Items");
+		ImGui::End();
+	}
 }
