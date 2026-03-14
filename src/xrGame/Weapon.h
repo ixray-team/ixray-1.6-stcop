@@ -30,7 +30,6 @@ class CWeaponRPG7;
 class CWeaponRG6;
 class CParticlesObject;
 class CUIStatic;
-class CWeaponNightVision;
 struct TAmmoBones;
 
 class CWeapon : public CHudItemObject,
@@ -468,7 +467,6 @@ protected:
 		BOOL			m_bUseDynamicZoom;
 		shared_str		m_sUseZoomPostprocess;
 		shared_str		m_sUseBinocularVision;
-		CWeaponNightVision*		m_pNight_vision;
 
 	} m_zoom_params;
 	
@@ -510,8 +508,6 @@ public:
 	IC		bool			IsZoomed			()	const		{return m_zoom_params.m_bIsZoomModeNow;}
 	IC		bool			IsAltZoomed			()	const		{return m_zoom_params.m_bIsAltZoomModeNow;}
 	CUIStatic*				ZoomTexture			();	
-
-	CWeaponNightVision*		GetNightVision()	{ return m_zoom_params.m_pNight_vision; }
 
 	IC bool ZoomHideCrosshair() {
 		CActor* pA = H_Parent() ? H_Parent()->cast_actor() : NULL;
