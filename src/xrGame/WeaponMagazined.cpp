@@ -2781,6 +2781,7 @@ void CWeaponMagazined::InitAddons()
 		}
 
 		m_zoom_params.m_sUseBinocularVision = READ_IF_EXISTS(pSettings, r_string, get_scope_section, "scope_alive_detector", 0);
+		m_zoom_params.m_sUseZoomPostprocess = READ_IF_EXISTS(pSettings, r_string, get_scope_section, "scope_nightvision", 0);
 
 		if (m_zoom_params.m_sUseBinocularVision.size() <= 0)
 		{
@@ -2791,6 +2792,19 @@ void CWeaponMagazined::InitAddons()
 			if (TBinocularsVision* Vision = GetOrCreateComponent<TBinocularsVision>())
 			{
 				Vision->Load(m_zoom_params.m_sUseBinocularVision);
+			}
+		}
+
+		if (m_zoom_params.m_sUseZoomPostprocess.size() <= 0)
+		{
+			DestroyComponent<TWeaponNightVision>();
+		}
+		else
+		{
+			if (TWeaponNightVision* NightVision = GetOrCreateComponent<TWeaponNightVision>())
+			{
+				NightVision->SwitchNightVision(false);
+				NightVision->Load(m_zoom_params.m_sUseZoomPostprocess);
 			}
 		}
 
