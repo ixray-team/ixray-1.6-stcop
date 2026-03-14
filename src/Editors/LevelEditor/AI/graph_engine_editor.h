@@ -7,6 +7,5 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
-
 #include "path_manager_params.h"
-#include "graph_engine_editor_space.h"
+#include "../xrEngine/AI/graph_engine_space.h"

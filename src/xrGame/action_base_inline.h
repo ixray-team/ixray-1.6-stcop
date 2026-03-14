@@ -152,17 +152,17 @@ IC	void CBaseAction::set_use_log		(bool value)
 #endif
 
 TEMPLATE_SPECIALIZATION
-IC	void CBaseAction::set_property	(const _condition_type &condition_id, const _value_type &value)
+IC	void CBaseAction::set_property	(const u32 &condition_id, const bool&value)
 {
 	VERIFY					(m_storage);
 	m_storage->set_property	(condition_id,value);
 }
 
 TEMPLATE_SPECIALIZATION
-IC	const typename CBaseAction::_value_type	&CBaseAction::property	(const _condition_type &condition_id) const
+IC	const typename bool& CBaseAction::property	(const u32 &condition_id) const
 {
-	VERIFY					(m_storage);
-	return					(m_storage->property(condition_id));
+	VERIFY(m_storage);
+	return (m_storage->property(condition_id));
 }
 
 TEMPLATE_SPECIALIZATION
