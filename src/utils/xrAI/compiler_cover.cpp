@@ -34,7 +34,6 @@ IC float getLastRP_Scale(CDB::COLLIDER* DB, RayCache& C)
 	for (u32 I = 0; I < tris_count; I++)
 	{
 		CDB::RESULT& rpinf = DB->r_begin()[I];
-		LevelPtr->get_tris()[rpinf.id];
 		b_rc_face& F = g_rc_faces[rpinf.id];
 
 		if (F.dwMaterial >= g_materials.size())
