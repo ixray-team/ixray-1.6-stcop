@@ -400,11 +400,9 @@ void CObjectActionStrapping::execute			()
 {
 	inherited::execute();
 
-	VERIFY						(m_item);
-	VERIFY						(object().inventory().ActiveItem());
-	VERIFY						(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
-
-	prevent_weapon_state_switch_ugly	( );
+	VERIFY(m_item);
+	VERIFY(object().inventory().ActiveItem());
+	VERIFY(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
 }
 
 void CObjectActionStrapping::finalize		()
@@ -509,8 +507,6 @@ void CObjectActionStrappingToIdle::execute			()
 	VERIFY						(m_item);
 	VERIFY						(object().inventory().ActiveItem());
 	VERIFY						(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
-
-	prevent_weapon_state_switch_ugly	( );
 }
 
 void CObjectActionStrappingToIdle::finalize		()
@@ -617,8 +613,6 @@ void CObjectActionUnstrapping::execute			()
 	VERIFY						(m_item);
 	VERIFY						(object().inventory().ActiveItem());
 	VERIFY						(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
-
-	prevent_weapon_state_switch_ugly	( );
 }
 
 void CObjectActionUnstrapping::finalize		()
@@ -723,8 +717,6 @@ void CObjectActionUnstrappingToIdle::execute			()
 	VERIFY						(m_item);
 	VERIFY						(object().inventory().ActiveItem());
 	VERIFY						(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
-
-	prevent_weapon_state_switch_ugly	( );
 }
 
 void CObjectActionUnstrappingToIdle::finalize		()
