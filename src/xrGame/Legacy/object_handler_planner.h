@@ -24,11 +24,11 @@ namespace MonsterSpace {
 	enum EObjectAction;
 };
 
-class CObjectHandlerPlanner : public CActionPlanner<CAI_Stalker,true> {
+class CObjectHandlerPlanner :
+	public CActionPlanner<CAI_Stalker,true>
+{
 public:
 	typedef CActionPlanner<CAI_Stalker,true>			inherited;
-	typedef GraphEngineSpace::_solver_value_type		_value_type;
-	typedef GraphEngineSpace::_solver_condition_type	_condition_type;
 	typedef ObjectHandlerSpace::EWorldProperties		EWorldProperties;
 	typedef MonsterSpace::EObjectAction					EObjectAction;
 	typedef CActionBase<CAI_Stalker>					CSActionBase;
@@ -54,18 +54,18 @@ private:
 #ifdef LOG_ACTION
 public:
 	virtual LPCSTR			action2string			(const _action_id_type &action_id);
-	virtual LPCSTR			property2string			(const _condition_type &property_id);
+	virtual LPCSTR			property2string			(const u32 &property_id);
 #endif
 
 public:
-	IC		_condition_type	uid						(const u32 id1, const u32 id0) const;
-	IC		bool			object_action			(_condition_type action_id, CObject *object);
+	IC		u32	uid						(const u32 id1, const u32 id0) const;
+	IC		bool			object_action			(u32 action_id, CObject *object);
 	IC		u16				current_action_object_id() const;
 	IC		u32				current_action_state_id	() const;
-	IC		u16				action_object_id		(_condition_type action_id) const;
-	IC		u32				action_state_id			(_condition_type action_id) const;
-	IC		void			add_condition			(CSActionBase *action, u16 id, EWorldProperties property, _value_type value);
-	IC		void			add_effect				(CSActionBase *action, u16 id, EWorldProperties property, _value_type value);
+	IC		u16				action_object_id		(u32 action_id) const;
+	IC		u32				action_state_id			(u32 action_id) const;
+	IC		void			add_condition			(CSActionBase *action, u16 id, EWorldProperties property, bool value);
+	IC		void			add_effect				(CSActionBase *action, u16 id, EWorldProperties property, bool value);
 	IC		CAI_Stalker		&object					() const;
 
 public:

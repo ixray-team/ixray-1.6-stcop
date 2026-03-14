@@ -15,11 +15,8 @@
 class CScriptGameObject;
 
 template <typename _object_type>
-class CPropertyEvaluator {
-public:
-	typedef GraphEngineSpace::_solver_condition_type	_condition_type;
-	typedef GraphEngineSpace::_solver_value_type		_value_type;
-
+class CPropertyEvaluator 
+{
 public:
 	_object_type		*m_object;
 	CPropertyStorage	*m_storage;
@@ -33,8 +30,8 @@ public:
 	IC		void				init				(_object_type *object, LPCSTR evaluator_name);
 	virtual void				setup				(_object_type *object, CPropertyStorage *storage);
 	virtual void				Load				(LPCSTR section);
-	virtual	_value_type			evaluate			();
-	IC		const _value_type	&property			(const _condition_type &condition_id) const;
+	virtual	bool			evaluate			();
+	IC		const bool &property			(const u32 &condition_id) const;
 
 	virtual	void				save				(NET_Packet &packet) {}
 	virtual	void				load				(IReader &packet) {}

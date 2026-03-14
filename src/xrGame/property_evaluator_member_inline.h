@@ -12,7 +12,7 @@
 #define CEvaluator				CPropertyEvaluatorMember<_object_type>
 
 TEMPLATE_SPECIALIZATION
-CEvaluator::CPropertyEvaluatorMember	(CPropertyStorage *storage, _condition_type condition_id, _value_type value, bool equality, LPCSTR evaluator_name) :
+CEvaluator::CPropertyEvaluatorMember	(CPropertyStorage *storage, u32 condition_id, bool value, bool equality, LPCSTR evaluator_name) :
 	m_condition_id		(condition_id),
 	m_value				(value),
 	m_equality			(equality)
@@ -30,7 +30,7 @@ void CEvaluator::setup					(_object_type *object, CPropertyStorage *storage)
 }
 
 TEMPLATE_SPECIALIZATION
-typename CEvaluator::_value_type CEvaluator::evaluate	()
+typename bool CEvaluator::evaluate	()
 {
 	return				((this->m_storage->property(m_condition_id) == m_value) == m_equality);
 }

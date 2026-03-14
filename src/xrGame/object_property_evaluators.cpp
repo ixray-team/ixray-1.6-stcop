@@ -26,10 +26,10 @@ CObjectPropertyEvaluatorState::CObjectPropertyEvaluatorState	(CWeapon *item, CAI
 {
 }
 
-CObjectPropertyEvaluatorState::_value_type CObjectPropertyEvaluatorState::evaluate	()
+bool CObjectPropertyEvaluatorState::evaluate	()
 {
 	VERIFY			(m_item);
-	return			(_value_type((m_item->GetState() == m_state) == m_equality));
+	return			(bool((m_item->GetState() == m_state) == m_equality));
 }
 
 CObjectPropertyEvaluatorWeaponHidden::CObjectPropertyEvaluatorWeaponHidden(CWeapon *item, CAI_Stalker *owner):
@@ -37,11 +37,11 @@ CObjectPropertyEvaluatorWeaponHidden::CObjectPropertyEvaluatorWeaponHidden(CWeap
 {
 }
 
-CObjectPropertyEvaluatorWeaponHidden::_value_type CObjectPropertyEvaluatorWeaponHidden::evaluate()
+bool CObjectPropertyEvaluatorWeaponHidden::evaluate()
 {
-	VERIFY			(m_item);
+	VERIFY(m_item);
 
-	return			((m_item !=  m_item->m_pInventory->ActiveItem()) || (m_item->GetState() == CWeapon::eShowing));
+	return ((m_item !=  m_item->m_pInventory->ActiveItem()) || (m_item->GetState() == CWeapon::eShowing));
 }
 //////////////////////////////////////////////////////////////////////////
 // CObjectPropertyEvaluatorAmmo
@@ -53,12 +53,12 @@ CObjectPropertyEvaluatorAmmo::CObjectPropertyEvaluatorAmmo	(CWeapon *item, CAI_S
 {
 }
 
-CObjectPropertyEvaluatorAmmo::_value_type CObjectPropertyEvaluatorAmmo::evaluate	()
+bool CObjectPropertyEvaluatorAmmo::evaluate	()
 {
 	if (!m_ammo_type)
-		return		(_value_type(!!m_item->GetSuitableAmmoTotal()));
-	else
-		return		(_value_type(false));
+		return !!m_item->GetSuitableAmmoTotal();
+
+	return false;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -71,12 +71,12 @@ CObjectPropertyEvaluatorEmpty::CObjectPropertyEvaluatorEmpty(CWeapon *item, CAI_
 {
 }
 
-CObjectPropertyEvaluatorEmpty::_value_type CObjectPropertyEvaluatorEmpty::evaluate	()
+bool CObjectPropertyEvaluatorEmpty::evaluate()
 {
 	if (!m_ammo_type)
-		return		(_value_type(!m_item->GetAmmoElapsed()));
-	else
-		return		(_value_type(false));
+		return !m_item->GetAmmoElapsed();
+
+	return false;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -89,12 +89,12 @@ CObjectPropertyEvaluatorFull::CObjectPropertyEvaluatorFull	(CWeapon *item, CAI_S
 {
 }
 
-CObjectPropertyEvaluatorFull::_value_type CObjectPropertyEvaluatorFull::evaluate	()
+bool CObjectPropertyEvaluatorFull::evaluate	()
 {
 	if (!m_ammo_type)
-		return		(_value_type(m_item->GetAmmoElapsed() == m_item->GetAmmoMagSize()));
+		return		(bool(m_item->GetAmmoElapsed() == m_item->GetAmmoMagSize()));
 	else
-		return		(_value_type(false));
+		return false;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -107,13 +107,12 @@ CObjectPropertyEvaluatorReady::CObjectPropertyEvaluatorReady(CWeapon *item, CAI_
 {
 }
 
-CObjectPropertyEvaluatorReady::_value_type CObjectPropertyEvaluatorReady::evaluate	()
+bool CObjectPropertyEvaluatorReady::evaluate	()
 {
 	if (!m_ammo_type)
-//		return		(_value_type(!m_item->IsMisfire() && m_item->GetAmmoElapsed()));
-		return		(_value_type(!m_item->IsMisfire() && (m_item->GetAmmoElapsed() && (m_item->GetState() != CWeapon::eReload))));
-	else
-		return		(_value_type(false));
+		return (bool(!m_item->IsMisfire() && (m_item->GetAmmoElapsed() && (m_item->GetState() != CWeapon::eReload))));
+
+	return false;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -127,7 +126,7 @@ CObjectPropertyEvaluatorQueue::CObjectPropertyEvaluatorQueue(CWeapon *item, CAI_
 	m_magazined		= item->cast_weapon_magazined();
 }
 
-CObjectPropertyEvaluatorQueue::_value_type CObjectPropertyEvaluatorQueue::evaluate	()
+bool CObjectPropertyEvaluatorQueue::evaluate	()
 {
 	return			(!m_magazined ? true : !m_magazined->StopedAfterQueueFired());
 }
@@ -141,7 +140,7 @@ CObjectPropertyEvaluatorNoItems::CObjectPropertyEvaluatorNoItems(CAI_Stalker *ow
 	m_object		= owner;
 }
 
-CObjectPropertyEvaluatorNoItems::_value_type CObjectPropertyEvaluatorNoItems::evaluate	()
+bool CObjectPropertyEvaluatorNoItems::evaluate	()
 {
 	PIItem I = object().inventory().ActiveItem();
 	if (!I)
@@ -167,10 +166,10 @@ CObjectPropertyEvaluatorMissile::CObjectPropertyEvaluatorMissile	(CMissile *item
 {
 }
 
-CObjectPropertyEvaluatorMissile::_value_type CObjectPropertyEvaluatorMissile::evaluate	()
+bool CObjectPropertyEvaluatorMissile::evaluate	()
 {
 	VERIFY			(m_item);
-	return			(_value_type((m_item->GetState() == m_state) == m_equality));
+	return ((m_item->GetState() == m_state) == m_equality);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -182,7 +181,7 @@ CObjectPropertyEvaluatorMissileStarted::CObjectPropertyEvaluatorMissileStarted	(
 {
 }
 
-CObjectPropertyEvaluatorMissileStarted::_value_type CObjectPropertyEvaluatorMissileStarted::evaluate	()
+bool CObjectPropertyEvaluatorMissileStarted::evaluate	()
 {
 	VERIFY			(m_item);
 	if (m_item->GetState() != CMissile::eThrow)
@@ -200,7 +199,7 @@ CObjectPropertyEvaluatorMissileHidden::CObjectPropertyEvaluatorMissileHidden	(CM
 {
 }
 
-CObjectPropertyEvaluatorMissileHidden::_value_type CObjectPropertyEvaluatorMissileHidden::evaluate	()
+bool CObjectPropertyEvaluatorMissileHidden::evaluate	()
 {
 	VERIFY			(m_item);
 

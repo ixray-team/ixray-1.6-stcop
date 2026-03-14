@@ -14,17 +14,15 @@ template <typename _object_type>
 class CPropertyEvaluatorMember : public CPropertyEvaluator<_object_type> {
 protected:
 	typedef CPropertyEvaluator<_object_type>	inherited;
-	using _value_type = inherited::_value_type;
-	using _condition_type = inherited::_condition_type;
 protected:
-	_condition_type		m_condition_id;
-	_value_type			m_value;
-	bool				m_equality;
+	u32 m_condition_id;
+	bool m_value;
+	bool m_equality;
 
 public:
-						CPropertyEvaluatorMember(CPropertyStorage *storage, _condition_type condition_id, _value_type value, bool equality = true, LPCSTR evaluator_name = "");
+						CPropertyEvaluatorMember(CPropertyStorage *storage, u32 condition_id, bool value, bool equality = true, LPCSTR evaluator_name = "");
 	virtual void		setup					(_object_type *object, CPropertyStorage *storage);
-	virtual _value_type	evaluate				();
+	virtual bool	evaluate				();
 };
 
 
