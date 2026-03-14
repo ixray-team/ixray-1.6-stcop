@@ -14,29 +14,49 @@ float3 TangentToWorld(in float3 N, in float3 H)
     return normalize(T * H.x + B * H.y + N * H.z);
 }
 
-// Brian Karis, Epic Games "Real Shading in Unreal Engine 4"
-float4 ImportanceSampleGGX(float3 N, float2 Xi, float Roughness)
+//https://auzaiffe.wordpress.com/2024/04/15/vndf-importance-sampling-an-isotropic-distribution/
+float3 sample_vndf_isotropic(float3 n, float3 wi, float2 u, float alpha)
 {
-    float m = Roughness * Roughness;
-    float m2 = m * m;
-		
-    float Phi = 2 * PI * Xi.x;
-				 
-    float CosTheta = sqrt((1.0 - Xi.y) * rcp(1.0 + (m2 - 1.0) * Xi.y));
-    float SinTheta = sqrt(abs(1.0 - CosTheta * CosTheta));
-				 
-    float3 H;
-    H.x = SinTheta * cos(Phi);
-    H.y = SinTheta * sin(Phi);
-    H.z = CosTheta;
-		
-    float d = (CosTheta * m2 - CosTheta) * CosTheta + 1.0f;
-    float D = m2 * rcp(d * d);
-    float pdf = D * CosTheta;
+    // decompose the floattor in parallel and perpendicular components
+    float3 wi_z = -n * dot(wi, n);
+    float3 wi_xy = wi + wi_z;
+ 
+    // warp to the hemisphere configuration
+    float3 wiStd = -normalize(alpha * wi_xy + wi_z);
+ 
+    // sample a spherical cap in (-wiStd.z, 1]
+    float wiStd_z = dot(wiStd, n);
+    float z = 1.0 - u.y * (1.0 + wiStd_z);
+    float sinTheta = sqrt(saturate(1.0f - z * z));
+    float phi = (2.0 * PI) * u.x - PI;
+    float x = sinTheta * cos(phi);
+    float y = sinTheta * sin(phi);
+    float3 cStd = float3(x, y, z);
+ 
+    // reflect sample to align with normal
+    float3 up = float3(0, 0, 1.000001); // Used for the singularity
+    float3 wr = n + up;
+    float3 c = dot(wr, cStd) * wr / wr.z - cStd;
+ 
+    // compute halfway direction as standard normal
+    float3 wmStd = c + wiStd;
+    float3 wmStd_z = n * dot(n, wmStd);
+    float3 wmStd_xy = wmStd_z - wmStd;
 
-	H = TangentToWorld(N, H);
-	
-    return float4(H, pdf);
+    return normalize(alpha * wmStd_xy + wmStd_z);
+}
+
+float pdf_vndf_isotropic(float3 n, float3 wi, float3 wo, float alpha)
+{
+    float alphaSquare = alpha * alpha;
+    float3 wm = normalize(wo + wi);
+    float zm = dot(wm, n);
+    float zi = dot(wi, n);
+    float nrm = rsqrt((zi * zi) * (1.0f - alphaSquare) + alphaSquare);
+    float sigmaStd = (zi * nrm) * 0.5f + 0.5f;
+    float sigmaI = sigmaStd / nrm;
+    float nrmN = (zm * zm) * (alphaSquare - 1.0f) + 1.0f;
+    return alphaSquare / (PI * 4.0f * nrmN * nrmN * sigmaI);
 }
 
 //LVutner: UAVs. See CPP code
@@ -70,12 +90,10 @@ void main(uint3 DTid : SV_DispatchThreadID)
 	float3 ViewVec = normalize(ReflectPoint);
 	
 	float2 Jitter = s_blue_noise[uint3(uint2(I.hpos.xy) % 128, uint(m_taa_jitter.w) % 32)].xy;
-	
-	Jitter.x = Jitter.x * 0.5f + 0.5f;
-	Jitter.y *= 0.7f;
-	
-	float4 H = ImportanceSampleGGX(mul(m_invV, O.Normal.xyz), Jitter, O.Roughness);
-	H.xyz = mul(m_V, H.xyz);
+
+	float4 H;
+	H.xyz = sample_vndf_isotropic(O.Normal, -ViewVec, Jitter * float2(1.0, 0.7), O.Roughness * O.Roughness);
+	H.w = pdf_vndf_isotropic(O.Normal, -ViewVec, reflect(ViewVec, H.xyz), O.Roughness * O.Roughness);
 	
 	float3 Reflection = reflect(ViewVec, H.xyz);
 	
