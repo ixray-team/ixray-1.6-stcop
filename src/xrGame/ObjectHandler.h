@@ -14,11 +14,11 @@ class CMissile;
 class CFoodItem;
 class FRbmkObjectHandlerPlanner;
 
-class CObjectHandler : public CInventoryOwner {
+class CObjectHandler : 
+	public CInventoryOwner 
+{
 protected:
-	typedef CInventoryOwner									inherited;
-	typedef GraphEngineSpace::_solver_value_type			_value_type;
-	typedef GraphEngineSpace::_solver_condition_type		_condition_type;
+	typedef CInventoryOwner inherited;
 
 private:
 	int								m_r_hand;

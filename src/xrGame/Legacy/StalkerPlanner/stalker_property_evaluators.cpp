@@ -22,7 +22,6 @@
 #include "enemy_manager.h"
 #include "danger_manager.h"
 #include "ai_space.h"
-#include "ai/stalker/ai_stalker.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "alife_human_brain.h"
 #include "Actor.h"
@@ -33,15 +32,10 @@
 #include "agent_member_manager.h"
 #include "cover_point.h"
 #include "level_graph.h"
-#include "cover_point.h"
-#include "level_graph.h"
 #include "stalker_animation_manager.h"
 #include "Weapon.h"
 
 using namespace StalkerDecisionSpace;
-
-typedef CStalkerPropertyEvaluator::_value_type _value_type;
-
 const float wounded_enemy_reached_distance	= 3.f;
 
 //////////////////////////////////////////////////////////////////////////
@@ -53,7 +47,7 @@ CStalkerPropertyEvaluatorALife::CStalkerPropertyEvaluatorALife	(CAI_Stalker *obj
 {
 }
 
-_value_type CStalkerPropertyEvaluatorALife::evaluate	()
+bool CStalkerPropertyEvaluatorALife::evaluate	()
 {
 	return			(!!ai().get_alife());
 }
@@ -67,7 +61,7 @@ CStalkerPropertyEvaluatorAlive::CStalkerPropertyEvaluatorAlive	(CAI_Stalker *obj
 {
 }
 
-_value_type CStalkerPropertyEvaluatorAlive::evaluate	()
+bool CStalkerPropertyEvaluatorAlive::evaluate	()
 {
 	return			(!!object().g_Alive());
 }
@@ -81,7 +75,7 @@ CStalkerPropertyEvaluatorItems::CStalkerPropertyEvaluatorItems	(CAI_Stalker *obj
 {
 }
 
-_value_type CStalkerPropertyEvaluatorItems::evaluate	()
+bool CStalkerPropertyEvaluatorItems::evaluate	()
 {
 	return			(!!m_object->memory().item().selected());
 }
@@ -102,7 +96,7 @@ CStalkerPropertyEvaluatorEnemies::CStalkerPropertyEvaluatorEnemies	(
 	m_dont_wait		= dont_wait;
 }
 
-_value_type CStalkerPropertyEvaluatorEnemies::evaluate	()
+bool CStalkerPropertyEvaluatorEnemies::evaluate	()
 {
 	if (m_object->memory().enemy().selected())
 		return			(true);
@@ -125,7 +119,7 @@ CStalkerPropertyEvaluatorSeeEnemy::CStalkerPropertyEvaluatorSeeEnemy	(CAI_Stalke
 {
 }
 
-_value_type CStalkerPropertyEvaluatorSeeEnemy::evaluate	()
+bool CStalkerPropertyEvaluatorSeeEnemy::evaluate	()
 {
 	return				(m_object->memory().enemy().selected() ? m_object->memory().visual().visible_now(m_object->memory().enemy().selected()) : false);
 }
@@ -139,7 +133,7 @@ CStalkerPropertyEvaluatorEnemySeeMe::CStalkerPropertyEvaluatorEnemySeeMe	(CAI_St
 {
 }
 
-_value_type CStalkerPropertyEvaluatorEnemySeeMe::evaluate	()
+bool CStalkerPropertyEvaluatorEnemySeeMe::evaluate	()
 {
 	const CEntityAlive		*enemy = m_object->memory().enemy().selected();
 	if (!enemy)
@@ -167,7 +161,7 @@ CStalkerPropertyEvaluatorItemToKill::CStalkerPropertyEvaluatorItemToKill	(CAI_St
 {
 }
 
-_value_type CStalkerPropertyEvaluatorItemToKill::evaluate	()
+bool CStalkerPropertyEvaluatorItemToKill::evaluate	()
 {
 	return				(!!m_object->item_to_kill());
 }
@@ -181,7 +175,7 @@ CStalkerPropertyEvaluatorItemCanKill::CStalkerPropertyEvaluatorItemCanKill	(CAI_
 {
 }
 
-_value_type CStalkerPropertyEvaluatorItemCanKill::evaluate	()
+bool CStalkerPropertyEvaluatorItemCanKill::evaluate	()
 {
 	return				(m_object->item_can_kill());
 }
@@ -195,7 +189,7 @@ CStalkerPropertyEvaluatorFoundItemToKill::CStalkerPropertyEvaluatorFoundItemToKi
 {
 }
 
-_value_type CStalkerPropertyEvaluatorFoundItemToKill::evaluate	()
+bool CStalkerPropertyEvaluatorFoundItemToKill::evaluate	()
 {
 	return				(m_object->remember_item_to_kill());
 }
@@ -209,7 +203,7 @@ CStalkerPropertyEvaluatorFoundAmmo::CStalkerPropertyEvaluatorFoundAmmo	(CAI_Stal
 {
 }
 
-_value_type CStalkerPropertyEvaluatorFoundAmmo::evaluate	()
+bool CStalkerPropertyEvaluatorFoundAmmo::evaluate	()
 {
 	return				(m_object->remember_ammo());
 }
@@ -223,7 +217,7 @@ CStalkerPropertyEvaluatorReadyToKillSmartCover::CStalkerPropertyEvaluatorReadyTo
 {
 }
 
-_value_type CStalkerPropertyEvaluatorReadyToKillSmartCover::evaluate	()
+bool CStalkerPropertyEvaluatorReadyToKillSmartCover::evaluate	()
 {
 	if (m_object->movement().current_params().cover() && !m_object->movement().current_params().cover()->can_fire())
 		return		(true);
@@ -241,7 +235,7 @@ CStalkerPropertyEvaluatorReadyToKill::CStalkerPropertyEvaluatorReadyToKill	(CAI_
 {
 }
 
-_value_type CStalkerPropertyEvaluatorReadyToKill::evaluate	()
+bool CStalkerPropertyEvaluatorReadyToKill::evaluate	()
 {
 	if (!m_object->ready_to_kill())
 		return		(false);
@@ -273,7 +267,7 @@ CStalkerPropertyEvaluatorReadyToDetour::CStalkerPropertyEvaluatorReadyToDetour	(
 {
 }
 
-_value_type CStalkerPropertyEvaluatorReadyToDetour::evaluate	()
+bool CStalkerPropertyEvaluatorReadyToDetour::evaluate	()
 {
 	return				(m_object->ready_to_detour());
 }
@@ -287,7 +281,7 @@ CStalkerPropertyEvaluatorAnomaly::CStalkerPropertyEvaluatorAnomaly	(CAI_Stalker 
 {
 }
 
-_value_type CStalkerPropertyEvaluatorAnomaly::evaluate	()
+bool CStalkerPropertyEvaluatorAnomaly::evaluate	()
 {
 	if (!m_object->undetected_anomaly())
 		return			(false);
@@ -308,7 +302,7 @@ CStalkerPropertyEvaluatorInsideAnomaly::CStalkerPropertyEvaluatorInsideAnomaly	(
 {
 }
 
-_value_type CStalkerPropertyEvaluatorInsideAnomaly::evaluate	()
+bool CStalkerPropertyEvaluatorInsideAnomaly::evaluate	()
 {
 	if (!m_object->inside_anomaly())
 		return			(false);
@@ -329,7 +323,7 @@ CStalkerPropertyEvaluatorPanic::CStalkerPropertyEvaluatorPanic	(CAI_Stalker *obj
 {
 }
 
-_value_type CStalkerPropertyEvaluatorPanic::evaluate	()
+bool CStalkerPropertyEvaluatorPanic::evaluate	()
 {
 	if (object().animation().global_selector())
 		return			(false);
@@ -347,7 +341,7 @@ CStalkerPropertyEvaluatorSmartTerrainTask::CStalkerPropertyEvaluatorSmartTerrain
 {
 }
 
-_value_type CStalkerPropertyEvaluatorSmartTerrainTask::evaluate	()
+bool CStalkerPropertyEvaluatorSmartTerrainTask::evaluate	()
 {
 	if (!ai().get_alife())
 		return			(false);
@@ -373,7 +367,7 @@ CStalkerPropertyEvaluatorEnemyReached::CStalkerPropertyEvaluatorEnemyReached	(CA
 {
 }
 
-_value_type CStalkerPropertyEvaluatorEnemyReached::evaluate	()
+bool CStalkerPropertyEvaluatorEnemyReached::evaluate	()
 {
 	const CEntityAlive			*enemy = object().memory().enemy().selected();
 	if (!enemy)
@@ -395,7 +389,7 @@ CStalkerPropertyEvaluatorPlayerOnThePath::CStalkerPropertyEvaluatorPlayerOnThePa
 {
 }
 
-_value_type CStalkerPropertyEvaluatorPlayerOnThePath::evaluate	()
+bool CStalkerPropertyEvaluatorPlayerOnThePath::evaluate	()
 {
 	const CEntityAlive			*enemy = object().memory().enemy().selected();
 	if (!enemy)
@@ -419,7 +413,7 @@ CStalkerPropertyEvaluatorEnemyCriticallyWounded::CStalkerPropertyEvaluatorEnemyC
 {
 }
 
-_value_type CStalkerPropertyEvaluatorEnemyCriticallyWounded::evaluate	()
+bool CStalkerPropertyEvaluatorEnemyCriticallyWounded::evaluate	()
 {
 	const CEntityAlive			*enemy = object().memory().enemy().selected();
 	if (!enemy)
@@ -443,7 +437,7 @@ CStalkerPropertyEvaluatorShouldThrowGrenade::CStalkerPropertyEvaluatorShouldThro
 {
 }
 
-_value_type CStalkerPropertyEvaluatorShouldThrowGrenade::evaluate	()
+bool CStalkerPropertyEvaluatorShouldThrowGrenade::evaluate	()
 {
 #if 0
 	return						(false);
@@ -513,7 +507,7 @@ CStalkerPropertyEvaluatorTooFarToKillEnemy::CStalkerPropertyEvaluatorTooFarToKil
 {
 }
 
-_value_type CStalkerPropertyEvaluatorTooFarToKillEnemy::evaluate	()
+bool CStalkerPropertyEvaluatorTooFarToKillEnemy::evaluate	()
 {
 	if (!object().memory().enemy().selected())
 		return					(false);
@@ -534,7 +528,7 @@ CStalkerPropertyEvaluatorLowCover::CStalkerPropertyEvaluatorLowCover	(CAI_Stalke
 {
 }
 
-_value_type CStalkerPropertyEvaluatorLowCover::evaluate	()
+bool CStalkerPropertyEvaluatorLowCover::evaluate	()
 {
 	return						(false);
 
