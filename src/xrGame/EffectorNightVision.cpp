@@ -188,34 +188,48 @@ void CNightVisionEffector::PlaySounds(EPlaySounds which)
 	}
 }
 
-CWeaponNightVision::CWeaponNightVision(const shared_str& sect, CActor* actor)
+void TWeaponNightVision::Load(const shared_str& sect)
 {
-	m_pActor = actor;
 	m_section = sect;
 }
 
-CWeaponNightVision::~CWeaponNightVision()
+void TWeaponNightVision::EndComponent()
 {
 	m_bNightVisionOn = false;
-	m_pActor = nullptr;
 }
 
-bool CWeaponNightVision::IsActive()
+bool TWeaponNightVision::IsActive()
 {
-	CEffectorPP* pp = m_pActor->Cameras().GetPPEffector((EEffectorPPType)effWeaponNightVision);
+	CObject* CurrentEntity = Level().CurrentEntity();
+	CActor* pActor = CurrentEntity != nullptr ? CurrentEntity->cast_actor() : nullptr;
+
+	if (pActor == nullptr)
+	{
+		return false;
+	}
+
+	CEffectorPP* pp = pActor->Cameras().GetPPEffector((EEffectorPPType)effWeaponNightVision);
 	return pp != nullptr;
 }
 
-void CWeaponNightVision::SwitchNightVision(bool vision_on)
+void TWeaponNightVision::SwitchNightVision(bool vision_on)
 {
+	CObject* CurrentEntity = Level().CurrentEntity();
+	CActor* pActor = CurrentEntity != nullptr ? CurrentEntity->cast_actor() : nullptr;
+
+	if (pActor == nullptr)
+	{
+		return;
+	}
+	
 	if (vision_on)
 	{
-		AddEffector(m_pActor, effWeaponNightVision, m_section);
+		AddEffector(pActor, effWeaponNightVision, m_section);
 		m_bNightVisionOn = true;
 	}
 	else
 	{
-		CEffectorPP* pp = m_pActor->Cameras().GetPPEffector((EEffectorPPType)effWeaponNightVision);
+		CEffectorPP* pp = pActor->Cameras().GetPPEffector((EEffectorPPType)effWeaponNightVision);
 		if (pp)
 		{
 			pp->Stop(100000.0f);

@@ -30,17 +30,22 @@ public:
 	bool	GetStatus() const { return m_bNightVisionOn; }
 };
 
-class CWeaponNightVision
+struct TWeaponNightVision
 {
+private:
 	bool m_bNightVisionOn = false;
 	shared_str m_section;
-	CActor* m_pActor = nullptr;
 
 public:
-			CWeaponNightVision(const shared_str& sect, CActor* actor);
-			~CWeaponNightVision();
+	void EndComponent();
 
-	void	SwitchNightVision(bool vision_on);
-	bool	IsActive();
-	bool	GetStatus() const { return m_bNightVisionOn; }
+	void Load(const shared_str& sect);
+	void SwitchNightVision(bool vision_on);
+	bool IsActive();
+	bool GetStatus() const { return m_bNightVisionOn; }
+
+private:
+	ECS_COMPONENT(TWeaponNightVision)
+		ECS_STRING(m_section.c_str(), "NightVision Section")
+	ECS_END
 };
