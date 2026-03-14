@@ -320,6 +320,15 @@ bool CWeapon::install_upgrade_addon(LPCSTR section, bool test)
 		}
 	}
 
+	if (m_zoom_params.m_sUseZoomPostprocess.size() > 0)
+	{
+		if (TWeaponNightVision* NightVision = GetOrCreateComponent<TWeaponNightVision>())
+		{
+			NightVision->SwitchNightVision(false);
+			NightVision->Load(m_zoom_params.m_sUseZoomPostprocess);
+		}
+	}
+
 	result |= result2;
 
 	temp_int = (int)m_eSilencerStatus;
