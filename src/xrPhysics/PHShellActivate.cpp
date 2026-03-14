@@ -6,176 +6,150 @@
 #include "PHFracture.h"
 #include "PHJointDestroyInfo.h"
 #include "PHCollideValidator.h"
-//#include "Level.h"
+
 #include "IPhysicsShellHolder.h"
 #include "PhysicsShellAnimator.h"
 #include "../Include/xrRender/Kinematics.h"
-
-///////////////////////////////////////////////////////////////
-///#pragma warning(disable:4995)
-//#include "../3rd-party/ode/ode/src/collision_kernel.h"
-//#include "../3rd-party/ode/ode/src/joint.h"
-//#include "../3rd-party/ode/ode/src/objects.h"
-
-//#pragma warning(default:4995)
-///////////////////////////////////////////////////////////////////
 
 #include "ExtendedGeom.h"
 
 #include "PHElement.h"
 #include "PHShell.h"
+
 void CPHShell::activate(bool disable)
 {
 	PresetActive();
 	if(!CPHObject::is_active()) vis_update_deactivate();
 	if(!disable)EnableObject(0);
-
 }
-void CPHShell::Activate(const Fmatrix &m0,float dt01,const Fmatrix &m2,bool disable){
 
-	if(isActive())return;
+void CPHShell::Activate(const Fmatrix& m0, float dt01, const Fmatrix& m2, bool disable)
+{
+	if (isActive())return;
 	activate(disable);
-//	ELEMENT_I i;
-	mXFORM.set(m0);
-	//for(i=elements.begin();elements.end() != i;++i){
 
-	//	(*i)->Activate(m0,dt01, m2, disable);
-	//}
-	
-	{		
-		ELEMENT_I i=elements.begin(),e=elements.end();
-		for(;i!=e;++i)(*i)->Activate(mXFORM,disable);
-	}
+	mXFORM.set(m0);
 
 	{
-		JOINT_I i=joints.begin(),e=joints.end();
-		for(;i!=e;++i) (*i)->Activate();
-	}	
-	
+		ELEMENT_I i = elements.begin(), e = elements.end();
+		for (; i != e; ++i)(*i)->Activate(mXFORM, disable);
+	}
+	{
+		JOINT_I i = joints.begin(), e = joints.end();
+		for (; i != e; ++i) (*i)->Activate();
+	}
+
 	Fmatrix m;
 	{
 		Fmatrix old_m = mXFORM;//+GetGlobalTransformDynamic update mXFORM;
-		GetGlobalTransformDynamic	(&m);
+		GetGlobalTransformDynamic(&m);
 		mXFORM = old_m;
 	}
-	m.invert();m.mulA_43		(mXFORM);
-	TransformPosition( m, mh_unspecified );
-	if(PKinematics())
+
+	m.invert(); m.mulA_43(mXFORM);
+	TransformPosition(m, mh_unspecified);
+	if (PKinematics())
 	{
-		SetCallbacks( );
+		SetCallbacks();
 	}
 
-	//bActive=true;
-	//bActivating=true;
-	m_flags.set(flActive,TRUE);
-	m_flags.set(flActivating,TRUE);
+	m_flags.set(flActive, TRUE);
+	m_flags.set(flActivating, TRUE);
 	spatial_register();
-///////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
-	//mXFORM.set(m0);
-	//Activate(disable);
+
 	Fvector lin_vel;
-	lin_vel.sub(m2.c,m0.c);
+	lin_vel.sub(m2.c, m0.c);
 	set_LinearVel(lin_vel);
 }
 
+void CPHShell::Activate(const Fmatrix& transform, const Fvector& lin_vel, const Fvector& ang_vel, bool disable) {
 
-
-void CPHShell::Activate(const Fmatrix &transform,const Fvector& lin_vel,const Fvector& ang_vel,bool disable){
-
-	if(isActive())return;
+	if (isActive())return;
 	activate(disable);
 
 	ELEMENT_I i;
 	mXFORM.set(transform);
-	for(i=elements.begin();elements.end() != i;++i){
-		(*i)->Activate(transform,lin_vel, ang_vel);
+	for (i = elements.begin(); elements.end() != i; ++i)
+	{
+		(*i)->Activate(transform, lin_vel, ang_vel);
 	}
-	
-	{
-		JOINT_I i_=joints.begin(),e=joints.end();
-		for(;i_!=e;++i_) (*i_)->Activate();
-	}	
 
-	if(PKinematics())
 	{
-		SetCallbacks( );
+		JOINT_I i_ = joints.begin(), e = joints.end();
+		for (; i_ != e; ++i_) (*i_)->Activate();
+	}
+
+	if (PKinematics())
+	{
+		SetCallbacks();
 	}
 	spatial_register();
-	//bActive=true;
-	//bActivating=true;
-	m_flags.set(flActivating,TRUE);
-	m_flags.set(flActive,TRUE);
-/////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////
-	//mXFORM.set(transform);
-	//Activate(disable);
-	//set_LinearVel(lin_vel);
-	//set_AngularVel(ang_vel);
 
+	m_flags.set(flActivating, TRUE);
+	m_flags.set(flActive, TRUE);
 }
 
-
-
 void CPHShell::Activate(bool disable, bool not_set_bone_callbacks /*= false*/)
-{ 
-	if(isActive())return;
+{
+	if (isActive())return;
 
 	activate(disable);
-	{		
+	{
 		IKinematics* K = m_pKinematics;
-		if(not_set_bone_callbacks)
-				m_pKinematics = 0;
-		ELEMENT_I i=elements.begin(),e=elements.end();
-			 for(;i!=e;++i)(*i)->Activate(mXFORM,disable);
+		if (not_set_bone_callbacks)
+			m_pKinematics = 0;
+		ELEMENT_I i = elements.begin(), e = elements.end();
+		for (; i != e; ++i)(*i)->Activate(mXFORM, disable);
 		m_pKinematics = K;
 	}
 
 	{
-		JOINT_I i=joints.begin(),e=joints.end();
-		for(;i!=e;++i) (*i)->Activate();
-	}	
-	
-	if(PKinematics() && !not_set_bone_callbacks )
-	{
-		SetCallbacks( );
+		JOINT_I i = joints.begin(), e = joints.end();
+		for (; i != e; ++i) (*i)->Activate();
 	}
+
+	if (PKinematics() && !not_set_bone_callbacks)
+	{
+		SetCallbacks();
+	}
+
 	spatial_register();
-	m_flags.set(flActivating,TRUE);
-	m_flags.set(flActive,TRUE);
+	m_flags.set(flActivating, TRUE);
+	m_flags.set(flActive, TRUE);
 
 }
 
-
-void CPHShell::Build(bool disable/*false*/)
+void CPHShell::Build(bool disable)
 {
-	if(isActive())return;
+	if (isActive())return;
 
 	PresetActive();
-	m_flags.set(flActivating,TRUE);
-	m_flags.set(flActive,TRUE);
+	m_flags.set(flActivating, TRUE);
+	m_flags.set(flActive, TRUE);
 
-	{		
-		ELEMENT_I i=elements.begin(),e=elements.end();
-		for(;i!=e;++i)
+	{
+		ELEMENT_I i = elements.begin(), e = elements.end();
+		for (; i != e; ++i)
 		{
 			(*i)->build(disable);
 		}
 	}
 
 	{
-		JOINT_I i=joints.begin(),e=joints.end();
-		for(;i!=e;++i) (*i)->Create();
-	}	
-	
+		JOINT_I i = joints.begin(), e = joints.end();
+		for (; i != e; ++i) (*i)->Create();
+	}
+
 }
 
 void CPHShell::RunSimulation(bool place_current_forms/*true*/)
 {
-	if(!CPHObject::is_active()) vis_update_deactivate();
+	if (!CPHObject::is_active())
+	{
+		vis_update_deactivate();
+	}
+
 	EnableObject(0);
-
-
 	dSpaceSetCleanup(m_space,0);
 
 	{		
@@ -194,17 +168,16 @@ void CPHShell::AfterSetActive()
 {
 	if(isActive())	return;
 	PureActivate();
-	//bActive=true;
+
 	m_flags.set(flActive,TRUE);
 	ELEMENT_I i=elements.begin(),e=elements.end();
 	for(;i!=e;++i)(*i)->PresetActive();
-
 }
 
 void CPHShell::PureActivate()
 {
 	if(isActive())	return;
-	//bActive=true;
+
 	m_flags.set(flActive,TRUE);
 	if(!CPHObject::is_active()) vis_update_deactivate();
 	EnableObject(0);
@@ -223,10 +196,8 @@ void CPHShell::PresetActive()
 	}
 }
 
-
-
-void CPHShell::Deactivate(){
-
+void CPHShell::Deactivate()
+{
 	VERIFY(ph_world);
 	ph_world->NetRelcase(this);
 	
@@ -236,7 +207,6 @@ void CPHShell::Deactivate(){
 		PhysicsRefObject( )->ObjectProcessingDeactivate();
 		xr_delete<CPhysicsShellAnimator>(m_pPhysicsShellAnimatorC); 
 	}
-
 
 	if(!isActive())return;
 	R_ASSERT2(!ph_world->Processing(),"can not deactivate physics shell during physics processing!!!");
@@ -252,36 +222,31 @@ void CPHShell::Deactivate(){
 		CPHObject::UnFreeze();
 		ph_world->StepTouch();
 		ph_world->UnFreeze();
-		//Fmatrix m;
-		//InterpolateGlobalTransform(&m);
 	}
 	spatial_unregister();
 	
 	vis_update_activate();
-	//if(ref_object && !CPHObject::is_active() && m_active_count == 0)
-	//{
-	//	ref_object->processing_activate();
-	//}
 	DisableObject();
 	CPHObject::remove_from_recently_deactivated();
-	
 
 	ELEMENT_I i;
-	for(i=elements.begin();elements.end() != i;++i)
+	for (i = elements.begin(); elements.end() != i; ++i)
+	{
 		(*i)->Deactivate();
+	}
 
 	JOINT_I j;
-	for(j=joints.begin();joints.end() != j;++j)
+	for (j = joints.begin(); joints.end() != j; ++j)
+	{
 		(*j)->Deactivate();
+	}
 
-	
-
-	if(m_space) {
+	if(m_space)
+	{
 		dSpaceDestroy(m_space);
 		m_space=nullptr;
 	}
-	//bActive=false;
-	//bActivating=false;
+
 	m_flags.set(flActivating,FALSE);
 	m_flags.set(flActive,FALSE);
 	m_traced_geoms.clear();
@@ -290,11 +255,12 @@ void CPHShell::Deactivate(){
 
 #include "PHElementInline.h"
 
-void	CPHShell::ActivatingBonePoses( IKinematics &K )
+void CPHShell::ActivatingBonePoses(IKinematics& K)
 {
 	ELEMENT_I i, e;
-	i = elements.begin(); e=elements.end();
-	for( ; i!=e; ++i )
-		(*i)->ActivatingPos( K.LL_GetTransform( (*i)->m_SelfID ) );
-		
+	i = elements.begin(); e = elements.end();
+	for (; i != e; ++i)
+	{
+		(*i)->ActivatingPos(K.LL_GetTransform((*i)->m_SelfID));
+	}
 }
