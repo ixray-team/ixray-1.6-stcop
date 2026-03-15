@@ -269,7 +269,9 @@ void UILeftBarForm::DrawObjectTool(ImVec2& WindowPadding, float PannelPadding, I
 	{
 		if (LTools->GetToolForm())
 		{
-			LTools->GetToolForm()->Draw();
+			ImGui::BeginChild("Scroll", { -1.f, -1.f });
+				LTools->GetToolForm()->Draw();
+			ImGui::EndChild();
 		}
 	}
 	ImGui::End();
