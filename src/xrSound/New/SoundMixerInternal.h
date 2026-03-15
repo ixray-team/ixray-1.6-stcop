@@ -32,6 +32,16 @@
 
 #define SND_RESAMPLING_QUALITY 3
 
+IC void	volume_lerp(float& c, float t, float s, float dt)
+{
+    float diff = t - c;
+    float diff_a = std::abs(diff);
+    if (diff_a < EPS_S) return;
+    float mot = s * dt;
+    if (mot > diff_a) mot = diff_a;
+    c += (diff / diff_a) * mot;
+}
+
 struct sound_slot_state
 {
     XRay::Sound::Mixer::State prev_state;
@@ -43,7 +53,8 @@ struct sound_slot_state
     u32 stopping_position;
     u32 hrtf_slot;
     f32 history[SND_CHANNEL_COUNT][SND_RESAMPLING_QUALITY + 1];
-    float delay = 0.f;
+    f32 panning[SND_CHANNEL_COUNT];
+    f32 delay = 0.f;
     xr_string sound_name;
     Fvector parameters[(u32)XRay::Sound::Mixer::ParameterId::Count];
     f32 fade_volume = 1.0f;
