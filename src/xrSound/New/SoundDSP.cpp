@@ -75,13 +75,16 @@ DSP_SpatialProcess(float** buffer, const Fvector& distances, const Fvector& P, c
     }
 
     // Panning
-    float lc = att * ((speaker_l.dotproduct(pos) + 1.0f) * 0.5f);
-    float rc = att * ((speaker_r.dotproduct(pos) + 1.0f) * 0.5f);
+    float lc = ((speaker_l.dotproduct(pos) + 1.0f) * 0.5f);
+    float rc = ((speaker_r.dotproduct(pos) + 1.0f) * 0.5f);
+    lc = lerp(1.0f, lc, std::min(distance, 1.0f) / 1.0f);
+    rc = lerp(1.0f, rc, std::min(distance, 1.0f) / 1.0f);
+
     for (size_t i = 0; i < SND_BLOCKSIZE; i++) {
-        buffer[0][i] *= (lc * pl);
+        buffer[0][i] *= att * (lc * pl);
     }
     for (size_t i = 0; i < SND_BLOCKSIZE; i++) {
-        buffer[1][i] *= (rc * pl);
+        buffer[1][i] *= att * (rc * pl);
     }
 }
 
