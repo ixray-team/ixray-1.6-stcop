@@ -27,6 +27,8 @@ namespace XRay::ImGui
         ToggleActive,
         TabHover,
         TabActive,
+		TableHover,
+		TableActive
 	};
 	enum EEditorSizes
 	{

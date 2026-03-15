@@ -4,9 +4,9 @@
 static xr_hash_map<XRay::ImGui::EEditorColors, ImColor> EditorColors;
 static xr_hash_map<XRay::ImGui::EEditorSizes, float> EditorSizes;
 
-std::array<ImColor, 21>* CurrentTheme = nullptr;
+std::array<ImColor, 22>* CurrentTheme = nullptr;
 
-std::array<ImColor, 21> PurpleTheme =
+std::array<ImColor, 22> PurpleTheme =
 {
 	ImColor(63, 71, 101, 255),	  // Base Color
 	ImColor(29, 129, 136, 255),	  // Accent Color
@@ -24,7 +24,7 @@ std::array<ImColor, 21> PurpleTheme =
 	ImColor(1.f, 1.f, 1.f, 0.05f) // ActiveTint
 };
 
-std::array<ImColor, 21> DarkTheme =
+std::array<ImColor, 22> DarkTheme =
 {
 	ImColor(51, 51, 51, 255),	  // Base Color
 	ImColor(121, 113, 189, 255),  // Accent Color
@@ -77,7 +77,7 @@ XREUI_API ImColor XRay::ImGui::GetEditorColor(EEditorColors Color)
 	{
 		CurrentTheme = &PurpleTheme;
 	}
-	std::array<ImColor, 21>& DefaultTheme = *CurrentTheme;
+	std::array<ImColor, 22>& DefaultTheme = *CurrentTheme;
 
 	ImColor Clr = DefaultTheme[(size_t)EEditorColors::Main];
 
@@ -181,6 +181,16 @@ XREUI_API ImColor XRay::ImGui::GetEditorColor(EEditorColors Color)
 		case EEditorColors::TabActive:
 		{
 			EditorColors[Color] = AlphaBlend(EditorColors[EEditorColors::PanelBorderTint], DefaultTheme[(size_t)EEditorColors::ActiveTint]);
+			return EditorColors[Color];
+		}
+		case EEditorColors::TableHover:
+		{
+			EditorColors[Color] = AlphaBlend(EditorColors[EEditorColors::TableTint], DefaultTheme[(size_t)EEditorColors::HoverTint]);
+			return EditorColors[Color];
+		}
+		case EEditorColors::TableActive:
+		{
+			EditorColors[Color] = AlphaBlend(EditorColors[EEditorColors::TableTint], DefaultTheme[(size_t)EEditorColors::ActiveTint]);
 			return EditorColors[Color];
 		}
 	}
