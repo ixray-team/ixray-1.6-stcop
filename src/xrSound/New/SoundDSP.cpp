@@ -31,10 +31,10 @@
 #include <Sound.h>
 
 void
-DSP_CalculateRelativePosition(const Fvector& P, const Fvector& D, const Fvector& N, const Fvector& obj_pos, Fvector& out_pos, float& out_distance)
+DSP_CalculateRelativePosition(const dsp_stuff& stuff, Fvector& out_pos, float& out_distance)
 {
     // Direction vector
-    Fvector pos = obj_pos; pos.sub(P);
+    Fvector pos = *stuff.obj_position; pos.sub(*stuff.camera_position);
     if (fis_zero(pos.x) && fis_zero(pos.y) && fis_zero(pos.z)) {
         out_distance = EPS;
     } else {
@@ -42,7 +42,7 @@ DSP_CalculateRelativePosition(const Fvector& P, const Fvector& D, const Fvector&
     }
 
     // Look at matrix
-    Fmatrix m; m.build_camera_dir(P, D, N);
+    Fmatrix m; m.build_camera_dir(*stuff.camera_position, *stuff.camera_direction, *stuff.camera_normal);
 
     // Transform only position without w component
     m.transform_tiny_noadd(out_pos, pos);
@@ -50,7 +50,7 @@ DSP_CalculateRelativePosition(const Fvector& P, const Fvector& D, const Fvector&
 }
 
 void 
-DSP_SpatialProcess(float** buffer, const Fvector& distances, const Fvector& P, const Fvector& D, const Fvector& N, const Fvector& obj_pos, bool disable_attenuation)
+DSP_SpatialProcess(float** buffer, const Fvector& distances, const dsp_stuff& stuff, bool disable_attenuation)
 {   
     // LH coordinates
     Fvector pos;
@@ -58,7 +58,7 @@ DSP_SpatialProcess(float** buffer, const Fvector& distances, const Fvector& P, c
     Fvector speaker_l = Fvector(-1, 0, 0.5);
     Fvector speaker_r = Fvector(1, 0, 0.5);
     
-    DSP_CalculateRelativePosition(P, D, N, obj_pos, pos, distance);
+    DSP_CalculateRelativePosition(stuff, pos, distance);
 
     // Panning level
     float pl = std::min(distance / distances.x, 1.0f);
@@ -79,12 +79,19 @@ DSP_SpatialProcess(float** buffer, const Fvector& distances, const Fvector& P, c
     float rc = ((speaker_r.dotproduct(pos) + 1.0f) * 0.5f);
     lc = lerp(1.0f, lc, std::min(distance, 1.0f) / 1.0f);
     rc = lerp(1.0f, rc, std::min(distance, 1.0f) / 1.0f);
+    //volume_lerp(stuff.panning[0], lc, 10.0f, stuff.dt);
+    //volume_lerp(stuff.panning[1], rc, 10.0f, stuff.dt);
+
+    float sample_dt = 1.0f / (float)SND_SAMPLERATE;
 
     for (size_t i = 0; i < SND_BLOCKSIZE; i++) {
-        buffer[0][i] *= att * (lc * pl);
+        buffer[0][i] *= att * (stuff.panning[0] * pl);
+        volume_lerp(stuff.panning[0], lc, 10.0f, sample_dt);
     }
+
     for (size_t i = 0; i < SND_BLOCKSIZE; i++) {
-        buffer[1][i] *= att * (rc * pl);
+        buffer[1][i] *= att * (stuff.panning[1] * pl);
+        volume_lerp(stuff.panning[1], rc, 10.0f, sample_dt);
     }
 }
 
