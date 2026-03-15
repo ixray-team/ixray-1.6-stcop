@@ -282,9 +282,9 @@ XREUI_API   bool        XRay::ImGui::ButtonBackground(const char* id, bool* togg
 										 *toggle ? EnabledColor  : DisabledColor;
 			}
 			else {
-				ButtonColor = (Active) ? DisabledColor :
+				ButtonColor = (Active) ? DisabledActive :
 							   Hovered ? DisabledHover :
-										 DisabledActive;
+										 DisabledColor;
 }
 
 	// --- draw background ---
@@ -352,7 +352,7 @@ XREUI_API bool XRay::ImGui::ToggleButton(const char* Label, bool* Flags, const I
 	bool Enabled = *Flags;
 	bool Changed = false;
 
-    const ImVec4 FlagColor = GetEditorColor(EEditorColors::Accent);
+    const ImColor FlagColor = GetEditorColor(EEditorColors::Accent);
     const float StripeWidth = GetEditorSize(EEditorSizes::IndicatorWidth);
     const float Rounding = style.FrameRounding;
     
@@ -365,18 +365,16 @@ XREUI_API bool XRay::ImGui::ToggleButton(const char* Label, bool* Flags, const I
 		Enabled = !Enabled;
 	}
 	::ImGui::PopStyleVar(2);
-
 	
-	ImDrawList* DrawList		= ::ImGui::GetWindowDrawList();
-	ImVec2		Min				= ::ImGui::GetItemRectMin();
-	ImVec2		Max				= ::ImGui::GetItemRectMax();
-
 	if (!Enabled)
 	{
+		ImDrawList* DrawList		= ::ImGui::GetWindowDrawList();
+		ImVec2		Min				= ::ImGui::GetItemRectMin();
+		ImVec2		Max				= ::ImGui::GetItemRectMax();
+
 		DrawList->AddRectFilled(
-			Min,
-			ImVec2(Min.x + StripeWidth, Max.y),
-			::ImGui::ColorConvertFloat4ToU32(FlagColor),
+			Min, ImVec2(Min.x + StripeWidth, Max.y),
+			FlagColor,
 			Rounding,
 			ImDrawFlags_RoundCornersLeft
 		);
