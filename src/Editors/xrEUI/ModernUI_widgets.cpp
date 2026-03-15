@@ -157,7 +157,6 @@ void XRay::ImGui::TextFramedEx(const char* text, const char* text_end, const ImV
 XREUI_API bool XRay::ImGui::InputVector3(const char* Label, float V[3], float Step)
 {
 	bool Changed = false;
-	ImGuiStyle& style = ::ImGui::GetStyle();
 
 	::ImGui::PushID(Label);
 	::ImGui::BeginGroup();
@@ -172,13 +171,8 @@ XREUI_API bool XRay::ImGui::InputVector3(const char* Label, float V[3], float St
 	static  const   char* Ids[3]    = { "##x", "##y", "##z" };
 	const	float   StripeWidth     = GetEditorSize(EEditorSizes::IndicatorWidth);
 	const	float   Rounding        = GetEditorSize(EEditorSizes::ButtonRadius);
+	const	float	InputWidth		= (::ImGui::GetContentRegionAvail().x) / 3.0f;
 
-	const	float	FontSize		= GetEditorSize(EEditorSizes::FontSize);
-	const	ImVec2	FrameSize		= CalcItemSize(ImVec2(-0.01f,-1.f), FontSize + style.FramePadding.x * 2.0f, FontSize + style.FramePadding.y * 2.0f);
-	const	float	InputWidth		= (FrameSize.x) / 3.0f;
-	const	ImVec2	InputPadding	= ImVec2(GetEditorSize(EEditorSizes::ButtonRadius),
-											 (FrameSize.y - GetEditorSize(EEditorSizes::FontSize)) / 2
-											 );
 	for (int i = 0; i < 3; ++i)
 	{
 		if (i > 0)
@@ -187,11 +181,8 @@ XREUI_API bool XRay::ImGui::InputVector3(const char* Label, float V[3], float St
 		}
 
 		::ImGui::SetNextItemWidth(InputWidth);
-		::ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, InputPadding);
 
 		Changed |= ::ImGui::DragFloat(Ids[i], &V[i], Step, 0, 0, "%.3f");
-
-		::ImGui::PopStyleVar();
 
 		ImDrawList*     DrawList    = ::ImGui::GetWindowDrawList();
 		ImVec2          Min         = ::ImGui::GetItemRectMin();
@@ -202,7 +193,7 @@ XREUI_API bool XRay::ImGui::InputVector3(const char* Label, float V[3], float St
 			Min,
 			ImVec2(Min.x + StripeWidth, Max.y),
 			::ImGui::ColorConvertFloat4ToU32(AxisColors[i]),
-			Rounding,
+			::ImGui::GetStyle().FrameRounding,
 			ImDrawFlags_RoundCornersLeft
 		);
 	}
