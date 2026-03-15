@@ -137,9 +137,9 @@ private:
 
 private:
 	// IXR: .xrignore
-	xr_vector<xr_string> IgnoreData;
+	xr_vector<xr_path> IgnoreData;
 	void ParseIgnoreList();
-	bool CheckSkip(const xr_string& Path) const;
+	bool CheckSkip(const xr_path& Path) const;
 	
 	void FileEventAdd(LPCSTR file);
 	void FileEventDel(LPCSTR file);

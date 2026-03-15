@@ -38,15 +38,17 @@ void CLocatorAPI::ParseIgnoreList()
 	}
 }
 
-bool CLocatorAPI::CheckSkip(const xr_string& Path) const
+bool CLocatorAPI::CheckSkip(const xr_path& Path) const
 {
-	xr_string UnixPath = Path.data();
-	std::replace(UnixPath.begin(), UnixPath.end(), '\\', '/');
+	auto UnixPath = Path.native();
+	std::ranges::replace(UnixPath, '\\', '/');
 
-	for (const xr_string& SkipPath : IgnoreData)
+	for (const auto& SkipPath : IgnoreData)
 	{
-		if (UnixPath.Contains(SkipPath))
+		if(UnixPath.contains(SkipPath.native()))
+		{
 			return true;
+		}
 	}
 
 	return false;
