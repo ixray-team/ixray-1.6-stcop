@@ -307,7 +307,7 @@ void RenderUI()
 				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
 
 				float AvailWidth = ImGui::GetContentRegionAvail().x;
-				ImGui::PlotHistogram("##Spectral", stats->spectral_data, SND_BLOCKSIZE / 2, 0, nullptr, min_volume, max_volume, ImVec2(AvailWidth, 300));
+				ImGui::PlotHistogram("##Spectral", stats->spectral_data, SND_BLOCKSIZE / 2, 0, nullptr, min_volume, max_volume, ImVec2(AvailWidth, 200));
 				ImGui::PopStyleColor(2);
 				ImGui::PopStyleVar();
 				ImGui::SameLine();
