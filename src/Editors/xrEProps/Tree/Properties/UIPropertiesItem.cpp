@@ -87,8 +87,9 @@ void UIPropertiesItem::Draw()
 		else
 		{
 			ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, ImGui::GetColorU32(RowColor0.Value));
-			ImGui::SetCursorPos(ImGui::GetCursorPos() + CellPadding);
-			ImGui::TextUnformatted(*Name);
+			//ImGui::SetCursorPos(ImGui::GetCursorPos() + CellPadding);
+			//ImGui::TextUnformatted(*Name);
+			XRay::ImGui::TextFramed(*Name, { -1, -1 }, { 0.f, 0.5f }, false);
 		}
 
 		ImGui::TableNextColumn();
@@ -245,7 +246,7 @@ void UIPropertiesItem::DrawItem()
 			if (ImGui::BeginTable("##multi_choose_table", 2, ImGuiTableFlags_BordersInner))
 			{
 				// If you are implementing UI localization, forgive us this hardcoded width :'-)
-				ImGui::TableSetupColumn("Key", ImGuiTableColumnFlags_WidthFixed, 56);
+				ImGui::TableSetupColumn("Key", ImGuiTableColumnFlags_WidthFixed);
 				ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
 
 				for (ChooseValue* ChooseItem : Prop->Values)
@@ -269,8 +270,7 @@ void UIPropertiesItem::DrawItem()
 
 					ImGui::TableSetColumnIndex(0);
 
-					ImGui::SetCursorPos(ImGui::GetCursorPos() + CellPadding);
-					ImGui::TextUnformatted(text.c_str());
+					XRay::ImGui::TextFramed(text.c_str(), { 0, -1 }, { 0.f, 0.5f }, false);
 
 					ImGui::TableSetColumnIndex(1);
 					ImGui::NextColumn();
