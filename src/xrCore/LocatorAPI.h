@@ -136,9 +136,9 @@ private:
 
 private:
 	// IXR: .xrignore
-	xr_vector<xr_string> IgnoreData;
-			void				ParseIgnoreList		();
-			bool				CheckSkip			(const xr_string& Path) const;
+	xr_vector<xr_path> IgnoreData;
+	void ParseIgnoreList();
+	bool CheckSkip(const xr_path& Path) const;
 
 public:
 								CLocatorAPI			();
