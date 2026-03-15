@@ -30,12 +30,12 @@ static ImVec2 CalcItemSize(ImVec2 size, float default_w, float default_h)
     if (size.x == 0.0f)
         size.x = default_w;
     else if (size.x < 0.0f)
-        size.x = ImMax(4.0f, avail.x + size.x); // <-- size.x is negative here so we are subtracting
+        size.x = ImMax(default_w, avail.x + size.x); // <-- size.x is negative here so we are subtracting
 
     if (size.y == 0.0f)
         size.y = default_h;
     else if (size.y < 0.0f)
-        size.y = ImMax(4.0f, avail.y + size.y); // <-- size.y is negative here so we are subtracting
+        size.y = ImMax(default_h, avail.y + size.y); // <-- size.y is negative here so we are subtracting
 
     return size;
 }
@@ -128,19 +128,20 @@ void XRay::ImGui::TextFramedEx(const char* text, const char* text_end, const ImV
 
     // --- size ---
             ImVec2  TextSize        = ::ImGui::CalcTextSize(text, text_end);
-            ImVec2  FrameSize;
-                    FrameSize       = CalcItemSize(size, TextSize.x + style.FramePadding.x * 2.0f, TextSize.y + style.FramePadding.y * 2.0f);
+            ImVec2  FrameSize       = CalcItemSize(size, TextSize.x + style.FramePadding.x * 2.0f, TextSize.y + style.FramePadding.y * 2.0f);
+					//FrameSize       = ImMax(FrameSize, CalcItemSize({ 0, 0 }, TextSize.x + style.FramePadding.x * 2.0f, TextSize.y + style.FramePadding.y * 2.0f));
     const   ImVec2  FramePadding    = ImMin(style.FramePadding, (FrameSize - TextSize) * 0.5);
     const   ImRect  bb              = ImRect(::ImGui::GetCursorScreenPos(), ::ImGui::GetCursorScreenPos() + FrameSize);
 
     const   ImVec4  FrameColor      = style.Colors[ImGuiCol_TableRowBg];
 
-    ::ImGui::ItemSize(FrameSize, style.FramePadding.y);
+    ::ImGui::ItemSize(FrameSize, -FramePadding.y);
     ::ImGui::ItemAdd(bb, id);
 	// --- draw text centered ---
 	        ImDrawList* dl			= ::ImGui::GetWindowDrawList();
             ImVec4      clip_rect   = ImVec4(bb.Min.x, bb.Min.y, bb.Max.x, bb.Max.y);
             ImVec2		text_pos    = bb.Min + FramePadding + (FrameSize - TextSize - FramePadding * 2) * text_align;
+            //ImVec2		text_pos    = bb.Min + FramePadding;
 	        ImU32       text_col    = ::ImGui::GetColorU32(ImGuiCol_Text);
                         if (draw_background) {
                             dl->AddRectFilled(bb.Min, bb.Max, ::ImGui::GetColorU32(FrameColor), style.FrameRounding);
@@ -156,6 +157,7 @@ void XRay::ImGui::TextFramedEx(const char* text, const char* text_end, const ImV
 XREUI_API bool XRay::ImGui::InputVector3(const char* Label, float V[3], float Step)
 {
 	bool Changed = false;
+	ImGuiStyle& style = ::ImGui::GetStyle();
 
 	::ImGui::PushID(Label);
 	::ImGui::BeginGroup();
@@ -168,21 +170,24 @@ XREUI_API bool XRay::ImGui::InputVector3(const char* Label, float V[3], float St
 	};
 
 	static  const   char* Ids[3]    = { "##x", "##y", "##z" };
-			float   StripeWidth     = GetEditorSize(EEditorSizes::IndicatorWidth);
-			float   Rounding        = GetEditorSize(EEditorSizes::ButtonRadius);
+	const	float   StripeWidth     = GetEditorSize(EEditorSizes::IndicatorWidth);
+	const	float   Rounding        = GetEditorSize(EEditorSizes::ButtonRadius);
 
-			float   TotalWidth      = ::ImGui::GetContentRegionAvail().x;
-			float   InputWidth      = (TotalWidth) / 3.0f;
-
+	const	float	FontSize		= GetEditorSize(EEditorSizes::FontSize);
+	const	ImVec2	FrameSize		= CalcItemSize(ImVec2(-0.01f,-1.f), FontSize + style.FramePadding.x * 2.0f, FontSize + style.FramePadding.y * 2.0f);
+	const	float	InputWidth		= (FrameSize.x) / 3.0f;
+	const	ImVec2	InputPadding	= ImVec2(GetEditorSize(EEditorSizes::ButtonRadius),
+											 (FrameSize.y - GetEditorSize(EEditorSizes::FontSize)) / 2
+											 );
 	for (int i = 0; i < 3; ++i)
 	{
 		if (i > 0)
 		{
-			::ImGui::SameLine(0.0f, 0.0f);
+			::ImGui::SameLine(0.0f, 1.0f);
 		}
 
 		::ImGui::SetNextItemWidth(InputWidth);
-		::ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
+		::ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, InputPadding);
 
 		Changed |= ::ImGui::DragFloat(Ids[i], &V[i], Step, 0, 0, "%.3f");
 
@@ -976,7 +981,7 @@ XREUI_API bool XRay::ImGui::BeginExpand(const char* label, ImGuiTreeNodeFlags fl
         ::ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0);
         ::ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { ButtonPaddingX, Padding });
 
-        ::ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2( Padding, Padding ));
+        ::ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2( Border + 1, Border + 1 ));
         ::ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 1);
         ::ImGui::PushStyleColor(ImGuiCol_ChildBg, GetEditorColor(EEditorColors::PanelBackgroundTint).Value);
         ::ImGui::PushStyleColor(ImGuiCol_Border, GetEditorColor(EEditorColors::PanelBorderTint).Value);
