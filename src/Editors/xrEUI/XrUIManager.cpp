@@ -47,6 +47,8 @@ void LoadImGuiFontBase(const char* Font, float scale)
 
 		ImCurrentFont = Font;
 		//ImGui::GetIO().Fonts->AddFontDefault(&FontsStorage[Font]);
+
+		ImGui::GetIO().FontDefault = FontsStorage[Font];
 	}
 }
 
