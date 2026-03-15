@@ -280,10 +280,10 @@ void CUIThemeManager::InitDefault(int InThemeID)
 	//style.PopupBorderSize = 0.0f;
 	style.TabBorderSize = 0.0f;
 	//style.WindowBorderSize					= 1.0f;
-	style.WindowBorderSize					= 0.0f;
+	style.WindowBorderSize					= 1.0f;
 	style.ChildBorderSize					= 0.0f;
 
-	style.WindowPadding						= { WindowPadding, WindowPadding };
+	style.WindowPadding						= { GetEditorSize(EEditorSizes::WindowPadding),  GetEditorSize(EEditorSizes::WindowPadding) };
 	style.FrameBorderSize					= 0.0f;
 	style.FramePadding						= { GetEditorSize(EEditorSizes::ButtonPaddingW), (GetEditorSize(EEditorSizes::ButtonSize) - GetEditorSize(EEditorSizes::FontSize)) / 2 };
 	style.FrameRounding						= GetEditorSize(EEditorSizes::ButtonRadius);
