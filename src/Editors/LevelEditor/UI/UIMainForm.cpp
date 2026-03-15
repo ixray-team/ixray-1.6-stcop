@@ -885,7 +885,7 @@ void UIMainForm::RenderOldCameraButtons()
 
 	ImGui::SameLine();
 
-	if (XRay::ImGui::ToolbarIconButton("##CamFreeFly", m_tFreeFly->get_SRView()->GetRawSRV(), &CamArcBall, ImDrawFlags_RoundCornersRight))
+	if (XRay::ImGui::ToolbarIconButton("##CamFreeFly", m_tFreeFly->get_SRView()->GetRawSRV(), &CamFly, ImDrawFlags_RoundCornersRight))
 	{
 		UI->CurrentView().m_Camera.SetStyle(csFreeFly);
 		UI->RedrawScene();
