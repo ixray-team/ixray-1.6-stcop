@@ -115,6 +115,7 @@ void UIPropertiesItem::DrawItem()
 	const ImVec2  CellPadding		= ImVec2(XRay::ImGui::GetEditorSize(XRay::ImGui::ButtonTextPaddingY), XRay::ImGui::GetEditorSize(XRay::ImGui::TableTextPaddingY));
 	const ImColor RowColor1			= XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelTint);
 	const ImColor RowColor2			= XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableTint);
+	const ImVec2  ButtonPadding		= ImVec2(XRay::ImGui::GetEditorSize(XRay::ImGui::ButtonPaddingW), XRay::ImGui::GetEditorSize(XRay::ImGui::ButtonPaddingH));
 
 	if (!PItem)
 		return;
@@ -331,6 +332,7 @@ void UIPropertiesItem::DrawItem()
 			}
 			else
 			{
+				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(ButtonPadding.y, CellPadding.y));
 				if (PItem->m_Flags.test(PropItem::flDisabled))
 				{
 					//if (type == PROP_FLAG)
@@ -340,11 +342,9 @@ void UIPropertiesItem::DrawItem()
 					//}
 					//else
 					//{
-						ImGui::PushItemWidth(-1);
 						ImGui::BeginDisabled();
 						DrawProp();
 						ImGui::EndDisabled();
-                        ImGui::PopItemWidth();
 					//}
 				}
 				else
@@ -352,6 +352,7 @@ void UIPropertiesItem::DrawItem()
 					ImGui::PushItemWidth(-1);
 					DrawProp();
 				}
+				ImGui::PopStyleVar();
 			}
 			ImGui::PopID();
 			break;
