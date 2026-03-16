@@ -52,7 +52,7 @@ public:
 	v_vertices				m_vertices;
 	v_faces					m_faces;
 	v_subdivs				m_subdivs;
-
+	CDB::CollectorPacked	CL;
 	xr_vector<base_color>	color;
 private:
 	_face*					create_face			( _vertex* v0, _vertex* v1, _vertex* v2, b_face& F );
