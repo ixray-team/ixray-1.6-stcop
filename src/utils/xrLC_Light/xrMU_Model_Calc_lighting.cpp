@@ -207,7 +207,7 @@ void xrMU_Model::calc_lighting	()
 	else
 	{
 		// Export CForm
-		CDB::CollectorPacked	CL(BB, (u32)m_vertices.size(), (u32)m_faces.size());
+		CL.Create(BB, (u32)m_vertices.size(), (u32)m_faces.size());
 		export_cform_rcast(CL, Fidentity);
 
 		CDB::MODEL* M = new CDB::MODEL();

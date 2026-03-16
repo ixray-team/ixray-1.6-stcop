@@ -613,7 +613,7 @@ bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 
 			SPBItem* pb = UI->ProgressStart(mesh_cnt, "Prepare collision model...");
 
-			CDB::Collector CL;
+			static CDB::Collector CL; CL.clear();
 			Fvector verts[3];
 			for (ObjectIt o_it = m_SnapObjects.begin(); o_it != m_SnapObjects.end(); o_it++)
 			{

@@ -189,7 +189,7 @@ void CSoundRender_Core::set_geometry_som(IReader* I)
 		float		occ;
 	};
 	// Create AABB-tree
-	CDB::Collector				CL;			
+	static CDB::Collector CL; CL.clear();
 	while (!geom->eof()){
 		SOM_poly				P;
 		geom->r					(&P,sizeof(P));
