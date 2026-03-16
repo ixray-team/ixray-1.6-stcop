@@ -1501,16 +1501,16 @@ void	CActor::OnPrevWeaponSlot()
 		{
 			if (SlotsToCheck[i] == ARTEFACT_SLOT) 
 			{
-				IR_OnKeyboardPress(get_binded_action(kARTEFACT));
+				IR_OnKeyboardPress(get_action_dik(kARTEFACT));
 			}
 			else if (SlotsToCheck[i] == PISTOL_SLOT_NEW)
 			{
-				IR_OnKeyboardPress(get_binded_action(kARTEFACT));
+				IR_OnKeyboardPress(get_action_dik(kARTEFACT));
 			}
 			else
 			{
 				u32 action = kWPN_1 + i;
-				IR_OnKeyboardPress(get_binded_action((EGameActions)action));
+				IR_OnKeyboardPress(get_action_dik((EGameActions)action));
 			}
 			return;
 		}
