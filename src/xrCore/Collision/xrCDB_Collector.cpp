@@ -163,27 +163,6 @@ namespace CDB
         }
     }
 
-	CollectorPacked::CollectorPacked(const Fbox &bb, int apx_vertices, int apx_faces)
-	{
-		HDIM_X = 1024;
-		HDIM_Y = 1024;
-		HDIM_Z = 1024;
-
-		// Params
- 		VMscale.set(bb.max.x - bb.min.x, bb.max.y - bb.min.y, bb.max.z - bb.min.z);
-		VMmin.set(bb.min);
-
-		scale.set(float(HDIM_X), float(HDIM_Y), float(HDIM_Z));
-		scale.div(VMscale);
-
-		// Msg("*** Set Hash Scale for Compacting: {%f, %f, %f}", VPUSH(scale));
-
-		// Preallocate memory
-		verts.reserve	(apx_vertices);
-		faces.reserve	(apx_faces);
-		flags.reserve	(apx_faces);
-	}
-
 	u32		CollectorPacked::VPack(const Fvector& V)
 	{
 

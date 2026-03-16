@@ -4,6 +4,7 @@
 #pragma once
 #include "../xrDXT/xrDXT.h"
 #include "../../xrCore/FS.h"
+#include "../../xrCore/Collision/xrCDB.h"
 #include "../Shader_xrLC.h"
 
 #include "../xrLC_Light/b_build_texture.h"
@@ -43,7 +44,7 @@ public:
 	xr_vector<b_lod>				lods;
 	string_path						path;
 	xr_vector<LPCSTR>				g_Shaders;
-
+	CDB::CollectorPacked			CL;
 
 	xr_vector<b_material>			&materials()	;
 	xr_vector<b_BuildTexture>		&textures()	;

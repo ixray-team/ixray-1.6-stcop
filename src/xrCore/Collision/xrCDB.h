@@ -214,12 +214,28 @@ namespace CDB
  
 		u32					VPack		( const Fvector& V);
 	public:
-		CollectorPacked	(const Fbox &bb, int apx_vertices=5000, int apx_faces=5000);
+		ICF CollectorPacked() {};
+		ICF CollectorPacked(const Fbox& bb, int apx_vertices = 5000, int apx_faces = 5000) { Create(bb, apx_vertices, apx_faces); };
+		ICF void Create(const Fbox& bb, int apx_vertices = 5000, int apx_faces = 5000)
+		{
+			HDIM_X = 1024;
+			HDIM_Y = 1024;
+			HDIM_Z = 1024;
 
-		//		__declspec(noinline) CollectorPacked &operator=	(const CollectorPacked &object)
-		//		{
-		//			verts
-		//		}
+			// Params
+			VMscale.set(bb.max.x - bb.min.x, bb.max.y - bb.min.y, bb.max.z - bb.min.z);
+			VMmin.set(bb.min);
+
+			scale.set(float(HDIM_X), float(HDIM_Y), float(HDIM_Z));
+			scale.div(VMscale);
+
+			// Msg("*** Set Hash Scale for Compacting: {%f, %f, %f}", VPUSH(scale));
+
+			// Preallocate memory
+			verts.reserve(apx_vertices);
+			faces.reserve(apx_faces);
+			flags.reserve(apx_faces);
+		}
 
 		void				add_face	( const Fvector& v0, const Fvector& v1, const Fvector& v2, u16 material, u16 sector, u32 flags );
 		void				add_face_D	( const Fvector& v0, const Fvector& v1, const Fvector& v2, u32 dummy , u32 flags );
