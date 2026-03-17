@@ -283,7 +283,7 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 
 	if (UICost)
 	{
-		if (IsGameTypeSingleCompatible() && item_price != u32(-1))
+		if (IsGameTypeSingleCompatible() && item_price != u32(-1) && pInvItem->IsDrawCost())
 		{
 			xr_sprintf(str, "%d RU", item_price);// will be owerwritten in multiplayer
 			UICost->SetText(str);
