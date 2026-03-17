@@ -120,8 +120,10 @@ void CContentView::DrawFolderNode(FolderNode& Node)
 {
 	ImGuiTreeNodeFlags Flags = ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_DrawLinesToNodes;
 	Flags |= Node.Children.empty() ? ImGuiTreeNodeFlags_Leaf : ImGuiTreeNodeFlags_OpenOnArrow;
+	// xroo: icon is a crutch. Should be maked separate with its own color.
+	xr_string FolderName = xr_string(ICON_FA_FOLDER) + " " + Node.Name;
 
-	bool Open = ImGui::TreeNodeEx(Node.Name.c_str(), Flags);
+	bool Open = XRay::ImGui::TreeNodeEx(FolderName.c_str(), Flags);
 
 	if (ImGui::IsItemClicked())
 	{
@@ -155,39 +157,50 @@ void CContentView::DrawFolderTree()
 {
 	static bool SortAscending = true;
 
-	if (ImGui::BeginChild("##FolderTreePanel", ImVec2(200, 0), true))
+	const	float	WindowPadding	= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::WindowPadding);
+	const	float	RowHeight		= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableRowHeight);
+	const	float	RowPadding		= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableTextPaddingY);
+
+	if (XRay::ImGui::BeginDarkChild("##FolderTreePanel", ImVec2(ImGui::GetContentRegionMax().x - 1.f, 0), true))
 	{
-		if (ImGui::BeginChild("##cntbrwssortbtn", ImVec2(0, 20)))
+		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.f);
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { ImGui::GetStyle().FramePadding.y , RowPadding });
+		ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, { 0.f, 0.5f });
+		if (ImGui::Button("Name", { -0.01, 0 }))
 		{
-			if (ImGui::Button(SortAscending ? "Sort: A→Z" : "Sort: Z→A", ImVec2(-1, 0)))
+			SortAscending = !SortAscending;
+		}
+
+		// xroo: I will move this marker on the button to ModernUI_widgets when I understand how it will be reused.
+		ImGui::SetWindowFontScale(0.75f);
+		XRay::ImGui::SameLine(0.f, -12.f);
+		ImGui::Text(SortAscending ? ICON_FA_SORT_DOWN : ICON_FA_SORT_UP);
+		ImGui::SetWindowFontScale(1.0f);
+
+		ImGui::PopStyleVar(3);
+
+		std::function<void(FolderNode&)> SortTree = [&](FolderNode& Node)
+		{
+			if (SortAscending)
 			{
-				SortAscending = !SortAscending;
+				std::sort(Node.Children.begin(), Node.Children.end(), [](auto& a, auto& b) { return a.Name < b.Name; });
+			}
+			else
+			{
+				std::sort(Node.Children.begin(), Node.Children.end(), [](auto& a, auto& b) { return a.Name > b.Name; });
 			}
 
-			std::function<void(FolderNode&)> SortTree = [&](FolderNode& Node)
+			for (auto& Child : Node.Children)
 			{
-				if (SortAscending)
-				{
-					std::sort(Node.Children.begin(), Node.Children.end(), [](auto& a, auto& b) { return a.Name < b.Name; });
-				}
-				else
-				{
-					std::sort(Node.Children.begin(), Node.Children.end(), [](auto& a, auto& b) { return a.Name > b.Name; });
-				}
+				SortTree(Child);
+			}
+		};
+		SortTree(Root);
 
-				for (auto& Child : Node.Children)
-				{
-					SortTree(Child);
-				}
-			};
-			SortTree(Root);
-
-		}
-		ImGui::EndChild();
-
-        // Need a variable for indent spacing from themes.
+        // xroo: Need a variable for indent spacing from themes.
 		ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 18.0f);
-		if (ImGui::BeginChild("##cntbrwslftview", ImVec2(0, 0)))
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableTint).Value);
+		if (ImGui::BeginChild("##ContentBrowserTreeView", { 0.f, 0.f }))
 		{
 			for (auto& Child : Root.Children)
 			{
@@ -195,10 +208,10 @@ void CContentView::DrawFolderTree()
 			}
 		}
 		ImGui::EndChild();
+		ImGui::PopStyleColor();
 		ImGui::PopStyleVar();
 	}
-
-	ImGui::EndChild();
+	XRay::ImGui::EndDarkChild();
 }
 
 void CContentView::DrawLayout()
@@ -252,6 +265,8 @@ void CContentView::Draw()
 	if (IsWndDestroyed)
 		return;
 
+	const	float	RowHeight		= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableRowHeight);
+	const	float	ToolbarPadding	= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ToolbarPadding);
 	ImGuiStyle& style = ImGui::GetStyle();
 	float OldChildRound = style.ChildRounding;
 
@@ -262,7 +277,7 @@ void CContentView::Draw()
 		CollectAllFolder();
 	}
 
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(3, 3));
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 	if (ImGui::Begin("Content Browser"))
 	{
 		if ((NeedRescan || Files.empty()) && !IsFindResult && !IsSpawnElement && !IsParticles)
@@ -271,18 +286,33 @@ void CContentView::Draw()
 			NeedRescan = false;
 		}
 
-		DrawFolderTree();
-		ImGui::SameLine();
-
-		//ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-		if (ImGui::BeginChild("##contentbrowserrightside"))
+		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0, 0));
+		if (ImGui::BeginTable("##ContentBrowserTable", 2, ImGuiTableFlags_Resizable, { -0.001f, -1 }))
 		{
+			ImGui::TableSetupColumn("##ContentBrowserLeftSide", ImGuiTableColumnFlags_WidthFixed, 200.f);
+			ImGui::TableSetupColumn("##ContentBrowserRightSide", ImGuiTableColumnFlags_WidthStretch);
+
+			ImGui::TableNextRow();
+
+			ImGui::TableSetColumnIndex(0);
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(2.f, 2.f));
+			if (ImGui::BeginChild("##ContentBrowserFileTree", ImVec2(-0.01f, -0.01f), ImGuiChildFlags_AlwaysUseWindowPadding | ImGuiChildFlags_AutoResizeX | ImGuiChildFlags_AutoResizeY))
+			{
+				DrawFolderTree();
+			}
+			ImGui::EndChild();
+			ImGui::PopStyleVar();
+
+			ImGui::TableSetColumnIndex(1);
+
 			ImGui::PushStyleColor(ImGuiCol_ChildBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelBorderTint).Value);
-			if (ImGui::BeginChild("##contentbrowsersearch", ImVec2(-1, 24)))
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { ToolbarPadding, ToolbarPadding });
+			if (ImGui::BeginChild("##ContentBrowserSearch", ImVec2(ImGui::GetContentRegionAvail().x, 0), ImGuiChildFlags_AlwaysUseWindowPadding | ImGuiChildFlags_AutoResizeY))
 			{
 				DrawHeader();
 			}
 			ImGui::EndChild();
+			ImGui::PopStyleVar();
 			ImGui::PopStyleColor();
 
 			ImGui::PushStyleColor(ImGuiCol_ChildBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelTint).Value);
@@ -311,13 +341,13 @@ void CContentView::Draw()
 				draw_list->AddRectFilled(p_min, p_max, IM_COL32(50, 50, 70, 100));
 				draw_list->AddRect(p_min, p_max, IM_COL32(100, 180, 255, 255));
 			}
+			ImGui::EndTable();
 		}
-		ImGui::EndChild();
+		ImGui::PopStyleVar();
 	}
+	ImGui::PopStyleVar();
 
 	ImGui::End();
-
-	ImGui::PopStyleVar();
 
 	style.ChildRounding = OldChildRound;
 	ThmPropWnd.Draw();
@@ -327,216 +357,193 @@ void CContentView::DrawHeader()
 {
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
 
-	BtnSize = (ViewMode == EViewMode::Tile) ? ImVec2(64.f, 64.f) : ImVec2(32.f, 32.f);
-	int FindStartPosX = (int)ImGui::GetWindowSize().x;
+					BtnSize		= (ViewMode == EViewMode::Tile) ? ImVec2(64.f, 64.f) : ImVec2(32.f, 32.f);
+			ImGuiStyle& style	= ImGui::GetStyle();
+	const	float	FindStartPosX = ImGui::GetWindowSize().x;
+	const	float	Height		= style.FontSizeBase + style.FramePadding.y * 2;
+	const	float	WindowPadding = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::WindowPadding);
+	const	float	ToolbarPadding = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ToolbarPadding);
+	const	float	Rounding	= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonRadius);
 
-	ImColor NavColor = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableTint);
-	// FX: Рисуем подложку
-	{
-		ImDrawList* DrawList = ImGui::GetWindowDrawList();
-		ImVec2 BgMin = ImGui::GetCursorScreenPos();
-		ImVec2 BgMax = BgMin;
+			ImColor NavColor	= XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableTint);
+			ImColor NavHover	= XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableHover);
+			ImColor NavActive	= XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableActive);
+	const	float	FindSizeX	= FindStartPosX / 3.5f;
 
-		if (FindStartPosX > 400)
-		{
-			int FindSizeX = FindStartPosX / 3.5f;
-			BgMax.x += FindStartPosX - FindSizeX - 15;
-		}
-		else
-		{
-			BgMax.x += ImGui::GetContentRegionAvail().x;
-		}
-
-		BgMax.y += ImGui::GetFrameHeight();
-
-		ImColor BgColor = ImGui::GetColorU32(NavColor.Value);
-
-		DrawList->AddRectFilled(BgMin, BgMax, BgColor, 5);
-
-		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 5);
-	}
+	ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, Rounding);
+	ImGui::PushStyleColor(ImGuiCol_ChildBg, NavColor.Value);
 
 	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.f);
 	ImGui::PushStyleColor(ImGuiCol_Button, NavColor.Value);
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, NavHover.Value);
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, NavActive.Value);
 
-	if (ImGui::Button("root"))
+	if (ImGui::BeginChild("##BreadCrumbsBar", { -FindSizeX, 0 }, ImGuiChildFlags_AutoResizeY))
 	{
-		CurrentDir = RootDir;
-		IsSpawnElement = false;
-		IsParticles = false;
-		IsFindResult = false;
-		std::memset(FindStr, 0, sizeof(FindStr));
-		VirtualPath.clear();
-	}
-
-	TextHeight = ImGui::CalcTextSize("1").y;
-
-	ImGui::SameLine();
-	ImGui::TextUnformatted(">");
-
-	auto DrawByPathLambda = [&](const xr_string& ViewDir)
-	{
-		auto Pathes = ViewDir.Split('\\');
-
-		u16 Iter = 0;
-		for (const xr_string& Path : Pathes)
+		if (ImGui::Button("root"))
 		{
-			ImGui::SameLine(0, 0);
+			CurrentDir = RootDir;
+			IsSpawnElement = false;
+			IsParticles = false;
+			IsFindResult = false;
+			std::memset(FindStr, 0, sizeof(FindStr));
+			VirtualPath.clear();
+		}
 
-			xr_string ButtonPathName = Path + "##" + xr_string::ToString(Iter);
+		ImGui::SameLine();
+		ImGui::TextUnformatted(">");
 
-			if (ImGui::Button(Platform::ANSI_TO_UTF8(ButtonPathName).c_str()))
+		auto DrawByPathLambda = [&](const xr_string& ViewDir)
+		{
+			auto Pathes = ViewDir.Split('\\');
+
+			u16 Iter = 0;
+			for (const xr_string& Path : Pathes)
 			{
-				xr_string NewPath;
-				for (const xr_string& LocPath : Pathes)
+				ImGui::SameLine(0, 0);
+
+				xr_string ButtonPathName = Path + "##" + xr_string::ToString(Iter);
+
+				if (ImGui::Button(Platform::ANSI_TO_UTF8(ButtonPathName).c_str()))
 				{
-					NewPath += LocPath;
-					if (LocPath == Path)
-						break;
-					NewPath += "\\";
+					xr_string NewPath;
+					for (const xr_string& LocPath : Pathes)
+					{
+						NewPath += LocPath;
+						if (LocPath == Path)
+							break;
+						NewPath += "\\";
+					}
+
+					if (IsSpawnElement)
+					{
+						VirtualPath = NewPath;
+						RescanISEDirectory(VirtualPath);
+					}
+					else if (IsParticles)
+					{
+						VirtualPath = NewPath;
+						RescanParticlesDirectory(VirtualPath);
+					}
+					else
+					{
+						CurrentDir = NewPath;
+						RescanDirectory();
+					}
 				}
+
+				if (&Path != &Pathes.back())
+				{
+					ImGui::SameLine(0, 0);
+					ImGui::TextUnformatted(">");
+				}
+
+				Iter++;
+			}
+		};
+		if (IsSpawnElement || IsParticles)
+		{
+			ImGui::SameLine();
+			shared_str DirPartialName = IsSpawnElement ? "spawn element" : "particles";
+
+			if (ImGui::Button(*DirPartialName))
+			{
+				VirtualPath.clear();
 
 				if (IsSpawnElement)
 				{
-					VirtualPath = NewPath;
 					RescanISEDirectory(VirtualPath);
-				}
-				else if (IsParticles)
-				{
-					VirtualPath = NewPath;
-					RescanParticlesDirectory(VirtualPath);
 				}
 				else
 				{
-					CurrentDir = NewPath;
-					RescanDirectory();
+					RescanParticlesDirectory(VirtualPath);
 				}
 			}
+			ImGui::SameLine();
+			ImGui::TextUnformatted("/");
 
-			if (&Path != &Pathes.back())
+			if (!VirtualPath.empty())
 			{
-				ImGui::SameLine(0, 0);
-				ImGui::TextUnformatted(">");
-			}
-
-			Iter++;
-		}
-	};
-
-
-	if (IsSpawnElement || IsParticles)
-	{
-		ImGui::SameLine();
-		shared_str DirPartialName = IsSpawnElement ? "spawn element" : "particles";
-
-		if (ImGui::Button(*DirPartialName))
-		{
-			VirtualPath.clear();
-
-			if (IsSpawnElement)
-			{
-				RescanISEDirectory(VirtualPath);
-			}
-			else
-			{
-				RescanParticlesDirectory(VirtualPath);
+				DrawByPathLambda(VirtualPath);
 			}
 		}
-		ImGui::SameLine();
-		ImGui::TextUnformatted("/");
-
-		if (!VirtualPath.empty())
+		else if (CurrentDir != RootDir)
 		{
-			DrawByPathLambda(VirtualPath);
+			DrawByPathLambda(CurrentDir);
 		}
-	}
-	else if (CurrentDir != RootDir)
-	{
-		DrawByPathLambda(CurrentDir);
+		ImGui::EndChild();
 	}
 
-	ImGui::PopStyleVar();
+	ImGui::SameLine(0, ToolbarPadding);
 
-	float w = 0;
+	ImGui::PopStyleColor(3); // Button, ButtonHovered, ButtonActive
+	ImGui::PopStyleVar(); // FrameBorderSize
 
-	if (FindStartPosX > 400)
+	if (ImGui::BeginChild("##SearchBar", { FindSizeX - ToolbarPadding, 0 }, ImGuiChildFlags_AutoResizeY))
 	{
-		ImGui::SameLine();
-		int FindSizeX = FindStartPosX / 3.5f;
-		FindStartPosX -= FindSizeX;
-
-		ImGui::SetCursorPosX(FindStartPosX);
-		
-		w = FindSizeX - 35;
-	}
-	else
-	{
-		w = FindStartPosX - 45;
-	}
-
-	ImVec2 IconSize{ 0,0 };
-	ImGui::PopStyleVar();
-	ImGui::PopStyleColor();
-
-	ImGui::SetNextItemWidth(w - IconSize.x*1.5f);
-
-	if (ImGui::InputTextWithHint("##Search", "Search", FindStr, sizeof(FindStr)))
-	{
-		FindFile();
-	}
-
-	//Varian 2
-	if (GUIManager->SearchIcon)
-	{
-		IconSize = { 12,12 };
-
-		ImGui::SameLine();
-		ImVec2 cursorPos = ImGui::GetCursorPos();
-		ImGui::SetCursorPos(ImVec2(cursorPos.x - IconSize.x-10.f, cursorPos.y+(IconSize.y/4)));
-
-		ImGui::Image(GUIManager->SearchIcon, IconSize);
-	}
-
-	ImGui::SameLine();
-
-	if (ImGui::BeginPopupContextItem("MenuCBPpp"))
-	{
-		if (ImGui::Checkbox("Show THM", &IsThmMode) && !IsSpawnElement)
+		ImVec2 IconSize = { 14, 14 };
+		ImGui::SetNextItemWidth(FindSizeX - ToolbarPadding - Height - ToolbarPadding - IconSize.x);
+		ImGui::SetNextItemAllowOverlap();
+		if (ImGui::InputTextWithHint("##Search", "Search", FindStr, sizeof(FindStr)))
 		{
-			RescanDirectory();
+			FindFile();
 		}
-		if (ImGui::Checkbox("Show Temp Files", &IsTempMode) && !IsSpawnElement)
-		{
-			RescanDirectory();
-		}
-		ImGui::Separator();
 
-		if (ImGui::BeginMenu("View mode"))
+		//Varian 2
+		if (GUIManager->SearchIcon)
 		{
-			if (ImGui::MenuItem("Tile"))
+			XRay::ImGui::SameLine(0, 0);
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + (Height - IconSize.y) / 2.f);
+
+			ImGui::Image(GUIManager->SearchIcon, IconSize);
+		}
+
+		XRay::ImGui::SameLine(0, ToolbarPadding + 1.f);
+
+		if (ImGui::BeginPopupContextItem("MenuCBPpp"))
+		{
+			if (ImGui::Checkbox("Show THM", &IsThmMode) && !IsSpawnElement)
 			{
-				ViewMode = EViewMode::Tile;
+				RescanDirectory();
 			}
-			if (ImGui::MenuItem("List"))
+			if (ImGui::Checkbox("Show Temp Files", &IsTempMode) && !IsSpawnElement)
 			{
-				ViewMode = EViewMode::List;
+				RescanDirectory();
+			}
+			ImGui::Separator();
+
+			if (ImGui::BeginMenu("View mode"))
+			{
+				if (ImGui::MenuItem("Tile"))
+				{
+					ViewMode = EViewMode::Tile;
+				}
+				if (ImGui::MenuItem("List"))
+				{
+					ViewMode = EViewMode::List;
+				}
+
+				ImGui::EndMenu();
 			}
 
-			ImGui::EndMenu();
+			ImGui::EndPopup();
 		}
-
-		ImGui::EndPopup();
-	}
 	/*
 	Exception thrown: read access violation.
 this->MenuIcon.p_ was nullptr.
 	*/
 
 	//if (MenuIcon && ImGui::ImageButton("##MenuCB", MenuIcon->get_SRView()->GetRawSRV(), { 15, 15 }))
-	if (MenuIcon && ImGui::Button(ICON_FA_BARS"##IMenuCB" ))
-	{
-		ImGui::OpenPopup("MenuCBPpp");
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.f);
+		if (MenuIcon && XRay::ImGui::Button(ICON_FA_BARS"##IMenuCB", { Height - 2.f, Height - 2.f }))
+		{
+			ImGui::OpenPopup("MenuCBPpp");
+		}
+		ImGui::EndChild();
 	}
+	ImGui::PopStyleColor(); // ChildBg
+	ImGui::PopStyleVar(); // ChildRounding
+	ImGui::PopStyleVar(); // ItemSpacing
 }
 
 void CContentView::FindFile()
