@@ -152,7 +152,7 @@ void UILeftBarForm::Draw()
 					ImGui::PushStyleColor(ImGuiCol_ButtonActive, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableActive).Value);
 					ImGui::PushStyleColor(ImGuiCol_Text, IconColor.Value);
 					ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.f);
-					ImGui::SetWindowFontScale(0.59f);
+					ImGui::SetWindowFontScale(0.7f);
 					if (ImGui::Button(IconText.c_str(), { ShowH, ShowH }))
 					{
 						tool->m_EditFlags.set(ESceneToolBase::flVisible, !IsVisible);
