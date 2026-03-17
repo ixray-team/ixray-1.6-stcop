@@ -54,6 +54,8 @@ namespace XRay::ImGui
 	XREUI_API	ImColor			GetEditorColor(EEditorColors Color);
 	XREUI_API	float			GetEditorSize(EEditorSizes Size);
 
+	XREUI_API	void			SameLine(float offset_from_start_x = 0.0f, float spacing = -1.0f);  // call between widgets or groups to layout them horizontally. X position given in window coordinates.
+
 	XREUI_API	bool			InputVector3(const char* Label, float V[3], float Step);
 
 	// This button is made to be reused in toggles, so it has an optional bool* Toggle
