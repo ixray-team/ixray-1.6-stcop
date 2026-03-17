@@ -40,6 +40,34 @@ static ImVec2 CalcItemSize(ImVec2 size, float default_w, float default_h)
     return size;
 }
 
+void XRay::ImGui::SameLine(float offset_from_start_x, float spacing_w)
+{
+	ImGuiContext& g = *GImGui;
+	ImGuiWindow* window = g.CurrentWindow;
+	ImGuiStyle& style = g.Style;
+	if (window->SkipItems)
+		return;
+
+	if (offset_from_start_x != 0.0f)
+	{
+		if (spacing_w < 0.0f)
+			spacing_w = 0.0f;
+		window->DC.CursorPos.x = window->Pos.x - window->Scroll.x + offset_from_start_x + spacing_w + window->DC.GroupOffset.x + window->DC.ColumnsOffset.x;
+		window->DC.CursorPos.y = window->DC.CursorPosPrevLine.y;
+	}
+	else
+	{
+		//if (spacing_w < 0.0f)
+		//	spacing_w = g.Style.ItemSpacing.x;
+		window->DC.CursorPos.x = window->DC.CursorPosPrevLine.x + spacing_w;
+		window->DC.CursorPos.y = window->DC.CursorPosPrevLine.y;
+		window->DC.CursorPos.y = window->DC.CursorPosPrevLine.y + style.FontSizeBase * 0.5 - g.FontSize * 0.5;
+	}
+	window->DC.CurrLineSize = window->DC.PrevLineSize;
+	window->DC.CurrLineTextBaseOffset = window->DC.PrevLineTextBaseOffset;
+	window->DC.IsSameLine = true;
+}
+
 //-----------------------------------------------------------------
 // [SECTION] Decoration Widgets
 //-----------------------------------------------------------------
@@ -256,6 +284,7 @@ XREUI_API   bool        XRay::ImGui::ButtonBackground(const char* id, bool* togg
 
 	// --- Size ---
 	const   float   BorderSize      = GetEditorSize(EEditorSizes::ButtonBorderSize);
+	const	ImVec2  ButtonSize		= CalcItemSize(size, 0.f, 0.f);
 
 	// --- Styling ---
 	const   ImVec4  EnabledColor    = GetEditorColor(EEditorColors::Accent);
@@ -267,10 +296,19 @@ XREUI_API   bool        XRay::ImGui::ButtonBackground(const char* id, bool* togg
 	const   ImVec4  BorderColor     = GetEditorColor(EEditorColors::ButtonBorderTint);
 
 			ImGuiButtonFlags flags  = 0;
-
+			/*
 			bool    Clicked	        = ::ImGui::InvisibleButton(id, size);
 	const	bool    Hovered	        = ::ImGui::IsItemHovered();
 	const	bool    Active          = ::ImGui::IsItemActive();
+			*/
+			ImRect bb(window->DC.CursorPos, window->DC.CursorPos + ButtonSize);
+			::ImGui::ItemSize(ButtonSize, style.FramePadding.y);
+			if (!::ImGui::ItemAdd(bb, buttonID))
+				return false;
+			bool	Hovered, Held;
+			bool	Clicked			= ::ImGui::ButtonBehavior(bb, buttonID, &Hovered, &Held, flags);
+	const	bool	Active			= Held;
+
 			ImVec4  ButtonColor;
 			if (toggle) {
 				ButtonColor = (Active) ? *toggle ? EnabledActive : DisabledActive :
@@ -343,7 +381,7 @@ XREUI_API bool XRay::ImGui::IconButton(const char* id, ImTextureRef texture, con
 
 XREUI_API bool XRay::ImGui::ToggleButton(const char* Label, bool* Flags, const ImVec2& Size)
 {
-    ImGuiStyle style = ::ImGui::GetStyle();
+    ImGuiStyle& style = ::ImGui::GetStyle();
 	if(!Flags) return false;
 	bool Enabled = *Flags;
 	bool Changed = false;
@@ -403,13 +441,26 @@ XREUI_API bool XRay::ImGui::ToolbarButtonBackground(
     ImDrawFlags	rounding_flags,
     float		rounding)
 {
-    ImGuiWindow* window = ::ImGui::GetCurrentWindow();
-    if (window->SkipItems)
-        return false;
-
+	// --- Initial Constants
+	const   ImGuiContext& g = *GImGui;
+	const   ImGuiStyle& style = g.Style;
+			ImGuiWindow* window = ::ImGui::GetCurrentWindow();
+	if (window->SkipItems)
+		return false;
+	const   ImGuiID buttonID		= window->GetID(id);
+	const	ImVec2  ButtonSize		= CalcItemSize(size, 0.f, 0.f);
+/*
     bool    Clicked = ::ImGui::InvisibleButton(id, size);
     const	bool    Hovered = ::ImGui::IsItemHovered();
     const	bool    Active = ::ImGui::IsItemActive();
+*/
+	ImRect bb(window->DC.CursorPos, window->DC.CursorPos + ButtonSize);
+	::ImGui::ItemSize(ButtonSize, style.FramePadding.y);
+	if (!::ImGui::ItemAdd(bb, buttonID))
+		return false;
+			bool	Hovered, Held;
+			bool	Clicked		= ::ImGui::ButtonBehavior(bb, buttonID, &Hovered, &Held, rounding_flags);
+	const	bool	Active		= Held;
 
     ImVec4  Color = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToolbarButtonTint);
     ImVec4  ColorHover = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ButtonHover);
@@ -529,7 +580,7 @@ static void RenderArrow(ImDrawList* draw_list, ImVec2 pos, ImU32 col, ImGuiDir d
 	const   float        fontSize   = g.FontSize;
 	const   char*        arrow      = nullptr;
 						 pos.x     += fontSize * (1.45 - scale) * 0.5f;
-						 pos.y     += fontSize * (1.25 - scale) * 0.5f;
+						 pos.y     += fontSize * (1.00 - scale) * 0.5f;
 	switch (dir)
 	{
 	case ImGuiDir_Up:    arrow      = ICON_FA_CARET_UP; break;
