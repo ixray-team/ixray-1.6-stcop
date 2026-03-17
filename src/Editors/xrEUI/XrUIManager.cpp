@@ -93,7 +93,7 @@ void XrUIManager::Initialize(HWND hWnd, IDirect3DDevice9* device, const char* in
 	static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
 	ImFontConfig icons_config = {};
 	icons_config.MergeMode = true;
-	FontsStorage["_fa"] = io.Fonts->AddFontFromMemoryCompressedTTF(FontAwesome_compressed_data, FontAwesome_compressed_size, 16.0f, &icons_config, icons_ranges);
+	FontsStorage["_fa"] = io.Fonts->AddFontFromMemoryCompressedTTF(FontAwesome_compressed_data, FontAwesome_compressed_size, 12.0f, &icons_config, icons_ranges);
 
 	//io.Fonts->Build();
 
