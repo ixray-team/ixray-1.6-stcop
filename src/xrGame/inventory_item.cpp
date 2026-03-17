@@ -88,6 +88,8 @@ void CInventoryItem::Load(LPCSTR section)
 	CHitImmunity::LoadImmunities(pSettings->r_string(section, "immunities_sect"), pSettings);
 
 	// FFx0001 ++ begin
+	SetDrawCost(READ_IF_EXISTS(pSettings, r_bool, section, "is_draw_cost", true));
+
 	// Highlight separated by delimeter ',' related item sections on mouseover from the actor's inventory
 	m_HiglightRelatedItemSections.clear();
 	if (pSettings->line_exist(section, "highlight_related_sections"))
@@ -491,6 +493,8 @@ void CInventoryItem::save(NET_Packet& packet)
 	u8 _num_items = (u8)object().PHGetSyncItemsNumber();
 	packet.w_u8(_num_items);
 	object().PHSaveState(packet);
+
+	packet.w_u8(IsDrawCost() ? 1 : 0);
 }
 
 void CInventoryItem::net_Import(NET_Packet& P)
@@ -711,6 +715,8 @@ void CInventoryItem::load(IReader& packet)
 
 	object().PHLoadState(packet);
 	object().PPhysicsShell()->Disable();
+
+	SetDrawCost(packet.r_u8() == 1);
 }
 
 ///////////////////////////////////////////////

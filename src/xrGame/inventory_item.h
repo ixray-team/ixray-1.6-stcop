@@ -115,6 +115,7 @@ public:
 
 	// Дополнение описания предмета для кастомизации через скрипты к основному описанию в UIItemInfo.cpp
 	void SetAdditionalDescription(LPCSTR additionalDescription);
+	bool IsDrawCost() { return m_draw_cost; }
 	void UnsetAdditionalDescription() { SetAdditionalDescription(""); }
 	bool IsUsedAdditionalDescription() const { return m_IsUsedAdditionalDescription; }
 	LPCSTR GetAdditionalDescription() const { return m_AdditionalDescription.c_str(); }
@@ -153,7 +154,7 @@ public:
 	virtual void save(NET_Packet& output_packet);
 	virtual void load(IReader& input_packet);
 	virtual BOOL net_SaveRelevant() { return TRUE; }
-
+	void SetDrawCost(bool state) { m_draw_cost = state; }
 	virtual void render_item_ui() {}; //when in slot & query return TRUE
 	virtual bool render_item_ui_query() { return false; }; //when in slot
 
@@ -179,6 +180,7 @@ public:
 	}
 
 public:
+	bool m_draw_cost = true;
 	CInventory* m_pInventory = nullptr;
 	shared_str m_section_id;
 	shared_str m_name;
