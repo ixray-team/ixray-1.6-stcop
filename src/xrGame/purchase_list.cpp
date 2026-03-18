@@ -12,6 +12,8 @@
 #include "GameObject.h"
 #include "ai_object_location.h"
 #include "Level.h"
+#include "Inventory.h"
+#include "InventoryBox.h"
 
 static float min_deficit_factor = .3f;
 
@@ -84,9 +86,20 @@ void CPurchaseList::process(CInifile& ini_file, const char* section, CInventoryO
 		ProcessSingleTradeItemSettingFunc(sect.first, count, prob);
 	}
 
+	auto& Inventory = owner.inventory();
 	for (auto& elem : FinalSupplises)
 	{
-		process(game_object, elem.first, elem.second.first, elem.second.second);
+		if (Inventory.GetTraderExternalStorageMode())
+		{
+			auto Storage = Inventory.FindSuitableStorage(elem.first);
+			if (!I_ASSERT(Storage))
+			{
+				continue;
+			}
+			process(*Storage, elem.first, elem.second.first, elem.second.second);
+		} else {
+			process(game_object, elem.first, elem.second.first, elem.second.second);
+		}
 	}
 }
 

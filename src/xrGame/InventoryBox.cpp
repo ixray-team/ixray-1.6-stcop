@@ -117,9 +117,14 @@ void CInventoryBox::AddAvailableItems(TIItemContainer& items_container) const
 	for (const u16& item : m_items)
 	{
 		CObject* finded_object = Level().Objects.net_Find(item);
+		if(!IVERIFY_M(finded_object, "Unable to find item with id [%d] from box [%d]", item, ID()))
+		{
+			continue;
+		}
 		PIItem itm = finded_object->cast_inventory_item();
-		VERIFY(itm);
-		items_container.push_back(itm);
+		if(IVERIFY(itm)){
+			items_container.push_back(itm);
+		}
 	}
 }
 
@@ -153,4 +158,60 @@ void CInventoryBox::SE_update_status()
 	P.w_u8((m_closed) ? 1 : 0);
 	P.w_stringZ(tip_text());
 	CGameObject::u_EventSend(P);
+}
+
+void CTradeStorageBox::Load(LPCSTR section)
+{
+	CInventoryBox::Load(section);
+	auto FilterSection = pSettings->r_string_nullable(section, "filter_section");
+	if (!FilterSection)
+	{
+		return;
+	}
+	auto Sect = pSettings->r_section_nullable(FilterSection);
+	if (!I_ASSERT_M(Sect, "Unable to find section [%s]", FilterSection))
+	{
+		return;
+	}
+
+	auto ProcessMultipleTradeItemsSettingsFunc = [&](this auto self, shared_str loc_section)
+	{
+		auto Section = pSettings->r_section_nullable(loc_section);
+		if(!I_ASSERT_M(Section, "Unable to find section [%s]", loc_section.c_str()))
+		{
+			return;
+		}
+
+		for(auto& Item : Section->Data)
+		{
+			if (!pSettings->section_exist(Item.first))
+			{
+				if(Item.first.c_str()[0] == '$')
+				{
+					LPCSTR section_name = Item.first.c_str()+1;
+					self(section_name);
+					continue;
+				}
+				Msg("! Section [%s] (parsing trade list [%s]) doesn't exist!", Item.first.c_str(), loc_section.c_str());
+				continue;
+			}
+			m_ItemFilter.emplace(Item.first);
+		}
+	};
+	
+	for (auto& elem : Sect->Data)
+	{
+		if (elem.first.c_str()[0] == '$')
+		{
+			ProcessMultipleTradeItemsSettingsFunc(elem.first.c_str()+1);
+		} else
+		{
+			if (!pSettings->section_exist(elem.first))
+			{
+				Msg("! Section [%s] doesn't exist!", elem.first.c_str());
+				continue;
+			}
+			m_ItemFilter.emplace(elem.first);
+		}
+	}
 }

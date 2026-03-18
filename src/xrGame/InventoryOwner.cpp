@@ -26,6 +26,7 @@
 #include "../xrScripts/script_callback_ex.h"
 #include "ActorHelmet.h"
 #include "antigas_filter.h"
+#include "ScriptsSubsystems/StoryID/StoryIDManager.h"
 
 CInventoryOwner::CInventoryOwner()
 {
@@ -66,13 +67,15 @@ AntigasFilter* CScriptGameObject::cast_AntigasFilter()
 
 void CInventoryOwner::Load(const char* section)
 {
-	if (pSettings->line_exist(section, "inv_max_weight"))
 	{
-		m_inventory->SetMaxWeight(pSettings->r_float(section, "inv_max_weight"));
+		float MaxWeight = false;
+		if (pSettings->r_float_nullable(section, "inv_max_weight", MaxWeight))
+		{
+			m_inventory->SetMaxWeight(MaxWeight);
+		}
 	}
-
-	m_isFocusingOnNpc = READ_IF_EXISTS(pSettings, r_bool, section, "focus_on_npc", true);
-	m_need_osoznanie_mode = READ_IF_EXISTS(pSettings, r_bool, section, "need_osoznanie_mode", false);
+	m_isFocusingOnNpc = pSettings->read_if_exists<bool>(section, "focus_on_npc", true);
+	m_need_osoznanie_mode = pSettings->read_if_exists<bool>(section, "need_osoznanie_mode", false);
 }
 
 void CInventoryOwner::reload(const char* section)
@@ -159,6 +162,73 @@ bool CInventoryOwner::net_Spawn(CSE_Abstract* DC)
 	}
 
 	CharacterInfo().m_SpecificCharacter.updateMechanic(READ_IF_EXISTS(pSettings, r_bool, cast_game_object()->cNameSect(), "mechanic", SpecificCharacter().upgrade_mechanic()));
+
+	if (EngineExternal()[EEngineExternalSystem::EngineScriptStoryID]) // required because use script story id from engine object
+	{
+		auto ExternalStorageSect = pSettings->r_string_nullable(*DC->s_name, "ExternalStorageSect");
+		if (ExternalStorageSect)
+		{
+			auto& Manager = CScriptStoryIDManager::GetInstance();
+			auto Sect = pSettings->r_section(ExternalStorageSect);
+			for (auto& elem : Sect.Data)
+			{
+				auto ID = Manager.GetID(elem.first.c_str());
+				if (!I_ASSERT_M(ID != ALife::_OBJECT_ID(-1), "Unable to find object with story id [%s]", elem.first.c_str()))
+				{
+					continue;
+				}
+				auto Obj = Level().Objects.net_Find(ID);
+				if (Obj)
+				{
+					auto Casted = Obj->cast_trade_storage_box();
+					if (!I_ASSERT_M(Casted, "Unable to convert object [%s] into CTradeStorageBox!", Obj->cNameSect().c_str()))
+					{
+						continue;
+					}
+					inventory().AddExternalStorage(elem.first, Casted);
+				} else
+				{
+					auto seObj = ai().alife().objects().object(ID);
+					if (!I_ASSERT_M(seObj, "Unable to find server object with id [%d]", ID))
+					{
+						continue;
+					}
+					struct SAlifeActionTradeStorageSpawned : public SAlifeActionBase
+					{
+						shared_str storage_story_id;
+						ALife::_OBJECT_ID owner_id;
+						ALife::_OBJECT_ID storage_id;
+						
+						SAlifeActionTradeStorageSpawned(shared_str storage_story_id, ALife::_OBJECT_ID owner_id, ALife::_OBJECT_ID storage_id)
+							: storage_story_id(storage_story_id), owner_id(owner_id), storage_id(storage_id) {}
+						
+						void Process() override
+						{
+							auto owner = Level().Objects.net_Find(owner_id);
+							auto storage = Level().Objects.net_Find(storage_id);
+							if (!IVERIFY(owner) || !IVERIFY(storage))
+							{
+								return;
+							}
+							auto CastedStorage = storage->cast_trade_storage_box();
+							if (!I_ASSERT_M(CastedStorage, "Unable to convert object [%s] into CTradeStorageBox!", storage->cNameSect().c_str()))
+							{
+								return;
+							}
+							auto CastedOwner = owner->cast_inventory_owner();
+							if (!IVERIFY(CastedOwner))
+							{
+								return;
+							}
+							CastedOwner->inventory().AddExternalStorage(storage_story_id, CastedStorage);
+						}
+					};
+					ai().get_alife()->objects().BindAction(EAlifeActionCallbackType::CESpawned, ID,
+						new SAlifeActionTradeStorageSpawned{elem.first, DC->ID, ID});
+				}
+			}
+		}
+	}
 
 	if (!pThis->Local())
 	{
@@ -713,28 +783,51 @@ void CInventoryOwner::buy_supplies(CInifile& ini_file, const char* section)
 
 void CInventoryOwner::sell_useless_items()
 {
-	CGameObject* object = cast_game_object();
-
-	for (PIItem item : inventory().m_all)
+	auto& Inv = inventory();
+	if (Inv.GetTraderExternalStorageMode())
 	{
-		if (item->cast_bolt())
+		for (auto& elem : Inv.GetExternalStorages())
 		{
-			continue;
+			for (auto ID : elem.second->m_items)
+			{
+				auto obj = Level().Objects.net_Find(ID);
+				if (!IVERIFY(obj))
+				{
+					continue;
+				}
+				auto item = obj->cast_inventory_item();
+				if (!IVERIFY(item))
+				{
+					continue;
+				}
+				item->SetDropManual(FALSE);
+				item->object().DestroyObject();
+			}
 		}
-
-		if (item->CurrSlot() && item->CurrPlace() == eItemPlaceSlot && item->cast_weapon())
-			continue;
-
-		if (CPda* pda = item->cast_pda())
+	} else
+	{
+		CGameObject* object = cast_game_object();
+		for (PIItem item : inventory().m_all)
 		{
-			if (pda->GetOriginalOwnerID() == object->ID())
+			if (item->cast_bolt())
 			{
 				continue;
 			}
-		}
+			if (item->CurrSlot() && item->CurrPlace() == eItemPlaceSlot && item->cast_weapon())
+			{
+				continue;
+			}
+			if (CPda* pda = item->cast_pda())
+			{
+				if (pda->GetOriginalOwnerID() == object->ID())
+				{
+					continue;
+				}
+			}
 
-		item->SetDropManual(false);
-		item->object().DestroyObject();
+			item->SetDropManual(false);
+			item->object().DestroyObject();
+		}
 	}
 }
 

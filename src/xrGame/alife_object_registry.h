@@ -11,6 +11,19 @@
 #include "xrServer_Objects_ALife.h"
 #include "../xrCore/Save/SaveObject.h"
 
+enum class EAlifeActionCallbackType
+{
+	CESpawned,
+	CEDespawned,
+	Num
+};
+
+struct SAlifeActionBase
+{
+	virtual ~SAlifeActionBase() = default;
+	virtual void Process() = 0;
+};
+
 class CALifeObjectRegistry
 {
 public:
@@ -28,8 +41,13 @@ private:
 
 	void SerializeElem(ISaveObject& Object, CSE_ALifeDynamicObject* elem);
 	u32 m_serializable_object_count = 0;
-			
+
+	xrCriticalSection m_actionsCS;
+	xr_vector<xr_map<ALife::_OBJECT_ID, xr_vector<SAlifeActionBase*>>> m_actions;
 public:
+	void BindAction(EAlifeActionCallbackType Event, ALife::_OBJECT_ID ID, SAlifeActionBase *Action);
+	void TriggerActions(EAlifeActionCallbackType Event, ALife::_OBJECT_ID ID);
+	
 	static	CSE_ALifeDynamicObject	*get_object				(IReader &file_stream);
 	static	CSE_ALifeDynamicObject* get_object(ISaveObject& Object);
 

@@ -12,6 +12,8 @@
 #include "../xrEngine/IGame_Persistent.h"
 #include "patrol_path_params.h"
 #include "SaveObjectHelpers.h"
+#include "alife_object_registry.h"
+#include "alife_simulator.h"
 
 void CLevel::cl_Process_Spawn(NET_Packet& P)
 {
@@ -214,6 +216,8 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 			cl_Process_Event(E->ID_Parent, GE_OWNERSHIP_TAKE, GEN);
 			//*/
 		}
+
+		ai().get_alife()->objects().TriggerActions(EAlifeActionCallbackType::CESpawned, E->ID);
 	}
 
 	/*if (E->s_flags.is(M_SPAWN_UPDATE)) {

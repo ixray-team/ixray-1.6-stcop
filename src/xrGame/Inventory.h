@@ -1,6 +1,7 @@
 #pragma once
 #include "inventory_item.h"
 
+class CTradeStorageBox;
 class CInventoryItem;
 class CInventoryOwner;
 class CGrenade;
@@ -163,6 +164,11 @@ public:
 	// Максимальное кол-во объектов на поясе
 	u32 m_iMaxBelt = 0;
 
+	void AddExternalStorage(shared_str story_id, CTradeStorageBox* obj);
+	IC bool GetTraderExternalStorageMode() const {return m_TraderExternalStorageMode;}
+	CTradeStorageBox* FindSuitableStorage(const shared_str& section) const;
+	const xr_hash_map<shared_str, CTradeStorageBox*>& GetExternalStorages() const {return m_ExternalContainers;}
+
 protected:
 	void UpdateDropTasks();
 	void UpdateDropItem(PIItem pIItem);
@@ -222,4 +228,7 @@ private:
 
 	const char* m_onInventoryEat = {};
 	bool m_isInventoryEat = false;
+
+	bool m_TraderExternalStorageMode = false;
+	xr_hash_map<shared_str, CTradeStorageBox*> m_ExternalContainers = {};
 };
