@@ -76,6 +76,7 @@ class CRocketLauncher;
 class CRadioactiveZone;
 class CExplosive;
 class CWeaponShotgun;
+class CTradeStorageBox;
 
 //-----------------------------------------------------------------------------------------------------------
 #define CROW_RADIUS		(30.f)
@@ -234,6 +235,7 @@ public:
 	virtual CBolt* cast_bolt() { return nullptr; }
 	virtual CPda* cast_pda() { return nullptr; }
 	virtual CInventoryBox* cast_inventory_box() { return nullptr; }
+	virtual CTradeStorageBox* cast_trade_storage_box() { return nullptr; }
 	virtual CSpaceRestrictor* cast_restrictor() { return nullptr; }
 	virtual CSpectator* cast_spectator() {return nullptr;}
 	virtual CSilencer* cast_addon_silencer() {return nullptr;}
