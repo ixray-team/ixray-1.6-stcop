@@ -23,8 +23,39 @@ void CPurchaseList::process(CInifile& ini_file, const char* section, CInventoryO
 
 	const CGameObject& game_object = *owner.cast_game_object();
 
-	CInifile::Sect& S = ini_file.r_section(section);
+	xr_map<shared_str, xr_pair<u32, float>> FinalSupplises = {};
+	
+	auto ProcessSingleTradeItemSettingFunc = [&](shared_str loc_section, u32 count, float prob)
+	{
+		FinalSupplises[loc_section] = {count,prob};
+	};
 
+	auto ProcessMultipleTradeItemsSettingsFunc = [&](this auto self, shared_str loc_section, u32 count, float prob)
+	{
+		if(!I_ASSERT(pSettings->section_exist(loc_section)))
+		{
+			return;
+		}
+
+		for(auto& Item : pSettings->r_section(loc_section).Data)
+		{
+			if (!pSettings->section_exist(Item.first))
+			{
+				if(Item.first.c_str()[0] == '$')
+				{
+					LPCSTR section_name = Item.first.c_str()+1;
+					self(section_name, count, prob);
+					continue;
+				}
+				Msg("! Section [%s] (parsing trade list [%s]) doesn't exist!", Item.first.c_str(), loc_section.c_str());
+				continue;
+			}
+			ProcessSingleTradeItemSettingFunc(Item.first, count, prob);
+		}
+	};
+	
+	CInifile::Sect& S = ini_file.r_section(section);
+	
 	for (const auto& sect : S.Data)
 	{
 		if (!sect.second.size())
@@ -33,18 +64,29 @@ void CPurchaseList::process(CInifile& ini_file, const char* section, CInventoryO
 			continue;
 		}
 
+		string256 temp0 = {}, temp1 = {};
+
+		u32 count = atoi(_GetItem(*sect.second, 0, temp0));
+		float prob = _GetItemCount(*sect.second) >= 2 ? atof(_GetItem(*sect.second, 1, temp1)) : 1.0f;
+
 		if (!pSettings->section_exist(sect.first))
 		{
+			if(sect.first.c_str()[0] == '$')
+			{
+				LPCSTR section_name = sect.first.c_str()+1;
+				ProcessMultipleTradeItemsSettingsFunc(section_name, count, prob);
+				continue;
+			}
 			Msg("! Section [%s] doesn't exist! File [%s]", sect.first.c_str(), ini_file.fname());
 			continue;
 		}
 
-		string256 temp0 = {}, temp1 = {};
+		ProcessSingleTradeItemSettingFunc(sect.first, count, prob);
+	}
 
-		const char* count = _GetItem(*sect.second, 0, temp0);
-		const char* prob = _GetItemCount(*sect.second) >= 2 ? _GetItem(*sect.second, 1, temp1) : "1.0f";
-
-		process(game_object, sect.first, atoi(count), (float)atof(prob));
+	for (auto& elem : FinalSupplises)
+	{
+		process(game_object, elem.first, elem.second.first, elem.second.second);
 	}
 }
 

@@ -113,32 +113,91 @@ IC	void CTradeParameters::process							(_action_type type, CInifile &ini_file, 
 	CTradeActionParameters	&_action = action(type);
 	_action.clear			();
 
-	CInifile::Sect			&S = ini_file.r_section(section);
-	CInifile::SectCIt		I = S.Data.begin();
-	CInifile::SectCIt		E = S.Data.end();
-	for ( ; I != E; ++I) {
-		if (!pSettings->section_exist((*I).first))
-		{
-//			Msg("! Section [%s] in file [%s] doesn't exist!", (*I).first.c_str(), ini_file.fname());
-			continue;
-		}
-		if (!(*I).second.size()) {
-			_action.disable	((*I).first);
-			continue;
+	auto ParseTradeParametersFunc = [&](shared_str args, u8& param_num, float& param1, float& param2)
+	{
+		if (!args.size()) {
+			param_num = 0;
+			return;
 		}
 
-		string256			temp0, temp1;
-		//THROW3				(_GetItemCount(*(*I).second) == 2,"Invalid parameters in section",*section);
-		const char* param1 = _GetItem(*(*I).second, 0, temp0);
-		const char* param2 = _GetItemCount(*(*I).second) >= 2 ? _GetItem(*(*I).second, 1, temp1) : param1;
+		param_num = _GetItemCount(*args);
+		string256 temp;
+		if (param_num < 2)
+		{
+			param1 = atof(_GetItem(*args, 0, temp));
+			param2 = param1;
+		} else
+		{
+			param1 = atof(_GetItem(*args, 0, temp));
+			param2 = atof(_GetItem(*args, 1, temp));
+		}
+	};
+
+	auto ProcessSingleTradeItemSettingFunc = [&](shared_str loc_section, u8 param_num, float param1, float param2)
+	{
+		
+		if (!param_num) {
+			_action.disable(loc_section);
+			return;
+		}
+
+		if(param_num < 2)
+		{
+			param2 = param1;
+		}
 
 		_action.enable		(
-			(*I).first,
+			loc_section,
 			CTradeFactors	(
-				(float)atof(param1),
-				(float)atof(param2)
+				param1,
+				param2
 			)
 		);
+	};
+
+	auto ProcessMultipleTradeItemsSettingsFunc = [&](this auto self, shared_str loc_section, u8 param_num, float param1, float param2)
+	{
+		if(!I_ASSERT(pSettings->section_exist(loc_section)))
+		{
+			return;
+		}
+
+		for(auto& Item : pSettings->r_section(loc_section).Data)
+		{
+			if (!pSettings->section_exist(Item.first))
+			{
+				if(Item.first.c_str()[0] == '$')
+				{
+					LPCSTR section_name = Item.first.c_str()+1;
+					self(section_name,  param_num, param1, param2);
+					continue;
+				}
+				Msg("! Section [%s] (parsing trade list [%s]) doesn't exist!", Item.first.c_str(), loc_section.c_str());
+				continue;
+			}
+			ProcessSingleTradeItemSettingFunc(Item.first, param_num, param1, param2);
+		}
+	};
+
+	CInifile::Sect			&S = ini_file.r_section(section);
+	for(auto& Sect : S.Data)
+	{
+		u8 param_num = 0;
+		float param1, param2;
+		if (!pSettings->section_exist(Sect.first))
+		{
+			if(Sect.first.c_str()[0] == '$')
+			{
+				LPCSTR section_name = Sect.first.c_str()+1;
+				ParseTradeParametersFunc(Sect.second, param_num,param1,param2);
+				ProcessMultipleTradeItemsSettingsFunc(section_name,  param_num, param1, param2);
+				continue;
+			}
+			Msg("! Section [%s] (parse trade config file [%s]) doesn't exist!", Sect.first.c_str(), ini_file.fname());
+			continue;
+		}
+		ParseTradeParametersFunc(Sect.second,param_num,param1,param2);
+		ProcessSingleTradeItemSettingFunc(Sect.first, param_num, param1, param2);
 	}
 }
 
