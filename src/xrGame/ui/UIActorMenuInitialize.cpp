@@ -21,11 +21,12 @@
 #include "object_broker.h"
 #include "../../xrUI/Widgets/UIWndCallback.h"
 #include "UIHelperGame.h"
-#include "../../xrUI/Widgets/UIProgressBar.h"
+#include "../../xrUI/Widgets/UIItemStateDisplay.h"
 #include "../../xrUI/Widgets/UITabControl.h"
 #include "../../xrUI/ui_base.h"
 #include "../../xrEngine/string_table.h"
 #include "ui_drop_amount.h"
+#include "../xrUI/Widgets/UIProgressBar.h"
 
 CUIActorMenu::CUIActorMenu()
 {
@@ -140,7 +141,8 @@ void CUIActorMenu::Construct()
 	{
 		m_pInvList[i] = nullptr;
 		m_pInvSlotHighlight[i] = nullptr;
-		m_pInvSlotProgress[i] = nullptr;
+		m_pInvSlotProgressLegacy[i] = nullptr;
+		m_pInvSlotProgressPercent[i] = nullptr;
 	}
 
 	XML_NODE* stored_root = uiXml.GetLocalRoot();
@@ -173,13 +175,24 @@ void CUIActorMenu::Construct()
 			m_pInvSlotHighlight[i]->Show(false);
 		}
 
-		if (uiXml.GetNodesNum(slot_node, "slot_progress") == 0)
-			continue;
+		const bool hasSlotProgress = uiXml.GetNodesNum(slot_node, "slot_progress") > 0;
+		const bool hasSlotProgressPercent = uiXml.GetNodesNum(slot_node, "slot_progress_percent") > 0;
 
-		m_pInvSlotProgress[i] = new CUIProgressBar();
-		AttachChild(m_pInvSlotProgress[i]);
-		CUIXmlInit::InitProgressBar(uiXml, "slot_progress", 0, m_pInvSlotProgress[i]);
-		m_pInvSlotProgress[i]->SetAutoDelete(true);
+		if (hasSlotProgress)
+		{
+			m_pInvSlotProgressLegacy[i] = new CUIProgressBar();
+			AttachChild(m_pInvSlotProgressLegacy[i]);
+			CUIXmlInit::InitProgressBar(uiXml, "slot_progress", 0, m_pInvSlotProgressLegacy[i]);
+			m_pInvSlotProgressLegacy[i]->SetAutoDelete(true);
+		}
+
+		if (hasSlotProgressPercent)
+		{
+			m_pInvSlotProgressPercent[i] = new CUIItemStateDisplay();
+			AttachChild(m_pInvSlotProgressPercent[i]);
+			CUIXmlInit::InitItemStateDisplay(uiXml, "slot_progress_percent", 0, m_pInvSlotProgressPercent[i]);
+			m_pInvSlotProgressPercent[i]->SetAutoDelete(true);
+		}
 	}
 	uiXml.SetLocalRoot(stored_root);
 
