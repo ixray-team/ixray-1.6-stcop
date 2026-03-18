@@ -44,7 +44,6 @@
 #include "../../agent_location_manager.h"
 #include "../../cover_point.h"
 #include "../../../xrEngine/CameraBase.h"
-#include "../../mt_config.h"
 #include "../../WeaponMagazined.h"
 #include "../../debug_renderer.h"
 #include "../../CharacterPhysicsSupport.h"
@@ -356,9 +355,8 @@ void CAI_Stalker::debug_text			()
 				break;
 			}
 
-		if (g_Alive()) {
-			if ( true || !g_mt_config.test(mtAiVision) )
-				VERIFY						(!memory().visual().visible_now(memory().enemy().selected()) || (fuzzy > 0.f));
+		if (g_Alive())
+		{
 			DBG_OutText("%s%s%svisible   : %s %f",indent,indent,indent,memory().visual().visible_now(memory().enemy().selected()) ? "+" : "-",fuzzy);
 		}
 		DBG_OutText	("%s%s%sobject    : %s",indent,indent,indent,*memory().enemy().selected()->cName());

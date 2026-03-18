@@ -15,7 +15,6 @@
 #include "Creature.h"
 #include "level_path_builder.h"
 #include "detail_path_builder.h"
-#include "mt_config.h"
 
 void CMovementManager::process_level_path()
 {
@@ -33,8 +32,9 @@ void CMovementManager::process_level_path()
 				0
 			);
 
-			if (can_use_distributed_computations(mtLevelPath)) {
-				level_path_builder().register_to_process	();
+			if (can_use_distributed_computations())
+			{
+				level_path_builder().register_to_process();
 				break;
 			}
 
@@ -58,8 +58,9 @@ void CMovementManager::process_level_path()
 				level_path().intermediate_index()
 			);
 
-			if (can_use_distributed_computations(mtDetailPath)) {
-				detail_path_builder().register_to_process	();
+			if (can_use_distributed_computations())
+			{
+				detail_path_builder().register_to_process();
 				break;
 			}
 

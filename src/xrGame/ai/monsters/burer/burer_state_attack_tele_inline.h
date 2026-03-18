@@ -224,18 +224,18 @@ void CStateBurerAttackTele<Object>::FindFreeObjects(xr_vector<ISpatialShared>& t
 }
 
 template <typename Object>
-void CStateBurerAttackTele<Object>::FindObjects	()
+void CStateBurerAttackTele<Object>::FindObjects()
 {
-	u32	res_size					= (u32)tele_objects.size		();
-	clear_and_reserve(tele_objects);
+	u32	res_size = (u32)tele_objects.size();
+	tele_objects.clear();
 
 	// получить список объектов вокруг врага
 	m_nearest.clear();
-	m_nearest.reserve				(res_size);
-	FindFreeObjects					(m_nearest, this->object->EnemyMan.get_enemy()->Position());
+	m_nearest.reserve(res_size);
+	FindFreeObjects(m_nearest, this->object->EnemyMan.get_enemy()->Position());
 
 	// получить список объектов вокруг монстра
-	FindFreeObjects					(m_nearest, this->object->Position());
+	FindFreeObjects(m_nearest, this->object->Position());
 
 	// получить список объектов между монстром и врагом
 	float dist = this->object->EnemyMan.get_enemy()->Position().distance_to(this->object->Position());
@@ -244,16 +244,13 @@ void CStateBurerAttackTele<Object>::FindObjects	()
 	dir.normalize();
 
 	Fvector pos;
-	pos.mad							(this->object->Position(), dir, dist / 2.f);
-	FindFreeObjects					(m_nearest, pos);	
-	
+	pos.mad(this->object->Position(), dir, dist / 2.f);
+	FindFreeObjects(m_nearest, pos);
 
 	// оставить уникальные объекты
-	tele_objects.erase				(
-		std::unique(
-			tele_objects.begin(),
-			tele_objects.end()
-		),
+	tele_objects.erase
+	(
+		std::unique(tele_objects.begin(), tele_objects.end()),
 		tele_objects.end()
 	);
 }
