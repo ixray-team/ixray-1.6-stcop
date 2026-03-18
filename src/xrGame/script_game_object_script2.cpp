@@ -451,6 +451,8 @@ class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject>
 
 		.def("IsSafemode", (bool (CScriptGameObject::*)() const)& CScriptGameObject::IsActorSafemode)
 		.def("SetSafemode", &CScriptGameObject::SetActorSafemode)
+	
+		.def("UseExternalStorageForTrade", &CScriptGameObject::UseExternalStorageForTrade)
 			
 		.def("SetCharacterMaxWeight",			&CScriptGameObject::SetCharacterMaxWeight)
 

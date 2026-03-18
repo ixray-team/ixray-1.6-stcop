@@ -1182,6 +1182,35 @@ void CInventory::Update()
 	UpdateDropTasks();
 }
 
+void CInventory::AddExternalStorage(shared_str story_id, CTradeStorageBox* obj)
+{
+	m_TraderExternalStorageMode = true;
+	if (I_ASSERT_M(!m_ExternalContainers.contains(story_id), "Attempt to register storage [%s] twice!", story_id.c_str()))
+	{
+		m_ExternalContainers[story_id] = obj;
+	}
+}
+
+CTradeStorageBox* CInventory::FindSuitableStorage(const shared_str& section) const
+{
+	CTradeStorageBox* UniversalStorage = nullptr;
+	for (auto& Storage : m_ExternalContainers)
+	{
+		if (!Storage.second->GetFilterSize())
+		{
+			I_ASSERT_M(!UniversalStorage, "Find more than one universal storages!");
+			UniversalStorage = Storage.second;
+			continue;
+		}
+		if (Storage.second->CanStoreItem(section))
+		{
+			return Storage.second;
+		}
+	}
+	I_ASSERT_M(UniversalStorage, "Can't find universal storage!");
+	return UniversalStorage;
+}
+
 void CInventory::UpdateDropTasks()
 {
 	//проверить слоты
@@ -1787,6 +1816,15 @@ u32 CInventory::BeltWidth() const
 
 void CInventory::AddAvailableItems(TIItemContainer& items_container, bool for_trade) const
 {
+	if(for_trade && m_TraderExternalStorageMode)
+	{
+		for(auto& elem : m_ExternalContainers)
+		{
+			elem.second->AddAvailableItems(items_container);
+		}
+		return;
+	}
+	
 	for (const PIItem item : m_ruck)
 	{
 		if (!for_trade || item->CanTrade())

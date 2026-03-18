@@ -546,7 +546,14 @@ void CUIActorMenu::InfoCurItem( CUICellItem* cell_item )
 
 	if(GetMenuMode()==mmTrade)
 	{
-		CInventoryOwner* item_owner = current_item->m_pInventory->GetOwner() ? current_item->m_pInventory->GetOwner()->cast_inventory_owner() : nullptr;
+		CInventoryOwner* item_owner = nullptr;
+		if (current_item->m_pInventory)
+		{
+			item_owner = current_item->m_pInventory->GetOwner() ? current_item->m_pInventory->GetOwner()->cast_inventory_owner() : nullptr;
+		} else
+		{
+			item_owner = m_pPartnerInvOwner;
+		}
 		u32 item_price = u32(-1);
 		if(item_owner && item_owner==m_pActorInvOwner)
 			item_price = m_partner_trade->GetItemPrice(current_item, true);

@@ -937,3 +937,12 @@ Novice_Difficulty_Error_Angle			= 30.0
 Stalker_Difficulty_Error_Angle			= 20.0
 Veteran_Difficulty_Error_Angle			= 15.0
 Master_Difficulty_Error_Angle			= 8
+
+[trade_storage_box_base]
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn 				= "devices\trade_storade_box"
+class				= O_TRDBOX
+cform				= skeleton
+visual				= dynamics\equipment_cache\equipment_box_01_case.ogf
+script_binding      = bind_physic_object.init
