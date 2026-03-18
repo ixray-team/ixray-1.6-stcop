@@ -32,7 +32,6 @@
 #include "autosave_manager.h"
 #include "ClimableObject.h"
 #include "level_graph.h"
-#include "mt_config.h"
 #include "PHCommander.h"
 #include "map_manager.h"
 #include "../xrEngine/CameraManager.h"
@@ -606,9 +605,6 @@ void CLevel::OnFrame()
 	{
 		if (OnClient() && !IsGameTypeSingle())
 		{
-#ifdef DEBUG
-			Msg("--- I'm disconnected, so clear all objects...");
-#endif // #ifdef DEBUG
 			ClearAllObjects();
 		}
 
@@ -627,14 +623,14 @@ void CLevel::OnFrame()
 	ProcessGameEvents();
 
 
-	if (m_bNeed_CrPr)					make_NetCorrectionPrediction();
+	if (m_bNeed_CrPr)
+	{
+		make_NetCorrectionPrediction();
+	}
 
 	if (!g_dedicated_server)
 	{
-		if (g_mt_config.test(mtMap))
-			Device.seqParallel.push_back(xr_make_delegate(m_map_manager, &CMapManager::Update));
-		else
-			MapManager().Update();
+		Device.seqParallel.push_back(xr_make_delegate(m_map_manager, &CMapManager::Update));
 	}
 	// Inherited update
 	inherited::OnFrame();
@@ -729,16 +725,9 @@ void CLevel::OnFrame()
 #endif
 	g_pGamePersistent->Environment().SetGameTime(GetEnvironmentGameDayTimeSec(), game->GetEnvironmentGameTimeFactor());
 
-	// update static sounds
-	if (g_mt_config.test(mtLevelSounds))
-		Device.seqParallel.push_back(xr_make_delegate(m_level_sound_manager, &CLevelSoundManager::Update));
-	else
-		m_level_sound_manager->Update();
-
-	if (g_mt_config.test(mtLUA_GC))	
-		Device.seqParallel.push_back(xr_make_delegate(this, &CLevel::script_gc));
-	else						
-		script_gc();
+	// update static sounds & gc
+	Device.seqParallel.push_back(xr_make_delegate(m_level_sound_manager, &CLevelSoundManager::Update));
+	Device.seqParallel.push_back(xr_make_delegate(this, &CLevel::script_gc));
 
 	//-----------------------------------------------------
 	if (pStatGraphR)

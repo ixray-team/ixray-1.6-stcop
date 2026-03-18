@@ -16,7 +16,6 @@
 #include "Creature.h"
 #include "level_path_builder.h"
 #include "detail_path_builder.h"
-#include "mt_config.h"
 
 void CMovementManager::process_patrol_path()
 {
@@ -49,7 +48,8 @@ void CMovementManager::process_patrol_path()
 				&patrol().destination_position()
 			);
 
-			if (can_use_distributed_computations(mtLevelPath)) {
+			if (can_use_distributed_computations())
+			{
 				level_path_builder().register_to_process	();
 				break;
 			}
@@ -74,8 +74,9 @@ void CMovementManager::process_patrol_path()
 				level_path().intermediate_index()
 			);
 
-			if (can_use_distributed_computations(mtDetailPath)) {
-				detail_path_builder().register_to_process	();
+			if (can_use_distributed_computations())
+			{
+				detail_path_builder().register_to_process();
 				break;
 			}
 
@@ -83,42 +84,39 @@ void CMovementManager::process_patrol_path()
 			
 			break;
 		}
-		case ePathStatePathVerification : {
-			if (!patrol().actual()) {
-//				Msg				("[%6d][%s] actuality is false 3",Device.dwFrame,*object().cName());
-				m_path_state	= ePathStateSelectPatrolPoint;
+		case ePathStatePathVerification:
+		{
+			if (!patrol().actual())
+			{
+				m_path_state = ePathStateSelectPatrolPoint;
 			}
-			else
-				if (!level_path().actual())
-					m_path_state	= ePathStateBuildLevelPath;
-				else
-					if (!detail().actual())
-						m_path_state	= ePathStateBuildLevelPath;
-					else
-						if (detail().completed(object().Position(),!detail().state_patrol_path())) {
-//							Msg				("[%6d][%s] detail path is completed",Device.dwFrame,*object().cName());
-//							Msg				(
-//								"[path_size=%d][curr_id=%d][last_pp=%d] start_position=[%f][%f][%f] stop_position=[%f][%f][%f] position=[%f][%f][%f]",
-//								detail().path().size(),
-//								detail().curr_travel_point_index(),
-//								detail().last_patrol_point(),
-//								VPUSH(detail().path().front().position),
-//								VPUSH(detail().curr_travel_point().position),
-//								VPUSH(object().Position())
-//							);
-							m_path_state	= ePathStateContinueLevelPath;
-							if (level_path().completed()) {
-								m_path_state	= ePathStateSelectPatrolPoint;
-								if (patrol().completed()) 
-									m_path_state	= ePathStatePathCompleted;
-							}
-						}
+			else if (!level_path().actual())
+			{
+				m_path_state = ePathStateBuildLevelPath;
+			}
+			else if (!detail().actual())
+			{
+				m_path_state = ePathStateBuildLevelPath;
+			}
+			else if (detail().completed(object().Position(), !detail().state_patrol_path()))
+			{
+				m_path_state = ePathStateContinueLevelPath;
+				if (level_path().completed())
+				{
+					m_path_state = ePathStateSelectPatrolPoint;
+					if (patrol().completed())
+					{
+						m_path_state = ePathStatePathCompleted;
+					}
+				}
+			}
 			break;
 		}
-		case ePathStatePathCompleted : {
-			if (!patrol().actual()) {
-//				Msg				("[%6d][%s] actuality is false 4",Device.dwFrame,*object().cName());
-				m_path_state	= ePathStateSelectPatrolPoint;
+		case ePathStatePathCompleted :
+		{
+			if (!patrol().actual())
+			{
+				m_path_state = ePathStateSelectPatrolPoint;
 			}
 			break;
 		}

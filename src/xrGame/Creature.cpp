@@ -33,7 +33,6 @@
 #include "level_debug.h"
 #include "material_manager.h"
 #include "sound_user_data_visitor.h"
-#include "mt_config.h"
 #include "PHMovementControl.h"
 #include "../xrEngine/date_time.h"
 #include "CharacterPhysicsSupport.h"
@@ -404,7 +403,7 @@ void CCreature::net_update::lerp(CCreature::net_update& A, CCreature::net_update
 
 void CCreature::update_sound_player()
 {
-	PROF_EVENT("AI: [Monsters] Update sounds");
+	PROF_EVENT("update_sound_player");
 	sound().update(client_update_fdelta());
 }
 
@@ -426,12 +425,7 @@ void CCreature::UpdateCL	()
 				animation_movement()->DBG_verify_position_not_chaged();
 #endif
 
-	if (g_mt_config.test(mtSoundPlayer))
-		Device.seqParallel.push_back	(xr_make_delegate(this,&CCreature::update_sound_player));
-	else {
-		PROF_EVENT("sound_player");
-		update_sound_player	();
-	}
+	Device.seqParallel.push_back	(xr_make_delegate(this,&CCreature::update_sound_player));
 
 	if (NET.empty())
 	{
