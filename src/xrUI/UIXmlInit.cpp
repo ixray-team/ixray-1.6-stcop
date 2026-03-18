@@ -8,6 +8,7 @@
 #include "Widgets/UICustomSpin.h"
 #include "Widgets/UIRadioButton.h"
 #include "Widgets/UIProgressBar.h"
+#include "Widgets/UIItemStateDisplay.h"
 #include "Widgets/UIProgressShape.h"
 #include "Widgets/UITabControl.h"
 #include "Widgets/UIAnimatedStatic.h"
@@ -620,6 +621,155 @@ bool CUIXmlInit::InitProgressBar(CUIXml& xml_doc, LPCSTR path,
 	
 		color = GetColor	(xml_doc, buf, index, 0xff);
 		pWnd->m_maxColor.set(color);
+	}
+
+	return true;
+}
+
+bool CUIXmlInit::InitItemStateDisplay(CUIXml& xml_doc, LPCSTR path, int index, CUIItemStateDisplay* pWnd)
+{
+	bool isValidNode = xml_doc.NavigateToNode(path, index);
+	R_ASSERT4(isValidNode, "XML node not found", path, xml_doc.m_xml_file_name);
+
+	InitAutoStaticGroup(xml_doc, path, index, pWnd);
+
+	string256 buf;
+	Fvector2 pos, size;
+	pos.x = xml_doc.ReadAttribFlt(path, index, "x");
+	pos.y = xml_doc.ReadAttribFlt(path, index, "y");
+	InitAlignment(xml_doc, path, index, pos.x, pos.y, pWnd);
+	size.x = xml_doc.ReadAttribFlt(path, index, "width");
+	size.y = xml_doc.ReadAttribFlt(path, index, "height");
+	pWnd->SetWndPos(pos);
+	pWnd->SetWndSize(size);
+
+	float initialPos = xml_doc.ReadAttribFlt(path, index, "pos", 0.0f);
+	// Resolve percent display relative to path node; local root may change after InitAutoStaticGroup
+	XML_NODE* pathNode = xml_doc.NavigateToNode(path, index);
+	XML_NODE* storedRoot = xml_doc.GetLocalRoot();
+	bool hasPercentDisplay = false;
+	if (pathNode)
+	{
+		xml_doc.SetLocalRoot(pathNode);
+		hasPercentDisplay = (xml_doc.NavigateToNode("percent_display", 0) != nullptr);
+		xml_doc.SetLocalRoot(storedRoot);
+	}
+
+	xr_strconcat(buf, path, ":percent_display");
+
+	if (hasPercentDisplay)
+	{
+		pWnd->_mode = CUIItemStateDisplay::EDisplayMode::Percent;
+
+		string256 subPath;
+		xr_strconcat(subPath, buf, ":background");
+		if (xml_doc.NavigateToNode(subPath, index))
+		{
+			pWnd->_percentBackground = new CUIStatic();
+			pWnd->_percentBackground->SetAutoDelete(true);
+			pWnd->AttachChild(pWnd->_percentBackground);
+			InitWindow(xml_doc, subPath, index, pWnd->_percentBackground);
+			pWnd->_percentBackground->SetWndPos(Fvector2().set(0.0f, 0.0f));
+			pWnd->_percentBackground->SetWndSize(pWnd->GetWndSize());
+
+			string256 texPath;
+			xr_strconcat(texPath, subPath, ":texture");
+			if (xml_doc.NavigateToNode(texPath, index))
+			{
+				LPCSTR texture = xml_doc.Read(texPath, index, nullptr);
+				if (texture && texture[0])
+				{
+					pWnd->_percentBackground->InitTexture(texture, false);
+					u32 color = GetColor(xml_doc, texPath, index, 255);
+					pWnd->_percentBackground->SetTextureColor(color);
+				}
+				int stretchFlag = xml_doc.ReadAttribInt(subPath, index, "stretch", 0);
+				pWnd->_percentBackground->SetStretchTexture(stretchFlag != 0);
+			}
+		}
+
+		xr_strconcat(subPath, buf, ":text");
+		if (xml_doc.NavigateToNode(subPath, index))
+		{
+			LPCSTR formatStr = xml_doc.ReadAttrib(subPath, index, "format", "percent");
+			if (_stricmp(formatStr, "number") == 0)
+			{
+				pWnd->_percentFormat = CUIItemStateDisplay::EPercentFormat::Number;
+			}
+			else if (_stricmp(formatStr, "fraction") == 0)
+			{
+				pWnd->_percentFormat = CUIItemStateDisplay::EPercentFormat::Fraction;
+				pWnd->_fractionMax = xml_doc.ReadAttribInt(subPath, index, "fraction_max", 100);
+			}
+			else if (_stricmp(formatStr, "portion") == 0)
+			{
+				pWnd->_percentFormat = CUIItemStateDisplay::EPercentFormat::Portion;
+			}
+			else
+			{
+				pWnd->_percentFormat = CUIItemStateDisplay::EPercentFormat::Percent;
+			}
+
+			CGameFont* pFont = nullptr;
+			LPCSTR fontName = xml_doc.ReadAttrib(subPath, index, "font", nullptr);
+			if (fontName && fontName[0])
+			{
+				pFont = UI().Font().GetFont(fontName);
+			}
+			if (!pFont)
+			{
+				pFont = UI().Font().pFontStat;
+			}
+			if (pFont && pWnd->_percentBackground)
+			{
+				pWnd->_percentText = new CUIStatic();
+				pWnd->_percentText->SetAutoDelete(true);
+				pWnd->_percentBackground->AttachChild(pWnd->_percentText);
+				InitWindow(xml_doc, subPath, index, pWnd->_percentText);
+
+				Fvector2 textSize = pWnd->_percentText->GetWndSize();
+				if (textSize.x <= 0.0f || textSize.y <= 0.0f)
+				{
+					pWnd->_percentText->SetWndSize(pWnd->_percentBackground->GetWndSize());
+				}
+
+				u32 color = GetColor(xml_doc, subPath, index, 0xff);
+				CUILines* pLines = pWnd->_percentText->TextItemControl();
+				pLines->SetTextColor(color);
+				pLines->SetFont(pFont);
+			}
+		}
+		pWnd->SetState(initialPos);
+	}
+	else
+	{
+		// Bar mode: progress node may be under path or under path:legacy
+		string256 barPath;
+		bool useLegacy = false;
+		if (pathNode)
+		{
+			xml_doc.SetLocalRoot(pathNode);
+			useLegacy = (xml_doc.NavigateToNode("legacy", 0) != nullptr);
+			xml_doc.SetLocalRoot(storedRoot);
+		}
+		if (useLegacy)
+		{
+			xr_strconcat(barPath, path, ":legacy");
+		}
+		else
+		{
+			xr_strcpy(barPath, path);
+		}
+
+		pWnd->_mode = CUIItemStateDisplay::EDisplayMode::Bar;
+		pWnd->_progressBar = new CUIProgressBar();
+		pWnd->_progressBar->SetAutoDelete(true);
+		pWnd->AttachChild(pWnd->_progressBar);
+		if (!InitProgressBar(xml_doc, barPath, index, pWnd->_progressBar))
+			return false;
+		pWnd->_showBackground = pWnd->_progressBar->IsShownBackground();
+		pWnd->m_bUseGradient = pWnd->_progressBar->m_bUseGradient;
+		pWnd->SetState(initialPos);
 	}
 
 	return true;

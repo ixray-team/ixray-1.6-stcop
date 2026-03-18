@@ -8,6 +8,7 @@
 #include "object_broker.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/Widgets/UIProgressBar.h"
+#include "../../xrUI/Widgets/UIItemStateDisplay.h"
 #include "../eatable_item.h"
 #include "../../Include/xrRender/Kinematics.h"
 #include "../Include/xrRender/RenderVisual.h"
@@ -110,10 +111,10 @@ void CUICellItem::init()
 	}
 
 
-	m_pConditionState = new CUIProgressBar();
+	m_pConditionState = new CUIItemStateDisplay();
 	m_pConditionState->SetAutoDelete(true);
 	AttachChild(m_pConditionState);
-	CUIXmlInit::InitProgressBar(uiXml, "condition_progess_bar", 0, m_pConditionState);
+	CUIXmlInit::InitItemStateDisplay(uiXml, "condition_progess_bar", 0, m_pConditionState);
 	m_pConditionState->Show(true);
 
 	if (uiXml.NavigateToNode("cell_item_custom_text", 0))
@@ -506,10 +507,22 @@ void CUICellItem::SetOwnerList(CUIDragDropListEx* p)
 
 void CUICellItem::UpdateConditionProgressBar()
 {
+	if (!m_pConditionState)
+	{
+		return;
+	}
+
+	if (!m_pParentList || !m_pParentList->GetConditionProgBarVisibility())
+	{
+		m_pConditionState->Show(false);
+		return;
+	}
+
 	PIItem itm = (PIItem)m_pData;
 
 	if (itm == nullptr)
 	{
+		m_pConditionState->Show(false);
 		return;
 	}
 
@@ -521,56 +534,40 @@ void CUICellItem::UpdateConditionProgressBar()
 
 	Ivector2 cell_size = m_pParentList->CellSize();
 	Ivector2 cell_space = m_pParentList->CellsSpacing();
-	float x = 1.f;
-	float y = itm_grid_size.y * (cell_size.y + cell_space.y) - m_pConditionState->GetHeight() - 2.f;
-	bool is_need_skip = false;
+	float x = 1.0f;
+	float y = itm_grid_size.y * (cell_size.y + cell_space.y) - m_pConditionState->GetHeight() - 2.0f;
 
-	if (!m_pConditionState)
-		return;
+	const InventoryUtilities::ConditionDisplayParams display =
+		InventoryUtilities::GetConditionDisplayParams(itm);
 
-	if(m_pParentList && m_pParentList->GetConditionProgBarVisibility())
+	if (!itm->IsUsingCondition())
 	{
-		if (itm != nullptr && itm->IsUsingCondition())
-		{
-			float cond = itm->GetCondition();
-
-			if (CEatableItem* eitm = itm->cast_eatable_item())
-			{
-				u8 max_uses = eitm->GetMaxUses();
-				if (max_uses > 0)
-				{
-					u8 remaining_uses = eitm->GetRemainingUses();
-
-					if (max_uses < 8)
-					{
-						m_pConditionState->ShowBackground(false);
-					}
-					if (remaining_uses < 1)
-					{
-						cond = 0.f;
-					}
-					else if (max_uses > 8)
-					{
-						cond = (float)remaining_uses / (float)max_uses;
-					}
-					else
-					{
-						cond = ((float)remaining_uses * 0.125f) - 0.0625f;
-					}
-
-					m_pConditionState->m_bUseGradient = false;
-				}
-			}
-
-
-			m_pConditionState->SetWndPos(Fvector2().set(x,y));
-			m_pConditionState->SetProgressPos( iCeil( cond * 13.0f ) / 13.0f );
-			m_pConditionState->Show(true);
-			return;
-		}
+		m_pConditionState->Show(false);
+		return;
 	}
 
-	m_pConditionState->Show(false);
+	m_pConditionState->SetWndPos(Fvector2().set(x, y));
+	m_pConditionState->m_bUseGradient = !display.disableGradient;
+
+	if (display.hideBackground)
+	{
+		m_pConditionState->ShowBackground(false);
+	}
+
+	CEatableItem* eatableItem = itm->cast_eatable_item();
+	if (m_pConditionState->GetPercentFormat() == CUIItemStateDisplay::EPercentFormat::Portion &&
+		eatableItem != nullptr &&
+		display.usePortion &&
+		display.portionMax > 1)
+	{
+		m_pConditionState->SetPortion(display.portionCurrent, display.portionMax);
+	}
+	else
+	{
+		m_pConditionState->SetState(display.state);
+	}
+
+	m_pConditionState->Show(true);
 }
 
 bool CUICellItem::EqualTo(CUICellItem* itm)
