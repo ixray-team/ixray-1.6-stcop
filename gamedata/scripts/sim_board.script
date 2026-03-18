@@ -407,24 +407,22 @@ function sim_board:fill_start_position()
 		local levelId = gg_level_id( i )
 		local section_name = "start_position_" .. alife():level_name(levelId)
 
-		if not setting_ini:section_exist(section_name) then
-			return
-		end
-
-		local n = setting_ini:line_count(section_name)
-		for i=0,n-1 do
-			local _, id, value	= setting_ini:r_line(section_name,i,"","")
-			local smrt_names = utils.parse_names(value)
-			for _,v in pairs(smrt_names) do
-				local smart = self.smarts_by_names[v]
-				if smart == nil then
-					abort("Wrong smart name [%s] in start position", tostring(v))
-				end
-				local squad = self:create_squad(smart, id)
-				self:enter_smart(squad, smart.id)
-				--squad:update()
-			end
-		end
+		if setting_ini:section_exist(section_name) then
+		    local n = setting_ini:line_count(section_name)
+		    for i=0,n-1 do
+			    local _, id, value	= setting_ini:r_line(section_name,i,"","")
+			    local smrt_names = utils.parse_names(value)
+			    for _,v in pairs(smrt_names) do
+				    local smart = self.smarts_by_names[v]
+				    if smart == nil then
+					    abort("Wrong smart name [%s] in start position", tostring(v))
+				    end
+				    local squad = self:create_squad(smart, id)
+				    self:enter_smart(squad, smart.id)
+				    --squad:update()
+			    end
+		    end
+        end
 	end
 end
 
