@@ -21,12 +21,20 @@ IC	void CTradeActionParameters::clear							()
 
 IC	void CTradeActionParameters::enable							(const shared_str &section, const CTradeFactors &trade_factors)
 {
-	m_enabled.enable	(section,trade_factors);
+	if (m_disabled.disabled(section))
+	{
+		m_disabled.remove(section);
+	}
+	m_enabled.enable(section,trade_factors);
 }
 
 IC	void CTradeActionParameters::disable						(const shared_str &section)
 {
-	m_disabled.disable	(section);
+	if (m_enabled.enabled(section))
+	{
+		m_enabled.remove(section);
+	}
+	m_disabled.disable(section);
 }
 
 IC	bool CTradeActionParameters::enabled						(const shared_str &section) const
