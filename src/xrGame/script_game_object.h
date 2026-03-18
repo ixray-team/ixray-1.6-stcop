@@ -1047,6 +1047,9 @@ public:
 	bool IsActorLadder() const;
 	bool IsActorSafemode() const;
 	void SetActorSafemode(bool status);
+
+	bool UseExternalStorageForTrade();
+	
 	doors::door* m_door;
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION

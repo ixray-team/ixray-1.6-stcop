@@ -447,6 +447,7 @@ void CObjectFactory::register_classes	()
 	ADD(CHolderEntityObject		,CSE_ALifeDynamicObjectVisual	,CLSID_OBJECT_HOLDER_ENT		,"obj_holder_ent");
 
 	ADD(CInventoryBox			,CSE_ALifeInventoryBox			,CLSID_INVENTORY_BOX			,"inventory_box");
+	ADD(CTradeStorageBox		,CSE_ALifeInventoryBox			,CLSID_TRADE_STORAGE_BOX		,"trade_storage_box");
 #ifndef NO_SINGLE
 	ADD(smart_cover::object		,CSE_SmartCover					,TEXT2CLSID("SMRTCOVR")			,"smart_cover");
 #endif // #ifndef NO_SINGLE

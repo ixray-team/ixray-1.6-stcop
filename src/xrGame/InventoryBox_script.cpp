@@ -16,3 +16,14 @@ void CInventoryBox::script_register(lua_State *L)
 			.def("set_closed", &CInventoryBox::set_closed)
 		];
 }
+void CTradeStorageBox::script_register(lua_State *L)
+{
+	module(L)
+		[
+			class_<CTradeStorageBox, CGameObject>("CInventoryBox")
+			.def(constructor<>())
+			.def("can_take", &CInventoryBox::can_take)
+			.def("set_can_take", &CInventoryBox::set_can_take)
+			.def("set_closed", &CInventoryBox::set_closed)
+		];
+}

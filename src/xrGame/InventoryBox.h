@@ -3,7 +3,7 @@
 #include "GameObject.h"
 #include "../xrScripts/script_export_space.h"
 
-class CInventoryBox final : public CGameObject
+class CInventoryBox : public CGameObject
 {
 	using inherited = CGameObject;
 
@@ -42,4 +42,19 @@ protected:
 	void SE_update_status();
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 
+};
+
+class CTradeStorageBox final : public CInventoryBox
+{
+	using inherited = CInventoryBox;
+
+	xr_hash_set<shared_str> m_ItemFilter;
+
+public:
+	virtual CTradeStorageBox* cast_trade_storage_box() override { return this; }
+	virtual void Load(LPCSTR section) override;
+	IC u32 GetFilterSize() { return m_ItemFilter.size(); }
+	IC bool CanStoreItem(shared_str item) { return !m_ItemFilter.contains(item); }
+	
+	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
