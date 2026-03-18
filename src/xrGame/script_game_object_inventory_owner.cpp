@@ -2841,3 +2841,17 @@ void CScriptGameObject::IterateBelt(::luabind::functor<bool> functor, ::luabind:
 		}
 	}
 }
+
+
+bool CScriptGameObject::UseExternalStorageForTrade()
+{
+	auto InvOwn = object().cast_inventory_owner();
+
+	if (!InvOwn)
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "cannot cast object to CInventoryOwner!");
+		return false;
+	}
+
+	return InvOwn->inventory().GetTraderExternalStorageMode();
+}

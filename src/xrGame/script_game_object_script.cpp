@@ -927,6 +927,8 @@ void CScriptGameObject::script_register(lua_State *L)
 			.def("iterate_ruck", &CScriptGameObject::IterateRuck)
 			.def("iterate_belt", &CScriptGameObject::IterateBelt)
 
+			.def("UseExternalStorageForTrade", &CScriptGameObject::UseExternalStorageForTrade)
+			
 			.def("mark_item_dropped",			&CScriptGameObject::MarkItemDropped)
 			.def("marked_dropped",				&CScriptGameObject::MarkedDropped)
 			.def("unload_magazine",				&CScriptGameObject::UnloadMagazine)
