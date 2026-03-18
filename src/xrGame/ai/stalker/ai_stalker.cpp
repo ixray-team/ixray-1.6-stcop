@@ -47,7 +47,6 @@
 #include "../../stalker_sound_data_visitor.h"
 #include "ai_stalker_space.h"
 #include "RbmkObjectHandlerPlanner.h"
-#include "../../mt_config.h"
 #include "../../EffectorShot.h"
 #include "../../visual_memory_manager.h"
 #include "../../enemy_manager.h"
