@@ -136,6 +136,40 @@ void CALifeObjectRegistry::save				(IWriter &memory_stream)
 	Msg							("* %d objects are successfully saved",object_count);
 }
 
+void CALifeObjectRegistry::BindAction(EAlifeActionCallbackType Event, ALife::_OBJECT_ID ID, SAlifeActionBase* Action)
+{
+	xrCriticalSectionGuard g(m_actionsCS);
+	if (m_actions.empty())
+	{
+		m_actions.resize((size_t)EAlifeActionCallbackType::Num);
+	}
+	auto& Type = m_actions[(size_t)Event];
+	if (!Type.contains(ID))
+	{
+		Type[ID] = {};
+	}
+	Type[ID].emplace_back(Action);
+}
+
+void CALifeObjectRegistry::TriggerActions(EAlifeActionCallbackType Event, ALife::_OBJECT_ID ID)
+{
+	xrCriticalSectionGuard g(m_actionsCS);
+	if (m_actions.empty())
+	{
+		return;
+	}
+	auto& Type = m_actions[(size_t)Event];
+	if (auto It = Type.find(ID); It != Type.end())
+	{
+		for (auto Action : It->second)
+		{
+			Action->Process();
+			xr_delete(Action);
+		}
+		Type.erase(ID);
+	}
+}
+
 CSE_ALifeDynamicObject *CALifeObjectRegistry::get_object		(IReader &file_stream)
 {
 	NET_Packet				tNetPacket;

@@ -1079,6 +1079,9 @@ public:
 	bool IsActorSafemode() const;
 	void SetActorSafemode(bool status);
 	bool IsPsiBlocked() const;
+
+	bool UseExternalStorageForTrade();
+	
 	doors::door* m_door;
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
