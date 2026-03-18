@@ -7,32 +7,38 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
+#include <Windows.Media.Streaming.Adaptive.h>
 
-IC	CTradeFactorParameters::CTradeFactorParameters			()
+IC CTradeFactorParameters::CTradeFactorParameters()
 {
 }
 
-IC	void CTradeFactorParameters::clear						()
+IC	void CTradeFactorParameters::clear()
 {
-	m_factors.clear			();
+	m_factors.clear();
 }
 
-IC	void CTradeFactorParameters::enable						(const shared_str &section, const CTradeFactors &factors)
+IC	void CTradeFactorParameters::enable(const shared_str &section, const CTradeFactors &factors)
+{
+	FACTORS::const_iterator I = m_factors.find(section);
+	VERIFY(I == m_factors.end());
+	m_factors.insert(std::make_pair(section,factors));
+}
+
+IC	bool CTradeFactorParameters::enabled(const shared_str &section) const
 {
 	FACTORS::const_iterator	I = m_factors.find(section);
-	VERIFY					(I == m_factors.end());
-	m_factors.insert		(std::make_pair(section,factors));
+	return I != m_factors.end();
 }
 
-IC	bool CTradeFactorParameters::enabled					(const shared_str &section) const
+IC	void CTradeFactorParameters::remove(const shared_str &section)
 {
-	FACTORS::const_iterator	I = m_factors.find(section);
-	return					(I != m_factors.end());
+	m_factors.erase(section);
 }
 
 IC	const CTradeFactors &CTradeFactorParameters::factors	(const shared_str &section) const
 {
-	FACTORS::const_iterator	I = m_factors.find(section);
-	VERIFY					(I != m_factors.end());
-	return					((*I).second);
+	FACTORS::const_iterator I = m_factors.find(section);
+	VERIFY(I != m_factors.end());
+	return I->second;
 }
