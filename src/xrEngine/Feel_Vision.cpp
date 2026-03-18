@@ -86,7 +86,8 @@ void Vision::feel_vision_query(Fmatrix& mFull)
 	);
 
 	// Determine visibility for dynamic part of scene
-	clear_and_reserve(seen);
+	seen.clear();
+
 	for (u32 o_it = 0; o_it < r_spatial.size(); o_it++)
 	{
 		ISpatial* spatial = r_spatial[o_it].get();

@@ -8,7 +8,6 @@
 #include "game_cl_base.h"
 #include "Actor.h"
 #include "GamePersistent.h"
-#include "mt_config.h"
 #include "game_cl_base_weapon_usage_statistic.h"
 #include "game_cl_mp.h"
 
@@ -1338,19 +1337,14 @@ void CBulletManager::CommitEvents()	// @ the start of frame
 			}break;
 		}		
 	}
-	clear_and_reserve(m_Events);
 
-	if (g_mt_config.test(mtBullets)) {
-		Device.seqParallel.push_back(xr_make_delegate(this, &CBulletManager::UpdateWorkload));
-	}
-	else {
-		UpdateWorkload();
-	}
+	m_Events.clear();
+	Device.seqParallel.push_back(xr_make_delegate(this, &CBulletManager::UpdateWorkload));
 
 	std::swap(bp_update_idx, bp_render_idx);
 }
 
-void CBulletManager::RegisterEvent			(EventType Type, BOOL _dynamic, SBullet* bullet, const Fvector& end_point, collide::rq_result& R, u16 tgt_material)
+void CBulletManager::RegisterEvent(EventType Type, BOOL _dynamic, SBullet* bullet, const Fvector& end_point, collide::rq_result& R, u16 tgt_material)
 {
 	m_Events.push_back	(_event())		;
 	_event&	E		= m_Events.back()	;

@@ -276,7 +276,7 @@ void CControlPathBuilder::make_inactual()
 	enable_movement(!enabled());
 }
 
-bool CControlPathBuilder::can_use_distributed_computations (u32 option) const
+bool CControlPathBuilder::can_use_distributed_computations () const
 {
 	CActor* pActor = Actor();
 
@@ -285,7 +285,7 @@ bool CControlPathBuilder::can_use_distributed_computations (u32 option) const
 
 	VERIFY(inherited_com::m_object);
 	if (pActor->memory().visual().visible_right_now(inherited_com::m_object)) return false;
-	return inherited::can_use_distributed_computations(option);
+	return inherited::can_use_distributed_computations();
 }
 
 u32	 CControlPathBuilder::find_nearest_vertex				(const u32 &level_vertex_id, const Fvector &target_position, const float &range)

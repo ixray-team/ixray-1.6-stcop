@@ -20,7 +20,6 @@
 #include "graph_engine.h"
 #include "../xrEngine/x_ray.h"
 #include "restriction_space.h"
-#include "mt_config.h"
 #include "../xrEngine/string_table.h"
 
 using namespace ALife;
@@ -143,7 +142,7 @@ void CALifeUpdateManager::shedule_Update(u32 dt)
 	if (!initialized())
 		return;
 
-	if (!m_first_time && g_mt_config.test(mtALife))
+	if (!m_first_time)
 	{
 		Device.seqParallel.push_back(xr_delegate<void()>(this, &CALifeUpdateManager::update));
 		return;

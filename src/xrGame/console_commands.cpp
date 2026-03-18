@@ -27,7 +27,6 @@
 #include "ai_space.h"
 #include "ai/monsters/basemonster/base_monster.h"
 #include "../xrEngine/date_time.h"
-#include "mt_config.h"
 #include "ui/UIOptConCom.h"
 #include "UIGameSP.h"
 #include "ui/UIActorMenu.h"
@@ -122,7 +121,6 @@ void register_mp_console_commands();
 
 BOOL	g_bCheckTime = FALSE;
 int		net_cl_inputupdaterate = 50;
-Flags32	g_mt_config = { mtLevelPath | mtDetailPath | mtObjectHandler | mtSoundPlayer | mtAiVision | mtBullets | mtLUA_GC | mtLevelSounds | mtALife | mtMap };
 #ifdef DEBUG_DRAW
 Flags32	dbg_net_Draw_Flags = { 0 };
 #endif
@@ -2548,32 +2546,14 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask32, "hud_crosshair_point", &psHUD_Flags, HUD_CROSSHAIR_POINT);
 	CMD3(CCC_Mask32, "hud_crosshair_dist", &psHUD_Flags, HUD_CROSSHAIR_DIST);
 
-	//#ifdef DEBUG
 	CMD4(CCC_Float, "hud_fov", &psHUD_FOV_def, 5.0f, 180.0f);
 	CMD4(CCC_Float, "fov", &g_base_fov, 5.0f, 180.0f);
 	CMD2(CCC_Boolean, "g_3d_scopes", &g_3d_scopes);
-	//#endif // DEBUG
 
-		// Demo
-#if 1//ndef MASTER_GOLD
+	// Demo
 	CMD1(CCC_DemoPlay, "demo_play");
 	CMD1(CCC_DemoRecord, "demo_record");
 	CMD1(CCC_DemoRecordSetPos, "demo_set_cam_position");
-#endif // #ifndef MASTER_GOLD
-
-#ifndef MASTER_GOLD
-	// ai
-	CMD3(CCC_Mask32, "mt_ai_vision", &g_mt_config, mtAiVision);
-	CMD3(CCC_Mask32, "mt_level_path", &g_mt_config, mtLevelPath);
-	CMD3(CCC_Mask32, "mt_detail_path", &g_mt_config, mtDetailPath);
-	CMD3(CCC_Mask32, "mt_object_handler", &g_mt_config, mtObjectHandler);
-	CMD3(CCC_Mask32, "mt_sound_player", &g_mt_config, mtSoundPlayer);
-	CMD3(CCC_Mask32, "mt_bullets", &g_mt_config, mtBullets);
-	CMD3(CCC_Mask32, "mt_script_gc", &g_mt_config, mtLUA_GC);
-	CMD3(CCC_Mask32, "mt_level_sounds", &g_mt_config, mtLevelSounds);
-	CMD3(CCC_Mask32, "mt_alife", &g_mt_config, mtALife);
-	CMD3(CCC_Mask32, "mt_map", &g_mt_config, mtMap);
-#endif // MASTER_GOLD
 
 #ifndef MASTER_GOLD
 	CMD3(CCC_Mask32, "ai_obstacles_avoiding", &psAI_Flags, aiObstaclesAvoiding);

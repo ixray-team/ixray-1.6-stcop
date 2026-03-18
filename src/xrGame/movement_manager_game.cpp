@@ -20,7 +20,6 @@
 #include "Creature.h"
 #include "level_path_builder.h"
 #include "detail_path_builder.h"
-#include "mt_config.h"
 
 void CMovementManager::show_game_path_info	()
 {
@@ -56,44 +55,50 @@ void CMovementManager::process_game_path()
 {
 	PROF_EVENT("Build Path/Process Game Path");
 
-	if (m_path_state != ePathStateTeleport) {
-
+	if (m_path_state != ePathStateTeleport)
+	{
 		if (!level_path().actual() && (m_path_state > ePathStateBuildLevelPath))
-			m_path_state		= ePathStateBuildLevelPath;
+			m_path_state = ePathStateBuildLevelPath;
 
 		if (!game_path().actual() && (m_path_state > ePathStateBuildGamePath))
-			m_path_state		= ePathStateBuildGamePath;
+			m_path_state = ePathStateBuildGamePath;
 	}
 
-	switch (m_path_state) {
-		case ePathStateSelectGameVertex : {
+	switch (m_path_state)
+	{
+		case ePathStateSelectGameVertex : 
+		{
 
-			u32					current = game_path().m_dest_vertex_id;
+			u32 current = game_path().m_dest_vertex_id;
 			game_selector().select_location(object().ai_location().game_vertex_id(),game_path().m_dest_vertex_id);
-			if ( (current == game_path().m_dest_vertex_id) && game_selector().used() ) {
-				m_path_state	= ePathStatePathCompleted;
+			if ((current == game_path().m_dest_vertex_id) && game_selector().used())
+			{
+				m_path_state = ePathStatePathCompleted;
 				break;
 			}
 
 			if (game_selector().failed())
 				break;
 
-			m_path_state		= ePathStateBuildGamePath;
+			m_path_state = ePathStateBuildGamePath;
 		}
-		case ePathStateBuildGamePath : {
+		case ePathStateBuildGamePath : 
+		{
 			game_path().build_path(
 				object().ai_location().game_vertex_id(),
 				game_dest_vertex_id()
 			);
 
-			if (game_path().failed()) {
+			if (game_path().failed()) 
+			{
 				show_game_path_info	();
 				break;
 			}
 			
 			m_path_state	= ePathStateContinueGamePath;
 		}
-		case ePathStateContinueGamePath : {
+		case ePathStateContinueGamePath :
+		{
 			game_path().select_intermediate_vertex();
 			if (ai().game_graph().vertex(object().ai_location().game_vertex_id())->level_id() != ai().game_graph().vertex(game_path().intermediate_vertex_id())->level_id()) {
 				m_path_state	= ePathStateTeleport;
@@ -105,7 +110,8 @@ void CMovementManager::process_game_path()
 			
 			m_path_state		= ePathStateBuildLevelPath;
 		}
-		case ePathStateBuildLevelPath : {
+		case ePathStateBuildLevelPath : 
+		{
 			VERIFY				(
 				ai().game_graph().vertex(object().ai_location().game_vertex_id())->level_id() 
 				== 
@@ -132,7 +138,8 @@ void CMovementManager::process_game_path()
 				&temp
 			);
 
-			if (can_use_distributed_computations(mtLevelPath)) {
+			if (can_use_distributed_computations())
+			{
 				level_path_builder().register_to_process	();
 				break;
 			}
@@ -141,14 +148,15 @@ void CMovementManager::process_game_path()
 			
 			break;
 		}
-		case ePathStateContinueLevelPath : {
-			VERIFY				(!level_path().failed());
-
+		case ePathStateContinueLevelPath :
+		{
+			VERIFY(!level_path().failed());
 			level_path().select_intermediate_vertex();
 			
-			m_path_state		= ePathStateBuildDetailPath;
+			m_path_state = ePathStateBuildDetailPath;
 		}
-		case ePathStateBuildDetailPath : {
+		case ePathStateBuildDetailPath :
+		{
 			detail().set_state_patrol_path(true);
 			detail().set_start_position(object().Position());
 			detail().set_start_direction(Fvector().setHP(-m_body.current.yaw,0));
@@ -163,8 +171,9 @@ void CMovementManager::process_game_path()
 				level_path().intermediate_index()
 			);
 
-			if (can_use_distributed_computations(mtDetailPath)) {
-				detail_path_builder().register_to_process	();
+			if (can_use_distributed_computations())
+			{
+				detail_path_builder().register_to_process();
 				break;
 			}
 
