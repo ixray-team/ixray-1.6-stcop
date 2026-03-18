@@ -14,6 +14,8 @@
 #include "Level.h"
 #include "Actor.h"
 #include "../../xrUI/ui_base.h"
+#include "ui/UIGameSP.h"
+#include "ui/UIActorMenu.h"
 #include "../xrEngine/string_table.h"
 #include "ai_object_location.h"
 #include "object_broker.h"

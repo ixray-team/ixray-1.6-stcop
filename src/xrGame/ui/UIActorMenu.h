@@ -31,6 +31,7 @@ class CUIMessageBoxEx;
 class CUIPropertiesBox;
 class CTrade;
 class CUIProgressBar;
+class CUIItemStateDisplay;
 class CUIItemDropAmountWnd;
 class CUIGamepadLegend;
 class CUIOwnerPropertiesBox;
@@ -120,7 +121,8 @@ protected:
 
 	u8							m_slot_count;
 	CUIStatic*					m_pInvSlotHighlight[LAST_SLOT + 1];
-	CUIProgressBar*				m_pInvSlotProgress[LAST_SLOT + 1];
+	CUIProgressBar*				m_pInvSlotProgressLegacy[LAST_SLOT + 1];
+	CUIItemStateDisplay*		m_pInvSlotProgressPercent[LAST_SLOT + 1];
 	CUIDragDropListEx*			m_pInvList[LAST_SLOT + 1];
 
 	CUIStatic*					m_InvSlot2Highlight = nullptr;
