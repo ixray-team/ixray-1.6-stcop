@@ -25,6 +25,7 @@
 #include "../eatable_item.h"
 #include "UITalkWnd.h"
 #include "../../xrUI/Widgets/UIProgressBar.h"
+#include "../../xrUI/Widgets/UIItemStateDisplay.h"
 #include "../../xrUI/UICursor.h"
 #include "UICellItem.h"
 #include "UICharacterInfo.h"
@@ -363,6 +364,8 @@ void CUIActorMenu::Update()
 		break;
 	case mmInventory:
 		{
+			UpdateConditionProgressBars();
+
 			if (m_clock_value)
 			{
 				m_clock_value->SetText(InventoryUtilities::GetGameTimeAsString(
@@ -1261,8 +1264,56 @@ void CUIActorMenu::UpdateConditionProgressBars()
 	for (u8 i = 1; i <= m_slot_count; ++i)
 	{
 		PIItem itm = m_pActorInvOwner->inventory().ItemFromSlot(i);
-		if (m_pInvSlotProgress[i])
-			m_pInvSlotProgress[i]->SetProgressPos(itm ? iCeil(itm->GetCondition() * 10.f) / 10.f : 0);
+		const bool hasLegacy = m_pInvSlotProgressLegacy[i] != nullptr;
+		const bool hasPercent = m_pInvSlotProgressPercent[i] != nullptr;
+
+		if (!hasLegacy && !hasPercent)
+		{
+			continue;
+		}
+
+		if (!itm)
+		{
+			if (hasLegacy)
+			{
+				m_pInvSlotProgressLegacy[i]->Show(false);
+			}
+			if (hasPercent)
+			{
+				m_pInvSlotProgressPercent[i]->Show(false);
+			}
+			continue;
+		}
+
+		const InventoryUtilities::ConditionDisplayParams display =
+			InventoryUtilities::GetConditionDisplayParams(itm);
+
+		if (hasLegacy)
+		{
+			m_pInvSlotProgressLegacy[i]->SetProgressPos(display.state);
+			m_pInvSlotProgressLegacy[i]->m_bUseGradient = !display.disableGradient;
+			m_pInvSlotProgressLegacy[i]->ShowBackground(!display.hideBackground);
+			m_pInvSlotProgressLegacy[i]->Show(true);
+		}
+
+		if (hasPercent)
+		{
+			CUIItemStateDisplay* stateDisplay = m_pInvSlotProgressPercent[i];
+			stateDisplay->Show(true);
+
+			CEatableItem* eatableItem = itm->cast_eatable_item();
+			if (stateDisplay->GetPercentFormat() == CUIItemStateDisplay::EPercentFormat::Portion &&
+				eatableItem != nullptr &&
+				display.usePortion &&
+				display.portionMax > 1)
+			{
+				stateDisplay->SetPortion(display.portionCurrent, display.portionMax);
+			}
+			else
+			{
+				stateDisplay->SetState(display.state);
+			}
+		}
 	}
 
 	//Highlight 'equipped' items in actor bag

@@ -9,6 +9,7 @@ class CUIDragItem;
 class CUIDragDropListEx;
 class CUICellItem;
 class CUIProgressBar;
+class CUIItemStateDisplay;
 class ICustomDrawCellItem
 {
 public:
@@ -32,7 +33,7 @@ protected:
 	xr_vector<CUICellItem*> m_childs;
 
 	CUIDragDropListEx*		m_pParentList;
-	CUIProgressBar*			m_pConditionState;
+	CUIItemStateDisplay*	m_pConditionState;
 	CUIProgressBar*			m_pConditionState_filter;
 	Ivector2				m_grid_size;
 	ICustomDrawCellItem*	m_custom_draw;

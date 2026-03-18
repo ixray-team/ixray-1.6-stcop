@@ -5,7 +5,7 @@
 #include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrUI/UIXmlInit.h"
 
-#include "../../xrUI/Widgets/UIProgressBar.h"
+#include "../../xrUI/Widgets/UIItemStateDisplay.h"
 #include "../../xrUI/Widgets/UIScrollView.h"
 #include "../../xrUI/Widgets/UIFrameWindow.h"
 
@@ -141,8 +141,10 @@ bool CUIItemInfo::InitItemInfo(LPCSTR xml_name)
 	
 	if(uiXml.NavigateToNode("condition_progress",0))
 	{
-		UICondProgresBar			= new CUIProgressBar(); AttachChild(UICondProgresBar);UICondProgresBar->SetAutoDelete(true);
-		xml_init.InitProgressBar	(uiXml, "condition_progress", 0, UICondProgresBar);
+		UICondProgresBar = new CUIItemStateDisplay();
+		AttachChild(UICondProgresBar);
+		UICondProgresBar->SetAutoDelete(true);
+		xml_init.InitItemStateDisplay(uiXml, "condition_progress", 0, UICondProgresBar);
 	}
 
 	if(uiXml.NavigateToNode("static_no_trade",0))
@@ -302,9 +304,23 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 
 	if (UICondProgresBar)
 	{
-		float cond = pInvItem->GetConditionToShow();
 		UICondProgresBar->Show(true);
-		UICondProgresBar->SetProgressPos(cond * 100.0f + 1.0f - EPS);
+
+		const InventoryUtilities::ConditionDisplayParams display =
+			InventoryUtilities::GetConditionDisplayParams(pInvItem);
+
+		CEatableItem* eatableItem = pInvItem->cast_eatable_item();
+		if (UICondProgresBar->GetPercentFormat() == CUIItemStateDisplay::EPercentFormat::Portion &&
+			eatableItem != nullptr &&
+			display.usePortion &&
+			display.portionMax > 1)
+		{
+			UICondProgresBar->SetPortion(display.portionCurrent, display.portionMax);
+		}
+		else
+		{
+			UICondProgresBar->SetState(display.state);
+		}
 	}
 
 	if ( UITradeTip && IsGameTypeSingleCompatible())
@@ -385,7 +401,7 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
         else
             UIItemImage->SetVisual(nullptr);
 
-        // Загружаем картинку
+        // Р—Р°РіСЂСѓР¶Р°РµРј РєР°СЂС‚РёРЅРєСѓ
 		UIItemImage->SetShader(InventoryUtilities::GetEquipmentIconsShader(m_pInvItem->IconsTexture.c_str()));
 
 		Irect item_grid_rect = pInvItem->GetInvGridRect();
@@ -518,3 +534,4 @@ void CUIItemInfo::Draw()
 	if(m_pInvItem)
 		inherited::Draw();
 }
+

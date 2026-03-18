@@ -662,19 +662,79 @@ u32 InventoryUtilities::GetReputationColor(s32 rv)
 
 InventoryUtilities::InventoryIconParams InventoryUtilities::GetInventoryIconParams(LPCSTR section)
 {
-    InventoryIconParams ret_struct;
-    ret_struct.inv_grid_x = pSettings->r_float(section, "inv_grid_x");
-    ret_struct.inv_grid_y = pSettings->r_float(section, "inv_grid_y");
-    ret_struct.inv_grid_height = pSettings->r_float(section, "inv_grid_height");
-    ret_struct.inv_grid_width = pSettings->r_float(section, "inv_grid_width");
-    ret_struct.icons_texture = READ_IF_EXISTS(pSettings, r_string, section, "icons_texture", nullptr);
-    ret_struct.scaleIcon = READ_IF_EXISTS(pSettings, r_float, section, "inv_scale", 1.0f);
+	InventoryIconParams ret_struct;
+	ret_struct.inv_grid_x = pSettings->r_float(section, "inv_grid_x");
+	ret_struct.inv_grid_y = pSettings->r_float(section, "inv_grid_y");
+	ret_struct.inv_grid_height = pSettings->r_float(section, "inv_grid_height");
+	ret_struct.inv_grid_width = pSettings->r_float(section, "inv_grid_width");
+	ret_struct.icons_texture = READ_IF_EXISTS(pSettings, r_string, section, "icons_texture", nullptr);
+	ret_struct.scaleIcon = READ_IF_EXISTS(pSettings, r_float, section, "inv_scale", 1.0f);
 
-    ret_struct._3d_static_visual = READ_IF_EXISTS(pSettings, r_string, section, "3d_static_visual_name", pSettings->r_string(section, "visual"));
-    ret_struct._3d_static_rotate = READ_IF_EXISTS(pSettings, r_fvector3, section, "3d_static_rotate", ret_struct._3d_static_rotate.set(0, 0, 0));
-    ret_struct._3d_static_rotate.mul(M_PI / 180.0f);
-    ret_struct._3d_static_scale = READ_IF_EXISTS(pSettings, r_float, section, "3d_static_scale", 1.f);
-    return ret_struct;
+	ret_struct._3d_static_visual = READ_IF_EXISTS(pSettings, r_string, section, "3d_static_visual_name", pSettings->r_string(section, "visual"));
+	ret_struct._3d_static_rotate = READ_IF_EXISTS(pSettings, r_fvector3, section, "3d_static_rotate", ret_struct._3d_static_rotate.set(0, 0, 0));
+	ret_struct._3d_static_rotate.mul(M_PI / 180.0f);
+	ret_struct._3d_static_scale = READ_IF_EXISTS(pSettings, r_float, section, "3d_static_scale", 1.f);
+	return ret_struct;
+}
+
+InventoryUtilities::ConditionDisplayParams InventoryUtilities::GetConditionDisplayParams(CInventoryItem* item)
+{
+	ConditionDisplayParams result = {};
+	result.state = 0.0f;
+	result.usePortion = false;
+	result.portionCurrent = 0;
+	result.portionMax = 0;
+	result.hideBackground = false;
+	result.disableGradient = false;
+
+	if (item == nullptr)
+	{
+		return result;
+	}
+
+	if (!item->IsUsingCondition())
+	{
+		return result;
+	}
+
+	float condition = item->GetConditionToShow();
+
+	CEatableItem* eatableItem = item->cast_eatable_item();
+	if (eatableItem != nullptr)
+	{
+		u8 maxUses = eatableItem->GetMaxUses();
+		if (maxUses > 0)
+		{
+			u8 remainingUses = eatableItem->GetRemainingUses();
+
+			result.usePortion = true;
+			result.portionCurrent = static_cast<int>(remainingUses);
+			result.portionMax = static_cast<int>(maxUses);
+
+			if (maxUses < 8)
+			{
+				result.hideBackground = true;
+			}
+
+			if (remainingUses < 1)
+			{
+				condition = 0.0f;
+			}
+			else if (maxUses > 8)
+			{
+				condition = static_cast<float>(remainingUses) / static_cast<float>(maxUses);
+			}
+			else
+			{
+				condition = (static_cast<float>(remainingUses) * 0.125f) - 0.0625f;
+			}
+
+			result.disableGradient = true;
+		}
+	}
+
+	result.state = condition;
+	return result;
 }
 
 u32	InventoryUtilities::GetRelationColor(ALife::ERelationType relation)
