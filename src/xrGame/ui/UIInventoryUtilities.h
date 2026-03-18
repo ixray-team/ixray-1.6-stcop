@@ -87,6 +87,16 @@ struct InventoryIconParams
 	float inv_grid_height;
 };
 
+struct ConditionDisplayParams
+{
+	float state;
+	bool usePortion;
+	int portionCurrent;
+	int portionMax;
+	bool hideBackground;
+	bool disableGradient;
+};
+
 const shared_str GetGameDateAsString(EDatePrecision datePrec, char dateSeparator = ',');
 const shared_str GetGameTimeAsString(ETimePrecision timePrec, char timeSeparator = ':');
 const shared_str GetDateAsString(ALife::_TIME_ID time, EDatePrecision datePrec, char dateSeparator = ',');
@@ -113,4 +123,5 @@ u32		GetGoodwillColor			(s32 gw);
 u32		GetRelationColor			(ALife::ERelationType r);
 u32		GetReputationColor			(s32 rv);
 InventoryIconParams	GetInventoryIconParams(LPCSTR section);
+ConditionDisplayParams GetConditionDisplayParams(CInventoryItem* item);
 };
