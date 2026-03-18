@@ -88,85 +88,127 @@ Frect CUIXmlInit::GetFRect(CUIXml& xml_doc, LPCSTR path, int index)
 	return rect;
 }
 
+enum EUIAnchorPreset
+{
+	top_left,
+	top_center,
+	top_right,
+
+	center_left,
+	center,
+	center_right,
+
+	bottom_left,
+	bottom_center,
+	bottom_right,
+
+	stretch_h,
+	stretch_v,
+	stretch_full,
+};
+
 static bool ParseAnchorPreset(const char* preset, Fvector2& anchorMin, Fvector2& anchorMax)
 {
 	if (!preset || !preset[0])
 	{
 		return false;
 	}
-	if (xr_strcmp(preset, "top-left") == 0)
+
+	char normalized[64];
+	u32 normalizedSize = 0;
+
+	for (const char* it = preset; *it != '\0' && normalizedSize < (sizeof(normalized) - 1); ++it)
 	{
-		anchorMin.set(0.0f, 0.0f);
-		anchorMax.set(0.0f, 0.0f);
-		return true;
+		char ch = *it;
+
+		if (ch >= 'A' && ch <= 'Z')
+		{
+			ch = ch - 'A' + 'a';
+		}
+
+		if (ch == '-')
+		{
+			ch = '_';
+		}
+
+		normalized[normalizedSize++] = ch;
 	}
-	if (xr_strcmp(preset, "top-center") == 0)
+
+	normalized[normalizedSize] = '\0';
+
+	auto presetEnum = magic_enum::enum_cast<EUIAnchorPreset>(normalized);
+	if (!presetEnum.has_value())
 	{
-		anchorMin.set(0.5f, 0.0f);
-		anchorMax.set(0.5f, 0.0f);
-		return true;
+		return false;
 	}
-	if (xr_strcmp(preset, "top-right") == 0)
+
+	switch (presetEnum.value())
 	{
-		anchorMin.set(1.0f, 0.0f);
-		anchorMax.set(1.0f, 0.0f);
-		return true;
+		case top_left:
+			anchorMin.set(0.0f, 0.0f);
+			anchorMax.set(0.0f, 0.0f);
+			break;
+
+		case top_center:
+			anchorMin.set(0.5f, 0.0f);
+			anchorMax.set(0.5f, 0.0f);
+			break;
+
+		case top_right:
+			anchorMin.set(1.0f, 0.0f);
+			anchorMax.set(1.0f, 0.0f);
+			break;
+
+		case center_left:
+			anchorMin.set(0.0f, 0.5f);
+			anchorMax.set(0.0f, 0.5f);
+			break;
+
+		case center:
+			anchorMin.set(0.5f, 0.5f);
+			anchorMax.set(0.5f, 0.5f);
+			break;
+
+		case center_right:
+			anchorMin.set(1.0f, 0.5f);
+			anchorMax.set(1.0f, 0.5f);
+			break;
+
+		case bottom_left:
+			anchorMin.set(0.0f, 1.0f);
+			anchorMax.set(0.0f, 1.0f);
+			break;
+
+		case bottom_center:
+			anchorMin.set(0.5f, 1.0f);
+			anchorMax.set(0.5f, 1.0f);
+			break;
+
+		case bottom_right:
+			anchorMin.set(1.0f, 1.0f);
+			anchorMax.set(1.0f, 1.0f);
+			break;
+
+		case stretch_h:
+			anchorMin.set(0.0f, 0.5f);
+			anchorMax.set(1.0f, 0.5f);
+			break;
+
+		case stretch_v:
+			anchorMin.set(0.5f, 0.0f);
+			anchorMax.set(0.5f, 1.0f);
+			break;
+
+		case stretch_full:
+			anchorMin.set(0.0f, 0.0f);
+			anchorMax.set(1.0f, 1.0f);
+			break;
+
+		default:
+			return false;
 	}
-	if (xr_strcmp(preset, "center-left") == 0)
-	{
-		anchorMin.set(0.0f, 0.5f);
-		anchorMax.set(0.0f, 0.5f);
-		return true;
-	}
-	if (xr_strcmp(preset, "center") == 0)
-	{
-		anchorMin.set(0.5f, 0.5f);
-		anchorMax.set(0.5f, 0.5f);
-		return true;
-	}
-	if (xr_strcmp(preset, "center-right") == 0)
-	{
-		anchorMin.set(1.0f, 0.5f);
-		anchorMax.set(1.0f, 0.5f);
-		return true;
-	}
-	if (xr_strcmp(preset, "bottom-left") == 0)
-	{
-		anchorMin.set(0.0f, 1.0f);
-		anchorMax.set(0.0f, 1.0f);
-		return true;
-	}
-	if (xr_strcmp(preset, "bottom-center") == 0)
-	{
-		anchorMin.set(0.5f, 1.0f);
-		anchorMax.set(0.5f, 1.0f);
-		return true;
-	}
-	if (xr_strcmp(preset, "bottom-right") == 0)
-	{
-		anchorMin.set(1.0f, 1.0f);
-		anchorMax.set(1.0f, 1.0f);
-		return true;
-	}
-	if (xr_strcmp(preset, "stretch-h") == 0)
-	{
-		anchorMin.set(0.0f, 0.5f);
-		anchorMax.set(1.0f, 0.5f);
-		return true;
-	}
-	if (xr_strcmp(preset, "stretch-v") == 0)
-	{
-		anchorMin.set(0.5f, 0.0f);
-		anchorMax.set(0.5f, 1.0f);
-		return true;
-	}
-	if (xr_strcmp(preset, "stretch-full") == 0)
-	{
-		anchorMin.set(0.0f, 0.0f);
-		anchorMax.set(1.0f, 1.0f);
-		return true;
-	}
-	return false;
+
+	return true;
 }
 
 static bool ParseVector2(LPCSTR str, Fvector2& out)
