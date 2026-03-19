@@ -868,12 +868,20 @@ retval: float
 ```lua
 --// Поиск онлайн обьектов по eSpatial в сфере
 level.search_online_objects_by_sphere(center_position, radius, table_spatial_types)
-retval: none
+retval: lua iterator (CScriptGameObject*)
 args: 
-  center_position (vector3),
-  radius (float),
+  center_position (vector3), -- точка центра сферы
+  radius (float), -- радиус сферы в метрах
   table_spatial_types (table)
   
+--// Поиск онлайн обьектов по eSpatial в боксе с указанным углом поворота
+level.search_online_objects_by_obb_box(center_position, box_halfsize, box_direction, table_spatial_types)
+retval: lua iterator (CScriptGameObject*)
+args: 
+  center_position (vector3), -- точка центра бокса
+  box_halfsize (vector3), -- вектор указывающий длинну сторон бокса по трем осям координат X Y Z
+  box_direction (vector3), -- вектор указывающий направление бокса в пространстве X Y Z
+  table_spatial_types (table)
   
 --// Допустимые E_SPATIAL типы
 level.e_spatial_type.NONE
@@ -966,6 +974,30 @@ for obj in level.search_online_objects_by_sphere(center, radius, spatial_types) 
 end
 ```
 
+## Пример поиск онлайн обьектов по eSpatial в боксе obb
+```lua
+--// Центр бокса относительно которого будет произведен поиск
+local center_position = db.actor:position()
+
+--// Полусумма сторон бокса 5 5 5 метров
+local box_halfsize = vector():set(5,5,5)
+
+-- направление бокса возьмем по направлению вгляда гг
+local box_direction = db.actor:direction()
+
+--// Перечисление типов обьектов для фильтрации поиска
+local spatial_types = {
+  level.e_spatial_type.SHAPE,
+  level.e_spatial_type.STALKER,
+}
+
+local result_obb = level.search_online_objects_by_obb_box(center_position, box_halfsize, box_direction, spatial_types)
+
+for k in result_obb do
+  if k then SemiLog("OBB:: " .. tostring(k:name())) end -- печатаем в консоль попавшие в боек обьекты искомых типов
+end
+```
+
 ## level (runtime storage)
 ```lua
 
@@ -1036,4 +1068,64 @@ else
 	)
 end
 
+```
+
+## CFFxRandom 
+
+* Воспроизводимость
+* Позволяет восстанавливать своё состояние что позволяет упростить разработку логики требующую повторяемость на сейв лоаде либо как то еще
+* Улучшенное распределение рандома в отличии от встроенного в lua math.random
+* Добавлено принудительное занижение шанса выдачи одинаковых результатов в ряд
+* Не зависимые экземпляры класса позволяют манипулировать последовательностями корректируя входные настройки сидов и счетчиков
+
+```lua
+local ffx_rand = FFxRandom() -- Конструктор с автогенерацией seed по текущей дате и времени
+retval: FFxRandom
+
+local ffx_rand = FFxRandom(seed, counter) -- Конструктор
+retval: FFxRandom
+args: 
+  seed (u32), -- Вектор инициализации
+  counter (u32) -- Счетчик проходов
+
+ffx_rand.is_counter_valid() -- Проверка того не происходило ли переполнение счетчика если да то воспроизведение последовательности не гарантируется на следующем сохранении
+retval: void
+
+ffx_rand.get_seed() -- Получить текущий вектор инициализации
+retval: u32
+
+ffx_rand.get_counter() -- Получить текущий счетчик проходов
+retval: u32
+
+ffx_rand.set_state(seed, counter) -- Восстановление состояния рандомизатора (позволяет воспроизвести положение рандомизатора после загрузки сохранения предварительно сохранив seed и counter)
+retval: void
+args: 
+  seed (u32), -- Вектор инициализации
+  counter (u32) -- Счетчик проходов
+
+ffx_rand.next_int() -- Получить следующее случайное целое от 0 до (u32)-1
+retval: u32
+
+ffx_rand.next_int_range(min_value, max_value) -- Получить следующее случайное целое в интервале
+retval: u32
+  args: 
+    min_value (u32), -- Минимальное значение
+    max_value (u32) -- Максимальное значение
+    
+ffx_rand.next_float() -- Получить следующее случайное дробное от 0 до (float) - 1
+retval: float    
+ 
+ffx_rand.next_float_range(min_value, max_value) -- Получить следующее случайное дробное в интервале
+retval: float
+  args: 
+    min_value (float), -- Минимальное значение
+    max_value (float) -- Максимальное значение   
+
+ffx_rand.next_bool() -- Получить следующее случайное булево true | false
+retval: bool
+
+ffx_rand.next_bool_probability(chance) -- Получить следующее случайное булево истинну с шансом в интервале значений 0.00001 до 0.99999 при значении 0.5 считается как 50х50 вероятность броска монетки
+retval: float
+  args: 
+    chance (float), -- Шанс в интервале 0.00001 до 0.99999
 ```

@@ -1096,4 +1096,12 @@ args: wallmark_object(script game object), status (boolean)
 --// Get fog distance from current env
 level.get_fog_distance()
 retval: float
+
+-- Запретить двигать мышью (независимо от disable input или во время него)
+level.disable_mouse_move()
+retval: void
+
+-- Разрешить двигать мышью (независимо от disable input или во время него)
+level.enable_mouse_move()
+retval: void
 ```
