@@ -35,20 +35,20 @@ CStalkerPlanner::~CStalkerPlanner	()
 }
 
 #ifdef LOG_ACTION
-LPCSTR CStalkerPlanner::action2string	(const _action_id_type &action_id)
+LPCSTR CStalkerPlanner::action2string(const u32 &action_id)
 {
 	return					(inherited::action2string(action_id));
 }
 
-LPCSTR CStalkerPlanner::property2string	(const u32 &property_id)
+LPCSTR CStalkerPlanner::property2string(const u32 &property_id)
 {
 	return					(inherited::property2string(property_id));
 }
 
-LPCSTR CStalkerPlanner::object_name		() const
+LPCSTR CStalkerPlanner::object_name() const
 {
-	VERIFY					(m_object);
-	return					(*m_object->cName());
+	VERIFY(m_object);
+	return (*m_object->cName());
 }
 #endif
 
