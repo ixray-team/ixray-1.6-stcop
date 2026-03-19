@@ -20,6 +20,7 @@ public:
 	virtual void SetActorDirection(float dir) = 0;
 	virtual void StopAnyMove() = 0;
 	virtual void RenderItemUI() = 0;
+	virtual void UpdatePlayerHud() = 0;
 
 	virtual CCameraBase* cam_Active() { return nullptr; }
 };
