@@ -883,25 +883,25 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 				{
 				case filewatch::Event::added:
 					{
-						Msg("[CLocatorAPI filewatcher] Added %s", file.c_str());
+						//Msg("[CLocatorAPI filewatcher] Added %s", file.c_str());
 						FileEventAdd(file.c_str());
 						break;
 					}
 				case filewatch::Event::removed:
 					{
-						Msg("[CLocatorAPI filewatcher] Removed %s", file.c_str());
+						//Msg("[CLocatorAPI filewatcher] Removed %s", file.c_str());
 						FileEventDel(file.c_str());
 						break;
 					}
 				case filewatch::Event::renamed_old:
 					{
-						Msg("[CLocatorAPI filewatcher] Renamed (old) %s", file.c_str());
+						//Msg("[CLocatorAPI filewatcher] Renamed (old) %s", file.c_str());
 						FileEventDel(file.c_str());
 						break;
 					}
 				case filewatch::Event::renamed_new:
 					{
-						Msg("[CLocatorAPI filewatcher] Renamed (new) %s", file.c_str());
+						//Msg("[CLocatorAPI filewatcher] Renamed (new) %s", file.c_str());
 						FileEventAdd(file.c_str());
 						break;
 					}
