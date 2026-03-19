@@ -7,49 +7,36 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
-
 #include "random32.h"
 
-#define TEMPLATE_SPECIALIZATION template<\
-	typename _condition_type,\
-	typename _value_type\
->
-
-#define CAbstractOperatorCondition COperatorConditionAbstract<_condition_type,_value_type>
-
-TEMPLATE_SPECIALIZATION
-IC	CAbstractOperatorCondition::COperatorConditionAbstract	(const _condition_type condition, const _value_type value) :
-	m_condition			(condition),
-	m_value				(value)
+IC CWorldProperty::CWorldProperty(const u32 condition, const bool value) :
+	m_condition(condition),
+	m_value(value)
 {
-	u32					seed = ::Random32.seed();
-	::Random32.seed		(u32(condition) + 1);
-	m_hash				= ::Random32.random(0xffffffff);
-	::Random32.seed		(m_hash + u32(value));
-	m_hash				^= ::Random32.random(0xffffffff);
-	::Random32.seed		(seed);
+	u32 seed = ::Random32.seed();
+	::Random32.seed(u32(condition) + 1);
+	m_hash = ::Random32.random(0xffffffff);
+	::Random32.seed(m_hash + u32(value));
+	m_hash ^= ::Random32.random(0xffffffff);
+	::Random32.seed(seed);
 }
 
-TEMPLATE_SPECIALIZATION
-IC	const _condition_type &CAbstractOperatorCondition::condition	() const
+IC const u32& CWorldProperty::condition() const
 {
-	return				(m_condition);
+	return (m_condition);
 }
 
-TEMPLATE_SPECIALIZATION
-IC	const _value_type &CAbstractOperatorCondition::value			() const
+IC const bool& CWorldProperty::value() const
 {
-	return				(m_value);
+	return (m_value);
 }
 
-TEMPLATE_SPECIALIZATION
-IC	const u32 &CAbstractOperatorCondition::hash_value	() const
+IC const u32& CWorldProperty::hash_value() const
 {
-	return				(m_hash);
+	return (m_hash);
 }
 
-TEMPLATE_SPECIALIZATION
-IC	bool CAbstractOperatorCondition::operator<			(const COperatorCondition &_condition) const
+IC bool CWorldProperty::operator<(const CWorldProperty& _condition) const
 {
 	if (condition() < _condition.condition())
 		return			(true);
@@ -60,13 +47,9 @@ IC	bool CAbstractOperatorCondition::operator<			(const COperatorCondition &_cond
 	return				(false);
 }
 
-TEMPLATE_SPECIALIZATION
-IC	bool CAbstractOperatorCondition::operator==			(const COperatorCondition &_condition) const
+IC bool CWorldProperty::operator==(const CWorldProperty& _condition) const
 {
 	if ((condition() == _condition.condition()) && (value() == _condition.value()))
 		return			(true);
 	return				(false);
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CAbstractOperatorCondition
