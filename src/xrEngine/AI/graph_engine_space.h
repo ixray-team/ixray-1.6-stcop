@@ -8,13 +8,11 @@
 
 #pragma once
 
-template <typename _condition_type, typename _value_type>
-class COperatorConditionAbstract;
+class CWorldProperty;
 
 template <typename _world_property>
 class CConditionState;
 
-template <typename _world_property, typename _edge_value_type>
 class COperatorAbstract;
 
 template <typename _dist_type, typename _index_type, typename _iteration_type>
@@ -41,9 +39,8 @@ namespace GraphEngineSpace
 	};
 
 	using CSolverConditionStorage = xr_vector<CSolverConditionValue>;
-	using CWorldProperty = COperatorConditionAbstract<u32, bool>;
 	using CWorldState = CConditionState<CWorldProperty>;
-	using CWorldOperator = COperatorAbstract<CWorldProperty, u16>;
+	using CWorldOperator = COperatorAbstract;
 	using CSolverBaseParameters = SBaseParameters<u16, CWorldState, u32>;
 	using CBaseParameters = SBaseParameters<float, u32, u32>;
 };

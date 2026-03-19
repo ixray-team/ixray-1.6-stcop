@@ -42,10 +42,6 @@
 
 #define DISABLE_COVER_BEFORE_DETOUR
 
-#if 0//def DEBUG
-#	define TEST_MENTAL_STATE
-#endif // DEBUG
-
 const float TEMP_DANGER_DISTANCE	= 5.f;
 const u32	TEMP_DANGER_INTERVAL	= 120000;
 
@@ -57,12 +53,6 @@ static const u32	s_wait_enemy_in_smart_cover_time	= 30*1000;
 
 using namespace StalkerSpace;
 using namespace StalkerDecisionSpace;
-
-typedef CStalkerActionBase::_edge_value_type _edge_value_type;
-
-#ifdef _DEBUG
-//#	define SILENT_COMBAT
-#endif
 
 //////////////////////////////////////////////////////////////////////////
 // CStalkerActionGetItemToKill
@@ -250,9 +240,9 @@ void CStalkerActionRetreatFromEnemy::execute		()
 #endif
 }
 
-_edge_value_type CStalkerActionRetreatFromEnemy::weight	(const CSConditionState &condition0, const CSConditionState &condition1) const
+u16 CStalkerActionRetreatFromEnemy::weight	(const CSConditionState &condition0, const CSConditionState &condition1) const
 {
-	return								(_edge_value_type(100));
+	return 100;
 }
 
 //////////////////////////////////////////////////////////////////////////

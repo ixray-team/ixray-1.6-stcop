@@ -24,8 +24,8 @@ public:
 	static	void				execute_static		(CScriptActionPlannerAction *action);
 	virtual void				finalize			();
 	static	void				finalize_static		(CScriptActionPlannerAction *action);
-	virtual _edge_value_type	weight				(const CSConditionState &condition0, const CSConditionState &condition1) const;
-	static	_edge_value_type	weight_static		(CScriptActionPlannerAction *action, const CSConditionState &condition0, const CSConditionState &condition1);
+	virtual u16	weight				(const CSConditionState &condition0, const CSConditionState &condition1) const;
+	static	u16	weight_static		(CScriptActionPlannerAction *action, const CSConditionState &condition0, const CSConditionState &condition1);
 };
 
 #include "script_action_planner_action_wrapper_inline.h"
