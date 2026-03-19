@@ -11,11 +11,8 @@
 #include "graph_engine_space.h"
 
 #define TEMPLATE_SPECIALIZATION template<\
-	typename _operator_condition,\
-	typename _operator,\
 	typename _condition_state,\
 	typename _condition_evaluator,\
-	typename _operator_id_type,\
 	bool	 _reverse_search,\
 	typename _operator_ptr,\
 	typename _condition_evaluator_ptr\
@@ -23,11 +20,8 @@
 
 #define CProblemSolverAbstract \
 	CProblemSolver<\
-		_operator_condition,\
-		_operator,\
 		_condition_state,\
 		_condition_evaluator,\
-		_operator_id_type,\
 		_reverse_search,\
 		_operator_ptr,\
 		_condition_evaluator_ptr\
@@ -79,8 +73,8 @@ IC bool CProblemSolverAbstract::actual() const
 	if (!m_actuality)
 		return (false);
 
-	typename xr_vector<COperatorCondition>::const_iterator I = current_state().conditions().begin();
-	typename xr_vector<COperatorCondition>::const_iterator E = current_state().conditions().end();
+	auto I = current_state().conditions().begin();
+	auto E = current_state().conditions().end();
 	typename EVALUATORS::const_iterator i = evaluators().begin();
 	typename EVALUATORS::const_iterator e = evaluators().end();
 	for (; I != E; ++I)
@@ -96,7 +90,7 @@ IC bool CProblemSolverAbstract::actual() const
 }
 
 TEMPLATE_SPECIALIZATION
-IC void CProblemSolverAbstract::add_operator(const _edge_type& operator_id, _operator_ptr _operator)
+IC void CProblemSolverAbstract::add_operator(const u32& operator_id, _operator_ptr _operator)
 {
 	typename OPERATOR_VECTOR::iterator I = std::lower_bound(m_operators.begin(), m_operators.end(), operator_id);
 	THROW((I == m_operators.end()) || ((*I).m_operator_id != operator_id));
@@ -112,8 +106,8 @@ IC void CProblemSolverAbstract::add_operator(const _edge_type& operator_id, _ope
 TEMPLATE_SPECIALIZATION
 IC void CProblemSolverAbstract::validate_properties(const CState& conditions) const
 {
-	typename xr_vector<COperatorCondition>::const_iterator I = conditions.conditions().begin();
-	typename xr_vector<COperatorCondition>::const_iterator E = conditions.conditions().end();
+	auto I = conditions.conditions().begin();
+	auto E = conditions.conditions().end();
 	for (; I != E; ++I)
 	{
 		if (evaluators().find((*I).condition()) == evaluators().end())
@@ -127,7 +121,7 @@ IC void CProblemSolverAbstract::validate_properties(const CState& conditions) co
 #endif
 
 TEMPLATE_SPECIALIZATION
-IC void CProblemSolverAbstract::remove_operator(const _edge_type& operator_id)
+IC void CProblemSolverAbstract::remove_operator(const u32& operator_id)
 {
 	typename OPERATOR_VECTOR::iterator I = std::lower_bound(m_operators.begin(), m_operators.end(), operator_id);
 	THROW(m_operators.end() != I);
@@ -158,26 +152,26 @@ IC void CProblemSolverAbstract::set_target_state(const CState& state)
 }
 
 TEMPLATE_SPECIALIZATION
-IC const typename CProblemSolverAbstract::CState&CProblemSolverAbstract::current_state() const
+IC const typename CProblemSolverAbstract::CState& CProblemSolverAbstract::current_state() const
 {
 	return (m_current_state);
 }
 
 TEMPLATE_SPECIALIZATION
-IC const typename CProblemSolverAbstract::CState&CProblemSolverAbstract::target_state() const
+IC const typename CProblemSolverAbstract::CState& CProblemSolverAbstract::target_state() const
 {
 	return (m_target_state);
 }
 
 TEMPLATE_SPECIALIZATION
-IC void CProblemSolverAbstract::add_evaluator(const _condition_type& condition_id, _condition_evaluator_ptr evaluator)
+IC void CProblemSolverAbstract::add_evaluator(const u32& condition_id, _condition_evaluator_ptr evaluator)
 {
 	THROW(evaluators().end() == evaluators().find(condition_id));
 	m_evaluators.insert(std::make_pair(condition_id, evaluator));
 }
 
 TEMPLATE_SPECIALIZATION
-IC void CProblemSolverAbstract::remove_evaluator(const _condition_type& condition_id)
+IC void CProblemSolverAbstract::remove_evaluator(const u32& condition_id)
 {
 	typename EVALUATORS::iterator I = m_evaluators.find(condition_id);
 	THROW(I != m_evaluators.end());
@@ -194,8 +188,7 @@ IC void CProblemSolverAbstract::remove_evaluator(const _condition_type& conditio
 }
 
 TEMPLATE_SPECIALIZATION
-IC typename CProblemSolverAbstract::_condition_evaluator_ptr CProblemSolverAbstract::evaluator(
-	const _condition_type& condition_id) const
+IC typename CProblemSolverAbstract::_condition_evaluator_ptr CProblemSolverAbstract::evaluator(const u32& condition_id) const
 {
 	typename EVALUATORS::const_iterator I = evaluators().find(condition_id);
 	THROW(evaluators().end() != I);
@@ -209,21 +202,18 @@ IC const typename CProblemSolverAbstract::EVALUATORS&CProblemSolverAbstract::eva
 }
 
 TEMPLATE_SPECIALIZATION
-IC void CProblemSolverAbstract::evaluate_condition(typename xr_vector<COperatorCondition>::const_iterator& I,
-												   typename xr_vector<COperatorCondition>::const_iterator& E,
-												   const _condition_type& condition_id) const
+IC void CProblemSolverAbstract::evaluate_condition(typename xr_vector<CWorldProperty>::const_iterator& I, typename xr_vector<CWorldProperty>::const_iterator& E, const u32& condition_id) const
 {
 	size_t index = I - m_current_state.conditions().begin();
-	m_current_state.add_condition(I, COperatorCondition(condition_id, evaluator(condition_id)->evaluate()));
+	m_current_state.add_condition(I, CWorldProperty(condition_id, evaluator(condition_id)->evaluate()));
 	I = m_current_state.conditions().begin() + index;
 	E = m_current_state.conditions().end();
 }
 
 TEMPLATE_SPECIALIZATION
-IC typename CProblemSolverAbstract::_edge_value_type CProblemSolverAbstract::get_edge_weight(
-	const _index_type& vertex_index0, const _index_type& vertex_index1, const const_iterator& i) const
+IC u16 CProblemSolverAbstract::get_edge_weight(const _index_type& vertex_index0, const _index_type& vertex_index1, const const_iterator& i) const
 {
-	_edge_value_type current, min;
+	u16 current, min;
 	current = (*i).m_operator->weight(vertex_index1, vertex_index0);
 	min = (*i).m_operator->min_weight();
 	THROW(current >= min);
@@ -237,8 +227,7 @@ IC bool CProblemSolverAbstract::is_accessible(const _index_type& vertex_index) c
 }
 
 TEMPLATE_SPECIALIZATION
-IC const typename CProblemSolverAbstract::_index_type&CProblemSolverAbstract::value(
-	const _index_type& vertex_index, const_iterator& i, bool reverse_search) const
+IC const typename CProblemSolverAbstract::_index_type&CProblemSolverAbstract::value(const _index_type& vertex_index, const_iterator& i, bool reverse_search) const
 {
 	if (reverse_search)
 	{
@@ -279,12 +268,12 @@ TEMPLATE_SPECIALIZATION
 IC bool CProblemSolverAbstract::is_goal_reached_impl(const _index_type& vertex_index) const
 {
 	static_assert(!reverse_search, "This function cannot be used in the REVERSE search");
-	typename xr_vector<COperatorCondition>::const_iterator I = vertex_index.conditions().begin();
-	typename xr_vector<COperatorCondition>::const_iterator E = vertex_index.conditions().end();
-	typename xr_vector<COperatorCondition>::const_iterator i = target_state().conditions().begin();
-	typename xr_vector<COperatorCondition>::const_iterator e = target_state().conditions().end();
-	typename xr_vector<COperatorCondition>::const_iterator II = current_state().conditions().begin();
-	typename xr_vector<COperatorCondition>::const_iterator EE = current_state().conditions().end();
+	auto I = vertex_index.conditions().begin();
+	auto E = vertex_index.conditions().end();
+	auto i = target_state().conditions().begin();
+	auto e = target_state().conditions().end();
+	auto II = current_state().conditions().begin();
+	auto EE = current_state().conditions().end();
 	for (; (i != e) && (I != E);)
 	{
 		if ((*I).condition() < (*i).condition())
@@ -342,10 +331,10 @@ TEMPLATE_SPECIALIZATION
 IC bool CProblemSolverAbstract::is_goal_reached_impl(const _index_type& vertex_index, bool) const
 {
 	static_assert(reverse_search, "This function cannot be used in the STRAIGHT search");
-	typename xr_vector<COperatorCondition>::const_iterator I = m_current_state.conditions().begin();
-	typename xr_vector<COperatorCondition>::const_iterator E = m_current_state.conditions().end();
-	typename xr_vector<COperatorCondition>::const_iterator i = vertex_index.conditions().begin();
-	typename xr_vector<COperatorCondition>::const_iterator e = vertex_index.conditions().end();
+	auto I = m_current_state.conditions().begin();
+	auto E = m_current_state.conditions().end();
+	auto i = vertex_index.conditions().begin();
+	auto e = vertex_index.conditions().end();
 	for (; i != e;)
 	{
 		if ((I == E) || ((*I).condition() > (*i).condition()))
@@ -365,13 +354,13 @@ IC bool CProblemSolverAbstract::is_goal_reached_impl(const _index_type& vertex_i
 }
 
 TEMPLATE_SPECIALIZATION
-IC const xr_vector<typename CProblemSolverAbstract::_edge_type>&CProblemSolverAbstract::solution() const
+IC const xr_vector<u32>&CProblemSolverAbstract::solution() const
 {
 	return (m_solution);
 }
 
 TEMPLATE_SPECIALIZATION
-IC typename CProblemSolverAbstract::_operator_ptr CProblemSolverAbstract::get_operator(const _edge_type& operator_id)
+IC typename CProblemSolverAbstract::_operator_ptr CProblemSolverAbstract::get_operator(const u32& operator_id)
 {
 	typename OPERATOR_VECTOR::iterator I = std::lower_bound(m_operators.begin(), m_operators.end(), operator_id);
 	THROW(m_operators.end() != I);
@@ -401,7 +390,7 @@ IC void CProblemSolverAbstract::solve()
 }
 
 TEMPLATE_SPECIALIZATION
-IC bool CProblemSolverAbstract::Search(const CState FromID, const CState& dest_vertex_id,xr_vector<_edge_type>& OutPath, u16 MaxRange, u32 MaxIterationCount,u32 MaxVisitedNodeCount) const
+IC bool CProblemSolverAbstract::Search(const CState FromID, const CState& dest_vertex_id,xr_vector<u32>& OutPath, u16 MaxRange, u32 MaxIterationCount,u32 MaxVisitedNodeCount) const
 {
 	auto IsAccessible = [this](const CState& VertexID)
 	{
@@ -426,7 +415,7 @@ IC bool CProblemSolverAbstract::Search(const CState FromID, const CState& dest_v
 	thread_local xr_vector<std::pair<u16, CState>> TempPriorityNode;
 	thread_local xr_map<CState, CState> TempCameFrom;
 	thread_local xr_map<CState, u16> TempCostSoFar;
-	thread_local xr_map<CState, _edge_type> TempEdges;
+	thread_local xr_map<CState, u32> TempEdges;
 
 	TempPriorityNode.clear();
 	TempCameFrom.clear();
@@ -458,14 +447,6 @@ IC bool CProblemSolverAbstract::Search(const CState FromID, const CState& dest_v
 				}
 				NextNode = TempCameFrom[NextNode];
 			}
-		/*	if(reverse_search)
-			{
-				OutPath.push_back( TempEdges[NextNode]);
-			}
-			else
-			{
-				OutPath.insert(OutPath.begin(), TempEdges[NextNode]);
-			}*/
 			return true;
 		}
 
@@ -533,22 +514,20 @@ IC bool CProblemSolverAbstract::Search(const CState FromID, const CState& dest_v
 }
 
 TEMPLATE_SPECIALIZATION
-IC typename CProblemSolverAbstract::_edge_value_type CProblemSolverAbstract::estimate_edge_weight(
-	const _index_type& condition) const
+IC u16 CProblemSolverAbstract::estimate_edge_weight(const _index_type& condition) const
 {
 	return (helper<reverse_search>::estimate_edge_weight_impl(*this, condition));
 }
 
 TEMPLATE_SPECIALIZATION
-IC typename CProblemSolverAbstract::_edge_value_type CProblemSolverAbstract::estimate_edge_weight_impl(
-	const _index_type& condition) const
+IC u16 CProblemSolverAbstract::estimate_edge_weight_impl(const _index_type& condition) const
 {
 	static_assert(!reverse_search, "This function cannot be used in the REVERSE search");
-	_edge_value_type result_ = 0;
-	typename xr_vector<COperatorCondition>::const_iterator I = target_state().conditions().begin();
-	typename xr_vector<COperatorCondition>::const_iterator E = target_state().conditions().end();
-	typename xr_vector<COperatorCondition>::const_iterator i = condition.conditions().begin();
-	typename xr_vector<COperatorCondition>::const_iterator e = condition.conditions().end();
+	u16 result_ = 0;
+	auto I = target_state().conditions().begin();
+	auto E = target_state().conditions().end();
+	auto i = condition.conditions().begin();
+	auto e = condition.conditions().end();
 	for (; (I != E) && (i != e);)
 		if ((*I).condition() < (*i).condition())
 		{
@@ -564,19 +543,18 @@ IC typename CProblemSolverAbstract::_edge_value_type CProblemSolverAbstract::est
 			++I;
 			++i;
 		}
-	return (result_ + _edge_value_type(E - I));
+	return (result_ + u16(E - I));
 }
 
 TEMPLATE_SPECIALIZATION
-IC typename CProblemSolverAbstract::_edge_value_type CProblemSolverAbstract::estimate_edge_weight_impl(
-	const _index_type& condition, bool) const
+IC u16 CProblemSolverAbstract::estimate_edge_weight_impl(const _index_type& condition, bool) const
 {
 	static_assert(reverse_search, "This function cannot be used in the STRAIGHT search");
-	_edge_value_type result = 0;
-	typename xr_vector<COperatorCondition>::const_iterator I = current_state().conditions().begin();
-	typename xr_vector<COperatorCondition>::const_iterator E = current_state().conditions().end();
-	typename xr_vector<COperatorCondition>::const_iterator i = condition.conditions().begin();
-	typename xr_vector<COperatorCondition>::const_iterator e = condition.conditions().end();
+	u16 result = 0;
+	auto I = current_state().conditions().begin();
+	auto E = current_state().conditions().end();
+	auto i = condition.conditions().begin();
+	auto e = condition.conditions().end();
 	for (; (i != e);)
 	{
 		if ((I == E) || ((*I).condition() > (*i).condition()))

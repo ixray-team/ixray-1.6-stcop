@@ -33,7 +33,7 @@ void CBaseAction::init			(_object_type *object, LPCSTR action_name)
 {
 	m_storage			= 0;
 	m_object			= object;
-	m_weight			= _edge_value_type(1);
+	m_weight			= u16(1);
 
 #ifdef LOG_ACTION
 	m_use_log			= false;
@@ -166,18 +166,18 @@ IC	const typename bool& CBaseAction::property	(const u32 &condition_id) const
 }
 
 TEMPLATE_SPECIALIZATION
-IC	void CBaseAction::set_weight	(const _edge_value_type &weight)
+IC	void CBaseAction::set_weight	(const u16 &weight)
 {
-	m_weight				= std::max(min_weight(),weight);
+	m_weight = std::max(min_weight(),weight);
 }
 
 TEMPLATE_SPECIALIZATION
-typename CBaseAction::_edge_value_type CBaseAction::weight	(const CSConditionState &condition0, const CSConditionState &condition1) const
+u16 CBaseAction::weight	(const CSConditionState &condition0, const CSConditionState &condition1) const
 {
-	_edge_value_type		_min_weight = min_weight();
+	u16 _min_weight = min_weight();
 	if (m_weight < _min_weight)
-		m_weight			= _min_weight;
-	return					(m_weight);
+		m_weight = _min_weight;
+	return (m_weight);
 }
 
 #ifdef LOG_ACTION
