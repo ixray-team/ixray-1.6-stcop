@@ -21,34 +21,24 @@ function opt_controls:InitControls(x, y, xml, handler)
 	self.scroll_v = xml:InitScrollView("main_dialog:scroll_v", self)
 
     local _st
-    local addControl = function(cap, elem, crl)	
-        self.scroll_v:AddWindow(crl, true)
-        crl:SetAutoDelete(false)
-		if cap ~= nil and elem ~= nil then
-			table.insert(self.focusList, {cap, elem, crl} )
-		end
-    end
 
     _st = xml:InitStatic("video_adv:templ_item", nil)
 	local caption = xml:InitStatic		("tab_controls:cap_mousesens",			_st)
 	local element = xml:InitTrackBar	("tab_controls:track_mousesens",		_st)
-	addControl(caption, element, _st)
+	handler:addControl(self, caption, element, _st)
 	
     _st = xml:InitStatic("video_adv:templ_item", nil)
     caption = xml:InitStatic		("tab_controls:cap_mousesens_ui",		_st)
 	element = xml:InitTrackBar	("tab_controls:track_mousesens_ui",		_st)
-	addControl(caption, element, _st)
+	handler:addControl(self, caption, element, _st)
 
     _st = xml:InitStatic("video_adv:templ_item", nil)
 	caption = xml:InitStatic		("tab_controls:cap_check_mouseinvert",	_st)
 	element = xml:InitCheck		("tab_controls:check_mouseinvert",		_st)
-	addControl(caption, element, _st)
+	handler:addControl(self, caption, element, _st)
 	
---	self.kb_setup = xml:InitFrameLine	("tab_controls:cap_keyboardsetup",	nil)
---    addControl(nil, nil, self.kb_setup)
-
 	self.kb = xml:InitKeyBinding	("tab_controls:key_binding",			nil)
-    addControl(nil, nil, self.kb)
+    handler:addControl(self, nil, nil, self.kb)
 
 	self.default_btn = xml:Init3tButton("tab_controls:btn_default", 			self)
 	handler:Register(self.default_btn, "btn_keyb_default")
