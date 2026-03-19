@@ -37,58 +37,57 @@ function options_dialog:InitControls()
 	self:SetWndRect				(Frect():set(0,0,1024,768))
 	self:Enable					(true)
 
-	local xml					= CScriptXmlInit()
-	xml:ParseFile				("ui_mm_opt.xml")
+	self.xml					= CScriptXmlInit()
+	self.xml:ParseFile			("ui_mm_opt.xml")
 
-	xml:InitStatic				("background", self)
-	self.dialog					= xml:InitStatic("main_dialog:dialog", self)
+	self.xml:InitStatic			("background", self)
+	self.dialog					= self.xml:InitStatic("main_dialog:dialog", self)
 
-	if xml:NodeExist("main_dialog:cap_options", 0) then
-		xml:InitStatic			("main_dialog:cap_options", self.dialog)
+	if self.xml:NodeExist("main_dialog:cap_options", 0) then
+		self.xml:InitStatic			("main_dialog:cap_options", self.dialog)
 	end
 
 	self.dlg_video				= ui_mm_opt_video.opt_video()
-	self.dlg_video:InitControls	(0,0, xml, self)
+	self.dlg_video:SetWindowName("dlg_video")
+	self.dlg_video:InitControls	(0,0, self.xml, self)
 	self.dlg_video:Show			(false)
 	self.dialog:AttachChild		(self.dlg_video)
-	xml:InitWindow				("tab_size", 0, self.dlg_video)
+	self.xml:InitWindow			("tab_size", 0, self.dlg_video)
 
 	self.dlg_sound				= ui_mm_opt_sound.opt_sound()
-	self.dlg_sound:InitControls	(0,0, xml, self)
+	self.dlg_sound:SetWindowName("dlg_sound")
+	self.dlg_sound:InitControls	(0,0, self.xml, self)
 	self.dlg_sound:Show			(false)
 	self.dialog:AttachChild		(self.dlg_sound)
-	xml:InitWindow				("tab_size", 0, self.dlg_sound)
+	self.xml:InitWindow			("tab_size", 0, self.dlg_sound)
 
 	self.dlg_gameplay			= ui_mm_opt_gameplay.opt_gameplay()
-	self.dlg_gameplay:InitControls(0,0, xml, self)
+	self.dlg_gameplay:SetWindowName("dlg_gameplay")
+	self.dlg_gameplay:InitControls(0,0, self.xml, self)
 	self.dlg_gameplay:Show		(false)
 	self.dialog:AttachChild		(self.dlg_gameplay)
-	xml:InitWindow				("tab_size", 0, self.dlg_gameplay)
+	self.xml:InitWindow			("tab_size", 0, self.dlg_gameplay)
 
 	self.dlg_controls			= ui_mm_opt_controls.opt_controls()
-	self.dlg_controls:InitControls(0,0, xml, self)
+	self.dlg_controls:SetWindowName("dlg_controls")
+	self.dlg_controls:InitControls(0,0, self.xml, self)
 	self.dlg_controls:Show		(false)
 	self.dialog:AttachChild		(self.dlg_controls)
-	xml:InitWindow				("tab_size", 0, self.dlg_controls)
---[[
-	self.dlg_con_cmd			= ui_mm_opt_con_cmd.opt_con_cmd()
-	self.dlg_con_cmd:InitControls(0,0, xml, self)
-	self.dlg_con_cmd:Show		(false)
-	self.dialog:AttachChild		(self.dlg_con_cmd)
-	xml:InitWindow				("tab_size", 0, self.dlg_con_cmd)
-]]
+	self.xml:InitWindow			("tab_size", 0, self.dlg_controls)
+
 	self.dlg_video_adv			= ui_mm_opt_video_adv.opt_video_adv()
-	self.dlg_video_adv:InitControls(0,0, xml, self)
+	self.dlg_video_adv:SetWindowName("dlg_video_adv")
+	self.dlg_video_adv:InitControls(0,0, self.xml, self)
 	self.dlg_video_adv:Show		(false)
 	self.dialog:AttachChild		(self.dlg_video_adv)
-	xml:InitWindow				("tab_size", 0, self.dlg_video_adv)
+	self.xml:InitWindow			("tab_size", 0, self.dlg_video_adv)
 
-	self.btn_accept = xml:Init3tButton		("main_dialog:btn_accept", self.dialog)
+	self.btn_accept = self.xml:Init3tButton		("main_dialog:btn_accept", self.dialog)
 	self:Register				(self.btn_accept, "btn_accept")
-	self.btn_cancel = xml:Init3tButton		("main_dialog:btn_cancel", self.dialog)
+	self.btn_cancel = self.xml:Init3tButton		("main_dialog:btn_cancel", self.dialog)
 	self:Register				(self.btn_cancel, "btn_cancel")
 
-	self.tab					= xml:InitTab("main_dialog:tab", self.dialog)
+	self.tab					= self.xml:InitTab("main_dialog:tab", self.dialog)
 	self:Register				(self.tab, "tab")
 
 
@@ -98,14 +97,14 @@ function options_dialog:InitControls()
 	self.b_restart_system_shown	= false
 	self.timer					= nil
 
-	self.cap_download			= xml:InitStatic		("download_static",self)
-	self.text_download			= xml:InitStatic		("download_text",self)
-	self.download_progress		= xml:InitProgressBar	("progress_download", self)
-	self.btn_cancel_download	= xml:Init3tButton		("btn_cancel_download", self)
+	self.cap_download			= self.xml:InitStatic		("download_static",self)
+	self.text_download			= self.xml:InitStatic		("download_text",self)
+	self.download_progress		= self.xml:InitProgressBar	("progress_download", self)
+	self.btn_cancel_download	= self.xml:Init3tButton		("btn_cancel_download", self)
 	self:Register				(self.btn_cancel_download, "btn_cancel_download")
 	
-	if xml:NodeExist("gamepad_legend", 0) then
-		self.gamepad_legend = xml:InitGamepadLegend("gamepad_legend", self)
+	if self.xml:NodeExist("gamepad_legend", 0) then
+		self.gamepad_legend = self.xml:InitGamepadLegend("gamepad_legend", self)
 		self:Register(self.gamepad_legend, "gamepad_legend")
 	end
 end
@@ -222,7 +221,7 @@ function options_dialog:OnBtnAccept()
 	SendScriptCallback("opt_menu_on_accept", self, opt, console)
 
 	if opt:NeedVidRestart() then
-		_G.b_discard_settings_shown = true
+		SetRegistryValue("main_menu", "b_discard_settings_shown", true)
 		self.message_box:InitMessageBox("message_box_yes_no")
 		self.message_box:SetText(string.format("%s %d% s", game.translate_string("ui_mm_confirm_changes"), 15, game.translate_string("mp_si_sec")))
 		self.message_box:ShowDialog(true)
@@ -464,7 +463,7 @@ function options_dialog:Update()
 		self.download_progress:Show				(false)
 		self.btn_cancel_download:Show			(false)
 	end
-	if(_G.b_discard_settings_shown) then
+	if(GetRegistryValue("main_menu", "b_discard_settings_shown", false)) then
 		local tg = math.floor(time_global_async()/1000)
 		if(self.timer==nil) then
 			self.timer = tg
@@ -484,7 +483,7 @@ end
 
 function options_dialog:OnApplyChanges()
     self.timer = nil
-    _G.b_discard_settings_shown = false
+	SetRegistryValue("main_menu", "b_discard_settings_shown", false)
 
 	self.owner:ShowDialog(true)
 	self:HideDialog()
@@ -502,7 +501,7 @@ end
 
 function options_dialog:OnDiscardChanges()
     self.timer = nil
-    _G.b_discard_settings_shown = false
+   SetRegistryValue("main_menu", "b_discard_settings_shown", false)
 
 	local c = get_console()
    	c:execute("cfg_load tmp")
@@ -514,7 +513,7 @@ function options_dialog:OnDiscardChanges()
 end
 
 function options_dialog:OnMenuReloaded()
-	if(_G.b_discard_settings_shown) then
+	if(GetRegistryValue("main_menu", "b_discard_settings_shown", false)) then
 	    self.message_box:InitMessageBox("message_box_yes_no")
 	    self.message_box:SetText(string.format("%s %d% s", game.translate_string("ui_mm_confirm_changes"), 15, game.translate_string("mp_si_sec")))
 	    self.message_box:ShowDialog(true)
@@ -805,4 +804,100 @@ function options_dialog:OnElementGpadHold(element, right)
 			element:StepLeft()
 		end
 	end
+end
+
+function options_dialog:addControl(wnd, cap, elem, crl)
+	if wnd:WindowName() ~= "dlg_video_adv" then
+		wnd.scroll_v:AddWindow(crl, true)
+		crl:SetAutoDelete(false)
+	end
+	if cap ~= nil and elem ~= nil then
+		table.insert(wnd.focusList, {cap, elem, crl} )
+	end
+end
+	
+function options_dialog:lineFrame(wnd, prec, text)
+	local static = self.xml:InitStatic("video_adv:templ_item", nil)
+	local temp = self.xml:InitFrameLine("video_adv:header_setup", static)
+	local tempText = self.xml:InitTextWnd("video_adv:cap_header_setup", temp)
+	if wnd:WindowName() == "dlg_video_adv" then
+		table.insert(self.m_preconditions, {func=prec, control=static})
+	end
+	tempText:SetTextST(text)
+	self:addControl(wnd, nil, nil, static)
+	return temp
+end
+
+function options_dialog:GetPropsName(wnd)
+	if wnd:WindowName() == "dlg_video" then
+		return "mm_opt_video"
+	elseif wnd:WindowName() == "dlg_video_adv" then
+		return "mm_opt_video_adv"
+	elseif wnd:WindowName() == "dlg_sound" then
+		return "mm_opt_sound"
+	elseif wnd:WindowName() == "dlg_gameplay" then
+		return "mm_opt_gameplay"
+	elseif wnd:WindowName() == "dlg_controls" then
+		return "mm_opt_controls"
+	end
+	return ""
+end
+
+function options_dialog:addTrack(wnd, prec, text, command, step, invert, mode, show_value, depend, reg_name, magnitude)
+	local _st = self.xml:InitStatic("video_adv:templ_item", nil)
+	local temp = self.xml:InitTrackBar("video_adv:track_template_" .. mode, _st)
+	local tempText = self.xml:InitTextWnd("video_adv:cap_template", _st)
+	if wnd:WindowName() == "dlg_video_adv" then
+		table.insert(self.m_preconditions, {func=prec, control=_st})
+	end
+	temp:SetSystemDepends(depend)
+	temp:AssignProps(command, self:GetPropsName(wnd))
+	temp:SetInvert(invert)
+	temp:SetDrawingValue(show_value)
+	if reg_name then
+		self:Register(temp, reg_name)
+	end
+	if magnitude then
+		temp:SetMagnitude(magnitude)
+	end
+	temp:SetStep(step)
+	tempText:SetTextST(text)
+	self:addControl(wnd, tempText, temp, _st)
+	return temp
+end
+
+function options_dialog:addCheck(wnd, prec, text, command, depend, reg_name)
+	local _st = self.xml:InitStatic("video_adv:templ_item", nil)
+	local temp = self.xml:InitCheck("video_adv:check_template", _st)
+	local tempText = self.xml:InitTextWnd("video_adv:cap_template", _st)
+	if prec and wnd:WindowName() == "dlg_video_adv" then
+		table.insert(self.m_preconditions, {func=prec, control=_st})
+	end
+	temp:AssignProps(command, self:GetPropsName(wnd))
+	temp:SetSystemDepends(depend)
+	if reg_name then
+		self:Register(temp, reg_name)
+	end
+	tempText:SetTextST(text)
+	self:addControl(wnd, tempText, temp, _st)
+	return temp
+end
+
+function options_dialog:addComboBox(wnd, prec, text, command, list_length, show_scroll, depend, reg_name)
+	local _st = self.xml:InitStatic("video_adv:templ_item", nil)
+	local temp = self.xml:InitComboBox("video_adv:list_template", _st)
+	local tempText = self.xml:InitTextWnd("video_adv:cap_template", _st)
+	if wnd:WindowName() == "dlg_video_adv" then
+		table.insert(self.m_preconditions, {func=prec, control=_st})
+	end
+	temp:SetListLength(list_length)
+	temp:SetVertScroll(show_scroll)
+	temp:AssignProps(command, self:GetPropsName(wnd))
+	temp:SetSystemDepends(depend)
+	if reg_name then
+		self:Register(temp, reg_name)
+	end
+	tempText:SetTextST(text)
+	self:addControl(wnd, tempText, temp, _st)
+	return temp
 end
