@@ -19,81 +19,30 @@ function opt_gameplay:InitControls(x, y, xml, handler)
  	self.focusList = {}
 	self.scroll_v = xml:InitScrollView("main_dialog:scroll_v", self)
 
-    local _st
-    local addControl = function(cap, elem, crl)	
-        self.scroll_v:AddWindow(crl, true)
-        crl:SetAutoDelete(false)
-		if cap ~= nil and elem ~= nil then
-			table.insert(self.focusList, {cap, elem, crl} )
-		end
-    end
+	handler:lineFrame(self, true, "st_common_settings")
+	
+	handler:addComboBox(self, true, "ui_mm_difficulty", "g_game_difficulty", 4, false, system_depends.sdNothing)
+	handler:addComboBox(self, true, "ui_mm_lang", "language", 4, false, system_depends.sdNothing)
+	
+	handler:lineFrame(self, true, "st_gameplay_settings")
 
-    local lineFrame = function (text)
-        local static = xml:InitStatic("video_adv:templ_item", nil)
-        local temp = xml:InitFrameLine("video_adv:header_setup", static)
-        local tempText = xml:InitTextWnd("video_adv:cap_header_setup", temp)
-        tempText:SetTextST(text)
-		addControl(nil, nil, static)
-    end
-	
-    local addTrack = function (text, command, step, mode, show_value, magnitude)
-        _st = xml:InitStatic("video_adv:templ_item", nil)
-        local temp = xml:InitTrackBar("video_adv:track_template_" .. mode, _st)
-        local tempText = xml:InitTextWnd("video_adv:cap_template", _st)
-		temp:AssignProps(command, "mm_opt_gameplay")
-		temp:SetDrawingValue(show_value)
-		if magnitude then
-			temp:SetMagnitude(magnitude)
-		end
-		temp:SetStep(step)
-        tempText:SetTextST(text)
-		addControl(tempText, temp, _st)
-    end
-	
-	local addCheck = function (text, command)
-		_st = xml:InitStatic("video_adv:templ_item", nil)
-        local temp = xml:InitCheck("video_adv:check_template", _st)
-        local tempText = xml:InitTextWnd("video_adv:cap_template", _st)
-		temp:AssignProps(command, "mm_opt_gameplay")
-		tempText:SetTextST(text)
-		addControl(tempText, temp, _st)
-    end
-
-    local addComboBox = function (text, command, list_length, show_scroll)
-		_st = xml:InitStatic("video_adv:templ_item", nil)
-        local temp = xml:InitComboBox("video_adv:list_template", _st)
-        local tempText = xml:InitTextWnd("video_adv:cap_template", _st)
- 		temp:SetListLength(list_length)
-		temp:SetVertScroll(show_scroll)
-		temp:AssignProps(command, "mm_opt_video_adv")
-		tempText:SetTextST(text)
-		addControl(tempText, temp, _st)
-    end
-	
-	lineFrame("st_common_settings")
-	
-	addComboBox("ui_mm_difficulty", "g_game_difficulty", 4, false)
-	addComboBox("ui_mm_lang", "language", 4, false)
-	
-	lineFrame("st_gameplay_settings")
-
-	addTrack("ui_mm_bobbing_factor", "g_bobbing_factor", 0.1, "float", true, 10)
-	addCheck("ui_mm_hit_slowmo", "g_hit_slowmo")
-	addCheck("ui_mm_wpn_aim_toggle", "wpn_aim_toggle")
+	handler:addTrack(self, true, "ui_mm_bobbing_factor", "g_bobbing_factor", 0.1, false, "float", true, system_depends.sdNothing, nil, 10)
+	handler:addCheck(self, true, "ui_mm_hit_slowmo", "g_hit_slowmo", system_depends.sdNothing)
+	handler:addCheck(self, true, "ui_mm_wpn_aim_toggle", "wpn_aim_toggle", system_depends.sdNothing)
 	if is_cop() then
-		addCheck("ui_mm_important_save", "g_important_save")
+		handler:addCheck(self, true, "ui_mm_important_save", "g_important_save", system_depends.sdNothing)
 	end	
-	addCheck("ui_mm_show_weapon", "hud_weapon")
-	addCheck("ui_mm_crouch_toggle", "g_crouch_toggle")
+	handler:addCheck(self, true, "ui_mm_show_weapon", "hud_weapon", system_depends.sdNothing)
+	handler:addCheck(self, true, "ui_mm_crouch_toggle", "g_crouch_toggle", system_depends.sdNothing)
 
-	lineFrame("st_ui_settings")
+	handler:lineFrame(self, true, "st_ui_settings")
 
-	addCheck("ui_mm_show_crosshair", "hud_crosshair")
-	addCheck("ui_mm_dyn_crosshair", "cl_dynamiccrosshair")
-	addCheck("ui_mm_crosshair_distance", "hud_crosshair_dist")
-	addCheck("ui_mm_tips", "hud_info")
- 	addCheck("ui_st_disable_hud", "hud_draw")
- 	addCheck("ui_rs_fps_show", "rs_fps_show")
-	addCheck("ui_mm_show_minimap", "hud_minimap")
-	addCheck("ui_mm_hide_quick_slots", "hud_hide_quick_slots")
+	handler:addCheck(self, true, "ui_mm_show_crosshair", "hud_crosshair", system_depends.sdNothing)
+	handler:addCheck(self, true, "ui_mm_dyn_crosshair", "cl_dynamiccrosshair", system_depends.sdNothing)
+	handler:addCheck(self, true, "ui_mm_crosshair_distance", "hud_crosshair_dist", system_depends.sdNothing)
+	handler:addCheck(self, true, "ui_mm_tips", "hud_info", system_depends.sdNothing)
+ 	handler:addCheck(self, true, "ui_st_disable_hud", "hud_draw", system_depends.sdNothing)
+ 	handler:addCheck(self, true, "ui_rs_fps_show", "rs_fps_show", system_depends.sdNothing)
+	handler:addCheck(self, true, "ui_mm_show_minimap", "hud_minimap", system_depends.sdNothing)
+	handler:addCheck(self, true, "ui_mm_hide_quick_slots", "hud_hide_quick_slots", system_depends.sdNothing)
 end
