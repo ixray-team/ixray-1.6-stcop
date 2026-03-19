@@ -2179,6 +2179,24 @@ CScriptGameObject *CScriptGameObject::ItemOnBelt(u32 item_id) const
 	return result ? result->object().lua_game_object() : 0;
 }
 
+bool CScriptGameObject::IsDefaultToRuck()
+{
+	if (CInventoryItem* inventory_item = object().cast_inventory_item())
+	{
+		return inventory_item->m_flags.test(inventory_item->EIIFlags::FRuckDefault) == TRUE;
+	}
+
+	return false;
+}
+
+void CScriptGameObject::SetDefaultToRuck(bool state)
+{
+	if (CInventoryItem* inventory_item = object().cast_inventory_item())
+	{
+		inventory_item->m_flags.set(inventory_item->EIIFlags::FRuckDefault, state ? TRUE : FALSE);
+	}
+}
+
 bool CScriptGameObject::IsOnBelt(CScriptGameObject *obj) const
 {
 	CInventoryOwner* inventory_owner = object().cast_inventory_owner();
