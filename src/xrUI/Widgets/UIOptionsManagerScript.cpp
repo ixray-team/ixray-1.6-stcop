@@ -54,6 +54,15 @@ void CUIOptionsManagerScript::script_register(lua_State *L)
 			.def("OptionsPostAccept",	&CUIOptionsManagerScript::OptionsPostAccept )
 			.def("SendMessage2Group",	&CUIOptionsManagerScript::SendMessage2Group )
 			.def("NeedSystemRestart",	&CUIOptionsManagerScript::NeedSystemRestart )
-			.def("NeedVidRestart",		&CUIOptionsManagerScript::NeedVidRestart )
+			.def("NeedVidRestart",		&CUIOptionsManagerScript::NeedVidRestart ),
+
+		class_<enum_exporter<CUIOptionsItem::ESystemDepends> >("system_depends")
+			.enum_("depends")
+			[
+				value("sdNothing",			int(CUIOptionsItem::sdNothing)),
+				value("sdVidRestart",		int(CUIOptionsItem::sdVidRestart)),
+				value("sdSystemRestart",	int(CUIOptionsItem::sdSystemRestart)),
+				value("sdSndRestart",		int(CUIOptionsItem::sdSndRestart))
+			]
 		];
 }
