@@ -879,6 +879,10 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 			WatchedPath.data(),
 			[this](const std::string& file, const filewatch::Event Event)
 			{
+				if (CheckSkip(file.c_str()))
+				{
+					return;
+				}
 				switch (Event)
 				{
 				case filewatch::Event::added:
