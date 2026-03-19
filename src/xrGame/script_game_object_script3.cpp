@@ -458,7 +458,13 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("cast_CHelmet", &CScriptGameObject::cast_CHelmet)
 		.def("cast_AntigasFilter", &CScriptGameObject::cast_AntigasFilter)
 
-		.def("bones_protection_sect", &CScriptGameObject::bones_protection_sect)															  
+		.def("bones_protection_sect", &CScriptGameObject::bones_protection_sect)	
+
+		// FFx0001 ++
+		.def("is_ruck_to_default", &CScriptGameObject::IsDefaultToRuck)
+		.def("set_ruck_to_default", &CScriptGameObject::SetDefaultToRuck)
+		// FFx0001 --
+
 		.def("is_on_belt",					&CScriptGameObject::IsOnBelt)
 		.def("item_on_belt",				&CScriptGameObject::ItemOnBelt) 
 		.def("belt_count",					&CScriptGameObject::BeltSize)  													   
