@@ -784,6 +784,15 @@ retval: none
 --// Проверить, установлена ли строка дополнительного описания на инвентарный предмет
 object:is_item_used_additional_description()
 retval: bool
+
+--// Проверить, активен ли флаг автовзятия в слот при подборе
+object:is_ruck_to_default()
+retval: bool
+
+--// Задать, состояние флага автовзятия предмета в слот при подборе
+object:set_ruck_to_default(state)
+retval: void
+args: bool (state)
 ```
 
 ::: details Пример оптимизированного варианта установки дополнительного описания к предмету через скрипт
