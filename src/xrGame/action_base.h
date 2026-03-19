@@ -17,13 +17,16 @@
 class CScriptGameObject;
 
 template <typename _object_type>
-class CActionBase : public GraphEngineSpace::CWorldOperator {
+class CActionBase :
+	public GraphEngineSpace::CWorldOperator 
+{
 protected:
-	typedef GraphEngineSpace::CWorldOperator			inherited;
-	typedef GraphEngineSpace::CWorldProperty			COperatorCondition;
+	using inherited = GraphEngineSpace::CWorldOperator;
+	using COperatorCondition = CWorldProperty;
 
 protected:
-	enum EActionStates {
+	enum EActionStates
+	{
 		eActionStateConstructed		= u32(0),
 		eActionStateSetup,
 		eActionStateInitialized,
@@ -40,7 +43,7 @@ protected:
 	u32							m_start_level_time;
 	u32							m_start_game_time;
 	u32							m_inertia_time;
-	mutable _edge_value_type	m_weight;
+	mutable u16	m_weight;
 	bool						m_first_time;
 
 #ifdef LOG_ACTION
@@ -64,14 +67,14 @@ public:
 	virtual void				initialize			();
 	virtual void				execute				();
 	virtual void				finalize			();
-	virtual _edge_value_type	weight				(const CSConditionState &condition0, const CSConditionState &condition1) const;
+	virtual u16	weight				(const CSConditionState &condition0, const CSConditionState &condition1) const;
 	IC		void				set_inertia_time	(u32 inertia_time);
 	IC		u32					start_level_time	() const;
 	IC		u32					inertia_time		() const;
 	IC		bool				completed			() const;
 	IC		void				set_property		(const u32 &condition_id, const bool&value);
 	IC		const bool	&property			(const u32 &condition_id) const;
-	IC		void 				set_weight			(const _edge_value_type &weight);
+	IC		void 				set_weight			(const u16 &weight);
 	IC		bool				first_time			() const;
 
 	virtual	void				save				(NET_Packet &packet) {}
