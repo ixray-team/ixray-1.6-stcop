@@ -27,11 +27,8 @@ template <
 >
 class CActionPlanner : 
 	public CProblemSolver<
-		GraphEngineSpace::CWorldProperty,
-		GraphEngineSpace::CWorldState,
 		_world_operator,
 		_condition_evaluator,
-		u32,
 		_reverse_search,
 		_world_operator_ptr,
 		_condition_evaluator_ptr
@@ -39,32 +36,24 @@ class CActionPlanner :
 {
 public:
 	typedef CProblemSolver<
-		GraphEngineSpace::CWorldProperty,
-		GraphEngineSpace::CWorldState,
 		_world_operator,
 		_condition_evaluator,
-		u32,
 		_reverse_search,
 		_world_operator_ptr,
 		_condition_evaluator_ptr
 	> CProblemSolver;
 
 	using inherited = CProblemSolver;
-	using _action_id_type = typename inherited::_edge_type;
-	using _condition_type = typename inherited::_condition_type;
 	using COperator = typename inherited::COperator;
 	using CConditionEvaluator = typename inherited::CConditionEvaluator;
-	using _value_type = typename inherited::_value_type;
-	using _edge_type = typename inherited::_edge_type;
 	using _operator_ptr = typename inherited::_operator_ptr;
 	
-	typedef GraphEngineSpace::CWorldProperty CWorldProperty;
 	typedef GraphEngineSpace::CWorldState CWorldState;
 	typedef _world_operator _world_operator; 
 
 protected:
 	bool						m_initialized;
-	_action_id_type				m_current_action_id;
+	u32				m_current_action_id;
 
 #ifdef LOG_ACTION
 public:
@@ -83,8 +72,8 @@ public:
 
 #ifdef LOG_ACTION
 public:
-	virtual LPCSTR				action2string			(const _action_id_type &action_id);
-	virtual LPCSTR				property2string			(const _condition_type &action_id);
+	virtual LPCSTR				action2string			(const u32&action_id);
+	virtual LPCSTR				property2string			(const u32 &action_id);
 	virtual LPCSTR				object_name				() const;
 	virtual void				show					(LPCSTR offset = "");
 	IC		void				show_current_world_state();
@@ -97,17 +86,17 @@ public:
 	virtual	void				setup					(_object_type *object);
 	virtual	void				update					();
 	virtual void				finalize				();
-	IC		COperator			&action					(const _action_id_type &action_id);
-	IC		CConditionEvaluator	&evaluator				(const _condition_type &evaluator_id);
-	IC		_action_id_type		current_action_id		() const;
+	IC		COperator			&action					(const u32&action_id);
+	IC		CConditionEvaluator	&evaluator				(const u32 &evaluator_id);
+	IC		u32		current_action_id		() const;
 	IC		COperator			&current_action			();
 	IC		bool				initialized				() const;
-	IC		void				add_condition			(_world_operator *action, _condition_type condition_id, _value_type condition_value);
-	IC		void				add_effect				(_world_operator *action, _condition_type condition_id, _value_type condition_value);
-	IC		virtual void		add_operator			(const _edge_type &operator_id,	_operator_ptr _operator);
-	IC		virtual void		remove_operator			(const _edge_type	&operator_id);
-	IC		virtual void		add_evaluator			(const _condition_type &condition_id, _condition_evaluator_ptr evaluator);
-	IC		virtual void		remove_evaluator		(const _condition_type &condition_id);
+	IC		void				add_condition			(_world_operator *action, u32 condition_id, bool condition_value);
+	IC		void				add_effect				(_world_operator *action, u32 condition_id, bool condition_value);
+	IC		virtual void		add_operator			(const u32& operator_id,	_operator_ptr _operator);
+	IC		virtual void		remove_operator			(const u32& operator_id);
+	IC		virtual void		add_evaluator			(const u32 &condition_id, _condition_evaluator_ptr evaluator);
+	IC		virtual void		remove_evaluator		(const u32 &condition_id);
 	IC		_object_type		&object					() const;
 	virtual	void				save					(NET_Packet &packet);
 	virtual	void				load					(IReader &packet);

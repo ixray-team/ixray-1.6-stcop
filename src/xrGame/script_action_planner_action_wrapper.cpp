@@ -51,12 +51,12 @@ void CScriptActionPlannerActionWrapper::finalize_static		(CScriptActionPlannerAc
 	action->CScriptActionPlannerAction::finalize		();
 }
 
-CScriptActionPlannerActionWrapper::_edge_value_type CScriptActionPlannerActionWrapper::weight	(const CSConditionState &condition0, const CSConditionState &condition1) const
+u16 CScriptActionPlannerActionWrapper::weight(const CSConditionState& condition0, const CSConditionState& condition1) const
 {
-	return								(luabind::call_member<_edge_value_type>(const_cast<CScriptActionPlannerActionWrapper*>(this),"weight",condition0,condition1));
+	return (luabind::call_member<u16>(const_cast<CScriptActionPlannerActionWrapper*>(this), "weight", condition0, condition1));
 }
 
-CScriptActionPlannerActionWrapper::_edge_value_type CScriptActionPlannerActionWrapper::weight_static	(CScriptActionPlannerAction *action, const CSConditionState &condition0, const CSConditionState &condition1)
+u16 CScriptActionPlannerActionWrapper::weight_static(CScriptActionPlannerAction* action, const CSConditionState& condition0, const CSConditionState& condition1)
 {
-	return								(((const CScriptActionPlannerActionWrapper*)action)->CScriptActionPlannerAction::weight(condition0,condition1));
+	return (((const CScriptActionPlannerActionWrapper*)action)->CScriptActionPlannerAction::weight(condition0, condition1));
 }

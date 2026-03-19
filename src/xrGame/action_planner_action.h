@@ -22,7 +22,6 @@ class CActionPlannerAction :
 protected:
 	typedef	CActionPlanner<_object_type>					inherited_planner;
 	typedef	CActionBase<_object_type>						inherited_action;
-	typedef typename inherited_action::_edge_value_type		_edge_value_type;
 	using _world_operator = typename inherited_planner::_world_operator;
 
 public:
