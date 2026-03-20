@@ -18,37 +18,15 @@ function opt_sound:InitControls(x, y, xml, handler)
  	self.focusList = {}
     self.scroll_v = xml:InitScrollView("main_dialog:scroll_v", self)
 
-    local _st
+	handler:addTrack(self, true, "ui_mm_master_volume", "snd_volume_eff", 0.01, false, "float", true, system_depends.sdNothing, nil, 100)
+	--handler:addTrack(self, true, "ui_mm_shoot_volume", "snd_volume_shooting", 0.01, false, "float", true, system_depends.sdNothing, nil, 100)
+	handler:addTrack(self, true, "ui_mm_music_volume", "snd_volume_music", 0.01, false, "float", true, system_depends.sdNothing, nil, 100)
 	
-    _st = xml:InitStatic("video_adv:templ_item", nil)
-    local caption = xml:InitStatic("tab_sound:cap_mastervolume", _st)
-    local element = xml:InitTrackBar("tab_sound:track_mastervolume", _st)
-    handler:addControl(self, caption, element, _st)
-
-    --_st = xml:InitStatic("video_adv:templ_item", nil)
-    --caption = xml:InitStatic("tab_sound:cap_shootvolume", _st)
-    --element = xml:InitTrackBar("tab_sound:track_shootvolume", _st)
-    --handler:addControl(self, caption, element, _st)
-
-    _st = xml:InitStatic("video_adv:templ_item", nil)
-    caption = xml:InitStatic("tab_sound:cap_musicvolume", _st)
-    element = xml:InitTrackBar("tab_sound:track_musicvolume", _st)
-    handler:addControl(self, caption, element, _st)
-
-    _st = xml:InitStatic("video_adv:templ_item", nil)
-    caption = xml:InitStatic("tab_sound:cap_snd_device", _st)
-    element = xml:InitComboBox("tab_sound:list_snd_device", _st)
-    handler:addControl(self, caption, element, _st)
+	handler:addComboBox(self, true, "ui_mm_snd_device", "snd_device", 4, false, system_depends.sdSystemRestart)
 
 	if not is_soc() then
-		_st = xml:InitStatic("video_adv:templ_item", nil)
-		caption = xml:InitStatic("tab_sound:cap_check_dynamic_music", _st)
-		element = xml:InitCheck("tab_sound:check_dynamic_music", _st)
-		handler:addControl(self, caption, element, _st)
+		handler:addCheck(self, true, "ui_mm_dynamic_music", "g_dynamic_music", system_depends.sdNothing)
 	end
 	
-    _st = xml:InitStatic("video_adv:templ_item", nil)
-    caption = xml:InitStatic("tab_sound:cap_check_eax", _st)
-    element = xml:InitCheck("tab_sound:check_eax", _st)
-    handler:addControl(self, caption, element, _st)
+	handler:addCheck(self, true, "ui_mm_eax", "snd_efx", system_depends.sdNothing)
 end

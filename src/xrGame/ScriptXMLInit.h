@@ -48,6 +48,7 @@ public:
 	void NavigateToRoot();
 	LPCSTR ReadValue(LPCSTR path, int index);
 	LPCSTR ReadAttribute(LPCSTR path, int index, LPCSTR attrib);
+	u32 GetColor(LPCSTR path, int index);
 
 	void				InitWindow(LPCSTR path, int index, CUIWindow* pWnd);
 	CUIFrameWindow*		InitFrame(LPCSTR path, CUIWindow* parent);
