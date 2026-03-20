@@ -113,6 +113,10 @@ LPCSTR CScriptXmlInit::ReadAttribute(LPCSTR path, int index, LPCSTR attrib)
 	return m_xml.ReadAttrib(path, index, attrib, "");
 }
 
+u32 CScriptXmlInit::GetColor(LPCSTR path, int index)
+{
+	return CUIXmlInit::GetColor(m_xml, path, index, 0xFFFFFFFF);
+}
 
 void CScriptXmlInit::InitWindow(LPCSTR path, int index, CUIWindow* pWnd)
 {
@@ -374,6 +378,7 @@ void CScriptXmlInit::script_register(lua_State *L){
 		.def("NavigateToRoot",			&CScriptXmlInit::NavigateToRoot)
 		.def("ReadValue",				&CScriptXmlInit::ReadValue)
 		.def("ReadAttribute",			&CScriptXmlInit::ReadAttribute)
+		.def("GetColor",				&CScriptXmlInit::GetColor)
 
 		.def("InitWindow",				&CScriptXmlInit::InitWindow)
 		.def("InitFrame",				&CScriptXmlInit::InitFrame)
