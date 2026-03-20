@@ -62,7 +62,8 @@ void CUIOptionsManagerScript::script_register(lua_State *L)
 				value("sdNothing",			int(CUIOptionsItem::sdNothing)),
 				value("sdVidRestart",		int(CUIOptionsItem::sdVidRestart)),
 				value("sdSystemRestart",	int(CUIOptionsItem::sdSystemRestart)),
-				value("sdSndRestart",		int(CUIOptionsItem::sdSndRestart))
+				value("sdSndRestart",		int(CUIOptionsItem::sdSndRestart)),
+				value("sdApplyOnChange",	int(CUIOptionsItem::sdApplyOnChange))
 			]
 		];
 }
