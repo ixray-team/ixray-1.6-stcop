@@ -190,9 +190,21 @@ protected:
 	CUIStatic*					m_clock_value = nullptr;
 
 	CInventorySorter*			m_pInventorySorter = nullptr;
-	CUITabControl*				m_sortTabControl = nullptr;
-	shared_str					m_currentSortCategoryId;
-	EInventorySortCategory		m_currentSortCategory = EInventorySortCategory::All;
+	enum ESortTabsLayoutSlot : u8
+	{
+		eSortTabsInventory = 0,
+		eSortTabsUpgrade,
+		eSortTabsTradeActor,
+		eSortTabsTradePartner,
+		eSortTabsDeadBody,
+		eSortTabsLayoutCount
+	};
+	CUITabControl*				m_sortTabControl[eSortTabsLayoutCount] = {};
+	Fvector2					m_sortTabsLayoutPos[eSortTabsLayoutCount];
+	Fvector2					m_sortTabsLayoutSize[eSortTabsLayoutCount];
+	bool						m_sortTabsLayoutDefined[eSortTabsLayoutCount] = {};
+	shared_str					m_sortCategoryId[eSortTabsLayoutCount];
+	EInventorySortCategory		m_sortCategory[eSortTabsLayoutCount] = {};
 
 	u32							m_last_time;
 	u8							m_repair_mode;
@@ -293,6 +305,14 @@ protected:
 	void						InitCellForSlot						(u16 slot_idx);
 	void						InitInventoryContents				(CUIDragDropListEx* pBagList);
 	void						UpdateActorBagList					();
+	void						UpdateTradeActorBagList				();
+	void						UpdateTradePartnerBagList			();
+	void						UpdateDeadBodyBagList				();
+	void						UpdateSortTabsLayout				();
+	void						ShowSortTabsForCurrentMode			();
+	ESortTabsLayoutSlot			GetSortTabsSlotByWindow				(CUIWindow* window) const;
+	EInventorySortCategory		GetPlayerSortCategory				() const;
+	void						ApplySortForSlot					(ESortTabsLayoutSlot sortSlot);
 	void						OnSortTabChanged					(CUIWindow* w, void* pData);
 	void						ClearAllLists						();
 	void						BindDragDropListEvents				(CUIDragDropListEx* lst);
