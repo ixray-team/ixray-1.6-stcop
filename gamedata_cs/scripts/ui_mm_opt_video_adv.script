@@ -30,10 +30,11 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 		xml:InitFrame("frame_videoadv", self)
 	end
 	self.focusList = {}
-	self.scroll_v = xml:InitScrollView("video_adv:scroll_v", self)
+	self.scroll_v = xml:InitScrollView("main_dialog:scroll_v", self)
     handler.scroll_v = self.scroll_v
 	
-	self.btn_simply = xml:Init3tButton("video_adv:btn_to_simply", self)
+	self.btn_simply = xml:Init3tButton("main_dialog:btn_template", self)
+	self.btn_simply:SetTextST("ui_mm_simply")
 	handler:Register(self.btn_simply, "btn_simply_graphic")
 	
 	local ctl = nil

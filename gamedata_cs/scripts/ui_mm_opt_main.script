@@ -5,19 +5,13 @@ function options_dialog:__init() super()
 	self.m_preconditions	= {}
 	self.focusIndex = 1 --MTB_Jakub_Jurek [JP-165] reset index value
 	self.m_deffer_ex	= {}
-	self.default_text_color = GetARGB(255, 170, 170, 170)
-	if not is_cop() then
-		self.default_text_color = GetARGB(255, 240, 217, 182) -- TODO: do something about this later, that's not good
-	end
     self:InitControls()
+	self.default_text_color = self.xml:GetColor("main_dialog:cap_template:text", 0)
+	self.selection_text_color = self.xml:GetColor("main_dialog:selection_color", 0)
     self:InitCallBacks()
 	self.tab:SetActiveTab			("video")
-	
-	
-	if main_menu.in_controller_mode() then
-		--highlight current element in focusIndex
-		self:OnElementSetSelected(self:GetCurTabWnd(), self.focusIndex, true)
-	end
+		
+	self:OnElementSetSelected(self:GetCurTabWnd(), self.focusIndex, true)
 	action_repeaters():Register(self, key_bindings.kUI_TAB_LEFT, 250, 250)
 	action_repeaters():Register(self, key_bindings.kUI_TAB_RIGHT, 250, 250)
 	action_repeaters():Register(self, key_bindings.kUI_UP, 0, 0)
@@ -112,9 +106,6 @@ end
 function options_dialog:SetCurrentValues()
 	local opt = COptionsManager()
 
-	opt:SetCurrentValues("mm_opt_video_preset")
-	opt:SaveBackupValues("mm_opt_video_preset")
-
 	opt:SetCurrentValues("mm_opt_video")
 	opt:SaveBackupValues("mm_opt_video")
 
@@ -161,8 +152,6 @@ function options_dialog:InitCallBacks()
 	self:AddCallback("btn_advanced_graphic",ui_events.BUTTON_CLICKED,	self.OnBtnAdvGraphic,		self)
 	self:AddCallback("btn_accept",			ui_events.BUTTON_CLICKED,	self.OnBtnAccept,			self)
 	self:AddCallback("btn_cancel",			ui_events.BUTTON_CLICKED,	self.OnBtnCancel,			self)
-	self:AddCallback("btn_default_graphic",	ui_events.BUTTON_CLICKED,	self.OnBtnDefGraph,			self)
-	self:AddCallback("btn_default_sound",	ui_events.BUTTON_CLICKED,	self.OnBtnDefSound,			self)
 	self:AddCallback("combo_preset",		ui_events.LIST_ITEM_SELECT,	self.OnPresetChanged,		self)
 	self:AddCallback("btn_simply_graphic",	ui_events.BUTTON_CLICKED,	self.OnSimplyGraphic,		self)
 	self:AddCallback("btn_keyb_default",	ui_events.BUTTON_CLICKED,	self.OnBtnKeybDefault,		self)
@@ -192,17 +181,6 @@ function options_dialog:OnPresetChanged()
 	opt:SetCurrentValues		("mm_opt_video_adv")
 end
 
-
-function options_dialog:OnBtnDefGraph()
-	local opt = COptionsManager()
-	opt:SendMessage2Group("mm_opt_video","set_default_value")
-end
-
-function options_dialog:OnBtnDefSound()
-	local opt = COptionsManager()
-	opt:SendMessage2Group("mm_opt_sound","set_default_value")
-end
-
 function options_dialog:OnBtnAccept()
 
 	local opt		= COptionsManager()
@@ -210,7 +188,6 @@ function options_dialog:OnBtnAccept()
 
    	console:execute("cfg_save tmp")
 
-	opt:SaveValues("mm_opt_video_preset")
 	opt:SaveValues("key_binding")
 	opt:SaveValues("mm_opt_video")
 	opt:SaveValues("mm_opt_video_adv")
@@ -236,7 +213,6 @@ end
 
 function options_dialog:OnBtnCancel()
 	local opt				= COptionsManager()
-	opt:UndoGroup			("mm_opt_video_preset")
 	opt:UndoGroup			("mm_opt_video")
 	opt:UndoGroup			("mm_opt_video_adv")
 	opt:UndoGroup			("mm_opt_sound")
@@ -275,22 +251,18 @@ function options_dialog:OnBtnAdvGraphic()
 	self.dlg_video:Show		(false)
 	self.dlg_video_adv:Show	(true)
 		
-	if main_menu.in_controller_mode() then
-		self.focusIndex = 1
-		self:DeselectAllTabElements(self.dlg_video_adv)
-		self:OnElementSetSelected(self.dlg_video_adv, self.focusIndex, true)
-	end
+	self.focusIndex = 1
+	self:DeselectAllTabElements(self.dlg_video_adv)
+	self:OnElementSetSelected(self.dlg_video_adv, self.focusIndex, true)
 end
 
 function options_dialog:OnSimplyGraphic()
 	self.dlg_video:Show		(true)
 	self.dlg_video_adv:Show	(false)
 	
-	if main_menu.in_controller_mode() then
-		self.focusIndex = 1
-		self:DeselectAllTabElements(self.dlg_video)
-		self:OnElementSetSelected(self.dlg_video, self.focusIndex, true)
-	end
+	self.focusIndex = 1
+	self:DeselectAllTabElements(self.dlg_video)
+	self:OnElementSetSelected(self.dlg_video, self.focusIndex, true)
 end
 
 function options_dialog:OnKeyboard(dik, keyboard_action)
@@ -420,12 +392,25 @@ function options_dialog:Update()
 	self.dlg_controls.default_btn:Show(not main_menu.in_controller_mode())
 	
 	local curTab = self:GetCurTabWnd()
-	local element = curTab.focusList[self.focusIndex][1]
+	local elementCap = curTab.focusList[self.focusIndex][1]
 	if main_menu.in_controller_mode() then 
-		element:SetTextColor(GetARGB(255, 255, 255, 255))
+		elementCap:SetTextColor(self.selection_text_color)
 	else
-		element:SetTextColor(self.default_text_color)
+		elementCap:SetTextColor(self.default_text_color)
 	end
+		
+	local element = curTab.focusList[self.focusIndex][2]
+	local elementInfo = class_info(element)
+	local elementClass = elementInfo.name
+	
+	if elementClass == "CUI3tButton" 
+	or elementClass == "CUIComboBox" 
+	or elementClass == "CUICheckButton" 
+	or elementClass == "CUITrackBar" 
+	then
+		element:SetHighlighted(main_menu.in_controller_mode())
+	end
+	
 	
 	if self.gamepad_legend then
 		local icon_back		= self:GetStatic("gp_additional_btn")	
@@ -692,7 +677,7 @@ function options_dialog:OnElementSetSelected(curTab, eltIndex, on)
 	local caption = focusRecord[1]:TextControl()
 	
 	if on then
-		caption:SetTextColor(GetARGB(255, 255, 255, 255))
+		caption:SetTextColor(self.selection_text_color)
 		
 		--for advanced video settings, make autoscroll		
 		local elementParent = focusRecord[1]:GetParent()
@@ -817,9 +802,9 @@ function options_dialog:addControl(wnd, cap, elem, crl)
 end
 	
 function options_dialog:lineFrame(wnd, prec, text)
-	local static = self.xml:InitStatic("video_adv:templ_item", nil)
-	local temp = self.xml:InitFrameLine("video_adv:header_setup", static)
-	local tempText = self.xml:InitTextWnd("video_adv:cap_header_setup", temp)
+	local static = self.xml:InitStatic("main_dialog:templ_item", nil)
+	local temp = self.xml:InitFrameLine("main_dialog:header_setup", static)
+	local tempText = self.xml:InitTextWnd("main_dialog:cap_header_setup", temp)
 	if wnd:WindowName() == "dlg_video_adv" then
 		table.insert(self.m_preconditions, {func=prec, control=static})
 	end
@@ -844,9 +829,9 @@ function options_dialog:GetPropsName(wnd)
 end
 
 function options_dialog:addTrack(wnd, prec, text, command, step, invert, mode, show_value, depend, reg_name, magnitude)
-	local _st = self.xml:InitStatic("video_adv:templ_item", nil)
-	local temp = self.xml:InitTrackBar("video_adv:track_template_" .. mode, _st)
-	local tempText = self.xml:InitTextWnd("video_adv:cap_template", _st)
+	local _st = self.xml:InitStatic("main_dialog:templ_item", nil)
+	local temp = self.xml:InitTrackBar("main_dialog:track_template_" .. mode, _st)
+	local tempText = self.xml:InitTextWnd("main_dialog:cap_template", _st)
 	if wnd:WindowName() == "dlg_video_adv" then
 		table.insert(self.m_preconditions, {func=prec, control=_st})
 	end
@@ -867,9 +852,9 @@ function options_dialog:addTrack(wnd, prec, text, command, step, invert, mode, s
 end
 
 function options_dialog:addCheck(wnd, prec, text, command, depend, reg_name)
-	local _st = self.xml:InitStatic("video_adv:templ_item", nil)
-	local temp = self.xml:InitCheck("video_adv:check_template", _st)
-	local tempText = self.xml:InitTextWnd("video_adv:cap_template", _st)
+	local _st = self.xml:InitStatic("main_dialog:templ_item", nil)
+	local temp = self.xml:InitCheck("main_dialog:check_template", _st)
+	local tempText = self.xml:InitTextWnd("main_dialog:cap_template", _st)
 	if prec and wnd:WindowName() == "dlg_video_adv" then
 		table.insert(self.m_preconditions, {func=prec, control=_st})
 	end
@@ -884,9 +869,9 @@ function options_dialog:addCheck(wnd, prec, text, command, depend, reg_name)
 end
 
 function options_dialog:addComboBox(wnd, prec, text, command, list_length, show_scroll, depend, reg_name)
-	local _st = self.xml:InitStatic("video_adv:templ_item", nil)
-	local temp = self.xml:InitComboBox("video_adv:list_template", _st)
-	local tempText = self.xml:InitTextWnd("video_adv:cap_template", _st)
+	local _st = self.xml:InitStatic("main_dialog:templ_item", nil)
+	local temp = self.xml:InitComboBox("main_dialog:list_template", _st)
+	local tempText = self.xml:InitTextWnd("main_dialog:cap_template", _st)
 	if wnd:WindowName() == "dlg_video_adv" then
 		table.insert(self.m_preconditions, {func=prec, control=_st})
 	end
