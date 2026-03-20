@@ -19,6 +19,7 @@
 #include "../Weapon.h"
 #include "../trade_parameters.h"
 #include "../inventory_item_object.h"
+#include "../MPPlayersBag.h"
 #include "../../xrEngine/string_table.h"
 #include "../ai/monsters/basemonster/base_monster.h"
 #include "../ai_space.h"
@@ -105,6 +106,10 @@ void CUIActorMenu::InitPartnerInventoryContents()
 	TIItemContainer					items_list;
 	m_pPartnerInvOwner->inventory().AddAvailableItems(items_list, true);
 	std::sort						(items_list.begin(), items_list.end(),InventoryUtilities::GreaterRoomInRuck);
+	if (m_pInventorySorter)
+	{
+		m_pInventorySorter->SortItems(items_list, m_sortCategory[eSortTabsTradePartner]);
+	}
 
 	TIItemContainer::iterator itb = items_list.begin();
 	TIItemContainer::iterator ite = items_list.end();
@@ -117,6 +122,47 @@ void CUIActorMenu::InitPartnerInventoryContents()
 		}
 	}
 	m_trade_partner_inventory_state = m_pPartnerInvOwner->inventory().ModifyFrame();
+}
+
+void CUIActorMenu::UpdateTradeActorBagList()
+{
+	if (!m_pTradeActorBagList || !m_pActorInvOwner)
+	{
+		return;
+	}
+
+	m_pTradeActorBagList->ClearAll(true);
+
+	TIItemContainer items_list = m_pActorInvOwner->inventory().m_ruck;
+	std::sort(items_list.begin(), items_list.end(), InventoryUtilities::GreaterRoomInRuck);
+	if (m_pInventorySorter)
+	{
+		m_pInventorySorter->SortItems(items_list, GetPlayerSortCategory());
+	}
+
+	for (PIItem item : items_list)
+	{
+		CMPPlayersBag* bag = smart_cast<CMPPlayersBag*>(&item->object());
+		if (bag || is_item_in_list(m_pTradeActorList, item))
+		{
+			continue;
+		}
+
+		CUICellItem* itm = create_cell_item(item);
+		m_pTradeActorBagList->SetItem(itm);
+		ColorizeItem(itm, !CanMoveToPartner(item));
+	}
+}
+
+void CUIActorMenu::UpdateTradePartnerBagList()
+{
+	if (!m_pTradePartnerBagList || !m_pPartnerInvOwner)
+	{
+		return;
+	}
+
+	InitPartnerInventoryContents();
+	UpdatePrices();
 }
 
 void CUIActorMenu::ColorizeItem(CUICellItem* itm, bool colorize)
