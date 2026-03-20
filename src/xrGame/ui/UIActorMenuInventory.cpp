@@ -51,9 +51,6 @@ void move_item_from_to(u16 from_id, u16 to_id, u16 what_id);
 
 void CUIActorMenu::InitInventoryMode()
 {
-	m_currentSortCategory = EInventorySortCategory::All;
-	m_currentSortCategoryId = "";
-
 	m_pInventoryBagList->Show(true);
 	m_pInventoryBeltList->Show(true);
 
@@ -516,8 +513,8 @@ void CUIActorMenu::InitCellForSlot( u16 slot_idx )
 	}
 
 	if (slot_idx == GRENADE_SLOT && m_currMenuMode == mmInventory && m_pInventorySorter &&
-		m_currentSortCategory != EInventorySortCategory::All &&
-		m_currentSortCategory != EInventorySortCategory::Ammo)
+		GetPlayerSortCategory() != EInventorySortCategory::All &&
+		GetPlayerSortCategory() != EInventorySortCategory::Ammo)
 	{
 		return;
 	}
@@ -573,9 +570,9 @@ void CUIActorMenu::InitInventoryContents(CUIDragDropListEx* pBagList)
 
 	curr_list					= pBagList;
 
-	if (m_currMenuMode == mmInventory && m_pInventorySorter)
+	if ((m_currMenuMode == mmInventory || m_currMenuMode == mmUpgrade) && m_pInventorySorter)
 	{
-		m_pInventorySorter->SortItems(ruck_list, m_currentSortCategory);
+		m_pInventorySorter->SortItems(ruck_list, GetPlayerSortCategory());
 	}
 
 	itb = ruck_list.begin();
@@ -617,7 +614,7 @@ void CUIActorMenu::UpdateActorBagList()
 
 	if (m_pInventorySorter)
 	{
-		m_pInventorySorter->SortItems(ruck_list, m_currentSortCategory);
+		m_pInventorySorter->SortItems(ruck_list, GetPlayerSortCategory());
 	}
 
 	for (PIItem item : ruck_list)
@@ -639,8 +636,8 @@ void CUIActorMenu::UpdateActorBagList()
 	PIItem grenade_item = m_pActorInvOwner->inventory().ItemFromSlot(GRENADE_SLOT);
 	if (grenade_item)
 	{
-		const bool allow_grenade = (m_currentSortCategory == EInventorySortCategory::All ||
-			m_currentSortCategory == EInventorySortCategory::Ammo);
+		const bool allow_grenade = (GetPlayerSortCategory() == EInventorySortCategory::All ||
+			GetPlayerSortCategory() == EInventorySortCategory::Ammo);
 		if (allow_grenade)
 		{
 			CUICellItem* itm = create_cell_item(grenade_item);
