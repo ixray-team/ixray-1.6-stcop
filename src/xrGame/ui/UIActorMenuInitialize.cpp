@@ -432,13 +432,59 @@ void CUIActorMenu::Construct()
 
 	if (uiXml.NavigateToNode("inventory_sort_tabs", 0))
 	{
-		m_sortTabControl = new CUITabControl();
-		m_sortTabControl->SetAutoDelete(true);
-		AttachChild(m_sortTabControl);
-		CUIXmlInit::InitTabControl(uiXml, "inventory_sort_tabs", 0, m_sortTabControl);
-		m_sortTabControl->SetWindowName("inventory_sort_tabs");
-		Register(m_sortTabControl);
-		AddCallbackStr("inventory_sort_tabs", TAB_CHANGED, CUIWndCallback::void_function(this, &CUIActorMenu::OnSortTabChanged));
+		constexpr LPCSTR kBaseSortTabsNode = "inventory_sort_tabs";
+
+		const struct SSortTabsLayoutNode
+		{
+			ESortTabsLayoutSlot slot;
+			LPCSTR node;
+			LPCSTR windowName;
+		} layoutNodes[] = {
+			{ eSortTabsInventory, "inventory_sort_tabs", "inventory_sort_tabs" },
+			{ eSortTabsUpgrade, "inventory_sort_tabs_container_upgrade", "inventory_sort_tabs_container_upgrade" },
+			{ eSortTabsTradeActor, "inventory_sort_tabs_container_trade_actor_bag", "inventory_sort_tabs_container_trade_actor_bag" },
+			{ eSortTabsTradePartner, "inventory_sort_tabs_container_trade_partner_bag", "inventory_sort_tabs_container_trade_partner_bag" },
+			{ eSortTabsDeadBody, "inventory_sort_tabs_container_deadbody_bag", "inventory_sort_tabs_container_deadbody_bag" }
+		};
+
+		for (const SSortTabsLayoutNode& layoutNode : layoutNodes)
+		{
+			m_sortCategory[layoutNode.slot] = EInventorySortCategory::All;
+			m_sortCategoryId[layoutNode.slot] = "";
+
+			if (layoutNode.slot == eSortTabsInventory)
+			{
+				m_sortTabsLayoutPos[layoutNode.slot] = Fvector2().set(uiXml.ReadAttribFlt(kBaseSortTabsNode, 0, "x", 0.0f),
+					uiXml.ReadAttribFlt(kBaseSortTabsNode, 0, "y", 0.0f));
+				m_sortTabsLayoutSize[layoutNode.slot] = Fvector2().set(uiXml.ReadAttribFlt(kBaseSortTabsNode, 0, "width", 0.0f),
+					uiXml.ReadAttribFlt(kBaseSortTabsNode, 0, "height", 0.0f));
+				m_sortTabsLayoutDefined[layoutNode.slot] = true;
+			}
+			else if (uiXml.NavigateToNode(layoutNode.node, 0))
+			{
+				m_sortTabsLayoutPos[layoutNode.slot].x = uiXml.ReadAttribFlt(layoutNode.node, 0, "x", 0.0f);
+				m_sortTabsLayoutPos[layoutNode.slot].y = uiXml.ReadAttribFlt(layoutNode.node, 0, "y", 0.0f);
+				m_sortTabsLayoutSize[layoutNode.slot].x = uiXml.ReadAttribFlt(layoutNode.node, 0, "width", 0.0f);
+				m_sortTabsLayoutSize[layoutNode.slot].y = uiXml.ReadAttribFlt(layoutNode.node, 0, "height", 0.0f);
+				m_sortTabsLayoutDefined[layoutNode.slot] = true;
+			}
+			else
+			{
+				continue;
+			}
+
+			m_sortTabControl[layoutNode.slot] = new CUITabControl();
+			m_sortTabControl[layoutNode.slot]->SetAutoDelete(true);
+			AttachChild(m_sortTabControl[layoutNode.slot]);
+			CUIXmlInit::InitTabControl(uiXml, kBaseSortTabsNode, 0, m_sortTabControl[layoutNode.slot]);
+			m_sortTabControl[layoutNode.slot]->SetWindowName(layoutNode.windowName);
+			m_sortTabControl[layoutNode.slot]->SetWndPos(m_sortTabsLayoutPos[layoutNode.slot]);
+			m_sortTabControl[layoutNode.slot]->SetWndSize(m_sortTabsLayoutSize[layoutNode.slot]);
+			m_sortTabControl[layoutNode.slot]->Show(false);
+			m_sortTabControl[layoutNode.slot]->Enable(false);
+			Register(m_sortTabControl[layoutNode.slot]);
+			AddCallbackStr(layoutNode.windowName, TAB_CHANGED, CUIWndCallback::void_function(this, &CUIActorMenu::OnSortTabChanged));
+		}
 	}
 
 	m_message_box_yes_no				= new CUIMessageBoxEx();	

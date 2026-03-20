@@ -73,29 +73,7 @@ void CUIActorMenu::InitDeadBodySearchMode()
 	}
 
 	InitInventoryContents			(m_pInventoryBagList);
-
-	TIItemContainer					items_list;
-	if ( m_pPartnerInvOwner )
-	{
-		m_pPartnerInvOwner->inventory().AddAvailableItems( items_list, false ); //true
-		UpdatePartnerBag();
-	}
-	else
-	{
-		VERIFY( m_pInvBox );
-		m_pInvBox->set_in_use( true );
-		m_pInvBox->AddAvailableItems( items_list );
-	}
-
-	std::sort( items_list.begin(), items_list.end(),InventoryUtilities::GreaterRoomInRuck );
-	
-	TIItemContainer::iterator it	= items_list.begin();
-	TIItemContainer::iterator it_e	= items_list.end();
-	for(; it != it_e; ++it) 
-	{
-		CUICellItem* itm			= create_cell_item	(*it);
-		m_pDeadBodyBagList->SetItem	(itm);
-	}
+	UpdateDeadBodyBagList();
 
 	CBaseMonster* monster = m_pPartnerInvOwner != nullptr ? m_pPartnerInvOwner->cast_base_monster() : nullptr;
 	CCar* pCar = m_pPartnerInvOwner != nullptr ? m_pPartnerInvOwner->cast_car() : nullptr;
@@ -121,6 +99,40 @@ void CUIActorMenu::InitDeadBodySearchMode()
 	}
 	UpdateDeadBodyBag();
 	SetAreaSelectionTo(m_pDeadBodyBagList);
+}
+
+void CUIActorMenu::UpdateDeadBodyBagList()
+{
+	if (!m_pDeadBodyBagList)
+	{
+		return;
+	}
+
+	m_pDeadBodyBagList->ClearAll(true);
+
+	TIItemContainer items_list;
+	if (m_pPartnerInvOwner)
+	{
+		m_pPartnerInvOwner->inventory().AddAvailableItems(items_list, false);
+	}
+	else
+	{
+		VERIFY(m_pInvBox);
+		m_pInvBox->set_in_use(true);
+		m_pInvBox->AddAvailableItems(items_list);
+	}
+
+	std::sort(items_list.begin(), items_list.end(), InventoryUtilities::GreaterRoomInRuck);
+	if (m_pInventorySorter)
+	{
+		m_pInventorySorter->SortItems(items_list, m_sortCategory[eSortTabsDeadBody]);
+	}
+
+	for (PIItem item : items_list)
+	{
+		CUICellItem* itm = create_cell_item(item);
+		m_pDeadBodyBagList->SetItem(itm);
+	}
 }
 
 void CUIActorMenu::DeInitDeadBodySearchMode()
