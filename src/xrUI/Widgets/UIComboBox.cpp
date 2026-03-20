@@ -402,6 +402,6 @@ u32 CUIComboBox::GetSelectedIDX()
 
 void CUIComboBox::SetHighlighted(bool val)
 {
-	m_frameLine.SetCurrentState(val ? S_Highlighted : S_Enabled);
-	m_arrow.SetCurrentState(val ? S_Highlighted : S_Enabled);
+	m_frameLine.SetCurrentState((val || m_bCursorOverWindow) ? S_Highlighted : S_Enabled);
+	m_arrow.SetCurrentState((val || m_bCursorOverWindow) ? S_Highlighted : S_Enabled);
 }
