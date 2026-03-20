@@ -19,60 +19,21 @@ function opt_video:InitControls(x, y, xml, handler)
 	self.focusList = {}
 	self.scroll_v = xml:InitScrollView("main_dialog:scroll_v", self)
 
-	local _st
+	handler.combo_renderer = handler:addComboBox(self, true, "ui_mm_renderer", "renderer", 3, false, system_depends.sdSystemRestart, "combo_renderer")
+	handler.combo_preset = handler:addComboBox(self, true, "ui_mm_quality_presets", "_preset", 6, false, system_depends.sdSystemRestart, "combo_preset")
+	handler:addComboBox(self, true, "ui_mm_resolution", "vid_mode", 7, false, system_depends.sdVidRestart)
 
-    _st = xml:InitStatic("video_adv:templ_item", nil)
-	local caption = xml:InitStatic("tab_video:cap_renderer", _st)
-	handler.combo_renderer = xml:InitComboBox("tab_video:list_renderer", _st)
-	handler:Register(handler.combo_renderer, "combo_renderer")
-	handler:addControl(self, caption, handler.combo_renderer, _st)
+	handler:addTrack(self, true, "ui_mm_brightness", "rs_c_brightness", 0.1, false, "float", false, system_depends.sdApplyOnChange)
+	handler:addTrack(self, true, "ui_mm_contrast", "rs_c_contrast", 0.1, false, "float", false, system_depends.sdApplyOnChange)
+	handler:addTrack(self, true, "ui_mm_gamma", "rs_c_gamma", 0.1, false, "float", false, system_depends.sdApplyOnChange)
+	
+	handler:addCheck(self, true, "ui_mm_fullscreen", "rs_fullscreen", system_depends.sdVidRestart)
+	handler:addCheck(self, true, "ui_rs_device_active", "rs_device_active", system_depends.sdNothing)
+	handler:addCheck(self, true, "ui_mm_vsync", "rs_v_sync", system_depends.sdVidRestart)
 
-	_st = xml:InitStatic("video_adv:templ_item", nil)
-	caption = xml:InitStatic("tab_video:cap_preset", _st)
-	handler.combo_preset = xml:InitComboBox("tab_video:list_presets", _st)
-	handler:Register(handler.combo_preset, "combo_preset")
-	handler:addControl(self, caption, handler.combo_preset, _st)
+	handler:addComboBox(self, true, "ui_mm_screenshot_format", "r__screenshot_format", 3, false, system_depends.sdApplyOnChange)
 
-    _st = xml:InitStatic("video_adv:templ_item", nil)
-	caption = xml:InitStatic("tab_video:cap_resolution",_st)
-	local element = xml:InitComboBox("tab_video:list_resolution",_st)
-	handler:addControl(self, caption, element, _st)
-
-	_st = xml:InitStatic("video_adv:templ_item", nil)
-	caption = xml:InitStatic("tab_video:cap_brightness", _st)
-	element = xml:InitTrackBar("tab_video:track_brightness", _st)
-	handler:addControl(self, caption, element, _st)
-
-	_st = xml:InitStatic("video_adv:templ_item", nil)
-	caption = xml:InitStatic("tab_video:cap_contrast", _st)
-	element = xml:InitTrackBar("tab_video:track_contrast", _st)
-	handler:addControl(self, caption, element, _st)
-
-	_st = xml:InitStatic("video_adv:templ_item", nil)
-	caption = xml:InitStatic("tab_video:cap_gamma", _st)
-	element = xml:InitTrackBar("tab_video:track_gamma", _st)
-	handler:addControl(self, caption, element, _st)
-
-	_st = xml:InitStatic("video_adv:templ_item", nil)
-	caption = xml:InitStatic ("tab_video:cap_fullscreen", _st)
-	element = xml:InitCheck ("tab_video:check_fullscreen", _st)
-	handler:addControl(self, caption, element, _st)
-
-	_st = xml:InitStatic("video_adv:templ_item", nil)
-	caption = xml:InitStatic("tab_video:cap_rs_device_active", _st)
-	element = xml:InitCheck("tab_video:check_rs_device_active", _st)
-	handler:addControl(self, caption, element, _st)
-
-	_st = xml:InitStatic("video_adv:templ_item", nil)
-	caption = xml:InitStatic("tab_video:cap_vsync", _st)
-	element = xml:InitCheck("tab_video:check_vsync", _st)
-	handler:addControl(self, caption, element, _st)
-
-	_st = xml:InitStatic("video_adv:templ_item", nil)
-	caption = xml:InitStatic("tab_video:cap_screenshot_format", _st)
-	element = xml:InitComboBox("tab_video:list_screenshot_format", _st)
-	handler:addControl(self, caption, element, _st)
-
-	self.btn_advanced = xml:Init3tButton("tab_video:btn_advanced", self)
+	self.btn_advanced = xml:Init3tButton("main_dialog:btn_template", self)
+	self.btn_advanced:SetTextST("ui_mm_advanced")
 	handler:Register(self.btn_advanced, "btn_advanced_graphic")
 end
