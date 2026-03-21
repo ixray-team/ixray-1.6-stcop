@@ -1,7 +1,7 @@
 <w>
 	<main x="0" y="0" width="1024" height="768"/>	
 	<gamepad_legend x="0" y="720" width="1024" height="50" spacing="3">
-		<gp_bind x="0" y="0" width="30" height="30" stretch="1">
+		<!--gp_bind x="0" y="0" width="30" height="30" stretch="1">
 			<texture>controller_lb</texture>
 		</gp_bind>
 		<auto_static x="0" y="0" width="22" height="30">
@@ -12,64 +12,19 @@
 		</gp_bind>
 		<auto_static x="0" y="0" width="22" height="30">
 			<text font="graffiti19" vert_align="c">ui_rmw_select</text>
-		</auto_static>
-		<gp_bind x="0" y="0" width="30" height="30" stretch="1">
-			<texture>controller_lb</texture>
-		</gp_bind>
-		<auto_static x="0" y="0" width="22" height="30">
-			<text font="graffiti19" vert_align="c">+</text>
-		</auto_static>
-		<gp_bind x="0" y="0" width="22" height="30" stretch="1">
-			<texture>controller_b</texture>
-		</gp_bind>
+		</auto_static-->
 		<auto_static x="0" y="0" width="22" height="30">
 			<text font="graffiti19" vert_align="c">ui_rmw_drop_weapon</text>
 		</auto_static>
-		<gp_bind x="0" y="0" width="30" height="30" stretch="1">
-			<texture>controller_lb</texture>
-		</gp_bind>
-		<auto_static x="0" y="0" width="22" height="30">
-			<text font="graffiti19" vert_align="c">+</text>
-		</auto_static>
-		<gp_bind x="0" y="0" width="22" height="30" stretch="1">
-			<texture>controller_rsclick</texture>
-		</gp_bind>
 		<auto_static x="0" y="0" width="22" height="30">
 			<text font="graffiti19" vert_align="c">ui_rmw_night_vision</text>
 		</auto_static>
-		<gp_bind x="0" y="0" width="30" height="30" stretch="1">
-			<texture>controller_lb</texture>
-		</gp_bind>
-		<auto_static x="0" y="0" width="22" height="30">
-			<text font="graffiti19" vert_align="c">+</text>
-		</auto_static>
-		<gp_bind x="0" y="0" width="22" height="30" stretch="1">
-			<texture>controller_x</texture>
-		</gp_bind>
 		<auto_static x="0" y="0" width="22" height="30">
 			<text font="graffiti19" vert_align="c">ui_rmw_wpn_func</text>
 		</auto_static>
-		<gp_bind x="0" y="0" width="30" height="30" stretch="1">
-			<texture>controller_lb</texture>
-		</gp_bind>
-		<auto_static x="0" y="0" width="22" height="30">
-			<text font="graffiti19" vert_align="c">+</text>
-		</auto_static>
-		<gp_bind x="0" y="0" width="22" height="30" stretch="1">
-			<texture>controller_y</texture>
-		</gp_bind>
 		<auto_static x="0" y="0" width="22" height="30">
 			<text font="graffiti19" vert_align="c">ui_rmw_fire_mode</text>
 		</auto_static>
-		<gp_bind x="0" y="0" width="30" height="30" stretch="1">
-			<texture>controller_lb</texture>
-		</gp_bind>
-		<auto_static x="0" y="0" width="22" height="30">
-			<text font="graffiti19" vert_align="c">+</text>
-		</auto_static>
-		<gp_bind x="0" y="0" width="22" height="30" stretch="1">
-			<texture>controller_a</texture>
-		</gp_bind>
 		<auto_static x="0" y="0" width="22" height="30">
 			<text font="graffiti19" vert_align="c">ui_rmw_ammo_next</text>
 		</auto_static>
@@ -97,7 +52,7 @@
 		<texture>ui_weapon_wheel_fs</texture>
 	</focused_and_selected_arc>
 	
-	<wheel_menu_params sector_count="8" starting_angle="0.425" sector_gap_angle="0.035" safezone_height_factor="0.09" inner_radius_ratio="0.57" selected_radius_factor="1.078">
+	<wheel_menu_params sector_count="7" starting_angle="0.425" sector_gap_angle="0.035" safezone_height_factor="0.09" inner_radius_ratio="0.5" selected_radius_factor="1.078">
 		<color_selected r="255" g="153" b="68" a="255"/>
 		<color_deselected r="255" g="255" b="255" a="204"/>
 		<sector_outer_side_color r="51" g="51" b="51" a="50"/>
@@ -105,7 +60,6 @@
 		
 		<!-- first slot is at 0 degrees = EAST -->
 		<slot id="5"/>
-		<slot id="9"/>
 		<slot id="6"/>
 		<slot id="0"/>
 		<slot id="2"/>

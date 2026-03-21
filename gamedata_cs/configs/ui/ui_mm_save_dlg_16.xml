@@ -35,6 +35,7 @@
 		</auto_static>
 	</gamepad_legend>
   <file_item>
+	<itm_color r="216" g="186" b="140"/>
     <main width="358" height="22"/>
     <fn   width="236" height="22"/>
     <fd   width="92" height="22"/>
@@ -56,7 +57,7 @@
       <texture>ui_tablist_textbox</texture>
     </list_frame>
 
-    <list x="63" y="103" width="358" height="293" item_height="18">
+    <list x="63" y="103" width="358" height="293" item_height="18" can_select="1">
       <font font="letterica16" r="216" g="186" b="140" />
     </list>
 
