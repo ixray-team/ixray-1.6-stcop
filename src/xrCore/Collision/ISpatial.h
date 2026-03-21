@@ -164,7 +164,7 @@ private:
 	ISpatialOwner* RawOwner = nullptr;
 
 public:
-	IC bool spatial_inside()
+	ICF bool spatial_inside()
 	{
 		float dr = -(-spatial.node_radius + spatial.sphere.R);
 		if (spatial.sphere.P.x < spatial.node_center.x - dr) return false;
@@ -175,7 +175,7 @@ public:
 		if (spatial.sphere.P.z > spatial.node_center.z + dr) return false;
 		return true;
 	}
-	IC bool verify_sp(Fvector& node_center, float node_radius)
+	ICF bool verify_sp(Fvector& node_center, float node_radius)
 	{
 		float dr = -(-node_radius + spatial.sphere.R);
 		if (spatial.sphere.P.x < node_center.x - dr) return false;
@@ -284,29 +284,30 @@ struct ISpatial_NODE
 			parent->childs_size--;
 	}
 
-	IC void _insert(ISpatialShared S)
+	ICF void _insert(ISpatialShared S)
 	{
 		S->spatial.node_ptr = this;
 		items.push_back(S);
 	}
 
-	IC void _remove(ISpatialShared S)
+	ICF void _remove(ISpatialShared S)
 	{
 		S->spatial.node_ptr = nullptr;
 
 		for (size_t i = 0; i < items.size(); ++i)
 		{
-			if (items[i] == S)
+			ISpatialShared& node = items[i];
+			if (node == S)
 			{
 				if (i != items.size() - 1)
-					items[i] = items.back();
+					node = items.back();
 				items.pop_back();
 				break;
 			}
 		}
 	}
 
-	IC bool _empty() const
+	ICF bool _empty() const
 	{
 		return !!(items.empty() && childs_size == 0U);
 	}
@@ -323,8 +324,8 @@ public:
 	Fvector							m_center = zero_vel;
 	float							m_bounds = 0.f;
 private:
-	IC u32							_octant			(u32 x, u32 y, u32 z)			{	return z*4 + y*2 + x;	}
-	IC u32							_octant			(Fvector& base, Fvector& rel)
+	ICF u32							_octant			(u32 x, u32 y, u32 z)			{	return z*4 + y*2 + x;	}
+	ICF u32							_octant			(Fvector& base, Fvector& rel)
 	{
 		u32 o	= 0;
 		if (rel.x > base.x) o+=1;
@@ -333,19 +334,26 @@ private:
 		return	o;
 	}
 
-	IC ISpatial_NODE* _node_create(ISpatial_NODE* parent = nullptr, u32 octant = u32(-1))
+	ICF ISpatial_NODE* _node_create(ISpatial_NODE* parent = nullptr, u32 octant = u32(-1))
 	{
 		return nodes.emplace_back(new ISpatial_NODE(parent, octant));
 	}
 
-	IC void _node_destroy(ISpatial_NODE*& P)
+	ICF void _node_destroy(ISpatial_NODE*& P)
 	{
 		if(P)
 		{
-			auto it = std::find(nodes.begin(), nodes.end(), P);
-
-			if (it != nodes.end())
-				nodes.erase(it);
+			for (size_t i = 0; i < nodes.size(); ++i)
+			{
+				ISpatial_NODE*& node = nodes[i];
+				if (node == P)
+				{
+					if (i != nodes.size() - 1)
+						node = nodes.back();
+					nodes.pop_back();
+					break;
+				}
+			}
 
 			xr_delete(P);
 		}
@@ -376,9 +384,17 @@ public:
 
 	// query
 	void q_ray(xr_vector<ISpatialShared>& R, u32 _o, ESPATIAL_TYPE _mask_and, const Fvector& _start, const Fvector& _dir, float _range);
-	void q_box(xr_vector<ISpatialShared>& R, u32 _o, ESPATIAL_TYPE _mask_or, const Fvector& _center, const Fvector& _size);
+
+	void q_box(xr_vector<ISpatialShared>& R, u32 _o, ESPATIAL_TYPE _mask_or, const Fbox& box);
+	ICF void q_box(xr_vector<ISpatialShared>& R, u32 _o, ESPATIAL_TYPE _mask_or, const Fvector& _center, const Fvector& _dim)
+	{ q_box(R, _o, _mask_or, Fbox().setb(_center, _dim)); };
+
 	void q_obb(xr_vector<ISpatialShared>& R, u32 _o, ESPATIAL_TYPE _mask_or, const Fobb& obb);
-	void q_sphere(xr_vector<ISpatialShared>& R, u32 _o, ESPATIAL_TYPE _mask_or, const Fvector& _center, const float _radius);
+
+	void q_sphere(xr_vector<ISpatialShared>& R, u32 _o, ESPATIAL_TYPE _mask_or, const Fsphere& sphere);
+	ICF void q_sphere(xr_vector<ISpatialShared>& R, u32 _o, ESPATIAL_TYPE _mask_or, const Fvector& _center, const float _radius)
+	{ q_sphere(R, _o, _mask_or, Fsphere{ _center, _radius }); };
+
 	void q_frustum(xr_vector<ISpatialShared>& R, u32 _o, ESPATIAL_TYPE _mask_or, const CFrustum& _frustum);
 };
 

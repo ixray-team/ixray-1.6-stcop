@@ -10,11 +10,14 @@ public:
 	typedef Self&		SelfRef;
 	typedef const Self&	SelfCRef;
 public:
-	T x = 0;
-	T y = 0;
-	T z = 0;
+	T x = T(0);
+	T y = T(0);
+	T z = T(0);
 
-	constexpr _vector3(float _x = 0.f, float _y = 0.f, float _z = 0.f): x(_x), y(_y), z(_z) {}
+	constexpr _vector3(T _x = T(0), T _y = T(0), T _z = T(0)): x(_x), y(_y), z(_z) {}
+	constexpr _vector3(T _x) = delete;
+	constexpr _vector3(T _x, T _y) = delete;
+
     constexpr ~_vector3() = default;
 
 	// access operators
@@ -581,18 +584,32 @@ public:
 	}
 
 
-	ICF T 	operator* (const Self&a) const	{ return x*a.x + y*a.y + z*a.z; }//dot
+	ICF T 	operator* (const Self&a) const		{ return x*a.x+y*a.y+z*a.z; }//dot
 	ICF Self operator* (const T s) const		{ return Self{x*s, y*s, z*s}; }//mul
-	ICF Self operator/ (const T s) const		{ T invs = 1.0f / s; return Self{x*invs, y*invs, z*invs}; }//fast div
-	ICF Self operator+ (const Self& a) const	{ return Self{x+a.x, y+a.y, z+a.z}; }//add
-	ICF Self operator- (const Self& a) const	{ return Self{x-a.x, y-a.y, z-a.z}; }//sub
-	ICF Self operator- ()					{ return Self(-x, -y, -z); }//invert
 
-	ICF Self& operator+=	(const Self& a)			{ x += a.x;y += a.y;z += a.z; return *this; }//add
-	ICF Self& operator-=	(const Self& a)		 	{ x -= a.x;y -= a.y;z -= a.z; return *this;	}//sub
-	ICF Self& operator*=	(const T a)				{ x *= a;	y *= a;	z *= a;	return *this; }//mul
-	ICF Self& operator/=	(const T a)				{ T b = 1.0f / a; x *= b; y *= b; z *= b; return *this;	}//fast div
-	ICF Self  operator^	(const Self& b) const	{ return Self {y*b.z-z*b.y,z*b.x-x*b.z,x*b.y-y*b.x}; }//cross
+	ICF Self operator/ (const Self& a) const	{ return Self{ x/a.x, y/a.y, z/a.z }; }//div
+	ICF Self operator/ (const T s) const		{ T invs = 1.0f/s; return Self{x*invs, y*invs, z*invs}; }//fast div
+
+	ICF Self operator+ (const Self& a) const	{ return Self{x+a.x, y+a.y, z+a.z}; }//add
+	ICF Self operator+ (const T s) const		{ return Self{ x+s, y+s, z+s }; }//add
+
+	ICF Self operator- (const Self& a) const	{ return Self{x-a.x, y-a.y, z-a.z}; }//sub
+	ICF Self operator- (const T s) const		{ return Self{ x-s, y-s, z-s }; }//sub
+
+	ICF Self& operator+= (const Self& a)		{ x += a.x;y += a.y;z += a.z; return *this; }//add
+	ICF Self& operator+= (const T s)			{ x += s;y += s;z += s; return *this; }//add
+
+	ICF Self& operator-= (const Self& a)		{ x -= a.x;y -= a.y;z -= a.z; return *this;	}//sub
+	ICF Self& operator-= (const T s)			{ x -= s; y -= s; z -= s; return *this; }//sub
+
+	ICF Self& operator*= (const Self& a)		{ x *= a.x;	y *= a.y; z *= a.z;	return *this; }//mul
+	ICF Self& operator*= (const T a)			{ x *= a; y *= a; z *= a; return *this; }//mul
+
+	ICF Self& operator/= (const Self& a)		{ x /= a.x; y /= a.y; z /= a.z; return *this; }//div
+	ICF Self& operator/= (const T a)			{ T b = 1.0f / a; x *= b; y *= b; z *= b; return *this;	}//fast div
+
+	ICF Self operator- ()						{ return Self(-x, -y, -z); }//invert
+	ICF Self operator^ (const Self& b) const	{ return Self {y*b.z-z*b.y,z*b.x-x*b.z,x*b.y-y*b.x}; }//cross
 };
 typedef _vector3<float>		Fvector;
 typedef _vector3<float>		Fvector3;

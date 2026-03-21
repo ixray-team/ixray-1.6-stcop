@@ -25,22 +25,23 @@ public:
 		};
 	};
 
-	ICF _box3()
-	{
-		x1 = y1 = z1 = x2 = y2 = z2 = static_cast<T>(0);
-	}
+	ICF _box3() : x1(T(0)), y1(T(0)), z1(T(0)), x2(T(0)), y2(T(0)), z2(T(0)) {}
+	ICF _box3(const Tvector& _min, const Tvector& _max) : min(_min), max(_max) { }
+	ICF _box3(T _x1, T _y1, T _z1, T _x2, T _y2, T _z2) : x1(_x1), y1(_y1), z1(_z1), x2(_x2), y2(_y2), z2(_z2) {}
+	template<typename U>
+	ICF _box3(U) = delete;
 
-	ICF _box3(const std::initializer_list<T>& list)
-	{
-		R_ASSERT2(list.size() == 6, "Initializer list must contain exactly 6 elements.");
-		auto it = list.begin();
-		x1 = *it++;
-		y1 = *it++;
-		z1 = *it++;
-		x2 = *it++;
-		y2 = *it++;
-		z2 = *it++;
-	}
+	template<typename U, typename V>
+	ICF _box3(U, V) = delete;
+
+	template<typename U, typename V, typename W>
+	ICF _box3(U, V, W) = delete;
+
+	template<typename U, typename V, typename W, typename X>
+	ICF _box3(U, V, W, X) = delete;
+
+	template<typename U, typename V, typename W, typename X, typename Y>
+	ICF _box3(U, V, W, X, Y) = delete;
 
 	ICF	BOOL	is_valid	()											{return (x2>=x1)&&(y2>=y1)&&(z2>=z1);}
 
@@ -147,6 +148,155 @@ public:
 		if( min.z > box.max.z )	return FALSE;
 		return TRUE;
 	};
+
+	ICF bool intersectTri(const Tvector(&p)[3], const Tvector& center, const Tvector& extents, bool bClass3 = true)
+	{
+		Tvector tv0, tv1, tv2;
+		tv0.sub(p[0], center);
+		tv1.sub(p[1], center);
+		tv2.sub(p[2], center);
+
+		Tvector e0, e1, e2;
+		e0.sub(tv1, tv0);
+		e1.sub(tv2, tv1);
+		e2.sub(tv0, tv2);
+
+		T p0, p1, p2, min, max, rad;
+
+		min = std::min(tv0.x, std::min(tv1.x, tv2.x));
+		max = std::max(tv0.x, std::max(tv1.x, tv2.x));
+		if (min > extents.x || max < -extents.x)
+			return false;
+
+		min = std::min(tv0.y, std::min(tv1.y, tv2.y));
+		max = std::max(tv0.y, std::max(tv1.y, tv2.y));
+		if (min > extents.y || max < -extents.y)
+			return false;
+
+		min = std::min(tv0.z, std::min(tv1.z, tv2.z));
+		max = std::max(tv0.z, std::max(tv1.z, tv2.z));
+		if (min > extents.z || max < -extents.z)
+			return false;
+
+		Tvector normal = e0 ^ e1;
+		if (std::abs(normal.x) < EPS_S && std::abs(normal.y) < EPS_S && std::abs(normal.z) < EPS_S)
+			return true;
+
+		T v0_dist = normal.dotproduct(tv0);
+		T v1_dist = normal.dotproduct(tv1);
+		T v2_dist = normal.dotproduct(tv2);
+		min = std::min(v0_dist, std::min(v1_dist, v2_dist));
+		max = std::max(v0_dist, std::max(v1_dist, v2_dist));
+
+		rad = extents.x * std::abs(normal.x) + extents.y * std::abs(normal.y) + extents.z * std::abs(normal.z);
+
+		if (min > rad || max < -rad)
+			return false;
+
+		if (bClass3)
+		{
+			T abs_e0x = std::abs(e0.x);
+			T abs_e0y = std::abs(e0.y);
+			T abs_e0z = std::abs(e0.z);
+			T abs_e1x = std::abs(e1.x);
+			T abs_e1y = std::abs(e1.y);
+			T abs_e1z = std::abs(e1.z);
+			T abs_e2x = std::abs(e2.x);
+			T abs_e2y = std::abs(e2.y);
+			T abs_e2z = std::abs(e2.z);
+
+			p0 = tv0.y * e0.z - tv0.z * e0.y;
+			p1 = tv1.y * e0.z - tv1.z * e0.y;
+			p2 = tv2.y * e0.z - tv2.z * e0.y;
+			min = std::min(p0, std::min(p1, p2));
+			max = std::max(p0, std::max(p1, p2));
+			rad = extents.y * abs_e0z + extents.z * abs_e0y;
+			if (min > rad || max < -rad)
+				return false;
+
+			p0 = tv0.z * e0.x - tv0.x * e0.z;
+			p1 = tv1.z * e0.x - tv1.x * e0.z;
+			p2 = tv2.z * e0.x - tv2.x * e0.z;
+			min = std::min(p0, std::min(p1, p2));
+			max = std::max(p0, std::max(p1, p2));
+			rad = extents.x * abs_e0z + extents.z * abs_e0x;
+			if (min > rad || max < -rad)
+				return false;
+
+			p0 = tv0.x * e0.y - tv0.y * e0.x;
+			p1 = tv1.x * e0.y - tv1.y * e0.x;
+			p2 = tv2.x * e0.y - tv2.y * e0.x;
+			min = std::min(p0, std::min(p1, p2));
+			max = std::max(p0, std::max(p1, p2));
+			rad = extents.x * abs_e0y + extents.y * abs_e0x;
+			if (min > rad || max < -rad)
+				return false;
+
+			p0 = tv0.y * e1.z - tv0.z * e1.y;
+			p1 = tv1.y * e1.z - tv1.z * e1.y;
+			p2 = tv2.y * e1.z - tv2.z * e1.y;
+			min = std::min(p0, std::min(p1, p2));
+			max = std::max(p0, std::max(p1, p2));
+			rad = extents.y * abs_e1z + extents.z * abs_e1y;
+			if (min > rad || max < -rad)
+				return false;
+
+			p0 = tv0.z * e1.x - tv0.x * e1.z;
+			p1 = tv1.z * e1.x - tv1.x * e1.z;
+			p2 = tv2.z * e1.x - tv2.x * e1.z;
+			min = std::min(p0, std::min(p1, p2));
+			max = std::max(p0, std::max(p1, p2));
+			rad = extents.x * abs_e1z + extents.z * abs_e1x;
+			if (min > rad || max < -rad)
+				return false;
+
+			p0 = tv0.x * e1.y - tv0.y * e1.x;
+			p1 = tv1.x * e1.y - tv1.y * e1.x;
+			p2 = tv2.x * e1.y - tv2.y * e1.x;
+			min = std::min(p0, std::min(p1, p2));
+			max = std::max(p0, std::max(p1, p2));
+			rad = extents.x * abs_e1y + extents.y * abs_e1x;
+			if (min > rad || max < -rad)
+				return false;
+
+			p0 = tv0.y * e2.z - tv0.z * e2.y;
+			p1 = tv1.y * e2.z - tv1.z * e2.y;
+			p2 = tv2.y * e2.z - tv2.z * e2.y;
+			min = std::min(p0, std::min(p1, p2));
+			max = std::max(p0, std::max(p1, p2));
+			rad = extents.y * abs_e2z + extents.z * abs_e2y;
+			if (min > rad || max < -rad)
+				return false;
+
+			p0 = tv0.z * e2.x - tv0.x * e2.z;
+			p1 = tv1.z * e2.x - tv1.x * e2.z;
+			p2 = tv2.z * e2.x - tv2.x * e2.z;
+			min = std::min(p0, std::min(p1, p2));
+			max = std::max(p0, std::max(p1, p2));
+			rad = extents.x * abs_e2z + extents.z * abs_e2x;
+			if (min > rad || max < -rad)
+				return false;
+
+			p0 = tv0.x * e2.y - tv0.y * e2.x;
+			p1 = tv1.x * e2.y - tv1.y * e2.x;
+			p2 = tv2.x * e2.y - tv2.y * e2.x;
+			min = std::min(p0, std::min(p1, p2));
+			max = std::max(p0, std::max(p1, p2));
+			rad = extents.x * abs_e2y + extents.y * abs_e2x;
+			if (min > rad || max < -rad)
+				return false;
+		}
+
+		return true;
+	}
+
+	ICF bool intersectTri(const Tvector (&p)[3], bool bClass3 = true)
+	{
+		Tvector center, extents;
+		get_CD(center, extents);
+
+		return intersectTri(p, center, extents, bClass3);
+	}
 
 	// Does the vector3 intersects box
 	ICF BOOL Pick			(const Tvector& start, const Tvector& dir)
