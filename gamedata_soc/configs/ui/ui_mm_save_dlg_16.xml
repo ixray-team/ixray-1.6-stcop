@@ -1,9 +1,11 @@
 <!-- 16:10 ready -->
 <w>
-    <back_video x="0" y="0" width="1024" height="430">
-      <texture x="0" y="0" width="1024" height="430">ui\ui_mm_window_back_crop</texture>
-    </back_video>
   <background x="0" y="0" width="1024" height="768">
+
+    <auto_static x="0" y="0" width="1024" height="430">
+      <!-- fullscreen video -->
+      <texture x="0" y="0" width="1024" height="430">ui\ui_mm_window_back_crop</texture>
+    </auto_static>
 
     <auto_static x="85" y="0" width="854" height="768" stretch="1">
       <texture x="0" y="0" width="1024" height="768">ui\ui_static_mm_back_04</texture>
@@ -15,13 +17,25 @@
       <texture>ui_inGame2_back_02w10_r</texture>
     </auto_static>
 
-  </background>
-  
-   <newspaper_video x="192" y="512" width="213" height="256" stretch="1">
+    <auto_static x="192" y="512" width="213" height="256" stretch="1">
+      <!-- newspaper video -->
       <texture x="1" y="1" width="254" height="254">ui\ui_mm_newspaper</texture>
-    </newspaper_video>
-
+    </auto_static>
+  </background>
+	<gamepad_legend x="0" y="724" width="1024" height="30" spacing="5">
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_mm_save_gp</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>gp_delete_text</window_name>
+			<text font="graffiti19" vert_align="c">ui_mm_delete_gp</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_mm_back_gp</text>
+		</auto_static>
+	</gamepad_legend>
   <file_item>
+	<itm_color r="216" g="186" b="140"/>
     <main width="358" height="22"/>
     <fn   width="236" height="22"/>
     <fd   width="92" height="22"/>
@@ -34,7 +48,7 @@
       <text font="graffiti22" r="184" g="168" b="131">ui_mm_save_game</text>
     </caption>
 
-    <edit x="54" y="55" width="204" height="23" file_name_mode="1">
+    <edit x="54" y="55" width="374" height="23" file_name_mode="1" max_symb_count="120">
       <texture>ui_linetext_e</texture>
       <text x="3" font="letterica18" r="240" g="217" b="182"/>
     </edit>
@@ -43,11 +57,11 @@
       <texture>ui_tablist_textbox</texture>
     </list_frame>
 
-    <list x="63" y="103" width="358" height="293" item_height="18">
+    <list x="63" y="103" width="358" height="293" item_height="18" can_select="1">
       <font font="letterica16" r="216" g="186" b="140" />
     </list>
 
-    <btn_save x="54" y="427" width="131" height="48" stretch="1">
+    <btn_save x="54" y="427" width="131" height="48">
       <texture>ui_button_main02</texture>
       <text font="graffiti22">ui_mm_save</text>
       <text_color>
@@ -58,7 +72,7 @@
       </text_color>
     </btn_save>
 
-    <btn_delete x="184" y="427" width="131" height="48" stretch="1">
+    <btn_delete x="184" y="427" width="131" height="48">
       <texture>ui_button_main02</texture>
       <text font="graffiti22">ui_mm_delete</text>
       <text_color>
@@ -69,7 +83,7 @@
       </text_color>
     </btn_delete>
 
-    <btn_cancel x="314" y="427" width="131" height="48" stretch="1">
+    <btn_cancel x="314" y="427" width="131" height="48">
       <texture>ui_button_main02</texture>
       <text font="graffiti22">ui_mm_cancel</text>
       <text_color>

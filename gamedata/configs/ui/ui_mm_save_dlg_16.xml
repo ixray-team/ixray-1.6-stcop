@@ -32,6 +32,7 @@
 		</auto_static>
 	</gamepad_legend>
     <file_item>
+		<itm_color r="170" g="170" b="170"/>
 	    <main width="392" height="18"/>
 	    <fn width="284" height="18"/>
 	    <fd width="88" height="18"/>
