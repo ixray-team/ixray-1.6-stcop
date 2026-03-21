@@ -193,3 +193,9 @@ function level_on_key_press(dik,bind)
 	
 	return false
 end
+
+-- called from engine!
+-- for debug visible entity
+function get_near_object_info(npc_object)
+	return ixr_npc_info.collect_object_info(npc_object)
+end
