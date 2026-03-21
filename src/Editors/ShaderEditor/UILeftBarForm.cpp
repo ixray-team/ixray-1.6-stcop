@@ -23,8 +23,6 @@ void UILeftBarForm::Draw()
 					{
 						STools->OnChangeEditor(tool.second);
 					}
-					ImGui::BeginChild("main", ImVec2(0, 0), false, 0);
-
 
 					if (ImGui::Button("Create"))
 					{
@@ -53,22 +51,25 @@ void UILeftBarForm::Draw()
 					if (!STools->m_PreviewProps->Empty())
 					{
 						ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-						if (ImGui::TreeNode("Preview"))
+						if (XRay::ImGui::BeginExpand("Preview"))
 						{
-							STools->m_PreviewProps->Draw();
-							ImGui::TreePop();
+							if (ImGui::BeginChild("##ShPreview", { 0, 68 }))
+							{
+								STools->m_PreviewProps->Draw();
+							}
+							ImGui::EndChild();
+							XRay::ImGui::EndExpand();
 						}
 					}
 
 					ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-					if (ImGui::TreeNode("Items"))
+					if (XRay::ImGui::BeginExpand("Items"))
 					{
 						ImGui::BeginGroup();
 						STools->m_Items->Draw();
 						ImGui::EndGroup();
-						ImGui::TreePop();
+						XRay::ImGui::EndExpand();
 					}
-					ImGui::EndChild();
 					ImGui::EndTabItem();
 				}
 
