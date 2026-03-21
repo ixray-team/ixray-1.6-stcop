@@ -71,9 +71,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 		{
 			switch (Event.type)
 			{
-			case SDL_EVENT_WINDOW_MAXIMIZED:
-				EDevice->MaximizedWindow();
-				break;
 			case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
 			{
 				SDL_WindowID MainWndID = SDL_GetWindowID(g_AppInfo.Window);
