@@ -1,4 +1,4 @@
-// Originally by B.O.R.S.C.H.T. team
+﻿// Originally by B.O.R.S.C.H.T. team
 // see https://bitbucket.org/stalker/xray-csky_borscht_sdk
 
 #include "stdafx.h"
@@ -101,21 +101,29 @@ void IM_Manipulator::CommandScale(ObjectList& lst, Fmatrix& ObjectMatrix, Fmatri
 
 	bool IsSingleObject = lst.size() == 1;
 
-	Fbox test;
+	Fbox localBox;
+	Fbox worldBox;
+
 	ImGuizmo::OPERATION Flags = ImGuizmo::SCALE;
 
+	//----------------------------------------------------
+	// Bounds
+	//----------------------------------------------------
 	if (IsSingleObject)
 	{
+		CCustomObject* Obj = lst.front();
+
 		if (LTools->CurrentClassID() == OBJCLASS_SCENEOBJECT)
 		{
-			lst.front()->GetUTBox(test);
+			Obj->GetUTBox(localBox);
 		}
 		else if (LTools->CurrentClassID() == OBJCLASS_SHAPE || LTools->CurrentClassID() == OBJCLASS_PUDDLES)
 		{
-			CEditShape* Shape = (CEditShape*)lst.front();
+			CEditShape* Shape = (CEditShape*)Obj;
+
 			if (Shape->shapes[0].type == CShapeData::cfBox)
 			{
-				test = Shape->m_Box;
+				localBox = Shape->m_Box;
 			}
 			else
 			{
@@ -126,6 +134,11 @@ void IM_Manipulator::CommandScale(ObjectList& lst, Fmatrix& ObjectMatrix, Fmatri
 		else
 		{
 			IsSingleObject = false;
+		}
+
+		if (IsSingleObject)
+		{
+			worldBox = localBox;
 		}
 	}
 
@@ -138,42 +151,66 @@ void IM_Manipulator::CommandScale(ObjectList& lst, Fmatrix& ObjectMatrix, Fmatri
 		(float*)&ObjectMatrix,
 		(float*)&DeltaMatrix,
 		PtrScaleSnap,
-		IsSingleObject ? (float*)&test.min.x : nullptr,
+		IsSingleObject ? (float*)&worldBox.min.x : nullptr,
 		IsSingleObject ? PtrScaleSnap : nullptr
 	);
 
 	if (IsManipulated)
 	{
-		Fvector pos, rot, scl;
-		DeltaMatrix.Decompose(scl, rot, pos);
+		Fvector scl;
+		scl.set(
+			DeltaMatrix.i.magnitude(),
+			DeltaMatrix.j.magnitude(),
+			DeltaMatrix.k.magnitude()
+		);
 
 		for (auto& obj : lst)
 		{
+			Fvector baseScale = obj->GetScale();
 			Fvector newScale;
-			newScale.mul(obj->GetScale(), scl);
+
+			newScale.x = baseScale.x * scl.x;
+			newScale.y = baseScale.y * scl.y;
+			newScale.z = baseScale.z * scl.z;
+
 			obj->SetScale(newScale);
 		}
+
 		UI->UpdateScene();
 	}
 	else if (IsSingleObject && ImGuizmo::IsUsing())
 	{
-		Fmatrix DeltaMatrixScale = lst.front()->FTransform;
-		DeltaMatrixScale.invert();
-		DeltaMatrixScale.mulA_44(ObjectMatrix);
+		CCustomObject* Obj = lst.front();
 
-		Fvector pos, rot, scl;
-		DeltaMatrixScale.Decompose(scl, rot, pos);
+		Fmatrix invStart;
+		invStart.invert(Obj->FTransform);
 
-		if (scl.x < 0.05f || scl.y < 0.05f || scl.z < 0.05f)
+		Fmatrix delta;
+		delta.mul(invStart, ObjectMatrix);
+
+		Fvector scl;
+		scl.set(
+			delta.i.magnitude(),
+			delta.j.magnitude(),
+			delta.k.magnitude()
+		);
+
+		const float MIN_SCALE = 0.05f;
+		if (scl.x < MIN_SCALE || scl.y < MIN_SCALE || scl.z < MIN_SCALE)
 		{
 			return;
 		}
 
-		CCustomObject* Obj = lst.front();
+		Fvector baseScale = Obj->GetScale();
 		Fvector newScale;
-		newScale.mul(Obj->GetScale(), scl);
-		Obj->FPosition = ObjectMatrix.c;
+
+		newScale.x = baseScale.x * scl.x;
+		newScale.y = baseScale.y * scl.y;
+		newScale.z = baseScale.z * scl.z;
+
 		Obj->SetScale(newScale);
+		Obj->FPosition = ObjectMatrix.c;
+
 		UI->UpdateScene();
 	}
 
