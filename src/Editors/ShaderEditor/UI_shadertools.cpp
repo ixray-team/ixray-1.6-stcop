@@ -66,6 +66,7 @@ bool CShaderTool::OnCreate()
     m_Items->m_Flags.set(UIItemListForm::fMenuEdit, true);
     m_ItemProps = new UIPropertiesForm();//TProperties::CreateForm	("Item Properties",		fraLeftBar->paShaderProps,	alClient);
     m_PreviewProps = new UIPropertiesForm();//  	= TProperties::CreateForm	("Preview Properties",	fraLeftBar->paPreviewProps,	alClient);
+    m_PreviewProps->DisableSearch(true);
 
     // create tools
     RegisterTools		();
