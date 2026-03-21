@@ -29,7 +29,7 @@ float4 main(PSInput I) : SV_Target
 	float3 jitter_tex = s_blue_noise[uint3(uint2(I.hpos.xy * 0.5) % 128, uint(20*timers.x) % 32)].xyz;
 
 	//Unpack G-Buffer data...
-	float3 Point = GbufferGetPointRealUnjitter(I.texcoord.xy, s_position.SampleLevel(smp_nofilter, I.texcoord.xy, 0.0f).x);
+	float3 Point =  GbufferGetPointRealUnjitter(I.texcoord.xy, 1.0f - s_position.SampleLevel(smp_nofilter, I.texcoord.xy, 0.0f).x);
 
 	//Fetch fulres scene
 	float3 image = s_image[I.hpos.xy].xyz;
