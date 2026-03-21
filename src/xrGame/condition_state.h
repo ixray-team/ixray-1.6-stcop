@@ -17,12 +17,13 @@ public:
 	typedef _world_property COperatorCondition;
 
 protected:
-	xr_vector<COperatorCondition>				m_conditions;
-	u32											m_hash;
+	xr_vector<COperatorCondition> m_conditions;
+	u32 m_hash = 0;
 
 public:
-	IC											CConditionState		();
-	virtual										~CConditionState	();
+	constexpr CConditionState() = default;
+	virtual ~CConditionState() = default;
+
 	IC		const xr_vector<COperatorCondition>	&conditions			() const;
 	IC		u8									weight				(const CConditionState &condition) const;
 	IC		void								add_condition		(const COperatorCondition &condition);
