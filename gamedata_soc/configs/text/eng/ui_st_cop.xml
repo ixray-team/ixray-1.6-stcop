@@ -66,8 +66,8 @@
 	<string id="st_opt_ultra">
 		<text>very high</text>
 	</string>
-	<string id="ui_mm_r4_enable_tessellation">
-		<text>Tessellation</text>
+	<string id="st_key_notbinded">
+		<text>...</text>
 	</string>
 	<string id="ui_mm_volumetric_light">
 		<text>Volumetric light</text>
@@ -95,5 +95,41 @@
 	</string>
 	<string id="ui_mm_soft_water">
 		<text>Soft water</text>
+	</string>
+	<string id="month_april">
+		<text>April</text>
+	</string>
+	<string id="month_august">
+		<text>August</text>
+	</string>
+	<string id="month_december">
+		<text>December</text>
+	</string>
+	<string id="month_february">
+		<text>February</text>
+	</string>
+	<string id="month_january">
+		<text>January</text>
+	</string>
+	<string id="month_july">
+		<text>July</text>
+	</string>
+	<string id="month_june">
+		<text>June</text>
+	</string>
+	<string id="month_march">
+		<text>March</text>
+	</string>
+	<string id="month_may">
+		<text>May</text>
+	</string>
+	<string id="month_november">
+		<text>November</text>
+	</string>
+	<string id="month_october">
+		<text>October</text>
+	</string>
+	<string id="month_september">
+		<text>September</text>
 	</string>
 </string_table>
