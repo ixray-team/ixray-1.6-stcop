@@ -7,7 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
-
+#include "../xrEngine/AI/graph_engine_space.h"
 #include "../xrCore/associative_vector.h"
 
 template <
