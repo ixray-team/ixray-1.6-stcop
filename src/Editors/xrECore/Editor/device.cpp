@@ -438,6 +438,7 @@ void CEditorRenderDevice::MaximizedWindow()
 
 	SDL_SetWindowSize(g_AppInfo.Window, workArea.right - workArea.left, workArea.bottom - workArea.top);
 	SDL_SetWindowPosition(g_AppInfo.Window, workArea.left, workArea.top);
+	PostMessage(GetHWND(), WM_APP + 2, 0, 0);
 }
 
 void CEditorRenderDevice::ResoreWindow(bool moving)
@@ -454,7 +455,7 @@ void CEditorRenderDevice::ResoreWindow(bool moving)
 			SDL_SetWindowPosition(g_AppInfo.Window, mouseX / 2, mouseY - 10);
 		}
 	}
-
+	PostMessage(GetHWND(), WM_APP + 1, 0, 0);
 	EDevice->isZoomed = false;
 }
 
@@ -603,7 +604,7 @@ void CEditorRenderDevice::InitWindowStyle()
 #if _WINDOWS
 	SDL_SetWindowBordered(g_AppInfo.Window, false);
 
-	win_cheese_layer(GetHWND());
+	win_chezze_layer(GetHWND());
 	SDL_SetWindowHitTest(g_AppInfo.Window, HitTest, &EDevice->isZoomed);
 
 
