@@ -29,6 +29,20 @@ static LRESULT CALLBACK CustomWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
     case WM_NCACTIVATE:
         // lParam = -1 → запретить перерисовку non-client area
         return DefWindowProc(hwnd, msg, wParam, -1);
+    case WM_APP+1: //IX_RESTORE
+    {
+        MARGINS margins = { 1, 1, 1, 1 };
+        DwmExtendFrameIntoClientArea(hwnd, &margins);
+        RefreshFrame(hwnd);
+        break;
+    }
+    case WM_APP + 2: //IX_MAX
+    {
+        MARGINS margins = { 0, 0, 0, 0 };
+        DwmExtendFrameIntoClientArea(hwnd, &margins);
+        RefreshFrame(hwnd);
+        break;
+    }
 
     case WM_SYSCOMMAND:
     {
@@ -38,7 +52,9 @@ static LRESULT CALLBACK CustomWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
         if (cmd == SC_RESTORE || cmd == SC_MAXIMIZE)
         {
             MARGINS margins = { 1, 1, 1, 1 };
+
             DwmExtendFrameIntoClientArea(hwnd, &margins);
+
             RefreshFrame(hwnd);
 
             LONG style = GetWindowLong(hwnd, GWL_STYLE);
@@ -69,12 +85,12 @@ void EnableDwmRendering(HWND hwnd)
         sizeof(policy));
 }
 
-void EnableShadow(HWND hwnd)
-{
-    if (!hwnd) return;
-    MARGINS margins = { 1, 1, 1, 1 };
-    DwmExtendFrameIntoClientArea(hwnd, &margins);
-}
+//void DwmExtendFrame(HWND hwnd, bool enable)
+//{
+//    if (!hwnd) return;
+//    MARGINS margins = { 1, 1, 1, 1 };
+//    DwmExtendFrameIntoClientArea(hwnd, &margins);
+//}
 
 void RemoveDwmBorder(HWND hwnd)
 {
@@ -84,12 +100,6 @@ void RemoveDwmBorder(HWND hwnd)
         DWMWA_BORDER_COLOR,
         &none,
         sizeof(none));
-}
-
-void ExtendFrame(HWND hwnd)
-{
-    MARGINS m = { 1, 1, 1, 1 };
-    DwmExtendFrameIntoClientArea(hwnd, &m);
 }
 
 #if custom_proc
@@ -107,7 +117,7 @@ void _SubclassWindow(HWND hwnd)
 
 #endif
 
-void win_cheese_layer(
+void win_chezze_layer(
 #if _WINDOWS
     HWND hwnd
 #endif
@@ -125,8 +135,9 @@ void win_cheese_layer(
     // 2. DWM-настройки
     EnableDwmRendering(hwnd);
     RemoveDwmBorder(hwnd);
-    ExtendFrame(hwnd);
-    EnableShadow(hwnd);
+    //ExtendFrame(hwnd);
+    MARGINS margins = { 1, 1, 1, 1 };
+    DwmExtendFrameIntoClientArea(hwnd, &margins);
 
     // 3. Субклассируем — перехватываем WM_NCACTIVATE / WM_NCPAINT
     #if custom_proc
