@@ -1,0 +1,33 @@
+
+--[[
+	IX-Ray override script
+	Version: 1.0
+	Author: FFx0001
+	Script: __ixr_override_autoload_system.script
+	Description: Override configure autoload scripts system before init
+]]
+
+function configure(_ref_ixr_autoloader)
+
+	-- single ignore by file names
+	-- Игнорирование файлов скриптов из системы поиска автозагрузчика коллбеков
+	_ref_ixr_autoloader.ignore_script("bind_*")
+	_ref_ixr_autoloader.ignore_script("smart_*")
+	_ref_ixr_autoloader.ignore_script("heli_snd")
+	_ref_ixr_autoloader.ignore_script("level_psy_antenna")
+	_ref_ixr_autoloader.ignore_script("mob_alife_control")
+	_ref_ixr_autoloader.ignore_script("xr_surge_hide")
+
+	_ref_ixr_autoloader.ignore_script("bug_test")
+	_ref_ixr_autoloader.ignore_script("copy of _test")
+	_ref_ixr_autoloader.ignore_script("copy of a1")
+	_ref_ixr_autoloader.ignore_script("dbg_test")
+	_ref_ixr_autoloader.ignore_script("game_last")
+	_ref_ixr_autoloader.ignore_script("game_last_*")
+	_ref_ixr_autoloader.ignore_script("gramofon")
+	_ref_ixr_autoloader.ignore_script("gulag_*")
+	_ref_ixr_autoloader.ignore_script("script_object_registry")
+	_ref_ixr_autoloader.ignore_script("sound_megafon")
+	_ref_ixr_autoloader.ignore_script("test")
+	_ref_ixr_autoloader.ignore_script("test_*")
+end

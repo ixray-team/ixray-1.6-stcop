@@ -14,6 +14,7 @@
 		</auto_static>
 	</background>
 	<file_item>
+		<itm_color r="170" g="170" b="170"/>
 	    <main width="490" height="18"/>
 	    <fn width="325" height="18"/>
 	    <fd width="110" height="18"/>

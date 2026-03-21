@@ -11,22 +11,27 @@ function opt_controls:InitControls(x, y, xml, handler)
 
 	self:SetWndPos(vector2():set(x,y))
 	self:SetWndSize(vector2():set(738,416))
-
 	self:SetAutoDelete(true)
 	
-	self.bk = xml:InitFrame("frame", self)
-	
-	xml:InitStatic		("tab_controls:cap_mousesens",		self)
-	xml:InitTrackBar	("tab_controls:track_mousesens",	self)
-	xml:InitStatic		("tab_controls:cap_mousesens_ui",		self)
-	xml:InitTrackBar	("tab_controls:track_mousesens_ui",	self)
-	xml:InitFrameLine	("tab_controls:cap_keyboardsetup",	self)
-	xml:InitCheck		("tab_controls:check_mouseinvert",	self)	
-	xml:InitKeyBinding	("tab_controls:key_binding",		self)
+	self.focusList = {}
 
-	local btn
-	btn = xml:Init3tButton("tab_controls:btn_default", self)
-	handler:Register(btn, "btn_keyb_default")
+	if xml:NodeExist("frame", 0) then
+		self.bk = xml:InitFrame("frame", self)
+	end
+	self.scroll_v = xml:InitScrollView("main_dialog:scroll_v", self)
+
+    local _st
+
+	handler:addTrack(self, true, "ui_mm_mouse_sense", "mouse_sens", 0.01, false, "float", true, system_depends.sdNothing)
+	handler:addTrack(self, true, "ui_mm_mouse_sense_ui", "mouse_sens_ui", 0.01, false, "float", true, system_depends.sdNothing)
+	handler:addCheck(self, true, "ui_mm_invert_mouse", "mouse_invert", system_depends.sdNothing)
+
+	self.kb = xml:InitKeyBinding	("tab_controls:key_binding",			nil)
+    handler:addControl(self, nil, nil, self.kb)
+
+	self.default_btn = xml:Init3tButton("main_dialog:btn_template", 			self)
+	self.default_btn:SetTextST("ui_mm_default")
+	handler:Register(self.default_btn, "btn_keyb_default")
 
 
 end
