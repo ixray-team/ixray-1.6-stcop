@@ -162,7 +162,6 @@ void CSHSoundEnvTools::OnActivate()
 		B->OnBtnClickEvent.bind		(this,&CSHSoundEnvTools::OnControlClick);
 		
 		Ext.m_PreviewProps->AssignItems(items);
-	   // Ext.m_PreviewProps->ShowProperties();
 	}
 	// fill items
 	FillItemList		();
