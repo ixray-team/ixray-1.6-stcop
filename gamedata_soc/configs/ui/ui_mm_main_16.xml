@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <window>
 	<background x="0" y="0" width="1024" height="768">
+		<auto_static x="148" y="0" width="876" height="400" stretch="1">
+			<texture x="0" y="0" width="876" height="400">ui\ui_mm_main_back_crop</texture>
+		</auto_static>
+	
 		<auto_static x="85" y="0" width="854" height="1024" stretch="1">
 			<texture>ui\ui_mainmenu_16</texture>
 		</auto_static>
@@ -12,17 +16,23 @@
 		<auto_static x="939" y="0" width="86" height="768" stretch="1">
 			<texture x="0" y="0" width="128" height="768">ui\ui_inGame2_menu_r</texture>
 		</auto_static>
+		
+		<auto_static x="523" y="459" width="106" height="256" stretch="1">
+			<texture>ui\ui_mm_fire</texture>
+		</auto_static>
 	</background>
-
-
-	<back_movie x="148" y="0" width="876" height="400" stretch="1">
-		<texture x="0" y="0" width="876" height="400">ui\ui_mm_main_back_crop</texture>
-	</back_movie>
 	
-	<fire_movie x="523" y="459" width="106" height="256" stretch="1">
-		<texture>ui\ui_mm_fire</texture>
-	</fire_movie>
-
+	<gamepad_legend x="0" y="724" width="1024" height="30" spacing="5">
+		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>gp_select</window_name>
+			<text font="graffiti19" vert_align="c">ui_mm_select</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_mm_back_gp</text>
+			<window_name>gp_back</window_name>
+		</auto_static>
+	</gamepad_legend>
+	
 	<shniaga_wnd x="569" y="419" width="392" height="280" stretch="1">
 		<buttons_region	x="93" y="0" width="154" height="280" always_show_scroll="false"/>
 		

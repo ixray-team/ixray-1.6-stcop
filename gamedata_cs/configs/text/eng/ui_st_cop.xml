@@ -51,4 +51,7 @@
 	<string id="ui_inv_seconds_short">
 		<text>sec</text>
 	</string>
+	<string id="st_key_notbinded">
+		<text>...</text>
+	</string>
 </string_table>

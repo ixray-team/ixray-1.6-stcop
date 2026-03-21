@@ -3,15 +3,14 @@ saved_game_extension_ex	= alife_storage_manager.saved_game_extension_ex
 
 class "load_item" (CUIListBoxItem)
 
-function load_item:__init(height) super(height)
-	printf("%f",height)
+function load_item:__init(height, color) super(height, color)
 	self.file_name		= "filename"
 
-		self:SetTextColor(GetARGB(255, 170, 170, 170))
+	self:SetTextColor(color)
 
-		self.fn = self:GetTextItem()
-		self.fn:SetFont(GetFontLetterica18Russian())
-		self.fn:SetEllipsis(true)
+	self.fn = self:GetTextItem()
+	self.fn:SetFont(GetFontLetterica18Russian())
+	self.fn:SetEllipsis(true)
 end
 
 function load_item:__finalize()
@@ -43,7 +42,6 @@ function load_dialog:FillList()
 		local file		=	flist:GetAt(it)
 		local file_name = string.sub(file:NameFull(), 0, (string.len(file:NameFull()) - string.len(saved_game_extension)))
 		local date_time = "[" .. file:ModifDigitOnly() .. "]"
-		--menu_item =  ..
 		self:AddItemToList(file_name, date_time)
 	end
 end
@@ -74,8 +72,9 @@ function load_dialog:InitControls()
 
 	self.picture			= xml:InitStatic("form:picture",self.form)
 
---	xml:InitStatic			("form:file_info",self.form)
-
+	if xml:NodeExist("form:file_info", 0) then
+		xml:InitStatic			("form:file_info",self.form)
+	end
 	self.file_caption 		= xml:InitTextWnd("form:file_caption",self.form)
 	self.file_data			= xml:InitTextWnd("form:file_data",self.form)
 
@@ -97,6 +96,8 @@ function load_dialog:InitControls()
 
 	self.message_box		= CUIMessageBoxEx()
 	self:Register			(self.message_box,"message_box")
+	
+	self.item_color			= xml:GetColor("file_item:itm_color", 0)
 	
 	if xml:NodeExist("gamepad_legend", 0) then
 		self.gamepad_legend = xml:InitGamepadLegend("gamepad_legend", self)
@@ -187,9 +188,11 @@ function file_data(fname)
 
 		date_time = date_time .. y
 
-
-		--string.format("[%d/%d/%d %d]",m,d,h,min,y)
-		local health = string.format("\\n%s %d%s", game.translate_string("st_ui_health_sensor"),sg:actor_health()*100,"%")
+		local health_str = game.translate_string("st_ui_health_sensor")
+		if game.translate_string("st_ui_health_sensor") == "st_ui_health_sensor" then
+			health_str = game.translate_string("ui_inv_health")
+		end
+		local health = string.format("\\n%s %d%s", health_str,sg:actor_health()*100,"%")
 
 		return game.translate_string("st_level") .. ": " .. game.translate_string(sg:level_name()) .. "\\n" .. game.translate_string("ui_inv_time")..": " .. date_time .. health
 	else
@@ -414,7 +417,7 @@ end
 
 function load_dialog:AddItemToList(file_name, date_time)
 
-	local _itm			= load_item(self.file_item_main_sz.y)
+	local _itm			= load_item(self.file_item_main_sz.y, self.item_color)
 
 	_itm:SetWndSize		(self.file_item_main_sz)
 

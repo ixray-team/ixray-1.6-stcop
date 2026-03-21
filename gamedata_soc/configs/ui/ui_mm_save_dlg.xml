@@ -1,45 +1,57 @@
-<?xml version="1.0" encoding="utf-8"?>
+<w>
+  <background x="0" y="0" width="1024" height="768">
+    <auto_static x="0" y="0" width="1024" height="430">
+      <texture x="0" y="0" width="1024" height="430">ui\ui_mm_window_back_crop</texture>
+    </auto_static>
+    <auto_static x="0" y="0" width="1024" height="768">
+      <texture x="0" y="0" width="1024" height="768">ui\ui_static_mm_back_04</texture>
+    </auto_static>
+    <auto_static x="130" y="512" width="256" height="256" stretch="1">
+      <texture x="1" y="1" width="254" height="254">ui\ui_mm_newspaper</texture>
+    </auto_static>
+  </background>
+	<gamepad_legend x="0" y="724" width="1024" height="30" spacing="5">
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_mm_save_gp</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>gp_delete_text</window_name>
+			<text font="graffiti19" vert_align="c">ui_mm_delete_gp</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_mm_back_gp</text>
+		</auto_static>
+	</gamepad_legend>
+  <file_item>
+	<itm_color r="216" g="186" b="140"/>
+    <main width="430" height="22"/>
+    <fn width="285" height="22"/>
+    <fd x="290" y="0" width="110" height="22"/>
+  </file_item>
 
-<window>
-	<back_video x="0" y="0" width="1024" height="430">
-		<texture x="0" y="0" width="1024" height="430">ui\ui_mm_window_back_crop</texture>
-	</back_video>
-
-	<_back_video x="0" y="0" width="1024" height="512" stretch="1">
-		<texture>ui\ui_vid_back_02</texture>
-	</_back_video>
-	
-	<background x="0" y="0" width="1024" height="768">
-		<texture>ui\ui_static_mm_back_04</texture>
-	</background>
-
-	<newspaper_video x="137" y="512" width="256" height="256">
-		<texture>ui\ui_mm_newspaper</texture>
-	</newspaper_video>
-	
-	<form x="415" y="168" width="560" height="460">
-		<_texture>ui\ui_options_menu_static</_texture>
-		<_texture_offset x="-29" y="-19"/>
-		<texture>ui_menu_options_dlg</texture>
+  <form x="415" y="168" width="560" height="460">
+    <texture>ui_menu_options_dlg</texture>
 		
 		<caption x="65" y="10" width="500" height="25" complex_mode="0">
 			<text font="graffiti22" r="184" g="168" b="131">ui_mm_save_game</text>
 		</caption>
 		
-		<edit x="65" y="55" width="257" height="23">
+		<edit x="65" y="55" width="449" height="23" file_name_mode="1" max_symb_count="120">
 			<texture>ui_linetext_e</texture>
 			
-			<text font="letterica18" r="240" g="217" b="182"/>
+			<text x="3" font="letterica18" r="240" g="217" b="182"/>
 		</edit>
 		
 		<list_frame x="65" y="96" width="449" height="307">
 			<texture>ui_tablist_textbox</texture>
 		</list_frame>
-		
-		<list x="75" y="106" width="429" height="287" item_height="18"/>
-				
-		<btn_save x="65" y="427" width="157" height="48">
-			<texture>ui_button_main01</texture>
+
+    <list x="75" y="103" width="429" height="293" item_height="18" can_select="1">
+      <font font="letterica16" r="216" g="186" b="140" />
+    </list>
+
+    <btn_save x="65" y="427" width="157" height="48">
+			<texture>ui_button_main02</texture>
 			<text font="graffiti22">ui_mm_save</text>
 			<text_color>
 				<e r="227" g="199" b="178"/> <t r="180" g="153" b="155"/> <d r="106" g="95" b="91"/> <h r="0" g="0" b="0"/>
@@ -47,7 +59,7 @@
 		</btn_save>
 
 		<btn_delete x="221" y="427" width="157" height="48">
-			<texture>ui_button_main01</texture>
+			<texture>ui_button_main02</texture>
 			<text font="graffiti22">ui_mm_delete</text>
 			<text_color>
 				<e r="227" g="199" b="178"/> <t r="180" g="153" b="155"/> <d r="106" g="95" b="91"/> <h r="0" g="0" b="0"/>
@@ -55,7 +67,7 @@
 		</btn_delete>
 		
 		<btn_cancel x="377" y="427" width="157" height="48">
-			<texture>ui_button_main01</texture>			
+			<texture>ui_button_main02</texture>			
 			<text font="graffiti22">ui_mm_cancel</text>
 			<text_color>
 				<e r="227" g="199" b="178"/> <t r="180" g="153" b="155"/> <d r="106" g="95" b="91"/> <h r="0" g="0" b="0"/>
@@ -64,4 +76,4 @@
 	</form>
 
 
-</window>
+</w>

@@ -1,0 +1,100 @@
+local ini = system_ini()
+local exists_sections_cache = {}
+
+-- safe
+function has_section(section)
+	if exists_sections_cache[section] ~= nil then
+		return exists_sections_cache[section]
+	end
+	
+	exists_sections_cache[section] = ini and section and section ~= "" and ini:section_exist(section)
+	
+	return exists_sections_cache[section]
+end
+
+-- unsafe
+function has_line(section, parameter)
+	return ini and section and section ~= "" and parameter and parameter ~= "" and ini:line_exist(section, parameter)
+end
+
+-- safe
+function has_line_in_section(section, parameter)
+	return has_section(section) and has_line(section, parameter)
+end
+
+-- safe
+function cfg_get_bool(section, parameter, def_value)
+	if has_line_in_section(section, parameter) then
+		local line_value = ini:r_bool(section, parameter) or nil
+		
+		if line_value ~= nil then
+			return line_value
+		end
+	end
+	
+	return def_value
+end
+
+-- safe
+function cfg_get_string(section, parameter, def_value)
+	if has_line_in_section(section, parameter) then
+		local line_value = ini:r_string(section, parameter) or nil
+		
+		if line_value ~= nil then
+			return line_value
+		end
+	end
+	
+	return def_value
+end
+
+-- safe
+function cfg_get_float(section, parameter, def_value)
+	if has_line_in_section(section, parameter) then
+		local line_value = ini:r_float(section, parameter) or nil
+		
+		if line_value ~= nil then
+			return line_value
+		end
+	end
+	
+	return def_value
+end
+
+function cfg_parse_separated_strings(section, parameter, def_value)
+	if not has_line_in_section(section, parameter) then
+		return def_value
+	end
+	
+	local string_with_separators = cfg_get_string(section, parameter, false)
+	if not string_with_separators then
+		return def_value
+	end
+		
+	local strings_list = {}
+	for string_part in string.gfind(string_with_separators, "([%w_%-.\\]+)%p*") do
+		if string_part then
+			table.insert(strings_list, string_part)
+		end
+	end
+	
+	if #strings_list == 0 then
+		return def_value
+	end
+	
+	return strings_list
+end
+
+-- safe
+function translate(str)
+	return game.translate_string(tostring(str)) or tostring(str)
+end
+
+-- safe
+function get_translated_section_name(real_sect)
+	if has_line_in_section(real_sect, "inv_name") then
+		return game.translate_string(cfg_get_string(real_sect, "inv_name", real_sect)) or real_sect
+	else
+		return real_sect
+	end
+end

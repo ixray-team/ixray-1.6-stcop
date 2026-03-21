@@ -9,8 +9,8 @@ local saved_game_extension = ui_load_dialog.saved_game_extension
 
 class "save_item" (CUIListBoxItem)
 
-function save_item:__init(height) super(height)
-	self:SetTextColor	(GetARGB(255, 170, 170, 170))
+function save_item:__init(height, color) super(height, color)
+	self:SetTextColor	(color)
 	self.fn				= self:GetTextItem()
 	self.fn:SetFont		(GetFontLetterica18Russian())
 	self.fn:SetEllipsis	(true)
@@ -101,7 +101,9 @@ function save_dialog:InitControls()
 	self:Register					(self.message_box,"message_box")
 
 	self.mbox_mode					= 0
-		
+	
+	self.item_color			= xml:GetColor("file_item:itm_color", 0)
+
 	if xml:NodeExist("gamepad_legend", 0) then
 		self.gamepad_legend = xml:InitGamepadLegend("gamepad_legend", self)
 		self:Register(self.gamepad_legend, "gamepad_legend")
@@ -256,7 +258,7 @@ function save_dialog:OnGamepadKey(key, gamepad_action)  --virtual function
 end
 
 function save_dialog:AddItemToList(file_name, date_time)
-	local _itm			= save_item(self.file_item_main_sz.y)
+	local _itm			= save_item(self.file_item_main_sz.y, self.item_color)
 	_itm:SetWndSize		(self.file_item_main_sz)
 
 	_itm.fn:SetWndPos	(vector2():set(0,0))
