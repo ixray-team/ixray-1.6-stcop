@@ -140,7 +140,7 @@ void UILeftBarForm::Draw()
 
 					// --- Show/hide button ---
 					const	xr_string	Icon		= IsVisible ? ICON_FA_EYE : ICON_FA_EYE_SLASH;
-					const	xr_string	IconText	= " " + Icon + "  ";
+					const	xr_string	IconText	= Icon;
 					const	ImColor		IconColor	= IsVisible
 						? XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::Accent)
 						: XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ContentIconTint)
