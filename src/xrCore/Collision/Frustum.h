@@ -86,7 +86,7 @@ public:
 		return			fcvPartial;
 	}
 public:
-	IC void			_clear				()				{ p_count=0; }
+	ICF void _clear() { p_count=0; }
 	ICF void _add(Fplane& P)
 	{
 		VERIFY(p_count < FRUSTUM_MAXPLANES);
@@ -104,12 +104,12 @@ public:
 
 	void			SimplifyPoly_AABB	(sPoly* P, Fplane& plane);
 
-	void			CreateOccluder		(Fvector* p,	int count,		Fvector& vBase, CFrustum& clip);
+	CFrustum&		CreateOccluder		(Fvector* p,	int count,		Fvector& vBase, CFrustum& clip);
 	BOOL			CreateFromClipPoly	(Fvector* p,	int count,		Fvector& vBase, CFrustum& clip);	// returns 'false' if creation failed
-	void			CreateFromPoints	(Fvector* p,	int count,		Fvector& vBase );
-	void			CreateFromMatrix	(Fmatrix &M,	u32 mask);
-	void			CreateFromPortal	(sPoly* P,		Fvector& vPN,	Fvector& vBase, Fmatrix& mFullXFORM);
-	void			CreateFromPlanes	(Fplane* p,		int count);
+	CFrustum&		CreateFromPoints	(Fvector* p,	int count,		Fvector& vBase );
+	CFrustum&		CreateFromMatrix	(Fmatrix &M,	u32 mask);
+	CFrustum&		CreateFromPortal	(sPoly* P,		Fvector& vPN,	Fvector& vBase, Fmatrix& mFullXFORM);
+	CFrustum&		CreateFromPlanes	(Fplane* p,		int count);
 
 	ICF sPoly* ClipPoly(sPoly& S, sPoly& D) const
 	{
@@ -172,7 +172,7 @@ public:
 		return dest;
 	}
 
-	u32				getMask				() const { return (1<<p_count)-1; }
+	ICF u32 getMask() const { return (1<<p_count)-1; }
 
 	ICF EFC_Visible	testSphere(Fvector& c, float r, u32& test_mask) const
 	{
