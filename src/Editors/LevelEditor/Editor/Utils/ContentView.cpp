@@ -278,6 +278,7 @@ void CContentView::Draw()
 	}
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(250, 100));
 	if (ImGui::Begin("Content Browser"))
 	{
 		if ((NeedRescan || Files.empty()) && !IsFindResult && !IsSpawnElement && !IsParticles)
@@ -305,31 +306,38 @@ void CContentView::Draw()
 
 			ImGui::TableSetColumnIndex(1);
 
-			ImGui::PushStyleColor(ImGuiCol_ChildBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelBorderTint).Value);
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { ToolbarPadding, ToolbarPadding });
-			if (ImGui::BeginChild("##ContentBrowserSearch", ImVec2(ImGui::GetContentRegionAvail().x, 0), ImGuiChildFlags_AlwaysUseWindowPadding | ImGuiChildFlags_AutoResizeY))
+			ImVec2 availRegion = ImGui::GetContentRegionAvail();
+			if (availRegion.x > 15)
 			{
-				DrawHeader();
+				ImGui::PushStyleColor(ImGuiCol_ChildBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelBorderTint).Value);
+				ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { ToolbarPadding, ToolbarPadding });
+				if (ImGui::BeginChild("##ContentBrowserSearch", ImVec2(ImGui::GetContentRegionAvail().x, 0), ImGuiChildFlags_AlwaysUseWindowPadding | ImGuiChildFlags_AutoResizeY))
+				{
+					DrawHeader();
+				}
+				ImGui::EndChild();
+				ImGui::PopStyleVar();
+				ImGui::PopStyleColor();
 			}
-			ImGui::EndChild();
-			ImGui::PopStyleVar();
-			ImGui::PopStyleColor();
-
-			ImGui::PushStyleColor(ImGuiCol_ChildBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelTint).Value);
-			if (ImGui::BeginChild("##contentbrowserscroll"))
+			availRegion = ImGui::GetContentRegionAvail();
+			if (availRegion.x > 15)
 			{
-				DrawLayout();
-			}
+				ImGui::PushStyleColor(ImGuiCol_ChildBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelTint).Value);
+				if (ImGui::BeginChild("##contentbrowserscroll"))
+				{
+					DrawLayout();
+				}
 
-			if (CurrentItemHint.Active)
-			{
-				ImGui::SetCursorPos(CurrentItemHint.Pos);
-				ImGui::Button(CurrentItemHint.Name.c_str());
-				CurrentItemHint.Active = false;
-			}
+				if (CurrentItemHint.Active)
+				{
+					ImGui::SetCursorPos(CurrentItemHint.Pos);
+					ImGui::Button(CurrentItemHint.Name.c_str());
+					CurrentItemHint.Active = false;
+				}
 
-			ImGui::EndChild();
-			ImGui::PopStyleColor();
+				ImGui::EndChild();
+				ImGui::PopStyleColor();
+			}
 
 			const ImGuiPayload* payload = ImGui::GetDragDropPayload();
 
@@ -345,7 +353,7 @@ void CContentView::Draw()
 		}
 		ImGui::PopStyleVar();
 	}
-	ImGui::PopStyleVar();
+	ImGui::PopStyleVar(2);
 
 	ImGui::End();
 
