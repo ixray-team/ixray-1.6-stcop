@@ -13,11 +13,10 @@ struct spatial_ray_walker final
 	bool bFirst = false;
 	bool bNearest = false;
 
-	void xr_vectorcall walk(ISpatial_NODE* N, Fvector& n_C, float n_R)
+	void walk(ISpatial_NODE* N, const Fvector& n_C, float n_R)
 	{
 		float n_vR = n_R * 2.f;
-		Fbox BB;
-		BB.set(Fvector().sub(n_C, n_vR), Fvector().add(n_C, n_vR));
+		Fbox BB{n_C-n_vR,n_C+n_vR};
 		Fvector P;
 		if (!BB.Pick2(pos, fwd_dir, P))
 			return;
@@ -64,13 +63,10 @@ struct spatial_ray_walker final
 		float c_R = n_R * 0.5f;
 		for (u32 octant=0; octant<8; octant++)
 		{
-			if (0==N->children[octant])
+			if (nullptr==N->children[octant])
 				continue;
 
-			Fvector c_C;
-			c_C.mad(n_C,c_spatial_offset[octant],c_R);
-
-			walk(N->children[octant],c_C,c_R);
+			walk(N->children[octant], Fvector().mad(n_C, c_spatial_offset[octant], c_R), c_R);
 
 			if (bFirst && !R.empty())
 				return;

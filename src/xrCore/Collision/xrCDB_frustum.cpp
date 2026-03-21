@@ -18,34 +18,28 @@ struct cform_frustum_collider final
 
 	bool bClass3, bFirst;
 
-	ICF void SetByVerts(Fvector* Val, DWORD prim)
-	{
-		Val[0] = verts[tris[prim].verts[0]];
-		Val[1] = verts[tris[prim].verts[1]];
-		Val[2] = verts[tris[prim].verts[2]];
-	}
+	sPoly Src, Dst;
 
-	ICF EFC_Visible Box(const Fvector& C, const Fvector& E, u32& mask)
+	ICF void Prim(size_t InPrim)
 	{
-		Fvector mM[2];
-		mM[0].sub(C, E);
-		mM[1].add(C, E);
-		return F.testAABB(&mM[0].x, mask);
-	}
+		auto& Tri = tris[InPrim];
+		auto& TriVerts = Tri.verts;
+		Fvector tri_verts[3] = { verts[TriVerts[0]], verts[TriVerts[1]], verts[TriVerts[2]] };
 
-	ICF void Prim(DWORD InPrim)
-	{
 		if (bClass3)
 		{
-			static sPoly Src, Dst;
 			Src.resize(3);
-			SetByVerts(Src.begin(), InPrim);
-
+			Fvector* src = Src.begin();
+			src[0] = tri_verts[0];
+			src[1] = tri_verts[1];
+			src[2] = tri_verts[2];
 			if (F.ClipPoly(Src, Dst))
 			{
 				RESULT& R = dest->r_add();
 				R.id = InPrim;
-				SetByVerts(R.verts, InPrim);
+				R.verts[0] = tri_verts[0];
+				R.verts[1] = tri_verts[1];
+				R.verts[2] = tri_verts[2];
 				R.dummy = tris[InPrim].dummy;
 			}
 		}
@@ -53,7 +47,9 @@ struct cform_frustum_collider final
 		{
 			RESULT& R = dest->r_add();
 			R.id = InPrim;
-			SetByVerts(R.verts, InPrim);
+			R.verts[0] = tri_verts[0];
+			R.verts[1] = tri_verts[1];
+			R.verts[2] = tri_verts[2];
 			R.dummy = tris[InPrim].dummy;
 		}
 	}
@@ -61,18 +57,15 @@ struct cform_frustum_collider final
 	void Stab(const AABBNoLeafNode* node, u32 mask)
 	{
 		// Actual frustum/aabb test
-		EFC_Visible	result = Box((Fvector&)node->mAABB.mCenter, (Fvector&)node->mAABB.mExtents, mask);
-		if (fcvNone == result)	return;
+		Fvector& center = (Fvector&)node->mAABB.mCenter;
+		Fvector& extents = (Fvector&)node->mAABB.mExtents;
+		if (fcvNone == F.testAABB(Fbox(center-extents,center+extents).data(), mask))	return;
 
 		// 1st chield
 		if (node->HasPosLeaf())
-		{
-			Prim((DWORD)node->GetPosPrimitive());
-		}
+			Prim(node->GetPosPrimitive());
 		else 
-		{
 			Stab(node->GetPos(), mask);
-		}
 
 		// Early exit for "only first"
 		if (bFirst) 
@@ -83,7 +76,7 @@ struct cform_frustum_collider final
 
 		// 2nd chield
 		if (node->HasNegLeaf())
-			Prim((DWORD)node->GetNegPrimitive());
+			Prim(node->GetNegPrimitive());
 		else 
 			Stab(node->GetNeg(), mask);
 	}
@@ -92,14 +85,10 @@ struct cform_frustum_collider final
 void COLLIDER::frustum_query(const MODEL* m_def, const CFrustum& F)
 {
 	PROF_EVENT("COLLIDER::frustum_query");
-	m_def->wait_loading();
-
 	if (!m_def || m_def->tree == nullptr)
 		return;
 
-	// Get nodes
-	const AABBNoLeafNode* pNodes = ((AABBNoLeafTree*)m_def->tree->GetTree())->GetNodes();
-	const DWORD mask = F.getMask();
+	m_def->wait_loading();
 
 	r_clear();
 	r_vec().reserve(16);
@@ -113,5 +102,55 @@ void COLLIDER::frustum_query(const MODEL* m_def, const CFrustum& F)
 		!!(frustum_mode & OPT_FULL_TEST),
 		!!(frustum_mode & OPT_ONLYFIRST)
 	};
-	BC.Stab(pNodes, mask);
+	BC.Stab(m_def->tree->GetTree()->GetNodes(), F.getMask());
+}
+
+struct cform_custom_collider final
+{
+	bool(*AABBCheck)(const Fvector&, const Fvector&, bool, void*);
+	void* paabbc = nullptr;
+	void(*GetTris)(size_t, void*);
+	void* ptric = nullptr;
+	void Stab(const AABBNoLeafNode* node)
+	{
+		bool pos_leaf = node->HasPosLeaf();
+		bool neg_leaf = node->HasNegLeaf();
+		if (nullptr==AABBCheck || !AABBCheck((Fvector&)node->mAABB.mCenter, (Fvector&)node->mAABB.mExtents, pos_leaf||neg_leaf, paabbc)) return;
+
+		// 1st chield
+		if (pos_leaf)
+		{
+			if (GetTris)
+				GetTris(node->GetPosPrimitive(), ptric);
+		}
+		else
+			Stab(node->GetPos());
+
+		// 2nd chield
+		if (neg_leaf)
+		{
+			if (GetTris)
+				GetTris(node->GetNegPrimitive(), ptric);
+		}
+		else
+			Stab(node->GetNeg());
+	}
+};
+
+void COLLIDER::custom_query(const MODEL* m_def, bool(AABBCheckF)(const Fvector&, const Fvector&, bool, void*), void* paabbc, void(GetTrisF)(size_t, void*), void* ptric)
+{
+	PROF_EVENT("COLLIDER::custom_query");
+	if (!m_def || m_def->tree == nullptr)
+		return;
+
+	m_def->wait_loading();
+
+	cform_custom_collider CC
+	{
+		AABBCheckF,
+		paabbc,
+		GetTrisF,
+		ptric
+	};
+	CC.Stab(m_def->tree->GetTree()->GetNodes());
 }
