@@ -174,8 +174,7 @@ ECORE_API void IXEndMainMenuBar()
 			}
 			else
 			{
-				Event.type = SDL_EVENT_WINDOW_MAXIMIZED;
-				SDL_PushEvent(&Event);
+				EDevice->MaximizedWindow();
 			}
 		}
 
