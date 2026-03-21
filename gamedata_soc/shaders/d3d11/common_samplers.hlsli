@@ -64,4 +64,7 @@ Texture2D s_image; // used in various post-processing
 Texture2D s_velocity; // used in various post-processing
 Texture2D s_tonemap; // actually MidleGray / exp(Lw + eps)
 
+Texture2D n_bloom; // new papa_doenitz bloom
+Texture2D s_adapt; // new adaptation texture
+
 #endif //	#ifndef	common_samplers_h_included
