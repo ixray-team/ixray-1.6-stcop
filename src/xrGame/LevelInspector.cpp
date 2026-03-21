@@ -498,7 +498,6 @@ LevelInspector::LevelInspector(BOOL hm) : hud_mode(hm)
 				ImGui::Begin("LevelInspector", &isOpen);
 				if(ImGui::CollapsingHeader("Main"))
 				{
-					ImGui::CheckboxFlags("Draw All Spatials", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_ALL_SPATIALS);
 					ImGui::CheckboxFlags("Draw HUD", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_HUD);
 					ImGui::CheckboxFlags("Draw Objects", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_OBJECTS);
 					ImGui::CheckboxFlags("Draw Zones", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_ZONES);
@@ -507,17 +506,27 @@ LevelInspector::LevelInspector(BOOL hm) : hud_mode(hm)
 					ImGui::CheckboxFlags("Draw GameGraph", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_G_GRID);
 					ImGui::CheckboxFlags("Draw WayPoints", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_W_GRID);
 					ImGui::CheckboxFlags("Draw LevelGraph", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_L_GRID);
+					ImGui::Separator(); ImGui::Spacing();
 					ImGui::CheckboxFlags("Draw HOM", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_HOM);
-
+					ImGui::CheckboxFlags("Draw Cform", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_CFORM);
+					ImGui::CheckboxFlags("Draw Cform Tris", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS);
+					ImGui::CheckboxFlags("Draw SpatialSpace", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_ALL_SPATIALS);
+					ImGui::CheckboxFlags("Draw LevelBounds", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_LEVEL_BOUNDS);
 					ImGui::Separator();
 
+					setkey(visible_currents_key, 1, "ZBuffText");
 					setkey(zbuffer_key, 0);
 					hud_prims->zbuffer_key = zbuffer_key;
-					setkey(visible_currents_key, 1, "ZBuffText");
+					ImGui::SliderFloat("zbuff_shift", &zbuff_shift, 0.0f, 0.1f);
+					//hud_prims->zbuff_shift = zbuff_shift;
 				}
 
 				if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_ALL_SPATIALS) && ImGui::CollapsingHeader("Spatials"))
 				{
+					ImGui::CheckboxFlags("Draw Spatial Space", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_SPATIAL_SPACE);
+					ImGui::CheckboxFlags("Draw Spatial Space All", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_SPATIAL_SPACE_ALL);
+					ImGui::Separator();
+					ImGui::Spacing();
 					constexpr ImU64 flags_cnt = magic_enum::enum_count<ESPATIAL_TYPE, magic_enum::detail::enum_subtype::flags>();
 					ImGui::CheckboxFlags("##show_hide_all", &reinterpret_cast<ImU64&>(m_spatials_mask), ImU64(-1));
 					for (ImU64 i = 0ULL; i < flags_cnt; ++i)
@@ -526,6 +535,15 @@ LevelInspector::LevelInspector(BOOL hm) : hud_mode(hm)
 						if(LPCSTR enum_name = magic_enum::enum_name<ESPATIAL_TYPE, magic_enum::detail::enum_subtype::flags>(ESPATIAL_TYPE(flag)).data())
 							ImGui::CheckboxFlags(enum_name, &reinterpret_cast<ImU64&>(m_spatials_mask), flag);
 					}
+				}
+
+				if ((m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM) || m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS)) && ImGui::CollapsingHeader("Cform"))
+				{
+					static float test_ssa = 0.5f;
+					ImGui::SliderFloat("cform_ssa", &test_ssa, 10.0f, 0.01f);
+					cform_ssa = test_ssa / 10000.f;
+					if(m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM))
+						ImGui::CheckboxFlags("Draw Cform All", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_CFORM_ALL);
 				}
 
 				if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_HUD) && ImGui::CollapsingHeader("HUD"))
@@ -646,18 +664,39 @@ LevelInspector::~LevelInspector()
 		xr_delete(pair.second);
 	}
 }
+ICF u32 positionToColorWithAlpha(const Fvector& C)
+{
+	//Fvector _T_(C * 0.2f);
+	//_T_ = Fvector{ sin(_T_.x), sin(_T_.y), sin(_T_.z) };
+	//_T_.add(1.0f).mul(0.5f);
+	//_T_.add(100.f).mul(155.f);
+	//return color_rgba(_T_.x, _T_.y, _T_.z, 20u);
+
+	__m128 result = _mm_add_ps(__m128{ 100.f, 100.f, 100.f, 1.f },_mm_mul_ps(_mm_mul_ps(_mm_add_ps(_mm_sin_ps(_mm_mul_ps(__m128{ C.x, C.y, C.z, 1.f }, __m128{ 0.2f, 0.2f, 0.2f, 1.f })), __m128{ 1.f, 1.f, 1.f, 1.f }), __m128{ .5f, .5f, .5f, .5f }), __m128{ 155.f, 155.f, 155.f, 1.f }));
+	return color_rgba(result.m128_u32[0], result.m128_u32[1], result.m128_u32[2], 20u);
+}
 
 void LevelInspector::OnRender()
 {
 	PROF_EVENT(__FUNCTION__);
+	Fmatrix Pold,Vold,FTold;
+
 
 	if (hud_mode)
 	{
+		Pold = Device.mProject_hud;
+		FTold = Device.mFullTransform_hud;
+		Vold = Device.mView_hud;
+
 		if(m_skeleton_flags.flags != 0u)
 			DrawHud();
 	}
 	else
 	{
+		Pold = Device.mProject;
+		FTold = Device.mFullTransform;
+		Vold = Device.mView;
+
 		visible_currents = pInput->iGetAsyncKeyState(visible_currents_key);
 
 		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_HUD))
@@ -674,6 +713,12 @@ void LevelInspector::OnRender()
 			DrawWayPoints();
 		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_HOM))
 			DrawHOM();
+		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_ALL_SPATIALS) || m_flags.test(ESCENE_FLAGS::ESF_DRAW_SPATIAL_SPACE))
+			DrawSpatials();
+		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM) || m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS))
+			DrawCFORM();
+		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_LEVEL_BOUNDS))
+			append_aabb(g_pGameLevel->ObjectSpace.GetBoundingVolume(), color_rgba(10, 10, 10, 122), color_rgba(255, 220, 10, 50));
 	}
 
 	bool tris_empty = tris.empty();
@@ -687,13 +732,30 @@ void LevelInspector::OnRender()
 	{
 		if (hud_mode)
 		{
+			UIRender->CacheSetXformWorld(Device.mFullTransform_hud);
+
 			if (Device.m_pRender)
 			{
+				//extern ENGINE_API float psHUD_FOV;
+				//Device.mProject_hud.build_projection(deg2rad(psHUD_FOV), Device.fASPECT, Device.fHUDViewportNear + zbuff_shift, g_pGamePersistent->Environment().CurrentEnv->far_plane);
+				//Device.mFullTransform_hud.mul(Device.mProject_hud, Device.mView_hud);
+				//Device.mView_hud.build_camera_dir(Fvector().mad(Device.vCameraPosition, Device.vCameraDirection, zbuff_shift), Device.vCameraDirection, Device.vCameraTop);
 				Device.m_pRender->SetCacheXform(Device.mView_hud, Device.mProject_hud);
 				Device.m_pRender->SetCacheXformOld(Device.mView_hud_old, Device.mProject_hud_old);
 			}
-			UIRender->CacheSetXformWorld(Device.mFullTransform_hud);
 			Render->rmNear();
+		}
+		else
+		{
+			UIRender->CacheSetXformWorld(Device.mFullTransform);
+			
+			if (Device.m_pRender)
+			{
+				Device.mProject.build_projection(deg2rad(Device.fFOV), Device.fASPECT, Device.fViewportNear + zbuff_shift, g_pGamePersistent->Environment().CurrentEnv->far_plane);
+				Device.mFullTransform.mul(Device.mProject, Device.mView);
+				Device.mView.build_camera_dir(Fvector().mad(Device.vCameraPosition, Device.vCameraDirection, zbuff_shift), Device.vCameraDirection, Device.vCameraTop);
+				Device.m_pRender->SetCacheXform(Device.mView, Device.mProject);
+			}
 		}
 
 		UIRender->SetShader(*shader);
@@ -759,21 +821,32 @@ void LevelInspector::OnRender()
 		UIRender->CacheSetCullMode(ERHI_CULLMODE::BACK);
 
 		if (hud_mode)
-		{
 			Render->rmNormal();
-			if (Device.m_pRender)
-			{
-				Device.m_pRender->SetCacheXform(Device.mView, Device.mProject);
-				Device.m_pRender->SetCacheXformOld(Device.mView_old, Device.mProject_old);
-			}
-			UIRender->CacheSetXformWorld(Device.mFullTransform);
-		}
 	}
 
 	if (!hud_mode && m_flags.test(ESCENE_FLAGS::ESF_DRAW_L_GRID))
 		DrawLevelGraph();
 
 	dbg_font->OnRender();
+
+	if(hud_mode)
+	{
+		Device.mView_hud = Vold;
+		Device.mProject_hud = Pold;
+		Device.mFullTransform_hud = FTold;
+	}
+	else
+	{
+		Device.mView = Vold;
+		Device.mProject = Pold;
+		Device.mFullTransform = FTold;
+	}
+	UIRender->CacheSetXformWorld(Device.mFullTransform);
+	if (Device.m_pRender)
+	{
+		Device.m_pRender->SetCacheXform(Device.mView, Device.mProject);
+		Device.m_pRender->SetCacheXformOld(Device.mView_old, Device.mProject_old);
+	}
 }
 
 void LevelInspector::DrawWayPoints()
@@ -1829,7 +1902,7 @@ void LevelInspector::DrawLevelGraph()
 
 			Fvector node_pos = lgraph.vertex_position(&vertex);
 
-			node_pos.y += 0.045f;
+			//node_pos.y += 0.045f;
 			CachedNode& node = cached_nodes.emplace_back();
 
 			Fplane plane;
@@ -2128,6 +2201,15 @@ void LevelInspector::DrawLevelGraph()
 	{
 		if (tris.empty() && lines.empty())
 		{
+			UIRender->CacheSetXformWorld(Fidentity);
+			if (Device.m_pRender)
+			{
+				Device.mProject.build_projection(deg2rad(Device.fFOV), Device.fASPECT, Device.fViewportNear + zbuff_shift, g_pGamePersistent->Environment().CurrentEnv->far_plane);
+				Device.mFullTransform.mul(Device.mProject, Device.mView);
+				Device.mView.build_camera_dir(Fvector().mad(Device.vCameraPosition, Device.vCameraDirection, zbuff_shift), Device.vCameraDirection, Device.vCameraTop);
+				Device.m_pRender->SetCacheXform(Device.mView, Device.mProject);
+			}
+
 			UIRender->SetShader(*shader);
 			UIRender->CacheSetCullMode(ERHI_CULLMODE::BACK);
 			UIRender->zb_enable(zbuffer_enable);
@@ -3141,28 +3223,16 @@ void LevelInspector::DrawObjects()
 			}
 		}
 	}
+}
 
-	if(m_flags.test(ESCENE_FLAGS::ESF_DRAW_ALL_SPATIALS) && m_spatials_mask!=ESPATIAL_TYPE::NONE)
+void LevelInspector::DrawSpatials()
+{
+	Fvector& cam_pos = Device.vCameraPosition;
+	if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_ALL_SPATIALS))
 	{
-		g_SpatialSpace->q_frustum(m_objects, 0, m_spatials_mask, Render->ViewBase);
-
-		for (ISpatialShared& spatial : m_objects)
+		if(m_spatials_mask != ESPATIAL_TYPE::NONE)
 		{
-			if (!spatial.get()) continue;
-
-			float opt_dist = cam_pos.distance_to_sqr(spatial->spatial.sphere.P);
-			float fog_dist = visible_currents ? 50000.f : g_pGamePersistent->pEnvironment->CurrentEnv->fog_distance;
-			if (opt_dist >= _sqr(fog_dist + spatial->spatial.sphere.R))
-				continue;
-
-			if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_ALL_SPATIALS))
-				append_sphere(spatial->spatial.sphere, color_rgba(10, 10, 10, 255), color_rgba(255, 100, 0, 20));
-
-		}
-
-		if ((m_spatials_mask & ESPATIAL_TYPE::PHYSIC) != ESPATIAL_TYPE::NONE)
-		{
-			g_SpatialSpacePhysic->q_frustum(m_objects, 0, m_spatials_mask, Render->ViewBase);
+			g_SpatialSpace->q_frustum(m_objects, 0, m_spatials_mask, Render->ViewBase);
 
 			for (ISpatialShared& spatial : m_objects)
 			{
@@ -3173,34 +3243,94 @@ void LevelInspector::DrawObjects()
 				if (opt_dist >= _sqr(fog_dist + spatial->spatial.sphere.R))
 					continue;
 
-				if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_ALL_SPATIALS))
-					append_sphere(spatial->spatial.sphere, color_rgba(10, 10, 10, 255), color_rgba(255, 100, 0, 20));
+				append_sphere(spatial->spatial.sphere, color_rgba(10, 10, 10, 255), color_rgba(255, 100, 0, 20));
 
 			}
+
+			if ((m_spatials_mask & ESPATIAL_TYPE::PHYSIC) != ESPATIAL_TYPE::NONE)
+			{
+				g_SpatialSpacePhysic->q_frustum(m_objects, 0, m_spatials_mask, Render->ViewBase);
+
+				for (ISpatialShared& spatial : m_objects)
+				{
+					if (!spatial.get()) continue;
+
+					float opt_dist = cam_pos.distance_to_sqr(spatial->spatial.sphere.P);
+					float fog_dist = visible_currents ? 50000.f : g_pGamePersistent->pEnvironment->CurrentEnv->fog_distance;
+					if (opt_dist >= _sqr(fog_dist + spatial->spatial.sphere.R))
+						continue;
+
+					append_sphere(spatial->spatial.sphere, color_rgba(10, 10, 10, 255), color_rgba(255, 100, 0, 20));
+				}
+			}
+		}
+
+		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_SPATIAL_SPACE))
+		{
+			struct
+			{
+				const CFrustum& F;
+				LevelInspector& LE;
+
+				Fvector	c_spatial_offset[8]
+				{
+					{-1.f, -1.f, -1.f},
+					{ 1.f, -1.f, -1.f},
+					{-1.f,  1.f, -1.f},
+					{ 1.f,  1.f, -1.f},
+					{-1.f, -1.f,  1.f},
+					{ 1.f, -1.f,  1.f},
+					{-1.f,  1.f,  1.f},
+					{ 1.f,  1.f,  1.f}
+				};
+				void walk(ISpatial_NODE* N, const Fvector& n_C, float n_R, u32 fmask)
+				{
+					// box
+					float n_vR = n_R * 2.f;
+					Fbox BB{n_C-n_vR,n_C+n_vR};
+
+					if (fcvNone == F.testAABB(BB.data(), fmask))
+						return;
+					bool items_present = !N->items.empty();
+					if ((items_present || LE.m_flags.test(ESCENE_FLAGS::ESF_DRAW_SPATIAL_SPACE_ALL)) && N != g_actor->SpatialComponent->spatial.node_ptr)
+						LE.append_aabb(BB, color_rgba(10, 10, 10, 255), !items_present ? positionToColorWithAlpha(n_C) : color_rgba(0, 255, 0, 15));
+					for (ISpatialShared& spatial : N->items)
+					{
+						if (spatial.get() == g_actor->SpatialComponent.get()) continue;
+
+						LE.append_line({ n_C, spatial->spatial.sphere.P, color_rgba(0, 0, 255, 200) });
+					}
+					// recurse
+					float c_R = n_R * 0.5f;
+					for (u32 octant = 0; octant < 8; octant++)
+					{
+						if (ISpatial_NODE* next_node = N->children[octant])
+							walk(next_node, Fvector().mad(n_C, c_spatial_offset[octant], c_R), c_R, fmask);
+					}
+				}
+			}W{ Render->ViewBase,*this };
+			W.walk(g_SpatialSpace->m_root, g_SpatialSpace->m_center, g_SpatialSpace->m_bounds, Render->ViewBase.getMask());
 		}
 	}
 }
 
 void LevelInspector::DrawHOM()
 {
-	xr_vector<CDB::TRI>& hom_tris = Render->GetHOMModel()->get_tris();
-	xr_vector<Fvector>& hom_verts = Render->GetHOMModel()->get_verts();
-	u32 hom_tris_cnt = Render->GetHOMModel()->get_tris().size();
-
+	static CDB::COLLIDER xrc;
+	xrc.frustum_options(0);
+	xrc.frustum_query(Render->GetHOMModel(), Render->ViewBase);
 	constexpr u32 hom_lclr = color_rgba(20, 20, 20, 255);
-	for (u32 i = 0; i < hom_tris_cnt; i++)
+	for (CDB::RESULT& res : xrc.r_vec())
 	{
-		auto& verts = hom_tris[i].verts;
-		Fvector& v0 = hom_verts[verts[0]];
-		Fvector& v1 = hom_verts[verts[1]];
-		Fvector& v2 = hom_verts[verts[2]];
-
-		append_tri({ v0, v1, v2, color_rgba(150, 150, 150, 100) });
-		append_line({ v0, v1, hom_lclr });
-		append_line({ v0, v2, hom_lclr });
-		append_line({ v2, v1, hom_lclr });
+		auto& verts = res.verts;
+		append_tri({ verts[0], verts[1], verts[2], color_rgba(150, 150, 150, 100) });
+		append_line({ verts[0], verts[1], hom_lclr });
+		append_line({ verts[0], verts[2], hom_lclr });
+		append_line({ verts[2], verts[1], hom_lclr });
 	}
 
+	xr_vector<CDB::TRI>& hom_tris = Render->GetHOMModel()->get_tris();
+	xr_vector<Fvector>& hom_verts = Render->GetHOMModel()->get_verts();
 	xr_vector<u32>& inv_v = *Render->GetHOMInvaltids();
 	for (u32 i : inv_v)
 	{
@@ -3208,5 +3338,90 @@ void LevelInspector::DrawHOM()
 		append_text3d(v0 + Fvector{ 0.f, 0.1f, 0.f }, "invalid face", color_rgba(255, 0, 0, 200));
 		Fbox box; box.setb(v0, { 0.06f, 0.06f, 0.06f });
 		append_aabb(box, color_rgba(255, 0, 0, 255));
+	}
+}
+
+void LevelInspector::DrawCFORM()
+{
+	if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM) || m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS))
+	{
+		static CDB::COLLIDER xrc;
+		static CDB::RESULT* selected_prim;
+		selected_prim = nullptr;
+
+		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS))
+		{
+			xrc.ray_options(CDB::OPT_ONLYNEAREST);
+			xrc.ray_query(g_pGameLevel->ObjectSpace.GetStaticModel(), Device.vCameraPosition, Device.vCameraDirection);
+			if (!xrc.r_vec().empty())
+				selected_prim = &xrc.r_vec()[0];
+		}
+		static u32 mask; mask = Render->ViewBase.getMask();
+		static float max_dist; max_dist = g_pGamePersistent->Environment().CurrentEnv->fog_distance;
+		xrc.custom_query(g_pGameLevel->ObjectSpace.GetStaticModel(),
+			[](const Fvector& center, const Fvector& extents, bool leaf, void* ptr)
+			{
+				const Fvector& cam_pos = Device.vCameraPosition;
+				float distsqr = cam_pos.distance_to_sqr(center) + EPS;
+				float radius = extents.magnitude();
+				LevelInspector* LE = (LevelInspector*)ptr;
+				if (radius / distsqr <= LE->cform_ssa || distsqr > _sqr(max_dist + radius))
+					return false;
+
+				Fbox BB; BB.set(center - extents, center + extents);
+				if (fcvNone == Render->ViewBase.testAABB(BB.data(), mask))
+					return false;
+
+				if (LE->m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM_ALL))
+					leaf = true;
+
+				if (leaf && LE->m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM))
+				{
+					if (!BB.contains(cam_pos))
+						LE->append_aabb(BB, color_rgba(10, 10, 10, 122), positionToColorWithAlpha(center));
+				}
+				return true;
+			}, this,
+			m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS) ?
+			[](size_t InPrim, void* ptr)
+			{
+				if (selected_prim && selected_prim->id == InPrim) return;
+				LevelInspector* LE = (LevelInspector*)ptr;
+
+				auto& TriVerts = g_pGameLevel->ObjectSpace.GetStaticModel()->get_tris()[InPrim].verts;
+				auto& verts = g_pGameLevel->ObjectSpace.GetStaticModel()->get_verts();
+				Fvector tri_verts[3] = { verts[TriVerts[0]], verts[TriVerts[1]], verts[TriVerts[2]] };
+
+				LE->append_tri({ tri_verts[0], tri_verts[1], tri_verts[2], color_rgba(100, 100, 100, 250) });
+				LE->append_line({ tri_verts[0], tri_verts[1], color_rgba(20, 20, 20, 255) });
+				LE->append_line({ tri_verts[0], tri_verts[2], color_rgba(20, 20, 20, 255) });
+				LE->append_line({ tri_verts[2], tri_verts[1], color_rgba(20, 20, 20, 255) });
+			} : nullptr, this);
+
+		if (selected_prim)
+		{
+			auto& TriVerts = selected_prim->verts;
+			auto& verts = g_pGameLevel->ObjectSpace.GetStaticModel()->get_verts();
+			Fvector tri_verts[3] = { TriVerts[0], TriVerts[1], TriVerts[2] };
+			append_tri({ tri_verts[0], tri_verts[1], tri_verts[2], color_rgba(255, 20, 20, 255) });
+			append_line({ tri_verts[0], tri_verts[1], color_rgba(10, 10, 10, 255) });
+			append_line({ tri_verts[0], tri_verts[2], color_rgba(10, 10, 10, 255) });
+			append_line({ tri_verts[2], tri_verts[1], color_rgba(10, 10, 10, 255) });
+
+			float side_AB = (tri_verts[1] - tri_verts[0]).magnitude();
+			float side_BC = (tri_verts[2] - tri_verts[0]).magnitude();
+			float side_CA = (tri_verts[2] - tri_verts[1]).magnitude();
+			float inradius = std::min(0.5f, std::min(std::min(side_AB, side_BC), side_CA));
+
+			Fvector arrow_pos[2];
+			arrow_pos[0].mad(Device.vCameraPosition, Device.vCameraDirection, selected_prim->range);
+			arrow_pos[1].mad(arrow_pos[0], Fvector().mknormal(tri_verts[0], tri_verts[1], tri_verts[2]), inradius);// тут вместо 1.f нужен радиус вписывающего круга
+			//arrow_pos[2] = Fvector(tri_verts[0] + tri_verts[1] + tri_verts[2]).div(3.f);
+
+			append_line({ arrow_pos[0], arrow_pos[1], color_rgba(255, 220, 10, 255) });
+			const SGameMtl* mtl = GMLib.GetMaterialByIdx(selected_prim->material);
+			if (mtl)
+				append_text3d(arrow_pos[1], shared_str().printf("%s id[%d] idx[%d] s[%d]", *mtl->m_Name, mtl->ID, selected_prim->material, selected_prim->sector));
+		}
 	}
 }
