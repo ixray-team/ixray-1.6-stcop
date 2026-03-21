@@ -33,7 +33,7 @@ void CEditableMesh::GenerateCFModel()
 		}
 	}
 	m_CFModel = new CDB::MODEL();
-	m_CFModel->build(CL.getV(), CL.getVS(), CL.getT(), CL.getTS());
+	m_CFModel->build(CL.getV(), CL.getVS(), CL.getT(), CL.getTS(), nullptr, nullptr, nullptr, false, false);
 }
 
 void CEditableMesh::RayQuery(SPickQuery& pinf)
@@ -81,7 +81,9 @@ bool CEditableMesh::RayPick(float& distance, const Fvector& start, const Fvector
 		return false;
 
 	if (!m_CFModel)
+	{
 		GenerateCFModel();
+	}
 
 	XRC.ray_options(CDB::OPT_ONLYNEAREST | CDB::OPT_CULL);
 
