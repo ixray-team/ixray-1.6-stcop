@@ -14,7 +14,7 @@
 #include "../xrRender/SkeletonCustom.h"
 #include "../../xrEngine/IGame_Actor.h"
 
-static	float	CalcSSADynamic				(const Fvector& C, float R)
+ICF	float	CalcSSADynamic				(const Fvector& C, float R)
 {
     Fvector4 v_res1, v_res2;
     Device.mFullTransform.transform(v_res1, C);
@@ -24,7 +24,7 @@ static	float	CalcSSADynamic				(const Fvector& C, float R)
 constexpr float base_fov = 67.f;
 
 // Aproximate, adjusted by fov, distance from camera to position (For right work when looking though binoculars and scopes)
-static float GetDistFromCamera(const Fvector& from_position)
+ICF float GetDistFromCamera(const Fvector& from_position)
 {
 	float distance = Device.vCameraPosition.distance_to(from_position);
 	float fov_K = base_fov / Device.fFOV;
@@ -124,13 +124,21 @@ void CRender::render_main	(bool deffered, bool zfill)
 			}
 			else
 			{
-				for (u32 s_it=0; s_it<PortalTraverser.r_sectors.size(); s_it++)
+				if (psDeviceFlags.test(rsClearBB))
 				{
-					CSector*	sector		= (CSector*)PortalTraverser.r_sectors[s_it];
-					dxRender_Visual*	root	= sector->root();
-					for (u32 v_it=0; v_it<sector->r_frustums.size(); v_it++)	{
-						set_Frustum			(&(sector->r_frustums[v_it]));
-						add_Geometry		(root);
+					for (auto visual : Visuals)
+						r_dsgraph_insert_static(visual);
+				}
+				else
+				{
+					for (u32 s_it = 0; s_it < PortalTraverser.r_sectors.size(); s_it++)
+					{
+						CSector* sector = (CSector*)PortalTraverser.r_sectors[s_it];
+						dxRender_Visual* root = sector->root();
+						for (u32 v_it = 0; v_it < sector->r_frustums.size(); v_it++) {
+							set_Frustum(&(sector->r_frustums[v_it]));
+							add_Geometry(root);
+						}
 					}
 				}
 			}
