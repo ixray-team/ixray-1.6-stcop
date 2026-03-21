@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "UIPropertiesForm.h"
+#include "../xrEUI/IconsFontAwesome7.h"
 
 UIPropertiesForm::UIPropertiesForm() :
 	m_Root("", this), SearchRoot("", this)
@@ -101,8 +102,9 @@ void UIPropertiesForm::Draw()
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { borderSize, borderSize });
 	if (!IsSearchDisabled)
 	{
+		const size_t SettingsIconSize = 24;
 
-		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - SettingsIconSize);
 		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { buttonPaddingX, padding });
 		string32 FindStr = {};
@@ -114,13 +116,36 @@ void UIPropertiesForm::Draw()
 			SearchRoot.Items.clear();
 		}
 
+		ImGui::SameLine();
+		if (ImGui::Button(ICON_FA_GEAR))
+		{
+			ImGui::OpenPopup("MenuEdit");
+		}
+
+		if (ImGui::BeginPopup("MenuEdit"))
+		{
+			if (ImGui::MenuItem("Collapse All"))
+			{
+				m_Root.SetOpenRecursive(false);
+				SearchRoot.SetOpenRecursive(false);
+			}
+
+			if (ImGui::MenuItem("Expand All"))
+			{
+				m_Root.SetOpenRecursive(true);
+				SearchRoot.SetOpenRecursive(true);
+			}
+
+			ImGui::EndPopup();
+		}
+
 		if (GUIManager->SearchIcon)
 		{
 			ImVec2 IconSize = { 14,14 };
 
 			ImGui::SameLine();
 			ImVec2 cursorPos = ImGui::GetCursorPos();
-			ImGui::SetCursorPos(ImVec2(cursorPos.x - IconSize.x - borderSize - padding, cursorPos.y + borderSize + padding));
+			ImGui::SetCursorPos(ImVec2(cursorPos.x - IconSize.x - borderSize - padding - SettingsIconSize, cursorPos.y + borderSize + padding));
 
 			ImGui::Image(GUIManager->SearchIcon, IconSize);
 		}
