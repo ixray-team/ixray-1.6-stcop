@@ -701,6 +701,13 @@ bool CSector::Validate(bool bMsg)
 		for (SurfFacesPairIt sf_it=it->mesh->m_SurfFaces.begin(); sf_it!=it->mesh->m_SurfFaces.end(); sf_it++){
 			CSurface* surf 		= sf_it->first;
 			Shader_xrLC* c_sh	= EDevice->ShaderXRLC.Get(surf->_ShaderXRLCName());
+			if (c_sh == nullptr)
+			{
+				ELog.Msg(mtError, "*ERROR: Sector: '%s' - Shader '%s' does not exist on material '%s'", GetName(), surf->_ShaderXRLCName(), surf->_Name());
+				bRes = false;
+				continue;
+			}
+
 			if (c_sh->flags.bRendering)	bRenderableFound = true;
 		}
 	}
