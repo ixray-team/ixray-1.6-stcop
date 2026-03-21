@@ -117,6 +117,7 @@ void UIRenderForm::Draw()
 	if (!ImGui::Begin(ViewportName, nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 	{
 		ImGui::End();
+		ImGui::PopStyleVar();
 		return;
 	}
 
