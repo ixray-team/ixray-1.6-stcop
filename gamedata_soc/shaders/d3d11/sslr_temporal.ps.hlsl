@@ -78,15 +78,15 @@ float4 main(PSInputFullscreen I) : SV_Target
 		return float4(SSLR4.xyz, O.Depth);
 	}
 	
-	float4 SSLR0 = s_image.SampleLevel(smp_nofilter, I.texcoord, 0, int2(+1, +0));
-	float4 SSLR1 = s_image.SampleLevel(smp_nofilter, I.texcoord, 0, int2(-0, +1));
-	float4 SSLR2 = s_image.SampleLevel(smp_nofilter, I.texcoord, 0, int2(-1, -0));
-	float4 SSLR3 = s_image.SampleLevel(smp_nofilter, I.texcoord, 0, int2(-0, -1));
+	float4 SSLR0 = s_image.Load(int3(I.hpos.xy + int2(+1, +0), 0));
+	float4 SSLR1 = s_image.Load(int3(I.hpos.xy + int2(-0, +1), 0));
+	float4 SSLR2 = s_image.Load(int3(I.hpos.xy + int2(-1, -0), 0));
+	float4 SSLR3 = s_image.Load(int3(I.hpos.xy + int2(-0, -1), 0));
 	
-	float4 SSLR5 = s_image.SampleLevel(smp_nofilter, I.texcoord, 0, int2(+1, +1));
-	float4 SSLR6 = s_image.SampleLevel(smp_nofilter, I.texcoord, 0, int2(-1, +1));
-	float4 SSLR7 = s_image.SampleLevel(smp_nofilter, I.texcoord, 0, int2(-1, -1));
-	float4 SSLR8 = s_image.SampleLevel(smp_nofilter, I.texcoord, 0, int2(-1, -1));
+	float4 SSLR5 = s_image.Load(int3(I.hpos.xy + int2(+1, +1), 0));
+	float4 SSLR6 = s_image.Load(int3(I.hpos.xy + int2(-1, +1), 0));
+	float4 SSLR7 = s_image.Load(int3(I.hpos.xy + int2(-1, -1), 0));
+	float4 SSLR8 = s_image.Load(int3(I.hpos.xy + int2(-1, -1), 0));
 	
 	float4 SSLRBoxMinPos = min(SSLR0, min(SSLR2, min(SSLR6, SSLR8)));
 	float4 SSLRBoxMaxPos = max(SSLR0, max(SSLR2, max(SSLR6, SSLR8)));
@@ -94,14 +94,11 @@ float4 main(PSInputFullscreen I) : SV_Target
 	float4 SSLRBoxMin = min(SSLR1, min(SSLR3, min(SSLR5, SSLR7)));
 	float4 SSLRBoxMax = max(SSLR1, max(SSLR3, max(SSLR5, SSLR7)));
 	
-	SSLRBoxMinPos = min(SSLRBoxMin, SSLRBoxMinPos);
-	SSLRBoxMaxPos = max(SSLRBoxMax, SSLRBoxMaxPos);
-	
-	SSLRBoxMin = SSLRBoxMinPos; //SSLRBoxMin * 0.5f + SSLRBoxMinPos * 0.5f;
-	SSLRBoxMax = SSLRBoxMaxPos; //SSLRBoxMax * 0.5f + SSLRBoxMaxPos * 0.5f;
+	SSLRBoxMin = min(SSLRBoxMin, SSLRBoxMinPos);
+	SSLRBoxMax = max(SSLRBoxMax, SSLRBoxMaxPos);
 	
 	float4 SSLRMain = SSLR4; //rcp(9) * (SSLR0 + SSLR1 + SSLR2 + SSLR3 + SSLR4 + SSLR5 + SSLR6 + SSLR7 + SSLR8);
-	SSLRMain = median9(SSLR0, SSLR1, SSLR2, SSLR3, SSLR4, SSLR5, SSLR6, SSLR7, SSLR8);
+	// SSLRMain = median9(SSLR0, SSLR1, SSLR2, SSLR3, SSLR4, SSLR5, SSLR6, SSLR7, SSLR8);
 	
 	float3 Point = gbuf_unpack_position(I.texcoord.xy, O.PointReal.z);
 	float3 View = normalize(Point);
@@ -124,7 +121,7 @@ float4 main(PSInputFullscreen I) : SV_Target
 	
 	if(O.Depth < 0.02f) 
 	{
-		DepthClamp = 1.0f - saturate(80.0f * abs(min(0.02f, SSLR_OldDiffyse.w) - O.Depth) * rcp(O.Depth) - 0.5f);
+		DepthClamp = 1.0f - HistoryClamp(SSLR_OldDiffyse.xyz, SSLRMain.xyz, SSLRBoxMin.xyz, SSLRBoxMax.xyz);
 		SSLRMain.xyz = lerp(SSLRMain.xyz, SSLR4.xyz, GetBorderAtten(PrevDiffuseUV));
 		SSLRMain.xyz = lerp(SSLRMain.xyz, SSLR_OldDiffyse.xyz, DepthClamp * Fade);
 		

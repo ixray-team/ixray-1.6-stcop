@@ -20,6 +20,26 @@ float ComputeLightAttention(float3 PointToLight, float MinAttention)
     return saturate(1.0f - dot(PointToLight, PointToLight) * MinAttention);
 }
 
+float getSquareFalloffAttenuation(float3 posToLight, float lightInvRadius) 
+{
+    float distanceSquare = dot(posToLight, posToLight);
+    float factor = distanceSquare * lightInvRadius;
+    float smoothFactor = max(1.0 - factor * factor, 0.0);
+    return (smoothFactor * smoothFactor) / max(distanceSquare, 1e-4);
+}
+
+float getSpotAngleAttenuation(float3 l, float3 lightDir,
+        float innerAngle, float outerAngle) {
+    // the scale and offset computations can be done CPU-side
+    float cosOuter = cos(outerAngle);
+    float spotScale = 1.0 / max(cos(innerAngle) - cosOuter, 1e-4);
+    float spotOffset = -cosOuter * spotScale;
+
+    float cd = dot(normalize(-lightDir), l);
+    float attenuation = clamp(cd * spotScale + spotOffset, 0.0, 1.0);
+    return attenuation * attenuation;
+}
+
 float GeometrySmithD(float NdotL, float NdotV, float Roughness)
 {
     float R = Roughness + 1.0f;
@@ -56,7 +76,7 @@ float3 DirectLight(float4 Radiance, float3 Light, float3 Normal, float3 View, fl
     float3 Diffuse = Color * (1.0f - Metalness);
 
     float3 BRDF = lerp(Diffuse, Specular, F);
-    return PushGamma(Radiance.xyz) * NdotL * BRDF;
+    return Radiance.xyz * NdotL * BRDF;
 #else
     float2 Material = s_material.SampleLevel(smp_material, float3(NdotL, NdotH, Metalness), 0).xy;
     return Radiance.xyz * (Material.x * Color.xyz + Material.y * Roughness.x * Radiance.w);
@@ -72,7 +92,7 @@ float3 SimpleTranslucency(float3 Radiance, float3 Light, float3 Normal)
 	float Factor = 1.0f - saturate(abs(Scale) * 13.0f - 1.0f);
 
 	float SSS = lerp(saturate(NdotL), Attention, Factor * Factor);
-	return PushGamma(Radiance) * saturate(3.5f * SSS + 0.1f);
+	return (Radiance) * saturate(3.5f * SSS + 0.1f);
 }
 
 #endif
