@@ -226,30 +226,7 @@ namespace splash
         return false;
     }
 #endif
-    bool IsWindowFocused(SDL_Window* window)
-    {
-        if (!window) return false;
 
-        Uint32 flags = SDL_GetWindowFlags(window);
-        return (flags & SDL_WINDOW_INPUT_FOCUS) != 0;
-    }
-    void RaiseWindowNoFocus(SDL_Window* window, HWND hwnd)
-    {
-        if (!window) return;
-
-
-        if (!hwnd) return;
-
-        SetWindowPos(
-            hwnd,
-            HWND_TOP,
-            0, 0, 0, 0,
-            SWP_NOMOVE |
-            SWP_NOSIZE |
-            SWP_NOACTIVATE |
-            SWP_SHOWWINDOW
-        );
-    }
     bool running = true;
     SPLASH_API int Show()
     {
