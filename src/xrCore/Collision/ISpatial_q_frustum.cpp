@@ -9,14 +9,11 @@ struct spatial_frustum_walker final
 	ESPATIAL_TYPE	mask;
 	ISpatial_DB*	space;
 	xr_vector<ISpatialShared>& R;
-	void xr_vectorcall walk(ISpatial_NODE* N, Fvector& n_C, float n_R, u32 fmask)
+	void xr_vectorcall walk(ISpatial_NODE* N, const Fvector& n_C, float n_R, u32 fmask)
 	{
 		// box
 		float n_vR = n_R * 2.f;
-		Fbox BB;
-		BB.set(Fvector().sub(n_C, n_vR), Fvector().add(n_C, n_vR));
-
-		if (fcvNone == F.testAABB(BB.data(), fmask))
+		if (fcvNone == F.testAABB(Fbox(n_C-n_vR,n_C+n_vR).data(), fmask))
 			return;
 
 		// test items
@@ -40,11 +37,10 @@ struct spatial_frustum_walker final
 		float c_R = n_R * 0.5f;
 		for (u32 octant = 0; octant < 8; octant++)
 		{
-			if (0 == N->children[octant])
+			if (nullptr == N->children[octant])
 				continue;
 
-			Fvector c_C; c_C.mad(n_C, c_spatial_offset[octant], c_R);
-			walk(N->children[octant], c_C, c_R, fmask);
+			walk(N->children[octant], Fvector().mad(n_C, c_spatial_offset[octant], c_R), c_R, fmask);
 		}
 	}
 };

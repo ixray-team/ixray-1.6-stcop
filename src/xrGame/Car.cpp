@@ -615,7 +615,7 @@ void CCar::SyncRead(NET_Packet& P)
 
 	for (int i = 0; i < cnt; i++)
 	{
-		SPHNetState state{ 0 };
+		SPHNetState state;
 
 		P.r_vec3(state.position);
 		P.r_float_q8(state.quaternion.x, -1.0, 1.0);
