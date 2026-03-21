@@ -1,16 +1,18 @@
 #pragma once
 class EDetailManager;
-class UIDOTool :public UIToolCustom
+
+class UIDOTool :
+	public UIToolCustom
 {
 public:
-	UIDOTool();
-	virtual ~UIDOTool();
+	UIDOTool() = default;
+	virtual ~UIDOTool() = default;
 	virtual void Draw();
 	virtual void OnDrawUI();
-	EDetailManager* DM;
+	EDetailManager* DM = nullptr;
 
 private:
 	void HandleDragDrop();
-	bool m_DOShuffle;
+	bool m_DOShuffle = false;
 	bool IsChooseDraw = false;
 };

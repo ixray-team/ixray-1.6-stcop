@@ -1,12 +1,4 @@
 #include "stdafx.h"
-UIDOTool::UIDOTool()
-{
-	m_DOShuffle = false;
-}
-
-UIDOTool::~UIDOTool()
-{
-}
 
 void UIDOTool::Draw()
 {
@@ -22,33 +14,60 @@ void UIDOTool::Draw()
 			float SizeX = (ImGui::GetContentRegionAvail().x - ItemSpacingX) / 2;
 
 			if (XRay::ImGui::Button("First Init", { SizeX, 0 }))
-				if (DM->Initialize()) Scene->UndoSave();
+			{
+				if (DM->Initialize())
+				{
+					Scene->UndoSave();
+				}
+			}
+			
 			ImGui::SameLine(0, ItemSpacingX);
 			if (XRay::ImGui::Button("Reinit All", { SizeX, 0 }))
-				if (DM->Reinitialize()) Scene->UndoSave();
+			{
+				if (DM->Reinitialize())
+				{
+					Scene->UndoSave();
+				}
+			}
 
 			if (XRay::ImGui::Button("Reinit Objects Only", { SizeX, 0 }))
-				if (DM->UpdateObjects(true, false)) Scene->UndoSave();
+			{
+				if (DM->UpdateObjects(true, false))
+				{
+					Scene->UndoSave();
+				}
+			}
+			
 			ImGui::SameLine(0, ItemSpacingX);
-			if (XRay::ImGui::Button("Reinit Selected Slot Objects", { SizeX, 0 }))
-				if (DM->UpdateObjects(false, true)) Scene->UndoSave();
+			if (XRay::ImGui::Button("Reinit Selected Slot", { SizeX, 0 }))
+			{
+				if (DM->UpdateObjects(false, true))
+				{
+					Scene->UndoSave();
+				}
+			}
 
 			XRay::ImGui::Separator();
 
 			if (XRay::ImGui::Button("Clear Slots", { SizeX, 0 }))
+			{
 				if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to reset slots?") == mrYes)
 				{
 					DM->ClearSlots();
 					Scene->UndoSave();
 				}
+			}
+
 			ImGui::SameLine(0, ItemSpacingX);
 			if (XRay::ImGui::Button("Clear Details", { SizeX, 0 }))
+			{
 				if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to clear details?") == mrYes)
 				{
 					ExecCommand(COMMAND_UPDATE_PROPERTIES);
 					DM->Clear();
 					Scene->UndoSave();
 				}
+			}
 
 			XRay::ImGui::Separator();
 
