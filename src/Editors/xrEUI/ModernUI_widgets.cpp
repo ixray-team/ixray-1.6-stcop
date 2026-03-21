@@ -459,7 +459,7 @@ XREUI_API bool XRay::ImGui::ToolbarButtonBackground(
 	if (!::ImGui::ItemAdd(bb, buttonID))
 		return false;
 			bool	Hovered, Held;
-			bool	Clicked		= ::ImGui::ButtonBehavior(bb, buttonID, &Hovered, &Held, rounding_flags);
+			bool	Clicked		= ::ImGui::ButtonBehavior(bb, buttonID, &Hovered, &Held, ImGuiButtonFlags_PressedOnClick | rounding_flags);
 	const	bool	Active		= Held;
 
     ImVec4  Color = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToolbarButtonTint);
@@ -550,7 +550,7 @@ XREUI_API bool XRay::ImGui::ToolbarIconButton(
     ::ImGui::PushID(id);
 
     // --- draw background ---
-    bool		Clicked = ToolbarButtonBackground("##icon_btn", toggle, button_size, rounding_flags, rounding);
+    bool		Clicked = ToolbarButtonBackground(id, toggle, button_size, rounding_flags, rounding);
 
     // --- center image ---
     ImDrawList* dl = ::ImGui::GetWindowDrawList();
