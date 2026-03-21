@@ -71,7 +71,7 @@ float3 CommerceToneMapping(float3 color, float startCompression, float desaturat
     //float desaturation = 0.15f; // 0.15
 
     float x = min(color.r, min(color.g, color.b));
-    float offset = x < 0.08 ? x - 6.25 * x * x : 0.04;
+    float offset = (x < 0.08f) ? (x - 6.25f * x * x) : 0.04f;
     color -= offset;
 
     float peak = max(color.r, max(color.g, color.b));
@@ -83,7 +83,37 @@ float3 CommerceToneMapping(float3 color, float startCompression, float desaturat
     color *= newPeak / peak;
 
     float g = 1.f - 1.f / (desaturation * (peak - newPeak) + 1.f);
-    return (lerp(color, newPeak * 1.f, g));
+    return lerp(color, newPeak.xxx, g);
+}
+
+float Curve(float A, float B, float C, float D, float E, float F, float x)
+{
+    return ((x * (A * x + C * B) + D * E) / (x * (A * x + B) + D * F)) - E / F;
+}
+
+float3 Curve(float A, float B, float C, float D, float E, float F, float3 x)
+{
+    return ((x * (A * x + C * B) + D * E) / (x * (A * x + B) + D * F)) - E / F;
+}
+
+float3 Uncharted2Tonemap(float3 Color, float A, float B, float C, float D, float E, float F, float WhitePoint)
+{
+    float P = Curve(A, B, C, D, E, F, WhitePoint);
+    float3 U = Curve(A, B, C, D, E, F, Color);
+    return U / P;
+}
+
+float3 Uncharted2Tonemap(float3 Color)
+{
+    float A = 0.15f;
+    float B = 0.5f;
+    float C = 0.1f;
+    float D = 0.4f;
+    float E = 0.02f;
+    float F = 0.3f;
+    float WhitePoint = 1.7f;
+
+    return Uncharted2Tonemap(Color, A, B, C, D, E, F, WhitePoint);
 }
 
 float3 Crossfeed(float3 rgb, float factor)
@@ -266,18 +296,22 @@ float4 combine_bloom(float3 low, float4 high)
     return float4(low.xyz + high.xyz * high.w, 1.f);
 }
 
-#define NEW_FOGGIN
+//#define NEW_FOGGIN
+#ifdef NEW_FOGGIN
+    #define F_base 1.f
+    #define F_dens 0.002f
+#endif
 
 float calc_fogging(float3 pos)
 {
     #ifndef NEW_FOGGIN
         return saturate(length(pos - eye_position) * fog_params.w + fog_params.x);
     #else // NEW_FOGGIN
-        float a = 1.0f;
-        float b = 0.002f;
-        float denom = a - exp(-b * (fog_params.z - fog_params.y));
+        //float a = 1.0f;
+        //float b = 0.002f;
+        float denom = F_base - exp(-F_dens * (fog_params.z - fog_params.y));
         float dist = length(pos - eye_position);
-        return saturate((a - exp(-b * (dist - fog_params.y))) / denom);
+        return saturate((F_base - exp(-F_dens * (dist - fog_params.y))) / denom);
     #endif
 }
 
