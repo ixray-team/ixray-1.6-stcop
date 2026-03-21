@@ -278,6 +278,7 @@ void CContentView::Draw()
 	}
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(250, 100));
 	if (ImGui::Begin("Content Browser"))
 	{
 		if ((NeedRescan || Files.empty()) && !IsFindResult && !IsSpawnElement && !IsParticles)
@@ -305,6 +306,9 @@ void CContentView::Draw()
 
 			ImGui::TableSetColumnIndex(1);
 
+			ImVec2 availRegion = ImGui::GetContentRegionAvail();
+			if (availRegion.x > 15)
+			{
 			ImGui::PushStyleColor(ImGuiCol_ChildBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelBorderTint).Value);
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { ToolbarPadding, ToolbarPadding });
 			if (ImGui::BeginChild("##ContentBrowserSearch", ImVec2(ImGui::GetContentRegionAvail().x, 0), ImGuiChildFlags_AlwaysUseWindowPadding | ImGuiChildFlags_AutoResizeY))
@@ -314,7 +318,10 @@ void CContentView::Draw()
 			ImGui::EndChild();
 			ImGui::PopStyleVar();
 			ImGui::PopStyleColor();
-
+			}
+			availRegion = ImGui::GetContentRegionAvail();
+			if (availRegion.x > 15)
+			{
 			ImGui::PushStyleColor(ImGuiCol_ChildBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelTint).Value);
 			if (ImGui::BeginChild("##contentbrowserscroll"))
 			{
@@ -330,6 +337,7 @@ void CContentView::Draw()
 
 			ImGui::EndChild();
 			ImGui::PopStyleColor();
+			}
 
 			const ImGuiPayload* payload = ImGui::GetDragDropPayload();
 
@@ -345,7 +353,7 @@ void CContentView::Draw()
 		}
 		ImGui::PopStyleVar();
 	}
-	ImGui::PopStyleVar();
+	ImGui::PopStyleVar(2);
 
 	ImGui::End();
 
