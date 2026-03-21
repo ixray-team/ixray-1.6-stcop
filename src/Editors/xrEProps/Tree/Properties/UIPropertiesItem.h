@@ -12,6 +12,8 @@ public:
 	void SetSelect();
 	void SetUnselect();
 
+	void SetOpenRecursive(bool bOpen);
+
 public:
 	PropItem* PItem;
 	UIPropertiesForm* PropertiesFrom;
@@ -24,4 +26,5 @@ protected:
 private:
 	void RemoveMixed();
 	bool IsSelect = false;
+	bool IsOpen = true;
 };
