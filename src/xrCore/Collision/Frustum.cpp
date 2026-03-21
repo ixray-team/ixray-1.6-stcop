@@ -22,7 +22,7 @@ u32 XRCORE_API frustum_aabb_remap[8][6]
 };
 
 //////////////////////////////////////////////////////////////////////
-void CFrustum::CreateFromPoints(Fvector* p, int count, Fvector& COP)
+CFrustum& CFrustum::CreateFromPoints(Fvector* p, int count, Fvector& COP)
 {
 	VERIFY(count<FRUSTUM_MAXPLANES);
 	VERIFY(count>=3);
@@ -31,9 +31,12 @@ void CFrustum::CreateFromPoints(Fvector* p, int count, Fvector& COP)
 	for (int i=1; i<count; i++)
 		_add(COP,p[i-1],p[i]);
 	_add(COP,p[count-1],p[0]);
+
+	return *this;
 }
 
-void CFrustum::CreateFromPlanes(Fplane* p, int count){
+CFrustum& CFrustum::CreateFromPlanes(Fplane* p, int count)
+{
 	for (int k=0; k<count; k++)
 		planes[k].set(p[k]);
 
@@ -47,9 +50,11 @@ void CFrustum::CreateFromPlanes(Fplane* p, int count){
 	}
 
 	p_count = count;
+
+	return *this;
 }
 
-void CFrustum::CreateFromPortal(sPoly* poly, Fvector& vPN, Fvector& vBase, Fmatrix& mFullXFORM)
+CFrustum& CFrustum::CreateFromPortal(sPoly* poly, Fvector& vPN, Fvector& vBase, Fmatrix& mFullXFORM)
 {
 	Fplane	P;
 	P.build_precise	((*poly)[0],(*poly)[1],(*poly)[2]);
@@ -85,6 +90,8 @@ void CFrustum::CreateFromPortal(sPoly* poly, Fvector& vPN, Fvector& vBase, Fmatr
 	P.n.z		*= denom;
 	P.d			*= denom;
 	_add		(P);
+
+	return *this;
 }
 
 void CFrustum::SimplifyPoly_AABB(sPoly* poly, Fplane& plane)
@@ -123,7 +130,7 @@ void CFrustum::SimplifyPoly_AABB(sPoly* poly, Fplane& plane)
 	mInv.transform_tiny23(poly->last(),p2);		poly->inc();
 }
 
-void CFrustum::CreateOccluder(Fvector* p, int count, Fvector& vBase, CFrustum& clip)
+CFrustum& CFrustum::CreateOccluder(Fvector* p, int count, Fvector& vBase, CFrustum& clip)
 {
 	VERIFY(count<FRUSTUM_SAFE);
 	VERIFY(count>=3);
@@ -160,6 +167,8 @@ void CFrustum::CreateOccluder(Fvector* p, int count, Fvector& vBase, CFrustum& c
 			_add(vBase,p[i],p[next]);
 		}
 	}
+
+	return *this;
 }
 
 BOOL CFrustum::CreateFromClipPoly(Fvector* p, int count, Fvector& vBase, CFrustum& clip)
@@ -178,7 +187,7 @@ BOOL CFrustum::CreateFromClipPoly(Fvector* p, int count, Fvector& vBase, CFrustu
 	return	true;
 }
 
-void CFrustum::CreateFromMatrix(Fmatrix &M, u32 mask)
+CFrustum& CFrustum::CreateFromMatrix(Fmatrix &M, u32 mask)
 {
 	VERIFY			(_valid(M));
 	p_count			= 0;
@@ -252,4 +261,6 @@ void CFrustum::CreateFromMatrix(Fmatrix &M, u32 mask)
 		planes[i].d		*= denom;
 		planes[i].cache	();
 	}
+
+	return *this;
 }

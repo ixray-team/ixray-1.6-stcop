@@ -152,7 +152,7 @@ void ISpatial_DB::initialize(Fbox& BB)
 void ISpatial_DB::db_insert(ISpatialShared S, ISpatial_NODE* N, Fvector& n_C, float n_R)
 {
 	//*** we are assured that object lives inside our node
-	float n_vR = 2.f * n_R;
+	float n_vR = n_R * 2.f;
 	VERIFY(N);
 	VERIFY(S->verify_sp(n_C, n_vR));
 
@@ -175,7 +175,7 @@ void ISpatial_DB::db_insert(ISpatialShared S, ISpatial_NODE* N, Fvector& n_C, fl
 		// object can be pushed further down - select "octant", calc node position
 		Fvector& s_C = S->spatial.sphere.P;
 		u32 octant = _octant(n_C, s_C);
-		Fvector c_C; c_C.mad(n_C, c_spatial_offset[octant], c_R);
+		Fvector c_C{ n_C + c_spatial_offset[octant] * c_R };
 		VERIFY(octant == _octant(n_C, c_C));				// check table assosiations
 		ISpatial_NODE*& chield = N->children[octant];
 
