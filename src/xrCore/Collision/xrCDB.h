@@ -79,7 +79,7 @@ namespace CDB
 
 			load_task.wait();
 		}
-		void build(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_callback* bc=nullptr, void* bcp=nullptr, void* pRW = nullptr, bool RWMode = false);
+		void build(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_callback* bc=nullptr, void* bcp=nullptr, void* pRW = nullptr, bool RWMode = false, bool UseDelay = true);
 		u32 memory();
 	};
 

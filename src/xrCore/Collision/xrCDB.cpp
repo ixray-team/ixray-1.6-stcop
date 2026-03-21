@@ -53,7 +53,7 @@ CDB::MODEL::~MODEL()
 	xr_delete(tree);
 }
 
-void MODEL::build(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_callback* bc, void* bcp, void* pRW, bool RWMode)
+void MODEL::build(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_callback* bc, void* bcp, void* pRW, bool RWMode, bool UseDelay)
 {
 	R_ASSERT((Vcnt >= 4) && (Tcnt >= 2));
 
@@ -62,76 +62,85 @@ void MODEL::build(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_callback* 
 
 	status.store(S_BUILD);
 
-	load_task.run([=]()
+	auto LoaderLamda = [=]()
+	{
+		PROF_START_THREAD("build cform");
+		PROF_EVENT("build cform");
+
+		// verts
+		if (verts.empty())
 		{
-			PROF_START_THREAD("build cform");
-			PROF_EVENT("build cform");
+			verts.resize(Vcnt);
+			CopyMemory(verts.data(), V, Vcnt * sizeof(Fvector));
+		}
 
-			// verts
-			if (verts.empty())
+		// tris
+		if (tris.empty())
+		{
+			tris.resize(Tcnt);
+			CopyMemory(tris.data(), T, Tcnt * sizeof(TRI));
+		}
+
+		// callback
+		if (bc)
+			bc(verts.data(), Vcnt, tris.data(), Tcnt, bcp);
+
+		tree = new CDB_Model();
+
+		if (pRW != nullptr && RWMode)
+		{
+			if (tree->Restore((IReader*)pRW))
 			{
-				verts.resize(Vcnt);
-				CopyMemory(verts.data(), V, Vcnt * sizeof(Fvector));
-			}
-
-			// tris
-			if (tris.empty())
-			{
-				tris.resize(Tcnt);
-				CopyMemory(tris.data(), T, Tcnt * sizeof(TRI));
-			}
-
-			// callback
-			if (bc)
-				bc(verts.data(), Vcnt, tris.data(), Tcnt, bcp);
-
-			tree = new CDB_Model();
-
-			if (pRW != nullptr && RWMode)
-			{
-				if (tree->Restore((IReader*)pRW))
-				{
-					Msg("* Collision DB cache found...");
-					status.store(S_READY);
-					PROF_STOP_THREAD();
-					return;
-				}
-				else
-					Msg("* Collision DB cache missing, rebuilding...");
-			}
-
-			// Build a non quantized no-leaf tree
-			OPCODECREATE OPCC;
-
-			OPCC.mIMesh = new MeshInterface();
-			OPCC.mIMesh->SetNbTriangles(tris.size());
-			OPCC.mIMesh->SetNbVertices(verts.size());
-			OPCC.mIMesh->SetPointers((IceMaths::IndexedTriangle*)tris.data(), (IceMaths::Point*)verts.data());
-			OPCC.mSettings.mRules = SplittingRules::SPLIT_SPLATTER_POINTS | SplittingRules::SPLIT_GEOM_CENTER;
-			OPCC.mNoLeaf = true;
-			OPCC.mQuantized = false;
-
-			if (!tree->Build(OPCC))
-			{
+				Msg("* Collision DB cache found...");
 				status.store(S_READY);
-				verts.clear();
-				tris.clear();
-				xr_delete(tree);
-				Msg("! Collision build failed");
 				PROF_STOP_THREAD();
 				return;
 			}
+			else
+				Msg("* Collision DB cache missing, rebuilding...");
+		}
 
-			// Write cache
-			if (!RWMode && pRW)
-			{
-				tree->Store((IWriter*)pRW);
-				FS.w_close((IWriter*&)pRW);
-			}
-			Msg("+ Collision build succeeded");
+		// Build a non quantized no-leaf tree
+		OPCODECREATE OPCC;
+
+		OPCC.mIMesh = new MeshInterface();
+		OPCC.mIMesh->SetNbTriangles(tris.size());
+		OPCC.mIMesh->SetNbVertices(verts.size());
+		OPCC.mIMesh->SetPointers((IceMaths::IndexedTriangle*)tris.data(), (IceMaths::Point*)verts.data());
+		OPCC.mSettings.mRules = SplittingRules::SPLIT_SPLATTER_POINTS | SplittingRules::SPLIT_GEOM_CENTER;
+		OPCC.mNoLeaf = true;
+		OPCC.mQuantized = false;
+
+		if (!tree->Build(OPCC))
+		{
 			status.store(S_READY);
+			verts.clear();
+			tris.clear();
+			xr_delete(tree);
+			Msg("! Collision build failed");
 			PROF_STOP_THREAD();
-		});
+			return;
+		}
+
+		// Write cache
+		if (!RWMode && pRW)
+		{
+			tree->Store((IWriter*)pRW);
+			FS.w_close((IWriter*&)pRW);
+		}
+		Msg("+ Collision build succeeded");
+		status.store(S_READY);
+		PROF_STOP_THREAD();
+	};
+
+	if (UseDelay)
+	{
+		load_task.run(LoaderLamda);
+	}
+	else
+	{
+		LoaderLamda();
+	}
 }
 
 u32 MODEL::memory()
