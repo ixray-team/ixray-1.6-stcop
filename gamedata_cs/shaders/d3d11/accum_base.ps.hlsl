@@ -22,6 +22,8 @@ float4 main(p_volume I, float4 pos2d : SV_POSITION) : SV_Target
     float3 Light = DirectLight(Ldynamic_color, LightDirection, O.Normal, O.View.xyz, O.Color, O.Metalness, O.Roughness, O.F0);
 
     float3 Lightmap = ComputeLightAttention(Point.xyz - Ldynamic_pos.xyz, Ldynamic_pos.w);
+    //float3 Lightmap = getSquareFalloffAttenuation(Point.xyz - Ldynamic_pos.xyz, Ldynamic_pos.w);
+    
     Point.xyz += O.Normal * 0.025f;
 
     float4 PS = mul(m_shadow, Point);
@@ -47,7 +49,7 @@ float4 main(p_volume I, float4 pos2d : SV_POSITION) : SV_Target
     Lightmap *= s_lmap.SampleLevel(smp_rtlinear, PS.xy / PS.w, 0.0f).xyz;
 #endif
 
-	Lightmap = PushGamma(Lightmap);
+	Lightmap = Lightmap;
     return float4(Lightmap.xyz * Light.xyz, 0.0f);
 }
 

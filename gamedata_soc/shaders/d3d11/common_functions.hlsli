@@ -61,6 +61,90 @@ void RemapVector(inout float3 View)
     View.y = View.y * 2.0 - 1.0;
 }
 
+float3 CommerceToneMapping(float3 color, float startCompression, float desaturation)
+{
+    // Lisence Creative Commons Attribution 4.0 International CC BY 4.0
+    // taken from https://modelviewer.dev/examples/tone-mapping
+    // article and original code by Emmett Lalish https://github.com/elalish 
+    
+    //float startCompression = 0.8 - 0.04; //0.8-0.04;
+    //float desaturation = 0.15f; // 0.15
+
+    float x = min(color.r, min(color.g, color.b));
+    float offset = (x < 0.08f) ? (x - 6.25f * x * x) : 0.04f;
+    color -= offset;
+
+    float peak = max(color.r, max(color.g, color.b));
+    if (peak < startCompression)
+        return color;
+
+    float d = 1.f - startCompression;
+    float newPeak = 1.f - d * d / (peak + d - startCompression);
+    color *= newPeak / peak;
+
+    float g = 1.f - 1.f / (desaturation * (peak - newPeak) + 1.f);
+    return lerp(color, newPeak.xxx, g);
+}
+
+float Curve(float A, float B, float C, float D, float E, float F, float x)
+{
+    return ((x * (A * x + C * B) + D * E) / (x * (A * x + B) + D * F)) - E / F;
+}
+
+float3 Curve(float A, float B, float C, float D, float E, float F, float3 x)
+{
+    return ((x * (A * x + C * B) + D * E) / (x * (A * x + B) + D * F)) - E / F;
+}
+
+float3 Uncharted2Tonemap(float3 Color, float A, float B, float C, float D, float E, float F, float WhitePoint)
+{
+    float P = Curve(A, B, C, D, E, F, WhitePoint);
+    float3 U = Curve(A, B, C, D, E, F, Color);
+    return U / P;
+}
+
+float3 Uncharted2Tonemap(float3 Color)
+{
+    float A = 0.15f;
+    float B = 0.5f;
+    float C = 0.1f;
+    float D = 0.4f;
+    float E = 0.02f;
+    float F = 0.3f;
+    float WhitePoint = 1.7f;
+
+    return Uncharted2Tonemap(Color, A, B, C, D, E, F, WhitePoint);
+}
+
+float3 Crossfeed(float3 rgb, float factor)
+{
+    float a = 1.f - factor;
+    float b = factor * 0.5f;
+    return float3(
+        rgb.r * a + (rgb.g + rgb.b) * b,
+        rgb.g * a + (rgb.b + rgb.r) * b,
+        rgb.b * a + (rgb.r + rgb.g) * b);
+}
+
+float3 Vibrance(float3 rgb, float vibrance)
+{
+    float lum = dot(rgb, LUMINANCE_VECTOR);
+    float3 mask = (rgb - lum.xxx);
+    mask = saturate(mask);
+    float lumMask = dot(LUMINANCE_VECTOR, mask);
+    lumMask = 1.0 - lumMask;
+    return lerp(lum.xxx, rgb, 1.0 + vibrance * lumMask);
+}
+
+float3 b_remap(float3 color, float2 threshold)
+{
+    float thres1 = min(threshold.x, threshold.y);
+    float thres2 = max(threshold.x, threshold.y);
+    float brightness = (color.r + color.g + color.b) / 3.0;
+    float factor = smoothstep(thres1, thres2, brightness);
+    return color * factor;
+}
+
 // Функции генерации случайных чисел [0, 1]
 // START
 
@@ -212,9 +296,23 @@ float4 combine_bloom(float3 low, float4 high)
     return float4(low.xyz + high.xyz * high.w, 1.f);
 }
 
+//#define NEW_FOGGIN
+#ifdef NEW_FOGGIN
+    #define F_base 1.f
+    #define F_dens 0.002f
+#endif
+
 float calc_fogging(float3 pos)
 {
-    return saturate(length(pos - eye_position) * fog_params.w + fog_params.x);
+    #ifndef NEW_FOGGIN
+        return saturate(length(pos - eye_position) * fog_params.w + fog_params.x);
+    #else // NEW_FOGGIN
+        //float a = 1.0f;
+        //float b = 0.002f;
+        float denom = F_base - exp(-F_dens * (fog_params.z - fog_params.y));
+        float dist = length(pos - eye_position);
+        return saturate((F_base - exp(-F_dens * (dist - fog_params.y))) / denom);
+    #endif
 }
 
 float2 unpack_tc_base(float2 tc, float du, float dv)

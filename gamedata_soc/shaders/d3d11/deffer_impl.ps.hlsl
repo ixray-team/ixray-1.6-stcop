@@ -70,9 +70,9 @@ void main(p_bumped_new I, out OutStructure O)
 		float4 b_bumpX = s_dn_bX.Sample(smp_base, tcdbump) * Mask.z;
 		float4 a_bumpX = s_dn_aX.Sample(smp_base, tcdbump) * Mask.w;
 
-		//Unpack normals
-		M.Normal.xy = (r_bump.wy + g_bump.wy + b_bump.wy + a_bump.wy) - 128.0f / 255.0f;
-		M.Normal.z = sqrt(1.0f - dot(M.Normal.xy, M.Normal.xy));
+		//Unpack normals (if something is wrong - unpack and then blend them)
+		M.Normal.xy = (r_bump.wy + g_bump.wy + b_bump.wy + a_bump.wy) * 2.0 - 1.0;
+		M.Normal.z = sqrt(1.0f - saturate(dot(M.Normal.xy, M.Normal.xy)));
 
 		#ifndef USE_DX_NORMAL_MAP
 			M.Normal.y *= -1.0f;
@@ -90,8 +90,8 @@ void main(p_bumped_new I, out OutStructure O)
 
 		M.Roughness = DetailBumpX.y;
 		M.Metalness = DetailBumpX.x;
-		M.Normal.xy = DetailBump.wy - 128.0f / 255.0f;
-		M.Normal.z = sqrt(1.0f - dot(M.Normal.xy, M.Normal.xy));
+		M.Normal.xy = DetailBump.wy * 2.0 - 1.0;
+		M.Normal.z = sqrt(1.0f - saturate(dot(M.Normal.xy, M.Normal.xy)));
 		M.Color.xyz *= Detail * 2.0f;
 	#endif
 #else
