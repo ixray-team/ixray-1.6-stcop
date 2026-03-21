@@ -829,3 +829,17 @@ void UIPropertiesItem::SetUnselect()
 {
 	IsSelect = false;
 }
+
+void UIPropertiesItem::SetOpenRecursive(bool bOpen)
+{
+	IsOpen = bOpen;
+
+	for (UITreeItem* Child : Items)
+	{
+		UIPropertiesItem* SelfTypeItem = smart_cast<UIPropertiesItem*>(Child);
+		if (SelfTypeItem)
+		{
+			SelfTypeItem->SetOpenRecursive(bOpen);
+		}
+	}
+}

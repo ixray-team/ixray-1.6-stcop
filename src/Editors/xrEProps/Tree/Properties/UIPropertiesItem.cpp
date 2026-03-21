@@ -48,7 +48,9 @@ void UIPropertiesItem::Draw()
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, CellPadding);
 		ImGui::PushStyleColor(ImGuiCol_Header, RowColor1.Value);
 
-		bool open = XRay::ImGui::CollapsingHeader(*Name, ImGuiTreeNodeFlags_DefaultOpen);
+		ImGui::SetNextItemOpen(IsOpen, ImGuiCond_Always);
+		bool open = XRay::ImGui::CollapsingHeader(*Name, ImGuiTreeNodeFlags_None);
+		IsOpen = open;
 
 		ImGui::PopStyleColor();
 		ImGui::PopStyleVar();
