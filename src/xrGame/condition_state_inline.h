@@ -12,21 +12,9 @@
 #define CConditionStateAbstract CConditionState<_world_property>
 
 TEMPLATE_SPECIALIZATION
-IC	CConditionStateAbstract::CConditionState	()
-{
-//	m_conditions.reserve	(32);
-	m_hash					= 0;
-}
-
-TEMPLATE_SPECIALIZATION
-CConditionStateAbstract::~CConditionState	()
-{
-}
-
-TEMPLATE_SPECIALIZATION
 IC	const xr_vector<typename CConditionStateAbstract::COperatorCondition> &CConditionStateAbstract::conditions	() const
 {
-	return					(m_conditions);
+	return (m_conditions);
 }
 
 TEMPLATE_SPECIALIZATION
