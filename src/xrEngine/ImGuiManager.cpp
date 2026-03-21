@@ -180,7 +180,7 @@ void CImGuiManager::Render()
 	ImGui::NewFrame();
 
 #ifdef DEBUG_DRAW
-	if (DrawUIRender)
+	if (DrawUIRender && !psDeviceFlags.test(rsClearBB))
 	{
 		for (const auto& [Id, CommandData] : RenderFrameData)
 		{
