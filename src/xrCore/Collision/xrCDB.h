@@ -117,6 +117,8 @@ namespace CDB
 		u32 box_mode = 0;
 		u32 frustum_mode = 0;
 		u32 obb_mode = 0;
+		u32 sphere_mode = 0;
+		u32 custom_mode = 0;
 		// Result management
 		xr_vector<RESULT> rd;
 	public:
@@ -125,13 +127,21 @@ namespace CDB
 		void			ray_query		(const MODEL *m_def, const Fvector& r_start,  const Fvector& r_dir, float r_range = 10000.f);
 
 		ICF void		box_options		(u32 f)	{	box_mode = f;		}
-		void			box_query		(const MODEL *m_def, const Fvector& b_center, const Fvector& b_dim);
+		ICF void		box_query		(const MODEL* m_def, const Fvector& b_center, const Fvector& b_dim) { box_query(m_def, Fbox().set(b_center - b_dim, b_center + b_dim)); }
+		void			box_query		(const MODEL *m_def, const Fbox& _box);
 
 		ICF void		frustum_options	(u32 f)	{	frustum_mode = f;	}
 		void			frustum_query	(const MODEL *m_def, const CFrustum& F);
 
 		ICF void		obb_options(u32 f) { obb_mode = f; }
 		void			obb_query(const MODEL* m_def, const Fobb& _obb);
+
+		ICF void		sphere_options(u32 f) { sphere_mode = f; }
+		void		 	sphere_query(const MODEL* m_def, const Fsphere& _sphere);
+		ICF void		sphere_query(const MODEL* m_def, const Fvector& P, float R) { sphere_query(m_def, Fsphere{P,R}); }
+
+		ICF void		custom_options(u32 f) { obb_mode = f; }
+		void			custom_query(const MODEL* m_def, bool(AABBCheckF)(const Fvector&, const Fvector&, bool, void*), void* paabbc, void(GetTrisF)(size_t, void*), void* ptric);
 
 		ICF RESULT*		r_begin			(){return &*rd.begin();};
 		ICF RESULT*		r_end			(){return &*rd.end();};
