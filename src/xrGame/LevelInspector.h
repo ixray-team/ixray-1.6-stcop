@@ -4,17 +4,24 @@ struct LevelInspector final
 {
 	enum ESCENE_FLAGS
 	{
-		ESF_NONE				= 0U,
-		ESF_DRAW_L_GRID			= bit_lshift(0U),
-		ESF_DRAW_G_GRID			= bit_lshift(1U),
-		ESF_DRAW_W_GRID			= bit_lshift(2U),
-		ESF_DRAW_OBJECTS		= bit_lshift(3U),
-		ESF_DRAW_ZONES			= bit_lshift(4U),
-		ESF_DRAW_AI_PATHS		= bit_lshift(5U),
-		ESF_DRAW_SELECTION		= bit_lshift(6U),
-		ESF_DRAW_HUD			= bit_lshift(7U),
-		ESF_DRAW_ALL_SPATIALS	= bit_lshift(8U),
-		ESF_DRAW_HOM			= bit_lshift(9U),
+		ESF_NONE					= 0U,
+		ESF_DRAW_L_GRID				= bit_lshift(0U),
+		ESF_DRAW_G_GRID				= bit_lshift(1U),
+		ESF_DRAW_W_GRID				= bit_lshift(2U),
+		ESF_DRAW_OBJECTS			= bit_lshift(3U),
+		ESF_DRAW_ZONES				= bit_lshift(4U),
+		ESF_DRAW_AI_PATHS			= bit_lshift(5U),
+		ESF_DRAW_SELECTION			= bit_lshift(6U),
+		ESF_DRAW_HUD				= bit_lshift(7U),
+
+		ESF_DRAW_ALL_SPATIALS		= bit_lshift(8U),
+		ESF_DRAW_SPATIAL_SPACE		= bit_lshift(9U),
+		ESF_DRAW_SPATIAL_SPACE_ALL	= bit_lshift(10U),
+		ESF_DRAW_HOM				= bit_lshift(11U),
+		ESF_DRAW_CFORM				= bit_lshift(12U),
+		ESF_DRAW_CFORM_ALL			= bit_lshift(13U),
+		ESF_DRAW_CFORM_TRIS			= bit_lshift(14U),
+		ESF_DRAW_LEVEL_BOUNDS		= bit_lshift(15U),
 	};
 	
 	enum ESELECTION_FLAGS
@@ -106,7 +113,9 @@ struct LevelInspector final
 	u32 visible_currents_key = 224u;
 
 
-
+	float cform_ssa = 0.00005;
+	float cform_aabb_aspect_ratio = 1.0f;
+	float zbuff_shift = 0.005f;
 
 	Flags32 m_flags = { 0 };
 	Flags32 m_selection_flags = { 0 };
@@ -114,7 +123,7 @@ struct LevelInspector final
 	Flags32 m_skeleton_flags = { 0 };
 	Flags32 m_waypoint_flags = { 0 };
 	Flags32 m_zone_flags = { 0 };
-	ESPATIAL_TYPE m_spatials_mask{ ESPATIAL_TYPE(-1)};
+	ESPATIAL_TYPE m_spatials_mask{ ESPATIAL_TYPE::NONE};
 
 	BOOL zbuffer_enable = TRUE;
 	BOOL visible_currents = TRUE;
@@ -425,7 +434,9 @@ struct LevelInspector final
 	void DrawGameGraph();
 	void DrawWayPoints();
 	void DrawObjects();
+	void DrawSpatials();
 	void DrawHOM();
+	void DrawCFORM();
 
 	void DrawLevelGraph();
 
