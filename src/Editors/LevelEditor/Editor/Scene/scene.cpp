@@ -296,6 +296,8 @@ void EScene::Unload(BOOL bEditableOnly)
 ECORE_API xrGUID generate_guid();
 void EScene::Clear(BOOL bEditableToolsOnly)
 {
+	Device.details_task.wait();
+
 	// clear snap
 	ClearSnapList(false);
 	// clear scene tools
