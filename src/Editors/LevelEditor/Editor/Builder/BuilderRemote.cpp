@@ -612,17 +612,22 @@ BOOL SceneBuilder::BuildMesh(	const Fmatrix& parent,
 		mesh->UnloadFNormals();
 	}
 	// fill faces
-	for (SurfFacesPairIt sp_it=mesh->m_SurfFaces.begin(); sp_it!=mesh->m_SurfFaces.end(); sp_it++)
+	for (auto &[MeshSurf, face_lst] : mesh->m_SurfFaces)
 	{
-		IntVec& face_lst = sp_it->second;
 		CSurface* surf = nullptr;
-		for (size_t i = 0; i < mesh->Parent()->SurfaceCount(); i++)
+
+		for (CSurface* SceneSurf : obj->m_Surfaces)
 		{
-			if (mesh->Parent()->Surfaces()[i] == sp_it->first)
+			if (SceneSurf->m_Name == MeshSurf->m_Name && SceneSurf->m_id == MeshSurf->m_id)
 			{
-				surf = obj ? obj->m_Surfaces[i] : sp_it->first;
+				surf = SceneSurf;
 				break;
 			}
+		}
+
+		if (surf == nullptr)
+		{
+			surf = MeshSurf;
 		}
 		VERIFY(surf);
 
@@ -1375,19 +1380,6 @@ BOOL SceneBuilder::CompileStatic(bool b_selected_only)
 	SceneToolsMapPairIt t_it 	= Scene->FirstTool();
 	SceneToolsMapPairIt t_end 	= Scene->LastTool();
 
-	if(b_selected_only)
-	{
-		if(pCurrentTool)
-			pCurrentTool->CompileStaticStart();
-	}else
-	{
-		for (; t_it!=t_end; ++t_it)
-		{
-			ESceneToolBase* mt 		= t_it->second;
-			if (mt)
-				mt->CompileStaticStart();
-		}
-	}
 	int objcount = Scene->ObjCount();
 	if( objcount <= 0 )	return FALSE;
 
@@ -1509,21 +1501,6 @@ BOOL SceneBuilder::CompileStatic(bool b_selected_only)
 			SaveBuild			();
 	}
 
-	if(b_selected_only)
-	{
-		if(pCurrentTool)
-			pCurrentTool->CompileStaticEnd();
-	}else
-	{
-		t_it 				= Scene->FirstTool();
-		t_end 				= Scene->LastTool();
-		for (; t_it!=t_end; ++t_it)
-		{
-			ESceneToolBase* mt 		= t_it->second;
-			if (mt)
-				mt->CompileStaticEnd();
-		}
-	}
 	return bResult;
 }
 
