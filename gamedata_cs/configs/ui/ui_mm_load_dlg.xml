@@ -13,6 +13,7 @@
   </background>
   
   <file_item>
+	<itm_color r="216" g="186" b="140"/>
     <main width="430" height="22"/>
     <fn width="285" height="22"/>
     <fd x="290" y="0" width="110" height="22"/>
@@ -58,7 +59,7 @@
 		  <texture>ui_tablist_textbox</texture>
 	  </list_frame>
   		
-	  <list x="75" y="231" width="429" height="180" item_height="18">
+	  <list x="75" y="231" width="429" height="180" item_height="18" can_select="1">
 		  <font font="letterica16" r="216" g="186" b="140" />
 	  </list>
   				
@@ -66,7 +67,10 @@
 		  <texture>ui_button_main02</texture>
 		  <text font="graffiti22">ui_mm_load</text>
 		  <text_color>
-			  <e r="227" g="199" b="178"/> <t r="180" g="153" b="155"/> <d r="106" g="95" b="91"/> <h r="0" g="0" b="0"/>
+			  <e r="227" g="199" b="178"/> 
+			  <t r="180" g="153" b="155"/> 
+			  <d r="106" g="95" b="91"/> 
+			  <h r="0" g="0" b="0"/>
 		  </text_color>
 	  </btn_load>
   		
@@ -74,7 +78,10 @@
 		  <texture>ui_button_main02</texture>
 		  <text font="graffiti22">ui_mm_delete</text>
 		  <text_color>
-			  <e r="227" g="199" b="178"/> <t r="180" g="153" b="155"/> <d r="106" g="95" b="91"/> <h r="0" g="0" b="0"/>
+			  <e r="227" g="199" b="178"/> 
+			  <t r="180" g="153" b="155"/> 
+			  <d r="106" g="95" b="91"/> 
+			  <h r="0" g="0" b="0"/>
 		  </text_color>
 	  </btn_delete>
   	
@@ -82,7 +89,10 @@
 		  <texture>ui_button_main02</texture>			
 		  <text font="graffiti22">ui_mm_cancel</text>
 		  <text_color>
-			  <e r="227" g="199" b="178"/> <t r="180" g="153" b="155"/> <d r="106" g="95" b="91"/> <h r="0" g="0" b="0"/>
+			  <e r="227" g="199" b="178"/> 
+			  <t r="180" g="153" b="155"/> 
+			  <d r="106" g="95" b="91"/> 
+			  <h r="0" g="0" b="0"/>
 		  </text_color>
 	  </btn_cancel>
   </form>

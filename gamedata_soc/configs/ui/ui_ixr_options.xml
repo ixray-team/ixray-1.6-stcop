@@ -1,0 +1,137 @@
+<w>
+
+	<ixr_options_btn x="25" y="650" width="40" height="40" stretch="1">
+		<texture>ui\ixr_options\options</texture>
+	</ixr_options_btn>
+
+	<ixr_options_overlay_background x="0" y="0" width="1024" height="768" stretch="1">
+		<texture>ui\ixr_options\background</texture>
+	</ixr_options_overlay_background>
+	
+	<ixr_options_close_button x="0" y="0" width="32" height="32" stretch="1">
+		<texture>ui\ixr_options\close_button</texture>
+	</ixr_options_close_button>
+	
+	<black_texture x="0" y="0" width="64" height="64" stretch="1">
+		<texture>ui\ixr_options\black</texture>
+	</black_texture>
+	
+	<white_texture x="0" y="0" width="64" height="64" stretch="1">
+		<texture>ui\ixr_options\white</texture>
+	</white_texture>
+	
+	<black_round_l_u x="0" y="0" width="32" height="32" stretch="1">
+		<texture>ui\ixr_options\black_round_l_u</texture>
+	</black_round_l_u>
+	
+	<black_round_l_d x="0" y="0" width="32" height="32" stretch="1">
+		<texture>ui\ixr_options\black_round_l_d</texture>
+	</black_round_l_d>
+	
+	<black_round_r_u x="0" y="0" width="32" height="32" stretch="1">
+		<texture>ui\ixr_options\black_round_r_u</texture>
+	</black_round_r_u>
+	
+	<black_round_r_d x="0" y="0" width="32" height="32" stretch="1">
+		<texture>ui\ixr_options\black_round_r_d</texture>
+	</black_round_r_d>
+	
+	<black_option_rounded_rect x="0" y="0" width="640" height="40" stretch="1">
+		<texture  x="0" y="0" width="640" height="40">ui\ixr_options\option_rounded_rect</texture>
+	</black_option_rounded_rect>
+	
+	<ixr_options_boycott_32_l x="0" y="0" width="1" height="1" stretch="1">
+		<text align="l"  complex_mode="1" font="font_boycott_32"> </text>
+		<text_color>
+			<e r="255" g="255" b="255" a="150"/>
+			<h r="255" g="0" b="0" a="150"/>
+		</text_color>
+	</ixr_options_boycott_32_l>
+	
+	<ixr_options_boycott_18_l x="0" y="0" width="1" height="1" stretch="1">
+		<text align="l"  complex_mode="1" font="font_boycott_18"> </text>
+		<text_color>
+			<e r="255" g="255" b="255" a="150"/>
+			<h r="255" g="0" b="0" a="150"/>
+		</text_color>
+	</ixr_options_boycott_18_l>
+	
+	<ixr_product_sans_16_l x="0" y="0" width="1" height="1" stretch="1">
+		<text align="l"  complex_mode="1" font="font_product_sans_16"> </text>
+		<text_color>
+			<e r="255" g="255" b="255" a="150"/>
+			<h r="255" g="0" b="0" a="150"/>
+		</text_color>
+	</ixr_product_sans_16_l>
+	
+	<ixr_product_sans_12_l x="0" y="0" width="1" height="1" stretch="1">
+		<text align="l"  complex_mode="1" font="font_product_sans_12"> </text>
+		<text_color>
+			<e r="255" g="255" b="255" a="150"/>
+			<h r="255" g="0" b="0" a="150"/>
+		</text_color>
+	</ixr_product_sans_12_l>
+	
+	<addons_list x="0" y="0" width="250" height="575" item_height="0" can_select="1">
+		<font font="letterica16"/>
+	</addons_list>
+	
+	<addon_icon x="0" y="0" width="64" height="64" stretch="1">
+		<texture width="128" height="128">ui\ui_noise</texture>
+	</addon_icon>
+	
+	<addon_background x="0" y="0" width="64" height="64" stretch="1">
+		<texture x="0" y="0" width="222" height="68">ui\ixr_options\addon_background</texture>
+	</addon_background>
+
+	<scroll_v x="0" y="0" width="670" height="320" right_ident="0" left_ident="0" top_indent="0" bottom_indent="0" vert_interval="0" always_show_scroll="0" />
+	
+	<check_box_background x="0" y="0" width="256" height="64" stretch="1">
+		<texture>ui\ixr_options\controlls\check_box\check_box_background</texture>
+	</check_box_background>
+	
+	<check_box_on x="0" y="0" width="70" height="18" stretch="1">
+		<text x="45" y="0" align="l"  complex_mode="1" font="font_product_sans_12">ON</text>
+		<text_color>
+			<e r="42" g="86" b="47" a="200"/>
+			<h r="255" g="255" b="255" a="200"/>
+		</text_color>
+		<texture>ui\ixr_options\controlls\check_box\on</texture>
+	</check_box_on>
+	
+	<check_box_off x="0" y="0" width="70" height="18" stretch="1">
+		<text x="15" y="0"  align="l"  complex_mode="1" font="font_product_sans_12">OFF</text>
+		<text_color>
+			<e r="96" g="0" b="1" a="200"/>
+			<h r="255" g="255" b="255" a="200"/>
+		</text_color>
+		<texture>ui\ixr_options\controlls\check_box\off</texture>
+	</check_box_off>
+	
+	<text_box x="0" y="0" width="556" height="64" file_name_mode="1">
+		<text x="3" width="500" font="font_product_sans_14" vert_align="c"/>
+		<text_color>
+			<e r="255" g="255" b="255" a="200"/>
+			<h r="255" g="255" b="255" a="200"/>
+		</text_color>
+	</text_box>
+	
+	<combo_box_left_arrow x="0" y="0" width="16" height="16" stretch="1">
+		<texture>ui\ixr_options\controlls\combo_box\left_arrow</texture>
+	</combo_box_left_arrow>
+	
+	<combo_box_right_arrow x="0" y="0" width="16" height="16" stretch="1">
+		<texture>ui\ixr_options\controlls\combo_box\right_arrow</texture>
+	</combo_box_right_arrow>
+	
+	<text_box_middle x="0" y="0" width="1" height="1" stretch="1">
+		<text x="3" vert_align="c" horiz_align="c" align="c" complex_mode="1" font="font_product_sans_14"> </text>
+		<text_color>
+			<e r="255" g="255" b="255" a="150"/>
+			<h r="255" g="0" b="0" a="150"/>
+		</text_color>
+	</text_box_middle>
+	
+	<templ_item width="240" height="16"/>
+	<track_bar x="0" y="0" width="240" height="16"></track_bar>
+</w>
