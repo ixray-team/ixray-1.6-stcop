@@ -591,6 +591,25 @@ function GetOptionsVar(var_name, default_value)
 	return false
 end
 
+--  ####################################################################################################################
+-- 													IXR THROTTLERS 
+--  ####################################################################################################################
+
+--[[
+Description: Checks whether the action is allowed to be performed, whether a sufficient amount of time has passed relative to the previous call.
+Parameters:
+  name (string)(required) 	- key name throttler.
+  interval_ms (int)(required) - time interval calls in milliseconds
+Returns: (bool) - returns true if call allow, otherwise false.
+ --]]
+function IsActionThrottled(name, interval_ms)
+	if IsModuleLoaded("ixr_throttlers") then
+		return GetModule("ixr_throttlers").is_action_throttled(name, interval_ms)
+	end
+	
+	return true
+end
+
 -- ##############################################################
 -- #						OTHER								#
 -- ##############################################################
