@@ -201,6 +201,13 @@ IC bool	ILevelGraph::inside				(const u32 vertex_id,	const Fvector2 &position) c
 {
 	int					pxz	= iFloor(((position.x - header().box().min.x)/header().cell_size() + .5f))*m_row_length + iFloor((position.y - header().box().min.z)/header().cell_size() + .5f);
 	VERIFY				(pxz < MAX_AI_NODES);
+
+	if (!valid_vertex_id(vertex_id))
+	{
+		Msg("! Invalid vertex id %u at pos xz[%.3f %.3f]", vertex_id, position.x, position.y);
+		return false;
+	}
+
 	bool				b = vertex(vertex_id)->position().xz() == u32(pxz);
 	return				(b);
 }
