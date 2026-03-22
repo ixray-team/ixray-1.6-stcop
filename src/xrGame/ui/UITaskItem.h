@@ -64,6 +64,7 @@ class CUITaskSubItem :public CUITaskItemLegacy
 	u32				m_active_color;
 	u32				m_failed_color;
 	u32				m_accomplished_color;
+	u32				m_selected_color;
 protected:
 	CUIStatic*		m_ActiveObjectiveStatic;
 	CUI3tButton*	m_showDescriptionBtn;
@@ -71,6 +72,7 @@ protected:
 	CUIStatic*		m_stateStatic;
 
 	void			Init					();
+	void			UpdateColor				();
 
 public:	
 					CUITaskSubItem			(CUIEventsWnd* w);
