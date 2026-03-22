@@ -23,4 +23,7 @@ public:
 	void		ClearAll					();
 	void		AddArticle					(LPCSTR article);
 	void		AddArticle					(CEncyclopediaArticle* article);
+	
+	void		ScrollUp					();
+	void		ScrollDown					();
 };
