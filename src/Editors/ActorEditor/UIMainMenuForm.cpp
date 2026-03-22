@@ -89,6 +89,9 @@ void UIMainMenuForm::DrawMenuItemI(const char* label, const char* icon, int comm
 
 void UIMainMenuForm::Draw()
 {
+	ImGui::PushStyleColor(ImGuiCol_Button, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::BackgroundTint).Value);
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+
 	if (IXBeginMainMenuBar())
 	{
 		ImVec2 cp;
@@ -357,4 +360,7 @@ void UIMainMenuForm::Draw()
 
 		IXEndMainMenuBar();
 	}
+
+	ImGui::PopStyleColor();
+	ImGui::PopStyleVar();
 }
