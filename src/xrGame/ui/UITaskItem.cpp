@@ -229,6 +229,7 @@ void CUITaskSubItem::Init			()
 	m_active_color					= xml_init.GetColor(uiXml, "task_sub_item:description:text_colors:active",		0, 0x00);
 	m_failed_color					= xml_init.GetColor(uiXml, "task_sub_item:description:text_colors:failed",		0, 0x00);
 	m_accomplished_color			= xml_init.GetColor(uiXml, "task_sub_item:description:text_colors:accomplished",0, 0x00);
+	m_selected_color				= xml_init.GetColor(uiXml, "task_sub_item:description:text_colors:selected",	0, 0xFFFFFFFF);
 }
 
 void CUITaskSubItem::SetGameTask	(CGameTask* gt, u16 obj_idx)				
@@ -242,22 +243,28 @@ void CUITaskSubItem::SetGameTask	(CGameTask* gt, u16 obj_idx)
 	float h = std::max(	m_ActiveObjectiveStatic->GetWndPos().y+m_ActiveObjectiveStatic->GetHeight(),
 					m_descriptionStatic->GetWndPos().y+ m_descriptionStatic->GetHeight());
 	SetHeight									(h);
+	UpdateColor();
+}
+
+void CUITaskSubItem::UpdateColor()
+{
+	SGameTaskObjective	*obj = &m_GameTask->Objective(m_TaskObjectiveIdx);
 	switch (obj->GetTaskState())
 	{
-		case eTaskStateInProgress:
-			m_stateStatic->InitTexture				("ui_icons_PDA_subtask_active");
-			m_descriptionStatic->SetTextColor		(m_active_color);
-			break;
-		case eTaskStateFail:
-			m_stateStatic->InitTexture				("ui_icons_PDA_subtask_failed");
-			m_descriptionStatic->SetTextColor		(m_failed_color);
-			break;
-		case eTaskStateCompleted:
-			m_stateStatic->InitTexture				("ui_icons_PDA_subtask_accomplished");
-			m_descriptionStatic->SetTextColor		(m_accomplished_color);
-			break;
-		default:
-			NODEFAULT;
+	case eTaskStateInProgress:
+		m_stateStatic->InitTexture("ui_icons_PDA_subtask_active");
+		m_descriptionStatic->SetTextColor(GetSelected()?m_selected_color:m_active_color);
+		break;
+	case eTaskStateFail:
+		m_stateStatic->InitTexture("ui_icons_PDA_subtask_failed");
+		m_descriptionStatic->SetTextColor(GetSelected() ? m_selected_color : m_failed_color);
+		break;
+	case eTaskStateCompleted:
+		m_stateStatic->InitTexture("ui_icons_PDA_subtask_accomplished");
+		m_descriptionStatic->SetTextColor(GetSelected() ? m_selected_color : m_accomplished_color);
+		break;
+	default:
+		NODEFAULT;
 	};
 }
 
@@ -294,4 +301,5 @@ void CUITaskSubItem::OnShowDescriptionClicked (CUIWindow*, void*)
 void CUITaskSubItem::MarkSelected (bool b)
 {
 	m_showDescriptionBtn->SetButtonState	(b ? CUIButton::BUTTON_PUSHED : CUIButton::BUTTON_NORMAL);
+	UpdateColor();
 }
