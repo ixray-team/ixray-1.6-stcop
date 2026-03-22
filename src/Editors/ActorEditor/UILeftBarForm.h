@@ -24,6 +24,10 @@ public:
 	IC int GetPickMode()const { return m_PickMode; }
 
 private:
+	void SetSmooth(ESmoothGroup mode);
+	void SetAnim(EAnimMode mode);
+
+private:
 	int m_PickMode;
 	RenderMode m_RenderMode;
 	EAnimMode m_AnimMode;
