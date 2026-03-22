@@ -2,7 +2,7 @@
 
 #include "UIButton.h"
 
-class UI_API CUIListItem : public CUIButton
+class UI_API CUIListItem : public CUIButton, public CUISelectable
 {
 protected:
     using inherited = CUIButton;
@@ -36,9 +36,11 @@ public:
     // переопределяем критерий подсвечивания текста
     virtual bool IsHighlightText();
     virtual void SetHighlightText(bool Highlight) { m_bHighlightText = Highlight; }
-
+    
+	virtual void SetSelected(bool b) override;
     virtual CUIWindow* ui_cast_window() { return this; }
     virtual CUIListItem* ui_cast_list_item() { return this; }
+    virtual CUISelectable* ui_cast_selectable() { return this; }
 
 protected:
     //указатель на произвольные данные, которые могут

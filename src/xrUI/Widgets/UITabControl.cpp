@@ -218,22 +218,46 @@ void CUITabControl::SetActiveTabByIndex(u32 index)
 	SetActiveTab(newBtn->m_btn_id);
 }
 
-void CUITabControl::NextTab()
+void CUITabControl::NextTab(bool bAllowLoop)
 {
+	if (m_TabsArr.size() < 2)
+	{
+		return;
+	}
+
 	int nextIdx = GetActiveIndex() + 1;
 	if (nextIdx > GetButtonsVector()->size()-1)
 	{
-		nextIdx = 0;
+		if (bAllowLoop)
+		{
+			nextIdx = 0;
+		}
+		else
+		{
+			return;
+		}
 	}
 	SetActiveTabByIndex(nextIdx);
 }
 
-void CUITabControl::PrevTab()
+void CUITabControl::PrevTab(bool bAllowLoop)
 {
+	if (m_TabsArr.size() < 2)
+	{
+		return;
+	}
+
 	int nextIdx = GetActiveIndex() - 1;
 	if (nextIdx < 0)
 	{
-		nextIdx = GetButtonsVector()->size()-1;
+		if (bAllowLoop)
+		{
+			nextIdx = GetButtonsVector()->size() - 1;
+		}
+		else
+		{
+			return;
+		}
 	}
 	SetActiveTabByIndex(nextIdx);
 }
