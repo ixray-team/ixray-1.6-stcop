@@ -19,7 +19,7 @@ public:
 	xr_vector<xr_string> m_bone_names;
 	xr_string m_spawn_section;
 	xr_vector<ref_sound> m_use_sounds;
-	u16 left_uses = 0;
+	u8 left_uses = 0;
 
 	CInteractiveObject();
 	~CInteractiveObject();
@@ -33,6 +33,8 @@ public:
 
 	virtual void save(NET_Packet& output_packet) override;
 	virtual void load(IReader& input_packet) override;
+
+	virtual BOOL net_SaveRelevant() override  { return TRUE; }
 
 	void DestroySoundsArray(xr_vector<ref_sound>& soundsArray);
 	virtual void Load(LPCSTR section) override;
