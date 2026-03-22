@@ -61,6 +61,62 @@ float CActor::GetWeaponAccuracy() const
 	return dispersion;
 }
 
+//возвращает учет движения актора с оружем
+float CActor::GetAgility() const
+{
+	PIItem active_item = inventory().ActiveItem();
+	CWeapon* W = active_item != nullptr ? active_item->cast_weapon() : nullptr;
+
+	if (!W) return 0.0f;
+
+	CameraRecoil current_recoil = W->IsZoomed() ? W->zoom_cam_recoil : W->cam_recoil;
+
+	float Agility = current_recoil.Pattern.FactorAgility;
+
+	CEntity::SEntityState state;
+	if (g_State(state))
+	{
+		bool bAccelerated = isActorAccelerated(mstate_real, IsZoomAimingMode());
+
+		// Скоростной модификатор
+		float vel_combined = 1.0f + (m_fAgilityVelFactor * current_recoil.Pattern.FactorAgilityVel - 1.0f);
+		float speed_factor = 1.0f;
+		speed_factor *= (1.0f + (state.fAVelocity / VEL_A_MAX) * (vel_combined - 1.0f));
+		speed_factor *= (1.0f + (state.fVelocity / VEL_MAX) * (vel_combined - 1.0f));
+
+		// Модификатор ускорения
+		float accel_modifier = 1.0f;
+		if (bAccelerated || !state.bCrouch)
+		{
+			float accel_combined = 1.0f + (m_fAgilityAccelFactor * current_recoil.Pattern.FactorAgilityAccel - 1.0f);
+			accel_modifier = accel_combined;
+		}
+
+		// Модификатор полуприседа (crouch)
+		float crouch_modifier = 1.0f;
+		if (state.bCrouch && bAccelerated)
+		{
+			float crouch_combined = 1.0f + (m_fAgilityCrouchFactor * current_recoil.Pattern.FactorAgilityCrouch - 1.0f);
+			crouch_modifier = crouch_combined;
+		}
+
+		// Модификатор полного приседа (crouch no accel) 
+		float crouch_no_accel_modifier = 1.0f;
+		if (state.bCrouch && !bAccelerated)
+		{
+			float crouch_no_accel_combined = 1.0f + (m_fAgilityCrouchNoAccelFactor * current_recoil.Pattern.FactorAgilityCrouchNoAcc - 1.0f);
+			crouch_no_accel_modifier = crouch_no_accel_combined;
+		}
+
+
+		Agility = Agility * speed_factor * accel_modifier * crouch_modifier * crouch_no_accel_modifier;
+	//	Msg("Agility=%.3f, speed_factor=%.3f, accel_modifier=%.3f, crouch_modifier=%.3f, crouch_no_accel_modifier=%.3f",
+	//		Agility, speed_factor, accel_modifier, crouch_modifier, crouch_no_accel_modifier);
+	}
+
+	return Agility;
+}
+
 
 void CActor::g_fireParams(const CHudItem* pHudItem, Fvector& fire_pos, Fvector& fire_dir)
 {
