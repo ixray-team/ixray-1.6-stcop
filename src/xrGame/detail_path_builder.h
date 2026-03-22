@@ -47,6 +47,11 @@ public:
 		if (separate_computing)
 			m_object->m_wait_for_distributed_computation	= false;
 
+		if (m_level_path->empty())
+		{
+			return;
+		}
+
 		m_object->detail().build_path	(*m_level_path,m_path_vertex_index);
 
 		m_object->on_build_path			();
