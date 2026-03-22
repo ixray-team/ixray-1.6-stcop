@@ -79,7 +79,8 @@ IC			bool	NeedShowScrollBar	();		// no comment
 			void	UpdateChildrenLenght();		// set default width for all children
 			float	Scroll2ViewV		();		// calculate scale for scroll position
 	CUIScrollBar*	ScrollBar		() {return m_VScrollBar;}
-	
+			void	SetSelectionsAllowed(bool bOn) { m_flags.set(eItemsSelectabe, bOn);  }
+
 	virtual CUIWindow* ui_cast_window() { return this; }
 	virtual CUIScrollView* ui_cast_scroll_view() { return this; }
 

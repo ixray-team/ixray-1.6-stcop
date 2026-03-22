@@ -32,14 +32,14 @@ void CUIListItem::InitTexture(pcstr tex_name)
     SetTextX(m_UIStaticItem.GetTextureRect().width());
 }
 
-/*
-void CUIListItem::Init(const char* str, float x, float y, float width, float height)
-{
-    Init(x,y,width, height);
-    SetTextST(str);	
-}*/
-
 bool CUIListItem::IsHighlightText()
 {
     return CursorOverWindow();
+}
+
+void CUIListItem::SetSelected(bool b)
+{
+    CUISelectable::SetSelected(b);
+
+    MarkSelected(b);
 }
