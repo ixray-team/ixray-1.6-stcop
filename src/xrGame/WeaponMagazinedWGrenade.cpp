@@ -890,6 +890,8 @@ bool CWeaponMagazinedWGrenade::Detach(LPCSTR item_section_name, bool b_spawn_ite
 			PlayAnimIdle();
 		}
 
+		m_fGrenadeAttachedRecoil = 1.0f;
+
 		return CInventoryItemObject::Detach(item_section_name, b_spawn_item);
 	}
 	else
@@ -907,8 +909,10 @@ void CWeaponMagazinedWGrenade::InitAddons()
 		if (IsGrenadeLauncherAttached())
 		{
 			CRocketLauncher::m_fLaunchSpeed = pSettings->r_float(*m_sGrenadeLauncherName, "grenade_vel");
+			m_fGrenadeAttachedRecoil = READ_IF_EXISTS(pSettings, r_float, *m_sGrenadeLauncherName, "grenade_attached_recoil", 1.0f);
 		}
 	}
+
 }
 
 bool CWeaponMagazinedWGrenade::UseScopeTexture()
