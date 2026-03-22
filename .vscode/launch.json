@@ -17,6 +17,19 @@
             "env": {
                 "LD_LIBRARY_PATH": "${workspaceFolder}/build/bin/Debug"
             }
+        },
+        {
+            "type": "lua",
+            "request": "launch",
+            "name": "LuaPanda",
+            "description": "IX-Ray Lua Debug",
+            "cwd": "${workspaceFolder}/gamedata/scripts",
+            "luaFileExtension": "script",
+            "connectionPort": 8818,
+            "stopOnEntry": true,
+            "useCHook": true,
+            "autoPathMode": true,
+            "updateTips": true
         }
     ]
 }
