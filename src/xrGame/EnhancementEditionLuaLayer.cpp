@@ -143,28 +143,3 @@ void ExportEELayer(lua_State* L)
 		lua_pop(L, 1);
 	}
 }
-
-void IterateActiveItem(CScriptGameObject* Owner, luabind::object func, luabind::object context)
-{
-	if (Actor()->inventory().GetActiveSlot() != NO_ACTIVE_SLOT)
-	{
-		try
-		{
-			luabind::call_function<void>(func, Owner, Actor()->inventory().ItemFromSlot(Actor()->inventory().GetActiveSlot())->object().lua_game_object());
-		}
-		catch (...)
-		{
-			ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "Error in iterate_activeitems callback!");
-		}
-	}
-
-	if (CInventoryItem* result = Actor()->inventory().ItemFromSlot(DEVICE_SLOT))
-	{
-		luabind::call_function<void>(func, Owner, result->object().lua_game_object());
-	}
-};
-
-luabind::class_<CScriptGameObject> script_register_game_object_ee(luabind::class_<CScriptGameObject>&& instance)
-{
-	return std::move(instance).def("iterate_activeitems", &IterateActiveItem);
-}
