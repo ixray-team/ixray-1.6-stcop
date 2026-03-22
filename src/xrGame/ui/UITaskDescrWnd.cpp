@@ -68,3 +68,13 @@ void CUITaskDescrWnd::AddArticle					(CEncyclopediaArticle* article)
 	article_info->SetArticle	(article);
 	m_UITaskInfoWnd->AddWindow	(article_info, true);
 }
+
+void CUITaskDescrWnd::ScrollUp()
+{
+	m_UITaskInfoWnd->ScrollBar()->TryScrollDec();
+}
+
+void CUITaskDescrWnd::ScrollDown()
+{
+	m_UITaskInfoWnd->ScrollBar()->TryScrollInc();
+}

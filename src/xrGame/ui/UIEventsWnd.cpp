@@ -20,14 +20,25 @@
 #include "UITaskItem.h"
 #include "../alife_registry_wrappers.h"
 #include "../encyclopedia_article.h"
+#include "../../xrEngine/xr_input.h"
+#include "../../xrUI/UIHelper.h"
+#include "../../xrUI/Widgets/UIGamepadLegend.h"
 
 CUIEventsWnd::CUIEventsWnd			()
 {
 	m_flags.zero			();
+
+	ActionRepeaters()->Register(this, kUI_UP);
+	ActionRepeaters()->Register(this, kUI_DOWN);
+	ActionRepeaters()->Register(this, kPDA_TASKS_FILTER_NEXT);
+	ActionRepeaters()->Register(this, kPDA_TASKS_FILTER_PREV);
+	ActionRepeaters()->Register(this, kUI_SECONDARY_UP);
+	ActionRepeaters()->Register(this, kUI_SECONDARY_DOWN);
 }
 
 CUIEventsWnd::~CUIEventsWnd			()
 {
+	ActionRepeaters()->UnregisterOwner(this);
 	delete_data			(m_UIMapWnd);
 	delete_data			(m_UITaskInfoWnd);
 }
@@ -50,8 +61,6 @@ void CUIEventsWnd::Init				()
 	m_UILeftFrame->AttachChild		(m_UILeftHeader);
 	xml_init.InitFrameLine			(uiXml, "main_wnd:left_frame:left_frame_header", 0, m_UILeftHeader);
 
-//.	xml_init.InitAutoStaticGroup	(uiXml, "main_wnd:left_frame",m_UILeftFrame);
-
 	m_UIAnimation					= new CUIAnimatedStatic(); m_UIAnimation->SetAutoDelete(true);
 	xml_init.InitAnimatedStatic		(uiXml, "main_wnd:left_frame:left_frame_header:anim_static", 0, m_UIAnimation);
 	m_UILeftHeader->AttachChild		(m_UIAnimation);
@@ -70,6 +79,7 @@ void CUIEventsWnd::Init				()
 	m_ListWnd						= new CUIScrollView(); m_ListWnd->SetAutoDelete(true);
 	m_UILeftFrame->AttachChild		(m_ListWnd);
 	xml_init.InitScrollView			(uiXml, "main_wnd:left_frame:list", 0, m_ListWnd);
+	m_ListWnd->SetSelectionsAllowed(true);
 
 	m_TaskFilter					= new CUITabControl(); m_TaskFilter->SetAutoDelete(true);
 	m_UILeftFrame->AttachChild		(m_TaskFilter);
@@ -77,28 +87,65 @@ void CUIEventsWnd::Init				()
 	m_TaskFilter->SetWindowName		("filter_tab");
 	Register						(m_TaskFilter);
     AddCallbackStr					("filter_tab",TAB_CHANGED,CUIWndCallback::void_function(this,&CUIEventsWnd::OnFilterChanged));
-/*
-    m_primary_or_all_filter_btn		= new CUI3tButton(); m_primary_or_all_filter_btn->SetAutoDelete(true);
-	m_UILeftFrame->AttachChild		(m_primary_or_all_filter_btn);
-	xml_init.Init3tButton			(uiXml, "main_wnd:left_frame:primary_or_all", 0, m_primary_or_all_filter_btn);
 
-	Register						(m_primary_or_all_filter_btn);
-	m_primary_or_all_filter_btn->	SetWindowName("btn_primary_or_all");
-    AddCallback						("btn_primary_or_all",BUTTON_CLICKED,boost::bind(&CUIEventsWnd::OnFilterChanged,this,_1,_2));
-*/
-   m_currFilter						= eActiveTask;
-   SetDescriptionMode				(true);
+	SetDescriptionMode				(true);
 
-   m_ui_task_item_xml.Load(CONFIG_PATH, UI_PATH, "job_item.xml");
+	m_ui_task_item_xml.Load(CONFIG_PATH, UI_PATH, "job_item.xml");
+	m_TaskFilter->SetActiveTabByIndex(0);
+
+	m_GamepadLegend					= UIHelper::CreateGamepadLegend(uiXml, "gamepad_legend", this, false);
 }
 
 void CUIEventsWnd::Update			()
 {
-	if(m_flags.test(flNeedReload) ){
+	if(m_flags.test(flNeedReload) )
+	{
 		ReloadList(false);
 		m_flags.set(flNeedReload,FALSE );
 	}
 	inherited::Update		();
+	UpdateGamepadLegend		();
+}
+
+void CUIEventsWnd::UpdateGamepadLegend()
+{
+	if (!m_GamepadLegend)
+	{
+		return;
+	}
+
+	CUIWindow* actionAccept = m_GamepadLegend->FindChild("action_accept");
+	if (actionAccept)
+	{
+		actionAccept->Show(GetDescriptionMode());
+	}
+
+	CUIWindow* showDescription = m_GamepadLegend->FindChild("show_description");
+	if (showDescription)
+	{
+		if (CUIStatic* showDescriptionS = showDescription->ui_cast_static())
+		{
+			showDescriptionS->SetTextST(GetDescriptionMode() ? "ui_tasks_show_description" : "ui_tasks_show_description_back");
+		}
+	}
+
+	CUIWindow* showOnMap = m_GamepadLegend->FindChild("show_on_map");
+	if (showOnMap)
+	{
+		showOnMap->Show(GetDescriptionMode());
+	}
+
+	CUIWindow* showMe = m_GamepadLegend->FindChild("show_me");
+	if (showMe)
+	{
+		showMe->Show(GetDescriptionMode());
+	}
+
+	CUIWindow* mapZoom = m_GamepadLegend->FindChild("map_zoom");
+	if (mapZoom)
+	{
+		mapZoom->Show(GetDescriptionMode());
+	}
 }
 
 void CUIEventsWnd::Draw				()
@@ -127,6 +174,7 @@ void CUIEventsWnd::Reload					()
 void CUIEventsWnd::ReloadList(bool bClearOnly)
 {
 	m_ListWnd->Clear			();
+	m_SubtaskItemList.clear		();
 	if(bClearOnly)				return;
 
 	if(!g_actor)				return;
@@ -153,17 +201,27 @@ void CUIEventsWnd::ReloadList(bool bClearOnly)
 */
 		for (u16 i = 0; i < task->GetObjectivesCount(); ++i)
 		{
-			if(i==0){
+			if(i==0)
+			{
 				pTaskItem					= new CUITaskRootItem(this);
-			}else{
+			}
+			else
+			{
 				pTaskItem					= new CUITaskSubItem(this);
+				m_SubtaskItemList.push_back(pTaskItem);
 			}
 			pTaskItem->SetGameTask			(task, i);
 			m_ListWnd->AddWindow			(pTaskItem,true);
 		}
 
 	}
-
+	if (pInput->GetControllerMode())
+	{
+		if (m_SubtaskItemList.size() > 0)
+		{
+			SetSubtaskSelected(m_SubtaskItemList.front());
+		}
+	}
 }
 
 void CUIEventsWnd::Show(bool status)
@@ -304,9 +362,207 @@ void CUIEventsWnd::Reset()
 {
 	inherited::Reset	();
 	Reload				();
+		
+	// need to clear the tasks list here
+	// cause the list refills in the update and someone using it before that update will get invalid data
+	ReloadList(true);
+	
+	if (!GetDescriptionMode())
+		SetDescriptionMode(true);
 }
 
 void CUIEventsWnd::DrawHint()
 {
 	m_UIMapWnd->DrawHint();
+}
+
+bool CUIEventsWnd::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
+{
+	if (gamepad_action == WINDOW_KEY_PRESSED)
+	{
+		switch (get_binded_action(id, agUIGeneral))
+		{
+			case kUI_UP:
+			{
+				if (!any_binded_key_for_action_pressed_c(kUI_DOWN))
+					MoveSelectionUp(true);
+				ActionRepeaters()->SetActionStarted(this, kUI_UP);
+				return true;
+			}
+			case kUI_DOWN:
+			{
+				if (!any_binded_key_for_action_pressed_c(kUI_UP))
+					MoveSelectionDown(true);
+				ActionRepeaters()->SetActionStarted(this, kUI_DOWN);
+				return true;
+			}
+			case kUI_SECONDARY_UP:
+			{
+				if (!GetDescriptionMode())
+				{
+					break;
+				}
+
+				if (!any_binded_key_for_action_pressed_c(kUI_SECONDARY_DOWN))
+					m_UITaskInfoWnd->ScrollUp();
+				ActionRepeaters()->SetActionStarted(this, kUI_SECONDARY_UP);
+				return true;
+			}
+			case kUI_SECONDARY_DOWN:
+			{
+				if (!GetDescriptionMode())
+				{
+					break;
+				}
+
+				if (!any_binded_key_for_action_pressed_c(kUI_SECONDARY_UP))
+					m_UITaskInfoWnd->ScrollDown();
+				ActionRepeaters()->SetActionStarted(this, kUI_SECONDARY_DOWN);
+				return true;
+			}
+		}
+		switch (get_binded_action(id, agUITaskMenu))
+		{
+			case kPDA_TASKS_MAP_SHOW_ME:
+			{
+				m_UIMapWnd->ViewActor();
+				return true;
+				break;
+			}
+			case kPDA_TASKS_TOGGLE_LEGEND:
+			{
+				SetDescriptionMode(!GetDescriptionMode());
+
+				CUITaskItemLegacy* pItem = static_cast<CUITaskItemLegacy*>(m_ListWnd->GetSelected());
+				if (pItem)
+					SetSubtaskSelected(pItem);
+				return true;
+			}
+			case kPDA_TASKS_FILTER_NEXT:
+			{
+				if (!any_binded_key_for_action_pressed_c(kPDA_TASKS_FILTER_PREV))
+					m_TaskFilter->NextTab(true);
+				ActionRepeaters()->SetActionStarted(this, kPDA_TASKS_FILTER_NEXT);
+				return true;
+			}
+			case kPDA_TASKS_FILTER_PREV:
+			{
+				if (!any_binded_key_for_action_pressed_c(kPDA_TASKS_FILTER_NEXT))
+					m_TaskFilter->PrevTab(true);
+				ActionRepeaters()->SetActionStarted(this, kPDA_TASKS_FILTER_PREV);
+				return true;
+			}
+			case kPDA_TASKS_TOGGLE_LIST:
+			{
+				CUITaskSubItem* pItem = dynamic_cast<CUITaskSubItem*>(m_ListWnd->GetSelected());
+				if (pItem)
+					pItem->OnActiveObjectiveClicked();
+				return true;
+			}
+			case kPDA_TASKS_FILTER_TOGGLE:
+			{
+				CUITaskSubItem* pItem = dynamic_cast<CUITaskSubItem*>(m_ListWnd->GetSelected());
+				if (pItem)
+					pItem->OnDbClick();
+				return true;
+			}
+		}
+	}
+
+	return inherited::OnGamepadKeyAction(id, gamepad_action);
+}
+
+bool CUIEventsWnd::OnGamepadKeyHold(int id)
+{
+	switch (get_binded_action(id, agUIGeneral))
+	{
+		case kUI_UP:
+		{
+			if (ActionRepeaters()->CanRepeatActionNow(this, kUI_UP) && !any_binded_key_for_action_pressed_c(kUI_DOWN))
+				MoveSelectionUp(false);
+			return true;
+		}
+		case kUI_DOWN:
+		{
+			if (ActionRepeaters()->CanRepeatActionNow(this, kUI_DOWN) && !any_binded_key_for_action_pressed_c(kUI_UP))
+				MoveSelectionDown(false);
+			return true;
+		}
+		case kUI_SECONDARY_UP:
+		{
+			if (ActionRepeaters()->CanRepeatActionNow(this, kUI_SECONDARY_UP) && !any_binded_key_for_action_pressed_c(kUI_SECONDARY_DOWN))
+				m_UITaskInfoWnd->ScrollUp();
+			return true;
+		}
+		case kUI_SECONDARY_DOWN:
+		{
+			if (ActionRepeaters()->CanRepeatActionNow(this, kUI_SECONDARY_DOWN) && !any_binded_key_for_action_pressed_c(kUI_SECONDARY_UP))
+				m_UITaskInfoWnd->ScrollDown();
+			return true;
+		}
+	}
+	switch (get_binded_action(id, agUITaskMenu))
+	{
+		case kPDA_TASKS_FILTER_NEXT:
+		{
+			if (ActionRepeaters()->CanRepeatActionNow(this, kPDA_TASKS_FILTER_NEXT) && !any_binded_key_for_action_pressed_c(kPDA_TASKS_FILTER_PREV))
+				m_TaskFilter->NextTab(false);
+			return true;
+		}
+		case kPDA_TASKS_FILTER_PREV:
+		{
+			if (ActionRepeaters()->CanRepeatActionNow(this, kPDA_TASKS_FILTER_PREV) && !any_binded_key_for_action_pressed_c(kPDA_TASKS_FILTER_NEXT))
+				m_TaskFilter->PrevTab(false);
+			return true;
+		}
+	}
+
+	return inherited::OnGamepadKeyHold(id);
+}
+
+bool CUIEventsWnd::MoveSelectionDown(bool bAllowLoop)
+{
+	CUITaskItemLegacy* pNewSelection = nullptr;
+	if (!::MoveSelectionDown<CUITaskItemLegacy>(m_SubtaskItemList, static_cast<CUITaskItemLegacy*>(m_ListWnd->GetSelected()), pNewSelection, bAllowLoop))
+		return false;
+
+	SetSubtaskSelected(pNewSelection);
+	return true;
+}
+
+bool CUIEventsWnd::MoveSelectionUp(bool bAllowLoop)
+{
+	CUITaskItemLegacy* pNewSelection = nullptr;
+	if (!::MoveSelectionUp<CUITaskItemLegacy>(m_SubtaskItemList, static_cast<CUITaskItemLegacy*>(m_ListWnd->GetSelected()), pNewSelection, bAllowLoop))
+		return false;
+
+	SetSubtaskSelected(pNewSelection);
+	return true;
+}
+
+CUITaskRootItem* CUIEventsWnd::GetTaskRootItem(CGameTask* t)
+{
+	WINDOW_LIST& witems = m_ListWnd->Items();
+	for (WINDOW_LIST::iterator it = witems.begin(); it != witems.end(); ++it)
+	{
+		CUITaskRootItem* pItem = static_cast<CUITaskRootItem*>(*it);
+		if (!pItem)
+			continue;
+		if (pItem->GameTask() == t)
+			return pItem;
+	}
+	return nullptr;
+}
+
+void CUIEventsWnd::SetSubtaskSelected(CUITaskItemLegacy* pTaskItem)
+{
+	m_ListWnd->SetSelected(pTaskItem);
+
+	CUITaskRootItem* pRoot = GetTaskRootItem(pTaskItem->GameTask());
+	m_ListWnd->ScrollToItem(pRoot, 0);
+
+	CUITaskItemLegacy* pItem = static_cast<CUITaskItemLegacy*>(m_ListWnd->GetSelected());
+	ShowDescription(pItem->GameTask(), pItem->ObjectiveIdx());
+
+//	UpdateInputLegend();
 }
