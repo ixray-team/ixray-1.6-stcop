@@ -31,6 +31,8 @@ protected:
 	float			m_target_angle_horz;
 	float			m_velocity_vert;
 	float			m_velocity_horz;
+	float			m_return_target_vert;      // позиция предпоследнего выстрела (куда возвращаемся)
+	float			m_return_target_horz;
 
 	// Флаг использования паттерна
 	bool			m_using_pattern; 

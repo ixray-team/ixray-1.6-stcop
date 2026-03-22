@@ -13,6 +13,11 @@ struct CameraRecoil
 	struct PatternParams
 	{
 		float Factor;
+		float FactorAgility;
+		float FactorAgilityVel;
+		float FactorAgilityAccel;
+		float FactorAgilityCrouch;
+		float FactorAgilityCrouchNoAcc;
 		float Stiffness;
 		float Damping;
 		float Impulse;
@@ -25,6 +30,11 @@ struct CameraRecoil
 
 		PatternParams() :
 			Factor(0.0f),
+			FactorAgility(0.0f),
+			FactorAgilityVel(0.0f),
+			FactorAgilityAccel(0.0f),
+			FactorAgilityCrouch(0.0f),
+			FactorAgilityCrouchNoAcc(0.0f),
 			Stiffness(0.0f),
 			Damping(0.0f),
 			Impulse(0.0f),
@@ -33,13 +43,18 @@ struct CameraRecoil
 			ReturnEnable(true),
 			RandomOffsetX(0.0f, 0.0f),
 			RandomOffsetY(0.0f, 0.0f),
-	       	RandomOffsetEnable(false)
+			RandomOffsetEnable(false)
 		{
 		}
 
 		IC void Reset()
 		{
 			Factor = 0.0f;
+			FactorAgility = 0.0f;
+			FactorAgilityVel = 0.0f;
+			FactorAgilityAccel = 0.0f;
+			FactorAgilityCrouch = 0.0f;
+			FactorAgilityCrouchNoAcc = 0.0f;
 			Stiffness = 0.0f;
 			Damping = 0.0f;
 			Impulse = 0.0f;
@@ -104,7 +119,7 @@ struct CameraRecoil
 		VERIFY(!fis_zero(MaxAngleHorz));
 	}
 
-	
+
 	IC void Reset()
 	{
 		RelaxSpeed = EPS_L;

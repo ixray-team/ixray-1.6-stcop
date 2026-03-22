@@ -149,11 +149,21 @@ bool CWeapon::install_upgrade_disp(LPCSTR section, bool test)
 	VERIFY(!fis_zero(zoom_cam_recoil.MaxAngleHorz));
 
 	result |= process_if_exists(section, "pattern_factor", cam_recoil.Pattern.Factor, test);
+	result |= process_if_exists(section, "pattern_factor_agility", cam_recoil.Pattern.FactorAgility, test);
+	result |= process_if_exists(section, "pattern_factor_agility_vel", cam_recoil.Pattern.FactorAgilityVel, test);
+	result |= process_if_exists(section, "pattern_factor_agility_accel", cam_recoil.Pattern.FactorAgilityAccel, test);
+	result |= process_if_exists(section, "pattern_factor_agility_crouch", cam_recoil.Pattern.FactorAgilityCrouch, test);
+	result |= process_if_exists(section, "pattern_factor_agility_crouch_no_acc", cam_recoil.Pattern.FactorAgilityCrouchNoAcc, test);
 	result |= process_if_exists(section, "pattern_stiffness", cam_recoil.Pattern.Stiffness, test);
 	result |= process_if_exists(section, "pattern_damping", cam_recoil.Pattern.Damping, test);
 	result |= process_if_exists(section, "pattern_impulse", cam_recoil.Pattern.Impulse, test);
 	result |= process_if_exists(section, "pattern_return_speed", cam_recoil.Pattern.ReturnSpeed, test);
 	result |= process_if_exists(section, "zoom_pattern_factor", zoom_cam_recoil.Pattern.Factor, test);
+	result |= process_if_exists(section, "zoom_pattern_factor_agility", zoom_cam_recoil.Pattern.FactorAgility, test);
+	result |= process_if_exists(section, "zoom_pattern_factor_agility_vel", zoom_cam_recoil.Pattern.FactorAgilityVel, test);
+	result |= process_if_exists(section, "zoom_pattern_factor_agility_accel", zoom_cam_recoil.Pattern.FactorAgilityAccel, test);
+	result |= process_if_exists(section, "zoom_pattern_factor_agility_crouch", zoom_cam_recoil.Pattern.FactorAgilityCrouch, test);
+	result |= process_if_exists(section, "zoom_pattern_factor_agility_crouch_no_acc", zoom_cam_recoil.Pattern.FactorAgilityCrouchNoAcc, test);
 	result |= process_if_exists(section, "zoom_pattern_stiffness", zoom_cam_recoil.Pattern.Stiffness, test);
 	result |= process_if_exists(section, "zoom_pattern_damping", zoom_cam_recoil.Pattern.Damping, test);
 	result |= process_if_exists(section, "zoom_pattern_impulse", zoom_cam_recoil.Pattern.Impulse, test);

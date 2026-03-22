@@ -232,32 +232,32 @@ void CWeapon::UpdateFireDependencies_internal()
 		VERIFY(_valid(m_current_firedeps.m_FireParticlesXForm));
 	}
 	else 
+	{
+		// 3rd person or no parent
+		Fmatrix& parent			= XFORM();
+
+		if(H_Parent() && H_Parent()->cast_actor() && render_item_ui_query())
 		{
-			// 3rd person or no parent
-			Fmatrix& parent			= XFORM();
-
-			if(H_Parent() && H_Parent()->cast_actor() && render_item_ui_query())
-			{
-				Level().Cameras().camera_Matrix(parent);
-				parent.j.invert();
-				parent.i.invert();
-			}
-
-			Fvector& fp				= vLoadedFirePoint;
-			Fvector& fp2			= vLoadedFirePoint2;
-			Fvector& sp				= vLoadedShellPoint;
-
-			parent.transform_tiny	(m_current_firedeps.vLastFP,fp);
-			parent.transform_tiny	(m_current_firedeps.vLastFP2,fp2);
-			parent.transform_tiny	(m_current_firedeps.vLastSP,sp);
-			
-			m_current_firedeps.vLastFD.set	(0.f,0.f,1.f);
-			parent.transform_dir	(m_current_firedeps.vLastFD);
-
-			m_current_firedeps.m_FireParticlesXForm.set(parent);
-			VERIFY(_valid(m_current_firedeps.m_FireParticlesXForm));
+			Level().Cameras().camera_Matrix(parent);
+			parent.j.invert();
+			parent.i.invert();
 		}
+
+		Fvector& fp				= vLoadedFirePoint;
+		Fvector& fp2			= vLoadedFirePoint2;
+		Fvector& sp				= vLoadedShellPoint;
+
+		parent.transform_tiny	(m_current_firedeps.vLastFP,fp);
+		parent.transform_tiny	(m_current_firedeps.vLastFP2,fp2);
+		parent.transform_tiny	(m_current_firedeps.vLastSP,sp);
+		
+		m_current_firedeps.vLastFD.set	(0.f,0.f,1.f);
+		parent.transform_dir	(m_current_firedeps.vLastFD);
+
+		m_current_firedeps.m_FireParticlesXForm.set(parent);
+		VERIFY(_valid(m_current_firedeps.m_FireParticlesXForm));
 	}
+}
 
 void CWeapon::Load		(LPCSTR section)
 {
@@ -278,7 +278,7 @@ void CWeapon::Load		(LPCSTR section)
 
 	m_zoom_inertion.OriginOffset = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_aim_origin_offset", ORIGIN_OFFSET * 0.5f);
 	m_zoom_inertion.TendtoSpeed = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_aim_tendto_speed", TENDTO_SPEED);
-	
+
 	// load ammo classes
 	m_ammoTypes.clear	(); 
 	LPCSTR				S = pSettings->r_string(section,"ammo_class");
@@ -827,6 +827,11 @@ void CWeapon::LoadRecoilPatterns(LPCSTR section)
 	m_hipfire_pattern.name = "hipfire";
 
 	cam_recoil.Pattern.Factor = READ_IF_EXISTS(pSettings, r_float, section, "pattern_factor", 0.035f);
+	cam_recoil.Pattern.FactorAgility = READ_IF_EXISTS(pSettings, r_float, section, "pattern_factor_agility", 1.0f);
+	cam_recoil.Pattern.FactorAgilityVel = READ_IF_EXISTS(pSettings, r_float, section, "pattern_factor_agility_vel", 3.0f);
+	cam_recoil.Pattern.FactorAgilityAccel = READ_IF_EXISTS(pSettings, r_float, section, "pattern_factor_agility_accel", 1.0f);
+	cam_recoil.Pattern.FactorAgilityCrouch = READ_IF_EXISTS(pSettings, r_float, section, "pattern_factor_agility_crouch", 0.95f);
+	cam_recoil.Pattern.FactorAgilityCrouchNoAcc = READ_IF_EXISTS(pSettings, r_float, section, "pattern_factor_agility_crouch_no_acc", 0.95f);
 	cam_recoil.Pattern.Stiffness = READ_IF_EXISTS(pSettings, r_float, section, "pattern_stiffness", 800.0f);
 	cam_recoil.Pattern.Damping = READ_IF_EXISTS(pSettings, r_float, section, "pattern_damping", 40.0f);
 	cam_recoil.Pattern.Impulse = READ_IF_EXISTS(pSettings, r_float, section, "pattern_impulse", 35.0f);
@@ -854,7 +859,12 @@ void CWeapon::LoadRecoilPatterns(LPCSTR section)
 	}
 
 
-	zoom_cam_recoil.Pattern.Factor = READ_IF_EXISTS(pSettings, r_float, section, "zoom_pattern_factor", 0.015f);
+	zoom_cam_recoil.Pattern.Factor = READ_IF_EXISTS(pSettings, r_float, section, "zoom_pattern_factor", 0.025f);
+	zoom_cam_recoil.Pattern.FactorAgility = READ_IF_EXISTS(pSettings, r_float, section, "zoom_pattern_factor_agility", 1.0f);
+	zoom_cam_recoil.Pattern.FactorAgilityVel = READ_IF_EXISTS(pSettings, r_float, section, "zoom_pattern_factor_agility_vel", 3.50f);
+	zoom_cam_recoil.Pattern.FactorAgilityAccel = READ_IF_EXISTS(pSettings, r_float, section, "zoom_pattern_factor_agility_accel", 1.0f);
+	zoom_cam_recoil.Pattern.FactorAgilityCrouch = READ_IF_EXISTS(pSettings, r_float, section, "zoom_pattern_factor_agility_crouch", 0.9f);
+	zoom_cam_recoil.Pattern.FactorAgilityCrouchNoAcc = READ_IF_EXISTS(pSettings, r_float, section, "zoom_pattern_factor_agility_crouch_no_acc", 0.85f);
 	zoom_cam_recoil.Pattern.Stiffness = READ_IF_EXISTS(pSettings, r_float, section, "zoom_pattern_stiffness", 800.0f);
 	zoom_cam_recoil.Pattern.Damping = READ_IF_EXISTS(pSettings, r_float, section, "zoom_pattern_damping", 40.0f);
 	zoom_cam_recoil.Pattern.Impulse = READ_IF_EXISTS(pSettings, r_float, section, "zoom_pattern_impulse", 35.0f);
@@ -2407,6 +2417,7 @@ bool CWeapon::IsMisfire() const
 
 void CWeapon::Reload()
 {
+	StopShooting();
 	OnZoomOut();
 }
 
@@ -2879,10 +2890,10 @@ void CWeapon::ApplyPattern()
 	if (m_current_pattern->current_bullet < m_current_pattern->bullet_patterns.size())
 	{
 		SRecoilPoint& point = m_current_pattern->bullet_patterns[m_current_pattern->current_bullet];
-	//	Msg("Pattern bullet %d/%d: raw (x:%.3f, y:%.3f)",
-	//		m_current_pattern->current_bullet + 1,
-	//		m_current_pattern->bullet_patterns.size(),
-	//		point.x, point.y);
+//		Msg("Pattern bullet %d/%d: raw (x:%.3f, y:%.3f)",
+//			m_current_pattern->current_bullet + 1,
+//			m_current_pattern->bullet_patterns.size(),
+//			point.x, point.y);
 	}
 
 	
@@ -2957,12 +2968,14 @@ bool CWeapon::GetCurrentRecoilPattern(float& out_x, float& out_y)
 	return true;
 }
 
+
 void GetZoomData(const float scope_factor, float& delta, float& min_zoom_factor);
 
 float LastZoomFactor = 0.f;
 
 void CWeapon::OnZoomIn()
 {
+	StopShooting();
 	m_bSwitchSprint = false;
 	m_zoom_params.m_bIsZoomModeNow		= true;
 
@@ -4929,4 +4942,29 @@ bool CWeapon::AllowSafemode() const
 THudLightLaser* CWeapon::GetLightLaser()
 {
 	return GetComponent<THudLightLaser>();
+}
+
+
+float CWeapon::GetAddonRecoil() const
+{
+	const float silencerFactor = cur_silencer_koef.attached_recoil;
+	const float scopeFactor = m_scope_recoil.m_fScopeAttachedRecoil;
+	const float grenadeFactor = m_fGrenadeAttachedRecoil;
+
+	float reduction = 1.0f;
+
+	if (IsZoomed())
+	{
+		reduction = m_scope_recoil.m_fScopeAttachedRecoilReduction;
+	}
+
+	reduction = std::max(reduction, 0.01f);
+
+	const float adjustedScopeFactor = scopeFactor / reduction;
+	const float finalRecoil = adjustedScopeFactor * silencerFactor * grenadeFactor;
+
+//	Msg("GetAddonRecoil: silencer=%.3f, grenade=%.3f, adjustedScope=%.3f, result=%.3f",
+//		silencerFactor, grenadeFactor,  adjustedScopeFactor, finalRecoil);
+
+	return finalRecoil;
 }

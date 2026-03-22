@@ -2739,6 +2739,11 @@ void CWeaponMagazined::InitAddons()
 			get_scope_section = GetScopeName();
 			LoadCurrentScopeParams(*get_scope_section);
 
+			m_scope_recoil.m_fScopeAttachedRecoil = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "scope_attached_recoil_factor", 1.0f);
+
+			m_scope_recoil.m_fScopeAttachedRecoilReduction = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "scope_attached_recoil_reduction", 1.0f);
+		
+
 			m_lens_zoom_params.factor_min = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "min_lens_factor", 1.0f);
 			m_lens_zoom_params.factor_max = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "max_lens_factor", 1.0f);
 			m_lens_zoom_params.need_lens_frame = READ_IF_EXISTS(pSettings, r_bool, get_scope_section, "need_lens_frame", false);
@@ -2779,6 +2784,10 @@ void CWeaponMagazined::InitAddons()
 		{
 			m_zoom_params.m_fIronSightZoomFactor = pSettings->r_float(get_scope_section, "scope_zoom_factor");
 		}
+
+		m_scope_recoil.m_fScopeAttachedRecoil = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "scope_attached_recoil_factor", 1.0f);
+
+		m_scope_recoil.m_fScopeAttachedRecoilReduction = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "scope_attached_recoil_reduction", 1.0f);
 
 		m_zoom_params.m_sUseBinocularVision = READ_IF_EXISTS(pSettings, r_string, get_scope_section, "scope_alive_detector", 0);
 		m_zoom_params.m_sUseZoomPostprocess = READ_IF_EXISTS(pSettings, r_string, get_scope_section, "scope_nightvision", 0);
@@ -2880,6 +2889,7 @@ void CWeaponMagazined::LoadSilencerKoeffs()
 		m_silencer_koef.fire_dispersion	= READ_IF_EXISTS( pSettings, r_float, sect, "fire_dispersion_base_k", 1.0f );
 		m_silencer_koef.cam_dispersion	= READ_IF_EXISTS( pSettings, r_float, sect, "cam_dispersion_k", 1.0f );
 		m_silencer_koef.cam_disper_inc	= READ_IF_EXISTS( pSettings, r_float, sect, "cam_dispersion_inc_k", 1.0f );
+		m_silencer_koef.attached_recoil = READ_IF_EXISTS(pSettings, r_float, sect, "attached_recoil_f", 1.0f);
 	}
 
 	clamp( m_silencer_koef.hit_power,		0.0f, 1.0f );
@@ -2888,6 +2898,7 @@ void CWeaponMagazined::LoadSilencerKoeffs()
 	clamp( m_silencer_koef.fire_dispersion,	0.0f, 3.0f );
 	clamp( m_silencer_koef.cam_dispersion,	0.0f, 1.0f );
 	clamp( m_silencer_koef.cam_disper_inc,	0.0f, 1.0f );
+	clamp (m_silencer_koef.attached_recoil,  0.01f, 3.0f );
 }
 
 void CWeaponMagazined::ApplySilencerKoeffs()
