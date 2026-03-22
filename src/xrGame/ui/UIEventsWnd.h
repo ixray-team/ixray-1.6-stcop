@@ -13,6 +13,8 @@ class CGameTask;
 class CUITaskDescrWnd;
 class CUIScrollView;
 class CUITaskItemLegacy;
+class CUITaskRootItem;
+class CUIGamepadLegend;
 
 class CUIEventsWnd	:public CUIWindow, public CUIWndCallback{
 	typedef CUIWindow			inherited;
@@ -34,10 +36,19 @@ class CUIEventsWnd	:public CUIWindow, public CUIWndCallback{
 	CUITaskDescrWnd*			m_UITaskInfoWnd;
 	CUIScrollView*				m_ListWnd;
 	CUITabControl*				m_TaskFilter;
+	CUIGamepadLegend*			m_GamepadLegend = nullptr;
+
+	xr_vector<CUITaskItemLegacy*>		m_SubtaskItemList; // For controller navigation
 
 	bool						Filter					(CGameTask* t);
 	void 				OnFilterChanged			(CUIWindow*,void*);
 	void						ReloadList				(bool bClearOnly);
+
+	bool						MoveSelectionDown		(bool bAllowLoop);
+	bool						MoveSelectionUp			(bool bAllowLoop);
+	CUITaskRootItem*			GetTaskRootItem			(CGameTask* t);
+	void						SetSubtaskSelected		(CUITaskItemLegacy* pTask);
+	void						UpdateGamepadLegend		();
 
 public:
 	void						SetDescriptionMode		(bool bMap);
@@ -56,6 +67,8 @@ public:
 	virtual void				Show					(bool status);
 			void				Reload					();
 	virtual void				Reset					();
+	virtual bool				OnGamepadKeyAction		(int id, EUIMessages gamepad_action);
+	virtual bool				OnGamepadKeyHold		(int id);
 
 	CUIXml						m_ui_task_item_xml;
 

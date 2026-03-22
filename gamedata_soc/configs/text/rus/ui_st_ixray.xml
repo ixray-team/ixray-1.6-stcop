@@ -675,4 +675,19 @@
 	<string id="dead_character_use_or_drag_gp">
 		<text>Обыскать труп ($$ACTION_USE$$)\nТащить труп ($$ACTION_SPRINT_TOGGLE$$+$$ACTION_USE$$)</text>
 	</string>
+	<string id="ui_tasks_filter_tasks">
+		<text>$$ACTION_pda_tasks_filter_prev$$/$$ACTION_pda_tasks_filter_next$$ Фильтр заданий</text>
+	</string>
+	<string id="ui_tasks_show_description">
+		<text>$$ACTION_pda_tasks_toggle_legend$$ Показать описание</text>
+	</string>
+	<string id="ui_tasks_show_description_back">
+		<text>$$ACTION_pda_tasks_toggle_legend$$ Показать карту</text>
+	</string>
+	<string id="ui_tasks_show_on_map_soc">
+		<text>$$ACTION_pda_tasks_toggle_list$$ Показать на карте</text>
+	</string>
+	<string id="ui_tasks_set_active">
+		<text>$$ACTION_pda_tasks_filter_toggle$$ Сделать активным</text>
+	</string>
 </string_table>
