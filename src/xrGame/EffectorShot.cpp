@@ -11,6 +11,10 @@
 //-----------------------------------------------------------------------------
 
 static constexpr float FIXED_STEP = 0.006f;
+static constexpr float PATTERN_MAX_STEP_X = 0.5f;   // Максимальный финальный шаг
+static constexpr float PATTERN_MAX_STEP_Y = 0.5f;   // Максимальный финальный шаг
+static constexpr float MAX_PATTERN_VELOCITY_VERT = 7.5f;   // Максимальная вертикальная скорость
+static constexpr float MAX_PATTERN_VELOCITY_HORZ = 7.5f;   // Максимальная горизонтальная скорость
 
 CWeaponShotEffector::CWeaponShotEffector()
 {
@@ -32,6 +36,8 @@ void CWeaponShotEffector::Reset()
 	m_target_angle_horz = 0.0f;
 	m_velocity_vert = 0.0f;
 	m_velocity_horz = 0.0f;
+	m_return_target_vert = 0.0f;   
+	m_return_target_horz = 0.0f;    
 
 	current_recoil.Reset();
 
@@ -49,6 +55,7 @@ void CWeaponShotEffector::Reset()
 	// Сбрасываем накопленное время
 	m_accumulated_time = 0.0f;
 }
+
 
 void CWeaponShotEffector::Shot(CWeapon* weapon)
 {
@@ -71,13 +78,28 @@ void CWeaponShotEffector::Shot(CWeapon* weapon)
 		// Используем паттернную систему
 		m_using_pattern = true;
 
-//		Msg("Shot: Factor=%.3f,", current_recoil.Pattern.Factor);
+		float addon_factor = weapon->GetAddonRecoil();
+		clamp(addon_factor, 0.01f, addon_factor);
 
-		// Получаем множители паттерна от оружия
+		float agility_factor = Actor()->GetAgility();
+		clamp(agility_factor, 0.01f, agility_factor);
+
 		float pattern_factor = current_recoil.Pattern.Factor;
+		clamp(pattern_factor, 0.01f, pattern_factor);
 
-		float final_x = pattern_x * pattern_factor;
-		float final_y = pattern_y * pattern_factor;
+		float final_factor = pattern_factor * addon_factor * agility_factor;
+		clamp(final_factor, 0.001f, final_factor);
+
+		float final_x = pattern_x * final_factor;
+		float final_y = pattern_y * final_factor;
+
+		// Ограничиваем максимальное смещение за один выстрел
+		clamp(final_x, -PATTERN_MAX_STEP_X, PATTERN_MAX_STEP_X);
+		clamp(final_y, -PATTERN_MAX_STEP_Y, PATTERN_MAX_STEP_Y);
+
+
+//		Msg("Recoil: final_factor=%.3f [pattern=%.3f * addon=%.3f * agility=%.3f] → final_offset=(%.3f, %.3f)",
+//			final_factor, pattern_factor, addon_factor, agility_factor, final_x, final_y);
 
 		// Используем значения из паттерна
 		ShotFromPattern(final_x, final_y);
@@ -95,19 +117,31 @@ void CWeaponShotEffector::Shot(CWeapon* weapon)
 
 void CWeaponShotEffector::ShotFromPattern(float pattern_x, float pattern_y)
 {
+	// Сохраняем текущую позицию как предпоследнюю (куда будем возвращаться)
+	m_return_target_vert = m_target_angle_vert;
+	m_return_target_horz = m_target_angle_horz;
+
+	// Вычисляем новую позицию последнего выстрела
+	float new_target_vert = m_target_angle_vert + pattern_y;
+	float new_target_horz = m_target_angle_horz + pattern_x;
+
 	// Добавляем мгновенную скорость для резкого начала отдачи
-	m_velocity_vert += pattern_y * current_recoil.Pattern.Impulse;
-	m_velocity_horz += pattern_x * current_recoil.Pattern.Impulse;
+	// Скорость направляем к новой цели
+	m_velocity_vert += (new_target_vert - m_target_angle_vert) * current_recoil.Pattern.Impulse;
+	m_velocity_horz += (new_target_horz - m_target_angle_horz) * current_recoil.Pattern.Impulse;
 
-	// Обновляем целевые углы (добавляем к текущим, а не заменяем)
-	m_target_angle_vert += pattern_y;
-	m_target_angle_horz += pattern_x;
+	clamp(m_velocity_vert, -MAX_PATTERN_VELOCITY_VERT, MAX_PATTERN_VELOCITY_VERT);
+	clamp(m_velocity_horz, -MAX_PATTERN_VELOCITY_HORZ, MAX_PATTERN_VELOCITY_HORZ);
 
-//	Msg("Recoil impulse: vert=%.3f (vel=%.3f), horz=%.3f (vel=%.3f), target_vert=%.3f, target_horz=%.3f",
-//		pattern_y, pattern_y * current_recoil.Pattern.Impulse,
-//		pattern_x, pattern_x * current_recoil.Pattern.Impulse,
-//		m_target_angle_vert, m_target_angle_horz);
+	// Обновляем целевые углы (позиция последнего выстрела)
+	m_target_angle_vert = new_target_vert;
+	m_target_angle_horz = new_target_horz;
 
+	//	Msg("Recoil impulse: vert=%.3f (vel=%.3f), horz=%.3f (vel=%.3f), new_target_vert=%.3f, new_target_horz=%.3f",
+	//	pattern_y, pattern_y * current_recoil.Pattern.Impulse,
+	//	pattern_x, pattern_x * current_recoil.Pattern.Impulse,
+	//		new_target_vert, new_target_horz);
+	//Msg("(m_velocity_vert) %.3f || %.3f (m_velocity_horz)", m_velocity_vert, m_velocity_horz);
 	m_actived = true;
 	m_shot_end = false;
 }
@@ -152,27 +186,37 @@ void CWeaponShotEffector::UpdateSpringRecoil(float dt)
 
 	if (m_shot_end && current_recoil.Pattern.ReturnEnable)
 	{
-		float return_speed = current_recoil.Pattern.ReturnSpeed * dt; 
+		float return_speed = current_recoil.Pattern.ReturnSpeed * dt;
 		clamp(return_speed, 0.0f, 1.0f);
 
-		//Постепенное уменьшение паттернных целей
-		m_target_angle_vert *= (1.0f - return_speed);
-		m_target_angle_horz *= (1.0f - return_speed);
+		// Возвращаем m_target_angle к позиции предпоследнего выстрела
+		m_target_angle_vert = m_target_angle_vert * (1.0f - return_speed) + m_return_target_vert * return_speed;
+		m_target_angle_horz = m_target_angle_horz * (1.0f - return_speed) + m_return_target_horz * return_speed;
 	}
 
+	// Всегда применяем физику пружины
 	SpringPhysics(dt, current_recoil.Pattern.Stiffness, current_recoil.Pattern.Damping);
-	
-	// Проверка стабилизации
-	bool is_vert_stable = std::abs(m_velocity_vert) < 0.001f && std::abs(m_angle_vert - m_target_angle_vert) < 0.001f;
-	bool is_horz_stable = std::abs(m_velocity_horz) < 0.001f && std::abs(m_angle_horz - m_target_angle_horz) < 0.001f;
 
-	if (is_vert_stable && is_horz_stable)
+	// Проверяем, достаточно ли мы близки к цели И скорость достаточно мала
+	bool is_near_target = std::abs(m_angle_vert - m_target_angle_vert) < 0.005f &&
+		std::abs(m_angle_horz - m_target_angle_horz) < 0.005f;
+
+	bool is_slow = std::abs(m_velocity_vert) < 0.01f &&
+		std::abs(m_velocity_horz) < 0.01f;
+
+	if (is_near_target && is_slow)
 	{
-		m_angle_vert = m_target_angle_vert;
-		m_angle_horz = m_target_angle_horz;
+		// Плавно "приклеиваем" к цели через интерполяцию
+		float blend = std::min(1.0f, dt ); 
+		m_angle_vert = m_angle_vert * (1.0f - blend) + m_target_angle_vert * blend;
+		m_angle_horz = m_angle_horz * (1.0f - blend) + m_target_angle_horz * blend;
+		m_velocity_vert = 0.0f;
+		m_velocity_horz = 0.0f;
 
-		// Если стабилизировались и цели близки к нулю, деактивируем
-		if (m_shot_end && std::abs(m_target_angle_vert) < 0.001f && std::abs(m_target_angle_horz) < 0.001f)
+		// Если вернулись к предпоследней позиции И выстрелы кончились
+		if (m_shot_end &&
+			std::abs(m_angle_vert - m_return_target_vert) < 0.001f &&
+			std::abs(m_angle_horz - m_return_target_horz) < 0.001f)
 		{
 			m_actived = false;
 		}

@@ -226,6 +226,15 @@ public:
 		// для доступа к паттерну отдачи
 		bool GetCurrentRecoilPattern(float& out_x, float& out_y);
 
+		float GetAddonRecoil() const;
+		float m_fGrenadeAttachedRecoil = 1.0f;
+
+		struct scope_recoil_params
+		{
+			float           m_fScopeAttachedRecoil = 1.0f;
+			float           m_fScopeAttachedRecoilReduction = 1.0f;
+		} m_scope_recoil;
+
 protected:
 	// Вспомогательные методы
 	void LoadBulletPattern(LPCSTR section, LPCSTR line, SRecoilPattern& pattern);
@@ -326,6 +335,7 @@ protected:
 		s32 lens_night_brightness_saved_step = -1;
 	} m_lens_night_brightness;
 
+
 	struct fast_kick_params
 	{
 		shared_str material = "objects\\knife";
@@ -356,12 +366,14 @@ protected:
 	void MakeWeaponKick(Fvector& pos, Fvector& dir);
 	float GetNightPPEFactor();
 
+
 	float m_fCollimatorLevelsProblem = 0.0f;
 	float m_fMisfireAfterProblemsLevel = 10.0f;
 	float m_fRechargeTime = 0.0f;
 	float m_fLastRechargeTime = 0.0f;
 	float m_fSafeModeRotationFactor = 0.0f;
 	float m_fSafeModeRotateTime = 0.25f;
+
 
 	bool bUpdateHUDBonesVisibility = false;
 	u32 _last_update_time;
@@ -479,6 +491,8 @@ protected:
 	shared_str GetCurrentScopeSection() const { return m_scopes[m_cur_scope]; }
 	shared_str GetScopeSection(int idx) const { return m_scopes[idx]; }
 
+
+
 protected:
 
 	u8 m_LastShotAmmoType = 0;
@@ -517,6 +531,7 @@ public:
 	}
 
 	IC float				GetZoomFactor		() const		{return m_zoom_params.m_fCurrentZoomFactor;}
+
 	IC void					SetZoomFactor		(float f) 		{m_zoom_params.m_fCurrentZoomFactor = f;}
 
 	virtual	float			CurrentZoomFactor	();

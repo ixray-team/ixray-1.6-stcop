@@ -102,6 +102,7 @@ protected:
 		float	fire_dispersion;
 		float	cam_dispersion;
 		float	cam_disper_inc;
+		float   attached_recoil;
 
 		SilencerKoeffs() { Reset(); }
 		IC void Reset()
@@ -112,6 +113,7 @@ protected:
 			fire_dispersion = 1.0f;
 			cam_dispersion  = 1.0f;
 			cam_disper_inc  = 1.0f;
+			attached_recoil = 1.0f;
 		}
 	};// SilencerKoeffs
 	SilencerKoeffs		m_silencer_koef;
