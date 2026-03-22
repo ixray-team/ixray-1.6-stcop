@@ -40,11 +40,13 @@ void CUIEncyclopediaArticleWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 	AttachChild					(m_UIImage);
 
 	xr_strconcat				(str,start_from,":model");
-	m_UIModel					= new CUI3dStatic();
-	m_UIModel->SetAutoDelete	(true);
-	xml_init.InitStatic			(uiXml,str,0, m_UIModel);
-	AttachChild					(m_UIModel);
-
+	if (uiXml.NavigateToNode(str))
+	{
+		m_UIModel = new CUI3dStatic();
+		m_UIModel->SetAutoDelete(true);
+		xml_init.InitStatic(uiXml, str, 0, m_UIModel);
+		AttachChild(m_UIModel);
+	}
 	xr_strconcat				(str,start_from,":text_cont");
 	m_UIText					= new CUIStatic();
 	m_UIText->SetAutoDelete		(true);
@@ -106,7 +108,7 @@ void CUIEncyclopediaArticleWnd::SetArticle(LPCSTR article)
 extern ENGINE_API float devfloat1;
 bool CUIEncyclopediaArticleWnd::OnMouseAction(float x, float y, EUIMessages mouse_action)
 {
-	if (m_UIModel->CursorOverWindow() && pInput->iGetAsyncBtnState(0))
+	if (m_UIModel && m_UIModel->CursorOverWindow() && pInput->iGetAsyncBtnState(0))
 	{
 		// need to fix input invertion on 180 degs rotate
 		Fvector xyz = m_UIModel->GetXYZ();

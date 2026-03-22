@@ -496,21 +496,30 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 		if (item->cast_weapon_knife())
 		{
 			m_item_info.clear();
-			if (m_weapon_icon_text_mode && m_ui_weapon_icon)
+			if (m_use_adaptive_ammo_widget)
 			{
-				m_ui_weapon_icon->SetTextureColor(color_rgba(255, 255, 255, 0));
-				m_ui_weapon_icon->SetText(item->NameShort());
-				m_ui_weapon_icon->Show(true);
+				if (m_weapon_icon_text_mode && m_ui_weapon_icon)
+				{
+					m_ui_weapon_icon->SetTextureColor(color_rgba(255, 255, 255, 0));
+					m_ui_weapon_icon->SetText(item->NameShort());
+					m_ui_weapon_icon->Show(true);
+				}
+				else if (m_ui_weapon_icon)
+				{
+					m_ui_weapon_icon->Show(false);
+					m_ui_weapon_icon->SetText("");
+				}
 			}
-			else if (m_ui_weapon_icon)
+			else
 			{
-				m_ui_weapon_icon->Show(false);
-				m_ui_weapon_icon->SetText("");
+				if (m_ui_weapon_icon)
+				{
+					SetAmmoIcon(item->m_section_id);
+				}
 			}
 			if (m_static_weapon)
 			{
-				m_static_weapon->SetText("");
-				m_static_weapon->Show(false);
+				m_static_weapon->SetText(item->NameShort());
 			}
 			if (m_fire_mode)
 				m_fire_mode->Show(false);
@@ -552,7 +561,6 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 
 		if (m_static_weapon)
 		{
-			m_static_weapon->Show(true);
 			string256 ammoName;
 			if (m_item_info.fire_mode.size())
 			{
