@@ -69,7 +69,7 @@ void UITopBarForm::Draw()
 	{
 		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ToolbarPadding);
 
-		if (ImGui::BeginTable("##ToolbarTable", 11, ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ContextMenuInBody | ImGuiTableFlags_Hideable | ImGuiTableFlags_NoBordersInBodyUntilResize))
+		if (ImGui::BeginTable("##ToolbarTable", 10, ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ContextMenuInBody | ImGuiTableFlags_Hideable | ImGuiTableFlags_NoBordersInBodyUntilResize))
 		{
 			ImGui::TableSetupColumn("Actions", ImGuiTableColumnFlags_WidthFixed);
 			ImGui::TableSetupColumn("File");
@@ -78,7 +78,6 @@ void UITopBarForm::Draw()
 			ImGui::TableSetupColumn("Compile Actions");
 			ImGui::TableSetupColumn("Engine");
 			ImGui::TableSetupColumn("Directory Actions");
-			ImGui::TableSetupColumn("Hint");
 			ImGui::TableSetupColumn("Sound Preferences");
 			ImGui::TableSetupColumn("Physics");
 			ImGui::TableSetupColumn("Preferences");

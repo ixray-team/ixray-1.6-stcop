@@ -24,174 +24,220 @@ UILeftBarForm::~UILeftBarForm()
 {
 }
 
+void UILeftBarForm::SetSmooth(ESmoothGroup mode)
+{
+    EPrefs->SmoothGroup = mode;
+
+    if (!ATools->CurrentObject())
+        return;
+
+    for (CEditableMesh* Mesh : ATools->CurrentObject()->Meshes())
+    {
+        u32 Count = Mesh->m_SVertInfl;
+        Mesh->UnloadSVertices();
+        Mesh->GenerateSVertices(Count);
+    }
+}
+
+void UILeftBarForm::SetAnim(EAnimMode mode)
+{
+    m_AnimMode = mode;
+
+    g_force16BitTransformQuant = (mode == e16bit);
+    g_force32BitTransformQuant = (mode == e32bit);
+}
+
 void UILeftBarForm::Draw()
 {
-	if (ImGui::Begin("LeftBar", 0))
-	{
-		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-		if (ImGui::TreeNode("Model"))
-		{
-			ImGui::AlignTextToFramePadding();
-			ImGui::Text("Render:"); ImGui::SameLine();
-			if (ImGui::RadioButton("Editor", m_RenderMode == Render_Editor))
-			{
-				ATools->PhysicsStopSimulate();
-				m_RenderMode = Render_Editor;
-				ExecCommand(COMMAND_UPDATE_PROPERTIES);
-				UI->RedrawScene();
-			}
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, { 300, 100 });
+    if (ImGui::Begin("Object Tool", 0))
+    {
+        ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+        if (XRay::ImGui::BeginExpand("Render"))
+        {
+            bool editor = (m_RenderMode == Render_Editor);
+            bool engine = (m_RenderMode == Render_Engine);
 
-			ImGui::SameLine();
-			if (ImGui::RadioButton("Engine", m_RenderMode == Render_Engine))
-			{
-				ATools->PhysicsStopSimulate();
-				m_RenderMode = Render_Engine;
-				if (!ATools->IsVisualPresent()) ExecCommand(COMMAND_MAKE_PREVIEW);
-				if (!ATools->IsVisualPresent()) SetRenderMode(false);
-				else						  SetRenderMode(true);
-				ExecCommand(COMMAND_UPDATE_PROPERTIES);
-				UI->RedrawScene();
-			}
+            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+            if (XRay::ImGui::ToolbarButton("editor", "Editor", &editor, { 0, 0 }, ImDrawFlags_RoundCornersLeft))
+            {
+                ATools->PhysicsStopSimulate();
+                m_RenderMode = Render_Editor;
+                ExecCommand(COMMAND_UPDATE_PROPERTIES);
+                UI->RedrawScene();
+            }
 
-			const float ButtonSize = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize) * 0.7f;
-			ImGui::TextUnformatted("Smooth Groups:");
-			ImGui::SameLine();
+            ImGui::SameLine();
 
-			bool SMEdge = EPrefs->SmoothGroup == ESmoothGroup::Edges;
-			bool SMNormals = EPrefs->SmoothGroup == ESmoothGroup::Normals;
-			bool SMOther = EPrefs->SmoothGroup == ESmoothGroup::Other;
-			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
-			if (XRay::ImGui::ToolbarButton("##SmoothEdge", "Edges", &SMEdge, { 0, ButtonSize }, ImDrawFlags_RoundCornersLeft))
-			{
-				EPrefs->SmoothGroup = ESmoothGroup::Edges;
-				if (ATools->CurrentObject() != nullptr)
-				{
-					for (CEditableMesh* Mesh : ATools->CurrentObject()->Meshes())
-					{
-						u32 Count = Mesh->m_SVertInfl;
-						Mesh->UnloadSVertices();
-						Mesh->GenerateSVertices(Count);
-					}
-				}
-			}
-			ImGui::SameLine();
-			if (XRay::ImGui::ToolbarButton("##SmoothNormals", "Normals", &SMNormals, {0, ButtonSize}, ImDrawFlags_RoundCornersNone))
-			{
-				EPrefs->SmoothGroup = ESmoothGroup::Normals;
+            if (XRay::ImGui::ToolbarButton("engine", "Engine", &engine, { 0, 0 }, ImDrawFlags_RoundCornersRight))
+            {
+                ATools->PhysicsStopSimulate();
 
-				if (ATools->CurrentObject() != nullptr)
-				{
-					for (CEditableMesh* Mesh : ATools->CurrentObject()->Meshes())
-					{
-						u32 Count = Mesh->m_SVertInfl;
-						Mesh->UnloadSVertices();
-						Mesh->GenerateSVertices(Count);
-					}
-				}
-			}
-			ImGui::SameLine();
-			if (XRay::ImGui::ToolbarButton("##SmoothOther", "Legacy", &SMOther, {0, ButtonSize}, ImDrawFlags_RoundCornersRight))
-			{
-				EPrefs->SmoothGroup = ESmoothGroup::Other;
-				if (ATools->CurrentObject() != nullptr)
-				{
-					for (CEditableMesh* Mesh : ATools->CurrentObject()->Meshes())
-					{
-						u32 Count = Mesh->m_SVertInfl;
-						Mesh->UnloadSVertices();
-						Mesh->GenerateSVertices(Count);
-					}
-				}
-			}
-			ImGui::PopStyleVar();
-			//ImGui::Checkbox("Auto Smooth", &EPrefs->IsEdgeSmooth);
-			//ImGui::SameLine(0, 10);
+                if (!ATools->IsVisualPresent())
+                    ExecCommand(COMMAND_MAKE_PREVIEW);
 
-			if (ImGui::Button("Bone View")) 
-			{
-				ATools->BoneView->Show(true);
-			}
+                if (!ATools->IsVisualPresent())
+                    SetRenderMode(false);
+                else
+                    SetRenderMode(true);
 
-			ImGui::SameLine(0, 10);
-			if (ImGui::Button("Bone Parts"))
-			{
-				UIBoneForm::Show();
-			}
+                ExecCommand(COMMAND_UPDATE_PROPERTIES);
+                UI->RedrawScene();
+            }
 
-			ImGui::Separator();
-			ImGui::Text("Animation:"); ImGui::SameLine();
+            ImGui::PopStyleVar();
+            XRay::ImGui::EndExpand();
+        }
 
-			if (ImGui::RadioButton("8bit", m_AnimMode == e8bit))
-			{
-				m_AnimMode = e8bit;
-				g_force16BitTransformQuant = false;
-				g_force32BitTransformQuant = false;
-			}
+        ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+        if (XRay::ImGui::BeginExpand("Shading"))
+        {
+            if (XRay::ImGui::BeginTable("SmoothTable", 2, ImGuiTableFlags_SizingFixedFit))
+            {
+                XRay::ImGui::TableNextColumn();
+                ImGui::TextUnformatted("Smooth: ");
 
-			ImGui::SameLine();
-			if (ImGui::RadioButton("16bit", m_AnimMode == e16bit))
-			{
-				m_AnimMode = e16bit;
-				g_force16BitTransformQuant = true;
-				g_force32BitTransformQuant = false;
-			}
-			
-			ImGui::SameLine(); 
-			if (ImGui::RadioButton("32bit", m_AnimMode == e32bit))
-			{
-				m_AnimMode = e32bit;
-				g_force16BitTransformQuant = false;
-				g_force32BitTransformQuant = true;
-			}
+                XRay::ImGui::TableNextColumn();
 
-			static const char* PickModeList[] = { "None","Surface","Bone" };
-			ImGui::Combo("Pick mode", &m_PickMode, PickModeList, 3, -1);
-			ImGui::TreePop();
+                bool edge = EPrefs->SmoothGroup == ESmoothGroup::Edges;
+                bool normal = EPrefs->SmoothGroup == ESmoothGroup::Normals;
+                bool other = EPrefs->SmoothGroup == ESmoothGroup::Other;
 
-		}
+                ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+                if (XRay::ImGui::ToolbarButton("edge", "Edges", &edge, { 0, 0 }, ImDrawFlags_RoundCornersLeft))
+                {
+                    SetSmooth(ESmoothGroup::Edges);
+                }
 
-		ImGui::Separator();
-		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-		//if (ImGui::TreeNode("Object Items"))
-		{
-			ImGui::BeginGroup();
-			ATools->m_ObjectItems->Draw();
-			ImGui::EndGroup();
-		//	ImGui::TreePop();
-		}
-	}
+                ImGui::SameLine();
 
-	if (ATools->CurrentObject() != nullptr)
-	{
-		if (!ATools->CurrentObject()->m_objectFlags.test(CEditableObject::eoDynamic))
-		{
-			if (ImGui::Button("Make dynamic"))
-			{
-				ATools->CurrentObject()->CreateBone("idle");
+                if (XRay::ImGui::ToolbarButton("normal", "Normals", &normal, { 0, 0 }, ImDrawFlags_RoundCornersNone))
+                {
+                    SetSmooth(ESmoothGroup::Normals);
+                }
 
-				for (EditMeshIt mesh_it = ATools->CurrentObject()->FirstMesh(); mesh_it != ATools->CurrentObject()->LastMesh(); mesh_it++)
-				{
-					CEditableMesh* pMesh = *mesh_it;
-					pMesh->AssignMesh("idle");
-				}
+                ImGui::SameLine();
 
-				ATools->RealUpdateProperties();
-			}
-		}
-	}
+                if (XRay::ImGui::ToolbarButton("other", "Legacy", &other, { 0, 0 }, ImDrawFlags_RoundCornersRight))
+                {
+                    SetSmooth(ESmoothGroup::Other);
+                }
 
-	ImGui::End();
+                ImGui::PopStyleVar();
+
+                XRay::ImGui::EndTable();
+            }
+
+            XRay::ImGui::EndExpand();
+        }
+
+        ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+        if (XRay::ImGui::BeginExpand("Animation"))
+        {
+            bool b8 = (m_AnimMode == e8bit);
+            bool b16 = (m_AnimMode == e16bit);
+            bool b32 = (m_AnimMode == e32bit);
+
+            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+            if (XRay::ImGui::ToolbarButton("8bit", "8-bit", &b8, { 0, 0 }, ImDrawFlags_RoundCornersLeft))
+            {
+                SetAnim(e8bit);
+            }
+
+            ImGui::SameLine();
+
+            if (XRay::ImGui::ToolbarButton("16bit", "16-bit", &b16, { 0, 0 }, ImDrawFlags_RoundCornersNone))
+            {
+                SetAnim(e16bit);
+            }
+
+            ImGui::SameLine();
+
+            if (XRay::ImGui::ToolbarButton("32bit", "32-bit", &b32, { 0, 0 }, ImDrawFlags_RoundCornersRight))
+            {
+                SetAnim(e32bit);
+            }
+
+            ImGui::PopStyleVar();
+
+            XRay::ImGui::EndExpand();
+        }
+
+        ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+        if (XRay::ImGui::BeginExpand("Tools"))
+        {
+            if (ImGui::Button("Bone View", { -1, 0 }))
+            {
+                ATools->BoneView->Show(true);
+            }
+
+            if (ImGui::Button("Bone Parts", { -1, 0 }))
+            {
+                UIBoneForm::Show();
+            }
+
+            XRay::ImGui::EndExpand();
+        }
+
+        ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+        if (XRay::ImGui::BeginExpand("Pick"))
+        {
+            ImGui::AlignTextToFramePadding();             // выравниваем текст по середине строки по Y
+            ImGui::TextUnformatted("Mode: ");
+            ImGui::SameLine();
+
+            ImGui::SetNextItemWidth(-1);                  // растягиваем combo на всё оставшееся место
+            static const char* PickModeList[] = { "None", "Surface", "Bone" };
+            ImGui::Combo("##Mode", &m_PickMode, PickModeList, IM_ARRAYSIZE(PickModeList));
+
+            XRay::ImGui::EndExpand();
+        }
+    }
+
+    ImGui::End();
+
+    // OBJECT ITEMS
+    if (ImGui::Begin("Object Properties"))
+    {
+        ImGui::BeginGroup();
+        ATools->m_ObjectItems->Draw();
+        ImGui::EndGroup();
 
 
-	if (ImGui::Begin("Item Properties", 0))
-	{
-		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-		ImGui::BeginGroup();
-			ATools->m_Props->Draw();
-		ImGui::EndGroup();
-	}
+        if (ATools->CurrentObject() != nullptr)
+        {
+            if (!ATools->CurrentObject()->m_objectFlags.test(CEditableObject::eoDynamic))
+            {
+                ImGui::Separator();
 
-	ImGui::End();
+                if (ImGui::Button("Make dynamic", { -1, 0 }))
+                {
+                    ATools->CurrentObject()->CreateBone("idle");
+
+                    for (EditMeshIt mesh_it = ATools->CurrentObject()->FirstMesh();
+                        mesh_it != ATools->CurrentObject()->LastMesh();
+                        mesh_it++)
+                    {
+                        CEditableMesh* pMesh = *mesh_it;
+                        pMesh->AssignMesh("idle");
+                    }
+
+                    ATools->RealUpdateProperties();
+                }
+            }
+        }
+    }
+    ImGui::End();
+
+    if (ImGui::Begin("Item Properties", 0))
+    {
+        ImGui::BeginGroup();
+        ATools->m_Props->Draw();
+        ImGui::EndGroup();
+    }
+    ImGui::End();
+
+    ImGui::PopStyleVar();
 }
 
 void UILeftBarForm::SetRenderMode(bool bEngineMode)
