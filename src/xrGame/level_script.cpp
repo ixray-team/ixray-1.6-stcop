@@ -1606,8 +1606,6 @@ void RemoveAllNamedStashStringVectors()
 	m_named_stash.clear();
 }
 
-#pragma optimize("",off)
-
 const xr_vector<CScriptGameObject*>& GetOnlineGameObjectsBySphereSpatial(const Fvector& _center, const float _radius, luabind::object const& eSpatialTypes)
 {
 	u64 mask = 0;

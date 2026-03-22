@@ -120,22 +120,33 @@ extern CSE_Abstract* CALifeSimulator__spawn_item2(
 	ALife::_OBJECT_ID id_parent
 );
 
-
 void CInteractiveObject::save(NET_Packet& output_packet)
 {
 	inherited::save(output_packet);
-	output_packet.w_u16(left_uses ? 1 : 0);
+	output_packet.w_u8(left_uses);
 	output_packet.r_stringZ(m_tip_text);
 }
 
 void CInteractiveObject::load(IReader& input_packet)
 {
 	inherited::load(input_packet);
-	left_uses = input_packet.r_u16() == 1 ? true : false;
+	left_uses = input_packet.r_u8();
 	input_packet.r_stringZ(m_tip_text);
 
 	m_tip_text = left_uses > 0 ? m_tip_text_default : "";
 	set_tip_text(m_tip_text.c_str());
+
+	if (!m_bone_names.empty())
+	{
+		u8 total_bones = m_bone_names.size();
+		if (left_uses < total_bones)
+		{
+			for (u8 i = left_uses; i < total_bones; i++)
+			{
+				SetVisible(m_bone_names[i].c_str(), false);
+			}
+		}
+	}
 }
 
 void CInteractiveObject::OnUse()
