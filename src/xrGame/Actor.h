@@ -556,6 +556,7 @@ public:
 
 	virtual BOOL						g_State				(SEntityState& state) const;
 	virtual	float						GetWeaponAccuracy	() const;
+	virtual	float						GetAgility() const;
 			float						GetFireDispertion	() const {return m_fdisp_controller.GetCurrentDispertion();}
 			bool						IsZoomAimingMode	() const {return m_bZoomAimingMode;}
 	virtual float						MaxCarryWeight		() const;
@@ -583,6 +584,15 @@ protected:
 	float								m_fDispCrouchFactor;
 	//crouch+no acceleration
 	float								m_fDispCrouchNoAccelFactor;
+
+	//коэффициенты на сколько процентов увеличится или уменьшиться ловкость для отдачи оружия, также учитывая скорость актера
+	float								m_fAgilityVelFactor;
+	//если актер бежит
+	float								m_fAgilityAccelFactor;
+	//если актер сидит
+	float								m_fAgilityCrouchFactor;
+	//crouch+no acceleration
+	float								m_fAgilityCrouchNoAccelFactor;
 
 protected:
 	//косточки используемые при стрельбе
