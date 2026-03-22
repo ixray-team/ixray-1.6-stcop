@@ -577,6 +577,11 @@ if(!g_dedicated_server)
 	m_fDispCrouchFactor			= pSettings->r_float		(section,"disp_crouch_factor");
 	m_fDispCrouchNoAccelFactor	= pSettings->r_float		(section,"disp_crouch_no_acc_factor");
 
+	m_fAgilityVelFactor =  READ_IF_EXISTS(pSettings, r_float, section, "agility_vel_factor", 2.0f);
+	m_fAgilityAccelFactor =  READ_IF_EXISTS(pSettings, r_float, section, "agility_accel_factor", 1.05f);
+	m_fAgilityCrouchFactor = READ_IF_EXISTS(pSettings, r_float, section, "agility_crouch_factor", 0.98f);
+	m_fAgilityCrouchNoAccelFactor = READ_IF_EXISTS(pSettings, r_float, section, "agility_crouch_no_acc_factor", 0.96f);
+
 	LPCSTR							default_outfit = READ_IF_EXISTS(pSettings,r_string,section,"default_outfit",0);
 	SetDefaultVisualOutfit			(default_outfit);
 
