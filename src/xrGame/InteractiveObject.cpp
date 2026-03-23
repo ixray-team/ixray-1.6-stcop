@@ -120,7 +120,6 @@ extern CSE_Abstract* CALifeSimulator__spawn_item2(
 	ALife::_OBJECT_ID id_parent
 );
 
-#pragma optimize("",off)
 void CInteractiveObject::save(NET_Packet& output_packet)
 {
 	inherited::save(output_packet);
@@ -128,7 +127,6 @@ void CInteractiveObject::save(NET_Packet& output_packet)
 	output_packet.r_stringZ(m_tip_text);
 }
 
-#pragma optimize("",off)
 void CInteractiveObject::load(IReader& input_packet)
 {
 	inherited::load(input_packet);
