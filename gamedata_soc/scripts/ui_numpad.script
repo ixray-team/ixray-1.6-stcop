@@ -17,6 +17,15 @@ function numpad:__init(owner) super()
 	self.owner = owner
 	self:InitControls()
 	self:InitCallBacks()
+
+	self.focusIndex = {x=1, y=1}
+	self.curBtn = self.focusList[1][1]
+	self.curBtn:SetHighlighted(true)
+
+	action_repeaters():Register(self, key_bindings.kUI_UP, 0, 0)
+	action_repeaters():Register(self, key_bindings.kUI_DOWN, 0, 0)
+	action_repeaters():Register(self, key_bindings.kUI_LEFT, 0, 0)
+	action_repeaters():Register(self, key_bindings.kUI_RIGHT, 0, 0)
 end
 
 function numpad:__finalize()
@@ -34,21 +43,71 @@ function numpad:InitControls()
 	xml:InitStatic("background", self)
 	t = xml:InitStatic("edit_box", self)
 	t:SetWindowName("edit_window")
-	self:Register(xml:Init3tButton("btn_0", self),"btn_0")
-	self:Register(xml:Init3tButton("btn_1", self),"btn_1")
-	self:Register(xml:Init3tButton("btn_2", self),"btn_2")
-	self:Register(xml:Init3tButton("btn_3", self),"btn_3")
-	self:Register(xml:Init3tButton("btn_4", self),"btn_4")
-	self:Register(xml:Init3tButton("btn_5", self),"btn_5")
-	self:Register(xml:Init3tButton("btn_6", self),"btn_6")
-	self:Register(xml:Init3tButton("btn_7", self),"btn_7")
-	self:Register(xml:Init3tButton("btn_8", self),"btn_8")
-	self:Register(xml:Init3tButton("btn_9", self),"btn_9")	
-	
-	self:Register(xml:Init3tButton("btn_c",			self),	"btn_c")
-	self:Register(xml:Init3tButton("btn_backspase",	self),	"btn_backspase")
-	self:Register(xml:Init3tButton("btn_enter",		self),	"btn_enter")
-	self:Register(xml:Init3tButton("btn_cancel",	self),	"btn_cancel")
+	self.focusList = {}
+	local btn1, btn2, btn3
+
+	btn1 = xml:Init3tButton("btn_7", self)
+	self:Register(btn1,"btn_7")
+
+	btn2 = xml:Init3tButton("btn_8", self)
+	self:Register(btn2,"btn_8")
+
+	btn3 = xml:Init3tButton("btn_9", self)
+	self:Register(btn3,"btn_9")
+
+	-- 1st stroke
+	table.insert(self.focusList, { btn1, btn2, btn3 })
+
+	btn1 = xml:Init3tButton("btn_4", self)
+	self:Register(btn1,"btn_4")
+
+	btn2 = xml:Init3tButton("btn_5", self)
+	self:Register(btn2,"btn_5")
+
+	btn3 = xml:Init3tButton("btn_6", self)
+	self:Register(btn3,"btn_6")
+
+	-- 2nd stroke
+	table.insert(self.focusList, { btn1, btn2, btn3 })
+
+	btn1 = xml:Init3tButton("btn_1", self)
+	self:Register(btn1,"btn_1")
+
+	btn2 = xml:Init3tButton("btn_2", self)
+	self:Register(btn2,"btn_2")
+
+	btn3 = xml:Init3tButton("btn_3", self)
+	self:Register(btn3,"btn_3")
+
+	-- 3rd stroke
+	table.insert(self.focusList, { btn1, btn2, btn3 })
+
+	btn1 = xml:Init3tButton("btn_0", self)
+	self:Register(btn1,"btn_0")
+
+	btn2 = xml:Init3tButton("btn_c", self)
+	self:Register(btn2,"btn_c")
+
+	btn3 = xml:Init3tButton("btn_backspase", self)
+	self:Register(btn3,"btn_backspase")
+
+	-- 4th stroke
+	table.insert(self.focusList, { btn1, btn2, btn3 })
+	--focusStroke = {}
+
+	btn1 = xml:Init3tButton("btn_enter", self)
+	self:Register(btn1,"btn_enter")
+
+	btn2 = xml:Init3tButton("btn_cancel", self)
+	self:Register(btn2,"btn_cancel")
+
+	-- 5th stroke
+	table.insert(self.focusList, { btn1, btn2 })
+		
+	-- Gamepad legend
+	if xml:NodeExist("gamepad_legend", 0) then
+		self.gamepad_legend = xml:InitGamepadLegend("gamepad_legend", self)
+	end
 end
 
 
@@ -163,6 +222,58 @@ function numpad:OnButton_OK_clicked()
 	self.owner:OnNumberReceive(text)
 end
 
+function numpad:TryOffsetSelector(xx, yy, canLoop)
+
+	newx = self.focusIndex.x
+	newy = self.focusIndex.y
+		
+	-- only allow strict v/h motion
+	if xx == 0 then
+		newy = newy + yy
+		if newy < 1 then
+			if canLoop then
+				newy = #self.focusList
+			else
+				return false
+			end
+		elseif newy > #self.focusList then
+			if canLoop then
+				newy = 1
+			else
+				return false
+			end
+		end	
+	elseif yy == 0 then
+		newx = newx + xx
+		if newx > #self.focusList[self.focusIndex.y] then
+			if canLoop then
+				newx = 1
+			else
+				return false
+			end
+		elseif newx < 1 then
+			if canLoop then
+				newx = #self.focusList[self.focusIndex.y]
+			else
+				return false
+			end
+		end	
+	end
+	
+	self.curBtn:SetHighlighted(false)
+	self.focusIndex.x = newx 
+	self.focusIndex.y = newy
+	self.curBtn = self.focusList[self.focusIndex.y][self.focusIndex.x]
+	
+	-- hack for missing btn in the last row
+	if self.curBtn == nil then
+		self.focusIndex.x = 2
+		self.curBtn = self.focusList[self.focusIndex.y][self.focusIndex.x]
+	end
+	
+	self.curBtn:SetHighlighted(true)
+end
+
 function numpad:OnKeyboard(dik, keyboard_action)  --virtual function
 	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
 	
@@ -203,3 +314,78 @@ function numpad:OnKeyboard(dik, keyboard_action)  --virtual function
 	return true
 end
 
+
+function numpad:OnGamepadKey(key, gamepad_action)  --virtual function
+	if gamepad_action == ui_events.WINDOW_KEY_PRESSED then
+		local bindUI = dik_to_bind(key, action_groups.agUIGeneral)
+		if bindUI == key_bindings.kUI_ACCEPT then
+			self.curBtn:OnClick()
+			return true
+		elseif bindUI == key_bindings.kUI_BACK then
+			-- todo: play sound
+			self:OnButton_CANCEL_clicked()
+			return true
+		elseif bindUI == key_bindings.kUI_DOWN then
+			if not any_binded_key_for_action_pressed_c(key_bindings.kUI_UP) then
+				self:TryOffsetSelector(0,1,true)
+			end
+			action_repeaters():SetActionStarted(self, key_bindings.kUI_DOWN)
+			return true
+		elseif bindUI == key_bindings.kUI_UP then
+			if not any_binded_key_for_action_pressed_c(key_bindings.kUI_DOWN) then
+				self:TryOffsetSelector(0,-1,true)
+			end
+			action_repeaters():SetActionStarted(self, key_bindings.kUI_UP)
+			return true
+		elseif bindUI == key_bindings.kUI_LEFT then
+			if not any_binded_key_for_action_pressed_c(key_bindings.kUI_RIGHT) then
+				self:TryOffsetSelector(-1,0,true)
+			end
+			action_repeaters():SetActionStarted(self, key_bindings.kUI_LEFT)
+			return true
+		elseif bindUI == key_bindings.kUI_RIGHT then	
+			if not any_binded_key_for_action_pressed_c(key_bindings.kUI_LEFT) then
+				self:TryOffsetSelector(1,0,true)
+			end
+			action_repeaters():SetActionStarted(self, key_bindings.kUI_RIGHT) 
+			return true
+		end
+	end
+
+	CUIScriptWnd.OnGamepadKey(self,key,gamepad_action)
+	return true
+end
+
+function numpad:OnGamepadKeyHold(key)  --virtual function
+	local bindUI = dik_to_bind(key, action_groups.agUIGeneral)		
+	if bindUI == key_bindings.kUI_DOWN then
+		if action_repeaters():CanRepeatActionNow(self, key_bindings.kUI_DOWN) 
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_UP) then
+			self:TryOffsetSelector(0,1,false)
+		end
+		return true
+	
+	elseif bindUI == key_bindings.kUI_UP then
+		if action_repeaters():CanRepeatActionNow(self, key_bindings.kUI_UP) 
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_DOWN) then
+			self:TryOffsetSelector(0,-1,false)
+		end
+		return true
+	
+	elseif bindUI == key_bindings.kUI_LEFT then
+		if action_repeaters():CanRepeatActionNow(self, key_bindings.kUI_LEFT) 
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_RIGHT) then
+			self:TryOffsetSelector(-1,0,false)
+		end
+		return true
+	
+	elseif bindUI == key_bindings.kUI_RIGHT then	
+		if action_repeaters():CanRepeatActionNow(self, key_bindings.kUI_RIGHT) 
+		and not any_binded_key_for_action_pressed_c(key_bindings.kUI_LEFT) then
+			self:TryOffsetSelector(1,0,false)
+		end
+		return true
+	end
+
+	return CUIScriptWnd.OnGamepadKeyHold(self, key)
+end
