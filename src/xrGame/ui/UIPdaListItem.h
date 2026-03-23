@@ -23,6 +23,7 @@ public:
 	virtual CUIWindow* ui_cast_window() { return this; }
 
 	void*					m_data;
+	CUIFrameWindow*			m_frame_selected = nullptr;
 protected:
 	//информация о персонаже
 	CUIFrameWindow*			UIMask;

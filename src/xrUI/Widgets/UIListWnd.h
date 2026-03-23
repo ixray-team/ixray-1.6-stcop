@@ -64,8 +64,8 @@ public:
     void SetAlwaysShowScroll(bool flag = true) { m_bAlwaysShowScroll = flag; }
     void EnableAlwaysShowScroll(bool flag) { m_bAlwaysShowScroll_enable = flag; }
 
-    void NextItem(bool selectOnly = false);
-	void PrevItem(bool selectOnly = false);
+    bool NextItem(bool selectOnly = false, bool loop = false);
+	bool PrevItem(bool selectOnly = false, bool loop = false);
 
     int GetItemsCount() { return m_ItemList.size(); }
 
@@ -79,6 +79,7 @@ public:
     void ScrollToBegin();
     void ScrollToEnd();
     void ScrollToPos(int position);
+    void ScrollToSelection();
 
     IC bool IsActiveBackgroundEnabled() { return m_bActiveBackground; }
     void EnableActiveBackground(bool enable);
