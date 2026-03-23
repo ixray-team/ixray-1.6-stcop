@@ -485,3 +485,24 @@ void CUIScrollView::UpdateChildrenLenght()
 	}
 }
 
+bool CUIScrollView::MoveSelectionUp(bool bAllowLoop)
+{
+	CUIWindow* pNewSelection = nullptr;
+	if (!::MoveSelectionUp<CUIWindow>(Items(), GetSelected(), pNewSelection, bAllowLoop))
+		return false;
+
+	R_ASSERT(pNewSelection);
+	SetSelected(pNewSelection);
+	return true;
+}
+
+bool CUIScrollView::MoveSelectionDown(bool bAllowLoop)
+{
+	CUIWindow* pNewSelection = nullptr;
+	if (!::MoveSelectionDown<CUIWindow>(Items(), GetSelected(), pNewSelection, bAllowLoop))
+		return false;
+
+	R_ASSERT(pNewSelection);
+	SetSelected(pNewSelection);
+	return true;
+}

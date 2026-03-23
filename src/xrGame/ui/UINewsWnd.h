@@ -19,6 +19,8 @@ public:
 	void			AddNews		();
 	virtual void	Show		(bool status);
 	virtual void	Update		();
+	virtual bool	OnGamepadKeyAction(int id, EUIMessages gamepad_action);
+	virtual bool	OnGamepadKeyHold(int id);
 
 	CUIScrollView*	UIScrollWnd;
 	CUIXml			NewsXML;
