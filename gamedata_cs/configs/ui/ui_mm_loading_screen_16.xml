@@ -14,7 +14,7 @@
     <loading_progress x="410" y="726.5" width="205" height="37" stretch="1" under_background="0" double_progress="1">
         <texture>ui_mm_loading_progress_bar</texture>
     </loading_progress>
-    <loading_stage x="310" y="700" width="405" height="20" stretch="1" always_show="1">
-        <text align="c" r="157" g="140" b="120" font="graffiti19"/>
+    <loading_stage x="372" y="688" width="283" height="40" stretch="1" always_show="1" complex_mode="1">
+        <text align="c" vert_align="c" r="157" g="140" b="120" font="graffiti19"/>
     </loading_stage>
 </w>

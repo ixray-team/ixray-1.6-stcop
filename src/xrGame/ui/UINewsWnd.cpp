@@ -17,10 +17,15 @@
 #define NEWS_TO_SHOW 50
 
 CUINewsWnd::CUINewsWnd()
-{}
+{
+	ActionRepeaters()->Register(this, kPDA_LOG_SCROLL_UP);
+	ActionRepeaters()->Register(this, kPDA_LOG_SCROLL_DOWN);
+}
 
 CUINewsWnd::~CUINewsWnd()
-{}
+{
+	ActionRepeaters()->UnregisterOwner(this);
+}
 
 void CUINewsWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 {
@@ -107,4 +112,63 @@ void CUINewsWnd::Show(bool status)
 		InventoryUtilities::SendInfoToActor("ui_pda_news_hide");
 	inherited::Show(status);
 
+}
+
+bool CUINewsWnd::OnGamepadKeyAction(int key, EUIMessages gamepad_action)
+{
+	if (WINDOW_KEY_PRESSED == gamepad_action)
+	{
+		switch (get_binded_action(key, agUILogMenu))
+		{
+			case kPDA_LOG_TO_START:
+			{
+				UIScrollWnd->ScrollToBegin();
+				return true;
+			}
+			case kPDA_LOG_TO_END:
+			{
+				UIScrollWnd->ScrollToEnd();
+				return true;
+			}
+			case kPDA_LOG_SCROLL_UP:
+			{
+				ActionRepeaters()->SetActionStarted(this, kPDA_LOG_SCROLL_UP);
+				UIScrollWnd->ScrollBar()->TryScrollDec();
+				return true;
+			}
+			case kPDA_LOG_SCROLL_DOWN:
+			{
+				ActionRepeaters()->SetActionStarted(this, kPDA_LOG_SCROLL_DOWN);
+				UIScrollWnd->ScrollBar()->TryScrollInc();
+				return true;
+			}
+		}
+	}
+
+	return inherited::OnGamepadKeyAction(key, gamepad_action);
+}
+
+bool CUINewsWnd::OnGamepadKeyHold(int key)
+{
+	switch (get_binded_action(key, agUILogMenu))
+	{
+		case kPDA_LOG_SCROLL_UP:
+		{
+			if (ActionRepeaters()->CanRepeatActionNow(this, kPDA_LOG_SCROLL_UP))
+			{
+				UIScrollWnd->ScrollBar()->TryScrollDec();
+			}
+			return true;
+		}
+		case kPDA_LOG_SCROLL_DOWN:
+		{
+			if (ActionRepeaters()->CanRepeatActionNow(this, kPDA_LOG_SCROLL_DOWN))
+			{
+				UIScrollWnd->ScrollBar()->TryScrollInc();
+			}
+			return true;
+		}
+	}
+
+	return inherited::OnGamepadKeyHold(key);
 }

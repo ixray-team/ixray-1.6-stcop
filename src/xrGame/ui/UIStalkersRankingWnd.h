@@ -10,11 +10,15 @@ class CUIScrollView;
 class CUIXml;
 class CSE_ALifeTraderAbstract;
 class UIHint;
+class CUIGamepadLegend;
 
 class CUIStalkersRankingWnd: public CUIWindow
 {
 	typedef CUIWindow inherited;
 public:
+	CUIStalkersRankingWnd();
+	virtual ~CUIStalkersRankingWnd();
+	
 			void			Init				();
 	virtual void			Show				(bool status);
 			void			ShowHumanDetails	();
@@ -34,11 +38,15 @@ protected:
 	void					AddStalkerItem		(CUIXml* xml, int num, CSE_ALifeTraderAbstract* t);
 	void					AddActorItem		(CUIXml* xml, int num, CSE_ALifeTraderAbstract* t);
 	s32						m_items_count;
+	CUIGamepadLegend*		m_gamepad_legend = nullptr;
 
 public:
 	CUIScrollView&			GetTopList			()			{return *UIList;}
 	void					ShowHumanInfo		(u16 id);
 	virtual void			Reset				();
+	
+	virtual bool			OnGamepadKeyAction	(int id, EUIMessages gamepad_action);
+	virtual bool			OnGamepadKeyHold	(int id);
 	virtual CUIWindow* ui_cast_window() { return this; }
 	UIHint*						m_hint_wnd = nullptr;
 };

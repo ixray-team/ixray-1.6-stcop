@@ -266,7 +266,9 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 
 	m_UserSpotWnd = new CUIPdaSpot();
 	m_UserSpotWnd->SetAutoDelete(true);
-	//AttachChild(m_UserSpotWnd);
+
+	if (!xr_strcmp(xml_name, "pda_map.xml"))
+		m_gamepad_legend = UIHelper::CreateGamepadLegend(uiXml, "gamepad_legend", this, false);
 }
 
 void CUIMapWnd::Show(bool status)
