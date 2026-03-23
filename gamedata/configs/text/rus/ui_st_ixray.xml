@@ -690,4 +690,7 @@
 	<string id="ui_tasks_set_active">
 		<text>$$ACTION_pda_tasks_filter_toggle$$ Сделать активным</text>
 	</string>
+	<string id="ui_pda_tabs_secondary">
+		<text>$$ACTION_UI_TAB_SEC_LEFT$$/$$ACTION_UI_TAB_SEC_RIGHT$$ Дополнительные вкладки</text>
+	</string>
 </string_table>

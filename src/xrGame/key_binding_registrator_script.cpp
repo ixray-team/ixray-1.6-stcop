@@ -132,6 +132,8 @@ void key_binding_registrator::script_register(lua_State *L)
                 
 				value("kUI_TAB_LEFT",	            int(kUI_TAB_LEFT)),
 				value("kUI_TAB_RIGHT",	            int(kUI_TAB_RIGHT)),
+				value("kUI_TAB_SECONDARY_LEFT",	    int(kUI_TAB_SECONDARY_LEFT)),
+				value("kUI_TAB_SECONDARY_RIGHT",	int(kUI_TAB_SECONDARY_RIGHT)),
 				value("kUI_LEFT",	                int(kUI_LEFT)),
 				value("kUI_RIGHT",	                int(kUI_RIGHT)),
 				value("kUI_UP",	                    int(kUI_UP)),
