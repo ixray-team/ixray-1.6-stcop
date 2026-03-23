@@ -691,18 +691,25 @@ void CUIListWnd::destroy_active_back()
         xr_delete(m_ActiveBackgroundFrame);
 }
 
-void CUIListWnd::NextItem(bool selectOnly)
+bool CUIListWnd::NextItem(bool selectOnly, bool loop)
 {
 	if (m_ItemList.empty())
 	{
-		return;
+		return false;
 	}
 
 	int nextIdx = GetSelectedItem() + 1;
 	if (nextIdx > m_ItemList.size() - 1)
 	{
-		nextIdx = 0;
-		ScrollToBegin();
+        if (loop)
+        {
+            nextIdx = 0;
+            ScrollToBegin();
+        }
+        else
+        {
+            return false;
+        }
 	}
 	SetSelectedItem(nextIdx);
     CUIListItem* pListItem = GetItem(GetSelectedItem());
@@ -722,20 +729,28 @@ void CUIListWnd::NextItem(bool selectOnly)
     m_ScrollBar->SetScrollPos(pos);
     m_iFirstShownIndex = m_ScrollBar->GetScrollPos();
     UpdateList();
+    return true;
 }
 
-void CUIListWnd::PrevItem(bool selectOnly)
+bool CUIListWnd::PrevItem(bool selectOnly, bool loop)
 {
     if (m_ItemList.empty())
     {
-        return;
+        return false;
     }
 
     int nextIdx = GetSelectedItem() - 1;
     if (nextIdx < 0)
     {
-        nextIdx = m_ItemList.size() - 1;
-        ScrollToEnd();
+        if (loop)
+        {
+            nextIdx = m_ItemList.size() - 1;
+            ScrollToEnd();
+        }
+        else
+        {
+            return false;
+        }
     }
     SetSelectedItem(nextIdx);
     CUIListItem* pListItem = GetItem(GetSelectedItem());
@@ -755,4 +770,23 @@ void CUIListWnd::PrevItem(bool selectOnly)
     m_ScrollBar->SetScrollPos(pos);
     m_iFirstShownIndex = m_ScrollBar->GetScrollPos();
     UpdateList();
+    return true;
+}
+
+void CUIListWnd::ScrollToSelection()
+{
+    const int itemCount = m_ItemList.size();
+    const int minIdxToScroll = m_iRowNum / 2;
+    if (m_iSelectedItem >= minIdxToScroll)
+    {
+        if (itemCount > m_iRowNum)
+        {
+            int scrollToIdx = m_iSelectedItem - minIdxToScroll;
+            ScrollToPos(std::min(scrollToIdx, itemCount - m_iRowNum));
+        }
+    }
+    else
+    {
+        ScrollToPos(0);
+    }
 }

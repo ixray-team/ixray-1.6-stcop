@@ -13,6 +13,7 @@ class CUITabControl;
 class CUIScrollView;
 class CUIListWnd;
 class CEncyclopediaArticle;
+class CUIGamepadLegend;
 
 class CUIDiaryWnd: public CUIWindow, public CUIWndCallback
 {
@@ -35,13 +36,13 @@ protected:
 	CUIFrameWindow*		m_UIRightFrame;
 	CUIFrameLineWnd*	m_UIRightHeader;
 	CUIAnimatedStatic*	m_UIAnimation;
-	CUITabControl*		m_FilterTab;
 	CUIListWnd*			m_SrcListWnd;
 	CUIScrollView*		m_DescrView;
 	CGameFont*			m_pTreeRootFont;
 	u32					m_uTreeRootColor;
 	CGameFont*			m_pTreeItemFont;
 	u32					m_uTreeItemColor;
+	CUIGamepadLegend*	m_gamepad_legend = nullptr;
 
 	xr_vector<Fvector2>	m_sign_places;
 	CUIStatic*			m_updatedSectionImage;
@@ -58,7 +59,9 @@ protected:
 			void		UnloadNewsTab			();
 			void		LoadNewsTab				();
 			void		Reload					(EDiaryFilter new_filter);
+			void		UpdateGamepadLegend		();
 public:
+	CUITabControl*		m_FilterTab;
 						CUIDiaryWnd				();
 	virtual				~CUIDiaryWnd			();
 
@@ -70,6 +73,9 @@ public:
 			void		AddNews					();
 			void		MarkNewsAsRead			(bool status);
 	virtual void		Show					(bool status);
+	virtual void		Update					();
+	virtual bool		OnGamepadKeyAction		(int id, EUIMessages gamepad_action);
+	virtual bool		OnGamepadKeyHold		(int id);
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 };
