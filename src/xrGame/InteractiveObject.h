@@ -19,7 +19,7 @@ public:
 	xr_vector<xr_string> m_bone_names;
 	xr_string m_spawn_section;
 	xr_vector<ref_sound> m_use_sounds;
-	u16 left_uses = 0;
+	u8 left_uses = 0;
 
 	CInteractiveObject();
 	~CInteractiveObject();
