@@ -22,6 +22,7 @@ class CUIXml;
 class UIHint;
 class CUIPdaSpot;
 class CUIPropertiesBox;
+class CUIGamepadLegend;
 
 using GameMaps = xr_map<shared_str, CUICustomMap*>;
 using GameMapsPairIt = GameMaps::iterator;
@@ -58,6 +59,7 @@ private:
 	CUIMapLocationHint*			m_map_location_hint;
 	CUIPdaSpot*					m_UserSpotWnd;
 	CUIStatic*					m_text_hint;
+	CUIGamepadLegend*			m_gamepad_legend = nullptr;
 
 	enum EBtnPos
 	{

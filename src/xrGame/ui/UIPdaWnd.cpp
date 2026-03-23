@@ -70,10 +70,15 @@ CUIPdaWnd::CUIPdaWnd()
 
 	LoadCallbackGlobals(m_isSetActiveSubdialog, m_onSetActiveSubdialog, "OnSetActiveSubdialog");
 	Init();
+	ActionRepeaters()->Register(this, kUI_TAB_LEFT);
+	ActionRepeaters()->Register(this, kUI_TAB_RIGHT);
+	ActionRepeaters()->Register(this, kUI_TAB_SECONDARY_LEFT);
+	ActionRepeaters()->Register(this, kUI_TAB_SECONDARY_RIGHT);
 }
 
 CUIPdaWnd::~CUIPdaWnd()
 {
+	ActionRepeaters()->UnregisterOwner(this);
 	delete_data( pUITaskWnd );
 	delete_data( pUIFactionWarWnd );
 	delete_data( UIPdaContactsWnd );
@@ -797,19 +802,96 @@ bool CUIPdaWnd::OnGamepadKeyAction(int key, EUIMessages gamepad_action)
 			}
 			case kUI_TAB_LEFT:
 			{
-				UITabControl->PrevTab();
+				ActionRepeaters()->SetActionStarted(this, kUI_TAB_LEFT);
+				UITabControl->PrevTab(true);
 				break;
 			}
 			case kUI_TAB_RIGHT:
 			{
-				UITabControl->NextTab();
+				ActionRepeaters()->SetActionStarted(this, kUI_TAB_RIGHT);
+				UITabControl->NextTab(true);
+				break;
+			}
+			case kUI_TAB_SECONDARY_LEFT:
+			{
+				if (m_pActiveDialog == pUIDiaryWnd)
+				{
+					ActionRepeaters()->SetActionStarted(this, kUI_TAB_SECONDARY_LEFT);
+					pUIDiaryWnd->m_FilterTab->PrevTab(true);
+				}
+				break;
+			}
+			case kUI_TAB_SECONDARY_RIGHT:
+			{
+				if (m_pActiveDialog == pUIDiaryWnd)
+				{
+					ActionRepeaters()->SetActionStarted(this, kUI_TAB_SECONDARY_RIGHT);
+					pUIDiaryWnd->m_FilterTab->NextTab(true);
+				}
 				break;
 			}
 			return true;
 		}
+		switch (get_binded_action(key, agUITaskMenu))
+		{
+			case kPDA_TASKS_MAP_SHOW_ME:
+			{
+				if (m_pActiveDialog == pUIMapWnd)
+				{
+					pUIMapWnd->ViewActor();
+					return true;
+				}
+				break;
+			}
+		}
 	}
 
 	return inherited::OnGamepadKeyAction(key, gamepad_action);
+}
+
+bool CUIPdaWnd::OnGamepadKeyHold(int key)
+{
+	switch (get_binded_action(key, agUIGeneral))
+	{
+		case kUI_TAB_LEFT:
+		{
+			if (ActionRepeaters()->CanRepeatActionNow(this, kUI_TAB_LEFT) && !any_binded_key_for_action_pressed_c(kUI_TAB_RIGHT))
+			{
+				UITabControl->PrevTab();
+				return true;
+			}
+			break;
+		}
+		case kUI_TAB_RIGHT:
+		{
+			if (ActionRepeaters()->CanRepeatActionNow(this, kUI_TAB_RIGHT) && !any_binded_key_for_action_pressed_c(kUI_TAB_LEFT))
+			{
+				UITabControl->NextTab();
+				return true;
+			}
+			break;
+		}
+		case kUI_TAB_SECONDARY_LEFT:
+		{
+			if (m_pActiveDialog == pUIDiaryWnd && ActionRepeaters()->CanRepeatActionNow(this, kUI_TAB_SECONDARY_LEFT) && !any_binded_key_for_action_pressed_c(kUI_TAB_SECONDARY_RIGHT))
+			{
+				pUIDiaryWnd->m_FilterTab->PrevTab();
+				return true;
+			}
+			break;
+		}
+		case kUI_TAB_SECONDARY_RIGHT:
+		{
+			if (m_pActiveDialog == pUIDiaryWnd && ActionRepeaters()->CanRepeatActionNow(this, kUI_TAB_SECONDARY_LEFT) && !any_binded_key_for_action_pressed_c(kUI_TAB_SECONDARY_RIGHT))
+			{
+				pUIDiaryWnd->m_FilterTab->NextTab();
+				return true;
+			}
+			break;
+		}
+	}
+
+	return inherited::OnGamepadKeyHold(key);
 }
 
 void CUIPdaWnd::HideDialog()

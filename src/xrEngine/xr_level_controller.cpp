@@ -101,6 +101,8 @@ ENGINE_API _action  actions[]		= {
 	
 	{ "ui_tab_left",		kUI_TAB_LEFT,			_both,			agUIGeneral},
 	{ "ui_tab_right",		kUI_TAB_RIGHT,			_both,			agUIGeneral},
+	{ "ui_tab_sec_left",	kUI_TAB_SECONDARY_LEFT,	_both,			agUIGeneral},
+	{ "ui_tab_sec_right",	kUI_TAB_SECONDARY_RIGHT,_both,			agUIGeneral},
 	{ "ui_left",			kUI_LEFT,				_both,			agUIGeneral},
 	{ "ui_right",			kUI_RIGHT,				_both,			agUIGeneral},
 	{ "ui_up",				kUI_UP,					_both,			agUIGeneral},
