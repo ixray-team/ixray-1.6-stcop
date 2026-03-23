@@ -1,6 +1,21 @@
 <?xml version='1.0' encoding="UTF-8"?>
 <window>
 
+	<gamepad_legend x="-171" y="614" width="1024" height="30" spacing="5">
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_pda_tabs</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_tasks_map_show_me</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_tasks_map_zoom</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_mm_back_gp</text>
+		</auto_static>
+	</gamepad_legend>
+	
 	<map_wnd>
 		<main_wnd x="110" y="90" width="761" height="475"> 
 			<text_hint x="735" y="450" width="100" height="22" complex_mode="1">

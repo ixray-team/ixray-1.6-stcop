@@ -11,6 +11,7 @@ class CUIAnimatedStatic;
 class CUIScrollView;
 class CInventoryOwner;
 class UIHint;
+class CUIGamepadLegend;
 
 class CUIPdaContactsWnd: public CUIWindow  
 {
@@ -30,6 +31,9 @@ public:
 	virtual void				Update					();
 	virtual void				DrawHint				();
 	virtual void				Reset					();
+
+	virtual bool				OnGamepadKeyAction		(int id, EUIMessages gamepad_action);
+	virtual bool				OnGamepadKeyHold		(int id);
 
 	virtual void				Show					(bool status);
 
@@ -51,6 +55,7 @@ protected:
 	CUIFrameWindow*				UIRightFrame;
 	CUIFrameLineWnd*			UIRightFrameHeader;
 	CUIAnimatedStatic*			UIAnimation;
+	CUIGamepadLegend*			m_gamepad_legend = nullptr;
 };
 
 #include "UIPdaListItem.h"

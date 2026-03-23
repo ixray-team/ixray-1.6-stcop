@@ -66,6 +66,9 @@ public:
 			float	GetDesiredChildWidth();
 	virtual	void	SetSelected			(CUIWindow*);
 	CUIWindow*		GetSelected			();
+			bool	MoveSelectionUp		(bool bAllowLoop);
+			bool	MoveSelectionDown	(bool bAllowLoop);
+
 			Fvector2 GetPadSize			();
 			void	ForceUpdate			();
 			int		GetMinScrollPos		();
