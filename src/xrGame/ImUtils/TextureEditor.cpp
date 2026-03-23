@@ -792,23 +792,8 @@ void PrintHelp()
 	{
 		if (ImGui::BeginItemTooltip())
 		{
-			ImGui::Text("Author:");
-			ImGui::SameLine();
-			ImGui::TextColored(kAuthorTextColor, "@wh1t3lord");
-			ImGui::Separator();
-			ImGui::Text("");
-
 			ImGui::Text("Description:");
 			ImGui::Text("\tEditor for previewing textures and editing thms");
-			
-			ImGui::Text("");
-			ImGui::Separator();
-			ImGui::Text("Contributors:");
-			ImGui::Text("\t*");
-			ImGui::SameLine();
-			ImGui::TextColored(kContributorsTextColor, "@v2v3v4");
-			ImGui::SameLine();
-			ImGui::Text(" - improved threading;");
 
 			ImGui::EndTooltip();
 		}
