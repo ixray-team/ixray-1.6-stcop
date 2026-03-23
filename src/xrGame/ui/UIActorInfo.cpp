@@ -3,7 +3,7 @@
 #include "../../xrUI/UIXmlInit.h"
 #include "../Level.h"
 #include "../Actor.h"
-
+#include "../../xrUI/UIHelper.h"
 #include "UIInventoryUtilities.h"
 #include "../../xrUI/Widgets/UIFrameWindow.h"
 #include "../../xrUI/Widgets/UIFrameLineWnd.h"
@@ -23,8 +23,17 @@
 
 
 CUIActorInfoWnd::CUIActorInfoWnd()
-{}
+{
+	ActionRepeaters()->Register(this, kUI_DOWN);
+	ActionRepeaters()->Register(this, kUI_UP);
+	ActionRepeaters()->Register(this, kUI_SECONDARY_DOWN);
+	ActionRepeaters()->Register(this, kUI_SECONDARY_UP);
+}
 
+CUIActorInfoWnd::~CUIActorInfoWnd()
+{
+	ActionRepeaters()->UnregisterOwner(this);
+}
 
 void CUIActorInfoWnd::Init()
 {
@@ -89,6 +98,7 @@ void CUIActorInfoWnd::Init()
 		UICharIconFrame->AttachChild(rightStatic);
 		xml_init.InitStatic(uiXml, "right_auto_static", i, rightStatic);
 	}
+	m_gamepad_legend = UIHelper::CreateGamepadLegend(uiXml, "gamepad_legend", this, false);
 }
 
 void CUIActorInfoWnd::Show(bool status)
@@ -108,6 +118,7 @@ void CUIActorInfoWnd::FillPointsInfo			()
 	uiXml.Load								(CONFIG_PATH, UI_PATH,ACTOR_STATISTIC_XML);
 
 	UIMasterList->Clear						();
+	UIMasterSelectableItems.clear();
 
 #ifndef PRIQUEL
 	int items_num = uiXml.GetNodesNum		("actor_stats_wnd", 0, "master_part");
@@ -141,6 +152,8 @@ void CUIActorInfoWnd::FillPointsInfo			()
 			}
 		}
 		UIMasterList->AddWindow				(itm, true);
+		if (itm->m_bSelectable)
+			UIMasterSelectableItems.push_back(itm);
 	}
 #else
 	const vStatSectionData& _storage	= Actor()->StatisticMgr().GetCStorage();
@@ -187,6 +200,8 @@ void CUIActorInfoWnd::FillMasterPart(CUIXml* xml, const shared_str& key_name)
 		}
 	}
 	UIMasterList->AddWindow							(itm, true);
+	if (itm->m_bSelectable)
+		UIMasterSelectableItems.push_back(itm);
 }
 
 void CUIActorInfoWnd::FillPointsDetail(const shared_str& id)
@@ -295,6 +310,118 @@ void	CUIActorInfoWnd::FillReputationDetails(CUIXml* xml, LPCSTR path)
 }
 
 
+bool CUIActorInfoWnd::MoveSelectionUp(bool bAllowLoop)
+{
+	if (UIMasterSelectableItems.size() <2)
+		return false;
+
+	CUIActorStaticticHeader* pSelected = static_cast<CUIActorStaticticHeader*>(UIMasterList->GetSelected());
+	xr_vector<CUIActorStaticticHeader*>::iterator fIt = std::find(UIMasterSelectableItems.begin(), UIMasterSelectableItems.end(), pSelected);
+	R_ASSERT(fIt != UIMasterSelectableItems.end());
+	if (fIt == UIMasterSelectableItems.begin())
+	{
+		if (bAllowLoop)
+		{
+			fIt = --UIMasterSelectableItems.end();
+		}
+		else
+			return false;
+	}
+	else
+		fIt = --fIt;
+
+	pSelected->SetSelected(false);
+	UIMasterList->SetSelected(*fIt);
+	return true;
+}
+
+bool CUIActorInfoWnd::MoveSelectionDown(bool bAllowLoop)
+{
+	if (UIMasterSelectableItems.size() <2)
+		return false;
+
+	CUIActorStaticticHeader* pSelected = static_cast<CUIActorStaticticHeader*>(UIMasterList->GetSelected());
+	xr_vector<CUIActorStaticticHeader*>::iterator fIt = std::find(UIMasterSelectableItems.begin(), UIMasterSelectableItems.end(), pSelected);
+	R_ASSERT(fIt != UIMasterSelectableItems.end());
+	++fIt;
+	if (fIt == UIMasterSelectableItems.end())
+	{
+		if (bAllowLoop)
+		{
+			fIt = UIMasterSelectableItems.begin();
+		}
+		else
+			return false;
+	}
+
+	pSelected->SetSelected(false);
+	UIMasterList->SetSelected(*fIt);
+	return true;
+}
+
+bool CUIActorInfoWnd::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
+{
+	if (gamepad_action == WINDOW_KEY_PRESSED)
+	{
+		if (is_binded(kUI_UP, id))
+		{
+			ActionRepeaters()->SetActionStarted(this, kUI_UP);
+			MoveSelectionUp(true);
+			return true;
+		}
+		else if (is_binded(kUI_DOWN, id))
+		{
+			ActionRepeaters()->SetActionStarted(this, kUI_DOWN);
+			MoveSelectionDown(true);
+			return true;
+		}
+		else if (is_binded(kUI_SECONDARY_UP, id))
+		{
+			ActionRepeaters()->SetActionStarted(this, kUI_SECONDARY_UP);
+			UIDetailList->ScrollBar()->TryScrollDec();
+			return true;
+		}
+		else if (is_binded(kUI_SECONDARY_DOWN, id))
+		{
+			ActionRepeaters()->SetActionStarted(this, kUI_SECONDARY_DOWN);
+			UIDetailList->ScrollBar()->TryScrollInc();
+			return true;
+		}
+	}
+
+	return inherited::OnGamepadKeyAction(id, gamepad_action);
+}
+
+bool CUIActorInfoWnd::OnGamepadKeyHold(int id)
+{
+	if (is_binded(kUI_UP, id))
+	{
+		if (ActionRepeaters()->CanRepeatActionNow(this, kUI_UP))
+			MoveSelectionUp(false);
+		return true;
+	}
+	else if (is_binded(kUI_DOWN, id))
+	{
+		if (ActionRepeaters()->CanRepeatActionNow(this, kUI_DOWN))
+			MoveSelectionDown(false);
+		return true;
+	}
+	else if (is_binded(kUI_SECONDARY_UP, id))
+	{
+		if (ActionRepeaters()->CanRepeatActionNow(this, kUI_SECONDARY_UP))
+			UIDetailList->ScrollBar()->TryScrollDec();
+		return true;
+	}
+	else if (is_binded(kUI_SECONDARY_DOWN, id))
+	{
+		if (ActionRepeaters()->CanRepeatActionNow(this, kUI_SECONDARY_DOWN))
+			UIDetailList->ScrollBar()->TryScrollInc();
+		return true;
+	}
+
+	return inherited::OnGamepadKeyHold(id);
+}
+
 CUIActorStaticticHeader::CUIActorStaticticHeader(CUIActorInfoWnd* w)
 :m_actorInfoWnd(w)
 {}
@@ -306,6 +433,8 @@ void CUIActorStaticticHeader::Init	(CUIXml* xml, LPCSTR path, int idx_in_xml)
 
 	CUIXmlInit							xml_init;
 	xml_init.InitWindow					(*xml, path, idx_in_xml, this);
+
+	m_bSelectable = !!xml->ReadAttribInt(xml->NavigateToNode(path, idx_in_xml), "selectable", 0);
 
 	xml->SetLocalRoot					(xml->NavigateToNode(path,idx_in_xml));
 

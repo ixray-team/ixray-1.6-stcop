@@ -98,6 +98,8 @@ enum EGameActions
 	// Controller UI actions
 	kUI_TAB_LEFT,
 	kUI_TAB_RIGHT,
+	kUI_TAB_SECONDARY_LEFT,
+	kUI_TAB_SECONDARY_RIGHT,
 
 	kUI_LEFT,
 	kUI_RIGHT,

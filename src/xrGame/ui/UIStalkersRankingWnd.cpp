@@ -30,6 +30,17 @@ struct SStatData{
 typedef xr_vector<SStatData>	TOP_LIST;
 TOP_LIST						g_all_statistic_humans;
 
+CUIStalkersRankingWnd::CUIStalkersRankingWnd()
+{
+	ActionRepeaters()->Register(this, kUI_DOWN);
+	ActionRepeaters()->Register(this, kUI_UP);
+}
+
+CUIStalkersRankingWnd::~CUIStalkersRankingWnd()
+{
+	ActionRepeaters()->UnregisterOwner(this);
+}
+
 void CUIStalkersRankingWnd::Init()
 {
 	CUIXml								uiXml;
@@ -87,6 +98,7 @@ void CUIStalkersRankingWnd::Init()
 	{
 		m_hint_wnd = UIHelper::CreateHint(uiXml, "hint_wnd");
 	}
+	m_gamepad_legend = UIHelper::CreateGamepadLegend(uiXml, "gamepad_legend", this, false);
 }
 
 void CUIStalkersRankingWnd::DrawHint()
@@ -214,6 +226,65 @@ void CUIStalkersRankingWnd::Reset()
 	inherited::Reset		();	
 }
 
+bool CUIStalkersRankingWnd::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
+{
+	if (gamepad_action == WINDOW_KEY_PRESSED)
+	{
+		if (is_binded(kUI_UP, id))
+		{
+			ActionRepeaters()->SetActionStarted(this, kUI_UP);
+			UIList->MoveSelectionUp(true);
+			if (smart_cast<CUIStalkerRankingElipsisItem*>(UIList->GetSelected()))
+			{
+				UIList->MoveSelectionUp(true);
+			}
+			return true;
+		}
+		else if (is_binded(kUI_DOWN, id))
+		{
+			ActionRepeaters()->SetActionStarted(this, kUI_DOWN);
+			UIList->MoveSelectionDown(true);
+			if (smart_cast<CUIStalkerRankingElipsisItem*>(UIList->GetSelected()))
+			{
+				UIList->MoveSelectionDown(true);
+			}
+			return true;
+		}
+	}
+
+	return inherited::OnGamepadKeyAction(id, gamepad_action);
+}
+
+bool CUIStalkersRankingWnd::OnGamepadKeyHold(int id)
+{
+	if (is_binded(kUI_UP, id))
+	{
+		if (ActionRepeaters()->CanRepeatActionNow(this, kUI_UP))
+		{
+			UIList->MoveSelectionUp(false);
+			if (smart_cast<CUIStalkerRankingElipsisItem*>(UIList->GetSelected()))
+			{
+				UIList->MoveSelectionUp(false);
+			}
+		}
+		return true;
+	}
+	else if (is_binded(kUI_DOWN, id))
+	{
+		if (ActionRepeaters()->CanRepeatActionNow(this, kUI_DOWN))
+		{
+			UIList->MoveSelectionDown(false);
+			if (smart_cast<CUIStalkerRankingElipsisItem*>(UIList->GetSelected()))
+			{
+				UIList->MoveSelectionDown(true);
+			}
+		}
+		return true;
+	}
+
+	return inherited::OnGamepadKeyHold(id);
+}
+
 void add_human_to_top_list(u16 id)
 {
 	CSE_ALifeTraderAbstract* t	= ch_info_get_from_id(id);
@@ -337,7 +408,7 @@ CUIStalkerRankingElipsisItem::CUIStalkerRankingElipsisItem(CUIStalkersRankingWnd
 
 void CUIStalkerRankingElipsisItem::SetSelected(bool b)
 {
-	return;
+	CUISelectable::SetSelected(b);
 }
 
 bool CUIStalkerRankingElipsisItem::OnMouseDown(int mouse_btn)

@@ -29,10 +29,16 @@ CUIEncyclopediaWnd::CUIEncyclopediaWnd()
 	m_background = nullptr;
 	m_background2 = nullptr;
 	prevArticlesCount	= 0;
+	ActionRepeaters()->Register(this, kUI_DOWN);
+	ActionRepeaters()->Register(this, kUI_UP);
+	ActionRepeaters()->Register(this, kUI_SECONDARY_DOWN);
+	ActionRepeaters()->Register(this, kUI_SECONDARY_UP);
 }
 
 CUIEncyclopediaWnd::~CUIEncyclopediaWnd()
 {
+	ActionRepeaters()->UnregisterOwner(this);
+
 	DeleteArticles();
 }
 
@@ -120,6 +126,7 @@ void CUIEncyclopediaWnd::Init()
 		UIEncyclopediaIdxBkg->AttachChild(rightStatic);
 		xml_init.InitStatic(uiXml, "right_auto_static", i, rightStatic);
 	}
+	m_gamepad_legend = UIHelper::CreateGamepadLegend(uiXml, "gamepad_legend", this, false);
 }
 
 #include "../../xrEngine/string_table.h"
@@ -128,35 +135,41 @@ void CUIEncyclopediaWnd::SendMessage(CUIWindow *pWnd, s16 msg, void* pData)
 	if (UIIdxList == pWnd && LIST_ITEM_CLICKED == msg)
 	{
 		CUITreeViewItem *pTVItem = static_cast<CUITreeViewItem*>(pData);
-		R_ASSERT		(pTVItem);
-		
-		if( pTVItem->vSubItems.size() )
-		{
-			CEncyclopediaArticle* A = m_ArticlesDB[pTVItem->vSubItems[0]->GetValue()];
-
-			xr_string caption		= "# ";
-			caption					+= "/";
-			caption					+= g_pStringTable->translate(A->data()->group).c_str();
-
-			UIEncyclopediaInfoHeader->UITitleText.SetText(caption.c_str());
-			UIArticleHeader->SetTextST(*(A->data()->group));
-			SetCurrentArtice		(nullptr);
-		}else
-		{
-			CEncyclopediaArticle* A = m_ArticlesDB[pTVItem->GetValue()];
-			xr_string caption		= "# ";
-			caption					+= "/";
-			caption					+= g_pStringTable->translate(A->data()->group).c_str();
-			caption					+= "/";
-			caption					+= g_pStringTable->translate(A->data()->name).c_str();
-
-			UIEncyclopediaInfoHeader->UITitleText.SetText(caption.c_str());
-			SetCurrentArtice		(pTVItem);
-			UIArticleHeader->SetTextST(*(A->data()->name));
-		}
+		OnTreeViewItemClicked(pTVItem);
 	}
 
 	inherited::SendMessage(pWnd, msg, pData);
+}
+
+void CUIEncyclopediaWnd::OnTreeViewItemClicked(CUITreeViewItem* pTVItem)
+{
+	R_ASSERT(pTVItem);
+
+	if (pTVItem->vSubItems.size())
+	{
+		CEncyclopediaArticle* A = m_ArticlesDB[pTVItem->vSubItems[0]->GetValue()];
+
+		xr_string caption = "# ";
+		caption += "/";
+		caption += g_pStringTable->translate(A->data()->group).c_str();
+
+		UIEncyclopediaInfoHeader->UITitleText.SetText(caption.c_str());
+		UIArticleHeader->SetTextST(*(A->data()->group));
+		SetCurrentArtice(nullptr);
+	}
+	else
+	{
+		CEncyclopediaArticle* A = m_ArticlesDB[pTVItem->GetValue()];
+		xr_string caption = "# ";
+		caption += "/";
+		caption += g_pStringTable->translate(A->data()->group).c_str();
+		caption += "/";
+		caption += g_pStringTable->translate(A->data()->name).c_str();
+
+		UIEncyclopediaInfoHeader->UITitleText.SetText(caption.c_str());
+		SetCurrentArtice(pTVItem);
+		UIArticleHeader->SetTextST(*(A->data()->name));
+	}
 }
 
 void CUIEncyclopediaWnd::Draw()
@@ -274,4 +287,163 @@ void CUIEncyclopediaWnd::Reset()
 {
 	inherited::Reset	();
 	ReloadArticles		();
+}
+
+bool CUIEncyclopediaWnd::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
+{
+	if (gamepad_action == WINDOW_KEY_PRESSED)
+	{
+		if (UIIdxList->GetItemsCount())
+		{
+			if (is_binded(kUI_UP, id))
+			{
+				if (!any_binded_key_for_action_pressed_c(kUI_DOWN))
+				{
+					CUITreeViewItem* pItem = static_cast<CUITreeViewItem*>(UIIdxList->GetItem(UIIdxList->GetSelectedItem()));
+					if (pItem)
+					{
+						pItem->UIBkg.TextureOff();
+					}
+					if (UIIdxList->PrevItem(false, true))
+					{
+						pItem = static_cast<CUITreeViewItem*>(UIIdxList->GetItem(UIIdxList->GetSelectedItem()));
+						OnTreeViewItemClicked(pItem);
+						pItem->UIBkg.TextureOn();
+						if (!pItem->IsRoot())
+						{
+							pItem->MarkArticleAsRead(true);
+						}
+					}
+				}
+				ActionRepeaters()->SetActionStarted(this, kUI_UP);
+				return true;
+			}
+			else if (is_binded(kUI_DOWN, id))
+			{
+				if (!any_binded_key_for_action_pressed_c(kUI_UP))
+				{
+					CUITreeViewItem* pItem = static_cast<CUITreeViewItem*>(UIIdxList->GetItem(UIIdxList->GetSelectedItem()));
+					if (pItem)
+					{
+						pItem->UIBkg.TextureOff();
+					}
+					if (UIIdxList->NextItem(false, true))
+					{
+						pItem = static_cast<CUITreeViewItem*>(UIIdxList->GetItem(UIIdxList->GetSelectedItem()));
+						OnTreeViewItemClicked(pItem);
+						pItem->UIBkg.TextureOn();
+						if (!pItem->IsRoot())
+						{
+							pItem->MarkArticleAsRead(true);
+						}
+					}
+				}
+				ActionRepeaters()->SetActionStarted(this, kUI_DOWN);
+				return true;
+			}
+			else if (is_binded(kUI_SECONDARY_UP, id))
+			{
+				ActionRepeaters()->SetActionStarted(this, kUI_SECONDARY_UP);
+				UIInfoList->ScrollBar()->TryScrollDec();
+				return true;
+			}
+			else if (is_binded(kUI_SECONDARY_DOWN, id))
+			{
+				ActionRepeaters()->SetActionStarted(this, kUI_SECONDARY_DOWN);
+				UIInfoList->ScrollBar()->TryScrollInc();
+				return true;
+			}
+			else if (is_binded(kUI_LEFT, id) || is_binded(kUI_RIGHT, id) || is_binded(kUI_ACCEPT, id))
+			{
+				CUITreeViewItem* pItem = static_cast<CUITreeViewItem*>(UIIdxList->GetItem(UIIdxList->GetSelectedItem()));
+				if (pItem)
+				{
+					if (pItem->IsRoot())
+					{
+						if (pItem->IsOpened())
+							pItem->Close();
+						else
+							pItem->Open();
+						UIIdxList->ScrollToSelection();
+					}
+					else
+					{
+						pItem->UIBkg.TextureOff();
+						pItem = pItem->GetOwner();
+						pItem->Close();
+						int idx = UIIdxList->GetItemPos(pItem);
+						UIIdxList->SetSelectedItem(idx);
+						UIIdxList->ScrollToSelection();
+
+						OnTreeViewItemClicked(pItem);
+						pItem->UIBkg.TextureOn();
+					}
+					return true;
+				}
+			}
+		}
+	}
+	return inherited::OnGamepadKeyAction(id, gamepad_action);
+}
+
+bool CUIEncyclopediaWnd::OnGamepadKeyHold(int id)
+{
+	if (is_binded(kUI_DOWN, id))
+	{
+		if (ActionRepeaters()->CanRepeatActionNow(this, kUI_DOWN) && !any_binded_key_for_action_pressed_c(kUI_UP))
+		{
+			CUITreeViewItem* pItem = static_cast<CUITreeViewItem*>(UIIdxList->GetItem(UIIdxList->GetSelectedItem()));
+			if (pItem)
+			{
+				pItem->UIBkg.TextureOff();
+			}
+			if (UIIdxList->NextItem())
+			{
+				pItem = static_cast<CUITreeViewItem*>(UIIdxList->GetItem(UIIdxList->GetSelectedItem()));
+				OnTreeViewItemClicked(pItem);
+				pItem->UIBkg.TextureOn();
+				if (!pItem->IsRoot())
+				{
+					pItem->MarkArticleAsRead(true);
+				}
+			}
+		}
+		return true;
+	}
+	else if (is_binded(kUI_UP, id))
+	{
+		if (ActionRepeaters()->CanRepeatActionNow(this, kUI_UP) && !any_binded_key_for_action_pressed_c(kUI_DOWN))
+		{
+			CUITreeViewItem* pItem = static_cast<CUITreeViewItem*>(UIIdxList->GetItem(UIIdxList->GetSelectedItem()));
+			if (pItem)
+			{
+				pItem->UIBkg.TextureOff();
+			}
+			if (UIIdxList->PrevItem())
+			{
+				pItem = static_cast<CUITreeViewItem*>(UIIdxList->GetItem(UIIdxList->GetSelectedItem()));
+				OnTreeViewItemClicked(pItem);
+				pItem->UIBkg.TextureOn();
+				if (!pItem->IsRoot())
+				{
+					pItem->MarkArticleAsRead(true);
+				}
+			}
+		}
+		return true;
+	}
+	else if (is_binded(kUI_SECONDARY_UP, id))
+	{
+		if (ActionRepeaters()->CanRepeatActionNow(this, kUI_SECONDARY_UP))
+			UIInfoList->ScrollBar()->TryScrollDec();
+		return true;
+	}
+	else if (is_binded(kUI_SECONDARY_DOWN, id))
+	{
+		if (ActionRepeaters()->CanRepeatActionNow(this, kUI_SECONDARY_DOWN))
+			UIInfoList->ScrollBar()->TryScrollInc();
+		return true;
+	}
+
+	return inherited::OnGamepadKeyHold(id);
 }
