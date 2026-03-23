@@ -11,59 +11,73 @@
 	<btn_0 x="61" y="244" width="59" height="45">
 		<texture_e>ui_numpad_void</texture_e>
 		<texture_t>ui_numpad_key00</texture_t>
+		<texture_h>ui_numpad_key00_h</texture_h>
 	</btn_0>	
 	<btn_1 x="61" y="194" width="59" height="45">
 		<texture_e>ui_numpad_void</texture_e>
 		<texture_t>ui_numpad_key01</texture_t>
+		<texture_h>ui_numpad_key01_h</texture_h>
 	</btn_1>
 	<btn_2 x="123" y="194" width="59" height="45">
 		<texture_e>ui_numpad_void</texture_e>
 		<texture_t>ui_numpad_key02</texture_t>
+		<texture_h>ui_numpad_key02_h</texture_h>
 	</btn_2>
 	<btn_3 x="186" y="194" width="59" height="45">
 		<texture_e>ui_numpad_void</texture_e>
 		<texture_t>ui_numpad_key03</texture_t>
+		<texture_h>ui_numpad_key03_h</texture_h>
 	</btn_3>
 	<btn_4 x="61" y="144" width="59" height="45">
 		<texture_e>ui_numpad_void</texture_e>
 		<texture_t>ui_numpad_key04</texture_t>
+		<texture_h>ui_numpad_key04_h</texture_h>
 	</btn_4>
 	<btn_5 x="123" y="144" width="59" height="45">
 		<texture_e>ui_numpad_void</texture_e>
 		<texture_t>ui_numpad_key05</texture_t>
+		<texture_h>ui_numpad_key05_h</texture_h>
 	</btn_5>
 	<btn_6 x="186" y="144" width="59" height="45">
 		<texture_e>ui_numpad_void</texture_e>
 		<texture_t>ui_numpad_key06</texture_t>
+		<texture_h>ui_numpad_key06_h</texture_h>
 	</btn_6>
 	<btn_7 x="61" y="94" width="59" height="45">
 		<texture_e>ui_numpad_void</texture_e>
 		<texture_t>ui_numpad_key07</texture_t>
+		<texture_h>ui_numpad_key07_h</texture_h>
 	</btn_7>
 	<btn_8 x="123" y="94" width="59" height="45">
 		<texture_e>ui_numpad_void</texture_e>
 		<texture_t>ui_numpad_key08</texture_t>
+		<texture_h>ui_numpad_key08_h</texture_h>
 	</btn_8>
 	<btn_9 x="186" y="94" width="59" height="45">
 		<texture_e>ui_numpad_void</texture_e>
 		<texture_t>ui_numpad_key09</texture_t>
+		<texture_h>ui_numpad_key09_h</texture_h>
 	</btn_9>
 	
 	<btn_c x="123" y="244" width="59" height="45">
 		<texture_e>ui_numpad_void</texture_e>
 		<texture_t>ui_numpad_key0c</texture_t>
+		<texture_h>ui_numpad_key0c_h</texture_h>
 	</btn_c>
 	<btn_backspase x="186" y="244" width="59" height="45">
 		<texture_e>ui_numpad_void</texture_e>
 		<texture_t>ui_numpad_key0b</texture_t>
+		<texture_h>ui_numpad_key0b_h</texture_h>
 	</btn_backspase>	
 	<btn_enter x="61" y="302" width="90" height="45">
 		<texture_e>ui_numpad_void</texture_e>
 		<texture_t>ui_numpad_keyEnter</texture_t>
+		<texture_h>ui_numpad_keyEnter_h</texture_h>
 	</btn_enter>	
 	<btn_cancel x="156" y="302" width="90" height="45">
 		<texture_e>ui_numpad_void</texture_e>
 		<texture_t>ui_numpad_keyCancel</texture_t>
+		<texture_h>ui_numpad_keyCancel_h</texture_h>
 	</btn_cancel>
 	
 </numpad>
