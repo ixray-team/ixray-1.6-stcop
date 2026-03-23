@@ -1,6 +1,15 @@
 <?xml version='1.0' encoding="UTF-8"?>
 <window>
 
+	<gamepad_legend x="-171" y="614" width="1024" height="30" spacing="5">
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_pda_tabs</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_mm_back_gp</text>
+		</auto_static>
+	</gamepad_legend>
+	
 	<list x="20" y="87" width="420" height="370" item_height = "18">
 		<font font="letterica18" r="255" g="255" b="255"></font>
 	</list>
@@ -87,7 +96,7 @@
 			<text_2 x="0" y="0" width="0" height="0"/>
 		</master_part>
 
-		<master_part x="0" y="0" width="250" height="25" id="stalkerkills">
+		<master_part x="0" y="0" width="250" height="25" id="stalkerkills" selectable="1">
 			<text_1 x="0" y="0" width="200" height="20" highlight_text="1" hA="255" hR="255" hB="255" hG="255">
 				<text align="l" x="0" y="0" font="letterica18" r="170" g="170" b="170" a="160">st_pda_stalker_kills</text>
 			</text_1>
@@ -101,7 +110,7 @@
 			</auto>
 		</master_part>
 
-		<master_part x="0" y="0" width="250" height="25" id="monsterkills">
+		<master_part x="0" y="0" width="250" height="25" id="monsterkills" selectable="1">
 			<text_1 x="0" y="0" width="200" height="20" highlight_text="1" hA="255" hR="255" hB="255" hG="255">
 				<text align="l" x="0" y="0" font="letterica18" r="170" g="170" b="170" a="160">st_pda_monster_kills</text>
 			</text_1>
@@ -115,7 +124,7 @@
 			</auto>
 		</master_part>
 		
-		<master_part x="0" y="0" width="250" height="25" id="quests">
+		<master_part x="0" y="0" width="250" height="25" id="quests" selectable="1">
 			<text_1 x="0" y="0" width="200" height="20" highlight_text="1" hA="255" hR="255" hB="255" hG="255">
 				<text align="l" x="0" y="0" font="letterica18" r="170" g="170" b="170" a="160">st_pda_quest_complete</text>
 			</text_1>

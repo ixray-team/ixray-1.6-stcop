@@ -17,9 +17,9 @@ class CUIFrameLineWnd;
 class CUIAnimatedStatic;
 class CUIStatic;
 class CUIListWnd;
-class CUIEncyclopediaCore;
 class CUIScrollView;
 class CUITreeViewItem;
+class CUIGamepadLegend;
 
 class CUIEncyclopediaWnd final: public CUIWindow
 {
@@ -35,6 +35,8 @@ public:
 	virtual void		Show						(bool status);
 	virtual void		SendMessage					(CUIWindow *pWnd, s16 msg, void* pData = nullptr);
 	virtual void		Draw						();
+	virtual bool		OnGamepadKeyAction			(int id, EUIMessages gamepad_action);
+	virtual bool		OnGamepadKeyHold			(int id);
 
 	void				AddArticle					(shared_str, bool bReaded);
 	void				DeleteArticles				();
@@ -53,6 +55,7 @@ protected:
 	CUIFrameLineWnd*	UIEncyclopediaInfoHeader;
 	CUIAnimatedStatic*	UIAnimation;
 	CUIStatic*			UIArticleHeader;
+	CUIGamepadLegend*	m_gamepad_legend = nullptr;
 
 	// Хранилище статей
 	typedef xr_vector<CEncyclopediaArticle*>			ArticlesDB;
@@ -67,6 +70,7 @@ protected:
 	CUIListWnd*				UIIdxList;
 	CUIScrollView*			UIInfoList;
 
+	void				OnTreeViewItemClicked(CUITreeViewItem* pTVItem);
 	void				SetCurrentArtice(CUITreeViewItem *pTVItem);
 	virtual CUIWindow* ui_cast_window() { return this; }
 };

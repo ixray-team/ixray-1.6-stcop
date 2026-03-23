@@ -12,6 +12,7 @@
 #include "../../xrUI/UIHelper.h"
 #include "../../xrServerEntities/xrServer_Objects_ALife_Monsters.h"
 #include "../../xrUI/UICursor.h"
+#include "../../xrEngine/xr_input.h"
 
 #define PDA_CONTACT_HEIGHT 70
 
@@ -24,11 +25,14 @@ CUIPdaContactsWnd::CUIPdaContactsWnd()
 	UIRightFrame = nullptr;
 	UIRightFrameHeader = nullptr;
 	UIDetailsWnd = nullptr;
+	ActionRepeaters()->Register(this, kUI_DOWN);
+	ActionRepeaters()->Register(this, kUI_UP);
 }
 
 CUIPdaContactsWnd::~CUIPdaContactsWnd()
 {
-}
+	ActionRepeaters()->UnregisterOwner(this);
+}	
 
 void CUIPdaContactsWnd::Show(bool status)
 {
@@ -98,6 +102,7 @@ void CUIPdaContactsWnd::Init()
 		UIRightFrame->AttachChild(rightStatic);
 		xml_init.InitStatic(uiXml, "right_auto_static", i, rightStatic);
 	}
+	m_gamepad_legend = UIHelper::CreateGamepadLegend(uiXml, "gamepad_legend", this, false);
 }
 
 void CUIPdaContactsWnd::Draw()
@@ -135,8 +140,20 @@ void CUIPdaContactsWnd::UpdateInfo()
 
 	xr_vector<CInventoryOwner*>::iterator it = m_pda_list.begin();
 
-	for (; it != m_pda_list.end(); ++it) {
+	bool needSelect = true;
+	for (; it != m_pda_list.end(); ++it) 
+	{
 		AddContact(*it);
+		if (needSelect)
+		{
+			UIListWnd->SetSelected(UIListWnd->GetItem(0));
+			CUIPdaContactItem* itm = smart_cast<CUIPdaContactItem*>(UIListWnd->GetSelected());
+			if (pInput->GetControllerMode() && itm && itm->m_frame_selected)
+			{
+				itm->m_frame_selected->Show(true);
+			}
+			needSelect = false;
+		}
 	}
 	m_flags.set(flNeedUpdate, FALSE);
 }
@@ -173,6 +190,94 @@ void CUIPdaContactsWnd::Reset()
 	Reload						();
 }
 
+bool CUIPdaContactsWnd::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
+{
+	if (gamepad_action == WINDOW_KEY_PRESSED)
+	{
+		if (is_binded(kUI_UP, id))
+		{
+			ActionRepeaters()->SetActionStarted(this, kUI_UP);
+			CUIPdaContactItem* itm = smart_cast<CUIPdaContactItem*>(UIListWnd->GetSelected());
+			if (itm && itm->m_frame_selected)
+			{
+				itm->m_frame_selected->Show(false);
+			}
+			UIListWnd->MoveSelectionUp(true);
+			itm = smart_cast<CUIPdaContactItem*>(UIListWnd->GetSelected());
+			if (itm && itm->m_frame_selected)
+			{
+				itm->m_frame_selected->Show(true);
+			}
+			UIListWnd->ScrollToItem(UIListWnd->GetSelected(), iFloor(-UIListWnd->ScrollBar()->GetHeight() / 2.0f + UIListWnd->GetSelected()->GetWndRect().height() / 2.0f));
+			return true;
+		}
+		else if (is_binded(kUI_DOWN, id))
+		{
+			ActionRepeaters()->SetActionStarted(this, kUI_DOWN);
+			CUIPdaContactItem* itm = smart_cast<CUIPdaContactItem*>(UIListWnd->GetSelected());
+			if (itm && itm->m_frame_selected)
+			{
+				itm->m_frame_selected->Show(false);
+			}
+			UIListWnd->MoveSelectionDown(true);
+			itm = smart_cast<CUIPdaContactItem*>(UIListWnd->GetSelected());
+			if (itm && itm->m_frame_selected)
+			{
+				itm->m_frame_selected->Show(true);
+			}
+			UIListWnd->ScrollToItem(UIListWnd->GetSelected(), iFloor(-UIListWnd->ScrollBar()->GetHeight() / 2.0f + UIListWnd->GetSelected()->GetWndRect().height() / 2.0f));
+			return true;
+		}
+	}
+
+	return inherited::OnGamepadKeyAction(id, gamepad_action);
+}
+
+bool CUIPdaContactsWnd::OnGamepadKeyHold(int id)
+{
+	if (is_binded(kUI_UP, id))
+	{
+		if (ActionRepeaters()->CanRepeatActionNow(this, kUI_UP))
+		{
+			CUIPdaContactItem* itm = smart_cast<CUIPdaContactItem*>(UIListWnd->GetSelected());
+			if (itm && itm->m_frame_selected)
+			{
+				itm->m_frame_selected->Show(false);
+			}
+			UIListWnd->MoveSelectionUp(false);
+			itm = smart_cast<CUIPdaContactItem*>(UIListWnd->GetSelected());
+			if (itm && itm->m_frame_selected)
+			{
+				itm->m_frame_selected->Show(true);
+			}
+			UIListWnd->ScrollToItem(UIListWnd->GetSelected(), iFloor(-UIListWnd->ScrollBar()->GetHeight() / 2.0f + UIListWnd->GetSelected()->GetWndRect().height() / 2.0f));
+		}
+		return true;
+	}
+	else if (is_binded(kUI_DOWN, id))
+	{
+		if (ActionRepeaters()->CanRepeatActionNow(this, kUI_DOWN))
+		{
+			CUIPdaContactItem* itm = smart_cast<CUIPdaContactItem*>(UIListWnd->GetSelected());
+			if (itm && itm->m_frame_selected)
+			{
+				itm->m_frame_selected->Show(false);
+			}
+			UIListWnd->MoveSelectionDown(false);
+			itm = smart_cast<CUIPdaContactItem*>(UIListWnd->GetSelected());
+			if (itm && itm->m_frame_selected)
+			{
+				itm->m_frame_selected->Show(true);
+			}
+			UIListWnd->ScrollToItem(UIListWnd->GetSelected(), iFloor(-UIListWnd->ScrollBar()->GetHeight() / 2.0f + UIListWnd->GetSelected()->GetWndRect().height() / 2.0f));
+		}
+		return true;
+	}
+
+	return inherited::OnGamepadKeyHold(id);
+}
+
+
 CUIPdaContactItem::~CUIPdaContactItem()
 {
 }
@@ -195,7 +300,7 @@ void CUIPdaContactItem::SetSelected	(bool b)
 		CSE_ALifeTraderAbstract*	T = ch_info_get_from_id(UIInfo->OwnerID());
 		chInfo.Init					(T);
 
-		ADD_TEXT_TO_VIEW2( *(chInfo.Bio()), m_cw->UIDetailsWnd);
+		ADD_TEXT_TO_VIEW2( g_pStringTable->translate(chInfo.Bio()).c_str(), m_cw->UIDetailsWnd);
 	}
 }
 
