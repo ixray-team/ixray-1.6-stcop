@@ -36,6 +36,7 @@ public:
 
 	virtual BOOL net_SaveRelevant() override  { return TRUE; }
 
+	void SetText();
 	void DestroySoundsArray(xr_vector<ref_sound>& soundsArray);
 	virtual void Load(LPCSTR section) override;
 	void SetVisible(shared_str bone_name, BOOL bVisibility);
