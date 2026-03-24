@@ -609,6 +609,62 @@ void CImageManager::ApplyBorders(U32Vec& tgt_data, u32 w, u32 h)
 		tgt_data[t]=subst_alpha(tgt_data[t],color_get_A(border_pixels[t]));
 }
 
+void FlipVertical(xr_vector<u32>& pixels, int width, int height)
+{
+	for (int y = 0; y < height / 2; ++y)
+	{
+		u32* rowTop = &pixels[y * width];
+		u32* rowBottom = &pixels[(height - 1 - y) * width];
+
+		for (int x = 0; x < width; ++x)
+			std::swap(rowTop[x], rowBottom[x]);
+	}
+}
+
+bool GetRTDataU32(ref_rt& RT, xr_vector<u32>& outPixels, int& width, int& height)
+{
+	IDirect3DSurface9* pSrc = nullptr;
+	((IDirect3DTexture9*)RT->pTexture->pSurface->GetRawTexture())->GetSurfaceLevel(0, &pSrc);
+	if (!pSrc)
+	{
+		return false;
+	}
+
+	D3DSURFACE_DESC desc;
+	pSrc->GetDesc(&desc);
+	width = desc.Width;
+	height = desc.Height;
+
+	IDirect3DSurface9* pSysMem = nullptr;
+	RDevice->CreateOffscreenPlainSurface(width, height, desc.Format, D3DPOOL_SYSTEMMEM, &pSysMem, nullptr);
+
+	RDevice->GetRenderTargetData(pSrc, pSysMem);
+	pSrc->Release();
+
+	D3DLOCKED_RECT rect;
+	pSysMem->LockRect(&rect, nullptr, D3DLOCK_READONLY);
+
+	outPixels.resize(width * height);
+	for (int y = 0; y < height; ++y)
+	{
+		u32* src = (u32*)((u8*)rect.pBits + y * rect.Pitch);
+		u32* dst = &outPixels[y * width];
+		memcpy(dst, src, width * sizeof(u32));
+	}
+
+	pSysMem->UnlockRect();
+	pSysMem->Release();
+
+	for (u32& p : outPixels)
+	{
+		p |= 0xFF000000;
+	}
+
+	FlipVertical(outPixels, width, height);
+
+	return true;
+}
+
 BOOL CImageManager::CreateOBJThumbnail(LPCSTR tex_name, CEditableObject* obj, time_t age)
 {
 	BOOL bResult = TRUE;
@@ -621,8 +677,9 @@ BOOL CImageManager::CreateOBJThumbnail(LPCSTR tex_name, CEditableObject* obj, ti
 	psDeviceFlags.set(rsStatistic,FALSE);
 
 	U32Vec pixels;
-	u32 w=512,h=512;
-	if (EDevice->MakeScreenshot(pixels,w,h))
+	int w=512,h=512;
+
+	if (GetRTDataU32(UI->RT, pixels, w, h))
 	{
 		EObjectThumbnail tex(tex_name,false);
 		tex.CreateFromData(pixels.data(),w,h,obj->GetFaceCount(),obj->GetVertexCount());
