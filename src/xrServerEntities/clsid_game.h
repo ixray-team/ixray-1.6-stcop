@@ -157,6 +157,7 @@
 #define CLSID_SPACE_RESTRICTOR 		MK_CLSID('S','P','A','C','E','_','R','S')
 #define CLSID_SMART_ZONE			MK_CLSID('S','M','R','T','Z','O','N','E')
 #define CLSID_Z_CAMPFIRE			MK_CLSID('Z','_','C','F','I','R','E',' ')
+#define CLSID_Z_CAPTURE_BASE  		MK_CLSID('Z','_','C','P','O','I','N','T')
 
 // Detectors
 #define CLSID_DETECTOR_SIMPLE		MK_CLSID('D','_','S','I','M','D','E','T')

@@ -2485,6 +2485,52 @@ void CSE_ALifeInteractiveObject::UPDATE_Write(NET_Packet& tNetPacket)
 	inherited::UPDATE_Write(tNetPacket);
 }
 
+////////////////////////////////////////////////////////////////////////////
+// CSE_ALifeTeamBaseZone
+////////////////////////////////////////////////////////////////////////////
+#ifndef XRGAME_EXPORTS
+void CSE_ALifeTeamCaptureZone::FillProps(LPCSTR pref, PropItemVec& items)
+{
+	inherited::FillProps(pref, items);
+	PHelper().CreateU8(items, PrepareKey(pref, *s_name, "team"), &m_team, 0, 16);
+	PHelper().CreateRText(items, PrepareKey(pref, *s_name, "point_name"), &m_point_name);
+}
+#endif // #ifndef XRGAME_EXPORTS
+
+CSE_ALifeTeamCaptureZone::CSE_ALifeTeamCaptureZone(LPCSTR caSection) : CSE_ALifeSpaceRestrictor(caSection)
+{
+	m_team = 0;
+	m_point_name = "";
+}
+
+CSE_ALifeTeamCaptureZone::~CSE_ALifeTeamCaptureZone()
+{
+}
+
+void CSE_ALifeTeamCaptureZone::STATE_Read(NET_Packet& tNetPacket, u16 size)
+{
+	inherited::STATE_Read(tNetPacket, size);
+	tNetPacket.r_u8(m_team);
+	tNetPacket.r_stringZ(m_point_name);
+}
+
+void CSE_ALifeTeamCaptureZone::STATE_Write(NET_Packet& tNetPacket)
+{
+	inherited::STATE_Write(tNetPacket);
+	tNetPacket.w_u8(m_team);
+	tNetPacket.w_stringZ(m_point_name);
+}
+
+void CSE_ALifeTeamCaptureZone::UPDATE_Read(NET_Packet& tNetPacket)
+{
+	inherited::UPDATE_Read(tNetPacket);
+}
+
+void CSE_ALifeTeamCaptureZone::UPDATE_Write(NET_Packet& tNetPacket)
+{
+	inherited::UPDATE_Write(tNetPacket);
+}
+
 #ifndef XRGAME_EXPORTS
 void CSE_ALifeInteractiveObject::FillProps(LPCSTR pref, PropItemVec& values)
 {

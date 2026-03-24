@@ -295,7 +295,7 @@ int __cdecl callback_count(qr2_key_type keytype, void *userdata)
 				case eGameIDTeamDeathmatch:
 				case eGameIDArtefactHunt:
 				case eGameIDCaptureTheArtefact:
-				case eGameIDTeamDominationZone:
+				case eGameIDCapturePoints:
 					return 2;
 				default : 
 					R_ASSERT(0);

@@ -37,8 +37,8 @@ BOOL SceneBuilder::BuildLTX()
         	F->w_string("capturetheartefact");
         if(Scene->m_LevelOp.m_mapUsage.MatchType(eGameIDDominationZone))
         	F->w_string("dominationzone");
-        if(Scene->m_LevelOp.m_mapUsage.MatchType(eGameIDTeamDominationZone))
-        	F->w_string("teamdominationzone");
+        if(Scene->m_LevelOp.m_mapUsage.MatchType(eGameIDCapturePoints))
+        	F->w_string("capturepoints");
         if(Scene->m_LevelOp.m_mapUsage.MatchType(eGameIDFreeMP))
         	F->w_string("freemp");
 

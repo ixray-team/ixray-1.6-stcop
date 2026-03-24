@@ -8,7 +8,7 @@ enum EGameIDs {
 	eGameIDArtefactHunt					= u32(1) << 3,
 	eGameIDCaptureTheArtefact			= u32(1) << 4,
 	eGameIDDominationZone				= u32(1) << 5,
-	eGameIDTeamDominationZone			= u32(1) << 6,
+	eGameIDCapturePoints				= u32(1) << 6,
 };*/
 
 enum EGamePlayerFlags
