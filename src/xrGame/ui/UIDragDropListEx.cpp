@@ -934,12 +934,19 @@ void CUICellContainer::ClearAll(bool bDestroy, xr_vector<u16> IgnoredItemsIds)
 
 				if (bDestroy)
 				{
+					// During bulk UI list cleanup item game objects may already be invalid.
+					// Prevent CUICellItem destructor from dereferencing m_pData callbacks.
+					ci->m_b_destroy_childs = false;
+					ci->m_pData = nullptr;
 					delete_data(ci);
 				}
 			}
 
 			if (bDestroy)
 			{
+				// Same safety as for child cells: do not touch stale inventory object.
+				wc->m_b_destroy_childs = false;
+				wc->m_pData = nullptr;
 				delete_data(wc);
 			}
 		}
