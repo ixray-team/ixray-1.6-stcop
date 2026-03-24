@@ -532,6 +532,15 @@ void UIPropertiesForm::DrawEditGameType()
 			{
 				m_EditGameTypeChooser.m_GameType.set(eGameIDFreeMP, cheked);
 			}
+
+		}
+		{
+			bool cheked = m_EditGameTypeChooser.MatchType(eGameIDCapturePoints);
+			if (ImGui::Checkbox("CP", &cheked))
+			{
+				m_EditGameTypeChooser.m_GameType.set(eGameIDCapturePoints, cheked);
+			}
+
 		}
 		ImGui::EndGroup(); ImGui::SameLine();
 
