@@ -1,123 +1,137 @@
 local OBJECT_ID_MAX_VALUE = 65535
 
-function collect_object_info(game_object_npc)
-	local result_info = {
-		["header"] = "-[Stalker Info]-",
-	}
-	
+local sight_type_names = {
+    [-1] = "eSightTypeDummy",
+    [0] = "eSightTypeCurrentDirection",
+    [1] = "eSightTypePathDirection",
+    [2] = "eSightTypeDirection",
+    [3] = "eSightTypePosition",
+    [4] = "eSightTypeObject",
+    [5] = "eSightTypeCover",
+    [6] = "eSightTypeSearch",
+    [7] = "eSightTypeLookOver",
+    [8] = "eSightTypeCoverLookOver",
+    [9] = "eSightTypeFireObject",
+    [10] = "eSightTypeFirePosition",
+    [11] = "eSightTypeAnimationDirection"
+}
 
-	if not game_object_npc or not game_object_npc:id() or not game_object_npc:alive() then
+function IsWounded(obj)
+	local id = obj:id()
+	local var = db.storage[id].pstor and db.storage[id].pstor["wounded_state"] or "nil"
+	return var and (var ~= "") and (var ~= "nil")
+end
+
+function collect_object_info(game_object)
+	local result_info = {}
+	
+	if not game_object or not game_object:id() then
 		return result_info
 	end
 
-	local storage_data = db.storage[game_object_npc:id()]
-	if not storage_data then
+	local story_id = get_object_story_id(game_object:id())
+	if story_id then 
+		add_to_result(result_info, "story_id", tostring(get_object_story_id(game_object:id())))
+	end
+	
+	local storage_data = db.storage[game_object:id()]
+	if storage_data then
+		add_to_result(result_info, "storage_data", storage_data)
+	end
+	
+	if not IsStalker(game_object) and not IsMonster(game_object) then
 		return result_info
 	end
+	
+	if storage_data then
+		if (storage_data.corpse_detection and storage_data.corpse_detection.selected_corpse_id) then
+			local vo = level.object_by_id(storage_data.corpse_detection.selected_corpse_id)
+			if (vo) then
+				add_to_result(result_info, "Looting corpse", tostring(vo:name()))
+			end
+		end
+	
+		if (storage_data.help_wounded and storage_data.help_wounded.selected_id) then
+			local vo = level.object_by_id(storage_data.help_wounded.selected_id)
+			if (vo) then
+				add_to_result(result_info, "Helping wounded", tostring(vo:name()))
+			end
+		end
+	
+		if (storage_data.gather_items and storage_data.gather_items.selected_id) then
+			local vo = level.object_by_id(storage_data.gather_items.selected_id)
+			if (vo) then
+				add_to_result(result_info, "Picking up", tostring(vo:name()))
+			end
+		end
+	end
+	
+	add_to_result(result_info, "OUT RESTR", tostring(game_object:out_restrictions()))
+	add_to_result(result_info, "IN RESTR", tostring(game_object:in_restrictions()))
 
-	local sobj_npc = alife():object(game_object_npc:id())
-	if not sobj_npc or not sobj_npc.id then
+	local sobj = alife():object(game_object:id())
+	if not sobj or not sobj.id then
 		return result_info
 	end
-
-	add_to_result(result_info, "Name", game_object_npc:name())
-	add_to_result(result_info, "Section", sobj_npc:section_name())
-	add_to_result(result_info, "SID", get_object_story_id(game_object_npc:id()))
-	add_to_result(result_info, "CLSID", game_object_npc:clsid())
 	
-	if (sobj_npc.parent_id and sobj_npc.parent_id ~= OBJECT_ID_MAX_VALUE) then 
-		add_to_result(result_info, "Parent ID", sobj_npc.parent_id)
+	if (sobj.group_id and sobj.group_id ~= OBJECT_ID_MAX_VALUE) then 
+		local squad_name = alife():object(sobj.group_id):section_name()
+		add_to_result(result_info, "Squad", tostring(squad_name))
 	end
 	
-	if (sobj_npc.group_id and sobj_npc.group_id ~= OBJECT_ID_MAX_VALUE) then 
-		add_to_result(result_info, "Squad ID", sobj_npc.group_id)
+	add_to_result(result_info, "Community", tostring(character_community(game_object)))
+	add_to_result(result_info, "Rank", tostring(ranks.get_obj_rank_name(game_object)))
+	add_to_result(result_info, "Health", tostring(math.floor(game_object.health * 100)))
+	add_to_result(result_info, "FOV", tostring(game_object:fov()))
+	add_to_result(result_info, "Range", tostring(game_object:range()))
+	
+	if IsStalker(game_object) then
+		local sight_type = game_object:sight_params()
+		add_to_result(result_info, "Sight Type", sight_type and tostring(sight_type_names[sight_type.m_sight_type]))
 	end
 	
-	add_to_result(result_info, "Community", character_community(game_object_npc))
-	add_to_result(result_info, "Rank", ranks.get_obj_rank_name(game_object_npc))
-	add_to_result(result_info, "Visual", game_object_npc:get_visual_name())
-	add_to_result(result_info, "Health", math.floor(game_object_npc.health * 100))
-	add_to_result(result_info, "FOV", game_object_npc:fov())
-	add_to_result(result_info, "Range", game_object_npc:range())
-	add_to_result(result_info, "rx_dont_shoot", storage_data.rx_dont_shoot)
-	
-	local sight_type = game_object_npc:sight_params()
-	add_to_result(result_info, "Sight Type", sight_type and sight_type.m_sight_type)
-	
-	local smrt = sobj_npc.m_smart_terrain_id and sobj_npc.m_smart_terrain_id ~= OBJECT_ID_MAX_VALUE and alife_object(sobj_npc.m_smart_terrain_id)
-	add_to_result(result_info, "m_smart_terrain_id", smrt and smrt:name())
+	local smrt = sobj.m_smart_terrain_id and sobj.m_smart_terrain_id ~= OBJECT_ID_MAX_VALUE and alife():object(sobj.m_smart_terrain_id)
+	add_to_result(result_info, "m_smart_terrain_id", smrt and tostring(smrt:name()))
 	
 	if (smrt) then
-		local arriving = smrt.arriving_npc[sobj_npc.id]
+		local arriving = smrt.arriving_npc[sobj.id]
 		if (arriving) then 
-			add_to_result(result_info, "arriving_npc", true)
+			add_to_result(result_info, "arriving_npc", "true")
 		end
 		
-		add_to_result(result_info, "Arrived", arrived_to_smart(sobj_npc, smrt))
+		add_to_result(result_info, "Arrived", tostring(arrived_to_smart(sobj, smrt)))
 		
-		local npc_info = smrt.npc_info and smrt.npc_info[sobj_npc.id]
+		local npc_info = smrt.npc_info and smrt.npc_info[sobj.id]
 		if (npc_info) then
-			add_to_result(result_info, "Job", npc_info.job and npc_info.job.section)
-		else 
-			add_to_result(result_info, "npc_info", nil)
+			add_to_result(result_info, "Job", npc_info.job and tostring(npc_info.job.section))
 		end
 	end
 	
-	add_to_result(result_info, "A.Scheme", storage_data.active_scheme)
-	add_to_result(result_info, "A.Section", storage_data.active_section)
-	add_to_result(result_info, "Logic", storage_data.section_logic)
-	add_to_result(result_info, "Ini", storage_data.ini_filename)
-	add_to_result(result_info, "AnimState", state_mgr.get_state(game_object_npc))
+	add_to_result(result_info, "AnimState", tostring(state_mgr.get_state(game_object)))
 
-	local pt_index = game_object_npc.get_current_point_index and game_object_npc:get_current_point_index()
-	if (not pt_index or pt_index == 4294967296 ) then
-		pt_index = storage_data.active_scheme and (storage_data.active_scheme == "camper" or storage_data.active_scheme == "beh") and load_var(game_object_npc, "path_index", nil)
-	end
-
-	if (pt_index) then
-		add_to_result(result_info, "PT index", pt_index)
-	end
-
-	if (storage_data.corpse_detection and storage_data.corpse_detection.selected_corpse_id) then
-		local vo = level.object_by_id(storage_data.corpse_detection.selected_corpse_id)
-		if (vo) then
-			add_to_result(result_info, "Looting corpse", vo:name())
+	local best_enemy = game_object:best_enemy()
+	if (best_enemy and IsStalker(best_enemy) and IsWounded(best_enemy)) and best_enemy:alive() then
+		if (db.storage[best_enemy:id()] and db.storage[best_enemy:id()].victim_surrender and db.storage[best_enemy:id()].victim_surrender < (OBJECT_ID_MAX_VALUE - 1)) then
+			add_to_result(result_info, "Kill wounded", tostring(best_enemy:name()))
 		end
 	end
-
-	if (storage_data.help_wounded and storage_data.help_wounded.selected_id) then
-		local vo = level.object_by_id(storage_data.help_wounded.selected_id)
-		if (vo) then
-			add_to_result(result_info, "Helping wounded", vo:name())
-		end
-	end
-
-	if (storage_data.gather_items and storage_data.gather_items.selected_id) then
-		local vo = level.object_by_id(storage_data.gather_items.selected_id)
-		if (vo) then
-			add_to_result(result_info, "Picking up", vo:name())
-		end
-	end
-
-	local vo = game_object_npc:best_enemy()
-	if (vo and vo:alive() and IsStalker(vo) and IsWounded(vo)) then
-		if (db.storage[vo:id()] and db.storage[vo:id()].victim_surrender and db.storage[vo:id()].victim_surrender < (OBJECT_ID_MAX_VALUE - 1)) then
-			add_to_result(result_info, "Kill wounded", vo:name())
-		end
-	end
-	
-	local dist = device().cam_pos:distance_to(game_object_npc:position())
-	
-	add_to_result(result_info, "distance", string.format("%d (%dm)", dist*dist, dist))
-	add_to_result(result_info, "OUT RESTR", game_object_npc:out_restrictions())
-	add_to_result(result_info, "IN RESTR", game_object_npc:in_restrictions())
-
+		
 	return result_info
 end
 
 function add_to_result(_tbl, k, v)
-	_tbl[tostring(k)] = tostring(v)
+	_tbl[k] = v
 end
+
+local is_squad_monster =
+{
+	["monster_predatory_day"] = true,
+	["monster_predatory_night"] = true,
+	["monster_vegetarian"] = true,
+	["monster_zombied_day"] = true,
+	["monster_zombied_night"] = true,
+	["monster_special"] = true
+}
 
 function arrived_to_smart(obj,  smart)
 	if not (obj and smart) then return false end 
@@ -133,9 +147,9 @@ function arrived_to_smart(obj,  smart)
 		return false 
 	end
 	
-	if (IsHelicopter(nil, cls)) then return true end 
+	--if (IsHelicopter(nil, cls)) then return true end 
 
-	local squad = obj.group_id ~= OBJECT_ID_MAX_VALUE and alife_object(obj.group_id)
+	local squad = obj.group_id ~= OBJECT_ID_MAX_VALUE and alife():object(obj.group_id)
 	if (squad) then
 		if (squad.m_game_vertex_id == smart.m_game_vertex_id) then  return true end 
 		if (squad.current_target_id and squad.current_target_id == smart.id) then return true end
