@@ -35,6 +35,8 @@
 #include "patrol_path_storage.h"
 #include "player_hud.h"
 #include "ImUtils\ImUtils.h"
+#include "script_game_object.h"
+
 Fvector aabb_selection_vertices[]
 {
 	{-0.505f, -0.505f, -0.505f},
@@ -626,9 +628,10 @@ LevelInspector::LevelInspector(BOOL hm) : hud_mode(hm)
 						ImGui::CheckboxFlags("Class Name", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_LCNAME);
 						ImGui::CheckboxFlags("Name", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_LNAME);
 						ImGui::CheckboxFlags("Visual Name", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_VNAME);
-						ImGui::CheckboxFlags("Custom Data", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_INI);
 						ImGui::CheckboxFlags("Position", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_POSITION);
 						ImGui::CheckboxFlags("GVertexID & LVertexID", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_GVERTEX_LVERTEX);
+						ImGui::CheckboxFlags("Custom Data", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_INI);
+						ImGui::CheckboxFlags("Script Info", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_SCRIPT);
 
 						if(m_flags.test(ESCENE_FLAGS::ESF_DRAW_OBJECTS))
 							ImGui::CheckboxFlags("For Actor ", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_ACTOR);
@@ -2668,7 +2671,7 @@ void LevelInspector::DrawObjectInfo(CGameObject* GO, const Fvector& pos, Fvector
 				{
 					if (line.second)
 					{
-						shared_str str = shared_str().printf("%s = %s", *line.first, *line.second);
+						shared_str str = shared_str().printf("    %s = %s", *line.first, *line.second);
 						if (text3d)
 							append_text_next(str);
 						else
@@ -2682,13 +2685,14 @@ void LevelInspector::DrawObjectInfo(CGameObject* GO, const Fvector& pos, Fvector
 					}
 					else
 					{
+						shared_str str = shared_str().printf("    %s", *line.first);
 						if (text3d)
-							append_text_next(line.first);
+							append_text_next(str);
 						else
-							text3d = append_text3d(pos, line.first, color_red, CGameFont::alLeft);
+							text3d = append_text3d(pos, str, color_red, CGameFont::alLeft);
 						if (!visible_currents)
 						{
-							selected_info_str += *line.first;
+							selected_info_str += *str;
 							selected_info_str += '\n';
 							selected_info_height++;
 						}
@@ -2770,6 +2774,190 @@ void LevelInspector::DrawObjectInfo(CGameObject* GO, const Fvector& pos, Fvector
 					append_text_next(lophole->id());
 				else
 					text3d = append_text3d(pos, lophole->id(), color_red, CGameFont::alLeft);
+			}
+		}
+	}
+
+	if (m_selection_text_flags.test(EOBJECT_INFO::EOI_SCRIPT))
+	{
+		auto oid = GO->ID();
+		Device.callback(500, [=]()
+			{
+				if (!g_pGameLevel || !g_pGameLevel->CurrentViewEntity() || !g_hud)
+					return;
+
+				auto print_table = [](auto self, luabind::object table, int indent, xr_string& output) -> void
+					{
+						xr_string indent_str;
+						indent_str.resize(indent * 2, ' ');
+
+						for (luabind::object::iterator I = table.begin(); I != table.end(); ++I)
+						{
+							luabind::object key = I.key();
+							luabind::object value = *I;
+
+							if (key.type() < LUA_TBOOLEAN && value.type() < LUA_TBOOLEAN)
+								continue;
+
+							if (key.type() == LUA_TSTRING)
+								output += indent_str + luabind::object_cast<const char*>(key);
+							else if (key.type() == LUA_TNUMBER)
+							{
+								double key_num = luabind::object_cast<double>(key);
+								if (key_num == static_cast<long long>(key_num))
+									output += indent_str + std::to_string(static_cast<long long>(key_num)).c_str();
+								else
+									output += indent_str + std::to_string(key_num).c_str();
+							}
+							else if (key.type() == LUA_TBOOLEAN)
+							{
+								bool bool_val = luabind::object_cast<bool>(key);
+								output += indent_str + (bool_val ? "true" : "false");
+							}
+							else if (key.type() == LUA_TFUNCTION)
+								output += indent_str + "[function]";
+							else if (key.type() == LUA_TUSERDATA || key.type() == LUA_TLIGHTUSERDATA)
+							{
+								//luabind::class_info class_info = luabind::get_class_info(key);
+								lua_State* L = key.lua_state();
+								key.pushvalue();
+								luabind::detail::object_rep* obj = static_cast<luabind::detail::object_rep*>(lua_touserdata(L, -1));
+								lua_pop(L, 1);
+								if (obj)
+								{
+									output += obj->crep()->name();
+									output += "()";
+								}
+							}
+
+							output += ": ";
+
+							if (value.type() == LUA_TSTRING)
+							{
+								output += luabind::object_cast<const char*>(value);
+								output += '\n';
+							}
+							else if (value.type() == LUA_TNUMBER)
+							{
+								double num_val = luabind::object_cast<double>(value);
+								if (num_val == static_cast<long long>(num_val))
+									output += std::to_string(static_cast<long long>(num_val)).c_str();
+								else
+									output += std::to_string(num_val).c_str();
+								output += '\n';
+							}
+							else if (value.type() == LUA_TBOOLEAN)
+							{
+								bool bool_val = luabind::object_cast<bool>(value);
+								output += (bool_val ? "true" : "false");
+								output += '\n';
+							}
+							else if (value.type() == LUA_TTABLE)
+							{
+								int element_count = 0;
+								for (luabind::object::iterator J = value.begin(); J != value.end(); ++J)
+								{
+									luabind::object k = J.key();
+									luabind::object v = *J;
+									if (k.type() != LUA_TNIL && v.type() != LUA_TNIL)
+										element_count++;
+								}
+
+								if (element_count == 0)
+									output += " {}\n";
+								else if (element_count == 1)
+								{
+									output += '\n';
+									xr_string temp_output;
+									self(self, value, indent + 1, temp_output);
+
+									if (!temp_output.empty())
+									{
+										size_t start = temp_output.find_first_not_of(" \t\n");
+										size_t end = temp_output.find_last_not_of(" \t\n");
+										if (start != xr_string::npos && end != xr_string::npos)
+										{
+											xr_string content = temp_output.substr(start, end - start + 1);
+											if (content.size() >= 2 && content.front() == '{' && content.back() == '}')
+											{
+												content = content.substr(1, content.length() - 2);
+												size_t content_start = content.find_first_not_of(" \t\n");
+												size_t content_end = content.find_last_not_of(" \t\n");
+												if (content_start != xr_string::npos && content_end != xr_string::npos)
+													content = content.substr(content_start, content_end - content_start + 1);
+											}
+											output += indent_str + "  " + content + '\n';
+										}
+									}
+								}
+								else
+								{
+									output += '\n';
+									output += indent_str + "{\n";
+									self(self, value, indent + 1, output);
+									output += indent_str + "}\n";
+								}
+							}
+							else if (value.type() == LUA_TFUNCTION)
+								output += "[function]\n";
+							else if (value.type() == LUA_TUSERDATA || value.type() == LUA_TLIGHTUSERDATA)
+							{
+								//luabind::class_info class_info = luabind::get_class_info(value);
+								lua_State* L = value.lua_state();
+								value.pushvalue();
+								luabind::detail::object_rep* obj = static_cast<luabind::detail::object_rep*>(lua_touserdata(L, -1));
+								lua_pop(L, 1);
+								if (obj)
+								{
+									output += obj->crep()->name();
+									output += "()";
+									output += "\n";
+								}
+							}
+						}
+					};
+
+				script_info.clear();
+				luabind::functor<luabind::object> funct;
+				CObject* _O = g_pGameLevel->Objects.net_Find(oid);
+				CScriptGameObject* lua_obj = _O && _O->cast_game_object() && _O->cast_game_object()->lua_game_object()
+					? _O->cast_game_object()->lua_game_object() : nullptr;
+
+				if (lua_obj && ai().script_engine().functor("___ixr_engine_callbacks.get_near_object_info", funct))
+				{
+					luabind::object table = funct(lua_obj);
+					if (table.type() == LUA_TTABLE)
+						print_table(print_table, table, 0, script_info);
+				}
+			});
+
+		if (!script_info.empty())
+		{
+			shared_str str = "---------------------------LUA Info---------------------------";
+			if (text3d)
+				append_text_next(str);
+			else
+				text3d = append_text3d(pos, str, color_red, CGameFont::alLeft);
+			if (!visible_currents)
+			{
+				selected_info_str += *str;
+				selected_info_str += '\n';
+				selected_info_height++;
+			}
+			static xr_vector<xr_string> m_splits;
+			script_info.Split(m_splits, '\n');
+			for (xr_string& str : m_splits)
+			{
+				if (text3d)
+					append_text_next(str.c_str());
+				else
+					text3d = append_text3d(pos, str.c_str(), color_red, CGameFont::alLeft);
+				if (!visible_currents)
+				{
+					selected_info_str += str;
+					selected_info_str += '\n';
+					selected_info_height++;
+				}
 			}
 		}
 	}
