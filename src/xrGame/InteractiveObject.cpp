@@ -56,8 +56,7 @@ BOOL CInteractiveObject::net_Spawn(CSE_Abstract* DC)
 	if (CSE_ALifeInteractiveObject* pSE_box = smart_cast<CSE_ALifeInteractiveObject*>(DC))
 	{
 		m_can_take = pSE_box->m_can_take;
-		m_tip_text = left_uses > 0 ? m_tip_text_default : "";
-		set_tip_text(m_tip_text.c_str());
+		SetText();
 	}
 
 	return TRUE;
@@ -75,8 +74,7 @@ void CInteractiveObject::Load(LPCSTR section)
 	m_tip_text_default = READ_IF_EXISTS(pSettings, r_string, section, "use_tip_text", "");
 	m_tip_text = m_tip_text_default;
 
-	m_tip_text = left_uses > 0 ? m_tip_text_default : "";
-	set_tip_text(m_tip_text.c_str());
+	SetText();
 }
 
 void CInteractiveObject::ParseBones(LPCSTR section, LPCSTR bonesParameter, xr_vector<xr_string>& _array)
@@ -133,8 +131,7 @@ void CInteractiveObject::load(IReader& input_packet)
 	left_uses = input_packet.r_u8();
 	input_packet.r_stringZ(m_tip_text);
 
-	m_tip_text = left_uses > 0 ? m_tip_text_default : "";
-	set_tip_text(m_tip_text.c_str());
+	SetText();
 
 	if (!m_bone_names.empty())
 	{
@@ -184,7 +181,26 @@ void CInteractiveObject::OnUse()
 		left_uses--;
 	}
 
-	m_tip_text = left_uses > 0 ? m_tip_text_default : "";
+	SetText();
+
+	if (m_bone_names.size() == 0)
+	{
+		this->DestroyObject();
+	}
+}
+
+void CInteractiveObject::SetText()
+{
+	if (m_bone_names.size() == 0)
+	{
+		m_tip_text = m_tip_text_default;
+		
+	}
+	else
+	{
+		m_tip_text = left_uses > 0 ? m_tip_text_default : "";
+	}
+
 	set_tip_text(m_tip_text.c_str());
 }
 
