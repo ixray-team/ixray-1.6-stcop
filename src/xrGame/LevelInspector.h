@@ -42,10 +42,11 @@ struct LevelInspector final
 		EOI_LCNAME			= bit_lshift(1U),
 		EOI_LNAME			= bit_lshift(2U),
 		EOI_VNAME			= bit_lshift(3U),
-		EOI_INI				= bit_lshift(4U),
-		EOI_POSITION		= bit_lshift(5U),
-		EOI_GVERTEX_LVERTEX = bit_lshift(6U),
-		EOI_ACTOR			= bit_lshift(7U),
+		EOI_POSITION		= bit_lshift(4U),
+		EOI_GVERTEX_LVERTEX = bit_lshift(5U),
+		EOI_INI				= bit_lshift(6U),
+		EOI_SCRIPT			= bit_lshift(7U),
+		EOI_ACTOR			= bit_lshift(8U),
 	};
 
 	enum ESKELETON_INFO
@@ -97,7 +98,7 @@ struct LevelInspector final
 	xr_vector<tvertex> tris;
 	collide::rq_results RQR;
 	collide::rq_result RQ;
-	xr_string selected_info_str;
+	xr_string selected_info_str, script_info;
 	int selected_info_height = 0;
 
 	CGameFont* dbg_font = nullptr;
