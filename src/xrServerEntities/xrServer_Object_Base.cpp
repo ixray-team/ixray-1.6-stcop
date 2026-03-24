@@ -418,8 +418,7 @@ xr_token game_types[]={
 	{ "artefacthunt",			eGameIDArtefactHunt			},
 	{ "capture_the_artefact",	eGameIDCaptureTheArtefact	},
 	{ "freemp",					eGameIDFreeMP				},
-	//eGameIDDominationZone
-	//eGameIDTeamDominationZone
+	{ "capturepoints",			eGameIDCapturePoints		},
 	{ 0,				0				}
 };
 
