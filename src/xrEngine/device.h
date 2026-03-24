@@ -222,8 +222,11 @@ public:
 
 	xr_delegate<void()> ModelDefferClear;
 
-	std::unordered_multimap<u32,std::function<void()>> m_time_callbacks;
-	void callback(const u32& cb_time, const std::function<void()> &func);
+	xr_vector<xr_pair<u32,std::function<void()>>> m_time_callbacks;
+	ICF void callback(u32 cb_time, const std::function<void()>& func)
+	{
+		m_time_callbacks.push_back({ dwTimeGlobal + cb_time,func });
+	}
 	// Dependent classes
 	CStats*									Statistic;
 
