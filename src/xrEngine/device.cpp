@@ -139,11 +139,6 @@ void CRenderDevice::time_factor(const float &time_factor)
 	Sound->time_factor		(time_factor);
 }
 
-void CRenderDevice::callback(const u32& cb_time, const std::function<void()> &func)
-{
-	m_time_callbacks.insert({dwTimeGlobal+cb_time,func});
-}
-
 void CRenderDevice::on_idle		()
 {
 	if (!b_is_Ready) {
@@ -187,12 +182,13 @@ void CRenderDevice::on_idle		()
 			if (Device.ModelDefferClear)
 				Device.ModelDefferClear();
 
+		u32 tglob = Device.dwTimeGlobal;
 		for (auto it = m_time_callbacks.begin(); it != m_time_callbacks.end();)
 		{
-		    if (Device.dwTimeGlobal >= it->first)
+		    if (tglob >= it->first)
 			{
 				it->second();
-		        it = m_time_callbacks.erase(it);
+				fast_erase(m_time_callbacks, it);
 		    }
 			else
 		       ++it;
