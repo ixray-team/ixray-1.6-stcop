@@ -328,8 +328,16 @@ void UIDOShuffle::OnItemFocused(const char* name)
 		{
 			m_Texture = new CTexture;
 		}
-		m_Texture->surface_set(Surface);
-		Surface->Release();
+
+		if (Surface == nullptr)
+		{
+			Msg("! Error creating object view: %s", name);
+		}
+		else
+		{
+			m_Texture->surface_set(Surface);
+			Surface->Release();
+		}
 	}
 
 	xr_delete(m_Thm);
