@@ -117,6 +117,13 @@
 #include <magic_enum/magic_enum.hpp>
 #include "_static_thread.h"
 
+
+template<stack_string<char, 1>::number_type _kSize>
+inline bool operator==(const stack_string<char, _kSize>& left, const shared_str& right)
+{
+	return xr_strcmp(left.c_str(), right.c_str()) == 0;
+}
+
 // stl ext
 struct XRCORE_API xr_rtoken
 {
