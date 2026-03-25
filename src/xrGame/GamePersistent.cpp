@@ -577,6 +577,13 @@ void CGamePersistent::update_game_loaded()
 {
 	xr_delete					(m_intro);
 	load_screen_renderer.stop	();
+
+	luabind::functor<void> lua_update_game_loaded;
+	if (ai().script_engine().functor("___ixr_engine_callbacks.load_screen_press_any_key", lua_update_game_loaded))
+	{
+		lua_update_game_loaded();
+	}
+
 	start_game_intro			();
 }
 
