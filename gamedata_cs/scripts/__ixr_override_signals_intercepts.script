@@ -46,6 +46,8 @@ function configure(_ref_ixr_signals)
 		_ref_ixr_signals.add_intercept("ActorMenu_on_trade_closed",             	{})
 	--]]
 	
+	_ref_ixr_signals.add_intercept("on_load_screen_await_any_key_pressed",	{})	-- уровень загружен гг получил управление
+	
 	_ref_ixr_signals.add_intercept("level_input_on_key_press",				{})	
 	_ref_ixr_signals.add_intercept("on_key_press",                         	{"dik_key_number"})	
 	_ref_ixr_signals.add_intercept("on_key_release",                     	{"dik_key_number"})	
@@ -155,6 +157,8 @@ function configure(_ref_ixr_signals)
 	_ref_ixr_signals.add_intercept("monster_on_death",         				{"monster_game_object", "who_game_object"}) 
 	_ref_ixr_signals.add_intercept("monster_on_actor_use_callback",     	{"monster_game_object", "who_game_object"}) 
 	_ref_ixr_signals.add_intercept("monster_on_use",     					{"monster_game_object", "who_game_object", "is_alive_bool"}) 
+
+	_ref_ixr_signals.add_intercept("anomaly_field_on_update",     			{"binder_class", "anomaly_zone_game_object"}) 
 
 	_ref_ixr_signals.add_intercept("anomaly_zone_on_init",     				{"binder_class", "anomaly_zone_game_object"}) 
 	_ref_ixr_signals.add_intercept("anomaly_zone_on_spawn_artefact_randomly", {"binder_class", "anomaly_zone_game_object", "artefact_server_object"}) 
