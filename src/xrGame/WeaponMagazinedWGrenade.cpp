@@ -29,7 +29,7 @@ void CWeaponMagazinedWGrenade::Load(const char* section)
 	{
 		CRocketLauncher::m_fLaunchSpeed = pSettings->r_float(section, "grenade_vel");
 	}
-	grenade_bone_name = READ_IF_EXISTS(pSettings, r_string, hud_sect, "grenade_bone", "grenade");
+	grenade_bone_name = pSettings->read_if_exists<str_c>(hud_sect, "grenade_bone", "grenade");
 
 	// load ammo classes SECOND (grenade_class)
 	m_ammoTypes2.clear();
@@ -79,7 +79,7 @@ void CWeaponMagazinedWGrenade::ReloadConfig()
 		if (pSettings->section_exist(Section))
 		{
 			CRocketLauncher::m_fLaunchSpeed = pSettings->r_float(Section, "grenade_vel");
-			m_fGrenadeAttachedRecoil = READ_IF_EXISTS(pSettings, r_float, Section, "grenade_attached_recoil", 1.0f);
+			m_fGrenadeAttachedRecoil = pSettings->read_if_exists<float>(Section, "grenade_attached_recoil", 1.0f);
 		}
 	}
 }
@@ -1001,7 +1001,7 @@ void CWeaponMagazinedWGrenade::InitAddons()
 		}
 
 		CRocketLauncher::m_fLaunchSpeed = pSettings->r_float(*GetGrenadeLauncherName(), "grenade_vel");
-		m_fGrenadeAttachedRecoil = READ_IF_EXISTS(pSettings, r_float, *GetGrenadeLauncherName(), "grenade_attached_recoil", 1.0f);
+		m_fGrenadeAttachedRecoil = pSettings->read_if_exists<float>(*GetGrenadeLauncherName(), "grenade_attached_recoil", 1.0f);
 
 		LoadGrenadeLauncherXY();
 	}

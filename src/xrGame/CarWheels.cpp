@@ -76,9 +76,9 @@ void CCar::SWheel::Load(const char* section)
 	VERIFY						(ini)							;
 	if(ini->section_exist(section))
 	{
-		collision_params.damping_factor	=READ_IF_EXISTS(ini,r_float,section,"damping_factor",collision_params.damping_factor);
-		collision_params.spring_factor	=READ_IF_EXISTS(ini,r_float,section,"spring_factor",collision_params.spring_factor);
-		collision_params.mu_factor		=READ_IF_EXISTS(ini,r_float,section,"friction_factor",collision_params.mu_factor);
+		collision_params.damping_factor	=ini->read_if_exists<float>(section,"damping_factor",collision_params.damping_factor);
+		collision_params.spring_factor	=ini->read_if_exists<float>(section,"spring_factor",collision_params.spring_factor);
+		collision_params.mu_factor		=ini->read_if_exists<float>(section,"friction_factor",collision_params.mu_factor);
 	} 
 	else if(ini->section_exist("wheels_params"))
 	{
@@ -351,11 +351,11 @@ void CCar::SWheelBreak::Load(const char* section)
 	CInifile		*ini		=K->LL_UserData()																;
 	VERIFY						(ini)																			;
 	break_torque		=		ini->r_float("car_definition","break_torque")									;
-	hand_break_torque	=		READ_IF_EXISTS(ini,r_float,"car_definition","hand_break_torque",break_torque)	;
+	hand_break_torque	=		ini->read_if_exists<float>("car_definition","hand_break_torque",break_torque)	;
 	if(ini->section_exist(section))
 	{	
-		break_torque					=READ_IF_EXISTS(ini,r_float,section,"break_torque",break_torque);
-		hand_break_torque				=READ_IF_EXISTS(ini,r_float,section,"hand_break_torque",hand_break_torque);
+		break_torque					=ini->read_if_exists<float>(section,"break_torque",break_torque);
+		hand_break_torque				=ini->read_if_exists<float>(section,"hand_break_torque",hand_break_torque);
 	}
 }
 void CCar::SWheelBreak::Break(float k)

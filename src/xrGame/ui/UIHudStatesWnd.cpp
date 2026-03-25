@@ -169,7 +169,7 @@ CUIHudStatesWnd::CUIHudStatesWnd()
 
     m_zone_feel_radius_max = 0.0f;
 
-    m_health_blink = READ_IF_EXISTS(pSettings, r_float, "actor_condition", "hud_health_blink", 0.f);
+    m_health_blink = pSettings->read_if_exists<float>("actor_condition", "hud_health_blink", 0.f);
     clamp( m_health_blink, 0.0f, 1.0f );
 
     m_fake_indicators_update = false;

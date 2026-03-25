@@ -97,11 +97,11 @@ void CArtefact::Load(const char* section)
 
 	IRestoresOwner::Load(section);
 
-	m_fEquipmentDurabilityModifier = READ_IF_EXISTS(pSettings, r_float, section, "equipment_durability_modifier", 1.0f);
-	m_fInventoryWeightModifier = READ_IF_EXISTS(pSettings, r_float, section, "inventory_weight_modifier", 1.0f);
-	m_fJumpHeightModifier = READ_IF_EXISTS(pSettings, r_float, section, "jump_height_modifier", 0.0f);
-	m_fMovementSpeedModifier = READ_IF_EXISTS(pSettings, r_float, section, "movement_speed_modifier", 0.0f);
-	m_fSleepinessRestoreSpeed = READ_IF_EXISTS(pSettings, r_float, section, "sleepiness_restore_speed", 0.0f);
+	m_fEquipmentDurabilityModifier = pSettings->read_if_exists<float>(section, "equipment_durability_modifier", 1.0f);
+	m_fInventoryWeightModifier = pSettings->read_if_exists<float>(section, "inventory_weight_modifier", 1.0f);
+	m_fJumpHeightModifier = pSettings->read_if_exists<float>(section, "jump_height_modifier", 0.0f);
+	m_fMovementSpeedModifier = pSettings->read_if_exists<float>(section, "movement_speed_modifier", 0.0f);
+	m_fSleepinessRestoreSpeed = pSettings->read_if_exists<float>(section, "sleepiness_restore_speed", 0.0f);
 }
 
 bool CArtefact::net_Spawn(CSE_Abstract* DC) 

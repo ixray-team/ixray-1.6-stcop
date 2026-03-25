@@ -20,14 +20,14 @@ void SEatableItemDesc::Load(const shared_str& Section)
 	}
 	else
 	{
-		m_iMaxUses = READ_IF_EXISTS(pSettings, r_u8, Section, "max_uses", 1);
+		m_iMaxUses = pSettings->read_if_exists<u8>(Section, "max_uses", 1);
 	}
 
-	float EatCondition = READ_IF_EXISTS(pSettings, r_float, Section, "eat_condition", 1);
+	float EatCondition = pSettings->read_if_exists<float>(Section, "eat_condition", 1);
 	m_iMaxUses /= EatCondition;
 
-	UseText = READ_IF_EXISTS(pSettings, r_string, Section, "use_text", "st_use");
-	m_bConsumeChargeOnUse = READ_IF_EXISTS(pSettings, r_bool, Section, "consume_charge_on_use", true);
+	UseText = pSettings->read_if_exists<str_c>(Section, "use_text", "st_use");
+	m_bConsumeChargeOnUse = pSettings->read_if_exists<bool>(Section, "consume_charge_on_use", true);
 }
 
 void SEatableEffectsDesc::Load(const shared_str& Section)

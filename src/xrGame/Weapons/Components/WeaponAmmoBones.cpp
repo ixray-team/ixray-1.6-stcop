@@ -505,7 +505,7 @@ void TAmmoBones::ApplyDefaultIconBones(IKinematics& Model, LPCSTR SectionName, x
 	LPCSTR HudSection = WeaponBoneVisibility::ReadString(SectionName, "hud");
 	for (const auto& Parameters : InstalledSections)
 	{
-		HudSection = READ_IF_EXISTS(pSettings, r_string, Parameters, "hud", HudSection);
+		HudSection = pSettings->read_if_exists<str_c>(Parameters, "hud", HudSection);
 	}
 	const auto ReadParameters = [&](LPCSTR Field)
 	{
@@ -513,7 +513,7 @@ void TAmmoBones::ApplyDefaultIconBones(IKinematics& Model, LPCSTR SectionName, x
 		return WeaponBoneVisibility::ReadString(Parameters, Field);
 	};
 	xr_vector<SAmmoBonesParams> Parameters;
-	const s32 MagazineSize = READ_IF_EXISTS(pSettings, r_s32, SectionName, "ammo_mag_size", 0);
+	const s32 MagazineSize = pSettings->read_if_exists<s32>(SectionName, "ammo_mag_size", 0);
 	LPCSTR Common = ReadParameters("ammo_params_section");
 	if (*Common && pSettings->section_exist(Common))
 	{

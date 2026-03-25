@@ -334,8 +334,8 @@ void CActorAuraPostEffectsBalancer::spawn_instance(const SAuraRunningKey& key, c
 		const char* filename_key = pSettings->line_exist(section, "pp_eff_name") ? "pp_eff_name" : "ppe_file";
 		CPostprocessAnimatorLerp* pp	= new CPostprocessAnimatorLerp();
 		pp->SetType						((EEffectorPPType)inst.pp_slot_id);
-		pp->SetCyclic					(READ_IF_EXISTS(pSettings, r_bool, section, "pp_eff_cyclic", true));
-		pp->bOverlap					= READ_IF_EXISTS(pSettings, r_bool, section, "pp_eff_overlap", true);
+		pp->SetCyclic					(pSettings->read_if_exists<bool>(section, "pp_eff_cyclic", true));
+		pp->bOverlap					= pSettings->read_if_exists<bool>(section, "pp_eff_overlap", true);
 		pp->SetFactorFunc				(GET_KOEFF_FUNC(&inst, &SRunningInstance::get_factor));
 		pp->Load						(pSettings->r_string(section, filename_key));
 		inst.effector = actor->Cameras().AddPPEffector(pp);

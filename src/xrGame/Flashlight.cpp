@@ -20,8 +20,8 @@ void CFlashlight::Load(const char* section)
 		LightTorch->NewTorchlight(section);
 	}
 
-	m_fElectronicProblems.x = READ_IF_EXISTS(pSettings, r_float, section, "electronic_problems_level", 0.0f);
-	m_fElectronicProblems.y = READ_IF_EXISTS(pSettings, r_float, section, "electronic_problems_freq", 0.5f);
+	m_fElectronicProblems.x = pSettings->read_if_exists<float>(section, "electronic_problems_level", 0.0f);
+	m_fElectronicProblems.y = pSettings->read_if_exists<float>(section, "electronic_problems_freq", 0.5f);
 
 	//TODO: Implement particles support
 }

@@ -9,7 +9,7 @@ void CNVG::Load(const char* section)
     CInventoryItemObject::Load(section);
     IPowerManager::SetSelfObject(cast_inventory_item(), H_Parent());
     IPowerManager::Load(section, cast_inventory_item());
-    m_night_vision_effector_section = READ_IF_EXISTS(pSettings, r_string, section, "nightvision_sect", "effector_nightvision_1");
+    m_night_vision_effector_section = pSettings->read_if_exists<str_c>(section, "nightvision_sect", "effector_nightvision_1");
     m_nvg_effector = Actor()->GetNightVisionEffector();
 }
 
@@ -121,7 +121,7 @@ void CNVG::OnNvgStart()
    // Msg("NVG OnNvgStart");
     if (!m_nvg_effector->IsActive())
     {
-		const Fcolor Color = READ_IF_EXISTS(pSettings, r_fcolor, m_night_vision_effector_section, "shader_nvg_color", Fcolor(0.3f, 1.0f, 0.2f));
+		const Fcolor Color = pSettings->read_if_exists<Fcolor>(m_night_vision_effector_section, "shader_nvg_color", Fcolor(0.3f, 1.0f, 0.2f));
 		m_nvg_effector->Start(m_night_vision_effector_section, true, Color);
     }
 }

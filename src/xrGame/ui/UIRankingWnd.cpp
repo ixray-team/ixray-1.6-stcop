@@ -492,7 +492,7 @@ void CUIRankingWnd::add_achievement(CUIXml& xml, shared_str const& achiev_id)
 	achievement->SetHint(pSettings->r_string(achiev_id, "hint"));
 	achievement->SetIcon(pSettings->r_string(achiev_id, "icon"));
 	achievement->SetFunctor(pSettings->r_string(achiev_id, "functor"));
-	achievement->SetRepeatable(!!READ_IF_EXISTS(pSettings,r_bool,achiev_id,"repeatable",false));
+	achievement->SetRepeatable(!!pSettings->read_if_exists<bool>(achiev_id,"repeatable",false));
 
 	m_achieves_vec.push_back(achievement);
 }
@@ -1038,17 +1038,17 @@ void CUIRankingWnd::get_favorite_weapon()
 		bool Has3dIcon = false;
 		if (m_use_3d_icon)
 		{
-			const char* VisualName = READ_IF_EXISTS(pSettings, r_string, str, "3d_static_visual_name", READ_IF_EXISTS(pSettings, r_string, str, "visual", nullptr));
+			const char* VisualName = pSettings->read_if_exists<str_c>(str, "3d_static_visual_name", pSettings->read_if_exists<str_c>(str, "visual", nullptr));
 			if (VisualName && VisualName[0])
 			{
 				m_favorite_weapon_icon->SetIconVisual(VisualName);
 				if (m_favorite_weapon_icon->GetVisual())
 				{
-					Fvector rot = READ_IF_EXISTS(pSettings, r_fvector3, str, "3d_static_rotate", rot.set(0, 0, 0));
+					Fvector rot = pSettings->read_if_exists<Fvector3>(str, "3d_static_rotate", rot.set(0, 0, 0));
 					rot.mul(M_PI / 180.0f);
 					m_favorite_weapon_icon->SetXYZ(rot);
-					m_favorite_weapon_icon->SetScaleFactor(READ_IF_EXISTS(pSettings, r_float, str, "3d_static_scale", 1.f));
-					m_favorite_weapon_icon->SetIconOffset(READ_IF_EXISTS(pSettings, r_fvector2, str, "3d_static_offset", Fvector2().set(0.0f, 0.0f)));
+					m_favorite_weapon_icon->SetScaleFactor(pSettings->read_if_exists<float>(str, "3d_static_scale", 1.f));
+					m_favorite_weapon_icon->SetIconOffset(pSettings->read_if_exists<Fvector2>(str, "3d_static_offset", Fvector2().set(0.0f, 0.0f)));
 
 					RStringVec m_bDefHideBones{}, m_bDefShowBones{};
 
@@ -1125,7 +1125,7 @@ void CUIRankingWnd::get_favorite_weapon()
 			m_favorite_weapon_icon->SetVisual(nullptr);
 			if (pSettings->line_exist(str, "upgr_icon_x") && pSettings->line_exist(str, "upgr_icon_y") && pSettings->line_exist(str, "upgr_icon_width") && pSettings->line_exist(str, "upgr_icon_height"))
 			{
-				const char* upgrIconsTexture = READ_IF_EXISTS(pSettings, r_string, str, "upgr_icons_texture", nullptr);
+				const char* upgrIconsTexture = pSettings->read_if_exists<str_c>(str, "upgr_icons_texture", nullptr);
 				m_favorite_weapon_icon->SetShader(InventoryUtilities::GetWeaponUpgradeIconsShader(upgrIconsTexture));
 				if (!xr_strcmp(str, "wpn_rpg7"))
 				{

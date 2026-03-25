@@ -22,7 +22,7 @@ CUIPdaSpot::CUIPdaSpot()
 
 	m_spotID = ALife::_OBJECT_ID(-1);
 
-	m_spotType = READ_IF_EXISTS(pSettings, r_string, "user_spots", "spot_type", "treasure");
+	m_spotType = pSettings->read_if_exists<str_c>("user_spots", "spot_type", "treasure");
 	// FFx0001 override spot section from global config
 	if (pGameGlobals->section_exist("pda_map") && pGameGlobals->line_exist("pda_map", "hand_spot_icon_xml_section"))
 	{

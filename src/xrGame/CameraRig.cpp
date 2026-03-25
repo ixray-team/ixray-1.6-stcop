@@ -45,7 +45,7 @@ bool CCameraRig::Enabled()
 		return !!g_rig_enabled;
 	}
 
-	g_rig_enabled = pSettings->section_exist("camera_rig") && READ_IF_EXISTS(pSettings, r_bool, "camera_rig", "enabled", true);
+	g_rig_enabled = pSettings->section_exist("camera_rig") && pSettings->read_if_exists<bool>("camera_rig", "enabled", true);
 	if (!g_rig_enabled)
 	{
 		return false;
@@ -203,8 +203,8 @@ void CCameraRig::OnShot(CWeapon* weapon)
 		m_weapon_sect = sect;
 		m_weapon_punch = pSettings->line_exist(sect, "rig_punch") ? Fvector(pSettings->r_fvector3(sect, "rig_punch")).mul(PI / 180.f) : g_rig.punch;
 		m_weapon_kick_rot = pSettings->line_exist(sect, "rig_kick_rot") ? Fvector(pSettings->r_fvector3(sect, "rig_kick_rot")).mul(PI / 180.f) : g_rig.kick_rot;
-		m_weapon_kick_pos = READ_IF_EXISTS(pSettings, r_fvector3, sect, "rig_kick_pos", g_rig.kick_pos);
-		m_weapon_trauma = READ_IF_EXISTS(pSettings, r_float, sect, "rig_shot_trauma", g_rig.shot_trauma);
+		m_weapon_kick_pos = pSettings->read_if_exists<Fvector3>(sect, "rig_kick_pos", g_rig.kick_pos);
+		m_weapon_trauma = pSettings->read_if_exists<float>(sect, "rig_shot_trauma", g_rig.shot_trauma);
 	}
 
 	const float aim = weapon->GetAimFactor();

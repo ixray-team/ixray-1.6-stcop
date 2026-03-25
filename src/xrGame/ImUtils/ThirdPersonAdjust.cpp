@@ -222,7 +222,7 @@ void Render3rdAdjust()
 
 			if (ImGui::Button("Reset##AP"))
 			{
-				item->m_offset_position = READ_IF_EXISTS(pSettings, r_fvector3, item->item().m_section_id, "attach_position_offset", zero_vel);
+				item->m_offset_position = pSettings->read_if_exists<Fvector3>(item->item().m_section_id, "attach_position_offset", zero_vel);
 			}
 
 			ImGui::DragFloat("X##AP", &item->m_offset_position.x, ATT_ITEM_MOVE_STEP, -100.0f, 100.0f, "%.6f");
@@ -233,7 +233,7 @@ void Render3rdAdjust()
 
 			if (ImGui::Button("Reset##AR"))
 			{
-				item->m_offset_rotation = READ_IF_EXISTS(pSettings, r_fvector3, item->item().m_section_id, "attach_angle_offset", zero_vel);
+				item->m_offset_rotation = pSettings->read_if_exists<Fvector3>(item->item().m_section_id, "attach_angle_offset", zero_vel);
 			}
 
 			ImGui::DragFloat("X##AR", &item->m_offset_rotation.x, ATT_ITEM_ROT_STEP, -360.0f, 360.0f, "%.6f");
@@ -272,7 +272,7 @@ void Render3rdAdjust()
 					if (ImGui::Button("Reset##SP"))
 					{
 						Fvector _default = Fvector().set(-0.34f, (use_alt_position ? 0.20f : -0.20f), 0.15f);
-						strap_position.StrapPosition = READ_IF_EXISTS(pSettings, r_fvector3, wpn->cNameSect(), use_alt_position ? "strap_position_alt" : "strap_position", _default);
+						strap_position.StrapPosition = pSettings->read_if_exists<Fvector3>(wpn->cNameSect(), use_alt_position ? "strap_position_alt" : "strap_position", _default);
 					}
 
 					ImGui::DragFloat("X##SP", &strap_position.StrapPosition.x, ATT_ITEM_MOVE_STEP, -360.0f, 360.0f, "%.6f");
@@ -284,7 +284,7 @@ void Render3rdAdjust()
 					if (ImGui::Button("Reset##SR"))
 					{
 						Fvector _default = Fvector().set(0.0f, 0.0f, (use_alt_position ? 94.0f : 84.0f));
-						strap_position.StrapRotation = READ_IF_EXISTS(pSettings, r_fvector3, wpn->cNameSect(), use_alt_position ? "strap_orientation_alt" : "strap_orientation", _default);
+						strap_position.StrapRotation = pSettings->read_if_exists<Fvector3>(wpn->cNameSect(), use_alt_position ? "strap_orientation_alt" : "strap_orientation", _default);
 					}
 
 					ImGui::DragFloat("X##SR", &strap_position.StrapRotation.x, ATT_ITEM_ROT_STEP, -360.0f, 360.0f, "%.6f");
@@ -321,7 +321,7 @@ void Render3rdAdjust()
 
 			if (ImGui::Button("Reset##CP"))
 			{
-				wpn->m_ActiveOffset.StrapPosition = READ_IF_EXISTS(pSettings, r_fvector3, wpn->cNameSect(), "position", zero_vel);
+				wpn->m_ActiveOffset.StrapPosition = pSettings->read_if_exists<Fvector3>(wpn->cNameSect(), "position", zero_vel);
 			}
 
 			ImGui::DragFloat("X##CP", &wpn->m_ActiveOffset.StrapPosition.x, ATT_ITEM_MOVE_STEP, -100.0f, 100.0f, "%.6f");
@@ -332,7 +332,7 @@ void Render3rdAdjust()
 
 			if (ImGui::Button("Reset##CR"))
 			{
-				wpn->m_ActiveOffset.StrapRotation = READ_IF_EXISTS(pSettings, r_fvector3, wpn->cNameSect(), "orientation", zero_vel);
+				wpn->m_ActiveOffset.StrapRotation = pSettings->read_if_exists<Fvector3>(wpn->cNameSect(), "orientation", zero_vel);
 			}
 
 			ImGui::DragFloat("X##CR", &wpn->m_ActiveOffset.StrapRotation.x, ATT_ITEM_ROT_STEP, -360.0f, 360.0f, "%.6f");
@@ -343,7 +343,7 @@ void Render3rdAdjust()
 
 			if (ImGui::Button("Reset##FP"))
 			{
-				wpn->vLoadedFirePoint = READ_IF_EXISTS(pSettings, r_fvector3, wpn->cNameSect(), "fire_point", zero_vel);
+				wpn->vLoadedFirePoint = pSettings->read_if_exists<Fvector3>(wpn->cNameSect(), "fire_point", zero_vel);
 			}
 
 			ImGui::DragFloat("X##FP", &wpn->vLoadedFirePoint.x, ATT_ITEM_ROT_STEP, -100.0f, 100.0f, "%.6f");
@@ -354,7 +354,7 @@ void Render3rdAdjust()
 
 			if (ImGui::Button("Reset##FP2"))
 			{
-				wpn->vLoadedFirePoint2 = READ_IF_EXISTS(pSettings, r_fvector3, wpn->cNameSect(), "fire_point2", zero_vel);
+				wpn->vLoadedFirePoint2 = pSettings->read_if_exists<Fvector3>(wpn->cNameSect(), "fire_point2", zero_vel);
 			}
 
 			ImGui::DragFloat("X##FP2", &wpn->vLoadedFirePoint2.x, ATT_ITEM_ROT_STEP, -100.0f, 100.0f, "%.6f");
@@ -365,7 +365,7 @@ void Render3rdAdjust()
 
 			if (ImGui::Button("Reset##SP"))
 			{
-				wpn->vLoadedShellPoint = READ_IF_EXISTS(pSettings, r_fvector3, wpn->cNameSect(), "shell_point", zero_vel);
+				wpn->vLoadedShellPoint = pSettings->read_if_exists<Fvector3>(wpn->cNameSect(), "shell_point", zero_vel);
 			}
 
 			ImGui::DragFloat("X##SP", &wpn->vLoadedShellPoint.x, ATT_ITEM_ROT_STEP, -100.0f, 100.0f, "%.6f");

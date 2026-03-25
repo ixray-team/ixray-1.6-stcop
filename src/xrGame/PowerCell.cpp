@@ -7,8 +7,8 @@ void PowerCell::Load(const char* section)
     CInventoryItemObject::Load(section);
 
     m_power_cell_data.section = section;
-    m_power_cell_data.max_power = READ_IF_EXISTS(pSettings, r_float, section, "power_cell_max_energy_value", 0.0f);
-    m_power_cell_data.current_power = READ_IF_EXISTS(pSettings, r_float, section, "power_cell_current_energy_value", 0.0f);
+    m_power_cell_data.max_power = pSettings->read_if_exists<float>(section, "power_cell_max_energy_value", 0.0f);
+    m_power_cell_data.current_power = pSettings->read_if_exists<float>(section, "power_cell_current_energy_value", 0.0f);
     m_flags.set(FUsingCondition, true);
 }
 

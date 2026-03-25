@@ -78,7 +78,7 @@ void CSE_ALifeScavengerCrow::LoadOfflineConfig()
 	DryDelay.load(Section,"crow_shelter_dry_delay",5.f,120.f);
 	Tick.load(Section,"crow_offline_update_interval",1.f,3.f);
 	R_ASSERT2(Tick.low > 0.f, "Invalid crow offline update interval");
-#define CROW_OFFLINE_FLOAT(Field, Key, Default) Field = READ_IF_EXISTS(pSettings,r_float,Section,Key,Default)
+#define CROW_OFFLINE_FLOAT(Field, Key, Default) Field = pSettings->read_if_exists<float>(Section,Key,Default)
 	CROW_OFFLINE_FLOAT(HungerTime,"crow_hunger_time",900.f);
 	CROW_OFFLINE_FLOAT(Hungry,"crow_hungry_threshold",.35f);
 	CROW_OFFLINE_FLOAT(FearRadius,"crow_fear_radius",10.f);
@@ -95,8 +95,8 @@ void CSE_ALifeScavengerCrow::LoadOfflineConfig()
 	CROW_OFFLINE_FLOAT(FlightSpeed,"flight_speed",6.f);
 	CROW_OFFLINE_FLOAT(FoodRadius,"crow_corpse_search_radius",70.f);
 #undef CROW_OFFLINE_FLOAT
-	NightEnabled=READ_IF_EXISTS(pSettings,r_bool,Section,"crow_night_enabled",true);
-	RainEnabled=READ_IF_EXISTS(pSettings,r_bool,Section,"crow_rain_shelter_enabled",true);
+	NightEnabled=pSettings->read_if_exists<bool>(Section,"crow_night_enabled",true);
+	RainEnabled=pSettings->read_if_exists<bool>(Section,"crow_rain_shelter_enabled",true);
 	CrowBehaviorTiming::SCrowRange SeedPeck, MeatPeck;
 	SeedPeck.load(Section,"crow_peck_interval",.5f,1.1f);
 	MeatPeck.load(Section,"crow_corpse_peck_interval",.8f,1.6f);
@@ -107,7 +107,7 @@ void CSE_ALifeScavengerCrow::LoadOfflineConfig()
 		"Invalid crow offline configuration");
 	if (!State.Valid)
 	{
-		State.Enabled=READ_IF_EXISTS(pSettings,r_bool,Section,"crow_ai_enabled",false);
+		State.Enabled=pSettings->read_if_exists<bool>(Section,"crow_ai_enabled",false);
 		CrowBehaviorTiming::SCrowRange Initial;
 		Initial.load(Section,"crow_initial_satiety",.25f,.9f);
 		State.Satiety=Initial.sample();

@@ -480,7 +480,7 @@ static void HudAdjustDrawHandsSettings()
 
 			if (ImGui::Button("Reset##WP"))
 			{
-				g_player_hud->m_watches_pos = READ_IF_EXISTS(pSettings, r_fvector3, g_player_hud->section_name(), "watches_pos", zero_vel);
+				g_player_hud->m_watches_pos = pSettings->read_if_exists<Fvector3>(g_player_hud->section_name(), "watches_pos", zero_vel);
 			}
 
 			if (ImGui::BeginTable("Data##WP", 1))
@@ -500,7 +500,7 @@ static void HudAdjustDrawHandsSettings()
 
 			if (ImGui::Button("Reset##WR"))
 			{
-				g_player_hud->m_watches_rot = READ_IF_EXISTS(pSettings, r_fvector3, g_player_hud->section_name(), "watches_rot", zero_vel);
+				g_player_hud->m_watches_rot = pSettings->read_if_exists<Fvector3>(g_player_hud->section_name(), "watches_rot", zero_vel);
 			}
 
 			if (ImGui::BeginTable("Data##WR", 1))
@@ -1060,37 +1060,37 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 			{
 			case EHudOffsetType::eAim:
 			{
-				position = READ_IF_EXISTS(pSettings, r_fvector3, item->m_sect_name, val_name, READ_IF_EXISTS(pSettings, r_fvector3, item->m_sect_name, "zoom_offset", zero_vel));
+				position = pSettings->read_if_exists<Fvector3>(item->m_sect_name, val_name, pSettings->read_if_exists<Fvector3>(item->m_sect_name, "zoom_offset", zero_vel));
 				break;
 			}
 			case EHudOffsetType::eAimGL:
 			{
 				xr_strconcat(val_name, "gl_hud_offset_pos", _prefix);
-				position = READ_IF_EXISTS(pSettings, r_fvector3, item->m_sect_name, val_name, READ_IF_EXISTS(pSettings, r_fvector3, item->m_sect_name, "grenade_zoom_offset", zero_vel));
+				position = pSettings->read_if_exists<Fvector3>(item->m_sect_name, val_name, pSettings->read_if_exists<Fvector3>(item->m_sect_name, "grenade_zoom_offset", zero_vel));
 				break;
 			}
 			case EHudOffsetType::eAimAlt:
 			{
 				xr_strconcat(val_name, "alter_aim_hud_offset_pos", _prefix);
-				position = READ_IF_EXISTS(pSettings, r_fvector3, item->m_sect_name, val_name, zero_vel);
+				position = pSettings->read_if_exists<Fvector3>(item->m_sect_name, val_name, zero_vel);
 				break;
 			}
 			case EHudOffsetType::eSafemode:
 			{
 				xr_strconcat(val_name, "safemode_hud_offset_pos", _prefix);
-				position = READ_IF_EXISTS(pSettings, r_fvector3, item->m_sect_name, val_name, zero_vel);
+				position = pSettings->read_if_exists<Fvector3>(item->m_sect_name, val_name, zero_vel);
 				break;
 			}
 			case EHudOffsetType::eCollision:
 			{
 				xr_strconcat(val_name, "collision_hud_offset_pos", _prefix);
-				position = READ_IF_EXISTS(pSettings, r_fvector3, item->m_sect_name, val_name, zero_vel);
+				position = pSettings->read_if_exists<Fvector3>(item->m_sect_name, val_name, zero_vel);
 				break;
 			}
 			default:
 			{
 				xr_strconcat(val_name, "hands_position", _prefix);
-				position = READ_IF_EXISTS(pSettings, r_fvector3, item->m_sect_name, val_name, zero_vel);
+				position = pSettings->read_if_exists<Fvector3>(item->m_sect_name, val_name, zero_vel);
 				break;
 			}
 			};
@@ -1126,9 +1126,9 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 				}
 				else
 				{
-					rotation.x = READ_IF_EXISTS(pSettings, r_float, item->m_sect_name, "zoom_rotate_x", 0.f);
-					rotation.y = READ_IF_EXISTS(pSettings, r_float, item->m_sect_name, "zoom_rotate_y", 0.f);
-					rotation.z = READ_IF_EXISTS(pSettings, r_float, item->m_sect_name, "zoom_rotate_z", 0.f);
+					rotation.x = pSettings->read_if_exists<float>(item->m_sect_name, "zoom_rotate_x", 0.f);
+					rotation.y = pSettings->read_if_exists<float>(item->m_sect_name, "zoom_rotate_y", 0.f);
+					rotation.z = pSettings->read_if_exists<float>(item->m_sect_name, "zoom_rotate_z", 0.f);
 				}
 				break;
 			}
@@ -1141,34 +1141,34 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 				}
 				else
 				{
-					rotation.x = READ_IF_EXISTS(pSettings, r_float, item->m_sect_name, "grenade_zoom_rotate_x", 0.f);
-					rotation.y = READ_IF_EXISTS(pSettings, r_float, item->m_sect_name, "grenade_zoom_rotate_y", 0.f);
-					rotation.z = READ_IF_EXISTS(pSettings, r_float, item->m_sect_name, "grenade_zoom_rotate_z", 0.f);
+					rotation.x = pSettings->read_if_exists<float>(item->m_sect_name, "grenade_zoom_rotate_x", 0.f);
+					rotation.y = pSettings->read_if_exists<float>(item->m_sect_name, "grenade_zoom_rotate_y", 0.f);
+					rotation.z = pSettings->read_if_exists<float>(item->m_sect_name, "grenade_zoom_rotate_z", 0.f);
 				}
 				break;
 			}
 			case EHudOffsetType::eAimAlt:
 			{
 				xr_strconcat(val_name, "alter_aim_hud_offset_rot", _prefix);
-				rotation = READ_IF_EXISTS(pSettings, r_fvector3, item->m_sect_name, val_name, zero_vel);
+				rotation = pSettings->read_if_exists<Fvector3>(item->m_sect_name, val_name, zero_vel);
 				break;
 			}
 			case EHudOffsetType::eSafemode:
 			{
 				xr_strconcat(val_name, "safemode_hud_offset_rot", _prefix);
-				rotation = READ_IF_EXISTS(pSettings, r_fvector3, item->m_sect_name, val_name, zero_vel);
+				rotation = pSettings->read_if_exists<Fvector3>(item->m_sect_name, val_name, zero_vel);
 				break;
 			}
 			case EHudOffsetType::eCollision:
 			{
 				xr_strconcat(val_name, "collision_hud_offset_rot", _prefix);
-				rotation = READ_IF_EXISTS(pSettings, r_fvector3, item->m_sect_name, val_name, zero_vel);
+				rotation = pSettings->read_if_exists<Fvector3>(item->m_sect_name, val_name, zero_vel);
 				break;
 			}
 			default:
 			{
 				xr_strconcat(val_name, "hands_orientation", _prefix);
-				rotation = READ_IF_EXISTS(pSettings, r_fvector3, item->m_sect_name, val_name, zero_vel);
+				rotation = pSettings->read_if_exists<Fvector3>(item->m_sect_name, val_name, zero_vel);
 				break;
 			}
 			}
@@ -1287,7 +1287,7 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 
 		if (ImGui::Button("Reset##IPosition"))
 		{
-			position = READ_IF_EXISTS(pSettings, r_fvector3, item->m_sect_name, "item_position", pSettings->r_fvector3(item->m_sect_name, "position"));
+			position = pSettings->read_if_exists<Fvector3>(item->m_sect_name, "item_position", pSettings->r_fvector3(item->m_sect_name, "position"));
 		}
 
 		if (ImGui::BeginTable("Data##HUDPI", 1))
@@ -1307,7 +1307,7 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 		Fvector& rotation = item->m_measures.m_item_attach[EHudOffsetAxis::eAxisRot];
 		if (ImGui::Button("Reset##IRotation"))
 		{
-			rotation = READ_IF_EXISTS(pSettings, r_fvector3, item->m_sect_name, "item_orientation", pSettings->r_fvector3(item->m_sect_name, "orientation"));
+			rotation = pSettings->read_if_exists<Fvector3>(item->m_sect_name, "item_orientation", pSettings->r_fvector3(item->m_sect_name, "orientation"));
 		}
 
 		if (ImGui::BeginTable("Data##HUDR", 1))
@@ -1336,9 +1336,9 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 	
 			if (ImGui::Button("Reset##TLOffset"))
 			{
-				position.x = READ_IF_EXISTS(pSettings, r_float, lt->Section, "torch_attach_offset_x", 0.0f);
-				position.y = READ_IF_EXISTS(pSettings, r_float, lt->Section, "torch_attach_offset_y", 0.0f);
-				position.z = READ_IF_EXISTS(pSettings, r_float, lt->Section, "torch_attach_offset_z", 0.0f);
+				position.x = pSettings->read_if_exists<float>(lt->Section, "torch_attach_offset_x", 0.0f);
+				position.y = pSettings->read_if_exists<float>(lt->Section, "torch_attach_offset_y", 0.0f);
+				position.z = pSettings->read_if_exists<float>(lt->Section, "torch_attach_offset_z", 0.0f);
 			}
 	
 			if (ImGui::BeginTable("Data##TLOffset", 1))
@@ -1366,11 +1366,11 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 	
 			if (ImGui::Button("Reset##TLOffset"))
 			{
-				position.x = READ_IF_EXISTS(pSettings, r_float, ll->Section, "laserdot_attach_offset_x", 0.0f);
-				position.y = READ_IF_EXISTS(pSettings, r_float, ll->Section, "laserdot_attach_offset_y", 0.0f);
-				position.z = READ_IF_EXISTS(pSettings, r_float, ll->Section, "laserdot_attach_offset_z", 0.0f);
+				position.x = pSettings->read_if_exists<float>(ll->Section, "laserdot_attach_offset_x", 0.0f);
+				position.y = pSettings->read_if_exists<float>(ll->Section, "laserdot_attach_offset_y", 0.0f);
+				position.z = pSettings->read_if_exists<float>(ll->Section, "laserdot_attach_offset_z", 0.0f);
 	
-				position = READ_IF_EXISTS(pSettings, r_fvector3, ll->Section, "laserdot_attach_offset", position);
+				position = pSettings->read_if_exists<Fvector3>(ll->Section, "laserdot_attach_offset", position);
 			}
 	
 			if (ImGui::BeginTable("Data##TLOffset", 1))
@@ -1391,7 +1391,7 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 			Fvector2& angle = ll->LightSpotAngle;
 			if (ImGui::Button("Reset##TLAngle"))
 			{
-				angle = READ_IF_EXISTS(pSettings, r_fvector2, ll->Section, "laser_spot_angle", angle.set(2, 5));
+				angle = pSettings->read_if_exists<Fvector2>(ll->Section, "laser_spot_angle", angle.set(2, 5));
 				angle.mul(M_PI / 180);
 			}
 	

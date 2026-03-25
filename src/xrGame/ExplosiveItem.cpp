@@ -17,7 +17,7 @@ void CExplosiveItem::Load(const char* section)
 	VERIFY(pSettings->line_exist(section, "set_timer_particles"));
 
 	// Added by Axel, to enable optional condition use on any item
-	m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", true));
+	m_flags.set(FUsingCondition, pSettings->read_if_exists<bool>(section, "use_condition", true));
 }
 
 void CExplosiveItem::net_Destroy()

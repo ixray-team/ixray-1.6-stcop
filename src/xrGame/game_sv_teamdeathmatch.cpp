@@ -659,7 +659,7 @@ bool game_sv_TeamDeathmatch::OnTouchItem(CSE_ActorMP *actor, CSE_Abstract *item)
 		DestroyGameItem(item);
 		if (g_sv_dm_bPDAHunt && actor->owner && actor->owner->ps)
 		{
-			Player_AddBonusMoney(actor->owner->ps, READ_IF_EXISTS(pSettings, r_s32, "mp_bonus_money", "pda_taken",0), SKT_PDA);
+			Player_AddBonusMoney(actor->owner->ps, pSettings->read_if_exists<s32>("mp_bonus_money", "pda_taken",0), SKT_PDA);
 		};
 				
 		//-------------------------------

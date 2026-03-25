@@ -46,13 +46,13 @@ void CFlyingMonster::Load(const char* section)
 {
     inherited::Load(section);
     m_flight.Load(section);
-    m_wander = READ_IF_EXISTS(pSettings, r_bool, section, "flight_free_wander", false);
-    m_wander_radius = READ_IF_EXISTS(pSettings, r_float, section, "flight_wander_radius", 40.f);
-    m_wander_height = READ_IF_EXISTS(pSettings, r_float, section, "flight_wander_height", 15.f);
+    m_wander = pSettings->read_if_exists<bool>(section, "flight_free_wander", false);
+    m_wander_radius = pSettings->read_if_exists<float>(section, "flight_wander_radius", 40.f);
+    m_wander_height = pSettings->read_if_exists<float>(section, "flight_wander_height", 15.f);
     clamp(m_wander_radius, 2.f, 200.f);
     clamp(m_wander_height, 1.f, 100.f);
     auto& idle_velocity = move().get_velocity(MonsterMovement::eVelocityParameterIdle);
-    const char* idle = READ_IF_EXISTS(pSettings, r_string, section, "flight_idle_animation", "fly_idle");
+    const char* idle = pSettings->read_if_exists<str_c>(section, "flight_idle_animation", "fly_idle");
     anim().AddAnim(eAnimStandIdle, idle, -1, &idle_velocity, PS_STAND);
     anim().AddAnim(eAnimStandTurnLeft, idle, -1, &idle_velocity, PS_STAND);
     anim().AddAnim(eAnimStandTurnRight, idle, -1, &idle_velocity, PS_STAND);
@@ -100,10 +100,8 @@ bool CFlyingMonster::net_Spawn(CSE_Abstract* data)
             m_wander_origin = Position();
         m_wander_timer = 0.f;
         auto* skeleton = Visual()->dcast_PKinematicsAnimated();
-        m_fly_motion = skeleton->ID_Cycle_Safe(READ_IF_EXISTS(pSettings, r_string,
-            cNameSect().c_str(), "flight_animation", ""));
-        m_idle_motion = skeleton->ID_Cycle_Safe(READ_IF_EXISTS(pSettings, r_string,
-            cNameSect().c_str(), "flight_idle_animation", ""));
+        m_fly_motion = skeleton->ID_Cycle_Safe(pSettings->read_if_exists<str_c>(cNameSect().c_str(), "flight_animation", ""));
+        m_idle_motion = skeleton->ID_Cycle_Safe(pSettings->read_if_exists<str_c>(cNameSect().c_str(), "flight_idle_animation", ""));
         R_ASSERT2(m_fly_motion.valid() && m_idle_motion.valid(), "Flying monster animations are missing");
         play_flight_animation(false);
         restore_command();
