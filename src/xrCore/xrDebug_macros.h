@@ -83,7 +83,7 @@
 		static bool ignore_always = false;\
 		if (!ignore_always){ \
 			string1024 buff; \
-			xr_sprintf(buff, message, __VA_ARGS__); \
+			xr_sprintf(buff, message, ##__VA_ARGS__); \
 			::Debug.fail(_TRE(#expr),buff,DEBUG_INFO,ignore_always);\
 		} \
 		return false;\

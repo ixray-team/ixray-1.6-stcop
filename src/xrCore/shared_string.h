@@ -55,10 +55,10 @@ class XRCORE_API shared_str
 {
 	str_value* p_;
 protected:
-	void _dec() { if (nullptr == p_) return;	p_->dwReference--; 	if (0 == p_->dwReference)	p_ = nullptr; }
+	void _dec() { if (!p_) return;	p_->dwReference--; 	if (0 == p_->dwReference)	p_ = nullptr; }
 public:
-	void _set(str_c rhs) { str_value* v = g_pStringContainer->dock(rhs); if (nullptr != v) v->dwReference++; _dec(); p_ = v; }
-	void _set(shared_str const& rhs) { str_value* v = rhs.p_; if (nullptr != v) v->dwReference++; _dec(); p_ = v; }
+	void _set(str_c rhs) { str_value* v = g_pStringContainer->dock(rhs); if (v) v->dwReference++; _dec(); p_ = v; }
+	void _set(shared_str const& rhs) { str_value* v = rhs.p_; if (v) v->dwReference++; _dec(); p_ = v; }
 
 	const str_value* _get()	const { return p_; }
 public:
@@ -77,7 +77,7 @@ public:
 	str_c				c_str		() const { return p_ ? p_->value : nullptr; }
 
 	// misc func
-	u32					size		() const { if (nullptr == p_) return 0; else return p_->dwLength; }
+	u32					size		() const { if (!p_) return 0; else return p_->dwLength; }
 	void				swap		(shared_str& rhs) { str_value* tmp = p_; p_ = rhs.p_; rhs.p_ = tmp; }
 	bool				equal		(const shared_str& rhs) const { return (p_ == rhs.p_); }
 	shared_str& 		printf		(const char* format, ...);
