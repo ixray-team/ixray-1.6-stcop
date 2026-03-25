@@ -374,7 +374,7 @@ void CUIMainIngameWnd::Init()
 			continue;
 		}
 		// Читаем данные порогов для каждого индикатора
-		shared_str cfgRecord = READ_IF_EXISTS(pSettings, r_string, "main_ingame_indicators_thresholds", *warningStrings[static_cast<int>(j) - 1], "0.5,0.6,0.7,0.8,0.9");
+		shared_str cfgRecord = pSettings->read_if_exists<str_c>("main_ingame_indicators_thresholds", *warningStrings[static_cast<int>(j) - 1], "0.5,0.6,0.7,0.8,0.9");
 		u32 count = _GetItemCount(*cfgRecord);
 
 		char	singleThreshold[8];

@@ -151,15 +151,15 @@ void CVisualMemoryManager::reinit					()
 
 void CVisualMemoryManager::reload				(const char* section)
 {
-//	m_max_object_count			= READ_IF_EXISTS(pSettings,r_s32,section,"DynamicObjectsCount",1);
+//	m_max_object_count			= pSettings->read_if_exists<s32>(section,"DynamicObjectsCount",1);
 
 	if (m_stalker) {
 		m_free.Load		(pSettings->r_string(section,"vision_free_section"),true);
 		m_danger.Load	(pSettings->r_string(section,"vision_danger_section"),true);
 	}
 	else if (m_object) {
-        m_free.Load(READ_IF_EXISTS(pSettings, r_string, section, "vision_free_section", section), !!m_client);
-        m_danger.Load(READ_IF_EXISTS(pSettings, r_string, section, "vision_danger_section", section), !!m_client);
+        m_free.Load(pSettings->read_if_exists<str_c>(section, "vision_free_section", section), !!m_client);
+        m_danger.Load(pSettings->read_if_exists<str_c>(section, "vision_danger_section", section), !!m_client);
 	}
 	else {
 		m_free.Load		(section,!!m_client);

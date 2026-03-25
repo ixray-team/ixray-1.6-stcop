@@ -70,9 +70,9 @@ void CShootingObject::destroy_particles()
 void CShootingObject::Load(const char* section)
 {
 	// время затрачиваемое на выстрел
-	fOneShotTimeSaved = READ_IF_EXISTS(pSettings, r_float, section, "rpm", fOneShotTimeSaved);
+	fOneShotTimeSaved = pSettings->read_if_exists<float>(section, "rpm", fOneShotTimeSaved);
 	VERIFY2(fOneShotTimeSaved > 0.f, make_string<const char*>("Section [%s], line rpm = %f", section, fOneShotTimeSaved));
-	fOneShotTime = 60.f / (fOneShotTimeSaved * READ_IF_EXISTS(pSettings, r_float, section, "rpm_mult", 1.0f));
+	fOneShotTime = 60.f / (fOneShotTimeSaved * pSettings->read_if_exists<float>(section, "rpm_mult", 1.0f));
 
 	LoadFireParams(section);
 	LoadEffects(section);
@@ -92,17 +92,17 @@ void CShootingObject::LoadEffects(const char* Section)
 	LoadLights(Section, fire_mode == eSilencerFire ? "silencer_" : fire_mode == eGlauncherFire ? "grenade_"
 																							   : "");
 
-	m_sShellParticles = READ_IF_EXISTS(pSettings, r_string, Section, "shell_particles", m_sShellParticles);
-	m_sSmokeParticles = READ_IF_EXISTS(pSettings, r_string, Section, "smoke_particles", m_sSmokeParticles);
-	m_sFlameParticles = READ_IF_EXISTS(pSettings, r_string, Section, "flame_particles", m_sFlameParticles);
-	m_sSmokeSilencerParticles = READ_IF_EXISTS(pSettings, r_string, Section, "silencer_smoke_particles", m_sSmokeSilencerParticles);
-	m_sFlameSilencerParticles = READ_IF_EXISTS(pSettings, r_string, Section, "silencer_flame_particles", m_sFlameSilencerParticles);
-	m_sFlameGlauncherParticles = READ_IF_EXISTS(pSettings, r_string, Section, "grenade_flame_particles", m_sFlameGlauncherParticles);
-	m_sSmokeGlauncherParticles = READ_IF_EXISTS(pSettings, r_string, Section, "grenade_smoke_particles", m_sSmokeGlauncherParticles);
+	m_sShellParticles = pSettings->read_if_exists<str_c>(Section, "shell_particles", m_sShellParticles.c_str());
+	m_sSmokeParticles = pSettings->read_if_exists<str_c>(Section, "smoke_particles", m_sSmokeParticles.c_str());
+	m_sFlameParticles = pSettings->read_if_exists<str_c>(Section, "flame_particles", m_sFlameParticles.c_str());
+	m_sSmokeSilencerParticles = pSettings->read_if_exists<str_c>(Section, "silencer_smoke_particles", m_sSmokeSilencerParticles.c_str());
+	m_sFlameSilencerParticles = pSettings->read_if_exists<str_c>(Section, "silencer_flame_particles", m_sFlameSilencerParticles.c_str());
+	m_sFlameGlauncherParticles = pSettings->read_if_exists<str_c>(Section, "grenade_flame_particles", m_sFlameGlauncherParticles.c_str());
+	m_sSmokeGlauncherParticles = pSettings->read_if_exists<str_c>(Section, "grenade_smoke_particles", m_sSmokeGlauncherParticles.c_str());
 
-	vLoadedShellPoint = READ_IF_EXISTS(pSettings, r_fvector3, Section, "shell_point", vLoadedShellPoint);
+	vLoadedShellPoint = pSettings->read_if_exists<Fvector3>(Section, "shell_point", vLoadedShellPoint);
 
-	m_air_resistance_factor = READ_IF_EXISTS(pSettings, r_float, Section, "air_resistance_factor", m_air_resistance_factor);
+	m_air_resistance_factor = pSettings->read_if_exists<float>(Section, "air_resistance_factor", m_air_resistance_factor);
 
 	light_render = ::Render->light_create();
 	if (::Render->get_generation() == IRender_interface::GENERATION_R2)
@@ -161,17 +161,17 @@ void CShootingObject::LoadFireParams( const char* section )
 	}
 
 	// базовая дисперсия оружия
-	fireDispersionBase = deg2rad(READ_IF_EXISTS(pSettings, r_float, section, "fire_dispersion_base", rad2deg(fireDispersionBase))) * READ_IF_EXISTS(pSettings, r_float, section, "fire_dispersion_base_mult", 1.f);
+	fireDispersionBase = deg2rad(pSettings->read_if_exists<float>(section, "fire_dispersion_base", rad2deg(fireDispersionBase))) * pSettings->read_if_exists<float>(section, "fire_dispersion_base_mult", 1.f);
 	// сила выстрела и его мощьность
-	fHitImpulse = READ_IF_EXISTS(pSettings, r_float, section, "hit_impulse", fHitImpulse) * READ_IF_EXISTS(pSettings, r_float, section, "hit_impulse_mult", 1.f);
+	fHitImpulse = pSettings->read_if_exists<float>(section, "hit_impulse", fHitImpulse) * pSettings->read_if_exists<float>(section, "hit_impulse_mult", 1.f);
 	//максимальное расстояние полета пули
-	fireDistance = READ_IF_EXISTS(pSettings, r_float, section, "fire_distance", fireDistance) * READ_IF_EXISTS(pSettings, r_float, section, "fire_distance_mult", 1.f);
+	fireDistance = pSettings->read_if_exists<float>(section, "fire_distance", fireDistance) * pSettings->read_if_exists<float>(section, "fire_distance_mult", 1.f);
 	//начальная скорость пули
-	m_fStartBulletSpeed = READ_IF_EXISTS(pSettings, r_float, section, "bullet_speed", m_fStartBulletSpeed) * READ_IF_EXISTS(pSettings, r_float, section, "bullet_speed_mult", 1.f);
+	m_fStartBulletSpeed = pSettings->read_if_exists<float>(section, "bullet_speed", m_fStartBulletSpeed) * pSettings->read_if_exists<float>(section, "bullet_speed_mult", 1.f);
 
-	m_bUseAimBullet = READ_IF_EXISTS(pSettings, r_bool, section, "use_aim_bullet", m_bUseAimBullet);
+	m_bUseAimBullet = pSettings->read_if_exists<bool>(section, "use_aim_bullet", m_bUseAimBullet);
 	if (m_bUseAimBullet)
-		m_fTimeToAim = READ_IF_EXISTS(pSettings, r_float, section, "time_to_aim", m_fTimeToAim);
+		m_fTimeToAim = pSettings->read_if_exists<float>(section, "time_to_aim", m_fTimeToAim);
 }
 
 void CShootingObject::LoadLights		(const char* section, const char* prefix)
@@ -180,13 +180,13 @@ void CShootingObject::LoadLights		(const char* section, const char* prefix)
 	// light
 	if(m_bLightShotEnabled) 
 	{
-		Fvector clr = READ_IF_EXISTS(pSettings, r_fvector3, section, xr_strconcat(full_name, prefix, "light_color"), Fvector3(light_base_color.r, light_base_color.g, light_base_color.b));
+		Fvector clr = pSettings->read_if_exists<Fvector3>(section, xr_strconcat(full_name, prefix, "light_color"), Fvector3(light_base_color.r, light_base_color.g, light_base_color.b));
 		
 		light_base_color.set(clr.x,clr.y,clr.z,1);
-		light_base_range = READ_IF_EXISTS(pSettings, r_float, section, xr_strconcat(full_name, prefix, "light_range"), light_base_range);
-		light_var_color = READ_IF_EXISTS(pSettings, r_float, section, xr_strconcat(full_name, prefix, "light_var_color"), light_var_color);
-		light_var_range = READ_IF_EXISTS(pSettings, r_float, section, xr_strconcat(full_name, prefix, "light_var_range"), light_var_range);
-		light_lifetime = READ_IF_EXISTS(pSettings, r_float, section, xr_strconcat(full_name, prefix, "light_time"), light_lifetime);
+		light_base_range = pSettings->read_if_exists<float>(section, xr_strconcat(full_name, prefix, "light_range"), light_base_range);
+		light_var_color = pSettings->read_if_exists<float>(section, xr_strconcat(full_name, prefix, "light_var_color"), light_var_color);
+		light_var_range = pSettings->read_if_exists<float>(section, xr_strconcat(full_name, prefix, "light_var_range"), light_var_range);
+		light_lifetime = pSettings->read_if_exists<float>(section, xr_strconcat(full_name, prefix, "light_time"), light_lifetime);
 		
 		light_time			= -1.f;
 

@@ -440,8 +440,8 @@ namespace
 			{
 				return;
 			}
-			auto w = READ_IF_EXISTS(pSettings, r_u32, safe_c_str(m_target_section), "inv_grid_width", 1);
-			auto h = READ_IF_EXISTS(pSettings, r_u32, safe_c_str(m_target_section), "inv_grid_height", 1);
+			auto w = pSettings->read_if_exists<u32>(safe_c_str(m_target_section), "inv_grid_width", 1);
+			auto h = pSettings->read_if_exists<u32>(safe_c_str(m_target_section), "inv_grid_height", 1);
 			GridSize.set((int)w, (int)h);
 			if (!ApplyGridSize())
 			{

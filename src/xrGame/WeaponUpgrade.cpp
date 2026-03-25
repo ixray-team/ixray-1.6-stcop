@@ -719,7 +719,7 @@ bool CWeapon::install_upgrade_scope_zoom(const char* section, bool test)
 		}
 		else if (last.steps == 0 && m_lens_night_brightness.steps > 0)
 		{
-			m_lens_night_brightness.cur_step = READ_IF_EXISTS(pSettings, r_u32, section, "default_brightness_step", m_lens_night_brightness.steps);
+			m_lens_night_brightness.cur_step = pSettings->read_if_exists<u32>(section, "default_brightness_step", m_lens_night_brightness.steps);
 		}
 
 		SetNightBrightness(m_lens_night_brightness.cur_step, false);

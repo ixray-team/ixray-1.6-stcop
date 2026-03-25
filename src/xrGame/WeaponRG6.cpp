@@ -42,7 +42,7 @@ void CWeaponRG6::Load(const char* section)
 	inheritedRL::Load(section);
 	inheritedSG::Load(section);
 
-	m_bAlternateReloadScheme = READ_IF_EXISTS(pSettings, r_bool, section, "alternate_reload_scheme", false);
+	m_bAlternateReloadScheme = pSettings->read_if_exists<bool>(section, "alternate_reload_scheme", false);
 }
 
 void CWeaponRG6::FireTrace(const Fvector& P, const Fvector& D)

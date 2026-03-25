@@ -609,26 +609,26 @@ void hud_item_measures::hud_hands_positions::Load(const shared_str& section, boo
 	string128 val_name = {};
 
 	xr_strconcat(val_name, "hands_position", _prefix);
-	hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eDefault] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eDefault] : zero_vel);
+	hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eDefault] = pSettings->read_if_exists<Fvector3>(sSection, val_name, default_is_self ? hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eDefault] : zero_vel);
 	xr_strconcat(val_name, "hands_orientation", _prefix);
-	hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eDefault] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eDefault] : zero_vel);
+	hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eDefault] = pSettings->read_if_exists<Fvector3>(sSection, val_name, default_is_self ? hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eDefault] : zero_vel);
 	
 	LoadAimParams(section, is_16x9, default_is_self);
 
 	xr_strconcat(val_name, "alter_aim_hud_offset_pos", _prefix);
-	hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eAimAlt] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eAimAlt] : zero_vel);
+	hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eAimAlt] = pSettings->read_if_exists<Fvector3>(sSection, val_name, default_is_self ? hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eAimAlt] : zero_vel);
 	xr_strconcat(val_name, "alter_aim_hud_offset_rot", _prefix);
-	hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAimAlt] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAimAlt] : zero_vel);
+	hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAimAlt] = pSettings->read_if_exists<Fvector3>(sSection, val_name, default_is_self ? hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAimAlt] : zero_vel);
 
 	xr_strconcat(val_name, "safemode_hud_offset_pos", _prefix);
-	hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eSafemode] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eSafemode] : zero_vel);
+	hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eSafemode] = pSettings->read_if_exists<Fvector3>(sSection, val_name, default_is_self ? hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eSafemode] : zero_vel);
 	xr_strconcat(val_name, "safemode_hud_offset_rot", _prefix);
-	hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eSafemode] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eSafemode] : zero_vel);
+	hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eSafemode] = pSettings->read_if_exists<Fvector3>(sSection, val_name, default_is_self ? hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eSafemode] : zero_vel);
 
 	xr_strconcat(val_name, "collision_hud_offset_pos", _prefix);
-	hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eCollision] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eCollision] : zero_vel);
+	hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eCollision] = pSettings->read_if_exists<Fvector3>(sSection, val_name, default_is_self ? hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eCollision] : zero_vel);
 	xr_strconcat(val_name, "collision_hud_offset_rot", _prefix);
-	hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eCollision] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eCollision] : zero_vel);
+	hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eCollision] = pSettings->read_if_exists<Fvector3>(sSection, val_name, default_is_self ? hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eCollision] : zero_vel);
 
 	memcpy(hands_offsets_tune, hands_offsets, sizeof(hands_offsets_tune));
 
@@ -645,45 +645,45 @@ void hud_item_measures::hud_hands_positions::LoadAimParams(const shared_str& sec
 	xr_strconcat(val_name, "aim_hud_offset_pos", widescreenPrefix);
 	if (pSettings->line_exist(section, val_name))
 	{
-		hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eAim] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eAim] : zero_vel);
+		hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eAim] = pSettings->read_if_exists<Fvector3>(sSection, val_name, default_is_self ? hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eAim] : zero_vel);
 	}
 	else
 	{
-		hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eAim] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, "zoom_offset", default_is_self ? hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eAim] : zero_vel);
+		hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eAim] = pSettings->read_if_exists<Fvector3>(sSection, "zoom_offset", default_is_self ? hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eAim] : zero_vel);
 	}
 
 	xr_strconcat(val_name, "aim_hud_offset_rot", widescreenPrefix);
 	if (pSettings->line_exist(section, val_name))
 	{
-		hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAim] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAim] : zero_vel);
+		hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAim] = pSettings->read_if_exists<Fvector3>(sSection, val_name, default_is_self ? hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAim] : zero_vel);
 	}
 	else
 	{
-		hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAim].x = READ_IF_EXISTS(pSettings, r_float, sSection, "zoom_rotate_x", default_is_self ? hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAim].x : 0.0f);
-		hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAim].y = READ_IF_EXISTS(pSettings, r_float, sSection, "zoom_rotate_y", default_is_self ? hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAim].y : 0.0f);
-		hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAim].z = READ_IF_EXISTS(pSettings, r_float, sSection, "zoom_rotate_z", default_is_self ? hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAim].z : 0.0f);
+		hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAim].x = pSettings->read_if_exists<float>(sSection, "zoom_rotate_x", default_is_self ? hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAim].x : 0.0f);
+		hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAim].y = pSettings->read_if_exists<float>(sSection, "zoom_rotate_y", default_is_self ? hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAim].y : 0.0f);
+		hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAim].z = pSettings->read_if_exists<float>(sSection, "zoom_rotate_z", default_is_self ? hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAim].z : 0.0f);
 	}
 
 	xr_strconcat(val_name, "gl_hud_offset_pos", widescreenPrefix);
 	if (pSettings->line_exist(section, val_name))
 	{
-		hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eAimGL] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eAimGL] : zero_vel);
+		hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eAimGL] = pSettings->read_if_exists<Fvector3>(sSection, val_name, default_is_self ? hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eAimGL] : zero_vel);
 	}
 	else
 	{
-		hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eAimGL] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, "grenade_zoom_offset", default_is_self ? hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eAimGL] : zero_vel);
+		hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eAimGL] = pSettings->read_if_exists<Fvector3>(sSection, "grenade_zoom_offset", default_is_self ? hands_offsets[EHudOffsetAxis::eAxisPos][EHudOffsetType::eAimGL] : zero_vel);
 	}
 
 	xr_strconcat(val_name, "gl_hud_offset_rot", widescreenPrefix);
 	if (pSettings->line_exist(section, val_name))
 	{
-		hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAimGL] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAimGL] : zero_vel);
+		hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAimGL] = pSettings->read_if_exists<Fvector3>(sSection, val_name, default_is_self ? hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAimGL] : zero_vel);
 	}
 	else
 	{
-		hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAimGL].x = READ_IF_EXISTS(pSettings, r_float, sSection, "grenade_zoom_rotate_x", default_is_self ? hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAimGL].x : 0.0f);
-		hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAimGL].y = READ_IF_EXISTS(pSettings, r_float, sSection, "grenade_zoom_rotate_y", default_is_self ? hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAimGL].y : 0.0f);
-		hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAimGL].z = READ_IF_EXISTS(pSettings, r_float, sSection, "grenade_zoom_rotate_z", default_is_self ? hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAimGL].z : 0.0f);
+		hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAimGL].x = pSettings->read_if_exists<float>(sSection, "grenade_zoom_rotate_x", default_is_self ? hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAimGL].x : 0.0f);
+		hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAimGL].y = pSettings->read_if_exists<float>(sSection, "grenade_zoom_rotate_y", default_is_self ? hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAimGL].y : 0.0f);
+		hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAimGL].z = pSettings->read_if_exists<float>(sSection, "grenade_zoom_rotate_z", default_is_self ? hands_offsets[EHudOffsetAxis::eAxisRot][EHudOffsetType::eAimGL].z : 0.0f);
 	}
 }
 
@@ -716,13 +716,13 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K, bool c
 {
 	if (combined_model)
 	{
-		m_item_attach[EHudOffsetAxis::eAxisPos] = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "position", zero_vel);
-		m_item_attach[EHudOffsetAxis::eAxisRot] = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "orientation", zero_vel);
+		m_item_attach[EHudOffsetAxis::eAxisPos] = pSettings->read_if_exists<Fvector3>(sect_name, "position", zero_vel);
+		m_item_attach[EHudOffsetAxis::eAxisRot] = pSettings->read_if_exists<Fvector3>(sect_name, "orientation", zero_vel);
 	}
 	else
 	{
-		m_item_attach[EHudOffsetAxis::eAxisPos] = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "item_position", zero_vel);
-		m_item_attach[EHudOffsetAxis::eAxisRot] = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "item_orientation", zero_vel);
+		m_item_attach[EHudOffsetAxis::eAxisPos] = pSettings->read_if_exists<Fvector3>(sect_name, "item_position", zero_vel);
+		m_item_attach[EHudOffsetAxis::eAxisRot] = pSettings->read_if_exists<Fvector3>(sect_name, "item_orientation", zero_vel);
 	}
 
 	shared_str bone_name;
@@ -745,12 +745,12 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K, bool c
 		m_fire_bone2 = K->LL_BoneID(bone_name);
 	}
 	// St4lker0k765: got to move this param from fire_bone2 because SoC don't have it in configs
-	m_fire_point2_offset = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "fire_point2", zero_vel);
+	m_fire_point2_offset = pSettings->read_if_exists<Fvector3>(sect_name, "fire_point2", zero_vel);
 
 	m_prop_flags.set(e_shell_point, pSettings->line_exist(sect_name, "shell_point"));
 	if (m_prop_flags.test(e_shell_point))
 	{
-		bone_name = READ_IF_EXISTS(pSettings, r_string, sect_name, "shell_bone", "");
+		bone_name = pSettings->read_if_exists<str_c>(sect_name, "shell_bone", "");
 		m_shell_bone = bone_name.size() ? K->LL_BoneID(bone_name) : u16(-1);
 		m_shell_point_offset = pSettings->r_fvector3(sect_name, "shell_point");
 	}
@@ -759,10 +759,10 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K, bool c
 		m_shell_point_offset.set(0, 0, 0);
 	}
 
-	m_inertion_params.m_tendto_speed = READ_IF_EXISTS(pSettings, r_float, sect_name, "inertion_tendto_speed", 1.0f);
-	m_inertion_params.m_tendto_speed_aim = READ_IF_EXISTS(pSettings, r_float, sect_name, "inertion_tendto_aim_speed", 1.0f);
-	m_inertion_params.m_tendto_ret_speed = READ_IF_EXISTS(pSettings, r_float, sect_name, "inertion_tendto_ret_speed", 5.0f);
-	m_inertion_params.m_tendto_ret_speed_aim = READ_IF_EXISTS(pSettings, r_float, sect_name, "inertion_tendto_ret_aim_speed", 5.0f);
+	m_inertion_params.m_tendto_speed = pSettings->read_if_exists<float>(sect_name, "inertion_tendto_speed", 1.0f);
+	m_inertion_params.m_tendto_speed_aim = pSettings->read_if_exists<float>(sect_name, "inertion_tendto_aim_speed", 1.0f);
+	m_inertion_params.m_tendto_ret_speed = pSettings->read_if_exists<float>(sect_name, "inertion_tendto_ret_speed", 5.0f);
+	m_inertion_params.m_tendto_ret_speed_aim = pSettings->read_if_exists<float>(sect_name, "inertion_tendto_ret_aim_speed", 5.0f);
 
 	bool is_16x9 = UI().is_widescreen() && !combined_model;
 
@@ -772,14 +772,14 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K, bool c
 
 	m_weapon_inertion.Load(sect_name, is_16x9);
 
-	m_collision_params.obb_pos = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "collision_box_pos", zero_vel);
-	m_collision_params.obb_scale = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "collision_box_scale", Fvector({1.0f, 1.0f, 1.0f}));
+	m_collision_params.obb_pos = pSettings->read_if_exists<Fvector3>(sect_name, "collision_box_pos", zero_vel);
+	m_collision_params.obb_scale = pSettings->read_if_exists<Fvector3>(sect_name, "collision_box_scale", Fvector({1.0f, 1.0f, 1.0f}));
 
-	m_collision_params.damping = READ_IF_EXISTS(pSettings, r_float, sect_name, "collision_damping", 40.0f);
-	m_collision_params.stifness = READ_IF_EXISTS(pSettings, r_float, sect_name, "collision_stifness", 400.0f);
+	m_collision_params.damping = pSettings->read_if_exists<float>(sect_name, "collision_damping", 40.0f);
+	m_collision_params.stifness = pSettings->read_if_exists<float>(sect_name, "collision_stifness", 400.0f);
 
-	m_collision_params.dist_min = READ_IF_EXISTS(pSettings, r_float, sect_name, "collision_dist_min", 0.5f);
-	m_collision_params.dist_max = READ_IF_EXISTS(pSettings, r_float, sect_name, "collision_dist_max", 0.8f);
+	m_collision_params.dist_min = pSettings->read_if_exists<float>(sect_name, "collision_dist_min", 0.5f);
+	m_collision_params.dist_max = pSettings->read_if_exists<float>(sect_name, "collision_dist_max", 0.8f);
 
 	m_prop_flags.set(e_16x9_mode_now,is_16x9);
 }
@@ -832,38 +832,38 @@ void weapon_inertion::Load(const shared_str& section, bool is_16x9)
 	move_landing_offset.Load(section, "hud_move_landing_offset", is_16x9);
 	move_landing2_offset.Load(section, "hud_move_landing2_offset", is_16x9);
 
-	move_rlookout_offset_speed_factor = READ_IF_EXISTS(pSettings, r_float, section, "hud_move_rlookout_offset_speed_factor", 1.0f);
-	move_llookout_offset_speed_factor = READ_IF_EXISTS(pSettings, r_float, section, "hud_move_llookout_offset_speed_factor", 1.0f);
+	move_rlookout_offset_speed_factor = pSettings->read_if_exists<float>(section, "hud_move_rlookout_offset_speed_factor", 1.0f);
+	move_llookout_offset_speed_factor = pSettings->read_if_exists<float>(section, "hud_move_llookout_offset_speed_factor", 1.0f);
 
-	aim_move_slow_crouch_factor = READ_IF_EXISTS(pSettings, r_float, section, "hud_aim_move_slow_crouch_factor", 1.0f);
-	aim_move_crouch_factor = READ_IF_EXISTS(pSettings, r_float, section, "hud_aim_move_crouch_factor", 1.0f);
-	aim_move_slow_factor = READ_IF_EXISTS(pSettings, r_float, section, "hud_aim_move_slow_factor", 1.0f);
+	aim_move_slow_crouch_factor = pSettings->read_if_exists<float>(section, "hud_aim_move_slow_crouch_factor", 1.0f);
+	aim_move_crouch_factor = pSettings->read_if_exists<float>(section, "hud_aim_move_crouch_factor", 1.0f);
+	aim_move_slow_factor = pSettings->read_if_exists<float>(section, "hud_aim_move_slow_factor", 1.0f);
 
-	move_slow_crouch_factor = READ_IF_EXISTS(pSettings, r_float, section, "hud_move_slow_crouch_factor", 1.0f);
-	move_crouch_factor = READ_IF_EXISTS(pSettings, r_float, section, "hud_move_crouch_factor", 1.0f);
-	move_slow_factor = READ_IF_EXISTS(pSettings, r_float, section, "hud_move_slow_factor", 1.0f);
+	move_slow_crouch_factor = pSettings->read_if_exists<float>(section, "hud_move_slow_crouch_factor", 1.0f);
+	move_crouch_factor = pSettings->read_if_exists<float>(section, "hud_move_crouch_factor", 1.0f);
+	move_slow_factor = pSettings->read_if_exists<float>(section, "hud_move_slow_factor", 1.0f);
 
-	no_other_hud_moving_while_suicide = READ_IF_EXISTS(pSettings, r_bool, section, "no_other_hud_moving_while_suicide", false);
+	no_other_hud_moving_while_suicide = pSettings->read_if_exists<bool>(section, "no_other_hud_moving_while_suicide", false);
 
-	to_crouch_time = floor(READ_IF_EXISTS(pSettings, r_float, section, "to_crouch_time", 0.0f) * 1000.f);
-	from_crouch_time = floor(READ_IF_EXISTS(pSettings, r_float, section, "from_crouch_time", 0.0f) * 1000.f);
-	to_slow_crouch_time = floor(READ_IF_EXISTS(pSettings, r_float, section, "to_slow_crouch_time", 0.0f) * 1000.f);
-	from_slow_crouch_time = floor(READ_IF_EXISTS(pSettings, r_float, section, "from_slow_crouch_time", 0.0f) * 1000.f);
+	to_crouch_time = floor(pSettings->read_if_exists<float>(section, "to_crouch_time", 0.0f) * 1000.f);
+	from_crouch_time = floor(pSettings->read_if_exists<float>(section, "from_crouch_time", 0.0f) * 1000.f);
+	to_slow_crouch_time = floor(pSettings->read_if_exists<float>(section, "to_slow_crouch_time", 0.0f) * 1000.f);
+	from_slow_crouch_time = floor(pSettings->read_if_exists<float>(section, "from_slow_crouch_time", 0.0f) * 1000.f);
 
-	to_rlookout_time = floor(READ_IF_EXISTS(pSettings, r_float, section, "to_rlookout_time", 0.0f) * 1000.f);
-	from_rlookout_time = floor(READ_IF_EXISTS(pSettings, r_float, section, "from_rlookout_time", 0.0f) * 1000.f);
-	to_llookout_time = floor(READ_IF_EXISTS(pSettings, r_float, section, "to_llookout_time", 0.0f) * 1000.f);
-	from_llookout_time = floor(READ_IF_EXISTS(pSettings, r_float, section, "from_llookout_time", 0.0f) * 1000.f);
+	to_rlookout_time = floor(pSettings->read_if_exists<float>(section, "to_rlookout_time", 0.0f) * 1000.f);
+	from_rlookout_time = floor(pSettings->read_if_exists<float>(section, "from_rlookout_time", 0.0f) * 1000.f);
+	to_llookout_time = floor(pSettings->read_if_exists<float>(section, "to_llookout_time", 0.0f) * 1000.f);
+	from_llookout_time = floor(pSettings->read_if_exists<float>(section, "from_llookout_time", 0.0f) * 1000.f);
 
-	move_weaponhide_factor = READ_IF_EXISTS(pSettings, r_float, section, "hud_move_weaponhide_factor", 1.0f);
-	move_unzoom_factor = READ_IF_EXISTS(pSettings, r_float, section, "hud_move_unzoom_factor", 1.0f);
-	move_stabilize_factor = READ_IF_EXISTS(pSettings, r_float, section, "hud_move_stabilize_factor", 2.0f);
+	move_weaponhide_factor = pSettings->read_if_exists<float>(section, "hud_move_weaponhide_factor", 1.0f);
+	move_unzoom_factor = pSettings->read_if_exists<float>(section, "hud_move_unzoom_factor", 1.0f);
+	move_stabilize_factor = pSettings->read_if_exists<float>(section, "hud_move_stabilize_factor", 2.0f);
 
-	move_speed_pos = READ_IF_EXISTS(pSettings, r_float, section, "hud_move_speed_pos", 0.1f);
-	move_speed_rot = READ_IF_EXISTS(pSettings, r_float, section, "hud_move_speed_rot", 0.4f);
+	move_speed_pos = pSettings->read_if_exists<float>(section, "hud_move_speed_pos", 0.1f);
+	move_speed_rot = pSettings->read_if_exists<float>(section, "hud_move_speed_rot", 0.4f);
 
-	move_suicide_speed_pos = READ_IF_EXISTS(pSettings, r_float, section, "suicide_speed_pos", 0.2f);
-	move_suicide_speed_rot = READ_IF_EXISTS(pSettings, r_float, section, "suicide_speed_rot", 0.002f);
+	move_suicide_speed_pos = pSettings->read_if_exists<float>(section, "suicide_speed_pos", 0.2f);
+	move_suicide_speed_rot = pSettings->read_if_exists<float>(section, "suicide_speed_rot", 0.002f);
 }
 
 void weapon_inertion::base_params::Load(const shared_str& section, const shared_str& str, bool is_16x9)
@@ -871,10 +871,10 @@ void weapon_inertion::base_params::Load(const shared_str& section, const shared_
 	shared_str name;
 
 	name.printf("%s_pos%s", *str, is_16x9 ? "_16x9" : "");
-	position = READ_IF_EXISTS(pSettings, r_fvector3, section, *name, zero_vel);
+	position = pSettings->read_if_exists<Fvector3>(section, *name, zero_vel);
 
 	name.printf("%s_rot%s", *str, is_16x9 ? "_16x9" : "");
-	rotation = READ_IF_EXISTS(pSettings, r_fvector3, section, *name, zero_vel);
+	rotation = pSettings->read_if_exists<Fvector3>(section, *name, zero_vel);
 }
 
 attachable_hud_item::~attachable_hud_item()
@@ -896,7 +896,7 @@ void attachable_hud_item::load(const shared_str& sect_name)
 	{
 		animated->LL_SetInertialization(CCameraRig::HudInertialization());
 
-		const char* exclude = READ_IF_EXISTS(pSettings, r_string, sect_name, "inertialization_exclude_bones", READ_IF_EXISTS(pSettings, r_string, "camera_rig", "hud_inertialization_exclude_bones", nullptr));
+		const char* exclude = pSettings->read_if_exists<str_c>(sect_name, "inertialization_exclude_bones", pSettings->read_if_exists<str_c>("camera_rig", "hud_inertialization_exclude_bones", nullptr));
 		if (exclude != nullptr)
 		{
 			string128 bone_name;
@@ -911,36 +911,36 @@ void attachable_hud_item::load(const shared_str& sect_name)
 		}
 	}
 
-	m_attach_place_idx = READ_IF_EXISTS(pSettings, r_u16, sect_name, "attach_place_idx", 0);
+	m_attach_place_idx = pSettings->read_if_exists<u16>(sect_name, "attach_place_idx", 0);
 
 	if (pSettings->line_exist(sect_name, "aim_bone_name"))
 		m_aim_bone_id = m_model->LL_BoneID(pSettings->r_string(sect_name, "aim_bone_name"));
 
-	m_aim_reload_motion = READ_IF_EXISTS(pSettings, r_float, sect_name, "aim_reload_motion", READ_IF_EXISTS(pSettings, r_float, "camera_rig", "aim_reload_motion", 1.f));
-	m_hud_mass = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "hud_mass", 1.f), 0.1f);
-	m_shot_variation = READ_IF_EXISTS(pSettings, r_float, sect_name, "shot_anim_variation", READ_IF_EXISTS(pSettings, r_float, "camera_rig", "shot_anim_variation", 0.f));
-	m_shot_twist = READ_IF_EXISTS(pSettings, r_float, sect_name, "shot_anim_twist", READ_IF_EXISTS(pSettings, r_float, "camera_rig", "shot_anim_twist", 0.f));
-	m_aim_shot_motion = READ_IF_EXISTS(pSettings, r_float, sect_name, "aim_shot_motion", READ_IF_EXISTS(pSettings, r_float, "camera_rig", "aim_shot_motion", 1.f));
-	m_idle_fade = READ_IF_EXISTS(pSettings, r_float, sect_name, "idle_fade", READ_IF_EXISTS(pSettings, r_float, "camera_rig", "idle_fade", 0.f));
-	m_inertia_damping = READ_IF_EXISTS(pSettings, r_float, sect_name, "inertia_damping", READ_IF_EXISTS(pSettings, r_float, "camera_rig", "inertia_damping", 0.55f));
+	m_aim_reload_motion = pSettings->read_if_exists<float>(sect_name, "aim_reload_motion", pSettings->read_if_exists<float>("camera_rig", "aim_reload_motion", 1.f));
+	m_hud_mass = std::max(pSettings->read_if_exists<float>(sect_name, "hud_mass", 1.f), 0.1f);
+	m_shot_variation = pSettings->read_if_exists<float>(sect_name, "shot_anim_variation", pSettings->read_if_exists<float>("camera_rig", "shot_anim_variation", 0.f));
+	m_shot_twist = pSettings->read_if_exists<float>(sect_name, "shot_anim_twist", pSettings->read_if_exists<float>("camera_rig", "shot_anim_twist", 0.f));
+	m_aim_shot_motion = pSettings->read_if_exists<float>(sect_name, "aim_shot_motion", pSettings->read_if_exists<float>("camera_rig", "aim_shot_motion", 1.f));
+	m_idle_fade = pSettings->read_if_exists<float>(sect_name, "idle_fade", pSettings->read_if_exists<float>("camera_rig", "idle_fade", 0.f));
+	m_inertia_damping = pSettings->read_if_exists<float>(sect_name, "inertia_damping", pSettings->read_if_exists<float>("camera_rig", "inertia_damping", 0.55f));
 
-	const char* left_ik_bone = READ_IF_EXISTS(pSettings, r_string, sect_name, "left_hand_ik_bone", READ_IF_EXISTS(pSettings, r_string, "camera_rig", "left_hand_ik_bone", nullptr));
+	const char* left_ik_bone = pSettings->read_if_exists<str_c>(sect_name, "left_hand_ik_bone", pSettings->read_if_exists<str_c>("camera_rig", "left_hand_ik_bone", nullptr));
 	if (!m_model_combined && left_ik_bone != nullptr)
 	{
 		m_left_ik_bone = m_model->LL_BoneID(left_ik_bone);
 		m_left_ik_fixed = pSettings->line_exist(sect_name, "left_hand_ik_pos") || pSettings->line_exist(sect_name, "left_hand_ik_rot");
-		Fvector ypr = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "left_hand_ik_rot", zero_vel);
+		Fvector ypr = pSettings->read_if_exists<Fvector3>(sect_name, "left_hand_ik_rot", zero_vel);
 		ypr.mul(PI / 180.f);
 		m_left_ik_offset.setHPB(ypr.x, ypr.y, ypr.z);
-		m_left_ik_offset.c = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "left_hand_ik_pos", zero_vel);
+		m_left_ik_offset.c = pSettings->read_if_exists<Fvector3>(sect_name, "left_hand_ik_pos", zero_vel);
 
-		m_left_grip_blend = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "left_hand_grip_blend", READ_IF_EXISTS(pSettings, r_float, "camera_rig", "left_hand_grip_blend", 0.f)), 0.f);
-		m_left_grip_target = READ_IF_EXISTS(pSettings, r_string, sect_name, "left_hand_grip_target", READ_IF_EXISTS(pSettings, r_string, "camera_rig", "left_hand_grip_target", "anm_idle"));
+		m_left_grip_blend = std::max(pSettings->read_if_exists<float>(sect_name, "left_hand_grip_blend", pSettings->read_if_exists<float>("camera_rig", "left_hand_grip_blend", 0.f)), 0.f);
+		m_left_grip_target = pSettings->read_if_exists<str_c>(sect_name, "left_hand_grip_target", pSettings->read_if_exists<str_c>("camera_rig", "left_hand_grip_target", "anm_idle"));
 
 		const auto read_motions = [&](const char* key, xr_vector<shared_str>& list)
 		{
 			list.clear();
-			if (const char* motions = READ_IF_EXISTS(pSettings, r_string, sect_name, key, nullptr))
+			if (const char* motions = pSettings->read_if_exists<str_c>(sect_name, key, nullptr))
 			{
 				string128 motion;
 				for (int i = 0, count = _GetItemCount(motions); i < count; ++i)
@@ -1185,7 +1185,7 @@ void attachable_hud_item::AddOffsets(weapon_inertion::base_params& base, Fvector
 
 void attachable_hud_item::AddSuicideOffset(weapon_inertion& inertion_params, const shared_str& section, Fvector& pos, Fvector& rot)
 {
-	if (READ_IF_EXISTS(pSettings, r_bool, section, "prohibit_suicide", false))
+	if (pSettings->read_if_exists<bool>(section, "prohibit_suicide", false))
 		return;
 
 	if (inertion_params.no_other_hud_moving_while_suicide)
@@ -1777,7 +1777,7 @@ void player_hud::load(const shared_str& player_hud_sect)
 
 	m_sect_name = player_hud_sect;
 
-	const shared_str& model_name = READ_IF_EXISTS(pSettings, r_string, player_hud_sect, "visual", nullptr);
+	const shared_str& model_name = pSettings->read_if_exists<str_c>(player_hud_sect, "visual", nullptr);
 	
 	if (model_name.size())
 	{
@@ -1831,9 +1831,9 @@ void player_hud::load(const shared_str& player_hud_sect)
 		m_watches_pos = zero_vel;
 		m_watches_rot = zero_vel;
 		m_watches_scale = 1.0f;
-		pSettings->read_if_exists<Fvector>(m_watches_pos, player_hud_sect, "watches_pos");
-		pSettings->read_if_exists<Fvector>(m_watches_rot, player_hud_sect, "watches_rot");
-		pSettings->read_if_exists<float>(m_watches_scale, player_hud_sect, "watches_scale");
+		pSettings->r_fvector3_nullable(player_hud_sect, "watches_pos", m_watches_pos);
+		pSettings->r_fvector3_nullable(player_hud_sect, "watches_rot", m_watches_rot);
+		pSettings->r_float_nullable(player_hud_sect, "watches_scale", m_watches_scale);
 
 		if (m_model)
 		{
@@ -1859,7 +1859,7 @@ void player_hud::load(const shared_str& player_hud_sect)
 		const auto load_chain = [&](const char* key, const char* def, u16* chain)
 		{
 			string128 bone;
-			const char* names = READ_IF_EXISTS(pSettings, r_string, player_hud_sect, key, READ_IF_EXISTS(pSettings, r_string, "camera_rig", key, def));
+			const char* names = pSettings->read_if_exists<str_c>(player_hud_sect, key, pSettings->read_if_exists<str_c>("camera_rig", key, def));
 			for (int i = 0; i < 3; i++)
 			{
 				chain[i] = _GetItemCount(names) == 3 ? m_model->dcast_PKinematics()->LL_BoneID(_GetItem(names, i, bone)) : BI_NONE;
@@ -1903,8 +1903,8 @@ void player_hud::load(const shared_str& player_hud_sect)
 	}
 
 	if(Actor()) {
-		float m_fLegs_shift = READ_IF_EXISTS(pSettings, r_float, "actor_hud", "legs_shift_delta", -0.55f);
-		Actor()->m_fLegs_shift = READ_IF_EXISTS(pSettings, r_float, player_hud_sect, "legs_shift_delta", m_fLegs_shift);
+		float m_fLegs_shift = pSettings->read_if_exists<float>("actor_hud", "legs_shift_delta", -0.55f);
+		Actor()->m_fLegs_shift = pSettings->read_if_exists<float>(player_hud_sect, "legs_shift_delta", m_fLegs_shift);
 	}
 
 	if (m_watches_model)
@@ -3823,7 +3823,7 @@ void player_hud::animator_fx_play(const shared_str& anim_name, u16 place_idx, u1
 
 void player_hud::load_default()
 {
-	static auto actorHudDefault = READ_IF_EXISTS(pSettings, r_string, 
+	static auto actorHudDefault = pSettings->read_if_exists<str_c>(
 		"actor", "player_hud_default", "actor_hud");
 	load(actorHudDefault);
 }
@@ -3867,8 +3867,8 @@ animator_item::animator_item(CHudAnimatorBase* animator, player_hud* pParent, co
 		else
 			m_fire_point_offset.set(0, 0, 0);
 
-		m_item_attach[EHudOffsetAxis::eAxisPos] = READ_IF_EXISTS(pSettings, r_fvector3, section.c_str(), "item_position", zero_vel);
-		m_item_attach[EHudOffsetAxis::eAxisRot] = READ_IF_EXISTS(pSettings, r_fvector3, section.c_str(), "item_orientation", zero_vel);
+		m_item_attach[EHudOffsetAxis::eAxisPos] = pSettings->read_if_exists<Fvector3>(section.c_str(), "item_position", zero_vel);
+		m_item_attach[EHudOffsetAxis::eAxisRot] = pSettings->read_if_exists<Fvector3>(section.c_str(), "item_orientation", zero_vel);
 	}
 
 	m_hands_positions.Load(section, UI().is_widescreen());

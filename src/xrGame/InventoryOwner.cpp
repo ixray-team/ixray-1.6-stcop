@@ -70,8 +70,8 @@ void CInventoryOwner::Load(const char* section)
 		m_inventory->SetMaxWeight(pSettings->r_float(section, "inv_max_weight"));
 	}
 
-	m_isFocusingOnNpc = READ_IF_EXISTS(pSettings, r_bool, section, "focus_on_npc", true);
-	m_need_osoznanie_mode = READ_IF_EXISTS(pSettings, r_bool, section, "need_osoznanie_mode", false);
+	m_isFocusingOnNpc = pSettings->read_if_exists<bool>(section, "focus_on_npc", true);
+	m_need_osoznanie_mode = pSettings->read_if_exists<bool>(section, "need_osoznanie_mode", false);
 }
 
 void CInventoryOwner::reload(const char* section)
@@ -157,7 +157,7 @@ bool CInventoryOwner::net_Spawn(CSE_Abstract* DC)
 		m_game_name = (E->name_replace()[0]) ? E->name_replace() : *pThis->cName();
 	}
 
-	CharacterInfo().m_SpecificCharacter.updateMechanic(READ_IF_EXISTS(pSettings, r_bool, cast_game_object()->cNameSect(), "mechanic", SpecificCharacter().upgrade_mechanic()));
+	CharacterInfo().m_SpecificCharacter.updateMechanic(pSettings->read_if_exists<bool>(cast_game_object()->cNameSect(), "mechanic", SpecificCharacter().upgrade_mechanic()));
 
 	if (!pThis->Local())
 	{
@@ -668,7 +668,7 @@ const char* CInventoryOwner::trade_section() const
 {
 	const CGameObject* game_object = smart_cast<const CGameObject*>(this);
 	VERIFY(game_object);
-	return READ_IF_EXISTS(pSettings, r_string, game_object->cNameSect(), "trade_section", "trade");
+	return pSettings->read_if_exists<str_c>(game_object->cNameSect(), "trade_section", "trade");
 }
 
 float CInventoryOwner::deficit_factor(const shared_str& section) const

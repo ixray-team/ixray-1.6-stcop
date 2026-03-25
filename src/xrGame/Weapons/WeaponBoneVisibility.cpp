@@ -8,7 +8,7 @@ namespace WeaponBoneVisibility
 LPCSTR ReadString(LPCSTR SectionName, LPCSTR Field)
 {
 	// Empty LTX values are stored as null shared strings, even when the field exists.
-	LPCSTR Value = READ_IF_EXISTS(pSettings, r_string, SectionName, Field, nullptr);
+	LPCSTR Value = pSettings->read_if_exists<str_c>(SectionName, Field, nullptr);
 	return Value ? Value : "";
 }
 
@@ -82,7 +82,7 @@ static void CollectUpgradeBonesRecursive(LPCSTR SectionName, xr_vector<shared_st
 			_GetItem(Effects, EffectIndex, Effect);
 			CollectUpgradeBonesRecursive(Effect, Bones, Visited);
 		}
-		LPCSTR Upgrade = READ_IF_EXISTS(pSettings, r_string, Element, "section", nullptr);
+		LPCSTR Upgrade = pSettings->read_if_exists<str_c>(Element, "section", nullptr);
 		if (Upgrade && *Upgrade)
 		{
 			AppendBones(Upgrade, "show_bones", Bones);
@@ -104,7 +104,7 @@ void ConfigureDefault(IKinematics& Model, LPCSTR SectionName)
 	{
 		string256 Upgrade;
 		_GetItem(Installed, Index, Upgrade);
-		LPCSTR Parameters = READ_IF_EXISTS(pSettings, r_string, Upgrade, "section", nullptr);
+		LPCSTR Parameters = pSettings->read_if_exists<str_c>(Upgrade, "section", nullptr);
 		if (Parameters && *Parameters)
 		{
 			InstalledSections.emplace_back(Parameters);
@@ -112,10 +112,10 @@ void ConfigureDefault(IKinematics& Model, LPCSTR SectionName)
 	}
 	const auto ReadStatus = [&](LPCSTR Field)
 	{
-		u32 Status = READ_IF_EXISTS(pSettings, r_u32, SectionName, Field, 0);
+		u32 Status = pSettings->read_if_exists<u32>(SectionName, Field, 0);
 		for (const auto& Parameters : InstalledSections)
 		{
-			Status = READ_IF_EXISTS(pSettings, r_u32, Parameters, Field, Status);
+			Status = pSettings->read_if_exists<u32>(Parameters, Field, Status);
 		}
 		return Status;
 	};
@@ -179,7 +179,7 @@ void ConfigureDefault(IKinematics& Model, LPCSTR SectionName)
 			Scopes.emplace_back(Parameters);
 		}
 	};
-	AppendScopes(SectionName, READ_IF_EXISTS(pSettings, r_u32, SectionName, "scope_status", 0));
+	AppendScopes(SectionName, pSettings->read_if_exists<u32>(SectionName, "scope_status", 0));
 	for (const auto& Parameters : InstalledSections)
 	{
 		if (pSettings->line_exist(Parameters, "scope_status"))
