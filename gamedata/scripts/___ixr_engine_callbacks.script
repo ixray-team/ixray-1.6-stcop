@@ -199,3 +199,7 @@ end
 function get_near_object_info(npc_object)
 	return ixr_npc_info.collect_object_info(npc_object)
 end
+
+function load_screen_press_any_key()
+	SendScriptCallback("on_load_screen_await_any_key_pressed")
+end
