@@ -29,3 +29,20 @@ function register_command(name, _callable, tips_table)
 	
 	return true
 end
+
+
+local con = nil
+function execute_command(command, arg)
+	if not con then con = get_console() end
+	
+	if tostring(arg) == "true" then
+		arg = 1
+	end
+	
+	if tostring(arg) == "false" then
+		arg = 0
+	end
+	
+	--SemiLog(tostring(command) .. " " .. tostring(arg))
+	con:execute(tostring(command) .. " " .. tostring(arg))
+end
