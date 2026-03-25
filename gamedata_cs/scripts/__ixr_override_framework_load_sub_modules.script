@@ -22,6 +22,7 @@ function configure(_ref_ixr_framework)
 	--------------------------------------------
 	_ref_ixr_framework.load_module_by_script_name("ixr_module_timers") -- alias:[ixr_timers]
 	_ref_ixr_framework.load_module_by_script_name("ixr_module_triggers") -- alias:[ixr_triggers]
+	_ref_ixr_framework.load_module_by_script_name("ixr_module_throttlers") -- alias:[ixr_throttlers]
 	
 	--------------------------------------------
 	-- REGISTER MODULES CALLED AS LATEST HERE ->
