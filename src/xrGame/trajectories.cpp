@@ -166,8 +166,26 @@ bool trajectory_check_collision (float 							low,
 			pick.z_axis					=	normalize(box_z_axis);
 			out_trajectory_picks->push_back	(pick);
 		}
+		if(out_collide_tris)
+		{
+			thread_local CDB::COLLIDER obb_collider;
+			Fobb obb;
+			obb.m_rotate.i = box_x_axis.normalize_safe();
+			obb.m_rotate.j = box_y_axis.normalize_safe();
+			obb.m_rotate.k = Fvector(box_z_axis).normalize_safe();
+			obb.m_translate = box_center;
 
-		box_result	=	!Level().ObjectSpace.BoxQuery	(box_center, box_z_axis, box_y_axis, box_size, out_collide_tris);
+			obb.m_halfsize = box_size;
+			obb_collider.obb_options(CDB::OPT_FULL_TEST);
+			obb_collider.obb_query(Level().ObjectSpace.GetStaticModel(), obb);
+			for (CDB::RESULT& R : obb_collider.r_vec())
+			{
+				out_collide_tris->push_back(R.verts[0]);
+				out_collide_tris->push_back(R.verts[1]);
+				out_collide_tris->push_back(R.verts[2]);
+			}
+		}
+		//box_result	=	!Level().ObjectSpace.BoxQuery	(box_center, box_z_axis, box_y_axis, box_size, out_collide_tris);
 	}
 
 	if (ignored_object)
