@@ -316,9 +316,16 @@ end
 function ixr_autoloader.call_entry_point(script_name)
 	if ffx_compare_utils.is_not_empty_string(script_name) then
 		local fn_arg = "data"
-		local result = _G[script_name][ixr_autoloader.entry_point_function_name](fn_arg)
-		
-		ixr_autoloader.on_call_entry_point(script_name, fn_arg, result)
+		if _G[script_name] then
+			if _G[script_name][ixr_autoloader.entry_point_function_name] then
+				local result = _G[script_name][ixr_autoloader.entry_point_function_name](fn_arg)
+				ixr_autoloader.on_call_entry_point(script_name, fn_arg, result)
+			else
+				ixr_autoloader.toLog("missing: _G[" .. tostring(script_name) .. "][" .. tostring(ixr_autoloader.entry_point_function_name) .. "]")
+			end
+		else
+			ixr_autoloader.toLog("missing: _G[" .. tostring(script_name) .. "]")
+		end
 	end
 end
 
