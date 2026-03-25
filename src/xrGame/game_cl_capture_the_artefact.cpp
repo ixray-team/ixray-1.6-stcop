@@ -100,7 +100,7 @@ void game_cl_CaptureTheArtefact::SetGameUI(CUIGameCustom * already_created_ui)
 void game_cl_CaptureTheArtefact::Init()
 {
 	inherited::Init();
-	spawn_cost = READ_IF_EXISTS(pSettings, r_s32, "capturetheartefact_gamedata", "spawn_cost", -10000);
+	spawn_cost = pSettings->read_if_exists<s32>("capturetheartefact_gamedata", "spawn_cost", -10000);
 	LoadTeamData(GREENTEAM_MENU);
 	LoadTeamData(BLUETEAM_MENU);
 }

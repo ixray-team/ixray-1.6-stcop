@@ -142,7 +142,7 @@ void CUIInventoryUpgradeWnd::InitInventory(CUICellItem* cellItem, bool can_upgra
 	const char* upgrIconsTexture = {};
 	if (m_inv_item != nullptr)
 	{
-		upgrIconsTexture = READ_IF_EXISTS(pSettings, r_string, m_inv_item->m_section_id, "upgr_icons_texture", nullptr);
+		upgrIconsTexture = pSettings->read_if_exists<str_c>(m_inv_item->m_section_id, "upgr_icons_texture", nullptr);
 	}
 
 	// Загружаем картинку

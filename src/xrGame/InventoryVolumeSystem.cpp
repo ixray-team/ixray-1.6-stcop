@@ -266,16 +266,16 @@ void CInventoryVolumeSystem::LoadFile(const char* relativePath)
 
 void CInventoryVolumeSystem::ApplyConfig(const CInifile& ini)
 {
-    _baseActorVolume = READ_IF_EXISTS(&ini, r_float, kSectionSystem, "base_actor_volume", _baseActorVolume);
-    _defaultWeightVolumeMultiplier = READ_IF_EXISTS(&ini, r_float, kSectionSystem, "default_weight_volume_multiplier", _defaultWeightVolumeMultiplier);
-    _hardOverloadLimit = READ_IF_EXISTS(&ini, r_float, kSectionSystem, "hard_overload_limit", _hardOverloadLimit);
-    _blockPickupAtHardLimit = READ_IF_EXISTS(&ini, r_bool, kSectionSystem, "block_pickup_at_hard_limit", _blockPickupAtHardLimit);
-    _recursiveContainerVolume = READ_IF_EXISTS(&ini, r_bool, kSectionSystem, "recursive_container_volume", _recursiveContainerVolume);
+    _baseActorVolume = ini.read_if_exists<float>(kSectionSystem, "base_actor_volume", _baseActorVolume);
+    _defaultWeightVolumeMultiplier = ini.read_if_exists<float>(kSectionSystem, "default_weight_volume_multiplier", _defaultWeightVolumeMultiplier);
+    _hardOverloadLimit = ini.read_if_exists<float>(kSectionSystem, "hard_overload_limit", _hardOverloadLimit);
+    _blockPickupAtHardLimit = ini.read_if_exists<bool>(kSectionSystem, "block_pickup_at_hard_limit", _blockPickupAtHardLimit);
+    _recursiveContainerVolume = ini.read_if_exists<bool>(kSectionSystem, "recursive_container_volume", _recursiveContainerVolume);
 
-    _staminaPowerPenalty = READ_IF_EXISTS(&ini, r_float, kSectionPenalties, "stamina_power_penalty", _staminaPowerPenalty);
-    _maxWalkWeightPenalty = READ_IF_EXISTS(&ini, r_float, kSectionPenalties, "max_walk_weight_penalty", _maxWalkWeightPenalty);
-    _aimSwayPenalty = READ_IF_EXISTS(&ini, r_float, kSectionPenalties, "aim_sway_penalty", _aimSwayPenalty);
-    _sprintBlockFactor = READ_IF_EXISTS(&ini, r_float, kSectionPenalties, "sprint_block_factor", _sprintBlockFactor);
+    _staminaPowerPenalty = ini.read_if_exists<float>(kSectionPenalties, "stamina_power_penalty", _staminaPowerPenalty);
+    _maxWalkWeightPenalty = ini.read_if_exists<float>(kSectionPenalties, "max_walk_weight_penalty", _maxWalkWeightPenalty);
+    _aimSwayPenalty = ini.read_if_exists<float>(kSectionPenalties, "aim_sway_penalty", _aimSwayPenalty);
+    _sprintBlockFactor = ini.read_if_exists<float>(kSectionPenalties, "sprint_block_factor", _sprintBlockFactor);
 
     LoadFloatSection(ini, kSectionItemVolumes, _itemVolumes);
     LoadFloatSection(ini, kSectionContainerProfiles, _containerProfiles);

@@ -240,7 +240,7 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 			m_bJumpKeyPressed	=	true;
 			if (EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation])
 			{
-				const float NoiseRadius = READ_IF_EXISTS(EngineExternal().GetMonsterLogicIniFile(), r_float, "monsters_logic", "MonsterActorJumpSoundRadius", 20.f);
+				const float NoiseRadius = EngineExternal().GetMonsterLogicIniFile()->read_if_exists<float>("monsters_logic", "MonsterActorJumpSoundRadius", 20.f);
 				xr_vector<ISpatialShared> Listeners;
 				g_SpatialSpace->q_sphere(Listeners, 0, ESPATIAL_TYPE::REACTTOSOUND, Position(), std::clamp(NoiseRadius, 0.f, 500.f));
 				for (const auto& Spatial : Listeners)

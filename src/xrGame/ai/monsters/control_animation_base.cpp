@@ -846,7 +846,7 @@ void CControlAnimationBase::ConfigureSearchInspection()
 	{
 		return;
 	}
-	const char* Configured = READ_IF_EXISTS(pSettings, r_string, *m_object->cNameSect(), "monster_search_animation", "auto");
+	const char* Configured = pSettings->read_if_exists<str_c>(*m_object->cNameSect(), "monster_search_animation", "auto");
 	const bool Auto = !Configured[0] || xr_strcmp(Configured, "auto") == 0;
 	const auto Walking = m_tMotions.find(ACT_HOME_WALK_SMELLING);
 	if (Auto && Walking != m_tMotions.end() && u32(Walking->second.anim) < m_anim_storage.size())

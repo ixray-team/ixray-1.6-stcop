@@ -34,9 +34,9 @@ void CEatableItem::Load(const char* section)
 
 	m_iRemainingUses = GetMaxUses();
 
-	m_bRemoveAfterUse = READ_IF_EXISTS(pSettings, r_bool, section, "remove_after_use", true);
+	m_bRemoveAfterUse = pSettings->read_if_exists<bool>(section, "remove_after_use", true);
 	m_fWeightFull = m_weight;
-	m_fWeightEmpty = READ_IF_EXISTS(pSettings, r_float, section, "empty_weight", 0.0f);
+	m_fWeightEmpty = pSettings->read_if_exists<float>(section, "empty_weight", 0.0f);
 
 	if (IsUsingCondition())
 	{

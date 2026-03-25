@@ -168,61 +168,61 @@ CFlyingMovementController::~CFlyingMovementController()
 
 void CFlyingMovementController::Load(const char* section)
 {
-    m_speed = READ_IF_EXISTS(pSettings, r_float, section, "flight_speed", 6.f);
-    m_takeoff_speed_factor = READ_IF_EXISTS(pSettings,r_float,section,"flight_takeoff_speed_factor",1.f);
-    m_landing_speed_factor = READ_IF_EXISTS(pSettings,r_float,section,"flight_landing_speed_factor",1.f);
-    m_progress_timeout = READ_IF_EXISTS(pSettings,r_float,section,"flight_progress_timeout",8.f);
+    m_speed = pSettings->read_if_exists<float>(section, "flight_speed", 6.f);
+    m_takeoff_speed_factor = pSettings->read_if_exists<float>(section,"flight_takeoff_speed_factor",1.f);
+    m_landing_speed_factor = pSettings->read_if_exists<float>(section,"flight_landing_speed_factor",1.f);
+    m_progress_timeout = pSettings->read_if_exists<float>(section,"flight_progress_timeout",8.f);
     R_ASSERT2(_valid(m_takeoff_speed_factor) && m_takeoff_speed_factor>0.f && m_takeoff_speed_factor<=2.f &&
         _valid(m_landing_speed_factor) && m_landing_speed_factor>0.f && m_landing_speed_factor<=2.f &&
         _valid(m_progress_timeout) && m_progress_timeout>=1.f,"Invalid flyer speed/progress settings");
-    m_acceleration = READ_IF_EXISTS(pSettings, r_float, section, "flight_acceleration", 8.f);
-    m_radius = READ_IF_EXISTS(pSettings, r_float, section, "flight_collision_radius", .18f);
-    m_use_model_bounds = READ_IF_EXISTS(pSettings, r_bool, section, "flight_use_model_bounds", true);
+    m_acceleration = pSettings->read_if_exists<float>(section, "flight_acceleration", 8.f);
+    m_radius = pSettings->read_if_exists<float>(section, "flight_collision_radius", .18f);
+    m_use_model_bounds = pSettings->read_if_exists<bool>(section, "flight_use_model_bounds", true);
     m_have_model_bounds = false;
-    m_turn_speed = READ_IF_EXISTS(pSettings, r_float, section, "flight_turn_speed", 2.f);
-    m_turn_acceleration = READ_IF_EXISTS(pSettings, r_float, section, "flight_turn_acceleration", 2.5f);
-    m_orientation_response = READ_IF_EXISTS(pSettings, r_float, section, "flight_orientation_response", 4.f);
-    m_direction_sync_speed = READ_IF_EXISTS(pSettings, r_float, section, "flight_direction_sync_speed", 6.f);
-    m_max_direction_lag = READ_IF_EXISTS(pSettings, r_float, section, "flight_max_direction_lag", 15.f);
+    m_turn_speed = pSettings->read_if_exists<float>(section, "flight_turn_speed", 2.f);
+    m_turn_acceleration = pSettings->read_if_exists<float>(section, "flight_turn_acceleration", 2.5f);
+    m_orientation_response = pSettings->read_if_exists<float>(section, "flight_orientation_response", 4.f);
+    m_direction_sync_speed = pSettings->read_if_exists<float>(section, "flight_direction_sync_speed", 6.f);
+    m_max_direction_lag = pSettings->read_if_exists<float>(section, "flight_max_direction_lag", 15.f);
     clamp(m_max_direction_lag, 1.f, 45.f);
     m_max_direction_lag *= PI / 180.f;
-    TurnForwardFactor = READ_IF_EXISTS(pSettings, r_float, section, "flight_turn_forward_factor", 0.f);
+    TurnForwardFactor = pSettings->read_if_exists<float>(section, "flight_turn_forward_factor", 0.f);
     R_ASSERT2(_valid(TurnForwardFactor) && TurnForwardFactor >= 0.f && TurnForwardFactor <= 1.f,
         "Invalid flight turn forward factor");
-    m_cell_size = READ_IF_EXISTS(pSettings, r_float, section, "flight_path_cell", 2.f);
-    m_min_cell_size = READ_IF_EXISTS(pSettings, r_float, section, "flight_path_min_cell", .4f);
-    m_search_margin = READ_IF_EXISTS(pSettings, r_float, section, "flight_path_margin", 24.f);
-    m_max_distance = READ_IF_EXISTS(pSettings, r_float, section, "flight_max_distance", 300.f);
-    m_search_budget = READ_IF_EXISTS(pSettings, r_u32, section, "flight_search_budget", 24);
-    m_corridor_check_interval=READ_IF_EXISTS(pSettings,r_float,section,"flight_corridor_check_interval",.2f);
-    m_separation_interval=READ_IF_EXISTS(pSettings,r_float,section,"flight_separation_interval",.1f);
+    m_cell_size = pSettings->read_if_exists<float>(section, "flight_path_cell", 2.f);
+    m_min_cell_size = pSettings->read_if_exists<float>(section, "flight_path_min_cell", .4f);
+    m_search_margin = pSettings->read_if_exists<float>(section, "flight_path_margin", 24.f);
+    m_max_distance = pSettings->read_if_exists<float>(section, "flight_max_distance", 300.f);
+    m_search_budget = pSettings->read_if_exists<u32>(section, "flight_search_budget", 24);
+    m_corridor_check_interval=pSettings->read_if_exists<float>(section,"flight_corridor_check_interval",.2f);
+    m_separation_interval=pSettings->read_if_exists<float>(section,"flight_separation_interval",.1f);
     R_ASSERT2(_valid(m_corridor_check_interval) && _valid(m_separation_interval) &&
         m_corridor_check_interval>0.f && m_separation_interval>0.f,"Invalid flying query interval");
     clamp(m_corridor_check_interval,.02f,.5f); clamp(m_separation_interval,.02f,.25f);
-    m_search_limit = READ_IF_EXISTS(pSettings, r_u32, section, "flight_search_limit", 8192);
-    m_landing_height = READ_IF_EXISTS(pSettings, r_float, section, "flight_landing_height", 1.5f);
-    m_hop_height = READ_IF_EXISTS(pSettings, r_float, section, "flight_ground_hop_height", .12f);
-    const char* ground_mode = READ_IF_EXISTS(pSettings, r_string, section, "flight_ground_movement", "walk");
+    m_search_limit = pSettings->read_if_exists<u32>(section, "flight_search_limit", 8192);
+    m_landing_height = pSettings->read_if_exists<float>(section, "flight_landing_height", 1.5f);
+    m_hop_height = pSettings->read_if_exists<float>(section, "flight_ground_hop_height", .12f);
+    const char* ground_mode = pSettings->read_if_exists<str_c>(section, "flight_ground_movement", "walk");
     R_ASSERT2(xr_strcmp(ground_mode, "walk") == 0 || xr_strcmp(ground_mode, "hop") == 0,
         "flight_ground_movement must be walk or hop");
     set_ground_movement(xr_strcmp(ground_mode, "hop") == 0 ? EGroundMovement::Hop : EGroundMovement::Walk);
-    m_hop_length = READ_IF_EXISTS(pSettings, r_float, section, "flight_ground_hop_length", .35f);
-    HopSpeedScale = READ_IF_EXISTS(pSettings, r_float, section, "flight_ground_hop_speed_scale", 1.f);
+    m_hop_length = pSettings->read_if_exists<float>(section, "flight_ground_hop_length", .35f);
+    HopSpeedScale = pSettings->read_if_exists<float>(section, "flight_ground_hop_speed_scale", 1.f);
     R_ASSERT2(_valid(HopSpeedScale) && HopSpeedScale > 0.f && HopSpeedScale <= 8.f, "Invalid ground hop settings");
-    m_ground_offset = READ_IF_EXISTS(pSettings, r_float, section, "flight_ground_offset", .03f);
-    m_landing_footprint_radius = READ_IF_EXISTS(pSettings, r_float, section,
+    m_ground_offset = pSettings->read_if_exists<float>(section, "flight_ground_offset", .03f);
+    m_landing_footprint_radius = pSettings->read_if_exists<float>(section,
         "flight_landing_footprint_radius", .01f);
-    const float LandingMaxSlope = READ_IF_EXISTS(pSettings, r_float, section, "flight_landing_max_slope", 65.f);
+    const float LandingMaxSlope = pSettings->read_if_exists<float>(section, "flight_landing_max_slope", 65.f);
     R_ASSERT2(_valid(LandingMaxSlope) && LandingMaxSlope >= 0.f && LandingMaxSlope <= 65.f,
         "flight_landing_max_slope must be between 0 and 65 degrees");
     LandingMinNormalY = cosf(LandingMaxSlope * PI / 180.f);
-    m_landing_search_radius = READ_IF_EXISTS(pSettings, r_float, section, "flight_landing_search_radius", 3.f);
-    m_landing_search_max_radius = READ_IF_EXISTS(pSettings, r_float, section, "flight_landing_search_max_radius", 6.f);
-    m_landing_body_radius = READ_IF_EXISTS(pSettings,r_float,section,"flight_landing_body_radius",0.f);
-    m_landing_spacing = READ_IF_EXISTS(pSettings, r_float, section, "flight_landing_spacing", .4f);
-    m_separation_distance = READ_IF_EXISTS(pSettings, r_float, section, "flight_separation_distance", .8f);
-    m_separation_speed = READ_IF_EXISTS(pSettings, r_float, section, "flight_separation_speed", 1.5f);
-    m_debug = READ_IF_EXISTS(pSettings,r_bool,section,"flight_debug",false);
+    m_landing_search_radius = pSettings->read_if_exists<float>(section, "flight_landing_search_radius", 3.f);
+    m_landing_search_max_radius = pSettings->read_if_exists<float>(section, "flight_landing_search_max_radius", 6.f);
+    m_landing_body_radius = pSettings->read_if_exists<float>(section,"flight_landing_body_radius",0.f);
+    m_landing_spacing = pSettings->read_if_exists<float>(section, "flight_landing_spacing", .4f);
+    m_separation_distance = pSettings->read_if_exists<float>(section, "flight_separation_distance", .8f);
+    m_separation_speed = pSettings->read_if_exists<float>(section, "flight_separation_speed", 1.5f);
+    m_debug = pSettings->read_if_exists<bool>(section,"flight_debug",false);
     clamp(m_speed, .1f, 50.f);
     clamp(m_acceleration, .1f, 100.f);
     clamp(m_radius, .05f, 5.f);
@@ -247,15 +247,15 @@ void CFlyingMovementController::Load(const char* section)
     clamp(m_landing_body_radius,0.f,5.f);
     clamp(m_separation_distance, m_radius * 2.f, 10.f);
     clamp(m_separation_speed, .1f, 5.f);
-    BudgetedFlight = READ_IF_EXISTS(pSettings, r_bool, section, "flight_budgeted_updates", false);
-    BoundaryMargin = READ_IF_EXISTS(pSettings, r_float, section, "flight_boundary_margin", 40.f);
+    BudgetedFlight = pSettings->read_if_exists<bool>(section, "flight_budgeted_updates", false);
+    BoundaryMargin = pSettings->read_if_exists<float>(section, "flight_boundary_margin", 40.f);
     clamp(BoundaryMargin, 1.f, 1000.f);
-    MovementCheckInterval = READ_IF_EXISTS(pSettings, r_float, section, "flight_movement_check_interval", .25f);
-    AirChecksPerFrame = READ_IF_EXISTS(pSettings, r_u32, section, "flight_air_checks_per_frame", 8);
-    RouteStartsPerFrame = READ_IF_EXISTS(pSettings, r_u32, section, "flight_route_starts_per_frame", 4);
-    LandingProbesPerFrame = READ_IF_EXISTS(pSettings, r_u32, section, "flight_landing_probes_per_frame", 8);
-    LandingProbeCount = READ_IF_EXISTS(pSettings, r_u32, section, "flight_landing_probe_count", 32);
-    SearchExpansionsPerFrame = READ_IF_EXISTS(pSettings, r_u32, section, "flight_search_expansions_per_frame", 64);
+    MovementCheckInterval = pSettings->read_if_exists<float>(section, "flight_movement_check_interval", .25f);
+    AirChecksPerFrame = pSettings->read_if_exists<u32>(section, "flight_air_checks_per_frame", 8);
+    RouteStartsPerFrame = pSettings->read_if_exists<u32>(section, "flight_route_starts_per_frame", 4);
+    LandingProbesPerFrame = pSettings->read_if_exists<u32>(section, "flight_landing_probes_per_frame", 8);
+    LandingProbeCount = pSettings->read_if_exists<u32>(section, "flight_landing_probe_count", 32);
+    SearchExpansionsPerFrame = pSettings->read_if_exists<u32>(section, "flight_search_expansions_per_frame", 64);
     clamp(MovementCheckInterval, .1f, 2.f);
     clamp(AirChecksPerFrame, 1u, 64u);
     clamp(RouteStartsPerFrame, 1u, 64u);

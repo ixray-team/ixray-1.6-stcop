@@ -62,9 +62,9 @@ void CBaseMonster::Load(const char* section)
 	// load parameters from ".ltx" file
 	inherited::Load					(section);
 
-	m_head_bone_name				= READ_IF_EXISTS(pSettings,r_string,section, "bone_head", "bip01_head");
-	m_left_eye_bone_name			= READ_IF_EXISTS(pSettings,r_string,section, "bone_eye_left", 0);
-	m_right_eye_bone_name			= READ_IF_EXISTS(pSettings,r_string,section, "bone_eye_right", 0);
+	m_head_bone_name				= pSettings->read_if_exists<str_c>(section, "bone_head", "bip01_head");
+	m_left_eye_bone_name			= pSettings->read_if_exists<str_c>(section, "bone_eye_left", 0);
+	m_right_eye_bone_name			= pSettings->read_if_exists<str_c>(section, "bone_eye_right", 0);
 
 	m_corpse_cover_evaluator		= new CMonsterCorpseCoverEvaluator	(&movement().restrictions());
 	m_enemy_cover_evaluator			= new CCoverEvaluatorFarFromEnemy	(&movement().restrictions());
@@ -95,27 +95,27 @@ void CBaseMonster::Load(const char* section)
 
 	LoadMonsterLogicOptions(section);
 
-	m_melee_rotation_factor			= READ_IF_EXISTS(pSettings,r_float,section,"Melee_Rotation_Factor", 1.5f);
-	berserk_always					= !!READ_IF_EXISTS(pSettings,r_bool,section,"berserk_always", false);
+	m_melee_rotation_factor			= pSettings->read_if_exists<float>(section,"Melee_Rotation_Factor", 1.5f);
+	berserk_always					= !!pSettings->read_if_exists<bool>(section,"berserk_always", false);
 
-	m_feel_enemy_who_just_hit_max_distance	=	READ_IF_EXISTS(pSettings, r_float, section, 
+	m_feel_enemy_who_just_hit_max_distance	=	pSettings->read_if_exists<float>(section, 
 												"feel_enemy_who_just_hit_max_distance", 
 												::detail::base_monster::feel_enemy_who_just_hit_max_distance);
 
-	m_feel_enemy_max_distance				=	READ_IF_EXISTS(pSettings, r_float, section, 
+	m_feel_enemy_max_distance				=	pSettings->read_if_exists<float>(section, 
 												"feel_enemy_max_distance", 
 												::detail::base_monster::feel_enemy_max_distance);
 
-	m_feel_enemy_who_made_sound_max_distance =	READ_IF_EXISTS(pSettings, r_float, section, 
+	m_feel_enemy_who_made_sound_max_distance =	pSettings->read_if_exists<float>(section, 
 												"feel_enemy_who_made_sound_max_distance", 
 												::detail::base_monster::feel_enemy_who_made_sound_max_distance);
 	
 	//------------------------------------
 	// Steering Behaviour 
 	//------------------------------------
-	float    separate_factor				=	READ_IF_EXISTS(pSettings, r_float, section, 
+	float    separate_factor				=	pSettings->read_if_exists<float>(section, 
 												"separate_factor", 0.f);
-	float    separate_range					=	READ_IF_EXISTS(pSettings, r_float, section, 
+	float    separate_range					=	pSettings->read_if_exists<float>(section, 
 												"separate_range" , 0.f);
 	
 	if ( (separate_factor > 0.0001f) && (separate_range > 0.01f) )
@@ -149,13 +149,13 @@ void CBaseMonster::Load(const char* section)
 	if(has_protections_sect)
 	{
 		const char* protections_sect = pSettings->r_string(section, "protections_sect");
-		m_fSkinArmor = READ_IF_EXISTS(pSettings,r_float,protections_sect,"skin_armor", 0.f);
-		m_fHitFracMonster = READ_IF_EXISTS(pSettings, r_float, protections_sect, "hit_fraction_monster", 0.1f);
+		m_fSkinArmor = pSettings->read_if_exists<float>(protections_sect,"skin_armor", 0.f);
+		m_fHitFracMonster = pSettings->read_if_exists<float>(protections_sect, "hit_fraction_monster", 0.1f);
 	}
 
 	m_force_anti_aim						=	false;
 
-	m_bCanDropActorWeapon = READ_IF_EXISTS(pSettings, r_bool, section, "can_drop_actor_weapon", false);
+	m_bCanDropActorWeapon = pSettings->read_if_exists<bool>(section, "can_drop_actor_weapon", false);
 }
 
 void CBaseMonster::PostLoad (const char* section)
@@ -165,35 +165,35 @@ void CBaseMonster::PostLoad (const char* section)
 	//------------------------------------
 	attack_on_move_params_t& aom			=	m_attack_on_move_params;
 
-	aom.enabled								=	(READ_IF_EXISTS(pSettings, r_bool, section, 
+	aom.enabled								=	(pSettings->read_if_exists<bool>(section, 
 												"aom_enabled", false)) != 0;
-	aom.far_radius							=	READ_IF_EXISTS(pSettings, r_float, section, 
+	aom.far_radius							=	pSettings->read_if_exists<float>(section, 
 												"aom_far_radius", ::detail::base_monster::aom_far_radius);
-	aom.attack_radius						=	READ_IF_EXISTS(pSettings, r_float, section, 
+	aom.attack_radius						=	pSettings->read_if_exists<float>(section, 
 												"aom_attack_radius", ::detail::base_monster::aom_attack_radius);
-	aom.update_side_period					=	READ_IF_EXISTS(pSettings, r_float, section, 
+	aom.update_side_period					=	pSettings->read_if_exists<float>(section, 
 												"aom_update_side_period", 
 												::detail::base_monster::aom_update_side_period);
-	aom.prediction_factor					=	READ_IF_EXISTS(pSettings, r_float, section, 
+	aom.prediction_factor					=	pSettings->read_if_exists<float>(section, 
 												"aom_prediction_factor", 
 												::detail::base_monster::aom_prediction_factor);
-	aom.prepare_time						=	READ_IF_EXISTS(pSettings, r_float, section, 
+	aom.prepare_time						=	pSettings->read_if_exists<float>(section, 
 												"aom_prepare_time", 
 												::detail::base_monster::aom_prepare_time);
-	aom.prepare_radius						=	READ_IF_EXISTS(pSettings, r_float, section, 
+	aom.prepare_radius						=	pSettings->read_if_exists<float>(section, 
 												"aom_prepare_radius", 
 												::detail::base_monster::aom_prepare_radius);
-	aom.max_go_close_time					=	READ_IF_EXISTS(pSettings, r_float, section, 
+	aom.max_go_close_time					=	pSettings->read_if_exists<float>(section, 
 												"aom_max_go_close_time", 8.f);
 
 	if ( aom.enabled )
 	{
 		SVelocityParam&	velocity_run		=	move().get_velocity(MonsterMovement::eVelocityParameterRunNormal);
 
-		const char*	attack_on_move_anim_l		=	READ_IF_EXISTS(pSettings, r_string, section, 
+		const char*	attack_on_move_anim_l		=	pSettings->read_if_exists<str_c>(section, 
 																"aom_animation_left", "stand_attack_run_");
 		anim().AddAnim (eAnimAttackOnRunLeft, attack_on_move_anim_l, -1, &velocity_run, PS_STAND);
-		const char*	attack_on_move_anim_r		=	READ_IF_EXISTS(pSettings, r_string, section, 
+		const char*	attack_on_move_anim_r		=	pSettings->read_if_exists<str_c>(section, 
 																"aom_animation_right", "stand_attack_run_");
 		anim().AddAnim (eAnimAttackOnRunRight, attack_on_move_anim_r, -1, &velocity_run, PS_STAND);
 	}
@@ -208,7 +208,7 @@ void CBaseMonster::PostLoad (const char* section)
 		m_anti_aim							=	new anti_aim_ability(this);
 		control().add							(m_anti_aim,  ControlCom::eAntiAim);
 
-		const char*	anti_aim_animation			=	READ_IF_EXISTS(pSettings, r_string, section, 
+		const char*	anti_aim_animation			=	pSettings->read_if_exists<str_c>(section, 
 												"anti_aim_animation", "stand_attack_");
 		anim().AddAnim							(eAnimAntiAimAbility, anti_aim_animation, -1, 
 												&velocity_stand, PS_STAND);
@@ -552,9 +552,9 @@ void CBaseMonster::fill_bones_body_parts	(const char* body_part, CriticalWoundTy
 void CBaseMonster::LoadMonsterLogicOptions(const char* section)
 {
 	Behavior.Load(*this, section);
-	VisionIgnoreFoliage = READ_IF_EXISTS(pSettings, r_bool, section, "monster_vision_ignore_foliage", false);
+	VisionIgnoreFoliage = pSettings->read_if_exists<bool>(section, "monster_vision_ignore_foliage", false);
 	EnemyCallBroadcastFrame = u32(-1);
-	const float CallRatio = READ_IF_EXISTS(pSettings, r_float, section, "monster_enemy_sharing_call_ratio", READ_IF_EXISTS(EngineExternal().GetMonsterLogicIniFile(), r_float, "monsters_logic", "MonsterEnemySharingCallRatio", .6f));
+	const float CallRatio = pSettings->read_if_exists<float>(section, "monster_enemy_sharing_call_ratio", EngineExternal().GetMonsterLogicIniFile()->read_if_exists<float>("monsters_logic", "MonsterEnemySharingCallRatio", .6f));
 	EnemySharingCallRatio = _valid(CallRatio) ? std::clamp(CallRatio, 0.f, 1.f) : .6f;
 	EnemySharingRadius = 40.f;
 	EnemySharingCloseRatio = .25f;
@@ -588,19 +588,19 @@ void CBaseMonster::LoadMonsterLogicOptions(const char* section)
 	NoiseReactionCooldown = 3000;
 	NoisePanicDuration = 6000;
 	NoiseMinPower = .01f;
-	HearingFactor = std::clamp(READ_IF_EXISTS(pSettings, r_float, section, "monster_hearing_factor", 1.f), 0.f, 1.f);
+	HearingFactor = std::clamp(pSettings->read_if_exists<float>(section, "monster_hearing_factor", 1.f), 0.f, 1.f);
 	if (!_valid(HearingFactor)) HearingFactor = 1.f;
 	NoiseInvestigationUntil = 0;
 	NoiseInvestigationVertex = u32(-1);
 	if (EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation])
 	{
 		CInifile* CommonOptions = EngineExternal().GetMonsterLogicIniFile();
-		PlayerVisualAcquireTime = std::min(u32(10000), READ_IF_EXISTS(pSettings, r_u32, section, "monster_player_visual_acquire_time", READ_IF_EXISTS(CommonOptions, r_u32, "monsters_logic", "MonsterPlayerVisualAcquireTime", 400)));
-		EnemyStuckTime = std::clamp(READ_IF_EXISTS(pSettings, r_u32, section, "monster_enemy_stuck_time", READ_IF_EXISTS(CommonOptions, r_u32, "monsters_logic", "MonsterEnemyStuckTime", u32(3000))), u32(500), u32(30000));
-		const float CloseAttackDistance = READ_IF_EXISTS(pSettings, r_float, section, "monster_enemy_close_attack_distance", READ_IF_EXISTS(CommonOptions, r_float, "monsters_logic", "MonsterEnemyCloseAttackDistance", 5.f));
+		PlayerVisualAcquireTime = std::min(u32(10000), pSettings->read_if_exists<u32>(section, "monster_player_visual_acquire_time", CommonOptions->read_if_exists<u32>("monsters_logic", "MonsterPlayerVisualAcquireTime", 400)));
+		EnemyStuckTime = std::clamp(pSettings->read_if_exists<u32>(section, "monster_enemy_stuck_time", CommonOptions->read_if_exists<u32>("monsters_logic", "MonsterEnemyStuckTime", u32(3000))), u32(500), u32(30000));
+		const float CloseAttackDistance = pSettings->read_if_exists<float>(section, "monster_enemy_close_attack_distance", CommonOptions->read_if_exists<float>("monsters_logic", "MonsterEnemyCloseAttackDistance", 5.f));
 		EnemyCloseAttackDistance = _valid(CloseAttackDistance) && CloseAttackDistance >= 0.f && CloseAttackDistance <= 100.f ? CloseAttackDistance : 5.f;
-		float MemoryMin = READ_IF_EXISTS(pSettings, r_float, section, "monster_enemy_memory_min", READ_IF_EXISTS(CommonOptions, r_float, "monsters_logic", "MonsterEnemyMemoryMin", 30.f));
-		float MemoryMax = READ_IF_EXISTS(pSettings, r_float, section, "monster_enemy_memory_max", READ_IF_EXISTS(CommonOptions, r_float, "monsters_logic", "MonsterEnemyMemoryMax", 60.f));
+		float MemoryMin = pSettings->read_if_exists<float>(section, "monster_enemy_memory_min", CommonOptions->read_if_exists<float>("monsters_logic", "MonsterEnemyMemoryMin", 30.f));
+		float MemoryMax = pSettings->read_if_exists<float>(section, "monster_enemy_memory_max", CommonOptions->read_if_exists<float>("monsters_logic", "MonsterEnemyMemoryMax", 60.f));
 		if (!_valid(MemoryMin) || MemoryMin < 1.f || MemoryMin > 600.f)
 		{
 			MemoryMin = 30.f;
@@ -615,18 +615,18 @@ void CBaseMonster::LoadMonsterLogicOptions(const char* section)
 		}
 		EnemyMemoryRetentionMin = u32(MemoryMin * 1000.f);
 		EnemyMemoryRetentionMax = u32(MemoryMax * 1000.f);
-		const float SearchTime = READ_IF_EXISTS(CommonOptions, r_float, "monsters_logic", "MonsterEnemySearchAtPointTime", 15.f);
+		const float SearchTime = CommonOptions->read_if_exists<float>("monsters_logic", "MonsterEnemySearchAtPointTime", 15.f);
 		EnemySearchAtPointTime = u32((_valid(SearchTime) && SearchTime >= 0.f && SearchTime <= 600.f ? SearchTime : 15.f) * 1000.f);
-		EnemySharingEnabled = READ_IF_EXISTS(pSettings, r_bool, section, "monster_enemy_sharing_enabled", true);
-		EnemyCallEnabled = READ_IF_EXISTS(pSettings, r_bool, section, "monster_enemy_call_enabled", false);
-		EnemyCallCooldown = READ_IF_EXISTS(pSettings, r_float, section, "monster_enemy_call_cooldown", 20.f);
+		EnemySharingEnabled = pSettings->read_if_exists<bool>(section, "monster_enemy_sharing_enabled", true);
+		EnemyCallEnabled = pSettings->read_if_exists<bool>(section, "monster_enemy_call_enabled", false);
+		EnemyCallCooldown = pSettings->read_if_exists<float>(section, "monster_enemy_call_cooldown", 20.f);
 		if (!_valid(EnemyCallCooldown) || EnemyCallCooldown < .5f || EnemyCallCooldown > 3600.f)
 		{
 			EnemyCallCooldown = 20.f;
 		}
-		AutoPanicOnInvisibleDamage = READ_IF_EXISTS(pSettings, r_bool, section, "autopanic_on_invisible_damage", false);
-		AutoFocusAttacker = READ_IF_EXISTS(pSettings, r_bool, section, "autofocus_attacker", false);
-		AutoFocusMaxDist = READ_IF_EXISTS(pSettings, r_float, section, "autofocus_max_dist", 200.f);
+		AutoPanicOnInvisibleDamage = pSettings->read_if_exists<bool>(section, "autopanic_on_invisible_damage", false);
+		AutoFocusAttacker = pSettings->read_if_exists<bool>(section, "autofocus_attacker", false);
+		AutoFocusMaxDist = pSettings->read_if_exists<float>(section, "autofocus_max_dist", 200.f);
 		if (!_valid(AutoFocusMaxDist) || AutoFocusMaxDist < 0.f)
 		{
 			AutoFocusMaxDist = 200.f;
@@ -635,32 +635,32 @@ void CBaseMonster::LoadMonsterLogicOptions(const char* section)
 		{
 			string128 Key;
 			xr_sprintf(Key, "%s_enabled", Prefix);
-			Reaction.Enabled = READ_IF_EXISTS(pSettings, r_bool, section, Key, false);
+			Reaction.Enabled = pSettings->read_if_exists<bool>(section, Key, false);
 			xr_sprintf(Key, "%s_radius", Prefix);
-			Reaction.Radius = READ_IF_EXISTS(pSettings, r_float, section, Key, 0.f);
+			Reaction.Radius = pSettings->read_if_exists<float>(section, Key, 0.f);
 			if (!_valid(Reaction.Radius) || Reaction.Radius < 0.f || Reaction.Radius > 500.f)
 			{
 				Reaction.Radius = 0.f;
 			}
 			xr_sprintf(Key, "%s_panic_chance", Prefix);
-			Reaction.PanicChance = READ_IF_EXISTS(pSettings, r_float, section, Key, 0.f);
+			Reaction.PanicChance = pSettings->read_if_exists<float>(section, Key, 0.f);
 			if (!_valid(Reaction.PanicChance) || Reaction.PanicChance < 0.f || Reaction.PanicChance > 1.f)
 			{
 				Reaction.PanicChance = 0.f;
 			}
 			xr_sprintf(Key, "%s_attract", Prefix);
-			Reaction.Attract = READ_IF_EXISTS(pSettings, r_bool, section, Key, false);
+			Reaction.Attract = pSettings->read_if_exists<bool>(section, Key, false);
 			xr_sprintf(Key, "%s_interest_enabled", Prefix);
-			Reaction.Attract = READ_IF_EXISTS(pSettings, r_bool, section, Key, Reaction.Attract);
+			Reaction.Attract = pSettings->read_if_exists<bool>(section, Key, Reaction.Attract);
 			xr_sprintf(Key, "%s_fear_enabled", Prefix);
-			Reaction.FearEnabled = READ_IF_EXISTS(pSettings, r_bool, section, Key, Reaction.PanicChance > 0.f);
+			Reaction.FearEnabled = pSettings->read_if_exists<bool>(section, Key, Reaction.PanicChance > 0.f);
 			auto ReadUnit = [&](const char* Suffix, const char* GlobalSuffix, float Default, float Minimum)
 			{
 				xr_sprintf(Key, "%s%s", xr_strcmp(Prefix, "monster_shot_reaction") == 0 ? "MonsterShotReaction" : "MonsterExplosionReaction", GlobalSuffix);
-				const float Global = READ_IF_EXISTS(EngineExternal().GetMonsterLogicIniFile(), r_float, "monsters_logic", Key, Default);
+				const float Global = EngineExternal().GetMonsterLogicIniFile()->read_if_exists<float>("monsters_logic", Key, Default);
 				if (_valid(Global) && Global >= Minimum && Global <= 1.f) Default = Global;
 				xr_sprintf(Key, "%s_%s", Prefix, Suffix);
-				const float Value = READ_IF_EXISTS(pSettings, r_float, section, Key, Default);
+				const float Value = pSettings->read_if_exists<float>(section, Key, Default);
 				return _valid(Value) && Value >= Minimum && Value <= 1.f ? Value : Default;
 			};
 			Reaction.InterestStep = ReadUnit("interest_step", "InterestStep", .25f, 0.f);
@@ -671,29 +671,29 @@ void CBaseMonster::LoadMonsterLogicOptions(const char* section)
 		};
 		LoadNoiseReaction(ShotReaction, "monster_shot_reaction");
 		LoadNoiseReaction(ExplosionReaction, "monster_explosion_reaction");
-		const float Cooldown = READ_IF_EXISTS(pSettings, r_float, section, "monster_noise_reaction_cooldown", 3.f);
+		const float Cooldown = pSettings->read_if_exists<float>(section, "monster_noise_reaction_cooldown", 3.f);
 		NoiseReactionCooldown = u32((_valid(Cooldown) && Cooldown >= .5f && Cooldown <= 60.f ? Cooldown : 3.f) * 1000.f);
-		const float Duration = READ_IF_EXISTS(pSettings, r_float, section, "monster_noise_panic_duration", 6.f);
+		const float Duration = pSettings->read_if_exists<float>(section, "monster_noise_panic_duration", 6.f);
 		NoisePanicDuration = u32((_valid(Duration) && Duration >= 1.f && Duration <= 60.f ? Duration : 6.f) * 1000.f);
-		NoiseMinPower = READ_IF_EXISTS(pSettings, r_float, section, "monster_noise_min_power", .01f);
+		NoiseMinPower = pSettings->read_if_exists<float>(section, "monster_noise_min_power", .01f);
 		if (!_valid(NoiseMinPower) || NoiseMinPower < 0.f || NoiseMinPower > 1.f)
 		{
 			NoiseMinPower = .01f;
 		}
-		MonsterPeaceful = READ_IF_EXISTS(pSettings, r_bool, section, "monster_peaceful", false);
-		EnemyCloseDetectionRadius = READ_IF_EXISTS(pSettings, r_float, section, "monster_enemy_close_detection_radius", 0.f);
+		MonsterPeaceful = pSettings->read_if_exists<bool>(section, "monster_peaceful", false);
+		EnemyCloseDetectionRadius = pSettings->read_if_exists<float>(section, "monster_enemy_close_detection_radius", 0.f);
 		if (!_valid(EnemyCloseDetectionRadius) || EnemyCloseDetectionRadius < 0.f)
 		{
 			EnemyCloseDetectionRadius = 0.f;
 		}
-		EnemyTrackingLive = READ_IF_EXISTS(pSettings, r_bool, section, "monster_enemy_tracking_live", false);
-		EnemySharingCloseRatio = READ_IF_EXISTS(pSettings, r_float, section, "monster_enemy_sharing_close_ratio", EngineExternal().GetMonsterEnemySharingCloseRatio());
+		EnemyTrackingLive = pSettings->read_if_exists<bool>(section, "monster_enemy_tracking_live", false);
+		EnemySharingCloseRatio = pSettings->read_if_exists<float>(section, "monster_enemy_sharing_close_ratio", EngineExternal().GetMonsterEnemySharingCloseRatio());
 		if (!_valid(EnemySharingCloseRatio) || EnemySharingCloseRatio < 0.f || EnemySharingCloseRatio > 1.f)
 		{
 			EnemySharingCloseRatio = EngineExternal().GetMonsterEnemySharingCloseRatio();
 		}
-		EnemySharingWireless = READ_IF_EXISTS(pSettings, r_bool, section, "monster_enemy_sharing_wireless", false);
-		EnemySharingRadius = READ_IF_EXISTS(pSettings, r_float, section, "monster_enemy_sharing_radius", 40.f);
+		EnemySharingWireless = pSettings->read_if_exists<bool>(section, "monster_enemy_sharing_wireless", false);
+		EnemySharingRadius = pSettings->read_if_exists<float>(section, "monster_enemy_sharing_radius", 40.f);
 		if (!_valid(EnemySharingRadius) || EnemySharingRadius < 0.f)
 		{
 			EnemySharingRadius = 0.f;
@@ -707,11 +707,11 @@ void CBaseMonster::LoadMonsterEnemyCall(const char* section)
 	EnemyCallSoundType = MonsterSound::eMonsterSoundAggressive;
 	if (EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation] &&
 		EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterEnemySharingCallSounds] &&
-		READ_IF_EXISTS(pSettings, r_bool, section, "monster_enemy_call_enabled", false) &&
-		READ_IF_EXISTS(pSettings, r_bool, section, "monster_enemy_sharing_enabled", true) &&
-		!READ_IF_EXISTS(pSettings, r_bool, section, "monster_peaceful", false))
+		pSettings->read_if_exists<bool>(section, "monster_enemy_call_enabled", false) &&
+		pSettings->read_if_exists<bool>(section, "monster_enemy_sharing_enabled", true) &&
+		!pSettings->read_if_exists<bool>(section, "monster_peaceful", false))
 	{
-		const char* CallSound = READ_IF_EXISTS(pSettings, r_string, section, "monster_enemy_call_sound", "");
+		const char* CallSound = pSettings->read_if_exists<str_c>(section, "monster_enemy_call_sound", "");
 		if (CallSound && CallSound[0])
 		{
 			if (sound().objects().find(MonsterSound::eMonsterSoundEnemyCall) == sound().objects().end())

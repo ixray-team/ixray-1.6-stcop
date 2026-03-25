@@ -205,8 +205,8 @@ struct CScavengerCrow::SBehavior
 
     void load(const char* s)
     {
-        enabled = READ_IF_EXISTS(pSettings, r_bool, s, "crow_ai_enabled", false);
-        debug = READ_IF_EXISTS(pSettings,r_bool,s,"crow_ai_debug",false);
+        enabled = pSettings->read_if_exists<bool>(s, "crow_ai_enabled", false);
+        debug = pSettings->read_if_exists<bool>(s,"crow_ai_debug",false);
         sky.load(s,"crow_sky_time",20.f,50.f); ground.load(s,"crow_ground_time",6.f,14.f);
         roof.load(s,"crow_roof_time",10.f,30.f); corpse.load(s,"crow_corpse_time",60.f,180.f);
         escape.load(s,"crow_escape_time",12.f,25.f); safe.load(s,"crow_safe_time",20.f,40.f);
@@ -234,7 +234,7 @@ struct CScavengerCrow::SBehavior
         corpse_peck.load(s,"crow_corpse_peck_interval",.8f,1.6f);
         sated_peck.load(s,"crow_sated_peck_interval",2.f,4.f);
         step.load(s,"crow_ground_step_interval",2.f,5.f);
-#define CROW_FLOAT(field, key, value) field = READ_IF_EXISTS(pSettings, r_float, s, key, value); R_ASSERT3(_valid(field) && field > 0.f, "Invalid crow setting", key)
+#define CROW_FLOAT(field, key, value) field = pSettings->read_if_exists<float>(s, key, value); R_ASSERT3(_valid(field) && field > 0.f, "Invalid crow setting", key)
         CROW_FLOAT(perception,"crow_perception_interval",.25f);
         clamp(perception, .1f, .5f);
         CROW_FLOAT(weather_interval,"crow_weather_interval",.5f);
@@ -293,31 +293,31 @@ struct CScavengerCrow::SBehavior
         CROW_FLOAT(corpse_side_distance,"crow_corpse_side_distance",.22f);
         CROW_FLOAT(corpse_reach_distance,"crow_corpse_reach_distance",1.f);
 #undef CROW_FLOAT
-        height_variation=READ_IF_EXISTS(pSettings,r_float,s,"crow_sky_height_variation",8.f);
+        height_variation=pSettings->read_if_exists<float>(s,"crow_sky_height_variation",8.f);
         R_ASSERT2(_valid(height_variation) && height_variation>=0.f,"Invalid crow height variation");
-        ground_chance = READ_IF_EXISTS(pSettings,r_float,s,"crow_ground_choice_probability",.6f);
-        CircleProbability = READ_IF_EXISTS(pSettings, r_float, s, "crow_corpse_circle_probability", .8f);
+        ground_chance = pSettings->read_if_exists<float>(s,"crow_ground_choice_probability",.6f);
+        CircleProbability = pSettings->read_if_exists<float>(s, "crow_corpse_circle_probability", .8f);
         R_ASSERT2(_valid(CircleProbability) && CircleProbability >= 0.f && CircleProbability <= 1.f, "Invalid crow circling probability");
-        corpse_slots = READ_IF_EXISTS(pSettings,r_u32,s,"crow_corpse_slots",3);
-        nav_attempts = READ_IF_EXISTS(pSettings,r_u32,s,"crow_navigation_attempts",12);
-        GeometryBudget = READ_IF_EXISTS(pSettings, r_u32, s, "crow_behavior_probes_per_frame", 4u);
+        corpse_slots = pSettings->read_if_exists<u32>(s,"crow_corpse_slots",3);
+        nav_attempts = pSettings->read_if_exists<u32>(s,"crow_navigation_attempts",12);
+        GeometryBudget = pSettings->read_if_exists<u32>(s, "crow_behavior_probes_per_frame", 4u);
         clamp(GeometryBudget, 1u, 64u);
         CFlyingWorkBudget::Configure(CFlyingWorkBudget::EKind::BehaviorProbe, GeometryBudget);
-        mapwide = READ_IF_EXISTS(pSettings,r_bool,s,"crow_roam_entire_level",true);
-        ground_hops = READ_IF_EXISTS(pSettings,r_bool,s,"crow_ground_hops",true);
-        rain_shelter_enabled=READ_IF_EXISTS(pSettings,r_bool,s,"crow_rain_shelter_enabled",true);
-        TreeShelter=READ_IF_EXISTS(pSettings,r_bool,s,"crow_tree_shelter_enabled",true);
-        night_enabled=READ_IF_EXISTS(pSettings,r_bool,s,"crow_night_enabled",true);
-        night_start=READ_IF_EXISTS(pSettings,r_float,s,"crow_night_start_hour",20.f);
-        night_end=READ_IF_EXISTS(pSettings,r_float,s,"crow_night_end_hour",6.f);
-        night_forage_chance=READ_IF_EXISTS(pSettings,r_float,s,"crow_night_forage_probability",.35f);
+        mapwide = pSettings->read_if_exists<bool>(s,"crow_roam_entire_level",true);
+        ground_hops = pSettings->read_if_exists<bool>(s,"crow_ground_hops",true);
+        rain_shelter_enabled=pSettings->read_if_exists<bool>(s,"crow_rain_shelter_enabled",true);
+        TreeShelter=pSettings->read_if_exists<bool>(s,"crow_tree_shelter_enabled",true);
+        night_enabled=pSettings->read_if_exists<bool>(s,"crow_night_enabled",true);
+        night_start=pSettings->read_if_exists<float>(s,"crow_night_start_hour",20.f);
+        night_end=pSettings->read_if_exists<float>(s,"crow_night_end_hour",6.f);
+        night_forage_chance=pSettings->read_if_exists<float>(s,"crow_night_forage_probability",.35f);
         R_ASSERT2(_valid(night_start) && _valid(night_end) && night_start>=0.f && night_start<24.f &&
             night_end>=0.f && night_end<=24.f && night_start!=night_end &&
             _valid(night_forage_chance) && night_forage_chance>=0.f && night_forage_chance<=1.f &&
             fear_calm<fear_trigger && fear_trigger<=1.f,"Invalid crow night/fear configuration");
-        rain_start=READ_IF_EXISTS(pSettings,r_float,s,"crow_rain_start_threshold",.1f);
-        rain_stop=READ_IF_EXISTS(pSettings,r_float,s,"crow_rain_stop_threshold",.03f);
-        shelter_attempts=READ_IF_EXISTS(pSettings,r_u32,s,"crow_shelter_search_attempts",4);
+        rain_start=pSettings->read_if_exists<float>(s,"crow_rain_start_threshold",.1f);
+        rain_stop=pSettings->read_if_exists<float>(s,"crow_rain_stop_threshold",.03f);
+        shelter_attempts=pSettings->read_if_exists<u32>(s,"crow_shelter_search_attempts",4);
         R_ASSERT2(_valid(rain_start) && _valid(rain_stop) && rain_stop>=0.f && rain_start>rain_stop &&
             rain_start<=1.f && shelter_attempts>0 && shelter_attempts<=16 && shelter_hold.low>0.f &&
             shelter_retry.low>0.f,"Invalid crow shelter configuration");
@@ -1739,7 +1739,7 @@ void CScavengerCrow::reinit()
 {
     stop_crow_behavior();
     CFlyingMonster::reinit();
-    m_behavior->enabled=READ_IF_EXISTS(pSettings,r_bool,cNameSect().c_str(),"crow_ai_enabled",false);
+    m_behavior->enabled=pSettings->read_if_exists<bool>(cNameSect().c_str(),"crow_ai_enabled",false);
     m_behavior->home_valid=false; m_behavior->loaded=false;
 }
 void CScavengerCrow::start_crow_behavior()
@@ -2032,7 +2032,7 @@ void CScavengerCrow::load_species(IReader& reader,u8 version)
     if (version<2) return;
 	// Keep the old packet field for save compatibility; native policy comes from config.
 	reader.r_u8();
-	m_behavior->enabled=READ_IF_EXISTS(pSettings,r_bool,cNameSect().c_str(),"crow_ai_enabled",true);
+	m_behavior->enabled=pSettings->read_if_exists<bool>(cNameSect().c_str(),"crow_ai_enabled",true);
 	m_behavior->satiety=reader.r_float();
     m_behavior->safe_timer=reader.r_float(); m_behavior->home_valid=reader.r_u8()!=0;
     reader.r_fvector3(m_behavior->home);
@@ -2047,7 +2047,7 @@ void CScavengerCrow::Serialize(ISaveObject& object)
         object << m_behavior->home.x << m_behavior->home.y << m_behavior->home.z;
         if (!object.IsSave())
 		{
-			m_behavior->enabled=READ_IF_EXISTS(pSettings,r_bool,cNameSect().c_str(),"crow_ai_enabled",true);
+			m_behavior->enabled=pSettings->read_if_exists<bool>(cNameSect().c_str(),"crow_ai_enabled",true);
 			clamp(m_behavior->satiety,0.f,1.f);
 			m_behavior->loaded=true;
 		}

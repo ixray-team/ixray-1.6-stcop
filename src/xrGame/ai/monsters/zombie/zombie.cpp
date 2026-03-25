@@ -84,9 +84,9 @@ void CZombie::Load(LPCSTR section)
 	fake_death_count = 1 + u8(Random.randI(pSettings->r_u8(section,"FakeDeathCount")));
 	health_death_threshold	= pSettings->r_float(section,"StartFakeDeathHealthThreshold");
 
-	time_dead_duration = READ_IF_EXISTS(pSettings, r_float, section, "time_dead_duration", default_time_fake_death);
-	time_resurrect_duration = READ_IF_EXISTS(pSettings, r_float, section, "time_resurrect_duration", default_time_resurrect_restore);
-	time_out_frustum_duration = READ_IF_EXISTS(pSettings, r_float, section, "time_out_frustum_duration", default_time_out_frustum_timeout);
+	time_dead_duration = pSettings->read_if_exists<float>(section, "time_dead_duration", default_time_fake_death);
+	time_resurrect_duration = pSettings->read_if_exists<float>(section, "time_resurrect_duration", default_time_resurrect_restore);
+	time_out_frustum_duration = pSettings->read_if_exists<float>(section, "time_out_frustum_duration", default_time_out_frustum_timeout);
 
 	SVelocityParam &velocity_none		= move().get_velocity(MonsterMovement::eVelocityParameterIdle);	
 	SVelocityParam &velocity_turn		= move().get_velocity(MonsterMovement::eVelocityParameterStand);

@@ -43,17 +43,17 @@ DLL_Pure *CHudItem::_construct()
 
 void CHudItem::Load(const char* section)
 {
-	SetHudSection(READ_IF_EXISTS(pSettings, r_string, section, "hud", nullptr));
+	SetHudSection(pSettings->read_if_exists<str_c>(section, "hud", nullptr));
 	hud_sect_cache = hud_sect;
 
 	if (m_animation_slot != u32(-1)) // if it has default hardcoded slot, then don't crash
-		pSettings->read_if_exists(m_animation_slot, section, "animation_slot");
+		pSettings->r_u32_nullable(section, "animation_slot", m_animation_slot);
 	else // if it doesn't, then crash if line is missing from config
 		m_animation_slot		= pSettings->r_u32			(section,"animation_slot");
 
-	m_fActorCamSpeedFactor = READ_IF_EXISTS(pSettings, r_float, section, "actor_camera_speed_factor", 1.0f);
+	m_fActorCamSpeedFactor = pSettings->read_if_exists<float>(section, "actor_camera_speed_factor", 1.0f);
 
-	ScriptUIFunctor = READ_IF_EXISTS(pSettings, r_string, section, "script_ui_functor", "");
+	ScriptUIFunctor = pSettings->read_if_exists<str_c>(section, "script_ui_functor", "");
 
 	if (ScriptUIFunctor.size())
 	{
@@ -66,7 +66,7 @@ void CHudItem::Load(const char* section)
 		ScriptUIMatrix.setHPB(ScriptUIRot.x, ScriptUIRot.y, ScriptUIRot.z).translate_over(ScriptUIPos);
 	}
 
-	if (READ_IF_EXISTS(pSettings, r_bool, section, "torch_installed", false))
+	if (pSettings->read_if_exists<bool>(section, "torch_installed", false))
 	{
 		THudLightTorch& LightTorch = m_object->CreateComponent<THudLightTorch>();
 		LightTorch.NewTorchlight(section);

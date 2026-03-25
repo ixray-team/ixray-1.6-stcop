@@ -10,9 +10,9 @@ struct SCrowRange
     {
         string128 key;
         xr_strconcat(key, name, "_min");
-        low = READ_IF_EXISTS(pSettings, r_float, section, key, a);
+        low = pSettings->read_if_exists<float>(section, key, a);
         xr_strconcat(key, name, "_max");
-        high = READ_IF_EXISTS(pSettings, r_float, section, key, b);
+        high = pSettings->read_if_exists<float>(section, key, b);
         R_ASSERT3(_valid(low) && _valid(high) && low >= 0.f && high >= low && high <= 86400.f,
             "Invalid crow interval", name);
     }

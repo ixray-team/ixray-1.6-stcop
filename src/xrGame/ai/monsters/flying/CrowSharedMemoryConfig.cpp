@@ -19,7 +19,7 @@ bool CCrowSharedMemory::ReloadConfig()
 	SConfig Next;
 	auto Read = [&](const char* Key, u32 Default, u32 Min, u32 Max)
 	{
-		u32 Value = READ_IF_EXISTS(&Ini, r_u32, "crow_shared_memory", Key, Default);
+		u32 Value = Ini.read_if_exists<u32>("crow_shared_memory", Key, Default);
 		clamp(Value, Min, Max);
 		return Value;
 	};
@@ -35,8 +35,8 @@ bool CCrowSharedMemory::ReloadConfig()
 	Next.MaintenanceMs = Read("maintenance_ms", Next.MaintenanceMs, 16u, 10000u);
 	Next.PerchProbesPerFrame = Read("perch_probes_per_frame", Next.PerchProbesPerFrame, 1u, 64u);
 	Next.ObservationQueriesPerFrame = Read("observation_queries_per_frame", Next.ObservationQueriesPerFrame, 1u, 64u);
-	Next.CellSize = READ_IF_EXISTS(&Ini, r_float, "crow_shared_memory", "observation_cell_size", Next.CellSize);
-	Next.CorpseMoveDistance = READ_IF_EXISTS(&Ini, r_float, "crow_shared_memory", "corpse_move_distance", Next.CorpseMoveDistance);
+	Next.CellSize = Ini.read_if_exists<float>("crow_shared_memory", "observation_cell_size", Next.CellSize);
+	Next.CorpseMoveDistance = Ini.read_if_exists<float>("crow_shared_memory", "corpse_move_distance", Next.CorpseMoveDistance);
 	if (!_valid(Next.CellSize) || !_valid(Next.CorpseMoveDistance))
 	{
 		Msg("! Crow shared memory: non-finite configuration value");

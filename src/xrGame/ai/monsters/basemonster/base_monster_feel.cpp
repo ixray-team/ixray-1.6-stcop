@@ -128,8 +128,8 @@ float CBaseMonster::GetDistanceSoundRange(int Type, CObject* Source) const
 		if (Weapon)
 		{
 			const char* Section = Weapon->cNameSect().c_str();
-			const char* Kind = READ_IF_EXISTS(pSettings, r_string, Section, "weapon_class", "");
-			const int WeaponType = READ_IF_EXISTS(pSettings, r_s32, Section, "ef_weapon_type", 8);
+			const char* Kind = pSettings->read_if_exists<str_c>(Section, "weapon_class", "");
+			const int WeaponType = pSettings->read_if_exists<s32>(Section, "ef_weapon_type", 8);
 			CWeaponMagazinedWGrenade* Launcher = Weapon->cast_weapon_magazined_w_grenade();
 			if ((Launcher && Launcher->IsGrenadeMode()) || WeaponType == 12)
 			{

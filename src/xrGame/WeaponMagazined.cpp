@@ -91,19 +91,19 @@ void CWeaponMagazined::Load(const char* section)
 
 	LoadSilencerKoeffs();
 	
-	m_vibration_time = READ_IF_EXISTS(pSettings, r_float, section, "vibration_time", 0.1f);
-	m_vibration_factor_left = READ_IF_EXISTS(pSettings, r_float, section, "vibration_factor_left", 1.0f);
-	m_vibration_factor_right = READ_IF_EXISTS(pSettings, r_float, section, "vibration_factor_right", 1.0f);
+	m_vibration_time = pSettings->read_if_exists<float>(section, "vibration_time", 0.1f);
+	m_vibration_factor_left = pSettings->read_if_exists<float>(section, "vibration_factor_left", 1.0f);
+	m_vibration_factor_right = pSettings->read_if_exists<float>(section, "vibration_factor_right", 1.0f);
 
-	m_trigger_effect_time = READ_IF_EXISTS(pSettings, r_float, section, "trigger_effect_time", 1.0f);
+	m_trigger_effect_time = pSettings->read_if_exists<float>(section, "trigger_effect_time", 1.0f);
 }
 
 void CWeaponMagazined::LoadMagazineShootingParams(const char* section)
 {
-	m_iBaseDispersionedBulletsCount = READ_IF_EXISTS(pSettings, r_u8, section, "base_dispersioned_bullets_count", 0);
-	m_fBaseDispersionedBulletsSpeed = READ_IF_EXISTS(pSettings, r_float, section, "base_dispersioned_bullets_speed", m_fStartBulletSpeed);
-	m_fBaseDispersionedBulletsTimeDelta = READ_IF_EXISTS(pSettings, r_float, section, "base_dispersioned_bullets_time_delta", 0.0f);
-	m_fSingleShootsTimeDelta = READ_IF_EXISTS(pSettings, r_float, section, "singleshoots_time_delta", 0.0f);
+	m_iBaseDispersionedBulletsCount = pSettings->read_if_exists<u8>(section, "base_dispersioned_bullets_count", 0);
+	m_fBaseDispersionedBulletsSpeed = pSettings->read_if_exists<float>(section, "base_dispersioned_bullets_speed", m_fStartBulletSpeed);
+	m_fBaseDispersionedBulletsTimeDelta = pSettings->read_if_exists<float>(section, "base_dispersioned_bullets_time_delta", 0.0f);
+	m_fSingleShootsTimeDelta = pSettings->read_if_exists<float>(section, "singleshoots_time_delta", 0.0f);
 }
 
 void CWeaponMagazined::ReloadConfig()
@@ -2878,7 +2878,7 @@ bool CWeaponMagazined::Detach(PIItem pIItem)
 /*
 void CWeaponMagazined::LoadAddons()
 {
-	m_zoom_params.m_fIronSightZoomFactor = READ_IF_EXISTS( pSettings, r_float, cNameSect(), "ironsight_zoom_factor", 50.0f );
+	m_zoom_params.m_fIronSightZoomFactor = pSettings->read_if_exists<float>(cNameSect(), "ironsight_zoom_factor", 50.0f );
 
 }
 */
@@ -2886,28 +2886,28 @@ void CWeaponMagazined::InitAddons()
 {
 	shared_str get_scope_section = GetScopeName();
 
-	m_zoom_params.m_fIronSightZoomFactor = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "ironsight_zoom_factor", 50.0f);
+	m_zoom_params.m_fIronSightZoomFactor = pSettings->read_if_exists<float>(cNameSect(), "ironsight_zoom_factor", 50.0f);
 
 	if (GetScopeAttached() || IsScopePermanent())
 	{
 		LoadCurrentScopeParams(*get_scope_section);
 
-		m_scope_recoil.m_fScopeAttachedRecoil = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "scope_attached_recoil_factor", 1.0f);
+		m_scope_recoil.m_fScopeAttachedRecoil = pSettings->read_if_exists<float>(get_scope_section, "scope_attached_recoil_factor", 1.0f);
 
-		m_scope_recoil.m_fScopeAttachedRecoilReduction = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "scope_attached_recoil_reduction", 1.0f);
+		m_scope_recoil.m_fScopeAttachedRecoilReduction = pSettings->read_if_exists<float>(get_scope_section, "scope_attached_recoil_reduction", 1.0f);
 		
 
-		m_lens_zoom_params.factor_min = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "min_lens_factor", 1.0f);
-		m_lens_zoom_params.factor_max = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "max_lens_factor", 1.0f);
-		m_lens_zoom_params.need_lens_frame = READ_IF_EXISTS(pSettings, r_bool, get_scope_section, "need_lens_frame", false);
+		m_lens_zoom_params.factor_min = pSettings->read_if_exists<float>(get_scope_section, "min_lens_factor", 1.0f);
+		m_lens_zoom_params.factor_max = pSettings->read_if_exists<float>(get_scope_section, "max_lens_factor", 1.0f);
+		m_lens_zoom_params.need_lens_frame = pSettings->read_if_exists<bool>(get_scope_section, "need_lens_frame", false);
 
-		m_lens_zoom_params.speed = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "lens_speed", 0.0f);
-		m_lens_zoom_params.gyro_period = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "lens_gyro_sound_period", 0.0f);
+		m_lens_zoom_params.speed = pSettings->read_if_exists<float>(get_scope_section, "lens_speed", 0.0f);
+		m_lens_zoom_params.gyro_period = pSettings->read_if_exists<float>(get_scope_section, "lens_gyro_sound_period", 0.0f);
 
-		m_lens_zoom_params.lens_factor_levels_count = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "lens_factor_levels_count", 5.0f);
+		m_lens_zoom_params.lens_factor_levels_count = pSettings->read_if_exists<float>(get_scope_section, "lens_factor_levels_count", 5.0f);
 		m_lens_zoom_params.delta = 1.0f / m_lens_zoom_params.lens_factor_levels_count;
 
-		m_lens_zoom_params.force_zoom_sound = READ_IF_EXISTS(pSettings, r_bool, get_scope_section, "force_zoom_sound", false);
+		m_lens_zoom_params.force_zoom_sound = pSettings->read_if_exists<bool>(get_scope_section, "force_zoom_sound", false);
 
 		LoadNightBrightnessParamsFromSection(get_scope_section);
 
@@ -2934,28 +2934,28 @@ void CWeaponMagazined::InitAddons()
 
 		if (IsZoomEnabled())
 		{
-			m_zoom_params.m_fIronSightZoomFactor = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "scope_zoom_factor", 1.0f);
+			m_zoom_params.m_fIronSightZoomFactor = pSettings->read_if_exists<float>(get_scope_section, "scope_zoom_factor", 1.0f);
 		}
 
-		m_scope_recoil.m_fScopeAttachedRecoil = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "scope_attached_recoil_factor", 1.0f);
+		m_scope_recoil.m_fScopeAttachedRecoil = pSettings->read_if_exists<float>(get_scope_section, "scope_attached_recoil_factor", 1.0f);
 
-		m_scope_recoil.m_fScopeAttachedRecoilReduction = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "scope_attached_recoil_reduction", 1.0f);
+		m_scope_recoil.m_fScopeAttachedRecoilReduction = pSettings->read_if_exists<float>(get_scope_section, "scope_attached_recoil_reduction", 1.0f);
 
 		LoadScopeEffects(get_scope_section.c_str());
 
-		m_lens_zoom_params.factor_min = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "min_lens_factor", 1.0f);
-		m_lens_zoom_params.factor_max = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "max_lens_factor", 1.0f);
-		m_lens_zoom_params.need_lens_frame = READ_IF_EXISTS(pSettings, r_bool, get_scope_section, "need_lens_frame", false);
+		m_lens_zoom_params.factor_min = pSettings->read_if_exists<float>(get_scope_section, "min_lens_factor", 1.0f);
+		m_lens_zoom_params.factor_max = pSettings->read_if_exists<float>(get_scope_section, "max_lens_factor", 1.0f);
+		m_lens_zoom_params.need_lens_frame = pSettings->read_if_exists<bool>(get_scope_section, "need_lens_frame", false);
 
-		m_lens_zoom_params.factor_min = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "min_lens_factor", 1.0f);
-		m_lens_zoom_params.factor_max = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "max_lens_factor", 1.0f);
-		m_lens_zoom_params.speed = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "lens_speed", 0.0f);
-		m_lens_zoom_params.gyro_period = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "lens_gyro_sound_period", 0.0f);
+		m_lens_zoom_params.factor_min = pSettings->read_if_exists<float>(get_scope_section, "min_lens_factor", 1.0f);
+		m_lens_zoom_params.factor_max = pSettings->read_if_exists<float>(get_scope_section, "max_lens_factor", 1.0f);
+		m_lens_zoom_params.speed = pSettings->read_if_exists<float>(get_scope_section, "lens_speed", 0.0f);
+		m_lens_zoom_params.gyro_period = pSettings->read_if_exists<float>(get_scope_section, "lens_gyro_sound_period", 0.0f);
 
-		m_lens_zoom_params.lens_factor_levels_count = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "lens_factor_levels_count", 5.0f);
+		m_lens_zoom_params.lens_factor_levels_count = pSettings->read_if_exists<float>(get_scope_section, "lens_factor_levels_count", 5.0f);
 		m_lens_zoom_params.delta = 1.0f / m_lens_zoom_params.lens_factor_levels_count;
 
-		m_lens_zoom_params.force_zoom_sound = READ_IF_EXISTS(pSettings, r_bool, get_scope_section, "force_zoom_sound", false);
+		m_lens_zoom_params.force_zoom_sound = pSettings->read_if_exists<bool>(get_scope_section, "force_zoom_sound", false);
 
 		LoadNightBrightnessParamsFromSection(get_scope_section);
 
@@ -3017,13 +3017,13 @@ void CWeaponMagazined::LoadSilencerKoeffs()
 	if (IsSilencerAttachable())
 	{
 		const char* sect = m_sSilencerName.c_str();
-		m_silencer_koef.hit_power		= READ_IF_EXISTS( pSettings, r_float, sect, "bullet_hit_power_k", 1.0f );
-		m_silencer_koef.hit_impulse		= READ_IF_EXISTS( pSettings, r_float, sect, "bullet_hit_impulse_k", 1.0f );
-		m_silencer_koef.bullet_speed	= READ_IF_EXISTS( pSettings, r_float, sect, "bullet_speed_k", 1.0f );
-		m_silencer_koef.fire_dispersion	= READ_IF_EXISTS( pSettings, r_float, sect, "fire_dispersion_base_k", 1.0f );
-		m_silencer_koef.cam_dispersion	= READ_IF_EXISTS( pSettings, r_float, sect, "cam_dispersion_k", 1.0f );
-		m_silencer_koef.cam_disper_inc	= READ_IF_EXISTS( pSettings, r_float, sect, "cam_dispersion_inc_k", 1.0f );
-		m_silencer_koef.attached_recoil = READ_IF_EXISTS(pSettings, r_float, sect, "attached_recoil_f", 1.0f);
+		m_silencer_koef.hit_power		= pSettings->read_if_exists<float>(sect, "bullet_hit_power_k", 1.0f );
+		m_silencer_koef.hit_impulse		= pSettings->read_if_exists<float>(sect, "bullet_hit_impulse_k", 1.0f );
+		m_silencer_koef.bullet_speed	= pSettings->read_if_exists<float>(sect, "bullet_speed_k", 1.0f );
+		m_silencer_koef.fire_dispersion	= pSettings->read_if_exists<float>(sect, "fire_dispersion_base_k", 1.0f );
+		m_silencer_koef.cam_dispersion	= pSettings->read_if_exists<float>(sect, "cam_dispersion_k", 1.0f );
+		m_silencer_koef.cam_disper_inc	= pSettings->read_if_exists<float>(sect, "cam_dispersion_inc_k", 1.0f );
+		m_silencer_koef.attached_recoil = pSettings->read_if_exists<float>(sect, "attached_recoil_f", 1.0f);
 	}
 
 	clamp( m_silencer_koef.hit_power,		0.0f, 1.0f );

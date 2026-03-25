@@ -14,11 +14,11 @@ bool CScavengerCrow::net_Spawn(CSE_Abstract* data)
     if (!RestoreOfflineCrow()) return false;
 	EnsureAirMotion();
     CCrowSharedMemory::Get().RegisterBird(ID());
-	OfflineSyncInterval = READ_IF_EXISTS(pSettings, r_float, cNameSect().c_str(), "crow_offline_sync_interval", .25f);
+	OfflineSyncInterval = pSettings->read_if_exists<float>(cNameSect().c_str(), "crow_offline_sync_interval", .25f);
 	R_ASSERT2(_valid(OfflineSyncInterval) && OfflineSyncInterval >= .05f && OfflineSyncInterval <= 5.f, "Invalid crow offline sync interval");
 	OfflineSyncTick = float(ID() % 101u) * OfflineSyncInterval / 101.f;
     m_ground_pose_weight = flight().grounded() ? 1.f : 0.f;
-    m_ground_pose_speed = READ_IF_EXISTS(pSettings, r_float, cNameSect().c_str(), "crow_fold_speed", 4.f);
+    m_ground_pose_speed = pSettings->read_if_exists<float>(cNameSect().c_str(), "crow_fold_speed", 4.f);
     clamp(m_ground_pose_speed, .1f, 20.f);
     PerchLookAngles.set(0,0,0);
     PreviousLookAngles.set(0,0,0);
@@ -36,36 +36,36 @@ bool CScavengerCrow::net_Spawn(CSE_Abstract* data)
     DetailedAnimation = true;
 	AnimationVisibleFrame = u32(-1);
 	AnimationWasVisible = false;
-    DetailDistance = READ_IF_EXISTS(pSettings, r_float, cNameSect().c_str(), "crow_animation_detail_distance", 30.f);
-    FocusDistance = READ_IF_EXISTS(pSettings, r_float, cNameSect().c_str(), "crow_animation_focus_distance", 100.f);
-    FocusFraction = READ_IF_EXISTS(pSettings, r_float, cNameSect().c_str(), "crow_animation_focus_fraction", .3f);
+    DetailDistance = pSettings->read_if_exists<float>(cNameSect().c_str(), "crow_animation_detail_distance", 30.f);
+    FocusDistance = pSettings->read_if_exists<float>(cNameSect().c_str(), "crow_animation_focus_distance", 100.f);
+    FocusFraction = pSettings->read_if_exists<float>(cNameSect().c_str(), "crow_animation_focus_fraction", .3f);
     R_ASSERT2(_valid(DetailDistance) && DetailDistance > 0.f && _valid(FocusDistance) && FocusDistance >= DetailDistance &&
         _valid(FocusFraction) && FocusFraction > 0.f && FocusFraction <= 1.f, "Invalid crow animation LOD settings");
     CachedGroundPose = false;
     PeckSolutionValid = PeckCanReach = false;
-    FoldFeatherWidth = READ_IF_EXISTS(pSettings, r_float, cNameSect().c_str(), "crow_fold_feather_width", .35f);
-    FoldFeatherLength = READ_IF_EXISTS(pSettings, r_float, cNameSect().c_str(), "crow_fold_feather_length", .9f);
+    FoldFeatherWidth = pSettings->read_if_exists<float>(cNameSect().c_str(), "crow_fold_feather_width", .35f);
+    FoldFeatherLength = pSettings->read_if_exists<float>(cNameSect().c_str(), "crow_fold_feather_length", .9f);
     R_ASSERT2(_valid(FoldFeatherWidth) && FoldFeatherWidth >= .2f && FoldFeatherWidth <= 1.f &&
         _valid(FoldFeatherLength) && FoldFeatherLength >= .7f && FoldFeatherLength <= 1.f, "Invalid crow feather folding settings");
-    IdleAmount = READ_IF_EXISTS(pSettings, r_float, cNameSect().c_str(), "crow_idle_amount", 1.f);
-    RuffleIntervalMin = READ_IF_EXISTS(pSettings, r_float, cNameSect().c_str(), "crow_idle_ruffle_interval_min", 4.f);
-    RuffleIntervalMax = READ_IF_EXISTS(pSettings, r_float, cNameSect().c_str(), "crow_idle_ruffle_interval_max", 10.f);
-    LandingSettleDuration = READ_IF_EXISTS(pSettings, r_float, cNameSect().c_str(), "crow_landing_settle_duration", .55f);
+    IdleAmount = pSettings->read_if_exists<float>(cNameSect().c_str(), "crow_idle_amount", 1.f);
+    RuffleIntervalMin = pSettings->read_if_exists<float>(cNameSect().c_str(), "crow_idle_ruffle_interval_min", 4.f);
+    RuffleIntervalMax = pSettings->read_if_exists<float>(cNameSect().c_str(), "crow_idle_ruffle_interval_max", 10.f);
+    LandingSettleDuration = pSettings->read_if_exists<float>(cNameSect().c_str(), "crow_landing_settle_duration", .55f);
     R_ASSERT2(_valid(IdleAmount) && IdleAmount >= 0.f && IdleAmount <= 2.f &&
         _valid(RuffleIntervalMin) && _valid(RuffleIntervalMax) && RuffleIntervalMin > 0.f && RuffleIntervalMax >= RuffleIntervalMin &&
         _valid(LandingSettleDuration) && LandingSettleDuration > 0.f && LandingSettleDuration <= 2.f, "Invalid crow idle settings");
     RuffleTimer = Random.randF(0.f, RuffleIntervalMax);
-    LookYawAxis = READ_IF_EXISTS(pSettings, r_fvector3, cNameSect().c_str(), "crow_look_yaw_axis", Fvector().set(0,1,0));
-    LookPitchAxis = READ_IF_EXISTS(pSettings, r_fvector3, cNameSect().c_str(), "crow_look_pitch_axis", Fvector().set(0,0,1));
-    HeadLookSpeed = READ_IF_EXISTS(pSettings, r_float, cNameSect().c_str(), "crow_head_look_speed", 4.f);
-    HeadPitchRange = READ_IF_EXISTS(pSettings, r_float, cNameSect().c_str(), "crow_head_pitch_range", 12.f) * PI / 180.f;
-    NeckLookShare = READ_IF_EXISTS(pSettings, r_float, cNameSect().c_str(), "crow_neck_look_share", .35f);
-    LookIntervalMin = READ_IF_EXISTS(pSettings, r_float, cNameSect().c_str(), "crow_look_interval_min", 2.f);
-    LookIntervalMax = READ_IF_EXISTS(pSettings, r_float, cNameSect().c_str(), "crow_look_interval_max", 5.f);
-    LookDuration = READ_IF_EXISTS(pSettings, r_float, cNameSect().c_str(), "crow_look_duration", 1.f);
-    LookAngle = READ_IF_EXISTS(pSettings, r_float, cNameSect().c_str(), "crow_look_angle", 30.f) * PI / 180.f;
-    HopWingAmount = READ_IF_EXISTS(pSettings, r_float, cNameSect().c_str(), "crow_hop_wing_weight", .65f);
-    WingOpenSpeed = READ_IF_EXISTS(pSettings, r_float, cNameSect().c_str(), "crow_fold_open_speed", 10.f);
+    LookYawAxis = pSettings->read_if_exists<Fvector3>(cNameSect().c_str(), "crow_look_yaw_axis", Fvector().set(0,1,0));
+    LookPitchAxis = pSettings->read_if_exists<Fvector3>(cNameSect().c_str(), "crow_look_pitch_axis", Fvector().set(0,0,1));
+    HeadLookSpeed = pSettings->read_if_exists<float>(cNameSect().c_str(), "crow_head_look_speed", 4.f);
+    HeadPitchRange = pSettings->read_if_exists<float>(cNameSect().c_str(), "crow_head_pitch_range", 12.f) * PI / 180.f;
+    NeckLookShare = pSettings->read_if_exists<float>(cNameSect().c_str(), "crow_neck_look_share", .35f);
+    LookIntervalMin = pSettings->read_if_exists<float>(cNameSect().c_str(), "crow_look_interval_min", 2.f);
+    LookIntervalMax = pSettings->read_if_exists<float>(cNameSect().c_str(), "crow_look_interval_max", 5.f);
+    LookDuration = pSettings->read_if_exists<float>(cNameSect().c_str(), "crow_look_duration", 1.f);
+    LookAngle = pSettings->read_if_exists<float>(cNameSect().c_str(), "crow_look_angle", 30.f) * PI / 180.f;
+    HopWingAmount = pSettings->read_if_exists<float>(cNameSect().c_str(), "crow_hop_wing_weight", .65f);
+    WingOpenSpeed = pSettings->read_if_exists<float>(cNameSect().c_str(), "crow_fold_open_speed", 10.f);
     R_ASSERT2(_valid(LookIntervalMin) && _valid(LookIntervalMax) && LookIntervalMin > 0.f && LookIntervalMax >= LookIntervalMin &&
         _valid(LookDuration) && LookDuration > 0.f && _valid(LookAngle) && LookAngle > 0.f && LookAngle <= PI_DIV_2 &&
         _valid(HopWingAmount) && HopWingAmount >= 0.f && HopWingAmount <= 1.f &&
@@ -106,7 +106,7 @@ bool CScavengerCrow::net_Spawn(CSE_Abstract* data)
     const char* settings[] = {"crow_fold_shoulder", "crow_fold_elbow", "crow_fold_wrist", "crow_fold_finger"};
     for (u32 i = 0; i < 8; ++i)
     {
-        const char* name = READ_IF_EXISTS(pSettings, r_string, cNameSect().c_str(), bone_settings[i], "");
+        const char* name = pSettings->read_if_exists<str_c>(cNameSect().c_str(), bone_settings[i], "");
         if (!name[0])
             continue;
         const u16 id = skeleton->LL_BoneID(name);
@@ -132,15 +132,15 @@ bool CScavengerCrow::net_Spawn(CSE_Abstract* data)
         pose.target.setXYZi(rotation);
         pose.target.c = position;
     }
-    IdleBodyBone = skeleton->LL_BoneID(READ_IF_EXISTS(pSettings, r_string, cNameSect().c_str(), "crow_idle_body_bone", "bip01_pelvis"));
-    IdleTailBone = skeleton->LL_BoneID(READ_IF_EXISTS(pSettings, r_string, cNameSect().c_str(), "crow_idle_tail_bone", "bip01_tail"));
+    IdleBodyBone = skeleton->LL_BoneID(pSettings->read_if_exists<str_c>(cNameSect().c_str(), "crow_idle_body_bone", "bip01_pelvis"));
+    IdleTailBone = skeleton->LL_BoneID(pSettings->read_if_exists<str_c>(cNameSect().c_str(), "crow_idle_tail_bone", "bip01_tail"));
     // Counter the body's visual motion at the leg roots, leaving both feet planted.
     const char* LegSettings[] = {"crow_idle_left_leg_bone", "crow_idle_right_leg_bone"};
     const char* LegDefaults[] = {"bip01_l_thigh", "bip01_r_thigh"};
     bool FeetAnchored = IdleBodyBone != BI_NONE && !skeleton->LL_GetBoneInstance(IdleBodyBone).callback();
     for (u32 Index = 0; Index < 2; ++Index)
     {
-        const u16 Bone = skeleton->LL_BoneID(READ_IF_EXISTS(pSettings, r_string, cNameSect().c_str(), LegSettings[Index], LegDefaults[Index]));
+        const u16 Bone = skeleton->LL_BoneID(pSettings->read_if_exists<str_c>(cNameSect().c_str(), LegSettings[Index], LegDefaults[Index]));
         if (Bone == BI_NONE || m_ground_pose_bones[Bone].parent != IdleBodyBone || skeleton->LL_GetBoneInstance(Bone).callback())
         {
             FeetAnchored = false;
@@ -157,19 +157,19 @@ bool CScavengerCrow::net_Spawn(CSE_Abstract* data)
     const char* peck_settings[] = {"crow_peck_neck_angles", "crow_peck_head_angles"};
     for (u32 i = 0; i < 2; ++i)
     {
-        const char* name = READ_IF_EXISTS(pSettings, r_string, cNameSect().c_str(), peck_bones[i], "");
+        const char* name = pSettings->read_if_exists<str_c>(cNameSect().c_str(), peck_bones[i], "");
         if (!name[0] || !pSettings->line_exist(cNameSect().c_str(), peck_settings[i])) continue;
         const u16 id = skeleton->LL_BoneID(name);
         if (id == BI_NONE) { Msg("! [scavenger crow] peck bone missing: %s", name); continue; }
         m_ground_pose_bones[id].peck_angles = pSettings->r_fvector3(cNameSect().c_str(), peck_settings[i]);
         m_ground_pose_bones[id].peck_angles.mul(PI / 180.f);
     }
-    m_peck_neck = skeleton->LL_BoneID(READ_IF_EXISTS(pSettings,r_string,cNameSect().c_str(),"crow_peck_neck_bone",""));
-    m_peck_head = skeleton->LL_BoneID(READ_IF_EXISTS(pSettings,r_string,cNameSect().c_str(),"crow_peck_head_bone",""));
-    m_peck_ik_enabled = READ_IF_EXISTS(pSettings,r_bool,cNameSect().c_str(),"crow_peck_ik_enabled",true);
-    m_peck_beak_offset = READ_IF_EXISTS(pSettings,r_fvector3,cNameSect().c_str(),"crow_peck_beak_offset",Fvector().set(.12f,0,0));
-    m_peck_ik_angle = READ_IF_EXISTS(pSettings,r_float,cNameSect().c_str(),"crow_peck_ik_max_angle",90.f)*PI/180.f;
-    m_peck_neck_extension = READ_IF_EXISTS(pSettings,r_float,cNameSect().c_str(),"crow_peck_ik_neck_extension",.12f);
+    m_peck_neck = skeleton->LL_BoneID(pSettings->read_if_exists<str_c>(cNameSect().c_str(),"crow_peck_neck_bone",""));
+    m_peck_head = skeleton->LL_BoneID(pSettings->read_if_exists<str_c>(cNameSect().c_str(),"crow_peck_head_bone",""));
+    m_peck_ik_enabled = pSettings->read_if_exists<bool>(cNameSect().c_str(),"crow_peck_ik_enabled",true);
+    m_peck_beak_offset = pSettings->read_if_exists<Fvector3>(cNameSect().c_str(),"crow_peck_beak_offset",Fvector().set(.12f,0,0));
+    m_peck_ik_angle = pSettings->read_if_exists<float>(cNameSect().c_str(),"crow_peck_ik_max_angle",90.f)*PI/180.f;
+    m_peck_neck_extension = pSettings->read_if_exists<float>(cNameSect().c_str(),"crow_peck_ik_neck_extension",.12f);
     R_ASSERT2(_valid(m_peck_beak_offset) && _valid(m_peck_ik_angle) && m_peck_ik_angle>0.f && m_peck_ik_angle<=PI &&
         _valid(m_peck_neck_extension) && m_peck_neck_extension>=0.f && m_peck_neck_extension<=.5f,"Invalid crow peck IK settings");
     if (m_peck_neck == BI_NONE || m_peck_head == BI_NONE ||

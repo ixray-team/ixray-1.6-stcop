@@ -25,7 +25,7 @@ void Property::construct(shared_str const& property_id, Manager& manager_r)
 	m_name = g_pStringTable->translate(pSettings->r_string(id(), "name"));
 	m_icon._set(pSettings->r_string(id(), "icon"));
 
-	Fvector3 color = READ_IF_EXISTS(pSettings, r_fvector3, id(), "color", Fvector3().set(255, 255, 255));
+	Fvector3 color = pSettings->read_if_exists<Fvector3>(id(), "color", Fvector3().set(255, 255, 255));
 	m_color = color_rgba((u32)color.x, (u32)color.y, (u32)color.z, 255);
 
 	// functor

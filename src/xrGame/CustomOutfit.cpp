@@ -19,12 +19,12 @@ void CCustomOutfit::Load(const char* section)
 	inherited::Load(section);
 	CurrentOutfitDesc = &SCustomOutfitDesc::Registry::Get(section);
 
-	m_HitTypeProtection[ALife::eHitTypeFireWound]	= READ_IF_EXISTS(pSettings, r_float, section,"fire_wound_protection", 0.f);
+	m_HitTypeProtection[ALife::eHitTypeFireWound]	= pSettings->read_if_exists<float>(section,"fire_wound_protection", 0.f);
 
 	m_additional_weight = pSettings->r_float(section, "additional_inventory_weight");
 	m_additional_weight2 = pSettings->r_float(section, "additional_inventory_weight2");
 
-	m_artefact_count = READ_IF_EXISTS(pSettings, r_u32, section, "artefact_count", 0);
+	m_artefact_count = pSettings->read_if_exists<u32>(section, "artefact_count", 0);
 }
 
 void CCustomOutfit::OnMoveToSlot(const SInvItemPlace& prev)

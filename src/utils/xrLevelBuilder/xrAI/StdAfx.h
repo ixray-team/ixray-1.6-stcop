@@ -16,9 +16,6 @@
 #include "../../../xrEngine/_d3d_extensions.h"
 #include "../../../xrEngine/stdafx.h"
 
-#define READ_IF_EXISTS(ltx,method,section,name,default_value)\
-	(ltx->line_exist(section,name)) ? ltx->method(section,name) : default_value
-
 #undef		THROW
 
 #if XRAY_EXCEPTIONS

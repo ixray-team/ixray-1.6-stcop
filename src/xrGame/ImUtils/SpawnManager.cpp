@@ -49,7 +49,7 @@ public:
 		Entry.LastFrame = Device.dwFrame;
 		if (IsNew)
 		{
-			LPCSTR Visual = READ_IF_EXISTS(pSettings, r_string, SectionName, "3d_static_visual_name", READ_IF_EXISTS(pSettings, r_string, SectionName, "visual", nullptr));
+			LPCSTR Visual = pSettings->read_if_exists<str_c>(SectionName, "3d_static_visual_name", pSettings->read_if_exists<str_c>(SectionName, "visual", nullptr));
 			Entry.Icon = xr_make_unique<CUI3dStatic>();
 			Entry.Icon->SetIconVisual(Visual);
 			if (Entry.Icon->GetVisual())
@@ -67,11 +67,11 @@ public:
 		}
 		if (Entry.Icon)
 		{
-			Fvector Rotation = READ_IF_EXISTS(pSettings, r_fvector3, SectionName, "3d_static_rotate", Fvector().set(0.0f, 0.0f, 0.0f));
+			Fvector Rotation = pSettings->read_if_exists<Fvector3>(SectionName, "3d_static_rotate", Fvector().set(0.0f, 0.0f, 0.0f));
 			Rotation.mul(M_PI / 180.0f);
 			Entry.Icon->SetXYZ(Rotation);
-			Entry.Icon->SetScaleFactor(READ_IF_EXISTS(pSettings, r_float, SectionName, "3d_static_scale", 1.0f));
-			Entry.Icon->SetIconOffset(READ_IF_EXISTS(pSettings, r_fvector2, SectionName, "3d_static_offset", Fvector2().set(0.0f, 0.0f)));
+			Entry.Icon->SetScaleFactor(pSettings->read_if_exists<float>(SectionName, "3d_static_scale", 1.0f));
+			Entry.Icon->SetIconOffset(pSettings->read_if_exists<Fvector2>(SectionName, "3d_static_offset", Fvector2().set(0.0f, 0.0f)));
 		}
 		return Entry.Icon.get();
 	}
@@ -1306,7 +1306,7 @@ bool SpawnManager_RenderButtonOrImage(CInifile::Sect* section, const char* imnam
 	bool HasLabel = false;
 	if (imgui_spawn_manager.Use3DIcons && isIcon)
 	{
-		const float Scale = READ_IF_EXISTS(pSettings, r_float, name, "inv_scale", 1.0f);
+		const float Scale = pSettings->read_if_exists<float>(name, "inv_scale", 1.0f);
 		const float Divisor = Scale > 1.0f ? 2.0f : 1.0f;
 		const ImVec2 Size(pSettings->r_float(name, "inv_grid_width") * INV_GRID_WIDTH(Scale) / Divisor, pSettings->r_float(name, "inv_grid_height") * INV_GRID_HEIGHT(Scale) / Divisor);
 		if (Size.x > 0.0f && Size.y > 0.0f)
@@ -1334,13 +1334,13 @@ bool SpawnManager_RenderButtonOrImage(CInifile::Sect* section, const char* imnam
 			}
 		}
 	}
-	const auto surface = READ_IF_EXISTS(pSettings, r_string, name, "icons_texture", "ui\\ui_icon_equipment");
+	const auto surface = pSettings->read_if_exists<str_c>(name, "icons_texture", "ui\\ui_icon_equipment");
 	const auto surfaceParams = ::Render->getSurface(surface);
 
 	if (surfaceParams.Surface == nullptr || !isIcon)
 		return ImGui::Button(imname);
 
-	float scaleIcon = READ_IF_EXISTS(pSettings, r_float, name, "inv_scale", 1.0f);
+	float scaleIcon = pSettings->read_if_exists<float>(name, "inv_scale", 1.0f);
 	float x = pSettings->r_float(name, "inv_grid_x") * INV_GRID_WIDTH(scaleIcon);
 	float y = pSettings->r_float(name, "inv_grid_y") * INV_GRID_HEIGHT(scaleIcon);
 	float w = pSettings->r_float(name, "inv_grid_width") * INV_GRID_WIDTH(scaleIcon);
@@ -1519,7 +1519,7 @@ Section FilterSectionsWithSearch(const Section& sections, const char* searchBuff
 
 			xr_string lowerSectionName = xr_strlwr_rus(sectionKey);
 
-			const char* rawName = READ_IF_EXISTS(pSettings, r_string, sectionKey, "inv_name", sectionKey);
+			const char* rawName = pSettings->read_if_exists<str_c>(sectionKey, "inv_name", sectionKey);
 			if (!rawName || !*rawName)
 				rawName = sectionKey;
 

@@ -11,7 +11,7 @@ first_bullet_controller::first_bullet_controller()
 
 void first_bullet_controller::load(shared_str const & section)
 {
-	m_use_first_bullet	= READ_IF_EXISTS(pSettings, r_bool, section, "use_first_bullet", false);
+	m_use_first_bullet	= pSettings->read_if_exists<bool>(section, "use_first_bullet", false);
 	if (!m_use_first_bullet)
 		return;
 	m_fire_dispertion		= pSettings->r_float(section, "first_bullet_dispertion");

@@ -57,8 +57,8 @@ void CMissile::Load(const char* section)
 {
 	inherited::Load(section);
 
-	pSettings->read_if_exists<bool>(m_bUseAltThrow, section, "use_alt_throw");
-	pSettings->read_if_exists<bool>(m_bUseHudPosition, section, "use_hud_position");
+	pSettings->r_bool_nullable(section, "use_alt_throw", m_bUseAltThrow);
+	pSettings->r_bool_nullable(section, "use_hud_position", m_bUseHudPosition);
 
 	if (!m_bUseAltThrow)
 	{
@@ -74,7 +74,7 @@ void CMissile::Load(const char* section)
 	m_vThrowPoint = pSettings->r_fvector3(section, "throw_point");
 	m_vThrowDir = pSettings->r_fvector3(section, "throw_dir");
 
-	m_ef_weapon_type	= READ_IF_EXISTS(pSettings,r_u32,section,"ef_weapon_type",u32(-1));
+	m_ef_weapon_type	= pSettings->read_if_exists<u32>(section,"ef_weapon_type",u32(-1));
 
 	SuicideFailDestroyTime = pSettings->read_if_exists<u32>(section, "suicide_fail_destroy_time", 700);
 	SuicideFailForce = pSettings->read_if_exists<float>(section, "suicide_fail_force", 20.0f);

@@ -27,8 +27,8 @@ void CGrenade::Load(const char* section)
 	inherited::Load(section);
 	CExplosive::Load(section);
 
-	m_bExplosionOnHit = READ_IF_EXISTS(pSettings, r_bool, section, "explosion_on_hit", false);
-	m_bExplosionWhileNotActivated = READ_IF_EXISTS(pSettings, r_bool, section, "explosive_while_not_activated", false);
+	m_bExplosionOnHit = pSettings->read_if_exists<bool>(section, "explosion_on_hit", false);
+	m_bExplosionWhileNotActivated = pSettings->read_if_exists<bool>(section, "explosive_while_not_activated", false);
 
 	if (m_bExplosionOnHit)
 	{
@@ -42,11 +42,11 @@ void CGrenade::Load(const char* section)
 		}
 	}
 
-	m_contact_grenade_params.SafeTime = READ_IF_EXISTS(pSettings, r_u32, section, "safe_time", 0);
-	m_contact_grenade_params.DelayTime = READ_IF_EXISTS(pSettings, r_u32, section, "delay_time", 0);
-	m_contact_grenade_params.ExplosionOnKick = READ_IF_EXISTS(pSettings, r_bool, section, "explosion_on_kick", false);
-	m_contact_grenade_params.MinExplosionSpeed = READ_IF_EXISTS(pSettings, r_float, section, "min_explosion_speed", 0.0f);
-	m_contact_grenade_params.DeactivateOnLowSpeedContact = READ_IF_EXISTS(pSettings, r_bool, section, "deactivate_on_minimal_speed_contact", false);
+	m_contact_grenade_params.SafeTime = pSettings->read_if_exists<u32>(section, "safe_time", 0);
+	m_contact_grenade_params.DelayTime = pSettings->read_if_exists<u32>(section, "delay_time", 0);
+	m_contact_grenade_params.ExplosionOnKick = pSettings->read_if_exists<bool>(section, "explosion_on_kick", false);
+	m_contact_grenade_params.MinExplosionSpeed = pSettings->read_if_exists<float>(section, "min_explosion_speed", 0.0f);
+	m_contact_grenade_params.DeactivateOnLowSpeedContact = pSettings->read_if_exists<bool>(section, "deactivate_on_minimal_speed_contact", false);
 
 	//////////////////////////////////////
 	//время убирания оружия с уровня
@@ -54,7 +54,7 @@ void CGrenade::Load(const char* section)
 		m_dwGrenadeRemoveTime = pSettings->r_u32(section,"grenade_remove_time");
 	else
 		m_dwGrenadeRemoveTime = GRENADE_REMOVE_TIME;
-	m_grenade_detonation_threshold_hit=READ_IF_EXISTS(pSettings,r_float,section,"detonation_threshold_hit",default_grenade_detonation_threshold_hit);
+	m_grenade_detonation_threshold_hit=pSettings->read_if_exists<float>(section,"detonation_threshold_hit",default_grenade_detonation_threshold_hit);
 }
 
 void CGrenade::LoadSounds(const char* section)
