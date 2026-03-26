@@ -172,6 +172,7 @@ function configure(_ref_ixr_signals)
 	_ref_ixr_signals.add_intercept("artefact_on_update",     				{"binder_class", "artefact_game_object"}) 
 	
 	_ref_ixr_signals.add_intercept("physic_object_on_init",     			{"game_object"}) 
+	_ref_ixr_signals.add_intercept("physic_object_on_net_spawn",			{"class_binder", "game_object", "data"})
 	_ref_ixr_signals.add_intercept("physic_object_on_death",     			{"game_object", "game_object"}) 
 	_ref_ixr_signals.add_intercept("physic_object_on_use",     				{"physic_game_object", "who_game_object"}) 
 	_ref_ixr_signals.add_intercept("physic_object_on_use_callback",     	{"physic_game_object", "who_game_object"}) 
