@@ -70,7 +70,7 @@ float main(PSInputFullscreen I) : SV_Target
     #endif
     
     #ifdef USE_SOFT_LOG
-        float logSoft = (1.0f / adapt_params2) * log2(max(sumExp * rcp(max(weightsumm, 1e-6)), 1e-12f));
+        float logSoft = (1.0f / adapt_params2.x) * log2(max(sumExp * rcp(max(weightsumm, 1e-6)), 1e-12f));
         logSoft = min(logSoft, LumaCurr + adapt_params2.y);
         LumaCurr = lerp(LumaCurr, logSoft, adapt_params2.z);
     #endif

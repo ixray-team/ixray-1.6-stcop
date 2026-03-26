@@ -57,6 +57,7 @@ public:
 
 	//============== new Depth of Field ==============
 	IBlender*					b_new_dof;
+	IBlender*					b_tonemap_lut_bake;
 
 #ifdef DEBUG
 	struct		dbg_line_t		{
@@ -140,6 +141,13 @@ public:
 	ref_rt						rt_dof_blur1;			// 32bit, dim,		blur pass1
 	ref_rt						rt_dof_blur2;			// 32bit, dim,		blur pass2
 	ref_rt						rt_dof_blur3;			// 32bit, dim,		blur pass3
+
+	//=============== tonemap lut bake =================
+	ref_rt						rt_tonemap_lut_3d;
+	ID3DTexture3D* t_tonemap_lut_3d_surf = nullptr;
+	ref_texture                   t_tonemap_lut_3d;
+	ID3D11UnorderedAccessView* u_tonemap_lut_3d = nullptr;
+
 
 	// env
 	ref_texture				t_envmap_0		;	// env-0
@@ -255,6 +263,10 @@ private:
 	ref_shader					s_dof_blur1;
 	ref_shader					s_dof_blur2;
 	ref_shader					s_dof_blur3;
+	//==================================================
+
+	//=============== tonemap lut bake =================
+	ref_shader					s_tonemap_lut_bake;
 	
 
 	// FX: ScreenQuad
@@ -412,6 +424,7 @@ public:
 	void						phase_bloom_upsample();
 	void						phase_new_luminance();
 	void						phase_new_dof();
+	void						phase_bake_tonemap_lut();
 	//==========================================================
 
 

@@ -94,6 +94,8 @@
 #define 	r2_RT_dof_blur1			"$user$dof_blur1"		// --- 32 bit, dim, blur pass1
 #define 	r2_RT_dof_blur2			"$user$dof_blur2"		// --- 32 bit, dim, blur pass2
 #define 	r2_RT_dof_blur3			"$user$dof_blur3"		// --- 32 bit, dim, blur pass3
+//===================================================================
+#define     r2_RT_tonemap_lut_3d     "$user$tonemap_lut_3d"
 
 #define		r2_RT_smap_surf		"$user$smap_surf"		// --- directional
 #define		r2_RT_smap_depth	"$user$smap_depth"		// ---directional

@@ -37,8 +37,8 @@ float2 gbuf_unpack_uv(float3 position)
     return saturate(position.xy * 0.5 + 0.5);
 }
 
-#define SSLR_STEPS 30
-#define MAX_FIND_STEP 5
+#define SSLR_STEPS 26
+#define MAX_FIND_STEP 4
 
 float BinaryRefinement(inout float3 EndProj, float3 Reflect)
 {

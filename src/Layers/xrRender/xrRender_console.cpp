@@ -41,6 +41,22 @@ xr_token							qsun_shafts_token							[ ]={
 	{ 0,							0												}
 };
 
+u32			ps_r2_new_dof_quality = 2;
+xr_token							q_new_dof_token[] = {
+	{ "st_opt_low",					1												},
+	{ "st_opt_medium",				2												},
+	{ "st_opt_high",				3												},
+	{ 0,							0												}
+};
+u32			ps_r2_new_dof_bokeh_shape = 1;
+xr_token							q_new_dof_bokeh_token[] = {
+	{ "circle",						1												},
+	{ "hexagon",					2												},
+	{ "smth?	",					3												},
+	{ 0,							0												}
+};
+
+
 u32			ps_r_sun_quality		=	1;			//	=	0;
 xr_token							qsun_quality_token							[ ]={
 	{ "st_opt_low",					0												},
@@ -191,6 +207,20 @@ float		ps_r2_tonemap_crossfeed		= 0.05f;			// rbg crossfeed (optional, 0.01 - 0.
 bool		ps_r2_vibrance				= false;			// tonemap vibrance enable
 float 		ps_r2_tonemap_vibrance		= 0.05f;			// tonemap vibrance (optional, 0.0 - 1.0)
 // new tonemapping/adaptation/bloom end
+// new dof
+bool		ps_r2_new_dof_enable			= true;			// enable new dof
+bool		ps_r2_new_dof_autofocus			= false;		// false - manual focus, true - autofocus 
+float		ps_r2_camera_focal_length		= 100.f;		// focal length in mm 
+float		ps_r2_camera_f_number			= 2.8f;			// f-number, could be used for other camera related effects
+float		ps_r2_new_dof_manual_focus = 40.f;				// manual focus distance in meters, used if ps_r2_new_dof_autofocus is false
+Fvector3	ps_r2_new_dof_autofocus_point = Fvector3().set(0.5f, 0.45f, 0.0f); // autofocus point in screen space, used if ps_r2_new_dof_autofocus is true
+float		ps_r2_new_dof_autofocus_speed	= 1.f;			// speed of interpolation of autofocus and CoC between frames
+float		ps_r2_new_dof_max_blur_far		= 20.f;			// maximum blur radius in pixels for far objects
+float		ps_r2_new_dof_max_blur_near		= 20.f;			// maximum blur radius in pixels for near objects
+//u32			ps_r2_new_dof_quality			= ;
+float		ps_r2_new_dof_bokeh_factor		= 1.f;			// bokeh extraction factor
+//u32			ps_r2_new_dof_bekeh_shape;
+
 float		ps_r2_tonemap_adaptation	= 3.f;				// r2-only
 float		ps_r2_tonemap_low_lum		= 0.01f;			// r2-only
 float		ps_r2_tonemap_amount		= 0.7f;				// r2-only
@@ -800,6 +830,17 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float, "r2_tonemap_vibrance", &ps_r2_tonemap_vibrance, -1.0f, 1.0f);
 	CMD4(CCC_Float, "r2_tonemap_crossfeed", &ps_r2_tonemap_crossfeed, 0.0f, 0.9f);
 	// end of new tonemapping/bloom/autoexposure settings
+	// section for new DOF console params
+	CMD2(CCC_Boolean, "r2_new_dof_enable", &ps_r2_new_dof_enable);
+	CMD2(CCC_Boolean, "r2_new_dof_autofocus", &ps_r2_new_dof_autofocus);
+	CMD4(CCC_Float, "r2_camera_focal_length", &ps_r2_camera_focal_length, 0.01f, 300.f);
+	CMD4(CCC_Float, "r2_camera_f_number", &ps_r2_camera_f_number, 0.1f, 26.f);
+	CMD4(CCC_Float, "r2_new_dof_manual_focus", &ps_r2_new_dof_manual_focus, 0.1f, 1200.f);
+	CMD4(CCC_Float, "r2_new_dof_autofocus_speed", &ps_r2_new_dof_autofocus_speed, 0.01f, 100.f);
+	CMD3(CCC_Token, "r2_new_dof_quality", &ps_r2_new_dof_quality, q_new_dof_token);
+	CMD3(CCC_Token, "r2_new_dof_bokeh_shape", &ps_r2_new_dof_bokeh_shape, q_new_dof_bokeh_token);
+	CMD4(CCC_Vector3, "r2_new_dof_autofocus_point", &ps_r2_new_dof_autofocus_point, Fvector().set(0.0f, 0.0f, 0.0f), Fvector().set(1.0f, 1.0f, 1.0f));
+
 
 
 

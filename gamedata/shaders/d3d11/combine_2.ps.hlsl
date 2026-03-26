@@ -3,6 +3,8 @@
 #include "dof.hlsli"
 
 Texture3D s_lut;
+Texture2D s_new_dof;
+Texture3D s_tonemap_lut_3d;
 
 float4 autoexposure_params; // x - ps_r2_autoexposure_key, y - ps_r2_autoexposure_min, z - ps_r2_autoexposure_max, w - ps_r2_autoexposure_bias
 float4 bloom_params; // x - ps_r2_bloom_amount, y - ps_r2_bloom_desaturation, z - ps_r2_bloom_tint_amount
@@ -35,10 +37,33 @@ float exposure(float ev100) {
     return 1.0 / (pow(2.0, ev100) * 1.2);
 }
 
+float2 uvs_to_uv(float2 uvs){
+    return uvs * 0.5 + 0.5;
+}
+
+
+uint3 LUT2DTo3D(uint2 Pixel, uint LutSize)
+{
+    uint3 Coord;
+    Coord.x = Pixel.x % LutSize;   // R
+    Coord.y = Pixel.y;             // G
+    Coord.z = Pixel.x / LutSize;   // B
+    return Coord;
+}
+
+float3 LUTCoordToLinearColor(uint3 Coord, uint LutSize)
+{
+    // map [0 .. 31] -> [0 .. 1]
+    float Scale = 1.0f / float(LutSize - 1);
+    return float3(Coord) * Scale;
+}
 
 float3 main(PSInputFullscreen I) : SV_Target
 {
-    float3 Color = max(0.0f, dof(I.texcoord));
+    //float3 Color = max(0.0f, dof(I.texcoord));
+    float2 uvs = I.texcoord.xy * 2.0 - 1.0;
+    float3 Color = s_new_dof.Sample(smp_rtlinear, I.texcoord.xy).rgb;
+
     float Depth = 1.0f - s_position.Sample(smp_nofilter, I.texcoord.xy);
     float3 Point = GbufferGetPointRealUnjitter(I.texcoord, Depth);
     float3 wPoint = mul(m_invV, float4(Point, 1.0));
@@ -61,11 +86,12 @@ float3 main(PSInputFullscreen I) : SV_Target
       
 #ifndef NEW_FOGGIN
     Fog = (saturate(ViewDist * fog_params.w + fog_params.x));
+    Fog *= Fog;
 #else  //NEW_FOGGIN
     float a = 1.0f;
     float b = 0.001f;
-    float denom = a - exp(-b * (fog_params.z - fog_params.y));
-    Fog = (a - exp(-b * (ViewDist)));
+    float denom = F_base - exp(-b * (fog_params.z - fog_params.y));
+    Fog = (F_base - exp(-F_dens * (ViewDist)));
     Fog = smoothstep(0.f, 1.f, saturate(Fog));
 #endif
 
@@ -78,6 +104,7 @@ float3 main(PSInputFullscreen I) : SV_Target
     Color = combine_bloom(Color, Bloom).xyz;
 #else   //USE_NEW_BLOOM_TONEMAP_FOG
     Bloom = max(1e-5, n_bloom.Sample(smp_rtlinear, I.texcoord));
+    //Bloom = max(0.0, Bloom - 0.2f);
     float Bloom_Luma = Luminance(Bloom.rgb);
     float Color_Luma = Luminance(Color.rgb);
     //Bloom *= Color_Luma / (Bloom_Luma + 1e-5);
@@ -91,19 +118,20 @@ float3 main(PSInputFullscreen I) : SV_Target
     float3 Fog_Bloom = Bloom_Desat * temp_f_col / max(LumaTemp, 1e-4).xxx;
     temp_f_col *= Bloom_Luma / max(LumaTemp, 1e-4);
     // experimental - will return later
-    //Color = lerp(Color, Fog_Bloom, Fog);
-
+    //Color = lerp(Color, 0.05 * Fog_Bloom, Fog);
     Color *= Exposure;
-    Color.rgb = CommerceToneMapping(Color.rgb, tonemap_params.x, tonemap_params.y);
-    //Color.rgb = Uncharted2Tonemap(Color.rgb);
-    //Color.rgb = 1.f - exp(-Color.rgb);
+
+    float3 uvw = saturate(Color / 3.67926554928f); // GT7 range
+    float3 Color2 = s_tonemap_lut_3d.SampleLevel(smp_rtlinear, pow(uvw, 0.25f), 0.0f).rgb;
+    Color2 = deband_color(Color2, I.hpos.xy, 256.f);
+    Color = Color2;
 
 #ifdef USE_CROSSFEED
-    Color.rgb = Crossfeed(Color.rgb, tonemap_params.z);
+    //Color.rgb = Crossfeed(Color.rgb, tonemap_params.z);
 #endif
     
 #ifdef USE_VIBRANCE
-    Color.rgb = Vibrance(Color.rgb, tonemap_params.w);
+    //Color.rgb = Vibrance(Color.rgb, tonemap_params.w);
 #endif
 /*    
 #ifdef USE_CGIM_COLOR_TWEAK // didnt test with new tonemap

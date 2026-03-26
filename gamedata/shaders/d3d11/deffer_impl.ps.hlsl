@@ -198,7 +198,7 @@ void main(p_bumped_new I, out OutStructure O)
     float3 Light = M.Sun * DirectLight(LightColor, LightDir, M.Normal, View, M.Color.xyz, M.Metalness, M.Roughness, F0);
     float3 Ambient = PushGamma(M.AO) * AmbientLighting(View, M.Normal, M.Color.xyz, M.Metalness, M.Roughness, M.Hemi, F0);
 	
-	Light += DirectLight(float4(Lmap.xyz, 0.5f), View, M.Normal, View, M.Color.xyz, M.Metalness, M.Roughness, F0);
+	Light += DirectLight(float4(Lmap.xyz, 0.5f), View, M.Normal, View, M.Color.xyz, M.Metalness, M.Roughness, F0, 1.0f, 0.12f);
 	
     O.Color.xyz = Ambient + Light;
     O.Color.w = 1.0f;

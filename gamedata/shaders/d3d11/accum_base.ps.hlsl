@@ -15,13 +15,16 @@ float4 main(p_volume I, float4 pos2d : SV_POSITION) : SV_Target
 	
     IXrayGbuffer O;
     GbufferUnpack(tcProj, pos2d.xy, O);
-
+    float3 a = GbufferGetPoint(pos2d.xy).xyz;
+    float3 b = GbufferGetPoint(pos2d.xy + float2(1,0)).xyz;
+    float3 c = GbufferGetPoint(pos2d.xy + float2(0,1)).xyz;
+    float3 restoredNormal = normalize(cross(b - a, c - a));
     float4 Point = float4(Ldynamic_hud > 0 ? O.PointHud.xyz : O.Point.xyz, 1.0f);
 
 	float3 LightDirection = normalize(O.PointReal.xyz - Ldynamic_pos.xyz);
-    float3 Light = DirectLight(Ldynamic_color, LightDirection, O.Normal, O.View.xyz, O.Color, O.Metalness, O.Roughness, O.F0);
+    float3 Light = DirectLightCC(Ldynamic_color, LightDirection, O.Normal, O.Normal, O.View.xyz, O.Color, O.Metalness, O.Roughness, O.F0, 0.25f, 0.2f);
 
-    float3 Lightmap = ComputeLightAttention(Point.xyz - Ldynamic_pos.xyz, Ldynamic_pos.w);
+    float3 Lightmap = getLightAttenuation(Point.xyz - Ldynamic_pos.xyz, Ldynamic_pos.w);
     //float3 Lightmap = getSquareFalloffAttenuation(Point.xyz - Ldynamic_pos.xyz, Ldynamic_pos.w);
     
     Point.xyz += O.Normal * 0.025f;

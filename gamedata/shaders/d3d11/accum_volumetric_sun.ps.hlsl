@@ -15,8 +15,10 @@ struct PSInput
     float2 texcoord : TEXCOORD0;
 };
 
+//Texture2D<float4> s_lmap;
 //#define JITTER_TEXTURE_SIZE 128.0f
 
+//#define SUN_SHAFTS_QUALITY 2
 
 #if SUN_SHAFTS_QUALITY == 1
 #define RAY_SAMPLES 6
@@ -26,13 +28,14 @@ struct PSInput
 #define RAY_SAMPLES 18
 #endif
 
-// --- Medium/scattering tuning knobs ---
-static const float PHASE_G = 0.5f; // Schlick g (0 isotropic, higher = forward)
-static const float SCATTER_RATIO = 0.5f; // fraction of extinction that goes to scattering
-static const float ABSORB_TINT_STRENGTH = 0.5f; // 0 = gray absorption, 1 = tinted by fog_color
-
 // Sun shafts intensity param (x used as density scale)
 float4 sun_shafts_intensity;
+// --- Medium/scattering tuning knobs ---
+static const float PHASE_G = 0.0f; // Schlick g (0 isotropic, higher = forward)
+static const float SCATTER_RATIO = 0.5; // fraction of extinction that goes to scattering
+static const float ABSORB_TINT_STRENGTH = 0.2f; // 0 = gray absorption, 1 = tinted by fog_color
+
+
 
 // Schlick phase function (normalized form)
 float PhaseFunction_Schlick(float g, float cos_theta)
@@ -76,6 +79,8 @@ float4 main(PSInput I) : SV_Target
 
     float4 current = mul(m_shadow_sun[2], float4(PW, 1.f));
     float4 deltaS = mul(m_shadow_sun[2], float4(deltaW, 0.f));
+    float3 current_mask = mul(m_sunmask, float4(PW, 1.f));
+    float3 deltaM = mul(m_sunmask, float4(deltaW, 0.f));
 
     float3 fogTint = PushGamma(fog_color.rgb);
     fogTint /= max(max(fogTint.r, fogTint.g), fogTint.b + 1e-6f);
@@ -101,6 +106,7 @@ float4 main(PSInput I) : SV_Target
     float tFar = saturate((distToCam - FarFadeStart) / max(fog_params.z - FarFadeStart, 1e-4));
     tFar = tFar * tFar * (3.f - 2.f * tFar);
     float cosTheta = dot(Ldir, O.View);
+    float vis = 0.f;
     // since density is isomorphic and light dir constant - we can take phase out of loop
     float phase = PhaseFunction_Schlick(PHASE_G, cosTheta);
     [unroll]
@@ -109,7 +115,9 @@ float4 main(PSInput I) : SV_Target
         if (depth > 0.3f)
         {   
             float shadowValid = (current.x >= 0.f && current.x <= 1.f && current.y >= 0.f && current.y <= 1.f) ? 1.f : 0.f;
-            float vis = s_smap_sun.SampleCmpLevelZero(smp_smap, float3(current.xy, 2), current.z).x;
+            vis = s_smap_sun.SampleCmpLevelZero(smp_smap, float3(current.xy, 2), current.z).x;
+            vis *= (0.5f + 0.5f * s_lmap.SampleLevel(smp_nofilter, mul(m_sunmask, float4(P0view, 1.0f)).xy, 0.0).w);
+            //vis *= sunmask(float4(Pview, 1.f)); //sun_mask.Sample(smp_nofilter, current_mask.xy).w;
             float visSafe = lerp(1.f, vis, shadowValid);
             vis = lerp(visSafe, 1.f, tFar);
 
@@ -120,11 +128,18 @@ float4 main(PSInput I) : SV_Target
 
         depth -= deltaDepth;
         current -= deltaS;
+        //current_mask -= deltaM;
+        P0view -= deltaView;
+
     }
+    
+    //vis /= RAY_SAMPLES;
     
     float3 fogNeutral = lerp(fogTint, Luminance(fogTint), 0.6f);
     radiance = lerp(radiance, fogNeutral * Luminance(radiance), tFar);
     
+    //radiance = vis * sunCol;
+
     return float4(radiance, 1.0f);
 
 #endif //SUN_SHAFTS_QUALITY

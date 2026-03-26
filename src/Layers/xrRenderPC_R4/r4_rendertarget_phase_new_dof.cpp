@@ -17,7 +17,7 @@ void CRenderTarget::phase_new_dof()
     // 0) Focus (1x1)
     // -------------------------------
     {
-        float W = 1.0f, H = 1.0f;
+        float W = float(Device.TargetWidth), H = float(Device.TargetHeight);
         float rW = 1.0f / W, rH = 1.0f / H;
 
         VP_DOF.Width  = W;
@@ -32,7 +32,8 @@ void CRenderTarget::phase_new_dof()
         RCache.set_Element(s_dof_coc->E[0]);
 
         // TODO: set your focus params here (target focus, lerp alpha, etc.)
-        //RCache.set_c("dof_focus_params", ...);
+        RCache.set_c("dof_focus_params", ps_r2_new_dof_manual_focus, ps_r2_new_dof_autofocus_speed, ps_r2_new_dof_autofocus_point.x, ps_r2_new_dof_autofocus_point.y);
+		RCache.set_c("autofocus_enabled", ps_r2_new_dof_autofocus ? 1.0f : 0.0f);
 
         RCache.set_Geometry(FSTriangleGeom);
         RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
@@ -46,6 +47,9 @@ void CRenderTarget::phase_new_dof()
     float rW = 1.0f / W;
     float rH = 1.0f / H;
 
+	float sensorHeightMm = 24.0f; // Assuming a 35mm full-frame sensor; adjust if different
+    float focalLengthMm = sensorHeightMm / (2.0f * tanf(deg2rad(Device.fFOV) * 0.5f));
+    
     VP_DOF.Width  = W;
     VP_DOF.Height = H;
     RContext->RSSetViewports(1, &VP_DOF);
@@ -65,7 +69,7 @@ void CRenderTarget::phase_new_dof()
         // RCache.set_c("dof_coc_params", ...);
 
         // If your shader expects tex sizes:
-        RCache.set_c("dof_params", 10.f, 16.5f, 0.024f, rH);
+        RCache.set_c("dof_params", focalLengthMm, ps_r2_camera_f_number, sensorHeightMm, ps_r2_new_dof_autofocus_speed);
 
         RCache.set_Geometry(FSTriangleGeom);
         RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);

@@ -1,4 +1,5 @@
 local tex_noise = "shaders\\blue_noise_3x3"
+local tex_sun_mask = "shaders\\shaders_sunmask"
 
 function normal(shader, t_base, t_second, t_detail)
     shader:begin("stub_fullscreen_triangle", "accum_volumetric_sun")
@@ -11,6 +12,7 @@ function normal(shader, t_base, t_second, t_detail)
     shader:dx10texture("s_position", "$user$position")
     shader:dx10texture("jitter0", "$user$jitter_0")
     shader:dx10texture("blue_noise", tex_noise)
+    shader:dx10texture("s_lmap", tex_sun_mask)
 
     shader:dx10sampler("smp_nofilter")
     shader:dx10sampler("smp_jitter")

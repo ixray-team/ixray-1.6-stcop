@@ -46,7 +46,7 @@ void CRenderTarget::phase_combine()
 
 	u32 Offset = 0;
 	Fvector2 p0, p1;
-
+	/*
 	//*** exposure-pipeline
 	{
 		if (t_LUM_src != rt_LUM_pool[0]->pTexture)
@@ -59,7 +59,7 @@ void CRenderTarget::phase_combine()
 			t_LUM_dest->surface_set(rt_LUM_pool[1]->pSurface);
 		}
 	}
-
+	*/
 	{
 		PROF_EVENT("PHASE_AMBIENT_OCCLUSION");
 
@@ -295,7 +295,7 @@ void CRenderTarget::phase_combine()
 	// HDR RT invalidated here
 	// Perform blooming filter and distortion if needed
 	RCache.set_Stencil(FALSE);
-	phase_bloom();
+	//phase_bloom();
 
 	{
 		GPU_EVENT(phase_bloom_downsample);
@@ -313,7 +313,10 @@ void CRenderTarget::phase_combine()
 		GPU_EVENT(phase_new_dof);
 		phase_new_dof();
 	}
-
+	{
+		GPU_EVENT(phase_bake_lut);
+		phase_bake_tonemap_lut();
+	}
 
 	u_setrt(rt_Back_Buffer, 0, 0, 0);			// LDR RT
 
@@ -395,14 +398,14 @@ void CRenderTarget::phase_combine()
 	
 	//	Re-adapt luminance
 	RCache.set_Stencil(FALSE);
-
+	/*
 	//*** exposure-pipeline-clear
 	{
 		std::swap(rt_LUM_pool[0], rt_LUM_pool[1]);
 		t_LUM_src->surface_set		(nullptr);
 		t_LUM_dest->surface_set		(nullptr);
 	}
-
+	*/
 #ifdef DEBUG
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 	static	xr_vector<Fplane>		saved_dbg_planes;

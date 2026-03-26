@@ -94,6 +94,8 @@ void CRenderTarget::accum_direct_volumetric()
 	if (!need_to_render_sunshafts())
 		return;
 
+
+
 	light* fuckingsun = (light*)RImplementation.Lights.sun_adapted._get();
 
 	Fvector L_clr;
@@ -105,6 +107,34 @@ void CRenderTarget::accum_direct_volumetric()
 	Device.mView.transform_dir(L_dir, fuckingsun->direction);
 	L_dir.normalize();
 
+	Fmatrix xf_invview;
+	xf_invview.invert(Device.mView);
+
+	Fmatrix m_clouds_shadow;
+	{
+		static float w_shift = 0.0f;
+
+		Fvector normal;
+		normal.setHP(g_pGamePersistent->Environment().CurrentEnv->wind_direction, 0);
+		w_shift += 0.003f * Device.fTimeDelta;
+
+		Fvector position;
+		position.set(0, 0, 0);
+
+		Fmatrix m_xform;
+		m_xform.build_camera_dir(position, fuckingsun->direction, normal);
+
+		Fvector localnormal;
+		m_xform.transform_dir(localnormal, normal);
+		localnormal.normalize();
+
+		m_clouds_shadow.mul(m_xform, xf_invview);
+		m_xform.scale(0.002f, 0.002f, 1.f);
+		m_clouds_shadow.mulA_44(m_xform);
+		m_xform.translate(localnormal.mul(w_shift));
+		m_clouds_shadow.mulA_44(m_xform);
+	}
+
 	phase_vol_accumulator();
 	RCache.set_ColorWriteEnable();
 
@@ -112,6 +142,7 @@ void CRenderTarget::accum_direct_volumetric()
 
 	RCache.set_c("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0);
 	RCache.set_c("Ldynamic_color", L_clr.x, L_clr.y, L_clr.z, 0);
+	RCache.set_c("m_sunmask", m_clouds_shadow);
 
 	RCache.set_Geometry(FSTriangleGeom);
 	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);

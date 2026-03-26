@@ -23,6 +23,7 @@
 #include "blender_bloom_upsample.h"
 #include "blender_new_adaptation.h"
 #include "blender_new_dof.h"
+#include "blender_tonemap_lut_bake.h"
 
 #include "../xrRenderDX10/DX10 Rain/dx10RainBlender.h"
 #include "../xrRender/blender_fxaa.h"
@@ -719,7 +720,7 @@ CRenderTarget::CRenderTarget()
 	{
 		s_accum_reflected.create(b_accum_reflected, "r2\\accum_refl");
 	}
-
+	/*
 	// BLOOM
 	{
 		ERHI_FORMAT	fmt = ERHI_FORMAT::R8G8B8A8_UNORM;			//;		// D3DFMT_X8R8G8B8
@@ -756,7 +757,7 @@ CRenderTarget::CRenderTarget()
 
 		u_setrt(Device.TargetWidth, Device.TargetHeight, rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr);
 	}
-
+	*/
 	// New BLOOM and LUM
 	{
 		ERHI_FORMAT	fmt = ERHI_FORMAT::R11G11B10_FLOAT;
@@ -827,6 +828,50 @@ CRenderTarget::CRenderTarget()
 		b_new_dof = new CBlender_new_dof();
 
 		s_dof_coc.create(b_new_dof);
+	}
+	// bake 3d tonemap lut
+	{	
+		b_tonemap_lut_bake = new CBlender_tonemap_lut_bake();
+		s_tonemap_lut_bake.create(b_tonemap_lut_bake);
+
+		D3D11_TEXTURE3D_DESC desc = {};
+		desc.Width = 32;
+		desc.Height = 32;
+		desc.Depth = 32;
+		desc.MipLevels = 1;
+		desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+		desc.Usage = D3D11_USAGE_DEFAULT;
+		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
+		desc.CPUAccessFlags = 0;
+		desc.MiscFlags = 0;
+
+		R_CHK(RDevice->CreateTexture3D(&desc, nullptr, &t_tonemap_lut_3d_surf));
+
+		t_tonemap_lut_3d = dxRenderDeviceRender::Instance().Resources->_CreateTexture(r2_RT_tonemap_lut_3d);
+
+		RHITextureDesc rhiDesc = {};
+		rhiDesc.Width = desc.Width;
+		rhiDesc.Height = desc.Height;
+		rhiDesc.Depth = desc.Depth;
+		rhiDesc.MipLevels = desc.MipLevels;
+		rhiDesc.Format = (ERHI_FORMAT)desc.Format;
+		rhiDesc.Usage = (ERHI_USAGE)desc.Usage;
+		rhiDesc.BindFlags = (ERHI_BIND_FLAG)desc.BindFlags;
+		rhiDesc.CPUAccessFlags = desc.CPUAccessFlags;
+		rhiDesc.MiscFlags = desc.MiscFlags;
+
+		IRHISurface* rhiSurface = GRHI->CreateTextureFromMemory(t_tonemap_lut_3d_surf, 0, rhiDesc);
+		t_tonemap_lut_3d->surface_set(rhiSurface);
+
+		D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+		uavDesc.Format = desc.Format;
+		uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE3D;
+		uavDesc.Texture3D.MipSlice = 0;
+		uavDesc.Texture3D.FirstWSlice = 0;
+		uavDesc.Texture3D.WSize = 32;
+
+		R_CHK(RDevice->CreateUnorderedAccessView(t_tonemap_lut_3d_surf, &uavDesc, &u_tonemap_lut_3d));
+
 	}
 
 	// HBAO
@@ -1071,8 +1116,8 @@ CRenderTarget::~CRenderTarget	()
 #endif // DEBUG
 	_RELEASE					(t_material_surf);
 
-	t_LUM_src->surface_set		(nullptr);
-	t_LUM_dest->surface_set		(nullptr);
+	//t_LUM_src->surface_set		(nullptr);
+	//t_LUM_dest->surface_set		(nullptr);
 
 #ifdef DEBUG
 	IRHISurface*	pSurf = 0;
@@ -1102,6 +1147,15 @@ CRenderTarget::~CRenderTarget	()
 		_RELEASE(t_noise_surf[it]);
 	}
 
+	if (t_tonemap_lut_3d)
+		t_tonemap_lut_3d->surface_set(nullptr);
+
+	_RELEASE(u_tonemap_lut_3d);
+	_RELEASE(t_tonemap_lut_3d_surf);
+
+	t_tonemap_lut_3d.destroy();
+	xr_delete(b_tonemap_lut_bake);
+
 	accum_spot_geom_destroy();
 	accum_omnip_geom_destroy();
 	accum_point_geom_destroy();
@@ -1109,8 +1163,8 @@ CRenderTarget::~CRenderTarget	()
 
 	// Blenders
 	xr_delete(b_combine);
-	xr_delete(b_luminance);
-	xr_delete(b_bloom);
+	//xr_delete(b_luminance);
+	//xr_delete(b_bloom);
 	xr_delete(b_accum_reflected);
 	xr_delete(b_accum_spot);
 	xr_delete(b_accum_point);
@@ -1130,6 +1184,7 @@ CRenderTarget::~CRenderTarget	()
 	xr_delete(b_bloom_downsample);
 	xr_delete(b_bloom_upsample);
 	xr_delete(b_new_adaptation);
+	xr_delete(b_new_dof);
 
 	g_Fsr2Wrapper.Destroy();
 	g_DLSSWrapper.Destroy();

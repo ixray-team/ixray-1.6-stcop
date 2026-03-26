@@ -155,6 +155,20 @@ extern ECORE_API float		ps_r2_tonemap_crossfeed;				// rbg crossfeed (optional, 
 extern ECORE_API bool		ps_r2_vibrance;						// tonemap vibrance enable
 extern ECORE_API float 		ps_r2_tonemap_vibrance;					// tonemap vibrance (optional, 0.0 - 1.0)
 // new tonemapping/adaptation/bloom end
+// new dof params
+extern ECORE_API bool		ps_r2_new_dof_enable;				// enable new dof	
+extern ECORE_API bool		ps_r2_new_dof_autofocus;
+extern ECORE_API float		ps_r2_camera_focal_length;
+extern ECORE_API float		ps_r2_camera_f_number;					// reuse in autoexposure code
+extern ECORE_API float		ps_r2_new_dof_manual_focus;
+extern ECORE_API Fvector3	ps_r2_new_dof_autofocus_point;
+extern ECORE_API float		ps_r2_new_dof_autofocus_speed;
+extern ECORE_API float		ps_r2_new_dof_max_blur_far;
+extern ECORE_API float		ps_r2_new_dof_max_blur_near;
+extern ECORE_API u32		ps_r2_new_dof_quality;
+extern ECORE_API float		ps_r2_new_dof_bokeh_factor;
+extern ECORE_API u32		ps_r2_new_dof_bokeh_shape;
+
 
 extern bool UseGasmak;
 extern bool UseRainDrops;

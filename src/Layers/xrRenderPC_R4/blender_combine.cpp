@@ -86,6 +86,8 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 		C.r_dx10Texture		("s_tonemap",		r2_RT_luminance_cur);
 		C.r_dx10Texture		("n_bloom",			r2_RT_bloomA2);
 		C.r_dx10Texture		("s_adapt",			r2_RT_lumD);
+		C.r_dx10Texture		("s_new_dof",		r2_RT_dof_blur1);
+		C.r_dx10Texture		("s_tonemap_lut_3d", r2_RT_tonemap_lut_3d);
 
 		if (is_loot_present)
 		{

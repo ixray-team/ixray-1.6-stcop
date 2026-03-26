@@ -14,6 +14,11 @@ float4 main(PSInput I) : SV_Target
 	IXrayGbuffer O;
 	GbufferUnpack(I.texcoord, I.hpos.xy, O);
 	
+    float3 a = GbufferGetPoint(I.hpos.xy).xyz;
+    float3 b = GbufferGetPoint(I.hpos.xy + float2(1,0)).xyz;
+    float3 c = GbufferGetPoint(I.hpos.xy + float2(0,1)).xyz;
+    float3 restoredNormal = normalize(cross(b - a, c - a));
+
 	float3 Shift = O.Normal;
 	
 	if (O.SSS > 0.0f)
@@ -50,7 +55,12 @@ float4 main(PSInput I) : SV_Target
 	Shadow *= sunmask(Point);
 #endif
 	
-    float3 Light = DirectLight(Ldynamic_color, Ldynamic_dir.xyz, O.Normal, O.View.xyz, O.Color, O.Metalness, O.Roughness, O.F0);
+	float dist = length(Point.xyz),
+	distfade = saturate((dist - 15.f) / 40.f),
+	new_roughness = lerp(O.Roughness, 1.0, distfade);
+
+
+    float3 Light = DirectLightCC(Ldynamic_color, Ldynamic_dir.xyz, O.Normal, O.Normal, O.View.xyz, O.Color, O.Metalness, new_roughness, O.F0, 0.25f, 0.2f);
     Light += SimpleTranslucency(Ldynamic_color.xyz, Ldynamic_dir.xyz, O.Normal) * O.SSS * O.Color;
 	
 	if (O.Depth < 0.02f && dot(Shadow.xxx, Light.xyz) > EPS)
@@ -58,6 +68,9 @@ float4 main(PSInput I) : SV_Target
 		RayTraceContactShadow(I.texcoord, O.PointHud, Ldynamic_dir.xyz, Light);
 	}
 	
-	Light *= PushGamma(Shadow);
+	Light *= (Shadow);
+
+
+
 	return float4(Light, 0);
 }
