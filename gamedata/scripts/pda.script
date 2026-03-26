@@ -358,17 +358,36 @@ local sleep_zones_tbl =
 	pri_a16_sr_sleep_id	= { hint = "st_ui_pda_sleep_place", sobj = nil, id = nil },
 }
 
+-- Добавляем опциональную возможность отрисовки спотов только при наличии инфопорции таргета
+local is_need_info_for_draw_spots = false
+
+function get_state_need_info_for_draw_spots()
+	return is_need_info_for_draw_spots
+end
+
+function set_state_need_info_for_draw_spots(state)
+	is_need_info_for_draw_spots = state
+end
+
 function fill_primary_objects()
 	for k,v in pairs(primary_objects_tbl) do
-		if primary_locations_cache[v.target] == nil then
-			local obj_id = get_story_object_id(v.target)
-			if(obj_id) then
-				primary_locations_cache[v.target] = obj_id
+		if type(v) == "table" and v.target ~= nil then
+			if primary_locations_cache[v.target] == nil then
+				local obj_id = get_story_object_id(v.target)
+				if(obj_id) then
+					primary_locations_cache[v.target] = obj_id
+				end
 			end
-		end
-		
-		if primary_locations_cache[v.target] and level.map_has_object_spot(primary_locations_cache[v.target], "primary_object") == 0 then
-			level.map_add_object_spot(primary_locations_cache[v.target], "primary_object", v.hint)
+			
+			if primary_locations_cache[v.target] and level.map_has_object_spot(primary_locations_cache[v.target], "primary_object") == 0 then
+				if get_state_need_info_for_draw_spots() then
+					if has_alife_info(v.target) then
+						level.map_add_object_spot(primary_locations_cache[v.target], "primary_object", v.hint)
+					end
+				else
+					level.map_add_object_spot(primary_locations_cache[v.target], "primary_object", v.hint)
+				end
+			end
 		end
 	end
 end
