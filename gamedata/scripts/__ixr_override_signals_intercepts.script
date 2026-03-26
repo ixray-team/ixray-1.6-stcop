@@ -169,6 +169,8 @@ function configure(_ref_ixr_signals)
 	_ref_ixr_signals.add_intercept("anomaly_zone_on_load",    				{"binder_class", "anomaly_zone_game_object", "thread", "parent_zones_by_artefact_id"}) 
 	_ref_ixr_signals.add_intercept("anomaly_zone_override_artefact_spawn_сhance", {"binder_class", "anomaly_zone_game_object", "flags_table"}) -- flags_table = {spawn_chance = 17}
 	
+	_ref_ixr_signals.add_intercept("artefact_on_update",     				{"binder_class", "artefact_game_object"}) 
+	
 	_ref_ixr_signals.add_intercept("physic_object_on_init",     			{"game_object"}) 
 	_ref_ixr_signals.add_intercept("physic_object_on_death",     			{"game_object", "game_object"}) 
 	_ref_ixr_signals.add_intercept("physic_object_on_use",     				{"physic_game_object", "who_game_object"}) 
