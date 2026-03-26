@@ -63,6 +63,14 @@ void XrUIManager::Initialize(HWND hWnd, IDirect3DDevice9* device, const char* in
 	io.IniFilename = m_name_ini;
 	io.ConfigWindowsMoveFromTitleBarOnly = true;
 
+	const HDC screen = GetDC(nullptr);
+	m_ScaleDpi = GetDeviceCaps(screen, LOGPIXELSX) / 96.f;
+	ReleaseDC(nullptr, screen);
+
+	ImGui::GetStyle().ScaleAllSizes(m_ScaleDpi);
+	io.ConfigDpiScaleFonts = true;
+	io.ConfigDpiScaleViewports = true;
+
 	CUIThemeManager::Get().InitDefault();
 	Push(&CUIThemeManager::Get(), false);
 
@@ -70,10 +78,6 @@ void XrUIManager::Initialize(HWND hWnd, IDirect3DDevice9* device, const char* in
 	string_path Fonts = {};
 	FS.update_path(Fonts, _game_fonts_, "editors\\");
 	FS.file_list(Files, Fonts, 1, "*.ttf");
-
-	const HDC screen = GetDC(nullptr);
-	m_ScaleDpi = GetDeviceCaps(screen, LOGPIXELSX) / 96.f;
-	ReleaseDC(nullptr, screen);
 
 	auto OldFont = ImCurrentFont;
 	for (auto& File : Files)
@@ -93,7 +97,8 @@ void XrUIManager::Initialize(HWND hWnd, IDirect3DDevice9* device, const char* in
 	static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
 	ImFontConfig icons_config = {};
 	icons_config.MergeMode = true;
-	FontsStorage["_fa"] = io.Fonts->AddFontFromMemoryCompressedTTF(FontAwesome_compressed_data, FontAwesome_compressed_size, 12.0f, &icons_config, icons_ranges);
+	float FontSize = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::FontSize);
+	FontsStorage["_fa"] = io.Fonts->AddFontFromMemoryCompressedTTF(FontAwesome_compressed_data, FontAwesome_compressed_size, FontSize * 0.75f, &icons_config, icons_ranges);
 
 	//io.Fonts->Build();
 
@@ -303,11 +308,11 @@ void XrUIManager::Draw()
 	ImGui::PushFont(FontsStorage[ImCurrentFont]);
 	//ImGui::DockSpaceOverViewport();
 	{
-		m_MenuBarHeight = 64;
-		m_MenuBarButtonHeight = 28.f;
+		m_MenuBarHeight = ScaleByDpi(64.f);
+		m_MenuBarButtonHeight = m_MenuBarHeight - XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize);
 
 
-		int headerSize = 0.f
+		float headerSize = 0.f
 			+ XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::PanelPadding) * 2
 			- 1 // WinAPI WindowBorder
 			;

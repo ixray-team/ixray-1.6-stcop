@@ -101,7 +101,7 @@ void UIMainMenuForm::DrawMenuItemI(const char* label, const char* icon, int comm
 }
 
 #define MainMenuList(Name) cp = ImGui::GetCursorPos();\
-	ImGui::SetCursorPosY((UI->GetMenuBarButtonHeight() - ImGui::GetFontSize()) - ImGui::GetStyle().FramePadding.y);\
+	ImGui::SetCursorPosY((UI->GetMenuBarButtonHeight() - ImGui::GetFontSize()) / 2.f - ImGui::GetStyle().FramePadding.y);\
     if (ImGui::Button(Name)) {\
         ImGui::OpenPopup(Name"Popup"); \
 		ImGui::SetNextWindowPos({ImGui::GetWindowPos().x + cp.x, ImGui::GetWindowPos().y+ cp.y + UI->GetMenuBarButtonHeight()}); }	\
@@ -685,7 +685,7 @@ void UIMainMenuForm::Draw()
 
 		{
 			bool selected = UIObjectList::IsOpen();
-			ImGui::SetCursorPosY((UI->GetMenuBarButtonHeight() - ImGui::GetFontSize()) - ImGui::GetStyle().FramePadding.y);
+			ImGui::SetCursorPosY((UI->GetMenuBarButtonHeight() - ImGui::GetFontSize()) / 2.f - ImGui::GetStyle().FramePadding.y);
 
 			if (ImGui::Checkbox("Object List", &selected))
 			{

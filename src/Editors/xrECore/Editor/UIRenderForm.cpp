@@ -42,6 +42,10 @@ UIRenderForm::~UIRenderForm()
 
 void UIRenderForm::DrawStatistics()
 {
+	const float ToolbarHeight = 0
+		+ XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ToolbarPadding) * 2.f
+		+ XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize);
+	const float Gap = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::DockingGap);
 	if (!psDeviceFlags.is(rsStatistic))
 		return;
 
@@ -57,8 +61,8 @@ void UIRenderForm::DrawStatistics()
 			va_end(args);
 		};
 
-	ImGui::SetCursorPos(ImVec2(48, 48));
-	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(4.0f, .5f));
+	ImGui::SetCursorPos(ImVec2(ToolbarHeight * 0.5f, ToolbarHeight * 1.5f));
+	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(Gap, Gap));
 
 	if (!ImGui::BeginTable("stats", 2))
 	{
@@ -128,6 +132,12 @@ void UIRenderForm::Draw()
 
 void UIRenderForm::DrawVP()
 {
+	const float ToolbarHeight = 0
+		+ XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ToolbarPadding) * 2.f
+		+ XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize);
+
+	float ScreenDPI = GUIManager->GetScaleDpi();
+
 	if (UI->Views[ViewportID].ViewGlobalIDX != ViewportID)
 	{
 		return;
@@ -205,8 +215,8 @@ void UIRenderForm::DrawVP()
 		bool curent_shiftstate_down = UI->CurrentView().m_Camera.IsMoving();
 
 
-		if (canvas_size.x < 32.0f) canvas_size.x = 32.0f;
-		if (canvas_size.y < 32.0f) canvas_size.y = 32.0f;
+		if (canvas_size.x < 32.0f * ScreenDPI) canvas_size.x = 32.0f * ScreenDPI;
+		if (canvas_size.y < 32.0f * ScreenDPI) canvas_size.y = 32.0f * ScreenDPI;
 		UI->Views[ViewportID].RTSize.set(canvas_size.x, canvas_size.y);
 
 		ImGui::SetCursorScreenPos(canvas_pos);
@@ -234,7 +244,7 @@ void UIRenderForm::DrawVP()
 				float calcSide = (canvas_size.x > canvas_size.y) ? canvas_size.y : canvas_size.x;
 
 				ImVec2 size{ calcSide * 0.15f, calcSide * 0.15f };
-				ImVec2 pos{ canvas_pos.x + canvas_size.x - size.x, canvas_pos.y+25.f };
+				ImVec2 pos{ canvas_pos.x + canvas_size.x - size.x, canvas_pos.y + ToolbarHeight };
 
 				//Device.mView for only read
 				Fmatrix TempViewMatrix = Device.mView;
