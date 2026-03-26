@@ -258,7 +258,7 @@ void CController::Load(const char* section)
 	                             	pSettings->r_float(section, tube_condition_min_distance_line) :
 									default_tube_condition_min_distance;
 
-	m_stamina_hit				  = READ_IF_EXISTS(pSettings, r_float, section, "stamina_hit",
+	m_stamina_hit				  = pSettings->read_if_exists<float>(section, "stamina_hit",
 									default_stamina_hit);
 
 	PostLoad						(section);

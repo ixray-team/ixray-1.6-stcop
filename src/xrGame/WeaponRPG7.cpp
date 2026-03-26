@@ -23,28 +23,28 @@ void CWeaponRPG7::Load	(const char* section)
 
 	m_zoom_params.m_fScopeZoomFactor	= pSettings->r_float	(section,"max_zoom_factor");
 
-	m_sGrenadeBoneName					= READ_IF_EXISTS(pSettings, r_string, section,"grenade_bone", "grenade");
-	m_sHudGrenadeBoneName				= READ_IF_EXISTS(pSettings, r_string, hud_sect,"grenade_bone", "grenade");
+	m_sGrenadeBoneName = pSettings->read_if_exists<LPCSTR>(section,"grenade_bone","grenade");
+	m_sHudGrenadeBoneName = pSettings->read_if_exists<LPCSTR>(hud_sect,"grenade_bone","grenade");
 
-	m_sRocketSection					= pSettings->r_string	(section,"rocket_class");
+	m_sRocketSection = pSettings->r_string(section,"rocket_class");
 
-	m_rocket_explode_params.start_tr = READ_IF_EXISTS(pSettings, r_float, section, "rocket_misfunc_start_condition", 0.0f);
-	m_rocket_explode_params.end_tr = READ_IF_EXISTS(pSettings, r_float, section, "rocket_misfunc_end_condition", 0.0f);
-	m_rocket_explode_params.start_prob = READ_IF_EXISTS(pSettings, r_float, section, "rocket_misfunc_start_probability", 0.0f);
-	m_rocket_explode_params.end_prob = READ_IF_EXISTS(pSettings, r_float, section, "rocket_misfunc_end_probability", 0.0f);
+	m_rocket_explode_params.start_tr = pSettings->read_if_exists<float>(section,"rocket_misfunc_start_condition",0.0f);
+	m_rocket_explode_params.end_tr = pSettings->read_if_exists<float>(section,"rocket_misfunc_end_condition",0.0f);
+	m_rocket_explode_params.start_prob = pSettings->read_if_exists<float>(section,"rocket_misfunc_start_probability",0.0f);
+	m_rocket_explode_params.end_prob = pSettings->read_if_exists<float>(section,"rocket_misfunc_end_probability",0.0f);
 
-	m_reactive_hit_params.dist = READ_IF_EXISTS(pSettings, r_float, section, "reactive_hit_dist", 0.0f);
-	m_reactive_hit_params.power = READ_IF_EXISTS(pSettings, r_float, section, "reactive_hit_power", 0.0f);
-	m_reactive_hit_params.impulse = READ_IF_EXISTS(pSettings, r_float, section, "reactive_hit_impulse", 0.0f);
-	m_reactive_hit_params.buck = READ_IF_EXISTS(pSettings, r_u32, section, "reactive_hit_buck", 1);
-	m_reactive_hit_params.reverse_buck = READ_IF_EXISTS(pSettings, r_u32, section, "reactive_hit_reverse_buck", 1);
-	m_reactive_hit_params.buck_disp = READ_IF_EXISTS(pSettings, r_float, section, "reactive_hit_buck_disp", 1.0f);
-	m_reactive_hit_params.reverse_disp = READ_IF_EXISTS(pSettings, r_float, section, "reactive_hit_reverse_disp", 0.1f);
-	m_reactive_hit_params.reverse_disp2 = READ_IF_EXISTS(pSettings, r_float, section, "reactive_hit_reverse_disp2", 0.1f);
-	m_reactive_hit_params.reverse_power = READ_IF_EXISTS(pSettings, r_float, section, "reactive_hit_reverse_power", m_reactive_hit_params.power);
-	m_reactive_hit_params.type = (ALife::EHitType)READ_IF_EXISTS(pSettings, r_u32, section, "reactive_hit_type", ALife::eHitTypeExplosion);
-	m_reactive_hit_params.reverse_k = READ_IF_EXISTS(pSettings, r_float, section, "reactive_hit_reverse_k", 1.0f);
-	m_reactive_hit_params.bullet_material = READ_IF_EXISTS(pSettings, r_string, section, "reactive_hit_bullet_material", "default");
+	m_reactive_hit_params.dist = pSettings->read_if_exists<float>(section,"reactive_hit_dist",0.0f);
+	m_reactive_hit_params.power = pSettings->read_if_exists<float>(section,"reactive_hit_power",0.0f);
+	m_reactive_hit_params.impulse = pSettings->read_if_exists<float>(section,"reactive_hit_impulse",0.0f);
+	m_reactive_hit_params.buck = pSettings->read_if_exists<u32>(section,"reactive_hit_buck",1);
+	m_reactive_hit_params.reverse_buck = pSettings->read_if_exists<u32>(section,"reactive_hit_reverse_buck",1);
+	m_reactive_hit_params.buck_disp = pSettings->read_if_exists<float>(section,"reactive_hit_buck_disp",1.0f);
+	m_reactive_hit_params.reverse_disp = pSettings->read_if_exists<float>(section,"reactive_hit_reverse_disp",0.1f);
+	m_reactive_hit_params.reverse_disp2 = pSettings->read_if_exists<float>(section,"reactive_hit_reverse_disp2",0.1f);
+	m_reactive_hit_params.reverse_power = pSettings->read_if_exists<float>(section,"reactive_hit_reverse_power",m_reactive_hit_params.power);
+	m_reactive_hit_params.type = (ALife::EHitType)pSettings->read_if_exists<u32>(section,"reactive_hit_type",ALife::eHitTypeExplosion);
+	m_reactive_hit_params.reverse_k = pSettings->read_if_exists<float>(section,"reactive_hit_reverse_k",1.0f);
+	m_reactive_hit_params.bullet_material = pSettings->read_if_exists<LPCSTR>(section,"reactive_hit_bullet_material","default");
 }
 
 bool CWeaponRPG7::AllowBore()

@@ -277,7 +277,7 @@ void RenderWeaponManagerWindow()
 				imgui_weapon_manager.Reset();
 				if (Render)
 				{
-					const auto surface = READ_IF_EXISTS(pSettings, r_string, pItem->m_section_id, "icons_texture", "ui\\ui_icon_equipment");
+					const auto surface = pSettings->read_if_exists<str_c>(pItem->m_section_id,"icons_texture","ui\\ui_icon_equipment");
 					imgui_weapon_manager.ui_icons = Render->getSurface(surface);
 					imgui_weapon_manager.ui_icon_name = surface;
 				}
@@ -288,7 +288,7 @@ void RenderWeaponManagerWindow()
 				imgui_weapon_manager.inv_cost = pItem->Cost();
 				imgui_weapon_manager.inv_weight = pItem->Weight();
 				imgui_weapon_manager.control_inertion_factor = pItem->GetControlInertionFactor();
-				imgui_weapon_manager.inv_scale = READ_IF_EXISTS(pSettings, r_float, pItem->m_section_id, "inv_scale", 1.0f);;
+				imgui_weapon_manager.inv_scale = pSettings->read_if_exists<float>(pItem->m_section_id, "inv_scale", 1.0f);;
 				imgui_weapon_manager.inv_grid_x = pItem->GetInvGridRect().x1;
 				imgui_weapon_manager.inv_grid_y = pItem->GetInvGridRect().y1;
 				imgui_weapon_manager.inv_grid_width = pItem->GetInvGridRect().x2;
@@ -350,13 +350,13 @@ void RenderWeaponManagerWindow()
 							if (pSection.line_exist("inv_grid_x") && pSection.line_exist("inv_grid_y") && pSection.line_exist("inv_grid_width") && pSection.line_exist("inv_grid_height"))
 							{
 								WeaponIcon icon;
-								icon.inv_scale = READ_IF_EXISTS(pSettings, r_float, name.data(), "inv_scale", 1.0f);
+								icon.inv_scale = pSettings->read_if_exists<float>(name.data(), "inv_scale", 1.0f);
 								icon.inv_grid_x = pSettings->r_u32(name.data(), "inv_grid_x");
 								icon.inv_grid_y = pSettings->r_u32(name.data(), "inv_grid_y");
 								icon.inv_grid_width = pSettings->r_u32(name.data(), "inv_grid_width");
 								icon.inv_grid_height = pSettings->r_u32(name.data(), "inv_grid_height");
 								icon.p_section_name = name.data();
-								icon.ui_icon_name = READ_IF_EXISTS(pSettings, r_string, name.data(), "icons_texture", "ui\\ui_icon_equipment");
+								icon.ui_icon_name = pSettings->read_if_exists<str_c>(name.data(), "icons_texture", "ui\\ui_icon_equipment");
 								icon.ui_icons = Render->getSurface(icon.ui_icon_name.c_str());
 								imgui_weapon_manager.icons.push_back(icon);
 							}
@@ -613,7 +613,7 @@ void RenderWeaponManagerWindow()
 							imgui_weapon_manager.cfg_fire_dispersion_condition_factor = pSettings->r_float(pSectionName, "fire_dispersion_condition_factor");
 						}
 
-						imgui_weapon_manager.cfg_inv_scale = READ_IF_EXISTS(pSettings, r_float, pSectionName, "inv_scale", 1.0f);
+						imgui_weapon_manager.cfg_inv_scale = pSettings->read_if_exists<float>(pSectionName, "inv_scale", 1.0f);
 
 						if (pSettings->line_exist(pSectionName, "inv_grid_x"))
 						{

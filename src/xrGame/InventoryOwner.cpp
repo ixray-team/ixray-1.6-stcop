@@ -161,7 +161,7 @@ bool CInventoryOwner::net_Spawn(CSE_Abstract* DC)
 		m_game_name = (E->name_replace()[0]) ? E->name_replace() : *pThis->cName();
 	}
 
-	CharacterInfo().m_SpecificCharacter.updateMechanic(READ_IF_EXISTS(pSettings, r_bool, cast_game_object()->cNameSect(), "mechanic", SpecificCharacter().upgrade_mechanic()));
+	CharacterInfo().m_SpecificCharacter.updateMechanic(pSettings->read_if_exists<bool>(cast_game_object()->cNameSect(), "mechanic", SpecificCharacter().upgrade_mechanic()));
 
 	if (EngineExternal()[EEngineExternalSystem::EngineScriptStoryID]) // required because use script story id from engine object
 	{
@@ -758,7 +758,7 @@ const char* CInventoryOwner::trade_section() const
 {
 	const CGameObject* game_object = smart_cast<const CGameObject*>(this);
 	VERIFY(game_object);
-	return READ_IF_EXISTS(pSettings, r_string, game_object->cNameSect(), "trade_section", "trade");
+	return pSettings->read_if_exists<LPCSTR>(game_object->cNameSect(),"trade_section","trade");
 }
 
 float CInventoryOwner::deficit_factor(const shared_str& section) const

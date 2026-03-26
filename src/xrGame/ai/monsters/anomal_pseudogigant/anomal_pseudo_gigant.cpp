@@ -35,30 +35,30 @@ CAnomalPseudoGigant::~CAnomalPseudoGigant()
 void CAnomalPseudoGigant::Load(LPCSTR section)
 {
 	inherited::Load(section);
-	if (READ_IF_EXISTS(pSettings, r_bool, section, "use_flame", false)) {
+	if (pSettings->read_if_exists<bool>(section,"use_flame",false)) {
 		m_flame = new CPolterFlame(this);
 		m_flame->load(section);
 	}
-	if (READ_IF_EXISTS(pSettings, r_bool, section, "use_tele", false)) {
+	if (pSettings->read_if_exists<bool>(section,"use_tele",false)) {
 		m_tele = new CPolterTele(this);
 		m_tele->load(section);
 	}
-	if (READ_IF_EXISTS(pSettings, r_bool, section, "use_chem", false)) {
+	if (pSettings->read_if_exists<bool>(section,"use_chem",false)) {
 		m_chem = new CPolterChem(this);
 		m_chem->load(section);
 	}
 
-	m_flame_max_hp_to_activate = READ_IF_EXISTS(pSettings, r_float, section, "flame_max_hp_to_activate", 0.0f);
-	m_tele_max_hp_to_activate = READ_IF_EXISTS(pSettings, r_float, section, "tele_max_hp_to_activate", 0.0f);
-	m_chem_max_hp_to_activate = READ_IF_EXISTS(pSettings, r_float, section, "chem_max_hp_to_activate", 0.0f);
+	m_flame_max_hp_to_activate = pSettings->read_if_exists<float>(section,"flame_max_hp_to_activate",0.0f);
+	m_tele_max_hp_to_activate = pSettings->read_if_exists<float>(section,"tele_max_hp_to_activate",0.0f);
+	m_chem_max_hp_to_activate = pSettings->read_if_exists<float>(section,"chem_max_hp_to_activate",0.0f);
 
-	m_shield_cooldown = READ_IF_EXISTS(pSettings, r_u32, section, "shield_cooldown", 4000);
-	m_shield_time = READ_IF_EXISTS(pSettings, r_u32, section, "shield_time", 3000);
-	m_shield_keep_particle = READ_IF_EXISTS(pSettings, r_string, section, "shield_keep_particle", 0);
-	m_shield_keep_particle_period = READ_IF_EXISTS(pSettings, r_u32, section, "shield_keep_particle_period", 1000);
+	m_shield_cooldown = pSettings->read_if_exists<u32>(section,"shield_cooldown",4000);
+	m_shield_time = pSettings->read_if_exists<u32>(section,"shield_time",3000);
+	m_shield_keep_particle = pSettings->read_if_exists<LPCSTR>(section,"shield_keep_particle",nullptr);
+	m_shield_keep_particle_period = pSettings->read_if_exists<u32>(section,"shield_keep_particle_period",1000);
 	
-	m_shield_penetration_border = READ_IF_EXISTS(pSettings, r_float, section, "shield_penetration_border", m_shield_penetration_border);
-	m_shield_penetration_damage_coeff = READ_IF_EXISTS(pSettings, r_float, section, "shield_penetration_damage_coeff", m_shield_penetration_damage_coeff);
+	m_shield_penetration_border = pSettings->read_if_exists<float>(section,"shield_penetration_border",m_shield_penetration_border);
+	m_shield_penetration_damage_coeff = pSettings->read_if_exists<float>(section,"shield_penetration_damage_coeff",m_shield_penetration_damage_coeff);
 
 	SVelocityParam& velocity_turn = move().get_velocity(MonsterMovement::eVelocityParameterStand);
 

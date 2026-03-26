@@ -10,7 +10,7 @@ void CHelmet::Load(const char* section)
 {
 	inherited::Load(section);
 
-	m_fShowNearestEnemiesDistance = READ_IF_EXISTS(pSettings, r_float, section, "nearest_enemies_show_dist", 0.0f);
+	m_fShowNearestEnemiesDistance = pSettings->read_if_exists<float>(section,"nearest_enemies_show_dist",0.0f);
 }
 
 void CHelmet::OnMoveToSlot(const SInvItemPlace& previous_place)

@@ -48,8 +48,8 @@ void CPdaCommunication::ensurePdaTalkConfigCache() const
         _pdaTalkIgnoreSwitchDistanceCached = false;
         return;
     }
-    _pdaTalkEnabledCached = READ_IF_EXISTS(ini, r_bool, "pda_talk", "enabled", false);
-    _pdaTalkIgnoreSwitchDistanceCached = READ_IF_EXISTS(ini, r_bool, "pda_talk", "ignore_switch_distance", true);
+    _pdaTalkEnabledCached = pSettings->read_if_exists<bool>("pda_talk", "enabled", false);
+    _pdaTalkIgnoreSwitchDistanceCached = pSettings->read_if_exists<bool>("pda_talk", "ignore_switch_distance", true);
 }
 
 bool CPdaCommunication::IsEnabled() const
@@ -359,7 +359,7 @@ bool CPdaCommunication::IsNpcPdaEnabled(CInventoryOwner* npc) const
         return true;
     }
 
-    return READ_IF_EXISTS(pSettings, r_bool, gameObject->cNameSect(), "pda_talk_enabled", true);
+    return pSettings->read_if_exists<bool>(gameObject->cNameSect(), "pda_talk_enabled", true);
 }
 
 bool CPdaCommunication::IsQuestTalkAllowed(CInventoryOwner* npc) const
@@ -370,6 +370,6 @@ bool CPdaCommunication::IsQuestTalkAllowed(CInventoryOwner* npc) const
         return true;
     }
 
-    return READ_IF_EXISTS(pSettings, r_bool, gameObject->cNameSect(), "pda_quest_talk_enabled", true);
+    return pSettings->read_if_exists<bool>(gameObject->cNameSect(), "pda_quest_talk_enabled", true);
 }
 

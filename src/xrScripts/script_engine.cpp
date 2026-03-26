@@ -370,7 +370,7 @@ void CScriptEngine::register_script_classes		()
 		return;
 	}
 
-	m_class_registrators		= READ_IF_EXISTS(l_tpIniFile,r_string,"common","class_registrators","");
+	m_class_registrators		= l_tpIniFile->read_if_exists<LPCSTR>("common","class_registrators","");
 	xr_delete					(l_tpIniFile);
 
 	u32 n = _GetItemCount(*m_class_registrators);

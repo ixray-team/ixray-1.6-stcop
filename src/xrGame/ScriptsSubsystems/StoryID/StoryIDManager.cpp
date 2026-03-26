@@ -35,7 +35,7 @@ void CScriptStoryIDManager::VerifiedRegisterObject(CSE_Abstract* se_obj)
         }
         return;
     }
-    auto story_id = READ_IF_EXISTS(pSettings, r_string, se_obj->name(), "story_id", nullptr);
+    auto story_id = pSettings->read_if_exists<LPCSTR>(se_obj->name(),"story_id",nullptr);
     if (story_id)
     {
         self.Register(se_obj->ID, story_id);

@@ -568,8 +568,8 @@ void game_sv_CaptureTheArtefact::Create(shared_str &options)
 	Msg("---Starting new round, scores: [ %d : %d ]",
 		teams[etGreenTeam].score, teams[etBlueTeam].score);
 #endif // #ifndef MASTER_GOLD
-	m_iMoney_for_BuySpawn	= READ_IF_EXISTS(pSettings, r_s32, "capturetheartefact_gamedata", "spawn_cost", -10000);
-	m_not_free_ammo_str		= READ_IF_EXISTS(pSettings, r_string, "capturetheartefact_gamedata", "not_free_ammo", "");
+	m_iMoney_for_BuySpawn	= pSettings->read_if_exists<s32>("capturetheartefact_gamedata", "spawn_cost", -10000);
+	m_not_free_ammo_str		= pSettings->read_if_exists<LPCSTR>("capturetheartefact_gamedata", "not_free_ammo", "");
 }
 
 void game_sv_CaptureTheArtefact::OnRoundStart()
@@ -1421,18 +1421,18 @@ void game_sv_CaptureTheArtefact::OnGiveBonus(KILL_RES KillResult, game_PlayerSta
 					{
 					case SKT_HEADSHOT:
 						{
-							Player_AddExperience(pKiller, READ_IF_EXISTS(pSettings, r_float, "mp_bonus_exp", "headshot",0));
-							Player_AddBonusMoney(pKiller, READ_IF_EXISTS(pSettings, r_s32, "mp_bonus_money", "headshot",0), SKT_HEADSHOT);
+							Player_AddExperience(pKiller, pSettings->read_if_exists<float>("mp_bonus_exp", "headshot",0));
+							Player_AddBonusMoney(pKiller, pSettings->read_if_exists<s32>("mp_bonus_money", "headshot",0), SKT_HEADSHOT);
 						}break;
 					case SKT_EYESHOT:
 						{
-							Player_AddExperience(pKiller, READ_IF_EXISTS(pSettings, r_float, "mp_bonus_exp", "eyeshot",0));
-							Player_AddBonusMoney(pKiller, READ_IF_EXISTS(pSettings, r_s32, "mp_bonus_money", "eyeshot",0), SKT_EYESHOT);
+							Player_AddExperience(pKiller, pSettings->read_if_exists<float>("mp_bonus_exp", "eyeshot",0));
+							Player_AddBonusMoney(pKiller, pSettings->read_if_exists<s32>("mp_bonus_money", "eyeshot",0), SKT_EYESHOT);
 						}break;
 					case SKT_BACKSTAB:
 						{
-							Player_AddExperience(pKiller, READ_IF_EXISTS(pSettings, r_float, "mp_bonus_exp", "backstab",0));
-							Player_AddBonusMoney(pKiller, READ_IF_EXISTS(pSettings, r_s32, "mp_bonus_money", "backstab",0), SKT_BACKSTAB);
+							Player_AddExperience(pKiller, pSettings->read_if_exists<float>("mp_bonus_exp", "backstab",0));
+							Player_AddBonusMoney(pKiller, pSettings->read_if_exists<s32>("mp_bonus_money", "backstab",0), SKT_BACKSTAB);
 						}break;
 					default:
 						{
@@ -1442,8 +1442,8 @@ void game_sv_CaptureTheArtefact::OnGiveBonus(KILL_RES KillResult, game_PlayerSta
 								{
 								case CLSID_OBJECT_W_KNIFE:
 									{
-										Player_AddExperience(pKiller, READ_IF_EXISTS(pSettings, r_float, "mp_bonus_exp", "knife_kill",0));
-										Player_AddBonusMoney(pKiller, READ_IF_EXISTS(pSettings, r_s32, "mp_bonus_money", "knife_kill",0), SKT_KNIFEKILL);
+										Player_AddExperience(pKiller, pSettings->read_if_exists<float>("mp_bonus_exp", "knife_kill",0));
+										Player_AddBonusMoney(pKiller, pSettings->read_if_exists<s32>("mp_bonus_money", "knife_kill",0), SKT_KNIFEKILL);
 									}break;
 								};
 							};
@@ -1459,7 +1459,7 @@ void game_sv_CaptureTheArtefact::OnGiveBonus(KILL_RES KillResult, game_PlayerSta
 			{
 				string64 tmpStr;
 				xr_sprintf(tmpStr, "%d_kill_in_row", pKiller->m_iKillsInRowCurr);
-				Player_AddBonusMoney(pKiller, READ_IF_EXISTS(pSettings, r_s32, "mp_bonus_money", tmpStr,0), SKT_KIR, u8(pKiller->m_iKillsInRowCurr & 0xff));
+				Player_AddBonusMoney(pKiller, pSettings->read_if_exists<s32>("mp_bonus_money", tmpStr,0), SKT_KIR, u8(pKiller->m_iKillsInRowCurr & 0xff));
 			};			
 		}break;
 	default:
@@ -1678,10 +1678,6 @@ bool game_sv_CaptureTheArtefact::OnTouch(ALife::_OBJECT_ID eid_who, ALife::_OBJE
 					//add to actor some money and exp
 					VERIFY(TeamList.size() >= artefactOfTeam->second.indexOfTeamInList);
 					Player_AddMoney(ps_who, TeamList[artefactOfTeam->second.indexOfTeamInList].m_iM_KillRival);
-					
-					/*Set_RankUp_Allowed(true);
-					Player_AddExperience(ps_who, READ_IF_EXISTS(pSettings, r_float, "mp_bonus_exp","target_succeed",0));
-					Set_RankUp_Allowed(false);*/
 
 					NET_Packet			P;
 					GenerateGameMessage	(P);
@@ -1770,7 +1766,7 @@ bool game_sv_CaptureTheArtefact::OnTouchItem(CSE_ActorMP *actor, CSE_Abstract *i
 		DestroyGameItem(item);
 		if (isPDAHuntEnabled() && actor->owner && actor->owner->ps)
 		{
-			Player_AddBonusMoney(actor->owner->ps, READ_IF_EXISTS(pSettings, r_s32, "mp_bonus_money", "pda_taken",0), SKT_PDA);
+			Player_AddBonusMoney(actor->owner->ps, pSettings->read_if_exists<s32>("mp_bonus_money", "pda_taken",0), SKT_PDA);
 		};
 				
 		//-------------------------------
@@ -2160,7 +2156,7 @@ void game_sv_CaptureTheArtefact::ActorDeliverArtefactOnBase(CSE_ActorMP *actor, 
 	teams[actorTeam].score++;
 
 	Set_RankUp_Allowed(true);
-	Player_AddExperience(ps, READ_IF_EXISTS(pSettings, r_float, "mp_bonus_exp","target_succeed",0));
+	Player_AddExperience(ps, pSettings->read_if_exists<float>("mp_bonus_exp","target_succeed",0));
 
 	// Add money to players in this team
 	struct bonusmoney_adder
@@ -2179,7 +2175,7 @@ void game_sv_CaptureTheArtefact::ActorDeliverArtefactOnBase(CSE_ActorMP *actor, 
 			if (pstate->team == ps->team)
 			{
 				m_owner->Player_AddMoney(pstate, m_iM_TargetSucceedAll);				
-				m_owner->Player_AddExperience(pstate, READ_IF_EXISTS(pSettings, r_float, "mp_bonus_exp", "target_succeed_all",0));
+				m_owner->Player_AddExperience(pstate, pSettings->read_if_exists<float>("mp_bonus_exp", "target_succeed_all",0));
 			} else
 			{
 				m_owner->Player_AddExperience(pstate, 0.f);
@@ -2272,10 +2268,6 @@ void game_sv_CaptureTheArtefact::CheckForArtefactReturning(u32 currentTime_)
 					VERIFY(ps_who);
 
 					Player_AddMoney(ps_who, TeamList[ps_who->team].m_iM_KillRival);
-				
-					/*Set_RankUp_Allowed(true);
-					Player_AddExperience(ps_who, READ_IF_EXISTS(pSettings, r_float, "mp_bonus_exp","target_succeed",0));
-					Set_RankUp_Allowed(false);*/
 
 					NET_Packet			P;
 					GenerateGameMessage	(P);

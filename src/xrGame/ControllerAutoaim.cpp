@@ -8,23 +8,23 @@ void CAutoAim::load()
 {
 	// distance thresholds a-b-c
 	distA = 0.0f;
-	distB = READ_IF_EXISTS(pSettings, r_float, "auto_aiming", "distance_b", 5.1f);
-	distC = READ_IF_EXISTS(pSettings, r_float, "auto_aiming", "distance_c", 200.1f);
+	distB = pSettings->read_if_exists<float>("auto_aiming", "distance_b", 5.1f);
+	distC = pSettings->read_if_exists<float>("auto_aiming", "distance_c", 200.1f);
 
 	// dotp thresholds easy,norm
-	dotpA_n = READ_IF_EXISTS(pSettings, r_float, "auto_aiming", "dotp_a_norm", 0.5f);
-	dotpB_n = READ_IF_EXISTS(pSettings, r_float, "auto_aiming", "dotp_b_norm", 0.97f);
-	dotpC_n = READ_IF_EXISTS(pSettings, r_float, "auto_aiming", "dotp_c_norm", 0.97f);
+	dotpA_n = pSettings->read_if_exists<float>("auto_aiming", "dotp_a_norm", 0.5f);
+	dotpB_n = pSettings->read_if_exists<float>("auto_aiming", "dotp_b_norm", 0.97f);
+	dotpC_n = pSettings->read_if_exists<float>("auto_aiming", "dotp_c_norm", 0.97f);
 
-	dotpA_e = READ_IF_EXISTS(pSettings, r_float, "auto_aiming", "dotp_a_easy", 0.5f);
-	dotpB_e = READ_IF_EXISTS(pSettings, r_float, "auto_aiming", "dotp_b_easy", 0.97f);
-	dotpC_e = READ_IF_EXISTS(pSettings, r_float, "auto_aiming", "dotp_c_easy", 0.97f);
+	dotpA_e = pSettings->read_if_exists<float>("auto_aiming", "dotp_a_easy", 0.5f);
+	dotpB_e = pSettings->read_if_exists<float>("auto_aiming", "dotp_b_easy", 0.97f);
+	dotpC_e = pSettings->read_if_exists<float>("auto_aiming", "dotp_c_easy", 0.97f);
 
 	// lerp easiness
-	easiness = READ_IF_EXISTS(pSettings, r_float, "auto_aiming", "easiness", 1.0f);
+	easiness = pSettings->read_if_exists<float>("auto_aiming", "easiness", 1.0f);
 
 	// What Y to aim at
-	heightFraction = READ_IF_EXISTS(pSettings, r_float, "auto_aiming", "height_fraction", 0.7f);
+	heightFraction = pSettings->read_if_exists<float>("auto_aiming", "height_fraction", 0.7f);
 }
 
 void CAutoAim::look_at_pos_for_aiming(Fvector& dest, const CEntityAlive* pAim)

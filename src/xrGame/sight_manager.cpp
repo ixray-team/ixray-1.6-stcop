@@ -50,8 +50,8 @@ void CSightManager::reinit			()
 
 void CSightManager::reload			(const char* section)
 {
-	m_max_left_angle			= deg2rad(READ_IF_EXISTS(pSettings,r_float,section,"max_left_torso_angle",90.f));
-	m_max_right_angle			= deg2rad(READ_IF_EXISTS(pSettings,r_float,section,"max_right_torso_angle",60.f));
+	m_max_left_angle			= deg2rad(pSettings->read_if_exists<float>(section,"max_left_torso_angle",90.f));
+	m_max_right_angle			= deg2rad(pSettings->read_if_exists<float>(section,"max_right_torso_angle",60.f));
 }
 
 void CSightManager::vfValidateAngleDependency(float x1, float &x2, float x3)

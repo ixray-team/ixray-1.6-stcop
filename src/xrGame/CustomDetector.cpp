@@ -15,8 +15,8 @@ void CCustomDetector::Load(const char* section)
     m_animation_slot = 7;
 	inherited::Load(section);
 
-	m_fAfDetectRadius = READ_IF_EXISTS(pSettings, r_float, section, "af_radius", 30.0f);
-	m_fAfVisRadius = READ_IF_EXISTS(pSettings, r_float, section, "af_vis_radius", 2.0f);
+	m_fAfDetectRadius = pSettings->read_if_exists<float>(section,"af_radius",30.0f);
+	m_fAfVisRadius = pSettings->read_if_exists<float>(section,"af_vis_radius",2.0f);
 	m_artefacts.load(section, "af");
 
 	SpatialComponent->type |= ESPATIAL_TYPE::ANOMALY_DETECTOR;

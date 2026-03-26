@@ -1,4 +1,5 @@
 #include "stdafx.h"
+<<<<<<< HEAD
 #include "HUDManager.h"
 #include "poltergeist.h"
 #include "WeaponMagazined.h"
@@ -9,6 +10,134 @@
 #include "../../../ActorCondition.h"
 #include "../../../Inventory.h"
 #include "../../../Weapon.h"
+=======
+
+#include "../xrSound/ai_sounds.h"
+#include "PolterInterface.h"
+#include "PolterTele.h"
+#include "PhysicsShellHolder.h"
+#include "level.h"
+#include "actor.h"
+#include "ActorCondition.h"
+#include "Inventory.h"
+#include "../xrPhysics/icolisiondamageinfo.h"
+#include "ai/monsters/telekinesis.h"
+#include "ai/monsters/BaseMonster/base_monster.h"
+
+CPolterTele::CPolterTele(IPolterInterface* polter) : inherited (polter),m_pmt_object_collision_damage(0.5f)
+{
+}
+
+CPolterTele::~CPolterTele()
+{
+}
+
+void CPolterTele::load(const char* section)
+{
+	inherited::load(section);
+
+	m_pmt_radius						= pSettings->read_if_exists<float>(section,	"Tele_Find_Radius",					10.f);
+	m_pmt_object_min_mass				= pSettings->read_if_exists<float>(section,	"Tele_Object_Min_Mass",				40.f);
+	m_pmt_object_max_mass				= pSettings->read_if_exists<float>(section,	"Tele_Object_Max_Mass",				500.f);
+	m_pmt_object_count					= pSettings->read_if_exists<u32>(section,	"Tele_Object_Count",				10);
+	m_pmt_time_to_hold					= pSettings->read_if_exists<u32>(section,	"Tele_Hold_Time",					3000);
+	m_pmt_time_to_wait					= pSettings->read_if_exists<u32>(section,	"Tele_Wait_Time",					3000);
+	m_pmt_time_to_wait_in_objects		= pSettings->read_if_exists<u32>(section,	"Tele_Delay_Between_Objects_Time",	500);
+	m_pmt_distance						= pSettings->read_if_exists<float>(section,	"Tele_Distance",					50.f);
+	m_pmt_object_height					= pSettings->read_if_exists<float>(section,	"Tele_Object_Height",				10.f);
+	m_pmt_time_object_keep				= pSettings->read_if_exists<u32>(section,	"Tele_Time_Object_Keep",			10000);
+	m_pmt_raise_speed					= pSettings->read_if_exists<float>(section,	"Tele_Raise_Speed",					3.f);
+	m_pmt_raise_time_to_wait_in_objects	= pSettings->read_if_exists<u32>(section,	"Tele_Delay_Between_Objects_Raise_Time", 500);
+	m_pmt_fly_velocity					= pSettings->read_if_exists<float>(section, "Tele_Fly_Velocity",				30.f);
+	m_pmt_object_collision_damage		= pSettings->read_if_exists<float>(section, "Tele_Collision_Damage",			0.5f);
+	::Sound->create						(m_sound_tele_hold, pSettings->r_string(section,"sound_tele_hold"),	st_Effect,SOUND_TYPE_WORLD);
+	::Sound->create						(m_sound_tele_throw, pSettings->r_string(section,"sound_tele_throw"),st_Effect,SOUND_TYPE_WORLD);
+
+	m_state								= 	eWait;
+	m_time								= 	0;
+	m_time_next							= 	0;
+}
+
+void CPolterTele::update_frame()
+{
+	inherited::update_frame();
+}
+
+void CPolterTele::update_schedule()
+{
+	inherited::update_schedule();
+	
+	CMonsterEnemyManager& enemy = m_object->GetMonster()->EnemyMan;
+	
+	const Fvector enemy_pos = enemy.get_enemy_position();
+	const float distance_to_enemy = enemy_pos.distance_to(m_object->GetCurrentPosition());
+
+	// TODO: Where was a detection level! "if ( m_object->GetCurrentDetectionLevel() < m_object->GetDetectionSuccessLevel() ) return"
+	if (distance_to_enemy > m_pmt_distance || m_object->GetActorIgnore())
+	{
+		return;
+	}
+
+	switch (m_state)
+	{
+	case eStartRaiseObjects:
+		{
+			if (m_time + m_time_next < time()) {
+				if (!tele_raise_objects())
+				{
+					m_state	= eRaisingObjects;
+				}
+				
+				m_time = time();
+				m_time_next = m_pmt_raise_time_to_wait_in_objects / 2 + Random.randI(m_pmt_raise_time_to_wait_in_objects / 2);
+			}
+	
+			if (m_state == eStartRaiseObjects) {
+				if (m_object->GetTelekinesis()->get_objects_count() >= m_pmt_object_count) {
+					m_state		= eRaisingObjects;
+					m_time		= time();
+				}
+			}
+	
+			break;
+		}
+	case eRaisingObjects:
+		{
+			if (m_time + m_pmt_time_to_hold > time())
+			{
+				break;
+			}
+		
+			m_time = time();
+			m_time_next = 0;
+			m_state = eFireObjects;
+		}
+	case eFireObjects:
+		{
+			if (m_time + m_time_next < time()) {
+				tele_fire_objects();
+			
+				m_time = time();
+				m_time_next	= m_pmt_time_to_wait_in_objects / 2 + Random.randI(m_pmt_time_to_wait_in_objects / 2);
+			}
+		
+			if (m_object->GetTelekinesis()->get_objects_count() == 0) {
+				m_state = eWait;
+				m_time = time();
+			}
+			break;
+		}
+	case eWait:
+		{
+			if (m_time + m_pmt_time_to_wait < time()) {
+				m_time_next = 0;
+				m_state = eStartRaiseObjects;
+			}
+			break;
+		}
+	}
+}
+>>>>>>> 05290cbd48 (Replace READ_IF_EXISTS with optimized read)
 
 //////////////////////////////////////////////////////////////////////////
 // Выбор подходящих объектов для телекинеза

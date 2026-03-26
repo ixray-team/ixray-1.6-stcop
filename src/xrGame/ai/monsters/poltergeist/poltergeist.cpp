@@ -103,16 +103,16 @@ void CPoltergeist::Load(const char* section)
 	// READ_IF_EXISTS(pSettings,r_u32,section,"PsyAura_Fake_Delay", 8000);
 	// READ_IF_EXISTS(pSettings,r_float,section,"PsyAura_Fake_MaxAddDist", 90.f);
 
-	m_height_change_velocity = READ_IF_EXISTS(pSettings, r_float, section, "Height_Change_Velocity", 0.5f);
-	m_height_change_min_time = READ_IF_EXISTS(pSettings, r_u32, section, "Height_Change_Min_Time", 3000);
-	m_height_change_max_time = READ_IF_EXISTS(pSettings, r_u32, section, "Height_Change_Max_Time", 10000);
-	m_height_min = READ_IF_EXISTS(pSettings, r_float, section, "Height_Min", 0.4f);
-	m_height_max = READ_IF_EXISTS(pSettings, r_float, section, "Height_Max", 2.f);
+	m_height_change_velocity = pSettings->read_if_exists<float>(section, "Height_Change_Velocity", 0.5f);
+	m_height_change_min_time = pSettings->read_if_exists<u32>(section, "Height_Change_Min_Time", 3000);
+	m_height_change_max_time = pSettings->read_if_exists<u32>(section, "Height_Change_Max_Time", 10000);
+	m_height_min = pSettings->read_if_exists<float>(section, "Height_Min", 0.4f);
+	m_height_max = pSettings->read_if_exists<float>(section, "Height_Max", 2.f);
 
-	m_fly_around_level = READ_IF_EXISTS(pSettings, r_float, section, "detection_fly_around_level", 5.f);
-	m_fly_around_distance = READ_IF_EXISTS(pSettings, r_float, section, "detection_fly_around_distance", 15.f);
+	m_fly_around_level = pSettings->read_if_exists<float>(section, "detection_fly_around_level", 5.f);
+	m_fly_around_distance = pSettings->read_if_exists<float>(section, "detection_fly_around_distance", 15.f);
 
-	m_fly_around_change_direction_time = READ_IF_EXISTS(pSettings, r_float, section, "detection_fly_around_change_direction_time", 7);
+	m_fly_around_change_direction_time = pSettings->read_if_exists<u32>(section, "detection_fly_around_change_direction_time", 7);
 
 	const char* polter_type = pSettings->r_string(section, "type");
 
@@ -140,7 +140,7 @@ void CPoltergeist::Load(const char* section)
 	m_last_detection_time = 0;
 	m_detection_pp_type_index = 0;
 
-	m_enable_corpse_on_death = READ_IF_EXISTS(pSettings, r_bool, section, "enable_corpse_on_death", false);
+	m_enable_corpse_on_death = pSettings->read_if_exists<bool>(section, "enable_corpse_on_death", false);
 
 	PostLoad(section);
 }

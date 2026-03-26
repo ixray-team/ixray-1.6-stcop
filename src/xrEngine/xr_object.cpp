@@ -232,8 +232,8 @@ void CObject::Load				(const char* section )
 	}
 	setVisible					(false);
 
-	SpatialComponent->ssa_dyn_factor = READ_IF_EXISTS(pSettings, r_float, section, "ssa_dyn_factor", 0.002f);// минимальный размер на экране при котором объект еще будет виден
-	SpatialComponent->ssa_d_cam = READ_IF_EXISTS(pSettings, r_float, section, "ssa_d_cam", 220.f);//дистанция в совокупности с fov на которой еще видно объект
+	SpatialComponent->ssa_dyn_factor = pSettings->read_if_exists<float>(section, "ssa_dyn_factor", 0.002f);// минимальный размер на экране при котором объект еще будет виден
+	SpatialComponent->ssa_d_cam = pSettings->read_if_exists<float>(section, "ssa_d_cam", 220.f);//дистанция в совокупности с fov на которой еще видно объект
 }
 
 bool CObject::net_Spawn			(CSE_Abstract* data)

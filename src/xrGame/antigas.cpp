@@ -138,7 +138,7 @@ void IAntigas::AddSound(const char* snd_path, bool isFilter)
 
 void IAntigas::Load(const char* section)
 {
-	SetAllowed(READ_IF_EXISTS(pSettings, r_bool, section, "is_antigas", false));
+	SetAllowed(pSettings->read_if_exists<bool>(section, "is_antigas", false));
 	if (IsAllowed())
 	{
 		if (pSettings->line_exist(section, "antigas_allow_filter_sections"))
@@ -249,26 +249,26 @@ void IAntigas::OnNetLoad(IReader& packet)
 	{
 		const char* section = m_filter_section.c_str();
 		// immunities
-		m_FilterProtection[ALife::eHitTypeBurn] = READ_IF_EXISTS(pSettings, r_float, section, "antigas_filter_protection_burn", 0.0f);
+		m_FilterProtection[ALife::eHitTypeBurn] = pSettings->read_if_exists<float>(section, "antigas_filter_protection_burn", 0.0f);
 		clamp(m_FilterProtection[ALife::eHitTypeBurn], 0.0f, 1.0f);
 
-		m_FilterProtection[ALife::eHitTypeRadiation] = READ_IF_EXISTS(pSettings, r_float, section, "antigas_filter_protection_radiation", 0.0f);
+		m_FilterProtection[ALife::eHitTypeRadiation] = pSettings->read_if_exists<float>(section, "antigas_filter_protection_radiation", 0.0f);
 		clamp(m_FilterProtection[ALife::eHitTypeRadiation], 0.0f, 1.0f);
 
-		m_FilterProtection[ALife::eHitTypeChemicalBurn] = READ_IF_EXISTS(pSettings, r_float, section, "antigas_filter_protection_chemical_burn", 0.0f);
+		m_FilterProtection[ALife::eHitTypeChemicalBurn] = pSettings->read_if_exists<float>(section, "antigas_filter_protection_chemical_burn", 0.0f);
 		clamp(m_FilterProtection[ALife::eHitTypeChemicalBurn], 0.0f, 1.0f);
 
 		m_FilterProtection[ALife::eHitTypeLightBurn] = m_FilterProtection[ALife::eHitTypeBurn];
 		clamp(m_FilterProtection[ALife::eHitTypeLightBurn], 0.0f, 1.0f);
 
 		// damage
-		m_FilterDamage[ALife::eHitTypeBurn] = READ_IF_EXISTS(pSettings, r_float, section, "antigas_filter_coeff_damage_burn", 0.0f);
+		m_FilterDamage[ALife::eHitTypeBurn] = pSettings->read_if_exists<float>(section, "antigas_filter_coeff_damage_burn", 0.0f);
 		clamp(m_FilterDamage[ALife::eHitTypeBurn], 0.0f, 1.0f);
 
-		m_FilterDamage[ALife::eHitTypeRadiation] = READ_IF_EXISTS(pSettings, r_float, section, "antigas_filter_coeff_damage_radiation", 0.0f);
+		m_FilterDamage[ALife::eHitTypeRadiation] = pSettings->read_if_exists<float>(section, "antigas_filter_coeff_damage_radiation", 0.0f);
 		clamp(m_FilterDamage[ALife::eHitTypeRadiation], 0.0f, 1.0f);
 
-		m_FilterDamage[ALife::eHitTypeChemicalBurn] = READ_IF_EXISTS(pSettings, r_float, section, "antigas_filter_coeff_damage_chemical_burn", 0.0f);
+		m_FilterDamage[ALife::eHitTypeChemicalBurn] = pSettings->read_if_exists<float>(section, "antigas_filter_coeff_damage_chemical_burn", 0.0f);
 		clamp(m_FilterDamage[ALife::eHitTypeChemicalBurn], 0.0f, 1.0f);
 
 		m_FilterDamage[ALife::eHitTypeLightBurn] = m_FilterProtection[ALife::eHitTypeBurn];

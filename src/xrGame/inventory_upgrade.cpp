@@ -66,7 +66,7 @@ void Upgrade::construct(const shared_str& upgrade_id, Group& parental_group, Man
 		add_dependent_groups(groups_str, manager_r);
 	}
 
-	m_known = !!READ_IF_EXISTS(pSettings, r_bool, id(), "known", false);
+	m_known = pSettings->read_if_exists<bool>(id(), "known", false);
 
 	shared_str properties = pSettings->r_string(id(), "property");
 	VERIFY2(properties.size(), make_string<const char*>("Upgrade <%s> : property is empty !", id_str()));

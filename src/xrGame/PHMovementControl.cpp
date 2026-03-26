@@ -882,7 +882,7 @@ void CPHMovementControl::Load(const char* section)
 	if(pSettings->line_exist(section,"actor_restrictor"))
 		SetRestrictionType(ERestrictionType(pSettings->r_token(section, "actor_restrictor", retrictor_types)));
 
-	fCollisionDamageFactor = READ_IF_EXISTS(pSettings, r_float, section, "ph_collision_damage_factor", fCollisionDamageFactor);
+	fCollisionDamageFactor = pSettings->read_if_exists<float>(section, "ph_collision_damage_factor", fCollisionDamageFactor);
 	R_ASSERT3(fCollisionDamageFactor <= 1.f, "ph_collision_damage_factor >1.", section);
 	SetCrashSpeeds(cs_min, cs_max);
 	SetMass(mass);

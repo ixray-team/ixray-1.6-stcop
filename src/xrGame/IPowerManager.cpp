@@ -26,7 +26,7 @@ void IPowerManager::Load(const char* section, CInventoryItem* iitem)
 		return;
 	}
 
-	SetUsePowerCell(READ_IF_EXISTS(pSettings, r_bool, section, "use_power_cells", false));
+	SetUsePowerCell(pSettings->read_if_exists<bool>(section, "use_power_cells", false));
 	if (GetUsePowerCell()) 
 	{
 		m_allowed_power_cells_sections.clear();
@@ -43,8 +43,8 @@ void IPowerManager::Load(const char* section, CInventoryItem* iitem)
 		}
 	}
 
-	SetUsePowerBank(READ_IF_EXISTS(pSettings, r_bool, section, "use_power_bank", false));
-	SetPowerDrainValue(READ_IF_EXISTS(pSettings, r_float, section, "power_drain_value", 0.f));
+	SetUsePowerBank(pSettings->read_if_exists<bool>(section, "use_power_bank", false));
+	SetPowerDrainValue(pSettings->read_if_exists<float>(section, "power_drain_value", 0.f));
 }
 
 PowerBank* IPowerManager::GetPowerBank()

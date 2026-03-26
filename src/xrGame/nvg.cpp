@@ -10,7 +10,7 @@ void CNVG::Load(const char* section)
     CInventoryItemObject::Load(section);
     IPowerManager::SetSelfObject(cast_inventory_item(), H_Parent());
     IPowerManager::Load(section, cast_inventory_item());
-    m_night_vision_effector_section = READ_IF_EXISTS(pSettings, r_string, section, "nightvision_sect", "effector_nightvision_1");
+    m_night_vision_effector_section = pSettings->read_if_exists<LPCSTR>(section, "nightvision_sect", "effector_nightvision_1");
     m_nvg_effector = Actor()->GetNightVisionEffector();
 }
 
