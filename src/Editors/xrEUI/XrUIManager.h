@@ -46,6 +46,9 @@ public:
 	virtual bool IsPlayInEditor() { return false; }
 	void ApplyShortCutInput(DWORD Key);
 
+	float GetScaleDpi() const { return m_ScaleDpi; }
+	float ScaleByDpi(float value) const { return value * m_ScaleDpi; }
+
 protected:
 	virtual void OnDrawUI();
 

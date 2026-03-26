@@ -104,19 +104,19 @@ void UIAIMapTool::Draw()
 												ImGui::TableSetupColumn("Arrows2", ImGuiTableColumnFlags_WidthFixed);
 												ImGui::TableSetupColumn("Arrows3", ImGuiTableColumnFlags_WidthFixed);
 												ImGui::TableSetupColumn("Buttons", ImGuiTableColumnFlags_WidthStretch);
-				XRay::ImGui::TableNextRow();	XRay::ImGui::TableNextColumn();	if (XRay::ImGui::ToggleButton("Add", bAppend, { 60.f, 0 }))				m_Mode = mdAppend;
+				XRay::ImGui::TableNextRow();	XRay::ImGui::TableNextColumn();	if (XRay::ImGui::ToggleButton("Add", bAppend, { GUIManager->ScaleByDpi(60.f), 0 }))				m_Mode = mdAppend;
 												XRay::ImGui::TableNextColumn();
 												XRay::ImGui::TableNextColumn();	if (XRay::ImGui::Button(ICON_FA_CHEVRON_UP, { TableRowHeight, 0 }))		SideClick(1);
 												XRay::ImGui::TableNextColumn();
 												XRay::ImGui::TableNextColumn(); if (XRay::ImGui::Button("Select 0-Link", { -0.01f, 0 }))				{ tool->SelectNodesByLink(0); Scene->UndoSave(); }
 
-				XRay::ImGui::TableNextRow();	XRay::ImGui::TableNextColumn();	if (XRay::ImGui::ToggleButton("Delete ", bRemove, { 60.f, 0 }))			m_Mode = mdRemove;
+				XRay::ImGui::TableNextRow();	XRay::ImGui::TableNextColumn();	if (XRay::ImGui::ToggleButton("Delete ", bRemove, { GUIManager->ScaleByDpi(60.f), 0 }))			m_Mode = mdRemove;
 												XRay::ImGui::TableNextColumn(); if (XRay::ImGui::Button(ICON_FA_CHEVRON_LEFT, { TableRowHeight, 0 }))	SideClick(0);
 												XRay::ImGui::TableNextColumn(); if (XRay::ImGui::Button(ICON_FA_XMARK, { TableRowHeight, 0 }))			SideClick(4);
 												XRay::ImGui::TableNextColumn(); if (XRay::ImGui::Button(ICON_FA_CHEVRON_RIGHT, { TableRowHeight, 0 }))	SideClick(2);
 												XRay::ImGui::TableNextColumn(); if (XRay::ImGui::Button("Select 1-Link", { -0.01f, 0 }))				{ tool->SelectNodesByLink(1); Scene->UndoSave(); }
 
-				XRay::ImGui::TableNextRow();	XRay::ImGui::TableNextColumn();	if (XRay::ImGui::ToggleButton("Invert ", bInvert, { 60.f, 0 }))			m_Mode = mdInvert;
+				XRay::ImGui::TableNextRow();	XRay::ImGui::TableNextColumn();	if (XRay::ImGui::ToggleButton("Invert ", bInvert, { GUIManager->ScaleByDpi(60.f), 0 }))			m_Mode = mdInvert;
 												XRay::ImGui::TableNextColumn();
 												XRay::ImGui::TableNextColumn();	if (XRay::ImGui::Button(ICON_FA_CHEVRON_DOWN, { TableRowHeight, 0 }))	SideClick(3);
 												XRay::ImGui::TableNextColumn();
