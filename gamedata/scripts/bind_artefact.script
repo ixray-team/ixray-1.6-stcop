@@ -37,6 +37,8 @@ function artefact_binder:update(delta)
 	object_binder.update(self, delta)
 	printf("pl:art [%s] pos %s", self.object:name(), vec_to_str(self.object:position()))
 	
+	SendScriptCallback("artefact_on_update", self, self.object)
+	
     if self.first_call == true then
     		local ini = self.object:spawn_ini()
 			if not (ini and ini:section_exist("fixed_bone")) then
