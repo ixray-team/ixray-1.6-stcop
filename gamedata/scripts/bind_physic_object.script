@@ -48,6 +48,8 @@ end
 function generic_physics_binder:update(delta)
 	object_binder.update(self, delta)
 
+	SendScriptCallback("physic_object_on_update", self, self.object, delta)
+
 	if not self.initialized and db.actor then
 		self.initialized = true
 		xr_logic.initialize_obj(self.object, self.st, self.loaded, db.actor, modules.stype_item)
