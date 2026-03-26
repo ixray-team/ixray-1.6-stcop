@@ -33,6 +33,7 @@ namespace XRay::ImGui
 	enum EEditorSizes
 	{
         FontSize,
+		IconSize,
 		DockingGap,
 		WindowPadding,
 		PanelPadding,
@@ -41,6 +42,7 @@ namespace XRay::ImGui
 		ButtonRadius,
 		ButtonPaddingW,
 		ButtonPaddingH,
+		CheckboxSize,
 		IndicatorWidth,
 		TableRowHeight,
 		TableBorder,
@@ -51,6 +53,9 @@ namespace XRay::ImGui
 	};
 
 	XREUI_API	void			SetupColorsList(int ID);
+	XREUI_API	void			SetupSizesList(int ID);
+	XREUI_API	void			InitSizes();
+
 	XREUI_API	ImColor			GetEditorColor(EEditorColors Color);
 	XREUI_API	float			GetEditorSize(EEditorSizes Size);
 
@@ -81,7 +86,7 @@ namespace XRay::ImGui
 			const	char*			id,
 					ImTextureRef	texture,
 			const	ImVec2&			button_size		= ImVec2(GetEditorSize(EEditorSizes::ButtonBorderSize), GetEditorSize(EEditorSizes::ButtonBorderSize)),
-			const	ImVec2&			image_size		= ImVec2(20, 20),
+			const	ImVec2&			image_size		= ImVec2(GetEditorSize(EEditorSizes::IconSize), GetEditorSize(EEditorSizes::IconSize)),
 					bool*			toggle			= nullptr,
 					ImDrawFlags		rounding_flags	= ImDrawFlags_RoundCornersAll
 	);
@@ -104,7 +109,7 @@ namespace XRay::ImGui
 					ImDrawFlags		rounding_flags	= ImDrawFlags_RoundCornersAll,
 					float			rounding		= GetEditorSize(EEditorSizes::ButtonRadius),
 					ImVec2			button_size		= { GetEditorSize(EEditorSizes::ButtonSize), GetEditorSize(EEditorSizes::ButtonSize) },
-					ImVec2			image_size		= { 20.0f, 20.0f });
+					ImVec2			image_size		= ImVec2(GetEditorSize(EEditorSizes::IconSize), GetEditorSize(EEditorSizes::IconSize)));
 
 	XREUI_API	bool			ToolbarButton(
 			const	char*			id,
