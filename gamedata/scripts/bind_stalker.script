@@ -425,7 +425,6 @@ function actor_binder:update(delta)
 		self.already_jumped = true
 		return
 	end
-
 	-- Вызов апдейта переноса игрока проводником
 	if travel_func ~= nil then
 		travel_func()
@@ -627,7 +626,7 @@ function actor_binder:save(packet)
 	set_save_marker(packet, "save", true, "actor_binder")
 	
 	SendScriptCallback("save", packet) -- IX-Ray
-	SendScriptCallback("actor_on_save", reader) -- IX-Ray
+	SendScriptCallback("actor_on_save", packet) -- IX-Ray
 end
 
 
@@ -758,12 +757,22 @@ end
 
 -- Weapon functions
 function hide_weapon(zone_id)
-	printf("[WEAPON_CONTROL]:hiding weapon from zone [%s] in section [%s]!!!", zone_id, db.storage[zone_id].active_section)
+	local active_section = nil
+	if db.storage[zone_id] then
+		active_section = db.storage[zone_id].active_section
+	end
+	printf("[WEAPON_CONTROL]:hiding weapon from zone [%s] in section [%s]!!!", tostring(zone_id), tostring(active_section))
+	
 	weapon_hide[zone_id] = true
 end
 
 function restore_weapon(zone_id)
-	printf("[WEAPON_CONTROL]:restoring weapon from zone [%s] in section [%s]!!!", zone_id, db.storage[zone_id].active_section)
+	local active_section = nil
+	if db.storage[zone_id] then
+		active_section = db.storage[zone_id].active_section
+	end
+	printf("[WEAPON_CONTROL]:restoring weapon from zone [%s] in section [%s]!!!", tostring(zone_id), tostring(active_section))
+	
 	weapon_hide[zone_id] = false
 end
 
