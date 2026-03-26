@@ -757,12 +757,22 @@ end
 
 -- Weapon functions
 function hide_weapon(zone_id)
-	printf("[WEAPON_CONTROL]:hiding weapon from zone [%s] in section [%s]!!!", zone_id, db.storage[zone_id].active_section)
+	local active_section = nil
+	if db.storage[zone_id] then
+		active_section = db.storage[zone_id].active_section
+	end
+	printf("[WEAPON_CONTROL]:hiding weapon from zone [%s] in section [%s]!!!", tostring(zone_id), tostring(active_section))
+	
 	weapon_hide[zone_id] = true
 end
 
 function restore_weapon(zone_id)
-	printf("[WEAPON_CONTROL]:restoring weapon from zone [%s] in section [%s]!!!", zone_id, db.storage[zone_id].active_section)
+	local active_section = nil
+	if db.storage[zone_id] then
+		active_section = db.storage[zone_id].active_section
+	end
+	printf("[WEAPON_CONTROL]:restoring weapon from zone [%s] in section [%s]!!!", tostring(zone_id), tostring(active_section))
+	
 	weapon_hide[zone_id] = false
 end
 
