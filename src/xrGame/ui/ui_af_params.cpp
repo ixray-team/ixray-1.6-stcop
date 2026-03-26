@@ -60,8 +60,8 @@ constexpr std::tuple<ALife::EConditionRestoreType, LPCSTR, LPCSTR, float, bool, 
 	//{ ALife::EConditionRestoreType,   "section",                  "caption",          magnitude, sign_inverse, "unit" }
 	{ ALife::eHealthRestoreSpeed,       "health_restore_speed",     "ui_inv_health",    100.0f,    false,        "%" },
 	{ ALife::eSatietyRestoreSpeed,      "satiety_restore_speed",    "ui_inv_satiety",   100.0f,    false,        "%" },
-	{ ALife::ePowerRestoreSpeed,        "power_restore_speed",      "ui_inv_power",     1.0f,      false,        nullptr },
 	{ ALife::eThirstRestoreSpeed,       "thirst_restore_speed",     "ui_inv_thirst",     1.0f,     false,        nullptr },
+	{ ALife::ePowerRestoreSpeed,        "power_restore_speed",      "ui_inv_power",     1.0f,      false,        nullptr },
 	{ ALife::eBleedingRestoreSpeed,     "bleeding_restore_speed",   "ui_inv_bleeding",  100.0f,    false,        "%" },
 	{ ALife::eRadiationRestoreSpeed,    "radiation_restore_speed",  "ui_inv_radiation", 1.0f,	    true,        nullptr },
 };
@@ -70,8 +70,8 @@ LPCSTR af_actor_param_names[] =
 {
 	"satiety_health_v",
 	"satiety_v",
-	"satiety_power_v",
 	"thirst_power_v",
+	"satiety_power_v",
 	"wound_incarnation_v",
 	"radiation_v",
 };
@@ -230,7 +230,7 @@ void CUIArtefactParams::SetInfo(CInventoryItem& pInvItem)
 			if (!m_restore_item[id])
 				continue;
 
-			float actor_val = READ_IF_EXISTS(pSettings, r_float, "actor_condition", af_actor_param_names[id], 0.0f);
+			float actor_val = READ_IF_EXISTS(pSettings, r_float, "actor_condition", af_actor_param_names[id], 1.0f);
 			val = READ_IF_EXISTS(pSettings, r_float, af_section, restore_section, 0.0f);
 			if (fis_zero(val))
 			{
