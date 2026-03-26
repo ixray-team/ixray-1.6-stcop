@@ -70,11 +70,11 @@ void CInteractiveObject::Load(const char* section)
 	left_uses = m_bone_names.size();
 	ParseToVector(section, "spawn_section_name", m_spawn_sections);
 
-	useSpawnRandomSections = READ_IF_EXISTS(pSettings, r_bool, section, "use_spawn_random_sections", false);
-	useSpawnAtBoneIndexSections = READ_IF_EXISTS(pSettings, r_bool, section, "use_spawn_at_bone_index_sections", false);
+	useSpawnRandomSections = pSettings->read_if_exists<bool>(section, "use_spawn_random_sections", false);
+	useSpawnAtBoneIndexSections = pSettings->read_if_exists<bool>(section, "use_spawn_at_bone_index_sections", false);
 
 	ParseRandomSounds(section, "use_sounds", m_use_sounds);
-	m_tip_text_default = READ_IF_EXISTS(pSettings, r_string, section, "use_tip_text", "");
+	m_tip_text_default = pSettings->read_if_exists<LPCSTR>(section, "use_tip_text", "");
 	m_tip_text = m_tip_text_default;
 
 	SetText();

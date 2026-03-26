@@ -187,9 +187,6 @@ using xr_optional = std::optional<T>;
 #include "net_utils.h"
 #include "xrParams.h"
 
-#define READ_IF_EXISTS(ltx,method,section,name,default_value)\
-	(((ltx)->line_exist(section, name)) ? ((ltx)->method(section, name)) : (default_value))
-
 // destructor
 template <class T>
 class destructor

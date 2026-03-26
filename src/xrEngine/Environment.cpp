@@ -120,24 +120,24 @@ CEnvironment::CEnvironment	() :
     p_sun_color = config->r_float(section, "sun_color");
     p_fog_color = config->r_float(section, "fog_color");
 	
-	max_desired_items = READ_IF_EXISTS(config, r_u32, "rain", "max_desired_items", 2500);
-	source_offset = READ_IF_EXISTS(config, r_float, "rain", "source_offset", 40.0f);
+	max_desired_items = config->read_if_exists<u32>("rain", "max_desired_items", 2500);
+	source_offset = config->read_if_exists<float>("rain", "source_offset", 40.0f);
 	max_distance = source_offset * 1.25f;
 	sink_offset = -(max_distance - source_offset);
 
-	drop_angle = READ_IF_EXISTS(config, r_float, "rain", "drop_angle", 3.0f);
-	drop_max_angle = deg2rad(READ_IF_EXISTS(config, r_float, "rain", "drop_max_angle", 10.0f));
-	drop_max_wind_vel = READ_IF_EXISTS(config, r_float, "rain", "drop_max_wind_vel", 20.0f);
+	drop_angle = config->read_if_exists<float>("rain", "drop_angle", 3.0f);
+	drop_max_angle = deg2rad(config->read_if_exists<float>("rain", "drop_max_angle", 10.0f));
+	drop_max_wind_vel = config->read_if_exists<float>("rain", "drop_max_wind_vel", 20.0f);
 
-	max_particles = READ_IF_EXISTS(config, r_u32, "rain", "max_particles", 1000);
-	particles_cache = READ_IF_EXISTS(config, r_u32, "rain", "particles_cache", 400);
-	particles_time = READ_IF_EXISTS(config, r_float, "rain", "particles_time", 0.3f);
+	max_particles = config->read_if_exists<u32>("rain", "max_particles", 1000);
+	particles_cache = config->read_if_exists<u32>("rain", "particles_cache", 400);
+	particles_time = config->read_if_exists<float>("rain", "particles_time", 0.3f);
 
-	source_rain_radius_render = READ_IF_EXISTS(config, r_float, "rain", "source_rain_radius_render", 12.5f);
-	add_const_dist_coefficient = READ_IF_EXISTS(config, r_u32, "rain", "add_const_dist_coefficient", 30);
-	add_const_dist_coefficient_render = READ_IF_EXISTS(config, r_u32, "rain", "add_const_dist_coefficient_render", 40);
+	source_rain_radius_render = config->read_if_exists<float>("rain", "source_rain_radius_render", 12.5f);
+	add_const_dist_coefficient = config->read_if_exists<u32>("rain", "add_const_dist_coefficient", 30);
+	add_const_dist_coefficient_render = config->read_if_exists<u32>("rain", "add_const_dist_coefficient_render", 40);
 
-	multiplier_clouds_color = READ_IF_EXISTS(config, r_u32, "clouds_params", "multiplier", 1);
+	multiplier_clouds_color = config->read_if_exists<u32>("clouds_params", "multiplier", 1);
 
     if (environmentFolderExist)
         xr_delete(config);

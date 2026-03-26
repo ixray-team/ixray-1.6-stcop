@@ -23,22 +23,23 @@ void CHudAnimatorBase::Load()
 {
 	m_sounds.Clear();
 
-	m_bCanSprint = READ_IF_EXISTS(pSettings, r_bool, m_section, "can_sprint", false);
-	m_bHideUI = READ_IF_EXISTS(pSettings, r_bool, m_section, "hide_ui", true);
+	m_bCanSprint = pSettings->read_if_exists<bool>(m_section,"can_sprint",false);
+	m_bHideUI = pSettings->read_if_exists<bool>(m_section,"hide_ui",true);
 
-	m_fHudFov = READ_IF_EXISTS(pSettings, r_float, m_section, "hud_fov", 0.0f);
-	m_fHudFovFactor = READ_IF_EXISTS(pSettings, r_float, m_section, "hud_fov_factor", 1.0f);
+	m_fHudFov = pSettings->read_if_exists<float>(m_section,"hud_fov",0.0f);
+	m_fHudFovFactor = pSettings->read_if_exists<float>(m_section,"hud_fov_factor",1.0f);
 
-	m_sLuaLeftCallback = READ_IF_EXISTS(pSettings, r_string, m_section, "left_lua_callback", "null");
-	m_sLuaLeft2Callback = READ_IF_EXISTS(pSettings, r_string, m_section, "left2_lua_callback", "null");
-	m_sLuaRightCallback = READ_IF_EXISTS(pSettings, r_string, m_section, "right_lua_callback", "null");
-	m_sLuaRight2Callback = READ_IF_EXISTS(pSettings, r_string, m_section, "right2_lua_callback", "null");
-	m_sLuaStartCallback = READ_IF_EXISTS(pSettings, r_string, m_section, "start_lua_callback", "null");
-	m_sLuaEndCallback = READ_IF_EXISTS(pSettings, r_string, m_section, "end_lua_callback", "null");
+	m_sLuaLeftCallback = pSettings->read_if_exists<str_c>(m_section,"left_lua_callback","null");
+	m_sLuaLeft2Callback = pSettings->read_if_exists<str_c>(m_section,"left2_lua_callback","null");
+	m_sLuaRightCallback = pSettings->read_if_exists<str_c>(m_section,"right_lua_callback","null");
+	m_sLuaRight2Callback = pSettings->read_if_exists<str_c>(m_section,"right2_lua_callback","null");
+	m_sLuaStartCallback = pSettings->read_if_exists<str_c>(m_section,"start_lua_callback","null");
+	m_sLuaEndCallback = pSettings->read_if_exists<str_c>(m_section,"end_lua_callback","null");
 
-	AnimatorHideSpeedFactor = READ_IF_EXISTS(pSettings, r_float, m_section, "hide_speed_factor", 1.0f);
+	AnimatorHideSpeedFactor = pSettings->read_if_exists<float>(m_section, "hide_speed_factor", 1.0f);
 
-	pSettings->read_if_exists<bool>(m_bBlendMovement, m_section, "use_blending_movement");
+	auto res = pSettings->r_bool_nullable(m_section, "use_blending_movement", m_bBlendMovement);
+	m_bBlendMovement &= res;
 }
 
 void CHudAnimatorBase::StopAnimator()
@@ -287,7 +288,7 @@ void CHudStateAnimator::Load()
 		m_sounds.LoadSound(*m_section, "snd_sprint_end", "sndSprintEnd", false);
 	}
 
-	m_bDisableBore = READ_IF_EXISTS(pSettings, r_bool, m_section, "disable_bore", true);
+	m_bDisableBore = pSettings->read_if_exists<bool>(m_section, "disable_bore", true);
 }
 
 void CHudStateAnimator::Update()
@@ -793,7 +794,7 @@ void CHudStateAnimator::SwitchAnimator()
 	}
 	else if (!m_bNeedActivated && GetState() == eHidden && g_player_hud->GetAnimator() == nullptr)
 	{
-		m_sLuaModifySect = READ_IF_EXISTS(pSettings, r_string, m_section, "modify_sect_lua_callback", "null");
+		m_sLuaModifySect = pSettings->read_if_exists<LPCSTR>(m_section,"modify_sect_lua_callback","null");
 
 		if (m_sLuaModifySect != "null")
 		{
@@ -830,7 +831,7 @@ void CHudStateAnimator::ShowStateAnimator(const shared_str& section)
 {
 	m_section = section;
 
-	m_sLuaModifySect = READ_IF_EXISTS(pSettings, r_string, m_section, "modify_sect_lua_callback", "null");
+	m_sLuaModifySect = pSettings->read_if_exists<LPCSTR>(m_section,"modify_sect_lua_callback","null");
 
 	if (m_sLuaModifySect != "null")
 	{

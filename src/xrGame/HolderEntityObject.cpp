@@ -49,10 +49,10 @@ void CHolderEntityObject::Load(const char* section)
 	m_bExitLocked = !!pSettings->r_bool(section, "lock_exit");
 	m_bEnterLocked = !!pSettings->r_bool(section, "lock_enter");
 
-	m_exit_position = READ_IF_EXISTS(pSettings, r_fvector3, section, "exit_pos", Fvector().set(0.0f, 0.0f, 0.0f));
-	m_camera_position = READ_IF_EXISTS(pSettings, r_fvector3, section, "camera_pos", Fvector().set(0.0f, 0.0f, 0.0f));
-	m_camera_angle = READ_IF_EXISTS(pSettings, r_fvector3, section, "camera_angle", Fvector().set(0.0f, 0.0f, 0.0f));
-	m_sUseAction = READ_IF_EXISTS(pSettings, r_string, section, "use_action_hint", NULL);
+	m_exit_position = pSettings->read_if_exists<Fvector3>(section,"exit_pos",Fvector().set(0.0f, 0.0f, 0.0f));
+	m_camera_position = pSettings->read_if_exists<Fvector3>(section,"camera_pos",Fvector().set(0.0f, 0.0f, 0.0f));
+	m_camera_angle = pSettings->read_if_exists<Fvector3>(section,"camera_angle",Fvector().set(0.0f, 0.0f, 0.0f));
+	m_sUseAction = pSettings->read_if_exists<LPCSTR>(section,"use_action_hint",nullptr);
 }
 
 bool CHolderEntityObject::net_Spawn(CSE_Abstract* DC)

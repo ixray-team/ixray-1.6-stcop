@@ -1,8 +1,7 @@
 //----------------------------------------------------
 // file: StaticMesh.h
 //----------------------------------------------------
-#ifndef EditMeshH
-#define EditMeshH
+#pragma once
 
 //----------------------------------------------------
 // refs
@@ -284,7 +283,6 @@ protected:
 
 #if 1
 	CDB::MODEL*		m_CFModel;
-#endif
 public:
 	RBMap*			m_RenderBuffers;
 
@@ -372,6 +370,4 @@ public:
 
 	bool			Validate				();
 };
-//----------------------------------------------------
-#endif /*_INCDEF_EditableMesh_H_*/
 

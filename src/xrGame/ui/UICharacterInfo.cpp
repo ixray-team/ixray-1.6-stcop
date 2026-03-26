@@ -498,7 +498,7 @@ bool CUICharacterInfo::get_actor_community( shared_str* our, shared_str* enemy )
 	enemy->_set( nullptr );
 	shared_str const& actor_team = Actor()->CharacterInfo().Community().id();
 
-    const char* vs_teams = READ_IF_EXISTS(pSettings, r_string, "actor_communities", actor_team.c_str(), nullptr);
+    const char* vs_teams = pSettings->read_if_exists<LPCSTR>("actor_communities",actor_team.c_str(),nullptr);
     if (!vs_teams || _GetItemCount(vs_teams) != 2)
 	{
 		return false;

@@ -78,18 +78,18 @@ void CWeaponStatMgun::Load(const char* section)
 	camRelaxSpeed = pSettings->r_float(section, "cam_relax_speed");
 	camRelaxSpeed = std::abs(deg2rad(camRelaxSpeed));
 
-	m_overheat_enabled = !!READ_IF_EXISTS(pSettings, r_bool, section, "overheat_enabled", false);
-	m_overheat_time_quant = READ_IF_EXISTS(pSettings, r_float, section, "overheat_time_quant", 0.025f);
-	m_overheat_decr_quant = READ_IF_EXISTS(pSettings, r_float, section, "overheat_decr_quant", 0.002f);
-	m_overheat_threshold = READ_IF_EXISTS(pSettings, r_float, section, "overheat_threshold", 110.f);
-	m_overheat_particles = READ_IF_EXISTS(pSettings, r_string, section, "overheat_particles", "damage_fx\\burn_creatures00");
+	m_overheat_enabled = pSettings->read_if_exists<float>(section,"overheat_enabled",false);
+	m_overheat_time_quant = pSettings->read_if_exists<float>(section,"overheat_time_quant",0.025f);
+	m_overheat_decr_quant = pSettings->read_if_exists<float>(section,"overheat_decr_quant",0.002f);
+	m_overheat_threshold = pSettings->read_if_exists<float>(section,"overheat_threshold",110.f);
+	m_overheat_particles = pSettings->read_if_exists<LPCSTR>(section,"overheat_particles","damage_fx\\burn_creatures00");
 
-	m_bEnterLocked = !!READ_IF_EXISTS(pSettings, r_bool, section, "lock_enter", false);
-	m_bExitLocked = !!READ_IF_EXISTS(pSettings, r_bool, section, "lock_exit", false);
+	m_bEnterLocked = pSettings->read_if_exists<bool>(section,"lock_enter",false);
+	m_bExitLocked = pSettings->read_if_exists<bool>(section,"lock_exit",false);
 
-	m_vibration_time = READ_IF_EXISTS(pSettings, r_float, section, "vibration_time", 0.1f);
-	m_vibration_factor_left = READ_IF_EXISTS(pSettings, r_float, section, "vibration_factor_left", 1.0f);
-	m_vibration_factor_right = READ_IF_EXISTS(pSettings, r_float, section, "vibration_factor_right", 1.0f);
+	m_vibration_time = pSettings->read_if_exists<float>(section, "vibration_time", 0.1f);
+	m_vibration_factor_left = pSettings->read_if_exists<float>(section, "vibration_factor_left", 1.0f);
+	m_vibration_factor_right = pSettings->read_if_exists<float>(section, "vibration_factor_right", 1.0f);
 
 	VERIFY(!fis_zero(camMaxAngle));
 	VERIFY(!fis_zero(camRelaxSpeed));

@@ -84,7 +84,7 @@ void CStringTable::Init		()
 
 	if (languages_token.empty())
 	{
-		static auto languages = READ_IF_EXISTS(pSettings, r_string_wb, "string_table", "languages", nullptr);
+		static shared_str languages = pSettings->r_string_wb_nullable("string_table", "languages");
 
 		if (languages == nullptr)
 		{

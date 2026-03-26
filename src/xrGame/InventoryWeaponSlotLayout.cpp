@@ -11,12 +11,11 @@ bool InventorySecondarySlotPairingStrict()
 	if (!isInitialized)
 	{
 		if (pSettings == nullptr)
-		{
+		{	
 			return false;
 		}
-		cachedValue = !!READ_IF_EXISTS(
-			pSettings,
-			r_bool,
+		cachedValue = 
+			pSettings->read_if_exists<bool>(
 			"inventory",
 			"inventory_secondary_slot_pairing_strict",
 			false);
@@ -35,9 +34,8 @@ bool InventoryHolsterPistolSlotActiveInSettings()
 		{
 			return false;
 		}
-		cachedValue = !!READ_IF_EXISTS(
-			pSettings,
-			r_bool,
+		cachedValue = 
+			pSettings->read_if_exists<bool>(
 			"inventory",
 			"slot_active_16",
 			false);

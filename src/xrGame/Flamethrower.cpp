@@ -1168,7 +1168,7 @@ bool CFlamethrower::Detach(const char* item_section_name, bool b_spawn_item)
 
 void CFlamethrower::InitAddons()
 {
-	m_zoom_params.m_fIronSightZoomFactor = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "ironsight_zoom_factor", 50.0f);
+	m_zoom_params.m_fIronSightZoomFactor = pSettings->read_if_exists<float>(cNameSect(), "ironsight_zoom_factor", 50.0f);
 
 	SetAnimFlag(ANM_SHOT_AIM, "anm_shots_when_aim");
 	SetAnimFlag(ANM_SHOT_AIM_GL, "anm_shots_w_gl_when_aim");

@@ -759,7 +759,7 @@ public:
 													const char* ammoSect = NULL, 
 													ALife::_OBJECT_ID ParentID = ALife::INVALID_OBJECT_ID);
 			void			ReturnAmmoToInventory(xr_map<shared_str, u16>& ammo,
-													xr_map<u16, u16>* ammos_to_sync = nullptr);
+													xr_map<ALife::_OBJECT_ID, u16>* ammos_to_sync = nullptr);
 	bool					SwitchAmmoType		(u32 flags);
 
 	virtual	float			Get_PDM_Base		()	const	{ return m_pdm.m_fPDM_disp_base			; };

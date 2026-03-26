@@ -92,7 +92,7 @@ void CInventoryItem::Load(const char* section)
 	CHitImmunity::LoadImmunities(pSettings->r_string(section, "immunities_sect"), pSettings);
 
 	// FFx0001 ++ begin
-	SetDrawCost(READ_IF_EXISTS(pSettings, r_bool, section, "is_draw_cost", true));
+	SetDrawCost(pSettings->read_if_exists<bool>(section, "is_draw_cost", true));
 
 	// Highlight separated by delimeter ',' related item sections on mouseover from the actor's inventory
 	m_HiglightRelatedItemSections.clear();
@@ -145,38 +145,38 @@ void CInventoryItem::Load(const char* section)
 	R_ASSERT(m_weight >= 0.f);
 
 	m_cost = pSettings->r_u32(section, "cost");
-	u32 sl = READ_IF_EXISTS(pSettings, r_u32, section, "slot", -1);
+	u32 sl = pSettings->read_if_exists<u32>(section, "slot", -1);
 	m_ItemCurrPlace.base_slot_id = (sl == -1) ? 0 : (sl + 1);
 
-	m_Description = g_pStringTable->translate(READ_IF_EXISTS(pSettings, r_string, section, "description", ""));
+	m_Description = g_pStringTable->translate(pSettings->read_if_exists<LPCSTR>(section, "description", ""));
 
-	m_flags.set(Fbelt, READ_IF_EXISTS(pSettings, r_bool, section, "belt", false));
-	m_can_trade = READ_IF_EXISTS(pSettings, r_bool, section, "can_trade", true);
-	m_flags.set(FCanTake, READ_IF_EXISTS(pSettings, r_bool, section, "can_take", true));
+	m_flags.set(Fbelt, pSettings->read_if_exists<bool>(section, "belt", false));
+	m_can_trade = pSettings->read_if_exists<bool>(section, "can_trade", true);
+	m_flags.set(FCanTake, pSettings->read_if_exists<bool>(section, "can_take", true));
 	m_flags.set(FCanTrade, m_can_trade);
-	m_flags.set(FCanStack, READ_IF_EXISTS(pSettings, r_bool, section, "can_stack", true));
-	m_flags.set(FIsQuestItem, READ_IF_EXISTS(pSettings, r_bool, section, "quest_item", false));
+	m_flags.set(FCanStack, pSettings->read_if_exists<bool>(section, "can_stack", true));
+	m_flags.set(FIsQuestItem, pSettings->read_if_exists<bool>(section, "quest_item", false));
 
 	// Added by Axel, to enable optional condition use on any item
-	m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", false));
+	m_flags.set(FUsingCondition, pSettings->read_if_exists<bool>(section, "use_condition", false));
 
-	m_highlight_equipped = !!READ_IF_EXISTS(pSettings, r_bool, section, "highlight_equipped", false);
+	m_highlight_equipped = pSettings->read_if_exists<bool>(section, "highlight_equipped", false);
 
 	if (BaseSlot() != NO_ACTIVE_SLOT || Belt())
 	{
 		bool defaultRuck = (BaseSlot() != NO_ACTIVE_SLOT && !Belt() && cast_hud_item()) ? false : true;
-		m_flags.set(FRuckDefault, READ_IF_EXISTS(pSettings, r_bool, section, "default_to_ruck", defaultRuck));
-		m_flags.set(FAllowSprint, READ_IF_EXISTS(pSettings, r_bool, section, "sprint_allowed", true));
-		m_fControlInertionFactor = READ_IF_EXISTS(pSettings, r_float, section, "control_inertion_factor", 1.0f);
+		m_flags.set(FRuckDefault, pSettings->read_if_exists<bool>(section, "default_to_ruck", defaultRuck));
+		m_flags.set(FAllowSprint, pSettings->read_if_exists<bool>(section, "sprint_allowed", true));
+		m_fControlInertionFactor = pSettings->read_if_exists<float>(section, "control_inertion_factor", 1.0f);
 	}
-	m_icon_name = READ_IF_EXISTS(pSettings, r_string, section, "icon_name", nullptr);
+	m_icon_name = pSettings->read_if_exists<LPCSTR>(section,"icon_name",nullptr);
 
 	u32 inv_grid_x = pSettings->r_u32(m_object->cNameSect(), "inv_grid_x");
 	u32 inv_grid_y = pSettings->r_u32(m_object->cNameSect(), "inv_grid_y");
-	u32 inv_grid_width = READ_IF_EXISTS(pSettings, r_u32, m_object->cNameSect(), "inv_grid_width", 1);
-	u32 inv_grid_height = READ_IF_EXISTS(pSettings, r_u32, m_object->cNameSect(), "inv_grid_height", 1);
-	ScaleIcon = READ_IF_EXISTS(pSettings, r_float, m_object->cNameSect(), "inv_scale", 1.0f);
-	IconsTexture = READ_IF_EXISTS(pSettings, r_string, section, "icons_texture", nullptr);
+	u32 inv_grid_width = pSettings->read_if_exists<u32>(m_object->cNameSect(), "inv_grid_width", 1);
+	u32 inv_grid_height = pSettings->read_if_exists<u32>(m_object->cNameSect(), "inv_grid_height", 1);
+	ScaleIcon = pSettings->read_if_exists<float>(m_object->cNameSect(), "inv_scale", 1.0f);
+	IconsTexture = pSettings->read_if_exists<LPCSTR>(section,"icons_texture",nullptr);
 
 	m_inv_rect.set(inv_grid_x, inv_grid_y, inv_grid_width, inv_grid_height);
 
@@ -220,11 +220,10 @@ CInventoryItem::EInvCellAnchor CInventoryItem::ParseInvCellAnchor(const char* va
 
 void CInventoryItem::ReadCustomTextAndMarks(const char* section)
 {
-	m_custom_text = READ_IF_EXISTS(pSettings, r_string, section, "item_custom_text", nullptr);
-	m_custom_text_offset = READ_IF_EXISTS(pSettings, r_fvector2, section, "item_custom_text_offset", Fvector2().set(0.f, 0.f));
-	m_custom_text_auto_uses = READ_IF_EXISTS(pSettings, r_bool, section, "item_custom_text_auto_uses", false);
-	m_custom_text_anchor = ParseInvCellAnchor(
-		READ_IF_EXISTS(pSettings, r_string, section, "item_custom_text_anchor", "bottom_right"));
+	m_custom_text = pSettings->read_if_exists<str_c>(section,"item_custom_text",nullptr);
+	m_custom_text_offset = pSettings->read_if_exists<Fvector2>(section, "item_custom_text_offset", Fvector2().set(0.f, 0.f));
+	m_custom_text_auto_uses = pSettings->read_if_exists<bool>(section, "item_custom_text_auto_uses", false);
+	m_custom_text_anchor = ParseInvCellAnchor(pSettings->read_if_exists<str_c>(section, "item_custom_text_anchor", "bottom_right"));
 
 	if (pSettings->line_exist(section, "item_custom_text_font"))
 	{
@@ -241,23 +240,22 @@ void CInventoryItem::ReadCustomTextAndMarks(const char* section)
 		m_custom_text_clr_inv = 0;
 	}
 
-	m_custom_mark_texture = READ_IF_EXISTS(pSettings, r_string, section, "item_custom_mark_texture", nullptr);
-	m_custom_mark = READ_IF_EXISTS(pSettings, r_bool, section, "item_custom_mark", false);
-	m_custom_mark_offset = READ_IF_EXISTS(pSettings, r_fvector2, section, "item_custom_mark_offset", Fvector2().set(0.f, 0.f));
-	m_custom_mark_size = READ_IF_EXISTS(pSettings, r_fvector2, section, "item_custom_mark_size", Fvector2().set(0.f, 0.f));
-	m_custom_mark_clr = READ_IF_EXISTS(pSettings, r_color, section, "item_custom_mark_clr", 0);
-	m_custom_mark_anchor = ParseInvCellAnchor(
-		READ_IF_EXISTS(pSettings, r_string, section, "item_custom_mark_anchor", "bottom_right"));
+	m_custom_mark_texture = pSettings->read_if_exists<str_c>(section,"item_custom_mark_texture",nullptr);
+	m_custom_mark = pSettings->read_if_exists<bool>(section, "item_custom_mark", false);
+	m_custom_mark_offset = pSettings->read_if_exists<Fvector2>(section, "item_custom_mark_offset", Fvector2().set(0.f, 0.f));
+	m_custom_mark_size = pSettings->read_if_exists<Fvector2>(section, "item_custom_mark_size", Fvector2().set(0.f, 0.f));
+	m_custom_mark_clr = pSettings->read_if_exists<Fcolor>(section, "item_custom_mark_clr", Fcolor(0)).get();
+	m_custom_mark_anchor = ParseInvCellAnchor(pSettings->read_if_exists<str_c>(section, "item_custom_mark_anchor", "bottom_right"));
 }
 
 void CInventoryItem::Read3dStaticsData(const char* section)
 {
-	m_3d_static_visual_name = READ_IF_EXISTS(pSettings, r_string, section, "3d_static_visual_name", *object().cNameVisual());
+	m_3d_static_visual_name = pSettings->read_if_exists<LPCSTR>(section, "3d_static_visual_name", *object().cNameVisual());
 
-	m_3d_static_rotate = READ_IF_EXISTS(pSettings, r_fvector3, section, "3d_static_rotate", m_3d_static_rotate.set(0,0,0));
+	m_3d_static_rotate = pSettings->read_if_exists<Fvector3>(section, "3d_static_rotate", m_3d_static_rotate.set(0,0,0));
 	m_3d_static_rotate.mul(M_PI / 180.0f);
 
-	m_3d_static_scale = READ_IF_EXISTS(pSettings, r_float, section, "3d_static_scale", 1.f);
+	m_3d_static_scale = pSettings->read_if_exists<float>(section, "3d_static_scale", 1.f);
 }
 
 void CInventoryItem::RefreshTranslations()
@@ -933,8 +931,8 @@ void CInventoryItem::reload(const char* section)
 {
 	inherited::reload(section);
 
-	m_holder_range_modifier = READ_IF_EXISTS(pSettings, r_float, section, "holder_range_modifier", 1.f);
-	m_holder_fov_modifier = READ_IF_EXISTS(pSettings, r_float, section, "holder_fov_modifier", 1.f);
+	m_holder_range_modifier = pSettings->read_if_exists<float>(section, "holder_range_modifier", 1.f);
+	m_holder_fov_modifier = pSettings->read_if_exists<float>(section, "holder_fov_modifier", 1.f);
 }
 
 void CInventoryItem::reinit()
@@ -1150,10 +1148,10 @@ Frect CInventoryItem::GetKillMsgRect() const
 {
 	float x, y, w, h;
 
-	x = READ_IF_EXISTS(pSettings, r_float, m_object->cNameSect(), "kill_msg_x", 0.0f);
-	y = READ_IF_EXISTS(pSettings, r_float, m_object->cNameSect(), "kill_msg_y", 0.0f);
-	w = READ_IF_EXISTS(pSettings, r_float, m_object->cNameSect(), "kill_msg_width", 0.0f);
-	h = READ_IF_EXISTS(pSettings, r_float, m_object->cNameSect(), "kill_msg_height", 0.0f);
+	x = pSettings->read_if_exists<float>(m_object->cNameSect(), "kill_msg_x", 0.0f);
+	y = pSettings->read_if_exists<float>(m_object->cNameSect(), "kill_msg_y", 0.0f);
+	w = pSettings->read_if_exists<float>(m_object->cNameSect(), "kill_msg_width", 0.0f);
+	h = pSettings->read_if_exists<float>(m_object->cNameSect(), "kill_msg_height", 0.0f);
 
 	return Frect().set(x, y, w, h);
 }
@@ -1175,10 +1173,10 @@ void CInventoryItem::SetInvGridRect(u32 x, u32 y, u32 w, u32 h)
 
 Irect CInventoryItem::GetUpgrIconRect() const
 {
-	u32 x = READ_IF_EXISTS(pSettings, r_u32, m_object->cNameSect(), "upgr_icon_x", 0);
-	u32 y = READ_IF_EXISTS(pSettings, r_u32, m_object->cNameSect(), "upgr_icon_y", 0);
-	u32 w = READ_IF_EXISTS(pSettings, r_u32, m_object->cNameSect(), "upgr_icon_width", 0);
-	u32 h = READ_IF_EXISTS(pSettings, r_u32, m_object->cNameSect(), "upgr_icon_height", 0);
+	u32 x = pSettings->read_if_exists<u32>(m_object->cNameSect(), "upgr_icon_x", 0);
+	u32 y = pSettings->read_if_exists<u32>(m_object->cNameSect(), "upgr_icon_y", 0);
+	u32 w = pSettings->read_if_exists<u32>(m_object->cNameSect(), "upgr_icon_width", 0);
+	u32 h = pSettings->read_if_exists<u32>(m_object->cNameSect(), "upgr_icon_height", 0);
 
 	return Irect().set(x, y, w, h);
 }

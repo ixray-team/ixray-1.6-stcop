@@ -68,13 +68,17 @@ void CShootingObject::Load	(const char* section)
 		vLoadedShellPoint = pSettings->line_exist(section, "shell_point") ? pSettings->r_fvector3(section, "shell_point") : zero_vel;
 	}
 
-	m_air_resistance_factor	= READ_IF_EXISTS(pSettings,r_float,section,"air_resistance_factor",1.f);
+	m_air_resistance_factor	= pSettings->read_if_exists<float>(section,"air_resistance_factor",1.f);
 
 	light_render = ::Render->light_create();
 	if (::Render->get_generation() == IRender_interface::GENERATION_R2)
+	{
 		light_render->set_shadow(true);
-	else 
+	}
+	else
+	{
 		light_render->set_shadow(false);
+	}
 }
 
 void CShootingObject::DestroyEffects()
@@ -104,7 +108,16 @@ void CShootingObject::LoadFireParams( const char* section )
 
 	//сила выстрела и его мощьность
 	s_sHitPower			= pSettings->r_string_wb(section, "hit_power" );//читаем строку силы хита пули оружия
-	s_sHitPowerCritical	= READ_IF_EXISTS(pSettings, r_string_wb, section, "hit_power_critical", "0.0, 0.0, 0.0, 0.0");
+	{
+		auto temp = pSettings->r_string_wb_nullable(section,"hit_power_critical");
+		if (temp)
+		{
+			s_sHitPowerCritical = temp;
+		} else
+		{
+			s_sHitPowerCritical = "0.0, 0.0, 0.0, 0.0";
+		}
+	}
 	fvHitPower[egdMaster]			= (float)atof(_GetItem(*s_sHitPower,0,buffer));//первый параметр - это хит для уровня игры мастер
 	fvHitPowerCritical[egdMaster]	= (float)atof(_GetItem(*s_sHitPowerCritical,0,buffer));//первый параметр - это хит для уровня игры мастер
 

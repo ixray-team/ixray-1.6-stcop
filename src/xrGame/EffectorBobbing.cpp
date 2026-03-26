@@ -12,41 +12,41 @@ float g_bobbing_factor = 1.0f;
 
 CEffectorBobbing::CEffectorBobbing() : CEffectorCam(eCEBobbing, 10000.0f)
 {
-    Sprint.Amplitude.Default = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "sprint_amplitude", 0.0f);
-    Sprint.Speed.Default = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "sprint_speed", 0.0f);
+    Sprint.Amplitude.Default = pSettings->read_if_exists<float>(BOBBING_SECT,"sprint_amplitude",0.0f);
+    Sprint.Speed.Default = pSettings->read_if_exists<float>(BOBBING_SECT,"sprint_speed",0.0f);
 
-    Limp.Amplitude.Default = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "limp_amplitude", 0.0f);
-    Limp.Speed.Default = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "limp_speed", 0.0f);
+    Limp.Amplitude.Default = pSettings->read_if_exists<float>(BOBBING_SECT,"limp_amplitude",0.0f);
+    Limp.Speed.Default = pSettings->read_if_exists<float>(BOBBING_SECT, "limp_speed", 0.0f);
 
-    Limp.Amplitude.Zoom = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_limp_amplitude", 0.0f);
-    Limp.Speed.Zoom = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_limp_speed", 0.0f);
+    Limp.Amplitude.Zoom = pSettings->read_if_exists<float>(BOBBING_SECT, "zoom_limp_amplitude", 0.0f);
+    Limp.Speed.Zoom = pSettings->read_if_exists<float>(BOBBING_SECT, "zoom_limp_speed", 0.0f);
 
-    SlowCrouch.Amplitude.Default = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "slow_crouch_amplitude", 0.0f);
-    SlowCrouch.Speed.Default = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "slow_crouch_speed", 0.0f);
+    SlowCrouch.Amplitude.Default = pSettings->read_if_exists<float>(BOBBING_SECT, "slow_crouch_amplitude", 0.0f);
+    SlowCrouch.Speed.Default = pSettings->read_if_exists<float>(BOBBING_SECT, "slow_crouch_speed", 0.0f);
 
-    SlowCrouch.Amplitude.Zoom = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_slow_crouch_amplitude", 0.0f);
-    SlowCrouch.Speed.Zoom = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_slow_crouch_speed", 0.0f);
+    SlowCrouch.Amplitude.Zoom = pSettings->read_if_exists<float>(BOBBING_SECT, "zoom_slow_crouch_amplitude", 0.0f);
+    SlowCrouch.Speed.Zoom = pSettings->read_if_exists<float>(BOBBING_SECT, "zoom_slow_crouch_speed", 0.0f);
 
-    Crouch.Amplitude.Default = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "crouch_amplitude", 0.0f);
-    Crouch.Speed.Default = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "crouch_speed", 0.0f);
+    Crouch.Amplitude.Default = pSettings->read_if_exists<float>(BOBBING_SECT, "crouch_amplitude", 0.0f);
+    Crouch.Speed.Default = pSettings->read_if_exists<float>(BOBBING_SECT, "crouch_speed", 0.0f);
 
-    Crouch.Amplitude.Zoom = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_crouch_amplitude", 0.0f);
-    Crouch.Speed.Zoom = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_crouch_speed", 0.0f);
+    Crouch.Amplitude.Zoom = pSettings->read_if_exists<float>(BOBBING_SECT, "zoom_crouch_amplitude", 0.0f);
+    Crouch.Speed.Zoom = pSettings->read_if_exists<float>(BOBBING_SECT, "zoom_crouch_speed", 0.0f);
 
-    Walk.Amplitude.Default = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "walk_amplitude", 0.0f);
-    Walk.Speed.Default = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "walk_speed", 0.0f);
+    Walk.Amplitude.Default = pSettings->read_if_exists<float>(BOBBING_SECT, "walk_amplitude", 0.0f);
+    Walk.Speed.Default = pSettings->read_if_exists<float>(BOBBING_SECT, "walk_speed", 0.0f);
 
-    Walk.Amplitude.Zoom = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_walk_amplitude", 0.0f);
-    Walk.Speed.Zoom = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_walk_speed", 0.0f);
+    Walk.Amplitude.Zoom = pSettings->read_if_exists<float>(BOBBING_SECT, "zoom_walk_amplitude", 0.0f);
+    Walk.Speed.Zoom = pSettings->read_if_exists<float>(BOBBING_SECT, "zoom_walk_speed", 0.0f);
 
-    Run.Amplitude.Default = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "run_amplitude", 0.0f);
-    Run.Speed.Default = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "run_speed", 0.0f);
+    Run.Amplitude.Default = pSettings->read_if_exists<float>(BOBBING_SECT, "run_amplitude", 0.0f);
+    Run.Speed.Default = pSettings->read_if_exists<float>(BOBBING_SECT, "run_speed", 0.0f);
 
-    Run.Amplitude.Zoom = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_run_amplitude", 0.0f);
-    Run.Speed.Zoom = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_run_speed", 0.0f);
+    Run.Amplitude.Zoom = pSettings->read_if_exists<float>(BOBBING_SECT, "zoom_run_amplitude", 0.0f);
+    Run.Speed.Zoom = pSettings->read_if_exists<float>(BOBBING_SECT, "zoom_run_speed", 0.0f);
 
-    m_fAmplitudeDelta = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "amplitude_delta", 1.0f);
-	SetHudAffect(READ_IF_EXISTS(pSettings, r_bool, BOBBING_SECT, "affect_hud", true));
+    m_fAmplitudeDelta = pSettings->read_if_exists<float>(BOBBING_SECT, "amplitude_delta", 1.0f);
+	SetHudAffect(pSettings->read_if_exists<bool>(BOBBING_SECT, "affect_hud", true));
 }
 
 void CEffectorBobbing::SetState(u32 mstate, bool limping, bool ZoomMode)

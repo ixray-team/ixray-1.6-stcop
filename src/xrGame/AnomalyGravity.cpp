@@ -23,15 +23,15 @@ extern CSE_Abstract* CALifeSimulator__spawn_item2(
 
 void TAnomalyGravity::Load(const char* section)
 {
-	shared_str gravity_options_section = READ_IF_EXISTS(pSettings, r_string, section, "gravity_options_section", nullptr);
+	shared_str gravity_options_section = pSettings->read_if_exists<str_c>(section, "gravity_options_section", nullptr);
 	if (gravity_options_section)
 	{
-		m_use_gravity_effect = READ_IF_EXISTS(pSettings, r_bool, gravity_options_section, "use_gravity_effect", m_use_gravity_effect);
-		m_max_count_spawn_trash = READ_IF_EXISTS(pSettings, r_u16, gravity_options_section, "max_count_spawn_trash", m_max_count_spawn_trash);
+		m_use_gravity_effect = pSettings->read_if_exists<bool>(gravity_options_section, "use_gravity_effect", m_use_gravity_effect);
+		m_max_count_spawn_trash = pSettings->read_if_exists<u16>(gravity_options_section, "max_count_spawn_trash", m_max_count_spawn_trash);
 
-		m_min_gravity_radius_factor = READ_IF_EXISTS(pSettings, r_float, gravity_options_section, "min_gravity_radius_factor", m_min_gravity_radius_factor);
-		m_gravity_radius = READ_IF_EXISTS(pSettings, r_float, gravity_options_section, "gravity_radius", m_gravity_radius);
-		m_max_processing_distance = READ_IF_EXISTS(pSettings, r_float, gravity_options_section, "max_processing_distance", m_max_processing_distance);
+		m_min_gravity_radius_factor = pSettings->read_if_exists<float>(gravity_options_section, "min_gravity_radius_factor", m_min_gravity_radius_factor);
+		m_gravity_radius = pSettings->read_if_exists<float>(gravity_options_section, "gravity_radius", m_gravity_radius);
+		m_max_processing_distance = pSettings->read_if_exists<float>(gravity_options_section, "max_processing_distance", m_max_processing_distance);
 		if (m_gravity_radius <= 0.f || m_max_processing_distance <= 0.f)
 		{
 			m_gravity_radius = 0.f;

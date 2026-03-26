@@ -35,9 +35,9 @@ using namespace MonsterSound;
 
 void CBaseMonster::GenerateNewOffsetFromLeader ()
 {
-	float const min_squad_offset	=	READ_IF_EXISTS(pSettings, r_float, "monsters_common", 
+	float const min_squad_offset	=	pSettings->read_if_exists<float>("monsters_common", 
 													   "script_move_min_offset_from_leader", 3.f);
-	float const max_squad_offset	=	READ_IF_EXISTS(pSettings, r_float, "monsters_common", 
+	float const max_squad_offset	=	pSettings->read_if_exists<float>("monsters_common", 
 													   "script_move_max_offset_from_leader", 9.f);
 
 	float const offset_magnitude	=	min_squad_offset + (max_squad_offset-min_squad_offset)*Random.randF(1.f);

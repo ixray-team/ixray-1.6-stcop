@@ -38,12 +38,12 @@ void   anti_aim_ability::load_from_ini (CInifile const* ini, const char* const s
 {
 	using namespace						::detail;
 
-	m_timeout						=	READ_IF_EXISTS(ini, r_float, section, s_anti_aim_timeout_string, 5.f);
-	m_freeze_time					=	READ_IF_EXISTS(ini, r_float, section, s_anti_aim_freeze_time_string, 1.f);
-	m_max_angle						=	READ_IF_EXISTS(ini, r_float, section, s_anti_aim_max_angle_string, 0.5f);
-	m_detection_gain_speed			=	READ_IF_EXISTS(ini, r_float, section, s_anti_aim_detection_gain_speed_string, 1.f);
-	m_detection_loose_speed			=	READ_IF_EXISTS(ini, r_float, section, s_anti_aim_detection_loose_speed_string, 0.1f);
-	const char* effectors					=	READ_IF_EXISTS(ini, r_string, section, s_anti_aim_effectors_string, nullptr);
+	m_timeout						=	ini->read_if_exists<float>(section, s_anti_aim_timeout_string, 5.f);
+	m_freeze_time					=	ini->read_if_exists<float>(section, s_anti_aim_freeze_time_string, 1.f);
+	m_max_angle						=	ini->read_if_exists<float>(section, s_anti_aim_max_angle_string, 0.5f);
+	m_detection_gain_speed			=	ini->read_if_exists<float>(section, s_anti_aim_detection_gain_speed_string, 1.f);
+	m_detection_loose_speed			=	ini->read_if_exists<float>(section, s_anti_aim_detection_loose_speed_string, 0.1f);
+	const char* effectors			=	ini->read_if_exists<LPCSTR>(section,s_anti_aim_effectors_string,nullptr);
 
 	if ( effectors )
 	{

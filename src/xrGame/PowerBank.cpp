@@ -25,7 +25,7 @@ void PowerBank::Load(const char* section)
 	CInventoryItemObject::Load(section);
 
 	m_flags.set(FCanStack, false);
-	m_max_count_power_cells = READ_IF_EXISTS(pSettings, r_u32, section, "max_count_power_cells", 0);
+	m_max_count_power_cells = pSettings->read_if_exists<u32>(section, "max_count_power_cells", 0);
 
 	m_allowed_power_cells_sections.clear();
 	if (pSettings->line_exist(section, "allowed_power_cells_sections"))

@@ -215,8 +215,6 @@ bool CHelicopter::net_Spawn(CSE_Abstract*	DC)
 		m_engineSound.create(*heli->engine_sound,st_Effect,sg_SourceType);
 		m_engineSound.play_at_pos(nullptr,XFORM().c,sm_Looped);
 	}
-	
-	CShootingObject::Light_Create	();
 
 	setVisible						(true);
 	setEnabled						(true);

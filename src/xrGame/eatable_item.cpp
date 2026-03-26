@@ -46,19 +46,19 @@ void CEatableItem::Load(const char* section)
 	}
 	else
 	{
-		m_iMaxUses = READ_IF_EXISTS(pSettings, r_u8, section, "max_uses", 1);
+		m_iMaxUses = pSettings->read_if_exists<u8>(section,"max_uses",1);
 	}
 
-	float m_eat_condition = READ_IF_EXISTS(pSettings, r_float, section, "eat_condition", 1);
+	float m_eat_condition = pSettings->read_if_exists<float>(section,"eat_condition",1);
 	m_iMaxUses /= m_eat_condition;
 	m_iRemainingUses = m_iMaxUses;
 
-	UseText = READ_IF_EXISTS(pSettings, r_string, section, "use_text", "st_use");
+	UseText = pSettings->read_if_exists<LPCSTR>(section,"use_text","st_use");
 
-	m_bRemoveAfterUse = READ_IF_EXISTS(pSettings, r_bool, section, "remove_after_use", true);
-	m_bConsumeChargeOnUse = READ_IF_EXISTS(pSettings, r_bool, section, "consume_charge_on_use", true);
+	m_bRemoveAfterUse = pSettings->read_if_exists<bool>(section,"remove_after_use",true);
+	m_bConsumeChargeOnUse = pSettings->read_if_exists<bool>(section,"consume_charge_on_use",true);
 	m_fWeightFull = m_weight;
-	m_fWeightEmpty = READ_IF_EXISTS(pSettings, r_float, section, "empty_weight", 0.0f);
+	m_fWeightEmpty = pSettings->read_if_exists<float>(section,"empty_weight",0.0f);
 
 	if (IsUsingCondition())
 	{

@@ -59,7 +59,7 @@ void CInventorySorter::LoadSystemSettings()
 
     if (pSettings->section_exist("inventory_sort"))
     {
-        shared_str systemStr = READ_IF_EXISTS(pSettings, r_string, "inventory_sort", "system", "categories");
+        shared_str systemStr = pSettings->read_if_exists<str_c>("inventory_sort", "system", "categories");
         if (systemStr.size() && xr_strcmp(systemStr.c_str(), "ordering") == 0)
         {
             _system = EInventorySortSystem::Ordering;
@@ -68,10 +68,10 @@ void CInventorySorter::LoadSystemSettings()
 
     if (pSettings->section_exist("inventory_sort:ordering"))
     {
-        _weightDesc = READ_IF_EXISTS(pSettings, r_bool, "inventory_sort:ordering", "weight_desc", true);
-        _conditionDesc = READ_IF_EXISTS(pSettings, r_bool, "inventory_sort:ordering", "condition_desc", true);
-        _costDesc = READ_IF_EXISTS(pSettings, r_bool, "inventory_sort:ordering", "cost_desc", true);
-        _noveltyDesc = READ_IF_EXISTS(pSettings, r_bool, "inventory_sort:ordering", "novelty_desc", true);
+        _weightDesc = pSettings->read_if_exists<bool>("inventory_sort:ordering", "weight_desc", true);
+        _conditionDesc = pSettings->read_if_exists<bool>("inventory_sort:ordering", "condition_desc", true);
+        _costDesc = pSettings->read_if_exists<bool>("inventory_sort:ordering", "cost_desc", true);
+        _noveltyDesc = pSettings->read_if_exists<bool>("inventory_sort:ordering", "novelty_desc", true);
     }
 }
 
@@ -163,9 +163,9 @@ void CInventorySorter::LoadOrderModeFromLtx(const shared_str& orderModeId, EInve
     SInventoryOrderModeInfo& info = it->second;
     if (pSettings->section_exist(path))
     {
-        info._name = READ_IF_EXISTS(pSettings, r_string, path, "name", info._name.c_str());
-        info._hint = READ_IF_EXISTS(pSettings, r_string, path, "hint", info._hint.c_str());
-        info._hasText = READ_IF_EXISTS(pSettings, r_bool, path, "show_text", info._hasText);
+        info._name = pSettings->read_if_exists<str_c>(path, "name", info._name.c_str());
+        info._hint = pSettings->read_if_exists<str_c>(path, "hint", info._hint.c_str());
+        info._hasText = pSettings->read_if_exists<bool>(path, "show_text", info._hasText);
     }
 }
 
@@ -276,17 +276,17 @@ void CInventorySorter::LoadCategoryFromXml(const shared_str& categoryId, EInvent
         return;
     }
 
-    info._name = READ_IF_EXISTS(pSettings, r_string, path, "name", info._name.c_str());
-    info._hint = READ_IF_EXISTS(pSettings, r_string, path, "hint", info._hint.c_str());
+    info._name = pSettings->read_if_exists<str_c>(path, "name", info._name.c_str());
+    info._hint = pSettings->read_if_exists<str_c>(path, "hint", info._hint.c_str());
 
-    shared_str iconTexture = READ_IF_EXISTS(pSettings, r_string, path, "icon", nullptr);
+    shared_str iconTexture = pSettings->read_if_exists<str_c>(path, "icon", nullptr);
     if (iconTexture && iconTexture.size() > 0)
     {
         info._iconTexture = iconTexture;
         info._hasIcon = true;
     }
 
-    info._hasText = READ_IF_EXISTS(pSettings, r_bool, path, "show_text", info._hasText);
+    info._hasText = pSettings->read_if_exists<bool>(path, "show_text", info._hasText);
 }
 
 void CInventorySorter::LoadCustomCategories()
@@ -314,7 +314,7 @@ void CInventorySorter::LoadCustomCategories()
         xr_sprintf(path, "inventory_sort_custom:%s", lineName);
 
         shared_str name = pSettings->r_string(path, "name");
-        shared_str hint = READ_IF_EXISTS(pSettings, r_string, path, "hint", "");
+        shared_str hint = pSettings->read_if_exists<LPCSTR>(path, "hint", "");
         
         AddCustomCategory(lineName, name, hint);
 

@@ -36,7 +36,7 @@ void CPsyDog::Load(const char* section)
 	inherited::Load					(section);
 	
 	m_aura->load					(pSettings->r_string(section,"aura_effector"));
-	m_min_phantoms_count = READ_IF_EXISTS(pSettings, r_u8, section, "Min_Phantoms_Count", 1);
+	m_min_phantoms_count = pSettings->read_if_exists<u8>(section,"Min_Phantoms_Count",1);
 	if (pSettings->line_exist(section, "Phantoms_Count"))
 		m_max_phantoms_count		=	pSettings->r_u8(section,"Phantoms_Count");
 	else
@@ -107,7 +107,7 @@ bool CPsyDog::spawn_phantom()
 	if (!control().path_builder().get_node_in_radius(ai_location().level_vertex_id(), 4,8,5,node)) return false;
 	
  	// set id to created server object
-	const char* phantomSection = READ_IF_EXISTS(pSettings, r_string, this->get_section(), "phantom_section", "psy_dog_phantom");
+	const char* phantomSection = pSettings->read_if_exists<LPCSTR>(this->get_section(),"phantom_section","psy_dog_phantom");
 	CSE_Abstract* phantom = Level().spawn_item(phantomSection, ai().level_graph().vertex_position(node), node, ALife::INVALID_OBJECT_ID, true);
 	CSE_ALifeMonsterBase	*pSE_Monster = smart_cast<CSE_ALifeMonsterBase*>(phantom);
 	VERIFY(pSE_Monster);

@@ -71,18 +71,18 @@ void CSoundMemoryManager::reinit				()
 
 void CSoundMemoryManager::reload				(const char* section)
 {
-	m_max_sound_count		= READ_IF_EXISTS(pSettings,r_s32,section,"DynamicSoundsCount",1);
-	m_min_sound_threshold	= READ_IF_EXISTS(pSettings,r_float,section,"sound_threshold",0.05f);
-	m_self_sound_factor		= READ_IF_EXISTS(pSettings,r_float,section,"self_sound_factor",0.f);
-	m_sound_decrease_quant	= READ_IF_EXISTS(pSettings,r_u32,section,"self_decrease_quant",250);
-	m_decrease_factor		= READ_IF_EXISTS(pSettings,r_float,section,"self_decrease_factor",.95f);
+	m_max_sound_count		= pSettings->read_if_exists<s32>(section,"DynamicSoundsCount",1);
+	m_min_sound_threshold	= pSettings->read_if_exists<float>(section,"sound_threshold",0.05f);
+	m_self_sound_factor		= pSettings->read_if_exists<float>(section,"self_sound_factor",0.f);
+	m_sound_decrease_quant	= pSettings->read_if_exists<u32>(section,"self_decrease_quant",250);
+	m_decrease_factor		= pSettings->read_if_exists<float>(section,"self_decrease_factor",.95f);
 
-	const char*					sound_perceive_section = READ_IF_EXISTS(pSettings,r_string,section,"sound_perceive_section",section);
-	m_weapon_factor			= READ_IF_EXISTS(pSettings,r_float,sound_perceive_section,"weapon",10.f);
-	m_item_factor			= READ_IF_EXISTS(pSettings,r_float,sound_perceive_section,"item",1.f);
-	m_npc_factor			= READ_IF_EXISTS(pSettings,r_float,sound_perceive_section,"npc",1.f);
-	m_anomaly_factor		= READ_IF_EXISTS(pSettings,r_float,sound_perceive_section,"anomaly",1.f);
-	m_world_factor			= READ_IF_EXISTS(pSettings,r_float,sound_perceive_section,"world",1.f);
+	const char*					sound_perceive_section = pSettings->read_if_exists<LPCSTR>(section,"sound_perceive_section",section);
+	m_weapon_factor			= pSettings->read_if_exists<float>(sound_perceive_section,"weapon",10.f);
+	m_item_factor			= pSettings->read_if_exists<float>(sound_perceive_section,"item",1.f);
+	m_npc_factor			= pSettings->read_if_exists<float>(sound_perceive_section,"npc",1.f);
+	m_anomaly_factor		= pSettings->read_if_exists<float>(sound_perceive_section,"anomaly",1.f);
+	m_world_factor			= pSettings->read_if_exists<float>(sound_perceive_section,"world",1.f);
 }
 
 IC	void CSoundMemoryManager::update_sound_threshold			()

@@ -227,12 +227,12 @@ void CWeapon::Load		(const char* section)
 
 	m_base_inertion = m_current_inertion;
 
-	m_zoom_inertion.PitchOffsetR = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_aim_pitch_offset_r", 0.0f);
-	m_zoom_inertion.PitchOffsetD = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_aim_pitch_offset_d", 0.0f);
-	m_zoom_inertion.PitchOffsetN = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_aim_pitch_offset_n", 0.0f);
+	m_zoom_inertion.PitchOffsetR = pSettings->read_if_exists<float>(hud_sect, "inertion_aim_pitch_offset_r", 0.0f);
+	m_zoom_inertion.PitchOffsetD = pSettings->read_if_exists<float>(hud_sect, "inertion_aim_pitch_offset_d", 0.0f);
+	m_zoom_inertion.PitchOffsetN = pSettings->read_if_exists<float>(hud_sect, "inertion_aim_pitch_offset_n", 0.0f);
 
-	m_zoom_inertion.OriginOffset = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_aim_origin_offset", ORIGIN_OFFSET * 0.5f);
-	m_zoom_inertion.TendtoSpeed = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_aim_tendto_speed", TENDTO_SPEED);
+	m_zoom_inertion.OriginOffset = pSettings->read_if_exists<float>(hud_sect, "inertion_aim_origin_offset", ORIGIN_OFFSET * 0.5f);
+	m_zoom_inertion.TendtoSpeed = pSettings->read_if_exists<float>(hud_sect, "inertion_aim_tendto_speed", TENDTO_SPEED);
 
 	// load ammo classes
 	m_ammoTypes.clear	(); 
@@ -260,10 +260,10 @@ void CWeapon::Load		(const char* section)
 	
 	cam_recoil.LegacyRecoil = zoom_cam_recoil.LegacyRecoil = pSettings->line_exist(section, "cam_dispertion_frac"); // do not confuse with cam_dispersion_frac param from CS/CoP
 
-	u8 rm = READ_IF_EXISTS(pSettings, r_u8, section, "cam_return", !EngineExternal().ShadowOfChernobylMode());
+	u8 rm =pSettings->read_if_exists<u8>(section, "cam_return", !EngineExternal().ShadowOfChernobylMode());
 	cam_recoil.ReturnMode = (rm == 1);
 	
-	rm = READ_IF_EXISTS( pSettings, r_u8, section, "cam_return_stop", 0 );
+	rm = pSettings->read_if_exists<u8>(section, "cam_return_stop", 0 );
 	cam_recoil.StopReturn = (rm == 1);
 
 	float temp_f = 0.0f;
@@ -307,7 +307,7 @@ void CWeapon::Load		(const char* section)
 	temp_f						= pSettings->r_float( section, "cam_step_angle_horz" );
 	cam_recoil.StepAngleHorz	= deg2rad( temp_f );
 	
-	cam_recoil.DispersionFrac	= std::abs( READ_IF_EXISTS( pSettings, r_float, section, "cam_dispersion_frac", READ_IF_EXISTS( pSettings, r_float, section, "cam_dispertion_frac", 0.7f ) ) );
+	cam_recoil.DispersionFrac	= std::abs( pSettings->read_if_exists<float>(section, "cam_dispersion_frac", pSettings->read_if_exists<float>(section, "cam_dispertion_frac", 0.7f ) ) );
 
 	
 	//zoom_cam_recoil.Clone( cam_recoil ); ==== ������ !!!!!!!!!!
@@ -369,12 +369,12 @@ void CWeapon::Load		(const char* section)
 		zoom_cam_recoil.DispersionFrac	= std::abs( pSettings->r_float( section, "zoom_cam_dispersion_frac" ) );
 	}
 
-	m_pdm.m_fPDM_disp_base			= READ_IF_EXISTS(pSettings, r_float, section, "PDM_disp_base", 1.0f);
-	m_pdm.m_fPDM_disp_vel_factor	= READ_IF_EXISTS(pSettings, r_float, section, "PDM_disp_vel_factor", 1.0f);
-	m_pdm.m_fPDM_disp_accel_factor	= READ_IF_EXISTS(pSettings, r_float, section, "PDM_disp_accel_factor", 1.0f);
-	m_pdm.m_fPDM_disp_crouch		= READ_IF_EXISTS(pSettings, r_float, section, "PDM_disp_crouch", 1.0f);
-	m_pdm.m_fPDM_disp_crouch_no_acc	= READ_IF_EXISTS(pSettings, r_float, section, "PDM_disp_crouch_no_acc", 1.0f);
-	m_crosshair_inertion			= READ_IF_EXISTS(pSettings, r_float, section, "crosshair_inertion",	5.91f);
+	m_pdm.m_fPDM_disp_base			= pSettings->read_if_exists<float>(section, "PDM_disp_base", 1.0f);
+	m_pdm.m_fPDM_disp_vel_factor	= pSettings->read_if_exists<float>(section, "PDM_disp_vel_factor", 1.0f);
+	m_pdm.m_fPDM_disp_accel_factor	= pSettings->read_if_exists<float>(section, "PDM_disp_accel_factor", 1.0f);
+	m_pdm.m_fPDM_disp_crouch		= pSettings->read_if_exists<float>(section, "PDM_disp_crouch", 1.0f);
+	m_pdm.m_fPDM_disp_crouch_no_acc	= pSettings->read_if_exists<float>(section, "PDM_disp_crouch_no_acc", 1.0f);
+	m_crosshair_inertion			= pSettings->read_if_exists<float>(section, "crosshair_inertion",	5.91f);
 
 	m_first_bullet_controller.load	(section);
 	fireDispersionConditionFactor = pSettings->r_float(section,"fire_dispersion_condition_factor");
@@ -394,7 +394,7 @@ void CWeapon::Load		(const char* section)
 		useLegacyMisfire = true;
 
         misfireProbability      = pSettings->r_float(section, "misfire_probability");
-        misfireConditionK       = READ_IF_EXISTS(pSettings, r_float, section, "misfire_condition_k", 1.0f);
+        misfireConditionK       = pSettings->read_if_exists<float>(section, "misfire_condition_k", 1.0f);
 
         // For UI indicators to work correctly
         misfireStartCondition   = 0.95f;
@@ -403,7 +403,7 @@ void CWeapon::Load		(const char* section)
         misfireEndProbability   = (misfireProbability + misfireConditionK) * 0.25f;
     }
 	conditionDecreasePerShot = pSettings->r_float(section, "condition_shot_dec");
-	conditionDecreasePerQueueShot = READ_IF_EXISTS(pSettings, r_float, section, "condition_queue_shot_dec", conditionDecreasePerShot);
+	conditionDecreasePerQueueShot = pSettings->read_if_exists<float>(section, "condition_queue_shot_dec", conditionDecreasePerShot);
 
 
 	vLoadedFirePoint	= pSettings->r_fvector3		(section,"fire_point"		);
@@ -429,7 +429,7 @@ void CWeapon::Load		(const char* section)
 	m_eGrenadeLauncherStatus = (ALife::EWeaponAddonStatus)pSettings->r_s32(section,"grenade_launcher_status");
 
 	m_zoom_params.m_bZoomEnabled		= !!pSettings->r_bool(section,"zoom_enabled");
-	m_zoom_params.m_fZoomRotateTime		= READ_IF_EXISTS(pSettings, r_float, section, "zoom_rotate_time", ROTATION_TIME);
+	m_zoom_params.m_fZoomRotateTime		= pSettings->read_if_exists<float>(section,"zoom_rotate_time",0.25f);
 
 	bUseAltScope = !!bLoadAltScopesParams(section);
 
@@ -484,49 +484,51 @@ void CWeapon::Load		(const char* section)
 	m_zoom_params.m_bHideCrosshairInZoom		= true;
 
 	if(pSettings->line_exist(hud_sect, "zoom_hide_crosshair"))
-		m_zoom_params.m_bHideCrosshairInZoom = !!pSettings->r_bool(hud_sect, "zoom_hide_crosshair");	
+	{
+		m_zoom_params.m_bHideCrosshairInZoom = !!pSettings->r_bool(hud_sect, "zoom_hide_crosshair");
+	}
 
 	Fvector			def_dof;
 	def_dof.set		(-1,-1,-1);
 //	m_zoom_params.m_ZoomDof		= READ_IF_EXISTS(pSettings, r_fvector3, section, "zoom_dof", Fvector().set(-1,-1,-1));
 //	m_zoom_params.m_bZoomDofEnabled	= !def_dof.similar(m_zoom_params.m_ZoomDof);
 
-	m_zoom_params.m_ReloadDof	= READ_IF_EXISTS(pSettings, r_fvector4, section, "reload_dof", Fvector4().set(-1,-1,-1,-1));
+	m_zoom_params.m_ReloadDof	= pSettings->read_if_exists<Fvector4>(section,"reload_dof",Fvector4().set(-1,-1,-1,-1));
 
 
-	m_bHasTracers			= !!READ_IF_EXISTS(pSettings, r_bool, section, "tracers", true);
-	m_u8TracerColorID		= READ_IF_EXISTS(pSettings, r_u8, section, "tracers_color_ID", u8(-1));
+	m_bHasTracers			= pSettings->read_if_exists<bool>(section,"tracers",true);
+	m_u8TracerColorID		= pSettings->read_if_exists<u8>(section,"tracers_color_ID",u8(-1));
 
 	string256						temp;
 	for (int i=egdNovice; i<egdCount; ++i) 
 	{
 		xr_strconcat(temp,"hit_probability_",get_token_name(difficulty_type_token,i));
-		m_hit_probability[i]		= READ_IF_EXISTS(pSettings,r_float,section,temp,1.f);
+		m_hit_probability[i] = pSettings->read_if_exists<float>(section,temp,1.f);
 	}
 
-	m_bAimActions = READ_IF_EXISTS(pSettings, r_bool, section, "enable_aim_actions", false);
+	m_bAimActions =  pSettings->read_if_exists<bool>(section, "enable_aim_actions", false);
 
 	{
 		string_path	ce_path = {};
-		shared_str tmp = READ_IF_EXISTS(pSettings, r_string, hud_sect, "cam_safemode_in", "camera_effects\\actor_move\\safemode_in.anm");
+		shared_str tmp = pSettings->read_if_exists<LPCSTR>(hud_sect, "cam_safemode_in", "camera_effects\\actor_move\\safemode_in.anm");
 		if (FS.exist(ce_path, "$game_anims$", *tmp))
 		{
 			m_safemode_cams[0] = tmp;
 		}
 
-		tmp = READ_IF_EXISTS(pSettings, r_string, hud_sect, "cam_safemode_out", "camera_effects\\actor_move\\safemode_out.anm");
+		tmp = pSettings->read_if_exists<LPCSTR>(hud_sect, "cam_safemode_out", "camera_effects\\actor_move\\safemode_out.anm");
 		if (FS.exist(ce_path, "$game_anims$", *tmp))
 		{
 			m_safemode_cams[1] = tmp;
 		}
 
-		tmp = READ_IF_EXISTS(pSettings, r_string, hud_sect, "cam_aim_in", "camera_effects\\actor_move\\aim_in.anm");
+		tmp = pSettings->read_if_exists<LPCSTR>(hud_sect, "cam_aim_in", "camera_effects\\actor_move\\aim_in.anm");
 		if (FS.exist(ce_path, "$game_anims$", *tmp))
 		{
 			m_aim_cams[0] = tmp;
 		}
 
-		tmp = READ_IF_EXISTS(pSettings, r_string, hud_sect, "cam_aim_out", "camera_effects\\actor_move\\aim_out.anm");
+		tmp = pSettings->read_if_exists<LPCSTR>(hud_sect, "cam_aim_out", "camera_effects\\actor_move\\aim_out.anm");
 		if (FS.exist(ce_path, "$game_anims$", *tmp))
 		{
 			m_aim_cams[1] = tmp;
@@ -537,7 +539,7 @@ void CWeapon::Load		(const char* section)
 		auto LoadMoreCameras = [&](RStringVec& vector, const char* param_name, const char* base_camera_name)
 		{
 			string_path	ce_path = {};
-			shared_str tmp = READ_IF_EXISTS(pSettings, r_string, hud_sect, param_name, base_camera_name);
+			shared_str tmp = pSettings->read_if_exists<LPCSTR>(hud_sect, param_name, base_camera_name);
 			if (!FS.exist(ce_path, "$game_anims$", *tmp))
 			{
 				return;
@@ -559,9 +561,9 @@ void CWeapon::Load		(const char* section)
 		LoadMoreCameras(m_shot_cams[1], "cam_aim_shoot", "camera_effects\\weapon\\base_aim_shoot.anm");
 	}
 
-	m_zoom_params.m_bUseDynamicZoom	= READ_IF_EXISTS(pSettings,r_bool,section,"scope_dynamic_zoom",false);
-	m_zoom_params.m_sUseZoomPostprocess	= READ_IF_EXISTS(pSettings, r_string, section, "scope_nightvision", 0);
-	m_zoom_params.m_sUseBinocularVision	= READ_IF_EXISTS(pSettings, r_string, section, "scope_alive_detector", 0);
+	m_zoom_params.m_bUseDynamicZoom	= pSettings->read_if_exists<bool>(section,"scope_dynamic_zoom",false);
+	m_zoom_params.m_sUseZoomPostprocess	= pSettings->read_if_exists<LPCSTR>(section,"scope_nightvision",nullptr);
+	m_zoom_params.m_sUseBinocularVision	= pSettings->read_if_exists<LPCSTR>(section,"scope_alive_detector",nullptr);
 
 	if (m_zoom_params.m_sUseBinocularVision.size() > 0)
 	{
@@ -590,14 +592,14 @@ void CWeapon::Load		(const char* section)
 		return reached_sect;
 	};
 
-	pSettings->read_if_exists(m_bAllowSafemode, section, "allow_safemode");
-	pSettings->read_if_exists(m_fSafeModeRotateTime, section, "safemode_rotate_time");
+	pSettings->r_bool_nullable(section, "allow_safemode", m_bAllowSafemode);
+	pSettings->r_float_nullable(section, "safemode_rotate_time", m_fSafeModeRotateTime);
 
-	m_AlterZoomAllowed = READ_IF_EXISTS(pSettings, r_bool, ReachInAllSections("alter_zoom_allowed"), "alter_zoom_allowed", false);
+	m_AlterZoomAllowed = pSettings->read_if_exists<bool>(ReachInAllSections("alter_zoom_allowed"),"alter_zoom_allowed",false);
 
-	m_bUseSilHud = READ_IF_EXISTS(pSettings, r_bool, section, "hud_when_silencer_is_attached", false);
-	m_bUseScopeHud = READ_IF_EXISTS(pSettings, r_bool, section, "hud_when_scope_is_attached", false);
-	m_bUseGLHud = READ_IF_EXISTS(pSettings, r_bool, section, "hud_when_gl_is_attached", false);
+	m_bUseSilHud = pSettings->read_if_exists<bool>(section,"hud_when_silencer_is_attached",false);
+	m_bUseScopeHud = pSettings->read_if_exists<bool>(section,"hud_when_scope_is_attached",false);
+	m_bUseGLHud = pSettings->read_if_exists<bool>(section,"hud_when_gl_is_attached",false);
 
 	if (m_bUseSilHud)
 	{
@@ -614,31 +616,31 @@ void CWeapon::Load		(const char* section)
 		hud_gl = pSettings->r_string(section, "hud_gl");
 	}
 
-	m_fHudFovZoomFactor = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_fov_zoom_factor", m_fHudFovFactor);
-	m_fHudFovGLZoomFactor = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_fov_gl_zoom_factor", m_fHudFovFactor);
-	m_HudFovZoom = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_fov_zoom", 0.0f);
+	m_fHudFovZoomFactor = pSettings->read_if_exists<float>(hud_sect,"hud_fov_zoom_factor",m_fHudFovFactor);
+	m_fHudFovGLZoomFactor = pSettings->read_if_exists<float>(hud_sect,"hud_fov_gl_zoom_factor",m_fHudFovFactor);
+	m_HudFovZoom = pSettings->read_if_exists<float>(hud_sect,"hud_fov_zoom",0.0f);
 
-	m_fast_kick_params.material = READ_IF_EXISTS(pSettings, r_string, section, "kick_material", "objects\\knife");
-	m_fast_kick_params.ap = READ_IF_EXISTS(pSettings, r_float, section, "kick_ap", EPS_L);
-	m_fast_kick_params.wallmark_size = READ_IF_EXISTS(pSettings, r_float, section, "kick_wallmark_size", 0.05f);
-	m_fast_kick_params.cnt = READ_IF_EXISTS(pSettings, r_u32, section, "kick_hit_count", 1);
-	m_fast_kick_params.hp = READ_IF_EXISTS(pSettings, r_float, section, "kick_hit_power", 0.0f);
-	m_fast_kick_params.imp = READ_IF_EXISTS(pSettings, r_float, section, "kick_hit_impulse", 0.0f);
-	m_fast_kick_params.htype = (ALife::EHitType)READ_IF_EXISTS(pSettings, r_u32, section, "kick_hit_type", ALife::EHitType::eHitTypeWound);
-	m_fast_kick_params.hdist = READ_IF_EXISTS(pSettings, r_float, section, "kick_distance", 0.0f);
-	m_fast_kick_params.disp_hor = READ_IF_EXISTS(pSettings, r_float, section, "kick_disp_hor", 0.0f);
-	m_fast_kick_params.disp_ver = READ_IF_EXISTS(pSettings, r_float, section, "kick_disp_ver", 0.0f);
+	m_fast_kick_params.material = pSettings->read_if_exists<LPCSTR>(section,"kick_material","objects\\knife");
+	m_fast_kick_params.ap = pSettings->read_if_exists<float>(section,"kick_ap",EPS_L);
+	m_fast_kick_params.wallmark_size = pSettings->read_if_exists<float>(section,"kick_wallmark_size",0.05f);
+	m_fast_kick_params.cnt = pSettings->read_if_exists<u32>(section,"kick_hit_count",1);
+	m_fast_kick_params.hp = pSettings->read_if_exists<float>(section,"kick_hit_power",0.0f);
+	m_fast_kick_params.imp = pSettings->read_if_exists<float>(section,"kick_hit_impulse",0.0f);
+	m_fast_kick_params.htype = (ALife::EHitType)pSettings->read_if_exists<u32>(section,"kick_hit_type",ALife::EHitType::eHitTypeWound);
+	m_fast_kick_params.hdist = pSettings->read_if_exists<float>(section,"kick_distance",0.0f);
+	m_fast_kick_params.disp_hor = pSettings->read_if_exists<float>(section,"kick_disp_hor",0.0f);
+	m_fast_kick_params.disp_ver = pSettings->read_if_exists<float>(section,"kick_disp_ver",0.0f);
 
-	m_fast_kick_params.bBlockQK = READ_IF_EXISTS(pSettings, r_bool, section, "disable_kick_anim", true);
-	m_fast_kick_params.bBlockQKSil = READ_IF_EXISTS(pSettings, r_bool, section, "disable_kick_anim_when_sil_attached", true);
-	m_fast_kick_params.bBlockQKScp = READ_IF_EXISTS(pSettings, r_bool, section, "disable_kick_anim_when_scope_attached", true);
-	m_fast_kick_params.bBlockQKGL = READ_IF_EXISTS(pSettings, r_bool, section, "disable_kick_anim_when_gl_attached", true);
-	m_fast_kick_params.bBlockQKGLM = READ_IF_EXISTS(pSettings, r_bool, section, "disable_kick_anim_when_gl_enabled", true);
+	m_fast_kick_params.bBlockQK = pSettings->read_if_exists<bool>(section,"disable_kick_anim",true);
+	m_fast_kick_params.bBlockQKSil = pSettings->read_if_exists<bool>(section,"disable_kick_anim_when_sil_attached",true);
+	m_fast_kick_params.bBlockQKScp = pSettings->read_if_exists<bool>(section,"disable_kick_anim_when_scope_attached",true);
+	m_fast_kick_params.bBlockQKGL = pSettings->read_if_exists<bool>(section,"disable_kick_anim_when_gl_attached",true);
+	m_fast_kick_params.bBlockQKGLM = pSettings->read_if_exists<bool>(section,"disable_kick_anim_when_gl_enabled",true);
 
 	// Added by Axel, to enable optional condition use on any item
-	m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", true));
+	m_flags.set(FUsingCondition, pSettings->read_if_exists<bool>(section,"use_condition",true));
 
-	m_bDisableFireModeAim = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "disable_firemode_aim", false);
+	m_bDisableFireModeAim = pSettings->read_if_exists<bool>(hud_sect,"disable_firemode_aim",false);
 
 	auto LoadVector = [&](RStringVec& vec, const char* sect)
 		{
@@ -666,69 +668,69 @@ void CWeapon::Load		(const char* section)
 	LoadVector(m_sCollimatorSightsBones, "collimator_sights_bones");
 
 	Fvector tmp_vector = { -1.0f, -1.0f, 0.0f };
-	tmp_vector = READ_IF_EXISTS(pSettings, r_fvector3, section, "collimator_breaking_params", tmp_vector);
+	tmp_vector = pSettings->read_if_exists<Fvector3>(section,"collimator_breaking_params",tmp_vector);
 	CollimatorBreakingParams.start_condition = tmp_vector.x;
 	CollimatorBreakingParams.end_condition = tmp_vector.y;
 	CollimatorBreakingParams.start_probability = tmp_vector.z;
 
-	m_fCollimatorLevelsProblem = READ_IF_EXISTS(pSettings, r_float, section, "collimator_problems_level", 0.0f);
+	m_fCollimatorLevelsProblem = pSettings->read_if_exists<float>(section,"collimator_problems_level",0.0f);
 
-	m_fRechargeTime = READ_IF_EXISTS(pSettings, r_float, section, "recharge_time", 0.0f);
+	m_fRechargeTime = pSettings->read_if_exists<float>(section,"recharge_time",0.0f);
 
-	m_bGaussScheme = !!READ_IF_EXISTS(pSettings, r_bool, section, "use_gauss_scheme", false);
+	m_bGaussScheme = pSettings->read_if_exists<bool>(section,"use_gauss_scheme",false);
 
-	m_bullet_point_offset_hud = READ_IF_EXISTS(pSettings, r_float, section, "bullet_point_offset_hud", -1.0f);
-	m_bullet_point_offset_world = READ_IF_EXISTS(pSettings, r_float, section, "bullet_point_offset_world", -0.3f);
+	m_bullet_point_offset_hud = pSettings->read_if_exists<float>(section,"bullet_point_offset_hud",-1.0f);
+	m_bullet_point_offset_world = pSettings->read_if_exists<float>(section,"bullet_point_offset_world",-0.3f);
 
-	m_bAmmoInChamber = READ_IF_EXISTS(pSettings, r_bool, section, "ammo_in_chamber", false);
+	m_bAmmoInChamber = pSettings->read_if_exists<bool>(section,"ammo_in_chamber",false);
 	
-	m_bRestGlSil = READ_IF_EXISTS(pSettings, r_bool, section, "restricted_gl_and_sil", false);
+	m_bRestGlSil = pSettings->read_if_exists<bool>(section,"restricted_gl_and_sil",false);
 	
-	m_bAddCartridgeInOpen = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "add_cartridge_in_open", false);
+	m_bAddCartridgeInOpen = pSettings->read_if_exists<bool>(hud_sect,"add_cartridge_in_open",false);
 
-	m_bBlockReload = READ_IF_EXISTS(pSettings, r_bool, section, "block_reload", false);
-	m_bBlockFiremodeinGLM = READ_IF_EXISTS(pSettings, r_bool, section, "block_firemode_glm", false);
+	m_bBlockReload = pSettings->read_if_exists<bool>(section,"block_reload",false);
+	m_bBlockFiremodeinGLM = pSettings->read_if_exists<bool>(section,"block_firemode_glm",false);
 
-	m_fMisfireAfterProblemsLevel = READ_IF_EXISTS(pSettings, r_float, section, "misfire_after_problems_level", 10.0f);
+	m_fMisfireAfterProblemsLevel = pSettings->read_if_exists<float>(section,"misfire_after_problems_level",10.0f);
 
-	m_bNoJamFirstShot = READ_IF_EXISTS(pSettings, r_bool, section, "no_jam_in_first_shot", false);
-	m_bActorCanShoot = READ_IF_EXISTS(pSettings, r_bool, section, "actor_can_shoot", true);
+	m_bNoJamFirstShot = pSettings->read_if_exists<bool>(section,"no_jam_in_first_shot",false);
+	m_bActorCanShoot = pSettings->read_if_exists<bool>(section,"actor_can_shoot",true);
 
-	m_bUseLightMis = READ_IF_EXISTS(pSettings, r_bool, section, "use_light_misfire", false);
-	m_bDisableLightMisDet = READ_IF_EXISTS(pSettings, r_bool, HudSection(), "disable_light_misfires_with_detector", false);
+	m_bUseLightMis = pSettings->read_if_exists<bool>(section,"use_light_misfire",false);
+	m_bDisableLightMisDet = pSettings->read_if_exists<bool>(HudSection(),"disable_light_misfires_with_detector",false);
 
-	m_bIsPumpEnabled = READ_IF_EXISTS(pSettings, r_bool, section, "use_pump_system", false);
-	m_bNeedPumpReloadEnd = READ_IF_EXISTS(pSettings, r_bool, section, "need_pump_reload_end", false);
+	m_bIsPumpEnabled = pSettings->read_if_exists<bool>(section,"use_pump_system",false);
+	m_bNeedPumpReloadEnd = pSettings->read_if_exists<bool>(section,"need_pump_reload_end",false);
 
-	m_bUseRevolverScheme = !!READ_IF_EXISTS(pSettings, r_bool, section, "use_revolver_scheme", false);
-	m_bUseMosinScheme = !!READ_IF_EXISTS(pSettings, r_bool, section, "use_mosin_scheme", false);
+	m_bUseRevolverScheme = pSettings->read_if_exists<bool>(section,"use_revolver_scheme",false);
+	m_bUseMosinScheme = pSettings->read_if_exists<bool>(section,"use_mosin_scheme",false);
 
-	m_iAutoAimTime = std::floor(READ_IF_EXISTS(pSettings, r_float, section, "autoaim_time", 0.0f) * 1000.0f);
-	m_bAutoAimOnlyAlive = !!READ_IF_EXISTS(pSettings, r_bool, section, "autoaim_only_alive", false);
-	m_bAutoAimIgnoreDead = !!READ_IF_EXISTS(pSettings, r_bool, section, "autoaim_ignore_dead", false);
-	m_bAutoAimShotAfterKeyReleased = !!READ_IF_EXISTS(pSettings, r_bool, section, "autoaim_shot_after_key_released", false);
-	m_bAutoAimAutoShot = !!READ_IF_EXISTS(pSettings, r_bool, section, "autoaim_auto_shot", false);
+	m_iAutoAimTime = std::floor(pSettings->read_if_exists<float>(section,"autoaim_time",0.0f) * 1000.0f);
+	m_bAutoAimOnlyAlive = pSettings->read_if_exists<bool>(section,"autoaim_only_alive",false);
+	m_bAutoAimIgnoreDead = pSettings->read_if_exists<bool>(section,"autoaim_ignore_dead",false);
+	m_bAutoAimShotAfterKeyReleased = pSettings->read_if_exists<bool>(section,"autoaim_shot_after_key_released",false);
+	m_bAutoAimAutoShot = pSettings->read_if_exists<bool>(section,"autoaim_auto_shot",false);
 
 	const static bool isImproveMis = EngineExternal()[EEngineExternalGame::EnableImproveWeaponMisfire];
 
-	m_bJamNotShot = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "no_jam_fire", !isImproveMis);
+	m_bJamNotShot = pSettings->read_if_exists<bool>(hud_sect,"no_jam_fire",!isImproveMis);
 
-	NeedMisfireAmmo = READ_IF_EXISTS(pSettings, r_bool, section, "change_misfire_mag", false);
-	m_Allow3DScope = READ_IF_EXISTS(pSettings, r_bool, section, "allow_3d_scope", false);
+	NeedMisfireAmmo = pSettings->read_if_exists<bool>(section, "change_misfire_mag", false);
+	m_Allow3DScope = pSettings->read_if_exists<bool>(section, "allow_3d_scope", false);
 
-	light_misfire.startcond = READ_IF_EXISTS(pSettings, r_float, section, "light_misfire_start_condition", 1.0f);
-	light_misfire.endcond = READ_IF_EXISTS(pSettings, r_float, section, "light_misfire_end_condition", 0.0f);
-	light_misfire.startprob = READ_IF_EXISTS(pSettings, r_float, section, "light_misfire_start_probability", 1.0f);
-	light_misfire.endprob = READ_IF_EXISTS(pSettings, r_float, section, "light_misfire_end_probability", 0.0f);
+	light_misfire.startcond = pSettings->read_if_exists<float>(section,"light_misfire_start_condition",1.0f);
+	light_misfire.endcond = pSettings->read_if_exists<float>(section,"light_misfire_end_condition",0.0f);
+	light_misfire.startprob = pSettings->read_if_exists<float>(section,"light_misfire_start_probability",1.0f);
+	light_misfire.endprob = pSettings->read_if_exists<float>(section,"light_misfire_end_probability",0.0f);
 
-	m_lens_zoom_params.factor_min = READ_IF_EXISTS(pSettings, r_float, section, "min_lens_factor", 1.0f);
-	m_lens_zoom_params.factor_max = READ_IF_EXISTS(pSettings, r_float, section, "max_lens_factor", 1.0f);
-	m_lens_zoom_params.speed = READ_IF_EXISTS(pSettings, r_float, section, "lens_speed", 0.0f);
-	m_lens_zoom_params.gyro_period = READ_IF_EXISTS(pSettings, r_float, section, "lens_gyro_sound_period", 0.0f);
-	m_lens_zoom_params.lens_factor_levels_count = READ_IF_EXISTS(pSettings, r_float, section, "lens_factor_levels_count", 5.0f);
+	m_lens_zoom_params.factor_min = pSettings->read_if_exists<float>(section,"min_lens_factor",1.0f);
+	m_lens_zoom_params.factor_max = pSettings->read_if_exists<float>(section,"max_lens_factor",1.0f);
+	m_lens_zoom_params.speed = pSettings->read_if_exists<float>(section,"lens_speed",0.0f);
+	m_lens_zoom_params.gyro_period = pSettings->read_if_exists<float>(section,"lens_gyro_sound_period",0.0f);
+	m_lens_zoom_params.lens_factor_levels_count = pSettings->read_if_exists<float>(section,"lens_factor_levels_count",5.0f);
 	m_lens_zoom_params.delta = 1.0f / m_lens_zoom_params.lens_factor_levels_count;
-	m_lens_zoom_params.need_lens_frame = READ_IF_EXISTS(pSettings, r_bool, section, "need_lens_frame", false);
-	m_lens_zoom_params.force_zoom_sound = READ_IF_EXISTS(pSettings, r_bool, section, "force_zoom_sound", false);
+	m_lens_zoom_params.need_lens_frame = pSettings->read_if_exists<bool>(section,"need_lens_frame",false);
+	m_lens_zoom_params.force_zoom_sound = pSettings->read_if_exists<bool>(section,"force_zoom_sound",false);
 
 	m_lens_zoom_params.target_position = 1.0f;
 	m_lens_zoom_params.last_gyro_snd_time = Device.dwTimeGlobal;
@@ -777,9 +779,9 @@ void CWeapon::Load		(const char* section)
 		}
 	}
 
-	m_bBlockUpdateAmmoBonesShooting = READ_IF_EXISTS(pSettings, r_bool, ReachInAllSections("ammo_params_toggle_shooting"), "ammo_params_toggle_shooting", false);
-	m_bUseLastAmmoType = READ_IF_EXISTS(pSettings, r_bool, ReachInAllSections("ammo_params_use_last_cartridge_type"), "ammo_params_use_last_cartridge_type", false);
-	m_bUseChamberInUpdateBones = READ_IF_EXISTS(pSettings, r_bool, ReachInAllSections("ammo_params_use_chamber"), "ammo_params_use_chamber", false);
+	m_bBlockUpdateAmmoBonesShooting = pSettings->read_if_exists<bool>(ReachInAllSections("ammo_params_toggle_shooting"),"ammo_params_toggle_shooting",false);
+	m_bUseLastAmmoType = pSettings->read_if_exists<bool>(ReachInAllSections("ammo_params_use_last_cartridge_type"),"ammo_params_use_last_cartridge_type",false);
+	m_bUseChamberInUpdateBones = pSettings->read_if_exists<bool>(ReachInAllSections("ammo_params_use_chamber"),"ammo_params_use_chamber",false);
 
 	if (pSettings->line_exist(ReachInAllSections("ammo_params_section"), "ammo_params_section") && pSettings->section_exist(pSettings->r_string(ReachInAllSections("ammo_params_section"), "ammo_params_section")))
 	{
@@ -854,29 +856,26 @@ void CWeapon::LoadRecoilPatterns(const char* section)
 	LoadBulletPattern(section, "hipfire_pattern", m_hipfire_pattern);
 	m_hipfire_pattern.name = "hipfire";
 
-	cam_recoil.Pattern.Factor = READ_IF_EXISTS(pSettings, r_float, section, "pattern_factor", 0.035f);
-	cam_recoil.Pattern.FactorAgility = READ_IF_EXISTS(pSettings, r_float, section, "pattern_factor_agility", 1.0f);
-	cam_recoil.Pattern.FactorAgilityVel = READ_IF_EXISTS(pSettings, r_float, section, "pattern_factor_agility_vel", 3.0f);
-	cam_recoil.Pattern.FactorAgilityAccel = READ_IF_EXISTS(pSettings, r_float, section, "pattern_factor_agility_accel", 1.0f);
-	cam_recoil.Pattern.FactorAgilityCrouch = READ_IF_EXISTS(pSettings, r_float, section, "pattern_factor_agility_crouch", 0.95f);
-	cam_recoil.Pattern.FactorAgilityCrouchNoAcc = READ_IF_EXISTS(pSettings, r_float, section, "pattern_factor_agility_crouch_no_acc", 0.95f);
-	cam_recoil.Pattern.Stiffness = READ_IF_EXISTS(pSettings, r_float, section, "pattern_stiffness", 800.0f);
-	cam_recoil.Pattern.Damping = READ_IF_EXISTS(pSettings, r_float, section, "pattern_damping", 40.0f);
-	cam_recoil.Pattern.Impulse = READ_IF_EXISTS(pSettings, r_float, section, "pattern_impulse", 35.0f);
-	cam_recoil.Pattern.Loop = READ_IF_EXISTS(pSettings, r_bool, section, "pattern_loop", true);
-	cam_recoil.Pattern.ReturnSpeed = READ_IF_EXISTS(pSettings, r_float, section, "pattern_return_speed", 5.0f);
-	cam_recoil.Pattern.ReturnEnable = READ_IF_EXISTS(pSettings, r_bool, section, "pattern_return_enable", true);
+	cam_recoil.Pattern.Factor = pSettings->read_if_exists<float>(section,"pattern_factor",0.035f);
+	cam_recoil.Pattern.FactorAgility = pSettings->read_if_exists<float>(section, "pattern_factor_agility", 1.0f);
+	cam_recoil.Pattern.FactorAgilityVel = pSettings->read_if_exists<float>(section, "pattern_factor_agility_vel", 3.0f);
+	cam_recoil.Pattern.FactorAgilityAccel = pSettings->read_if_exists<float>(section, "pattern_factor_agility_accel", 1.0f);
+	cam_recoil.Pattern.FactorAgilityCrouch = pSettings->read_if_exists<float>(section, "pattern_factor_agility_crouch", 0.95f);
+	cam_recoil.Pattern.FactorAgilityCrouchNoAcc = pSettings->read_if_exists<float>(section, "pattern_factor_agility_crouch_no_acc", 0.95f);
+	cam_recoil.Pattern.Stiffness = pSettings->read_if_exists<float>(section,"pattern_stiffness",800.0f);
+	cam_recoil.Pattern.Damping = pSettings->read_if_exists<float>(section,"pattern_damping",40.0f);
+	cam_recoil.Pattern.Impulse = pSettings->read_if_exists<float>(section,"pattern_impulse",35.0f);
+	cam_recoil.Pattern.Loop = pSettings->read_if_exists<bool>(section,"pattern_loop",true);
+	cam_recoil.Pattern.ReturnSpeed = pSettings->read_if_exists<float>(section,"pattern_return_speed",5.0f);
+	cam_recoil.Pattern.ReturnEnable = pSettings->read_if_exists<bool>(section,"pattern_return_enable",true);
 
 
-	cam_recoil.Pattern.RandomOffsetEnable =
-		READ_IF_EXISTS(pSettings, r_bool, section, "pattern_random_enable", false);
+	cam_recoil.Pattern.RandomOffsetEnable = pSettings->read_if_exists<bool>(section, "pattern_random_enable", false);
 
 	if (cam_recoil.Pattern.RandomOffsetEnable)
 	{
-		Fvector2 pattern_random_x =
-			READ_IF_EXISTS(pSettings, r_fvector2, section, "pattern_random_x", Fvector2().set(0, 0));
-		Fvector2 pattern_random_y =
-			READ_IF_EXISTS(pSettings, r_fvector2, section, "pattern_random_y", Fvector2().set(0, 0));
+		Fvector2 pattern_random_x =	pSettings->read_if_exists<Fvector2>(section,"pattern_random_x",Fvector2().set(0, 0));
+		Fvector2 pattern_random_y =	pSettings->read_if_exists<Fvector2>(section,"pattern_random_y",Fvector2().set(0, 0));
 
 
 		cam_recoil.Pattern.RandomOffsetX.x = pattern_random_x.x;
@@ -886,29 +885,27 @@ void CWeapon::LoadRecoilPatterns(const char* section)
 		cam_recoil.Pattern.RandomOffsetY.y = pattern_random_y.y;
 	}
 
+	zoom_cam_recoil.Pattern.Factor = pSettings->read_if_exists<float>(section,"zoom_pattern_factor",0.015f);
+	zoom_cam_recoil.Pattern.FactorAgility = pSettings->read_if_exists<float>(section, "zoom_pattern_factor_agility", 1.0f);
+	zoom_cam_recoil.Pattern.FactorAgilityVel = pSettings->read_if_exists<float>(section, "zoom_pattern_factor_agility_vel", 3.50f);
+	zoom_cam_recoil.Pattern.FactorAgilityAccel = pSettings->read_if_exists<float>(section, "zoom_pattern_factor_agility_accel", 1.0f);
+	zoom_cam_recoil.Pattern.FactorAgilityCrouch = pSettings->read_if_exists<float>(section, "zoom_pattern_factor_agility_crouch", 0.9f);
+	zoom_cam_recoil.Pattern.FactorAgilityCrouchNoAcc = pSettings->read_if_exists<float>(section, "zoom_pattern_factor_agility_crouch_no_acc", 0.85f);
+	zoom_cam_recoil.Pattern.Stiffness = pSettings->read_if_exists<float>(section,"zoom_pattern_stiffness",800.0f);
+	zoom_cam_recoil.Pattern.Damping = pSettings->read_if_exists<float>(section,"zoom_pattern_damping",40.0f);
+	zoom_cam_recoil.Pattern.Impulse = pSettings->read_if_exists<float>(section,"zoom_pattern_impulse",35.0f);
+	zoom_cam_recoil.Pattern.Loop = pSettings->read_if_exists<bool>(section,"zoom_pattern_loop",true);
+	zoom_cam_recoil.Pattern.ReturnSpeed = pSettings->read_if_exists<float>(section,"zoom_pattern_return_speed",5.0f);
+	zoom_cam_recoil.Pattern.ReturnEnable = pSettings->read_if_exists<bool>(section,"zoom_pattern_return_enable",true);
 
-	zoom_cam_recoil.Pattern.Factor = READ_IF_EXISTS(pSettings, r_float, section, "zoom_pattern_factor", 0.025f);
-	zoom_cam_recoil.Pattern.FactorAgility = READ_IF_EXISTS(pSettings, r_float, section, "zoom_pattern_factor_agility", 1.0f);
-	zoom_cam_recoil.Pattern.FactorAgilityVel = READ_IF_EXISTS(pSettings, r_float, section, "zoom_pattern_factor_agility_vel", 3.50f);
-	zoom_cam_recoil.Pattern.FactorAgilityAccel = READ_IF_EXISTS(pSettings, r_float, section, "zoom_pattern_factor_agility_accel", 1.0f);
-	zoom_cam_recoil.Pattern.FactorAgilityCrouch = READ_IF_EXISTS(pSettings, r_float, section, "zoom_pattern_factor_agility_crouch", 0.9f);
-	zoom_cam_recoil.Pattern.FactorAgilityCrouchNoAcc = READ_IF_EXISTS(pSettings, r_float, section, "zoom_pattern_factor_agility_crouch_no_acc", 0.85f);
-	zoom_cam_recoil.Pattern.Stiffness = READ_IF_EXISTS(pSettings, r_float, section, "zoom_pattern_stiffness", 800.0f);
-	zoom_cam_recoil.Pattern.Damping = READ_IF_EXISTS(pSettings, r_float, section, "zoom_pattern_damping", 40.0f);
-	zoom_cam_recoil.Pattern.Impulse = READ_IF_EXISTS(pSettings, r_float, section, "zoom_pattern_impulse", 35.0f);
-	zoom_cam_recoil.Pattern.Loop = READ_IF_EXISTS(pSettings, r_bool, section, "zoom_pattern_loop", true);
-	zoom_cam_recoil.Pattern.ReturnSpeed = READ_IF_EXISTS(pSettings, r_float, section, "zoom_pattern_return_speed", 5.0f);
-	zoom_cam_recoil.Pattern.ReturnEnable = READ_IF_EXISTS(pSettings, r_bool, section, "zoom_pattern_return_enable", true);
-
-	zoom_cam_recoil.Pattern.RandomOffsetEnable =
-		READ_IF_EXISTS(pSettings, r_bool, section, "zoom_pattern_random_enable", false);
+	zoom_cam_recoil.Pattern.RandomOffsetEnable = pSettings->read_if_exists<bool>(section,"zoom_pattern_random_enable",false);
 
 	if (zoom_cam_recoil.Pattern.RandomOffsetEnable)
 	{
 		Fvector2 zoom_pattern_random_x =
-			READ_IF_EXISTS(pSettings, r_fvector2, section, "zoom_pattern_random_x", Fvector2().set(0, 0));
+			pSettings->read_if_exists<Fvector2>(section,"zoom_pattern_random_x",Fvector2().set(0, 0));
 		Fvector2 zoom_pattern_random_y =
-			READ_IF_EXISTS(pSettings, r_fvector2, section, "zoom_pattern_random_y", Fvector2().set(0, 0));
+			pSettings->read_if_exists<Fvector2>(section,"zoom_pattern_random_y",Fvector2().set(0, 0));
 
 
 		zoom_cam_recoil.Pattern.RandomOffsetX.x = zoom_pattern_random_x.x; 
@@ -2252,7 +2249,7 @@ void CWeapon::SpawnAmmo(u32 boxCurr, const char* ammoSect, ALife::_OBJECT_ID Par
 	F_entity_Destroy				(D);
 }
 
-void CWeapon::ReturnAmmoToInventory(xr_map<shared_str, u16>& ammo, xr_map<u16, u16>* ammos_to_sync)
+void CWeapon::ReturnAmmoToInventory(xr_map<shared_str, u16>& ammo, xr_map<ALife::_OBJECT_ID, u16>* ammos_to_sync)
 {
 	bool ammoChanged = false;
 
@@ -2910,17 +2907,17 @@ void CWeapon::InitAddons()
 				scope_sect = cNameSect().c_str();
 			}
 
-			m_fHudFovZoomFactor = READ_IF_EXISTS(pSettings, r_float, scope_sect, "hud_fov_zoom_factor", m_fHudFovZoomFactor);
-			m_fHudFovGLZoomFactor = READ_IF_EXISTS(pSettings, r_float, scope_sect, "hud_fov_gl_zoom_factor", m_fHudFovGLZoomFactor);
-			m_AlterZoomAllowed = READ_IF_EXISTS(pSettings, r_bool, scope_sect, "alter_zoom_allowed", m_AlterZoomAllowed);
-			m_Allow3DScope = READ_IF_EXISTS(pSettings, r_bool, scope_sect, "allow_3d_scope", m_Allow3DScope);
+			m_fHudFovZoomFactor = pSettings->read_if_exists<float>(scope_sect, "hud_fov_zoom_factor", m_fHudFovZoomFactor);
+			m_fHudFovGLZoomFactor = pSettings->read_if_exists<float>(scope_sect, "hud_fov_gl_zoom_factor", m_fHudFovGLZoomFactor);
+			m_AlterZoomAllowed = pSettings->read_if_exists<bool>(scope_sect, "alter_zoom_allowed", m_AlterZoomAllowed);
+			m_Allow3DScope = pSettings->read_if_exists<bool>(scope_sect, "allow_3d_scope", m_Allow3DScope);
 		}
 		else
 		{
-			m_fHudFovZoomFactor = READ_IF_EXISTS(pSettings, r_float, ReachInAllSections("hud_fov_zoom_factor"), "hud_fov_zoom_factor", 1.0f);
-			m_fHudFovGLZoomFactor = READ_IF_EXISTS(pSettings, r_float, ReachInAllSections("hud_fov_gl_zoom_factor"), "hud_fov_gl_zoom_factor", 1.0f);
-			m_AlterZoomAllowed = READ_IF_EXISTS(pSettings, r_bool, ReachInAllSections("alter_zoom_allowed"), "alter_zoom_allowed", false);
-			m_Allow3DScope = READ_IF_EXISTS(pSettings, r_bool, ReachInAllSections("allow_3d_scope"), "allow_3d_scope", false);
+			m_fHudFovZoomFactor = pSettings->read_if_exists<float>(ReachInAllSections("hud_fov_zoom_factor"), "hud_fov_zoom_factor", 1.0f);
+			m_fHudFovGLZoomFactor = pSettings->read_if_exists<float>(ReachInAllSections("hud_fov_gl_zoom_factor"), "hud_fov_gl_zoom_factor", 1.0f);
+			m_AlterZoomAllowed = pSettings->read_if_exists<bool>(ReachInAllSections("alter_zoom_allowed"), "alter_zoom_allowed", false);
+			m_Allow3DScope = pSettings->read_if_exists<bool>(ReachInAllSections("allow_3d_scope"), "allow_3d_scope", false);
 		}
 	}
 }
@@ -2967,7 +2964,7 @@ bool CWeapon::CanAimNow()
 				sect = ScopeAttachable() ? GetCurrentScopeSection() : cNameSect();
 			}
 
-			if (READ_IF_EXISTS(pSettings, r_bool, sect, "prohibit_aim_for_grenade_mode", false))
+			if (pSettings->read_if_exists<bool>(sect, "prohibit_aim_for_grenade_mode", false))
 			{
 				result = false;
 			}
@@ -3394,10 +3391,8 @@ void CWeapon::reload(const char* section)
 	bUseAltScope = !!bReloadSectionScope(section);
 
 	if (m_eScopeStatus == ALife::eAddonAttachable) {
-		m_addon_holder_range_modifier = READ_IF_EXISTS(
-			pSettings, r_float, GetScopeName(), "holder_range_modifier", m_holder_range_modifier);
-		m_addon_holder_fov_modifier = READ_IF_EXISTS(pSettings, r_float, GetScopeName(),
-			"holder_fov_modifier", m_holder_fov_modifier);
+		m_addon_holder_range_modifier = pSettings->read_if_exists<float>(GetScopeName(), "holder_range_modifier", m_holder_range_modifier);
+		m_addon_holder_fov_modifier = pSettings->read_if_exists<float>(GetScopeName(), "holder_fov_modifier", m_holder_fov_modifier);
 	}
 	else {
 		m_addon_holder_range_modifier = m_holder_range_modifier;
@@ -3451,10 +3446,8 @@ void CWeapon::reload(const char* section)
 		m_can_be_strapped_rifle = false;
 	}
 
-	m_ef_main_weapon_type =
-		READ_IF_EXISTS(pSettings, r_u32, section, "ef_main_weapon_type", u32(-1));
-	m_ef_weapon_type =
-		READ_IF_EXISTS(pSettings, r_u32, section, "ef_weapon_type", u32(-1));
+	m_ef_main_weapon_type = pSettings->read_if_exists<u32>(section, "ef_main_weapon_type", u32(-1));
+	m_ef_weapon_type = pSettings->read_if_exists<u32>(section, "ef_weapon_type", u32(-1));
 }
 
 void CWeapon::create_physic_shell()
@@ -4168,15 +4161,15 @@ bool CWeapon::IsUIForceHiding()
 
 	if (bino && !IsRotatingToZoom())
 	{
-		return READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "zoom_hide_ui", true);
+		return pSettings->read_if_exists<bool>(cNameSect(), "zoom_hide_ui", true);
 	}
 	else if (get_ScopeStatus() == 1 && !IsRotatingToZoom())
 	{
-		return READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "zoom_hide_ui", true);
+		return pSettings->read_if_exists<bool>(cNameSect(), "zoom_hide_ui", true);
 	}
 	else if (get_ScopeStatus() == 2 && IsScopeAttached() && !IsRotatingToZoom())
 	{
-		return READ_IF_EXISTS(pSettings, r_bool, GetScopeName(), "zoom_hide_ui", true);
+		return pSettings->read_if_exists<bool>(GetScopeName(), "zoom_hide_ui", true);
 	}
 
 	return false;
@@ -4189,7 +4182,7 @@ bool CWeapon::IsCollimatorInstalled() const
 		return false;
 	}
 
-	return READ_IF_EXISTS(pSettings, r_bool, GetScopeName(), "collimator", false);
+	return pSettings->read_if_exists<bool>(GetScopeName(), "collimator", false);
 }
 
 bool CWeapon::IsHudModelForceUnhide() const
@@ -4207,11 +4200,11 @@ bool CWeapon::IsUIForceUnhiding() const
 			result = true;
 		else */if (get_ScopeStatus() == 1)
 		{
-			result = !READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "zoom_hide_ui", false);
+			result = !pSettings->read_if_exists<bool>(cNameSect(), "zoom_hide_ui", false);
 		}
 		else if (get_ScopeStatus() == 2 && IsScopeAttached())
 		{
-			result = !READ_IF_EXISTS(pSettings, r_bool, GetScopeName(), "zoom_hide_ui", false);
+			result = !pSettings->read_if_exists<bool>(GetScopeName(), "zoom_hide_ui", false);
 		}
 	}
 
@@ -4412,10 +4405,10 @@ void CWeapon::LoadCurrentScopeParams(const char* section)
 
 	if (bScopeIsHasTexture)
 	{
-		m_zoom_params.m_sUseZoomPostprocess = READ_IF_EXISTS(pSettings, r_string, section, "scope_nightvision", 0);
-		m_zoom_params.m_bUseDynamicZoom = READ_IF_EXISTS(pSettings, r_bool, section, "scope_dynamic_zoom", false);
+		m_zoom_params.m_sUseZoomPostprocess = pSettings->read_if_exists<LPCSTR>(section,"scope_nightvision",nullptr);
+		m_zoom_params.m_bUseDynamicZoom = pSettings->read_if_exists<bool>(section,"scope_dynamic_zoom",false);
 
-		m_zoom_params.m_sUseBinocularVision = READ_IF_EXISTS(pSettings, r_string, section, "scope_alive_detector", 0);
+		m_zoom_params.m_sUseBinocularVision = pSettings->read_if_exists<LPCSTR>(section,"scope_alive_detector",nullptr);
 
 		if (m_zoom_params.m_sUseBinocularVision.size() > 0)
 		{
@@ -4660,10 +4653,10 @@ bool CWeapon::GetScopeBack()
 {
 	if (bUseAltScope && m_eScopeStatus != ALife::eAddonPermanent && IsScopeAttached())
 	{
-		return !!READ_IF_EXISTS(pSettings, r_bool, GetNameWithAttachmentScope(), "scope_back", false);
+		return pSettings->read_if_exists<bool>(GetNameWithAttachmentScope(), "scope_back", false);
 	}
 
-	return !!READ_IF_EXISTS(pSettings, r_bool, ScopeAttachable() ? GetScopeName() : cNameSect(), "scope_back", false);
+	return pSettings->read_if_exists<bool>(ScopeAttachable() ? GetScopeName() : cNameSect(), "scope_back", false);
 }
 
 void CWeapon::UpdateCollimatorSight()
@@ -4841,11 +4834,11 @@ void CWeapon::LoadNightBrightnessParamsFromSection(shared_str sect)
 {
 	stepped_params last = m_lens_night_brightness;
 
-	m_lens_night_brightness.max_value = READ_IF_EXISTS(pSettings, r_float, sect, "max_night_brightness", 1.0f) / 3.0f;
-	m_lens_night_brightness.min_value = READ_IF_EXISTS(pSettings, r_float, sect, "min_night_brightness", 1.0f) / 3.0f;
-	m_lens_night_brightness.steps = READ_IF_EXISTS(pSettings, r_u32, sect, "steps_brightness", 0);
-	m_lens_night_brightness.jitter = READ_IF_EXISTS(pSettings, r_float, sect, "jitter_brightness", 1.0f);
-	m_lens_night_brightness.min_factor = READ_IF_EXISTS(pSettings, r_float, sect, "scope_nightvision_min_factor", 0.0f);
+	m_lens_night_brightness.max_value = pSettings->read_if_exists<float>(sect, "max_night_brightness", 1.0f) / 3.0f;
+	m_lens_night_brightness.min_value = pSettings->read_if_exists<float>(sect, "min_night_brightness", 1.0f) / 3.0f;
+	m_lens_night_brightness.steps = pSettings->read_if_exists<u32>(sect, "steps_brightness", 0);
+	m_lens_night_brightness.jitter = pSettings->read_if_exists<float>(sect, "jitter_brightness", 1.0f);
+	m_lens_night_brightness.min_factor = pSettings->read_if_exists<float>(sect, "scope_nightvision_min_factor", 0.0f);
 
 	bool b_r2 = !!psDeviceFlags.test(rsR2);
 	b_r2 |= !!psDeviceFlags.test(rsR4);
@@ -4864,7 +4857,7 @@ void CWeapon::LoadNightBrightnessParamsFromSection(shared_str sect)
 		}
 		else
 		{
-			m_lens_night_brightness.cur_step = READ_IF_EXISTS(pSettings, r_u32, sect, "default_brightness_step", m_lens_night_brightness.steps);
+			m_lens_night_brightness.cur_step = pSettings->read_if_exists<u32>(sect, "default_brightness_step", m_lens_night_brightness.steps);
 		}
 
 		SetNightBrightness(m_lens_night_brightness.cur_step, false);

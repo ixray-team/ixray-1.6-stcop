@@ -203,7 +203,7 @@ void CUIActorMenu::TryRepairItem(CUIWindow* w, void* d)
 	CEatableItem* EItm = item->cast_eatable_item();
 	if (EItm)
 	{
-		bool allow_repair = !!READ_IF_EXISTS(pSettings, r_bool, item_name, "allow_repair", false);
+		bool allow_repair = pSettings->read_if_exists<bool>(item_name, "allow_repair", false);
 		if (!allow_repair)
 			return;
 	}

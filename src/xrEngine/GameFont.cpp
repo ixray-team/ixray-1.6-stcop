@@ -200,8 +200,8 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 	GetDisplayMetricsSDL3(Wmm, Hmm, Wpx, Hpx);
 #endif
 
-	auto is_res_depend = !!READ_IF_EXISTS(pSettings, r_bool, Name, "res_depend", true);
-	auto is_dpi_depend = !!READ_IF_EXISTS(pSettings, r_bool, Name, "dpi_depend", !is_res_depend);
+	auto is_res_depend = pSettings->read_if_exists<bool>(Name, "res_depend", true);
+	auto is_dpi_depend = pSettings->read_if_exists<bool>(Name, "dpi_depend", !is_res_depend);
 
 	auto ppi = int(25.4f * sqrt(Hpx * Hpx + Wpx * Wpx) / sqrt(Hmm * Hmm + Wmm * Wmm));
 

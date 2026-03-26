@@ -1,17 +1,16 @@
-#pragma once
 #include "StdAfx.h"
 #include "object_broker.h"
 #include "AnomalyRainCollide.h"
 
 void TAnomalyRainCollide::Load(const char* section)
 {
-	shared_str rain_collide_particles_section = READ_IF_EXISTS(pSettings, r_string, section, "rain_collide_particles_section", nullptr);
+	shared_str rain_collide_particles_section = pSettings->read_if_exists<str_c>(section, "rain_collide_particles_section", nullptr);
 	if (rain_collide_particles_section)
 	{
-		m_ground_particle_path = READ_IF_EXISTS(pSettings, r_string, rain_collide_particles_section, "ground_particle_path", nullptr);
+		m_ground_particle_path = pSettings->read_if_exists<str_c>(rain_collide_particles_section, "ground_particle_path", nullptr);
 		m_use_ground_rain_collide_particles = m_ground_particle_path != nullptr;
 
-		m_air_particle_path = READ_IF_EXISTS(pSettings, r_string, rain_collide_particles_section, "air_particle_path", nullptr);
+		m_air_particle_path = pSettings->read_if_exists<str_c>(rain_collide_particles_section, "air_particle_path", nullptr);
 		m_use_air_rain_collide_particles = m_air_particle_path != nullptr;
 	}
 }

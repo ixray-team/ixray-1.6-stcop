@@ -143,9 +143,9 @@ void CWeaponKnife::Load(const char* section)
 #ifdef DEBUG
 	m_dbg_data.m_pick_vectors.reserve(std::max(m_Splash1HitsCount, m_Splash2HitsCount));
 #endif
-	m_bShowKnifeStats = READ_IF_EXISTS(pSettings, r_bool, section, "show_knife_stats", true);
+	m_bShowKnifeStats = pSettings->read_if_exists<bool>(section, "show_knife_stats", true);
 
-	m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", false));
+	m_flags.set(FUsingCondition, pSettings->read_if_exists<bool>(section, "use_condition", false));
 }
 
 void CWeaponKnife::LoadSounds(const char* section)
@@ -587,7 +587,11 @@ void CWeaponKnife::LoadFireParams(const char* section)
 
 	//fHitPower_2			= pSettings->r_float	(section,strconcat(full_name, prefix, "hit_power_2"));
 	s_sHitPower_2			= pSettings->r_string_wb	(section, "hit_power_2" );
-	s_sHitPowerCritical_2	= READ_IF_EXISTS(pSettings, r_string_wb, section, "hit_power_critical_2", s_sHitPower_2);
+	s_sHitPowerCritical_2 = pSettings->r_string_wb_nullable(section, "hit_power_critical_2");
+	if (!s_sHitPowerCritical_2.c_str())
+	{
+		s_sHitPowerCritical_2 = s_sHitPower_2;
+	}
 	
 	fvHitPower_2[egdMaster]			= (float)atof(_GetItem(*s_sHitPower_2,0,buffer));//первый параметр - это хит для уровня игры мастер
 	fvHitPowerCritical_2[egdMaster]	= (float)atof(_GetItem(*s_sHitPowerCritical_2,0,buffer));//первый параметр - это хит для уровня игры мастер

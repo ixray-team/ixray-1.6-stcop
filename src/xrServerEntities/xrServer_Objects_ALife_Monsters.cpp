@@ -158,7 +158,7 @@ CSE_ALifeTraderAbstract::CSE_ALifeTraderAbstract(const char* caSection)
 		m_dwMoney 				= pSettings->r_u32(caSection, "money");
 	m_fMaxItemMass				= pSettings->r_float(caSection, "max_item_mass");
 
-	m_sCharacterProfile			= READ_IF_EXISTS(pSettings,r_string,caSection,"character_profile","default");
+	m_sCharacterProfile			= pSettings->read_if_exists<LPCSTR>(caSection,"character_profile","default");
 	m_SpecificCharacter			= nullptr;
 
 #ifdef XRGAME_EXPORTS
@@ -1139,8 +1139,8 @@ CSE_ALifeCreatureAbstract::CSE_ALifeCreatureAbstract(const char* caSection)	: CS
 	m_fIntelligence				= 25.f;
 	m_fMorale					= 100.f;
 	m_ef_creature_type			= pSettings->r_u32(caSection,"ef_creature_type");
-	m_ef_weapon_type			= READ_IF_EXISTS(pSettings,r_u32,caSection,"ef_weapon_type",u32(-1));
-	m_ef_detector_type			= READ_IF_EXISTS(pSettings,r_u32,caSection,"ef_detector_type",u32(-1));
+	m_ef_weapon_type			= pSettings->read_if_exists<u32>(caSection,"ef_weapon_type",u32(-1));
+	m_ef_detector_type			= pSettings->read_if_exists<u32>(caSection,"ef_detector_type",u32(-1));
 	m_killer_id					= ALife::INVALID_OBJECT_ID;
 	m_game_death_time			= 0;
 }
@@ -1384,7 +1384,7 @@ CSE_ALifeMonsterAbstract::CSE_ALifeMonsterAbstract(const char* caSection)	: CSE_
 	m_fDistanceFromPoint		= 0.0f;
 	m_fDistanceToPoint			= 0.0f;
 	m_fGoingSpeed				= pSettings->r_float(caSection, "going_speed");
-	m_fCurrentLevelGoingSpeed	= READ_IF_EXISTS(pSettings,r_float,caSection,"current_level_going_speed",m_fGoingSpeed);
+	m_fCurrentLevelGoingSpeed	= pSettings->read_if_exists<float>(caSection,"current_level_going_speed",m_fGoingSpeed);
 	
 	setup_location_types		(m_tpaTerrain,pSettings,pSettings->r_string(caSection,"terrain"));
 
@@ -1411,7 +1411,7 @@ CSE_ALifeMonsterAbstract::CSE_ALifeMonsterAbstract(const char* caSection)	: CSE_
 		{
 			xr_strcpy			(S, ALife::g_cafHitType2String(ALife::EHitType(I - B)));
 			xr_strcat				(S,"_immunity");
-			*I					= READ_IF_EXISTS(pSettings,r_float,imm_section,S,1.f);
+			*I					= pSettings->read_if_exists<float>(imm_section,S,1.f);
 		}
 	}
 

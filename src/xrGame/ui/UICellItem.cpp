@@ -227,7 +227,7 @@ void AplyFilterIcon(const shared_str& sect_name, CUIStatic* _static, float width
 	}
 
 	Frect texture_rect;
-	float scaleIcon = READ_IF_EXISTS(pSettings, r_float, sect_name, "inv_scale", 1.0f);
+	float scaleIcon = pSettings->read_if_exists<float>(sect_name, "inv_scale", 1.0f);
 
 	texture_rect.x1 = pSettings->r_float(sect_name, "inv_grid_x") * INV_GRID_WIDTH(scaleIcon);
 	texture_rect.y1 = pSettings->r_float(sect_name, "inv_grid_y") * INV_GRID_HEIGHT(scaleIcon);
@@ -239,7 +239,7 @@ void AplyFilterIcon(const shared_str& sect_name, CUIStatic* _static, float width
 	_static->GetUIStaticItem().SetTextureRect(texture_rect);
 	_static->SetStretchTexture(true);
 
-	const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, sect_name, "icons_texture", nullptr);
+	const char* icons_texture = pSettings->read_if_exists<LPCSTR>(sect_name,"icons_texture",nullptr);
 	_static->SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
 
 	float h = height * EngineExternal().GetWeaponIconScaling();

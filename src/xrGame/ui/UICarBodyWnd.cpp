@@ -210,7 +210,7 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, CInventoryOwner* pOthers)
 			m_pUICharacterInfoRight->ClearInfo		();
 			if(monster)
 			{
-				const char* monster_tex_name = READ_IF_EXISTS(pSettings, r_string, monster->cNameSect(), "icon", "npc_icon_unknown_data");
+				const char* monster_tex_name = pSettings->read_if_exists<LPCSTR>(monster->cNameSect(), "icon", "npc_icon_unknown_data");
 				m_pUICharacterInfoRight->InitCharacter("", monster_tex_name);
 			}
 		}else 

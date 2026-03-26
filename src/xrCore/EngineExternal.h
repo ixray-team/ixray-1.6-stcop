@@ -135,7 +135,7 @@ class XRCORE_API CEngineExternal final
 			xr_array<bool, (size_t)Enum::None> Cache = {};
 			for (ntype i = 0; i < (ntype)Enum::None; i++)
 			{
-				Cache[i] = READ_IF_EXISTS(File, r_bool, Type.data(), magic_enum::enum_name((Enum)i).data(), false);
+				Cache[i] = File->read_if_exists<bool>(Type.data(), magic_enum::enum_name((Enum)i).data(), false);
 			}
 			return Cache;
 		}();

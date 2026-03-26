@@ -42,7 +42,7 @@ void CCartridge::Load(const char* section, u8 LocalAmmoType)
 		if (param_s.kAP < 0.f)
 			param_s.kAP = 0.f;
 	}
-	param_s.u8ColorID			= READ_IF_EXISTS(pSettings, r_u8, section, "tracer_color_ID", 0);
+	param_s.u8ColorID			= pSettings->read_if_exists<u8>(section, "tracer_color_ID", 0);
 	
 	if (pSettings->line_exist(section, "k_air_resistance"))
 		param_s.kAirRes			=  pSettings->r_float(section, "k_air_resistance");
@@ -74,7 +74,7 @@ void CCartridge::Load(const char* section, u8 LocalAmmoType)
 	if(pSettings->line_exist(section,"can_be_unlimited"))
 		m_flags.set(cfCanBeUnlimited, pSettings->r_bool(section, "can_be_unlimited"));
 
-	m_flags.set			(cfExplosive, READ_IF_EXISTS(pSettings, r_bool, section, "explosive", false));
+	m_flags.set			(cfExplosive, pSettings->read_if_exists<bool>(section, "explosive", false));
 
 	bullet_material_idx		=  GMLib.GetMaterialIdx(WEAPON_MATERIAL_NAME);
 	VERIFY	(u16(-1)!=bullet_material_idx);
@@ -118,7 +118,7 @@ void CWeaponAmmo::Load(const char* section)
 			cartridge_param.kAP = 0.f;
 	}
 
-	cartridge_param.u8ColorID	= READ_IF_EXISTS(pSettings, r_u8, section, "tracer_color_ID", 0);
+	cartridge_param.u8ColorID	= pSettings->read_if_exists<u8>(section, "tracer_color_ID", 0);
 
 	if (pSettings->line_exist(section, "k_air_resistance"))
 		cartridge_param.kAirRes		= pSettings->r_float(section, "k_air_resistance");

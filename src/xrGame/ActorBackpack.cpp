@@ -20,11 +20,11 @@ void CBackpack::Load(const char* section)
 {
     inherited::Load(section);
 
-    m_additional_weight = READ_IF_EXISTS(pSettings, r_float, section, "additional_inventory_weight", 0.0f);
-    m_additional_weight2 = READ_IF_EXISTS(pSettings, r_float, section, "additional_inventory_weight2", 0.0f);
-    m_fPowerRestoreSpeed = READ_IF_EXISTS(pSettings, r_float, section, "power_restore_speed", 0.0f);
+    m_additional_weight = pSettings->read_if_exists<float>(section,"additional_inventory_weight",0.0f);
+    m_additional_weight2 = pSettings->read_if_exists<float>(section,"additional_inventory_weight2",0.0f);
+    m_fPowerRestoreSpeed = pSettings->read_if_exists<float>(section,"power_restore_speed",0.0f);
 
-    m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", false));
+    m_flags.set(FUsingCondition, pSettings->read_if_exists<bool>(section,"use_condition",false));
 }
 
 void CBackpack::OnMoveToSlot(const SInvItemPlace& previous_place)

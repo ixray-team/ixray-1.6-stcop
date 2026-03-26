@@ -680,8 +680,8 @@ CSE_ALifeItemWeapon::CSE_ALifeItemWeapon	(const char* caSection) : CSE_ALifeItem
 	m_scope_status				=	(EWeaponAddonStatus)pSettings->r_s32(s_name,"scope_status");
 	m_silencer_status			=	(EWeaponAddonStatus)pSettings->r_s32(s_name,"silencer_status");
 	m_grenade_launcher_status	=	(EWeaponAddonStatus)pSettings->r_s32(s_name,"grenade_launcher_status");
-	m_ef_main_weapon_type		= READ_IF_EXISTS(pSettings,r_u32,caSection,"ef_main_weapon_type",u32(-1));
-	m_ef_weapon_type			= READ_IF_EXISTS(pSettings,r_u32,caSection,"ef_weapon_type",u32(-1));
+	m_ef_main_weapon_type		= pSettings->read_if_exists<u32>(caSection,"ef_main_weapon_type",u32(-1));
+	m_ef_weapon_type			= pSettings->read_if_exists<u32>(caSection,"ef_weapon_type",u32(-1));
 }
 
 CSE_ALifeItemWeapon::~CSE_ALifeItemWeapon	()
@@ -1754,7 +1754,7 @@ void CSE_ALifeItemDocument::FillProps		(const char* pref, PropItemVec& items)
 ////////////////////////////////////////////////////////////////////////////
 CSE_ALifeItemGrenade::CSE_ALifeItemGrenade	(const char* caSection): CSE_ALifeItem(caSection)
 {
-	m_ef_weapon_type	= READ_IF_EXISTS(pSettings,r_u32,caSection,"ef_weapon_type",u32(-1));
+	m_ef_weapon_type	= pSettings->read_if_exists<u32>(caSection,"ef_weapon_type",u32(-1));
 }
 
 CSE_ALifeItemGrenade::~CSE_ALifeItemGrenade	()
@@ -1871,7 +1871,7 @@ CSE_ALifeItemBolt::CSE_ALifeItemBolt		(const char* caSection) : CSE_ALifeItem(ca
 {
 	m_flags.set					(flUseSwitches,false);
 	m_flags.set					(flSwitchOffline,false);
-	m_ef_weapon_type			= READ_IF_EXISTS(pSettings,r_u32,caSection,"ef_weapon_type",u32(-1));
+	m_ef_weapon_type			= pSettings->read_if_exists<u32>(caSection,"ef_weapon_type",u32(-1));
 }
 
 CSE_ALifeItemBolt::~CSE_ALifeItemBolt		()
@@ -1943,7 +1943,7 @@ CSE_ALifeItemsNotSave::CSE_ALifeItemsNotSave(const char* caSection) : CSE_ALifeI
 {
 	m_flags.set(flUseSwitches, false);
 	m_flags.set(flSwitchOffline, false);
-	m_ef_weapon_type = READ_IF_EXISTS(pSettings, r_u32, caSection, "ef_weapon_type", u32(-1));
+	m_ef_weapon_type = pSettings->read_if_exists<u32>(caSection, "ef_weapon_type", u32(-1));
 }
 
 CSE_ALifeItemsNotSave::~CSE_ALifeItemsNotSave()

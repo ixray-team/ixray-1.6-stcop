@@ -100,7 +100,7 @@ void	game_sv_Deathmatch::Create					(shared_str& options)
 	R_ASSERT2(rpoints[0].size(), "rpoints for players not found");
 	
 	LoadTeams();
-	m_not_free_ammo_str		= READ_IF_EXISTS(pSettings, r_string, "deathmatch_gamedata", "not_free_ammo", "");
+	m_not_free_ammo_str		= pSettings->read_if_exists<LPCSTR>("deathmatch_gamedata", "not_free_ammo", "");
 	
 	switch_Phase(GAME_PHASE_PENDING);
 
@@ -310,17 +310,17 @@ void game_sv_Deathmatch::OnGiveBonus(KILL_RES KillResult, game_PlayerState* pKil
 					{
 					case SKT_HEADSHOT:
 						{
-							Player_AddExperience(pKiller, READ_IF_EXISTS(pSettings, r_float, "mp_bonus_exp", "headshot",0));
-							Player_AddBonusMoney(pKiller, READ_IF_EXISTS(pSettings, r_s32, "mp_bonus_money", "headshot",0), SKT_HEADSHOT);
+							Player_AddExperience(pKiller, pSettings->read_if_exists<float>("mp_bonus_exp", "headshot",0));
+							Player_AddBonusMoney(pKiller, pSettings->read_if_exists<s32>("mp_bonus_money", "headshot",0), SKT_HEADSHOT);
 						}break;
 					case SKT_EYESHOT:
 						{
-							Player_AddExperience(pKiller, READ_IF_EXISTS(pSettings, r_float, "mp_bonus_exp", "eyeshot",0));
-							Player_AddBonusMoney(pKiller, READ_IF_EXISTS(pSettings, r_s32, "mp_bonus_money", "eyeshot",0), SKT_EYESHOT);
+							Player_AddExperience(pKiller, pSettings->read_if_exists<float>("mp_bonus_exp", "eyeshot",0));
+							Player_AddBonusMoney(pKiller, pSettings->read_if_exists<s32>("mp_bonus_money", "eyeshot",0), SKT_EYESHOT);
 						}break;
 					case SKT_BACKSTAB:
 						{
-							Player_AddBonusMoney(pKiller, READ_IF_EXISTS(pSettings, r_s32, "mp_bonus_money", "backstab",0), SKT_BACKSTAB);
+							Player_AddBonusMoney(pKiller, pSettings->read_if_exists<s32>("mp_bonus_money", "backstab",0), SKT_BACKSTAB);
 						}break;
 					default:
 						{
@@ -330,7 +330,7 @@ void game_sv_Deathmatch::OnGiveBonus(KILL_RES KillResult, game_PlayerState* pKil
 								{
 								case CLSID_OBJECT_W_KNIFE:
 									{
-										Player_AddBonusMoney(pKiller, READ_IF_EXISTS(pSettings, r_s32, "mp_bonus_money", "knife_kill",0), SKT_KNIFEKILL);
+										Player_AddBonusMoney(pKiller, pSettings->read_if_exists<s32>("mp_bonus_money", "knife_kill",0), SKT_KNIFEKILL);
 									}break;
 								};
 							};
@@ -346,7 +346,7 @@ void game_sv_Deathmatch::OnGiveBonus(KILL_RES KillResult, game_PlayerState* pKil
 			{
 				string64 tmpStr;
 				xr_sprintf(tmpStr, "%d_kill_in_row", pKiller->m_iKillsInRowCurr);
-				Player_AddBonusMoney(pKiller, READ_IF_EXISTS(pSettings, r_s32, "mp_bonus_money", tmpStr,0), SKT_KIR, u8(pKiller->m_iKillsInRowCurr & 0xff));
+				Player_AddBonusMoney(pKiller, pSettings->read_if_exists<s32>("mp_bonus_money", tmpStr,0), SKT_KIR, u8(pKiller->m_iKillsInRowCurr & 0xff));
 			};			
 		}break;
 	default:
@@ -1607,7 +1607,7 @@ bool	game_sv_Deathmatch::OnTouch			(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID
 				{
 					if (g_sv_dm_bPDAHunt)
 					{
-						Player_AddBonusMoney(pKiller, READ_IF_EXISTS(pSettings, r_s32, "mp_bonus_money", "pda_taken",0), SKT_PDA);
+						Player_AddBonusMoney(pKiller, pSettings->read_if_exists<s32>("mp_bonus_money", "pda_taken",0), SKT_PDA);
 					};
 				};
 				//-------------------------------

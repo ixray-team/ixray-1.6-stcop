@@ -626,8 +626,8 @@ void CActor::Load	(const char* section )
 	m_fClimbFactor				= pSettings->r_float(section,"climb_coef");
 	m_fSprintFactor				= pSettings->r_float(section,"sprint_koef");
 
-	m_fWalk_StrafeFactor		= READ_IF_EXISTS(pSettings, r_float, section, "walk_strafe_coef", 1.0f);
-	m_fRun_StrafeFactor			= READ_IF_EXISTS(pSettings, r_float, section, "run_strafe_coef", 1.0f);
+	m_fWalk_StrafeFactor		= pSettings->read_if_exists<float>(section,"walk_strafe_coef",1.0f);
+	m_fRun_StrafeFactor			= pSettings->read_if_exists<float>(section,"run_strafe_coef",1.0f);
 
 
 	m_fCamHeightFactor			= pSettings->r_float(section,"camera_height_factor");
@@ -637,30 +637,30 @@ void CActor::Load	(const char* section )
 
 	pPickup->SetPickupRadius(pSettings->r_float(section,"pickup_info_radius"));
 
-	m_fFeelGrenadeRadius		= READ_IF_EXISTS(pSettings, r_float, section, "feel_grenade_radius", 10.0f);
-	m_fFeelGrenadeTime			= READ_IF_EXISTS(pSettings, r_float, section, "feel_grenade_time", 1.0f);
+	m_fFeelGrenadeRadius		= pSettings->read_if_exists<float>(section,"feel_grenade_radius",10.0f);
+	m_fFeelGrenadeTime			= pSettings->read_if_exists<float>(section,"feel_grenade_time",1.0f);
 	m_fFeelGrenadeTime			*= 1000.0f;
 	
 	character_physics_support()->in_Load		(section);
 	
 
-	if (!g_dedicated_server)
+	if(!g_dedicated_server)
 	{
 		const char* hit_snd_sect = pSettings->r_string(section, "hit_sounds");
-		for (int hit_type = 0; hit_type < (int)ALife::eHitTypeMax; ++hit_type)
+		for(int hit_type = 0; hit_type < (int)ALife::eHitTypeMax; ++hit_type)
 		{
 			const char* hit_name = ALife::g_cafHitType2String((ALife::EHitType)hit_type);
-			const char* hit_snds = READ_IF_EXISTS(pSettings, r_string, hit_snd_sect, hit_name, "");
+			const char* hit_snds = pSettings->read_if_exists<LPCSTR>(hit_snd_sect,hit_name,"");
 			int cnt = _GetItemCount(hit_snds);
-			string128 tmp;
+			string128		tmp;
 			if (hit_type != (int)ALife::eHitTypeLightBurn && hit_type != (int)ALife::eHitTypePhysicStrike)
 			{
-				VERIFY(cnt != 0);
+				VERIFY(cnt!=0);
 			}
-			for (int i = 0; i < cnt; ++i)
+			for(int i=0; i<cnt;++i)
 			{
-				sndHit[hit_type].push_back(ref_sound());
-				sndHit[hit_type].back().create(_GetItem(hit_snds, i, tmp), st_Effect, sg_SourceType);
+				sndHit[hit_type].push_back		(ref_sound());
+				sndHit[hit_type].back().create	(_GetItem(hit_snds,i,tmp),st_Effect,sg_SourceType);
 			}
 			char buf[256];
 
@@ -669,11 +669,11 @@ void CActor::Load	(const char* section )
 			::Sound->create(sndDie[2], xr_strconcat(buf, *cName(), "\\die2"), st_Effect, SOUND_TYPE_MONSTER_DYING);
 			::Sound->create(sndDie[3], xr_strconcat(buf, *cName(), "\\die3"), st_Effect, SOUND_TYPE_MONSTER_DYING);
 
-			m_HeavyBreathSnd.create(pSettings->r_string(section, "heavy_breath_snd"), st_Effect, SOUND_TYPE_MONSTER_INJURING);
-			m_BloodSnd.create(pSettings->r_string(section, "heavy_blood_snd"), st_Effect, SOUND_TYPE_MONSTER_INJURING);
-			m_DangerSnd.create(READ_IF_EXISTS(pSettings, r_string, section, "heavy_danger_snd", pSettings->r_string(section, "heavy_blood_snd")), st_Effect, SOUND_TYPE_MONSTER_INJURING);
+				m_HeavyBreathSnd.create(pSettings->r_string(section, "heavy_breath_snd"), st_Effect, SOUND_TYPE_MONSTER_INJURING);
+				m_BloodSnd.create(pSettings->r_string(section, "heavy_blood_snd"), st_Effect, SOUND_TYPE_MONSTER_INJURING);
+				m_DangerSnd.create(pSettings->read_if_exists<LPCSTR>(section, "heavy_danger_snd",pSettings->r_string(section, "heavy_blood_snd")), st_Effect, SOUND_TYPE_MONSTER_INJURING);
+			}
 		}
-	}
 
 	cam_Set(eacFirstEye);
 
@@ -692,19 +692,19 @@ void CActor::Load	(const char* section )
 	m_fDispCrouchFactor			= pSettings->r_float		(section,"disp_crouch_factor");
 	m_fDispCrouchNoAccelFactor	= pSettings->r_float		(section,"disp_crouch_no_acc_factor");
 
-	m_fAgilityVelFactor =  READ_IF_EXISTS(pSettings, r_float, section, "agility_vel_factor", 2.0f);
-	m_fAgilityAccelFactor =  READ_IF_EXISTS(pSettings, r_float, section, "agility_accel_factor", 1.05f);
-	m_fAgilityCrouchFactor = READ_IF_EXISTS(pSettings, r_float, section, "agility_crouch_factor", 0.98f);
-	m_fAgilityCrouchNoAccelFactor = READ_IF_EXISTS(pSettings, r_float, section, "agility_crouch_no_acc_factor", 0.96f);
+	m_fAgilityVelFactor =  pSettings->read_if_exists<float>(section, "agility_vel_factor", 2.0f);
+	m_fAgilityAccelFactor =  pSettings->read_if_exists<float>(section, "agility_accel_factor", 1.05f);
+	m_fAgilityCrouchFactor = pSettings->read_if_exists<float>(section, "agility_crouch_factor", 0.98f);
+	m_fAgilityCrouchNoAccelFactor = pSettings->read_if_exists<float>(section, "agility_crouch_no_acc_factor", 0.96f);
 
-	const char*							default_outfit = READ_IF_EXISTS(pSettings,r_string,section,"default_outfit",0);
+	const char* default_outfit = pSettings->read_if_exists<LPCSTR>(section,"default_outfit",nullptr);
 	SetDefaultVisualOutfit			(default_outfit);
 
-	invincibility_fire_shield_1st	= READ_IF_EXISTS(pSettings,r_string,section,"Invincibility_Shield_1st",0);
-	invincibility_fire_shield_3rd	= READ_IF_EXISTS(pSettings,r_string,section,"Invincibility_Shield_3rd",0);
+	invincibility_fire_shield_1st	= pSettings->read_if_exists<LPCSTR>(section,"Invincibility_Shield_1st",nullptr);
+	invincibility_fire_shield_3rd	= pSettings->read_if_exists<LPCSTR>(section,"Invincibility_Shield_3rd",nullptr);
 //-----------------------------------------
-	m_AutoPickUp_AABB				= READ_IF_EXISTS(pSettings,r_fvector3,section,"AutoPickUp_AABB",Fvector().set(0.02f, 0.02f, 0.02f));
-	m_AutoPickUp_AABB_Offset		= READ_IF_EXISTS(pSettings,r_fvector3,section,"AutoPickUp_AABB_offs",Fvector().set(0, 0, 0));
+	m_AutoPickUp_AABB				= pSettings->read_if_exists<Fvector3>(section,"AutoPickUp_AABB",Fvector().set(0.02f, 0.02f, 0.02f));
+	m_AutoPickUp_AABB_Offset		= pSettings->read_if_exists<Fvector3>(section,"AutoPickUp_AABB_offs",Fvector().set(0, 0, 0));
 
 	m_sCharacterUseAction			= "character_use";
 	m_sDeadCharacterUseAction		= "dead_character_use";
@@ -717,28 +717,28 @@ void CActor::Load	(const char* section )
 	m_sInventoryBoxUseAction		= "inventory_box_use";
 	m_sWeaponQuickReloadAction		= "weapon_quick_reload";
 	//---------------------------------------------------------------------
-	m_sHeadShotParticle	= READ_IF_EXISTS(pSettings,r_string,section,"HeadShotParticle",0);
-	m_fLegs_shift = READ_IF_EXISTS(pSettings, r_float, "actor_hud", "legs_shift_delta", -0.55f);
+	m_sHeadShotParticle	= pSettings->read_if_exists<LPCSTR>(section,"HeadShotParticle",nullptr);
+	m_fLegs_shift = pSettings->read_if_exists<float>("actor_hud","legs_shift_delta",-0.55f);
 
-	m_fActorCameraLanding2Time = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_landing2_time", 0.5f);
-	m_fActorCameraLandingTime = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_landing_time", 0.5f);
-	m_fActorCameraSpeedPow = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_speed_pow", 1.0f);
-	m_fDefaultActorCameraSpeed = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "default_actor_camera_speed", 10.0f);
-	m_fActorCameraLandingOffset = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_landing_offset", 0.0f);
-	m_fActorCameraLandingSpeedFactor = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_landing_speed_factor", 1.0f);
-	m_fActorCameraLandingSpeedPowFactor = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_landing_speed_pow_factor", 1.0f);
-	m_fActorCameraLanding2Offset = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_landing2_offset", 0.0f);
-	m_fActorCameraLanding2SpeedFactor = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_landing2_speed_factor", 1.0f);
-	m_fActorCameraLanding2SpeedPowFactor = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_landing2_speed_pow_factor", 1.0f);
-	m_fActorCameraFinishLandingSpeedFactor = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_finish_landing_speed_factor", 1.0f);
-	m_fActorCameraFinishLandingSpeedPowFactor = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_finish_landing_speed_pow_factor", 1.0f);
-	m_fActorCameraFinishLandingTime = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_finish_landing_time", 0.5f);
+	m_fActorCameraLanding2Time = pSettings->read_if_exists<float>("gunslinger_base","actor_camera_landing2_time",0.5f);
+	m_fActorCameraLandingTime = pSettings->read_if_exists<float>("gunslinger_base","actor_camera_landing_time",0.5f);
+	m_fActorCameraSpeedPow = pSettings->read_if_exists<float>("gunslinger_base","actor_camera_speed_pow",1.0f);
+	m_fDefaultActorCameraSpeed = pSettings->read_if_exists<float>("gunslinger_base","default_actor_camera_speed",10.0f);
+	m_fActorCameraLandingOffset = pSettings->read_if_exists<float>("gunslinger_base","actor_camera_landing_offset",0.0f);
+	m_fActorCameraLandingSpeedFactor = pSettings->read_if_exists<float>("gunslinger_base","actor_camera_landing_speed_factor",1.0f);
+	m_fActorCameraLandingSpeedPowFactor = pSettings->read_if_exists<float>("gunslinger_base","actor_camera_landing_speed_pow_factor",1.0f);
+	m_fActorCameraLanding2Offset = pSettings->read_if_exists<float>("gunslinger_base","actor_camera_landing2_offset",0.0f);
+	m_fActorCameraLanding2SpeedFactor = pSettings->read_if_exists<float>("gunslinger_base","actor_camera_landing2_speed_factor",1.0f);
+	m_fActorCameraLanding2SpeedPowFactor = pSettings->read_if_exists<float>("gunslinger_base","actor_camera_landing2_speed_pow_factor",1.0f);
+	m_fActorCameraFinishLandingSpeedFactor = pSettings->read_if_exists<float>("gunslinger_base","actor_camera_finish_landing_speed_factor",1.0f);
+	m_fActorCameraFinishLandingSpeedPowFactor = pSettings->read_if_exists<float>("gunslinger_base","actor_camera_finish_landing_speed_pow_factor",1.0f);
+	m_fActorCameraFinishLandingTime = pSettings->read_if_exists<float>("gunslinger_base","actor_camera_finish_landing_time",0.5f);
 
-	m_fLookOutSpeed = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "lookout_speed", 6.0f);
-	m_fLookOutAmplK = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "lookout_ampl_k", 1.0f);
-	m_fLookOutSpeedAmplDXPow = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "lookout_ampl_dx_pow", 1.0f);
-	m_burn_restore_material_speed = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "burn_restore_material_speed", 0.0f);
-	m_actor_burn_restore_speed = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_burn_restore_speed", 0.000001f);
+	m_fLookOutSpeed = pSettings->read_if_exists<float>("gunslinger_base","lookout_speed",6.0f);
+	m_fLookOutAmplK = pSettings->read_if_exists<float>("gunslinger_base","lookout_ampl_k",1.0f);
+	m_fLookOutSpeedAmplDXPow = pSettings->read_if_exists<float>("gunslinger_base","lookout_ampl_dx_pow",1.0f);
+	m_burn_restore_material_speed = pSettings->read_if_exists<float>("gunslinger_base","burn_restore_material_speed",0.0f);
+	m_actor_burn_restore_speed = pSettings->read_if_exists<float>("gunslinger_base","actor_burn_restore_speed",0.000001f);
 
 	if (pSettings->line_exist("gunslinger_base", "burn_restore_materials"))
 	{
@@ -2539,7 +2539,7 @@ void CActor::HitArtefactsCondition(SHit& hit)
 		CArtefact* artefact = item->cast_artefact();
 		if (artefact && artefact->DegradationRate())
 		{
-			shared_str hit_absorbation_sect = READ_IF_EXISTS(pSettings, r_string, artefact->m_section_id.c_str(), "hit_absorbation_sect", "");
+			shared_str hit_absorbation_sect = pSettings->read_if_exists<LPCSTR>(artefact->m_section_id.c_str(),"hit_absorbation_sect","");
 
 			if (hit_absorbation_sect.size() > 0)
 			{

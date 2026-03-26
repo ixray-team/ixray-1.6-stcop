@@ -129,7 +129,7 @@ void CLevelChanger::feel_touch_new	(CObject *tpObject)
 		
 		if (!Actor()->cast_inventory_owner()->HasInfo(p_name))
 		{
-			if (READ_IF_EXISTS(m_ini_file, r_bool, "cond", "move", false))
+			if (m_ini_file->read_if_exists<bool>("cond", "move", false))
 			{
 				Fvector p, r;
 				if (get_reject_pos(p, r))

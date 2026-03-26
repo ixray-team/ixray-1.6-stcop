@@ -16,15 +16,15 @@ CAnomalyDetector::~CAnomalyDetector()
 
 void CAnomalyDetector::load(const char* section)
 {
-	m_radius				= READ_IF_EXISTS(pSettings,r_float,section,"Anomaly_Detect_Radius",15.f);
-	m_time_to_rememeber		= READ_IF_EXISTS(pSettings,r_u32,section,"Anomaly_Detect_Time_Remember",30000);
-	shared_str IgnoredCLSIDsSection = READ_IF_EXISTS(pSettings, r_string, section, "Anomaly_Detect_Ignore_List", "");
+	m_radius				= pSettings->read_if_exists<float>(section,"Anomaly_Detect_Radius",15.f);
+	m_time_to_rememeber		= pSettings->read_if_exists<u32>(section,"Anomaly_Detect_Time_Remember",30000);
+	shared_str IgnoredCLSIDsSection = pSettings->read_if_exists<str_c>(section, "Anomaly_Detect_Ignore_List", "");
 	if (IgnoredCLSIDsSection.size()) {
 		R_ASSERT3(pSettings->section_exist(IgnoredCLSIDsSection), "Unable to find section [%s]", IgnoredCLSIDsSection.c_str());
 		for (u32 i = 0; i < pSettings->line_count(IgnoredCLSIDsSection); ++i) {
 			str_c Key = nullptr;
 			str_c Value = nullptr;
-			IVERIFY(pSettings->r_line(IgnoredCLSIDsSection, i, &Key, &Value));
+			IVERIFY(pSettings->r_line(IgnoredCLSIDsSection, i, Key, Value));
 			IgnoredCLSIDS.emplace(TEXT2CLSID(Key));
 		}
 	}

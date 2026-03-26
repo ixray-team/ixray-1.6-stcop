@@ -1683,7 +1683,7 @@ void	game_sv_mp::LoadRanks	()
 		Rank_Struct NewRank; 
 		
 		NewRank.m_sTitle = pSettings->r_string(RankSect, "rank_name");
-		NewRank.m_iBonusMoney = READ_IF_EXISTS(pSettings, r_s32, RankSect, "rank_aquire_money", 0);
+		NewRank.m_iBonusMoney = pSettings->read_if_exists<s32>(RankSect, "rank_aquire_money", 0);
 		shared_str RDEB_str = pSettings->r_string(RankSect, "rank_diff_exp_bonus");
 		int RDEB_Count = _GetItemCount(RDEB_str.c_str());
 		for (int r=0; r<RDEB_Count; r++)

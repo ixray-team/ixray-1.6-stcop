@@ -33,53 +33,57 @@ DLL_Pure *CHudItem::_construct()
 
 void CHudItem::Load(const char* section)
 {
-	hud_sect				= READ_IF_EXISTS(pSettings, r_string, section,"hud", nullptr);
+	hud_sect				= pSettings->read_if_exists<LPCSTR>(section,"hud",nullptr);
 	hud_sect_cache = hud_sect;
 
-	if (m_animation_slot != u32(-1)) // if it has default hardcoded slot, then don't crash
-		pSettings->read_if_exists(m_animation_slot, section, "animation_slot");
-	else // if it doesn't, then crash if line is missing from config
-		m_animation_slot		= pSettings->r_u32			(section,"animation_slot");
+	if (m_animation_slot != u32(-1))
+	{
+		// if it has default hardcoded slot, then don't crash
+		pSettings->r_u32_nullable(section, "animation_slot", m_animation_slot);
+	}
+	else
+	{
+		// if it doesn't, then crash if line is missing from config
+		m_animation_slot = pSettings->r_u32(section,"animation_slot");
+	}
 
-	m_nearwall_dist_min = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_dist_min", .2f);
-	m_nearwall_dist_max = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_dist_max", 1.f);
-	m_nearwall_target_hud_fov = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_target_hud_fov", 0.27f);
-	m_nearwall_speed_mod = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_speed_mod", 10.f);
+	m_nearwall_dist_min = pSettings->read_if_exists<float>(section,"nearwall_dist_min",.2f);
+	m_nearwall_dist_max = pSettings->read_if_exists<float>(section,"nearwall_dist_max",1.f);
+	m_nearwall_target_hud_fov = pSettings->read_if_exists<float>(section,"nearwall_target_hud_fov",0.27f);
+	m_nearwall_speed_mod = pSettings->read_if_exists<float>(section,"nearwall_speed_mod",10.f);
 
-	m_fHudFov = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_fov", 0.0f);
-	m_fHudFovFactor = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_fov_factor", 1.0f);
+	m_fHudFov = pSettings->read_if_exists<float>(hud_sect,"hud_fov",0.0f);
+	m_fHudFovFactor = pSettings->read_if_exists<float>(hud_sect,"hud_fov_factor",1.0f);
 
-	m_fLookOutSpeedKoef = READ_IF_EXISTS(pSettings, r_float, hud_sect, "lookout_speed_koef", 1.0f);
-	m_fLookOutAmplK = READ_IF_EXISTS(pSettings, r_float, hud_sect, "lookout_ampl_k", 1.0f);
+	m_fLookOutSpeedKoef = pSettings->read_if_exists<float>(hud_sect,"lookout_speed_koef",1.0f);
+	m_fLookOutAmplK = pSettings->read_if_exists<float>(hud_sect,"lookout_ampl_k",1.0f);
 
-	m_fActorCamSpeedFactor = READ_IF_EXISTS(pSettings, r_float, section, "actor_camera_speed_factor", 1.0f);
+	m_fActorCamSpeedFactor = pSettings->read_if_exists<float>(section,"actor_camera_speed_factor",1.0f);
 
-	m_current_inertion.PitchOffsetR = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_pitch_offset_r", PITCH_OFFSET_R);
-	m_current_inertion.PitchOffsetD = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_pitch_offset_d", PITCH_OFFSET_D);
-	m_current_inertion.PitchOffsetN = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_pitch_offset_n", PITCH_OFFSET_N);
+	m_current_inertion.PitchOffsetR = pSettings->read_if_exists<float>(hud_sect,"inertion_pitch_offset_r",PITCH_OFFSET_R);
+	m_current_inertion.PitchOffsetD = pSettings->read_if_exists<float>(hud_sect,"inertion_pitch_offset_d",PITCH_OFFSET_D);
+	m_current_inertion.PitchOffsetN = pSettings->read_if_exists<float>(hud_sect,"inertion_pitch_offset_n",PITCH_OFFSET_N);
 
-	m_current_inertion.OriginOffset = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_origin_offset", ORIGIN_OFFSET);
-	m_current_inertion.TendtoSpeed = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_tendto_speed", TENDTO_SPEED);
+	m_current_inertion.OriginOffset = pSettings->read_if_exists<float>(hud_sect,"inertion_origin_offset",ORIGIN_OFFSET);
+	m_current_inertion.TendtoSpeed = pSettings->read_if_exists<float>(hud_sect,"inertion_tendto_speed",TENDTO_SPEED);
 
-	m_jitter_params.pos_amplitude = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "base_jitter_pos_amplitude", 0.001f);
-	m_jitter_params.rot_amplitude = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "base_jitter_rot_amplitude", 0.1f);
+	m_jitter_params.pos_amplitude = pSettings->read_if_exists<float>("gunslinger_base","base_jitter_pos_amplitude",0.001f);
+	m_jitter_params.rot_amplitude = pSettings->read_if_exists<float>("gunslinger_base","base_jitter_rot_amplitude",0.1f);
 
-	m_jitter_params.pos_amplitude = READ_IF_EXISTS(pSettings, r_float, hud_sect, "jitter_pos_amplitude", m_jitter_params.pos_amplitude);
-	m_jitter_params.rot_amplitude = READ_IF_EXISTS(pSettings, r_float, hud_sect, "jitter_rot_amplitude", m_jitter_params.rot_amplitude);
+	m_jitter_params.pos_amplitude = pSettings->read_if_exists<float>(hud_sect,"jitter_pos_amplitude",m_jitter_params.pos_amplitude);
+	m_jitter_params.rot_amplitude = pSettings->read_if_exists<float>(hud_sect,"jitter_rot_amplitude",m_jitter_params.rot_amplitude);
 
-	m_jitter_params.stop_time = floor(READ_IF_EXISTS(pSettings, r_float, hud_sect, "jitter_stop_time", 3.0f) * 1000.f);
+	m_jitter_params.stop_time = floor(pSettings->read_if_exists<float>(hud_sect,"jitter_stop_time",3.0f) * 1000.f);
 
-	m_bDisableBore = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "disable_bore", false);
+	m_bDisableBore = pSettings->read_if_exists<bool>(hud_sect,"disable_bore",false);
 
-	if (READ_IF_EXISTS(pSettings, r_bool, section, "torch_installed", false))
+	if (pSettings->read_if_exists<bool>(section,"torch_installed",false))
 	{
 		THudLightTorch& LightTorch = m_object->CreateComponent<THudLightTorch>();
 		LightTorch.NewTorchlight(section);
 	}
 
-	pSettings->read_if_exists<bool>(m_bBlendMovement, hud_sect, "use_blending_movement");
-
-	if (m_bBlendMovement)
+	if (pSettings->r_bool_nullable(hud_sect, "use_blending_movement", m_bBlendMovement) && m_bBlendMovement)
 	{
 		m_sMovementBlendParams[EMovementLayers::eWalk].Load(hud_sect, "anim_blend_walk");
 		m_sMovementBlendParams[EMovementLayers::eWalkSlow].Load(hud_sect, "anim_blend_walk_slow");

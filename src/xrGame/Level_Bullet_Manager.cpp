@@ -241,9 +241,9 @@ void CBulletManager::Load()
 		m_ExplodeParticles.emplace_back(_GetItem(explode_particles, k, tmp));
 	}
 
-	const char* sh_name = READ_IF_EXISTS(pSettings, r_string, bullet_manager_sect, "tracer_shader", "effects\\bullet_tracer");
-	const char* tx_name = READ_IF_EXISTS(pSettings, r_string, bullet_manager_sect, "tracer_texture", "fx\\fx_tracer");
-	m_circle_size_k = READ_IF_EXISTS(pSettings, r_float, bullet_manager_sect, "fire_circle_k", .5f);
+	const char* sh_name = pSettings->read_if_exists<LPCSTR>(bullet_manager_sect,"tracer_shader","effects\\bullet_tracer");
+	const char* tx_name = pSettings->read_if_exists<LPCSTR>(bullet_manager_sect,"tracer_texture","fx\\fx_tracer");
+	m_circle_size_k = pSettings->read_if_exists<float>(bullet_manager_sect,"fire_circle_k",.5f);
 
 	sh_Tracer->create(sh_name, tx_name);
 

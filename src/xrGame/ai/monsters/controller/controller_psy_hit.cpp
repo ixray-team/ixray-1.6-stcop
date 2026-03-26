@@ -18,7 +18,7 @@
 
 void CControllerPsyHit::load(const char* section)
 {
-	m_min_tube_dist = READ_IF_EXISTS(pSettings, r_float, section,"tube_condition_min_distance", 10.f);
+	m_min_tube_dist = pSettings->read_if_exists<float>(section,"tube_condition_min_distance", 10.f);
 }
 
 void CControllerPsyHit::reinit()

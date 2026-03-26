@@ -51,10 +51,10 @@ void CSE_ALifeAnomalousZone::spawn_artefacts				()
 {
 	VERIFY2					(!m_bOnline,"Cannot spawn artefacts in online!");
 
-	float					m_min_start_power	= READ_IF_EXISTS(pSettings, r_float, name(), "min_start_power", 0.f);
-	float					m_max_start_power	= READ_IF_EXISTS(pSettings, r_float, name(), "max_start_power", 0.f);
-	u32						m_min_artefact_count= READ_IF_EXISTS(pSettings, r_u32, name(), "min_artefact_count", 0);
-	u32						m_max_artefact_count= READ_IF_EXISTS(pSettings, r_u32, name(), "max_artefact_count", 0);
+	float					m_min_start_power	= pSettings->read_if_exists<float>(name(), "min_start_power", 0.f);
+	float					m_max_start_power	= pSettings->read_if_exists<float>(name(), "max_start_power", 0.f);
+	u32						m_min_artefact_count= pSettings->read_if_exists<u32>(name(), "min_artefact_count", 0);
+	u32						m_max_artefact_count= pSettings->read_if_exists<u32>(name(), "max_artefact_count", 0);
     u32						m_artefact_count;
 
 	if (m_min_artefact_count == m_max_artefact_count)

@@ -985,7 +985,7 @@ void CCar::ParseDefinitions()
 	CExplosive::Load(ini, "explosion");
 	//CExplosive::SetInitiator(ID());
 	m_camera_position = ini->r_fvector3("car_definition", "camera_pos");
-	m_camera_position_2 = READ_IF_EXISTS(ini, r_fvector3, "car_definition", "camera_pos2", m_camera_position);
+	m_camera_position_2 = ini->read_if_exists<Fvector3>("car_definition","camera_pos2",m_camera_position);
 	m_camera_current_position = &m_camera_position;
 	///////////////////////////car definition///////////////////////////////////////////////////
 	fill_wheel_vector(ini->r_string("car_definition", "driving_wheels"), m_driving_wheels);
@@ -1089,11 +1089,11 @@ void CCar::ParseDefinitions()
 	m_torque_rpm = ini->r_float("car_definition", "max_torque_rpm");
 	m_torque_rpm *= (1.f / 60.f * 2.f * M_PI);//
 
-	m_power_increment_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "power_increment_factor", m_power_increment_factor);
-	m_rpm_increment_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "rpm_increment_factor", m_rpm_increment_factor);
-	m_power_decrement_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "power_decrement_factor", m_power_increment_factor);
-	m_rpm_decrement_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "rpm_decrement_factor", m_rpm_increment_factor);
-	m_power_neutral_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "power_neutral_factor", m_power_neutral_factor);
+	m_power_increment_factor = ini->read_if_exists<float>("car_definition","power_increment_factor",m_power_increment_factor);
+	m_rpm_increment_factor = ini->read_if_exists<float>("car_definition","rpm_increment_factor",m_rpm_increment_factor);
+	m_power_decrement_factor = ini->read_if_exists<float>("car_definition","power_decrement_factor",m_power_increment_factor);
+	m_rpm_decrement_factor = ini->read_if_exists<float>("car_definition","rpm_decrement_factor",m_rpm_increment_factor);
+	m_power_neutral_factor = ini->read_if_exists<float>("car_definition","power_neutral_factor",m_power_neutral_factor);
 	R_ASSERT2(m_power_neutral_factor > 0.1f && m_power_neutral_factor < 1.f, "power_neutral_factor must be 0 - 1 !!");
 	if (ini->line_exist("car_definition", "exhaust_particles"))
 	{
@@ -1218,7 +1218,7 @@ void CCar::Init()
 	m_pPhysicsShell->set_DynamicScales(1.f, 1.f);
 
 	CDamagableItem::Init(GetfHealth(), 3);
-	float l_time_to_explosion = READ_IF_EXISTS(ini, r_float, "car_definition", "time_to_explosion", 120.f);
+	float l_time_to_explosion = ini->read_if_exists<float>("car_definition","time_to_explosion",120.f);
 	CDelayedActionFuse::Initialize(l_time_to_explosion, CDamagableItem::DamageLevelToHealth(2));
 
 	for (auto& [ID, WhellData] : m_wheels_map)
