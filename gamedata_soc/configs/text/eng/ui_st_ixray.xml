@@ -690,4 +690,10 @@
 	<string id="ui_pda_tabs_secondary">
 		<text>$$ACTION_UI_TAB_SEC_LEFT$$/$$ACTION_UI_TAB_SEC_RIGHT$$ Additional tabs</text>
 	</string>
+	<string id="st_upgrade">
+		<text>upgrade</text>
+	</string>
+	<string id="st_repair">
+		<text>repair</text>
+	</string>
 </string_table>
