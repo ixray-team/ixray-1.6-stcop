@@ -43,6 +43,8 @@ void UITopBarForm::Draw()
 {
 	ImGuiViewport* viewport = ImGui::GetMainViewport();
 	const float ButtonSize = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize);
+	const float IconSize = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::IconSize);
+	const float ButtonRadius = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonRadius);
 	const float ToolbarPadding = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ToolbarPadding);
 	ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x, viewport->Pos.y + UI->GetMenuBarHeight()));
 	ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, ButtonSize + ToolbarPadding * 2));
@@ -58,7 +60,7 @@ void UITopBarForm::Draw()
 		;
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.f);
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(2, 0));
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(ToolbarPadding, 0));
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
 	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(ToolbarPadding * 0.5f, ToolbarPadding));
 	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
@@ -67,8 +69,6 @@ void UITopBarForm::Draw()
 
 	if (ImGui::Begin("TOOLBAR", NULL, window_flags))
 	{
-		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ToolbarPadding);
-
 		if (ImGui::BeginTable("##ToolbarTable", 10, ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ContextMenuInBody | ImGuiTableFlags_Hideable | ImGuiTableFlags_NoBordersInBodyUntilResize))
 		{
 			ImGui::TableSetupColumn("Actions", ImGuiTableColumnFlags_WidthFixed);
@@ -120,7 +120,7 @@ void UITopBarForm::Draw()
 				}
 
 				Icons["play_in_editor_settings"]->Load();
-				if (XRay::ImGui::ToolbarIconButton("##PlaySettings", Icons["play_in_editor_settings"]->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersRight, 6.f, { 17.f,26.f }, { 9.f, 9.f }))
+				if (XRay::ImGui::ToolbarIconButton("##PlaySettings", Icons["play_in_editor_settings"]->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersRight, ButtonRadius, { ButtonSize * 0.5f, ButtonSize }, { IconSize * 0.4f, IconSize * 0.4f }))
 				{
 					ImGui::OpenPopup("test");
 				}
@@ -175,7 +175,7 @@ void UITopBarForm::Draw()
 				//ApplyBackground("Sound Preferences");
 				ImGui::BeginDisabled(psDeviceFlags.is(rsMuteSounds));
 				//ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3);
-				ImGui::SetNextItemWidth(150);
+				ImGui::SetNextItemWidth(GUIManager->ScaleByDpi(150));
 				ImGui::SliderFloat(!psDeviceFlags.is(rsMuteSounds) ? ICON_FA_VOLUME_HIGH : ICON_FA_VOLUME_XMARK, &EPrefs->sound_volume, 0, 1, "%.2f");
 				ImGui::EndDisabled();
 				//CalcTableEndPos("Sound Preferences");
@@ -186,7 +186,7 @@ void UITopBarForm::Draw()
 				ImGui::PushStyleColor(ImGuiCol_ButtonActive, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::Accent).Value);
 				//ApplyBackground("Physics");
 				
-				if (XRay::ImGui::ToolbarButton("PhysSimulation228","Phys Simulation", &m_Simulate, { 0.f, 26.f }, ImDrawFlags_RoundCornersLeft))
+				if (XRay::ImGui::ToolbarButton("PhysSimulation228","Phys Simulation", &m_Simulate, { 0.f, ButtonSize }, ImDrawFlags_RoundCornersLeft))
 				//if (ImGui::Checkbox("Phys Simulation", &m_Simulate))
 				{
 					ExecCommand(COMMAND_SIMULATE, true);
@@ -200,7 +200,7 @@ void UITopBarForm::Draw()
 
 				//ImGui::SetCursorPosY(3);
 
-				if (XRay::ImGui::ToolbarButton("UsePos228", "Use Pos", nullptr, { 0.f, 26.f }, ImDrawFlags_RoundCornersRight))
+				if (XRay::ImGui::ToolbarButton("UsePos228", "Use Pos", nullptr, { 0.f, ButtonSize }, ImDrawFlags_RoundCornersRight))
 				//if (ImGui::Button("Use Pos"))
 				{
 					ExecCommand(COMMAND_USE_SIMULATE_POSITIONS, true);

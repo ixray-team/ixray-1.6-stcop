@@ -24,7 +24,7 @@ std::array<ImColor, 22> PurpleTheme =
 	ImColor(1.f, 1.f, 1.f, 0.05f) // ActiveTint
 };
 
-std::array<ImColor, 22> DarkTheme =
+std::array<ImColor, PurpleTheme.size()> DarkTheme =
 {
 	ImColor(51, 51, 51, 255),	  // Base Color
 	ImColor(121, 113, 189, 255),  // Accent Color
@@ -77,7 +77,7 @@ XREUI_API ImColor XRay::ImGui::GetEditorColor(EEditorColors Color)
 	{
 		CurrentTheme = &PurpleTheme;
 	}
-	std::array<ImColor, 22>& DefaultTheme = *CurrentTheme;
+	std::array<ImColor, PurpleTheme.size()>& DefaultTheme = *CurrentTheme;
 
 	ImColor Clr = DefaultTheme[(size_t)EEditorColors::Main];
 
@@ -196,9 +196,11 @@ XREUI_API ImColor XRay::ImGui::GetEditorColor(EEditorColors Color)
 	}
 }
 
-std::array<float, 13> Sizes =
+const size_t SizeCount = 17;
+std::array<float, SizeCount> DefaultSizes =
 {
     16.f,								// FontSize
+	20.f,								// IconSize
     4.0f,								// DockingGap
     2.0f,								// WindowPadding
     4.0f,								// PanelPadding
@@ -207,15 +209,58 @@ std::array<float, 13> Sizes =
 	4.0f, 								// ButtonRadius
 	8.0f, 								// ButtonPaddingW
 	4.0f, 								// ButtonPaddingH
+	14.0f,								// CheckboxSize
 	4.0f,								// IndicatorWidth
 	22.0f,								// TableRowHeight
 	2.0f,								// TableBorder
 	4.0f								// ToolbarPadding
 };
-//ImGui::GetFontSize();
+std::array<float, SizeCount> TitySizes =
+{
+    16.f,								// FontSize
+	20.f,								// IconSize
+	4.0f,								// DockingGap
+	2.0f,								// WindowPadding
+    4.0f,								// PanelPadding
+	26.0f, 								// ButtonSize
+	1.0f, 								// ButtonBorderSize
+	4.0f, 								// ButtonRadius
+	8.0f, 								// ButtonPaddingW
+	4.0f, 								// ButtonPaddingH
+	14.0f,								// CheckboxSize
+	4.0f,								// IndicatorWidth
+	22.0f,								// TableRowHeight
+	2.0f,								// TableBorder
+	4.0f								// ToolbarPadding
+};
+
+XREUI_API void XRay::ImGui::InitSizes()
+{
+	for(size_t i = 0; i < SizeCount; ++i)
+	{
+		GetEditorSize((EEditorSizes)i);
+	}
+}
+
+std::array<float, DefaultSizes.size()> *CurrentSizes = nullptr;
+XREUI_API void XRay::ImGui::SetupSizesList(int ID)
+{
+	switch (ID)
+	{
+		case 0: CurrentSizes = &DefaultSizes; break;
+		case 1: CurrentSizes = &TitySizes; break;
+	}
+
+}
+
 XREUI_API float XRay::ImGui::GetEditorSize(EEditorSizes Size)
 {
-    if (EditorSizes.contains(Size))
+	std::array<float, SizeCount>& Sizes = *CurrentSizes;
+	float dpiScale = 1.0f;
+	if (GUIManager)
+		dpiScale = GUIManager->GetScaleDpi();
+	
+	if (EditorSizes.contains(Size))
 	{
 		return EditorSizes[Size];
 	}
@@ -224,15 +269,15 @@ XREUI_API float XRay::ImGui::GetEditorSize(EEditorSizes Size)
 	{
 		case EEditorSizes::ButtonTextPaddingY:
 		{
-			return EditorSizes[Size] = (Sizes[static_cast<std::size_t>(ButtonSize)] - Sizes[static_cast<std::size_t>(FontSize)]) / 2;
+			return EditorSizes[Size] = (Sizes[static_cast<std::size_t>(ButtonSize)] - Sizes[static_cast<std::size_t>(FontSize)]) / 2 * dpiScale;
 		}
 		case EEditorSizes::TableTextPaddingY:
 		{
-			return EditorSizes[Size] = (Sizes[static_cast<std::size_t>(TableRowHeight)] - Sizes[static_cast<std::size_t>(FontSize)]) / 2;
+			return EditorSizes[Size] = (Sizes[static_cast<std::size_t>(TableRowHeight)] - Sizes[static_cast<std::size_t>(FontSize)]) / 2 * dpiScale;
 		}
 		default:
 		{
-			return EditorSizes[Size] = Sizes[static_cast<std::size_t>(Size)];
+			return EditorSizes[Size] = Sizes[static_cast<std::size_t>(Size)] * dpiScale;
 		}
     }
 }
