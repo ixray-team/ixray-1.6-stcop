@@ -48,6 +48,7 @@ function configure(_ref_ixr_signals)
 	
 	_ref_ixr_signals.add_intercept("on_load_screen_await_any_key_pressed",	{})	-- уровень загружен гг получил управление
 	
+	_ref_ixr_signals.add_intercept("on_game_present",						{})	
 	_ref_ixr_signals.add_intercept("level_input_on_key_press",				{})	
 	_ref_ixr_signals.add_intercept("on_key_press",                         	{"dik_key_number"})	
 	_ref_ixr_signals.add_intercept("on_key_release",                     	{"dik_key_number"})	
@@ -166,6 +167,7 @@ function configure(_ref_ixr_signals)
 	_ref_ixr_signals.add_intercept("anomaly_zone_on_artefact_take",     	{"binder_class", "anomaly_zone_game_object", "artefact_id", "artefact_object", "parent_zones_by_artefact_id"})
 	_ref_ixr_signals.add_intercept("anomaly_zone_on_save",    				{"binder_class", "anomaly_zone_game_object", "thread", "parent_zones_by_artefact_id"}) 
 	_ref_ixr_signals.add_intercept("anomaly_zone_on_load",    				{"binder_class", "anomaly_zone_game_object", "thread", "parent_zones_by_artefact_id"}) 
+	_ref_ixr_signals.add_intercept("anomaly_zone_override_artefact_spawn_сhance", {"binder_class", "anomaly_zone_game_object", "flags_table"}) -- flags_table = {spawn_chance = 17}
 	
 	_ref_ixr_signals.add_intercept("physic_object_on_init",     			{"game_object"}) 
 	_ref_ixr_signals.add_intercept("physic_object_on_death",     			{"game_object", "game_object"}) 

@@ -234,7 +234,10 @@ function anomaly_zone_binder:spawn_artefact_randomly()
 		rnd_artefact = self.start_artefacts_table[layer][#self.start_artefacts_table[layer]]
 		self.forced_spawn = false
 	else
-		if math.random(1,100) > 17 then
+	
+		local flags_table = {spawn_chance = 17}
+		SendScriptCallback("anomaly_zone_override_artefact_spawn_сhance", self, self.object, flags_table)
+		if math.random(1,100) > flags_table.spawn_chance then
 			return
 		end
 
