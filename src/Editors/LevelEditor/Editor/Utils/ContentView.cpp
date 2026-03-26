@@ -173,7 +173,7 @@ void CContentView::DrawFolderTree()
 
 		// xroo: I will move this marker on the button to ModernUI_widgets when I understand how it will be reused.
 		ImGui::SetWindowFontScale(0.75f);
-		XRay::ImGui::SameLine(0.f, -12.f);
+		XRay::ImGui::SameLine(0.f, -RowHeight/2);
 		ImGui::Text(SortAscending ? ICON_FA_SORT_DOWN : ICON_FA_SORT_UP);
 		ImGui::SetWindowFontScale(1.0f);
 
@@ -365,13 +365,16 @@ void CContentView::DrawHeader()
 {
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
 
-					BtnSize		= (ViewMode == EViewMode::Tile) ? ImVec2(64.f, 64.f) : ImVec2(32.f, 32.f);
+	const	float	BtnHeight	= GUIManager->ScaleByDpi((ViewMode == EViewMode::Tile) ? 64.f : 32.f);
+					BtnSize		= ImVec2(BtnHeight, BtnHeight);
 			ImGuiStyle& style	= ImGui::GetStyle();
 	const	float	FindStartPosX = ImGui::GetWindowSize().x;
 	const	float	Height		= style.FontSizeBase + style.FramePadding.y * 2;
 	const	float	WindowPadding = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::WindowPadding);
 	const	float	ToolbarPadding = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ToolbarPadding);
+	const	float	TableBorder = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableBorder);
 	const	float	Rounding	= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonRadius);
+	const	float	IconHeight	= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::IconSize) * 0.7;
 
 			ImColor NavColor	= XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableTint);
 			ImColor NavHover	= XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableHover);
@@ -489,7 +492,7 @@ void CContentView::DrawHeader()
 
 	if (ImGui::BeginChild("##SearchBar", { FindSizeX - ToolbarPadding, 0 }, ImGuiChildFlags_AutoResizeY))
 	{
-		ImVec2 IconSize = { 14, 14 };
+		ImVec2 IconSize = { IconHeight, IconHeight };
 		ImGui::SetNextItemWidth(FindSizeX - ToolbarPadding - Height - ToolbarPadding - IconSize.x);
 		ImGui::SetNextItemAllowOverlap();
 		if (ImGui::InputTextWithHint("##Search", "Search", FindStr, sizeof(FindStr)))
@@ -506,7 +509,7 @@ void CContentView::DrawHeader()
 			ImGui::Image(GUIManager->SearchIcon, IconSize);
 		}
 
-		XRay::ImGui::SameLine(0, ToolbarPadding + 1.f);
+		XRay::ImGui::SameLine(0, ToolbarPadding + TableBorder);
 
 		if (ImGui::BeginPopupContextItem("MenuCBPpp"))
 		{
@@ -542,8 +545,8 @@ this->MenuIcon.p_ was nullptr.
 	*/
 
 	//if (MenuIcon && ImGui::ImageButton("##MenuCB", MenuIcon->get_SRView()->GetRawSRV(), { 15, 15 }))
-		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.f);
-		if (MenuIcon && XRay::ImGui::Button(ICON_FA_BARS"##IMenuCB", { Height - 2.f, Height - 2.f }))
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + TableBorder);
+		if (MenuIcon && XRay::ImGui::Button(ICON_FA_BARS"##IMenuCB", { Height - TableBorder * 2.f, Height - TableBorder * 2.f }))
 		{
 			ImGui::OpenPopup("MenuCBPpp");
 		}
