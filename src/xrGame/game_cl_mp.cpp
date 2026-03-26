@@ -1026,7 +1026,7 @@ void	game_cl_mp::OnRankChanged	(u8 OldRank)
 	string256 tmp;
 	string1024 RankStr;
 	xr_sprintf(tmp, "rank_%d",local_player->rank);
-	xr_sprintf(RankStr, "%s : %s", *g_pStringTable->translate("mp_your_rank"), *g_pStringTable->translate(READ_IF_EXISTS(pSettings, r_string, tmp, "rank_name", "")));
+	xr_sprintf(RankStr, "%s : %s", *g_pStringTable->translate("mp_your_rank"), *g_pStringTable->translate(pSettings->read_if_exists<LPCSTR>(tmp,"rank_name","")));
 	if(CurrentGameUI()) CurrentGameUI()->CommonMessageOut(RankStr);	
 #ifdef DEBUG
 	Msg("- %s", RankStr);
@@ -1303,10 +1303,10 @@ void game_cl_mp::LoadBonuses				()
 				NewBonus.IconShader->create("hud\\default", pSettings->r_string("mp_bonus_icons", IconShader));
 			}
 			Frect IconRect;
-			IconRect.x1 = READ_IF_EXISTS(pSettings, r_float, "mp_bonus_icons", IconX,0);
-			IconRect.y1 = READ_IF_EXISTS(pSettings, r_float, "mp_bonus_icons", IconY,0);
-			IconRect.x2 = READ_IF_EXISTS(pSettings, r_float, "mp_bonus_icons", IconW,0);
-			IconRect.y2 = READ_IF_EXISTS(pSettings, r_float, "mp_bonus_icons", IconH,0);
+			IconRect.x1 = pSettings->read_if_exists<float>("mp_bonus_icons", IconX,0);
+			IconRect.y1 = pSettings->read_if_exists<float>("mp_bonus_icons", IconY,0);
+			IconRect.x2 = pSettings->read_if_exists<float>("mp_bonus_icons", IconW,0);
+			IconRect.y2 = pSettings->read_if_exists<float>("mp_bonus_icons", IconH,0);
 			NewBonus.IconRects.push_back(IconRect);
 		}
 		else

@@ -283,9 +283,9 @@ void CCameraLook2::Load(const char* section)
 	Fvector defaultOffsetLeft = {};
 	defaultOffsetLeft.set(0.314f, 0.2f, 0.0f);
 
-	m_cam_offset_r = READ_IF_EXISTS(pSettings, r_fvector3, section, "offset_right", defaultOffsetRight);
-	m_cam_offset_l = READ_IF_EXISTS(pSettings, r_fvector3, section, "offset_left", defaultOffsetLeft);
-	m_use_inertion = READ_IF_EXISTS(pSettings, r_bool, section, "use_inertion", true);
+	m_cam_offset_r = pSettings->read_if_exists<Fvector3>(section, "offset_right", defaultOffsetRight);
+	m_cam_offset_l = pSettings->read_if_exists<Fvector3>(section, "offset_left", defaultOffsetLeft);
+	m_use_inertion = pSettings->read_if_exists<bool>(section, "use_inertion", true);
 
 	dist = 1.4f;
 	prev_d = 0.0f;

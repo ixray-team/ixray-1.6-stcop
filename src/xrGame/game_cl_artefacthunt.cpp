@@ -46,7 +46,7 @@ game_cl_ArtefactHunt::game_cl_ArtefactHunt()
 	//---------------------------------
 	LoadSndMessages();
 	//---------------------------------
-	m_iSpawn_Cost = READ_IF_EXISTS(pSettings, r_s32, "artefacthunt_gamedata", "spawn_cost", -10000);
+	m_iSpawn_Cost = pSettings->read_if_exists<s32>("artefacthunt_gamedata", "spawn_cost", -10000);
 }
 
 void game_cl_ArtefactHunt::Init ()

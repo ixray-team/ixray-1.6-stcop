@@ -99,8 +99,8 @@ CInventory::CInventory()
 		xr_sprintf(slot_active, "%s%d", "slot_active_", k);
 		m_last_slot = k;
 
-		m_slots[k].m_bPersistent = !!READ_IF_EXISTS(pSettings, r_bool, "inventory", slot_persistent, defaultSlotPersistent[k - 1]);
-		m_slots[k].m_bAct = !!READ_IF_EXISTS(pSettings, r_bool, "inventory", slot_active, defaultSlotActive[k - 1]);
+		m_slots[k].m_bPersistent = pSettings->read_if_exists<bool>("inventory", slot_persistent, defaultSlotPersistent[k - 1]);
+		m_slots[k].m_bAct = pSettings->read_if_exists<bool>("inventory", slot_active, defaultSlotActive[k - 1]);
 	}
 
 	m_blocked_slots.resize(k + 1);

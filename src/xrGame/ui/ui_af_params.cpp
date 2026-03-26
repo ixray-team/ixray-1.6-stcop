@@ -267,8 +267,8 @@ void CUIArtefactParams::SetInfo(CInventoryItem& pInvItem)
 			if (!m_restore_item[id])
 				continue;
 
-			float actor_val = READ_IF_EXISTS(pSettings, r_float, "actor_condition", af_actor_param_names[id], 1.0f);
-			val = READ_IF_EXISTS(pSettings, r_float, af_section, restore_section, 0.0f);
+			float actor_val = pSettings->read_if_exists<float>("actor_condition", af_actor_param_names[id], 1.0f);
+			val = pSettings->read_if_exists<float>(af_section, restore_section, 0.0f);
 			if (fis_zero(val))
 			{
 				continue;
@@ -282,7 +282,7 @@ void CUIArtefactParams::SetInfo(CInventoryItem& pInvItem)
 
 		if (m_jump_height_modifier)
 		{
-			val = READ_IF_EXISTS(pSettings, r_float, af_section, "jump_height_modifier", 0.0f);
+			val = pSettings->read_if_exists<float>(af_section, "jump_height_modifier", 0.0f);
 			if (!fis_zero(val))
 			{
 				setValue(m_jump_height_modifier, val * pInvItem.GetCondition());
@@ -291,7 +291,7 @@ void CUIArtefactParams::SetInfo(CInventoryItem& pInvItem)
 
 		if (m_movement_speed_modifier)
 		{
-			val = READ_IF_EXISTS(pSettings, r_float, af_section, "movement_speed_modifier", 0.0f);
+			val = pSettings->read_if_exists<float>(af_section, "movement_speed_modifier", 0.0f);
 			if (!fis_zero(val))
 			{
 				setValue(m_movement_speed_modifier, val * pInvItem.GetCondition());
@@ -300,7 +300,7 @@ void CUIArtefactParams::SetInfo(CInventoryItem& pInvItem)
 
 		if (m_sleepiness_restore_speed)
 		{
-			val = READ_IF_EXISTS(pSettings, r_float, af_section, "sleepiness_restore_speed", 0.0f);
+			val = pSettings->read_if_exists<float>(af_section, "sleepiness_restore_speed", 0.0f);
 			if (!fis_zero(val))
 			{
 				setValue(m_sleepiness_restore_speed, val * pInvItem.GetCondition());
@@ -309,7 +309,7 @@ void CUIArtefactParams::SetInfo(CInventoryItem& pInvItem)
 
 		if (m_equipment_durability_modifier)
 		{
-			val = READ_IF_EXISTS(pSettings, r_float, af_section, "equipment_durability_modifier", 1.0f);
+			val = pSettings->read_if_exists<float>(af_section, "equipment_durability_modifier", 1.0f);
 			if (!fsimilar(val, 1.0f))
 			{
 				setValue(m_equipment_durability_modifier, (1.0f - val) * pInvItem.GetCondition());
@@ -318,7 +318,7 @@ void CUIArtefactParams::SetInfo(CInventoryItem& pInvItem)
 
 		if (m_inventory_weight_modifier)
 		{
-			val = READ_IF_EXISTS(pSettings, r_float, af_section, "inventory_weight_modifier", 1.0f);
+			val = pSettings->read_if_exists<float>(af_section, "inventory_weight_modifier", 1.0f);
 			if (!fsimilar(val, 1.0f))
 			{
 				setValue(m_inventory_weight_modifier, (1.0f - val) * pInvItem.GetCondition());
@@ -327,7 +327,7 @@ void CUIArtefactParams::SetInfo(CInventoryItem& pInvItem)
 	}
 	else if (!is_backpack())
 	{
-		u32 count = READ_IF_EXISTS(pSettings, r_u32, af_section, "artefact_count", 0);
+		u32 count = pSettings->read_if_exists<u32>(af_section, "artefact_count", 0);
 		if (count > 0 && m_af_slots)
 		{
 			setValue(m_af_slots, count);
@@ -336,7 +336,7 @@ void CUIArtefactParams::SetInfo(CInventoryItem& pInvItem)
 
 	if (m_additional_weight)
 	{
-		val	= READ_IF_EXISTS(pSettings, r_float, af_section, "additional_inventory_weight", 0.0f);
+		val	= pSettings->read_if_exists<float>(af_section, "additional_inventory_weight", 0.0f);
 		if ( !fis_zero(val) )
 		{
 			setValue(m_additional_weight, val * (is_artefact() ? pInvItem.GetCondition() : 1));

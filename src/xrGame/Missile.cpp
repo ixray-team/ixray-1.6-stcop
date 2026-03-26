@@ -68,7 +68,7 @@ void CMissile::Load(const char* section)
 	m_vThrowPoint		= pSettings->r_fvector3(section,"throw_point");
 	m_vThrowDir			= pSettings->r_fvector3(section,"throw_dir");
 
-	m_ef_weapon_type	= READ_IF_EXISTS(pSettings,r_u32,section,"ef_weapon_type",u32(-1));
+	m_ef_weapon_type	= pSettings->read_if_exists<u32>(section,"ef_weapon_type",u32(-1));
 
 	if (pSettings->line_exist(section, "checkout_bones"))
 	{

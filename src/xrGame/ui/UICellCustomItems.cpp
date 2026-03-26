@@ -28,7 +28,7 @@ CUIInventoryCellItem::CUIInventoryCellItem(CInventoryItem* itm)
 {
 	m_pData = (void*)itm;
 
-	const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, itm->m_section_id, "icons_texture", nullptr);
+	const char* icons_texture = pSettings->read_if_exists<LPCSTR>(itm->m_section_id,"icons_texture",nullptr);
 
 	const bool isRaster = !(pSettings->line_exist(itm->m_section_id, kUIConfigField_InventoryVectorIcon));
 

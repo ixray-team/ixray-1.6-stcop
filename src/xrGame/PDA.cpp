@@ -41,7 +41,7 @@ void CPda::Load(const char* section)
 	inherited::Load(section);
 
 	m_fRadius = pSettings->r_float(section, "radius");
-	m_functor_str = READ_IF_EXISTS(pSettings, r_string, section, "play_function", "");
+	m_functor_str = pSettings->read_if_exists<LPCSTR>(section,"play_function","");
 
 	IPowerManager::SetSelfObject(cast_inventory_item(), H_Parent());
 	IPowerManager::Load(section, cast_inventory_item());

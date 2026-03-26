@@ -47,7 +47,7 @@ EWristwatchDisplayType ToDisplayType(LPCSTR value)
 
 void ReadSharedString(shared_str& dest, LPCSTR key, LPCSTR defaultValue)
 {
-	dest = READ_IF_EXISTS(pSettings, r_string, kSection, key, defaultValue);
+	dest = pSettings->read_if_exists<LPCSTR>(kSection, key, defaultValue);
 }
 
 void ResolveFontTextureFromConfig(SWristwatchRuntimeSettings& settings)
@@ -91,21 +91,16 @@ void UpdateContentReady(SWristwatchRuntimeSettings& settings)
 
 void LoadFromIni(SWristwatchRuntimeSettings& settings)
 {
-	settings.game.displayType = ToDisplayType(
-		READ_IF_EXISTS(pSettings, r_string, kSection, "display_type", ""));
-	settings.game.preSurgeWindow = READ_IF_EXISTS(
-		pSettings, r_u32, kSection, "pre_surge_window", 0);
-	settings.game.radiationGlowMaxMsv = READ_IF_EXISTS(
-		pSettings, r_float, kSection, "radiation_glow_max_msv", 0.0f);
-	settings.game.anomalyGlitchRadius = READ_IF_EXISTS(
-		pSettings, r_float, kSection, "anomaly_glitch_radius", 0.0f);
-	settings.game.replaceSurgeNotifications = READ_IF_EXISTS(
-		pSettings, r_bool, kSection, "replace_surge_notifications", false);
+	settings.game.displayType = ToDisplayType(pSettings->read_if_exists<LPCSTR>(kSection, "display_type", ""));
+	settings.game.preSurgeWindow = pSettings->read_if_exists<u32>(kSection, "pre_surge_window", 0);
+	settings.game.radiationGlowMaxMsv = pSettings->read_if_exists<float>(kSection, "radiation_glow_max_msv", 0.0f);
+	settings.game.anomalyGlitchRadius = pSettings->read_if_exists<float>(kSection, "anomaly_glitch_radius", 0.0f);
+	settings.game.replaceSurgeNotifications = pSettings->read_if_exists<bool>(kSection, "replace_surge_notifications", false);
 
-	settings.lcdCenterX = READ_IF_EXISTS(pSettings, r_float, kSection, "watches_lcd_center_x", 0.0f);
-	settings.lcdCenterY = READ_IF_EXISTS(pSettings, r_float, kSection, "watches_lcd_center_y", 0.0f);
-	settings.lcdHalfW = READ_IF_EXISTS(pSettings, r_float, kSection, "watches_lcd_half_w", 0.0f);
-	settings.lcdHalfH = READ_IF_EXISTS(pSettings, r_float, kSection, "watches_lcd_half_h", 0.0f);
+	settings.lcdCenterX = pSettings->read_if_exists<float>(kSection, "watches_lcd_center_x", 0.0f);
+	settings.lcdCenterY = pSettings->read_if_exists<float>(kSection, "watches_lcd_center_y", 0.0f);
+	settings.lcdHalfW = pSettings->read_if_exists<float>(kSection, "watches_lcd_half_w", 0.0f);
+	settings.lcdHalfH = pSettings->read_if_exists<float>(kSection, "watches_lcd_half_h", 0.0f);
 
 	ReadSharedString(settings.digitalTexture, "watches_digital_texture", "");
 	ReadSharedString(settings.glassTexture, "watches_glass_texture", "");
@@ -134,8 +129,8 @@ void LoadFromIni(SWristwatchRuntimeSettings& settings)
 	ReadSharedString(settings.surgeHooksFn, "watches_surge_hooks_fn", "");
 	ReadSharedString(settings.glassMeshSubstr, "watches_glass_mesh_substr", "");
 
-	settings.debugLcdPass = READ_IF_EXISTS(pSettings, r_u8, kSection, "watches_debug_lcd_pass", 0);
-	settings.forceSkipGlassDraw = READ_IF_EXISTS(pSettings, r_bool, kSection, "watches_force_skip_glass", true);
+	settings.debugLcdPass = pSettings->read_if_exists<u8>(kSection, "watches_debug_lcd_pass", 0);
+	settings.forceSkipGlassDraw = pSettings->read_if_exists<bool>(kSection, "watches_force_skip_glass", true);
 
 	ResolveFontTextureFromConfig(settings);
 }

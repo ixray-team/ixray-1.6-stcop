@@ -1187,7 +1187,7 @@ void SpawnManager_ProcessSections(Section& sections, size_t& number_imgui)
 bool SpawnManager_RenderButtonOrImage(CInifile::Sect* section, const char* imname)
 {
 	auto name = section->Name.c_str();
-	const auto surface = READ_IF_EXISTS(pSettings, r_string, name, "icons_texture", "ui\\ui_icon_equipment");
+	const auto surface = pSettings->read_if_exists<LPCSTR>(name,"icons_texture","ui\\ui_icon_equipment");
 	const auto surfaceParams = ::Render->getSurface(surface);
 
 	bool isIcon = section->line_exist("inv_grid_x")
@@ -1198,7 +1198,7 @@ bool SpawnManager_RenderButtonOrImage(CInifile::Sect* section, const char* imnam
 	if (surfaceParams.Surface == nullptr || !isIcon)
 		return ImGui::Button(imname);
 
-	float scaleIcon = READ_IF_EXISTS(pSettings, r_float, name, "inv_scale", 1.0f);
+	float scaleIcon = pSettings->read_if_exists<float>(name, "inv_scale", 1.0f);
 	float x = pSettings->r_float(name, "inv_grid_x") * INV_GRID_WIDTH(scaleIcon);
 	float y = pSettings->r_float(name, "inv_grid_y") * INV_GRID_HEIGHT(scaleIcon);
 	float w = pSettings->r_float(name, "inv_grid_width") * INV_GRID_WIDTH(scaleIcon);
@@ -1374,7 +1374,7 @@ Section FilterSectionsWithSearch(const Section& sections, const char* searchBuff
 
 			xr_string lowerSectionName = xr_strlwr_rus(sectionKey);
 
-			const char* rawName = READ_IF_EXISTS(pSettings, r_string, sectionKey, "inv_name", sectionKey);
+			const char* rawName = pSettings->read_if_exists<LPCSTR>(sectionKey,"inv_name",sectionKey);
 
 			xr_string lowerTranslated = xr_strlwr_rus(g_pStringTable->translate(rawName).c_str());
 

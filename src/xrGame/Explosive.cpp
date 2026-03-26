@@ -89,7 +89,7 @@ void CExplosive::Load(const char* section)
 
 void CExplosive::Load(CInifile const *ini,const char* section)
 {
-	m_bDisableEffector = READ_IF_EXISTS(pSettings, r_bool, section, "disable_effector", false);
+	m_bDisableEffector = pSettings->read_if_exists<bool>(section,"disable_effector",false);
 	m_fBlastHit			= ini->r_float(section,"blast");
 	m_fBlastRadius		= ini->r_float(section,"blast_r");
 	m_fBlastHitImpulse	= ini->r_float(section,"blast_impulse");
@@ -129,17 +129,17 @@ void CExplosive::Load(CInifile const *ini,const char* section)
 		m_wallmark_manager.Load(ini->r_string(section, "wallmark_section"));
 	}
 
-	m_bHideInExplosion = READ_IF_EXISTS(ini, r_bool, section, "hide_in_explosion", true);
-	m_fExplodeHideDurationMax = READ_IF_EXISTS(ini, r_float, section, "explode_hide_duration", 0);
+	m_bHideInExplosion = ini->read_if_exists<bool>(section,"hide_in_explosion",true);
+	m_fExplodeHideDurationMax = ini->read_if_exists<float>(section,"explode_hide_duration",0);
 
-	m_bDynamicParticles	 = READ_IF_EXISTS(ini, r_bool, section, "dynamic_explosion_particles", false);
+	m_bDynamicParticles	 = ini->read_if_exists<bool>(section,"dynamic_explosion_particles",false);
 
-	m_bIsGasExplosive = READ_IF_EXISTS(pSettings, r_bool, section, "is_gas_explosive", false);
-	m_sBlastActorCallback = READ_IF_EXISTS(pSettings, r_string, section, "actor_blast_callback", "");
-	m_sBlastBeginActorCallback = READ_IF_EXISTS(pSettings, r_string, section, "actor_blast_begin_callback", "");
-	m_sBlastEndActorCallback = READ_IF_EXISTS(pSettings, r_string, section, "actor_blast_end_callback", "");
-	m_uBlastUpdateTime = READ_IF_EXISTS(pSettings, r_u32, section, "blast_update_time", 2000);
-	m_uParticlesUpdateTime = READ_IF_EXISTS(pSettings, r_u32, section, "particles_update_time", 500);
+	m_bIsGasExplosive = pSettings->read_if_exists<bool>(section,"is_gas_explosive",false);
+	m_sBlastActorCallback = pSettings->read_if_exists<LPCSTR>(section,"actor_blast_callback","");
+	m_sBlastBeginActorCallback = pSettings->read_if_exists<LPCSTR>(section,"actor_blast_begin_callback","");
+	m_sBlastEndActorCallback = pSettings->read_if_exists<LPCSTR>(section,"actor_blast_end_callback","");
+	m_uBlastUpdateTime = pSettings->read_if_exists<u32>(section,"blast_update_time",2000);
+	m_uParticlesUpdateTime = pSettings->read_if_exists<u32>(section,"particles_update_time",500);
 }
 
 void CExplosive::net_Destroy	()

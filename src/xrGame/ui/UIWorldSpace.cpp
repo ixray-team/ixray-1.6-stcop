@@ -2,7 +2,7 @@
 #include "UIWorldSpace.h"
 #include "../Include/xrRender/Kinematics.h"
 
-static Fvector GetBonePosition(const CGameObject* obj, u16 bone_id) // TODO Emmis: должно ли это быть тут?
+static Fvector GetBonePosition(const CGameObject* obj, u16 bone_id) // TODO Emmis: пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ?
 {
 	Fmatrix matrix;
 	matrix.mul_43(obj->XFORM(), PKinematics(obj->Visual())->LL_GetTransform(bone_id));
@@ -10,10 +10,10 @@ static Fvector GetBonePosition(const CGameObject* obj, u16 bone_id) // TODO Emmi
 }
 
 CWorldSpaceElement::CWorldSpaceElement(const CGameObject* attached_object, const char* section)
-	: m_hasAttachedBone(xr_strcmp(READ_IF_EXISTS(pSettings, r_string, section, "attach_bone", "nil"), "nil") != 0)
-	, m_show(READ_IF_EXISTS(pSettings, r_bool, section, "show", true))
+	: m_hasAttachedBone(xr_strcmp(pSettings->read_if_exists<str_c>(section, "attach_bone", "nil"), "nil") != 0)
+	, m_show(pSettings->read_if_exists<bool>(section, "show", true))
 	, m_attachedBoneID(BI_NONE)
-	, m_showDistance(READ_IF_EXISTS(pSettings, r_float, section, "show_distance", 10.0f))
+	, m_showDistance(pSettings->read_if_exists<float>(section, "show_distance", 10.0f))
 {
 	if (m_hasAttachedBone)
 	{
@@ -37,7 +37,7 @@ CWorldSpaceElement::CWorldSpaceElement(const CGameObject* attached_object, const
 		}
 	}
 
-	m_pBillboard = new CBillboard(READ_IF_EXISTS(pSettings, r_string, section, "billboard", "ws_default_element"));
+	m_pBillboard = new CBillboard(pSettings->read_if_exists<str_c>(section, "billboard", "ws_default_element"));
 }
 
 CWorldSpaceElement::~CWorldSpaceElement()
@@ -96,7 +96,7 @@ CWorldSpaceElement* CUIWorldSpaceManager::GetWorldSpaceElement(const CGameObject
 	}
 	return nullptr;
 }
-// TODO Emmis: когда будет нормальная реализация билборда, не забыть про этот метод
+// TODO Emmis: пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 void CUIWorldSpaceManager::ElementSetText(const CGameObject* attached_object, const char* section, const char* text)
 {
 	CWorldSpaceElement* ws_element = GetWorldSpaceElement(attached_object, section);

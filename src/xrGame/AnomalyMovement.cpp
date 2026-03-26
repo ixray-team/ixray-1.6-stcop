@@ -1,4 +1,3 @@
-#pragma once
 #include "StdAfx.h"
 #include "AnomalyMovement.h"
 #include "object_broker.h"
@@ -18,7 +17,7 @@ void TAnomalyMovement::BeginComponent(IECSOwner* O)
 
 void TAnomalyMovement::EndComponent() { }
 
-// ГГ берет артефакт с земли где то в пределах 160 метров от артефакта до аномалии
+// пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 160 пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 void TAnomalyMovement::OnActorTakeArtefact(float scan_radius, CArtefact* artefact, Fvector actorPos)
 {
 	if (!m_use_movement)
@@ -49,28 +48,28 @@ bool TAnomalyMovement::IsNeedScanObjects()
 
 void TAnomalyMovement::Load(const char* section)
 {
-	xr_string options_section = READ_IF_EXISTS(pSettings, r_string, section, "movement_options_section", "");
+	xr_string options_section = pSettings->read_if_exists<str_c>(section, "movement_options_section", "");
 	if (!options_section.empty())
 	{
 		const char* sect = options_section.c_str();
-		m_use_movement = READ_IF_EXISTS(pSettings, r_bool, sect, "use_movement", false);
+		m_use_movement = pSettings->read_if_exists<bool>(sect, "use_movement", false);
 		if (m_use_movement)
 		{
-			draw_dbg = READ_IF_EXISTS(pSettings, r_bool, sect, "draw_debug", false); // отладка
+			draw_dbg = pSettings->read_if_exists<bool>(sect, "draw_debug", false); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
-			max_processing_distance = READ_IF_EXISTS(pSettings, r_float, sect, "max_processing_distance", max_processing_distance); // дистанция обновления
+			max_processing_distance = pSettings->read_if_exists<float>(sect, "max_processing_distance", max_processing_distance); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
-			m_use_movement_always_mode = READ_IF_EXISTS(pSettings, r_bool, sect, "use_movement_always_mode", false);
+			m_use_movement_always_mode = pSettings->read_if_exists<bool>(sect, "use_movement_always_mode", false);
 
-			m_use_movement_magnetic_on_inside_alive_mode = READ_IF_EXISTS(pSettings, r_bool, sect, "use_movement_magnetic_on_inside_alive_mode", false);
-			movement_magnetic_on_inside_alive_mode_speed = READ_IF_EXISTS(pSettings, r_float, sect, "movement_magnetic_on_inside_alive_mode_speed", false);
+			m_use_movement_magnetic_on_inside_alive_mode = pSettings->read_if_exists<bool>(sect, "use_movement_magnetic_on_inside_alive_mode", false);
+			movement_magnetic_on_inside_alive_mode_speed = pSettings->read_if_exists<float>(sect, "movement_magnetic_on_inside_alive_mode_speed", false);
 
-			m_use_movement_magnetic_on_take_artefacts_mode = READ_IF_EXISTS(pSettings, r_bool, sect, "use_movement_magnetic_on_take_artefacts_mode", false);
-			m_max_timer_magnetic_on_take_artefacts = READ_IF_EXISTS(pSettings, r_float, sect, "milliseconds_time_magnetic_on_take_artefacts", 0.f);
-			movement_magnetic_on_take_artefacts_mode_speed = READ_IF_EXISTS(pSettings, r_float, sect, "movement_magnetic_on_take_artefacts_mode_speed", 0.f);
+			m_use_movement_magnetic_on_take_artefacts_mode = pSettings->read_if_exists<bool>(sect, "use_movement_magnetic_on_take_artefacts_mode", false);
+			m_max_timer_magnetic_on_take_artefacts = pSettings->read_if_exists<float>(sect, "milliseconds_time_magnetic_on_take_artefacts", 0.f);
+			movement_magnetic_on_take_artefacts_mode_speed = pSettings->read_if_exists<float>(sect, "movement_magnetic_on_take_artefacts_mode_speed", 0.f);
 
-			m_movement_speed = READ_IF_EXISTS(pSettings, r_float, sect, "movement_speed", 1.5f);
-			m_movement_radius = READ_IF_EXISTS(pSettings, r_float, sect, "movement_radius", 15.f);
+			m_movement_speed = pSettings->read_if_exists<float>(sect, "movement_speed", 1.5f);
+			m_movement_radius = pSettings->read_if_exists<float>(sect, "movement_radius", 15.f);
 		}
 	}
 }

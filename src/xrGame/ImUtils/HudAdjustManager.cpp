@@ -353,37 +353,37 @@ void RenderHUDAdjustManager()
 											case EHudOffsetType::eAim:
 											{
 												xr_strconcat(val_name, "aim_hud_offset_pos", _prefix);
-												position = READ_IF_EXISTS(pSettings, r_fvector3, p_item->m_sect_name, val_name, zero_vel);
+												position = pSettings->read_if_exists<Fvector3>(p_item->m_sect_name, val_name, zero_vel);
 												break;
 											}
 											case EHudOffsetType::eAimGL:
 											{
 												xr_strconcat(val_name, "gl_hud_offset_pos", _prefix);
-												position = READ_IF_EXISTS(pSettings, r_fvector3, p_item->m_sect_name, val_name, zero_vel);
+												position = pSettings->read_if_exists<Fvector3>(p_item->m_sect_name, val_name, zero_vel);
 												break;
 											}
 											case EHudOffsetType::eAimAlt:
 											{
 												xr_strconcat(val_name, "alter_aim_hud_offset_pos", _prefix);
-												position = READ_IF_EXISTS(pSettings, r_fvector3, p_item->m_sect_name, val_name, zero_vel);
+												position = pSettings->read_if_exists<Fvector3>(p_item->m_sect_name, val_name, zero_vel);
 												break;
 											}
 											case EHudOffsetType::eSafemode:
 											{
 												xr_strconcat(val_name, "safemode_hud_offset_pos", _prefix);
-												position = READ_IF_EXISTS(pSettings, r_fvector3, p_item->m_sect_name, val_name, zero_vel);
+												position = pSettings->read_if_exists<Fvector3>(p_item->m_sect_name, val_name, zero_vel);
 												break;
 											}
 											case EHudOffsetType::eCollision:
 											{
 												xr_strconcat(val_name, "collision_hud_offset_pos", _prefix);
-												position = READ_IF_EXISTS(pSettings, r_fvector3, p_item->m_sect_name, val_name, zero_vel);
+												position = pSettings->read_if_exists<Fvector3>(p_item->m_sect_name, val_name, zero_vel);
 												break;
 											}
 											default:
 											{
 												xr_strconcat(val_name, "hands_position", _prefix);
-												position = READ_IF_EXISTS(pSettings, r_fvector3, p_item->m_sect_name, val_name, zero_vel);
+												position = pSettings->read_if_exists<Fvector3>(p_item->m_sect_name, val_name, zero_vel);
 												break;
 											}
 											};
@@ -413,37 +413,37 @@ void RenderHUDAdjustManager()
 											case EHudOffsetType::eAim:
 											{
 												xr_strconcat(val_name, "aim_hud_offset_rot", _prefix);
-												rotation = READ_IF_EXISTS(pSettings, r_fvector3, p_item->m_sect_name, val_name, zero_vel);
+												rotation = pSettings->read_if_exists<Fvector3>(p_item->m_sect_name, val_name, zero_vel);
 												break;
 											}
 											case EHudOffsetType::eAimGL:
 											{
 												xr_strconcat(val_name, "gl_hud_offset_rot", _prefix);
-												rotation = READ_IF_EXISTS(pSettings, r_fvector3, p_item->m_sect_name, val_name, zero_vel);
+												rotation = pSettings->read_if_exists<Fvector3>(p_item->m_sect_name, val_name, zero_vel);
 												break;
 											}
 											case EHudOffsetType::eAimAlt:
 											{
 												xr_strconcat(val_name, "alter_aim_hud_offset_rot", _prefix);
-												rotation = READ_IF_EXISTS(pSettings, r_fvector3, p_item->m_sect_name, val_name, zero_vel);
+												rotation = pSettings->read_if_exists<Fvector3>(p_item->m_sect_name, val_name, zero_vel);
 												break;
 											}
 											case EHudOffsetType::eSafemode:
 											{
 												xr_strconcat(val_name, "safemode_hud_offset_rot", _prefix);
-												rotation = READ_IF_EXISTS(pSettings, r_fvector3, p_item->m_sect_name, val_name, zero_vel);
+												rotation = pSettings->read_if_exists<Fvector3>(p_item->m_sect_name, val_name, zero_vel);
 												break;
 											}
 											case EHudOffsetType::eCollision:
 											{
 												xr_strconcat(val_name, "collision_hud_offset_rot", _prefix);
-												rotation = READ_IF_EXISTS(pSettings, r_fvector3, p_item->m_sect_name, val_name, zero_vel);
+												rotation = pSettings->read_if_exists<Fvector3>(p_item->m_sect_name, val_name, zero_vel);
 												break;
 											}
 											default:
 											{
 												xr_strconcat(val_name, "hands_orientation", _prefix);
-												rotation = READ_IF_EXISTS(pSettings, r_fvector3, p_item->m_sect_name, val_name, zero_vel);
+												rotation = pSettings->read_if_exists<Fvector3>(p_item->m_sect_name, val_name, zero_vel);
 												break;
 											}
 											}
@@ -596,9 +596,9 @@ void RenderHUDAdjustManager()
 
 								if (ImGui::Button("Reset##TLOffset"))
 								{
-									position.x = READ_IF_EXISTS(pSettings, r_float, lt->Section, "torch_attach_offset_x", 0.0f);
-									position.y = READ_IF_EXISTS(pSettings, r_float, lt->Section, "torch_attach_offset_y", 0.0f);
-									position.z = READ_IF_EXISTS(pSettings, r_float, lt->Section, "torch_attach_offset_z", 0.0f);
+									position.x = pSettings->read_if_exists<float>(lt->Section, "torch_attach_offset_x", 0.0f);
+									position.y = pSettings->read_if_exists<float>(lt->Section, "torch_attach_offset_y", 0.0f);
+									position.z = pSettings->read_if_exists<float>(lt->Section, "torch_attach_offset_z", 0.0f);
 								}
 
 								if (ImGui::BeginTable("Data##TLOffset", 1))
@@ -625,11 +625,11 @@ void RenderHUDAdjustManager()
 
 								if (ImGui::Button("Reset##TLOffset"))
 								{
-									position.x = READ_IF_EXISTS(pSettings, r_float, ll->Section, "laserdot_attach_offset_x", 0.0f);
-									position.y = READ_IF_EXISTS(pSettings, r_float, ll->Section, "laserdot_attach_offset_y", 0.0f);
-									position.z = READ_IF_EXISTS(pSettings, r_float, ll->Section, "laserdot_attach_offset_z", 0.0f);
+									position.x = pSettings->read_if_exists<float>(ll->Section, "laserdot_attach_offset_x", 0.0f);
+									position.y = pSettings->read_if_exists<float>(ll->Section, "laserdot_attach_offset_y", 0.0f);
+									position.z = pSettings->read_if_exists<float>(ll->Section, "laserdot_attach_offset_z", 0.0f);
 
-									position = READ_IF_EXISTS(pSettings, r_fvector3, ll->Section, "laserdot_attach_offset", position);
+									position = pSettings->read_if_exists<Fvector3>(ll->Section, "laserdot_attach_offset", position);
 								}
 
 								if (ImGui::BeginTable("Data##TLOffset", 1))
@@ -650,7 +650,7 @@ void RenderHUDAdjustManager()
 								Fvector2& angle = ll->LightSpotAngle;
 								if (ImGui::Button("Reset##TLAngle"))
 								{
-									angle = READ_IF_EXISTS(pSettings, r_fvector2, ll->Section, "laser_spot_angle", angle.set(2, 5));
+									angle = pSettings->read_if_exists<Fvector2>(ll->Section, "laser_spot_angle", angle.set(2, 5));
 									angle.mul(M_PI / 180);
 								}
 

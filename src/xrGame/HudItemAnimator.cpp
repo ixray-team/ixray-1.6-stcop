@@ -25,7 +25,7 @@ void CHudItemAnimator::Load()
 		m_sounds.LoadSound(m_section.c_str(), "sound_1", "sndSnd", true);
 	}
 
-	m_bBlend = READ_IF_EXISTS(pSettings, r_bool, m_section, "blend", false);
+	m_bBlend = pSettings->read_if_exists<bool>(m_section, "blend", false);
 }
 
 void CHudItemAnimator::Update()
@@ -106,7 +106,7 @@ void CHudItemAnimator::StartAnimator(const shared_str& section)
 
 	m_section = section;
 
-	m_sLuaModifySect = READ_IF_EXISTS(pSettings, r_string, m_section, "modify_sect_lua_callback", "null");
+	m_sLuaModifySect = pSettings->read_if_exists<LPCSTR>(m_section,"modify_sect_lua_callback","null");
 
 	if (m_sLuaModifySect != "null")
 	{
@@ -122,7 +122,7 @@ void CHudItemAnimator::StartAnimator(const shared_str& section)
 		}
 	}
 
-	m_sLuaPrecondFunc = READ_IF_EXISTS(pSettings, r_string, m_section, "precondition_functor", "null");
+	m_sLuaPrecondFunc = pSettings->read_if_exists<LPCSTR>(m_section,"precondition_functor","null");
 
 	if (m_sLuaPrecondFunc != "null")
 	{
@@ -347,7 +347,7 @@ void CBackpackAnimator::SwitchAnimator()
 	}
 	else if (!m_bNeedActivated && GetState() == eHidden && g_player_hud->GetAnimator() == nullptr)
 	{
-		m_sLuaModifySect = READ_IF_EXISTS(pSettings, r_string, m_section, "modify_sect_lua_callback", "null");
+		m_sLuaModifySect = pSettings->read_if_exists<LPCSTR>(m_section,"modify_sect_lua_callback","null");
 
 		if (m_sLuaModifySect != "null")
 		{
@@ -601,7 +601,7 @@ void CBurnAnimator::StartAnimator()
 		return;
 	}
 
-	m_sLuaModifySect = READ_IF_EXISTS(pSettings, r_string, m_section, "modify_sect_lua_callback", "null");
+	m_sLuaModifySect = pSettings->read_if_exists<LPCSTR>(m_section,"modify_sect_lua_callback","null");
 
 	if (m_sLuaModifySect != "null")
 	{
@@ -617,7 +617,7 @@ void CBurnAnimator::StartAnimator()
 		}
 	}
 
-	m_sLuaPrecondFunc = READ_IF_EXISTS(pSettings, r_string, m_section, "precondition_functor", "null");
+	m_sLuaPrecondFunc = pSettings->read_if_exists<LPCSTR>(m_section,"precondition_functor","null");
 
 	if (m_sLuaPrecondFunc != "null")
 	{

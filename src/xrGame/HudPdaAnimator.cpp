@@ -29,22 +29,22 @@ void CHudPdaAnimator::Load()
 	m_sounds.LoadSound(m_section.c_str(), "snd_btn_press", "sndButtonPress");
 	m_sounds.LoadSound(m_section.c_str(), "snd_btn_release", "sndButtonRelease");
 
-	m_fBlowoutLevel = READ_IF_EXISTS(pSettings, r_float, m_section, "blowout_anim_level", 1000.0f);
-	m_fZoomRotateTime = READ_IF_EXISTS(pSettings, r_float, m_section, "zoom_rotate_time", 0.25f);
+	m_fBlowoutLevel = pSettings->read_if_exists<float>(m_section, "blowout_anim_level", 1000.0f);
+	m_fZoomRotateTime = pSettings->read_if_exists<float>(m_section, "zoom_rotate_time", 0.25f);
 
 	//m_base_inertion = m_current_inertion;
 
-	m_zoom_inertion.PitchOffsetR = READ_IF_EXISTS(pSettings, r_float, m_section, "inertion_aim_pitch_offset_r", 0.0f);
-	m_zoom_inertion.PitchOffsetD = READ_IF_EXISTS(pSettings, r_float, m_section, "inertion_aim_pitch_offset_d", 0.0f);
-	m_zoom_inertion.PitchOffsetN = READ_IF_EXISTS(pSettings, r_float, m_section, "inertion_aim_pitch_offset_n", 0.0f);
+	m_zoom_inertion.PitchOffsetR = pSettings->read_if_exists<float>(m_section, "inertion_aim_pitch_offset_r", 0.0f);
+	m_zoom_inertion.PitchOffsetD = pSettings->read_if_exists<float>(m_section, "inertion_aim_pitch_offset_d", 0.0f);
+	m_zoom_inertion.PitchOffsetN = pSettings->read_if_exists<float>(m_section, "inertion_aim_pitch_offset_n", 0.0f);
 
-	m_zoom_inertion.OriginOffset = READ_IF_EXISTS(pSettings, r_float, m_section, "inertion_aim_origin_offset", ORIGIN_OFFSET * 0.5f);
-	m_zoom_inertion.TendtoSpeed = READ_IF_EXISTS(pSettings, r_float, m_section, "inertion_aim_tendto_speed", TENDTO_SPEED);
+	m_zoom_inertion.OriginOffset = pSettings->read_if_exists<float>(m_section, "inertion_aim_origin_offset", ORIGIN_OFFSET * 0.5f);
+	m_zoom_inertion.TendtoSpeed = pSettings->read_if_exists<float>(m_section, "inertion_aim_tendto_speed", TENDTO_SPEED);
 
-	m_fHudFovZoomFactor = READ_IF_EXISTS(pSettings, r_float, m_section, "hud_fov_zoom_factor", m_fHudFovFactor);
-	m_thumb_rot[0] = READ_IF_EXISTS(pSettings, r_float, m_section, "thumb_rot_x", 0.f);
-	m_thumb_rot[1] = READ_IF_EXISTS(pSettings, r_float, m_section, "thumb_rot_y", 0.f);
-	m_joystick_bone = READ_IF_EXISTS(pSettings, r_string, m_section, "joystick_bone", nullptr);
+	m_fHudFovZoomFactor = pSettings->read_if_exists<float>(m_section, "hud_fov_zoom_factor", m_fHudFovFactor);
+	m_thumb_rot[0] = pSettings->read_if_exists<float>(m_section, "thumb_rot_x", 0.f);
+	m_thumb_rot[1] = pSettings->read_if_exists<float>(m_section, "thumb_rot_y", 0.f);
+	m_joystick_bone = pSettings->read_if_exists<LPCSTR>(m_section, "joystick_bone", nullptr);
 }
 
 void CHudPdaAnimator::Update()
@@ -659,7 +659,7 @@ float CHudPdaAnimator::GetPDAScreen_kx()
 			const char* pda_animator = pGameGlobals->r_string("pda", "pda_animator");
 			if (pSettings->section_exist(pda_animator))
 			{
-				return READ_IF_EXISTS(pSettings, r_float, pda_animator, "screen_kx", 1.0f);
+				return pSettings->read_if_exists<float>(pda_animator, "screen_kx", 1.0f);
 			}
 		}
 	}

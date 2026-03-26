@@ -38,7 +38,7 @@ CEngineExternal::CEngineExternal() :
 		//R_ASSERT2(false, "Unknown platform mode specified. Please check your engine_external.ltx.");
 	}
 
-	gamesaveSize = READ_IF_EXISTS(pOptions, r_ivector2, "general", "SaveImageSize", Ivector2().set(128, 128));
+	gamesaveSize = pOptions->read_if_exists<Ivector2>("general", "SaveImageSize", Ivector2().set(128, 128));
 }
 
 CEngineExternal::~CEngineExternal() 
@@ -48,23 +48,45 @@ CEngineExternal::~CEngineExternal()
 
 xr_string CEngineExternal::GetTitle() const
 {
-	return READ_IF_EXISTS(pOptions, r_string_wb, "general", "title", "IX-Ray Platform").c_str();
+	auto Title = pOptions->r_string_wb_nullable("general", "title");
+	if (Title.size())
+	{
+		return Title.c_str();
+	}
+	return "IX-Ray Platform";
 }
 
 const char* CEngineExternal::GetPlayerHudOmfAdditional() const
 {
-	return READ_IF_EXISTS(pOptions, r_string_wb, "player_hud", "PlayerHudOmfAdditional", "").c_str();
+	auto HUD = pOptions->r_string_wb_nullable("player_hud", "PlayerHudOmfAdditional");
+	if (HUD.size())
+	{
+		return HUD.c_str();
+	}
+	return "";
 }
 
 const char* CEngineExternal::GetPreferredFallbackLanguage() const
 {
-	return READ_IF_EXISTS(pOptions, r_string_wb, "localization", "PreferedFallbackLanguage", "eng").c_str();
+	auto Lang = pOptions->r_string_wb_nullable("localization", "PreferedFallbackLanguage");
+	if (Lang.size())
+	{
+		return Lang.c_str();
+	}
+	return "eng";
 }
 
 const xr_vector<shared_str> CEngineExternal::StepWallmarksMaterials() const
 {
 	xr_vector<shared_str> TempVector;
-	xr_string Items = READ_IF_EXISTS(pOptions, r_string_wb, "step_wallmark", "materials", "").c_str();
+	xr_string Items = "";
+	{
+		auto SItems = pOptions->r_string_wb_nullable("step_wallmark", "materials");
+		if (SItems.size())
+		{
+			Items = SItems.c_str();
+		}
+	}
 
 	size_t MaterialsCount = _GetItemCount(Items.c_str());
 	TempVector.resize(MaterialsCount);
@@ -82,12 +104,22 @@ const xr_vector<shared_str> CEngineExternal::StepWallmarksMaterials() const
 
 const xr_string CEngineExternal::WallmarkLeft() const
 {
-	return READ_IF_EXISTS(pOptions, r_string_wb, "step_wallmark", "left_mark", "").c_str();
+	auto Mark = pOptions->r_string_wb_nullable("step_wallmark", "left_mark");
+	if (Mark.size())
+	{
+		return Mark.c_str();
+	}
+	return "";
 }
 
 const xr_string CEngineExternal::WallmarkRight() const
 {
-	return READ_IF_EXISTS(pOptions, r_string_wb, "step_wallmark", "right_mark", "").c_str();
+	auto Mark = pOptions->r_string_wb_nullable("step_wallmark", "right_mark");
+	if (Mark.size())
+	{
+		return Mark.c_str();
+	}
+	return "";
 }
 
 void CEngineExternal::InitPlatform(const char* pPlatformName)
@@ -136,7 +168,12 @@ const char* CEngineExternal::GetCurrentPlatformFullName()
 
 const char* CEngineExternal::GetCurrentPlatformName()
 {
-	return READ_IF_EXISTS(pOptions, r_string, "general", "Platform", "cop");
+	auto Platform = pOptions->r_string_wb_nullable("general", "Platform");
+	if (Platform.size())
+	{
+		return Platform.c_str();
+	}
+	return "cop";
 }
 
 EEngineExternalPlatform CEngineExternal::GetCurrentPlatform()
@@ -154,17 +191,22 @@ XRCORE_API CEngineExternal& EngineExternal()
 
 u32 CEngineExternal::GetFontAltasSize() const
 {
-	return READ_IF_EXISTS(pOptions, r_u32, "render", "FontAtlasSize", 4096);
+	return pOptions->read_if_exists<u32>("render", "FontAtlasSize", 4096);
 }
 
 float CEngineExternal::GetWeaponIconScaling() const
 {
-	return READ_IF_EXISTS(pOptions, r_float, "ui", "WeaponIconScale", 0.8f);
+	return pOptions->read_if_exists<float>("ui", "WeaponIconScale", 0.8f);
 }
 
 const char* CEngineExternal::PlatformMode() const
 {
-	return READ_IF_EXISTS(pOptions, r_string, "general", "Platform", "cop");
+	auto Platform = pOptions->r_string_wb_nullable("general", "Platform");
+	if (Platform.size())
+	{
+		return Platform.c_str();
+	}
+	return "cop";
 }
 
 bool CEngineExternal::ClearSkyMode() const
@@ -184,22 +226,27 @@ bool CEngineExternal::ShadowOfChernobylMode() const
 
 Fvector4 CEngineExternal::GetTalkDof() const
 {
-	return READ_IF_EXISTS(pOptions, r_fvector4, "gameplay", "TalkDof", Fvector4().set(0.0f, 0.5f, 5.0f, 0.0f));
+	return pOptions->read_if_exists<Fvector4>("gameplay", "TalkDof", Fvector4().set(0.0f, 0.5f, 5.0f, 0.0f));
 }
 
 float CEngineExternal::GetTalkFovScale() const
 {
-	return READ_IF_EXISTS(pOptions, r_float, "gameplay", "DialogFovScale", 0.7f);
+	return pOptions->read_if_exists<float>("gameplay", "DialogFovScale", 0.7f);
 }
 
 float CEngineExternal::GetSprintFovFactor() const
 {
-	return READ_IF_EXISTS(pOptions, r_float, "gameplay", "SprintFovFactor", 7.0f);
+	return pOptions->read_if_exists<float>("gameplay", "SprintFovFactor", 7.0f);
 }
 
 shared_str CEngineExternal::GetInventoryItemCountPrefix()
 {
-	return READ_IF_EXISTS(pOptions, r_string_wb, "ui", "InventoryItemCountPrefix", "x");
+	auto Prefix = pOptions->r_string_wb_nullable("ui", "InventoryItemCountPrefix");
+	if (Prefix.size())
+	{
+		return Prefix.c_str();
+	}
+	return "x";
 }
 
 CInifile* CEngineExternal::GetIniFile()

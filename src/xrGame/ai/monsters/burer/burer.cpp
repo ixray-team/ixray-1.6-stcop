@@ -115,15 +115,15 @@ void CBurer::Load(const char* section)
 
 	particle_gravi_wave = pSettings->r_string(section, "Particle_Gravi_Wave");
 	particle_gravi_prepare = pSettings->r_string(section, "Particle_Gravi_Prepare");
-	particle_tele_object = READ_IF_EXISTS(pSettings, r_string, section, "Particle_Tele_Object", "static\\fire_distort");
+	particle_tele_object = pSettings->read_if_exists<str_c>(section, "Particle_Tele_Object", "static\\fire_distort");
 
 	::Sound->create(sound_gravi_wave, pSettings->r_string(section, "sound_gravi_wave"), st_Effect, SOUND_TYPE_WORLD);
 	::Sound->create(sound_tele_hold, pSettings->r_string(section, "sound_tele_hold"), st_Effect, SOUND_TYPE_WORLD);
 	::Sound->create(sound_tele_throw, pSettings->r_string(section, "sound_tele_throw"), st_Effect, SOUND_TYPE_WORLD);
 
-	gravi.cooldown = READ_IF_EXISTS(pSettings, r_u32, section, "Gravi_Cooldown", 0.f);
-	gravi.min_dist = READ_IF_EXISTS(pSettings, r_float, section, "Gravi_MinDist", 6.f);
-	gravi.max_dist = READ_IF_EXISTS(pSettings, r_float, section, "Gravi_MaxDist", 0);
+	gravi.cooldown = pSettings->read_if_exists<u32>(section, "Gravi_Cooldown", 0.f);
+	gravi.min_dist = pSettings->read_if_exists<float>(section, "Gravi_MinDist", 6.f);
+	gravi.max_dist = pSettings->read_if_exists<float>(section, "Gravi_MaxDist", 0);
 	gravi.speed = pSettings->r_float(section, "Gravi_Speed");
 	gravi.step = pSettings->r_float(section, "Gravi_Step");
 	gravi.time_to_hold = pSettings->r_u32(section, "Gravi_Time_To_Hold");
@@ -132,67 +132,67 @@ void CBurer::Load(const char* section)
 	gravi.impulse_to_enemy = pSettings->r_float(section, "Gravi_Impulse_To_Enemy");
 	gravi.hit_power = pSettings->r_float(section, "Gravi_Hit_Power");
 
-	weight_to_stamina_hit = READ_IF_EXISTS(pSettings, r_float, section, "weight_to_stamina_hit", 0.02f);
-	weapon_drop_stamina_k = READ_IF_EXISTS(pSettings, r_float, section, "weapon_drop_stamina_k", 3.f);
+	weight_to_stamina_hit = pSettings->read_if_exists<float>(section, "weight_to_stamina_hit", 0.02f);
+	weapon_drop_stamina_k = pSettings->read_if_exists<float>(section, "weapon_drop_stamina_k", 3.f);
 
-	runaway_distance = READ_IF_EXISTS(pSettings, r_float, section, "runaway_distance", 6.f);
-	normal_distance = READ_IF_EXISTS(pSettings, r_float, section, "normal_distance", 12.f);
-	max_runaway_time = READ_IF_EXISTS(pSettings, r_u32, section, "max_runaway_time", 5000);
+	runaway_distance = pSettings->read_if_exists<float>(section, "runaway_distance", 6.f);
+	normal_distance = pSettings->read_if_exists<float>(section, "normal_distance", 12.f);
+	max_runaway_time = pSettings->read_if_exists<u32>(section, "max_runaway_time", 5000);
 
-	weapon_drop_velocity = READ_IF_EXISTS(pSettings, r_float, section, "weapon_drop_velocity", 8);
+	weapon_drop_velocity = pSettings->read_if_exists<float>(section, "weapon_drop_velocity", 8);
 
-	shield_cooldown = READ_IF_EXISTS(pSettings, r_u32, section, "shield_cooldown", 4000);
-	shield_time = READ_IF_EXISTS(pSettings, r_u32, section, "shield_time", 3000);
-	shield_keep_particle = READ_IF_EXISTS(pSettings, r_string, section, "shield_keep_particle", 0);
-	shield_keep_particle_period = READ_IF_EXISTS(pSettings, r_u32, section, "shield_keep_particle_period", 1000);
+	shield_cooldown = pSettings->read_if_exists<u32>(section, "shield_cooldown", 4000);
+	shield_time = pSettings->read_if_exists<u32>(section, "shield_time", 3000);
+	shield_keep_particle = pSettings->read_if_exists<LPCSTR>(section,"shield_keep_particle",nullptr);
+	shield_keep_particle_period = pSettings->read_if_exists<u32>(section, "shield_keep_particle_period", 1000);
 
-	shield_penetration_border = READ_IF_EXISTS(pSettings, r_float, section, "shield_penetration_border", shield_penetration_border);
-	shield_penetration_damage_coeff = READ_IF_EXISTS(pSettings, r_float, section, "shield_penetration_damage_coeff", shield_penetration_damage_coeff);
+	shield_penetration_border = pSettings->read_if_exists<float>(section, "shield_penetration_border", shield_penetration_border);
+	shield_penetration_damage_coeff = pSettings->read_if_exists<float>(section, "shield_penetration_damage_coeff", shield_penetration_damage_coeff);
 
 
 	tele_find_radius = pSettings->r_float(section, "Tele_Find_Radius");
 	tele_object_min_mass = pSettings->r_float(section, "Tele_Object_Min_Mass");
 	tele_object_max_mass = pSettings->r_float(section, "Tele_Object_Max_Mass");
 	tele_max_handled_objects = pSettings->r_u32(section, "Tele_Max_Handled_Objects");
-	tele_max_time = READ_IF_EXISTS(pSettings, r_u32, section, "Tele_Max_Time", 10000);
-	tele_time_to_hold = READ_IF_EXISTS(pSettings, r_u32, section, "Tele_Time_To_Hold", 10'000);
-	tele_min_distance = READ_IF_EXISTS(pSettings, r_float, section, "tele_min_distance", 8);
-	tele_max_distance = READ_IF_EXISTS(pSettings, r_float, section, "tele_max_distance", 30);
-	tele_raise_speed = READ_IF_EXISTS(pSettings, r_float, section, "tele_raise_speed", 5.f);
-	tele_fly_velocity = READ_IF_EXISTS(pSettings, r_float, section, "tele_fly_velocity", 30.f);
-	tele_object_height = READ_IF_EXISTS(pSettings, r_float, section, "tele_object_height", 2.f);
+	tele_max_time = pSettings->read_if_exists<u32>(section, "Tele_Max_Time", 10000);
+	tele_time_to_hold = pSettings->read_if_exists<u32>(section, "Tele_Time_To_Hold", 10'000);
+	tele_min_distance = pSettings->read_if_exists<float>(section, "tele_min_distance", 8);
+	tele_max_distance = pSettings->read_if_exists<float>(section, "tele_max_distance", 30);
+	tele_raise_speed = pSettings->read_if_exists<float>(section, "tele_raise_speed", 5.f);
+	tele_fly_velocity = pSettings->read_if_exists<float>(section, "tele_fly_velocity", 30.f);
+	tele_object_height = pSettings->read_if_exists<float>(section, "tele_object_height", 2.f);
 
 	particle_fire_shield = pSettings->r_string(section, "Particle_Shield");
 
-	shooting_from_weapon_enable = READ_IF_EXISTS(pSettings, r_bool, section, "Tele_Shooting_From_Weapon_Enable", true);
-	activate_n_throw_grenade = READ_IF_EXISTS(pSettings, r_bool, section, "Tele_Activate_N_Throw_Grenade", true);
-	max_pickuped_weapons = READ_IF_EXISTS(pSettings, r_u32, section, "Tele_Max_Pickuped_Weapons", 2);
-	delay_before_first_shot = READ_IF_EXISTS(pSettings, r_u32, section, "Tele_Delay_Before_First_Shoot", 0);
+	shooting_from_weapon_enable = pSettings->read_if_exists<bool>(section, "Tele_Shooting_From_Weapon_Enable", true);
+	activate_n_throw_grenade = pSettings->read_if_exists<bool>(section, "Tele_Activate_N_Throw_Grenade", true);
+	max_pickuped_weapons = pSettings->read_if_exists<u32>(section, "Tele_Max_Pickuped_Weapons", 2);
+	delay_before_first_shot = pSettings->read_if_exists<u32>(section, "Tele_Delay_Before_First_Shoot", 0);
 
-	novice_difficulty_angular_speed = READ_IF_EXISTS(pSettings, r_float, section, "Novice_Difficulty_Angular_Speed", 180.f);
-	stalker_difficulty_angular_speed = READ_IF_EXISTS(pSettings, r_float, section, "Novice_Difficulty_Angular_Speed", 200.f);
-	veteran_difficulty_angular_speed = READ_IF_EXISTS(pSettings, r_float, section, "Novice_Difficulty_Angular_Speed", 240.f);
-	master_difficulty_angular_speed = READ_IF_EXISTS(pSettings, r_float, section, "Novice_Difficulty_Angular_Speed", 280.f);
+	novice_difficulty_angular_speed = pSettings->read_if_exists<float>(section, "Novice_Difficulty_Angular_Speed", 180.f);
+	stalker_difficulty_angular_speed = pSettings->read_if_exists<float>(section, "Novice_Difficulty_Angular_Speed", 200.f);
+	veteran_difficulty_angular_speed = pSettings->read_if_exists<float>(section, "Novice_Difficulty_Angular_Speed", 240.f);
+	master_difficulty_angular_speed = pSettings->read_if_exists<float>(section, "Novice_Difficulty_Angular_Speed", 280.f);
 
 	clamp(novice_difficulty_angular_speed, EPS_S, 360.f);
 	clamp(stalker_difficulty_angular_speed, EPS_L, 360.f);
 	clamp(veteran_difficulty_angular_speed, EPS_L, 360.f);
 	clamp(master_difficulty_angular_speed, EPS_L, 360.f);
 
-	novice_difficulty_error_angle = READ_IF_EXISTS(pSettings, r_float, section, "Novice_Difficulty_Error_Angle", 30.f);
-	stalker_difficulty_error_angle = READ_IF_EXISTS(pSettings, r_float, section, "Stalker_Difficulty_Error_Angle", 20.f);
-	veteran_difficulty_error_angle = READ_IF_EXISTS(pSettings, r_float, section, "Veteran_Difficulty_Error_Angle", 15.f);
-	master_difficulty_error_angle = READ_IF_EXISTS(pSettings, r_float, section, "Master_Difficulty_Error_Angle", 8.f);
+	novice_difficulty_error_angle = pSettings->read_if_exists<float>(section, "Novice_Difficulty_Error_Angle", 30.f);
+	stalker_difficulty_error_angle = pSettings->read_if_exists<float>(section, "Stalker_Difficulty_Error_Angle", 20.f);
+	veteran_difficulty_error_angle = pSettings->read_if_exists<float>(section, "Veteran_Difficulty_Error_Angle", 15.f);
+	master_difficulty_error_angle = pSettings->read_if_exists<float>(section, "Master_Difficulty_Error_Angle", 8.f);
 	
 	clamp(novice_difficulty_error_angle, EPS_L, 180.f);
 	clamp(stalker_difficulty_error_angle, EPS_L, 180.f);
 	clamp(veteran_difficulty_error_angle, EPS_L, 180.f);
 	clamp(master_difficulty_error_angle, EPS_L, 180.f);
 	
-	novice_difficulty_object_hit_factor = READ_IF_EXISTS(pSettings, r_float, section, "Novice_Difficulty_Throwed_Object_Hit_Factor", 0.1f);
-	stalker_difficulty_object_hit_factor = READ_IF_EXISTS(pSettings, r_float, section, "Stalker_Difficulty_Throwed_Object_Hit_Factor", 0.2f);
-	veteran_difficulty_object_hit_factor = READ_IF_EXISTS(pSettings, r_float, section, "Veteran_Difficulty_Throwed_Object_Hit_Factor", 0.3f);
-	master_difficulty_object_hit_factor = READ_IF_EXISTS(pSettings, r_float, section, "Master_Difficulty_Throwed_Object_Hit_Factor", 0.4f);
+	novice_difficulty_object_hit_factor = pSettings->read_if_exists<float>(section, "Novice_Difficulty_Throwed_Object_Hit_Factor", 0.1f);
+	stalker_difficulty_object_hit_factor = pSettings->read_if_exists<float>(section, "Stalker_Difficulty_Throwed_Object_Hit_Factor", 0.2f);
+	veteran_difficulty_object_hit_factor = pSettings->read_if_exists<float>(section, "Veteran_Difficulty_Throwed_Object_Hit_Factor", 0.3f);
+	master_difficulty_object_hit_factor = pSettings->read_if_exists<float>(section, "Master_Difficulty_Throwed_Object_Hit_Factor", 0.4f);
 
 	clamp(novice_difficulty_object_hit_factor, 0.f, 1.f);
 	clamp(stalker_difficulty_object_hit_factor, 0.f, 1.f);

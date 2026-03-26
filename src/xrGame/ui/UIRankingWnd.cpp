@@ -452,7 +452,7 @@ void CUIRankingWnd::add_achievement(CUIXml& xml, shared_str const& achiev_id)
 	achievement->SetHint(pSettings->r_string(achiev_id, "hint"));
 	achievement->SetIcon(pSettings->r_string(achiev_id, "icon"));
 	achievement->SetFunctor(pSettings->r_string(achiev_id, "functor"));
-	achievement->SetRepeatable(!!READ_IF_EXISTS(pSettings,r_bool,achiev_id,"repeatable",false));
+	achievement->SetRepeatable(pSettings->read_if_exists<bool>(achiev_id,"repeatable",false));
 
 	m_achieves_vec.push_back(achievement);
 }
@@ -976,7 +976,7 @@ void CUIRankingWnd::get_favorite_weapon()
 	{
 		if(pSettings->section_exist(str) && pSettings->line_exist(str, "upgr_icon_x"))
 		{
-			const char* upgrIconsTexture = READ_IF_EXISTS(pSettings, r_string, str, "upgr_icons_texture", nullptr);
+			const char* upgrIconsTexture = pSettings->read_if_exists<LPCSTR>(str,"upgr_icons_texture",nullptr);
 			m_favorite_weapon_icon->SetShader(InventoryUtilities::GetWeaponUpgradeIconsShader(upgrIconsTexture));
 			if(!xr_strcmp(str, "wpn_rpg7"))
 				m_favorite_weapon_icon->SetShader(InventoryUtilities::GetOutfitUpgradeIconsShader(upgrIconsTexture));

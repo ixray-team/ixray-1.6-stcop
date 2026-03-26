@@ -24,7 +24,7 @@ void CWeaponBinoculars::Load(const char* section)
 		}
 	}
 
-	m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", false));
+	m_flags.set(FUsingCondition, pSettings->read_if_exists<bool>(section, "use_condition", false));
 }
 
 bool CWeaponBinoculars::Action(u16 cmd, u32 flags)

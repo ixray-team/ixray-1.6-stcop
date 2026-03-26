@@ -104,14 +104,14 @@ CEntityCondition::CEntityCondition(CEntityAlive *object)
 
 		for (int i = 0; i < ALife::eHitTypeMax; i++)
 		{
-			m_GlobalWoundsFactorsForHitTypes[i] = READ_IF_EXISTS(pSettings, r_float, "gunslinger_wound_factors", shared_str().printf("wound_factor_for_hit_type_%u", i).c_str(), 1.0f);
+			m_GlobalWoundsFactorsForHitTypes[i] = pSettings->read_if_exists<float>("gunslinger_wound_factors", shared_str().printf("wound_factor_for_hit_type_%u", i).c_str(), 1.0f);
 		}
 
 		m_GlobalBleedingsFactorsForHitTypes.resize(ALife::eHitTypeMax);
 
 		for (int i = 0; i < ALife::eHitTypeMax; i++)
 		{
-			m_GlobalBleedingsFactorsForHitTypes[i] = READ_IF_EXISTS(pSettings, r_float, "gunslinger_wound_factors", shared_str().printf("bleeding_factor_for_hit_type_%u", i).c_str(), 1.0f);
+			m_GlobalBleedingsFactorsForHitTypes[i] = pSettings->read_if_exists<float>("gunslinger_wound_factors", shared_str().printf("bleeding_factor_for_hit_type_%u", i).c_str(), 1.0f);
 		}
 	}
 
@@ -134,7 +134,7 @@ void CEntityCondition::ClearWounds()
 
 void CEntityCondition::LoadCondition(const char* entity_section)
 {
-	const char*				section = READ_IF_EXISTS(pSettings,r_string,entity_section,"condition_sect",entity_section);
+	const char*				section = pSettings->read_if_exists<LPCSTR>(entity_section,"condition_sect",entity_section);
 
 	m_change_v.load		(section,"");
 
@@ -142,33 +142,33 @@ void CEntityCondition::LoadCondition(const char* entity_section)
 	m_fHealthHitPart		= pSettings->r_float(section,"health_hit_part");
 	m_fPowerHitPart			= pSettings->r_float(section,"power_hit_part");
 
-	m_use_limping_state		= !!(READ_IF_EXISTS(pSettings,r_bool,section,"use_limping_state",false));
-	m_limping_threshold		= READ_IF_EXISTS(pSettings,r_float,section,"limping_threshold",.5f);
+	m_use_limping_state		= pSettings->read_if_exists<bool>(section,"use_limping_state",false);
+	m_limping_threshold		= pSettings->read_if_exists<float>(section,"limping_threshold",.5f);
 
-	m_fKillHitTreshold		= READ_IF_EXISTS(pSettings,r_float,section,"killing_hit_treshold",0.0f);
-	m_fLastChanceHealth		= READ_IF_EXISTS(pSettings,r_float,section,"last_chance_health",0.0f);
-	m_fInvulnerableTimeDelta= READ_IF_EXISTS(pSettings,r_float,section,"invulnerable_time",0.0f)/1000.f;
+	m_fKillHitTreshold		= pSettings->read_if_exists<float>(section,"killing_hit_treshold",0.0f);
+	m_fLastChanceHealth		= pSettings->read_if_exists<float>(section,"last_chance_health",0.0f);
+	m_fInvulnerableTimeDelta= pSettings->read_if_exists<float>(section,"invulnerable_time",0.0f)/1000.f;
 
 	m_WoundsFactorsForHitTypes.resize(ALife::eHitTypeMax);
 
 	for (int i = 0; i < ALife::eHitTypeMax; i++)
 	{
-		m_WoundsFactorsForHitTypes[i] = READ_IF_EXISTS(pSettings, r_float, section, shared_str().printf("wound_factor_for_hit_type_%u", i).c_str(), 1.0f);
+		m_WoundsFactorsForHitTypes[i] = pSettings->read_if_exists<float>(section, shared_str().printf("wound_factor_for_hit_type_%u", i).c_str(), 1.0f);
 	}
 
 	m_BleedingsFactorsForHitTypes.resize(ALife::eHitTypeMax);
 
 	for (int i = 0; i < ALife::eHitTypeMax; i++)
 	{
-		m_BleedingsFactorsForHitTypes[i] = READ_IF_EXISTS(pSettings, r_float, section, shared_str().printf("bleeding_factor_for_hit_type_%u", i).c_str(), 1.0f);
+		m_BleedingsFactorsForHitTypes[i] = pSettings->read_if_exists<float>(section, shared_str().printf("bleeding_factor_for_hit_type_%u", i).c_str(), 1.0f);
 	}
 }
 
 void CEntityCondition::LoadTwoHitsDeathParams(const char* section)
 {
-	m_fKillHitTreshold		= READ_IF_EXISTS(pSettings,r_float,section,"killing_hit_treshold",0.0f);
-	m_fLastChanceHealth		= READ_IF_EXISTS(pSettings,r_float,section,"last_chance_health",0.0f);
-	m_fInvulnerableTimeDelta= READ_IF_EXISTS(pSettings,r_float,section,"invulnerable_time",0.0f)/1000.f;
+	m_fKillHitTreshold		= pSettings->read_if_exists<float>(section,"killing_hit_treshold",0.0f);
+	m_fLastChanceHealth		= pSettings->read_if_exists<float>(section,"last_chance_health",0.0f);
+	m_fInvulnerableTimeDelta= pSettings->read_if_exists<float>(section,"invulnerable_time",0.0f)/1000.f;
 }
 
 void CEntityCondition::reinit	()
@@ -815,7 +815,7 @@ void CEntityCondition::SConditionChangeV::load(LPCSTR sect, LPCSTR prefix)
 	xr_strconcat(str,"wound_incarnation_v",prefix);
 	m_fV_WoundIncarnation	= pSettings->r_float(sect,str);
 	xr_strconcat(str,"health_restore_v",prefix);
-	m_fV_HealthRestore		= READ_IF_EXISTS(pSettings,r_float,sect, str,0.0f);
+	m_fV_HealthRestore		= pSettings->read_if_exists<float>(sect, str,0.0f);
 }
 
 void CEntityCondition::remove_links	(const CObject *object)
@@ -851,15 +851,15 @@ void SMedicineInfluenceValues::Load(const shared_str& sect)
 	fHealth			= pSettings->r_float(sect.c_str(), "eat_health");
 	fPower			= pSettings->r_float(sect.c_str(), "eat_power");
 	fSatiety		= pSettings->r_float(sect.c_str(), "eat_satiety");
-	fThirst			= READ_IF_EXISTS(pSettings, r_float, sect.c_str(), "eat_thirst", 0);
-	fSleepiness		= READ_IF_EXISTS(pSettings, r_float, sect.c_str(), "eat_sleepiness", 0);
+	fThirst			= pSettings->read_if_exists<float>(sect.c_str(), "eat_thirst", 0);
+	fSleepiness		= pSettings->read_if_exists<float>(sect.c_str(), "eat_sleepiness", 0);
 	fRadiation		= pSettings->r_float(sect.c_str(), "eat_radiation");
 	fWoundsHeal		= pSettings->r_float(sect.c_str(), "wounds_heal_perc");
 	clamp			(fWoundsHeal, 0.f, 1.f);
-	fMaxPowerUp		= READ_IF_EXISTS	(pSettings,r_float,sect.c_str(),	"eat_max_power",0.0f);
-	fAlcohol		= READ_IF_EXISTS	(pSettings, r_float, sect.c_str(),	"eat_alcohol", 0.0f);
-	fIntoxication	= READ_IF_EXISTS	(pSettings, r_float, sect.c_str(),	"eat_intoxication", 0.0f);
-	fTimeTotal		= READ_IF_EXISTS	(pSettings, r_float, sect.c_str(),	"apply_time_sec", -1.0f);
+	fMaxPowerUp		= pSettings->read_if_exists<float>(sect.c_str(),	"eat_max_power",0.0f);
+	fAlcohol		= pSettings->read_if_exists<float>(sect.c_str(),	"eat_alcohol", 0.0f);
+	fIntoxication	= pSettings->read_if_exists<float>(sect.c_str(),	"eat_intoxication", 0.0f);
+	fTimeTotal		= pSettings->read_if_exists<float>(sect.c_str(),	"apply_time_sec", -1.0f);
 }
 
 void SBooster::Load(const shared_str& sect, EBoostParams type)

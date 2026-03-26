@@ -133,15 +133,15 @@ void CEntity::Load		(const char* section)
 	setVisible			(false);
 	
 	// Team params
-	id_Team				= READ_IF_EXISTS(pSettings,r_s32,section,"team",-1);
-	id_Squad			= READ_IF_EXISTS(pSettings,r_s32,section,"squad",-1);
-	id_Group			= READ_IF_EXISTS(pSettings,r_s32,section,"group",-1);
+	id_Team				= pSettings->read_if_exists<s32>(section,"team",-1);
+	id_Squad			= pSettings->read_if_exists<s32>(section,"squad",-1);
+	id_Group			= pSettings->read_if_exists<s32>(section,"group",-1);
 	
 #pragma todo("Jim to Dima: no specific figures or comments needed")	
 	m_fMorale			= 66.f;
 
 	//время убирания тела с уровня
-	m_dwBodyRemoveTime	= READ_IF_EXISTS(pSettings,r_u32,section,"body_remove_time",BODY_REMOVE_TIME);
+	m_dwBodyRemoveTime	= pSettings->read_if_exists<u32>(section,"body_remove_time",BODY_REMOVE_TIME);
 	//////////////////////////////////////
 }
 

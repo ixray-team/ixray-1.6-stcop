@@ -88,7 +88,7 @@ void CHitMemoryManager::reload				(const char* section)
 #ifdef USE_SELECTED_HIT
 	xr_delete				(m_selected_hit);
 #endif
-	m_max_hit_count			= READ_IF_EXISTS(pSettings,r_s32,section,"DynamicHitCount",1);
+	m_max_hit_count			= pSettings->read_if_exists<s32>(section,"DynamicHitCount",1);
 }
 
 void CHitMemoryManager::add					(float amount, const Fvector &vLocalDir, const CObject *who, s16 element)

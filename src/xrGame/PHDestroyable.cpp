@@ -345,12 +345,12 @@ void CPHDestroyable::NotificatePart(CPHDestroyableNotificate *dn)
 	
 		if(own_ini&&own_ini->section_exist("autoremove_parts"))
 		{
-			ps->SetAutoRemove(1000*(READ_IF_EXISTS(own_ini,r_u32,"autoremove_parts","time",ps->DefaultExitenceTime())));
+			ps->SetAutoRemove(1000*(pSettings->read_if_exists<u32>("autoremove_parts","time",ps->DefaultExitenceTime())));
 		}
 
 		if(new_ini&&new_ini->section_exist("autoremove"))
 		{
-			ps->SetAutoRemove(1000*(READ_IF_EXISTS(new_ini,r_u32,"autoremove","time",ps->DefaultExitenceTime())));
+			ps->SetAutoRemove(1000*(pSettings->read_if_exists<u32>("autoremove","time",ps->DefaultExitenceTime())));
 		}
 	}
 
