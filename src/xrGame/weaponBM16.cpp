@@ -3,7 +3,7 @@
 
 void CWeaponBM16::Load(const char* section)
 {
-	m_bUseAltReloadSystem = READ_IF_EXISTS(pSettings, r_bool, section, "use_alt_reload_system", false);
+	m_bUseAltReloadSystem = pSettings->read_if_exists<bool>(section, "use_alt_reload_system", false);
 
 	inherited::Load(section);
 }

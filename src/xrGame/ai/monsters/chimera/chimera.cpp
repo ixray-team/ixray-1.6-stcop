@@ -50,7 +50,7 @@ void   CChimera::Load (const char* section)
 	bool rotateVelocityExist = m_velocity_rotate.Load(section, "Velocity_Rotate");
 	bool jumpVelocityExist = m_velocity_jump_start.Load				(section, "Velocity_JumpStart");
 	
-#define ANIM_NAME(Var, Def) READ_IF_EXISTS(pSettings, r_string, section, Var, Def)
+#define ANIM_NAME(Var, Def) pSettings->read_if_exists<LPCSTR>(section, Var, Def)
 	
 	anim().AddAnim(eAnimStandIdle,		ANIM_NAME("AnimStandIdle_prefix", "stand_idle_"),			-1, &velocity_none,		PS_STAND);
 	anim().AddAnim(eAnimStandTurnLeft,	ANIM_NAME("AnimStandTurnLeft_prefix", "stand_turn_ls_"),		-1, &velocity_turn,		PS_STAND);
@@ -102,13 +102,13 @@ void   CChimera::Load (const char* section)
 	anim().LinkAction						(ACT_STEAL,			eAnimSteal);
 	anim().LinkAction						(ACT_LOOK_AROUND,	eAnimLookAround);
 
-	m_attack_params.attack_radius			=	READ_IF_EXISTS(pSettings, r_float,section, "attack_radius",	    10.f);
-	m_attack_params.prepare_jump_timeout	=	READ_IF_EXISTS(pSettings, r_u32,  section, "prepare_jump_timeout",	2000);
-	m_attack_params.attack_jump_timeout		=	READ_IF_EXISTS(pSettings ,r_u32,  section, "attack_jump_timeout",	1000);
-	m_attack_params.stealth_timeout			=	READ_IF_EXISTS(pSettings ,r_u32,  section, "stealth_timeout",	2000);
-	m_attack_params.force_attack_distance	=	READ_IF_EXISTS(pSettings ,r_float,  section, "force_attack_distance",	8);
-	m_attack_params.num_attack_jumps		=	READ_IF_EXISTS(pSettings ,r_u32,  section, "num_attack_jumps",	4);
-	m_attack_params.num_prepare_jumps		=	READ_IF_EXISTS(pSettings ,r_u32,  section, "num_prepare_jumps",	2);
+	m_attack_params.attack_radius			=	pSettings->read_if_exists<float>(section,"attack_radius",10.f);
+	m_attack_params.prepare_jump_timeout	=	pSettings->read_if_exists<u32>(section,"prepare_jump_timeout",2000);
+	m_attack_params.attack_jump_timeout		=	pSettings->read_if_exists<u32>(section,"attack_jump_timeout",1000);
+	m_attack_params.stealth_timeout			=	pSettings->read_if_exists<u32>(section,"stealth_timeout",2000);
+	m_attack_params.force_attack_distance	=	pSettings->read_if_exists<float>(section,"force_attack_distance",8);
+	m_attack_params.num_attack_jumps		=	pSettings->read_if_exists<u32>(section,"num_attack_jumps",4);
+	m_attack_params.num_prepare_jumps		=	pSettings->read_if_exists<u32>(section,"num_prepare_jumps",2);
 #ifdef DEBUG	
 	anim().accel_chain_test					();
 #endif
@@ -138,11 +138,11 @@ void   CChimera::reinit ()
 	static string16 def_s3 = "jump_attack_1";
 	static string16 def_s4 = "jump_attack_2";
 
-	const char* s3_anim = READ_IF_EXISTS(pSettings, r_string, get_section(), "jump_data_s3", def_s3);
-	const char* s4_anim = READ_IF_EXISTS(pSettings, r_string, get_section(), "jump_data_s4", def_s4);
+	const char* s3_anim = pSettings->read_if_exists<LPCSTR>(get_section(),"jump_data_s3",def_s3);
+	const char* s4_anim = pSettings->read_if_exists<LPCSTR>(get_section(),"jump_data_s4",def_s4);
 
-	com_man().load_jump_data				(0,//"jump_attack_0",
-											 0,//"jump_attack_0",
+	com_man().load_jump_data				(nullptr,//"jump_attack_0",
+											 nullptr,//"jump_attack_0",
 											 s3_anim,
 											 s4_anim,
 											 u32(-1),//MonsterMovement::eVelocityParameterRunNormal,
@@ -164,7 +164,7 @@ void   CChimera::CheckSpecParams (u32 spec_params)
 
 void   CChimera::HitEntityInJump (const CEntity *pEntity)
 {
-	auto AttackParamAnim = READ_IF_EXISTS(pSettings, r_string, get_section(), "AttackParamAnim", "jump_attack_1");
+	auto AttackParamAnim = pSettings->read_if_exists<LPCSTR>(get_section(),"AttackParamAnim","jump_attack_1");
 	SAAParam &params = anim().AA_GetParams(AttackParamAnim);
 	
 	HitEntity(pEntity, params.hit_power, params.impulse, params.impulse_dir);

@@ -133,46 +133,55 @@ void CEnvAmbient::SSndChannel::load(CInifile& config, const char* sect, const ch
 {
 	m_load_section = sectionToReadFrom ? sectionToReadFrom : sect;
 
-    if (config.read_if_exists(m_sound_dist, m_load_section, "sound_dist"))
-    {
-        if (m_sound_dist.x > m_sound_dist.y)
-            std::swap(m_sound_dist.x, m_sound_dist.y);
-        config.read_if_exists(m_sound_dist.x, m_load_section, "min_distance");
-        config.read_if_exists(m_sound_dist.y, m_load_section, "max_distance");
-    }
-    else
-    {
-        m_sound_dist.x = config.r_float(m_load_section, "min_distance");
-        m_sound_dist.y = config.r_float(m_load_section, "max_distance");
-        R_ASSERT2(m_sound_dist.y > m_sound_dist.x, sect);
-    }
+	if (config.r_fvector2_nullable(m_load_section, "sound_dist", m_sound_dist))
+	{
+		if (!I_ASSERT_M(m_sound_dist.x <= m_sound_dist.y,
+			"In enviroment sound channel section [%s] min_distance [%f] is bigger than max_distance [%f]!",
+			m_load_section.c_str(), m_sound_dist.x, m_sound_dist.y))
+		{
+			std::swap(m_sound_dist.x, m_sound_dist.y);
+		}
+		config.r_float_nullable(m_load_section, "min_distance", m_sound_dist.x);
+		config.r_float_nullable(m_load_section, "max_distance", m_sound_dist.y);
+	}
+	else
+	{
+		m_sound_dist.x = config.r_float(m_load_section, "min_distance");
+		m_sound_dist.y = config.r_float(m_load_section, "max_distance");
+		if (!I_ASSERT_M(m_sound_dist.x <= m_sound_dist.y,
+			"In enviroment sound channel section [%s] min_distance [%f] is bigger than max_distance [%f]!",
+			m_load_section.c_str(), m_sound_dist.x, m_sound_dist.y))
+		{
+			std::swap(m_sound_dist.x, m_sound_dist.y);
+		}
+	}
 
     Ivector2 staticPeriod;
     Ivector4 period;
-    if (config.try_read_if_exists(period, m_load_section, "sound_period")) // Pre Clear Sky
-    {
-        config.read_if_exists(period.x, m_load_section, "period0");
-        config.read_if_exists(period.y, m_load_section, "period1");
-        config.read_if_exists(period.z, m_load_section, "period2");
-        config.read_if_exists(period.w, m_load_section, "period3");
+	if (config.r_ivector4_nullable(m_load_section, "sound_period", period)) // Pre Clear Sky
+	{
+		config.r_s32_nullable(m_load_section, "period0", period.x);
+		config.r_s32_nullable(m_load_section, "period1", period.y);
+		config.r_s32_nullable(m_load_section, "period2", period.z);
+		config.r_s32_nullable(m_load_section, "period3", period.w);
         m_sound_period.set(period.mul(1000.f));
-    }
-    else if (config.read_if_exists(staticPeriod, m_load_section, "sound_period")) // SOC
-    {
-        period = { staticPeriod.x, staticPeriod.y, staticPeriod.x, staticPeriod.y };
-        config.read_if_exists(period.x, m_load_section, "period0");
-        config.read_if_exists(period.y, m_load_section, "period1");
-        config.read_if_exists(period.z, m_load_section, "period2");
-        config.read_if_exists(period.w, m_load_section, "period3");
-        m_sound_period.set(period.mul(1000.f));
-    }
-    else // COP
-    {
-        m_sound_period.x = config.r_s32(m_load_section, "period0");
-        m_sound_period.y = config.r_s32(m_load_section, "period1");
-        m_sound_period.z = config.r_s32(m_load_section, "period2");
-        m_sound_period.w = config.r_s32(m_load_section, "period3");
-    }
+	}
+	else if (config.r_ivector2_nullable(m_load_section, "sound_period", staticPeriod)) // SOC
+	{
+		period = { staticPeriod.x, staticPeriod.y, staticPeriod.x, staticPeriod.y };
+		config.r_s32_nullable(m_load_section, "period0", period.x);
+		config.r_s32_nullable(m_load_section, "period1", period.y);
+		config.r_s32_nullable(m_load_section, "period2", period.z);
+		config.r_s32_nullable(m_load_section, "period3", period.w);
+		m_sound_period.set(period.mul(1000.f));
+	}
+	else // COP
+	{
+		m_sound_period.x = config.r_s32(m_load_section, "period0");
+		m_sound_period.y = config.r_s32(m_load_section, "period1");
+		m_sound_period.z = config.r_s32(m_load_section, "period2");
+		m_sound_period.w = config.r_s32(m_load_section, "period3");
+	}
 
 	R_ASSERT				(m_sound_period.x <= m_sound_period.y && m_sound_period.z <= m_sound_period.w);
 
@@ -277,16 +286,16 @@ void CEnvAmbient::load(
 
 	// effects
     Fvector2 period;
-    if (ambients_config.read_if_exists(period, sect, "effect_period"))
-    {
-        ambients_config.read_if_exists(period.x, sect, "min_effect_period");
-        ambients_config.read_if_exists(period.y, sect, "max_effect_period");
-    }
-    else
-    {
-        period.x = ambients_config.r_float(sect, "min_effect_period");
-        period.y = ambients_config.r_float(sect, "max_effect_period");
-    }
+	if (ambients_config.r_fvector2_nullable(sect, "effect_period", period))
+	{
+		ambients_config.r_float_nullable(sect, "min_effect_period", period.x);
+		ambients_config.r_float_nullable(sect, "max_effect_period", period.y);
+	}
+	else
+	{
+		period.x = ambients_config.r_float(sect, "min_effect_period");
+		period.y = ambients_config.r_float(sect, "max_effect_period");
+	}
     m_effect_period.set(iFloor(period.x * 1000.f), iFloor(period.y * 1000.f));
 
 	if (ambients_config.line_exist(sect, "effects"))
@@ -501,30 +510,25 @@ void CEnvDescriptor::load	(CEnvironment& environment, CInifile& config, const ch
 
 	if (tb_id.size())
 	{
-		if (config.read_if_exists(bolt_period, identifier, "bolt_period"))
-			bolt_period = config.r_float(identifier, "bolt_period");
-		else
+		if (!config.r_float_nullable(identifier, "bolt_period", bolt_period))
+		{
 			bolt_period = config.r_float(identifier, "thunderbolt_period");
-
-		if (config.read_if_exists(bolt_duration, identifier, "bolt_duration"))
-			bolt_duration = config.r_float(identifier, "bolt_duration");
-		else
+		}
+		if (!config.r_float_nullable(identifier, "bolt_duration", bolt_duration))
+		{
 			bolt_duration = config.r_float(identifier, "thunderbolt_duration");
+		}
 	}
+	config.r_float_nullable(identifier,"sun_shafts_intensity", m_fSunShaftsIntensity);
+	config.r_float_nullable(identifier,"water_intensity", m_fWaterIntensity);
 
-	if (config.line_exist(identifier,"sun_shafts_intensity"))
-		m_fSunShaftsIntensity = config.r_float(identifier,"sun_shafts_intensity");
-
-	if (config.line_exist(identifier,"water_intensity"))
-		m_fWaterIntensity = config.r_float(identifier,"water_intensity");
-
-	C_CHECK					(clouds_color);
-	C_CHECK					(sky_color	);
-	C_CHECK					(fog_color	);
-	C_CHECK					(rain_color	);
-	C_CHECK					(ambient	);
-	C_CHECK					(hemi_color	);
-	C_CHECK					(sun_color	);
+	C_CHECK(clouds_color);
+	C_CHECK(sky_color);
+	C_CHECK(fog_color);
+	C_CHECK(rain_color);
+	C_CHECK(ambient);
+	C_CHECK(hemi_color);
+	C_CHECK(sun_color);
 }
 
 void CEnvDescriptor::on_device_create	()

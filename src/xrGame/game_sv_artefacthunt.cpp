@@ -106,7 +106,7 @@ void	game_sv_ArtefactHunt::Create					(shared_str& options)
 
 	m_bSwapBases	= false;
 	//---------------------------------------------------------------
-	m_iMoney_for_BuySpawn = READ_IF_EXISTS(pSettings, r_s32, "artefacthunt_gamedata", "spawn_cost", -10000);
+	m_iMoney_for_BuySpawn = pSettings->read_if_exists<s32>("artefacthunt_gamedata", "spawn_cost", -10000);
 	//---------------------------------------------------------------
 	Set_RankUp_Allowed			( false );
 	ArtefactChooserRandom.seed	( u32(CPU::QPC() & 0xffffffff) );
@@ -200,7 +200,7 @@ void game_sv_ArtefactHunt::OnGiveBonus(KILL_RES KillResult, game_PlayerState* pK
 	case KR_RIVAL:
 		{
 			if (pVictim->GameID == m_iAfBearerMenaceID)
-				Player_AddExperience(pKiller, READ_IF_EXISTS(pSettings, r_float, "mp_bonus_exp", "assist_kill",0));
+				Player_AddExperience(pKiller, pSettings->read_if_exists<float>("mp_bonus_exp", "assist_kill",0));
 
 			inherited::OnGiveBonus(KR_RIVAL, pKiller, pVictim, KillType, SpecialKillType, pWeaponA);
 		}break;
@@ -539,7 +539,7 @@ bool	game_sv_ArtefactHunt::OnTouch				(ALife::_OBJECT_ID eid_who, ALife::_OBJECT
 								if (!l_pC->net_Ready || pstate->IsSkip() || pstate->team != ps_who->team)
 									return;
 
-								m_owner->Player_AddExperience(pstate, READ_IF_EXISTS(pSettings, r_float, "mp_bonus_exp", "af_first_take_all",0));
+								m_owner->Player_AddExperience(pstate, pSettings->read_if_exists<float>("mp_bonus_exp", "af_first_take_all",0));
 							}
 						};
 						experience_adder exp_adder;
@@ -667,7 +667,7 @@ void game_sv_ArtefactHunt::OnArtefactOnBase(ClientID id_who)
 	if (pTeam)
 	{
 		Player_AddMoney(ps, pTeam->m_iM_TargetSucceed);
-		Player_AddExperience(ps, READ_IF_EXISTS(pSettings, r_float, "mp_bonus_exp","target_succeed",0));
+		Player_AddExperience(ps, pSettings->read_if_exists<float>("mp_bonus_exp","target_succeed",0));
 		ps->af_count++;
 
 		struct money_for_team_adder
@@ -687,13 +687,13 @@ void game_sv_ArtefactHunt::OnArtefactOnBase(ClientID id_who)
 				if (pstate->team == ps->team)
 				{
 					m_owner->Player_AddMoney(pstate, pTeam->m_iM_TargetSucceedAll);				
-					m_owner->Player_AddExperience(pstate, READ_IF_EXISTS(pSettings, r_float, "mp_bonus_exp", "target_succeed_all",0));
+					m_owner->Player_AddExperience(pstate, pSettings->read_if_exists<float>("mp_bonus_exp", "target_succeed_all",0));
 				}
 				else
 				{
 					m_owner->Player_AddMoney(pstate, pTeam->m_iM_TargetFailed);
 					if (!m_bArtefactWasDropped)
-						pstate->experience_New *= READ_IF_EXISTS(pSettings, r_float, "mp_bonus_exp", "target_failed_all_mul",1.0f);
+						pstate->experience_New *= pSettings->read_if_exists<float>("mp_bonus_exp", "target_failed_all_mul",1.0f);
 				};
 				m_owner->Player_AddExperience(pstate, 0);
 				m_owner->Player_ExperienceFin(pstate);

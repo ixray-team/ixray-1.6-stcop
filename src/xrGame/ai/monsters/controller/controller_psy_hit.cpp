@@ -24,18 +24,11 @@ bool CControllerPsyHit::EnableSuicide = false;
 
 void CControllerPsyHit::load(const char* section)
 {
-	m_min_tube_dist = READ_IF_EXISTS(pSettings, r_float, section, "tube_condition_min_distance", 10.0f);
+	m_min_tube_dist = pSettings->read_if_exists<float>(section, "tube_condition_min_distance", 10.0f);
 
-	static bool SuicideEnabledStatus = false;
-
-	if (!SuicideEnabledStatus)
+	if (EngineExternal()[EEngineExternalGame::EnableSuicideByController])
 	{
-		EnableSuicide = EngineExternal()[EEngineExternalGame::EnableSuicideByController];
-		SuicideEnabledStatus = true;
-	}
-
-	if (EnableSuicide)
-	{
+		EnableSuicide = true;
 		FeelParams.MinDist = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "controller_min_feel_dist", 10.0f);
 		FeelParams.MaxDist = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "controller_max_feel_dist", 30.0f);
 		ControllerPsyBlockedTime = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "controller_psyblocked_time", 5.0f);

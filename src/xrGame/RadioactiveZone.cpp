@@ -17,7 +17,7 @@ CRadioactiveZone::~CRadioactiveZone(void)
 void CRadioactiveZone::Load(const char* section) 
 {
 	inherited::Load(section);
-	legacyHit = READ_IF_EXISTS(pSettings, r_bool, section, "pure_hit_damage", false);
+	legacyHit = pSettings->read_if_exists<bool>(section, "pure_hit_damage", false);
 }
 
 bool  CRadioactiveZone::BlowoutState	()

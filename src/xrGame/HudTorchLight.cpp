@@ -44,53 +44,53 @@ void THudLightTorch::NewTorchlight(const char* section)
 	Section = section;
 
 	RenderLight = ::Render->light_create();
-	RenderLight->set_type((IRender_Light::LT)READ_IF_EXISTS(pSettings, r_u32, section, "torch_render_type", IRender_Light::SPOT));
-	RenderLight->set_range(READ_IF_EXISTS(pSettings, r_float, section, "torch_r2_range", 15.0f));
-	RenderLight->set_shadow(!!READ_IF_EXISTS(pSettings, r_bool, section, "torch_render_shadow", true));
+	RenderLight->set_type(pSettings->read_if_exists<IRender_Light::LT>(section, "torch_render_type", IRender_Light::SPOT));
+	RenderLight->set_range(pSettings->read_if_exists<float>(section, "torch_r2_range", 15.0f));
+	RenderLight->set_shadow(pSettings->read_if_exists<bool>(section, "torch_render_shadow", true));
 
 	OmniLight = ::Render->light_create();
 	OmniLight->set_type(IRender_Light::POINT); // (IRender_Light::LT)READ_IF_EXISTS(pSettings, r_u32, section, "torch_omni_type", IRender_Light::POINT));
-	OmniLight->set_range(READ_IF_EXISTS(pSettings, r_float, section, "torch_r2_omni_range", 0.75f));
-	OmniLight->set_shadow(!!READ_IF_EXISTS(pSettings, r_bool, section, "torch_omni_shadow", false));
+	OmniLight->set_range(pSettings->read_if_exists<float>(section, "torch_r2_omni_range", 0.75f));
+	OmniLight->set_shadow(pSettings->read_if_exists<bool>(section, "torch_omni_shadow", false));
 
 	LightBone = pSettings->r_string(section, "torch_light_bone");
 
-	LightOffset.x = READ_IF_EXISTS(pSettings, r_float, section, "torch_attach_offset_x", 0.0f);
-	LightOffset.y = READ_IF_EXISTS(pSettings, r_float, section, "torch_attach_offset_y", 0.0f);
-	LightOffset.z = READ_IF_EXISTS(pSettings, r_float, section, "torch_attach_offset_z", 0.0f);
+	LightOffset.x = pSettings->read_if_exists<float>(section, "torch_attach_offset_x", 0.0f);
+	LightOffset.y = pSettings->read_if_exists<float>(section, "torch_attach_offset_y", 0.0f);
+	LightOffset.z = pSettings->read_if_exists<float>(section, "torch_attach_offset_z", 0.0f);
 
-	AimOffset.x = READ_IF_EXISTS(pSettings, r_float, section, "torch_aim_attach_offset_x", 0.0f);
-	AimOffset.y = READ_IF_EXISTS(pSettings, r_float, section, "torch_aim_attach_offset_y", 0.0f);
-	AimOffset.z = READ_IF_EXISTS(pSettings, r_float, section, "torch_aim_attach_offset_z", 0.0f);
+	AimOffset.x = pSettings->read_if_exists<float>(section, "torch_aim_attach_offset_x", 0.0f);
+	AimOffset.y = pSettings->read_if_exists<float>(section, "torch_aim_attach_offset_y", 0.0f);
+	AimOffset.z = pSettings->read_if_exists<float>(section, "torch_aim_attach_offset_z", 0.0f);
 
-	LightWorldOffset.x = READ_IF_EXISTS(pSettings, r_float, section, "torch_world_attach_offset_x", 0.0f);
-	LightWorldOffset.y = READ_IF_EXISTS(pSettings, r_float, section, "torch_world_attach_offset_y", 0.0f);
-	LightWorldOffset.z = READ_IF_EXISTS(pSettings, r_float, section, "torch_world_attach_offset_z", 0.0f);
+	LightWorldOffset.x = pSettings->read_if_exists<float>(section, "torch_world_attach_offset_x", 0.0f);
+	LightWorldOffset.y = pSettings->read_if_exists<float>(section, "torch_world_attach_offset_y", 0.0f);
+	LightWorldOffset.z = pSettings->read_if_exists<float>(section, "torch_world_attach_offset_z", 0.0f);
 
-	OmniOffset.x = READ_IF_EXISTS(pSettings, r_float, section, "torch_omni_attach_offset_x", LightOffset.x);
-	OmniOffset.y = READ_IF_EXISTS(pSettings, r_float, section, "torch_omni_attach_offset_y", LightOffset.y);
-	OmniOffset.z = READ_IF_EXISTS(pSettings, r_float, section, "torch_omni_attach_offset_z", LightOffset.z);
+	OmniOffset.x = pSettings->read_if_exists<float>(section, "torch_omni_attach_offset_x", LightOffset.x);
+	OmniOffset.y = pSettings->read_if_exists<float>(section, "torch_omni_attach_offset_y", LightOffset.y);
+	OmniOffset.z = pSettings->read_if_exists<float>(section, "torch_omni_attach_offset_z", LightOffset.z);
 
-	OmniWorldOffset.x = READ_IF_EXISTS(pSettings, r_float, section, "torch_omni_world_attach_offset_x", LightWorldOffset.x);
-	OmniWorldOffset.y = READ_IF_EXISTS(pSettings, r_float, section, "torch_omni_world_attach_offset_y", LightWorldOffset.y);
-	OmniWorldOffset.z = READ_IF_EXISTS(pSettings, r_float, section, "torch_omni_world_attach_offset_z", LightWorldOffset.z);
+	OmniWorldOffset.x =pSettings->read_if_exists<float>(section, "torch_omni_world_attach_offset_x", LightWorldOffset.x);
+	OmniWorldOffset.y =pSettings->read_if_exists<float>(section, "torch_omni_world_attach_offset_y", LightWorldOffset.y);
+	OmniWorldOffset.z =pSettings->read_if_exists<float>(section, "torch_omni_world_attach_offset_z", LightWorldOffset.z);
 
-	LightColor.r = READ_IF_EXISTS(pSettings, r_float, section, "torch_r2_color_r", 0.60f);
-	LightColor.g = READ_IF_EXISTS(pSettings, r_float, section, "torch_r2_color_g", 0.55f);
-	LightColor.b = READ_IF_EXISTS(pSettings, r_float, section, "torch_r2_color_b", 0.55f);
-	LightColor.a = READ_IF_EXISTS(pSettings, r_float, section, "torch_r2_color_a", 0.80f);
+	LightColor.r = pSettings->read_if_exists<float>(section, "torch_r2_color_r", 0.60f);
+	LightColor.g = pSettings->read_if_exists<float>(section, "torch_r2_color_g", 0.55f);
+	LightColor.b = pSettings->read_if_exists<float>(section, "torch_r2_color_b", 0.55f);
+	LightColor.a = pSettings->read_if_exists<float>(section, "torch_r2_color_a", 0.80f);
 	RenderLight->set_color(LightColor);
 
-	OmniColor.r = READ_IF_EXISTS(pSettings, r_float, section, "torch_r2_omni_color_r", 0.60f);
-	OmniColor.g = READ_IF_EXISTS(pSettings, r_float, section, "torch_r2_omni_color_g", 0.55f);
-	OmniColor.b = READ_IF_EXISTS(pSettings, r_float, section, "torch_r2_omni_color_b", 0.55f);
-	OmniColor.a = READ_IF_EXISTS(pSettings, r_float, section, "torch_r2_omni_color_a", 0.80f);
+	OmniColor.r = pSettings->read_if_exists<float>(section, "torch_r2_omni_color_r", 0.60f);
+	OmniColor.g = pSettings->read_if_exists<float>(section, "torch_r2_omni_color_g", 0.55f);
+	OmniColor.b = pSettings->read_if_exists<float>(section, "torch_r2_omni_color_b", 0.55f);
+	OmniColor.a = pSettings->read_if_exists<float>(section, "torch_r2_omni_color_a", 0.80f);
 	OmniLight->set_color(OmniColor);
 
-	RenderLight->set_cone(deg2rad(READ_IF_EXISTS(pSettings, r_float, section, "torch_spot_angle", 75.0f)));
+	RenderLight->set_cone(deg2rad(pSettings->read_if_exists<float>(section, "torch_spot_angle", 75.0f)));
 	RenderLight->set_texture(pSettings->r_string(section, "torch_spot_texture"));
 
-	IsLightDirByBone = !!READ_IF_EXISTS(pSettings, r_bool, section, "light_directions_by_bones", false);
+	IsLightDirByBone = pSettings->read_if_exists<bool>(section, "light_directions_by_bones", false);
 	if (IsLightDirByBone)
 	{
 		LightDirBoneName = pSettings->r_string(section, "light_dir_bone");
@@ -110,7 +110,7 @@ void THudLightTorch::NewTorchlight(const char* section)
 
 	Fvector tmp_vector = { -1.0f, -1.0f, 0.0f };
 
-	tmp_vector = READ_IF_EXISTS(pSettings, r_fvector3, section, "torch_breaking_params", tmp_vector);
+	tmp_vector = pSettings->read_if_exists<Fvector3>(section, "torch_breaking_params", tmp_vector);
 	BreakingParams.start_condition = tmp_vector.x;
 	BreakingParams.end_condition = tmp_vector.y;
 	BreakingParams.start_probability = tmp_vector.z;
@@ -341,12 +341,12 @@ void THudLightLaser::NewTorchlight(const char* section)
 	Section = section;
 	LightBone = pSettings->r_string(section, "laserdot_attach_bone");
 
-	LaserLightDist = READ_IF_EXISTS(pSettings, r_float, section, "laser_light_distance", 15.0f);
+	LaserLightDist = pSettings->read_if_exists<float>(section, "laser_light_distance", 15.0f);
 
-	LaserWorkDist = READ_IF_EXISTS(pSettings, r_float, section, "laser_wrok_distance", LaserLightDist * 0.5f);
-	LaserMaxDist = READ_IF_EXISTS(pSettings, r_float, section, "laser_max_distance", LaserWorkDist);
+	LaserWorkDist = pSettings->read_if_exists<float>(section, "laser_wrok_distance", LaserLightDist * 0.5f);
+	LaserMaxDist = pSettings->read_if_exists<float>(section, "laser_max_distance", LaserWorkDist);
 
-	LightColor = READ_IF_EXISTS(pSettings, r_fcolor, section, "laser_light_color", LightColor.set(1, 0, 0, 0));
+	LightColor = pSettings->read_if_exists<Fcolor>(section, "laser_light_color", LightColor.set(1, 0, 0, 0));
 
 	RenderLight = ::Render->light_create();
 
@@ -354,24 +354,24 @@ void THudLightLaser::NewTorchlight(const char* section)
 	RenderLight->set_range(LaserLightDist);
 	RenderLight->set_type(IRender_Light::SPOT);
 
-	RenderLight->set_shadow(!!READ_IF_EXISTS(pSettings, r_bool, section, "laser_render_shadow", true));
+	RenderLight->set_shadow(pSettings->read_if_exists<bool>(section, "laser_render_shadow", true));
 
-	LightSpotAngle = READ_IF_EXISTS(pSettings, r_fvector2, section, "laser_spot_angle", LightSpotAngle.set(2, 5));
+	LightSpotAngle = pSettings->read_if_exists<Fvector2>(section, "laser_spot_angle", LightSpotAngle.set(2, 5));
 	LightSpotAngle.mul(M_PI / 180);
 
 	RenderLight->set_cone(LightSpotAngle.x);
 	RenderLight->set_texture(pSettings->r_string(section, "laser_spot_texture"));
 
-	LightOffset.x = READ_IF_EXISTS(pSettings, r_float, section, "laserdot_attach_offset_x", 0.0f);
-	LightOffset.y = READ_IF_EXISTS(pSettings, r_float, section, "laserdot_attach_offset_y", 0.0f);
-	LightOffset.z = READ_IF_EXISTS(pSettings, r_float, section, "laserdot_attach_offset_z", 0.0f);
+	LightOffset.x = pSettings->read_if_exists<float>(section, "laserdot_attach_offset_x", 0.0f);
+	LightOffset.y = pSettings->read_if_exists<float>(section, "laserdot_attach_offset_y", 0.0f);
+	LightOffset.z = pSettings->read_if_exists<float>(section, "laserdot_attach_offset_z", 0.0f);
 
-	LightWorldOffset.x = READ_IF_EXISTS(pSettings, r_float, section, "laserdot_world_attach_offset_x", 0.0f);
-	LightWorldOffset.y = READ_IF_EXISTS(pSettings, r_float, section, "laserdot_world_attach_offset_y", 0.0f);
-	LightWorldOffset.z = READ_IF_EXISTS(pSettings, r_float, section, "laserdot_world_attach_offset_z", 0.0f);
+	LightWorldOffset.x = pSettings->read_if_exists<float>(section, "laserdot_world_attach_offset_x", 0.0f);
+	LightWorldOffset.y = pSettings->read_if_exists<float>(section, "laserdot_world_attach_offset_y", 0.0f);
+	LightWorldOffset.z = pSettings->read_if_exists<float>(section, "laserdot_world_attach_offset_z", 0.0f);
 
-	LightWorldOffset = READ_IF_EXISTS(pSettings, r_fvector3, section, "laserdot_world_attach_offset", LightWorldOffset);
-	LightOffset = READ_IF_EXISTS(pSettings, r_fvector3, section, "laserdot_attach_offset", LightOffset);
+	LightWorldOffset = pSettings->read_if_exists<Fvector3>(section, "laserdot_world_attach_offset", LightWorldOffset);
+	LightOffset = pSettings->read_if_exists<Fvector3>(section, "laserdot_attach_offset", LightOffset);
 
 	if (pSettings->line_exist(section, "laser_ray_bones"))
 	{
@@ -387,11 +387,11 @@ void THudLightLaser::NewTorchlight(const char* section)
 
 	Fvector tmp_vector = { -1.0f, -1.0f, 0.0f };
 
-	tmp_vector = READ_IF_EXISTS(pSettings, r_fvector3, section, "laser_breaking_params", tmp_vector);
+	tmp_vector = pSettings->read_if_exists<Fvector3>(section, "laser_breaking_params", tmp_vector);
 	BreakingParams.start_condition = tmp_vector.x;
 	BreakingParams.end_condition = tmp_vector.y;
 	BreakingParams.start_probability = tmp_vector.z;
-	BreakingParams.levels_problem = READ_IF_EXISTS(pSettings, r_float, section, "laser_problems_level", 0.0f);
+	BreakingParams.levels_problem = pSettings->read_if_exists<float>(section, "laser_problems_level", 0.0f);
 }
 
 bool forceLPDraw = false;

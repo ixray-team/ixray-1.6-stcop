@@ -61,9 +61,9 @@ void CBaseMonster::Load(const char* section)
 	// load parameters from ".ltx" file
 	inherited::Load					(section);
 
-	m_head_bone_name				= READ_IF_EXISTS(pSettings,r_string,section, "bone_head", "bip01_head");
-	m_left_eye_bone_name			= READ_IF_EXISTS(pSettings,r_string,section, "bone_eye_left", 0);
-	m_right_eye_bone_name			= READ_IF_EXISTS(pSettings,r_string,section, "bone_eye_right", 0);
+	m_head_bone_name				= pSettings->read_if_exists<LPCSTR>(section,"bone_head","bip01_head");
+	m_left_eye_bone_name			= pSettings->read_if_exists<LPCSTR>(section,"bone_eye_left",nullptr);
+	m_right_eye_bone_name			= pSettings->read_if_exists<LPCSTR>(section,"bone_eye_right",nullptr);
 
 	m_corpse_cover_evaluator		= new CMonsterCorpseCoverEvaluator	(&movement().restrictions());
 	m_enemy_cover_evaluator			= new CCoverEvaluatorFarFromEnemy	(&movement().restrictions());
@@ -92,27 +92,27 @@ void CBaseMonster::Load(const char* section)
 //		m_spawn_probability				= pSettings->r_float(section,"Spawn_Inventory_Item_Probability");
 //	} else m_spawn_probability			= 0.f;
 
-	m_melee_rotation_factor			= READ_IF_EXISTS(pSettings,r_float,section,"Melee_Rotation_Factor", 1.5f);
-	berserk_always					= !!READ_IF_EXISTS(pSettings,r_bool,section,"berserk_always", false);
+	m_melee_rotation_factor			= pSettings->read_if_exists<float>(section,"Melee_Rotation_Factor", 1.5f);
+	berserk_always					= pSettings->read_if_exists<bool>(section,"berserk_always", false);
 
-	m_feel_enemy_who_just_hit_max_distance	=	READ_IF_EXISTS(pSettings, r_float, section, 
+	m_feel_enemy_who_just_hit_max_distance	=	pSettings->read_if_exists<float>(section, 
 												"feel_enemy_who_just_hit_max_distance", 
 												::detail::base_monster::feel_enemy_who_just_hit_max_distance);
 
-	m_feel_enemy_max_distance				=	READ_IF_EXISTS(pSettings, r_float, section, 
+	m_feel_enemy_max_distance				=	pSettings->read_if_exists<float>(section, 
 												"feel_enemy_max_distance", 
 												::detail::base_monster::feel_enemy_max_distance);
 
-	m_feel_enemy_who_made_sound_max_distance =	READ_IF_EXISTS(pSettings, r_float, section, 
+	m_feel_enemy_who_made_sound_max_distance =	pSettings->read_if_exists<float>(section, 
 												"feel_enemy_who_made_sound_max_distance", 
 												::detail::base_monster::feel_enemy_who_made_sound_max_distance);
 	
 	//------------------------------------
 	// Steering Behaviour 
 	//------------------------------------
-	float    separate_factor				=	READ_IF_EXISTS(pSettings, r_float, section, 
+	float    separate_factor				=	pSettings->read_if_exists<float>(section, 
 												"separate_factor", 0.f);
-	float    separate_range					=	READ_IF_EXISTS(pSettings, r_float, section, 
+	float    separate_range					=	pSettings->read_if_exists<float>(section, 
 												"separate_range" , 0.f);
 	
 	if ( (separate_factor > 0.0001f) && (separate_range > 0.01f) )
@@ -146,13 +146,13 @@ void CBaseMonster::Load(const char* section)
 	if(has_protections_sect)
 	{
 		const char* protections_sect = pSettings->r_string(section, "protections_sect");
-		m_fSkinArmor = READ_IF_EXISTS(pSettings,r_float,protections_sect,"skin_armor", 0.f);
-		m_fHitFracMonster = READ_IF_EXISTS(pSettings, r_float, protections_sect, "hit_fraction_monster", 0.1f);
+		m_fSkinArmor = pSettings->read_if_exists<float>(protections_sect,"skin_armor", 0.f);
+		m_fHitFracMonster = pSettings->read_if_exists<float>(protections_sect, "hit_fraction_monster", 0.1f);
 	}
 
 	m_force_anti_aim						=	false;
 
-	m_bCanDropActorWeapon = READ_IF_EXISTS(pSettings, r_bool, section, "can_drop_actor_weapon", false);
+	m_bCanDropActorWeapon = pSettings->read_if_exists<bool>(section, "can_drop_actor_weapon", false);
 }
 
 void CBaseMonster::PostLoad (const char* section)
@@ -162,36 +162,22 @@ void CBaseMonster::PostLoad (const char* section)
 	//------------------------------------
 	attack_on_move_params_t& aom			=	m_attack_on_move_params;
 
-	aom.enabled								=	(READ_IF_EXISTS(pSettings, r_bool, section, 
-												"aom_enabled", false)) != 0;
-	aom.far_radius							=	READ_IF_EXISTS(pSettings, r_float, section, 
-												"aom_far_radius", ::detail::base_monster::aom_far_radius);
-	aom.attack_radius						=	READ_IF_EXISTS(pSettings, r_float, section, 
-												"aom_attack_radius", ::detail::base_monster::aom_attack_radius);
-	aom.update_side_period					=	READ_IF_EXISTS(pSettings, r_float, section, 
-												"aom_update_side_period", 
-												::detail::base_monster::aom_update_side_period);
-	aom.prediction_factor					=	READ_IF_EXISTS(pSettings, r_float, section, 
-												"aom_prediction_factor", 
-												::detail::base_monster::aom_prediction_factor);
-	aom.prepare_time						=	READ_IF_EXISTS(pSettings, r_float, section, 
-												"aom_prepare_time", 
-												::detail::base_monster::aom_prepare_time);
-	aom.prepare_radius						=	READ_IF_EXISTS(pSettings, r_float, section, 
-												"aom_prepare_radius", 
-												::detail::base_monster::aom_prepare_radius);
-	aom.max_go_close_time					=	READ_IF_EXISTS(pSettings, r_float, section, 
-												"aom_max_go_close_time", 8.f);
+	aom.enabled								=	pSettings->read_if_exists<bool>(section,"aom_enabled",false);
+	aom.far_radius							=	pSettings->read_if_exists<float>(section,"aom_far_radius",::detail::base_monster::aom_far_radius);
+	aom.attack_radius						=	pSettings->read_if_exists<float>(section,"aom_attack_radius",::detail::base_monster::aom_attack_radius);
+	aom.update_side_period					=	pSettings->read_if_exists<float>(section,"aom_update_side_period",::detail::base_monster::aom_update_side_period);
+	aom.prediction_factor					=	pSettings->read_if_exists<float>(section,"aom_prediction_factor",::detail::base_monster::aom_prediction_factor);
+	aom.prepare_time						=	pSettings->read_if_exists<float>(section,"aom_prepare_time",::detail::base_monster::aom_prepare_time);
+	aom.prepare_radius						=	pSettings->read_if_exists<float>(section,"aom_prepare_radius",::detail::base_monster::aom_prepare_radius);
+	aom.max_go_close_time					=	pSettings->read_if_exists<float>(section,"aom_max_go_close_time",8.f);
 
 	if ( aom.enabled )
 	{
 		SVelocityParam&	velocity_run		=	move().get_velocity(MonsterMovement::eVelocityParameterRunNormal);
 
-		const char*	attack_on_move_anim_l		=	READ_IF_EXISTS(pSettings, r_string, section, 
-																"aom_animation_left", "stand_attack_run_");
+		const char*	attack_on_move_anim_l		=	pSettings->read_if_exists<LPCSTR>(section,"aom_animation_left","stand_attack_run_");
 		anim().AddAnim (eAnimAttackOnRunLeft, attack_on_move_anim_l, -1, &velocity_run, PS_STAND);
-		const char*	attack_on_move_anim_r		=	READ_IF_EXISTS(pSettings, r_string, section, 
-																"aom_animation_right", "stand_attack_run_");
+		const char*	attack_on_move_anim_r		=	pSettings->read_if_exists<LPCSTR>(section,"aom_animation_right","stand_attack_run_");
 		anim().AddAnim (eAnimAttackOnRunRight, attack_on_move_anim_r, -1, &velocity_run, PS_STAND);
 	}
 
@@ -205,8 +191,7 @@ void CBaseMonster::PostLoad (const char* section)
 		m_anti_aim							=	new anti_aim_ability(this);
 		control().add							(m_anti_aim,  ControlCom::eAntiAim);
 
-		const char*	anti_aim_animation			=	READ_IF_EXISTS(pSettings, r_string, section, 
-												"anti_aim_animation", "stand_attack_");
+		const char*	anti_aim_animation			=	pSettings->read_if_exists<LPCSTR>(section,"anti_aim_animation","stand_attack_");
 		anim().AddAnim							(eAnimAntiAimAbility, anti_aim_animation, -1, 
 												&velocity_stand, PS_STAND);
 		m_anti_aim->load_from_ini				(pSettings, section);

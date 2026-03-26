@@ -157,7 +157,7 @@ public:
     }
 
     // Returns true if value is exist and assigns it or returns false
-    template<typename T>
+    /*template<typename T>
     bool read_if_exists(T& outValue, pcstr section, pcstr line) const
     {
         if (line_exist(section, line))
@@ -166,13 +166,13 @@ public:
             return true;
         }
         return false;
-    }
+    }*/
 
-    template<typename T>
+    /*template<typename T>
     bool read_if_exists(T& outValue, const shared_str& section, pcstr line) const
     {
         return read_if_exists(outValue, section.c_str(), line);
-    }
+    }*/
 
 	template<typename T>
 	bool try_read_if_exists(T& outValue, const char* section, const char* line) const
@@ -294,17 +294,6 @@ public:
 	EnumT r_enum(LPCSTR S, LPCSTR L) const
 	{
 		return EnumT(r_u64(S, L));
-	}
-	
-	template<XRay::Concepts::Enum EnumT>
-	EnumT read_if_exists(pcstr section, pcstr line, EnumT defaultValue) const
-	{
-		EnumT Return;
-		if (r_enum_nullable(section, line, Return))
-		{
-			return Return;
-		}
-		return defaultValue;
 	}
 
     void		w_string		( LPCSTR S, LPCSTR L, LPCSTR			V, LPCSTR comment=0 );

@@ -72,8 +72,8 @@ void CArmorBase::Load(const char* section)
 	m_HitTypeProtection[ALife::eHitTypeTelepatic] = pSettings->r_float(section, "telepatic_protection");
 	m_HitTypeProtection[ALife::eHitTypeChemicalBurn] = pSettings->r_float(section, "chemical_burn_protection");
 	m_HitTypeProtection[ALife::eHitTypeExplosion] = pSettings->r_float(section, "explosion_protection");
-	m_HitTypeProtection[ALife::eHitTypeFireWound] = READ_IF_EXISTS(pSettings, r_float, section, "fire_wound_protection", 0.0f);
-	m_HitTypeProtection[ALife::eHitTypePhysicStrike] = READ_IF_EXISTS(pSettings, r_float, section, "physic_strike_protection", m_HitTypeProtection[ALife::eHitTypeStrike]);
+	m_HitTypeProtection[ALife::eHitTypeFireWound] = pSettings->read_if_exists<float>(section,"fire_wound_protection",0.0f);
+	m_HitTypeProtection[ALife::eHitTypePhysicStrike] = pSettings->read_if_exists<float>(section,"physic_strike_protection",m_HitTypeProtection[ALife::eHitTypeStrike]);
 	m_HitTypeProtection[ALife::eHitTypeLightBurn] = m_HitTypeProtection[ALife::eHitTypeBurn];
 	if (pSettings->line_exist(section, "hit_fraction_actor"))
 	{
@@ -106,17 +106,20 @@ void CArmorBase::Load(const char* section)
 		m_NightVisionColor.a = 0.0f;
 	}
 
-	pSettings->read_if_exists(m_bTorchAvailable, section, "torch_available");
+	{
+		auto res = pSettings->r_bool_nullable(section, "torch_available", m_bTorchAvailable);
+		m_bTorchAvailable &= res;
+	}
 
 	IRestoresOwner::Load(section);
 
-	m_fPowerLoss = READ_IF_EXISTS(pSettings, r_float, section, "power_loss", 1.0f);
+	m_fPowerLoss = pSettings->read_if_exists<float>(section, "power_loss", 1.0f);
 	clamp(m_fPowerLoss, 0.0f, 1.0f);
 
-	m_BonesProtectionSect = READ_IF_EXISTS(pSettings, r_string, section, "bones_koeff_protection", "");
+	m_BonesProtectionSect = pSettings->read_if_exists<LPCSTR>(section,"bones_koeff_protection","");
 
-	bIsHudGasMaskAvailable = !!READ_IF_EXISTS(pSettings, r_bool, section, "hud_gas_mask_avaliable", true);		// FFx0001 ++
-	bIsHudRainDropsAvailable = !!READ_IF_EXISTS(pSettings, r_bool, section, "hud_rain_drops_avaliable", true);  // FFx0001 ++
+	bIsHudGasMaskAvailable = pSettings->read_if_exists<bool>(section,"hud_gas_mask_avaliable",true);		// FFx0001 ++
+	bIsHudRainDropsAvailable = pSettings->read_if_exists<bool>(section,"hud_rain_drops_avaliable",true);  // FFx0001 ++
 
 	if (pSettings->line_exist(section, "glass_present"))
 	{
@@ -124,7 +127,7 @@ void CArmorBase::Load(const char* section)
 	}
 
 	// Added by Axel, to enable optional condition use on any item
-	m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", true));
+	m_flags.set(FUsingCondition, pSettings->read_if_exists<bool>(section,"use_condition",true));
 	IAntigas::SetOwner(this, m_HitTypeProtection);	// FFx0001 ++
 	IAntigas::Load(section);						// FFx0001 ++
 }

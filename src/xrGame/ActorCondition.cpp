@@ -92,7 +92,7 @@ void CActorCondition::LoadCondition(const char* entity_section)
 {
 	inherited::LoadCondition(entity_section);
 
-	const char*						section = READ_IF_EXISTS(pSettings,r_string,entity_section,"condition_sect",entity_section);
+	const char*						section = pSettings->read_if_exists<LPCSTR>(entity_section,"condition_sect",entity_section);
 
 	m_fJumpPower				= pSettings->r_float(section,"jump_power");
 	m_fStandPower				= pSettings->r_float(section,"stand_power");
@@ -168,28 +168,28 @@ void CActorCondition::LoadCondition(const char* entity_section)
 	const static bool enableMedIntoxication = EngineExternal()[EEngineExternalGame::EnableMedIntoxication];
 	if (enableMedIntoxication)
 	{
-		Intoxication.Critical = READ_IF_EXISTS(pSettings, r_float, section, "intoxication_critical", 0.35f);
+		Intoxication.Critical = pSettings->read_if_exists<float>(section, "intoxication_critical", 0.35f);
 		clamp(Intoxication.Critical, 0.0f, 1.0f);
 
-		Intoxication.Variability = READ_IF_EXISTS(pSettings, r_float, section, "intoxication_v", -0.00025f);
-		Intoxication.PowerBoost = READ_IF_EXISTS(pSettings, r_float, section, "intoxication_power_v", -0.005f);
-		Intoxication.HealthBoost = READ_IF_EXISTS(pSettings, r_float, section, "intoxication_health_v", -0.0015f);
-		m_fIntoxicationThirstK = READ_IF_EXISTS(pSettings, r_float, section, "intoxication_thirst_k", 0.3f);
+		Intoxication.Variability = pSettings->read_if_exists<float>(section, "intoxication_v", -0.00025f);
+		Intoxication.PowerBoost = pSettings->read_if_exists<float>(section, "intoxication_power_v", -0.005f);
+		Intoxication.HealthBoost = pSettings->read_if_exists<float>(section, "intoxication_health_v", -0.0015f);
+		m_fIntoxicationThirstK = pSettings->read_if_exists<float>(section, "intoxication_thirst_k", 0.3f);
 	}
 	else
 	{
 		m_fIntoxicationThirstK = 0.0f;
 	}
 
-	m_zone_max_power[ALife::infl_rad]	= READ_IF_EXISTS(pSettings, r_float, section, "radio_zone_max_power", 1.0f);
-	m_zone_max_power[ALife::infl_fire]	= READ_IF_EXISTS(pSettings, r_float, section, "fire_zone_max_power", 1.0f);
-	m_zone_max_power[ALife::infl_acid]	= READ_IF_EXISTS(pSettings, r_float, section, "acid_zone_max_power", 1.0f);
-	m_zone_max_power[ALife::infl_psi]	= READ_IF_EXISTS(pSettings, r_float, section, "psi_zone_max_power", 1.0f);
-	m_zone_max_power[ALife::infl_electra]= READ_IF_EXISTS(pSettings, r_float, section, "electra_zone_max_power", 1.0f);
+	m_zone_max_power[ALife::infl_rad]	= pSettings->read_if_exists<float>(section,"radio_zone_max_power",1.0f);
+	m_zone_max_power[ALife::infl_fire]	= pSettings->read_if_exists<float>(section,"fire_zone_max_power",1.0f);
+	m_zone_max_power[ALife::infl_acid]	= pSettings->read_if_exists<float>(section,"acid_zone_max_power",1.0f);
+	m_zone_max_power[ALife::infl_psi]	= pSettings->read_if_exists<float>(section,"psi_zone_max_power",1.0f);
+	m_zone_max_power[ALife::infl_electra]= pSettings->read_if_exists<float>(section,"electra_zone_max_power",1.0f);
 
-	m_max_power_restore_speed = READ_IF_EXISTS(pSettings, r_float, section, "max_power_restore_speed", 1.0f);
-	m_max_wound_protection = READ_IF_EXISTS(pSettings,r_float,section,"max_wound_protection",1.0f);
-	m_max_fire_wound_protection = READ_IF_EXISTS(pSettings,r_float,section,"max_fire_wound_protection",1.0f);
+	m_max_power_restore_speed = pSettings->read_if_exists<float>(section,"max_power_restore_speed",1.0f);
+	m_max_wound_protection = pSettings->read_if_exists<float>(section,"max_wound_protection",1.0f);
+	m_max_fire_wound_protection = pSettings->read_if_exists<float>(section,"max_fire_wound_protection",1.0f);
 
 	VERIFY( !fis_zero(m_zone_max_power[ALife::infl_rad]) );
 	VERIFY( !fis_zero(m_zone_max_power[ALife::infl_fire]) );
@@ -669,7 +669,7 @@ float CActorCondition::GetMedicineEfficiencyFactor(const shared_str& sect) const
 	float t = (Intoxication.Current - Intoxication.Critical) / denom;
 	clamp(t, 0.0f, 1.0f);
 
-	float kMin = READ_IF_EXISTS(pSettings, r_float, sect, "intoxication_heal_min", 0.25f);
+	float kMin = pSettings->read_if_exists<float>(sect, "intoxication_heal_min", 0.25f);
 	clamp(kMin, 0.0f, 1.0f);
 	return 1.0f + (kMin - 1.0f) * t;
 }

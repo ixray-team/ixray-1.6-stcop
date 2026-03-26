@@ -8,8 +8,8 @@ float psHUDStepSoundVolume = 1.0f;
 
 void InitHudSoundSettings()
 {
-	psHUDSoundVolume = READ_IF_EXISTS(pSettings, r_float, "hud_sound", "hud_sound_vol_k", 1.0f);
-	psHUDStepSoundVolume = READ_IF_EXISTS(pSettings, r_float, "hud_sound", "hud_step_sound_vol_k", 1.0f);
+	psHUDSoundVolume = pSettings->read_if_exists<float>("hud_sound", "hud_sound_vol_k", 1.0f);
+	psHUDStepSoundVolume = pSettings->read_if_exists<float>("hud_sound", "hud_step_sound_vol_k", 1.0f);
 }
 
 void HUD_SOUND_ITEM::LoadSound(const char* section, const char* line, HUD_SOUND_ITEM& hud_snd, int type, esound_type sound_type)

@@ -119,7 +119,7 @@ void CArtefact::Load(const char* section)
 
 bool CArtefact::net_Spawn(CSE_Abstract* DC) 
 {
-	if (READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "can_be_controlled", false))
+	if(pSettings->read_if_exists<bool>(cNameSect(),"can_be_controlled",false) )
 	{
 		m_detectorObj				= xr_make_unique<SArtefactDetectorsSupport>(this);
 	}
@@ -136,7 +136,7 @@ bool CArtefact::net_Spawn(CSE_Abstract* DC)
 	SetState						(eHidden);
 
 	m_pTrailLight = ::Render->light_create();
-	bool const b_light_shadow = READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "idle_light_shadow", false);
+	bool const b_light_shadow = pSettings->read_if_exists<bool>(cNameSect(),"idle_light_shadow",false);
 
 	m_pTrailLight->set_shadow(b_light_shadow);
 

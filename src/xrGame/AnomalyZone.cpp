@@ -325,10 +325,10 @@ void CAnomalyZone::Load(const char* section)
 	}
 
 	// volumetric light
-	m_bVolumetricBlowout   = READ_IF_EXISTS(pSettings, r_bool,  section, "volumetric_blowout",   false);
-	m_fVolumetricQuality   = READ_IF_EXISTS(pSettings, r_float, section, "volumetric_quality",   1.f);
-	m_fVolumetricDistance  = READ_IF_EXISTS(pSettings, r_float, section, "volumetric_distance",  1.f);
-	m_fVolumetricIntensity = READ_IF_EXISTS(pSettings, r_float, section, "volumetric_intensity", 1.f);
+	m_bVolumetricBlowout   = pSettings->read_if_exists<bool>(section,"volumetric_blowout",false);
+	m_fVolumetricQuality   = pSettings->read_if_exists<float>(section,"volumetric_quality",1.f);
+	m_fVolumetricDistance  = pSettings->read_if_exists<float>(section,"volumetric_distance",1.f);
+	m_fVolumetricIntensity = pSettings->read_if_exists<float>(section,"volumetric_intensity",1.f);
 
 	//загрузить параметры idle подсветки
 	m_zone_flags.set(eIdleLight,	pSettings->r_bool (section, "idle_light"));
@@ -338,12 +338,12 @@ void CAnomalyZone::Load(const char* section)
 		const char* light_anim		= pSettings->r_string(section,"idle_light_anim");
 		m_pIdleLAnim			= LALib.FindItem(light_anim);
 		m_fIdleLightHeight		= pSettings->r_float(section,"idle_light_height");
-		m_zone_flags.set(eIdleLightVolumetric,READ_IF_EXISTS(pSettings, r_bool, section, "idle_light_volumetric", false) );
-		m_zone_flags.set(eIdleLightShadow,READ_IF_EXISTS(pSettings, r_bool, section, "idle_light_shadow", true) );
-		m_zone_flags.set(eIdleLightR1,READ_IF_EXISTS(pSettings, r_bool, section, "idle_light_r1", true) );
+		m_zone_flags.set(eIdleLightVolumetric,pSettings->read_if_exists<bool>(section,"idle_light_volumetric",false) );
+		m_zone_flags.set(eIdleLightShadow,pSettings->read_if_exists<bool>(section,"idle_light_shadow",true) );
+		m_zone_flags.set(eIdleLightR1,pSettings->read_if_exists<bool>(section,"idle_light_r1",true) );
 	}
 
-	bool use = !!READ_IF_EXISTS(pSettings, r_bool, section, "use_secondary_hit", false);
+	bool use = pSettings->read_if_exists<bool>(section,"use_secondary_hit",false);
 	m_zone_flags.set(eUseSecondaryHit, use);
 	if(use)
 		m_fSecondaryHitPower	= pSettings->r_float(section,"secondary_hit_power");
@@ -351,7 +351,7 @@ void CAnomalyZone::Load(const char* section)
 	m_ef_anomaly_type			= pSettings->r_u32(section,"ef_anomaly_type");
 	m_ef_weapon_type			= pSettings->r_u32(section,"ef_weapon_type");
 	
-	m_zone_flags.set			(eAffectPickDOF, READ_IF_EXISTS(pSettings, r_bool, section, "pick_dof_effector", false));
+	m_zone_flags.set			(eAffectPickDOF, pSettings->read_if_exists<bool>(section,"pick_dof_effector",false));
 
 	if (TAnomalyMovement* AnomalyMovement = GetComponent<TAnomalyMovement>())
 	{

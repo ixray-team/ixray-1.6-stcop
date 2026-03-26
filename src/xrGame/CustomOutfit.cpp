@@ -17,9 +17,9 @@
 void CCustomOutfit::Load(const char* section)
 {
 	inherited::Load(section);
-	isDisableChangeSkin = READ_IF_EXISTS(pSettings, r_bool, section, "forbid_change_skin", false);
+	isDisableChangeSkin = pSettings->read_if_exists<bool>(section,"forbid_change_skin",false);
 	
-	m_HitTypeProtection[ALife::eHitTypeFireWound]	= READ_IF_EXISTS(pSettings, r_float, section,"fire_wound_protection", 0.f);
+	m_HitTypeProtection[ALife::eHitTypeFireWound] = pSettings->read_if_exists<float>(section,"fire_wound_protection",0.f);
  
 	if (pSettings->line_exist(section, "actor_visual"))
 	{
@@ -32,11 +32,11 @@ void CCustomOutfit::Load(const char* section)
 	m_additional_weight2 = pSettings->r_float(section, "additional_inventory_weight2");
 
 	m_full_icon_name = pSettings->r_string(section, "full_icon_name");
-	m_artefact_count = READ_IF_EXISTS(pSettings, r_u32, section, "artefact_count", 0);
-	bIsHelmetAvaliable = !!READ_IF_EXISTS(pSettings, r_bool, section, "helmet_avaliable", true);
+	m_artefact_count = pSettings->read_if_exists<u32>(section,"artefact_count",0);
+	bIsHelmetAvaliable = pSettings->read_if_exists<bool>(section,"helmet_avaliable",true);
 
-	IsExo = READ_IF_EXISTS(pSettings, r_bool, section, "is_exo", false);
-	IsExoProto = READ_IF_EXISTS(pSettings, r_bool, section, "is_exo_proto", false);
+	IsExo = pSettings->read_if_exists<bool>(section,"is_exo",false);
+	IsExoProto = pSettings->read_if_exists<bool>(section,"is_exo_proto",false);
 
 	if (pSettings->line_exist(section, "character_portrait"))
 	{
@@ -160,7 +160,7 @@ void CCustomOutfit::ApplySkinModel(CActor* pActor, bool bDress, bool bHUDOnly)
 				}
 			}
 
-			g_player_hud->NextHUDSect = READ_IF_EXISTS(pSettings, r_string, cNameSect(), "player_hud_section", nullptr);
+			g_player_hud->NextHUDSect = pSettings->read_if_exists<str_c>(cNameSect(), "player_hud_section", nullptr);
 			g_player_hud->m_need_reload = false;
 		}
 	}
