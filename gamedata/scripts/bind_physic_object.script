@@ -94,6 +94,9 @@ function generic_physics_binder:net_spawn(data)
 			end
 		end
 	end
+	
+	SendScriptCallback("physic_object_on_net_spawn", self, self.object, data)
+	
 	db.add_obj(self.object)
 	return true
 end
