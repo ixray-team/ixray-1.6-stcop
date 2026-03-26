@@ -171,13 +171,14 @@ function configure(_ref_ixr_signals)
 	
 	_ref_ixr_signals.add_intercept("artefact_on_update",     				{"binder_class", "artefact_game_object"}) 
 	
-	_ref_ixr_signals.add_intercept("physic_object_on_init",     			{"game_object"}) 
-	_ref_ixr_signals.add_intercept("physic_object_on_net_spawn",			{"class_binder", "game_object", "data"})
-	_ref_ixr_signals.add_intercept("physic_object_on_death",     			{"game_object", "game_object"}) 
+	_ref_ixr_signals.add_intercept("physic_object_on_init",     			{"physic_game_object"}) 
+	_ref_ixr_signals.add_intercept("physic_object_on_net_spawn",			{"class_binder", "physic_game_object", "data"})
+	_ref_ixr_signals.add_intercept("physic_object_on_death",     			{"physic_game_object", "who_game_object"}) 
 	_ref_ixr_signals.add_intercept("physic_object_on_use",     				{"physic_game_object", "who_game_object"}) 
 	_ref_ixr_signals.add_intercept("physic_object_on_use_callback",     	{"physic_game_object", "who_game_object"}) 
 	_ref_ixr_signals.add_intercept("physic_object_on_hit",     				{"physic_game_object", "power_number", "hit_direction_vector", "who_game_object", "bone_index_number"}) 
 	_ref_ixr_signals.add_intercept("physic_object_on_hit_callback",     	{"physic_game_object", "power_number", "hit_direction_vector", "who_game_object", "bone_index_number"}) 
+	_ref_ixr_signals.add_intercept("physic_object_on_update",				{"class_binder", "physic_game_object", "delta"})
 	
 	_ref_ixr_signals.add_intercept("heli_on_hit_callback",              	{"heli_game_object", "power_number", "nil", "who_game_object", "nil"}) 
 	
