@@ -107,8 +107,10 @@ void UILeftBarForm::Draw()
 				ImGui::TableSetColumnIndex(i % 2);
 				// --- Edit Mode Button
 				{
-					float ButtonH = 20.f;
-					float ShowH = 14.f;
+					float FlagSize = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::IndicatorWidth);
+					float ButtonH = ImGui::GetFontSize() + FlagSize / 2.f;
+					float ShowH = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::CheckboxSize);
+
 
 					ImGui::PushID(tool->ClassName());
 					ImGui::BeginDisabled(!tool->IsEnabled());
@@ -145,7 +147,7 @@ void UILeftBarForm::Draw()
 						? XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::Accent)
 						: XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ContentIconTint)
 						;
-					const	ImVec2		ShowPos		= { cur.x + 6.f, cur.y + (ButtonH - ShowH) / 2.f };
+					const	ImVec2		ShowPos		= { cur.x + FlagSize * 1.5f, cur.y + (ButtonH - ShowH) / 2.f };
 					ImGui::SetCursorPos(ShowPos);
 					ImGui::PushStyleColor(ImGuiCol_Button, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableTint).Value);
 					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableHover).Value);

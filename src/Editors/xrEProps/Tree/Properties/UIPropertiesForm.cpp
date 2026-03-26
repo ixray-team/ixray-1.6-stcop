@@ -95,18 +95,19 @@ void UIPropertiesForm::Draw()
 		}
 	}
 
-	float borderSize		= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableBorder);
-	float padding			= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableTextPaddingY);
-	float buttonPaddingX	= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonPaddingH);
+	float BorderSize		= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableBorder);
+	float Padding			= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableTextPaddingY);
+	float ButtonPaddingX	= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonPaddingH);
+	float Icon				= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::IconSize) * 0.7f;
 
-	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { borderSize, borderSize });
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { BorderSize, BorderSize });
 	if (!IsSearchDisabled)
 	{
-		const size_t SettingsIconSize = 24;
+		const size_t TableRowHeight = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableRowHeight);
 
-		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - SettingsIconSize);
+		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - TableRowHeight);
 		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { buttonPaddingX, padding });
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { ButtonPaddingX, Padding });
 		string32 FindStr = {};
 		xr_strcpy(FindStr, m_SearchText.c_str());
 
@@ -141,11 +142,11 @@ void UIPropertiesForm::Draw()
 
 		if (GUIManager->SearchIcon)
 		{
-			ImVec2 IconSize = { 14,14 };
+			ImVec2 IconSize = { Icon, Icon };
 
 			ImGui::SameLine();
-			ImVec2 cursorPos = ImGui::GetCursorPos();
-			ImGui::SetCursorPos(ImVec2(cursorPos.x - IconSize.x - borderSize - padding - SettingsIconSize, cursorPos.y + borderSize + padding));
+			ImVec2 CursorPos = ImGui::GetCursorPos();
+			ImGui::SetCursorPos(ImVec2(CursorPos.x - IconSize.x - BorderSize - Padding - TableRowHeight, CursorPos.y + (TableRowHeight - Icon) / 2.f));
 
 			ImGui::Image(GUIManager->SearchIcon, IconSize);
 		}

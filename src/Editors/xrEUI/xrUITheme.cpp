@@ -228,10 +228,14 @@ void CUIThemeManager::InitDefault(int InThemeID)
 		ThemeID = InThemeID;
 	}
 
+	float ScreenDPI = GUIManager->GetScaleDpi();
 	XRay::ImGui::MakeEditorTheme();
 	XRay::ImGui::SetupColorsList(ThemeID);
+	XRay::ImGui::SetupSizesList(0);
+	XRay::ImGui::InitSizes();
 
 	ImGuiStyle& style = ImGui::GetStyle();
+	//style.ScaleAllSizes(ScreenDPI);
 	ImVec4* colors = style.Colors;
 	colors[ImGuiCol_MenuBarBg]				= GetEditorColor(EEditorColors::BackgroundTint);
 	colors[ImGuiCol_FrameBg]				= GetEditorColor(EEditorColors::TableTint);
@@ -287,10 +291,15 @@ void CUIThemeManager::InitDefault(int InThemeID)
 	style.FrameBorderSize					= 0.0f;
 	style.FramePadding						= { GetEditorSize(EEditorSizes::ButtonPaddingW), (GetEditorSize(EEditorSizes::ButtonSize) - GetEditorSize(EEditorSizes::FontSize)) / 2 };
 	style.FrameRounding						= GetEditorSize(EEditorSizes::ButtonRadius);
+	style.TabRounding						= GetEditorSize(EEditorSizes::ButtonRadius);
 	style.ChildRounding						= 0.0f;
 	style.ItemSpacing						= ImVec2(4.f, 2.f);
 	style.ItemInnerSpacing					= ImVec2(2.f, 2.f);
 	style.DockingSeparatorSize				= GetEditorSize(EEditorSizes::DockingGap);
+	style.ScrollbarSize						= GetEditorSize(EEditorSizes::ButtonSize) / 2;
+	style.ScrollbarRounding					= GetEditorSize(EEditorSizes::ButtonSize) / 4;
+	style.GrabRounding						= GetEditorSize(EEditorSizes::ButtonRadius);
+	style.GrabMinSize						= style.GrabRounding * 2;
 	style.IndentSpacing						= 8.0f;
 	style.SeparatorTextBorderSize			= 2.0f;
 	style.SeparatorTextBorderSize			= 2.0f;
