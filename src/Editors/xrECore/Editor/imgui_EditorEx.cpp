@@ -10,6 +10,9 @@
 
 ECORE_API bool IXBeginMainMenuBar()
 {
+	float LogoSize = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::IconSize) * 2;
+	float ButtonSize = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize);
+
 	float UIMainMenuSize = UI->GetMenuBarHeight();
 	ImGuiViewport* viewport = ImGui::GetMainViewport();
 
@@ -19,13 +22,12 @@ ECORE_API bool IXBeginMainMenuBar()
 	//style.FramePadding.y = 9.0f;
 
 	ImVec2 LogoButtonSize = ImVec2(UIMainMenuSize, UIMainMenuSize);
-	ImVec2 LogoSize = ImVec2(40, 40);
 
 
 	//ImGui::SetCursorPos({ 0, 0 });
 
 	ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x, viewport->Pos.y));
-	ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, LogoButtonSize.y));
+	ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, UIMainMenuSize));
 	//ImGui::SetNextWindowViewport(viewport->ID);
 
 	ImGuiWindowFlags window_flags = 0
@@ -62,9 +64,9 @@ ECORE_API bool IXBeginMainMenuBar()
 		{ LogoButtonSize.x - WindowPadding.x, LogoButtonSize.y - WindowPadding.y }))
 	{
 		auto t_size = ImGui::GetContentRegionAvail();
-		ImVec2 t_pose = { (t_size.x - LogoSize.x) / 2 - (WindowPadding.x/2), (t_size.y - LogoSize.y) / 2 - (WindowPadding.y/2)};
+		ImVec2 t_pose = { (t_size.x - LogoSize) / 2 - (WindowPadding.x/2), (t_size.y - LogoSize) / 2 - (WindowPadding.y/2)};
 		ImGui::SetCursorPos(t_pose);
-		ImGui::Image(UI->m_HeaderLogo->get_SRView()->GetRawSRV(), LogoSize);
+		ImGui::Image(UI->m_HeaderLogo->get_SRView()->GetRawSRV(), { LogoSize, LogoSize });
 
 		ImGui::EndChild();
 		ImGui::SameLine();
@@ -77,10 +79,11 @@ ECORE_API void IXEndMainMenuBar()
 
 	ImGuiStyle& style = ImGui::GetStyle();
 
-	float button_w = 46.f;
-	float button_h = UI->GetMenuBarButtonHeight();
-
 	float UIMainMenuSize = UI->GetMenuBarHeight();
+	float button_h = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize);
+	float button_w = button_h * 2.f;
+	float IconSize = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::IconSize) / 2.f;
+
 	bool MaxBut = false;
 	bool MoveWin = false;
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
@@ -107,7 +110,7 @@ ECORE_API void IXEndMainMenuBar()
 
 	{
 		ImVec2 ControlButtonSize = ImVec2(button_w, button_h);
-		ImVec2 ImageSize = ImVec2(10.f, 10.f);
+		ImVec2 ImageSize = ImVec2(IconSize, IconSize);
 
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2((ControlButtonSize.x - ImageSize.x) / 2, (ControlButtonSize.y - ImageSize.y) / 2));
 
@@ -136,9 +139,10 @@ ECORE_API void IXEndMainMenuBar()
 
 		ImGui::EndChild();
 
-		ImGui::SetCursorPos(ImGui::GetCursorPos() + ImVec2{ UI->GetMenuBarHeight()- style.WindowPadding.x, 12.f});
+		ImGui::PopStyleVar();
+
+		ImGui::SetCursorPos({ UIMainMenuSize, UIMainMenuSize - ImGui::GetFontSize() - ImGui::GetStyle().FramePadding.y * 2.f});
 		ImVec2 padding = ImVec2(XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonPaddingW), XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonPaddingH));
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, padding);
 
 		if (!UI->GeneralTabs.empty() && ImGui::BeginTabBar("#TopBarView"))
 		{
@@ -164,7 +168,6 @@ ECORE_API void IXEndMainMenuBar()
 
 			ImGui::EndTabBar();
 		}
-		ImGui::PopStyleVar();
 
 		if (MaxBut)
 		{
@@ -184,7 +187,7 @@ ECORE_API void IXEndMainMenuBar()
 			SendMessageW(EDevice->GetHWND(), 0xA1, 0x2, 0);
 		}
 
-		ImGui::PopStyleVar(2);
+		ImGui::PopStyleVar();
 
 	}
 	ImGui::PopStyleVar(3);
