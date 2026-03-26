@@ -1,0 +1,30 @@
+function save_ctime_table(t)
+    if t == nil then return { valid = false } end
+    if t == 0 then  return { zero = true } end
+    
+    local Y, M, D, h, m, s, ms = t:get()
+    return {
+        year = Y,
+        month = M,
+        day = D,
+        hour = h,
+        minute = m,
+        second = s,
+        ms = ms
+    }
+end
+
+function load_ctime_from_table(data)
+    if data and data.zero then
+        return 0
+    end
+    
+    if not data or not data.year then
+        return nil
+    end
+    
+    local t = game.CTime()
+    t:set(data.year, data.month, data.day, data.hour, data.minute, data.second, data.ms)
+	
+    return t
+end
