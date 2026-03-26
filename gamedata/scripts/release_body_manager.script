@@ -5,6 +5,11 @@
 --' 11.02.08 ----------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------
 local IDLE_AFTER_DEATH = 40000
+
+function override_idle_after_death(val)
+	IDLE_AFTER_DEATH = val
+end
+
 local function add_to_release_table(release_tbl, object_id)
 	printf("add to release_objects_table ["..object_id.."]")
 	local obj_params = {}
@@ -55,6 +60,8 @@ function Crelease_body:__init()
 		result, section, value  = snd_ini:r_line("keep_items", i, "", "")
 		table.insert(self.keep_items_table, section)
 	end
+	
+	SendScriptCallback("release_body_manager_on_init", self)
 end
 
 function Crelease_body:moving_dead_body(obj)
@@ -64,7 +71,11 @@ function Crelease_body:moving_dead_body(obj)
 	printf("-----end table-----")
 
 	local object_id = obj:id()
-	if self:inspection_result(obj) then
+	local flags_table = {allow_release = true}
+	
+	SendScriptCallback("release_body_manager_can_moving_dead_body", self, obj, flags_table)
+	
+	if self:inspection_result(obj) and flags_table.allow_release then
 		printf("inspection_result return  ->  true")
 		if #self.release_objects_table <= self.body_max_count then
 			add_to_release_table(self.release_objects_table, object_id)
@@ -109,6 +120,14 @@ function Crelease_body:inspection_result(obj)
 			return false
 		end
 	end
+	
+	local flags_table = {need_skip = false}
+	
+	SendScriptCallback("release_body_manager_skip_inspection_result", self, obj, flags_table)
+	if flags_table.need_skip then
+		return false
+	end
+	
 	if get_object_story_id(obj:id()) ~= nil then
 		printf("Object << "..obj:name().." >> presence_in_story") -- помечен как сюжетный
 		return false
