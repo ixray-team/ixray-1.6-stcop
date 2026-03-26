@@ -425,7 +425,6 @@ function actor_binder:update(delta)
 		self.already_jumped = true
 		return
 	end
-
 	-- Вызов апдейта переноса игрока проводником
 	if travel_func ~= nil then
 		travel_func()
@@ -627,7 +626,7 @@ function actor_binder:save(packet)
 	set_save_marker(packet, "save", true, "actor_binder")
 	
 	SendScriptCallback("save", packet) -- IX-Ray
-	SendScriptCallback("actor_on_save", reader) -- IX-Ray
+	SendScriptCallback("actor_on_save", packet) -- IX-Ray
 end
 
 
