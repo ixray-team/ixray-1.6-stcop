@@ -369,11 +369,11 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 
 	// Параметры таблицы, которые может настроить пользователь
 	static ImVec2 cellPadding = ImVec2(ToolbarPadding * 0.5f, ToolbarPadding); // Отступы внутри ячеек
-	static ImVec2 minColumnWidth = ImVec2(100, 0); // Минимальная ширина колонок (0 = авто)
+	static ImVec2 minColumnWidth = ImVec2(GUIManager->ScaleByDpi(100), 0); // Минимальная ширина колонок (0 = авто)
 	static bool stretchColumns = true; // Растягивать ли колонки
 
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
-	ImGui::SameLine(0, 4);
+	ImGui::SameLine(0, ToolbarPadding);
 
 	auto DrawActionButton = [&](const char* id, auto& texture, ETAction action, const char* tooltip, ImDrawFlags flags)
 	{
