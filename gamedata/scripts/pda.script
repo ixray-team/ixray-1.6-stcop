@@ -279,7 +279,7 @@ function get_favorite_weapon()
 		return xr_statistic.actor_statistic.favorite_weapon_sect
 end
 
-local primary_objects_tbl =
+primary_objects_tbl =
 {
 	{target="zat_b55_spot",		hint="st_zat_b55_name"},
 	{target="zat_b100_spot",	hint="st_zat_b100_name"},
