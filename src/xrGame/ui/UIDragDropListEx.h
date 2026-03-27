@@ -11,12 +11,6 @@ class CUICellItem;
 class CUIDragItem;
 class CUIFrameWindow;
 
-enum EListType{
-		iwSlot,
-		iwBag,
-		iwBelt
-};
-
 struct CUICell{
 							CUICell					()						{m_item=NULL; Clear();}
 
