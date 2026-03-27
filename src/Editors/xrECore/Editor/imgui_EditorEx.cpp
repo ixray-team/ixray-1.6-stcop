@@ -12,8 +12,7 @@ bool BeginMenuBar(float off)
 		return false;
 	IM_ASSERT(!window->DC.MenuBarAppending);
 	ImGui::BeginGroup();
-	float window_TitleBarHeight = 125.f;
-	const float border_top = ImMax(IM_ROUND(window->WindowBorderSize * 0.5f - window_TitleBarHeight), 0.0f);
+	const float border_top = ImMax(IM_ROUND(window->WindowBorderSize * 0.5f), 0.0f);
 	const float border_half = IM_ROUND(window->WindowBorderSize * 0.5f);
 	ImRect bar_rect = window->MenuBarRect();
 	ImRect clip_rect(
@@ -85,6 +84,9 @@ ECORE_API bool IXBeginMainMenuBar()
 
 	ImGuiStyle& style = ImGui::GetStyle();
 
+	const float text_line_h = ImGui::GetTextLineHeight();
+	const float font_size = ImGui::GetFontSize();
+
 	ImVec2 LogoButtonSize = ImVec2(UIMainMenuSize, UIMainMenuSize);
 
 
@@ -113,11 +115,10 @@ ECORE_API bool IXBeginMainMenuBar()
 
 	if (!ImGui::Begin("##ChezzeTopMenu", NULL, window_flags))
 	{
-		ImGui::PopStyleVar(4);
+		ImGui::PopStyleVar(3);
 		ImGui::PopStyleColor(4);
 		return false;
 	}
-
 
 	auto WindowPadding = style.WindowPadding;
 
@@ -137,6 +138,9 @@ ECORE_API bool IXBeginMainMenuBar()
 
 	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8.0f, 4.0f)); // : L/R=8, T/B=4
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 10.0f));  // : L/R=0, T/B=8
+	const float frame_padding_y = style.FramePadding.y;
+
+
 
 	ImVec2 b_content_size = ImGui::GetContentRegionAvail();
 	b_content_size.y += style.FramePadding.y;
@@ -145,14 +149,10 @@ ECORE_API bool IXBeginMainMenuBar()
 
 	auto o_cur = ImGui::GetCursorPos() ;
 
-	float start_y = ImGui::GetCursorPosY();
+	//float start_y = ImGui::GetCursorPosY();
 
-	float tabbar_height = ImGui::GetFrameHeight();
-
-	float avail_y = ImGui::GetContentRegionAvail().y;
-	float result = UIMainMenuSize - ImGui::GetFontSize() - ImGui::GetStyle().FramePadding.y * 2.f;
-	float height = result*0.5f - ImGui::GetTextLineHeight() + style.FramePadding.y * 2.0f;
-	float offset_y = (height);
+	const float result = UIMainMenuSize - font_size - frame_padding_y * 2.f;
+	const float offset_y = result * 0.5f - text_line_h + frame_padding_y * 2.0f;
 
 	{
 		ImGui::SetCursorPos({ o_cur.x , result });
@@ -195,7 +195,7 @@ ECORE_API bool IXBeginMainMenuBar()
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, style.FramePadding);
 
 	if (offset_y > 0.0f)
-		ImGui::SetCursorPos({ o_cur.x + style.FramePadding.y, start_y + offset_y });
+		ImGui::SetCursorPos({ o_cur.x + style.FramePadding.y, offset_y });
 
 	return true;
 }
@@ -208,7 +208,6 @@ ECORE_API void IXEndMainMenuBar()
 	ImGui::EndChild();
 	ImGui::PopStyleVar(2);
 	
-
 	ImGuiStyle& style = ImGui::GetStyle();
 
 	float UIMainMenuSize = UI->GetMenuBarHeight();
