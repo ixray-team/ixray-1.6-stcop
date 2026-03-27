@@ -1,37 +1,17 @@
 prefetch("_G")
 
-local prevent_duplicates = {}
-
-function cs_register(factory, client_object_class, server_object_class, clsid, script_clsid)
-	local str_name = tostring(client_object_class) .. tostring(server_object_class) .. tostring(clsid) .. tostring(script_clsid)
-	if prevent_duplicates[str_name] then
-		return
-	end
-	
-	factory:register(client_object_class, server_object_class, clsid, script_clsid)
-	prevent_duplicates[str_name] = true
+function cs_register(factory,client_object_class,server_object_class,clsid,script_clsid)
+	factory:register	(client_object_class,server_object_class,clsid,script_clsid)
 end
 
 function c_register(factory,client_object_class,clsid,script_clsid)
-	if (not editor()) then
-		local str_name = tostring(client_object_class) .. tostring(clsid) .. tostring(script_clsid)
-		if prevent_duplicates[str_name] then
-			return
-		end
-		
+	if (editor() == false) then
 		factory:register(client_object_class,clsid,script_clsid)
-		prevent_duplicates[str_name] = true
 	end
 end
 
 function s_register(factory,server_object_class,clsid,script_clsid)
-	local str_name = tostring(server_object_class) .. tostring(clsid) .. tostring(script_clsid)
-	if prevent_duplicates[str_name] then
-		return
-	end
-	
-	factory:register(server_object_class, clsid, script_clsid)
-	prevent_duplicates[str_name] = true
+	factory:register(server_object_class,clsid,script_clsid)
 end
 
 function register(object_factory)
@@ -154,6 +134,4 @@ function register(object_factory)
 	-- ONLINE_OFFLINE_GROUP --------------------------------------------------------------------------------------------------------------
 
 	s_register	(object_factory, 							"sim_squad_scripted.sim_squad_scripted",	"ON_OFF_S",			"online_offline_group_s")
-	
-	SendScriptCallback("class_registrator_on_register", cs_register, s_register, c_register, object_factory)
 end
