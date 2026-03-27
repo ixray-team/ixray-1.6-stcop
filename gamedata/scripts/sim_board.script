@@ -6,7 +6,7 @@
 squad_ltx = system_ini()
 setting_ini = ini_file("misc\\simulation.ltx")
 
-local group_id_by_levels = {zaton = 1,
+group_id_by_levels = {zaton = 1,
 							pripyat = 2,
 							jupiter = 3,
 							labx8 = 4,
@@ -233,6 +233,8 @@ function sim_board:create_squad(spawn_smart, sq_id)
 	squad:create_npc(spawn_smart)
 	squad:set_squad_relation()
 	self:assign_squad_to_smart(squad, spawn_smart.id)
+
+	SendScriptCallback("squad_on_create", self, squad, squad_id, squad.id, spawn_smart, spawn_smart.m_game_vertex_id)
 
 	--' Пересчитываем Team, Squad, Group
     local npcCount = squad:npc_count() -1

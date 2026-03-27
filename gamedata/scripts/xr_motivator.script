@@ -207,8 +207,15 @@ function motivator_binder:net_spawn(sobject)
 		elseif se_obj.m_smart_terrain_id ~= 65535 then
 			local smart_terrain = alife():object(se_obj.m_smart_terrain_id)
 			if smart_terrain.arriving_npc[se_obj.id] == nil then
-				local smart_task = smart_terrain.job_data[smart_terrain.npc_info[se_obj.id].job_id].alife_task
-				self.object:set_npc_position(smart_task:position())
+				
+				local flags_table = {override_position_logic = false}
+				SendScriptCallback("motivator_override_net_spawn_set_npc_position_logic", self, self.object, flags_table)
+				if not flags_table.override_position_logic then
+					local smart_task = smart_terrain.job_data[smart_terrain.npc_info[se_obj.id].job_id].alife_task
+					self.object:set_npc_position(smart_task:position())
+				else
+					flags_table.override_position_logic(self, smart_terrain, self.object, se_obj)
+				end
 			end
 		end
 	end
