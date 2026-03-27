@@ -202,6 +202,9 @@ function configure(_ref_ixr_signals)
 	_ref_ixr_signals.add_intercept("binder_smart_terrain_on_update",        {"class_binder", "smart_terrain_game_object", "delta"}) 
 	_ref_ixr_signals.add_intercept("on_try_respawn",                      	{"smart_terrain_server_object", "table"}) -- {disabled = false} switch to true for break
 	
+	_ref_ixr_signals.add_intercept("motivator_override_net_spawn_set_npc_position_logic", {"class_binder", "npc_game_object", "flags_table"}) -- flags_table = {override_position_logic = false} -- вместо false вставить функтор если нужно переопределить поведение function (_binder, smart_terrain, npc_game_object) ... end
+
+	
 	_ref_ixr_signals.add_intercept("inv_upgrades_precondition_functor_a_override_price", {"param_ini", "char_ini", "cur_price_percent", "param1", "section", "flags_table"})  -- flags_table = {new_price = math.floor(char_ini:r_u32(section, "cost")*cur_price_percent)}
 	_ref_ixr_signals.add_intercept("inv_upgrades_prereq_functor_a_override_price", {"param_ini", "char_ini", "cur_price_percent", "param3", "section", "flags_table"})  -- flags_table = {new_price = math.floor(char_ini:r_u32(section, "cost")*cur_price_percent)}
 	_ref_ixr_signals.add_intercept("inv_upgrades_get_upgrade_cost_override_price", {"param_ini", "char_ini", "cur_price_percent", "section", "flags_table"})  -- flags_table = {new_price = math.floor(char_ini:r_u32(section, "cost")*cur_price_percent)}
