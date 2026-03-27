@@ -8,6 +8,7 @@
 #include "../antigas.h"
 #include "UIItemInfo.h"
 #include "../../xrEngine/xr_input.h"
+#include "../script_game_object.h"
 
 bool CUIActorMenuBase::OnItemDrop(CUICellItem* itm)
 {
