@@ -10,17 +10,17 @@ local mul_by_level = {}
 local count_by_level = {}
 
 --' Предметы, которые нельзя удалять (квестовые например)
-local always_keep_item = {}
+always_keep_item = {}
 
 --' Предметы, относящиеся к патронам. Их надо спаунить другим методом.
 ammo_sections = {}
 
 local death_ini = ini_file("misc\\death_generic.ltx")
 
+-- группировки
+community_list = { "stalker", "dolg", "freedom", "bandit", "army", "zombied", "ecolog", "killer", "monolith" }
 
 function init_drop_settings()
-	local community_list = { "stalker", "dolg", "freedom", "bandit", "army", "zombied", "ecolog", "killer", "monolith" }
-
 		for k,v in pairs(community_list) do
 				--' Необходимо заполнить таблицу
 				item_by_community[v] = {}
@@ -118,8 +118,16 @@ function drop_manager:create_release_item()
 	end
 	se_obj.death_droped = true
 
-	--' Запускаем итератор на удаление предметов
-	self.npc:iterate_inventory(keep_item, self.npc)
+	local flags_table = {overriden_iterator_functor = false}
+	SendScriptCallback("death_manager_override_iterator_on_create_release_item", self, self.npc, flags_table)
+	
+	if not flags_table.overriden_iterator_functor then
+		--' Запускаем итератор на удаление предметов
+		self.npc:iterate_inventory(keep_item, self.npc)
+	else
+		--' Запускаем кастомный переопределенный из вне итератор или логику
+		flags_table.overriden_iterator_functor(self, self.npc, keep_item)
+	end
 
 	--' Проверка на отсутствие спауна лута
 	local ini = self.npc:spawn_ini()
@@ -140,19 +148,28 @@ function drop_manager:create_release_item()
 	if spawn_items == nil then
 		return
 	end
-	for k,v in pairs(spawn_items) do
-		--' По каждому объекту необходимо получить зависимости
-		if check_item_dependence(self.npc, k) == true then
-			--' По каждому объекту необходимо получить количество
-			if count_by_level[k] == nil then
-				abort("Incorrect count settings in death_manager for object[%s]", k)
+	
+	local flags_table_b = {override_spawn_items_functor = false}
+	SendScriptCallback("death_manager_override_spawn_items_on_create_release_item", self, self.npc, flags_table_b)
+	
+	if not flags_table_b.override_spawn_items_functor then
+		--' оригинальный спавн предметов
+		for k,v in pairs(spawn_items) do
+			--' По каждому объекту необходимо получить зависимости
+			if check_item_dependence(self.npc, k) == true then
+				--' По каждому объекту необходимо получить количество
+				if count_by_level[k] == nil then
+					abort("Incorrect count settings in death_manager for object[%s]", k)
+				end
+				local number = math.ceil(math.random(count_by_level[k].min, count_by_level[k].max))
+				--' Необходимо заспавнить нужное количество.
+				create_items(self.npc, k, number, v)
 			end
-			local number = math.ceil(math.random(count_by_level[k].min, count_by_level[k].max))
-			--' Необходимо заспавнить нужное количество.
-			create_items(self.npc, k, number, v)
 		end
+	else
+		--' переопределенная из вне логика спавна предметов
+		flags_table_b.override_spawn_items_functor(self, self.npc, spawn_items, count_by_level, create_items, check_item_dependence)
 	end
-
 end
 
 --' Функция вызывается для каждого предмета, если вернет false то предмет удалится.
