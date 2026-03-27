@@ -4,17 +4,6 @@
 
 #include "IconsFontAwesome6.h"
 
-#define MainMenuList(Name) cp = ImGui::GetCursorPos();\
-	if (ImGui::Button(Name)) {\
-		ImGui::OpenPopup(Name"Popup"); \
-		ImGui::SetNextWindowPos({ImGui::GetWindowPos().x + cp.x, ImGui::GetWindowPos().y+ cp.y + UI->GetMenuBarButtonHeight()}); }	\
-	if (ImGui::BeginPopup(Name"Popup")) {
-
-#define EndMainMenuList \
-	ImGui::EndPopup(); \
-	} \
-	ImGui::SameLine();
-
 UIMainMenuForm::UIMainMenuForm()
 {
 }
@@ -86,12 +75,13 @@ void UIMainMenuForm::Draw()
 	if (IXBeginMainMenuBar())
 	{
 		ImVec2 cp;
-		MainMenuList("File")
+		if (ImGui::BeginMenu("File")) {
 			DrawMenuItemI("Save", ICON_FA_FLOPPY_DISK, COMMAND_SAVE);
 			DrawMenuItemI("Reload", ICON_FA_ARROWS_ROTATE, COMMAND_LOAD);
-		EndMainMenuList;
+			ImGui::EndMenu();
+		}
 
-		MainMenuList("Editors")
+		if (ImGui::BeginMenu("Editors")) {
 			if (ImGui::BeginMenu("Images"))
 			{
 				DrawMenuItemI("Image Editor", ICON_FA_IMAGE, COMMAND_IMAGE_EDITOR);
@@ -114,9 +104,10 @@ void UIMainMenuForm::Draw()
 				ImGui::EndMenu();
 			}
 			DrawMenuItemI("Light Anim Editor", ICON_FA_LIGHTBULB, COMMAND_LIGHTANIM_EDITOR);
-		EndMainMenuList;
+			ImGui::EndMenu();
+		}
 
-		MainMenuList("Options")
+		if (ImGui::BeginMenu("Options")) {
 			if (ImGui::BeginMenu("Render"))
 			{
 				if (ImGui::BeginMenu("Quality"))
@@ -270,34 +261,36 @@ void UIMainMenuForm::Draw()
 				}
 
 			}
-		EndMainMenuList;
-
-		MainMenuList("Windows")
-		{
-			bool selected = AllowLogCommands();
-
-			if (ImGui::MenuItem("Log", "", &selected))
-			{
-				ExecCommand(COMMAND_LOG_COMMANDS);
-			}
-
-			CUIThemeManager& ThemeInstance = CUIThemeManager::Get();
-			bool selected2 = !ThemeInstance.IsClosed();
-			if (ImGui::MenuItemI("Theme", ICON_FA_PAINT_ROLLER, "", &selected2))
-			{
-				if (selected2)
-				{
-					if (!UI->HasWindow<CUIThemeManager>())
-					{
-						UI->Push(&ThemeInstance);
-					}
-					ThemeInstance.Show(true);
-				}
-				else
-					ThemeInstance.Show(false);
-			}
+			ImGui::EndMenu();
 		}
-		EndMainMenuList;
+
+		if (ImGui::BeginMenu("Windows")) {
+			{
+				bool selected = AllowLogCommands();
+
+				if (ImGui::MenuItem("Log", "", &selected))
+				{
+					ExecCommand(COMMAND_LOG_COMMANDS);
+				}
+
+				CUIThemeManager& ThemeInstance = CUIThemeManager::Get();
+				bool selected2 = !ThemeInstance.IsClosed();
+				if (ImGui::MenuItemI("Theme", ICON_FA_PAINT_ROLLER, "", &selected2))
+				{
+					if (selected2)
+					{
+						if (!UI->HasWindow<CUIThemeManager>())
+						{
+							UI->Push(&ThemeInstance);
+						}
+						ThemeInstance.Show(true);
+					}
+					else
+						ThemeInstance.Show(false);
+				}
+			}
+			ImGui::EndMenu();
+		}
 
 		IXEndMainMenuBar();
 	}
