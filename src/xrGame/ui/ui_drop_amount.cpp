@@ -281,11 +281,6 @@ void CUIItemDropAmountWnd::PerformDrop()
             CurrentGameUI()->ActorMenu()->ToPartnerTradeAll((u32)amount);
         break;
     }
-    default:
-    {
-        R_ASSERT(false, "Drop menu mode not implemented :(", make_string<const char*>("%s", _dropMode));
-        break;
-    }
     }
 }
 
