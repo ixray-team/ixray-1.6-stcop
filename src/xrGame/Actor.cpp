@@ -1888,7 +1888,6 @@ void CActor::UpdateCL()
 			Device.hudViewportData.renderZoomRotateFactor = pWeapon->GetAimFactor();
 			Device.hudViewportData.isRenderActive = !pWeapon->IsGrenadeMode() && pWeapon->IsScopeAttached() && (pWeapon->GetAimFactor() > 0.0f) && (pWeapon->GetZoomFactor() > 0.0f);
 			Device.hudViewportData.ActorWeaponCondition = pWeapon->GetCondition();
-			Device.hudViewportData.ActorWeaponLoading = 1.0f;
 			Device.hudViewportData.renderScopeBrightnessValue = pWeapon->m_lens_night_brightness.cur_value;
 			Device.hudViewportData.renderScopeBrightnessJitterValue = pWeapon->m_lens_night_brightness.jitter;
 		}
