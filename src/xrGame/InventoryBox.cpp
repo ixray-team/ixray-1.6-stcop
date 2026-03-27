@@ -5,6 +5,7 @@
 #include "../xrScripts/script_callback_ex.h"
 #include "ui/UIActorMenu.h"
 #include "UIGameCustom.h"
+#include "ui/UICarBodyWnd.h"
 
 void CInventoryBox::OnEvent(NET_Packet& P, u16 type)
 {
@@ -35,6 +36,13 @@ void CInventoryBox::OnEvent(NET_Packet& P, u16 type)
 					CurrentGameUI()->OnInventoryAction(pIItem, GE_OWNERSHIP_TAKE);
 				}
 			}
+			else if (CurrentGameUI()->CarBodyWnd())
+			{
+				if (this == CurrentGameUI()->CarBodyWnd()->GetInvBox())
+				{
+					CurrentGameUI()->OnInventoryAction(pIItem, GE_OWNERSHIP_TAKE);
+				}
+			}
 		};
 	}break;
 
@@ -57,9 +65,16 @@ void CInventoryBox::OnEvent(NET_Packet& P, u16 type)
 
 		if (!IsGameTypeSingle() && CurrentGameUI())
 		{
-			if (CurrentGameUI()->ActorMenu()->GetMenuMode() == mmDeadBodySearch)
+			if (CurrentGameUI()->ActorMenu() && CurrentGameUI()->ActorMenu()->GetMenuMode() == mmDeadBodySearch)
 			{
 				if (this == CurrentGameUI()->ActorMenu()->GetInvBox())
+				{
+					CurrentGameUI()->OnInventoryAction(itm->cast_inventory_item(), GE_OWNERSHIP_REJECT);
+				}
+			}
+			else if (CurrentGameUI()->CarBodyWnd())
+			{
+				if (this == CurrentGameUI()->CarBodyWnd()->GetInvBox())
 				{
 					CurrentGameUI()->OnInventoryAction(itm->cast_inventory_item(), GE_OWNERSHIP_REJECT);
 				}
