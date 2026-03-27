@@ -182,6 +182,10 @@ function configure(_ref_ixr_signals)
 	
 	_ref_ixr_signals.add_intercept("heli_on_hit_callback",              	{"heli_game_object", "power_number", "nil", "who_game_object", "nil"}) 
 	
+	_ref_ixr_signals.add_intercept("release_body_manager_on_init",				{"class_binder"})
+	_ref_ixr_signals.add_intercept("release_body_manager_can_moving_dead_body",	{"class_binder", "game_object_to_remove", "flags_table"}) -- flags_table = {allow_release = true}
+	_ref_ixr_signals.add_intercept("release_body_manager_skip_inspection_result",	{"class_binder", "game_object_to_inspection_result", "flags_table"}) -- flags_table = {need_skip = true}
+	
 	_ref_ixr_signals.add_intercept("squad_on_npc_creation",             	{"squad_server_object", "npc_server_object", "spawn_smart_server_object"}) 
 	_ref_ixr_signals.add_intercept("squad_on_enter_smart",              	{"squad_server_object", "smart_server_object"}) 
 	_ref_ixr_signals.add_intercept("squad_on_leave_smart",              	{"squad_server_object", "old_smart_server_object"}) 
