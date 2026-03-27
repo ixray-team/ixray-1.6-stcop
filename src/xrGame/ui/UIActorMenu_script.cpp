@@ -357,23 +357,6 @@ void CUIActorMenu::PerformDisassemble()
 	item->object().DestroyObject();
 }
 
-bool CUIActorMenu::CanUpgradeItem( PIItem item )
-{
-	VERIFY( item );
-
-	LPCSTR item_name = item->m_section_id.c_str();
-	LPCSTR partner = m_pPartnerInvOwner ? m_pPartnerInvOwner->CharacterInfo().Profile().c_str() : Actor()->CharacterInfo().Profile().c_str();
-	LPCSTR section = m_pPartnerInvOwner ? m_pPartnerInvOwner->cast_game_object()->cNameSect_str() : Actor()->cast_game_object()->cNameSect_str();
-		
-	luabind::functor<bool> funct; 
-	R_ASSERT2(
-		ai().script_engine().functor( "inventory_upgrades.can_upgrade_item", funct ),
-		make_string<const char*>( "Failed to get functor <inventory_upgrades.can_upgrade_item>, item = %s, mechanic = %s", item_name, partner )
-		);
-
-	return funct( item_name, partner, section);
-}
-
 void CUIActorMenu::CurModeToScript()
 {
 	int mode = (int)m_currMenuMode;
