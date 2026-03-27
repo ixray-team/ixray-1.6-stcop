@@ -8,6 +8,7 @@
 #include "WeaponMagazined.h"
 #include "Grenade.h"
 #include "../xrScripts/script_callback_ex.h"
+#include "ui/UICarBodyWnd.h"
 
 using namespace InventoryUtilities;
 
@@ -249,6 +250,13 @@ void CInventory::Take(CGameObject* pObj, bool bNotActivate, bool strict_placemen
 		else if (current_ui->ActorMenu() && current_ui->ActorMenu()->GetMenuMode() == mmDeadBodySearch)
 		{
 			if (m_pOwner == current_ui->ActorMenu()->GetPartner())
+			{
+				current_ui->OnInventoryAction(pIItem, GE_OWNERSHIP_TAKE);
+			}
+		}
+		else if (current_ui->CarBodyWnd())
+		{
+			if (m_pOwner == current_ui->CarBodyWnd()->GetPartner())
 			{
 				current_ui->OnInventoryAction(pIItem, GE_OWNERSHIP_TAKE);
 			}
