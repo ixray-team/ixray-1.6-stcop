@@ -5,8 +5,75 @@
 #include "IconsFontAwesome7.h"
 #include "ModernUI.h"
 
-//extern XRE_API TUI* UI;
-//extern XREUI_API CEditorRenderDevice* EDevice;
+bool BeginMenuBar(float off)
+{
+	ImGuiWindow* window = ImGui::GetCurrentWindow();
+	if (window->SkipItems)
+		return false;
+	IM_ASSERT(!window->DC.MenuBarAppending);
+	ImGui::BeginGroup();
+	float window_TitleBarHeight = 125.f;
+	const float border_top = ImMax(IM_ROUND(window->WindowBorderSize * 0.5f - window_TitleBarHeight), 0.0f);
+	const float border_half = IM_ROUND(window->WindowBorderSize * 0.5f);
+	ImRect bar_rect = window->MenuBarRect();
+	ImRect clip_rect(
+		ImFloor(bar_rect.Min.x + border_half),
+		ImFloor(bar_rect.Min.y + border_top),
+		ImFloor(ImMax(bar_rect.Min.x, bar_rect.Max.x - ImMax(window->WindowRounding, border_half))),
+		ImFloor(bar_rect.Max.y + off));
+	clip_rect.ClipWith(window->OuterRectClipped);
+	ImGui::PushClipRect(clip_rect.Min, clip_rect.Max, false);
+
+	window->DC.LayoutType = ImGuiLayoutType_Horizontal;
+	window->DC.NavLayerCurrent = ImGuiNavLayer_Main;
+	window->DC.MenuBarAppending = true;
+	return true;
+}
+
+void EndMenuBar()
+{
+	ImGuiWindow* window = ImGui::GetCurrentWindow();
+	if (window->SkipItems)
+		return;
+
+	ImGuiContext& g = *GImGui;
+
+	IM_MSVC_WARNING_SUPPRESS(6011); // Static Analysis false positive "warning C6011: Dereferencing NULL pointer 'window'"
+	IM_ASSERT(window->DC.MenuBarAppending);
+
+	// Nav: When a move request within one of our child menu failed, capture the request to navigate among our siblings.
+	if (ImGui::NavMoveRequestButNoResultYet() && (g.NavMoveDir == ImGuiDir_Left || g.NavMoveDir == ImGuiDir_Right) && (g.NavWindow->Flags & ImGuiWindowFlags_ChildMenu))
+	{
+		// Try to find out if the request is for one of our child menu
+		ImGuiWindow* nav_earliest_child = g.NavWindow;
+		while (nav_earliest_child->ParentWindow && (nav_earliest_child->ParentWindow->Flags & ImGuiWindowFlags_ChildMenu))
+			nav_earliest_child = nav_earliest_child->ParentWindow;
+		if (nav_earliest_child->ParentWindow == window && nav_earliest_child->DC.ParentLayoutType == ImGuiLayoutType_Horizontal && (g.NavMoveFlags & ImGuiNavMoveFlags_Forwarded) == 0)
+		{
+			// To do so we claim focus back, restore NavId and then process the movement request for yet another frame.
+			// This involve a one-frame delay which isn't very problematic in this situation. We could remove it by scoring in advance for multiple window (probably not worth bothering)
+			const ImGuiNavLayer layer = ImGuiNavLayer_Main;
+			IM_ASSERT(window->DC.NavLayersActiveMaskNext & (1 << layer)); // Sanity check (FIXME: Seems unnecessary)
+			ImGui::FocusWindow(window);
+			ImGui::SetNavID(window->NavLastIds[layer], layer, 0, window->NavRectRel[layer]);
+			// FIXME-NAV: How to deal with this when not using g.IO.ConfigNavCursorVisibleAuto?
+			if (g.NavCursorVisible)
+			{
+				g.NavCursorVisible = false; // Hide nav cursor for the current frame so we don't see the intermediary selection. Will be set again
+				g.NavCursorHideFrames = 2;
+			}
+			g.NavHighlightItemUnderNav = g.NavMousePosDirty = true;
+			ImGui::NavMoveRequestForward(g.NavMoveDir, g.NavMoveClipDir, g.NavMoveFlags, g.NavMoveScrollFlags); // Repeat
+		}
+	}
+
+	ImGui::PopClipRect();
+	ImGui::EndGroup();
+	window->DC.LayoutType = ImGuiLayoutType_Vertical;
+	window->DC.MenuBarAppending = false;
+}
+
+
 
 ECORE_API bool IXBeginMainMenuBar()
 {
@@ -17,18 +84,12 @@ ECORE_API bool IXBeginMainMenuBar()
 	ImGuiViewport* viewport = ImGui::GetMainViewport();
 
 	ImGuiStyle& style = ImGui::GetStyle();
-	//originalFramePadding = style.FramePadding;
-
-	//style.FramePadding.y = 9.0f;
 
 	ImVec2 LogoButtonSize = ImVec2(UIMainMenuSize, UIMainMenuSize);
 
 
-	//ImGui::SetCursorPos({ 0, 0 });
-
 	ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x, viewport->Pos.y));
 	ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, UIMainMenuSize));
-	//ImGui::SetNextWindowViewport(viewport->ID);
 
 	ImGuiWindowFlags window_flags = 0
 		| ImGuiWindowFlags_NoDocking
@@ -71,11 +132,82 @@ ECORE_API bool IXBeginMainMenuBar()
 		ImGui::EndChild();
 		ImGui::SameLine();
 	}
+	ImGui::SetCursorPosY(0);
+	//ImGui::PushStyleColor(ImGuiCol_ChildBg, { 255.f,0.f,0.f,0.5f });
+
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8.0f, 4.0f)); // : L/R=8, T/B=4
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 10.0f));  // : L/R=0, T/B=8
+
+	ImVec2 b_content_size = ImGui::GetContentRegionAvail();
+	b_content_size.y += style.FramePadding.y;
+	b_content_size.x += style.FramePadding.x;
+	ImGui::BeginChild("##MENUBAR", b_content_size);
+
+	auto o_cur = ImGui::GetCursorPos() ;
+
+	float start_y = ImGui::GetCursorPosY();
+
+	float tabbar_height = ImGui::GetFrameHeight();
+
+	float avail_y = ImGui::GetContentRegionAvail().y;
+	float result = UIMainMenuSize - ImGui::GetFontSize() - ImGui::GetStyle().FramePadding.y * 2.f;
+	float height = result*0.5f - ImGui::GetTextLineHeight() + style.FramePadding.y * 2.0f;
+	float offset_y = (height);
+
+	{
+		ImGui::SetCursorPos({ o_cur.x , result });
+		ImVec2 padding = ImVec2(XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonPaddingW), XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonPaddingH));
+
+		if (!UI->GeneralTabs.empty() && ImGui::BeginTabBar("#TopBarView"))
+		{
+			for (const auto& [Name, Callback] : UI->GeneralTabs)
+			{
+				bool ChangedColor = false;
+				if (Callback != nullptr && Callback())
+				{
+					ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 20, 20, 255));
+					ChangedColor = true;
+				}
+
+				if (ImGui::BeginTabItem(*Name, nullptr, ImGuiTabItemFlags_SetSelected))
+				{
+					ImGui::EndTabItem();
+				}
+
+				if (ChangedColor)
+				{
+					ImGui::PopStyleColor();
+				}
+			}
+
+			ImGui::EndTabBar();
+		}
+	}
+	ImGui::SetCursorPos(o_cur);
+
+	if (!BeginMenuBar(offset_y+ImGui::GetTextLineHeight() + style.FramePadding.y * 2.0f))
+	{
+		ImGui::PopStyleVar(3);
+		ImGui::PopStyleColor(4);
+		ImGui::End();
+		return false;
+	}
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, style.FramePadding);
+
+	if (offset_y > 0.0f)
+		ImGui::SetCursorPos({ o_cur.x + style.FramePadding.y, start_y + offset_y });
+
 	return true;
 }
 
 ECORE_API void IXEndMainMenuBar()
 {
+	ImGui::PopStyleVar(1);
+	//ImGui::PopStyleColor(1);
+	EndMenuBar();
+	ImGui::EndChild();
+	ImGui::PopStyleVar(2);
+	
 
 	ImGuiStyle& style = ImGui::GetStyle();
 
@@ -92,20 +224,21 @@ ECORE_API void IXEndMainMenuBar()
 	ImGui::SameLine();
 
 
-	ImVec2 dragZoneSize = ImVec2(ImGui::GetContentRegionAvail().x+ style.WindowPadding.x /*- button_w*3*/, UIMainMenuSize);
+	ImVec2 dragZoneSize = ImVec2(ImGui::GetContentRegionAvail().x+ style.WindowPadding.x /*- button_w*3*/, ImGui::GetContentRegionAvail().x);
 	ImGui::SetCursorPosY(0.f);
-	ImGui::InvisibleButton("##DragZone", dragZoneSize);
+	
+	auto h_id = ImGui::GetHoveredID();
 
-
-	if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+	if (ImGui::IsItemHovered() && h_id == 0 &&
+		ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 		MaxBut = true;
 
-	if (EDevice->isZoomed && ImGui::IsItemHovered() && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+	if (EDevice->isZoomed && h_id == 0 && ImGui::IsItemHovered() && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
 	{
 		MaxBut = true;
 		MoveWin = true;
 	}
-	else if (!EDevice->isZoomed && ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+	else if (!EDevice->isZoomed && h_id == 0 && ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 		MoveWin = true;
 
 	{
@@ -141,33 +274,7 @@ ECORE_API void IXEndMainMenuBar()
 
 		ImGui::PopStyleVar();
 
-		ImGui::SetCursorPos({ UIMainMenuSize, UIMainMenuSize - ImGui::GetFontSize() - ImGui::GetStyle().FramePadding.y * 2.f});
-		ImVec2 padding = ImVec2(XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonPaddingW), XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonPaddingH));
-
-		if (!UI->GeneralTabs.empty() && ImGui::BeginTabBar("#TopBarView"))
-		{
-			for (const auto& [Name, Callback ]: UI->GeneralTabs)
-			{
-				bool ChangedColor = false;
-				if (Callback != nullptr && Callback())
-				{
-					ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 20, 20, 255));
-					ChangedColor = true;
-				}
-
-				if (ImGui::BeginTabItem(*Name, nullptr, ImGuiTabItemFlags_SetSelected))
-				{
-					ImGui::EndTabItem();
-				}
-
-				if (ChangedColor)
-				{
-					ImGui::PopStyleColor();
-				}
-			}
-
-			ImGui::EndTabBar();
-		}
+		
 
 		if (MaxBut)
 		{
