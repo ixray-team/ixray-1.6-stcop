@@ -105,9 +105,9 @@ function show_tasks(npc, actor, dialog, phrase)
 					news_caption = tsk.name
 				else
 					if(smart_name~=nil) then
-						news_caption = "#"..tsk.name.."#: "..smart_name
+						news_caption = "#"..tsk.name.."#: #"..smart_name.."#"
 					else
-						news_caption = "#"..tsk.name.."#: "..sim_board.get_sim_board().smarts[tsk.target].smrt:name()
+						news_caption = "#"..tsk.name.."#: #"..sim_board.get_sim_board().smarts[tsk.target].smrt:name().."#"
 					end
 				end
 				if(tsk.description~="NO_TEXT") then
