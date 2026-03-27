@@ -5,17 +5,6 @@
 
 #include "IconsFontAwesome6.h"
 
-#define MainMenuList(Name) cp = ImGui::GetCursorPos();\
-	if (ImGui::Button(Name)) {\
-		ImGui::OpenPopup(Name"Popup"); \
-		ImGui::SetNextWindowPos({ImGui::GetWindowPos().x + cp.x, ImGui::GetWindowPos().y+ cp.y + UI->GetMenuBarButtonHeight()}); }	\
-	if (ImGui::BeginPopup(Name"Popup")) {
-
-#define EndMainMenuList \
-	ImGui::EndPopup(); \
-	} \
-	ImGui::SameLine();
-
 UIMainMenuForm::UIMainMenuForm()
 {
 }
@@ -95,7 +84,7 @@ void UIMainMenuForm::Draw()
 	if (IXBeginMainMenuBar())
 	{
 		ImVec2 cp;
-		MainMenuList("File")
+		if (ImGui::BeginMenu("File")) {
 			DrawMenuItemI("Clear", ICON_FA_FILE, COMMAND_CLEAR);
 			DrawMenuItemI("Load", ICON_FA_FILE_IMPORT, COMMAND_LOAD);
 			DrawMenuItemI("Save", ICON_FA_FLOPPY_DISK, COMMAND_SAVE, ATools->m_LastFileName, 0);
@@ -136,17 +125,19 @@ void UIMainMenuForm::Draw()
 			ImGui::Separator();
 
 			DrawMenuItemI("Quit", ICON_FA_POWER_OFF, COMMAND_QUIT);
-		EndMainMenuList;
+			ImGui::EndMenu();
+		};
 
-		MainMenuList("Preview Object")
+		if (ImGui::BeginMenu("Preview Object")) {
 			DrawMenuItem("Custom...", COMMAND_SELECT_PREVIEW_OBJ, false);
 			DrawMenuItem("Clear", COMMAND_SELECT_PREVIEW_OBJ, true);
 			ImGui::Separator();
 
 			DrawMenuItem("Preferences", COMMAND_PREVIEW_OBJ_PREF);
-		EndMainMenuList;
+			ImGui::EndMenu();
+		};
 
-		MainMenuList("Editors")
+		if (ImGui::BeginMenu("Editors")) {
 			if (ImGui::BeginMenu("Images"))
 			{
 				DrawMenuItemI("Image Editor", ICON_FA_IMAGE, COMMAND_IMAGE_EDITOR);
@@ -176,9 +167,10 @@ void UIMainMenuForm::Draw()
 			{
 				PPE.OpenState() = true;
 			}
-		EndMainMenuList;
+			ImGui::EndMenu();
+		};
 
-		MainMenuList("Options")
+		if (ImGui::BeginMenu("Options")) {
 			if (ImGui::BeginMenu("Render"))
 			{
 				if (ImGui::BeginMenu("Quality"))
@@ -329,9 +321,10 @@ void UIMainMenuForm::Draw()
 				}
 
 			}
-		EndMainMenuList;
+			ImGui::EndMenu();
+		};
 
-		MainMenuList("Windows")
+		if (ImGui::BeginMenu("Windows")) {
 		{
 			bool selected = AllowLogCommands();
 
@@ -356,7 +349,8 @@ void UIMainMenuForm::Draw()
 					ThemeInstance.Show(false);
 			}
 		}
-		EndMainMenuList
+		ImGui::EndMenu();
+		}
 
 		IXEndMainMenuBar();
 	}
