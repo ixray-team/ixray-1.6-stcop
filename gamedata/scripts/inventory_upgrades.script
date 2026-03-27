@@ -22,6 +22,11 @@ local mechanic_name = ""
 local char_ini = ini_file("item_upgrades.ltx")
 local param_ini = ini_file("misc\\stalkers_upgrade_info.ltx")
 local cur_price_percent = 1
+
+function override_param_ini(new_ini)
+	param_ini = new_ini
+end
+
 function precondition_functor_a( param1, section )
 	if(param_ini:line_exist(mechanic_name.."_upgr", section)) then
 		local param = param_ini:r_string(mechanic_name.."_upgr", section)
@@ -39,6 +44,11 @@ function precondition_functor_a( param1, section )
 	end
 	if(db.actor) then
 		local price = math.floor(char_ini:r_u32(section, "cost")*cur_price_percent)
+		
+		local flags_table = {new_price = price}
+		SendScriptCallback("inv_upgrades_precondition_functor_a_override_price", param_ini, char_ini, cur_price_percent, param1, section, flags_table)
+		price = flags_table.new_price
+		
 		local cash = db.actor:money()
 		if(cash<price) then
 			return 2
@@ -50,14 +60,26 @@ end
 function effect_functor_a( param2, section, loading ) --( string, string, int )
 	if loading == 0 then
 		local money = char_ini:r_u32(section, "cost")
+
+		local flags_table = {new_money = money}
+		SendScriptCallback("inv_upgrades_effect_functor_a_override_money", param_ini, char_ini, param2, section, loading, flags_table)
+		money = flags_table.new_money
+		
 		db.actor:give_money(math.floor(money*-1*cur_price_percent))
+		
+		SendScriptCallback("inv_upgrades_effect_functor_a_after_give_money", param_ini, char_ini, param2, section, loading)
 	end
 end
 
 function get_upgrade_cost(section)
 	if db.actor then
 		local price = math.floor(char_ini:r_u32(section, "cost")*cur_price_percent)
-				return game.translate_string("st_upgr_cost")..": "..price
+		
+		local flags_table = {new_price = price}
+		SendScriptCallback("inv_upgrades_get_upgrade_cost_override_price", param_ini, char_ini, cur_price_percent, section, flags_table)
+		price = flags_table.new_price
+		
+		return game.translate_string("st_upgr_cost")..": "..price
 	end
 	return " "
 end
@@ -94,6 +116,11 @@ function prereq_functor_a( param3, section )
 	end
 	if(db.actor) then
 		local price = math.floor(char_ini:r_u32(section, "cost")*cur_price_percent)
+
+		local flags_table = {new_price = price}
+		SendScriptCallback("inv_upgrades_prereq_functor_a_override_price", param_ini, char_ini, cur_price_percent, param3, section, flags_table)
+		price = flags_table.new_price
+		
 		local cash = db.actor:money()
 		if(cash<price) then
 			return str.."\\n - "..game.translate_string("st_upgr_enough_money")--.." "..price-cash.." RU"
@@ -187,7 +214,14 @@ local function how_much_repair( item_name, item_condition )
 	local cost = ltx:r_u32(item_name, "cost")
 	local class = ltx:r_string(item_name, "class")
 	local cof = 0.6
-	return math.floor(cost*(1-item_condition)*cof * cur_price_percent)
+	
+	local result = math.floor(cost*(1-item_condition)*cof * cur_price_percent)
+	
+	local flags_table = {new_value = price}
+	SendScriptCallback("inv_upgrades_how_much_repair_override", param_ini, char_ini, item_name, item_condition, cost, cof, cur_price_percent, flags_table)
+	result = flags_table.new_value
+		
+	return result
 end
 
 function can_repair_item( item_name, item_condition, mechanic ) --( string, float, string )
@@ -241,4 +275,8 @@ end
 
 function mech_discount(perc)
 	cur_price_percent = perc
+	
+	local flags_table = {new_perc = perc}
+	SendScriptCallback("inv_upgrades_override_mech_discount", param_ini, char_ini, perc, flags_table)
+	cur_price_percent = flags_table.new_perc
 end
