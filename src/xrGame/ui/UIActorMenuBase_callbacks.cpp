@@ -8,6 +8,7 @@
 #include "../antigas.h"
 #include "UIItemInfo.h"
 #include "../../xrEngine/xr_input.h"
+#include "../script_game_object.h"
 
 bool CUIActorMenuBase::OnItemDrop(CUICellItem* itm)
 {
@@ -32,13 +33,15 @@ bool CUIActorMenuBase::OnItemDrop(CUICellItem* itm)
 		return true;
 	}
 	
-	if (old_owner == new_owner){
+	if (old_owner == new_owner)
+	{
 		if (!is_on_item_dropped_callback_processed)
 		{
 			CGameObject* GO1 = CurrentIItem() != nullptr ? CurrentIItem()->cast_game_object() : nullptr;
 			CGameObject* GO2 = nullptr;
 
-			if (m_lastFocusRecivedItem != nullptr && m_lastFocusLostItem_id != u16(0xffff) && m_lastFocusRecivedItem->object_id() != m_lastFocusLostItem_id) {
+			if (m_lastFocusRecivedItem != nullptr && m_lastFocusLostItem_id != u16(0xffff) && m_lastFocusRecivedItem->object_id() != m_lastFocusLostItem_id && m_lastFocusRecivedItem->m_pInventory != nullptr) 
+			{
 				GO2 = m_lastFocusRecivedItem->cast_game_object();
 			}
 
@@ -161,7 +164,8 @@ bool CUIActorMenuBase::OnItemDrop(CUICellItem* itm)
 		CGameObject* GO1 = CurrentIItem() != nullptr ? CurrentIItem()->cast_game_object() : nullptr;
 		CGameObject* GO2 = nullptr;
 
-		if (m_lastFocusRecivedItem != nullptr && m_lastFocusLostItem_id != u16(0xffff) && m_lastFocusRecivedItem->object_id() != m_lastFocusLostItem_id) {
+		if (m_lastFocusRecivedItem != nullptr && m_lastFocusLostItem_id != u16(0xffff) && m_lastFocusRecivedItem->object_id() != m_lastFocusLostItem_id && m_lastFocusRecivedItem->m_pInventory != nullptr)
+		{
 			GO2 = m_lastFocusRecivedItem->cast_game_object();
 		}
 
