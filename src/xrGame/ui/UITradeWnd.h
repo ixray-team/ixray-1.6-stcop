@@ -6,6 +6,7 @@
 #include "UICharacterInfo.h"
 #include "../../xrUI/Widgets/UI3tButton.h"
 #include "UIItemInfo.h"
+#include "UIActorMenuBase.h"
 
 class CInventoryOwner;
 class CEatableItem;
@@ -15,10 +16,10 @@ class SDrawStaticStruct;
 
 class CUICellItem;
 
-class CUITradeWnd: public CUIWindow
+class CUITradeWnd: public CUIActorMenuBase
 {
 private:
-	typedef CUIWindow inherited;
+	typedef CUIActorMenuBase inherited;
 public:
 						CUITradeWnd					();
 	virtual				~CUITradeWnd				();
@@ -40,7 +41,6 @@ public:
 	void 				StartTrade					();
 	void 				StopTrade					();
 
-	void				clear_highlight_lists		();
 protected:
 	CUIStatic			UIStaticTop;
 	CUIStatic			UIStaticBottom;
@@ -72,25 +72,13 @@ protected:
 
 	//информация о перетаскиваемом предмете
 	CUIStatic			UIDescWnd;
-	CUIItemInfo			UIItemInfo;
 
 	SDrawStaticStruct*	UIDealMsg;
 
 	bool				bStarted;
-	bool 				ToOurTrade					();
-	bool 				ToOthersTrade				();
-	bool 				ToOurBag					();
-	bool 				ToOthersBag					();
-	void 				SendEvent_ItemDrop			(PIItem pItem);
 	
-	u32					CalcItemsPrice				(CUIDragDropListEx* pList, CTrade* pTrade, bool bBuying);
-	float				CalcItemsWeight				(CUIDragDropListEx* pList);
-
-	void				TransferItems				(CUIDragDropListEx* pSellList, CUIDragDropListEx* pBuyList, CTrade* pTrade, bool bBuying);
-
 	void				PerformTrade				();
-	void				UpdatePrices				();
-	void				ColorizeItem				(CUICellItem* itm, bool b);
+	virtual void		UpdatePrices				();
 
 	enum EListType{eNone,e1st,e2nd,eBoth};
 	void				UpdateLists					(EListType);
@@ -98,8 +86,6 @@ protected:
 	void				FillList					(TIItemContainer& cont, CUIDragDropListEx& list, bool do_colorize);
 
 	bool				m_bDealControlsVisible;
-
-	bool				CanMoveToOther				(PIItem pItem);
 
 	//указатели игрока и того с кем торгуем
 	CInventory*			m_pInv;
@@ -112,31 +98,19 @@ protected:
 	u32					m_iOurTradePrice;
 	u32					m_iOthersTradePrice;
 
-
-	CUICellItem*		m_pCurrentCellItem;
 	TIItemContainer		ruck_list;
 
+	virtual void		SetCurrentItem				(CUICellItem* itm);
 
-	void				SetCurrentItem				(CUICellItem* itm);
-	CUICellItem*		CurrentItem					();
-	PIItem				CurrentIItem				();
-	
-	void				set_highlight_item			(CUICellItem* cell_item);
-	void				highlight_armament			(PIItem item, CUIDragDropListEx* ddlist);
-	void				highlight_ammo_for_weapon	(PIItem weapon_item, CUIDragDropListEx* ddlist);
-	void				highlight_weapons_for_ammo	(PIItem ammo_item, CUIDragDropListEx* ddlist);
-	bool				highlight_addons_for_weapon	(PIItem weapon_item, CUICellItem* ci);
-	void				highlight_weapons_for_addon	(PIItem addon_item, CUIDragDropListEx* ddlist);
+public:
+	virtual CInventory*			GetInventory				() { return m_pInv; }
+	virtual CInventoryOwner*	GetInventoryOwner			() { return m_pInvOwner; }
+	virtual CInventoryOwner*	GetPartner					() { return m_pOthersInvOwner; }
+	virtual CUIDragDropListEx*	GetTradeActorList			() { return &UIOurTradeList; }
+	virtual CUIDragDropListEx*	GetTradeActorBagList		() { return &UIOurBagList; }
+	virtual CUIDragDropListEx*	GetTradePartnerList			() { return &UIOthersTradeList; }
+	virtual CUIDragDropListEx*	GetTradePartnerBagList		() { return &UIOthersBagList; }
 
-	bool				OnItemDrop			(CUICellItem* itm);
-	bool				OnItemStartDrag		(CUICellItem* itm);
-	bool				OnItemDbClick		(CUICellItem* itm);
-	bool				OnItemSelected		(CUICellItem* itm);
-	bool				OnItemRButtonClick	(CUICellItem* itm);
-	bool				OnItemFocusReceive	(CUICellItem* itm);
-	bool				OnItemFocusLost		(CUICellItem* itm);
-	bool				OnItemFocusedUpdate	(CUICellItem* itm);
-
-	void				BindDragDropListEnents		(CUIDragDropListEx* lst);
-
+	virtual CTrade*				GetActorTrade				() { return m_pTrade; }
+	virtual CTrade*				GetPartnerTrade				() { return m_pOthersTrade; }
 };
