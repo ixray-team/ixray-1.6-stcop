@@ -1,10 +1,6 @@
 #include "stdafx.h"
 
-#ifdef IXR_WINDOWS
-#	include <opus/opus.h>
-#else
-#	include <opus.h>
-#endif
+#include <opus.h>
 
 #include "VoicePacketsPacker.h"
 #include "SoundVoiceChat.h"
