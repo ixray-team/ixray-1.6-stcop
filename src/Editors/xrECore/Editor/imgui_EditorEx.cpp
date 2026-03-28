@@ -72,7 +72,7 @@ void EndMenuBar()
 	window->DC.MenuBarAppending = false;
 }
 
-
+#define dbg_draw_tmenu 0
 
 ECORE_API bool IXBeginMainMenuBar()
 {
@@ -120,21 +120,12 @@ ECORE_API bool IXBeginMainMenuBar()
 		return false;
 	}
 
-	auto WindowPadding = style.WindowPadding;
+	
+	ImGui::SetCursorPos({0,0});
 
-	if (ImGui::BeginChild("##IXBeginMainMenuBarGROUP00", 
-		{ LogoButtonSize.x - WindowPadding.x, LogoButtonSize.y - WindowPadding.y }))
-	{
-		auto t_size = ImGui::GetContentRegionAvail();
-		ImVec2 t_pose = { (t_size.x - LogoSize) / 2 - (WindowPadding.x/2), (t_size.y - LogoSize) / 2 - (WindowPadding.y/2)};
-		ImGui::SetCursorPos(t_pose);
-		ImGui::Image(UI->m_HeaderLogo->get_SRView()->GetRawSRV(), { LogoSize, LogoSize });
-
-		ImGui::EndChild();
-		ImGui::SameLine();
-	}
-	ImGui::SetCursorPosY(0);
-	//ImGui::PushStyleColor(ImGuiCol_ChildBg, { 255.f,0.f,0.f,0.5f });
+#if dbg_draw_tmenu
+	ImGui::PushStyleColor(ImGuiCol_ChildBg, { 255.f,0.f,0.f,0.2f });
+#endif
 
 	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8.0f, 4.0f)); // : L/R=8, T/B=4
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 10.0f));  // : L/R=0, T/B=8
@@ -147,15 +138,23 @@ ECORE_API bool IXBeginMainMenuBar()
 	b_content_size.x += style.FramePadding.x;
 	ImGui::BeginChild("##MENUBAR", b_content_size);
 
-	auto o_cur = ImGui::GetCursorPos() ;
+	auto WindowPadding = style.WindowPadding;
 
-	//float start_y = ImGui::GetCursorPosY();
+	//TopBar logo
+	{
+		ImVec2 t_pose = { (LogoButtonSize.x - LogoSize) / 2, (LogoButtonSize.y - LogoSize) / 2};
+		ImGui::SetCursorPos(t_pose);
+		ImGui::Image(UI->m_HeaderLogo->get_SRView()->GetRawSRV(), { LogoSize, LogoSize });
+		ImGui::SameLine();
+	}
+
+	auto o_cur = ImGui::GetCursorPos();
 
 	const float result = UIMainMenuSize - font_size - frame_padding_y * 2.f;
 	const float offset_y = result * 0.5f - text_line_h + frame_padding_y * 2.0f;
 
 	{
-		ImGui::SetCursorPos({ o_cur.x , result });
+		ImGui::SetCursorPos({ o_cur.x, result });
 		ImVec2 padding = ImVec2(XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonPaddingW), XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonPaddingH));
 
 		if (!UI->GeneralTabs.empty() && ImGui::BeginTabBar("#TopBarView"))
@@ -203,7 +202,9 @@ ECORE_API bool IXBeginMainMenuBar()
 ECORE_API void IXEndMainMenuBar()
 {
 	ImGui::PopStyleVar(1);
-	//ImGui::PopStyleColor(1);
+#if dbg_draw_tmenu
+	ImGui::PopStyleColor(1);
+#endif
 	EndMenuBar();
 	ImGui::EndChild();
 	ImGui::PopStyleVar(2);
@@ -220,25 +221,31 @@ ECORE_API void IXEndMainMenuBar()
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
 
 	SDL_Event Event;
-	ImGui::SameLine();
-
 
 	ImVec2 dragZoneSize = ImVec2(ImGui::GetContentRegionAvail().x+ style.WindowPadding.x /*- button_w*3*/, ImGui::GetContentRegionAvail().x);
 	ImGui::SetCursorPosY(0.f);
 	
 	auto h_id = ImGui::GetHoveredID();
+	bool iih = ImGui::IsItemHovered();
 
-	if (ImGui::IsItemHovered() && h_id == 0 &&
+	if (iih && h_id == 0 &&
 		ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 		MaxBut = true;
 
-	if (EDevice->isZoomed && h_id == 0 && ImGui::IsItemHovered() && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+	if (EDevice->isZoomed && /*h_id == 0 && iih &&*/ ImGui::IsMouseDragging(ImGuiMouseButton_Left))
 	{
 		MaxBut = true;
 		MoveWin = true;
 	}
-	else if (!EDevice->isZoomed && h_id == 0 && ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+	else if (!EDevice->isZoomed && h_id == 0 && iih && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 		MoveWin = true;
+
+#if dbg_draw_tmenu
+	ImGui::Begin("dbg_hwr");
+	ImGui::Text("h_id = %d", h_id);
+	ImGui::Text("iih = %d", iih);
+	ImGui::End();
+#endif
 
 	{
 		ImVec2 ControlButtonSize = ImVec2(button_w, button_h);
@@ -256,7 +263,6 @@ ECORE_API void IXEndMainMenuBar()
 		ImGui::SameLine();
 
 		if (ImGui::ImageButton("##IXEndMainMenuBar02", (EDevice->isZoomed ? UI->m_WinRes->get_SRView()->GetRawSRV() : UI->m_WinMax->get_SRView()->GetRawSRV()), ImageSize))
-		//if (ImGui::Button((EDevice->isZoomed ? ICON_FA_WINDOW_RESTORE : ICON_FA_WINDOW_MAXIMIZE), ControlButtonSize))
 			MaxBut = true;
 
 		ImGui::SameLine();
@@ -272,8 +278,6 @@ ECORE_API void IXEndMainMenuBar()
 		ImGui::EndChild();
 
 		ImGui::PopStyleVar();
-
-		
 
 		if (MaxBut)
 		{
