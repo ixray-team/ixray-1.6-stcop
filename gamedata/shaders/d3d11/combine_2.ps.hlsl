@@ -123,7 +123,7 @@ float3 main(PSInputFullscreen I) : SV_Target
 
     float3 uvw = saturate(Color / 3.67926554928f); // GT7 range
     float3 Color2 = s_tonemap_lut_3d.SampleLevel(smp_rtlinear, pow(uvw, 0.25f), 0.0f).rgb;
-    Color2 = deband_color(Color2, I.hpos.xy, 256.f);
+    //Color2 = deband_color(Color2, I.hpos.xy, 256.f);
     Color = Color2;
 
 #ifdef USE_CROSSFEED
