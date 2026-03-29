@@ -226,18 +226,18 @@ ECORE_API void IXEndMainMenuBar()
 	ImGui::SetCursorPosY(0.f);
 	
 	auto h_id = ImGui::GetHoveredID();
-	bool iih = ImGui::IsItemHovered();
+	bool iih = ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem);
 
 	if (iih && h_id == 0 &&
 		ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 		MaxBut = true;
-	/*
+	
 	if (EDevice->isZoomed && h_id == 0    && iih && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
 	{
 		MaxBut = true;
 		MoveWin = true;
 	}
-	else */
+	else
 		if (!EDevice->isZoomed && h_id == 0 && iih && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 		MoveWin = true;
 
@@ -282,13 +282,13 @@ ECORE_API void IXEndMainMenuBar()
 
 		if (MaxBut)
 		{
-			if (EDevice->isZoomed)
+			if (!MoveWin && EDevice->isZoomed)
 			{
-				EDevice->ResoreWindow(MoveWin);
+				SendMessageW(EDevice->GetHWND(), WM_SYSCOMMAND, SC_RESTORE, 0);
 			}
 			else
 			{
-				EDevice->MaximizedWindow();
+				SendMessageW(EDevice->GetHWND(), WM_SYSCOMMAND, SC_MAXIMIZE, 0);
 			}
 		}
 
