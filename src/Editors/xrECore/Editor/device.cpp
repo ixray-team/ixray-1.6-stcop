@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 #include "stdafx.h"
 
 #include "../xrEngine/GameFont.h"
@@ -416,46 +416,29 @@ void CEditorRenderDevice::Reset(IReader* F, BOOL bKeepTextures)
 void CEditorRenderDevice::MaximizedWindow()
 {
 	auto hwnd = GetHWND();
-	if (IsZoomed(hwnd))
-		SendMessageW(hwnd, WM_SYSCOMMAND, SC_RESTORE, 0);
+	if (EDevice->isZoomed) {
+		ResoreWindow(false);
+		return;
+	}
 
-	//
-	//LONG style = GetWindowLong(hwnd, GWL_STYLE);
-	//style &= ~WS_THICKFRAME;
-	//SetWindowLong(hwnd, GWL_STYLE, style);
-
-	GetWindowRect(hwnd, &EDevice->NormalWinSize);
-	EDevice->NormalWinSizeSaved = true;
 	EDevice->isZoomed = true;
 
-	auto CurrentMonitor = ::MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
-
-	MONITORINFO minfo;
-	minfo.cbSize = sizeof(MONITORINFO);
-	GetMonitorInfo(CurrentMonitor, &minfo);
-
-	const RECT& workArea = minfo.rcWork;
-
-	SDL_SetWindowSize(g_AppInfo.Window, workArea.right - workArea.left, workArea.bottom - workArea.top);
-	SDL_SetWindowPosition(g_AppInfo.Window, workArea.left, workArea.top);
-	PostMessage(GetHWND(), WM_APP + 2, 0, 0);
+	SendMessage(hwnd, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
 }
 
 void CEditorRenderDevice::ResoreWindow(bool moving)
 {
-	if (EDevice->NormalWinSizeSaved)
-	{
-		auto& r = EDevice->NormalWinSize;
-		MoveWindow(GetHWND(), r.left, r.top, r.right - r.left, r.bottom - r.top, TRUE);
+	SendMessageW(GetHWND(), WM_SYSCOMMAND, SC_RESTORE, 0);
 
-		if (moving)
-		{
-			float mouseX, mouseY;
-			SDL_GetMouseState(&mouseX, &mouseY);
-			SDL_SetWindowPosition(g_AppInfo.Window, mouseX / 2, mouseY - 10);
-		}
+	WINDOWPLACEMENT wp{};
+	wp.length = sizeof(wp);
+
+	if (GetWindowPlacement(GetHWND(), &wp)) //analog EDevice->NormalWinSizeSaved
+	{
+		RECT r = wp.rcNormalPosition;
+		MoveWindow(GetHWND(), r.left, r.top, r.right - r.left, r.bottom - r.top, TRUE);
 	}
-	PostMessage(GetHWND(), WM_APP + 1, 0, 0);
+	
 	EDevice->isZoomed = false;
 }
 
