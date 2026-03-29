@@ -14,6 +14,7 @@
 #include "../xrEngine/SkeletonMotions.h"
 #include "player_hud.h"
 #include "ActorEffector.h"
+#include <tuple>
 
 #define KNIFE_MATERIAL_NAME "objects\\knife"
 
@@ -35,9 +36,23 @@ CWeaponKnife::CWeaponKnife()
 	m_Hit1SplashRadius		= 1.0f;
 	m_Hit2SplashRadius		= 1.0f;
 
-	m_Hit1SpashDir.set	(0.f,0.f,1.f);
-	m_Hit2SpashDir.set	(0.f,0.f,1.f);
+    m_Hit1SpashDir.set		(0.f, -0.3, 1.f);
+    m_Hit2SpashDir.set		(0.f, 0.f, 1.f);
+
+    m_Splash1HitsCount		= 3;
+    m_Splash1PerVictimsHCount = 1;
+    m_Splash2HitsCount		= 2;
+
+    m_NextHitDivideFactor	= 0.75f;
+
+    oldStrikeMethod			= false;
+    attackMotionMarksAvailable = true;
 }
+
+enum class FieldTypes
+{
+	t_u32, t_float, t_fvector3
+};
 
 void CWeaponKnife::Load(const char* section)
 {
@@ -46,24 +61,92 @@ void CWeaponKnife::Load(const char* section)
 
 	fWallmarkSize = pSettings->r_float(section, "wm_size");
 
-	m_Hit1SpashDir = pSettings->r_fvector3(section, "splash1_direction");
-	m_Hit2SpashDir = pSettings->r_fvector3(section, "splash2_direction");
+    int successCount = 0;
+    string1024 missingFields;
 
-	m_Hit1Distance = pSettings->r_float(section, "spash1_dist");
-	m_Hit2Distance = pSettings->r_float(section, "spash2_dist");
+    // array of <name, fallbackName, type, variable>
+    constexpr u32 elementsCount = 10;
+    const xr_array<std::tuple<const char*, const char*, FieldTypes, void*>, elementsCount> fields =
+    {{
+        { "splash1_direction", nullptr, FieldTypes::t_fvector3, &m_Hit1SpashDir },
+        { "splash2_direction", nullptr, FieldTypes::t_fvector3, &m_Hit2SpashDir },
 
-	m_Hit1SplashRadius = pSettings->r_float(section, "spash1_radius");
-	m_Hit2SplashRadius = pSettings->r_float(section, "spash2_radius");
+        { "splash1_dist", "spash1_dist", FieldTypes::t_float, &m_Hit1Distance }, // We need those fallback names just because
+        { "splash2_dist", "spash2_dist", FieldTypes::t_float, &m_Hit2Distance }, // GSC was too lazy to fix the typos!!!
 
-	m_Splash1HitsCount = pSettings->r_u32(section, "splash1_hits_count");
-	m_Splash1PerVictimsHCount = pSettings->r_u32(section, "splash1_pervictim_hcount");
-	m_Splash2HitsCount = pSettings->r_u32(section, "splash2_hits_count");
+        { "splash1_radius", "spash1_radius", FieldTypes::t_float, &m_Hit1SplashRadius },
+        { "splash2_radius", "spash2_radius", FieldTypes::t_float, &m_Hit1SplashRadius },
+
+        { "splash1_hits_count", nullptr, FieldTypes::t_u32, &m_Splash1HitsCount },
+        { "splash1_pervictim_hcount", nullptr, FieldTypes::t_u32, &m_Splash1PerVictimsHCount },
+        { "splash2_hits_count", nullptr, FieldTypes::t_u32, &m_Splash2HitsCount },
+        { "splash_hit_divide_factor", nullptr, FieldTypes::t_float, &m_NextHitDivideFactor },
+    }};
+
+    const auto assertField = [&](const char* name, const char* /*fallback*/, FieldTypes /*type*/, void* outPtr)
+    {
+        R_ASSERT2(name && outPtr, "Some fields are missing or malformed");
+    };
+
+    for (const auto& field : fields)
+    {
+        std::apply(assertField, field);
+    }
+
+    const auto processField = [&](const char* name, const char* fallback, FieldTypes type, void* outPtr)
+    {
+        const char* nameToRead = nullptr;
+        if (pSettings->line_exist(section, name))
+            nameToRead = name;
+        else if (fallback && pSettings->line_exist(section, fallback))
+            nameToRead = fallback;
+
+        if (!nameToRead)
+        {
+            if (xr_strlen(missingFields))
+                xr_strcat(missingFields, ", ");
+            xr_strcat(missingFields, name);
+            return;
+        }
+
+        switch (type)
+        {
+        case FieldTypes::t_u32:
+        {
+            u32* outValue = static_cast<u32*>(outPtr);
+            *outValue = pSettings->r_u32(section, nameToRead);
+            break;
+        }
+        case FieldTypes::t_float:
+        {
+            float* outValue = static_cast<float*>(outPtr);
+            *outValue = pSettings->r_float(section, nameToRead);
+            break;
+        }
+        case FieldTypes::t_fvector3:
+        {
+            Fvector3* outValue = static_cast<Fvector3*>(outPtr);
+            *outValue = pSettings->r_fvector3(section, nameToRead);
+            break;
+        }
+        }
+        successCount++;
+    };
+
+    for (const auto& field : fields)
+    {
+        std::apply(processField, field);
+    }
+
+    R_ASSERT4(successCount == elementsCount || successCount == 0,
+        "You need to provide all knife splash parameters or remove them all.",
+        "Missing fields are:", missingFields);
+
+    oldStrikeMethod = successCount == 0;
+	knife_material_idx = GMLib.GetMaterialIdx(KNIFE_MATERIAL_NAME);
 #ifdef DEBUG
 	m_dbg_data.m_pick_vectors.reserve(std::max(m_Splash1HitsCount, m_Splash2HitsCount));
 #endif
-	m_NextHitDivideFactor = pSettings->r_float(section, "splash_hit_divide_factor");
-
-	knife_material_idx = GMLib.GetMaterialIdx(KNIFE_MATERIAL_NAME);
 	m_bShowKnifeStats = READ_IF_EXISTS(pSettings, r_bool, section, "show_knife_stats", true);
 
 	m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", false));
@@ -168,6 +251,12 @@ void CWeaponKnife::OnStateSwitch	(u8 S)
 
 void CWeaponKnife::KnifeStrike(const Fvector& pos, const Fvector& dir)
 {
+	if (oldStrikeMethod)
+	{
+		MakeShot(pos, dir);
+		return;
+	}
+
 	CObject* real_victim = TryPick(pos, dir, m_hit_dist);
 	if (real_victim)
 	{
@@ -252,6 +341,7 @@ void CWeaponKnife::OnMotionMark(u8 state, const motion_marks& M)
 			m_splash_radius = m_Hit1SplashRadius;
 			m_hits_count = m_Splash1HitsCount;
 			m_perv_hits_count = m_Splash1PerVictimsHCount;
+			fireDistance = m_hit_dist + m_splash_radius;
 		}
 		else if (state == eFire2)
 		{
@@ -260,6 +350,7 @@ void CWeaponKnife::OnMotionMark(u8 state, const motion_marks& M)
 			m_splash_radius = m_Hit2SplashRadius;
 			m_hits_count = m_Splash2HitsCount;
 			m_perv_hits_count = 0;
+			fireDistance = m_hit_dist + m_splash_radius;
 		}
 		else
 		{
@@ -276,10 +367,14 @@ void CWeaponKnife::OnMotionMark(u8 state, const motion_marks& M)
 		return;
 	}
 
+	OnKnifeStrike();
+}
+
+void CWeaponKnife::OnKnifeStrike()
+{
 	Fvector	p1, d;
 	p1.set(get_LastFP());
 	d.set(get_LastFD());
-	fireDistance = m_hit_dist + m_splash_radius;
 
 	if (H_Parent())
 	{
@@ -295,7 +390,27 @@ void CWeaponKnife::OnAnimationEnd(u8 state)
 	case eHiding:	SwitchState(eHidden, false);	break;
 
 	case eFire:
-	case eFire2: 	SwitchState(eIdle, false);		break;
+    case eFire2:
+    {
+        u32 time = 0;
+        if (attackStarted)
+        {
+            attackStarted = false;
+
+            if (state == eFire && HudAnimationExist("anm_shoot1_end", false))
+                time = PlayHUDMotion("anm_shoot1_end", EHudMixType::eNoMix, state);
+			else if (HudAnimationExist("anm_shoot2_end", false))
+                time = PlayHUDMotion("anm_shoot2_end", EHudMixType::eNoMix, state);
+
+            if (time != 0 && !attackMotionMarksAvailable)
+                OnKnifeStrike();
+        }
+        if (time == 0)
+        {
+        	SwitchState(eIdle, false);		break;
+        }
+        break;
+    }
 
 	case eShowing:
 	case eIdle:		SwitchState(eIdle, false);		break;
@@ -325,7 +440,7 @@ void CWeaponKnife::switch2_Attacking(u8 state)
 			}
 		}
 
-		PlayHUDMotion("anm_attack", EHudMixType::eNoMix, state);
+		PlayHUDMotion("anm_attack", "anm_shoot1_start", EHudMixType::eNoMix, state);
 
 		if (m_eSoundsFlags.test(ESoundsFlags::sf_kick))
 		{
@@ -345,13 +460,16 @@ void CWeaponKnife::switch2_Attacking(u8 state)
 			}
 		}
 
-		PlayHUDMotion("anm_attack2", EHudMixType::eNoMix, state);
+		PlayHUDMotion("anm_attack2", "anm_shoot2_start", EHudMixType::eNoMix, state);
 
 		if (m_eSoundsFlags.test(ESoundsFlags::sf_kick))
 		{
 			PlaySound("sndKick2", Position());
 		}
 	}
+
+	attackMotionMarksAvailable = m_current_motion_def ? !m_current_motion_def->marks.empty() : false;
+	attackStarted = true;
 }
 
 void CWeaponKnife::switch2_Idle	()
@@ -383,7 +501,7 @@ void CWeaponKnife::switch2_Hidden()
 void CWeaponKnife::switch2_Showing	()
 {
 	VERIFY(GetState()==eShowing);
-	PlayHUDMotion("anm_show", EHudMixType::eNoMix, GetState());
+	PlayHUDMotion("anm_show", "anm_draw", EHudMixType::eNoMix, GetState());
 
 	if (m_eSoundsFlags.test(ESoundsFlags::sf_draw))
 	{
@@ -469,7 +587,7 @@ void CWeaponKnife::LoadFireParams(const char* section)
 
 	//fHitPower_2			= pSettings->r_float	(section,strconcat(full_name, prefix, "hit_power_2"));
 	s_sHitPower_2			= pSettings->r_string_wb	(section, "hit_power_2" );
-	s_sHitPowerCritical_2	= pSettings->r_string_wb	(section, "hit_power_critical_2" );
+	s_sHitPowerCritical_2	= READ_IF_EXISTS(pSettings, r_string_wb, section, "hit_power_critical_2", s_sHitPower_2);
 	
 	fvHitPower_2[egdMaster]			= (float)atof(_GetItem(*s_sHitPower_2,0,buffer));//первый параметр - это хит для уровня игры мастер
 	fvHitPowerCritical_2[egdMaster]	= (float)atof(_GetItem(*s_sHitPowerCritical_2,0,buffer));//первый параметр - это хит для уровня игры мастер

@@ -3861,7 +3861,7 @@ bool CWeapon::MovingAnimAllowedNow()
 
 bool CWeapon::IsHudModeNow()
 {
-	return !!GetHUDmode();
+	return !!GetHUDmode() && !HudItemData()->m_model_combined;
 }
 
 void CWeapon::ZoomInc()

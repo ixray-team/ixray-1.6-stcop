@@ -160,7 +160,7 @@ shared_str CWeaponBM16::SetCurrentReloadAnimation()
 				}
 				else
 				{
-					anim = "anm_reload_2";
+					anim = HudAnimationExist("anm_reload_2") ? "anm_reload_2" : "anm_reload";
 				}
 			}
 		}
@@ -175,7 +175,7 @@ shared_str CWeaponBM16::SetCurrentReloadAnimation()
 		}
 		else
 		{
-			anim = "anm_reload_2";
+			anim = HudAnimationExist("anm_reload_2", false) ? "anm_reload_2" : "anm_reload";
 		}
 	}
 
@@ -266,23 +266,43 @@ shared_str CWeaponBM16::SetCurrentStateAnimation(const shared_str& first_name)
 	else
 	{
 		xr_sprintf(new_suffix, "%s_%d", *anim, iAmmoElapsed);
-		anim = new_suffix;
+		if (HudAnimationExist(new_suffix, false))
+			anim = new_suffix;
 	}
 
 	return anim;
 }
 
-bool CWeaponBM16::HudAnimationExist(const shared_str& anim_name)
+bool CWeaponBM16::HudAnimationExist(const shared_str& anim_name, bool only_for_actor)
 {
 	string128 new_name;
 	xr_sprintf(new_name, "%s_%d", *anim_name, iAmmoElapsed);	
 
-	bool has_anim = inherited::HudAnimationExist(new_name);
+	bool has_anim = inherited::HudAnimationExist(new_name, only_for_actor);
 
 	if (has_anim)
 	{
 		return has_anim;
 	}
 
-	return inherited::HudAnimationExist(anim_name);
+	return inherited::HudAnimationExist(anim_name, only_for_actor);
+}
+
+shared_str CWeaponBM16::SetCurrentAimAnimation()
+{
+	switch (m_magazine.size())
+	{
+	break;
+	case 1: 
+	{
+		return HudAnimationExist("anm_zoomed_idle_1") ? "anm_zoomed_idle_1" : inherited::SetCurrentAimAnimation();
+	}
+	break;
+	case 2: 
+	{
+		return HudAnimationExist("anm_zoomedidle_2") ? "anm_zoomedidle_2" : inherited::SetCurrentAimAnimation();
+	}
+	break;
+	};
+	return inherited::SetCurrentAimAnimation();
 }

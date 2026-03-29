@@ -198,6 +198,7 @@ protected:
 	virtual shared_str SetCurrentShootAnimation();
 	virtual shared_str SetCurrentStateAnimation(const shared_str& first_name);
 	virtual shared_str SetCurrentAimAnimation();
+	virtual shared_str SetCurrentIdleAnimation();
 	shared_str SetCurrentPumpAnimation();
 
 	virtual	int		ShotsFired			() { return m_iShotNum; }
