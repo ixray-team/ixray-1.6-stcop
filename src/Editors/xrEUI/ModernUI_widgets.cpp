@@ -123,6 +123,8 @@ XREUI_API void XRay::ImGui::EndTable()
 XREUI_API void XRay::ImGui::TableNextColumn()
 {
 	::ImGui::TableNextColumn();
+	if (::ImGui::GetCurrentTable()->CurrentColumn > 0)
+		::ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, GetEditorColor(EEditorColors::TableTint));
 	if (::ImGui::GetCurrentTable()->CurrentRow > 0)
 		::ImGui::SetCursorPosY(::ImGui::GetCursorPosY() + 1.f);
 }
@@ -459,7 +461,7 @@ XREUI_API bool XRay::ImGui::ToolbarButtonBackground(
 	if (!::ImGui::ItemAdd(bb, buttonID))
 		return false;
 			bool	Hovered, Held;
-			bool	Clicked		= ::ImGui::ButtonBehavior(bb, buttonID, &Hovered, &Held, ImGuiButtonFlags_PressedOnClick | rounding_flags);
+			bool	Clicked		= ::ImGui::ButtonBehavior(bb, buttonID, &Hovered, &Held, ImGuiButtonFlags_PressedOnClickRelease);
 	const	bool	Active		= Held;
 
     ImVec4  Color = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToolbarButtonTint);
