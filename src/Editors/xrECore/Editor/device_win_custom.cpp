@@ -8,6 +8,8 @@
 
 #define custom_proc 1
 
+extern CEditorRenderDevice* EDevice;
+extern ECORE_API TUI* UI;
 void RefreshFrame(HWND hwnd)
 {
     SetWindowPos(hwnd, nullptr, 0, 0, 0, 0,
@@ -21,26 +23,62 @@ void RefreshFrame(HWND hwnd)
 // ---- Сохраняем оригинальную процедуру ----
 static WNDPROC g_OriginalWndProc = nullptr;
 
+struct WindowState
+{
+    bool wasMaximized = false;
+};
+
+WindowState g_state;
 // ---- Субклассированная процедура ----
 static LRESULT CALLBACK CustomWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch (msg)
     {
+    case WM_SIZE:
+    {
+        bool isMaximized = (wParam == SIZE_MAXIMIZED);
+
+        if (isMaximized && !g_state.wasMaximized)
+        {
+            MARGINS margins = { 0, 0, 0, 0 };
+            DwmExtendFrameIntoClientArea(hwnd, &margins);
+            RefreshFrame(hwnd);
+
+            if (!EDevice->isZoomed)
+            {
+                EDevice->MaximizedWindow();
+            }
+        }
+        else if (!isMaximized && g_state.wasMaximized)
+        {
+            MARGINS margins = { 1, 1, 1, 1 };
+            DwmExtendFrameIntoClientArea(hwnd, &margins);
+            RefreshFrame(hwnd);
+
+            if (EDevice->isZoomed)
+            {
+                EDevice->ResoreWindow(false);
+            }
+            else
+            {
+                //ТУТ НУЖНО ВЫЗВАТЬ ФУНКЦИЮ, КОТОРАЯ ПЕРЕРИСУЕТ ПРИЛОЖЕНИЕ \
+                // БЕЗ ЭТОГО ВЫГЛЯДИТЬ КАК НЕПОНЯТНО ЧТО 
+            }
+        }
+
+        g_state.wasMaximized = isMaximized;
+        break;
+    }
+
     case WM_NCACTIVATE:
         // lParam = -1 → запретить перерисовку non-client area
         return DefWindowProc(hwnd, msg, wParam, -1);
     case WM_APP+1: //IX_RESTORE
     {
-        MARGINS margins = { 1, 1, 1, 1 };
-        DwmExtendFrameIntoClientArea(hwnd, &margins);
-        RefreshFrame(hwnd);
         break;
     }
     case WM_APP + 2: //IX_MAX
     {
-        MARGINS margins = { 0, 0, 0, 0 };
-        DwmExtendFrameIntoClientArea(hwnd, &margins);
-        RefreshFrame(hwnd);
         break;
     }
 
