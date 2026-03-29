@@ -162,18 +162,19 @@ public:
 
 	virtual	void				UpdateXForm			()						= 0;
 
-	u32							PlayHUDMotion		(const shared_str& M, EHudMixType bMixIn, u8 state);
-	u32							PlayHUDMotion_noCB	(const shared_str& M, EHudMixType bMixIn);
+	u32							PlayHUDMotion		(const shared_str& M, EHudMixType bMixIn, u8 state, bool disableRandom = false);
+	u32							PlayHUDMotion		(const shared_str& M, const shared_str& M2, EHudMixType bMixIn, u8 state, bool disableRandom = false);
+	u32							PlayHUDMotion_noCB	(const shared_str& M, EHudMixType bMixIn, bool disableRandom);
 	void						StopCurrentAnimWithoutCallback();
 	bool						AddSuffixName		(shared_str& anim, const char* suffix, const char* test_suffix = "");
-	shared_str					SetCurrentIdleAnimation();
+	virtual shared_str			SetCurrentIdleAnimation();
 	virtual shared_str			SetCurrentStateAnimation(const shared_str& first_name) { return first_name; }
 
 	IC void						RenderHud				(bool B)	{ m_huditem_flags.set(fl_renderhud, B);}
 	IC bool						RenderHud				()			{ return m_huditem_flags.test(fl_renderhud);}
 	attachable_hud_item*		HudItemData				();
 	virtual void				on_a_hud_attach			();
-	virtual bool				HudAnimationExist		(const shared_str& anim_name);
+	virtual bool				HudAnimationExist		(const shared_str& anim_name, bool only_for_actor = true);
 	virtual void				on_b_hud_detach			();
 	virtual void				render_hud_mode			()					{};
 	virtual bool				need_renderable			()					{return true;};
@@ -249,6 +250,8 @@ public:
 		af_det_hand_lightmis = (1 << 26),
 		af_det_hand_firemode = (1 << 27),
 		af_safemode_in_out = (1 << 28),
+		af_sprint = (1 << 29),
+		af_moving = (1 << 30),
 	};
 
 	enum EBPAnimsFlags : u64
@@ -348,6 +351,7 @@ public:
 	jitter_params& GetCurJitterParams() { return m_jitter_params; }
 	THudLightTorch* GetHudLight();
 
+	bool m_disable_random_animations = false;
 protected:
 
 	IC void						SetPending(bool H) { m_huditem_flags.set(fl_pending, H); }

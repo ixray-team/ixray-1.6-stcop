@@ -185,7 +185,8 @@ struct hud_item_measures final
 	struct hud_hands_positions
 	{
 		void Load(const shared_str& section, bool is_16x9);
-		Fvector hands_offsets[2][EHudOffsetType::eHudOffsetsMax]; //pos,rot //normal, aim, gl, alt-aim, safemode
+		void LoadAimParams(const shared_str& section, bool is_16x9, bool default_is_self);
+		Fvector hands_offsets[2][EHudOffsetType::eHudOffsetsMax]; // pos,rot //normal, aim, gl, alt-aim, safemode
 		Fvector hands_offsets_saved[2]; //pos,rot
 		Fvector hands_offsets_tune[2][EHudOffsetType::eHudOffsetsMax];
 		bool bIs16x9 = false;
@@ -211,16 +212,16 @@ struct hud_item_measures final
 	inertion_params m_inertion_params; //--#SM+#--
 	weapon_inertion m_weapon_inertion;
 
-	u16								m_fire_bone;
+	u16								m_fire_bone = u16(-1);
 	Fvector							m_fire_point_offset;
-	u16								m_fire_bone2;
+	u16								m_fire_bone2 = u16(-1);
 	Fvector							m_fire_point2_offset;
-	u16								m_shell_bone;
+	u16								m_shell_bone = u16(-1);
 	Fvector							m_shell_point_offset;
 
 	Fvector							m_hands_attach_real[2];//pos,rot
 
-	void load						(const shared_str& sect_name, IKinematics* K);
+	void load						(const shared_str& sect_name, IKinematics* K, bool combined_model);
 };
 
 struct dbg_render_obb final : public pureRender
@@ -247,6 +248,8 @@ struct attachable_hud_item final
 	IKinematics*					m_model;
 	u16								m_attach_place_idx;
 	hud_item_measures				m_measures;
+	shared_str						m_visual_name;
+	bool							m_model_combined = false;
 
 	//runtime positioning
 	Fmatrix							m_attach_offset;
@@ -298,7 +301,7 @@ struct attachable_hud_item final
 	void		tune				(Fvector values);
 	void		anim_play			(const shared_str& item_anm_name, EHudMixType bMixIn, float speed, player_hud_motion* anm = nullptr);
 	void		anim_play_bonepart	(const shared_str& anim, bool bMixIn);
-	u32			anim_play			(const shared_str& anim_name, EHudMixType bMixIn, const CMotionDef*& md, u8& rnd);
+	u32			anim_play			(const shared_str& anim_name, EHudMixType bMixIn, const CMotionDef*& md, u8& rnd, bool disable_random);
 
 };
 
@@ -645,7 +648,7 @@ public:
 	void			render_item_ui		();
 	bool			render_item_ui_query();
 
-	u32				anim_play			(u16 part, const MotionID& M, bool bMixIn, const CMotionDef*& md, float speed);
+	u32				anim_play			(u16 part, const MotionID& M, bool bMixIn, const CMotionDef*& md, float speed, IKinematicsAnimated* model);
 	bool			check_anim			(const shared_str& anim_name, u16 place_idx);
 
 	bool			animator_play			(const shared_str& anim_name, u16 place_idx = u16(-1), u16 part_id = u16(-1), bool bMixIn = false, float speed = 1.0f, u8 anm_idx = u8(0), bool impact_on_item = false, bool similar_check = false, PlayCallback Callback = PlayCallback(0), LPVOID CallbackParam = nullptr, bool UpdateCallbackType = 0);
@@ -666,7 +669,7 @@ public:
 
 	void			calc_transform		(u16 attach_slot_idx, const Fmatrix& offset, Fmatrix& result);
 	void			tune				(Fvector values);
-	u32				motion_length		(const MotionID& M, const CMotionDef*& md, float speed);
+	u32				motion_length		(const MotionID& M, const CMotionDef*& md, float speed, IKinematicsAnimated* model);
 	u32				motion_length		(const shared_str& anim_name, const shared_str& hud_name, const CMotionDef*& md);
 	void			OnMovementChanged	(ACTOR_DEFS::EMoveCommand cmd)	;
 	void			RestoreHandBlends(const char* ignored_part);
@@ -746,7 +749,7 @@ private:
 	Fmatrix								m_transform;
 	Fmatrix								m_transformL;
 
-	IKinematicsAnimated*				m_model;
+	IKinematicsAnimated*				m_model = nullptr;
 	xr_vector<u16>						m_ancors;
 	attachable_hud_item*				m_attached_items[2];
 	animator_item*						m_animator_item = nullptr;
