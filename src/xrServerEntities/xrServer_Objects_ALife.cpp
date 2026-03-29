@@ -2491,7 +2491,7 @@ CSE_ALifeInteractiveObject::CSE_ALifeInteractiveObject(LPCSTR caSection) : CSE_A
 {
 	m_can_take = true;
 	m_closed = false;
-	m_tip_text._set("");
+	//m_tip_text._set("");
 }
 
 CSE_ALifeInteractiveObject::~CSE_ALifeInteractiveObject()
@@ -2508,7 +2508,7 @@ void CSE_ALifeInteractiveObject::STATE_Read(NET_Packet& tNetPacket, u16 size)
 		u8 temp;
 		tNetPacket.r_u8(temp);		m_can_take = (temp == 1);
 		tNetPacket.r_u8(temp);		m_closed = (temp == 1);
-		tNetPacket.r_stringZ(m_tip_text);
+	//	tNetPacket.r_stringZ(m_tip_text);
 	}
 }
 
@@ -2517,7 +2517,7 @@ void CSE_ALifeInteractiveObject::STATE_Write(NET_Packet& tNetPacket)
 	inherited::STATE_Write(tNetPacket);
 	tNetPacket.w_u8((m_can_take) ? 1 : 0);
 	tNetPacket.w_u8((m_closed) ? 1 : 0);
-	tNetPacket.w_stringZ(m_tip_text);
+	//tNetPacket.w_stringZ(m_tip_text);
 }
 
 void CSE_ALifeInteractiveObject::UPDATE_Read(NET_Packet& tNetPacket)
