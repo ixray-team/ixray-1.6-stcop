@@ -122,16 +122,14 @@ void CInteractiveObject::save(NET_Packet& output_packet)
 {
 	inherited::save(output_packet);
 	output_packet.w_u8(left_uses);
-	output_packet.r_stringZ(m_tip_text);
+	//output_packet.r_stringZ(m_tip_text);
 }
 
 void CInteractiveObject::load(IReader& input_packet)
 {
 	inherited::load(input_packet);
 	left_uses = input_packet.r_u8();
-	input_packet.r_stringZ(m_tip_text);
-
-	SetText();
+	//input_packet.r_stringZ(m_tip_text);
 
 	if (!m_bone_names.empty())
 	{
@@ -143,6 +141,8 @@ void CInteractiveObject::load(IReader& input_packet)
 				SetVisible(m_bone_names[i].c_str(), false);
 			}
 		}
+
+		SetText();
 	}
 }
 
@@ -221,6 +221,7 @@ void CInteractiveObject::SetVisible(shared_str bone_name, BOOL bVisibility)
 	KI->CalculateBones(TRUE);
 	KI->LL_SetBoneVisible(boneId, bVisibility, TRUE);
 	KI->CalculateBones(TRUE);
+	SetText();
 }
 
 using namespace luabind;
