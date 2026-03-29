@@ -49,6 +49,7 @@
 #include "ui/UIMainIngameWnd.h"
 #include "ui/UIPdaWnd.h"
 #include "HUDManager.h"
+#include "WeaponHUD.h"
 
 extern int g_keypress_on_start;
 
@@ -102,6 +103,8 @@ CGamePersistent::CGamePersistent(void)
 		eDemoStart			=	nullptr;
 	}
 
+	CWeaponHUD::CreateSharedContainer();
+
 	eQuickLoad				= g_pEventManager->Event.Handler_Attach("Game:QuickLoad",this);
 	Fvector3* DofValue		= Console->GetFVectorPtr("r2_dof");
 	if(DofValue)
@@ -122,6 +125,7 @@ CGamePersistent::CGamePersistent(void)
 
 CGamePersistent::~CGamePersistent(void)
 {	
+	CWeaponHUD::DestroySharedContainer();
 	FS.r_close					(pDemoFile);
 	Device.seqFrame.Remove		(this);
 	g_pEventManager->Event.Handler_Detach	(eDemoStart,this);
@@ -193,6 +197,8 @@ void CGamePersistent::Start		(const char* op)
 
 void CGamePersistent::Disconnect()
 {
+	CWeaponHUD::CleanSharedContainer();
+
 	// destroy ambient particles
 	Particles::Details::Destroy(ambient_particles);
 
@@ -283,7 +289,10 @@ void CGamePersistent::OnGameEnd	()
 
 	xr_delete							(g_stalker_animation_data_storage);
 	xr_delete							(g_stalker_velocity_holder);
+
+	CWeaponHUD::CleanSharedContainer	();
 }
+
 bool no_amb_effects = false;
 void CGamePersistent::WeathersUpdate()
 {

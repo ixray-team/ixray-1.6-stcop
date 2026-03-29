@@ -2940,13 +2940,14 @@ void CWeaponMagazined::ResetSilencerKoeffs()
 void CWeaponMagazined::PlayAnimShow()
 {
 	VERIFY(GetState()==eShowing);
-	PlayHUDMotion(SetCurrentStateAnimation("anm_show"), EHudMixType::eNoMix, GetState());
+	PlayHUDMotion(SetCurrentStateAnimation("anm_show"), SetCurrentStateAnimation("anim_draw"), EHudMixType::eNoMix, GetState());
 }
 
 void CWeaponMagazined::PlayAnimHide()
 {
 	VERIFY(GetState()==eHiding);
-	PlayHUDMotion(SetCurrentStateAnimation("anm_hide"), EHudMixType::eMixAll, GetState());
+	bool empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 : iAmmoElapsed == 0;
+	PlayHUDMotion(SetCurrentStateAnimation("anm_hide"), empty && HudAnimationExist("anim_close") ? "anim_close" : SetCurrentStateAnimation("anim_holster"), EHudMixType::eMixAll, GetState());
 }
 
 shared_str CWeaponMagazined::SetCurrentReloadAnimation()
@@ -3019,6 +3020,22 @@ shared_str CWeaponMagazined::SetCurrentReloadAnimation()
 	return anim;
 }
 
+shared_str CWeaponMagazined::SetCurrentReloadAnimationLegacy()
+{
+	shared_str anim = "anim_reload";
+
+	if (H_Parent() && H_Parent() == Level().CurrentControlEntity())
+	{
+		bool empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 : iAmmoElapsed == 0;
+		if (empty)
+		{
+			AddSuffixName(anim, "_empty");
+		}
+	}
+
+	return anim;
+}
+
 shared_str CWeaponMagazined::SetCurrentStateAnimation(const shared_str& first_name)
 {
 	shared_str anim = first_name;
@@ -3077,11 +3094,21 @@ shared_str CWeaponMagazined::SetCurrentStateAnimation(const shared_str& first_na
 	return anim;
 }
 
+shared_str CWeaponMagazined::SetCurrentIdleAnimation(const shared_str& first_name)
+{
+	bool empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 : iAmmoElapsed == 0;
+	if (empty && m_pHUD && HudAnimationExist("anim_empty"))
+	{
+		return "anim_empty";
+	}
+	return inherited::SetCurrentIdleAnimation(first_name);
+}
+
 void CWeaponMagazined::PlayAnimReload()
 {
 	VERIFY(GetState() == eReload);
 
-	PlayHUDMotion(SetCurrentReloadAnimation(), EHudMixType::eMixAll, GetState());
+	PlayHUDMotion(SetCurrentReloadAnimation(), SetCurrentReloadAnimationLegacy(), EHudMixType::eMixAll, GetState());
 	if (ParentIsActor())
 	{
 		if (IsMisfire() && (HudAnimationExist("anm_reload_misfire") || HudAnimationExist("anm_reload_jammed")))
@@ -3098,14 +3125,16 @@ void CWeaponMagazined::PlayAnimReload()
 	}
 }
 
-shared_str CWeaponMagazined::SetCurrentAimAnimation()
+shared_str CWeaponMagazined::SetCurrentAimAnimation(const shared_str& first_name)
 {
-	shared_str anim = "anm_idle_aim";
+	shared_str anim = first_name;
 
 	if (IsGrenadeLauncherAttached())
 	{
 		//Hack for original weapon configs
 		anim = IsGrenadeMode() && HudAnimationExist("anm_idle_g_aim") ? "anm_idle_g_aim" : (HudAnimationExist("anm_idle_w_gl_aim") ? "anm_idle_w_gl_aim" : anim);
+		if (m_pHUD)
+			anim = IsGrenadeMode() && HudAnimationExist("anim_idle_g_aim") ? "anim_idle_g_aim" : (HudAnimationExist("anim_idle_gl_aim") ? "anim_idle_gl_aim" : anim);
 	}
 
 	if (CActor* actor = H_Parent()->cast_actor())
@@ -3147,7 +3176,7 @@ shared_str CWeaponMagazined::SetCurrentAimAnimation()
 
 void CWeaponMagazined::PlayAnimAim()
 {
-	PlayHUDMotion(SetCurrentAimAnimation(), EHudMixType::eMixAll, GetState());
+	PlayHUDMotion(SetCurrentAimAnimation("anm_idle_aim"), SetCurrentAimAnimation("anim_idle_aim"), EHudMixType::eMixAll, GetState());
 }
 
 void CWeaponMagazined::PlaySoundAim(bool in)
@@ -3207,9 +3236,7 @@ void CWeaponMagazined::PlayAnimIdle()
 			return;
 		}
 
-		shared_str new_name = SetCurrentIdleAnimation();
-
-		PlayHUDMotion(SetCurrentStateAnimation(new_name), EHudMixType::eMixAll, GetState());
+		PlayHUDMotion(SetCurrentStateAnimation(SetCurrentIdleAnimation("anm_idle")), SetCurrentStateAnimation(SetCurrentIdleAnimation("anim_idle")), EHudMixType::eMixAll, GetState());
 	}
 }
 
@@ -3264,6 +3291,22 @@ shared_str CWeaponMagazined::SetCurrentShootAnimation()
 	return anim;
 }
 
+shared_str CWeaponMagazined::SetCurrentShootAnimationLegacy()
+{
+	bool last = m_bAmmoInChamber ? iAmmoChamberElapsed == 1 && iAmmoElapsed == 0 : iAmmoElapsed == 1;
+	shared_str anim = "anim_shoot";
+
+	if (H_Parent() && H_Parent() == Level().CurrentControlEntity())
+	{
+		if (last && HudAnimationExist("anim_shot_last"))
+		{
+			anim = "anim_shot_last";
+		}
+	}
+
+	return anim;
+}
+
 void CWeaponMagazined::PlayAnimShoot()
 {
 	VERIFY(GetState()==eFire);
@@ -3288,7 +3331,7 @@ void CWeaponMagazined::PlayAnimShoot()
 		m_iLastShotTime = Device.dwTimeGlobal;
 	}
 
-	PlayHUDMotion(SetCurrentShootAnimation(), EHudMixType::eMixHands, GetState());
+	PlayHUDMotion(SetCurrentShootAnimation(), SetCurrentShootAnimationLegacy(), EHudMixType::eMixHands, GetState());
 
 	if (CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
 	{

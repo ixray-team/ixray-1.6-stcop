@@ -400,7 +400,7 @@ void CActor::cam_Update(float dt, float fFOV)
 			{
 				psHUD_FOV = fminf(pItem->GetHudFov(), pDevice->GetHudFov());
 			}
-			else if (pItem && pItem->HudItemData())
+			else if (pItem && (pItem->HudItemData() || pItem->GetHUD()))
 			{
 				psHUD_FOV = pItem->GetHudFov();
 			}

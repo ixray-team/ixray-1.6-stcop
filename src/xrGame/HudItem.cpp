@@ -17,7 +17,13 @@
 
 CHudItem::CHudItem()
 {
+	RenderHud(true);
 	m_eDevicesFlags.zero();
+}
+
+CHudItem::~CHudItem(void)
+{
+	xr_delete(m_pHUD);
 }
 
 DLL_Pure *CHudItem::_construct()
@@ -40,6 +46,14 @@ void CHudItem::Load(const char* section)
 		pSettings->read_if_exists(m_animation_slot, section, "animation_slot");
 	else // if it doesn't, then crash if line is missing from config
 		m_animation_slot		= pSettings->r_u32			(section,"animation_slot");
+
+	if ((pSettings->line_exist(hud_sect, "position") && !pSettings->line_exist(hud_sect, "item_position"))
+	 && (pSettings->line_exist(hud_sect, "orientation") && !pSettings->line_exist(hud_sect, "item_orientation"))
+	 && (pSettings->line_exist(hud_sect, "visual") && !pSettings->line_exist(hud_sect, "item_visual")))
+	{
+		m_pHUD			= new CWeaponHUD(this);
+		m_pHUD->Load	(hud_sect.c_str());
+	}
 
 	m_nearwall_dist_min = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_dist_min", .2f);
 	m_nearwall_dist_max = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_dist_max", 1.f);
@@ -163,8 +177,13 @@ void CHudItem::renderable_Render()
 	UpdateXForm					();
 	bool _hud_render			= ::Render->get_HUD() && GetHUDSoundMode();
 	
-	if(_hud_render  && !IsHidden())
+	if(_hud_render && (m_pHUD && !m_pHUD->IsHidden()) && !IsHidden())
 	{ 
+		if (RenderHud())
+		{
+			::Render->set_Transform(&m_pHUD->Transform());
+			::Render->add_Visual(m_pHUD->Visual());
+		}
 	}
 	else 
 	{
@@ -354,7 +373,7 @@ void CHudItem::OnAnimationEnd(u8 state)
 
 void CHudItem::PlayAnimBore()
 {
-	PlayHUDMotion(SetCurrentStateAnimation("anm_bore"), EHudMixType::eMixAll, GetState());
+	PlayHUDMotion(SetCurrentStateAnimation("anm_bore"), SetCurrentStateAnimation("anim_playing"), EHudMixType::eMixAll, GetState());
 }
 
 bool CHudItem::ActivateItem() 
@@ -460,10 +479,90 @@ void CHudItem::UpdateCL()
 	{
 		LightTorch->UpdateTorchFromObject(this);
 	}
+
+	if (m_pHUD)
+	{
+		m_pHUD->Update();
+	}
+	UpdateHudPosition();
+}
+
+void CHudItem::UpdateHudPosition	()
+{
+	if (m_pHUD && GetHUDmode())
+	{
+		Fmatrix							trans;
+
+		CActor* pActor = object().H_Parent()->cast_actor();
+		if (pActor)
+		{
+			pActor->Cameras().camera_Matrix				(trans);
+			UpdateHudInertion							(trans);
+			UpdateHudAdditonal							(trans);
+			m_pHUD->UpdatePosition						(trans);
+		}
+	}
+}
+
+void CHudItem::StartHudInertion()
+{
+	m_bInertionEnable = true;
+}
+
+void CHudItem::StopHudInertion()
+{
+	m_bInertionEnable = false;
+}
+
+void CHudItem::UpdateHudInertion		(Fmatrix& hud_trans)
+{
+	if (m_pHUD && m_bInertionEnable)
+	{
+		Fmatrix								xform;//,xform_orig; 
+		Fvector& origin						= hud_trans.c; 
+		xform								= hud_trans;
+
+		static Fvector						m_last_dir={0,0,0};
+
+		// calc difference
+		Fvector								diff_dir;
+		diff_dir.sub						(xform.k, m_last_dir);
+
+		// clamp by PI_DIV_2
+		Fvector last;						last.normalize_safe(m_last_dir);
+		float dot							= last.dotproduct(xform.k);
+		if (dot<EPS)
+		{
+			Fvector v0;
+			v0.crossproduct			(m_last_dir,xform.k);
+			m_last_dir.crossproduct	(xform.k,v0);
+			diff_dir.sub			(xform.k, m_last_dir);
+		}
+
+		// tend to forward
+		m_last_dir.mad	(diff_dir,TENDTO_SPEED*Device.fTimeDelta);
+		origin.mad		(diff_dir,ORIGIN_OFFSET);
+
+		// pitch compensation
+		float pitch		= angle_normalize_signed(xform.k.getP());
+		origin.mad		(xform.k,	-pitch * PITCH_OFFSET_D);
+		origin.mad		(xform.i,	-pitch * PITCH_OFFSET_R);
+		origin.mad		(xform.j,	-pitch * PITCH_OFFSET_N);
+
+		// calc moving inertion
+	}
 }
 
 void CHudItem::OnH_A_Chield		()
-{}
+{
+	if (m_pHUD)
+	{
+		if (Level().CurrentEntity() == object().H_Parent() && object().H_Parent()->cast_actor())
+			m_pHUD->Visible(true);
+		else
+			m_pHUD->Visible(false);
+	}
+}
 
 void CHudItem::OnH_B_Chield		()
 {
@@ -472,6 +571,9 @@ void CHudItem::OnH_B_Chield		()
 
 void CHudItem::OnH_B_Independent	(bool just_before_destroy)
 {
+	if (m_pHUD)
+		m_pHUD->Visible(false);
+
 	m_sounds.StopAllSounds	();
 	UpdateXForm				();
 
@@ -505,7 +607,7 @@ void CHudItem::on_a_hud_attach()
 {
 	if (m_current_motion_def)
 	{
-		PlayHUDMotion_noCB(m_current_motion, EHudMixType::eNoMix);
+		PlayHUDMotion_noCB(m_current_motion, EHudMixType::eNoMix, false);
 	}
 
 	m_eAnimationsFlags.set(EAnimationsFlags::af_torch, HudAnimationExist("anm_switch_device"));
@@ -520,7 +622,7 @@ void CHudItem::on_a_hud_attach()
 	m_eAnimationsFlags.set(EAnimationsFlags::af_det_hand_throw_end, HudAnimationExist("anm_hand_throw_end"));
 	m_eAnimationsFlags.set(EAnimationsFlags::af_det_hand_kick, HudAnimationExist("anm_kick") && HudAnimationExist("anm_kick2"));
 	m_eAnimationsFlags.set(EAnimationsFlags::af_det_hand_lam, HudAnimationExist("anm_lam"));
-	m_eAnimationsFlags.set(EAnimationsFlags::af_bore, HudAnimationExist("anm_bore"));
+	m_eAnimationsFlags.set(EAnimationsFlags::af_bore, HudAnimationExist("anm_bore") || HudAnimationExist("anim_playing"));
 	m_eAnimationsFlags.set(EAnimationsFlags::af_firemode, (HudAnimationExist("anm_firemode") || HudAnimationExist("anm_changefiremode_from_1_to_a") || HudAnimationExist("anm_changefiremode_from_a_to_1")));
 	m_eAnimationsFlags.set(EAnimationsFlags::af_empty_click, HudAnimationExist("anm_empty_click"));
 	m_eAnimationsFlags.set(EAnimationsFlags::af_aim_in_out, (HudAnimationExist("anm_idle_aim_start") && HudAnimationExist("anm_idle_aim_end")));
@@ -545,13 +647,19 @@ void CHudItem::on_a_hud_attach()
 	m_eBonePartAnimationsFlags.set(EBPAnimsFlags::abpf_firemode, (HudAnimationExist("anm_bp_firemode_state_auto") || HudAnimationExist("anm_bp_firemode_state_1")));
 }
 
-bool CHudItem::HudAnimationExist(const shared_str& anim_name)
+bool CHudItem::HudAnimationExist(const shared_str& anim_name, bool only_for_actor)
 {
-	if (Level().CurrentControlEntity() != object().H_Parent())
+	if (Level().CurrentControlEntity() != object().H_Parent() && only_for_actor)
 		return false;
 
-	auto HID = HudItemData();
-	if (HID)
+	if (m_pHUD)
+	{
+		const char* anm = READ_IF_EXISTS(pSettings, r_string, hud_sect, anim_name.c_str(), "");
+		MotionSVec vec{};
+		animGet(vec, anm);
+		return !vec.empty();
+	}
+	else if (auto HID = HudItemData())
 	{
 		return HID->m_hand_motions.has_motion(anim_name);
 	}
@@ -563,7 +671,19 @@ bool CHudItem::HudAnimationExist(const shared_str& anim_name)
 	}
 }
 
-u32 CHudItem::PlayHUDMotion(const shared_str& M, EHudMixType bMixIn, u8 state)
+u32 CHudItem::PlayHUDMotion(const shared_str& M, const shared_str& M2, EHudMixType bMixIn, u8 state, bool disableRandom)
+{
+    u32 time = 0;
+
+    if (HudAnimationExist(M.c_str(), false))
+        time = PlayHUDMotion(M, bMixIn, state, disableRandom);
+    else if (HudAnimationExist(M2.c_str(), false))
+        time = PlayHUDMotion(M2, bMixIn, state, disableRandom);
+
+    return time;
+}
+
+u32 CHudItem::PlayHUDMotion(const shared_str& M, EHudMixType bMixIn, u8 state, bool disableRandom)
 {
 	if (HudItemData() && !HudAnimationExist(M.c_str()))
 	{
@@ -579,7 +699,7 @@ u32 CHudItem::PlayHUDMotion(const shared_str& M, EHudMixType bMixIn, u8 state)
 		PlaySound("sndByMotion", m_object->Position());
 	}
 
-	u32 anim_time = PlayHUDMotion_noCB(M.c_str(), bMixIn);
+	u32 anim_time = PlayHUDMotion_noCB(M.c_str(), bMixIn, disableRandom);
 	if (anim_time>0)
 	{
 		m_bStopAtEndAnimIsRunning	= true;
@@ -598,7 +718,7 @@ bool CHudItem::AddSuffixName(shared_str& anim, const char* suffix, const char* t
 	string128 new_name = {};
 	xr_strconcat(new_name, anim.c_str(), suffix, test_suffix);
 
-	if (HudAnimationExist(new_name))
+	if (HudAnimationExist(new_name, m_pHUD == nullptr))
 	{
 		anim = new_name;
 		return true;
@@ -607,7 +727,7 @@ bool CHudItem::AddSuffixName(shared_str& anim, const char* suffix, const char* t
 	return false;
 }
 
-u32 CHudItem::PlayHUDMotion_noCB(const shared_str& motion_name, EHudMixType bMixIn)
+u32 CHudItem::PlayHUDMotion_noCB(const shared_str& motion_name, EHudMixType bMixIn, bool disableRandom)
 {
 	m_current_motion					= motion_name;
 
@@ -620,13 +740,29 @@ u32 CHudItem::PlayHUDMotion_noCB(const shared_str& motion_name, EHudMixType bMix
 			motion_name.c_str(), 
 			Device.dwFrame);
 	}
-	if( HudItemData() )
+	if (m_pHUD)
 	{
-		return HudItemData()->anim_play		(motion_name, bMixIn, m_current_motion_def, m_started_rnd_anim_idx);
-	}else
+		m_started_rnd_anim_idx = 0;
+
+		LPCSTR anm = READ_IF_EXISTS(pSettings, r_string, hud_sect, motion_name.c_str(), "");
+		MotionSVec vec;
+		animGet(vec, anm);
+		R_ASSERT(!vec.empty(), "Invalid animation found", hud_sect.c_str(), anm);
+
+		MotionID id = disableRandom ? vec[0] : random_anim(vec);
+		return m_pHUD->animPlay(id, bMixIn == EHudMixType::eMixAll, this, GetState(), m_current_motion_def);
+	}
+	else
 	{
-		m_started_rnd_anim_idx				= 0;
-		return g_player_hud->motion_length	(motion_name, HudSection(), m_current_motion_def );
+		if (HudItemData())
+		{
+			return HudItemData()->anim_play(motion_name, bMixIn, m_current_motion_def, m_started_rnd_anim_idx);
+		}
+		else
+		{
+			m_started_rnd_anim_idx = 0;
+			return g_player_hud->motion_length(motion_name, HudSection(), m_current_motion_def);
+		}
 	}
 }
 
@@ -653,7 +789,7 @@ bool CHudItem::GetHUDSoundMode()
 {
 	if (m_object && m_object->H_Parent()) {
 		CActor* A = m_object->H_Parent()->cast_actor();
-		return (A && A->HUDview()) || HudItemData();
+		return (A && A->HUDview());
 	} 
 
 	return false;
@@ -666,12 +802,12 @@ void CHudItem::PlayAnimIdle()
 		return;
 	}
 
-	PlayHUDMotion(SetCurrentIdleAnimation(), EHudMixType::eMixAll, GetState());
+	PlayHUDMotion(SetCurrentIdleAnimation("anm_idle"), SetCurrentStateAnimation(SetCurrentIdleAnimation("anim_idle")), EHudMixType::eMixAll, GetState(), m_pHUD != nullptr);
 }
 
-shared_str CHudItem::SetCurrentIdleAnimation()
+shared_str CHudItem::SetCurrentIdleAnimation(const shared_str& first_name)
 {
-	shared_str new_name = "anm_idle";
+	shared_str new_name = first_name;
 	if (Level().CurrentControlEntity() == nullptr)
 		return new_name;
 
@@ -762,27 +898,34 @@ bool CHudItem::TryPlayAnimIdle()
 
 void CHudItem::PlayAnimIdleMoving()
 {
-	PlayHUDMotion(SetCurrentStateAnimation("anm_idle_moving"), EHudMixType::eMixAll, GetState());
+	PlayHUDMotion(SetCurrentStateAnimation("anm_idle_moving"), SetCurrentStateAnimation(SetCurrentIdleAnimation("anim_idle")), EHudMixType::eMixAll, GetState(), m_pHUD != nullptr);
 }
 
 void CHudItem::PlayAnimIdleMovingSlow()
 {
-	PlayHUDMotion(SetCurrentStateAnimation("anm_idle_moving_slow"), EHudMixType::eMixAll, GetState());
+	PlayHUDMotion(SetCurrentStateAnimation("anm_idle_moving_slow"), EHudMixType::eMixAll, GetState(), m_pHUD != nullptr);
 }
 
 void CHudItem::PlayAnimIdleMovingCrouch()
 {
-	PlayHUDMotion(SetCurrentStateAnimation("anm_idle_moving_crouch"), EHudMixType::eMixAll, GetState());
+	PlayHUDMotion(SetCurrentStateAnimation("anm_idle_moving_crouch"), EHudMixType::eMixAll, GetState(), m_pHUD != nullptr);
 }
 
 void CHudItem::PlayAnimIdleMovingCrouchSlow()
 {
-	PlayHUDMotion(SetCurrentStateAnimation("anm_idle_moving_crouch_slow"), EHudMixType::eMixAll, GetState());
+	PlayHUDMotion(SetCurrentStateAnimation("anm_idle_moving_crouch_slow"), EHudMixType::eMixAll, GetState(), m_pHUD != nullptr);
 }
 
 void CHudItem::PlayAnimIdleSprint()
 {
-	PlayHUDMotion(SetCurrentStateAnimation("anm_idle_sprint"), EHudMixType::eMixAll, GetState());
+	if (m_pHUD && !HudAnimationExist(SetCurrentStateAnimation("anim_idle_sprint")))
+	{
+		PlayHUDMotion(SetCurrentStateAnimation(SetCurrentStateAnimation("anim_idle")), EHudMixType::eMixAll, GetState(), m_pHUD != nullptr);
+	}
+	else
+	{
+		PlayHUDMotion(SetCurrentStateAnimation("anm_idle_sprint"), SetCurrentStateAnimation("anim_idle_sprint"), EHudMixType::eMixAll, GetState(), m_pHUD != nullptr);
+	}
 }
 
 void CHudItem::PlayAnimDeviceSwitch()
@@ -1139,3 +1282,41 @@ void CHudItem::StopBlendAnm(const shared_str& name, bool Force) { g_player_hud->
 void CHudItem::StopAllBlendAnms(bool Force, u8 part) { g_player_hud->StopAllBlendAnms(Force); }
 
 bool CHudItem::IsBlendAnmActive(const shared_str& name) { return g_player_hud->IsBlendAnmActive(name); }
+
+void CHudItem::animGet	(MotionSVec& lst, const char* prefix)
+{
+	if (!m_pHUD)
+	{
+		lst.clear();
+		return;
+	}
+
+	const MotionID		&M = m_pHUD->animGet(prefix);
+	if (M)				
+		lst.push_back(M);
+
+	for (int i = 0; i < MAX_ANIM_COUNT_WEAPON; ++i)
+	{
+		string128		sh_anim;
+		xr_sprintf			(sh_anim,"%s%d",prefix,i);
+		const MotionID	&M = m_pHUD->animGet(sh_anim);
+		if (M)			
+			lst.push_back(M);
+	}
+}
+
+void CHudItem::OnActiveItem() 
+{
+	if (m_pHUD)
+	{
+		on_a_hud_attach();
+	}
+}
+
+void CHudItem::OnHiddenItem() 
+{
+	if (m_pHUD)
+	{
+		on_b_hud_detach();
+	}
+}

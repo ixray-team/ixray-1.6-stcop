@@ -1462,10 +1462,13 @@ void player_hud::ApplyWatchesBoneVisibility(bool showAnalog, bool showLcd, bool 
 
 player_hud::~player_hud()
 {
-	IRenderVisual* v			= m_model->dcast_RenderVisual();
-	::Render->model_Delete		(v);
-	m_model						= nullptr;
-
+	if (m_model)
+	{
+		IRenderVisual* v = m_model->dcast_RenderVisual();
+		::Render->model_Delete(v);
+		m_model = nullptr;
+	}
+	
 	if (m_model_watches != nullptr)
 	{
 		IRenderVisual* v = m_model_watches->dcast_RenderVisual();
@@ -1526,11 +1529,14 @@ void player_hud::load(const shared_str& player_hud_sect)
 
 	m_sect_name = player_hud_sect;
 
-	const shared_str& model_name = pSettings->r_string(player_hud_sect, "visual");
-
-	auto CreatedModel = ::Render->model_Create(model_name.c_str());
-	m_model = dynamic_cast<IKinematicsAnimated*>(CreatedModel);
-
+	const shared_str& model_name = READ_IF_EXISTS(pSettings, r_string, player_hud_sect, "visual", nullptr);
+	
+	if (model_name.size())
+	{
+		auto CreatedModel = ::Render->model_Create(model_name.c_str());
+		m_model = dynamic_cast<IKinematicsAnimated*>(CreatedModel);
+	}
+	
 	if (pSettings->line_exist(player_hud_sect, "visual_watches"))
 	{
 		const shared_str& clocks_name = pSettings->r_string(player_hud_sect, "visual_watches");
@@ -1573,19 +1579,22 @@ void player_hud::load(const shared_str& player_hud_sect)
 		m_watchesBones.Reset();
 	}
 
-	u16 bone_r_finger0 = m_model->dcast_PKinematics()->LL_BoneID("r_finger0");
-	u16 bone_r_finger01 = m_model->dcast_PKinematics()->LL_BoneID("r_finger01");
-	u16 bone_r_finger02 = m_model->dcast_PKinematics()->LL_BoneID("r_finger02");
-	
-	if (bone_r_finger0 != BI_NONE && bone_r_finger01 != BI_NONE && bone_r_finger02 != BI_NONE)
+	if (m_model)
 	{
-		m_model->dcast_PKinematics()->LL_GetBoneInstance(bone_r_finger0).set_callback(bctCustom, FingerCallback, m_bone_callback_params[r_finger0]);
-		m_model->dcast_PKinematics()->LL_GetBoneInstance(bone_r_finger01).set_callback(bctCustom, FingerCallback, m_bone_callback_params[r_finger01]);
-		m_model->dcast_PKinematics()->LL_GetBoneInstance(bone_r_finger02).set_callback(bctCustom, FingerCallback, m_bone_callback_params[r_finger02]);
+		u16 bone_r_finger0 = m_model->dcast_PKinematics()->LL_BoneID("r_finger0");
+		u16 bone_r_finger01 = m_model->dcast_PKinematics()->LL_BoneID("r_finger01");
+		u16 bone_r_finger02 = m_model->dcast_PKinematics()->LL_BoneID("r_finger02");
+	
+		if (bone_r_finger0 != BI_NONE && bone_r_finger01 != BI_NONE && bone_r_finger02 != BI_NONE)
+		{
+			m_model->dcast_PKinematics()->LL_GetBoneInstance(bone_r_finger0).set_callback(bctCustom, FingerCallback, m_bone_callback_params[r_finger0]);
+			m_model->dcast_PKinematics()->LL_GetBoneInstance(bone_r_finger01).set_callback(bctCustom, FingerCallback, m_bone_callback_params[r_finger01]);
+			m_model->dcast_PKinematics()->LL_GetBoneInstance(bone_r_finger02).set_callback(bctCustom, FingerCallback, m_bone_callback_params[r_finger02]);
+		}
 	}
 
 	auto pathOmfs = EngineExternal().GetPlayerHudOmfAdditional();
-	if (pathOmfs && pathOmfs[0])
+	if (m_model && pathOmfs && pathOmfs[0])
 	{
 		string_path nm = {};
 		for (int i = 0, n = _GetItemCount(pathOmfs); i < n; ++i)
@@ -1600,42 +1609,48 @@ void player_hud::load(const shared_str& player_hud_sect)
 		m_legs_model = PKinematics(::Render->model_Create(model_name));
 	}
 
-	u16 l_arm = m_model->dcast_PKinematics()->LL_BoneID("l_clavicle");
-	if(l_arm != BI_NONE) {
-		m_model->dcast_PKinematics()->LL_GetBoneInstance(l_arm).set_callback(bctCustom, [](CBoneInstance* B) {g_player_hud->LeftArmCallback(B); }, NULL);
-	}
-
-	auto& _sect = pSettings->r_section(player_hud_sect);
-	auto _b = _sect.Data.begin();
-	auto _e = _sect.Data.end();
-
-	m_ancors.clear();
-
-	for(; _b != _e; ++_b) 
+	if (m_model)
 	{
-		if(strstr(_b->first.c_str(), "ancor_") == _b->first.c_str())
+		u16 l_arm = m_model->dcast_PKinematics()->LL_BoneID("l_clavicle");
+		if (l_arm != BI_NONE)
 		{
-			const shared_str& _bone = _b->second;
-			m_ancors.push_back(m_model->dcast_PKinematics()->LL_BoneID(_bone));
-		}
-	}
-
-	if(!b_reload) {
-		m_model->PlayCycle("hand_idle_doun");
-	}
-	else {
-		if(m_attached_items[1]) {
-			m_attached_items[1]->m_parent_hud_item->on_a_hud_attach();
+			m_model->dcast_PKinematics()->LL_GetBoneInstance(l_arm).set_callback(bctCustom, [](CBoneInstance* B) {g_player_hud->LeftArmCallback(B); }, NULL);
 		}
 
-		if(m_attached_items[0]) {
-			m_attached_items[0]->m_parent_hud_item->on_a_hud_attach();
+		auto& _sect = pSettings->r_section(player_hud_sect);
+		auto _b = _sect.Data.begin();
+		auto _e = _sect.Data.end();
+
+		m_ancors.clear();
+
+		for (; _b != _e; ++_b)
+		{
+			if (strstr(_b->first.c_str(), "ancor_") == _b->first.c_str())
+			{
+				const shared_str& _bone = _b->second;
+				m_ancors.push_back(m_model->dcast_PKinematics()->LL_BoneID(_bone));
+			}
 		}
+
+		if (!b_reload) {
+			m_model->PlayCycle("hand_idle_doun");
+		}
+		else
+		{
+			if (m_attached_items[1])
+			{
+				m_attached_items[1]->m_parent_hud_item->on_a_hud_attach();
+			}
+
+			if (m_attached_items[0])
+			{
+				m_attached_items[0]->m_parent_hud_item->on_a_hud_attach();
+			}
+		}
+
+		m_model->dcast_PKinematics()->CalculateBones_Invalidate();
+		m_model->dcast_PKinematics()->CalculateBones(TRUE);
 	}
-
-	m_model->dcast_PKinematics()->CalculateBones_Invalidate();
-	m_model->dcast_PKinematics()->CalculateBones(true);
-
 	if(m_legs_model) {
 		m_legs_model->CalculateBones_Invalidate();
 		m_legs_model->CalculateBones(true);

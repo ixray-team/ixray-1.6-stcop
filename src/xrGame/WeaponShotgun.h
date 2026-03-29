@@ -24,9 +24,9 @@ public:
 	void			switch2_AddCartgidge();
 	void			switch2_EndReload	();
 
-	shared_str		SelectOpenWeaponAnimation();
-	shared_str		SelectAddCartridgeWeaponAnimation();
-	shared_str		SelectCloseWeaponAnimation();
+	shared_str		SelectOpenWeaponAnimation(const shared_str& first_name);
+	shared_str		SelectAddCartridgeWeaponAnimation(const shared_str& first_name);
+	shared_str		SelectCloseWeaponAnimation(const shared_str& first_name);
 
 	virtual void	PlayAnimOpenWeapon	();
 	virtual void	PlayAnimAddOneCartridgeWeapon();
