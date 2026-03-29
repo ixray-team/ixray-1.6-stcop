@@ -7,14 +7,16 @@ UITopBarForm::UITopBarForm()
     m_timeUndo  = 0;
     m_timeRedo  = 0;
 
+    InitIcons();
+
     m_Simulate  = false;
 }
 
 UITopBarForm::~UITopBarForm() {}
 
-#define IMGUI_HINT_BUTTON(Name, Ptr, Hint, Callback) \
+#define IMGUI_HINT_BUTTON(Name, Ptr, Hint, dImDrawFlags, Callback) \
 			Ptr->Load(); \
-			if (ImGui::ImageButton("##" Name, Ptr->get_SRView()->GetRawSRV(), ImVec2(20, 20))) \
+			if (XRay::ImGui::ToolbarIconButton("##" Name, Ptr->get_SRView()->GetRawSRV(), nullptr, dImDrawFlags)) \
 				Callback(); \
 			if (ImGui::IsItemHovered()) \
 			{ \
@@ -25,33 +27,16 @@ UITopBarForm::~UITopBarForm() {}
 
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
-#define IMGUI_HINT_AF_BUTTON_EX(Name, Timer, Hint, Callback) \
-			if (ImGui::Button(Name"##" STR(__LINE__) , ImVec2(yMaxSize, yMaxSize))) \
-			{ \
-				Callback(); \
-				Timer = EDevice->TimerAsync() + 130;\
-			} \
-			if (ImGui::IsItemHovered()) \
-			{ \
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand); \
-				ImGui::SetTooltip(Hint); \
-			} \
-			ImGui::SameLine()
-#define IMGUI_HINT_AF_BUTTON(Name, Hint, Callback) \
-			if (ImGui::Button(Name"##" STR(__LINE__), ImVec2(yMaxSize, yMaxSize))) \
-				Callback(); \
-			if (ImGui::IsItemHovered()) \
-			{ \
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand); \
-				ImGui::SetTooltip(Hint); \
-			} \
-			ImGui::SameLine()
 
 void UITopBarForm::Draw()
 {
 	ImGuiViewport* viewport = ImGui::GetMainViewport();
-	ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x, viewport->Pos.y + UI->GetMenuBarHeight()));
-	ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, UIToolBarSize));
+    const float ButtonSize = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize);
+    const float IconSize = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::IconSize);
+    const float ButtonRadius = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonRadius);
+    const float ToolbarPadding = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ToolbarPadding);
+    ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x, viewport->Pos.y + UI->GetMenuBarHeight()));
+	ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, ButtonSize + ToolbarPadding * 2));
 	ImGui::SetNextWindowViewport(viewport->ID);
 
 	ImGuiWindowFlags window_flags = 0
@@ -63,18 +48,15 @@ void UITopBarForm::Draw()
 		;
     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.f);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(2, 0));
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(2, 2));
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(-2, 0));
-    ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(6, 6));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(ToolbarPadding, 0));
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+    ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(ToolbarPadding * 0.5f, ToolbarPadding));
     ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
     ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.f, 0.f, 0.f, 0.f));
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelBorderTint).Value);
 
     ImGui::Begin("TOOLBAR", NULL, window_flags);
     {
-        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 6);
-        ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 6);
-
         if (ImGui::BeginTable("##ToolbarTable", 5, ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ContextMenuInBody | ImGuiTableFlags_Hideable))
         {
             ImGui::TableSetupColumn("Actions");
@@ -87,27 +69,25 @@ void UITopBarForm::Draw()
 
             if (ImGui::TableNextColumn())
             {
-                IMGUI_HINT_AF_BUTTON_EX(ICON_FA_ROTATE_LEFT, m_timeUndo, "Undo the last action", ClickUndo);
-                IMGUI_HINT_AF_BUTTON_EX(ICON_FA_ROTATE_RIGHT, m_timeRedo, "Repeat the last action", ClickRedo);
+                IMGUI_HINT_BUTTON("Undo", Icons["undo"], "Undo the last action", ImDrawFlags_RoundCornersLeft, ClickUndo);
+                IMGUI_HINT_BUTTON("Redo", Icons["redo"], "Repeat the last action", ImDrawFlags_RoundCornersRight, ClickRedo);
             }
 
             if (ImGui::TableNextColumn())
             {
-                IMGUI_HINT_AF_BUTTON(ICON_FA_FILE, "Clear/New Scene", ClickNew);
-                IMGUI_HINT_AF_BUTTON(ICON_FA_FILE_IMPORT, "Open file", ClickOpen);
-                IMGUI_HINT_AF_BUTTON(ICON_FA_FLOPPY_DISK, "Save file", ClickSave);
+                IMGUI_HINT_BUTTON("I_CNS", Icons["new_scene"], "Clear/New Scene", ImDrawFlags_RoundCornersLeft, ClickNew);
+                IMGUI_HINT_BUTTON("I_OL", Icons["open_level"], "Open level", ImDrawFlags_RoundCornersNone, ClickOpen);
+                IMGUI_HINT_BUTTON("I_SL", Icons["save_level"], "Save level", ImDrawFlags_RoundCornersRight, ClickSave);
             }
 
             if (ImGui::TableNextColumn())
             {
-                IMGUI_HINT_AF_BUTTON(ICON_FA_FOLDER_OPEN, "Open 'gamedata' folder", ClickOpenGameData);
+                IMGUI_HINT_BUTTON("I_OGF", Icons["open_gamedata_folder"], "Open 'gamedata' folder", ImDrawFlags_RoundCornersAll, ClickOpenGameData);
             }
 
             if (ImGui::TableNextColumn())
             {
-                ImGui::SetCursorPosY(3);
-
-                if (ImGui::Checkbox("Phys Simulation", &m_Simulate))
+                if (XRay::ImGui::ToolbarButton("PhysSimulation228", "Phys Simulation", &m_Simulate, { 0.f, ButtonSize }, ImDrawFlags_RoundCornersAll))
                 {
                     bool isPhysics = ATools->IsPhysics();
 
@@ -125,14 +105,25 @@ void UITopBarForm::Draw()
 
             if (ImGui::TableNextColumn())
             {
-                IMGUI_HINT_AF_BUTTON(ICON_FA_SLIDERS, "Preferences", ClickPreferences);
+                IMGUI_HINT_BUTTON("I_Preferences", Icons["preferences"], "Preferences", ImDrawFlags_RoundCornersAll, ClickPreferences);
             }
         }
         ImGui::EndTable();
     }
     ImGui::End();
-    ImGui::PopStyleColor();
-    ImGui::PopStyleVar(7);
+    ImGui::PopStyleColor(2);
+    ImGui::PopStyleVar(6);
+}
+
+void UITopBarForm::InitIcons()
+{
+    Icons["undo"] = EDevice->Resources->_CreateTexture("ed\\icons\\Edit Undo");
+    Icons["redo"] = EDevice->Resources->_CreateTexture("ed\\icons\\Edit Redo");
+    Icons["new_scene"] = EDevice->Resources->_CreateTexture("ed\\icons\\File New");
+    Icons["open_level"] = EDevice->Resources->_CreateTexture("ed\\icons\\File Open");
+    Icons["save_level"] = EDevice->Resources->_CreateTexture("ed\\icons\\File Save");
+    Icons["open_gamedata_folder"] = EDevice->Resources->_CreateTexture("ed\\icons\\File Open Game Data Folder");
+    Icons["preferences"] = EDevice->Resources->_CreateTexture("ed\\icons\\Tab Preferences");
 }
 
 void UITopBarForm::ClickUndo()
