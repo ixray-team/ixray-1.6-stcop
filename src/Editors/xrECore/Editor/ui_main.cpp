@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "../xrEngine/xr_input.h"
+#include "../xrEngine/IGame_Actor.h"
 #include "UI_ToolsCustom.h"
 
 #include "ui_main.h"
@@ -638,6 +639,11 @@ bool TUI::Idle()
 	}
 
 	OnFrame();
+
+	if (g_pIGameActor != nullptr)
+	{
+		g_pIGameActor->UpdatePlayerHud();
+	}
 
 	Device.secondary_tasks.run([]()
 	{
