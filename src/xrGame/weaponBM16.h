@@ -14,7 +14,7 @@ public:
 	virtual void	Load							(const char* section);
 	virtual void	LoadSounds						(const char* section);
 
-	virtual bool	HudAnimationExist				(const shared_str& anim_name);
+	virtual bool	HudAnimationExist				(const shared_str& anim_name, bool only_for_actor = true);
 
 protected:
 	virtual void	PlayAnimReload					();
@@ -22,6 +22,7 @@ protected:
 	virtual shared_str SetCurrentStateAnimation(const shared_str& first_name);
 	virtual shared_str SetCurrentShootAnimation();
 	virtual shared_str SetCurrentReloadAnimation();
+	virtual shared_str SetCurrentAimAnimation();
 
 	virtual CWeaponBM16* cast_weapon_bm16() override { return this; }
 	virtual CWeaponShotgun* cast_weapon_shotgun() override { return this; }

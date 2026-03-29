@@ -29,6 +29,7 @@ void CWeaponMagazinedWGrenade::Load(const char* section)
 	{
 		CRocketLauncher::m_fLaunchSpeed = pSettings->r_float(section, "grenade_vel");
 	}
+	grenade_bone_name = READ_IF_EXISTS(pSettings, r_string, hud_sect, "grenade_bone", "grenade");
 
 	// load ammo classes SECOND (grenade_class)
 	m_ammoTypes2.clear();
@@ -176,7 +177,7 @@ shared_str CWeaponMagazinedWGrenade::SetCurrentReloadAnimation()
 
 	if (H_Parent() && H_Parent() == Level().CurrentControlEntity())
 	{
-		const char* end_suffix = m_bGrenadeMode ? "_g" : "_w_gl";
+		const char* end_suffix = m_bGrenadeMode ? "_g" : m_disable_random_animations ? "_gl" : "_w_gl";
 
 		if (m_bUseRevolverScheme && !IsGrenadeMode() && !IsMisfire() && !IsChangeAmmoType())
 		{
@@ -323,7 +324,7 @@ shared_str CWeaponMagazinedWGrenade::SetCurrentShootAnimation()
 			AddSuffixName(anim, "_l");
 		}
 
-		AddSuffixName(anim, m_bGrenadeMode ? "_g" : "_w_gl");
+		AddSuffixName(anim, m_bGrenadeMode ? "_g" : m_disable_random_animations ? "_gl" : "_w_gl");
 	}
 
 	return anim;
@@ -924,7 +925,7 @@ float	CWeaponMagazinedWGrenade::CurrentZoomFactor()
 //виртуальные функции для проигрывания анимации HUD
 void CWeaponMagazinedWGrenade::PlayAnimModeSwitch()
 {
-	PlayHUDMotion(SetCurrentStateAnimation("anm_switch"), EHudMixType::eMixAll, eSwitch);
+	PlayHUDMotion(SetCurrentStateAnimation("anm_switch"), m_bGrenadeMode ? "anm_switch_grenade_on" : "anm_switch_grenade_off", EHudMixType::eMixAll, eSwitch);
 }
 
 shared_str CWeaponMagazinedWGrenade::SetCurrentStateAnimation(const shared_str& first_name)
@@ -950,7 +951,7 @@ shared_str CWeaponMagazinedWGrenade::SetCurrentStateAnimation(const shared_str& 
 		int GetElapsed = m_bGrenadeMode ? iAmmoElapsed2 : iAmmoElapsed;
 		bool empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 && GetElapsed == 0 : GetElapsed == 0;
 
-		const char* end_suffix = m_bGrenadeMode ? "_g" : "_w_gl";
+		const char* end_suffix = m_bGrenadeMode ? "_g" : m_disable_random_animations ? "_gl" : "_w_gl";
 
 		if (IsZoomed() && IsMisfire())
 		{
@@ -1030,7 +1031,7 @@ void CWeaponMagazinedWGrenade::UpdateGrenadeVisibility(bool visibility)
 {
 	if (HudItemData() != nullptr)
 	{
-		HudItemData()->set_bone_visible("grenade", visibility, true);
+		HudItemData()->set_bone_visible(grenade_bone_name, visibility, TRUE);
 	}
 }
 

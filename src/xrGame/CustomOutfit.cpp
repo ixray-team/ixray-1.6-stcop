@@ -160,7 +160,7 @@ void CCustomOutfit::ApplySkinModel(CActor* pActor, bool bDress, bool bHUDOnly)
 				}
 			}
 
-			g_player_hud->NextHUDSect = pSettings->r_string(cNameSect(), "player_hud_section");
+			g_player_hud->NextHUDSect = READ_IF_EXISTS(pSettings, r_string, cNameSect(), "player_hud_section", nullptr);
 			g_player_hud->m_need_reload = false;
 		}
 	}
