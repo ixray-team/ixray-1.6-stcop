@@ -293,6 +293,7 @@ void CWeaponShotgun::switch2_EndReload()
 shared_str CWeaponShotgun::SelectOpenWeaponAnimation()
 {
 	shared_str anim = "anm_open";
+	AddSuffixName(anim, "_weapon");
 
 	if (ParentIsActor())
 	{
@@ -352,6 +353,7 @@ void CWeaponShotgun::PlayAnimAddOneCartridgeWeapon()
 shared_str CWeaponShotgun::SelectCloseWeaponAnimation()
 {
 	shared_str anim = "anm_close";
+	AddSuffixName(anim, "_weapon");
 
 	if (ParentIsActor())
 	{
