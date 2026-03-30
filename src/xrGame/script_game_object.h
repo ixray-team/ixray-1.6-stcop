@@ -672,6 +672,15 @@ public:
 			CCar*				get_car					();
 			//LAMP
 			CHangingLamp*		get_hanging_lamp		();
+			
+			// Custom lighting control for CHangingLamp (used in cutscenes and logic)
+			bool				IsLightActive		();
+			void				SetLightColor		(float r, float g, float b, float multiplier);
+			void				SetLightRange		(float range);
+			void				SetLightShadows		(bool b_shadows);
+			void				SetLightVolumetric	(bool b_volumetric);
+			void				SetLightAnim		(LPCSTR anim_name);
+
 			CHolderCustom*		get_custom_holder		();
 			CHolderCustom*		get_current_holder		(); //actor only
 
