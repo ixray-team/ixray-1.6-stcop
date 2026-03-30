@@ -25,6 +25,7 @@
 //#include "script_ini_file.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "HangingLamp.h"
+#include "../xrEngine/LightAnimLibrary.h"
 #include "patrol_path_manager.h"
 #include "ai_object_location.h"
 #include "Creature.h"
@@ -899,4 +900,84 @@ bool CScriptGameObject::Use(CScriptGameObject* obj)
 	}
 
 	return false;
+}
+
+// =========================================================================
+// Custom Lighting Control (CHangingLamp)
+// Designed for script-driven cutscenes and dynamic atmosphere adjustments
+// =========================================================================
+
+// Checks if the light is currently turned on
+bool CScriptGameObject::IsLightActive()
+{
+	CHangingLamp* lamp = smart_cast<CHangingLamp*>(&object());
+	if (lamp && lamp->light_render) 
+		return lamp->light_render->get_active();
+	
+	return false;
+}
+
+// Sets the RGB color and brightness multiplier of the light source
+void CScriptGameObject::SetLightColor(float r, float g, float b, float multiplier)
+{
+	CHangingLamp* lamp = smart_cast<CHangingLamp*>(&object());
+	if (!lamp) return;
+
+	Fcolor new_color;
+	new_color.set(r, g, b, 1.f);
+	
+	// Store the brightness multiplier
+	lamp->fBrightness = multiplier; 
+
+	if (lamp->light_render)
+	{
+		// Apply brightness multiplier to the RGB values before passing to render
+		new_color.mul_rgb(multiplier); 
+		lamp->light_render->set_color(new_color);
+	}
+}
+
+// Sets the maximum radius (distance) of the light source
+void CScriptGameObject::SetLightRange(float range)
+{
+	CHangingLamp* lamp = smart_cast<CHangingLamp*>(&object());
+	if (!lamp || !lamp->light_render) return;
+
+	lamp->light_render->set_range(range); 
+}
+
+// Enables or disables dynamic shadows cast by this light
+void CScriptGameObject::SetLightShadows(bool b_shadows)
+{
+	CHangingLamp* lamp = smart_cast<CHangingLamp*>(&object());
+	if (!lamp || !lamp->light_render) return;
+
+	lamp->light_render->set_shadow(b_shadows); 
+}
+
+// Enables or disables volumetric lighting (god rays / fog scattering)
+void CScriptGameObject::SetLightVolumetric(bool b_volumetric)
+{
+	CHangingLamp* lamp = smart_cast<CHangingLamp*>(&object());
+	if (!lamp || !lamp->light_render) return;
+
+	lamp->light_render->set_volumetric(b_volumetric); 
+}
+
+// Applies a specific color/flicker animation from light_anims.ltx
+void CScriptGameObject::SetLightAnim(LPCSTR anim_name)
+{
+	CHangingLamp* lamp = smart_cast<CHangingLamp*>(&object());
+	if (!lamp) return;
+
+	if (anim_name && anim_name[0])
+	{
+		// Find and assign the animation by name from the library
+		lamp->lanim = LALib.FindItem(anim_name); 
+	}
+	else
+	{
+		// Disable animation if an empty string or null is passed
+		lamp->lanim = nullptr; 
+	}
 }
