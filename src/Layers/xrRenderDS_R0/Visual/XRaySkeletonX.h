@@ -2,6 +2,48 @@
 class CDS0_Kinematics;
 #include "../../xrEngine/bone.h"
 
+#pragma pack( push,2 )
+struct vertBoned1W			// (3+3+3+3+2+1)*4 = 15*4 = 60 bytes
+{
+	Fvector	P;
+	Fvector	N;
+	Fvector	T;
+	Fvector	B;
+	float	u, v;
+	u32		m;
+};
+struct vertBoned2W			// (1+3+3 + 1+3+3 + 2)*4 = 16*4 = 64 bytes
+{
+	u16		m[2];
+	Fvector	P;
+	Fvector	N;
+	Fvector	T;
+	Fvector	B;
+	float	w;
+	float	u, v;
+};
+struct vertBoned3W          // 70 bytes
+{
+	u16		m[3];
+	Fvector	P;
+	Fvector	N;
+	Fvector	T;
+	Fvector	B;
+	float	w[2];
+	float	u, v;
+};
+struct vertBoned4W       //76 bytes
+{
+	u16		m[4];
+	Fvector	P;
+	Fvector	N;
+	Fvector	T;
+	Fvector	B;
+	float	w[3];
+	float	u, v;
+};
+#pragma pack(pop)
+
 class CDS0_FVisual;
 
 class CDS0_SkeletonX
