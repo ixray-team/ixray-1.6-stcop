@@ -68,7 +68,7 @@ void CDS0_SkeletonX::_Load(const char* N, IReader* data, size_t& dwVertCount)
 		for (it = 0; it < dwVertCount; ++it)
 		{
 			const vertBoned1W& VB = pVO[it];
-			u16 mid = (u16)VB.matrix;
+			u16 mid = (u16)VB.m;
 
 			if (bids.end() == std::find(bids.begin(), bids.end(), mid))
 				bids.push_back(mid);
@@ -115,14 +115,14 @@ void CDS0_SkeletonX::_Load(const char* N, IReader* data, size_t& dwVertCount)
 		for (it = 0; it < dwVertCount; ++it)
 		{
 			const vertBoned2W& VB = pVO[it];
-			sw_bones_cnt = std::max(sw_bones_cnt, VB.matrix0);
-			sw_bones_cnt = std::max(sw_bones_cnt, VB.matrix1);
+			sw_bones_cnt = std::max(sw_bones_cnt, VB.m[0]);
+			sw_bones_cnt = std::max(sw_bones_cnt, VB.m[1]);
 
-			if (bids.end() == std::find(bids.begin(), bids.end(), VB.matrix0))
-				bids.push_back(VB.matrix0);
+			if (bids.end() == std::find(bids.begin(), bids.end(), VB.m[0]))
+				bids.push_back(VB.m[0]);
 
-			if (bids.end() == std::find(bids.begin(), bids.end(), VB.matrix1))
-				bids.push_back(VB.matrix1);
+			if (bids.end() == std::find(bids.begin(), bids.end(), VB.m[1]))
+				bids.push_back(VB.m[1]);
 		}
 		R_ASSERT(sw_bones_cnt<=hw_bones_cnt);
 		if (sw_bones_cnt <= hw_bones_cnt)
@@ -222,7 +222,7 @@ void CDS0_SkeletonX::_Load(const char* N, IReader* data, size_t& dwVertCount)
 
 inline void 	get_pos_bones(const vertBoned1W& v, Fvector& p, CDS0_Kinematics* Parent)
 {
-	const Fmatrix& xform = Parent->LL_GetBoneInstance((u16)v.matrix).mRenderTransform;
+	const Fmatrix& xform = Parent->LL_GetBoneInstance((u16)v.m).mRenderTransform;
 	xform.transform_tiny(p, v.P);
 }
 
@@ -230,8 +230,8 @@ inline void 	get_pos_bones(const vertBoned2W& vert, Fvector& p, CDS0_Kinematics*
 {
 	Fvector		P0, P1;
 
-	Fmatrix& xform0 = Parent->LL_GetBoneInstance(vert.matrix0).mRenderTransform;
-	Fmatrix& xform1 = Parent->LL_GetBoneInstance(vert.matrix1).mRenderTransform;
+	Fmatrix& xform0 = Parent->LL_GetBoneInstance(vert.m[0]).mRenderTransform;
+	Fmatrix& xform1 = Parent->LL_GetBoneInstance(vert.m[1]).mRenderTransform;
 	xform0.transform_tiny(P0, vert.P);
 	xform1.transform_tiny(P1, vert.P);
 	p.lerp(P0, P1, vert.w);

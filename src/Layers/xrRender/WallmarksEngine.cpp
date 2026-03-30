@@ -9,9 +9,6 @@
 #include "../../xrEngine/x_ray.h"
 #include "../../xrEngine/GameFont.h"
 #include "SkeletonCustom.h"
-
-u32 g_r = 1;
-
 namespace WallmarksEngine {
 	struct wm_slot
 	{
@@ -359,10 +356,10 @@ CWallmarksEngine::static_wallmark* CWallmarksEngine::AddStaticWallmark(CDB::TRI*
 	lock.Leave				();
 	return result;
 }
-
+extern bool ps_r__WallmarkDyn;
 void CWallmarksEngine::AddSkeletonWallmark	(const Fmatrix* xf, CKinematics* obj, ref_shader& sh, const Fvector& start, const Fvector& dir, float size)
 {	
-	if( 0==g_r || ::RImplementation.phase != CRender::PHASE_NORMAL)				return;
+	if(!ps_r__WallmarkDyn || ::RImplementation.phase != CRender::PHASE_NORMAL)				return;
 	// optimization cheat: don't allow wallmarks more than 50 m from viewer/actor
 	if (xf->c.distance_to_sqr(Device.vCameraPosition) > _sqr(50.f))				return;
 
@@ -374,7 +371,7 @@ void CWallmarksEngine::AddSkeletonWallmark	(const Fmatrix* xf, CKinematics* obj,
 
 void CWallmarksEngine::AddSkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm)
 {
-	if(0==g_r || ::RImplementation.phase != CRender::PHASE_NORMAL) return;
+	if(!ps_r__WallmarkDyn || ::RImplementation.phase != CRender::PHASE_NORMAL) return;
 
 	if (!::RImplementation.val_bHUD)
 	{
@@ -384,9 +381,6 @@ void CWallmarksEngine::AddSkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm)
 		if (0==slot) slot	= AppendSlot(wm->Shader());
 		// no similar - register _new_
 		slot->skeleton_items.push_back(wm);
-#ifdef	DEBUG
-		wm->used_in_render	= Device.dwFrame;
-#endif
 		lock.Leave			();
 	}
 }
@@ -494,16 +488,6 @@ void CWallmarksEngine::Render()
 				if (!W){
 					continue	;
 				}
-
-#ifdef DEBUG
-				if(W->used_in_render != Device.dwFrame)			
-				{
-					Msg("W->used_in_render %d", W->used_in_render);
-					Msg("Device.dwFrame %d", Device.dwFrame);
-					VERIFY(W->used_in_render == Device.dwFrame);
-				}
-#endif
-
 				float dst	= Device.vCameraPosition.distance_to_sqr(W->m_Bounds.P);
 				float ssa	= W->m_Bounds.R * W->m_Bounds.R / dst;
 				if (ssa>=ssaCLIP){
@@ -523,9 +507,6 @@ void CWallmarksEngine::Render()
 						w_verts = w_save;
 					}
 				}
-				#ifdef	DEBUG
-				 W->used_in_render	= u32(-1);
-				#endif
 			}
 			slot->skeleton_items.clear();
 		}
