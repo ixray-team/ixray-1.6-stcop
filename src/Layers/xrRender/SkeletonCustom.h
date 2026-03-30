@@ -24,15 +24,23 @@ class  CSkeletonWallmark : public intrusive_base // 4+4+4+12+4+16+16 = 60 + 4 = 
 	Fvector3			m_ContactPoint;	// 12		model space
 	float				m_fTimeStart;	// 4
 public:
-#ifdef DEBUG
-	u32					used_in_render;	
-#endif
 	Fsphere				m_LocalBounds;	// 16		model space
-	struct WMFace{
-		Fvector3		vert	[3];
-		Fvector2		uv		[3];
-		u16				bone_id	[3][2];
-		float			weight	[3];
+	struct WMFace
+	{
+		Fvector vert[3];
+		Fvector2 uv[3];
+		u16 bone_id[3][4]
+		{
+			{BI_NONE, BI_NONE, BI_NONE, BI_NONE},
+			{BI_NONE, BI_NONE, BI_NONE, BI_NONE},
+			{BI_NONE, BI_NONE, BI_NONE, BI_NONE}
+		};
+		float weight[3][3]
+		{
+			{0.f, 0.f, 0.f},
+			{0.f, 0.f, 0.f},
+			{0.f, 0.f, 0.f}
+		};
 	};
 
 	using WMFacesVec = xr_vector<WMFace>;
@@ -44,26 +52,16 @@ public:
 public:									
 						CSkeletonWallmark	(CKinematics* p,const Fmatrix* m, ref_shader s, const Fvector& cp, float ts):
 						m_Parent(p),m_XForm(m),m_Shader(s),m_fTimeStart(ts),m_ContactPoint(cp)
-						{
-#ifdef DEBUG
-						used_in_render = u32(-1);
-#endif
-						
-						}
-						~CSkeletonWallmark	()
-#ifdef DEBUG
-							;
-#else
-							{}
-#endif
+						{}
+						~CSkeletonWallmark	(){}
 
-	IC CKinematics*		Parent				(){return m_Parent;}
-	IC u32				VCount				(){return (u32)m_Faces.size()*3;}
-	IC bool				Similar				(ref_shader& sh, const Fvector& cp, float eps){return (m_Shader==sh)&&m_ContactPoint.similar(cp,eps);}
-	IC float			TimeStart			(){return m_fTimeStart;}
-	IC const Fmatrix*	XFORM				(){return m_XForm;}
-	IC const Fvector3&	ContactPoint		(){return m_ContactPoint;}
-	IC ref_shader		Shader				(){return m_Shader;}
+	ICF CKinematics*	Parent				(){return m_Parent;}
+	ICF u32				VCount				(){return (u32)m_Faces.size()*3;}
+	ICF bool			Similar				(ref_shader& sh, const Fvector& cp, float eps){return (m_Shader==sh)&&m_ContactPoint.similar(cp,eps);}
+	ICF float			TimeStart			(){return m_fTimeStart;}
+	ICF const Fmatrix*	XFORM				(){return m_XForm;}
+	ICF const Fvector3&	ContactPoint		(){return m_ContactPoint;}
+	ICF ref_shader		Shader				(){return m_Shader;}
 };
 
 using SkeletonWMVec = xr_vector<intrusive_ptr<CSkeletonWallmark>>;
