@@ -13,6 +13,7 @@
 #include "../../xrEngine/x_ray.h"
 #include "../xrRender/SkeletonCustom.h"
 #include "../../xrEngine/IGame_Actor.h"
+#include "../../Include/xrRender/UIRender.h"
 
 ICF	float	CalcSSADynamic				(const Fvector& C, float R)
 {
@@ -358,12 +359,7 @@ void CRender::render_menu() {
 	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 4, 0, 2);
 }
 
-Fvector3 ps_r_taa_jitter_full = {0,0,0};
-
-#include "../../Include/xrRender/UIRender.h"
-
-extern u32 g_r;
-
+Fvector ps_r_taa_jitter_full = {0,0,0};
 void CRender::RenderUI(bool is_debug)
 {
 	ps_r_taa_jitter.set(0, 0, -1);
@@ -408,7 +404,6 @@ void CRender::Render()
 {
 	GPU_EVENT(CRender_Render);
 
-	g_r						= 1;
 	VERIFY					(0==mapDistort.size() + mapHUDDistort.size());
 
 //	rmNormal();
@@ -757,7 +752,6 @@ void CRender::Render()
 	{
 		GPU_EVENT(DEFER_WALLMARKS);
 		Target->phase_wallmarks					();
-		g_r										= 0;
 		Wallmarks->Render						();				// wallmarks has priority as normal geometry
 	}
 
