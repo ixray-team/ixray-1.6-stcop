@@ -20,6 +20,9 @@ public CPhysicsShellHolder,
 public CPHSkeleton
 {//need m_pPhysicShell
 	typedef	CPhysicsShellHolder		inherited;
+	// Allow CScriptGameObject to access private members for script control (cutscenes, logic)	
+	friend class CScriptGameObject;
+
 private:
 	u16				light_bone;
 	u16				ambient_bone;
