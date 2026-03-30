@@ -486,8 +486,6 @@ void CRender::Calculate				()
 	Device.Statistic->RenderCALC.End	();
 }
 
-extern u32 g_r;
-
 void CRender::RenderUI(bool) 
 {
 	//CHK_DX(RDevice->Clear(0L, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0x0, 1.0f, 0L));
@@ -511,7 +509,6 @@ void CRender::Render()
 		return;
 	}
 
-	g_r											= 1;
 	Device.Statistic->RenderDUMP.Begin();
 
 	if (g_pIGameActor)
@@ -537,7 +534,6 @@ void CRender::Render()
 	o.vis_intersect								= TRUE			;
 	L_Dynamic->render							(0);				// addititional light sources
 	if(Wallmarks){
-		g_r										= 0;
 		Wallmarks->Render						();				// wallmarks has priority as normal geometry
 	}
 	HOM.Enable									();

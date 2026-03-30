@@ -318,8 +318,6 @@ void CRender::render_menu	()
 	RCache.Render					(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,Offset,0,4,0,2);
 }
 
-extern u32 g_r;
-
 void CRender::RenderUI(bool)
 {
 	CHK_DX(RDevice->Clear(0L, nullptr, D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0x0, 1.0f, 0L));
@@ -340,7 +338,6 @@ void CRender::RenderUI(bool)
 
 void CRender::Render()
 {
-	g_r						= 1;
 	VERIFY					(0==mapDistort.size());
 
 	bool	_menu_pp		= g_pGamePersistent?g_pGamePersistent->OnRenderPPUI_query():false;
@@ -516,7 +513,6 @@ void CRender::Render()
 	// Wall marks
 	if(Wallmarks)	{
 		Target->phase_wallmarks					();
-		g_r										= 0;
 		Wallmarks->Render						();				// wallmarks has priority as normal geometry
 	}
 
