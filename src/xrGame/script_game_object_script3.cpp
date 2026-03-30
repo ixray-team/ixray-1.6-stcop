@@ -553,6 +553,14 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("get_gasmask_condition",		&CScriptGameObject::GetGasmaskCondition)
 		.def("set_head_rotate",				&CScriptGameObject::SetHeadRotate)
 		.def("set_default_visual",			&CScriptGameObject::SetActorDefaultVisual)
-		.def("IsInCar", &CScriptGameObject::IsInCar)
+		.def("IsInCar", 					&CScriptGameObject::IsInCar)
+		// Custom Lighting Control (CHangingLamp)
+		// Allows scripts and logic restrictors to dynamically control light parameters
+		.def("is_light_active",				&CScriptGameObject::IsLightActive)
+		.def("set_light_color",				&CScriptGameObject::SetLightColor)
+		.def("set_light_range",				&CScriptGameObject::SetLightRange)
+		.def("set_light_shadows",			&CScriptGameObject::SetLightShadows)
+		.def("set_light_volumetric",		&CScriptGameObject::SetLightVolumetric)
+		.def("set_light_anim",				&CScriptGameObject::SetLightAnim)
 	;
 }
