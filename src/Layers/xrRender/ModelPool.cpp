@@ -14,7 +14,7 @@
 #include "FProgressive.h"
 #include "ParticleEffect.h"
 #include "ParticleGroup.h"
-#include "FSkinned.h"
+#include "SkeletonX.h"
 #include "FHierrarhyVisual.h"
 #include "SkeletonAnimated.h"
 
@@ -40,10 +40,10 @@ dxRender_Visual* CModelPool::Instance_Create(u32 type)
 		V	= new CKinematics			();
 		break;
 	case MT_SKELETON_GEOMDEF_PM:
-		V	= new CSkeletonX_PM			();
+		V	= new CSkeletonX(true);
 		break;
 	case MT_SKELETON_GEOMDEF_ST:
-		V	= new CSkeletonX_ST			();
+		V	= new CSkeletonX(false);
 		break;
 	case MT_PARTICLE_EFFECT:
 		V	= new PS::CParticleEffect	();

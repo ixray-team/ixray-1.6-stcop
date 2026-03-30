@@ -104,6 +104,7 @@ float		ps_r__Tree_SBC				= 1.5f	;	// scale bias correct
 float		ps_r__WallmarkTTL			= 50.f	;
 float		ps_r__WallmarkSHIFT			= 0.001f;
 float		ps_r__WallmarkSHIFT_V		= 0.001f;
+bool		ps_r__WallmarkDyn			= false;
 
 float		ps_r__GLOD_ssa_start		= 256.f	;
 float		ps_r__GLOD_ssa_end			=  64.f	;
@@ -810,6 +811,7 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float, "r__ssa_glod_end", &ps_r__GLOD_ssa_end, 16, 96);
 	CMD4(CCC_Float, "r__wallmark_shift_pp", &ps_r__WallmarkSHIFT, 0.0f, 1.f);
 	CMD4(CCC_Float, "r__wallmark_shift_v", &ps_r__WallmarkSHIFT_V, 0.0f, 1.f);
+	CMD2(CCC_Boolean, "r__wallmark_dyn", &ps_r__WallmarkDyn);
 
 #ifdef USE_DX11
 	//	Allow real-time fog config reload
