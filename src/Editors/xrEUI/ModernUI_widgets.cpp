@@ -289,12 +289,6 @@ XREUI_API   bool        XRay::ImGui::ButtonBackground(const char* id, bool* togg
 	const	ImVec2  ButtonSize		= CalcItemSize(size, 0.f, 0.f);
 
 	// --- Styling ---
-	const   ImVec4  EnabledColor    = GetEditorColor(EEditorColors::Accent);
-	const   ImVec4  EnabledHover    = GetEditorColor(EEditorColors::ToggleHover);
-	const   ImVec4  EnabledActive   = GetEditorColor(EEditorColors::ToggleActive);
-	const   ImVec4  DisabledColor   = GetEditorColor(EEditorColors::ButtonTint);
-	const   ImVec4  DisabledHover   = GetEditorColor(EEditorColors::ButtonHover);
-	const   ImVec4  DisabledActive  = GetEditorColor(EEditorColors::ButtonActive);
 	const   ImVec4  BorderColor     = GetEditorColor(EEditorColors::ButtonBorderTint);
 
 			ImGuiButtonFlags flags  = 0;
@@ -311,16 +305,25 @@ XREUI_API   bool        XRay::ImGui::ButtonBackground(const char* id, bool* togg
 			bool	Clicked			= ::ImGui::ButtonBehavior(bb, buttonID, &Hovered, &Held, flags);
 	const	bool	Active			= Held;
 
-			ImVec4  ButtonColor;
+			ImVec4  Color;
 			if (toggle) {
-				ButtonColor = (Active) ? *toggle ? EnabledActive : DisabledActive :
-							   Hovered ? *toggle ? EnabledHover  : DisabledHover :
-										 *toggle ? EnabledColor  : DisabledColor;
+				const   ImVec4  EnabledColor	= GetEditorColor(EEditorColors::Accent);
+				const   ImVec4  EnabledHover	= GetEditorColor(EEditorColors::AccentHover);
+				const   ImVec4  EnabledActive	= GetEditorColor(EEditorColors::AccentActive);
+				const   ImVec4  DisabledColor	= GetEditorColor(EEditorColors::ButtonTint);
+				const   ImVec4  DisabledHover	= GetEditorColor(EEditorColors::ToggleHover);
+				const   ImVec4  DisabledActive	= GetEditorColor(EEditorColors::ToggleActive);
+				Color = (Active) ? *toggle ? EnabledActive : DisabledActive :
+						 Hovered ? *toggle ? EnabledHover  : DisabledHover :
+								   *toggle ? EnabledColor  : DisabledColor;
 			}
 			else {
-				ButtonColor = (Active) ? DisabledActive :
-							   Hovered ? DisabledHover :
-										 DisabledColor;
+				const	ImVec4	ButtonColor		= GetEditorColor(EEditorColors::ButtonTint);
+				const	ImVec4	ButtonHover		= GetEditorColor(EEditorColors::ButtonHover);
+				const	ImVec4	ButtonActive	= GetEditorColor(EEditorColors::ButtonActive);
+				Color = (Active) ? ButtonActive :
+						 Hovered ? ButtonHover :
+								   ButtonColor;
 }
 
 	// --- draw background ---
@@ -328,7 +331,7 @@ XREUI_API   bool        XRay::ImGui::ButtonBackground(const char* id, bool* togg
 	ImVec2		    p_min           = ::ImGui::GetItemRectMin();
 	ImVec2		    p_max           = ::ImGui::GetItemRectMax();
 
-					dl->AddRectFilled   (p_min, p_max, ::ImGui::GetColorU32(ButtonColor), style.FrameRounding, rounding_flags);
+					dl->AddRectFilled   (p_min, p_max, ::ImGui::GetColorU32(Color), style.FrameRounding, rounding_flags);
 					dl->AddRect         (p_min, p_max, ::ImGui::GetColorU32(BorderColor), style.FrameRounding, rounding_flags, BorderSize);
 
 	return  Clicked;
@@ -451,11 +454,7 @@ XREUI_API bool XRay::ImGui::ToolbarButtonBackground(
 		return false;
 	const   ImGuiID buttonID		= window->GetID(id);
 	const	ImVec2  ButtonSize		= CalcItemSize(size, 0.f, 0.f);
-/*
-    bool    Clicked = ::ImGui::InvisibleButton(id, size);
-    const	bool    Hovered = ::ImGui::IsItemHovered();
-    const	bool    Active = ::ImGui::IsItemActive();
-*/
+
 	ImRect bb(window->DC.CursorPos, window->DC.CursorPos + ButtonSize);
 	::ImGui::ItemSize(ButtonSize, style.FramePadding.y);
 	if (!::ImGui::ItemAdd(bb, buttonID))
@@ -464,36 +463,33 @@ XREUI_API bool XRay::ImGui::ToolbarButtonBackground(
 			bool	Clicked		= ::ImGui::ButtonBehavior(bb, buttonID, &Hovered, &Held, ImGuiButtonFlags_PressedOnClickRelease);
 	const	bool	Active		= Held;
 
-    ImVec4  Color = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToolbarButtonTint);
-    ImVec4  ColorHover = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ButtonHover);
-    ImVec4  ColorActive = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ButtonActive);
-
-    // --- toggle logic ---
-    if (toggle) {
-        if (Clicked)
-            *toggle = !*toggle;
-        if (*toggle == true) {
-            Color = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::Accent);
-            ColorHover = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToggleHover);
-            ColorActive = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToggleActive);
-        }
-    }
-
-    // --- colors ---
-    ImU32 col;
-    if (Active)
-        col = ::ImGui::GetColorU32(ColorActive);
-    else if (Hovered)
-        col = ::ImGui::GetColorU32(ColorHover);
-    else
-        col = ::ImGui::GetColorU32(Color);
+			ImVec4  Color;
+			if (toggle) {
+				const   ImVec4  EnabledColor	= GetEditorColor(EEditorColors::Accent);
+				const   ImVec4  EnabledHover	= GetEditorColor(EEditorColors::AccentHover);
+				const   ImVec4  EnabledActive	= GetEditorColor(EEditorColors::AccentActive);
+				const   ImVec4  DisabledColor	= GetEditorColor(EEditorColors::ToolbarButtonTint);
+				const   ImVec4  DisabledHover	= GetEditorColor(EEditorColors::ToolbarToggleHover);
+				const   ImVec4  DisabledActive	= GetEditorColor(EEditorColors::ToolbarToggleActive);
+				Color = (Active) ? *toggle ? EnabledActive : DisabledActive :
+						 Hovered ? *toggle ? EnabledHover  : DisabledHover :
+								   *toggle ? EnabledColor  : DisabledColor;
+			}
+			else {
+				const	ImVec4	ButtonColor		= GetEditorColor(EEditorColors::ToolbarButtonTint);
+				const	ImVec4	ButtonHover		= GetEditorColor(EEditorColors::ButtonHover);
+				const	ImVec4	ButtonActive	= GetEditorColor(EEditorColors::ButtonActive);
+				Color = (Active) ? ButtonActive :
+						 Hovered ? ButtonHover :
+								   ButtonColor;
+			}
 
     // --- draw background ---
     ImDrawList* dl = ::ImGui::GetWindowDrawList();
     ImVec2		p_min = ::ImGui::GetItemRectMin();
     ImVec2		p_max = ::ImGui::GetItemRectMax();
 
-    dl->AddRectFilled(p_min, p_max, col, rounding, rounding_flags);
+    dl->AddRectFilled(p_min, p_max, ::ImGui::GetColorU32(Color), rounding, rounding_flags);
 
     return Clicked;
 }

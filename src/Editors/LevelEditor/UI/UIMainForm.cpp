@@ -368,7 +368,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 	ImGui::PopStyleColor();
 
 	// Параметры таблицы, которые может настроить пользователь
-	static ImVec2 cellPadding = ImVec2(ToolbarPadding * 0.5f, ToolbarPadding); // Отступы внутри ячеек
+	static ImVec2 cellPadding = ImVec2(ToolbarPadding, ToolbarPadding); // Отступы внутри ячеек
 	static ImVec2 minColumnWidth = ImVec2(GUIManager->ScaleByDpi(100), 0); // Минимальная ширина колонок (0 = авто)
 	static bool stretchColumns = true; // Растягивать ли колонки
 
@@ -438,7 +438,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 	};
 
 	// Настройки флагов таблицы
-	ImGuiTableFlags tableFlags = ImGuiTableFlags_Resizable | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ContextMenuInBody | ImGuiTableFlags_NoBordersInBodyUntilResize;
+	ImGuiTableFlags tableFlags = ImGuiTableFlags_Resizable | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ContextMenuInBody;
 
 	// Применяем отступы в ячейках
 	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, cellPadding);
@@ -474,6 +474,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 		ImGui::SameLine();
 		DrawActionButton("##DrawRenderToolBar620", m_tScale, etaScale, "Scale", ImDrawFlags_RoundCornersRight);
 		ImGui::SameLine();
+		ImGui::EndGroup();
 
 		ImGui::TableSetColumnIndex(2);
 		ImGui::BeginGroup();
@@ -485,15 +486,14 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 		const ETAction action = LTools->GetAction();
 		ImGui::BeginDisabled(action == etaScale || action == etaSelect || action == etaAdd);
 
-		bool UseLocal = !!imManipulator.MatrixMode;
+		bool UseLocal = imManipulator.MatrixMode;
 		ref_texture& CurrentCoordsView = UseLocal ? TransformLocalOrWorld2 : TransformLocalOrWorld;
 		if (XRay::ImGui::ToolbarIconButton("##LocalOrWorldTransform", CurrentCoordsView->get_SRView()->GetRawSRV(), &UseLocal, ImDrawFlags_RoundCornersRight))
 		{
-			imManipulator.MatrixMode = UseLocal;
+			imManipulator.MatrixMode = !UseLocal;
 		}
 
 		ImGui::EndDisabled();
-		ImGui::EndGroup();
 		ImGui::EndGroup();
 
 		// Группа привязок
