@@ -86,13 +86,14 @@ void INetQueue::Release()
 	//---------------------------------------------
 	size_t tmp_time = CPU::GetTickCount() - 60000;
 	size_t size = unused.size();
-	ready.front()->B.count = 0;
+	auto ElemPtr = ready.front();
+	ElemPtr->B.data.clear();
 	if ((LastTimeCreate < tmp_time) && (size > 32))
 	{
-		xr_delete(ready.front());
+		xr_delete(ElemPtr);
 	}
 	else
-		unused.push_back(ready.front());
+		unused.push_back(ElemPtr);
 	//---------------------------------------------	
 	ready.pop_front();
 }

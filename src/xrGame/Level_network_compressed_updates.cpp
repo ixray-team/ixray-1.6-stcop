@@ -6,6 +6,9 @@
 
 void CLevel::ProcessCompressedUpdate(NET_Packet& P, u8 const compress_type)
 {
+	constexpr u32 Coeff = 2;
+	constexpr u32 FinalSize = NET_PacketSizeLimit*Coeff;
+	thread_local xr_vector<BYTE> Pool(FinalSize);
 	NET_Packet	uncompressed_packet;
 	u16 next_size;
 	P.r_u16(next_size);
@@ -14,34 +17,40 @@ void CLevel::ProcessCompressedUpdate(NET_Packet& P, u8 const compress_type)
 	{
 		if (compress_type & eto_ppmd_compression)
 		{
-			R_ASSERT(m_trained_stream);			
-			uncompressed_packet.B.count = ppmd_trained_decompress(
-				uncompressed_packet.B.data,
-				sizeof(uncompressed_packet.B.data),
-				P.B.data + P.r_tell(),
+			R_ASSERT(m_trained_stream);
+			auto UncompressedSize = ppmd_trained_decompress(
+				Pool.data(),
+				Pool.size(),
+				P.B.data.data() + P.r_tell(),
 				next_size,
 				m_trained_stream
-			);
+				);
+			I_ASSERT_M(UncompressedSize <= FinalSize, "Not enough pool size for packet decompression: pool size [%d], decompressed size [%d]", FinalSize, UncompressedSize);
+			uncompressed_packet.B.data.resize(UncompressedSize);
+			CopyMemory(uncompressed_packet.B.data.data(), Pool.data(), UncompressedSize);
 		} else if (compress_type & eto_lzo_compression)
 		{
 			R_ASSERT(m_lzo_dictionary.data);
-			uncompressed_packet.B.count = sizeof(uncompressed_packet.B.data);
+			lzo_uint UncompressedSize = FinalSize;
 			lzo_decompress_dict(
-				P.B.data + P.r_tell(),
+				P.B.data.data() + P.r_tell(),
 				next_size,
-				uncompressed_packet.B.data,
-				(lzo_uint*)&uncompressed_packet.B.count,
+				Pool.data(),
+				&UncompressedSize,
 				m_lzo_working_memory,
 				m_lzo_dictionary.data,
 				m_lzo_dictionary.size
 			);
+			I_ASSERT_M(UncompressedSize <= FinalSize, "Not enough pool size for packet decompression: pool size [%d], decompressed size [%d]", FinalSize, UncompressedSize);
+			uncompressed_packet.B.data.resize(UncompressedSize);
+			CopyMemory(uncompressed_packet.B.data.data(), Pool.data(), UncompressedSize);
 		} else
 		{
 			NODEFAULT;
 		}
 		
-		VERIFY2(uncompressed_packet.B.count <= sizeof(uncompressed_packet.B.data),
-			"stack owerflow after decompressing");
+		//VERIFY2(uncompressed_packet.B.count <= sizeof(uncompressed_packet.B.data),
+		//	"stack owerflow after decompressing");
 
 		P.r_seek(P.r_tell() + next_size);
 		uncompressed_packet.r_seek(0);
