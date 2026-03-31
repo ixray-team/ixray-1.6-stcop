@@ -90,8 +90,8 @@ void CLevelSpawnConstructor::init								()
 CSE_Abstract *CLevelSpawnConstructor::create_object						(IReader *chunk)
 {
 	NET_Packet				net_packet;
-	net_packet.B.count		= chunk->length();
-	chunk->r				(net_packet.B.data,net_packet.B.count);
+	net_packet.B.data.resize(chunk->length());
+	chunk->r				(net_packet.B.data.data(),net_packet.B.data.size());
 //	we do not need to close chunk since we iterate on them
 //	chunk->close			();
 	u16						ID;

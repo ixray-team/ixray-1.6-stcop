@@ -1,12 +1,10 @@
-#ifndef _INCDEF_NETUTILS_H_
-#define _INCDEF_NETUTILS_H_
 #pragma once
 
 #include "client_id.h"
 
 #pragma pack(push,1)
 
-const	u32			NET_PacketSizeLimit	= 16*1024;
+constexpr u32 NET_PacketSizeLimit	= 16*1024;
 
 struct XRCORE_API IIniFileStream
 {
@@ -60,10 +58,63 @@ if(inistream)\
 }
 #endif
 
+// Если это не сработает - ну это пиздец...
+class NET_Packet_byte_vector_pool // Попробовать сделать пулл буферов, мб деаллокация починится и перф улучшится
+{
+	xr_map<size_t, xr_queue<BYTE*>> buffers;
+	xrCriticalSection mutex;
+	
+	NET_Packet_byte_vector_pool() = default;
+
+	IC size_t CalculateSize(size_t DesiredSize)
+	{
+		auto Div = (DesiredSize / NET_PacketSizeLimit) + (DesiredSize != NET_PacketSizeLimit);
+		return Div * NET_PacketSizeLimit;
+	}
+	
+public:
+	~NET_Packet_byte_vector_pool();
+
+	NET_Packet_byte_vector_pool(NET_Packet_byte_vector_pool&) = delete;
+	NET_Packet_byte_vector_pool(NET_Packet_byte_vector_pool&&) = delete;
+	NET_Packet_byte_vector_pool& operator=(NET_Packet_byte_vector_pool&) = delete;
+	NET_Packet_byte_vector_pool& operator=(NET_Packet_byte_vector_pool&&) = delete;
+
+	static NET_Packet_byte_vector_pool& GetInstance();
+
+	void Allocate(BYTE*& Target, size_t& GivenSize, size_t DesiredSize);
+	void Deallocate(BYTE*& Target, size_t& BufferSize);
+};
+
+class XRCORE_API NET_Packet_byte_vector
+{
+	BYTE* Buff = nullptr;
+	size_t BuffSize = 0;
+	size_t UsedSize = 0;
+
+public:
+	NET_Packet_byte_vector() = default;
+	~NET_Packet_byte_vector();
+
+	NET_Packet_byte_vector(const NET_Packet_byte_vector& other);
+	NET_Packet_byte_vector& operator=(const NET_Packet_byte_vector& other);
+	NET_Packet_byte_vector(NET_Packet_byte_vector&& other) noexcept;
+	NET_Packet_byte_vector& operator=(NET_Packet_byte_vector&& other) noexcept;
+
+	void reserve(size_t size);
+	void resize(size_t size);
+
+	IC BYTE* data() const { return Buff; }
+	IC void clear(){UsedSize = 0;}
+	IC size_t size() const { return UsedSize; }
+	
+};
+
 struct	NET_Buffer
 {
-	BYTE	data	[NET_PacketSizeLimit];
-	u32		count;
+	//xr_vector<BYTE>	data;
+	NET_Packet_byte_vector data;
+	NET_Buffer() { data.reserve(NET_PacketSizeLimit);}
 };
 
 class XRCORE_API NET_Packet
@@ -73,8 +124,8 @@ public:
 
     void            construct( const void* data, unsigned size )
                     {
-                        memcpy( B.data, data, size );
-                        B.count = size;
+    					B.data.resize(size);
+                        memcpy(B.data.data(), data, size);
                     }
                     
 	NET_Buffer		B;
@@ -84,8 +135,8 @@ public:
 public:
 	NET_Packet			():inistream(nullptr),w_allow(true)	{}
 	// writing - main
-	IC void write_start	()				{	B.count=0;				INI_W(move_begin());}
-	IC void	w_begin		( u16 type	)	{	B.count=0;	w_u16(type);}
+	IC void write_start	()				{	B.data.clear();				INI_W(move_begin());}
+	IC void	w_begin		( u16 type	)	{	B.data.clear();	w_u16(type);}
 
 	struct W_guard{
 		bool*	guarded;
@@ -96,10 +147,9 @@ public:
 	{
 		R_ASSERT	(inistream==NULL || w_allow);
 		VERIFY		(p && count);
-		VERIFY		(B.count + count < NET_PacketSizeLimit);
-		CopyMemory(&B.data[B.count],p,count);
-		B.count		+= count;
-		VERIFY		(B.count<NET_PacketSizeLimit);
+		auto OldSize = B.data.size();
+		B.data.resize(OldSize+count); // TODO: Will this trigger frequent reallocations?
+		CopyMemory(B.data.data()+OldSize, p, count);
 	}
 
 	// read/write operators
@@ -121,7 +171,7 @@ public:
 	}
 
 	void w_seek	(u32 pos, const void* p, u32 count);
-	IC u32	w_tell	()						{ return B.count; }
+	IC u32	w_tell	()						{ return B.data.size(); }
 
 	// writing - utilities
 	IC void	w_float		( float a       )	{ W_guard g(&w_allow); w(&a,4);				INI_W(w_float(a));		}			// float
@@ -230,9 +280,10 @@ public:
 	{
 		R_ASSERT	(inistream==NULL);
 		VERIFY		(p && count);
-		CopyMemory	(p,&B.data[r_pos],count);
+		I_ASSERT_M(B.data.size() >= r_pos + count, "NET_Packet invalid read action: current read pos [%d], read size [%d], containter size [%d]", r_pos, count, B.data.size());
+		CopyMemory	(p,B.data.data() + r_pos,count);
 		r_pos		+= count;
-		VERIFY		(r_pos<=B.count);
+		VERIFY		(r_pos<=B.data.size());
 	}
 	bool		r_eof			();
 	u32			r_elapsed		();
@@ -448,5 +499,3 @@ inline NET_Packet& NET_Packet::operator>><float>(float& value)
 }
 
 #pragma pack(pop)
-
-#endif /*_INCDEF_NETUTILS_H_*/

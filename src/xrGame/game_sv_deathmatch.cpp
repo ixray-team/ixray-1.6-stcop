@@ -1438,9 +1438,9 @@ void	game_sv_Deathmatch::Send_EventPack_for_AnomalySet	(u32 AnomalySet, u8 Event
 		u_EventGen		(P,GE_ZONE_STATE_CHANGE,ID);
 		P.w_u8			(u8(Event)); //eZoneStateDisabled
 		//-----------------------------------
-		EventPack.w_u8(u8(P.B.count));
-		EventPack.w(&P.B.data, P.B.count);
-	};
+		EventPack.w_u8(u8(P.B.data.size()));
+		EventPack.w(P.B.data.data(), P.B.data.size());
+	}
 	u_EventSend(EventPack);
 };
 
@@ -1588,12 +1588,12 @@ bool	game_sv_Deathmatch::OnTouch			(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID
 						
 						m_server->Perform_transfer(PacketReject, PacketTake, e_child_item, e_what, e_who);
 
-						EventPack.w_u8(u8(PacketReject.B.count));
-						EventPack.w(&PacketReject.B.data, PacketReject.B.count);
-						EventPack.w_u8(u8(PacketTake.B.count));
-						EventPack.w(&PacketTake.B.data, PacketTake.B.count);
+						EventPack.w_u8(u8(PacketReject.B.data.size()));
+						EventPack.w(PacketReject.B.data.data(), PacketReject.B.data.size());
+						EventPack.w_u8(u8(PacketTake.B.data.size()));
+						EventPack.w(PacketTake.B.data.data(), PacketTake.B.data.size());
 					}
-					if (EventPack.B.count > 2)	u_EventSend(EventPack);
+					if (EventPack.B.data.size() > 2)	u_EventSend(EventPack);
 				}
 				//-------------------------------
 				//destroy the BAG
@@ -1665,13 +1665,13 @@ void game_sv_Deathmatch::OnDetach(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID e
 		for(auto Item : to_transfer)
 		{
 			m_server->Perform_transfer		(PacketReject, PacketTake, Item, e_parent, e_entity);
-			EventPack.w_u8					(u8(PacketReject.B.count));
-			EventPack.w						(&PacketReject.B.data, PacketReject.B.count);
-			EventPack.w_u8					(u8(PacketTake.B.count));
-			EventPack.w						(&PacketTake.B.data, PacketTake.B.count);
+			EventPack.w_u8					(u8(PacketReject.B.data.size()));
+			EventPack.w						(PacketReject.B.data.data(), PacketReject.B.data.size());
+			EventPack.w_u8					(u8(PacketTake.B.data.size()));
+			EventPack.w						(PacketTake.B.data.data(), PacketTake.B.data.size());
 		}
 
-		if (EventPack.B.count > 2)	
+		if (EventPack.B.data.size() > 2)	
 			u_EventSend						(EventPack);
 
 		std::ranges::for_each(to_reject,
@@ -1971,8 +1971,8 @@ void game_sv_Deathmatch::Send_Anomaly_States(ClientID id_who)
 			
 			P.w_u8			(u8(AnomalyState));
 			//-----------------------------------
-			EventPack.w_u8(u8(P.B.count));
-			EventPack.w(&P.B.data, P.B.count);
+			EventPack.w_u8(u8(P.B.data.size()));
+			EventPack.w(P.B.data.data(), P.B.data.size());
 		};
 	};
 

@@ -646,12 +646,12 @@ bool game_sv_TeamDeathmatch::OnTouchItem(CSE_ActorMP *actor, CSE_Abstract *item)
 				
 				m_server->Perform_transfer(PacketReject, PacketTake, e_child_item, item, actor);
 
-				EventPack.w_u8(u8(PacketReject.B.count));
-				EventPack.w(&PacketReject.B.data, PacketReject.B.count);
-				EventPack.w_u8(u8(PacketTake.B.count));
-				EventPack.w(&PacketTake.B.data, PacketTake.B.count);
+				EventPack.w_u8(u8(PacketReject.B.data.size()));
+				EventPack.w(PacketReject.B.data.data(), PacketReject.B.data.size());
+				EventPack.w_u8(u8(PacketTake.B.data.size()));
+				EventPack.w(PacketTake.B.data.data(), PacketTake.B.data.size());
 			}
-			if (EventPack.B.count > 2)
+			if (EventPack.B.data.size() > 2)
 				u_EventSend(EventPack);
 		}
 		//-------------------------------
@@ -713,13 +713,13 @@ void game_sv_TeamDeathmatch::OnDetachItem(CSE_ActorMP *actor, CSE_Abstract *item
 		for(auto Item : to_transfer)
 		{
 			m_server->Perform_transfer(PacketReject, PacketTake, Item, actor, item);
-			EventPack.w_u8(u8(PacketReject.B.count));
-			EventPack.w(&PacketReject.B.data, PacketReject.B.count);
-			EventPack.w_u8(u8(PacketTake.B.count));
-			EventPack.w(&PacketTake.B.data, PacketTake.B.count);
+			EventPack.w_u8(u8(PacketReject.B.data.size()));
+			EventPack.w(PacketReject.B.data.data(), PacketReject.B.data.size());
+			EventPack.w_u8(u8(PacketTake.B.data.size()));
+			EventPack.w(PacketTake.B.data.data(), PacketTake.B.data.size());
 		}
 		
-		if (EventPack.B.count > 2)	
+		if (EventPack.B.data.size() > 2)	
 			u_EventSend(EventPack);
 
 		std::for_each(to_destroy.begin(), to_destroy.end(),
