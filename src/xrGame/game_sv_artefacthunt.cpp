@@ -1151,7 +1151,7 @@ void	game_sv_ArtefactHunt::MoveAllAlivePlayers			()
 		alife_players_teleporter()
 		{
 			AliveCount = 0;
-			tmpP.B.count = 0;	
+			tmpP.B.data.clear();	
 		}
 		
 		void operator()(IClient* client)
@@ -1183,7 +1183,7 @@ void	game_sv_ArtefactHunt::MoveAllAlivePlayers			()
 			m_owner->u_EventGen(P, GE_ACTOR_MAX_POWER, ps->GameID);
 			m_server->SendTo(l_pC->ID,P,net_flags(true,true));		
 			//------------------------------------------------
-			P.B.count = 0;
+			P.B.data.clear();
 			tmpP << pA->ID;
 			tmpP.w_vec3(pA->o_Position);
 			tmpP.w_vec3(pA->o_Angle);
@@ -1203,7 +1203,7 @@ void	game_sv_ArtefactHunt::MoveAllAlivePlayers			()
 	NET_Packet MovePacket;
 	MovePacket.w_begin(M_MOVE_PLAYERS);
 	MovePacket.w_u8(tmp_functor.AliveCount);
-	MovePacket.w(&tmp_functor.tmpP.B.data, tmp_functor.tmpP.B.count);
+	MovePacket.w(tmp_functor.tmpP.B.data.data(), tmp_functor.tmpP.B.data.size());
 
 	m_server->SendBroadcast		(BroadcastCID,MovePacket, net_flags(true, true));	
 };
@@ -1243,7 +1243,7 @@ void	game_sv_ArtefactHunt::ReplicatePlayersStateToPlayer(ClientID CID)
 		player_replicator()
 		{
 			AliveCount = 0;
-			tmpP.B.count = 0;
+			tmpP.B.data.clear();
 		}
 
 		void operator()(IClient* client)
@@ -1258,7 +1258,7 @@ void	game_sv_ArtefactHunt::ReplicatePlayersStateToPlayer(ClientID CID)
 			if(!pA)			return;
 			//-----------------------------------------------
 			NET_Packet P;
-			P.B.count = 0;
+			P.B.data.clear();
 			tmpP.w_u16(pA->ID);
 			tmpP.w_vec3(pA->o_Position);
 			tmpP.w_vec3(pA->o_Angle);
@@ -1272,7 +1272,7 @@ void	game_sv_ArtefactHunt::ReplicatePlayersStateToPlayer(ClientID CID)
 	NET_Packet MovePacket;
 	MovePacket.w_begin(M_MOVE_PLAYERS);
 	MovePacket.w_u8(tmp_functor.AliveCount);
-	MovePacket.w(&tmp_functor.tmpP.B.data, tmp_functor.tmpP.B.count);
+	MovePacket.w(tmp_functor.tmpP.B.data.data(), tmp_functor.tmpP.B.data.size());
 	
 	m_server->SendTo	(CID,MovePacket, net_flags(true, true));	
 };

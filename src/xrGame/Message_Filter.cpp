@@ -65,8 +65,8 @@ void message_filter::check_new_data	(NET_Packet & packet)
 		NET_Packet tmp_packet;
 		while (!packet.r_eof())
 		{
-			tmp_packet.B.count = packet.r_u8();
-			packet.r	(tmp_packet.B.data, tmp_packet.B.count);
+			tmp_packet.B.data.resize(packet.r_u8());
+			packet.r(tmp_packet.B.data.data(), tmp_packet.B.data.size());
 			packet_mtype.import(tmp_packet);
 			
 			R_ASSERT2(packet_mtype.msg_type != M_EVENT_PACK, "M_EVENT_PACK in M_EVENT_PACK");

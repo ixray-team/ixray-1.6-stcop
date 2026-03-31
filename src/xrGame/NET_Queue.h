@@ -62,8 +62,8 @@ public:
 	}
 	void				implication	(NET_Packet& P) const
 	{
-		CopyMemory	(P.B.data,&*data.begin(),(u32)data.size());
-		P.B.count		= (u32)data.size();
+		P.B.data.resize(data.size());
+		CopyMemory(P.B.data.data(), data.data(), data.size());
 		P.r_pos			= 0;
 	}
 };
