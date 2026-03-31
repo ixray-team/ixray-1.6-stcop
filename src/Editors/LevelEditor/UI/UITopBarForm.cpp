@@ -62,14 +62,16 @@ void UITopBarForm::Draw()
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.f);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(ToolbarPadding, 0));
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
-	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(ToolbarPadding * 0.5f, ToolbarPadding));
+	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(ToolbarPadding, ToolbarPadding));
 	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
 	ImGui::PushStyleColor(ImGuiCol_Button, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToolbarButtonTint).Value);
 	ImGui::PushStyleColor(ImGuiCol_WindowBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelBorderTint).Value);
 
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, { ButtonSize, ButtonSize + ToolbarPadding * 2 });
 	if (ImGui::Begin("TOOLBAR", NULL, window_flags))
 	{
-		if (ImGui::BeginTable("##ToolbarTable", 10, ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ContextMenuInBody | ImGuiTableFlags_Hideable | ImGuiTableFlags_NoBordersInBodyUntilResize))
+		ImGui::PopStyleVar(); // WindowMinSize
+		if (ImGui::BeginTable("##ToolbarTable", 10, ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ContextMenuInBody | ImGuiTableFlags_Hideable))
 		{
 			ImGui::TableSetupColumn("Actions", ImGuiTableColumnFlags_WidthFixed);
 			ImGui::TableSetupColumn("File");
