@@ -17,17 +17,175 @@ u32 NET_Packet::r_begin			( u16& type	)	// returns time of receiving
 	return		timeReceive;
 }
 
+NET_Packet_byte_vector_pool::~NET_Packet_byte_vector_pool()
+{
+	for (auto& elem : buffers)
+	{
+		while (!elem.second.empty())
+		{
+			auto buff = elem.second.front();
+			xr_delete(buff);
+			elem.second.pop();
+		}
+	}
+}
+
+NET_Packet_byte_vector_pool& NET_Packet_byte_vector_pool::GetInstance()
+{
+	static NET_Packet_byte_vector_pool instance;
+	return instance;
+}
+
+void NET_Packet_byte_vector_pool::Allocate(BYTE*& Target, size_t& GivenSize, size_t DesiredSize)
+{
+	if (!IVERIFY(!Target))
+	{
+		Deallocate(Target, GivenSize);
+	}
+
+	GivenSize = CalculateSize(DesiredSize);
+	xrCriticalSectionGuard g(mutex);
+	auto Slot = buffers.find(GivenSize);
+	if (Slot == buffers.end() || Slot->second.empty())
+	{
+		Target = new BYTE[GivenSize];
+	} else
+	{
+		Target = Slot->second.front();
+		Slot->second.pop();
+	}
+}
+
+void NET_Packet_byte_vector_pool::Deallocate(BYTE*& Target, size_t& BufferSize)
+{
+	if (!IVERIFY(Target))
+	{
+		return;
+	}
+
+	std::memset(Target, 0, BufferSize);
+
+	xrCriticalSectionGuard g(mutex);
+	auto Slot = buffers.find(BufferSize);
+	if (Slot == buffers.end())
+	{
+		buffers[BufferSize].push(Target);
+	} else
+	{
+		Slot->second.push(Target);
+	}
+	Target = nullptr;
+	BufferSize = 0;
+}
+
+NET_Packet_byte_vector::~NET_Packet_byte_vector()
+{
+	if (Buff)
+	{
+		NET_Packet_byte_vector_pool::GetInstance().Deallocate(Buff, BuffSize);
+	}
+}
+
+NET_Packet_byte_vector::NET_Packet_byte_vector(const NET_Packet_byte_vector& other)
+{
+	if (other.Buff)
+	{
+		NET_Packet_byte_vector_pool::GetInstance().Allocate(Buff, BuffSize, other.BuffSize);
+		std::memcpy(Buff, other.Buff, other.BuffSize);
+		UsedSize = other.UsedSize;
+	}
+}
+
+NET_Packet_byte_vector& NET_Packet_byte_vector::operator=(const NET_Packet_byte_vector& other)
+{
+	if (this == &other)
+	{
+		return *this;
+	}
+	if (Buff)
+	{
+		NET_Packet_byte_vector_pool::GetInstance().Deallocate(Buff, BuffSize);
+	}
+	if (other.Buff)
+	{
+		NET_Packet_byte_vector_pool::GetInstance().Allocate(Buff, BuffSize, other.BuffSize);
+		std::memcpy(Buff, other.Buff, other.BuffSize);
+		UsedSize = other.UsedSize;
+	} else
+	{
+		BuffSize = 0;
+		UsedSize = 0;
+	}
+	return *this;
+}
+
+NET_Packet_byte_vector::NET_Packet_byte_vector(NET_Packet_byte_vector&& other) noexcept
+{
+	Buff = other.Buff;
+	BuffSize = other.BuffSize;
+	UsedSize = other.UsedSize;
+	other.Buff = nullptr;
+	other.BuffSize = 0;
+	other.UsedSize = 0;
+}
+
+NET_Packet_byte_vector& NET_Packet_byte_vector::operator=(NET_Packet_byte_vector&& other) noexcept
+{
+	if (Buff)
+	{
+		NET_Packet_byte_vector_pool::GetInstance().Deallocate(Buff, BuffSize);
+	}
+	Buff = other.Buff;
+	BuffSize = other.BuffSize;
+	UsedSize = other.UsedSize;
+	other.Buff = nullptr;
+	other.BuffSize = 0;
+	other.UsedSize = 0;
+	return *this;
+}
+
+void NET_Packet_byte_vector::reserve(size_t size)
+{
+	if (!Buff)
+	{
+		NET_Packet_byte_vector_pool::GetInstance().Allocate(Buff, BuffSize, size);
+		return;
+	}
+	if (BuffSize < size)
+	{
+		BYTE* NewBuff = nullptr;
+		size_t NewBuffSize = size;
+		NET_Packet_byte_vector_pool::GetInstance().Allocate(NewBuff, NewBuffSize, size);
+		std::memcpy(NewBuff, Buff, UsedSize);
+		NET_Packet_byte_vector_pool::GetInstance().Deallocate(Buff, BuffSize);
+		Buff = NewBuff;
+		BuffSize = NewBuffSize;
+	}
+	BuffSize = size;
+}
+
+void NET_Packet_byte_vector::resize(size_t size)
+{
+	if (!Buff || BuffSize < size)
+	{
+		reserve(size);
+		UsedSize = size;
+		return;
+	}
+	UsedSize = size;
+}
+
 void NET_Packet::w_seek	(u32 pos, const void* p, u32 count)	
 {
-	VERIFY(p && count && (pos+count<=B.count)); 
-	CopyMemory(&B.data[pos],p,count);	
+	VERIFY(p && count && (pos+count<=B.data.size())); 
+	CopyMemory(B.data.data() + pos,p,count);	
 //.	INI_ASSERT		(w_seek)
 }
 
 void NET_Packet::r_seek	(u32 pos)
 {
 	INI_ASSERT		(r_seek)
-	VERIFY			(pos < B.count);
+	VERIFY			(pos < B.data.size());
 	r_pos			= pos;
 }
 
@@ -40,20 +198,20 @@ u32 NET_Packet::r_tell()
 bool NET_Packet::r_eof()
 {
 	INI_ASSERT		(r_eof)
-	return			(r_pos>=B.count);
+	return			(r_pos>=B.data.size());
 }
 
 u32 NET_Packet::r_elapsed()
 {
 	INI_ASSERT		(r_elapsed)
-	return			(B.count-r_pos);
+	return			(B.data.size()-r_pos);
 }
 
 void NET_Packet::r_advance(u32 size)		
 {
 	INI_ASSERT		(r_advance)
 	r_pos			+= size;	
-	VERIFY			(r_pos<=B.count);
+	VERIFY			(r_pos<=B.data.size());
 }
 
 // reading - utilities
@@ -284,7 +442,7 @@ void NET_Packet::r_stringZ(LPSTR S)
 {
 	if (!inistream)
 	{
-		const char* data = (const char*)(&B.data[r_pos]);
+		const char* data = (const char*)(B.data.data() + r_pos);
 		size_t	len = xr_strlen(data);
 		r(S, (u32)len + 1);
 	}
@@ -298,7 +456,7 @@ void NET_Packet::r_stringZ( xr_string& dest )
 {
  	if(!inistream)
 	{
-		dest			= (const char*)(&B.data[r_pos]);
+		dest			= (const char*)(B.data.data() + r_pos);
 		r_advance		(u32(dest.size()+1));
 	}else{
 		string4096		buff;
@@ -311,7 +469,7 @@ void NET_Packet::r_stringZ(shared_str& dest)
 {
  	if(!inistream)
 	{
-		dest			= (const char*)(&B.data[r_pos]);
+		dest			= (const char*)(B.data.data() + r_pos);
 		r_advance		(dest.size()+1);
 	}else{
 		string4096		buff;
@@ -324,7 +482,7 @@ void NET_Packet::skip_stringZ()
 {
 	if (!inistream)
 	{
-		const char*	data	= (const char*)(&B.data[r_pos]);
+		const char*	data	= (const char*)(B.data.data() + r_pos);
 		u32	len		= xr_strlen(data);
 		r_advance		(len + 1);
 	} else {
@@ -355,7 +513,7 @@ void NET_Packet::r_stringZ_s(LPSTR string, u32 const size)
 		return;
 	}
 
-	const char* data = (const char*)(B.data + r_pos);
+	const char* data = (const char*)(B.data.data() + r_pos);
 	u32 length = xr_strlen(data);
 	R_ASSERT2((length + 1) <= size, "buffer overrun");
 	r(string, length + 1);

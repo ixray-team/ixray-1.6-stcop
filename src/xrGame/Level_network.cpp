@@ -236,10 +236,12 @@ void CLevel::ClientSend()
 
 				pObj->net_Export			(P);
 
-				if (P.B.count>9)				
+				if (P.B.data.size()>9)				
 				{
 					if (!OnServer())
-						Send	(P, net_flags(false));
+					{
+						Send(P, net_flags(false));
+					}
 				}				
 			}			
 		}		
@@ -255,12 +257,12 @@ void CLevel::ClientSend()
 		return;
 	}
 	//-------------------------------------------------
-	while (1)
+	while (true)
 	{
 		P.w_begin						(M_UPDATE);
 		start	= Objects.net_Export	(&P, start, max_objects_size);
 
-		if (P.B.count>2)
+		if (P.B.data.size()>2)
 		{
 			Device.Statistic->TEST3.Begin();
 				Send	(P, net_flags(false));
@@ -294,7 +296,7 @@ void CLevel::ClientSave()
 		GO->net_Save(Packet);
 		Packet.w_chunk_close16(ChunkID);
 
-		if (Packet.B.count > 2)
+		if (Packet.B.data.size() > 2)
 		{
 			Send(Packet, net_flags(false));
 		}
@@ -404,7 +406,7 @@ bool CLevel::Connect2Server(const char* options)
 			if (CurTime > EndTime)
 			{
 				NET_Packet	P;
-				P.B.count = 0;
+				P.write_start();
 				P.r_pos = 0;
 
 				P.w_u8(0);
