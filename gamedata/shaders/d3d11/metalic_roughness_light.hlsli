@@ -19,25 +19,17 @@ float ComputeLightAttention(float3 PointToLight, float MinAttention)
 {
     return saturate(1.0f - dot(PointToLight, PointToLight) * MinAttention);
 }
-
-float getSquareFalloffAttenuation(float3 posToLight, float lightInvRadius) 
+// doenitz - improved attenuation function (with correct spelling  :))
+float ComputeLightAttenuation(float3 posToLight, float lightInvRadius2, float falloff)
 {
-    float distanceSquare = dot(posToLight, posToLight);
-    float factor = distanceSquare * lightInvRadius;
-    float smoothFactor = max(1.0 - factor * factor, 0.0);
-    return (smoothFactor * smoothFactor) / max(distanceSquare, 1e-4);
+    float distanceSqr = dot(posToLight, posToLight);
+    float s2 = distanceSqr * lightInvRadius2;
+    float smooth = max(1.0f - s2, 0.0f);
+    return (smooth * smooth) / (1.0f + falloff * s2);
 }
-
-float getSpotAngleAttenuation(float3 l, float3 lightDir,
-        float innerAngle, float outerAngle) {
-    // the scale and offset computations can be done CPU-side
-    float cosOuter = cos(outerAngle);
-    float spotScale = 1.0 / max(cos(innerAngle) - cosOuter, 1e-4);
-    float spotOffset = -cosOuter * spotScale;
-
-    float cd = dot(normalize(-lightDir), l);
-    float attenuation = clamp(cd * spotScale + spotOffset, 0.0, 1.0);
-    return attenuation * attenuation;
+float ComputeLightAttenuation(float3 posToLight, float lightInvRadius2)
+{
+    return ComputeLightAttenuation(posToLight, lightInvRadius2, 3.0f);
 }
 
 float GeometrySmithD(float NdotL, float NdotV, float Roughness)
