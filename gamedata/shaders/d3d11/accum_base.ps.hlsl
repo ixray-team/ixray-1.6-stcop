@@ -21,7 +21,7 @@ float4 main(p_volume I, float4 pos2d : SV_POSITION) : SV_Target
 	float3 LightDirection = normalize(O.PointReal.xyz - Ldynamic_pos.xyz);
     float3 Light = DirectLight(Ldynamic_color, LightDirection, O.Normal, O.View.xyz, O.Color, O.Metalness, O.Roughness, O.F0);
 
-    float3 Lightmap = ComputeLightAttention(Point.xyz - Ldynamic_pos.xyz, Ldynamic_pos.w);
+    float3 Lightmap = ComputeLightAttenuation(Point.xyz - Ldynamic_pos.xyz, Ldynamic_pos.w);
     //float3 Lightmap = getSquareFalloffAttenuation(Point.xyz - Ldynamic_pos.xyz, Ldynamic_pos.w);
     
     Point.xyz += O.Normal * 0.025f;
