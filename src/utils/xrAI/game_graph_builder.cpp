@@ -147,8 +147,8 @@ void CGameGraphBuilder::load_graph_points	(const float &start, const float &amou
 			chunk = reader->open_chunk_iterator(id,chunk)
 		)
 	{
-		net_packet.B.count	= chunk->length();
-		chunk->r			(net_packet.B.data,net_packet.B.count);
+		net_packet.B.data.resize(chunk->length());
+		chunk->r			(net_packet.B.data.data(),net_packet.B.data.size());
 		load_graph_point	(net_packet);
 	}
 	
