@@ -78,7 +78,7 @@ void CLevel::ClientReceive()
 		}
 		//-----------------------------------------------------
 		m_dwRPC++;
-		m_dwRPS += P->B.count;
+		m_dwRPS += P->B.data.size();
 		//-----------------------------------------------------
 		u16			m_type;
 		ALife::_OBJECT_ID ID;
@@ -113,13 +113,13 @@ void CLevel::ClientReceive()
 				NET_Packet	tmpP;
 				while (!P->r_eof())
 				{
-					tmpP.B.count = P->r_u8();
-					P->r(&tmpP.B.data, tmpP.B.count);
+					tmpP.B.data.resize(P->r_u8());
+					P->r(tmpP.B.data.data(), tmpP.B.data.size());
 					tmpP.timeReceive = P->timeReceive;
 
 					game_events->insert		(tmpP);
 					if (g_bDebugEvents)		ProcessGameEvents();
-				};			
+				}
 			}break;
 		case M_UPDATE:
 			{
