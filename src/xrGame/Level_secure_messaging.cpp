@@ -5,12 +5,16 @@
 void CLevel::OnSecureMessage	(NET_Packet & P)
 {
 	NET_Packet dec_packet;
-	dec_packet.B.count	= P.B.count - sizeof(u16) - sizeof(u32); // - r_begin - crypt_check_sum
-	P.r					(dec_packet.B.data, dec_packet.B.count);
-	u32 checksum		= secure_messaging::decrypt(dec_packet.B.data, dec_packet.B.count, m_secret_key);
+	dec_packet.B.data.resize(P.B.data.size() - sizeof(u16) - sizeof(u32)); // - r_begin - crypt_check_sum
+	P.r(dec_packet.B.data.data(), dec_packet.B.data.size());
+	u32 checksum		= secure_messaging::decrypt(dec_packet.B.data.data(), dec_packet.B.data.size(), m_secret_key);
 	u32 real_checksum	= 0;
-	P.r_u32				(real_checksum);
-	VERIFY				(checksum == real_checksum);	//cheater tries to change incoming data packet - need crash
+	P.r_u32(real_checksum);
+	if(!IVERIFY(checksum == real_checksum))
+	{
+		//cheater tries to change incoming data packet - need crash
+		// TODO: So, I don't need to trigger immediate crash?
+	}
 	game_events->insert	(dec_packet);					//if checksum != real_checksum will be delayed crash ...
 }
 
@@ -31,8 +35,8 @@ void CLevel::SecureSend	(NET_Packet& P, u32 dwFlags, u32 dwTimeout)
 	NET_Packet enc_packet;
 	
 	enc_packet.w_begin	(M_SECURE_MESSAGE);
-	u32 checksum		= secure_messaging::encrypt(P.B.data, P.B.count, m_secret_key);
-	enc_packet.w		(P.B.data, P.B.count);
+	u32 checksum		= secure_messaging::encrypt(P.B.data.data(), P.B.data.size(), m_secret_key);
+	enc_packet.w		(P.B.data.data(), P.B.data.size());
 	enc_packet.w_u32	(checksum);
 	Send				(enc_packet, dwFlags, dwTimeout);
 }

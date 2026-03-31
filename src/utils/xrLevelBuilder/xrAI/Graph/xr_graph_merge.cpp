@@ -214,8 +214,8 @@ public:
 			int i = 0;
 			for (; O; O = F->open_chunk_iterator(id,O))	{
 				NET_Packet							P;
-				P.B.count							= O->length();
-				O->r								(P.B.data,P.B.count);
+				P.B.data.resize(O->length());
+				O->r								(P.B.data.data(),P.B.data.size());
 				u16									ID;
 				P.r_begin							(ID);
 				R_ASSERT							(M_SPAWN==ID);
