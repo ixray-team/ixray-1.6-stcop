@@ -166,7 +166,7 @@ void BaseClient::_SendTo_LL(const void* data, u32 size, u32 flags, u32 timeout)
 
 void	BaseClient::Send(NET_Packet& packet, u32 dwFlags, u32 dwTimeout)
 {
-	MultipacketSender::SendPacket(packet.B.data, packet.B.count, dwFlags, dwTimeout);
+	MultipacketSender::SendPacket(packet.B.data.data(), packet.B.data.size(), dwFlags, dwTimeout);
 }
 
 void	BaseClient::Flush_Send_Buffer()

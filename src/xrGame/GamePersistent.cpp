@@ -674,12 +674,12 @@ void CGamePersistent::update_game_intro()
 	{
 		xr_delete				(m_intro);
 		Msg("intro_delete ::update_game_intro");
-		m_intro_event			= 0;
+		m_intro_event			= nullptr;
 	}
 	else
 	if(!m_intro)
 	{
-		m_intro_event			= 0;
+		m_intro_event			= nullptr;
 	}
 }
 
@@ -781,7 +781,7 @@ if (!g_pGameLevel)
 						VERIFY							(e);
 						CSE_ALifeCreatureActor*	s_actor = smart_cast<CSE_ALifeCreatureActor*>(e);
 						VERIFY							(s_actor);
-						for(auto ID : s_actor->children){
+						for(auto ID : s_actor->children)
 						{
 							CObject* obj = Level().Objects.net_Find(ID);
 							if(obj && Engine.Sheduler.Registered(obj))

@@ -351,8 +351,8 @@ void CSpawnPoint::SSpawnData::SaveStream(IWriter& F)
 	F.open_chunk		(SPAWNPOINT_CHUNK_SPAWNDATA);
 	NET_Packet 			Packet;
 	m_Data->Spawn_Write	(Packet,true);
-	F.w_u32				(Packet.B.count);
-	F.w					(Packet.B.data,Packet.B.count);
+	F.w_u32				(Packet.B.data.size());
+	F.w					(Packet.B.data.data(),Packet.B.data.size());
 	F.close_chunk		();
 }
 
@@ -367,8 +367,8 @@ bool CSpawnPoint::SSpawnData::LoadStream(IReader& F)
 
 	NET_Packet 			Packet;
 	R_ASSERT(F.find_chunk(SPAWNPOINT_CHUNK_SPAWNDATA));
-	Packet.B.count 		= F.r_u32();
-	F.r					(Packet.B.data,Packet.B.count);
+	Packet.B.data.resize(F.r_u32());
+	F.r(Packet.B.data.data(),Packet.B.data.size());
 	Create				(temp);
 	if (Valid())
 		if (!m_Data->Spawn_Read(Packet))
@@ -403,7 +403,7 @@ bool CSpawnPoint::SSpawnData::ExportGame(SExportStreams* F, CSpawnPoint* owner)
 
 	SExportStreamItem& tgt 		= (m_flags.test(eSDTypeRespawn))? F->spawn_rs : F->spawn;
 	tgt.stream.open_chunk		(tgt.chunk++);
-	tgt.stream.w				(Packet.B.data,Packet.B.count);
+	tgt.stream.w				(Packet.B.data.data(),Packet.B.data.size());
 	tgt.stream.close_chunk		();
 
 	return true;

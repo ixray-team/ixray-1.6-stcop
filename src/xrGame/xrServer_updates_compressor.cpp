@@ -14,7 +14,7 @@ last_updates_cache::last_updates_cache()
 		m_cache[i].first.m_eq_count		= 0;
 		m_cache[i].first.m_object_id	= 0;
 		m_cache[i].first.m_update_time	= 0;
-		m_cache[i].second.B.count		= 0;
+		m_cache[i].second.B.data.clear();
 	}
 }
 
@@ -24,15 +24,15 @@ u16 last_updates_cache::add_update			(u16 const entity_id, NET_Packet const & up
 	u32 current_time = Device.dwTimeGlobal;
 	if (!tmp_entity)
 	{
-		tmp_entity = search_most_expired(current_time, update.B.count);
+		tmp_entity = search_most_expired(current_time, update.B.data.size());
 		if (!tmp_entity)
 		{
 			return 0;
 		}		
 	}
 	tmp_entity->first.m_object_id	= entity_id;
-	if ((tmp_entity->second.B.count == update.B.count) &&
-		(!memcmp(tmp_entity->second.B.data, update.B.data, update.B.count)))
+	if ((tmp_entity->second.B.data.size() == update.B.data.size()) &&
+		(!memcmp(tmp_entity->second.B.data.data(), update.B.data.data(), update.B.data.size())))
 	{
 		++tmp_entity->first.m_eq_count;
 	} else
@@ -40,8 +40,8 @@ u16 last_updates_cache::add_update			(u16 const entity_id, NET_Packet const & up
 		tmp_entity->first.m_eq_count = 0;
 	}	
 	tmp_entity->first.m_update_time	= current_time;
-	CopyMemory(tmp_entity->second.B.data, update.B.data, update.B.count);
-	tmp_entity->second.B.count = update.B.count;
+	tmp_entity->second.B.data.resize(update.B.data.size());
+	CopyMemory(tmp_entity->second.B.data.data(), update.B.data.data(), update.B.data.size());
 	return tmp_entity->first.m_eq_count;
 }
 
@@ -79,13 +79,13 @@ last_updates_cache::last_update_t*	last_updates_cache::search_most_expired(u32 c
 		{
 			min_time = &tmp_entity;
 		} else if ((curr_time == mtime) &&
-			(tmp_entity.second.B.count < min_time->second.B.count))
+			(tmp_entity.second.B.data.size() < min_time->second.B.data.size()))
 		{
 			min_time = &tmp_entity;
 		}
 	}
 	if ((min_time->first.m_update_time == current_time) &&
-		(min_time->second.B.count >= update_size))
+		(min_time->second.B.data.size() >= update_size))
 	{
 		return nullptr;
 	}
@@ -94,7 +94,8 @@ last_updates_cache::last_update_t*	last_updates_cache::search_most_expired(u32 c
 
 server_updates_compressor::server_updates_compressor()
 {
-	u32 const need_to_reserve = (start_compress_buffer_size / sizeof(m_acc_buff.B.data)) + 1;
+	//u32 const need_to_reserve = (start_compress_buffer_size / m_acc_buff.B.data.size()) + 1;
+	u32 const need_to_reserve = (start_compress_buffer_size / NET_PacketSizeLimit) + 1;
 	for (u32 i = 0; i < need_to_reserve; ++i)
 	{
 		m_ready_for_send.push_back(new NET_Packet());
@@ -200,44 +201,48 @@ void server_updates_compressor::flush_accumulative_buffer()
 	{
 		Device.Statistic->netServerCompressor.Begin();
 		R_ASSERT(m_trained_stream);
+		m_compress_buf.B.data.resize(m_acc_buff.B.data.size());
 		if (g_sv_traffic_optimization_level & eto_ppmd_compression)
 		{
-			m_compress_buf.B.count = ppmd_trained_compress(
-				m_compress_buf.B.data,
-				sizeof(m_compress_buf.B.data),
-				m_acc_buff.B.data,
-				m_acc_buff.B.count,
+			auto NewSize = ppmd_trained_compress(
+				m_compress_buf.B.data.data(),
+				m_compress_buf.B.data.size(),
+				m_acc_buff.B.data.data(),
+				m_acc_buff.B.data.size(),
 				m_trained_stream
 			);
+			m_compress_buf.B.data.resize(NewSize);
 		} else
 		{
-			m_compress_buf.B.count = sizeof(m_compress_buf.B.data);
+			m_compress_buf.B.data.resize(m_acc_buff.B.data.size());
+			auto NewSize = m_compress_buf.B.data.size();
 			lzo_compress_dict(
-				m_acc_buff.B.data,
-				m_acc_buff.B.count,
-				m_compress_buf.B.data,
-				(lzo_uint*)&m_compress_buf.B.count,
+				m_acc_buff.B.data.data(),
+				m_acc_buff.B.data.size(),
+				m_compress_buf.B.data.data(),
+				&NewSize,
 				m_lzo_working_memory,
 				m_lzo_dictionary.data, m_lzo_dictionary.size
 			);
+			m_compress_buf.B.data.resize(NewSize);
 		}
 		Device.Statistic->netServerCompressor.End();
 		//(sizeof(u16)*2 + 1) ::= w_begin(2) + compress_type(1) + zero_end(2)
-		if (dst_packet->w_tell() + m_compress_buf.B.count + (sizeof(u16)*2 + 1) < sizeof(dst_packet->B.data))
+		if (dst_packet->w_tell() + m_compress_buf.B.data.size() + (sizeof(u16)*2 + 1) < dst_packet->B.data.size())
 		{
-			dst_packet->w_u16(static_cast<u16>(m_compress_buf.B.count));
-			dst_packet->w(m_compress_buf.B.data, m_compress_buf.B.count);
+			dst_packet->w_u16(static_cast<u16>(m_compress_buf.B.data.size()));
+			dst_packet->w(m_compress_buf.B.data.data(), m_compress_buf.B.data.size());
 			m_acc_buff.write_start();
 			return;
 		}
 		dst_packet->w_u16(0);
 		dst_packet = goto_next_dest();
-		dst_packet->w_u16(static_cast<u16>(m_compress_buf.B.count));
-		dst_packet->w(m_compress_buf.B.data, m_compress_buf.B.count);
+		dst_packet->w_u16(static_cast<u16>(m_compress_buf.B.data.size()));
+		dst_packet->w(m_compress_buf.B.data.data(), m_compress_buf.B.data.size());
 		m_acc_buff.write_start();
 		return;
 	} 
-	dst_packet->w(m_acc_buff.B.data, m_acc_buff.B.count);
+	dst_packet->w(m_acc_buff.B.data.data(), m_acc_buff.B.data.size());
 	goto_next_dest();
 	m_acc_buff.w_begin(M_UPDATE_OBJECTS);
 }
@@ -253,11 +258,11 @@ void server_updates_compressor::write_update_for(u16 const enity, NET_Packet & u
 		}
 	}
 	//(sizeof(u16)*2 + 1) ::= w_begin(2) + compress_type(1) + zero_end(2)
-	if (m_acc_buff.w_tell() + update.w_tell() + (sizeof(u16)*2 + 1) >= sizeof(m_acc_buff.B.data))
+	if (m_acc_buff.w_tell() + update.w_tell() + (sizeof(u16)*2 + 1) >= m_acc_buff.B.data.size())
 	{
 		flush_accumulative_buffer();
 	}
-	m_acc_buff.w(update.B.data, update.B.count);
+	m_acc_buff.w(update.B.data.data(), update.B.data.size());
 }
 
 void server_updates_compressor::end_updates(send_ready_updates_t::const_iterator & b,
@@ -284,8 +289,8 @@ void server_updates_compressor::end_updates(send_ready_updates_t::const_iterator
 		VERIFY(dbg_update_bins_writer);
 		for (send_ready_updates_t::const_iterator i = b; i != e; ++i)
 		{
-			dbg_update_bins_writer->w_u16(static_cast<u16>((*i)->B.count));
-			dbg_update_bins_writer->w((*i)->B.data, (*i)->B.count);
+			dbg_update_bins_writer->w_u16(static_cast<u16>((*i)->B.data.size()));
+			dbg_update_bins_writer->w((*i)->B.data.data(), (*i)->B.data.size());
 		}
 	}
 }

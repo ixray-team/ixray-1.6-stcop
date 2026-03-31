@@ -69,9 +69,9 @@ bool CPhysicObject::net_Spawn(CSE_Abstract* DC)
 	if (DC->s_flags.is(M_SPAWN_UPDATE))
 	{
 		NET_Packet temp;
-		temp.B.count = 0;
+		temp.B.data.clear();
 		DC->UPDATE_Write(temp);
-		if (temp.B.count > 0)
+		if (temp.B.data.size() > 0)
 		{
 			temp.r_seek(0);
 			net_Import(temp);

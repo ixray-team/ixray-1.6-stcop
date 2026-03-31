@@ -25,8 +25,9 @@ void CServerEntityWrapper::save				(IWriter &stream)
 	stream.open_chunk		(0);
 
 	m_object->Spawn_Write	(net_packet,true);
-	stream.w_u16			(u16(net_packet.B.count));
-	stream.w				(net_packet.B.data,net_packet.B.count);
+	I_ASSERT_M(net_packet.B.data.size() <= u16(-1), "(Spawn_Write) Object [%s] contains more data than save data limit, current size [%d], max [%d]", m_object->name(), net_packet.B.data.size(), u16(-1));
+	stream.w_u16			(u16(net_packet.B.data.size()));
+	stream.w				(net_packet.B.data.data(),net_packet.B.data.size());
 	
 	stream.close_chunk		();
 
@@ -35,8 +36,9 @@ void CServerEntityWrapper::save				(IWriter &stream)
 
 	net_packet.w_begin		(M_UPDATE);
 	m_object->UPDATE_Write	(net_packet);
-	stream.w_u16			(u16(net_packet.B.count));
-	stream.w				(net_packet.B.data,net_packet.B.count);
+	I_ASSERT_M(net_packet.B.data.size() <= u16(-1), "(UPDATE_Write) Object [%s] contains more data than save data limit, current size [%d], max [%d]", m_object->name(), net_packet.B.data.size(), u16(-1));
+	stream.w_u16			(u16(net_packet.B.data.size()));
+	stream.w				(net_packet.B.data.data(),net_packet.B.data.size());
 
 //	u16						ID;
 //	net_packet.r_begin		(ID);

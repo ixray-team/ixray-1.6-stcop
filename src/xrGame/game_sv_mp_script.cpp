@@ -14,16 +14,18 @@ void game_sv_mp_script::SetHitParams (NET_Packet* P, float impulse, float power)
 {
 	u32 PowRPos = 16;
 	u32 ImpRPos = 34;
-	
-	u32 bk = P->B.count;
 
-	P->B.count	= PowRPos;	
+	
+	
+	u32 bk = P->B.data.size();
+
+	P->B.data.resize(PowRPos);	
 	P->w_float(power);
 
-	P->B.count	= ImpRPos;
+	P->B.data.resize(ImpRPos);
 	P->w_float(impulse);
 
-	P->B.count = bk;
+	P->B.data.resize(bk);
 }
 
 float game_sv_mp_script::GetHitParamsPower (NET_Packet* P)

@@ -74,7 +74,7 @@ private:
     struct
     Buffer
     {
-                    Buffer() : last_flags(0) { buffer.B.count = 0; }
+                    Buffer() : last_flags(0) { buffer.B.data.clear(); }
                     
         NET_Packet  buffer;
         u32         last_flags;

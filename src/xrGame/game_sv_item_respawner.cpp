@@ -373,8 +373,8 @@ void item_respawn_manager::respawn_level_items()
 		NET_Packet			P;
 		u32					S_id;
 		for (IReader *S = SP->open_chunk_iterator(S_id); S; S = SP->open_chunk_iterator(S_id,S)) {
-			P.B.count		= S->length();
-			S->r			(P.B.data,P.B.count);
+			P.B.data.resize(S->length());
+			S->r			(P.B.data.data(),P.B.data.size());
 			
 			u16				ID;
 			P.r_begin		(ID);

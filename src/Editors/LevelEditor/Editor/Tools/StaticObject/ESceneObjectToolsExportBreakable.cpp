@@ -155,7 +155,7 @@ bool ESceneObjectTool::ExportBreakableObjects(SExportStreams* F)
 					m_Data->Spawn_Write(Packet, true);
 
 					F->spawn.stream.open_chunk(F->spawn.chunk++);
-					F->spawn.stream.w(Packet.B.data, Packet.B.count);
+					F->spawn.stream.w(Packet.B.data.data(), Packet.B.data.size());
 					F->spawn.stream.close_chunk();
 					g_SEFactoryManager->destroy_entity(m_Data);
 				}
@@ -300,7 +300,7 @@ bool ESceneObjectTool::ExportClimableObjects(SExportStreams* F)
 						m_Data->Spawn_Write			(Packet,true);
 
 						F->spawn.stream.open_chunk	(F->spawn.chunk++);
-						F->spawn.stream.w			(Packet.B.data,Packet.B.count);
+						F->spawn.stream.w			(Packet.B.data.data(),Packet.B.data.size());
 						F->spawn.stream.close_chunk	();
 
 						if (s_draw_dbg)

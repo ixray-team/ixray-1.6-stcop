@@ -343,7 +343,7 @@ void xrServer::MakeUpdatePackets()
 			continue;
 		}
 
-		tmpPacket.B.count = 0;
+		tmpPacket.B.data.clear();
 
 		// write specific data
 		{
@@ -558,9 +558,9 @@ void xrServer::SendUpdatePacketsToAll()
 			for (update_iterator_t i = m_update_begin; i != m_update_end; ++i)
 			{
 				NET_Packet& P = **i;
-				if (P.B.count > 2)
+				if (P.B.data.size() > 2)
 				{
-					m_owner->SendTo_LL(client->ID, P.B.data, P.B.count, m_dwFlags);
+					m_owner->SendTo_LL(client->ID, P.B.data.data(), P.B.data.size(), m_dwFlags);
 				}
 			}
 		}
@@ -743,8 +743,8 @@ u32 xrServer::OnMessage(NET_Packet& P, ClientID sender) // Non-Zero means broadc
 			NET_Packet tmpP;
 			while (!P.r_eof())
 			{
-				tmpP.B.count = P.r_u8();
-				P.r(&tmpP.B.data, tmpP.B.count);
+				tmpP.B.data.resize(P.r_u8());
+				P.r(tmpP.B.data.data(), tmpP.B.data.size());
 
 				OnMessage(tmpP, sender);
 			};
@@ -1097,7 +1097,7 @@ void xrServer::SendBroadcast(ClientID exclude, NET_Packet& P, u32 dwFlags)
 			m_owner->SendTo_LL(client->ID, m_data, m_size, m_dwFlags);
 		}
 	};
-	ClientSenderFunctor temp_functor(this, P.B.data, P.B.count, dwFlags);
+	ClientSenderFunctor temp_functor(this, P.B.data.data(), P.B.data.size(), dwFlags);
 	net_players.ForFoundClientsDo(ClientExcluderPredicate(exclude), temp_functor);
 }
 //--------------------------------------------------------------------
@@ -1401,7 +1401,12 @@ void xrServer::AddDelayedPacket(NET_Packet& Packet, ClientID Sender)
 	m_aDelayedPackets.push_back(DelayedPacket());
 	DelayedPacket* NewPacket = &(m_aDelayedPackets.back());
 	NewPacket->SenderID = Sender;
-	CopyMemory(&(NewPacket->Packet), &Packet, sizeof(NET_Packet));
+	NewPacket->Packet.B.data.resize(Packet.B.data.size());
+	CopyMemory(NewPacket->Packet.B.data.data(), Packet.B.data.data(), Packet.B.data.size());
+	NewPacket->Packet.inistream = Packet.inistream;
+	NewPacket->Packet.r_pos = Packet.r_pos;
+	NewPacket->Packet.w_allow = Packet.w_allow;
+	NewPacket->Packet.timeReceive = Packet.timeReceive;
 
 	DelayedPackestCS.Leave();
 }
@@ -1863,10 +1868,10 @@ void xrServer::SecureSendTo(xrClientData* xrCL, NET_Packet& P, u32 dwFlags, u32 
 	NET_Packet enc_packet;
 
 	enc_packet.w_begin(M_SECURE_MESSAGE);
-	enc_packet.w(P.B.data, P.B.count);
+	enc_packet.w(P.B.data.data(), P.B.data.size());
 	u32 checksum = secure_messaging::encrypt(
-		enc_packet.B.data + sizeof(u16),
-		enc_packet.B.count - sizeof(u16),
+		enc_packet.B.data.data() + sizeof(u16),
+		enc_packet.B.data.size() - sizeof(u16),
 		xrCL->m_secret_key
 	);
 	enc_packet.w_u32(checksum);
@@ -1884,9 +1889,9 @@ void xrServer::OnSecureMessage(NET_Packet& P, xrClientData* xrClSender)
 	VERIFY(dbg_encrypt_checksum == dbg_decrypt_checksum);
 #endif
 	NET_Packet dec_packet;
-	dec_packet.B.count = P.B.count - sizeof(u16) - sizeof(u32); // - r_begin - crypt_check_sum
-	P.r(dec_packet.B.data, dec_packet.B.count);
-	u32 checksum = secure_messaging::decrypt(dec_packet.B.data, dec_packet.B.count, xrClSender->m_secret_key);
+	dec_packet.B.data.resize(P.B.data.size() - sizeof(u16) - sizeof(u32)); // - r_begin - crypt_check_sum
+	P.r(dec_packet.B.data.data(), dec_packet.B.data.size());
+	u32 checksum = secure_messaging::decrypt(dec_packet.B.data.data(), dec_packet.B.data.size(), xrClSender->m_secret_key);
 	u32 real_checksum = 0;
 	P.r_u32(real_checksum);
 	VERIFY2(checksum == real_checksum, "caught cheater");
@@ -1939,7 +1944,7 @@ void xrServer::Export_game_type(IClient* CL)
 
 void xrServer::Perform_connect_spawn(CSE_Abstract* E, xrClientData* CL, NET_Packet& P)
 {
-	P.B.count = 0;
+	P.B.data.clear();
 	xr_vector<ALife::_OBJECT_ID>::iterator it = std::find(conn_spawned_ids.begin(), conn_spawned_ids.end(), E->ID);
 	if (it != conn_spawned_ids.end())
 	{
@@ -2195,7 +2200,7 @@ void xrServer::OnCL_Disconnected(IClient* CL)
 {
 	// Game config (all, info includes deleted player now, excludes at the next cl-update)
 	NET_Packet P;
-	P.B.count = 0;
+	P.B.data.clear();
 	P.w_clientID(CL->ID);
 	xrClientData* xrCData = (xrClientData*)(CL);
 	VERIFY(xrCData);
@@ -2326,7 +2331,7 @@ IClient* xrServer::new_client(SClientConnectData* cl_data)
 	CL->pass._set(cl_data->pass);
 
 	NET_Packet P;
-	P.B.count = 0;
+	P.B.data.clear();
 	P.r_pos = 0;
 
 	game->AddDelayedEvent(P, GAME_EVENT_CREATE_CLIENT, 0, CL->ID);
@@ -2445,8 +2450,8 @@ void xrServer::SLS_Default()
 		u32 S_id;
 		for (IReader* S = SP->open_chunk_iterator(S_id); S; S = SP->open_chunk_iterator(S_id, S))
 		{
-			P.B.count = S->length();
-			S->r(P.B.data, P.B.count);
+			P.B.data.resize(S->length());
+			S->r(P.B.data.data(),P.B.data.size());
 
 			u16 ID;
 			P.r_begin(ID);
@@ -2509,8 +2514,8 @@ void xrServer::SLS_Load(IReader& fs)
 	for (IReader* F = fs.open_chunk_iterator(C); F; F = fs.open_chunk_iterator(C, F))
 	{
 		// Spawn
-		P.B.count = F->r_u16();
-		F->r(P.B.data, P.B.count);
+		P.B.data.resize(F->r_u16());
+		F->r(P.B.data.data(),P.B.data.size());
 		P.r_begin(u_id);
 		R_ASSERT(M_SPAWN == u_id);
 		ClientID clientID;
@@ -2518,8 +2523,8 @@ void xrServer::SLS_Load(IReader& fs)
 		Process_spawn(P, clientID);
 
 		// Update
-		P.B.count = F->r_u16();
-		F->r(P.B.data, P.B.count);
+		P.B.data.resize(F->r_u16());
+		F->r(P.B.data.data(),P.B.data.size());
 		P.r_begin(u_id);
 		R_ASSERT(M_UPDATE == u_id);
 
@@ -2542,8 +2547,9 @@ void xrServer::SLS_Save(IWriter& fs)
 
 		// Spawn
 		E_->Spawn_Write(P, true);
-		fs.w_u16(u16(P.B.count));
-		fs.w(P.B.data, P.B.count);
+		I_ASSERT_M(P.B.data.size() <= u16(-1), "(Spawn_Write) Object [%s] contains more data than save data limit, current size [%d], max [%d]", E_->name(), P.B.data.size(), u16(-1));
+		fs.w_u16(u16(P.B.data.size()));
+		fs.w(P.B.data.data(),P.B.data.size());
 
 		// Update
 		P.w_begin(M_UPDATE);
@@ -2552,8 +2558,9 @@ void xrServer::SLS_Save(IWriter& fs)
 		E_->UPDATE_Write(P);
 		P.w_chunk_close8(position);
 
-		fs.w_u16(u16(P.B.count));
-		fs.w(P.B.data, P.B.count);
+		I_ASSERT_M(P.B.data.size() <= u16(-1), "(Spawn_Write) Object [%s] contains more data than save data limit, current size [%d], max [%d]", E_->name(), P.B.data.size(), u16(-1));
+		fs.w_u16(u16(P.B.data.size()));
+		fs.w(P.B.data.data(),P.B.data.size());
 
 		fs.close_chunk();
 	}
@@ -2765,7 +2772,7 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
 			P.r_pos -= sizeof(ALife::_OBJECT_ID);
 			if (type == GE_HIT_STATISTIC)
 			{
-				P.B.count -= 4;
+				P.B.data.resize(P.B.data.size()-4);
 				P.w_u32(sender.value());
 			};
 			game->AddDelayedEvent(P, GAME_EVENT_ON_HIT, 0, ClientID());
@@ -3129,14 +3136,14 @@ void xrServer::Process_event_destroy(NET_Packet& P, ClientID sender, u32 time, A
 				pEventPack = &P2;
 			}
 
-			pEventPack->w_u8(u8(tmpP.B.count));
-			pEventPack->w(&tmpP.B.data, tmpP.B.count);
+			pEventPack->w_u8(u8(tmpP.B.data.size()));
+			pEventPack->w(tmpP.B.data.data(), tmpP.B.data.size());
 		};
 
 		game->u_EventGen(tmpP, GE_DESTROY, id_dest);
 
-		pEventPack->w_u8(u8(tmpP.B.count));
-		pEventPack->w(&tmpP.B.data, tmpP.B.count);
+		pEventPack->w_u8(u8(tmpP.B.data.size()));
+		pEventPack->w(tmpP.B.data.data(), tmpP.B.data.size());
 	};
 
 	if (nullptr == pEPack && nullptr != pEventPack)
@@ -3202,7 +3209,7 @@ void ReplaceOwnershipHeader(NET_Packet& P)
 {
 	// ������ ����� ������, �� �� ������ ������ ����� ������ ���. ������� ������� ���������
 	u16 NewType = GE_OWNERSHIP_TAKE;
-	CopyMemory(&P.B.data[6], &NewType, 2);
+	CopyMemory(P.B.data.data()+6,&NewType,2);
 };
 
 void xrServer::Process_event_ownership(NET_Packet& P, ClientID sender, u32 time, ALife::_OBJECT_ID ID, bool bForced)
