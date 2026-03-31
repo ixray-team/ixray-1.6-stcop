@@ -4,9 +4,9 @@
 static xr_hash_map<XRay::ImGui::EEditorColors, ImColor> EditorColors;
 static xr_hash_map<XRay::ImGui::EEditorSizes, float> EditorSizes;
 
-std::array<ImColor, 22>* CurrentTheme = nullptr;
+std::array<ImColor, 26>* CurrentTheme = nullptr;
 
-std::array<ImColor, 22> PurpleTheme =
+std::array<ImColor, 26> PurpleTheme =
 {
 	ImColor(63, 71, 101, 255),	  // Base Color
 	ImColor(29, 129, 136, 255),	  // Accent Color
@@ -165,10 +165,46 @@ XREUI_API ImColor XRay::ImGui::GetEditorColor(EEditorColors Color)
 		}
 		case EEditorColors::ToggleHover:
 		{
-			EditorColors[Color] = AlphaBlend(EditorColors[EEditorColors::Accent], DefaultTheme[(size_t)EEditorColors::HoverTint]);
+			EditorColors[Color] = AlphaBlend(EditorColors[EEditorColors::ButtonTint], ImVec4(ImVec4(EditorColors[EEditorColors::Accent]).x,
+																							 ImVec4(EditorColors[EEditorColors::Accent]).y,
+																							 ImVec4(EditorColors[EEditorColors::Accent]).z,
+																							 ImVec4(DefaultTheme[(size_t)EEditorColors::HoverTint]).w * 2.f
+																							 ));
 			return EditorColors[Color];
 		}
 		case EEditorColors::ToggleActive:
+		{
+			EditorColors[Color] = AlphaBlend(EditorColors[EEditorColors::ButtonTint], ImVec4(ImVec4(EditorColors[EEditorColors::Accent]).x,
+																							 ImVec4(EditorColors[EEditorColors::Accent]).y,
+																							 ImVec4(EditorColors[EEditorColors::Accent]).z,
+																							 ImVec4(DefaultTheme[(size_t)EEditorColors::ActiveTint]).w * 2.f
+																							 ));
+			return EditorColors[Color];
+		}
+		case EEditorColors::ToolbarToggleHover:
+		{
+			EditorColors[Color] = AlphaBlend(EditorColors[EEditorColors::ToolbarButtonTint], ImVec4(ImVec4(EditorColors[EEditorColors::Accent]).x,
+																							 ImVec4(EditorColors[EEditorColors::Accent]).y,
+																							 ImVec4(EditorColors[EEditorColors::Accent]).z,
+																							 ImVec4(DefaultTheme[(size_t)EEditorColors::HoverTint]).w * 4.f
+																							 ));
+			return EditorColors[Color];
+		}
+		case EEditorColors::ToolbarToggleActive:
+		{
+			EditorColors[Color] = AlphaBlend(EditorColors[EEditorColors::ToolbarButtonTint], ImVec4(ImVec4(EditorColors[EEditorColors::Accent]).x,
+																							 ImVec4(EditorColors[EEditorColors::Accent]).y,
+																							 ImVec4(EditorColors[EEditorColors::Accent]).z,
+																							 ImVec4(DefaultTheme[(size_t)EEditorColors::ActiveTint]).w * 4.f
+																							 ));
+			return EditorColors[Color];
+		}
+		case EEditorColors::AccentHover:
+		{
+			EditorColors[Color] = AlphaBlend(EditorColors[EEditorColors::Accent], DefaultTheme[(size_t)EEditorColors::HoverTint]);
+			return EditorColors[Color];
+		}
+		case EEditorColors::AccentActive:
 		{
 			EditorColors[Color] = AlphaBlend(EditorColors[EEditorColors::Accent], DefaultTheme[(size_t)EEditorColors::ActiveTint]);
 			return EditorColors[Color];
@@ -213,7 +249,7 @@ std::array<float, SizeCount> DefaultSizes =
 	4.0f,								// IndicatorWidth
 	22.0f,								// TableRowHeight
 	2.0f,								// TableBorder
-	4.0f								// ToolbarPadding
+	2.0f								// ToolbarPadding
 };
 std::array<float, SizeCount> TitySizes =
 {
