@@ -35,15 +35,17 @@ void CALifeObjectRegistry::save				(IWriter &memory_stream, CSE_ALifeDynamicObje
 	NET_Packet					tNetPacket;
 	// Spawn
 	object->Spawn_Write			(tNetPacket,true);
-	memory_stream.w_u16			(u16(tNetPacket.B.count));
-	memory_stream.w				(tNetPacket.B.data,tNetPacket.B.count);
+	auto& data = tNetPacket.B.data;
+	I_ASSERT_M(data.size() <= u16(-1), "(Spawn_Write) Object [%s] contains more data than save data limit, current size [%d], max [%d]", data.size(), u16(-1));
+	memory_stream.w_u16			(u16(data.size()));
+	memory_stream.w				(data.data(),data.size());
 
 	// Update
 	tNetPacket.w_begin			(M_UPDATE);
 	object->UPDATE_Write		(tNetPacket);
-
-	memory_stream.w_u16			(u16(tNetPacket.B.count));
-	memory_stream.w				(tNetPacket.B.data,tNetPacket.B.count);
+	I_ASSERT_M(data.size() <= u16(-1), "(UPDATE_Write) Object [%s] contains more data than save data limit, current size [%d], max [%d]", data.size(), u16(-1));
+	memory_stream.w_u16			(u16(data.size()));
+	memory_stream.w				(data.data(),data.size());
 
 	for (auto ID : object->children) {
 		CSE_ALifeDynamicObject* child = this->object(ID,true);
@@ -104,8 +106,8 @@ CSE_ALifeDynamicObject *CALifeObjectRegistry::get_object		(IReader &file_stream)
 	NET_Packet				tNetPacket;
 	u16						u_id;
 	// Spawn
-	tNetPacket.B.count		= file_stream.r_u16();
-	file_stream.r			(tNetPacket.B.data,tNetPacket.B.count);
+	tNetPacket.B.data.resize(file_stream.r_u16());
+	file_stream.r			(tNetPacket.B.data.data(),tNetPacket.B.data.size());
 	tNetPacket.r_begin		(u_id);
 	R_ASSERT2				(M_SPAWN==u_id,"Invalid packet ID (!= M_SPAWN)");
 
@@ -113,7 +115,7 @@ CSE_ALifeDynamicObject *CALifeObjectRegistry::get_object		(IReader &file_stream)
 	tNetPacket.r_stringZ	(s_name);
 #ifdef DEBUG
 	if (psAI_Flags.test(aiALife)) {
-		Msg					("Loading object %s [%d]b", s_name, tNetPacket.B.count);
+		Msg					("Loading object %s [%d]b", s_name, tNetPacket.B.data.size());
 	}
 #endif
 	// create entity
@@ -124,8 +126,8 @@ CSE_ALifeDynamicObject *CALifeObjectRegistry::get_object		(IReader &file_stream)
 	tpALifeDynamicObject->Spawn_Read(tNetPacket);
 
 	// Update
-	tNetPacket.B.count		= file_stream.r_u16();
-	file_stream.r			(tNetPacket.B.data,tNetPacket.B.count);
+	tNetPacket.B.data.resize(file_stream.r_u16());
+	file_stream.r			(tNetPacket.B.data.data(),tNetPacket.B.data.size());
 	tNetPacket.r_begin		(u_id);
 	R_ASSERT2				(M_UPDATE==u_id,"Invalid packet ID (!= M_UPDATE)");
 	tpALifeDynamicObject->UPDATE_Read(tNetPacket);

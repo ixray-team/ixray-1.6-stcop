@@ -76,13 +76,17 @@ bool game_sv_freemp::OnTouchPlayersBag(CSE_ActorMP* actor, CSE_Abstract* item)
 
 			m_server->Perform_transfer(PacketReject, PacketTake, e_child_item, item, actor);
 
-			EventPack.w_u8(u8(PacketReject.B.count));
-			EventPack.w(&PacketReject.B.data, PacketReject.B.count);
-			EventPack.w_u8(u8(PacketTake.B.count));
-			EventPack.w(&PacketTake.B.data, PacketTake.B.count);
+			auto& RejectData = PacketReject.B.data;
+			auto& TakeData = PacketTake.B.data;
+			EventPack.w_u8(u8(RejectData.size()));
+			EventPack.w(RejectData.data(), RejectData.size());
+			EventPack.w_u8(u8(TakeData.size()));
+			EventPack.w(TakeData.data(), TakeData.size());
 		}
-		if (EventPack.B.count > 2)
+		if (EventPack.B.data.size() > 2)
+		{
 			u_EventSend(EventPack);
+		}
 	}
 
 	//destroy the BAG
@@ -138,13 +142,16 @@ void game_sv_freemp::OnDetachPlayersBag(CSE_ActorMP* actor, CSE_Abstract* item)
 	for (auto it : to_transfer)
 	{
 		m_server->Perform_transfer(PacketReject, PacketTake, it, actor, item);
-		EventPack.w_u8(u8(PacketReject.B.count));
-		EventPack.w(&PacketReject.B.data, PacketReject.B.count);
-		EventPack.w_u8(u8(PacketTake.B.count));
-		EventPack.w(&PacketTake.B.data, PacketTake.B.count);
+		
+		auto& RejectData = PacketReject.B.data;
+		auto& TakeData = PacketTake.B.data;
+		EventPack.w_u8(u8(RejectData.size()));
+		EventPack.w(RejectData.data(), RejectData.size());
+		EventPack.w_u8(u8(TakeData.size()));
+		EventPack.w(TakeData.data(), TakeData.size());
 	}
 
-	if (EventPack.B.count > 2)
+	if (EventPack.B.data.size() > 2)
 	{
 		u_EventSend(EventPack);
 	}
