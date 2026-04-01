@@ -218,8 +218,6 @@ public:
 	xr_vector		<xr_delegate<void()>>	seqParallel;
 	xr_vector		<xr_delegate<void()>>	seqParallelRender;
 
-	xr_vector<xr_delegate<void()>> seqParallelBeforRender;
-
 	xr_delegate<void()> ModelDefferClear;
 
 	xr_vector<xr_pair<u32,std::function<void()>>> m_time_callbacks;

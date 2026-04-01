@@ -22,7 +22,7 @@ public:
 	virtual				~CParticlesObject	();
 
 	virtual void		renderable_Render	();
-	virtual void		Update				(u32 dt);
+	virtual void		Update				(u32 dt, CFrustum& viewbase);
 	virtual	IRenderable* dcast_Renderable	() { return this; }
 
 	Fvector&			Position			();
@@ -31,6 +31,7 @@ public:
 	void				UpdateParent		(const Fmatrix& m, const Fvector& vel);
 	void				SetLiveUpdate		(BOOL b);
 	bool				GetLiveUpdate		();
+	u32					GetSpriteCount		();
 	void				play_at_pos			(const Fvector& pos, BOOL xform=FALSE);
 	void				Play				(bool bHudMode);
 	void				Stop				(BOOL bDefferedStop=TRUE);
