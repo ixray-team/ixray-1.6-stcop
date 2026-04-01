@@ -29,9 +29,11 @@ function collect_object_info(game_object)
 		return result_info
 	end
 
-	local story_id = get_object_story_id(game_object:id())
-	if story_id then 
-		add_to_result(result_info, "story_id", tostring(get_object_story_id(game_object:id())))
+	if get_object_story_id then 
+		local story_id = get_object_story_id(game_object:id())
+		if story_id then 
+			add_to_result(result_info, "story_id", tostring(get_object_story_id(game_object:id())))
+		end
 	end
 	
 	local storage_data = db.storage[game_object:id()]
@@ -94,15 +96,17 @@ function collect_object_info(game_object)
 	add_to_result(result_info, "m_smart_terrain_id", smrt and tostring(smrt:name()))
 	
 	if (smrt) then
-		local arriving = smrt.arriving_npc[sobj.id]
-		if (arriving) then 
-			add_to_result(result_info, "arriving_npc", "true")
+		if smrt.arriving_npc then
+			local arriving = smrt.arriving_npc[sobj.id]
+			if (arriving) then 
+				add_to_result(result_info, "arriving_npc", "true")
+			end
 		end
 		
 		add_to_result(result_info, "Arrived", tostring(arrived_to_smart(sobj, smrt)))
 		
 		local npc_info = smrt.npc_info and smrt.npc_info[sobj.id]
-		if (npc_info) then
+		if npc_info and npc_info.job then
 			add_to_result(result_info, "Job", npc_info.job and tostring(npc_info.job.section))
 		end
 	end
