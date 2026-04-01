@@ -32,8 +32,11 @@ public:
 	virtual		void					Bone_GetAnimPos(Fmatrix& pos,u16 id, u8 channel_mask, bool ignore_callbacks) = 0;
 
 	virtual		bool					PickBone			(const Fmatrix &parent_xform, pick_result &r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id) = 0;
-	virtual		void					EnumBoneVertices	(SEnumVerticesCallback &C, u16 bone_id) = 0;
+	virtual		void					EnumBoneVertices	(SEnumVerticesCallback &C, u16 bone_id = u16(-1)) = 0;
+	virtual		void					EnumBoneVertices	(xr_vector<Fvector>& m_vec, u16 bone_id = u16(-1)) {};
+	virtual		void					EnumBoneVertices	(buffer_vector<Fvector>& m_vec, u16 bone_id = u16(-1)) {};
 
+	virtual		u32						GetFacesCount(u16 bone_id = u16(-1)) { return 0; }
 	// Low level interface
 	virtual u16					_BCL	LL_BoneID(LPCSTR  B) = 0;
 	virtual u16					_BCL	LL_BoneID(const shared_str& B) = 0;
@@ -64,6 +67,7 @@ virtual	const IBoneData&		_BCL	GetBoneData(u16 bone_id) const = 0;
 	virtual Fobb&						LL_GetBox(u16 bone_id) = 0;
 	virtual const Fbox&			_BCL	GetBox()const = 0;
 	virtual void						LL_GetBindTransform(xr_vector<Fmatrix>& matrices) = 0;
+	virtual void						LL_GetBindTransform(buffer_vector<Fmatrix>& matrices) {};
 	virtual int 						LL_GetBoneGroups(xr_vector<xr_vector<u16> >& groups) = 0;
 
 	virtual u16					_BCL	LL_GetBoneRoot() = 0;

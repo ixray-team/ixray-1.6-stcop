@@ -365,7 +365,8 @@ void CIKLimb::Create( u16 id, IKinematicsAnimated* K, bool collide_ )
 	sv_state.set_limb	( this );
 	m_collide =collide_;
 //////////////////////////////////////////////////////////////////////
-	xr_vector<Fmatrix> binds;
+	u16 bones_count = CK->LL_BoneCount();
+	buffer_vector<Fmatrix> binds(_alloca(bones_count * sizeof(Fmatrix)), bones_count);
 	CK->LL_GetBindTransform( binds );
 	Fmatrix XT,XS;
 	XT.set( binds[m_bones[0]] ); XT.invert( ); XT.mulB_43( binds[m_bones[1]] );
