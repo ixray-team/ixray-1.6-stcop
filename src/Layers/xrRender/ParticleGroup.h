@@ -85,35 +85,17 @@ namespace PS
 		Fvector				m_InitialPosition;
 	public:
 		xrCriticalSection	onframe_lock;
-		using VisualVec = xr_vector<dxRender_Visual*>;
-		using VisualVecIt = VisualVec::iterator;
+		xrSRWLock lock;
+		using PEffectsVec = xr_vector<CParticleEffect*>;
+		using PEffectsVecIt = PEffectsVec::iterator;
 
 		struct SItem final
 		{
-			dxRender_Visual* _effect;
-			VisualVec _children_related;
-			VisualVec _children_free;
-			xr_set<dxRender_Visual*> _children_destroy;
+			CParticleEffect* _effect;
+			PEffectsVec _children_related;
+			PEffectsVec _children_free;
 
-		public:
-			~SItem();
-
-			void Set(dxRender_Visual* e);
 			void Clear();
-
-			IC u32 GetVisuals(xr_vector<dxRender_Visual*>& visuals)
-			{
-				visuals.reserve(_children_related.size() + _children_free.size() + 1);
-				if (_effect)
-					visuals.push_back(_effect);
-
-				visuals.insert(visuals.end(), _children_related.begin(), _children_related.end());
-				visuals.insert(visuals.end(), _children_free.begin(), _children_free.end());
-				return u32(visuals.size());
-			}
-
-			void OnDeviceCreate();
-			void OnDeviceDestroy();
 
 			void StartRelatedChild(CParticleEffect* emitter, LPCSTR eff_name, PAPI::Particle& m);
 			void StopRelatedChild(u32 idx);
@@ -121,9 +103,8 @@ namespace PS
 
 			void UpdateParent(const Fmatrix& m, const Fvector& velocity, BOOL bXFORM);
 			void OnFrame(u32 u_dt, const CPGDef::SEffect& def, Fbox& box, bool& bPlaying);
-			void DelayDeleteChilds();
 
-			u32 ParticlesCount();
+			u32 SpriteCount();
 			BOOL IsPlaying() const;
 			void Play();
 			void Stop(BOOL def_stop);
@@ -144,14 +125,15 @@ namespace PS
 		virtual				~CParticleGroup	();
 		virtual void	 	OnFrame			(u32 dt);
 
-		virtual void		Copy			(dxRender_Visual* pFrom) {FATAL("Can't duplicate particle system - NOT IMPLEMENTED");}
+#ifndef _EDITOR
+		virtual void	 	UpdateCache();
+#endif
 
-		virtual void 		OnDeviceCreate	();
-		virtual void 		OnDeviceDestroy	();
+		virtual void		Copy			(dxRender_Visual* pFrom) {FATAL("Can't duplicate particle system - NOT IMPLEMENTED");}
 
 		virtual void		UpdateParent	(const Fmatrix& m, const Fvector& velocity, BOOL bXFORM);
 
-		BOOL				Compile			(CPGDef* def);
+		void				Compile			(CPGDef* def);
 
 		const CPGDef*		GetDefinition	(){return m_Def;}
 
@@ -169,7 +151,7 @@ namespace PS
 
 		virtual const shared_str	Name		(){VERIFY(m_Def); return m_Def->m_Name;}
 
-        virtual u32 		ParticlesCount	();
+        virtual u32 		SpriteCount	();
 		PAPI::ParticleAction* FindPA(shared_str PEName, PAPI::PActionEnum Action) override;
 
 		virtual IParticleCustom* dcast_ParticleCustom() { return this; }
