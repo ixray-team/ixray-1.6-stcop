@@ -3063,11 +3063,31 @@ void CWeapon::OnMagazineEmpty	()
 {
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 
-	if (ParentIsActor())
+	if (!ParentIsActor())
 	{
-		int	AC = GetSuitableAmmoTotal();
-		Actor()->callback(GameObject::eOnWeaponMagazineEmpty)(lua_game_object(), AC);
+		return;
 	}
+
+	CObject* parent = H_Parent();
+	if (!parent || parent->getDestroy() || !parent->getReady())
+	{
+		return;
+	}
+
+	CObject* parent_from_net = Level().Objects.net_Find(parent->ID());
+	if (!parent_from_net || parent_from_net != parent || parent_from_net->getDestroy())
+	{
+		return;
+	}
+
+	CActor* actor = parent->cast_actor();
+	if (!actor || actor->getDestroy() || !actor->getReady())
+	{
+		return;
+	}
+
+	int AC = GetSuitableAmmoTotal();
+	actor->callback(GameObject::eOnWeaponMagazineEmpty)(lua_game_object(), AC);
 }
 
 
@@ -4227,11 +4247,7 @@ void CWeapon::UnloadChamber(bool spawn_ammo)
 
 	//VERIFY((u32)iAmmoInChamberElapsed == m_chamber.size());
 
-	if (ParentIsActor())
-	{
-		int	AC = GetSuitableAmmoTotal();
-		Actor()->callback(GameObject::eOnWeaponMagazineEmpty)(lua_game_object(), AC);
-	}
+	OnMagazineEmpty();
 
 	if (!spawn_ammo)
 		return;

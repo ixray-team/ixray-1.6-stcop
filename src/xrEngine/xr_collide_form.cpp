@@ -7,6 +7,7 @@
 #include "xrLevel.h"
 #include "Fmesh.h"
 #include "../xrCore/Collision/Frustum.h"
+#include <limits>
 
 //#include "skeletoncustom.h"
 #include "../Include/xrRender/Kinematics.h"
@@ -95,6 +96,11 @@ IC bool RAYvsSPHERE(const Fsphere& s_sphere, const Fvector &S, const Fvector &D,
 }
 IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const Fvector &S, const Fvector &D, float &R, BOOL bCull)
 {
+	if (c_cylinder.m_direction.square_magnitude() <= std::numeric_limits<float>::min())
+		return false;
+	if (c_cylinder.m_height <= EPS || c_cylinder.m_radius <= EPS)
+		return false;
+
 	// Actual test
 	Fcylinder::ERP_Result rp_res = c_cylinder.intersect(S,D,R);
 	VERIFY				(R>=0.f);
@@ -121,6 +127,7 @@ void CCF_Skeleton::BuildState()
 	//K->CalculateBones();
 	const Fmatrix& L2W	= owner->XFORM();
 	xrSRWLockGuard guard(&build_lock, false);
+	bool bones_recalculated = false;
 	if (vis_mask!=K->LL_GetBonesVisible()){
 		vis_mask		= K->LL_GetBonesVisible();
 		elements.resize(0);
@@ -137,11 +144,24 @@ void CCF_Skeleton::BuildState()
 
 	for (ElementVecIt I=elements.begin(); I!=elements.end(); I++){
 		if (!I->valid())		continue;
+		if (!K->LL_GetBoneVisible(I->elem_id))
+			continue;
 		SBoneShape&	shape		= K->LL_GetData(I->elem_id).shape;
 		Fmatrix					ME,T,TW;
 		Fmatrix Mbone;
 		K->LL_GetBoneLocalTransform(I->elem_id, Mbone);
-		VERIFY2( DET(Mbone)>EPS, (make_string<const char*>("0 scale bone matrix, %d \n", I->elem_id ) + dbg_object_full_dump_string( owner ) ).c_str()  );
+		if (DET(Mbone) <= EPS)
+		{
+			if (!bones_recalculated)
+			{
+				K->CalculateBones(TRUE);
+				K->LL_GetBoneLocalTransform(I->elem_id, Mbone);
+				bones_recalculated = true;
+			}
+
+			if (DET(Mbone) <= EPS)
+				continue;
+		}
 		if (CCF_bone_callback && owner == g_pGameLevel->CurrentViewEntity())
 			CCF_bone_callback(Mbone, CCF_bone_callback_param);
 
@@ -181,6 +201,8 @@ void CCF_Skeleton::BuildState()
 				L2W.transform_tiny	(I->c_cylinder.m_center);
 				Mbone.transform_dir	(I->c_cylinder.m_direction,C.m_direction);
 				L2W.transform_dir	(I->c_cylinder.m_direction);
+				if (I->c_cylinder.m_direction.square_magnitude() <= std::numeric_limits<float>::min())
+					continue;
 				I->c_cylinder.m_height	= C.m_height;
 				I->c_cylinder.m_radius	= C.m_radius;
 			}break;
@@ -244,6 +266,10 @@ BOOL CCF_Skeleton::_RayQuery( const collide::ray_defs& Q, collide::rq_results& R
 
 		break;
 		case SBoneShape::stCylinder: 
+			if (I->c_cylinder.m_direction.square_magnitude() <= std::numeric_limits<float>::min())
+				continue;
+			if (I->c_cylinder.m_height <= EPS || I->c_cylinder.m_radius <= EPS)
+				continue;
 			res_			= RAYvsCYLINDER	(I->c_cylinder,Q.start,Q.dir,range,Q.flags&CDB::OPT_CULL);
 		break;
 		}

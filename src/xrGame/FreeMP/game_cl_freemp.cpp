@@ -59,8 +59,14 @@ void game_cl_freemp::OnConnected()
 	}
 
 	luabind::functor<void>	funct;
-	R_ASSERT(ai().script_engine().functor("mp_game_cl.on_connected", funct));
-	funct();
+	if (ai().script_engine().functor("mp_game_cl.on_connected", funct))
+	{
+		funct();
+	}
+	else
+	{
+		Msg("! [FreeMP] Optional callback 'mp_game_cl.on_connected' is not defined, skipping.");
+	}
 }
 
 void game_cl_freemp::net_import_state(NET_Packet& P)

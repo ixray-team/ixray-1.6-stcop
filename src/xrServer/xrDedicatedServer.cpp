@@ -1,13 +1,8 @@
 #include "stdafx.h"
 #include "resource.h"
 #include "../xrEngine/XR_IOConsole.h"
+#include "../xrEngine/x_ray.h"
 #include "Text_Console.h"
-
-ENGINE_API void EngineLoadStage1(char* lpCmdLine);
-ENGINE_API void EngineLoadStage2();
-ENGINE_API void EngineLoadStage3();
-ENGINE_API void EngineLoadStage4();
-ENGINE_API void EngineLoadStage5();
 
 void CreateGameWindow()
 {
@@ -60,6 +55,8 @@ int APIENTRY WinMain
 	Console->Execute("vid_restart");
 
 	EngineLoadStage5();
+
+	EngineLoadStage6();
 
 	Core._destroy();
 

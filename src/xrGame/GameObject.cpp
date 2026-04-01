@@ -898,6 +898,12 @@ void CGameObject::net_Relcase(CObject* O)
 
 CGameObject::CScriptCallbackExVoid &CGameObject::callback(GameObject::ECallbackType type) const
 {
+	static CScriptCallbackExVoid s_empty_callback;
+	if (!m_callbacks)
+	{
+		return s_empty_callback;
+	}
+
 	return ((*m_callbacks)[type]);
 }
 

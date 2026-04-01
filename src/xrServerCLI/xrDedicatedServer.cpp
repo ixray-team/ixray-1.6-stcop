@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "resource.h"
 #include "../xrEngine/XR_IOConsole.h"
+#include "../xrEngine/x_ray.h"
 #include "DedicatedConsoleInput.h"
 
 #include <cctype>
@@ -10,12 +11,6 @@
 #ifndef IXR_WINDOWS
 #include <sstream>
 #endif
-
-ENGINE_API void EngineLoadStage1(char* lpCmdLine);
-ENGINE_API void EngineLoadStage2();
-ENGINE_API void EngineLoadStage3();
-ENGINE_API void EngineLoadStage4();
-ENGINE_API void EngineLoadStage5();
 
 namespace
 {
@@ -109,6 +104,16 @@ void CreateGameWindow()
 		g_AppInfo.Window = SDL_CreateWindow("IX-Ray Dedicated Server", screen_width, screen_height, window_flags);
 	}
 }
+
+class DedicatedServerShutdown final : public pureAppEnd
+{
+public:
+	void OnAppEnd() override
+	{
+		DedicatedConsoleInput::Stop();
+		xrLogger::RemoveLogCallback(StdoutLogCallback);
+	}
+};
 } // namespace
 
 int main(int argc, char** argv)
@@ -144,6 +149,9 @@ int main(int argc, char** argv)
 	Console->Execute("renderer renderer_ds0");
 	Engine.External.Initialize();
 
+	DedicatedServerShutdown dedicatedServerShutdown;
+	Device.seqAppEnd.Add(&dedicatedServerShutdown);
+
 	DedicatedConsoleInput::Start();
 
 	EngineLoadStage4();
@@ -153,9 +161,8 @@ int main(int argc, char** argv)
 
 	EngineLoadStage5();
 
-	DedicatedConsoleInput::Stop();
+	EngineLoadStage6();
 
-	xrLogger::RemoveLogCallback(StdoutLogCallback);
 	Core._destroy();
 	SDL_Quit();
 

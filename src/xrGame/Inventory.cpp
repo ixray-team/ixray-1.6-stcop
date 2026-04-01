@@ -379,7 +379,11 @@ bool CInventory::DropItem(CGameObject* pObj, bool just_before_destroy, bool dont
 //положить вещь в слот
 bool CInventory::Slot(u16 slot_id, PIItem pIItem, bool bNotActivate, bool strict_placement)
 {
-	VERIFY(pIItem);
+	if (!pIItem)
+	{
+		Msg("! WARNING: CInventory::Slot called with nullptr, slot_id=%d", slot_id);
+		return false;
+	}
 
 	if (ItemFromSlot(slot_id) == pIItem)
 	{
@@ -1011,18 +1015,28 @@ void CInventory::UpdateDropTasks()
 
 void CInventory::UpdateDropItem(PIItem pIItem)
 {
+	if (!pIItem)
+	{
+		return;
+	}
 	if (pIItem->GetDropManual())
 	{
-		pIItem->SetDropManual(FALSE);
-		pIItem->DenyTrade();
-
 		if (OnServer())
 		{
+			CObject* parent = pIItem->object().H_Parent();
+			if (!parent || parent->getDestroy())
+			{
+				return;
+			}
+
 			NET_Packet P;
-			pIItem->object().u_EventGen(P, GE_OWNERSHIP_REJECT, pIItem->object().H_Parent()->ID());
+			pIItem->object().u_EventGen(P, GE_OWNERSHIP_REJECT, parent->ID());
 			P.w_u16(u16(pIItem->object().ID()));
 			pIItem->object().u_EventSend(P);
 		}
+
+		pIItem->SetDropManual(FALSE);
+		pIItem->DenyTrade();
 	}
 }
 

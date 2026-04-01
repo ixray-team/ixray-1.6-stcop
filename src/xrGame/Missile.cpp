@@ -643,9 +643,15 @@ void CMissile::Throw()
 	if (!H_Parent()) 
 		return;
 
+	if (!m_fake_missile || m_fake_missile->getDestroy())
+	{
+		Msg("! WARNING: CMissile::Throw skipped, fake missile is not ready. missile=[%d][%s]", ID(), cNameSect().c_str());
+		return;
+	}
+
 	CActor* pActor = H_Parent()->cast_actor();
 
-	if (pActor && pActor == Level().CurrentControlEntity() || Local())
+	if ((pActor && pActor == Level().CurrentControlEntity()) || Local())
 	{
 		VERIFY(H_Parent()->cast_entity());
 		setup_throw_params();
@@ -667,7 +673,8 @@ void CMissile::Throw()
 		m_fThrowForce = m_fMinForce;
 	}
 
-	if (Local() && H_Parent())
+	const bool controlled_by_local = (H_Parent() && OnClient() && H_Parent() == Level().CurrentControlEntity());
+	if ((Local() || controlled_by_local) && H_Parent() && m_fake_missile && !m_fake_missile->getDestroy())
 	{
 		NET_Packet P;
 		u_EventGen(P,GE_OWNERSHIP_REJECT,ID());
