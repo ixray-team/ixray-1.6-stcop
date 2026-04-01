@@ -179,6 +179,16 @@ void dxUIRender::CacheSetXformWorld(const Fmatrix& M)
 	RCache.set_xform_world(M);
 }
 
+void dxUIRender::CacheSetProject(const Fmatrix& M)
+{
+	RCache.set_xform_project(M);
+}
+
+void dxUIRender::CacheSetView(const Fmatrix& M)
+{
+	RCache.set_xform_view(M);
+}
+
 void dxUIRender::CacheSetCullMode(ERHI_CULLMODE m)
 {
 	GRHI->StateManager->SetCullMode(m);
