@@ -685,9 +685,10 @@ bool FRbmkGoapPlanner::Search()
 	}
 	{
 		FRbmkGoapParameters NewStartParameters;
-		for(xr_unique_ptr<FRbmkGoapProperty>&Property :Properties)
+		for(xr_unique_ptr<FRbmkGoapProperty>& Property :Properties)
 		{
-			NewStartParameters.Add(Property->Name,FindOrAddCacheProperty(Property.get()));
+			if(FRbmkGoapProperty* property = Property.get())
+				NewStartParameters.Add(property->Name,FindOrAddCacheProperty(property));
 		}
 		StartParameters = GetParametersPtr(NewStartParameters);
 	}
