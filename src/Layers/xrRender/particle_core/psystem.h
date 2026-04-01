@@ -1,5 +1,5 @@
 #pragma once
-
+#include "../FVF.h"
 // Actually this must be < sqrt(MAXFLOAT) since we store this value squared.
 #define P_MAXFLOAT	1.0e16f
 
@@ -30,7 +30,13 @@ namespace PAPI{
 		enum{
 			ANIMATE_CCW	= (1<<0),
 		};
-
+		struct LITBUFF { FVF::LIT buff[4]; } buff =
+		{
+			Fvector{0.f,0.f,0.f},0u,Fvector2{0.f,0.f},
+			Fvector{0.f,0.f,0.f},0u,Fvector2{0.f,0.f},
+			Fvector{0.f,0.f,0.f},0u,Fvector2{0.f,0.f},
+			Fvector{0.f,0.f,0.f},0u,Fvector2{0.f,0.f}
+		};
 		Fvector pos = {};	
 		Fvector posB = {};   
 		Fvector posI = {};   

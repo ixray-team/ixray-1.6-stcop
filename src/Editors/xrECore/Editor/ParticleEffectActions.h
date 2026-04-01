@@ -177,8 +177,8 @@ struct EParticleAction
 
 public:
 	SOrder&	appendFloat	(LPCSTR name, float v, float mn, float mx);
-	SOrder&	appendInt	(LPCSTR name, int v, int mn=-P_MAXINT, int mx=P_MAXINT);
-	SOrder&	appendVector(LPCSTR name, PVector::EType type, float vx, float vy, float vz, float mn=-P_MAXFLOAT, float mx=P_MAXFLOAT);
+	SOrder&	appendInt	(LPCSTR name, int v, int mn=-int_max, int mx=int_max);
+	SOrder&	appendVector(LPCSTR name, PVector::EType type, float vx, float vy, float vz, float mn=-flt_max, float mx= flt_max);
 	SOrder&	appendDomain(LPCSTR name, PDomain v);
 	SOrder&	appendBool	(LPCSTR name, BOOL b);
 	SOrder&	appendBool	(LPCSTR name, bool b);
