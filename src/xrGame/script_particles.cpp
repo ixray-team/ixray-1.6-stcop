@@ -35,9 +35,9 @@ CScriptParticlesCustom::~CScriptParticlesCustom()
 //		g_verify_stalkers		();
 }
 
-void CScriptParticlesCustom::Update(u32 _dt)
+void CScriptParticlesCustom::Update(u32 _dt, CFrustum& viewbase)
 {
-	CParticlesObject::Update(_dt);
+	CParticlesObject::Update(_dt, viewbase);
 	if (m_animator)
 	{
 		float dt				= float(_dt)/1000.f; 

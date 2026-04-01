@@ -292,7 +292,7 @@ void CParticleTool::OnFrame()
             {
                 xr_string nn;
                 nn.resize(64);
-                sprintf(nn.data(), " PE Playing...[%d]", m_EditPE->ParticlesCount());
+                sprintf(nn.data(), " PE Playing...[%d]", m_EditPE->SpriteCount());
                 UI->SetStatus(nn.c_str(), false);
             }
         
@@ -312,7 +312,7 @@ void CParticleTool::OnFrame()
             {
                 xr_string nn;
                 nn.resize(64);
-                sprintf(nn.data(), " PE Playing...[%d]", m_EditPG->ParticlesCount());
+                sprintf(nn.data(), " PE Playing...[%d]", m_EditPG->SpriteCount());
                 UI->SetStatus(nn.c_str(),false);
             }
             else
@@ -329,15 +329,6 @@ void CParticleTool::OnFrame()
         {
             THROW;
         }
-    }
-
-
-    {
-        PROF_EVENT("seqParallelBeforRender");
-        for (auto& it : Device.seqParallelBeforRender)
-            it();
-
-        Device.seqParallelBeforRender.clear();
     }
 }
 

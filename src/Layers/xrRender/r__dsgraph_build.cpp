@@ -8,7 +8,7 @@
 #include "FLOD.h"
 #include "ParticleGroup.h"
 #include "FTreeVisual.h"
-
+#include "ParticleEffect.h"
 #include "newproject_dsgraph_constants.h"
 
 using namespace R_dsgraph;
@@ -429,13 +429,18 @@ void CRender::add_leafs_Dynamic(dxRender_Visual *pVisual, bool IgnoreObject)
 	case MT_PARTICLE_GROUP:
 		{
 			// Add all children, doesn't perform any tests
-			PS::CParticleGroup* pG	= (PS::CParticleGroup*)pVisual;
-			xrCriticalSectionGuard guard(&pG->onframe_lock);
-			for (PS::CParticleGroup::SItemVecIt i_it=pG->items.begin(); i_it!=pG->items.end(); i_it++)	{
-				PS::CParticleGroup::SItem&			I_		= *i_it;
-				if (I_._effect)		add_leafs_Dynamic		(I_._effect, IgnoreObject);
-				for (xr_vector<dxRender_Visual*>::iterator pit = I_._children_related.begin();	pit!=I_._children_related.end(); pit++)	add_leafs_Dynamic(*pit, IgnoreObject);
-				for (xr_vector<dxRender_Visual*>::iterator pit = I_._children_free.begin();		pit!=I_._children_free.end();	pit++)	add_leafs_Dynamic(*pit, IgnoreObject);
+			PS::CParticleGroup* pG = (PS::CParticleGroup*)pVisual;
+			xrSRWLockGuard srwguard(&pG->lock, true);
+			for (PS::CParticleGroup::SItem& item : pG->items)
+			{
+				if (item._effect)
+					add_leafs_Dynamic(item._effect);
+
+				for (dxRender_Visual* pEffect : item._children_related)
+					add_leafs_Dynamic(pEffect);
+
+				for (dxRender_Visual* pEffect : item._children_free)
+					add_leafs_Dynamic(pEffect);
 			}
 		}
 		return;
@@ -506,12 +511,17 @@ void CRender::add_leafs_Static(dxRender_Visual *pVisual)
 		{
 			// Add all children, doesn't perform any tests
 			PS::CParticleGroup* pG = (PS::CParticleGroup*)pVisual;
-			xrCriticalSectionGuard guard(&pG->onframe_lock);
-			for (PS::CParticleGroup::SItemVecIt i_it=pG->items.begin(); i_it!=pG->items.end(); i_it++){
-				PS::CParticleGroup::SItem&			I_		= *i_it;
-				if (I_._effect)		add_leafs_Dynamic		(I_._effect);
-				for (xr_vector<dxRender_Visual*>::iterator pit = I_._children_related.begin();	pit!=I_._children_related.end(); pit++)	add_leafs_Dynamic(*pit);
-				for (xr_vector<dxRender_Visual*>::iterator pit = I_._children_free.begin();		pit!=I_._children_free.end();	pit++)	add_leafs_Dynamic(*pit);
+			xrSRWLockGuard srwguard(&pG->lock, true);
+			for (PS::CParticleGroup::SItem& item : pG->items)
+			{
+				if (item._effect)
+					add_leafs_Dynamic(item._effect);
+
+				for (dxRender_Visual* pEffect : item._children_related)
+					add_leafs_Dynamic(pEffect);
+
+				for (dxRender_Visual* pEffect : item._children_free)
+					add_leafs_Dynamic(pEffect);
 			}
 		}
 		return;
@@ -605,16 +615,20 @@ void CRender::add_Static(dxRender_Visual *pVisual, u32 planes)
 	case MT_PARTICLE_GROUP:
 		{
 			// Add all children, doesn't perform any tests
-			PS::CParticleGroup* pG = (PS::CParticleGroup*)pVisual;
-			xrCriticalSectionGuard guard(&pG->onframe_lock);
-			for (PS::CParticleGroup::SItemVecIt i_it=pG->items.begin(); i_it!=pG->items.end(); i_it++)
+			if (fcvPartial != VIS)
 			{
-				PS::CParticleGroup::SItem& I_ = *i_it;
-				if (fcvPartial != VIS)
+				PS::CParticleGroup* pG = (PS::CParticleGroup*)pVisual;
+				xrSRWLockGuard srwguard(&pG->lock, true);
+				for (PS::CParticleGroup::SItem& item : pG->items)
 				{
-					if (I_._effect)		add_leafs_Dynamic		(I_._effect);
-					for (xr_vector<dxRender_Visual*>::iterator pit = I_._children_related.begin();	pit!=I_._children_related.end(); pit++)	add_leafs_Dynamic(*pit);
-					for (xr_vector<dxRender_Visual*>::iterator pit = I_._children_free.begin();		pit!=I_._children_free.end();	pit++)	add_leafs_Dynamic(*pit);
+						if (item._effect)
+							add_leafs_Dynamic(item._effect);
+
+						for (dxRender_Visual* pEffect : item._children_related)
+							add_leafs_Dynamic(pEffect);
+
+						for (dxRender_Visual* pEffect : item._children_free)
+							add_leafs_Dynamic(pEffect);
 				}
 			}
 		}

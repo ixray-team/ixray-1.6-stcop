@@ -76,7 +76,7 @@ xr_shared_ptr<CParticlesObject> Particles::Details::Create(LPCSTR p_name, BOOL b
 //----------------------------------------------------
 void CParticlesObject::Play(bool bHudMode)
 {
-	if (g_dedicated_server || renderable.visual == nullptr)
+	if (g_dedicated_server || renderable.visual == nullptr || m_bPlaying)
 		return;
 
 	IParticleCustom* V = renderable.visual->dcast_ParticleCustom(); VERIFY(V);
@@ -85,13 +85,13 @@ void CParticlesObject::Play(bool bHudMode)
 
 	if(!IsLooped())
 		m_iLifeTime = iFloor(V->GetTimeLimit() * 1000.f);
-
+	V->UpdateCache();
 	m_bPlaying = true;
 }
 
 void CParticlesObject::play_at_pos(const Fvector& pos, BOOL xform)
 {
-	if (g_dedicated_server || renderable.visual == nullptr)
+	if (g_dedicated_server || renderable.visual == nullptr || m_bPlaying)
 		return;
 
 	IParticleCustom* V = renderable.visual->dcast_ParticleCustom(); VERIFY(V);
@@ -101,13 +101,13 @@ void CParticlesObject::play_at_pos(const Fvector& pos, BOOL xform)
 
 	if (!IsLooped())
 		m_iLifeTime = iFloor(V->GetTimeLimit() * 1000.f);
-
+	V->UpdateCache();
 	m_bPlaying = true;
 }
 
 void CParticlesObject::Stop(BOOL bDefferedStop)
 {
-	if (g_dedicated_server || renderable.visual == nullptr)
+	if (g_dedicated_server || renderable.visual == nullptr || !m_bPlaying)
 		return;
 
 	IParticleCustom* V = renderable.visual->dcast_ParticleCustom(); VERIFY(V);
@@ -117,7 +117,7 @@ void CParticlesObject::Stop(BOOL bDefferedStop)
 		m_bPlaying = false;
 }
 
-void CParticlesObject::Update(u32 _dt)
+void CParticlesObject::Update(u32 _dt, CFrustum& viewbase)
 {
 	if (m_NeedDestroy || (!m_bPlaying && !m_bAutoRemove)) return;
 	PROF_EVENT(__FUNCTION__);
@@ -136,9 +136,8 @@ void CParticlesObject::Update(u32 _dt)
 		vis_data& vis = renderable.visual->getVisData();
 		if (_valid(vis.sphere))
 		{
-			Fvector	P; float R;
+			Fvector	P; float R = vis.sphere.R;
 			renderable.xform.transform_tiny(P, vis.sphere.P);
-			R = vis.sphere.R;
 			if (ESPATIAL_TYPE::NONE == SpatialComponent->spatial.type)
 			{
 				// First 'valid' update - register
@@ -154,7 +153,15 @@ void CParticlesObject::Update(u32 _dt)
 					spatial_move();
 				}
 			}
+
+
+			if (RDEVICE.vCameraPosition_saved.distance_to_sqr(P) > _sqr(g_pGamePersistent->Environment().CurrentEnv->fog_distance + vis.sphere.R))
+				return;
+			
+			if (!viewbase.testSphere_dirty(P, R))
+				return;
 		}
+		V->UpdateCache();
 	}
 }
 
@@ -222,4 +229,11 @@ bool CParticlesObject::IsPlaying()
 
 	IParticleCustom* V = renderable.visual->dcast_ParticleCustom(); VERIFY(V);
 	return !!V->IsPlaying();
+}
+
+u32 CParticlesObject::GetSpriteCount()
+{
+	IParticleCustom* V = renderable.visual->dcast_ParticleCustom(); VERIFY(V);
+
+	return V->SpriteCount();
 }
