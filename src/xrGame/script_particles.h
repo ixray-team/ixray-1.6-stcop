@@ -23,7 +23,7 @@ public:
 	virtual						~CScriptParticlesCustom();
 	CScriptParticles* m_owner;
 								CScriptParticlesCustom(CScriptParticles* owner, LPCSTR caParticlesName);
-	virtual void				Update		(u32 dt);
+	virtual void				Update		(u32 dt, CFrustum& viewbase);
 
 	void						LoadPath			(LPCSTR caPathName);
 	void						StartPath			(bool looped);

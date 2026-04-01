@@ -194,14 +194,6 @@ void CRenderDevice::on_idle		()
 		       ++it;
 		}
 
-		{
-			PROF_EVENT("seqParallelBeforRender");
-			for (auto& it : Device.seqParallelBeforRender)
-				it();
-
-			Device.seqParallelBeforRender.clear();
-		}
-
 		if (g_pIGameActor != nullptr)
 		{
 			g_pIGameActor->UpdatePlayerHud();
