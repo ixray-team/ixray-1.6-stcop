@@ -116,6 +116,8 @@ extern	BOOL	g_b_COD_PickUpMode;
 
 extern bool g_artefacts_on_hud;
 
+u32 particles_workers_count = 1;
+
 void register_mp_console_commands();
 //-----------------------------------------------------------
 
@@ -2464,6 +2466,8 @@ void CCC_RegisterCommands()
 {
 	// options
 	g_OptConCom.Init();
+	CMD4(CCC_Integer, "particles_workers_count", &(int&)particles_workers_count, 1, 64);
+
 	CMD1(CCC_ChangeLanguage, "language");
 
 #ifndef MASTER_GOLD
@@ -2550,7 +2554,7 @@ void CCC_RegisterCommands()
 	CMD4(CCC_Float, "fov", &g_base_fov, 5.0f, 180.0f);
 	CMD2(CCC_Boolean, "g_3d_scopes", &g_3d_scopes);
 
-	// Demo
+		// Demo
 	CMD1(CCC_DemoPlay, "demo_play");
 	CMD1(CCC_DemoRecord, "demo_record");
 	CMD1(CCC_DemoRecordSetPos, "demo_set_cam_position");

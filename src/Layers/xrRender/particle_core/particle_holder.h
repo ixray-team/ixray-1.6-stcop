@@ -22,10 +22,6 @@ namespace PAPI
 		IC ParticleHolder()
 		{
 			particles = xr_alloc<Particle>(max_particles);
-			for (u32 i = 0; i < max_particles; i++)
-			{
-				particles[i] = {};
-			}
 		}
 
 		virtual ~ParticleHolder()
@@ -51,11 +47,14 @@ namespace PAPI
 
 			// Allocate particles.
 			Particle* new_particles = xr_alloc<Particle>(max_count);
+			//std::memcpy(new_particles, particles, p_count * sizeof(Particle));
 
-			std::memcpy(new_particles, particles, p_count * sizeof(Particle));
-			for (u32 i = p_count; i < max_count; i++)
+			for (u32 i = 0; i < max_count; i++)
 			{
-				new_particles[i] = {};
+				if (i < p_count)
+					new_particles[i] = particles[i];
+				else
+					new_particles[i].Reset();
 			}
 			
 			xr_free(particles);
@@ -69,18 +68,12 @@ namespace PAPI
 		IC void RemoveParticle(u32 i)
 		{
 			if (0 == p_count)
-			{
 				return;
-			}
 
-			Particle& m = particles[i];
 			if (d_cb)
-			{
-				d_cb(owner, param, m, i);
-			}
+				d_cb(owner, param, particles[i], i);
 
-			// �� ������ ������� �������� !!! (dependence ParticleGroup)
-			m = particles[--p_count];
+			particles[i] = particles[--p_count];
 			particles[p_count].Reset();
 		}
 
@@ -106,6 +99,7 @@ namespace PAPI
 			P.rot_vel 	= rot_vel;
 			P.rot_velS 	= rot_vel;
 			P.color = color;
+			P.colorMod = { 1.0f, 1.0f, 1.0f, 1.0f };
 			P.age = age;
 			P.frame = frame;
 			P.flags.assign(flags);

@@ -176,11 +176,11 @@ void CRenderDevice::on_idle		()
 	}
 	else 
 	{
-			if (g_pGamePersistent)
+		if (g_pGamePersistent)
 			g_pGamePersistent->UpdatePlayDestroyParticles();
 
-			if (Device.ModelDefferClear)
-				Device.ModelDefferClear();
+		if (Device.ModelDefferClear)
+			Device.ModelDefferClear();
 
 		u32 tglob = Device.dwTimeGlobal;
 		for (auto it = m_time_callbacks.begin(); it != m_time_callbacks.end();)
@@ -192,14 +192,6 @@ void CRenderDevice::on_idle		()
 		    }
 			else
 		       ++it;
-		}
-
-		{
-			PROF_EVENT("seqParallelBeforRender");
-			for (auto& it : Device.seqParallelBeforRender)
-				it();
-
-			Device.seqParallelBeforRender.clear();
 		}
 
 		if (g_pIGameActor != nullptr)

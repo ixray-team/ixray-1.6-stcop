@@ -89,6 +89,7 @@ dxRender_Visual*	CModelPool::Instance_Duplicate	(dxRender_Visual* V)
 
 dxRender_Visual*	CModelPool::Instance_Load		(const char* N, BOOL allow_register)
 {
+	PROF_EVENT(__FUNCTION__);
 	dxRender_Visual	*V;
 	string_path		fn;
 	string_path		name;
@@ -129,6 +130,7 @@ dxRender_Visual*	CModelPool::Instance_Load		(const char* N, BOOL allow_register)
 
 dxRender_Visual* CModelPool::Instance_Load(const char* name, IReader* data, BOOL allow_register)
 {
+	PROF_EVENT(__FUNCTION__);
 	dxRender_Visual	*V;
 	
 	ogf_header			H;
@@ -458,7 +460,7 @@ void 	CModelPool::Render(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, 
     case MT_SKELETON_ANIM:
     case MT_SKELETON_RIGID:{
         if (_IsBoxVisible(m_pVisual,mTransform)){
-            CKinematics* pV		= dynamic_cast<CKinematics*>(m_pVisual); VERIFY(pV);
+            CKinematics* pV		= smart_cast<CKinematics*>(m_pVisual); VERIFY(pV);
             if (fis_zero(m_fLOD,EPS)&&pV->m_lod){
 		        if (_IsValidShader(pV->m_lod,priority,strictB2F)){
 	                RCache.set_Shader		(pV->m_lod->shader?pV->m_lod->shader: EDevice->m_WireShader);
@@ -480,7 +482,7 @@ void 	CModelPool::Render(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, 
     }break;
     case MT_HIERRARHY:{
         if (_IsBoxVisible(m_pVisual,mTransform)){
-            FHierrarhyVisual* pV		= dynamic_cast<FHierrarhyVisual*>(m_pVisual); VERIFY(pV);
+            FHierrarhyVisual* pV		= smart_cast<FHierrarhyVisual*>(m_pVisual); VERIFY(pV);
             I = pV->children.begin		();
             E = pV->children.end		();
             for (; I!=E; I++){
@@ -493,17 +495,19 @@ void 	CModelPool::Render(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, 
         }
     }break;
     case MT_PARTICLE_GROUP:{
-        PS::CParticleGroup* pG			= dynamic_cast<PS::CParticleGroup*>(m_pVisual); VERIFY(pG);
-//		if (_IsBoxVisible(m_pVisual,mTransform))
-        {
-            RCache.set_xform_world	  		(mTransform);
-            for (PS::CParticleGroup::SItemVecIt i_it=pG->items.begin(); i_it!=pG->items.end(); i_it++){
-                xr_vector<dxRender_Visual*>	visuals;
-                i_it->GetVisuals			(visuals);
-                for (xr_vector<dxRender_Visual*>::iterator it=visuals.begin(); it!=visuals.end(); it++)
-                    Render					(*it,Fidentity,priority,strictB2F,m_fLOD);
-            }
-        }
+		PS::CParticleGroup* pG = smart_cast<PS::CParticleGroup*>(m_pVisual); VERIFY(pG);
+		xrSRWLockGuard srwguard(&pG->lock, true);
+		for (PS::CParticleGroup::SItem& item : pG->items)
+		{
+			if (item._effect)
+				Render(item._effect, Fidentity, priority, strictB2F, m_fLOD);
+
+			for (dxRender_Visual* pEffect : item._children_related)
+				Render(pEffect, Fidentity, priority, strictB2F, m_fLOD);
+
+			for (dxRender_Visual* pEffect : item._children_free)
+				Render(pEffect, Fidentity, priority, strictB2F, m_fLOD);
+		}
     }break;
     case MT_PARTICLE_EFFECT:{
 //		if (_IsBoxVisible(m_pVisual,mTransform))

@@ -476,13 +476,79 @@ void CGamePersistent::UpdateParticles()
 	{
 		PROF_EVENT(__FUNCTION__);
 		u32 dwTime = Device.dwTimeGlobal;
-		for (xr_shared_ptr<CParticlesObject> particle : ps_active)
+
+		static CFrustum frustum;
+		frustum.CreateFromMatrix(Device.mFullTransform_saved, FRUSTUM_P_LRTB | FRUSTUM_P_FAR);
+
+		extern u32 particles_workers_count;
+		static u32 last_count = particles_workers_count;
+		static xr_vector<std::pair<u32, xr_vector<xr_shared_ptr<CParticlesObject>>>> workers(last_count);
+
+		if (particles_workers_count <= 1)
 		{
-			if (!particle->m_NeedDestroy)
+			for (xr_shared_ptr<CParticlesObject> particle : ps_active)
 			{
-				particle->Update(dwTime - particle->dwLastTime);
-				particle->dwLastTime = dwTime;
+				if (!particle->m_NeedDestroy)
+				{
+					particle->Update(dwTime - particle->dwLastTime, frustum);
+					particle->dwLastTime = dwTime;
+				}
 			}
+			return;
+		}
+
+		if (last_count != particles_workers_count)
+		{
+			last_count = particles_workers_count;
+			workers.resize(last_count);
+		}
+
+		for (u32 i = 0; i < last_count; ++i)
+		{
+			workers[i].first = 0;
+			workers[i].second.clear();
+		}
+
+		std::sort(ps_active.begin(), ps_active.end(),
+			[](const xr_shared_ptr<CParticlesObject>& a, const xr_shared_ptr<CParticlesObject>& b)
+			{
+				return a->GetSpriteCount() > b->GetSpriteCount();
+			});
+
+		for (auto& particle : ps_active)
+		{
+			u32 min_group = 0;
+			for (u32 i = 0; i < last_count; ++i)
+			{
+				if (workers[i].first < workers[min_group].first)
+					min_group = i;
+			}
+
+			workers[min_group].second.push_back(particle);
+			workers[min_group].first += particle->GetSpriteCount();
+		}
+
+		for (u32 i = 0; i < last_count; ++i)
+		{
+			Device.secondary_tasks.run([i, dwTime]()
+				{
+					PROF_START_THREAD("update_particles");
+					std::sort(workers[i].second.begin(), workers[i].second.end(), [](xr_shared_ptr<CParticlesObject>& a, xr_shared_ptr<CParticlesObject>& b)
+						{
+							return Device.vCameraPosition_saved.distance_to_sqr(a->SpatialComponent->spatial.sphere.P) 
+								< Device.vCameraPosition_saved.distance_to_sqr(b->SpatialComponent->spatial.sphere.P);
+						});
+
+					for (xr_shared_ptr<CParticlesObject>& particle : workers[i].second)
+					{
+						if (!particle->m_NeedDestroy)
+						{
+							particle->Update(dwTime - particle->dwLastTime, frustum);
+							particle->dwLastTime = dwTime;
+						}
+					}
+					PROF_STOP_THREAD();
+				});
 		}
 	}
 }
