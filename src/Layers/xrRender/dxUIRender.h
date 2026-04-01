@@ -29,8 +29,11 @@ public:
 
 	virtual LPCSTR	UpdateShaderName(LPCSTR tex_name, LPCSTR sh_name);
 
-	virtual void	CacheSetXformWorld	(const Fmatrix& M);
-	virtual void	CacheSetCullMode	(ERHI_CULLMODE);
+	virtual void CacheSetXformWorld(const Fmatrix& M);
+	virtual void CacheSetProject(const Fmatrix& M);
+	virtual void CacheSetView(const Fmatrix& M);
+
+	virtual void CacheSetCullMode(ERHI_CULLMODE);
 
 	virtual void zb_enable(u32 val);
 
