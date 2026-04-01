@@ -161,7 +161,7 @@ float		ps_r2_ls_bloom_kernel_scale	= .7f;				// r2-only	// gauss
 float		ps_r2_ls_bloom_threshold	= 0.1f;				// r2-only
 float		ps_r2_ls_depth_scale = 0.9999f; // 1.00001f
 float		ps_r2_ls_depth_bias = 0.00001f; // -0.0001f
-float		ps_r2_ls_squality			= 1.0f;				// 1.00f
+float		ps_r2_ls_squality			= 6.0f;				// 1.00f
 
 float		ps_r2_sun_bias				= -0.01f;			// 
 float		ps_r2_sun_far				= 160.f;
@@ -673,7 +673,7 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float,		"r2_ls_bloom_threshold",&ps_r2_ls_bloom_threshold,	0.f,	1.f		);
 	CMD4(CCC_Float,		"r2_ls_bloom_speed",	&ps_r2_ls_bloom_speed,		0.f,	100.f	);
 	CMD3(CCC_Mask,		"r2_ls_bloom_fast",		&ps_r2_ls_flags,			R2FLAG_FASTBLOOM);
-	CMD4(CCC_Float,		"r2_ls_squality",		&ps_r2_ls_squality,			.5f,	1.f		);
+	CMD4(CCC_Float,		"r2_ls_squality",		&ps_r2_ls_squality,			.5f,	10.f		);
 
 	CMD3(CCC_Mask,		"r2_zfill",				&ps_r2_ls_flags,			R2FLAG_ZFILL	);
 	CMD4(CCC_Float,		"r2_zfill_depth",		&ps_r2_zfill,				.001f,	.5f		);
