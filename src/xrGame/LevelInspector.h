@@ -56,14 +56,15 @@ struct LevelInspector final
 		ESI_BONES_INFO		= bit_lshift(1U),
 		ESI_BONES_LINKS		= bit_lshift(2U),
 		ESI_BONES_SHAPES	= bit_lshift(3U),
-		ESI_HIT_SHAPES		= bit_lshift(4U),
-		ESI_BBOXES			= bit_lshift(5U),
-		ESI_FIRE_POINTS		= bit_lshift(6U),
-		ESI_MAIN_BBOX		= bit_lshift(7U),
-		ESI_MAIN_SPHERE		= bit_lshift(8U),
-		ESI_MAIN_RSPHERE	= bit_lshift(9U),
-		ESI_ACTOR			= bit_lshift(10U),
-		ESI_PH_BBOX			= bit_lshift(11U),
+		ESI_BONES_VERTS		= bit_lshift(4U),
+		ESI_HIT_SHAPES		= bit_lshift(5U),
+		ESI_BBOXES			= bit_lshift(6U),
+		ESI_FIRE_POINTS		= bit_lshift(7U),
+		ESI_MAIN_BBOX		= bit_lshift(8U),
+		ESI_MAIN_SPHERE		= bit_lshift(9U),
+		ESI_MAIN_RSPHERE	= bit_lshift(10U),
+		ESI_ACTOR			= bit_lshift(11U),
+		ESI_PH_BBOX			= bit_lshift(12U),
 	};
 
 	enum EZONE_INFO
@@ -135,6 +136,9 @@ struct LevelInspector final
 
 	void OnRender();
 
+	void TrisRender(xr_vector<tvertex>& _tris, bool clear = true);
+	void LinesRender(xr_vector<lvertex>& _lines, bool clear = true);
+
 	ICF bool append_text3d(const Fvector& pos, shared_str str = "+", u32 color = color_rgba(0, 255, 100, 255), CGameFont::EAligment align = CGameFont::alCenter)
 	{
 		Fvector4 v_res;
@@ -177,6 +181,60 @@ struct LevelInspector final
 	ICF void append_tri(const Fvector& v1, const Fvector& v2, const Fvector& v3, u32 clr) { swap_color_channels(clr); tris.push_back({ v1, v2, v3, clr }); }
 	ICF void append_tri(tvertex& tri) { swap_color_channels(tri.color); tris.push_back(tri); }
 	ICF void append_tri(tvertex&& tri) { swap_color_channels(tri.color); tris.push_back(tri); }
+	ICF void append_trilines(tvertex& tri, u32 lcolor)
+	{
+		append_tri(tri);
+		append_line({ tri.v1, tri.v2, lcolor });
+		append_line({ tri.v1, tri.v3, lcolor });
+		append_line({ tri.v3, tri.v2, lcolor });
+	}
+	ICF void append_trilines(const Fvector(&tri_verts)[3], u32 tcolor, u32 lcolor)
+	{
+		swap_color_channels(tcolor);
+		swap_color_channels(lcolor);
+		append_tri({ tri_verts[0],tri_verts[1],tri_verts[2], tcolor });
+		
+		append_line({ tri_verts[0], tri_verts[1], lcolor });
+		append_line({ tri_verts[0], tri_verts[2], lcolor });
+		append_line({ tri_verts[2], tri_verts[1], lcolor });
+	}
+
+	ICF void append_lines_arrow(const Fvector& arrow_start, const Fvector& arrow_dir, float arrow_len, u32 arrow_color)
+	{
+		Fvector arrow_end;
+		arrow_end.mad(arrow_start, arrow_dir, arrow_len);
+
+		Fvector perp1, perp2;
+		if (abs(arrow_dir.x) < 0.9f)
+			perp1.set(1.0f, 0.0f, 0.0f);
+		else
+			perp1.set(0.0f, 1.0f, 0.0f);
+
+		perp2.crossproduct(perp1, arrow_dir);
+		perp2.normalize();
+		perp1.crossproduct(arrow_dir, perp2);
+		perp1.normalize();
+
+		float angle_deg = deg2rad(25.f);
+		float cos_value = std::cos(angle_deg);
+		float angles[3] = { 0.0f, 2.0943951f, 4.1887902f };
+		Fvector tip_dir;
+		for (int i = 0; i < 3; i++)
+		{
+			Fvector side_dir;
+			side_dir.mul(perp1, std::cos(angles[i]));
+			side_dir.mad(side_dir, perp2, std::sin(angles[i]));
+			side_dir.normalize();
+
+			tip_dir = Fvector(arrow_dir).invert() * cos_value + side_dir * angle_deg;
+			tip_dir.normalize();
+
+			append_line({ arrow_end, Fvector().mad(arrow_end, tip_dir, arrow_len * 0.3f), arrow_color });
+		}
+
+		append_line({ arrow_start, arrow_end, arrow_color });
+	}
+
 
 	ICF void append_axis(const Fmatrix& xform, float axis_scale = 0.1f, bool append_text = false)
 	{
@@ -269,10 +327,15 @@ struct LevelInspector final
 
 	ICF void append_aabb(const Fbox& box, u32 lcolor = u32(0), u32 tcolor = u32(0), void** fastbuff = nullptr)
 	{
-		Fobb obb;
-		obb.m_rotate.identity();
-		box.get_CD(obb.m_translate, obb.m_halfsize);
-		append_obb(obb, lcolor, tcolor, fastbuff);
+		extern lindex aabb_lindices[12];
+		extern tindex aabb_tindices[12];
+
+		swap_color_channels(lcolor);
+		swap_color_channels(tcolor);
+		Fvector vertices[8];
+		const_cast<Fbox&>(box).getpoints(vertices);
+
+		append_geometry(vertices, aabb_lindices, aabb_tindices, lcolor, tcolor, fastbuff);
 	}
 
 	ICF void append_sphere(const Fvector& pos, float radius, u32 lcolor = u32(0), u32 tcolor = u32(0), void** fastbuff = nullptr)
