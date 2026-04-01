@@ -11,6 +11,7 @@
 #include "UIInventoryWnd.h"
 #include "UICarBodyWnd.h"
 #include "inventory_item.h"
+#include "WeaponAmmo.h"
 #include "../../xrUI/UIHelper.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/Widgets/UI3tButton.h"
@@ -21,6 +22,57 @@
 #include "../../xrCore/xr_ini.h"
 #include "../../xrEngine/string_table.h"
 #include "../../xrEngine/xr_input.h"
+
+namespace
+{
+LPCSTR GetTitleStringIdForMode(CUIItemDropAmountWnd::EDropMode mode)
+{
+    switch (mode)
+    {
+    case CUIItemDropAmountWnd::eModeDrop:
+        return "st_drop_amount_title";
+    case CUIItemDropAmountWnd::eModeMove:
+        return "st_move_amount";
+    case CUIItemDropAmountWnd::eModeTake:
+        return "st_take_amount";
+    case CUIItemDropAmountWnd::eModeToOffer:
+        return "st_move_to_offer_amount";
+    case CUIItemDropAmountWnd::eModeFromOffer:
+        return "st_remove_from_offer_amount";
+    case CUIItemDropAmountWnd::eModeToCart:
+        return "st_move_to_cart_amount";
+    case CUIItemDropAmountWnd::eModeFromCart:
+        return "st_remove_from_cart_amount";
+    default:
+        return "st_drop_amount_title";
+    }
+}
+
+void UpdateItemNameText(CUIStatic* itemNameText, CInventoryItem* item, int amount)
+{
+    if (itemNameText == nullptr || item == nullptr)
+    {
+        return;
+    }
+
+    shared_str invName = pSettings->line_exist(item->m_section_id.c_str(), "inv_name") ?
+        pSettings->r_string(item->m_section_id.c_str(), "inv_name") :
+        item->m_section_id;
+
+    CWeaponAmmo* weaponAmmo = item->cast_weapon_ammo();
+    if (weaponAmmo != nullptr)
+    {
+        string256 ammoNameText;
+        xr_sprintf(ammoNameText, "%s (%d)", *g_pStringTable->translate(invName.c_str()),
+            amount * (int)weaponAmmo->m_boxCurr);
+        itemNameText->SetText(ammoNameText);
+    }
+    else
+    {
+        itemNameText->SetTextST(invName.c_str());
+    }
+}
+}
 
 CUIItemDropAmountWnd::CUIItemDropAmountWnd()
 {
@@ -106,26 +158,23 @@ void CUIItemDropAmountWnd::ShowDropAmount(u32 max, EDropMode mode, CInventoryIte
     _simpleDropMode = true;
     _maxAmount = (int)max;
     _pItem = pItem;
-    _currentAmount = 1;
+    _currentAmount = (_maxAmount + 2) / 2;
 
     Enable(true);
     ShowDialog(false);
 
     _trackBar->SetOptIBounds(1, max + 1);
-    _trackBar->SetIValue(1);
-    _trackBar->UndoOptValue();
+    _trackBar->SetIValue(_currentAmount);
+    _trackBar->SaveBackUpOptValue();
     _currentAmount = _trackBar->GetIValue();
 
     _dropMode = mode;
 
-    _titleText->SetTextST("st_drop_amount_title");
+    _titleText->SetTextST(GetTitleStringIdForMode(_dropMode));
 
     if (_pItem)
     {
-        shared_str invName = pSettings->line_exist(_pItem->m_section_id.c_str(), "inv_name")
-        ? pSettings->r_string(_pItem->m_section_id.c_str(), "inv_name")
-        : _pItem->m_section_id;
-    _itemNameText->SetTextST(invName.c_str());
+        UpdateItemNameText(_itemNameText, _pItem, _currentAmount);
     }
     else
     {
@@ -148,29 +197,30 @@ void CUIItemDropAmountWnd::ShowDropAmount(u32 max, EDropMode mode, CInventoryIte
 void CUIItemDropAmountWnd::Show(CInventoryItem* pItem, int maxAmount, std::function<void(int)> callback)
 {
     if (!callback)
+    {
         return;
+    }
 
     _simpleDropMode = false;
     _pItem = pItem;
     _maxAmount = maxAmount;
     _callback = std::move(callback);
-    _currentAmount = 1;
+    _currentAmount = (_maxAmount + 2) / 2;
 
     Enable(true);
     ShowDialog(false);
 
     _trackBar->SetOptIBounds(1, maxAmount + 1);
-    _trackBar->SetIValue(1);
+    _trackBar->SetIValue(_currentAmount);
     _trackBar->SaveBackUpOptValue();
 
     if (pItem)
     {
-        shared_str invName = pSettings->line_exist(pItem->m_section_id.c_str(), "inv_name")
-            ? pSettings->r_string(pItem->m_section_id.c_str(), "inv_name")
-            : pItem->m_section_id;
-        _itemNameText->SetTextST(invName.c_str());
+        UpdateItemNameText(_itemNameText, pItem, _currentAmount);
         if (_itemNameText->IsColorAnimationPresent())
+        {
             _itemNameText->ResetColorAnimation();
+        }
     }
 
     if (_editAmount)
@@ -193,6 +243,12 @@ void CUIItemDropAmountWnd::SyncValueToEdit()
     string32 buf;
     xr_sprintf(buf, "%d", _currentAmount);
     _editAmount->SetText(buf);
+
+    if (_pItem)
+    {
+        UpdateItemNameText(_itemNameText, _pItem, _currentAmount);
+    }
+
     UpdateWeightText();
 }
 
@@ -278,7 +334,7 @@ void CUIItemDropAmountWnd::PerformDrop()
     case eModeFromCart:
     {
         if (CurrentGameUI()->ActorMenu())
-            CurrentGameUI()->ActorMenu()->ToPartnerTradeAll((u32)amount);
+            CurrentGameUI()->ActorMenu()->ToPartnerTradeBagAll((u32)amount);
         break;
     }
     }
