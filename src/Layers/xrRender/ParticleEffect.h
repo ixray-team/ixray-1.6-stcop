@@ -13,27 +13,23 @@ namespace PS
 	class ECORE_API CParticleEffect final: public dxRender_Visual, public IParticleCustom
 	{
 		friend class CPEDef;
-	protected:
-		float				m_fElapsedLimit;
+	public:
+		float				m_fElapsedLimit = 0.f;
 
-		s32					m_MemDT;
+		s32					m_MemDT = 0;
 
-		Fvector				m_InitialPosition;
+		Fvector				m_InitialPosition = {0.f, 0.f, 0.f};
 		xrCriticalSection	onframe_lock, cache_lock;
-	public:
-		CPEDef*				m_Def;
+		xr_atomic_u32 chache_frame = 0;
+		CPEDef*				m_Def = nullptr;
 		ref_geom			geom;
-        Fmatrix				m_XFORM;
+        Fmatrix				m_XFORM = Fidentity;
 
-		struct LITBUFF { FVF::LIT buff[4]; };
-#ifndef _EDITOR
-		xr_vector<LITBUFF> m_ps_cache;
-#endif
 		PAPI::ParticleHolder Pholder;
-    protected:
-    	DestroyCallback		m_DestroyCallback;
-        CollisionCallback	m_CollisionCallback;
-	public:
+
+    	DestroyCallback		m_DestroyCallback = nullptr;
+        CollisionCallback	m_CollisionCallback = nullptr;
+
 		enum{
 			flRT_Playing		= (1<<0),
 			flRT_DefferedStop	= (1<<1),
@@ -41,28 +37,24 @@ namespace PS
 			flRT_HUDmode		= (1<<3),
 			flRT_LiveUpdate		= (1<<4),
 		};
-		Flags8				m_RT_Flags;
-	protected:
+		Flags8				m_RT_Flags = {0u};
 
-		void				RefreshShader		();
-	public:
-							CParticleEffect		();
 		virtual 			~CParticleEffect	();
 
 		void	 			OnFrame				(u32 dt);
 #ifndef _EDITOR
-		void	 			UpdateCache			();
+		virtual void	 	UpdateCache			();
 #endif
 
 		virtual void		Render				(float LOD);
 		virtual void		Copy				(dxRender_Visual* pFrom);
 
-		virtual void 		OnDeviceCreate		();
-		virtual void 		OnDeviceDestroy		();
+		virtual void 		GeomCreate();
+		virtual void 		GeomDestroy();
 
 		virtual void		UpdateParent		(const Fmatrix& m, const Fvector& velocity, BOOL bXFORM);
 
-		BOOL				Compile				(CPEDef* def);
+		void				Compile				(CPEDef* def);
 
 		ICF CPEDef*			GetDefinition		(){return m_Def;}
 
@@ -84,7 +76,7 @@ namespace PS
         void				SetCollisionCB		(CollisionCallback	collision_cb)	{m_CollisionCallback= collision_cb;}
         void				SetBirthDeadCB		(PAPI::OnBirthParticleCB bc, PAPI::OnDeadParticleCB dc, void* owner, u32 p);		
 
-	    virtual u32			ParticlesCount		();
+	    virtual u32			SpriteCount		();
 		PAPI::ParticleAction* FindPA(shared_str PEName, PAPI::PActionEnum Action) override;
 
 		virtual IParticleCustom* dcast_ParticleCustom() { return this; }
