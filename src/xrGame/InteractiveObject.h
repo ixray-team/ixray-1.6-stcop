@@ -17,9 +17,11 @@ public:
 	shared_str m_tip_text;
 	shared_str m_tip_text_default;
 	xr_vector<xr_string> m_bone_names;
-	xr_string m_spawn_section;
+	xr_vector<xr_string> m_spawn_sections;
 	xr_vector<ref_sound> m_use_sounds;
 	u8 left_uses = 0;
+	bool useSpawnRandomSections = false;
+	bool useSpawnAtBoneIndexSections = false;
 
 	CInteractiveObject();
 	~CInteractiveObject();
@@ -41,7 +43,7 @@ public:
 	virtual void Load(LPCSTR section) override;
 	void SetVisible(shared_str bone_name, BOOL bVisibility);
 	void ParseRandomSounds(LPCSTR section, LPCSTR soundParameter, xr_vector<ref_sound>& soundsArray);
-	void ParseBones(LPCSTR section, LPCSTR bonesParameter, xr_vector<xr_string>& _array);
+	void ParseToVector(LPCSTR section, LPCSTR bonesParameter, xr_vector<xr_string>& _array);
 	ICF ref_sound& GetRandomSound(xr_vector<ref_sound>& soundsArray) { return soundsArray[::Random.randI(soundsArray.size())]; }
 	void OnUse();
 
