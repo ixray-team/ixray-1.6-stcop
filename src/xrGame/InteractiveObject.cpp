@@ -66,10 +66,13 @@ void CInteractiveObject::Load(LPCSTR section)
 {
 	inherited::Load(section);
 
-	ParseBones(section, "items_bones_names", m_bone_names);
+	ParseToVector(section, "items_bones_names", m_bone_names);
 	left_uses = m_bone_names.size();
+	ParseToVector(section, "spawn_section_name", m_spawn_sections);
 
-	m_spawn_section = READ_IF_EXISTS(pSettings, r_string, section, "spawn_section_name", "");
+	useSpawnRandomSections = READ_IF_EXISTS(pSettings, r_bool, section, "use_spawn_random_sections", false);
+	useSpawnAtBoneIndexSections = READ_IF_EXISTS(pSettings, r_bool, section, "use_spawn_at_bone_index_sections", false);
+
 	ParseRandomSounds(section, "use_sounds", m_use_sounds);
 	m_tip_text_default = READ_IF_EXISTS(pSettings, r_string, section, "use_tip_text", "");
 	m_tip_text = m_tip_text_default;
@@ -77,7 +80,7 @@ void CInteractiveObject::Load(LPCSTR section)
 	SetText();
 }
 
-void CInteractiveObject::ParseBones(LPCSTR section, LPCSTR bonesParameter, xr_vector<xr_string>& _array)
+void CInteractiveObject::ParseToVector(LPCSTR section, LPCSTR bonesParameter, xr_vector<xr_string>& _array)
 {
 	_array.clear();
 
@@ -122,14 +125,12 @@ void CInteractiveObject::save(NET_Packet& output_packet)
 {
 	inherited::save(output_packet);
 	output_packet.w_u8(left_uses);
-	//output_packet.r_stringZ(m_tip_text);
 }
 
 void CInteractiveObject::load(IReader& input_packet)
 {
 	inherited::load(input_packet);
 	left_uses = input_packet.r_u8();
-	//input_packet.r_stringZ(m_tip_text);
 
 	if (!m_bone_names.empty())
 	{
@@ -150,15 +151,27 @@ void CInteractiveObject::OnUse()
 {
 	if (left_uses > 0)
 	{
-		if (!m_spawn_section.empty())
+		if (!m_spawn_sections.empty())
 		{
 			if (CActor* act = Actor())
 			{
 				if (CALifeSimulator* sim = const_cast<CALifeSimulator*>(&ai().alife()))
 				{
+					LPCSTR section = m_spawn_sections[0].c_str();
+
+					if (useSpawnRandomSections)
+					{
+						section = m_spawn_sections[::Random.randI(0, m_spawn_sections.size())].c_str();
+					}
+
+					if (useSpawnAtBoneIndexSections && !m_bone_names.empty() && left_uses - 1 >= 0)
+					{
+						section = m_spawn_sections[left_uses - 1].c_str();;
+					}
+
 					CALifeSimulator__spawn_item2(
 						sim,
-						m_spawn_section.c_str(),
+						section,
 						act->Position(),
 						act->cast_game_object()->ai_location().level_vertex_id(),
 						act->cast_game_object()->ai_location().game_vertex_id(),
