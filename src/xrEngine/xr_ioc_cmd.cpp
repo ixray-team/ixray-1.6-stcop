@@ -673,6 +673,35 @@ extern float fps_smoothing_alpha;
 
 extern bool use_smoothed_delta;
 
+#if defined(IXRAY_PROFILER)
+class CCC_Profiler : public IConsole_Command
+{
+	bool start_profile = false;
+public:
+	CCC_Profiler(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+	virtual void Execute(LPCSTR args)
+	{
+		if (!start_profile)
+		{
+			//OPTICK_SET_MEMORY_ALLOCATOR(
+			//        [](size_t size) -> void * { return operator new(size); },
+			//        [](void *p) { operator delete(p); },
+			//        []() { /* Do some TLS initialization here if needed */ }
+			//);
+			OPTICK_START_CAPTURE(Optick::Mode::Type(Optick::Mode::INSTRUMENTATION | Optick::Mode::TAGS | Optick::Mode::AUTOSAMPLING | Optick::Mode::SWITCH_CONTEXT | Optick::Mode::IO | Optick::Mode::SYS_CALLS | Optick::Mode::OTHER_PROCESSES));
+			start_profile = true;
+		}
+		else
+		{
+			OPTICK_STOP_CAPTURE();
+			shared_str str; str.printf("%s.opt", args ? args : "profile_name");
+			OPTICK_SAVE_CAPTURE(str.c_str());
+			//OPTICK_SHUTDOWN();
+			start_profile = false;
+		}
+	}
+};
+#endif
 void CCC_Register()
 {
 	extern XRCORE_API bool ignore_error_window;
@@ -684,6 +713,9 @@ void CCC_Register()
 	CMD2(CCC_Boolean, "ui_dbg_cmd_vars",	&Engine.External.EditorStates[(int)EditorUI::CmdVars]);
 	CMD2(CCC_Boolean, "ui_dbg_cmd_console", &Engine.External.EditorStates[(int)EditorUI::CmdConsole]);
 
+#if defined(IXRAY_PROFILER)
+	CMD1(CCC_Profiler, "profiler_switch");
+#endif
 	// General
 	CMD1(CCC_Help,		"help"					);
 	CMD1(CCC_Quit,		"quit"					);
