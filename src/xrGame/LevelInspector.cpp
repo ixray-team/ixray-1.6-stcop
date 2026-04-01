@@ -37,46 +37,30 @@
 #include "ImUtils\ImUtils.h"
 #include "script_game_object.h"
 
-Fvector aabb_selection_vertices[]
+Fvector aabb_selection_vertices[32]
 {
-	{-0.505f, -0.505f, -0.505f},
-	{ 0.505f, -0.505f, -0.505f},
-	{-0.505f,  0.505f, -0.505f},
-	{ 0.505f,  0.505f, -0.505f},
-	{-0.505f, -0.505f,  0.505f},
-	{ 0.505f, -0.505f,  0.505f},
-	{-0.505f,  0.505f,  0.505f},
-	{ 0.505f,  0.505f,  0.505f},
+	{-0.505f, -0.505f, -0.505f}, { 0.505f, -0.505f, -0.505f},
+	{-0.505f,  0.505f, -0.505f}, { 0.505f,  0.505f, -0.505f},
+	{-0.505f, -0.505f,  0.505f}, { 0.505f, -0.505f,  0.505f},
+	{-0.505f,  0.505f,  0.505f}, { 0.505f,  0.505f,  0.505f},
 
-	{-0.255f, -0.505f, -0.505f},
-	{ 0.255f, -0.505f, -0.505f},
-	{-0.255f,  0.505f, -0.505f},
-	{ 0.255f,  0.505f, -0.505f},
-	{-0.255f, -0.505f,  0.505f},
-	{ 0.255f, -0.505f,  0.505f},
-	{-0.255f,  0.505f,  0.505f},
-	{ 0.255f,  0.505f,  0.505f},
+	{-0.255f, -0.505f, -0.505f}, { 0.255f, -0.505f, -0.505f},
+	{-0.255f,  0.505f, -0.505f}, { 0.255f,  0.505f, -0.505f},
+	{-0.255f, -0.505f,  0.505f}, { 0.255f, -0.505f,  0.505f},
+	{-0.255f,  0.505f,  0.505f}, { 0.255f,  0.505f,  0.505f},
 
-	{-0.505f, -0.255f, -0.505f},
-	{ 0.505f, -0.255f, -0.505f},
-	{-0.505f,  0.255f, -0.505f},
-	{ 0.505f,  0.255f, -0.505f},
-	{-0.505f, -0.255f,  0.505f},
-	{ 0.505f, -0.255f,  0.505f},
-	{-0.505f,  0.255f,  0.505f},
-	{ 0.505f,  0.255f,  0.505f},
+	{-0.505f, -0.255f, -0.505f}, { 0.505f, -0.255f, -0.505f},
+	{-0.505f,  0.255f, -0.505f}, { 0.505f,  0.255f, -0.505f},
+	{-0.505f, -0.255f,  0.505f}, { 0.505f, -0.255f,  0.505f},
+	{-0.505f,  0.255f,  0.505f}, { 0.505f,  0.255f,  0.505f},
 
-	{-0.505f, -0.505f, -0.255f},
-	{ 0.505f, -0.505f, -0.255f},
-	{-0.505f,  0.505f, -0.255f},
-	{ 0.505f,  0.505f, -0.255f},
-	{-0.505f, -0.505f,  0.255f},
-	{ 0.505f, -0.505f,  0.255f},
-	{-0.505f,  0.505f,  0.255f},
-	{ 0.505f,  0.505f,  0.255f}
+	{-0.505f, -0.505f, -0.255f}, { 0.505f, -0.505f, -0.255f},
+	{-0.505f,  0.505f, -0.255f}, { 0.505f,  0.505f, -0.255f},
+	{-0.505f, -0.505f,  0.255f}, { 0.505f, -0.505f,  0.255f},
+	{-0.505f,  0.505f,  0.255f}, { 0.505f,  0.505f,  0.255f}
 };
 
-LevelInspector::lindex aabb_selection_lindices[]
+LevelInspector::lindex aabb_selection_lindices[24]
 {
 	{0, 8}, {0, 16}, {0, 24},
 	{1, 9}, {1, 17}, {1, 25},
@@ -87,7 +71,41 @@ LevelInspector::lindex aabb_selection_lindices[]
 	{6, 14}, {6, 22}, {6, 30},
 	{7, 15}, {7, 23}, {7, 31}
 };
-constexpr int aabb_lvertices_max = std::size(aabb_selection_lindices) * 2;
+constexpr int aabb_selection_lvertices_max = std::size(aabb_selection_lindices) * 2;
+
+Fvector aabb_vertices[8]
+{
+	{-.5f, -.5f, -.5f},
+	{.5f, -.5f, -.5f},
+	{.5f, -.5f, .5f},
+	{-.5f, -.5f, .5f},
+	{-.5f, .5f, -.5f},
+	{.5f, .5f, -.5f},
+	{.5f, .5f, .5f},
+	{-.5f, .5f, .5f}
+};
+
+LevelInspector::lindex aabb_lindices[12]
+{
+	{0,1}, {1,2},
+	{2,3}, {3,0},
+	{4,5}, {5,6},
+	{6,7}, {7,4},
+	{0,4}, {1,5},
+	{2,6}, {3,7}
+};
+constexpr int aabb_lvertices_max = std::size(aabb_lindices) * 2;
+
+LevelInspector::tindex aabb_tindices[12]
+{
+	{0,1,2}, {0,2,3},
+	{4,6,5}, {4,7,6},
+	{0,5,1}, {0,4,5},
+	{2,6,7}, {2,7,3},
+	{0,3,7}, {0,7,4},
+	{1,5,6}, {1,6,2}
+};
+constexpr int aabb_tvertices_max = std::size(aabb_tindices) * 3;
 
 Fvector obb_vertices[8]
 {
@@ -411,6 +429,7 @@ ICF void RenderSkeletonFlags(Flags32& flags, bool hud_mode)
 	ImGui::CheckboxFlags(hud_mode ? "Draw bones info" : "Draw bones info ", &flags.flags, LevelInspector::ESKELETON_INFO::ESI_BONES_INFO);
 	ImGui::CheckboxFlags(hud_mode ? "Draw bones shapes" : "Draw bones shapes ", &flags.flags, LevelInspector::ESKELETON_INFO::ESI_BONES_SHAPES);
 	ImGui::CheckboxFlags(hud_mode ? "Draw bones links" : "Draw bones links ", &flags.flags, LevelInspector::ESKELETON_INFO::ESI_BONES_LINKS);
+	ImGui::CheckboxFlags(hud_mode ? "Draw bones verts" : "Draw bones verts ", &flags.flags, LevelInspector::ESKELETON_INFO::ESI_BONES_VERTS);
 
 	if (hud_mode)
 		ImGui::CheckboxFlags("Draw fire&shell points", &flags.flags, LevelInspector::ESKELETON_INFO::ESI_FIRE_POINTS);
@@ -718,8 +737,7 @@ void LevelInspector::OnRender()
 			DrawHOM();
 		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_ALL_SPATIALS) || m_flags.test(ESCENE_FLAGS::ESF_DRAW_SPATIAL_SPACE))
 			DrawSpatials();
-		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM) || m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS))
-			DrawCFORM();
+
 		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_LEVEL_BOUNDS))
 			append_aabb(g_pGameLevel->ObjectSpace.GetBoundingVolume(), color_rgba(10, 10, 10, 122), color_rgba(255, 220, 10, 50));
 	}
@@ -765,61 +783,9 @@ void LevelInspector::OnRender()
 		UIRender->CacheSetCullMode(ERHI_CULLMODE::NONE);
 		UIRender->zb_enable(zbuffer_enable);
 		constexpr Fvector2 nulluv = { 0.f,0.f };
-		if (!tris_empty)
-		{
-			u32 MAX_TRIS = UIRender->VBuffMaxSize() / sizeof(IUIRender::r_vertL<3>);
-			u32 total_tris = (u32)tris.size();
 
-			for (u32 start_idx = 0u; start_idx < total_tris; start_idx += MAX_TRIS)
-			{
-				u32 batch_size = std::min(MAX_TRIS, total_tris - start_idx);
-				IUIRender::r_vertL<3>** buffer = (IUIRender::r_vertL<3>**)UIRender->StartPrimitive(batch_size * 3u, IUIRender::ptTriList, IUIRender::pttL);
-				IUIRender::r_vertL<3>* buff = *buffer;
-				for (u32 i = 0u; i < batch_size; ++i)
-				{
-					tvertex& tri = tris[start_idx + i];
-					buff[i] =
-					{ 
-						tri.v1,tri.color,
-						tri.v2,tri.color,
-						tri.v3,tri.color
-					};
-				}
-				*buffer += batch_size;
-
-				UIRender->FlushPrimitive();
-			}
-
-			tris.clear();
-		}
-
-		if (!lines_empty)
-		{
-			u32 MAX_LINES = UIRender->VBuffMaxSize() / sizeof(IUIRender::r_vertL<2>);
-			u32 total_lines = (u32)lines.size();
-
-			for (u32 start_idx = 0u; start_idx < total_lines; start_idx += MAX_LINES)
-			{
-				u32 batch_size = std::min(MAX_LINES, total_lines - start_idx);
-				IUIRender::r_vertL<2>** buffer = (IUIRender::r_vertL<2>**)UIRender->StartPrimitive(batch_size * 2u, IUIRender::ptLineList, IUIRender::pttL);
-				IUIRender::r_vertL<2>* buff = *buffer;
-				for (u32 i = 0u; i < batch_size; ++i)
-				{
-					lvertex& line = lines[start_idx + i];
-
-					buff[i] =
-					{ 
-						line.v1,line.color,
-						line.v2,line.color
-					};
-				}
-				*buffer += batch_size;
-
-				UIRender->FlushPrimitive();
-			}
-
-			lines.clear();
-		}
+		TrisRender(tris);
+		LinesRender(lines);
 
 		UIRender->CacheSetCullMode(ERHI_CULLMODE::BACK);
 
@@ -827,8 +793,14 @@ void LevelInspector::OnRender()
 			Render->rmNormal();
 	}
 
-	if (!hud_mode && m_flags.test(ESCENE_FLAGS::ESF_DRAW_L_GRID))
-		DrawLevelGraph();
+	if(!hud_mode)
+	{
+		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM) || m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS))
+			DrawCFORM();
+
+		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_L_GRID))
+			DrawLevelGraph();
+	}
 
 	dbg_font->OnRender();
 
@@ -850,6 +822,69 @@ void LevelInspector::OnRender()
 		Device.m_pRender->SetCacheXform(Device.mView, Device.mProject);
 		Device.m_pRender->SetCacheXformOld(Device.mView_old, Device.mProject_old);
 	}
+}
+
+void LevelInspector::TrisRender(xr_vector<tvertex>& _tris, bool clear)
+{
+	if (_tris.empty()) return;
+	PROF_EVENT(__FUNCTION__);
+
+	u32 MAX_TRIS = UIRender->VBuffMaxSize() / sizeof(IUIRender::r_vertL<3>);
+	u32 total_tris = (u32)_tris.size();
+
+	for (u32 start_idx = 0u; start_idx < total_tris; start_idx += MAX_TRIS)
+	{
+		u32 batch_size = std::min(MAX_TRIS, total_tris - start_idx);
+		IUIRender::r_vertL<3>** buffer = (IUIRender::r_vertL<3>**)UIRender->StartPrimitive(batch_size * 3u, IUIRender::ptTriList, IUIRender::pttL);
+		IUIRender::r_vertL<3>* buff = *buffer;
+		for (u32 i = 0u; i < batch_size; ++i)
+		{
+			tvertex& tri = _tris[start_idx + i];
+			buff[i] =
+			{
+				tri.v1,tri.color,
+				tri.v2,tri.color,
+				tri.v3,tri.color
+			};
+		}
+		*buffer += batch_size;
+
+		UIRender->FlushPrimitive();
+	}
+
+	if(clear)
+		_tris.clear();
+}
+void LevelInspector::LinesRender(xr_vector<lvertex>& _lines, bool clear)
+{
+	if (_lines.empty()) return;
+	PROF_EVENT(__FUNCTION__);
+
+	u32 MAX_LINES = UIRender->VBuffMaxSize() / sizeof(IUIRender::r_vertL<2>);
+	u32 total_lines = (u32)_lines.size();
+
+	for (u32 start_idx = 0u; start_idx < total_lines; start_idx += MAX_LINES)
+	{
+		u32 batch_size = std::min(MAX_LINES, total_lines - start_idx);
+		IUIRender::r_vertL<2>** buffer = (IUIRender::r_vertL<2>**)UIRender->StartPrimitive(batch_size * 2u, IUIRender::ptLineList, IUIRender::pttL);
+		IUIRender::r_vertL<2>* buff = *buffer;
+		for (u32 i = 0u; i < batch_size; ++i)
+		{
+			lvertex& line = _lines[start_idx + i];
+
+			buff[i] =
+			{
+				line.v1,line.color,
+				line.v2,line.color
+			};
+		}
+		*buffer += batch_size;
+
+		UIRender->FlushPrimitive();
+	}
+
+	if (clear)
+		_lines.clear();
 }
 
 void LevelInspector::DrawWayPoints()
@@ -2234,7 +2269,7 @@ void LevelInspector::DrawLevelGraph()
 		}
 	}
 }
-
+#include "../xrEngine/EnnumerateVertices.h"
 void LevelInspector::DrawSkeleton(IKinematics* pKinematics, Fmatrix& xform, CGameObject* GO)
 {
 	if (m_skeleton_flags.test(ESKELETON_INFO::ESI_NONE))
@@ -2262,7 +2297,7 @@ void LevelInspector::DrawSkeleton(IKinematics* pKinematics, Fmatrix& xform, CGam
 		Fmatrix obb_xform, bone_xform;
 		for (std::pair<shared_str, u16>& bone : *pKinematics->LL_Bones())
 		{
-			
+
 			CBoneData& data = pKinematics->LL_GetData(bone.second);
 			SBoneShape shape = data.shape;
 			if (m_skeleton_flags.test(ESKELETON_INFO::ESI_BONES_SHAPES) && pKinematics->LL_GetBoneVisible(bone.second))
@@ -2312,7 +2347,7 @@ void LevelInspector::DrawSkeleton(IKinematics* pKinematics, Fmatrix& xform, CGam
 					if (m_selection_flags.test(ESELECTION_FLAGS::ESLF_O) && GO && (shape.flags.test(SBoneShape::sfNoPickable) || !GO->getEnabled()) && GO->dcast_CObject() != RQ.O && Cyl.intersect(RD.start, RD.dir, RD.range))
 					{
 						Fvector C = Cyl.m_center;
-						C.y += Cyl.m_radius*2.f;
+						C.y += Cyl.m_radius * 2.f;
 						DrawObjectInfo(GO, C, { 0.f, 0.f });
 					}
 					break;
@@ -2368,6 +2403,28 @@ void LevelInspector::DrawSkeleton(IKinematics* pKinematics, Fmatrix& xform, CGam
 						child_xform.mulA_43(xform);
 						append_line({ bone_xform.c, child_xform.c, color_rgba(255, 200, 100, 255) });
 					}
+				}
+			}
+		}
+
+		if (m_skeleton_flags.test(ESKELETON_INFO::ESI_BONES_VERTS))
+		{
+			static xr_vector<Fvector> m_vertices;
+			m_vertices.reserve(pKinematics->GetFacesCount() * 3);
+
+			pKinematics->EnumBoneVertices(m_vertices);
+			int counter = 0;
+			Fvector buff[3];
+			for (Fvector& vert : m_vertices)
+			{
+				buff[counter] = vert;
+				xform.transform_tiny(buff[counter]);
+				counter++;
+
+				if (counter == 3)
+				{
+					append_trilines(buff, color_rgba(100, 100, 100, 45), color_rgba(20, 20, 20, 255));
+					counter = 0;
 				}
 			}
 		}
@@ -2464,7 +2521,7 @@ void LevelInspector::DrawSkeleton(IKinematics* pKinematics, Fmatrix& xform, CGam
 				Fbox aabb;
 				trans.transform_tiny(box_c);
 				aabb.setb(box_c, box_hs);
-				append_aabb(aabb, color_rgba(0, 255, 0, 100), color_rgba(0, 255, 0, 10));
+				append_aabb(aabb, lines_color, triangles_color);
 			}
 		}
 	}
@@ -3531,85 +3588,191 @@ void LevelInspector::DrawHOM()
 
 void LevelInspector::DrawCFORM()
 {
+	PROF_EVENT(__FUNCTION__);
+	static struct tmp_prim
+	{
+		xr_vector<lvertex> temp_lines;
+		xr_vector<tvertex> temp_tris;
+
+		ICF void clear()
+		{
+			temp_lines.clear();
+			temp_tris.clear();
+		}
+	} temp_prims[2];
+	static xr_task_group cform_task;
+
 	if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM) || m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS))
 	{
-		static CDB::COLLIDER xrc;
-		static CDB::RESULT* selected_prim;
-		selected_prim = nullptr;
+		static u32 prims_calc = 0, prims_render = 1;
+		
+		static xr_atomic_bool task_finished = true;
+		static CDB::RESULT selected_prim{{zero_vel,zero_vel,zero_vel},0u,-1,0.f,0.f,0.f};
 
-		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS))
+		if ((m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM) || m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS)) && task_finished.load())
 		{
-			xrc.ray_options(CDB::OPT_ONLYNEAREST);
-			xrc.ray_query(g_pGameLevel->ObjectSpace.GetStaticModel(), Device.vCameraPosition, Device.vCameraDirection);
-			if (!xrc.r_vec().empty())
-				selected_prim = &xrc.r_vec()[0];
-		}
-		static u32 mask; mask = Render->ViewBase.getMask();
-		static float max_dist; max_dist = g_pGamePersistent->Environment().CurrentEnv->fog_distance;
-		xrc.custom_query(g_pGameLevel->ObjectSpace.GetStaticModel(),
-			[](const Fvector& center, const Fvector& extents, bool leaf, void* ptr)
+			task_finished.store(false);
+			std::swap(prims_calc, prims_render);
+			cform_task.run([this]()
 			{
-				const Fvector& cam_pos = Device.vCameraPosition;
-				float distsqr = cam_pos.distance_to_sqr(center) + EPS;
-				float radius = extents.magnitude();
-				LevelInspector* LE = (LevelInspector*)ptr;
-				if (radius / distsqr <= LE->cform_ssa || distsqr > _sqr(max_dist + radius))
-					return false;
+				PROF_EVENT("build_cform_tree");
+				static CDB::COLLIDER xrc;
+				temp_prims[prims_calc].clear();
 
-				Fbox BB; BB.set(center - extents, center + extents);
-				if (fcvNone == Render->ViewBase.testAABB(BB.data(), mask))
-					return false;
-
-				if (LE->m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM_ALL))
-					leaf = true;
-
-				if (leaf && LE->m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM))
+				if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS))
 				{
-					if (!BB.contains(cam_pos))
-						LE->append_aabb(BB, color_rgba(10, 10, 10, 122), positionToColorWithAlpha(center));
+					xrc.ray_options(CDB::OPT_ONLYNEAREST);
+					xrc.ray_query(g_pGameLevel->ObjectSpace.GetStaticModel(), Device.vCameraPosition, Device.vCameraDirection);
+					if (!xrc.r_vec().empty())
+						selected_prim = xrc.r_vec()[0];
+					else
+						selected_prim.id = -1;
 				}
-				return true;
-			}, this,
-			m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS) ?
-			[](size_t InPrim, void* ptr)
-			{
-				if (selected_prim && selected_prim->id == InPrim) return;
-				LevelInspector* LE = (LevelInspector*)ptr;
+				else
+					selected_prim.id = -1;
 
-				auto& TriVerts = g_pGameLevel->ObjectSpace.GetStaticModel()->get_tris()[InPrim].verts;
-				auto& verts = g_pGameLevel->ObjectSpace.GetStaticModel()->get_verts();
-				Fvector tri_verts[3] = { verts[TriVerts[0]], verts[TriVerts[1]], verts[TriVerts[2]] };
+				static u32 mask; mask = Render->ViewBase.getMask();
+				static float max_dist; max_dist = g_pGamePersistent->Environment().CurrentEnv->fog_distance;
 
-				LE->append_tri({ tri_verts[0], tri_verts[1], tri_verts[2], color_rgba(100, 100, 100, 250) });
-				LE->append_line({ tri_verts[0], tri_verts[1], color_rgba(20, 20, 20, 255) });
-				LE->append_line({ tri_verts[0], tri_verts[2], color_rgba(20, 20, 20, 255) });
-				LE->append_line({ tri_verts[2], tri_verts[1], color_rgba(20, 20, 20, 255) });
-			} : nullptr, this);
+				xrc.custom_query(g_pGameLevel->ObjectSpace.GetStaticModel(),
+				[](const Fvector& center, const Fvector& extents, bool leaf, void* ptr)
+				{
+					const Fvector& cam_pos = Device.vCameraPosition;
+					float distsqr = cam_pos.distance_to_sqr(center) + EPS;
+					float radius = extents.magnitude();
+					LevelInspector* LE = (LevelInspector*)ptr;
+					if (radius / distsqr <= LE->cform_ssa || distsqr > _sqr(max_dist + radius))
+						return false;
 
-		if (selected_prim)
+					Fbox BB{ center - extents, center + extents };
+					if (fcvNone == Render->ViewBase.testAABB(BB.data(), mask))
+						return false;
+
+					if ((leaf || LE->m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM_ALL)) && LE->m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM) && !BB.contains(cam_pos))
+					{
+						Fvector vertices[8];
+						for (int i = 0; i < 8; i++)
+							BB.getpoint(i, vertices[i]);
+
+						const size_t line_count = std::size(aabb_lindices);
+						const size_t tri_count = std::size(aabb_tindices);
+						for (size_t i = 0; i < std::max(line_count, tri_count); ++i)
+						{
+							if (i < tri_count)
+								temp_prims[prims_calc].temp_tris.push_back({ vertices[aabb_tindices[i].i1], 
+																					vertices[aabb_tindices[i].i2], 
+																					vertices[aabb_tindices[i].i3], positionToColorWithAlpha(center) });
+							if (i < line_count)
+								temp_prims[prims_calc].temp_lines.push_back({ vertices[aabb_lindices[i].i1], 
+																					vertices[aabb_lindices[i].i2], color_rgba(10, 10, 10, 122) });
+						}
+					}
+					return true;
+				}, this,
+				m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS) ?
+				[](size_t InPrim, void* ptr)
+				{
+					if (selected_prim.id == InPrim) return;
+
+					auto& StaticTris = g_pGameLevel->ObjectSpace.GetStaticModel()->get_tris();
+					auto& verts = g_pGameLevel->ObjectSpace.GetStaticModel()->get_verts();
+					auto& TriVerts = StaticTris[InPrim].verts;
+					Fvector tri_verts[3] = { verts[TriVerts[0]], verts[TriVerts[1]], verts[TriVerts[2]] };
+
+					temp_prims[prims_calc].temp_tris.push_back({ tri_verts[0], tri_verts[1], tri_verts[2], color_rgba(100, 100, 100, 45) });
+					temp_prims[prims_calc].temp_lines.push_back({ tri_verts[0], tri_verts[1], color_rgba(20, 20, 20, 255) });
+					temp_prims[prims_calc].temp_lines.push_back({ tri_verts[0], tri_verts[2], color_rgba(20, 20, 20, 255) });
+					temp_prims[prims_calc].temp_lines.push_back({ tri_verts[2], tri_verts[1], color_rgba(20, 20, 20, 255) });
+
+				} : nullptr, nullptr);
+
+				task_finished.store(true);
+			});
+		}
+		bool delete_last = false;
+		if (selected_prim.id != -1)
 		{
-			auto& TriVerts = selected_prim->verts;
-			auto& verts = g_pGameLevel->ObjectSpace.GetStaticModel()->get_verts();
+			delete_last = true;
+			auto& TriVerts = selected_prim.verts;
 			Fvector tri_verts[3] = { TriVerts[0], TriVerts[1], TriVerts[2] };
-			append_tri({ tri_verts[0], tri_verts[1], tri_verts[2], color_rgba(255, 20, 20, 255) });
-			append_line({ tri_verts[0], tri_verts[1], color_rgba(10, 10, 10, 255) });
-			append_line({ tri_verts[0], tri_verts[2], color_rgba(10, 10, 10, 255) });
-			append_line({ tri_verts[2], tri_verts[1], color_rgba(10, 10, 10, 255) });
+			temp_prims[prims_render].temp_tris.push_back({ tri_verts[0], tri_verts[1], tri_verts[2], color_rgba(20, 20, 255, 45) });
+			temp_prims[prims_render].temp_lines.push_back({ tri_verts[0], tri_verts[1], color_rgba(10, 10, 10, 255) });
+			temp_prims[prims_render].temp_lines.push_back({ tri_verts[0], tri_verts[2], color_rgba(10, 10, 10, 255) });
+			temp_prims[prims_render].temp_lines.push_back({ tri_verts[2], tri_verts[1], color_rgba(10, 10, 10, 255) });
 
 			float side_AB = (tri_verts[1] - tri_verts[0]).magnitude();
 			float side_BC = (tri_verts[2] - tri_verts[0]).magnitude();
 			float side_CA = (tri_verts[2] - tri_verts[1]).magnitude();
 			float inradius = std::min(0.5f, std::min(std::min(side_AB, side_BC), side_CA));
 
+			Fvector normal; normal.mknormal(tri_verts[0], tri_verts[1], tri_verts[2]);
 			Fvector arrow_pos[2];
-			arrow_pos[0].mad(Device.vCameraPosition, Device.vCameraDirection, selected_prim->range);
-			arrow_pos[1].mad(arrow_pos[0], Fvector().mknormal(tri_verts[0], tri_verts[1], tri_verts[2]), inradius);// тут вместо 1.f нужен радиус вписывающего круга
-			//arrow_pos[2] = Fvector(tri_verts[0] + tri_verts[1] + tri_verts[2]).div(3.f);
+			arrow_pos[0].mad(Device.vCameraPosition, Device.vCameraDirection, selected_prim.range);
+			arrow_pos[1].mad(arrow_pos[0], normal, inradius);
+			
+			Fvector perp1, perp2;
+			if (abs(normal.x) < 0.9f)
+				perp1.set(1.0f, 0.0f, 0.0f);
+			else
+				perp1.set(0.0f, 1.0f, 0.0f);
 
-			append_line({ arrow_pos[0], arrow_pos[1], color_rgba(255, 220, 10, 255) });
-			const SGameMtl* mtl = GMLib.GetMaterialByIdx(selected_prim->material);
-			if (mtl)
-				append_text3d(arrow_pos[1], shared_str().printf("%s id[%d] idx[%d] s[%d]", *mtl->m_Name, mtl->ID, selected_prim->material, selected_prim->sector));
+			perp2.crossproduct(perp1, normal).normalize();
+			perp1.crossproduct(normal, perp2).normalize();
+
+			float angle_25 = 0.42261826f;
+			float angles[3] = { 0.0f, 2.0943951f, 4.1887902f };
+			for (int i = 0; i < 3; i++)
+			{
+				Fvector side_dir;
+				side_dir.mul(perp1, std::cos(angles[i])).mad(side_dir, perp2, std::sin(angles[i])).normalize();
+				temp_prims[prims_render].temp_lines.push_back({ arrow_pos[1], Fvector().mad(arrow_pos[1], Fvector(-normal * 0.9063078f + side_dir * angle_25).normalize(), inradius * 0.3f), color_rgba(10, 220, 255, 255)});
+			}
+
+			temp_prims[prims_render].temp_lines.push_back({ arrow_pos[0], arrow_pos[1], color_rgba(10, 220, 255, 255) });
+
+			if (SGameMtl* mtl = GMLib.GetMaterialByIdx(selected_prim.material))
+				append_text3d(arrow_pos[1], shared_str().printf("%s id[%d] idx[%d] s[%d]", *mtl->m_Name, mtl->ID, selected_prim.material, selected_prim.sector));
 		}
+
+		if (tris.empty() && lines.empty() && (!temp_prims[prims_render].temp_tris.empty() || !temp_prims[prims_render].temp_lines.empty()))
+		{
+			UIRender->CacheSetXformWorld(Fidentity);
+			if (Device.m_pRender)
+			{
+				Device.mProject.build_projection(deg2rad(Device.fFOV), Device.fASPECT, Device.fViewportNear + zbuff_shift, g_pGamePersistent->Environment().CurrentEnv->far_plane);
+				Device.mFullTransform.mul(Device.mProject, Device.mView);
+				Device.mView.build_camera_dir(Fvector().mad(Device.vCameraPosition, Device.vCameraDirection, zbuff_shift), Device.vCameraDirection, Device.vCameraTop);
+				Device.m_pRender->SetCacheXform(Device.mView, Device.mProject);
+			}
+
+			UIRender->SetShader(*shader);
+			UIRender->zb_enable(zbuffer_enable);
+		}
+
+		if(m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM))
+			UIRender->CacheSetCullMode(ERHI_CULLMODE::NONE);
+		else
+			UIRender->CacheSetCullMode(ERHI_CULLMODE::BACK);
+
+		TrisRender(temp_prims[prims_render].temp_tris, false);
+		LinesRender(temp_prims[prims_render].temp_lines, false);
+		UIRender->CacheSetCullMode(ERHI_CULLMODE::BACK);
+
+
+		if (delete_last)
+		{
+			temp_prims[prims_render].temp_tris.pop_back();
+			temp_prims[prims_render].temp_lines.resize(temp_prims[prims_render].temp_lines.size() - 7);
+		}
+	}
+	else
+	{
+		cform_task.wait();
+		temp_prims[0].clear();
+		temp_prims[0].temp_tris.shrink_to_fit();
+		temp_prims[0].temp_lines.shrink_to_fit();
+		temp_prims[1].clear();
+		temp_prims[1].temp_tris.shrink_to_fit();
+		temp_prims[1].temp_lines.shrink_to_fit();
 	}
 }
