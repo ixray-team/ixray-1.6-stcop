@@ -95,7 +95,8 @@ void CIKFoot::set_toe(  u16 bones[4] )
 	m_foot_bone_id = bones[2];
 	m_toe_bone_id =	bones[3];
 
-	xr_vector<Fmatrix> binds;
+	u16 bones_count = Kinematics()->LL_BoneCount();
+	buffer_vector<Fmatrix> binds(_alloca(bones_count * sizeof(Fmatrix)), bones_count);
 	Kinematics()->LL_GetBindTransform( binds );
 	
 	const Fmatrix bind_ref	= binds[ bones[m_ref_bone] ];
