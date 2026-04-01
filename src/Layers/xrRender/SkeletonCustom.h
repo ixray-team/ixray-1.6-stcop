@@ -9,8 +9,6 @@
 
 // refs
 class	 CKinematics;
-class	 CInifile;
-class	 CBoneData;
 struct	SEnumVerticesCallback;
 
 #pragma warning(push)
@@ -43,10 +41,7 @@ public:
 		};
 	};
 
-	using WMFacesVec = xr_vector<WMFace>;
-	using WMFacesVecIt = WMFacesVec::iterator;
-
-	WMFacesVec			m_Faces;		// 16 
+	xr_vector<WMFace>	m_Faces;		// 16 
 public:
 	Fsphere				m_Bounds;		// 16		world space
 public:									
@@ -149,7 +144,10 @@ public:
 public:
 				
 				bool			PickBone			(const Fmatrix &parent_xform, IKinematics::pick_result &r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id);
-	virtual		void			EnumBoneVertices	(SEnumVerticesCallback &C, u16 bone_id);
+	virtual		void			EnumBoneVertices	(SEnumVerticesCallback &C, u16 bone_id = u16(-1));
+	virtual		void			EnumBoneVertices	(xr_vector<Fvector>& m_vec, u16 bone_id = u16(-1));
+	virtual		void			EnumBoneVertices	(buffer_vector<Fvector>& m_vec, u16 bone_id = u16(-1));
+	virtual		u32				GetFacesCount		(u16 bone_id = u16(-1));
 public:
 								CKinematics			();
 	virtual						~CKinematics		();
@@ -274,6 +272,7 @@ public:
 	Fobb&							LL_GetBox			(u16 bone_id)		{	VERIFY2(bone_id < LL_BoneCount(), make_string<const char*>("visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id));	return (*bones)[bone_id]->obb;	}
 	const Fbox&				_BCL	GetBox				()const				{	return vis.box ;}
 	void							LL_GetBindTransform (xr_vector<Fmatrix>& matrices);
+	void							LL_GetBindTransform	(buffer_vector<Fmatrix>& matrices);
     int 							LL_GetBoneGroups 	(xr_vector<xr_vector<u16> >& groups);
 
 	u16						_BCL	LL_GetBoneRoot		()					{	return iRoot;													}
