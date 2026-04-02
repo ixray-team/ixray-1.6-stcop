@@ -449,7 +449,7 @@ void CUIActorMenuBase::UpdateConditionProgressBars()
 			if (!item)
 				continue;
 
-			if (item->m_highlight_equipped && item->m_pInventory && item->m_pInventory->ItemFromSlot(item->BaseSlot()) == item)
+			if ((item->m_highlight_equipped || ForceHighlightForSlots()) && item->m_pInventory && item->m_pInventory->ItemFromSlot(item->BaseSlot()) == item)
 				ci->m_select_equipped = true;
 			else
 				ci->m_select_equipped = false;
