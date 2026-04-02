@@ -184,6 +184,8 @@ protected:
 	bool						AllowItemDrops				(EDDListType from, EDDListType to);
 
 	EInventorySortCategory		GetPlayerSortCategory		() const;
+	virtual bool				ShouldPutArtefactsToBag		() { return false; }
+	virtual bool				ForceHighlightForSlots		() { return false; }
 
 	EMenuMode					m_currMenuMode = mmUndefined;
 	CUIItemDropAmountWnd*		m_pItemDropAmountWnd = nullptr;

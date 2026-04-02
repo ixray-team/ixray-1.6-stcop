@@ -59,6 +59,13 @@ void CUIInventoryWnd::InitInventory()
 	InitInventoryContents		(GetActorList());
 
 	InventoryUtilities::UpdateWeight					(UIBagWnd, true);
+	if (m_pInvList[OUTFIT_SLOT])
+	{
+		if (CUIOutfitDragDropList* outfitSlot = smart_cast<CUIOutfitDragDropList*>(m_pInvList[OUTFIT_SLOT]))
+		{
+			outfitSlot->SetOutfit();
+		}
+	}
 
 	m_b_need_reinit					= false;
 }  

@@ -625,7 +625,7 @@ bool CUIActorMenuBase::ToSlot(CUICellItem* itm, bool force_place, u16 slot_id)
 
 		SendEvent_ActivateSlot				(slot_id, GetInventoryOwner()->object_id());
 
-		if ( slot_id == OUTFIT_SLOT )
+		if ( slot_id == OUTFIT_SLOT && ShouldPutArtefactsToBag() )
 		{
 			MoveArtefactsToBag();
 		}

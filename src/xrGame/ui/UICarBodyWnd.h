@@ -78,4 +78,5 @@ protected:
 	void						UpdateLists					();
 
 	virtual void				SetCurrentItem				(CUICellItem* itm);
+	virtual bool				ForceHighlightForSlots		() { return true; }
 };
