@@ -240,6 +240,7 @@ void CUICarBodyWnd::UpdateLists()
 	UpdateDeadBodyBagList();
 
 	InventoryUtilities::UpdateWeight				(*m_pUIOurBagWnd);
+	UpdateConditionProgressBars();
 }
 
 void CUICarBodyWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
