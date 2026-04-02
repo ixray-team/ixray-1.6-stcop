@@ -143,7 +143,6 @@ function send_sound(npc, faction, point, str, str2)
 		--printf(point_name)
 		local txt = ""
         if str2 == nil then
-	        txt = string.gsub(str, "(localization\\..\\)([^\\]*)", "%s")
 	        txt = string.gsub(str, "(characters_voice\\human_..\\)([^\\]*)", "%2")
 	        txt = string.gsub(txt, "[\\]([^\\]*)", "_%1")
 		else
