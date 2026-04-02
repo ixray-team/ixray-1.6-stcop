@@ -38,7 +38,7 @@ public:
 	using pointer = char_t*;
 	using reference = char_t&;
 	using const_reference = const char_t&;
-	using const_pointer = const pointer;
+	using const_pointer = const char_t*;
 
 	using number_type = decltype(_kStringLength);
 
