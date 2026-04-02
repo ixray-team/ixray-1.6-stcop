@@ -72,6 +72,7 @@ enum class EEngineExternalGame
 	EnableSuicideByController,
 	Enable3DIcons,
 	EnableRagdolledZombiePseudodeath,
+	EnableStackWindow,
 	None
 };
 
