@@ -397,15 +397,7 @@ local sound_object_by_path = {}
 --' Обертка вокруг функции, возвращающий звуковой объект.
 function get_safe_sound_object(path)
 	if sound_object_by_path[path] == nil then
-		local f = getFS()
-		local langName = game.current_language()
-		local sndName = "localization\\"..langName.."\\"..path
-		local sndExist = f:exist("$game_sounds$", sndName..".ogg")
-		if sndExist then
-			sound_object_by_path[path] = sound_object(sndName)
-		else
-			sound_object_by_path[path] = sound_object(path)
-		end
+		sound_object_by_path[path] = sound_object(path)
 	end
 	return sound_object_by_path[path]
 end
