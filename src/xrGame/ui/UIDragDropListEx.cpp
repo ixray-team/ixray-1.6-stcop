@@ -116,6 +116,7 @@ CUIDragDropListEx::CUIDragDropListEx()
 	AddCallbackStr				("cell_item",	DRAG_DROP_ITEM_DRAG,			CUIWndCallback::void_function		(this, &CUIDragDropListEx::OnItemStartDragging)	);
 	AddCallbackStr				("cell_item",	DRAG_DROP_ITEM_DROP,			CUIWndCallback::void_function		(this, &CUIDragDropListEx::OnItemDrop)			);
 	AddCallbackStr				("cell_item",	DRAG_DROP_ITEM_SELECTED,		CUIWndCallback::void_function		(this, &CUIDragDropListEx::OnItemSelected)			);
+	AddCallbackStr				("cell_item",	DRAG_DROP_ITEM_DESELECTED, CUIWndCallback::void_function	(this, &CUIDragDropListEx::OnItemDeselected));
 	AddCallbackStr				("cell_item",	DRAG_DROP_ITEM_LBUTTON_CLICK,	CUIWndCallback::void_function		(this, &CUIDragDropListEx::OnItemLButtonClick)			);
 	AddCallbackStr				("cell_item",	DRAG_DROP_ITEM_RBUTTON_CLICK,	CUIWndCallback::void_function		(this, &CUIDragDropListEx::OnItemRButtonClick)			);
 	AddCallbackStr				("cell_item",	DRAG_DROP_ITEM_DB_CLICK,		CUIWndCallback::void_function		(this, &CUIDragDropListEx::OnItemDBClick)			);
@@ -252,6 +253,14 @@ void CUIDragDropListEx::InitDragDropList(Fvector2 pos, Fvector2 size)
 	m_vScrollBar->SetWndPos				(Fvector2().set(m_vScrollBar->GetWndPos().x - m_vScrollBar->GetWidth(), m_vScrollBar->GetWndPos().y));
 }
 
+void CUIDragDropListEx::VerifyDeselected(CUICellItem* new_selected)
+{
+	if (m_selected_item && m_selected_item != new_selected)
+	{
+		OnItemDeselected(m_selected_item, nullptr);
+	}
+}
+
 void CUIDragDropListEx::OnScrollV(CUIWindow* w, void* pData)
 {
 	m_container->SetWndPos		(Fvector2().set(m_container->GetWndPos().x, float(-m_vScrollBar->GetScrollPos())));
@@ -267,6 +276,18 @@ void CUIDragDropListEx::CreateDragItem(CUICellItem* itm)
 	{
 		GetParent()->SetCapture			(m_drag_item, true);
 	}
+}
+
+CUICellItem* CUIDragDropListEx::GetItemByData(void* data)
+{
+	WINDOW_LIST_it it = std::ranges::find_if(m_container->GetChildWndList(),
+	                                         [&](CUIWindow* itm)
+	                                         {
+		                                         return itm->ui_cast_cell_item()->m_pData == data;
+	                                         }
+	);
+	VERIFY(it != m_container->GetChildWndList().end());
+	return (*it)->ui_cast_cell_item();
 }
 
 void CUIDragDropListEx::DestroyDragItem()
@@ -379,12 +400,24 @@ void CUIDragDropListEx::OnItemDBClick(CUIWindow* w, void* pData)
 
 void CUIDragDropListEx::OnItemSelected(CUIWindow* w, void* pData)
 {
-	m_selected_item = w->ui_cast_cell_item();
+	auto NewSelected = w->ui_cast_cell_item();
+	VerifyDeselected(NewSelected);
+	m_selected_item = NewSelected;
 	VERIFY(m_selected_item);
 
 	if (m_f_item_selected)
 	{
 		m_f_item_selected(m_selected_item);
+	}
+}
+
+void CUIDragDropListEx::OnItemDeselected(CUIWindow* w, void* pData)
+{
+	m_selected_item						= w->ui_cast_cell_item();
+	VERIFY								(m_selected_item);
+	if(m_f_item_deselected)
+	{
+		m_f_item_deselected(m_selected_item);
 	}
 }
 
@@ -556,6 +589,11 @@ void CUIDragDropListEx::ReinitScroll()
 bool CUIDragDropListEx::OnMouseAction(float x, float y, EUIMessages mouse_action)
 {
 	bool b = inherited::OnMouseAction		(x,y,mouse_action);
+	
+	if(!b && mouse_action == WINDOW_LBUTTON_DOWN)
+	{
+		VerifyDeselected(nullptr);
+	}
 
 	if(m_vScrollBar->IsShown())
 	{
