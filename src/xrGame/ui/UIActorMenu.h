@@ -238,6 +238,7 @@ public:
 	virtual CInventory*			GetInventory						();
 	virtual CInventoryOwner*	GetInventoryOwner					() { return m_pActorInvOwner; }
 	virtual CInventoryOwner*	GetPartner							() { return m_pPartnerInvOwner; }
+	virtual bool				ShouldPutArtefactsToBag				() { return true; }
 	virtual void				SetCurrentItem						(CUICellItem* itm);
 	virtual bool				StopAnyMove							();
 	virtual void				SendMessage							(CUIWindow* pWnd, s16 msg, void* pData = NULL);
