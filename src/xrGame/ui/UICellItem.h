@@ -1,5 +1,6 @@
 #pragma once
 
+#include "UIActorMenuBase.h"
 #include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrUI/Widgets/UI3dStatic.h"
 #include "../../xrUI/Widgets/UIDialogWnd.h"
@@ -61,6 +62,10 @@ protected:
 			void			UpdateItemTextAnchor	();
 			void			init					();
 public:
+	EDDListType m_represent_parent_list = EDDListType::iInvalid;
+	CUICellItem* m_represent_top_parent = nullptr;
+	CUICellItem* m_represent_parent = nullptr;
+	
 							CUICellItem				();
 	virtual					~CUICellItem			();
 
