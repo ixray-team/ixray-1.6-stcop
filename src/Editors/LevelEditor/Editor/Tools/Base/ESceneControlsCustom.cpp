@@ -133,8 +133,19 @@ void DragDrop(const xr_string& Path, int Type)
 		}
 		else if (Type == OBJCLASS_SPAWNPOINT)
 		{
+			xr_stack_string256 NameBuilder;
+			if(Scene->LevelPrefix().c_str())
+			{
+				NameBuilder = Scene->LevelPrefix().c_str();
+				NameBuilder += "_";
+				NameBuilder += Path.c_str();
+			} else
+			{
+				NameBuilder = Path;
+			}
 			string256 namebuffer;
-			Scene->GenObjectName(OBJCLASS_SPAWNPOINT, namebuffer, Path.data());
+			IVERIFY(NameBuilder.size()+10 < sizeof(namebuffer));
+			Scene->GenObjectName(OBJCLASS_SPAWNPOINT, namebuffer, NameBuilder.data());
 			auto obj = Scene->GetOTool(OBJCLASS_SPAWNPOINT)->CreateObject((void*)Path.data(), namebuffer);
 			if (!obj->Valid())
 			{
