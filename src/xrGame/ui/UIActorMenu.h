@@ -55,6 +55,7 @@ protected:
 
 	CUIDragDropListEx*			m_pInventoryBeltList;
 	CUIDragDropListEx*			m_pInventoryBagList;
+	CUIDragDropListEx*			m_pInventoryStackList = nullptr;
 
 	CUIDragDropListEx*			m_pTradeActorBagList;
 	CUIDragDropListEx*			m_pTradeActorList;
@@ -147,17 +148,20 @@ public:
 	virtual CInventoryBox*		GetInvBox							() {return m_pInvBox;}
 
 	virtual CUIWindow*			ui_cast_window						() { return this; }
+	
+	virtual ui_actor_state_wnd* GetActorState() override { return m_ActorStateInfo; }
 
-	virtual CUIDragDropListEx*	GetActorList						() { return m_pInventoryBagList; }
-	virtual CUIDragDropListEx*	GetPartnerList						() { return m_pDeadBodyBagList; }
-	virtual CUIDragDropListEx*	GetBeltList							() { return m_pInventoryBeltList; }
-	virtual CUIDragDropListEx*	GetTradeActorList					() { return m_pTradeActorList; }
-	virtual CUIDragDropListEx*	GetTradeActorBagList				() { return m_pTradeActorBagList; }
-	virtual CUIDragDropListEx*	GetTradePartnerList					() { return m_pTradePartnerList; }
-	virtual CUIDragDropListEx*	GetTradePartnerBagList				() { return m_pTradePartnerBagList; }
+	virtual CUIDragDropListEx* GetActorList() override { return m_pInventoryBagList; }
+	virtual CUIDragDropListEx* GetPartnerList() override { return m_pDeadBodyBagList; }
+	virtual CUIDragDropListEx* GetBeltList() override { return m_pInventoryBeltList; }
+	virtual CUIDragDropListEx* GetStackList() override { return m_pInventoryStackList; }
+	virtual CUIDragDropListEx* GetTradeActorList() override { return m_pTradeActorList; }
+	virtual CUIDragDropListEx* GetTradeActorBagList() override { return m_pTradeActorBagList; }
+	virtual CUIDragDropListEx* GetTradePartnerList() override { return m_pTradePartnerList; }
+	virtual CUIDragDropListEx* GetTradePartnerBagList() override { return m_pTradePartnerBagList; }
 
-	virtual CTrade*				GetActorTrade						() { return m_actor_trade; }
-	virtual CTrade*				GetPartnerTrade						() { return m_partner_trade; }
+	virtual CTrade* GetActorTrade() override { return m_actor_trade; }
+	virtual CTrade* GetPartnerTrade() override { return m_partner_trade; }
 
 protected:			
 	void						Construct							();
