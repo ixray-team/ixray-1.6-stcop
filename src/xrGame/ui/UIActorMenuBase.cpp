@@ -372,22 +372,30 @@ CUIDragDropListEx* CUIActorMenuBase::GetListByType(EDDListType t)
 		case iActorBag:
 			{
 				if(m_currMenuMode==mmTrade)
+				{
 					return GetTradeActorBagList();
+				}
 				else
+				{
 					return GetActorList();
-			}break;
+				}
+			}
 		case iDeadBodyBag:
 			{
 				return GetPartnerList();
-			}break;
+			}
 		case iActorBelt:
 			{
 				return GetBeltList();
-			}break;
+			}
+	case iStackList:
+			{
+				return GetStackList();
+			}
 		default:
 			{
 				R_ASSERT("invalid call");
-			}break;
+			}
 	}
 	return nullptr;
 }
@@ -563,23 +571,56 @@ void CUIActorMenuBase::UpdateConditionProgressBars()
 
 EDDListType CUIActorMenuBase::GetListType(CUIDragDropListEx* l)
 {
-	if(l==GetActorList() && GetActorList())			return iActorBag;
-	if(l==GetBeltList() && GetBeltList())			return iActorBelt;
+	if (GetActorList() && l == GetActorList())
+	{
+		return iActorBag;
+	}
+	if (GetBeltList() && l == GetBeltList())
+	{
+		return iActorBelt;
+	}
+	if (GetStackList() && l == GetStackList())
+	{
+		return iStackList;
+	}
 
 	for (u8 i = 1; i <= LAST_SLOT; ++i)
 	{
 		if (m_pInvList[i] && m_pInvList[i] == l)
+		{
 			return iActorSlot;
+		}
 	}
 
-	if(l==GetTradeActorBagList() && GetTradeActorBagList())			return iActorBag;
-	if(l==GetTradeActorList() && GetTradeActorList())			return iActorTrade;
-	if(l==GetTradePartnerBagList() && GetTradePartnerBagList())		return iPartnerTradeBag;
-	if(l==GetTradePartnerList() && GetTradePartnerList())			return iPartnerTrade;
-	if(l==GetPartnerList() && GetPartnerList())			return iDeadBodyBag;
+	if (GetTradeActorBagList() && l == GetTradeActorBagList())
+	{
+		return iActorBag;
+	}
+	if (GetTradeActorList() && l == GetTradeActorList())
+	{
+		return iActorTrade;
+	}
+	if (GetTradePartnerBagList() && l == GetTradePartnerBagList())
+	{
+		return iPartnerTradeBag;
+	}
+	if (GetTradePartnerList() && l == GetTradePartnerList())
+	{
+		return iPartnerTrade;
+	}
+	if (GetPartnerList() && l == GetPartnerList())
+	{
+		return iDeadBodyBag;
+	}
 
-	if(l==m_pQuickSlot && m_pQuickSlot)					return iQuickSlot;
-	if(l==m_pTrashList && m_pTrashList)					return iTrashSlot;
+	if (m_pQuickSlot && l == m_pQuickSlot)
+	{
+		return iQuickSlot;
+	}
+	if (m_pTrashList && l == m_pTrashList)
+	{
+		return iTrashSlot;
+	}
 
 	R_ASSERT(false, "Invalid call in function", __FUNCTION__);
 	
@@ -725,6 +766,7 @@ void CUIActorMenuBase::ClearAllLists()
 
 	CLEAR_LIST(GetActorList())
 	CLEAR_LIST(GetBeltList())
+	CLEAR_LIST(GetStackList())
 
 	for (u8 i = 1; i <= LAST_SLOT; ++i)
 	{

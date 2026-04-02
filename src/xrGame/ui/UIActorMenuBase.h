@@ -8,6 +8,7 @@
 #include "InventorySorter.h"
 #include "../../xrUI/Widgets/UIFocusSystem.h"
 #include "../InventoryOwner.h"
+#include "UIActorStateInfo.h"
 
 class CUIPropertiesBox;
 class CUIActorMenu;
@@ -54,6 +55,7 @@ enum EDDListType
 	iDeadBodyBag,
 	iQuickSlot,
 	iTrashSlot,
+	iStackList,
 	iListTypeMax
 };
 
@@ -175,6 +177,7 @@ protected:
 	bool						OnItemStartDrag				(CUICellItem* itm);
 	bool						OnItemRButtonClick			(CUICellItem* itm);
 	bool						OnItemSelected				(CUICellItem* itm);
+	bool						OnItemDeselected			(CUICellItem* itm);
 	bool						OnItemDrop					(CUICellItem* itm);
 	bool						OnItemFocusReceive			(CUICellItem* itm);
 	bool						OnItemDbClick				(CUICellItem* itm);
@@ -195,6 +198,7 @@ protected:
 	bool						ToPartnerTradeBag			(CUICellItem* itm, bool b_use_cursor_pos);
 	bool						ToDeadBodyBag				(CUICellItem* itm, bool b_use_cursor_pos);
 
+	void ActivateStackList(CUICellItem* cell_item);
 	void						DonateCurrentItem			(CUICellItem* cell_item); //Alundaio: Donate item via context menu while in trade menu
 	
 	void						BindDragDropListEvents		(CUIDragDropListEx* lst);
@@ -339,9 +343,12 @@ public:
 	virtual CInventoryOwner*	GetPartner					() { return nullptr; }
 	virtual CInventoryBox*		GetInvBox					() { return nullptr; }
 
+	virtual ui_actor_state_wnd* GetActorState				() { return nullptr; }
+
 	virtual CUIDragDropListEx*	GetActorList				() { return nullptr; }
 	virtual CUIDragDropListEx*	GetPartnerList				() { return nullptr; }
 	virtual CUIDragDropListEx*	GetBeltList					() { return nullptr; }
+	virtual CUIDragDropListEx*	GetStackList				() { return nullptr; }
 	virtual CUIDragDropListEx*	GetTradeActorList			() { return nullptr; }
 	virtual CUIDragDropListEx*	GetTradeActorBagList		() { return nullptr; }
 	virtual CUIDragDropListEx*	GetTradePartnerList			() { return nullptr; }

@@ -50,6 +50,10 @@ void CUIActorMenu::InitInventoryMode()
 {
 	m_pInventoryBagList->Show(true);
 	m_pInventoryBeltList->Show(true);
+	if (m_pInventoryStackList)
+	{
+		m_pInventoryStackList->Show(false);
+	}
 
 	for (u8 i = 1; i <= LAST_SLOT; ++i)
 	{
