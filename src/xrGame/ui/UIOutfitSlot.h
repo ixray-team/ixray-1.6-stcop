@@ -8,7 +8,6 @@ class CUIOutfitDragDropList :public CUIDragDropListEx
 	typedef CUIDragDropListEx						inherited;
 	CUI3dStatic*									m_background;
 	shared_str										m_default_outfit;
-	void					SetOutfit				();
 	
 public:
 							CUIOutfitDragDropList	();
@@ -18,6 +17,7 @@ public:
 	virtual bool			SetItem					(CUICellItem* itm, Fvector2 abs_pos);  // start at cursor pos
 	virtual void			SetItem					(CUICellItem* itm, Ivector2 cell_pos); // start at cell
 	virtual CUICellItem*	RemoveItem				(CUICellItem* itm, bool force_root);
+	void					SetOutfit				();
 	virtual	void			Draw					();
 			void			SetDefaultOutfit		(LPCSTR default_outfit);
 };
