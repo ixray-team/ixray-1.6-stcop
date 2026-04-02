@@ -101,6 +101,7 @@ protected:
 	TIItemContainer		ruck_list;
 
 	virtual void		SetCurrentItem				(CUICellItem* itm);
+	virtual bool		ForceHighlightForSlots		() { return true; }
 
 public:
 	virtual CInventory*			GetInventory				() { return m_pInv; }

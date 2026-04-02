@@ -361,6 +361,7 @@ void CUITradeWnd::UpdateLists(EListType mode)
 		InitPartnerInventoryContents();
 	}
 	UpdatePrices						();
+	UpdateConditionProgressBars			();
 }
 
 void CUITradeWnd::FillList	(TIItemContainer& cont, CUIDragDropListEx& dragDropList, bool do_colorize)
