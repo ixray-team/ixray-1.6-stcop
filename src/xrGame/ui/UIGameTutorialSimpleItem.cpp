@@ -58,18 +58,7 @@ void CUISequenceSimpleItem::Load(CUIXml* xml, int idx)
 	LPCSTR m_snd_name		= xml->Read				("sound",0,""			);
 	if (m_snd_name&&m_snd_name[0])
 	{
-		string_path localized_snd;
-		xr_sprintf(localized_snd, "localization\\%s\\%s", g_pStringTable->LangName().c_str(), m_snd_name);
-
-		string_path fn;
-		if (FS.exist(fn, _game_sounds_, localized_snd, ".ogg"))
-		{
-			m_sound.create(localized_snd, st_Effect, sg_Undefined);
-		}
-		else
-		{
-			m_sound.create(m_snd_name, st_Effect, sg_Undefined);
-		}
+		m_sound.create(m_snd_name, st_Effect, sg_Undefined);
 	}
 	m_time_length			= xml->ReadFlt			("length_sec",0,0		);
 	m_desired_cursor_pos.x	= xml->ReadAttribFlt	("cursor_pos",0,"x",0);

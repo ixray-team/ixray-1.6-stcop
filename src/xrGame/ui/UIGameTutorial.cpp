@@ -155,18 +155,7 @@ void CUISequencer::Start(LPCSTR tutor_name)
 	LPCSTR snd_name				= uiXml.Read("sound", 0, "");
 	if (snd_name && snd_name[0])
 	{
-		string_path localized_snd;
-		xr_sprintf(localized_snd, "localization\\%s\\%s", g_pStringTable->LangName().c_str(), snd_name);
-
-		string_path fn;
-		if (FS.exist(fn, _game_sounds_, localized_snd, ".ogg"))
-		{
-			m_global_sound.create(localized_snd, st_Effect, sg_Undefined);
-		}
-		else
-		{
-			m_global_sound.create(snd_name, st_Effect, sg_Undefined);
-		}
+		m_global_sound.create(snd_name, st_Effect, sg_Undefined);
 	}
 	m_start_lua_function		= uiXml.Read("function_on_start", 0, "");
 	m_stop_lua_function			= uiXml.Read("function_on_stop", 0, "");
