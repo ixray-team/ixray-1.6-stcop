@@ -94,7 +94,7 @@ bool CUIInventoryCellItem::EqualTo(CUICellItem* itm)
 		return false;
 	}
 
-	if (!fsimilar(object()->GetCondition(), ci->object()->GetCondition(), 0.01f))
+	if (EngineExternal()[EEngineExternalGame::EnableStackWindow] || !fsimilar(object()->GetCondition(), ci->object()->GetCondition(), 0.01f))
 	{
 		return false;
 	}

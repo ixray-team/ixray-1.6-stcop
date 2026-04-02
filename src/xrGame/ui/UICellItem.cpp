@@ -589,7 +589,7 @@ bool CUICellItem::OnMouseAction(float x, float y, EUIMessages mouse_action)
 		GetMessageTarget()->SendMessage( this, DRAG_DROP_ITEM_LBUTTON_CLICK, nullptr );
 		GetMessageTarget()->SendMessage( this, DRAG_DROP_ITEM_SELECTED, nullptr );
 		m_mouse_selected_item = this;
-		return false;
+		return EngineExternal()[EEngineExternalGame::EnableStackWindow];
 	}
 	else if ( mouse_action == WINDOW_MOUSE_MOVE )
 	{

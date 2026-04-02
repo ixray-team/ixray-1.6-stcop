@@ -2,6 +2,7 @@
 #include "UIActorMenuBase.h"
 #include "UIDragDropListEx.h"
 #include "UICellItem.h"
+#include "UICellItemFactory.h"
 #include "../InventoryOwner.h"
 #include "../IPowerManager.h"
 #include "../antigas_filter.h"
@@ -363,10 +364,46 @@ bool CUIActorMenuBase::OnItemRButtonClick(CUICellItem* itm)
 
 bool CUIActorMenuBase::OnItemSelected(CUICellItem* itm)
 {
+	if (EngineExternal()[EEngineExternalGame::EnableStackWindow] && CurrentItem() != itm && itm->ChildsCount())
+	{
+		ActivateStackList(itm);
+	}
 	SetCurrentItem		(itm);
 	InfoCurItem			(nullptr);
 	m_item_info_view	= false;
 	return				false;
+}
+
+bool CUIActorMenuBase::OnItemDeselected(CUICellItem* itm)
+{
+	if (EngineExternal()[EEngineExternalGame::EnableStackWindow])
+	{
+		GetActorState()->Show(true);
+		GetStackList()->ClearAll(true);
+		GetStackList()->Show(false);
+	}
+	return				false;
+}
+
+void CUIActorMenuBase::ActivateStackList(CUICellItem* cell_item)
+{
+	GetActorState()->Show(false);
+	GetStackList()->Show(true);
+	
+	CUICellItem* itm = create_cell_item( (CInventoryItem*)(cell_item->m_pData) );
+	itm->m_represent_parent_list = GetListType(cell_item->OwnerList());
+	itm->m_represent_top_parent	= cell_item;
+	itm->m_represent_parent = cell_item;
+	GetStackList()->SetItem(itm);
+
+	for(u32 i = 0; i < cell_item->ChildsCount(); ++i)
+	{
+		itm = create_cell_item( (CInventoryItem*)(cell_item->Child(i)->m_pData) );
+		itm->m_represent_parent_list = GetListType(cell_item->OwnerList());
+		itm->m_represent_top_parent	= cell_item;
+		itm->m_represent_parent = cell_item->Child(i);
+		GetStackList()->SetItem(itm);
+	}
 }
 
 bool CUIActorMenuBase::OnItemFocusReceive(CUICellItem* itm)
@@ -409,6 +446,12 @@ bool CUIActorMenuBase::OnItemDbClick(CUICellItem* itm)
 	{
 	case iActorSlot:
 		{
+			if (EngineExternal()[EEngineExternalGame::EnableStackWindow])
+			{
+				GetActorState()->Show(true);
+				GetStackList()->ClearAll(true);
+				GetStackList()->Show(false);
+			}
 			if (m_currMenuMode == mmDeadBodySearch) 
 			{
 				// FFx0001
@@ -444,8 +487,88 @@ bool CUIActorMenuBase::OnItemDbClick(CUICellItem* itm)
 			}
 			break;
 		}
+	case iStackList:
+		{
+			VERIFY(itm->m_represent_parent_list != EDDListType::iInvalid);
+			CUICellItem* real_itm = itm->m_represent_parent;
+			VERIFY(real_itm);
+			GetStackList()->ClearAll(true);
+			
+			if ( m_currMenuMode == mmTrade )
+			{
+				switch (itm->m_represent_parent_list)
+				{
+				case EDDListType::iActorBag:{
+						ToActorTrade( real_itm, false );
+						break;
+				}
+				case EDDListType::iPartnerTradeBag:{
+						ToPartnerTrade( real_itm, false );
+						break;
+				}
+				case EDDListType::iActorTrade:{
+						ToBag( real_itm, false );
+						break;
+				}
+				case EDDListType::iPartnerTrade:{
+						ToPartnerTradeBag( real_itm, false );
+						break;
+				}
+				default:{VERIFY(false);}
+				}
+				ActivateStackList(itm->m_represent_top_parent);
+				break;
+			}
+			
+			if ( m_currMenuMode == mmDeadBodySearch )
+			{
+				switch (itm->m_represent_parent_list)
+				{
+				case EDDListType::iActorBag:{
+						ToDeadBodyBag( real_itm, false );
+						break;
+				}
+				case EDDListType::iDeadBodyBag:{
+						ToBag( real_itm, false );
+						break;
+				}
+				default:{VERIFY(false);}
+				}
+				ActivateStackList(itm->m_represent_top_parent);
+				break;
+			}
+			
+			if(m_currMenuMode!=mmUpgrade && TryUseItem( real_itm  ))
+			{
+				ActivateStackList(itm->m_represent_top_parent);
+				break;
+			}
+			
+			if ( TryActiveSlot( real_itm  ) )
+			{
+				ActivateStackList(itm->m_represent_top_parent);
+				break;
+			}
+			
+			PIItem iitem_to_place = (PIItem)real_itm ->m_pData;
+			if ( !ToSlot( real_itm , false, iitem_to_place->BaseSlot() ) )
+			{
+				if ( !ToBelt( real_itm , false ) )
+				{
+					ToSlot( real_itm , true, iitem_to_place->BaseSlot() );
+				}
+			}
+			ActivateStackList(itm->m_represent_top_parent);
+			break;
+		}
 	case iActorBag:
 		{
+			if (EngineExternal()[EEngineExternalGame::EnableStackWindow])
+			{
+				GetActorState()->Show(true);
+				GetStackList()->ClearAll(true);
+				GetStackList()->Show(false);
+			}
 			if (pInput->GetControllerMode() && m_currMenuMode == mmUpgrade)
 			{
 				PIItem pItem = CurrentIItem();
@@ -517,6 +640,12 @@ bool CUIActorMenuBase::OnItemDbClick(CUICellItem* itm)
 		}
 	case iActorTrade:
 		{
+			if (EngineExternal()[EEngineExternalGame::EnableStackWindow])
+			{
+				GetActorState()->Show(true);
+				GetStackList()->ClearAll(true);
+				GetStackList()->Show(false);
+			}
 			bool bResult = ToBag( itm, false );
 			if (pInput->GetControllerMode() && bResult && !bItemPack)
 				SetCurrentItem(nullptr);
@@ -524,6 +653,12 @@ bool CUIActorMenuBase::OnItemDbClick(CUICellItem* itm)
 		}
 	case iPartnerTradeBag:
 		{
+			if (EngineExternal()[EEngineExternalGame::EnableStackWindow])
+			{
+				GetActorState()->Show(true);
+				GetStackList()->ClearAll(true);
+				GetStackList()->Show(false);
+			}
 			bool bResult = ToPartnerTrade( itm, false );
 			if (pInput->GetControllerMode() && bResult && !bItemPack)
 				SetCurrentItem(nullptr);
@@ -531,6 +666,12 @@ bool CUIActorMenuBase::OnItemDbClick(CUICellItem* itm)
 		}
 	case iPartnerTrade:
 		{
+			if (EngineExternal()[EEngineExternalGame::EnableStackWindow])
+			{
+				GetActorState()->Show(true);
+				GetStackList()->ClearAll(true);
+				GetStackList()->Show(false);
+			}
 			bool bResult = ToPartnerTradeBag( itm, false );
 			if (pInput->GetControllerMode() && bResult && !bItemPack)
 				SetCurrentItem(nullptr);
@@ -538,6 +679,12 @@ bool CUIActorMenuBase::OnItemDbClick(CUICellItem* itm)
 		}
 	case iDeadBodyBag:
 		{
+			if (EngineExternal()[EEngineExternalGame::EnableStackWindow])
+			{
+				GetActorState()->Show(true);
+				GetStackList()->ClearAll(true);
+				GetStackList()->Show(false);
+			}
 			bool bResult = ToBag( itm, false );
 			if (pInput->GetControllerMode() && bResult && !bItemPack)
 				SetCurrentItem(nullptr);
@@ -566,6 +713,7 @@ void CUIActorMenuBase::BindDragDropListEvents(CUIDragDropListEx* lst)
 	lst->m_f_item_start_drag		= CUIDragDropListEx::DRAG_CELL_EVENT(this,&CUIActorMenuBase::OnItemStartDrag);
 	lst->m_f_item_db_click			= CUIDragDropListEx::DRAG_CELL_EVENT(this,&CUIActorMenuBase::OnItemDbClick);
 	lst->m_f_item_selected			= CUIDragDropListEx::DRAG_CELL_EVENT(this,&CUIActorMenuBase::OnItemSelected);
+	lst->m_f_item_deselected		= CUIDragDropListEx::DRAG_CELL_EVENT(this,&CUIActorMenuBase::OnItemDeselected);
 	lst->m_f_item_rbutton_click		= CUIDragDropListEx::DRAG_CELL_EVENT(this,&CUIActorMenuBase::OnItemRButtonClick);
 	lst->m_f_item_focus_received	= CUIDragDropListEx::DRAG_CELL_EVENT(this,&CUIActorMenuBase::OnItemFocusReceive);
 	lst->m_f_item_focus_lost		= CUIDragDropListEx::DRAG_CELL_EVENT(this,&CUIActorMenuBase::OnItemFocusLost);

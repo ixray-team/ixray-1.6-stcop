@@ -122,6 +122,12 @@ void CUIActorMenu::Construct()
 	m_pTradePartnerList			= UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_partner_trade", this);
 	m_pTradePartnerBagList		= UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_partner_bag", this);
 	m_pDeadBodyBagList			= UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_deadbody_bag", this);
+	if (uiXml.NavigateToNode("dragdrop_stack"))
+	{
+		m_pTradeActorBagList->SetConditionProgBarVisibility(false);
+		m_pInventoryBagList->SetConditionProgBarVisibility(false);
+		m_pInventoryStackList = UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_stack", this);
+	}
 	if (uiXml.NavigateToNode("dragdrop_quick_slots"))
 	{
 		m_pQuickSlot = UIHelperGame::CreateDragDropReferenceList(uiXml, "dragdrop_quick_slots", this);
@@ -459,6 +465,7 @@ void CUIActorMenu::Construct()
 
 	BindDragDropListEvents(m_pInventoryBeltList);
 	BindDragDropListEvents(m_pInventoryBagList);
+	BindDragDropListEvents(m_pInventoryStackList);
 	BindDragDropListEvents(m_pTradeActorBagList);
 	BindDragDropListEvents(m_pTradeActorList);
 	BindDragDropListEvents(m_pTradePartnerBagList);
