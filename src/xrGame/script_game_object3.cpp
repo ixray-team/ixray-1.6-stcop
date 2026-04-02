@@ -1545,10 +1545,6 @@ void CScriptGameObject::sound_prefix(LPCSTR sound_prefix)
 {
 	if (CCreature* custom_monster = object().cast_creature())
 	{
-		string_path localized_prefix;
-		xr_sprintf(localized_prefix, "localization\\%s\\%s", g_pStringTable->LangName().c_str(), sound_prefix);
-
-		custom_monster->sound().sound_prefix_localized(localized_prefix);
 		custom_monster->sound().sound_prefix(sound_prefix);
 	}
 	else
