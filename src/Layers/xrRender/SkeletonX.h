@@ -221,8 +221,8 @@ protected:
 	void _Render(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount);
 	void _Load(const char* N, IReader *data, u32& dwVertCount);
 	void _Load_hw(void* data);
-	void _CollectBoneFaces(Fvisual* V, u32 iBase, u32 iCount);
-	void _DuplicateIndices(const char* N, IReader* data);
+	void _CollectBoneFaces();
+	void _DuplicateIndices(IReader* data);
 public:
 	BOOL has_visible_bones();
 	CSkeletonX(bool val) : progressive_mesh(val) {}
@@ -236,8 +236,49 @@ public:
 	void SetParent(CKinematics* K) { Parent = K; }
 	void AfterLoad(CKinematics* parent, u16 child_idx);
 
-	BOOL PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id);
-	void FillWMVertices(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, u16 bone_id);
+	ICF BOOL PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id)
+	{
+		VERIFY(Parent && (ChildIDX != u16(-1)));
+		CBoneData& BD = Parent->LL_GetData(bone_id);
+		CBoneData::FacesVec& faces = BD.child_faces[ChildIDX];
+
+		u16* indices{ nullptr };
+
+		if (progressive_mesh)
+			indices = *m_Indices + iBase + nSWI.sw[0].offset;
+		else
+			indices = *m_Indices + iBase;
+
+		if (*Vertices1W)
+			return pick_bone(r, dist, start, dir, indices, faces, Vertices1W, Parent->bone_instances);
+		else if (*Vertices2W)
+			return pick_bone(r, dist, start, dir, indices, faces, Vertices2W, Parent->bone_instances);
+		else if (*Vertices3W)
+			return pick_bone(r, dist, start, dir, indices, faces, Vertices3W, Parent->bone_instances);
+		else if (*Vertices4W)
+			return pick_bone(r, dist, start, dir, indices, faces, Vertices4W, Parent->bone_instances);
+
+		return FALSE;
+	}
+
+	ICF void FillWMVertices(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, u16 bone_id)
+	{
+		VERIFY(Parent && (ChildIDX != u16(-1)));
+		CBoneData& BD = Parent->LL_GetData(bone_id);
+		CBoneData::FacesVec& faces = BD.child_faces[ChildIDX];
+
+		u16* indices{ nullptr };
+
+		if (progressive_mesh)
+			indices = *m_Indices + iBase + nSWI.sw[0].offset;
+		else
+			indices = *m_Indices + iBase;
+
+		if (*Vertices1W) fill_wm_verts(view, wm, normal, size, indices, faces, Vertices1W, Parent->bone_instances);
+		else if (*Vertices2W) fill_wm_verts(view, wm, normal, size, indices, faces, Vertices2W, Parent->bone_instances);
+		else if (*Vertices3W) fill_wm_verts(view, wm, normal, size, indices, faces, Vertices3W, Parent->bone_instances);
+		else if (*Vertices4W) fill_wm_verts(view, wm, normal, size, indices, faces, Vertices4W, Parent->bone_instances);
+	}
 
 	template <typename T_output>
 	ICF void EnumBoneVertices(T_output& m_verts, u16 bone_id)
