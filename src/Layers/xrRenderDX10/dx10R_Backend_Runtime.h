@@ -19,11 +19,6 @@ ICF void CBackend::set_Format(SDeclaration* _decl)
 	}
 }
 
-ICF	bool CBackend::is_TessEnabled()
-{
-	return true;
-}
-
 IC void CBackend::Compute(UINT ThreadGroupCountX, UINT ThreadGroupCountY, UINT ThreadGroupCountZ)
 {
 	stat.calls++;

@@ -225,12 +225,6 @@ public:
 	ICF void						set_CS				(const ref_cs& _cs)					{ GRHI->SetShader(_cs->sh, ERHI_SHADER_TYPE::CS); }
 #endif
 
-#ifdef USE_DX11
-	ICF	bool						is_TessEnabled		();
-#else
-	ICF	bool						is_TessEnabled		() {return false;}
-#endif
-
 	ICF void						set_VS				(ref_vs& _vs);
 #ifdef USE_DX11
 	ICF void						set_VS				(SVS* _vs);
