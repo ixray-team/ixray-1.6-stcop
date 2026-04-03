@@ -559,12 +559,16 @@ void CSpawnPoint::SSpawnData::Render(bool bSelected, const Fmatrix& parent,int p
 
 	if (IdleParticle)
 	{
-		IParticleCustom* Particles = smart_cast<IParticleCustom*>(IdleParticle);
-		static Fvector v = { 0.f, 0.f, 0.f };
-		Particles->UpdateParent(parent, v, FALSE);
-		Particles->OnFrame(1);
+		float Dist = EDevice->vCameraPosition.distance_to(m_owner->FPosition);
+		if (Dist < EDevice->RenderRadius * 0.25f)
+		{
+			IParticleCustom* Particles = smart_cast<IParticleCustom*>(IdleParticle);
+			static Fvector v = { 0.f, 0.f, 0.f };
+			Particles->UpdateParent(parent, v, FALSE);
+			Particles->OnFrame(1);
 
-		::RImplementation.model_Render(IdleParticle, parent, priority, strictB2F, 1.f);
+			::RImplementation.model_Render(IdleParticle, parent, priority, strictB2F, 1.f);
+		}
 	}
 
 	if(bSelected)
@@ -602,8 +606,12 @@ void CSpawnPoint::SSpawnData::OnFrame()
 			m_Data->m_editor_flags.set(CSE_Abstract::flVisualAnimationChange, FALSE);
 		}
 
-		if (m_Visual->visual&&PKinematics(m_Visual->visual))
-			PKinematics			(m_Visual->visual)->CalculateBones(TRUE);
+		IKinematics* KinematicsObj = PKinematics(m_Visual->visual);
+		if (m_Visual->visual && KinematicsObj != nullptr)
+		{
+			float Dist = EDevice->vCameraPosition.distance_to(m_owner->FPosition);
+			KinematicsObj->CalculateBones(TRUE);
+		}
 	}
 	// motion part
 	if (m_Motion)
@@ -640,11 +648,13 @@ void CSpawnPoint::SSpawnData::OnFrame()
 
 	xr_vector<CLE_Visual*>::iterator it 	= m_VisualHelpers.begin();
 	xr_vector<CLE_Visual*>::iterator it_e 	= m_VisualHelpers.end();
-	for(;it!=it_e;++it)
+	for (; it != it_e; ++it)
 	{
-		CLE_Visual* v 			= *it;
-		if (PKinematics(v->visual))
-			PKinematics			(v->visual)->CalculateBones(TRUE);
+		CLE_Visual* v = *it;
+		if (IKinematics* KinematicsObj = PKinematics(v->visual))
+		{
+			KinematicsObj->CalculateBones(TRUE);
+		}
 	}
 
 	// reset editor flags
@@ -1029,7 +1039,7 @@ void CSpawnPoint::Render( int priority, bool strictB2F )
 					{
 						Fvector pos={0,0,0};
 						EDevice->SetShader(EDevice->m_WireShader);
-						DU_impl.DrawCross(pos,0.25f,Selected()?ENVMOD_SEL_COLOR2:ENVMOD_COLOR,true);
+						AddCross(pos,0.25f,0.25f,0.25f,0.25f,0.25f,0.25f,Selected()?ENVMOD_SEL_COLOR2:ENVMOD_COLOR,true);
 						if (Selected())
 							switch(m_EM_ShapeType)
 							{
