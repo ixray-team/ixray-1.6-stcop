@@ -105,7 +105,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 				(
 				pLastSector,
 				ViewBase,
-				Device.vCameraPosition,
+				vLastCameraPos,
 				mftrans,
 				CPortalTraverser::VQ_HOM + CPortalTraverser::VQ_SSA + CPortalTraverser::VQ_FADE
 				//. disabled scissoring (HW.Caps.bScissor?CPortalTraverser::VQ_SCISSOR:0)	// generate scissoring info
@@ -438,7 +438,7 @@ void CRender::Render()
 
 	if(RImplementation.o.offscreen_reflecitons && RImplementation.o.deffered_reflecitons && pLastSector)
 	{
-		static int& FaceCount = CCC_Integer::FastCommand("r_fce_count", 1, 1, 7);
+		static int& FaceCount = CCC_Integer::FastCommand("r_fce_count", 1, 0, 7);
 
 		for (auto i = 0; i < FaceCount; ++i)
 		{
@@ -451,6 +451,8 @@ void CRender::Render()
 
 			static Fmatrix EnvView[6](Fidentity);
 			static Fmatrix EnvFullTransform[6](Fidentity);
+
+			static u32 SectorIndex = 0;
 
 			static Fvector cmNorm[6] = {
 				{0.f, +1.f, 0.f},
@@ -493,6 +495,24 @@ void CRender::Render()
 					CurrentEnv->fog_far
 				};
 
+				cmDir[2].mul(Device.vCameraTop, +1.0f);
+				cmDir[3].mul(Device.vCameraTop, -1.0f);
+
+				cmNorm[2].mul(Device.vCameraDirection, -1.0f);
+				cmNorm[3].mul(Device.vCameraDirection, +1.0f);
+
+				cmDir[0].mul(Device.vCameraRight, +1.0f);
+				cmDir[1].mul(Device.vCameraRight, -1.0f);
+
+				cmNorm[0].mul(Device.vCameraTop, +1.0f);
+				cmNorm[1].mul(Device.vCameraTop, +1.0f);
+
+				cmDir[4].mul(Device.vCameraDirection, +1.0f);
+				cmDir[5].mul(Device.vCameraDirection, -1.0f);
+
+				cmNorm[4].mul(Device.vCameraTop, +1.0f);
+				cmNorm[5].mul(Device.vCameraTop, +1.0f);
+
 				EnvPosition.set(Device.vCameraPosition);
 
 				if (!psDeviceFlags.test(rsClearBB))
@@ -517,6 +537,17 @@ void CRender::Render()
 					GRHI->GenerateMips(Target->rt_Reflection_temp->pTexture->get_SRView());
 					break;
 				}
+
+				SectorIndex = 0;
+
+				for (size_t idx = 0, count = SectorsCount(); idx < count; ++idx)
+				{
+					if (Sectors[idx] == pLastSector)
+					{
+						SectorIndex = idx;
+						break;
+					}
+				}
 			}
 			else
 			{
@@ -530,7 +561,10 @@ void CRender::Render()
 				ps_r_taa_jitter.set(0, 0, -1);
 				ps_r_taa_jitter_full.set(ps_r_taa_jitter);
 
-				r_dsgraph_render_subspace(pLastSector, EnvFullTransform[iFace], EnvPosition, false, false);
+				auto pSector = getSector(SectorIndex);
+				pSector = pSector ? pSector : pLastSector;
+
+				r_dsgraph_render_subspace(pSector, EnvFullTransform[iFace], EnvPosition, false, false);
 
 				RCache.set_xform_project(EnvProject);
 				RCache.set_xform_view(EnvView[iFace]);
@@ -561,7 +595,7 @@ void CRender::Render()
 
 	if(ps_r_scale_mode > 1 || ps_r2_aa_type == 3)
 	{
-		int32_t jitterPhaseCount = ffxFsr2GetJitterPhaseCount((int32_t)RCache.get_width(), (int32_t)RCache.get_target_width());
+		int32_t jitterPhaseCount = 4 * ffxFsr2GetJitterPhaseCount((int32_t)RCache.get_width(), (int32_t)RCache.get_target_width());
 		ffxFsr2GetJitterOffset(&ps_r_taa_jitter_full.x, &ps_r_taa_jitter_full.y, Device.dwFrame, jitterPhaseCount);
 
 		ps_r_taa_jitter_full = ps_r_taa_jitter_full.mul(ps_r_taa_jitter_scale);
