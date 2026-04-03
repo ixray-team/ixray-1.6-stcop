@@ -84,7 +84,7 @@ void EParticlesObject::Render(int priority, bool strictB2F)
                 EDevice->SetShader(EDevice->m_WireShader);
 
                 if (!Selected())
-                    DU_impl.DrawCross(GetPosition(), 0.30f, 0.1f, 0.3f, 0.3f, 0.3f, 0.3f, 0xFFFFEBAA, false);
+                    AddCross(GetPosition(), 0.30f, 0.1f, 0.3f, 0.3f, 0.3f, 0.3f, 0xFFFFEBAA, false);
 
                 Fvector p = GetPosition();
                 DU_impl.DrawRomboid(p, 0.1f, 0x0AFFEBAA);

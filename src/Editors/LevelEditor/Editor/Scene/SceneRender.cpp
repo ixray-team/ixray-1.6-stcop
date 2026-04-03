@@ -8,7 +8,7 @@ doug_lea_area_allocator	g_render_lua_allocator_area(s_fake_array,"render:sdk", s
 
 #define RENDER_OBJECT(P,B)\
 {\
-    (N->val)->RenderRoot(P,B);\
+    (N->val)->Render(P,B);\
 }
     
 void  object_Normal_0(EScene::mapObject_Node *N)	 {RENDER_OBJECT(0,false); }
@@ -59,7 +59,7 @@ void EScene::Render( const Fmatrix& camera )
     // insert objects
     for (auto SceneTool : object_tools)
     {
-        if (!SceneTool->IsLoaded)
+        if (!SceneTool->IsLoaded || !SceneTool->IsVisible())
             continue;
 
         ObjectList& lst = SceneTool->GetObjects();
@@ -97,31 +97,39 @@ void EScene::Render( const Fmatrix& camera )
     // normal
     mapRenderObjects.traverseLR		(object_Normal_0);
     RENDER_SCENE_TOOLS				(0,false);
+    FlushCrosses();
     // alpha
     mapRenderObjects.traverseRL		(object_StrictB2F_0);
     RENDER_SCENE_TOOLS				(0,true);
+    FlushCrosses();
 
 // priority #1
     // normal
     mapRenderObjects.traverseLR		(object_Normal_1);
     RENDER_SCENE_TOOLS				(1,false);
+    FlushCrosses();
     // alpha
     mapRenderObjects.traverseRL		(object_StrictB2F_1);
     RENDER_SCENE_TOOLS				(1,true);
+    FlushCrosses();
 // priority #2
     // normal
     mapRenderObjects.traverseLR		(object_Normal_2);
     RENDER_SCENE_TOOLS				(2,false);
+    FlushCrosses();
     // alpha
     mapRenderObjects.traverseRL		(object_StrictB2F_2);
     RENDER_SCENE_TOOLS				(2,true);
+    FlushCrosses();
 // priority #3
     // normal
     mapRenderObjects.traverseLR		(object_Normal_3);
     RENDER_SCENE_TOOLS				(3,false);
+    FlushCrosses();
     // alpha
     mapRenderObjects.traverseRL		(object_StrictB2F_3);
     RENDER_SCENE_TOOLS				(3,true);
+    FlushCrosses();
 
     // render snap
     RenderSnapList			();
