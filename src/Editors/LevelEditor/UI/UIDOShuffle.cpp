@@ -74,7 +74,8 @@ void UIDOShuffle::Draw()
 			m_RealTexture.destroy();
 			m_RealTexture = m_Texture;
 		}
-		ImGui::Image(m_RealTexture ? m_RealTexture->get_SRView()->GetRawSRV() : m_TextureNull->get_SRView()->GetRawSRV(), ImVec2(256, 256));
+		bool HaveTexture = m_RealTexture != nullptr && m_RealTexture->get_SRView() != nullptr;
+		ImGui::Image(HaveTexture ? m_RealTexture->get_SRView()->GetRawSRV() : m_TextureNull->get_SRView()->GetRawSRV(), ImVec2(256, 256));
 
 		{
 			if (ImGui::Button("+", ImVec2(0, ImGui::GetFrameHeight()))) { UIChooseForm::SelectItem(smObject, 8); m_ChooseObject = true; }; ImGui::SameLine();
