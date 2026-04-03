@@ -877,13 +877,14 @@ void CKinematics::ClearWallmarks()
 
 int CKinematics::LL_GetBoneGroups(xr_vector<xr_vector<u16> >& groups)
 {
-	groups.resize	(children.size());
-    for (u16 bone_idx=0; bone_idx<(u16)bones->size(); bone_idx++) {
-        CBoneData*	B 	= (*bones)[bone_idx];
-        for (u32 child_idx=0; child_idx<children.size(); child_idx++){
-        	if (!B->child_faces[child_idx].empty()){ 
+	groups.resize(children.size());
+    for (u16 bone_idx=0; bone_idx<(u16)bones->size(); bone_idx++)
+	{
+        CBoneData* B = (*bones)[bone_idx];
+        for (u32 child_idx=0; child_idx<children.size(); child_idx++)
+		{
+        	if (!B->child_faces[child_idx].empty())
             	groups[child_idx].push_back(bone_idx);
-            }
         }
     }
     return (int)groups.size();
@@ -904,21 +905,21 @@ void CKinematics::StoreVisualMatrix(Fmatrix& world_matrix)
 			{
 				auto& Bi = bone_instances[i];
 
-				bone_instances[i].mRenderTransform_old.set(Bi.mRenderTransform_tmp);
-				bone_instances[i].mRenderTransform_tmp.set(Bi.mRenderTransform);
+				Bi.mRenderTransform_old.set(Bi.mRenderTransform_tmp);
+				Bi.mRenderTransform_tmp.set(Bi.mRenderTransform);
 			}
 		}
 		else
 		{
 			mOldWorldMartrixTmp.set(world_matrix);
-			mOldWorldMartrix.set(mOldWorldMartrixTmp);
+			mOldWorldMartrix.set(world_matrix);
 
 			for(u16 i = 0; i < bones->size(); ++i)
 			{
 				auto& Bi = bone_instances[i];
 
 				Bi.mRenderTransform_tmp.set(Bi.mRenderTransform);
-				Bi.mRenderTransform_old.set(Bi.mRenderTransform_tmp);
+				Bi.mRenderTransform_old.set(Bi.mRenderTransform);
 			}
 		}
 		dwFirstRenderFrame = RDEVICE.dwFrame;
