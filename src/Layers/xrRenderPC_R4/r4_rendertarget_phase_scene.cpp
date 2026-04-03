@@ -2,7 +2,7 @@
 
 void CRenderTarget::phase_scene_forward()
 {
-	u_setrt(rt_Generic_0, 0, 0, RDepth); // LDR RT
+	u_setrt(rt_Generic_0, rt_Velocity, 0, RDepth);
 }
 
 // startup

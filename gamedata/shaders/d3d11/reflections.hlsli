@@ -10,8 +10,6 @@
 // #define VSLR_SLOW_BREAK	
 // #define SSLR_SLOW_BREAK
 
-uniform float4 scaled_screen_res;
-
 float3 gbuf_unpack_position(float2 uv)
 {
 	float4 Point = float4

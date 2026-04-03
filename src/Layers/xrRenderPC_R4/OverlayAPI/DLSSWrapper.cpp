@@ -245,7 +245,7 @@ void DLSSWrapper::Destroy()
 		DLSSInited = false;
 	}
 
-	m_created = false;
+	m_created = false;	
 #endif
 }
 
