@@ -279,49 +279,52 @@ ICF void transfer_matrices(CBoneInstance* BI, u16 bonecount, bool phase_normal)
 {
 #ifdef USE_DX11
 	struct arraybuff{Fvector4 buff[3];};
+
 	arraybuff* array = 0;
 	RCache.get_ConstantDirect(s_bones_array_const, bonecount * sizeof(arraybuff), (void**)&array, 0, 0);
-	if (!array) return;
 
-	if (phase_normal)
+	if (!array)
 	{
-		arraybuff* array_old = 0;
-		RCache.get_ConstantDirect(s_bones_array_const_old, bonecount * sizeof(arraybuff), (void**)&array_old, 0, 0);
-		if (array_old)
-		{
-			for (u16 bid = 0; bid < bonecount; bid++)
-			{
-				Fmatrix& M = BI[bid].mRenderTransform;
-				array[bid] =
-				{
-					M.i.x, M.j.x, M.k.x, M.c.x,
-					M.i.y, M.j.y, M.k.y, M.c.y,
-					M.i.z, M.j.z, M.k.z, M.c.z
-				};
-
-				Fmatrix& O = BI[bid].mRenderTransform_old;
-				array_old[bid] =
-				{
-					O.i.x, O.j.x, O.k.x, O.c.x,
-					O.i.y, O.j.y, O.k.y, O.c.y,
-					O.i.z, O.j.z, O.k.z, O.c.z
-				};
-			}
-			return;
-		}
+		return;
 	}
 
-	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ PHASE_SMAP пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
-	for (u16 bid = 0; bid < bonecount; bid++)
-	{
-		Fmatrix& M = BI[bid].mRenderTransform;
+	arraybuff* array_old = 0;
+	RCache.get_ConstantDirect(s_bones_array_const_old, bonecount * sizeof(arraybuff), (void**)&array_old, 0, 0);
 
-		array[bid] =
+	if (phase_normal && array_old)
+	{
+		for (u16 bid = 0; bid < bonecount; bid++)
 		{
-			M.i.x, M.j.x, M.k.x, M.c.x,
-			M.i.y, M.j.y, M.k.y, M.c.y,
-			M.i.z, M.j.z, M.k.z, M.c.z
-		};
+			Fmatrix& M = BI[bid].mRenderTransform;
+			array[bid] =
+			{
+				M.i.x, M.j.x, M.k.x, M.c.x,
+				M.i.y, M.j.y, M.k.y, M.c.y,
+				M.i.z, M.j.z, M.k.z, M.c.z
+			};
+
+			Fmatrix& O = BI[bid].mRenderTransform_old;
+			array_old[bid] =
+			{
+				O.i.x, O.j.x, O.k.x, O.c.x,
+				O.i.y, O.j.y, O.k.y, O.c.y,
+				O.i.z, O.j.z, O.k.z, O.c.z
+			};
+		}
+	}
+	else
+	{
+		for (u16 bid = 0; bid < bonecount; bid++)
+		{
+			Fmatrix& M = BI[bid].mRenderTransform;
+
+			array[bid] =
+			{
+				M.i.x, M.j.x, M.k.x, M.c.x,
+				M.i.y, M.j.y, M.k.y, M.c.y,
+				M.i.z, M.j.z, M.k.z, M.c.z
+			};
+		}
 	}
 #else
 	ref_constant array = RCache.get_c(s_bones_array_const);
@@ -472,7 +475,7 @@ void CSkeletonX::_Load(const char* N, IReader *data, u32& dwVertCount)
 #endif
 
 	buffer_vector<u16> bids(_alloca(hw_bones_cnt * sizeof(u16)), hw_bones_cnt);
-	//пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ xr_vector
+	//если поймаете исключение замените на xr_vector
 
 	u32 dwVertType,size,it,crc;
 	dwVertType = data->r_u32(); 
@@ -647,9 +650,9 @@ bool CSkeletonX::has_visible_bones()
 	for (u32 it=0; it<BonesUsed.size(); it++)
 	{
 		if (Parent->visimask.is(BonesUsed[it]))
-			return true;
+			return TRUE;
 	}
-	return false;
+	return FALSE;
 }
 
 void CSkeletonX::_DuplicateIndices(IReader *data)
