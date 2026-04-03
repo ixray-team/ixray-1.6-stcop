@@ -114,9 +114,9 @@
 
 const		float				SMAP_near_plane		= .1f	;
 
-const		u32					SMAP_adapt_min		= 32	;
-const		u32					SMAP_adapt_optimal	= 768	;
-const		u32					SMAP_adapt_max		= 1536	;
+#define SMAP_adapt_min (RImplementation.o.smapsize / 64)    //GSC - 32. Now 2048 / 64 = 32, same for 2048 atlas size    
+#define SMAP_adapt_optimal (RImplementation.o.smapsize / 4)    //GSC - 768. Now 2048 / 4 = 512, seems legit fits 16 shadowmaps
+#define SMAP_adapt_max (RImplementation.o.smapsize / 2)    //GSC - 1536. Now 2048 / 2 = 1024, seems legit fits 4 shadowmaps
 
 const		u32					TEX_material_LdotN	= 128	;	// diffuse,		X, almost linear = small res
 const		u32					TEX_material_LdotH	= 256	;	// specular,	Y
