@@ -220,6 +220,7 @@ void CEditorRenderDevice::ResetNearer(){
 bool CEditorRenderDevice::Create()
 {
 	if (b_is_Ready)	return false;
+	psDeviceFlags.set(rsVSync, true);
 
 	TimerGlobal.Start();
 	//Statistic = EStatistic;
