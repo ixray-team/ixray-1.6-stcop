@@ -440,7 +440,7 @@ void CEditShape::Render(int priority, bool strictB2F)
                     B.mulA_43			(_Transform());
                     RCache.set_xform_world(B);
                     EDevice->SetShader	(EDevice->m_WireShader);
-                    DU_impl.DrawCross	(zero,1.f,m_DrawEdgeColor,false);
+                    AddCross(zero,1.f,1.f,1.f,1.f,1.f,1.f,m_DrawEdgeColor,false);
                     DU_impl.DrawIdentSphere	(true,true,clr,m_DrawEdgeColor);
                 }break;
                 case cfBox:

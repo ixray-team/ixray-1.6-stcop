@@ -247,12 +247,6 @@ void CCustomObject::OnFrame()
 		m_CO_Flags.set(flObjectInGroup, FALSE);
 }
 
-void CCustomObject::RenderRoot(int priority, bool strictB2F)
-{
-	if(FParentTools->IsVisible())
-		Render(priority, strictB2F);
-}
-
 void CCustomObject::Render(int priority, bool strictB2F)
 {
 	if ((1==priority)&&(false==strictB2F)){

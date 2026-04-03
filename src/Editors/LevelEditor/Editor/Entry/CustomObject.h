@@ -158,7 +158,6 @@ public:
 
 	virtual bool 	IsRender		();
 	virtual void 	Render			(int priority, bool strictB2F);
-			void 	RenderRoot		(int priority, bool strictB2F);
 	virtual void 	OnFrame			();
 	virtual void 	OnUpdateTransform();
 

@@ -38,7 +38,10 @@ public:
 //----------------------------------------------------
 // Utilities
 //----------------------------------------------------
-class ECORE_API CDrawUtilities: public CDUInterface, public pureRender{
+class ECORE_API CDrawUtilities: 
+    public CDUInterface, 
+    public pureRender
+{
 	SPrimitiveBuffer		m_SolidCone;
 	SPrimitiveBuffer		m_WireCone;
     SPrimitiveBuffer		m_SolidSphere;
