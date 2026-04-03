@@ -49,6 +49,7 @@ void CRT::create(const char* Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount,
 		case ERHI_FORMAT::D24_UNORM_S8_UINT:
 		case ERHI_FORMAT::R24_UNORM_X8_TYPELESS:
 		{
+			fmt = ERHI_FORMAT::R24G8_TYPELESS;
 			UsageDepth = true;
 			break;
 		}
