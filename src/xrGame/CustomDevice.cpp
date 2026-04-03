@@ -159,6 +159,10 @@ void CCustomDevice::ToggleDetector(bool bFastMode, bool switching)
 		PIItem iitem = m_pInventory->ActiveItem();
 		CHudItem* itm = (iitem) ? iitem->cast_hud_item() : nullptr;
 		u16 slot_to_activate = NO_ACTIVE_SLOT;
+		if (!HudSection().size())
+		{
+			return;
+		}
 
 		if (CheckCompatibilityInt(itm, &slot_to_activate))
 		{
