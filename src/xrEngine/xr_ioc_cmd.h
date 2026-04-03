@@ -156,7 +156,7 @@ public :
 		if (it == Console->Commands.end())
 		{
 			auto new_cmd = new CCC_Mask64(command_name, new Flags64, mask);
-			Console->Commands[command_name] = new_cmd;
+			Console->AddCommand(new_cmd);
 			*new_cmd->value = default_value;
 			return *new_cmd->value;
 		}
@@ -231,7 +231,7 @@ public :
 		if (it == Console->Commands.end())
 		{
 			CCC_Mask32* new_cmd = new CCC_Mask32(command_name, new Flags32, mask);
-			Console->Commands[command_name] = new_cmd;
+			Console->AddCommand(new_cmd);
 			*new_cmd->value = default_value;
 			return *(new_cmd)->value;
 		}
@@ -295,7 +295,7 @@ public		:
 		if (it == Console->Commands.end())
 		{
 			CCC_Mask16* new_cmd = new CCC_Mask16(command_name, new Flags16, mask);
-			Console->Commands[command_name] = new_cmd;
+			Console->AddCommand(new_cmd);
 			*new_cmd->value = default_value;
 			return *static_cast<CCC_Mask16*>(new_cmd)->value;
 		}
@@ -346,7 +346,7 @@ public		:
 		if (it == Console->Commands.end())
 		{
 			CCC_ToggleMask* new_cmd = new CCC_ToggleMask(command_name, new Flags32, mask);
-			Console->Commands[command_name] = new_cmd;
+			Console->AddCommand(new_cmd);
 			*new_cmd->value = default_value;
 			return *static_cast<CCC_ToggleMask*>(new_cmd)->value;
 		}
@@ -447,7 +447,7 @@ public		:
 		if (it == Console->Commands.end())
 		{
 			CCC_Token* new_cmd = new CCC_Token(command_name, new u32, new xr_token(std::move(token)));
-			Console->Commands[command_name] = new_cmd;
+			Console->AddCommand(new_cmd);
 			*new_cmd->value = default_value;
 			return *static_cast<CCC_Token*>(new_cmd)->value;
 		}
@@ -511,7 +511,7 @@ public:
 		if (it == Console->Commands.end())
 		{
 			CCC_Float* new_cmd = new CCC_Float(command_name, new float, min, max);
-			Console->Commands[command_name] = new_cmd;
+			Console->AddCommand(new_cmd);
 			*new_cmd->value = default_value;
 			return *static_cast<CCC_Float*>(new_cmd)->value;
 		}
@@ -592,7 +592,7 @@ public:
 		{
 			CCC_Vector3* new_cmd = new CCC_Vector3(command_name, new Fvector, min, max);
 			*new_cmd->value = default_value;
-			Console->Commands[command_name] = new_cmd;
+			Console->AddCommand(new_cmd);
 			return *static_cast<CCC_Vector3*>(new_cmd)->value;
 		}
 		else
@@ -671,7 +671,7 @@ public:
 		{
 			auto new_cmd = new CCC_Integer(command_name, new int, min, max);
 			*new_cmd->value = default_value;
-			Console->Commands[command_name] = new_cmd;
+			Console->AddCommand(new_cmd);
 			return *new_cmd->value;
 		}
 		return *static_cast<CCC_Integer*>(it->second)->value;
@@ -745,7 +745,7 @@ public:
 		{
 			CCC_Boolean* new_cmd = new CCC_Boolean(command_name, new bool, min, max);
 			*new_cmd->value = default_value;
-			Console->Commands[command_name] = new_cmd;
+			Console->AddCommand(new_cmd);
 			return *static_cast<CCC_Boolean*>(new_cmd)->value;
 		}
 		else
@@ -802,7 +802,7 @@ public:
 		if (it == Console->Commands.end())
 		{
 			CCC_String* new_cmd = new CCC_String(command_name, strdup(default_value), _size);
-			Console->Commands[command_name] = new_cmd;
+			Console->AddCommand(new_cmd);
 			return static_cast<CCC_String*>(new_cmd)->value;
 		}
 		else
