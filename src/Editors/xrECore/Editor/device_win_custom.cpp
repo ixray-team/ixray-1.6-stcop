@@ -36,9 +36,7 @@ static LRESULT CALLBACK CustomWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
     {
     case WM_SIZE:
     {
-        bool isMaximized = (wParam == SIZE_MAXIMIZED);
-
-        if (isMaximized && !g_state.wasMaximized)
+        if (wParam == SIZE_MAXIMIZED && !g_state.wasMaximized)
         {
             MARGINS margins = { 0, 0, 0, 0 };
             DwmExtendFrameIntoClientArea(hwnd, &margins);
@@ -49,7 +47,7 @@ static LRESULT CALLBACK CustomWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
                 EDevice->MaximizedWindow();
             }
         }
-        else if (!isMaximized && g_state.wasMaximized)
+        else if (wParam == SIZE_RESTORED && g_state.wasMaximized)
         {
             MARGINS margins = { 1, 1, 1, 1 };
             DwmExtendFrameIntoClientArea(hwnd, &margins);
@@ -66,7 +64,7 @@ static LRESULT CALLBACK CustomWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
             }
         }
 
-        g_state.wasMaximized = isMaximized;
+        g_state.wasMaximized = (wParam == SIZE_MAXIMIZED);
         break;
     }
 
