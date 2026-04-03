@@ -302,8 +302,8 @@ struct f_deffer
 struct f_forward
 {
     float4 Color : SV_Target0;
-    float Reactive : SV_Target1;
-    float2 Velocity : SV_Target2;
+    float4 Velocity : SV_Target1;
+    float Reactive : SV_Target2;
 };
 
 struct gbuffer_data

@@ -10,10 +10,11 @@ struct v2p
     float4 c0: COLOR0;
 };
 
-float4 main(v2p I, float4 pos2d : SV_POSITION) : SV_Target
+void main(v2p I, float4 pos2d : SV_POSITION, out f_forward O)
 {
-    if (m_hud_params.y * m_hud_params.a < 0.0001f) {
-		return 0.0f;
+    if (m_hud_params.y * m_hud_params.a < 0.0001f)
+	{
+		discard;
 	}
 
     float2 coords = I.tc0;
@@ -31,8 +32,13 @@ float4 main(v2p I, float4 pos2d : SV_POSITION) : SV_Target
 	
 	float alpha = m_hud_params.y * m_hud_params.a;
 	t_vp2 *= saturate(alpha * 2.0f - 1.0f);
+	alpha = saturate(alpha * 2.0f);
 
     float3 final = lerp(t_vp2.xyz, t_base.xyz, t_base.a);
-    return float4(final.xyz, saturate(alpha * 2.0f));
+	float2 vel = 0.0f;
+	
+    O.Color = float4(final.xyz, alpha);
+	O.Velocity = float4(vel, 0.0f, t_base.a * alpha);
+	O.Reactive = 0.0f;
 }
 
