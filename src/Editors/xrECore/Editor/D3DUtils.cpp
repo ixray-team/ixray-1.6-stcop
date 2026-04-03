@@ -345,7 +345,7 @@ void CDrawUtilities::DrawDirectionalLight(const Fvector& p, const Fvector& d, fl
 void CDrawUtilities::DrawPointLight(const Fvector& p, float radius, u32 c)
 {
 	RCache.set_xform_world(Fidentity);
-	DrawCross(p, radius,radius,radius, radius,radius,radius, c, true);
+    AddCross(p, radius,radius,radius, radius,radius,radius, c, true);
 }
 
 void CDrawUtilities::DrawEntity(u32 clr, ref_shader s)
@@ -989,7 +989,6 @@ void CDrawUtilities::DrawRectangle(const Fvector& o, const Fvector& u, const Fve
     }
 }
 //----------------------------------------------------
-
 void CDrawUtilities::DrawCross(const Fvector& p, float szx1, float szy1, float szz1, float szx2, float szy2, float szz2, u32 clr, BOOL bRot45)
 {
 	_VertexStream*	Stream	= &RCache.Vertex;
@@ -1019,7 +1018,7 @@ void CDrawUtilities::DrawCross(const Fvector& p, float szx1, float szy1, float s
 
 void CDrawUtilities::DrawPivot(const Fvector& pos, float sz){
 	DU_DRAW_SH(EDevice->m_WireShader);
-    DrawCross(pos, sz, sz, sz, sz, sz, sz, 0xFF7FFF7F);
+    AddCross(pos, sz, sz, sz, sz, sz, sz, 0xFF7FFF7F);
 }
 
 void CDrawUtilities::DrawAxis(const Fmatrix& T)
@@ -1273,4 +1272,63 @@ void CDrawUtilities::OutText(const Fvector& pos, LPCSTR text, u32 color, u32 sha
         m_Font->SetColor(color);
         m_Font->Out(p.x - 1, p.y - 1, (LPSTR)text);
     }
+}
+
+xr_vector<FVF::L> CrossVerts;
+ECORE_API void AddCross(const Fvector& p, float szx1, float szy1, float szz1, float szx2, float szy2, float szz2, u32 clr, BOOL bRot45)
+{
+    FVF::L v[12];
+
+    int count = bRot45 ? 12 : 6;
+
+    v[0].set(p.x + szx2, p.y, p.z, clr);
+    v[1].set(p.x - szx1, p.y, p.z, clr);
+    v[2].set(p.x, p.y + szy2, p.z, clr);
+    v[3].set(p.x, p.y - szy1, p.z, clr);
+    v[4].set(p.x, p.y, p.z + szz2, clr);
+    v[5].set(p.x, p.y, p.z - szz1, clr);
+
+    if (bRot45)
+    {
+        Fmatrix M;
+        M.setHPB(PI_DIV_4, PI_DIV_4, PI_DIV_4);
+
+        for (int i = 0; i < 6; i++)
+        {
+            v[6 + i].p.sub(v[i].p, p);
+            M.transform_dir(v[6 + i].p);
+            v[6 + i].p.add(p);
+            v[6 + i].color = clr;
+        }
+    }
+
+    CrossVerts.insert(CrossVerts.end(), v, v + count);
+}
+
+ECORE_API void FlushCrosses()
+{
+    if (CrossVerts.empty())
+        return;
+
+    _VertexStream* Stream = &RCache.Vertex;
+
+    u32 vBase;
+    FVF::L* pv = (FVF::L*)Stream->Lock(
+        CrossVerts.size(),
+        DU_impl.vs_L->vb_stride,
+        vBase
+    );
+
+    memcpy(pv, CrossVerts.data(), CrossVerts.size() * sizeof(FVF::L));
+
+    Stream->Unlock(CrossVerts.size(), DU_impl.vs_L->vb_stride);
+
+    DU_DRAW_DP(
+        ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,
+        DU_impl.vs_L,
+        vBase,
+        CrossVerts.size() / 2
+    );
+
+    CrossVerts.clear();
 }
