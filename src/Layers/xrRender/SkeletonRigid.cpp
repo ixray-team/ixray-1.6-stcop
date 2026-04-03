@@ -26,7 +26,7 @@ void CKinematics::CalculateBones(BOOL bForceExact)
 		return;	// early out for "slow" update
 
 	if (Update_Visibility)
-		Visibility_Update	();
+		Visibility_Update();
 
 
 	// here we have either:
@@ -40,7 +40,7 @@ void CKinematics::CalculateBones(BOOL bForceExact)
 	RDEVICE.Statistic->Animation.Begin();
 #endif
 
-	Bone_Calculate					(bones->at(iRoot),&Fidentity);
+	Bone_Calculate(bones->at(iRoot),&Fidentity);
 #ifdef DEBUG
 	check_kinematics				(this, dbg_name.c_str() );
 	RDEVICE.Statistic->Animation.End	();
@@ -51,7 +51,7 @@ void CKinematics::CalculateBones(BOOL bForceExact)
 	if (UCalc_Visibox>=psSkeletonUpdate) 
 	{
 		// mark
-		UCalc_Visibox		= -(::Random.randI(psSkeletonUpdate-1));
+		UCalc_Visibox = -(::Random.randI(psSkeletonUpdate-1));
 
 		CalculateBBox();
 
@@ -73,7 +73,8 @@ void CKinematics::CalculateBones(BOOL bForceExact)
 	}
 
 	//
-	if (Update_Callback)	Update_Callback(this);
+	if (Update_Callback)
+		Update_Callback(this);
 }
 
 #ifdef DEBUG
@@ -98,21 +99,24 @@ void check_kinematics(CKinematics* _k, LPCSTR s)
 }
 #endif
 
-void	CKinematics::			BuildBoneMatrix			( const CBoneData* bd, CBoneInstance &bi, const Fmatrix *parent, u8 channel_mask/* = (1<<0)*/ )
+void CKinematics::BuildBoneMatrix( const CBoneData* bd, CBoneInstance &bi, const Fmatrix *parent, u8 channel_mask/* = (1<<0)*/ )
 {
-	bi.mTransform.mul_43	(*parent,bd->bind_transform);
+	bi.mTransform.mul_43(*parent,bd->bind_transform);
 }
 
 void CKinematics::CLBone( const CBoneData* bd, CBoneInstance &bi, const Fmatrix *parent, u8 channel_mask /*= (1<<0)*/)
 {
-	
-	u16							SelfID				= bd->GetSelfID();
+	u16 SelfID = bd->GetSelfID();
 
-	if ( LL_GetBoneVisible(SelfID) ){
-		if ( bi.callback_overwrite() ){
-			if ( bi.callback() )	bi.callback()( &bi );
-		} else {
-
+	if (LL_GetBoneVisible(SelfID))
+	{
+		if (bi.callback_overwrite())
+		{
+			if (bi.callback())
+				bi.callback()(&bi);
+		}
+		else
+		{
 			BuildBoneMatrix( bd, bi, parent, channel_mask );
 #ifndef MASTER_GOLD
 			R_ASSERT2( _valid( bi.mTransform ), "anim kils bone matrix" ); 
@@ -129,10 +133,10 @@ void CKinematics::CLBone( const CBoneData* bd, CBoneInstance &bi, const Fmatrix 
 	}
 }
 
-void	CKinematics::Bone_GetAnimPos(Fmatrix& pos,u16 id,u8 mask_channel, bool ignore_callbacks)
+void CKinematics::Bone_GetAnimPos(Fmatrix& pos,u16 id,u8 mask_channel, bool ignore_callbacks)
 {
 	R_ASSERT(id<LL_BoneCount());
-	CBoneInstance bi = LL_GetBoneInstance(id);
+	CBoneInstance bi = bone_instances[id];
 	Fvector last_c = bi.mTransform.c;
 	BoneChain_Calculate(&LL_GetData(id),bi,mask_channel,ignore_callbacks);
 #ifndef MASTER_GOLD
@@ -145,28 +149,25 @@ void	CKinematics::Bone_GetAnimPos(Fmatrix& pos,u16 id,u8 mask_channel, bool igno
 void CKinematics::Bone_Calculate(CBoneData* bd, Fmatrix *parent)
 {
 	xrCriticalSectionGuard guard(&UCalc_Mutex2);
-	u16							SelfID				= bd->GetSelfID();
-	CBoneInstance				&BONE_INST			= LL_GetBoneInstance(SelfID);
+	u16 SelfID = bd->GetSelfID();
+	CBoneInstance &BONE_INST = bone_instances[SelfID];
 	CLBone( bd, BONE_INST, parent, u8(-1) );
 	// Calculate children
-	for (xr_vector<CBoneData*>::iterator C=bd->children.begin(); C!=bd->children.end(); C++)
-		Bone_Calculate( *C, &BONE_INST.mTransform );
+	for (CBoneData* BD : bd->children)
+		Bone_Calculate(BD, &BONE_INST.mTransform);
 
 }
 
-void	CKinematics::BoneChain_Calculate		(const CBoneData* bd, CBoneInstance &bi, u8 mask_channel, bool ignore_callbacks)
+void CKinematics::BoneChain_Calculate(const CBoneData* bd, CBoneInstance &bi, u8 mask_channel, bool ignore_callbacks)
 {
-	u16 SelfID					= bd->GetSelfID();
-	//CBlendInstance& BLEND_INST	= LL_GetBlendInstance(SelfID);
-	//CBlendInstance::BlendSVec &Blend = BLEND_INST.blend_vector();
-//ignore callbacks
+	u16 SelfID = bd->GetSelfID();
+
+	//ignore callbacks
 	BoneCallback bc = bi.callback();
-	BOOL		 ow = bi.callback_overwrite();
+	BOOL ow = bi.callback_overwrite();
 	if(ignore_callbacks)
-	{
 		bi.set_callback( bi.callback_type(), 0, bi.callback_param(), 0 );
 
-	}
 	if(SelfID==LL_GetBoneRoot())
 	{
 		CLBone( bd, bi, &Fidentity, mask_channel );
@@ -174,10 +175,10 @@ void	CKinematics::BoneChain_Calculate		(const CBoneData* bd, CBoneInstance &bi, 
 		bi.set_callback( bi.callback_type(), bc, bi.callback_param(), ow );
 		return;
 	}
-	u16 ParentID				= bd->GetParentID();
+	u16 ParentID = bd->GetParentID();
 	R_ASSERT( ParentID != BI_NONE );
-	CBoneData* ParrentDT		= &LL_GetData(ParentID);
-	CBoneInstance parrent_bi	= LL_GetBoneInstance(ParentID);
+	CBoneData* ParrentDT = &LL_GetData(ParentID);
+	CBoneInstance parrent_bi = bone_instances[ParentID];
 	BoneChain_Calculate(ParrentDT, parrent_bi, mask_channel, ignore_callbacks);
 	CLBone( bd, bi, &parrent_bi.mTransform, mask_channel );
 	//restore callback
