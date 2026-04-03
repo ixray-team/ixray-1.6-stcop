@@ -83,6 +83,8 @@ public:
 	adopt_compiler&			_ZB				(bool	_test,	bool _write)			{	C->PassSET_ZB		(_test,_write);			return	*this;		}
 	adopt_compiler&			_blend			(bool	_blend, u32 abSRC, u32 abDST)	{	C->PassSET_ablend_mode(_blend,abSRC,abDST);	return 	*this;		}
 	adopt_compiler&			_aref			(bool	_aref,  u32 aref)				{	C->PassSET_ablend_aref(_aref,aref);			return 	*this;		}
+	adopt_compiler&			_export_macros	(const char*	_name, const char* _def)				{	RImplementation.addShaderOption(_name, _def);	return 	*this;		}
+	adopt_compiler&			_clear_macros	()				{	RImplementation.clearAllShaderOptions();	return 	*this;		}
 	adopt_compiler&			_dx10texture	(const char* _resname, const char* _texname)		{	C->r_dx10Texture(_resname, _texname);		return	*this;		}
 	adopt_dx10sampler		_dx10sampler	(const char* _name)							{	u32 s = C->r_dx10Sampler(_name);			return	adopt_dx10sampler(C,s);	}
 
@@ -160,6 +162,10 @@ void	CResourceManager::LS_Load			()
 			.def("zb",							&adopt_compiler::_ZB			,return_reference_to<1>())
 			.def("blend",						&adopt_compiler::_blend			,return_reference_to<1>())
 			.def("aref",						&adopt_compiler::_aref			,return_reference_to<1>())
+
+			.def("add_shader_option",			&adopt_compiler::_export_macros	,return_reference_to<1>())
+			.def("clear_all_shader_options",	&adopt_compiler::_clear_macros	,return_reference_to<1>())
+
 			//	For compatibility only
 			.def("dx10color_write_enable",		&adopt_compiler::_dx10color_write_enable,return_reference_to<1>())
 			.def("color_write_enable",			&adopt_compiler::_dx10color_write_enable,return_reference_to<1>())
