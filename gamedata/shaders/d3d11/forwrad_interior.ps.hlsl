@@ -179,8 +179,8 @@ void main(p_bumped_new I, out f_forward O)
 	O.Color.xyz = saturate(O.Color.xyz * rcp(1.0f + O.Color.xyz));
 #else
 	#ifndef DISABLE_MOTION_VECTORS
-		O.Velocity = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
-		O.Reactive = O.Color.w * 0.9f;
+		O.Velocity.xy = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
+		O.Reactive = O.Color.w * 0.9f; O.Velocity.zw = 1.0f;
 	#endif
 #endif
 }

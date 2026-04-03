@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <DirectXTex.h>
+#include <src/xrEngine/xr_ioc_cmd.h>
 
 using namespace DirectX;
 
@@ -17,9 +18,20 @@ void fix_texture_name(LPSTR fn)
 	}
 }
 
-int get_texture_load_lod(const char* fn)
+int get_texture_load_lod(const char* fn, size_t& w, size_t& h)
 {
-	return psTextureLOD;
+	static auto& target_size = CCC_Integer::FastCommand("render.experemental.target_res", 8192, 256, D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION);
+	auto min_size = (int)std::min(w, h);
+
+	int target_lod = 0;
+
+	while (min_size > target_size)
+	{
+		min_size /= 2;
+		target_lod ++;
+	}
+
+	return std::max(target_lod, psTextureLOD);
 }
 
 u32 calc_texture_size(int lod, u32 mip_cnt, u32 orig_size)
@@ -317,7 +329,7 @@ _DDS_2D:
 		// Check for LMAP and compress if needed
 		_strlwr(fn);
 
-		img_loaded_lod = get_texture_load_lod(fn);
+		img_loaded_lod = get_texture_load_lod(fn, imageInfo.width, imageInfo.height);
 
 		HRESULT hr = LoadFromDDSMemory(reader->pointer(), reader->length(), textureFlag, &imageInfo, scratchImage);
 		if (FAILED(hr))
@@ -353,7 +365,7 @@ _DDS_2D:
 			mip_lod = oldMipmapCnt - imageInfo.mipLevels;
 		}
 
-		hr = CreateTextureEx(RDevice, scratchImage.GetImages() + mip_lod, scratchImage.GetImageCount(), imageInfo,
+		hr = CreateTextureEx(RDevice, scratchImage.GetImages() + mip_lod, scratchImage.GetImageCount() - mip_lod, imageInfo,
 			usage, bindFlags, cpuAccessFlags, miscFlags, CREATETEX_FLAGS::CREATETEX_DEFAULT, &pTexture2D);
 		FS.r_close(reader);
 		scratchImage.Release();
