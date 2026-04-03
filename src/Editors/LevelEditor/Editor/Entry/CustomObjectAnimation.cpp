@@ -57,35 +57,43 @@ static FvectorVec path_points;
 void CCustomObject::AnimationDrawPath()
 {
 	// motion path
-	VERIFY (m_Motion);
+	VERIFY(m_Motion);
 
-	if (EPrefs->object_flags.is(epoDrawAnimPath)){
-		float fps 				= m_Motion->FPS();
-		float min_t				= (float)m_Motion->FrameStart()/fps;
-		float max_t				= (float)m_Motion->FrameEnd()/fps;
+	if (EPrefs->object_flags.is(epoDrawAnimPath))
+	{
+		float fps = m_Motion->FPS();
+		float min_t = (float)m_Motion->FrameStart() / fps;
+		float max_t = (float)m_Motion->FrameEnd() / fps;
 
-		Fvector 				T,r;
-		u32 clr					= 0xffffffff;
-		path_points.clear		();
-		for (float t=min_t; (t<max_t)||fsimilar(t,max_t,EPS_L); t+=1/30.f){
-			m_Motion->_Evaluate	(t,T,r);
+		Fvector T, r;
+		u32 clr = 0xffffffff;
+		path_points.clear();
+		for (float t = min_t; (t < max_t) || fsimilar(t, max_t, EPS_L); t += 1 / 30.f)
+		{
+			m_Motion->_Evaluate(t, T, r);
 			path_points.push_back(T);
 		}
 
-		EDevice->SetShader		(EDevice->m_WireShader);
-		RCache.set_xform_world	(Fidentity);
+		EDevice->SetShader(EDevice->m_WireShader);
+		RCache.set_xform_world(Fidentity);
 		if (!path_points.empty())
-			DU_impl.DrawPrimitiveL		(ERHI_PRIMITIVE_TOPOLOGY::LINE_STRIP,path_points.size()-1,path_points.data(),path_points.size(),clr,true,false);
-		CEnvelope* E 			= m_Motion->Envelope();
-		for (KeyIt k_it=E->keys.begin(); k_it!=E->keys.end(); k_it++){
-			m_Motion->_Evaluate	((*k_it)->time,T,r);
-			if (UI->CurrentView().m_Camera.GetPosition().distance_to_sqr(T)<50.f*50.f){
-				DU_impl.DrawCross	(T,0.1f,0.1f,0.1f, 0.1f,0.1f,0.1f, clr,false);
+		{
+			DU_impl.DrawPrimitiveL(ERHI_PRIMITIVE_TOPOLOGY::LINE_STRIP, path_points.size() - 1, path_points.data(), path_points.size(), clr, true, false);
+		}
+
+		CEnvelope* E = m_Motion->Envelope();
+		for (KeyIt k_it = E->keys.begin(); k_it != E->keys.end(); k_it++)
+		{
+			m_Motion->_Evaluate((*k_it)->time, T, r);
+
+			if (UI->CurrentView().m_Camera.GetPosition().distance_to_sqr(T) < 50.f * 50.f)
+			{
+				DU_impl.DrawCross(T, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, clr, false);
 
 				string256 Data = {};
 				sprintf(Data, "K: %3.3f", (*k_it)->time);
 
-				DU_impl.OutText		(T, Data,0xffffffff,0x00000000);
+				DU_impl.OutText(T, Data, 0xffffffff, 0x00000000);
 			}
 		}
 	}

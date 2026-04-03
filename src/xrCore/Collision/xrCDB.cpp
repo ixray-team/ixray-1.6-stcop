@@ -117,7 +117,9 @@ void MODEL::build(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_callback* 
 			verts.clear();
 			tris.clear();
 			xr_delete(tree);
+#ifdef DEBUG
 			Msg("! Collision build failed");
+#endif
 			PROF_STOP_THREAD();
 			return;
 		}
@@ -128,7 +130,9 @@ void MODEL::build(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_callback* 
 			tree->Store((IWriter*)pRW);
 			FS.w_close((IWriter*&)pRW);
 		}
+#ifdef DEBUG
 		Msg("+ Collision build succeeded");
+#endif
 		status.store(S_READY);
 		PROF_STOP_THREAD();
 	};
