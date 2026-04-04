@@ -58,7 +58,7 @@ public:
  	Fvector					N;				// face normal
  	FixedVector<_TCF,2>			tc;				// TC
 
-	void*					pDeflector;		// does the face has LM-UV map?
+	CDeflector*				pDeflector;		// does the face has LM-UV map?
 	CLightmap*				lmap_layer;
 	u32						sm_group;
 	virtual Fvector2*		getTC0			( ) { return tc[0].uv; }

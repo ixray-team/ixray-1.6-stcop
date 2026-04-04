@@ -22,7 +22,7 @@ bool CEditableObject::Load(const char* fname)
 	{
         time_t age		= FS.get_file_age	(fname);		VERIFY3(age>0,"Invalid file age:",fname);
         IReader* F 		= FS.r_open			(fname); 		R_ASSERT(F);
-        IReader* OBJ 	= F->open_chunk		(EOBJ_CHUNK_OBJECT_BODY);
+        IReader* OBJ 	= F->open_chunk(EEditableObjectChunks::OBJECT_BODY);
         R_ASSERT2		(OBJ,"Corrupted file.");
         bool bRes 		= Load(*OBJ);
         OBJ->close();
@@ -64,7 +64,7 @@ bool CEditableObject::Save(const char* fname)
     IWriter* F			= FS.w_open(fname);
 	if (F)
 	{
-        F->open_chunk	(EOBJ_CHUNK_OBJECT_BODY);
+        F->open_chunk	(EEditableObjectChunks::OBJECT_BODY);
         Save			(*F);
         F->close_chunk	();
 
@@ -80,22 +80,22 @@ bool CEditableObject::Save(const char* fname)
 
 void CEditableObject::Save(IWriter& F)
 {
-	F.open_chunk	(EOBJ_CHUNK_VERSION);
-	F.w_u16			(EOBJ_CURRENT_VERSION);
+	F.open_chunk	(EEditableObjectChunks::VERSION);
+	F.w_u16			((u16)EEditableObjectVersions::Vanilla);
 	F.close_chunk	();
 
-	F.open_chunk	(EOBJ_CHUNK_CLASSSCRIPT);
+	F.open_chunk	(EEditableObjectChunks::CLASSSCRIPT);
 	F.w_stringZ		(m_ClassScript);
 	F.close_chunk	();
 
-	F.open_chunk	(EOBJ_CHUNK_LODS);
+	F.open_chunk	(EEditableObjectChunks::LODS);
 	F.w_stringZ		(m_LODs);
 	F.close_chunk	();
 
-    F.w_chunk		(EOBJ_CHUNK_FLAGS,&m_objectFlags.flags,sizeof(m_objectFlags.flags));
+    F.w_chunk		(EEditableObjectChunks::FLAGS,&m_objectFlags.flags,sizeof(m_objectFlags.flags));
 
     // meshes
-    F.open_chunk	(EOBJ_CHUNK_EDITMESHES);
+    F.open_chunk	(EEditableObjectChunks::EDITMESHES);
     int count		= 0;
 
     for(EditMeshIt m = m_Meshes.begin(); m!=m_Meshes.end(); ++m)
@@ -108,26 +108,35 @@ void CEditableObject::Save(IWriter& F)
     F.close_chunk	();
 
 	// surfaces
-    F.open_chunk	(EOBJ_CHUNK_SURFACES3);
-    F.w_u32			(m_Surfaces.size());
+    F.open_chunk(EEditableObjectChunks::SURFACES_SHARED);
+    F.w_u32(m_Surfaces.size());
 
-    for (SurfaceIt sf_it=m_Surfaces.begin(); sf_it!=m_Surfaces.end(); ++sf_it)
-	{
-        F.w_stringZ	((*sf_it)->_Name			());
-        F.w_stringZ	((*sf_it)->_ShaderName		());
-        F.w_stringZ	((*sf_it)->_ShaderXRLCName	());
-        F.w_stringZ	((*sf_it)->_GameMtlName		());
-		F.w_stringZ	((*sf_it)->_Texture			());
-		F.w_stringZ	((*sf_it)->_VMap			());
-        F.w_u32	((*sf_it)->m_Flags.get		());
-        F.w_u32	((*sf_it)->_FVF				());
-        F.w_u32	(1);
+    for (auto& m_Surface : m_Surfaces)
+    {
+    	bool IsShared = m_Surface->IsSharedMode();
+    	F.w_u8(IsShared);
+    	if(IsShared)
+    	{
+    		F.w_stringZ(m_Surface->_Name());
+    	}
+    	else
+    	{
+    		F.w_stringZ(m_Surface->_Name());
+    		F.w_stringZ(m_Surface->_ShaderName());
+    		F.w_stringZ(m_Surface->_ShaderXRLCName());
+    		F.w_stringZ(m_Surface->_GameMtlName());
+    		F.w_stringZ(m_Surface->_Texture());
+    	}
+		F.w_stringZ(m_Surface->_VMap());
+        F.w_u32(m_Surface->m_pData.second->m_Flags.get());
+        F.w_u32(m_Surface->_FVF());
+        F.w_u32(1);
     }
-    F.close_chunk	();
+    F.close_chunk();
 
     // bones
     if (!m_Bones.empty()){
-	    F.open_chunk	(EOBJ_CHUNK_BONES2);
+	    F.open_chunk	(EEditableObjectChunks::BONES2);
 	    for (BoneIt b_it=m_Bones.begin(); b_it!=m_Bones.end(); ++b_it)
 		{
         	F.open_chunk	(b_it-m_Bones.begin());
@@ -140,7 +149,7 @@ void CEditableObject::Save(IWriter& F)
     // skeleton motions
     if (!m_SMotions.empty())
     {
-        F.open_chunk	(EOBJ_CHUNK_SMOTIONS);
+        F.open_chunk	(EEditableObjectChunks::SMOTIONS);
         F.w_u32			(m_SMotions.size());
         
 		for (SMotionIt s_it=m_SMotions.begin(); s_it!=m_SMotions.end(); ++s_it) 
@@ -151,7 +160,7 @@ void CEditableObject::Save(IWriter& F)
     // skeleton motions refs
     if (m_SMotionRefs.size())
     {
-        F.open_chunk	(EOBJ_CHUNK_SMOTIONS3);
+        F.open_chunk	(EEditableObjectChunks::SMOTIONS3);
         F.w_u32			(m_SMotionRefs.size());
 
         for(u32 i=0; i<m_SMotionRefs.size(); ++i)
@@ -163,7 +172,7 @@ void CEditableObject::Save(IWriter& F)
     // bone parts
     if (!m_BoneParts.empty())
 	{
-        F.open_chunk	(EOBJ_CHUNK_BONEPARTS2);
+        F.open_chunk	(EEditableObjectChunks::BONEPARTS2);
         F.w_u32			(m_BoneParts.size());
         for (BPIt bp_it=m_BoneParts.begin(); bp_it!=m_BoneParts.end(); ++bp_it)
 		{
@@ -179,13 +188,13 @@ void CEditableObject::Save(IWriter& F)
 
     if (IsDynamic())
 	{
-		F.open_chunk	(EOBJ_CHUNK_ACTORTRANSFORM);
+		F.open_chunk	(EEditableObjectChunks::ACTORTRANSFORM);
         F.w_fvector3	(a_vPosition);
         F.w_fvector3	(a_vRotate);
 		F.close_chunk	();
     }
 
-    F.open_chunk		(EOBJ_CHUNK_DESC);
+    F.open_chunk		(EEditableObjectChunks::DESC);
     F.w_stringZ			(m_CreateName.c_str());
     F.w					(&m_CreateTime,sizeof(m_CreateTime));
     F.w_stringZ			(m_ModifName.c_str());
@@ -198,243 +207,317 @@ void CEditableObject::Save(IWriter& F)
 	bOnModified			= false;
 }
 
-#if 1 //#if 1
-
 bool CEditableObject::Load(IReader& F)
 {
 	bool bRes = true;
-	do{
-		u32 version = 0;
-        shared_str buf;
-		shared_str sh_name;
-		R_ASSERT(F.r_chunk(EOBJ_CHUNK_VERSION,&version));
-		if (version!=EOBJ_CURRENT_VERSION)
+
+	u32 version = 0;
+    shared_str buf;
+	shared_str sh_name;
+	R_ASSERT(F.r_chunk(EEditableObjectChunks::VERSION,&version));
+	if (version!=(u32)EEditableObjectVersions::Vanilla)
+	{
+		ELog.DlgMsg( mtError, "CEditableObject: unsupported file version. Object can't load.");
+		bRes = false;
+		return bRes;
+	}
+
+	R_ASSERT(F.r_chunk(EEditableObjectChunks::FLAGS, &m_objectFlags.flags));
+
+	if (F.find_chunk	(EEditableObjectChunks::CLASSSCRIPT))
+	{
+		F.r_stringZ		(m_ClassScript);
+	}
+
+	if (F.find_chunk	(EEditableObjectChunks::LODS))
+	{
+		F.r_stringZ		(m_LODs);
+	}
+
+	// surfaces
+	if (F.find_chunk(EEditableObjectChunks::SURFACES_SHARED))
+	{
+		u32 cnt = F.r_u32();
+		m_Surfaces.resize(cnt);
+		for (auto& m_Surface : m_Surfaces)
 		{
-			ELog.DlgMsg( mtError, "CEditableObject: unsupported file version. Object can't load.");
-			bRes = false;
-			break;
-		}
-
-		R_ASSERT(F.r_chunk(EOBJ_CHUNK_FLAGS, &m_objectFlags.flags));
-
-		if (F.find_chunk	(EOBJ_CHUNK_CLASSSCRIPT))
-			F.r_stringZ		(m_ClassScript);
-
-		if (F.find_chunk	(EOBJ_CHUNK_LODS))
-			F.r_stringZ		(m_LODs);
-
-		// surfaces
-		if (F.find_chunk(EOBJ_CHUNK_SURFACES3))
-		{
-			u32 cnt = F.r_u32();
-			m_Surfaces.resize(cnt);
-			for (SurfaceIt s_it=m_Surfaces.begin(); s_it!=m_Surfaces.end(); s_it++)
+			m_Surface = new CSurface();
+			bool IsShared = F.r_u8();
+			if (IsShared)
 			{
-				*s_it 		= new CSurface();
-				F.r_stringZ	(buf);	(*s_it)->SetName		(buf.c_str());
-				F.r_stringZ	(buf);	(*s_it)->SetShader		(buf.c_str());
-				F.r_stringZ	(buf);	(*s_it)->SetShaderXRLC	(buf.c_str());
-				F.r_stringZ	(buf);	(*s_it)->SetGameMtl		(buf.c_str());
-				F.r_stringZ	(buf); 	(*s_it)->SetTexture		(buf.c_str());
-				F.r_stringZ	(buf); 	(*s_it)->SetVMap		(buf.c_str());
-				(*s_it)->m_Flags.assign(F.r_u32());
-				(*s_it)->SetFVF		(F.r_u32());
-				cnt 				= F.r_u32();
-				if (cnt>1) ELog.DlgMsg(mtError,"Object surface '%s' has more than one TC's.",buf.c_str());
-				R_ASSERT(1<=cnt);
-			}
-		}else if (F.find_chunk(EOBJ_CHUNK_SURFACES2)){
-			u32 cnt = F.r_u32();
-			m_Surfaces.resize(cnt);
-			for (SurfaceIt s_it=m_Surfaces.begin(); s_it!=m_Surfaces.end(); s_it++){
-				*s_it 		= new CSurface();
-				F.r_stringZ	(buf);	(*s_it)->SetName		(buf.c_str());
-				F.r_stringZ	(buf);	(*s_it)->SetShader		(buf.c_str());
-				F.r_stringZ	(buf);	(*s_it)->SetShaderXRLC	(buf.c_str());
-				F.r_stringZ	(buf); 	(*s_it)->SetTexture		(buf.c_str());
-				F.r_stringZ	(buf); 	(*s_it)->SetVMap		(buf.c_str());
-				(*s_it)->m_Flags.assign(F.r_u32()); 
-				(*s_it)->SetFVF		(F.r_u32());
-				cnt 				= F.r_u32();
-				if (cnt>1) ELog.DlgMsg(mtError,"Object surface '%s' has more than one TC's.",buf.c_str());
-				R_ASSERT(1<=cnt);
-			}
-		}else{
-			R_ASSERT(F.find_chunk(EOBJ_CHUNK_SURFACES));
-			u32 cnt = F.r_u32();
-			m_Surfaces.resize(cnt);
-			for (SurfaceIt s_it=m_Surfaces.begin(); s_it!=m_Surfaces.end(); s_it++){
-				*s_it = new CSurface();
 				F.r_stringZ(buf);
-				(*s_it)->SetName(buf.c_str());
-				F.r_stringZ(sh_name);
-				(*s_it)->m_Flags.set(CSurface::sf2Sided,!!F.r_u8());
-				(*s_it)->SetFVF		(F.r_u32());
-				cnt 				= F.r_u32();
-				if (cnt>1) ELog.DlgMsg(mtError,"Object surface '%s' has more than one TC's.",buf.c_str());
-				R_ASSERT(1<=cnt);
-				F.r_stringZ			(buf); (*s_it)->SetTexture(buf.c_str());
-				F.r_stringZ			(buf); (*s_it)->SetVMap(buf.c_str());
-				(*s_it)->SetShader		(sh_name.c_str());
-				(*s_it)->SetShaderXRLC	("default");
-			}
-
-			// surfaces xrlc part
-			if(F.find_chunk(EOBJ_CHUNK_SURFACES_XRLC))
-				for (auto s_it=m_Surfaces.begin(); s_it!=m_Surfaces.end(); s_it++){
-					F.r_stringZ(buf); (*s_it)->SetShaderXRLC(buf.c_str());
+				auto Data = CSharedMaterialLibrary::Instance().GetData(buf);
+				if(!IVERIFY(Data))
+				{
+					Msg("Object [%s]: unable to find shared surface data [%s], set default...", m_LibName.c_str(), buf.c_str());
 				}
+				m_Surface->SetSharedData(Data);
+			} else
+			{
+				m_Surface->SetSharedData(nullptr);
+				F.r_stringZ	(buf);
+				m_Surface->SetName(buf.c_str());
+				F.r_stringZ	(buf);
+				m_Surface->SetShader(buf.c_str());
+				F.r_stringZ	(buf);
+				m_Surface->SetShaderXRLC(buf.c_str());
+				F.r_stringZ	(buf);
+				m_Surface->SetGameMtl(buf.c_str());
+				F.r_stringZ	(buf);
+				m_Surface->SetTexture(buf.c_str());
+			}
+			F.r_stringZ(buf);
+			m_Surface->SetVMap(buf.c_str());
+			m_Surface->m_pData.second->m_Flags.assign(F.r_u32());
+			m_Surface->SetFVF(F.r_u32());
+			cnt = F.r_u32();
+			if (!I_ASSERT(cnt==1))
+			{
+				ELog.DlgMsg(mtError,"Object surface '%s' has more than one TC's.",buf.c_str());
+			}
 		}
-
-		// Load meshes
-		IReader* OBJ = F.open_chunk(EOBJ_CHUNK_EDITMESHES);
-		if(OBJ)
+	}
+	else if (F.find_chunk(EEditableObjectChunks::SURFACES3))
+	{
+		u32 cnt = F.r_u32();
+		m_Surfaces.resize(cnt);
+		for (auto& m_Surface : m_Surfaces)
 		{
-			IReader* M   = OBJ->open_chunk(0);
-			for (int count=1; M; count++) 
+			m_Surface = new CSurface();
+			m_Surface->SetSharedData(nullptr);
+			F.r_stringZ	(buf);
+			m_Surface->SetName(buf.c_str());
+			F.r_stringZ	(buf);
+			m_Surface->SetShader(buf.c_str());
+			F.r_stringZ	(buf);
+			m_Surface->SetShaderXRLC(buf.c_str());
+			F.r_stringZ	(buf);
+			m_Surface->SetGameMtl(buf.c_str());
+			F.r_stringZ	(buf);
+			m_Surface->SetTexture(buf.c_str());
+			F.r_stringZ	(buf);
+			m_Surface->SetVMap(buf.c_str());
+			m_Surface->m_pData.second->m_Flags.assign(F.r_u32());
+			m_Surface->SetFVF(F.r_u32());
+			cnt = F.r_u32();
+			if (!I_ASSERT(cnt == 1))
 			{
-				CEditableMesh* mesh=new CEditableMesh(this);
-				if (mesh->LoadMesh(*M))
-					m_Meshes.push_back(mesh);
-				else{
-					ELog.DlgMsg( mtError, "CEditableObject: Can't load mesh '%s'!", *mesh->m_Name );
-					xr_delete(mesh);
-					bRes = false;
-				}
-				M->close();
-				if (!bRes)	break;
-				M = OBJ->open_chunk(count);
+				ELog.DlgMsg(mtError,"Object surface '%s' has more than one TC's.",buf.c_str());
 			}
-			OBJ->close();
+		}
+	}else if (F.find_chunk(EEditableObjectChunks::SURFACES2)){
+		u32 cnt = F.r_u32();
+		m_Surfaces.resize(cnt);
+		for (auto& m_Surface : m_Surfaces)
+		{
+			m_Surface = new CSurface();
+			m_Surface->SetSharedData(nullptr);
+			F.r_stringZ	(buf);
+			m_Surface->SetName(buf.c_str());
+			F.r_stringZ	(buf);
+			m_Surface->SetShader(buf.c_str());
+			F.r_stringZ	(buf);
+			m_Surface->SetShaderXRLC(buf.c_str());
+			F.r_stringZ	(buf);
+			m_Surface->SetTexture(buf.c_str());
+			F.r_stringZ	(buf);
+			m_Surface->SetVMap(buf.c_str());
+			m_Surface->m_pData.second->m_Flags.assign(F.r_u32());
+			m_Surface->SetFVF(F.r_u32());
+			cnt = F.r_u32();
+			if (!I_ASSERT(cnt == 1))
+			{
+				ELog.DlgMsg(mtError,"Object surface '%s' has more than one TC's.",buf.c_str());
+			}
+		}
+	}else{
+		R_ASSERT(F.find_chunk(EEditableObjectChunks::SURFACES));
+		u32 cnt = F.r_u32();
+		m_Surfaces.resize(cnt);
+		for (auto& m_Surface : m_Surfaces)
+		{
+			m_Surface = new CSurface();
+			m_Surface->SetSharedData(nullptr);
+			F.r_stringZ(buf);
+			m_Surface->SetName(buf.c_str());
+			F.r_stringZ(sh_name);
+			m_Surface->m_pData.second->m_Flags.set(SSurfaceData::sf2Sided,!!F.r_u8());
+			m_Surface->SetFVF(F.r_u32());
+			cnt = F.r_u32();
+			if (!I_ASSERT(cnt==1))
+			{
+				ELog.DlgMsg(mtError,"Object surface '%s' has more than one TC's.",buf.c_str());
+			}
+			F.r_stringZ(buf);
+			m_Surface->SetTexture(buf.c_str());
+			F.r_stringZ(buf);
+			m_Surface->SetVMap(buf.c_str());
+			m_Surface->SetShader(sh_name.c_str());
+			m_Surface->SetShaderXRLC("default");
 		}
 
-		// bones
-        if (bRes){
-            IReader* B_CHUNK = F.open_chunk(EOBJ_CHUNK_BONES2);
-            if (B_CHUNK)
+		// surfaces xrlc part
+		if(F.find_chunk(EEditableObjectChunks::SURFACES_XRLC))
+		{
+			for (auto& m_Surface : m_Surfaces)
 			{
-                int chunk = 0;
-                IReader* O;
-                while (nullptr!=(O=B_CHUNK->open_chunk(chunk++)))
-				{
-                    m_Bones.push_back(new CBone());
-                    m_Bones.back()->Load_1(*O);
-                    O->close();
-                }
-                B_CHUNK->close();
-                PrepareBones();
-            }else if (F.find_chunk(EOBJ_CHUNK_BONES)){
-                m_Bones.resize(F.r_u32());
-                for (BoneIt b_it=m_Bones.begin(); b_it!=m_Bones.end(); b_it++){
-                    *b_it = new CBone();
-                    (*b_it)->Load_0(F);
-                }
-                PrepareBones();
-            }
+				F.r_stringZ(buf);
+				m_Surface->SetShaderXRLC(buf.c_str());
+			}
+		}
+	}
 
-  			// skeleton motions
-            if (F.find_chunk(EOBJ_CHUNK_SMOTIONS))
+	// Load meshes
+	IReader* OBJ = F.open_chunk(EEditableObjectChunks::EDITMESHES);
+	if(OBJ)
+	{
+		IReader* M   = OBJ->open_chunk(0);
+		for (int count=1; M; count++) 
+		{
+			CEditableMesh* mesh=new CEditableMesh(this);
+			if (mesh->LoadMesh(*M))
+				m_Meshes.push_back(mesh);
+			else{
+				ELog.DlgMsg( mtError, "CEditableObject: Can't load mesh '%s'!", *mesh->m_Name );
+				xr_delete(mesh);
+				bRes = false;
+			}
+			M->close();
+			if (!bRes)	break;
+			M = OBJ->open_chunk(count);
+		}
+		OBJ->close();
+	}
+
+	// bones
+    if (bRes){
+        IReader* B_CHUNK = F.open_chunk(EEditableObjectChunks::BONES2);
+        if (B_CHUNK)
+		{
+            int chunk = 0;
+            IReader* O;
+            while (nullptr!=(O=B_CHUNK->open_chunk(chunk++)))
 			{
-                m_SMotions.resize(F.r_u32());
-                for (SMotionIt s_it=m_SMotions.begin(); s_it!=m_SMotions.end(); s_it++)
-				{
-                    *s_it = new CSMotion();
-                    if (!(*s_it)->Load(F))
-					{
-                        Log		("!Motions has different version. Load failed.");
-                        xr_delete(*s_it);
-                        m_SMotions.clear();
-                        break;                 
-                    }
-                    // resort bone_mots
-	                (*s_it)->SortBonesBySkeleton(m_Bones);
-                }
+                m_Bones.push_back(new CBone());
+                m_Bones.back()->Load_1(*O);
+                O->close();
             }
-            if (F.find_chunk(EOBJ_CHUNK_SMOTIONS2))
-            {
-            	shared_str 		tmp;
-                F.r_stringZ		(tmp);
-                u32 set_cnt		= _GetItemCount(tmp.c_str());
-
-                string_path		nm;
-                for (u32 k=0; k<set_cnt; ++k)
-                {
-                    _GetItem			(tmp.c_str(),k,nm);
-                	m_SMotionRefs.push_back	(nm);
-            	}
-            }else
-            if (F.find_chunk(EOBJ_CHUNK_SMOTIONS3))
-            {
-                u32 set_cnt		= F.r_u32();
-
-            	shared_str 		nm;
-                for (u32 k=0; k<set_cnt; ++k)
-                {
-                	F.r_stringZ				(nm);
-                	m_SMotionRefs.push_back	(nm);
-            	}
+            B_CHUNK->close();
+            PrepareBones();
+        }else if (F.find_chunk(EEditableObjectChunks::BONES)){
+            m_Bones.resize(F.r_u32());
+            for (BoneIt b_it=m_Bones.begin(); b_it!=m_Bones.end(); b_it++){
+                *b_it = new CBone();
+                (*b_it)->Load_0(F);
             }
+            PrepareBones();
         }
 
-		// bone parts
-        if (bRes){
-            if (F.find_chunk(EOBJ_CHUNK_BONEPARTS)){
-                m_BoneParts.resize(F.r_u32());
-                bool bBPok = true;
-                for (BPIt bp_it=m_BoneParts.begin(); bp_it!=m_BoneParts.end(); bp_it++){
-                    F.r_stringZ	(buf); bp_it->alias=buf;
-                    bp_it->bones.resize(F.r_u32());
-                    for (RStringVecIt s_it=bp_it->bones.begin(); s_it!=bp_it->bones.end(); s_it++){
-                        int idx		= F.r_u32();
-                        if ((idx>=0)&&(idx<(int)m_Bones.size())){
-                            *s_it	= m_Bones[idx]->Name();
-                        }else{
-		                    Log		("!Invalid bone parts.",GetName());
-                            bBPok = false;
-                            break;
-                        }
-                    }
-                    if (!bBPok) break;
+  		// skeleton motions
+        if (F.find_chunk(EEditableObjectChunks::SMOTIONS))
+		{
+            m_SMotions.resize(F.r_u32());
+            for (SMotionIt s_it=m_SMotions.begin(); s_it!=m_SMotions.end(); s_it++)
+			{
+                *s_it = new CSMotion();
+                if (!(*s_it)->Load(F))
+				{
+                    Log		("!Motions has different version. Load failed.");
+                    xr_delete(*s_it);
+                    m_SMotions.clear();
+                    break;                 
                 }
-				if (!bBPok)	m_BoneParts.clear();
-                if (!m_BoneParts.empty()&&!VerifyBoneParts())
-                    Log		("!Invalid bone parts. Found duplicate bones in object '%s'.",GetName());
-            }else if (F.find_chunk(EOBJ_CHUNK_BONEPARTS2)){
-                m_BoneParts.resize(F.r_u32());
-                for (BPIt bp_it=m_BoneParts.begin(); bp_it!=m_BoneParts.end(); bp_it++){
-                    F.r_stringZ	(buf); bp_it->alias=buf;
-                    bp_it->bones.resize(F.r_u32());
-                    for (RStringVecIt s_it=bp_it->bones.begin(); s_it!=bp_it->bones.end(); s_it++)
-                        F.r_stringZ(*s_it);
-                }
-                if (!m_BoneParts.empty()&&!VerifyBoneParts())
-                    Log			("!Invalid bone parts. Found duplicate bones in object '%s'.",GetName());
+                // resort bone_mots
+	            (*s_it)->SortBonesBySkeleton(m_Bones);
             }
         }
-
-        if (bRes)
+        if (F.find_chunk(EEditableObjectChunks::SMOTIONS2))
         {
-            if (F.find_chunk	(EOBJ_CHUNK_ACTORTRANSFORM))
-            {
-                F.r_fvector3	(a_vPosition);
-                F.r_fvector3	(a_vRotate);
-            }
+        	shared_str 		tmp;
+            F.r_stringZ		(tmp);
+            u32 set_cnt		= _GetItemCount(tmp.c_str());
 
-            if (F.find_chunk	(EOBJ_CHUNK_DESC))
+            string_path		nm;
+            for (u32 k=0; k<set_cnt; ++k)
             {
-                F.r_stringZ		(m_CreateName);
-                F.r				(&m_CreateTime,sizeof(m_CreateTime));
-                F.r_stringZ		(m_ModifName);
-                F.r				(&m_ModifTime,sizeof(m_ModifTime));
+                _GetItem			(tmp.c_str(),k,nm);
+            	m_SMotionRefs.push_back	(nm);
+        	}
+        }else
+        if (F.find_chunk(EEditableObjectChunks::SMOTIONS3))
+        {
+            u32 set_cnt		= F.r_u32();
+
+        	shared_str 		nm;
+            for (u32 k=0; k<set_cnt; ++k)
+            {
+            	F.r_stringZ				(nm);
+            	m_SMotionRefs.push_back	(nm);
+        	}
+        }
+    }
+
+	// bone parts
+    if (bRes){
+        if (F.find_chunk(EEditableObjectChunks::BONEPARTS)){
+            m_BoneParts.resize(F.r_u32());
+            bool bBPok = true;
+            for (BPIt bp_it=m_BoneParts.begin(); bp_it!=m_BoneParts.end(); bp_it++){
+                F.r_stringZ	(buf); bp_it->alias=buf;
+                bp_it->bones.resize(F.r_u32());
+                for (RStringVecIt s_it=bp_it->bones.begin(); s_it!=bp_it->bones.end(); s_it++){
+                    int idx		= F.r_u32();
+                    if ((idx>=0)&&(idx<(int)m_Bones.size())){
+                        *s_it	= m_Bones[idx]->Name();
+                    }else{
+	                    Log		("!Invalid bone parts.",GetName());
+                        bBPok = false;
+                        break;
+                    }
+                }
+                if (!bBPok) break;
             }
-	
-            ResetSAnimation();
+			if (!bBPok)	m_BoneParts.clear();
+            if (!m_BoneParts.empty()&&!VerifyBoneParts())
+                Log		("!Invalid bone parts. Found duplicate bones in object '%s'.",GetName());
+        }else if (F.find_chunk(EEditableObjectChunks::BONEPARTS2)){
+            m_BoneParts.resize(F.r_u32());
+            for (BPIt bp_it=m_BoneParts.begin(); bp_it!=m_BoneParts.end(); bp_it++){
+                F.r_stringZ	(buf); bp_it->alias=buf;
+                bp_it->bones.resize(F.r_u32());
+                for (RStringVecIt s_it=bp_it->bones.begin(); s_it!=bp_it->bones.end(); s_it++)
+                    F.r_stringZ(*s_it);
+            }
+            if (!m_BoneParts.empty()&&!VerifyBoneParts())
+                Log			("!Invalid bone parts. Found duplicate bones in object '%s'.",GetName());
+        }
+    }
+
+    if (bRes)
+    {
+        if (F.find_chunk	(EEditableObjectChunks::ACTORTRANSFORM))
+        {
+            F.r_fvector3	(a_vPosition);
+            F.r_fvector3	(a_vRotate);
         }
 
-		if (!bRes) break;
-		UpdateBox		();
-		VerifyMeshNames	();
-	}while(false);
+        if (F.find_chunk	(EEditableObjectChunks::DESC))
+        {
+            F.r_stringZ		(m_CreateName);
+            F.r				(&m_CreateTime,sizeof(m_CreateTime));
+            F.r_stringZ		(m_ModifName);
+            F.r				(&m_ModifTime,sizeof(m_ModifTime));
+        }
+	
+        ResetSAnimation();
+    }
+
+	if (!bRes)
+	{
+		return bRes;
+	}
+	UpdateBox		();
+	VerifyMeshNames	();
 
 	return bRes;
 }
@@ -474,6 +557,5 @@ bool CEditableObject::ExportOBJ(const char* fn)
     return false;
 }
 //------------------------------------------------------------------------------
-#endif
 
 

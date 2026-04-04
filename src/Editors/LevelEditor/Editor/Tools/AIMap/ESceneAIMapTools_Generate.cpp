@@ -569,7 +569,7 @@ void ESceneAIMapTool::UpdateLinks(SAINode* N, bool bIC)
 
 bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 {
-	std::sort(m_ignored_materials.begin(), m_ignored_materials.end());
+	std::ranges::sort(m_ignored_materials);
 	bool bRes = false;
 	if (!GetSnapList()->empty()) {
 		if (!RealUpdateSnapList()) return false;
@@ -643,7 +643,7 @@ bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 
 						u16 mtl_id = surf->_GameMtl();// ->material;
 
-						if (std::find(m_ignored_materials.begin(), m_ignored_materials.end(), mtl_id) != m_ignored_materials.end())
+						if (std::ranges::find(m_ignored_materials, mtl_id) != m_ignored_materials.end())
 						{
 							continue;
 						}
@@ -662,8 +662,10 @@ bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 							E->GetFaceWorld((*o_it)->_Transform(), *m_it, *it, verts);
 
 							CL.add_face_D(verts[0], verts[1], verts[2], surf->_GameMtl() /* *it */);
-							if (surf->m_Flags.is(CSurface::sf2Sided))
+							if (surf->_flags().is(SSurfaceData::sf2Sided))
+							{
 								CL.add_face_D(verts[2], verts[1], verts[0], surf->_GameMtl() /* *it */);
+							}
 						}
 					}
 				}

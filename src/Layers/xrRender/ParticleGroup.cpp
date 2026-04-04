@@ -482,7 +482,6 @@ void CParticleGroup::OnFrame(u32 u_dt)
 		vis.box.set(m_InitialPosition, m_InitialPosition);
 		vis.box.grow(EPS_L);
 		vis.box.getsphere(vis.sphere.P, vis.sphere.R);
-
 		return;
 	}
 

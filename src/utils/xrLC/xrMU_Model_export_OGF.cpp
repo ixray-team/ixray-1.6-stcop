@@ -102,19 +102,21 @@ void export_ogf( xrMU_Reference& mu_reference )
 	auto MakeRef = [](xrMU_Model& Model, xr_vector<u32>& GeneratedIds, const xrMU_Reference& Ref) -> void{
 		for (xrMU_Model::v_subdivs_it it=Model.m_subdivs.begin(); it!=Model.m_subdivs.end(); it++)
 		{
-			OGF_Reference*	pOGF	= new OGF_Reference ();
-			b_material*		M		= &(pBuild->materials()[it->material]);	// and it's material
-			R_ASSERT		(M);
+			OGF_Reference* pOGF = new OGF_Reference ();
+			//b_material*		M		= &(pBuild->materials()[it->material]);	// and it's material
+			//R_ASSERT		(M);
 
 			// Common data
-			pOGF->Sector = Ref.sector;
+			pOGF->Sector = mu_reference.sector;
 			pOGF->material = it->material;
+			pOGF->bSharedMaterial = it->bSharedMaterial;
 
 			// Collect textures
-			OGF_Texture				T;
-			TRY(T.name			= pBuild->textures()[M->surfidx].name);
-			TRY(T.pBuildSurface	= &(pBuild->textures()[M->surfidx]));
-			TRY(pOGF->textures.push_back(T));
+			auto& Tex = pBuild->GetTexture(it->material, it->bSharedMaterial);
+			OGF_Texture T;
+			T.name = Tex.name;
+			T.pBuildSurface	= &Tex;
+			pOGF->textures.push_back(T);
 
 			// Special
 			pOGF->model = it->ogf;

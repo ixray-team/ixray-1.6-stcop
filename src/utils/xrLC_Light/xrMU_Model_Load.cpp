@@ -13,13 +13,24 @@ void xrMU_Model::Load	( IReader& F, u32 version )
 	xr_vector<b_vertex>	b_vertices;
 	b_vertices.resize	(F.r_u32());
 	m_vertices.reserve	(b_vertices.size());
-	F.r					(&*b_vertices.begin(),(u32)b_vertices.size()*sizeof(b_vertex));
+	F.r					(b_vertices.data(),(u32)b_vertices.size()*sizeof(b_vertex));
 
 	// READ: faces
 	xr_vector<b_face>	b_faces;
 	b_faces.resize		(F.r_u32());
 	m_faces.reserve		(b_faces.size());
-	F.r					(&*b_faces.begin(),(u32)b_faces.size()*sizeof(b_face));
+	for (auto& f : b_faces)
+	{
+		f.v[0] = F.r_u32();
+		f.v[1] = F.r_u32();
+		f.v[2] = F.r_u32();
+		F.r(&f.t[0], sizeof(Fvector2));
+		F.r(&f.t[1], sizeof(Fvector2));
+		F.r(&f.t[2], sizeof(Fvector2));
+		f.dwMaterial = F.r_u16();
+		F.r(&f.flags, sizeof(b_face_flags));
+		f.dwMaterialGame = F.r_u32();
+	}
 
 	// READ: lod-ID
 	F.r					(&m_lod_ID,2);
@@ -36,8 +47,8 @@ void xrMU_Model::Load	( IReader& F, u32 version )
 	}
 	for (u32 f_it=0; f_it<b_faces.size(); f_it++)
 	{
-		b_face&	F		= b_faces[f_it];
-		_face *face = create_face		(m_vertices[F.v[0]],m_vertices[F.v[1]],m_vertices[F.v[2]],F);
+		b_face&	r_face		= b_faces[f_it];
+		_face *face = create_face		(m_vertices[r_face.v[0]],m_vertices[r_face.v[1]],m_vertices[r_face.v[2]],r_face);
 		face->sm_group = sm_groups[f_it];
 	}
 
@@ -60,7 +71,18 @@ void xrMU_Model::Load_Embree(IReader& F, xr_vector<FaceDataEmbree>& faces)
 	// READ: faces
 	xr_vector<b_face>	b_faces;
 	b_faces.resize(F.r_u32());
- 	F.r(&*b_faces.begin(), (u32)b_faces.size() * sizeof(b_face));
+	for (auto& f : b_faces)
+	{
+		f.v[0] = F.r_u32();
+		f.v[1] = F.r_u32();
+		f.v[2] = F.r_u32();
+		F.r(&f.t[0], sizeof(Fvector2));
+		F.r(&f.t[1], sizeof(Fvector2));
+		F.r(&f.t[2], sizeof(Fvector2));
+		f.dwMaterial = F.r_u16();
+		F.r(&f.flags, sizeof(b_face_flags));
+		f.dwMaterialGame = F.r_u32();
+	}
 
 
 	// READ: lod-ID
@@ -71,20 +93,21 @@ void xrMU_Model::Load_Embree(IReader& F, xr_vector<FaceDataEmbree>& faces)
  	F.r(&*sm_groups.begin(), (u32)sm_groups.size() * sizeof(u32));
 
 
-	for (auto& F : b_faces)
+	for (auto& Face : b_faces)
 	{
 		FaceDataEmbree faceNew;
-		faceNew.dwMaterial = F.dwMaterial;
-		faceNew.dwMaterialGame = F.dwMaterialGame;
+		faceNew.dwMaterial = Face.dwMaterial;
+		faceNew.dwMaterialGame = Face.dwMaterialGame;
 		faceNew.bOpaque = false;
-		faceNew.v1 = b_vertices[F.v[0]];
-		faceNew.v2 = b_vertices[F.v[1]];
-		faceNew.v3 = b_vertices[F.v[2]];
+		faceNew.bSharedMaterial = (bool)(Face.flags&b_face_flags::UseSharedMaterial);
+		faceNew.v1 = b_vertices[Face.v[0]];
+		faceNew.v2 = b_vertices[Face.v[1]];
+		faceNew.v3 = b_vertices[Face.v[2]];
 
 		// tc
-		faceNew.TC[0] = F.t[0];
-		faceNew.TC[1] = F.t[1];
-		faceNew.TC[2] = F.t[2];
+		faceNew.TC[0] = Face.t[0];
+		faceNew.TC[1] = Face.t[1];
+		faceNew.TC[2] = Face.t[2];
  
 		faces.push_back(faceNew);
   	}
@@ -98,6 +121,7 @@ _face* xrMU_Model::create_face(_vertex* v0, _vertex* v1, _vertex* v2, b_face& B)
 	_F->dwMaterial		= u16(B.dwMaterial);
 	_F->dwMaterialGame	= B.dwMaterialGame;
 	R_ASSERT			(B.dwMaterialGame<65536);
+	_F->flags.bSharedMaterial = !!(B.flags & b_face_flags::UseSharedMaterial);
 
 	// Vertices and adjacement info
 	_F->SetVertex		(0,v0);
@@ -117,7 +141,7 @@ _face* xrMU_Model::create_face(_vertex* v0, _vertex* v1, _vertex* v2, b_face& B)
 
 _face* xrMU_Model::load_create_face(Fvector& P1, Fvector& P2, Fvector& P3, b_face& B)
 {
-	return				create_face(load_create_vertex(P1),load_create_vertex(P2),load_create_vertex(P3),B);
+	return create_face(load_create_vertex(P1),load_create_vertex(P2),load_create_vertex(P3),B);
 }
 
 _vertex* xrMU_Model::create_vertex(Fvector& P)
@@ -138,5 +162,5 @@ _vertex* xrMU_Model::load_create_vertex(Fvector& P)
 			return m_vertices[it];
 	}
 	// create new
-	return				create_vertex(P);
+	return create_vertex(P);
 }

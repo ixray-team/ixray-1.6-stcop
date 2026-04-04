@@ -279,10 +279,11 @@ struct Hardware_TextureData
 
 struct Hardware_FaceData
 {
-	__half2		 TC0[3]; // UV координаты
+	__half2 TC0[3]; // UV координаты
 	unsigned short surfidx;
- 	bool		 bOpacue = false;
-	bool		 bWater = false;
+	bool bShared = false;
+ 	bool bOpacue = false;
+	bool bWater = false;
 };
 
 struct OPTICK_Params
@@ -301,4 +302,7 @@ struct OPTICK_Params
 
 	Hardware_TextureData* textures;
 	int					  count_textures;
+	
+	Hardware_TextureData* textures_shared;
+	int					  count_textures_shared;
 };

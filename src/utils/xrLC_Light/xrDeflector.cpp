@@ -319,9 +319,9 @@ void CDeflector::RemapUV(u32 base_u, u32 base_v, u32 size_u, u32 size_v, u32 lm_
 
 
 // Дампинг и сравнение
-u16	CDeflector:: GetBaseMaterial		() 
+Face& CDeflector::GetBaseMaterial() 
 {
-	return UVpolys.front().owner->dwMaterial;	
+	return *UVpolys.front().owner;	
 }
 
 bool	CDeflector::similar					( const CDeflector &D, float eps/* =EPS */ ) const

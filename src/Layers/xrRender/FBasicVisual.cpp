@@ -11,6 +11,7 @@
 
 #include "FBasicVisual.h"
 #include "../../xrEngine/Fmesh.h"
+#include "src/xrCore/SharedMaterialLibrary.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -50,8 +51,10 @@ void dxRender_Visual::Load		(const char* N, IReader *data, u32 )
 	{
 		R_ASSERT2			(hdr.format_version==xrOGF_FormatVersion, "Invalid visual version");
 		Type				= hdr.type;
-		//if (hdr.shader_id)	shader	= ::Render->getShader	(hdr.shader_id);
-		if (hdr.shader_id)	shader	= ::RImplementation.getShader	(hdr.shader_id);
+		if (hdr.shader_id)
+		{
+			shader	= ::RImplementation.getShader	(hdr.shader_id);
+		}
 		vis.box.set			(hdr.bb.min,hdr.bb.max	);
 		vis.sphere.set		(hdr.bs.c,	hdr.bs.r	);
 	} else {
@@ -59,7 +62,29 @@ void dxRender_Visual::Load		(const char* N, IReader *data, u32 )
 	}
 
 	// Shader
-	if (data->find_chunk(OGF_TEXTURE)) {
+	bool SharedMat = false;
+	if (data->find_chunk(OGF_SHARED_MATERIAL_SETTINGS))
+	{
+		SharedMat = data->r_u8();
+	}
+	if (SharedMat)
+	{
+		string128 Name;
+		data->r_stringZ(Name, sizeof(Name));
+		auto MatData = CSharedMaterialLibrary::Instance().GetData(Name);
+		xr_string ShaderDescr = MatData->m_ShaderName.c_str();
+		auto ShaderEndPos = ShaderDescr.size();
+		ShaderDescr.append("/");
+		ShaderDescr.append(MatData->m_Texture.c_str());
+		xr_stack_string512 lmap_tex;
+		data->r_stringZ(lmap_tex.data(), lmap_tex.Length);
+		ShaderDescr.append(lmap_tex.c_str());
+		shader = ::RImplementation.getShaderShared(ShaderDescr.c_str());
+		ShaderDescr[ShaderEndPos] = '\0';
+		
+		shader.create(ShaderDescr.c_str(),ShaderDescr.c_str()+ShaderEndPos+1);
+	}
+	else if (data->find_chunk(OGF_TEXTURE)) {
 		string256		fnT,fnS;
 		data->r_stringZ	(fnT,sizeof(fnT));
 		data->r_stringZ	(fnS,sizeof(fnS));

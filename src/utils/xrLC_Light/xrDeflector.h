@@ -49,8 +49,8 @@ public:
 	void	Light				(  base_lighting* LightsSelected);
 	void	L_Direct			(  base_lighting* LightsSelected);
  
-	u32		weight				() { return layer.Area(); }	
-	u16		GetBaseMaterial		() ;
+	u32 weight() { return layer.Area(); }	
+	Face& GetBaseMaterial();
 
 	void	Bounds				(u32 ID, Fbox2& dest)
 	{

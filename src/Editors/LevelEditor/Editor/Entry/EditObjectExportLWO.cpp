@@ -38,7 +38,7 @@ bool CEditableObject::ExportLWO(const char* fname)
 			int im_idx=FindLPCSTR(images,S->_Texture());
 			R_ASSERT(im_idx>=0);
 			const char* vm_name=S->_VMap();
-			F->Wsurface(S->_Name(),S->m_Flags.is(CSurface::sf2Sided),(u16)im_idx,(vm_name&&vm_name[0])?vm_name:"Texture",S->_ShaderName(),S->_ShaderXRLCName());
+			F->Wsurface(S->_Name(),S->_flags().is(SSurfaceData::sf2Sided),(u16)im_idx,(vm_name&&vm_name[0])?vm_name:"Texture",S->_ShaderName(),S->_ShaderXRLCName());
 		}
 		// meshes/layers
 		for (EditMeshIt mesh_it=FirstMesh(); mesh_it!=LastMesh(); mesh_it++){

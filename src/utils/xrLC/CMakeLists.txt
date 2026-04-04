@@ -51,6 +51,7 @@ file(GLOB_RECURSE XLC_SOURCE_MUMODELS_FILES
 file(GLOB_RECURSE XLC_SOURCE_EDITOR_PUBLIC_FILES CONFIGURE_DEPENDS
 	"../../Editors/Public/VIMP_Processor.*"
 	"../../Editors/Public/object_sliding.*"
+	"../utils/Shader_xrLC_Compilers.h"
 )
 
 # Source groups

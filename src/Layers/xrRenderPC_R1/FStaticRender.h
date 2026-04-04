@@ -60,7 +60,8 @@ public:
 	
 	// Global containers
 	xr_vector<FSlideWindowItem>									SWIs;
-	xr_vector<ref_shader>										Shaders;
+	xr_vector<ref_shader> ShadersLevel;
+	xr_hash_map<shared_str, ref_shader> ShadersShared;
 	using VertexDeclarator = FixedVector<RHIInputElementDesc,65>;
 	xr_vector<VertexDeclarator>									DCL;
 	xr_vector<IRHIBuffer*>							VB;
@@ -160,6 +161,7 @@ public:
 	virtual void					Statistics				(CGameFont* F);
 	virtual LPCSTR					getShaderPath			()									{ return "r1\\";	}
 	virtual ref_shader				getShader				(int id);
+	virtual ref_shader getShaderShared(shared_str id);
 	virtual IRender_Sector*			getSector				(int id);
 	virtual IRenderVisual*			getVisual				(int id);
 	virtual IRender_Sector*			detectSector			(const Fvector& P);

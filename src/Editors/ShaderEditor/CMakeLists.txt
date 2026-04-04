@@ -3,6 +3,7 @@ project(ShaderEditor)
 # Files import
 file(GLOB_RECURSE ESHE_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.*"
+	"../../utils/Shader_xrLC.h"
 )
 
 set(ESHE_SRC_FILES)

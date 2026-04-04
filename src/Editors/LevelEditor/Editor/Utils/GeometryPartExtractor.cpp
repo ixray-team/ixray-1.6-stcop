@@ -226,30 +226,30 @@ bool SBPart::Export	(IWriter& F, u8 infl)
         }
         split.add_face		(v[0], v[1], v[2]);
 
-        if (face->surf->m_Flags.is(CSurface::sf2Sided)){
+        if (face->surf->_flags().is(SSurfaceData::sf2Sided)){
             v[0].norm.invert(); v[1].norm.invert(); v[2].norm.invert();
             if (!split.add_face(v[0], v[2], v[1])) split.invalid_faces++;
         }
     }
 
     // fill per bone vertices
-    for (SplitIt split_it=m_Splits.begin(); split_it!=m_Splits.end(); split_it++)
+    for (auto& elem : m_Splits)
     {
-        if (!split_it->valid()){
-            ELog.Msg(mtError,"Degenerate part found (Texture '%s').",*split_it->m_Texture);
+        if (!elem.valid()){
+            ELog.Msg(mtError,"Degenerate part found (Texture '%s').",elem.m_SurfaceData->m_Texture.c_str());
             bRes = false;
             break;
         }
-        if (0!=split_it->invalid_faces){
-	        ELog.Msg(mtError,"Part [texture '%s'] have %d duplicate(degenerate) face(s).",*split_it->m_Texture,split_it->invalid_faces);
+        if (elem.invalid_faces){
+            ELog.Msg(mtError,"Part [texture '%s'] have %d duplicate(degenerate) face(s).",elem.m_SurfaceData->m_Texture.c_str(),elem.invalid_faces);
         }
-    	// calculate T&B components
-		split_it->CalculateTB();
+        // calculate T&B components
+        elem.CalculateTB();
         // subtract offset
-		SkelVertVec& lst = split_it->getV_Verts();
-	    for (SkelVertIt sv_it=lst.begin(); sv_it!=lst.end(); sv_it++){
-		    bone_points[sv_it->bones[0].id].push_back(sv_it->offs);
-            bone_points[sv_it->bones[0].id].back().sub(m_Bones[sv_it->bones[0].id].offset);
+        for (auto& v : elem.getV_Verts())
+        {
+            bone_points[v.bones[0].id].push_back(v.offs);
+            bone_points[v.bones[0].id].back().sub(m_Bones[v.bones[0].id].offset);
         }
     }
 

@@ -208,7 +208,7 @@ namespace CDB
 
 	void	CollectorPacked::add_face(
 		const Fvector& v0, const Fvector& v1, const Fvector& v2,	// vertices
-		u16 material, u16 sector, u32 _flags									// misc
+		u16 material, u16 sector, bool bSharedMaterial, u32 _flags									// misc
 		)
 	{
 		TRI T;
@@ -217,6 +217,7 @@ namespace CDB
 		T.verts	[2] = VPack(v2);
 		T.material		= material;
 		T.sector		= sector;
+		T.shared_material	= bSharedMaterial;
 		flags.push_back(_flags);
 		faces.push_back(T);
 
@@ -231,7 +232,7 @@ namespace CDB
 		T.verts	[0] = VPack(v0);
 		T.verts	[1] = VPack(v1);
 		T.verts	[2] = VPack(v2);
-		T.dummy		= dummy;
+		T.dummy = dummy;
 		faces.push_back(T);
 		flags.push_back(_flags);
 	}
