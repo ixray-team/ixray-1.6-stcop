@@ -52,10 +52,12 @@ int	SceneBuilder::BuildObjectLOD(const Fmatrix& parent, CEditableObject* E, int 
     mtl.sector = (u16)sector_num;
     mtl.shader_xrlc = -1;
 
-    if ((u16(-1) == mtl.surfidx) || (u16(-1) == mtl.shader)) 
+    if ((u16(-1) == mtl.surfidx) || (u16(-1) == mtl.shader))
+    {
         return -2;
+    }
 
-    int mtl_idx = FindInMaterials(&mtl);
+    int mtl_idx = FindInMaterials(mtl);
     if (mtl_idx < 0)
     {
         l_materials.push_back(mtl);

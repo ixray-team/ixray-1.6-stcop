@@ -98,7 +98,7 @@ void CBuild::xrPhase_UVmap()
 				break;
 			}
 			// Select maximal sized poly
-			Face* msF = NULL;
+			Face* msF = nullptr;
 
 			for (auto FACE : *g_XSplit[SP])
 			{

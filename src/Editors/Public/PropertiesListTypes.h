@@ -73,7 +73,7 @@ public:
 	typedef fastdelegate::FastDelegate<void(PropValue*)> TOnChange;
     TOnChange			OnChangeEvent;
 public:
-						PropValue		():tag(0),m_Owner(0),OnChangeEvent(0){;}
+						PropValue		():tag(0),m_Owner(nullptr),OnChangeEvent(nullptr){;}
 	virtual				~PropValue		(){}
     virtual xr_string	GetDrawText		(TOnDrawTextEvent OnDrawText)=0;
     virtual void		ResetValue		()=0;
@@ -164,7 +164,7 @@ public:
     };
     Flags32				m_Flags;
 public:
-						PropItem		(EPropType _type):type(_type),prop_color(0),val_color(0),item(0),key(0),OnClickEvent(0),OnDrawTextEvent(0),OnItemFocused(0){m_Flags.zero();}
+						PropItem		(EPropType _type):type(_type),prop_color(0),val_color(0),item(nullptr),key(nullptr),OnClickEvent(nullptr),OnDrawTextEvent(nullptr),OnItemFocused(nullptr){m_Flags.zero();}
 	virtual 			~PropItem		()
     {
     	for (PropValueIt it=values.begin(); values.end() != it; ++it)
@@ -293,7 +293,7 @@ public:
     TOnTestEqual		OnTestEqual;
     TOnDrawCanvasEvent	OnDrawCanvasEvent;
 public:
-						CanvasValue		(const shared_str& val, int h):OnDrawCanvasEvent(0),OnTestEqual(0),height(h){value=val;}
+						CanvasValue		(const shared_str& val, int h):OnDrawCanvasEvent(nullptr),OnTestEqual(nullptr),height(h){value=val;}
     virtual xr_string	GetDrawText		(TOnDrawTextEvent){return value.c_str()?value.c_str():"";}
     virtual	void		ResetValue		(){;}
     virtual	bool		Equal			(PropValue* val)
@@ -317,7 +317,7 @@ public:
 						ButtonValue		(const shared_str& val, u32 flags)
 	{
     	m_Flags.assign	(flags);
-    	OnBtnClickEvent	= 0;
+    	OnBtnClickEvent	= nullptr;
     	btn_num			= -1;
     	xr_string 	v;
         int cnt			=_GetItemCount(val.c_str()); 
@@ -392,8 +392,8 @@ public:
 public:
 						CTextValue		(LPSTR val, int _lim):value(val),init_value(val),lim(_lim)
     {
-    	OnBeforeEditEvent 	= 0;
-        OnAfterEditEvent	= 0;
+    	OnBeforeEditEvent 	= nullptr;
+        OnAfterEditEvent	= nullptr;
     };
     virtual xr_string	GetDrawText		(TOnDrawTextEvent OnDrawText)
     {
@@ -438,7 +438,7 @@ public:
 #endif
 }
 public:
-						ChooseValue			(shared_str* val, u32 cid, const char* path, void* param, u32 sub_item_count, u32 choose_flags):RTextValue(val),m_ChooseID(cid),m_StartPath(path),subitem(sub_item_count),m_Items(0),m_FillParam(param),OnChooseFillEvent(0),/*OnDrawThumbnailEvent(0),*/m_ChooseFlags(choose_flags){}
+						ChooseValue			(shared_str* val, u32 cid, const char* path, void* param, u32 sub_item_count, u32 choose_flags):RTextValue(val),m_ChooseID(cid),m_StartPath(path),subitem(sub_item_count),m_Items(nullptr),m_FillParam(param),OnChooseFillEvent(nullptr),/*OnDrawThumbnailEvent(0),*/m_ChooseFlags(choose_flags){}
 };
 
 class MultiChooseValue:
@@ -478,7 +478,7 @@ public:
         PropItem* Item = new PropItem(PROP_CHOOSE);
         Item->SetName(Key);
 
-        ChooseValue* ItemValue = new ChooseValue(Value, cid, 0, 0, 1, cfAllowNone);
+        ChooseValue* ItemValue = new ChooseValue(Value, cid, nullptr, nullptr, 1, cfAllowNone);
         Item->AppendValue(ItemValue);
         ItemValue->m_Owner = Item;
         return Values.emplace_back(ItemValue);
@@ -714,7 +714,7 @@ public:
     {
         u32 draw_val 	= GetValue();
         for(u32 i=0; i<cnt; i++) if (items[i].ID==draw_val) return items[i].str;
-        return 0;
+        return nullptr;
     }
 };
 //------------------------------------------------------------------------------

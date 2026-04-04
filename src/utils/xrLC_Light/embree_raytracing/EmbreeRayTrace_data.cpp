@@ -8,6 +8,7 @@
 #include "EmbreeRayTrace.h"
 #include "xrMU_Model_Reference.h"
 #include "xrMU_Model.h"
+#include "../../xrLC/Build.h"
 
 #include <base_face.h>
 #include "global_calculation_data.h"
@@ -16,6 +17,8 @@ extern CBuild* pBuild;
 
 // Для Загрузки Геометрии
 #include <../xrForms/CompilersUI.h>
+
+#include "src/xrGame/ui/TeamInfo.h"
 extern CompilersMode gCompilerMode;
 
 // *** Ray Packed Initialize *** //

@@ -115,7 +115,8 @@ void CBuild::BuildCForm	()
 		CL.add_face(
 			T->v[0]->P, T->v[1]->P, T->v[2]->P,
 			T->dwMaterialGame, 
-			materials()[T->dwMaterial].sector,
+			GetMaterialSector(*T), 
+			T->flags.bSharedMaterial,
 			T->sm_group
 		);
 		Progress(p_total += p_cost);		// progress
@@ -130,10 +131,11 @@ void CBuild::BuildCForm	()
 
 	// Models
 	Status("Models...");
-	for (u32 ref = 0; ref < mu_refs().size(); ref++)
+	auto& mu_refs_arr = mu_refs();
+	for (u32 ref = 0; ref < mu_refs_arr.size(); ref++)
 	{
-		Progress(float(ref) / float(mu_refs().size()));
-		mu_refs()[ref]->export_cform_game(CL);
+		Progress(float(ref) / float(mu_refs_arr.size()));
+		mu_refs_arr[ref]->export_cform_game(CL);
 	}
 
 	// Simplification

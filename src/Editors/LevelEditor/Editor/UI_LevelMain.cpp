@@ -7,6 +7,7 @@
 #include "Editor/Utils/GitIntegration.h"
 #include "Editor/Utils/GitLFSConfig.h"
 #include "UI/UIGitWindow.h"
+#include "UI/UISharedMaterialsLibrary.h"
 
 ECORE_API extern bool bIsLevelEditor;
 CLevelMain* LUI = (CLevelMain*)UI;
@@ -41,6 +42,13 @@ CCommandVar CommandLibraryEditor(CCommandVar p1, CCommandVar p2)
 	UIEditLibrary::Show();
 
 	return true;
+}
+
+CCommandVar CommandSharedMaterialsEditor(CCommandVar p1, CCommandVar p2)
+{
+	UISharedMaterialsLibrary::Show();
+
+	return TRUE;
 }
 
 CCommandVar CommandLAnimEditor(CCommandVar p1, CCommandVar p2)
@@ -1123,6 +1131,7 @@ void CLevelMain::RegisterCommands()
 
 	// common
 	REGISTER_CMD_S	    (COMMAND_LIBRARY_EDITOR,           	CommandLibraryEditor);
+	REGISTER_CMD_S	    (COMMAND_SHARED_MATERIALS_EDITOR,   CommandSharedMaterialsEditor);
 	REGISTER_CMD_S	    (COMMAND_LANIM_EDITOR,            	CommandLAnimEditor);
 	REGISTER_CMD_S		(COMMAND_LOAD_LEVEL_PART,			CommandLoadLevelPart);
 	REGISTER_CMD_S		(COMMAND_UNLOAD_LEVEL_PART,			CommandUnloadLevelPart);

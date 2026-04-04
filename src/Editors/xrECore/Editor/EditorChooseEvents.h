@@ -1,5 +1,5 @@
-#ifndef EditorChooseEventsH
-#define EditorChooseEventsH
+#pragma once
+
 #include "SoundManager.h"
 #include "Library.h"
 #include "../../xrEngine/GameMtlLib.h"
@@ -11,477 +11,68 @@
 #include "../../Layers/xrRender/ParticleAnimCurve.h"
 #include "../../xrEngine/defines.h"
 #include "EditObject.h"
-ref_sound* choose_snd;
+inline ref_sound* choose_snd;
 
 namespace ChoseEvents
 {
-    void   FillEntity(ChooseItemVec& items, void* param)
-    {
-        //.    AppendItem	   					(RPOINT_CHOOSE_NAME);
-        CInifile::Root& sections = pSettings->sections();
-        for (CInifile::Sect& sect : sections)
-        {
-            const char* val;
-            if (sect.line_exist("$spawn", &val))
-                items.push_back(SChooseItem(*sect.Name, ""));
-        }
-    }
+    void FillEntity(ChooseItemVec& items, void* param);
     //---------------------------------------------------------------------------
-    void   SelectSoundSource(SChooseItem* item, PropItemVec& info_items)
-    {
-        choose_snd->stop();
-        choose_snd->create(item->name.c_str(), st_Effect, sg_Undefined);
-        choose_snd->play(nullptr, sm_2D);
-        //    snd.pla
-        /*
-        //.
-            ECustomThumbnail*& thm, ref_sound& snd,
-            thm 		= new ESoundThumbnail(item->name.c_str());
-        */
-    }
-    void   CloseSoundSource()
-    {
-        choose_snd->destroy();
-    }
-    void   FillSoundSource(ChooseItemVec& items, void* param)
-    {
-        FS_FileSet 		lst;
-        if (SndLib->GetGameSounds(lst))
-        {
-            FS_FileSetIt  it = lst.begin();
-            FS_FileSetIt	_E = lst.end();
-            for (; it != _E; it++)		items.push_back(SChooseItem(it->name.c_str(), ""));
-        }
-    }
+    void SelectSoundSource(SChooseItem* item, PropItemVec& info_items);
+    void CloseSoundSource();
+    void FillSoundSource(ChooseItemVec& items, void* param);
     //---------------------------------------------------------------------------
-    void   FillSoundEnv(ChooseItemVec& items, void* param)
-    {
-        AStringVec lst;
-        if (SndLib->GetSoundEnvs(lst)) {
-            AStringIt  it = lst.begin();
-            AStringIt	_E = lst.end();
-            for (; it != _E; it++)		items.push_back(SChooseItem(it->c_str(), ""));
-        }
-    }
+    void FillSoundEnv(ChooseItemVec& items, void* param);
     //---------------------------------------------------------------------------
-    void   FillObject(ChooseItemVec& items, void* param)
-    {
-        FS_FileSet lst;
-        if (Lib.GetObjects(lst)) {
-            FS_FileSetIt	it = lst.begin();
-            FS_FileSetIt	_E = lst.end();
-            for (; it != _E; it++)		items.push_back(SChooseItem(it->name.c_str(), ""));
-        }
-    }
-    void   SelectObject(SChooseItem* item, PropItemVec& info_items)
-    {
-        EObjectThumbnail* thm = new EObjectThumbnail(*item->name);
-        if (thm->Valid()) thm->FillInfo(info_items);
-        xr_delete(thm);
-    }
-    void   UpdateObjectTHM(const char* name, IRHISurface*&ID)
-    {
-        EObjectThumbnail* thm = new EObjectThumbnail(name);
-        if (thm->Valid())
-        {
-            thm->Update(ID);
-        }
-        else if (ID)
-        {
-            IM_TEXTURE_RELEASE(ID);
-            ID = nullptr;
-        }
-        xr_delete(thm);
-    }
+    void FillObject(ChooseItemVec& items, void* param);
+    void SelectObject(SChooseItem* item, PropItemVec& info_items);
+    void UpdateObjectTHM(LPCSTR name, IRHISurface*&ID);
     //---------------------------------------------------------------------------
-    void   FillGroup(ChooseItemVec& items, void* param)
-    {
-        FS_FileSet lst;
-        if (FS.file_list(lst, _groups_, FS_ListFiles | FS_ClampExt, "*.group")) {
-            FS_FileSetIt	it = lst.begin();
-            FS_FileSetIt	_E = lst.end();
-            for (; it != _E; it++)		items.push_back(SChooseItem(it->name.c_str(), ""));
-        }
-    }
-    void   SelectGroup(SChooseItem* item, PropItemVec& info_items)
-    {
-        EGroupThumbnail* thm = new EGroupThumbnail(*item->name);
-        if (thm->Valid()) thm->FillInfo(info_items);
-        xr_delete(thm);
-    }
-    void   UpdateGroupTHM(const char* name, IRHISurface*& ID)
-    {
-        EGroupThumbnail* thm = new EGroupThumbnail(name);
-        if (thm->Valid())
-        {
-            thm->Update(ID);
-        }
-        else if(ID)
-        {
-            IM_TEXTURE_RELEASE(ID);
-            ID = nullptr;
-        }
-        xr_delete(thm);
-    }
+    void FillGroup(ChooseItemVec& items, void* param);
+    void SelectGroup(SChooseItem* item, PropItemVec& info_items);
+    void UpdateGroupTHM(LPCSTR name, IRHISurface*& ID);
     //---------------------------------------------------------------------------
-    void   FillVisual(ChooseItemVec& items, void* param)
-    {
-        FS_FileSet lst;
-        if (FS.file_list(lst, _game_meshes_, FS_ListFiles | FS_ClampExt, "*.ogf")) {
-            FS_FileSetIt	it = lst.begin();
-            FS_FileSetIt	_E = lst.end();
-            for (; it != _E; it++)		items.push_back(SChooseItem(it->name.c_str(), ""));
-        }
-    }
-    void   SelectVisual(SChooseItem* item, PropItemVec& info_items)
-    {
-        /*
-        //.
-            AnsiString fn					= ChangeFileExt(item->name.c_str(),".ogf");
-            IRender_Visual* visual			= ::Render->model_Create(fn.c_str());
-            if (visual){
-                PHelper().CreateCaption	(info_items,	"Source",	*visual->desc.source_file?*visual->desc.source_file:"unknown");
-                PHelper().CreateCaption	(info_items, 	"Creator N",*visual->desc.create_name?*visual->desc.create_name:"unknown");
-                PHelper().CreateCaption	(info_items,	"Creator T",Trim(AnsiString(ctime(&visual->desc.create_time))).c_str());
-                PHelper().CreateCaption	(info_items,	"Modif N",	*visual->desc.modif_name ?*visual->desc.modif_name :"unknown");
-                PHelper().CreateCaption	(info_items,	"Modif T",	Trim(AnsiString(ctime(&visual->desc.modif_time))).c_str());
-                PHelper().CreateCaption	(info_items,	"Build N",	*visual->desc.build_name ?*visual->desc.build_name :"unknown");
-                PHelper().CreateCaption	(info_items,	"Build T",	Trim(AnsiString(ctime(&visual->desc.build_time))).c_str());
-            }
-            ::Render->model_Delete(visual);
-        */
-    }
+    void FillVisual(ChooseItemVec& items, void* param);
+    void SelectVisual(SChooseItem* item, PropItemVec& info_items);
     //---------------------------------------------------------------------------
-    void   FillGameObjectMots(ChooseItemVec& items, void* param)
-    {
-        FS_FileSet lst;
-        if (FS.file_list(lst, _game_meshes_, FS_ListFiles | FS_ClampExt, "*.omf")) {
-            FS_FileSetIt	it = lst.begin();
-            FS_FileSetIt	_E = lst.end();
-            for (; it != _E; it++)		items.push_back(SChooseItem(it->name.c_str(), ""));
-        }
-    }
-    void   SelectGameObjectMots(SChooseItem* item, PropItemVec& info_items)
-    {
-    }
+    void FillGameObjectMots(ChooseItemVec& items, void* param);
+    void SelectGameObjectMots(SChooseItem* item, PropItemVec& info_items);
     //---------------------------------------------------------------------------
-    void   FillGameAnim(ChooseItemVec& items, void* param)
-    {
-        FS_FileSet lst;
-        if (FS.file_list(lst, "$game_anims$", FS_ListFiles, "*.anm,*.anms"))
-        {
-            FS_FileSetIt	it = lst.begin();
-            FS_FileSetIt	_E = lst.end();
-            for (; it != _E; it++)		items.push_back(SChooseItem(it->name.c_str(), ""));
-        }
-    }
+    void FillGameAnim(ChooseItemVec& items, void* param);
     //---------------------------------------------------------------------------
-    void   FillLAnim(ChooseItemVec& items, void* param)
-    {
-        LAItemVec& lst = LALib.Objects();
-        LAItemIt it = lst.begin();
-        LAItemIt _E = lst.end();
-        for (; it != _E; it++)			items.push_back(SChooseItem(*(*it)->cName, ""));
-    }
-
-    void UpdateLAnim(const char* Name, IRHISurface*& Texture)
-    {
-        CLAItem* Item = LALib.FindItem(Name);
-        if (!Item)
-            return;
-
-        RHITextureDesc Desc;
-        Desc.Width = THUMB_WIDTH;
-        Desc.Height = THUMB_HEIGHT;
-        Desc.Format = ERHI_FORMAT::R8G8B8A8_UNORM;
-        Desc.MipLevels = 1;
-        Desc.ArraySize = 1;
-        Desc.Usage = ERHI_USAGE::USAGE_DYNAMIC;
-        Desc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
-
-        if (Texture)
-        {
-            if (Texture->GetWidth() != Desc.Width ||
-                Texture->GetHeight() != Desc.Height ||
-                Texture->GetFormat() != Desc.Format)
-            {
-                Texture->Release();
-                Texture = nullptr;
-            }
-        }
-
-        xr_vector<u32> Pixels(THUMB_WIDTH * THUMB_HEIGHT);
-
-        int Frame = 0;
-        for (u32 Y = 0; Y < THUMB_HEIGHT; ++Y)
-        {
-            for (u32 X = 0; X < THUMB_WIDTH; ++X)
-            {
-                u32 Color = Item->CalculateRGB(EDevice->fTimeGlobal, Frame);
-                Color = subst_alpha(Color, 0xFF); // фиксируем альфу
-                Pixels[Y * THUMB_WIDTH + X] = Color;
-            }
-        }
-
-        // Подготовка подресурса
-        RHISubResource SubResource{};
-        SubResource.Width = THUMB_WIDTH;
-        SubResource.Height = THUMB_HEIGHT;
-        SubResource.TextureFormat = Desc.Format;
-        SubResource.RowPitch = THUMB_WIDTH * 4;
-        SubResource.Data = Pixels.data();
-
-        if (!Texture)
-        {
-            Texture = GRHI->CreateTexture2D(Desc, SubResource);
-        }
-        else
-        {
-            RHIBox box;
-            box.left = 0;
-            box.top = 0;
-            box.front = 0;
-            box.right = THUMB_WIDTH;
-            box.bottom = THUMB_HEIGHT;
-            box.back = 1;
-
-            Texture->UpdateData(0, 0, &SubResource, box);
-        }
-    }
-
+    void FillLAnim(ChooseItemVec& items, void* param);
+    void UpdateLAnim(LPCSTR Name, IRHISurface*& Texture);
     //---------------------------------------------------------------------------
-    void   FillEShader(ChooseItemVec& items, void* param)
-    {
-        CResourceManager::map_Blender& blenders = EDevice->Resources->_GetBlenders();
-        CResourceManager::map_BlenderIt _S = blenders.begin();
-        CResourceManager::map_BlenderIt _E = blenders.end();
-        for (; _S != _E; _S++)			items.push_back(SChooseItem(_S->first, ""));
-    }
+    void FillEShader(ChooseItemVec& items, void* param);
     //---------------------------------------------------------------------------
-    void   FillCShader(ChooseItemVec& items, void* param)
-    {
-        Shader_xrLCVec& shaders = EDevice->ShaderXRLC.Library();
-        Shader_xrLCIt _F = shaders.begin();
-        Shader_xrLCIt _E = shaders.end();
-        for (; _F != _E; _F++)				items.push_back(SChooseItem(_F->Name, ""));
-    }
+    void FillCShader(ChooseItemVec& items, void* param);
     //---------------------------------------------------------------------------
-    void   FillPE(ChooseItemVec& items, void* param)
-    {
-        for (PS::PEDIt E = ::RImplementation.PSLibrary.FirstPED(); E != ::RImplementation.PSLibrary.LastPED(); E++)
-        {
-            items.push_back(SChooseItem(*(*E)->m_Name, "EFFECT"));
-        }
-    }
+    void FillPE(ChooseItemVec& items, void* param);
     //---------------------------------------------------------------------------
-    void   FillPAC(ChooseItemVec& items, void* param)
-    {
-        for (auto elem : RImplementation.PSLibrary.VecPACDs())
-        {
-            items.push_back(SChooseItem(elem->getName(), "ANIM_CURVE"));
-        }
-    }
+    void FillPAC(ChooseItemVec& items, void* param);
     //---------------------------------------------------------------------------
-    void   FillParticles(ChooseItemVec& items, void* param)
-    {
-        for (PS::PEDIt E = ::RImplementation.PSLibrary.FirstPED(); E != ::RImplementation.PSLibrary.LastPED(); E++)
-        {
-            items.push_back(SChooseItem(*(*E)->m_Name, "EFFECT"));
-        }
-        for (PS::PGDIt G = ::RImplementation.PSLibrary.FirstPGD(); G != ::RImplementation.PSLibrary.LastPGD(); G++)
-        {
-            items.push_back(SChooseItem(*(*G)->m_Name, "GROUP"));
-        }
-    }
-
-    void   SelectPE(SChooseItem* item, PropItemVec& info_items)
-    {
-        string64 	str;
-        u32 		i = 0;
-        PHelper().CreateCaption(info_items, "", "used in groups");
-        for (PS::PGDIt G = ::RImplementation.PSLibrary.FirstPGD(); G != ::RImplementation.PSLibrary.LastPGD(); ++G)
-        {
-            PS::CPGDef* def = (*G);
-            PS::CPGDef::EffectIt pe_it = def->m_Effects.begin();
-            PS::CPGDef::EffectIt pe_it_e = def->m_Effects.end();
-            for (; pe_it != pe_it_e; ++pe_it)
-            {
-                if ((*pe_it)->m_EffectName == item->name)
-                {
-                    xr_sprintf(str, sizeof(str), "%d", ++i);
-                    PHelper().CreateCaption(info_items, str, def->m_Name);
-                }
-            }
-        }
-    }
-
-    void   SelectPG(SChooseItem* item, PropItemVec& info_items)
-    {
-        string64 	str;
-        u32 		i = 0;
-        PHelper().CreateCaption(info_items, "", "using effects");
-        for (PS::PGDIt G = ::RImplementation.PSLibrary.FirstPGD(); G != ::RImplementation.PSLibrary.LastPGD(); G++)
-        {
-            PS::CPGDef* def = (*G);
-            if (def->m_Name == item->name)
-            {
-                PS::CPGDef::EffectIt pe_it = def->m_Effects.begin();
-                PS::CPGDef::EffectIt pe_it_e = def->m_Effects.end();
-                for (; pe_it != pe_it_e; ++pe_it)
-                {
-                    xr_sprintf(str, sizeof(str), "%d", ++i);
-                    PHelper().CreateCaption(info_items, str, (*pe_it)->m_EffectName);
-                }
-                break;
-            }
-        }
-    }
-
+    void FillSharedMaterials(ChooseItemVec& items, void* param);
+    void FillSharedMaterialsInfo(SChooseItem* item, PropItemVec& info_items);
     //---------------------------------------------------------------------------
-    void   FillTexture(ChooseItemVec& items, void* param)
-    {
-        FS_FileSet	lst;
-        if (ImageLib.GetTextures(lst)) {
-            FS_FileSetIt	it = lst.begin();
-            FS_FileSetIt	_E = lst.end();
-            for (; it != _E; it++)		items.push_back(SChooseItem(it->name.c_str(), ""));
-        }
-    }
-
-    void   UpdateTextureTHM(const char* name, IRHISurface*&Texture)
-    {
-        if (name && name[0]) {
-            ETextureThumbnail* thm = new ETextureThumbnail(name);
-            if (thm->Valid()) thm->Update(Texture);
-            xr_delete(thm);
-        }
-    }
-
+    void FillParticles(ChooseItemVec& items, void* param);
+    void SelectPE(SChooseItem* item, PropItemVec& info_items);
+    void SelectPG(SChooseItem* item, PropItemVec& info_items);
     //---------------------------------------------------------------------------
-    void   FillTextureRaw(ChooseItemVec& items, void* param)
-    {
-        FS_FileSet	lst;
-        if (ImageLib.GetTexturesRaw(lst)) {
-            FS_FileSetIt	it = lst.begin();
-            FS_FileSetIt	_E = lst.end();
-            for (; it != _E; it++)		items.push_back(SChooseItem(it->name.c_str(), ""));
-        }
-    }
-
-    void   UpdateTextureTHMRaw(const char* name, IRHISurface*& ID)
-    {
-        if (name && name[0]) {
-            ETextureThumbnail* thm = new ETextureThumbnail(name);
-            if (thm->Valid()) thm->Update(ID);
-            xr_delete(thm);
-        }
-    }
-
-    void   SelectTexture(SChooseItem* item, PropItemVec& info_items)
-    {
-        if (item->name.size()) {
-            ETextureThumbnail* thm = new ETextureThumbnail(*item->name);
-            if (thm->Valid()) thm->FillInfo(info_items);
-            xr_delete(thm);
-        }
-    }
-    void   SelectTextureRaw(SChooseItem* item, PropItemVec& info_items)
-    {
-        if (item->name.size()) {
-            ETextureThumbnail* thm = new ETextureThumbnail(*item->name);
-            if (thm->Valid()) thm->FillInfo(info_items);
-            xr_delete(thm);
-        }
-    }
+    void FillTexture(ChooseItemVec& items, void* param);
+    void UpdateTextureTHM(const char* name, IRHISurface*&Texture);
     //---------------------------------------------------------------------------
-    void   FillGameMaterial(ChooseItemVec& items, void* param)
-    {
-        GameMtlIt _F = PGMLib->FirstMaterial();
-        GameMtlIt _E = PGMLib->LastMaterial();
-        for (; _F != _E; _F++)				items.push_back(SChooseItem(*(*_F)->m_Name, ""));
-    }
+    void FillTextureRaw(ChooseItemVec& items, void* param);
+    void UpdateTextureTHMRaw(const char* name, IRHISurface*& ID);
+    void SelectTexture(SChooseItem* item, PropItemVec& info_items);
+    void SelectTextureRaw(SChooseItem* item, PropItemVec& info_items);
     //---------------------------------------------------------------------------
-
-    void   FillSkeletonAnims(ChooseItemVec& items, void* param)
-    {
-        IRenderVisual* V = ::Render->model_Create((const char*)param);
-        if (PKinematicsAnimated(V)) {
-            u32 cnt = PKinematicsAnimated(V)->LL_MotionsSlotCount();
-            for (u32 k = 0; k < cnt; k++) {
-                accel_map* ll_motions = PKinematicsAnimated(V)->LL_Motions(k);
-                accel_map::iterator 	_I, _E;
-                _I = ll_motions->begin();
-                _E = ll_motions->end();
-                for (; _I != _E; ++_I) {
-                    bool bFound = false;
-                    for (ChooseItemVecIt it = items.begin(); it != items.end(); it++)
-                        if (it->name == _I->first) { bFound = true; break; }
-                    if (!bFound)		items.push_back(SChooseItem(*_I->first, ""));
-                }
-            }
-        }
-        ::Render->model_Delete(V);
-    }
-
-    void   FillSkeletonBones(ChooseItemVec& items, void* param)
-    {
-        IRenderVisual* V = ::Render->model_Create((const char*)param);
-        if (PKinematics(V))
-        {
-            CKinematicsAnimated::accel* ll_bones = PKinematics(V)->LL_Bones();
-            CKinematicsAnimated::accel::iterator _I, _E;
-            _I = ll_bones->begin();
-            _E = ll_bones->end();
-            for (; _I != _E; ++_I) 		items.push_back(SChooseItem(*_I->first, ""));
-        }
-        ::Render->model_Delete(V);
-    }
-
-    void   FillSkeletonBonesObject(ChooseItemVec& items, void* param)
-    {
-        CEditableObject* eo = (CEditableObject*)param;
-
-        BoneIt	_I = eo->FirstBone();
-        BoneIt	_E = eo->LastBone();
-        for (; _I != _E; ++_I)
-        {
-            items.push_back(SChooseItem((*_I)->Name().c_str(), ""));
-        }
-
-    }
-
+    void FillGameMaterial(ChooseItemVec& items, void* param);
+    //---------------------------------------------------------------------------
+    void FillSkeletonAnims(ChooseItemVec& items, void* param);
+    void FillSkeletonBones(ChooseItemVec& items, void* param);
+    void FillSkeletonBonesObject(ChooseItemVec& items, void* param);
 }//namespace
 
-void FillChooseEvents()
-{
-    UIChooseForm::AppendEvents(smSoundSource, "Select Sound Source", ChoseEvents::FillSoundSource, ChoseEvents::SelectSoundSource, nullptr, ChoseEvents::CloseSoundSource, 0);
-    UIChooseForm::AppendEvents(smSoundEnv, "Select Sound Environment", ChoseEvents::FillSoundEnv, nullptr, nullptr, nullptr, 0);
-    UIChooseForm::AppendEvents(smObject, "Select Library Object", ChoseEvents::FillObject, ChoseEvents::SelectObject, ChoseEvents::UpdateObjectTHM, nullptr, 0);
-    UIChooseForm::AppendEvents(smGroup, "Select Group", ChoseEvents::FillGroup, ChoseEvents::SelectGroup, ChoseEvents::UpdateGroupTHM, nullptr, 0);
-    UIChooseForm::AppendEvents(smEShader, "Select Engine Shader", ChoseEvents::FillEShader, nullptr, nullptr, nullptr, 0);
-    UIChooseForm::AppendEvents(smCShader, "Select Compiler Shader", ChoseEvents::FillCShader, nullptr, nullptr, nullptr, 0);
-    UIChooseForm::AppendEvents(smPE, "Select Particle Effect", ChoseEvents::FillPE, nullptr/*ChoseEvents::SelectPE*/, nullptr, nullptr, 0);
-    UIChooseForm::AppendEvents(smParticles, "Select Particle System", ChoseEvents::FillParticles, nullptr/*ChoseEvents::SelectPG*/, nullptr, nullptr, 0);
-    UIChooseForm::AppendEvents(smTextureRaw, "Select Source Texture", ChoseEvents::FillTextureRaw, ChoseEvents::SelectTextureRaw, ChoseEvents::UpdateTextureTHMRaw, nullptr, SChooseEvents::flClearTexture);
-    UIChooseForm::AppendEvents(smTexture, "Select Texture", ChoseEvents::FillTexture, ChoseEvents::SelectTexture, ChoseEvents::UpdateTextureTHM, nullptr, SChooseEvents::flClearTexture);
-    UIChooseForm::AppendEvents(smEntityType, "Select Entity", ChoseEvents::FillEntity, nullptr, nullptr, nullptr, 0);
-    UIChooseForm::AppendEvents(smLAnim, "Select Light Animation", ChoseEvents::FillLAnim, nullptr, ChoseEvents::UpdateLAnim, nullptr, SChooseEvents::flAnimated);
-    UIChooseForm::AppendEvents(smVisual, "Select Visual", ChoseEvents::FillVisual, ChoseEvents::SelectVisual, nullptr, nullptr, 0);
-    UIChooseForm::AppendEvents(smSkeletonAnims, "Select Skeleton Animation", ChoseEvents::FillSkeletonAnims, nullptr, nullptr, nullptr, 0);
-    UIChooseForm::AppendEvents(smSkeletonBones, "Select Skeleton Bones", ChoseEvents::FillSkeletonBones, nullptr, nullptr, nullptr, 0);
-    UIChooseForm::AppendEvents(smSkeletonBonesInObject, "Select Skeleton Bones", ChoseEvents::FillSkeletonBonesObject, nullptr, nullptr, nullptr, 0);
-    UIChooseForm::AppendEvents(smGameMaterial, "Select Game Material", ChoseEvents::FillGameMaterial, nullptr, nullptr, nullptr, 0);
-    UIChooseForm::AppendEvents(smGameAnim, "Select Animation", ChoseEvents::FillGameAnim, nullptr, nullptr, nullptr, 0);
-    UIChooseForm::AppendEvents(smGameSMotions, "Select Game Object Motions", ChoseEvents::FillGameObjectMots, ChoseEvents::SelectGameObjectMots, nullptr, nullptr, 0);
-    UIChooseForm::AppendEvents(smPAC, "Select Animation Curve", ChoseEvents::FillPAC, nullptr,nullptr, nullptr, 0);
-    choose_snd = new ref_sound();
-}
-
-void ClearChooseEvents()
-{
-	UIChooseForm::ClearEvents	();
-    xr_delete					(choose_snd);
-}
+ECORE_API void FillChooseEvents();
+ECORE_API void ClearChooseEvents();
 
 //---------------------------------------------------------------------------
-#endif

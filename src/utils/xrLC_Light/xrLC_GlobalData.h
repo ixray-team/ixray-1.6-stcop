@@ -25,7 +25,9 @@ class XRLC_LIGHT_API xrLC_GlobalData
 	CMemoryWriter					_err_tjunction;
 
 	xr_vector<b_BuildTexture>		_textures;
+	xr_hash_map<b_material_shared*, b_BuildTexture> _textures_shared;
 	xr_vector<b_material>			_materials;
+	xr_vector<b_material_shared>	_materials_shared;
 	Shader_xrLC_LIB					_shaders;
 	b_params						_g_params;
 	base_lighting					_L_static;
@@ -53,10 +55,12 @@ public:
 		IC Shader_xrLC_LIB& shaders() { return _shaders; }
 
 
-		IC xr_vector<b_BuildTexture>&	textures()		{ return _textures; }
-		IC xr_vector<CLightmap*>&		lightmaps()		{ return _g_lightmaps; }
-		IC xr_vector<b_material>&		materials()		{ return _materials; }
-
+		IC xr_vector<b_BuildTexture>& textures() { return _textures; }
+		IC xr_hash_map<b_material_shared*, b_BuildTexture>& textures_shared() { return _textures_shared; }
+		IC xr_vector<CLightmap*>& lightmaps() { return _g_lightmaps; }
+		IC xr_vector<b_material>& materials() { return _materials; }
+		IC xr_vector<b_material_shared>& materials_shared() { return _materials_shared; }
+		
  		vecVertex&						g_vertices()	{ return	_g_vertices; }
 		vecFace&						g_faces()		{ return	_g_faces; }
 		vecDefl& g_deflectors() { return	_g_deflectors; }

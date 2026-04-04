@@ -36,20 +36,20 @@ void calc_ogf( xrMU_Model &	mu_model )
 	// Build OGFs
 	for (xrMU_Model::v_subdivs_it it=mu_model.m_subdivs.begin(); it!=mu_model.m_subdivs.end(); it++)
 	{
-		OGF*		pOGF	= new OGF ();
-		b_material*	M		= &(pBuild->materials()[it->material]);	// and it's material
-		R_ASSERT	(M);
+		OGF* pOGF = new OGF ();
 
 		try {
 			// Common data
-			pOGF->Sector		= 0;
-			pOGF->material		= it->material;
+			pOGF->Sector = 0;
+			pOGF->material = it->material;
+			pOGF->bSharedMaterial = it->bSharedMaterial;
 
 			// Collect textures
-			OGF_Texture			T;
-			TRY					(T.name		= pBuild->textures()[M->surfidx].name);
-			TRY					(T.pBuildSurface = &(pBuild->textures()[M->surfidx]));
-			TRY					(pOGF->textures.push_back(T));
+			auto& Tex = pBuild->GetTexture(it->material, it->bSharedMaterial);
+			OGF_Texture T;
+			T.name = Tex.name;
+			T.pBuildSurface = &Tex;
+			pOGF->textures.push_back(T);
 
 			// Collect faces & vertices
 			try {
@@ -57,8 +57,8 @@ void calc_ogf( xrMU_Model &	mu_model )
 				xrMU_Model::v_faces_it	_end	= _beg + it->count;
 				for (xrMU_Model::v_faces_it Fit =_beg; Fit!=_end; Fit++)
 				{
-					_face*	FF		= *Fit;
-					R_ASSERT			(FF);
+					_face* FF = *Fit;
+					R_ASSERT(FF);
 					OGF_AddFace( *pOGF, *FF, mu_model ); 
 				}
 			} catch (...) {  clMsg("* ERROR: MU2OGF, model %s, *faces*",*(mu_model.m_name)); }

@@ -440,14 +440,20 @@ int CEditableMesh::GetFaceCount(bool bMatch2Sided, bool bIgnoreOCC)
     for (SurfFacesPairIt sp_it=m_SurfFaces.begin(); sp_it!=m_SurfFaces.end(); sp_it++)
     {
     	CSurface* S = sp_it->first;
-        if(S->m_GameMtlName== occ_name && bIgnoreOCC)
-        	continue;
+        if(S->_GameMtlName() == occ_name && bIgnoreOCC)
+        {
+	        continue;
+        }
             
     	if (bMatch2Sided){
-	    	if (S->m_Flags.is(CSurface::sf2Sided))	
-            	f_cnt+=sp_it->second.size()*2;
-    	    else												
-            	f_cnt+=sp_it->second.size();
+	    	if (S->_flags().is(SSurfaceData::sf2Sided))
+	    	{
+	    		f_cnt+=sp_it->second.size()*2;
+	    	}
+    	    else
+    	    {
+	    	    f_cnt+=sp_it->second.size();
+    	    }
         }else{
         	f_cnt+=sp_it->second.size();
         }
@@ -468,7 +474,7 @@ float CEditableMesh::CalculateSurfaceArea(CSurface* surf, bool bMatch2Sided)
         e02.sub			(m_Vertices[F.pv[2].pindex],m_Vertices[F.pv[0].pindex]);
         area			+= c.crossproduct(e01,e02).magnitude()/2.f;
     }
-    if (bMatch2Sided&&sp_it->first->m_Flags.is(CSurface::sf2Sided)) area*=2;
+    if (bMatch2Sided&&sp_it->first->_flags().is(SSurfaceData::sf2Sided)) area*=2;
     return area;
 }
 
@@ -492,7 +498,7 @@ float CEditableMesh::CalculateSurfacePixelArea(CSurface* surf, bool bMatch2Sided
 		e02.sub(Fvector().set(tc[2]->x, tc[2]->y, 0), Fvector().set(tc[0]->x, tc[0]->y, 0));
 		area += c.crossproduct(e01, e02).magnitude() / 2.f;
 	}
-	if (bMatch2Sided && sp_it->first->m_Flags.is(CSurface::sf2Sided))
+	if (bMatch2Sided && sp_it->first->_flags().is(SSurfaceData::sf2Sided))
 	{
 		area *= 2;
 	}
@@ -504,7 +510,7 @@ int CEditableMesh::GetSurfFaceCount(CSurface* surf, bool bMatch2Sided)
 	SurfFacesPairIt sp_it = m_SurfFaces.find(surf);
     if (sp_it==m_SurfFaces.end()) return 0;
 	int f_cnt = sp_it->second.size();
-    if (bMatch2Sided&&sp_it->first->m_Flags.is(CSurface::sf2Sided)) f_cnt*=2;
+    if (bMatch2Sided&&sp_it->first->_flags().is(SSurfaceData::sf2Sided)) f_cnt*=2;
     return f_cnt;
 }
 

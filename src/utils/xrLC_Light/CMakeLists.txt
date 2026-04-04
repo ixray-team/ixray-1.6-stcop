@@ -41,6 +41,7 @@ file(GLOB_RECURSE LCL_SOURCE_BASE_FILES
 	"ETextureParams.*"
 	"R_light.*"
 	"light_point.h"
+	"../../utils/Shader_xrLC_Compilers.h"
 )
 
 file(GLOB_RECURSE LCL_SOURCE_DOLIGHT_FILES

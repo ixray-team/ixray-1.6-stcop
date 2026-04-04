@@ -5,6 +5,7 @@ set(XAI_SRC_FILES)
 file(GLOB_RECURSE XAI_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.cpp"
     "*.h"
+	"../../utils/Shader_xrLC.h"
 )
 
 file(GLOB_RECURSE XAI_COMPILER

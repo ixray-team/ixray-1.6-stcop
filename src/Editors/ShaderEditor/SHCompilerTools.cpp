@@ -180,9 +180,11 @@ void CSHCompilerTools::ResetCurrentItem()
 void CSHCompilerTools::FillItemList()
 {
     ListItemsVec items;
-    Shader_xrLCVec& lst = m_Library.Library();
-    for (Shader_xrLCIt it = lst.begin(); it != lst.end(); it++)
-        LHelper().CreateItem(items, it->Name, 0);
+    auto& lst = m_Library.Library();
+    for (auto& elem : lst)
+    {
+	    LHelper().CreateItem(items, elem.Name, 0);
+    }
 
     Ext.m_Items->AssignItems(items, nullptr);
 }

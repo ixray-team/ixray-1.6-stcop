@@ -125,12 +125,18 @@ void UIEditLibrary::InitObjects()
 void UIEditLibrary::Update()
 {
 	if (!Form)
+	{
 		return;
+	}
 
 	if (!Form->IsClosed())
+	{
 		Form->Draw();
+	}
 	else
+	{
 		Close();
+	}
 }
 
 UIEditLibrary* UIEditLibrary::Init()
@@ -341,9 +347,16 @@ void UIEditLibrary::OnPropertiesClick()
 
 		NE->FillBasicProps("", Info);
 
+		AnsiString pref_init = AnsiString("Surfaces");
+		{
+			auto BatchButton = PHelper().CreateButton(Info, PrepareKey(pref_init.c_str(), "Batch Material Convert"), "All unique,All shared", 0);
+			BatchButton->OnBtnClickEvent.bind(NE, &CEditableObject::OnBatchProcessMaterial);
+		}
+		pref_init.append("\\");
+
 		for (SurfaceIt Iter = NE->m_Surfaces.begin(); Iter != NE->m_Surfaces.end(); Iter++)
 		{
-			AnsiString	Pref = AnsiString("Surfaces\\") + (*Iter)->_Name();
+			AnsiString	Pref = pref_init + (*Iter)->_Name();
 			PropValue* V = PHelper().CreateCaption(Info, Pref.c_str(), "");
 			V->tag = (int)*Iter;
 			NE->FillSurfaceProps(*Iter, Pref.c_str(), Info);

@@ -240,6 +240,10 @@ void UIPropertiesItem::DrawItem()
 						//offset = 0;
 						ImGui::SameLine(0, 2);
 					}
+					if (bRes)
+					{
+						PropertiesFrom->Modified();
+					}
 				}
 				else
 				{
@@ -305,7 +309,12 @@ void UIPropertiesItem::DrawItem()
 
 					ImGui::TableSetColumnIndex(1);
 					ImGui::NextColumn();
-					ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f);												// Important move away from horizontal inner border
+					ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f); // Important move away from horizontal inner border
+					auto Event = UIChooseForm::GetEvents(ChooseItem->m_ChooseID); VERIFY2(Event, "Can't find choose event.");
+					if(Event->flags.is(SChooseEvents::flDisabled))
+					{
+						ImGui::BeginDisabled();
+					}
 					if (ImGui::Button(TextValue.c_str(), ImVec2(-1, TableRowHeight)))
 					{
 						ChooseValue* V = dynamic_cast<ChooseValue*>(ChooseItem->Owner()->GetFrontValue());
@@ -326,8 +335,12 @@ void UIPropertiesItem::DrawItem()
 							V->OnChooseFillEvent(V);
 						}
 
-						UIChooseForm::SelectItem(V->m_ChooseID, V->subitem, edit_val.c_str(), 0, V->m_FillParam, 0, !Items.empty() ? &Items : 0, V->m_ChooseFlags);
+						UIChooseForm::SelectItem(V->m_ChooseID, V->subitem, edit_val.c_str(), nullptr, V->m_FillParam, nullptr, !Items.empty() ? &Items : nullptr, V->m_ChooseFlags);
 						PropertiesFrom->m_EditChooseValue = ChooseItem->Owner();
+					}
+					if(Event->flags.is(SChooseEvents::flDisabled))
+					{
+						ImGui::EndDisabled();
 					}
 					ImGui::PopID();
 				}

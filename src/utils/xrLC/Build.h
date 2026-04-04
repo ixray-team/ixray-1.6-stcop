@@ -49,13 +49,33 @@ public:
 	xr_vector<const char*>				g_Shaders;
 	CDB::CollectorPacked			CL;
 
-	xr_vector<b_material>			&materials()	;
-	xr_vector<b_BuildTexture>		&textures()	;
-	base_lighting					&L_static();
-	xr_vector<xrMU_Model*>			&mu_models();
-	xr_vector<xrMU_Reference*>		&mu_refs();
+	static u16 GetMaterialSector(const Face& F);
+	static u16 GetMaterialReserved(const Face& F);
+	static u32 GetMaterialInternalMaxArea(const Face& F);
+	static u32& GetMutableMaterialInternalMaxArea(const Face& F);
+	static b_BuildTexture& GetTexture(const Face& F);
+	static u16 GetMaterialSector(u16 index, bool shared);
+	static u16 GetMaterialReserved(u16 index, bool shared);
+	static u32 GetMaterialInternalMaxArea(u16 index, bool shared);
+	static b_BuildTexture& GetTexture(u16 index, bool shared);
+	
+	static Shader_xrLC& GetShaderXRLC(const Face& F);
+	static Shader_xrLC& GetShaderXRLC(u32 ID, bool Shared);
 
-	Shader_xrLC_LIB					&shaders();
+	LPCSTR GetMaterialShaderName(const Face& F) const;
+	LPCSTR GetMaterialShaderName(u16 index, bool shared) const;
+	LPCSTR GetMaterialShaderXRLCName(const Face& F) const;
+	LPCSTR GetMaterialShaderXRLCName(u16 index, bool shared) const;
+
+	static xr_vector<b_material>& materials();
+	static xr_vector<b_material_shared>& materials_shared();
+	static xr_vector<b_BuildTexture>& textures();
+	static xr_hash_map<b_material_shared*, b_BuildTexture>& textures_shared();
+	static base_lighting& L_static();
+	static xr_vector<xrMU_Model*>& mu_models();
+	static xr_vector<xrMU_Reference*>& mu_refs();
+
+	static Shader_xrLC_LIB& shaders();
 
 public:
 	void	Load					(const b_params& P, const IReader&  fs);

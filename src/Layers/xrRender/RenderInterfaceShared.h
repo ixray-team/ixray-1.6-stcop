@@ -9,8 +9,27 @@ IRenderVisual* CRender::getVisual(int id)
 
 ref_shader CRender::getShader(int id)
 {
-	VERIFY(id<int(Shaders.size()));
-	return Shaders[id];
+	VERIFY(id<int(ShadersLevel.size()));
+	return ShadersLevel[id];
+}
+
+ref_shader CRender::getShaderShared(shared_str id)
+{
+	auto it = ShadersShared.find(id);
+	if (it == ShadersShared.end())
+	{
+		xr_stack_string128 ShaderName = id.c_str();
+		auto SplitPos = ShaderName.find("/");
+		ShaderName[SplitPos] = '\0';
+		LPCSTR Textures = ShaderName.c_str()+SplitPos+1;
+		auto Shader = dxRenderDeviceRender::Instance().Resources->Create(
+			ShaderName.c_str(),
+			Textures
+			);
+		ShadersShared[id] = Shader;
+		return Shader;
+	}
+	return it->second;
 }
 
 IRender_Portal* CRender::getPortal(int id)

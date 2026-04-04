@@ -120,9 +120,9 @@ void SceneBuilder::SaveBuildAsObject()
 	for(u32 i=0;i<l_materials.size(); ++i)
 	{
 		b_material& m		= l_materials[i];
-		b_texture_real&	t 		= l_textures[m.surfidx];
-		_splitpath			(t.name, 0, tex_path, tex_name, 0 );
-
+		b_texture_real&	t = l_textures[m.surfidx];
+		_splitpath(t.name, nullptr, tex_path, tex_name, nullptr );
+		
 		sprintf				(tmp,"newmtl %s", tex_name);
 		Fm->w_string		(tmp);
 		Fm->w_string		("Ka  0 0 0");
@@ -175,25 +175,25 @@ void SceneBuilder::SaveBuildAsObject()
 	total_tcs				+= idx*3;
 
 	//faces
-	b_texture_real* last_texture = NULL;
+	LPCSTR last_texture = nullptr;
 	for(idx=0; idx<l_face_it; ++idx)
 	{
-		const b_face& it			= l_faces[idx];
+		const b_face& it = l_faces[idx];
 
-		b_material& m				= l_materials[it.dwMaterial];
-		b_texture_real&	t 				= l_textures[m.surfidx];
-		if(last_texture != &t)
+		b_material& m = l_materials[it.dwMaterial];
+		b_texture_real&	t = l_textures[m.surfidx];
+		if(last_texture != t.name)
 		{
-			_splitpath			(t.name, 0, 0, tex_name, 0 );
-			sprintf				(tmp,"usemtl %s", tex_name);
-			tmpFaces.w_string	(tmp);
-			last_texture 		= &t;
+			_splitpath(t.name, nullptr, nullptr, tex_name, nullptr );
+			sprintf(tmp,"usemtl %s", tex_name);
+			tmpFaces.w_string(tmp);
+			last_texture = t.name;
 		}
 
-		sprintf				(tmp,"f %d/%d %d/%d %d/%d", it.v[0]+1, idx*3+1,
+		sprintf(tmp,"f %d/%d %d/%d %d/%d", it.v[0]+1, idx*3+1,
 														it.v[1]+1, idx*3+2,
 														it.v[2]+1, idx*3+3);
-		tmpFaces.w_string	(tmp);
+		tmpFaces.w_string(tmp);
 	}
 	total_vertices += l_vert_it;
 
@@ -201,38 +201,40 @@ void SceneBuilder::SaveBuildAsObject()
 	{
 		const b_mu_model&	m = l_mu_models[idx];
 
-		for(u32 vi=0; vi<m.m_iVertexCount; ++vi)
+		for(u32 vi=0; vi<m.vertices.size(); ++vi)
 		{
-			const b_vertex& it	= m.m_pVertices[vi];
-			sprintf				(tmp,"v %f %f %f",it.x*100.0f, it.y*100.0f, it.z*100.0f);
-			F->w_string			(tmp);
+			const b_vertex& it = m.vertices[vi];
+			sprintf(tmp,"v %f %f %f",it.x*100.0f, it.y*100.0f, it.z*100.0f);
+			F->w_string(tmp);
 		}
 		//TC-s
-		for(u32 fi=0; fi<m.m_iFaceCount; ++fi)
+		for(u32 fi=0; fi<m.faces.size(); ++fi)
 		{
-			const b_face& it	= m.m_pFaces[fi];
-			sprintf				(tmp,"vt %f %f", it.t[0].x, /*_abs*/(1.f-it.t[0].y));
-			tmpFaces.w_string	(tmp);
-			sprintf				(tmp,"vt %f %f", it.t[1].x, /*_abs*/(1.f-it.t[1].y));
-			tmpFaces.w_string	(tmp);
-			sprintf				(tmp,"vt %f %f", it.t[2].x, /*_abs*/(1.f-it.t[2].y));
-			tmpFaces.w_string	(tmp);
+			const b_face& it = m.faces[fi];
+			sprintf(tmp,"vt %f %f", it.t[0].x, /*_abs*/(1.f-it.t[0].y));
+			tmpFaces.w_string(tmp);
+			sprintf(tmp,"vt %f %f", it.t[1].x, /*_abs*/(1.f-it.t[1].y));
+			tmpFaces.w_string(tmp);
+			sprintf(tmp,"vt %f %f", it.t[2].x, /*_abs*/(1.f-it.t[2].y));
+			tmpFaces.w_string(tmp);
 		}
 		//faces
-		for(int fi=0; fi<m.m_iFaceCount; ++fi)
+		for(int fi=0; fi<m.faces.size(); ++fi)
 		{
-			const b_face& it		= m.m_pFaces[fi];
+			const b_face& it = m.faces[fi];
 
-			b_material& m			= l_materials[it.dwMaterial];
-			b_texture_real&	t 			= l_textures[m.surfidx];
-			if(last_texture != &t)
+			// TODO: Shared material support
+			b_material& m = l_materials[it.dwMaterial];
+			b_texture_real&	t = l_textures[m.surfidx];
+			if(last_texture != t.name)
 			{
-				_splitpath			(t.name, 0, 0, tex_name, 0 );
-				sprintf				(tmp,"usemtl %s", tex_name);
-				tmpFaces.w_string	(tmp);
-				last_texture 		= &t;
+				_splitpath(t.name, nullptr, nullptr, tex_name, nullptr );
+				sprintf(tmp,"usemtl %s", tex_name);
+				tmpFaces.w_string(tmp);
+				last_texture = t.name;
 			}
-			sprintf			(tmp,"f %d/%d %d/%d %d/%d", it.v[0]+1+total_vertices, fi*3+1+total_tcs,
+			
+			sprintf(tmp,"f %d/%d %d/%d %d/%d", it.v[0]+1+total_vertices, fi*3+1+total_tcs,
 														it.v[1]+1+total_vertices, fi*3+2+total_tcs,
 														it.v[2]+1+total_vertices, fi*3+3+total_tcs);
 /*
@@ -240,10 +242,10 @@ void SceneBuilder::SaveBuildAsObject()
 													it.v[1]+1+total_vertices,
 													it.v[2]+1+total_vertices );
 */
-			tmpFaces.w_string	(tmp);
+			tmpFaces.w_string(tmp);
 		}
-		total_tcs				+= m.m_iFaceCount*3;
-		total_vertices += m.m_iVertexCount;
+		total_tcs += m.faces.size()*3;
+		total_vertices += m.vertices.size();
 	}
 	F->w(tmpFaces.pointer(),tmpFaces.size());
 
@@ -343,20 +345,37 @@ void SceneBuilder::SaveBuild()
 		F->close_chunk	();
 
 		F->open_chunk	(EB_Vertices);
-		F->w		  	(l_verts,sizeof(b_vertex)*l_vert_it); 	//. l_vert_cnt
+		F->w		  	(l_verts.data(),sizeof(b_vertex)*l_vert_it); 	//. l_vert_cnt
 		F->close_chunk	();
 
 		F->open_chunk	(EB_Faces);
-		F->w		  	(l_faces,sizeof(b_face)*l_face_it); 	//. l_face_cnt
+		for (u32 i = 0; i < l_face_it; ++i)
+		{
+			auto& elem = l_faces[i];
+			F->w_u32(elem.v[0]);
+			F->w_u32(elem.v[1]);
+			F->w_u32(elem.v[2]);
+			F->w(&elem.t[0], sizeof(Fvector2));
+			F->w(&elem.t[1], sizeof(Fvector2));
+			F->w(&elem.t[2], sizeof(Fvector2));
+			F->w_u16(elem.dwMaterial);
+			F->w(&elem.flags, sizeof(b_face_flags));
+			F->w_u32(elem.dwMaterialGame);
+		}
 		F->close_chunk	();
 
 		F->open_chunk	(EB_SmoothGroups);
-		F->w		  	(l_smgroups, sizeof(u32)*l_face_it); 	//. l_face_cnt
+		F->w		  	(l_smgroups.data(), sizeof(u32)*l_face_it); 	//. l_face_cnt
 		F->close_chunk	();
 
 		F->open_chunk	(EB_Materials);
 		F->w	   		(l_materials.data(),sizeof(b_material)*l_materials.size());
 		F->close_chunk	();
+
+		F->make_chunk(EB_MaterialsShared, [this](IWriter& F)
+		{
+			F.w(l_materials_shared.data(),sizeof(b_material_shared)*l_materials_shared.size());
+		});
 
 		F->open_chunk	(EB_Shaders_Render);
 		F->w			(l_shaders.data(),sizeof(b_shader)*l_shaders.size());
@@ -406,14 +425,37 @@ void SceneBuilder::SaveBuild()
 			// name
 			F->w_stringZ(m.name);
 			// vertices
-			F->w_u32	(m.m_iVertexCount);
-			F->w		(m.m_pVertices,sizeof(b_vertex)*m.m_iVertexCount);
-			// faces
-			F->w_u32	(m.m_iFaceCount);
-			F->w		(m.m_pFaces,sizeof(b_face)*m.m_iFaceCount);
+			F->w_u32(m.vertices.size());
+			F->w(m.vertices.data(),sizeof(b_vertex)*m.vertices.size());
+
+			F->w_u32(m.faces.size());
+			for (auto& elem : m.faces)
+			{
+				//auto& elem = m.m_pFaces[i];
+				F->w_u32(elem.v[0]);
+				F->w_u32(elem.v[1]);
+				F->w_u32(elem.v[2]);
+				F->w(&elem.t[0], sizeof(Fvector2));
+				F->w(&elem.t[1], sizeof(Fvector2));
+				F->w(&elem.t[2], sizeof(Fvector2));
+				F->w_u16(elem.dwMaterial);
+				F->w(&elem.flags, sizeof(b_face_flags));
+				F->w_u32(elem.dwMaterialGame);
+			}
 			// lod_id
 			F->w_u16	(m.lod_id);
-			F->w		(m.m_smgroups,sizeof(int)*m.m_iFaceCount);
+			F->w		(m.smgroups.data(),sizeof(u32)*m.smgroups.size());
+		}
+		F->close_chunk	();
+		
+		F->open_chunk(EB_MU_Mesh_LODs);
+		for (auto& elem : l_mu_mesh_lods)
+		{
+			F->w_u8(elem.UseMeshLods);
+			F->w_u32(elem.model_index[0]);
+			F->w_u32(elem.model_index[1]);
+			F->w_u32(elem.model_index[2]);
+			F->w_u32(elem.model_index[3]);
 		}
 		F->close_chunk	();
 		
@@ -453,20 +495,12 @@ int SceneBuilder::CalculateSector(const Fvector& P, float R)
 void SceneBuilder::Clear ()
 {
 	object_for_render		= 0;
-	l_vert_cnt 				= 0;
-	l_face_cnt				= 0;
 	l_vert_it 				= 0;
 	l_face_it				= 0;
-	xr_free					(l_verts);
-	xr_free					(l_faces);
-	xr_free					(l_smgroups);
+	l_verts.clear();
+	l_faces.clear();
+	l_smgroups.clear();
 
-	for (int k=0; k<(int)l_mu_models.size(); k++){
-		b_mu_model&	m 		= l_mu_models[k];
-		xr_free				(m.m_pVertices);
-		xr_free				(m.m_pFaces);
-		xr_free				(m.m_smgroups);
-	}
 	l_mu_models.clear		();
 	l_mu_refs.clear			();
 	l_lods.clear			();
@@ -524,13 +558,15 @@ bool GetStaticCformData(const Fmatrix& parent, CEditableMesh* mesh, CEditableObj
 				break;
 			}
 		}
-		if (surf->m_GameMtlName == "materials\\occ")
+		if (surf->_GameMtlName() == shared_str("materials\\occ"))
+		{
 			continue;
+		}
 
 		if (!EDevice->ShaderXRLC.Get(surf->_ShaderXRLCName())->flags.bCollision)
 			continue;
 
-		u16 game_material_idx = GameMaterialLibraryEditors->GetMaterialIdx(surf->m_GameMtlName.c_str());
+		u16 game_material_idx = GameMaterialLibraryEditors->GetMaterialIdx(surf->_GameMtlName());
 
 		for (IntIt f_it = face_lst.begin(); f_it != face_lst.end(); ++f_it)
 		{
@@ -557,7 +593,7 @@ bool GetStaticCformData(const Fmatrix& parent, CEditableMesh* mesh, CEditableObj
 
 				}
 				++face_it;
-				if (surf->m_Flags.is(CSurface::sf2Sided))
+				if (surf->_flags().is(SSurfaceData::sf2Sided))
 				{
 					R_ASSERT(face_it < face_cnt);
 					CDB::TRI& second_face = faces[face_it];
@@ -581,13 +617,11 @@ bool SceneBuilder::BuildMesh(	const Fmatrix& parent,
 								CEditableObject* object,
 								CEditableMesh* mesh,
 								int sect_num,
-								b_vertex* verts,
-								int& vert_cnt,
+								xr_vector<b_vertex>& verts,
 								int& vert_it,
-								b_face* faces,
-								int& face_cnt,
+								xr_vector<b_face>& faces,
 								int& face_it,
-								u32* smgroups,
+								xr_vector<u32>& smooth_groups,
 								const Fmatrix& real_transform,
 								CSceneObject* obj)
 {
@@ -597,7 +631,7 @@ bool SceneBuilder::BuildMesh(	const Fmatrix& parent,
 
 	// fill vertices
 	for (u32 pt_id=0; pt_id<mesh->GetVCount(); pt_id++){
-		R_ASSERT(vert_it<vert_cnt);
+		R_ASSERT(vert_it<verts.size());
 		parent.transform_tiny(verts[vert_it++],mesh->m_Vertices[pt_id]);
 	}
 
@@ -629,7 +663,7 @@ bool SceneBuilder::BuildMesh(	const Fmatrix& parent,
 
 		for (CSurface* SceneSurf : obj->m_Surfaces)
 		{
-			if (SceneSurf->m_Name == MeshSurf->m_Name && SceneSurf->m_id == MeshSurf->m_id)
+			if (SceneSurf->_Name() == MeshSurf->_Name() && SceneSurf->m_id == MeshSurf->m_id)
 			{
 				surf = SceneSurf;
 				break;
@@ -642,8 +676,10 @@ bool SceneBuilder::BuildMesh(	const Fmatrix& parent,
 		}
 		VERIFY(surf);
 
-		if (surf->m_GameMtlName == "materials\\occ")
+		if (surf->_GameMtlName() == shared_str("materials\\occ"))
+		{
 			continue;
+		}
 												
 		int m_id			= BuildMaterial(surf,sect_num,!object->IsMUStatic());
 		int gm_id			= surf->_GameMtl();
@@ -708,14 +744,22 @@ bool SceneBuilder::BuildMesh(	const Fmatrix& parent,
 				dwInvalidFaces++;
 				continue;
 			}
-			R_ASSERT				(face_it<face_cnt);
-			b_face& first_face 		= faces[face_it];
+			R_ASSERT(face_it<faces.size());
+			b_face& first_face = faces[face_it];
 			{
-				smgroups[face_it]			= mesh->m_SmoothGroups[f_it];
-				smgroups[face_it]			&= ~(1<<3);
+				smooth_groups[face_it] = mesh->m_SmoothGroups[f_it];
+				smooth_groups[face_it] &= ~(1<<3);
 
-				first_face.dwMaterial 		= (u16)m_id;
-				first_face.dwMaterialGame 	= gm_id;
+				first_face.dwMaterial = (u16)m_id;
+				first_face.dwMaterialGame = gm_id;
+				if (!!first_face.flags)
+				{
+					__nop();
+				}
+				if (surf->UseShared)
+				{
+					first_face.flags |= b_face_flags::UseSharedMaterial;
+				}
 				for (int k=0; k<3; ++k)
 				{
 					st_FaceVert& fv = face.pv[k];
@@ -740,14 +784,15 @@ bool SceneBuilder::BuildMesh(	const Fmatrix& parent,
 			++face_it;
 			}
 
-			if (surf->m_Flags.is(CSurface::sf2Sided))
+			if (surf->_flags().is(SSurfaceData::sf2Sided))
 			{
-				R_ASSERT					(face_it<face_cnt);
-				b_face& second_face 		= faces[face_it];
-				second_face.dwMaterial 		= first_face.dwMaterial;
-				second_face.dwMaterialGame 	= first_face.dwMaterialGame;
-				smgroups[face_it]			= mesh->m_SmoothGroups[f_it];
-				smgroups[face_it]			|= (1<<3);
+				R_ASSERT(face_it<faces.size());
+				b_face& second_face = faces[face_it];
+				second_face.dwMaterial = first_face.dwMaterial;
+				second_face.dwMaterialGame = first_face.dwMaterialGame;
+				second_face.flags = first_face.flags;
+				smooth_groups[face_it] = mesh->m_SmoothGroups[f_it];
+				smooth_groups[face_it] |= (1<<3);
 
 				for (int k=0; k<3; ++k)
 				{
@@ -773,10 +818,16 @@ bool SceneBuilder::BuildMesh(	const Fmatrix& parent,
 			}
 		}
 		if (dwInvalidFaces)
+		{
+			faces.resize(faces.size() - dwInvalidFaces);
+			smooth_groups.resize(smooth_groups.size() - dwInvalidFaces);
 			Msg("!Object '%s' - '%s' has %d invalid face(s). Removed.",object->GetName(),mesh->Name().c_str(),dwInvalidFaces);
+		}
 
 		if (!bResult)
+		{
 			break;
+		}
 	}
 	return bResult;
 }
@@ -814,7 +865,7 @@ bool SceneBuilder::BuildEditableObject(CEditableObject* obj, Fmatrix Transform, 
 	{
 		CSector* S = PortalUtils.FindSector(Owner, *M);
 		int sect_num = S ? S->m_sector_num : m_iDefaultSectorNum;
-		if (!BuildMesh(T, obj, *M, sect_num, l_verts, l_vert_cnt, l_vert_it, l_faces, l_face_cnt, l_face_it, l_smgroups, Transform, Owner))
+		if (!BuildMesh(T, obj, *M, sect_num, l_verts, /*l_vert_cnt, */l_vert_it, l_faces, /*l_face_cnt, */l_face_it, l_smgroups, Transform, Owner))
 			return false;
 
 		// fill DI vertices
@@ -857,12 +908,15 @@ int	GetModelIdx( const char* model_name )
 //    int sect_num 		= S?S->m_sector_num:Builder.m_iDefaultSectorNum;
 //}
 
-
-
 bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 {
 	xr_string temp = "Building object: ";
 	temp += obj->GetName();
+
+	if (temp.size() > 9 && temp[temp.size()-8] == 'p')
+	{
+		__nop();
+	}
 
 	UI->SetStatus(temp.c_str());
 	
@@ -1001,91 +1055,79 @@ bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 	}
 	debug_name += obj->GetName();
 
-	// scene statssm
-	b_mu_model& MStat = l_mu_models[model_idx];
-	for (u32 mu_vi=0; mu_vi<(u32)MStat.m_iVertexCount; ++mu_vi)
-	{
-		l_scene_stat->add_muvert(obj->_Transform(),MStat.m_pVertices[mu_vi]);
-	}
-	
-	return true;
-}
-
-u32 SceneBuilder::BuildMUObjectTemplate(CSceneObject* obj, bool BuildBillboard, int sect_num)
-{
-	CEditableObject* O = obj->GetReference();
-	// build LOD
-	u16	lod_id = u16(-1);
-	if (BuildBillboard)
-	{
-		lod_id = u16(BuildObjectLOD(Fidentity,O,sect_num));
-		if (lod_id==u16(-2))
-		{
-			return u32(-1);
-		}
-	}
-	// build model
-	u32 model_idx = l_mu_models.size();
-	b_mu_model&	M = l_mu_models.emplace_back();
-	M.lod_id = lod_id;
-	int vert_it=0, face_it=0;
-
-	M.m_iFaceCount = obj->GetFaceCount();
-	M.m_iVertexCount = obj->GetVertexCount();
-	strcpy(M.name,O->GetName());
-
-	M.m_pFaces = xr_alloc<b_face>(M.m_iFaceCount);
-	M.m_pVertices = xr_alloc<b_vertex>(M.m_iVertexCount);
-	M.m_smgroups = xr_alloc<u32>(M.m_iFaceCount);
-	// parse mesh data
-	Fmatrix T;
-	T.identity();
-
-	if(m_save_as_object)
-	{
-		T = obj->_Transform();
-		
-		Fmatrix cv = Fidentity;
-
-		cv.k.z = -1.f;
-
-		Fmatrix TM;
-
-		TM.mul( Fmatrix().mul(cv,T), cv );
-		TM.mulB_44( cv );
-		T = TM;
-	}
-
-	for(EditMeshIt MESH=O->FirstMesh();MESH!=O->LastMesh();++MESH)
-	{
-		if (M.m_iVertexCount || M.m_iFaceCount)
-		{
-			continue;
-		}
-		if (!BuildMesh(T, O, *MESH, sect_num, M.m_pVertices, M.m_iVertexCount, vert_it, M.m_pFaces, M.m_iVertexCount, face_it, M.m_smgroups, obj->_Transform(), obj))
-		{
-			return u32(-1);
-		}
-	}
-	return model_idx;
-}
-
-bool SceneBuilder::BuildMUObjectLOD(CSceneObject* obj, b_mu_mesh_lods& Slot, u8 LODID, int sect_num)
-{
-	CEditableObject *O = obj->GetReference();
-	int model_idx = GetModelIdx( O->GetName() ) ;
+	// detect sector
+	CSector* S 			= PortalUtils.FindSector(obj,*O->FirstMesh());
+	int sect_num 		= S?S->m_sector_num:m_iDefaultSectorNum;
 
 	// build model
 	if (-1==model_idx || m_save_as_object)
 	{
-		model_idx = BuildMUObjectTemplate(obj, false, sect_num);
-		if (model_idx == -1)
+		// build LOD
+		int	lod_id = BuildObjectLOD(Fidentity,O,sect_num);
+		if (lod_id==-2)
 		{
 			return false;
 		}
+		// build model
+		model_idx = l_mu_models.size();
+		l_mu_models.push_back(b_mu_model());
+		b_mu_model&	M = l_mu_models.back();
+		M.lod_id = (u16)lod_id;
+		int vert_it=0, face_it=0;
+
+		auto FaceCount = obj->GetFaceCount();
+		auto VertexCount = obj->GetVertexCount();
+		strcpy(M.name,O->GetName());
+
+		M.faces.resize(FaceCount);
+		M.vertices.resize(VertexCount);
+		M.smgroups.resize(FaceCount);
+		// parse mesh data
+		Fmatrix T;
+		T.identity();
+
+		if(m_save_as_object)
+		{
+			T = obj->_Transform();
+			
+			Fmatrix cv = Fidentity;
+
+			cv.k.z 				= -1.f;
+
+			Fmatrix 			TM;
+
+			TM.mul				( Fmatrix().mul(cv,T), cv );
+			TM.mulB_44			( cv );
+			T 					= TM;
+		}
+
+		for(EditMeshIt MESH=O->FirstMesh();MESH!=O->LastMesh();++MESH)
+		{
+			if (M.vertices.empty() || M.faces.empty())
+			{
+				continue;
+			}
+			if (!BuildMesh(T, O, *MESH, sect_num, M.vertices, /*M.m_iVertexCount, */vert_it, M.faces, /*M.m_iFaceCount, */face_it, M.smgroups, obj->_Transform(), obj))
+			{
+				return false;
+			}
+		}
+	}
+
+	l_mu_refs.push_back	(b_mu_reference());
+	b_mu_reference&	R	= l_mu_refs.back();
+	R.model_index		= model_idx;
+	R.transform			= obj->_Transform();
+	R.flags.zero		();
+	R.sector			= (u16)sect_num;
+
+	// scene statssm
+	b_mu_model& MStat = l_mu_models[model_idx];
+	for (u32 mu_vi=0; mu_vi<(u32)MStat.vertices.size(); ++mu_vi)
+	{
+		l_scene_stat->add_muvert(obj->_Transform(),MStat.vertices[mu_vi]);
 	}
 	
-	Slot.model_index[LODID-1] = model_idx;
 	return true;
 }
 
@@ -1309,16 +1351,20 @@ bool SceneBuilder::BuildGlow(CGlow* e)
 	l_glows.push_back(b_glow());
 	b_glow& b 		= l_glows.back();
 // material
-	b_material mtl; ZeroMemory(&mtl,sizeof(mtl));
+	b_material mtl;
+	ZeroMemory(&mtl,sizeof(mtl));
 	int mtl_idx;
 	VERIFY			(e->m_ShaderName.size());
 	mtl.surfidx		= (u16)BuildTexture		(*e->m_TexName);		
 	mtl.shader      = (u16)BuildShader		(*e->m_ShaderName);
 	mtl.sector		= (u16)CalculateSector	(e->GetPosition(),e->m_fRadius);
 	mtl.shader_xrlc	= -1;
-	if ((u16(-1)==mtl.surfidx)||(u16(-1)==mtl.shader)) return false;
+	if ((u16(-1)==mtl.surfidx)||(u16(-1)==mtl.shader))
+	{
+		return false;
+	}
 
-	mtl_idx 		= FindInMaterials(&mtl);
+	mtl_idx 		= FindInMaterials(mtl);
 	if (mtl_idx<0){
 		l_materials.push_back(mtl);
 		mtl_idx 	= l_materials.size()-1;
@@ -1427,47 +1473,114 @@ int SceneBuilder::BuildTexture(const char* name)
 
 // material build functions
 
-int SceneBuilder::FindInMaterials(b_material* m)
+int SceneBuilder::FindInMaterials(const b_material& m)
 {
 	for (u32 i=0; i<l_materials.size(); i++){
-		if( (l_materials[i].surfidx		== m->surfidx) 		&&
-			(l_materials[i].shader		== m->shader) 		&&
-			(l_materials[i].shader_xrlc	== m->shader_xrlc) 	&&
-			(l_materials[i].sector		== m->sector)) return i;
+		if( (l_materials[i].surfidx == m.surfidx)
+			&& (l_materials[i].shader == m.shader)
+			&& (l_materials[i].shader_xrlc == m.shader_xrlc)
+			&& (l_materials[i].sector == m.sector))
+		{
+			return i;
+		}
 	}
 	return -1;
 }
 
+int SceneBuilder::FindInSharedMaterials(const b_material_shared& m)
+{
+	for (u32 i=0; i<l_materials_shared.size(); i++){
+		if( (l_materials_shared[i].sector == m.sector)
+			&& !xr_strcmp(l_materials_shared[i].Name, m.Name))
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+bool SceneBuilder::BuildMaterialDataUnique(b_material& mtl, const char* esh_name, const char* csh_name,
+	const char* tx_name, bool allow_draft)
+{
+	if (allow_draft&&(Scene->m_LevelOp.m_BuildParams.m_quality==ebqDraft)){
+		Shader_xrLC* c_sh = EDevice->ShaderXRLC.Get(csh_name);
+		if (c_sh->flags.bRendering){
+			mtl.shader = (u16)BuildShader("def_shaders\\def_vertex");
+			mtl.shader_xrlc	= (u16)BuildShaderXRLC("def_shaders\\def_vertex");
+		}else{
+			mtl.shader = (u16)BuildShader(esh_name);
+			mtl.shader_xrlc	= (u16)BuildShaderXRLC(csh_name);
+		}
+	}else{
+		mtl.shader = (u16)BuildShader(esh_name);
+		mtl.shader_xrlc	= (u16)BuildShaderXRLC(csh_name);
+	}
+	mtl.surfidx = (u16)BuildTexture(tx_name);
+	return !((u16(-1)==mtl.shader)
+		||(u16(-1)==mtl.shader_xrlc)
+		||(u16(-1)==mtl.surfidx));
+}
 
 int SceneBuilder::BuildMaterial(CSurface* surf, int sector_num, bool allow_draft)
 {
+	if (surf->UseShared)
+	{
+		
+		VERIFY(sector_num>=0);
+		VERIFY(((surf->_FVF()&D3DFVF_TEXCOUNT_MASK)>>D3DFVF_TEXCOUNT_SHIFT)==1);
+		
+		if (allow_draft&&(Scene->m_LevelOp.m_BuildParams.m_quality==ebqDraft))
+		{
+			b_material mtl;
+			ZeroMemory(&mtl,sizeof(mtl));
+			mtl.sector = (u16)sector_num;
+			if (!BuildMaterialDataUnique(mtl,surf->_ShaderName(),surf->_ShaderXRLCName(),surf->_Texture(),allow_draft))
+			{
+				return -1;
+			}
+		
+			int mtl_idx = FindInMaterials(mtl);
+			if (mtl_idx<0){
+				l_materials.push_back(mtl);
+				mtl_idx = l_materials.size()-1;
+			}
+			return mtl_idx;
+			
+		}
+
+		b_material_shared mtl;
+		if (!IVERIFY_M(surf->m_pData.first.size() < sizeof(mtl.Name), "Too long shared material name [%s], limit %d symbols!", surf->m_pData.first.c_str(), sizeof(mtl.Name)))
+		{
+			return -1;
+		}
+		std::memcpy(mtl.Name, surf->m_pData.first.c_str(), sizeof(mtl.Name));
+		mtl.sector = sector_num;
+		
+		int mtl_idx = FindInSharedMaterials(mtl);
+		if (mtl_idx<0){
+			l_materials_shared.push_back(mtl);
+			mtl_idx = l_materials_shared.size()-1;
+		}
+		return mtl_idx;
+	}
 	return BuildMaterial(surf->_ShaderName(),surf->_ShaderXRLCName(),surf->_Texture(),((surf->_FVF()&D3DFVF_TEXCOUNT_MASK)>>D3DFVF_TEXCOUNT_SHIFT),sector_num,allow_draft);
 }
 int SceneBuilder::BuildMaterial(const char* esh_name, const char* csh_name, const char* tx_name, u32 tx_cnt, int sector_num, bool allow_draft)
 {
-	b_material mtl; ZeroMemory(&mtl,sizeof(mtl));
+	b_material mtl;
+	ZeroMemory(&mtl,sizeof(mtl));
+	
 	VERIFY(sector_num>=0);
 	int mtl_idx;
 	VERIFY			(tx_cnt==1);
-	
-	if (allow_draft&&(Scene->m_LevelOp.m_BuildParams.m_quality==ebqDraft)){
-		Shader_xrLC* c_sh	= EDevice->ShaderXRLC.Get(csh_name);
-		if (c_sh->flags.bRendering){
-			mtl.shader      = (u16)BuildShader		("def_shaders\\def_vertex");
-			mtl.shader_xrlc	= (u16)BuildShaderXRLC	("def_shaders\\def_vertex");
-		}else{
-			mtl.shader      = (u16)BuildShader		(esh_name);
-			mtl.shader_xrlc	= (u16)BuildShaderXRLC	(csh_name);
-		}
-	}else{
-		mtl.shader      = (u16)BuildShader		(esh_name);
-		mtl.shader_xrlc	= (u16)BuildShaderXRLC	(csh_name);
-	}
-	mtl.sector		= (u16)sector_num;
-	mtl.surfidx		= (u16)BuildTexture		(tx_name);
-	if ((u16(-1)==mtl.shader)||(u16(-1)==mtl.shader_xrlc)||(u16(-1)==mtl.surfidx)) return -1;
 
-	mtl_idx 		= FindInMaterials(&mtl);
+	mtl.sector = (u16)sector_num;
+	if (!BuildMaterialDataUnique(mtl,esh_name,csh_name,tx_name,allow_draft))
+	{
+		return -1;
+	}
+
+	mtl_idx 		= FindInMaterials(mtl);
 	if (mtl_idx<0){
 		l_materials.push_back(mtl);
 		mtl_idx 	= l_materials.size()-1;
@@ -1553,8 +1666,8 @@ bool SceneBuilder::CompileStatic(bool b_selected_only)
 	if( objcount <= 0 )	return false;
 
 // compute vertex/face count
-	l_vert_cnt	= 0;
-	l_face_cnt 	= 0;
+	auto l_vert_cnt	= 0;
+	auto l_face_cnt 	= 0;
 	l_vert_it 	= 0;
 	l_face_it	= 0;
 
@@ -1574,9 +1687,9 @@ bool SceneBuilder::CompileStatic(bool b_selected_only)
 				mt->GetStaticDesc(l_vert_cnt,l_face_cnt, b_selected_only,false);
 		}
 	}
-	l_faces		= xr_alloc<b_face>	(l_face_cnt);
-	l_smgroups  = xr_alloc<u32>		(l_face_cnt);
-	l_verts		= xr_alloc<b_vertex>(l_vert_cnt);
+	l_faces.resize(l_face_cnt);
+	l_smgroups.resize(l_face_cnt);
+	l_verts.resize(l_vert_cnt);
 
 	l_scene_stat= new CSceneStat(m_LevelBox);
 

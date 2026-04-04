@@ -11,17 +11,30 @@ struct b_rc_face
 	u16					dwMaterial;
 	u32					dwMaterialGame;
 	Fvector2			t[3];				// TC
-	u16					reserved;
+	struct
+	{
+		u16 bSharedMaterial:1;
+	} extra_data;
 };
 // All types to interact with xrLC
 typedef Fvector			b_vertex;
 
+enum class b_face_flags : u16
+{
+	None = 0,
+	UseSharedMaterial		= 1 << 0,
+};
+
+ENUM_CLASS_FLAGS(b_face_flags)
+
 struct b_face
 {
-	u32					v[3];				// vertices
+	// Не уверен в том, что выравнивание не было причиной бага, но лучше оставлю так и перепишу функции сериализации
 	Fvector2			t[3];				// TC
-	u16					dwMaterial;			// index of material
+	u32					v[3];				// vertices
 	u32					dwMaterialGame;		// unique-ID of game material
+	u16					dwMaterial;			// index of material
+	b_face_flags flags = b_face_flags::None;
 };
 
 struct b_material
@@ -29,6 +42,14 @@ struct b_material
 	u16					surfidx;			// indices of texture surface
 	u16					shader;				// index of shader that combine them
 	u16					shader_xrlc;		// compiler options
+	u16					sector;				// ***
+	u16					reserved;			//
+	u32					internal_max_area;	//
+};
+
+struct b_material_shared
+{
+	string128 Name;
 	u16					sector;				// ***
 	u16					reserved;			//
 	u32					internal_max_area;	//
@@ -118,11 +139,9 @@ struct b_lod
 struct b_mu_model
 {
 	string128 name;
-	int m_iVertexCount;
-	b_vertex* m_pVertices;
-	int m_iFaceCount;
-	b_face* m_pFaces;
-	u32* m_smgroups;
+	xr_vector<b_vertex> vertices = {};
+	xr_vector<b_face> faces = {};
+	xr_vector<u32> smgroups = {};
 	u16 lod_id;				// u16(-1) = no lod, just static geometry
 };
 
@@ -247,6 +266,7 @@ enum EBUILD_CHUNKS
     EB_MU_refs,
     EB_SmoothGroups,
     EB_MU_Mesh_LODs,
+	EB_MaterialsShared,
 
 	EB_FORCE_DWORD = u32(-1)
 };

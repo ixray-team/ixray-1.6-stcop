@@ -72,7 +72,7 @@ bool CEditableObject::LoadBoneData(IReader& F)
     	bRes 		= false;
     }
     // load bone part
-    if (F.find_chunk(EOBJ_CHUNK_BONEPARTS2)){
+    if (F.find_chunk(EEditableObjectChunks::BONEPARTS2)){
     	shared_str 	buf;
         m_BoneParts.resize(F.r_u32());
         for (BPIt bp_it=m_BoneParts.begin(); bp_it!=m_BoneParts.end(); bp_it++){
@@ -97,7 +97,7 @@ void CEditableObject::SaveBoneData(IWriter& F)
         F.close_chunk		();
     }
     // save bone part
-    F.open_chunk	(EOBJ_CHUNK_BONEPARTS2);
+    F.open_chunk	(EEditableObjectChunks::BONEPARTS2);
     F.w_u32			(m_BoneParts.size());
     for (BPIt bp_it=m_BoneParts.begin(); bp_it!=m_BoneParts.end(); bp_it++){
         F.w_stringZ	(bp_it->alias.c_str());

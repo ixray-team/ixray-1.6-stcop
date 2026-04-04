@@ -288,6 +288,8 @@ Shader* CResourceManager::Create	(const char* s_shader,	const char* s_textures,	
 {
 	xrCriticalSectionGuard guard(ResSafe);
 
+	Msg("Create shader: shader %s, texture %s", s_shader, s_textures);
+	
 	if (!g_dedicated_server)
 	{
 		//	TODO: DX10: When all shaders are ready switch to common path

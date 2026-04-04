@@ -2,6 +2,7 @@
 #include "../../Public/VIMP_Processor.h"
 #include "EditMesh.h"
 
+struct SSurfaceData;
 //---------------------------------------------------------------------------
 const int clpSMX = 28, clpSMY=16, clpSMZ=28;
 //---------------------------------------------------------------------------
@@ -136,18 +137,18 @@ protected:
     struct ECORE_API SSplit: 
         public CSkeletonCollectorPacked
     {
-    	shared_str		m_Shader;
-        shared_str		m_Texture;
-        u16 			m_PartID;
-        Fbox			m_Box;
-        U16Vec			m_UsedBones;
-        u16             m_id;
+        SSurfaceData* m_SurfaceData = nullptr;
+        bool bIsShared = false;
+        u16 m_PartID;
+        Fbox m_Box;
+        U16Vec m_UsedBones;
+        u16 m_id;
 
         // Progressive
 		ArbitraryList<VIPM_SWR>	m_SWR;// The records of the collapses.
 	    u32				m_SkeletonLinkType;
     public:
-        SSplit (CSurface* surf, const Fbox& bb, u16 part);
+        SSplit(CSurface* surf, const Fbox& bb, u16 part);
 
         bool valid()
         {

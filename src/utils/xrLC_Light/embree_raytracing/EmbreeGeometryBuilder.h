@@ -9,6 +9,7 @@ struct FaceDataEmbree
 	Fvector				v1, v2, v3;
 
 	bool				bOpaque = false;
+	bool				bSharedMaterial = false;
 	u16					dwMaterial;
 	u32					dwMaterialGame;
 	Fvector2			TC[3];				// TC
@@ -22,10 +23,11 @@ struct FaceDataEmbree
 		ptr = P;
 	};
 
-	void SetMaterial(u16 dwMt, u32 dwMtGame, Fvector2* TCn )
+	void SetMaterial(u16 dwMt, u32 dwMtGame, Fvector2* TCn, bool SharedMaterial )
 	{
 		dwMaterial = dwMt;
 		dwMaterialGame = dwMtGame;
+		bSharedMaterial = SharedMaterial;
 		TC[0] = TCn[0];
 		TC[1] = TCn[1];
 		TC[2] = TCn[2];
