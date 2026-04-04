@@ -2,7 +2,7 @@
 #include "UIChooseForm.h"
 
 UIChooseForm::EventsMap UIChooseForm::m_Events;
-UIChooseForm* UIChooseForm::Form = 0;
+UIChooseForm* UIChooseForm::Form = nullptr;
 ImTextureID UIChooseForm::NullTexture = nullptr;
 
 void UIChooseForm::UpdateSelected(UIChooseFormItem* NewSelected)
@@ -22,7 +22,7 @@ void UIChooseForm::UpdateSelected(UIChooseFormItem* NewSelected)
 			{
 				m_Texture->Release();
 			}
-			m_Texture = 0;
+			m_Texture = nullptr;
 		}
 		if (!E.on_get_texture.empty())
 		{
@@ -453,12 +453,12 @@ void UIChooseForm::SelectItem(u32 choose_ID, int sel_cnt, const char* init_name,
 	{
 		VERIFY2(item_fill.empty(), "UIChooseForm: Duplicate source.");
 		Form->m_Items = *items;
-		Form->E.Set("Select Item", 0, item_select, 0, 0, 0);
+		Form->E.Set("Select Item", nullptr, item_select, nullptr, nullptr, 0);
 	}
 	else if (!item_fill.empty())
 	{
 		// custom
-		Form->E.Set("Select Item", item_fill, item_select, 0, 0, 0);
+		Form->E.Set("Select Item", item_fill, item_select, nullptr, nullptr, 0);
 	}
 	else
 	{
@@ -532,6 +532,5 @@ SChooseEvents* UIChooseForm::GetEvents(u32 choose_ID)
 	{
 		return &it->second;
 	}
-
-	return 0;
+	return nullptr;
 }

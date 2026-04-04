@@ -1,9 +1,32 @@
 #include "StdAfx.h"
 #include "compiler.h"
 
+#include "src/xrCore/SharedMaterialLibrary.h"
+
 IComputeData comp_data;
 Nodes g_nodes;
 SAIParams g_params;
+
+b_texture& IComputeData::GetTexture(u32 ID, bool Shared)
+{
+	if (Shared)
+	{
+		return comp_data.g_textures_shared[&comp_data.g_materials_shared[ID]];
+	}
+	return comp_data.g_textures[comp_data.g_materials[ID].surfidx];
+}
+
+Shader_xrLC& IComputeData::GetShaderXRLC(u32 ID, bool Shared)
+{
+	if (Shared)
+	{
+		return *comp_data.g_shaders_xrlc->Get(
+			CSharedMaterialLibrary::Instance().GetData(
+				comp_data.g_materials_shared[ID].Name)->m_ShaderXRLCName.c_str()
+				);
+	}
+	return *comp_data.g_shaders_xrlc->Get(comp_data.g_shader_compile[comp_data.g_materials[ID].surfidx].name);
+}
 
 void vertex::PointLF(Fvector& D)
 {

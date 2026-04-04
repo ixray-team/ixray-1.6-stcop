@@ -46,9 +46,8 @@ void xrMU_Reference::export_cform_game(CDB::CollectorPacked& CL)
 
 		// faces and mark vertices
 		cfFaces->reserve	(model->m_faces.size());
-		for (xrMU_Model::v_faces_it I=model->m_faces.begin(); I!=model->m_faces.end(); I++)
+		for (auto F : model->m_faces)
 		{
-			_face* F = *I;
 			if (F->Shader().flags.bCollision) 
 			{
 				cfFaces->push_back	(F);
@@ -84,7 +83,7 @@ void xrMU_Reference::export_cform_game(CDB::CollectorPacked& CL)
 		xform.transform_tiny	(P[1],T->v[1]->P);
 		xform.transform_tiny	(P[2],T->v[2]->P);
 
-		CL.add_face				( P[0], P[1], P[2], T->dwMaterialGame, sector, T->sm_group);
+		CL.add_face( P[0], P[1], P[2], T->dwMaterialGame, sector, T->flags.bSharedMaterial, T->sm_group);
 	}
 
 	xr_delete		(cfFaces);

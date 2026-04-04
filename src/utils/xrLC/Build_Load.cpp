@@ -2,6 +2,7 @@
 #include "ELight_def.h"
 
 #include "Build.h"
+#include "src/utils/Shader_xrLC_Compilers.h"
 
 #include "../xrLC_Light/xrLC_GlobalData.h"
 #include "../xrLC_Light/xrFace.h"
@@ -73,15 +74,15 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 	{
 		F = fs.open_chunk(EB_Vertices);
 		u32 v_count = F->length() / sizeof(b_vertex);
- 		scene_bb.invalidate();
+		scene_bb.invalidate();
 
 		Status("* %16s: %d", "vertices", lc_global_data()->g_vertices().size());
 
 		size_t LastStatCalls = 0;
 		for (i = 0; i < v_count; i++)
 		{
-  			Vertex* pV = lc_global_data()->create_vertex();
-  			F->r_fvector3(pV->P);
+			Vertex* pV = lc_global_data()->create_vertex();
+			F->r_fvector3(pV->P);
 			pV->N.set(0, 0, 0);
 			scene_bb.modify(pV->P);
 		}
@@ -104,17 +105,26 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 			Face*	_F			= lc_global_data()->create_face();
 			
 			b_face	B;
-			F->r				(&B,sizeof(B));
+			B.v[0] = F->r_u32();
+			B.v[1] = F->r_u32();
+			B.v[2] = F->r_u32();
+			F->r(&B.t[0], sizeof(Fvector2));
+			F->r(&B.t[1], sizeof(Fvector2));
+			F->r(&B.t[2], sizeof(Fvector2));
+			B.dwMaterial = F->r_u16();
+			F->r(&B.flags, sizeof(b_face_flags));
+			B.dwMaterialGame = F->r_u32();
 			R_ASSERT			(B.dwMaterialGame<65536);
 
 			_F->dwMaterial		= u16(B.dwMaterial);
 			_F->dwMaterialGame	= B.dwMaterialGame;
+			_F->flags.bSharedMaterial = !!(B.flags & b_face_flags::UseSharedMaterial);
 
 			// Vertices and adjacement info
 			for (u32 it=0; it<3; ++it)
 			{
 				int id			= B.v[it];
- 				R_ASSERT		(id<(int)lc_global_data()->g_vertices().size());
+				R_ASSERT		(id<(int)lc_global_data()->g_vertices().size());
 				_F->SetVertex	(it, lc_global_data()->g_vertices()[id]);
 			}
 
@@ -217,13 +227,14 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 
 
 	//*******
-	Status	("Other transfer...");
-	transfer("materials",	materials(),			fs,		EB_Materials);
-	transfer("shaders",		shader_render,		fs,		EB_Shaders_Render);
-	transfer("shaders_xrlc",shader_compile,		fs,		EB_Shaders_Compile);
-	transfer("glows",		glows,				fs,		EB_Glows);
-	transfer("portals",		portals,			fs,		EB_Portals);
-	transfer("LODs",		lods,				fs,		EB_LOD_models);
+	Status("Other transfer...");
+	transfer("materials", materials(), fs, EB_Materials);
+	transfer("materials_shared", materials_shared(), fs, EB_MaterialsShared);
+	transfer("shaders", shader_render, fs, EB_Shaders_Render);
+	transfer("shaders_xrlc", shader_compile, fs, EB_Shaders_Compile);
+	transfer("glows", glows, fs, EB_Glows);
+	transfer("portals", portals, fs, EB_Portals);
+	transfer("LODs", lods, fs, EB_LOD_models);
 
 	// Load lights
 	Status	("Loading lights...");
@@ -326,27 +337,20 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 	// process textures
 	Status			("Processing textures...");
 	{
-		F = fs.open_chunk	(EB_Textures);
-		u32 tex_count = F->length() / sizeof(b_texture_real);
 		bool is_thm_missing = false;
 		bool is_tga_missing = false;
 
-		for (u32 t=0; t<tex_count; t++)
+		auto TextureProcess = [&](b_BuildTexture& BT)
 		{
-			Progress(float(t)/float(tex_count));
-
-			b_texture_real TEX;
-			F->r(&TEX, sizeof(TEX));
-			b_BuildTexture	BT;
-
-			// ptr should be copied separately
-			CopyMemory(&BT, &TEX, sizeof(TEX) - 4);
 			BT.pSurface.Clear();
 
 			// load thumbnail
-			LPSTR N			= BT.name;
-			if (strchr(N,'.')) *(strchr(N,'.')) = 0;
-			_strlwr			(N);
+			LPSTR N = BT.name;
+			if (strchr(N,'.'))
+			{
+				*(strchr(N,'.')) = 0;
+			}
+			_strlwr(N);
 
 			if (0==xr_strcmp(N,"level_lods")) 
 			{
@@ -408,8 +412,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 								is_tga_missing = true;
 
 								BT.SetHasSurface(false);
-								textures().push_back(BT);
-								continue;
+								return;
 							}
 
 							BT.pSurface.ClearMipLevels();
@@ -427,8 +430,45 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 				}
 
 			} 
-			// save all the stuff we've created
-			textures().push_back	(BT);
+		};
+
+		u32 SharedMaterialsCount = materials_shared().size();
+		u32 tex_count = SharedMaterialsCount;
+		if (F = fs.open_chunk(EB_Textures); F)
+		{
+			tex_count += F->length() / sizeof(b_texture_real);
+			for (u32 t=0; t<tex_count-SharedMaterialsCount; t++)
+			{
+				Progress(float(t)/float(tex_count));
+
+				b_texture_real TEX;
+				F->r(&TEX, sizeof(TEX));
+				b_BuildTexture	BT;
+
+				// ptr should be copied separately
+				CopyMemory(&BT, &TEX, sizeof(TEX) - 4);
+
+				TextureProcess(BT);
+			
+				// save all the stuff we've created
+				textures().push_back	(BT);
+			}
+		}
+
+		for (u32 i = 0; i < materials_shared().size(); i++)
+		{
+			auto& elem = materials_shared()[i];
+			
+			Progress(float(i + SharedMaterialsCount)/float(tex_count));
+
+			textures_shared()[&elem] = {};
+			b_BuildTexture&	BT = textures_shared()[&elem];
+			auto Data = CSharedMaterialLibrary::Instance().GetData(elem.Name);
+			R_ASSERT(Data);
+			CopyMemory(BT.name, Data->m_Texture.c_str(), Data->m_Texture.size()+1);
+
+			TextureProcess(BT);
+			
 		}
 
 		if (!gCompilerMode.SkipTHM)
@@ -441,6 +481,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 	// post-process materials
 	Status	("Post-process materials...");
 	post_process_materials( shaders(), shader_compile, materials() );
+	post_process_materials_shared( shaders(), materials_shared() );
 
 	Progress(p_total+=p_cost);
 

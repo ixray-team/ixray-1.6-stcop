@@ -56,6 +56,10 @@ enum OGF_Chuncks {
 	OGF_S_MOTION_REFS2		= 24,	// * changes in format
 	OGF_COLLISION_VERTICES	= 25,
 	OGF_COLLISION_INDICES	= 26,
+
+	// New
+	OGF_SHARED_MATERIAL_SETTINGS,
+	
     OGF_forcedword			= 0xFFFFFFFF         
 };							
 

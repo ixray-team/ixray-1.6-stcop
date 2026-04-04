@@ -127,6 +127,7 @@ struct OGF : public OGF_Base
 	};
 
 	u32					material;
+	bool bSharedMaterial = false;
 	vecOGF_T			textures;
 
 	// for build only
@@ -221,6 +222,8 @@ struct OGF_Reference : public OGF_Base
 	Fmatrix				xform;
 	base_color_c		c_scale;
 	base_color_c		c_bias;
+
+	bool bSharedMaterial;
 
 	OGF_Reference() : OGF_Base(0) 
 					{

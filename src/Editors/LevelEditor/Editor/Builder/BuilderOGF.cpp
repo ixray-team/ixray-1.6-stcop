@@ -23,7 +23,7 @@ bool SceneBuilder::BuildHOMModel()
 			{
 				for (SurfFacesPairIt sf_it=(*m_it)->m_SurfFaces.begin(); sf_it!=(*m_it)->m_SurfFaces.end(); ++sf_it)
 				{
-					bool b2Sided = sf_it->first->m_Flags.is(CSurface::sf2Sided);
+					bool b2Sided = sf_it->first->_flags().is(SSurfaceData::sf2Sided);
 					IntVec& i_lst= sf_it->second;
 					for (IntIt i_it=i_lst.begin(); i_it!=i_lst.end(); ++i_it)
 					{
@@ -46,9 +46,9 @@ bool SceneBuilder::BuildHOMModel()
 				for (SurfFacesPairIt sf_it=(*m_it)->m_SurfFaces.begin(); sf_it!=(*m_it)->m_SurfFaces.end(); ++sf_it)
 				{
 					CSurface* S 	= sf_it->first;
-					if(S->m_GameMtlName=="materials\\occ")
+					if(S->_GameMtlName()==shared_str("materials\\occ"))
 					{
-						bool b2Sided 	= S->m_Flags.is(CSurface::sf2Sided);
+						bool b2Sided 	= S->_flags().is(SSurfaceData::sf2Sided);
 						IntVec& i_lst	= sf_it->second;
 						for (IntIt i_it=i_lst.begin(); i_it!=i_lst.end(); ++i_it)
 						{
@@ -106,16 +106,17 @@ bool SceneBuilder::BuildSOMModel()
 					}
 					SGameMtl* mtl 		=  GameMaterialLibraryEditors->GetMaterialByID(gm_id);
 
-					if (0==mtl)
+					if (!mtl)
 					{
 						ELog.DlgMsg		(mtError,"%s Object '%s', surface '%s' contain undefined game material.", *(*m_it)->Name(), (*m_it)->Parent()->m_LibName.c_str(),surf->_Name());
 						bResult 		= false; 
 						break; 
 					}
-					bool b2Sided 		= surf->m_Flags.is(CSurface::sf2Sided);
-					IntVec& i_lst		= sf_it->second;
-					for (IntIt i_it=i_lst.begin(); i_it!=i_lst.end(); i_it++){
-						st_Face& face 	= (*m_it)->m_Faces[*i_it];
+					bool b2Sided = surf->_flags().is(SSurfaceData::sf2Sided);
+					IntVec& i_lst = sf_it->second;
+					for(auto elem : i_lst)
+					{
+						st_Face& face 	= (*m_it)->m_Faces[elem];
 						for (int k=0; k<3; k++){
 							parent.transform_tiny(v,(*m_it)->m_Vertices[face.pv[k].pindex]);
 							F.w_fvector3(v);

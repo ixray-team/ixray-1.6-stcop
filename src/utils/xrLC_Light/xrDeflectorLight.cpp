@@ -7,6 +7,7 @@
 #include "xrFace.h"
 
 #include "../xrForms/CompilersUI.h"
+#include "src/utils/xrLC/Build.h"
 
 void Jitter_Select(Fvector2* &Jitter, u32& Jcount)
 {

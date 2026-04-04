@@ -60,15 +60,18 @@ void CBuild::xrPhase_Subdivide()
 
 		// analyze if we need to split
 		size.sub(bb.max, bb.min);
-		BOOL	bSplit = FALSE;
-		if (size.x > c_SS_maxsize)					bSplit = TRUE;
-		if (size.y > c_SS_maxsize)					bSplit = TRUE;
-		if (size.z > c_SS_maxsize)					bSplit = TRUE;
-		if (int(g_XSplit[X]->size()) > c_SS_HighVertLimit)	bSplit = TRUE;
-		CDeflector* defl_base = (CDeflector*)g_XSplit[X]->front()->pDeflector;
+		bool bSplit = false;
+		if (size.x > c_SS_maxsize || size.y > c_SS_maxsize || size.z > c_SS_maxsize || int(g_XSplit[X]->size()) > c_SS_HighVertLimit)
+		{
+			bSplit = true;
+		}
+		CDeflector* defl_base = g_XSplit[X]->front()->pDeflector;
 		if (!bSplit && defl_base) {
-			if (defl_base->layer.width >=  (gCompilerMode.LC_sizeLmaps - 2 * gCompilerMode.LC_BORDER))	bSplit = TRUE;
-			if (defl_base->layer.height >= (gCompilerMode.LC_sizeLmaps - 2 * gCompilerMode.LC_BORDER))	bSplit = TRUE;
+			if (defl_base->layer.width >= (gCompilerMode.LC_sizeLmaps - 2 * gCompilerMode.LC_BORDER) 
+				|| defl_base->layer.height >= (gCompilerMode.LC_sizeLmaps - 2 * gCompilerMode.LC_BORDER))
+			{
+				bSplit = true;
+			}
 		}
 
 		// perform subdivide if needed

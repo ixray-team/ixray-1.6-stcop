@@ -13,7 +13,7 @@ public:
 	static void Close();
 	static void OnRender();
 
-	ref_texture RealTexture;
+	ref_texture RealTexture = nullptr;
 
 	void OnItemFocused(ListItem* item);
 	void OnItemUnfocused(ListItem* item);
@@ -22,7 +22,7 @@ private:
 	static UIEditLibrary* Form;
 	ListItemsVec FocusedItems;
 
-	virtual void Draw();
+	virtual void Draw() override;
 	void ImportClick();
 	void DrawObjects();
 

@@ -452,20 +452,20 @@ IC bool BE(bool A, bool B)
 
 bool CEditableObject::CheckShaderCompatible()
 {
-	bool bRes 			= true;
-	for(SurfaceIt s_it=m_Surfaces.begin(); s_it!=m_Surfaces.end(); s_it++)
+	bool bRes = true;
+	for(auto& Surf : m_Surfaces)
 	{
-		IBlender* 		B = EDevice->Resources->_FindBlender(*(*s_it)->m_ShaderName);
-		Shader_xrLC* 	C = EDevice->ShaderXRLC.Get(*(*s_it)->m_ShaderXRLCName);
+		IBlender* B = EDevice->Resources->_FindBlender(Surf->_ShaderName());
+		Shader_xrLC* C = EDevice->ShaderXRLC.Get(Surf->_ShaderXRLCName());
 		if (!B||!C){
-			ELog.Msg	(mtError,"Object '%s': invalid or missing shader [E:'%s', C:'%s']",GetName(),(*s_it)->_ShaderName(),(*s_it)->_ShaderXRLCName());
-			bRes 		= false;
+			ELog.Msg(mtError,"Object '%s': invalid or missing shader [E:'%s', C:'%s']",GetName(),Surf->_ShaderName(),Surf->_ShaderXRLCName());
+			bRes = false;
 		}else{
 			if (!BE(B->canBeLMAPped(),!C->flags.bLIGHT_Vertex)){
-				ELog.Msg	(mtError,"Object '%s', material '%s': engine shader '%s' non compatible with compiler shader '%s'", GetName(),
-					(*s_it)->_Name(), (*s_it)->_ShaderName(), (*s_it)->_ShaderXRLCName());
+				ELog.Msg(mtError,"Object '%s', material '%s': engine shader '%s' non compatible with compiler shader '%s'", GetName(),
+					Surf->_Name(), Surf->_ShaderName(), Surf->_ShaderXRLCName());
 				
-				bRes 		= false;
+				bRes = false;
 			}
 		}
 	}

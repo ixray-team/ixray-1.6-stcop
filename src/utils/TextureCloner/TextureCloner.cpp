@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "SharedMaterialLibrary.h"
 
 //#define COPY_ALL_TEXTURE_LIST
 //#define COPY_NORMAL_MAPS
@@ -124,7 +125,20 @@ void CopyTextureList(const char* S)
 void LoadVisual(IReader* visual)
 {
     if(visual) {
-        if(visual->find_chunk(OGF_TEXTURE)) {
+       
+        bool SharedMat = false;
+        if (visual->find_chunk(OGF_SHARED_MATERIAL_SETTINGS))
+        {
+            SharedMat = visual->r_u8();
+        }
+        if (SharedMat)
+        {
+            string128 Name;
+            visual->r_stringZ(Name, sizeof(Name));
+            auto MatData = CSharedMaterialLibrary::Instance().GetData(Name);
+            CopyTextureList(MatData->m_Texture.c_str());
+        }
+        else if(visual->find_chunk(OGF_TEXTURE)) {
             string256 fnT = "", fnS = "";
 
             visual->r_stringZ(fnT, sizeof(fnT));

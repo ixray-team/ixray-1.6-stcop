@@ -42,11 +42,11 @@ protected:
 public:
 	CEditableObject*			object_for_render;
 
-    int							l_vert_cnt, l_vert_it;
-	int							l_face_cnt, l_face_it;
-    b_vertex*		        	l_verts;
-    b_face*  		        	l_faces;
-    u32*						l_smgroups;
+    int							l_vert_it;
+	int							l_face_it;
+	xr_vector<b_vertex> l_verts = {};
+	xr_vector<b_face> l_faces = {};
+	xr_vector<u32> l_smgroups = {};
 
     xr_vector<b_mu_model>		l_mu_models;
     xr_vector<b_mu_reference>	l_mu_refs;
@@ -59,6 +59,7 @@ public:
     xr_vector<b_shader>        	l_shaders;
     xr_vector<b_shader>        	l_shaders_xrlc;
     xr_vector<b_material>      	l_materials;
+    xr_vector<b_material_shared>l_materials_shared;
     xr_vector<b_vnormal>       	l_vnormals;
     xr_vector<b_glow>          	l_glows;
     xr_vector<b_portal>        	l_portals;
@@ -71,8 +72,9 @@ public:
     bool    BuildGlow       (CGlow* e);
     void    BuildPortal   	(b_portal* b, CPortal* e);
     bool    BuildMesh       (const Fmatrix& parent, CEditableObject* object, CEditableMesh* mesh, int sector_num,
-    						b_vertex* verts, int& vert_cnt, int& vert_it,
-                            b_face* faces, int& face_cnt, int& face_it, u32* smooth_groups, const Fmatrix& real_transform, CSceneObject* obj);
+    						xr_vector<b_vertex>& verts, int& vert_it,
+                            xr_vector<b_face>& faces, int& face_it,
+                            xr_vector<u32>& smooth_groups, const Fmatrix& real_transform, CSceneObject* obj);
     bool    BuildObject     (CSceneObject* obj);
     bool    BuildEditableObject(CEditableObject* obj, Fmatrix T, CSceneObject* Owner);
     bool    BuildMUObject   (CSceneObject* obj);
@@ -100,7 +102,8 @@ public:
 	int 	FindInTextures	(const char* name);
     int     BuildTexture    (const char* name);
 
-    int     FindInMaterials (b_material* m);
+    int     FindInMaterials (const b_material& m);
+    int     FindInSharedMaterials (const b_material_shared& m);
 	int 	BuildMaterial	(CSurface* surf, int sector_num, bool allow_draft);
 	int 	BuildMaterial	(const char* esh_name, const char* csh_name, const char* tx_name, u32 tx_cnt, int sector_num, bool allow_draft);
 
@@ -111,6 +114,8 @@ public:
     void 	SaveBuild			();
     void 	SaveBuildAsObject	();
 protected:
+	bool BuildMaterialDataUnique(b_material& mtl, const char* esh_name, const char* csh_name, const char* tx_name, bool allow_draft);
+	
 	friend void SaveBuild	();
     friend class TfrmBuildProgress;
 

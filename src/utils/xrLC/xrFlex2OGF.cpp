@@ -19,9 +19,22 @@ void CBuild::validate_splits			()
 			clMsg	("! ERROR: subdiv #%d has more than %d faces (%d)",MODEL_ID,2*c_SS_HighVertLimit,(*it)->size());
 			Errors++;
 		}
-	};
 
-	clMsg("! Validate errors splits: %u", Errors);
+		bool InitValue = (*it)->at(0)->flags.bSharedMaterial;
+		for (auto elem : **it)
+		{
+			if (elem->flags.bSharedMaterial != InitValue)
+			{
+				clMsg("! ERROR: subdiv #%d has faces with different material types!", MODEL_ID);
+				Errors++;
+			}
+		}
+	}
+
+	if (Errors)
+	{
+		clMsg("! Validate errors splits: %u", Errors);
+	}
 }
 
 void Face2OGF_Vertices( const Face &FF, OGF_Vertex	V[3] ) 
@@ -51,7 +64,7 @@ void OGF_AddFace( OGF &ogf, const Face& FF, bool _tc_ )
 	// Geometry
 	Face2OGF_Vertices( FF, V );
 	// build face
-	TRY				(ogf._BuildFace(V[0],V[1],V[2],_tc_));
+	ogf._BuildFace(V[0],V[1],V[2],_tc_);
 	V[0].UV.clear();V[1].UV.clear();V[2].UV.clear();
 }
 
