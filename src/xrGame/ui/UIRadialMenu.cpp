@@ -196,7 +196,7 @@ bool CUIRadialMenu::OnMouseAction(float x, float y, EUIMessages mouse_action)
 	{
 		if (!fis_zero(pos.x) || !fis_zero(pos.y))
 		{
-			if (!bWaitForZeroRStick && std::abs(pos.magnitude()) > 0.6)
+			if (!bWaitForZeroRStick && std::abs(pos.magnitude()) > 15.f)
 			{
 				float angle = atan2(pos.y, pos.x) + 2 * M_PI;
 				int focus_index = int(floor(((angle - starting_angle) * sectors_count) / (2 * M_PI))) % sectors_count;
@@ -220,7 +220,7 @@ bool CUIRadialMenu::OnGamepadStickAction(int key, Fvector2 value, EUIMessages ga
 	{
 		if (!fis_zero(value.x) || !fis_zero(value.y))
 		{
-			if (!bWaitForZeroRStick && std::abs(value.magnitude()) > 0.6)
+			if (!bWaitForZeroRStick && std::abs(value.magnitude()) > 0.6f)
 			{
 				float angle = atan2(value.y, value.x) + 2 * M_PI;
 				int focus_index = int(floor(((angle - starting_angle) * sectors_count) / (2 * M_PI))) % sectors_count;
