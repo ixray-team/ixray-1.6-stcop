@@ -11,6 +11,8 @@
 
 #include "global_calculation_data.h"
 #include <../xrForms/CompilersUI.h>
+
+#include "src/utils/xrLC/Build.h"
 extern CompilersMode gCompilerMode;
 extern global_claculation_data gl_data;
 
@@ -100,19 +102,17 @@ void FilterRayTraceTransp(const struct RTCFilterFunctionNArguments* args)
 		if (UD->DummyType == 1)
 		{
 			auto _F = (FaceDataEmbree*)F;
-			const b_material& M = gl_data.g_materials[_F->dwMaterial];
-			const b_texture& T = gl_data.g_textures[M.surfidx];
+			auto& T = gl_data.FindTexture(_F->dwMaterial, _F->bSharedMaterial);
 			bSearching = CalculateEnergy(T, _F->getTC0(), ctxt->energy[i], hit_u, hit_v);
 		}
 		else if (UD->DummyType == 0)
 		{
-			auto _F = (Face*)F;
-			const b_material& M = inlc_global_data()->materials()[_F->dwMaterial];
-			const b_texture& T = inlc_global_data()->textures()[M.surfidx];
+			auto _F = (Face*) F;
+			const b_texture& T = CBuild::GetTexture(*_F);
 			// fetch pixel
 			if (T.pSurface.Empty())
 			{
-				Msg("Texture[%s] is Emptry", T.name);
+				Msg("Texture[%s] is Empty", T.name);
 				ctxt->energy[i] = 0;
 				continue;
 			}

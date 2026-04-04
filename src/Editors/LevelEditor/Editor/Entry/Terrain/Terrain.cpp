@@ -149,15 +149,27 @@ void CTerrain::FillProp(const char* pref, PropItemVec& items)
 
 	shared_str Pref1 = PrepareKey(pref, "Surfaces").c_str();
 
-	for (SurfaceIt s_it = s_lst.begin(); s_it != s_lst.end(); s_it++)
+	for (auto& s_it : s_lst)
 	{
-		shared_str Pref2 = PrepareKey(Pref1.c_str(), (*s_it)->_Name()).c_str();
+		shared_str Pref2 = PrepareKey(Pref1.c_str(), s_it->_Name()).c_str();
 		{
-			PropValue* V;
-			V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Texture"), &(*s_it)->m_Texture, smTexture);		V->OnChangeEvent.bind(this, &CTerrain::OnChangeShader);
-			V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Shader"), &(*s_it)->m_ShaderName, smEShader);		V->OnChangeEvent.bind(this, &CTerrain::OnChangeShader);
-			V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Compile"), &(*s_it)->m_ShaderXRLCName, smCShader); V->OnChangeEvent.bind(this, &CTerrain::OnChangeSurface);
-			V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Game Mtl"), &(*s_it)->m_GameMtlName, smGameMaterial); V->OnChangeEvent.bind(this, &CTerrain::OnChangeSurface);
+			// TODO: Add switch logic
+			auto B = PHelper().CreateBool(items, PrepareKey(Pref2.c_str(), "Use shared material"), &s_it->UseShared);
+			//B->OnChangeEvent.bind(this, &CSceneObject::OnChangeShader);
+			
+			if(s_it->UseShared)
+			{
+				PHelper().CreateCaption(items, PrepareKey(Pref2.c_str(), "Texture"), s_it->_Texture());
+				PHelper().CreateCaption(items, PrepareKey(Pref2.c_str(), "Shader"), s_it->_ShaderName());
+				PHelper().CreateCaption(items, PrepareKey(Pref2.c_str(), "Compile"), s_it->_ShaderXRLCName());
+				PHelper().CreateCaption(items, PrepareKey(Pref2.c_str(), "Game Mtl"), s_it->_GameMtlName());
+			} else {
+				PropValue* V;
+				V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Texture"), &s_it->m_pData.second->m_Texture, smTexture);		V->OnChangeEvent.bind(this, &CTerrain::OnChangeShader);
+				V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Shader"), &s_it->m_pData.second->m_ShaderName, smEShader);		V->OnChangeEvent.bind(this, &CTerrain::OnChangeShader);
+				V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Compile"), &s_it->m_pData.second->m_ShaderXRLCName, smCShader); V->OnChangeEvent.bind(this, &CTerrain::OnChangeSurface);
+				V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Game Mtl"), &s_it->m_pData.second->m_GameMtlName, smGameMaterial); V->OnChangeEvent.bind(this, &CTerrain::OnChangeSurface);
+			}
 		}
 	}
 }

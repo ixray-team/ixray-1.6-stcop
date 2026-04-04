@@ -17,9 +17,9 @@ float g_MinBoxSize = 0.05f;
 
 void CSurface::CreateImageData()
 {
-	VERIFY(0 == m_ImageData);
+	VERIFY(m_ImageData);
 	m_ImageData = new SSimpleImage();
-	m_ImageData->name = m_Texture;
+	m_ImageData->name = _Texture();
 	m_ImageData->layers.push_back(U32Vec());
 	ImageLib.LoadTextureData(*m_ImageData->name, m_ImageData->layers.back(), m_ImageData->w, m_ImageData->h);
 }

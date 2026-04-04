@@ -317,8 +317,8 @@ bool CExportObjectOGF::PrepareMESH(CEditableMesh* MESH)
 			m_Splits.push_back	(new SSplit(surf,m_Source->GetBox()));
             split				= m_Splits.back();
         }
-        int 	elapsed_faces 	= surf->m_Flags.is(CSurface::sf2Sided) ?face_lst.size()*2 : face_lst.size();
-        const 	bool b2sided	= !!surf->m_Flags.is(CSurface::sf2Sided);
+        int 	elapsed_faces 	= surf->_flags().is(SSurfaceData::sf2Sided) ?face_lst.size()*2 : face_lst.size();
+        const 	bool b2sided	= !!surf->_flags().is(SSurfaceData::sf2Sided);
             
         if (nullptr==split->m_CurrentPart) 
 			split->AppendPart(	(elapsed_faces>0xffff) ? 0xffff : elapsed_faces,

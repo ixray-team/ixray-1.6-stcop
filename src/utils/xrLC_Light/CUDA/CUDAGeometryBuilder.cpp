@@ -218,8 +218,7 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
             const Shader_xrLC& SH = F->Shader();
             if (!SH.flags.bLIGHT_CastShadow) { continue; }
 
-            u16 surfaceID = globalData->materials()[F->dwMaterial].surfidx;
-            b_texture& T = globalData->textures()[surfaceID];
+            b_texture& T = CBuild::GetTexture(*F);
 
             bool isTransparent = (!T.pSurface.Empty() && T.bHasAlpha);
             F->flags.bOpaque = !isTransparent;
@@ -236,8 +235,7 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
             for (auto& pF : tempBuffer)
             {
                 Face* F = (Face*)pF.ptr;
-                b_material& M = globalData->materials()[F->dwMaterial];
-                b_texture& T = globalData->textures()[M.surfidx];
+                b_texture& T = CBuild::GetTexture(*F);
 
                 bool isTransparent = (!T.pSurface.Empty() && T.bHasAlpha);
                 F->flags.bOpaque = isTransparent;
@@ -255,8 +253,7 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
         // 1. Обрабатываем статическую геометрию
        for (auto& F : globalData->building_embree_faces)
        {
-           u16 surfaceID = globalData->g_materials[F.dwMaterial].surfidx;
-           b_texture& T  = globalData->g_textures[surfaceID];
+           b_texture& T  = CBuild::GetTexture(F.dwMaterial, F.bSharedMaterial);
        
            bool isTransparent = (!T.pSurface.Empty() && T.bHasAlpha);
            F.bOpaque = !isTransparent;

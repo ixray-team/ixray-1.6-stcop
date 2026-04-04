@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "xrMU_Model.h"
 #include "../Shader_xrLC.h"
+#include "src/utils/xrLC/Build.h"
 
 bool	cmp_face_material		(_face* f1, _face* f2)
 {
@@ -38,6 +39,7 @@ void xrMU_Model::calc_materials	()
 
 	_subdiv				current;
 	current.material	= temp_vector[0]->dwMaterial;
+	current.bSharedMaterial = temp_vector[0]->flags.bSharedMaterial;
 	current.start		= 0;
 	current.count		= 1;
 
@@ -76,6 +78,7 @@ void xrMU_Model::calc_materials	()
 			// end of strip 
 			m_subdivs.push_back	(current);
 			current.material	= F->dwMaterial;
+			current.bSharedMaterial = F->flags.bSharedMaterial;
 			current.start		= it;
 			current.count		= 0;
 

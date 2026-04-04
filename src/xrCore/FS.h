@@ -84,6 +84,22 @@ public:
 
 	// generalized chunking
 	u32				align		();
+	
+	void make_chunk(u32 type, auto&& lambda)
+	{
+		open_chunk(type);
+		lambda(*this);
+		close_chunk();
+	}
+	
+	template<XRay::Concepts::Enum EnumT>
+	void make_chunk(EnumT type, auto&& lambda)
+	{
+		open_chunk(type);
+		lambda(*this);
+		close_chunk();
+	}
+	
 	void			open_chunk	(u32 type);
 
 	template<XRay::Concepts::Enum EnumT>

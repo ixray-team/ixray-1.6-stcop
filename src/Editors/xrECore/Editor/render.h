@@ -182,6 +182,7 @@ public:
 	virtual void					add_Visual(IRenderVisual* visual, bool IgnoreOptimize = false, bool Force = false) override;
 
 	virtual ref_shader		getShader(int id);
+	virtual ref_shader getShaderShared(shared_str id);
 	virtual	CRenderTarget* getTarget() { return Target; }
 	//.	virtual IRender_Target*	getTarget		(){return Target;}
 

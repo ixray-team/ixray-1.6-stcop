@@ -282,6 +282,7 @@ void UIMainMenuForm::Draw()
 
 		if (ImGui::BeginMenu("Objects")) {
 			DrawMenuItemI("Library Editor", ICON_FA_BOOK, COMMAND_LIBRARY_EDITOR);
+			DrawMenuItem("Shared Materials Editor", COMMAND_SHARED_MATERIALS_EDITOR);
 			ImGui::Separator();
 
 			DrawMenuItem("Clip Editor", COMMAND_SHOW_CLIP_EDITOR);
@@ -831,7 +832,7 @@ void UIMainMenuForm::ExportLevelAsArchive()
 		for (CSurface* Surface : Obj->m_Surfaces)
 		{
 			DirFilePath = TexturesObjectPath;
-			xr_string TextureName = Surface->m_Texture.c_str();
+			xr_string TextureName = Surface->_Texture();
 			TextureName += ".dds";
 
 			auto Dirs = TextureName.Split('\\');

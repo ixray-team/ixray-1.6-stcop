@@ -14,6 +14,7 @@
 #include <FlexibleVertexFormat.h>
 
 #include "../../xrCore/FormatParsers/LevelGeom/GeomIO.h"
+#include "src/xrCore/SharedMaterialLibrary.h"
 using namespace FVF;
 
 #pragma warning(pop)
@@ -35,7 +36,7 @@ void CRender::level_Load(IReader *fs)
 		chunk = fs->open_chunk		(fsL_SHADERS);
 		R_ASSERT2					(chunk,"Level doesn't builded correctly.");
 		u32 count = chunk->r_u32	();
-		Shaders.resize				(count);
+		ShadersLevel.resize				(count);
 		for(u32 i=0; i<count; i++)	// skip first shader as "reserved" one
 		{
 			string512				n_sh,n_tlist;
@@ -46,7 +47,7 @@ void CRender::level_Load(IReader *fs)
 			LPSTR			delim	= strchr(n_sh,'/');
 			*delim					= 0;
 			xr_strcpy					(n_tlist,delim+1);
-			Shaders[i]				= dxRenderDeviceRender::Instance().Resources->Create(n_sh,n_tlist);
+			ShadersLevel[i]				= dxRenderDeviceRender::Instance().Resources->Create(n_sh,n_tlist);
 		}
 		chunk->close();
 	}
@@ -181,7 +182,8 @@ void CRender::level_Unload		()
 	xr_delete					(L_Shadows);
 
 	//*** Shaders
-	Shaders.clear();
+	ShadersLevel.clear();
+	ShadersShared.clear();
 
 	b_loaded					= false;
 }

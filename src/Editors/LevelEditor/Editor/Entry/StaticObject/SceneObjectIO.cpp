@@ -72,11 +72,11 @@ bool CSceneObject::LoadLTX(CInifile& ini, const char* sect_name)
                     xr_string Name;
                     ini_stream.r_string(Name);
                     CSurface* Surf = nullptr;
-                    for (SurfaceIt sf_it = m_Surfaces.begin(); sf_it != m_Surfaces.end(); ++sf_it)
+                    for(auto elem : m_Surfaces)
                     {
-                        if ((*sf_it)->m_Name == Name.c_str())
+                        if(elem->_Name() == Name)
                         {
-                            Surf = *sf_it;
+                            Surf = elem;
                             break;
                         }
                     }
@@ -228,11 +228,11 @@ bool CSceneObject::LoadStream(IReader& F)
                     xr_string Name;
                     F.r_stringZ(Name);
                     CSurface* Surf = nullptr;
-                    for (SurfaceIt sf_it = m_Surfaces.begin(); sf_it != m_Surfaces.end(); ++sf_it)
+                    for(auto elem : m_Surfaces)
                     {
-                        if ((*sf_it)->m_Name == Name.c_str())
+                        if(elem->_Name() == Name)
                         {
-                            Surf = *sf_it;
+                            Surf = elem;
                             break;
                         }
                     }

@@ -17,15 +17,13 @@ ICF static void simple_hemi_callback(float x, float y, float z, float E, LPVOID 
 SceneBuilder::SceneBuilder()
 {
     m_iDefaultSectorNum = 0;
-    l_scene_stat		= 0;
-    l_verts				= 0;
-    l_faces				= 0;
-    l_smgroups			= 0;
-    l_vert_cnt			= 0;
-    l_face_cnt 			= 0;
+    l_scene_stat		= nullptr;
+    l_verts				= {};
+    l_faces				= {};
+    l_smgroups			= {};
 	l_vert_it	 		= 0;
 	l_face_it			= 0;
-    object_for_render	= 0;
+    object_for_render	= nullptr;
 	m_save_as_object	= false;
 }
 

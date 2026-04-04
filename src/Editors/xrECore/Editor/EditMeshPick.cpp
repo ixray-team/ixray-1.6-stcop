@@ -28,12 +28,12 @@ void CEditableMesh::GenerateCFModel()
 		{
 			if (!IVERIFY(face_id >=0 && face_id < m_FaceCount))
 			{
-				Msg("Invalid face id [%d] in surface [%s] in mesh [%s]!", face_id, Surf.first->m_Name.c_str(), m_Name.c_str());
+				Msg("Invalid face id [%d] in surface [%s] in mesh [%s]!", face_id, Surf.first->_Name(), m_Name.c_str());
 				continue;
 			}
 			st_Face& F = m_Faces[face_id];
 			CL.add_face_D(m_Vertices[F.pv[0].pindex], m_Vertices[F.pv[1].pindex], m_Vertices[F.pv[2].pindex], face_id);
-			if (Surf.first->m_Flags.is(CSurface::sf2Sided))
+			if (Surf.first->_flags().is(SSurfaceData::sf2Sided))
 			{
 				CL.add_face_D(m_Vertices[F.pv[2].pindex], m_Vertices[F.pv[1].pindex], m_Vertices[F.pv[0].pindex], face_id);
 			}

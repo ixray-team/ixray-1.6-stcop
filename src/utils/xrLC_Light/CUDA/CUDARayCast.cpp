@@ -41,6 +41,7 @@ void XRay::RayTrace::CUDA::InitializeGPU()
 
 // Loading Buffers
 xr_vector<Hardware_TextureData> cpu_tex_gpu;
+xr_map<b_material_shared*, u16> conv_shared_mat_to_index;
 
 int					  size_lights;
 Hardware_Lighting*	  gpu_lights = nullptr;			// GPU alloc
@@ -50,6 +51,9 @@ Hardware_FaceData*	  gpu_faces = nullptr;
 
 int					  size_textures;
 Hardware_TextureData* gpu_textures = nullptr;
+
+int					  size_textures_shared;
+Hardware_TextureData* gpu_textures_shared = nullptr;
 
 void XRay::RayTrace::CUDA::InitializeLights()
 {
@@ -117,29 +121,64 @@ void XRay::RayTrace::CUDA::InitializeFaces(xr_vector<void*>& Faces)
 	bool isLC = gCompilerMode.builder_type == LCBuildingType::eLC;
 	for (auto& Fv : Faces)
 	{
-		unsigned short surface = 0;
 		Fvector2 * TC = nullptr;
 		bool bOpacue = false;
+		bool bShared = false;
 
 		if (isLC)
 		{
 			Face* F		= (Face*)Fv;
- 			surface		= lc_global_data()->materials()[((Face*)F)->dwMaterial].surfidx;
 			TC			= F->getTC0();
 			bOpacue		= F->flags.bOpaque;
+			bShared = F->flags.bSharedMaterial;
  		}
 		else
 		{
 			FaceDataEmbree* F = (FaceDataEmbree*)Fv;
- 			surface		= gl_data.g_materials[F->dwMaterial].surfidx;
 			TC			= F->getTC0();
 			bOpacue		= F->bOpaque;
+			bShared = F->bSharedMaterial;
 		}
 
 		Hardware_FaceData& FaceGPU = faces_host[IndexFace];
+		FaceGPU.bShared = bShared;
 		FaceGPU.bOpacue = bOpacue;
 		FaceGPU.bWater  = false;
-		FaceGPU.surfidx = surface;
+		if (FaceGPU.bShared)
+		{
+			b_material_shared* ID = nullptr;
+			if (isLC)
+			{
+				Face* F = (Face*)Fv;
+				ID = &lc_global_data()->materials_shared()[F->dwMaterial];
+			} else
+			{
+				FaceDataEmbree* F = (FaceDataEmbree*)Fv;
+				ID = &lc_global_data()->materials_shared()[F->dwMaterial];
+			}
+			auto It = conv_shared_mat_to_index.find(ID);
+			if (It == conv_shared_mat_to_index.end())
+			{
+				conv_shared_mat_to_index[ID] = conv_shared_mat_to_index.size();
+				FaceGPU.surfidx = conv_shared_mat_to_index[ID];
+			} else
+			{
+				FaceGPU.surfidx = It->second;	
+			}
+		} else
+		{
+			u16 surfidx = u16(-1);
+			if (isLC)
+			{
+				Face* F = (Face*)Fv;
+				surfidx = lc_global_data()->materials()[F->dwMaterial].surfidx;
+			} else
+			{
+				FaceDataEmbree* F = (FaceDataEmbree*)Fv;
+				surfidx = lc_global_data()->materials()[F->dwMaterial].surfidx;
+			}
+			FaceGPU.surfidx = surfidx;
+		}
 
 		FaceGPU.TC0[0].x = __float2half(TC[0].x);
 		FaceGPU.TC0[0].y = __float2half(TC[0].y);
@@ -169,29 +208,22 @@ void XRay::RayTrace::CUDA::InitializeFaces(xr_vector<void*>& Faces)
 void XRay::RayTrace::CUDA::InitializeTexturesAlpha()
 {
 	auto& glTextures = gCompilerMode.builder_type == LCBuildingType::eLC ? lc_global_data()->textures() : gl_data.g_textures;
+	auto& glTexturesShared = gCompilerMode.builder_type == LCBuildingType::eLC ? lc_global_data()->textures_shared() : gl_data.g_textures_shared;
 
- 	u32 SizeT = glTextures.size();
- 
-	xr_vector<TextureDataCPU>  Textures;
- 	for (auto& T : glTextures)
+	xr_vector<TextureDataCPU> Textures;
+	xr_vector<TextureDataCPU> TexturesShared;
+	auto SingleTexturePrepareFunc = [](TextureDataCPU& data, const b_BuildTexture& T)
 	{
 		if (T.pSurface.Empty() || !T.bHasAlpha)
 		{
- 			Textures.push_back(TextureDataCPU());
- 			
-			TextureDataCPU& data = Textures.back();
 			data.Width  = T.dwWidth;
 			data.Height = T.dwHeight;
 			data.alpha.clear();
-
-			continue; 
+			return; 
 		}
 
- 		Textures.push_back(TextureDataCPU());
-
-		TextureDataCPU& data = Textures.back();
 		data.alpha.resize(T.dwWidth*T.dwHeight);
- 		u8* ALPHA = data.alpha.data();
+		u8* ALPHA = data.alpha.data();
 
 		const uint32_t* raw = static_cast<const uint32_t*>(*T.pSurface);
 		for (auto i = 0; i < T.dwWidth * T.dwHeight; i++)
@@ -202,50 +234,68 @@ void XRay::RayTrace::CUDA::InitializeTexturesAlpha()
 		}
 		data.Width  = T.dwWidth;
 		data.Height = T.dwHeight;
- 	}
-
-
-	// Textures (alpha only)
-	cpu_tex_gpu.resize(Textures.size());
-	size_t allocated = 0;
-	for (size_t i = 0; i < Textures.size(); ++i)
+	};
+	Textures.reserve(glTextures.size());
+ 	for (auto& T : glTextures)
 	{
-		const auto& src = Textures[i];
-
-		if (!src.alpha.size())
-		{
-			cpu_tex_gpu[i].pSurface = nullptr;
-		}
-		else
-		{
-			unsigned char* d_alpha = nullptr;
-			CUDA_CHECK( cudaMalloc(&d_alpha, src.Width * src.Height * sizeof(uint8_t)) );
-
-			CUDA_CHECK( cudaMemcpy(
-				d_alpha,
-				src.alpha.data(),
-				src.Width * src.Height * sizeof(uint8_t),
-				cudaMemcpyHostToDevice) );
-
-
-			cpu_tex_gpu[i].pSurface = d_alpha;
-			allocated += src.Width * src.Height;
-		}
-
- 		cpu_tex_gpu[i].width     = src.Width;
-		cpu_tex_gpu[i].height    = src.Height;
-	
+ 		Textures.emplace_back();
+ 		SingleTexturePrepareFunc(Textures.back(), T);
 	}
- 
-	CUDA_CHECK ( cudaMalloc((void**)&gpu_textures, cpu_tex_gpu.size() * sizeof(Hardware_TextureData)) );
-	CUDA_CHECK(  cudaMemcpy(gpu_textures,
-		cpu_tex_gpu.data(),
-		cpu_tex_gpu.size() * sizeof(Hardware_TextureData),
-		cudaMemcpyHostToDevice) );
+	TexturesShared.resize(glTexturesShared.size());
+	R_ASSERT(TexturesShared.size() == conv_shared_mat_to_index.size());
+	for (auto& [K, T] : glTexturesShared)
+	{
+		auto It = conv_shared_mat_to_index.find(K);
+		R_ASSERT(It != conv_shared_mat_to_index.end());
+		SingleTexturePrepareFunc(TexturesShared[It->second], T);
+	}
+	
+	// Textures (alpha only)
+	size_t allocated = 0;
+	cpu_tex_gpu.resize(Textures.size() + TexturesShared.size());
+	auto GPUMoveFunc = [&allocated](Hardware_TextureData*& OutArr, int& OutArrSize,
+		Hardware_TextureData* Buffer, size_t BufferSize,
+		const xr_vector<TextureDataCPU>& In)
+	{
+		for (size_t i = 0; i < In.size(); ++i)
+		{
+			const auto& src = In[i];
+
+			if (!src.alpha.size())
+			{
+				Buffer[i].pSurface = nullptr;
+			}
+			else
+			{
+				unsigned char* d_alpha = nullptr;
+				CUDA_CHECK( cudaMalloc(&d_alpha, src.Width * src.Height * sizeof(uint8_t)) );
+
+				CUDA_CHECK( cudaMemcpy(
+					d_alpha,
+					src.alpha.data(),
+					src.Width * src.Height * sizeof(uint8_t),
+					cudaMemcpyHostToDevice) );
 
 
-	allocated     += cpu_tex_gpu.size() * sizeof(Hardware_TextureData);
-	size_textures = cpu_tex_gpu.size();
+				Buffer[i].pSurface = d_alpha;
+				allocated += src.Width * src.Height;
+			}
+			Buffer[i].width = src.Width;
+			Buffer[i].height = src.Height;
+		}
+		
+		CUDA_CHECK ( cudaMalloc((void**)&OutArr, BufferSize * sizeof(Hardware_TextureData)) );
+		CUDA_CHECK(  cudaMemcpy(OutArr,
+			Buffer,
+			BufferSize * sizeof(Hardware_TextureData),
+			cudaMemcpyHostToDevice) );
+
+
+		allocated += BufferSize * sizeof(Hardware_TextureData);
+		OutArrSize = BufferSize;
+	};
+	GPUMoveFunc(gpu_textures, size_textures, cpu_tex_gpu.data(), Textures.size(), Textures);
+	GPUMoveFunc(gpu_textures_shared, size_textures_shared, cpu_tex_gpu.data()+Textures.size(), TexturesShared.size(), TexturesShared);
 
 	Msg("[GPU DEVICE MEMORY] Textures[%u] Allocate : %llu mb", cpu_tex_gpu.size(), allocated / 1024 / 1024);
 }
@@ -376,6 +426,9 @@ public:
 
 			.textures = gpu_textures,
 			.count_textures = size_textures,
+
+			.textures_shared = gpu_textures_shared,
+			.count_textures_shared = size_textures_shared,
 		};
  		 
 		// Копируем Стартовые параметры !!! асинхронно
@@ -506,6 +559,7 @@ void XRay::RayTrace::CUDA::UnloadingModel()
 		cudaFree(gpu_lights);
 		cudaFree(gpu_faces);
 		cudaFree(gpu_textures);
+		cudaFree(gpu_textures_shared);
 
 		size_faces = 0;
 		size_lights = 0;

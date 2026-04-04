@@ -208,11 +208,13 @@ void	tessalate_faces( xr_vector<Face*> & faces, Vertex* V1, Vertex* V2,  tesscb_
 			F1->flags.bLocked	= false;
 			F1->dwMaterial		= AF->dwMaterial;
 			F1->dwMaterialGame	= AF->dwMaterialGame;
+			F1->flags.bSharedMaterial = AF->flags.bSharedMaterial;
 			Face* F2			= lc_global_data()->create_face();
 			F2->flags.bSplitted	= false;
 			F2->flags.bLocked	= false;
 			F2->dwMaterial		= AF->dwMaterial;
 			F2->dwMaterialGame	= AF->dwMaterialGame;
+			F2->flags.bSharedMaterial = AF->flags.bSharedMaterial;
 
 
 			set_backface( F1->sm_group, is_backface( AF->sm_group ) );

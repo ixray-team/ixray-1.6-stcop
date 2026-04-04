@@ -1,10 +1,11 @@
 #include "stdafx.h"
 #include "global_calculation_data.h"
 
-#include "../Shader_xrLC.h"
+#include "../Shader_xrLC_Compilers.h"
 #include "embree_raytracing/EmbreeRayTrace.h"
 #include "../xrForms/CompilersUI.h"
- 
+#include "src/utils/xrLC/Build.h"
+
 global_claculation_data	gl_data;
 
 template <class T>
@@ -90,39 +91,29 @@ void global_claculation_data::xrLoad(bool skipThm)
 		fs->r_chunk			(EB_Parameters,&g_params);
 
 		// Load level data
-		transfer("materials",	g_materials,			*fs,		EB_Materials);
-		transfer("shaders_xrlc",g_shader_compile,		*fs,		EB_Shaders_Compile);
+		transfer("materials", g_materials, *fs, EB_Materials);
+		transfer("materials_shared", g_materials_shared, *fs, EB_MaterialsShared);
+		transfer("shaders_xrlc",g_shader_compile, *fs, EB_Shaders_Compile);
 		post_process_materials( *g_shaders_xrlc, g_shader_compile, g_materials );
 		// process textures
 
 		Status("Processing textures...");
 		
-		IReader* F;
 		{
-			F = fs->open_chunk	(EB_Textures);
-
-			u32 tex_count = F->length() / sizeof(b_texture_real);
-
 			bool is_thm_missing = false;
 			bool is_tga_missing = false;
-
-			for (u32 t=0; t<tex_count; t++)
+			
+			auto TextureProcess = [&](b_BuildTexture& BT)
 			{
-				Progress(float(t)/float(tex_count));
-
-				b_texture_real	TEX;
-				F->r(&TEX, sizeof(TEX));
-
-				b_BuildTexture	BT;
-
-				// ptr should be copied separately
-				CopyMemory(&BT, &TEX, sizeof(TEX) - 4);
 				BT.pSurface.Clear();
 
 				// load thumbnail
-				LPSTR N			= BT.name;
-				if (strchr(N,'.')) *(strchr(N,'.')) = 0;
-				_strlwr			(N);
+				LPSTR N = BT.name;
+				if (strchr(N,'.'))
+				{
+					*(strchr(N,'.')) = 0;
+				}
+				_strlwr(N);
 
 				if (0==xr_strcmp(N,"level_lods"))
 				{
@@ -143,72 +134,110 @@ void global_claculation_data::xrLoad(bool skipThm)
 					{
 						clMsg("cannot find thm: %s", N);
 						is_thm_missing = true;
-
+						BT.dwWidth = 1024;
+						BT.dwHeight = 1024;
 						BT.bHasAlpha = false;
- 						BT.SetHasSurface(false);
-					}
-					else
-					{
-						// version
-						u32 version = 0;
-						R_ASSERT(THM->r_chunk(THM_CHUNK_VERSION, &version));
-
-						// analyze thumbnail information
-						R_ASSERT(THM->find_chunk(THM_CHUNK_TEXTUREPARAM));
-						THM->r(&BT.THM.fmt, sizeof(STextureParams::ETFormat));
-						BT.THM.flags.assign(THM->r_u32());
-						BT.THM.border_color = THM->r_u32();
-						BT.THM.fade_color = THM->r_u32();
-						BT.THM.fade_amount = THM->r_u32();
-						BT.THM.mip_filter = THM->r_u32();
-						BT.THM.width = THM->r_u32();
-						BT.THM.height = THM->r_u32();
-						bool			bLOD = false;
-						if (N[0] == 'l' && N[1] == 'o' && N[2] == 'd' && N[3] == '\\') bLOD = true;
-
-						// load surface if it has an alpha channel or has "implicit lighting" flag
-						BT.dwWidth = BT.THM.width;
-						BT.dwHeight = BT.THM.height;
-						BT.bHasAlpha = BT.THM.HasAlphaChannel();
 						BT.SetHasSurface(false);
+						return;
+					}
+					
+					// version
+					u32 version = 0;
+					R_ASSERT(THM->r_chunk(THM_CHUNK_VERSION, &version));
 
-						if (!bLOD)
+					// analyze thumbnail information
+					R_ASSERT(THM->find_chunk(THM_CHUNK_TEXTUREPARAM));
+					THM->r(&BT.THM.fmt,sizeof(STextureParams::ETFormat));
+					BT.THM.flags.assign(THM->r_u32());
+					BT.THM.border_color = THM->r_u32();
+					BT.THM.fade_color = THM->r_u32();
+					BT.THM.fade_amount = THM->r_u32();
+					BT.THM.mip_filter = THM->r_u32();
+					BT.THM.width = THM->r_u32();
+					BT.THM.height = THM->r_u32();
+					bool bLOD = false;
+					if (N[0]=='l' && N[1]=='o' && N[2]=='d' && N[3]=='\\')
+					{
+						bLOD = true;
+					}
+
+					// load surface if it has an alpha channel or has "implicit lighting" flag
+					BT.dwWidth = BT.THM.width;
+					BT.dwHeight = BT.THM.height;
+					BT.bHasAlpha = BT.THM.HasAlphaChannel();
+					BT.SetHasSurface(false);
+
+					if (!bLOD)
+					{
+						if (BT.bHasAlpha || BT.THM.flags.test(STextureParams::flImplicitLighted))
 						{
-							if (BT.bHasAlpha || BT.THM.flags.test(STextureParams::flImplicitLighted))
+							clMsg("- loading: %s", N);
+							BT.SetHasSurface(true);
+
+							string_path OutName;
+							if (!Surface_Detect(OutName, N) || !BT.pSurface.LoadFromFile(OutName))
 							{
-								clMsg("- loading: %s", N);
-								BT.SetHasSurface(true);
+								clMsg("cannot find tga texture: %s", N);
+								is_tga_missing = true;
 
-								string_path OutName;
-								if (!Surface_Detect(OutName, N) || !BT.pSurface.LoadFromFile(OutName))
-								{
-									clMsg("cannot find tga texture: %s", N);
-									is_tga_missing = true;
+								BT.bHasAlpha = false;
+								BT.SetHasSurface(false);
+								return;
+							}
 
-									BT.bHasAlpha = false;
-									BT.SetHasSurface(false);
-								}
-								else
-								{
-									BT.pSurface.ClearMipLevels();
-									BT.pSurface.Convert(RedImageTool::RedTexturePixelFormat::R8G8B8A8);
-									BT.pSurface.SwapRB();
+							BT.pSurface.ClearMipLevels();
+							BT.pSurface.Convert(RedImageTool::RedTexturePixelFormat::R8G8B8A8);
+							BT.pSurface.SwapRB();
 
-									if ((BT.pSurface.GetWidth() != BT.dwWidth) || (BT.pSurface.GetHeight() != BT.dwHeight))
-									{
-										Msg("! THM doesn't correspond to the texture: %dx%d -> %dx%d", BT.dwWidth, BT.dwHeight, BT.pSurface.GetWidth(), BT.pSurface.GetHeight());
-										BT.dwWidth  = BT.THM.width  = BT.pSurface.GetWidth();
-										BT.dwHeight = BT.THM.height = BT.pSurface.GetHeight();
-									}
-								}
+							if ((BT.pSurface.GetWidth() != BT.dwWidth) || (BT.pSurface.GetHeight() != BT.dwHeight))
+							{
+								Msg("! THM doesn't correspond to the texture: %dx%d -> %dx%d", BT.dwWidth, BT.dwHeight, BT.pSurface.GetWidth(), BT.pSurface.GetHeight());
+								BT.dwWidth  = BT.THM.width  = BT.pSurface.GetWidth();
+								BT.dwHeight = BT.THM.height = BT.pSurface.GetHeight();
 							}
 						}
 					}
-					
 				}
+			};
 
-				// save all the stuff we've created
-				g_textures.push_back	(BT);
+			u32 TotalTextureCount = 0;
+			u32 SharedMaterialCount = g_materials_shared.size();
+			{
+				IReader* F = fs->open_chunk(EB_Textures);
+
+				TotalTextureCount = F->length() / sizeof(b_texture_real);
+			
+				for (u32 t=0; t<TotalTextureCount; t++)
+				{
+					Progress(float(t)/float(TotalTextureCount+SharedMaterialCount));
+
+					b_texture_real	TEX;
+					F->r(&TEX, sizeof(TEX));
+
+					b_BuildTexture	BT;
+
+					// ptr should be copied separately
+					CopyMemory(&BT, &TEX, sizeof(TEX) - 4);
+
+					TextureProcess(BT);
+				
+					// save all the stuff we've created
+					g_textures.push_back	(BT);
+				}
+			}
+
+			for (u32 i = 0; i < SharedMaterialCount; i++)
+			{
+				auto& elem = g_materials_shared[i];
+				
+				Progress(float(TotalTextureCount+i)/float(TotalTextureCount+SharedMaterialCount));
+				
+				b_BuildTexture	BT;
+				CopyMemory(BT.name, elem.Name, sizeof(elem.Name));
+
+				TextureProcess(BT);
+
+				g_textures_shared[&elem] = BT;
 			}
 
 			if (!skipThm)
@@ -229,8 +258,7 @@ void global_claculation_data::xrCalculateOpacity()
 	{
  		F.bOpaque = true;
 		 
-		b_material& M = gl_data.g_materials[F.dwMaterial];
-		b_BuildTexture& T = gl_data.g_textures[M.surfidx];
+		b_BuildTexture& T = gl_data.FindTexture(F.dwMaterial, F.bSharedMaterial);
 		F.bOpaque = !T.bHasAlpha;
 
 		// pSurface was possible deleted
@@ -244,12 +272,6 @@ void global_claculation_data::xrCalculateOpacity()
 
 void global_claculation_data::xrLoadGeometry(IReader* fs)
 {
- 	auto GetShader = [](u32 dwMaterial) -> const Shader_xrLC&
-	{
-		return shader(dwMaterial, *gl_data.g_shaders_xrlc, gl_data.g_materials);
-	};
-
-
 	Status("Loading Vertices...");
 	xr_vector<Fvector> vertexs;
   	{
@@ -277,10 +299,15 @@ void global_claculation_data::xrLoadGeometry(IReader* fs)
 			ChunkFaces->r(&B, sizeof(B));
 			R_ASSERT(B.dwMaterialGame < 65536);
 
-			const Shader_xrLC& SH = GetShader(B.dwMaterial);
-			if (!SH.flags.bLIGHT_CastShadow) continue;
+			
+			const Shader_xrLC& SH = CBuild::GetShaderXRLC(B.dwMaterial, bool(B.flags&b_face_flags::UseSharedMaterial));
+			if (!SH.flags.bLIGHT_CastShadow)
+			{
+				continue;
+			}
 
 			FaceDataEmbree& bFace = building_embree_faces.emplace_back();
+			bFace.bSharedMaterial = bool(B.flags&b_face_flags::UseSharedMaterial);
 			bFace.dwMaterial	 = u16(B.dwMaterial);
 			bFace.dwMaterialGame = B.dwMaterialGame;
 			bFace.ptr = &bFace;
@@ -328,18 +355,21 @@ void global_claculation_data::xrLoadGeometry(IReader* fs)
 			auto& faces = mu_faces[R.model_index];		// Model Buffer by Index !
 			for (auto& F : faces)
 			{
-				const Shader_xrLC& SH = GetShader(F.dwMaterial);
-				if (!SH.flags.bLIGHT_CastShadow) continue;
+				const Shader_xrLC& SH = CBuild::GetShaderXRLC(F.dwMaterial, F.bSharedMaterial);
+				if (!SH.flags.bLIGHT_CastShadow)
+				{
+					continue;
+				}
  				
   				Fvector					P[3];
 				xform.transform_tiny(P[0], F.v1);
 				xform.transform_tiny(P[1], F.v2);
 				xform.transform_tiny(P[2], F.v3);
 				
-				// Косяк по видимости MU! 
+				// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ MU! 
 				auto& Fnew = building_embree_faces.emplace_back();
  				Fnew.SetFace(P[0], P[1], P[2], &F);
-				Fnew.SetMaterial(F.dwMaterial, F.dwMaterialGame, F.getTC0());			
+				Fnew.SetMaterial(F.dwMaterial, F.dwMaterialGame, F.getTC0(), F.bSharedMaterial);			
 			}
    		}
 		MUChunkRef->close();
@@ -347,7 +377,7 @@ void global_claculation_data::xrLoadGeometry(IReader* fs)
 
 	xrCalculateOpacity();
  
-	// Изза сраного BOX-QUERY Для расщета t_n !
+	// пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ BOX-QUERY пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ t_n !
 	if (true) // Rcast - Model
 	{
 		TriangleContainer container;
@@ -388,8 +418,19 @@ void global_claculation_data::xrUnload()
 	// vectors
 	g_shader_compile.clear(); g_shader_compile.shrink_to_fit();
 	g_materials.clear();	  g_materials.shrink_to_fit();
+	g_materials_shared.clear(); g_materials_shared.shrink_to_fit();
 	g_textures.clear();		  g_textures.shrink_to_fit();
+	g_textures_shared.clear();
 
 	building_embree_faces.clear(); building_embree_faces.shrink_to_fit();
 
+}
+
+b_BuildTexture& global_claculation_data::FindTexture(u16 Index, bool Shared)
+{
+	if (Shared)
+	{
+		return g_textures_shared[&g_materials_shared[Index]];
+	}
+	return g_textures[g_materials[Index].surfidx];
 }

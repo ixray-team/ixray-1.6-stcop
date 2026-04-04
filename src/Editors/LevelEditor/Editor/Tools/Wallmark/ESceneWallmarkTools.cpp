@@ -937,10 +937,10 @@ bool ESceneWallmarkTool::ExportStatic(SceneBuilder* B, bool b_selected_only)
 	        int m_id		= B->BuildMaterial	(*slot->sh_name,COMPILER_SHADER,*slot->tx_name,1,sect_num,false);
             u32 f_cnt 		= W->verts.size()/3;
             for (u32 f_it=0; f_it<f_cnt; f_it++,B->l_face_it++){
-                R_ASSERT(B->l_face_it<B->l_face_cnt);
+                R_ASSERT(B->l_face_it<B->l_faces.size());
                 b_face& dst_f		= B->l_faces[B->l_face_it];
             	for (u32 k=0; k<3; k++,B->l_vert_it++){
-			    	R_ASSERT(B->l_vert_it<B->l_vert_cnt);
+			    	R_ASSERT(B->l_vert_it<B->l_verts.size());
                 	FVF::LIT& src	= W->verts[f_it*3+k];
                     Fvector& dst_v	= B->l_verts[B->l_vert_it];
 	            	dst_v.set 		(src.p);

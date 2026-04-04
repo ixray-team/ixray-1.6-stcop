@@ -660,8 +660,10 @@ bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 							E->GetFaceWorld((*o_it)->_Transform(), *m_it, *it, verts);
 
 							CL.add_face_D(verts[0], verts[1], verts[2], surf->_GameMtl() /* *it */);
-							if (surf->m_Flags.is(CSurface::sf2Sided))
+							if (surf->_flags().is(SSurfaceData::sf2Sided))
+							{
 								CL.add_face_D(verts[2], verts[1], verts[0], surf->_GameMtl() /* *it */);
+							}
 						}
 					}
 				}

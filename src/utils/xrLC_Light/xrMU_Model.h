@@ -31,6 +31,7 @@ public:
 		u32		ib_start;
 
 		u32		sw_id;
+		bool bSharedMaterial;
 	};
 
 	//** 

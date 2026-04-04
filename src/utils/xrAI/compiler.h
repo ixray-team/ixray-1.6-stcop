@@ -1,9 +1,7 @@
 #pragma once
 
-#include "../../xrCore/Collision/xrCDB.h"
 #include "../../xrEngine/xrLevel.h"
 #include "AIMapExport.h"
-#include "Shader_xrLC.h"
 #include "../../Editors/LevelEditor/Engine/communicate.h"
 #include "../../xrEngine/ETextureParams.h"
 
