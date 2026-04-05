@@ -355,7 +355,7 @@ namespace splash
         WINDOW_WIDTH = surface->w;
         WINDOW_HEIGHT = surface->h;
 
-        if (!SDL_CreateWindowAndRenderer("chezze/renderer/ixray_splash", WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_BORDERLESS/* | SDL_WINDOW_TRANSPARENT*/, &window, &renderer)) {
+        if (!SDL_CreateWindowAndRenderer("chezze/renderer/ixray_splash", WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_BORDERLESS | SDL_WINDOW_NOT_FOCUSABLE/* | SDL_WINDOW_TRANSPARENT*/, &window, &renderer)) {
             SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
             return SDL_APP_FAILURE;
         }
