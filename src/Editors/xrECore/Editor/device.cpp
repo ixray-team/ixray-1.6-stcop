@@ -591,7 +591,8 @@ void CEditorRenderDevice::InitWindowStyle()
 	win_chezze_layer(GetHWND());
 	SDL_SetWindowHitTest(g_AppInfo.Window, HitTest, &EDevice->isZoomed);
 
-
+	SetFocus(EDevice->GetHWND());
+	SetForegroundWindow(EDevice->GetHWND());
 #else
 	SDL_SetWindowResizable(g_AppInfo.Window, SDL_TRUE);
 	SDL_SetWindowHitTest(g_AppInfo.Window, HitTestCallback, 0);
