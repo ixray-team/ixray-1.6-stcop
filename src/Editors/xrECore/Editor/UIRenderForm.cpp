@@ -114,8 +114,8 @@ void UIRenderForm::DrawStatistics()
 void UIRenderForm::Draw()
 {
 	ImGuiWindowClass window_class;
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-	window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_HiddenTabBar | ImGuiDockNodeFlags_NoDockingOverMe;
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+	window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_HiddenTabBar | ImGuiDockNodeFlags_NoDockingOverMe | ImGuiDockNodeFlags_NoDockingOverOther;
 	ImGui::SetNextWindowClass(&window_class);
 
 	if (!ImGui::Begin(ViewportName, nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
