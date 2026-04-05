@@ -43,14 +43,14 @@ void UIDOShuffle::Draw()
 
 			size_t PixelIndex = ClickPos.y * 256 * 4 + (ClickPos.x * 4);
 
-			UIDOOneColor* NewItem = m_color_indices.emplace_back(new UIDOOneColor);
-			NewItem->DOShuffle = this;
+			UIDOOneColor& NewItem = m_color_indices.emplace_back();
+			NewItem.DOShuffle = this;
 
 			if (!Pixels.empty())
 			{
-				NewItem->Color[2] = (float)Pixels[PixelIndex + 0] / 255.f;
-				NewItem->Color[1] = (float)Pixels[PixelIndex + 1] / 255.f;
-				NewItem->Color[0] = (float)Pixels[PixelIndex + 2] / 255.f;
+				NewItem.Color[2] = (float)Pixels[PixelIndex + 0] / 255.f;
+				NewItem.Color[1] = (float)Pixels[PixelIndex + 1] / 255.f;
+				NewItem.Color[0] = (float)Pixels[PixelIndex + 2] / 255.f;
 			}
 		}
 
@@ -84,7 +84,10 @@ void UIDOShuffle::Draw()
 				if (m_list_selected >= 0 && m_list.size() > m_list_selected)
 				{
 					DM->RemoveDO(m_list[m_list_selected].c_str());
-					for (UIDOOneColor* one_color : m_color_indices) { one_color->RemoveObject(m_list[m_list_selected]); }
+					for (UIDOOneColor& one_color : m_color_indices) 
+					{
+						one_color.RemoveObject(m_list[m_list_selected]);
+					}
 					m_list.erase(m_list.begin() + m_list_selected);
 					OnItemFocused(nullptr);
 					bModif = true;
@@ -136,8 +139,8 @@ void UIDOShuffle::Draw()
 		ImGui::SameLine();
 		if (ImGui::Button("Append Color Index", ImVec2(-1,0))) 
 		{
-			m_color_indices.push_back(new UIDOOneColor());
-			m_color_indices.back()->DOShuffle = this;
+			UIDOOneColor& Color = m_color_indices.emplace_back();
+			Color.DOShuffle = this;
 		}
 
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
@@ -145,23 +148,24 @@ void UIDOShuffle::Draw()
 		{
 			int index = 0;
 			
-			for (UIDOOneColor* one_color : m_color_indices)
+			xr_vector<size_t> NeedToClear;
+			for (UIDOOneColor& OneColor : m_color_indices)
 			{
 				ImGui::PushID(index);
-				one_color->Draw();
+				OneColor.Draw();
 				ImGui::PopID();
 				index++;
 			}
-			for (auto b = m_color_indices.begin(), e = m_color_indices.end(); b != e; b++)
-			{
-				if ((*b)->IsClosed())
-				{
-					auto ptr = *b;
-					xr_delete(ptr);
-					m_color_indices.erase(b);
-					b = m_color_indices.begin();
-				}
-			}
+
+			m_color_indices.erase
+			(
+				std::remove_if
+				(
+					m_color_indices.begin(), m_color_indices.end(),
+					[](const UIDOOneColor& OneColor) { return OneColor.IsClosed(); }
+				),
+				m_color_indices.end()
+			);
 		}
 		ImGui::PopStyleVar(2);
 	}
@@ -289,19 +293,27 @@ void UIDOShuffle::FillData(bool ReloadTex)
 	ColorIndexPairIt E = DM->m_ColorIndices.end();
 	ColorIndexPairIt it = S;
 	for (; it != E; it++) {
-		UIDOOneColor* OneColor = new UIDOOneColor();
-		OneColor->DOShuffle = this;
-		m_color_indices.push_back(OneColor);
-		OneColor->Color[0] = color_get_R(it->first)/255.f;
-		OneColor->Color[1] = color_get_G(it->first) / 255.f;
-		OneColor->Color[2] = color_get_B(it->first) / 255.f;
+		
+		UIDOOneColor& OneColor = m_color_indices.emplace_back();
+		OneColor.DOShuffle = this;
+		OneColor.Color[0] = color_get_R(it->first)/255.f;
+		OneColor.Color[1] = color_get_G(it->first) / 255.f;
+		OneColor.Color[2] = color_get_B(it->first) / 255.f;
+
 		for (DOIt do_it = it->second.begin(); do_it != it->second.end(); do_it++) 
 		{
 			EDetail* dd = 0;
 			for (CDetailManager::DetailIt d_it = DM->objects.begin(); d_it != DM->objects.end(); d_it++)
-				if (0 == strcmp(((EDetail*)(*d_it))->GetName(), (*do_it)->GetName())) { dd = (EDetail*)*d_it; break; }
+			{
+				if (0 == strcmp(((EDetail*)(*d_it))->GetName(), (*do_it)->GetName())) 
+				{
+					dd = (EDetail*)*d_it;
+					break; 
+				}
+			}
+
 			VERIFY(dd);
-			OneColor->list.push_back(dd->GetName());
+			OneColor.list.push_back(dd->GetName());
 		}
 	}
 }
@@ -367,23 +379,25 @@ bool UIDOShuffle::FindItem(const char* name)
 
 void UIDOShuffle::ClearIndexForms()
 {
-	for (int i = 0; i < m_color_indices.size(); i++)xr_delete(m_color_indices[i]);
 	m_color_indices.clear();
 }
 
 bool UIDOShuffle::ApplyChanges(bool msg )
 {
 	DM->RemoveColorIndices();
-	for (u32 k = 0; k < m_color_indices.size(); k++) {
-		UIDOOneColor* OneColor = m_color_indices[k];
-		if (OneColor->list.size())
+	for (UIDOOneColor& OneColor : m_color_indices)
+	{
+		if (!OneColor.list.empty())
 		{
-			u32 clr = color_rgba_f(OneColor->Color[0], OneColor->Color[1], OneColor->Color[2], 1.f);
-			for (xr_string&i:OneColor->list)
+			u32 clr = color_rgba_f(OneColor.Color[0], OneColor.Color[1], OneColor.Color[2], 1.f);
+			for (xr_string& i : OneColor.list)
+			{
 				DM->AppendIndexObject(clr, i.c_str(), false);
+			}
 		}
 	}
-	if (/*bNeedUpdate||*/bModif&& msg)
+
+	if (/*bNeedUpdate||*/bModif && msg)
 	{
 		ELog.DlgMsg(mtInformation, "Object or object list changed. Reinitialize needed!");
 		DM->InvalidateSlots();
