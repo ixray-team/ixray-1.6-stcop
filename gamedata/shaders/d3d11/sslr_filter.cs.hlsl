@@ -51,12 +51,9 @@ static const float2 Disk32_Normalized[32] = {
 
 RWTexture2D<float4> u_sslr_temp : register(u0);
 
-[numthreads(64, 1, 1)]
-void main(uint2 Gid : SV_GroupID, uint GI : SV_GroupIndex)
+[numthreads(8, 8, 1)]
+void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV_GroupIndex)
 {
-    uint2 GTid = thread_remap_8x8(GI);
-    uint2 DTid = Gid * 8 + GTid;
-
 	//LVutner: Making my life easier.
 	PSInputFullscreen I;
 	I.hpos.xy = float2(DTid.xy) + 0.5; //half-pix
@@ -66,7 +63,6 @@ void main(uint2 Gid : SV_GroupID, uint GI : SV_GroupIndex)
     IXrayGbuffer O;
     GbufferUnpack(I.texcoord.xy, I.hpos.xy, O);
 
-	float4 SSLR = s_refl.SampleLevel(smp_nofilter, I.texcoord.xy, 0);
 	float isHUDRender = O.Depth < 0.02f ? 1.0f : 0.0f;
 	
 	if(O.Depth >= 1.0f)
@@ -74,7 +70,7 @@ void main(uint2 Gid : SV_GroupID, uint GI : SV_GroupIndex)
 		u_sslr_temp[DTid.xy] = (0.0).xxxx;
 		return;
 	}
-		
+
 	float3 ReflectPoint = GbufferGetPointRealUnjitter(I.texcoord.xy, O.Depth);
 	float3 View = normalize(ReflectPoint);
 	
@@ -101,7 +97,10 @@ void main(uint2 Gid : SV_GroupID, uint GI : SV_GroupIndex)
 		
 		float D = DistributionGGX(NdotH, O.Roughness);
 
-		float SampleWeight = D * NdotH * SSLR.w; //LVutner: This is evil, but works.
+		//LVutner: it just works.
+		float SampleWeight = max(D * NdotH * SSLR.w, 1e-5);
+		
+		//HUD weight
 		SampleWeight *= 1.0f - abs(Color.w - isHUDRender);
 
 		Color.w = Length;
@@ -112,9 +111,8 @@ void main(uint2 Gid : SV_GroupID, uint GI : SV_GroupIndex)
 
 	FinalColor *= rcp(FinalWeight);
 	FinalColor.xyz = saturate(FinalColor.xyz);
-	
+
 	FinalColor.w += O.ViewDist;
-	
+
 	u_sslr_temp[DTid.xy] = FinalColor;
 }
-

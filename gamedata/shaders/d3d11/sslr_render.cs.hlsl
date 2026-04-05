@@ -1,74 +1,17 @@
 #include "common.hlsli"
 #include "reflections.hlsli"
 #include "metalic_roughness_ambient.hlsli"
+#include "metalic_roughness_light.hlsli"
 
 Texture3D s_blue_noise;
-
-// TODO: Это можно упростить потом
-float3 TangentToWorld(in float3 N, in float3 H)
-{
-    float3 UpVector = abs(N.y) < 0.999f ? float3(0.0, 1.0, 0.0) : float3(0.0, 0.0, -1.0);
-    float3 T = normalize(cross(UpVector, N));
-    float3 B = cross(N, T);
-				 
-    return normalize(T * H.x + B * H.y + N * H.z);
-}
-
-//https://auzaiffe.wordpress.com/2024/04/15/vndf-importance-sampling-an-isotropic-distribution/
-float3 sample_vndf_isotropic(float3 n, float3 wi, float2 u, float alpha)
-{
-    // decompose the floattor in parallel and perpendicular components
-    float3 wi_z = -n * dot(wi, n);
-    float3 wi_xy = wi + wi_z;
- 
-    // warp to the hemisphere configuration
-    float3 wiStd = -normalize(alpha * wi_xy + wi_z);
- 
-    // sample a spherical cap in (-wiStd.z, 1]
-    float wiStd_z = dot(wiStd, n);
-    float z = 1.0 - u.y * (1.0 + wiStd_z);
-    float sinTheta = sqrt(saturate(1.0f - z * z));
-    float phi = (2.0 * PI) * u.x - PI;
-    float x = sinTheta * cos(phi);
-    float y = sinTheta * sin(phi);
-    float3 cStd = float3(x, y, z);
- 
-    // reflect sample to align with normal
-    float3 up = float3(0, 0, 1.000001); // Used for the singularity
-    float3 wr = n + up;
-    float3 c = dot(wr, cStd) * wr / wr.z - cStd;
- 
-    // compute halfway direction as standard normal
-    float3 wmStd = c + wiStd;
-    float3 wmStd_z = n * dot(n, wmStd);
-    float3 wmStd_xy = wmStd_z - wmStd;
-
-    return normalize(alpha * wmStd_xy + wmStd_z);
-}
-
-float pdf_vndf_isotropic(float3 n, float3 wi, float3 wo, float alpha)
-{
-    float alphaSquare = alpha * alpha;
-    float3 wm = normalize(wo + wi);
-    float zm = dot(wm, n);
-    float zi = dot(wi, n);
-    float nrm = rsqrt((zi * zi) * (1.0f - alphaSquare) + alphaSquare);
-    float sigmaStd = (zi * nrm) * 0.5f + 0.5f;
-    float sigmaI = sigmaStd / nrm;
-    float nrmN = (zm * zm) * (alphaSquare - 1.0f) + 1.0f;
-    return alphaSquare / (PI * 4.0f * nrmN * nrmN * sigmaI);
-}
 
 //LVutner: UAVs. See CPP code
 RWTexture2D<float4> u_sslr : register(u0);
 RWTexture2D<float4> u_sslr_data : register(u1);
 
-[numthreads(64, 1, 1)]
-void main(uint2 Gid : SV_GroupID, uint GI : SV_GroupIndex)
+[numthreads(8, 8, 1)]
+void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV_GroupIndex)
 {
-    uint2 GTid = thread_remap_8x8(GI);
-    uint2 DTid = Gid * 8 + GTid;
-
 	//LVutner: Making my life easier.
 	PSInputFullscreen I;
 	I.hpos.xy = float2(DTid.xy) + 0.5; //half-pix
@@ -94,6 +37,7 @@ void main(uint2 Gid : SV_GroupID, uint GI : SV_GroupIndex)
 	
 	float2 Jitter = s_blue_noise[uint3(uint2(I.hpos.xy) % 128, uint(m_taa_jitter.w) % 32)].xy;
 
+	//LVutner: VNDF is biased, cause I don't want random fireflies
 	float4 H;
 	H.xyz = sample_vndf_isotropic(O.Normal, -ViewVec, Jitter * float2(1.0, 0.7), O.Roughness * O.Roughness);
 	H.w = pdf_vndf_isotropic(O.Normal, -ViewVec, reflect(ViewVec, H.xyz), O.Roughness * O.Roughness);
