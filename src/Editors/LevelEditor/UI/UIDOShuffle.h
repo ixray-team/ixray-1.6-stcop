@@ -24,7 +24,7 @@ private:
 	EDetailManager* DM;
 
 	UIPropertiesForm* m_Props;
-	xr_vector<UIDOOneColor*> m_color_indices;
+	xr_vector<UIDOOneColor> m_color_indices;
 
 	EImageThumbnail* m_Thm;
 	ref_texture m_TextureNull;
