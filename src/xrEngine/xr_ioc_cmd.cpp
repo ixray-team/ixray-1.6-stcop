@@ -708,9 +708,9 @@ void CCC_Register()
 
 	CMD3(CCC_Mask,		"rs_v_sync",			&psDeviceFlags,		rsVSync				);
 	
-#ifdef MASTER_GOLD
+//#ifdef MASTER_GOLD
 	CMD3(CCC_Mask, "rs_fullscreen", &psDeviceFlags, rsFullscreen);
-#endif // MASTER_GOLD
+//#endif // MASTER_GOLD
 
 	//CMD3(CCC_Mask,		"rs_refresh_60hz",		&psDeviceFlags,		rsRefresh60hz			);
 	CMD3(CCC_Mask,		"rs_stats",				&psDeviceFlags,		rsStatistic				);

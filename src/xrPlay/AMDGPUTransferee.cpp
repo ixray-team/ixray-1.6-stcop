@@ -306,6 +306,8 @@ AGSContext* CAMDReader::GetContext() const
 	return Context;
 }
 
+extern DXGI_RATIONAL GetCurrentRefreshRate();
+
 void CAMDReader::GetDX11Device(ID3D11Device** pDevice, ID3D11DeviceContext** pImmediateContext, IDXGISwapChain** pSwapChain, D3D_FEATURE_LEVEL& FeatureLevel)
 {
 	D3D_FEATURE_LEVEL featureLevels[] =
@@ -328,9 +330,7 @@ void CAMDReader::GetDX11Device(ID3D11Device** pDevice, ID3D11DeviceContext** pIm
 	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	sd.OutputWindow = hwnd;
 	sd.Windowed = !psDeviceFlags.is(rsFullscreen);
-
-	sd.BufferDesc.RefreshRate.Numerator = 0;
-	sd.BufferDesc.RefreshRate.Denominator = 0;
+	sd.BufferDesc.RefreshRate = GetCurrentRefreshRate();
 
 	//	Additional set up
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;

@@ -18,6 +18,32 @@ extern void* RenderRTV;
 extern void* RenderDSV;
 extern void* SwapChainRTV;
 
+ENGINE_API DXGI_RATIONAL GetCurrentRefreshRate()
+{
+	HWND hwnd = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(g_AppInfo.Window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
+	DXGI_RATIONAL refreshRate = { 0, 1 };
+
+	HMONITOR hMonitor = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
+	if (hMonitor == nullptr) return refreshRate;
+
+	MONITORINFOEX monitorInfo = {};
+	monitorInfo.cbSize = sizeof(MONITORINFOEX);
+	if (!GetMonitorInfo(hMonitor, (MONITORINFO*)&monitorInfo)) { return refreshRate; }
+
+	DEVMODE devMode = {};
+	devMode.dmSize = sizeof(DEVMODE);
+	if (!EnumDisplaySettings(monitorInfo.szDevice, ENUM_CURRENT_SETTINGS, &devMode)) { return refreshRate; }
+
+	UINT refreshRateHz = devMode.dmDisplayFrequency;
+
+	refreshRate.Numerator = refreshRateHz;
+	//refreshRate.Denominator = 1;
+
+	//Msg("RefreshRate Numerator = %d & Denominator = %d", refreshRate.Numerator, refreshRate.Denominator);
+
+	return refreshRate;
+}
+
 bool UpdateBuffersD3D11()
 {
 	HWND hwnd = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(g_AppInfo.Window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
@@ -43,9 +69,7 @@ bool UpdateBuffersD3D11()
 	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	sd.OutputWindow = hwnd;
 	sd.Windowed = !psDeviceFlags.is(rsFullscreen);
-
-	sd.BufferDesc.RefreshRate.Numerator = 0;
-	sd.BufferDesc.RefreshRate.Denominator = 0;
+	sd.BufferDesc.RefreshRate = GetCurrentRefreshRate();
 
 	//	Additional set up
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
@@ -142,9 +166,7 @@ bool CreateD3D11()
 	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	sd.OutputWindow = hwnd;
 	sd.Windowed = !psDeviceFlags.is(rsFullscreen);
-
-	sd.BufferDesc.RefreshRate.Numerator = 0;
-	sd.BufferDesc.RefreshRate.Denominator = 0;
+	sd.BufferDesc.RefreshRate = GetCurrentRefreshRate();
 
 	//	Additional set up
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
@@ -268,8 +290,7 @@ void ResizeBuffersD3D11(u16 Width, u16 Height)
 	Desc.Width = Width;
 	Desc.Height = Height;
 	Desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-	Desc.RefreshRate.Numerator = 0;
-	Desc.RefreshRate.Denominator = 0;
+	Desc.RefreshRate = GetCurrentRefreshRate();
 
 	HRESULT R = ((IDXGISwapChain*)HWSwapchain)->ResizeTarget(&Desc);
 	R_CHK(R);

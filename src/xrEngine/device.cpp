@@ -20,6 +20,7 @@
 #include "../xrCore/FS_impl.h"
 #include "IGame_Persistent.h"
 #include "IGame_Actor.h"
+#include <dxgicommon.h>
 
 ENGINE_API CRenderDevice* DevicePtr = nullptr;
 ENGINE_API CLoadScreenRenderer load_screen_renderer;
@@ -137,9 +138,10 @@ void CRenderDevice::PreCache(u32 amount, bool b_draw_loadscreen, bool b_wait_use
 }
 
 int g_svDedicateServerUpdateReate = 100;
+extern DXGI_RATIONAL GetCurrentRefreshRate();
 
 ENGINE_API xr_list<LOADING_EVENT> g_loading_events;
-int g_dwFPSlimit = 120;
+int g_dwFPSlimit = GetCurrentRefreshRate().Numerator;
 void CRenderDevice::time_factor(const float &time_factor)
 {
 	Timer.time_factor		(time_factor);
@@ -161,7 +163,7 @@ void CRenderDevice::on_idle		()
 
 	// FPS Limit
 	bool main_menu_active = g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive();
-	int fps_limit = main_menu_active ? 120 : g_dwFPSlimit;
+	int fps_limit = main_menu_active ? GetCurrentRefreshRate().Numerator : g_dwFPSlimit;
 	if (fps_limit > 0)
 	{
 		static DWORD dwLastFrameTime = 0;
