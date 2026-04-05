@@ -312,7 +312,7 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 	req.horiResolution = 0;
 	req.vertResolution = 0;
 	FT_Request_Size(OurFont, &req);
-
+#if EnableGamepadFontInclude
 	FT_Face GamepadFont = nullptr;
 
 	if (xr_strcmp(name, "arial") == 0)
@@ -344,7 +344,7 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 			FS.r_close(gpFile);
 		}
 	}
-
+#endif
 #define FT_CEIL(X)  (((X + 63) & -64) / 64)
 
 	float FontSizeInPixels = (float)(OurFont->size->metrics.ascender - OurFont->size->metrics.descender) / 64.0f;
