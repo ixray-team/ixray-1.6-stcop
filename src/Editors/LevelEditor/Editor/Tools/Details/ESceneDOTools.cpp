@@ -714,7 +714,7 @@ bool EDetailManager::Export(LPCSTR path)
 	    	*remap_object_it	= (u8)new_idx++;
 
     xr_string 			do_tex_name = ChangeFileExt(fn,"_details");
-    int res = ImageLib.CreateMergedTexture(textures, do_tex_name.c_str(), STextureParams::tfDXT5, 256, 2048, 256, 2048, offsets, scales, rotated, remap);
+    int res = ImageLib.CreateMergedTexture(textures, do_tex_name.c_str(), STextureParams::tfDXT5, 256, 8192, 256, 8192, offsets, scales, rotated, remap);
     if (1!=res)			bRes=FALSE;
 
     pb->Inc				("export geometry");
