@@ -777,7 +777,7 @@ ENGINE_API EGameActions get_binded_action(int _dik, _action_group _ai)
 
 const char* GetGamepadSymbol(int dik)
 {
-	if (!xr_strcmp(pInput->GamepadPrefix(), "xbox1"))
+	//if (!xr_strcmp(pInput->GamepadPrefix(), "xbox1"))
 	{
 		switch (dik)
 		{
@@ -851,6 +851,7 @@ const char* GetGamepadSymbol(int dik)
 			return XBOX_RSTICK_RIGHT;
 		}
 	}
+	
 	return "NONE";
 }
 
@@ -862,15 +863,13 @@ ENGINE_API void GetActionAllBinding(LPCSTR _action, char* dst_buff, int dst_buff
 	if (action_id == kNOTBINDED)
 	{
 		Msg("! [ERROR]: Action not found %s", _action);
+		dst_buff[0] = 0;
 		return;
 	}
 
-	string128 prim;
-	string128 sec;
-	string128 gp_prim;
-	prim[0] = 0;
-	sec[0] = 0;
-	gp_prim[0] = 0;
+	string128 prim = {};
+	string128 sec = {};
+	string128 gp_prim = {};
 
 	if (pbinding->m_keyboard[0])
 		xr_strcpy(prim, pbinding->m_keyboard[0]->key_local_name.c_str());
@@ -880,21 +879,45 @@ ENGINE_API void GetActionAllBinding(LPCSTR _action, char* dst_buff, int dst_buff
 
 	if (pbinding->m_gamepad[0])
 	{
-		xr_string gpSymbol = Platform::ANSI_TO_UTF8(GetGamepadSymbol(pbinding->m_gamepad[0]->dik));
-		xr_strcpy(gp_prim, gpSymbol.c_str());
+		const char* gpSymbol = GetGamepadSymbol(pbinding->m_gamepad[0]->dik);
+		if (gpSymbol)
+			xr_strcpy(gp_prim, gpSymbol);
 	}
 
-	if (!pbinding->m_keyboard[0] && !pbinding->m_keyboard[1] 
-		&& !pbinding->m_gamepad[0] && !pbinding->m_gamepad[1])
-		xr_sprintf(dst_buff, dst_buff_sz, "%s", g_pStringTable->translate("st_key_notbinded").c_str());
-	else if (pInput->GetControllerMode())
+	if (!pbinding->m_keyboard[0] && !pbinding->m_keyboard[1] &&
+		!pbinding->m_gamepad[0] && !pbinding->m_gamepad[1])
 	{
-		xr_sprintf(dst_buff, dst_buff_sz, "%s", 
-			gp_prim[0] ? gp_prim : "");
+		strcpy(dst_buff, g_pStringTable->translate("st_key_notbinded").c_str());
+		return;
+	}
+
+	if (pInput->GetControllerMode())
+	{
+		if (gp_prim[0])
+			strcpy(dst_buff, gp_prim);
+		else
+			dst_buff[0] = 0;
+
+		return;
+	}
+
+	if (prim[0] && sec[0])
+	{
+		strcpy(dst_buff, prim);
+		strcat(dst_buff, " , ");
+		strcat(dst_buff, sec);
+	}
+	else if (prim[0])
+	{
+		strcpy(dst_buff, prim);
+	}
+	else if (sec[0])
+	{
+		strcpy(dst_buff, sec);
 	}
 	else
 	{
-		xr_sprintf(dst_buff, dst_buff_sz, "%s%s%s", prim[0] ? prim : "", (sec[0] && prim[0]) ? " , " : "", sec[0] ? sec : "");
+		dst_buff[0] = 0;
 	}
 }
 
