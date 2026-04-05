@@ -266,9 +266,15 @@ bool TUI_CustomControl::CheckSnapList(TShiftState Shift)
 }
 
 // total select
-bool  TUI_CustomControl::SelectStart(TShiftState Shift)
+bool TUI_CustomControl::SelectStart(TShiftState Shift)
 {
 	ObjClassID cls = LTools->CurrentClassID();
+
+	ESceneToolBase* mt = Scene->GetTool(cls);
+	if (mt && !mt->IsLoaded)
+	{
+		return false;
+	}
 
 	if (CheckSnapList(Shift)) return false;
 	if (Shift==ssRBOnly){ ExecCommand(COMMAND_SHOWCONTEXTMENU,parent_tool->FClassID); return false;}

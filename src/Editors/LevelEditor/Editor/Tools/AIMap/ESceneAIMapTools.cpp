@@ -655,6 +655,9 @@ void ESceneAIMapTool::SelectNodesByLink(int link)
 
 void ESceneAIMapTool::SelectObjects(bool flag)
 {
+    if (!IsLoaded)
+        return;
+
     switch (LTools->GetSubTarget()){
     case estAIMapNode:{
         for (AINodeIt it=m_Nodes.begin(); it!=m_Nodes.end(); it++)
