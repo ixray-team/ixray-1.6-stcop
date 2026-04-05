@@ -218,9 +218,9 @@ BOOL CLevelEditor::net_Start(LPCSTR op_server, LPCSTR op_client)
 
 void CLevelEditor::LoadEditor(shared_str LevelName)
 {
+	map_data.m_name = LevelName;
 	string_path fn_game;
 	// loading sound environment
-
 	xr_string File = LevelName.c_str();
 
 	if (FS.exist(fn_game, "$level$", (File + "\\level.snd_env").c_str()))
