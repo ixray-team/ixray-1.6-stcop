@@ -231,15 +231,12 @@ ECORE_API void IXEndMainMenuBar()
 	if (iih && h_id == 0 &&
 		ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 		MaxBut = true;
-	
-	if (EDevice->isZoomed && h_id == 0    && iih && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+	else if (h_id == 0 && iih && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 	{
-		MaxBut = true;
+		MaxBut = EDevice->isZoomed;
 		MoveWin = true;
 	}
-	else
-		if (!EDevice->isZoomed && h_id == 0 && iih && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
-		MoveWin = true;
+	
 
 #if dbg_draw_tmenu
 	ImGui::Begin("dbg_hwr");
