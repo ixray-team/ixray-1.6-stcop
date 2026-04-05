@@ -12,7 +12,7 @@ void EScene::SelectObjects( bool flag, ObjClassID classfilter )
     else
     {
         ESceneToolBase* mt = GetTool(classfilter);
-        if (mt)
+        if (mt && mt->IsLoaded)
         	mt->SelectObjects(flag);
     }
 

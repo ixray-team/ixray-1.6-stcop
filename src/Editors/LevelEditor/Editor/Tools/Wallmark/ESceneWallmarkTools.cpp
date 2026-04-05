@@ -77,6 +77,9 @@ int ESceneWallmarkTool::FrustumSelect(int flag, const CFrustum& frustum)
 
 void ESceneWallmarkTool::SelectObjects(bool flag)
 {
+    if (!IsLoaded)
+        return;
+
 	if (!m_Flags.is(flDrawWallmark)) return;
     for (WMSVecIt p_it=marks.begin(); p_it!=marks.end(); p_it++){
         for (WMVecIt m_it=(*p_it)->items.begin(); m_it!=(*p_it)->items.end(); m_it++)
