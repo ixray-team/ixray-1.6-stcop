@@ -738,8 +738,6 @@ void CUIMainIngameWnd::Update()
 	}
 	
 	UpdateMainIndicators();
-	if (IsGameTypeSingle())
-		return;
 
 	// ewiArtefact
 	if ( GameID() == eGameIDArtefactHunt )
