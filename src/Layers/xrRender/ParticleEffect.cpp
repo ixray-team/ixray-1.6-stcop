@@ -137,7 +137,11 @@ void CParticleEffect::OnFrame(u32 frame_dt)
 			if (m_Def->m_Flags.is(CPEDef::dfFramed | CPEDef::dfAnimated))
 				m_Def->ExecuteAnimate(particles, p_cnt, fDT_STEP);
 
-			if (m_Def->m_Flags.is(CPEDef::dfCollision))
+			bool EditorTest = !Device.IsEditorMode();
+#ifdef _EDITOR
+			EditorTest = EditorTest || UI->IsPlayInEditor();
+#endif
+			if (m_Def->m_Flags.is(CPEDef::dfCollision) && EditorTest)
 				m_Def->ExecuteCollision(particles, p_cnt, fDT_STEP, this, m_CollisionCallback);
 
 			//-move action
