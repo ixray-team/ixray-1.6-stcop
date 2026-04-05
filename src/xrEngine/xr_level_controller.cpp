@@ -3,6 +3,7 @@
 #include "xr_ioc_cmd.h"
 #include "xr_level_controller.h"
 #include "string_table.h"
+#include "UIGamepadButtons.h"
 
 ENGINE_API _binding	g_key_bindings[bindings_count]; 
 ENGINE_API _key_group g_current_keygroup = _sp;
@@ -774,6 +775,85 @@ ENGINE_API EGameActions get_binded_action(int _dik, _action_group _ai)
 	return kNOTBINDED;
 }
 
+const char* GetGamepadSymbol(int dik)
+{
+	if (!xr_strcmp(pInput->GamepadPrefix(), "xbox1"))
+	{
+		switch (dik)
+		{
+		case SDL_GAMEPAD_BUTTON_SOUTH:
+			return XBOX_A;
+		case SDL_GAMEPAD_BUTTON_EAST:
+			return XBOX_B;
+		case SDL_GAMEPAD_BUTTON_WEST:
+			return XBOX_X;
+		case SDL_GAMEPAD_BUTTON_NORTH:
+			return XBOX_Y;
+		case SDL_GAMEPAD_BUTTON_BACK:
+			return XBOX_Back;
+		case SDL_GAMEPAD_BUTTON_GUIDE:
+			return XBOX_Guide;
+		case SDL_GAMEPAD_BUTTON_START:
+			return XBOX_Start;
+		case SDL_GAMEPAD_BUTTON_LEFT_STICK:
+			return XBOX_LS;
+		case SDL_GAMEPAD_BUTTON_RIGHT_STICK:
+			return XBOX_RS;
+		case SDL_GAMEPAD_BUTTON_DPAD_UP:
+			return XBOX_DPAD_UP;
+		case SDL_GAMEPAD_BUTTON_DPAD_DOWN:
+			return XBOX_DPAD_DOWN;
+		case SDL_GAMEPAD_BUTTON_DPAD_LEFT:
+			return XBOX_DPAD_LEFT;
+		case SDL_GAMEPAD_BUTTON_DPAD_RIGHT:
+			return XBOX_DPAD_RIGHT;
+		case SDL_GAMEPAD_BUTTON_MISC1:
+			return XBOX_RESERVED_00;
+		case SDL_GAMEPAD_BUTTON_RIGHT_PADDLE1:
+			return XBOX_RESERVED_01;
+		case SDL_GAMEPAD_BUTTON_LEFT_PADDLE1:
+			return XBOX_RESERVED_02;
+		case SDL_GAMEPAD_BUTTON_RIGHT_PADDLE2:
+			return XBOX_RESERVED_03;
+		case SDL_GAMEPAD_BUTTON_LEFT_PADDLE2:
+			return XBOX_RESERVED_04;
+		case SDL_GAMEPAD_BUTTON_TOUCHPAD:
+			return XBOX_RESERVED_05;
+		case SDL_GAMEPAD_BUTTON_MISC2:
+			return XBOX_RESERVED_06;
+		case SDL_GAMEPAD_BUTTON_MISC3:
+			return XBOX_RESERVED_07;
+		case SDL_GAMEPAD_BUTTON_MISC4:
+			return XBOX_RESERVED_08;
+		case SDL_GAMEPAD_BUTTON_MISC5:
+			return XBOX_RESERVED_09;
+		case SDL_GAMEPAD_BUTTON_MISC6:
+			return XBOX_RESERVED_10;
+		case DIK_LTRIGGER:
+			return XBOX_LTRIGGER;
+		case DIK_RTRIGGER:
+			return XBOX_RTRIGGER;
+		case DIK_LSTICK_UP:
+			return XBOX_LSTICK_UP;
+		case DIK_LSTICK_DOWN:
+			return XBOX_LSTICK_DOWN;
+		case DIK_LSTICK_LEFT:
+			return XBOX_LSTICK_LEFT;
+		case DIK_LSTICK_RIGHT:
+			return XBOX_LSTICK_RIGHT;
+		case DIK_RSTICK_UP:
+			return XBOX_RSTICK_UP;
+		case DIK_RSTICK_DOWN:
+			return XBOX_RSTICK_DOWN;
+		case DIK_RSTICK_LEFT:
+			return XBOX_RSTICK_LEFT;
+		case DIK_RSTICK_RIGHT:
+			return XBOX_RSTICK_RIGHT;
+		}
+	}
+	return "NONE";
+}
+
 ENGINE_API void GetActionAllBinding(LPCSTR _action, char* dst_buff, int dst_buff_sz)
 {
 	int action_id = action_name_to_id(_action);
@@ -788,11 +868,9 @@ ENGINE_API void GetActionAllBinding(LPCSTR _action, char* dst_buff, int dst_buff
 	string128 prim;
 	string128 sec;
 	string128 gp_prim;
-	string128 gp_sec;
 	prim[0] = 0;
 	sec[0] = 0;
 	gp_prim[0] = 0;
-	gp_sec[0] = 0;
 
 	if (pbinding->m_keyboard[0])
 		xr_strcpy(prim, pbinding->m_keyboard[0]->key_local_name.c_str());
@@ -801,23 +879,23 @@ ENGINE_API void GetActionAllBinding(LPCSTR _action, char* dst_buff, int dst_buff
 		xr_strcpy(sec, pbinding->m_keyboard[1]->key_local_name.c_str());
 
 	if (pbinding->m_gamepad[0])
-		xr_strcpy(gp_prim, pbinding->m_gamepad[0]->key_local_name.c_str());
-
-	if (pbinding->m_gamepad[1])
-		xr_strcpy(gp_sec, pbinding->m_gamepad[1]->key_local_name.c_str());
+	{
+		xr_string gpSymbol = Platform::ANSI_TO_UTF8(GetGamepadSymbol(pbinding->m_gamepad[0]->dik));
+		xr_strcpy(gp_prim, gpSymbol.c_str());
+	}
 
 	if (!pbinding->m_keyboard[0] && !pbinding->m_keyboard[1] 
 		&& !pbinding->m_gamepad[0] && !pbinding->m_gamepad[1])
 		xr_sprintf(dst_buff, dst_buff_sz, "%s", g_pStringTable->translate("st_key_notbinded").c_str());
 	else if (pInput->GetControllerMode())
 	{
-		xr_sprintf(dst_buff, dst_buff_sz, "%s%s%s", 
-			gp_prim[0] ? gp_prim : "", 
-			(gp_sec[0] && gp_prim[0]) ? "/" : "", 
-			gp_sec[0] ? gp_sec : "");
+		xr_sprintf(dst_buff, dst_buff_sz, "%s", 
+			gp_prim[0] ? gp_prim : "");
 	}
 	else
+	{
 		xr_sprintf(dst_buff, dst_buff_sz, "%s%s%s", prim[0] ? prim : "", (sec[0] && prim[0]) ? " , " : "", sec[0] ? sec : "");
+	}
 }
 
 ENGINE_API bool any_binded_key_for_action_pressed_c(int actionId)
