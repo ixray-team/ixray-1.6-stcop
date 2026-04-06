@@ -38,3 +38,15 @@ void CRenderTarget::phase_gtao()
 		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
 	}
 }
+
+void CRenderTarget::pharse_velocity()
+{
+	GPU_EVENT(pharse_velocity);
+
+	u_setrt(rt_Velocity, nullptr, nullptr, nullptr);
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+
+	RCache.set_Element(s_gtao->E[2]);
+	RCache.set_Geometry(FSTriangleGeom);
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
+}

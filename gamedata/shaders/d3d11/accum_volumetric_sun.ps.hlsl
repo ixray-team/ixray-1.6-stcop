@@ -47,14 +47,13 @@ float4 main(PSInputFullscreen I) : SV_Target
     GbufferUnpack((uint2)I.hpos.xy, O);
     
     float3 Pview = O.Point * 0.996f;
-    bool isSky = (O.Depth > 0.9999f);
 	
-    if (isSky)
-    {
-        float zFar = fog_params.z; 
-        float3 viewDir = normalize(Pview);
-        Pview = viewDir * zFar;
-    }
+	float PviewSqr = dot(Pview, Pview);
+	float PviewSqrDiv = PviewSqr > 0.0f ? rsqrt(PviewSqr) : 0.0f;
+	
+	float zFar = min(PviewSqr * PviewSqrDiv, fog_params.z); 
+	float3 viewDir = Pview * PviewSqrDiv;
+	Pview = viewDir * zFar;
 
     float4 J0 = s_blue_noise[uint3(uint2(I.hpos.xy) % 128, uint(m_taa_jitter.w) % 32)];
 

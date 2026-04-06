@@ -50,7 +50,9 @@ void main(p_bumped_new I, out f_forward O)
 #endif
 
     M.Sun = saturate(M.Sun * 2.0f);
-    M.Color.xyz = GammaToLinear(saturate(M.Color.xyz));
+	
+    M.Color.xyz = GammaToLinear(M.Color.xyz);
+    M.Specular = GammaToLinear(M.Specular);
 
 #ifdef USE_LEGACY_LIGHT
 	M.Material = L_material.w;
@@ -60,7 +62,12 @@ void main(p_bumped_new I, out f_forward O)
 	
 #ifndef USE_R2_STATIC_SUN
 	float4 Point = float4(M.Point.xyz, 1.f);
+	
+#ifdef USE_LENGTH_BUFFER
+    Point.xyz += M.Normal * 0.05f;
+#else
     Point.xyz += M.Normal * 0.025f;
+#endif
 	
 	Point.xyz = mul(m_invV, Point).xyz;
 
@@ -147,7 +154,7 @@ void main(p_bumped_new I, out f_forward O)
 #ifndef USE_LENGTH_BUFFER
 	#ifndef DISABLE_MOTION_VECTORS
 		O.Velocity.xy = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
-		O.Reactive = O.Color.w * 0.9f; O.Velocity.zw = 1.0f;
+		O.Reactive = O.Color.w * 0.9f; O.Velocity.zw = saturate(M.Color.w * 2.0f);
 	#endif
 #endif
 	
