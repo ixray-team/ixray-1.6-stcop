@@ -1538,30 +1538,30 @@ void CUIMainIngameWnd::UpdateMainIndicators()
 
 void CUIMainIngameWnd::UpdateQuickSlots()
 {
-	string32 tmp;
+	string32 tmp{};
 	LPCSTR str = g_pStringTable->translate("quick_use_str_1").c_str();
-	strncpy_s(tmp, sizeof(tmp), str, 3);
+	xr_strcpy(tmp, sizeof(tmp), str);
 	if (tmp[2] == ',')
 		tmp[1] = '\0';
 	if (m_QuickSlotText1)
 		m_QuickSlotText1->SetTextST(tmp);
 
 	str = g_pStringTable->translate("quick_use_str_2").c_str();
-	strncpy_s(tmp, sizeof(tmp), str, 3);
+	xr_strcpy(tmp, sizeof(tmp), str);
 	if (tmp[2] == ',')
 		tmp[1] = '\0';
 	if (m_QuickSlotText2)
 		m_QuickSlotText2->SetTextST(tmp);
 
 	str = g_pStringTable->translate("quick_use_str_3").c_str();
-	strncpy_s(tmp, sizeof(tmp), str, 3);
+	xr_strcpy(tmp, sizeof(tmp), str);
 	if (tmp[2] == ',')
 		tmp[1] = '\0';
 	if (m_QuickSlotText3)
 		m_QuickSlotText3->SetTextST(tmp);
 
 	str = g_pStringTable->translate("quick_use_str_4").c_str();
-	strncpy_s(tmp, sizeof(tmp), str, 3);
+	xr_strcpy(tmp, sizeof(tmp), str);
 	if (tmp[2] == ',')
 		tmp[1] = '\0';
 	if (m_QuickSlotText4)
