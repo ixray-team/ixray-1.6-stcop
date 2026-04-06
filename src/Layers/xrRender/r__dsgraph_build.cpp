@@ -195,7 +195,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 	// UI rendering
 	if (RI.val_bUI)
 	{
-		if (sh->flags.bStrictB2F)
+		if (sh->flags.bStrictB2F || sh->flags.iPriority > 1)
 		{
 			mapUISorted.insertInAnyWay(distSQ, { SSA, RI.val_pObject, pVisual, *RI.val_pTransform, sh });
 		}
