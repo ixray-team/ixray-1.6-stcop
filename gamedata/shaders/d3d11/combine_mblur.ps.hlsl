@@ -41,7 +41,7 @@ void main(in PSInputFullscreen I, out float3 Color : SV_Target)
 	float PixelSize = max(mblur_params.z, mblur_params.w);
 	float VelSize = dot(Vel, Vel); PixelSize *= PixelSize;
 	
-	float Step = mblur_params.x * rcp(MBLUR_SAMPLES);
+	float Step = rcp(MBLUR_SAMPLES * mblur_params.y);
 	float L = 0.0f;
 	
 	if(VelSize > PixelSize)

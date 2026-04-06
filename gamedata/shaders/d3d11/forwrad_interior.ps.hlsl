@@ -132,7 +132,7 @@ void main(p_bumped_new I, out f_forward O)
 	float3 PositionWS = float3(I.tcdh.xy * 2.0f - 1.0f, 0);
 	viewDir = normalize(viewDir);
 	
-	float3 dist = CubemapParralax(PositionWS, viewDir);	
+	float3 Point = CubemapParralax(PositionWS, viewDir);	
 	
 	float3 LightDirE = mul((float3x3)m_V, L_sun_dir_w.xyz);
 	float3 LightDir = normalize(mul(transpose(TBN), -LightDirE).xyz);
@@ -144,29 +144,32 @@ void main(p_bumped_new I, out f_forward O)
     Hemi = get_hemi(hs);
 #endif
 	
-	float4 SampleRef = s_env.Sample(smp_base, -dist);
-	float3 LightColor = CompureDiffuseIrradanceSimple(dist, Hemi) + L_ambient.xyz;
+	float4 SampleRef = s_env.Sample(smp_base, -Point);
+	float3 LightColor = CompureDiffuseIrradanceSimple(Point, Hemi) + L_ambient.xyz;
+	
+	float3 PojectedPos = I.position.xyz + length(Point - PositionWS) * normalize(I.position.xyz);
+	float4 PrevUV = mul(m_VP_old, float4(mul(m_invV, float4(PojectedPos, 1.0f)).xyz, 1.0f));
 	
  	if(LightDir.z > 0.0f) 
 	{		
-		float3 dist1 = CubemapParralax(dist, LightDir);
-		float3 PosD = I.position.xyz + length(dist - PositionWS) * normalize(I.position.xyz) - length(dist1 - dist) * LightDirE.xyz + normalize(float3(I.M1.z, I.M2.z, I.M3.z)) * 0.1f;
+		float3 Window = CubemapParralax(Point, LightDir);
+		float3 WindowW = PojectedPos - length(Window - Point) * LightDirE.xyz + normalize(float3(I.M1.z, I.M2.z, I.M3.z)) * 0.1f;
 		
-		PosD = mul(m_invV, float4(PosD.xyz, 1.0f)).xyz;
+		WindowW = mul(m_invV, float4(WindowW.xyz, 1.0f)).xyz;
 
 		float Shadow = 1.0;
 		
 		int cascade_index;
 		float3 smap_texcoord;
 		
-		bool is_in_bounds = calc_cascades(PosD.xyz, m_shadow_sun, cascade_index, smap_texcoord);
+		bool is_in_bounds = calc_cascades(WindowW.xyz, m_shadow_sun, cascade_index, smap_texcoord);
 
 		if(is_in_bounds)
 		{
 			Shadow = pcf_3x3(s_smap_sun, smp_smap, smap_texcoord, float2(SMAP_size, 1.0 / SMAP_size), 0.0, cascade_index);
 		}
 		
-		LightColor += L_sun_color.xyz * min(Shadow, 1.0f - s_base.Sample(smp_base, saturate(dist1.xy * 0.5f + 0.5f)).w);
+		LightColor += L_sun_color.xyz * min(Shadow, 1.0f - s_base.Sample(smp_base, saturate(Window.xy * 0.5f + 0.5f)).w);
 	}
 	
     O.Color.xyz = GammaToLinear(SampleRef.xyz * LightColor);
