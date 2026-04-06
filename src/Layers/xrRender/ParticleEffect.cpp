@@ -466,7 +466,9 @@ void CParticleEffect::Render(float )
 	m_XFORM.transform_tiny(c);
 
 	if (Device.vCameraPosition.distance_to_sqr(c) > _sqr(g_pGamePersistent->Environment().CurrentEnv->fog_distance + vis.sphere.R))
+	{
 		return;
+	}
 
 	UpdateCache();
 
@@ -475,20 +477,20 @@ void CParticleEffect::Render(float )
 	Pholder.GetParticles(particles, total_sprites);
 
 	if (total_sprites == 0u || particles == nullptr)
+	{
 		return;
+	}
 
-
-
-	CHudInitializer initalizer(false);
+	CHudInitializer initalizer(false, true);
 
 	if (GetHudMode())
 	{
 		initalizer.SetHudMode();
-		RImplementation.rmNear();
 		RCache.set_xform_view(Device.mView);
 		RCache.set_xform_project(Device.mProject);
 		ApplyTexgen(Device.mFullTransform);
 	}
+
 	RCache.set_xform_world(Fidentity);
 	RCache.set_Geometry(geom);
 
@@ -509,9 +511,9 @@ void CParticleEffect::Render(float )
 	}
 
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
+
 	if (GetHudMode())
 	{
-		RImplementation.rmNormal();
 		initalizer.SetDefaultMode();
 		RCache.set_xform_view(Device.mView);
 		RCache.set_xform_project(Device.mProject);
@@ -722,12 +724,11 @@ void CParticleEffect::Render(float)
 			dwCount = u32(pv - pv_start) * 4;
 			RCache.Vertex.Unlock(dwCount, geom->vb_stride);
 
-			CHudInitializer initalizer(false);
+			CHudInitializer initalizer(false, true);
 
 			if (GetHudMode())
 			{
 				initalizer.SetHudMode();
-				RImplementation.rmNear();
 				RCache.set_xform_view(Device.mView);
 				RCache.set_xform_project(Device.mProject);
 				ApplyTexgen(Device.mFullTransform);
@@ -743,7 +744,6 @@ void CParticleEffect::Render(float)
 
 			if (GetHudMode())
 			{
-				RImplementation.rmNormal();
 				initalizer.SetDefaultMode();
 				RCache.set_xform_view(Device.mView);
 				RCache.set_xform_project(Device.mProject);

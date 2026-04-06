@@ -2,9 +2,10 @@
 
 #include "CHudInitializer.h"
 
-CHudInitializer::CHudInitializer(bool setup)
+CHudInitializer::CHudInitializer(bool setup, bool ajust)
 {
 	b_auto_setup = setup;
+	b_ajust = ajust;
 
 	mView_saved = Device.mView;
 	mProject_saved = Device.mProject;
@@ -17,8 +18,6 @@ CHudInitializer::CHudInitializer(bool setup)
 
 CHudInitializer::~CHudInitializer()
 {
-	if (!b_auto_setup) return;
-
 	SetDefaultMode();
 }
 
@@ -28,19 +27,31 @@ void CHudInitializer::SetHudMode()
 	Device.mProject.set(Device.mProject_hud);
 	Device.mFullTransform.set(Device.mFullTransform_hud);
 
-	if(Device.m_pRender) {
+	if(Device.m_pRender) 
+	{
 		Device.m_pRender->SetCacheXform(Device.mView, Device.mProject);
 		Device.m_pRender->SetCacheXformOld(Device.mView_hud_old, Device.mProject_hud_old);
+	}
+
+	if (b_ajust)
+	{
+		::Render->rmNear();
 	}
 }
 
 void CHudInitializer::SetDefaultMode()
 {
+	if (b_ajust)
+	{
+		::Render->rmNormal();
+	}
+
 	Device.mView.set(mView_saved);
 	Device.mProject.set(mProject_saved);
 	Device.mFullTransform.set(mFullTransform_saved);
 
-	if(Device.m_pRender) {
+	if(Device.m_pRender) 
+	{
 		Device.m_pRender->SetCacheXform(Device.mView, Device.mProject);
 		Device.m_pRender->SetCacheXformOld(Device.mView_old, Device.mProject_old);
 	}

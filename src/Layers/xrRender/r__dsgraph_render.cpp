@@ -189,9 +189,8 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 	}
 }
 
-ICF void sorted_L1(mapSorted_Node& N)
+ICF static void RenderNode(mapSorted_Node& N)
 {
-	//PROF_EVENT("sorted_L1");
 	dxRender_Visual* V = N.val.pVisual;
 
 	VERIFY(V && V->shader._get());
@@ -211,52 +210,49 @@ ICF void sorted_L1(mapSorted_Node& N)
 	V->Render(calcLOD(N.val.ssa, V->vis.sphere.R));
 }
 
-//////////////////////////////////////////////////////////////////////////
-// HUD render
+static void __fastcall sorted_L1(mapSorted_Node* N)
+{
+	RenderNode(*N);
+}
+
+ICF static void RenderMap(mapSorted_T& Map, const bool clear = true)
+{
+	for (auto& Node : Map)
+	{
+		RenderNode(Node);
+	}
+
+	if (clear) Map.clear();
+}
+
 void R_dsgraph_structure::r_dsgraph_render_ui()
 {
-	auto& map = mapUI;
-	for (auto& Node : map)
-		sorted_L1(Node);
-	map.clear();
+	RenderMap(mapUI);
 }
 
 void R_dsgraph_structure::r_dsgraph_render_sorted_ui()
 {
 #if	RENDER!=R_R1
-	{
-		auto& map = mapUIEmissive;
-		for (auto& Node : map)
-			sorted_L1(Node);
-		map.clear();
-	}
+	RenderMap(mapUIEmissive);
 #endif
-	{
-		auto& map = mapUISorted;
-		for (auto& Node : map)
-			sorted_L1(Node);
-		map.clear();
-	}
+
+	mapUISorted.traverseRL(sorted_L1);
+	mapUISorted.clear();
 }
 
 void R_dsgraph_structure::r_dsgraph_render_hud()
 {
 	PROF_EVENT("r_dsgraph_render_hud");
-	CHudInitializer initalizer(true);
+	CHudInitializer initalizer(true, true);
 
-	// Rendering
-	rmNear();
-	auto& map = mapHUD;
-	for (auto& Node : map)
-		sorted_L1(Node);
-	map.clear();
+	RenderMap(mapHUD);
 
 #if	RENDER==R_R1
 	if (g_hud && g_hud->RenderActiveItemUIQuery())
-		r_dsgraph_render_hud_ui();// hud ui
+	{
+		r_dsgraph_render_hud_ui();
+	}
 #endif
-
-	rmNormal();
 }
 
 void R_dsgraph_structure::r_dsgraph_render_hud_ui()
@@ -264,80 +260,49 @@ void R_dsgraph_structure::r_dsgraph_render_hud_ui()
 	PROF_EVENT("r_dsgraph_render_hud_ui");
 	VERIFY(g_hud && g_hud->RenderActiveItemUIQuery());
 
-	CHudInitializer initalizer(true);
+	CHudInitializer initalizer(true, true);
 
 #if	RENDER==R_R2
-	// Targets, use accumulator for temporary storage
-	const ref_rt	rt_null;
-	RCache.set_RT(nullptr, 1);
-	RCache.set_RT(nullptr, 2);
-	RImplementation.Target->u_setrt(RImplementation.Target->rt_Color, rt_null, rt_null, RDepth);
+	RImplementation.Target->u_setrt(RImplementation.Target->rt_Color, nullptr, nullptr, RDepth);
 #endif
 
-	rmNear();
 	g_hud->RenderActiveItemUI();
-	rmNormal();
 }
 
-//////////////////////////////////////////////////////////////////////////
-// strict-sorted render
-void	R_dsgraph_structure::r_dsgraph_render_sorted(bool render_hud)
+void R_dsgraph_structure::r_dsgraph_render_sorted(bool render_hud)
 {
 	PROF_EVENT("r_dsgraph_render_sorted");
-	// Rendering
+
 	// Sorted (back to front)
-	auto& map = mapSorted;
-	for (auto& Node : map)
-		sorted_L1(Node);
-	map.clear();
+	mapSorted.traverseRL(sorted_L1);
+	mapSorted.clear();
 
 	if (render_hud)
+	{
 		r_dsgraph_render_sorted_hud();
+	}
 }
 
 void R_dsgraph_structure::r_dsgraph_render_sorted_hud()
 {
 	PROF_EVENT("r_dsgraph_render_sorted_hud");
 
-	CHudInitializer initalizer(true);
-
-	rmNear();
-	auto& map = mapHUDSorted;
-	for (auto& Node : map)
-		sorted_L1(Node);
-	map.clear();
-	rmNormal();
+	CHudInitializer initalizer(true, true);
+	RenderMap(mapHUDSorted);
 }
 
-//////////////////////////////////////////////////////////////////////////
-// strict-sorted render
-void	R_dsgraph_structure::r_dsgraph_render_emissive()
+void R_dsgraph_structure::r_dsgraph_render_emissive()
 {
 	PROF_EVENT("r_dsgraph_render_emissive");
-#if	RENDER!=R_R1
-	// Rendering
-	// Sorted (back to front)
-	{
-		auto& map = mapEmissive;
-		for (auto& Node : map)
-			sorted_L1(Node);
-		map.clear();
-	}
-	//	HACK: Calculate this only once
-	CHudInitializer initalizer(true);
 
-	rmNear();
-	{
-		auto& map = mapHUDEmissive;
-		for (auto& Node : map)
-			sorted_L1(Node);
-		map.clear();
-	}
-	rmNormal();
+#if	RENDER!=R_R1
+	RenderMap(mapEmissive);
+
+	CHudInitializer initalizer(true, true);
+	RenderMap(mapHUDEmissive);
 #endif
 }
 
-// strict-sorted render
 void R_dsgraph_structure::r_dsgraph_render_scope()
 {
 #if	RENDER==R_R4
@@ -345,51 +310,28 @@ void R_dsgraph_structure::r_dsgraph_render_scope()
 	RImplementation.Target->copy_position();
 
 	RImplementation.Target->u_setrt(NULL, NULL, RDepth);
+
 	CHudInitializer initalizer(true);
-	auto& map = mapHUDScopeMask;
-	for (auto& Node : map)
-		sorted_L1(Node);
-	map.clear();
+	RenderMap(mapHUDScopeMask);
 #endif
 }
 
-//////////////////////////////////////////////////////////////////////////
-// strict-sorted render
-void	R_dsgraph_structure::r_dsgraph_render_wmarks()
+void R_dsgraph_structure::r_dsgraph_render_wmarks()
 {
 	PROF_EVENT("r_dsgraph_render_wmarks");
+
 #if	RENDER!=R_R1
-	// Sorted (back to front)
-	auto& map = mapWmark;
-	for (auto& Node : map)
-		sorted_L1(Node);
-	map.clear();
+	RenderMap(mapWmark);
 #endif
 }
 
-//////////////////////////////////////////////////////////////////////////
-// strict-sorted render
-void	R_dsgraph_structure::r_dsgraph_render_distort()
+void R_dsgraph_structure::r_dsgraph_render_distort()
 {
 	PROF_EVENT("r_dsgraph_render_distort");
-	// Sorted (back to front)
-	{
-		auto& map = mapDistort;
-		for (auto& Node : map)
-			sorted_L1(Node);
-		map.clear();
-	}
+	RenderMap(mapDistort);
 
-	//	HACK: Calculate this only once
-	CHudInitializer initalizer(true);
-	rmNear();
-	{
-		auto& map = mapHUDDistort;
-		for (auto& Node : map)
-			sorted_L1(Node);
-		map.clear();
-	}
-	rmNormal();
+	CHudInitializer initalizer(true, true);
+	RenderMap(mapHUDDistort);
 }
 
 //////////////////////////////////////////////////////////////////////////
