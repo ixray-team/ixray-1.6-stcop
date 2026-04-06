@@ -269,7 +269,8 @@ bool CUIActorMenuBase::OnItemFocusLost(CUICellItem* itm)
 {
 	if ( itm )
 	{
-		m_lastFocusLostItem_id = ((PIItem)itm->m_pData)->object_id();
+		if (PIItem iItm = (PIItem)itm->m_pData)
+			m_lastFocusLostItem_id = iItm->object_id();
 		itm->m_selected = false;
 	}
 	else 
