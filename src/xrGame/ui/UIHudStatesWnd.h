@@ -13,12 +13,21 @@ class CUIXml;
 class CUIArrow;
 class CActor;
 class CUIStackPanel;
+class CInventoryItem;
+class CUIHudGroupCatalog;
 
 int const it_max = ALife::infl_max_count - 1;
 
 class CUIHudStatesWnd final : public CUIWindow
 {
 private:
+	enum class EWpnIconHudMode : u8
+	{
+		Legacy,
+		AmmoText,
+		Caliber,
+	};
+
 	typedef CUIWindow						inherited;
 //-	typedef ALife::EInfluenceType	EIndicatorType;
 
@@ -34,7 +43,7 @@ private:
 	CUIProgressShape*	m_progress_self = nullptr;
 	CUIArrow*			m_arrow = nullptr;
 	CUIArrow*			m_arrow_shadow = nullptr;
-	
+
 	float				m_last_health;
 	float				m_health_blink;
 
@@ -42,7 +51,7 @@ private:
 //	float				m_actor_radia_factor;
 	float				m_radia_hit;
 	shared_str			m_lanim_name;
-	
+
 	float				m_zone_cur_power[ALife::infl_max_count];
 //--	float				m_zone_max_power[hud_it_max];//<-- CActorCondition
 	float				m_zone_feel_radius[ALife::infl_max_count ];
@@ -51,27 +60,31 @@ private:
 
 	float				m_zone_feel_radius_max;
 	u32					m_timer_1sec;
-	
+
 	bool				m_fake_indicators_update;
 	bool				m_cur_state_LA[it_max];
 	bool				m_b_force_update;
-	bool				m_weapon_icon_text_mode = false;
 	bool				m_weapon_icon_show_weapon_name = false;
 	bool				m_use_adaptive_ammo_widget = false;
 	bool				m_use_fire_mode_icons = false;
+	EWpnIconHudMode		m_wpnIconHudMode = EWpnIconHudMode::Legacy;
 
 	bool				m_isZoneTouch = false;
 	const char*			m_onZoneTouch = {};
-	
+
 	CUIStatic*			m_ui_adaptive_clip = nullptr;
 	CUIStatic*			m_ui_adaptive_total = nullptr;
 	CUIStatic*			m_ui_fire_mode_icon = nullptr;
-	
+	CUIStatic*			m_ui_caliber_text = nullptr;
+	CUIStatic*			m_ui_caliber_icon = nullptr;
+
+	CUIHudGroupCatalog*		m_hud_group_catalog = nullptr;
+
 	xr_map<shared_str, shared_str>	m_fire_mode_icon_map;
 
 	CUIStackPanel*		UIStackPanelDangers;
 public:
-	
+
 	CUIStatic*			m_ui_weapon_cur_ammo = nullptr;
 	CUIStatic*			m_ui_weapon_fmj_ammo = nullptr;
 	CUIStatic*			m_ui_weapon_ap_ammo = nullptr;
@@ -84,7 +97,7 @@ public:
 	CUIStatic*			m_static_armor = nullptr;
 	CUIStatic*			m_static_health = nullptr;
 	CUIStatic*			m_static_weapon = nullptr;
-	
+
 	CUIProgressBar*		m_ui_health_bar = nullptr;
 	CUIProgressBar*		m_ui_armor_bar = nullptr;
 	CUIProgressBar*		m_ui_stamina_bar = nullptr;
@@ -128,5 +141,8 @@ protected:
 			void	Load_section_type	( ALife::EInfluenceType type, LPCSTR section );
 			void	UpdateIndicatorType	( CActor* actor, ALife::EInfluenceType type );
 			void	SwitchLA			( bool state, ALife::EInfluenceType type );
+
+			void	HideCaliberHudWidgets	();
+			void	UpdateCaliberHudForItem	( CInventoryItem* item );
 
 }; // class CUIHudStatesWnd
