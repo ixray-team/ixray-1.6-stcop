@@ -488,6 +488,11 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 
 		bool UseLocal = imManipulator.MatrixMode;
 		ref_texture& CurrentCoordsView = UseLocal ? TransformLocalOrWorld2 : TransformLocalOrWorld;
+		if (CurrentCoordsView->get_SRView() == nullptr)
+		{
+			CurrentCoordsView = EDevice->texture_null;
+		}
+
 		if (XRay::ImGui::ToolbarIconButton("##LocalOrWorldTransform", CurrentCoordsView->get_SRView()->GetRawSRV(), &UseLocal, ImDrawFlags_RoundCornersRight))
 		{
 			imManipulator.MatrixMode = !UseLocal;
