@@ -281,44 +281,47 @@ ICF void transfer_matrices(CBoneInstance* BI, u16 bonecount, bool phase_normal)
 	struct arraybuff{Fvector4 buff[3];};
 	arraybuff* array = 0;
 	RCache.get_ConstantDirect(s_bones_array_const, bonecount * sizeof(arraybuff), (void**)&array, 0, 0);
-
-	arraybuff* array_old = 0;
-	RCache.get_ConstantDirect(s_bones_array_const_old, bonecount * sizeof(arraybuff), (void**)&array_old, 0, 0);
+	if (!array) return;
 
 	if (phase_normal)
 	{
-		for (u16 bid = 0; bid < bonecount; bid++)
+		arraybuff* array_old = 0;
+		RCache.get_ConstantDirect(s_bones_array_const_old, bonecount * sizeof(arraybuff), (void**)&array_old, 0, 0);
+		if (array_old)
 		{
-			Fmatrix& M = BI[bid].mRenderTransform;
-			array[bid] =
+			for (u16 bid = 0; bid < bonecount; bid++)
 			{
-				M.i.x, M.j.x, M.k.x, M.c.x,
-				M.i.y, M.j.y, M.k.y, M.c.y,
-				M.i.z, M.j.z, M.k.z, M.c.z
-			};
+				Fmatrix& M = BI[bid].mRenderTransform;
+				array[bid] =
+				{
+					M.i.x, M.j.x, M.k.x, M.c.x,
+					M.i.y, M.j.y, M.k.y, M.c.y,
+					M.i.z, M.j.z, M.k.z, M.c.z
+				};
 
-			Fmatrix& O = BI[bid].mRenderTransform_old;
-			array_old[bid] =
-			{
-				O.i.x, O.j.x, O.k.x, O.c.x,
-				O.i.y, O.j.y, O.k.y, O.c.y,
-				O.i.z, O.j.z, O.k.z, O.c.z
-			};
+				Fmatrix& O = BI[bid].mRenderTransform_old;
+				array_old[bid] =
+				{
+					O.i.x, O.j.x, O.k.x, O.c.x,
+					O.i.y, O.j.y, O.k.y, O.c.y,
+					O.i.z, O.j.z, O.k.z, O.c.z
+				};
+			}
+			return;
 		}
 	}
-	else
-	{
-		for (u16 bid = 0; bid < bonecount; bid++)
-		{
-			Fmatrix& M = BI[bid].mRenderTransform;
 
-			array[bid] =
-			{
-				M.i.x, M.j.x, M.k.x, M.c.x,
-				M.i.y, M.j.y, M.k.y, M.c.y,
-				M.i.z, M.j.z, M.k.z, M.c.z
-			};
-		}
+	//выполним в том случае если PHASE_SMAP или моушн вектора выключены
+	for (u16 bid = 0; bid < bonecount; bid++)
+	{
+		Fmatrix& M = BI[bid].mRenderTransform;
+
+		array[bid] =
+		{
+			M.i.x, M.j.x, M.k.x, M.c.x,
+			M.i.y, M.j.y, M.k.y, M.c.y,
+			M.i.z, M.j.z, M.k.z, M.c.z
+		};
 	}
 #else
 	ref_constant array = RCache.get_c(s_bones_array_const);
