@@ -440,6 +440,39 @@ void CRender::Render()
 	{
 		static int& FaceCount = CCC_Integer::FastCommand("r_fce_count", 1, 0, 7);
 
+		extern float g_fSCREEN;
+
+		extern float r_ssaDISCARD;
+		extern float r_ssaDONTSORT;
+		extern float r_ssaLOD_A;
+		extern float r_ssaLOD_B;
+		extern float r_ssaHZBvsTEX;
+		extern float r_ssaGLOD_start, r_ssaGLOD_end;
+
+		auto saved_g_fSCREEN = g_fSCREEN;
+		auto saved_r_ssaDISCARD = r_ssaDISCARD;
+		auto saved_r_ssaDONTSORT = r_ssaDONTSORT;
+		auto saved_r_ssaLOD_A = r_ssaLOD_A;
+		auto saved_r_ssaLOD_B = r_ssaLOD_B;
+		auto saved_r_ssaGLOD_start = r_ssaGLOD_start;
+		auto saved_r_ssaGLOD_end = r_ssaGLOD_end;
+		auto saved_r_ssaHZBvsTEX = r_ssaHZBvsTEX;
+
+		u32 dwSize = Target->rt_Reflection->dwSize;
+
+		float fov_factor = _sqr(90.f / Device.fFOV);
+		g_fSCREEN = _sqr((float)dwSize) * fov_factor * (EPS_S + ps_r__LOD);
+
+		r_ssaDISCARD = _sqr(ps_r__ssaDISCARD) / g_fSCREEN;
+		r_ssaDONTSORT = _sqr(ps_r__ssaDONTSORT / 3) / g_fSCREEN;
+
+		r_ssaLOD_A = _sqr(ps_r2_ssaLOD_A / 3) / g_fSCREEN;
+		r_ssaLOD_B = _sqr(ps_r2_ssaLOD_B / 3) / g_fSCREEN;
+
+		r_ssaGLOD_start = _sqr(ps_r__GLOD_ssa_start / 3) / g_fSCREEN;
+		r_ssaGLOD_end = _sqr(ps_r__GLOD_ssa_end / 3) / g_fSCREEN;
+		r_ssaHZBvsTEX = _sqr(ps_r__ssaHZBvsTEX / 3) / g_fSCREEN;
+
 		for (auto i = 0; i < FaceCount; ++i)
 		{
 			GPU_EVENT(FORWARD_REFLECTIONS);
@@ -495,7 +528,7 @@ void CRender::Render()
 					CurrentEnv->fog_far
 				};
 
-				if(RImplementation.o.deffered_reflecitons && iFace == 7)
+				if(RImplementation.o.deffered_reflecitons && FaceCount == 7)
 				{
 					cmDir[2].mul(Device.vCameraTop, +1.0f);
 					cmDir[3].mul(Device.vCameraTop, -1.0f);
@@ -574,7 +607,6 @@ void CRender::Render()
 
 				mapWmark.clear();
 
-				u32 dwSize = Target->rt_Reflection->dwSize;
 				GRHI->ClearDepthStencil(Target->rt_Depth->pZRT, ERHI_CLEAR_TARGET::DEPTH, 1.0f, 0L);
 				Target->u_setrt(dwSize, dwSize, Target->rt_Reflection->pRT[iFace], NULL, NULL, Target->rt_Depth->pZRT);
 
@@ -594,6 +626,15 @@ void CRender::Render()
 
 			iFace = (iFace + 1) % 7;
 		}
+
+		g_fSCREEN = saved_g_fSCREEN;
+		r_ssaDISCARD = saved_r_ssaDISCARD;
+		r_ssaDONTSORT = saved_r_ssaDONTSORT;
+		r_ssaLOD_A = saved_r_ssaLOD_A;
+		r_ssaLOD_B = saved_r_ssaLOD_B;
+		r_ssaGLOD_start = saved_r_ssaGLOD_start;
+		r_ssaGLOD_end = saved_r_ssaGLOD_end;
+		r_ssaHZBvsTEX = saved_r_ssaHZBvsTEX;
 	}
 
 	if(ps_r_scale_mode > 1 || ps_r2_aa_type == 3)
@@ -684,8 +725,9 @@ void CRender::Render()
 	bool	split_the_scene_to_minimize_wait		= false;
 	if (ps_r2_ls_flags.test(R2FLAG_EXP_SPLIT_SCENE))	split_the_scene_to_minimize_wait=true;
 
-	if (mapHUDScopeMask.size() > 0) {
-		split_the_scene_to_minimize_wait = false;
+	if (mapHUDScopeMask.size() > 0) 
+	{
+		split_the_scene_to_minimize_wait = FALSE;
 	}
 
 	rmNormal();
@@ -796,7 +838,8 @@ void CRender::Render()
 
 	Target->copy_position();
 
-	if (!!o.dx11_disable_motion_vectors) {
+	if (!!o.dx11_disable_motion_vectors)
+	{
 		Target->pharse_velocity();
 	}
 

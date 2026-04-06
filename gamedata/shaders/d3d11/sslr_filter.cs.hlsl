@@ -10,8 +10,8 @@ uniform float4 scaled_screen_res;
 #define DISK32_RADIUS16 1.48565f
 #define DISK32_RADIUS32 1.0f
 
-#define NUM_SAMPLES 32
-#define DISK32_RADIUS DISK32_RADIUS32
+#define NUM_SAMPLES 16
+#define DISK32_RADIUS DISK32_RADIUS16
 
 static const float2 Disk32_Normalized[32] = {
 	float2(0.408569f, 0.024217f),
@@ -102,7 +102,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 		float D = DistributionGGX(NdotH, O.Roughness);
 		float SampleWeight = max(D * NdotH * SSLR.w, 1e-5);
 #else
-		float SampleWeight = NdotL * rcp(NdotH + EPS);
+		float SampleWeight = rcp(NdotH + EPS);
 #endif
 		
 		//HUD weight
