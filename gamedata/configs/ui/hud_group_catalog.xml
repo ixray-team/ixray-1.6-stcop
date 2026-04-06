@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<hud_group_catalog>
+	<group icon="ui_ammo_caliber_icon_fmj">
+		<section name="ammo_9x18_fmj">ui_hud_caliber_9x18</section>
+		<section name="ammo_9x19_fmj">ui_hud_caliber_9x19</section>
+		<section name="ammo_5.45x39_fmj">ui_hud_caliber_545</section>
+		<section name="ammo_5.56x45_ss190">ui_hud_caliber_556</section>
+		<section name="ammo_7.62x54_7h1">ui_hud_caliber_762</section>
+		<section name="ammo_pkm_100">ui_hud_caliber_762</section>
+		<section name="ammo_9x39_pab9">ui_hud_caliber_9x39</section>
+		<section name="ammo_11.43x23_fmj">ui_hud_caliber_45</section>
+		<section name="ammo_11.43x23_hydro">ui_hud_caliber_45</section>
+		<section name="ammo_12x70_buck">ui_hud_caliber_1270</section>
+		<section name="ammo_12x76_zhekan">ui_hud_caliber_1270</section>
+		<section name="ammo_gauss">ui_hud_caliber_gauss</section>
+		<section name="ammo_gauss_cardan">ui_hud_caliber_gauss</section>
+		<section name="ammo_vog-25">ui_hud_caliber_gl</section>
+		<section name="ammo_m209">ui_hud_caliber_gl</section>
+		<section name="ammo_og-7b">ui_hud_caliber_gl</section>
+		<section name="bolt">st_bolt</section>
+		<section name="wpn_knife">WP_KNIFE</section>
+		<section name="wpn_binoc">st_binocular_name</section>
+		<section name="detector_simple">st_detector1</section>
+		<section name="detector_advanced">st_detector2</section>
+		<section name="detector_elite">st_detector3</section>
+		<section name="detector_scientific">st_detector4</section>
+	</group>
+	<group icon="ui_ammo_caliber_icon_ap">
+		<section name="ammo_9x18_pmm">ui_hud_caliber_9x18_ap</section>
+		<section name="ammo_9x19_pbp">ui_hud_caliber_9x19_ap</section>
+		<section name="ammo_5.45x39_ap">ui_hud_caliber_545_ap</section>
+		<section name="ammo_5.56x45_ap">ui_hud_caliber_556_ap</section>
+		<section name="ammo_9x39_ap">ui_hud_caliber_9x39_ap</section>
+	</group>
+</hud_group_catalog>
