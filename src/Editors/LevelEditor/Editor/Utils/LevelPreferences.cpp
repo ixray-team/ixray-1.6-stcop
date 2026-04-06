@@ -1,114 +1,145 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "LevelPreferences.h"
 #include "ContentView.h"
 
 #include "../xrECore/Editor/UILogForm.h"
 
+template<typename T>
+T GetSafe(const nlohmann::json& j, const char* key, T& Out)
+{
+	if (!j.is_object())
+	{
+		return Out;
+	}
+
+	auto it = j.find(key);
+	if (it == j.end() || it->is_null())
+	{
+		return Out;
+	}
+
+	try
+	{
+		if constexpr (std::is_same_v<T, xr_string>)
+		{
+			Out = it->get<std::string>().c_str();
+		}
+		else if constexpr (std::is_same_v<T, shared_str>)
+		{
+			Out = it->get<std::string>().c_str();
+		}
+		else if constexpr (std::is_same_v<std::remove_cvref_t<T>, char*>)
+		{
+			auto OutTemp = it->get<std::string>();
+			xr_strcpy(Out, OutTemp.c_str());
+		}
+		else
+		{
+			Out = it->get<T>();
+		}
+	}
+	catch (...)
+	{
+	}
+
+	return Out;
+}
+
+const nlohmann::json* GetObjectSafe(const nlohmann::json& j, const char* key)
+{
+	if (!j.is_object())
+	{
+		return nullptr;
+	}
+
+	auto it = j.find(key);
+	if (it == j.end() || !it->is_object())
+	{
+		return nullptr;
+	}
+
+	return &(*it);
+}
+
 void CLevelPreferences::Load()
 {
-	inherited::Load		();
-
-	OpenObjectList = JSONData["windows"]["object_list"];
-	OpenProperties = JSONData["windows"]["properties"];
-	OpenWorldProperties = JSONData["windows"]["world_properties"];
-	
-	if (JSONData.contains("Compilers Path") && JSONData["Compilers Path"].contains("xrLC"))
+	if (JSONData.is_discarded() || JSONData.is_null())
 	{
-		Compiler_xrLC = ((std::string)JSONData["Compilers Path"]["xrLC"]).c_str();
+		Msg("Invalid JSON data");
+		return;
 	}
 
-	if (JSONData.contains("Compilers Path") && JSONData["Compilers Path"].contains("xrAI"))
+	inherited::Load();
+
+	if (const auto* windows = GetObjectSafe(JSONData, "windows"))
 	{
-		Compiler_xrAI = ((std::string)JSONData["Compilers Path"]["xrAI"]).c_str();
+		GetSafe(*windows, "object_list", OpenObjectList);
+		GetSafe(*windows, "properties", OpenProperties);
+		GetSafe(*windows, "world_properties", OpenWorldProperties);
+		GetSafe(*windows, "snap_list", OpenSnapList);
+		GetSafe(*windows, "light_anim", OpenLightAnim);
+
+		GetSafe(*windows, "log_clear_in_pie", UILogForm::bClearInPIE);
 	}
 
-	if (JSONData.contains("Compilers Path") && JSONData["Compilers Path"].contains("xrDO"))
+	if (const auto* comp = GetObjectSafe(JSONData, "Compilers Path"))
 	{
-		Compiler_xrDO = ((std::string)JSONData["Compilers Path"]["xrDO"]).c_str();
+		GetSafe(*comp, "xrLC", Compiler_xrLC);
+		GetSafe(*comp, "xrAI", Compiler_xrAI);
+		GetSafe(*comp, "xrDO", Compiler_xrDO);
 	}
 
-	if (JSONData.contains("PIE") && JSONData["PIE"].contains("ArtPos"))
+	if (const auto* cb = GetObjectSafe(JSONData, "ContentBrowser"))
 	{
-		PIEArtSpawnPos = JSONData["PIE"]["ArtPos"];
-	}
+		GetSafe(*cb, "CurPath", GContentView->CurrentDir);
 
-	if (JSONData.contains("LibaryEditor") && JSONData["LibaryEditor"].contains("Preview"))
-	{
-		PreviewRenderLibrary = JSONData["LibaryEditor"]["Preview"];
-	}
-
-	if (JSONData["windows"].contains("snap_list"))
-	{
-		OpenSnapList = JSONData["windows"]["snap_list"];
-	}
-
-	if (JSONData["windows"].contains("log_clear_in_pie"))
-	{
-		UILogForm::bClearInPIE = JSONData["windows"]["log_clear_in_pie"];
-	}
-
-	if (JSONData["windows"].contains("light_anim"))
-	{
-		OpenLightAnim = JSONData["windows"]["light_anim"];
-	}
-
-	if (JSONData["ContentBrowser"].contains("CurPath"))
-	{
-		GContentView->CurrentDir = JSONData["ContentBrowser"]["CurPath"];
-		if (!std::filesystem::exists(GContentView->CurrentDir.c_str()))
+		if (!std::filesystem::exists(xr_path(GContentView->CurrentDir)))
 		{
 			GContentView->CurrentDir = GContentView->RootDir;
 		}
-	}
 
-	if (JSONData["ContentBrowser"].contains("ViewMode"))
-	{
-		GContentView->ViewMode = JSONData["ContentBrowser"]["ViewMode"];
-	}
+		GetSafe(*cb, "ViewMode", GContentView->ViewMode);
+		GetSafe(*cb, "ISEPath", GContentView->VirtualPath);
+		GetSafe(*cb, "IsSpawnElement", GContentView->IsSpawnElement);
 
-	if (JSONData["ContentBrowser"].contains("ISEPath"))
-	{
-		GContentView->VirtualPath = JSONData["ContentBrowser"]["ISEPath"];
 		if (GContentView->IsSpawnElement)
 		{
 			GContentView->RescanISEDirectory(GContentView->VirtualPath);
 		}
 	}
-	
-	if (JSONData.contains("gizmo") && JSONData["gizmo"].contains("matrixmode"))
+
+	if (const auto* pie = GetObjectSafe(JSONData, "PIE"))
 	{
-		imManipulator.MatrixMode = JSONData["gizmo"]["matrixmode"];
+		GetSafe(*pie, "ArtPos", PIEArtSpawnPos);
 	}
 
-	if (JSONData["ContentBrowser"].contains("IsSpawnElement"))
+	if (const auto* gizmo = GetObjectSafe(JSONData, "gizmo"))
 	{
-		GContentView->IsSpawnElement = JSONData["ContentBrowser"]["IsSpawnElement"];
+		GetSafe(*gizmo, "matrixmode", imManipulator.MatrixMode);
 	}
 
-	if (JSONData.contains("Scene"))
+	if (const auto* targets = GetObjectSafe(JSONData, "targets"))
 	{
-		if (JSONData["Scene"].contains("ValidNames"))
+		for (auto it = Scene->FirstTool(); it != Scene->LastTool(); ++it)
 		{
-			Scene->IsValidateDublicateNames = JSONData["Scene"]["ValidNames"];
-		}
-		if (JSONData["Scene"].contains("ValidLod"))
-		{
-			Scene->IsValidateDublicateNames = JSONData["Scene"]["ValidLod"];
-		}
-		if (JSONData["Scene"].contains("ValidMake"))
-		{
-			Scene->IsValidateDublicateNames = JSONData["Scene"]["ValidMake"];
+			if (!it->second || it->first == OBJCLASS_DUMMY)
+			{
+				continue;
+			}
+
+			u32 flags;
+			if (GetSafe(*targets, it->second->ClassName(), flags))
+			{
+				it->second->m_EditFlags.flags = flags;
+			}
 		}
 	}
 
-	SceneToolsMapPairIt _I 	= Scene->FirstTool();
-	SceneToolsMapPairIt _E 	= Scene->LastTool();
-	for (; _I != _E; _I++)
+	if (const auto* scene = GetObjectSafe(JSONData, "Scene"))
 	{
-		if (_I->second && (_I->first != OBJCLASS_DUMMY) && JSONData["targets"].contains(_I->second->ClassName()))
-		{
-			_I->second->m_EditFlags.flags = JSONData["targets"][_I->second->ClassName()];
-		}
+		GetSafe(*scene, "ValidNames", Scene->IsValidateDublicateNames);
+		GetSafe(*scene, "ValidLod", Scene->IsValidateLODs);
+		GetSafe(*scene, "ValidMake", Scene->IsValidateAtMake);
 	}
 }
 
