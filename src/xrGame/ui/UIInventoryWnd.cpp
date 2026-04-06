@@ -367,3 +367,16 @@ bool CUIInventoryWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 
 	return false;
 }
+
+void CUIInventoryWnd::UpdateActor()
+{	
+	if (CActor* actor = GetInventoryOwner()->cast_actor())
+	{
+		if (CWeapon* wp = actor->inventory().ActiveItem() ? actor->inventory().ActiveItem()->cast_weapon() : nullptr)
+		{
+			wp->ForceUpdateAmmo();
+		}
+	}
+
+	InventoryUtilities::UpdateWeight(UIBagWnd, true);
+}
