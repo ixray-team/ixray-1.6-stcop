@@ -22,6 +22,44 @@
 		<texture>ui\ui_bottom_background</texture>
 	</bottom_static>
 
+  	<inventory_slot_wnd>
+		<slot> <!-- Knife -->
+		</slot>
+		<slot> <!-- Pistol -->
+			<slot_dragdrop x="38" y="118" width="156" height="104"
+            cell_width = "52" cell_height="52" rows_num="2" cols_num="3"
+            custom_placement="0" condition_progress_bar="1"/>
+ 		</slot>
+		<slot> <!-- Auto -->
+			<slot_dragdrop x="237" y="118" width="312" height="104"
+            cell_width = "52" cell_height="52" rows_num="2" cols_num="6"
+            custom_placement="0" condition_progress_bar="1"/>
+		</slot>
+		<slot> <!-- Grenade -->
+		</slot>
+		<slot> <!-- Binoc -->
+		</slot>
+		<slot> <!-- Bolt -->
+		</slot>
+		<slot> <!-- Outfit -->
+			<slot_dragdrop x="858" y="290" width="104" height="260" 
+            cell_width = "57" cell_height="57" rows_num="4" cols_num="4" 
+            custom_placement="0" use_full_scale_icon="true"/>
+		</slot>
+		<slot> <!-- PDA -->
+		</slot>
+		<slot> <!-- Detector -->
+		</slot>
+		<slot> <!-- Torch -->
+		</slot>
+		<slot> <!-- Artfake -->
+		</slot>
+		<slot> <!-- Helmet -->
+		</slot>
+		<slot> <!-- Backpack -->
+		</slot>
+	</inventory_slot_wnd>
+	
     <dragdrop_bag x="22" y="33" width="310" height="442"
             cell_width = "41" cell_height="41" rows_num="10" cols_num="7" 
             unlimited="1" group_similar="1" condition_progress_bar="1"/>
@@ -29,22 +67,6 @@
     <dragdrop_belt x="645" y="136" width="410" height="60"
             cell_width = "60" cell_height="60" rows_num="1" cols_num="5"/>
 
-    <dragdrop_outfit x="858" y="290" width="104" height="260" 
-            cell_width = "57" cell_height="57" rows_num="4" cols_num="4" 
-            custom_placement="0"/>
-
-    <dragdrop_pistol x="38" y="118" width="156" height="104"
-            cell_width = "52" cell_height="52" rows_num="2" cols_num="3"
-            custom_placement="0" condition_progress_bar="1"/>
-
-    <dragdrop_automatic x="237" y="118" width="312" height="104"
-            cell_width = "52" cell_height="52" rows_num="2" cols_num="6"
-            custom_placement="0" condition_progress_bar="1"/>
-
-
-
-
-	
     <bag_static x="15" y="240" width="350" height="480" complex_mode="1">		
         <text x="30" y="8" font="graffiti22" r="231" g="153" b="22">ui_inv_bag</text>
     </bag_static>
