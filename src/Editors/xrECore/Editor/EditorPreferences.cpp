@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 #include "stdafx.h"
 
 #include <fstream>
@@ -269,122 +269,196 @@ void CCustomPreferences::Edit()
 }
 //---------------------------------------------------------------------------
 extern bool bAllowLogCommands;
+
+template<typename T>
+T GetSafe(const nlohmann::json& j, const char* key, T& Out)
+{
+	if (!j.is_object())
+	{
+		return Out;
+	}
+
+	auto it = j.find(key);
+	if (it == j.end() || it->is_null())
+	{
+		return Out;
+	}
+
+	try
+	{
+		if constexpr (std::is_same_v<T, xr_string>)
+		{
+			Out = it->get<std::string>().c_str();
+		}
+		else if constexpr (std::is_same_v<T, shared_str>)
+		{
+			Out = it->get<std::string>().c_str();
+		}
+		else if constexpr(std::is_same_v<std::remove_cvref_t<T>, char*>)
+		{
+			auto OutTemp = it->get<std::string>();
+			xr_strcpy(Out, OutTemp.c_str());
+		}
+		else
+		{
+			Out = it->get<T>();
+		}
+	}
+	catch (...)
+	{
+	}
+
+	return Out;
+}
+
+const nlohmann::json* GetObjectSafe(const nlohmann::json& j, const char* key)
+{
+	if (!j.is_object())
+	{
+		return nullptr;
+	}
+
+	auto it = j.find(key);
+	if (it == j.end() || !it->is_object())
+	{
+		return nullptr;
+	}
+
+	return &(*it);
+}
+
 void CCustomPreferences::Load()
 {
-	if (!JSONData.contains("editor_prefs"))
+	// --- EDITOR PREFS ---
+	const auto* prefs = GetObjectSafe(JSONData, "editor_prefs");
+	if (!prefs)
 	{
 		return;
 	}
 
-	psDeviceFlags.flags = JSONData["editor_prefs"]["device_flags"];
-	psSoundFlags.flags = JSONData["editor_prefs"]["sound_flags"];
+	// flags
+	GetSafe(*prefs, "device_flags", psDeviceFlags.flags);
+	GetSafe(*prefs, "sound_flags", psSoundFlags.flags);
 
-	if (JSONData["editor_prefs"].contains("theme"))
+	// theme
+	if (int themeID; GetSafe(*prefs, "theme", themeID))
 	{
-		CUIThemeManager& ThemeInstance = CUIThemeManager::Get();
-		int ThemeID = JSONData["editor_prefs"]["theme"];
-		ThemeInstance.ThemeID = (ThemeID);
+		CUIThemeManager::Get().ThemeID = themeID;
 	}
 
-	if (JSONData["editor_prefs"].contains("sound_volume"))
+	// sound
+	GetSafe(*prefs, "sound_volume", sound_volume);
+
+	// tools
+	GetSafe(*prefs, "tools_settings", Tools->m_Settings.flags);
+
+	// view
+	GetSafe(*prefs, "view_np", view_np);
+	GetSafe(*prefs, "view_fp", view_fp);
+	GetSafe(*prefs, "view_fov", view_fov);
+
+	// fog
+	GetSafe(*prefs, "fog_color", fog_color);
+	GetSafe(*prefs, "fog_fogness", fog_fogness);
+
+	// camera
+	GetSafe(*prefs, "cam_fly_speed", cam_fly_speed);
+	GetSafe(*prefs, "cam_fly_alt", cam_fly_alt);
+	GetSafe(*prefs, "cam_sens_rot", cam_sens_rot);
+	GetSafe(*prefs, "cam_sens_move", cam_sens_move);
+
+	// ui toggles
+	GetSafe(*prefs, "ShowAxisButtons", ShowAxisButtons);
+	GetSafe(*prefs, "ShowOldCameraButtons", ShowOldCameraButtons);
+	GetSafe(*prefs, "bMoreStats", bMoreStats);
+	GetSafe(*prefs, "bp_cull", bp_cull);
+	GetSafe(*prefs, "scale_fixed", scale_fixed);
+
+	// tools sens
+	GetSafe(*prefs, "tools_sens_move", tools_sens_move);
+	GetSafe(*prefs, "tools_sens_rot", tools_sens_rot);
+	GetSafe(*prefs, "tools_sens_scale", tools_sens_scale);
+
+	// misc
+	GetSafe(*prefs, "bp_lim_depth", bp_lim_depth);
+	GetSafe(*prefs, "snap_angle", snap_angle);
+	GetSafe(*prefs, "snap_move", snap_move);
+	GetSafe(*prefs, "snap_moveto", snap_moveto);
+
+	GetSafe(*prefs, "bp_depth_tolerance", bp_depth_tolerance);
+
+	// grid / scene
+	GetSafe(*prefs, "grid_cell_size", grid_cell_size);
+	GetSafe(*prefs, "grid_cell_count", grid_cell_count);
+	GetSafe(*prefs, "scene_undo_level", scene_undo_level);
+	GetSafe(*prefs, "scene_recent_count", scene_recent_count);
+	GetSafe(*prefs, "scene_clear_color", scene_clear_color);
+
+	// object flags
+	GetSafe(*prefs, "object_flags", object_flags.flags);
+
+	// --- RENDER ---
+	if (const auto* render = GetObjectSafe(JSONData, "render"))
 	{
-		sound_volume = JSONData["editor_prefs"]["sound_volume"];
-	}
+		GetSafe(*render, "render_radius", EDevice->RenderRadius);
+		GetSafe(*render, "w", start_w);
+		GetSafe(*render, "h", start_h);
+		GetSafe(*render, "quality", EDevice->m_ScreenQuality);
 
-	Tools->m_Settings.flags = JSONData["editor_prefs"]["tools_settings"], Tools->m_Settings.flags;
-
-	view_np = JSONData["editor_prefs"]["view_np"];
-	view_fp = JSONData["editor_prefs"]["view_fp"];
-	view_fov = JSONData["editor_prefs"]["view_fov"];
-	fog_color = JSONData["editor_prefs"]["fog_color"];
-	fog_fogness = JSONData["editor_prefs"]["fog_fogness"];
-	cam_fly_speed = JSONData["editor_prefs"]["cam_fly_speed"];
-	cam_fly_alt = JSONData["editor_prefs"]["cam_fly_alt"];
-	cam_sens_rot = JSONData["editor_prefs"]["cam_sens_rot"];
-	cam_sens_move = JSONData["editor_prefs"]["cam_sens_move"];
-
-	if (JSONData["editor_prefs"].contains("ShowAxisButtons"))
-		ShowAxisButtons = JSONData["editor_prefs"]["ShowAxisButtons"];
-
-	if (JSONData["editor_prefs"].contains("ShowOldCameraButtons"))
-		ShowOldCameraButtons = JSONData["editor_prefs"]["ShowOldCameraButtons"];
-
-	tools_sens_move = JSONData["editor_prefs"]["tools_sens_move"];
-	tools_sens_rot = JSONData["editor_prefs"]["tools_sens_rot"];
-	tools_sens_scale = JSONData["editor_prefs"]["tools_sens_scale"];
-	bp_lim_depth = JSONData["editor_prefs"]["bp_lim_depth"];
-
-	if (JSONData["editor_prefs"].contains("bMoreStats"))
-	{
-		bMoreStats = JSONData["editor_prefs"]["bMoreStats"];
-	}
-
-	if (JSONData["editor_prefs"].contains("bp_cull"))
-		bp_cull = JSONData["editor_prefs"]["bp_cull"];
-
-	bp_depth_tolerance = JSONData["editor_prefs"]["tools_sens_rot"];
-	snap_angle = JSONData["editor_prefs"]["snap_angle"];
-	snap_move = JSONData["editor_prefs"]["snap_move"];
-	snap_moveto = JSONData["editor_prefs"]["snap_moveto"];
-
-	if (JSONData["editor_prefs"].contains("scale_fixed"))
-	{
-		scale_fixed = JSONData["editor_prefs"]["scale_fixed"];
-	}
-
-	grid_cell_size = JSONData["editor_prefs"]["grid_cell_size"];
-	grid_cell_count = JSONData["editor_prefs"]["grid_cell_count"];
-	scene_undo_level = JSONData["editor_prefs"]["scene_undo_level"];
-	scene_recent_count = JSONData["editor_prefs"]["scene_recent_count"];
-	scene_clear_color = JSONData["editor_prefs"]["scene_clear_color"];
-	object_flags.flags = JSONData["editor_prefs"]["object_flags"];
-	EDevice->RenderRadius = JSONData["render"]["render_radius"];
-
-	start_w = JSONData["render"]["w"];
-	start_h = JSONData["render"]["h"];
-
-	if (JSONData["render"].contains("quality"))
-		EDevice->m_ScreenQuality = JSONData["render"]["quality"];
-
-	int x = JSONData["render"]["x"];
-	int y = JSONData["render"]["y"];
-
-	SDL_SetWindowPosition(g_AppInfo.Window, x, y);
-
-	start_maximized = JSONData["render"]["maximized"];
-
-	bAllowLogCommands = JSONData["windows"]["log"];
-	// read recent list    
-	for (u32 i = 0; i < scene_recent_count; i++)
-	{
-		string64 buffer = {};
-		sprintf(buffer, "recent_files_%d", i);
-
-		std::string fn = JSONData["editor_prefs"][buffer];
-		if (fn.size())
+		int x = 0, y = 0;
+		if (GetSafe(*render, "x", x) && GetSafe(*render, "y", y))
 		{
-			AStringIt it = std::find(scene_recent_list.begin(), scene_recent_list.end(), fn.c_str());
+			SDL_SetWindowPosition(g_AppInfo.Window, x, y);
+		}
+
+		GetSafe(*render, "maximized", start_maximized);
+	}
+
+	// --- WINDOWS ---
+	if (const auto* windows = GetObjectSafe(JSONData, "windows"))
+	{
+		GetSafe(*windows, "log", bAllowLogCommands);
+	}
+
+	// --- RECENT FILES ---
+	for (u32 i = 0; i < scene_recent_count; ++i)
+	{
+		char buffer[64];
+		snprintf(buffer, sizeof(buffer), "recent_files_%d", i);
+
+		xr_string fn;
+		GetSafe(*prefs, buffer, fn);
+		if (!fn.empty())
+		{
+			auto it = std::find(scene_recent_list.begin(), scene_recent_list.end(), fn);
 			if (it == scene_recent_list.end())
+			{
 				scene_recent_list.push_back(fn.c_str());
+			}
 		}
 	}
-	// Weather
-	if (JSONData["editor_prefs"].contains("env_from_time"))
+
+	// --- WEATHER ---
+	if (prefs)
 	{
-		env_from_time = JSONData["editor_prefs"]["env_from_time"];
-		env_to_time = JSONData["editor_prefs"]["env_to_time"];
-		env_speed = JSONData["editor_prefs"]["env_speed"];
+		if (prefs->contains("env_from_time"))
+		{
+			GetSafe(*prefs, "env_from_time", env_from_time);
+			GetSafe(*prefs, "env_to_time", env_to_time);
+			GetSafe(*prefs, "env_speed", env_speed);
+		}
+
+		GetSafe(*prefs, "weather", sWeather);
 	}
 
-	sWeather = ((std::string)(JSONData["editor_prefs"]["weather"])).c_str();
-	if (JSONData["ContentBrowser"].contains("file_custom_icon"))
+	// --- CONTENT BROWSER EXTRA ---
+	if (const auto* cb = GetObjectSafe(JSONData, "ContentBrowser"))
 	{
-		custom_icons = JSONData["ContentBrowser"]["file_custom_icon"].get<std::map<std::string, std::string>>();
+		GetSafe(*cb, "file_custom_icon", custom_icons);
 	}
-	
 	// load shortcuts
-	LoadShortcuts		(JSONData);
-	UI->LoadSettings	(JSONData);
+	LoadShortcuts(JSONData);
+	UI->LoadSettings(JSONData);
 }
 
 void CCustomPreferences::Save()
@@ -512,6 +586,12 @@ void CCustomPreferences::LoadConfig()
 	if (std::filesystem::exists(jfn))
 	{
 		std::ifstream f(jfn);
+		if (!f.is_open())
+		{
+			Msg("! Cannot open file: %s", jfn);
+			return;
+		}
+
 		f >> JSONData;
 	}
 	else
