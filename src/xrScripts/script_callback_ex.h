@@ -104,6 +104,7 @@ public:
     template<typename... Args>
     TResult operator()(Args &&...args) const
     {
+        PROF_EVENT(__FUNCTION__);
         try
         {
             try
@@ -134,6 +135,7 @@ public:
     template<typename... Args>
     TResult operator()(Args &&...args)
     {
+        PROF_EVENT(__FUNCTION__);
         try
         {
             try
@@ -166,6 +168,7 @@ template<>
 template<typename... Args>
 void CScriptCallbackEx<void>::operator()(Args &&...args) const
 {
+    PROF_EVENT(__FUNCTION__);
     try
     {
         try
@@ -197,6 +200,7 @@ template<>
 template<typename... Args>
 void CScriptCallbackEx<void>::operator()(Args &&...args)
 {
+    PROF_EVENT(__FUNCTION__);
     try
     {
         try
