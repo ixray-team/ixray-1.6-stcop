@@ -9,7 +9,7 @@ const LPCSTR UI_PATH				= "ui";
 using XML_NODE = tinyxml2::XMLNode;
 using XML_ATTRIBUTE = tinyxml2::XMLAttribute;
 
-class XRCORE_API	CXml  
+class XRCORE_API	CXml
 {
 	bool 				Load					(LPCSTR path_alias, LPCSTR xml_filename);
 public:
@@ -18,6 +18,7 @@ public:
 	virtual				~CXml					();
 	void				ClearInternal			();
 	static void			InvalidateCache			();
+	static void			RemoveFromCache			(LPCSTR path_alias, LPCSTR xml_path);
 
 	bool 				Load					(LPCSTR path_alias, LPCSTR path, LPCSTR  xml_filename);
 	void				Save					();
@@ -43,7 +44,7 @@ public:
 	int					ReadAttribInt			(LPCSTR path, int index, LPCSTR attrib, int default_int_val = 0);
 	int					ReadAttribInt			(XML_NODE* start_node, LPCSTR path, int index, LPCSTR attrib, int default_int_val = 0);
 	int					ReadAttribInt			(XML_NODE* node, LPCSTR attrib, int default_int_val);
-	
+
 	bool				ReadAttribBool			(const char* path, int index, const char* attrib, bool default_value = false);
 	bool				ReadAttribBool			(XML_NODE* start_node, const char* path, int index, const char* attrib, bool default_value = false);
 	bool				ReadAttribBool			(XML_NODE* node, const char* attrib, bool default_value = false);
@@ -62,12 +63,12 @@ public:
 
 #ifdef DEBUG // debug & mixed
 	//проверка того, что аттрибуты у тегов уникальны
-	//(если не NULL, то уникальность нарушена и возврашается имя 
+	//(если не NULL, то уникальность нарушена и возврашается имя
 	//повторяющегося атрибута)
 	LPCSTR				CheckUniqueAttrib		(XML_NODE* start_node, LPCSTR tag_name, LPCSTR attrib_name);
 #endif
 
-	//переместиться по XML дереву 
+	//переместиться по XML дереву
 	//путь задается в форме PARENT:CHILD:CHIDLS_CHILD
 	//node_index - номер, если узлов с одним именем несколько
 	XML_NODE*			NavigateToNode			(LPCSTR  path, int node_index = 0);
