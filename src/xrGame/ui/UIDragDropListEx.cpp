@@ -724,7 +724,12 @@ bool CUICellContainer::AddSimilar(CUICellItem* itm)
 
 	const PIItem iitem = static_cast<PIItem>(itm->m_pData);
 	if (iitem && iitem->m_pInventory && iitem->m_pInventory->ItemFromSlot(iitem->BaseSlot()) == iitem)
-		return false;
+	{
+		const bool allowSlottedGrenadeStack =
+			(iitem->BaseSlot() == GRENADE_SLOT) && (iitem->cast_grenade() != nullptr);
+		if (!allowSlottedGrenadeStack)
+			return false;
+	}
 
 	if (!iitem->CanStack())
 		return false;

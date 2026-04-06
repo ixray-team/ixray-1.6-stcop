@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="ui_hud_caliber_9x18">
+		<text>9x18</text>
+	</string>
+	<string id="ui_hud_caliber_9x19">
+		<text>9x19</text>
+	</string>
+	<string id="ui_hud_caliber_545">
+		<text>5.45</text>
+	</string>
+	<string id="ui_hud_caliber_556">
+		<text>5.56</text>
+	</string>
+	<string id="ui_hud_caliber_762">
+		<text>7.62</text>
+	</string>
+	<string id="ui_hud_caliber_9x39">
+		<text>9x39</text>
+	</string>
+	<string id="ui_hud_caliber_45">
+		<text>.45</text>
+	</string>
+	<string id="ui_hud_caliber_1270">
+		<text>12/70</text>
+	</string>
+	<string id="ui_hud_caliber_gauss">
+		<text>Гаусс</text>
+	</string>
+	<string id="ui_hud_caliber_gl">
+		<text>ГЛ</text>
+	</string>
+	<string id="ui_hud_caliber_9x18_ap">
+		<text>9x18 ББ</text>
+	</string>
+	<string id="ui_hud_caliber_9x19_ap">
+		<text>9x19 ББ</text>
+	</string>
+	<string id="ui_hud_caliber_545_ap">
+		<text>5.45 ББ</text>
+	</string>
+	<string id="ui_hud_caliber_556_ap">
+		<text>5.56 ББ</text>
+	</string>
+	<string id="ui_hud_caliber_9x39_ap">
+		<text>9x39 ББ</text>
+	</string>
+</string_table>
