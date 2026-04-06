@@ -22,14 +22,14 @@
 #include "Widgets/UIStackPanel.h"
 #include "Widgets/UIGamepadLegend.h"
 
-CUI3dStatic* UIHelper::Create3dStatic( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent, bool critical )
+CUI3dStatic* UIHelper::Create3dStatic( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent, bool critical, int node_index )
 {
     // If it's not critical element, then don't crash if it doesn't exist
-    if (!critical && !xml.NavigateToNode(ui_path, 0))
+    if (!critical && !xml.NavigateToNode(ui_path, node_index))
         return nullptr;
 
     auto ui = new CUI3dStatic();
-    if (!CUIXmlInit::InitStatic(xml, ui_path, 0, ui, critical))
+    if (!CUIXmlInit::InitStatic(xml, ui_path, node_index, ui, critical))
     {
         R_ASSERT4(!critical, "Failed to create static", ui_path, xml.m_xml_file_name);
         xr_delete(ui);
@@ -42,14 +42,14 @@ CUI3dStatic* UIHelper::Create3dStatic( CUIXml& xml, LPCSTR ui_path, CUIWindow* p
     return ui;
 }
 
-CUIStatic* UIHelper::CreateStatic( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent, bool critical )
+CUIStatic* UIHelper::CreateStatic( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent, bool critical, int node_index )
 {
     // If it's not critical element, then don't crash if it doesn't exist
-    if (!critical && !xml.NavigateToNode(ui_path, 0))
+    if (!critical && !xml.NavigateToNode(ui_path, node_index))
         return nullptr;
 
     auto ui = new CUIStatic();
-    if (!CUIXmlInit::InitStatic(xml, ui_path, 0, ui, critical))
+    if (!CUIXmlInit::InitStatic(xml, ui_path, node_index, ui, critical))
     {
         R_ASSERT4(!critical, "Failed to create static", ui_path, xml.m_xml_file_name);
         xr_delete(ui);
