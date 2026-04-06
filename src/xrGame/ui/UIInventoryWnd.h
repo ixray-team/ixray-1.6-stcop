@@ -50,6 +50,7 @@ public:
 
 	virtual CUIDragDropListEx*	GetActorList				() { return m_pUIBagList; }
 	virtual CUIDragDropListEx*	GetBeltList					() { return m_pUIBeltList; }
+	virtual void				UpdateActor					();
 protected:
 	CUIStatic					UIBeltSlots;
 	CUIStatic					UIBack;
