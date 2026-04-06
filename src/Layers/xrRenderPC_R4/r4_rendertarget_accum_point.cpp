@@ -17,11 +17,11 @@ void CRenderTarget::accum_point		(light* L)
 		shader			= s_accum_point;
 	}
 
-	CHudInitializer initalizer(false);
+	CHudInitializer initalizer(false, true);
 
-	if(L->flags.bHudMode) {
+	if(L->flags.bHudMode) 
+	{
 		initalizer.SetHudMode();
-		RImplementation.rmNear();
 	}
 
 	// Common
@@ -103,8 +103,8 @@ void CRenderTarget::accum_point		(light* L)
 
 	u_DBT_disable				();
 
-	if(L->flags.bHudMode) {
-		RImplementation.rmNormal();
+	if(L->flags.bHudMode)
+	{
 		initalizer.SetDefaultMode();
 	}
 }
