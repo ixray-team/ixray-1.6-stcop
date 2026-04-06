@@ -474,17 +474,6 @@ _keyboard gamepads[] =
 	{ "cDPAD_DOWN",             SDL_GAMEPAD_BUTTON_DPAD_DOWN,     "D-Pad Down" },
 	{ "cDPAD_LEFT",             SDL_GAMEPAD_BUTTON_DPAD_LEFT,     "D-Pad Left" },
 	{ "cDPAD_RIGHT",            SDL_GAMEPAD_BUTTON_DPAD_RIGHT,    "D-Pad Right" },
-	{ "cMISC1",                 SDL_GAMEPAD_BUTTON_MISC1,         "Misc 1" },
-	{ "cRPADDLE1",              SDL_GAMEPAD_BUTTON_RIGHT_PADDLE1, "Upper Right Paddle" },
-	{ "cLPADDLE1",              SDL_GAMEPAD_BUTTON_LEFT_PADDLE1,  "Upper Left Paddle" },
-	{ "cRPADDLE2",              SDL_GAMEPAD_BUTTON_RIGHT_PADDLE2, "Lower Right Paddle" },
-	{ "cLPADDLE2",              SDL_GAMEPAD_BUTTON_LEFT_PADDLE2,  "Lower Left Paddle" },
-	{ "cTOUCHPAD",              SDL_GAMEPAD_BUTTON_TOUCHPAD,      "Touchpad" },
-	{ "cMISC2",                 SDL_GAMEPAD_BUTTON_MISC2,         "Misc 2" },
-	{ "cMISC3",                 SDL_GAMEPAD_BUTTON_MISC3,         "Misc 3" },
-	{ "cMISC4",                 SDL_GAMEPAD_BUTTON_MISC4,         "Misc 4" },
-	{ "cMISC5",                 SDL_GAMEPAD_BUTTON_MISC5,         "Misc 5" },
-	{ "cMISC6",                 SDL_GAMEPAD_BUTTON_MISC6,         "Misc 6" },
 
 	{ "cLTRIGGER",				DIK_LTRIGGER,					  "LT" },
 	{ "cRTRIGGER",				DIK_RTRIGGER,					  "RT" },
@@ -811,28 +800,6 @@ const char* GetGamepadSymbol(int dik)
 			return XBOX_DPAD_LEFT;
 		case SDL_GAMEPAD_BUTTON_DPAD_RIGHT:
 			return XBOX_DPAD_RIGHT;
-		case SDL_GAMEPAD_BUTTON_MISC1:
-			return XBOX_RESERVED_00;
-		case SDL_GAMEPAD_BUTTON_RIGHT_PADDLE1:
-			return XBOX_RESERVED_01;
-		case SDL_GAMEPAD_BUTTON_LEFT_PADDLE1:
-			return XBOX_RESERVED_02;
-		case SDL_GAMEPAD_BUTTON_RIGHT_PADDLE2:
-			return XBOX_RESERVED_03;
-		case SDL_GAMEPAD_BUTTON_LEFT_PADDLE2:
-			return XBOX_RESERVED_04;
-		case SDL_GAMEPAD_BUTTON_TOUCHPAD:
-			return XBOX_RESERVED_05;
-		case SDL_GAMEPAD_BUTTON_MISC2:
-			return XBOX_RESERVED_06;
-		case SDL_GAMEPAD_BUTTON_MISC3:
-			return XBOX_RESERVED_07;
-		case SDL_GAMEPAD_BUTTON_MISC4:
-			return XBOX_RESERVED_08;
-		case SDL_GAMEPAD_BUTTON_MISC5:
-			return XBOX_RESERVED_09;
-		case SDL_GAMEPAD_BUTTON_MISC6:
-			return XBOX_RESERVED_10;
 		case DIK_LTRIGGER:
 			return XBOX_LTRIGGER;
 		case DIK_RTRIGGER:
