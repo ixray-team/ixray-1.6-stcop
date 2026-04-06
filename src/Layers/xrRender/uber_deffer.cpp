@@ -13,7 +13,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 	ref_texture pTexture; pTexture.create(fname);
 
 #ifdef _EDITOR
-	ps_r__common_flags.set(R2FLAG_USE_BUMP, true);
+	ps_r__common_flags.set(R2FLAG_USE_BUMP, TRUE);
 #endif
 
 	bool bump = ps_r__common_flags.test(R2FLAG_USE_BUMP) && pTexture.bump_exist();
@@ -348,8 +348,8 @@ void uber_forward(CBlender_Compile& C, bool hq, const char* vs, const char* ps, 
 
 	if (blend) 
 	{
-		C.PassSET_ZB(true, false);
-		C.PassSET_Blend(true, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, 0);
+		C.PassSET_ZB(TRUE, FALSE);
+		C.PassSET_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, 0);
 	}
 
 #ifndef _EDITOR
