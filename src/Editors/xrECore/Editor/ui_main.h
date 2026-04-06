@@ -1,5 +1,9 @@
 #pragma once
+
+#define JSON_NOEXCEPTION
+#define JSON_THROW_USER do{}while(false);
 #include <nlohmann/json.hpp>
+using json = nlohmann::json;
 
 #include "UI_MainCommand.h"
 #include "../../xrEngine/IInputReceiver.h"
