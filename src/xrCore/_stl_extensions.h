@@ -71,19 +71,19 @@ template <typename T, typename allocator = xalloc<T> >
 using xr_vector = std::vector<T, allocator>;
 
 template <typename T>
-ICF void fast_erase(xr_vector<T>& vec, typename xr_vector<T>::iterator it)
+ICF T& fast_erase(xr_vector<T>& vec, typename xr_vector<T>::iterator it)
 {
-	if (it != vec.end() - 1)
-		*it = std::move(vec.back());
+	T& moved = *it = std::move(vec.back());
 	vec.pop_back();
+	return moved;
 }
 
 template <typename T>
-ICF void fast_erase(xr_vector<T>& vec, size_t idx)
+ICF T& fast_erase(xr_vector<T>& vec, size_t idx)
 {
-	if (idx < vec.size() - 1)
-		vec[idx] = std::move(vec.back());
+	T& moved = vec[idx] = std::move(vec.back());
 	vec.pop_back();
+	return moved;
 }
 
 // deque
