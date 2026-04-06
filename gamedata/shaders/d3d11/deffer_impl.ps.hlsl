@@ -179,7 +179,9 @@ void main(p_bumped_new I, out OutStructure O)
 	float3 LightDir = mul((float3x3)m_V, L_sun_dir_w.xyz);
 	
     M.Sun = saturate(M.Sun * 2.0f);
-    M.Color.xyz = GammaToLinear(saturate(M.Color.xyz));
+	
+    M.Color.xyz = GammaToLinear(M.Color.xyz);
+    M.Specular = GammaToLinear(M.Specular);
 	
 #ifndef USE_R2_STATIC_SUN
 	float4 Point = float4(M.Point.xyz, 1.f);
