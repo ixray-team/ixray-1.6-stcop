@@ -232,6 +232,7 @@ bool CPSLibrary::Load2()
             	} else
             	{
             		m_PEDs.push_back(def);
+					m_all_ps.push_back(def->m_Name);
             	}
             }
             else
@@ -254,6 +255,7 @@ bool CPSLibrary::Load2()
             	} else
             	{
             		m_PGDs.push_back(def);
+					m_all_ps.push_back(def->m_Name);
             	}
             }
             else
