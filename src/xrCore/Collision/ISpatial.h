@@ -158,6 +158,8 @@ public:
 
 		// allow different spaces
 		ISpatial_DB* space = nullptr;
+
+		size_t items_idx = 0;
 	} spatial;
 
 private:
@@ -287,6 +289,7 @@ struct ISpatial_NODE
 	ICF void _insert(ISpatialShared S)
 	{
 		S->spatial.node_ptr = this;
+		S->spatial.items_idx = items.size();
 		items.push_back(S);
 	}
 
@@ -294,17 +297,9 @@ struct ISpatial_NODE
 	{
 		S->spatial.node_ptr = nullptr;
 
-		for (size_t i = 0; i < items.size(); ++i)
-		{
-			ISpatialShared& node = items[i];
-			if (node == S)
-			{
-				if (i != items.size() - 1)
-					node = items.back();
-				items.pop_back();
-				break;
-			}
-		}
+		size_t idx = S->spatial.items_idx;
+		ISpatialShared& moved = fast_erase(items, idx);
+		moved->spatial.items_idx = idx;
 	}
 
 	ICF bool _empty() const
