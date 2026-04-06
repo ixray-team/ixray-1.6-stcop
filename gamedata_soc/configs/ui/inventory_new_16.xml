@@ -18,25 +18,50 @@
 	</back>
 
 
+  	<inventory_slot_wnd>
+		<slot> <!-- Knife -->
+		</slot>
+		<slot> <!-- Pistol -->
+			<slot_dragdrop x="150" y="118" width="117" height="104"
+            cell_width="39" cell_height="52" rows_num="2" cols_num="3"
+            custom_placement="0" condition_progress_bar="1"/>
+ 		</slot>
+		<slot> <!-- Auto -->
+			<slot_dragdrop x="300" y="118" width="235" height="104"
+            cell_width="39" cell_height="52" rows_num="2" cols_num="6"
+            custom_placement="0" condition_progress_bar="1"/>
+		</slot>
+		<slot> <!-- Grenade -->
+		</slot>
+		<slot> <!-- Binoc -->
+		</slot>
+		<slot> <!-- Bolt -->
+		</slot>
+		<slot> <!-- Outfit -->
+			<slot_dragdrop x="768" y="270" width="120" height="280" 
+            cell_width="43" cell_height="57" rows_num="4" cols_num="4" 
+            custom_placement="0" use_full_scale_icon="true"/>
+		</slot>
+		<slot> <!-- PDA -->
+		</slot>
+		<slot> <!-- Detector -->
+		</slot>
+		<slot> <!-- Torch -->
+		</slot>
+		<slot> <!-- Artfake -->
+		</slot>
+		<slot> <!-- Helmet -->
+		</slot>
+		<slot> <!-- Backpack -->
+		</slot>
+	</inventory_slot_wnd>
+	
     <dragdrop_bag x="22" y="34" width="237" height="440"
             cell_width="32" cell_height="42" rows_num="10" cols_num="7" 
             unlimited="1" group_similar="1" condition_progress_bar="1"/>
 
     <dragdrop_belt x="600" y="136" width="225" height="60"
             cell_width="45" cell_height="60" rows_num="1" cols_num="5"/>
-
-    <dragdrop_outfit x="768" y="270" width="120" height="280" 
-            cell_width="43" cell_height="57" rows_num="4" cols_num="4" 
-            custom_placement="0"/>
-
-    <dragdrop_pistol x="150" y="118" width="117" height="104"
-            cell_width="39" cell_height="52" rows_num="2" cols_num="3"
-            custom_placement="0" condition_progress_bar="1"/>
-
-    <dragdrop_automatic x="300" y="118" width="235" height="104"
-            cell_width="39" cell_height="52" rows_num="2" cols_num="6"
-            custom_placement="0" condition_progress_bar="1"/>
-
 
 	<bottom_static x="125" y="736" width="784" height="32" stretch="1">
 		<texture>ui\ui_bottom_background</texture>
