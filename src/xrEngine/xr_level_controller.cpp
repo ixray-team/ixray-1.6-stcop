@@ -799,6 +799,10 @@ const char* GetGamepadSymbol(int dik)
 			return XBOX_LS;
 		case SDL_GAMEPAD_BUTTON_RIGHT_STICK:
 			return XBOX_RS;
+		case SDL_GAMEPAD_BUTTON_LEFT_SHOULDER:
+			return XBOX_LB;
+		case SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER:
+			return XBOX_RB;
 		case SDL_GAMEPAD_BUTTON_DPAD_UP:
 			return XBOX_DPAD_UP;
 		case SDL_GAMEPAD_BUTTON_DPAD_DOWN:
@@ -887,14 +891,14 @@ ENGINE_API void GetActionAllBinding(LPCSTR _action, char* dst_buff, int dst_buff
 	if (!pbinding->m_keyboard[0] && !pbinding->m_keyboard[1] &&
 		!pbinding->m_gamepad[0] && !pbinding->m_gamepad[1])
 	{
-		strcpy(dst_buff, g_pStringTable->translate("st_key_notbinded").c_str());
+		xr_strcpy(dst_buff, dst_buff_sz, g_pStringTable->translate("st_key_notbinded").c_str());
 		return;
 	}
 
 	if (pInput->GetControllerMode())
 	{
 		if (gp_prim[0])
-			strcpy(dst_buff, gp_prim);
+			xr_strcpy(dst_buff, dst_buff_sz, gp_prim);
 		else
 			dst_buff[0] = 0;
 
@@ -903,17 +907,17 @@ ENGINE_API void GetActionAllBinding(LPCSTR _action, char* dst_buff, int dst_buff
 
 	if (prim[0] && sec[0])
 	{
-		strcpy(dst_buff, prim);
-		strcat(dst_buff, " , ");
-		strcat(dst_buff, sec);
+		xr_strcpy(dst_buff, dst_buff_sz, prim);
+		xr_strcat(dst_buff, dst_buff_sz, " , ");
+		xr_strcat(dst_buff, dst_buff_sz, sec);
 	}
 	else if (prim[0])
 	{
-		strcpy(dst_buff, prim);
+		xr_strcpy(dst_buff, dst_buff_sz, prim);
 	}
 	else if (sec[0])
 	{
-		strcpy(dst_buff, sec);
+		xr_strcpy(dst_buff, dst_buff_sz, sec);
 	}
 	else
 	{
