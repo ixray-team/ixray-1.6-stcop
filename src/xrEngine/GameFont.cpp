@@ -150,7 +150,7 @@ bool GetDisplayMetricsSDL3(float& width_mm, float& height_mm, float& width_px, f
 	ДЛЯ ТЕСТА ДОБАВЛЯЕТСЯ К ARIAL.
 		ШРИФТ gamepad.ttf
 */
-#define EnableGamepadFontInclude 0
+#define EnableGamepadFontInclude 1
 
 /**/
 
@@ -315,7 +315,7 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 #if EnableGamepadFontInclude
 	FT_Face GamepadFont = nullptr;
 
-	if (xr_strcmp(name, "arial") == 0)
+	//if (xr_strcmp(name, "arial") == 0)
 	{
 		string_path gpPath;
 		xr_string gpName = CStringTable::LangName() + "\\gamepad.ttf";
@@ -436,14 +436,7 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 				Msg("glyphID %d", glyphID);
 			}
 
-			u32 TrueGlyph = glyphID;
-
-			if (Data.OpenType && glyphID <= 0xFF)
-			{
-				TrueGlyph = TranslateSymbolUsingCP1251((char)glyphID);
-			}
-
-			FT_UInt charIndex = FT_Get_Char_Index(FaceToUse, TrueGlyph);
+			FT_UInt charIndex = FT_Get_Char_Index(FaceToUse, glyphID);
 
 			if (charIndex == 0 && glyphID != 0)
 			{
@@ -456,7 +449,7 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 				charIndex,
 				FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL
 			);
-			R_ASSERT3(err == 0, "FT_Load_Glyph failed", "");
+			I_ASSERT_M(err == 0, "FT_Load_Glyph failed: charIndex [%d], glyphID [%d]", charIndex, glyphID);
 
 			FT_GlyphSlot Glyph = FaceToUse->glyph;
 			FT_Glyph_Metrics& GlyphMetrics = Glyph->metrics;
