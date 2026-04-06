@@ -30,11 +30,11 @@ void CRenderTarget::accum_spot(light* L)
 		}
 	}
 
-	CHudInitializer initalizer(false);
+	CHudInitializer initalizer(false, true);
 
-	if(L->flags.bHudMode) {
+	if(L->flags.bHudMode) 
+	{
 		initalizer.SetHudMode();
-		RImplementation.rmNear();
 	}
 
 	bool	bIntersect = false; //enable_scissor(L);
@@ -165,8 +165,8 @@ void CRenderTarget::accum_spot(light* L)
 
 	u_DBT_disable();
 
-	if(L->flags.bHudMode) {
-		RImplementation.rmNormal();
+	if(L->flags.bHudMode)
+	{
 		initalizer.SetDefaultMode();
 	}
 }
