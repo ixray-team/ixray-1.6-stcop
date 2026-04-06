@@ -30,7 +30,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 
 	//LVutner: Init
 	float4 Final = (0.0).xxxx;
-	float4 Point = (0.0).xxxx;	
+	float4 Point = (0.0).xxxx;
 	
 	float3 ReflectPoint = GbufferGetPointRealUnjitter(I.texcoord.xy, O.Depth);
 	float3 ViewVec = normalize(ReflectPoint);
@@ -58,13 +58,25 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	float4 VSLR = 0;
 #endif
 
+	StartPoint += !isHUDRender ? O.Normal * 0.025f : 0.0f;
+	float4 SSLR = FastViewReflectionsSSR(StartPoint, Reflection, isHUDRender);
+	
+	float4 EndProj = mul(O.Depth < 0.02f ? m_P_hud : m_P, float4(SSLR.xyz, 1.0f));
+	EndProj.xy = EndProj.xy * rcp(EndProj.w) * float2(0.5f, -0.5f) + 0.5f;
+	
+	EndProj.xy += s_velocity.SampleLevel(smp_rtlinear, EndProj.xy, 0).xy * float2(-0.5f, 0.5f);
+	SSLR *= GetBorderAtten(EndProj.xy);
+	
+	Final = s_image.SampleLevel(smp_rtlinear, EndProj.xy, 0.0);
+	
 	if(!isHUDRender)
 	{
-		StartPoint += O.Normal * 0.025f;
-		
 #ifdef USE_OFFSCREEN_REFLECTIONS
-		VSLR = FastViewReflections(mul(m_env_view, float4(StartPoint.xyz, 1.0f)).xyz, mul((float3x3)m_env_view, Reflection).xyz);
-		Point.xyz = lerp(Point.xyz, mul(m_env_view_inv, float4(VSLR.xyz, 1.0f)).xyz, VSLR.w);
+		if(SSLR.w < 1.0f)
+		{
+			VSLR = FastViewReflections(mul(m_env_view, float4(StartPoint.xyz, 1.0f)).xyz, mul((float3x3)m_env_view, Reflection).xyz);
+			Point.xyz = lerp(Point.xyz, mul(m_env_view_inv, float4(VSLR.xyz, 1.0f)).xyz, VSLR.w);
+		}
 	} 
 	else
 	{
@@ -73,31 +85,24 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 #endif
 	}
 	
-	float4 SSLR = FastViewReflectionsSSR(StartPoint, Reflection, isHUDRender);
-	
-	float4 EndProj = mul(O.Depth < 0.02f ? m_P_hud : m_P, float4(SSLR.xyz, 1.0f));
-	EndProj.xy = EndProj.xy * rcp(EndProj.w) * float2(0.5f, -0.5f) + 0.5f;
-	
-	float2 Velocity = s_velocity.SampleLevel(smp_nofilter, EndProj.xy, 0.0).xy * float2(0.5f, -0.5f);
-	float2 PrevSpecularUV = saturate(EndProj.xy - Velocity.xy);
-	
-	Final = s_image.SampleLevel(smp_rtlinear, PrevSpecularUV.xy, 0.0);
-	
 #ifdef USE_OFFSCREEN_REFLECTIONS
 	O.Hemi = isHUDRender ? 1.0f : saturate(O.Hemi * 3.0f);
 #endif
 	
 	float4 Hemi = CompureSpecularIrradance(Reflection.xyz, O.Hemi, 0.0f).xyzz;
-	SSLR.w *= GetBorderAtten(PrevSpecularUV);
 	
+	if(SSLR.w < 1.0f)
+	{
 #ifdef USE_OFFSCREEN_REFLECTIONS
-	float3 Color = s_env.SampleLevel(smp_linear, VSLR.xyz, 0.0f);
-	Color.xyz *= rcp(1.00001f - Color.xyz);
+		float3 Color = s_env.SampleLevel(smp_linear, VSLR.xyz, 0.0f);
+		Color.xyz *= rcp(1.00001f - Color.xyz);
 #else
-	float3 Color = Hemi.xyz;
+		float3 Color = Hemi.xyz;
 #endif
+		
+		Final.xyz = lerp(Color.xyz, Final.xyz, SSLR.w);
+	}
 	
-	Final.xyz = lerp(Color.xyz, Final.xyz, SSLR.w);
 	Point.xyz = lerp(Point.xyz, SSLR.xyz, SSLR.w);
 	Final.xyz = LinearToGamma(Final.xyz);
 	

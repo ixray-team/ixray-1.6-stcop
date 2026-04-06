@@ -10,6 +10,7 @@ void CBlender_SSAO::Compile(CBlender_Compile& C)
 
 	switch (C.iElement)
 	{
+	case 0:
 		C.r_Pass("stub_fullscreen_triangle", "ssao_calc", false, false, false);
 
 		C.r_Stencil(TRUE, D3DCMP_LESSEQUAL, 0xFF);
