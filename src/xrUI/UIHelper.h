@@ -4,7 +4,7 @@
 //	Author		: Evgeniy Sokolov
 //	Description : UI Helper class
 ////////////////////////////////////////////////////////////////////////////
-#pragma once 
+#pragma once
 
 class CUIXml;
 class CUIWindow;
@@ -34,8 +34,8 @@ public:
 	UIHelper		() {};
 	~UIHelper		() {};
 
-	static	CUIStatic*			CreateStatic		( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent, bool critical = true );
-    static	CUI3dStatic*        Create3dStatic      ( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent, bool critical = true );
+	static	CUIStatic*			CreateStatic		( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent, bool critical = true, int node_index = 0 );
+    static	CUI3dStatic*        Create3dStatic      ( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent, bool critical = true, int node_index = 0 );
 	static	CUIStackPanel*		CreateStackPanel	( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent, bool critical = true );
 	static	CUIGamepadLegend*	CreateGamepadLegend	( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent, bool critical = true );
 	static	CUIProgressBar*		CreateProgressBar	( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent );
