@@ -10,9 +10,11 @@ R_hemi::R_hemi()
 
 void	R_hemi::unmap		()
 {
-	c_pos_faces = nullptr;
-	c_neg_faces = nullptr;
-	c_material	= nullptr;
+	c_pos_faces = 0;
+	c_neg_faces = 0;
+	c_material	= 0;
+	c_lit_color = 0;
+	c_lit_dir = 0;
 }
 
 void	R_hemi::set_pos_faces		(float posx, float posy, float posz)
@@ -29,3 +31,17 @@ void	R_hemi::set_material		(float x, float y, float z, float w)
 	if (c_material) RCache.set_c(c_material, x, y, z, w);
 }
 
+void R_hemi::set_lit_color(Fvector color, Fvector dir) 
+{
+	RCache.xforms.m_v.transform_tiny(dir);
+
+	if (c_lit_color) 
+	{
+		RCache.set_c(c_lit_color, color.x, color.y, color.z, 0);
+	}
+
+	if (c_lit_dir) 
+	{
+		RCache.set_c(c_lit_dir, dir.x, dir.y, dir.z, 0);
+	}
+}
