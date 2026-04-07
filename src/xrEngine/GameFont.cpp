@@ -449,7 +449,7 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 				charIndex,
 				FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL
 			);
-			R_ASSERT(err == 0, "FT_Load_Glyph failed", charIndex, glyphID);
+			I_ASSERT_M(err == 0, "FT_Load_Glyph failed: charIndex [%d], glyphID [%d]", charIndex, glyphID);
 
 			FT_GlyphSlot Glyph = FaceToUse->glyph;
 			FT_Glyph_Metrics& GlyphMetrics = Glyph->metrics;
