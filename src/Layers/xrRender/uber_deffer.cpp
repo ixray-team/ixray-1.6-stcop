@@ -338,7 +338,13 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 
 void uber_forward(CBlender_Compile& C, bool hq, const char* vs, const char* ps, bool aref, bool blend, const char* detail_replace, bool DO_NOT_FINISH, bool DO_NOT_START)
 {
-	uber_deffer(C, hq, vs, ps, aref, detail_replace, true, DO_NOT_START);
+	if (strstr(vs, "model"))
+	{
+		RImplementation.addShaderOption("FORWARD_LIGHT", "1");
+	}
+
+	uber_deffer(C, hq, vs, ps, aref && !blend, detail_replace, true, DO_NOT_START);
+
 
 	if (blend) 
 	{
