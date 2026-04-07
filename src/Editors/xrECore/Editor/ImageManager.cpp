@@ -162,13 +162,27 @@ bool CImageManager::MakeGameTexture(LPCSTR game_name, u32* data, const STextureP
 	{
 		FS.file_delete(game_name);
 		switch(res){
-		case 0:		ELog.DlgMsg	(mtError,"Can't make game texture '%s'.",game_name);	break;
-		case -1000:	ELog.Msg	(mtError,"Invalid gloss mask '%s'.",game_name);			return true;
+		case 0:
+			{
+				ELog.DlgMsg(mtError,"Can't make game texture '%s'.",game_name);
+				break;
+			}
+		case -1000:
+			{
+				ELog.Msg	(mtError,"Invalid gloss mask '%s'.",game_name);
+				return true;
+			}
+		default:
+			{
+				ELog.DlgMsg(mtError,"Error [code %d] while making game texture '%s'.", res, game_name);
+			}
 		}
 		return false;
 	}
 
-	R_ASSERT((res==1)&&FS.file_length(game_name));
+	FS.file_update(game_name);
+	R_ASSERT(FS.file_length(game_name));
+	
 	return true;
 }
 bool CImageManager::MakeGameTexture(ETextureThumbnail* THM, LPCSTR game_name, u32* load_data)
