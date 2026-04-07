@@ -534,6 +534,27 @@ CRenderTarget::CRenderTarget()
 		rt_ui_pda.create(r_ui_pda, get_target_width(), get_target_height(), ERHI_FORMAT::R8G8B8A8_UNORM);
 	}
 
+	if(RImplementation.o.deffered_reflecitons) 
+	{
+		rt_sslr_old.create(r2_RT_sslr_old, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT);
+		rt_sslr.create(r2_RT_sslr, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT);
+
+		rt_sslr_data.create(r2_RT_sslr_data, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT);
+		rt_sslr_temp.create(r2_RT_sslr_temp, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT);
+	}
+
+	if(RImplementation.o.offscreen_reflecitons)
+	{
+		u32 RefSize = 256;
+		auto flags = CRT::CRTCreationFlags::AUTOGEN_MIP_MAPS | CRT::CRTCreationFlags::AUTOGEN_MIP_MAPS;
+
+		// TODO: Optimize memory using
+		rt_Reflection.create(r2_RT_env, RefSize, ERHI_FORMAT::R16G16B16A16_FLOAT, (CRT::CRTCreationFlags)flags);
+		rt_Reflection_temp.create(r2_RT_env_temp, RefSize, ERHI_FORMAT::R16G16B16A16_FLOAT, (CRT::CRTCreationFlags)flags);
+
+		rt_Depth.create(r2_RT_env_depth, RefSize, RefSize, ERHI_FORMAT::R24G8_TYPELESS);
+	}
+
 	rt_upscaled_depth.create(r2_RT_upscaled_depth, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16_FLOAT);
 	rt_upscaled_depth_old.create(r2_RT_upscaled_depth_old, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16_FLOAT);
 

@@ -9,6 +9,11 @@
 #include "metalic_roughness_light.hlsli"
 #include "metalic_roughness_ambient.hlsli"
 
+#ifdef FORWARD_LIGHT
+	uniform float4 L_model_light_color;
+	uniform float4 L_model_light_dir;
+#endif
+	
 void main(p_bumped_new I, out f_forward O)
 {
     IXRayMaterial M = (IXRayMaterial)NULL;
@@ -104,6 +109,16 @@ void main(p_bumped_new I, out f_forward O)
 		float3 Ambient = AmbientLighting(View, M.Normal, M.Color.xyz, M.Material, M.Gloss, M.Hemi);
 	#endif
 	
+#ifdef FORWARD_LIGHT
+	float3 LocalLightDir = normalize(M.Point - L_model_light_dir);
+	
+	#ifndef USE_LEGACY_LIGHT
+		Light += DirectLight(L_model_light_color, LocalLightDir, M.Normal, View, Diffuse, Specular, M.Roughness);
+	#else
+		Light += DirectLightLegacy(L_model_light_color, LocalLightDir, M.Normal, View, M.Color.xyz, M.Material, M.Gloss);
+	#endif
+#endif
+	
 #ifdef USE_LENGTH_BUFFER	
 	#ifdef USE_LM_HEMI
 		float3 Lmap = s_lmap.Sample(smp_rtlinear, I.tcdh.zw).xyz;
@@ -113,13 +128,13 @@ void main(p_bumped_new I, out f_forward O)
 	
 	float Luma = max(Lmap.y, max(Lmap.z, Lmap.x));
 	
-	Lmap *= Luma > 0.0f ? rcp(Luma) : 0.0f;
-	Lmap = GammaToLinear(Lmap) * Luma * 3.14f;
+	Lmap *= Luma > 0.0f ? rcp(Luma) : 0.0f; Luma *= 1.6f;
+	Lmap = lerp(1.0f, Lmap, min(1.0f, Luma * 10.0f));
 	
 	#ifndef USE_LEGACY_LIGHT
-		Light += DirectLight(float4(Lmap.xyz, 0.5f), View, M.Normal, View, Diffuse, Specular, M.Roughness);
+		Light += Luma * DirectLight(float4(Lmap.xyz, 0.5f), View, M.Normal, View, Diffuse, Specular, M.Roughness);
 	#else
-		Light += DirectLightLegacy(float4(Lmap.xyz, 0.5f), View, M.Normal, View, M.Color.xyz, M.Material, M.Gloss);
+		Light += Luma * DirectLightLegacy(float4(Lmap.xyz, 0.5f), View, M.Normal, View, M.Color.xyz, M.Material, M.Gloss);
 	#endif
 #endif
 	
