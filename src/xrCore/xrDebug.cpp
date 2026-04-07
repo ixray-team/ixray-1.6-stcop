@@ -155,7 +155,7 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 	buffer				+= xr_sprintf(buffer,sizeof(assertion_info) - u32(buffer - &assertion_info[0]),"Press TRY AGAIN to continue execution%s",endline);
 	buffer				+= xr_sprintf(buffer,sizeof(assertion_info) - u32(buffer - &assertion_info[0]),"Press CONTINUE to continue execution and ignore all the errors of this type%s%s",endline,endline);
 
-	if ( g_pEventManager == nullptr || g_pEventManager->IsEventThread())
+	if (g_pEventManager == nullptr || g_pEventManager->IsEventThread())
 	{
 		show_dialog(assertion_info, ignore_always);
 	}
