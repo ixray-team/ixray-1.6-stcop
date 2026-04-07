@@ -57,7 +57,6 @@ BOOL APIENTRY DllMain		(HANDLE module_handle, DWORD call_reason, LPVOID reserved
 //			g_temporary_stuff			= &trivial_encryptor::decode;
 
 			Debug._initialize(false);
-			CFilewatcher::instance().SetFilewatcherActive(false);
  			Core._initialize("xrSE_Factory",NULL,TRUE,"fsfactory.ltx");
 			string_path SYSTEM_LTX;
 			FS.update_path(SYSTEM_LTX,"$game_config$","system.ltx");

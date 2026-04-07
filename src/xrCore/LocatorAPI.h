@@ -140,11 +140,25 @@ private:
 	xr_vector<xr_path> IgnoreData;
 	void ParseIgnoreList();
 	bool CheckSkip(const xr_path& Path) const;
+
+	// принимает путь/имя файла
+	// возвращает true когда триггер выполнил всё что хотел и нужно удалить (чтоб не копился)
+	// возвращает false, если триггер должен продолжать работу
+	using FilewatcherTrigger = std::function<bool(LPCSTR)>;
+
+	xrCriticalSection FilewatcherOnAddCS;
+	xrCriticalSection FilewatcherOnDelCS;
+	xr_vector<FilewatcherTrigger> FilewatcherOnAdd;
+	xr_vector<FilewatcherTrigger> FilewatcherOnDel;
 	
 	void FileEventAdd(LPCSTR file);
 	void FileEventDel(LPCSTR file);
+	void ProcessTriggers(LPCSTR file, xrCriticalSection& CS, xr_vector<FilewatcherTrigger>& Triggers);
 
 public:
+	void AddOnFilewatcherEventAddTrigger(FilewatcherTrigger f);
+	void AddOnFilewatcherEventDelTrigger(FilewatcherTrigger f);
+	
 								CLocatorAPI			();
 								~CLocatorAPI		();
 	void						_initialize			(u32 flags, LPCSTR target_folder=nullptr, LPCSTR fs_name=nullptr);
@@ -193,6 +207,7 @@ public:
 	void 						file_copy			(LPCSTR src, LPCSTR dest);
 	void 						file_rename			(LPCSTR src, LPCSTR dest,bool bOwerwrite=true);
     int							file_length			(LPCSTR src);
+	void						file_update 		(LPCSTR file);
 
     time_t 						get_file_age		(LPCSTR nm);
     void 						set_file_age		(LPCSTR nm, time_t age);

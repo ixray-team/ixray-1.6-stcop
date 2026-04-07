@@ -59,16 +59,52 @@ void CLocatorAPI::FileEventAdd(LPCSTR file)
 	size_t FileSize = std::filesystem::file_size(file);
 	size_t FileModif = xr_chrono_to_time_t(std::filesystem::last_write_time(file));
 	Register(file, 0xffffffff, 0, 0, FileSize, FileSize, FileModif);
+
+	ProcessTriggers(file, FilewatcherOnAddCS, FilewatcherOnAdd);
 }
 
 void CLocatorAPI::FileEventDel(LPCSTR file)
 {
-	xrSRWLockGuard g(m_files_lock);
-	const files_it I = file_find_it(file);
-	if (I != m_files.end())
 	{
-		m_files.erase(I);
+		xrSRWLockGuard g(m_files_lock);
+		const files_it I = file_find_it(file);
+		if (I != m_files.end())
+		{
+			m_files.erase(I);
+		}
 	}
+	
+	ProcessTriggers(file, FilewatcherOnDelCS, FilewatcherOnDel);
+}
+
+void CLocatorAPI::ProcessTriggers(LPCSTR file, xrCriticalSection& CS, xr_vector<FilewatcherTrigger>& Triggers)
+{
+	xrCriticalSectionGuard g(CS);
+	int i = 0, end_index = Triggers.size();
+	while(i < end_index)
+	{
+		auto& Trigger = Triggers[i];
+		if(Trigger(file))
+		{
+			Triggers[i] = Triggers[(end_index--) - 1];
+		} else
+		{
+			++i;
+		}
+	}
+	Triggers.resize(end_index);
+}
+
+void CLocatorAPI::AddOnFilewatcherEventAddTrigger(FilewatcherTrigger f)
+{
+	xrCriticalSectionGuard g(FilewatcherOnAddCS);
+	FilewatcherOnAdd.emplace_back(f);
+}
+
+void CLocatorAPI::AddOnFilewatcherEventDelTrigger(FilewatcherTrigger f)
+{
+	xrCriticalSectionGuard g(FilewatcherOnDelCS);
+	FilewatcherOnDel.emplace_back(f);
 }
 
 CLocatorAPI::CLocatorAPI()
@@ -1749,6 +1785,23 @@ int	CLocatorAPI::file_length(LPCSTR src)
 	xrSRWLockGuard g(m_files_lock, true);
 	files_it	I		= file_find_it(src);
 	return (I!=m_files.end())?I->size_real:-1;
+}
+
+void CLocatorAPI::file_update(LPCSTR file_name)
+{
+	xrSRWLockGuard g(m_files_lock);
+	auto I = file_find_it(file_name);
+	if(I == m_files.end())
+	{
+		TryLoad(file_name);
+		return;
+	}
+	auto& Data = const_cast<file&>(*I); // safe, because changed fields are not affected on order
+	size_t FileSize = std::filesystem::file_size(file_name);
+	size_t FileModif = xr_chrono_to_time_t(std::filesystem::last_write_time(file_name));
+	Data.size_real = FileSize;
+	Data.size_compressed = FileSize;
+	Data.modif = FileModif;
 }
 
 bool CLocatorAPI::path_exist(LPCSTR path)
