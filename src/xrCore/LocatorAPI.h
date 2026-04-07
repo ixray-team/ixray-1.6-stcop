@@ -227,7 +227,7 @@ class XRCORE_API CFilewatcher
 {
 	using FilewatcherImplPtr = filewatch::FileWatch<std::string>*;
 	FilewatcherImplPtr WatcherPtr = nullptr;
-	bool FilewatcherActive = true;
+	bool FilewatcherActive = false;
 
 	CFilewatcher() = default;
 	
