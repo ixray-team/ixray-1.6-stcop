@@ -59,6 +59,18 @@ DECLARE_TREE_BIND(c_scale);
 DECLARE_TREE_BIND(c_bias);
 DECLARE_TREE_BIND(c_sun);
 
+class cl_lit_color : public RHIShaderConstant::Setup {
+	virtual void setup(RHIShaderConstant* C) { RCache.hemi.set_c_lit_color(C); }
+};
+
+static cl_lit_color binder_lit_color;
+
+class cl_lit_dir : public RHIShaderConstant::Setup {
+	virtual void setup(RHIShaderConstant* C) { RCache.hemi.set_c_lit_dir(C); }
+};
+
+static cl_lit_dir binder_lit_dir;
+
 class cl_hemi_cube_pos_faces: public RHIShaderConstant::Setup
 {
 	virtual void setup(RHIShaderConstant* C) {RCache.hemi.set_c_pos_faces(C);}
@@ -844,6 +856,9 @@ void	CBlender_Compile::SetMapping()
 	r_Constant("L_material", &binder_material);
 	r_Constant("hemi_cube_pos_faces", &binder_hemi_cube_pos_faces);
 	r_Constant("hemi_cube_neg_faces", &binder_hemi_cube_neg_faces);
+
+	r_Constant("L_model_light_color", &binder_lit_color);
+	r_Constant("L_model_light_dir", &binder_lit_dir);
 
 	r_Constant("m_texgen", &binder_texgen);
 	r_Constant("mVPTexgen", &binder_VPtexgen);

@@ -436,7 +436,7 @@ void CRender::Render()
 		return;
 	}
 
-	if(RImplementation.o.offscreen_reflecitons && RImplementation.o.deffered_reflecitons && pLastSector)
+	if(RImplementation.o.offscreen_reflecitons && pLastSector)
 	{
 		static int& FaceCount = CCC_Integer::FastCommand("r_fce_count", 1, 0, 7);
 
@@ -495,23 +495,26 @@ void CRender::Render()
 					CurrentEnv->fog_far
 				};
 
-				cmDir[2].mul(Device.vCameraTop, +1.0f);
-				cmDir[3].mul(Device.vCameraTop, -1.0f);
+				if(RImplementation.o.deffered_reflecitons && iFace == 7)
+				{
+					cmDir[2].mul(Device.vCameraTop, +1.0f);
+					cmDir[3].mul(Device.vCameraTop, -1.0f);
 
-				cmNorm[2].mul(Device.vCameraDirection, -1.0f);
-				cmNorm[3].mul(Device.vCameraDirection, +1.0f);
+					cmNorm[2].mul(Device.vCameraDirection, -1.0f);
+					cmNorm[3].mul(Device.vCameraDirection, +1.0f);
 
-				cmDir[0].mul(Device.vCameraRight, +1.0f);
-				cmDir[1].mul(Device.vCameraRight, -1.0f);
+					cmDir[0].mul(Device.vCameraRight, +1.0f);
+					cmDir[1].mul(Device.vCameraRight, -1.0f);
 
-				cmNorm[0].mul(Device.vCameraTop, +1.0f);
-				cmNorm[1].mul(Device.vCameraTop, +1.0f);
+					cmNorm[0].mul(Device.vCameraTop, +1.0f);
+					cmNorm[1].mul(Device.vCameraTop, +1.0f);
 
-				cmDir[4].mul(Device.vCameraDirection, +1.0f);
-				cmDir[5].mul(Device.vCameraDirection, -1.0f);
+					cmDir[4].mul(Device.vCameraDirection, +1.0f);
+					cmDir[5].mul(Device.vCameraDirection, -1.0f);
 
-				cmNorm[4].mul(Device.vCameraTop, +1.0f);
-				cmNorm[5].mul(Device.vCameraTop, +1.0f);
+					cmNorm[4].mul(Device.vCameraTop, +1.0f);
+					cmNorm[5].mul(Device.vCameraTop, +1.0f);
+				}
 
 				EnvPosition.set(Device.vCameraPosition);
 
