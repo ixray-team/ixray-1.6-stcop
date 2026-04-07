@@ -163,6 +163,8 @@ public:
 	IC void							occq_end					(u32&	ID		)	{ HWOCC.occq_end	(ID);			}
 	IC R_occlusion::occq_result		occq_get					(u32&	ID		)	{ return HWOCC.occq_get		(ID);	}
 
+	Fvector avg_lit_color, avg_lit_dir;
+
 	ICF void						apply_object				(IRenderable*	O)
 	{
 		if (0==O)					return;
@@ -173,16 +175,23 @@ public:
 		//o_hemi						= 0.5f*LT.get_hemi			()	;
 		o_sun						= 0.75f*LT.get_sun			()	;
 		CopyMemory(o_hemi_cube, LT.get_hemi_cube(), CROS_impl::NUM_FACES*sizeof(float));
+
+		avg_lit_color = LT.get_avg_color();
+		avg_lit_dir = LT.get_avg_dir();
 	}
 	IC void							apply_lmaterial				()
 	{
-		ref_constant constant = RCache.get_c(c_sbase);
-		RHIShaderConstant*		C	= constant ? &*constant : nullptr;		// get sampler
-		if (0==C)			return;
-		VERIFY				(RC_dest_sampler	== C->destination);
-		VERIFY				(RC_dx10texture		== C->type);
-		CTexture*		T	= RCache.get_ActiveTexture	(u32(C->samp.index));
-		VERIFY				(T);
+		ref_constant constant = RCache.get_c(c_sbase);		
+		
+		RCache.hemi.set_lit_color(avg_lit_color, avg_lit_dir);
+		avg_lit_color = avg_lit_dir = { 0,0,0 };
+
+		RHIShaderConstant* C = constant ? &*constant : nullptr;		// get sampler
+		if (0 == C) return;
+		VERIFY(RC_dest_sampler == C->destination);
+		VERIFY(RC_dx10texture == C->type);
+		CTexture* T = RCache.get_ActiveTexture(u32(C->samp.index));
+		VERIFY(T);
 
 		float mtl = T->m_material;
 
