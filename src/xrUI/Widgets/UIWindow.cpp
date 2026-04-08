@@ -10,6 +10,36 @@
 #include "../xrEngine/IGame_Persistent.h"
 #include "UIBtnHint.h"
 
+namespace
+{
+thread_local int s_anchorAbsRectDepth = 0;
+
+struct AnchorAbsRectDepthGuard
+{
+	AnchorAbsRectDepthGuard()
+	{
+		++s_anchorAbsRectDepth;
+	}
+	~AnchorAbsRectDepthGuard()
+	{
+		--s_anchorAbsRectDepth;
+	}
+};
+
+constexpr int AnchorAbsRectDepthLimit = 32;
+
+void LogAnchorAbsRectDepthExceededOnce()
+{
+	static bool hasLoggedDepthExceeded = false;
+	if (hasLoggedDepthExceeded)
+	{
+		return;
+	}
+	hasLoggedDepthExceeded = true;
+	Msg("! UI anchor GetAbsoluteRect recursion depth exceeded (possible anchor_to cycle)");
+}
+} // namespace
+
 // #define LOG_ALL_WNDS
 #ifdef LOG_ALL_WNDS
 	int ListWndCount = 0;
@@ -108,6 +138,7 @@ m_bCursorOverWindow(false),
 m_bPP(false),
 m_dwFocusReceiveTime(0),
 m_bCustomDraw(false),
+m_bLoggedMissingAnchorTo(false),
 m_pLayout(nullptr)
 {
 	Show					(true);
@@ -229,18 +260,7 @@ void CUIWindow::Update()
 	if (GetUseAnchors() && GetParent())
 	{
 		Frect anchorRect;
-		if (m_anchorToWindowName.size() > 0)
-		{
-			CUIWindow* sibling = GetParent()->FindChild(m_anchorToWindowName);
-			if (sibling != nullptr && sibling != this)
-				sibling->GetAbsoluteRect(anchorRect);
-			else
-				GetParent()->GetAbsoluteRect(anchorRect);
-		}
-		else
-		{
-			GetParent()->GetAbsoluteRect(anchorRect);
-		}
+		ResolveAnchorReferenceRect(anchorRect);
 		Frect parentRect;
 		GetParent()->GetAbsoluteRect(parentRect);
 		Frect ourRect;
@@ -363,23 +383,18 @@ void CUIWindow::GetAbsoluteRect(Frect& r)
 
 	if (GetUseAnchors())
 	{
+		AnchorAbsRectDepthGuard depthGuard;
+		if (s_anchorAbsRectDepth > AnchorAbsRectDepthLimit)
+		{
+			LogAnchorAbsRectDepthExceededOnce();
+			Frect refRect;
+			GetParent()->GetAbsoluteRect(refRect);
+			ComputeAnchoredRect(refRect, GetAnchorData(), r);
+			return;
+		}
+
 		Frect anchorRect;
-		if (m_anchorToWindowName.size() > 0)
-		{
-			CUIWindow* sibling = GetParent()->FindChild(m_anchorToWindowName);
-			if (sibling != nullptr && sibling != this)
-			{
-				sibling->GetAbsoluteRect(anchorRect);
-			}
-			else
-			{
-				GetParent()->GetAbsoluteRect(anchorRect);
-			}
-		}
-		else
-		{
-			GetParent()->GetAbsoluteRect(anchorRect);
-		}
+		ResolveAnchorReferenceRect(anchorRect);
 		ComputeAnchoredRect(anchorRect, GetAnchorData(), r);
 		return;
 	}
@@ -792,6 +807,54 @@ bool CUIWindow::IsChild(CUIWindow *pPossibleChild) const
 	return it != m_ChildWndList.end();
 }
 
+
+void CUIWindow::SetAnchorTo(LPCSTR targetName)
+{
+	shared_str nextName = targetName ? targetName : "";
+	if (nextName != m_anchorToWindowName)
+	{
+		m_bLoggedMissingAnchorTo = false;
+	}
+	m_anchorToWindowName = nextName;
+}
+
+void CUIWindow::LogMissingAnchorToTargetOnce()
+{
+	if (m_bLoggedMissingAnchorTo)
+	{
+		return;
+	}
+	m_bLoggedMissingAnchorTo = true;
+	Msg(
+		"! UI anchor_to: target window [%s] not found under parent (widget node [%s])",
+		m_anchorToWindowName.c_str(),
+		m_windowNodeName.c_str());
+}
+
+void CUIWindow::ResolveAnchorReferenceRect(Frect& anchorRect)
+{
+	CUIWindow* parentWnd = GetParent();
+	if (parentWnd == nullptr)
+	{
+		return;
+	}
+	if (m_anchorToWindowName.size() == 0)
+	{
+		parentWnd->GetAbsoluteRect(anchorRect);
+		return;
+	}
+	CUIWindow* targetWnd = parentWnd->FindChild(m_anchorToWindowName);
+	if (targetWnd != nullptr && targetWnd != this)
+	{
+		targetWnd->GetAbsoluteRect(anchorRect);
+		return;
+	}
+	parentWnd->GetAbsoluteRect(anchorRect);
+	if (targetWnd == nullptr)
+	{
+		LogMissingAnchorToTargetOnce();
+	}
+}
 
 CUIWindow*	CUIWindow::FindChild(const shared_str name)
 {

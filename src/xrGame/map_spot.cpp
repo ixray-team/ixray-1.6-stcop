@@ -3,6 +3,7 @@
 #include "map_location.h"
 
 #include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/uiabstract.h"
 #include "ui/UIMapWnd.h"
 #include "Level.h"
 #include "ui/UIInventoryUtilities.h"
@@ -14,6 +15,32 @@
 #include "../Include/xrRender/UIShader.h"
 #include "GametaskManager.h"
 #include "GameTask.h"
+
+namespace
+{
+void SyncPointAnchorOffsetsToWndSize(CUIWindow* wnd)
+{
+	if (wnd == nullptr || !wnd->GetUseAnchors())
+	{
+		return;
+	}
+	SAnchorData& ad = wnd->GetAnchorData();
+	if (ad.anchorMin.x != ad.anchorMax.x || ad.anchorMin.y != ad.anchorMax.y)
+	{
+		return;
+	}
+	const float w = wnd->GetWidth();
+	const float h = wnd->GetHeight();
+	const float eps = 0.02f;
+	if (fabsf(ad.anchorMin.x - 0.5f) <= eps && fabsf(ad.anchorMin.y - 0.5f) <= eps)
+	{
+		ad.offsetMin.x = -w * 0.5f;
+		ad.offsetMin.y = -h * 0.5f;
+	}
+	ad.offsetMax.x = ad.offsetMin.x + w;
+	ad.offsetMax.y = ad.offsetMin.y + h;
+}
+} // namespace
 
 CMapSpot::CMapSpot(CMapLocation* ml)
 :m_map_location(ml)
@@ -35,6 +62,7 @@ void CMapSpot::Load(CUIXml* xml, LPCSTR path)
 	{
 		SetWidth			(GetWidth()*UI().get_current_kx());
 		SetStretchTexture	(true);
+		SyncPointAnchorOffsetsToWndSize(this);
 	}
 
 	int i				= xml->ReadAttribInt(path, 0, "scale", 0);
@@ -62,6 +90,7 @@ void CMapSpot::Load(CUIXml* xml, LPCSTR path)
 				m_border_static->SetTextureOffset(1, 0);
 			}
 			m_border_static->SetStretchTexture(true);
+			SyncPointAnchorOffsetsToWndSize(m_border_static);
 		}
 	}
 	m_mark_focused = false;

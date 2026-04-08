@@ -163,10 +163,12 @@ public:
 	// Name of the window
 	const shared_str		WindowName			() const					{ return m_windowName; }
 	void					SetWindowName		(LPCSTR wn)					{ m_windowName = wn; }
-	void					SetAnchorTo			(LPCSTR targetName)			{ m_anchorToWindowName = targetName ? targetName : ""; }
+	void					SetAnchorTo			(LPCSTR targetName);
 	const shared_str&		GetAnchorTo			() const					{ return m_anchorToWindowName; }
 	LPCSTR					WindowName_script	()							{return m_windowName.c_str();}
 	CUIWindow*				FindChild			(const shared_str name);
+	void					ResolveAnchorReferenceRect	(Frect& anchorRect);
+	void					LogMissingAnchorToTargetOnce	();
 	// Name of the window by node from XML
 	const shared_str		WindowNodeName		() const					{ return m_windowNodeName; }
 	void					SetWindowNodeName	(LPCSTR wn)					{ m_windowNodeName = wn; }
@@ -224,6 +226,7 @@ protected:
 	// Если курсор над окном
 	bool					m_bCursorOverWindow;
 	bool					m_bCustomDraw;
+	bool					m_bLoggedMissingAnchorTo;
 
 	ILayoutProvider*		m_pLayout;
 

@@ -62,7 +62,10 @@ void CUIStackLayout::LayoutChildren(CUIWindow* pParent)
 				}
 				float w = child->GetWidth();
 				x -= w;
-				child->SetWndPos(Fvector2().set(x, m_paddingTop));
+				if (!child->GetUseAnchors())
+				{
+					child->SetWndPos(Fvector2().set(x, m_paddingTop));
+				}
 				x -= m_spacing;
 			}
 		}
@@ -74,7 +77,10 @@ void CUIStackLayout::LayoutChildren(CUIWindow* pParent)
 				{
 					continue;
 				}
-				child->SetWndPos(Fvector2().set(x, m_paddingTop));
+				if (!child->GetUseAnchors())
+				{
+					child->SetWndPos(Fvector2().set(x, m_paddingTop));
+				}
 				x += child->GetWidth() + m_spacing;
 			}
 		}
@@ -97,7 +103,10 @@ void CUIStackLayout::LayoutChildren(CUIWindow* pParent)
 				}
 				float h = child->GetHeight();
 				y -= h;
-				child->SetWndPos(Fvector2().set(m_paddingLeft, y));
+				if (!child->GetUseAnchors())
+				{
+					child->SetWndPos(Fvector2().set(m_paddingLeft, y));
+				}
 				y -= m_spacing;
 			}
 		}
@@ -109,7 +118,10 @@ void CUIStackLayout::LayoutChildren(CUIWindow* pParent)
 				{
 					continue;
 				}
-				child->SetWndPos(Fvector2().set(m_paddingLeft, y));
+				if (!child->GetUseAnchors())
+				{
+					child->SetWndPos(Fvector2().set(m_paddingLeft, y));
+				}
 				y += child->GetHeight() + m_spacing;
 			}
 		}
@@ -162,22 +174,24 @@ void CUIGridLayout::LayoutChildren(CUIWindow* pParent)
 			continue;
 		}
 
-		int row = childIndex / m_cols;
-		int col = childIndex % m_cols;
-
-		if (m_rows > 0 && row >= m_rows)
+		if (!child->GetUseAnchors())
 		{
-			break;
+			int row = childIndex / m_cols;
+			int col = childIndex % m_cols;
+
+			if (m_rows > 0 && row >= m_rows)
+			{
+				break;
+			}
+
+			float cellW = m_cellWidth > 0.0f ? m_cellWidth : child->GetWidth();
+			float cellH = m_cellHeight > 0.0f ? m_cellHeight : child->GetHeight();
+
+			float x = m_paddingLeft + col * (cellW + m_cellSpacingX);
+			float y = m_paddingTop + row * (cellH + m_cellSpacingY);
+
+			child->SetWndPos(Fvector2().set(x, y));
 		}
-
-		float cellW = m_cellWidth > 0.0f ? m_cellWidth : child->GetWidth();
-		float cellH = m_cellHeight > 0.0f ? m_cellHeight : child->GetHeight();
-
-		float x = m_paddingLeft + col * (cellW + m_cellSpacingX);
-		float y = m_paddingTop + row * (cellH + m_cellSpacingY);
-
-		child->SetWndPos(Fvector2().set(x, y));
-
 		++childIndex;
 	}
 }

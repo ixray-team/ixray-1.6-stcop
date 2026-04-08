@@ -273,12 +273,14 @@ bool CUIXmlInit::InitAnchoredWindow(CUIXml& xml_doc, LPCSTR path, int index, CUI
 	anchorData.useAnchors = true;
 
 	LPCSTR anchorPreset = xml_doc.ReadAttrib(path, index, "anchor", nullptr);
-	if (anchorPreset && ParseAnchorPreset(anchorPreset, anchorData.anchorMin, anchorData.anchorMax))
+	const bool hasParsedAnchorPreset =
+		anchorPreset && ParseAnchorPreset(anchorPreset, anchorData.anchorMin, anchorData.anchorMax);
+	if (!hasParsedAnchorPreset)
 	{
-		// Preset applied
-	}
-	else
-	{
+		if (anchorPreset != nullptr && anchorPreset[0] != '\0')
+		{
+			Msg("! Invalid UI anchor preset [%s] in [%s]", anchorPreset, xml_doc.m_xml_file_name);
+		}
 		LPCSTR anchorMinStr = xml_doc.ReadAttrib(path, index, "anchor_min", nullptr);
 		LPCSTR anchorMaxStr = xml_doc.ReadAttrib(path, index, "anchor_max", nullptr);
 		if (anchorMinStr)

@@ -32,4 +32,17 @@ void ComputeAnchoredRect(const Frect& parentRect, const SAnchorData& anchor, Fre
 	result.y1 = parentRect.y1 + anchor.anchorMin.y * parentHeight + anchor.offsetMin.y;
 	result.x2 = parentRect.x1 + anchor.anchorMax.x * parentWidth + anchor.offsetMax.x;
 	result.y2 = parentRect.y1 + anchor.anchorMax.y * parentHeight + anchor.offsetMax.y;
+
+	if (result.x2 < result.x1)
+	{
+		const float tmp = result.x1;
+		result.x1 = result.x2;
+		result.x2 = tmp;
+	}
+	if (result.y2 < result.y1)
+	{
+		const float tmp = result.y1;
+		result.y1 = result.y2;
+		result.y2 = tmp;
+	}
 }
