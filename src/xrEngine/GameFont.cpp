@@ -140,74 +140,6 @@ bool GetDisplayMetricsSDL3(float& width_mm, float& height_mm, float& width_px, f
 	return true;
 }
 
-/*
-		ПЕРЕД ВКЛЮЧЕНИЕМ - ПОСТАВИТЬ ТОЧКУ ПОСЛЕ ФУНКЦИИ. \
-			ИНАЧЕ НАГЕННЕРИТ ДЛЯ КАЖДОГО ШРИФТА BMP
-*/
-#define DBG_SAVE_FONT_ATLAS 0
-
-/*
-	ДЛЯ ТЕСТА ДОБАВЛЯЕТСЯ К ARIAL.
-		ШРИФТ gamepad.ttf
-*/
-#define EnableGamepadFontInclude 0
-
-/**/
-
-
-#if DBG_SAVE_FONT_ATLAS
-
-#pragma pack(push, 1)
-struct BMPInfoHeader
-{
-	u32 biSize = sizeof(BMPInfoHeader);
-	s32 biWidth;
-	s32 biHeight;
-	u16 biPlanes = 1;
-	u16 biBitCount = 32;
-	u32 biCompression = 0; // BI_RGB
-	u32 biSizeImage;
-	s32 biXPelsPerMeter = 0;
-	s32 biYPelsPerMeter = 0;
-	u32 biClrUsed = 0;
-	u32 biClrImportant = 0;
-};
-struct BMPFileHeader
-{
-	u16 bfType = 0x4D42; // "BM"
-	u32 bfSize;
-	u16 bfReserved1 = 0;
-	u16 bfReserved2 = 0;
-	u32 bfOffBits = sizeof(BMPFileHeader) + sizeof(BMPInfoHeader);
-};
-
-
-#pragma pack(pop)
-void SaveBMP(const char* path, void* bitmap, u32 w, u32 h)
-{
-	FILE* f = fopen(path, "wb");
-	if (!f) return;
-
-	u32 imageSize = w * h * 4;
-
-	BMPFileHeader fileHeader;
-	BMPInfoHeader infoHeader;
-
-	fileHeader.bfSize = fileHeader.bfOffBits + imageSize;
-
-	infoHeader.biWidth = w;
-	infoHeader.biHeight = -((s32)h);
-	infoHeader.biSizeImage = imageSize;
-
-	fwrite(&fileHeader, sizeof(fileHeader), 1, f);
-	fwrite(&infoHeader, sizeof(infoHeader), 1, f);
-
-	fwrite(bitmap, imageSize, 1, f);
-
-	fclose(f);
-}
-#endif
-
 void CGameFont::Initialize2(const char* name, const char* shader, const char* style, u32 size)
 {
 	FontBitmap.resize(TextureDimension * TextureDimension);
@@ -312,10 +244,8 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 	req.horiResolution = 0;
 	req.vertResolution = 0;
 	FT_Request_Size(OurFont, &req);
-#if EnableGamepadFontInclude
 	FT_Face GamepadFont = nullptr;
 
-	//if (xr_strcmp(name, "arial") == 0)
 	{
 		string_path gpPath;
 		xr_string gpName = CStringTable::LangName() + "\\gamepad.ttf";
@@ -337,14 +267,17 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 			}
 			else
 			{
-				Msg("! Failed to load gamepad.ttf");
+				Msg("! Failed to load gamepad.ttf: file is invalid");
 				GamepadFont = nullptr;
 			}
 
 			FS.r_close(gpFile);
 		}
+		else
+		{
+			Msg("! Failed to load gamepad.ttf: file not found");
+		}
 	}
-#endif
 #define FT_CEIL(X)  (((X + 63) & -64) / 64)
 
 	float FontSizeInPixels = (float)(OurFont->size->metrics.ascender - OurFont->size->metrics.descender) / 64.0f;
@@ -424,34 +357,23 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 
 	//const char* Format = FT_Get_Font_Format(OurFont);
 	u32 index = 0;
-#if EnableGamepadFontInclude
-	auto LoadGlyphTest = [&](FT_UInt glyphID)
+	auto LoadGlyphGamepad = [&](FT_UInt glyphID)
 		{
-			FT_Face FaceToUse = OurFont;
-
-			// fallback диапазон
-			if (GamepadFont && glyphID >= 0xE000 && glyphID <= 0xE0BF)
-			{
-				FaceToUse = GamepadFont;
-				Msg("glyphID %d", glyphID);
-			}
-
-			FT_UInt charIndex = FT_Get_Char_Index(FaceToUse, glyphID);
+			FT_UInt charIndex = FT_Get_Char_Index(GamepadFont, glyphID);
 
 			if (charIndex == 0 && glyphID != 0)
 			{
-				Msg("! Glyph not found: %d", glyphID);
 				return;
 			}
 
 			FT_Error err = FT_Load_Glyph(
-				FaceToUse,
+				GamepadFont,
 				charIndex,
 				FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL
 			);
-			I_ASSERT_M(err == 0, "FT_Load_Glyph failed: charIndex [%d], glyphID [%d]", charIndex, glyphID);
+			R_ASSERT(err == 0, "FT_Load_Glyph failed", charIndex, glyphID);
 
-			FT_GlyphSlot Glyph = FaceToUse->glyph;
+			FT_GlyphSlot Glyph = GamepadFont->glyph;
 			FT_Glyph_Metrics& GlyphMetrics = Glyph->metrics;
 
 			CopyGlyphImageToAtlas(Glyph->bitmap);
@@ -477,7 +399,6 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 			TargetX = TargetX2;
 			TargetX += 4;
 		};
-#endif
 	auto LoadGlyph = [&](FT_UInt glyphID)
 	{
 		u32 TrueGlyph = glyphID;
@@ -533,19 +454,13 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 		glyphID = FT_Get_Next_Char(OurFont, glyphID, &index);
 	}
 
-#if EnableGamepadFontInclude
 	if (GamepadFont)
 	{
-		//FT_Select_Charmap(GamepadFont, FT_ENCODING_UNICODE);
-
-		// после тестов, можешь старый LoadGlyph удалить,
-		//		так как, вроде с LoadGlyphTest всё работает
-		for (u32 g = 0xE000; g <= 0xE0BF; ++g)
+		for (u32 g = 57344; g <= 57535; ++g)
 		{
-			LoadGlyphTest(g);
+			LoadGlyphGamepad(g);
 		}
 	}
-#endif
 
 	fCurrentHeight = FontSizeInPixels;
 
@@ -561,12 +476,6 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 	Msg("* Font %s Y size [%d - %d]", Name, TargetDemensionY, TargetY2);
 #endif
 	R_ASSERT2(TargetDemensionY <= TextureDimension, "Font too large, or dimension texture is too small");
-
-#if DBG_SAVE_FONT_ATLAS
-	xr_string d_name = FullPath;
-	d_name += ".bmp";
-	SaveBMP(d_name.c_str(), FontBitmap.data(), TextureDimension, TargetDemensionY);
-#endif
 
 	pFontRender->CreateFontAtlas(TextureDimension, TargetDemensionY, textureName, FontBitmap.data());
 
