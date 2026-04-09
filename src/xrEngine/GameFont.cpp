@@ -150,7 +150,7 @@ bool GetDisplayMetricsSDL3(float& width_mm, float& height_mm, float& width_px, f
 	ДЛЯ ТЕСТА ДОБАВЛЯЕТСЯ К ARIAL.
 		ШРИФТ gamepad.ttf
 */
-#define EnableGamepadFontInclude 1
+#define EnableGamepadFontInclude 0
 
 /**/
 
