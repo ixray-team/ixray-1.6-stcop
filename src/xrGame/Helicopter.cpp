@@ -213,9 +213,6 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract*	DC)
 
 	m_engineSound.create			(*heli->engine_sound,st_Effect,sg_SourceType);
 	m_engineSound.play_at_pos		(0,XFORM().c,sm_Looped);
-	
-	CShootingObject::Light_Create	();
-
 
 	setVisible						(TRUE);
 	setEnabled						(TRUE);
@@ -246,7 +243,7 @@ void CHelicopter::net_Destroy()
 {
 	inherited::net_Destroy				();
 	CExplosive::net_Destroy				();
-	CShootingObject::Light_Destroy		();
+	CShootingObject::DestroyEffects		();
 	CPHSkeleton::RespawnInit			();
 	CPHDestroyable::RespawnInit			();
 	m_engineSound.stop					();

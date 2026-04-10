@@ -496,16 +496,17 @@ void 	CModelPool::Render(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, 
     }break;
     case MT_PARTICLE_GROUP:{
 		PS::CParticleGroup* pG = smart_cast<PS::CParticleGroup*>(m_pVisual); VERIFY(pG);
-		xrSRWLockGuard srwguard(&pG->lock, true);
+		xrCriticalSectionGuard guard(pG->onframe_lock);
 		for (PS::CParticleGroup::SItem& item : pG->items)
 		{
-			if (item._effect)
-				Render(item._effect, Fidentity, priority, strictB2F, m_fLOD);
+			if (item.root_effect)
+				Render(item.root_effect, Fidentity, priority, strictB2F, m_fLOD);
 
-			for (dxRender_Visual* pEffect : item._children_related)
+			xrCriticalSectionGuard guard(item.childs_cs);
+			for (dxRender_Visual* pEffect : item.children_related)
 				Render(pEffect, Fidentity, priority, strictB2F, m_fLOD);
 
-			for (dxRender_Visual* pEffect : item._children_free)
+			for (dxRender_Visual* pEffect : item.children_free)
 				Render(pEffect, Fidentity, priority, strictB2F, m_fLOD);
 		}
     }break;
