@@ -132,8 +132,6 @@ BOOL CWeaponStatMgun::net_Spawn(CSE_Abstract* DC)
 	m_destEnemyDir.setHP(m_bind_y_rot, m_bind_x_rot);
 	XFORM().transform_dir(m_destEnemyDir);
 
-	inheritedShooting::Light_Create();
-
 	processing_activate();
 	setVisible(TRUE);
 	setEnabled(TRUE);
@@ -150,6 +148,7 @@ void CWeaponStatMgun::net_Destroy()
 	}
 	inheritedPH::net_Destroy	();
 	processing_deactivate		();
+	CShootingObject::DestroyEffects();
 }
 
 void CWeaponStatMgun::net_Export(NET_Packet& P)	// export to server
