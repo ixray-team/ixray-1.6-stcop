@@ -59,8 +59,6 @@ CCarWeapon::CCarWeapon(CPhysicsShellHolder* obj)
 	m_destEnemyDir.setHP				(m_bind_y_rot,m_bind_x_rot);
 	m_object->XFORM().transform_dir		(m_destEnemyDir);
 
-
-	inheritedShooting::Light_Create		();
 	Load								(pUserData->r_string("mounted_weapon_definition","wpn_section"));
 	SetBoneCallbacks					();
 	m_object->processing_activate		();
@@ -75,6 +73,7 @@ CCarWeapon::~CCarWeapon()
 {
 	delete_data(m_Ammo);
 //.	m_object->processing_deactivate		();
+	CShootingObject::DestroyEffects();
 }
 
 void CCarWeapon::Load(LPCSTR section)

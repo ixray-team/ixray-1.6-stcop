@@ -140,15 +140,13 @@ protected:
 	float					light_time;
 	bool					m_bLightShotEnabled;
 protected:
-	void					Light_Create		();
-	void					Light_Destroy		();
-
 	void					Light_Start			();
 	void					Light_Render		(const Fvector& P);
 
 			void			LoadLights			(LPCSTR section, LPCSTR prefix);
 			void			RenderLight			();
 			void			UpdateEffects		();
+			void			DestroyEffects		();
 			void			StopLight			();
 	virtual bool			IsHudModeNow		() { return false; };
 protected:
@@ -156,7 +154,7 @@ protected:
 	virtual const Fvector&	get_CurrentFirePoint2() { return get_CurrentFirePoint(); };
 	virtual const Fvector&	get_CurrentShellPoint()	{ return get_CurrentFirePoint(); };
 	virtual const Fmatrix&	get_ParticlesXFORM()	{ return Fidentity; };
-	
+
 			void			LoadParticle		(LPCSTR section, LPCSTR line, xr_shared_ptr<CParticlesObject>& particle);
 
 			void			StartFlameParticle();

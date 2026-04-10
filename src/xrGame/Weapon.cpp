@@ -1013,13 +1013,12 @@ BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 	return bResult;
 }
 
-void CWeapon::net_Destroy	()
+void CWeapon::net_Destroy()
 {
-	inherited::net_Destroy	();
+	inherited::net_Destroy();
 
-	//удалить объекты партиклов
-	StopLight			();
-	Light_Destroy		();
+	//удалить эффекты вспышки от выстрела
+	DestroyEffects();
 
 	m_magazine.clear();
 	m_chamber.clear();
@@ -1276,7 +1275,6 @@ void CWeapon::OnH_A_Independent	()
 {
 	m_dwWeaponIndependencyTime = Level().timeServer();
 	inherited::OnH_A_Independent();
-	Light_Destroy				();
 	UpdateAddonsVisibility		();
 	ProcessScope();
 };

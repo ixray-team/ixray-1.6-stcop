@@ -185,7 +185,7 @@ void CParticleTool::Render()
         	if (m_EditPG){
              	int cnt 		= m_EditPG->items.size();
                 for (int k=0; k<cnt; k++){
-                    PS::CParticleEffect* E		= (PS::CParticleEffect*)m_EditPG->items[k]._effect;
+                    PS::CParticleEffect* E		= (PS::CParticleEffect*)m_EditPG->items[k].root_effect;
     
                     if (m_LibPGD == nullptr || m_LibPGD->m_Effects[k] == nullptr)
                     {
@@ -996,8 +996,8 @@ void CParticleTool::PlayCurrent(int idx)
             VERIFY(m_CurrentEf);
             for (auto& item : m_EditPG->items)
             {
-                VERIFY(item._effect);
-                auto CastedEffect = (PS::CParticleEffect*)item._effect;
+                VERIFY(item.root_effect);
+                auto CastedEffect = (PS::CParticleEffect*)item.root_effect;
                 if (CastedEffect->m_Def->Name() == m_CurrentEf->m_EffectName)
                 {
                     m_LibPED = CastedEffect->GetDefinition();
@@ -1012,7 +1012,7 @@ void CParticleTool::PlayCurrent(int idx)
         {
             if (idx>-1){
                 VERIFY(idx<(int)m_EditPG->items.size());
-                m_LibPED = ((PS::CParticleEffect*)m_EditPG->items[idx]._effect)->GetDefinition();
+                m_LibPED = ((PS::CParticleEffect*)m_EditPG->items[idx].root_effect)->GetDefinition();
                 m_EditPE->Compile(m_LibPED);
                 m_EditPE->Play();
             }else{
