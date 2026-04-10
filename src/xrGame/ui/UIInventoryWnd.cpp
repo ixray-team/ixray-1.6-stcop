@@ -26,7 +26,7 @@ using namespace InventoryUtilities;
 #include "../InfoPortion.h"
 #include "../Level.h"
 #include "../EntityCondition.h"
-
+#include "../../xrUI/Widgets/UIGamepadLegend.h"
 #include "../game_cl_base.h"
 #include "../ActorCondition.h"
 #include "UIDragDropListEx.h"
@@ -39,8 +39,6 @@ using namespace InventoryUtilities;
 #define				INVENTORY_XML			"inventory_new.xml"
 
 
-CUIInventoryWnd*	g_pInvWnd = nullptr;
-
 CUIInventoryWnd::CUIInventoryWnd()
 {
 	m_iCurrentActiveSlot				= NO_ACTIVE_SLOT;
@@ -49,7 +47,6 @@ CUIInventoryWnd::CUIInventoryWnd()
 	Init								();
 	SetCurrentItem						(nullptr);
 
-	g_pInvWnd							= this;	
 	m_b_need_reinit						= false;
 	Show								(false);	
 	m_currMenuMode						= mmInventory;
@@ -94,16 +91,15 @@ void CUIInventoryWnd::Init()
 	AttachChild							(&UIProgressBack);
 	xml_init.InitStatic					(uiXml, "progress_background", 0, &UIProgressBack);
 
-	if (!IsGameTypeSingle()){
+	if (!IsGameTypeSingle())
+	{
 		AttachChild						(&UIProgressBack_rank);
 		xml_init.InitStatic				(uiXml, "progress_back_rank", 0, &UIProgressBack_rank);
 
 		UIProgressBack_rank.AttachChild	(&UIProgressBarRank);
 		xml_init.InitProgressBar		(uiXml, "progress_bar_rank", 0, &UIProgressBarRank);
 		UIProgressBarRank.SetProgressPos(100);
-
 	}
-	
 
 	UIProgressBack.AttachChild (&UIProgressBarHealth);
 	xml_init.InitProgressBar (uiXml, "progress_bar_health", 0, &UIProgressBarHealth);
@@ -116,16 +112,16 @@ void CUIInventoryWnd::Init()
 
 	UIPersonalWnd.AttachChild			(&UIStaticPersonal);
 	xml_init.InitStatic					(uiXml, "static_personal",0, &UIStaticPersonal);
-//	UIStaticPersonal.Init				(1, UIPersonalWnd.GetHeight() - 175, 260, 260);
 
 	AttachChild							(&UIOutfitInfo);
 	UIOutfitInfo.InitFromXml			(uiXml);
-//.	xml_init.InitStatic					(uiXml, "outfit_info_window",0, &UIOutfitInfo);
 
-
-	if (!IsGameTypeSingle()){
-		UIRankFrame = new CUIStatic (); UIRankFrame->SetAutoDelete(true);
-		UIRank = new CUIStatic (); UIRank->SetAutoDelete(true);
+	if (!IsGameTypeSingle())
+	{
+		UIRankFrame = new CUIStatic (); 
+		UIRankFrame->SetAutoDelete(true);
+		UIRank = new CUIStatic (); 
+		UIRank->SetAutoDelete(true);
 
 		CUIXmlInit::InitStatic(uiXml, "rank", 0, UIRankFrame);
 		CUIXmlInit::InitStatic(uiXml, "rank:pic", 0, UIRank);
@@ -141,7 +137,6 @@ void CUIInventoryWnd::Init()
 	CUIXmlInitGame::InitDragDropListEx	(uiXml, "dragdrop_belt", 0, m_pUIBeltList);
 	BindDragDropListEvents				(m_pUIBeltList);
 
-
 	inherited::InitSlots				(uiXml);
 	
 	int cols = m_pUIBeltList->CellsCapacity().x;
@@ -152,10 +147,11 @@ void CUIInventoryWnd::Init()
 	m_ArtefactSlotsHighlight.resize(m_ArtefactSlotsCount, nullptr);
 	m_belt_list_over.resize(m_ArtefactSlotsCount, nullptr);
 
+	inherited::InitGamepadSelectors		();
+
 	//pop-up menu
 	m_UIPropertiesBox					= new CUIPropertiesBox();
 	AttachChild							(m_UIPropertiesBox);
-	m_UIPropertiesBox->SetAutoDelete	(true);
 	m_UIPropertiesBox->InitPropertiesBox(Fvector2().set(0,0),Fvector2().set(300,300));
 	m_UIPropertiesBox->Hide				();
 
@@ -177,39 +173,25 @@ void CUIInventoryWnd::Init()
 		m_pItemDropAmountWnd->InitDropAmount(uiDropAmountXml);
 	}
 
+	m_gamepad_legend					= UIHelper::CreateGamepadLegend(uiXml, "gamepad_legend", this, false);
+
 	m_highlight_clear = true;
 	clear_highlight_lists();
+		
+	const char* pSelectorTextureName = "ui_inv_item_selector_sec";
+	m_pUIBagList->InitSelector(pSelectorTextureName);
+	m_pUIBeltList->InitSelector(pSelectorTextureName);
+
+	// Controller mode
+	xr_map<xr_string, CUIWindow*> wndPointers;
+	wndPointers["BeltList"]				= m_pUIBeltList;
+	wndPointers["PistolList"]			= m_pInvList[INV_SLOT_2];
+	wndPointers["AutomaticList"]		= m_pInvList[INV_SLOT_3];
+	wndPointers["OutfitList"]			= m_pInvList[OUTFIT_SLOT];
+	wndPointers["BagList"]				= m_pUIBagList;
+
+	ReadWndSelectorsInfo(uiXml, "ui_c_navi_inventory", m_ui_navigation_lists[mmInventory], wndPointers);
 }
-
-CUIInventoryWnd::~CUIInventoryWnd()
-{
-}
-
-bool CUIInventoryWnd::OnMouseAction(float x, float y, EUIMessages mouse_action)
-{
-	if (m_b_need_reinit)
-		return true;
-
-	//вызов дополнительного меню по правой кнопке
-	if (mouse_action == WINDOW_RBUTTON_DOWN)
-	{
-		if (m_UIPropertiesBox->IsShown())
-		{
-			m_UIPropertiesBox->Hide		();
-			return						true;
-		}
-	}
-
-	CUIWindow::OnMouseAction					(x, y, mouse_action);
-
-	return true; // always returns true, because ::StopAnyMove() == true;
-}
-
-void CUIInventoryWnd::Draw()
-{
-	CUIWindow::Draw						();
-}
-
 
 void CUIInventoryWnd::Update()
 {
@@ -217,9 +199,9 @@ void CUIInventoryWnd::Update()
 		InitInventory					();
 
 	CObject* current_entity = Level().CurrentEntity();
-	CEntityAlive *pEntityAlive			= current_entity != nullptr ? current_entity->cast_entity_alive() : nullptr;
+	CEntityAlive *pEntityAlive			= current_entity != nullptr ? GetInventoryOwner()->cast_entity_alive() : nullptr;
 
-	if(pEntityAlive) 
+	if (pEntityAlive) 
 	{
 		float v = pEntityAlive->conditions().GetHealth()*100.0f;
 		UIProgressBarHealth.SetProgressPos		(v);
@@ -231,7 +213,7 @@ void CUIInventoryWnd::Update()
 		UIProgressBarRadiation.SetProgressPos	(v);
 
 		CInventoryOwner* pOurInvOwner	= pEntityAlive != nullptr ? pEntityAlive->cast_inventory_owner() : nullptr;
-		u32 _money						= 0;
+		u32 _money						= pOurInvOwner->get_money();
 
 		if (!IsGameTypeSingle())
 		{
@@ -241,13 +223,9 @@ void CUIInventoryWnd::Update()
 				_money							= ps->money_for_round;
 			}
 		}
-		else
-		{
-			_money							= pOurInvOwner->get_money();
-		}
 		// update money
 		string64						sMoney;
-		sprintf_s							(sMoney,"%d RU", _money);
+		xr_sprintf						(sMoney,"%d RU", _money);
 		UIMoneyWnd.SetText				(sMoney);
 
 		// update outfit parameters
@@ -258,7 +236,7 @@ void CUIInventoryWnd::Update()
 
 	UIStaticTimeString.SetText(*InventoryUtilities::GetGameTimeAsString(InventoryUtilities::etpTimeToMinutes));
 
-	CUIWindow::Update					();
+	inherited::Update					();
 }
 
 void CUIInventoryWnd::Show(bool status) 
@@ -324,48 +302,6 @@ void CUIInventoryWnd::Show(bool status)
 			pActor->SetWeaponHideState(INV_STATE_INV_WND, false);
 		}
 	}
-}
-
-#include "../../xrEngine/xr_level_controller.h"
-
-bool CUIInventoryWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
-{
-	if(m_b_need_reinit)
-		return true;
-
-	if (m_UIPropertiesBox->GetVisible())
-		m_UIPropertiesBox->OnKeyboardAction(dik, keyboard_action);
-
-	if ( is_binded(kDROP, dik) )
-	{
-		if ( WINDOW_KEY_PRESSED == keyboard_action && CurrentIItem() && !CurrentIItem()->IsQuestItem()
-			&& CurrentIItem()->parent_id()==m_pInvOwner->object_id() )
-		{
-
-			SendEvent_Item_Drop		(CurrentIItem(), m_pInvOwner->object_id());
-			SetCurrentItem			(nullptr);
-		}
-		return true;
-	}
-
-	if (WINDOW_KEY_PRESSED == keyboard_action)
-	{
-#ifdef DEBUG
-		if(SDL_SCANCODE_KP_7 == dik && CurrentIItem())
-		{
-			CurrentIItem()->ChangeCondition(-0.05f);
-			m_ItemInfo->InitItem(CurrentItem());
-		}
-		else if(SDL_SCANCODE_KP_8 == dik && CurrentIItem())
-		{
-			CurrentIItem()->ChangeCondition(0.05f);
-			m_ItemInfo->InitItem(CurrentItem());
-		}
-#endif
-	}
-	if( inherited::OnKeyboardAction(dik,keyboard_action) )return true;
-
-	return false;
 }
 
 void CUIInventoryWnd::UpdateActor()

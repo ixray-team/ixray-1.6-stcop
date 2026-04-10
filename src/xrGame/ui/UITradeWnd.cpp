@@ -21,17 +21,17 @@
 #include "../../xrUI/Widgets/UI3tButton.h"
 #include "UIItemInfo.h"
 #include "UIHelperGame.h"
-
+#include "../../xrUI/Widgets/UIBtnHint.h"
 #include "UICharacterInfo.h"
 #include "UIDragDropListEx.h"
 #include "UICellItem.h"
 #include "UICellItemFactory.h"
-
+#include "UITalkWnd.h"
 #include "../WeaponBinoculars.h"
 #include "../WeaponKnife.h"
 #include "../WeaponMagazinedWGrenade.h"
 #include "../inventory_item.h"
-
+#include "UITalkDialogWnd.h"
 
 #define				TRADE_XML			"trade.xml"
 #define				TRADE_CHARACTER_XML	"trade_character.xml"
@@ -125,6 +125,7 @@ void CUITradeWnd::Init()
 	AttachChild							(&UIDescWnd);
 	xml_init.InitStatic					(uiXml, "desc_static", 0, &UIDescWnd);
 	m_ItemInfo							= new CUIItemInfo();
+	m_ItemInfo->SetAutoDelete			(true);
 	UIDescWnd.AttachChild				(m_ItemInfo);
 	m_ItemInfo->InitItemInfo			(Fvector2().set(0,0), Fvector2().set(UIDescWnd.GetWidth(), UIDescWnd.GetHeight()), TRADE_ITEM_XML);
 
@@ -141,6 +142,8 @@ void CUITradeWnd::Init()
 	BindDragDropListEvents				(&UIOthersBagList);
 	BindDragDropListEvents				(&UIOurTradeList);
 	BindDragDropListEvents				(&UIOthersTradeList);
+
+	inherited::InitGamepadSelectors		();
 	
 	//pop-up menu
 	m_UIPropertiesBox					= new CUIPropertiesBox();
@@ -148,9 +151,33 @@ void CUITradeWnd::Init()
 	m_UIPropertiesBox->SetAutoDelete	(true);
 	m_UIPropertiesBox->InitPropertiesBox(Fvector2().set(0,0),Fvector2().set(300,300));
 	m_UIPropertiesBox->Hide				();
+	
+	CUIXml uiDropAmountXml;
+	if (uiDropAmountXml.Load(CONFIG_PATH, UI_PATH, "custom_drop_amount.xml"))
+	{
+		m_pItemDropAmountWnd = new CUIItemDropAmountWnd();
+		m_pItemDropAmountWnd->SetAutoDelete(true);
+		m_pItemDropAmountWnd->InitDropAmount(uiDropAmountXml);
+	}
+	m_gamepad_legend = UIHelper::CreateGamepadLegend(uiXml, "gamepad_legend", this, false);
 
 	m_highlight_clear = true;
 	clear_highlight_lists();
+
+	const char* pSelectorTextureName = "ui_inv_item_selector_sec";
+	GetTradeActorBagList()->InitSelector(pSelectorTextureName);
+	GetTradeActorList()->InitSelector(pSelectorTextureName);
+	GetTradePartnerBagList()->InitSelector(pSelectorTextureName);
+	GetTradePartnerList()->InitSelector(pSelectorTextureName);
+
+	// Controller mode
+	xr_map<xr_string, CUIWindow*> wndPointers;
+	wndPointers["OurBagList"]			= &UIOurBagList;
+	wndPointers["OurTradeList"]			= &UIOurTradeList;
+	wndPointers["OthersBagList"]		= &UIOthersBagList;
+	wndPointers["OthersTradeList"]		= &UIOthersTradeList;
+
+	ReadWndSelectorsInfo(uiXml, "ui_c_navi_trade", m_ui_navigation_lists[mmTrade], wndPointers);
 }
 
 void CUITradeWnd::InitTrade(CInventoryOwner* pOur, CInventoryOwner* pOthers)
@@ -160,7 +187,7 @@ void CUITradeWnd::InitTrade(CInventoryOwner* pOur, CInventoryOwner* pOthers)
 
 	m_pInvOwner							= pOur;
 	m_pOthersInvOwner					= pOthers;
-	UIOthersPriceCaption.GetPhraseByIndex(0)->SetText(*g_pStringTable->translate("ui_st_opponent_items"));
+	UIOthersPriceCaption.GetPhraseByIndex(0)->SetText(g_pStringTable->translate("ui_st_opponent_items").c_str());
 
 	UICharacterInfoLeft.InitCharacter(m_pInvOwner);
 	UICharacterInfoRight.InitCharacter(m_pOthersInvOwner);
@@ -177,6 +204,7 @@ void CUITradeWnd::InitTrade(CInventoryOwner* pOur, CInventoryOwner* pOthers)
 	EnableAll							();
 
 	UpdateLists							(eBoth);
+	SetAreaSelectionTo					(&UIOurBagList);
 }  
 
 void CUITradeWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
@@ -187,7 +215,7 @@ void CUITradeWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 	}
 	else if(pWnd == &UIPerformTradeButton && msg == BUTTON_CLICKED)
 	{
-		PerformTrade();
+		OnBtnPerformTrade(this, nullptr);
 	}
 	else if (pWnd == m_UIPropertiesBox && msg == PROPERTY_CLICKED)
 	{
@@ -237,6 +265,7 @@ void CUITradeWnd::Show(bool status)
 		SetCurrentItem(nullptr);
 		ResetAll();
 		UIDealMsg = nullptr;
+		PlaySnd(eSndOpen);
 	}
 	else
 	{
@@ -255,6 +284,7 @@ void CUITradeWnd::Show(bool status)
 		UIOurTradeList.ClearAll(true);
 		UIOthersBagList.ClearAll(true);
 		UIOthersTradeList.ClearAll(true);
+		PlaySnd(eSndClose);
 	}
 }
 
@@ -272,39 +302,15 @@ void CUITradeWnd::StopTrade()
 	bStarted						= false;
 }
 
-void CUITradeWnd::PerformTrade()
+void CUITradeWnd::TradeShowMessage(int money_actor, int money_patner) 
 {
-
-	if (UIOurTradeList.ItemsCount()==0 && UIOthersTradeList.ItemsCount()==0) 
-		return;
-
-	int our_money			= (int)m_pInvOwner->get_money();
-	int others_money		= (int)m_pOthersInvOwner->get_money();
-
-	int delta_price			= int(m_iOurTradePrice-m_iOthersTradePrice);
-
-	our_money				+= delta_price;
-	others_money			-= delta_price;
-
-	if(our_money>=0 && others_money>=0 && (m_iOurTradePrice>=0 || m_iOthersTradePrice>0))
-	{
-		m_pOthersTrade->OnPerformTrade(m_iOthersTradePrice, m_iOurTradePrice);
-		
-		TransferItems		(&UIOurTradeList,		&UIOthersBagList, m_pOthersTrade,	true);
-		TransferItems		(&UIOthersTradeList,	&UIOurBagList,	m_pOthersTrade,	false);
-	}
+	if (money_patner < 0)
+		UIDealMsg = CurrentGameUI()->AddCustomStatic("not_enough_money_other", true);
 	else
-	{
-		if(others_money<0)
-			UIDealMsg		= CurrentGameUI()->AddCustomStatic("not_enough_money_other", true);
-		else
-			UIDealMsg		= CurrentGameUI()->AddCustomStatic("not_enough_money_mine", true);
+		UIDealMsg = CurrentGameUI()->AddCustomStatic("not_enough_money_mine", true);
 
 
-		UIDealMsg->m_endTime	= Device.fTimeGlobal+2.0f;// sec
-	}
-	SetCurrentItem			(nullptr);
-	UpdatePrices			();
+	UIDealMsg->m_endTime = Device.fTimeGlobal + 2.0f;// sec
 }
 
 void CUITradeWnd::DisableAll()
@@ -392,5 +398,9 @@ void CUITradeWnd::SetCurrentItem(CUICellItem* itm)
 
 void CUITradeWnd::SwitchToTalk()
 {
-	GetMessageTarget()->SendMessage		(this, TRADE_WND_CLOSED);
+	g_btnHint->Discard();
+	HideDialog();
+
+	if (GetInventoryOwner()->IsTalking())
+		CurrentGameUI()->TalkMenu->UITalkDialogWnd->Show();
 }

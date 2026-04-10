@@ -284,53 +284,6 @@ void CUIActorMenu::UpdatePrices()
 		m_trade_sell_button->Enable(has_actor_items);	
 }
 
-void CUIActorMenu::OnBtnPerformTrade(CUIWindow* w, void* d)
-{
-	if (m_pTradeActorList->ItemsCount() == 0 && m_pTradePartnerList->ItemsCount() == 0)
-	{
-		return;
-	}
-
-	int actor_money = (int)m_pActorInvOwner->get_money();
-	int partner_money = (int)m_pPartnerInvOwner->get_money();
-	int actor_price = (int)CalcItemsPrice(m_pTradeActorList, m_partner_trade, true);
-	int partner_price = (int)CalcItemsPrice(m_pTradePartnerList, m_partner_trade, false);
-
-	int delta_price = actor_price - partner_price;
-	actor_money += delta_price;
-	partner_money -= delta_price;
-
-	if ((actor_money >= 0) && (partner_money >= 0) && (actor_price >= 0 || partner_price > 0))
-	{
-		m_partner_trade->OnPerformTrade(partner_price, actor_price);
-
-		TransferItems(m_pTradeActorList, m_pTradePartnerBagList, m_partner_trade, true);
-		TransferItems(m_pTradePartnerList, m_pTradeActorBagList, m_partner_trade, false);
-
-		if (pInput->GetControllerMode())
-			SetCurrentItem(nullptr);
-	}
-	else
-	{
-		if (actor_money < 0)
-		{
-			CallMessageBoxOK("not_enough_money_actor");
-		}
-		else if (partner_money < 0)
-		{
-			CallMessageBoxOK("not_enough_money_partner");
-		}
-		else
-		{
-			CallMessageBoxOK("trade_dont_make");
-		}
-	}
-	if (!pInput->GetControllerMode())
-		SetCurrentItem(nullptr);
-
-	UpdateItemsPlace();
-}
-
 void CUIActorMenu::OnBtnPerformTradeBuy(CUIWindow* w, void* d)
 {
 	if(m_pTradePartnerList->ItemsCount()==0) 
@@ -422,4 +375,20 @@ void CUIActorMenu::OnBtnPerformTradeSell(CUIWindow* w, void* d)
 		SetCurrentItem(nullptr);
 
 	UpdateItemsPlace();
+}
+
+void CUIActorMenu::TradeShowMessage(int money_actor, int money_patner) 
+{
+	if (money_actor < 0)
+	{
+		CallMessageBoxOK("not_enough_money_actor");
+	}
+	else if (money_patner < 0)
+	{
+		CallMessageBoxOK("not_enough_money_partner");
+	}
+	else
+	{
+		CallMessageBoxOK("trade_dont_make");
+	}
 }

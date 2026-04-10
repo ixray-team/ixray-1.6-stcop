@@ -3,6 +3,28 @@
 
 	<main x="0" y="0" width="1024" height="768"/>
 
+	<gamepad_legend x="0" y="730" width="1024" height="30" spacing="5">
+		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>am_use</window_name>
+			<text font="graffiti19" vert_align="c">ui_am_use</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>am_actions</window_name>
+			<text font="graffiti19" vert_align="c">ui_am_actions</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>am_info</window_name>
+			<text font="graffiti19" vert_align="c">ui_am_info_soc</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>am_action</window_name>
+			<text font="graffiti19" vert_align="c">ui_am_take_all</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_mm_back_gp</text>
+		</auto_static>
+	</gamepad_legend>
+	
 	<static_icon x="111" y="32" width="150" height="220"  stretch="1">
 		<texture>ui_charinfo_left</texture>
 		<texture_offset x="-4" y="0"/>
@@ -63,6 +85,11 @@
         <texture>ui_button_main01</texture>
         <text align="c" font="graffiti22" r="238" g="153" b="26">ui_st_put_all</text>
 	</put_all_btn>
+
+	<ui_c_navi_carbody>
+		<wnd_selector_info wnd="OurBagList" 			wnd_l=""				wnd_r="OthersBagList"/>
+		<wnd_selector_info wnd="OthersBagList" 			wnd_l="OurBagList" 		wnd_r="" 			 />
+	</ui_c_navi_carbody>
 
 </window>
 
