@@ -1,6 +1,5 @@
 #include "StdAfx.h"
 #include "UITalkWnd.h"
-#include "UITradeWnd.h"
 #include "UITalkDialogWnd.h"
 
 #include "../Actor.h"
@@ -31,7 +30,6 @@ CUITalkWnd::CUITalkWnd()
 
 	m_pOurInvOwner			= nullptr;
 	m_pOthersInvOwner		= nullptr;
-	UITradeWnd				= nullptr;
 	m_pOurDialogManager		= nullptr;
 	m_pOthersDialogManager	= nullptr;
 
@@ -67,15 +65,6 @@ void CUITalkWnd::InitTalkWnd()
 	AttachChild				(UITalkDialogWnd);
 	UITalkDialogWnd->m_pParent = this;
 	UITalkDialogWnd->InitTalkDialogWnd();
-
-	CUIXml xml_test;
-	if (!xml_test.Load(CONFIG_PATH, UI_PATH, "actor_menu.xml"))
-	{
-		UITradeWnd = new CUITradeWnd();
-		UITradeWnd->SetAutoDelete(true);
-		AttachChild(UITradeWnd);
-		UITradeWnd->Show(false);
-	}
 }
 
 void CUITalkWnd::InitTalkDialog()
@@ -127,8 +116,6 @@ void CUITalkWnd::InitTalkDialog()
 	UITalkDialogWnd->SetOsoznanieMode(m_pOthersInvOwner->NeedOsoznanieMode());
 	UITalkDialogWnd->Show();
 	UITalkDialogWnd->UpdateButtonsLayout(b_disable_break, m_pOthersInvOwner->IsTradeEnabled());
-	if (UITradeWnd)
-		UITradeWnd->Show(false);
 }
 
 void CUITalkWnd::InitOthersStartDialog()
@@ -226,11 +213,6 @@ void CUITalkWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 	else if(pWnd == UITalkDialogWnd && msg == TALK_DIALOG_QUESTION_CLICKED)
 	{
 		AskQuestion();
-	}
-	else if (pWnd == UITradeWnd && msg == TRADE_WND_CLOSED)
-	{
-		UITalkDialogWnd->Show();
-		UITradeWnd->Show(false);
 	}
 	inherited::SendMessage(pWnd, msg, pData);
 }
@@ -332,8 +314,6 @@ void CUITalkWnd::Show(bool status)
 	{
 		StopSnd						();
 		UITalkDialogWnd->Hide		();
-		if (UITradeWnd)
-			UITradeWnd->Show(false);
 
 		if(m_pActor)
 		{
@@ -430,16 +410,7 @@ void CUITalkWnd::SwitchToTrade()
 	if ( m_pOurInvOwner->IsTradeEnabled() && m_pOthersInvOwner->IsTradeEnabled() )
 	{
 		UITalkDialogWnd->Hide();
-		if (CurrentGameUI()->ActorMenu())
-		{
-			CurrentGameUI()->StartTrade	(m_pOurInvOwner, m_pOthersInvOwner);
-		}
-		else
-		{
-			UITradeWnd->InitTrade(m_pOurInvOwner, m_pOthersInvOwner);
-			UITradeWnd->Show(true);
-			UITradeWnd->StartTrade();
-		}
+		CurrentGameUI()->StartTrade	(m_pOurInvOwner, m_pOthersInvOwner);
 		StopSnd();
 	}
 }
