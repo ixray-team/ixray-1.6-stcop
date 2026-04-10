@@ -85,18 +85,8 @@ void CUITradeWnd::Init()
 	UICharacterInfoRight.InitCharacterInfo(Fvector2().set(0,0), Fvector2().set(UIOthersIcon.GetWidth(), UIOthersIcon.GetHeight()), TRADE_CHARACTER_XML);
 
 
-	//Списки торговли
-	AttachChild							(&UIOurBagWnd);
-	xml_init.InitStatic					(uiXml, "our_bag_static", 0, &UIOurBagWnd);
-	AttachChild							(&UIOthersBagWnd);
-	xml_init.InitStatic					(uiXml, "others_bag_static", 0, &UIOthersBagWnd);
-
-	UIOurBagWnd.AttachChild	(&UIOurMoneyStatic);
-	xml_init.InitStatic					(uiXml, "our_money_static", 0, &UIOurMoneyStatic);
-
-	UIOthersBagWnd.AttachChild(&UIOtherMoneyStatic);
-	xml_init.InitStatic					(uiXml, "other_money_static", 0, &UIOtherMoneyStatic);
-
+	// Attach order defines z-order: trade panels first, bag panels last so the backpack stays on top
+	// for drawing and hit-testing when a long deal list overlaps the inventory region
 	AttachChild							(&UIOurTradeWnd);
 	xml_init.InitStatic					(uiXml, "static", 0, &UIOurTradeWnd);
 	AttachChild							(&UIOthersTradeWnd);
@@ -108,18 +98,28 @@ void CUITradeWnd::Init()
 	UIOthersTradeWnd.AttachChild(&UIOthersPriceCaption);
 	CUIXmlInitGame::InitMultiTextStatic		(uiXml, "price_mt_static", 0, &UIOthersPriceCaption);
 
-	//Списки Drag&Drop
-	UIOurBagWnd.AttachChild	(&UIOurBagList);	
-	CUIXmlInitGame::InitDragDropListEx			(uiXml, "dragdrop_list", 0, &UIOurBagList);
-
-	UIOthersBagWnd.AttachChild(&UIOthersBagList);	
-	CUIXmlInitGame::InitDragDropListEx			(uiXml, "dragdrop_list", 1, &UIOthersBagList);
-
 	UIOurTradeWnd.AttachChild	(&UIOurTradeList);	
 	CUIXmlInitGame::InitDragDropListEx			(uiXml, "dragdrop_list", 2, &UIOurTradeList);
 
 	UIOthersTradeWnd.AttachChild(&UIOthersTradeList);	
 	CUIXmlInitGame::InitDragDropListEx			(uiXml, "dragdrop_list", 3, &UIOthersTradeList);
+
+	AttachChild							(&UIOurBagWnd);
+	xml_init.InitStatic					(uiXml, "our_bag_static", 0, &UIOurBagWnd);
+	AttachChild							(&UIOthersBagWnd);
+	xml_init.InitStatic					(uiXml, "others_bag_static", 0, &UIOthersBagWnd);
+
+	UIOurBagWnd.AttachChild	(&UIOurMoneyStatic);
+	xml_init.InitStatic					(uiXml, "our_money_static", 0, &UIOurMoneyStatic);
+
+	UIOthersBagWnd.AttachChild(&UIOtherMoneyStatic);
+	xml_init.InitStatic					(uiXml, "other_money_static", 0, &UIOtherMoneyStatic);
+
+	UIOurBagWnd.AttachChild	(&UIOurBagList);	
+	CUIXmlInitGame::InitDragDropListEx			(uiXml, "dragdrop_list", 0, &UIOurBagList);
+
+	UIOthersBagWnd.AttachChild(&UIOthersBagList);	
+	CUIXmlInitGame::InitDragDropListEx			(uiXml, "dragdrop_list", 1, &UIOthersBagList);
 
 	
 	AttachChild							(&UIDescWnd);
