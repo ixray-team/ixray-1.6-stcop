@@ -8,6 +8,7 @@ namespace PAPI
 	struct ParticleHolder
 	{
 		xr_vector<ParticleAction*> m_actions;
+		xr_vector<ParticleAction*> m_animators;
 
 		Particle* particles = nullptr;		// Actually, num_particles in size
 		OnBirthParticleCB b_cb = nullptr;
@@ -31,7 +32,7 @@ namespace PAPI
 				xr_delete(pPAction);
 		}
 
-		IC void SetMaxParticles(u32 max_count)
+		ICF void SetMaxParticles(u32 max_count)
 		{
 			// Reducing max
 			if (particles_allocated >= max_count)
@@ -49,13 +50,8 @@ namespace PAPI
 			Particle* new_particles = xr_alloc<Particle>(max_count);
 			//std::memcpy(new_particles, particles, p_count * sizeof(Particle));
 
-			for (u32 i = 0; i < max_count; i++)
-			{
-				if (i < p_count)
-					new_particles[i] = particles[i];
-				else
-					new_particles[i].Reset();
-			}
+			for (u32 i = 0; i < p_count; i++)
+				new_particles[i] = particles[i];
 			
 			xr_free(particles);
 
@@ -65,7 +61,7 @@ namespace PAPI
 			particles_allocated = max_count;
 		}
 
-		IC void RemoveParticle(u32 i)
+		ICF void RemoveParticle(u32 i)
 		{
 			if (0 == p_count)
 				return;
@@ -73,11 +69,10 @@ namespace PAPI
 			if (d_cb)
 				d_cb(owner, param, particles[i], i);
 
-			particles[i] = particles[--p_count];
-			particles[p_count].Reset();
+			particles[i] = std::move(particles[--p_count]);
 		}
 
-		IC BOOL AddParticle(const Fvector& pos, const Fvector& posB,
+		ICF BOOL AddParticle(const Fvector& pos, const Fvector& posB,
 			const Fvector& size, const Fvector& rot, const Fvector& vel, const Fvector& rot_vel,
 			u32 color, const float age = 0.0f, u16 frame = 0, u16 flags = 0)
 		{
@@ -90,14 +85,14 @@ namespace PAPI
 			P.posI = pos;
 			P.posB = posB;
 			P.size = size;
-			P.sizeMod = {1.0f, 1.0f, 1.0f};
 			P.sizeI = size;
+			P.sizeMod = { 1.0f, 1.0f, 1.0f };
 			P.rot.x = rot.x;
 			P.rotI.x = rot.x;
 			P.vel = vel;
 			P.velI = vel;
-			P.rot_vel 	= rot_vel;
-			P.rot_velS 	= rot_vel;
+			P.rot_vel = rot_vel;
+			P.rot_velS = rot_vel;
 			P.color = color;
 			P.colorMod = { 1.0f, 1.0f, 1.0f, 1.0f };
 			P.age = age;
@@ -112,20 +107,19 @@ namespace PAPI
 			return TRUE;
 		}
 
-		IC u32 LoadActions(IReader& R)
+		ICF void LoadActions(IReader& R)
 		{
 			if (R.length())
 			{
 				u32 cnt = R.r_u32();
+				m_animators.clear();
 				m_actions.clear(); // without this in SDK effects are broken
 				m_actions.reserve(cnt);
 
 				for (u32 k = 0; k < cnt; ++k)
 				{
-					PActionEnum type = (PActionEnum)R.r_u32();
-
 					ParticleAction* PA = nullptr;
-					switch (type)
+					switch ((PActionEnum)R.r_u32())
 					{
 						case PAAvoidID:				PA = new PAAvoid();				break;
 						case PABounceID:    		PA = new PABounce();			break;
@@ -158,28 +152,27 @@ namespace PAPI
 						case PAVortexID:    		PA = new PAVortex();			break;
 						case PATurbulenceID:		PA = new PATurbulence();		break;
 						case PAScatterID:  			PA = new PAScatter();			break;
-						case PABindVelocityValueID: PA = new PABindVelocityValue();			break;
-						case PABindRotationValueID: PA = new PABindRotationValue();			break;
-						case PABindSizeValueID:  	PA = new PABindSizeValue();			break;
-						case PABindColorValueID:  	PA = new PABindColorValue();			break;
-						case PABindColorAlphaID:  	PA = new PABindColorAlpha();			break;
-						case PAColorAnimatorID:  	PA = new PAColorAnimator();			break;
-						case PASizeAnimatorID:  	PA = new PASizeAnimator();			break;
-						case PAVelocityAnimatorID:  PA = new PAVelocityAnimator();			break;
-						case PAVelocityRotationAnimatorID: PA = new PAVelocityRotationAnimator();	break;
+
+						case PABindVelocityValueID: PA = new PABindVelocityValue();	break;
+						case PABindRotationValueID: PA = new PABindRotationValue();	break;
+						case PABindSizeValueID:  	PA = new PABindSizeValue();		break;
+						case PABindColorValueID:  	PA = new PABindColorValue();	break;
+						case PABindColorAlphaID:  	PA = new PABindColorAlpha();	break;
+
+						case PAColorAnimatorID:  	PA = new PAColorAnimator(); m_animators.push_back(PA);		break;
+						case PASizeAnimatorID:  	PA = new PASizeAnimator(); m_animators.push_back(PA);		break;
+						case PAVelocityAnimatorID:  PA = new PAVelocityAnimator(); m_animators.push_back(PA);	break;
+						case PAVelocityRotationAnimatorID: PA = new PAVelocityRotationAnimator(); m_animators.push_back(PA);	break;
 						default: NODEFAULT;
 					}
 					R_ASSERT(PA);
-					PA->type = type;
-
 					PA->Load(R);
 					m_actions.push_back(PA);
 				}
 			}
-			return (u32)m_actions.size();
 		}
 
-		IC void SaveActions(IWriter& W)
+		ICF void SaveActions(IWriter& W)
 		{
 			W.w_u32((u32)m_actions.size());
 
@@ -187,7 +180,7 @@ namespace PAPI
 				PA->Save(W);
 		}
 
-		IC void SetCallback(OnBirthParticleCB _b, OnDeadParticleCB _d, void* ow, u32 par)
+		ICF void SetCallback(OnBirthParticleCB _b, OnDeadParticleCB _d, void* ow, u32 par)
 		{
 			b_cb = _b;
 			d_cb = _d;
@@ -195,15 +188,15 @@ namespace PAPI
 			param = par;
 		}
 
-		IC void GetParticles(Particle*& pvec, u32& cnt)
+		ICF void GetParticles(Particle*& pvec, u32& cnt)
 		{
 			pvec = particles;
 			cnt = p_count;
 		}
 
-		IC u32 GetParticlesCount() { return p_count; }
+		ICF u32 GetParticlesCount() { return p_count; }
 
-		IC void Transform(const Fmatrix& full, const Fvector& vel)
+		ICF void Transform(const Fmatrix& full, const Fvector& vel)
 		{
 			Fmatrix mT;
 			mT.translate(full.c);
@@ -223,21 +216,21 @@ namespace PAPI
 			}
 		}
 
-		IC void Update(float dt)
+		ICF void Update(float dt)
 		{
 			// Step through all the actions in the action list.
-			float kill_old_time = 3.0f;
+
+
+			for (auto PA : m_animators)
+				PA->Animate(this);
+
+			float kill_old_time = 1.0f;
 			for (auto PA : m_actions)
-			{
-				PA->PreExecute(this);
-			}			
-			for (auto PA : m_actions)
-			{
 				PA->Execute(this, dt, kill_old_time);
-			}
+
 		}
 
-		IC void StopEffect(BOOL deffered)
+		ICF void StopEffect(BOOL deffered)
 		{
 			for (ParticleAction* PA : m_actions)
 			{
@@ -253,7 +246,7 @@ namespace PAPI
 				p_count = 0;
 		}
 
-		IC void PlayEffect()
+		ICF void PlayEffect()
 		{
 			// Step through all the actions in the action list.
 			for (ParticleAction* PA : m_actions)
