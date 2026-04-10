@@ -35,7 +35,7 @@ void CUIInventoryWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 		HideDialog();
 	}
 
-	CUIWindow::SendMessage(pWnd, msg, pData);
+	inherited::SendMessage(pWnd, msg, pData);
 }
 
 
@@ -67,5 +67,6 @@ void CUIInventoryWnd::InitInventory()
 		}
 	}
 
+	SetAreaSelectionTo				(m_pUIBagList);
 	m_b_need_reinit					= false;
 }  
