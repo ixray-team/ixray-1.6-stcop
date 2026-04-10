@@ -130,10 +130,10 @@ void CUIActorMenu::Construct()
 	m_pInventoryBagList			= UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_bag", this);
 	m_pInventoryBeltList		= UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_belt", this);
 
-	m_pTradeActorBagList		= UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_actor_trade_bag", this);
 	m_pTradeActorList			= UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_actor_trade", this);
-	m_pTradePartnerBagList		= UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_partner_bag", this);
+	m_pTradeActorBagList		= UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_actor_trade_bag", this);
 	m_pTradePartnerList			= UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_partner_trade", this);
+	m_pTradePartnerBagList		= UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_partner_bag", this);
 	m_pDeadBodyBagList			= UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_deadbody_bag", this);
 	if (uiXml.NavigateToNode("dragdrop_quick_slots"))
 	{
