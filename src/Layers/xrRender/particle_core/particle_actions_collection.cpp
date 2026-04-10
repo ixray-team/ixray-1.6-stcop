@@ -2712,9 +2712,9 @@ void PAColorAnimator::Transform(const Fmatrix& m)
 {
 }
 
-void PAColorAnimator::PreExecute(ParticleHolder* pe)
+void PAColorAnimator::Animate(ParticleHolder* pe)
 {
-	ParticleAction::PreExecute(pe);
+	//ParticleAction::Animate(pe);
 	for (u32 i = 0; i < pe->p_count; i++)
 	{
 		Particle &m = pe->particles[i];
@@ -2795,9 +2795,9 @@ void PASizeAnimator::Transform(const Fmatrix& m)
 {
 }
 
-void PASizeAnimator::PreExecute(ParticleHolder* pe)
+void PASizeAnimator::Animate(ParticleHolder* pe)
 {
-	ParticleAction::PreExecute(pe);
+	//ParticleAction::Animate(pe);
 	for (u32 i = 0; i < pe->p_count; i++)
 	{
 		Particle &m = pe->particles[i];

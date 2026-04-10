@@ -80,20 +80,24 @@ namespace PS
 
 	class ECORE_API CParticleGroup final : public dxRender_Visual, public IParticleCustom
 	{
-		const CPGDef*		m_Def;
-		float				m_CurrentTime;
-		Fvector				m_InitialPosition;
 	public:
-		xrCriticalSection	onframe_lock;
-		xrSRWLock lock;
-		using PEffectsVec = xr_vector<CParticleEffect*>;
-		using PEffectsVecIt = PEffectsVec::iterator;
+		const CPGDef* m_Def = nullptr;
+		float m_CurrentTime;
+		Fvector m_InitialPosition;
+		xrCriticalSection onframe_lock;
 
 		struct SItem final
 		{
-			CParticleEffect* _effect;
-			PEffectsVec _children_related;
-			PEffectsVec _children_free;
+			xrCriticalSection childs_cs;
+			xr_vector<CParticleEffect*> children_related;
+			xr_vector<CParticleEffect*> children_free;
+			CParticleEffect* root_effect = nullptr;
+
+			//заглушка для CS
+			SItem(){};
+			SItem(SItem&& other){}
+			SItem(const SItem& item){};
+			SItem& operator=(const SItem&) {return *this;};
 
 			void Clear();
 
@@ -109,49 +113,45 @@ namespace PS
 			void Play();
 			void Stop(BOOL def_stop);
 		};
+		xr_vector<SItem> items;
 
-		using SItemVec = xr_vector<SItem>;
-		using SItemVecIt = SItemVec::iterator;
-
-		SItemVec			items;
-	public:
 		enum{
 			flRT_Playing		= (1<<0),
 			flRT_DefferedStop	= (1<<1),
 		};
 		Flags8				m_RT_Flags;
-	public:
-		CParticleGroup	();
-		virtual				~CParticleGroup	();
-		virtual void	 	OnFrame			(u32 dt);
+
+		CParticleGroup();
+		virtual ~CParticleGroup();
+		virtual void OnFrame(u32 dt);
 
 #ifndef _EDITOR
-		virtual void	 	UpdateCache();
+		virtual void UpdateCache();
 #endif
 
-		virtual void		Copy			(dxRender_Visual* pFrom) {FATAL("Can't duplicate particle system - NOT IMPLEMENTED");}
+		virtual void Copy(dxRender_Visual* pFrom) {FATAL("Can't duplicate particle system - NOT IMPLEMENTED");}
 
-		virtual void		UpdateParent	(const Fmatrix& m, const Fvector& velocity, BOOL bXFORM);
+		virtual void UpdateParent(const Fmatrix& m, const Fvector& velocity, BOOL bXFORM);
 
-		void				Compile			(CPGDef* def);
+		void Compile(CPGDef* def);
 
-		const CPGDef*		GetDefinition	(){return m_Def;}
+		const CPGDef* GetDefinition(){return m_Def;}
 
-		virtual void		Play			();
-		virtual void		Stop			(BOOL bDefferedStop=TRUE);
-		virtual BOOL		IsPlaying		(){return m_RT_Flags.is(flRT_Playing);}
+		virtual void Play();
+		virtual void Stop(BOOL bDefferedStop=TRUE);
+		virtual BOOL IsPlaying(){return m_RT_Flags.is(flRT_Playing);}
 
-		virtual void		SetHudMode			(BOOL b);
-		virtual BOOL		GetHudMode			();
+		virtual void SetHudMode(BOOL b);
+		virtual BOOL GetHudMode();
 
-		virtual void		SetLiveUpdate		(BOOL b);
-		virtual BOOL		GetLiveUpdate		();
+		virtual void SetLiveUpdate(BOOL b);
+		virtual BOOL GetLiveUpdate();
 
-		virtual float		GetTimeLimit	(){VERIFY(m_Def); return m_Def->m_fTimeLimit;}
+		virtual float GetTimeLimit(){VERIFY(m_Def); return m_Def->m_fTimeLimit;}
 
-		virtual const shared_str	Name		(){VERIFY(m_Def); return m_Def->m_Name;}
+		virtual const shared_str Name(){VERIFY(m_Def); return m_Def->m_Name;}
 
-        virtual u32 		SpriteCount	();
+        virtual u32 SpriteCount();
 		PAPI::ParticleAction* FindPA(shared_str PEName, PAPI::PActionEnum Action) override;
 
 		virtual IParticleCustom* dcast_ParticleCustom() { return this; }

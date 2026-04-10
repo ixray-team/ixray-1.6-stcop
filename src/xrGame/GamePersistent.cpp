@@ -442,12 +442,10 @@ void CGamePersistent::WeathersUpdate()
 void CGamePersistent::UpdatePlayDestroyParticles()
 {
 	// Play req particle systems
-	while (!ps_needtoplay.empty())
-	{
-		xr_shared_ptr<CParticlesObject> pInstance = ps_needtoplay.back();
-		ps_needtoplay.pop_back();
-		pInstance->Play(false);
-	}
+	for (xr_shared_ptr<CParticlesObject>& Part : ps_needtoplay)
+		Part->Play(false);
+	ps_needtoplay.clear();
+
 
 	if (!ps_active_deffer.empty())
 	{
@@ -541,11 +539,8 @@ void CGamePersistent::UpdateParticles()
 
 					for (xr_shared_ptr<CParticlesObject>& particle : workers[i].second)
 					{
-						if (!particle->m_NeedDestroy)
-						{
-							particle->Update(dwTime - particle->dwLastTime, frustum);
-							particle->dwLastTime = dwTime;
-						}
+						particle->Update(dwTime - particle->dwLastTime, frustum);
+						particle->dwLastTime = dwTime;
 					}
 					PROF_STOP_THREAD();
 				});

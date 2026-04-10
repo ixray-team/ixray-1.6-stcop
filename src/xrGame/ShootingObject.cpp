@@ -69,19 +69,28 @@ void CShootingObject::Load	(LPCSTR section)
 	}
 
 	m_air_resistance_factor	= READ_IF_EXISTS(pSettings,r_float,section,"air_resistance_factor",1.f);
+
+	light_render = ::Render->light_create();
+	if (::Render->get_generation() == IRender_interface::GENERATION_R2)
+		light_render->set_shadow(true);
+	else 
+		light_render->set_shadow(false);
 }
 
-void CShootingObject::Light_Create		()
+void CShootingObject::DestroyEffects()
 {
-	//lights
-	light_render				=	::Render->light_create();
-	if (::Render->get_generation()==IRender_interface::GENERATION_R2)	light_render->set_shadow	(true);
-	else																light_render->set_shadow	(false);
-}
+	light_render.destroy();
 
-void CShootingObject::Light_Destroy		()
-{
-	light_render.destroy		();
+	if (m_pSmokeParticles)
+		m_pSmokeParticles->Destroy();
+	if (m_pFlameParticles)
+		m_pFlameParticles->Destroy();
+	if (m_pSmokeSilencerParticles)
+		m_pSmokeSilencerParticles->Destroy();
+	if (m_pFlameSilencerParticles)
+		m_pFlameSilencerParticles->Destroy();
+	if (m_pFlameGlaucherParticles)
+		m_pFlameGlaucherParticles->Destroy();
 }
 
 void CShootingObject::LoadFireParams( LPCSTR section )
@@ -91,7 +100,7 @@ void CShootingObject::LoadFireParams( LPCSTR section )
 	shared_str	s_sHitPowerCritical;
 
 	//базовая дисперсия оружия
-	fireDispersionBase	= deg2rad( pSettings->r_float	(section,"fire_dispersion_base"	) );
+	fireDispersionBase	= deg2rad( pSettings->r_float(section,"fire_dispersion_base"	) );
 
 	//сила выстрела и его мощьность
 	s_sHitPower			= pSettings->r_string_wb(section, "hit_power" );//читаем строку силы хита пули оружия
@@ -167,11 +176,6 @@ void CShootingObject::Light_Start	()
 		return;
 	}
 
-	if(!light_render)
-	{
-		Light_Create();
-	}
-
 	if (Device.dwFrame	!= light_frame)
 	{
 		light_frame					= Device.dwFrame;
@@ -212,6 +216,9 @@ void CShootingObject::LoadParticle(LPCSTR section, LPCSTR line, xr_shared_ptr<CP
 	{
 		if (LPCSTR pname = pSettings->r_string(section, line))
 		{
+			if (particle)
+				particle->Destroy();
+
 			particle = Particles::Details::Create(pname, FALSE);
 			particle->m_bAutoStop = true;
 			particle->SetLiveUpdate(TRUE);

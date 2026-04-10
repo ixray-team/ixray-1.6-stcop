@@ -37,26 +37,25 @@ namespace PAPI{
 			Fvector{0.f,0.f,0.f},0u,Fvector2{0.f,0.f},
 			Fvector{0.f,0.f,0.f},0u,Fvector2{0.f,0.f}
 		};
-		Fvector pos = {};	
-		Fvector posB = {};   
-		Fvector posI = {};   
-		Fvector vel = {};     	
-		Fvector velI = {};
-		Fvector rot_vel = {};
-		Fvector rot_velS = {};
-		Fvector size = {};
-		Fvector sizeMod = {1.0f, 1.0f, 1.0f};
-		Fvector sizeI = {};  
-		Rotation rot;	
-		Rotation rotI;	
-		Fcolor color = {};
-		Fvector4 colorMod = {1.0f, 1.0f, 1.0f, 1.0f};
-		float age = 0.0f;	      
-		u16 frame = 0;	
+		Fvector pos;
+		Fvector posB;
+		Fvector posI;
+		Fvector vel;
+		Fvector velI;
+		Fvector rot_vel;
+		Fvector rot_velS;
+		Fvector size;
+		Fvector sizeI;
+		Fvector sizeMod{ 1.0f, 1.0f, 1.0f };
+		Rotation rot;
+		Rotation rotI;
+		Fcolor color;
+		Fvector4 colorMod{1.0f, 1.0f, 1.0f, 1.0f};
+		float age = 0.0f;
+		u16 frame = 0;
 		Flags16 flags;
 
-		Particle(){Reset();}
-		void Reset()
+		ICF void Reset_modifiers()
 		{
 			sizeMod = {1.0f, 1.0f, 1.0f};
 			colorMod = {1.0f, 1.0f, 1.0f, 1.0f};
