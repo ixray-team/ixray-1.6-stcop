@@ -535,3 +535,14 @@ void CUIItemInfo::Draw()
 		inherited::Draw();
 }
 
+void CUIItemInfo::ScrollDown()
+{
+	if (UIDesc && !m_b_FitToHeight)
+		UIDesc->ScrollToEnd();
+}
+
+void CUIItemInfo::ScrollUp()
+{
+	if (UIDesc && !m_b_FitToHeight)
+		UIDesc->ScrollToBegin();
+}

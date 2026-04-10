@@ -10,6 +10,28 @@
 	
 	<main x="0" y="0" width="1024" height="768"/>
 	
+	<gamepad_legend x="0" y="730" width="1024" height="30" spacing="5">
+		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>am_use</window_name>
+			<text font="graffiti19" vert_align="c">ui_am_use</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>am_actions</window_name>
+			<text font="graffiti19" vert_align="c">ui_am_actions</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>am_info</window_name>
+			<text font="graffiti19" vert_align="c">ui_am_info_soc</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>am_action</window_name>
+			<text font="graffiti19" vert_align="c">ui_am_take_all</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_mm_back_gp</text>
+		</auto_static>
+	</gamepad_legend>
+	
 	<belt_slots x="0" y="80" width="1024" height="172">
 		<texture>ui_slots_belt</texture>		
 	</belt_slots>
@@ -199,6 +221,13 @@
 		</text_color>
     </exit_button>
 
+	<ui_c_navi_inventory>
+		<wnd_selector_info wnd="BagList" 		wnd_r="OutfitList"		wnd_t="PistolList" />
+		<wnd_selector_info wnd="PistolList" 	wnd_l="" 				wnd_r="AutomaticList" 	wnd_t="" 			wnd_b="BagList"/>
+		<wnd_selector_info wnd="AutomaticList" 	wnd_l="PistolList"		wnd_r="BeltList" 		wnd_t="" 			wnd_b="BagList"/>
+		<wnd_selector_info wnd="BeltList" 		wnd_l="AutomaticList"	wnd_r="" 				wnd_t="" 			wnd_b="OutfitList"/>
+		<wnd_selector_info wnd="OutfitList" 	wnd_l="BagList"			wnd_r="" 				wnd_t="BeltList" 	wnd_b=""/>
+	</ui_c_navi_inventory>
 	<action_sounds>
 		<snd_open>interface\inv_open</snd_open>
 		<snd_close>interface\inv_close</snd_close>
