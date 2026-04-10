@@ -14,7 +14,6 @@ struct LevelInspector final
 		ESF_DRAW_SELECTION			= bit_lshift(6U),
 		ESF_DRAW_HUD				= bit_lshift(7U),
 
-		ESF_DRAW_ALL_SPATIALS		= bit_lshift(8U),
 		ESF_DRAW_SPATIAL_SPACE		= bit_lshift(9U),
 		ESF_DRAW_SPATIAL_SPACE_ALL	= bit_lshift(10U),
 		ESF_DRAW_HOM				= bit_lshift(11U),
@@ -80,12 +79,12 @@ struct LevelInspector final
 		EZI_SIM_FACTION			= bit_lshift(7U),
 	};
 
-	enum EWAYPOINT_INFO
+	enum class EWAYPOINT_INFO
 	{
-		EWI_NONE		= 0U,
-		EWI_PREFIX		= bit_lshift(0U),
-		EWI_LICATION_ID = bit_lshift(1U),
-		EWI_ALL			= bit_lshift(2U),
+		EWI_NONE,
+		EWI_PREFIX,
+		EWI_LOCATION_ID,
+		EWI_ALL,
 	};
 
 	struct lindex { u8 i1, i2; };
@@ -123,7 +122,7 @@ struct LevelInspector final
 	Flags32 m_selection_flags = { 0 };
 	Flags32 m_selection_text_flags = { 0 };
 	Flags32 m_skeleton_flags = { 0 };
-	Flags32 m_waypoint_flags = { 0 };
+	EWAYPOINT_INFO WaypointsFlags = EWAYPOINT_INFO::EWI_NONE;
 	Flags32 m_zone_flags = { 0 };
 	ESPATIAL_TYPE m_spatials_mask{ ESPATIAL_TYPE::NONE};
 
