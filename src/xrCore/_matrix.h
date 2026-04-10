@@ -210,25 +210,75 @@ public:
 	ICF	SelfRef	mul_43		(const Self &A,const Self &B)
 	{
 		VERIFY	((this!=&A)&&(this!=&B));
+
+		m[0][3] = T(0);
+		m[1][3] = T(0);
+		m[2][3] = T(0);
+		m[3][3] = T(1);
+#ifdef IXR_WINDOWS
+		static constexpr unsigned int shuffle_constants[4] = { 0x00U, 0x55U, 0xaaU, 0xffU };
+		if (CPU::ID().hasFeature(CPUFeature::FMA))
+		{
+			xmm[0] = _mm_fmadd_ps(_mm_shuffle_ps(B.xmm[0], B.xmm[0], shuffle_constants[0]), A.xmm[0],
+					_mm_fmadd_ps(_mm_shuffle_ps(B.xmm[0], B.xmm[0], shuffle_constants[1]), A.xmm[1],
+					_mm_mul_ps(_mm_shuffle_ps(B.xmm[0], B.xmm[0], shuffle_constants[2]), A.xmm[2])));
+			
+			xmm[1] = _mm_fmadd_ps(_mm_shuffle_ps(B.xmm[1], B.xmm[1], shuffle_constants[0]), A.xmm[0],
+					_mm_fmadd_ps(_mm_shuffle_ps(B.xmm[1], B.xmm[1], shuffle_constants[1]), A.xmm[1],
+					_mm_mul_ps(_mm_shuffle_ps(B.xmm[1], B.xmm[1], shuffle_constants[2]), A.xmm[2])));
+			
+			xmm[2] = _mm_fmadd_ps(_mm_shuffle_ps(B.xmm[2], B.xmm[2], shuffle_constants[0]), A.xmm[0],
+					_mm_fmadd_ps(_mm_shuffle_ps(B.xmm[2], B.xmm[2], shuffle_constants[1]), A.xmm[1],
+					_mm_mul_ps(_mm_shuffle_ps(B.xmm[2], B.xmm[2], shuffle_constants[2]), A.xmm[2])));
+			
+			xmm[3] = _mm_fmadd_ps(_mm_shuffle_ps(B.xmm[3], B.xmm[3], shuffle_constants[0]), A.xmm[0],
+					_mm_fmadd_ps(_mm_shuffle_ps(B.xmm[3], B.xmm[3], shuffle_constants[1]), A.xmm[1],
+					_mm_fmadd_ps(_mm_shuffle_ps(B.xmm[3], B.xmm[3], shuffle_constants[2]), A.xmm[2], A.xmm[3])));
+
+			return *this;
+
+		}
+		else if (CPU::ID().hasFeature(CPUFeature::SSE))
+		{
+			xmm[0] = _mm_add_ps(_mm_add_ps(
+				_mm_mul_ps(_mm_shuffle_ps(B.xmm[0], B.xmm[0], shuffle_constants[0]), A.xmm[0]),
+				_mm_mul_ps(_mm_shuffle_ps(B.xmm[0], B.xmm[0], shuffle_constants[1]), A.xmm[1])),
+				_mm_mul_ps(_mm_shuffle_ps(B.xmm[0], B.xmm[0], shuffle_constants[2]), A.xmm[2]));
+
+			xmm[1] = _mm_add_ps(_mm_add_ps(
+				_mm_mul_ps(_mm_shuffle_ps(B.xmm[1], B.xmm[1], shuffle_constants[0]), A.xmm[0]),
+				_mm_mul_ps(_mm_shuffle_ps(B.xmm[1], B.xmm[1], shuffle_constants[1]), A.xmm[1])),
+				_mm_mul_ps(_mm_shuffle_ps(B.xmm[1], B.xmm[1], shuffle_constants[2]), A.xmm[2]));
+
+			xmm[2] = _mm_add_ps(_mm_add_ps(
+				_mm_mul_ps(_mm_shuffle_ps(B.xmm[2], B.xmm[2], shuffle_constants[0]), A.xmm[0]),
+				_mm_mul_ps(_mm_shuffle_ps(B.xmm[2], B.xmm[2], shuffle_constants[1]), A.xmm[1])),
+				_mm_mul_ps(_mm_shuffle_ps(B.xmm[2], B.xmm[2], shuffle_constants[2]), A.xmm[2]));
+
+			xmm[3] = _mm_add_ps(_mm_add_ps(
+				_mm_mul_ps(_mm_shuffle_ps(B.xmm[3], B.xmm[3], shuffle_constants[0]), A.xmm[0]),
+				_mm_mul_ps(_mm_shuffle_ps(B.xmm[3], B.xmm[3], shuffle_constants[1]), A.xmm[1])),
+				_mm_add_ps(_mm_mul_ps(_mm_shuffle_ps(B.xmm[3], B.xmm[3], shuffle_constants[2]), A.xmm[2]), A.xmm[3]));
+
+			return *this;
+		}
+#endif
 		m[0][0] = A.m[0][0] * B.m[0][0] + A.m[1][0] * B.m[0][1] + A.m[2][0] * B.m[0][2];
 		m[0][1] = A.m[0][1] * B.m[0][0] + A.m[1][1] * B.m[0][1] + A.m[2][1] * B.m[0][2];
 		m[0][2] = A.m[0][2] * B.m[0][0] + A.m[1][2] * B.m[0][1] + A.m[2][2] * B.m[0][2];
-		m[0][3] = 0;
 
 		m[1][0] = A.m[0][0] * B.m[1][0] + A.m[1][0] * B.m[1][1] + A.m[2][0] * B.m[1][2];
 		m[1][1] = A.m[0][1] * B.m[1][0] + A.m[1][1] * B.m[1][1] + A.m[2][1] * B.m[1][2];
 		m[1][2] = A.m[0][2] * B.m[1][0] + A.m[1][2] * B.m[1][1] + A.m[2][2] * B.m[1][2];
-		m[1][3] = 0;
 
 		m[2][0] = A.m[0][0] * B.m[2][0] + A.m[1][0] * B.m[2][1] + A.m[2][0] * B.m[2][2];
 		m[2][1] = A.m[0][1] * B.m[2][0] + A.m[1][1] * B.m[2][1] + A.m[2][1] * B.m[2][2];
 		m[2][2] = A.m[0][2] * B.m[2][0] + A.m[1][2] * B.m[2][1] + A.m[2][2] * B.m[2][2];
-		m[2][3] = 0;
 
 		m[3][0] = A.m[0][0] * B.m[3][0] + A.m[1][0] * B.m[3][1] + A.m[2][0] * B.m[3][2] + A.m[3][0];
 		m[3][1] = A.m[0][1] * B.m[3][0] + A.m[1][1] * B.m[3][1] + A.m[2][1] * B.m[3][2] + A.m[3][1];
 		m[3][2] = A.m[0][2] * B.m[3][0] + A.m[1][2] * B.m[3][1] + A.m[2][2] * B.m[3][2] + A.m[3][2];
-		m[3][3] = 1;
+
 		return *this;
 	}
 	ICF	SelfRef	mulA_44		( const Self &A )			// mul after 
