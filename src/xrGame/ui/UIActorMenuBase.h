@@ -194,10 +194,11 @@ protected:
 	bool						m_highlight_clear = true;
 	bool						m_item_info_view = false;
 
-	CUIStatic*					m_pInvSlotHighlight[LAST_SLOT + 1];
-	CUIProgressBar*				m_pInvSlotProgressLegacy[LAST_SLOT + 1];
-	CUIItemStateDisplay*		m_pInvSlotProgressPercent[LAST_SLOT + 1];
-	CUIDragDropListEx*			m_pInvList[LAST_SLOT + 1];
+	CUICellItem*				_tradeHoverCell = nullptr;
+	CUIStatic*					m_pInvSlotHighlight[LAST_SLOT + 1]{};
+	CUIProgressBar*				m_pInvSlotProgressLegacy[LAST_SLOT + 1]{};
+	CUIItemStateDisplay*		m_pInvSlotProgressPercent[LAST_SLOT + 1]{};
+	CUIDragDropListEx*			m_pInvList[LAST_SLOT + 1]{};
 	CUIDragDropListEx*			m_pTrashList = nullptr;
 
 	CUIItemInfo*				m_ItemInfo = nullptr;
