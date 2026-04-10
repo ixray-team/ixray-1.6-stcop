@@ -507,171 +507,151 @@ LevelInspector::LevelInspector(BOOL hm) : hud_mode(hm)
 	tris.reserve(256);
 	lines.reserve(256);
 
-	if(!hud_mode)
+	if (!hud_mode)
 	{
 		hud_prims = new LevelInspector(TRUE);
 
 		CImGuiManager::Instance().Subscribe("LevelInspector", CImGuiManager::ERenderPriority::eMedium, [this]()
+		{
+			static bool& isOpen = Engine.External.EditorStates[static_cast<u8>(EditorUI::LevelInspector)];
+			if (!isOpen) return;
+
+			ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, kGeneralAlphaLevelForImGuiWindows));
+			ImGui::Begin("Level Inspector", &isOpen);
+
+			if (ImGui::BeginTabBar("##tabs"))
 			{
-				static bool& isOpen = Engine.External.EditorStates[static_cast<u8>(EditorUI::LevelInspector)];
-				if (!isOpen) return;
-				ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, kGeneralAlphaLevelForImGuiWindows));
-				ImGui::Begin("LevelInspector", &isOpen);
-				if(ImGui::CollapsingHeader("Main"))
+				// ================= RENDER =================
+				if (ImGui::BeginTabItem("Render"))
 				{
-					ImGui::CheckboxFlags("Draw HUD", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_HUD);
-					ImGui::CheckboxFlags("Draw Objects", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_OBJECTS);
-					ImGui::CheckboxFlags("Draw Zones", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_ZONES);
-					ImGui::CheckboxFlags("Draw Selected", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_SELECTION);
-					ImGui::CheckboxFlags("Draw AIPaths", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_AI_PATHS);
-					ImGui::CheckboxFlags("Draw GameGraph", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_G_GRID);
-					ImGui::CheckboxFlags("Draw WayPoints", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_W_GRID);
-					ImGui::CheckboxFlags("Draw LevelGraph", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_L_GRID);
-					ImGui::Separator(); ImGui::Spacing();
-					ImGui::CheckboxFlags("Draw HOM", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_HOM);
-					ImGui::CheckboxFlags("Draw Cform", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_CFORM);
-					ImGui::CheckboxFlags("Draw Cform Tris", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS);
-					ImGui::CheckboxFlags("Draw SpatialSpace", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_ALL_SPATIALS);
-					ImGui::CheckboxFlags("Draw LevelBounds", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_LEVEL_BOUNDS);
+					ImGui::CheckboxFlags("HUD", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_HUD);
+					ImGui::CheckboxFlags("Objects", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_OBJECTS);
+					ImGui::CheckboxFlags("Zones", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_ZONES);
 					ImGui::Separator();
 
+					ImGui::CheckboxFlags("AI Paths", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_AI_PATHS);
+					ImGui::CheckboxFlags("Game Graph", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_G_GRID);
+					ImGui::CheckboxFlags("Waypoints", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_W_GRID);
+					ImGui::CheckboxFlags("Level Graph", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_L_GRID);
+					ImGui::Separator();
+
+					ImGui::CheckboxFlags("HOM", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_HOM);
+					ImGui::CheckboxFlags("CForm", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_CFORM);
+					ImGui::CheckboxFlags("CForm Tris", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS);
+					ImGui::CheckboxFlags("Level Bounds", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_LEVEL_BOUNDS);
+					ImGui::CheckboxFlags("Spatials", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_ALL_SPATIALS);
+					ImGui::EndTabItem();
+				}
+
+				// ================= SPATIALS =================
+				if (ImGui::BeginTabItem("Spatials"))
+				{
+					ImGui::CheckboxFlags("Spatials", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_ALL_SPATIALS);
+					ImGui::Separator();
+
+					ImGui::BeginDisabled(!m_flags.test(ESCENE_FLAGS::ESF_DRAW_ALL_SPATIALS));
+					{
+						static char search[64] = "";
+						ImGui::InputTextWithHint("##search", "Search...", search, sizeof(search));
+
+						ImGui::Separator();
+
+						constexpr ImU64 flags_cnt = magic_enum::enum_count<ESPATIAL_TYPE, magic_enum::detail::enum_subtype::flags>();
+
+						for (ImU64 i = 0; i < flags_cnt; ++i)
+						{
+							ImU64 flag = 1ULL << i;
+							LPCSTR name = magic_enum::enum_name<ESPATIAL_TYPE, magic_enum::detail::enum_subtype::flags>(ESPATIAL_TYPE(flag)).data();
+
+							if (!name || !name[0]) continue;
+
+							if (search[0] && !strstr(name, search)) continue;
+
+							ImGui::CheckboxFlags(name, &reinterpret_cast<ImU64&>(m_spatials_mask), flag);
+						}
+					}
+					ImGui::EndDisabled();
+					ImGui::EndTabItem();
+				}
+
+				// ================= WAYPOINTS =================
+				if (ImGui::BeginTabItem("Waypoints"))
+				{
+					ImGui::CheckboxFlags("Draw Waypoints", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_W_GRID);
+					ImGui::Separator();
+
+					ImGui::BeginDisabled(!m_flags.test(ESCENE_FLAGS::ESF_DRAW_W_GRID));
+					{
+						static int mode = 0;
+						ImGui::Text("Filter Mode:");
+						ImGui::RadioButton("All", &mode, 0);
+						ImGui::RadioButton("Prefix", &mode, 1);
+						ImGui::RadioButton("Level ID", &mode, 2);
+
+						if (mode == 1)
+						{
+							static char prefix[64] = "zat";
+							if (ImGui::InputTextWithHint("Prefix", "zat / jup / pri", prefix, sizeof(prefix)))
+							{
+								wp_prefix = prefix;
+								wp_recalc = true;
+							}
+						}
+					}
+					ImGui::EndDisabled();
+					ImGui::EndTabItem();
+				}
+
+				// ================= SELECTION =================
+				if (ImGui::BeginTabItem("Selection"))
+				{
+					if (ImGui::BeginChild("SelectionPanel", ImVec2(0, 200), true))
+					{
+						ImGui::TextColored(ImVec4(1, 1, 0, 1), "Inspector");
+						ImGui::Separator();
+
+						ImGui::CheckboxFlags("Name", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_LNAME);
+						ImGui::CheckboxFlags("Position", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_POSITION);
+						ImGui::CheckboxFlags("Script", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_SCRIPT);
+						ImGui::CheckboxFlags("Section", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_SNAME);
+					}
+					ImGui::EndChild();
+
+					ImGui::SeparatorText("Details");
+
+					ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.05f, 0.05f, 0.05f, 0.8f));
+					if (ImGui::BeginChild("InfoBox", ImVec2(0, 150), true))
+					{
+						ImGui::TextWrapped("%s", selected_info_str.c_str());
+					}
+					ImGui::EndChild();
+					ImGui::PopStyleColor();
+
+					if (ImGui::Button("Copy"))
+					{
+						ImGui::SetClipboardText(selected_info_str.c_str());
+					}
+
+					ImGui::EndTabItem();
+				}
+
+				// ================= DEBUG =================
+				if (ImGui::BeginTabItem("Debug"))
+				{
+					ImGui::SliderFloat("ZBuffer Shift", &zbuff_shift, 0.0f, 0.1f);
 					setkey(visible_currents_key, 1, "ZBuffText");
 					setkey(zbuffer_key, 0);
 					hud_prims->zbuffer_key = zbuffer_key;
-					ImGui::SliderFloat("zbuff_shift", &zbuff_shift, 0.0f, 0.1f);
-					//hud_prims->zbuff_shift = zbuff_shift;
+
+					ImGui::EndTabItem();
 				}
 
-				if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_ALL_SPATIALS) && ImGui::CollapsingHeader("Spatials"))
-				{
-					ImGui::CheckboxFlags("Draw Spatial Space", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_SPATIAL_SPACE);
-					ImGui::CheckboxFlags("Draw Spatial Space All", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_SPATIAL_SPACE_ALL);
-					ImGui::Separator();
-					ImGui::Spacing();
-					constexpr ImU64 flags_cnt = magic_enum::enum_count<ESPATIAL_TYPE, magic_enum::detail::enum_subtype::flags>();
-					ImGui::CheckboxFlags("##show_hide_all", &reinterpret_cast<ImU64&>(m_spatials_mask), ImU64(-1));
-					for (ImU64 i = 0ULL; i < flags_cnt; ++i)
-					{
-						ImU64 flag = 1ULL << i;
-						if(LPCSTR enum_name = magic_enum::enum_name<ESPATIAL_TYPE, magic_enum::detail::enum_subtype::flags>(ESPATIAL_TYPE(flag)).data())
-							ImGui::CheckboxFlags(enum_name, &reinterpret_cast<ImU64&>(m_spatials_mask), flag);
-					}
-				}
+				ImGui::EndTabBar();
+			}
 
-				if ((m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM) || m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS)) && ImGui::CollapsingHeader("Cform"))
-				{
-					static float test_ssa = 0.5f;
-					ImGui::SliderFloat("cform_ssa", &test_ssa, 10.0f, 0.01f);
-					cform_ssa = test_ssa / 10000.f;
-					if(m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM))
-						ImGui::CheckboxFlags("Draw Cform All", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_CFORM_ALL);
-				}
-
-				if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_HUD) && ImGui::CollapsingHeader("HUD"))
-					RenderSkeletonFlags(hud_prims->m_skeleton_flags, true);
-
-				if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_OBJECTS) && ImGui::CollapsingHeader("Objects"))
-					RenderSkeletonFlags(m_skeleton_flags, false);
-
-				if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_ZONES) && ImGui::CollapsingHeader("Zones"))
-				{
-					ImGui::CheckboxFlags("Draw Restrictor", &m_zone_flags.flags, EZONE_INFO::EZI_RESTR);
-					ImGui::CheckboxFlags("Draw AnomalyZone", &m_zone_flags.flags, EZONE_INFO::EZI_ANOMALY_ZONE);
-					ImGui::CheckboxFlags("Draw AnomalyZoneLogic", &m_zone_flags.flags, EZONE_INFO::EZI_ANOMAL_ZONE_LOGIC);
-					ImGui::CheckboxFlags("Draw CampZone", &m_zone_flags.flags, EZONE_INFO::EZI_CAMP_ZONE);
-					ImGui::CheckboxFlags("Draw LevelChanger", &m_zone_flags.flags, EZONE_INFO::EZI_LEVEL_CHANGER);
-					ImGui::CheckboxFlags("Draw SmartCover", &m_zone_flags.flags, EZONE_INFO::EZI_SMART_COVER);
-					ImGui::CheckboxFlags("Draw SmartTerrain", &m_zone_flags.flags, EZONE_INFO::EZI_SMART_TERRAIN);
-					ImGui::CheckboxFlags("Draw SimFaction", &m_zone_flags.flags, EZONE_INFO::EZI_SIM_FACTION);
-				}
-
-
-				if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_W_GRID) && ImGui::CollapsingHeader("WayPointsFilter"))
-				{
-					if (ImGui::CheckboxFlags("Draw by prefix", &m_waypoint_flags.flags, EWAYPOINT_INFO::EWI_PREFIX))
-						wp_recalc = true;
-					
-					ImGui::BeginDisabled(!m_waypoint_flags.test(EWAYPOINT_INFO::EWI_PREFIX));
-
-					static string64 temp_str{"\0"};
-					if(!wp_prefix)
-					{
-						IGameGraph& graph = ai().game_graph();
-						xr_string curr_l_n = "zat";
-						u8 level_id = graph.vertex(graph.current_level_vertex())->level_id();
-						auto it = graph.header().levels().find(level_id);
-						if (it != graph.header().levels().end())
-						{
-							curr_l_n = *it->second.m_name;
-							curr_l_n.length() > 3 ? curr_l_n = curr_l_n.substr(0, 3) : curr_l_n;
-						}
-						xr_strcpy(temp_str, sizeof(temp_str), curr_l_n.c_str());
-					}
-					if (ImGui::InputTextWithHint("##wp_fltext", "Prefix", temp_str, sizeof(temp_str)))
-						wp_recalc = true;
-					wp_prefix = temp_str;
-
-					ImGui::EndDisabled();
-
-					if (ImGui::CheckboxFlags("Draw by location id", &m_waypoint_flags.flags, EWAYPOINT_INFO::EWI_LICATION_ID))
-						wp_recalc = true;
-
-					if (ImGui::CheckboxFlags("Draw All", &m_waypoint_flags.flags, EWAYPOINT_INFO::EWI_ALL))
-						wp_recalc = true;
-				}
-
-				if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_SELECTION) && ImGui::CollapsingHeader("Selection"))
-				{
-					if(m_flags.test(ESCENE_FLAGS::ESF_DRAW_OBJECTS))
-						ImGui::CheckboxFlags("Select Object", &m_selection_flags.flags, ESELECTION_FLAGS::ESLF_O);
-
-					if(m_flags.test(ESCENE_FLAGS::ESF_DRAW_ZONES))
-						ImGui::CheckboxFlags("Select Zone", &m_selection_flags.flags, ESELECTION_FLAGS::ESLF_Z);
-
-					if(m_flags.test(ESCENE_FLAGS::ESF_DRAW_W_GRID))
-						ImGui::CheckboxFlags("Select WayPoint", &m_selection_flags.flags, ESELECTION_FLAGS::ESLF_WP);
-
-					if(m_flags.test(ESCENE_FLAGS::ESF_DRAW_G_GRID))
-						ImGui::CheckboxFlags("Select GraphPoint", &m_selection_flags.flags, ESELECTION_FLAGS::ESLF_GP);
-
-					if(m_flags.test(ESCENE_FLAGS::ESF_DRAW_L_GRID))
-						ImGui::CheckboxFlags("Select AINode", &m_selection_flags.flags, ESELECTION_FLAGS::ESLF_LG);
-
-					if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_OBJECTS) || m_flags.test(ESCENE_FLAGS::ESF_DRAW_ZONES))
-					{
-						ImGui::Separator();
-
-						fontselectioncombo(*this);
-
-						ImGui::CheckboxFlags("Section Name", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_SNAME);
-						ImGui::CheckboxFlags("Class Name", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_LCNAME);
-						ImGui::CheckboxFlags("Name", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_LNAME);
-						ImGui::CheckboxFlags("Visual Name", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_VNAME);
-						ImGui::CheckboxFlags("Position", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_POSITION);
-						ImGui::CheckboxFlags("GVertexID & LVertexID", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_GVERTEX_LVERTEX);
-						ImGui::CheckboxFlags("Custom Data", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_INI);
-						ImGui::CheckboxFlags("Script Info", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_SCRIPT);
-
-						if(m_flags.test(ESCENE_FLAGS::ESF_DRAW_OBJECTS))
-							ImGui::CheckboxFlags("For Actor ", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_ACTOR);
-					}
-				}
-				if (!selected_info_str.empty())
-				{
-					ImGui::Separator();
-					if (selected_info_str.back() == '\n')
-						selected_info_str.back() = '\0';
-
-					ImGui::InputTextMultiline("Selection info", selected_info_str.data(), selected_info_str.size() + 1,
-						ImVec2(ImGui::GetWindowWidth(), ImGui::GetTextLineHeight() * float(selected_info_height) * 1.05f),
-						ImGuiInputTextFlags_ReadOnly);
-
-					if (ImGui::Button("Copy to Clipboard"))
-						ImGui::SetClipboardText(selected_info_str.c_str());
-				}
-				ImGui::End();
-				ImGui::PopStyleColor(1);
-			});
+			ImGui::End();
+			ImGui::PopStyleColor();
+		});
 	}
 }
 
