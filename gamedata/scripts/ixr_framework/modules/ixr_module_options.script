@@ -677,19 +677,23 @@ function on_ixr_options_exit_btn_clicked()
 	ixr_options.dynamic_vars.menu_opened = false
 	hide_options()
 	get_menu_ref().ixr_options_btn:Show(true)
-	get_menu_ref().shniaga:Show(true)
-	get_menu_ref().shniaga:SetVisibleMagnifier(true)
-	get_menu_ref().eng_lang_btn:Show(true)
-	get_menu_ref().ru_lang_btn:Show(true)
+	if get_menu_ref().shniaga then
+		get_menu_ref().shniaga:Show(true)
+		get_menu_ref().shniaga:SetVisibleMagnifier(true)
+	end
+	if get_menu_ref().eng_lang_btn then get_menu_ref().eng_lang_btn:Show(true) end
+	if get_menu_ref().ru_lang_btn then get_menu_ref().ru_lang_btn:Show(true) end
 end
 
 function on_btn_options_ixr_clicked()
 	ixr_options.dynamic_vars.menu_opened = true
 	get_menu_ref().ixr_options_btn:Show(false)
-	get_menu_ref().eng_lang_btn:Show(false)
-	get_menu_ref().ru_lang_btn:Show(false)
-	get_menu_ref().shniaga:SetVisibleMagnifier(false)
-	get_menu_ref().shniaga:Show(false)
+	if get_menu_ref().eng_lang_btn then get_menu_ref().eng_lang_btn:Show(false) end
+	if get_menu_ref().ru_lang_btn then get_menu_ref().ru_lang_btn:Show(false) end
+	if get_menu_ref().shniaga then
+		get_menu_ref().shniaga:SetVisibleMagnifier(false)
+		get_menu_ref().shniaga:Show(false)
+	end
 	draw_options()
 end
 
