@@ -212,6 +212,7 @@ protected:
 	bool						m_highlight_clear = true;
 	bool						m_item_info_view = false;
 
+	CUICellItem*				_tradeHoverCell = nullptr;
 	CUIStatic*					m_pInvSlotHighlight[LAST_SLOT + 1]{};
 	CUIProgressBar*				m_pInvSlotProgressLegacy[LAST_SLOT + 1]{};
 	CUIItemStateDisplay*		m_pInvSlotProgressPercent[LAST_SLOT + 1]{};

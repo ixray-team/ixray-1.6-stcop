@@ -245,7 +245,20 @@ bool CUIActorMenuBase::OnItemFocusedUpdate(CUICellItem* itm)
 	if (itm)
 	{
 		itm->m_selected = true;
-		if (m_highlight_clear)
+		if (m_currMenuMode == mmTrade)
+		{
+			if (!CUIDragDropListEx::m_drag_item && itm != _tradeHoverCell)
+			{
+				clear_highlight_lists();
+				_tradeHoverCell = itm;
+				PIItem pitm = (PIItem)itm->m_pData;
+				if (pitm != nullptr)
+				{
+					set_highlight_item(itm);
+				}
+			}
+		}
+		else if (m_highlight_clear)
 		{
 			set_highlight_item(itm);
 		}
@@ -267,6 +280,8 @@ bool CUIActorMenuBase::OnItemFocusedUpdate(CUICellItem* itm)
 
 bool CUIActorMenuBase::OnItemFocusLost(CUICellItem* itm)
 {
+	_tradeHoverCell = nullptr;
+
 	if ( itm )
 	{
 		if (PIItem iItm = (PIItem)itm->m_pData)
@@ -300,6 +315,11 @@ bool CUIActorMenuBase::OnItemFocusLost(CUICellItem* itm)
 
 bool CUIActorMenuBase::OnItemStartDrag(CUICellItem* itm)
 {
+	if (m_currMenuMode == mmTrade)
+	{
+		_tradeHoverCell = nullptr;
+		clear_highlight_lists();
+	}
 	InfoCurItem( nullptr );
 	return false; //default behaviour
 }
@@ -327,7 +347,10 @@ bool CUIActorMenuBase::OnItemFocusReceive(CUICellItem* itm)
 	m_item_info_view = true;
 
 	itm->m_selected = true;
-	set_highlight_item( itm );
+	if (m_currMenuMode != mmTrade)
+	{
+		set_highlight_item( itm );
+	}
 
 	m_lastFocusRecivedItem = (PIItem)itm->m_pData;
 	m_cell_lastFocusRecivedItem = itm;
