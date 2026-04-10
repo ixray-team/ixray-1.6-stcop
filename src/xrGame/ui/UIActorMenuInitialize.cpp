@@ -44,18 +44,6 @@ CUIActorMenu::~CUIActorMenu()
 	xr_delete			(m_UIPropertiesBox);
 	xr_delete			(m_hint_wnd);
 	xr_delete			(m_ItemInfo);
-	xr_delete			(m_pInventorySorter);
-
-	xr_delete			(m_ui_navigation_selector);
-	xr_delete			(m_ui_aux_selector);
-
-	for (size_t i = 0; i < m_ArtefactSlotsHighlight.size(); i++)
-	{
-		m_ArtefactSlotsHighlight[i] = nullptr;
-		m_belt_list_over[i] = nullptr;
-	}
-
-	ActionRepeaters()->UnregisterOwner(this);
 }
 
 void CUIActorMenu::Construct()
@@ -296,31 +284,7 @@ void CUIActorMenu::Construct()
 	m_ActorStateInfo->SetAutoDelete		(true);
 	AttachChild							(m_ActorStateInfo); 
 	
-	m_ui_navigation_selector = new CUIFrameWindow();
-	if (m_ui_navigation_selector->InitTexture("ui_inv_item_selector", false))
-	{
-		m_ui_navigation_selector->SetWidth(0);
-		m_ui_navigation_selector->SetHeight(0);
-		m_ui_navigation_selector->SetVisible(false);
-		AttachChild(m_ui_navigation_selector);
-	}
-	else
-	{
-		xr_delete(m_ui_navigation_selector);
-	}
-
-	m_ui_aux_selector = new CUIFrameWindow();
-	if (m_ui_aux_selector->InitTexture("ui_inv_item_selector_tri", false))
-	{
-		m_ui_aux_selector->SetWidth(0);
-		m_ui_aux_selector->SetHeight(0);
-		m_ui_aux_selector->SetVisible(false);
-		AttachChild(m_ui_aux_selector);
-	}
-	else
-	{
-		xr_delete(m_ui_aux_selector);
-	}
+	inherited::InitGamepadSelectors		();
 
 	m_ItemInfo							= new CUIItemInfo();
 //-	m_ItemInfo->SetAutoDelete			(true);
@@ -470,14 +434,6 @@ void CUIActorMenu::Construct()
 	ReadWndSelectorsInfo(uiXml, "ui_c_navi_deadbody",	m_ui_navigation_lists[mmDeadBodySearch], wndPointers);
 	ReadWndSelectorsInfo(uiXml, "ui_c_navi_trade",		m_ui_navigation_lists[mmTrade], wndPointers);
 	ReadWndSelectorsInfo(uiXml, "ui_c_navi_upgrade",	m_ui_navigation_lists[mmUpgrade], wndPointers);
-
-	EGameActions repeatActions[] = {
-		kUI_LEFT, kUI_RIGHT, kUI_UP, kUI_DOWN,
-		kUI_SECONDARY_LEFT, kUI_SECONDARY_RIGHT, kUI_SECONDARY_UP, kUI_SECONDARY_DOWN
-	};
-
-	for (int i = 0; i < sizeof(repeatActions) / sizeof(repeatActions[0]); ++i)
-		ActionRepeaters()->Register(this, repeatActions[i]);
 }
 
 void CUIActorMenu::InitCallbacks()

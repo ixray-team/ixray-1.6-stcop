@@ -49,7 +49,8 @@ CUIGameCustom::CUIGameCustom()
 	m_ActorMenu(nullptr),
 	m_InventoryMenu(nullptr),
 	m_CarBodyMenu(nullptr),
-	m_PdaMenu(nullptr),		
+	m_TradeMenu(nullptr),
+	m_PdaMenu(nullptr),
 	m_window(nullptr), 
 	UIMainIngameWnd(nullptr), 
 	m_pMessagesWnd(nullptr), 
@@ -306,6 +307,10 @@ void CUIGameCustom::HideActorMenu()
 	{
 		m_CarBodyMenu->HideDialog();
 	}
+	else if (m_TradeMenu && m_TradeMenu->IsShown())
+	{
+		m_TradeMenu->HideDialog();
+	}
 }
 
 //Alundaio:
@@ -402,6 +407,12 @@ void  CUIGameCustom::StartTrade(CInventoryOwner* pActorInv, CInventoryOwner* pOt
 
 		m_ActorMenu->SetMenuMode(mmTrade);
 		m_ActorMenu->ShowDialog(true);
+	}
+	else if (m_TradeMenu)
+	{
+		m_TradeMenu->InitTrade(pActorInv, pOtherOwner);
+		m_TradeMenu->StartTrade();
+		m_TradeMenu->ShowDialog(true);
 	}
 }
 
@@ -505,6 +516,7 @@ void CUIGameCustom::UnLoad()
 	xr_delete					(m_ActorMenu);
 	xr_delete					(m_InventoryMenu);
 	xr_delete					(m_CarBodyMenu);
+	xr_delete					(m_TradeMenu);
 	xr_delete					(m_PdaMenu);
 	xr_delete					(m_window);
 	xr_delete					(UIMainIngameWnd);
@@ -533,6 +545,7 @@ void CUIGameCustom::Load()
 		{
 			m_CarBodyMenu			= new CUICarBodyWnd	();
 			m_InventoryMenu			= new CUIInventoryWnd	();
+			m_TradeMenu				= new CUITradeWnd();
 		}
 		
 		R_ASSERT				(nullptr==TalkMenu);

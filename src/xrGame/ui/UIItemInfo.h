@@ -50,7 +50,9 @@ public:
 	void				TryAddOutfitInfo	(CInventoryItem& pInvItem, CInventoryItem* pCompareItem);
 	void				TryAddUpgradeInfo	(CInventoryItem& pInvItem);
 	void				TryAddBoosterInfo	(CInventoryItem& pInvItem);
-	
+	void				ScrollDown			();
+	void				ScrollUp			();
+
 	virtual CUIWindow* ui_cast_window() { return this; }
 
 	virtual void		Draw				();

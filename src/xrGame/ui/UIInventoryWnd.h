@@ -28,23 +28,19 @@ private:
 	bool					m_b_need_reinit;
 public:
 							CUIInventoryWnd					();
-	virtual					~CUIInventoryWnd				();
+	virtual ~CUIInventoryWnd() = default;
 
 	virtual void			Init							();
 
 	void					InitInventory					();
 	void					InitInventory_delayed			();
-	virtual bool			StopAnyMove						() { return false; }
 
 	virtual void			SendMessage						(CUIWindow *pWnd, s16 msg, void *pData);
-	virtual bool			OnMouseAction					(float x, float y, EUIMessages mouse_action);
-	virtual bool			OnKeyboardAction				(int dik, EUIMessages keyboard_action);
 
 	virtual CInventoryOwner* GetInventoryOwner			() { return m_pInvOwner; }
 	virtual CInventory*		GetInventory					() { return m_pInv; }
 
 	virtual void			Update							();
-	virtual void			Draw							();
 
 	virtual void			Show							(bool status);
 
@@ -80,7 +76,7 @@ protected:
 	CUIProgressBar				UIProgressBarPsyHealth;
 	CUIProgressBar				UIProgressBarRadiation;
 	CUIProgressBar				UIProgressBarRank;
-	
+
 	//информация о персонаже
 	CUIOutfitInfo				UIOutfitInfo;
 
