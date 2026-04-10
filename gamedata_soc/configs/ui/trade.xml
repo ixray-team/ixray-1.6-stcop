@@ -11,6 +11,28 @@
 
 	<main x="0" y="0" width="1024" height="768"/>
 
+	<gamepad_legend x="0" y="730" width="1024" height="30" spacing="5">
+		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>am_use</window_name>
+			<text font="graffiti19" vert_align="c">ui_am_use</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>am_actions</window_name>
+			<text font="graffiti19" vert_align="c">ui_am_actions</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>am_info</window_name>
+			<text font="graffiti19" vert_align="c">ui_am_info_soc</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<window_name>am_action</window_name>
+			<text font="graffiti19" vert_align="c">ui_am_take_all</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_mm_back_gp</text>
+		</auto_static>
+	</gamepad_legend>
+	
 	<top_background x="0" y="0" width="1024" height="128">
 		<texture>ui\ui_top_background</texture>
 	</top_background>
@@ -94,5 +116,12 @@
 		<phrase x="170" y="0" font="graffiti22" r="220" g="185" b="140">ui_st_price</phrase>
 		<phrase x="215" y="0" font="graffiti22" r="240" g="215" b="185"></phrase>
 	</price_mt_static>
+
+	<ui_c_navi_trade>
+		<wnd_selector_info wnd="OurBagList" 			wnd_l=""				wnd_r="OurTradeList"/>
+		<wnd_selector_info wnd="OthersBagList" 			wnd_l="OthersTradeList" wnd_r="" 				wnd_t="" 			wnd_b=""/>
+		<wnd_selector_info wnd="OurTradeList" 			wnd_l="OurBagList"		wnd_r="OthersBagList" 	wnd_t="" 			wnd_b="OthersTradeList"/>
+		<wnd_selector_info wnd="OthersTradeList" 		wnd_l="OurBagList"		wnd_r="OthersBagList" 	wnd_t="OurTradeList" 			wnd_b=""/>
+	</ui_c_navi_trade>
 
 </window>

@@ -120,6 +120,8 @@ void CUICarBodyWnd::Init()
 	m_pUIDescWnd->AttachChild		(m_pUIStaticDesc);
 	xml_init.InitStatic				(uiXml, "descr_static", 0, m_pUIStaticDesc);
 
+	inherited::InitGamepadSelectors	();
+
 	m_ItemInfo						= new CUIItemInfo(); 
 	m_ItemInfo->SetAutoDelete		(true);
 	m_pUIDescWnd->AttachChild		(m_ItemInfo);
@@ -155,11 +157,24 @@ void CUICarBodyWnd::Init()
 		m_pItemDropAmountWnd->InitDropAmount(uiDropAmountXml);
 	}
 	
+	m_gamepad_legend = UIHelper::CreateGamepadLegend(uiXml, "gamepad_legend", this, false);
+
 	BindDragDropListEvents			(m_pUIOurBagList);
 	BindDragDropListEvents			(m_pUIOthersBagList);
 
 	m_highlight_clear = true;
 	clear_highlight_lists();
+
+	const char* pSelectorTextureName = "ui_inv_item_selector_sec";
+	m_pUIOurBagList->InitSelector(pSelectorTextureName);
+	m_pUIOthersBagList->InitSelector(pSelectorTextureName);
+
+	// Controller mode
+	xr_map<xr_string, CUIWindow*> wndPointers;
+	wndPointers["OurBagList"]				= m_pUIOurBagList;
+	wndPointers["OthersBagList"]		= m_pUIOthersBagList;
+
+	ReadWndSelectorsInfo(uiXml, "ui_c_navi_carbody",	m_ui_navigation_lists[mmDeadBodySearch], wndPointers);
 }
 
 void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, CInventoryBox* pInvBox)
@@ -175,7 +190,7 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, CInventoryBox* pInvBox)
 	m_UIPropertiesBox->Hide							();
 	EnableAll										();
 	UpdateLists										();
-
+	SetAreaSelectionTo								(m_pUIOthersBagList);
 }
 
 CInventory* CUICarBodyWnd::GetInventory()
@@ -209,7 +224,7 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, CInventoryOwner* pOthers)
 		}
 	}
 
-	m_UIPropertiesBox->Hide						();
+	m_UIPropertiesBox->Hide							();
 	EnableAll										();
 	UpdateLists										();
 
@@ -232,7 +247,8 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, CInventoryOwner* pOthers)
 		known_info.clear	();
 		xr_delete			(known_info_registry);
 	}
-}  
+	SetAreaSelectionTo							(m_pUIOthersBagList);
+}
 
 void CUICarBodyWnd::UpdateLists()
 {
@@ -274,13 +290,12 @@ void CUICarBodyWnd::Update()
 {
 	if(	m_pOurObject->inventory().ModifyFrame()==Device.dwFrame || 
 		(m_pOthersObject&&m_pOthersObject->inventory().ModifyFrame()==Device.dwFrame))
-
-		UpdateLists		();
+		InventoryUtilities::UpdateWeight(*m_pUIOurBagWnd);
 
 	
 	if(m_pOthersObject && m_pOurObject->cast_game_object()->Position().distance_to(m_pOthersObject->cast_game_object()->Position()) > 3.0f)
 	{
-		GetHolder()->StartStopMenu(this,true);
+		HideDialog();
 	}
 	inherited::Update();
 }
@@ -324,23 +339,4 @@ void CUICarBodyWnd::SetCurrentItem(CUICellItem* itm)
 	m_pCurrentCellItem		= itm;
 	m_ItemInfo->InitItem(CurrentItem(), nullptr, CurrentIItem() ? CurrentIItem()->Cost() : u32(-1), nullptr, true);
 	TryHidePropertiesBox();
-}
-
-#include "../../xrEngine/xr_level_controller.h"
-
-bool CUICarBodyWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
-{
-	if( inherited::OnKeyboardAction(dik,keyboard_action) )return true;
-
-	if(keyboard_action==WINDOW_KEY_PRESSED && (is_binded(kUSE, dik) || is_binded(kQUIT, dik))) 
-	{
-		GetHolder()->StartStopMenu(this,true);
-		return true;
-	}
-	if(keyboard_action==WINDOW_KEY_PRESSED && is_binded(kSPRINT_TOGGLE, dik))
-	{
-		TakeAllFromPartner(this, nullptr);
-		return true;
-	}
-	return false;
 }

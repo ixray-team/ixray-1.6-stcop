@@ -6,7 +6,6 @@
 #include "../../xrUI/Widgets/UIHint.h"
 #include "../../xrUI/Widgets/UITabControl.h"
 #include "../../xrUI/ui_defs.h"
-#include "../../xrUI/Widgets/UIFocusSystem.h"
 #include "UIActorMenuBase.h"
 
 #include "../script_game_object.h" //Alundaio
@@ -23,10 +22,8 @@ class CUIStatic;
 class CUI3tButton;
 class CInventoryOwner;
 class CInventoryBox;
-class CUIInventoryUpgradeWnd;
 class UIInvUpgradeInfo;
 class CUIMessageBoxEx;
-class CUIPropertiesBox;
 class CTrade;
 class CUIProgressBar;
 class CUIItemDropAmountWnd;
@@ -63,8 +60,6 @@ protected:
 	CUIDragDropListEx*			m_pDeadBodyBagList;
 
 	CUIStatic*					m_HelmetOver;
-
-	CUIInventoryUpgradeWnd*		m_pUpgradeWnd = nullptr;
 	
 	CUIStatic*					m_LeftBackground = nullptr;
 
@@ -118,30 +113,7 @@ protected:
 	u32							m_last_time;
 	u8							m_repair_mode;
 	
-	// Controller UI
-	xr_map<EMenuMode, xr_vector<WND_SELECTOR_INFO>>	m_ui_navigation_lists;
-	CUIWindow*					m_ui_navigation_selection;
-	CUIFrameWindow*				m_ui_navigation_selector = nullptr;
-	bool						m_ui_navigation_selector_shown = false;
-	bool						m_bShowInfoWnds = false;
-
-	eActorMenuControllerAuxMode	m_AuxMode= eAuxMode_None;
-	CUIFrameWindow*				m_ui_aux_selector = nullptr; // For upgrades, and picking item for a quickslot or belt
-	bool						m_ui_aux_selector_shown = false;
-
-	float						m_selectorPadding = 4.0f;
-
-	CUIGamepadLegend*			m_gamepad_legend = nullptr;
 private:
-	const char* m_onCanMoveToPartner = {};
-	bool m_isCanMoveToPartner = false;
-
-	const char* m_onItemFocusReceive = {};
-	bool m_isItemFocusReceive = false;
-
-	const char* m_onItemFocusLost = {};
-	bool m_isItemFocusLost = false;
-
 	const char* m_onCanDisassembleItem = {};
 	bool m_isCanDisassembleItem = false;
 
@@ -178,8 +150,6 @@ protected:
 	void						UpdateActorBagList					();
 	void						UpdateTradeActorBagList				();
 	void						UpdateTradePartnerBagList			();
-	void						UpdateSortTabsLayout				();
-	void						ShowSortTabsForCurrentMode			();
 	ESortTabsLayoutSlot			GetSortTabsSlotByWindow				(CUIWindow* window) const;
 	void						ApplySortForSlot					(ESortTabsLayoutSlot sortSlot);
 	void						OnSortTabChanged					(CUIWindow* w, void* pData);
@@ -206,7 +176,7 @@ protected:
 
 	virtual void				SetupUpgradeItem					();
 	void						UpdateUpgradeItem					();
-	void						TrySetCurUpgrade					();
+	virtual void				TrySetCurUpgrade					();
 	void						UpdateButtonsLayout					();
 
 	// inventory
@@ -219,17 +189,13 @@ protected:
 	virtual void				TryRepairItem						(CUIWindow* w, void* d);
 	void						TryDisassembleItem					(CUIWindow* w, void* d);
 	
-	void						OnPressUserKey						();
-
 	// trade
 	virtual void				UpdatePrices						();
 
 	// Controller UI
-	bool						MoveAreaSelector					(eUIDirection4 dir);
-	void						MoveSelector						(eUIDirection4 dir, bool bAllowAreaExit);
-	void						SetAreaSelectionTo					(CUIWindow* pList);
 	virtual void				SetAuxMode							(eActorMenuControllerAuxMode mode);
-	eUIDirection4				GetNaviDirection					(CUIWindow* pWndFrom, CUIWindow* pWndTo);
+
+	virtual void				TradeShowMessage					(int money_actor, int money_patner);
 
 public:
 								CUIActorMenu						();
@@ -240,17 +206,10 @@ public:
 	virtual CInventoryOwner*	GetPartner							() { return m_pPartnerInvOwner; }
 	virtual bool				ShouldPutArtefactsToBag				() { return true; }
 	virtual void				SetCurrentItem						(CUICellItem* itm);
-	virtual bool				StopAnyMove							();
 	virtual void				SendMessage							(CUIWindow* pWnd, s16 msg, void* pData = NULL);
 	virtual void				Draw								();
 	virtual void				Update								();
 	virtual void				Show								(bool status);
-			void				CheckSelectors						();
-
-	virtual bool				OnKeyboardAction					(int dik, EUIMessages keyboard_action);
-	virtual bool				OnMouseAction						(float x, float y, EUIMessages mouse_action);
-	virtual bool				OnGamepadKeyAction					(int id, EUIMessages gamepad_action);
-	virtual bool				OnGamepadKeyHold					(int id);
 
 	void						CallMessageBoxYesNo					(LPCSTR text);
 	void						CallMessageBoxOK					(LPCSTR text);
@@ -266,9 +225,7 @@ public:
 	void						UpdatePartnerBag					();
 	virtual void				UpdateDeadBodyBag					();
 	void						RefreshCurrentItemCell				();
-	void						UpdateGamepadLegend					();
 
-	void						OnBtnPerformTrade					(CUIWindow* w, void* d);
 	void						OnBtnPerformTradeBuy				(CUIWindow* w, void* d);
 	void						OnBtnPerformTradeSell				(CUIWindow* w, void* d);
 	void						OnBtnExitClicked					(CUIWindow* w, void* d);
@@ -283,7 +240,7 @@ public:
 	
 	void						UpdateInfoWindowVisibility	();
 	bool						NeedToShowInfos				() const { return m_bShowInfoWnds; }
-	bool						AnyInfoWindowOpen			() const;
+	virtual bool				AnyInfoWindowOpen			() const;
 
 	void HighlightSectionInSlot(LPCSTR section, u8 type, u16 slot_id = 0);
 	CScriptGameObject* GetCurrentItemAsGameObject();
