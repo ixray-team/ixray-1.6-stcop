@@ -24,6 +24,7 @@ class CUIMainIngameWnd;
 class CUIMessagesWindow;
 class CUIInventoryWnd;
 class CUICarBodyWnd;
+class CUITradeWnd;
 class CUIRadialMenuWeapon;
 
 struct SDrawStaticStruct :public IPureDestroyableObject
@@ -132,6 +133,7 @@ protected:
 	CUIActorMenu*		m_ActorMenu;
 	CUIInventoryWnd*	m_InventoryMenu;
 	CUICarBodyWnd*		m_CarBodyMenu;
+	CUITradeWnd*		m_TradeMenu;
 	CUIPdaWnd*			m_PdaMenu;
 	CUIRadialMenuWeapon* m_RadialMenuWeapon;
 
@@ -158,6 +160,7 @@ public:
 	IC CUIActorMenu*	ActorMenu				() const { return m_ActorMenu; }
 	IC CUIInventoryWnd*	InventoryWnd			() const { return m_InventoryMenu; }
 	IC CUICarBodyWnd*	CarBodyWnd				() const { return m_CarBodyMenu; }
+	IC CUITradeWnd*		TradeWnd				() const { return m_TradeMenu; }
 	IC CUIPdaWnd*		PdaMenu					() const { return m_PdaMenu;   }
 	IC CUIRadialMenuWeapon*	RadialMenuWeapon	() const { return m_RadialMenuWeapon;   }
 			bool		ShowActorMenu			();

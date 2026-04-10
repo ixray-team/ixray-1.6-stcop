@@ -22,6 +22,8 @@
 #include "../../xrCore/xr_ini.h"
 #include "../../xrEngine/string_table.h"
 #include "../../xrEngine/xr_input.h"
+#include "UITalkWnd.h"
+#include "UITradeWnd.h"
 
 namespace
 {
@@ -317,24 +319,32 @@ void CUIItemDropAmountWnd::PerformDrop()
     {
         if (CurrentGameUI()->ActorMenu())
             CurrentGameUI()->ActorMenu()->ToBagAll((u32)amount);
+        else
+            CurrentGameUI()->TradeWnd()->ToBagAll((u32)amount);
         break;
     }
     case eModeToOffer:
     {
         if (CurrentGameUI()->ActorMenu())
             CurrentGameUI()->ActorMenu()->ToActorTradeAll((u32)amount);
+        else
+            CurrentGameUI()->TradeWnd()->ToActorTradeAll((u32)amount);
         break;
     }
     case eModeToCart:
     {
         if (CurrentGameUI()->ActorMenu())
             CurrentGameUI()->ActorMenu()->ToPartnerTradeAll((u32)amount);
+        else
+            CurrentGameUI()->TradeWnd()->ToPartnerTradeAll((u32)amount);
         break;
     }
     case eModeFromCart:
     {
         if (CurrentGameUI()->ActorMenu())
             CurrentGameUI()->ActorMenu()->ToPartnerTradeBagAll((u32)amount);
+        else
+            CurrentGameUI()->TradeWnd()->ToPartnerTradeBagAll((u32)amount);
         break;
     }
     }
