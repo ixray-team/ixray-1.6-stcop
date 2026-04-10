@@ -36,6 +36,8 @@ namespace PS
 			flRT_XFORM			= (1<<2),
 			flRT_HUDmode		= (1<<3),
 			flRT_LiveUpdate		= (1<<4),
+			flRT_RelatedChild	= (1<<5),
+			flRT_FreeChild		= (1<<6),
 		};
 		Flags8				m_RT_Flags = {0u};
 

@@ -30,7 +30,7 @@ namespace PAPI{
 		ParticleAction	() : type(action_enum_force_dword) {m_Flags.zero();}
 
 		virtual ~ParticleAction() = default;
-		virtual void PreExecute(ParticleHolder *pe){}
+		virtual void Animate(ParticleHolder *pe){}
 		virtual void Execute(ParticleHolder *pe, const float dt, float& m_max) = 0;
 		virtual void Transform	(const Fmatrix& m)				= 0;
 
@@ -642,7 +642,7 @@ namespace PAPI{
 		bool Reverse;
 		bool Wrap = false;
 
-		void PreExecute(ParticleHolder *pe) override;
+		void Animate(ParticleHolder *pe) override;
 		_METHODS;
 	};
 
@@ -661,7 +661,7 @@ namespace PAPI{
 		bool Reverse;
 		bool Wrap = false;
 
-		void PreExecute(ParticleHolder *pe) override;
+		void Animate(ParticleHolder *pe) override;
 		_METHODS;
 	};
 
