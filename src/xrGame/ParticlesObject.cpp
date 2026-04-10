@@ -85,7 +85,7 @@ void CParticlesObject::Play(bool bHudMode)
 
 	if(!IsLooped())
 		m_iLifeTime = iFloor(V->GetTimeLimit() * 1000.f);
-	V->UpdateCache();
+
 	m_bPlaying = true;
 }
 
@@ -101,7 +101,7 @@ void CParticlesObject::play_at_pos(const Fvector& pos, BOOL xform)
 
 	if (!IsLooped())
 		m_iLifeTime = iFloor(V->GetTimeLimit() * 1000.f);
-	V->UpdateCache();
+
 	m_bPlaying = true;
 }
 
@@ -121,8 +121,19 @@ void CParticlesObject::Update(u32 _dt, CFrustum& viewbase)
 {
 	if (m_NeedDestroy || (!m_bPlaying && !m_bAutoRemove)) return;
 	PROF_EVENT(__FUNCTION__);
-	if (m_bAutoStop && m_bPlaying && !IsPlaying())
-		Stop(FALSE);
+	if (m_bPlaying && !IsPlaying())
+	{
+		if(m_bAutoStop)
+			Stop(FALSE);
+
+		if (ESPATIAL_TYPE::NONE != SpatialComponent->spatial.type)
+		{
+			SpatialComponent->spatial.type = ESPATIAL_TYPE::NONE;
+			ISpatialOwner::spatial_unregister();
+		}
+
+		m_bPlaying = false;
+	}
 
 	m_iLifeTime -= _dt;
 	if (m_bAutoRemove && !IsAlive())
@@ -134,7 +145,7 @@ void CParticlesObject::Update(u32 _dt, CFrustum& viewbase)
 
 		// UpdateSpatial (+ workaround occasional bug inside particle-system)
 		vis_data& vis = renderable.visual->getVisData();
-		if (_valid(vis.sphere))
+		if (V->IsPlaying() && vis.sphere.R>EPS_L)
 		{
 			Fvector	P; float R = vis.sphere.R;
 			renderable.xform.transform_tiny(P, vis.sphere.P);
@@ -143,14 +154,14 @@ void CParticlesObject::Update(u32 _dt, CFrustum& viewbase)
 				// First 'valid' update - register
 				SpatialComponent->spatial.type = ESPATIAL_TYPE::PARTICLE;
 				SpatialComponent->spatial.sphere.set(P, R);
-				spatial_register();
+				ISpatialOwner::spatial_register();
 			}
 			else
 			{
 				if (!P.similar(SpatialComponent->spatial.sphere.P, EPS_L * 10.f) || !fsimilar(R, SpatialComponent->spatial.sphere.R, 0.15f))
 				{
 					SpatialComponent->spatial.sphere.set(P, R);
-					spatial_move();
+					ISpatialOwner::spatial_move();
 				}
 			}
 

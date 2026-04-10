@@ -136,6 +136,9 @@ public:
 #endif
 	}
 
+	void		add_Static(dxRender_Visual* pVisual, u32 planes);
+	void		add_leafs_Dynamic(dxRender_Visual* pVisual, bool IgnoreObject = false); // if detected node's full visibility
+
 	void		r_pmask											(bool deffered = false, bool forward = false, bool wallmarks = false) { pmask[0] = deffered; pmask[1] = forward; pmask[2] = wallmarks; }
 
 	void		r_dsgraph_insert_dynamic						(dxRender_Visual	*pVisual, Fvector& Center);
