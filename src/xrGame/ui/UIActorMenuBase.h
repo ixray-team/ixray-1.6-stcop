@@ -6,6 +6,7 @@
 #include "../../xrUI/Widgets/UIDialogWnd.h"
 #include "../../xrUI/Widgets/UIWindow.h"
 #include "InventorySorter.h"
+#include "../../xrUI/Widgets/UIFocusSystem.h"
 
 class CUIPropertiesBox;
 class CUIActorMenu;
@@ -18,6 +19,7 @@ class CUIProgressBar;
 class CUIItemStateDisplay;
 class CUIItemInfo;
 class CUITabControl;
+class CUIInventoryUpgradeWnd;
 
 const u64 INVENTORY_ALL_CODE = 33;
 const u64 INVENTORY_AMOUNT_CODE = 77;
@@ -75,6 +77,7 @@ protected:
 	ref_sound					sounds						[eSndMax];
 	void						InitBase					(CUIXml& xml);
 	void						InitSlots					(CUIXml& xml);
+	void						InitGamepadSelectors		();
 	void						PlaySnd						(eActorMenuSndAction a);
 
 								CUIActorMenuBase			();
@@ -119,8 +122,10 @@ protected:
 	virtual	void				InfoCurItem					(CUICellItem* cell_item) {}
 	void						ClearAllLists				();
 	virtual	void				SetupUpgradeItem			() {}
+	virtual void				TrySetCurUpgrade			() {}
 	virtual void				UpdateOutfit				() {}
 	virtual void				UpdateActor					() {}
+	virtual void				TradeShowMessage			(int money_actor, int money_patner) {}
 	void						InitPartnerInventoryContents();
 
 	void						clear_highlight_lists		();
@@ -182,10 +187,23 @@ protected:
 
 	xr_vector<EDDListType>		m_allowed_drops				[iListTypeMax];
 	bool						AllowItemDrops				(EDDListType from, EDDListType to);
+	void						UpdateGamepadLegend			();
 
 	EInventorySortCategory		GetPlayerSortCategory		() const;
 	virtual bool				ShouldPutArtefactsToBag		() { return false; }
 	virtual bool				ForceHighlightForSlots		() { return false; }
+
+	void						OnPressUserKey				();
+
+	// Controller UI
+	bool						MoveAreaSelector			(eUIDirection4 dir);
+	void						MoveSelector				(eUIDirection4 dir, bool bAllowAreaExit);
+	void						SetAreaSelectionTo			(CUIWindow* pList);
+	eUIDirection4				GetNaviDirection			(CUIWindow* pWndFrom, CUIWindow* pWndTo);
+	void						UpdateSortTabsLayout		();
+	void						ShowSortTabsForCurrentMode	();
+	virtual bool				AnyInfoWindowOpen			() const { return false; }
+			void				CheckSelectors				();
 
 	EMenuMode					m_currMenuMode = mmUndefined;
 	CUIItemDropAmountWnd*		m_pItemDropAmountWnd = nullptr;
@@ -203,7 +221,7 @@ protected:
 
 	CUIItemInfo*				m_ItemInfo = nullptr;
 	
-	CUIStatic*					m_QuickSlotsHighlight[4];
+	CUIStatic*					m_QuickSlotsHighlight[4]{};
 	xr_vector<CUIStatic*>		m_ArtefactSlotsHighlight;
 
 	int							m_ArtefactSlotsCount = 0;
@@ -227,6 +245,23 @@ protected:
 	EInventorySortCategory		m_sortCategory[eSortTabsLayoutCount] = {};
 
 	u32							m_trade_partner_inventory_state = 0;
+	
+	CUIInventoryUpgradeWnd*		m_pUpgradeWnd = nullptr;
+
+	// Controller UI
+	xr_map<EMenuMode, xr_vector<WND_SELECTOR_INFO>>	m_ui_navigation_lists;
+	CUIWindow*					m_ui_navigation_selection = nullptr;
+	CUIFrameWindow*				m_ui_navigation_selector = nullptr;
+	bool						m_ui_navigation_selector_shown = false;
+	bool						m_bShowInfoWnds = false;
+
+	eActorMenuControllerAuxMode	m_AuxMode= eAuxMode_None;
+	CUIFrameWindow*				m_ui_aux_selector = nullptr; // For upgrades, and picking item for a quickslot or belt
+	bool						m_ui_aux_selector_shown = false;
+
+	float						m_selectorPadding = 4.0f;
+
+	CUIGamepadLegend*			m_gamepad_legend = nullptr;
 
 	const char* m_onCanMoveToPartner = {};
 	bool m_isCanMoveToPartner = false;
@@ -257,9 +292,8 @@ protected:
 	bool m_isItemFocusReceive = false;
 public:
 	CUIDragDropReferenceList*	m_pQuickSlot = nullptr;
-public:
 	EMenuMode					GetMenuMode					() {return m_currMenuMode;}
-	CUIPropertiesBox*			m_UIPropertiesBox;
+	CUIPropertiesBox*			m_UIPropertiesBox = nullptr;
 	virtual CInventory*			GetInventory				() { return nullptr; }
 	virtual CInventoryOwner*	GetInventoryOwner			() { return nullptr; }
 	virtual CInventoryOwner*	GetPartner					() { return nullptr; }
@@ -276,9 +310,9 @@ public:
 	virtual CTrade*				GetActorTrade				() { return nullptr; }
 	virtual CTrade*				GetPartnerTrade				() { return nullptr; }
 
-	virtual void				DropAllCurrentItem			(u32 item_amount);
-	virtual void				MoveAllCurrentItem			(u32 item_amount);
-	virtual void				TakeAllCurrentItem			(u32 item_amount);
+	void						DropAllCurrentItem			(u32 item_amount);
+	void						MoveAllCurrentItem			(u32 item_amount);
+	void						TakeAllCurrentItem			(u32 item_amount);
 	void						ToBagAll					(u32 item_amount);
 	void						ToActorTradeAll				(u32 item_amount);
 	void						ToPartnerTradeAll			(u32 item_amount);
@@ -287,10 +321,18 @@ public:
 	void						TakeAllFromPartner			(CUIWindow* w, void* d);
 	void						PutAllToPartner				(CUIWindow* w, void* d);
 	void						ProcessPropertiesBoxClicked	(CUIWindow* w, void* d);
+	void						OnBtnPerformTrade			(CUIWindow* w, void* d);
 	void						TakeAllFromInventoryBox		();
 
 	CUICellItem*				CurrentItem					();
 	PIItem						CurrentIItem				();
 
 	void						OnInventoryAction			(PIItem pItem, u16 action_type);
+	virtual void				Update						();
+
+	virtual bool				OnMouseAction				(float x, float y, EUIMessages mouse_action);
+	virtual bool				OnKeyboardAction			(int dik, EUIMessages keyboard_action);
+	virtual bool				OnGamepadKeyAction			(int id, EUIMessages gamepad_action);
+	virtual bool				OnGamepadKeyHold			(int id);
+	virtual bool				StopAnyMove					();
 };

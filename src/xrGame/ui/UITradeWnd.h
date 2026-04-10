@@ -77,7 +77,6 @@ protected:
 
 	bool				bStarted;
 	
-	void				PerformTrade				();
 	virtual void		UpdatePrices				();
 
 	enum EListType{eNone,e1st,e2nd,eBoth};
@@ -102,6 +101,7 @@ protected:
 
 	virtual void		SetCurrentItem				(CUICellItem* itm);
 	virtual bool		ForceHighlightForSlots		() { return true; }
+	virtual void		TradeShowMessage			(int money_actor, int money_patner);
 
 public:
 	virtual CInventory*			GetInventory				() { return m_pInv; }

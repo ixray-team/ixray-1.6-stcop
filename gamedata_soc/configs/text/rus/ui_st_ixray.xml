@@ -490,10 +490,10 @@
 		<text>$$ACTION_UI_TAB_LEFT$$/$$ACTION_UI_TAB_RIGHT$$ Вкладки</text>
 	</string>
 	<string id="ui_pda_log_to_start">
-		<text>$$ACTION_PDA_LOG_SCROLL_UP$$ В начало</text>
+		<text>$$ACTION_PDA_LOG_TO_START$$ В начало</text>
 	</string>
 	<string id="ui_pda_log_to_end">
-		<text>$$ACTION_PDA_LOG_SCROLL_DOWN$$ В конец</text>
+		<text>$$ACTION_PDA_LOG_TO_END$$ В конец</text>
 	</string>
 	<string id="ui_pda_log_date_prev">
 		<text>$$ACTION_PDA_LOG_DATE_PREV$$ Предыдущая дата</text>
@@ -693,10 +693,7 @@
 	<string id="ui_pda_tabs_secondary">
 		<text>$$ACTION_UI_TAB_SEC_LEFT$$/$$ACTION_UI_TAB_SEC_RIGHT$$ Дополнительные вкладки</text>
 	</string>
-	<string id="st_upgrade">
-		<text>улучшить</text>
-	</string>
-	<string id="st_repair">
-		<text>починить</text>
+	<string id="ui_am_info_soc">
+		<text>$$ACTION_UI_TAB_SEC_LEFT$$/$$ACTION_UI_TAB_SEC_RIGHT$$ Листать информацию</text>
 	</string>
 </string_table>

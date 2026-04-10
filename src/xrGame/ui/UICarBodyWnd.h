@@ -25,7 +25,6 @@ public:
 	virtual						~CUICarBodyWnd				();
 
 	virtual void				Init						();
-	virtual bool				StopAnyMove					() {return true;}
 
 	virtual void				SendMessage					(CUIWindow *pWnd, s16 msg, void *pData);
 
@@ -38,7 +37,6 @@ public:
 
 	void						DisableAll					();
 	void						EnableAll					();
-	virtual bool				OnKeyboardAction					(int dik, EUIMessages keyboard_action);
 
 	virtual CInventory*			GetInventory				();
 	virtual CInventoryOwner*	GetInventoryOwner			() { return m_pOurObject; }
