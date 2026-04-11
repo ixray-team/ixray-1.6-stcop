@@ -371,7 +371,7 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 				charIndex,
 				FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL
 			);
-			R_ASSERT(err == 0, "FT_Load_Glyph failed", charIndex, glyphID);
+			R_ASSERT2(err == 0, make_string<const char*>("FT_Load_Glyph failed %u %u", charIndex, glyphID));
 
 			FT_GlyphSlot Glyph = GamepadFont->glyph;
 			FT_Glyph_Metrics& GlyphMetrics = Glyph->metrics;
