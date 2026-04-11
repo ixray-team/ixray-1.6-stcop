@@ -63,16 +63,9 @@
 #	include "helicopter.h"
 
 #	include "MercuryBall.h"
-#	include "BlackDrops.h"
 #	include "BlackGraviArtifact.h"
 #	include "BastArtifact.h"
-#	include "DummyArtifact.h"
-#	include "ZudaArtifact.h"
-#	include "ThornArtifact.h"
-#	include "FadedBall.h"
 #	include "ElectricBall.h"
-#	include "RustyHairArtifact.h"
-#	include "GalantineArtifact.h"
 #	include "GraviArtifact.h"
 #	include "cta_game_artefact.h"
 
@@ -301,17 +294,17 @@ void CObjectFactory::register_classes	()
 
 	// Artefacts
 	ADD(CMercuryBall			,CSE_ALifeItemArtefact			,CLSID_AF_MERCURY_BALL			,"art_mercury_ball");
-	ADD(CBlackDrops				,CSE_ALifeItemArtefact			,CLSID_AF_BLACKDROPS			,"art_black_drops");
+	ADD(CArtefact,CSE_ALifeItemArtefact			,CLSID_AF_BLACKDROPS			,"art_black_drops");
 	ADD(CBlackGraviArtefact		,CSE_ALifeItemArtefact			,CLSID_AF_NEEDLES				,"art_needles");
 	ADD(CBastArtefact			,CSE_ALifeItemArtefact			,CLSID_AF_BAST					,"art_bast_artefact");
 	ADD(CBlackGraviArtefact		,CSE_ALifeItemArtefact			,CLSID_AF_BLACK_GRAVI			,"art_gravi_black");
-	ADD(CDummyArtefact			,CSE_ALifeItemArtefact			,CLSID_AF_DUMMY					,"art_dummy");
-	ADD(CZudaArtefact			,CSE_ALifeItemArtefact			,CLSID_AF_ZUDA					,"art_zuda");
-	ADD(CThornArtefact			,CSE_ALifeItemArtefact			,CLSID_AF_THORN					,"art_thorn");
-	ADD(CFadedBall				,CSE_ALifeItemArtefact			,CLSID_AF_FADED_BALL			,"art_faded_ball");
+	ADD(CArtefact				,CSE_ALifeItemArtefact			,CLSID_AF_DUMMY					,"art_dummy");
+	ADD(CArtefact,CSE_ALifeItemArtefact			,CLSID_AF_ZUDA					,"art_zuda");
+	ADD(CArtefact,CSE_ALifeItemArtefact			,CLSID_AF_THORN					,"art_thorn");
+	ADD(CArtefact,CSE_ALifeItemArtefact			,CLSID_AF_FADED_BALL			,"art_faded_ball");
 	ADD(CElectricBall			,CSE_ALifeItemArtefact			,CLSID_AF_ELECTRIC_BALL			,"art_electric_ball");
-	ADD(CRustyHairArtefact		,CSE_ALifeItemArtefact			,CLSID_AF_RUSTY_HAIR			,"art_rusty_hair");
-	ADD(CGalantineArtefact		,CSE_ALifeItemArtefact			,CLSID_AF_GALANTINE				,"art_galantine");
+	ADD(CArtefact				,CSE_ALifeItemArtefact			,CLSID_AF_RUSTY_HAIR			,"art_rusty_hair");
+	ADD(CArtefact				,CSE_ALifeItemArtefact			,CLSID_AF_GALANTINE				,"art_galantine");
 	ADD(CGraviArtefact			,CSE_ALifeItemArtefact			,CLSID_AF_GRAVI					,"art_gravi");
 	ADD(CGraviArtefact			,CSE_ALifeItemArtefact			,CLSID_ARTEFACT					,"artefact");
 	ADD(CtaGameArtefact			,CSE_ALifeItemArtefact			,CLSID_AF_CTA					,"art_cta");
