@@ -16,62 +16,39 @@ class CAgentMemberManager;
 class CAgentMemoryManager;
 class FRbmkAgentManagerPlanner;
 
-//#define USE_SCHEDULER_IN_AGENT_MANAGER
-
-#ifdef USE_SCHEDULER_IN_AGENT_MANAGER
-	class CAgentManager : public ISheduled {
-#else // USE_SCHEDULER_IN_AGENT_MANAGER
-	class CAgentManager {
-#endif // USE_SCHEDULER_IN_AGENT_MANAGER
-
-private:
-	CAgentCorpseManager				*m_corpse;
-	CAgentEnemyManager				*m_enemy;
-	CAgentExplosiveManager			*m_explosive;
-	CAgentLocationManager			*m_location;
-	CAgentMemberManager				*m_member;
-	CAgentMemoryManager				*m_memory;
-	FRbmkAgentManagerPlanner		*m_brain;
-
-#ifndef USE_SCHEDULER_IN_AGENT_MANAGER
-private:
-	u32								m_last_update_time;
-	u32								m_update_rate;
-#endif // USE_SCHEDULER_IN_AGENT_MANAGER
+class CAgentManager final
+{
+	CAgentCorpseManager* m_corpse;
+	CAgentEnemyManager* m_enemy;
+	CAgentExplosiveManager* m_explosive;
+	CAgentLocationManager* m_location;
+	CAgentMemberManager* m_member;
+	CAgentMemoryManager* m_memory;
+	FRbmkAgentManagerPlanner* m_brain;
 
 private:
-			void					init_scheduler		();
-			void					init_components		();
-			void					remove_components	();
-			void					update_impl			();
+	u32 m_last_update_time;
+	u32 m_update_rate;
 
-#ifdef USE_SCHEDULER_IN_AGENT_MANAGER
 private:
-			void					remove_scheduler	();
-#endif // USE_SCHEDULER_IN_AGENT_MANAGER
+	void init_scheduler();
+	void init_components();
+	void remove_components();
+	void update_impl();
 
 public:
-									CAgentManager		();
-									// final class, no virtual destructor needed
-									~CAgentManager		();
-#ifdef USE_SCHEDULER_IN_AGENT_MANAGER
-	virtual bool					shedule_Needed		()					{return true;};
-	virtual float					shedule_Scale		();
-	virtual void					shedule_Update		(u32 time_delta);	
-	virtual	shared_str				shedule_Name		() const			{return shared_str("agent_manager"); };
-#else // USE_SCHEDULER_IN_AGENT_MANAGER
-			void					update				();
-#endif // USE_SCHEDULER_IN_AGENT_MANAGER
-			shared_str				cName				() const;
-			void					remove_links		(CObject *object);
+	CAgentManager();
+	~CAgentManager();
+
+	void update();
+	shared_str cName() const { return "agent_manager"; };
+	void remove_links(CObject* object);
 
 public:
-	IC		CAgentCorpseManager		&corpse				() const;
-	IC		CAgentEnemyManager		&enemy				() const;
-	IC		CAgentExplosiveManager	&explosive			() const;
-	IC		CAgentLocationManager	&location			() const;
-	IC		CAgentMemberManager		&member				() const;
-	IC		CAgentMemoryManager		&memory				() const;
+	IC CAgentCorpseManager& corpse() const { return *m_corpse; };
+	IC CAgentEnemyManager& enemy() const { return *m_enemy; };
+	IC CAgentExplosiveManager& explosive() const { return *m_explosive; };
+	IC CAgentLocationManager& location() const { return *m_location; };
+	IC CAgentMemberManager& member() const{ return *m_member; };
+	IC CAgentMemoryManager& memory() const{ return *m_memory; };
 };
-
-#include "agent_manager_inline.h"
