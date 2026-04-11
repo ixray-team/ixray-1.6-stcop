@@ -931,9 +931,8 @@ void CAI_Stalker::shedule_Update(u32 DT)
 	{
 		update_object_handler();
 	}
-	//	if (Position().distance_to(Level().CurrentEntity()->Position()) <= 50.f)
-	//		Msg				("[%6d][SH][%s]",Device.dwTimeGlobal,*cName());
-		// Queue shrink
+
+	// Queue shrink
 	VERIFY(_valid(Position()));
 	u32	dwTimeCL = Level().timeServer() - NET_Latency;
 	if (NET.empty())
@@ -948,13 +947,11 @@ void CAI_Stalker::shedule_Update(u32 DT)
 	// *** general stuff
 	float dt = float(DT) / 1000.f;
 	CScriptEntity::process_sound_callbacks();
+
 	if (g_Alive())
 	{
 		animation().play_delayed_callbacks();
-
-#ifndef USE_SCHEDULER_IN_AGENT_MANAGER
 		agent_manager().update();
-#endif // USE_SCHEDULER_IN_AGENT_MANAGER
 
 		Exec_Visibility();
 		update_can_kill_info();

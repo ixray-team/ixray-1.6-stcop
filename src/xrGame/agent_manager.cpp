@@ -16,103 +16,71 @@
 #include "agent_memory_manager.h"
 #include "FRbmkAgentManagerPlanner.h"
 
-CAgentManager::CAgentManager			()
+CAgentManager::CAgentManager()
 {
-	init_scheduler				();
-	init_components				();
+	init_scheduler();
+	init_components();
 }
 
-CAgentManager::~CAgentManager			()
+CAgentManager::~CAgentManager()
 {
-	VERIFY						(member().members().empty());
-#ifdef USE_SCHEDULER_IN_AGENT_MANAGER
-	remove_scheduler			();
-#endif // USE_SCHEDULER_IN_AGENT_MANAGER
-	remove_components			();
+	VERIFY(member().members().empty());
+	remove_components();
 }
 
-void CAgentManager::init_scheduler		()
+void CAgentManager::init_scheduler()
 {
-#ifdef USE_SCHEDULER_IN_AGENT_MANAGER
-	shedule.t_min				= 1000;
-	shedule.t_max				= 1000;
-	shedule_register			();
-#else // USE_SCHEDULER_IN_AGENT_MANAGER
-	m_last_update_time			= 0;
-	m_update_rate				= 1000;
-#endif // USE_SCHEDULER_IN_AGENT_MANAGER
+	m_last_update_time = 0;
+	m_update_rate = 1000;
 }
 
-void CAgentManager::init_components		()
+void CAgentManager::init_components()
 {
-	m_corpse					= new CAgentCorpseManager		(this);
-	m_enemy						= new CAgentEnemyManager		(this);
-	m_explosive					= new CAgentExplosiveManager	(this);
-	m_location					= new CAgentLocationManager		(this);
-	m_member					= new CAgentMemberManager		(this);
-	m_memory					= new CAgentMemoryManager		(this);
-	m_brain						= new FRbmkAgentManagerPlanner	(this);
+	m_corpse = new CAgentCorpseManager(this);
+	m_enemy = new CAgentEnemyManager(this);
+	m_explosive = new CAgentExplosiveManager(this);
+	m_location = new CAgentLocationManager(this);
+	m_member = new CAgentMemberManager(this);
+	m_memory = new CAgentMemoryManager(this);
+	m_brain = new FRbmkAgentManagerPlanner(this);
 }
 
-#ifdef USE_SCHEDULER_IN_AGENT_MANAGER
-void CAgentManager::remove_scheduler	()
+void CAgentManager::remove_components()
 {
-	shedule_unregister			();
-}
-#endif // USE_SCHEDULER_IN_AGENT_MANAGER
-
-void CAgentManager::remove_components	()
-{
-	xr_delete					(m_corpse);
-	xr_delete					(m_enemy);
-	xr_delete					(m_explosive);
-	xr_delete					(m_location);
-	xr_delete					(m_member);
-	xr_delete					(m_memory);
-	xr_delete					(m_brain);
+	xr_delete(m_corpse);
+	xr_delete(m_enemy);
+	xr_delete(m_explosive);
+	xr_delete(m_location);
+	xr_delete(m_member);
+	xr_delete(m_memory);
+	xr_delete(m_brain);
 }
 
-void CAgentManager::remove_links		(CObject *object)
+void CAgentManager::remove_links(CObject* object)
 {
-	corpse().remove_links		(object);
-	enemy().remove_links		(object);
-	explosive().remove_links	(object);
-	location().remove_links		(object);
-	member().remove_links		(object);
-	memory().remove_links		(object);
+	corpse().remove_links(object);
+	enemy().remove_links(object);
+	explosive().remove_links(object);
+	location().remove_links(object);
+	member().remove_links(object);
+	memory().remove_links(object);
 }
 
-void CAgentManager::update_impl			()
+void CAgentManager::update_impl()
 {
 	PROF_EVENT("CAgentManager::update_impl");
-	VERIFY						(!member().members().empty());
+	VERIFY(!member().members().empty());
 
-	memory().update				();
-	corpse().update				();
-	enemy().update				();
-	explosive().update			();
-	location().update			();
-	member().update				();
-	m_brain->Update				();
+	memory().update();
+	corpse().update();
+	enemy().update();
+	explosive().update();
+	location().update();
+	member().update();
+	m_brain->Update();
 }
 
-#ifdef USE_SCHEDULER_IN_AGENT_MANAGER
-void CAgentManager::shedule_Update(u32 time_delta)
-{
-	PROF_EVENT("Agent_Manager")
-
-	ISheduled::shedule_Update(time_delta);
-	update_impl();
-}
-
-float CAgentManager::shedule_Scale()
-{
-	return (.5f);
-}
-
-#else // USE_SCHEDULER_IN_AGENT_MANAGER
-
-void CAgentManager::update				()
+void CAgentManager::update()
 {
 	if (Device.dwTimeGlobal <= m_last_update_time)
 		return;
@@ -120,8 +88,6 @@ void CAgentManager::update				()
 	if (Device.dwTimeGlobal - m_last_update_time < m_update_rate)
 		return;
 
-	m_last_update_time			= Device.dwTimeGlobal;
-	update_impl					();
+	m_last_update_time = Device.dwTimeGlobal;
+	update_impl();
 }
-
-#endif // USE_SCHEDULER_IN_AGENT_MANAGER
