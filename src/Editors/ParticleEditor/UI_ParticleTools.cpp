@@ -996,7 +996,7 @@ void CParticleTool::PlayCurrent(int idx)
             VERIFY(m_CurrentEf);
             for (auto& item : m_EditPG->items)
             {
-                VERIFY(item._effect);
+                VERIFY(item.root_effect);
                 auto CastedEffect = (PS::CParticleEffect*)item.root_effect;
                 if (CastedEffect->m_Def->Name() == m_CurrentEf->m_EffectName)
                 {
