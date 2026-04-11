@@ -59,6 +59,7 @@ export const mainSidebar: DefaultTheme.Sidebar = [
     items: [
       { text: 'General information', link: '/en/weapon-system/weapon-classes' },
       { text: 'Explosive classes', link: '/en/weapon-system/explosive-classes' }
+      ,{ text: 'Shot pattern system', link: '/en/weapon-system/shot-pattern-system' }
     ]
   },
   {
@@ -218,6 +219,12 @@ export const mainSidebar: DefaultTheme.Sidebar = [
         text: 'Clear Sky',
         items: [
           { text: 'Technical features', link: '/en/platforms/clear-sky/technical-features' },
+        ]
+      },
+      {
+        text: 'Shadow of Chernobyl',
+        items: [
+          { text: 'Technical features', link: '/en/platforms/shadow-of-chernobyl/technical-features' },
         ]
       },
       {
