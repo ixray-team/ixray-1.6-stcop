@@ -90,21 +90,21 @@ struct DetailSlot					// was(4+4+3*4+2 = 22b), now(8+2*4=16b)
 public:
 	enum			{	ID_Empty	= 0x3f	};
 public:
-	void			w_y		(float base, float height)				
+	ICF void			w_y		(float base, float height)
 	{	
 		s32	_base	= iFloor((base + 200)/.2f);			clamp(_base,	0,4095);	y_base		= _base;
 		f32 _error	= base - r_ybase();
 		s32	_height = iCeil ((height+_error) / .1f);	clamp(_height,	0,255);		y_height	= _height;
 	}
 
-	float			r_ybase		()						{	return float(y_base)*.2f - 200.f;								}
-	float			r_yheight	()						{	return float(y_height)*.1f;									}
-	u32				w_qclr		(float v, u32 range)	{	s32 _v = iFloor(v * float(range)); clamp(_v,0,s32(range)); return _v; };
-	float			r_qclr		(u32 v,   u32 range)	{	return float(v)/float(range); }
+	ICF float			r_ybase		()						{	return float(y_base)*.2f - 200.f;								}
+	ICF float			r_yheight	()						{	return float(y_height)*.1f;									}
+	ICF u32				w_qclr		(float v, u32 range)	{	s32 _v = iFloor(v * float(range)); clamp(_v,0,s32(range)); return _v; };
+	ICF float			r_qclr		(u32 v,   u32 range)	{	return float(v)/float(range); }
 
 //	static void		verify		()						{	VERIFY(16==sizeof(DetailSlot));	}
-    void			color_editor(){c_dir=w_qclr(0.5f,15);c_hemi=w_qclr(0.5f,15);c_r=w_qclr(0.f,15);c_g=w_qclr(0.f,15);c_b=w_qclr(0.f,15);}
-    u8				r_id		(u32 idx) {	
+	ICF void			color_editor(){c_dir=w_qclr(0.5f,15);c_hemi=w_qclr(0.5f,15);c_r=w_qclr(0.f,15);c_g=w_qclr(0.f,15);c_b=w_qclr(0.f,15);}
+	ICF u8				r_id		(u32 idx) {
         switch(idx)	{
         case 0: return (u8)id0;
         case 1: return (u8)id1;
@@ -116,7 +116,7 @@ public:
 		return 0;
 #endif
     }
-    void			w_id		(u32 idx, u8 val) {	
+    ICF void			w_id		(u32 idx, u8 val) {	
         switch(idx){
         case 0: id0=val; break;
         case 1: id1=val; break;
