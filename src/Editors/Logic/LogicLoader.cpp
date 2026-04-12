@@ -563,6 +563,15 @@ xr_vector<FState> LogicLoader::LoadFromFile(const xr_string& filename)
 			}
 		}
 
+		if (ini->line_exist(sec, "active"))
+		{
+			FTransition t;
+			t.DebugName = "active";
+			t.TargetState = ini->r_string_wb(sec, "active").c_str();
+
+			s.Transitions.push_back(t);
+		}
+
 		out.push_back(std::move(s));
 	}
 

@@ -96,64 +96,120 @@ void FNodeEditor::RenderNode(FState& State)
 	auto Desc = GetStateRenderDesc(State);
 
 	ed::BeginNode(MakeNodeId(State));
-
 	ImGui::PushID(State.StateName.c_str());
-	ImVec2 pos = ImGui::GetCursorScreenPos();
 
-	// HEADER
-	ImDrawList* dl = ImGui::GetWindowDrawList();
+	ImDrawList* DrawList = ImGui::GetWindowDrawList();
+	ImVec2 start = ImGui::GetCursorScreenPos();
 
-	ImVec2 headerSize(260, 28);
+	const float NODE_WIDTH = 260.0f;
 
-	dl->AddRectFilled
+	ImVec2 headerSize = ImVec2(NODE_WIDTH, 28);
+
+	DrawList->AddRectFilled
 	(
-		ImVec2(pos.x - 8, pos.y - 8),
-		{ pos.x + headerSize.x + 8, pos.y + headerSize.y - 8},
+		ImVec2(start.x - 8, start.y - 8),
+		ImVec2(start.x + headerSize.x + 8, start.y + headerSize.y - 8),
 		IM_COL32(Desc.Color.R, Desc.Color.G, Desc.Color.B, 255),
-		6.0f, ImDrawFlags_RoundCornersTop
+		6.0f,
+		ImDrawFlags_RoundCornersTop
 	);
 
 	ImGui::Dummy(headerSize);
-	ImGui::SetCursorScreenPos({ pos.x + 8, pos.y });
+	ImGui::SetCursorScreenPos({ start.x + 8, start.y });
 	ImGui::TextUnformatted(Desc.Title.c_str());
+
 	ImGui::Spacing();
 
-	// INPUT PINS (generic)
-	int idx = 0;
-	for (auto& in : Desc.Inputs)
-	{
-		auto pinId = MakePinId(State.StateName, in, idx++);
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 4));
 
-		ed::BeginPin(pinId, ed::PinKind::Input);
-		ImGui::Text("● %s", in.c_str());
-		ed::EndPin();
+	int MaxRows = std::max((int)Desc.Inputs.size(), (int)State.Transitions.size());
+	int idx = 0;
+
+	float leftX = start.x + 8;
+	float rightX = start.x + NODE_WIDTH - 8;
+
+	for (int Row = 0; Row < MaxRows; ++Row)
+	{
+		ImVec2 rowStart = ImGui::GetCursorScreenPos();
+
+		// ---------- INPUT ----------
+		if (Row < Desc.Inputs.size())
+		{
+			auto& in = Desc.Inputs[Row];
+			auto PinId = MakePinId(State.StateName, in, idx++);
+
+			ImGui::SetCursorScreenPos(rowStart);
+
+			ed::BeginPin(PinId, ed::PinKind::Input);
+
+			ImVec2 p = ImGui::GetCursorScreenPos();
+			ImGui::Dummy(ImVec2(12, 12));
+
+			ImVec2 center = { p.x + 6, p.y + 6 };
+			DrawList->AddCircleFilled(center, 4.0f, IM_COL32(150, 150, 220, 255));
+
+			ImGui::SameLine();
+			ImGui::TextUnformatted(in.c_str());
+
+			ed::EndPin();
+		}
+
+		// ---------- OUTPUT ----------
+		if (Row < State.Transitions.size())
+		{
+			auto& tr = State.Transitions[Row];
+
+			xr_string pinName = tr.DebugName;
+			if (!tr.TargetState.empty())
+			{
+				pinName += " → " + tr.TargetState;
+			}
+
+			auto pinId = MakePinId(State.StateName, pinName, idx++);
+
+			ImVec2 textSize = ImGui::CalcTextSize(tr.DebugName.c_str());
+
+			float x = rightX - textSize.x - 12.0f;
+			if (tr.DebugName.empty())
+			{
+				x = rightX - 12.0f;
+			}
+
+			ImGui::SetCursorScreenPos({ x, rowStart.y });
+
+			ed::BeginPin(pinId, ed::PinKind::Output);
+
+			if (!tr.DebugName.empty())
+			{
+				ImGui::TextUnformatted(tr.DebugName.c_str());
+				ImGui::SameLine();
+			}
+
+			ImVec2 p = ImGui::GetCursorScreenPos();
+			ImGui::Dummy(ImVec2(12, 12));
+
+			ImVec2 Center = { p.x + 6, p.y + 6 };
+			DrawList->AddCircleFilled(Center, 4.0f, IM_COL32(220, 150, 150, 255));
+
+			if (ImGui::IsItemHovered() && !tr.TargetState.empty())
+			{
+				ImGui::SetTooltip("Target: %s", tr.TargetState.c_str());
+			}
+
+			ed::EndPin();
+		}
+
+		ImGui::Dummy(ImVec2(0, 2));
 	}
 
-	Desc.DrawBody(State);
+	ImGui::PopStyleVar();
 
-	// OUTPUT PINS
-	for (auto& tr : State.Transitions)
+	if (Desc.DrawBody)
 	{
-		xr_string pinName = tr.DebugName;
-		if (!tr.TargetState.empty())
-		{
-			pinName += " → " + tr.TargetState;
-		}
-
-		auto pinId = MakePinId(State.StateName, pinName, idx++);
-
-		ed::BeginPin(pinId, ed::PinKind::Output);
-		ImGui::Text("%s ●", tr.DebugName.c_str());
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetTooltip("Target: %s", tr.TargetState.c_str());
-		}
-
-		ed::EndPin();
+		Desc.DrawBody(State);
 	}
 
 	ImGui::PopID();
-
 	ed::EndNode();
 }
 
@@ -232,8 +288,9 @@ void FNodeEditor::RenderContextMenu()
 						++count;
 						if (count > 200) break;
 					}
+
 					BuildLinksFromTransitions();
-					std::cout << "Loaded " << count << " states from file\n";
+					BuildNodesLayout();
 				}
 			}
 		}
@@ -245,6 +302,104 @@ void FNodeEditor::RenderContextMenu()
 	{
 		ImGui::OpenPopup("NodeEditorContext");
 	}
+}
+
+void FNodeEditor::BuildNodesLayout()
+{
+	xr_hash_map<xr_string, xr_vector<xr_string>> Graph;
+
+	for (auto& [key, node] : m_Nodes)
+	{
+		auto& children = Graph[node.StateName];
+
+		for (auto& tr : node.Transitions)
+		{
+			if (!tr.TargetState.empty())
+			{
+				children.push_back(tr.TargetState);
+			}
+		}
+	}
+
+	if (m_Nodes.empty())
+	{
+		return;
+	}
+
+	xr_string Root;
+
+	for (auto& [key, node] : m_Nodes)
+	{
+		if (node.StateName.StartWith("logic"))
+		{
+			Root = node.StateName;
+			break;
+		}
+	}
+
+	if (Root.empty() && !m_Nodes.empty())
+	{
+		Root = m_Nodes.begin()->second.StateName;
+	}
+
+	xr_hash_set<xr_string> Visited;
+
+	const float SpacingX = 420.0f;
+	const float SpacingY = 350.0f;
+
+	int CurrentY = 0;
+
+	std::function<void(const xr_string&, int, int)> DFSBuilder = [&](const xr_string& name, int Depth, int y)
+	{
+		if (Visited.contains(name))
+		{
+			return;
+		}
+
+		Visited.insert(name);
+
+		auto it = m_Nodes.find(std::hash<xr_string>{}(name));
+		if (it != m_Nodes.end())
+		{
+			ed::SetNodePosition
+			(
+				MakeNodeId(it->second),
+				ImVec2(Depth * SpacingX, y * SpacingY)
+			);
+		}
+
+		auto& Children = Graph[name];
+
+		if (Children.empty())
+		{
+			return;
+		}
+
+		if (Children.size() == 1)
+		{
+			DFSBuilder(Children[0], Depth + 1, y);
+			return;
+		}
+
+		int BranchY = y;
+
+		for (size_t i = 0; i < Children.size(); ++i)
+		{
+			if (i == 0)
+			{
+				DFSBuilder(Children[i], Depth + 1, BranchY);
+			}
+			else
+			{
+				CurrentY++;
+				BranchY = CurrentY;
+				DFSBuilder(Children[i], Depth + 1, BranchY);
+			}
+		}
+	};
+
+	// старт
+	DFSBuilder(Root, 0, CurrentY);
 }
 
 void FNodeEditor::BuildLinksFromTransitions()

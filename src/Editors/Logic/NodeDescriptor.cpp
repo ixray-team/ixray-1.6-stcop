@@ -1,6 +1,8 @@
 #include "../../xrCore/stdafx.h"
 #include "NodeEditor.h"
 
+constexpr float NodeItemWidth = 258.f;
+
 void DrawCustomVars(FBaseParams* Params)
 {
 	for (auto& Var : Params->CustomVariables)
@@ -10,7 +12,7 @@ void DrawCustomVars(FBaseParams* Params)
 
 		string256 Str;
 		strcpy(Str, Var.second.c_str());
-		ImGui::SetNextItemWidth(230);
+		ImGui::SetNextItemWidth(NodeItemWidth);
 		if (ImGui::InputText("##customvar", Str, std::size(Str)))
 		{
 			Var.second = Str;
@@ -39,7 +41,7 @@ FNodeRenderDesc GetStateRenderDesc(FState& State)
 		Desc.DrawBody = [&P](const FState&)
 			{
 				ImGui::Text("Path: %s", P.PathWalk.c_str());
-				ImGui::SetNextItemWidth(150.f);
+				ImGui::SetNextItemWidth(NodeItemWidth);
 				ImGui::SliderFloat("Speed", &P.WalkSpeed, 0.0f, 3.0f);
 				ImGui::Checkbox("Combat Ignore", &P.bCombatIgnore);
 
@@ -60,7 +62,7 @@ FNodeRenderDesc GetStateRenderDesc(FState& State)
 			{
 				ImGui::Text("Style: %d", (int)P.Style);
 				ImGui::Checkbox("Use Cover", &P.bUseCover);
-				ImGui::SetNextItemWidth(150.f);
+				ImGui::SetNextItemWidth(NodeItemWidth);
 				ImGui::SliderFloat("Aggression", &P.AggressionRadius, 0.0f, 100.0f);
 
 				DrawCustomVars(&P);
@@ -99,7 +101,7 @@ FNodeRenderDesc GetStateRenderDesc(FState& State)
 			{
 				ImGui::Text("Anim: %s", P.AnimationName.c_str());
 				ImGui::Checkbox("Loop", &P.bLoopAnimation);
-				ImGui::SetNextItemWidth(150.f);
+				ImGui::SetNextItemWidth(NodeItemWidth);
 				ImGui::SliderFloat("Blend In", &P.BlendInTime, 0.0f, 1.0f);
 
 				DrawCustomVars(&P);
@@ -131,15 +133,15 @@ FNodeRenderDesc GetStateRenderDesc(FState& State)
 		Desc.DrawBody = [&P](const FState&)
 			{
 				ImGui::TextUnformatted("Run Speed");
-				ImGui::SetNextItemWidth(258);
+				ImGui::SetNextItemWidth(NodeItemWidth);
 				ImGui::InputFloat("##RunSpeed", &P.RunSpeed);
 
 				ImGui::TextUnformatted("Ignore Distance");
-				ImGui::SetNextItemWidth(258);
+				ImGui::SetNextItemWidth(NodeItemWidth);
 				ImGui::InputFloat("##IgnoreDistance", &P.IgnoreDistance);
 
 				ImGui::TextUnformatted("Panic Timeout");
-				ImGui::SetNextItemWidth(258);
+				ImGui::SetNextItemWidth(NodeItemWidth);
 				ImGui::InputInt("##PanicTimeoutMs", &P.PanicTimeoutMs);
 
 				ImGui::TextUnformatted("Run Away");

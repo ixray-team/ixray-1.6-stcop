@@ -39,6 +39,7 @@ public:
 
 private:
     void RenderContextMenu();
+    void BuildNodesLayout();
     void BuildLinksFromTransitions();
     void HandleConnections();
 
