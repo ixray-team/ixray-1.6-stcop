@@ -270,6 +270,7 @@ private:
 	u32 Size;
 	Style Style;
 	FT_Face OurFont;
+	FT_Face GamepadFont = nullptr;
 
 	xr_map<int, Glyph> GlyphData;
 
