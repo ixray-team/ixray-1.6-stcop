@@ -201,7 +201,10 @@ void CDetailManager::hw_Render(light*L)
 		RCache.set_c(&*hwc_consts, scale, scale, ps_r__Detail_l_aniso, ps_r__Detail_l_ambient);				// consts
 		RCache.set_c(&*hwc_wave, wave.div(PI_MUL_2));	// wave
 		RCache.set_c(&*hwc_wind, wave_dir1);																					// wind-dir
-		hw_Render_dump(&*hwc_array, 1, 0, L);
+		if (CPU::ID().hasFeature(CPUFeature::AVX))
+			hw_Render_dump<__m256>(&*hwc_array, 1, 0, L);
+		else
+			hw_Render_dump<CDetail::SlotItem>(&*hwc_array, 1, 0, L);
 	}
 
 	// Wave1
@@ -210,7 +213,10 @@ void CDetailManager::hw_Render(light*L)
 		wave.set(1.f / 3.f, 1.f / 7.f, 1.f / 5.f, m_time_pos);
 		RCache.set_c(&*hwc_wave, wave.div(PI_MUL_2));	// wave
 		RCache.set_c(&*hwc_wind, wave_dir2);																					// wind-dir
-		hw_Render_dump(&*hwc_array, 2, 0, L);
+		if (CPU::ID().hasFeature(CPUFeature::AVX))
+			hw_Render_dump<__m256>(&*hwc_array, 2, 0, L);
+		else
+			hw_Render_dump<CDetail::SlotItem>(&*hwc_array, 2, 0, L);
 	}
 
 	// Still
@@ -218,21 +224,17 @@ void CDetailManager::hw_Render(light*L)
 		PROF_EVENT("Still")
 		RCache.set_c(&*hwc_s_consts, scale, scale, scale, 1.f);
 		RCache.set_c(&*hwc_s_xform, RDEVICE.mFullTransform);
-		hw_Render_dump(&*hwc_s_array, 0, 1, L);
+		if (CPU::ID().hasFeature(CPUFeature::AVX))
+			hw_Render_dump<__m256>(&*hwc_s_array, 0, 1, L);
+		else
+			hw_Render_dump<CDetail::SlotItem>(&*hwc_s_array, 0, 1, L);
 	}
 
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 }
 
-struct InstanceData
-{
-	Fvector hpb;
-	float scale;
-	Fvector pos;
-	float hemi;
-};
-
-void	CDetailManager::hw_Render_dump		(ref_constant x_array, u32 var_id, u32 lod_id, light*L)
+template<typename T>
+void CDetailManager::hw_Render_dump(ref_constant x_array, u32 var_id, u32 lod_id, light*L)
 {
 #if RENDER==R_R2
 	bool phase_shmap = RImplementation.phase == CRender::PHASE_SMAP;
@@ -261,14 +263,12 @@ void	CDetailManager::hw_Render_dump		(ref_constant x_array, u32 var_id, u32 lod_
 		RCache.set_Element(Object.shader->E[lod_id]);
 		RImplementation.apply_lmaterial();
 		u32 c_base = x_array->vs.index;
-		InstanceData* c_storage = (InstanceData*)RCache.get_ConstantCache_Vertex().get_array_f().access(c_base);
+		T* c_storage = (T*)RCache.get_ConstantCache_Vertex().get_array_f().access(c_base);
 
 		u32 dwBatch	= 0;
 
-		for (auto& S : Object.m_items[var_id][render_key])
+		for (CDetail::SlotItem& Instance : Object.m_items[var_id][render_key])
 		{
-			CDetail::SlotItem& Instance = *S.get();
-
 #ifndef _EDITOR
 			if (!in_outdoor)
 				continue;
@@ -282,7 +282,7 @@ void	CDetailManager::hw_Render_dump		(ref_constant x_array, u32 var_id, u32 lod_
 #endif
 
 #endif  
-			c_storage[dwBatch] = {Instance.hpb, Instance.scale_calculated, Instance.pos, Instance.c_hemi};
+			c_storage[dwBatch] = reinterpret_cast<T&>(Instance);
 			dwBatch++;
 
 			if (dwBatch >= hw_BatchSize)
