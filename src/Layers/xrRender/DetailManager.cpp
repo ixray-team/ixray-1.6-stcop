@@ -56,8 +56,6 @@ CDetailManager::CDetailManager()
 	m_global_time_old = 0;
 	render_key = 0;
 	calc_key = 1;
-
-	cache_Alloc();
 }
 
 void CDetailManager::cache_Alloc()
@@ -77,10 +75,13 @@ void CDetailManager::cache_Alloc()
 void CDetailManager::cache_Free()
 {
 	cache_pool.clear();
+	cache_pool.shrink_to_fit();
 	cache.clear();
+	cache.shrink_to_fit();
 	cache_level1.clear();
+	cache_level1.shrink_to_fit();
 	cache_task.clear();
-
+	cache_task.shrink_to_fit();
 #ifndef _EDITOR 
 	for (CDetail& Objectl : objects)
 	{
@@ -91,7 +92,10 @@ void CDetailManager::cache_Free()
 #endif
 		for (u32 i = 0; i < 3; ++i)
 			for (u32 j = 0; j < 2; ++j)
+			{
 				Objectl.m_items[i][j].clear();
+				Objectl.m_items[i][j].shrink_to_fit();
+			}
 	}
 }
 
@@ -136,7 +140,7 @@ void CDetailManager::Load()
 	m_slots->close		();
 
 	// Initialize 'vis' and 'cache'
-	cache_Initialize	();
+	cache_Initialize();
 
 	// Hardware specific optimizations
 	hw_Load();
@@ -161,6 +165,11 @@ void CDetailManager::Unload		()
 	Device.details_task.wait();
 	hw_Unload();
 
+#ifndef _EDITOR
+	for (CDetail& dt : objects)
+		dt.Unload();
+#endif
+
 	objects.clear();
 
 	FS.r_close(dtFS);
@@ -178,111 +187,6 @@ void CDetailManager::Unload		()
 }
 
 extern ECORE_API float r_ssaDISCARD;
-
-void CDetailManager::UpdateVisibleM()
-{
-	PROF_EVENT("CDetailManager");
-	Fvector		EYE				= RDEVICE.vCameraPosition_saved;
-	cache_Update(EYE);
-
-	PROF_EVENT("UpdateVisibleM");
-	CFrustum	View;
-	View.CreateFromMatrix		(RDEVICE.mFullTransform_saved, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
-	
-	float fade_limit			= dm_fade;	fade_limit=fade_limit*fade_limit;
-	float fade_start			= 1.f;		fade_start=fade_start*fade_start;
-	float fade_range			= fade_limit-fade_start;
- 	float r_ssaCHEAP			= 16*r_ssaDISCARD;
-
-#ifndef _EDITOR 
-	for (CDetail& Objectl : objects)
-	{
-#else
-	for (CDetail* D : objects)
-	{
-		CDetail& Objectl = *D;
-#endif
-		for (u32 i = 0; i < 3; ++i)
-			Objectl.m_items[i][calc_key].clear();
-	}
-
-	// Initialize 'vis' and 'cache'
-	// Collect objects for rendering
-	u32 max_index = dm_cache1_line*dm_cache1_line;
-	for (u32 index = 0; index < max_index; index++)
-	{
-	    u32 _mz = index / dm_cache1_line;
-	    u32 _mx = index % dm_cache1_line;
-		CacheSlot1& MS = cache_level1[_mz][_mx];
-		if (MS.empty)
-			continue;
-
-		u32 mask = 0xff;
-		u32 res = View.testSAABB(MS.vis.sphere.P, MS.vis.sphere.R, MS.vis.box.data(), mask);
-		if (fcvNone==res)
-			continue;	// invisible-view frustum
-
-		// test slots
-		for (u32 _i=0; _i < dm_cache_count ; _i++)
-		{
-			Slot& S = **MS.slots[_i];
-
-			// if slot empty - continue
-			if (S.empty)
-				continue;
-
-			// if upper test = fcvPartial - test inner slots
-			if (fcvPartial==res)
-			{
-				u32 _mask	= mask;
-				u32 _res = View.testSAABB(S.vis.sphere.P, S.vis.sphere.R, S.vis.box.data(), _mask);
-				if (fcvNone==_res)
-					continue;	// invisible-view frustum
-			}
-#ifndef _EDITOR
-			if (!RImplementation.HOM.visible(S.vis))
-				continue;	// invisible-occlusion
-#endif
-			// Add to visibility structures
-			// Calc fade factor	(per slot)
-			float dist_sq = EYE.distance_to_sqr(S.vis.sphere.P);
-			if (dist_sq>fade_limit) continue;
-			float alpha = (dist_sq<fade_start)?0.f:(dist_sq-fade_start)/fade_range;
-			float alpha_i = 1.f - alpha;
-			float dist_sq_rcp = 1.f / dist_sq;
-
-			for (int sp_id=0; sp_id<dm_obj_in_slot; sp_id++)
-			{
-				SlotPart& sp = S.G[sp_id];
-				if (sp.id==DetailSlot::ID_Empty) continue;
-#ifndef _EDITOR 
-				CDetail& D = objects[sp.id];
-#else
-				CDetail& D = *objects[sp.id];
-#endif
-				float R = D.bv_sphere.R;
-				float Rq_drcp = R*R*dist_sq_rcp;	// reordered expression for 'ssa' calc
-				auto& ditems = D.m_items;
-				auto& items = sp.items;
-				for (auto& SItem : items)
-				{
-					CDetail::SlotItem& Item  = *SItem;
-					float scale = Item.scale_calculated = Item.scale*alpha_i;
-					float ssa = scale*scale*Rq_drcp;
-
-					if (ssa < r_ssaDISCARD)
-						continue;
-
-					u32 vis_id = 0;
-					if (ssa > r_ssaCHEAP)
-						vis_id = Item.vis_ID;
-					ditems[vis_id][calc_key].push_back(SItem);
-				}
-			}
-		}
-	}
-}
-
 void CDetailManager::Render()
 {
 	PROF_EVENT("Render details");
@@ -291,21 +195,110 @@ void CDetailManager::Render()
 	if (!psDeviceFlags.is(rsDetails))	return;
 	if (!hw_BatchSize)	return;
 	bool in_outdoor = RImplementation.SectorsCount() <= 1 || (RImplementation.pOutdoorSector && PortalTraverser.i_marker == RImplementation.pOutdoorSector->r_marker);
-	if(in_outdoor)
+	if(in_outdoor && task_finished.load())
+#else
+	if (task_finished.load())
 #endif
 	{
-		Device.details_task.wait();
+		task_finished.store(false);
 		std::swap(render_key, calc_key);
+		Fvector cam_pos = RDEVICE.vCameraPosition;
+		CFrustum View;
+		View.CreateFromMatrix(RDEVICE.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
+		float fog_dist = g_pGamePersistent->pEnvironment->CurrentEnv->fog_distance;
 		Device.details_task.run
 		(
-			[this]()
+			[=]()
 			{
 #ifndef _EDITOR
 				if (0 == dtFS)						return;
 				if (!psDeviceFlags.is(rsDetails))	return;
 #endif
 				PROF_START_THREAD("Details async");
-				UpdateVisibleM();
+				Fvector EYE = cam_pos;
+				cache_Update(EYE);
+
+				PROF_EVENT("UpdateVisible");
+				float fade_limit = std::min(dm_fade, fog_dist);	fade_limit = fade_limit * fade_limit;
+				float fade_start = 1.f; fade_start = fade_start * fade_start;
+				float fade_range = fade_limit - fade_start;
+				float r_ssaCHEAP = 16 * r_ssaDISCARD;
+
+#ifndef _EDITOR 
+				for (CDetail& Objectl : objects)
+				{
+#else
+				for (CDetail* D : objects)
+				{
+					CDetail& Objectl = *D;
+#endif
+					for (u32 i = 0; i < 3; ++i)
+						Objectl.m_items[i][calc_key].clear();
+				}
+
+				// Initialize 'vis' and 'cache'
+				// Collect objects for rendering
+				u32 max_index = dm_cache1_line * dm_cache1_line;
+				for (u32 index = 0; index < max_index; index++)
+				{
+					u32 _mz = index / dm_cache1_line;
+					u32 _mx = index % dm_cache1_line;
+					CacheSlot1& MS = cache_level1[_mz][_mx];
+					if (MS.empty)
+						continue;
+
+					u32 mask = 0xff;
+					u32 res = View.testSAABB(MS.vis.sphere.P, MS.vis.sphere.R, MS.vis.box.data(), mask);
+					if (fcvNone == res)
+						continue;	// invisible-view frustum
+
+					// test slots
+					for (u32 _i = 0; _i < dm_cache_count; _i++)
+					{
+						Slot& S = **MS.slots[_i];
+
+						// if slot empty - continue
+						if (S.empty)
+							continue;
+
+						// if upper test = fcvPartial - test inner slots
+						if (fcvPartial == res)
+						{
+							u32 _mask = mask;
+							u32 _res = View.testSAABB(S.vis.sphere.P, S.vis.sphere.R, S.vis.box.data(), _mask);
+							if (fcvNone == _res)
+								continue;	// invisible-view frustum
+						}
+#ifndef _EDITOR
+						if (!RImplementation.HOM.visible(S.vis))
+							continue;	// invisible-occlusion
+#endif
+						// Add to visibility structures
+						// Calc fade factor	(per slot)
+						float dist_sq = EYE.distance_to_sqr(S.vis.sphere.P);
+						if (dist_sq > fade_limit) continue;
+						for (int sp_id = 0; sp_id < dm_obj_in_slot; sp_id++)
+						{
+							SlotPart& sp = S.G[sp_id];
+							if (sp.id == DetailSlot::ID_Empty) continue;
+#ifndef _EDITOR 
+							CDetail& D = objects[sp.id];
+#else
+							CDetail& D = *objects[sp.id];
+#endif
+							auto& ditems = D.m_items;
+							auto& items = sp.items;
+							for (u32 i = 0; i < 3; ++i)
+							{
+								for (CDetail::SlotItem& Item : items[i])
+								{
+									ditems[i][calc_key].push_back(Item);
+								}
+							}
+						}
+					}
+				}
+				task_finished.store(true);
 				PROF_STOP_THREAD();
 			}
 		);
