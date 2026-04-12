@@ -10,7 +10,7 @@ static int magic4x4[4][4] =
 	{ 7,  9,  4, 10}
 };
 
-void bwdithermap	(int levels, int magic[16][16])
+ICF void bwdithermap	(int levels, int magic[16][16])
 {
 	/* Get size of each step */
     float N = 255.0f / (levels - 1);
@@ -36,9 +36,13 @@ void bwdithermap	(int levels, int magic[16][16])
 }
 //--------------------------------------------------- Decompression
 
-void CDetailManager::cache_Initialize	()
+void CDetailManager::cache_Initialize()
 {
 	// Centroid
+	cache_Free();
+	cache_Alloc();
+
+	bwdithermap(2, dither);
 	cache_cx			= 0;
 	cache_cz			= 0;
 
@@ -68,11 +72,6 @@ void CDetailManager::cache_Initialize	()
 			MS.slots[_z * dm_cache1_count + _x] = &cache[_mz * dm_cache1_count + _z][_mx * dm_cache1_count + _x];
 		}
     }
-
-	// Make dither matrix
-	bwdithermap		(2,dither);
-
-	cache_cx = cache_cz = dm_cache_line*2;
 }
 
 CDetailManager::Slot*	CDetailManager::cache_Query	(int r_x, int r_z)
@@ -106,21 +105,15 @@ void 	CDetailManager::cache_Task		(int gx, int gz, Slot* D, bool init)
 	for (u32 i=0; i<dm_obj_in_slot; i++)
 	{
 		D->G[i].id = DS.r_id(i);
-		D->G[i].items.clear	();
+		D->G[i].items[0].clear();
+		D->G[i].items[1].clear();
+		D->G[i].items[2].clear();
 	}
 
 	if (old_type != stPending)
 	{
 		VERIFY		(stPending == D->type);
-		if (ps_r2_ls_flags.test(R2FLAG_FAST_DETAILS_UPDATE))
-		{
-			if(!init)
-				cache_Decompress(D);
-			else
-				D->type = stReady;
-		}
-		else
-			cache_task.push_back(D);
+		cache_task.push_back(D);
 	}
 }
 
@@ -249,6 +242,12 @@ void	CDetailManager::cache_Update(Fvector& view)
 				cache_Decompress(cache_task[best_id]);
 				cache_task.erase(cache_task.begin() + best_id);
 			}
+		}
+		else
+		{
+			for(Slot* S : cache_task)
+				cache_Decompress(S);
+			cache_task.clear();
 		}
 	}
 

@@ -46,7 +46,7 @@ public:
 	struct	SlotPart
 	{                              	// 
 		u32							id;					// ID модельки
-		xr_vector<xr_shared_ptr<CDetail::SlotItem>>			items;              // список кустиков
+		xr_vector<CDetail::SlotItem> items[3];              // список кустиков
 	};
 	enum	SlotType	{
 		stReady						= 0,				// Ready to use
@@ -59,13 +59,12 @@ public:
 		struct{
 			u32						empty	:1;
 			u32						type	:1;
-			u32						frame	:30;
 		};
 		int							sx,sz;				// координаты слота X x Y
 		vis_data					vis;				// 
 		SlotPart					G[dm_obj_in_slot];	// 
 
-									Slot()				{ frame=0;empty=1; type=stReady; sx=sz=0; vis.clear(); }
+									Slot()				{ empty=1; type=stReady; sx=sz=0; vis.clear(); }
 	};
     struct 	CacheSlot1
 	{
@@ -100,7 +99,7 @@ public:
 	DetailSlot*						dtSlots;		// note: pointer into VFS
 	DetailSlot						DS_empty;
 
-
+	xr_atomic_bool					task_finished = true;
 	int								render_key, calc_key;
 #ifndef _EDITOR    
 	using DetailIt = xr_vector<CDetail>::iterator;
@@ -148,9 +147,10 @@ public:
 
 #ifdef USE_DX11
 	xr_map<u32, std::pair<IRHIBuffer*, IRHIShaderResourceView*>> DetailInstanceBuffers;
-
+	template<typename T>
 	void							hw_Render_dump	(const Fvector4 &consts, const Fvector4 &wave, const Fvector4 &wind, const Fvector4& wave_old, const Fvector4& wind_old, u32 var_id, u32 lod_id, light*L=NULL);
 #else //USE_DX11
+	template<typename T>
 	void							hw_Render_dump	(ref_constant array, u32 var_id, u32 lod_id, light*L=NULL);
 #endif
 
