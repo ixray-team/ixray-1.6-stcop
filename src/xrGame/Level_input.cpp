@@ -241,6 +241,12 @@ void CLevel::IR_OnKeyboardPress	(int key)
 		}
 	}break;
 	};
+	if (key == SDL_SCANCODE_KP_0)
+	{
+		Msg("* Reloading fonts...");
+		g_FontManager->OnDeviceReset();
+		return;
+	}
 
 	if ( !bReady || !b_ui_exist )			return;
 
@@ -352,7 +358,6 @@ void CLevel::IR_OnKeyboardPress	(int key)
 			}
 		}
 		break;
-
 #ifdef DEBUG_DRAW
 	case SDL_SCANCODE_RETURN:
 	{
