@@ -12,15 +12,6 @@ struct FPinDesc
 	FTransition* Transition;
 };
 
-ImColor GetNodeColor(const xr_string& type)
-{
-	if (type == "walker") return ImColor(60, 180, 75); 
-	if (type == "combat") return ImColor(220, 50, 50); 
-	if (type == "trader") return ImColor(70, 120, 220);
-	if (type == "anim")   return ImColor(160, 90, 220);
-	return ImColor(100, 100, 100);
-}
-
 FNodeEditor::FNodeEditor()
 {
 	Initialize();
@@ -106,6 +97,7 @@ void FNodeEditor::RenderNode(FState& State)
 
 	ed::BeginNode(MakeNodeId(State));
 
+	ImGui::PushID(State.StateName.c_str());
 	ImVec2 pos = ImGui::GetCursorScreenPos();
 
 	// HEADER
@@ -159,6 +151,8 @@ void FNodeEditor::RenderNode(FState& State)
 
 		ed::EndPin();
 	}
+
+	ImGui::PopID();
 
 	ed::EndNode();
 }
@@ -264,7 +258,7 @@ void FNodeEditor::BuildLinksFromTransitions()
 		xr_vector<xr_string> InputPinNames;
 		xr_vector<xr_string> OutputPinNames;
 	};
-	std::unordered_map<xr_string, FNodePinInfo> stateInfo;
+	xr_hash_map<xr_string, FNodePinInfo> stateInfo;
 
 	for (auto& [key, state] : m_Nodes)
 	{
@@ -300,24 +294,28 @@ void FNodeEditor::BuildLinksFromTransitions()
 				continue;
 			}
 
-			xr_string outputPinName = sourceInfo.OutputPinNames.empty() ? "Out" : sourceInfo.OutputPinNames[0];
+			int inputCount = (int)sourceInfo.InputPinNames.size();
 
-			int outputPinIdx = 0;
-			for (size_t i = 0; i < sourceInfo.OutputPinNames.size(); ++i)
+			int transitionIndex = 0;
+			for (size_t i = 0; i < sourceState.Transitions.size(); ++i)
 			{
-				if (sourceInfo.OutputPinNames[i] == outputPinName)
+				if (&sourceState.Transitions[i] == &tr)
 				{
-					outputPinIdx = (int)sourceInfo.InputPinNames.size() + (int)i;
+					transitionIndex = (int)i;
 					break;
 				}
 			}
+
+			int outputPinIdx = inputCount + transitionIndex;
 
 			xr_string inputPinName = targetIt->second.InputPinNames[0];
 			int inputPinIdx = 0;
 
 			xr_string pinNameForOutput = tr.DebugName;
 			if (!tr.TargetState.empty())
+			{
 				pinNameForOutput += " → " + tr.TargetState;
+			}
 
 			ed::PinId startPinId = MakePinId(sourceState.StateName, pinNameForOutput, outputPinIdx);
 			ed::PinId endPinId = MakePinId(tr.TargetState, inputPinName, inputPinIdx);

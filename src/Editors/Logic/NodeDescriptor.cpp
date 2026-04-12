@@ -1,6 +1,24 @@
 #include "../../xrCore/stdafx.h"
 #include "NodeEditor.h"
 
+void DrawCustomVars(FBaseParams* Params)
+{
+	for (auto& Var : Params->CustomVariables)
+	{
+		ImGui::PushID(Var.first.c_str());
+		ImGui::TextUnformatted(Var.first.c_str());
+
+		string256 Str;
+		strcpy(Str, Var.second.c_str());
+		ImGui::SetNextItemWidth(230);
+		if (ImGui::InputText("##customvar", Str, std::size(Str)))
+		{
+			Var.second = Str;
+		}
+		ImGui::PopID();
+	}
+}
+
 FNodeRenderDesc GetStateRenderDesc(FState& State)
 {
 	FNodeRenderDesc Desc;
@@ -25,20 +43,7 @@ FNodeRenderDesc GetStateRenderDesc(FState& State)
 				ImGui::SliderFloat("Speed", &P.WalkSpeed, 0.0f, 3.0f);
 				ImGui::Checkbox("Combat Ignore", &P.bCombatIgnore);
 
-				for (auto& Var : P.CustomVariables)
-				{
-					ImGui::PushID(Var.first.c_str());
-					ImGui::TextUnformatted(Var.first.c_str());
-
-					string256 Str;
-					strcpy(Str, Var.second.c_str());
-					ImGui::SetNextItemWidth(180);
-					if (ImGui::InputText("##customvar", Str, std::size(Str)))
-					{
-						Var.second = Str;
-					}
-					ImGui::PopID();
-				}
+				DrawCustomVars(&P);
 			};
 	} break;
 
@@ -58,20 +63,7 @@ FNodeRenderDesc GetStateRenderDesc(FState& State)
 				ImGui::SetNextItemWidth(150.f);
 				ImGui::SliderFloat("Aggression", &P.AggressionRadius, 0.0f, 100.0f);
 
-				for (auto& Var : P.CustomVariables)
-				{
-					ImGui::PushID(Var.first.c_str());
-					ImGui::TextUnformatted(Var.first.c_str());
-
-					string256 Str;
-					strcpy(Str, Var.second.c_str());
-					ImGui::SetNextItemWidth(180);
-					if (ImGui::InputText("##customvar", Str, std::size(Str)))
-					{
-						Var.second = Str;
-					}
-					ImGui::PopID();
-				}
+				DrawCustomVars(&P);
 			};
 	} break;
 
@@ -90,20 +82,7 @@ FNodeRenderDesc GetStateRenderDesc(FState& State)
 				ImGui::Checkbox("Buy", &P.bBuyItems);
 				ImGui::Checkbox("Sell", &P.bSellItems);
 
-				for (auto& Var : P.CustomVariables)
-				{
-					ImGui::PushID(Var.first.c_str());
-					ImGui::TextUnformatted(Var.first.c_str());
-
-					string256 Str;
-					strcpy(Str, Var.second.c_str());
-					ImGui::SetNextItemWidth(180);
-					if (ImGui::InputText("##customvar", Str, std::size(Str)))
-					{
-						Var.second = Str;
-					}
-					ImGui::PopID();
-				}
+				DrawCustomVars(&P);
 			};
 	} break;
 
@@ -123,20 +102,7 @@ FNodeRenderDesc GetStateRenderDesc(FState& State)
 				ImGui::SetNextItemWidth(150.f);
 				ImGui::SliderFloat("Blend In", &P.BlendInTime, 0.0f, 1.0f);
 
-				for (auto& Var : P.CustomVariables)
-				{
-					ImGui::PushID(Var.first.c_str());
-					ImGui::TextUnformatted(Var.first.c_str());
-
-					string256 Str;
-					strcpy(Str, Var.second.c_str());
-					ImGui::SetNextItemWidth(180);
-					if (ImGui::InputText("##customvar", Str, std::size(Str)))
-					{
-						Var.second = Str;
-					}
-					ImGui::PopID();
-				}
+				DrawCustomVars(&P);
 			};
 	} break;
 
@@ -150,20 +116,7 @@ FNodeRenderDesc GetStateRenderDesc(FState& State)
 
 		Desc.DrawBody = [&P](const FState&)
 			{
-				for (auto& Var : P.CustomVariables)
-				{
-					ImGui::PushID(Var.first.c_str());
-					ImGui::TextUnformatted(Var.first.c_str());
-
-					string256 Str;
-					strcpy(Str, Var.second.c_str());
-					ImGui::SetNextItemWidth(180);
-					if (ImGui::InputText("##customvar", Str, std::size(Str)))
-					{
-						Var.second = Str;
-					}
-					ImGui::PopID();
-				}
+				DrawCustomVars(&P);
 			};
 		break;
 	}
@@ -192,20 +145,7 @@ FNodeRenderDesc GetStateRenderDesc(FState& State)
 				ImGui::TextUnformatted("Run Away");
 				ImGui::Checkbox("##bRunAway", &P.bRunAway);
 
-				for (auto& Var : P.CustomVariables)
-				{
-					ImGui::PushID(Var.first.c_str());
-					ImGui::TextUnformatted(Var.first.c_str());
-
-					string256 Str;
-					strcpy(Str, Var.second.c_str());
-					ImGui::SetNextItemWidth(180);
-					if (ImGui::InputText("##customvar", Str, std::size(Str)))
-					{
-						Var.second = Str;
-					}
-					ImGui::PopID();
-				}
+				DrawCustomVars(&P);
 			};
 		break;
 	}
@@ -219,20 +159,7 @@ FNodeRenderDesc GetStateRenderDesc(FState& State)
 
 		Desc.DrawBody = [&P](const FState&)
 			{
-				for (auto& Var : P.CustomVariables)
-				{
-					ImGui::PushID(Var.first.c_str());
-					ImGui::TextUnformatted(Var.first.c_str());
-
-					string256 Str;
-					strcpy(Str, Var.second.c_str());
-					ImGui::SetNextItemWidth(180);
-					if (ImGui::InputText("##customvar", Str, std::size(Str)))
-					{
-						Var.second = Str;
-					}
-					ImGui::PopID();
-				}
+				DrawCustomVars(&P);
 			};
 	} break;
 	}
