@@ -38,6 +38,10 @@ if(WIN32)
     include("${CMAKE_MODULE_PATHEX}/WindowsSDK.cmake")
 endif()
 
+if (IXRAY_EDITORS)
+    include("${CMAKE_MODULE_PATHEX}/ImGuiNodeEditor.cmake")
+endif()
+
 # Headers only libraries
 include("${CMAKE_MODULE_PATHEX}/FastDynamicCast.cmake")
 include("${CMAKE_MODULE_PATHEX}/magic_enum.cmake")

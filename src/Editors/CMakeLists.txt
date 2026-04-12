@@ -16,6 +16,7 @@ if (IXRAY_EDITORS)
     add_subdirectory("ActorEditor")
     add_subdirectory("ShaderEditor")
     add_subdirectory("LevelEditor")
+    add_subdirectory("Logic")
 endif()
 
 # Groups
