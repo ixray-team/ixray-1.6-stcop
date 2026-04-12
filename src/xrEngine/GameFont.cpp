@@ -72,6 +72,10 @@ CGameFont::~CGameFont()
 {
 	// Shading
 	FT_Done_Face(OurFont);
+	if (GamepadFont)
+	{
+		FT_Done_Face(GamepadFont);
+	}
 
 	RenderFactory->DestroyFontRender(pFontRender);
 	pFontRender = nullptr;
@@ -140,6 +144,8 @@ bool GetDisplayMetricsSDL3(float& width_mm, float& height_mm, float& width_px, f
 	return true;
 }
 
+#define GAMEPAD_GLYPH_START 57344
+#define GAMEPAD_GLYPH_END 57535
 void CGameFont::Initialize2(const char* name, const char* shader, const char* style, u32 size)
 {
 	FontBitmap.resize(TextureDimension * TextureDimension);
@@ -244,8 +250,6 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 	req.horiResolution = 0;
 	req.vertResolution = 0;
 	FT_Request_Size(OurFont, &req);
-	FT_Face GamepadFont = nullptr;
-
 	{
 		string_path gpPath;
 		xr_string gpName = CStringTable::LangName() + "\\gamepad.ttf";
@@ -268,7 +272,6 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 			else
 			{
 				Msg("! Failed to load gamepad.ttf: file is invalid");
-				GamepadFont = nullptr;
 			}
 
 			FS.r_close(gpFile);
@@ -456,7 +459,7 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 
 	if (GamepadFont)
 	{
-		for (u32 g = 57344; g <= 57535; ++g)
+		for (u32 g = GAMEPAD_GLYPH_START; g <= GAMEPAD_GLYPH_END; ++g)
 		{
 			LoadGlyphGamepad(g);
 		}
