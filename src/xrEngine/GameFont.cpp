@@ -72,10 +72,6 @@ CGameFont::~CGameFont()
 {
 	// Shading
 	FT_Done_Face(OurFont);
-	if (GamepadFont)
-	{
-		FT_Done_Face(GamepadFont);
-	}
 
 	RenderFactory->DestroyFontRender(pFontRender);
 	pFontRender = nullptr;
@@ -250,37 +246,6 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 	req.horiResolution = 0;
 	req.vertResolution = 0;
 	FT_Request_Size(OurFont, &req);
-	{
-		string_path gpPath;
-		xr_string gpName = CStringTable::LangName() + "\\gamepad.ttf";
-		FS.update_path(gpPath, _game_fonts_, gpName.c_str());
-
-		if (IReader* gpFile = FS.r_open(gpPath))
-		{
-			FT_Error err = FT_New_Memory_Face(
-				FreetypeLib,
-				(FT_Byte*)gpFile->pointer(),
-				gpFile->length(),
-				0,
-				&GamepadFont
-			);
-
-			if (err == 0)
-			{
-				FT_Request_Size(GamepadFont, &req); // тот же размер
-			}
-			else
-			{
-				Msg("! Failed to load gamepad.ttf: file is invalid");
-			}
-
-			FS.r_close(gpFile);
-		}
-		else
-		{
-			Msg("! Failed to load gamepad.ttf: file not found");
-		}
-	}
 #define FT_CEIL(X)  (((X + 63) & -64) / 64)
 
 	float FontSizeInPixels = (float)(OurFont->size->metrics.ascender - OurFont->size->metrics.descender) / 64.0f;
@@ -360,48 +325,6 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 
 	//const char* Format = FT_Get_Font_Format(OurFont);
 	u32 index = 0;
-	auto LoadGlyphGamepad = [&](FT_UInt glyphID)
-		{
-			FT_UInt charIndex = FT_Get_Char_Index(GamepadFont, glyphID);
-
-			if (charIndex == 0 && glyphID != 0)
-			{
-				return;
-			}
-
-			FT_Error err = FT_Load_Glyph(
-				GamepadFont,
-				charIndex,
-				FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL
-			);
-			R_ASSERT2(err == 0, make_string<const char*>("FT_Load_Glyph failed %u %u", charIndex, glyphID));
-
-			FT_GlyphSlot Glyph = GamepadFont->glyph;
-			FT_Glyph_Metrics& GlyphMetrics = Glyph->metrics;
-
-			CopyGlyphImageToAtlas(Glyph->bitmap);
-
-			RECT region;
-			region.left = TargetX;
-			region.right = TargetX + Glyph->bitmap.width;
-			region.top = TargetY;
-			region.bottom = long(TargetY + FontSizeInPixels);
-
-			ABC widths;
-			widths.abcA = FT_CEIL(GlyphMetrics.horiBearingX);
-			widths.abcB = Glyph->bitmap.width;
-			widths.abcC = FT_CEIL(GlyphMetrics.horiAdvance) - widths.abcB - widths.abcA;
-
-			int GlyphTopScanlineOffset = int(FontSizeInPixels - Glyph->bitmap.rows);
-			int yOffset = -Glyph->bitmap_top - GlyphTopScanlineOffset;
-			yOffset += (int)FontSizeInPixels;
-			yOffset -= (int)(FontSizeInPixels / 4);
-
-			GlyphData[glyphID] = { region, widths, yOffset };
-
-			TargetX = TargetX2;
-			TargetX += 4;
-		};
 	auto LoadGlyph = [&](FT_UInt glyphID)
 	{
 		u32 TrueGlyph = glyphID;
@@ -455,14 +378,6 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 	{
 		LoadGlyph(glyphID);
 		glyphID = FT_Get_Next_Char(OurFont, glyphID, &index);
-	}
-
-	if (GamepadFont)
-	{
-		for (u32 g = GAMEPAD_GLYPH_START; g <= GAMEPAD_GLYPH_END; ++g)
-		{
-			LoadGlyphGamepad(g);
-		}
 	}
 
 	fCurrentHeight = FontSizeInPixels;
