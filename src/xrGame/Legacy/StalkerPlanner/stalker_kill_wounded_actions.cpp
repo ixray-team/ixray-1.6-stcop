@@ -11,6 +11,7 @@
 #include "stalker_kill_wounded_actions.h"
 #include "ai/stalker/ai_stalker.h"
 #include "Inventory.h"
+#include "InventoryWeaponSlotLayout.h"
 #include "WeaponMagazined.h"
 #include "stalker_movement_manager_smart_cover.h"
 #include "movement_manager_space.h"
@@ -39,7 +40,7 @@ using namespace StalkerDecisionSpace;
 
 CInventoryItem *weapon_to_kill(const CAI_Stalker *object)
 {
-	if (!object->inventory().ItemFromSlot(INV_SLOT_2) && !object->inventory().ItemFromSlot(PISTOL_SLOT_NEW))
+	if (!InventoryAnySidearmCellOccupied(object->inventory()))
 		return			(object->best_weapon());
 
 	PIItem item_from_slot = object->inventory().ItemFromSlot(INV_SLOT_2);

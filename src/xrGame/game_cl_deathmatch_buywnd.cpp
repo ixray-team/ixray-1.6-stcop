@@ -3,6 +3,7 @@
 #include "Level.h"
 #include "Actor.h"
 #include "Inventory.h"
+#include "InventoryWeaponSlotLayout.h"
 #include "xrServer_Objects_ALife_Items.h"
 #include "Weapon.h"
 #include "WeaponMagazinedWGrenade.h"
@@ -288,7 +289,7 @@ void game_cl_Deathmatch::CheckItem			(PIItem pItem, PRESET_ITEMS* pPresetItems, 
 		if (PresetItemIt == pPresetItems->end()) return;
 	}
 
-	if (SlotID == INV_SLOT_2 || SlotID == PISTOL_SLOT_NEW)
+	if (IsSidearmPhysicalSlot(SlotID))
 	{
 		PRESET_ITEMS_it DefPistolIt = std::find(PlayerDefItems.begin(), PlayerDefItems.end(), BigID);
 		if (DefPistolIt != PlayerDefItems.end() && PresetItemIt == pPresetItems->end()) return;

@@ -9,6 +9,7 @@
 #include "../xrEngine/xr_input.h"
 #include "ClimableObject.h"
 #include "Inventory.h"
+#include "InventoryWeaponSlotLayout.h"
 #include "attachment_owner.h"
 #include "InventoryOwner.h"
 #include "PHMovementControl.h"
@@ -3387,7 +3388,7 @@ void LevelInspector::DrawObjects()
 								DrawSkeleton(lWeapon->object().Visual()->dcast_PKinematics(), lWeapon->object().XFORM(), &lWeapon->object());
 
 							auto lWeapon2 = IO->inventory().ItemFromSlot(PISTOL_SLOT_NEW);
-							bool lValid2 = lWeapon2 ? lWeapon2->BaseSlot() == INV_SLOT_3 : false;
+							bool lValid2 = lWeapon2 ? IsSidearmPhysicalSlot(lWeapon2->BaseSlot()) : false;
 							if (lWeapon2 && lValid2 && lWeapon2 != IO->inventory().ActiveItem())
 								DrawSkeleton(lWeapon2->object().Visual()->dcast_PKinematics(), lWeapon2->object().XFORM(), &lWeapon2->object());
 						}

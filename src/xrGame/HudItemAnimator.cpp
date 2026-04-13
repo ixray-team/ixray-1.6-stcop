@@ -3,6 +3,7 @@
 #include "player_hud.h"
 #include "UIGameCustom.h"
 #include "Inventory.h"
+#include "InventoryWeaponSlotLayout.h"
 #include "ai_space.h"
 #include "UIActorMenu.h"
 #include "ParticlesObject.h"
@@ -286,7 +287,7 @@ void CHudItemAnimator::OnAnimationEnd()
 	if (restore_slot > 0 && item_to_restore != nullptr)
 	{
 		u16 real_slot = item_to_restore->BaseSlot();
-		if (real_slot != INV_SLOT_2 && real_slot != KNIFE_SLOT && real_slot != BOLT_SLOT && real_slot != PISTOL_SLOT_NEW)
+		if (!IsSidearmPhysicalSlot(real_slot) && real_slot != KNIFE_SLOT && real_slot != BOLT_SLOT)
 		{
 			restore_device = false;
 		}
