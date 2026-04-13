@@ -529,9 +529,36 @@ LevelInspector::LevelInspector(BOOL hm) : hud_mode(hm)
 					ImGui::CheckboxFlags("Zones", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_ZONES);
 					ImGui::Separator();
 
+					if (ImGui::CollapsingHeader("HUD##spoiler"))
+					{
+						RenderSkeletonFlags(hud_prims->m_skeleton_flags, true);
+					}
+
+					if (ImGui::CollapsingHeader("Objects##spoiler"))
+					{
+						RenderSkeletonFlags(m_skeleton_flags, false);
+					}
+
+					if (ImGui::CollapsingHeader("Zones##spoiler"))
+					{
+						ImGui::CheckboxFlags("Restrictor", &m_zone_flags.flags, EZONE_INFO::EZI_RESTR);
+						ImGui::CheckboxFlags("Anomaly Zone", &m_zone_flags.flags, EZONE_INFO::EZI_ANOMALY_ZONE);
+						ImGui::CheckboxFlags("Anomaly Zone Logic", &m_zone_flags.flags, EZONE_INFO::EZI_ANOMAL_ZONE_LOGIC);
+						ImGui::CheckboxFlags("Camp Zone", &m_zone_flags.flags, EZONE_INFO::EZI_CAMP_ZONE);
+						ImGui::CheckboxFlags("Level Changer", &m_zone_flags.flags, EZONE_INFO::EZI_LEVEL_CHANGER);
+						ImGui::CheckboxFlags("Smart Covers", &m_zone_flags.flags, EZONE_INFO::EZI_SMART_COVER);
+						ImGui::CheckboxFlags("Smart Terrain", &m_zone_flags.flags, EZONE_INFO::EZI_SMART_TERRAIN);
+						ImGui::CheckboxFlags("Sim Faction", &m_zone_flags.flags, EZONE_INFO::EZI_SIM_FACTION);
+					}
+					ImGui::Separator();
+
 					ImGui::CheckboxFlags("AI Paths", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_AI_PATHS);
 					ImGui::CheckboxFlags("Game Graph", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_G_GRID);
-					ImGui::CheckboxFlags("Waypoints", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_W_GRID);
+					if (ImGui::CheckboxFlags("Waypoints", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_W_GRID))
+					{
+						m_waypoint_flags.flags = EWAYPOINT_INFO::EWI_ALL;
+					}
+
 					ImGui::CheckboxFlags("Level Graph", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_L_GRID);
 					ImGui::Separator();
 
@@ -540,6 +567,9 @@ LevelInspector::LevelInspector(BOOL hm) : hud_mode(hm)
 					ImGui::CheckboxFlags("CForm Tris", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS);
 					ImGui::CheckboxFlags("Level Bounds", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_LEVEL_BOUNDS);
 					ImGui::CheckboxFlags("Spatials", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_ALL_SPATIALS);
+
+					ImGui::Separator();
+					ImGui::CheckboxFlags("Draw Selected", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_SELECTION);
 					ImGui::EndTabItem();
 				}
 
@@ -585,17 +615,26 @@ LevelInspector::LevelInspector(BOOL hm) : hud_mode(hm)
 						static int mode = 0;
 						ImGui::Text("Filter Mode:");
 						ImGui::RadioButton("All", &mode, 0);
-						ImGui::RadioButton("Prefix", &mode, 1);
+						ImGui::RadioButton("Prefix##wp", &mode, 1);
 						ImGui::RadioButton("Level ID", &mode, 2);
 
-						if (mode == 1)
+						if (mode == 0)
 						{
+							m_waypoint_flags.flags = EWAYPOINT_INFO::EWI_ALL;
+						}
+						else if (mode == 1)
+						{
+							m_waypoint_flags.flags = EWAYPOINT_INFO::EWI_PREFIX;
 							static char prefix[64] = "zat";
 							if (ImGui::InputTextWithHint("Prefix", "zat / jup / pri", prefix, sizeof(prefix)))
 							{
 								wp_prefix = prefix;
 								wp_recalc = true;
 							}
+						}
+						else
+						{
+							m_waypoint_flags.flags = EWAYPOINT_INFO::EWI_LOCATION_ID;
 						}
 					}
 					ImGui::EndDisabled();
@@ -605,15 +644,42 @@ LevelInspector::LevelInspector(BOOL hm) : hud_mode(hm)
 				// ================= SELECTION =================
 				if (ImGui::BeginTabItem("Selection"))
 				{
+					ImGui::CheckboxFlags("Draw Selected", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_SELECTION);
+					ImGui::Separator();
+
+					ImGui::BeginDisabled(!m_flags.test(ESCENE_FLAGS::ESF_DRAW_SELECTION));
+					{
+						if ((m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM) || m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS)))
+						{
+							static float test_ssa = 0.5f;
+							ImGui::SliderFloat("cform_ssa", &test_ssa, 10.0f, 0.01f);
+							cform_ssa = test_ssa / 10000.f;
+							if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM))
+								ImGui::CheckboxFlags("Draw Cform All", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_CFORM_ALL);
+						}
+
+						ImGui::CheckboxFlags("Select Object", &m_selection_flags.flags, ESELECTION_FLAGS::ESLF_O);
+						ImGui::CheckboxFlags("Select Zone", &m_selection_flags.flags, ESELECTION_FLAGS::ESLF_Z);
+						ImGui::CheckboxFlags("Select WayPoint", &m_selection_flags.flags, ESELECTION_FLAGS::ESLF_WP);
+						ImGui::CheckboxFlags("Select GraphPoint", &m_selection_flags.flags, ESELECTION_FLAGS::ESLF_GP);
+						ImGui::CheckboxFlags("Select AINode", &m_selection_flags.flags, ESELECTION_FLAGS::ESLF_LG);
+					}
+					ImGui::EndDisabled();
+
 					if (ImGui::BeginChild("SelectionPanel", ImVec2(0, 200), true))
 					{
 						ImGui::TextColored(ImVec4(1, 1, 0, 1), "Inspector");
 						ImGui::Separator();
 
 						ImGui::CheckboxFlags("Name", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_LNAME);
+						ImGui::CheckboxFlags("Section", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_SNAME);
+						ImGui::CheckboxFlags("Visual Name", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_VNAME);
+						ImGui::CheckboxFlags("Class", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_LCNAME);
 						ImGui::CheckboxFlags("Position", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_POSITION);
 						ImGui::CheckboxFlags("Script", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_SCRIPT);
-						ImGui::CheckboxFlags("Section", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_SNAME);
+						ImGui::CheckboxFlags("Actor", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_ACTOR);
+						ImGui::CheckboxFlags("GVertexID & LVertexID", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_GVERTEX_LVERTEX);
+						ImGui::CheckboxFlags("Custom Data", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_INI);
 					}
 					ImGui::EndChild();
 
@@ -626,6 +692,8 @@ LevelInspector::LevelInspector(BOOL hm) : hud_mode(hm)
 					}
 					ImGui::EndChild();
 					ImGui::PopStyleColor();
+
+					fontselectioncombo(*this);
 
 					if (ImGui::Button("Copy"))
 					{
@@ -939,7 +1007,7 @@ void LevelInspector::DrawWayPoints()
 				const ILevelGraph::CVertex* lgvertex = lgraph.vertex(point.level_vertex_id());
 				u8 level_id = ggvertex->level_id();
 
-				if (!m_waypoint_flags.test(EWAYPOINT_INFO::EWI_ALL) && m_waypoint_flags.test(EWAYPOINT_INFO::EWI_LICATION_ID))
+				if (!m_waypoint_flags.test(EWAYPOINT_INFO::EWI_ALL) && m_waypoint_flags.test(EWAYPOINT_INFO::EWI_LOCATION_ID))
 				{
 					if (level_id != curr_level_id)
 						continue;
@@ -3006,8 +3074,8 @@ void LevelInspector::DrawObjectsInfo()
 	Fvector& cam_dir = Device.vCameraDirection;
 	RQ.set(nullptr, g_pGamePersistent->pEnvironment->CurrentEnv->fog_distance, -1);
 	collide::rq_target test_static = psDeviceFlags.test(rsDrawStatic) ? collide::rqtStatic : collide::rqtNone;
-	collide::rq_target test_dynamic = m_selection_flags.test(ESELECTION_FLAGS::ESLF_O)&&m_flags.test(ESCENE_FLAGS::ESF_DRAW_OBJECTS) &&psDeviceFlags.test(rsDrawDynamic) ? collide::rqtObject : collide::rqtNone;
-	collide::rq_target test_zones = m_selection_flags.test(ESELECTION_FLAGS::ESLF_Z)&&m_flags.test(ESCENE_FLAGS::ESF_DRAW_ZONES) ? collide::rqtShape : collide::rqtNone;
+	collide::rq_target test_dynamic = m_selection_flags.test(ESELECTION_FLAGS::ESLF_O) &&psDeviceFlags.test(rsDrawDynamic) ? collide::rqtObject : collide::rqtNone;
+	collide::rq_target test_zones = m_selection_flags.test(ESELECTION_FLAGS::ESLF_Z) ? collide::rqtShape : collide::rqtNone;
 	collide::rq_target test_flags = collide::rq_target(test_zones | test_dynamic | test_static);
 	RD = collide::ray_defs(cam_pos, cam_dir, RQ.range, CDB::OPT_CULL | CDB::OPT_FULL_TEST, test_flags);
 	static LevelInspector* LI = this;
