@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "Actor.h"
 #include "Inventory.h"
+#include "InventoryWeaponSlotLayout.h"
 #include "AnomalyZone.h"
 #include "ui/UIMainIngameWnd.h"
 #include "UIGameCustom.h"
@@ -291,7 +292,7 @@ void CActor::Check_for_AutoPickUp()
 		{
 			if (GameID() & eGameIDDeathmatch || GameID() & eGameIDTeamDeathmatch)
 			{
-				if (pIItem->BaseSlot() == INV_SLOT_2 || pIItem->BaseSlot() == INV_SLOT_3 || pIItem->BaseSlot() == PISTOL_SLOT_NEW)
+				if (IsSidearmOrPrimaryPhysicalSlot(pIItem->BaseSlot()))
 				{
 					if (inventory().ItemFromSlot(pIItem->BaseSlot()))
 					{

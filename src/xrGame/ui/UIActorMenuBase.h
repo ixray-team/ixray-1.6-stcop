@@ -119,6 +119,8 @@ protected:
 	virtual void				SetAuxMode					(eActorMenuControllerAuxMode mode) {}
 	virtual void				UpdatePrices				() {}
 	CUIDragDropListEx*			GetSlotList					(u16 slot_idx);
+	CUIDragDropListEx*			GetSidearmDragDropList		() const;
+	CUIDragDropListEx*			GetPrimaryDragDropList		() const;
 	virtual	void				InfoCurItem					(CUICellItem* cell_item) {}
 	void						ClearAllLists				();
 	virtual	void				SetupUpgradeItem			() {}
@@ -167,6 +169,8 @@ protected:
 
 	bool						TryUseItem					(CUICellItem* cell_itm);
 	bool						TryActiveSlot				(CUICellItem* itm);
+	bool						TryHolsterPistolBagDbClick			(CUICellItem* itm);
+	bool						TryHolsterPistolHolsterSlotDbClick	(CUICellItem* itm);
 	bool						ToSlot						(CUICellItem* itm, bool force_place, u16 slot_id);
 	bool						ToBag						(CUICellItem* itm, bool b_use_cursor_pos);
 	bool						ToBelt						(CUICellItem* itm, bool b_use_cursor_pos);

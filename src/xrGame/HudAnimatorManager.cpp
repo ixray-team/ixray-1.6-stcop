@@ -4,6 +4,7 @@
 #include "CustomDevice.h"
 #include "Actor.h"
 #include "Inventory.h"
+#include "InventoryWeaponSlotLayout.h"
 #include "ui/UIGameCustom.h"
 
 #include "ai_space.h"
@@ -510,7 +511,7 @@ void CHudStateAnimator::OnAnimationEnd(u32 state)
 		if (slot_to_restore > 0 && item_to_restore != nullptr)
 		{
 			u16 real_slot = item_to_restore->BaseSlot();
-			if (real_slot != INV_SLOT_2 && real_slot != KNIFE_SLOT && real_slot != BOLT_SLOT && real_slot != PISTOL_SLOT_NEW)
+			if (!IsSidearmPhysicalSlot(real_slot) && real_slot != KNIFE_SLOT && real_slot != BOLT_SLOT)
 			{
 				restore_device = false;
 			}

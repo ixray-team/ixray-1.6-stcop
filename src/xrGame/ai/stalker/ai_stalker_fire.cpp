@@ -12,6 +12,7 @@
 #include "ai_stalker_impl.h"
 #include "../../script_entity_action.h"
 #include "../../Inventory.h"
+#include "../../InventoryWeaponSlotLayout.h"
 #include "../../ef_storage.h"
 #include "../../script_game_object.h"
 #include "../../AnomalyZone.h"
@@ -411,7 +412,7 @@ void CAI_Stalker::HitSignal				(float amount, Fvector& vLocalDir, CObject* who, 
 
 bool CAI_Stalker::CanPutInSlot(PIItem item, u32 slot)
 {
-	if (slot == INV_SLOT_2 || slot == INV_SLOT_3 || slot == PISTOL_SLOT_NEW)
+	if (IsSidearmOrPrimaryPhysicalSlot(slot))
 	{
 		return !!g_Alive();
 	}
