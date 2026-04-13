@@ -51,14 +51,18 @@ void FNodeEditor::Render()
 	}
 
 	ed::SetCurrentEditor(m_Context);
+
+	RenderMainMenu();
+
 	auto& style = ed::GetStyle();
 	style.NodeRounding = 6.0f;
 	style.NodeBorderWidth = 1.5f;
 	style.PinRounding = 4.0f;
 	style.LinkStrength = 100.0f;
 
+	ImVec2 editorSize = ImGui::GetContentRegionAvail();
 
-	ed::Begin("Logic Editor", ImVec2(0.0f, 0.0f));
+	ed::Begin("Logic Editor", editorSize);
 
 	for (auto& [id, node] : m_Nodes)
 	{
@@ -74,7 +78,6 @@ void FNodeEditor::Render()
 	RenderContextMenu();
 
 	ed::End();
-
 	ed::SetCurrentEditor(nullptr);
 }
 
@@ -260,41 +263,9 @@ void FNodeEditor::HandleConnections()
 
 void FNodeEditor::RenderContextMenu()
 {
+#if 0
 	if (ImGui::BeginPopupContextWindow("NodeEditorContext", ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems))
 	{
-		if (ImGui::MenuItem("Load logic file..."))
-		{
-			char fname[MAX_PATH] = {0};
-			OPENFILENAMEA ofn = {};
-			ofn.lStructSize = sizeof(ofn);
-			ofn.hwndOwner = nullptr;
-			ofn.lpstrFile = fname;
-			ofn.nMaxFile = MAX_PATH;
-			ofn.lpstrFilter = "Logic files\0*.ltx;*.ini\0All files\0*.*\0";
-			ofn.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST;
-
-			if (GetOpenFileNameA(&ofn))
-			{
-				xr_string path = fname;
-				auto states = LogicLoader::LoadFromFile(path);
-				if (!states.empty())
-				{
-					m_Nodes.clear();
-					int count = 0;
-					for (auto& st : states)
-					{
-						size_t key = std::hash<xr_string>{}(st.StateName);
-						m_Nodes[key] = st;
-						++count;
-						if (count > 200) break;
-					}
-
-					BuildLinksFromTransitions();
-					BuildNodesLayout();
-				}
-			}
-		}
-
 		ImGui::EndPopup();
 	}
 
@@ -302,35 +273,32 @@ void FNodeEditor::RenderContextMenu()
 	{
 		ImGui::OpenPopup("NodeEditorContext");
 	}
+#endif
 }
 
 void FNodeEditor::BuildNodesLayout()
 {
-	xr_hash_map<xr_string, xr_vector<xr_string>> Graph;
+	if (m_Nodes.empty()) return;
+
+	xr_hash_map<xr_string, xr_vector<xr_string>> Parents;
+	xr_hash_map<xr_string, xr_vector<xr_string>> Children;
 
 	for (auto& [key, node] : m_Nodes)
 	{
-		auto& children = Graph[node.StateName];
-
 		for (auto& tr : node.Transitions)
 		{
 			if (!tr.TargetState.empty())
 			{
-				children.push_back(tr.TargetState);
+				Children[node.StateName].push_back(tr.TargetState);
+				Parents[tr.TargetState].push_back(node.StateName);
 			}
 		}
 	}
 
-	if (m_Nodes.empty())
-	{
-		return;
-	}
-
 	xr_string Root;
-
 	for (auto& [key, node] : m_Nodes)
 	{
-		if (node.StateName.StartWith("logic"))
+		if (node.StateName.find("logic") == 0)
 		{
 			Root = node.StateName;
 			break;
@@ -342,64 +310,81 @@ void FNodeEditor::BuildNodesLayout()
 		Root = m_Nodes.begin()->second.StateName;
 	}
 
-	xr_hash_set<xr_string> Visited;
-
 	const float SpacingX = 420.0f;
 	const float SpacingY = 350.0f;
 
-	int CurrentY = 0;
+	xr_hash_map<xr_string, ImVec2> Positions;
+	xr_hash_set<xr_string> Visited;
 
-	std::function<void(const xr_string&, int, int)> DFSBuilder = [&](const xr_string& name, int Depth, int y)
+	xr_hash_map<int, int> MaxDepthForRow;
+	int CurrentRow = 0;
+
+	std::function<void(const xr_string&, int, int)> BuildTree = [&](const xr_string& name, int Depth, int Row)
 	{
 		if (Visited.contains(name))
 		{
 			return;
 		}
-
+		
 		Visited.insert(name);
 
-		auto it = m_Nodes.find(std::hash<xr_string>{}(name));
-		if (it != m_Nodes.end())
+		auto it = MaxDepthForRow.find(Row);
+		if (it != MaxDepthForRow.end() && Depth < it->second)
 		{
-			ed::SetNodePosition
-			(
-				MakeNodeId(it->second),
-				ImVec2(Depth * SpacingX, y * SpacingY)
-			);
+			Depth = it->second;
 		}
 
-		auto& Children = Graph[name];
+		Positions[name] = ImVec2(Depth * SpacingX, Row * SpacingY);
+		MaxDepthForRow[Row] = Depth + 1;
 
-		if (Children.empty())
+		auto childIt = Children.find(name);
+		if (childIt == Children.end() || childIt->second.empty())
 		{
 			return;
 		}
 
-		if (Children.size() == 1)
+		const auto& childs = childIt->second;
+
+		if (childs.size() == 1)
 		{
-			DFSBuilder(Children[0], Depth + 1, y);
-			return;
+			BuildTree(childs[0], Depth + 1, Row);
 		}
-
-		int BranchY = y;
-
-		for (size_t i = 0; i < Children.size(); ++i)
+		else
 		{
-			if (i == 0)
+			for (size_t i = 0; i < childs.size(); ++i)
 			{
-				DFSBuilder(Children[i], Depth + 1, BranchY);
-			}
-			else
-			{
-				CurrentY++;
-				BranchY = CurrentY;
-				DFSBuilder(Children[i], Depth + 1, BranchY);
+				int newRow = (i == 0) ? Row : ++CurrentRow;
+				BuildTree(childs[i], Depth + 1, newRow);
 			}
 		}
 	};
 
-	// старт
-	DFSBuilder(Root, 0, CurrentY);
+	BuildTree(Root, 0, CurrentRow);
+
+	for (auto& [key, node] : m_Nodes)
+	{
+		if (!Visited.contains(node.StateName))
+		{
+			auto parentIt = Parents.find(node.StateName);
+
+			if (parentIt == Parents.end() || parentIt->second.empty())
+			{
+				CurrentRow++;
+				BuildTree(node.StateName, 1, CurrentRow);
+			}
+		}
+	}
+
+	for (auto& [name, pos] : Positions)
+	{
+		auto it = m_Nodes.find(std::hash<xr_string>{}(name));
+		if (it != m_Nodes.end())
+		{
+			ed::SetNodePosition(MakeNodeId(it->second), pos);
+		}
+	}
+
+	ed::NavigateToContent();
 }
 
 void FNodeEditor::BuildLinksFromTransitions()
@@ -481,5 +466,90 @@ void FNodeEditor::BuildLinksFromTransitions()
 			NewLink.EndPinId = endPinId;
 			m_Links.push_back(NewLink);
 		}
+	}
+}
+
+void FNodeEditor::RenderMainMenu()
+{
+	if (ImGui::BeginMainMenuBar())
+	{
+		if (ImGui::BeginMenu("File"))
+		{
+			if (ImGui::MenuItem("Open...", "Ctrl+O"))
+			{
+				m_ShowFileDialog = true;
+				m_FilePath[0] = '\0';
+			}
+
+			ImGui::Separator();
+
+			if (ImGui::MenuItem("Exit", "Alt+F4"))
+			{
+			}
+
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu("View"))
+		{
+			if (ImGui::MenuItem("Reset Layout"))
+			{
+				BuildNodesLayout();
+			}
+
+			if (ImGui::MenuItem("Navigate to Content", "F"))
+			{
+				ed::NavigateToContent();
+			}
+
+			ImGui::EndMenu();
+		}
+
+		ImGui::EndMainMenuBar();
+	}
+
+	if (m_ShowFileDialog)
+	{
+		OPENFILENAMEA ofn = {};
+		ofn.lStructSize = sizeof(ofn);
+		ofn.hwndOwner = nullptr;
+		ofn.lpstrFile = m_FilePath;
+		ofn.nMaxFile = MAX_PATH;
+		ofn.lpstrFilter = "Logic files\0*.ltx;*.ini\0All files\0*.*\0";
+		ofn.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST;
+
+		if (GetOpenFileNameA(&ofn))
+		{
+			m_ShowFileDialog = false;
+			LoadLogicFile(m_FilePath);
+		}
+		else
+		{
+			m_ShowFileDialog = false;
+		}
+	}
+}
+
+void FNodeEditor::LoadLogicFile(const char* path)
+{
+	xr_string pathStr = path;
+	auto states = LogicLoader::LoadFromFile(pathStr);
+
+	if (!states.empty())
+	{
+		m_Nodes.clear();
+		m_Links.clear();
+
+		int count = 0;
+		for (auto& st : states)
+		{
+			size_t key = std::hash<xr_string>{}(st.StateName);
+			m_Nodes[key] = st;
+			++count;
+			if (count > 200) break;
+		}
+
+		BuildLinksFromTransitions();
+		BuildNodesLayout();
 	}
 }

@@ -222,7 +222,7 @@ struct FAnimParams : FBaseParams
     bool bUseSingleHand = false;               // Анимация одной рукой?
     xr_string SoundName;                     // Зацикленный звук
     xr_string MentalState;                   // free, danger, panic
-    bool bLoopAnimation = true;                // Зациклить анимацию
+    bool bLoopAnimation = false;                // Зациклить анимацию
     float BlendInTime = 0.3f;                  // Время плавного входа
     float BlendOutTime = 0.3f;                 // Время плавного выхода
 };

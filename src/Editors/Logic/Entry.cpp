@@ -54,7 +54,18 @@ void RenderImGui()
 	ImGui_ImplSDL3_NewFrame();
 	ImGui::NewFrame();
 
-	ImGui::Begin("Behavior Logic Editor");
+	ImGuiViewport* viewport = ImGui::GetMainViewport();
+	ImGui::SetNextWindowPos(viewport->Pos);
+	ImGui::SetNextWindowSize(viewport->Size);
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoTitleBar |
+		ImGuiWindowFlags_NoCollapse |
+		ImGuiWindowFlags_NoResize |
+		ImGuiWindowFlags_NoMove |
+		ImGuiWindowFlags_NoBringToFrontOnFocus |
+		ImGuiWindowFlags_NoNavFocus |
+		ImGuiWindowFlags_MenuBar; 
+
+	ImGui::Begin("Behavior Logic Editor", nullptr, windowFlags);
 	GNodeEditor->Render();
 	ImGui::End();
 

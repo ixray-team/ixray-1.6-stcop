@@ -9,19 +9,19 @@ namespace fs = std::filesystem;
 
 static EStateType ParseStateType(const xr_string& v)
 {
-	if (v == "walker") return EStateType::Walker;
-	if (v == "combat") return EStateType::Combat;
-	if (v == "camper") return EStateType::Camper;
-	if (v == "trader") return EStateType::Trader;
-	if (v == "anim") return EStateType::Anim;
-	if (v == "sound") return EStateType::Sound;
-	if (v == "panic") return EStateType::Panic;
-	if (v == "reactor") return EStateType::Reactor;
-	if (v == "guard") return EStateType::Guard;
-	if (v == "follow") return EStateType::Follow;
-	if (v == "idle") return EStateType::Idle;
-	if (v == "trigger") return EStateType::Trigger;
-	if (v == "action") return EStateType::Action;
+	if (v.StartWith("walker"))return EStateType::Walker;
+	if (v.StartWith("combat"))return EStateType::Combat;
+	if (v.StartWith("camper"))return EStateType::Camper;
+	if (v.StartWith("trader"))return EStateType::Trader;
+	if (v.StartWith("anim")) return EStateType::Anim;
+	if (v.StartWith("sound")) return EStateType::Sound;
+	if (v.StartWith("panic")) return EStateType::Panic;
+	if (v.StartWith("reactor")) return EStateType::Reactor;
+	if (v.StartWith("guard")) return EStateType::Guard;
+	if (v.StartWith("follow")) return EStateType::Follow;
+	if (v.StartWith("idle")) return EStateType::Idle;
+	if (v.StartWith("trigger")) return EStateType::Trigger;
+	if (v.StartWith("action")) return EStateType::Action;
 	return EStateType::Custom;
 }
 
@@ -294,15 +294,7 @@ xr_vector<FState> LogicLoader::LoadFromFile(const xr_string& filename)
 
 		const char* sec = sect.Name.c_str();
 
-		if (ini->line_exist(sec, "type"))
-		{
-			shared_str st = ini->r_string_wb(sec, "type");
-			s.StateType = ParseStateType(xr_string(st.c_str()));
-		}
-		else
-		{
-			s.StateType = EStateType::Custom;
-		}
+		s.StateType = ParseStateType(s.StateName);
 
 		FBaseParams base;
 		for (auto& it : sect.Data)
@@ -347,6 +339,16 @@ xr_vector<FState> LogicLoader::LoadFromFile(const xr_string& filename)
 			if (ini->line_exist(sec, "combat_ignore")) wp.bCombatIgnore = ini->r_bool(sec, "combat_ignore");
 			if (ini->line_exist(sec, "keep_safe_alife")) wp.bKeepSafeAlife = ini->r_bool(sec, "keep_safe_alife");
 			if (ini->line_exist(sec, "animation")) wp.AnimationOverride = ini->r_string_wb(sec, "animation").c_str();
+
+			wp.CustomVariables = base.CustomVariables;
+
+			wp.CustomVariables.erase("path_walk");
+			wp.CustomVariables.erase("path");
+			wp.CustomVariables.erase("walk_speed");
+			wp.CustomVariables.erase("combat_ignore");
+			wp.CustomVariables.erase("keep_safe_alife");
+			wp.CustomVariables.erase("animation");
+
 			s.Params = wp;
 		}
 		break;
@@ -369,6 +371,16 @@ xr_vector<FState> LogicLoader::LoadFromFile(const xr_string& filename)
 			if (ini->line_exist(sec, "grenade_chance")) cp.GrenadeChance = ini->r_float(sec, "grenade_chance");
 			if (ini->line_exist(sec, "accuracy")) cp.AccuracyModifier = ini->r_float(sec, "accuracy");
 			if (ini->line_exist(sec, "aggression_radius")) cp.AggressionRadius = ini->r_float(sec, "aggression_radius");
+
+			cp.CustomVariables = base.CustomVariables;
+
+			cp.CustomVariables.erase("style");
+			cp.CustomVariables.erase("use_cover");
+			cp.CustomVariables.erase("fire_rate");
+			cp.CustomVariables.erase("grenade_chance");
+			cp.CustomVariables.erase("accuracy");
+			cp.CustomVariables.erase("aggression_radius");
+
 			s.Params = cp;
 		}
 		break;
@@ -380,6 +392,14 @@ xr_vector<FState> LogicLoader::LoadFromFile(const xr_string& filename)
 			if (ini->line_exist(sec, "sections")) tp.TraderSections = ini->r_string_wb(sec, "sections").c_str();
 			if (ini->line_exist(sec, "buy")) tp.bBuyItems = ini->r_bool(sec, "buy");
 			if (ini->line_exist(sec, "sell")) tp.bSellItems = ini->r_bool(sec, "sell");
+
+			tp.CustomVariables = base.CustomVariables;
+
+			tp.CustomVariables.erase("trade_config");
+			tp.CustomVariables.erase("sections");
+			tp.CustomVariables.erase("buy");
+			tp.CustomVariables.erase("sell");
+
 			s.Params = tp;
 		}
 		break;
@@ -392,24 +412,41 @@ xr_vector<FState> LogicLoader::LoadFromFile(const xr_string& filename)
 			if (ini->line_exist(sec, "blend_in")) ap.BlendInTime = ini->r_float(sec, "blend_in");
 			if (ini->line_exist(sec, "blend_out")) ap.BlendOutTime = ini->r_float(sec, "blend_out");
 			if (ini->line_exist(sec, "single_hand")) ap.bUseSingleHand = ini->r_bool(sec, "single_hand");
+
+			ap.CustomVariables = base.CustomVariables;
+
+			ap.CustomVariables.erase("animation");
+			ap.CustomVariables.erase("loop");
+			ap.CustomVariables.erase("blend_in");
+			ap.CustomVariables.erase("blend_out");
+			ap.CustomVariables.erase("single_hand");
+
 			s.Params = ap;
 		}
 		break;
 
 		case EStateType::Panic:
 		{
-			FPanicParams pp;
+			FPanicParams pp(base);
 			if (ini->line_exist(sec, "run_speed")) pp.RunSpeed = ini->r_float(sec, "run_speed");
 			if (ini->line_exist(sec, "run_away")) pp.bRunAway = ini->r_bool(sec, "run_away");
 			if (ini->line_exist(sec, "panic_timeout_ms")) pp.PanicTimeoutMs = ini->r_s32(sec, "panic_timeout_ms");
 			else if (ini->line_exist(sec, "panic_timeout")) pp.PanicTimeoutMs = (int)(ini->r_float(sec, "panic_timeout") * 1000.0f);
+
+			pp.CustomVariables = base.CustomVariables;
+
+			pp.CustomVariables.erase("run_speed");
+			pp.CustomVariables.erase("run_away");
+			pp.CustomVariables.erase("panic_timeout_ms");
+			pp.CustomVariables.erase("panic_timeout");
+
 			s.Params = pp;
 		}
 		break;
 
 		case EStateType::Idle:
 		{
-			FIdleParams ip;
+			FIdleParams ip(base);
 			if (ini->line_exist(sec, "min_idle")) ip.MinIdleTime = ini->r_float(sec, "min_idle");
 			if (ini->line_exist(sec, "max_idle")) ip.MaxIdleTime = ini->r_float(sec, "max_idle");
 			if (ini->line_exist(sec, "idle_animations"))
@@ -437,6 +474,13 @@ xr_vector<FState> LogicLoader::LoadFromFile(const xr_string& filename)
 					start = pos + 1;
 				}
 			}
+
+			ip.CustomVariables = base.CustomVariables;
+
+			ip.CustomVariables.erase("min_idle");
+			ip.CustomVariables.erase("max_idle");
+			ip.CustomVariables.erase("idle_animations");
+
 			s.Params = ip;
 		}
 		break;
@@ -568,6 +612,36 @@ xr_vector<FState> LogicLoader::LoadFromFile(const xr_string& filename)
 			FTransition t;
 			t.DebugName = "active";
 			t.TargetState = ini->r_string_wb(sec, "active").c_str();
+
+			s.Transitions.push_back(t);
+		}
+
+		if (ini->line_exist(sec, "meet"))
+		{
+			FTransition t;
+			t.DebugName = "meet";
+			t.TargetState = ini->r_string_wb(sec, "meet").c_str();
+
+			if (t.TargetState != "no_meet")
+			{
+				s.Transitions.push_back(t);
+			}
+		}
+
+		if (ini->line_exist(sec, "wounded"))
+		{
+			FTransition t;
+			t.DebugName = "wounded";
+			t.TargetState = ini->r_string_wb(sec, "wounded").c_str();
+
+			s.Transitions.push_back(t);
+		}
+
+		if (ini->line_exist(sec, "danger"))
+		{
+			FTransition t;
+			t.DebugName = "danger";
+			t.TargetState = ini->r_string_wb(sec, "danger").c_str();
 
 			s.Transitions.push_back(t);
 		}

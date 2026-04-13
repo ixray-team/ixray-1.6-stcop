@@ -41,6 +41,8 @@ private:
     void RenderContextMenu();
     void BuildNodesLayout();
     void BuildLinksFromTransitions();
+    void RenderMainMenu();
+    void LoadLogicFile(const char* path);
     void HandleConnections();
 
     ed::EditorContext* m_Context = nullptr;
@@ -57,6 +59,9 @@ private:
     // Для создания новых связей
     ed::PinId m_NewLinkStartPin;
     ed::PinId m_NewLinkEndPin;
+
+    bool m_ShowFileDialog = false;
+    char m_FilePath[MAX_PATH] = { 0 };
 };
 
 extern FNodeEditor* GNodeEditor;

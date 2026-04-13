@@ -3,6 +3,8 @@
 
 constexpr float NodeItemWidth = 258.f;
 
+string2048 CustomVarStr;
+
 void DrawCustomVars(FBaseParams* Params)
 {
 	for (auto& Var : Params->CustomVariables)
@@ -10,12 +12,11 @@ void DrawCustomVars(FBaseParams* Params)
 		ImGui::PushID(Var.first.c_str());
 		ImGui::TextUnformatted(Var.first.c_str());
 
-		string256 Str;
-		strcpy(Str, Var.second.c_str());
+		strcpy(CustomVarStr, Var.second.c_str());
 		ImGui::SetNextItemWidth(NodeItemWidth);
-		if (ImGui::InputText("##customvar", Str, std::size(Str)))
+		if (ImGui::InputText("##customvar", CustomVarStr, std::size(CustomVarStr)))
 		{
-			Var.second = Str;
+			Var.second = CustomVarStr;
 		}
 		ImGui::PopID();
 	}
@@ -40,9 +41,18 @@ FNodeRenderDesc GetStateRenderDesc(FState& State)
 
 		Desc.DrawBody = [&P](const FState&)
 			{
-				ImGui::Text("Path: %s", P.PathWalk.c_str());
+				ImGui::TextUnformatted("Path:");
+				string256 Str;
+				strcpy(Str, P.PathWalk.c_str());
 				ImGui::SetNextItemWidth(NodeItemWidth);
-				ImGui::SliderFloat("Speed", &P.WalkSpeed, 0.0f, 3.0f);
+				if (ImGui::InputText("##customvar", Str, std::size(Str)))
+				{
+					P.PathWalk = Str;
+				}
+
+				ImGui::TextUnformatted("Speed:");
+				ImGui::SetNextItemWidth(NodeItemWidth);
+				ImGui::SliderFloat("##Speed", &P.WalkSpeed, 0.0f, 3.0f);
 				ImGui::Checkbox("Combat Ignore", &P.bCombatIgnore);
 
 				DrawCustomVars(&P);
@@ -62,8 +72,9 @@ FNodeRenderDesc GetStateRenderDesc(FState& State)
 			{
 				ImGui::Text("Style: %d", (int)P.Style);
 				ImGui::Checkbox("Use Cover", &P.bUseCover);
+				ImGui::TextUnformatted("Aggression:");
 				ImGui::SetNextItemWidth(NodeItemWidth);
-				ImGui::SliderFloat("Aggression", &P.AggressionRadius, 0.0f, 100.0f);
+				ImGui::SliderFloat("##Aggression", &P.AggressionRadius, 0.0f, 100.0f);
 
 				DrawCustomVars(&P);
 			};
@@ -101,8 +112,9 @@ FNodeRenderDesc GetStateRenderDesc(FState& State)
 			{
 				ImGui::Text("Anim: %s", P.AnimationName.c_str());
 				ImGui::Checkbox("Loop", &P.bLoopAnimation);
+				ImGui::TextUnformatted("Blend In:");
 				ImGui::SetNextItemWidth(NodeItemWidth);
-				ImGui::SliderFloat("Blend In", &P.BlendInTime, 0.0f, 1.0f);
+				ImGui::SliderFloat("##Blend In", &P.BlendInTime, 0.0f, 1.0f);
 
 				DrawCustomVars(&P);
 			};
