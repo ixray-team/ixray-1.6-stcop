@@ -7,6 +7,7 @@
 #include "../xrUI/Widgets/UIPropertiesBox.h"
 #include "../trade.h"
 #include "../Inventory.h"
+#include "../InventoryWeaponSlotLayout.h"
 #include "../inventory_item.h"
 #include "../medkit.h"
 #include "../Weapon.h"
@@ -416,20 +417,30 @@ u32 CUIActorMenuBase::CalcItemsPrice(CUIDragDropListEx* pList, CTrade* pTrade, b
 bool CUIActorMenuBase::CanSetItemToList(PIItem item, CUIDragDropListEx* l, u16& ret_slot)
 {
 	u16 item_slot = item->BaseSlot();
-	if( GetSlotList(item_slot)==l )
+	if (GetSlotList(item_slot) == l)
 	{
 		ret_slot	= item_slot;
 		return		true;
 	}
 
-	const static bool pistolsOnly = EngineExternal()[EEngineExternalGame::EnableInventoryPistolSlot];
-	if (item_slot == INV_SLOT_3 && l == m_pInvList[INV_SLOT_2] && !pistolsOnly)
+	// Sidearm items keep BaseSlot INV_SLOT_2; map drops onto the dedicated holster list to PISTOL_SLOT_NEW.
+	if (m_pInvList[PISTOL_SLOT_NEW] && l == m_pInvList[PISTOL_SLOT_NEW] && item_slot == INV_SLOT_2)
+	{
+		if (GetInventoryOwner()->inventory().CanPutInSlot(item, PISTOL_SLOT_NEW))
+		{
+			ret_slot	= PISTOL_SLOT_NEW;
+			return		true;
+		}
+		return false;
+	}
+
+	if (item_slot == INV_SLOT_3 && l == m_pInvList[INV_SLOT_2] && !InventorySecondarySlotPairingStrict())
 	{
 		ret_slot	= INV_SLOT_2;
 		return		true;
 	}
 
-	if (item_slot == INV_SLOT_2&& l == m_pInvList[INV_SLOT_3] && !pistolsOnly)
+	if (item_slot == INV_SLOT_2 && l == m_pInvList[INV_SLOT_3] && !InventorySecondarySlotPairingStrict())
 	{
 		ret_slot	= INV_SLOT_3;
 		return		true;
@@ -566,6 +577,19 @@ CUIDragDropListEx* CUIActorMenuBase::GetSlotList(u16 slot_idx)
 	return GetActorList();
 }
 
+CUIDragDropListEx* CUIActorMenuBase::GetSidearmDragDropList() const
+{
+	if (m_pInvList[PISTOL_SLOT_NEW] != nullptr)
+	{
+		return m_pInvList[PISTOL_SLOT_NEW];
+	}
+	return m_pInvList[INV_SLOT_2];
+}
+
+CUIDragDropListEx* CUIActorMenuBase::GetPrimaryDragDropList() const
+{
+	return m_pInvList[INV_SLOT_3];
+}
 
 #define CLEAR_LIST(list) if (list) list->ClearAll(true);
 void CUIActorMenuBase::ClearAllLists()

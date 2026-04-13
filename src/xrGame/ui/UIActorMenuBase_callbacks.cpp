@@ -408,6 +408,11 @@ bool CUIActorMenuBase::OnItemDbClick(CUICellItem* itm)
 					if (pInput->GetControllerMode() && bResult)
 						SetCurrentItem(nullptr);
 				}
+				else if (m_currMenuMode == mmInventory && !bItemPack && TryHolsterPistolHolsterSlotDbClick(itm))
+				{
+					if (pInput->GetControllerMode())
+						SetCurrentItem(nullptr);
+				}
 			}
 			break;
 		}
@@ -440,6 +445,12 @@ bool CUIActorMenuBase::OnItemDbClick(CUICellItem* itm)
 				if(m_currMenuMode!=mmUpgrade && TryUseItem( itm ))
 				{
 					if (pInput->GetControllerMode() && !bItemPack)
+						SetCurrentItem(nullptr);
+					break;
+				}
+				if (!bItemPack && TryHolsterPistolBagDbClick(itm))
+				{
+					if (pInput->GetControllerMode())
 						SetCurrentItem(nullptr);
 					break;
 				}

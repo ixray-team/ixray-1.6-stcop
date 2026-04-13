@@ -8,6 +8,7 @@
 #include "../WeaponMagazined.h"
 #include "../trade.h"
 #include "../Inventory.h"
+#include "../InventoryWeaponSlotLayout.h"
 #include "../../xrUI/UICursor.h"
 
 void move_item_from_to(u16 from_id, u16 to_id, u16 what_id);
@@ -435,6 +436,119 @@ bool CUIActorMenuBase::TryActiveSlot(CUICellItem* itm)
 	return false;
 }
 
+bool CUIActorMenuBase::TryHolsterPistolBagDbClick(CUICellItem* itm)
+{
+	if (m_currMenuMode != mmInventory)
+	{
+		return false;
+	}
+	if (!InventoryHolsterPistolSlotActiveInSettings())
+	{
+		return false;
+	}
+	if (m_pInvList[PISTOL_SLOT_NEW] == nullptr)
+	{
+		return false;
+	}
+
+	PIItem	iitem	= (PIItem)itm->m_pData;
+	if (iitem == nullptr || iitem->CurrPlace() != eItemPlaceRuck)
+	{
+		return false;
+	}
+	if (!InventoryHolsterExclusivePistolFootprint(iitem))
+	{
+		return false;
+	}
+
+	if (ToSlot(itm, false, PISTOL_SLOT_NEW))
+	{
+		return true;
+	}
+	return ToSlot(itm, true, PISTOL_SLOT_NEW);
+}
+
+bool CUIActorMenuBase::TryHolsterPistolHolsterSlotDbClick(CUICellItem* itm)
+{
+	if (m_currMenuMode != mmInventory)
+	{
+		return false;
+	}
+	if (!InventoryHolsterPistolSlotActiveInSettings())
+	{
+		return false;
+	}
+	if (m_pInvList[PISTOL_SLOT_NEW] == nullptr)
+	{
+		return false;
+	}
+	if (itm->OwnerList() != m_pInvList[PISTOL_SLOT_NEW])
+	{
+		return false;
+	}
+
+	PIItem	current	= (PIItem)itm->m_pData;
+	if (!InventoryHolsterExclusivePistolFootprint(current))
+	{
+		return false;
+	}
+
+	CUIDragDropListEx*	bagList	= GetActorList();
+	if (bagList == nullptr)
+	{
+		return false;
+	}
+
+	const u32	count	= bagList->ItemsCount();
+	for (u32 i = 0; i < count; ++i)
+	{
+		CUICellItem*	cell		= bagList->GetItemIdx(i);
+		PIItem		candidate	= (PIItem)cell->m_pData;
+		if (candidate == nullptr || candidate == current)
+		{
+			continue;
+		}
+		if (candidate->CurrPlace() != eItemPlaceRuck)
+		{
+			continue;
+		}
+		if (!InventoryHolsterExclusivePistolFootprint(candidate))
+		{
+			continue;
+		}
+		if (candidate->object().cNameSect() != current->object().cNameSect())
+		{
+			continue;
+		}
+		if (ToSlot(cell, true, PISTOL_SLOT_NEW))
+		{
+			return true;
+		}
+	}
+	for (u32 i = 0; i < count; ++i)
+	{
+		CUICellItem*	cell		= bagList->GetItemIdx(i);
+		PIItem		candidate	= (PIItem)cell->m_pData;
+		if (candidate == nullptr || candidate == current)
+		{
+			continue;
+		}
+		if (candidate->CurrPlace() != eItemPlaceRuck)
+		{
+			continue;
+		}
+		if (!InventoryHolsterExclusivePistolFootprint(candidate))
+		{
+			continue;
+		}
+		if (ToSlot(cell, true, PISTOL_SLOT_NEW))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 void CUIActorMenuBase::PutAllToPartner(CUIWindow* w, void* d) 
 {
 	u32 Iter = 0;
@@ -636,22 +750,53 @@ bool CUIActorMenuBase::ToSlot(CUICellItem* itm, bool force_place, u16 slot_id)
 		if ( !force_place || slot_id == NO_ACTIVE_SLOT ) 
 			return false;
 
-		if ( GetInventoryOwner()->inventory().SlotIsPersistent(slot_id) && slot_id != DEVICE_SLOT)
+		// Same idea as DEVICE_SLOT: allow double-click swap out of a busy slot even when marked persistent.
+		const bool allowPersistentForceSwap =
+			(slot_id == DEVICE_SLOT) ||
+			(slot_id == PISTOL_SLOT_NEW && InventoryHolsterPistolSlotActiveInSettings());
+		if (GetInventoryOwner()->inventory().SlotIsPersistent(slot_id) && !allowPersistentForceSwap)
 			return false;
 
-		const static bool pistolsOnly = EngineExternal()[EEngineExternalGame::EnableInventoryPistolSlot];
-		if ( slot_id == INV_SLOT_2 && GetInventoryOwner()->inventory().CanPutInSlot(iitem, INV_SLOT_3) && !pistolsOnly)
+		if ( slot_id == INV_SLOT_2 && GetInventoryOwner()->inventory().CanPutInSlot(iitem, INV_SLOT_3) && !InventorySecondarySlotPairingStrict())
 			return ToSlot(itm, force_place, INV_SLOT_3);
 
-		if ( slot_id == INV_SLOT_3 && GetInventoryOwner()->inventory().CanPutInSlot(iitem, INV_SLOT_2) && !pistolsOnly)
+		if ( slot_id == INV_SLOT_3 && GetInventoryOwner()->inventory().CanPutInSlot(iitem, INV_SLOT_2) && !InventorySecondarySlotPairingStrict())
 			return ToSlot(itm, force_place, INV_SLOT_2);
 
 		PIItem	_iitem						= GetInventoryOwner()->inventory().ItemFromSlot(slot_id);
 		CUIDragDropListEx* slot_list		= GetSlotList(slot_id);
-		VERIFY								(slot_list->ItemsCount()==1);
+		if (slot_list == nullptr || _iitem == nullptr)
+		{
+			return false;
+		}
 
-		CUICellItem* slot_cell				= slot_list->GetItemIdx(0);
-		VERIFY								(slot_cell && ((PIItem)slot_cell->m_pData)==_iitem);
+		CUICellItem* slot_cell = nullptr;
+		for (u32 slot_cell_idx = 0; slot_cell_idx < slot_list->ItemsCount(); ++slot_cell_idx)
+		{
+			CUICellItem* const candidate = slot_list->GetItemIdx(slot_cell_idx);
+			if (candidate != nullptr && (PIItem)candidate->m_pData == _iitem)
+			{
+				slot_cell = candidate;
+				break;
+			}
+		}
+
+		if (slot_cell == nullptr)
+		{
+			// Occupant in inventory but no matching UI cell (out of sync or list fallback). Same outcome as ToBag, without a cell pointer.
+			bool const occupant_is_own = (_iitem->parent_id() == GetInventoryOwner()->object_id());
+			bool const cleared = (!occupant_is_own) || GetInventoryOwner()->inventory().Ruck(_iitem);
+			if (!cleared)
+			{
+				return false;
+			}
+			if (occupant_is_own)
+			{
+				SendEvent_Item2Ruck(_iitem, GetInventoryOwner()->object_id());
+			}
+			UpdateItemsPlace();
+			return ToSlot(itm, false, slot_id);
+		}
 
 		bool result							= ToBag(slot_cell, false);
 		VERIFY								(result);

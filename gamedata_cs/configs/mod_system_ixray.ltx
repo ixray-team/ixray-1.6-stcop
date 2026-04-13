@@ -8,6 +8,9 @@ snd_draw = weapons\draw_silent
 ![inventory]
 slot_persistent_4 = false ;grenades
 
+; Legacy CS: second slot column paired with primary for pistols-only style UI (replaces engine_external EnableInventoryPistolSlot).
+inventory_secondary_slot_pairing_strict = true
+
 slot_persistent_13  = false ;backpack
 slot_active_13      = false
 
@@ -600,4 +603,4 @@ movement_layer_0             = blend\walk.anm, 1, 1.5        	 ; Walk
 movement_layer_1             = blend\walk.anm, 0.7, 1.5        ; Walk slow
 movement_layer_2             = blend\walk.anm, 0.5, 1.5        ; Crouch
 movement_layer_3             = blend\walk.anm, 0.3, 1.5        ; Crouch slow
-movement_layer_4             = blend\sprint.anm, 1.55, 2      ; Sprint
+movement_layer_4             = blend\sprint.anm, 1.55, 2       ; Sprint
