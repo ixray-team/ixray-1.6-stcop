@@ -5,6 +5,7 @@
 #include "Entity.h"
 #include "Actor.h"
 #include "Inventory.h"
+#include "InventoryWeaponSlotLayout.h"
 #include "Level.h"
 #include "xrMessages.h"
 #include "../xrEngine/xr_level_controller.h"
@@ -369,7 +370,7 @@ void CGrenade::OnAnimationEnd(u32 state)
 				m_uSlotToRestore = NO_ACTIVE_SLOT;
 			}
 
-			bool bres = (saved_old_slot == NO_ACTIVE_SLOT || saved_old_slot == INV_SLOT_2 || saved_old_slot == PISTOL_SLOT_NEW || saved_old_slot == KNIFE_SLOT || saved_old_slot == BOLT_SLOT);
+			bool bres = (saved_old_slot == NO_ACTIVE_SLOT || IsSidearmPhysicalSlot(saved_old_slot) || saved_old_slot == KNIFE_SLOT || saved_old_slot == BOLT_SLOT);
 
 			if (!bres)
 			{

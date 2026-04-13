@@ -1505,7 +1505,7 @@ void	CActor::OnPrevWeaponSlot()
 			}
 			else if (SlotsToCheck[i] == PISTOL_SLOT_NEW)
 			{
-				IR_OnKeyboardPress(get_action_dik(kARTEFACT));
+				IR_OnKeyboardPress(get_action_dik(kWPN_7));
 			}
 			else
 			{
