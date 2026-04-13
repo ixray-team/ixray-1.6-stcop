@@ -185,8 +185,8 @@ void CUIInventoryWnd::Init()
 	// Controller mode
 	xr_map<xr_string, CUIWindow*> wndPointers;
 	wndPointers["BeltList"]				= m_pUIBeltList;
-	wndPointers["PistolList"]			= m_pInvList[INV_SLOT_2];
-	wndPointers["AutomaticList"]		= m_pInvList[INV_SLOT_3];
+	wndPointers["PistolList"]			= GetSidearmDragDropList();
+	wndPointers["AutomaticList"]		= GetPrimaryDragDropList();
 	wndPointers["OutfitList"]			= m_pInvList[OUTFIT_SLOT];
 	wndPointers["BagList"]				= m_pUIBagList;
 

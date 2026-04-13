@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "CustomDevice.h"
 #include "Inventory.h"
+#include "InventoryWeaponSlotLayout.h"
 #include "Actor.h"
 #include "player_hud.h"
 #include "Weapon.h"
@@ -39,7 +40,7 @@ bool CCustomDevice::CheckCompatibilityInt(CHudItem* itm, u16* slot_to_activate)
 
 	CInventoryItem& iitm = itm->item();
 	u32 slot = iitm.BaseSlot();
-	bool bres = (slot == INV_SLOT_2 || slot == PISTOL_SLOT_NEW || slot == KNIFE_SLOT || slot == BOLT_SLOT);
+	bool bres = (IsSidearmPhysicalSlot(slot) || slot == KNIFE_SLOT || slot == BOLT_SLOT);
 
 	if (!bres && slot_to_activate)
 	{
@@ -273,7 +274,7 @@ void CCustomDevice::switch_device()
 		return;
 	}
 
-	if (GetState() == eHidden && g_player_hud->attached_item(0) && need_fx && active_item && (active_item->BaseSlot() == INV_SLOT_2 || active_item->BaseSlot() == PISTOL_SLOT_NEW))
+	if (GetState() == eHidden && g_player_hud->attached_item(0) && need_fx && active_item && IsSidearmPhysicalSlot(active_item->BaseSlot()))
 	{
 		if (g_player_hud->animator_play(g_player_hud->check_anim("anm_hide", 0) ? "anm_hide" : "anm_hide_0", 0, 1, TRUE, 1.5f, 0, false, true, [](CBlend* B) {static_cast<CCustomDevice*>(B->CallbackParam)->ShowingCallback(B); }, this, 0))
 			g_player_hud->animator_fx_play(g_player_hud->check_anim("anm_hide", 0) ? "anm_hide" : "anm_hide_0", 0, 2, 0, 3.f, 1.f, 1.f, 0.5f);

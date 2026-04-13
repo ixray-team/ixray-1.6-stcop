@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "pch_script.h"
 #include "Inventory.h"
+#include "InventoryWeaponSlotLayout.h"
 #include "ui/UIActorMenu.h"
 #include "ui/UIInventoryUtilities.h"
 #include "UIGameCustom.h"
@@ -18,64 +19,69 @@ u16	INV_STATE_BLOCK_ALL = 0xffff;
 u16	INV_STATE_INV_WND = INV_STATE_BLOCK_ALL;
 u16	INV_STATE_BUY_MENU = INV_STATE_BLOCK_ALL;
 
-// REMINDER: Update these arrays after adding new slots to inventory_space.h
+// REMINDER: defaultSlot* index is slot_id - 1 for slot_id in [KNIFE_SLOT .. LAST_SLOT] (see inventory_space.h).
 bool defaultSlotActive[] =
 {
-	true,		// knife
-	true,		// pistol
-	true,		// automatic
-	true,		// grenades
-	true,		// binocular
-	true,		// bolt
-	false,		// outfit
-	false,		// pda
-	false,		// detector
-	false,		// torch
-	true,		// artefact
-	false,		// helmet
-	false,		// backpack
-	false,		// pistol (new)
-	false,		// custom 1
-	false,		// custom 2
-	false,		// custom 3
-	false,		// custom 3
-	false,		// custom 4
-	false,		// custom 5
-	false,		// custom 6
-	false,		// custom 7
-	false,		// custom 8
-	false,		// custom 9
-	false,		// custom 10
+	true,		// 1 knife
+	true,		// 2 INV_SLOT_2
+	true,		// 3 INV_SLOT_3
+	true,		// 4 grenade
+	true,		// 5 binocular
+	true,		// 6 bolt
+	false,		// 7 outfit
+	false,		// 8 pda
+	false,		// 9 detector
+	false,		// 10 torch
+	true,		// 11 artefact
+	false,		// 12 helmet
+	false,		// 13 backpack
+	false,		// 14 power_bank
+	false,		// 15 nvg
+	false,		// 16 PISTOL_SLOT_NEW
+	false,		// 17 CUSTOM_SLOT_1
+	false,		// 18 CUSTOM_SLOT_2
+	false,		// 19 CUSTOM_SLOT_3
+	false,		// 20 CUSTOM_SLOT_4
+	false,		// 21 CUSTOM_SLOT_5
+	false,		// 22 CUSTOM_SLOT_6
+	false,		// 23 CUSTOM_SLOT_7
+	false,		// 24 CUSTOM_SLOT_8
+	false,		// 25 CUSTOM_SLOT_9
+	false,		// 26 CUSTOM_SLOT_10
 };
 
 bool defaultSlotPersistent[] =
 {
-	true,		// knife
-	false,		// pistol
-	false,		// automatic
-	true,		// grenades
-	true,		// binocular
-	true,		// bolt
-	false,		// outfit
-	true,		// pda
-	true,		// detector
-	true,		// torch
-	false,		// artefact
-	false,		// helmet
-	true,		// backpack
-	true,		// pistol (new)
-	true,		// custom 1
-	true,		// custom 2
-	true,		// custom 3
-	true,		// custom 3
-	true,		// custom 4
-	true,		// custom 5
-	true,		// custom 6
-	true,		// custom 7
-	true,		// custom 8
-	true,		// custom 9
-	true,		// custom 10
+	true,		// 1 knife
+	false,		// 2 INV_SLOT_2
+	false,		// 3 INV_SLOT_3
+	true,		// 4 grenade
+	true,		// 5 binocular
+	true,		// 6 bolt
+	false,		// 7 outfit
+	true,		// 8 pda
+	true,		// 9 detector
+	true,		// 10 torch
+	false,		// 11 artefact
+	false,		// 12 helmet
+	true,		// 13 backpack
+	true,		// 14 power_bank
+	true,		// 15 nvg
+	true,		// 16 PISTOL_SLOT_NEW
+	true,		// 17 CUSTOM_SLOT_1
+	true,		// 18 CUSTOM_SLOT_2
+	true,		// 19 CUSTOM_SLOT_3
+	true,		// 20 CUSTOM_SLOT_4
+	true,		// 21 CUSTOM_SLOT_5
+	true,		// 22 CUSTOM_SLOT_6
+	true,		// 23 CUSTOM_SLOT_7
+	true,		// 24 CUSTOM_SLOT_8
+	true,		// 25 CUSTOM_SLOT_9
+	true,		// 26 CUSTOM_SLOT_10
 };
+
+static_assert(sizeof(defaultSlotActive) / sizeof(defaultSlotActive[0]) == LAST_SLOT, "defaultSlotActive size must match LAST_SLOT");
+static_assert(sizeof(defaultSlotPersistent) / sizeof(defaultSlotPersistent[0]) == LAST_SLOT, "defaultSlotPersistent size must match LAST_SLOT");
 
 CInventory::CInventory()
 {
@@ -210,24 +216,42 @@ void CInventory::Take(CGameObject* pObj, bool bNotActivate, bool strict_placemen
 
 	if (pIItem->CurrPlace() == eItemPlaceUndefined)
 	{
-		if (!pIItem->RuckDefault())
+		bool placedPreferred = false;
+		if (pIItem->HasPreferredSlotAfterPickup())
 		{
-			if (CanPutInSlot(pIItem, pIItem->BaseSlot()))
+			if (InventoryHolsterPistolSlotActiveInSettings() &&
+				pIItem->PreferredSlotAfterPickup() == PISTOL_SLOT_NEW &&
+				ItemFromSlot(PISTOL_SLOT_NEW) == nullptr &&
+				CanPutInSlot(pIItem, PISTOL_SLOT_NEW))
 			{
-				result = Slot(pIItem->BaseSlot(), pIItem, bNotActivate, strict_placement); VERIFY(result);
+				placedPreferred = Slot(PISTOL_SLOT_NEW, pIItem, bNotActivate, strict_placement);
+				if (placedPreferred)
+				{
+					result = true;
+				}
 			}
-			else if (CanPutInBelt(pIItem))
+		}
+		if (!placedPreferred)
+		{
+			if (!pIItem->RuckDefault())
 			{
-				result = Belt(pIItem, strict_placement); VERIFY(result);
+				if (CanPutInSlot(pIItem, pIItem->BaseSlot()))
+				{
+					result = Slot(pIItem->BaseSlot(), pIItem, bNotActivate, strict_placement); VERIFY(result);
+				}
+				else if (CanPutInBelt(pIItem))
+				{
+					result = Belt(pIItem, strict_placement); VERIFY(result);
+				}
+				else
+				{
+					result = Ruck(pIItem, strict_placement); VERIFY(result);
+				}
 			}
 			else
 			{
 				result = Ruck(pIItem, strict_placement); VERIFY(result);
 			}
-		}
-		else
-		{
-			result = Ruck(pIItem, strict_placement); VERIFY(result);
 		}
 	}
 
@@ -308,6 +332,10 @@ bool CInventory::DropItem(CGameObject* pObj, bool just_before_destroy, bool dont
 	case eItemPlaceSlot:
 	{
 		VERIFY(InSlot(pIItem));
+		if (pIItem->CurrSlot() == PISTOL_SLOT_NEW && InventoryHolsterPistolSlotActiveInSettings())
+		{
+			pIItem->SetPreferredSlotAfterPickup(PISTOL_SLOT_NEW);
+		}
 		if (m_iActiveSlot == pIItem->CurrSlot() && m_pOwner != nullptr)
 		{
 			CActor* pActor = m_pOwner->cast_actor();
@@ -847,10 +875,10 @@ bool CInventory::Action(u16 cmd, u32 flags)
 
 	if (b_send_event && g_pGameLevel && OnClient() && pActor)
 	{
-		u16 slot = u16(cmd - kWPN_1 + 1);
+		const u16 slotForDevice = InventoryWeaponHotkeyToInventorySlot(cmd);
 		// Pavel: для ножа и болта нам не нужны проверки
 		// Они нормально достаются / убираются с детектором в руках
-		if (flags & CMD_START && cmd != kWPN_1 && cmd != kWPN_6)
+		if (flags & CMD_START && cmd != kWPN_1 && cmd != kWPN_6 && slotForDevice != NO_ACTIVE_SLOT)
 		{
 			// Pavel: Не достаем другое оружие, если прицеливаемся из текущего оружия
 			attachable_hud_item* i0 = g_player_hud->attached_item(0);
@@ -875,9 +903,9 @@ bool CInventory::Action(u16 cmd, u32 flags)
 
 				if (CCustomDevice* pDevice = pHudItem->cast_custom_device())
 				{
-					PIItem pItem = ItemFromSlot(slot);
+					PIItem pItem = ItemFromSlot(slotForDevice);
 					// Pavel: достаем пушку только после того, как убрали детектор
-					if (pItem && pItem->BaseSlot() != INV_SLOT_2 && pItem->BaseSlot() != PISTOL_SLOT_NEW)
+					if (pItem && !IsSidearmPhysicalSlot(pItem->BaseSlot()))
 					{
 						pDevice->HideAndSetCallback([cmd, flags, this]() {
 							this->SendActionEvent(cmd, flags);

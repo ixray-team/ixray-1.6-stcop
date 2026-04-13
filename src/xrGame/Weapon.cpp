@@ -3,6 +3,7 @@
 #include "entity_alive.h"
 #include "inventory_item_impl.h"
 #include "Inventory.h"
+#include "InventoryWeaponSlotLayout.h"
 #include "xrServer_Objects_ALife_Items.h"
 #include "Actor.h"
 #include "ActorEffector.h"
@@ -211,7 +212,7 @@ void CWeapon::UpdateXForm	()
 		mRes.mulA_43		(go->XFORM());
 	}
 
-	if (CurrSlot() == INV_SLOT_2 || CurrSlot() == PISTOL_SLOT_NEW)
+	if (IsSidearmPhysicalSlot(CurrSlot()))
 		UpdatePosition_alt(mRes);
 	else
 		UpdatePosition(mRes);
