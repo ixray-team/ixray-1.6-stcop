@@ -84,7 +84,7 @@ struct LevelInspector final
 	{
 		EWI_NONE		= 0U,
 		EWI_PREFIX		= bit_lshift(0U),
-		EWI_LICATION_ID = bit_lshift(1U),
+		EWI_LOCATION_ID = bit_lshift(1U),
 		EWI_ALL			= bit_lshift(2U),
 	};
 
