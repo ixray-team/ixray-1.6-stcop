@@ -192,6 +192,8 @@ public:
 	CGameFont* m_custom_text_font = nullptr;
 	u32	m_custom_text_clr_inv = 0;
 	u32	m_last_dropped_owner_id = 65535;
+	// Used on next Take() to restore sidearm to holster after kG drop (see CInventory::Take / DropItem).
+	u16 m_preferredSlotAfterPickup = 0xffff;
 
 	bool m_custom_mark = false;
 	shared_str m_custom_mark_texture;
@@ -234,6 +236,11 @@ public:
 	u16 BaseSlot()  const { return m_ItemCurrPlace.base_slot_id; }
 	u16 CurrSlot()  const { return m_ItemCurrPlace.slot_id; }
 	u16 CurrPlace()  const { return m_ItemCurrPlace.type; }
+
+	IC void SetPreferredSlotAfterPickup(u16 slotId) { m_preferredSlotAfterPickup = slotId; }
+	IC void ClearPreferredSlotAfterPickup() { m_preferredSlotAfterPickup = 0xffff; }
+	IC bool HasPreferredSlotAfterPickup() const { return m_preferredSlotAfterPickup != 0xffff; }
+	IC u16 PreferredSlotAfterPickup() const { return m_preferredSlotAfterPickup; }
 
 	bool Belt() { return !!m_flags.test(Fbelt); }
 	void Belt(bool on_belt) { m_flags.set(Fbelt, on_belt); }
