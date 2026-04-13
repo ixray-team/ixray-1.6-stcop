@@ -7,6 +7,7 @@
 #include "ActorEffector.h"
 #include "Missile.h"
 #include "Inventory.h"
+#include "InventoryWeaponSlotLayout.h"
 #include "Weapon.h"
 #include "map_manager.h"
 #include "Level.h"
@@ -236,7 +237,7 @@ void CActor::SelectBestWeapon(CObject* O)
 		NeedToSelectBestWeapon = true;
 		if ((GameID() & eGameIDArtefactHunt) || (GameID() & eGameIDCaptureTheArtefact)) //only for test...
 		{
-			if (pIItem->BaseSlot() == INV_SLOT_2 || pIItem->BaseSlot() == PISTOL_SLOT_NEW || pIItem->BaseSlot() == INV_SLOT_3)
+			if (IsSidearmOrPrimaryPhysicalSlot(pIItem->BaseSlot()))
 			{
 				CInventoryItem* pIItemInSlot = inventory().ItemFromSlot(pIItem->BaseSlot());
 				if (pIItemInSlot != nullptr && pIItemInSlot != pIItem)

@@ -417,8 +417,8 @@ void CUIActorMenu::Construct()
 	xr_map<xr_string, CUIWindow*> wndPointers;
 	wndPointers["TradeActorBagList"]	= m_pTradeActorBagList;
 	wndPointers["BeltList"]				= m_pInventoryBeltList;
-	wndPointers["PistolList"]			= m_pInvList[INV_SLOT_2];
-	wndPointers["AutomaticList"]		= m_pInvList[INV_SLOT_3];
+	wndPointers["PistolList"]			= GetSidearmDragDropList();
+	wndPointers["AutomaticList"]		= GetPrimaryDragDropList();
 	wndPointers["OutfitList"]			= m_pInvList[OUTFIT_SLOT];
 	wndPointers["HelmetList"]			= m_pInvList[HELMET_SLOT];
 	wndPointers["DetectorList"]			= m_pInvList[DEVICE_SLOT];

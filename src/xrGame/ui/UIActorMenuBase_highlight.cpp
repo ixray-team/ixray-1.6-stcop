@@ -3,6 +3,7 @@
 #include "UICellItem.h"
 #include "../PowerCell.h"
 #include "../WeaponMagazinedWGrenade.h"
+#include "../InventoryWeaponSlotLayout.h"
 
 void CUIActorMenuBase::clear_highlight_lists()
 {
@@ -423,8 +424,7 @@ void CUIActorMenuBase::highlight_item_slot(CUICellItem* cell_item)
 	}
 
 	u16 slot_id = item->BaseSlot();
-	const static bool pistolsOnly = EngineExternal()[EEngineExternalGame::EnableInventoryPistolSlot];
-	if ((slot_id == INV_SLOT_2 || slot_id == INV_SLOT_3) && !pistolsOnly)
+	if ((slot_id == INV_SLOT_2 || slot_id == INV_SLOT_3) && !InventorySecondarySlotPairingStrict())
 	{
 		if (m_pInvSlotHighlight[INV_SLOT_2])
 		{
@@ -436,6 +436,19 @@ void CUIActorMenuBase::highlight_item_slot(CUICellItem* cell_item)
 			m_pInvSlotHighlight[INV_SLOT_3]->Show(true);
 		}
 
+		// Flex slot pair: also show dedicated holster highlight for BaseSlot INV_SLOT_2 (holster is separate UI).
+		if (slot_id == INV_SLOT_2 && m_pInvSlotHighlight[PISTOL_SLOT_NEW])
+		{
+			m_pInvSlotHighlight[PISTOL_SLOT_NEW]->Show(true);
+		}
+
+		return;
+	}
+
+	// Equipped item: use current slot so holster (PISTOL_SLOT_NEW) highlights instead of BaseSlot INV_SLOT_2 only.
+	if (item->CurrPlace() == eItemPlaceSlot && m_pInvSlotHighlight[item->CurrSlot()])
+	{
+		m_pInvSlotHighlight[item->CurrSlot()]->Show(true);
 		return;
 	}
 
