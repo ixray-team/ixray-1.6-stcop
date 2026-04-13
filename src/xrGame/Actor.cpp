@@ -21,6 +21,7 @@
 #include "actor_anim_defs.h"
 #include "Weapon.h"
 #include "Inventory.h"
+#include "InventoryWeaponSlotLayout.h"
 #include "GamePersistent.h"
 #include "../xrEngine/string_table.h"
 #include "alife_registry_wrappers.h"
@@ -1704,7 +1705,7 @@ void CActor::UpdateCL()
 					old_slot = 0;
 				}
 
-				bool bres = (saved_old_slot == NO_ACTIVE_SLOT || saved_old_slot == INV_SLOT_2 || saved_old_slot == PISTOL_SLOT_NEW || saved_old_slot == KNIFE_SLOT || saved_old_slot == BOLT_SLOT);
+				bool bres = (saved_old_slot == NO_ACTIVE_SLOT || IsSidearmPhysicalSlot(saved_old_slot) || saved_old_slot == KNIFE_SLOT || saved_old_slot == BOLT_SLOT);
 
 				if (!bres)
 				{
@@ -2579,7 +2580,9 @@ void CActor::g_PerformDrop()
 			return;
 		}
 
-		if (inventory().SlotIsPersistent(inventory().GetActiveSlot()))
+		const u16 activeSlot = inventory().GetActiveSlot();
+		// PISTOL_SLOT_NEW is persistent in [inventory] so slot gear is not lost by accident; still allow kDROP (G) for weapons.
+		if (inventory().SlotIsPersistent(activeSlot) && activeSlot != PISTOL_SLOT_NEW)
 		{
 			return;
 		}
