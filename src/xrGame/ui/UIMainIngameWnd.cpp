@@ -15,6 +15,7 @@
 #include "../PDA.h"
 #include "../xrServerEntities/character_info.h"
 #include "../Inventory.h"
+#include "../InventoryWeaponSlotLayout.h"
 #include "UIGameSP.h"
 #include "../WeaponMagazined.h"
 #include "../Missile.h"
@@ -1495,7 +1496,7 @@ void CUIMainIngameWnd::UpdateMainIndicators()
 	{
 		u16 slot = pActor->inventory().GetActiveSlot();
 		m_ind_weapon_broken->Show(false);
-		if (slot == INV_SLOT_2 || slot == INV_SLOT_3 || slot == PISTOL_SLOT_NEW)
+		if (IsSidearmOrPrimaryPhysicalSlot(slot))
 		{
 			PIItem item_from_slot = pActor->inventory().ItemFromSlot(slot);
 			CWeapon* weapon = item_from_slot ? item_from_slot->cast_weapon() : nullptr;
