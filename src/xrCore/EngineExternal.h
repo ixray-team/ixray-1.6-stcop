@@ -44,7 +44,6 @@ enum class EEngineExternalGame
 	EnableActorStepWallmarks,
 	DisableSprintWhileOverweight,
 	EnableAlternateZoomFovCalc,
-	EnableInventoryPistolSlot,
 	EnableImproveWeaponMisfire,
 	EnableDelayedWeaponActions,
 	EnableLegacyUpgradeSystem,

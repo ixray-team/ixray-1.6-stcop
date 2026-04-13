@@ -5,6 +5,7 @@
 #include "Actor.h"
 #include "trade.h"
 #include "Inventory.h"
+#include "InventoryWeaponSlotLayout.h"
 #include "character_info.h"
 #include "script_game_object.h"
 #include "../xrScripts/script_engine.h"
@@ -357,7 +358,7 @@ void CInventoryOwner::renderable_Render()
 		}
 
 		PIItem lWeapon2 = inventory().ItemFromSlot(PISTOL_SLOT_NEW);
-		bool lValid2 = lWeapon2 != nullptr ? lWeapon2->BaseSlot() == INV_SLOT_3 : false;
+		bool lValid2 = lWeapon2 != nullptr ? IsSidearmPhysicalSlot(lWeapon2->BaseSlot()) : false;
 		if (lWeapon2 != nullptr && lValid2 && lWeapon2 != active_item)
 		{
 			lWeapon2->renderable_Render();
@@ -374,6 +375,7 @@ void CInventoryOwner::OnItemTake(CInventoryItem* inventory_item)
 
 	object->callback(GameObject::eOnItemTake)(inventory_item->object().lua_game_object(), inventory_item->m_last_dropped_owner_id);
 	inventory_item->m_last_dropped_owner_id = 65535;
+	inventory_item->ClearPreferredSlotAfterPickup();
 
 	attach(inventory_item);
 
