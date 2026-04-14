@@ -166,11 +166,22 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 	// b) Should be rendered to special distort buffer in another pass
 
 	if (!pVisual->shader._get()) return;
+
+	bool bHUD = !!RI.val_bHUD;
+
+	if (auto pParticle = pVisual->dcast_ParticleCustom())
+	{
+		if (pParticle->GetHudMode())
+		{
+			bHUD = true;
+		}
+	}
+
 	ShaderElement* sh_d = pVisual->shader->E[4] ? &*pVisual->shader->E[4] : nullptr;
 
 	if (RImplementation.o.distortion && sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority / 2] && !psDeviceFlags.test(rsClearBB))
 	{
-		mapSorted_T& test = RI.val_bHUD ? mapHUDDistort : mapDistort;
+		mapSorted_T& test = bHUD ? mapHUDDistort : mapDistort;
 		mapSorted_Node* N = test.insertInAnyWay(distSQ);
 
 		N->val.ssa = SSA;
@@ -216,9 +227,9 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 	if (pmask[sh->flags.iPriority / 2])
 	{
 		// HUD rendering
-		if (RI.val_bHUD)
+		if (bHUD)
 		{
-			if (sh->flags.bStrictB2F)
+			if (sh->flags.bStrictB2F || sh->flags.iPriority > 1)
 			{
 				mapHUDSorted.insertInAnyWay(distSQ, { SSA, RI.val_pObject, pVisual, *RI.val_pTransform, sh });
 			}
