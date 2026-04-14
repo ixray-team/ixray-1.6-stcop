@@ -456,11 +456,12 @@ void CParticleEffect::UpdateCache()
 	}
 }
 
-void CParticleEffect::Render(float )
+void CParticleEffect::Render(float)
 {
 	if (!m_Def || !m_Def->m_Flags.test(CPEDef::dfSprite))
+	{
 		return;
-
+	}
 
 	Fvector c = vis.sphere.P;
 	m_XFORM.transform_tiny(c);
@@ -479,16 +480,6 @@ void CParticleEffect::Render(float )
 	if (total_sprites == 0u || particles == nullptr)
 	{
 		return;
-	}
-
-	CHudInitializer initalizer(false, true);
-
-	if (GetHudMode())
-	{
-		initalizer.SetHudMode();
-		RCache.set_xform_view(Device.mView);
-		RCache.set_xform_project(Device.mProject);
-		ApplyTexgen(Device.mFullTransform);
 	}
 
 	RCache.set_xform_world(Fidentity);
@@ -511,14 +502,6 @@ void CParticleEffect::Render(float )
 	}
 
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
-
-	if (GetHudMode())
-	{
-		initalizer.SetDefaultMode();
-		RCache.set_xform_view(Device.mView);
-		RCache.set_xform_project(Device.mProject);
-		ApplyTexgen(Device.mFullTransform);
-	}
 }
 #else
 ICF void FillSprite(PAPI::Particle::LITBUFF*& pv, const Fvector& T, const Fvector& R, const Fvector& pos, const Fvector2& lt, const Fvector2& rb, float r1, float r2, u32 clr, float angle)
