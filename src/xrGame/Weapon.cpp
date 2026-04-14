@@ -4798,3 +4798,10 @@ void CWeapon::OnChangeVisual()
 	const u32 config = for_grenade ? iAmmoElapsed : iAmmoElapsed + iAmmoChamberElapsed;
 	UpdateAmmoBones(for_grenade ? m_ammo_bones_gl : m_ammo_bones_mag, config, GetTargetAmmoType(for_grenade));
 }
+
+void CWeapon::on_a_hud_attach()
+{
+	inherited::on_a_hud_attach();
+
+	ForceUpdateHUD();
+}
