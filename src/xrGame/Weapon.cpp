@@ -4951,3 +4951,10 @@ float CWeapon::GetAddonRecoil() const
 
 	return finalRecoil;
 }
+
+void CWeapon::on_a_hud_attach()
+{
+	inherited::on_a_hud_attach();
+
+	ForceUpdateHUD();
+}

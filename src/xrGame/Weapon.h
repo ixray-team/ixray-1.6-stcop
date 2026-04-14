@@ -119,6 +119,9 @@ public:
 	bool IsHudModelForceUnhide() const;
 	bool IsUIForceUnhiding() const;
 	bool ScopeFit(CScope*) const;
+
+	virtual void on_a_hud_attach() override;
+
 protected:
 	//время удаления оружия
 	ALife::_TIME_ID			m_dwWeaponRemoveTime;
