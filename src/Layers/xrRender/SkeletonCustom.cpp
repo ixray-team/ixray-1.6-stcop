@@ -431,6 +431,7 @@ void CKinematics::Depart		()
 	// visibility
 	children.insert				(children.end(),children_invisible.begin(),children_invisible.end());
 	children_invisible.clear	();
+	SetParentObjectId(ALife::_OBJECT_ID(-1));
 }
 
 void CKinematics::Release		()

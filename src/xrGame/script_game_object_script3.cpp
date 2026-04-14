@@ -91,7 +91,17 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("set_item",					(void (CScriptGameObject::*)(MonsterSpace::EObjectAction, CScriptGameObject *, u32))(&CScriptGameObject::set_item))
 		.def("set_item",					(void (CScriptGameObject::*)(MonsterSpace::EObjectAction, CScriptGameObject *, u32, u32))(&CScriptGameObject::set_item))
 
-		.def("bone_position",				&CScriptGameObject::bone_position)
+		.def("bone_position",				(Fvector (CScriptGameObject::*)(u16))(&CScriptGameObject::bone_position))
+		.def("bone_position",				(Fvector (CScriptGameObject::*)(LPCSTR))(&CScriptGameObject::bone_position))
+
+		.def("bone_direction",				(Fvector(CScriptGameObject::*)(u16))(&CScriptGameObject::bone_direction))
+		.def("bone_direction",				(Fvector(CScriptGameObject::*)(LPCSTR))(&CScriptGameObject::bone_direction))
+		
+		.def("get_bone_name_by_id",			&CScriptGameObject::get_bone_name_by_id)
+		.def("get_bone_id_by_name",			&CScriptGameObject::get_bone_id_by_name)
+
+		.def("get_root_bone_name",			&CScriptGameObject::get_root_bone_name)
+		.def("get_root_bone_id",			&CScriptGameObject::get_root_bone_id)
 
 		.def("is_body_turning",				&CScriptGameObject::is_body_turning)
 
