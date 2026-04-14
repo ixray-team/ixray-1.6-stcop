@@ -1,8 +1,10 @@
 #include "stdafx.h"
+#include "Level.h"
 #include "GameObject.h"
 #include "ai_object_location.h"
 #include "../../xrServerEntities/xrMessages.h"
 #include "../../xrServerEntities/xrServer_Objects_ALife.h"
+#include "script_game_object.h"
 
 #include <luabind/luabind.hpp>
 
@@ -70,11 +72,27 @@ float SimDistTo(luabind::object Left, luabind::object Right)
 	return v1->game_point().distance_to(v2->game_point());
 }
 
+
+CScriptGameObject* net_find(ALife::_OBJECT_ID object_id)
+{
+	if (CObject* obj = Level().Objects.net_Find(object_id))
+	{
+		if (CGameObject* gObj = obj->cast_game_object())
+		{
+			return gObj->lua_game_object();
+		}
+	}
+
+	return 0;
+}
+
+#pragma optimize("s",on)
 void CompatibilityBringeExport(lua_State* L)
 {
 	luabind::module(L, "sim")
 	[
-		luabind::def("dist_to", SimDistTo)
+		luabind::def("dist_to", SimDistTo),
+		luabind::def("net_find", net_find)
 	];
 
 	luabind::object script_events = luabind::get_globals(L)["script_events"];

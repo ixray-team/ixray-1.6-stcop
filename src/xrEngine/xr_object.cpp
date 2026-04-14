@@ -79,36 +79,35 @@ void CObject::cNameVisual_set	(shared_str N)
 		if (N==NameVisual)		return;
 
 	// replace model
-	if (*N && N[0]) 
+	if (*N && N[0])
 	{
-		IRenderVisual			*old_v = renderable.visual;
-		
-		NameVisual				= N;
-		renderable.visual		= Render->model_Create	(*N);
-		
-		IKinematics* old_k	= old_v?old_v->dcast_PKinematics():nullptr;
-		IKinematics* new_k	= renderable.visual->dcast_PKinematics();
+		IRenderVisual* old_v = renderable.visual;
+		NameVisual = N;
+		renderable.visual = Render->model_Create(*N);
 
-		/*
-		if(old_k && new_k){
-			new_k->Update_Callback			= old_k->Update_Callback;
-			new_k->Update_Callback_Param	= old_k->Update_Callback_Param;
-		}
-		*/
-		if(old_k && new_k)
+		if (IKinematics* new_k = renderable.visual->dcast_PKinematics())
 		{
-			new_k->SetUpdateCallback(old_k->GetUpdateCallback());
-			new_k->SetUpdateCallbackParam(old_k->GetUpdateCallbackParam());
+			new_k->SetParentObjectId(ID());
+
+			if (IKinematics* old_k = old_v ? old_v->dcast_PKinematics() : nullptr)
+			{
+				new_k->SetUpdateCallback(old_k->GetUpdateCallback());
+				new_k->SetUpdateCallbackParam(old_k->GetUpdateCallbackParam());
+				old_k->SetParentObjectId(ALife::_OBJECT_ID(-1));
+			}
 		}
 
-		::Render->model_Delete	(old_v);
+		if (old_v)
+		{
+			::Render->model_Delete(old_v);
+		}
 	} 
 	else 
 	{
-		::Render->model_Delete	(renderable.visual);
+		::Render->model_Delete(renderable.visual);
 		NameVisual				= 0;
 	}
-	OnChangeVisual				();
+	OnChangeVisual();
 }
 
 // flagging
