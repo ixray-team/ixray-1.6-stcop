@@ -4,6 +4,7 @@
 
 #include "../../xrEngine/VisMask.h"
 #include "RenderVisual.h"
+#include "../../xrEngine/AI/alife_space.h"	
 
 typedef void (* UpdateCallback)		(IKinematics*	P);
 
@@ -20,6 +21,7 @@ struct	SEnumVerticesCallback;
 class IKinematics
 {
 public:
+	ALife::_OBJECT_ID parent_object_id = ALife::_OBJECT_ID(-1);
 	typedef xr_vector<std::pair<shared_str,u16> >	accel;
 	struct	pick_result
 	{
@@ -27,7 +29,10 @@ public:
 		float	dist;
 		Fvector	tri[3];
 	};
-public:
+
+	ALife::_OBJECT_ID GetParentObjectId() { return parent_object_id; }
+	void SetParentObjectId(ALife::_OBJECT_ID id) { parent_object_id = id; }
+
 	virtual		void					Bone_Calculate		(CBoneData* bd, Fmatrix* parent) = 0;
 	virtual		void					Bone_GetAnimPos(Fmatrix& pos,u16 id, u8 channel_mask, bool ignore_callbacks) = 0;
 
