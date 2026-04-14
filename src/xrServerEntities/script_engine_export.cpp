@@ -35,6 +35,7 @@
 #	include "antigas_filter.h"
 #	include "PowerCell.h"
 #	include "nvg.h"
+#	include "Crypto_script.h"
 #endif
 
 extern void CompatibilityBringeExport(lua_State*);
@@ -295,6 +296,7 @@ void export_classes	(lua_State *L)
 	AntigasFilter::script_register(L);
 	PowerCell::script_register(L);
 	CNVG::script_register(L);
+	CFFxCrypto::script_register(L);
 
 	// Ехидна Эдишен
 	ExportEELayer(L);
