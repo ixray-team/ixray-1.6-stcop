@@ -333,8 +333,71 @@ u32 CScriptGameObject::get_current_patrol_point_index()
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
+Fvector	CScriptGameObject::bone_position(u16 _bone_id)
+{
+	u16 bone_id = BI_NONE;
+	if (_bone_id == BI_NONE)
+	{
+		Msg("! CScriptGameObject::bone_position(...): bone_id [%s] not found in object [%s]", _bone_id, object().cNameSect().c_str());
+		return {};
+	}
 
-Fvector	CScriptGameObject::bone_position(LPCSTR bone_name) const
+	if (IKinematics* kin = PKinematics(object().Visual()))
+	{
+		LPCSTR bone_name = kin->LL_BoneName_dbg(_bone_id);
+		if (xr_strlen(bone_name))
+		{
+			bone_id = kin->LL_BoneID(bone_name);
+		}
+
+		if (bone_id == BI_NONE)
+		{
+			Msg("! CScriptGameObject::bone_position(...): bone_name missing by id [%d] in object [%s]", bone_id, object().cNameSect().c_str());
+			return {};
+		}
+		
+		Fvector res;
+		kin->LL_GetBoneWorldPosition(bone_id, object().XFORM(), res);
+
+		return res;
+	}
+
+	return {};
+}
+
+Fvector	CScriptGameObject::bone_direction(u16 _bone_id)
+{
+	u16 bone_id = BI_NONE;
+	if (_bone_id == BI_NONE)
+	{
+		Msg("! CScriptGameObject::bone_position(...): bone_id [%s] not found in object [%s]", _bone_id, object().cNameSect().c_str());
+		return {};
+	}
+
+	if (IKinematics* kin = PKinematics(object().Visual()))
+	{
+		LPCSTR bone_name = kin->LL_BoneName_dbg(_bone_id);
+		if (xr_strlen(bone_name))
+		{
+			bone_id = kin->LL_BoneID(bone_name);
+		}
+
+		if (bone_id == BI_NONE)
+		{
+			Msg("! CScriptGameObject::bone_position(...): bone_name missing by id [%d] in object [%s]", bone_id, object().cNameSect().c_str());
+			return {};
+		}
+
+		Fmatrix res;
+		kin->LL_GetBoneWorldTransform(bone_id, object().XFORM(), res);
+
+		return res.k;
+	}
+
+	return {};
+}
+
+Fvector	CScriptGameObject::bone_position(LPCSTR bone_name)
 {
 	u16 bone_id = BI_NONE;
 
@@ -356,9 +419,101 @@ Fvector	CScriptGameObject::bone_position(LPCSTR bone_name) const
 		return {};
 	}
 
-	Fmatrix matrix;
-	matrix.mul_43(object().XFORM(), kin->LL_GetBoneInstance(bone_id).mTransform);
-	return matrix.c;
+	Fvector res;
+	kin->LL_GetBoneWorldPosition(bone_id, object().XFORM(), res);
+
+	return res;
+}
+
+Fvector	CScriptGameObject::bone_direction(LPCSTR bone_name)
+{
+	u16 bone_id = BI_NONE;
+
+	IKinematics* kin = PKinematics(object().Visual());
+
+	if (xr_strlen(bone_name))
+	{
+		bone_id = kin->LL_BoneID(bone_name);
+	}
+	else
+	{
+		bone_id = kin->LL_GetBoneRoot();
+		Msg("! CScriptGameObject::bone_position(...): bone_name is empty, object %s:", object().cNameSect().c_str());
+	}
+
+	if (bone_id == BI_NONE)
+	{
+		Msg("! CScriptGameObject::bone_position(...): bone_name [%s] not found in object [%s]", bone_name, object().cNameSect().c_str());
+		return {};
+	}
+
+	Fmatrix res;
+	kin->LL_GetBoneWorldTransform(bone_id, object().XFORM(), res);
+
+	return res.k;
+}
+
+LPCSTR	CScriptGameObject::get_root_bone_name() const
+{
+	u16 bone_id = BI_NONE;
+
+	if (IKinematics* kin = PKinematics(object().Visual()))
+	{
+		bone_id = kin->LL_GetBoneRoot();
+		if (bone_id == BI_NONE)
+		{
+			Msg("! CScriptGameObject::get_root_bone_name(...): bone_id [%s] not found in object [%s]", bone_id, object().cNameSect().c_str());
+			return {};
+		}
+
+		return kin->LL_BoneName_dbg(bone_id);
+	}
+
+	return "";
+}
+
+u16	CScriptGameObject::get_root_bone_id() const
+{
+	if (IKinematics* kin = PKinematics(object().Visual()))
+	{
+		return kin->LL_GetBoneRoot();
+	}
+
+	return BI_NONE;
+}
+
+LPCSTR	CScriptGameObject::get_bone_name_by_id(u16 bone_id) const
+{
+	if (bone_id == BI_NONE)
+	{
+		Msg("! CScriptGameObject::bone_name_by_id(...): bone_id [%s] not found in object [%s]", bone_id, object().cNameSect().c_str());
+		return "";
+	}
+
+	if (IKinematics* kin = PKinematics(object().Visual()))
+	{
+		return kin->LL_BoneName_dbg(bone_id);
+	}
+
+	return "";
+}
+
+u16	CScriptGameObject::get_bone_id_by_name(LPCSTR bone_name) const
+{
+	u16 bone_id = BI_NONE;
+
+	IKinematics* kin = PKinematics(object().Visual());
+
+	if (xr_strlen(bone_name))
+	{
+		bone_id = kin->LL_BoneID(bone_name);
+	}
+	else
+	{
+		bone_id = BI_NONE;
+	}
+
+	return bone_id;
 }
 
 //////////////////////////////////////////////////////////////////////////
