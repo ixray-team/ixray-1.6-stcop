@@ -687,7 +687,15 @@ public:
 			void				start_particles			(LPCSTR pname, LPCSTR bone);
 			void				stop_particles			(LPCSTR pname, LPCSTR bone);
 
-			Fvector				bone_position			(LPCSTR bone_name) const;
+			Fvector				bone_position			(LPCSTR bone_name);
+			Fvector				bone_position			(u16 bone_index);
+			LPCSTR				get_bone_name_by_id		(u16 bone_id) const;
+			u16					get_bone_id_by_name		(LPCSTR bone_name) const;
+			LPCSTR				get_root_bone_name		() const;
+			u16					get_root_bone_id()		const;
+			Fvector				bone_direction			(LPCSTR bone_name);
+			Fvector				bone_direction			(u16 bone_name);
+
 			bool				is_body_turning			() const;
 	cphysics_shell_scripted*	get_physics_shell		() const;
 			u16					get_bone_id				(LPCSTR bone_name) const;					
