@@ -229,14 +229,12 @@ LPCSTR CFFxCrypto::SHA1(LPCSTR input)
 
             for (int j = 0; j < 16; j++)
             {
-                w[j] = (buffer[j * 4] << 24) | (buffer[j * 4 + 1] << 16) |
-                    (buffer[j * 4 + 2] << 8) | buffer[j * 4 + 3];
+                w[j] = (buffer[j * 4] << 24) | (buffer[j * 4 + 1] << 16) |  (buffer[j * 4 + 2] << 8) | buffer[j * 4 + 3];
             }
 
             for (int j = 16; j < 80; j++)
             {
-                w[j] = ((w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16]) << 1) |
-                    ((w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16]) >> 31);
+                w[j] = ((w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16]) << 1) |  ((w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16]) >> 31);
             }
 
             uint32_t a = h[0], b = h[1], c = h[2], d = h[3], e = h[4];
@@ -293,14 +291,12 @@ LPCSTR CFFxCrypto::SHA1(LPCSTR input)
         uint32_t w[80];
         for (int j = 0; j < 16; j++)
         {
-            w[j] = (buffer[j * 4] << 24) | (buffer[j * 4 + 1] << 16) |
-                (buffer[j * 4 + 2] << 8) | buffer[j * 4 + 3];
+            w[j] = (buffer[j * 4] << 24) | (buffer[j * 4 + 1] << 16) |  (buffer[j * 4 + 2] << 8) | buffer[j * 4 + 3];
         }
 
         for (int j = 16; j < 80; j++)
         {
-            w[j] = ((w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16]) << 1) |
-                ((w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16]) >> 31);
+            w[j] = ((w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16]) << 1) |  ((w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16]) >> 31);
         }
 
         uint32_t a = h[0], b = h[1], c = h[2], d = h[3], e = h[4];
@@ -357,14 +353,12 @@ LPCSTR CFFxCrypto::SHA1(LPCSTR input)
     uint32_t w[80];
     for (int j = 0; j < 16; j++)
     {
-        w[j] = (buffer[j * 4] << 24) | (buffer[j * 4 + 1] << 16) |
-            (buffer[j * 4 + 2] << 8) | buffer[j * 4 + 3];
+        w[j] = (buffer[j * 4] << 24) | (buffer[j * 4 + 1] << 16) |  (buffer[j * 4 + 2] << 8) | buffer[j * 4 + 3];
     }
 
     for (int j = 16; j < 80; j++)
     {
-        w[j] = ((w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16]) << 1) |
-            ((w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16]) >> 31);
+        w[j] = ((w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16]) << 1) | ((w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16]) >> 31);
     }
 
     uint32_t a = h[0], b = h[1], c = h[2], d = h[3], e = h[4];
