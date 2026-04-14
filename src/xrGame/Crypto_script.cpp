@@ -20,7 +20,7 @@ LPCSTR CFFxCrypto::CRC64(LPCSTR input)
 
     for (size_t i = 0; i < strlen(input); ++i)
     {
-        crc = CRC64_TABLE[(crc ^ bytes[i]) & 0xFF] ^ (crc >> 8);
+        crc = CRC64_MASK[(crc ^ bytes[i]) & 0xFF] ^ (crc >> 8);
     }
 
     crc = ~crc;
@@ -201,6 +201,229 @@ LPCSTR CFFxCrypto::SHA256(LPCSTR input)
     return result;
 }
 
+LPCSTR CFFxCrypto::SHA1(LPCSTR input)
+{
+    if (!input)
+    {
+        return "";
+    }
+
+    static char result[41];
+
+    uint32_t h[5];
+    memcpy(h, SHA1_H0, sizeof(SHA1_H0));
+
+    unsigned char buffer[64];
+    size_t bufferLen = 0;
+    uint64_t bitCount = 0;
+    size_t len = strlen(input);
+    const unsigned char* data = reinterpret_cast<const unsigned char*>(input);
+
+    for (size_t i = 0; i < len; i++)
+    {
+        buffer[bufferLen++] = data[i];
+
+        if (bufferLen == 64)
+        {
+            uint32_t w[80];
+
+            for (int j = 0; j < 16; j++)
+            {
+                w[j] = (buffer[j * 4] << 24) | (buffer[j * 4 + 1] << 16) |
+                    (buffer[j * 4 + 2] << 8) | buffer[j * 4 + 3];
+            }
+
+            for (int j = 16; j < 80; j++)
+            {
+                w[j] = ((w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16]) << 1) |
+                    ((w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16]) >> 31);
+            }
+
+            uint32_t a = h[0], b = h[1], c = h[2], d = h[3], e = h[4];
+
+            for (int j = 0; j < 80; j++)
+            {
+                uint32_t f;
+
+                if (j < 20)
+                {
+                    f = (b & c) | ((~b) & d);
+                }
+                else if (j < 40)
+                {
+                    f = b ^ c ^ d;
+                }
+                else if (j < 60)
+                {
+                    f = (b & c) | (b & d) | (c & d);
+                }
+                else
+                {
+                    f = b ^ c ^ d;
+                }
+
+                uint32_t temp = ((a << 5) | (a >> 27)) + f + e + SHA1_K[j / 20] + w[j];
+                e = d;
+                d = c;
+                c = (b << 30) | (b >> 2);
+                b = a;
+                a = temp;
+            }
+
+            h[0] += a;
+            h[1] += b;
+            h[2] += c;
+            h[3] += d;
+            h[4] += e;
+
+            bitCount += 512;
+            bufferLen = 0;
+        }
+    }
+
+    buffer[bufferLen++] = 0x80;
+
+    if (bufferLen > 56)
+    {
+        while (bufferLen < 64)
+        {
+            buffer[bufferLen++] = 0;
+        }
+
+        uint32_t w[80];
+        for (int j = 0; j < 16; j++)
+        {
+            w[j] = (buffer[j * 4] << 24) | (buffer[j * 4 + 1] << 16) |
+                (buffer[j * 4 + 2] << 8) | buffer[j * 4 + 3];
+        }
+
+        for (int j = 16; j < 80; j++)
+        {
+            w[j] = ((w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16]) << 1) |
+                ((w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16]) >> 31);
+        }
+
+        uint32_t a = h[0], b = h[1], c = h[2], d = h[3], e = h[4];
+
+        for (int j = 0; j < 80; j++)
+        {
+            uint32_t f;
+
+            if (j < 20)
+            {
+                f = (b & c) | ((~b) & d);
+            }
+            else if (j < 40)
+            {
+                f = b ^ c ^ d;
+            }
+            else if (j < 60)
+            {
+                f = (b & c) | (b & d) | (c & d);
+            }
+            else
+            {
+                f = b ^ c ^ d;
+            }
+
+            uint32_t temp = ((a << 5) | (a >> 27)) + f + e + SHA1_K[j / 20] + w[j];
+            e = d;
+            d = c;
+            c = (b << 30) | (b >> 2);
+            b = a;
+            a = temp;
+        }
+
+        h[0] += a;
+        h[1] += b;
+        h[2] += c;
+        h[3] += d;
+        h[4] += e;
+
+        bufferLen = 0;
+    }
+
+    while (bufferLen < 56)
+    {
+        buffer[bufferLen++] = 0;
+    }
+
+    uint64_t totalBits = bitCount + (bufferLen - 1) * 8;
+    for (int i = 0; i < 8; i++)
+    {
+        buffer[56 + i] = (totalBits >> (56 - i * 8)) & 0xFF;
+    }
+
+    uint32_t w[80];
+    for (int j = 0; j < 16; j++)
+    {
+        w[j] = (buffer[j * 4] << 24) | (buffer[j * 4 + 1] << 16) |
+            (buffer[j * 4 + 2] << 8) | buffer[j * 4 + 3];
+    }
+
+    for (int j = 16; j < 80; j++)
+    {
+        w[j] = ((w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16]) << 1) |
+            ((w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16]) >> 31);
+    }
+
+    uint32_t a = h[0], b = h[1], c = h[2], d = h[3], e = h[4];
+
+    for (int j = 0; j < 80; j++)
+    {
+        uint32_t f;
+
+        if (j < 20)
+        {
+            f = (b & c) | ((~b) & d);
+        }
+        else if (j < 40)
+        {
+            f = b ^ c ^ d;
+        }
+        else if (j < 60)
+        {
+            f = (b & c) | (b & d) | (c & d);
+        }
+        else
+        {
+            f = b ^ c ^ d;
+        }
+
+        uint32_t temp = ((a << 5) | (a >> 27)) + f + e + SHA1_K[j / 20] + w[j];
+        e = d;
+        d = c;
+        c = (b << 30) | (b >> 2);
+        b = a;
+        a = temp;
+    }
+
+    h[0] += a;
+    h[1] += b;
+    h[2] += c;
+    h[3] += d;
+    h[4] += e;
+
+    unsigned char hash[20];
+    for (int i = 0; i < 5; i++)
+    {
+        hash[i * 4] = (h[i] >> 24) & 0xFF;
+        hash[i * 4 + 1] = (h[i] >> 16) & 0xFF;
+        hash[i * 4 + 2] = (h[i] >> 8) & 0xFF;
+        hash[i * 4 + 3] = h[i] & 0xFF;
+    }
+
+    for (int i = 0; i < 20; i++)
+    {
+        result[i * 2] = hex[hash[i] >> 4];
+        result[i * 2 + 1] = hex[hash[i] & 0x0F];
+    }
+
+    result[40] = '\0';
+
+    return result;
+}
+
 using namespace luabind;
 #pragma optimize("s",on)
 void CFFxCrypto::script_register(lua_State* L)
@@ -210,6 +433,7 @@ void CFFxCrypto::script_register(lua_State* L)
             class_<CFFxCrypto>("FFxCrypto")
                 .def(constructor<>())
                 .def("crc64", &CFFxCrypto::CRC64)
+                .def("sha1", &CFFxCrypto::SHA1)
                 .def("sha256", &CFFxCrypto::SHA256)
         ];
 }
