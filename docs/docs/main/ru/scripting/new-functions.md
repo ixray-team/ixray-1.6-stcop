@@ -705,7 +705,58 @@ object:set_sub_inventory_icon(mark, offset, size, texture, color)
 retval: none
 args: bool, vector2, vector2, string, int
 
+
+--// Получить позицию кости по идентификатору кости у обьекта
+object:bone_position(bone_id)
+retval: vector
+args: (integer) bone_id
+
+--// Получить позицию кости по названию кости у обьекта
+object:bone_position(bone_name)
+retval: vector
+args: (string) bone_name
+
+
+--// Получить направление кости по идентификатору кости у обьекта
+object:bone_direction(bone_id)
+retval: vector
+args: (integer) bone_id
+
+--// Получить направление кости по названию кости у обьекта
+object:bone_direction(bone_name)
+retval: vector
+args: (string) bone_name
+
+
+--// Получить имя кости по идентификатору кости у обьекта
+object:get_bone_name_by_id(bone_id)
+retval: string
+args: (integer) bone_id
+
+--// Получить идентификатор кости по имени кости у обьекта
+object:get_bone_name_by_id(bone_name)
+retval: integer
+args: (string) bone_name
+
+
+--// Получить имя root кости у обьекта
+object:get_root_bone_name()
+retval: string
+
+--// Получить идентификатор root кости у обьекта
+object:get_root_bone_id()
+retval: integer
+
 ```
+
+## sim (CompatibilityBringeScripts.cpp)
+```lua
+--// Получить ссылку на игровой обьект по идентификатору
+sim.net_find(object_id)
+retval: game_object | nil
+args: (u16) object_id
+```
+
 ## CConsole
 ```lua
 --// Регистрация LUA команды в консоли (нужно вызывать каждый раз на старте уровня)
