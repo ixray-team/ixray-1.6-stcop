@@ -365,6 +365,38 @@ Fvector	CScriptGameObject::bone_position(u16 _bone_id)
 	return {};
 }
 
+Fvector	CScriptGameObject::bone_direction(u16 _bone_id)
+{
+	u16 bone_id = BI_NONE;
+	if (_bone_id == BI_NONE)
+	{
+		Msg("! CScriptGameObject::bone_position(...): bone_id [%s] not found in object [%s]", _bone_id, object().cNameSect().c_str());
+		return {};
+	}
+
+	if (IKinematics* kin = PKinematics(object().Visual()))
+	{
+		LPCSTR bone_name = kin->LL_BoneName_dbg(_bone_id);
+		if (xr_strlen(bone_name))
+		{
+			bone_id = kin->LL_BoneID(bone_name);
+		}
+
+		if (bone_id == BI_NONE)
+		{
+			Msg("! CScriptGameObject::bone_position(...): bone_name missing by id [%d] in object [%s]", bone_id, object().cNameSect().c_str());
+			return {};
+		}
+
+		Fmatrix res;
+		kin->LL_GetBoneWorldTransform(bone_id, object().XFORM(), res);
+
+		return res.k;
+	}
+
+	return {};
+}
+
 Fvector	CScriptGameObject::bone_position(LPCSTR bone_name)
 {
 	u16 bone_id = BI_NONE;
