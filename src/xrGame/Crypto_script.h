@@ -7,6 +7,8 @@ class CFFxCrypto final
 private:
     const char* hex = "0123456789ABCDEF";
     const char* null_hex = "0000000000000000";
+    const char* base64_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
     const uint64_t CRC64_MASK[256] = {
         0x0000000000000000, 0x42F0E1EBA9EA3693, 0x85E1C3D753D46D26, 0xC711223CFA3E5BB5,
         0x493366450E42ECDF, 0x0BC387AEA7A8DA4C, 0xCCD2A5925D9681F9, 0x8E224479F47CB76A,
@@ -108,7 +110,8 @@ public:
 	LPCSTR CRC64(LPCSTR input);
     LPCSTR SHA1(LPCSTR input);
     LPCSTR SHA256(LPCSTR input);
-
+    LPCSTR Base64Encode(LPCSTR input);
+    LPCSTR Base64Decode(LPCSTR input);
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION;
 };

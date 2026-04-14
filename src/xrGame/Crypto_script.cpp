@@ -424,6 +424,101 @@ LPCSTR CFFxCrypto::SHA1(LPCSTR input)
     return result;
 }
 
+LPCSTR CFFxCrypto::Base64Encode(LPCSTR input)
+{
+    if (!input)
+    {
+        return "";
+    }
+
+    static std::string result;
+    result.clear();
+
+    size_t len = strlen(input);
+    const unsigned char* bytes = reinterpret_cast<const unsigned char*>(input);
+
+    for (size_t i = 0; i < len; i += 3)
+    {
+        unsigned char b1 = bytes[i];
+        unsigned char b2 = (i + 1 < len) ? bytes[i + 1] : 0;
+        unsigned char b3 = (i + 2 < len) ? bytes[i + 2] : 0;
+
+        unsigned char b4 = b1 >> 2;
+        unsigned char b5 = ((b1 & 0x03) << 4) | (b2 >> 4);
+        unsigned char b6 = ((b2 & 0x0F) << 2) | (b3 >> 6);
+        unsigned char b7 = b3 & 0x3F;
+
+        result += base64_chars[b4];
+        result += base64_chars[b5];
+
+        if (i + 1 < len)
+            result += base64_chars[b6];
+        else
+            result += '=';
+
+        if (i + 2 < len)
+            result += base64_chars[b7];
+        else
+            result += '=';
+    }
+
+    return result.c_str();
+}
+
+LPCSTR CFFxCrypto::Base64Decode(LPCSTR input)
+{
+    if (!input)
+    {
+        return "";
+    }
+
+    static std::string result;
+    result.clear();
+
+    size_t len = strlen(input);
+    if (len % 4 != 0)
+    {
+        return "";
+    }
+
+    unsigned char lookup[256];
+    memset(lookup, 0xFF, sizeof(lookup));
+    for (int i = 0; i < 64; i++)
+    {
+        lookup[(unsigned char)base64_chars[i]] = i;
+    }
+
+    for (size_t i = 0; i < len; i += 4)
+    {
+        unsigned char c1 = lookup[(unsigned char)input[i]];
+        unsigned char c2 = lookup[(unsigned char)input[i + 1]];
+        unsigned char c3 = lookup[(unsigned char)input[i + 2]];
+        unsigned char c4 = lookup[(unsigned char)input[i + 3]];
+
+        if (c1 == 0xFF || c2 == 0xFF || (c3 == 0xFF && input[i + 2] != '=') || (c4 == 0xFF && input[i + 3] != '='))
+        {
+            return "";
+        }
+
+        unsigned char b1 = (c1 << 2) | (c2 >> 4);
+        result += static_cast<char>(b1);
+
+        if (input[i + 2] != '=')
+        {
+            unsigned char b2 = ((c2 & 0x0F) << 4) | (c3 >> 2);
+            result += static_cast<char>(b2);
+        }
+
+        if (input[i + 3] != '=')
+        {
+            unsigned char b3 = ((c3 & 0x03) << 6) | c4;
+            result += static_cast<char>(b3);
+        }
+    }
+
+    return result.c_str();
+}
+
 using namespace luabind;
 #pragma optimize("s",on)
 void CFFxCrypto::script_register(lua_State* L)
@@ -435,5 +530,7 @@ void CFFxCrypto::script_register(lua_State* L)
                 .def("crc64", &CFFxCrypto::CRC64)
                 .def("sha1", &CFFxCrypto::SHA1)
                 .def("sha256", &CFFxCrypto::SHA256)
+                .def("base64_encode", &CFFxCrypto::Base64Encode)
+                .def("base64_decode", &CFFxCrypto::Base64Decode)
         ];
 }
