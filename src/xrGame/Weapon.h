@@ -17,6 +17,8 @@
 #include "script_game_object.h"
 #include "Scope.h"
 
+#include "../xrScripts/script_export_space.h"
+
 class CEntity;
 class ENGINE_API CMotionDef;
 class CSE_ALifeItemWeapon;
@@ -28,6 +30,8 @@ class CWeaponKnife;
 class CWeaponBM16;
 class CWeaponRPG7;
 class CWeaponRG6;
+class CWeaponPistol;
+class CWeaponCustomPistol;
 class CParticlesObject;
 class CUIStatic;
 struct TAmmoBones;
@@ -887,4 +891,6 @@ public:
 	float GetDamageMP() const;
 	float GetHandling() const;
 	float GetAccuracy() const;
+
+	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
