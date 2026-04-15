@@ -54,6 +54,12 @@ void RequestHandler_QuestEditor(const SRequestData& req)
 	}
 	case eRequestType_QuestEditor::kShutdown:
 	{
+		if (g_pQuestEditor)
+		{
+			delete g_pQuestEditor;
+			g_pQuestEditor = nullptr;
+		}
+
 		break;
 	}
 	}
