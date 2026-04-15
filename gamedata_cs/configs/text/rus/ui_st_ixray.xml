@@ -696,4 +696,16 @@
 	<string id="ui_am_info_soc">
 		<text>$$ACTION_UI_TAB_SEC_LEFT$$/$$ACTION_UI_TAB_SEC_RIGHT$$ Листать информацию</text>
 	</string>
+	<string id="st_put_in_quick_slot_1">
+		<text>Положить в слот 1</text>
+	</string>
+	<string id="st_put_in_quick_slot_2">
+		<text>Положить в слот 2</text>
+	</string>
+	<string id="st_put_in_quick_slot_3">
+		<text>Положить в слот 3</text>
+	</string>
+	<string id="st_put_in_quick_slot_4">
+		<text>Положить в слот 4</text>
+	</string>
 </string_table>
