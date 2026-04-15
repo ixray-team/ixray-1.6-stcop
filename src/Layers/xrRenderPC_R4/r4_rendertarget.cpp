@@ -512,6 +512,7 @@ CRenderTarget::CRenderTarget()
 		rt_Generic_0.create(r2_RT_generic0, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);
 		rt_Generic_1.create(r2_RT_generic1, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM);
 		rt_Generic_2.create(r2_RT_generic2, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);
+		rt_Generic_temp.create("$user$generic_temp", s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM);
 
 		rt_BackbufferLUT.create(r2_RT_backbuffer_lut, get_target_width(), get_target_height(), DxgiFormat::DXGI_FORMAT_R10G10B10A2_UNORM);
 

@@ -189,6 +189,10 @@ void CRenderTarget::phase_combine()
 		phase_puddles();
 	}
 
+	// Copy previous rt
+	RContext->CopyResource(rt_Generic_temp->pTexture->surface_get(),
+		rt_Generic_0->pTexture->surface_get());
+
 	// Forward rendering
 	{
 		GPU_EVENT(Forward_rendering);
