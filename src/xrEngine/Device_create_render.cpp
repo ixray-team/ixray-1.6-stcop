@@ -151,6 +151,7 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 					ImGui::SetItemTooltip("Post-Process Effector");
 
 					ImGui::MenuItem("Texture Editor", nullptr, &States[static_cast<u8>(EditorUI::Tools_TextureEditor)]);
+					ImGui::MenuItem("Quest Editor", nullptr, &States[static_cast<u8>(EditorUI::Tools_QuestEditor)]);
 					ImGui::MenuItem("OMF", nullptr, &States[static_cast<u8>(EditorUI::Tools_OMFEditor)]);
 					ImGui::MenuItem("Input", nullptr, &States[static_cast<u8>(EditorUI::Tools_InputManager)]);
 

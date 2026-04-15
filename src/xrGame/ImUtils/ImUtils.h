@@ -408,23 +408,6 @@ struct CImGuiTextureEditor
 		kInvalidMetadata = 1 << 7
 	};
 
-	enum class eRequestType
-	{
-		kReadSettings,
-		kWriteSettings,
-		kReadAll,
-		kShutdownThread,
-		kLoadTooltipPreview,
-		kLoadTooltipMetadata,
-		kUnloadResources,
-		kLoadMetadataOfSelected,
-		kLoadPreviewOfSelected,
-		kLoadTHMOfSelected,
-		kDeselectCurrentSelected,
-		kFilterQuery,
-		kInvalid = -1
-	};
-
 	enum class eFilterQueryType : u32
 	{
 		kSearch,
@@ -550,8 +533,32 @@ enum class eImGuiEditorType : u32
 {
 	kTextureEditor,
 	kOMFEditor,
+	kQuestEditor,
 	kNoEditor,
 	kInvalid = u32(-1)
+};
+
+enum class eRequestType_TextureEditor : u32
+{
+	kReadSettings,
+	kWriteSettings,
+	kReadAll,
+	kLoadTooltipPreview,
+	kLoadTooltipMetadata,
+	kLoadMetadataOfSelected,
+	kLoadPreviewOfSelected,
+	kLoadTHMOfSelected,
+	kDeselectCurrentSelected,
+	kFilterQuery,
+	kShutdown
+};
+
+enum class eRequestType_QuestEditor : u32
+{
+	kReadSettings,
+	kWriteSettings,
+	kLoadCurrentQuests,
+	kShutdown
 };
 
 struct SRequestData
@@ -574,6 +581,7 @@ void InitImGuiCLSIDInGame();
 void InitImGuiSearchInGame();
 void InitImGuiHudAdjustInGame();
 void InitImGuiInGameInputReceiver();
+void InitImGuiQuestEditor();
 
 /* RENDER */
 void RenderTimeManagerWindow();
@@ -586,10 +594,12 @@ void RenderCarConfigEditor();
 void RenderToolsInputManagerWindow();
 void RenderToolsRenderDebugSVGStorageViewerWindow();
 void RenderTextureEditor();
+void RenderQuestEditor();
 
 /* MISCELLANEOUS */
 
 void DestroySpawnManagerWindow();
+void DestroyQuestEditorWindow();
 
 /* WORKER THREAD of Tools */
 
@@ -610,7 +620,11 @@ void TextureEditor_OnReleased(int key);
 void SpawnManager_OnPressed(int key);
 void SpawnManager_OnReleased(int key);
 
+void QuestEditor_OnPressed(int key);
+void QuestEditor_OnReleased(int key);
+
 void RequestHandler_TextureEditor(const SRequestData& req);
+void RequestHandler_QuestEditor(const SRequestData& req);
 void RequestHandler_OMFEditor(const SRequestData& req);
 
 void RegisterImGuiInGame();
@@ -633,3 +647,5 @@ IC void AllEditors_SendRequests_Sequential(const xr_array<T, N>& reqs)
 			}
 		});
 }
+
+void AllEditors_Shutdown();
