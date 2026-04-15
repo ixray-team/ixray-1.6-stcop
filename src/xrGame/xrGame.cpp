@@ -121,6 +121,7 @@ extern "C"
 
 	DLL_API void __cdecl xrGameShutdown()
 	{
+		AllEditors_Shutdown();
 		g_imgui_editor_request_manager.requests.wait();
 	}
 	
