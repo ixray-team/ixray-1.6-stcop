@@ -112,6 +112,7 @@ public:
     LPCSTR SHA256(LPCSTR input);
     LPCSTR Base64Encode(LPCSTR input);
     LPCSTR Base64Decode(LPCSTR input);
+    LPCSTR XorEncode(LPCSTR input, LPCSTR key);
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION;
 };

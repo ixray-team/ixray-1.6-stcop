@@ -513,6 +513,24 @@ LPCSTR CFFxCrypto::Base64Decode(LPCSTR input)
     return result.c_str();
 }
 
+LPCSTR CFFxCrypto::XorEncode(LPCSTR input, LPCSTR key)
+{
+    if (!input || !key) return "";
+
+    static std::string result;
+    result.clear();
+
+    size_t len = strlen(input);
+    size_t keyLen = strlen(key);
+
+    for (size_t i = 0; i < len; i++)
+    {
+        result += static_cast<char>(input[i] ^ key[i % keyLen]);
+    }
+
+    return result.c_str();
+}
+
 using namespace luabind;
 #pragma optimize("s",on)
 void CFFxCrypto::script_register(lua_State* L)
@@ -526,5 +544,6 @@ void CFFxCrypto::script_register(lua_State* L)
                 .def("sha256", &CFFxCrypto::SHA256)
                 .def("base64_encode", &CFFxCrypto::Base64Encode)
                 .def("base64_decode", &CFFxCrypto::Base64Decode)
+                .def("xor_encode", &CFFxCrypto::XorEncode)
         ];
 }
