@@ -85,6 +85,7 @@ protected:
 	void						PropertiesBoxForWeapon		(CUICellItem* cell_item, PIItem item, bool& b_show);
 	void						PropertiesBoxForAddon		(PIItem item, bool& b_show);
 	void						PropertiesBoxForUsing		(PIItem item, bool& b_show);
+	void						PropertiesBoxForQuickSlots	(CUICellItem* cell_item, PIItem item, bool& b_show);
 	void						PropertiesBoxForPlaying		(PIItem item, bool& b_show);
 	void						PropertiesBoxForDrop		(CUICellItem* cell_item, PIItem item, bool& b_show);
 	void						PropertiesBoxForSlots		(CUICellItem* cell_item, PIItem item, bool& b_show);
@@ -175,6 +176,7 @@ protected:
 	bool						ToBag						(CUICellItem* itm, bool b_use_cursor_pos);
 	bool						ToBelt						(CUICellItem* itm, bool b_use_cursor_pos);
 	bool						ToQuickSlot					(CUICellItem* itm);
+	bool						ToQuickSlotAt				(CUICellItem* itm, u8 slotIndex);
 	void						MoveArtefactsToBag			();
 
 	bool						ToActorTrade				(CUICellItem* itm, bool b_use_cursor_pos);

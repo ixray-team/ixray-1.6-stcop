@@ -9,6 +9,7 @@
 #include "../trade.h"
 #include "../Inventory.h"
 #include "../InventoryWeaponSlotLayout.h"
+#include "../eatable_item_object.h"
 #include "../../xrUI/UICursor.h"
 
 void move_item_from_to(u16 from_id, u16 to_id, u16 what_id);
@@ -1331,6 +1332,47 @@ bool CUIActorMenuBase::ToQuickSlot(CUICellItem* itm)
 	}
 
 	return true;
+}
+
+bool CUIActorMenuBase::ToQuickSlotAt(CUICellItem* itm, u8 slotIndex)
+{
+	if (m_pQuickSlot == nullptr || slotIndex > 3)
+	{
+		return false;
+	}
+
+	PIItem iitem = (PIItem)itm->m_pData;
+	CEatableItemObject* eatableObject = smart_cast<CEatableItemObject*>(iitem);
+	if (eatableObject == nullptr)
+	{
+		return false;
+	}
+
+	const Ivector2 itemGrid = iitem->GetInvGridRect().rb;
+	if (itemGrid.x > 1 || itemGrid.y > 1)
+	{
+		return false;
+	}
+
+	if (!iitem->Useful())
+	{
+		return false;
+	}
+
+	if (iitem->parent_id() != GetInventoryOwner()->object_id())
+	{
+		return false;
+	}
+
+	CUICellItem* slotCellItem = create_cell_item(iitem);
+	if (m_pQuickSlot->SetItemAtQuickSlotCell(slotCellItem, slotIndex))
+	{
+		xr_strcpy(ACTOR_DEFS::g_quick_use_slots[slotIndex], iitem->m_section_id.c_str());
+		return true;
+	}
+
+	xr_delete(slotCellItem);
+	return false;
 }
 
 void CUIActorMenuBase::TransferItems( CUIDragDropListEx* pSellList, CUIDragDropListEx* pBuyList, CTrade* pTrade, bool bBuying )
