@@ -18,6 +18,7 @@ void RegisterImGuiInGame()
 		CImGuiManager::Instance().Subscribe("OMF Editor", CImGuiManager::ERenderPriority::eMedium, RenderToolsOMFEditorWindow);
 		CImGuiManager::Instance().Subscribe("Car Editor", CImGuiManager::ERenderPriority::eMedium, RenderCarConfigEditor);
 		CImGuiManager::Instance().Subscribe("Texture Editor", CImGuiManager::ERenderPriority::eMedium, RenderTextureEditor);
+		CImGuiManager::Instance().Subscribe("Quest Editor", CImGuiManager::ERenderPriority::eMedium, RenderQuestEditor);
 		CImGuiManager::Instance().Subscribe("Input Manager", CImGuiManager::ERenderPriority::eMedium, RenderToolsInputManagerWindow);
 		CImGuiManager::Instance().Subscribe("SVGStorageViewer", CImGuiManager::ERenderPriority::eMedium, RenderToolsRenderDebugSVGStorageViewerWindow);
 		CImGuiManager::Instance().Subscribe("Hud Adjust", CImGuiManager::ERenderPriority::eMedium, RenderHUDAdjustManager);
@@ -488,6 +489,11 @@ void AllEditors_ExecuteRequest(const SRequestData& req)
 		RequestHandler_OMFEditor(req);
 		break;
 	}
+	case eImGuiEditorType::kQuestEditor:
+	{
+		RequestHandler_QuestEditor(req);
+		break;
+	}
 	case eImGuiEditorType::kNoEditor:break;
 	default:
 	{
@@ -513,6 +519,11 @@ void AllEditors_OnPressed(int key)
 	{
 		SpawnManager_OnPressed(key);
 	}
+
+	if (Engine.External.EditorStates[u8(EditorUI::Tools_QuestEditor)])
+	{
+		QuestEditor_OnPressed(key);
+	}
 }
 
 void AllEditors_OnReleased(int key)
@@ -528,6 +539,11 @@ void AllEditors_OnReleased(int key)
 	if (Engine.External.EditorStates[u8(EditorUI::Game_SpawnManager)])
 	{
 		SpawnManager_OnReleased(key);
+	}
+
+	if (Engine.External.EditorStates[u8(EditorUI::Tools_QuestEditor)])
+	{
+		QuestEditor_OnReleased(key);
 	}
 }
 
@@ -613,9 +629,38 @@ void CImGuiTextureEditor::SImGuiWindowState::Apply(const char* windowName)
 	}
 
 	ImGuiWindow* w = ImGui::FindWindowByName(windowName);
-	
+
 	if (w)
 	{
 		ImGui::FocusWindow(w);
+	}
+}
+
+void AllEditors_Shutdown()
+{
+	// texture editor
+	{
+		AllEditors_SendRequest({
+			.editor_type = u32(eImGuiEditorType::kTextureEditor),
+			.request_type = u32(eRequestType_TextureEditor::kWriteSettings)
+			});
+
+		AllEditors_SendRequest({
+			.editor_type = u32(eImGuiEditorType::kTextureEditor),
+			.request_type = u32(eRequestType_TextureEditor::kShutdown)
+			});
+	}
+
+	// quest editor
+	{
+		AllEditors_SendRequest({
+			.editor_type = u32(eImGuiEditorType::kQuestEditor),
+			.request_type = u32(eRequestType_QuestEditor::kWriteSettings)
+		});
+
+		AllEditors_SendRequest({
+			.editor_type = u32(eImGuiEditorType::kQuestEditor),
+			.request_type = u32(eRequestType_QuestEditor::kShutdown)
+		});
 	}
 }
