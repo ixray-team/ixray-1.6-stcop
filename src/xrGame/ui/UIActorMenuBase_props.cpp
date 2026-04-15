@@ -6,6 +6,7 @@
 #include "../../xrUI/UICursor.h"
 #include "UICellItem.h"
 #include "../Medkit.h"
+#include "../eatable_item_object.h"
 #include "../WeaponMagazined.h"
 #include "../PDA.h"
 #include "../Inventory.h"
@@ -52,6 +53,7 @@ void CUIActorMenuBase::ActivatePropertiesBox()
 	{
 		PropertiesBoxForAddon(item, b_show);
 		PropertiesBoxForUsing(item, b_show);
+		PropertiesBoxForQuickSlots(cell_item, item, b_show);
 		PropertiesBoxForPlaying(item, b_show);
 		PropertiesBoxForParse(item, b_show);
 		PropertiesBoxForDrop(cell_item, item, b_show);
@@ -195,6 +197,41 @@ void CUIActorMenuBase::PropertiesBoxForUsing(PIItem item, bool& b_show)
 		m_UIPropertiesBox->AddItem(act_str, nullptr, INVENTORY_EAT5_ACTION);
 		b_show = true;
 	}
+}
+
+void CUIActorMenuBase::PropertiesBoxForQuickSlots(CUICellItem* cell_item, PIItem item, bool& b_show)
+{
+	if (cell_item == nullptr || m_pQuickSlot == nullptr)
+	{
+		return;
+	}
+	if (item->parent_id() != GetInventoryOwner()->object_id())
+	{
+		return;
+	}
+
+	CEatableItemObject* eatableObject = smart_cast<CEatableItemObject*>(item);
+	if (eatableObject == nullptr)
+	{
+		return;
+	}
+
+	const Ivector2 itemGrid = item->GetInvGridRect().rb;
+	if (itemGrid.x > 1 || itemGrid.y > 1)
+	{
+		return;
+	}
+
+	if (!item->Useful())
+	{
+		return;
+	}
+
+	m_UIPropertiesBox->AddItem("st_put_in_quick_slot_1", nullptr, INVENTORY_TO_QUICK_SLOT_1);
+	m_UIPropertiesBox->AddItem("st_put_in_quick_slot_2", nullptr, INVENTORY_TO_QUICK_SLOT_2);
+	m_UIPropertiesBox->AddItem("st_put_in_quick_slot_3", nullptr, INVENTORY_TO_QUICK_SLOT_3);
+	m_UIPropertiesBox->AddItem("st_put_in_quick_slot_4", nullptr, INVENTORY_TO_QUICK_SLOT_4);
+	b_show = true;
 }
 
 void CUIActorMenuBase::PropertiesBoxForPlaying(PIItem item, bool& b_show)
@@ -1036,6 +1073,19 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 		}
 	}
 	break;
+
+	case INVENTORY_TO_QUICK_SLOT_1:
+		ToQuickSlotAt(cell_item, 0);
+		break;
+	case INVENTORY_TO_QUICK_SLOT_2:
+		ToQuickSlotAt(cell_item, 1);
+		break;
+	case INVENTORY_TO_QUICK_SLOT_3:
+		ToQuickSlotAt(cell_item, 2);
+		break;
+	case INVENTORY_TO_QUICK_SLOT_4:
+		ToQuickSlotAt(cell_item, 3);
+		break;
 
 	}
 
