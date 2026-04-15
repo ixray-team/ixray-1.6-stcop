@@ -64,6 +64,40 @@ bool CUIDragDropReferenceList::SetItem(CUICellItem* itm, Fvector2 abs_pos)
 	return true;
 }
 
+bool CUIDragDropReferenceList::SetItemAtQuickSlotCell(CUICellItem* itm, u8 slotIndex)
+{
+	const Ivector2 dest_cell_pos = Ivector2().set(slotIndex, 0);
+	if (!m_container->ValidCell(dest_cell_pos))
+	{
+		return false;
+	}
+
+	const Ivector2 itmGridSize = itm->GetGridSize();
+	const bool hasRoom = m_container->IsRoomFree(dest_cell_pos, itmGridSize);
+	if (hasRoom)
+	{
+		SetItem(itm, dest_cell_pos);
+	}
+	else
+	{
+		CUICell& cellRef = GetCellAt(dest_cell_pos);
+		CUICellItem* old_itm = cellRef.m_item;
+
+		if (itmGridSize.x > m_container->m_cellsCapacity.x || itmGridSize.y > m_container->m_cellsCapacity.y)
+		{
+			return false;
+		}
+
+		if (old_itm != nullptr)
+		{
+			RemoveItem(old_itm, false);
+		}
+		SetItem(itm, dest_cell_pos);
+	}
+
+	return true;
+}
+
 void CUIDragDropReferenceList::SetItem(CUICellItem* itm, Ivector2 cell_pos)
 {
 	CUI3dStatic *ref = m_references[cell_pos.x];
