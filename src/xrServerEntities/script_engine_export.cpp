@@ -213,25 +213,14 @@ void export_classes	(lua_State *L)
 	CTorch::script_register(L);
 	FactionState::script_register(L);
 	FractionState::script_register(L);
-	CWeaponAK74::script_register(L);
+	CWeapon::script_register(L);
 	CWeaponBinoculars::script_register(L);
 	CWeaponBM16::script_register(L);
-	CWeaponFN2000::script_register(L);
-	CWeaponFORT::script_register(L);
-	CWeaponGroza::script_register(L);
-	CWeaponHPSA::script_register(L);
 	CWeaponKnife::script_register(L);
-	CWeaponLR300::script_register(L);
-	CWeaponPM::script_register(L);
 	CWeaponRG6::script_register(L);
 	CWeaponRPG7::script_register(L);
-	CWeaponShotgun::script_register(L);
 	CWeaponSVD::script_register(L);
-	CWeaponSVU::script_register(L);
-	CWeaponUSP45::script_register(L);
-	CWeaponVal::script_register(L);
-	CWeaponVintorez::script_register(L);
-	CWeaponWalther::script_register(L);
+	CWeaponShotgun::script_register(L);
 	CZoneCampfire::script_register(L);
 
 	CArtefact::script_register(L);
