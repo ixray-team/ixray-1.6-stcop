@@ -192,6 +192,18 @@
 	<string id="st_move_all">
 		<text>move all</text>
 	</string>
+	<string id="st_put_in_quick_slot_1">
+		<text>Assign to quick slot 1</text>
+	</string>
+	<string id="st_put_in_quick_slot_2">
+		<text>Assign to quick slot 2</text>
+	</string>
+	<string id="st_put_in_quick_slot_3">
+		<text>Assign to quick slot 3</text>
+	</string>
+	<string id="st_put_in_quick_slot_4">
+		<text>Assign to quick slot 4</text>
+	</string>
 	<string id="renderer_r4_dx10">
 		<text>Enhanced full dyn. lighting (DX10)</text>
 	</string>
