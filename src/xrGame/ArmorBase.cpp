@@ -75,19 +75,19 @@ void CArmorBase::Load(const char* section)
 	m_HitTypeProtection[ALife::eHitTypeFireWound] = READ_IF_EXISTS(pSettings, r_float, section, "fire_wound_protection", 0.0f);
 	m_HitTypeProtection[ALife::eHitTypePhysicStrike] = READ_IF_EXISTS(pSettings, r_float, section, "physic_strike_protection", m_HitTypeProtection[ALife::eHitTypeStrike]);
 	m_HitTypeProtection[ALife::eHitTypeLightBurn] = m_HitTypeProtection[ALife::eHitTypeBurn];
-    if (pSettings->line_exist(section, "hit_fraction_actor"))
-    {
-        m_boneProtection->m_fHitFrac = pSettings->r_float(section, "hit_fraction_actor");
+	if (pSettings->line_exist(section, "hit_fraction_actor"))
+	{
+		m_boneProtection->m_fHitFrac = pSettings->r_float(section, "hit_fraction_actor");
 
-        // Since hit_fraction_actor exists both in CS and COP, but fire_wound_protection was removed in COP,
-        // We can use this hacky solution to determine which damage formula to use.
-        // It not robust for mods, because they can have fire_wound_protection in configs, despite that
-        // original COP engine doesn't read it.
-        if (pSettings->line_exist(section, "fire_wound_protection"))
-            m_boneProtection->m_hitFracType = SBoneProtections::HitFractionActorCS;
-        else
-            m_boneProtection->m_hitFracType = SBoneProtections::HitFractionActorCOP;
-    }
+		// Since hit_fraction_actor exists both in CS and COP, but fire_wound_protection was removed in COP,
+		// We can use this hacky solution to determine which damage formula to use.
+		// It not robust for mods, because they can have fire_wound_protection in configs, despite that
+		// original COP engine doesn't read it.
+		if (pSettings->line_exist(section, "fire_wound_protection"))
+			m_boneProtection->m_hitFracType = SBoneProtections::HitFractionActorCS;
+		else
+			m_boneProtection->m_hitFracType = SBoneProtections::HitFractionActorCOP;
+	}
 
 	if (pSettings->line_exist(section, "nightvision_sect"))
 	{
@@ -96,12 +96,8 @@ void CArmorBase::Load(const char* section)
 
 	pSettings->read_if_exists(m_bTorchAvailable, section, "torch_available");
 
-	m_fHealthRestoreSpeed = READ_IF_EXISTS(pSettings, r_float, section, "health_restore_speed", 0.0f);
-	m_fRadiationRestoreSpeed = READ_IF_EXISTS(pSettings, r_float, section, "radiation_restore_speed", 0.0f);
-	m_fSatietyRestoreSpeed = READ_IF_EXISTS(pSettings, r_float, section, "satiety_restore_speed", 0.0f);
-	m_fThirstRestoreSpeed = READ_IF_EXISTS(pSettings, r_float, section, "thirst_restore_speed", 0.0f);
-	m_fPowerRestoreSpeed = READ_IF_EXISTS(pSettings, r_float, section, "power_restore_speed", 0.0f);
-	m_fBleedingRestoreSpeed = READ_IF_EXISTS(pSettings, r_float, section, "bleeding_restore_speed", 0.0f);
+	IRestoresOwner::Load(section);
+
 	m_fPowerLoss = READ_IF_EXISTS(pSettings, r_float, section, "power_loss", 1.0f);
 	clamp(m_fPowerLoss, 0.0f, 1.0f);
 
@@ -370,23 +366,23 @@ float CArmorBase::HitThroughArmor(float hit_power, u16 element, float ap, bool& 
 
 float CArmorBase::GetDefHitTypeProtection(ALife::EHitType hit_type)
 {
-    float base = m_HitTypeProtection[hit_type] * GetCondition();
+	float base = m_HitTypeProtection[hit_type] * GetCondition();
 
-    if (m_boneProtection->m_hitFracType == SBoneProtections::HitFraction)
-        return 1.0f - base; // SOC
+	if (m_boneProtection->m_hitFracType == SBoneProtections::HitFraction)
+		return 1.0f - base; // SOC
 
-    return base; // CS/COP
+	return base; // CS/COP
 }
 
 float CArmorBase::GetHitTypeProtection(ALife::EHitType hit_type, u16 element)
 {
-    float base = m_HitTypeProtection[hit_type] * GetCondition();
-    float bone = m_boneProtection->getBoneProtection(element);
+	float base = m_HitTypeProtection[hit_type] * GetCondition();
+	float bone = m_boneProtection->getBoneProtection(element);
 
-    if (m_boneProtection->m_hitFracType == SBoneProtections::HitFraction)
-        return 1.0f - base * bone; // SOC
+	if (m_boneProtection->m_hitFracType == SBoneProtections::HitFraction)
+		return 1.0f - base * bone; // SOC
 
-    return base * bone; // CS/COP
+	return base * bone; // CS/COP
 }
 
 float CArmorBase::GetBoneArmor(u16 element)

@@ -2,10 +2,11 @@
 
 #include "inventory_item_object.h"
 #include "antigas.h"
+#include "IRestoresOwner.h"
 
 struct SBoneProtections;
 
-class CArmorBase : public CInventoryItemObject, public IAntigas
+class CArmorBase : public CInventoryItemObject, public IAntigas, public IRestoresOwner
 {
 private:
 	typedef	CInventoryItemObject inherited;
@@ -45,12 +46,6 @@ public:
 
 	bool					GlassPresent = false;
 	float					m_fPowerLoss = 0.0f;
-	float					m_fHealthRestoreSpeed = 0.0f;
-	float					m_fRadiationRestoreSpeed = 0.0f;
-	float					m_fSatietyRestoreSpeed = 0.0f;
-	float					m_fThirstRestoreSpeed = 0.0f;
-	float					m_fPowerRestoreSpeed = 0.0f;
-	float					m_fBleedingRestoreSpeed = 0.0f;
 
 protected:
 	HitImmunity::HitTypeSVec m_HitTypeProtection;
