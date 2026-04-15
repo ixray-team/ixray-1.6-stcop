@@ -42,9 +42,9 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 	if (static_cast<eImGuiEditorType>(req.editor_type) != eImGuiEditorType::kTextureEditor)
 		return;
 
-	switch (static_cast<CImGuiTextureEditor::eRequestType>(req.request_type))
+	switch (static_cast<eRequestType_TextureEditor>(req.request_type))
 	{
-	case CImGuiTextureEditor::eRequestType::kReadSettings:
+	case eRequestType_TextureEditor::kReadSettings:
 	{
 		if (g_imgui_texture_editor.is_settings_read == false)
 		{
@@ -83,7 +83,7 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 
 		break;
 	}
-	case CImGuiTextureEditor::eRequestType::kWriteSettings:
+	case eRequestType_TextureEditor::kWriteSettings:
 	{
 		if (g_imgui_texture_editor.is_init)
 		{
@@ -105,7 +105,7 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 
 		break;
 	}
-	case CImGuiTextureEditor::eRequestType::kReadAll:
+	case eRequestType_TextureEditor::kReadAll:
 	{
 		if (g_imgui_texture_editor.is_all_analyzed)
 			g_imgui_texture_editor.is_all_analyzed = false;
@@ -313,7 +313,7 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 
 		break;
 	}
-	case CImGuiTextureEditor::eRequestType::kLoadTooltipPreview:
+	case eRequestType_TextureEditor::kLoadTooltipPreview:
 	{
 		// for debug purposes
 #if 0
@@ -398,7 +398,7 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 
 		break;
 	}
-	case CImGuiTextureEditor::eRequestType::kLoadTooltipMetadata:
+	case eRequestType_TextureEditor::kLoadTooltipMetadata:
 	{
 		if (g_imgui_texture_editor.is_init)
 		{
@@ -424,7 +424,7 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 
 		break;
 	}
-	case CImGuiTextureEditor::eRequestType::kUnloadResources:
+	case eRequestType_TextureEditor::kShutdown:
 	{
 		if (g_imgui_texture_editor.pTexturePreview)
 		{
@@ -440,7 +440,7 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 
 		break;
 	}
-	case CImGuiTextureEditor::eRequestType::kLoadMetadataOfSelected:
+	case eRequestType_TextureEditor::kLoadMetadataOfSelected:
 	{
 
 		if (g_imgui_texture_editor.is_init)
@@ -460,7 +460,7 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 
 		break;
 	}
-	case CImGuiTextureEditor::eRequestType::kLoadPreviewOfSelected:
+	case eRequestType_TextureEditor::kLoadPreviewOfSelected:
 	{
 		if (g_imgui_texture_editor.is_init)
 		{
@@ -532,7 +532,7 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 
 		break;
 	}
-	case CImGuiTextureEditor::eRequestType::kLoadTHMOfSelected:
+	case eRequestType_TextureEditor::kLoadTHMOfSelected:
 	{
 		if (g_imgui_texture_editor.is_init)
 		{
@@ -585,7 +585,7 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 
 		break;
 	}
-	case CImGuiTextureEditor::eRequestType::kDeselectCurrentSelected:
+	case eRequestType_TextureEditor::kDeselectCurrentSelected:
 	{
 		if (g_imgui_texture_editor.is_init)
 		{
@@ -607,7 +607,7 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 
 		}
 	}
-	case CImGuiTextureEditor::eRequestType::kFilterQuery:
+	case eRequestType_TextureEditor::kFilterQuery:
 	{
 		if (g_imgui_texture_editor.is_all_analyzed == false)
 		{
@@ -894,8 +894,8 @@ void RenderTextureEditor()
 
 		AllEditors_SendRequests_Sequential(xr_array{
 			SRequestData{.editor_type = u32(eImGuiEditorType::kTextureEditor),
-			.request_type = u32(CImGuiTextureEditor::eRequestType::kReadSettings)},
-			SRequestData{.editor_type = u32(eImGuiEditorType::kTextureEditor), .request_type = u32(CImGuiTextureEditor::eRequestType::kReadAll)}
+			.request_type = u32(eRequestType_TextureEditor::kReadSettings)},
+			SRequestData{.editor_type = u32(eImGuiEditorType::kTextureEditor), .request_type = u32(eRequestType_TextureEditor::kReadAll)}
 			});
 
 		g_imgui_texture_editor.window_selected_name[0] = 0;
@@ -962,12 +962,12 @@ void RenderTextureEditor()
 								AllEditors_SendRequests_Sequential(xr_array{
 									SRequestData{
 										.editor_type = u32(eImGuiEditorType::kTextureEditor),
-										.request_type = u32(CImGuiTextureEditor::eRequestType::kFilterQuery),
+										.request_type = u32(eRequestType_TextureEditor::kFilterQuery),
 										.payload = u32(CImGuiTextureEditor::eFilterQueryType::kSearch)
 									},
 									SRequestData{
 										.editor_type = u32(eImGuiEditorType::kTextureEditor),
-										.request_type = u32(CImGuiTextureEditor::eRequestType::kFilterQuery),
+										.request_type = u32(eRequestType_TextureEditor::kFilterQuery),
 										.payload = u32(CImGuiTextureEditor::eFilterQueryType::kInvalidFirstExisted)
 									}
 									});
@@ -977,7 +977,7 @@ void RenderTextureEditor()
 								SRequestData req;
 
 								req.editor_type = static_cast<u32>(eImGuiEditorType::kTextureEditor);
-								req.request_type = static_cast<u32>(CImGuiTextureEditor::eRequestType::kFilterQuery);
+								req.request_type = static_cast<u32>(eRequestType_TextureEditor::kFilterQuery);
 								req.payload = static_cast<u32>(CImGuiTextureEditor::eFilterQueryType::kInvalidFirst);
 
 								AllEditors_SendRequest(req);
@@ -990,13 +990,13 @@ void RenderTextureEditor()
 								SRequestData req;
 
 								req.editor_type = static_cast<u32>(eImGuiEditorType::kTextureEditor);
-								req.request_type = static_cast<u32>(CImGuiTextureEditor::eRequestType::kFilterQuery);
+								req.request_type = static_cast<u32>(eRequestType_TextureEditor::kFilterQuery);
 								req.payload = static_cast<u32>(CImGuiTextureEditor::eFilterQueryType::kNoFilter);
 
 								AllEditors_SendRequests_Sequential(xr_array{
 									req,
 									SRequestData{.editor_type = u32(eImGuiEditorType::kTextureEditor),
-									.request_type = u32(CImGuiTextureEditor::eRequestType::kFilterQuery),
+									.request_type = u32(eRequestType_TextureEditor::kFilterQuery),
 									.payload = u32(CImGuiTextureEditor::eFilterQueryType::kSearch)}
 									});
 							}
@@ -1005,7 +1005,7 @@ void RenderTextureEditor()
 								SRequestData req;
 
 								req.editor_type = static_cast<u32>(eImGuiEditorType::kTextureEditor);
-								req.request_type = static_cast<u32>(CImGuiTextureEditor::eRequestType::kFilterQuery);
+								req.request_type = static_cast<u32>(eRequestType_TextureEditor::kFilterQuery);
 								req.payload = static_cast<u32>(CImGuiTextureEditor::eFilterQueryType::kNoFilter);
 
 								AllEditors_SendRequest(req);
@@ -1071,14 +1071,14 @@ void RenderTextureEditor()
 								SRequestData req;
 
 								req.editor_type = static_cast<u32>(eImGuiEditorType::kTextureEditor);
-								req.request_type = static_cast<u32>(CImGuiTextureEditor::eRequestType::kFilterQuery);
+								req.request_type = static_cast<u32>(eRequestType_TextureEditor::kFilterQuery);
 								req.payload = static_cast<u32>(CImGuiTextureEditor::eFilterQueryType::kSearch);
 
 								AllEditors_SendRequests_Sequential(xr_array{
 									req,
 									SRequestData{
 										.editor_type = u32(eImGuiEditorType::kTextureEditor),
-										.request_type = u32(CImGuiTextureEditor::eRequestType::kFilterQuery),
+										.request_type = u32(eRequestType_TextureEditor::kFilterQuery),
 										.payload = u32(CImGuiTextureEditor::eFilterQueryType::kInvalidFirstExisted)}
 									});
 							}
@@ -1087,7 +1087,7 @@ void RenderTextureEditor()
 								SRequestData req;
 
 								req.editor_type = static_cast<u32>(eImGuiEditorType::kTextureEditor);
-								req.request_type = static_cast<u32>(CImGuiTextureEditor::eRequestType::kFilterQuery);
+								req.request_type = static_cast<u32>(eRequestType_TextureEditor::kFilterQuery);
 
 								req.payload = static_cast<u32>(CImGuiTextureEditor::eFilterQueryType::kSearch);
 
@@ -1103,7 +1103,7 @@ void RenderTextureEditor()
 							SRequestData req;
 
 							req.editor_type = static_cast<u32>(eImGuiEditorType::kTextureEditor);
-							req.request_type = static_cast<u32>(CImGuiTextureEditor::eRequestType::kFilterQuery);
+							req.request_type = static_cast<u32>(eRequestType_TextureEditor::kFilterQuery);
 							req.payload = static_cast<u32>(CImGuiTextureEditor::eFilterQueryType::kInvalidFirst);
 
 							AllEditors_SendRequest(req);
@@ -1175,17 +1175,17 @@ void RenderTextureEditor()
 											SRequestData req;
 
 											req.editor_type = static_cast<u32>(eImGuiEditorType::kTextureEditor);
-											req.request_type = static_cast<u32>(CImGuiTextureEditor::eRequestType::kLoadMetadataOfSelected);
+											req.request_type = static_cast<u32>(eRequestType_TextureEditor::kLoadMetadataOfSelected);
 											req.payload = g_imgui_texture_editor.filter_query[row];
 
 											AllEditors_SendRequest(req);
 
-											req.request_type = static_cast<u32>(CImGuiTextureEditor::eRequestType::kLoadPreviewOfSelected);
+											req.request_type = static_cast<u32>(eRequestType_TextureEditor::kLoadPreviewOfSelected);
 											req.payload = g_imgui_texture_editor.filter_query[row];
 
 											AllEditors_SendRequest(req);
 
-											req.request_type = static_cast<u32>(CImGuiTextureEditor::eRequestType::kLoadTHMOfSelected);
+											req.request_type = static_cast<u32>(eRequestType_TextureEditor::kLoadTHMOfSelected);
 											req.payload = g_imgui_texture_editor.filter_query[row];
 
 											AllEditors_SendRequest(req);
@@ -1276,12 +1276,12 @@ void RenderTextureEditor()
 															SRequestData req;
 
 															req.editor_type = static_cast<u32>(eImGuiEditorType::kTextureEditor);
-															req.request_type = static_cast<u32>(CImGuiTextureEditor::eRequestType::kLoadTooltipPreview);
+															req.request_type = static_cast<u32>(eRequestType_TextureEditor::kLoadTooltipPreview);
 															req.payload = g_imgui_texture_editor.filter_query[row];
 
 															AllEditors_SendRequest(req);
 
-															req.request_type = static_cast<u32>(CImGuiTextureEditor::eRequestType::kLoadTooltipMetadata);
+															req.request_type = static_cast<u32>(eRequestType_TextureEditor::kLoadTooltipMetadata);
 
 															AllEditors_SendRequest(req);
 
@@ -1434,7 +1434,7 @@ void RenderTextureEditor()
 		SRequestData req;
 
 		req.editor_type = u32(eImGuiEditorType::kTextureEditor);
-		req.request_type = u32(CImGuiTextureEditor::eRequestType::kReadAll);
+		req.request_type = u32(eRequestType_TextureEditor::kReadAll);
 
 		AllEditors_SendRequest(req);
 
@@ -1708,7 +1708,7 @@ void TextureEditor_OnPressed(int key)
 		{
 			SRequestData req;
 			req.editor_type = (u32)eImGuiEditorType::kTextureEditor;
-			req.request_type = (u32)CImGuiTextureEditor::eRequestType::kDeselectCurrentSelected;
+			req.request_type = (u32)eRequestType_TextureEditor::kDeselectCurrentSelected;
 
 			AllEditors_SendRequest(req);
 		}
