@@ -51,6 +51,7 @@ enum class EditorUI : u8
 	Tools_CarEditor,
 	Tools_PostProcessEffectorEditor,
 	Tools_TextureEditor,
+	Tools_QuestEditor,
 	UI_General,
 	ECSViewer,
 	Count
