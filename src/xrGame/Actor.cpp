@@ -3016,6 +3016,16 @@ void CActor::UpdateArtefactsOnBeltAndOutfit()
 		conditions().ChangeThirst		(outfit->m_fThirstRestoreSpeed   * f_update_time);
 		conditions().ChangeRadiation	(outfit->m_fRadiationRestoreSpeed * f_update_time);
 	}
+
+	if (CHelmet* helmet = GetHelmet())
+	{
+		conditions().ChangeBleeding		(helmet->m_fBleedingRestoreSpeed  * f_update_time);
+		conditions().ChangeHealth		(helmet->m_fHealthRestoreSpeed    * f_update_time);
+		conditions().ChangePower		(helmet->m_fPowerRestoreSpeed     * f_update_time);
+		conditions().ChangeSatiety		(helmet->m_fSatietyRestoreSpeed   * f_update_time);
+		conditions().ChangeThirst		(helmet->m_fThirstRestoreSpeed   * f_update_time);
+		conditions().ChangeRadiation	(helmet->m_fRadiationRestoreSpeed * f_update_time);
+	}
 }
 
 float CActor::HitArtefactsOnBelt(float hit_power, ALife::EHitType hit_type)
@@ -3255,6 +3265,11 @@ float CActor::GetRestoreSpeed( ALife::EConditionRestoreType const& type )
 		{
 			res += outfit->m_fHealthRestoreSpeed;
 		}
+
+		if (CHelmet* helmet = GetHelmet())
+		{
+			res += helmet->m_fHealthRestoreSpeed;
+		}
 		break;
 	}
 	case ALife::eRadiationRestoreSpeed:
@@ -3270,6 +3285,11 @@ float CActor::GetRestoreSpeed( ALife::EConditionRestoreType const& type )
 		if (CCustomOutfit* outfit = GetOutfit())
 		{
 			res += outfit->m_fRadiationRestoreSpeed;
+		}
+
+		if (CHelmet* helmet = GetHelmet())
+		{
+			res += helmet->m_fRadiationRestoreSpeed;
 		}
 		break;
 	}
@@ -3289,6 +3309,11 @@ float CActor::GetRestoreSpeed( ALife::EConditionRestoreType const& type )
 		{
 			res += outfit->m_fSatietyRestoreSpeed;
 		}
+
+		if (CHelmet* helmet = GetHelmet())
+		{
+			res += helmet->m_fSatietyRestoreSpeed;
+		}
 		break;
 	}
 	case ALife::eThirstRestoreSpeed:
@@ -3307,6 +3332,11 @@ float CActor::GetRestoreSpeed( ALife::EConditionRestoreType const& type )
 		{
 			res += outfit->m_fThirstRestoreSpeed;
 		}
+
+		if (CHelmet* helmet = GetHelmet())
+		{
+			res += helmet->m_fThirstRestoreSpeed;
+		}
 		break;
 	}
 	case ALife::ePowerRestoreSpeed:
@@ -3321,13 +3351,22 @@ float CActor::GetRestoreSpeed( ALife::EConditionRestoreType const& type )
 			}
 		}
 
-		if (CCustomOutfit* outfit = GetOutfit())
+		CArmorBase* outfit = GetOutfit();
+		CHelmet* helmet = GetHelmet();
+		if (outfit)
 		{
 			res += outfit->m_fPowerRestoreSpeed;
 			VERIFY(outfit->m_fPowerLoss!=0.0f);
 			res /= outfit->m_fPowerLoss;
 		}
-		else
+		if (helmet)
+		{
+			res += helmet->m_fPowerRestoreSpeed;
+			//VERIFY(helmet->m_fPowerLoss!=0.0f);
+			//res /= helmet->m_fPowerLoss;
+			// not sure if `/=` operation is correct here
+		}
+		if (!outfit && !helmet)
 		{
 			res /= 0.5f;
 		}
@@ -3348,6 +3387,11 @@ float CActor::GetRestoreSpeed( ALife::EConditionRestoreType const& type )
 		if (CCustomOutfit* outfit = GetOutfit())
 		{
 			res += outfit->m_fBleedingRestoreSpeed;
+		}
+
+		if (CHelmet* helmet = GetHelmet())
+		{
+			res += helmet->m_fBleedingRestoreSpeed;
 		}
 		break;
 	}
