@@ -98,13 +98,7 @@ void CArtefact::Load(LPCSTR section)
 		m_LightBoneID = pSettings->line_exist(section, "trail_light_bone") ? K->LL_BoneID(pSettings->r_string(section, "trail_light_bone")) : BI_NONE;
 	}
 
-
-	m_fHealthRestoreSpeed = pSettings->r_float(section, "health_restore_speed");
-	m_fRadiationRestoreSpeed = pSettings->r_float(section, "radiation_restore_speed");
-	m_fSatietyRestoreSpeed = pSettings->r_float(section, "satiety_restore_speed");
-	m_fThirstRestoreSpeed = READ_IF_EXISTS(pSettings, r_float, section, "thirst_restore_speed", 0.0f);
-	m_fPowerRestoreSpeed = pSettings->r_float(section, "power_restore_speed");
-	m_fBleedingRestoreSpeed = pSettings->r_float(section, "bleeding_restore_speed");
+	IRestoresOwner::Load(section);
 	
 	if(pSettings->section_exist(pSettings->r_string(section,"hit_absorbation_sect")))
 	{

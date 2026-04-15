@@ -5,12 +5,13 @@
 #include "../xrPhysics/PHUpdateObject.h"
 #include "../xrScripts/script_export_space.h"
 #include "patrol_path.h"
+#include "IRestoresOwner.h"
 
 class SArtefactActivation;
 struct SArtefactDetectorsSupport;
 
 class CArtefact : public CHudItemObject, 
-	public CPHUpdateObject 
+	public CPHUpdateObject, public IRestoresOwner
 {
 	using inherited = CHudItemObject;
 public:
@@ -96,12 +97,6 @@ public:
 
 	float							AdditionalInventoryWeight		() const {return m_additional_weight;}
 	bool							m_bCanSpawnZone;
-	float							m_fHealthRestoreSpeed;
-	float 							m_fRadiationRestoreSpeed;
-	float 							m_fSatietyRestoreSpeed;
-	float 							m_fThirstRestoreSpeed;
-	float							m_fPowerRestoreSpeed;
-	float							m_fBleedingRestoreSpeed;
 	CHitImmunity 					m_ArtefactHitImmunities;
 public:
 	enum EAFHudStates {
