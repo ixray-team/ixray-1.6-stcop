@@ -2,6 +2,11 @@
 #include "../../xrCore/stdafx.h"
 #include <variant>
 
+#include "imgui.h"
+#include "imgui_node_editor.h"
+
+namespace ed = ax::NodeEditor;
+
 struct FColor
 {
     uint8_t R = 255;
@@ -298,12 +303,30 @@ struct FActionParams : FBaseParams
     std::unordered_map<xr_string, xr_string> ActionParameters; // Параметры действия
 };
 
+struct FEventInfo
+{
+    xr_string EventKey;
+    xr_string EventType;
+
+    FTransition Transition;
+    int EventIndex = 0;
+};
+
+struct FEventTransition
+{
+    int EventIndex = 0;
+    xr_string EventKey;       // "on_info_myflag", "active", "wounded", etc.
+    xr_string EventType;      // "on_timer", "on_info", "active", etc.
+    FTransition Transition;
+    xr_string SourceState;    // Из какого состояния это событие
+};
+
 // Состояние (схема поведения)
 struct FState
 {
-    xr_string StateName;                     // Уникальное имя состояния
-    EStateType StateType;                      // Тип схемы
-    
+    xr_string StateName;
+    EStateType StateType = EStateType::Custom;
+
     // Параметры в зависимости от типа
     std::variant<
         FWalkerParams,
@@ -321,12 +344,13 @@ struct FState
         FActionParams,
         FBaseParams
     > Params;
-    
+
+    ed::PinId InputPinId;
+    ed::PinId OutputPinId;
+
     xr_vector<FTransition> Transitions;      // Переходы в другие состояния
-    
-    // Для визуального редактора
-    float EditorPositionX = 0.0f;              // Позиция ноды в редакторе
-    float EditorPositionY = 0.0f;
+    xr_vector<FEventTransition> Events;
+
     FColor EditorColor;                         // Цвет ноды (нужно определить FColor)
 };
 

@@ -279,6 +279,7 @@ xr_vector<FState> LogicLoader::LoadAsStates(const xr_string& folder)
 xr_vector<FState> LogicLoader::LoadFromFile(const xr_string& filename)
 {
 	xr_vector<FState> out;
+	xr_vector<FEventInfo> events;
 
 	CInifile* ini = CInifile::Create(filename.c_str(), TRUE);
 	if (!ini)
@@ -287,13 +288,12 @@ xr_vector<FState> LogicLoader::LoadFromFile(const xr_string& filename)
 		return out;
 	}
 
+	// В LoadFromFile:
 	for (auto& sect : ini->sections())
 	{
 		FState s;
 		s.StateName = sect.Name.c_str();
-
 		const char* sec = sect.Name.c_str();
-
 		s.StateType = ParseStateType(s.StateName);
 
 		FBaseParams base;
@@ -303,28 +303,6 @@ xr_vector<FState> LogicLoader::LoadFromFile(const xr_string& filename)
 			const char* v = it.second.c_str();
 			if (!k || !v) continue;
 			base.CustomVariables[k] = v;
-		}
-
-		// Editor metadata
-		if (ini->line_exist(sec, "editor_pos_x"))
-			s.EditorPositionX = ini->r_float(sec, "editor_pos_x");
-		if (ini->line_exist(sec, "editor_pos_y"))
-			s.EditorPositionY = ini->r_float(sec, "editor_pos_y");
-		if (ini->line_exist(sec, "editor_color_r") || ini->line_exist(sec, "editor_color"))
-		{
-			if (ini->line_exist(sec, "editor_color_r"))
-			{
-				s.EditorColor.R = (uint8_t)ini->r_u32(sec, "editor_color_r");
-				s.EditorColor.G = (uint8_t)ini->r_u32(sec, "editor_color_g");
-				s.EditorColor.B = (uint8_t)ini->r_u32(sec, "editor_color_b");
-			}
-			else
-			{
-				u32 col = ini->r_u32(sec, "editor_color");
-				s.EditorColor.R = (uint8_t)((col >> 16) & 0xFF);
-				s.EditorColor.G = (uint8_t)((col >> 8) & 0xFF);
-				s.EditorColor.B = (uint8_t)(col & 0xFF);
-			}
 		}
 
 		// Parse per-type friendly fields
@@ -456,7 +434,7 @@ xr_vector<FState> LogicLoader::LoadFromFile(const xr_string& filename)
 
 				// split by comma
 				size_t start = 0;
-				while (start < list.size()) 
+				while (start < list.size())
 				{
 					size_t pos = list.find(',', start);
 					xr_string token = (pos == xr_string::npos) ? list.substr(start) : list.substr(start, pos - start);
@@ -467,7 +445,7 @@ xr_vector<FState> LogicLoader::LoadFromFile(const xr_string& filename)
 					{
 						ip.IdleAnimations.push_back(token.substr(a, b - a + 1));
 					}
-					
+
 					if (pos == xr_string::npos)
 						break;
 
@@ -490,6 +468,11 @@ xr_vector<FState> LogicLoader::LoadFromFile(const xr_string& filename)
 			break;
 		}
 
+		// Вектор для событий этого состояния
+		xr_vector<FEventTransition> stateEvents;
+
+		// Парсим все линии секции
+		int idx = 0;
 		int lines = ini->line_count(sec);
 		for (int li = 0; li < lines; ++li)
 		{
@@ -498,56 +481,90 @@ xr_vector<FState> LogicLoader::LoadFromFile(const xr_string& filename)
 			if (!ini->r_line(sec, li, &N, &V))
 				continue;
 			if (!N) continue;
+
 			xr_string key = N;
+
+			// Обработка on_* событий
 			if (key.rfind("on_", 0) == 0)
 			{
-				FTransition t;
-				t.DebugName = key;
+				FEventTransition eventTrans;
+				eventTrans.EventKey = key;
+				eventTrans.SourceState = s.StateName;
+				eventTrans.Transition.DebugName = key;
+				eventTrans.EventIndex = idx++;
 
+				// Определяем тип события
 				if (key == "on_timer" || key == "on_game_timer")
-					t.Condition.Type = EConditionType::OnTimer;
+				{
+					eventTrans.EventType = "on_timer";
+					eventTrans.Transition.Condition.Type = EConditionType::OnTimer;
+				}
 				else if (key == "on_info" || key == "on_info_yes")
-					t.Condition.Type = EConditionType::OnInfo;
+				{
+					eventTrans.EventType = "on_info";
+					eventTrans.Transition.Condition.Type = EConditionType::OnInfo;
+				}
 				else if (key == "on_death")
-					t.Condition.Type = EConditionType::OnDeath;
+				{
+					eventTrans.EventType = "on_death";
+					eventTrans.Transition.Condition.Type = EConditionType::OnDeath;
+				}
 				else if (key == "on_hit")
-					t.Condition.Type = EConditionType::OnHit;
+				{
+					eventTrans.EventType = "on_hit";
+					eventTrans.Transition.Condition.Type = EConditionType::OnHit;
+				}
 				else if (key == "on_combat")
-					t.Condition.Type = EConditionType::OnCombat;
+				{
+					eventTrans.EventType = "on_combat";
+					eventTrans.Transition.Condition.Type = EConditionType::OnCombat;
+				}
 				else if (key == "on_talk")
-					t.Condition.Type = EConditionType::OnTalk;
+				{
+					eventTrans.EventType = "on_talk";
+					eventTrans.Transition.Condition.Type = EConditionType::OnTalk;
+				}
 				else if (key == "on_health_le")
-					t.Condition.Type = EConditionType::OnHealthLe;
+				{
+					eventTrans.EventType = "on_health_le";
+					eventTrans.Transition.Condition.Type = EConditionType::OnHealthLe;
+				}
 				else if (key == "on_enemy_in_radius")
-					t.Condition.Type = EConditionType::OnEnemyInRadius;
+				{
+					eventTrans.EventType = "on_enemy_in_radius";
+					eventTrans.Transition.Condition.Type = EConditionType::OnEnemyInRadius;
+				}
 				else
-					t.Condition.Type = EConditionType::OnInfo;
+				{
+					eventTrans.EventType = "on_custom";
+					eventTrans.Transition.Condition.Type = EConditionType::OnInfo;
+				}
 
+				// Парсим значение
 				if (V && *V)
 				{
 					xr_string vs = Trim(xr_string(V));
 
+					// Парсим таймер (часть до |)
 					size_t pipe_pos = vs.find('|');
 					if (pipe_pos != xr_string::npos)
 					{
 						xr_string timer_part = Trim(vs.substr(0, pipe_pos));
-
-						try 
+						try
 						{
-							t.Condition.Value = std::stof(timer_part.c_str());
-							t.Condition.Type = EConditionType::OnTimer;
+							float timerValue = std::stof(timer_part.c_str());
+							eventTrans.Transition.Condition.Value = timerValue;
+							eventTrans.EventType = "on_timer";
+							eventTrans.Transition.Condition.Type = EConditionType::OnTimer;
 						}
-						catch (...) 
-						{
-						}
+						catch (...) {}
 
-						// Всё что после | — это остальная часть (цель + эффекты)
 						vs = Trim(vs.substr(pipe_pos + 1));
 					}
 
+					// Парсим эффекты (часть между %...%)
 					size_t percent_start = vs.find('%');
 					size_t percent_end = vs.rfind('%');
-
 					xr_string effects_block;
 					if (percent_start != xr_string::npos && percent_end != xr_string::npos && percent_start != percent_end)
 					{
@@ -555,9 +572,9 @@ xr_vector<FState> LogicLoader::LoadFromFile(const xr_string& filename)
 						vs = Trim(vs.substr(0, percent_start));
 					}
 
+					// Парсим условия (часть между {...})
 					size_t cond_start = vs.find('{');
 					size_t cond_end = vs.find('}');
-
 					xr_string condition_block;
 					if (cond_start != xr_string::npos && cond_end != xr_string::npos)
 					{
@@ -565,85 +582,88 @@ xr_vector<FState> LogicLoader::LoadFromFile(const xr_string& filename)
 						vs = Trim(vs.erase(cond_start, cond_end - cond_start + 1).data());
 					}
 
-					t.TargetState = vs;
-
-					if (!t.TargetState.empty() && (t.TargetState.back() == ',' || t.TargetState.back() == ';'))
+					// Целевое состояние
+					eventTrans.Transition.TargetState = vs;
+					if (!eventTrans.Transition.TargetState.empty() &&
+						(eventTrans.Transition.TargetState.back() == ',' ||
+							eventTrans.Transition.TargetState.back() == ';'))
 					{
-						t.TargetState.pop_back();
+						eventTrans.Transition.TargetState.pop_back();
 					}
 
+					// Парсим условия и эффекты
 					if (!condition_block.empty())
 					{
-						ParseConditionBlock(condition_block, t.ParsedConditions);
-						t.RawCondition = condition_block;
+						ParseConditionBlock(condition_block, eventTrans.Transition.ParsedConditions);
+						eventTrans.Transition.RawCondition = condition_block;
 					}
 
 					if (!effects_block.empty())
 					{
-						ParseEffectsBlock(effects_block, t.Effects);
-						t.RawEffects = effects_block;
+						ParseEffectsBlock(effects_block, eventTrans.Transition.Effects);
+						eventTrans.Transition.RawEffects = effects_block;
 					}
 
-					if (t.Condition.Type != EConditionType::OnTimer)
+					// Для не-таймеров пытаемся распарсить значение
+					if (eventTrans.EventType != "on_timer")
 					{
 						try {
-							t.Condition.Value = std::stof(vs.c_str());
+							eventTrans.Transition.Condition.Value = std::stof(vs.c_str());
 						}
-						catch (...) 
+						catch (...)
 						{
 							if (!condition_block.empty())
 							{
-								t.Condition.InfoName = condition_block;
+								eventTrans.Transition.Condition.InfoName = condition_block;
 							}
 							else
 							{
-								t.Condition.InfoName = vs;
+								eventTrans.Transition.Condition.InfoName = vs;
 							}
 						}
 					}
 				}
 
-				s.Transitions.push_back(t);
+				stateEvents.push_back(eventTrans);
 			}
 		}
+
+		// Обработка специальных переходов (active, meet, wounded, danger)
+		auto addSpecialEvent = [&](const char* eventName, const char* targetState)
+		{
+			if (targetState && *targetState)
+			{
+				FEventTransition eventTrans;
+				eventTrans.EventKey = eventName;
+				eventTrans.EventType = eventName;
+				eventTrans.SourceState = s.StateName;
+				eventTrans.Transition.DebugName = eventName;
+				eventTrans.Transition.TargetState = targetState;
+
+				if (xr_string(eventName) == "meet" && eventTrans.Transition.TargetState == "no_meet")
+					return;
+
+				stateEvents.push_back(eventTrans);
+			}
+		};
+
+		if (ini->line_exist(sec, "meet"))
+			addSpecialEvent("meet", ini->r_string_wb(sec, "meet").c_str());
+		else if (ini->line_exist(sec, "wounded"))
+			addSpecialEvent("wounded", ini->r_string_wb(sec, "wounded").c_str());
+		else if (ini->line_exist(sec, "danger"))
+			addSpecialEvent("danger", ini->r_string_wb(sec, "danger").c_str());
 
 		if (ini->line_exist(sec, "active"))
 		{
 			FTransition t;
 			t.DebugName = "active";
 			t.TargetState = ini->r_string_wb(sec, "active").c_str();
-
 			s.Transitions.push_back(t);
 		}
-
-		if (ini->line_exist(sec, "meet"))
+		else
 		{
-			FTransition t;
-			t.DebugName = "meet";
-			t.TargetState = ini->r_string_wb(sec, "meet").c_str();
-
-			if (t.TargetState != "no_meet")
-			{
-				s.Transitions.push_back(t);
-			}
-		}
-
-		if (ini->line_exist(sec, "wounded"))
-		{
-			FTransition t;
-			t.DebugName = "wounded";
-			t.TargetState = ini->r_string_wb(sec, "wounded").c_str();
-
-			s.Transitions.push_back(t);
-		}
-
-		if (ini->line_exist(sec, "danger"))
-		{
-			FTransition t;
-			t.DebugName = "danger";
-			t.TargetState = ini->r_string_wb(sec, "danger").c_str();
-
-			s.Transitions.push_back(t);
+			s.Events = stateEvents;
 		}
 
 		out.push_back(std::move(s));

@@ -52,6 +52,8 @@ void FNodeEditor::Render()
 
 	ed::SetCurrentEditor(m_Context);
 
+	ImGui::GetIO().FontGlobalScale = 1.0f;
+
 	RenderMainMenu();
 
 	auto& style = ed::GetStyle();
@@ -67,6 +69,11 @@ void FNodeEditor::Render()
 	for (auto& [id, node] : m_Nodes)
 	{
 		RenderNode(node);
+	}
+
+	for (auto& [nodeId, eventNode] : m_EventNodes)
+	{
+		RenderEventNode(eventNode, nodeId);
 	}
 
 	for (const auto& link : m_Links)
@@ -139,11 +146,9 @@ void FNodeEditor::RenderNode(FState& State)
 		if (Row < Desc.Inputs.size())
 		{
 			auto& in = Desc.Inputs[Row];
-			auto PinId = MakePinId(State.StateName, in, idx++);
-
 			ImGui::SetCursorScreenPos(rowStart);
 
-			ed::BeginPin(PinId, ed::PinKind::Input);
+			ed::BeginPin(State.InputPinId, ed::PinKind::Input);
 
 			ImVec2 p = ImGui::GetCursorScreenPos();
 			ImGui::Dummy(ImVec2(12, 12));
@@ -158,46 +163,25 @@ void FNodeEditor::RenderNode(FState& State)
 		}
 
 		// ---------- OUTPUT ----------
-		if (Row < State.Transitions.size())
+		//if (Row < State.Transitions.size())
 		{
-			auto& tr = State.Transitions[Row];
-
-			xr_string pinName = tr.DebugName;
-			if (!tr.TargetState.empty())
-			{
-				pinName += " → " + tr.TargetState;
-			}
-
-			auto pinId = MakePinId(State.StateName, pinName, idx++);
-
-			ImVec2 textSize = ImGui::CalcTextSize(tr.DebugName.c_str());
+			xr_string pinName = "Out";
+			ImVec2 textSize = ImGui::CalcTextSize(pinName.c_str());
 
 			float x = rightX - textSize.x - 12.0f;
-			if (tr.DebugName.empty())
-			{
-				x = rightX - 12.0f;
-			}
 
 			ImGui::SetCursorScreenPos({ x, rowStart.y });
 
-			ed::BeginPin(pinId, ed::PinKind::Output);
+			ed::BeginPin(State.OutputPinId, ed::PinKind::Output);
 
-			if (!tr.DebugName.empty())
-			{
-				ImGui::TextUnformatted(tr.DebugName.c_str());
+				ImGui::TextUnformatted(pinName.c_str());
 				ImGui::SameLine();
-			}
 
 			ImVec2 p = ImGui::GetCursorScreenPos();
 			ImGui::Dummy(ImVec2(12, 12));
 
 			ImVec2 Center = { p.x + 6, p.y + 6 };
 			DrawList->AddCircleFilled(Center, 4.0f, IM_COL32(220, 150, 150, 255));
-
-			if (ImGui::IsItemHovered() && !tr.TargetState.empty())
-			{
-				ImGui::SetTooltip("Target: %s", tr.TargetState.c_str());
-			}
 
 			ed::EndPin();
 		}
@@ -387,88 +371,6 @@ void FNodeEditor::BuildNodesLayout()
 	ed::NavigateToContent();
 }
 
-void FNodeEditor::BuildLinksFromTransitions()
-{
-	m_Links.clear();
-	m_NextLinkId = 1;
-
-	struct FNodePinInfo 
-	{
-		ed::NodeId NodeId;
-		xr_vector<xr_string> InputPinNames;
-		xr_vector<xr_string> OutputPinNames;
-	};
-	xr_hash_map<xr_string, FNodePinInfo> stateInfo;
-
-	for (auto& [key, state] : m_Nodes)
-	{
-		FNodePinInfo info;
-		info.NodeId = MakeNodeId(state);
-
-		auto Desc = GetStateRenderDesc(state);
-		info.InputPinNames = Desc.Inputs;
-		info.OutputPinNames = Desc.Outputs;
-
-		stateInfo[state.StateName] = info;
-	}
-
-	for (auto& [key, sourceState] : m_Nodes)
-	{
-		auto sourceInfo = stateInfo[sourceState.StateName];
-
-		for (auto& tr : sourceState.Transitions)
-		{
-			if (tr.TargetState.empty())
-			{
-				continue;
-			}
-
-			auto targetIt = stateInfo.find(tr.TargetState);
-			if (targetIt == stateInfo.end())
-			{
-				continue;
-			}
-
-			if (targetIt->second.InputPinNames.empty())
-			{
-				continue;
-			}
-
-			int inputCount = (int)sourceInfo.InputPinNames.size();
-
-			int transitionIndex = 0;
-			for (size_t i = 0; i < sourceState.Transitions.size(); ++i)
-			{
-				if (&sourceState.Transitions[i] == &tr)
-				{
-					transitionIndex = (int)i;
-					break;
-				}
-			}
-
-			int outputPinIdx = inputCount + transitionIndex;
-
-			xr_string inputPinName = targetIt->second.InputPinNames[0];
-			int inputPinIdx = 0;
-
-			xr_string pinNameForOutput = tr.DebugName;
-			if (!tr.TargetState.empty())
-			{
-				pinNameForOutput += " → " + tr.TargetState;
-			}
-
-			ed::PinId startPinId = MakePinId(sourceState.StateName, pinNameForOutput, outputPinIdx);
-			ed::PinId endPinId = MakePinId(tr.TargetState, inputPinName, inputPinIdx);
-
-			FLink NewLink;
-			NewLink.Id = ed::LinkId(m_NextLinkId++);
-			NewLink.StartPinId = startPinId;
-			NewLink.EndPinId = endPinId;
-			m_Links.push_back(NewLink);
-		}
-	}
-}
-
 void FNodeEditor::RenderMainMenu()
 {
 	if (ImGui::BeginMainMenuBar())
@@ -539,17 +441,310 @@ void FNodeEditor::LoadLogicFile(const char* path)
 	{
 		m_Nodes.clear();
 		m_Links.clear();
+		m_EventNodes.clear();
+		m_EventToNodeMap.clear();
 
-		int count = 0;
+		// Сначала загружаем состояния
 		for (auto& st : states)
 		{
 			size_t key = std::hash<xr_string>{}(st.StateName);
 			m_Nodes[key] = st;
-			++count;
-			if (count > 200) break;
+
+			for (auto& transition : st.Events)
+			{
+				FEventInfo eventInfo;
+				eventInfo.EventKey = transition.EventKey;
+				eventInfo.EventType = transition.EventType;
+				eventInfo.Transition = transition.Transition;
+				eventInfo.EventIndex = transition.EventIndex;
+				CreateEventNode(eventInfo, st);
+			}
 		}
 
-		BuildLinksFromTransitions();
+		// Удаляем переходы из состояний (теперь они в event-нодах)
+		for (auto& [key, state] : m_Nodes)
+		{
+			state.Transitions.erase
+			(
+				std::remove_if(state.Transitions.begin(), state.Transitions.end(),
+					[](const FTransition& t) {
+						return t.DebugName.rfind("on_", 0) == 0 ||
+							t.DebugName == "wounded" ||
+							t.DebugName == "danger" ||
+							t.DebugName == "meet";
+					}),
+				state.Transitions.end()
+			);
+		}
+
+		AssignStatePins();
+
+		BuildLinks();
 		BuildNodesLayout();
+
+
+		for (auto& [eventId, eventNode] : m_EventNodes)
+		{
+			ImVec2 parentPos = ed::GetNodePosition(eventNode.Owner);
+			ed::SetNodePosition(eventId, ImVec2(parentPos.x - 350, parentPos.y));
+		}
+	}
+}
+
+void FNodeEditor::CreateEventNode(const FEventInfo& event, const FState& parentState)
+{
+	FEventNode eventNode;
+	eventNode.Owner = MakeNodeId(parentState);
+
+	eventNode.EventName = event.EventKey;
+	eventNode.LinkedTransition = event.Transition; 
+	eventNode.EventIndex = event.EventIndex;
+
+	// Формируем отображаемое имя
+	if (event.EventType == "timer")
+	{
+		eventNode.DisplayName = event.EventKey;
+		if (event.Transition.Condition.Value > 0)
+			eventNode.DisplayName += xr_string(" (") + xr_string::ToString(event.Transition.Condition.Value) + "s)";
+		eventNode.TimerValue = event.Transition.Condition.Value;
+	}
+	else if (event.EventType == "info")
+	{
+		eventNode.DisplayName = event.EventKey;
+		if (!event.Transition.Condition.InfoName.empty())
+			eventNode.InfoName = event.Transition.Condition.InfoName;
+	}
+	else if (event.EventType == "wounded")
+	{
+		eventNode.DisplayName = "Wounded";
+	}
+	else if (event.EventType == "danger")
+	{
+		eventNode.DisplayName = "Danger";
+	}
+	else if (event.EventType == "meet")
+	{
+		eventNode.DisplayName = "Meet";
+	}
+	else
+	{
+		eventNode.DisplayName = event.EventKey;
+	}
+
+	eventNode.Conditions = event.Transition.ParsedConditions;
+	eventNode.Effects = event.Transition.Effects;
+
+	// Создаем ноду
+	ed::NodeId nodeId = ed::NodeId(++m_NextNodeId);
+	m_EventNodes[nodeId] = eventNode;
+	m_EventToNodeMap[{parentState.StateName, event.EventIndex}] = nodeId;
+}
+
+void FNodeEditor::RenderEventNode(FEventNode& EventNode, ed::NodeId nodeId)
+{
+	ed::BeginNode(nodeId);
+	ImGui::PushID(EventNode.EventName.c_str());
+
+	ImDrawList* DrawList = ImGui::GetWindowDrawList();
+	ImVec2 start = ImGui::GetCursorScreenPos();
+
+	const float NODE_WIDTH = 200.0f;
+	ImVec2 headerSize = ImVec2(NODE_WIDTH, 28);
+
+	// Цвет
+	ImU32 headerColor;
+	if (EventNode.EventName.find("timer") != xr_string::npos)
+		headerColor = IM_COL32(80, 120, 200, 255);
+	else if (EventNode.EventName.find("info") != xr_string::npos)
+		headerColor = IM_COL32(100, 180, 100, 255);
+	else if (EventNode.EventName == "active")
+		headerColor = IM_COL32(200, 180, 60, 255);
+	else if (EventNode.EventName == "wounded")
+		headerColor = IM_COL32(200, 80, 80, 255);
+	else if (EventNode.EventName == "danger")
+		headerColor = IM_COL32(220, 120, 40, 255);
+	else
+		headerColor = IM_COL32(140, 100, 180, 255);
+
+	DrawList->AddRectFilled(
+		ImVec2(start.x - 8, start.y - 8),
+		ImVec2(start.x + headerSize.x + 8, start.y + headerSize.y - 8),
+		headerColor, 6.0f, ImDrawFlags_RoundCornersTop
+	);
+
+	ImGui::Dummy(headerSize);
+	ImGui::SetCursorScreenPos({ start.x + 8, start.y });
+	ImGui::TextUnformatted(EventNode.DisplayName.c_str());
+
+	ImGui::Spacing();
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 4));
+
+	// ---------- INPUT PIN ----------
+	{
+		ed::PinId inPinId = ed::PinId(nodeId.Get() * 1000 + 0);
+
+		ed::BeginPin(EventNode.InputPinId, ed::PinKind::Input);
+
+		ImVec2 p = ImGui::GetCursorScreenPos();
+		ImGui::Dummy(ImVec2(12, 12));
+
+		ImVec2 center = { p.x + 6, p.y + 6 };
+		DrawList->AddCircleFilled(center, 4.0f, IM_COL32(150, 150, 220, 255));
+
+		ImGui::SameLine();
+		ImGui::TextUnformatted("In");
+
+		ed::EndPin();
+	}
+
+	// Условия
+	if (!EventNode.Conditions.empty())
+	{
+		ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.3f, 1.0f), "Conditions:");
+		for (auto& cond : EventNode.Conditions)
+		{
+			ImGui::Bullet();
+			switch (cond.Op)
+			{
+			case FParsedCondition::FuncTrue:
+				ImGui::Text("%s(...)", cond.FuncName.c_str());
+				break;
+			case FParsedCondition::Probability:
+				ImGui::Text("Probability: %d%%", cond.ProbabilityValue);
+				break;
+			default:
+				ImGui::Text("...");
+				break;
+			}
+		}
+	}
+
+	// Эффекты
+	if (!EventNode.Effects.empty())
+	{
+		ImGui::TextColored(ImVec4(0.3f, 0.7f, 0.3f, 1.0f), "Effects:");
+		for (auto& effect : EventNode.Effects)
+		{
+			ImGui::Bullet();
+			switch (effect.Type)
+			{
+			case FParsedEffect::GiveInfo:
+				ImGui::Text("+%s", effect.InfoName.c_str());
+				break;
+			case FParsedEffect::RemoveInfo:
+				ImGui::Text("-%s", effect.InfoName.c_str());
+				break;
+			case FParsedEffect::CallFunction:
+				ImGui::Text("= %s(...)", effect.FuncName.c_str());
+				break;
+			default:
+				ImGui::Text("%s", effect.RawCommand.c_str());
+				break;
+			}
+		}
+	}
+
+	ImGui::PopStyleVar();
+
+	// ---------- OUTPUT PIN ----------
+	{
+		ed::BeginPin(EventNode.OutputPinId, ed::PinKind::Output);
+
+		ImVec2 p = ImGui::GetCursorScreenPos();
+		ImGui::Dummy(ImVec2(12, 12));
+
+		ImVec2 center = { p.x + 6, p.y + 6 };
+		DrawList->AddCircleFilled(center, 4.0f, IM_COL32(220, 150, 150, 255));
+
+		ImGui::SameLine();
+		ImGui::TextUnformatted("Fire");
+
+		ed::EndPin();
+	}
+
+	ImGui::PopID();
+	ed::EndNode();
+}
+
+
+void FNodeEditor::BuildLinks()
+{
+	m_Links.clear();
+	m_NextLinkId = 1;
+
+	for (auto& [id, state] : m_Nodes)
+	{
+		for (auto& tr : state.Transitions)
+		{
+			if (tr.TargetState.empty())
+				continue;
+
+			auto it = m_Nodes.find(std::hash<xr_string>{}(tr.TargetState));
+			if (it == m_Nodes.end())
+				continue;
+
+			FLink link;
+			link.Id = ed::LinkId(m_NextLinkId++);
+			link.StartPinId = state.OutputPinId;
+			link.EndPinId = it->second.InputPinId;
+
+			m_Links.push_back(link);
+		}
+		for (size_t i = 0; i < state.Events.size(); ++i)
+		{
+			FEventTransition& Event = state.Events[i];
+
+			// ----------------------------
+			// 1. STATE → EVENT NODE
+			// ----------------------------
+			auto eventNodeIt = m_EventToNodeMap.find(
+				{ state.StateName, Event.EventIndex }
+			);
+			if (eventNodeIt == m_EventToNodeMap.end())
+				continue;
+
+			ed::PinId endPinId = m_EventNodes[eventNodeIt->second].InputPinId;
+
+			m_Links.push_back({
+				ed::LinkId(m_NextLinkId++),
+				state.OutputPinId,
+				endPinId
+				});
+
+			// ----------------------------
+			// 2. EVENT NODE → TARGET STATE
+			// ----------------------------
+			if (Event.Transition.TargetState.empty())
+				continue;
+
+			auto targetIt = m_Nodes.find(
+				std::hash<xr_string>{}(Event.Transition.TargetState)
+			);
+
+			if (targetIt == m_Nodes.end())
+				continue;
+
+			ed::PinId eventOutPin = m_EventNodes[eventNodeIt->second].OutputPinId;
+			m_Links.push_back({
+				ed::LinkId(m_NextLinkId++),
+				eventOutPin,
+				targetIt->second.InputPinId
+				});
+		}
+	}
+}
+
+void FNodeEditor::AssignStatePins()
+{
+	for (auto& [id, state] : m_Nodes)
+	{
+		state.InputPinId = ed::PinId(m_NextPinId++);
+		state.OutputPinId = ed::PinId(m_NextPinId++);
+	}
+
+	for (auto& [id, eventNode] : m_EventNodes)
+	{
+		eventNode.InputPinId = ed::PinId(m_NextPinId++);
+		eventNode.OutputPinId = ed::PinId(m_NextPinId++);
 	}
 }
