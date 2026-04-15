@@ -202,7 +202,7 @@ CActor::~CActor()
 {
 	xr_delete				(m_location_manager);
 	xr_delete				(m_memory);
-    xr_delete				(encyclopedia_registry);
+	xr_delete				(encyclopedia_registry);
 	xr_delete				(game_news_registry);
 #ifdef DEBUG
 	Device.seqRender.Remove(this);
@@ -2888,10 +2888,10 @@ void CActor::OnItemDrop(CInventoryItem *inventory_item, bool just_before_destroy
 	}
 
 	// Pavel: при продаже в МП граната удаляется у игрока
-    // И после этого нельзя достать новую
-    // Поэтому закомментировал проверку на just_before_destroy
+	// И после этого нельзя достать новую
+	// Поэтому закомментировал проверку на just_before_destroy
 	if(		//!just_before_destroy && 
-		    inventory_item &&
+			inventory_item &&
 			inventory_item->BaseSlot()==GRENADE_SLOT && 
 			nullptr==inventory().ItemFromSlot(GRENADE_SLOT) )
 	{
