@@ -4,6 +4,7 @@
 #include "ai_object_location.h"
 #include "../../xrServerEntities/xrMessages.h"
 #include "../../xrServerEntities/xrServer_Objects_ALife.h"
+#include "script_game_object.h"
 
 #include <luabind/luabind.hpp>
 
