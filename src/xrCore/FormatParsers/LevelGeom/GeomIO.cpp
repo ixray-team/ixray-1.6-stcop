@@ -188,6 +188,21 @@ IReaderBase& CGeomVanillaFormat::GetSWIData() const
     return *std::get<IReader*>(SWI);
 }
 
+bool CGeomVanillaFormat::HasVBData() const
+{
+    return std::holds_alternative<IReader*>(VB);
+}
+
+bool CGeomVanillaFormat::HasIBData() const
+{
+    return std::holds_alternative<IReader*>(IB);
+}
+
+bool CGeomVanillaFormat::HasSWIData() const
+{
+    return std::holds_alternative<IReader*>(SWI);
+}
+
 CGeomVanillaChunkedFormat::~CGeomVanillaChunkedFormat()
 {
     if (std::holds_alternative<CMultiReader*>(VB))
@@ -249,9 +264,75 @@ bool CGeomVanillaChunkedFormat::Write(xr_string_view FileName, xr_string_view Ex
     MasterChunk->open_chunk(fsL_TYPECHUNKS);
     MasterChunk->w_enum(GeomVanillaType::Chunked);
     MasterChunk->w_u32(ChunksNum);
-    MasterChunk->w_u8(!std::holds_alternative<std::monostate>(VBPtr));
-    MasterChunk->w_u8(!std::holds_alternative<std::monostate>(IBPtr));
-    MasterChunk->w_u8(!std::holds_alternative<std::monostate>(SWIPtr));
+    bool HasVB = true; u32 VBSize = 0;
+    bool HasIB = true; u32 IBSize = 0;
+    bool HasSWI = true; u32 SWISize = 0;
+    {
+        HasVB = !std::holds_alternative<std::monostate>(VBPtr);
+        if (HasVB)
+        {
+            if (std::holds_alternative<VBCPTR>(VBPtr))
+            {
+                auto Ptr = std::get<VBCPTR>(VBPtr);
+                VBSize = Ptr->size();
+                HasVB = VBSize > sizeof(u32);
+            } else if (std::holds_alternative<BuffPtr>(VBPtr))
+            {
+                auto& data = *std::get<BuffPtr>(VBPtr);
+                HasVB = !data.empty();
+                VBSize = data.size();
+            }
+        }
+    }
+    {
+        HasIB = !std::holds_alternative<std::monostate>(IBPtr);
+        if (HasIB)
+        {
+            if (std::holds_alternative<IBCPTR>(IBPtr))
+            {
+                auto Ptr = std::get<IBCPTR>(IBPtr);
+                IBSize = Ptr->size();
+                HasIB = IBSize > sizeof(u32);
+            } else if (std::holds_alternative<BuffPtr>(IBPtr))
+            {
+                auto& data = *std::get<BuffPtr>(IBPtr);
+                HasIB = !data.empty();
+                IBSize = data.size();
+            }
+        }
+    }
+    {
+        HasSWI = !std::holds_alternative<std::monostate>(SWIPtr);
+        if (HasSWI)
+        {
+            if (std::holds_alternative<SWICPTR>(SWIPtr))
+            {
+                auto Ptr = std::get<SWICPTR>(SWIPtr);
+                SWISize = Ptr->size();
+                HasSWI = SWISize > sizeof(u32);
+            } else if (std::holds_alternative<BuffPtr>(SWIPtr))
+            {
+                auto& data = *std::get<BuffPtr>(SWIPtr);
+                HasSWI = !data.empty();
+                SWISize = data.size();
+            }
+        }
+    }
+    MasterChunk->w_u8(HasVB);
+    MasterChunk->w_u8(HasIB);
+    MasterChunk->w_u8(HasSWI);
+    if (HasVB)
+    {
+        MasterChunk->w_u32(VBSize);
+    }
+    if (HasIB)
+    {
+        MasterChunk->w_u32(IBSize);
+    }
+    if (HasSWI)
+    {
+        MasterChunk->w_u32(SWISize);
+    }
     MasterChunk->close_chunk();
 
     xr_vector<u8> VBBuffer;
@@ -265,7 +346,7 @@ bool CGeomVanillaChunkedFormat::Write(xr_string_view FileName, xr_string_view Ex
     {
         VBBuffer = *std::get<BuffPtr>(VBPtr);
     }
-    VERIFY(std::holds_alternative<std::monostate>(VBPtr) || !VBBuffer.empty());
+    VERIFY(!HasVB || !VBBuffer.empty());
     auto VBBufferChunkNum = VBBuffer.size()/ChunksNum + VBBuffer.size()%ChunksNum;
     size_t CurrentPosVBBuffer = 0;
     
@@ -280,7 +361,7 @@ bool CGeomVanillaChunkedFormat::Write(xr_string_view FileName, xr_string_view Ex
     {
         IBBuffer = *std::get<BuffPtr>(IBPtr);
     }
-    VERIFY(std::holds_alternative<std::monostate>(IBPtr) || !IBBuffer.empty());
+    VERIFY(!HasIB || !IBBuffer.empty());
     auto IBBufferChunkNum = IBBuffer.size()/ChunksNum + IBBuffer.size()%ChunksNum;
     size_t CurrentPosIBBuffer = 0;
     
@@ -295,7 +376,7 @@ bool CGeomVanillaChunkedFormat::Write(xr_string_view FileName, xr_string_view Ex
     {
         SWIBuffer = *std::get<BuffPtr>(SWIPtr);
     }
-    VERIFY(std::holds_alternative<std::monostate>(SWIPtr) || !SWIBuffer.empty());
+    VERIFY(!HasSWI || !SWIBuffer.empty());
     auto SWIBufferChunkNum = SWIBuffer.size()/ChunksNum + SWIBuffer.size()%ChunksNum;
     size_t CurrentPosSWIBuffer = 0;
 
@@ -331,19 +412,19 @@ bool CGeomVanillaChunkedFormat::Write(xr_string_view FileName, xr_string_view Ex
             return true;
         };
 
-        if (!std::holds_alternative<std::monostate>(VBPtr) && !IVERIFY(
+        if (HasVB && !IVERIFY(
             process_func(VBBuffer, VBBufferChunkNum, CurrentPosVBBuffer, fsL_VB)))
         {
             return false;
         }
 
-        if (!std::holds_alternative<std::monostate>(IBPtr) && !IVERIFY(
+        if (HasIB && !IVERIFY(
             process_func(IBBuffer, IBBufferChunkNum, CurrentPosIBBuffer, fsL_IB)))
         {
             return false;
         }
 
-        if (!std::holds_alternative<std::monostate>(SWIPtr) && !IVERIFY(
+        if (HasSWI && !IVERIFY(
             process_func(SWIBuffer, SWIBufferChunkNum, CurrentPosSWIBuffer, fsL_SWIS)))
         {
             return false;
@@ -370,6 +451,7 @@ bool CGeomVanillaChunkedFormat::Read(xr_string_view FileName, xr_string_view Ext
         return false;
     }
     bool HasVB, HasIB, HasSWI;
+    u32 VBSize, IBSize, SWISize;
     {
         auto MasterTypeChunk = MasterChunk->open_chunk(fsL_TYPECHUNKS);
         if (!IVERIFY(MasterTypeChunk))
@@ -385,23 +467,41 @@ bool CGeomVanillaChunkedFormat::Read(xr_string_view FileName, xr_string_view Ext
         HasVB = MasterTypeChunk->r_u8();
         HasIB = MasterTypeChunk->r_u8();
         HasSWI = MasterTypeChunk->r_u8();
+        if (HasVB)
+        {
+            VBSize = MasterTypeChunk->r_u32();
+        }
+        if (HasIB)
+        {
+            IBSize = MasterTypeChunk->r_u32();
+        }
+        if (HasSWI)
+        {
+            SWISize = MasterTypeChunk->r_u32();
+        }
         MasterTypeChunk->close();
     }
 
+    CMultiReader* VBPtr = nullptr;
+    CMultiReader* IBPtr = nullptr;
+    CMultiReader* SWIPtr = nullptr;
     if (HasVB)
     {
         VERIFY(std::holds_alternative<std::monostate>(VB));
-        VB = new CMultiReader();
+        VBPtr = new CMultiReader();
+        VB = VBPtr;
     }
     if (HasIB)
     {
         VERIFY(std::holds_alternative<std::monostate>(IB));
-        IB = new CMultiReader();
+        IBPtr = new CMultiReader();
+        IB = IBPtr;
     }
     if (HasSWI)
     {
         VERIFY(std::holds_alternative<std::monostate>(SWI));
-        SWI = new CMultiReader();
+        SWIPtr = new CMultiReader();
+        SWI = SWIPtr;
     }
 
     for (size_t i = 0; i < ChunksNum; ++i)
@@ -465,6 +565,14 @@ bool CGeomVanillaChunkedFormat::Read(xr_string_view FileName, xr_string_view Ext
         }
     }
 
+    if (!IVERIFY(!HasVB || VBPtr->length() == VBSize)
+        || !IVERIFY(!HasIB || IBPtr->length() == IBSize)
+        || !IVERIFY(!HasSWI || SWIPtr->length() == SWISize)
+        )
+    {
+        return false;
+    }
+
     return true;
 }
 
@@ -524,6 +632,21 @@ IReaderBase& CGeomVanillaChunkedFormat::GetSWIData() const
 {
     VERIFY(std::holds_alternative<CMultiReader*>(SWI));
     return *std::get<CMultiReader*>(SWI);
+}
+
+bool CGeomVanillaChunkedFormat::HasVBData() const
+{
+    return std::holds_alternative<CMultiReader*>(VB);
+}
+
+bool CGeomVanillaChunkedFormat::HasIBData() const
+{
+    return std::holds_alternative<CMultiReader*>(IB);
+}
+
+bool CGeomVanillaChunkedFormat::HasSWIData() const
+{
+    return std::holds_alternative<CMultiReader*>(SWI);
 }
 
 XRCORE_API xr_unique_ptr<IFormat> XRay::Geom::Read(LPCSTR Initial, xr_string_view Filename, xr_string_view Extension)

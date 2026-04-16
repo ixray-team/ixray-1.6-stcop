@@ -126,9 +126,18 @@ void StartupConv()
 					Buff.resize(Data.length());
 					Data.r(Buff.data(), Buff.size());
 				};
-				read_func(VB, Geom->GetVBData());
-				read_func(IB, Geom->GetIBData());
-				read_func(SWI, Geom->GetSWIData());
+				if (Geom->HasVBData())
+				{
+					read_func(VB, Geom->GetVBData());
+				}
+				if (Geom->HasIBData())
+				{
+					read_func(IB, Geom->GetIBData());
+				}
+				if (Geom->HasSWIData())
+				{
+					read_func(SWI, Geom->GetSWIData());
+				}
 
 				Geom.reset();
 				

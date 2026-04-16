@@ -76,9 +76,18 @@ void CRender::level_Load(IReader* fs)
 			}
 		
 			dxRenderDeviceRender::Instance().Resources->Evict();
-			LoadVertexBuffers(Geom->GetVBData(), false);
-			LoadIndexBuffers(Geom->GetIBData(), false);
-			LoadSWIs(Geom->GetSWIData());
+			if (Geom->HasVBData())
+			{
+				LoadVertexBuffers(Geom->GetVBData(), false);
+			}
+			if (Geom->HasIBData())
+			{
+				LoadIndexBuffers(Geom->GetIBData(), false);
+			}
+			if (Geom->HasSWIData())
+			{
+				LoadSWIs(Geom->GetSWIData());
+			}
 		}
 		
 		//...and alternate/fast geometry
@@ -90,8 +99,14 @@ void CRender::level_Load(IReader* fs)
 			}
 		
 			dxRenderDeviceRender::Instance().Resources->Evict();
-			LoadVertexBuffers(Geom->GetVBData(), true);
-			LoadIndexBuffers(Geom->GetIBData(), true);
+			if (Geom->HasVBData())
+			{
+				LoadVertexBuffers(Geom->GetVBData(), true);
+			}
+			if (Geom->HasIBData())
+			{
+				LoadIndexBuffers(Geom->GetIBData(), true);
+			}
 		}
 
 		// Visuals
