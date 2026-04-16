@@ -646,7 +646,7 @@ BOOL CHudItem::GetHUDSoundMode()
 {
 	if (m_object && m_object->H_Parent()) {
 		CActor* A = m_object->H_Parent()->cast_actor();
-		return (A && A->HUDview());
+		return (A && A->HUDview()) || HudItemData();
 	} 
 
 	return FALSE;
