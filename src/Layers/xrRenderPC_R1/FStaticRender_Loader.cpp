@@ -78,9 +78,18 @@ void CRender::level_Load(IReader *fs)
 			}
 		
 			dxRenderDeviceRender::Instance().Resources->Evict();
-			LoadVertexBuffers(Geom->GetVBData());
-			LoadIndexBuffers(Geom->GetIBData());
-			LoadSWIs(Geom->GetSWIData());
+			if (Geom->HasVBData())
+			{
+				LoadVertexBuffers(Geom->GetVBData());
+			}
+			if (Geom->HasIBData())
+			{
+				LoadIndexBuffers(Geom->GetIBData());
+			}
+			if (Geom->HasSWIData())
+			{
+				LoadSWIs(Geom->GetSWIData());
+			}
 		}
 
 		// Visuals
