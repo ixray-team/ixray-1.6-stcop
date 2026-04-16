@@ -1,6 +1,10 @@
 #include "StdAfx.h"
 #include "pch_script.h"
 #include "../../Weapon.h"
+#include "../../WeaponMagazined.h"
+#include "../../WeaponMagazinedWGrenade.h"
+#include "../../WeaponCustomPistol.h"
+#include "../../WeaponPistol.h"
 
 using namespace luabind;
 

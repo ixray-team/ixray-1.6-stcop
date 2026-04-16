@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "AnimNotifyLuaFunctor.h"
+#include "script_game_object.h"
 
 #include "ai_space.h"
 #include "Actor.h"
