@@ -44,6 +44,10 @@ namespace XRay::Geom
         virtual IReaderBase& GetVBData() const = 0;
         virtual IReaderBase& GetIBData() const = 0;
         virtual IReaderBase& GetSWIData() const = 0;
+
+        virtual bool HasVBData() const = 0;
+        virtual bool HasIBData() const = 0;
+        virtual bool HasSWIData() const = 0;
     
         ChunkHeader& GetHeader() {return Header;}
         const ChunkHeader& GetHeader() const {return Header;}
@@ -73,7 +77,10 @@ namespace XRay::Geom
         virtual IReaderBase& GetVBData() const override;
         virtual IReaderBase& GetIBData() const override;
         virtual IReaderBase& GetSWIData() const override;
-        
+
+        virtual bool HasVBData() const override;
+        virtual bool HasIBData() const override;
+        virtual bool HasSWIData() const override;
     };
 
     class XRCORE_API CGeomVanillaChunkedFormat : public IFormat
@@ -102,6 +109,10 @@ namespace XRay::Geom
         virtual IReaderBase& GetVBData() const override;
         virtual IReaderBase& GetIBData() const override;
         virtual IReaderBase& GetSWIData() const override;
+
+        virtual bool HasVBData() const override;
+        virtual bool HasIBData() const override;
+        virtual bool HasSWIData() const override;
         
     };
 
