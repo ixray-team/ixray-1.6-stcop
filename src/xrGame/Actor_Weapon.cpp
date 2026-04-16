@@ -135,6 +135,31 @@ void CActor::g_fireParams(const CHudItem* pHudItem, Fvector& fire_pos, Fvector& 
 			XFORM().transform_dir(offset, pMissile->throw_point_offset());
 			fire_pos.add(offset);
 		}
+		else if (pWeap != nullptr && pWeap->cast_weapon_knife() == nullptr)
+		{
+			fire_pos = pWeap->get_LastFP();
+			fire_dir = Cameras().Direction();
+
+			fire_pos.lerp(fire_pos, Cameras().Position(), pWeap->GetAimFactor());
+
+			if (IsFocused())
+			{
+				Device.transform_hud2world(fire_pos, fire_dir);
+			}
+
+			if (!pWeap->IsZoomed())
+			{
+				collide::rq_result RQ;
+				Fvector ray_trace_dir = Fvector().set(fire_pos).sub(Cameras().Position());
+				float ray_trace_len = ray_trace_dir.magnitude();
+				ray_trace_dir.normalize();
+
+				if (g_pGameLevel->ObjectSpace.RayPick(Cameras().Position(), ray_trace_dir, ray_trace_len, collide::rqtBoth, RQ, this))
+				{
+					fire_pos.sub(ray_trace_dir.mul(ray_trace_len - RQ.range + 0.01f));
+				}
+			}
+		}
 	}
 	else
 	{
