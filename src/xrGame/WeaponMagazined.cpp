@@ -3776,6 +3776,72 @@ void CWeaponMagazined::OnMotionMark(u32 state, const motion_marks& mark)
 	{
 		SetQueueSize(GetCurrentFireMode());
 	}
+
+	if (!IsGrenadeMode() && state == eMagCheck && mark.name == "Right")
+	{
+		if (CUIGameCustom* ui = CurrentGameUI())
+		{
+			if (auto magcheck = ui->AddCustomStatic("mag_check", true))
+			{
+				int CurrMagSize = GetMagCapacity();
+				int Elapsed = iAmmoElapsed;
+
+				if (Elapsed == 0)
+				{
+					magcheck->SetText("st_mag_empty");
+				}
+				else if (Elapsed == CurrMagSize)
+				{
+					magcheck->SetText("st_mag_full");
+				}
+				else
+				{
+					float mag_factor = (float)Elapsed / (float)CurrMagSize;
+
+					if (mag_factor >= 0.65f)
+					{
+						magcheck->SetText("st_mag_nearly_full");
+					}
+					else if (mag_factor >= 0.5f)
+					{
+						magcheck->SetText("st_mag_near_medium");
+					}
+					else if (mag_factor >= 0.3f)
+					{
+						magcheck->SetText("st_mag_less_half");
+					}
+					else
+					{
+						magcheck->SetText("st_mag_nearly_empty");
+					}
+				}
+			}
+		}
+	}
+
+	if (state == eChamberCheck && mark.name == "Right")
+	{
+		if (CUIGameCustom* ui = CurrentGameUI())
+		{
+			if (auto magcheck = ui->AddCustomStatic("chamber_check", true))
+			{
+				shared_str static_info = g_pStringTable->translate("st_chamber_ammo");
+
+				if (m_bHaveShell && m_bNeedPumpState)
+				{
+					static_info = g_pStringTable->translate("st_chamber_shell");
+					LPCSTR ammo_type = m_ammoTypes[m_LastShotAmmoType].c_str();
+					static_info.printf("%s %s", static_info.c_str(), g_pStringTable->translate(pSettings->r_string(ammo_type, "inv_name_short")).c_str());
+					magcheck->SetText(static_info.c_str());
+				}
+				else if (!m_chamber.empty())
+				{
+					static_info.printf("%s %s", static_info.c_str(), m_chamber.back().m_InvShortName.c_str());
+					magcheck->SetText(static_info.c_str());
+				}
+			}
+		}
+	}
 }
 
 void CWeaponMagazined::UpdateBonePartAnimations()
