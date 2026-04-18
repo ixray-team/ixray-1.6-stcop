@@ -602,7 +602,7 @@ void R_dsgraph_structure::renderImGuiDebugWindow_SVGStorage()
 						static float _ViewerState_QueryHeight = 0.0f;
 
 						char name[32];
-						std::sprintf(name, "[%d] %s", pAtlas->getID(), _kSVGStorage_DefaultAtlasName);
+						xr_sprintf(name, sizeof(name), "[%d] %s", pAtlas->getID(), _kSVGStorage_DefaultAtlasName);
 
 						if (ImGui::CollapsingHeader(name))
 						{
@@ -624,12 +624,12 @@ void R_dsgraph_structure::renderImGuiDebugWindow_SVGStorage()
 
 								if (pElement)
 								{
-									std::sprintf(_ViewerState_QueryResult.data(), "w: %.2f h: %.2f\nx: %.2f y: %.2f\nu0: %.2f v0: %.2f u1: %.2f v1: %.2f", pElement->w(), pElement->h(), pElement->x(), pElement->y(), pElement->u0(pAtlas->getWidth()), pElement->v0(pAtlas->getHeight()), pElement->u1(pAtlas->getWidth()), pElement->v1(pAtlas->getHeight()));
+									xr_sprintf(_ViewerState_QueryResult.data(), _ViewerState_QueryResult.max_size(), "w: %.2f h: %.2f\nx: %.2f y: %.2f\nu0: %.2f v0: %.2f u1: %.2f v1: %.2f", pElement->w(), pElement->h(), pElement->x(), pElement->y(), pElement->u0(pAtlas->getWidth()), pElement->v0(pAtlas->getHeight()), pElement->u1(pAtlas->getWidth()), pElement->v1(pAtlas->getHeight()));
 								}
 								else
 								{
 									_ViewerState_QueryResult.clear();
-									std::sprintf(_ViewerState_QueryResult.data(), "failed to obtain element!");
+									xr_sprintf(_ViewerState_QueryResult.data(), _ViewerState_QueryResult.max_size(), "failed to obtain element!");
 								}
 							}
 
@@ -758,8 +758,10 @@ void R_dsgraph_structure::renderImGuiDebugWindow_SVGStorage()
 									ImGuiWindowFlags_NoSavedSettings;
 
 								ImGui::SetCursorScreenPos(subMin);
+								char subRegionChildId[48];
+								xr_sprintf(subRegionChildId, sizeof(subRegionChildId), "SubRegion##%d", i);
 								ImGui::BeginChild(
-									("SubRegion##" + std::to_string(i)).c_str(),
+									subRegionChildId,
 									subSize,
 									/*border=*/false,
 									childFlags
@@ -838,7 +840,46 @@ void R_dsgraph_structure::renderImGuiDebugWindow_SVGStorage()
 
 				if (ImGui::CollapsingHeader("Cache"))
 				{
-
+#ifdef DEBUG
+					xr_vector<CSVGStorage::SvgDebugCacheTableRow> rows;
+					pStorage->DebugCollectSvgCacheRows(rows);
+					if (ImGui::Button("Invalidate document LRU"))
+						pStorage->InvalidateAllSvgDocuments();
+					ImGui::Text(
+						"doc LRU hits: %llu misses: %llu",
+						static_cast<unsigned long long>(pStorage->DebugGetSvgDocCacheHits()),
+						static_cast<unsigned long long>(pStorage->DebugGetSvgDocCacheMisses()));
+					ImGui::Text("new atlas allocations: %llu", static_cast<unsigned long long>(pStorage->DebugGetSvgNewAtlasAllocCount()));
+					if (pStorage->DebugGetSvgRenderToBitmapSamples() > 0)
+					{
+						const double avgNs = static_cast<double>(pStorage->DebugGetSvgRenderToBitmapNsAccum()) /
+							static_cast<double>(pStorage->DebugGetSvgRenderToBitmapSamples());
+						ImGui::Text("renderToBitmap avg ns: %.0f", avgNs);
+					}
+					if (ImGui::Button("Reset SVG metrics"))
+						pStorage->DebugResetSvgMetrics();
+					if (ImGui::BeginTable("svg_cache", 4, ImGuiTableFlags_Borders))
+					{
+						ImGui::TableSetupColumn("key");
+						ImGui::TableSetupColumn("variants");
+						ImGui::TableSetupColumn("pixels");
+						ImGui::TableSetupColumn("last access");
+						ImGui::TableHeadersRow();
+						for (const auto& r : rows)
+						{
+							ImGui::TableNextRow();
+							ImGui::TableNextColumn();
+							ImGui::TextUnformatted(r.tableKey.c_str());
+							ImGui::TableNextColumn();
+							ImGui::Text("%u", r.variantCount);
+							ImGui::TableNextColumn();
+							ImGui::Text("%u", r.totalRasterPixels);
+							ImGui::TableNextColumn();
+							ImGui::Text("%llu", static_cast<unsigned long long>(r.lastAccessSeq));
+						}
+						ImGui::EndTable();
+					}
+#endif
 				}
 			}
 		}

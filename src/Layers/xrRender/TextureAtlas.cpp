@@ -8,6 +8,57 @@
 #include <lunasvg.h>
 #include "smol-atlas.h"
 
+#include <algorithm>
+#include <cmath>
+#include <cstddef>
+#include <cstdlib>
+
+#include "../../xrCore/_math.h"
+
+namespace
+{
+IC u64 SvgHashCombineU64(u64 a, u64 b)
+{
+	return a ^ (b + 0x9e3779b97f4a7c15ULL + (a << 6) + (a >> 2));
+}
+
+void ApplySvgTintToNearWhitePixels(lunasvg::Bitmap& bmp, const SVGTintRGBA& tint)
+{
+	if (tint.IsWhite())
+		return;
+
+	const u32 w = bmp.width();
+	const u32 h = bmp.height();
+	if (!w || !h || !bmp.data())
+		return;
+
+	u8* base = static_cast<u8*>(bmp.data());
+	const u32 stride = bmp.stride();
+
+	for (u32 y = 0; y < h; ++y)
+	{
+		u8* row = base + y * stride;
+		for (u32 x = 0; x < w; ++x)
+		{
+			u8* px = row + x * 4;
+			const u8 pr = px[0];
+			const u8 pg = px[1];
+			const u8 pb = px[2];
+			const u8 pa = px[3];
+			if (pa == 0)
+				continue;
+			if (pr >= 235 && pg >= 235 && pb >= 235)
+			{
+				px[0] = static_cast<u8>(u32(pr) * u32(tint.r) / 255u);
+				px[1] = static_cast<u8>(u32(pg) * u32(tint.g) / 255u);
+				px[2] = static_cast<u8>(u32(pb) * u32(tint.b) / 255u);
+				px[3] = static_cast<u8>(u32(pa) * u32(tint.a) / 255u);
+			}
+		}
+	}
+}
+} // namespace
+
 float CTextureAtlas::CTextureAtlasElement::x() const
 {
 	if (p_placement)
@@ -620,7 +671,7 @@ void CTextureAtlas::createShader()
 		if (m_p_shader)
 		{
 			char buf[128];
-			std::sprintf(buf, "hud%sdefault", Platform::kPreferredSeparator);
+			xr_sprintf(buf, sizeof(buf), "hud%sdefault", Platform::kPreferredSeparator);
 			(*m_p_shader)->create(buf, m_p_texture->cName.c_str());
 
 #ifdef DEBUG
@@ -639,10 +690,10 @@ CSVGStorage::CSVGStorage(u32 flags) :
 	m_p_default_shader{},
 	m_default_atlas{},
 	m_static_storage{},
-	m_ss_wrapper{ &m_static_storage, sizeof(m_static_storage), flags & eSVGStorageFlags::kFeatureSVGStorage_Static_Allocation ? std::pmr::null_memory_resource() : std::pmr::get_default_resource() },
+	m_ss_wrapper{ &m_static_storage, sizeof(m_static_storage), flags & static_cast<u32>(eSVGStorageFlags::kFeatureSVGStorage_Static_Allocation) ? std::pmr::null_memory_resource() : std::pmr::get_default_resource() },
 	m_storage_atlases{ std::pmr::polymorphic_allocator<CTextureAtlas>{&m_ss_wrapper} }
 {
-	R_ASSERT(!(flags & eSVGStorageFlags::kFeatureSVGStorage_Static_Allocation && flags & eSVGStorageFlags::kFeatureSVGStorage_Dynamic_Allocation) && "invalid flags");
+	R_ASSERT(!(flags & static_cast<u32>(eSVGStorageFlags::kFeatureSVGStorage_Static_Allocation) && flags & static_cast<u32>(eSVGStorageFlags::kFeatureSVGStorage_Dynamic_Allocation)) && "invalid flags");
 
 	// if allocation size is changed in static mode you will get throw bad_alloc due to fact that required allocation formula was changed so in such case you have to change the size of static_storage field please
 	m_storage_atlases.reserve(_kRenderBackend_SVGStorageSizeInitial);
@@ -664,6 +715,11 @@ void CSVGStorage::init()
 
 void CSVGStorage::uninit()
 {
+	m_docLruSlots.clear();
+	m_readBuffer.clear();
+	m_frameShaderUvCache.clear();
+	m_loggedSvgFailures.clear();
+	m_atlasEntryStats.clear();
 	m_default_atlas.uninit();
 	xr_delete(m_p_default_shader);
 
@@ -672,9 +728,18 @@ void CSVGStorage::uninit()
 		atlas.uninit();
 	}
 
+	m_storage_atlases.clear();
+	m_storage_textures.clear();
+	m_atlasIdToStorageIndex.clear();
+	m_atlas_index_generator = 0;
 
 #ifdef DEBUG
 	m_init_was_called = false;
+	m_debugDocCacheHits = 0;
+	m_debugDocCacheMisses = 0;
+	m_debugNewAtlasAllocCount = 0;
+	m_debugRenderToBitmapNsAccum = 0;
+	m_debugRenderToBitmapSamples = 0;
 #endif
 }
 
@@ -685,9 +750,9 @@ constexpr unsigned char CSVGStorage::get_static_size() const
 }
 
 // returns current size of storage
-unsigned int CSVGStorage::get_size() const
+u32 CSVGStorage::get_size() const
 {
-	return m_storage_atlases.size();
+	return static_cast<u32>(m_storage_atlases.size());
 }
 
 u32 CSVGStorage::init_atlas(u32 w, u32 h, const char* pTextureName, CTextureAtlas& instance, bool is_generate_id)
@@ -706,16 +771,11 @@ u32 CSVGStorage::init_atlas(u32 w, u32 h, const char* pTextureName, CTextureAtla
 CTextureAtlas* CSVGStorage::get_atlas(u32 id)
 {
 	if (id == _kSVGStorage_DefaultAtlasID)
-	{
 		return &m_default_atlas;
-	}
 
-	auto it = std::find_if(m_storage_atlases.begin(), m_storage_atlases.end(), [id](const CTextureAtlas& atlas) -> bool {
-		return atlas.getID() == id;
-	});
-
-	if (it != m_storage_atlases.end())
-		return &(*it);
+	const auto it = m_atlasIdToStorageIndex.find(id);
+	if (it != m_atlasIdToStorageIndex.end())
+		return &m_storage_atlases[it->second];
 
 	return nullptr;
 }
@@ -723,16 +783,11 @@ CTextureAtlas* CSVGStorage::get_atlas(u32 id)
 const CTextureAtlas* CSVGStorage::get_atlas(u32 id) const
 {
 	if (id == _kSVGStorage_DefaultAtlasID)
-	{
 		return &m_default_atlas;
-	}
 
-	auto it = std::find_if(m_storage_atlases.begin(), m_storage_atlases.end(), [id](const CTextureAtlas& atlas) -> bool {
-		return atlas.getID() == id;
-	});
-
-	if (it != m_storage_atlases.end())
-		return &(*it);
+	const auto it = m_atlasIdToStorageIndex.find(id);
+	if (it != m_atlasIdToStorageIndex.end())
+		return &m_storage_atlases[it->second];
 
 	return nullptr;
 }
@@ -742,80 +797,16 @@ const std::pmr::vector<CTextureAtlas>& CSVGStorage::get_atlases(void) const
 	return m_storage_atlases;
 }
 
-const FactoryPtr<IUIShader>& CSVGStorage::get_shader(const std::string_view& subpath, float requested_width, float requested_height)
+const FactoryPtr<IUIShader>& CSVGStorage::get_shader(const std::string_view& subpath, float requested_width, float requested_height, SVGTintRGBA tint)
 {
 	R_ASSERT(m_p_default_shader && "default shader must be initialized!");
 
-	if (!subpath.empty())
-	{
-		if (subpath == _kDefaultSVGShader)
-			return get_default_shader();
-
-		if (m_storage_textures.find(subpath.data()) == m_storage_textures.end())
-		{
-			auto lookup = try_allocate(subpath, requested_width, requested_height, nullptr);
-			R_ASSERT(lookup.isValid() && "failed to allocate!");
-			m_storage_textures[subpath.data()] = lookup;
-
-			char idx = lookup.atlas_ids[0];
-			CTextureAtlas& atlas = m_storage_atlases[idx];
-			R_ASSERT(atlas.getShader() && "must be valid!");
-
-			return *(atlas.getShader());
-		}
-		else
-		{
-			AtlasConnection& lookup_list = m_storage_textures.at(subpath.data());
-			bool found = false;
-
-			for (int i = 0; i < _kSVGStorage_MaxAtlasPlacement; ++i)
-			{
-				if (lookup_list.atlas_ids[i] != CTextureAtlas::element_lookupid_type(-1))
-				{
-					const CTextureAtlas& atlas = m_storage_atlases[i];
-
-					const CTextureAtlas::storage_type& elements = atlas.getElements();
-					for (int j = 0; j < _kSVGStorage_MaxElementsPerAtlas; ++j)
-					{
-						CTextureAtlas::element_lookupid_type element_id = j + (i * _kSVGStorage_MaxElementsPerAtlas);
-
-						// no avaiable so our searching is done
-						if (lookup_list.elements_per_atlas[element_id] == CTextureAtlas::element_lookupid_type(-1))
-							break;
-						
-						const CTextureAtlas::CTextureAtlasElement& element = elements[lookup_list.elements_per_atlas[element_id]];
-
-						if (element.w() == int(requested_width) && element.h() == int(requested_height))
-						{
-							found = true;
-							break;
-						}
-					}
-
-					if (found)
-					{
-						R_ASSERT(atlas.getShader() && "must be initialized");
-						return *atlas.getShader();
-					}
-				}
-			}
-
-			if (!found)
-			{
-				// didn't find appropriate size so let's allocate
-				auto lookup = try_allocate(subpath, requested_width, requested_height, &lookup_list);
-				R_ASSERT(lookup.isValid() && "failed to allocate!");
-
-				char idx = lookup.atlas_ids[0];
-				CTextureAtlas& atlas = m_storage_atlases[idx];
-				R_ASSERT(atlas.getShader() && "must be valid!");
-
-				return *atlas.getShader();
-			}
-		}
-	}
-
-	return get_default_shader();
+	const FactoryPtr<IUIShader>* pShader = nullptr;
+	Frect uvUnused{};
+	ResolveSvgRasterDraw(subpath, requested_width, requested_height, tint, &pShader, &uvUnused);
+	if (!pShader)
+		return get_default_shader();
+	return *pShader;
 }
 
 const FactoryPtr<IUIShader>& CSVGStorage::get_default_shader()
@@ -829,106 +820,477 @@ const FactoryPtr<IUIShader>& CSVGStorage::get_default_shader()
 	return m_empty_default_shader;
 }
 
-Frect CSVGStorage::get_uv(const std::string_view& subpath, float requested_width, float requested_height)
+Frect CSVGStorage::get_uv(const std::string_view& subpath, float requested_width, float requested_height, SVGTintRGBA tint)
 {
-	Frect result;
-	bool found = false;
-	if (subpath.empty() == false && subpath != _kDefaultSVGShader)
+	const FactoryPtr<IUIShader>* pShader = nullptr;
+	Frect uv{};
+	ResolveSvgRasterDraw(subpath, requested_width, requested_height, tint, &pShader, &uv);
+	return uv;
+}
+
+void CSVGStorage::BeginRasterFrameCache()
+{
+	m_frameShaderUvCache.clear();
+}
+
+void CSVGStorage::SetRasterUserScale(float scale)
+{
+	m_rasterUserScale = (scale > 0.f) ? scale : 1.f;
+}
+
+void CSVGStorage::SetMaxRasterPixels(u32 pixels)
+{
+	m_maxRasterPixels = (pixels > 0) ? pixels : _kSVGStorage_DefaultMaxRasterPixels;
+}
+
+void CSVGStorage::PrecacheSVG(std::string_view subpath, float width, float height, SVGTintRGBA tint)
+{
+	if (subpath.empty())
+		return;
+	const FactoryPtr<IUIShader>* pShader = nullptr;
+	Frect uv{};
+	ResolveSvgRasterDraw(subpath, width, height, tint, &pShader, &uv);
+}
+
+void CSVGStorage::PrecacheSVGList(const xr_vector<xr_string>& paths, float width, float height, SVGTintRGBA tint)
+{
+	for (const xr_string& p : paths)
+		PrecacheSVG(p, width, height, tint);
+}
+
+void CSVGStorage::InvalidateAllSvgDocuments()
+{
+	m_docLruSlots.clear();
+}
+
+void CSVGStorage::ReloadSVG(std::string_view subpath)
+{
+	EraseDocumentLruByPathKey(MakeSubpathKey(subpath));
+}
+
+u64 CSVGStorage::MakeFrameCacheKey(const xr_string& atlasTableKey, int pixelW, int pixelH) const
+{
+	u64 h = static_cast<u64>(std::hash<xr_string>{}(atlasTableKey));
+	h = SvgHashCombineU64(h, static_cast<u64>(static_cast<u32>(pixelW)));
+	h = SvgHashCombineU64(h, static_cast<u64>(static_cast<u32>(pixelH)));
+	return h;
+}
+
+xr_string CSVGStorage::BuildAtlasTableKey(const std::string_view& filesystemSubpath, SVGTintRGBA tint) const
+{
+	xr_string key = MakeSubpathKey(filesystemSubpath);
+	if (!tint.IsWhite())
 	{
-		if (m_storage_textures.find(subpath.data()) != m_storage_textures.end())
+		char suffix[24];
+		xr_sprintf(suffix, sizeof(suffix), "\x1f%08x", tint.PackKey());
+		key += suffix;
+	}
+	return key;
+}
+
+void CSVGStorage::NormalizeRasterRequest(float requestedWidth, float requestedHeight, int& outW, int& outH) const
+{
+	const float w = requestedWidth * m_rasterUserScale;
+	const float h = requestedHeight * m_rasterUserScale;
+	int iw = static_cast<int>(std::lroundf(std::max(1.f, w)));
+	int ih = static_cast<int>(std::lroundf(std::max(1.f, h)));
+	const int cap = static_cast<int>(m_maxRasterPixels);
+	iw = std::min(iw, cap);
+	ih = std::min(ih, cap);
+	outW = iw;
+	outH = ih;
+}
+
+bool CSVGStorage::ConnectionHasExactPixelSize(const AtlasConnection& connection, int pixelW, int pixelH) const
+{
+	for (int i = 0; i < _kSVGStorage_MaxAtlasPlacement; ++i)
+	{
+		if (connection.atlas_ids[i] == CTextureAtlas::element_lookupid_type(-1))
+			continue;
+		const size_t atlasStorageIdx = static_cast<size_t>(static_cast<unsigned char>(connection.atlas_ids[i]));
+		const CTextureAtlas& atlas = m_storage_atlases[atlasStorageIdx];
+		const CTextureAtlas::storage_type& elements = atlas.getElements();
+		for (int j = 0; j < _kSVGStorage_MaxElementsPerAtlas; ++j)
 		{
-			AtlasConnection& lookup_list = m_storage_textures.at(subpath.data());
+			const CTextureAtlas::element_lookupid_type element_slot = j + (i * _kSVGStorage_MaxElementsPerAtlas);
+			if (connection.elements_per_atlas[element_slot] == CTextureAtlas::element_lookupid_type(-1))
+				break;
+			const CTextureAtlas::CTextureAtlasElement& element = elements[static_cast<size_t>(static_cast<unsigned char>(connection.elements_per_atlas[element_slot]))];
+			if (element.w() == pixelW && element.h() == pixelH)
+				return true;
+		}
+	}
+	return false;
+}
 
-			R_ASSERT(lookup_list.isValid() && "must be valid!!!");
-			constexpr int _kSize = sizeof(AtlasConnection::atlas_ids) / sizeof(AtlasConnection::atlas_ids[0]);
-
-
-			for (int i = 0; i < _kSize; ++i)
+bool CSVGStorage::FindNearestCachedPixelSize(const AtlasConnection& connection, int pixelW, int pixelH, int& outW, int& outH) const
+{
+	bool hasAny = false;
+	int bestScore = INT_MAX;
+	int bestW = 0;
+	int bestH = 0;
+	for (int i = 0; i < _kSVGStorage_MaxAtlasPlacement; ++i)
+	{
+		if (connection.atlas_ids[i] == CTextureAtlas::element_lookupid_type(-1))
+			continue;
+		const size_t atlasStorageIdx = static_cast<size_t>(static_cast<unsigned char>(connection.atlas_ids[i]));
+		const CTextureAtlas& atlas = m_storage_atlases[atlasStorageIdx];
+		const CTextureAtlas::storage_type& elements = atlas.getElements();
+		for (int j = 0; j < _kSVGStorage_MaxElementsPerAtlas; ++j)
+		{
+			const CTextureAtlas::element_lookupid_type element_slot = j + (i * _kSVGStorage_MaxElementsPerAtlas);
+			if (connection.elements_per_atlas[element_slot] == CTextureAtlas::element_lookupid_type(-1))
+				break;
+			const CTextureAtlas::CTextureAtlasElement& element = elements[static_cast<size_t>(static_cast<unsigned char>(connection.elements_per_atlas[element_slot]))];
+			const int ew = static_cast<int>(element.w());
+			const int eh = static_cast<int>(element.h());
+			const int score = std::abs(ew - pixelW) + std::abs(eh - pixelH);
+			if (!hasAny || score < bestScore)
 			{
-				if (found)
-					break;
-
-				CTextureAtlas& atlas = m_storage_atlases[lookup_list.atlas_ids[i]];
-				R_ASSERT(atlas.getShader() && "must be inited and valid!");
-
-				if (atlas.getShader() == nullptr)
-				{
-#ifdef DEBUG
-					Msg("! [svg]: atlas[%s] has invalid shader", atlas.getTextureName());
-#endif
-					break;
-				}
-
-				if (atlas.getResource() == nullptr)
-				{
-#ifdef DEBUG
-					Msg("! [svg]: atlas[%s] has invalid texture", atlas.getTextureName());
-#endif
-					break;
-				}
-
-				const CTextureAtlas::storage_type& elements = atlas.getElements();
-
-				for (int j = 0; j < _kSVGStorage_MaxElementsPerAtlas; ++j)
-				{
-					int real_j = j + (_kSVGStorage_MaxElementsPerAtlas * i);
-
-					CTextureAtlas::element_lookupid_type el_id = lookup_list.elements_per_atlas[real_j];
-
-					if (el_id != CTextureAtlas::element_lookupid_type(-1))
-					{
-						const CTextureAtlas::CTextureAtlasElement& element = elements[el_id];
-
-						if (element.w() == int(requested_width) && element.h() == int(requested_height))
-						{
-							found = true;
-							float w = atlas.getWidth();
-							float h = atlas.getHeight();
-
-							result.lt.set(w * element.u0(static_cast<u32>(w)), h * element.v0(static_cast<u32>(h)));
-							result.rb.set(w * element.u1(static_cast<u32>(w)), h * element.v1(static_cast<u32>(h)));
-
-							break;
-						}
-					}
-				}
-			}
-
-			if (!found)
-			{
-#ifdef DEBUG
-				R_ASSERT(false && "shouldn't happen?");
-				Msg("! [svg]: failed to obtain [tex_name:%s;w:%.2f;h:%.2f]",
-					subpath.data(),
-					requested_width,
-					requested_height
-				);
-#endif
+				hasAny = true;
+				bestScore = score;
+				bestW = ew;
+				bestH = eh;
 			}
 		}
-#ifdef DEBUG
-		else
+	}
+	if (!hasAny)
+		return false;
+	outW = bestW;
+	outH = bestH;
+	return true;
+}
+
+void CSVGStorage::ResolveRasterDimensions(const xr_string& atlasTableKey, float requestedWidth, float requestedHeight, int& useW, int& useH) const
+{
+	int nw = 0;
+	int nh = 0;
+	NormalizeRasterRequest(requestedWidth, requestedHeight, nw, nh);
+	const auto it = m_storage_textures.find(atlasTableKey);
+	if (it == m_storage_textures.end())
+	{
+		useW = nw;
+		useH = nh;
+		return;
+	}
+	if (ConnectionHasExactPixelSize(it->second, nw, nh))
+	{
+		useW = nw;
+		useH = nh;
+		return;
+	}
+	int bw = 0;
+	int bh = 0;
+	if (FindNearestCachedPixelSize(it->second, nw, nh, bw, bh))
+	{
+		useW = bw;
+		useH = bh;
+		return;
+	}
+	useW = nw;
+	useH = nh;
+}
+
+void CSVGStorage::FillDefaultAtlasUvForSize(int useW, int useH, Frect& result) const
+{
+	result = {};
+	if (!m_default_atlas.getResource())
+		return;
+	const CTextureAtlas::CTextureAtlasElement* pElement = m_default_atlas.findNearest(static_cast<float>(useW), static_cast<float>(useH));
+	if (!pElement)
+		return;
+	const float w = m_default_atlas.getWidth();
+	const float h = m_default_atlas.getHeight();
+	result.lt.set(w * pElement->u0(static_cast<u32>(w)), h * pElement->v0(static_cast<u32>(h)));
+	result.rb.set(w * pElement->u1(static_cast<u32>(w)), h * pElement->v1(static_cast<u32>(h)));
+}
+
+bool CSVGStorage::TryLookupUvForSize(AtlasConnection& connection, int pixelW, int pixelH, Frect& outUv, bool useNearest)
+{
+	int rw = pixelW;
+	int rh = pixelH;
+	if (useNearest && !ConnectionHasExactPixelSize(connection, pixelW, pixelH))
+	{
+		int nw = 0;
+		int nh = 0;
+		if (FindNearestCachedPixelSize(connection, pixelW, pixelH, nw, nh))
 		{
-			Msg("! [svg]: can't find texture[%s]", subpath.data());
+			rw = nw;
+			rh = nh;
 		}
+	}
+	for (int i = 0; i < _kSVGStorage_MaxAtlasPlacement; ++i)
+	{
+		if (connection.atlas_ids[i] == CTextureAtlas::element_lookupid_type(-1))
+			continue;
+		CTextureAtlas& atlas = m_storage_atlases[static_cast<size_t>(static_cast<unsigned char>(connection.atlas_ids[i]))];
+		if (atlas.getShader() == nullptr || atlas.getResource() == nullptr)
+			continue;
+		const CTextureAtlas::storage_type& elements = atlas.getElements();
+		for (int j = 0; j < _kSVGStorage_MaxElementsPerAtlas; ++j)
+		{
+			const int real_j = j + (_kSVGStorage_MaxElementsPerAtlas * i);
+			const CTextureAtlas::element_lookupid_type el_id = connection.elements_per_atlas[real_j];
+			if (el_id == CTextureAtlas::element_lookupid_type(-1))
+				break;
+			const CTextureAtlas::CTextureAtlasElement& element = elements[static_cast<size_t>(static_cast<unsigned char>(el_id))];
+			if (element.w() == rw && element.h() == rh)
+			{
+				const float w = atlas.getWidth();
+				const float h = atlas.getHeight();
+				outUv.lt.set(w * element.u0(static_cast<u32>(w)), h * element.v0(static_cast<u32>(h)));
+				outUv.rb.set(w * element.u1(static_cast<u32>(w)), h * element.v1(static_cast<u32>(h)));
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+void CSVGStorage::TouchAtlasEntryStats(const xr_string& atlasTableKey)
+{
+	SvgAtlasEntryStats& st = m_atlasEntryStats[atlasTableKey];
+	st.lastAccessSeq = ++m_globalAccessSeq;
+}
+
+void CSVGStorage::RegisterNewRasterVariant(const xr_string& atlasTableKey, int pixelW, int pixelH)
+{
+	SvgAtlasEntryStats& st = m_atlasEntryStats[atlasTableKey];
+	st.variantCount += 1;
+	st.totalRasterPixels += static_cast<u32>(pixelW) * static_cast<u32>(pixelH);
+	st.lastAccessSeq = ++m_globalAccessSeq;
+}
+
+void CSVGStorage::LogSvgLoadFailureOnce(const xr_string& pathKey, ESVGLoadResult code)
+{
+	if (m_loggedSvgFailures.insert(pathKey).second == false)
+		return;
+	const char* reason = "unknown";
+	switch (code)
+	{
+		case ESVGLoadResult::PathTooLong:
+			reason = "path too long";
+			break;
+		case ESVGLoadResult::FileOpenFailed:
+			reason = "file open failed";
+			break;
+		case ESVGLoadResult::ParseFailed:
+			reason = "parse failed";
+			break;
+		default:
+			reason = "unknown";
+			break;
+	}
+	Msg("! [svg]: load failed (%s) [%s]", reason, pathKey.c_str());
+}
+
+void CSVGStorage::EraseDocumentLruByPathKey(const xr_string& pathKey)
+{
+	for (size_t i = 0; i < m_docLruSlots.size(); ++i)
+	{
+		if (m_docLruSlots[i].pathKey == pathKey)
+		{
+			m_docLruSlots.erase(m_docLruSlots.begin() + static_cast<ptrdiff_t>(i));
+			return;
+		}
+	}
+}
+
+CSVGStorage::SvgDocumentLruEntry* CSVGStorage::AccessDocumentLru(const xr_string& pathKey, LPCSTR resolvedPathForValidate)
+{
+	for (size_t i = 0; i < m_docLruSlots.size(); ++i)
+	{
+		SvgDocumentLruEntry& slot = m_docLruSlots[i];
+		if (slot.pathKey != pathKey)
+			continue;
+		const time_t diskMtime = FS.get_file_age(resolvedPathForValidate);
+		if (diskMtime != slot.fileMtimeAtLoad)
+		{
+			m_docLruSlots.erase(m_docLruSlots.begin() + static_cast<ptrdiff_t>(i));
+#ifdef DEBUG
+			++m_debugDocCacheMisses;
 #endif
+			return nullptr;
+		}
+#ifdef DEBUG
+		++m_debugDocCacheHits;
+#endif
+		slot.lastAccessSeq = ++m_docLruSeqCounter;
+		return &slot;
+	}
+	return nullptr;
+}
+
+void CSVGStorage::InsertDocumentLru(const xr_string& pathKey, LPCSTR resolvedPath, std::unique_ptr<lunasvg::Document> doc, time_t mtime, u32 fileSize)
+{
+	EraseDocumentLruByPathKey(pathKey);
+	SvgDocumentLruEntry slot;
+	slot.pathKey = pathKey;
+	slot.resolvedFsPath = resolvedPath;
+	slot.doc = std::move(doc);
+	slot.fileMtimeAtLoad = mtime;
+	slot.fileSizeAtLoad = fileSize;
+	slot.lastAccessSeq = ++m_docLruSeqCounter;
+	m_docLruSlots.push_back(std::move(slot));
+	while (m_docLruSlots.size() > _kSVGStorage_DocumentLruCapacity)
+	{
+		auto oldest = std::min_element(m_docLruSlots.begin(), m_docLruSlots.end(), [](const SvgDocumentLruEntry& a, const SvgDocumentLruEntry& b) {
+			return a.lastAccessSeq < b.lastAccessSeq;
+		});
+		if (oldest != m_docLruSlots.end())
+			m_docLruSlots.erase(oldest);
+	}
+}
+
+#ifdef DEBUG
+void CSVGStorage::DebugRecordRenderToBitmapTime(u64 deltaTicks)
+{
+	if (CPU::qpc_freq == 0)
+		return;
+	const u64 ns = (deltaTicks * 1000000000ULL) / CPU::qpc_freq;
+	m_debugRenderToBitmapNsAccum += ns;
+	++m_debugRenderToBitmapSamples;
+}
+
+void CSVGStorage::DebugCollectSvgCacheRows(xr_vector<SvgDebugCacheTableRow>& out) const
+{
+	out.clear();
+	out.reserve(m_storage_textures.size());
+	for (const auto& kv : m_storage_textures)
+	{
+		SvgDebugCacheTableRow row;
+		row.tableKey = kv.first;
+		const auto stIt = m_atlasEntryStats.find(kv.first);
+		if (stIt != m_atlasEntryStats.end())
+		{
+			row.variantCount = stIt->second.variantCount;
+			row.totalRasterPixels = stIt->second.totalRasterPixels;
+			row.lastAccessSeq = stIt->second.lastAccessSeq;
+		}
+		out.push_back(std::move(row));
+	}
+}
+
+void CSVGStorage::DebugResetSvgMetrics()
+{
+	m_debugDocCacheHits = 0;
+	m_debugDocCacheMisses = 0;
+	m_debugNewAtlasAllocCount = 0;
+	m_debugRenderToBitmapNsAccum = 0;
+	m_debugRenderToBitmapSamples = 0;
+}
+#endif
+
+void CSVGStorage::ResolveSvgRasterDraw(const std::string_view& filesystemSubpath, float requestedWidth, float requestedHeight, SVGTintRGBA tint, const FactoryPtr<IUIShader>** outShader, Frect* outUv)
+{
+	R_ASSERT(outShader && outUv);
+	*outShader = nullptr;
+	*outUv = Frect();
+
+	if (filesystemSubpath.empty() || filesystemSubpath == _kDefaultSVGShader)
+	{
+		if (m_p_default_shader)
+			*outShader = m_p_default_shader;
+		int uw = 0;
+		int uh = 0;
+		NormalizeRasterRequest(requestedWidth, requestedHeight, uw, uh);
+		FillDefaultAtlasUvForSize(uw, uh, *outUv);
+		return;
 	}
 
-	if (m_default_atlas.getResource() && !found)
+	const xr_string atlasTableKey = BuildAtlasTableKey(filesystemSubpath, tint);
+	int useW = 0;
+	int useH = 0;
+	ResolveRasterDimensions(atlasTableKey, requestedWidth, requestedHeight, useW, useH);
+
+	const u64 frameKey = MakeFrameCacheKey(atlasTableKey, useW, useH);
+	const auto fIt = m_frameShaderUvCache.find(frameKey);
+	if (fIt != m_frameShaderUvCache.end())
 	{
-		CTextureAtlas::CTextureAtlasElement* pElement = m_default_atlas.findNearest(requested_width, requested_height);
+		*outShader = fIt->second.pShader;
+		*outUv = fIt->second.uv;
+		TouchAtlasEntryStats(atlasTableKey);
+		return;
+	}
 
-		if (pElement)
+	const FactoryPtr<IUIShader>* pFoundShader = nullptr;
+	Frect uvRect{};
+	bool hasUv = false;
+
+	auto itEntry = m_storage_textures.find(atlasTableKey);
+	if (itEntry == m_storage_textures.end())
+	{
+		AtlasConnection lookup = try_allocate(atlasTableKey, filesystemSubpath, static_cast<float>(useW), static_cast<float>(useH), nullptr, tint);
+		R_ASSERT(lookup.isValid() && "failed to allocate!");
+		m_storage_textures.insert_or_assign(atlasTableKey, lookup);
+		const char idx = lookup.atlas_ids[0];
+		CTextureAtlas& atlas = m_storage_atlases[static_cast<size_t>(static_cast<unsigned char>(idx))];
+		FactoryPtr<IUIShader>* pSh = atlas.getShader();
+		R_ASSERT(pSh && "must be valid!");
+		pFoundShader = pSh;
+		hasUv = TryLookupUvForSize(lookup, useW, useH, uvRect, true);
+	}
+	else
+	{
+		AtlasConnection& lookupList = itEntry->second;
+		bool foundExact = false;
+		for (int i = 0; i < _kSVGStorage_MaxAtlasPlacement; ++i)
 		{
-			float w = m_default_atlas.getWidth();
-			float h = m_default_atlas.getHeight();
-
-			result.lt.set(w * pElement->u0(static_cast<u32>(w)), h * pElement->v0(static_cast<u32>(h)));
-			result.rb.set(w * pElement->u1(static_cast<u32>(w)), h * pElement->v1(static_cast<u32>(h)));
+			if (lookupList.atlas_ids[i] == CTextureAtlas::element_lookupid_type(-1))
+				continue;
+			const size_t atlasStorageIdx = static_cast<size_t>(static_cast<unsigned char>(lookupList.atlas_ids[i]));
+			const CTextureAtlas& atlas = m_storage_atlases[atlasStorageIdx];
+			const CTextureAtlas::storage_type& elements = atlas.getElements();
+			for (int j = 0; j < _kSVGStorage_MaxElementsPerAtlas; ++j)
+			{
+				const CTextureAtlas::element_lookupid_type element_slot = j + (i * _kSVGStorage_MaxElementsPerAtlas);
+				if (lookupList.elements_per_atlas[element_slot] == CTextureAtlas::element_lookupid_type(-1))
+					break;
+				const CTextureAtlas::CTextureAtlasElement& element = elements[static_cast<size_t>(static_cast<unsigned char>(lookupList.elements_per_atlas[element_slot]))];
+				if (element.w() == useW && element.h() == useH)
+				{
+					FactoryPtr<IUIShader>* pSh = atlas.getShader();
+					R_ASSERT(pSh && "must be initialized");
+					pFoundShader = pSh;
+					const float w = atlas.getWidth();
+					const float h = atlas.getHeight();
+					uvRect.lt.set(w * element.u0(static_cast<u32>(w)), h * element.v0(static_cast<u32>(h)));
+					uvRect.rb.set(w * element.u1(static_cast<u32>(w)), h * element.v1(static_cast<u32>(h)));
+					hasUv = true;
+					foundExact = true;
+					break;
+				}
+			}
+			if (foundExact)
+				break;
+		}
+		if (!foundExact)
+		{
+			AtlasConnection lookup = try_allocate(atlasTableKey, filesystemSubpath, static_cast<float>(useW), static_cast<float>(useH), &lookupList, tint);
+			R_ASSERT(lookup.isValid() && "failed to allocate!");
+			const char idx = lookup.atlas_ids[0];
+			CTextureAtlas& atlas = m_storage_atlases[static_cast<size_t>(static_cast<unsigned char>(idx))];
+			pFoundShader = atlas.getShader();
+			R_ASSERT(pFoundShader && "must be valid!");
+			hasUv = TryLookupUvForSize(lookup, useW, useH, uvRect, true);
 		}
 	}
 
-	return result;
+	if (!pFoundShader)
+	{
+		if (m_p_default_shader)
+			*outShader = m_p_default_shader;
+		FillDefaultAtlasUvForSize(useW, useH, *outUv);
+		return;
+	}
+
+	if (!hasUv)
+		FillDefaultAtlasUvForSize(useW, useH, uvRect);
+
+	TouchAtlasEntryStats(atlasTableKey);
+	*outShader = pFoundShader;
+	*outUv = uvRect;
+	m_frameShaderUvCache[frameKey] = { pFoundShader, uvRect };
 }
 
 
@@ -941,7 +1303,7 @@ void CSVGStorage::init_default()
 void CSVGStorage::init_default_atlas()
 {
 	string_path fn;
-	FS.update_path(fn, _game_textures_, _kSVGStorge_DefaultSVGTextureSubPathName);
+	FS.update_path(fn, _game_textures_, _kSVGStorage_DefaultSVGTextureSubPathName);
 
 	IReader* pReader = FS.r_open(fn);
 
@@ -972,7 +1334,7 @@ void CSVGStorage::init_default_atlas()
 				bmp.convertToRGBA();
 #endif
 
-				m_default_atlas.addRegion(_notused_lookupid, _kSVGStorge_DefaultSVGTextureSubPathName, bmp.width(), bmp.height(), bmp.data(), bmp.stride());
+				m_default_atlas.addRegion(_notused_lookupid, _kSVGStorage_DefaultSVGTextureSubPathName, bmp.width(), bmp.height(), bmp.data(), bmp.stride());
 			}
 		}
 
@@ -991,7 +1353,7 @@ void CSVGStorage::init_default_shader()
 	}
 }
 
-CSVGStorage::AtlasConnection CSVGStorage::try_allocate(const std::string_view& subpath, float requested_width, float requested_height, AtlasConnection* p_existed)
+CSVGStorage::AtlasConnection CSVGStorage::try_allocate(const xr_string& atlasTableKey, const std::string_view& filesystemSubpath, float requested_width, float requested_height, AtlasConnection* p_existed, SVGTintRGBA tint)
 {
 	AtlasConnection result;
 
@@ -999,7 +1361,7 @@ CSVGStorage::AtlasConnection CSVGStorage::try_allocate(const std::string_view& s
 	bool was_added = false;
 	for (CTextureAtlas& atlas : m_storage_atlases)
 	{
-		bool status = try_add_data(subpath, requested_width, requested_height, iter, atlas, p_existed ? *p_existed : result);
+		const bool status = try_add_data(atlasTableKey, filesystemSubpath, requested_width, requested_height, iter, atlas, p_existed ? *p_existed : result, tint);
 
 #ifdef DEBUG
 		if (status)
@@ -1013,9 +1375,7 @@ CSVGStorage::AtlasConnection CSVGStorage::try_allocate(const std::string_view& s
 		if (was_added)
 		{
 			if (p_existed)
-			{
 				result = *p_existed;
-			}
 
 			break;
 		}
@@ -1024,15 +1384,12 @@ CSVGStorage::AtlasConnection CSVGStorage::try_allocate(const std::string_view& s
 	}
 
 	if (!was_added)
-	{
-		result = allocate(subpath, requested_width, requested_height);
-	}
+		result = allocate(atlasTableKey, filesystemSubpath, requested_width, requested_height, tint);
 
 	return result;
 }
 
-
-CSVGStorage::AtlasConnection CSVGStorage::allocate(const std::string_view& subpath, float requested_width, float requested_height)
+CSVGStorage::AtlasConnection CSVGStorage::allocate(const xr_string& atlasTableKey, const std::string_view& filesystemSubpath, float requested_width, float requested_height, SVGTintRGBA tint)
 {
 	AtlasConnection result;
 
@@ -1040,16 +1397,16 @@ CSVGStorage::AtlasConnection CSVGStorage::allocate(const std::string_view& subpa
 	{
 		char texture_name[32];
 
-		std::sprintf(texture_name, "svg_atlas_%zu", m_storage_atlases.size());
+		xr_sprintf(texture_name, sizeof(texture_name), "svg_atlas_%zu", m_storage_atlases.size());
 
 		CTextureAtlas atlas;
-		u32 atlas_id = init_atlas(_kSVGStorage_DefaultAtlasSize, _kSVGStorage_DefaultAtlasSize, texture_name, atlas, true);
+		const u32 atlas_id = init_atlas(_kSVGStorage_DefaultAtlasSize, _kSVGStorage_DefaultAtlasSize, texture_name, atlas, true);
 		atlas.setID(atlas_id);
 
 		R_ASSERT2(requested_height <= atlas.getHeight(), "invalid height! Too big height");
 		R_ASSERT2(requested_width <= atlas.getWidth(), "invalid width! Too big width");
 
-		bool data_insert_status = add_data(subpath, requested_width, requested_height, atlas, result);
+		const bool data_insert_status = add_data(atlasTableKey, filesystemSubpath, requested_width, requested_height, atlas, result, tint);
 
 		R_ASSERT2(data_insert_status, "failed to insert data to atlas");
 
@@ -1066,52 +1423,56 @@ CSVGStorage::AtlasConnection CSVGStorage::allocate(const std::string_view& subpa
 				atlas.getTextureName(),
 				requested_width, requested_height
 			);
+			++m_debugNewAtlasAllocCount;
 #endif
 			m_storage_atlases.emplace_back(std::move(atlas));
-			result.atlas_ids[0] = static_cast<char>(m_storage_atlases.size() - 1);
+			const u32 storageIndex = static_cast<u32>(m_storage_atlases.size() - 1);
+			result.atlas_ids[0] = static_cast<char>(storageIndex);
+			m_atlasIdToStorageIndex[m_storage_atlases[storageIndex].getID()] = storageIndex;
 		}
 	}
 
 	return result;
 }
 
-
-bool CSVGStorage::add_data(const std::string_view& subpath, float requested_width, float requested_height, CTextureAtlas& atlas, AtlasConnection& connection)
+bool CSVGStorage::add_data(const xr_string& atlasTableKey, const std::string_view& filesystemSubpath, float requested_width, float requested_height, CTextureAtlas& atlas, AtlasConnection& connection, SVGTintRGBA tint)
 {
-	R_ASSERT(subpath.empty() == false && "must be valid!");
+	R_ASSERT(filesystemSubpath.empty() == false && "must be valid!");
 
 	bool result = false;
 
-	if (subpath.empty() == false)
+	if (filesystemSubpath.empty() == false)
 	{
-		result = true;
-
 		lunasvg::Bitmap bmp;
-		result = get_bitmap(subpath, requested_width, requested_height, &bmp);
+		const ESVGLoadResult loadRes = get_bitmap(filesystemSubpath, requested_width, requested_height, &bmp, tint);
+		result = loadRes == ESVGLoadResult::Success;
 
 		R_ASSERT(result && "failed to obtain bitmap!");
 
 		if (result)
 		{
 			CTextureAtlas::element_lookupid_type lookup_element_id;
-			result = atlas.addRegion(lookup_element_id, subpath, bmp.width(), bmp.height(), bmp.data(), bmp.stride());
+			const xr_string_view atlasKeyView{ atlasTableKey.c_str(), atlasTableKey.size() };
+			result = atlas.addRegion(lookup_element_id, atlasKeyView, bmp.width(), bmp.height(), bmp.data(), bmp.stride());
 
 			R_ASSERT(connection.atlas_ids[0] == CTextureAtlas::element_lookupid_type(-1) && "expected minus one because it is not existed in map!");
 			R_ASSERT(connection.elements_per_atlas[0] == CTextureAtlas::element_lookupid_type(-1) && "expected minus one because it is not existed in map!");
 
 			connection.elements_per_atlas[0] = lookup_element_id;
+			RegisterNewRasterVariant(atlasTableKey, static_cast<int>(bmp.width()), static_cast<int>(bmp.height()));
 		}
 	}
 
 	return result;
 }
 
-bool CSVGStorage::try_add_data(const std::string_view& subpath, float requested_width, float requested_height, const CTextureAtlas::element_lookupid_type atlas_lookup_id, CTextureAtlas& atlas, AtlasConnection& connection)
+bool CSVGStorage::try_add_data(const xr_string& atlasTableKey, const std::string_view& filesystemSubpath, float requested_width, float requested_height, const CTextureAtlas::element_lookupid_type atlas_lookup_id, CTextureAtlas& atlas, AtlasConnection& connection, SVGTintRGBA tint)
 {
 	bool result = false;
 
 	CTextureAtlas::element_lookupid_type lookup_el_id;
-	result = atlas.tryAddRegion(lookup_el_id, subpath, requested_width, requested_height);
+	const xr_string_view atlasKeyView{ atlasTableKey.c_str(), atlasTableKey.size() };
+	result = atlas.tryAddRegion(lookup_el_id, atlasKeyView, requested_width, requested_height);
 
 	if (lookup_el_id != CTextureAtlas::element_lookupid_type(-1))
 	{
@@ -1126,13 +1487,11 @@ bool CSVGStorage::try_add_data(const std::string_view& subpath, float requested_
 				filled_atlas_info = true;
 				break;
 			}
-			else
+
+			if (connection.atlas_ids[i] == atlas_lookup_id)
 			{
-				if (connection.atlas_ids[i] == atlas_lookup_id)
-				{
-					filled_atlas_info = true;
-					break;
-				}
+				filled_atlas_info = true;
+				break;
 			}
 		}
 
@@ -1143,10 +1502,9 @@ bool CSVGStorage::try_add_data(const std::string_view& subpath, float requested_
 			bool filled_element_info = false;
 			for (int j = 0; j < _kSVGStorage_MaxElementsPerAtlas; ++j)
 			{
-				int connection_el_id = j + (atlas_lookup_id * _kSVGStorage_MaxElementsPerAtlas);
+				const int connection_el_id = j + (atlas_lookup_id * _kSVGStorage_MaxElementsPerAtlas);
 
-				if (
-					connection.elements_per_atlas[connection_el_id] == CTextureAtlas::element_lookupid_type(-1))
+				if (connection.elements_per_atlas[connection_el_id] == CTextureAtlas::element_lookupid_type(-1))
 				{
 					connection.elements_per_atlas[connection_el_id] = lookup_el_id;
 					filled_element_info = true;
@@ -1167,68 +1525,98 @@ bool CSVGStorage::try_add_data(const std::string_view& subpath, float requested_
 	{
 		lunasvg::Bitmap bmp;
 
-		result = get_bitmap(subpath, requested_width, requested_height, &bmp);
+		const ESVGLoadResult loadRes = get_bitmap(filesystemSubpath, requested_width, requested_height, &bmp, tint);
+		result = loadRes == ESVGLoadResult::Success;
 
 		R_ASSERT(result && "failed to obtain data!");
 
 		if (result)
 		{
 			result = atlas.addData(bmp.width(), bmp.height(), bmp.data(), bmp.stride());
+			RegisterNewRasterVariant(atlasTableKey, static_cast<int>(bmp.width()), static_cast<int>(bmp.height()));
 		}
 	}
 
 	return result;
 }
 
-bool CSVGStorage::get_bitmap(const std::string_view& subpath, float requested_width, float requested_height, lunasvg::Bitmap* bmp)
+xr_string CSVGStorage::MakeSubpathKey(const std::string_view& subpath)
+{
+	return xr_string(subpath.data(), static_cast<u32>(subpath.size()));
+}
+
+ESVGLoadResult CSVGStorage::get_bitmap(const std::string_view& filesystemSubpath, float requested_width, float requested_height, lunasvg::Bitmap* bmp, SVGTintRGBA tint)
 {
 	R_ASSERT(bmp && "pass valid pointer!");
 
-	bool result = false;
+	const xr_string pathKey = MakeSubpathKey(filesystemSubpath);
 
 	char buf[256];
-	constexpr unsigned int _kSize = sizeof(buf) / sizeof(buf[0]);
-	if (subpath.size() > _kSize)
+	constexpr size_t bufElemCount = sizeof(buf) / sizeof(buf[0]);
+	const size_t prefixLen = 2 + xr_strlen(Platform::kPreferredSeparator);
+	if (filesystemSubpath.size() + prefixLen + 1 > bufElemCount)
 	{
-		R_ASSERT(false && "you have too long subpath, there's no need to move files to different folders and making chaos...");
-		Msg("! [svg]: too long subpath, max length is 255, can't add data");
-		return result;
+		LogSvgLoadFailureOnce(pathKey, ESVGLoadResult::PathTooLong);
+		return ESVGLoadResult::PathTooLong;
 	}
 
-	std::sprintf(buf, "ui%s%s", Platform::kPreferredSeparator, subpath.data());
+	xr_sprintf(buf, sizeof(buf), "ui%s%.*s", Platform::kPreferredSeparator, static_cast<int>(filesystemSubpath.size()), filesystemSubpath.data());
 
 	string_path fn;
 	FS.update_path(fn, _game_textures_, buf);
-	IReader* pReader = FS.r_open(fn);
 
-	result = !!(pReader);
-	R_ASSERT(pReader && "failed to open file!");
-
-	if (pReader)
+	lunasvg::Document* docPtr = nullptr;
+	SvgDocumentLruEntry* slot = AccessDocumentLru(pathKey, fn);
+	if (slot && slot->doc.get())
+		docPtr = slot->doc.get();
+	else
 	{
-		u32 len = pReader->length();
-		// todo: probably pmr would be better?
-		xr_string data;
-		data.resize(len);
-		pReader->r(&data[0], len);
-		auto doc = std::move(lunasvg::Document::loadFromData(data.c_str()));
-
-		R_ASSERT(doc.get() && "failed to load svg document!");
-		result = !!(doc.get());
-
-		if (doc.get())
-		{
-			*bmp = doc->renderToBitmap(requested_width, requested_height);
-
-#ifdef USE_DX11
-			bmp->convertToRGBA();
+#ifdef DEBUG
+		++m_debugDocCacheMisses;
 #endif
+		IReader* pReader = FS.r_open(fn);
+		if (!pReader)
+		{
+			LogSvgLoadFailureOnce(pathKey, ESVGLoadResult::FileOpenFailed);
+			return ESVGLoadResult::FileOpenFailed;
 		}
 
+		const u32 len = pReader->length();
+		if (m_readBuffer.capacity() < len)
+			m_readBuffer.reserve(len);
+		m_readBuffer.resize(len);
+		pReader->r(&m_readBuffer[0], len);
 		FS.r_close(pReader);
+
+		auto doc = std::move(lunasvg::Document::loadFromData(m_readBuffer.c_str()));
+		if (!doc.get())
+		{
+			LogSvgLoadFailureOnce(pathKey, ESVGLoadResult::ParseFailed);
+			return ESVGLoadResult::ParseFailed;
+		}
+
+		const time_t mtime = FS.get_file_age(fn);
+		InsertDocumentLru(pathKey, fn, std::move(doc), mtime, len);
+		slot = AccessDocumentLru(pathKey, fn);
+		if (!slot || !slot->doc.get())
+			return ESVGLoadResult::ParseFailed;
+		docPtr = slot->doc.get();
 	}
 
-	return result;
+#ifdef DEBUG
+	const u64 t0 = CPU::QPC();
+#endif
+	*bmp = docPtr->renderToBitmap(requested_width, requested_height);
+#ifdef DEBUG
+	const u64 t1 = CPU::QPC();
+	DebugRecordRenderToBitmapTime(t1 - t0);
+#endif
+
+#ifdef USE_DX11
+	bmp->convertToRGBA();
+#endif
+	ApplySvgTintToNearWhitePixels(*bmp, tint);
+	return ESVGLoadResult::Success;
 }
 
 u32 CSVGStorage::generate_id()

@@ -3,6 +3,8 @@
 #include "UILanimController.h"
 #include "UIStaticItem.h"
 #include "../../xrScripts/script_export_space.h"
+#include "../../Include/xrRender/SVGTypes.h"
+#include "../UIVectorBinding.h"
 #include "UILines.h"
 
 class CUIFrameWindow;
@@ -35,7 +37,7 @@ private:
 	typedef CUIWindow inherited;
 	lanim_cont_xf			m_lanim_xform;
 	void					EnableHeading_int		(bool b)				{m_bHeading = b;}
-	bool m_bHasSvgAttribute;
+	CUIVectorBinding _svgBinding;
 public:
 
 							CUIStatic				();
@@ -53,6 +55,7 @@ public:
 	void InitSVG(CUIXml& xml_doc, LPCSTR path, int index) override;
 	bool isSVGPresented(void) const override;
 	LPCSTR getSVGFilename(CUIXml& xml_doc, LPCSTR path, int index = 0) override;
+	const SVGTintRGBA& GetVectorTint() const { return _svgBinding.GetTint(); }
 	void SetTextColor_script(int a, int r, int g, int b)
 	{
 		TextItemControl()->SetTextColor(color_argb(a, r, g, b));
