@@ -93,6 +93,7 @@ set_property(TARGET xrEngineCore PROPERTY ENABLE_EXPORTS ON)
 target_include_directories(xrEngineCore PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/AI")
 target_include_directories(xrEngineCore PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrEngineCore PUBLIC "${IXRAY_SDK_INC}")
+target_include_directories(xrEngineCore PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../xrCore/")
 
 if(WIN32)
     target_include_directories(xrEngineCore PUBLIC ${CORE_DXMATH}/include/)
