@@ -394,7 +394,6 @@ public:
 	}
 };
 
-/// @brief author: wh1t3lord, wt - means worker thread
 struct CImGuiTextureEditor
 {
 	enum eAnalyzedStatus
@@ -459,10 +458,10 @@ struct CImGuiTextureEditor
 		bool    wasDocked = false;
 		bool    isCentralNode = false;
 
-		ImVec2  pos = { FLT_MAX, FLT_MAX };  
+		ImVec2  pos = { FLT_MAX, FLT_MAX };
 		ImVec2  size = { 0,0 };
 		ImGuiDir dockDir = ImGuiDir_None;
-                 
+
 		void Capture(const char* windowName);
 		void Apply(const char* windowName);
 	};
@@ -562,6 +561,15 @@ enum class eRequestType_QuestEditor : u32
 	kShutdown
 };
 
+enum class eRequestType_OMFEditor : u32
+{
+	kReadSettings,
+	kWriteSettings,
+	kLoadFile,
+	kDeselectCurrentSelectedOrHideWindow,
+	kShutdown
+};
+
 struct SRequestData
 {
 	u32 editor_type = static_cast<u32>(eImGuiEditorType::kInvalid);
@@ -575,6 +583,14 @@ struct CImGuiRequestManager
 };
 
 #define IXRAY_MAX_IMGUI_REQUESTS_COUNT 8
+
+
+// todo: implement viewer
+/// @brief \~english if enabled then you will have in-game viewer but right now it is not implemented feature
+#define IXRAY_OMF_EDITOR_ENABLE_VIEWER 0
+
+/// @brief \~english if enabled 'bone renaming' section won't exist and you can directly rename from bone list  otherwise you have to rename only through 'bone renaming' section
+#define IXRAY_OMF_EDITOR_ENABLE_DIRECT_BONE_RENAMING 1
 
 /* INIT */
 void InitSections();
@@ -600,7 +616,6 @@ void RenderQuestEditor();
 /* MISCELLANEOUS */
 
 void DestroySpawnManagerWindow();
-void DestroyQuestEditorWindow();
 
 /* WORKER THREAD of Tools */
 
@@ -623,6 +638,9 @@ void SpawnManager_OnReleased(int key);
 
 void QuestEditor_OnPressed(int key);
 void QuestEditor_OnReleased(int key);
+
+void OMFEditor_OnPressed(int key);
+void OMFEditor_OnReleased(int key);
 
 void RequestHandler_TextureEditor(const SRequestData& req);
 void RequestHandler_QuestEditor(const SRequestData& req);
