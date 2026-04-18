@@ -56,7 +56,7 @@ CPostprocessAnimator::~CPostprocessAnimator           ()
 }
 
 #ifndef _PP_EDITOR_
-BOOL CPostprocessAnimator::Valid()
+bool CPostprocessAnimator::Valid()
 {
 	if(m_bCyclic)	return TRUE;
 
@@ -70,7 +70,7 @@ void        CPostprocessAnimator::Clear                           ()
         xr_delete (m_Params[a]);
 }
 
-void        CPostprocessAnimator::Load                            (LPCSTR name)
+void        CPostprocessAnimator::Load                            (const char* name)
 {
     m_Name = name;
 #ifndef _PP_EDITOR_
@@ -83,7 +83,7 @@ void        CPostprocessAnimator::Load                            (LPCSTR name)
     xr_strcpy (full_path, name);
 #endif /*_PP_EDITOR_*/
 
-    LPCSTR  ext = strext(full_path);
+    const char*  ext = strext(full_path);
     if (ext)
        {
        if (!xr_strcmp (ext,POSTPROCESS_FILE_EXTENSION))
@@ -182,7 +182,7 @@ void CPostprocessAnimator::SetCurrentFactor	(float f)
 };
 
 #ifndef _PP_EDITOR_
-BOOL CPostprocessAnimator::Process(SPPInfo &PPInfo)
+bool CPostprocessAnimator::Process(SPPInfo &PPInfo)
 {
 	if(m_bCyclic)
 		fLifeTime				= 100000;
@@ -237,7 +237,7 @@ BOOL CPostprocessAnimator::Process(SPPInfo &PPInfo)
 	return TRUE;
 }
 #else
-BOOL CPostprocessAnimator::Process(float dt, SPPInfo &PPInfo)
+bool CPostprocessAnimator::Process(float dt, SPPInfo &PPInfo)
 {
 
 	Update					(dt);
@@ -296,7 +296,7 @@ CPostProcessParam*  CPostprocessAnimator::GetParam                (pp_params par
     VERIFY (param >= pp_base_color && param < pp_last);
     return m_Params[param];
 }
-void        CPostprocessAnimator::Save                            (LPCSTR name)
+void        CPostprocessAnimator::Save                            (const char* name)
 {
     IWriter *W = FS.w_open (name);
     VERIFY (W);
@@ -474,7 +474,7 @@ void CPostProcessValue::get_value(float time, float &value, int index)
 
 
 #ifndef _PP_EDITOR_
-BOOL CPostprocessAnimatorLerp::Process(SPPInfo &PPInfo)
+bool CPostprocessAnimatorLerp::Process(SPPInfo &PPInfo)
 {
 	if(!m_bStop)
 		m_factor = m_get_factor_func			();
@@ -482,7 +482,7 @@ BOOL CPostprocessAnimatorLerp::Process(SPPInfo &PPInfo)
 }
 
 
-BOOL CPostprocessAnimatorLerpConst::Process(SPPInfo &PPInfo)
+bool CPostprocessAnimatorLerpConst::Process(SPPInfo &PPInfo)
 {
 	if(!m_bStop)
 		m_factor = m_power;
@@ -501,7 +501,7 @@ CPostprocessAnimatorControlled::~CPostprocessAnimatorControlled()
 	m_controller->SetPP(nullptr);
 }
 
-BOOL CPostprocessAnimatorControlled::Valid()
+bool CPostprocessAnimatorControlled::Valid()
 {
 	return m_controller->Valid					();
 }

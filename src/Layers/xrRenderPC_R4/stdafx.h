@@ -41,7 +41,8 @@
 #include "../xrRender/xrRender_console.h"
 #include "r4.h"
 
-IC	void jitter(CBlender_Compile& C) {
+IC	void jitter(CBlender_Compile& C)
+{
 	C.r_dx10Texture("jitter0", JITTER(0));
 	C.r_dx10Texture("jitter1", JITTER(1));
 	C.r_dx10Texture("jitter2", JITTER(2));

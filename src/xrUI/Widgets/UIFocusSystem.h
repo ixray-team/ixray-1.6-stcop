@@ -22,4 +22,4 @@ struct WND_SELECTOR_INFO
 	{}
 };
 
-UI_API int ReadWndSelectorsInfo(CUIXml& xml, LPCSTR ui_path, xr_vector<WND_SELECTOR_INFO> &outInfos, xr_map<xr_string, CUIWindow*> &wndPointers);
+UI_API int ReadWndSelectorsInfo(CUIXml& xml, const char* ui_path, xr_vector<WND_SELECTOR_INFO> &outInfos, xr_map<xr_string, CUIWindow*> &wndPointers);

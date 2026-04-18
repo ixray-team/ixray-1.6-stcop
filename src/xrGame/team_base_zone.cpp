@@ -45,7 +45,7 @@ float CTeamBaseZone::Radius			() const
 	return						(CFORM()->getRadius());
 }
 
-BOOL CTeamBaseZone::net_Spawn	(CSE_Abstract* DC) 
+bool CTeamBaseZone::net_Spawn	(CSE_Abstract* DC) 
 {
 	CCF_Shape					*l_pShape = new CCF_Shape(this);
 	collidable.model			= l_pShape;
@@ -72,7 +72,7 @@ BOOL CTeamBaseZone::net_Spawn	(CSE_Abstract* DC)
 
 	m_Team = l_tpALifeScriptZone->m_team;
 
-	BOOL						bOk = inherited::net_Spawn(DC);
+	bool						bOk = inherited::net_Spawn(DC);
 	if (bOk) {
 		l_pShape->ComputeBounds	();
 		Fvector					P;
@@ -136,7 +136,7 @@ void CTeamBaseZone::feel_touch_delete	(CObject *tpObject)
 	};
 }
 
-BOOL CTeamBaseZone::feel_touch_contact	(CObject* O)
+bool CTeamBaseZone::feel_touch_contact	(CObject* O)
 {
 	CActor*	pActor = O->cast_actor();
 	if (!pActor) return (FALSE);

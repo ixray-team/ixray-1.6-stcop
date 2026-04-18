@@ -74,7 +74,7 @@ void CGameObject::init			()
 	m_spawned					= false;
 }
 
-void CGameObject::Load(LPCSTR section)
+void CGameObject::Load(const char* section)
 {
 	inherited::Load(section);
 	SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::REACTTOSOUND;
@@ -90,7 +90,7 @@ void CGameObject::reinit()
 		Callback.clear();
 }
 
-void CGameObject::reload	(LPCSTR section)
+void CGameObject::reload	(const char* section)
 {
 	m_script_clsid				= object_factory().script_clsid(CLS_ID);
 }
@@ -235,7 +235,7 @@ void CGameObject::OnEvent		(NET_Packet& P, u16 type)
 
 void VisualCallback(IKinematics *tpKinematics);
 
-BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
+bool CGameObject::net_Spawn		(CSE_Abstract*	DC)
 {
 	VERIFY							(!m_spawned);
 	m_spawned						= true;
@@ -399,7 +399,7 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 	{
 		Msg("CGameObject::net_Spawn obj %s Before CScriptBinder::net_Spawn %f,%f,%f",PH_DBG_ObjectTrackName(),Position().x,Position().y,Position().z);
 	}
-	BOOL ret =CScriptBinder::net_Spawn(DC);
+	bool ret =CScriptBinder::net_Spawn(DC);
 #else
 	return						(CScriptBinder::net_Spawn(DC));
 #endif
@@ -491,19 +491,21 @@ void CGameObject::spawn_supplies()
 	if (!spawn_ini()->section_exist("spawn"))
 		return;
 
-	LPCSTR					N,V;
+	const char* N, *V;
 	float					p;
 	bool bScope				=	false;
 	bool bSilencer			=	false;
 	bool bLauncher			=	false;
 
-	for (u32 k = 0, j; spawn_ini()->r_line("spawn",k,&N,&V); k++) {
+	for (u32 k = 0, j; spawn_ini()->r_line("spawn",k,&N,&V); k++)
+	{
 		VERIFY				(xr_strlen(N));
 		j					= 1;
 		p					= 1.f;
 		
-		float f_cond						= 1.0f;
-		if (V && xr_strlen(V)) {
+		float f_cond = 1.0f;
+		if (V && xr_strlen(V))
+		{
 			int				n = _GetItemCount(V);
 			string16		temp;
 			if (n > 0)
@@ -727,12 +729,12 @@ void CGameObject::OnH_B_Independent(bool just_before_destroy)
 		validate_ai_locations	(false);
 }
 
-BOOL CGameObject::UsedAI_Locations()
+bool CGameObject::UsedAI_Locations()
 {
 	return					(m_server_flags.test(CSE_ALifeObject::flUsedAI_Locations));
 }
 
-BOOL CGameObject::TestServerFlag(u32 Flag) const
+bool CGameObject::TestServerFlag(u32 Flag) const
 {
 	return					(m_server_flags.test(Flag));
 }
@@ -834,13 +836,13 @@ void CGameObject::shedule_Update	(u32 dt)
 	CScriptBinder::shedule_Update(dt);
 }
 
-BOOL CGameObject::net_SaveRelevant	()
+bool CGameObject::net_SaveRelevant	()
 {
 	return	(CScriptBinder::net_SaveRelevant());
 }
 
 //игровое имя объекта
-LPCSTR CGameObject::Name () const
+const char* CGameObject::Name () const
 {
 	return	(*cName());
 }
@@ -901,7 +903,7 @@ CGameObject::CScriptCallbackExVoid &CGameObject::callback(GameObject::ECallbackT
 	return ((*m_callbacks)[type]);
 }
 
-LPCSTR CGameObject::visual_name		(CSE_Abstract *server_entity)
+const char* CGameObject::visual_name		(CSE_Abstract *server_entity)
 {
 	const CSE_Visual			*visual	= smart_cast<const CSE_Visual*>(server_entity);
 	VERIFY						(visual);

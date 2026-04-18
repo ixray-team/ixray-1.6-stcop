@@ -69,7 +69,7 @@ public:
 	virtual CArmorBase* cast_armorbase() override { return nullptr; }
 
 public:
-	virtual void Load(LPCSTR section);
+	virtual void Load(const char* section);
 	virtual	void Hit(SHit* pHDS);
 
 	virtual void OnH_B_Independent(bool just_before_destroy);
@@ -78,15 +78,15 @@ public:
 	virtual void OnH_A_Chield();
 	virtual void UpdateCL();
 	virtual void OnEvent(NET_Packet& P, u16 type);
-	virtual BOOL net_Spawn(CSE_Abstract* DC);
+	virtual bool net_Spawn(CSE_Abstract* DC);
 	virtual void net_Destroy();
 	virtual void net_Import(NET_Packet& P);					// import from server
 	virtual void net_Export(NET_Packet& P);					// export to server
 	virtual void save(NET_Packet& output_packet);
 	virtual void load(IReader& input_packet);
-	virtual BOOL net_SaveRelevant() { return TRUE; }
+	virtual bool net_SaveRelevant() { return TRUE; }
 	virtual void renderable_Render();
-	virtual void reload(LPCSTR section);
+	virtual void reload(const char* section);
 	virtual void reinit();
 	virtual void activate_physic_shell();
 	virtual void on_activate_physic_shell();
@@ -94,7 +94,7 @@ public:
 
 	virtual void OnChangeVisual() override;
 
-	virtual bool install_upgrade_impl(LPCSTR section, bool test) override;
+	virtual bool install_upgrade_impl(const char* section, bool test) override;
 
 public:
 	////////// network //////////////////////////////////////////////////

@@ -51,12 +51,12 @@ private:
 public:
 	IC							CSpaceRestrictor	();
 	virtual						~CSpaceRestrictor	();
-	virtual	BOOL				net_Spawn			(CSE_Abstract* data);
+	virtual	bool				net_Spawn			(CSE_Abstract* data);
 	virtual	void				net_Destroy			();
 			bool				inside				(const Fsphere &sphere) const;
 	virtual void				Center				(Fvector &C) const;
 	virtual float				Radius				() const;
-	virtual BOOL				UsedAI_Locations	();
+	virtual bool				UsedAI_Locations	();
 	virtual void				spatial_move		();
 	IC		bool				actual				() const;
 	virtual CAnomalyZone* cast_anomaly_zone() { return nullptr; }

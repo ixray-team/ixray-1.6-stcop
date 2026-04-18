@@ -29,7 +29,7 @@ CIKFoot::CIKFoot( ):
 }
 
 
-void CIKFoot::Create		(  IKinematics	*K, LPCSTR section, u16 bones[4] )
+void CIKFoot::Create		(  IKinematics	*K, const char* section, u16 bones[4] )
 {
 	VERIFY(K);
 	m_K = K;

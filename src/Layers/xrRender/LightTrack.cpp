@@ -431,7 +431,7 @@ void CROS_impl::prepare_lights(Fvector& position, IRenderable* O)
 	vis_data &vis = O->renderable.visual->getVisData();
 	float	radius;		radius	= vis.sphere.R;
 	// light-tracing
-	BOOL	bTraceLights	= MODE & IRender_ObjectSpecific::TRACE_LIGHTS;
+	bool	bTraceLights	= MODE & IRender_ObjectSpecific::TRACE_LIGHTS;
 	if		((!O->renderable_ShadowGenerate()) && (!O->renderable_ShadowReceive()))	bTraceLights = FALSE;
 	if		(bTraceLights)	{
 		// Select nearest lights

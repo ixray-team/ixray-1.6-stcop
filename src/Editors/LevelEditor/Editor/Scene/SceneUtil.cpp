@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-CCustomObject* EScene::FindObjectByName( LPCSTR name, ObjClassID classfilter )
+CCustomObject* EScene::FindObjectByName( const char* name, ObjClassID classfilter )
 {
 	if(!name)
 	return NULL;
@@ -24,7 +24,7 @@ CCustomObject* EScene::FindObjectByName( LPCSTR name, ObjClassID classfilter )
 	return object;
 }
 
-CCustomObject* EScene::FindObjectByName(LPCSTR name, CCustomObject* pass_object)
+CCustomObject* EScene::FindObjectByName(const char* name, CCustomObject* pass_object)
 {
 	CCustomObject* object = 0;
 	SceneToolsMapPairIt _I = m_SceneTools.begin();

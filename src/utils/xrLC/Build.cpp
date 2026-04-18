@@ -23,7 +23,7 @@ void calc_ogf(xrMU_Model& mu_model);
 void export_geometry(xrMU_Model& mu_model);
 void export_ogf(xrMU_Reference& mu_reference);
 
-extern u16 RegisterShader(LPCSTR T);
+extern u16 RegisterShader(const char* T);
 
 struct OGF_Base;
 xr_vector<OGF_Base*> g_tree;
@@ -115,7 +115,7 @@ size_t GetHeapMemory()
 	return 0;
 }
   
-void CBuild::Run(LPCSTR P)
+void CBuild::Run(const char* P)
 {
 	if (gCompilerMode.CUDA || gCompilerMode.Embree)
 		InitializeEmbreeDevice();

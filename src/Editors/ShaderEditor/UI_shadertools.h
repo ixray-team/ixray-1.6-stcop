@@ -52,12 +52,12 @@ public:
     virtual bool		IsModified			();
     virtual void		Modified			(); 
 
-    virtual LPCSTR		GetInfo				();
+    virtual const char*		GetInfo				();
     
-    virtual void		ZoomObject			(BOOL bSelOnly);
+    virtual void		ZoomObject			(bool bSelOnly);
 
-    virtual bool		Load				(LPCSTR name);
-    virtual bool		Save				(LPCSTR name, bool bInternal=false);
+    virtual bool		Load				(const char* name);
+    virtual bool		Save				(const char* name, bool bInternal=false);
     virtual void		Reload				();
     
     virtual void		OnDeviceCreate		();
@@ -74,13 +74,13 @@ public:
     virtual bool		Pick				(TShiftState Shift){return false;}
 	virtual bool 		RayPick				(const Fvector& start, const Fvector& dir, float& dist, Fvector* pt, Fvector* n);
 
-    virtual void		ShowProperties		(LPCSTR focused_item);
-    virtual void		UpdateProperties	(BOOL bForced=false){m_Flags.set(flRefreshProps,TRUE); if (bForced) RealUpdateProperties();}
+    virtual void		ShowProperties		(const char* focused_item);
+    virtual void		UpdateProperties	(bool bForced=false){m_Flags.set(flRefreshProps,TRUE); if (bForced) RealUpdateProperties();}
     virtual void		RefreshProperties	(){;}
     virtual void		UpdateList			(bool bForced=false){m_Flags.set(flRefreshList,TRUE); if (bForced) RealUpdateList();}
     virtual bool		GetSelectionPosition	(Fmatrix& result);
 
-    LPCSTR				CurrentToolsName	();
+    const char*				CurrentToolsName	();
 
     void				OnChangeEditor		(ISHTools* tools);
 

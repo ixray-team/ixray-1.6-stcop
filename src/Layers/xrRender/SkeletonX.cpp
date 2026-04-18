@@ -639,7 +639,7 @@ void CSkeletonX::_Load(const char* N, IReader *data, u32& dwVertCount)
 	}
 }
 
-BOOL CSkeletonX::has_visible_bones()
+bool CSkeletonX::has_visible_bones()
 {
 	if (RM_SINGLE==RenderMode)	
 		return Parent->visimask.is((u16)RMS_boneid);

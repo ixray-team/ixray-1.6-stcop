@@ -36,7 +36,7 @@ private:
 	THMVec m_THM_Used;
 	THMVec m_THM_Current;
 
-	ESoundThumbnail* FindUsedTHM(LPCSTR name);
+	ESoundThumbnail* FindUsedTHM(const char* name);
 	void SaveUsedTHM();
 	void DestroyUsedTHM();
 
@@ -46,19 +46,19 @@ private:
 	void UpdateLib();
 
 	bool bFormLocked;
-	BOOL bAutoPlay;
+	bool bAutoPlay;
 
 	FS_FileSet modif_map;
 	ref_sound m_Snd;
 
-	void AppendModif(LPCSTR nm);
+	void AppendModif(const char* nm);
 
 private:
 	void   	OnControlClick(ButtonValue* sender, bool& bModif, bool& bSafe);
 	void   	OnControl2Click(ButtonValue* sender, bool& bModif, bool& bSafe);
 	void   	OnSyncCurrentClick(ButtonValue* sender, bool& bModif, bool& bSafe);
 	void   	OnAttClick(ButtonValue* sender, bool& bModif, bool& bSafe);
-	void    PlaySound(LPCSTR name);
+	void    PlaySound(const char* name);
 	void	OnAttenuationDraw(CanvasValue* sender);
 
 	float GetOGGDurationInSeconds(const char* filename);

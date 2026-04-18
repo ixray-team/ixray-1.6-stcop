@@ -22,7 +22,7 @@ CUIScrollBar::CUIScrollBar()
 	m_FrameBackground	= new CUIFrameLineWnd();m_FrameBackground->SetAutoDelete(true); AttachChild(m_FrameBackground);
 }
 
-bool CUIScrollBar::InitScrollBar(Fvector2 pos, float length, bool bIsHorizontal, LPCSTR profile)
+bool CUIScrollBar::InitScrollBar(Fvector2 pos, float length, bool bIsHorizontal, const char* profile)
 {
 	string256 _path;
 	CUIXml xml_doc;
@@ -70,7 +70,7 @@ bool CUIScrollBar::InitScrollBar(Fvector2 pos, float length, bool bIsHorizontal,
 		}
 
 		xr_strconcat(_path, profile, ":back:texture");
-		LPCSTR texture				= xml_doc.Read(_path, 0, "");
+		const char* texture				= xml_doc.Read(_path, 0, "");
 		R_ASSERT					(texture);
 
 		if (!m_FrameBackground->InitTexture(texture, "hud\\default", false))
@@ -112,7 +112,7 @@ bool CUIScrollBar::InitScrollBar(Fvector2 pos, float length, bool bIsHorizontal,
 		}
 
 		xr_strconcat(_path, profile, ":back_v:texture");
-		LPCSTR texture				= xml_doc.Read(_path, 0, "");
+		const char* texture				= xml_doc.Read(_path, 0, "");
 		R_ASSERT					(texture);
 
 		if (!m_FrameBackground->InitTexture(texture, "hud\\default", false))

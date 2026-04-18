@@ -27,7 +27,7 @@ public:
 
 	virtual void FlushPrimitive();
 
-	virtual LPCSTR	UpdateShaderName(LPCSTR tex_name, LPCSTR sh_name);
+	virtual const char*	UpdateShaderName(const char* tex_name, const char* sh_name);
 
 	virtual void CacheSetXformWorld(const Fmatrix& M);
 	virtual void CacheSetProject(const Fmatrix& M);

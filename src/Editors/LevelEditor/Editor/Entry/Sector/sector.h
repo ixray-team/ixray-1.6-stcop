@@ -54,7 +54,7 @@ class CSector :
 	bool 			FindSectorItem		(CSceneObject* o, CEditableMesh* m, SItemIt& it);
 	bool 			FindSectorItem		(const char* O, const char* M, SItemIt& it);
 	void 			LoadSectorDef		( IReader* F );
-    void 			LoadSectorDefLTX	( CInifile& ini, LPCSTR sect_name, u32 item_idx );
+    void 			LoadSectorDefLTX	( CInifile& ini, const char* sect_name, u32 item_idx );
     enum{
     	flNeedUpdateVolume = (1<<0)
     };
@@ -68,7 +68,7 @@ class CSector :
 public:
 	u8    			m_map_idx;
 
-					CSector		(LPVOID data, LPCSTR name);
+					CSector		(LPVOID data, const char* name);
 	void 			Construct	(LPVOID data);
 	virtual 		~CSector	();
     virtual bool	CanAttach		() {return false;}
@@ -84,10 +84,10 @@ public:
 
     // file system function
 	virtual bool 	LoadStream		(IReader&);
-	virtual bool 	LoadLTX			(CInifile& ini, LPCSTR sect_name);
+	virtual bool 	LoadLTX			(CInifile& ini, const char* sect_name);
 	virtual void 	SaveStream			(IWriter&);
-	virtual void 	SaveLTX			(CInifile& ini, LPCSTR sect_name);
-	virtual void	FillProp		(LPCSTR pref, PropItemVec& values);
+	virtual void 	SaveLTX			(CInifile& ini, const char* sect_name);
+	virtual void	FillProp		(const char* pref, PropItemVec& values);
 	virtual bool 	GetSummaryInfo	(SSceneSummary* inf);
 
 	bool			AddMesh		(CSceneObject* O, CEditableMesh* M); // возвращает добавлен ли объект

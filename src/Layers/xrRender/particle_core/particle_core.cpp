@@ -225,7 +225,7 @@ pDomain::pDomain(PDomainEnum dtype, float a0, float a1,
 }
 
 // Determines if pos is inside the domain
-BOOL pDomain::Within(const Fvector &pos) const
+bool pDomain::Within(const Fvector &pos) const
 {
 	switch (type)
 	{

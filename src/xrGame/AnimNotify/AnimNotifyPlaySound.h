@@ -9,7 +9,7 @@ class CAnimNotifyPlaySound : public IAnimNotify
     xr_set<CScriptSound*> m_playing_sounds = {};
     
 public:
-    void Construct(const CInifile& ini, LPCSTR sect) override;
+    void Construct(const CInifile& ini, const char* sect) override;
     void Execute(IRenderVisual* visual, u16 bone_id) override;
     
 };

@@ -91,7 +91,7 @@ public:
 	IntVec			vindices;
 	IntVec			pindices;
 public:
-	st_VMap			(LPCSTR nm=0, u8 t=vmtUV, bool pm=false)
+	st_VMap			(const char* nm=0, u8 t=vmtUV, bool pm=false)
 	{
 		type		= t;
 		polymap		= pm;
@@ -230,7 +230,7 @@ class ECORE_API CEditableMesh
 	void			UnloadCForm     	();
 
 public:
-	static 			BOOL m_bDraftMeshMode;
+	static 			bool m_bDraftMeshMode;
 
 	void 			GenerateRenderBuffers();
 	void 			UnloadRenderBuffers();
@@ -299,7 +299,7 @@ public:
 	bool 			OptimizeFace			(st_Face& face);
 public:
 	void			RecomputeBBox			();
-	void 			OptimizeMesh			(BOOL NoOpt);
+	void 			OptimizeMesh			(bool NoOpt);
 public:
 					CEditableMesh			(CEditableObject* parent){m_Parent=parent;Construct();}
 	virtual         ~CEditableMesh			();
@@ -307,14 +307,14 @@ public:
 	void			Clear					();
 	void			Create					(st_Face* faces, u32 face_count, Fvector* vertices, u32 vertex_count, Fvector* normals, u32 normal_count);
 
-	IC void			SetName					(LPCSTR name){m_Name=name;}
+	IC void			SetName					(const char* name){m_Name=name;}
 	IC shared_str	Name					(){return m_Name;}
 	void            GetBox					(Fbox& box){box.set(m_Box);}
 	CSurface*		GetSurfaceByFaceID		(u32 fid);
 	void			GetFaceTC				(u32 fid, const Fvector2* tc[3]);
 	void			GetFacePT				(u32 fid, const Fvector* pt[3]);
-	IC BOOL 		Visible					(){return m_Flags.is(flVisible); }
-	IC void 		Show					(BOOL bVisible){m_Flags.set(flVisible,bVisible);}
+	IC bool 		Visible					(){return m_Flags.is(flVisible); }
+	IC void 		Show					(bool bVisible){m_Flags.set(flVisible,bVisible);}
 
 	// mesh modify routine
 	void            Transform				(const Fmatrix& parent);

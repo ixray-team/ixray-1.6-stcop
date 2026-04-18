@@ -31,7 +31,7 @@ public:
 private:
 	BoneCallback		Callback;
 	void*				Callback_Param;
-	BOOL				Callback_overwrite;					// performance hint - don't calc anims
+	bool				Callback_overwrite;					// performance hint - don't calc anims
 	u32					Callback_type;	
 public:
 	float				param			[MAX_BONE_PARAMS];	// 
@@ -40,12 +40,12 @@ public:
 public:
 	IC	BoneCallback	_BCL	callback()					{ return  Callback; }
 	IC	void*			_BCL	callback_param()			{ return Callback_Param;	}
-	IC	BOOL			_BCL	callback_overwrite()		{ return Callback_overwrite; }					// performance hint - don't calc anims
+	IC	bool			_BCL	callback_overwrite()		{ return Callback_overwrite; }					// performance hint - don't calc anims
 	IC	u32				_BCL	callback_type()				{ return Callback_type; }	
 public:
 	IC void				_BCL	construct();
 
-	void	_BCL set_callback	(u32 Type, BoneCallback C, void* Param,  BOOL overwrite=FALSE)
+	void	_BCL set_callback	(u32 Type, BoneCallback C, void* Param,  bool overwrite=FALSE)
 	{	
 		Callback			= C; 
 		Callback_Param		= Param; 
@@ -60,7 +60,7 @@ public:
 		Callback_overwrite	= FALSE;
 		Callback_type		= 0;
 	}
-	void		_BCL		set_callback_overwrite(BOOL v){ Callback_overwrite = v; }
+	void		_BCL		set_callback_overwrite(bool v){ Callback_overwrite = v; }
 
 	void				set_param		(u32 idx, float data);
 	float				get_param		(u32 idx);
@@ -316,7 +316,7 @@ public:
 	shared_str		    ParentName		(){return parent_name;}
 	shared_str		    WMap			(){return wmap;}
 	IC CBone*		    Parent			(){return parent;}
-    IC BOOL			    IsRoot			(){return (parent==0);}
+    IC bool			    IsRoot			(){return (parent==0);}
 	shared_str&		    NameRef			(){return name;}
 
     // transformation
@@ -368,7 +368,7 @@ IC	float	_BCL		editor_hi_limit ( u8 k ) const	{ return IK_data.limits[k].limit.y
 
 	bool 			    Pick			(float& dist, const Fvector& S, const Fvector& D, const Fmatrix& parent);
 
-    void			    Select			(BOOL flag)	{ flags.set(flSelected,flag); }
+    void			    Select			(bool flag)	{ flags.set(flSelected,flag); }
     bool			    Selected		(){return !!flags.is(flSelected);}
 
     void			    ClampByLimits	();

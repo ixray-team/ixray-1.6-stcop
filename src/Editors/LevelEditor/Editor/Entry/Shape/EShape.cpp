@@ -19,7 +19,7 @@ xr_token shape_type_tok[]=
 	{ 0,				0	}
 };
 
-CEditShape::CEditShape(LPVOID data, LPCSTR name):CCustomObject(data,name)
+CEditShape::CEditShape(LPVOID data, const char* name):CCustomObject(data,name)
 {
 	Construct(data);
 }
@@ -287,7 +287,7 @@ bool CEditShape::GetBox(Fbox& box)
 	return false;
 }
 
-bool CEditShape::LoadLTX(CInifile& ini, LPCSTR sect_name)
+bool CEditShape::LoadLTX(CInifile& ini, const char* sect_name)
 {
     u32 vers		= ini.r_u32(sect_name, "version");
 
@@ -335,7 +335,7 @@ bool CEditShape::LoadLTX(CInifile& ini, LPCSTR sect_name)
     return true;
 }
 
-void CEditShape::SaveLTX(CInifile& ini, LPCSTR sect_name)
+void CEditShape::SaveLTX(CInifile& ini, const char* sect_name)
 {
 	inherited::SaveLTX	(ini, sect_name);
 
@@ -408,7 +408,7 @@ void CEditShape::SaveStream(IWriter& F)
     
 }
 
-void CEditShape::FillProp(LPCSTR pref, PropItemVec& values)
+void CEditShape::FillProp(const char* pref, PropItemVec& values)
 {
 	inherited::FillProp(pref,values);
 	PHelper().CreateCaption	(values, PrepareKey(pref,"Shape usage"),m_shape_type==eShapeCommon?"common":"level bound");
@@ -471,7 +471,7 @@ void CEditShape::OnFrame()
     if(m_shape_type==eShapeLevelBound)
     {
         UIShapeTool* F 		= (UIShapeTool*)FParentTools->pForm;
-    	BOOL bVis = F->EditLevelBound;
+    	bool bVis = F->EditLevelBound;
     	m_RT_Flags.set(flRT_Visible, bVis);
     }
 }

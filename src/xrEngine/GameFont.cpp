@@ -436,7 +436,7 @@ u16 CGameFont::SplitByWidth(u16* puBuffer, u16 uBufferSize, float fTargetWidth, 
 }
 
 void CGameFont::MasterOut(
-	BOOL bCheckDevice, BOOL bUseCoords, BOOL bScaleCoords, BOOL bUseSkip,
+	bool bCheckDevice, bool bUseCoords, bool bScaleCoords, bool bUseSkip,
 	float _x, float _y, float _skip, const char* fmt, va_list p)
 {
 	if (bCheckDevice && (!Device.b_is_Active))

@@ -26,8 +26,8 @@ public:
 
 	void	Draw(const dx103DFluidData &FluidData);
 
-	static LPCSTR*	GetRTNames() { return m_pRTNames; }
-	static LPCSTR*	GetResourceRTNames() { return m_pResourceRTNames; }
+	static const char**	GetRTNames() { return m_pRTNames; }
+	static const char**	GetResourceRTNames() { return m_pResourceRTNames; }
 
 private:
 	enum RendererShader
@@ -88,8 +88,8 @@ private:
 
 	ERHI_FORMAT				RTFormats[ RRT_NumRT ];
 	ref_rt					RT[ RRT_NumRT ];
-	static LPCSTR			m_pRTNames[ RRT_NumRT ];
-	static LPCSTR			m_pResourceRTNames[ RRT_NumRT ];
+	static const char*			m_pRTNames[ RRT_NumRT ];
+	static const char*			m_pResourceRTNames[ RRT_NumRT ];
 
 	ref_selement	m_RendererTechnique[ RS_NumShaders ];
 

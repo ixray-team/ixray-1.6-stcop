@@ -374,7 +374,7 @@ void	CSoundRender_Core::destroy	(ref_sound& S )
 	S._p				= 0;
 }                                                    
 
-void CSoundRender_Core::_create_data( ref_sound_data& S, LPCSTR fName, esound_type sound_type, int game_type)
+void CSoundRender_Core::_create_data( ref_sound_data& S, const char* fName, esound_type sound_type, int game_type)
 {
 	string_path			fn;
 	xr_strcpy			(fn,fName);
@@ -467,7 +467,7 @@ void CSoundRender_Core::object_relcase( CObject* obj )
     }
 }
 
-void						CSoundRender_Core::set_user_env		( CSound_environment* E)
+void CSoundRender_Core::set_user_env( CSound_environment* E)
 {
 	if ((0 == E) && !bUserEnvironment) return;
 

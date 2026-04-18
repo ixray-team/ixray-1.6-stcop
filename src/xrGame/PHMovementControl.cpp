@@ -812,7 +812,7 @@ void CPHMovementControl::SetActorRestrictorRadius(ERestrictionType rt, float r)
 		(m_character)->SetRestrictorRadius(rt, r);
 }
 
-void CPHMovementControl::Load(LPCSTR section)
+void CPHMovementControl::Load(const char* section)
 {
 	Fbox	bb;
 
@@ -1127,7 +1127,7 @@ void CPHMovementControl::UnFreeze()
 		m_character->UnFreeze();
 }
 
-void CPHMovementControl::ActivateBox(DWORD id, BOOL Check/*false*/)
+void CPHMovementControl::ActivateBox(DWORD id, bool Check/*false*/)
 {
 	if (Check && (m_dwCurBox == id))
 		return;
@@ -1219,7 +1219,7 @@ struct STraceBorderQParams
 	STraceBorderQParams& operator = (STraceBorderQParams& p) { VERIFY(FALSE); return p; }
 };
 
-BOOL CPHMovementControl::BorderTraceCallback(collide::rq_result& result, LPVOID params)
+bool CPHMovementControl::BorderTraceCallback(collide::rq_result& result, LPVOID params)
 {
 	STraceBorderQParams& p = *(STraceBorderQParams*)params;
 	u16 mtl_idx = GAMEMTL_NONE_IDX;
@@ -1485,7 +1485,7 @@ u16	CPHMovementControl::injurious_material_idx()
 	return m_character->InjuriousMaterialIDX();
 }
 
-void	CPHMovementControl::SetApplyGravity(BOOL flag)
+void	CPHMovementControl::SetApplyGravity(bool flag)
 {
 	bIsAffectedByGravity = flag;
 	if (m_character && m_character->b_exist)
@@ -1530,7 +1530,7 @@ float		CPHMovementControl::FootRadius()
 	else
 		return 0.f;
 }
-void		CPHMovementControl::CollisionEnable(BOOL enable)
+void		CPHMovementControl::CollisionEnable(bool enable)
 {
 	if (!m_character || !m_character->b_exist)
 		return;
@@ -1541,7 +1541,7 @@ void		CPHMovementControl::CollisionEnable(BOOL enable)
 
 }
 
-void CPHMovementControl::CollisionDynamicEnable(BOOL enable)
+void CPHMovementControl::CollisionDynamicEnable(bool enable)
 {
 	if (!m_character || !m_character->b_exist)
 		return;

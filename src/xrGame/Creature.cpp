@@ -64,7 +64,7 @@ extern int g_AI_inactive_time;
 	Flags32		psAI_Flags	= {aiObstaclesAvoiding | aiUseSmartCovers};
 #endif // MASTER_GOLD
 
-void CCreature::SAnimState::Create(IKinematicsAnimated* K, LPCSTR base)
+void CCreature::SAnimState::Create(IKinematicsAnimated* K, const char* base)
 {
 	char	buf[128];
 	fwd		= K->ID_Cycle_Safe(xr_strconcat(buf,base,"_fwd"));
@@ -123,7 +123,7 @@ CCreature::~CCreature	()
 
 }
 
-void CCreature::Load		(LPCSTR section)
+void CCreature::Load		(const char* section)
 {
 	inherited::Load				(section);
 	
@@ -230,7 +230,7 @@ void CCreature::reinit		()
 	m_movement_enabled_before_animation_controller	= true;
 }
 
-void CCreature::reload		(LPCSTR section)
+void CCreature::reload		(const char* section)
 {
 	sound().reload				(section);
 	CEntityAlive::reload		(section);
@@ -534,7 +534,7 @@ void CCreature::UpdatePositionAnimation()
 	eye_pp_s0();
 }
 
-BOOL CCreature::feel_visible_isRelevant (CObject* O)
+bool CCreature::feel_visible_isRelevant (CObject* O)
 {
 	if (!O)									return FALSE;
 	CEntityAlive* E = O->cast_entity_alive();
@@ -645,7 +645,7 @@ void CCreature::Die	(CObject* who)
 	SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::AI_ALIVE;
 }
 
-BOOL CCreature::net_Spawn	(CSE_Abstract* DC)
+bool CCreature::net_Spawn	(CSE_Abstract* DC)
 {
 	memory().reload				(*cNameSect());
 	memory().reinit				();
@@ -781,7 +781,7 @@ void CCreature::net_Destroy()
 	SetActorVisibility		(ID(), 0.0f);
 }
 
-BOOL CCreature::UsedAI_Locations()
+bool CCreature::UsedAI_Locations()
 {
 	return					(TRUE);
 }
@@ -813,7 +813,7 @@ void CCreature::PitchCorrection()
 
 }
 
-BOOL CCreature::feel_touch_on_contact	(CObject *O)
+bool CCreature::feel_touch_on_contact	(CObject *O)
 {
 	if(!O)
 		return		(FALSE);
@@ -833,7 +833,7 @@ BOOL CCreature::feel_touch_on_contact	(CObject *O)
 	return		(FALSE);
 }
 
-BOOL CCreature::feel_touch_contact		(CObject *O)
+bool CCreature::feel_touch_contact		(CObject *O)
 {
 	if (!O)
 		return		(FALSE);
@@ -859,10 +859,10 @@ void CCreature::set_ready_to_save		()
 	memory().enemy().set_ready_to_save	();
 }
 
-void CCreature::load_killer_clsids(LPCSTR section)
+void CCreature::load_killer_clsids(const char* section)
 {
 	m_killer_clsids.clear			();
-	LPCSTR							killers = pSettings->r_string(section,"killer_clsids");
+	const char*							killers = pSettings->r_string(section,"killer_clsids");
 	string16						temp;
 	for (u32 i=0, n=_GetItemCount(killers); i<n; ++i)
 		m_killer_clsids.push_back	(TEXT2CLSID(_GetItem(killers,i,temp)));
@@ -978,7 +978,7 @@ void CCreature::on_restrictions_change	()
 	movement().on_restrictions_change	();
 }
 
-LPCSTR CCreature::visual_name	(CSE_Abstract *server_entity) 
+const char* CCreature::visual_name	(CSE_Abstract *server_entity) 
 {
 	return						(inherited::visual_name(server_entity));
 }

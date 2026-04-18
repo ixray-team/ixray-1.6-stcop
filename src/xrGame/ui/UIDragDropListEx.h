@@ -152,7 +152,7 @@ public:
 	// Controller UI
 				bool		MoveSelector		(eUIDirection4 dir);
 				bool		MoveSelectorToItem	(CUICellItem* pItem);
-				void		InitSelector		(LPCSTR texture_name);
+				void		InitSelector		(const char* texture_name);
 				void		SetControllerFocusIn(Irect selectorPos);
 				void		SetControllerFocusOut();
 				void		UpdateSelector		();

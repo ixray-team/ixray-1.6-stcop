@@ -19,7 +19,7 @@ void CWeaponShotgun::net_Destroy()
 	inherited::net_Destroy();
 }
 
-void CWeaponShotgun::Load(LPCSTR section)
+void CWeaponShotgun::Load(const char* section)
 {
 	if (pSettings->line_exist(section, "tri_state_reload"))
 	{
@@ -29,7 +29,7 @@ void CWeaponShotgun::Load(LPCSTR section)
 	inherited::Load(section);
 }
 
-void CWeaponShotgun::LoadSounds(LPCSTR section)
+void CWeaponShotgun::LoadSounds(const char* section)
 {
 	inherited::LoadSounds(section);
 
@@ -379,9 +379,9 @@ void CWeaponShotgun::PlayAnimCloseWeapon()
 	PlayHUDMotion(SelectCloseWeaponAnimation(), EHudMixType::eNoMix, eReload);
 }
 
-BOOL CWeaponShotgun::net_Spawn(CSE_Abstract* DC)
+bool CWeaponShotgun::net_Spawn(CSE_Abstract* DC)
 {
-	BOOL bResult = inherited::net_Spawn(DC);
+	bool bResult = inherited::net_Spawn(DC);
 
 	CSE_ALifeItemWeaponShotGun* E = smart_cast<CSE_ALifeItemWeaponShotGun*>(DC);
 

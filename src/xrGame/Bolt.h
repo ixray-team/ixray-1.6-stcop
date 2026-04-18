@@ -21,7 +21,7 @@ public:
 	virtual bool Useful				() const;
     virtual void activate_physic_shell	();
 
-	virtual BOOL UsedAI_Locations	() {return FALSE;}
+	virtual bool UsedAI_Locations	() {return FALSE;}
 	virtual IDamageSource*	cast_IDamageSource			()	{return this;}
 
 	virtual CBolt* cast_bolt() { return this; }

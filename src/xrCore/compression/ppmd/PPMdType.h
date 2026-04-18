@@ -60,7 +60,7 @@ enum { BUF_SIZE=64*1024 };
     int  put(int c) { return (--Count >= 0)?(*p++ = c):(flush(c)); }
     int  getErr() const { return Error; }
     int    tell() const { return StrPos+(p-Buf); }
-    BOOL  atEOS() const { return (Count < 0); }
+    bool  atEOS() const { return (Count < 0); }
 protected:
     int Error, StrPos, Count;
     BYTE* p, Buf[BUF_SIZE];

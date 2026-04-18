@@ -27,22 +27,22 @@ public:
 	virtual void	updateGamma() = 0;
 
 	//	Destroy
-	virtual void	OnDeviceDestroy( BOOL bKeepTextures) = 0;
+	virtual void	OnDeviceDestroy( bool bKeepTextures) = 0;
 	virtual void	ValidateHW() = 0;
 	virtual void	DestroyHW() = 0;
 	virtual void	Reset(SDL_Window* window, u32 &dwWidth, u32 &dwHeight) = 0;
 	//	Init
 	virtual void	SetupStates() = 0;
-	virtual void	OnDeviceCreate(LPCSTR shName) = 0;
+	virtual void	OnDeviceCreate(const char* shName) = 0;
 	virtual void	Create(SDL_Window* window, u32 &dwWidth, u32 &dwHeight, bool ) = 0;
-	virtual void	SetupGPU( BOOL bForceGPU_SW, BOOL bForceGPU_NonPure, BOOL bForceGPU_REF) = 0;
+	virtual void	SetupGPU( bool bForceGPU_SW, bool bForceGPU_NonPure, bool bForceGPU_REF) = 0;
 	virtual void	PostCreate() = 0;
 	//	Overdraw
 	virtual void	overdrawBegin() = 0;
 	virtual void	overdrawEnd() = 0;
 
 	//	Resources control
-	virtual void	DeferredLoad(BOOL E) = 0;
+	virtual void	DeferredLoad(bool E) = 0;
 	virtual void	ResourcesDeferredUpload() = 0;
 	virtual void    ResourcesDeferredUnload() = 0;
 	virtual void	ResourcesGetMemoryUsage(u32& m_base, u32& c_base, u32& m_lmaps, u32& c_lmaps) = 0;
@@ -55,7 +55,7 @@ public:
 
 	//	Device state
 	virtual DeviceState GetDeviceState() = 0;
-	virtual BOOL	GetForceGPU_REF() = 0;
+	virtual bool	GetForceGPU_REF() = 0;
 	virtual u32		GetCacheStatPolys() = 0;
 	virtual void	Begin() = 0;
 	virtual void	Clear() = 0;

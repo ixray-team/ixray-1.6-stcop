@@ -13,8 +13,8 @@
 #include "ParticlesObject.h"
 
 #ifdef	DEBUG
-BOOL debug_step_info = FALSE;
-BOOL debug_step_info_load = FALSE;
+bool debug_step_info = FALSE;
+bool debug_step_info_load = FALSE;
 #endif
 
 extern float psHUDStepSoundVolume;
@@ -58,7 +58,7 @@ CStepManager::CStepManager()
 
 	if (exoVisuals.empty())
 	{
-		LPCSTR exoVisualName = {}, vall = {};
+		const char* exoVisualName = {}, *vall = {};
 		for (int k = 0; pSettings->r_line("exo_visuals", k, &exoVisualName, &vall); ++k)
 		{
 			exoVisuals.insert(exoVisualName);
@@ -90,10 +90,10 @@ DLL_Pure *CStepManager::_construct	()
 	return				(m_object);
 }
 
-void CStepManager::reload(LPCSTR section)
+void CStepManager::reload(const char* section)
 {
 	m_legs_count		= pSettings->r_u8		(section, "LegsCount");
-	LPCSTR anim_section = pSettings->r_string	(section, "step_params");
+	const char* anim_section = pSettings->r_string	(section, "step_params");
 
 	if (!pSettings->section_exist(anim_section))
 	{
@@ -107,8 +107,8 @@ void CStepManager::reload(LPCSTR section)
 	SStepParam			param; 
 	param.step[0].time = 0.1f;	// avoid warning
 
-	LPCSTR				anim_name, val;
-	string16			cur_elem;
+	const char* anim_name, *val;
+	string16 cur_elem;
 
 	IKinematicsAnimated	*skeleton_animated = m_object->Visual()->dcast_PKinematicsAnimated();
 
@@ -148,7 +148,7 @@ void CStepManager::reload(LPCSTR section)
 		{
 			IKinematicsAnimated *KA = m_object->Visual()->dcast_PKinematicsAnimated();
 			VERIFY( KA );
-			std::pair<LPCSTR,LPCSTR> anim_name_ = KA->LL_MotionDefName_dbg( motion_id );
+			std::pair<const char*,const char*> anim_name_ = KA->LL_MotionDefName_dbg( motion_id );
 			Msg( "step_params loaded for object :%s, visual: %s, motion: %s, anim set: %s  ", m_object->cName().c_str(), m_object->cNameVisual().c_str(), anim_name_.first, anim_name_.second );
 		}
 #endif
@@ -191,7 +191,7 @@ void CStepManager::on_animation_start(MotionID motion_id, CBlend *blend)
 		{
 			IKinematicsAnimated *KA = m_object->Visual()->dcast_PKinematicsAnimated();
 			VERIFY( KA );
-			std::pair<LPCSTR,LPCSTR> anim_name = KA->LL_MotionDefName_dbg( motion_id );
+			std::pair<const char*,const char*> anim_name = KA->LL_MotionDefName_dbg( motion_id );
 			Msg( "! no step_params found for object :%s, visual: %s, motion: %s, anim set: %s  ", m_object->cName().c_str(), m_object->cNameVisual().c_str(), anim_name.first, anim_name.second );
 		}
 #endif
@@ -273,7 +273,7 @@ void CStepManager::update(bool b_hud_view)
 			// Играть партиклы
 			if(b_play && !mtl_pair->CollideParticles.empty())	
 			{
-				LPCSTR ps_name = *mtl_pair->CollideParticles[::Random.randI(0, (u32)mtl_pair->CollideParticles.size())];
+				const char* ps_name = *mtl_pair->CollideParticles[::Random.randI(0, (u32)mtl_pair->CollideParticles.size())];
 
 				//отыграть партиклы столкновения материалов
 				xr_shared_ptr<CParticlesObject> ps = Particles::Details::Create(ps_name,TRUE);

@@ -5,7 +5,7 @@
 #include "Actor.h"
 #include "Inventory.h"
 
-void CNVG::Load(LPCSTR section)
+void CNVG::Load(const char* section)
 {
     CInventoryItemObject::Load(section);
     IPowerManager::SetSelfObject(cast_inventory_item(), H_Parent());

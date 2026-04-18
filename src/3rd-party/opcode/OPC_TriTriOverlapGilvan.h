@@ -51,7 +51,7 @@
  *	\return		true if triangles overlap
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-inline_ BOOL AABBTreeCollider::TriTriOverlap(const Point& u0, const Point& u1, const Point& u2, const Point& v0, const Point& v1, const Point& v2)
+inline_ bool AABBTreeCollider::TriTriOverlap(const Point& u0, const Point& u1, const Point& u2, const Point& v0, const Point& v1, const Point& v2)
 {
 	// Stats
 	mNbPrimPrimTests++;

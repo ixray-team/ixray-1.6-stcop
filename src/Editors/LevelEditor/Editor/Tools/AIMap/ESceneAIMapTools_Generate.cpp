@@ -19,7 +19,7 @@ const int	RCAST_Total		= (2*RCAST_Count+1)*(2*RCAST_Count+1);
 const float	RCAST_Depth		= 1.f;
 const float RCAST_VALID 	= 0.55f;
 
-BOOL ESceneAIMapTool::CreateNode(Fvector& vAt, SAINode& N, bool bIC)
+bool ESceneAIMapTool::CreateNode(Fvector& vAt, SAINode& N, bool bIC)
 {
 	// *** Query and cache polygons for ray-casting
 	Fvector	PointUp;		PointUp.set(vAt);	PointUp.y	+= RCAST_Depth;		SnapXZ	(PointUp,m_Params.fPatchSize);
@@ -309,7 +309,7 @@ SAINode* ESceneAIMapTool::FindNode(Fvector& vAt, float eps)
 	return 0;
 }
  
-BOOL ESceneAIMapTool::CanTravel(Fvector _from, Fvector _at)
+bool ESceneAIMapTool::CanTravel(Fvector _from, Fvector _at)
 {
 	_at.y		= _from.y;
 	
@@ -319,12 +319,12 @@ BOOL ESceneAIMapTool::CanTravel(Fvector _from, Fvector _at)
 
 	// 1
 	MotionSimulate(Result,_from,_at,radius,0.7f);
-	BOOL b1 = fsimilar(Result.x,_at.x,eps)&&fsimilar(Result.z,_at.z,eps)&&fsimilar(Result.y,_at.y,eps_y);
+	bool b1 = fsimilar(Result.x,_at.x,eps)&&fsimilar(Result.z,_at.z,eps)&&fsimilar(Result.y,_at.y,eps_y);
 	if (b1) return TRUE;
 
 	// 2
 	MotionSimulate(Result,_from,_at,radius,2.f);
-	BOOL b2 = fsimilar(Result.x,_at.x,eps)&&fsimilar(Result.z,_at.z,eps)&&fsimilar(Result.y,_at.y,eps_y);
+	bool b2 = fsimilar(Result.x,_at.x,eps)&&fsimilar(Result.z,_at.z,eps)&&fsimilar(Result.y,_at.y,eps_y);
 	if (b2) return TRUE;
 
 	return FALSE;
@@ -340,7 +340,7 @@ SAINode* ESceneAIMapTool::BuildNode(Fvector& vFrom, Fvector& vAt, bool bIC, bool
 	// *** set up node
 	SAINode N;
 
-	BOOL bRes		= CreateNode(vAt,N,bIC);
+	bool bRes		= CreateNode(vAt,N,bIC);
 	if (!bRes&&bIC&&bSuperIC){
 		Fvector D	= {0,1,0};
 		N.Plane.build(vAt,D);					// build plane

@@ -17,7 +17,7 @@ extern "C"
 	XRHS_API void	xrHemisphereBuild
 		(
 			int						quality,
-			BOOL					ground,
+			bool					ground,
 			float					ground_scale,
 			float					energy,
 			xrHemisphereIterator*	it,

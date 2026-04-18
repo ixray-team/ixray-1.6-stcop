@@ -31,12 +31,12 @@ void CScriptBinderObjectWrapper::reinit_static			(CScriptBinderObject *script_bi
 	script_binder_object->CScriptBinderObject::reinit	();
 }
 
-void CScriptBinderObjectWrapper::reload					(LPCSTR section)
+void CScriptBinderObjectWrapper::reload					(const char* section)
 {
 	luabind::call_member<void>		(this,"reload",section);
 }
 
-void CScriptBinderObjectWrapper::reload_static			(CScriptBinderObject *script_binder_object, LPCSTR section)
+void CScriptBinderObjectWrapper::reload_static			(CScriptBinderObject *script_binder_object, const char* section)
 {
 	script_binder_object->CScriptBinderObject::reload	(section);
 }

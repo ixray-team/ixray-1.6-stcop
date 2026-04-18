@@ -24,10 +24,10 @@ public:
 	};
 public:
 	// force flags
-	BOOL			bForceGPU_REF;
-	BOOL			bForceGPU_SW;
-	BOOL			bForceGPU_NonPure;
-	BOOL			SceneMode;
+	bool			bForceGPU_REF;
+	bool			bForceGPU_SW;
+	bool			bForceGPU_NonPure;
+	bool			SceneMode;
 
 	u32				iGPUNum;
 
@@ -40,9 +40,9 @@ public:
 
 	u32				id_device		;
 
-	BOOL			bStencil;			// stencil buffer present
-	BOOL			bScissor;			// scissor rect supported
-	BOOL			bTableFog;			//
+	bool			bStencil;			// stencil buffer present
+	bool			bScissor;			// scissor rect supported
+	bool			bTableFog;			//
 
 	void			Update(void);
 };

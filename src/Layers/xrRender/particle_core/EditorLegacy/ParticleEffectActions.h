@@ -20,7 +20,6 @@ namespace EPALegacy
 	{
 		bool		val;
 		PBool		():val(false){}
-		PBool		(BOOL _val):val(_val){}
 		PBool		(bool _val):val(_val){}
 		void 		set(bool v){val=v;}
 	};
@@ -65,9 +64,9 @@ namespace EPALegacy
 		shared_str val;
 		PString():val(""){}
 		PString(shared_str _val):val(_val){}
-		PString(LPCSTR _val):val(_val){}
+		PString(const char* _val):val(_val){}
 		void set(shared_str v){val=v;}
-		void set(LPCSTR v){val=v;}
+		void set(const char* v){val=v;}
 	};
 
 	struct PEnum
@@ -103,7 +102,7 @@ namespace EPALegacy
 		u32			clr;
 	public:
 		PDomain 	(){}
-		PDomain		(EType et, BOOL renderable, u32 color=0x00000000, PAPI::PDomainEnum type = PAPI::PDPoint,	
+		PDomain		(EType et, bool renderable, u32 color=0x00000000, PAPI::PDomainEnum type = PAPI::PDPoint,	
 														float inA0 = 0.0f,	float inA1 = 0.0f,	float inA2 = 0.0f,
 														float inA3 = 0.0f,	float inA4 = 0.0f,	float inA5 = 0.0f,
 														float inA6 = 0.0f,	float inA7 = 0.0f,	float inA8 = 0.0f	);
@@ -182,25 +181,24 @@ namespace EPALegacy
 		}
 	public:
 		virtual ~EParticleAction() = default;
-		SOrder&	appendFloat	(LPCSTR name, float v, float mn, float mx);
-		SOrder&	appendInt	(LPCSTR name, int v, int mn=-P_MAXINT, int mx=P_MAXINT);
-		SOrder&	appendVector(LPCSTR name, PVector::EType type, float vx, float vy, float vz, float mn=-P_MAXFLOAT, float mx=P_MAXFLOAT);
-		SOrder&	appendDomain(LPCSTR name, PDomain v);
-		SOrder&	appendBool	(LPCSTR name, BOOL b);
-		SOrder&	appendBool	(LPCSTR name, bool b);
-		SOrder&	appendString(LPCSTR name, const shared_str& v);
-		SOrder&	appendString(LPCSTR name, LPCSTR v);
-		SOrder& appendEnum(LPCSTR name, xr_token* variants, u8 EnumSize, u32 index);
+		SOrder&	appendFloat	(const char* name, float v, float mn, float mx);
+		SOrder&	appendInt	(const char* name, int v, int mn=-P_MAXINT, int mx=P_MAXINT);
+		SOrder&	appendVector(const char* name, PVector::EType type, float vx, float vy, float vz, float mn=-P_MAXFLOAT, float mx=P_MAXFLOAT);
+		SOrder&	appendDomain(const char* name, PDomain v);
+		SOrder&	appendBool	(const char* name, bool b);
+		SOrder&	appendString(const char* name, const shared_str& v);
+		SOrder&	appendString(const char* name, const char* v);
+		SOrder& appendEnum(const char* name, xr_token* variants, u8 EnumSize, u32 index);
 		template<XRay::Concepts::Enum T>
-		SOrder& appendEnum(LPCSTR name, xr_token* variants, T index){ return appendEnum(name, variants, sizeof(T), (u32)index); }
-		PFloat& _float(LPCSTR name){auto 	it=floats.find(name); 	R_ASSERT2(it!=floats.end(),name);	return it->second;}
-		PInt& _int(LPCSTR name){auto 	it=ints.find(name); 	R_ASSERT2(it!=ints.end(),name);		return it->second;}
-		PVector& _vector(LPCSTR name){auto 	it=vectors.find(name); 	R_ASSERT2(it!=vectors.end(),name);	return it->second;}
-		PDomain& _domain(LPCSTR name){auto 	it=domains.find(name); 	R_ASSERT2(it!=domains.end(),name);	return it->second;}
-		PBool& _bool(LPCSTR name){auto 	it=bools.find(name); 	R_ASSERT2(it!=bools.end(),name); 	return it->second;}
-		PBool* _bool_safe(LPCSTR name){auto 	it=bools.find(name); 	return (it!=bools.end())?&it->second:0;}
-		PString& _string(LPCSTR name){auto	it=strings.find(name);	R_ASSERT2(it!=strings.end(),name);	return it->second;}
-		PEnum& _enum(LPCSTR name){auto it = enums.find(name); bool found = it!=enums.end(); R_ASSERT(found,name); return it->second;}
+		SOrder& appendEnum(const char* name, xr_token* variants, T index){ return appendEnum(name, variants, sizeof(T), (u32)index); }
+		PFloat& _float(const char* name){auto 	it=floats.find(name); 	R_ASSERT2(it!=floats.end(),name);	return it->second;}
+		PInt& _int(const char* name){auto 	it=ints.find(name); 	R_ASSERT2(it!=ints.end(),name);		return it->second;}
+		PVector& _vector(const char* name){auto 	it=vectors.find(name); 	R_ASSERT2(it!=vectors.end(),name);	return it->second;}
+		PDomain& _domain(const char* name){auto 	it=domains.find(name); 	R_ASSERT2(it!=domains.end(),name);	return it->second;}
+		PBool& _bool(const char* name){auto 	it=bools.find(name); 	R_ASSERT2(it!=bools.end(),name); 	return it->second;}
+		PBool* _bool_safe(const char* name){auto 	it=bools.find(name); 	return (it!=bools.end())?&it->second:0;}
+		PString& _string(const char* name){auto	it=strings.find(name);	R_ASSERT2(it!=strings.end(),name);	return it->second;}
+		PEnum& _enum(const char* name){auto it = enums.find(name); bool found = it!=enums.end(); R_ASSERT(found,name); return it->second;}
 	public:
 	
 		virtual void	Compile		(IWriter& F)=0;
@@ -212,7 +210,7 @@ namespace EPALegacy
 	private:
 	
 		template <int count>
-		LPCSTR GenerateKey_Extended(char (&buff)[count], LPCSTR type, LPCSTR sect_ref, LPCSTR id)
+		const char* GenerateKey_Extended(char (&buff)[count], const char* type, const char* sect_ref, const char* id)
 		{
 			xr_string str_id = id;
 			xr_strlwr(str_id);

@@ -16,7 +16,7 @@ using aimers::base;
 
 base::base						(
 		CGameObject* object,
-		LPCSTR animation_id,
+		const char* animation_id,
 		bool animation_start,
 		Fvector const& target
 	) :

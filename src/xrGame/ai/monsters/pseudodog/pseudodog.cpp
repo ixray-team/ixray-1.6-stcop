@@ -48,7 +48,7 @@ void CAI_PseudoDog::reinit()
 	com_man().add_rotation_jump_data	("1","2","3","4", deg(90));
 }
 
-void CAI_PseudoDog::Load(LPCSTR section)
+void CAI_PseudoDog::Load(const char* section)
 {
 	inherited::Load	(section);
 
@@ -137,7 +137,7 @@ void CAI_PseudoDog::Load(LPCSTR section)
 }
 
 
-void CAI_PseudoDog::reload(LPCSTR section)
+void CAI_PseudoDog::reload(const char* section)
 {
 	inherited::reload			(section);
 

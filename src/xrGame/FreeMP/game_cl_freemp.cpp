@@ -222,7 +222,7 @@ bool game_cl_freemp::OnKeyboardRelease(int key)
 
 	return inherited::OnKeyboardRelease(key);
 }
-LPCSTR game_cl_freemp::GetGameScore(string32& score_dest)
+const char* game_cl_freemp::GetGameScore(string32& score_dest)
 {
 	s32 frags = local_player ? local_player->frags() : 0;
 	xr_sprintf(score_dest, "[%d]", frags);

@@ -157,7 +157,7 @@ using FvectorIt = FvectorVec::iterator;
 using LPSTRVec = xr_vector<LPSTR>;		 
 using LPSTRIt = LPSTRVec::iterator;
 
-using LPCSTRVec = xr_vector<LPCSTR>;	 
+using LPCSTRVec = xr_vector<const char*>;	 
 using LPCSTRIt = LPCSTRVec::iterator;
 
 using U16Vec = xr_vector<u16>;			 
@@ -172,10 +172,10 @@ using FloatIt = FloatVec::iterator;
 using IntVec = xr_vector<int>;			 
 using IntIt = IntVec::iterator;
 
-using BOOLVec = xr_vector<BOOL>;
+using BOOLVec = xr_vector<bool>;
 using BOOLIt = BOOLVec::iterator;
 
-using LPBOOLVec = xr_vector<BOOL*>;
+using LPBOOLVec = xr_vector<bool*>;
 using LPBOOLIt = LPBOOLVec::iterator;
 
 using FrectVec = xr_vector<Frect>;

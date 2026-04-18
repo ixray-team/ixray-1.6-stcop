@@ -30,7 +30,7 @@
 #include "Inventory.h"
 //#include "Creature.h"
 
-CMapLocation::CMapLocation(LPCSTR type, u16 object_id, bool is_user_loc)
+CMapLocation::CMapLocation(const char* type, u16 object_id, bool is_user_loc)
 {
 	m_flags.zero			();
 
@@ -79,7 +79,7 @@ CMapLocation::CMapLocation(LPCSTR type, u16 object_id, bool is_user_loc)
 
 ECompassSpotKind CMapLocation::GetCompassSpotKind() const
 {
-	LPCSTR typeStr = GetType();
+	const char* typeStr = GetType();
 	if (!typeStr || !*typeStr)
 	{
 		return ECompassSpotKind::Generic;
@@ -158,7 +158,7 @@ void CMapLocation::InitUserSpot(const shared_str& level_name, const Fvector& pos
 
 CUIXml* g_uiSpotXml = nullptr;
 
-void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
+void CMapLocation::LoadSpot(const char* type, bool bReload)
 {
 	if (!g_uiSpotXml)
 	{
@@ -181,7 +181,7 @@ void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 	xr_strcpy		(path_base,type);
 	m_compass_spot_color = 0;
 	R_ASSERT3		(g_uiSpotXml->NavigateToNode(path_base,0), "XML node not found in file map_spots.xml", path_base);
-	LPCSTR s		= g_uiSpotXml->ReadAttrib(path_base, 0, "hint", "no hint");
+	const char* s		= g_uiSpotXml->ReadAttrib(path_base, 0, "hint", "no hint");
 	SetHint			(s);
 	
 	s = g_uiSpotXml->ReadAttrib(path_base, 0, "store", nullptr);
@@ -212,7 +212,7 @@ void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 	node = g_uiSpotXml->NavigateToNode(path,0);
 	if ( node )
 	{
-		LPCSTR str = g_uiSpotXml->ReadAttrib(path, 0, "spot", "");
+		const char* str = g_uiSpotXml->ReadAttrib(path, 0, "spot", "");
 		if( xr_strlen(str) )
 		{
 			if ( !bReload )
@@ -244,7 +244,7 @@ void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 	node = g_uiSpotXml->NavigateToNode(path,0);
 	if ( node )
 	{
-		LPCSTR str = g_uiSpotXml->ReadAttrib(path, 0, "spot", "");
+		const char* str = g_uiSpotXml->ReadAttrib(path, 0, "spot", "");
 		if( xr_strlen(str) )
 		{
 			if ( !bReload )
@@ -310,7 +310,7 @@ void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 				m_compassOverrideMaxDist = g_uiSpotXml->ReadAttribFlt(compassPath, 0, "max_dist", 0.0f);
 				// max_dist: not specified or 0.0f = infinite distance, > 0.0f = distance in game meters
 				
-				LPCSTR colorName = g_uiSpotXml->ReadAttrib(compassPath, 0, "color", nullptr);
+				const char* colorName = g_uiSpotXml->ReadAttrib(compassPath, 0, "color", nullptr);
 				if (colorName && xr_strlen(colorName) > 0)
 				{
 					CUIXmlInit::ColorDefs::const_iterator colorIt = CUIXmlInit::GetColorDefs()->find(colorName);
@@ -321,7 +321,7 @@ void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 					m_compassOverrideColor = 0;
 				}
 				
-				LPCSTR vertAlignStr = g_uiSpotXml->ReadAttrib(compassPath, 0, "vert_align", nullptr);
+				const char* vertAlignStr = g_uiSpotXml->ReadAttrib(compassPath, 0, "vert_align", nullptr);
 				if (vertAlignStr && xr_strlen(vertAlignStr) > 0)
 				{
 					if (_stricmp(vertAlignStr, "top") == 0)
@@ -368,7 +368,7 @@ void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 	node = g_uiSpotXml->NavigateToNode(path, 0);
 	if ( node )
 	{
-		LPCSTR str = g_uiSpotXml->ReadAttrib(path, 0, "spot", "");
+		const char* str = g_uiSpotXml->ReadAttrib(path, 0, "spot", "");
 		if( xr_strlen(str) )
 		{
 			if ( !bReload )
@@ -827,7 +827,7 @@ Fvector2 CMapLocation::SpotSize()
 	return m_level_spot->GetWndSize();
 }
 
-LPCSTR CMapLocation::GetHint()
+const char* CMapLocation::GetHint()
 {
 	if ( !HintEnabled() ) 
 	{

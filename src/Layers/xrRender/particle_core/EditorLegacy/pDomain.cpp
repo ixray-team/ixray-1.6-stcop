@@ -5,7 +5,7 @@
 using namespace PAPI;
 using namespace EPALegacy;
 
-PDomain::PDomain(EType et, BOOL ra, u32 color, PDomainEnum t,	
+PDomain::PDomain(EType et, bool ra, u32 color, PDomainEnum t,	
 										float inA0,	float inA1,	float inA2,	
 								   		float inA3,	float inA4,	float inA5,
 										float inA6,	float inA7,	float inA8	)

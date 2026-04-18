@@ -19,7 +19,7 @@ void CSE_ALifeInventoryItem::script_register(lua_State *L)
 	module(L)[
 		class_<CSE_ALifeInventoryItem>
 			("cse_alife_inventory_item")
-//			.def(		constructor<LPCSTR>())
+//			.def(		constructor<const char*>())
 	];
 }
 

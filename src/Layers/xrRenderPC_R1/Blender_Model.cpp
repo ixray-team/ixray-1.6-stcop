@@ -96,8 +96,8 @@ void	CBlender_Model::Compile	(CBlender_Compile& C)
 
 		C.r_End();
 	} else {
-		LPCSTR	vsname		= 0;
-		LPCSTR	psname		= 0;
+		const char*	vsname		= 0;
+		const char*	psname		= 0;
 		switch (C.iElement)
 		{
 		case SE_R1_NORMAL_HQ:	

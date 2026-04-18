@@ -54,7 +54,7 @@ void CEncyclopediaArticle::Load	(shared_str  id)
 }
 
 
-void CEncyclopediaArticle::load_shared	(LPCSTR)
+void CEncyclopediaArticle::load_shared	(const char*)
 {
 	const ITEM_DATA& item_data = *id_to_index::GetById(m_ArticleId);
 
@@ -72,8 +72,8 @@ void CEncyclopediaArticle::load_shared	(LPCSTR)
 	//группа
 	data()->group = pXML->ReadAttrib(pNode, "group", "");
 	//секция ltx, откуда читать данные
-	LPCSTR ltx = pXML->Read(pNode, "ltx", 0, nullptr);
-	LPCSTR model = pXML->Read(pNode, "model", 0, nullptr);
+	const char* ltx = pXML->Read(pNode, "ltx", 0, nullptr);
+	const char* model = pXML->Read(pNode, "model", 0, nullptr);
 	data()->model.SetVisual(nullptr);
 
 	if (!model)
@@ -133,7 +133,7 @@ void CEncyclopediaArticle::load_shared	(LPCSTR)
 	else if (model)
 	{
 		bool bUseModelLtx				= pXML->ReadAttribBool(pNode, "model", 0, "use_ltx_model", true);
-		LPCSTR base_visual				= bUseModelLtx ? pSettings->r_string(model, "visual") : "";
+		const char* base_visual				= bUseModelLtx ? pSettings->r_string(model, "visual") : "";
 		IRenderVisual* iVis				= bUseModelLtx ? Render->model_Create(READ_IF_EXISTS(pSettings, r_string, model, "3d_static_visual_name", base_visual)) : Render->model_Create(model);
 		float rot_x						= deg2rad(pXML->ReadAttribFlt(pNode, "model", 0, "x", 0.f));
 		float rot_y						= deg2rad(pXML->ReadAttribFlt(pNode, "model", 0, "y", 0.f));

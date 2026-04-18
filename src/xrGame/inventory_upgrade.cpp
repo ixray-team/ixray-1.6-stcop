@@ -31,21 +31,21 @@ void Upgrade::construct(const shared_str& upgrade_id, Group& parental_group, Man
 	m_icon._set(pSettings->r_string(id(), "icon"));
 
 	// section --------------------------------------------------------------------------
-	LPCSTR section_str = pSettings->r_string(id(), "section");
+	const char* section_str = pSettings->r_string(id(), "section");
 	VERIFY2(pSettings->section_exist(section_str), make_string<const char*>("Upgrade <%s> : settings section [%s] not exist!", id_str(), section_str));
 	VERIFY2(pSettings->line_count(section_str), make_string<const char*>("Upgrade <%s> : settings section [%s] is empty !", id_str(), section_str));
 
 	m_section._set(section_str);
 
 	// precondition_functor
-	LPCSTR precondition_functor_str = pSettings->r_string(id(), "precondition_functor");
+	const char* precondition_functor_str = pSettings->r_string(id(), "precondition_functor");
 	m_preconditions.parameter = ""; //Dead Param
 	m_preconditions.parameter2 = m_section.c_str();
 	R_ASSERT2(ai().script_engine().functor(precondition_functor_str, m_preconditions.functr), make_string<const char*>("Failed to get precondition functor in section[%s], functor[%s]", id_str(), precondition_functor_str));
 	m_preconditions();
 
 	// effect_functor
-	LPCSTR effect_functor_str = pSettings->r_string(id(), "effect_functor");
+	const char* effect_functor_str = pSettings->r_string(id(), "effect_functor");
 	m_effects.parameter = ""; // Dead param
 	m_effects.parameter2 = m_section.c_str();
 	m_effects.parameter3 = 1;
@@ -53,14 +53,14 @@ void Upgrade::construct(const shared_str& upgrade_id, Group& parental_group, Man
 	m_effects();
 
 	// prereq_functor (1,2) : m_prerequisites
-	LPCSTR prereq_functor_str = pSettings->r_string(id(), "prereq_functor");
+	const char* prereq_functor_str = pSettings->r_string(id(), "prereq_functor");
 	m_prerequisites.parameter = ""; //Dead param
 	m_prerequisites.parameter2 = m_section.c_str();
 	R_ASSERT2(ai().script_engine().functor(prereq_functor_str, m_prerequisites.functr), make_string<const char*>("Failed to get prerequisites functor in section[%s], functor[%s]", id_str(), prereq_functor_str));
 	m_prerequisites();
 
 	// effects = groups
-	LPCSTR groups_str = pSettings->r_string(id(), "effects");
+	const char* groups_str = pSettings->r_string(id(), "effects");
 	if (groups_str)
 	{
 		add_dependent_groups(groups_str, manager_r);
@@ -88,7 +88,7 @@ void Upgrade::construct(const shared_str& upgrade_id, Group& parental_group, Man
 
 #ifdef DEBUG
 
-void Upgrade::log_hierarchy(LPCSTR nest)
+void Upgrade::log_hierarchy(const char* nest)
 {
 	u32 sz = (xr_strlen(nest) + 4) * sizeof(char);
 	char* nest2 = (char*)_alloca(sz);
@@ -172,7 +172,7 @@ bool Upgrade::check_scheme_index(Ivector2 const& scheme_index) const
 	return (m_scheme_index.x == scheme_index.x && m_scheme_index.y == scheme_index.y);
 }
 
-LPCSTR Upgrade::get_prerequisites()
+const char* Upgrade::get_prerequisites()
 {
 	return m_prerequisites();
 }

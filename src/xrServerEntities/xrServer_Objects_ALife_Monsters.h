@@ -20,7 +20,7 @@ class CALifeMonsterBrain;
 class CALifeHumanBrain;
 class CALifeOnlineOfflineGroupBrain;
 
-xr_string TranslateName(LPCSTR nameStr);
+xr_string TranslateName(const char* nameStr);
 
 #pragma warning(push)
 #pragma warning(disable:4005)
@@ -59,7 +59,7 @@ SERVER_ENTITY_DECLARE_BEGIN0(CSE_ALifeTraderAbstract)
 	//для работы с relation system
 	u16								object_id				() const;
 	s32		Community				() const;
-	LPCSTR							CommunityName			() const;
+	const char*							CommunityName			() const;
 	s32			Rank					();
 	s32		Reputation				();
 	void							SetRank					(s32 val);
@@ -74,7 +74,7 @@ SERVER_ENTITY_DECLARE_BEGIN0(CSE_ALifeTraderAbstract)
 	xr_vector<shared_str> m_DefaultCharacters;
 
 public:	
-									CSE_ALifeTraderAbstract		(LPCSTR caSection);
+									CSE_ALifeTraderAbstract		(const char* caSection);
 	virtual							~CSE_ALifeTraderAbstract	();
 	// we need this to prevent virtual inheritance :-(
 	virtual CSE_Abstract			*base						() = 0;
@@ -97,7 +97,7 @@ public:
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeTrader,CSE_ALifeDynamicObjectVisual,CSE_ALifeTraderAbstract)
-									CSE_ALifeTrader			(LPCSTR caSection);
+									CSE_ALifeTrader			(const char* caSection);
 	virtual							~CSE_ALifeTrader		();
 	virtual	bool					interactive				() const;
 	virtual CSE_Abstract			*init					();
@@ -128,7 +128,7 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeAnomalyZone,CSE_ALifeSpaceRestrictor)
 	u32								m_disabled_time;
 	u32								m_start_time_shift;
 
-									CSE_ALifeAnomalyZone		(LPCSTR caSection);
+									CSE_ALifeAnomalyZone		(const char* caSection);
 	virtual							~CSE_ALifeAnomalyZone	();
 SERVER_ENTITY_DECLARE_END
 
@@ -138,7 +138,7 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeAnomalousZone,CSE_ALifeAnomalyZone)
 	u32								m_artefact_position_offset;
 	u16								m_artefact_spawn_count;
 
-									CSE_ALifeAnomalousZone	(LPCSTR caSection);
+									CSE_ALifeAnomalousZone	(const char* caSection);
 	virtual							~CSE_ALifeAnomalousZone	();
 	virtual CSE_Abstract			*init					();
 	virtual CSE_Abstract			*base					();
@@ -160,14 +160,14 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeAnomalousZone,CSE_ALifeAnomalyZone)
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeTorridZone,CSE_ALifeAnomalyZone,CSE_Motion)
-									CSE_ALifeTorridZone		(LPCSTR caSection);
+									CSE_ALifeTorridZone		(const char* caSection);
 	virtual							~CSE_ALifeTorridZone	();
 	virtual CSE_Motion*		motion					();
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeZoneVisual,CSE_ALifeAnomalousZone,CSE_Visual)
 shared_str attack_animation;
-CSE_ALifeZoneVisual	(LPCSTR caSection);
+CSE_ALifeZoneVisual	(const char* caSection);
 virtual							~CSE_ALifeZoneVisual	();
 virtual CSE_Visual* 	visual					();
 SERVER_ENTITY_DECLARE_END
@@ -204,7 +204,7 @@ public:
 
 	ALife::_TIME_ID					m_game_death_time;
 									
-									CSE_ALifeCreatureAbstract(LPCSTR caSection);
+									CSE_ALifeCreatureAbstract(const char* caSection);
 	virtual							~CSE_ALifeCreatureAbstract();
 	virtual u8						g_team					();
 	virtual u8						g_squad					();
@@ -259,7 +259,7 @@ public:
 	ALife::_OBJECT_ID				m_group_id;
 
 public:
-									CSE_ALifeMonsterAbstract(LPCSTR					caSection);
+									CSE_ALifeMonsterAbstract(const char*					caSection);
 	virtual							~CSE_ALifeMonsterAbstract();
 	IC		float					g_MaxHealth				()	const									{ return m_fMaxHealthValue;	}
 	virtual CSE_Abstract			*init					();
@@ -334,7 +334,7 @@ SERVER_ENTITY_DECLARE_BEGIN3(CSE_ALifeCreatureActor,CSE_ALifeCreatureAbstract,CS
 	u8								m_BoneDataSize;
 	char							m_DeadBodyData[1024];
 	///////////////////////////////////////////
-									CSE_ALifeCreatureActor	(LPCSTR caSection);
+									CSE_ALifeCreatureActor	(const char* caSection);
 	virtual							~CSE_ALifeCreatureActor	();
 	virtual CSE_Abstract			*base					();
 	virtual const CSE_Abstract		*base					() const;
@@ -354,19 +354,19 @@ SERVER_ENTITY_DECLARE_BEGIN3(CSE_ALifeCreatureActor,CSE_ALifeCreatureAbstract,CS
 	virtual CSE_Abstract			*cast_abstract			() {return this;};
 	virtual CSE_ALifeTraderAbstract	*cast_trader_abstract	() {return this;};
 public:
-	virtual BOOL					Net_Relevant			();
+	virtual bool					Net_Relevant			();
 	virtual void SyncRead(NET_Packet& Packet);
 	virtual void SyncWrite(NET_Packet& Packet);
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeCreatureCrow,CSE_ALifeCreatureAbstract)
-									CSE_ALifeCreatureCrow	(LPCSTR caSection);
+									CSE_ALifeCreatureCrow	(const char* caSection);
 	virtual							~CSE_ALifeCreatureCrow	();
 	virtual bool					used_ai_locations		() const;
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeCreaturePhantom,CSE_ALifeCreatureAbstract)
-									CSE_ALifeCreaturePhantom	(LPCSTR caSection);
+									CSE_ALifeCreaturePhantom	(const char* caSection);
 	virtual							~CSE_ALifeCreaturePhantom	();
 	virtual bool					used_ai_locations			() const;
 SERVER_ENTITY_DECLARE_END
@@ -396,7 +396,7 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterRat,CSE_ALifeMonsterAbstract,CSE_AL
 	float							fAttackAngle;
 	float							fAttackSuccessProbability;
 
-									CSE_ALifeMonsterRat	(LPCSTR caSection);				// constructor for variable initialization
+									CSE_ALifeMonsterRat	(const char* caSection);				// constructor for variable initialization
 	virtual							~CSE_ALifeMonsterRat();
 	virtual bool					bfUseful();
 	virtual CSE_Abstract			*init				();
@@ -422,7 +422,7 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeMonsterZombie,CSE_ALifeMonsterAbstract)
 	float							fAttackDistance;
 	float							fAttackAngle;
 
-									CSE_ALifeMonsterZombie	(LPCSTR caSection);				// constructor for variable initialization
+									CSE_ALifeMonsterZombie	(const char* caSection);				// constructor for variable initialization
 	virtual							~CSE_ALifeMonsterZombie	();
 SERVER_ENTITY_DECLARE_END
 
@@ -454,11 +454,11 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterBase,CSE_ALifeMonsterAbstract,CSE_P
 	u32 m_snd_sync_sound_delay = 0;
 	u8 m_snd_sync_sound = 0;
 
-									CSE_ALifeMonsterBase	(LPCSTR caSection);				// constructor for variable initialization
+									CSE_ALifeMonsterBase	(const char* caSection);				// constructor for variable initialization
 	virtual							~CSE_ALifeMonsterBase	();
 	virtual	void					load					(NET_Packet &tNetPacket);
 	virtual CSE_Abstract			*cast_abstract			() {return this;}
-	virtual void					spawn_supplies			(LPCSTR){}
+	virtual void					spawn_supplies			(const char*){}
 	virtual void					spawn_supplies			(){}
 
 	virtual void SyncRead(NET_Packet& Packet) override;
@@ -469,11 +469,11 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterBase,CSE_ALifeMonsterAbstract,CSE_P
 	virtual	void					add_online				(const bool &update_registries);
 	virtual	void					add_offline				(const xr_vector<ALife::_OBJECT_ID> &saved_children, const bool &update_registries);
 #endif // XRGAME_EXPORTS
-	virtual BOOL Net_Relevant();
+	virtual bool Net_Relevant();
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifePsyDogPhantom,CSE_ALifeMonsterBase)
-									CSE_ALifePsyDogPhantom	(LPCSTR caSection);				// constructor for variable initialization
+									CSE_ALifePsyDogPhantom	(const char* caSection);				// constructor for variable initialization
 	virtual							~CSE_ALifePsyDogPhantom	();
 	virtual CSE_Abstract			*cast_abstract			() {return this;}
 	virtual bool					bfActive				() {return false;}
@@ -484,7 +484,7 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeHumanAbstract,CSE_ALifeTraderAbstract,CSE_
 
 
 public:
-									CSE_ALifeHumanAbstract	(LPCSTR caSection);
+									CSE_ALifeHumanAbstract	(const char* caSection);
 	virtual							~CSE_ALifeHumanAbstract	();
 	virtual CSE_Abstract			*init					();
 	virtual CSE_Abstract			*base					();
@@ -524,10 +524,10 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeHumanStalker,CSE_ALifeHumanAbstract,CSE_PH
 #ifdef XRGAME_EXPORTS
 	aistalker_state_net				m_state_mngr;
 #endif
-									CSE_ALifeHumanStalker	(LPCSTR caSection);
+									CSE_ALifeHumanStalker	(const char* caSection);
 	virtual							~CSE_ALifeHumanStalker	();
 	virtual	void					load					(NET_Packet &tNetPacket);
-	virtual BOOL					Net_Relevant() override;
+	virtual bool					Net_Relevant() override;
 	virtual CSE_Abstract			*cast_abstract			() {return this;}
 
 	virtual void SyncRead(NET_Packet& Packet);
@@ -536,7 +536,7 @@ SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN3(CSE_ALifeOnlineOfflineGroup,CSE_ALifeDynamicObject,CSE_ALifeSchedulable,CMovementManagerHolder)
 public:
-									CSE_ALifeOnlineOfflineGroup	(LPCSTR caSection);
+									CSE_ALifeOnlineOfflineGroup	(const char* caSection);
 	virtual							~CSE_ALifeOnlineOfflineGroup();
 	virtual CSE_Abstract			*base						();
 	virtual const CSE_Abstract		*base						() const;
@@ -591,7 +591,7 @@ public:
 			MEMBER*					get_squad_member(int index) const { return m_members.get_value_at(index); }
 			u32						npc_count				() const;
 			void					clear_location_types	();
-			void					add_location_type		(LPCSTR mask);	
+			void					add_location_type		(const char* mask);	
 			void					force_change_position	(Fvector position);
 	virtual void					on_failed_switch_online	();	
 #else

@@ -9,7 +9,6 @@
 	#define ICE_DONT_CHECK_COMPILER_OPTIONS
 
 	// From Windows...
-	typedef int                 BOOL;
 	#ifndef FALSE
 	#define FALSE               0
 	#endif

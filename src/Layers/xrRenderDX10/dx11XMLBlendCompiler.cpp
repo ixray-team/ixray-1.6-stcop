@@ -69,7 +69,7 @@ ShaderElement* CXMLBlend::MakeShader(const char* Texture, XML_NODE* pElement)
 	pCompiler->RS.Invalidate();
 
 	// Compile
-	LPCSTR t_0 = *pCompiler->L_textures[0] ? *pCompiler->L_textures[0] : "null";
+	const char* t_0 = *pCompiler->L_textures[0] ? *pCompiler->L_textures[0] : "null";
 
 	// Parse root attributes
 	bool bFog = Parser.ReadAttribBool(pElement, "fog", true);

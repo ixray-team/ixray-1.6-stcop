@@ -80,7 +80,7 @@ protected:
 
 	void                SetClientID(ClientID const & local_client) { net_ClientID = local_client; };
 
-	void                ParseConnectionOptions(LPCSTR options, ClientConnectionOptions& out);
+	void                ParseConnectionOptions(const char* options, ClientConnectionOptions& out);
 	virtual bool        CreateConnection(ClientConnectionOptions& opt) { return true; };
 	virtual void        DestroyConnection() {};
 
@@ -92,7 +92,7 @@ protected:
 	virtual	void        SendTo_LL(void* data, u32 size, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0) {}
 
 public:
-	bool                Connect(LPCSTR options);
+	bool                Connect(const char* options);
 	void                Disconnect();
 
 	ClientID const &	GetClientID() { return net_ClientID; };
@@ -104,7 +104,7 @@ public:
 	IC GameDescriptionData const & get_net_DescriptionData() const { return m_game_description; }
 
 	virtual bool        HasSessionName() { return false; }
-	virtual LPCSTR      net_SessionName() const { return m_game_description.map_name; }
+	virtual const char*      net_SessionName() const { return m_game_description.map_name; }
 
 	bool                net_HasBandwidth();
 
@@ -128,8 +128,8 @@ public:
 	virtual void        OnConnectRejected() {};
 
 
-	virtual	LPCSTR      GetMsgId2Name(u16 ID) { return ""; }
-	virtual void        OnSessionTerminate(LPCSTR reason) {};
+	virtual	const char*      GetMsgId2Name(u16 ID) { return ""; }
+	virtual void        OnSessionTerminate(const char* reason) {};
 
 	virtual	bool        GetServerAddress(ip_address& pAddress, DWORD* pPort) { return false; }
 

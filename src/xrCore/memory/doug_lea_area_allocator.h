@@ -4,7 +4,7 @@ class XRCORE_API doug_lea_area_allocator
 {
 	void* area_space = nullptr;
 public:
-	doug_lea_area_allocator(void* area, LPCSTR arena_id, size_t alloc_size);
+	doug_lea_area_allocator(void* area, const char* arena_id, size_t alloc_size);
 	~doug_lea_area_allocator();
 
 	void* malloc_impl(size_t size);

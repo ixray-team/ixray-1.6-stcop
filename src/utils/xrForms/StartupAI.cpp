@@ -23,13 +23,13 @@ void Help(const char* h_str);
 
 string_path INI_FILE;
 
-extern LPCSTR LEVEL_GRAPH_NAME;
+extern const char* LEVEL_GRAPH_NAME;
 
-extern LPCSTR GAME_CONFIG;
+extern const char* GAME_CONFIG;
 
 extern void clear_temp_folder();
-extern void	xrCompiler(LPCSTR name, bool draft_mode, bool pure_covers, bool skipThm, LPCSTR out_name);
-extern void	verify_level_graph(LPCSTR name, bool verbose);
+extern void	xrCompiler(const char* name, bool draft_mode, bool pure_covers, bool skipThm, const char* out_name);
+extern void	verify_level_graph(const char* name, bool verbose);
 
 #include "CompilersUI.h"
 extern CompilersMode gCompilerMode;
@@ -64,7 +64,7 @@ void StartupAI()
 		{
 			R_ASSERT3(can_use_name, "Too big level name", name);
 
-			char* output = (pstr)LEVEL_GRAPH_NAME;
+			char* output = (char*)LEVEL_GRAPH_NAME;
 
 			xrCompiler(prjName, gCompilerMode.AI_Draft, gCompilerMode.AI_PureCovers, gCompilerMode.SkipTHM, output);
 		}
@@ -126,7 +126,7 @@ SEFactory_Destroy* destroy_entity = 0;
 static HMODULE hFactory;
 
 void InitialFactory() {
-	LPCSTR g_name = "xrSE_Factory.dll";
+	const char* g_name = "xrSE_Factory.dll";
 	Msg("Loading DLL: %s", g_name);
 	hFactory = LoadLibraryA(g_name);
 

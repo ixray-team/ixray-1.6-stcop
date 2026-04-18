@@ -30,7 +30,7 @@ enum EBoostParams{
 	eBoostMaxCount,
 };
 
-static const LPCSTR ef_boosters_section_names[] =
+static const char* ef_boosters_section_names[] =
 {
 	"boost_health_restore",
 	"boost_power_restore",
@@ -106,8 +106,8 @@ public:
 							CEntityCondition		(CEntityAlive *object);
 	virtual					~CEntityCondition		();
 
-	virtual void			LoadCondition			(LPCSTR section);
-	virtual void			LoadTwoHitsDeathParams	(LPCSTR section);
+	virtual void			LoadCondition			(const char* section);
+	virtual void			LoadTwoHitsDeathParams	(const char* section);
 	virtual void			remove_links			(const CObject *object);
 
 	virtual void			save					(NET_Packet &output_packet);
@@ -230,7 +230,7 @@ protected:
 		float			m_fV_Bleeding;
 		float			m_fV_WoundIncarnation;
 		float			m_fV_HealthRestore;
-		void			load(LPCSTR sect, LPCSTR prefix);
+		void			load(const char* sect, const char* prefix);
 	};
 	
 	SConditionChangeV m_change_v;

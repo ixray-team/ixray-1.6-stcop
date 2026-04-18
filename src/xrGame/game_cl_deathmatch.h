@@ -63,26 +63,26 @@ public :
 	IBuyWnd*						pCurBuyMenu;
 
 	CUISkinSelectorWnd*				pCurSkinMenu;
-	BOOL							m_bFirstRun;
-	BOOL							m_bMenuCalledFromReady;
-	BOOL							m_bSkinSelected;
+	bool							m_bFirstRun;
+	bool							m_bMenuCalledFromReady;
+	bool							m_bSkinSelected;
 	
-	BOOL							m_bBuyEnabled;
+	bool							m_bBuyEnabled;
 	s32								m_iCurrentPlayersMoney;
 
 	u32								m_dwVoteEndTime;
 
 	virtual const shared_str		GetBaseCostSect			() {return "deathmatch_base_cost";}
-			void					CheckItem				(PIItem pItem, PRESET_ITEMS* pPresetItems,  BOOL OnlyPreset);
+			void					CheckItem				(PIItem pItem, PRESET_ITEMS* pPresetItems,  bool OnlyPreset);
 
 			void					ClearBuyMenu			();
 			IBuyWnd*				InitBuyMenu				(const shared_str& BasePriceSection, s16 Team);
 			CUISkinSelectorWnd*		InitSkinMenu			(s16 Team = -1);
-			void					SetBuyMenuItems			(PRESET_ITEMS* pItems, BOOL OnlyPreset = FALSE);
+			void					SetBuyMenuItems			(PRESET_ITEMS* pItems, bool OnlyPreset = FALSE);
 	virtual bool					CanBeReady				();
-	virtual BOOL					CanCallBuyMenu			();
-	virtual BOOL					CanCallSkinMenu			();
-	virtual	BOOL					CanCallInventoryMenu	();
+	virtual bool					CanCallBuyMenu			();
+	virtual bool					CanCallSkinMenu			();
+	virtual	bool					CanCallInventoryMenu	();
 
 	virtual bool					NeedToSendReady_Actor	(int key, game_PlayerState* ps);
 	virtual bool					NeedToSendReady_Spectator(int key, game_PlayerState* ps);
@@ -104,7 +104,7 @@ public :
 	virtual		void				ConvertTime2String		(string64* str, u32 Time);
 	virtual		int					GetPlayersPlace			(game_PlayerState* ps);
 
-	virtual		void				PlayParticleEffect		(LPCSTR EffName, Fvector& pos);
+	virtual		void				PlayParticleEffect		(const char* EffName, Fvector& pos);
 
 	virtual		void				ShowBuyMenu				();
 	virtual		void				HideBuyMenu				();
@@ -160,7 +160,7 @@ public:
 	virtual		void				UpdateMapLocations		();
 	virtual		bool				IsPlayerInTeam			(game_PlayerState* ps, ETeam team);
 	virtual		bool				LocalPlayerCanBuyItem	(shared_str const & name_sect);
-	virtual		LPCSTR				GetGameScore			(string32&	score_dest);
+	virtual		const char*				GetGameScore			(string32&	score_dest);
 	virtual		void				OnConnected				();
 
 	virtual game_cl_mp* cast_game_cl_mp() override { return this; }

@@ -14,7 +14,7 @@ IC	CScriptTokenList::CScriptTokenList	()
 	clear					();
 }
 
-IC	void CScriptTokenList::add		(LPCSTR name, int id)
+IC	void CScriptTokenList::add		(const char* name, int id)
 {
 	VERIFY					((token(name) == m_token_list.end()) && (token(id) == m_token_list.end()));
 	xr_token				temp;
@@ -27,7 +27,7 @@ IC	void CScriptTokenList::add		(LPCSTR name, int id)
 	m_token_list.push_back	(temp);
 }
 
-IC	void CScriptTokenList::remove	(LPCSTR name)
+IC	void CScriptTokenList::remove	(const char* name)
 {
 	iterator				I = token(name);
 	VERIFY					(I != m_token_list.end());
@@ -42,21 +42,21 @@ IC	void CScriptTokenList::clear	()
 	m_token_list.push_back	(temp);
 }
 
-IC	int	 CScriptTokenList::id		(LPCSTR name)
+IC	int	 CScriptTokenList::id		(const char* name)
 {
 	iterator				I = token(name);
 	VERIFY					(I != m_token_list.end());
 	return					((*I).id);
 }
 
-IC	LPCSTR CScriptTokenList::name	(int id)
+IC	const char* CScriptTokenList::name	(int id)
 {
 	iterator				I = token(id);
 	VERIFY					(I != m_token_list.end());
 	return					((*I).name);
 }
 
-IC	CScriptTokenList::iterator CScriptTokenList::token	(LPCSTR name)
+IC	CScriptTokenList::iterator CScriptTokenList::token	(const char* name)
 {
 	return					(std::find_if(m_token_list.begin(),m_token_list.end(),CTokenPredicateName(name)));
 }

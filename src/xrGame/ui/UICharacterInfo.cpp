@@ -95,7 +95,7 @@ void CUICharacterInfo::InitCharacterInfo(Fvector2 pos, Fvector2 size, CUIXml* xm
 	}
 }
 
-void CUICharacterInfo::Init_StrInfoItem( CUIXml& xml_doc, LPCSTR item_str, UIItemType type )
+void CUICharacterInfo::Init_StrInfoItem( CUIXml& xml_doc, const char* item_str, UIItemType type )
 {
 	if ( xml_doc.NavigateToNode( item_str, 0 ) )
 	{
@@ -106,7 +106,7 @@ void CUICharacterInfo::Init_StrInfoItem( CUIXml& xml_doc, LPCSTR item_str, UIIte
 	}
 }
 
-void CUICharacterInfo::Init_IconInfoItem( CUIXml& xml_doc, LPCSTR item_str, UIItemType type, bool enableStretchByDefault )
+void CUICharacterInfo::Init_IconInfoItem( CUIXml& xml_doc, const char* item_str, UIItemType type, bool enableStretchByDefault )
 {
 	if ( xml_doc.NavigateToNode( item_str, 0 ) )
 	{
@@ -123,14 +123,14 @@ void CUICharacterInfo::Init_IconInfoItem( CUIXml& xml_doc, LPCSTR item_str, UIIt
 	}
 }
 
-void CUICharacterInfo::InitCharacterInfo(Fvector2 pos, Fvector2 size, LPCSTR xml_name)
+void CUICharacterInfo::InitCharacterInfo(Fvector2 pos, Fvector2 size, const char* xml_name)
 {
 	CUIXml						uiXml;
 	uiXml.Load					(CONFIG_PATH, UI_PATH, xml_name);
 	InitCharacterInfo			(pos, size,&uiXml);
 }
 
-void CUICharacterInfo::InitCharacterInfo(CUIXml* xml_doc, LPCSTR node_str)
+void CUICharacterInfo::InitCharacterInfo(CUIXml* xml_doc, const char* node_str)
 {
 	Fvector2 pos, size;
 	XML_NODE* stored_root		= xml_doc->GetLocalRoot();
@@ -184,7 +184,7 @@ void CUICharacterInfo::InitCharacter(CInventoryOwner* invOwner)
 	}
 
 	shared_str const& comm_id = chInfo.Community().id();
-	LPCSTR   community0 = comm_id.c_str();
+	const char*   community0 = comm_id.c_str();
 	string64 community1;
 	xr_strcpy(community1, sizeof(community1), community0);
 	xr_strcat(community1, sizeof(community1), "_icon");
@@ -281,7 +281,7 @@ void CUICharacterInfo::InitCharacter(u16 id)
 	}
 
 	shared_str const& comm_id = chInfo.Community().id();
-	LPCSTR   community0 = comm_id.c_str();
+	const char*   community0 = comm_id.c_str();
 	string64 community1;
 	xr_strcpy(community1, sizeof(community1), community0);
 	xr_strcat(community1, sizeof(community1), "_icon");
@@ -335,7 +335,7 @@ void CUICharacterInfo::InitCharacter(u16 id)
 
 }
 
-void CUICharacterInfo::InitCharacter(LPCSTR player_name, LPCSTR player_icon)
+void CUICharacterInfo::InitCharacter(const char* player_name, const char* player_icon)
 {
 	ClearInfo();
 
@@ -502,7 +502,7 @@ bool CUICharacterInfo::get_actor_community( shared_str* our, shared_str* enemy )
 
 bool CUICharacterInfo::ignore_community( shared_str const& check_community )
 {
-	LPCSTR comm_section_str = "ignore_icons_communities";
+	const char* comm_section_str = "ignore_icons_communities";
 	if (!pSettings->section_exist(comm_section_str))
 		return false;
 

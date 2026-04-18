@@ -21,7 +21,7 @@ namespace ChoseEvents
         CInifile::Root& sections = pSettings->sections();
         for (CInifile::Sect& sect : sections)
         {
-            LPCSTR val;
+            const char* val;
             if (sect.line_exist("$spawn", &val))
                 items.push_back(SChooseItem(*sect.Name, ""));
         }
@@ -79,7 +79,7 @@ namespace ChoseEvents
         if (thm->Valid()) thm->FillInfo(info_items);
         xr_delete(thm);
     }
-    void   UpdateObjectTHM(LPCSTR name, IRHISurface*&ID)
+    void   UpdateObjectTHM(const char* name, IRHISurface*&ID)
     {
         EObjectThumbnail* thm = new EObjectThumbnail(name);
         if (thm->Valid())
@@ -109,7 +109,7 @@ namespace ChoseEvents
         if (thm->Valid()) thm->FillInfo(info_items);
         xr_delete(thm);
     }
-    void   UpdateGroupTHM(LPCSTR name, IRHISurface*& ID)
+    void   UpdateGroupTHM(const char* name, IRHISurface*& ID)
     {
         EGroupThumbnail* thm = new EGroupThumbnail(name);
         if (thm->Valid())
@@ -184,7 +184,7 @@ namespace ChoseEvents
         for (; it != _E; it++)			items.push_back(SChooseItem(*(*it)->cName, ""));
     }
 
-    void UpdateLAnim(LPCSTR Name, IRHISurface*& Texture)
+    void UpdateLAnim(const char* Name, IRHISurface*& Texture)
     {
         CLAItem* Item = LALib.FindItem(Name);
         if (!Item)
@@ -348,7 +348,7 @@ namespace ChoseEvents
         }
     }
 
-    void   UpdateTextureTHM(LPCSTR name, IRHISurface*&Texture)
+    void   UpdateTextureTHM(const char* name, IRHISurface*&Texture)
     {
         if (name && name[0]) {
             ETextureThumbnail* thm = new ETextureThumbnail(name);
@@ -368,7 +368,7 @@ namespace ChoseEvents
         }
     }
 
-    void   UpdateTextureTHMRaw(LPCSTR name, IRHISurface*& ID)
+    void   UpdateTextureTHMRaw(const char* name, IRHISurface*& ID)
     {
         if (name && name[0]) {
             ETextureThumbnail* thm = new ETextureThumbnail(name);
@@ -404,7 +404,7 @@ namespace ChoseEvents
 
     void   FillSkeletonAnims(ChooseItemVec& items, void* param)
     {
-        IRenderVisual* V = ::Render->model_Create((LPCSTR)param);
+        IRenderVisual* V = ::Render->model_Create((const char*)param);
         if (PKinematicsAnimated(V)) {
             u32 cnt = PKinematicsAnimated(V)->LL_MotionsSlotCount();
             for (u32 k = 0; k < cnt; k++) {
@@ -425,7 +425,7 @@ namespace ChoseEvents
 
     void   FillSkeletonBones(ChooseItemVec& items, void* param)
     {
-        IRenderVisual* V = ::Render->model_Create((LPCSTR)param);
+        IRenderVisual* V = ::Render->model_Create((const char*)param);
         if (PKinematics(V))
         {
             CKinematicsAnimated::accel* ll_bones = PKinematics(V)->LL_Bones();

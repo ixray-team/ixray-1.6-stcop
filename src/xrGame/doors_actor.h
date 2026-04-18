@@ -22,7 +22,7 @@ namespace doors
 		bool				need_update() const;
 		bool				update_doors(doors_type const& doors, float average_speed);
 		void				on_door_destroy(door& door);
-		pcstr				get_name() const;
+		const char*				get_name() const;
 		CScriptGameObject* lua_game_object() const;	//Alundaio
 #ifdef DEBUG_DRAW
 		void				render() const;

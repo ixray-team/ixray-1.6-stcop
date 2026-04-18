@@ -232,7 +232,7 @@ void CForm::CFormatVanillaChunked::GetStaticGeom(xr_vector<Fvector>& OutVertices
 #endif
 }
 
-XRCORE_API xr_unique_ptr<CForm::IFormat> CForm::Read(LPCSTR Initial, xr_string_view Filename)
+XRCORE_API xr_unique_ptr<CForm::IFormat> CForm::Read(const char* Initial, xr_string_view Filename)
 {
     ChunkHeader Header;
     xr_stack_string_path Path = Filename.data();
@@ -287,7 +287,7 @@ XRCORE_API xr_unique_ptr<CForm::IFormat> CForm::Read(xr_string_view Filename)
     return Read(nullptr, Filename);
 }
 
-XRCORE_API void CForm::Write(LPCSTR Initial, xr_string_view Filename, IFormat& Data)
+XRCORE_API void CForm::Write(const char* Initial, xr_string_view Filename, IFormat& Data)
 {
     xr_stack_string_path Path = Filename.data();
     if (Initial&&Initial[0])

@@ -38,7 +38,7 @@ SceneBuilder::~SceneBuilder()
 #define VERIFY_COMPILE(x,c1,c2) CHECK_BREAK \
 							if (!x){error_text = std::format("ERROR: {} {}", c1, c2).c_str(); break;}
 
-BOOL SceneBuilder::Compile(bool b_selected_only, bool show_message )
+bool SceneBuilder::Compile(bool b_selected_only, bool show_message )
 {
 	if(m_save_as_object)
 	{
@@ -119,7 +119,7 @@ BOOL SceneBuilder::Compile(bool b_selected_only, bool show_message )
 }
 
 
-BOOL SceneBuilder::MakeGame( )
+bool SceneBuilder::MakeGame( )
 {
 	xr_string error_text="";
 	UI->ResetBreak();
@@ -153,7 +153,7 @@ BOOL SceneBuilder::MakeGame( )
 	return error_text.empty();
 }
 
-BOOL SceneBuilder::MakePuddles()
+bool SceneBuilder::MakePuddles()
 {
     ELog.Msg(mtInformation, "Making started...");
 
@@ -209,7 +209,7 @@ BOOL SceneBuilder::MakePuddles()
 }
 
 
-BOOL SceneBuilder::MakeAIMap(bool Legacy)
+bool SceneBuilder::MakeAIMap(bool Legacy)
 {
 	xr_string error_text;
     do{
@@ -224,7 +224,7 @@ BOOL SceneBuilder::MakeAIMap(bool Legacy)
 }
 
 
-BOOL SceneBuilder::MakeDetails()
+bool SceneBuilder::MakeDetails()
 {
     UI->BeginEState(esBuildLevel);
 
@@ -244,7 +244,7 @@ BOOL SceneBuilder::MakeDetails()
 }
 
 
-BOOL SceneBuilder::MakeHOM( )
+bool SceneBuilder::MakeHOM( )
 {
 	xr_string error_text="";
 	UI->ResetBreak();
@@ -271,7 +271,7 @@ BOOL SceneBuilder::MakeHOM( )
 }
 
 
-BOOL SceneBuilder::MakeSOM( )
+bool SceneBuilder::MakeSOM( )
 {
 	xr_string error_text="";
 	UI->ResetBreak();

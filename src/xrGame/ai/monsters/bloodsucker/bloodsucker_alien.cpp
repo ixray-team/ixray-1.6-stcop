@@ -29,7 +29,7 @@ public:
 	void	Destroy			();
 
 private:
-	virtual	BOOL	Process			(SPPInfo& pp);
+	virtual	bool	Process			(SPPInfo& pp);
 };
 
 
@@ -47,7 +47,7 @@ CAlienEffectorPP::~CAlienEffectorPP()
 
 #define PERIOD_SPEED	0.3f
 
-BOOL CAlienEffectorPP::Process(SPPInfo& pp)
+bool CAlienEffectorPP::Process(SPPInfo& pp)
 {
 	inherited::Process(pp);
 
@@ -89,7 +89,7 @@ class CAlienEffector : public CEffectorCam {
 
 public:
 					CAlienEffector	(ECamEffectorType type, CAI_Bloodsucker *obj);
-	virtual BOOL	ProcessCam		(SCamEffectorInfo& info);
+	virtual bool	ProcessCam		(SCamEffectorInfo& info);
 };
 
 
@@ -119,7 +119,7 @@ CAlienEffector::CAlienEffector(ECamEffectorType type, CAI_Bloodsucker *obj) :
 	m_current_fov			= MIN_FOV;
 }
 
-BOOL CAlienEffector::ProcessCam(SCamEffectorInfo& info)
+bool CAlienEffector::ProcessCam(SCamEffectorInfo& info)
 {
 	// Инициализация
 	Fmatrix	Mdef;

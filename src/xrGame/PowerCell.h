@@ -23,7 +23,7 @@ public:
 	virtual void save(NET_Packet& output_packet) override;
 	virtual void load(IReader& input_packet) override;
 
-	virtual void Load(LPCSTR section) override;
+	virtual void Load(const char* section) override;
 	PowerCellData GetPowerCellData() { return m_power_cell_data; };
 	void SetPowerCellData(PowerCellData power_cell_data) { m_power_cell_data = power_cell_data; };
 

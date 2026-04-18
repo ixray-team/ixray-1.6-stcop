@@ -148,11 +148,11 @@ void CWalmarkManager::StartWorkflow(const shared_str& sect, bool UseCamDir)
     }
 }
 
-void CWalmarkManager::Load (LPCSTR section)
+void CWalmarkManager::Load (const char* section)
 {
 	//кровавые отметки на стенах
     string256 tmp;
-    pcstr wallmarks_name = pSettings->r_string(section, "wallmarks");
+    const char* wallmarks_name = pSettings->r_string(section, "wallmarks");
     const int cnt = _GetItemCount(wallmarks_name);
     VERIFY(cnt);
 

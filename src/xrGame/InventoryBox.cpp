@@ -100,7 +100,7 @@ void CInventoryBox::net_Destroy()
 	inherited::net_Destroy();
 }
 
-BOOL CInventoryBox::net_Spawn(CSE_Abstract* DC)
+bool CInventoryBox::net_Spawn(CSE_Abstract* DC)
 {
 	inherited::net_Spawn(DC);
 	setVisible(TRUE);
@@ -141,7 +141,7 @@ void CInventoryBox::set_can_take(bool status)
 	SE_update_status();
 }
 
-void CInventoryBox::set_closed(bool status, LPCSTR reason)
+void CInventoryBox::set_closed(bool status, const char* reason)
 {
 	m_closed = status;
 

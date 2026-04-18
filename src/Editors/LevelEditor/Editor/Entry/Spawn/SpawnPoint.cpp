@@ -84,7 +84,7 @@ void CLE_Visual::OnChangeVisual()
 			{
 				mr = ELog.DlgMsg(mtSkip, mbYes | mbNo, _msg.c_str());
 			}
-			LPCSTR _new_val = 0;
+			const char* _new_val = 0;
 			g_tmp_lock = true;
 
 			if (mr == mrSkip)
@@ -236,7 +236,7 @@ void CSpawnPoint::CLE_Motion::PlayMotion()
 	if (animator) animator->Play(true);
 }
 // SpawnData
-void CSpawnPoint::SSpawnData::Create(LPCSTR _entity_ref)
+void CSpawnPoint::SSpawnData::Create(const char* _entity_ref)
 {
 	m_Data = g_SEFactoryManager->create_entity(_entity_ref);
 	if (m_Data != nullptr)
@@ -288,7 +288,7 @@ void CSpawnPoint::SSpawnData::Destroy()
 	xr_delete(IdleParticle);
 }
 
-void CSpawnPoint::SSpawnData::get_bone_xform	(LPCSTR name, Fmatrix& xform)
+void CSpawnPoint::SSpawnData::get_bone_xform	(const char* name, Fmatrix& xform)
 {
 	xform.identity		();
 	if (name&&name[0]&&m_Visual&&m_Visual->visual){
@@ -301,7 +301,7 @@ void CSpawnPoint::SSpawnData::get_bone_xform	(LPCSTR name, Fmatrix& xform)
 	}
 }
 
-bool CSpawnPoint::SSpawnData::LoadLTX	(CInifile& ini, LPCSTR sect_name)
+bool CSpawnPoint::SSpawnData::LoadLTX	(CInifile& ini, const char* sect_name)
 {
 	xr_string temp 		= ini.r_string		(sect_name, "name");
 	Create				(temp.c_str());
@@ -323,7 +323,7 @@ bool CSpawnPoint::SSpawnData::LoadLTX	(CInifile& ini, LPCSTR sect_name)
 	return Valid();
 }
 
-void CSpawnPoint::SSpawnData::SaveLTX	(CInifile& ini, LPCSTR sect_name)
+void CSpawnPoint::SSpawnData::SaveLTX	(CInifile& ini, const char* sect_name)
 {
 	ini.w_string(sect_name, "name", m_Data->name());
 	ini.w_u8			(sect_name,"fl", m_flags.get());
@@ -516,7 +516,7 @@ void CSpawnPoint::SSpawnData::OnWallmarkDetachClick(ButtonValue* value, bool& bM
 	}
 }
 
-void CSpawnPoint::SSpawnData::FillProp(LPCSTR pref, PropItemVec& items)
+void CSpawnPoint::SSpawnData::FillProp(const char* pref, PropItemVec& items)
 {
 	xrCriticalSectionGuard guard(mLuaEnter);
 
@@ -660,7 +660,7 @@ void CSpawnPoint::SSpawnData::OnFrame()
 	// reset editor flags
 	m_Data->m_editor_flags.zero	();
 }
-CSpawnPoint::CSpawnPoint(LPVOID data, LPCSTR name):CCustomObject(data,name),m_SpawnData(this)
+CSpawnPoint::CSpawnPoint(LPVOID data, const char* name):CCustomObject(data,name),m_SpawnData(this)
 {
 	m_rpProfile			= "";
 	m_EM_Ptr			= NULL;
@@ -692,7 +692,7 @@ void CSpawnPoint::Construct(LPVOID data)
 			m_EM_HemiColor		= 0x00FFFFFF;
 			m_EM_ShapeType		= CShapeData::cfSphere;
 		}else{
-			CreateSpawnData(LPCSTR(data));
+			CreateSpawnData((const char*)(data));
 			if (!m_SpawnData.Valid())
 			{
 				SetValid(false);
@@ -791,17 +791,17 @@ void CSpawnPoint::DetachObject()
 	}
 }
 
-bool CSpawnPoint::RefCompare	(LPCSTR ref)
+bool CSpawnPoint::RefCompare	(const char* ref)
 {
 	return ref&&ref[0]&&m_SpawnData.Valid()?(strcmp(ref,m_SpawnData.m_Data->name())==0):false; 
 }
 
-LPCSTR CSpawnPoint::RefName	() 			
+const char* CSpawnPoint::RefName	() 			
 {
 	return m_SpawnData.Valid()?m_SpawnData.m_Data->name():0;
 }
 
-bool CSpawnPoint::CreateSpawnData(LPCSTR entity_ref)
+bool CSpawnPoint::CreateSpawnData(const char* entity_ref)
 {
 	R_ASSERT(entity_ref&&entity_ref[0]);
 	m_SpawnData.Destroy	();
@@ -1212,7 +1212,7 @@ bool CSpawnPoint::OnAppendObject(CCustomObject* object)
 	return true;
 }
 
-bool CSpawnPoint::LoadLTX(CInifile& ini, LPCSTR sect_name)
+bool CSpawnPoint::LoadLTX(CInifile& ini, const char* sect_name)
 {
 	xrCriticalSectionGuard guard(mLuaEnter);
 
@@ -1290,7 +1290,7 @@ bool CSpawnPoint::LoadLTX(CInifile& ini, LPCSTR sect_name)
 	return true;
 }
 
-void CSpawnPoint::SaveLTX(CInifile& ini, LPCSTR sect_name)
+void CSpawnPoint::SaveLTX(CInifile& ini, const char* sect_name)
 {
 	CCustomObject::SaveLTX(ini, sect_name);
 
@@ -1596,7 +1596,7 @@ void CSpawnPoint::OnProfileChange(PropValue* prop)
 	}
 }
 
-void CSpawnPoint::FillProp(LPCSTR pref, PropItemVec& items)
+void CSpawnPoint::FillProp(const char* pref, PropItemVec& items)
 {
 	inherited::FillProp(pref,items);
 
@@ -1680,7 +1680,7 @@ void CSpawnPoint::OnEnvModFlagChange(PropValue* prop)
 }
 
 
-bool CSpawnPoint::OnChooseQuery(LPCSTR specific)
+bool CSpawnPoint::OnChooseQuery(const char* specific)
 {
 	return (m_SpawnData.Valid()&&(0==strcmp(m_SpawnData.m_Data->name(),specific)));
 }

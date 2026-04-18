@@ -8,7 +8,7 @@ public:
 	CWeaponPistol() = default;
 	virtual	~CWeaponPistol() = default;
 
-	virtual void	Load			(LPCSTR section);
+	virtual void	Load			(const char* section);
 	virtual void	PlayAnimHide	();
 
 	virtual void	UpdateSounds	();

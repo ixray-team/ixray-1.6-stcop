@@ -67,7 +67,7 @@ bool CCF_Skeleton::_ElementCenter(u16 elem_id, Fvector& e_center)
 	return false;
 }
 
-IC bool RAYvsOBB(const Fmatrix& IM, const Fvector& b_hsize, const Fvector &S, const Fvector &D, float &R, BOOL bCull)
+IC bool RAYvsOBB(const Fmatrix& IM, const Fvector& b_hsize, const Fvector &S, const Fvector &D, float &R, bool bCull)
 {
 	Fbox E	= {-b_hsize.x, -b_hsize.y, -b_hsize.z,	b_hsize.x,	b_hsize.y,	b_hsize.z};
 	// XForm world-2-local
@@ -87,13 +87,13 @@ IC bool RAYvsOBB(const Fmatrix& IM, const Fvector& b_hsize, const Fvector &S, co
 	}
 	return false;
 }
-IC bool RAYvsSPHERE(const Fsphere& s_sphere, const Fvector &S, const Fvector &D, float &R, BOOL bCull)
+IC bool RAYvsSPHERE(const Fsphere& s_sphere, const Fvector &S, const Fvector &D, float &R, bool bCull)
 {
 	Fsphere::ERP_Result rp_res = s_sphere.intersect(S,D,R);
 	VERIFY				(R>=0.f);
 	return				((rp_res==Fsphere::rpOriginOutside)||(!bCull&&(rp_res==Fsphere::rpOriginInside)));
 }
-IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const Fvector &S, const Fvector &D, float &R, BOOL bCull)
+IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const Fvector &S, const Fvector &D, float &R, bool bCull)
 {
 	// Actual test
 	Fcylinder::ERP_Result rp_res = c_cylinder.intersect(S,D,R);
@@ -203,13 +203,13 @@ void CCF_Skeleton::BuildTopLevel()
 	VERIFY(_valid(bv_sphere));
 }
 
-BOOL CCF_Skeleton::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
+bool CCF_Skeleton::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
 {
 	PROF_EVENT("CCF_Skeleton::_RayQuery");
 
 	if (owner == nullptr || owner->getDestroy())
 	{
-		return FALSE;
+		return false;
 	}
 
 	if (dwFrameTL != Device.dwFrame)
@@ -229,7 +229,7 @@ BOOL CCF_Skeleton::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
 	Fsphere::ERP_Result res = w_bv_sphere.intersect(Q.start,Q.dir,tgt_dist,quant,aft);
 	if ((Fsphere::rpNone == res) || ((Fsphere::rpOriginOutside == res) && (aft[0] > tgt_dist)))
 	{
-		return FALSE;
+		return false;
 	}
 
 	if (dwFrame != Device.dwFrame)		BuildState	();
@@ -242,7 +242,7 @@ BOOL CCF_Skeleton::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
 		}
 	}
 	xrSRWLockGuard guard(&build_lock, true);
-	BOOL bHIT			= FALSE;
+	bool bHIT			= false;
 	for (ElementVecIt I=elements.begin(); I!=elements.end(); I++){
 		if (!I->valid())continue;
 		bool res_		= false;
@@ -260,7 +260,7 @@ BOOL CCF_Skeleton::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
 		break;
 		}
 		if (res_){
-			bHIT		= TRUE;
+			bHIT		= true;
 			R.append_result				(owner,range,I->elem_id,Q.flags&CDB::OPT_ONLYNEAREST);
 			if (Q.flags&CDB::OPT_ONLYFIRST) break;
 		}
@@ -299,7 +299,7 @@ CCF_EventBox::CCF_EventBox( CObject* O ) : ICollisionForm(O,cftShape)
 	Planes[5].build(B[1],B[0],B[6]);
 }
 
-BOOL CCF_EventBox::Contact(CObject* O)
+bool CCF_EventBox::Contact(CObject* O)
 {
 	IRenderVisual*	V		= O->Visual();
 	vis_data & vis = V->getVisData();
@@ -314,7 +314,7 @@ BOOL CCF_EventBox::Contact(CObject* O)
 	}
 	return TRUE;
 }
-BOOL CCF_EventBox::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
+bool CCF_EventBox::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
 {	return FALSE; }
 /*
 void CCF_EventBox::_BoxQuery(const Fbox& B, const Fmatrix& M, u32 flags)
@@ -327,7 +327,7 @@ void CCF_EventBox::_BoxQuery(const Fbox& B, const Fmatrix& M, u32 flags)
 CCF_Shape::CCF_Shape(CObject* _owner) : ICollisionForm(_owner,cftShape)
 {
 }
-BOOL CCF_Shape::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
+bool CCF_Shape::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
 {	
 	// Convert ray into local model space
 	Fvector dS, dD;
@@ -339,7 +339,7 @@ BOOL CCF_Shape::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
 	if (!bv_sphere.intersect(dS,dD))
 		return FALSE;
 	float& range = const_cast<float&>(Q.range);
-	BOOL bHIT = FALSE;
+	bool bHIT = FALSE;
 	for (u32 el=0; el<shapes.size(); el++)
 	{
 		shape_def& shape= shapes[el];
@@ -425,7 +425,7 @@ void CCF_Shape::ComputeBounds()
 
 	owner->SpatialComponent->spatial.type |= ESPATIAL_TYPE::SHAPE;
 
-	BOOL bCalcSphere	= (shapes.size()>1);
+	bool bCalcSphere	= (shapes.size()>1);
 	for (u32 el=0; el<shapes.size(); el++)
 	{
 		switch (shapes[el].type)
@@ -462,7 +462,7 @@ void CCF_Shape::ComputeBounds()
 	if (bCalcSphere) bv_box.getsphere(bv_sphere.P,bv_sphere.R);
 }
 
-BOOL CCF_Shape::Contact		( CObject* O )
+bool CCF_Shape::Contact		( CObject* O )
 {
 	// Build object-sphere in World-Space
 	Fsphere			S;

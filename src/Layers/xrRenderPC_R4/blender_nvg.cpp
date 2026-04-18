@@ -11,7 +11,7 @@ void CBlender_nvg::Compile(CBlender_Compile& C)
     switch (C.iElement)
     {
     case 0:
-		C.r_Pass("stub_fullscreen_triangle", "nvg_render", FALSE, FALSE, FALSE);
+		C.r_Pass("stub_fullscreen_triangle", "nvg_render", false, false, false);
 		C.r_dx10Texture("s_image", r2_RT_backbuffer_final);
 		C.r_dx10Texture("s_tonemap", r2_RT_luminance_cur);
         C.r_dx10Texture("s_position", r2_RT_upscaled_depth);

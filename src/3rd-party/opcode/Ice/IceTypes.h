@@ -87,11 +87,6 @@
 #endif
 	#define	INVALID_NUMBER		0xDEADBEEF	//!< Standard junk value
 
-	// Define BOOL if needed
-	#ifndef BOOL
-	typedef int	BOOL;						//!< Another boolean type.
-	#endif
-
 	//! Union of a float and a sdword
 	typedef union {
 		float	f;							//!< The float

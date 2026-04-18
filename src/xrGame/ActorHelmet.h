@@ -9,7 +9,7 @@ class CHelmet :
 	using inherited = CArmorBase;
 
 public:
-	virtual void		Load					(LPCSTR section) override;
+	virtual void		Load					(const char* section) override;
 
 	virtual void		OnMoveToSlot			(const SInvItemPlace& previous_place) override;
 	virtual void		OnMoveToRuck			(const SInvItemPlace& previous_place) override;
@@ -19,5 +19,5 @@ public:
 	float m_fShowNearestEnemiesDistance = 0.0f;
 
 protected:
-	virtual bool install_upgrade_impl			(LPCSTR section, bool test) override;
+	virtual bool install_upgrade_impl			(const char* section, bool test) override;
 };

@@ -6,7 +6,7 @@
 #	include "xrServer_Objects_ALife_Items.h"
 #endif
 
-CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpawnWithClientsMainEntityAsParent, CSE_Abstract* tpExistedEntity)
+CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, bool bSpawnWithClientsMainEntityAsParent, CSE_Abstract* tpExistedEntity)
 {
 	// create server entity
 	xrClientData* CL	= ID_to_client	(sender);

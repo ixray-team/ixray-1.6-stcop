@@ -14,19 +14,19 @@ public:
 	virtual void	updateGamma() ;
 
 	//	Destroy
-	virtual void	OnDeviceDestroy(BOOL bKeepTextures) ;
+	virtual void	OnDeviceDestroy(bool bKeepTextures) ;
 	virtual void	ValidateHW() ;
 	virtual void	DestroyHW() ;
 	//	Init
 	virtual void	SetupStates() ;
 	virtual void	OnDeviceCreate(LPCSTR shName) ;
-	virtual void	SetupGPU(BOOL bForceGPU_SW, BOOL bForceGPU_NonPure, BOOL bForceGPU_REF) ;
+	virtual void	SetupGPU(bool bForceGPU_SW, bool bForceGPU_NonPure, bool bForceGPU_REF) ;
 	//	Overdraw
 	virtual void	overdrawBegin() ;
 	virtual void	overdrawEnd() ;
 
 	//	Resources control
-	virtual void	DeferredLoad(BOOL E) ;
+	virtual void	DeferredLoad(bool E) ;
 	virtual void	ResourcesDeferredUpload() ;
 	virtual void	ResourcesDestroyNecessaryTextures() ;
 	virtual void	ResourcesStoreNecessaryTextures() ;
@@ -38,7 +38,7 @@ public:
 
 	//	Device state
 	virtual DeviceState GetDeviceState() ;
-	virtual BOOL	GetForceGPU_REF() ;
+	virtual bool	GetForceGPU_REF() ;
 	virtual u32		GetCacheStatPolys() ;
 	virtual void	Begin() ;
 	virtual void	Clear() ;

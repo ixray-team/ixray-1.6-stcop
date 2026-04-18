@@ -24,7 +24,7 @@ public:
 	IC						CAttachmentOwner	();
 	virtual					~CAttachmentOwner	();
 	virtual	void			reinit				();
-	virtual	void			reload				(LPCSTR section);
+	virtual	void			reload				(const char* section);
 	virtual void			net_Destroy			();
 	virtual void			renderable_Render	();
 	virtual	void			attach				(CInventoryItem *inventory_item);

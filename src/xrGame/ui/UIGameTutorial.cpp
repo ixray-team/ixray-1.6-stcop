@@ -17,7 +17,7 @@
 #include "../../xrEngine/string_table.h"
 #include "UIRadialMenuWeapon.h"
 
-extern ENGINE_API BOOL bShowPauseString;
+extern ENGINE_API bool bShowPauseString;
 
 CUISequenceItem::CUISequenceItem(CUISequencer* owner) :
 	m_owner(owner) 
@@ -54,7 +54,7 @@ void CUISequenceItem::Load(CUIXml* xml, int idx)
 	
 	for(int i=0; i<disabled_cnt; ++i)
 	{
-		LPCSTR str					= xml->Read			("disabled_key", i, nullptr);
+		const char* str					= xml->Read			("disabled_key", i, nullptr);
 		m_disabled_actions.push_back( action_name_to_id(str) );
 	}
 
@@ -112,7 +112,7 @@ CUISequencer::CUISequencer()
 	m_name = "invalid";
 }
 
-void CUISequencer::Start(LPCSTR tutor_name)
+void CUISequencer::Start(const char* tutor_name)
 {
 	VERIFY						(m_sequencer_items.size()==0);
 	Device.seqFrame.Add			(this, REG_PRIORITY_LOW-10000);
@@ -147,12 +147,12 @@ void CUISequencer::Start(LPCSTR tutor_name)
 	XML_NODE* bk				= uiXml.GetLocalRoot();
 	uiXml.SetLocalRoot			(uiXml.NavigateToNode("global_wnd", 0));
 	{	
-		LPCSTR str				= uiXml.Read		("pause_state", 0, "ignore");
+		const char* str				= uiXml.Read		("pause_state", 0, "ignore");
 		m_flags.set				(etsNeedPauseOn,	0==_stricmp(str, "on"));
 		m_flags.set				(etsNeedPauseOff,	0==_stricmp(str, "off"));
 	}
 
-	LPCSTR snd_name				= uiXml.Read("sound", 0, "");
+	const char* snd_name				= uiXml.Read("sound", 0, "");
 	if (snd_name && snd_name[0])
 	{
 		m_global_sound.create(snd_name, st_Effect, sg_Undefined);
@@ -164,7 +164,7 @@ void CUISequencer::Start(LPCSTR tutor_name)
 
 	for(int i=0;i<items_count;++i)
 	{
-		LPCSTR	_tp				= uiXml.ReadAttrib("item",i,"type","");
+		const char*	_tp				= uiXml.ReadAttrib("item",i,"type","");
 		bool bVideo				= 0==_stricmp(_tp,"video");
 		CUISequenceItem* pItem	= 0;
 		if (bVideo)	pItem		= new CUISequenceVideoItem(this);

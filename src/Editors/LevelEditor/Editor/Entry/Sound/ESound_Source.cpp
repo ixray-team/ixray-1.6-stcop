@@ -20,7 +20,7 @@
 #define SOUND_CHUNK_GAME_PARAMS			0x1008
 
 
-ESoundSource::ESoundSource(LPVOID data, LPCSTR name)
+ESoundSource::ESoundSource(LPVOID data, const char* name)
 	:CCustomObject(data,name)
 {
 	Construct(data);
@@ -104,7 +104,7 @@ bool ESoundSource::RayPick(float& distance, const Fvector& start, const Fvector&
 	return false;
 }
 
-bool ESoundSource::LoadLTX(CInifile& ini, LPCSTR sect_name)
+bool ESoundSource::LoadLTX(CInifile& ini, const char* sect_name)
 {
 	u32 version =  ini.r_u32(sect_name, "version");
 
@@ -146,7 +146,7 @@ bool ESoundSource::LoadLTX(CInifile& ini, LPCSTR sect_name)
 	return true;
 }
 
-void ESoundSource::SaveLTX(CInifile& ini, LPCSTR sect_name)
+void ESoundSource::SaveLTX(CInifile& ini, const char* sect_name)
 {
 	inherited::SaveLTX	(ini, sect_name);
 
@@ -277,7 +277,7 @@ void ESoundSource::SaveStream(IWriter& F)
 
 void ESoundSource::OnChangeWAV	(PropValue* prop)
 {
-	BOOL bPlay 		= m_Source.is_playing();
+	bool bPlay 		= m_Source.is_playing();
 	ResetSource		();
 	if (bPlay) 		Play();
 }
@@ -299,7 +299,7 @@ void ESoundSource::OnControlClick(ButtonValue* V, bool& bModif, bool& bSafe)
 	bModif = false;
 }
 
-void ESoundSource::FillProp(LPCSTR pref, PropItemVec& values)
+void ESoundSource::FillProp(const char* pref, PropItemVec& values)
 {
 	inherited::FillProp			(pref,values);
 	ButtonValue* B;
@@ -425,7 +425,7 @@ void ESoundSource::ResetSource()
 	m_Source.set_params(&m_Params);
 }
 
-void ESoundSource::SetSourceWAV(LPCSTR fname)
+void ESoundSource::SetSourceWAV(const char* fname)
 {
 	m_WAVName		= fname;
 	ResetSource		();

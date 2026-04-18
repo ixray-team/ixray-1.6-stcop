@@ -38,14 +38,14 @@ void CObjectAnimator::SetActiveMotion(COMotion* mot)
 	m_XFORM.identity	();
 }
 
-void CObjectAnimator::LoadMotions(LPCSTR fname)
+void CObjectAnimator::LoadMotions(const char* fname)
 {
 	string_path			full_path;
 	if (!FS.exist( full_path, "$level$", fname ))
 		if (!FS.exist( full_path, "$game_anims$", fname ))
 			Debug.fatal(DEBUG_INFO,"Can't find motion file '%s'.",fname);
             
-    LPCSTR  ext			= strext(full_path);
+    const char*  ext			= strext(full_path);
     if (ext){
 		Clear			();
     	if (0==xr_strcmp(ext,".anm")){
@@ -85,7 +85,7 @@ void CObjectAnimator::Update(float dt)
 	}
 }
 
-COMotion* CObjectAnimator::Play(bool loop, LPCSTR name)
+COMotion* CObjectAnimator::Play(bool loop, const char* name)
 {
 	if (name&&name[0]){
 		MotionIt it = std::lower_bound(m_Motions.begin(),m_Motions.end(),name,motion_find_pred);

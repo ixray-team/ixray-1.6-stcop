@@ -105,7 +105,7 @@ private:
 	IPHCapture  *		m_capture;
 
 	float				m_fGroundDelayFactor;
-	BOOL				bIsAffectedByGravity;
+	bool				bIsAffectedByGravity;
 	//------------------------------
 	CObject*			pObject;
 	EEnvironment		eOldEnvironment;
@@ -146,9 +146,9 @@ private:
 public:
 	Fvector				vExternalImpulse;
 	bool				bExernalImpulse;
-	BOOL				bSleep;
+	bool				bSleep;
 	bool				bNonInteractiveMode;
-	BOOL				gcontact_Was;			// Приземление
+	bool				gcontact_Was;			// Приземление
 	float				gcontact_Power;			// Насколько сильно ударились
 	float				gcontact_HealthLost;	// Скоко здоровья потеряли
 
@@ -157,7 +157,7 @@ public:
 	void				DeleteCharacterObject			()														;
 	void				CreateCharacter					()														;		
 	void				DestroyCharacter				()														;
-	void				Load							(LPCSTR section)										;
+	void				Load							(const char* section)										;
 #ifdef DEBUG_DRAW
 	void				dbg_Draw						();
 #endif
@@ -193,7 +193,7 @@ public:
 	void				SetNonInteractive			(bool v);
 	void				CalcMaximumVelocity			(Fvector& /**dest/**/, Fvector& /**accel/**/, float /**friction/**/){};
 	void				CalcMaximumVelocity			(float& /**dest/**/, float /**accel/**/, float /**friction/**/){};
-	void				ActivateBox					(DWORD id, BOOL Check = false);
+	void				ActivateBox					(DWORD id, bool Check = false);
 	bool				ActivateBoxDynamic			(DWORD id,int num_it=9,int num_steps=5,float resolve_depth=0.01f);
 	void				InterpolateBox				(DWORD id,float k);
 	EEnvironment		Environment					( )			{ return eEnvironment; }
@@ -202,8 +202,8 @@ public:
 	DWORD				BoxID						( )const	{ return m_dwCurBox;}
 	const Fbox*			Boxes						( )			{return boxes;}
 	float				FootRadius					( )			;
-	void				CollisionEnable 			(BOOL enable);
-	void				CollisionDynamicEnable(BOOL enable);
+	void				CollisionEnable 			(bool enable);
+	void				CollisionDynamicEnable(bool enable);
 	void				SetBox						(DWORD id, const Fbox &BB)	{ boxes[id].set(BB); aabb.set(BB); }
 	void				SetMass						(float M);	
 
@@ -258,8 +258,8 @@ public:
 												);
 	void				CorrectPathDir			(const Fvector &real_path_dir,const xr_vector<DetailPathManager::STravelPathPoint> & path,int index,Fvector &corrected_path_dir);
 
-	//	void				Move					(Fvector& Dest, Fvector& Motion, BOOL bDynamic=FALSE){};
-	void				SetApplyGravity			(BOOL flag)																;
+	//	void				Move					(Fvector& Dest, Fvector& Motion, bool bDynamic=FALSE){};
+	void				SetApplyGravity			(bool flag)																;
 	void				GetDeathPosition		(Fvector& pos)															;
 	void				SetEnvironment			( int enviroment,int old_enviroment);
 	void				SetFrictionFactor		(float f);
@@ -271,7 +271,7 @@ public:
 	void				EnableCharacter			()																		;
 	void				SetOjectContactCallback (ObjectContactCallbackFun* callback)									;
 	void				SetFootCallBack			(ObjectContactCallbackFun* callback)									;
-	static BOOL			BorderTraceCallback(collide::rq_result& result, LPVOID params);
+	static bool			BorderTraceCallback(collide::rq_result& result, LPVOID params);
 	ObjectContactCallbackFun* ObjectContactCallback()			;
 	u16					ContactBone				()				;
 	const ICollisionDamageInfo	*CollisionDamageInfo ()const	;

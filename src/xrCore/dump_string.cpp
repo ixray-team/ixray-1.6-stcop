@@ -22,17 +22,17 @@ std::string get_string( bool v )
 	return v ? std::string( "true" ) : std::string( "false" );
 }
 
-std::string dump_string( LPCSTR name, const Fvector &v )
+std::string dump_string( const char* name, const Fvector &v )
 {
 	return make_string<std::string>( "%s : (%f,%f,%f) ", name, v.x, v.y, v.z );
 }
 
-void dump( LPCSTR name, const Fvector &v )
+void dump( const char* name, const Fvector &v )
 {
 	Msg( "%s", dump_string( name, v ).c_str() );
 }
 
-std::string dump_string(LPCSTR name, const Fmatrix& form)
+std::string dump_string(const char* name, const Fmatrix& form)
 {
 	return (
 		make_string<std::string>("%s, _14_=%f \n", dump_string(make_string<const char*>("%s.i, ", name), form.i).c_str(), form._14_),
@@ -42,7 +42,7 @@ std::string dump_string(LPCSTR name, const Fmatrix& form)
 		);
 }
 
-void dump(LPCSTR name, const Fmatrix& form)
+void dump(const char* name, const Fmatrix& form)
 {
 	Msg("%s", dump_string(name, form).c_str());
 }

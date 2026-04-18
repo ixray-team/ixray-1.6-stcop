@@ -40,7 +40,7 @@ private:
 
 	void _SetupStates();
 	void _Create(IReader* F);
-	void _Destroy(BOOL bKeepTextures);
+	void _Destroy(bool bKeepTextures);
 
 public:
 	ref_shader m_WireShader;
@@ -81,7 +81,7 @@ public:
 
 	void Initialize(void);
 	void ShutDown(void);
-	void Reset(IReader* F, BOOL bKeepTextures);
+	void Reset(IReader* F, bool bKeepTextures);
 
 	void MaximizedWindow();
 	void ResoreWindow(bool moving);
@@ -122,7 +122,7 @@ public:
 	}
 
 	// light&material
-	IC void LightEnable(u32 dwLightIndex, BOOL bEnable)
+	IC void LightEnable(u32 dwLightIndex, bool bEnable)
 	{
 		CHK_DX(REDevice->LightEnable(dwLightIndex, bEnable));
 	}
@@ -152,7 +152,7 @@ public:
 	void InitTimer();
 
 	// Mode control
-	virtual void Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason) override
+	virtual void Pause(bool bOn, bool bTimer, bool bSound, const char* reason) override
 	{
 	}
 

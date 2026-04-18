@@ -160,7 +160,7 @@ void Manager::load_all_inventory()
 
 void Manager::load_all_properties()
 {
-	LPCSTR properties_section = "upgrades_properties";
+	const char* properties_section = "upgrades_properties";
 	if (!pSettings->section_exist(properties_section))
 		return;
 
@@ -334,7 +334,7 @@ void Manager::init_install(CInventoryItem& item)
 	if (pSettings->line_exist(item.m_section_id, "installed_upgrades"))
 	{
 		// installed_upgrades by default
-		LPCSTR installed_upgrades_str = pSettings->r_string(item.m_section_id, "installed_upgrades");
+		const char* installed_upgrades_str = pSettings->r_string(item.m_section_id, "installed_upgrades");
 		if (installed_upgrades_str)
 		{
 			string512 temp = {};
@@ -349,7 +349,7 @@ void Manager::init_install(CInventoryItem& item)
 	}
 }
 
-LPCSTR Manager::get_item_scheme(CInventoryItem& item)
+const char* Manager::get_item_scheme(CInventoryItem& item)
 {
 	Root* root_p = get_root(item.m_section_id);
 	if (!root_p)
@@ -360,7 +360,7 @@ LPCSTR Manager::get_item_scheme(CInventoryItem& item)
 	return root_p->scheme();
 }
 
-LPCSTR Manager::get_upgrade_by_index(CInventoryItem& item, Ivector2 const& index)
+const char* Manager::get_upgrade_by_index(CInventoryItem& item, Ivector2 const& index)
 {
 	Upgrade* upgrade = nullptr;
 
@@ -380,7 +380,7 @@ LPCSTR Manager::get_upgrade_by_index(CInventoryItem& item, Ivector2 const& index
 
 // -------------------------------------------------------------------------------------------------
 
-bool Manager::compute_range(LPCSTR parameter, float& low, float& high)
+bool Manager::compute_range(const char* parameter, float& low, float& high)
 {
 	low = flt_max;
 	high = flt_min;
@@ -398,7 +398,7 @@ bool Manager::compute_range(LPCSTR parameter, float& low, float& high)
 	return (low != flt_max) && (high != flt_min);
 }
 
-void Manager::compute_range_section(LPCSTR section, LPCSTR parameter, float& low, float& high)
+void Manager::compute_range_section(const char* section, const char* parameter, float& low, float& high)
 {
 	if (!pSettings->line_exist(section, parameter) || !*pSettings->r_string(section, parameter))
 	{

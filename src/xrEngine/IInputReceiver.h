@@ -10,8 +10,8 @@ public:
 	void			IR_GetMousePosReal				(Ivector2 &p);
 	void			IR_GetMousePosIndependent		(Fvector2 &f);
 	void			IR_GetMousePosIndependentCrop	(Fvector2 &f);
-	BOOL			IR_GetKeyState					(int dik);
-	BOOL			IR_GetBtnState					(int btn);
+	bool			IR_GetKeyState					(int dik);
+	bool			IR_GetBtnState					(int btn);
 	void			IR_Capture						(void);
 	void			IR_Release						(void);
 

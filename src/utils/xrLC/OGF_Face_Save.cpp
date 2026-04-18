@@ -7,7 +7,7 @@
 
 using namespace std;
 
-extern u16	RegisterShader		(LPCSTR T);
+extern u16	RegisterShader		(const char* T);
 extern void	geom_batch_average	(u32 verts, u32 faces);
 
 u32						u8_vec4			(Fvector N, u8 A=0)
@@ -316,7 +316,7 @@ void	write_ogf_swidata( IWriter &fs, const FSlideWindowItem& swi )
 	fs.close_chunk		();
 } 
 
-void	write_ogf_fastpath( IWriter &fs, const OGF& ogf, BOOL progresive )
+void	write_ogf_fastpath( IWriter &fs, const OGF& ogf, bool progresive )
 {
 	fs.open_chunk			( OGF_FASTPATH		);
 	{
@@ -330,7 +330,7 @@ void	write_ogf_fastpath( IWriter &fs, const OGF& ogf, BOOL progresive )
 	fs.close_chunk			();
 }
 
-void	OGF::Save_Normal_PM		(IWriter &fs, ogf_header& H, BOOL bVertexColored)
+void	OGF::Save_Normal_PM		(IWriter &fs, ogf_header& H, bool bVertexColored)
 {
 //	clMsg			("- saving: normal or clod");
 

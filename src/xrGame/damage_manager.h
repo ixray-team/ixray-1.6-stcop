@@ -14,8 +14,8 @@ struct TDamageManager
 	float m_default_wound_factor;
 	CObject* m_object;
 
-	void reload(LPCSTR section, CInifile const* ini);
-	void reload(LPCSTR section, LPCSTR sub_section, CInifile const* ini);
+	void reload(const char* section, CInifile const* ini);
+	void reload(const char* section, const char* sub_section, CInifile const* ini);
 
 	void HitScale(const int bone_num, float& hit_scale, float& wound_scale, bool aim_bullet = false);
 	void SetupOwner(IECSOwner* Owner);
@@ -28,6 +28,6 @@ private:
 		ECS_PTR(m_object, "Object")
 	ECS_END
 
-	void load_section(LPCSTR section, CInifile const* ini);
-	void init_bones(LPCSTR section, CInifile const* ini);
+	void load_section(const char* section, CInifile const* ini);
+	void init_bones(const char* section, CInifile const* ini);
 };

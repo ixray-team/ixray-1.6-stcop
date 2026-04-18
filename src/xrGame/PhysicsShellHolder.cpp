@@ -94,11 +94,11 @@ enum EEnableState
 };
 
 static u8 st_enable_state=(u8)stNotDefitnite;
-BOOL CPhysicsShellHolder::net_Spawn				(CSE_Abstract*	DC)
+bool CPhysicsShellHolder::net_Spawn				(CSE_Abstract*	DC)
 {
 	st_enable_state=(u8)stNotDefitnite;
 	b_sheduled									=	true;
-	BOOL ret=inherited::net_Spawn				(DC);//load
+	bool ret=inherited::net_Spawn				(DC);//load
 		//create_physic_shell			();
 	if(PPhysicsShell()&&PPhysicsShell()->isFullActive())
 	{
@@ -280,7 +280,7 @@ void CPhysicsShellHolder::PHSetMaterial(u16 m)
 		m_pPhysicsShell->SetMaterial(m);
 }
 
-void CPhysicsShellHolder::PHSetMaterial(LPCSTR m)
+void CPhysicsShellHolder::PHSetMaterial(const char* m)
 {
 	if(m_pPhysicsShell)
 		m_pPhysicsShell->SetMaterial(m);
@@ -491,15 +491,15 @@ Fvector& CPhysicsShellHolder::ObjectPosition()
 {
 	return Position();
 }
-LPCSTR CPhysicsShellHolder::ObjectName()const
+const char* CPhysicsShellHolder::ObjectName()const
 {
 	return cName().c_str();
 }
-LPCSTR CPhysicsShellHolder::ObjectNameVisual()const
+const char* CPhysicsShellHolder::ObjectNameVisual()const
 {
 	return cNameVisual().c_str();
 }
-LPCSTR CPhysicsShellHolder::ObjectNameSect()const
+const char* CPhysicsShellHolder::ObjectNameSect()const
 {
 	return cNameSect().c_str();
 }

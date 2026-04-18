@@ -29,11 +29,11 @@ struct SOGFVert{
   		N.set	(n);
         UV.set	(uv);
 	}
-	BOOL	similar_pos(SOGFVert& V)
+	bool	similar_pos(SOGFVert& V)
 	{
         return P.similar(V.P,EPS_L);
     }
-	BOOL	similar(SOGFVert& V)
+	bool	similar(SOGFVert& V)
 	{
         if (!P.similar	(V.P,EPS_L))	return FALSE;
         if (!UV.similar	(V.UV,EPS_S))	return FALSE;
@@ -175,5 +175,5 @@ public:
 			~CExportObjectOGF	();
     bool    Export				(IWriter& F, bool gen_tb=true, CEditableMesh* mesh=NULL);
     bool    ExportAsSimple		(IWriter& F);
-    bool	ExportAsWavefrontOBJ(IWriter& F, LPCSTR fn);
+    bool	ExportAsWavefrontOBJ(IWriter& F, const char* fn);
 };

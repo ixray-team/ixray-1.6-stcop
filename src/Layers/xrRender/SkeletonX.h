@@ -85,7 +85,7 @@ ICF void get_pos_bones(T_vertex& vert, Fvector& p, CBoneInstance* BI)
 }
 
 template<typename T_vertex>
-ICF BOOL pick_bone(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces, ref_smem<T_vertex> vertices, CBoneInstance* BI)
+ICF bool pick_bone(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces, ref_smem<T_vertex> vertices, CBoneInstance* BI)
 {
 	for (u16 face_id : faces)
 	{
@@ -224,7 +224,7 @@ protected:
 	void _CollectBoneFaces();
 	void _DuplicateIndices(IReader* data);
 public:
-	BOOL has_visible_bones();
+	bool has_visible_bones();
 	CSkeletonX(bool val) : progressive_mesh(val) {}
 
 	virtual void Copy(dxRender_Visual* V);
@@ -236,7 +236,7 @@ public:
 	void SetParent(CKinematics* K) { Parent = K; }
 	void AfterLoad(CKinematics* parent, u16 child_idx);
 
-	ICF BOOL PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id)
+	ICF bool PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id)
 	{
 		VERIFY(Parent && (ChildIDX != u16(-1)));
 		CBoneData& BD = Parent->LL_GetData(bone_id);

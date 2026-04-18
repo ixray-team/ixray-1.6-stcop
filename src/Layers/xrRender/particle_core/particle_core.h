@@ -16,7 +16,7 @@ namespace PAPI
 		float 		radius1Sqr;		// Used for fast Within test of spheres,
 		float 		radius2Sqr;		// and for mag. of u and v vectors for plane.
 
-		BOOL 		Within			(const Fvector &) const;
+		bool 		Within			(const Fvector &) const;
 		void 		Generate		(Fvector &) const;
 		// transformation
 		void 		transform		(const pDomain& domain, const Fmatrix& m);

@@ -21,7 +21,7 @@ ObjectList*	ESceneCustomOTool::GetSnapList()
 }
 
 
-BOOL ESceneCustomOTool::_AppendObject(CCustomObject* object)
+bool ESceneCustomOTool::_AppendObject(CCustomObject* object)
 {
     m_Objects.push_back(object);
     object->FParentTools = this;
@@ -29,7 +29,7 @@ BOOL ESceneCustomOTool::_AppendObject(CCustomObject* object)
 }
 
 
-BOOL ESceneCustomOTool::_RemoveObject(CCustomObject* object)
+bool ESceneCustomOTool::_RemoveObject(CCustomObject* object)
 {
     object->OnSceneRemove();
 	m_Objects.remove(object);
@@ -48,7 +48,7 @@ void ESceneCustomOTool::Clear(bool bInternal)
     m_Objects.clear();
 }
 
-BOOL  ESceneCustomOTool::AllowMouseStart()
+bool  ESceneCustomOTool::AllowMouseStart()
 {
 	for(ObjectIt it=m_Objects.begin(); it!=m_Objects.end(); ++it)
     {
@@ -223,7 +223,7 @@ void ESceneCustomOTool::ShowObjects(bool flag, bool bAllowSelectionFlag, bool bS
     UI->RedrawScene();
 }
 
-BOOL ESceneCustomOTool::RayPick(CCustomObject*& object, float& distance, const Fvector& start, const Fvector& direction, SRayPickInfo* pinf)
+bool ESceneCustomOTool::RayPick(CCustomObject*& object, float& distance, const Fvector& start, const Fvector& direction, SRayPickInfo* pinf)
 {
     object = 0;
 
@@ -241,7 +241,7 @@ BOOL ESceneCustomOTool::RayPick(CCustomObject*& object, float& distance, const F
 	return !!object;
 }
 
-BOOL ESceneCustomOTool::FrustumPick(ObjectList& lst, const CFrustum& frustum)
+bool ESceneCustomOTool::FrustumPick(ObjectList& lst, const CFrustum& frustum)
 {
     for(ObjectIt _F = m_Objects.begin();_F!=m_Objects.end();_F++)
         if((*_F)->Visible()&&(*_F)->FrustumPick(frustum))
@@ -249,7 +249,7 @@ BOOL ESceneCustomOTool::FrustumPick(ObjectList& lst, const CFrustum& frustum)
 	return !lst.empty();
 }
 
-BOOL ESceneCustomOTool::SpherePick(ObjectList& lst, const Fvector& center, float radius)
+bool ESceneCustomOTool::SpherePick(ObjectList& lst, const Fvector& center, float radius)
 {
     for(ObjectIt _F = m_Objects.begin();_F!=m_Objects.end();_F++)
         if((*_F)->Visible()&&(*_F)->SpherePick(center, radius))
@@ -257,7 +257,7 @@ BOOL ESceneCustomOTool::SpherePick(ObjectList& lst, const Fvector& center, float
 	return !lst.empty();
 }
 
-int ESceneCustomOTool::RaySelect(int flag, float& distance, const Fvector& start, const Fvector& direction, BOOL bDistanceOnly)
+int ESceneCustomOTool::RaySelect(int flag, float& distance, const Fvector& start, const Fvector& direction, bool bDistanceOnly)
 {
     CCustomObject* nearest_object=0;
     if (RayPick(nearest_object,distance,start,direction,0)&&!bDistanceOnly) 
@@ -310,7 +310,7 @@ int ESceneCustomOTool::LockObjects(bool flag, bool bAllowSelectionFlag, bool bSe
     return count;
 }
 
-CCustomObject* ESceneCustomOTool::FindObjectByName(LPCSTR name, CCustomObject* pass)
+CCustomObject* ESceneCustomOTool::FindObjectByName(const char* name, CCustomObject* pass)
 {
     xr_atomic_bool bFound = false;
     CCustomObject* Result = nullptr;
@@ -365,7 +365,7 @@ void setEditable(PropItemVec& items, u32 start_idx, bool bEditableTool, bool bOb
     }
 }
 
-void ESceneCustomOTool::FillPropObjects(LPCSTR pref, PropItemVec& items)
+void ESceneCustomOTool::FillPropObjects(const char* pref, PropItemVec& items)
 {
     for (ObjectIt it=m_Objects.begin(); it!=m_Objects.end(); it++)  
     {
@@ -385,7 +385,7 @@ void ESceneCustomOTool::FillPropObjects(LPCSTR pref, PropItemVec& items)
 }
 
 /*
-void ESceneCustomOTool::FillProp(LPCSTR pref, PropItemVec& items)
+void ESceneCustomOTool::FillProp(const char* pref, PropItemVec& items)
 {
     for (ObjectIt it=m_Objects.begin(); it!=m_Objects.end(); ++it)  
     {

@@ -17,7 +17,7 @@
 #include "UIInventoryWnd.h"
 #include "../../xrEngine/string_table.h"
 
-extern ENGINE_API BOOL bShowPauseString;
+extern ENGINE_API bool bShowPauseString;
 
 CUISequenceSimpleItem::~CUISequenceSimpleItem()
 {
@@ -55,7 +55,7 @@ void CUISequenceSimpleItem::Load(CUIXml* xml, int idx)
 	XML_NODE* _stored_root	= xml->GetLocalRoot();
 	xml->SetLocalRoot		(xml->NavigateToNode("item",idx));
 	
-	LPCSTR m_snd_name		= xml->Read				("sound",0,""			);
+	const char* m_snd_name		= xml->Read				("sound",0,""			);
 	if (m_snd_name&&m_snd_name[0])
 	{
 		m_sound.create(m_snd_name, st_Effect, sg_Undefined);
@@ -65,7 +65,7 @@ void CUISequenceSimpleItem::Load(CUIXml* xml, int idx)
 	m_desired_cursor_pos.y	= xml->ReadAttribFlt	("cursor_pos",0,"y",0	);
 	xr_strcpy					(m_pda_section, xml->Read("pda_section",0,"")	);
 
-	LPCSTR str				= xml->Read				("pause_state",		0,"ignore");
+	const char* str				= xml->Read				("pause_state",		0,"ignore");
 	m_flags.set										(etiNeedPauseOn,	0==_stricmp(str, "on"));
 	m_flags.set										(etiNeedPauseOff,	0==_stricmp(str, "off"));
 	m_flags.set										(etiNeedPauseSound, 0==_stricmp(str, "on"));
@@ -83,7 +83,7 @@ void CUISequenceSimpleItem::Load(CUIXml* xml, int idx)
 
 	m_flags.set						(etiCanBeStopped,	(m_continue_dik_guard==kNOTBINDED));
 
-	LPCSTR str_grab_input			= xml->Read("grab_input",0,"on");
+	const char* str_grab_input			= xml->Read("grab_input",0,"on");
 	m_flags.set						(etiGrabInput, (0==_stricmp(str_grab_input, "on")||0==_stricmp(str_grab_input, "1")) );
 	
 	int actions_count				= xml->GetNodesNum	(0,0,"action");
@@ -91,7 +91,7 @@ void CUISequenceSimpleItem::Load(CUIXml* xml, int idx)
 	for(int idx_=0; idx_<actions_count; ++idx_)
 	{
 		SActionItem& itm			= m_actions[idx_];
-		LPCSTR str_					= xml->ReadAttrib("action", idx_, "id");
+		const char* str_					= xml->ReadAttrib("action", idx_, "id");
 		itm.m_action				= action_name_to_id(str_);
 		itm.m_bfinalize				= !!xml->ReadAttribInt("action", idx_, "finalize", FALSE);
 		itm.m_functor				= xml->Read(xml->GetLocalRoot(), "action", idx_, "");

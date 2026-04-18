@@ -135,7 +135,7 @@ void CObject::processing_deactivate()
 	}
 }
 
-void CObject::setEnabled(BOOL _enabled)
+void CObject::setEnabled(bool _enabled)
 {
 	if (Props.bDestroy) return;
 	if (_enabled)
@@ -151,7 +151,7 @@ void CObject::setEnabled(BOOL _enabled)
 	}
 }
 
-void CObject::setVisible(BOOL _visible, BOOL _visibleshadow)
+void CObject::setVisible(bool _visible, bool _visibleshadow)
 {
 	if (Props.bDestroy) return;
 	if (_visible)
@@ -207,7 +207,7 @@ CObject::~CObject				( )
 	cNameSect_set				( 0 );
 }
 
-void CObject::Load				(LPCSTR section )
+void CObject::Load				(const char* section )
 {
 	// Name
 	R_ASSERT					(section);
@@ -230,7 +230,7 @@ void CObject::Load				(LPCSTR section )
 	SpatialComponent->spatial.ssa_d_cam = READ_IF_EXISTS(pSettings, r_float, section, "ssa_d_cam", 220.f);//дистанция в совокупности с fov на которой еще видно объект
 }
 
-BOOL CObject::net_Spawn			(CSE_Abstract* data)
+bool CObject::net_Spawn			(CSE_Abstract* data)
 {
 	PositionStack.clear			();
 
@@ -284,7 +284,7 @@ void	CObject::spatial_update		(float eps_P, float eps_R)
 {
 	if (Props.bDestroy) return;
 	//
-	BOOL	bUpdate=FALSE;
+	bool	bUpdate=FALSE;
 	if (PositionStack.empty())
 	{
 		// Empty
@@ -460,9 +460,9 @@ void CObject::OnH_B_Independent	(bool just_before_destroy)
 {
 }
 
-void CObject::setDestroy			(BOOL _destroy)
+void CObject::setDestroy			(bool _destroy)
 {
-	if (_destroy == (BOOL)Props.bDestroy)
+	if (_destroy == (bool)Props.bDestroy)
 		return;
 
 	Props.bDestroy	= _destroy?1:0;
@@ -470,7 +470,7 @@ void CObject::setDestroy			(BOOL _destroy)
 	{
 		g_pGameLevel->Objects.register_object_to_destroy	(this);
 #ifdef DEBUG
-		extern BOOL debug_destroy;
+		extern bool debug_destroy;
 		if(debug_destroy)
 			Msg("cl setDestroy [%d][%d]",ID(),Device.dwFrame);
 #endif

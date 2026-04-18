@@ -45,7 +45,7 @@ struct XRLC_LIGHT_API DataVertex :	public base_Vertex
 public:
 	typedef DataFace DataFaceType;
 
-	IC BOOL similar(Tvertex<DataVertex>& V, float eps);
+	IC bool similar(Tvertex<DataVertex>& V, float eps);
 
 	DataVertex() {};
 	virtual ~DataVertex() {};
@@ -64,10 +64,10 @@ public:
 	virtual Fvector2*		getTC0			( ) { return tc[0].uv; }
 
 
-	BOOL		RenderEqualTo		( Face *F );
+	bool		RenderEqualTo		( Face *F );
 
 	void		AddChannel			( Fvector2 &p1, Fvector2 &p2, Fvector2 &p3 ); 
-	BOOL		hasImplicitLighting	();
+	bool		hasImplicitLighting	();
 
 	DataFace(){};
 	virtual ~DataFace(){};
@@ -93,7 +93,7 @@ extern "C" XRLC_LIGHT_API void destroy_vertex(Vertex* &v, bool unregister);
 
 void destroy_face(Face*& v, bool unregister);
 							
-IC BOOL DataVertex::similar(Vertex& V, float eps)
+IC bool DataVertex::similar(Vertex& V, float eps)
 {
 	return P.similar(V.P, eps);
 }

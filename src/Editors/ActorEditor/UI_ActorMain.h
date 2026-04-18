@@ -36,11 +36,11 @@ public:
     virtual LPSTR	GetCaption				();
 
     virtual void 	ResetStatus				();
-    virtual void 	SetStatus				(LPCSTR s, bool bOutLog);
+    virtual void 	SetStatus				(const char* s, bool bOutLog);
     virtual void	ProgressDraw			();
 
-    virtual LPCSTR	EditorName				(){return "actor";}
-    virtual LPCSTR	EditorDesc				(){return "Actor Editor";}
+    virtual const char*	EditorName				(){return "actor";}
+    virtual const char*	EditorDesc				(){return "Actor Editor";}
 
     virtual bool 	ApplyShortCut			(DWORD Key, TShiftState Shift);
     virtual bool 	ApplyGlobalShortCut		(DWORD Key, TShiftState Shift);
@@ -65,8 +65,8 @@ public:
 
 public:
 					CAEPreferences():bAlwaysShowKeyBar12(FALSE),bAlwaysShowKeyBar34(FALSE){}
-    BOOL							bAlwaysShowKeyBar12;
-    BOOL							bAlwaysShowKeyBar34;
+    bool							bAlwaysShowKeyBar12;
+    bool							bAlwaysShowKeyBar34;
 
     virtual void 	Load			();
     virtual void 	Save			();

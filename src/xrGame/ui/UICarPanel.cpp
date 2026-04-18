@@ -4,8 +4,8 @@
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/UIHelper.h"
 
-constexpr LPCSTR CAR_PANEL_XML = "car_panel.xml";
-constexpr LPCSTR POINTER_ARROW_TEX = "ui\\hud_map_arrow";
+constexpr const char* CAR_PANEL_XML = "car_panel.xml";
+constexpr const char* POINTER_ARROW_TEX = "ui\\hud_map_arrow";
 
 void CUICarPanel::Init()
 {

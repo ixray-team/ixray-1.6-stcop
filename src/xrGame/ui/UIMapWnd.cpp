@@ -73,7 +73,7 @@ CUIMapWnd::~CUIMapWnd()
 }
 
 
-void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
+void CUIMapWnd::Init(const char* xml_name, const char* start_from)
 {
 	CUIXml uiXml;
 	uiXml.Load						(CONFIG_PATH, UI_PATH, xml_name);
@@ -768,7 +768,7 @@ void CUIMapWnd::ActivatePropertiesBox(CUIWindow* w)
 		luabind::functor<void> funct;
 
 		R_ASSERT2(ai().script_engine().functor(m_onPropertyBoxAddProperties, funct), "failed to get OnPropertyBoxAddProperties functor");
-		funct(m_UIPropertiesBox, m_cur_location->ObjectID(), (LPCSTR)m_cur_location->GetLevelName().c_str());
+		funct(m_UIPropertiesBox, m_cur_location->ObjectID(), (const char*)m_cur_location->GetLevelName().c_str());
 	}
 
 	if (m_cur_location->IsUserDefined())
@@ -940,7 +940,7 @@ void CUIMapWnd::ViewActor()
 	m_controller_cursor_pos = m_controller_cursor_pos_initial;
 }
 
-void CUIMapWnd::ShowHintStr(CUIWindow* parent, LPCSTR text) //map name
+void CUIMapWnd::ShowHintStr(CUIWindow* parent, const char* text) //map name
 {
 	if(m_map_location_hint->GetOwner())
 		return;

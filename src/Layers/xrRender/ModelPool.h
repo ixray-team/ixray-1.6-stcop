@@ -38,8 +38,8 @@ private:
 	xr_set<dxRender_Visual*>	ModelsToDeleteDeffer;		// 
 	REGISTRY					Registry;			// Just pairing of pointer / Name
 	POOL						Pool;				// Unused / Inactive
-    BOOL						bForceDiscard;
-    BOOL						bAllowChildrenDuplicate;
+    bool						bForceDiscard;
+    bool						bAllowChildrenDuplicate;
 	xrCriticalSection			deffered_del_lock;
 	void						Destroy	();
 public:
@@ -47,8 +47,8 @@ public:
 	virtual 				~CModelPool			();
 	dxRender_Visual*		Instance_Create		(u32 Type);
 	dxRender_Visual*		Instance_Duplicate	(dxRender_Visual* V);
-	dxRender_Visual*		Instance_Load		(const char* N, BOOL allow_register);
-	dxRender_Visual*		Instance_Load		(const char* N, IReader* data, BOOL allow_register);
+	dxRender_Visual*		Instance_Load		(const char* N, bool allow_register);
+	dxRender_Visual*		Instance_Load		(const char* N, IReader* data, bool allow_register);
 	void					Instance_Register	(const char* N, dxRender_Visual* V);
 	dxRender_Visual*		Instance_Find		(const char* N);
 
@@ -56,15 +56,15 @@ public:
 	dxRender_Visual*		CreatePG			(PS::CPGDef* source);
 	dxRender_Visual*		Create				(const char* name, IReader* data=0);
 	dxRender_Visual*		CreateChild			(const char* name, IReader* data);
-	void					Delete				(dxRender_Visual* &V, BOOL bDiscard=FALSE);
+	void					Delete				(dxRender_Visual* &V, bool bDiscard=FALSE);
 	void					DeleteDeffered		(dxRender_Visual* &V);
-	void					Discard				(dxRender_Visual* &V, BOOL b_complete);
-	void					DeleteInternal		(dxRender_Visual* &V, BOOL bDiscard=FALSE);
+	void					Discard				(dxRender_Visual* &V, bool b_complete);
+	void					DeleteInternal		(dxRender_Visual* &V, bool bDiscard=FALSE);
 	void					DeleteQueue			();
 	void					DeleteQueuedDeffer	();
 	
 	void					Prefetch			();
-	void					ClearPool			( BOOL b_complete );
+	void					ClearPool			( bool b_complete );
 
 #ifdef _EDITOR    
 	void					OnDeviceDestroy		();

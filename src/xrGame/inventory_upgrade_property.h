@@ -16,7 +16,7 @@ public:
 	using FunctorParams_type = xr_vector<shared_str>;
 
 private:
-	using StrFunctor = functor2<LPCSTR>;
+	using StrFunctor = functor2<const char*>;
 
 public:
 	Property(const Property& other) = delete;
@@ -26,14 +26,14 @@ public:
 
 	void construct(const shared_str& property_id, Manager& manager_r);
 	IC shared_str const& id() const { return m_id; }
-	IC LPCSTR id_str() const { return m_id.c_str(); }
-	IC LPCSTR icon_name() const { return m_icon.c_str(); }
-	IC LPCSTR name() const { return m_name.c_str(); }
+	IC const char* id_str() const { return m_id.c_str(); }
+	IC const char* icon_name() const { return m_icon.c_str(); }
+	IC const char* name() const { return m_name.c_str(); }
 	IC u32 icon_color() const { return m_color; }
 
 	IC FunctorParams_type const& functor_params() const { return m_functor_params; }
 
-	bool run_functor(LPCSTR parameter, string256& result);
+	bool run_functor(const char* parameter, string256& result);
 
 protected:
 	shared_str m_id;

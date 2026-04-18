@@ -27,8 +27,8 @@
 #	include "alife_simulator.h"
 #endif 
 
-LPCSTR script_section = "script";
-LPCSTR current_version = "current_server_entity_version";
+const char* script_section = "script";
+const char* current_version = "current_server_entity_version";
 
 u16	script_server_object_version	()
 {
@@ -65,7 +65,7 @@ void CPureServerObject::save				(NET_Packet	&tNetPacket)
 ////////////////////////////////////////////////////////////////////////////
 // CSE_Abstract
 ////////////////////////////////////////////////////////////////////////////
-CSE_Abstract::CSE_Abstract					(LPCSTR caSection)
+CSE_Abstract::CSE_Abstract					(const char* caSection)
 {
 	m_editor_flags.zero			();
 	RespawnTime					= 0;
@@ -104,7 +104,7 @@ CSE_Abstract::CSE_Abstract					(LPCSTR caSection)
 	m_ini_file					= 0;
 
 	if (pSettings->line_exist(caSection,"custom_data")) {
-		pcstr const raw_file_name	= pSettings->r_string(caSection,"custom_data");
+		const char* const raw_file_name	= pSettings->r_string(caSection,"custom_data");
 		IReader const* config	= 0;
 #ifdef XRGAME_EXPORTS
 		if ( ai().get_alife() )
@@ -183,7 +183,7 @@ CInifile &CSE_Abstract::spawn_ini			()
 	return						(*m_ini_file);
 }
 	
-void CSE_Abstract::Spawn_Write				(NET_Packet	&tNetPacket, BOOL bLocal)
+void CSE_Abstract::Spawn_Write				(NET_Packet	&tNetPacket, bool bLocal)
 {
 	// generic
 	tNetPacket.w_begin			(M_SPAWN);
@@ -258,7 +258,7 @@ enum EGameTypes {
 	GAME_DUMMY							= 255	// temporary game type
 };
 
-BOOL CSE_Abstract::Spawn_Read				(NET_Packet	&tNetPacket)
+bool CSE_Abstract::Spawn_Read				(NET_Packet	&tNetPacket)
 {
 	u16							dummy16;
 	// generic
@@ -385,12 +385,12 @@ CSE_Abstract *CSE_Abstract::init	()
 	return						(this);
 }
 
-LPCSTR		CSE_Abstract::name			() const
+const char*		CSE_Abstract::name			() const
 {
 	return	(*s_name);
 }
 
-LPCSTR		CSE_Abstract::name_replace	() const
+const char*		CSE_Abstract::name_replace	() const
 {
 	return	(s_name_replace);
 }
@@ -423,7 +423,7 @@ xr_token game_types[]={
 };
 
 #if !defined(XRGAME_EXPORTS)
-void CSE_Abstract::FillProps(LPCSTR pref, PropItemVec& items)
+void CSE_Abstract::FillProps(const char* pref, PropItemVec& items)
 {
 #ifdef XRSE_FACTORY_EXPORTS
     m_gameType.FillProp(pref, items);
@@ -437,7 +437,7 @@ void CSE_Abstract::FillProps(LPCSTR pref, PropItemVec& items)
 */
 }
 
-void CSE_Abstract::FillProp					(LPCSTR pref, PropItemVec &items)
+void CSE_Abstract::FillProp					(const char* pref, PropItemVec &items)
 {
 	CScriptValueContainer::assign();
 	CScriptValueContainer::clear();

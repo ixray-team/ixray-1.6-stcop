@@ -27,7 +27,7 @@ protected:
 #endif
 
 public:
-							CScriptThread		(LPCSTR caNamespaceName, bool do_string = false, bool reload = false);
+							CScriptThread		(const char* caNamespaceName, bool do_string = false, bool reload = false);
 	virtual					~CScriptThread		();
 			bool			update				();
 	IC		bool			active				() const;

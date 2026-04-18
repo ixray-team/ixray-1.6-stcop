@@ -28,8 +28,8 @@ private:
 	xr_vector<CDS0_RenderVisual*>	ModelsToDelete;		// 
 	REGISTRY					Registry;			// Just pairing of pointer / Name
 	POOL						Pool;				// Unused / Inactive
-	BOOL						bForceDiscard;
-	BOOL						bAllowChildrenDuplicate;
+	bool						bForceDiscard;
+	bool						bAllowChildrenDuplicate;
 
 	void						Destroy();
 
@@ -38,20 +38,20 @@ public:
 	virtual 				~CDS0_ModelPool();
 	CDS0_RenderVisual*		Instance_Create(u32 Type);
 	CDS0_RenderVisual*		Instance_Duplicate(CDS0_RenderVisual* V);
-	CDS0_RenderVisual*		Instance_Load(LPCSTR N, BOOL allow_register);
-	CDS0_RenderVisual*		Instance_Load(LPCSTR N, IReader* data, BOOL allow_register);
+	CDS0_RenderVisual*		Instance_Load(LPCSTR N, bool allow_register);
+	CDS0_RenderVisual*		Instance_Load(LPCSTR N, IReader* data, bool allow_register);
 	void					Instance_Register(LPCSTR N, CDS0_RenderVisual* V);
 	CDS0_RenderVisual*		Instance_Find(LPCSTR N);
 
 	CDS0_RenderVisual*		Create(LPCSTR name, IReader* data = 0);
 	CDS0_RenderVisual*		CreateChild(LPCSTR name, IReader* data);
-	void					Delete(CDS0_RenderVisual*& V, BOOL bDiscard = FALSE);
-	void					Discard(CDS0_RenderVisual*& V, BOOL b_complete);
-	void					DeleteInternal(CDS0_RenderVisual*& V, BOOL bDiscard = FALSE);
+	void					Delete(CDS0_RenderVisual*& V, bool bDiscard = FALSE);
+	void					Discard(CDS0_RenderVisual*& V, bool b_complete);
+	void					DeleteInternal(CDS0_RenderVisual*& V, bool bDiscard = FALSE);
 	void					DeleteQueue();
 
 	void					Prefetch();
-	void					ClearPool(BOOL b_complete);
+	void					ClearPool(bool b_complete);
 	virtual void Render();
 };
 

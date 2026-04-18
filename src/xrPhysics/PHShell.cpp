@@ -321,7 +321,7 @@ CPhysicsElement* CPHShell::get_Element		(const shared_str & bone_name)
 	VERIFY(m_pKinematics);
 	return get_Element(m_pKinematics->LL_BoneID(bone_name));
 }
-CPhysicsElement* CPHShell::get_Element		(LPCSTR bone_name)
+CPhysicsElement* CPHShell::get_Element		(const char* bone_name)
 {
 		return get_Element((const shared_str&)(bone_name));
 }
@@ -386,7 +386,7 @@ CPhysicsJoint* CPHShell::get_Joint(const shared_str &bone_name)
 	return get_Joint(m_pKinematics->LL_BoneID(bone_name));
 }
 
-CPhysicsJoint* CPHShell::get_Joint(LPCSTR bone_name)
+CPhysicsJoint* CPHShell::get_Joint(const char* bone_name)
 {
 	return get_Joint((const shared_str&)bone_name);
 }
@@ -505,7 +505,7 @@ void CPHShell::SetPhObjectInElements()
 		(*i)->SetPhObjectInGeomData((CPHObject*)this);
 }
 
-void CPHShell::SetMaterial(LPCSTR m)
+void CPHShell::SetMaterial(const char* m)
 {
 	ELEMENT_I i;
 	for(i=elements.begin();elements.end() != i;++i)
@@ -901,7 +901,7 @@ void CPHShell::ResetCallbacksRecursive(u16 id, u16 element, VisMask& mask)
 		ResetCallbacksRecursive(bone_data.GetChild(i).GetSelfID(), element, mask);
 }
 
-void CPHShell::EnabledCallbacks(BOOL val)
+void CPHShell::EnabledCallbacks(bool val)
 {
 	if (val)
 	{
@@ -1490,7 +1490,7 @@ void CPHShell::SetIgnoreRagDoll()
 }
 
 	//Делает данный физический объек анимированным 
-void CPHShell::CreateShellAnimator( CInifile const * ini, LPCSTR section )
+void CPHShell::CreateShellAnimator( CInifile const * ini, const char* section )
 {	
 	//Для фильтра коллизий относим данный объект к классу анимированных
 	CPHCollideValidator::SetAnimatedClass(*this);

@@ -218,10 +218,10 @@ u32	hsample(s32 w, s32 h, s32 p, s32 x, s32 y, u8* src)
 #include "../../xrEngine/ETextureParams.h"
 #include "Image_DXTC.h"
 
-extern int DXTCompressImageNVTT(LPCSTR out_name, u8* raw_data,
+extern int DXTCompressImageNVTT(const char* out_name, u8* raw_data,
     u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth);
 
-int DXTCompressBump(LPCSTR out_name, u8* T_height_gloss, u8* T_normal_map,
+int DXTCompressBump(const char* out_name, u8* T_height_gloss, u8* T_normal_map,
 	u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth)
 {
 	VERIFY(4 == depth);

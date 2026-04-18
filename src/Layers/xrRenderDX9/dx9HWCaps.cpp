@@ -19,7 +19,7 @@ void CHWCaps::Update()
 	// ***************** PIXEL processing
 	raster.dwStages				= caps.MaxSimultaneousTextures;
 
-	bTableFog			=	FALSE;	//BOOL	(caps.RasterCaps&D3DPRASTERCAPS_FOGTABLE);
+	bTableFog			=	FALSE;	//bool	(caps.RasterCaps&D3DPRASTERCAPS_FOGTABLE);
 
 	// Detect if stencil available
 	bStencil			=	FALSE;

@@ -4,8 +4,8 @@ class IKinematics;
 
 struct SBoneProtections final
 {
-	static constexpr LPCSTR HIT_FRACTION = "hit_fraction";
-	static constexpr LPCSTR HIT_FRACTION_NPC = "hit_fraction_npc";
+	static constexpr const char* HIT_FRACTION = "hit_fraction";
+	static constexpr const char* HIT_FRACTION_NPC = "hit_fraction_npc";
 
 	enum HitFractionType : u8
 	{
@@ -26,7 +26,7 @@ struct SBoneProtections final
 	{
 		float		koeff;
 		float		armor;
-		BOOL		BonePassBullet;
+		bool		BonePassBullet;
 	};
     float m_fHitFrac{ 0.1f };
     HitFractionType m_hitFracType{ HitFractionNPC };
@@ -40,6 +40,6 @@ struct SBoneProtections final
 	void				add					(const shared_str& outfit_section, IKinematics* kinematics);
 	float				getBoneProtection	(s16 bone_id);
 	float				getBoneArmor		(s16 bone_id);
-	BOOL				getBonePassBullet	(s16 bone_id);
+	bool				getBonePassBullet	(s16 bone_id);
 };
 

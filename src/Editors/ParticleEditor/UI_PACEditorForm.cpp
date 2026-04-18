@@ -338,7 +338,7 @@ void UIPACEditorForm::DrawCurves()
 			AfterChangeTimeFunc(SelectedKeyframeIndex);
 		}
 		ImGui::Separator();
-		auto ChannelButtonsFunc = [&](LPCSTR Channel, xr_vector<float>& vec)
+		auto ChannelButtonsFunc = [&](const char* Channel, xr_vector<float>& vec)
 		{
 			ImGui::Text(Channel);
 			ImGui::SameLine();

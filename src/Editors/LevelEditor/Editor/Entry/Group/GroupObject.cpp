@@ -17,7 +17,7 @@
 #define GROUPOBJ_CHUNK_REFERENCE	  	0x0004
 #define GROUPOBJ_CHUNK_OPEN_OBJECT_LIST	0x0005
 
-CGroupObject::CGroupObject(LPVOID data, LPCSTR name):CCustomObject(data,name)
+CGroupObject::CGroupObject(LPVOID data, const char* name):CCustomObject(data,name)
 {
 	Construct	(data);
 }
@@ -106,7 +106,7 @@ bool CGroupObject::AppendObjectLoadCB(CCustomObject* object)
 
 	string256 			buf;
 	Scene->GenObjectName(object->FClassID, buf, object->GetName());
-	LPCSTR N = object->GetName();
+	const char* N = object->GetName();
 	if (xr_strcmp(N,buf)!=0)
 	{
 		Msg					("Load_Append name changed from[%s] to[%s]",object->GetName(), buf);
@@ -118,7 +118,7 @@ bool CGroupObject::AppendObjectLoadCB(CCustomObject* object)
 	return true;
 }
 
-void  CGroupObject::SetRefName(LPCSTR nm)
+void  CGroupObject::SetRefName(const char* nm)
 {
 	m_ReferenceName_ = nm;
 	if(nm && strstr(nm, "light_preset"))
@@ -128,7 +128,7 @@ void  CGroupObject::SetRefName(LPCSTR nm)
 }
 
 
-bool CGroupObject::LoadLTX(CInifile& ini, LPCSTR sect_name)
+bool CGroupObject::LoadLTX(CInifile& ini, const char* sect_name)
 {
 	u32 version = ini.r_u32(sect_name, "version");
 	if (version<0x0011)
@@ -183,7 +183,7 @@ bool CGroupObject::LoadLTX(CInifile& ini, LPCSTR sect_name)
 	return 			true;
 }
 
-void CGroupObject::SaveLTX(CInifile& ini, LPCSTR sect_name)
+void CGroupObject::SaveLTX(CInifile& ini, const char* sect_name)
 {
 	CCustomObject::SaveLTX(ini, sect_name);
 
@@ -316,7 +316,7 @@ void CGroupObject::ReferenceChange(PropValue* sender)
 }
 
 
-bool CGroupObject::SetReference(LPCSTR ref_name)
+bool CGroupObject::SetReference(const char* ref_name)
 {
 	shared_str old_refs	= m_ReferenceName_;
 	SetRefName(ref_name);
@@ -412,7 +412,7 @@ bool CGroupObject::UpdateReference(bool bForceReload)
 }
 
 
-void CGroupObject::FillProp(LPCSTR pref, PropItemVec& items)
+void CGroupObject::FillProp(const char* pref, PropItemVec& items)
 {
 	inherited::FillProp(pref, items);
 	PropValue* V		= PHelper().CreateChoose	(items,PrepareKey(pref,"Reference"),&m_ReferenceName_, smGroup); 
@@ -434,7 +434,7 @@ void CGroupObject::FillProp(LPCSTR pref, PropItemVec& items)
 void CGroupObject::OnFreezeAllClick(ButtonValue* sender, bool& bModif, bool& bSafe)
 {
 	ButtonValue* V = smart_cast<ButtonValue*>(sender);
-	BOOL bDoUnique = FALSE;
+	bool bDoUnique = FALSE;
 	switch (V->btn_num)
 	{
 		case 0: 

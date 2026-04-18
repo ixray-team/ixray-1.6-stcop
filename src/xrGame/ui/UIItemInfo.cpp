@@ -28,7 +28,7 @@
 #include "UICellItem.h"
 #include "UIGrenadeParams.h"
 
-extern const LPCSTR g_inventory_upgrade_xml;
+extern const char* g_inventory_upgrade_xml;
 
 #define INV_GRID_WIDTH2(SCALE_ICON) (40.0f * SCALE_ICON)
 #define INV_GRID_HEIGHT2(SCALE_ICON) (40.0f * SCALE_ICON)
@@ -75,7 +75,7 @@ CUIItemInfo::~CUIItemInfo()
 	xr_delete	(UIBoosterInfo);
 }
 
-bool CUIItemInfo::InitItemInfo(LPCSTR xml_name)
+bool CUIItemInfo::InitItemInfo(const char* xml_name)
 {
 	CUIXml						uiXml;
 	uiXml.Load					(CONFIG_PATH, UI_PATH, xml_name);
@@ -222,7 +222,7 @@ bool CUIItemInfo::InitItemInfo(LPCSTR xml_name)
 	return true;
 }
 
-void CUIItemInfo::InitItemInfo(Fvector2 pos, Fvector2 size, LPCSTR xml_name)
+void CUIItemInfo::InitItemInfo(Fvector2 pos, Fvector2 size, const char* xml_name)
 {
 	inherited::SetWndPos	(pos);
 	inherited::SetWndSize	(size);
@@ -231,7 +231,7 @@ void CUIItemInfo::InitItemInfo(Fvector2 pos, Fvector2 size, LPCSTR xml_name)
 
 bool	IsGameTypeSingle();
 
-void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem, u32 item_price, LPCSTR trade_tip, bool overrideCorrectionByWeight)
+void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem, u32 item_price, const char* trade_tip, bool overrideCorrectionByWeight)
 {
 	if(!pCellItem)
 	{
@@ -255,7 +255,7 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 	}
 	if ( UIWeight )
 	{
-		LPCSTR  kg_str = g_pStringTable->translate( "st_kg" ).c_str();
+		const char*  kg_str = g_pStringTable->translate( "st_kg" ).c_str();
 		float	weight = pInvItem->Weight();
 		
 		if ( !weight )

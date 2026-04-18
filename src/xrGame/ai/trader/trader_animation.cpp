@@ -38,7 +38,7 @@ void  CTraderAnimation::head_callback(CBlend* B)
 /////////////////////////////////////////////////////////////////////////////////////////
 // Animation management
 /////////////////////////////////////////////////////////////////////////////////////////
-void CTraderAnimation::set_animation(LPCSTR anim)
+void CTraderAnimation::set_animation(const char* anim)
 {
 	m_anim_global = anim;
 
@@ -47,7 +47,7 @@ void CTraderAnimation::set_animation(LPCSTR anim)
 	kinematics_animated->PlayCycle(m_motion_global, TRUE, global_callback, this);
 }
 
-void CTraderAnimation::set_head_animation(LPCSTR anim)
+void CTraderAnimation::set_head_animation(const char* anim)
 {
 	m_anim_head = anim;
 
@@ -60,7 +60,7 @@ void CTraderAnimation::set_head_animation(LPCSTR anim)
 //////////////////////////////////////////////////////////////////////////
 // Sound management
 //////////////////////////////////////////////////////////////////////////
-void CTraderAnimation::set_sound(LPCSTR sound, LPCSTR anim)
+void CTraderAnimation::set_sound(const char* sound, const char* anim)
 {
 	if (m_sound)		remove_sound();	
 	
@@ -113,7 +113,7 @@ void CTraderAnimation::update_frame()
 //////////////////////////////////////////////////////////////////////////
 // External sound support 
 //////////////////////////////////////////////////////////////////////////
-void CTraderAnimation::external_sound_start(LPCSTR phrase)
+void CTraderAnimation::external_sound_start(const char* phrase)
 {
 	if (m_sound)			remove_sound();	
 	

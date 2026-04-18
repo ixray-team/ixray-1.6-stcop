@@ -80,7 +80,7 @@ public:
 };
 #pragma pack(pop)
 
-LPCSTR LEVEL_GRAPH_NAME = "level.ai";
+const char* LEVEL_GRAPH_NAME = "level.ai";
 CLevelGraph::CLevelGraph()
 {
 	VERIFY(Device.IsEditorMode() == false);

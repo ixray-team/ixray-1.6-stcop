@@ -44,7 +44,7 @@ void XrGamePersistentEditors::OnAppEnd		()
 }
 
 
-void XrGamePersistentEditors::PreStart		(LPCSTR op)
+void XrGamePersistentEditors::PreStart		(const char* op)
 {
 	string256						prev_type;
 	params							new_game_params;
@@ -56,7 +56,7 @@ void XrGamePersistentEditors::PreStart		(LPCSTR op)
 		OnGameEnd					();
 	}
 }
-void XrGamePersistentEditors::Start		(LPCSTR op)
+void XrGamePersistentEditors::Start		(const char* op)
 {
 	string256						prev_type;
 	xr_strcpy							(prev_type,m_game_params.m_game_type);

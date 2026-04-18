@@ -3,11 +3,11 @@
 extern class i_lc_log 
 {
 public:
-	virtual void clMsg(LPCSTR msg) = 0;
-	virtual void clLog(LPCSTR msg) = 0;
-	virtual void Status(LPCSTR msg) = 0;
+	virtual void clMsg(const char* msg) = 0;
+	virtual void clLog(const char* msg) = 0;
+	virtual void Status(const char* msg) = 0;
 	virtual	void Progress(const float F) = 0;
-	virtual	void Phase(LPCSTR phase_name) = 0;
+	virtual	void Phase(const char* phase_name) = 0;
 } *lc_log;
 
 enum IterationStatus
@@ -55,7 +55,7 @@ void AditionalData(const char* text, ...);
 
 
 void logThread	    (void *dummy);
-void logCallback	(LPCSTR c);
+void logCallback	(const char* c);
 
 float GetProgress();
 xr_vector<IterationData>& GetIterationData();

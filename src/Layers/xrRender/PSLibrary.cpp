@@ -20,9 +20,9 @@ bool ped_sort_pred(const PS::CPEDef* a, const PS::CPEDef* b){	return xr_strcmp(a
 bool pgd_sort_pred(const PS::CPGDef* a, const PS::CPGDef* b){	return xr_strcmp(a->m_Name,b->m_Name)<0;}
 bool pacd_sort_pred(const PS::CPACDef* a, const PS::CPACDef* b){	return xr_strcmp(a->getName(),b->getName())<0;}
 
-bool ped_find_pred(const PS::CPEDef* a, LPCSTR b){ return xr_strcmp(a->Name(),b)<0;}
-bool pgd_find_pred(const PS::CPGDef* a, LPCSTR b){ return xr_strcmp(a->m_Name,b)<0;}
-bool pacd_find_pred(const PS::CPACDef* a, LPCSTR b){ return xr_strcmp(a->getName(),b)<0;}
+bool ped_find_pred(const PS::CPEDef* a, const char* b){ return xr_strcmp(a->Name(),b)<0;}
+bool pgd_find_pred(const PS::CPGDef* a, const char* b){ return xr_strcmp(a->m_Name,b)<0;}
+bool pacd_find_pred(const PS::CPACDef* a, const char* b){ return xr_strcmp(a->getName(),b)<0;}
 //----------------------------------------------------
 void CPSLibrary::OnCreate()
 {
@@ -68,7 +68,7 @@ void CPSLibrary::OnDestroy()
 	PS::CPACLibraryWrapper::GetInstance().SetPACLibrary(nullptr);
 }
 //----------------------------------------------------
-PS::PEDIt CPSLibrary::FindPEDIt(LPCSTR Name)
+PS::PEDIt CPSLibrary::FindPEDIt(const char* Name)
 {
 	if (!Name) return m_PEDs.end();
 #ifdef _EDITOR
@@ -82,13 +82,13 @@ PS::PEDIt CPSLibrary::FindPEDIt(LPCSTR Name)
 #endif
 }
 
-PS::CPEDef* CPSLibrary::FindPED(LPCSTR Name)
+PS::CPEDef* CPSLibrary::FindPED(const char* Name)
 {
 	auto it = FindPEDIt(Name);
     return (it==m_PEDs.end())?0:*it;
 }
 
-PS::PGDIt CPSLibrary::FindPGDIt(LPCSTR Name)
+PS::PGDIt CPSLibrary::FindPGDIt(const char* Name)
 {
 	if (!Name) return m_PGDs.end();
 #ifdef _EDITOR
@@ -102,30 +102,30 @@ PS::PGDIt CPSLibrary::FindPGDIt(LPCSTR Name)
 #endif
 }
 
-PS::CPGDef* CPSLibrary::FindPGD(LPCSTR Name)
+PS::CPGDef* CPSLibrary::FindPGD(const char* Name)
 {
 	auto it = FindPGDIt(Name);
     return (it==m_PGDs.end())?0:*it;
 }
 
-void CPSLibrary::RenamePED(PS::CPEDef* src, LPCSTR new_name)
+void CPSLibrary::RenamePED(PS::CPEDef* src, const char* new_name)
 {
 	R_ASSERT(src&&new_name&&new_name[0]);
 	src->SetName(new_name);
 }
 
-PS::CPACDef* CPSLibrary::FindPACD(LPCSTR Name)
+PS::CPACDef* CPSLibrary::FindPACD(const char* Name)
 {
 	auto it = FindPACDIt(Name);
 	return (it==m_PACDs.end())?0:*it;
 }
 
-PS::IPAC* CPSLibrary::FindIPAC(LPCSTR name)
+PS::IPAC* CPSLibrary::FindIPAC(const char* name)
 {
 	return FindPACD(name);
 }
 
-PS::PACDIt CPSLibrary::FindPACDIt(LPCSTR Name)
+PS::PACDIt CPSLibrary::FindPACDIt(const char* Name)
 {
 	if (!Name) return m_PACDs.end();
 #ifdef _EDITOR
@@ -139,13 +139,13 @@ PS::PACDIt CPSLibrary::FindPACDIt(LPCSTR Name)
 #endif
 }
 
-void CPSLibrary::RenamePGD(PS::CPGDef* src, LPCSTR new_name)
+void CPSLibrary::RenamePGD(PS::CPGDef* src, const char* new_name)
 {
 	R_ASSERT(src&&new_name&&new_name[0]);
 	src->SetName(new_name);
 }
 
-void CPSLibrary::RenamePACD(PS::CPACDef* src, LPCSTR new_name)
+void CPSLibrary::RenamePACD(PS::CPACDef* src, const char* new_name)
 {
 	R_ASSERT(src&&new_name&&new_name[0]);
 	src->setName(new_name);

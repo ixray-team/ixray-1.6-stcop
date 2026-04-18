@@ -15,7 +15,7 @@
 
 static float min_deficit_factor = .3f;
 
-void CPurchaseList::process(CInifile& ini_file, LPCSTR section, CInventoryOwner& owner)
+void CPurchaseList::process(CInifile& ini_file, const char* section, CInventoryOwner& owner)
 {
 	owner.sell_useless_items();
 
@@ -41,8 +41,8 @@ void CPurchaseList::process(CInifile& ini_file, LPCSTR section, CInventoryOwner&
 
 		string256 temp0 = {}, temp1 = {};
 
-		LPCSTR count = _GetItem(*sect.second, 0, temp0);
-		LPCSTR prob = _GetItemCount(*sect.second) >= 2 ? _GetItem(*sect.second, 1, temp1) : "1.0f";
+		const char* count = _GetItem(*sect.second, 0, temp0);
+		const char* prob = _GetItemCount(*sect.second) >= 2 ? _GetItem(*sect.second, 1, temp1) : "1.0f";
 
 		process(game_object, sect.first, atoi(count), (float)atof(prob));
 	}

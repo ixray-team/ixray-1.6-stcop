@@ -82,7 +82,7 @@ void light::destroy(bool deffered)
 }
 
 
-void light::set_texture(LPCSTR name)
+void light::set_texture(const char* name)
 {
 #if (RENDER==R_R2) || (RENDER==R_R4)
 	if ((0 == name) || (0 == name[0]))

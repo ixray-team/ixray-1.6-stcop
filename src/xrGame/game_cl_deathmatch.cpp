@@ -230,7 +230,7 @@ void game_cl_Deathmatch::OnSkinMenu_Cancel		()
 	m_bMenuCalledFromReady = FALSE;
 };
 
-BOOL game_cl_Deathmatch::CanCallBuyMenu			()
+bool game_cl_Deathmatch::CanCallBuyMenu			()
 {
 	if (Phase()!=GAME_PHASE_INPROGRESS) return false;
 
@@ -259,7 +259,7 @@ BOOL game_cl_Deathmatch::CanCallBuyMenu			()
 	return m_bBuyEnabled;
 };
 
-BOOL game_cl_Deathmatch::CanCallSkinMenu			()
+bool game_cl_Deathmatch::CanCallSkinMenu			()
 {
 	if (Phase()!=GAME_PHASE_INPROGRESS) return false;
 	if ( m_game_ui )
@@ -283,7 +283,7 @@ BOOL game_cl_Deathmatch::CanCallSkinMenu			()
 	return TRUE;
 };
 
-BOOL game_cl_Deathmatch::CanCallInventoryMenu			()
+bool game_cl_Deathmatch::CanCallInventoryMenu			()
 {
 	if (Phase()!=GAME_PHASE_INPROGRESS) return false;
 	if (Level().CurrentEntity() != nullptr && Level().CurrentEntity()->cast_actor() == nullptr)
@@ -1004,7 +1004,7 @@ IC bool	DM_Compare_Players(game_PlayerState* p1, game_PlayerState* p2)
 	return p1->frags() > p2->frags();
 };
 
-void game_cl_Deathmatch::PlayParticleEffect(LPCSTR EffName, Fvector& pos)
+void game_cl_Deathmatch::PlayParticleEffect(const char* EffName, Fvector& pos)
 {
 	if (!EffName) return;
 	// вычислить позицию и направленность партикла
@@ -1279,7 +1279,7 @@ bool game_cl_Deathmatch::IsPlayerInTeam			(game_PlayerState* ps, ETeam team)
 	return false;
 }
 
-LPCSTR game_cl_Deathmatch::GetGameScore(string32&	score_dest)
+const char* game_cl_Deathmatch::GetGameScore(string32&	score_dest)
 {
 	s32 frags = local_player ? local_player->frags() : 0;
 	xr_sprintf(score_dest, "[%d/%d]", frags, m_s32FragLimit);

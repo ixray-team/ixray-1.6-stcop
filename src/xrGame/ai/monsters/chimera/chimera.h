@@ -8,7 +8,7 @@ public:
 							CChimera					();
 	virtual					~CChimera					();	
 
-	virtual void			Load						(LPCSTR section);
+	virtual void			Load						(const char* section);
 	virtual void			reinit						();
 	virtual	void			UpdateCL					();
 

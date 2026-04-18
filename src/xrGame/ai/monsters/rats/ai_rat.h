@@ -301,8 +301,8 @@ protected:
 	float						m_fSoundThreshold;
 
 	// eat troops
-	BOOL						m_bEatMemberCorpses;
-	BOOL						m_bCannibalism;
+	bool						m_bEatMemberCorpses;
+	bool						m_bCannibalism;
 	u32							m_dwEatCorpseInterval;
 	u32							m_previous_query_time;
 
@@ -361,22 +361,22 @@ public:
 
 public:
 
-	virtual BOOL				renderable_ShadowReceive();
-	virtual BOOL				renderable_ShadowGenerate();
-	virtual BOOL				net_Spawn				(CSE_Abstract* DC);
+	virtual bool				renderable_ShadowReceive();
+	virtual bool				renderable_ShadowGenerate();
+	virtual bool				net_Spawn				(CSE_Abstract* DC);
 	virtual void				net_Destroy				();
 	virtual void				net_Export				(NET_Packet& P);
 	virtual void				net_Import				(NET_Packet& P);
 	virtual void				HitSignal				(float amount, Fvector& vLocalDir, CObject* who, s16 element);
 	virtual void				Die						(CObject* who);
-	virtual void				Load					(LPCSTR section);
+	virtual void				Load					(const char* section);
 	virtual void				Think					();
 	virtual void				SelectAnimation			(const Fvector& _view, const Fvector& _move, float speed );
 	virtual void				Exec_Action				(float dt);
 	virtual	void				feel_sound_new			(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector &Position, float power);
 	virtual void				feel_touch_new			(CObject* O);
-	virtual BOOL				feel_touch_on_contact	(CObject* O);
-	virtual BOOL				feel_vision_isRelevant	(CObject*);
+	virtual bool				feel_touch_on_contact	(CObject* O);
+	virtual bool				feel_vision_isRelevant	(CObject*);
 	virtual void				shedule_Update			(u32 dt);
 	virtual void				UpdateCL				();
 	virtual	void				Hit						(SHit* pHDS);
@@ -392,7 +392,7 @@ public:
 	virtual void				OnH_A_Independent		();
 	virtual void				OnEvent					(NET_Packet& P, u16 type) {inherited::OnEvent(P,type);}
 	virtual bool				Useful					() const;
-	virtual BOOL				UsedAI_Locations		();
+	virtual bool				UsedAI_Locations		();
 	///////////////////////////////////////////////////////////////////////
 	virtual u16					PHGetSyncItemsNumber	()			{return inherited ::PHGetSyncItemsNumber();}
 	virtual CPHSynchronize*		PHGetSyncItem			(u16 item)	{return inherited ::PHGetSyncItem(item);}
@@ -405,7 +405,7 @@ public:
 	virtual bool				useful					(const CItemManager *manager, const CGameObject *object) const;
 	virtual	float				evaluate				(const CItemManager *manager, const CGameObject *object) const;
 	virtual	void				reinit					();
-	virtual void				reload					(LPCSTR	section);
+	virtual void				reload					(const char*	section);
 	virtual const SRotation		Orientation				() const
 	{
 		return					(inherited::Orientation());
@@ -430,7 +430,7 @@ public:
 	//serialization
 	virtual void				save					(NET_Packet &output_packet) {inherited::save(output_packet);}
 	virtual void				load					(IReader &input_packet)		{inherited::load(input_packet);}
-	virtual BOOL				net_SaveRelevant		()							{return inherited::net_SaveRelevant();}
+	virtual bool				net_SaveRelevant		()							{return inherited::net_SaveRelevant();}
 			bool				can_stand_here			();
 			bool				can_stand_in_position	();
 			Fvector				get_next_target_point	();

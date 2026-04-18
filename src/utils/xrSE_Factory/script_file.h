@@ -10,14 +10,14 @@ class CScriptFile
 public:
 	void		UpdateRelPathName		();
 //	void		DeleteIntermediateFiles	();
-//	BOOL		Compile					();
-//	BOOL		IsModified				();
-//	BOOL		Save					(CArchive& ar);
-//	BOOL		Load					(CArchive& ar);
-//	BOOL		HasFile					(CString strPathName);
+//	bool		Compile					();
+//	bool		IsModified				();
+//	bool		Save					(CArchive& ar);
+//	bool		Load					(CArchive& ar);
+//	bool		HasFile					(CString strPathName);
 	void		RemoveBreakPoint		(int nLine);
 	void		SetBreakPointsIn		(CLuaEditor* pEditor);
-	BOOL		HasBreakPoint			(int nLine);
+	bool		HasBreakPoint			(int nLine);
 	CScriptFile							();
 	~CScriptFile						();
 
@@ -26,7 +26,7 @@ public:
 	void		AddBreakPoint			(int nLine);
 	void		RemoveAllBreakPoints	();
 
-	BOOL		PositionBreakPoints		();
+	bool		PositionBreakPoints		();
 	int			GetNearestDebugLine		(int nLine);
 	int			GetPreviousDebugLine	(int nLine);
 	int			GetNextDebugLine		(int nLine);
@@ -44,17 +44,17 @@ protected:
 //	CString m_strPathName, m_strRelPathName;
 	string_path						m_strPathName;
 	string_path						m_strRelPathName;
-//	CMap<int, int, BOOL, BOOL> m_breakPoints;
-	xr_map<int,BOOL>				m_breakPoints;
+//	CMap<int, int, bool, bool> m_breakPoints;
+	xr_map<int,bool>				m_breakPoints;
 	int								m_nMinBreakPoint;
 	int								m_nMaxBreakPoint;
-//	CMap<int, int, BOOL, BOOL> m_debugLines;
-	xr_map<int,BOOL>				m_debugLines;
+//	CMap<int, int, bool, bool> m_debugLines;
+	xr_map<int,bool>				m_debugLines;
 	int								m_nMinDebugLine;
 	int								m_nMaxDebugLine;
 //	SYSTEMTIME	m_timeCompiled;
 
-	typedef xr_map<int,BOOL>::iterator	uniIt;
+	typedef xr_map<int,bool>::iterator	uniIt;
 };
 
 #endif

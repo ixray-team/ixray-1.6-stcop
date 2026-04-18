@@ -18,7 +18,7 @@ xr_string CSoundManager::UpdateFileName(xr_string& fn)
 //------------------------------------------------------------------------------
 // возвращает список всех звуков
 //------------------------------------------------------------------------------
-int CSoundManager::GetSounds(FS_FileSet& files, BOOL bFolders)
+int CSoundManager::GetSounds(FS_FileSet& files, bool bFolders)
 {
     return FS.file_list(files,_sounds_,(bFolders?FS_ListFolders:0)|FS_ListFiles|FS_ClampExt,"*.wav");
 }
@@ -59,13 +59,13 @@ void CSoundManager::OnFrame()
     ::psSoundVEffects = psDeviceFlags.is(rsMuteSounds) ? 0.f : EPrefs->sound_volume;
 }
 
-void CSoundManager::MuteSounds(BOOL bVal)
+void CSoundManager::MuteSounds(bool bVal)
 {
 	if (bVal) 	::psSoundVEffects = 0.f;
     else		::psSoundVEffects = psDeviceFlags.is(rsMuteSounds) ? 0.f : EPrefs->sound_volume;
 }
 
-void CSoundManager::RenameSound(LPCSTR nm0, LPCSTR nm1, EItemType type)
+void CSoundManager::RenameSound(const char* nm0, const char* nm1, EItemType type)
 {
     if (TYPE_FOLDER == type)
     {
@@ -93,7 +93,7 @@ void CSoundManager::RenameSound(LPCSTR nm0, LPCSTR nm1, EItemType type)
     }
 }
 
-BOOL CSoundManager::RemoveSound(LPCSTR fname, EItemType type)
+bool CSoundManager::RemoveSound(const char* fname, EItemType type)
 {
 	if (TYPE_FOLDER==type){
     	FS.dir_delete			(_sounds_,fname,FALSE);
@@ -128,7 +128,7 @@ int CSoundManager::GetLocalNewSounds(FS_FileSet& files)
 //------------------------------------------------------------------------------
 // создает тхм
 //------------------------------------------------------------------------------
-void CSoundManager::CreateSoundThumbnail(ESoundThumbnail* THM, const xr_string& src_name, LPCSTR initial, bool bSetDefParam)
+void CSoundManager::CreateSoundThumbnail(ESoundThumbnail* THM, const xr_string& src_name, const char* initial, bool bSetDefParam)
 {
 	R_ASSERT(src_name.size());
 	string_path base_name;
@@ -145,7 +145,7 @@ void CSoundManager::CreateSoundThumbnail(ESoundThumbnail* THM, const xr_string& 
     }
 }                             
 
-void CSoundManager::MakeGameSound(ESoundThumbnail* THM, LPCSTR src_name, LPCSTR game_name)
+void CSoundManager::MakeGameSound(ESoundThumbnail* THM, const char* src_name, const char* game_name)
 {
 	VerifyPath		(game_name);
     CMemoryWriter 	F;
@@ -214,7 +214,7 @@ void CSoundManager::SynchronizeSounds(bool sync_thm, bool sync_game, bool bForce
 	FS_FileSetIt it_e 			= M_BASE.end();
 	for (; it!=it_e; ++it)
     {
-	    BOOL bUpdated 			= FALSE;
+	    bool bUpdated 			= FALSE;
 
         string_path PathInitial = {};
         FS.update_path(PathInitial, _sounds_, "");

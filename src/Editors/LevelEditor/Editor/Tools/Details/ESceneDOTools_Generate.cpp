@@ -423,20 +423,20 @@ bool EDetailManager::UpdateObjects(bool bUpdateTex, bool bUpdateSelectedOnly)
     return true;
 }
 
-CDetailManager::DetailIt EDetailManager::FindDOByNameIt(LPCSTR name)
+CDetailManager::DetailIt EDetailManager::FindDOByNameIt(const char* name)
 {
 	for (DetailIt it=objects.begin(); it!=objects.end(); it++)
     	if (stricmp(((EDetail*)(*it))->GetName(),name)==0) return it;
     return objects.end();
 }
 
-EDetail* EDetailManager::FindDOByName(LPCSTR name)
+EDetail* EDetailManager::FindDOByName(const char* name)
 {
 	DetailIt it = FindDOByNameIt(name);
 	return (it!=objects.end())?(EDetail*)*it:0;
 }
 
-bool EDetailManager::RemoveDO(LPCSTR name)
+bool EDetailManager::RemoveDO(const char* name)
 {
     DetailIt it = FindDOByNameIt(name);
     if (it!=objects.end()){
@@ -447,7 +447,7 @@ bool EDetailManager::RemoveDO(LPCSTR name)
     }else return false;
 }
 
-EDetail* EDetailManager::AppendDO(LPCSTR name, bool bTestUnique)
+EDetail* EDetailManager::AppendDO(const char* name, bool bTestUnique)
 {
     EDetail* D=0;
 	if (bTestUnique&&(0!=(D=FindDOByName(name)))) return D;
@@ -489,7 +489,7 @@ void EDetailManager::RemoveColorIndices(){
 	m_ColorIndices.clear();
 }
 
-EDetail* EDetailManager::FindObjectInColorIndices(u32 index, LPCSTR name)
+EDetail* EDetailManager::FindObjectInColorIndices(u32 index, const char* name)
 {
 	ColorIndexPairIt CI=m_ColorIndices.find(index);
 	if (CI!=m_ColorIndices.end()){
@@ -500,7 +500,7 @@ EDetail* EDetailManager::FindObjectInColorIndices(u32 index, LPCSTR name)
     return 0;
 }
 
-void EDetailManager::AppendIndexObject(u32 color,LPCSTR name, bool bTestUnique)
+void EDetailManager::AppendIndexObject(u32 color,const char* name, bool bTestUnique)
 {
 	if (bTestUnique){
 		EDetail* DO = FindObjectInColorIndices(color,name);

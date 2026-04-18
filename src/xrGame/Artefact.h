@@ -17,8 +17,8 @@ public:
 	CArtefact();
 	virtual ~CArtefact() = default;
 
-	virtual void					Load							(LPCSTR section);
-	virtual BOOL					net_Spawn						(CSE_Abstract* DC);
+	virtual void					Load							(const char* section);
+	virtual bool					net_Spawn						(CSE_Abstract* DC);
 	virtual void					net_Destroy						();
 
 	virtual void					OnH_A_Chield					();
@@ -33,8 +33,8 @@ public:
 	
 	virtual bool					CanTake							() const;
 
-	virtual BOOL					renderable_ShadowGenerate		()		{ return FALSE;	}
-	virtual BOOL					renderable_ShadowReceive		()		{ return TRUE;	}
+	virtual bool					renderable_ShadowGenerate		()		{ return FALSE;	}
+	virtual bool					renderable_ShadowReceive		()		{ return TRUE;	}
 	virtual void					create_physic_shell				();
 
 	virtual CArtefact*				cast_artefact					()		{return this;}
@@ -56,7 +56,7 @@ public:
 	float m_fJumpSpeed;
 	float m_fWalkAccel;
 
-	LPCSTR PS_bone													()		{return m_sParticlesBone.c_str(); };
+	const char* PS_bone													()		{return m_sParticlesBone.c_str(); };
 	bool has_detector_visibling;
 protected:
 	virtual void					UpdateCLChild					()		{};
@@ -83,7 +83,7 @@ public:
 	IC u8							GetAfRank						() const		{return m_af_rank;}
 	IC bool							CanBeActivated					()				{return m_bCanSpawnZone;};
 	void							ActivateArtefact				();
-	void							FollowByPath					(LPCSTR path_name, int start_idx, Fvector magic_force);
+	void							FollowByPath					(const char* path_name, int start_idx, Fvector magic_force);
 	bool							CanBeInvisible					();
 	void							SwitchVisibility				(bool);
 
@@ -127,7 +127,7 @@ public:
 
 	// optimization FAST/SLOW mode
 	u32						o_render_frame				;
-	BOOL					o_fastmode					;
+	bool					o_fastmode					;
 	IC void					o_switch_2_fast				()	{
 		if (o_fastmode)		return	;
 		o_fastmode			= TRUE	;
@@ -153,17 +153,17 @@ struct SArtefactDetectorsSupport
 	const CPatrolPath::CVertex*		m_currPatrolVertex;
 	Fvector							m_destPoint;
 
-	LPCSTR							det_show_particles;
-	LPCSTR							det_hide_particles;
-	LPCSTR							det_show_snd;
-	LPCSTR							det_hide_snd;
-	LPCSTR							particles_bone;
+	const char*							det_show_particles;
+	const char*							det_hide_particles;
+	const char*							det_show_snd;
+	const char*							det_hide_snd;
+	const char*							particles_bone;
 
 			SArtefactDetectorsSupport		(CArtefact* A);
 			~SArtefactDetectorsSupport		();
 	void	SetVisible						(bool);
-	void	Load							(LPCSTR section);
-	void	FollowByPath					(LPCSTR path_name, int start_idx, Fvector force);
+	void	Load							(const char* section);
+	void	FollowByPath					(const char* path_name, int start_idx, Fvector force);
 	void	UpdateOnFrame					();
 	void	Blink							();
 };

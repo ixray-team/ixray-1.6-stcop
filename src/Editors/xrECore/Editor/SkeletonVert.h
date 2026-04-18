@@ -31,7 +31,7 @@ struct st_SVERT {
 			bone = B;
 		} else R_ASSERT(bone==B);
 	}
-	BOOL	similar(st_SVERT& V){
+	bool	similar(st_SVERT& V){
 		if (bone!=V.bone)			return FALSE;
         if (uv.size()!=V.uv.size())	return FALSE;
         for(DWORD i=0; i<uv.size(); i++){

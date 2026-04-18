@@ -123,7 +123,7 @@ bool door::is_blocked(door_state const state, CObject* Initiator) const
 }
 
 #ifdef DEBUG
-extern BOOL g_debug_doors;
+extern bool g_debug_doors;
 #endif // #ifdef DEBUG
 
 void door::lock					( )
@@ -270,7 +270,7 @@ void door::on_change_state		( door_state const state )
 }
 
 #ifdef DEBUG
-LPCSTR door::get_name			( ) const
+const char* door::get_name			( ) const
 {
 	return						m_object.cName().c_str();
 }
