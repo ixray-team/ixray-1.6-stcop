@@ -31,7 +31,7 @@ CAviPlayerCustom::~CAviPlayerCustom( )
 }
 
 //---------------------------------
-BOOL CAviPlayerCustom::Load (char* fname)
+bool CAviPlayerCustom::Load (char* fname)
 {
 #ifdef IXR_WINDOWS
 	// Check for alpha
@@ -260,7 +260,7 @@ BOOL CAviPlayerCustom::Load (char* fname)
 	return TRUE;
 }
 
-BOOL CAviPlayerCustom::DecompressFrame( DWORD dwFrameNum )
+bool CAviPlayerCustom::DecompressFrame( DWORD dwFrameNum )
 {
 #ifdef IXR_WINDOWS
 	// получаем элемент индекса
@@ -302,7 +302,7 @@ GetFrame
 
 возвращает TRUE если кадр изменился, иначе FALSE
 */
-BOOL CAviPlayerCustom::GetFrame( BYTE **pDest )
+bool CAviPlayerCustom::GetFrame( BYTE **pDest )
 {
 #ifdef IXR_WINDOWS
 	R_ASSERT( pDest );

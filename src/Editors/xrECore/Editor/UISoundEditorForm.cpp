@@ -123,12 +123,12 @@ void UISoundEditorForm::UpdateLib()
     }
 }
 
-void UISoundEditorForm::AppendModif(LPCSTR nm)
+void UISoundEditorForm::AppendModif(const char* nm)
 {
     FS_File 		dest;
     string_path		fname;
     FS.update_path(fname, _sounds_, EFS.ChangeFileExt(nm, ".wav").c_str());
-    BOOL bFind = FS.file_find(fname, dest); R_ASSERT(bFind);
+    bool bFind = FS.file_find(fname, dest); R_ASSERT(bFind);
     modif_map.insert(dest);
 }
 
@@ -303,7 +303,7 @@ void UISoundEditorForm::OnItemsFocused(ListItem* item)
 
     m_ItemProps->AssignItems(props);
 }
-void UISoundEditorForm::PlaySound(LPCSTR name)
+void UISoundEditorForm::PlaySound(const char* name)
 {
     string_path fname;
     FS.update_path(fname, _game_sounds_, EFS.ChangeFileExt(name, ".ogg").c_str());
@@ -338,7 +338,7 @@ void UISoundEditorForm::OnAttenuationDraw(CanvasValue* sender)
     }
     ImGui::PlotLines("##LinesSound", values, IM_ARRAYSIZE(values),0,0,0, HEIGHT, ImVec2(0, HEIGHT), 4);
 }
-ESoundThumbnail* UISoundEditorForm::FindUsedTHM(LPCSTR name)
+ESoundThumbnail* UISoundEditorForm::FindUsedTHM(const char* name)
 {
     for (THMIt it = m_THM_Used.begin(); it != m_THM_Used.end(); it++)
         if (0 == strcmp((*it)->SrcName(), name)) return *it;

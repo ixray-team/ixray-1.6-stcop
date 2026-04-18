@@ -11,7 +11,7 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "../xrEngine/bone.h"
 
-void TDamageManager::reload(LPCSTR section, CInifile const* ini)
+void TDamageManager::reload(const char* section, CInifile const* ini)
 {
 	m_default_hit_factor = 1.f;
 	m_default_wound_factor = 1.f;
@@ -24,7 +24,7 @@ void TDamageManager::reload(LPCSTR section, CInifile const* ini)
 		string32 buffer;
 		if (ini->line_exist(section, "default"))
 		{
-			LPCSTR value = ini->r_string(section, "default");
+			const char* value = ini->r_string(section, "default");
 			m_default_hit_factor = (float)atof(_GetItem(value, 0, buffer));
 			m_default_wound_factor = (float)atof(_GetItem(value, 2, buffer));
 		}
@@ -40,7 +40,7 @@ void TDamageManager::reload(LPCSTR section, CInifile const* ini)
 	}
 }
 
-void TDamageManager::reload(LPCSTR section, LPCSTR line, CInifile const * ini)
+void TDamageManager::reload(const char* section, const char* line, CInifile const * ini)
 {
 	if (ini && ini->section_exist(section) && ini->line_exist(section,line)) 
 		reload(ini->r_string(section,line),ini);	
@@ -53,7 +53,7 @@ void TDamageManager::SetupOwner(IECSOwner* Owner)
 	m_object = smart_cast<CGameObject*>(Owner);
 }
 
-void TDamageManager::init_bones(LPCSTR section, CInifile const* ini)
+void TDamageManager::init_bones(const char* section, CInifile const* ini)
 {
 	IKinematics* kinematics = PKinematics(m_object->Visual());
 
@@ -73,7 +73,7 @@ void TDamageManager::init_bones(LPCSTR section, CInifile const* ini)
 	}
 }
 
-void TDamageManager::load_section(LPCSTR section, CInifile const* ini)
+void TDamageManager::load_section(const char* section, CInifile const* ini)
 {
 	string32 buffer;
 	IKinematics* kinematics = PKinematics(m_object->Visual());

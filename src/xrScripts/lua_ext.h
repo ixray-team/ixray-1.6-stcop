@@ -4,7 +4,7 @@
 // initialize lua standard library functions 
 struct luajit 
 {
-	static void open_lib(lua_State* L, pcstr module_name, lua_CFunction function)
+	static void open_lib(lua_State* L, const char* module_name, lua_CFunction function)
 	{
 		lua_pushcfunction(L, function);
 		lua_pushstring(L, module_name);

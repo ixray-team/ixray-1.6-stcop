@@ -103,7 +103,7 @@ struct SVelocityParam {
 		max_factor				= 1.0f;
 	}
 
-	bool	Load (LPCSTR section, LPCSTR line) 
+	bool	Load (const char* section, const char* line) 
 	{
 		if (!pSettings->line_exist(section, line))
 			return false;

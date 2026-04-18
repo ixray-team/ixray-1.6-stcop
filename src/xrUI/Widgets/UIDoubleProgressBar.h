@@ -11,7 +11,7 @@ public: // func
 						CUIDoubleProgressBar	();
 	virtual				~CUIDoubleProgressBar	();
 
-			void		InitFromXml		( CUIXml& xml_doc, LPCSTR path );
+			void		InitFromXml		( CUIXml& xml_doc, const char* path );
 			void		SetTwoPos		( float cur_value, float compare_value );
 
 	virtual CUIWindow* ui_cast_window() { return this; }

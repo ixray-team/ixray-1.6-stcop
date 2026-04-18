@@ -57,7 +57,7 @@ struct SThunderboltCollection
 public:
 								SThunderboltCollection	();
 								~SThunderboltCollection	();
-						void	load					(CInifile* pIni, CInifile* thunderbolts, LPCSTR sect);
+						void	load					(CInifile* pIni, CInifile* thunderbolts, const char* sect);
 	SThunderboltDesc*			GetRandomDesc			(){VERIFY(palette.size()>0); return palette[Random.randI((u32)palette.size())];}
 };
 
@@ -92,10 +92,10 @@ private:
 	float						life_time;
 	float						current_time;
 	float						next_lightning_time;
-	BOOL						bEnabled;
+	bool						bEnabled;
 	bool IsEnabled = true;
 private:
-	BOOL						RayPick				(const Fvector& s, const Fvector& d, float& range);
+	bool						RayPick				(const Fvector& s, const Fvector& d, float& range);
 	void						Bolt				(shared_str id, float period, float life_time);
 public:                     
 								CEffect_Thunderbolt	(); 
@@ -105,5 +105,5 @@ public:
 	void						Render				();
 	void Enable(bool Value);
 
-	shared_str 					AppendDef			(CEnvironment& environment, CInifile* pIni, CInifile* thunderbolts, LPCSTR sect);
+	shared_str 					AppendDef			(CEnvironment& environment, CInifile* pIni, CInifile* thunderbolts, const char* sect);
 };

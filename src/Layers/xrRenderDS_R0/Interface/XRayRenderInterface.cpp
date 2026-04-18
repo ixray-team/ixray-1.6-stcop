@@ -83,20 +83,20 @@ void CDS0_RenderInterface::set_Transform(Fmatrix* M)
 {
 }
 
-void CDS0_RenderInterface::set_HUD(BOOL V)
+void CDS0_RenderInterface::set_HUD(bool V)
 {
 }
 
-void CDS0_RenderInterface::set_UI(BOOL V)
+void CDS0_RenderInterface::set_UI(bool V)
 {
 }
 
-BOOL CDS0_RenderInterface::get_HUD()
+bool CDS0_RenderInterface::get_HUD()
 {
 	return 0;
 }
 
-void CDS0_RenderInterface::set_Invisible(BOOL V)
+void CDS0_RenderInterface::set_Invisible(bool V)
 {
 }
 
@@ -186,7 +186,7 @@ IRenderVisual* CDS0_RenderInterface::model_Duplicate(IRenderVisual* V)
 	return GModelPool->Instance_Duplicate((CDS0_RenderVisual*)V);
 }
 
-void CDS0_RenderInterface::model_Delete(IRenderVisual*& V, BOOL bDiscard)
+void CDS0_RenderInterface::model_Delete(IRenderVisual*& V, bool bDiscard)
 {
 	if (V == nullptr)
 		return;
@@ -202,21 +202,21 @@ void CDS0_RenderInterface::models_Prefetch()
 	GModelPool->Prefetch();
 }
 
-void CDS0_RenderInterface::models_Clear(BOOL b_complete)
+void CDS0_RenderInterface::models_Clear(bool b_complete)
 {
 }
 
-BOOL CDS0_RenderInterface::occ_visible(vis_data& V)
-{
-	return 0;
-}
-
-BOOL CDS0_RenderInterface::occ_visible(Fbox& B)
+bool CDS0_RenderInterface::occ_visible(vis_data& V)
 {
 	return 0;
 }
 
-BOOL CDS0_RenderInterface::occ_visible(sPoly& P)
+bool CDS0_RenderInterface::occ_visible(Fbox& B)
+{
+	return 0;
+}
+
+bool CDS0_RenderInterface::occ_visible(sPoly& P)
 {
 	return 0;
 }

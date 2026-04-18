@@ -6,7 +6,7 @@
 //------------------------------------------------------------------------------
 // Custom Thumbnail
 //------------------------------------------------------------------------------
-ECustomThumbnail::ECustomThumbnail(LPCSTR src_name, THMType type)
+ECustomThumbnail::ECustomThumbnail(const char* src_name, THMType type)
 {
 	m_Type		= type;
     m_SrcName   = src_name;
@@ -113,7 +113,7 @@ void EImageThumbnail::Update(IRHISurface*& Texture)
 	}
 }
 
-ECORE_API EImageThumbnail* CreateThumbnail(LPCSTR src_name, ECustomThumbnail::THMType type, bool bLoad)
+ECORE_API EImageThumbnail* CreateThumbnail(const char* src_name, ECustomThumbnail::THMType type, bool bLoad)
 {
     switch (type){
     case ECustomThumbnail::ETObject: 	return new EObjectThumbnail	(src_name,bLoad);

@@ -17,7 +17,7 @@ void CSE_ALifeObject::spawn_supplies()
 }
 
 
-float CSE_ALifeObject::parseFloatParameterValue(LPCSTR spawnArgs, LPCSTR parameterName, float defaultValue)
+float CSE_ALifeObject::parseFloatParameterValue(const char* spawnArgs, const char* parameterName, float defaultValue)
 {
     float value = defaultValue;
 
@@ -32,7 +32,7 @@ float CSE_ALifeObject::parseFloatParameterValue(LPCSTR spawnArgs, LPCSTR paramet
     return value;
 }
 
-int CSE_ALifeObject::parseIntParameterValue(LPCSTR spawnArgs, LPCSTR parameterName, int defaultValue)
+int CSE_ALifeObject::parseIntParameterValue(const char* spawnArgs, const char* parameterName, int defaultValue)
 {
     int value = defaultValue;
 
@@ -47,7 +47,7 @@ int CSE_ALifeObject::parseIntParameterValue(LPCSTR spawnArgs, LPCSTR parameterNa
     return value;
 }
 
-bool CSE_ALifeObject::parseBoolParameterValue(LPCSTR spawnArgs, LPCSTR parameterName)
+bool CSE_ALifeObject::parseBoolParameterValue(const char* spawnArgs, const char* parameterName)
 {
     if (spawnArgs == nullptr || !xr_strlen(spawnArgs) || !xr_strlen(parameterName)) {
         return false;
@@ -56,7 +56,7 @@ bool CSE_ALifeObject::parseBoolParameterValue(LPCSTR spawnArgs, LPCSTR parameter
     return (nullptr != strstr(spawnArgs, parameterName));
 }
 
-u32 CSE_ALifeObject::getCountValueToSpawn(LPCSTR spawnArgs)
+u32 CSE_ALifeObject::getCountValueToSpawn(const char* spawnArgs)
 {
     int spawn_count = 1;
 
@@ -79,7 +79,7 @@ u32 CSE_ALifeObject::getCountValueToSpawn(LPCSTR spawnArgs)
     return spawn_count;
 }
 
-CSE_Abstract* CSE_ALifeObject::setAddonFlagsIsWeapon(CSE_Abstract* E, LPCSTR spawnArgs)
+CSE_Abstract* CSE_ALifeObject::setAddonFlagsIsWeapon(CSE_Abstract* E, const char* spawnArgs)
 {
     if (E == nullptr) {
         return E;
@@ -130,7 +130,7 @@ CSE_Abstract* CSE_ALifeObject::setAddonFlagsIsWeapon(CSE_Abstract* E, LPCSTR spa
     return E;
 }
 
-void CSE_ALifeObject::spawnAmmoForWeapon(LPCSTR wpnSection, CSE_Abstract* E, int i_ammo_type, u32 countAmmoBoxesToSpawn)
+void CSE_ALifeObject::spawnAmmoForWeapon(const char* wpnSection, CSE_Abstract* E, int i_ammo_type, u32 countAmmoBoxesToSpawn)
 {
     if (wpnSection == nullptr || !xr_strlen(wpnSection)) {
         return;
@@ -140,8 +140,8 @@ void CSE_ALifeObject::spawnAmmoForWeapon(LPCSTR wpnSection, CSE_Abstract* E, int
     {
         if (pSettings->line_exist(wpnSection, "ammo_class"))
         {
-            LPCSTR ammoSec = "";
-            LPCSTR ammo_class = pSettings->r_string(wpnSection, "ammo_class");
+            const char* ammoSec = "";
+            const char* ammo_class = pSettings->r_string(wpnSection, "ammo_class");
 
             for (int i = 0, n = _GetItemCount(ammo_class); i < n; ++i)
             {
@@ -178,7 +178,7 @@ void CSE_ALifeObject::setItemCondition(CSE_Abstract* E, float condition)
 }
 
 
-void CSE_ALifeObject::spawn_supplies(LPCSTR ini_string)
+void CSE_ALifeObject::spawn_supplies(const char* ini_string)
 {
     if (!ini_string)
         return;
@@ -236,8 +236,8 @@ void CSE_ALifeObject::parseLoadouts(CInifile& ini, xr_vector <CInifile::Sect*>& 
 void CSE_ALifeObject::processingSpawnFullRandomLoadout(CInifile& ini)
 {
     parseLoadouts(ini, m_loadouts);
-    LPCSTR itemSection = "";
-    LPCSTR spawnArgs = "";
+    const char* itemSection = "";
+    const char* spawnArgs = "";
 
     if (m_loadouts.empty()) {
         return;
@@ -292,8 +292,8 @@ void CSE_ALifeObject::processingSpawnOnceRandomitemByRandomLoadout(CInifile& ini
 
     CInifile::Sect* randomLoadout = m_loadouts[::Random.randI(0, m_loadouts.size())];
     size_t randomLoadoutItemIndex = ::Random.randI(0, randomLoadout->Data.size());
-    LPCSTR itemSection = randomLoadout->Data[randomLoadoutItemIndex].first.c_str();
-    LPCSTR spawnArgs = randomLoadout->Data[randomLoadoutItemIndex].second.c_str();
+    const char* itemSection = randomLoadout->Data[randomLoadoutItemIndex].first.c_str();
+    const char* spawnArgs = randomLoadout->Data[randomLoadoutItemIndex].second.c_str();
 
     if (!pSettings->section_exist(itemSection))
     {
@@ -323,8 +323,8 @@ void CSE_ALifeObject::processingSpawnOnceRandomitemByRandomLoadout(CInifile& ini
 void CSE_ALifeObject::processingSpawnOnceRandomItemPerEachLoadouts(CInifile& ini)
 {
     parseLoadouts(ini, m_loadouts);
-    LPCSTR itemSection = "";
-    LPCSTR spawnArgs = "";
+    const char* itemSection = "";
+    const char* spawnArgs = "";
     size_t randomLoadoutItemIndex = 0;
     size_t l_size = 0;
 
@@ -368,8 +368,8 @@ void CSE_ALifeObject::processingSpawnOnceRandomItemPerEachLoadouts(CInifile& ini
 // ��������� �����
 void CSE_ALifeObject::processingVanillaSpawn(CInifile& ini)
 {
-    LPCSTR itemSection = "";
-    LPCSTR spawnArgs = "";
+    const char* itemSection = "";
+    const char* spawnArgs = "";
 
     if (ini.section_exist("spawn"))
     {

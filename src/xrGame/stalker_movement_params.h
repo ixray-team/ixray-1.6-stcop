@@ -69,7 +69,7 @@ public:
 
 public:
 		void					cover_loophole_id		(shared_str const& loophole_id);
-		LPCSTR					cover_loophole_id		() const;
+		const char*					cover_loophole_id		() const;
 		loophole_type const*	cover_loophole			() const;
 
 public:

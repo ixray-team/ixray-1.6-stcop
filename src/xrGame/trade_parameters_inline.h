@@ -129,8 +129,8 @@ IC	void CTradeParameters::process							(_action_type type, CInifile &ini_file, 
 
 		string256			temp0, temp1;
 		//THROW3				(_GetItemCount(*(*I).second) == 2,"Invalid parameters in section",*section);
-		LPCSTR param1 = _GetItem(*(*I).second, 0, temp0);
-		LPCSTR param2 = _GetItemCount(*(*I).second) >= 2 ? _GetItem(*(*I).second, 1, temp1) : param1;
+		const char* param1 = _GetItem(*(*I).second, 0, temp0);
+		const char* param2 = _GetItemCount(*(*I).second) >= 2 ? _GetItem(*(*I).second, 1, temp1) : param1;
 
 		_action.enable		(
 			(*I).first,

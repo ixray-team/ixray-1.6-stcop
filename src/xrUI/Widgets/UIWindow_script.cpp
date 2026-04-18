@@ -75,17 +75,17 @@ const Fvector2 get_wnd_pos(CUIWindow* w)
 	return w->GetWndPos();
 }
 
-Frect	get_texture_rect(LPCSTR icon_name)
+Frect	get_texture_rect(const char* icon_name)
 {
 	return CUITextureMaster::GetTextureRect(icon_name);
 }
 
-LPCSTR	get_texture_name(LPCSTR icon_name)
+const char*	get_texture_name(const char* icon_name)
 {
 	return CUITextureMaster::GetTextureFileName(icon_name);
 }
 
-TEX_INFO	get_texture_info(LPCSTR name, LPCSTR def_name)
+TEX_INFO	get_texture_info(const char* name, const char* def_name)
 {
 	if (CUITextureMaster::ItemExist(name))
 		return CUITextureMaster::FindItem(name);

@@ -361,7 +361,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 					BT.THM.mip_filter = THM->r_u32();
 					BT.THM.width = THM->r_u32();
 					BT.THM.height = THM->r_u32();
-					BOOL			bLOD = FALSE;
+					bool			bLOD = FALSE;
 					if (N[0] == 'l' && N[1] == 'o' && N[2] == 'd' && N[3] == '\\') bLOD = TRUE;
 
 					// load surface if it has an alpha channel or has "implicit lighting" flag

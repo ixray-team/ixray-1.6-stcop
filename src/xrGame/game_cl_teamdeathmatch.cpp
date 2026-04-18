@@ -553,7 +553,7 @@ void	game_cl_TeamDeathmatch::OnRender				()
 	inherited::OnRender();
 }
 
-BOOL game_cl_TeamDeathmatch::CanCallBuyMenu			()
+bool game_cl_TeamDeathmatch::CanCallBuyMenu			()
 {
 	if (Phase()!=GAME_PHASE_INPROGRESS)
 		return FALSE;
@@ -585,7 +585,7 @@ BOOL game_cl_TeamDeathmatch::CanCallBuyMenu			()
 	return m_bBuyEnabled;
 };
 
-BOOL game_cl_TeamDeathmatch::CanCallSkinMenu			()
+bool game_cl_TeamDeathmatch::CanCallSkinMenu			()
 {
 	if(!m_game_ui)	return FALSE;
 	if (m_game_ui->m_pUITeamSelectWnd && m_game_ui->m_pUITeamSelectWnd->IsShown())
@@ -595,7 +595,7 @@ BOOL game_cl_TeamDeathmatch::CanCallSkinMenu			()
 	return inherited::CanCallSkinMenu();
 };
 
-BOOL game_cl_TeamDeathmatch::CanCallInventoryMenu			()
+bool game_cl_TeamDeathmatch::CanCallInventoryMenu			()
 {
 	if(!m_game_ui)	return FALSE;
 	if (m_game_ui->m_pUITeamSelectWnd && m_game_ui->m_pUITeamSelectWnd->IsShown())
@@ -604,7 +604,7 @@ BOOL game_cl_TeamDeathmatch::CanCallInventoryMenu			()
 	return inherited::CanCallInventoryMenu();	
 };
 
-BOOL game_cl_TeamDeathmatch::CanCallTeamSelectMenu			()
+bool game_cl_TeamDeathmatch::CanCallTeamSelectMenu			()
 {
 	if (Phase()!=GAME_PHASE_INPROGRESS) return false;
 	if (!local_player) return false;
@@ -770,7 +770,7 @@ bool				game_cl_TeamDeathmatch::IsPlayerInTeam(game_PlayerState* ps, ETeam team)
 	return (ModifyTeam(s16(ps->team)) == s16(team));
 }
 
-LPCSTR game_cl_TeamDeathmatch::GetGameScore(string32&	score_dest)
+const char* game_cl_TeamDeathmatch::GetGameScore(string32&	score_dest)
 {
 	xr_sprintf(score_dest, "[%d:%d]", teams[0].score, teams[1].score);
 	return score_dest;

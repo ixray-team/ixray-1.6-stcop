@@ -16,7 +16,7 @@ CUIEditKeyBind::CUIEditKeyBind(bool bPrim)
 	m_action					= nullptr;
 }
 
-UI_API u32 cut_string_by_length(CGameFont* pFont, LPCSTR src, LPSTR dst, u32 dst_size, float length)
+UI_API u32 cut_string_by_length(CGameFont* pFont, const char* src, LPSTR dst, u32 dst_size, float length)
 {
 	if ( pFont->IsMultibyte() ) {
 		u16 nPos = pFont->GetCutLengthPos( length, src );
@@ -230,7 +230,7 @@ void CUIEditKeyBind::BindAction2Key()
 	}	
 }
 
-void CUIEditKeyBind::OnMessage(LPCSTR message)
+void CUIEditKeyBind::OnMessage(const char* message)
 {
 	// message = "command=key"
 	int eq	= (int)strcspn(message,"=");

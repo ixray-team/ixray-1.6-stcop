@@ -137,7 +137,7 @@ game_cl_ArtefactHunt::~game_cl_ArtefactHunt()
 }
 
 
-BOOL	bBearerCantSprint = TRUE;
+bool	bBearerCantSprint = TRUE;
 void game_cl_ArtefactHunt::net_import_state	(NET_Packet& P)
 {
 	inherited::net_import_state	(P);
@@ -497,7 +497,7 @@ void game_cl_ArtefactHunt::SetScore				()
 			m_game_ui->SetFraglimit(ps->frags(), artefactsNum);
 	}
 }
-BOOL game_cl_ArtefactHunt::CanCallBuyMenu			()
+bool game_cl_ArtefactHunt::CanCallBuyMenu			()
 {
 	if (!m_bBuyEnabled) return FALSE;
 	if (Phase()!=GAME_PHASE_INPROGRESS) return false;

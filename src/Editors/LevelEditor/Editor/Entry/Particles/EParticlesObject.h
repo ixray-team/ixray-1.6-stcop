@@ -12,13 +12,13 @@ class EParticlesObject: public CCustomObject
 	void   	OnRefChange			(PropValue* V);
 	void   	OnControlClick		(ButtonValue* sender, bool& bModif, bool& bSafe);
 public:
-	                	EParticlesObject   	(LPVOID data, LPCSTR name);
+	                	EParticlesObject   	(LPVOID data, const char* name);
     void            	Construct   		(LPVOID data);
 	virtual         	~EParticlesObject  	();
     virtual bool		CanAttach			() {return true;}
 
     IParticleCustom*	GetParticles		(){return m_Particles;}
-	LPCSTR				GetReferenceName	(){return m_Particles?*m_Particles->Name():0;}
+	const char*				GetReferenceName	(){return m_Particles?*m_Particles->Name():0;}
 
     void				RenderSingle		();
 	virtual void    	Render      		(int priority, bool strictB2F);
@@ -27,9 +27,9 @@ public:
     virtual bool 		FrustumPick			(const CFrustum& frustum);
 
   	virtual bool 		LoadStream			(IReader&);
-  	virtual bool 		LoadLTX				(CInifile& ini, LPCSTR sect_name);
+  	virtual bool 		LoadLTX				(CInifile& ini, const char* sect_name);
 	virtual void 		SaveStream			(IWriter&);
-  	virtual void 		SaveLTX				(CInifile& ini, LPCSTR sect_name);
+  	virtual void 		SaveLTX				(CInifile& ini, const char* sect_name);
 
     virtual bool		ExportGame			(SExportStreams* data);
 	virtual bool    	GetBox      		(Fbox& box) ;
@@ -40,14 +40,14 @@ public:
 
     virtual void 		OnUpdateTransform	();
 
-    IC bool				RefCompare			(LPCSTR ref_name){VERIFY(ref_name&&ref_name[0]); return (0==stricmp(ref_name,GetReferenceName()));}
+    IC bool				RefCompare			(const char* ref_name){VERIFY(ref_name&&ref_name[0]); return (0==stricmp(ref_name,GetReferenceName()));}
 
-    bool				Compile				(LPCSTR ref_name);
+    bool				Compile				(const char* ref_name);
     
     // device dependent routine
 	virtual void 		OnDeviceCreate 		();
 	virtual void 		OnDeviceDestroy		();
 
-	virtual void		FillProp			(LPCSTR pref, PropItemVec& items);
+	virtual void		FillProp			(const char* pref, PropItemVec& items);
 	virtual bool 		GetSummaryInfo		(SSceneSummary* inf);
 };

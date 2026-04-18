@@ -12,7 +12,7 @@
 #define REPUTATION_TABLE		"reputation_relations"
 
 //////////////////////////////////////////////////////////////////////////
-REPUTATION_DATA::REPUTATION_DATA (int idx, shared_str idn, LPCSTR threshold_str)
+REPUTATION_DATA::REPUTATION_DATA (int idx, shared_str idn, const char* threshold_str)
 {
 	index = idx;
 	id = idn;

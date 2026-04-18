@@ -193,16 +193,16 @@ public:
 	virtual IRenderVisual*			model_Create			(LPCSTR name, IReader*data=0);
 	virtual IRenderVisual*			model_CreateChild		(LPCSTR name, IReader*data);
 	virtual IRenderVisual*			model_Duplicate			(IRenderVisual*	V);
-	virtual void					model_Delete			(IRenderVisual* &	V, BOOL bDiscard);
+	virtual void					model_Delete			(IRenderVisual* &	V, bool bDiscard);
 	virtual void					model_Delete_Deffered	(IRenderVisual* &	V);
 	virtual void 					model_Delete			(IRender_DetailModel* & F);
 	virtual void					models_Prefetch			();
-	virtual void					models_Clear			(BOOL b_complete);
+	virtual void					models_Clear			(bool b_complete);
 	
 	// Occlusion culling
-	virtual BOOL					occ_visible				(vis_data&	V);
-	virtual BOOL					occ_visible				(Fbox&		B);
-	virtual BOOL					occ_visible				(sPoly&		P);
+	virtual bool					occ_visible				(vis_data&	V);
+	virtual bool					occ_visible				(Fbox&		B);
+	virtual bool					occ_visible				(sPoly&		P);
 	
 	// Main
 	virtual void					Calculate				();
@@ -234,7 +234,7 @@ public:
 
 	auto							ShaderOptionsCount		() { return m_ShaderOptions.size(); }
 
-	virtual BOOL					InIndoor				() { return pLastSector!=pOutdoorSector; };
+	virtual bool					InIndoor				() { return pLastSector!=pOutdoorSector; };
 	virtual size_t					SectorsCount			() { return Sectors.size(); }
 
 private:

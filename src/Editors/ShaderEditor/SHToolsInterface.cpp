@@ -14,7 +14,7 @@ ISHTools::ISHTools(const ISHInit& init)
 }
 //---------------------------------------------------------------------------
 
-void ISHTools::ViewSetCurrentItem(LPCSTR full_name)
+void ISHTools::ViewSetCurrentItem(const char* full_name)
 {
 	if (m_bLockUpdate) 	return;
 
@@ -108,12 +108,12 @@ void ISHTools::OnDeactivate()
     Ext.m_Items->ClearList			();
 }
 //---------------------------------------------------------------------------
-void ISHTools::OnCloneItem(LPCSTR parent_path, LPCSTR new_full_name)
+void ISHTools::OnCloneItem(const char* parent_path, const char* new_full_name)
 {
     AppendItem(new_full_name, parent_path);
 }
 
-void ISHTools::OnCreateItem(LPCSTR path)
+void ISHTools::OnCreateItem(const char* path)
 {
     AppendItem(path);
 }

@@ -5,9 +5,9 @@
 void TLiteAmmoBones::BeginComponent(IECSOwner* O)
 {
 	CWeapon* pWeapon = smart_cast<CWeapon*>(O);
-	auto ReachInAllSections = [&](LPCSTR param_name)
+	auto ReachInAllSections = [&](const char* param_name)
 	{
-		LPCSTR reached_sect = *pWeapon->cNameSect();
+		const char* reached_sect = *pWeapon->cNameSect();
 		const shared_str hud_section = pWeapon->HudSection();
 		if (pSettings->line_exist(hud_section, param_name))
 		{
@@ -47,7 +47,7 @@ void TLiteAmmoBones::UpdateLiteAmmoBones(CWeapon* pWeapon, u32 idx)
 		return;
 	}
 
-	auto SetVisible = [&](IKinematics* kin, const shared_str& bone_name, BOOL status)
+	auto SetVisible = [&](IKinematics* kin, const shared_str& bone_name, bool status)
 	{
 		if (kin != nullptr)
 		{
@@ -68,7 +68,7 @@ void TLiteAmmoBones::UpdateLiteAmmoBones(CWeapon* pWeapon, u32 idx)
 		u32 bullet_idx = it.first;
 		const shared_str& node = it.second;
 
-		BOOL visible = (bullet_idx <= idx);
+		bool visible = (bullet_idx <= idx);
 		SetVisible(world_kin, node, visible);
 		SetVisible(hud_kin, node, visible);
 	}
@@ -89,9 +89,9 @@ void TLiteAmmoBones::UpdateLiteAmmoBones(CWeapon* pWeapon, u32 idx)
 void TMagAmmoBones::BeginComponent(IECSOwner* O)
 {
 	CWeapon* pWeapon = smart_cast<CWeapon*>(O);
-	auto ReachInAllSections = [&](LPCSTR param_name)
+	auto ReachInAllSections = [&](const char* param_name)
 	{
-		LPCSTR reached_sect = *pWeapon->cNameSect();
+		const char* reached_sect = *pWeapon->cNameSect();
 		const shared_str hud_section = pWeapon->HudSection();
 		if (pSettings->line_exist(hud_section, param_name))
 		{
@@ -107,7 +107,7 @@ void TMagAmmoBones::BeginComponent(IECSOwner* O)
 		if (pSettings->line_exist(ReachInAllSections(*mag_bone_type), *mag_bone_type))
 		{
 			RStringVec bones = {};
-			LPCSTR read_mag_bone_type = pSettings->r_string(ReachInAllSections(*mag_bone_type), *mag_bone_type);
+			const char* read_mag_bone_type = pSettings->r_string(ReachInAllSections(*mag_bone_type), *mag_bone_type);
 
 			for (int i = 0, count = _GetItemCount(read_mag_bone_type); i < count; ++i)
 			{
@@ -128,7 +128,7 @@ void TMagAmmoBones::UpdateMagAmmoBones(CWeapon* pWeapon, u8 type)
 		return;
 	}
 
-	auto SetVisible = [&](IKinematics* kin, const shared_str& bone_name, BOOL status)
+	auto SetVisible = [&](IKinematics* kin, const shared_str& bone_name, bool status)
 	{
 		if (kin != nullptr)
 		{
@@ -146,7 +146,7 @@ void TMagAmmoBones::UpdateMagAmmoBones(CWeapon* pWeapon, u8 type)
 
 	for (const auto& [ammotype, vec] : m_mag_bone_type)
 	{
-		BOOL status = !!(ammotype == type);
+		bool status = !!(ammotype == type);
 		for (const auto& bone : vec)
 		{
 			SetVisible(hud_kin, bone, status);
@@ -170,9 +170,9 @@ void TMagAmmoBones::UpdateMagAmmoBones(CWeapon* pWeapon, u8 type)
 void TGrenadeLauncherAmmoBones::BeginComponent(IECSOwner* O)
 {
 	CWeapon* pWeapon = smart_cast<CWeapon*>(O);
-	auto ReachInAllSections = [&](LPCSTR param_name)
+	auto ReachInAllSections = [&](const char* param_name)
 	{
-		LPCSTR reached_sect = *pWeapon->cNameSect();
+		const char* reached_sect = *pWeapon->cNameSect();
 		const shared_str hud_section = pWeapon->HudSection();
 		if (pSettings->line_exist(hud_section, param_name))
 		{
@@ -188,7 +188,7 @@ void TGrenadeLauncherAmmoBones::BeginComponent(IECSOwner* O)
 		if (pSettings->line_exist(ReachInAllSections(*mag_bone_type), *mag_bone_type))
 		{
 			RStringVec bones = {};
-			LPCSTR read_mag_bone_type = pSettings->r_string(ReachInAllSections(*mag_bone_type), *mag_bone_type);
+			const char* read_mag_bone_type = pSettings->r_string(ReachInAllSections(*mag_bone_type), *mag_bone_type);
 
 			for (int i = 0, count = _GetItemCount(read_mag_bone_type); i < count; ++i)
 			{
@@ -214,7 +214,7 @@ void TGrenadeLauncherAmmoBones::UpdateGLAmmoBones(CWeapon* pWeapon, u8 type)
 		return;
 	}
 
-	auto SetVisible = [&](IKinematics* kin, const shared_str& bone_name, BOOL status)
+	auto SetVisible = [&](IKinematics* kin, const shared_str& bone_name, bool status)
 	{
 		if (kin != nullptr)
 		{
@@ -232,7 +232,7 @@ void TGrenadeLauncherAmmoBones::UpdateGLAmmoBones(CWeapon* pWeapon, u8 type)
 
 	for (const auto& [ammotype, vec] : m_grenade_launcher_bone_type)
 	{
-		BOOL status = !!(ammotype == type);
+		bool status = !!(ammotype == type);
 		for (const auto& bone : vec)
 		{
 			SetVisible(hud_kin, bone, status);
@@ -256,9 +256,9 @@ void TGrenadeLauncherAmmoBones::UpdateGLAmmoBones(CWeapon* pWeapon, u8 type)
 void TShellBones::BeginComponent(IECSOwner* O)
 {
 	CWeapon* pWeapon = smart_cast<CWeapon*>(O);
-	auto ReachInAllSections = [&](LPCSTR param_name)
+	auto ReachInAllSections = [&](const char* param_name)
 	{
-		LPCSTR reached_sect = *pWeapon->cNameSect();
+		const char* reached_sect = *pWeapon->cNameSect();
 		const shared_str hud_section = pWeapon->HudSection();
 		if (pSettings->line_exist(hud_section, param_name))
 		{
@@ -274,7 +274,7 @@ void TShellBones::BeginComponent(IECSOwner* O)
 		if (pSettings->line_exist(ReachInAllSections(*mag_bone_type), *mag_bone_type))
 		{
 			RStringVec bones = {};
-			LPCSTR read_mag_bone_type = pSettings->r_string(ReachInAllSections(*mag_bone_type), *mag_bone_type);
+			const char* read_mag_bone_type = pSettings->r_string(ReachInAllSections(*mag_bone_type), *mag_bone_type);
 
 			for (int i = 0, count = _GetItemCount(read_mag_bone_type); i < count; ++i)
 			{
@@ -295,7 +295,7 @@ void TShellBones::UpdateShellBones(CWeapon* pWeapon, u8 type)
 		return;
 	}
 
-	auto SetVisible = [&](IKinematics* kin, const shared_str& bone_name, BOOL status)
+	auto SetVisible = [&](IKinematics* kin, const shared_str& bone_name, bool status)
 	{
 		if (kin != nullptr)
 		{
@@ -313,7 +313,7 @@ void TShellBones::UpdateShellBones(CWeapon* pWeapon, u8 type)
 
 	for (const auto& [ammotype, vec] : m_shell_bone_type)
 	{
-		BOOL status = !!(ammotype == type);
+		bool status = !!(ammotype == type);
 		for (const auto& bone : vec)
 		{
 			SetVisible(hud_kin, bone, status);
@@ -342,7 +342,7 @@ void TAmmoBones::SAmmoBonesParams::Load(const shared_str& section, s32 base_node
 	}
 	if (pSettings->line_exist(section, "all_bones"))
 	{
-		LPCSTR S = pSettings->r_string(section, "all_bones");
+		const char* S = pSettings->r_string(section, "all_bones");
 		if (S && S[0])
 		{
 			string128 Item = {};
@@ -385,7 +385,7 @@ void TAmmoBones::SAmmoBonesParams::Load(const shared_str& section, s32 base_node
 			continue;
 		}
 
-		LPCSTR S = pSettings->r_string(section, *configuration);
+		const char* S = pSettings->r_string(section, *configuration);
 		if (S && S[0])
 		{
 			string128 Item = {};
@@ -405,7 +405,7 @@ void TAmmoBones::SAmmoBonesParams::Load(const shared_str& section, s32 base_node
 		node.first = configuration;
 		node.second = {};
 
-		LPCSTR S = pSettings->r_string(section, *configuration);
+		const char* S = pSettings->r_string(section, *configuration);
 		if (S && S[0])
 		{
 			string128 Item = {};
@@ -475,7 +475,7 @@ void TAmmoBones::UpdateAmmoBones(CWeapon* pWeapon, u32 idx, u8 type)
 		return;
 	}
 
-	auto SetVisible = [&](IKinematics* kin, const shared_str& bone_name, BOOL status)
+	auto SetVisible = [&](IKinematics* kin, const shared_str& bone_name, bool status)
 	{
 		if (kin != nullptr)
 		{

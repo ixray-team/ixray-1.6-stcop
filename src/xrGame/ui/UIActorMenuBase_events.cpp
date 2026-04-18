@@ -397,7 +397,7 @@ void CUIActorMenuBase::AttachAddon(PIItem item_to_upgrade)
 	SetCurrentItem								(nullptr);
 }
 
-void CUIActorMenuBase::DetachAddon(LPCSTR addon_name, PIItem itm)
+void CUIActorMenuBase::DetachAddon(const char* addon_name, PIItem itm)
 {
 	PlaySnd										(eDetachAddon);
 	if (OnClient())

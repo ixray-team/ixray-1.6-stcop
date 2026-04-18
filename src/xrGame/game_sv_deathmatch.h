@@ -30,17 +30,17 @@ protected:
 	xr_vector<u32>					m_vFreeRPoints[TEAM_COUNT];
 	u32								m_dwLastRPoints[TEAM_COUNT];
 
-	BOOL							m_delayedRoundEnd;
+	bool							m_delayedRoundEnd;
 	u32								m_roundEndDelay;
 
-	BOOL							m_delayedTeamEliminated;
+	bool							m_delayedTeamEliminated;
 	u32								m_TeamEliminatedDelay;
 
 	shared_str							m_sBaseWeaponCostSection;
 		
 	xr_vector<game_TeamState>		teams;//dm,tdm,ah	
 
-	LPCSTR							pWinnigPlayerName;
+	const char*							pWinnigPlayerName;
 
 	virtual		void				ReadOptions				(shared_str &options);
 	virtual		void				ConsoleCommands_Create	();
@@ -76,7 +76,7 @@ protected:
 	void							SM_SwitchOnNextActivePlayer			();
 	void							SM_SwitchOnPlayer		(CObject* pNewObject);
 
-	BOOL							Is_Anomaly_InLists		(CSE_Abstract* E);
+	bool							Is_Anomaly_InLists		(CSE_Abstract* E);
 
 protected:
 
@@ -111,7 +111,7 @@ public:
 				virtual				~game_sv_Deathmatch		();
 	virtual		void				Create					(shared_str &options);
 
-	virtual		LPCSTR				type_name				() const { return "deathmatch";};
+	virtual		const char*				type_name				() const { return "deathmatch";};
 	virtual		void				net_Export_State		(NET_Packet& P, ClientID id_to);
 
 	virtual		void				OnEvent					(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender );
@@ -128,10 +128,10 @@ public:
 	virtual		void				OnPlayerHitPlayer		(u16 id_hitter, u16 id_hitted, NET_Packet& P); //игрок получил Hit
 	virtual		void				OnPlayerHitPlayer_Case	(game_PlayerState* ps_hitter, game_PlayerState* ps_hitted, SHit* pHitS);	
 
-	virtual		BOOL				OnTouch					(u16 eid_who, u16 eid_what, BOOL bForced = FALSE);
+	virtual		bool				OnTouch					(u16 eid_who, u16 eid_what, bool bForced = FALSE);
 	virtual		void				OnDetach				(u16 eid_who, u16 eid_what);
 
-	virtual		BOOL				OnPreCreate				(CSE_Abstract* E);
+	virtual		bool				OnPreCreate				(CSE_Abstract* E);
 	virtual		void				OnCreate				(u16 eid_who);
 	virtual		void				OnPostCreate			(u16 id_who);
 
@@ -159,7 +159,7 @@ public:
 	virtual		void				OnPlayerFire (ClientID id_who, NET_Packet &P);
 	// Main
 	virtual		void				Update					();
-				BOOL				AllPlayers_Ready		();
+				bool				AllPlayers_Ready		();
 
 	virtual		void				assign_RP				(CSE_Abstract* E, game_PlayerState* ps_who);
 	virtual		u32					RP_2_Use				(CSE_Abstract* E);
@@ -185,7 +185,7 @@ public:
 
 	virtual		void				StartAnomalies			(int AnomalySet = -1);
 
-	virtual		bool				IsBuyableItem			(LPCSTR	ItemName);
+	virtual		bool				IsBuyableItem			(const char*	ItemName);
 	void							RemoveItemFromActor		(CSE_Abstract* pItem);
 	//----- Money routines -----------------------------------------------------------------
 	virtual		void				Money_SetStart			(ClientID	id_who);
@@ -193,19 +193,19 @@ public:
 				int					GetTeamScore			(u32 idx);
 				void				SetTeamScore			(u32 idx, int val);
 				game_PlayerState*	GetWinningPlayer		();
-	virtual		BOOL				CanHaveFriendlyFire		()	{return FALSE;}
+	virtual		bool				CanHaveFriendlyFire		()	{return FALSE;}
 	virtual		void				RespawnPlayer			(ClientID id_who, bool NoSpectator);
 	virtual		void				check_InvinciblePlayers	();	
 	virtual		void				check_ForceRespawn		();
 	virtual		void				on_death				(CSE_Abstract *e_dest, CSE_Abstract *e_src);
 	//---------------------------------------------------------------------------------------------------
-	virtual		BOOL				IsDamageBlockIndEnabled	();
+	virtual		bool				IsDamageBlockIndEnabled	();
 	virtual		s32					GetTimeLimit			();
 	virtual		s32					GetFragLimit			();
 	virtual		u32					GetDMBLimit				();
 	virtual		u32					GetForceRespawn			();
 	virtual		u32					GetWarmUpTime			();
-	virtual		BOOL				IsAnomaliesEnabled		();
+	virtual		bool				IsAnomaliesEnabled		();
 	virtual		u32					GetAnomaliesTime		();
 
 	virtual		u32					GetNumTeams				() {return (u32)teams.size();};
@@ -217,7 +217,7 @@ public:
 	virtual game_sv_Deathmatch* cast_game_sv_deathmatch() override { return this; }
 
 protected:
-	virtual		void				WriteGameState			(CInifile& ini, LPCSTR sect, bool bRoundResult);
+	virtual		void				WriteGameState			(CInifile& ini, const char* sect, bool bRoundResult);
 	shared_str m_not_free_ammo_str;
 	virtual	bool CanChargeFreeAmmo(char const * ammo_section);
 	DECLARE_SCRIPT_REGISTER_FUNCTION

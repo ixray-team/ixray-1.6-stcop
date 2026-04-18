@@ -68,7 +68,7 @@ CCommandVar CLevelTool::CommandEnableTarget(CCommandVar p1, CCommandVar p2)
 {
 	ESceneToolBase* M = Scene->GetTool(p1);
 	VERIFY(M);
-	BOOL res = FALSE;
+	bool res = FALSE;
 	if (p2)
 	{
 		res = ExecCommand(COMMAND_LOAD_LEVEL_PART, M->FClassID, TRUE);
@@ -109,7 +109,7 @@ CCommandVar CLevelTool::CommandShowTarget(CCommandVar p1, CCommandVar p2)
 CCommandVar CLevelTool::CommandReadonlyTarget(CCommandVar p1, CCommandVar p2)
 {
 	ESceneToolBase* M = Scene->GetTool(p1); VERIFY(M);
-	BOOL res = TRUE;
+	bool res = TRUE;
 	if (p2)
 	{
 		if (!Scene->IfModified())
@@ -204,8 +204,8 @@ CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
 						UI->ResetStatus();
 						Scene->UndoClear();
 
-						BOOL bk1 = Scene->m_RTFlags.test(EScene::flRT_Unsaved);
-						BOOL bk2 = Scene->m_RTFlags.test(EScene::flRT_Modified);
+						bool bk1 = Scene->m_RTFlags.test(EScene::flRT_Unsaved);
+						bool bk2 = Scene->m_RTFlags.test(EScene::flRT_Modified);
 
 						Scene->UndoSave();
 
@@ -505,7 +505,7 @@ CCommandVar CommandLoadSelection(CCommandVar p1, CCommandVar p2)
 		xr_string fn			= LTools->m_LastSelectionName;
 		if( EFS.GetOpenName(_maps_, fn ) )
 		{
-			LPCSTR maps_path	= FS.get_path(_maps_)->m_Path;
+			const char* maps_path	= FS.get_path(_maps_)->m_Path;
 			if (fn.c_str()==strstr(fn.c_str(),maps_path))
 				LTools->m_LastSelectionName = fn.c_str()+xr_strlen(maps_path);
 			UI->SetStatus		("Fragment loading...");
@@ -529,7 +529,7 @@ CCommandVar CommandSaveSelection(CCommandVar p1, CCommandVar p2)
 	if( !Scene->locked() ){
 		xr_string fn			= LTools->m_LastSelectionName;
 		if( EFS.GetSaveName		( _maps_, fn ) ){
-			LPCSTR maps_path	= FS.get_path(_maps_)->m_Path;
+			const char* maps_path	= FS.get_path(_maps_)->m_Path;
 			if (fn.c_str()==strstr(fn.c_str(),maps_path))
 				LTools->m_LastSelectionName = fn.c_str()+xr_strlen(maps_path);
 			UI->SetStatus		("Fragment saving...");
@@ -631,7 +631,7 @@ CCommandVar CommandExportSceneSummary(CCommandVar p1, CCommandVar p2)
 CCommandVar CommandSceneHighlightTexture(CCommandVar p1, CCommandVar p2)
 {
 	/*if( !Scene->locked() ){
-		LPCSTR new_val 		 	= 0;
+		const char* new_val 		 	= 0;
 		if (TfrmChoseItem::SelectItem(smTexture,new_val,1)){
 			Scene->HighlightTexture(new_val,false,0,0,false);
 			return 				TRUE;
@@ -1103,7 +1103,7 @@ CCommandVar CommandCreateSoundLib(CCommandVar p1, CCommandVar p2)
 	return 						TRUE;
 }
 
-extern BOOL ai_map_shown;
+extern bool ai_map_shown;
 CCommandVar CommandToggleAiMapVisibility(CCommandVar p1, CCommandVar p2)
 {
 	ai_map_shown 				= !ai_map_shown;
@@ -1469,7 +1469,7 @@ void CLevelMain::ResetStatus()
 		fraBottomBar->paStatus->Caption=""; fraBottomBar->paStatus->Repaint();
 	}*/
 }
-void CLevelMain::SetStatus(LPCSTR s, bool bOutLog)
+void CLevelMain::SetStatus(const char* s, bool bOutLog)
 {
 	VERIFY(m_bReady);
 

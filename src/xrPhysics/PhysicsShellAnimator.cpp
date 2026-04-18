@@ -6,7 +6,7 @@
 #include "IPhysicsShellHolder.h"
 #include "../xrEngine/bone.h"
 
-CPhysicsShellAnimator::CPhysicsShellAnimator(CPhysicsShell* _pPhysicsShell, CInifile const* ini, LPCSTR section) : m_pPhysicsShell(_pPhysicsShell)
+CPhysicsShellAnimator::CPhysicsShellAnimator(CPhysicsShell* _pPhysicsShell, CInifile const* ini, const char* section) : m_pPhysicsShell(_pPhysicsShell)
 {
 	VERIFY(ini->section_exist(section));
 	IPhysicsShellHolder* obj = (*(_pPhysicsShell->Elements().begin()))->PhysicsRefObject();
@@ -14,7 +14,7 @@ CPhysicsShellAnimator::CPhysicsShellAnimator(CPhysicsShell* _pPhysicsShell, CIni
 	bool all_bones = true;
 	if (ini->line_exist(section, "controled_bones"))
 	{
-		LPCSTR controled = ini->r_string(section, "controled_bones");
+		const char* controled = ini->r_string(section, "controled_bones");
 		all_bones = xr_strcmp(controled, "all") == 0;
 		if (!all_bones)
 			CreateJoints(controled);
@@ -42,7 +42,7 @@ CPhysicsShellAnimator::~CPhysicsShellAnimator()
 	}
 }
 
-void CPhysicsShellAnimator::CreateJoints(LPCSTR controled)
+void CPhysicsShellAnimator::CreateJoints(const char* controled)
 {
 	IPhysicsShellHolder* obj = (*(m_pPhysicsShell->Elements().begin()))->PhysicsRefObject();
 	const u16 nb = (u16)_GetItemCount(controled);

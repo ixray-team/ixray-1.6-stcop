@@ -27,7 +27,7 @@ CUINewsWnd::~CUINewsWnd()
 	ActionRepeaters()->UnregisterOwner(this);
 }
 
-void CUINewsWnd::Init(LPCSTR xml_name, LPCSTR start_from)
+void CUINewsWnd::Init(const char* xml_name, const char* start_from)
 {
 	string512 pth;
 

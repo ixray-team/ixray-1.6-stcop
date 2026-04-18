@@ -40,8 +40,8 @@ private:
 	typedef xr_vector<TRIPPLE>						TRIPPLES;
 
 private:
-	LPCSTR					m_graph_name;
-	LPCSTR					m_cross_table_name;
+	const char*					m_graph_name;
+	const char*					m_cross_table_name;
 
 private:
 	shared_str				m_level_name;

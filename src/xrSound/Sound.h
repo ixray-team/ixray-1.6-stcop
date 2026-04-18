@@ -90,7 +90,7 @@ public:
 	float							fTimeTotal;
 public:
 									ref_sound_data		();
-									ref_sound_data		(LPCSTR fName, esound_type sound_type, int game_type);
+									ref_sound_data		(const char* fName, esound_type sound_type, int game_type);
 	virtual							~ref_sound_data		();
 	float							get_length_sec		() const {return fTimeTotal;};
 };
@@ -118,8 +118,8 @@ public:
 	IC esound_type			_sound_type				()						{VERIFY(_p); return _p->s_type;}
 	IC CSound_UserDataPtr	_g_userdata				()						{VERIFY(_p); return _p->g_userdata;}
 
-	IC void					create					( LPCSTR name, esound_type sound_type,	int	game_type);
-	IC void					attach_tail				( LPCSTR name);
+	IC void					create					( const char* name, esound_type sound_type,	int	game_type);
+	IC void					attach_tail				( const char* name);
 
 	IC void					clone					( const ref_sound& from, esound_type sound_type, int game_type);
 
@@ -149,7 +149,7 @@ public:
 	virtual ~CSound_source() = default;
 	virtual	float			length_sec				( ) const			= 0;
 	virtual u32				game_type				( ) const			= 0;
-	virtual LPCSTR			file_name				( ) const			= 0;
+	virtual const char*			file_name				( ) const			= 0;
 	virtual u16				channels_num			( ) const			= 0;
 	virtual u32				bytes_total				( ) const			= 0;
 };
@@ -247,7 +247,7 @@ class XRSOUND_API	CSound_manager_interface
 
 protected:
 	friend class 					ref_sound_data;
-	virtual void					_create_data			( ref_sound_data& S, LPCSTR fName, esound_type sound_type, int	game_type)				= 0;
+	virtual void					_create_data			( ref_sound_data& S, const char* fName, esound_type sound_type, int	game_type)				= 0;
 	virtual void					_destroy_data			( ref_sound_data& S)																	= 0;
 public:
 	virtual							~CSound_manager_interface(){}
@@ -258,8 +258,8 @@ public:
 	virtual void					_restart				( )																						= 0;
     virtual BOOL					i_locked 				( )																						= 0;
 
-	virtual void					create					( ref_sound& S, LPCSTR fName,				esound_type sound_type, int		game_type)	= 0;
-	virtual void					attach_tail				( ref_sound& S, LPCSTR fName)															= 0;
+	virtual void					create					( ref_sound& S, const char* fName,				esound_type sound_type, int		game_type)	= 0;
+	virtual void					attach_tail				( ref_sound& S, const char* fName)															= 0;
 	virtual void					clone					( ref_sound& S, const ref_sound& from,		esound_type sound_type, int		game_type)	= 0;
 	virtual void					destroy					( ref_sound& S)																			= 0;
 	virtual void					stop_emitters			( )																						= 0;	
@@ -296,11 +296,11 @@ extern XRSOUND_API CSound_manager_interface*		Sound;
 
 /// ********* Sound ********* (utils, accessors, helpers)
 IC ref_sound_data::ref_sound_data				()																{	handle=0;feedback=0;g_type=0;g_object=0;s_type=st_Effect;			}
-IC ref_sound_data::ref_sound_data				( LPCSTR fName, esound_type sound_type, int	game_type )	{	::Sound->_create_data			(*this,fName, sound_type, game_type);							}
+IC ref_sound_data::ref_sound_data				( const char* fName, esound_type sound_type, int	game_type )	{	::Sound->_create_data			(*this,fName, sound_type, game_type);							}
 IC ref_sound_data::~ref_sound_data				()																{	::Sound->_destroy_data			(*this);																}
 
-IC void	ref_sound::create						( LPCSTR name, esound_type sound_type, int	game_type)	{	VERIFY(!::Sound->i_locked()); 	::Sound->create		(*this,name,sound_type,game_type);							}
-IC void	ref_sound::attach_tail					( LPCSTR name)											{	VERIFY(!::Sound->i_locked()); 	::Sound->attach_tail(*this,name);							}
+IC void	ref_sound::create						( const char* name, esound_type sound_type, int	game_type)	{	VERIFY(!::Sound->i_locked()); 	::Sound->create		(*this,name,sound_type,game_type);							}
+IC void	ref_sound::attach_tail					( const char* name)											{	VERIFY(!::Sound->i_locked()); 	::Sound->attach_tail(*this,name);							}
 
 IC void	ref_sound::clone						( const ref_sound& from,esound_type sound_type, int	game_type)	{	VERIFY(!::Sound->i_locked()); 	::Sound->clone		(*this,from,sound_type,game_type);					}
 IC void	ref_sound::destroy						( )														{	VERIFY(!::Sound->i_locked()); 	::Sound->destroy	(*this);													}

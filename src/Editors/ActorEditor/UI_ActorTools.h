@@ -58,17 +58,17 @@ public:
 	}
 	bool 			UpdateVisual		(CEditableObject* source, bool bUpdGeom, bool bUpdKeys, bool bUpdDefs);
 	bool			IsRenderable		(){return !!m_pVisual;}
-	void			PlayMotion			(LPCSTR name, u16 slot);
+	void			PlayMotion			(const char* name, u16 slot);
  /*   void			RestoreParams		(TFormStorage* s);
 	void			SaveParams			(TFormStorage* s);*/
 	void			OnRender			();
-//.    void			PlayCycle			(LPCSTR name, int part, u16 slot);
-//.    void			PlayFX				(LPCSTR name, float power, u16 slot);
+//.    void			PlayCycle			(const char* name, int part, u16 slot);
+//.    void			PlayFX				(const char* name, float power, u16 slot);
 	void			StopAnimation		();
-	void 			FillMotionList		(LPCSTR pref, ListItemsVec& items, int modeID);
-	MotionID		FindMotionID		(LPCSTR name, u16 slot);
-	CMotionDef*		FindMotionDef		(LPCSTR name, u16 slot);
-	CMotion*		FindMotionKeys		(LPCSTR name, u16 slot);
+	void 			FillMotionList		(const char* pref, ListItemsVec& items, int modeID);
+	MotionID		FindMotionID		(const char* name, u16 slot);
+	CMotionDef*		FindMotionDef		(const char* name, u16 slot);
+	CMotion*		FindMotionKeys		(const char* name, u16 slot);
 private:
    //	virtual	Fmatrix&				   	_BCL	ObjectXFORM							()				 { return m_pobject_matrix; }
    //	virtual	Fvector&					_BCL	ObjectPosition						()				 { return m_pobject_matrix.c; }
@@ -234,13 +234,13 @@ public:
 	virtual void		Modified			(); 
 	void  		OnItemModified		(void); 
 
-	virtual LPCSTR		GetInfo				();
+	virtual const char*		GetInfo				();
 	void				RealUpdateProperties();
 	
-	virtual void		ZoomObject			(BOOL bSelOnly);
+	virtual void		ZoomObject			(bool bSelOnly);
 
-	virtual bool		Load				(LPCSTR name);
-	virtual bool		Save				(LPCSTR name, bool bInternal=false);
+	virtual bool		Load				(const char* name);
+	virtual bool		Save				(const char* name, bool bInternal=false);
 	virtual void		Reload				();
 	
 	virtual void		OnDeviceCreate		();
@@ -257,8 +257,8 @@ public:
 	virtual bool		Pick				(TShiftState Shift);
 	virtual bool 		RayPick				(const Fvector& start, const Fvector& dir, float& dist, Fvector* pt, Fvector* n);
 
-	virtual void		ShowProperties		(LPCSTR focused_item){;}
-	virtual void		UpdateProperties	(BOOL bForced=FALSE){m_Flags.set(flRefreshProps,TRUE); if (bForced) RealUpdateProperties();}
+	virtual void		ShowProperties		(const char* focused_item){;}
+	virtual void		UpdateProperties	(bool bForced=FALSE){m_Flags.set(flRefreshProps,TRUE); if (bForced) RealUpdateProperties();}
 	virtual void		RefreshProperties	(){;}
 	
 	void				GetStatTime			(float& a, float& b, float& c);
@@ -267,18 +267,18 @@ public:
 	void 				SelectPreviewObject	(bool bClear);
 	void				SetPreviewObjectPrefs();
 
-	void				SelectListItem		(LPCSTR pref, LPCSTR name, bool bVal, bool bLeaveSel, bool bExpand);
+	void				SelectListItem		(const char* pref, const char* name, bool bVal, bool bLeaveSel, bool bExpand);
 
 	void 				ShowClipMaker		();
-	bool				Import				(LPCSTR path, LPCSTR name);
-	bool				ExportOBJ			(LPCSTR name);
-	bool				ExportOGF			(LPCSTR name);
-	bool				ExportOMF			(LPCSTR name);
-	bool				ExportDM			(LPCSTR name);
-	bool 				ExportCPP			(LPCSTR name);
-	bool				SaveMotions			(LPCSTR name, bool bSelOnly);
-	bool				AppendMotion		(LPCSTR fn);
-	bool				RemoveMotion		(LPCSTR name);
+	bool				Import				(const char* path, const char* name);
+	bool				ExportOBJ			(const char* name);
+	bool				ExportOGF			(const char* name);
+	bool				ExportOMF			(const char* name);
+	bool				ExportDM			(const char* name);
+	bool 				ExportCPP			(const char* name);
+	bool				SaveMotions			(const char* name, bool bSelOnly);
+	bool				AppendMotion		(const char* fn);
+	bool				RemoveMotion		(const char* name);
 	void 				WorldMotionRotate	(const Fvector& R);
 	void				MakePreview			();
 
@@ -295,26 +295,26 @@ public:
 	IKinematics*		GetKinematics		(){VERIFY(m_RenderObject.m_pVisual); return m_RenderObject.m_pVisual->dcast_PKinematics();}
 
 	CEditableObject*	CurrentObject		(){return m_pEditObject;}
-	void				SetCurrentMotion	(LPCSTR name, u16 slot);
+	void				SetCurrentMotion	(const char* name, u16 slot);
 	CSMotion*			GetCurrentMotion	();       
-	CSMotion*			FindMotion			(LPCSTR name);
-	LPCSTR 				ExtractMotionName	(LPCSTR full_name, LPCSTR prefix=MOTIONS_PREFIX);
-	u16 				ExtractMotionSlot	(LPCSTR full_name, LPCSTR prefix=MOTIONS_PREFIX);
-	xr_string			BuildMotionPref		(u16 slot, LPCSTR prefix=MOTIONS_PREFIX);
-	void				FillObjectProperties(PropItemVec& items, LPCSTR pref, ListItem* sender);
-	void				FillSurfaceProperties(PropItemVec& items, LPCSTR pref, ListItem* sender);
-	void				FillMotionProperties(PropItemVec& items, LPCSTR pref, ListItem* sender);
-	void				FillBoneProperties	(PropItemVec& items, LPCSTR pref, ListItem* sender);
+	CSMotion*			FindMotion			(const char* name);
+	const char* 				ExtractMotionName	(const char* full_name, const char* prefix=MOTIONS_PREFIX);
+	u16 				ExtractMotionSlot	(const char* full_name, const char* prefix=MOTIONS_PREFIX);
+	xr_string			BuildMotionPref		(u16 slot, const char* prefix=MOTIONS_PREFIX);
+	void				FillObjectProperties(PropItemVec& items, const char* pref, ListItem* sender);
+	void				FillSurfaceProperties(PropItemVec& items, const char* pref, ListItem* sender);
+	void				FillMotionProperties(PropItemVec& items, const char* pref, ListItem* sender);
+	void				FillBoneProperties	(PropItemVec& items, const char* pref, ListItem* sender);
 	void				PlayMotion			();
 	void				StopMotion			();
 	void				PauseMotion			();
-	bool				RenameMotion		(LPCSTR old_name, LPCSTR new_name);
+	bool				RenameMotion		(const char* old_name, const char* new_name);
 	void 				RemoveMarksChannel	(bool b12);
 	void 				AddMarksChannel		(bool b12);
 	void				OptimizeMotions		();
 	void				RealMakeThumbnail();
 	void				RealGenerateLOD(bool hq);
-	bool				BatchConvert		(LPCSTR fn);
+	bool				BatchConvert		(const char* fn);
 
 
 	void				PhysicsSimulate			( );

@@ -10,7 +10,7 @@ CCustomDetector::~CCustomDetector()
 	xr_delete(m_ui);
 }
 
-void CCustomDetector::Load(LPCSTR section)
+void CCustomDetector::Load(const char* section)
 {
     m_animation_slot = 7;
 	inherited::Load(section);

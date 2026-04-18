@@ -36,8 +36,8 @@ public:
 				UIBoosterInfoItem	();
 	virtual		~UIBoosterInfoItem();
 		
-		void	Init				( CUIXml& xml, LPCSTR section );
-		void	SetCaption			( LPCSTR name );
+		void	Init				( CUIXml& xml, const char* section );
+		void	SetCaption			( const char* name );
 		void	SetValue			( float value );
 	
 	virtual CUIWindow* ui_cast_window() { return this; }

@@ -20,7 +20,7 @@ void Group::construct(const shared_str& group_id, UpgradeBase& parent_upgrade, M
 
 	VERIFY2(pSettings->section_exist(m_id), make_string<const char*>("Upgrade <%s> : group section [%s] does not exist!", parent_upgrade.id_str(), m_id.c_str()));
 
-	LPCSTR upgrades_str = pSettings->r_string(m_id, "elements");
+	const char* upgrades_str = pSettings->r_string(m_id, "elements");
 	VERIFY2(upgrades_str, make_string<const char*>("in upgrade group <%s> elements are empty!", m_id.c_str()));
 
 	string512 temp = {};
@@ -43,7 +43,7 @@ void Group::add_parent_upgrade(UpgradeBase& parent_upgrade)
 
 #ifdef DEBUG
 
-void Group::log_hierarchy(LPCSTR nest)
+void Group::log_hierarchy(const char* nest)
 {
 	u32 sz = (xr_strlen(nest) + 4) * sizeof(char);
 	char* nest2 = (char*)_alloca(sz);

@@ -20,9 +20,9 @@ class ITextureOwner
 {
 public:
 	virtual				~ITextureOwner			()												{}	
-	virtual bool		InitTexture				(LPCSTR texture, bool fatal = true)					= 0;
-	virtual bool InitTexture(LPCSTR raster_texture_name, LPCSTR svg_texture_name) { R_ASSERT(false && "provide implementation!"); return false; }
-	virtual bool		InitTextureEx			(LPCSTR texture, LPCSTR shader, bool fatal = true)	= 0;
+	virtual bool		InitTexture				(const char* texture, bool fatal = true)					= 0;
+	virtual bool InitTexture(const char* raster_texture_name, const char* svg_texture_name) { R_ASSERT(false && "provide implementation!"); return false; }
+	virtual bool		InitTextureEx			(const char* texture, const char* shader, bool fatal = true)	= 0;
 	virtual void		SetTextureRect			(const Frect& r)								= 0;
 	virtual const Frect& GetTextureRect			()										const	= 0;
 	virtual void		SetTextureColor			(u32 color)										= 0;
@@ -100,13 +100,13 @@ public:
 				void		MoveWndDelta		(float dx, float dy)					{m_wndPos.x+=dx;m_wndPos.y+=dy;}
 				void		MoveWndDelta		(const Fvector2& d)						{MoveWndDelta(d.x, d.y);	};
 				// supposed to be a place for init attribs or nested nodes of xml where svg is defined (aka filename with format like <svg>image.svg</svg> or <xml_node svg="image.svg"/>)
-				virtual void InitSVG(CUIXml& xml_doc, LPCSTR path, int index) {
+				virtual void InitSVG(CUIXml& xml_doc, const char* path, int index) {
 					R_ASSERT(!"provide implementation");
 				}
 
 				virtual bool isSVGPresented(void) const { R_ASSERT(!"provide implementation"); return false; }
 
-				virtual LPCSTR getSVGFilename(CUIXml& xml_doc, LPCSTR path, int index = 0 ) { R_ASSERT(!"provide implementation"); return nullptr; }
+				virtual const char* getSVGFilename(CUIXml& xml_doc, const char* path, int index = 0 ) { R_ASSERT(!"provide implementation"); return nullptr; }
 protected:
 	bool					m_bShowMe;
 	Fvector2				m_wndPos;

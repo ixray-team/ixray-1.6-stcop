@@ -226,7 +226,7 @@ void CActorMain::ResetStatus()
 		fraBottomBar->paStatus->Caption=""; fraBottomBar->paStatus->Repaint();
 	}*/
 }
-void CActorMain::SetStatus(LPCSTR s, bool bOutLog)
+void CActorMain::SetStatus(const char* s, bool bOutLog)
 {
 	VERIFY(m_bReady);
 	
@@ -244,8 +244,8 @@ void CActorMain::ProgressDraw()
 }
 
 //---------------------------------------------------------------------------
-extern ECORE_API BOOL g_force16BitTransformQuant;
-extern ECORE_API BOOL g_force32BitTransformQuant;
+extern ECORE_API bool g_force16BitTransformQuant;
+extern ECORE_API bool g_force32BitTransformQuant;
 //---------------------------------------------------------------------------
 
 constexpr size_t ConfigVer = 2;
@@ -280,8 +280,8 @@ void CAEPreferences::FillProp(PropItemVec& props)
 {
 	inherited::FillProp(props);
 
-	PHelper().CreateBOOL	(props,"Keybar\\show footsteps 12",	&bAlwaysShowKeyBar12);
-	PHelper().CreateBOOL	(props,"Keybar\\show footsteps 34",	&bAlwaysShowKeyBar34);
+	PHelper().CreateBool	(props,"Keybar\\show footsteps 12",	&bAlwaysShowKeyBar12);
+	PHelper().CreateBool	(props,"Keybar\\show footsteps 34",	&bAlwaysShowKeyBar34);
 
 	/*
 	PHelper().CreateBOOL	(props,"Tools\\MotionExport\\Force 16bit MotionT",	&g_force16BitTransformQuant);
@@ -405,7 +405,7 @@ CCommandVar CActorTools::CommandLoad(CCommandVar p1, CCommandVar p2)
 
 		ExecCommand(COMMAND_CLEAR);
 
-		BOOL bReadOnly = !FS.can_modify_file(temp_fn.c_str());
+		bool bReadOnly = !FS.can_modify_file(temp_fn.c_str());
 		m_Flags.set(flReadOnlyMode, bReadOnly);
 
 		CTimer T;

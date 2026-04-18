@@ -68,10 +68,10 @@ public:
 
 	bool				swapCharacterNames = false;
 
-	void				AddQuestion			(LPCSTR str, LPCSTR value, int number, SPhraseInfo &phInfo);
-	void				AddAnswer			(LPCSTR SpeakerName, const char* str, bool bActor);
-	void				AddIconedAnswer		(LPCSTR caption, LPCSTR text, LPCSTR texture_name, LPCSTR templ_name);
-	void				AddIconedAnswer		(LPCSTR text, LPCSTR texture_name, Frect texture_rect, LPCSTR templ_name);
+	void				AddQuestion			(const char* str, const char* value, int number, SPhraseInfo &phInfo);
+	void				AddAnswer			(const char* SpeakerName, const char* str, bool bActor);
+	void				AddIconedAnswer		(const char* caption, const char* text, const char* texture_name, const char* templ_name);
+	void				AddIconedAnswer		(const char* text, const char* texture_name, Frect texture_rect, const char* templ_name);
 	void				ClearAll			();
 	void				ClearQuestions		();
 
@@ -124,8 +124,8 @@ public:
 	float			m_fOffset;
 	Fvector2		m_icon_size;
 	float			m_fOffsetAfterIcon;
-					CUIQuestionItem			(CUIXml* xml_doc, LPCSTR path);
-	void			Init					(LPCSTR val, LPCSTR text, bool isFinalizer);
+					CUIQuestionItem			(CUIXml* xml_doc, const char* path);
+	void			Init					(const char* val, const char* text, bool isFinalizer);
 	virtual void Update();
 	bool			IsFinalizer() const		{ return m_is_finalizer;  }
 
@@ -144,8 +144,8 @@ class CUIAnswerItem :public CUIWindow
 	CUIStatic*		m_text;
 	CUIStatic*		m_name;
 public:
-					CUIAnswerItem			(CUIXml* xml_doc, LPCSTR path);
-	void			Init					(LPCSTR text, LPCSTR name);
+					CUIAnswerItem			(CUIXml* xml_doc, const char* path);
+	void			Init					(const char* text, const char* name);
 };
 
 class CUIAnswerItemIconed final :public CUIAnswerItem
@@ -154,9 +154,9 @@ class CUIAnswerItemIconed final :public CUIAnswerItem
 	CUIStatic*		m_icon;
 
 public:
-					CUIAnswerItemIconed		(CUIXml* xml_doc, LPCSTR path);
-	void			Init					(LPCSTR text, LPCSTR name, LPCSTR texture_name);
+					CUIAnswerItemIconed		(CUIXml* xml_doc, const char* path);
+	void			Init					(const char* text, const char* name, const char* texture_name);
 	virtual CUIWindow* ui_cast_window() { return this; }
-    void			Init					(LPCSTR text, LPCSTR texture_name, Frect texture_rect);
+    void			Init					(const char* text, const char* texture_name, Frect texture_rect);
 
 };

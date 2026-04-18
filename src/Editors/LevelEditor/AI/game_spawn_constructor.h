@@ -91,30 +91,30 @@ private:
 
 private:
 	IC		shared_str				actor_level_name		();
-	IC		shared_str				spawn_name				(LPCSTR output);
-			bool					save_spawn				(LPCSTR name, LPCSTR output);
-			bool					save_spawn				(LPCSTR name, CMemoryWriter& output);
+	IC		shared_str				spawn_name				(const char* output);
+			bool					save_spawn				(const char* name, const char* output);
+			bool					save_spawn				(const char* name, CMemoryWriter& output);
 			bool					verify_level_changers	();
 			bool					verify_spawns			(ALife::_SPAWN_ID spawn_id);
 			bool					verify_spawns			();
 			bool					process_spawns			();
-			bool					load_spawns				(LPCSTR name, bool no_separator_check);
+			bool					load_spawns				(const char* name, bool no_separator_check);
 	IC		SPAWN_GRAPH				&spawn_graph			();
 	IC		ALife::_SPAWN_ID		spawn_id				();
 	IC		void					process_spawns			(xr_vector<ALife::_SPAWN_ID> &spawns);
-			bool					process_actor			(LPCSTR start_level_name);
+			bool					process_actor			(const char* start_level_name);
 
 public:
 	CGameSpawnConstructor();
-	bool build(LPCSTR name, LPCSTR output, LPCSTR start, bool no_separator_check);
-	bool build(LPCSTR name, CMemoryWriter& output, LPCSTR start, bool no_separator_check = true);
+	bool build(const char* name, const char* output, const char* start, bool no_separator_check);
+	bool build(const char* name, CMemoryWriter& output, const char* start, bool no_separator_check = true);
 	virtual							~CGameSpawnConstructor	();
-			void					add_story_object		(ALife::_STORY_ID id,CSE_ALifeDynamicObject *object, LPCSTR level_name);
+			void					add_story_object		(ALife::_STORY_ID id,CSE_ALifeDynamicObject *object, const char* level_name);
 			void					add_object				(CSE_Abstract *object);
 			void					remove_object			(CSE_Abstract *object);
 	IC		void					add_level_changer		(CSE_ALifeLevelChanger *level_changer);
 	IC		void					add_level_points		(const LEVEL_POINT_STORAGE &level_points);
-	IC		u32						level_id				(LPCSTR level_name);
+	IC		u32						level_id				(const char* level_name);
 	IC		IGameGraph				&game_graph				() const;
 //	IC		CInifile				&game_info				();
 	IC		void					add_edge				(ALife::_SPAWN_ID id0, ALife::_SPAWN_ID id1, float weight);

@@ -15,8 +15,8 @@ protected:
 public:
 				ESceneGroupTool		        ():ESceneCustomOTool(OBJCLASS_GROUP){;}
 	// definition
-    IC LPCSTR			ClassName			(){return "group";}
-    IC LPCSTR			ClassDesc			(){return "Group";}
+    IC const char*			ClassName			(){return "group";}
+    IC const char*			ClassDesc			(){return "Group";}
     IC int			RenderPriority			(){return 1;}
 
     virtual void		Clear				(bool bSpecific=false){inherited::Clear(bSpecific);}
@@ -43,11 +43,11 @@ public:
 
     void 			 SaveSelectedObject		();
     void 			 ReloadRefsSelectedObject();
-    void 			 SetCurrentObject		(LPCSTR nm);
+    void 			 SetCurrentObject		(const char* nm);
 
-    LPCSTR			 GetCurrentObject		(){return m_CurrentObject.c_str();}
+    const char*			 GetCurrentObject		(){return m_CurrentObject.c_str();}
 
-    virtual CCustomObject*      CreateObject			(LPVOID data, LPCSTR name);
-    virtual BOOL 		_RemoveObject			(CCustomObject* object);
+    virtual CCustomObject*      CreateObject			(LPVOID data, const char* name);
+    virtual bool 		_RemoveObject			(CCustomObject* object);
 
 };

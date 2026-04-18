@@ -1,9 +1,9 @@
 private:
-	BOOL						m_DemoPlay;
-	BOOL						m_DemoPlayStarted;
-	BOOL						m_DemoPlayStoped;
-	BOOL						m_DemoSave;
-	BOOL						m_DemoSaveStarted;
+	bool						m_DemoPlay;
+	bool						m_DemoPlayStarted;
+	bool						m_DemoPlayStoped;
+	bool						m_DemoSave;
+	bool						m_DemoSaveStarted;
 	u32							m_StartGlobalTime;
 	CObject*					m_current_spectator;	//in real, this is CurrentControlEntity 
 	message_filter*				m_msg_filter;
@@ -30,11 +30,11 @@ public:
 
 
 	//virtual	NET_Packet*		net_msg_Retreive		();
-	BOOL						IsDemoPlay				()	{return (!m_DemoSave && m_DemoPlay);};
-	BOOL						IsDemoSave				()	{return ( m_DemoSave && !m_DemoPlay);};
-	inline	BOOL				IsDemoPlayStarted		()	{return (IsDemoPlay() && m_DemoPlayStarted); };
-	inline	BOOL				IsDemoPlayFinished		()	{return m_DemoPlayStoped; };
-	inline	BOOL				IsDemoSaveStarted		()	{return (IsDemoSave() && m_DemoSaveStarted); };
+	bool						IsDemoPlay				()	{return (!m_DemoSave && m_DemoPlay);};
+	bool						IsDemoSave				()	{return ( m_DemoSave && !m_DemoPlay);};
+	inline	bool				IsDemoPlayStarted		()	{return (IsDemoPlay() && m_DemoPlayStarted); };
+	inline	bool				IsDemoPlayFinished		()	{return m_DemoPlayStoped; };
+	inline	bool				IsDemoSaveStarted		()	{return (IsDemoSave() && m_DemoSaveStarted); };
 
 #pragma pack(push, 1)
 	struct	DemoHeader

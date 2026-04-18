@@ -47,7 +47,7 @@ DXGI_FORMAT	ConvertVertexFormat(D3DDECLTYPE dx9FMT)
 struct VertexSemanticPairs
 {
 	D3DDECLUSAGE	m_dx9Semantic;
-	LPCSTR			m_dx10Semantic;
+	const char*			m_dx10Semantic;
 };
 
 VertexSemanticPairs	VertexSemanticList[] = 
@@ -68,7 +68,7 @@ VertexSemanticPairs	VertexSemanticList[] =
 	//D3DDECLUSAGE_SAMPLE,        // 13
 };
 
-LPCSTR	ConvertSemantic(D3DDECLUSAGE Semantic)
+const char*	ConvertSemantic(D3DDECLUSAGE Semantic)
 {
 	int arrayLength = sizeof(VertexSemanticList)/sizeof(VertexSemanticList[0]);
 	for (int i=0; i<arrayLength; ++i)

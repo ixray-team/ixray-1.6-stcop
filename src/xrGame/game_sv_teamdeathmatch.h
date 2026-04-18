@@ -23,7 +23,7 @@ public:
 
 	virtual		void				OnEvent					(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender );
 
-	virtual		LPCSTR				type_name			() const { return "teamdeathmatch";};
+	virtual		const char*				type_name			() const { return "teamdeathmatch";};
 
 	virtual		void				Update					();
 	virtual		void				net_Export_State		(NET_Packet& P, ClientID id_to);				// full state
@@ -55,25 +55,25 @@ public:
 	virtual		void				LoadTeams				();
 
 	virtual		char*				GetAnomalySetBaseName	()	{return (char*) "teamdeathmatch_game_anomaly_sets";};	
-	virtual		BOOL				CanHaveFriendlyFire		()	{return TRUE;}
+	virtual		bool				CanHaveFriendlyFire		()	{return TRUE;}
 	virtual		void				OnFraglimitExceed		();
 	virtual		void				OnTimelimitExceed		();
 
-	virtual		BOOL				isFriendlyFireEnabled	();
+	virtual		bool				isFriendlyFireEnabled	();
 	virtual		float				GetFriendlyFire			();
 
-	virtual		BOOL				Get_AutoTeamBalance		();
-	virtual		BOOL				Get_AutoTeamSwap		();
-	virtual		BOOL				Get_FriendlyIndicators	();
-	virtual		BOOL				Get_FriendlyNames		();
+	virtual		bool				Get_AutoTeamBalance		();
+	virtual		bool				Get_AutoTeamSwap		();
+	virtual		bool				Get_FriendlyIndicators	();
+	virtual		bool				Get_FriendlyNames		();
 
 	virtual		int					Get_TeamKillLimit		();
-	virtual		BOOL				Get_TeamKillPunishment	();
+	virtual		bool				Get_TeamKillPunishment	();
 
-				BOOL				OnTouchItem(CSE_ActorMP *actor, CSE_Abstract *item);
+				bool				OnTouchItem(CSE_ActorMP *actor, CSE_Abstract *item);
 				void				OnDetachItem(CSE_ActorMP *actor, CSE_Abstract *item);
 	
-	virtual		BOOL				OnTouch					(u16 eid_who, u16 eid_what, BOOL bForced = FALSE);
+	virtual		bool				OnTouch					(u16 eid_who, u16 eid_what, bool bForced = FALSE);
 	virtual		void				OnDetach				(u16 eid_who, u16 eid_what);
 
 				void				OnObjectEnterTeamBase	(u16 id, u16 zone_team);
@@ -85,5 +85,5 @@ public:
 	virtual game_sv_TeamDeathmatch* cast_game_sv_teamdeathmatch() override { return this; }
 
 protected:
-	virtual		void				WriteGameState			(CInifile& ini, LPCSTR sect, bool bRoundResult);
+	virtual		void				WriteGameState			(CInifile& ini, const char* sect, bool bRoundResult);
 };

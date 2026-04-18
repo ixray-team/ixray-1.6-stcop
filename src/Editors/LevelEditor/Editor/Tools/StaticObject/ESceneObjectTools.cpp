@@ -171,7 +171,7 @@ void ESceneObjectTool::OnFrame()
     }
 }
 
-CCustomObject* ESceneObjectTool::CreateObject(LPVOID data, LPCSTR name)
+CCustomObject* ESceneObjectTool::CreateObject(LPVOID data, const char* name)
 {
 	CCustomObject* O	= new CSceneObject(data,name);                     
     O->FParentTools		= this;
@@ -179,7 +179,7 @@ CCustomObject* ESceneObjectTool::CreateObject(LPVOID data, LPCSTR name)
 }
 
 
-void ESceneObjectTool::HighlightTexture(LPCSTR tex_name, bool allow_ratio, u32 t_width, u32 t_height, BOOL mark)
+void ESceneObjectTool::HighlightTexture(const char* tex_name, bool allow_ratio, u32 t_width, u32 t_height, bool mark)
 {
 	if (tex_name&&tex_name[0]){
         for (ObjectIt a_it=m_Objects.begin(); a_it!=m_Objects.end(); a_it++){

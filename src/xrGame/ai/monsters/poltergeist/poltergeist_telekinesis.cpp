@@ -15,7 +15,7 @@ CPolterTele::~CPolterTele()
 	
 }
 
-void CPolterTele::load(LPCSTR section)
+void CPolterTele::load(const char* section)
 {
 	inherited::load(section);
 

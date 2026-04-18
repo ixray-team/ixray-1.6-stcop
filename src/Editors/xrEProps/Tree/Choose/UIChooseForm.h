@@ -51,8 +51,8 @@ public:
     static bool GetResult(bool&change,shared_str&result);
     static bool GetResult(bool& change, xr_string& result);
     static bool GetResult(bool& change, xr_vector<xr_string>& result);
-    static void SelectItem(u32 choose_ID,  int sel_cnt = 1, LPCSTR init_name = 0, TOnChooseFillItems item_fill = 0, void* fill_param = 0, TOnChooseSelectItem item_select = 0, ChooseItemVec* items = 0, u32 flags = cfAllowNone);
-    static void AppendEvents(u32 choose_ID, LPCSTR caption, TOnChooseFillItems on_fill, TOnChooseSelectItem on_sel, TGetTexture on_thm, TOnChooseClose on_close, u32 flags);
+    static void SelectItem(u32 choose_ID,  int sel_cnt = 1, const char* init_name = 0, TOnChooseFillItems item_fill = 0, void* fill_param = 0, TOnChooseSelectItem item_select = 0, ChooseItemVec* items = 0, u32 flags = cfAllowNone);
+    static void AppendEvents(u32 choose_ID, const char* caption, TOnChooseFillItems on_fill, TOnChooseSelectItem on_sel, TGetTexture on_thm, TOnChooseClose on_close, u32 flags);
     static void ClearEvents();
     static SChooseEvents* GetEvents(u32 choose_ID);
 };

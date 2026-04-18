@@ -14,7 +14,7 @@
 #include "object_broker.h"
 
 
-LPCSTR _list_names[]= {
+const char* _list_names[]= {
 		"lst_pistol",
 		"lst_pistol_ammo",
 		"lst_rifle",

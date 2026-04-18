@@ -15,7 +15,7 @@ public:
 	virtual			~CUINewsWnd	();
 
 			void	Init		();
-			void	Init		(LPCSTR xml_name, LPCSTR start_from);
+			void	Init		(const char* xml_name, const char* start_from);
 	void			AddNews		();
 	virtual void	Show		(bool status);
 	virtual void	Update		();

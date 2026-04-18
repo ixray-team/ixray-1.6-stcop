@@ -22,8 +22,8 @@ namespace PS
     public:
         ~CPACDef();
 
-        IC LPCSTR getName() const {return m_Name.c_str();}
-        void setName(LPCSTR name);
+        IC const char* getName() const {return m_Name.c_str();}
+        void setName(const char* name);
         
         void Save(IWriter& F);
         bool Load(IReader& F);
@@ -45,7 +45,7 @@ namespace PS
         
 #ifdef _EDITOR
         void Clone(CPACDef* source);
-		void FillProp(LPCSTR pref, PropItemVec& items, void* owner);
+		void FillProp(const char* pref, PropItemVec& items, void* owner);
         void OnEditClicked(ButtonValue* B, bool& bModif, bool&);
 		bool Validate(bool bMsg);
 

@@ -37,8 +37,8 @@ public:
 
 public:
 
-	virtual void Load(LPCSTR section) override;
-	virtual BOOL net_Spawn(CSE_Abstract* DC) override;
+	virtual void Load(const char* section) override;
+	virtual bool net_Spawn(CSE_Abstract* DC) override;
 	virtual void net_Destroy() override;
 	virtual	void net_Relcase(CObject* O) override;
 	virtual void OnH_A_Independent() override;
@@ -55,13 +55,13 @@ public:
 	};
 
 public:
-	virtual BOOL UsedAI_Locations() override { return inherited::UsedAI_Locations(); }
+	virtual bool UsedAI_Locations() override { return inherited::UsedAI_Locations(); }
 	virtual void net_Import(NET_Packet& P) override { inherited::net_Import(P); }
 	virtual void net_Export(NET_Packet& P) override { inherited::net_Export(P); }
 
 	virtual void save(NET_Packet& output_packet) override { inherited::save(output_packet); }
 	virtual void load(IReader& input_packet) override { inherited::load(input_packet); }
-	virtual BOOL net_SaveRelevant() override { return inherited::net_SaveRelevant(); }
+	virtual bool net_SaveRelevant() override { return inherited::net_SaveRelevant(); }
 
 	virtual void OnH_A_Chield() override { inherited::OnH_A_Chield(); }
 	virtual void OnH_B_Chield() override { inherited::OnH_B_Chield(); }
@@ -77,7 +77,7 @@ public:
 #endif
 	virtual void PH_A_CrPr() override; // actions & operations after phisic correction-prediction steps
 	virtual void reinit() override;
-	virtual void reload(LPCSTR section) override;
+	virtual void reload(const char* section) override;
 	virtual void activate_physic_shell() override;
 	virtual void setup_physic_shell() override;
 	virtual void create_physic_shell() override;

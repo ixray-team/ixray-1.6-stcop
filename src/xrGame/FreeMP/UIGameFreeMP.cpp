@@ -11,7 +11,7 @@
 #include "Actor.h"
 #include "Level.h"
 
-BOOL g_cl_draw_mp_statistic = FALSE;
+bool g_cl_draw_mp_statistic = FALSE;
 
 CUIGameFMP::CUIGameFMP()
 {

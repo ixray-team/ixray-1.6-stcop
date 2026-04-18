@@ -48,7 +48,7 @@ void CSoundPlayer::reinit			()
 {
 }
 
-void CSoundPlayer::reload			(LPCSTR section)
+void CSoundPlayer::reload			(const char* section)
 {
 	VERIFY							(m_playing_sounds.empty());
 	clear							();
@@ -61,7 +61,7 @@ void CSoundPlayer::unload			()
 	VERIFY							(m_playing_sounds.empty());
 }
 
-u32 CSoundPlayer::add				(LPCSTR prefix, u32 max_count, ESoundTypes type, u32 priority, u32 mask, u32 internal_type, LPCSTR bone_name, CSound_UserDataPtr data)
+u32 CSoundPlayer::add				(const char* prefix, u32 max_count, ESoundTypes type, u32 priority, u32 mask, u32 internal_type, const char* bone_name, CSound_UserDataPtr data)
 {
 	SOUND_COLLECTIONS::iterator		I = m_sounds.find(internal_type);
 	if (m_sounds.end() != I)

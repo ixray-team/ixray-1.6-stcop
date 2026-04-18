@@ -5,7 +5,7 @@ void XRNETSERVER_API fill_auth_check_params(xr_auth_strings_t & ignore,
 											xr_auth_strings_t & check)
 {
 	string_path				config;
-	LPCSTR pth				= FS.get_path("$app_data_root$")->m_Path;
+	const char* pth				= FS.get_path("$app_data_root$")->m_Path;
 	ignore.push_back		(shared_str(pth));
 	ignore.push_back		(shared_str(FS.update_path(config, _game_config_, "localization.ltx")));
 	ignore.push_back		(shared_str(FS.update_path(config, _game_config_, "fonts.ltx")));
@@ -49,7 +49,7 @@ void XRNETSERVER_API fill_auth_check_params(xr_auth_strings_t & ignore,
 }
 
 bool XRNETSERVER_API allow_to_include_path	(xr_auth_strings_t const & ignore,
-											 LPCSTR path)
+											 const char* path)
 {
 	for (xr_auth_strings_t::const_iterator i = ignore.begin(),
 		ie = ignore.end(); i != ie; ++i)

@@ -27,12 +27,12 @@
 
 
 ECommandVec 		ECommands;
-BOOL 				bAllowReceiveCommand	= FALSE;
+bool 				bAllowReceiveCommand	= FALSE;
 bool 				bAllowLogCommands		= false;
 //TfrmText*			frmEditCommandList		= 0;
 xr_string			sCommandListText;
 
-BOOL AllowLogCommands()
+bool AllowLogCommands()
 {
 	return bAllowLogCommands;
 }
@@ -60,7 +60,7 @@ SESubCommand* FindCommandByShortcut(const xr_shortcut& val)
 	}
 	return 0;
 }
-SECommand* FindCommandByName(LPCSTR nm)
+SECommand* FindCommandByName(const char* nm)
 {
 	ECommandVec& cmds		= GetEditorCommands();
 	for (u32 cmd_idx=0; cmd_idx<cmds.size(); cmd_idx++){
@@ -69,7 +69,7 @@ SECommand* FindCommandByName(LPCSTR nm)
 	}
 	return 0;
 }
-SESubCommand* FindSubCommandByName(SECommand* CMD, LPCSTR nm)
+SESubCommand* FindSubCommandByName(SECommand* CMD, const char* nm)
 {
 	VERIFY(CMD && !CMD->sub_commands.empty());
 	for (u32 sub_cmd_idx=0; sub_cmd_idx<CMD->sub_commands.size(); sub_cmd_idx++){
@@ -134,13 +134,13 @@ void	RegisterCommand (u32 cmd, SECommand* cmd_impl)
 	}
 	CMD	   			= cmd_impl;
 }
-void	RegisterSubCommand(SECommand* cmd_impl, LPCSTR desc, CCommandVar p0, CCommandVar p1)
+void	RegisterSubCommand(SECommand* cmd_impl, const char* desc, CCommandVar p0, CCommandVar p1)
 {
 	VERIFY		(cmd_impl);
 	cmd_impl->AppendSubCommand(desc,p0,p1);
 }
 
-BOOL LoadShortcuts(nlohmann::json& Data)
+bool LoadShortcuts(nlohmann::json& Data)
 {
 	for (u32 cmd_idx = 0; cmd_idx < ECommands.size(); cmd_idx++) 
 	{
@@ -180,7 +180,7 @@ BOOL LoadShortcuts(nlohmann::json& Data)
 	return TRUE;
 }
 
-BOOL SaveShortcuts(nlohmann::json& Data)
+bool SaveShortcuts(nlohmann::json& Data)
 {
 	for (u32 cmd_idx = 0; cmd_idx < ECommands.size(); cmd_idx++) 
 	{
@@ -283,7 +283,7 @@ CCommandVar CommandInitialize(CCommandVar p1, CCommandVar p2)
 		SndLib->OnCreate();
 		LALib.OnCreate	();
 		Lib.OnCreate	();
-        BOOL bWeather = psDeviceFlags.is(rsEnvironment);
+        bool bWeather = psDeviceFlags.is(rsEnvironment);
         psDeviceFlags.set(rsEnvironment, false);
         g_pGamePersistent = new XrGamePersistentEditors();
         if (Tools)
@@ -597,7 +597,7 @@ CCommandVar CommandMoveCameraTo(CCommandVar p1, CCommandVar p2)
 	return TRUE;
 }
 
-CCommandVar 	ExecuteCommandList(LPCSTR text)
+CCommandVar 	ExecuteCommandList(const char* text)
 {
 	CCommandVar	res		= TRUE;
 	IReader F			((void*)text,xr_strlen(text));
@@ -649,7 +649,7 @@ CCommandVar 	ExecuteCommandList(LPCSTR text)
 	return				res;
 }
 
-bool 	OnRunExecuteListClick(LPCSTR txt)
+bool 	OnRunExecuteListClick(const char* txt)
 {
 	ExecuteCommandList		(txt);
 	return true;
@@ -692,7 +692,7 @@ CCommandVar 	CommandRunMacro(CCommandVar p1, CCommandVar p2)
 		IReader* F 		= FS.r_open(fn.c_str());
 		if (NULL==F) F	= FS.r_open(_import_,fn.c_str());
 		if (F){
-			ExecCommand	(COMMAND_EXECUTE_COMMAND_LIST,xr_string((LPCSTR)F->pointer()));
+			ExecCommand	(COMMAND_EXECUTE_COMMAND_LIST,xr_string((const char*)F->pointer()));
 			FS.r_close 	(F);
 			return 	   	TRUE;
 		}

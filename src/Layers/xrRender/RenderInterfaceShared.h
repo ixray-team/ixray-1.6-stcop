@@ -37,22 +37,22 @@ void CRender::models_Prefetch()
 	Models->Prefetch();
 }
 
-void CRender::models_Clear(BOOL b_complete)
+void CRender::models_Clear(bool b_complete)
 {
 	Models->ClearPool(b_complete);
 }
 
-BOOL CRender::occ_visible(vis_data& P)
+bool CRender::occ_visible(vis_data& P)
 {
 	return HOM.visible(P);
 }
 
-BOOL CRender::occ_visible(sPoly& P)
+bool CRender::occ_visible(sPoly& P)
 {
 	return HOM.visible(P);
 }
 
-BOOL CRender::occ_visible(Fbox& P)
+bool CRender::occ_visible(Fbox& P)
 {
 	return HOM.visible(P);
 }

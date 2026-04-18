@@ -7,7 +7,7 @@
 
 bool  TUI_ControlSpawnAdd::AppendCallback(SBeforeAppendCallbackParams* p)
 {
-	LPCSTR ref_name = ((UISpawnTool*)parent_tool->pForm)->Current();
+	const char* ref_name = ((UISpawnTool*)parent_tool->pForm)->Current();
     if (!ref_name){
     	ELog.DlgMsg(mtInformation,"Nothing selected.");
     	return false;

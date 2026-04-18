@@ -42,7 +42,7 @@ public:
 	virtual void	SendMessage				(CUIWindow *pWnd, s16 msg, void* pData = 0);
 	virtual void	Update					();
 	virtual bool	OnMouseAction			(float x, float y, EUIMessages mouse_action);
-	virtual	void 	OnMessage				(LPCSTR message);
+	virtual	void 	OnMessage				(const char* message);
 
 	// CUIWindow
 			void	InitArrowStepper		(Fvector2 pos, Fvector2 size);

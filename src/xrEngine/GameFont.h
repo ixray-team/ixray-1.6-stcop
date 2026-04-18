@@ -126,10 +126,10 @@ public:
 	void OutSet(float x, float y);
 
 	void MasterOut(
-			BOOL bCheckDevice,
-			BOOL bUseCoords,
-			BOOL bScaleCoords,
-			BOOL bUseSkip,
+			bool bCheckDevice,
+			bool bUseCoords,
+			bool bScaleCoords,
+			bool bUseSkip,
 			float _x,
 			float _y,
 			float _skip,
@@ -137,7 +137,7 @@ public:
 			va_list p
 		);
 
-	BOOL IsMultibyte() { return uFlags & fsMultibyte;}
+	bool IsMultibyte() { return uFlags & fsMultibyte;}
 	u16 SplitByWidth(u16* puBuffer, u16 uBufferSize, float fTargetWidth, const char* pszText);
 	u16 GetCutLengthPos(float fTargetWidth, const char* pszText);
 

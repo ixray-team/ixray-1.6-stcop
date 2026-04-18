@@ -34,7 +34,7 @@ void CCustomObject::AnimationUpdate(float t)
 //    Log("speed: ",speed);
 	SetPosition(P);
 	SetRotation(R);
-	BOOL bAK				= m_CO_Flags.is(flAutoKey);
+	bool bAK				= m_CO_Flags.is(flAutoKey);
 	m_CO_Flags.set			(flAutoKey,FALSE);
 	UpdateTransform			(true);
 	m_CO_Flags.set			(flAutoKey,bAK);
@@ -319,7 +319,7 @@ void 	CCustomObject::OnTransformChange(PropValue* value)
 	UpdateTransform();
 }
 
-void CCustomObject::AnimationFillProp(LPCSTR pref, PropItemVec& items)
+void CCustomObject::AnimationFillProp(const char* pref, PropItemVec& items)
 {
 	PropValue* V		= PHelper().CreateFlag32(items,PrepareKey(pref,"Flags\\Motionable"),&m_CO_Flags, flMotion);
 	V->OnChangeEvent.bind(this,&CCustomObject::OnMotionableChange);

@@ -9,15 +9,15 @@ class ESoundThumbnail;
 class ECORE_API CSoundManager
 {
 public:
-	void 		MakeGameSound		(ESoundThumbnail* THM, LPCSTR src_name, LPCSTR game_name);
+	void 		MakeGameSound		(ESoundThumbnail* THM, const char* src_name, const char* game_name);
 				CSoundManager		();
 	virtual		~CSoundManager		(){;}
                     
-    BOOL  RemoveSound		(LPCSTR fname, EItemType type);
-	void  RenameSound		(LPCSTR p0, LPCSTR p1, EItemType type);
+    bool  RemoveSound		(const char* fname, EItemType type);
+	void  RenameSound		(const char* p0, const char* p1, EItemType type);
 
 	// texture routines
-    int			GetSounds			(FS_FileSet& files, BOOL bFolders=FALSE);
+    int			GetSounds			(FS_FileSet& files, bool bFolders=FALSE);
     int			GetGameSounds		(FS_FileSet& files);
     int			GetSoundEnvs		(AStringVec& items);
 
@@ -25,7 +25,7 @@ public:
 //	void		SafeCopyLocalToServer(FS_FileSet& files);
 	void		SynchronizeSounds	(bool sync_thm, bool sync_game, bool bForceGame, FS_FileSet* source_map, AStringVec* sync_list_without_extention, FS_FileSet* modif_map=0);
 //	void 		ChangeFileAgeTo		(FS_FileSet* tgt_map, int age);
-    void		CreateSoundThumbnail(ESoundThumbnail* THM, const xr_string& src_name, LPCSTR path=0, bool bSetDefParam=true);
+    void		CreateSoundThumbnail(ESoundThumbnail* THM, const xr_string& src_name, const char* path=0, bool bSetDefParam=true);
 	void		CleanupSounds		(bool IsSoft);
 
     bool		OnCreate			();
@@ -35,7 +35,7 @@ public:
 
     virtual bool Validate			(){return true;}
 
-    void		MuteSounds			(BOOL bVal);
+    void		MuteSounds			(bool bVal);
 
     void 		RefreshSounds		(bool bSync, bool IsSoft);
 

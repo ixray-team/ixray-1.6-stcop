@@ -30,7 +30,7 @@ void AntigasFilter::SetAllowed(bool sate)
 	bIsAllowed = sate;
 }
 
-void AntigasFilter::Load(LPCSTR section)
+void AntigasFilter::Load(const char* section)
 {
 	CInventoryItemObject::Load(section);
 

@@ -16,7 +16,7 @@
 #include "lua_ext.h"
 #include "script_process.h"
 
-LPCSTR	file_header = "\
+const char*	file_header = "\
 local function script_name() \
 return \"%s\" \
 end \
@@ -78,69 +78,68 @@ void CScriptStorage::reinit	()
 	lua_init_ext(lua());
 }
 
-int CScriptStorage::vscript_log		(ScriptStorage::ELuaMessageType tLuaMessageType, LPCSTR caFormat, va_list marker)
+int CScriptStorage::vscript_log(ScriptStorage::ELuaMessageType tLuaMessageType, const char* caFormat, va_list marker)
 {
-
-	LPCSTR		S = "", SS = "";
-	LPSTR		S1;
+	const char* S = "", * SS = "";
+	char* S1;
 	string4096	S2;
 	switch (tLuaMessageType) {
-		case ScriptStorage::eLuaMessageTypeInfo : {
-			S	= "* [LUA] ";
-			SS	= "[INFO]        ";
-			break;
-		}
-		case ScriptStorage::eLuaMessageTypeError : {
-			S	= "! [LUA] ";
-			SS	= "[ERROR]       ";
-			break;
-		}
-		case ScriptStorage::eLuaMessageTypeMessage : {
-			S	= "[LUA] ";
-			SS	= "[MESSAGE]     ";
-			break;
-		}
-		case ScriptStorage::eLuaMessageTypeHookCall : {
-			S	= "[LUA][HOOK_CALL] ";
-			SS	= "[CALL]        ";
-			break;
-		}
-		case ScriptStorage::eLuaMessageTypeHookReturn : {
-			S	= "[LUA][HOOK_RETURN] ";
-			SS	= "[RETURN]      ";
-			break;
-		}
-		case ScriptStorage::eLuaMessageTypeHookLine : {
-			S	= "[LUA][HOOK_LINE] ";
-			SS	= "[LINE]        ";
-			break;
-		}
-		case ScriptStorage::eLuaMessageTypeHookCount : {
-			S	= "[LUA][HOOK_COUNT] ";
-			SS	= "[COUNT]       ";
-			break;
-		}
-		case ScriptStorage::eLuaMessageTypeHookTailReturn : {
-			S	= "[LUA][HOOK_TAIL_RETURN] ";
-			SS	= "[TAIL_RETURN] ";
-			break;
-		}
-		default : NODEFAULT;
+	case ScriptStorage::eLuaMessageTypeInfo: {
+		S = "* [LUA] ";
+		SS = "[INFO]        ";
+		break;
 	}
-	
-	xr_strcpy	(S2,S);
-	S1		= S2 + xr_strlen(S);
-	int		l_iResult = vsprintf(S1,caFormat,marker);
-	Msg		("%s",S2);
-	
-	xr_strcpy	(S2,SS);
-	S1		= S2 + xr_strlen(SS);
-	vsprintf(S1,caFormat,marker);
-	xr_strcat	(S2,"\r\n");
+	case ScriptStorage::eLuaMessageTypeError: {
+		S = "! [LUA] ";
+		SS = "[ERROR]       ";
+		break;
+	}
+	case ScriptStorage::eLuaMessageTypeMessage: {
+		S = "[LUA] ";
+		SS = "[MESSAGE]     ";
+		break;
+	}
+	case ScriptStorage::eLuaMessageTypeHookCall: {
+		S = "[LUA][HOOK_CALL] ";
+		SS = "[CALL]        ";
+		break;
+	}
+	case ScriptStorage::eLuaMessageTypeHookReturn: {
+		S = "[LUA][HOOK_RETURN] ";
+		SS = "[RETURN]      ";
+		break;
+	}
+	case ScriptStorage::eLuaMessageTypeHookLine: {
+		S = "[LUA][HOOK_LINE] ";
+		SS = "[LINE]        ";
+		break;
+	}
+	case ScriptStorage::eLuaMessageTypeHookCount: {
+		S = "[LUA][HOOK_COUNT] ";
+		SS = "[COUNT]       ";
+		break;
+	}
+	case ScriptStorage::eLuaMessageTypeHookTailReturn: {
+		S = "[LUA][HOOK_TAIL_RETURN] ";
+		SS = "[TAIL_RETURN] ";
+		break;
+	}
+	default: NODEFAULT;
+	}
+
+	xr_strcpy(S2, S);
+	S1 = S2 + xr_strlen(S);
+	int		l_iResult = vsprintf(S1, caFormat, marker);
+	Msg("%s", S2);
+
+	xr_strcpy(S2, SS);
+	S1 = S2 + xr_strlen(SS);
+	vsprintf(S1, caFormat, marker);
+	xr_strcat(S2, "\r\n");
 
 #ifdef DEBUG
 #	ifndef ENGINE_BUILD
-	g_pScriptEngine->m_output.w(S2,xr_strlen(S2)*sizeof(char));
+	g_pScriptEngine->m_output.w(S2, xr_strlen(S2) * sizeof(char));
 #	endif // #ifdef ENGINE_BUILD
 #endif // #ifdef DEBUG
 
@@ -258,7 +257,7 @@ void CScriptStorage::print_stack() {
 	}
 }
 
-int __cdecl CScriptStorage::script_log	(ScriptStorage::ELuaMessageType tLuaMessageType, LPCSTR caFormat, ...)
+int __cdecl CScriptStorage::script_log	(ScriptStorage::ELuaMessageType tLuaMessageType, const char* caFormat, ...)
 {
 	va_list			marker;
 	va_start		(marker,caFormat);
@@ -278,7 +277,7 @@ int __cdecl CScriptStorage::script_log	(ScriptStorage::ELuaMessageType tLuaMessa
 	return			(result);
 }
 
-bool CScriptStorage::parse_namespace(LPCSTR caNamespaceName, LPSTR b, u32 const b_size, LPSTR c, u32 const c_size)
+bool CScriptStorage::parse_namespace(const char* caNamespaceName, LPSTR b, u32 const b_size, LPSTR c, u32 const c_size)
 {
 	*b				= 0;
 	*c				= 0;
@@ -309,13 +308,13 @@ bool CScriptStorage::parse_namespace(LPCSTR caNamespaceName, LPSTR b, u32 const 
 	return			(true);
 }
 
-bool CScriptStorage::load_buffer(lua_State* L, LPCSTR caBuffer, size_t tSize, LPCSTR caScriptName, LPCSTR caNameSpaceName)
+bool CScriptStorage::load_buffer(lua_State* L, const char* caBuffer, size_t tSize, const char* caScriptName, const char* caNameSpaceName)
 {
 	int					l_iErrorCode;
 	if (caNameSpaceName && xr_strcmp("_G", caNameSpaceName)) 
 	{
 		string512 insert, a, b;
-		LPCSTR header = file_header;
+		const char* header = file_header;
 
 		if (!parse_namespace(caNameSpaceName, a, sizeof(a), b, sizeof(b)))
 			return		(false);
@@ -365,7 +364,7 @@ bool CScriptStorage::load_buffer(lua_State* L, LPCSTR caBuffer, size_t tSize, LP
 	return (true);
 }
 
-bool CScriptStorage::do_file(LPCSTR caScriptName, LPCSTR caNameSpaceName)
+bool CScriptStorage::do_file(const char* caScriptName, const char* caNameSpaceName)
 {
 	int				start = lua_gettop(lua());
 	IReader* l_tpFileReader = FS.r_open(caScriptName);
@@ -375,7 +374,7 @@ bool CScriptStorage::do_file(LPCSTR caScriptName, LPCSTR caNameSpaceName)
 		return		(false);
 	}
 
-	if (!load_buffer(lua(), static_cast<LPCSTR>(l_tpFileReader->pointer()), (size_t)l_tpFileReader->length(), caNameSpaceName, caNameSpaceName))
+	if (!load_buffer(lua(), static_cast<const char*>(l_tpFileReader->pointer()), (size_t)l_tpFileReader->length(), caNameSpaceName, caNameSpaceName))
 	{
 		lua_settop(lua(), start);
 		FS.r_close(l_tpFileReader);
@@ -399,7 +398,7 @@ bool CScriptStorage::do_file(LPCSTR caScriptName, LPCSTR caNameSpaceName)
 	return (true);
 }
 
-bool CScriptStorage::load_file_into_namespace(LPCSTR caScriptName, LPCSTR caNamespaceName)
+bool CScriptStorage::load_file_into_namespace(const char* caScriptName, const char* caNamespaceName)
 {
 	int				start = lua_gettop(lua());
 	if (!do_file(caScriptName,caNamespaceName)) {
@@ -410,7 +409,7 @@ bool CScriptStorage::load_file_into_namespace(LPCSTR caScriptName, LPCSTR caName
 	return			(true);
 }
 
-bool CScriptStorage::namespace_loaded(LPCSTR N, bool remove_from_stack)
+bool CScriptStorage::namespace_loaded(const char* N, bool remove_from_stack)
 {
 	int						start = lua_gettop(lua());
 	lua_pushstring 			(lua(),"_G"); 
@@ -463,7 +462,7 @@ bool CScriptStorage::namespace_loaded(LPCSTR N, bool remove_from_stack)
 	return					(true); 
 }
 
-bool CScriptStorage::object	(LPCSTR identifier, int type)
+bool CScriptStorage::object	(const char* identifier, int type)
 {
 	int						start = lua_gettop(lua());
 	lua_pushnil				(lua()); 
@@ -483,7 +482,7 @@ bool CScriptStorage::object	(LPCSTR identifier, int type)
 	return					(false); 
 }
 
-bool CScriptStorage::object	(LPCSTR namespace_name, LPCSTR identifier, int type)
+bool CScriptStorage::object	(const char* namespace_name, const char* identifier, int type)
 {
 	int						start = lua_gettop(lua());
 	if (xr_strlen(namespace_name) && !namespace_loaded(namespace_name,false)) {
@@ -495,7 +494,7 @@ bool CScriptStorage::object	(LPCSTR namespace_name, LPCSTR identifier, int type)
 	return					(result); 
 }
 
-luabind::object CScriptStorage::name_space(LPCSTR namespace_name)
+luabind::object CScriptStorage::name_space(const char* namespace_name)
 {
 	string256			S1;
 	xr_strcpy				(S1,namespace_name);
@@ -516,10 +515,10 @@ luabind::object CScriptStorage::name_space(LPCSTR namespace_name)
 struct raii_guard 
 {
 	int m_error_code;
-	LPCSTR const& m_error_description;
+	const char* const& m_error_description;
 	raii_guard(const raii_guard& other) = delete;
 	raii_guard& operator=(const raii_guard& other) = delete;
-	raii_guard	(int error_code, LPCSTR const& m_description) : m_error_code(error_code), m_error_description(m_description) {}
+	raii_guard	(int error_code, const char* const& m_description) : m_error_code(error_code), m_error_description(m_description) {}
 	~raii_guard()
 	{
 		if (!m_error_code)
@@ -529,7 +528,7 @@ struct raii_guard
 	}
 }; // struct raii_guard
 
-bool CScriptStorage::print_output(lua_State *L, LPCSTR caScriptFileName, int iErorCode)
+bool CScriptStorage::print_output(lua_State *L, const char* caScriptFileName, int iErorCode)
 {	
 	if (iErorCode)
 		print_error		(L,iErorCode);
@@ -544,7 +543,7 @@ bool CScriptStorage::print_output(lua_State *L, LPCSTR caScriptFileName, int iEr
 	}
 #endif
 
-	LPCSTR err = "see call_stack for details!";
+	const char* err = "see call_stack for details!";
 	raii_guard guard(iErorCode, err);
 
 	return true;
@@ -591,12 +590,12 @@ void CScriptStorage::flush_log()
 }
 #endif // DEBUG
 
-int CScriptStorage::error_log	(LPCSTR	format, ...)
+int CScriptStorage::error_log	(const char*	format, ...)
 {
 	va_list			marker;
 	va_start		(marker,format);
 
-	LPCSTR			S = "! [LUA][ERROR] ";
+	const char*			S = "! [LUA][ERROR] ";
 	LPSTR			S1;
 	string4096		S2;
 	xr_strcpy		(S2,S);

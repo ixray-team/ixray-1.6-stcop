@@ -51,7 +51,7 @@ void Log				(const char *msg, const Fmatrix &dop)	{
 	Log			(buf);
 }
 
-void xrLogger::Msg(LPCSTR Msg, va_list argList)
+void xrLogger::Msg(const char* Msg, va_list argList)
 {
 	string4096	formattedMessage;
 	int MsgSize = _vsnprintf(formattedMessage, sizeof(formattedMessage) - 1, Msg, argList);
@@ -75,7 +75,7 @@ void xrLogger::Msg(LPCSTR Msg, va_list argList)
 	SimpleMessage(formattedMessage, MsgSize);
 }
 
-void xrLogger::SimpleMessage(LPCSTR Message, u32 MessageSize /*= 0*/)
+void xrLogger::SimpleMessage(const char* Message, u32 MessageSize /*= 0*/)
 {
 	switch (MessageSize)
 	{
@@ -291,6 +291,6 @@ void xrLogger::LogThreadEntry()
 	FlushLogIfRequestedLambda();
 }
 
-xrLogger::LogRecord::LogRecord(LPCSTR Msg, u32 sizeMsg)
+xrLogger::LogRecord::LogRecord(const char* Msg, u32 sizeMsg)
 	: Message(Msg, sizeMsg)
 {}

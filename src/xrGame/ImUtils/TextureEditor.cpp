@@ -112,7 +112,7 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 
 		if (!g_imgui_texture_editor.is_all_analyzed)
 		{
-			static xr_vector<LPCSTR> files_vec;
+			static xr_vector<const char*> files_vec;
 			static FS_Path* pTexturesFolder = FS.get_path(_game_textures_);
 
 			if (!pTexturesFolder)
@@ -146,7 +146,7 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 
 			{
 				PROF_EVENT("get_all_textures_count");
-				for (LPCSTR path : files_vec)
+				for (const char* path : files_vec)
 				{
 					std::string_view fn = path;
 					size_t len = fn.length();

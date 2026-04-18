@@ -13,7 +13,7 @@
 #include "AnomalyZone.h"
 
 #ifdef DEBUG
-extern	BOOL death_anim_debug;
+extern	bool death_anim_debug;
 #endif // DEBUG
 
 character_shell_control::character_shell_control():
@@ -25,7 +25,7 @@ character_shell_control::character_shell_control():
 
 }
 
-void	character_shell_control::Load( LPCSTR section )
+void	character_shell_control::Load( const char* section )
 {
 
 	skel_airr_ang_factor			= pSettings->r_float(section,"ph_skeleton_airr_ang_factor");

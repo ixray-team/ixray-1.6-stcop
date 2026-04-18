@@ -43,7 +43,7 @@ public:
 	template<typename U, typename V, typename W, typename X, typename Y>
 	ICF _box3(U, V, W, X, Y) = delete;
 
-	ICF	BOOL	is_valid	()											{return (x2>=x1)&&(y2>=y1)&&(z2>=z1);}
+	ICF	bool	is_valid	()											{return (x2>=x1)&&(y2>=y1)&&(z2>=z1);}
 
 	ICF	const T* data		()	const									{ return &min.x;	}	
 
@@ -66,11 +66,11 @@ public:
 	ICF	SelfRef	offset		(const Tvector &p)				{ min.add(p); max.add(p);	return *this;	};
 	ICF	SelfRef	add			(SelfCRef b, const Tvector &p)	{ min.add(b.min, p); max.add(b.max, p);				return *this;	};
 	
-	ICF	BOOL	contains	(T x, T y, T z)		const		{ return (x>=x1) && (x<=x2) && (y>=y1) && (y<=y2) && (z>=z1) && (z<=z2); };
-	ICF	BOOL	contains	(const Tvector &p)	const		{ return contains(p.x,p.y,p.z);	};
-	ICF	BOOL	contains	(SelfCRef b)		const		{ return contains(b.min) && contains(b.max); };
+	ICF	bool	contains	(T x, T y, T z)		const		{ return (x>=x1) && (x<=x2) && (y>=y1) && (y<=y2) && (z>=z1) && (z<=z2); };
+	ICF	bool	contains	(const Tvector &p)	const		{ return contains(p.x,p.y,p.z);	};
+	ICF	bool	contains	(SelfCRef b)		const		{ return contains(b.min) && contains(b.max); };
 	
-	ICF	BOOL	similar		(SelfCRef b)		const		{ return min.similar(b.min) && max.similar(b.max); };
+	ICF	bool	similar		(SelfCRef b)		const		{ return min.similar(b.min) && max.similar(b.max); };
 	
 	ICF	SelfRef	modify		(const Tvector &p)				{ min.min(p); max.max(p);				return *this;	}
 	ICF	SelfRef	modify		(T x, T y, T z)					{ _vector3<T> tmp = {x,y,z}; return		modify(tmp);	}
@@ -138,7 +138,7 @@ public:
 	};
 	
 	// Detects if this box intersect other
-	ICF	BOOL	intersect	(SelfCRef box )
+	ICF	bool	intersect	(SelfCRef box )
 	{
 		if( max.x < box.min.x )	return FALSE;
 		if( max.y < box.min.y )	return FALSE;
@@ -299,7 +299,7 @@ public:
 	}
 
 	// Does the vector3 intersects box
-	ICF BOOL Pick			(const Tvector& start, const Tvector& dir)
+	ICF bool Pick			(const Tvector& start, const Tvector& dir)
 	{
 		T	alpha,xt,yt,zt;
 		Tvector rvmin,rvmax;
@@ -369,7 +369,7 @@ public:
 	};
 	ICF ERP_Result Pick2(const Tvector& origin, const Tvector& dir, Tvector& coord)
 	{
-		BOOL Inside = TRUE;
+		bool Inside = TRUE;
 		Tvector		MaxT;
 		MaxT.x=MaxT.y=MaxT.z=-1.0f;
 		
@@ -496,4 +496,4 @@ typedef _box3<double>	Dbox;
 typedef _box3<double>	Dbox3;
 
 template <class T>
-ICF BOOL	_valid			(const _box3<T>& c)	{ return _valid(c.min) && _valid(c.max); }
+ICF bool	_valid			(const _box3<T>& c)	{ return _valid(c.min) && _valid(c.max); }

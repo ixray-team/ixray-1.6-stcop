@@ -645,12 +645,12 @@ void CBaseMonster::set_state_sound(u32 type, bool once)
 	m_prev_sound_type	= type;
 }
 
-BOOL CBaseMonster::feel_touch_on_contact	(CObject *O)
+bool CBaseMonster::feel_touch_on_contact	(CObject *O)
 {
 	return		(inherited::feel_touch_on_contact(O));
 }
 
-BOOL CBaseMonster::feel_touch_contact(CObject *O)
+bool CBaseMonster::feel_touch_contact(CObject *O)
 {
 	m_anomaly_detector->on_contact(O);
 	return inherited::feel_touch_contact(O);
@@ -845,7 +845,7 @@ void CBaseMonster::set_action(EAction action)
 	anim().m_tAction		= action;
 }
 
-CParticlesObject* CBaseMonster::PlayParticles(const shared_str& name, const Fvector &position, const Fvector &dir, BOOL auto_remove, BOOL xformed)
+CParticlesObject* CBaseMonster::PlayParticles(const shared_str& name, const Fvector &position, const Fvector &dir, bool auto_remove, bool xformed)
 {
 	CParticlesObject* ps = Particles::Details::Create(name.c_str(),auto_remove).get();
 	
@@ -870,9 +870,9 @@ void CBaseMonster::on_restrictions_change()
 	if (StateMan) StateMan->reinit();
 }
 
-void CBaseMonster::load_effector(LPCSTR section, LPCSTR line, SAttackEffector &effector)
+void CBaseMonster::load_effector(const char* section, const char* line, SAttackEffector &effector)
 {
-	LPCSTR ppi_section = pSettings->r_string(section, line);
+	const char* ppi_section = pSettings->r_string(section, line);
 	effector.ppi.duality.h			= pSettings->r_float(ppi_section,"duality_h");
 	effector.ppi.duality.v			= pSettings->r_float(ppi_section,"duality_v");
 	effector.ppi.gray				= pSettings->r_float(ppi_section,"gray");

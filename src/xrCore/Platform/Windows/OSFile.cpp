@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-bool Platform::OpenFileWnd(char* buffer, size_t sz_buf, FS_Path* P, int start_flt_ext, string1024 flt, LPCSTR offset, bool bMulti)
+bool Platform::OpenFileWnd(char* buffer, size_t sz_buf, FS_Path* P, int start_flt_ext, string1024 flt, const char* offset, bool bMulti)
 {
 	OPENFILENAME ofn;
 	Memory.mem_fill(&ofn, 0, sizeof(ofn));

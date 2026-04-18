@@ -20,7 +20,7 @@ CSCompiler& CSCompiler::begin(const char* name)
 	return *this;
 }
 
-CSCompiler& CSCompiler::defSampler(LPCSTR ResourceName)
+CSCompiler& CSCompiler::defSampler(const char* ResourceName)
 {
 	D3D11_SAMPLER_DESC	desc;
 	ZeroMemory(&desc, sizeof(desc));
@@ -104,7 +104,7 @@ CSCompiler& CSCompiler::defSampler(LPCSTR ResourceName)
 	return *this;
 }
 
-CSCompiler& CSCompiler::defSampler(LPCSTR ResourceName, const D3D_SAMPLER_DESC& def)
+CSCompiler& CSCompiler::defSampler(const char* ResourceName, const D3D_SAMPLER_DESC& def)
 {
 	VERIFY(ResourceName);
 
@@ -124,7 +124,7 @@ CSCompiler& CSCompiler::defSampler(LPCSTR ResourceName, const D3D_SAMPLER_DESC& 
 
 void fix_texture_name(LPSTR);
 
-CSCompiler& CSCompiler::defOutput(LPCSTR ResourceName,	ref_rt rt)
+CSCompiler& CSCompiler::defOutput(const char* ResourceName,	ref_rt rt)
 {
 	VERIFY(ResourceName);
 	if (!rt) return *this;
@@ -143,7 +143,7 @@ CSCompiler& CSCompiler::defOutput(LPCSTR ResourceName,	ref_rt rt)
 	return *this;
 }
 
-CSCompiler& CSCompiler::defTexture(LPCSTR ResourceName,	ref_texture texture)
+CSCompiler& CSCompiler::defTexture(const char* ResourceName,	ref_texture texture)
 {
 	VERIFY(ResourceName);
 	if (!texture) return *this;
@@ -192,8 +192,8 @@ void CSCompiler::compile(const char* name)
 	R_ASSERT2					( file, cname );
 
 	// Select target
-	LPCSTR						c_target	= "cs_5_0";
-	LPCSTR						c_entry		= "main";
+	const char*						c_target	= "cs_5_0";
+	const char*						c_entry		= "main";
 
 	HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, D3DCOMPILE_PACK_MATRIX_ROW_MAJOR, (void*&)m_cs);
 

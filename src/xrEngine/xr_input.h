@@ -91,7 +91,7 @@ private:
 	char						old_KBState[COUNT_KB_BUTTONS] = {};
 	char						old_GPState[COUNT_GP_BUTTONS] = {};
 	bool						controllerMode = false;
-	LPCSTR gamepadPrefix = "xbox1";
+	const char* gamepadPrefix = "xbox1";
 
 	Fvector2 LeftAxis = { 0, 0 };
 	Fvector2 RightAxis = { 0, 0 };
@@ -123,11 +123,11 @@ public:
 	void						iCapture					( IInputReceiver *pc );
 	void						iRelease					( IInputReceiver *pc );
 	bool						iGetAsyncGamepadKeyState	( int dik );
-	BOOL						iGetAsyncKeyState			( int dik );
-	BOOL						iGetAsyncBtnState			( int btn );
+	bool						iGetAsyncKeyState			( int dik );
+	bool						iGetAsyncBtnState			( int btn );
 	void						iGetLastMouseDelta			( Ivector2& p );
 
-	CInput						( BOOL bExclusive = true, int deviceForInit = default_key);
+	CInput						( bool bExclusive = true, int deviceForInit = default_key);
 	virtual ~CInput				( );
 
 	virtual void	_BCL		OnFrame						(void);
@@ -161,7 +161,7 @@ public:
 	void						SetControllerMode(bool val);
 	bool						GetControllerMode() { return controllerMode; }
 	void SelectGamepadPrefix();
-	LPCSTR GamepadPrefix() { return gamepadPrefix; }
+	const char* GamepadPrefix() { return gamepadPrefix; }
 private:
 	bool FillVendorInfo(const CInputDevice& device, CInputDeviceVendorInfo& info) noexcept;
 	bool GetConnectedInputKeyboards(CInputDevice(&pool)[DEF_XR_INPUT_MAX_INPUT_CONNECTED_DEVICES_COUNT], unsigned char max_keyboards = DEF_XR_INPUT_MAX_INPUT_CONNECTED_KEYBOARD_COUNT) noexcept;

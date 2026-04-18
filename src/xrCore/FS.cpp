@@ -5,7 +5,7 @@
 // Tools
 //////////////////////////////////////////////////////////////////////
 //---------------------------------------------------
-void VerifyPath(LPCSTR path)
+void VerifyPath(const char* path)
 {
 	string1024 tmp;
 	for (int i = 0; path[i]; i++) 
@@ -18,7 +18,7 @@ void VerifyPath(LPCSTR path)
 	}
 }
 
-static errno_t open_internal(LPCSTR fn, int& handle)
+static errno_t open_internal(const char* fn, int& handle)
 {
 	const char* FileName = Platform::ValidPath(fn);
 	return _wsopen_s
@@ -29,7 +29,7 @@ static errno_t open_internal(LPCSTR fn, int& handle)
 			);
 }
 
-bool file_handle_internal(LPCSTR file_name, intptr_t& size, int& file_handle)
+bool file_handle_internal(const char* file_name, intptr_t& size, int& file_handle)
 {
 	if (open_internal(file_name, file_handle))
 	{
@@ -46,7 +46,7 @@ bool file_handle_internal(LPCSTR file_name, intptr_t& size, int& file_handle)
 	return (true);
 }
 
-void *FileDownload(LPCSTR file_name, const int &file_handle, intptr_t&file_size)
+void *FileDownload(const char* file_name, const int &file_handle, intptr_t&file_size)
 {
 	void *buffer = Memory.mem_alloc(file_size);
 
@@ -57,7 +57,7 @@ void *FileDownload(LPCSTR file_name, const int &file_handle, intptr_t&file_size)
 	return (buffer);
 }
 
-void* FileDownload(LPCSTR file_name, intptr_t& buffer_size)
+void* FileDownload(const char* file_name, intptr_t& buffer_size)
 {
 	int file_handle;
 	bool HandleComplete = file_handle_internal(file_name, buffer_size, file_handle);
@@ -150,7 +150,7 @@ void CMemoryWriter::w(const void* ptr, u32 count)
 }
 
 //static const u32 mb_sz = 0x1000000;
-bool CMemoryWriter::save_to(LPCSTR fn)
+bool CMemoryWriter::save_to(const char* fn)
 {
 	IWriter* F = FS.w_open(fn);
 	if (F)
@@ -251,7 +251,7 @@ void IWriter::w_printf(const char* format, ...)
 // base stream
 IReader* IReader::open_chunk(u32 ID)
 {
-	BOOL bCompressed;
+	bool bCompressed;
 
 	size_t	dwSize = find_chunk(ID, &bCompressed);
 	if (dwSize != 0)
@@ -280,7 +280,7 @@ void IReader::close()
 
 #include "FS_impl.h"
 
-intptr_t IReader::find_chunk(u32 ID, BOOL* bCompressed)
+intptr_t IReader::find_chunk(u32 ID, bool* bCompressed)
 {
 	return inherited::find_chunk(ID, bCompressed);
 }
@@ -327,7 +327,7 @@ void IReader::r	(void *p, intptr_t cnt)
 	CopyMemory		(p,pointer(),cnt);
 	advance			(cnt);
 #ifdef DEBUG
-	BOOL	bShow		= FALSE		;
+	bool	bShow		= FALSE		;
 	if (cast_file_reader())			bShow = TRUE;
 	if (cast_virtual_file_reader())	bShow = TRUE;
 	if (bShow)			{
@@ -336,7 +336,7 @@ void IReader::r	(void *p, intptr_t cnt)
 #endif
 };
 
-IC BOOL is_term(char a)
+IC bool is_term(char a)
 { 
 	return (a==13)||(a==10);
 }

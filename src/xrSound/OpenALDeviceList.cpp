@@ -176,7 +176,7 @@ void ALDeviceList::Enumerate()
 	}
 }
 
-LPCSTR ALDeviceList::GetDeviceName(u32 index)
+const char* ALDeviceList::GetDeviceName(u32 index)
 {
 	return snd_devices_token[index].name;
 }

@@ -13,9 +13,9 @@
 
 #define LUABIND_HAS_BUGS_WITH_LUA_THREADS
 
-const LPCSTR main_function = "console_command_run_string_main_thread_function";
+const char* main_function = "console_command_run_string_main_thread_function";
 
-CScriptThread::CScriptThread(LPCSTR caNamespaceName, bool do_string, bool reload)
+CScriptThread::CScriptThread(const char* caNamespaceName, bool do_string, bool reload)
 {
 	m_virtual_machine = 0;
 	m_active = false;

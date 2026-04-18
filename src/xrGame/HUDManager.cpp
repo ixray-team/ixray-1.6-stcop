@@ -163,7 +163,7 @@ void   CHUDManager::RenderActiveItemUI()
 	g_player_hud->render_item_ui		();
 }
 
-extern ENGINE_API BOOL bShowPauseString;
+extern ENGINE_API bool bShowPauseString;
 //отрисовка элементов интерфейса
 void  CHUDManager::RenderUI()
 {
@@ -190,7 +190,7 @@ void  CHUDManager::RenderUI()
 	if( Device.Paused() && bShowPauseString){
 		CGameFont* pFont	= UI().Font().GetFont(GRAFFITI50_FONT_NAME);
 		pFont->SetColor		(0x80FF0000	);
-		LPCSTR _str			= g_pStringTable->translate("st_game_paused").c_str();
+		const char* _str			= g_pStringTable->translate("st_game_paused").c_str();
 		
 		Fvector2			_pos;
 		_pos.set			(UI_BASE_WIDTH/2.0f, UI_BASE_HEIGHT/2.0f);
@@ -244,12 +244,12 @@ void CHUDManager::Update_GrenadeView( Fvector& pos_actor )
 	HitMarker.Update_GrenadeView( pos_actor );
 }
 
-void CHUDManager::SetHitmarkType( LPCSTR tex_name )
+void CHUDManager::SetHitmarkType( const char* tex_name )
 {
 	HitMarker.InitShader( tex_name );
 }
 
-void CHUDManager::SetGrenadeMarkType( LPCSTR tex_name )
+void CHUDManager::SetGrenadeMarkType( const char* tex_name )
 {
 	HitMarker.InitShader_Grenade( tex_name );
 }

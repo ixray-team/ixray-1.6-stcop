@@ -47,7 +47,7 @@ using smart_cover::animation_planner;
 using namespace MonsterSpace;
 using namespace StalkerDecisionSpace;
 
-loophole_action_base::loophole_action_base	(CAI_Stalker *object, LPCSTR action_name) :
+loophole_action_base::loophole_action_base	(CAI_Stalker *object, const char* action_name) :
 	inherited	(object, action_name)
 {
 }
@@ -248,7 +248,7 @@ bool loophole_action_base::setup_sight		(bool const& change_sight)
 // loophole_action
 //////////////////////////////////////////////////////////////////////////
 
-loophole_action::loophole_action		(CAI_Stalker *object, LPCSTR action_name) :
+loophole_action::loophole_action		(CAI_Stalker *object, const char* action_name) :
 	inherited							(object, action_name),
 	m_action_id							(action_name)
 {
@@ -259,7 +259,7 @@ void loophole_action::initialize		()
 {
 	inherited::initialize		();
 
-	LPCSTR animation_id			= "idle";
+	const char* animation_id			= "idle";
 	typedef smart_cover::loophole::Animations ActionAnimations;
 	ActionAnimations const		&animations = object().movement().current_params().cover_loophole()->action_animations(m_action_id, animation_id);
 	m_animation					= animations[m_random.randI(animations.size())];
@@ -288,7 +288,7 @@ void loophole_action::on_animation_end	()
 // loophole_action_no_sight
 //////////////////////////////////////////////////////////////////////////
 
-loophole_action_no_sight::loophole_action_no_sight	(CAI_Stalker *object, LPCSTR action_name) :
+loophole_action_no_sight::loophole_action_no_sight	(CAI_Stalker *object, const char* action_name) :
 	inherited	(object, action_name)
 {
 }
@@ -309,7 +309,7 @@ void loophole_action_no_sight::finalize			()
 // loophole_reload
 //////////////////////////////////////////////////////////////////////////
 
-loophole_reload::loophole_reload		(CAI_Stalker *object, LPCSTR action_name) :
+loophole_reload::loophole_reload		(CAI_Stalker *object, const char* action_name) :
 	inherited							(object, action_name)
 {
 }
@@ -324,7 +324,7 @@ void loophole_reload::select_animation	(shared_str &result)
 // transition
 //////////////////////////////////////////////////////////////////////////
 
-transition::transition					(CAI_Stalker *object, LPCSTR action_name, LPCSTR action_from, LPCSTR action_to, StalkerDecisionSpace::EWorldProperties state_from, StalkerDecisionSpace::EWorldProperties state_to, animation_planner *planner) :
+transition::transition					(CAI_Stalker *object, const char* action_name, const char* action_from, const char* action_to, StalkerDecisionSpace::EWorldProperties state_from, StalkerDecisionSpace::EWorldProperties state_to, animation_planner *planner) :
 	inherited					(object, action_name),
 	m_action_from				(action_from),
 	m_action_to					(action_to),
@@ -365,7 +365,7 @@ void transition::on_animation_end		()
 // loophole_lookout
 //////////////////////////////////////////////////////////////////////////
 
-loophole_lookout::loophole_lookout		(CAI_Stalker *object, LPCSTR action_name) :
+loophole_lookout::loophole_lookout		(CAI_Stalker *object, const char* action_name) :
 	inherited							(object, action_name)
 {
 }
@@ -395,7 +395,7 @@ void loophole_lookout::finalize			()
 // loophole_fire
 //////////////////////////////////////////////////////////////////////////
 
-loophole_fire::loophole_fire			(CAI_Stalker *object, LPCSTR action_name) :
+loophole_fire::loophole_fire			(CAI_Stalker *object, const char* action_name) :
 	inherited							(object, action_name)
 {
 }
@@ -413,7 +413,7 @@ void loophole_fire::execute				()
 {
 	inherited::execute			();
 
-	LPCSTR						animation_id = "idle";
+	const char*						animation_id = "idle";
 	if	(
 			object().sight().current_action().target_reached() &&
 			m_firing &&
@@ -478,7 +478,7 @@ void loophole_fire::on_no_mark			()
 // idle_2_fire_transition
 //////////////////////////////////////////////////////////////////////////
 
-idle_2_fire_transition::idle_2_fire_transition	(CAI_Stalker *object, LPCSTR action_name, LPCSTR action_from, LPCSTR action_to, StalkerDecisionSpace::EWorldProperties state_from, StalkerDecisionSpace::EWorldProperties state_to, animation_planner *planner, bool const& use_weapon) :
+idle_2_fire_transition::idle_2_fire_transition	(CAI_Stalker *object, const char* action_name, const char* action_from, const char* action_to, StalkerDecisionSpace::EWorldProperties state_from, StalkerDecisionSpace::EWorldProperties state_to, animation_planner *planner, bool const& use_weapon) :
 	inherited	(object, action_name, action_from, action_to, state_from, state_to, planner)
 {
 }
@@ -507,7 +507,7 @@ void idle_2_fire_transition::finalize			()
 // fire_2_idle_transition
 //////////////////////////////////////////////////////////////////////////
 
-fire_2_idle_transition::fire_2_idle_transition	(CAI_Stalker *object, LPCSTR action_name, LPCSTR action_from, LPCSTR action_to, StalkerDecisionSpace::EWorldProperties state_from, StalkerDecisionSpace::EWorldProperties state_to, animation_planner *planner) :
+fire_2_idle_transition::fire_2_idle_transition	(CAI_Stalker *object, const char* action_name, const char* action_from, const char* action_to, StalkerDecisionSpace::EWorldProperties state_from, StalkerDecisionSpace::EWorldProperties state_to, animation_planner *planner) :
 	inherited	(object, action_name, action_from, action_to, state_from, state_to, planner)
 {
 }
@@ -537,7 +537,7 @@ void fire_2_idle_transition::finalize			()
 // idle_2_lookout_transition
 //////////////////////////////////////////////////////////////////////////
 
-idle_2_lookout_transition::idle_2_lookout_transition(CAI_Stalker *object, LPCSTR action_name, LPCSTR action_from, LPCSTR action_to, StalkerDecisionSpace::EWorldProperties state_from, StalkerDecisionSpace::EWorldProperties state_to, animation_planner *planner) :
+idle_2_lookout_transition::idle_2_lookout_transition(CAI_Stalker *object, const char* action_name, const char* action_from, const char* action_to, StalkerDecisionSpace::EWorldProperties state_from, StalkerDecisionSpace::EWorldProperties state_to, animation_planner *planner) :
 	inherited	(object, action_name, action_from, action_to, state_from, state_to, planner)
 {
 }
@@ -566,7 +566,7 @@ void idle_2_lookout_transition::finalize			()
 // lookout_2_idle_transition
 //////////////////////////////////////////////////////////////////////////
 
-lookout_2_idle_transition::lookout_2_idle_transition(CAI_Stalker *object, LPCSTR action_name, LPCSTR action_from, LPCSTR action_to, StalkerDecisionSpace::EWorldProperties state_from, StalkerDecisionSpace::EWorldProperties state_to, animation_planner *planner) :
+lookout_2_idle_transition::lookout_2_idle_transition(CAI_Stalker *object, const char* action_name, const char* action_from, const char* action_to, StalkerDecisionSpace::EWorldProperties state_from, StalkerDecisionSpace::EWorldProperties state_to, animation_planner *planner) :
 	inherited	(object, action_name, action_from, action_to, state_from, state_to, planner)
 {
 }

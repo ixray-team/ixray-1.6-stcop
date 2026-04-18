@@ -69,7 +69,7 @@ CAI_Bloodsucker::~CAI_Bloodsucker()
 	xr_delete	(StateMan);
 }
 
-void CAI_Bloodsucker::Load(LPCSTR section) 
+void CAI_Bloodsucker::Load(const char* section) 
 {
 	inherited::Load(section);
 
@@ -289,7 +289,7 @@ void CAI_Bloodsucker::reinit()
 	start_invisible_predator();
 }
 
-void CAI_Bloodsucker::reload(LPCSTR section)
+void CAI_Bloodsucker::reload(const char* section)
 {
 	inherited::reload(section);
 	if (!g_Alive())
@@ -306,7 +306,7 @@ void CAI_Bloodsucker::reload(LPCSTR section)
 	sound().add(pSettings->r_string(section,"Sound_Alien"),						DEFAULT_SAMPLE_COUNT,	SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eCriticalPriority,	u32(MonsterSound::eCaptureAllChannels),	eAlien,				"bip01_head");
 }
 
-void CAI_Bloodsucker::LoadVampirePPEffector(LPCSTR section)
+void CAI_Bloodsucker::LoadVampirePPEffector(const char* section)
 {
 	pp_vampire_effector.duality.h			= pSettings->r_float(section,"duality_h");
 	pp_vampire_effector.duality.v			= pSettings->r_float(section,"duality_v");
@@ -424,7 +424,7 @@ void CAI_Bloodsucker::CheckSpecParams(u32 spec_params)
 
 }
 
-BOOL CAI_Bloodsucker::net_Spawn (CSE_Abstract* DC) 
+bool CAI_Bloodsucker::net_Spawn (CSE_Abstract* DC) 
 {
 	if (!inherited::net_Spawn(DC))
 		return(FALSE);
@@ -739,7 +739,7 @@ void CAI_Bloodsucker::jump(const Fvector &position, float factor)
 	sound().play			(MonsterSound::eMonsterSoundAggressive);
 }
 
-void CAI_Bloodsucker::set_drag_jump(CEntityAlive* e, LPCSTR s, const Fvector &position, float factor)
+void CAI_Bloodsucker::set_drag_jump(CEntityAlive* e, const char* s, const Fvector &position, float factor)
 {
 	j_position = position;
 	j_factor = factor;
@@ -972,7 +972,7 @@ void CAI_Bloodsucker::manual_deactivate()
 	setVisible		(TRUE);
 }
 
-BOOL CAI_Bloodsucker::AlwaysTheCrow()
+bool CAI_Bloodsucker::AlwaysTheCrow()
 {
 	if (m_visibility_state == no_visibility)
 		return TRUE;

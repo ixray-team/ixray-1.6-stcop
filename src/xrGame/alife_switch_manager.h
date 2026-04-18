@@ -36,7 +36,7 @@ public:
 			void	add_online				(CSE_ALifeDynamicObject	*object, bool update_registries = true);
 
 public:
-	IC				CALifeSwitchManager		(xrServer *server, LPCSTR section);
+	IC				CALifeSwitchManager		(xrServer *server, const char* section);
 	virtual			~CALifeSwitchManager	();
 			void	switch_object			(CSE_ALifeDynamicObject	*object);
 	IC		float	online_distance			() const;

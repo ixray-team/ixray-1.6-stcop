@@ -8,7 +8,7 @@
 #include "stdafx.h"
 #include "xr_ioc_cmd.h"
 
-bool CConsole::GetBool(LPCSTR cmd) const {
+bool CConsole::GetBool(const char* cmd) const {
 	IConsole_Command* cc	= GetCommand(cmd);
 	CCC_Mask32* cf			= dynamic_cast<CCC_Mask32*>(cc);
 	if (cf) {
@@ -27,7 +27,7 @@ bool CConsole::GetBool(LPCSTR cmd) const {
 	return false;
 }
 
-float CConsole::GetFloat(LPCSTR cmd, float& min, float& max) const {
+float CConsole::GetFloat(const char* cmd, float& min, float& max) const {
 	min						= 0.0f;
 	max						= 0.0f;
 	IConsole_Command* cc	= GetCommand(cmd);
@@ -39,7 +39,7 @@ float CConsole::GetFloat(LPCSTR cmd, float& min, float& max) const {
 	return 0.0f;
 }
 
-IConsole_Command* CConsole::GetCommand(LPCSTR cmd) const {
+IConsole_Command* CConsole::GetCommand(const char* cmd) const {
 	const auto it = Commands.find(cmd);
 	
 	if (it == Commands.end())
@@ -49,7 +49,7 @@ IConsole_Command* CConsole::GetCommand(LPCSTR cmd) const {
 }
 
 
-int CConsole::GetInteger(LPCSTR cmd, int& min, int& max) const {
+int CConsole::GetInteger(const char* cmd, int& min, int& max) const {
 	min						= 0;
 	max						= 1;
 	IConsole_Command* cc	= GetCommand(cmd);
@@ -68,7 +68,7 @@ int CConsole::GetInteger(LPCSTR cmd, int& min, int& max) const {
 	return 0;
 }
 
-LPCSTR CConsole::GetString(LPCSTR cmd) const {
+const char* CConsole::GetString(const char* cmd) const {
 	IConsole_Command* cc	= GetCommand(cmd);
 	if (!cc) {
 		return nullptr;
@@ -79,11 +79,11 @@ LPCSTR CConsole::GetString(LPCSTR cmd) const {
 	return					stat;
 }
 
-LPCSTR CConsole::GetToken(LPCSTR cmd) const {
+const char* CConsole::GetToken(const char* cmd) const {
 	return GetString( cmd );
 }
 
-xr_token* CConsole::GetXRToken(LPCSTR cmd) const {
+xr_token* CConsole::GetXRToken(const char* cmd) const {
 	IConsole_Command* cc	= GetCommand(cmd);
 	
 	CCC_Token* cf			= dynamic_cast<CCC_Token*>(cc);
@@ -93,7 +93,7 @@ xr_token* CConsole::GetXRToken(LPCSTR cmd) const {
 	return nullptr;
 }
 
-Fvector* CConsole::GetFVectorPtr(LPCSTR cmd) const {
+Fvector* CConsole::GetFVectorPtr(const char* cmd) const {
 	IConsole_Command* cc	= GetCommand(cmd);
 	CCC_Vector3* cf			= dynamic_cast<CCC_Vector3*>(cc);
 	if (cf) {
@@ -102,7 +102,7 @@ Fvector* CConsole::GetFVectorPtr(LPCSTR cmd) const {
 	return					nullptr;
 }
 
-Fvector CConsole::GetFVector(LPCSTR cmd) const {
+Fvector CConsole::GetFVector(const char* cmd) const {
 	Fvector* pV = GetFVectorPtr( cmd );
 	if (pV) {
 		return *pV;

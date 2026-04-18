@@ -112,7 +112,7 @@ protected:
 
 public:
     void RemoveMapLocations(bool notify);
-    void ChangeMapLocation(pcstr new_map_location, u16 new_map_object_id);
+    void ChangeMapLocation(const char* new_map_location, u16 new_map_object_id);
 
     // for scripting access
     auto GetType_script() const { return m_task_type; }
@@ -121,35 +121,35 @@ public:
     auto GetID() const { return m_idx; }
 
     auto GetTitle_script() const { return m_Title.c_str(); }
-    void SetTitle_script(pcstr title) { m_Title = title; }
+    void SetTitle_script(const char* title) { m_Title = title; }
 
     auto GetDescription_script() const { return m_Description.c_str(); }
-    void SetDescription_script(pcstr desc) { m_Description = desc; }
+    void SetDescription_script(const char* desc) { m_Description = desc; }
 
     // encyclopedia
-    void SetArticleID_script(LPCSTR id) { m_article_id = id; }
-    void SetArticleKey_script(LPCSTR key) { m_article_key = key; }
+    void SetArticleID_script(const char* id) { m_article_id = id; }
+    void SetArticleKey_script(const char* key) { m_article_key = key; }
 
     auto GetIconName_script() const { return m_icon_texture_name.c_str(); }
-    void SetIconName_script(pcstr tex);
+    void SetIconName_script(const char* tex);
 
     // map
-    void SetMapHint_script(pcstr hint) { m_map_hint = hint; }
-    void SetMapLocation_script(pcstr mls) { m_map_location = mls; }
+    void SetMapHint_script(const char* hint) { m_map_hint = hint; }
+    void SetMapLocation_script(const char* mls) { m_map_location = mls; }
     void SetMapObjectID_script(int id) { m_map_object_id = (u16)id; }
 
     // callbacks and infos
-    void AddCompleteInfo_script(pcstr str);
-    void AddCompleteFunc_script(pcstr str);
+    void AddCompleteInfo_script(const char* str);
+    void AddCompleteFunc_script(const char* str);
 
-    void AddOnCompleteInfo_script(pcstr str);
-    void AddOnCompleteFunc_script(pcstr str);
+    void AddOnCompleteInfo_script(const char* str);
+    void AddOnCompleteFunc_script(const char* str);
 
-    void AddFailInfo_script(pcstr str);
-    void AddFailFunc_script(pcstr str);
+    void AddFailInfo_script(const char* str);
+    void AddFailFunc_script(const char* str);
 
-    void AddOnFailInfo_script(pcstr str);
-    void AddOnFailFunc_script(pcstr str);
+    void AddOnFailInfo_script(const char* str);
+    void AddOnFailFunc_script(const char* str);
 
     void CommitScriptHelperContents();
 };
@@ -197,10 +197,10 @@ public:
     void FillEncyclopedia() const;
 
     // for scripting access
-    void Load_script(pcstr id) { Load(id); }
+    void Load_script(const char* id) { Load(id); }
     
     auto GetID_script() const { return m_ID.c_str(); }
-    void SetID_script(pcstr id) { m_ID = id; }
+    void SetID_script(const char* id) { m_ID = id; }
 
     auto GetPriority_script() const { return m_priority; }
     void SetPriority_script(int prio) { m_priority = prio; }

@@ -27,7 +27,7 @@
 
 namespace
 {
-LPCSTR GetTitleStringIdForMode(CUIItemDropAmountWnd::EDropMode mode)
+const char* GetTitleStringIdForMode(CUIItemDropAmountWnd::EDropMode mode)
 {
     switch (mode)
     {
@@ -91,7 +91,7 @@ void CUIItemDropAmountWnd::InitDropAmount(CUIXml& uiXml)
     SetWndPos(Fvector2().set(0, 0));
     SetWndSize(Fvector2().set(UI_BASE_WIDTH, UI_BASE_HEIGHT));
 
-    LPCSTR base = "split_item";
+    const char* base = "split_item";
     XML_NODE* stored_root = uiXml.GetLocalRoot();
     XML_NODE* base_node = uiXml.NavigateToNode(base, 0);
     if (!base_node)
@@ -256,7 +256,7 @@ void CUIItemDropAmountWnd::SyncValueToEdit()
 
 void CUIItemDropAmountWnd::SyncEditToValue()
 {
-    LPCSTR text = _editAmount->GetText();
+    const char* text = _editAmount->GetText();
     int val = 1;
     if (text && xr_strlen(text) > 0)
         val = atoi(text);
@@ -271,8 +271,8 @@ void CUIItemDropAmountWnd::UpdateWeightText()
     if (!_pItem)
         return;
     float weight = _pItem->Weight() * _currentAmount;
-    LPCSTR weightLabel = g_pStringTable->translate("st_weight").c_str();
-    LPCSTR kgLabel = g_pStringTable->translate("st_kg").c_str();
+    const char* weightLabel = g_pStringTable->translate("st_weight").c_str();
+    const char* kgLabel = g_pStringTable->translate("st_kg").c_str();
     string128 buf;
     xr_sprintf(buf, "%s: %.2f %s", weightLabel, weight, kgLabel);
     _weightText->SetText(buf);

@@ -22,7 +22,7 @@ class CEditableObject;
 
 class CParseBlender{
 public:
-	virtual void Parse(CSHEngineTools* owner, DWORD type, LPCSTR key, LPVOID data)=0;
+	virtual void Parse(CSHEngineTools* owner, DWORD type, const char* key, LPVOID data)=0;
 };
 
 enum EPreviewObj{
@@ -43,12 +43,12 @@ class CSHEngineTools: public ISHTools
 	CEditableObject*		m_PreviewObject;
     bool					m_bCustomEditObject;
 
-	BOOL					m_bFreezeUpdate;
-    BOOL					m_bNeedResetShaders;
-    BOOL					m_RemoteRenBlender;
-    BOOL                    m_CreatingBlender;
+	bool					m_bFreezeUpdate;
+    bool					m_bNeedResetShaders;
+    bool					m_RemoteRenBlender;
+    bool                    m_CreatingBlender;
     xr_string               m_CreatingBlenderPath;
-    BOOL                    m_SetCustomObject;
+    bool                    m_SetCustomObject;
 
     xr_string				m_RenBlenderOldName;
     xr_string				m_RenBlenderNewName;
@@ -61,22 +61,22 @@ class CSHEngineTools: public ISHTools
 	MatrixMap				m_Matrices;
 	BlenderMap				m_Blenders;
 
-	void  			ItemExist			(LPCSTR name, bool& res){res = !!FindItem(name);}
-	IBlender*				FindItem			(LPCSTR name);
+	void  			ItemExist			(const char* name, bool& res){res = !!FindItem(name);}
+	IBlender*				FindItem			(const char* name);
 
 	void 					AddMatrixRef		(LPSTR name);
-	CMatrix*				FindMatrix			(LPCSTR name);
+	CMatrix*				FindMatrix			(const char* name);
 	CMatrix*				AppendMatrix		(LPSTR name);
-    LPCSTR					GenerateMatrixName	(LPSTR name);
-    LPCSTR					AppendMatrix		(CMatrix* src=0, CMatrix** dest=0);
-    void					RemoveMatrix		(LPCSTR name);   
+    const char*					GenerateMatrixName	(LPSTR name);
+    const char*					AppendMatrix		(CMatrix* src=0, CMatrix** dest=0);
+    void					RemoveMatrix		(const char* name);   
 
 	void 					AddConstantRef		(LPSTR name);
-	CConstant*				FindConstant		(LPCSTR name);
+	CConstant*				FindConstant		(const char* name);
 	CConstant*				AppendConstant		(LPSTR name);
-    LPCSTR					GenerateConstantName(LPSTR name);
-    LPCSTR					AppendConstant		(CConstant* src=0, CConstant** dest=0);
-    void					RemoveConstant		(LPCSTR name);
+    const char*					GenerateConstantName(LPSTR name);
+    const char*					AppendConstant		(CConstant* src=0, CConstant** dest=0);
+    void					RemoveConstant		(const char* name);
 
 friend class CCollapseBlender;
 friend class CRefsBlender;
@@ -102,18 +102,18 @@ friend class TfrmShaderProperties;
 	void   		FillChooseTemplate	(ChooseItemVec& items, void* param);
     // matrix props                                                
 	bool   		MatrixOnAfterEdit	(PropValue* sender, xr_string& edit_val);
-	void   		FillMatrixProps		(PropItemVec& items, LPCSTR pref, LPSTR name);
+	void   		FillMatrixProps		(PropItemVec& items, const char* pref, LPSTR name);
 	void   		MCOnDraw			(PropValue* sender, xr_string& draw_val);
     // constant props
 	bool   		ConstOnAfterEdit	(PropValue* sender, xr_string& edit_val);
-	void   		FillConstProps		(PropItemVec& items, LPCSTR pref, LPSTR name);
+	void   		FillConstProps		(PropItemVec& items, const char* pref, LPSTR name);
     // name                                 
 	bool   		NameOnAfterEdit		(PropValue* sender, xr_string& edit_val);
 
     void					RealResetShaders	();
 
-	void   		FillMatrix			(PropItemVec& values, LPCSTR pref, CMatrix* m);
-	void   		FillConst			(PropItemVec& values, LPCSTR pref, CConstant* c);
+	void   		FillMatrix			(PropItemVec& values, const char* pref, CMatrix* m);
+	void   		FillConst			(PropItemVec& values, const char* pref, CConstant* c);
     void  			RefreshProperties	();
 
     void					ResetShaders		(bool bForced=false){m_bNeedResetShaders=true; if (bForced) RealResetShaders(); }
@@ -125,14 +125,14 @@ public:
 	CMemoryWriter			m_RenderShaders;
 
     IBlender*				m_CurrentBlender;
-	void					RemoteRenameBlender	(LPCSTR old_full_name, LPCSTR new_full_name){m_RemoteRenBlender=TRUE;m_RenBlenderOldName=old_full_name;m_RenBlenderNewName=new_full_name;}
+	void					RemoteRenameBlender	(const char* old_full_name, const char* new_full_name){m_RemoteRenBlender=TRUE;m_RenBlenderOldName=old_full_name;m_RenBlenderNewName=new_full_name;}
 
     Shader_xrLC*			m_Shader;
 
-    virtual void			AppendItem			(LPCSTR path, LPCSTR parent=0);        
-	virtual void			RealRenameItem		(LPCSTR old_full_name, LPCSTR new_full_name);
+    virtual void			AppendItem			(const char* path, const char* parent=0);        
+	virtual void			RealRenameItem		(const char* old_full_name, const char* new_full_name);
     virtual void            OnRemoveItem		(UIItemListForm::Node& node); 
-	virtual void            OnRenameItem		(UIItemListForm::Node& node, LPCSTR old_full_name, LPCSTR new_full_name, EItemType type);
+	virtual void            OnRenameItem		(UIItemListForm::Node& node, const char* old_full_name, const char* new_full_name, EItemType type);
 	virtual void			FillItemList		();
 
     void					UpdateStreamFromObject();
@@ -143,7 +143,7 @@ public:
 							CSHEngineTools		(const ISHInit& init);
     virtual 				~CSHEngineTools		();
 
-    virtual LPCSTR			ToolsName			(){return "Engine Shader";}
+    virtual const char*			ToolsName			(){return "Engine Shader";}
 
 	virtual void			Reload				();
 	virtual void			Load				();
@@ -156,7 +156,7 @@ public:
 
     // misc
     virtual void			ResetCurrentItem	();
-    virtual void			SetCurrentItem		(LPCSTR name, bool bView);
+    virtual void			SetCurrentItem		(const char* name, bool bView);
     virtual void			ApplyChanges		(bool bForced=false);
 
 	virtual void 			RealUpdateProperties();
@@ -172,7 +172,7 @@ public:
 	virtual void 			OnShowHint			(AStringVec& ss);
     virtual void            OnDrawUI       ();
 private:
-    void                    AppendItem(LPCSTR path, CLASS_ID cls, IBlender* parent=nullptr);
+    void                    AppendItem(const char* path, CLASS_ID cls, IBlender* parent=nullptr);
 };
 //---------------------------------------------------------------------------
 #endif

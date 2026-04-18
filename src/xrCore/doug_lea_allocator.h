@@ -9,7 +9,7 @@
 class XRCORE_API doug_lea_allocator
 {
 public:
-	doug_lea_allocator(LPCSTR arena_id);
+	doug_lea_allocator(const char* arena_id);
 	~doug_lea_allocator() = default;
 
 	void* malloc_impl(size_t size);

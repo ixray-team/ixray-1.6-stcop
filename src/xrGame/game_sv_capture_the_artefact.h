@@ -96,7 +96,7 @@ private:
 	void							SM_CheckViewSwitching();
 
 	void	LoadAnomalySet();
-	bool	LoadAnomaliesItems(LPCSTR ini_set_id, TAnomaliesVector & dest_vector);
+	bool	LoadAnomaliesItems(const char* ini_set_id, TAnomaliesVector & dest_vector);
 	
 	
 	void	StopPreviousAnomalies();
@@ -110,7 +110,7 @@ private:
 	void	CheckAnomalyUpdate(u32 current_time);
 	void	CheckForWarmap(u32 current_time);
 	
-	u16		GetMinUsedAnomalyID(LPCSTR zone_name);
+	u16		GetMinUsedAnomalyID(const char* zone_name);
 	//----------------------------------------------------
 
 	void LoadTeamData(ETeam eteam, const shared_str& caSection);
@@ -156,7 +156,7 @@ private:
 	//void DestroyGameItem(CSE_Abstract* entity);
 	//void RejectGameItem(CSE_Abstract* entity);
 
-	BOOL OnTouchItem(CSE_ActorMP *actor, CSE_Abstract *item);
+	bool OnTouchItem(CSE_ActorMP *actor, CSE_Abstract *item);
 	void OnDetachItem(CSE_ActorMP *actor, CSE_Abstract *item);
 
 	void OnObjectEnterTeamBase(u16 id, u16 zone_team);
@@ -170,15 +170,15 @@ private:
 	void ReturnArtefactToBase();
 	void CheckForArtefactDelivering();
 	void CheckForArtefactReturning(u32 currentTime);
-	BOOL CheckForAllPlayersReady();
+	bool CheckForAllPlayersReady();
 	bool CheckForRoundStart();
-	BOOL CheckForRoundEnd();
+	bool CheckForRoundEnd();
 	
 	KILL_RES GetKillResult(game_PlayerState* pKiller, game_PlayerState* pVictim);
 	bool OnKillResult(KILL_RES KillResult, game_PlayerState* pKiller, game_PlayerState* pVictim);
 	void OnGiveBonus(KILL_RES KillResult, game_PlayerState* pKiller, game_PlayerState* pVictim, KILL_TYPE KillType, SPECIAL_KILL_TYPE SpecialKillType, CSE_Abstract* pWeaponA);
 	
-	BOOL roundStarted;
+	bool roundStarted;
 	u32 nextReinforcementTime;
 	u32 currentTime;
 	bool teams_swaped;
@@ -189,36 +189,36 @@ private:
 	void ResetTimeoutInvincibility(u32 currentTime);
 	bool ResetInvincibility(ClientID const clientId);
 
-	BOOL	isFriendlyFireEnabled	();
+	bool	isFriendlyFireEnabled	();
 	float	GetFriendlyFire			();
 	int		Get_TeamKillLimit		();
-	BOOL	Get_TeamKillPunishment	();
-	BOOL	Get_FriendlyIndicators	();
-	BOOL	Get_FriendlyNames		();
+	bool	Get_TeamKillPunishment	();
+	bool	Get_FriendlyIndicators	();
+	bool	Get_FriendlyNames		();
 	int		Get_ReinforcementTime_msec	();
 	u32		GetWarmUpTime			();
 	s32		GetTimeLimit			();
 
-	BOOL	isAnomaliesEnabled				();
-	BOOL	isPDAHuntEnabled				();
+	bool	isAnomaliesEnabled				();
+	bool	isPDAHuntEnabled				();
 	u32		Get_InvincibilityTime_msec		();
 	u32		Get_AnomalySetLengthTime_msec	();
 	u32		Get_ArtefactReturningTime_msec	();
 	u32		Get_ActivatedArtefactRet		();
 	u32		Get_PlayerScoresDelayTime_msec	();
 	s32		Get_ScoreLimit();
-	BOOL	Get_BearerCanSprint				();
+	bool	Get_BearerCanSprint				();
 protected:
 	virtual	void ReadOptions(shared_str &options);
 	virtual void FillDeathActorRejectItems(CSE_ActorMP *actor, xr_vector<CSE_Abstract*> & to_reject);
 	shared_str m_not_free_ammo_str;
 	virtual	bool CanChargeFreeAmmo(char const * ammo_section);
-	virtual	void WriteGameState(CInifile& ini, LPCSTR sect, bool bRoundResult);
+	virtual	void WriteGameState(CInifile& ini, const char* sect, bool bRoundResult);
 public:
 	game_sv_CaptureTheArtefact();
 	virtual ~game_sv_CaptureTheArtefact();
 	
-	virtual LPCSTR type_name() const;
+	virtual const char* type_name() const;
 	virtual	void Create(shared_str &options);
 	virtual void OnPlayerConnect(ClientID id_who);
 	virtual	void OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameID);
@@ -233,7 +233,7 @@ public:
 	virtual	void OnRoundStart();
 	virtual	void OnRoundEnd();
 
-	virtual BOOL OnPreCreate	(CSE_Abstract* E);
+	virtual bool OnPreCreate	(CSE_Abstract* E);
 	virtual void OnCreate		(u16 eid_who);
 	virtual void OnPostCreate	(u16 id_who);
 	virtual	void OnDestroyObject(u16 eid_who);
@@ -251,9 +251,9 @@ public:
 	virtual void OnPlayerHitPlayer(u16 id_hitter, u16 id_hitted, NET_Packet& P);
 	virtual void OnPlayerHitPlayer_Case(game_PlayerState* ps_hitter, game_PlayerState* ps_hitted, SHit* pHitS);
 
-	virtual	BOOL OnTouch(u16 eid_who, u16 eid_target, BOOL bForced = FALSE);			// TRUE=allow ownership, FALSE=denied
+	virtual	bool OnTouch(u16 eid_who, u16 eid_target, bool bForced = FALSE);			// TRUE=allow ownership, FALSE=denied
 	virtual	void OnDetach(u16 eid_who, u16 eid_target);
-	virtual	BOOL OnActivate(u16 eid_who, u16 eid_target);
+	virtual	bool OnActivate(u16 eid_who, u16 eid_target);
 	virtual	void OnEvent(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender );
 	virtual	void RespawnPlayer(ClientID id_who, bool NoSpectator);
 	virtual void OnPlayerBuySpawn(ClientID sender);

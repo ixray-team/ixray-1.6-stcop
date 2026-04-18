@@ -7,13 +7,13 @@ class XREPROPS_API UIItemListForm :
 {
 public:
 	using Node = FolderHelper<ListItem, true>::Node;
-	DECLARE_XR_DELEGATE(OnItemRename, void, Node&, LPCSTR, LPCSTR, EItemType);
+	DECLARE_XR_DELEGATE(OnItemRename, void, Node&, const char*, const char*, EItemType);
 	DECLARE_XR_DELEGATE(OnItemRemove, void, Node& Node);
 	DECLARE_XR_DELEGATE(OnItemPreRemove, bool, Node& Node);
 	DECLARE_XR_DELEGATE(OnILItemsFocused, void, ListItemsVec&);
 	DECLARE_XR_DELEGATE(OnILItemFocused, void, ListItem*);
-	DECLARE_XR_DELEGATE(OnItemCreate, void, LPCSTR);
-	DECLARE_XR_DELEGATE(OnItemClone, void, LPCSTR, LPCSTR);
+	DECLARE_XR_DELEGATE(OnItemCreate, void, const char*);
+	DECLARE_XR_DELEGATE(OnItemClone, void, const char*, const char*);
 	DECLARE_XR_DELEGATE(VerifyItem, bool, Node*);
 	DECLARE_XR_DELEGATE(GetItemMoveActionSlot, ENodeMoveActionSlot, Node*);
 	DECLARE_XR_DELEGATE(OnMoveItem, bool, Node*);
@@ -53,7 +53,7 @@ public:
 		return m_Items;
 	}
 	bool GetSelected(RStringVec& items) const;
-	int  GetSelected(LPCSTR pref, ListItemsVec& items, bool bOnlyObject);
+	int  GetSelected(const char* pref, ListItemsVec& items, bool bOnlyObject);
 
 public:
 	enum

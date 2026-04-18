@@ -10,7 +10,7 @@
 
 struct COMMUNITY_DATA
 {
-	COMMUNITY_DATA (s32, shared_str, LPCSTR);
+	COMMUNITY_DATA (s32, shared_str, const char*);
 
 	shared_str		id;
 	s32	index;

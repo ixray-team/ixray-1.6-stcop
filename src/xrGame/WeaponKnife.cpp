@@ -19,7 +19,7 @@
 
 #ifdef DEBUG
 #	include "debug_renderer.h"
-	extern BOOL g_bDrawBulletHit;
+	extern int g_bDrawBulletHit;
 #endif //#ifdef DEBUG
 
 CWeaponKnife::CWeaponKnife()
@@ -39,7 +39,7 @@ CWeaponKnife::CWeaponKnife()
 	m_Hit2SpashDir.set	(0.f,0.f,1.f);
 }
 
-void CWeaponKnife::Load(LPCSTR section)
+void CWeaponKnife::Load(const char* section)
 {
 	// verify class
 	inherited::Load(section);
@@ -69,7 +69,7 @@ void CWeaponKnife::Load(LPCSTR section)
 	m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", false));
 }
 
-void CWeaponKnife::LoadSounds(LPCSTR section)
+void CWeaponKnife::LoadSounds(const char* section)
 {
 	inherited::LoadSounds(section);
 
@@ -456,7 +456,7 @@ bool CWeaponKnife::Action(u16 cmd, u32 flags)
 	return false;
 }
 
-void CWeaponKnife::LoadFireParams(LPCSTR section)
+void CWeaponKnife::LoadFireParams(const char* section)
 {
 	inherited::LoadFireParams(section);
 
@@ -940,7 +940,7 @@ bool CWeaponKnife::SelectBestHitVictim(Fvector const & f_pos,
 	return !m_spartial_query_res.empty();
 }
 
-BOOL CWeaponKnife::RayQueryCallback(collide::rq_result& result, LPVOID this_ptr)
+bool CWeaponKnife::RayQueryCallback(collide::rq_result& result, LPVOID this_ptr)
 {
 	CWeaponKnife*	me = static_cast<CWeaponKnife*>(this_ptr);
 	if (result.O && (result.O->ID() != me->m_except_id))

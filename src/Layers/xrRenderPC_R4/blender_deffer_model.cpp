@@ -91,7 +91,7 @@ void CBlender_deffer_model::Compile(CBlender_Compile& C)
 	} 
 	else 
 	{
-		BOOL bAref = oBlend.value;
+		bool bAref = oBlend.value;
 
 		C.TessMethod = oTessellation.IDselected;
 		switch (C.iElement)

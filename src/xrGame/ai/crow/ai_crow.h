@@ -34,7 +34,7 @@ class CAI_Crow final : public CEntity
 		typedef			svector<MotionID,MAX_ANIM_COUNT> MotionSVec;
 		MotionSVec		m_Animations;
 		const MotionID	&GetRandom	(){return m_Animations[Random.randI(0,m_Animations.size())];}
-		void			Load		(IKinematicsAnimated* visual, LPCSTR prefix, LPCSTR prefix2);
+		void			Load		(IKinematicsAnimated* visual, const char* prefix, const char* prefix2);
 	};
 
 	struct SSound
@@ -42,7 +42,7 @@ class CAI_Crow final : public CEntity
 		typedef			svector<ref_sound,MAX_SND_COUNT>		SoundSVec;
 		SoundSVec		m_Sounds;
 		ref_sound&		GetRandom		()	{return m_Sounds[Random.randI(0,m_Sounds.size())];}
-		void			Load			(LPCSTR prefix);
+		void			Load			(const char* prefix);
 		void			SetPosition		(const Fvector& pos);
 		void			Unload			();
 	};
@@ -108,12 +108,12 @@ public:
 public:
 					CAI_Crow();
 	virtual			~CAI_Crow();
-	virtual void	Load						( LPCSTR section );
+	virtual void	Load						( const char* section );
 			void	init						();
-	virtual BOOL	net_Spawn					( CSE_Abstract* DC );
+	virtual bool	net_Spawn					( CSE_Abstract* DC );
 	virtual void	net_Destroy					();
-	virtual BOOL	renderable_ShadowGenerate	()			{ return FALSE;	}
-	virtual BOOL	renderable_ShadowReceive	()			{ return FALSE;	}
+	virtual bool	renderable_ShadowGenerate	()			{ return FALSE;	}
+	virtual bool	renderable_ShadowReceive	()			{ return FALSE;	}
 	virtual void	renderable_Render			();
 	virtual void	shedule_Update				(u32 DT);
 	virtual void	UpdateCL					();
@@ -133,9 +133,9 @@ public:
 	virtual	float	ffGetFov					() const {return 150.f;	}
 	virtual	float	ffGetRange					() const {return 30.f;	}
 
-	virtual BOOL	IsVisibleForHUD	()			{ return FALSE;		}
+	virtual bool	IsVisibleForHUD	()			{ return FALSE;		}
 	virtual bool	IsVisibleForZones()			{ return false;		}
-	virtual BOOL	UsedAI_Locations()			;
+	virtual bool	UsedAI_Locations()			;
 	virtual void	create_physic_shell	()		;
 
 	virtual	void	net_Relcase(CObject* O);

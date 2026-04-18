@@ -12,16 +12,16 @@ void CBlender_SPP::Compile(CBlender_Compile& C)
 	switch (C.iElement)
 	{
 		case ScreenPostProcessType::Vignette:
-			C.r_Pass("null", "vignette", FALSE, FALSE, FALSE);
+			C.r_Pass("null", "vignette", false, false, false);
 			break;
 		case ScreenPostProcessType::Aberration:
-			C.r_Pass("null", "chromatic_aberration", FALSE, FALSE, FALSE);
+			C.r_Pass("null", "chromatic_aberration", false, false, false);
 			break;
 		case ScreenPostProcessType::Saturation:
-			C.r_Pass("null", "saturation", FALSE, FALSE, FALSE);
+			C.r_Pass("null", "saturation", false, false, false);
 			break;
 		case ScreenPostProcessType::Raindrops:
-			C.r_Pass("null", "raindrops", FALSE, FALSE, FALSE);
+			C.r_Pass("null", "raindrops", false, false, false);
 			C.r_Sampler("s_droplets", "shaders\\fx_hud_droplets");
 			break;
 	}

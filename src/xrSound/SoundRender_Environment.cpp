@@ -196,7 +196,7 @@ void CSoundRender_Environment::save	(IWriter* fs)
 }
 
 //////////////////////////////////////////////////////////////////////////
-void	SoundEnvironment_LIB::Load	(LPCSTR name)
+void	SoundEnvironment_LIB::Load	(const char* name)
 {
 	R_ASSERT			(library.empty());
 	IReader* F			= FS.r_open(name);
@@ -210,7 +210,7 @@ void	SoundEnvironment_LIB::Load	(LPCSTR name)
 	}
 	FS.r_close			(F);
 }
-bool	SoundEnvironment_LIB::Save	(LPCSTR name)
+bool	SoundEnvironment_LIB::Save	(const char* name)
 {
 	IWriter* F			= FS.w_open(name);
     if (F){
@@ -231,13 +231,13 @@ void	SoundEnvironment_LIB::Unload	()
 		xr_delete(library[chunk]);
 	library.clear		();
 }
-int		SoundEnvironment_LIB::GetID		(LPCSTR name)
+int		SoundEnvironment_LIB::GetID		(const char* name)
 {
 	for (SE_IT it=library.begin(); it!=library.end(); it++)
 		if (0==_stricmp(name,*(*it)->name)) return int(it-library.begin());
 	return -1;
 }
-CSoundRender_Environment*	SoundEnvironment_LIB::Get		(LPCSTR name)
+CSoundRender_Environment*	SoundEnvironment_LIB::Get		(const char* name)
 {
 	for (SE_IT it=library.begin(); it!=library.end(); it++)
 		if (0==_stricmp(name,*(*it)->name)) return *it;
@@ -252,7 +252,7 @@ CSoundRender_Environment*	SoundEnvironment_LIB::Append	(CSoundRender_Environment
 	library.push_back	(parent?new CSoundRender_Environment(*parent):new CSoundRender_Environment());
 	return library.back	();
 }
-void						SoundEnvironment_LIB::Remove	(LPCSTR name)
+void						SoundEnvironment_LIB::Remove	(const char* name)
 {
 	for (SE_IT it=library.begin(); it!=library.end(); it++)
 		if (0==_stricmp(name,*(*it)->name))

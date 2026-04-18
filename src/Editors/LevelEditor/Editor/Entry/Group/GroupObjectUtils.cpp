@@ -40,7 +40,7 @@ void CGroupObject::OnUpdateTransform()
     	it->pObject->OnUpdateTransform();
 }
 
-void CGroupObject::UpdatePivot(LPCSTR nm, bool center)
+void CGroupObject::UpdatePivot(const char* nm, bool center)
 {
     // first init
     VERIFY(m_ObjectsInGroup.size());

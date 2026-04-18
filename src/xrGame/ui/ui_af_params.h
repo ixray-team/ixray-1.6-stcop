@@ -26,10 +26,10 @@ public:
 	virtual CUIWindow* ui_cast_window() { return this; }
 
 protected:
-    UIArtefactParamItem* CreateItem(CUIXml& uiXml, pcstr section,
+    UIArtefactParamItem* CreateItem(CUIXml& uiXml, const char* section,
         shared_str translationId, shared_str translationId2 = nullptr);
 	
-    UIArtefactParamItem* CreateItem(CUIXml& uiXml, pcstr section,
+    UIArtefactParamItem* CreateItem(CUIXml& uiXml, const char* section,
         float magnitude, bool isSignInverse, const shared_str& unit,
         shared_str translationId, shared_str translationId2 = nullptr);
 
@@ -63,17 +63,17 @@ public:
         Plain
     };
 	
-	InitResult	Init				( CUIXml& xml, LPCSTR section );
+	InitResult	Init				( CUIXml& xml, const char* section );
 	
 		void	SetDefaultValuesPlain(float magnitude, bool isSignInverse, const shared_str& unit);
-		void	SetCaption			( LPCSTR name );
+		void	SetCaption			( const char* name );
 		void	SetValue			( float value );
 	
 	virtual CUIWindow* ui_cast_window() { return this; }
 		bool	GetLegacyMode		() { return !(m_caption && m_caption->IsShown() && m_value && m_value->IsShown()); }
 
 protected:
-	InitResult	InitPlain			(CUIXml& xml, pcstr section);
+	InitResult	InitPlain			(CUIXml& xml, const char* section);
 
 private:
 	CUIStatic*	m_caption;

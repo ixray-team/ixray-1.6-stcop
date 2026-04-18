@@ -30,8 +30,8 @@ public:
 								CExplosive(void);
 	virtual						~CExplosive(void);
 
-	virtual void 				Load(LPCSTR section);
-	virtual void				Load(CInifile const * ini,LPCSTR section);
+	virtual void 				Load(const char* section);
+	virtual void				Load(CInifile const * ini,const char* section);
 
 	virtual void 				net_Destroy		();
 	virtual void				net_Relcase		(CObject* O);
@@ -141,7 +141,7 @@ protected:
 	Flags8						m_explosion_flags;
 	///////////////////////////////////////////////
 	//Должен ли объект быть скрыт после взрыва: true - для всех кроме дымовой гранаты
-	BOOL						m_bHideInExplosion;
+	bool						m_bHideInExplosion;
 	bool						m_bAlreadyHidden;
 	virtual void				HideExplosive	();
 	//bool						m_bExploding;
@@ -170,7 +170,7 @@ protected:
 	virtual	void				StartLight	();
 	virtual	void				StopLight	();
 
-	BOOL						m_bDynamicParticles;
+	bool						m_bDynamicParticles;
 	xr_shared_ptr<CParticlesObject> m_pExpParticle;
 	virtual void				UpdateExplosionParticles ();	
 

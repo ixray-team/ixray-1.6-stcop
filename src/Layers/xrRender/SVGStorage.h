@@ -167,8 +167,8 @@ private:
 
 	u64 MakeFrameCacheKey(const xr_string& atlasTableKey, int pixelW, int pixelH) const;
 
-	SvgDocumentLruEntry* AccessDocumentLru(const xr_string& pathKey, LPCSTR resolvedPathForValidate);
-	void InsertDocumentLru(const xr_string& pathKey, LPCSTR resolvedPath, std::unique_ptr<lunasvg::Document> doc, time_t mtime, u32 fileSize);
+	SvgDocumentLruEntry* AccessDocumentLru(const xr_string& pathKey, const char* resolvedPathForValidate);
+	void InsertDocumentLru(const xr_string& pathKey, const char* resolvedPath, std::unique_ptr<lunasvg::Document> doc, time_t mtime, u32 fileSize);
 	void EraseDocumentLruByPathKey(const xr_string& pathKey);
 	void LogSvgLoadFailureOnce(const xr_string& pathKey, ESVGLoadResult code);
 

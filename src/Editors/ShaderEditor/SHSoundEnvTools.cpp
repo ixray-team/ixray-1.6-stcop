@@ -124,7 +124,7 @@ CSHSoundEnvTools::~CSHSoundEnvTools()
 void CSHSoundEnvTools::OnChangeWAV	(PropValue* prop)
 {
 
-	BOOL bPlay 		= m_PreviewSnd.is_playing();
+	bool bPlay 		= m_PreviewSnd.is_playing();
 	m_PreviewSnd.destroy();
 	if (m_SoundName.size()){
 		m_PreviewSnd.create				(*m_SoundName,st_Effect,sg_Undefined);
@@ -278,14 +278,14 @@ bool CSHSoundEnvTools::Save()
 }
 
 
-CSoundRender_Environment* CSHSoundEnvTools::FindItem(LPCSTR name)
+CSoundRender_Environment* CSHSoundEnvTools::FindItem(const char* name)
 {
 	if (name && name[0]){
 		return m_Library.Get(name);
 	}else return 0;
 }
 
-void CSHSoundEnvTools::AppendItem(LPCSTR folder_name, LPCSTR parent_name)
+void CSHSoundEnvTools::AppendItem(const char* folder_name, const char* parent_name)
 {
 	CSoundRender_Environment* parent= FindItem(parent_name);
 	m_LastSelection = folder_name;
@@ -297,7 +297,7 @@ void CSHSoundEnvTools::AppendItem(LPCSTR folder_name, LPCSTR parent_name)
 	Modified			();
 }
 
-void CSHSoundEnvTools::OnRenameItem(UIItemListForm::Node& node, LPCSTR old_full_name, LPCSTR new_full_name, EItemType type)
+void CSHSoundEnvTools::OnRenameItem(UIItemListForm::Node& node, const char* old_full_name, const char* new_full_name, EItemType type)
 {
 	if (type==TYPE_OBJECT){
 		ApplyChanges	();
@@ -308,7 +308,7 @@ void CSHSoundEnvTools::OnRenameItem(UIItemListForm::Node& node, LPCSTR old_full_
 	}
 }
 
-void CSHSoundEnvTools::OnRemoveItem(UIItemListForm::Node& node/*, LPCSTR name, EItemType type*/)
+void CSHSoundEnvTools::OnRemoveItem(UIItemListForm::Node& node/*, const char* name, EItemType type*/)
 {
 	string_path path;
 	if (node.Path.size())
@@ -318,7 +318,7 @@ void CSHSoundEnvTools::OnRemoveItem(UIItemListForm::Node& node/*, LPCSTR name, E
 	{
 		xr_strcpy(path, node.Name.c_str());
 	}
-	LPCSTR name = path;
+	const char* name = path;
 	if (node.IsObject()){
 		R_ASSERT		(name && name[0]);
 		if (m_Env && m_Env->name == name)
@@ -330,7 +330,7 @@ void CSHSoundEnvTools::OnRemoveItem(UIItemListForm::Node& node/*, LPCSTR name, E
 	}
 }
 
-void CSHSoundEnvTools::SetCurrentItem(LPCSTR name, bool bView)
+void CSHSoundEnvTools::SetCurrentItem(const char* name, bool bView)
 {
 	if (m_bLockUpdate) return;
 	CSoundRender_Environment* S = FindItem(name);

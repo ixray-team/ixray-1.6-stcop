@@ -39,7 +39,7 @@ void game_sv_freemp::FillDeathActorRejectItems(CSE_ActorMP* actor, xr_vector<CSE
 	}
 }
 
-BOOL game_sv_freemp::OnTouchPlayersBag(CSE_ActorMP* actor, CSE_Abstract* item)
+bool game_sv_freemp::OnTouchPlayersBag(CSE_ActorMP* actor, CSE_Abstract* item)
 {
 	R_ASSERT(actor);
 	R_ASSERT(item);

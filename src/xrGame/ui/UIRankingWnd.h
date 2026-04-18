@@ -83,9 +83,9 @@ private:
 	u32					m_delay;
 	u32					m_previous_time;
 	u32					m_stat_count;
-	LPCSTR				m_last_monster_icon_back;
-	LPCSTR				m_last_monster_icon;
-	LPCSTR				m_last_weapon_icon;
+	const char*				m_last_monster_icon_back;
+	const char*				m_last_monster_icon;
+	const char*				m_last_weapon_icon;
 	CUIGamepadLegend*	m_gamepad_legend = nullptr;
 
 	bool m_isGetRankingsArraySize = false;

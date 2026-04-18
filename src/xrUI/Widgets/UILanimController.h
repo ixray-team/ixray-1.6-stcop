@@ -31,7 +31,7 @@ class UI_API CUILightAnimColorConroller
 public:
 	virtual bool	IsColorAnimationPresent			()											= 0;
 	virtual void	ResetColorAnimation				()											= 0;
-	virtual void	SetColorAnimation				(LPCSTR lanim, u8 const& flags, float delay=0.0f)	= 0;
+	virtual void	SetColorAnimation				(const char* lanim, u8 const& flags, float delay=0.0f)	= 0;
 	virtual void	ColorAnimationSetTextureColor	(u32 color, bool only_alpha)				{};
 	virtual void	ColorAnimationSetTextColor		(u32 color, bool only_alpha)				{};
 };
@@ -44,7 +44,7 @@ public:
 
 	virtual CUILightAnimColorConroller* ui_cast_light_anim_color_controller() { return this; }
 
-	void	SetColorAnimation(LPCSTR lanim, u8 const& flags, float delay=0.0f)
+	void	SetColorAnimation(const char* lanim, u8 const& flags, float delay=0.0f)
 	{
 		if(lanim && lanim[0]!=0)
 			m_lanim_clr.m_lanim	= LALib.FindItem(lanim);

@@ -12,7 +12,7 @@
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-ETextureThumbnail::ETextureThumbnail(LPCSTR src_name, bool bLoad):EImageThumbnail(src_name,ETTexture)
+ETextureThumbnail::ETextureThumbnail(const char* src_name, bool bLoad):EImageThumbnail(src_name,ETTexture)
 {
     if(!strchr(src_name,'\\'))
     {
@@ -81,9 +81,9 @@ void ETextureThumbnail::CreateFromData(u32* p, u32 w, u32 h)
 }
 //------------------------------------------------------------------------------
 
-bool Stbi_Load(LPCSTR full_name, U32Vec& data, u32& w, u32& h, u32& a);
+bool Stbi_Load(const char* full_name, U32Vec& data, u32& w, u32& h, u32& a);
 
-bool ETextureThumbnail::Load(LPCSTR src_name, LPCSTR path)
+bool ETextureThumbnail::Load(const char* src_name, const char* path)
 {
     string_path fn;
     strcpy(fn,EFS.ChangeFileExt(src_name?src_name:m_Name.c_str(),".thm").c_str() );
@@ -125,7 +125,7 @@ bool ETextureThumbnail::Load(LPCSTR src_name, LPCSTR path)
 }
 //------------------------------------------------------------------------------
 
-void ETextureThumbnail::Save(int age, LPCSTR path)
+void ETextureThumbnail::Save(int age, const char* path)
 {
 	if (!Valid()) 	return;
 
@@ -233,9 +233,9 @@ void ETextureThumbnail::Update(IRHISurface*& Texture)
     }
 }
 
-BOOL ETextureThumbnail::similar(ETextureThumbnail* thm1, xr_vector<xr_string>& sel_params)
+bool ETextureThumbnail::similar(ETextureThumbnail* thm1, xr_vector<xr_string>& sel_params)
 {
-	BOOL res = m_TexParams.similar(thm1->m_TexParams, sel_params);
+	bool res = m_TexParams.similar(thm1->m_TexParams, sel_params);
   /*
     if(res)
     {
@@ -273,7 +273,7 @@ BOOL ETextureThumbnail::similar(ETextureThumbnail* thm1, xr_vector<xr_string>& s
     return res;
 }
 
-LPCSTR ETextureThumbnail::FormatString()
+const char* ETextureThumbnail::FormatString()
 {
     return m_TexParams.FormatString();
 }

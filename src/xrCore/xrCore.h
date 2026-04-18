@@ -120,10 +120,10 @@ struct XRCORE_API xr_rtoken
 {
     shared_str	name;
     int	   	id;
-           	xr_rtoken	(LPCSTR _nm, int _id){name=_nm;id=_id;}
+           	xr_rtoken	(const char* _nm, int _id){name=_nm;id=_id;}
 public:
-    void	rename		(LPCSTR _nm)		{name=_nm;}
-    bool	equal		(LPCSTR _nm)		{return (0==xr_strcmp(*name,_nm));}
+    void	rename		(const char* _nm)		{name=_nm;}
+    bool	equal		(const char* _nm)		{return (0==xr_strcmp(*name,_nm));}
 };
 
 #pragma pack (push,1)
@@ -144,7 +144,7 @@ struct XRCORE_API xr_shortcut
         };
         u16		hotkey;
     };
-                xr_shortcut		(u8 k, BOOL a, BOOL c, BOOL s):key(k){ext.assign(u8((a?flAlt:0)|(c?flCtrl:0)|(s?flShift:0)));}
+                xr_shortcut		(u8 k, bool a, bool c, bool s):key(k){ext.assign(u8((a?flAlt:0)|(c?flCtrl:0)|(s?flShift:0)));}
                 xr_shortcut		(){ext.zero();key=0;}
     bool		similar			(const xr_shortcut& v)const{return ext.equal(v.ext)&&(key==v.key);}
 };
@@ -207,7 +207,7 @@ public:
     Flags64     ParamsData;
 
 public:
-	void _initialize	(LPCSTR ApplicationName, xrLogger::LogCallback cb=0, BOOL init_fs=TRUE, LPCSTR fs_fname=0);
+	void _initialize	(const char* ApplicationName, xrLogger::LogCallback cb=0, bool init_fs=TRUE, const char* fs_fname=0);
 	void _destroy	    ();
 };
 

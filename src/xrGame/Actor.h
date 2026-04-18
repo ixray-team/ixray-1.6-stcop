@@ -90,7 +90,7 @@ public:
 	virtual								~CActor				();
 
 public:
-	virtual BOOL						AlwaysTheCrow				()						{ return TRUE; }
+	virtual bool						AlwaysTheCrow				()						{ return TRUE; }
 
 	virtual CAttachmentOwner*			cast_attachment_owner		() override						{return this;}
 	virtual CInventoryOwner*			cast_inventory_owner		() override						{return this;}
@@ -111,7 +111,7 @@ public:
 	virtual xr_vector<xr_string>		GetKnownPortionArticles(shared_str id) const;
 	virtual xr_vector<xr_string>		GetKnownPortionArticlesDisable(shared_str id) const;
 	virtual xr_vector<xr_string>		GetKnownPortionTasks(shared_str id) const;
-	virtual void						Load				( LPCSTR section );
+	virtual void						Load				( const char* section );
 
 	virtual void						shedule_Update		( u32 T );
 	void PlayRainOnHelmetSound();
@@ -126,7 +126,7 @@ public:
 
 	// Render
 	virtual void						renderable_Render			();
-	virtual BOOL						renderable_ShadowGenerate	();
+	virtual bool						renderable_ShadowGenerate	();
 	virtual	void						feel_sound_new				(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector& position, float power);
 	virtual	Feel::Sound*				dcast_FeelSound				()	{ return this;	}
 			float						m_snd_noise;
@@ -175,19 +175,19 @@ public:
 	CGameNewsRegistryWrapper		*game_news_registry;
 	CCharacterPhysicsSupport		*m_pPhysics_support;
 
-	virtual LPCSTR	Name        () const {return CInventoryOwner::Name();}
+	virtual const char*	Name        () const {return CInventoryOwner::Name();}
 
 public:
 	//PhraseDialogManager
 	virtual void ReceivePhrase				(DIALOG_SHARED_PTR& phrase_dialog);
 	virtual void UpdateAvailableDialogs		(CPhraseDialogManager* partner);
 	virtual void TryToTalk					();
-			bool OnDialogSoundHandlerStart	(CInventoryOwner *inv_owner, LPCSTR phrase);
+			bool OnDialogSoundHandlerStart	(CInventoryOwner *inv_owner, const char* phrase);
 			bool OnDialogSoundHandlerStop	(CInventoryOwner *inv_owner);
 
 
 	virtual void reinit			();
-	virtual void reload			(LPCSTR section);
+	virtual void reload			(const char* section);
 	virtual bool use_bolts		() const;
 
 	virtual void OnItemTake		(CInventoryItem *inventory_item);
@@ -265,7 +265,7 @@ protected:
 	float					m_fCamHeightFactor;
 
 	// Dropping
-	BOOL					b_DropActivated;
+	bool					b_DropActivated;
 	float					f_DropPower;
 
 	//random seed для Zoom mode
@@ -356,7 +356,7 @@ protected:
 	void					ActorQuickSlotUse		(int cmd);
 
 protected:
-	BOOL					m_bAnimTorsoPlayed;
+	bool					m_bAnimTorsoPlayed;
 	static void				AnimTorsoPlayCallBack(CBlend* B);
 
 	// Rotation
@@ -398,7 +398,7 @@ public:
 	void					g_SetSprintAnimation(u32 mstate_rl,MotionID &head,MotionID &torso,MotionID &legs);
 public:
 	virtual void			OnHUDDraw			(CCustomHUD* hud);
-			BOOL			HUDview				( )const ;
+			bool			HUDview				( )const ;
 
 	//visiblity 
 	virtual	float			ffGetFov			()	const	{ return 90.f;		}	
@@ -445,12 +445,12 @@ public:
 
 	virtual void			feel_touch_new				(CObject* O);
 	virtual void			feel_touch_delete			(CObject* O);
-	virtual BOOL			feel_touch_contact			(CObject* O);
-	virtual BOOL			feel_touch_on_contact		(CObject* O);
+	virtual bool			feel_touch_contact			(CObject* O);
+	virtual bool			feel_touch_on_contact		(CObject* O);
 
 	CGameObject*			ObjectWeLookingAt			() {return m_pObjectWeLookingAt;}
 	CInventoryOwner*		PersonWeLookingAt			() {return m_pPersonWeLookingAt;}
-	LPCSTR					GetDefaultActionForObject	() {return *m_sDefaultObjAction;}
+	const char*					GetDefaultActionForObject	() {return *m_sDefaultObjAction;}
 protected:
 	CUsableScriptObject*	m_pUsableObject;
 	// Person we're looking at
@@ -512,7 +512,7 @@ public:
 	u32						mstate_old;
 	u32						mstate_real;
 
-	BOOL					m_bJumpKeyPressed;
+	bool					m_bJumpKeyPressed;
 
 	float					m_fWalkAccel;
 	float					m_fJumpSpeed;
@@ -554,7 +554,7 @@ public:
 	virtual void						g_fireParams		(const CHudItem* pHudItem, Fvector& P, Fvector& D);
 	virtual bool						g_stateFire			() {return ! ((mstate_wishful & mcLookout) && !IsGameTypeSingle() );}
 
-	virtual BOOL						g_State				(SEntityState& state) const;
+	virtual bool						g_State				(SEntityState& state) const;
 	virtual	float						GetWeaponAccuracy	() const;
 	virtual	float						GetAgility() const;
 			float						GetFireDispertion	() const {return m_fdisp_controller.GetCurrentDispertion();}
@@ -616,7 +616,7 @@ protected:
 	//////////////////////////////////////////////////////////////////////////
 			void						ConvState			(u32 mstate_rl, string128 *buf);
 public:
-	virtual BOOL						net_Spawn			( CSE_Abstract* DC);
+	virtual bool						net_Spawn			( CSE_Abstract* DC);
 
 	virtual void						net_Export			( NET_Packet& P);				// export to server
 	virtual void						net_Import			( NET_Packet& P);				// import from server
@@ -625,19 +625,19 @@ public:
 	virtual void						SyncWrite(NET_Packet& Packet);
 
 	virtual void						net_Destroy			();
-	virtual BOOL						net_Relevant		();//	{ return getSVU() | getLocal(); };		// relevant for export to server
+	virtual bool						net_Relevant		();//	{ return getSVU() | getLocal(); };		// relevant for export to server
 	virtual	void						net_Relcase			( CObject* O );					//
 	virtual void 				on_requested_spawn  (CObject *object);
 	//object serialization
 	virtual void						save				(NET_Packet &output_packet);
 	virtual void						load				(IReader &input_packet);
 	virtual void						net_Save			(NET_Packet& P)																	;
-	virtual	BOOL						net_SaveRelevant	()																				;
+	virtual	bool						net_SaveRelevant	()																				;
 protected:
 	xr_deque<net_update>	NET;
 	Fvector					NET_SavedAccel;
 	net_update				NET_Last;
-	BOOL					NET_WasInterpolating;	// previous update was by interpolation or by extrapolation
+	bool					NET_WasInterpolating;	// previous update was by interpolation or by extrapolation
 	u32						NET_Time;				// server time of last update
 
 	//---------------------------------------------
@@ -733,7 +733,7 @@ public:
 	virtual void			OnChangeVisual			();
 
 	virtual void			RenderIndicator			(Fvector dpos, float r1, float r2, const ui_shader &IndShader);
-	virtual void			RenderText				(LPCSTR Text, Fvector dpos, float* pdup, u32 color);
+	virtual void			RenderText				(const char* Text, Fvector dpos, float* pdup, u32 color);
 	virtual void			RenderItemUI();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -754,8 +754,8 @@ private:
 protected:
 		CStatGraph				*pStatGraph;
 
-		LPCSTR					invincibility_fire_shield_3rd;
-		LPCSTR					invincibility_fire_shield_1st;
+		const char*					invincibility_fire_shield_3rd;
+		const char*					invincibility_fire_shield_1st;
 		shared_str				m_sHeadShotParticle;
 		u32						last_hit_frame;
 #ifdef DEBUG
@@ -851,7 +851,7 @@ public:
 	IC float					HitProbability					() {return m_hit_probability;}
 	virtual	CVisualMemoryManager*visual_memory					() const;
 
-	virtual	BOOL				BonePassBullet					(int boneID);
+	virtual	bool				BonePassBullet					(int boneID);
 	virtual	void				On_B_NotCurrentEntity			();
 
 private:
@@ -902,10 +902,10 @@ private:
 
 private:
 	CScriptGameObject* m_pBestEnemy = nullptr;
-	xr_vector<LPCSTR> m_burn_restore_materials{};
+	xr_vector<const char*> m_burn_restore_materials{};
 	float m_burn_restore_material_speed = 0.0f;
 	float m_actor_burn_restore_speed = 0.0f;
-	float GetMaterialBurnRestoreSpeed(LPCSTR mtl);
+	float GetMaterialBurnRestoreSpeed(const char* mtl);
 	bool m_need_fire_particle = false;
 	bool m_actor_burning = false;
 	bool isGamepadShooting = false;

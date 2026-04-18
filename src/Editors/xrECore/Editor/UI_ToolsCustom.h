@@ -130,7 +130,7 @@ public:
 	    	m_Points.clear	();
             m_OBB.clear		();
         }
-        void AppendPoint(const Fvector& p0, u32 c=0xff0000ff, bool i=true, bool m=true, LPCSTR descr = NULL)
+        void AppendPoint(const Fvector& p0, u32 c=0xff0000ff, bool i=true, bool m=true, const char* descr = NULL)
         {
         	m_Points.push_back(Point());
             m_Points.back().p[0].set(p0);
@@ -182,9 +182,9 @@ public:
     virtual 			~CToolCustom		();
 
     ETAction			GetAction			()						{return m_Action;}
-    BOOL				GetSettings			(u32 mask)				{return m_Settings.is(mask);}
+    bool				GetSettings			(u32 mask)				{return m_Settings.is(mask);}
     virtual void		SetAction			(ETAction act);
-    virtual void		SetSettings			(u32 mask, BOOL val);
+    virtual void		SetSettings			(u32 mask, bool val);
 
     virtual void		Simulate			(){};
     virtual void		UseSimulatePositions(){};
@@ -204,12 +204,12 @@ public:
     virtual bool		IsModified			()=0;
     virtual void		Modified			()=0; 
 
-    virtual LPCSTR		GetInfo				()=0;
+    virtual const char*		GetInfo				()=0;
     
-    virtual void		ZoomObject			(BOOL bSelOnly)=0;
+    virtual void		ZoomObject			(bool bSelOnly)=0;
 
-    virtual bool		Load				(LPCSTR name)=0;
-    virtual bool		Save				(LPCSTR name, bool bInternal=false)=0;
+    virtual bool		Load				(const char* name)=0;
+    virtual bool		Save				(const char* name, bool bInternal=false)=0;
     virtual void		Reload				()=0;
     
     virtual void		OnDeviceCreate		()=0;
@@ -230,8 +230,8 @@ public:
     virtual bool		Pick				(TShiftState Shift)=0;
 	virtual bool 		RayPick				(const Fvector& start, const Fvector& dir, float& dist, Fvector* pt=0, Fvector* n=0)=0;
 
-    virtual void		ShowProperties		(LPCSTR focused_item)=0;
-    virtual void		UpdateProperties	(BOOL bForced=FALSE)=0;
+    virtual void		ShowProperties		(const char* focused_item)=0;
+    virtual void		UpdateProperties	(bool bForced=FALSE)=0;
     virtual void		RefreshProperties	()=0;
 
     const xr_string&	GetEditFileName		()	{ return m_LastFileName; }
@@ -243,7 +243,7 @@ public:
 
     virtual void PlayCurrent(int idx = -1) {};
     virtual void StopCurrent(bool bFinishPlaying) {};
-    virtual void SelectEffect(LPCSTR name) {};
+    virtual void SelectEffect(const char* name) {};
     virtual void RemoveAction(u32 idx, bool bForced = false) {};
     virtual void SetCurrentPG(PS::CPGDef* P) {};
 	virtual void EditPAC(PS::CPACDef* PAC){}

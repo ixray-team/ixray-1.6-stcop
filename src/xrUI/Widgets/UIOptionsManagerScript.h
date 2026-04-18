@@ -5,12 +5,12 @@
 class UI_API CUIOptionsManagerScript 
 {
 public:
-	void 		SaveBackupValues		(LPCSTR group);
-	void 		SetCurrentValues		(LPCSTR group);
-	void 		SaveValues				(LPCSTR group);
-	void 		UndoGroup				(LPCSTR group);
+	void 		SaveBackupValues		(const char* group);
+	void 		SetCurrentValues		(const char* group);
+	void 		SaveValues				(const char* group);
+	void 		UndoGroup				(const char* group);
 	void 		OptionsPostAccept		();
-	void 		SendMessage2Group		(LPCSTR group, LPCSTR message);
+	void 		SendMessage2Group		(const char* group, const char* message);
 	bool 		NeedSystemRestart		();
 	bool 		NeedVidRestart			();
 	DECLARE_SCRIPT_REGISTER_FUNCTION

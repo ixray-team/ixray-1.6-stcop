@@ -91,10 +91,10 @@ public:
 	UIUpgrade(CUIInventoryUpgradeWnd* parent_wnd, bool cellBorder);
 	virtual ~UIUpgrade();
 
-	void init_upgrade(LPCSTR upgrade_id, CInventoryItem& item);
+	void init_upgrade(const char* upgrade_id, CInventoryItem& item);
 
 	void load_from_xml(CUIXml& ui_xml, int i_column, int i_cell, Frect const* t_cell_border, Frect const& t_cell_item);
-	void set_texture(Layer layer, LPCSTR texture);
+	void set_texture(Layer layer, const char* texture);
 			
 	virtual	void Draw() override;
 	virtual	void Update() override;

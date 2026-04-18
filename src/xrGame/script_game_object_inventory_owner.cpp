@@ -53,7 +53,7 @@
 #include "ActorBackpack.h"
 #include "Car.h"
 
-bool CScriptGameObject::GiveInfoPortion(LPCSTR info_id)
+bool CScriptGameObject::GiveInfoPortion(const char* info_id)
 {
 	if (CInventoryOwner* pInventoryOwner = object().cast_inventory_owner())
 	{
@@ -64,7 +64,7 @@ bool CScriptGameObject::GiveInfoPortion(LPCSTR info_id)
 	return false;
 }
 
-bool CScriptGameObject::DisableInfoPortion(LPCSTR info_id)
+bool CScriptGameObject::DisableInfoPortion(const char* info_id)
 {
 	if (CInventoryOwner* pInventoryOwner = object().cast_inventory_owner())
 	{
@@ -75,7 +75,7 @@ bool CScriptGameObject::DisableInfoPortion(LPCSTR info_id)
 	return false;
 }
 
-void _AddIconedTalkMessage(LPCSTR text, LPCSTR texture_name, const Frect& tex_rect, LPCSTR templ_name)
+void _AddIconedTalkMessage(const char* text, const char* texture_name, const Frect& tex_rect, const char* templ_name)
 {
 	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
 	if (!pGameSP)
@@ -87,7 +87,7 @@ void _AddIconedTalkMessage(LPCSTR text, LPCSTR texture_name, const Frect& tex_re
 	}
 }
 
-void  CScriptGameObject::AddIconedTalkMessage(LPCSTR text, LPCSTR texture_name, Frect tex_rect, LPCSTR templ_name)
+void  CScriptGameObject::AddIconedTalkMessage(const char* text, const char* texture_name, Frect tex_rect, const char* templ_name)
 {
 	return _AddIconedTalkMessage(text,
 		texture_name,
@@ -95,7 +95,7 @@ void  CScriptGameObject::AddIconedTalkMessage(LPCSTR text, LPCSTR texture_name, 
 		templ_name);
 }
 
-void _AddIconedTalkMessage(LPCSTR caption, LPCSTR text, LPCSTR texture_name, LPCSTR templ_name)
+void _AddIconedTalkMessage(const char* caption, const char* text, const char* texture_name, const char* templ_name)
 {
 	if (CUIGameCustom* current_ui = CurrentGameUI())
 	{
@@ -106,12 +106,12 @@ void _AddIconedTalkMessage(LPCSTR caption, LPCSTR text, LPCSTR texture_name, LPC
 	}
 }
 
-void CScriptGameObject::AddIconedTalkMessage(LPCSTR caption, LPCSTR text, LPCSTR texture_name, LPCSTR templ_name)
+void CScriptGameObject::AddIconedTalkMessage(const char* caption, const char* text, const char* texture_name, const char* templ_name)
 {
 	_AddIconedTalkMessage(caption, text, texture_name, templ_name);
 }
 
-xrTime CScriptGameObject::GetInfoTime(LPCSTR info_id)
+xrTime CScriptGameObject::GetInfoTime(const char* info_id)
 {
 	CInventoryOwner* pInventoryOwner = smart_cast<CInventoryOwner*>(&object());
 	if (!pInventoryOwner)
@@ -124,20 +124,20 @@ xrTime CScriptGameObject::GetInfoTime(LPCSTR info_id)
 		return xrTime(0);
 }
 
-void _give_news(LPCSTR caption, LPCSTR news, LPCSTR texture_name, int delay, int show_time, int type);
-bool _give_news(LPCSTR news, LPCSTR texture_name, const Frect& tex_rect, int delay, int show_time);
+void _give_news(const char* caption, const char* news, const char* texture_name, int delay, int show_time, int type);
+bool _give_news(const char* news, const char* texture_name, const Frect& tex_rect, int delay, int show_time);
 
-void  CScriptGameObject::GiveGameNews(LPCSTR caption, LPCSTR news, LPCSTR texture_name, int delay, int show_time)
+void  CScriptGameObject::GiveGameNews(const char* caption, const char* news, const char* texture_name, int delay, int show_time)
 {
 	GiveGameNews(caption, news, texture_name, delay, show_time, 0);
 }
 
-void  CScriptGameObject::GiveGameNews(LPCSTR caption, LPCSTR news, LPCSTR texture_name, int delay, int show_time, int type)
+void  CScriptGameObject::GiveGameNews(const char* caption, const char* news, const char* texture_name, int delay, int show_time, int type)
 {
 	_give_news(caption, news, texture_name, delay, show_time, type);
 }
 
-bool  CScriptGameObject::GiveGameNews(LPCSTR news, LPCSTR texture_name, Frect tex_rect, int delay, int show_time)
+bool  CScriptGameObject::GiveGameNews(const char* news, const char* texture_name, Frect tex_rect, int delay, int show_time)
 {
 	return _give_news(news,
 		texture_name,
@@ -146,7 +146,7 @@ bool  CScriptGameObject::GiveGameNews(LPCSTR news, LPCSTR texture_name, Frect te
 		show_time);
 }
 
-void _give_news(LPCSTR caption, LPCSTR text, LPCSTR texture_name, int delay, int show_time, int type)
+void _give_news(const char* caption, const char* text, const char* texture_name, int delay, int show_time, int type)
 {
 	GAME_NEWS_DATA				news_data;
 	news_data.m_type = (GAME_NEWS_DATA::eNewsType)type;
@@ -165,7 +165,7 @@ void _give_news(LPCSTR caption, LPCSTR text, LPCSTR texture_name, int delay, int
 		Actor()->AddGameNews_deffered(news_data, delay);
 }
 
-bool _give_news(LPCSTR text, LPCSTR texture_name, const Frect& tex_rect, int delay, int show_time)
+bool _give_news(const char* text, const char* texture_name, const Frect& tex_rect, int delay, int show_time)
 {
 	GAME_NEWS_DATA				news_data;
 	news_data.news_text = text;
@@ -186,7 +186,7 @@ bool _give_news(LPCSTR text, LPCSTR texture_name, const Frect& tex_rect, int del
 	return true;
 }
 
-bool CScriptGameObject::HasInfo(LPCSTR info_id)
+bool CScriptGameObject::HasInfo(const char* info_id)
 {
 	if (CInventoryOwner* pInventoryOwner = object().cast_inventory_owner())
 	{
@@ -196,7 +196,7 @@ bool CScriptGameObject::HasInfo(LPCSTR info_id)
 	return false;
 
 }
-bool CScriptGameObject::DontHasInfo(LPCSTR info_id)
+bool CScriptGameObject::DontHasInfo(const char* info_id)
 {
 	if (CInventoryOwner* pInventoryOwner = object().cast_inventory_owner())
 	{
@@ -687,7 +687,7 @@ void CScriptGameObject::SetSympathy(float sympathy)
 	}
 }
 
-int CScriptGameObject::GetCommunityGoodwill_obj(LPCSTR community)
+int CScriptGameObject::GetCommunityGoodwill_obj(const char* community)
 {
 	if (CInventoryOwner* pInventoryOwner = object().cast_inventory_owner())
 	{
@@ -701,7 +701,7 @@ int CScriptGameObject::GetCommunityGoodwill_obj(LPCSTR community)
 	return 0;
 }
 
-void CScriptGameObject::SetCommunityGoodwill_obj(LPCSTR community, int goodwill)
+void CScriptGameObject::SetCommunityGoodwill_obj(const char* community, int goodwill)
 {
 	if (CInventoryOwner* pInventoryOwner = object().cast_inventory_owner())
 	{
@@ -732,7 +732,7 @@ int	CScriptGameObject::GetAttitude(CScriptGameObject* pToWho)
 	return RELATION_REGISTRY().GetAttitude(pInventoryOwner, pOthersInventoryOwner);
 }
 
-LPCSTR CScriptGameObject::ProfileName()
+const char* CScriptGameObject::ProfileName()
 {
 	if (CInventoryOwner* pInventoryOwner = object().cast_inventory_owner())
 	{
@@ -747,7 +747,7 @@ LPCSTR CScriptGameObject::ProfileName()
 	return 0;
 }
 
-LPCSTR CScriptGameObject::CharacterName()
+const char* CScriptGameObject::CharacterName()
 {
 	if (CInventoryOwner* pInventoryOwner = object().cast_inventory_owner())
 	{
@@ -758,7 +758,7 @@ LPCSTR CScriptGameObject::CharacterName()
 	return 0;
 }
 
-LPCSTR CScriptGameObject::CharacterIcon()
+const char* CScriptGameObject::CharacterIcon()
 {
 	if (CInventoryOwner* pInventoryOwner = object().cast_inventory_owner())
 	{
@@ -844,7 +844,7 @@ void CScriptGameObject::SetCharacterReputation(int char_rep)
 	}
 }
 
-LPCSTR CScriptGameObject::CharacterCommunity()
+const char* CScriptGameObject::CharacterCommunity()
 {
 	if (object().cast_base_monster())
 	{
@@ -860,7 +860,7 @@ LPCSTR CScriptGameObject::CharacterCommunity()
 	return 0;
 }
 
-void CScriptGameObject::SetCharacterCommunity(LPCSTR comm, int squad, int group)
+void CScriptGameObject::SetCharacterCommunity(const char* comm, int squad, int group)
 {
 	CInventoryOwner* pInventoryOwner = object().cast_inventory_owner();
 	CEntity* entity	= object().cast_entity();
@@ -885,7 +885,7 @@ void CScriptGameObject::SetCharacterCommunity(LPCSTR comm, int squad, int group)
 	}
 }
 
-LPCSTR CScriptGameObject::sound_voice_prefix() const
+const char* CScriptGameObject::sound_voice_prefix() const
 {
 	if (CInventoryOwner* pInventoryOwner = object().cast_inventory_owner())
 	{
@@ -897,7 +897,7 @@ LPCSTR CScriptGameObject::sound_voice_prefix() const
 }
 
 #include "GametaskManager.h"
-ETaskState CScriptGameObject::GetGameTaskState	(LPCSTR task_id, u16 objective_id)
+ETaskState CScriptGameObject::GetGameTaskState	(const char* task_id, u16 objective_id)
 {
 	shared_str shared_name = task_id;
 	CGameTask* t = Level().GameTaskManager()->HasGameTask(shared_name, true);
@@ -912,7 +912,7 @@ ETaskState CScriptGameObject::GetGameTaskState	(LPCSTR task_id, u16 objective_id
 	return t->ObjectiveState(objective_id);
 }
 
-void CScriptGameObject::SetGameTaskState	(ETaskState state, LPCSTR task_id, u16 objective_id)
+void CScriptGameObject::SetGameTaskState	(ETaskState state, const char* task_id, u16 objective_id)
 {
 	shared_str shared_name	= task_id;
 	Level().GameTaskManager()->SetTaskState(shared_name, state, objective_id);
@@ -1013,7 +1013,7 @@ void construct_restriction_vector(shared_str restrictions, xr_vector<ALife::_OBJ
 	}
 }
 
-void CScriptGameObject::add_restrictions(LPCSTR out, LPCSTR in)
+void CScriptGameObject::add_restrictions(const char* out, const char* in)
 {
 	if (CCreature* monster = object().cast_creature())
 	{
@@ -1025,7 +1025,7 @@ void CScriptGameObject::add_restrictions(LPCSTR out, LPCSTR in)
 	}
 }
 
-void CScriptGameObject::remove_restrictions(LPCSTR out, LPCSTR in)
+void CScriptGameObject::remove_restrictions(const char* out, const char* in)
 {
 	if (CCreature* monster = object().cast_creature())
 	{
@@ -1049,7 +1049,7 @@ void CScriptGameObject::remove_all_restrictions()
 	}
 }
 
-LPCSTR CScriptGameObject::in_restrictions()
+const char* CScriptGameObject::in_restrictions()
 {
 	if (CCreature* monster = object().cast_creature())
 	{
@@ -1060,7 +1060,7 @@ LPCSTR CScriptGameObject::in_restrictions()
 	return "";
 }
 
-LPCSTR CScriptGameObject::out_restrictions()
+const char* CScriptGameObject::out_restrictions()
 {
 	if (CCreature* monster = object().cast_creature())
 	{
@@ -1071,7 +1071,7 @@ LPCSTR CScriptGameObject::out_restrictions()
 	return "";
 }
 
-LPCSTR CScriptGameObject::base_in_restrictions()
+const char* CScriptGameObject::base_in_restrictions()
 {
 	if (CCreature* monster = object().cast_creature())
 	{
@@ -1082,7 +1082,7 @@ LPCSTR CScriptGameObject::base_in_restrictions()
 	return "";
 }
 
-LPCSTR CScriptGameObject::base_out_restrictions()
+const char* CScriptGameObject::base_out_restrictions()
 {
 	if (CCreature* monster = object().cast_creature())
 	{
@@ -1285,7 +1285,7 @@ bool CScriptGameObject::torch_enabled() const
 	return false;
 }
 
-void CScriptGameObject::attachable_item_load_attach(LPCSTR section)
+void CScriptGameObject::attachable_item_load_attach(const char* section)
 {
 	CAttachableItem* attachable_item = object().cast_attachable_item();
 	if (CAttachableItem* attachable_item = object().cast_attachable_item())
@@ -1472,7 +1472,7 @@ void CScriptGameObject::GiveTaskToActor(CGameTask* t, u32 dt, bool bCheckExistin
 	Level().GameTaskManager()->GiveGameTaskToActor(t, dt, bCheckExisting, t_timer);
 }
 
-CGameTask* CScriptGameObject::GetTask(LPCSTR id, bool only_inprocess)
+CGameTask* CScriptGameObject::GetTask(const char* id, bool only_inprocess)
 {
 	return Level().GameTaskManager()->HasGameTask(id, only_inprocess);
 }
@@ -1554,7 +1554,7 @@ float CScriptGameObject::GetBoosterInfluenceTime(EBoostParams param)
 	return 0.0f;
 }
 
-void CScriptGameObject::ApplyBooster(LPCSTR sect)
+void CScriptGameObject::ApplyBooster(const char* sect)
 {
 	CActor* pActor = object().cast_actor();
 	if (CActor* pActor = object().cast_actor())
@@ -1835,7 +1835,7 @@ bool CScriptGameObject::sniper_fire_mode() const
 	return false;
 }
 
-void CScriptGameObject::aim_bone_id(LPCSTR bone_id)
+void CScriptGameObject::aim_bone_id(const char* bone_id)
 {
 	if (CAI_Stalker* stalker = object().cast_stalker())
 	{
@@ -1847,7 +1847,7 @@ void CScriptGameObject::aim_bone_id(LPCSTR bone_id)
 	}
 }
 
-LPCSTR CScriptGameObject::aim_bone_id() const
+const char* CScriptGameObject::aim_bone_id() const
 {
 	if (CAI_Stalker* stalker = object().cast_stalker())
 	{
@@ -2066,7 +2066,7 @@ void CScriptGameObject::Weapon_AddonAttach(CScriptGameObject* item)
 	}
 }
 
-void CScriptGameObject::Weapon_AddonDetach(LPCSTR item_section, bool b_spawn_item = true)
+void CScriptGameObject::Weapon_AddonDetach(const char* item_section, bool b_spawn_item = true)
 {
 	if (CWeaponMagazined* weapon = object().cast_weapon_magazined())
 	{
@@ -2128,7 +2128,7 @@ void CScriptGameObject::AddonsAttacher(u8 addons, u8 scope_idx)
 	}
 }
 
-LPCSTR CScriptGameObject::Weapon_GetAmmoSection(u8 ammo_type)
+const char* CScriptGameObject::Weapon_GetAmmoSection(u8 ammo_type)
 {
 	CWeaponMagazined* weapon = object().cast_weapon_magazined();
 	if (weapon == nullptr)
@@ -2423,7 +2423,7 @@ void CScriptGameObject::SetActorRunBackCoef(float run_back_coef)
 	}
 }
 
-void CScriptGameObject::SetCharacterIcon(LPCSTR iconName)
+void CScriptGameObject::SetCharacterIcon(const char* iconName)
 {
 	if (CInventoryOwner* pInventoryOwner = object().cast_inventory_owner())
 	{
@@ -2435,7 +2435,7 @@ void CScriptGameObject::SetCharacterIcon(LPCSTR iconName)
 	}
 }
 
-void CScriptGameObject::SetActorDefaultVisual(LPCSTR visualName)
+void CScriptGameObject::SetActorDefaultVisual(const char* visualName)
 {
 	if (CActor* pActor = object().cast_actor())
 	{
@@ -2447,7 +2447,7 @@ void CScriptGameObject::SetActorDefaultVisual(LPCSTR visualName)
 	}
 }
 
-void CScriptGameObject::StartActorAnimator(LPCSTR section)
+void CScriptGameObject::StartActorAnimator(const char* section)
 {
 	if (CActor* pActor = object().cast_actor())
 	{
@@ -2477,7 +2477,7 @@ void CScriptGameObject::StopActorAnimator()
 	}
 }
 
-LPCSTR CScriptGameObject::GetActorAnimatorSection()
+const char* CScriptGameObject::GetActorAnimatorSection()
 {
 	if (CActor* pActor = object().cast_actor())
 	{
@@ -2536,7 +2536,7 @@ void CScriptGameObject::SetAnimatorForceHideItems(bool status)
 	}
 }
 
-void CScriptGameObject::ShowStateAnimator(LPCSTR section)
+void CScriptGameObject::ShowStateAnimator(const char* section)
 {
 	if (CActor* pActor = object().cast_actor())
 	{
@@ -2586,7 +2586,7 @@ float CScriptGameObject::GetActorPowerBoostTime()
 	return 0.0f;
 }
 
-LPCSTR CScriptGameObject::GetCutsceneVisual()
+const char* CScriptGameObject::GetCutsceneVisual()
 {
 	if (CActor* pActor = object().cast_actor())
 	{

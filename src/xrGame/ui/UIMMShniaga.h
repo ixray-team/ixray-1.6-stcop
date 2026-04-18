@@ -15,7 +15,7 @@ public:
 						CUIMMShniaga			();
 	virtual				~CUIMMShniaga			();
 
-			void 		InitShniaga				(CUIXml& xml_doc, LPCSTR path);
+			void 		InitShniaga				(CUIXml& xml_doc, const char* path);
 	virtual void 		Update					();
 	virtual void 		Draw					();
 
@@ -35,7 +35,7 @@ public:
 		epi_new_game,
 		epi_none
 	};//enum	enum_page_id
-			void		SetPage					(enum_page_id page_id, LPCSTR xml_file, LPCSTR xml_path);
+			void		SetPage					(enum_page_id page_id, const char* xml_file, const char* xml_path);
 	IC enum_page_id		GetPage					()	{ return m_page; }
 			void		ShowPage				(enum_page_id page_id);
 protected:
@@ -54,7 +54,7 @@ protected:
 	void 				ProcessEvent			(EVENT ev);
 
 	bool 				IsButton				(CUIWindow* st);
-	void 				CreateList				(xr_vector<CUIStatic*>& lst, CUIXml& xml_doc, LPCSTR path);
+	void 				CreateList				(xr_vector<CUIStatic*>& lst, CUIXml& xml_doc, const char* path);
 	void 				ShowMain				();
 	void 				ShowNewGame				();
 	float				pos						(float x1, float x2, u32 t);

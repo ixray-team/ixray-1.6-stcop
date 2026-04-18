@@ -11,7 +11,7 @@ CCustom2DProjector::CCustom2DProjector()
     shader_blended	= 0;
 }
 
-bool CCustom2DProjector::LoadImage(LPCSTR nm)
+bool CCustom2DProjector::LoadImage(const char* nm)
 {
 	name			= nm;
     ImageLib.LoadTextureData(*name,data,w,h);

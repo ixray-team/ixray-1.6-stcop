@@ -118,7 +118,7 @@ void 	CDetailManager::cache_Task		(int gx, int gz, Slot* D, bool init)
 }
 
 
-BOOL	CDetailManager::cache_Validate	()
+bool	CDetailManager::cache_Validate	()
 {
 	for (u32 z=0; z<dm_cache_line; z++)
 	{
@@ -206,7 +206,7 @@ void	CDetailManager::cache_Update(Fvector& view)
 		PROF_EVENT("cache_Decompress");
 		if (!ps_r2_ls_flags.test(R2FLAG_FAST_DETAILS_UPDATE))
 		{
-			BOOL	bFullUnpack = FALSE;
+			bool	bFullUnpack = FALSE;
 			int limit = dm_max_decompress;
 			if (cache_task.size() == dm_cache_size) { limit = dm_cache_size; bFullUnpack = TRUE; }
 

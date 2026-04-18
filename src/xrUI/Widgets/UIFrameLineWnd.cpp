@@ -10,7 +10,7 @@ CUIFrameLineWnd::CUIFrameLineWnd()
 	AttachChild(&UITitleText);
 }
 
-bool CUIFrameLineWnd::InitFrameLineWnd(LPCSTR base_name, Fvector2 pos, Fvector2 size, bool horizontal, bool fatal)
+bool CUIFrameLineWnd::InitFrameLineWnd(const char* base_name, Fvector2 pos, Fvector2 size, bool horizontal, bool fatal)
 {
 	InitFrameLineWnd(pos,size,horizontal);
 	return InitTexture		(base_name,"hud\\default",fatal);
@@ -28,7 +28,7 @@ void CUIFrameLineWnd::InitFrameLineWnd(Fvector2 pos, Fvector2 size, bool horizon
 		UITitleText.SetWndSize(Fvector2().set(50.f, size.y));
 }
 
-bool CUIFrameLineWnd::InitTexture(pcstr texture, pcstr shader, bool fatal /*= true*/)
+bool CUIFrameLineWnd::InitTexture(const char* texture, const char* shader, bool fatal /*= true*/)
 {
     dbg_tex_name = texture;
     string256 buf;

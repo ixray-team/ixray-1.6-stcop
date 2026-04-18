@@ -65,7 +65,7 @@ void CWeaponMagazined::net_Destroy()
 	inherited::net_Destroy();
 }
 
-void CWeaponMagazined::Load(LPCSTR section)
+void CWeaponMagazined::Load(const char* section)
 {
 	inherited::Load(section);
 
@@ -122,7 +122,7 @@ void CWeaponMagazined::Load(LPCSTR section)
 	LoadSilencerKoeffs();
 }
 
-void CWeaponMagazined::LoadSounds(LPCSTR section)
+void CWeaponMagazined::LoadSounds(const char* section)
 {
 	inherited::LoadSounds(section);
 
@@ -780,12 +780,12 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 		SetMisfireStatus(false);
 	}
 
-	xr_map<LPCSTR, u16> l_ammo;
+	xr_map<const char*, u16> l_ammo;
 	xr_map< u16, u16> ammos_to_sync;
 	while(!m_magazine.empty()) 
 	{
 		CCartridge &l_cartridge = m_magazine.back();
-		xr_map<LPCSTR, u16>::iterator l_it;
+		xr_map<const char*, u16>::iterator l_it;
 		for(l_it = l_ammo.begin(); l_ammo.end() != l_it; ++l_it) 
 		{
             if(!xr_strcmp(*l_cartridge.m_ammoSect, l_it->first)) 
@@ -811,7 +811,7 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 	if (!spawn_ammo)
 		return;
 
-	xr_map<LPCSTR, u16>::iterator l_it;
+	xr_map<const char*, u16>::iterator l_it;
 	for(l_it = l_ammo.begin(); l_ammo.end() != l_it; ++l_it) 
 	{
 		if(m_pInventory)
@@ -892,7 +892,7 @@ void CWeaponMagazined::ReloadMagazine()
 			return;
 		}
 
-		LPCSTR tmp_sect_name = m_ammoTypes[m_ammoType].c_str();
+		const char* tmp_sect_name = m_ammoTypes[m_ammoType].c_str();
 
 		if (!tmp_sect_name)
 		{
@@ -2882,7 +2882,7 @@ void CWeaponMagazined::LoadSilencerKoeffs()
 {
 	if ( m_eSilencerStatus == ALife::eAddonAttachable )
 	{
-		LPCSTR sect = m_sSilencerName.c_str();
+		const char* sect = m_sSilencerName.c_str();
 		m_silencer_koef.hit_power		= READ_IF_EXISTS( pSettings, r_float, sect, "bullet_hit_power_k", 1.0f );
 		m_silencer_koef.hit_impulse		= READ_IF_EXISTS( pSettings, r_float, sect, "bullet_hit_impulse_k", 1.0f );
 		m_silencer_koef.bullet_speed	= READ_IF_EXISTS( pSettings, r_float, sect, "bullet_speed_k", 1.0f );
@@ -3552,24 +3552,24 @@ bool CWeaponMagazined::GetBriefInfo( II_BriefInfo& info )
 
 	if ( ae != 0 && CurrVector.size() != 0 )
 	{
-		LPCSTR ammo_type = m_ammoTypes[CurrVector.back().m_LocalAmmoType].c_str();
+		const char* ammo_type = m_ammoTypes[CurrVector.back().m_LocalAmmoType].c_str();
 		info.name		= g_pStringTable->translate( pSettings->r_string(ammo_type, "inv_name_short") );
 		info.icon		= ammo_type;
 	}
 	else
 	{
-		LPCSTR ammo_type	= m_ammoTypes[CurrAmmoType].c_str();
+		const char* ammo_type	= m_ammoTypes[CurrAmmoType].c_str();
 		info.name			= g_pStringTable->translate( pSettings->r_string(ammo_type, "inv_name_short") );
 		info.icon			= ammo_type;
 	}
 	return true;
 }
 
-bool CWeaponMagazined::install_upgrade_impl(LPCSTR section, bool test)
+bool CWeaponMagazined::install_upgrade_impl(const char* section, bool test)
 {
 	bool result = inherited::install_upgrade_impl(section, test);
 
-	LPCSTR str = {};
+	const char* str = {};
 
 	bool result2 = process_if_exists_set(section, "fire_modes", str, test);
 	if (result2 && !test)
@@ -3638,7 +3638,7 @@ bool CWeaponMagazined::install_upgrade_impl(LPCSTR section, bool test)
 
 	if (m_eSilencerStatus == ALife::eAddonAttachable || m_eSilencerStatus == ALife::eAddonPermanent)
 	{
-		LPCSTR sil_ps = nullptr;
+		const char* sil_ps = nullptr;
 		result |= process_if_exists_set(section, "silencer_flame_particles", sil_ps, test);
 		if(sil_ps)
 			LoadParticle(section, sil_ps, m_pFlameSilencerParticles);
@@ -3830,7 +3830,7 @@ void CWeaponMagazined::OnMotionMark(u32 state, const motion_marks& mark)
 				if (m_bHaveShell && m_bNeedPumpState)
 				{
 					static_info = g_pStringTable->translate("st_chamber_shell");
-					LPCSTR ammo_type = m_ammoTypes[m_LastShotAmmoType].c_str();
+					const char* ammo_type = m_ammoTypes[m_LastShotAmmoType].c_str();
 					static_info.printf("%s %s", static_info.c_str(), g_pStringTable->translate(pSettings->r_string(ammo_type, "inv_name_short")).c_str());
 					magcheck->SetText(static_info.c_str());
 				}

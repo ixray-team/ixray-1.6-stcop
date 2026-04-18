@@ -124,7 +124,7 @@ void CStalkerAnimationManager::assign_bone_callbacks	()
 	m_spine_params.invalidate		();
 #endif // #ifdef DEBUG
 
-	LPCSTR							section = *object().cNameSect();
+	const char*							section = *object().cNameSect();
 
 	m_head_params.m_rotation		= &object().sight().current_head_rotation();
 	m_head_params.m_object			= &object();
@@ -164,7 +164,7 @@ void CStalkerAnimationManager::assign_bone_blend_callbacks	(bool const& forward_
 	m_spine_params.invalidate		();
 #endif // #ifdef DEBUG
 
-	LPCSTR							section = *object().cNameSect();
+	const char*							section = *object().cNameSect();
 
 	m_head_params.m_rotation		= &object().sight().current_head_rotation();
 	m_head_params.m_object			= &object();
@@ -204,7 +204,7 @@ void CStalkerAnimationManager::remove_bone_callbacks	()
 	m_spine_params.invalidate		();
 #endif // #ifdef DEBUG
 
-	LPCSTR							section = *object().cNameSect();
+	const char*							section = *object().cNameSect();
 	
 	int								head_bone = kinematics->LL_BoneID(pSettings->r_string(section,"bone_head"));
 	kinematics->LL_GetBoneInstance	(u16(head_bone)).set_callback(bctCustom,0,0);

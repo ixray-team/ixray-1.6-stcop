@@ -23,8 +23,8 @@ void CScriptStoryIDManager::VerifiedRegisterObject(CSE_Abstract* se_obj)
     auto& ini = se_obj->spawn_ini();
     if (ini.section_exist("story_object"))
     {
-        LPCSTR key;
-        LPCSTR value;
+        const char* key;
+        const char* value;
         if (!ini.r_line("story_object", 0, &key, &value) || !key)
         {
             R_ASSERT3(false, "There is no 'story_id' field in [story_object] section :object", se_obj->name());
@@ -45,17 +45,17 @@ void CScriptStoryIDManager::VerifiedRegisterObject(CSE_Abstract* se_obj)
 namespace ScriptStoryIDManager
 {
 
-    ALife::_OBJECT_ID get(CScriptStoryIDManager& manager, LPCSTR story_id)
+    ALife::_OBJECT_ID get(CScriptStoryIDManager& manager, const char* story_id)
     {
        return manager.GetID(story_id);
     }
 
-    LPCSTR get_story_id(CScriptStoryIDManager& manager, ALife::_OBJECT_ID id)
+    const char* get_story_id(CScriptStoryIDManager& manager, ALife::_OBJECT_ID id)
     {
        return manager.GetID(id);
     }
 
-    void Register(CScriptStoryIDManager& manager, ALife::_OBJECT_ID obj_id, LPCSTR story_id, bool registered)
+    void Register(CScriptStoryIDManager& manager, ALife::_OBJECT_ID obj_id, const char* story_id, bool registered)
     {
         manager.Register(obj_id, story_id);
     }
@@ -74,7 +74,7 @@ void CScriptStoryIDManager::script_register(lua_State* L)
         class_<CScriptStoryIDManager>("CScriptStoryIDManager")
             .def("register",	&ScriptStoryIDManager::Register)
             .def("unregister_by_id", (void(CScriptStoryIDManager::*)(ALife::_OBJECT_ID))&CScriptStoryIDManager::Unregister)
-            .def("unregister_by_story_id", (void(CScriptStoryIDManager::*)(LPCSTR))&CScriptStoryIDManager::Unregister)
+            .def("unregister_by_story_id", (void(CScriptStoryIDManager::*)(const char*))&CScriptStoryIDManager::Unregister)
             .def("get", &ScriptStoryIDManager::get)
             .def("get_story_id", &ScriptStoryIDManager::get_story_id),
             def("get_story_objects_registry", &CScriptStoryIDManager::GetInstance),
@@ -139,7 +139,7 @@ void CScriptStoryIDManager::Unregister(ALife::_OBJECT_ID obj_id)
     }
 }
 
-void CScriptStoryIDManager::Unregister(LPCSTR script_story_id)
+void CScriptStoryIDManager::Unregister(const char* script_story_id)
 {
     xrSRWLockGuard guard(m_containers_lock);
     VERIFY(m_containers_by_id.size() == m_containers_by_script_story_id.size());
@@ -154,7 +154,7 @@ void CScriptStoryIDManager::Unregister(LPCSTR script_story_id)
     }
 }
 
-ALife::_OBJECT_ID CScriptStoryIDManager::GetID(LPCSTR script_story_id) const
+ALife::_OBJECT_ID CScriptStoryIDManager::GetID(const char* script_story_id) const
 {
     xrSRWLockGuard guard(m_containers_lock, true);
     VERIFY(m_containers_by_id.size() == m_containers_by_script_story_id.size());
@@ -166,7 +166,7 @@ ALife::_OBJECT_ID CScriptStoryIDManager::GetID(LPCSTR script_story_id) const
     return it != m_containers_by_script_story_id.end() ? it->second : ALife::_OBJECT_ID(-1);
 }
 
-LPCSTR CScriptStoryIDManager::GetID(ALife::_OBJECT_ID obj_id) const
+const char* CScriptStoryIDManager::GetID(ALife::_OBJECT_ID obj_id) const
 {
     xrSRWLockGuard guard(m_containers_lock, true);
     VERIFY(m_containers_by_id.size() == m_containers_by_script_story_id.size());

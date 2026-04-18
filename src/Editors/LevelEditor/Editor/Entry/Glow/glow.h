@@ -25,7 +25,7 @@ protected:
     virtual const Fvector& GetScale() const { Ftemp.set(m_fRadius, m_fRadius, m_fRadius); return Ftemp; }
 	virtual void 	SetScale		(const Fvector& sc){float v=m_fRadius; if (!fsimilar(FScale.x,sc.x)) v=sc.x; if (!fsimilar(FScale.y,sc.y)) v=sc.y; if (!fsimilar(FScale.z,sc.z)) v=sc.z; FScale.set(v,v,v); m_fRadius=v; UpdateTransform();}
 public:
-	                CGlow       (LPVOID data, LPCSTR name);
+	                CGlow       (LPVOID data, const char* name);
     void            Construct   (LPVOID data);
 	virtual         ~CGlow      ();
     virtual bool	CanAttach	() {return true;}
@@ -38,12 +38,12 @@ public:
     virtual bool 	FrustumPick	( const CFrustum& frustum );
 
   	virtual bool 		LoadStream			(IReader&);
-  	virtual bool 		LoadLTX				(CInifile& ini, LPCSTR sect_name);
+  	virtual bool 		LoadLTX				(CInifile& ini, const char* sect_name);
 	virtual void 		SaveStream			(IWriter&);
-  	virtual void 		SaveLTX				(CInifile& ini, LPCSTR sect_name);
+  	virtual void 		SaveLTX				(CInifile& ini, const char* sect_name);
 
 	virtual bool    GetBox      ( Fbox& box ) ;
-    virtual void	FillProp	( LPCSTR pref, PropItemVec& values );
+    virtual void	FillProp	( const char* pref, PropItemVec& values );
 
     // device dependent routine
 	virtual void 	OnDeviceCreate 	();

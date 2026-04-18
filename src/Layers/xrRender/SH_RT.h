@@ -14,12 +14,12 @@ public:
 		MIPPED_RT_FLAG = u32(1 << 1)
 	};
 
-	void create(LPCSTR Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount = 1, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)0);
+	void create(const char* Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount = 1, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)0);
 	void destroy();
 	void reset_begin();
 	void reset_end();
 
-	IC BOOL	valid()
+	IC bool	valid()
 	{
 		return !!pSurface;
 	}
@@ -45,7 +45,7 @@ public:
 struct resptrcode_crt :
 	public resptr_base<CRT>
 {
-	void create(LPCSTR Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount = 1, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)0);
+	void create(const char* Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount = 1, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)0);
 	void destroy()
 	{
 		_set(nullptr);
@@ -72,17 +72,17 @@ public:
 	CRTC					();
 	~CRTC					();
 
-	void				create(LPCSTR name, u32 size, ERHI_FORMAT f, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)0);
+	void				create(const char* name, u32 size, ERHI_FORMAT f, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)0);
 	void				destroy			();
 	void				reset_begin		();
 	void				reset_end		();
-	IC BOOL				valid			()	{ return !pTexture; }
+	IC bool				valid			()	{ return !pTexture; }
 };
 
 struct resptrcode_crtc:
 	public resptr_base<CRTC>
 {
-	void				create(LPCSTR Name, u32 size, ERHI_FORMAT f, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)0);
+	void				create(const char* Name, u32 size, ERHI_FORMAT f, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)0);
 	void				destroy			()	{ _set(NULL);		}
 };
 

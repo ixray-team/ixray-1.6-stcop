@@ -33,7 +33,7 @@ void  CActorTools::OnObjectItemsFocused(xr_vector<ListItem*>& items)
 				break;
 			case emMotion:
 			{
-				LPCSTR m_name = ExtractMotionName(prop->Key());
+				const char* m_name = ExtractMotionName(prop->Key());
 				u16 slot = ExtractMotionSlot(prop->Key());
 				FillMotionProperties(props, MOTIONS_PREFIX, prop);
 				SetCurrentMotion(m_name, slot);
@@ -352,7 +352,7 @@ void  CActorTools::OnCylinderAxisClick(ButtonValue* V, bool& bModif, bool& bSafe
 #include "../../xrEngine/envelope.h"
 
 Fvector StartMotionPoint, EndMotionPoint;
-void CActorTools::FillMotionProperties(PropItemVec& items, LPCSTR pref, ListItem* sender)
+void CActorTools::FillMotionProperties(PropItemVec& items, const char* pref, ListItem* sender)
 {
 	R_ASSERT(m_pEditObject);
 	CSMotion* SM = m_pEditObject->m_SMotionRefs.size()?0:(CSMotion*)sender->m_Object;
@@ -476,7 +476,7 @@ void CActorTools::FillMotionProperties(PropItemVec& items, LPCSTR pref, ListItem
 			for (auto& elem : CurrentMotion->notify)
 			{
 				xr_string Name = std::to_string(elem.first).c_str();
-				LPCSTR Ptr = Name.c_str();
+				const char* Ptr = Name.c_str();
 				static string128 Receiver;
 				PHelper().CreateRText(items, PrepareKey(pref, xr_strconcat(Receiver, "Notify\\", Ptr, "\\Give Info")), &elem.second.GiveInfo);
 				PHelper().CreateRText(items, PrepareKey(pref, xr_strconcat(Receiver, "Notify\\", Ptr, "\\Disable Info")), &elem.second.DisableInfo);
@@ -511,7 +511,7 @@ xr_token shape_types[]={
 	{ 0,			0						}
 };
 
-static const LPCSTR axis[3]=
+static const char* axis[3]=
 { "Axis X", "Axis Y", "Axis Z" };
 
 void  CActorTools::OnJointTypeChange(PropValue* V)
@@ -627,7 +627,7 @@ void  CActorTools::OnBoneCreateDeleteClick(ButtonValue* V, bool& bModif, bool& b
 				Msg("! Select 1 bone please.");
 				return;
 			}
-			LPCSTR _bone_name 		= 0;
+			const char* _bone_name 		= 0;
 			UIChooseForm::SelectItem(smSkeletonBonesInObject, 1, 0, 0, m_pEditObject);
 			m_ChooseSkeletonBones = true;
 		}break;
@@ -768,7 +768,7 @@ void  CActorTools::OnBoneLimitsChange(PropValue* sender)
 	m_pEditObject->ClampByLimits(true);
 }
 
-void CActorTools::FillBoneProperties(PropItemVec& items, LPCSTR pref, ListItem* sender)
+void CActorTools::FillBoneProperties(PropItemVec& items, const char* pref, ListItem* sender)
 {
 	R_ASSERT(m_pEditObject);
 	CBone* BONE = (CBone*)sender->m_Object;
@@ -912,7 +912,7 @@ void CActorTools::FillBoneProperties(PropItemVec& items, LPCSTR pref, ListItem* 
 }
 //------------------------------------------------------------------------------
 
-void CActorTools::FillSurfaceProperties(PropItemVec& items, LPCSTR pref, ListItem* sender)
+void CActorTools::FillSurfaceProperties(PropItemVec& items, const char* pref, ListItem* sender)
 {
 	R_ASSERT(m_pEditObject);
 	CSurface* SURF = (CSurface*)sender->m_Object;
@@ -933,7 +933,7 @@ xr_token eo_type_token[] = {
 	{ 0,						0}
 };
 
-void CActorTools::FillObjectProperties(PropItemVec& items, LPCSTR pref, ListItem* sender)
+void CActorTools::FillObjectProperties(PropItemVec& items, const char* pref, ListItem* sender)
 {
 	R_ASSERT(m_pEditObject);
 	PropValue* V = 0;
@@ -970,7 +970,7 @@ void CActorTools::FillObjectProperties(PropItemVec& items, LPCSTR pref, ListItem
 }
 //------------------------------------------------------------------------------
 
-void CActorTools::SelectListItem(LPCSTR pref, LPCSTR name, bool bVal, bool bLeaveSel, bool bExpand)
+void CActorTools::SelectListItem(const char* pref, const char* name, bool bVal, bool bLeaveSel, bool bExpand)
 {
 	xr_string nm = (name&&name[0])?PrepareKey(pref,name).c_str():xr_string(pref).c_str();
 	m_ObjectItems->SelectItem(nm.c_str());

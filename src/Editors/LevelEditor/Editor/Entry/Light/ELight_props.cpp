@@ -144,7 +144,7 @@ void 	CLight::OnPointDataTestEqual(CanvasValue* a, CanvasValue* b, bool& res)
     		fsimilar(A->m_Brightness,B->m_Brightness));
 }
 
-void CLight::FillAttProp(LPCSTR pref, PropItemVec& items)
+void CLight::FillAttProp(const char* pref, PropItemVec& items)
 {
 	PropValue* V;
     V=PHelper().CreateFloat	(items,	PrepareKey(pref, "Range"),					&m_Range,		0.1f,1000.f);
@@ -170,7 +170,7 @@ xr_token fuzzy_shape_types[]={
 	{ "Box",			CLight::SFuzzyData::fstBox		},
 	{ 0,				0				}
 };
-void CLight::FillPointProp(LPCSTR pref, PropItemVec& items)
+void CLight::FillPointProp(const char* pref, PropItemVec& items)
 {
 	// flags
     PHelper().CreateFlag32(items,	PrepareKey(pref,"Usage\\LightMap"),	&m_Flags,	ELight::flAffectStatic);
@@ -205,7 +205,7 @@ void CLight::FillPointProp(LPCSTR pref, PropItemVec& items)
 }
 
 
-void CLight::FillSpotProp(LPCSTR pref, PropItemVec& items)
+void CLight::FillSpotProp(const char* pref, PropItemVec& items)
 {
 	// flags
     PHelper().CreateFlag32(items,	PrepareKey(pref,"Usage\\LightMap"),	&m_Flags,	ELight::flAffectStatic);
@@ -225,7 +225,7 @@ xr_token			token_light_type[ ]	=	{
     { 0,			0	  					}
 };
 
-void CLight::FillProp(LPCSTR pref, PropItemVec& items)
+void CLight::FillProp(const char* pref, PropItemVec& items)
 {
 	inherited::FillProp(pref,items);
 
@@ -246,7 +246,7 @@ void CLight::FillProp(LPCSTR pref, PropItemVec& items)
     case ELight::ltSpot: 	FillSpotProp 	(pref, items);	break;
     default: THROW;
     }
-    PHelper().CreateBOOL		(items,	PrepareKey(pref,"Use In D3D"),		&m_UseInD3D);
+    PHelper().CreateBool(items, PrepareKey(pref, "Use In D3D"), &m_UseInD3D);
 }
 
 void 	CLight::OnTypeChange(PropValue* value)

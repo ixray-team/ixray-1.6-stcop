@@ -270,7 +270,7 @@ struct attachable_hud_item final
 	void render_item_ui				();
 	bool render_item_ui_query		();
 	bool need_renderable			();
-	void set_bone_visible			(const shared_str& bone_name, BOOL bVisibility, BOOL bSilent=FALSE);
+	void set_bone_visible			(const shared_str& bone_name, bool bVisibility, bool bSilent=FALSE);
 	void debug_draw_firedeps		();
 	void UpdateInertion				(u32 delta, CActor* actor);
 
@@ -286,7 +286,7 @@ struct attachable_hud_item final
 	u32								m_upd_firedeps_frame;
 	void		tune				(Fvector values);
 	void		anim_play			(const shared_str& item_anm_name, EHudMixType bMixIn, float speed, player_hud_motion* anm = nullptr);
-	void		anim_play_bonepart	(const shared_str& anim, BOOL bMixIn);
+	void		anim_play_bonepart	(const shared_str& anim, bool bMixIn);
 	u32			anim_play			(const shared_str& anim_name, EHudMixType bMixIn, const CMotionDef*& md, u8& rnd);
 
 };
@@ -320,8 +320,8 @@ struct animator_item
 	
 	void update_hud_additional(Fmatrix& trans);
 
-	void anim_play(const shared_str& item_anm_name, BOOL bMixIn, float speed);
-	u32 anim_play(const shared_str& anim_name, BOOL bMixIn, const CMotionDef*& md);
+	void anim_play(const shared_str& item_anm_name, bool bMixIn, float speed);
+	u32 anim_play(const shared_str& anim_name, bool bMixIn, const CMotionDef*& md);
 	void			setup_firedeps		(firedeps& fd);
 };
 
@@ -360,7 +360,7 @@ struct movement_layer
 		return m_XFORM;
 	}
 
-	void Load(LPCSTR anim_name)
+	void Load(const char* anim_name)
 	{
 		anim->Load(anim_name);
 	}
@@ -408,10 +408,10 @@ public:
 	void			render_item_ui		();
 	bool			render_item_ui_query();
 
-	u32				anim_play			(u16 part, const MotionID& M, BOOL bMixIn, const CMotionDef*& md, float speed);
+	u32				anim_play			(u16 part, const MotionID& M, bool bMixIn, const CMotionDef*& md, float speed);
 	bool			check_anim			(const shared_str& anim_name, u16 place_idx);
 
-	bool			animator_play			(const shared_str& anim_name, u16 place_idx = u16(-1), u16 part_id = u16(-1), BOOL bMixIn = FALSE, float speed = 1.0f, u8 anm_idx = u8(0), bool impact_on_item = false, bool similar_check = false, PlayCallback Callback = PlayCallback(0), LPVOID CallbackParam = LPVOID(0), BOOL UpdateCallbackType = 0);
+	bool			animator_play			(const shared_str& anim_name, u16 place_idx = u16(-1), u16 part_id = u16(-1), bool bMixIn = FALSE, float speed = 1.0f, u8 anm_idx = u8(0), bool impact_on_item = false, bool similar_check = false, PlayCallback Callback = PlayCallback(0), LPVOID CallbackParam = LPVOID(0), bool UpdateCallbackType = 0);
 
 	// анимация-эффект которая не будет отключать обычные анимации но позволит создать подрагивания уклонения и прочие анимационные эффекты
 	void			animator_fx_play		(const shared_str& anim_name, u16 place_idx = u16(-1), u16 part_id = u16(-1), u8 anm_idx = u8(0), float blendAccrue = 1.f, float blendFalloff = 1.f, float Speed = 1.f, float Power = 1.f);
@@ -432,7 +432,7 @@ public:
 	u32				motion_length		(const MotionID& M, const CMotionDef*& md, float speed);
 	u32				motion_length		(const shared_str& anim_name, const shared_str& hud_name, const CMotionDef*& md);
 	void			OnMovementChanged	(ACTOR_DEFS::EMoveCommand cmd)	;
-	void			RestoreHandBlends(LPCSTR ignored_part);
+	void			RestoreHandBlends(const char* ignored_part);
 
 	void			ResetBlockedPartID(){m_blocked_part_idx=u16(-1); };
 	void			SetBlockedPartID(u16 val){m_blocked_part_idx = val; }

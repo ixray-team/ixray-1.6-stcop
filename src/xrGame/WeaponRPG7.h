@@ -12,11 +12,11 @@ public:
 	CWeaponRPG7();
 	virtual	~CWeaponRPG7() = default;
 
-	virtual BOOL net_Spawn		(CSE_Abstract* DC);
+	virtual bool net_Spawn		(CSE_Abstract* DC);
 	virtual void OnStateSwitch	(u32 S);
 	virtual void OnEvent		(NET_Packet& P, u16 type);
 	virtual void ReloadMagazine	();
-	virtual void Load			(LPCSTR section);
+	virtual void Load			(const char* section);
 	virtual	void FireTrace		(const Fvector& P, const Fvector& D);
 	virtual void on_a_hud_attach();
 
@@ -60,7 +60,7 @@ protected:
 		float reverse_power = 0.0f;
 		ALife::EHitType type = ALife::eHitTypeExplosion;
 		float reverse_k = 1.0f;
-		LPCSTR bullet_material = "default";
+		const char* bullet_material = "default";
 	} m_reactive_hit_params;
 
 	shared_str	m_sRocketSection;

@@ -11,7 +11,7 @@
 
 #include "memory/doug_lea_memory_allocator.h"
 
-doug_lea_allocator::doug_lea_allocator(LPCSTR arena_id)
+doug_lea_allocator::doug_lea_allocator(const char* arena_id)
 {
 }
 

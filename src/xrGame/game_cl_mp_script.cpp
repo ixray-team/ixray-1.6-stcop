@@ -67,7 +67,7 @@ CScriptGameObject*	game_cl_mp_script::GetObjectByGameID (u32 id)
 	return pGameObject->lua_game_object();
 }
 
-LPCSTR game_cl_mp_script::GetRoundTime()
+const char* game_cl_mp_script::GetRoundTime()
 {
 	static string32 bufTime;
 	u64 dt = Level().timeServer()-StartTime();

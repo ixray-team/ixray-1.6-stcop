@@ -21,12 +21,12 @@
 
 #include "../Include/xrRender/UIShader.h"
 
-const LPCSTR relationsLtxSection	= "game_relations";
-const LPCSTR ratingField			= "rating_names";
-const LPCSTR reputationgField		= "reputation_names";
-const LPCSTR goodwillField			= "goodwill_names";
+const char* relationsLtxSection	= "game_relations";
+const char* ratingField			= "rating_names";
+const char* reputationgField		= "reputation_names";
+const char* goodwillField			= "goodwill_names";
 
-const LPCSTR st_months[12]= // StringTable for GetDateAsString()
+const char* st_months[12]= // StringTable for GetDateAsString()
 {
 	"month_january",
 	"month_february",
@@ -273,8 +273,8 @@ const shared_str InventoryUtilities::GetGameTimeAsString(ETimePrecision timePrec
 const shared_str InventoryUtilities::GetTimeAndDateAsString(ALife::_TIME_ID time, bool legacyMode)
 {
 	string256 buf;
-	LPCSTR time_str = GetTimeAsString( time, etpTimeToMinutes ).c_str();
-	LPCSTR date_str = legacyMode ? GetDateAsStringLegacy( time, edpDateToDay ).c_str() : GetDateAsString( time, edpDateToDay ).c_str();
+	const char* time_str = GetTimeAsString( time, etpTimeToMinutes ).c_str();
+	const char* date_str = legacyMode ? GetDateAsStringLegacy( time, edpDateToDay ).c_str() : GetDateAsString( time, edpDateToDay ).c_str();
 	xr_strconcat(buf, time_str, ", ", date_str );
 	return buf;
 }
@@ -346,7 +346,7 @@ const shared_str InventoryUtilities::GetDateAsString(ALife::_TIME_ID date, EDate
 
 	split_time(date, year, month, day, hours, mins, secs, milisecs);
 	VERIFY( 1 <= month && month <= 12 );
-	LPCSTR month_str = g_pStringTable->translate( st_months[month-1] ).c_str();
+	const char* month_str = g_pStringTable->translate( st_months[month-1] ).c_str();
 
 	// Date
 	switch (datePrec)
@@ -396,7 +396,7 @@ const shared_str InventoryUtilities::GetDateAsStringLegacy(ALife::_TIME_ID date,
 	return bufDate;
 }
 
-LPCSTR InventoryUtilities::GetTimePeriodAsString(LPSTR _buff, u32 buff_sz, ALife::_TIME_ID _from, ALife::_TIME_ID _to)
+const char* InventoryUtilities::GetTimePeriodAsString(LPSTR _buff, u32 buff_sz, ALife::_TIME_ID _from, ALife::_TIME_ID _to)
 {
 	u32 year1,month1,day1,hours1,mins1,secs1,milisecs1;
 	u32 year2,month2,day2,hours2,mins2,secs2,milisecs2;
@@ -474,22 +474,22 @@ void InventoryUtilities::UpdateWeightStr(CUIStatic&wnd, CUIStatic&wnd_max, CInve
 	float total		= pInvOwner->inventory().CalcTotalWeight();
 	float max		= pInvOwner->MaxCarryWeight();
 
-	LPCSTR kg_str	= g_pStringTable->translate( "st_kg" ).c_str();
+	const char* kg_str	= g_pStringTable->translate( "st_kg" ).c_str();
 	xr_sprintf		(buf, "%.1f %s", total, kg_str);
 	wnd.SetText	(buf);
 
-	LPCSTR max_str = g_pStringTable->translate("ui_inv_max_weight").c_str();
+	const char* max_str = g_pStringTable->translate("ui_inv_max_weight").c_str();
 	xr_sprintf		(buf, "(%s %.1f %s)", max_str, max, kg_str);
 	wnd_max.SetText	(buf);
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-void LoadStrings(CharInfoStrings *container, LPCSTR section, LPCSTR field)
+void LoadStrings(CharInfoStrings *container, const char* section, const char* field)
 {
 	R_ASSERT(container);
 
-	LPCSTR				cfgRecord	= pSettings->r_string(section, field);
+	const char*				cfgRecord	= pSettings->r_string(section, field);
 	u32					count		= _GetItemCount(cfgRecord);
 	R_ASSERT3			(count%2, "there're must be an odd number of elements", field);
 	string64			singleThreshold;
@@ -557,7 +557,7 @@ void InventoryUtilities::ClearCharacterInfoStrings()
 
 //////////////////////////////////////////////////////////////////////////
 
-LPCSTR InventoryUtilities::GetRankAsText(s32 rankID)
+const char* InventoryUtilities::GetRankAsText(s32 rankID)
 {
 	InitCharacterInfoStrings();
 	CharInfoStrings::const_iterator cit = charInfoRankStrings->upper_bound(rankID);
@@ -568,7 +568,7 @@ LPCSTR InventoryUtilities::GetRankAsText(s32 rankID)
 
 //////////////////////////////////////////////////////////////////////////
 
-LPCSTR InventoryUtilities::GetReputationAsText(s32 rankID)
+const char* InventoryUtilities::GetReputationAsText(s32 rankID)
 {
 	InitCharacterInfoStrings();
 
@@ -581,7 +581,7 @@ LPCSTR InventoryUtilities::GetReputationAsText(s32 rankID)
 
 //////////////////////////////////////////////////////////////////////////
 
-LPCSTR InventoryUtilities::GetGoodwillAsText(s32 goodwill)
+const char* InventoryUtilities::GetGoodwillAsText(s32 goodwill)
 {
 	InitCharacterInfoStrings();
 
@@ -596,7 +596,7 @@ LPCSTR InventoryUtilities::GetGoodwillAsText(s32 goodwill)
 //////////////////////////////////////////////////////////////////////////
 // специальная функция для передачи info_portions при нажатии кнопок UI 
 // (для tutorial)
-void InventoryUtilities::SendInfoToActor(LPCSTR info_id)
+void InventoryUtilities::SendInfoToActor(const char* info_id)
 {
 	if (!IsGameTypeSingle())
 	{
@@ -660,7 +660,7 @@ u32 InventoryUtilities::GetReputationColor(s32 rv)
 	return res;
 }
 
-InventoryUtilities::InventoryIconParams InventoryUtilities::GetInventoryIconParams(LPCSTR section)
+InventoryUtilities::InventoryIconParams InventoryUtilities::GetInventoryIconParams(const char* section)
 {
 	InventoryIconParams ret_struct;
 	ret_struct.inv_grid_x = pSettings->r_float(section, "inv_grid_x");

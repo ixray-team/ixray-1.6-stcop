@@ -8,14 +8,14 @@ CListHelper 	LHelper_impl;
 IListHelper& 	LHelper		(){return LHelper_impl;}
 //---------------------------------------------------------------------------
 
-ListItem* CListHelper::FindItem		(ListItemsVec& items,	LPCSTR key)
+ListItem* CListHelper::FindItem		(ListItemsVec& items,	const char* key)
 {
     for (ListItemsIt it=items.begin(); it!=items.end(); it++)
         if ((*it)->key==key) return *it;
     return 0;
 }
     
-ListItem* CListHelper::CreateItem	(ListItemsVec& items, LPCSTR key, int type, u32 item_flags, void* object)
+ListItem* CListHelper::CreateItem	(ListItemsVec& items, const char* key, int type, u32 item_flags, void* object)
 {
     ListItem* item	= new ListItem	(type);
     item->SetName	(key);
@@ -25,7 +25,7 @@ ListItem* CListHelper::CreateItem	(ListItemsVec& items, LPCSTR key, int type, u3
     return			item;
 }
 
-bool CListHelper::NameAfterEdit(ListItem* sender, LPCSTR value, shared_str& N)
+bool CListHelper::NameAfterEdit(ListItem* sender, const char* value, shared_str& N)
 {
     if (strstr(N.c_str(), "\\")) { N =value; return false; }
     xr_strlwr(N);

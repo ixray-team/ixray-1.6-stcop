@@ -61,7 +61,7 @@ string64 PacketName[] = {
 	"MSG_FORCEDWORD"
 };
 //---------------------------------------------------------
-INetLog::INetLog(LPCSTR sFileName, u32 dwStartTime)
+INetLog::INetLog(const char* sFileName, u32 dwStartTime)
 {
 	xr_strcpy(m_cFileName, sFileName);
 

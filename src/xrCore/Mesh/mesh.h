@@ -51,7 +51,7 @@ private:
 	DlinkDefine(MeshTri,List);
 	DWORD		dwListId;	// For use when doing consistency checks.
 
-	void InternalDelete ( BOOL bBinUnusedEdges );
+	void InternalDelete ( bool bBinUnusedEdges );
 
 public:
 	MeshPt		*pPt1;		// Points.
@@ -70,7 +70,7 @@ public:
 	MeshTri ( MeshPt *pNewPt1, MeshPt *pNewPt2, MeshPt *pNewPt3, MeshTri *pListRoot = nullptr, MeshEdge *pEdgeListRoot = nullptr );
 	~MeshTri ( void );
 	// Set bBinUnusedEdges to TRUE to autodestroy edges.
-	void Delete ( BOOL bBinUnusedEdges = FALSE );
+	void Delete ( bool bBinUnusedEdges = FALSE );
 	// Which list is this tri in?
 	MeshTri *QueryList ( void );
 	// Move this tri to this list.
@@ -354,7 +354,7 @@ inline MeshTri::MeshTri ( MeshPt *pNewPt1, MeshPt *pNewPt2, MeshPt *pNewPt3, Mes
 }
 
 
-inline void MeshTri::InternalDelete ( BOOL bBinUnusedEdges )
+inline void MeshTri::InternalDelete ( bool bBinUnusedEdges )
 {
 	// Remove edge references.
 	if ( pEdge12 != nullptr )
@@ -483,7 +483,7 @@ inline MeshTri::~MeshTri ( void )
 	InternalDelete ( FALSE );
 }
 
-inline void MeshTri::Delete ( BOOL bBinUnusedEdges /*= FALSE*/ )
+inline void MeshTri::Delete ( bool bBinUnusedEdges /*= FALSE*/ )
 {
 	InternalDelete ( bBinUnusedEdges );
 	MeshTri* tri = (MeshTri*)this;

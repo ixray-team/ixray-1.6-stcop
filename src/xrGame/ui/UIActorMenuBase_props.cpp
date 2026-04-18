@@ -97,7 +97,7 @@ void CUIActorMenuBase::ActivatePropertiesBox()
 
 void CUIActorMenuBase::PropertiesBoxForUsing(PIItem item, bool& b_show)
 {
-	LPCSTR act_str = nullptr;
+	const char* act_str = nullptr;
 	CGameObject* GO = smart_cast<CGameObject*>(item);
 	shared_str	section_name = GO->cNameSect();
 
@@ -240,7 +240,7 @@ void CUIActorMenuBase::PropertiesBoxForPlaying(PIItem item, bool& b_show)
 	if (!pPda || !pPda->CanPlayScriptFunction())
 		return;
 
-	LPCSTR act_str = "st_play";
+	const char* act_str = "st_play";
 	m_UIPropertiesBox->AddItem(act_str, nullptr, INVENTORY_PLAY_ACTION);
 	b_show = true;
 }
@@ -751,7 +751,7 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 	case INVENTORY_EAT2_ACTION:
 	{
 		CGameObject* GO = item->cast_game_object();
-		LPCSTR functor_name = READ_IF_EXISTS(pSettings, r_string, GO->cNameSect(), "use1_functor", 0);
+		const char* functor_name = READ_IF_EXISTS(pSettings, r_string, GO->cNameSect(), "use1_functor", 0);
 		if (functor_name)
 		{
 			luabind::functor<bool>	funct1;
@@ -766,7 +766,7 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 	case INVENTORY_EAT3_ACTION:
 	{
 		CGameObject* GO = item->cast_game_object();
-		LPCSTR functor_name = READ_IF_EXISTS(pSettings, r_string, GO->cNameSect(), "use2_functor", 0);
+		const char* functor_name = READ_IF_EXISTS(pSettings, r_string, GO->cNameSect(), "use2_functor", 0);
 		if (functor_name)
 		{
 			luabind::functor<bool>	funct2;
@@ -781,7 +781,7 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 	case INVENTORY_EAT4_ACTION:
 	{
 		CGameObject* GO = item->cast_game_object();
-		LPCSTR functor_name = READ_IF_EXISTS(pSettings, r_string, GO->cNameSect(), "use3_functor", 0);
+		const char* functor_name = READ_IF_EXISTS(pSettings, r_string, GO->cNameSect(), "use3_functor", 0);
 		if (functor_name)
 		{
 			luabind::functor<bool>	funct3;
@@ -796,7 +796,7 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 	case INVENTORY_EAT5_ACTION:
 	{
 		CGameObject* GO = item->cast_game_object();
-		LPCSTR functor_name = READ_IF_EXISTS(pSettings, r_string, GO->cNameSect(), "use4_functor", 0);
+		const char* functor_name = READ_IF_EXISTS(pSettings, r_string, GO->cNameSect(), "use4_functor", 0);
 		if (functor_name)
 		{
 			luabind::functor<bool>	funct4;
@@ -997,7 +997,7 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 			break;
 		}
 
-		extern CSE_Abstract* CALifeSimulator__spawn_item2(CALifeSimulator* self_, LPCSTR section, const Fvector& position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ALife::_OBJECT_ID id_parent);
+		extern CSE_Abstract* CALifeSimulator__spawn_item2(CALifeSimulator* self_, const char* section, const Fvector& position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ALife::_OBJECT_ID id_parent);
 
 		int Count = item->m_parse_params.m_items.size();
 		int Count2 = item->m_parse_params.m_chances.size();

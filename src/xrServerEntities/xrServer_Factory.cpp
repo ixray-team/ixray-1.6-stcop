@@ -9,7 +9,7 @@
 #include "StdAfx.h"
 #include "object_factory.h"
 
-CSE_Abstract* F_entity_Create(LPCSTR section)
+CSE_Abstract* F_entity_Create(const char* section)
 {
 	if (DevicePtr != nullptr && Device.IsEditorMode())
 	{
