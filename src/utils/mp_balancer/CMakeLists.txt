@@ -16,6 +16,7 @@ list(APPEND MPB_SRC_FILES ${MPB_SOURCE_ALL_FILES})
 # mp_balancer project
 add_executable(mp_balancer ${MPB_SRC_FILES})
 target_include_directories(mp_balancer PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(mp_balancer PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../xrCore/")
 
 # Project defines
 target_compile_definitions(mp_balancer PRIVATE MPB_EXPORTS)
