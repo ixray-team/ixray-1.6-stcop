@@ -73,7 +73,7 @@ using LPAStringIt = LPAStringVec::iterator;
 
 struct str_pred 
 {
-    IC bool operator()(LPCSTR x, LPCSTR y) const
+    IC bool operator()(const char* x, const char* y) const
     {	return strcmp(x,y)<0;	}
 };
 struct astr_pred

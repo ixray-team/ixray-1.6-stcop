@@ -162,7 +162,7 @@ void CMainMenu::ReadTextureInfo()
 	}
 }
 
-extern ENGINE_API BOOL	bShowPauseString;
+extern ENGINE_API bool	bShowPauseString;
 extern bool				IsGameTypeSingle();
 static xr_string StrMainMenu = g_pStringTable->translate("st_discord_menu").c_str();
 
@@ -524,7 +524,7 @@ void CMainMenu::OnDeviceCreate()
 }
 
 
-void CMainMenu::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
+void CMainMenu::Screenshot(IRender_interface::ScreenshotMode mode, const char* name)
 {
 	if(mode != IRender_interface::SM_FOR_GAMESAVE)
 	{
@@ -583,7 +583,7 @@ void CMainMenu::DestroyInternal(bool bForce)
 		xr_delete		(m_startDialog);
 }
 
-void CMainMenu::OnNewPatchFound(LPCSTR VersionName, LPCSTR URL)
+void CMainMenu::OnNewPatchFound(const char* VersionName, const char* URL)
 {
 	if (m_sPDProgress.IsInProgress) return;
 	
@@ -622,7 +622,7 @@ void CMainMenu::OnDownloadPatch(CUIWindow*, void*)
 		return;
 	};
 	
-	LPCSTR fileName = *m_sPatchURL;
+	const char* fileName = *m_sPatchURL;
 	if (!fileName) return;
 
 	string4096 FilePath = "";
@@ -659,13 +659,13 @@ void	CMainMenu::OnDownloadPatchSuccess			()
 	m_pMB_ErrDlgs[PatchDownloadSuccess]->ShowDialog(false);
 }
 
-void	CMainMenu::OnSessionTerminate				(LPCSTR reason)
+void	CMainMenu::OnSessionTerminate				(const char* reason)
 {
 	if ( m_NeedErrDialog == SessionTerminate && (Device.dwTimeGlobal - m_start_time) < 8000 )
 		return;
 
 	m_start_time = Device.dwTimeGlobal;
-	LPCSTR str = g_pStringTable->translate("ui_st_kicked_by_server").c_str();
+	const char* str = g_pStringTable->translate("ui_st_kicked_by_server").c_str();
 	string256 text;
 
 	if ( reason && xr_strlen(reason) && reason[0] == '@' )
@@ -681,9 +681,9 @@ void	CMainMenu::OnSessionTerminate				(LPCSTR reason)
 	SetErrorDialog(CMainMenu::SessionTerminate);
 }
 
-void	CMainMenu::OnLoadError				(LPCSTR module)
+void	CMainMenu::OnLoadError				(const char* module)
 {
-	LPCSTR str = g_pStringTable->translate("ui_st_error_loading").c_str();
+	const char* str = g_pStringTable->translate("ui_st_error_loading").c_str();
 	string1024 Text;
 	xr_strconcat(Text,str," ");
 	xr_strcat(Text,sizeof(Text),module);
@@ -726,7 +726,7 @@ void CMainMenu::OnDeviceReset()
 
 // -------------------------------------------------------------------------------------------------
 
-LPCSTR AddHyphens( LPCSTR c )
+const char* AddHyphens( const char* c )
 {
 	static string64 buf;
 
@@ -748,7 +748,7 @@ LPCSTR AddHyphens( LPCSTR c )
 	return buf;
 }
 
-LPCSTR DelHyphens( LPCSTR c )
+const char* DelHyphens( const char* c )
 {
 	static string64 buf;
 
@@ -799,7 +799,7 @@ void CMainMenu::OnConnectToMasterServerOkClicked(CUIWindow*, void*)
 	Hide_CTMS_Dialog();
 }
 
-LPCSTR CMainMenu::GetGSVer()
+const char* CMainMenu::GetGSVer()
 {
 	static string256	buff;
 	if(m_pGameSpyFull && Engine.External.hGameSpy != 0)
@@ -819,7 +819,7 @@ LPCSTR CMainMenu::GetGSVer()
 	return buff;
 }
 
-LPCSTR CMainMenu::GetPlayerName()
+const char* CMainMenu::GetPlayerName()
 {
 	string512 name;
 	GetPlayerName_FromRegistry( name, sizeof(name) );
@@ -827,7 +827,7 @@ LPCSTR CMainMenu::GetPlayerName()
 	return m_player_name.c_str();
 }
 
-LPCSTR CMainMenu::GetCDKeyFromRegistry()
+const char* CMainMenu::GetCDKeyFromRegistry()
 {
 	string512 key;
 	GetCDKey_FromRegistry( key );
@@ -835,7 +835,7 @@ LPCSTR CMainMenu::GetCDKeyFromRegistry()
 	return m_cdkey.c_str();
 }
 
-void CMainMenu::Show_DownloadMPMap(LPCSTR text, LPCSTR url)
+void CMainMenu::Show_DownloadMPMap(const char* text, const char* url)
 {
 	VERIFY( m_pMB_ErrDlgs[DownloadMPMap] );
 
@@ -849,19 +849,19 @@ void CMainMenu::Show_DownloadMPMap(LPCSTR text, LPCSTR url)
 
 void CMainMenu::OnDownloadMPMap_CopyURL(CUIWindow* w, void* d)
 {
-	LPCSTR url = m_downloaded_mp_map_url.c_str();
+	const char* url = m_downloaded_mp_map_url.c_str();
 	os_clipboard::copy_to_clipboard( url );
 }
 
 void CMainMenu::OnDownloadMPMap(CUIWindow* w, void* d)
 {
-	LPCSTR url = m_downloaded_mp_map_url.c_str();
+	const char* url = m_downloaded_mp_map_url.c_str();
 	string256 params = {};
 	xr_strconcat(params, "/C start ", url);
 	ShellExecuteA(0, "open", "cmd.exe", params, nullptr, SW_SHOW);
 }
 
-demo_info const * CMainMenu::GetDemoInfo(LPCSTR file_name)
+demo_info const * CMainMenu::GetDemoInfo(const char* file_name)
 {
 	if (!m_demo_info_loader)
 	{

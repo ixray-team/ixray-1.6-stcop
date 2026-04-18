@@ -24,7 +24,7 @@ CEffectorZoomInertion::~CEffectorZoomInertion	()
 
 }
 
-void CEffectorZoomInertion::LoadParams			(LPCSTR Section, LPCSTR Prefix)
+void CEffectorZoomInertion::LoadParams			(const char* Section, const char* Prefix)
 {
 	string256 full_name;
 	m_fCameraMoveEpsilon	= READ_IF_EXISTS(pSettings, r_float, Section, xr_strconcat(full_name, Prefix, "camera_move_epsilon"),	pSettings->r_float(EFFECTOR_ZOOM_SECTION, "camera_move_epsilon"));
@@ -90,7 +90,7 @@ void			CEffectorZoomInertion::CalcNextPoint		()
 	m_vTargetVel.sub(m_vTargetPoint, m_vLastPoint);
 };
 
-BOOL CEffectorZoomInertion::ProcessCam(SCamEffectorInfo& info)
+bool CEffectorZoomInertion::ProcessCam(SCamEffectorInfo& info)
 {
 	bool camera_moved = false;
 

@@ -27,8 +27,8 @@ public:
 	u32		Size()			{ return data.size(); }
 	void	ResetData()		{ data.clear(); }
 
-	void	AddItem( LPCSTR name_,		LPCSTR value_, u32 color_ = RGB(255,255,255) );
-	void	AddItem( shared_str& name_,	LPCSTR value_, u32 color_ = RGB(255,255,255) );
+	void	AddItem( const char* name_,		const char* value_, u32 color_ = RGB(255,255,255) );
+	void	AddItem( shared_str& name_,	const char* value_, u32 color_ = RGB(255,255,255) );
 
 	IC SItem_ServerInfo&	operator[] ( u32 id ) { VERIFY( id < max_item ); return data[id]; }
 
@@ -54,7 +54,7 @@ protected:
 	// Static sounds
 	xr_vector<ref_sound>		Sounds_Random;
 	u32							Sounds_Random_dwNextTime;
-	BOOL						Sounds_Random_Enabled;
+	bool						Sounds_Random_Enabled;
 	CCameraManager*				m_pCameras;
 	CObject*					pCurrentControlEntity;
 
@@ -65,7 +65,7 @@ public:
 	CObjectSpace				ObjectSpace;
 	CCameraManager&				Cameras			()				{return *m_pCameras;};
 
-	BOOL						bReady;
+	bool						bReady;
 	bool						UseSnowmask = true;
 
 	CInifile*					pLevel;
@@ -85,21 +85,21 @@ public:
 	virtual void				GetLevelInfo			( CServerInfo* si ) = 0;
 
 	virtual u64					GetGameTime				() { return 0; };
-	virtual BOOL				net_Start				( LPCSTR op_server, LPCSTR op_client)	= 0;
-	virtual void				net_Load				( LPCSTR name )							= 0;
-	virtual void				net_Save				( LPCSTR name )							= 0;
+	virtual bool				net_Start				( const char* op_server, const char* op_client)	= 0;
+	virtual void				net_Load				( const char* name )							= 0;
+	virtual void				net_Save				( const char* name )							= 0;
 	virtual void				net_Stop				( );
 	virtual void				net_Update				( )										= 0;
 
-	virtual BOOL				Load					( u32 dwNum );
-	virtual BOOL				Load_GameSpecific_Before( )										{ return TRUE; };		// before object loading
-	virtual BOOL				Load_GameSpecific_After	( )										{ return TRUE; };		// after object loading
+	virtual bool				Load					( u32 dwNum );
+	virtual bool				Load_GameSpecific_Before( )										{ return TRUE; };		// before object loading
+	virtual bool				Load_GameSpecific_After	( )										{ return TRUE; };		// after object loading
 	void						Load_GameSpecific_CFORM	( CDB::TRI* T, size_t count );
 
 	virtual void	_BCL		OnFrame					( void );
 	virtual void				OnRender				( void );
 
-	virtual	shared_str			OpenDemoFile			(LPCSTR demo_file_name) = 0;
+	virtual	shared_str			OpenDemoFile			(const char* demo_file_name) = 0;
 	virtual void				net_StartPlayDemo		() = 0;
 
 	// Main interface
@@ -123,7 +123,7 @@ public:
     virtual void                SetEnvironmentTimeFactor(float fTimeFactor) = 0;
     virtual u64                 GetEnvironmentGameTime() const = 0;
 
-	virtual	void				SpawnItem(LPCSTR section, const Fvector& position, u32 level_vertex_id, u16 parent_id) = 0;
+	virtual	void				SpawnItem(const char* section, const Fvector& position, u32 level_vertex_id, u16 parent_id) = 0;
 	virtual IGame_Patrol*		CreatePatrol(const char* patrol) = 0;
 	virtual void				LoadEditor(shared_str LevelName) {};
 

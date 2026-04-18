@@ -60,7 +60,7 @@ void SThunderboltDesc::load						(CInifile& pIni, shared_str const& sect)
 	color_anim->fFPS			= (float)color_anim->iFrameCount;
 
     // models
-    LPCSTR m_name = pIni.r_string(sect, "lightning_model");
+    const char* m_name = pIni.r_string(sect, "lightning_model");
     string_path tmp;
     xr_strcpy(tmp, m_name);
     m_pRender->CreateModel(tmp);
@@ -78,12 +78,12 @@ SThunderboltCollection::SThunderboltCollection	()
 {
 }
 
-void SThunderboltCollection::load				(CInifile* pIni, CInifile* thunderbolts, LPCSTR sect)
+void SThunderboltCollection::load				(CInifile* pIni, CInifile* thunderbolts, const char* sect)
 {
 	section			= sect;
 	int tb_count	= pIni->line_count(sect);
 	for (int tb_idx=0; tb_idx<tb_count; tb_idx++){
-		LPCSTR		N, V;
+		const char*		N, *V;
 		if (pIni->r_line(sect,tb_idx,&N,&V))
 			palette.push_back	(g_pGamePersistent->Environment().thunderbolt_description(*thunderbolts, N));
 	}
@@ -133,7 +133,7 @@ CEffect_Thunderbolt::~CEffect_Thunderbolt()
 	//hGeom_gradient.destroy		();
 }
 
-shared_str CEffect_Thunderbolt::AppendDef(CEnvironment& environment, CInifile* pIni, CInifile* thunderbolts, LPCSTR sect)
+shared_str CEffect_Thunderbolt::AppendDef(CEnvironment& environment, CInifile* pIni, CInifile* thunderbolts, const char* sect)
 {
 	if (!sect||(0==sect[0])) return "";
 	for (CollectionVecIt it=collection.begin(); it!=collection.end(); it++)
@@ -142,9 +142,9 @@ shared_str CEffect_Thunderbolt::AppendDef(CEnvironment& environment, CInifile* p
 	return collection.back()->section;
 }
 
-BOOL CEffect_Thunderbolt::RayPick(const Fvector& s, const Fvector& d, float& dist)
+bool CEffect_Thunderbolt::RayPick(const Fvector& s, const Fvector& d, float& dist)
 {
-	BOOL bRes 	= TRUE;
+	bool bRes 	= TRUE;
 
 	collide::rq_result	RQ;
 	CObject* E 			= g_pGameLevel ? g_pGameLevel->CurrentViewEntity() : nullptr;
@@ -219,7 +219,7 @@ void CEffect_Thunderbolt::OnFrame(shared_str id, float period, float duration)
     }
 
 	PROF_EVENT("CEffect_Thunderbolt::OnFrame");
-	BOOL enabled			= !!(id.size());
+	bool enabled			= !!(id.size());
 	if (bEnabled!=enabled){
     	bEnabled			= enabled;
 	    next_lightning_time = Device.fTimeGlobal+period+Random.randF(-period*0.5f,period*0.5f);

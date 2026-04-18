@@ -29,7 +29,7 @@ ESceneWallmarkTool::~ESceneWallmarkTool()
 {
 }
 
-int ESceneWallmarkTool::RaySelect(int flag, float& distance, const Fvector& start, const Fvector& direction, BOOL bDistanceOnly)
+int ESceneWallmarkTool::RaySelect(int flag, float& distance, const Fvector& start, const Fvector& direction, bool bDistanceOnly)
 {
 	if (!m_Flags.is(flDrawWallmark)) return 0;
 
@@ -528,7 +528,7 @@ void ESceneWallmarkTool::SaveSelection(IWriter& F)
 	SaveStream(F);
 }
 
-bool ESceneWallmarkTool::Export(LPCSTR path)
+bool ESceneWallmarkTool::Export(const char* path)
 {
 	RefiningSlots		();
     
@@ -705,7 +705,7 @@ int	ESceneWallmarkTool::ObjectCount()
 	return count;
 }
 
-BOOL ESceneWallmarkTool::AddWallmark_internal(const Fvector& start, const Fvector& dir, shared_str sh, shared_str tx, float width, float height, float rotate, wallmark** out_wm)
+bool ESceneWallmarkTool::AddWallmark_internal(const Fvector& start, const Fvector& dir, shared_str sh, shared_str tx, float width, float height, float rotate, wallmark** out_wm)
 {
     /*
 	if (ObjectCount()>=MAX_WALLMARK_COUNT){
@@ -821,12 +821,12 @@ BOOL ESceneWallmarkTool::AddWallmark_internal(const Fvector& start, const Fvecto
     return TRUE;
 }
 
-BOOL ESceneWallmarkTool::AddWallmark	(const Fvector& start, const Fvector& dir)
+bool ESceneWallmarkTool::AddWallmark	(const Fvector& start, const Fvector& dir)
 {
 	return AddWallmark_internal(start,dir,m_ShName,m_TxName,m_MarkWidth,m_MarkHeight,m_MarkRotate);
 }
 
-BOOL ESceneWallmarkTool::MoveSelectedWallmarkTo(const Fvector& start, const Fvector& dir)
+bool ESceneWallmarkTool::MoveSelectedWallmarkTo(const Fvector& start, const Fvector& dir)
 {
 	if (!m_Flags.is(flDrawWallmark)) return 0;
     wallmark* wm	= 0;
@@ -854,7 +854,7 @@ BOOL ESceneWallmarkTool::MoveSelectedWallmarkTo(const Fvector& start, const Fvec
     return FALSE;
 }
 
-void ESceneWallmarkTool::FillPropObjects(LPCSTR pref, PropItemVec& items)
+void ESceneWallmarkTool::FillPropObjects(const char* pref, PropItemVec& items)
 {
     PHelper().CreateFlag32		(items, PrepareKey(pref,"Common\\Draw Wallmarks"),	&m_Flags, 		flDrawWallmark);
     PHelper().CreateFlag32		(items,	PrepareKey(pref,"Common\\Alignment"),		&m_Flags, 		flAxisAlign, "By Camera", "By World Axis");

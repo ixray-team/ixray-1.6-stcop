@@ -126,8 +126,8 @@ void CUITrackBar::InitTrackBar(Fvector2 pos, Fvector2 size)
 	CUIXml xml_doc;
 	xml_doc.Load			(CONFIG_PATH, UI_PATH, "backend\\trackbar.xml");
 
-	LPCSTR nodevalue_button = xml_doc.Read("button_texture_name", 0, "ui_inGame2_opt_slider_box");
-	LPCSTR nodevalue_track	= xml_doc.Read("track_texture_name", 0, "ui_inGame2_opt_slider_bar");
+	const char* nodevalue_button = xml_doc.Read("button_texture_name", 0, "ui_inGame2_opt_slider_box");
+	const char* nodevalue_track	= xml_doc.Read("track_texture_name", 0, "ui_inGame2_opt_slider_bar");
 	float size_custom		= xml_doc.ReadFlt("size", 0, 1.0f);
 
 	float					item_height;
@@ -227,7 +227,7 @@ void CUITrackBar::UpdateText()
 			case eTrackBarModeToken:
 			{
 				xr_token* tok = GetOptToken();
-				LPCSTR cur_val = get_token_name(tok, m_i_val - 1);
+				const char* cur_val = get_token_name(tok, m_i_val - 1);
 				out_str = g_pStringTable->translate(cur_val).c_str();
 			}
 			break;
@@ -248,7 +248,7 @@ void CUITrackBar::SetCurrentOptValue()
 	CUIOptionsItem::SetCurrentOptValue();
 	if (IsTokenMode())
 	{
-		LPCSTR val = GetOptStringValue();
+		const char* val = GetOptStringValue();
 		for (xr_token* tok = GetOptToken(); tok->name; ++tok)
 		{
 			if (stricmp(tok->name, val) == 0)
@@ -299,7 +299,7 @@ void CUITrackBar::SaveOptValue()
 		if (strcmp("not_an_option", GetEntry()))
 		{
 			xr_token* tok = GetOptToken();
-			LPCSTR cur_val = get_token_name(tok, m_i_val - 1);
+			const char* cur_val = get_token_name(tok, m_i_val - 1);
 			SaveOptStringValue(cur_val);
 		}
 	}
@@ -463,7 +463,7 @@ void CUITrackBar::SetTokenValues(xr_token* tokens)
 		m_i_max = count;
 	}
 
-	LPCSTR current_value = GetOptStringValue();
+	const char* current_value = GetOptStringValue();
 	m_i_val = m_i_min;
 
 	if (!GetInvert())
@@ -522,7 +522,7 @@ void CUITrackBar::UpdatePos()
 	UpdateText();
 }
 
-void CUITrackBar::OnMessage(LPCSTR message)
+void CUITrackBar::OnMessage(const char* message)
 {
 	if (0 == xr_strcmp(message, "set_default_value"))
 	{

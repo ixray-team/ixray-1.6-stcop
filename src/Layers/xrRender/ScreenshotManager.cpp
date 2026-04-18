@@ -8,7 +8,7 @@ extern int SM_FOR_SEND_HEIGHT;
 
 using namespace DirectX;
 
-bool ScreenshotManager::SaveScreenshot(IRender_interface::ScreenshotMode Mode, LPCSTR Name, CMemoryWriter* MemoryWriter)
+bool ScreenshotManager::SaveScreenshot(IRender_interface::ScreenshotMode Mode, const char* Name, CMemoryWriter* MemoryWriter)
 {
 	if (!GRHI || !GRHI->DevicePtr)
 	{

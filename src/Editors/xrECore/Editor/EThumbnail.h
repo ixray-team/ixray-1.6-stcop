@@ -24,17 +24,17 @@ protected:
     int				m_Age;
     THMType			m_Type;
 public:
-					ECustomThumbnail(LPCSTR src_name, THMType type);
+					ECustomThumbnail(const char* src_name, THMType type);
 	virtual			~ECustomThumbnail();
 
-    LPCSTR			Name			(){return m_Name.c_str();}
-    LPCSTR			SrcName			(){return m_SrcName.c_str();}
+    const char*			Name			(){return m_Name.c_str();}
+    const char*			SrcName			(){return m_SrcName.c_str();}
 
     IC bool			IsClass			(THMType type){return m_Type==type;}
 
     // thumbnail public routines
-	virtual bool 	Load			(LPCSTR src_name=0, LPCSTR path=0)=0;
-	virtual void 	Save			(int age=0,LPCSTR path=0)=0;
+	virtual bool 	Load			(const char* src_name=0, const char* path=0)=0;
+	virtual void 	Save			(int age=0,const char* path=0)=0;
     virtual bool	Valid			()=0;
 	//virtual void	FillProp		(PropItemVec& values)=0;
 	virtual void	FillInfo		(PropItemVec& values)=0;
@@ -51,7 +51,7 @@ protected:
 	void 			CreatePixels	(u32* p, u32 w, u32 h);
     void			VFlip			();
 public:
-					EImageThumbnail	(LPCSTR src_name, THMType type):ECustomThumbnail(src_name, type){};
+					EImageThumbnail	(const char* src_name, THMType type):ECustomThumbnail(src_name, type){};
 	virtual			~EImageThumbnail();
 	virtual void 	Update			(IRHISurface*& Texture);
 //	virtual void 	Draw			(TMxPanel* panel){Irect r; r.set(1,1,1+panel->Width,1+panel->Height); Draw(panel->Canvas->Handle,r);}
@@ -68,7 +68,7 @@ private:
     STextureParams	m_TexParams;
     bool            m_bValid;
 public:
-					ETextureThumbnail	(LPCSTR src_name, bool bLoad=true);
+					ETextureThumbnail	(const char* src_name, bool bLoad=true);
 	virtual			~ETextureThumbnail	();
 
     // Texture routines
@@ -78,8 +78,8 @@ public:
     IC u32			_Alpha			(){return m_TexParams.HasAlphaChannel();}
     // thumbnail public routines
     IC STextureParams& _Format		(){return m_TexParams;}
-	virtual bool 	Load			(LPCSTR src_name=0, LPCSTR path=0);
-	virtual void 	Save			(int age=0,LPCSTR path=0);
+	virtual bool 	Load			(const char* src_name=0, const char* path=0);
+	virtual void 	Save			(int age=0,const char* path=0);
     virtual bool	Valid			(){return m_bValid; /*return !m_Pixels.empty();*/}
         	void    SetValid        () {m_bValid = true;}
 	virtual void	FillProp		(PropItemVec& values, PropValue::TOnChange on_type_change);
@@ -88,8 +88,8 @@ public:
 //	virtual void 	Draw			(TMxPanel* panel){inherited::Draw(panel);}
 
     virtual int		MemoryUsage		();
-    LPCSTR			FormatString	();
-    BOOL			similar			(ETextureThumbnail* thm1, xr_vector<xr_string>& sel_params);
+    const char*			FormatString	();
+    bool			similar			(ETextureThumbnail* thm1, xr_vector<xr_string>& sel_params);
 };
 //------------------------------------------------------------------------------
 
@@ -100,7 +100,7 @@ private:
     u32				face_count;
     u32				vertex_count;
 public:
-					EObjectThumbnail	(LPCSTR src_name, bool bLoad=true);
+					EObjectThumbnail	(const char* src_name, bool bLoad=true);
 	virtual			~EObjectThumbnail	();
 
     // Object routines
@@ -109,8 +109,8 @@ public:
     IC int			_FaceCount		(){return face_count;}
 
     // thumbnail public routines
-	virtual bool 	Load			(LPCSTR src_name=0, LPCSTR path=0);
-	virtual void 	Save			(int age=0,LPCSTR path=0);
+	virtual bool 	Load			(const char* src_name=0, const char* path=0);
+	virtual void 	Save			(int age=0,const char* path=0);
     virtual bool	Valid			(){return !m_Pixels.empty();}
 	virtual void	FillProp		(PropItemVec& values);
 	virtual void	FillInfo		(PropItemVec& values);
@@ -123,15 +123,15 @@ class ECORE_API EGroupThumbnail: public EImageThumbnail{
 private:
 	SStringVec		objects;
 public:
-					EGroupThumbnail	(LPCSTR src_name, bool bLoad=true);
+					EGroupThumbnail	(const char* src_name, bool bLoad=true);
 	virtual			~EGroupThumbnail();
 
     // Object routines
 	void 			CreateFromData	(u32* p, u32 w, u32 h, const SStringVec& lst);
 
     // thumbnail public routines
-	virtual bool 	Load			(LPCSTR src_name=0, LPCSTR path=0);
-	virtual void 	Save			(int age=0,LPCSTR path=0);
+	virtual bool 	Load			(const char* src_name=0, const char* path=0);
+	virtual void 	Save			(int age=0,const char* path=0);
     virtual bool	Valid			(){return !m_Pixels.empty();}
 	virtual void	FillProp		(PropItemVec& values);
 	virtual void	FillInfo		(PropItemVec& values);
@@ -155,12 +155,12 @@ private:
 	bool 			OnMaxAIDistAfterEdit(PropValue* sender, float& edit_val);
 	void 			OnMaxDistChange		(PropValue* sender);
 public:
-					ESoundThumbnail	(LPCSTR src_name, bool bLoad=true, bool bFullPath = false);
+					ESoundThumbnail	(const char* src_name, bool bLoad=true, bool bFullPath = false);
 	virtual			~ESoundThumbnail();
 
     // thumbnail public routines
-	virtual bool 	Load			(LPCSTR src_name=0, LPCSTR path=0);
-	virtual void 	Save			(int age=0,LPCSTR path=0);
+	virtual bool 	Load			(const char* src_name=0, const char* path=0);
+	virtual void 	Save			(int age=0,const char* path=0);
     virtual bool	Valid			(){return true;}
 	virtual void	FillProp		(PropItemVec& values);
 	virtual void	FillInfo		(PropItemVec& values);
@@ -172,7 +172,7 @@ public:
 };
 //------------------------------------------------------------------------------
 
-ECORE_API EImageThumbnail* CreateThumbnail	(LPCSTR src_name, ECustomThumbnail::THMType type, bool bLoad=true);
+ECORE_API EImageThumbnail* CreateThumbnail	(const char* src_name, ECustomThumbnail::THMType type, bool bLoad=true);
 
 #endif
 

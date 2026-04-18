@@ -30,10 +30,10 @@ CMaterialManager::~CMaterialManager	()
 {
 }
 #ifdef	DEBUG
-BOOL debug_character_material_load = FALSE;
+bool debug_character_material_load = FALSE;
 #endif
 
-void CMaterialManager::Load			(LPCSTR section)
+void CMaterialManager::Load			(const char* section)
 {
 	R_ASSERT3				(pSettings->line_exist(section,"material"),"Material not found in the section ",*(m_object->cNameSect()));
 	m_my_material_idx		= GMLib.GetMaterialIdx(READ_IF_EXISTS(pSettings, r_string, section, "material", "default_object"));
@@ -48,7 +48,7 @@ void CMaterialManager::Load			(LPCSTR section)
 				SGameMtl *m = GMLib.GetMaterialByIdx( m_my_material_idx );
 
 				VERIFY( m );
-				Msg( "(CMaterialManager::Load(LPCSTR section)) material: %s loaded for %s, from section: %s ", m->m_Name.c_str(), entity_alive->cName().c_str(), section ); 
+				Msg( "(CMaterialManager::Load(const char* section)) material: %s loaded for %s, from section: %s ", m->m_Name.c_str(), entity_alive->cName().c_str(), section ); 
 			}
 		}
 #endif
@@ -84,7 +84,7 @@ void CMaterialManager::reinit		()
 	}
 }
 
-void CMaterialManager::reload		(LPCSTR section)
+void CMaterialManager::reload		(const char* section)
 {
 }
 

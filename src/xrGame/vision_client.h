@@ -52,7 +52,7 @@ public:
 	virtual	float					feel_vision_mtl_transp	(CObject *object, u32 element);
 
 public:
-	virtual	BOOL					feel_vision_isRelevant	(CObject *object) = 0;
+	virtual	bool					feel_vision_isRelevant	(CObject *object) = 0;
 	virtual	void					camera					(
 										Fvector &position,
 										Fvector &direction,
@@ -66,7 +66,7 @@ public:
 
 public:
 	virtual	void					reinit					();
-	virtual	void					reload					(LPCSTR section);
+	virtual	void					reload					(const char* section);
 			void					remove_links			(CObject *object);
 
 public:

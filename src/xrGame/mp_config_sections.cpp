@@ -36,8 +36,8 @@ mp_config_sections::mp_config_sections() :
 	m_tmp_dumper(nullptr, FALSE, FALSE, FALSE)
 {
 	u32		gcount	=  pSettings->line_count("mp_item_groups");
-	LPCSTR	line;
-	LPCSTR	name;
+	const char*	line;
+	const char*	name;
 	for (u32 i = 0; i < gcount; ++i)
 	{
 		pSettings->r_line	("mp_item_groups", i, &name, &line);
@@ -91,7 +91,7 @@ mp_active_params::~mp_active_params()
 
 char const * active_params_section	= "active_params_section";
 
-void mp_active_params::dump	(IAnticheatDumpable const * dumpable_obj, LPCSTR sect_name_key, CInifile & dest_dumper)
+void mp_active_params::dump	(IAnticheatDumpable const * dumpable_obj, const char* sect_name_key, CInifile & dest_dumper)
 {
 	string256 obj_sect_name = "";
 	if (dumpable_obj)
@@ -114,7 +114,7 @@ void mp_active_params::dump	(IAnticheatDumpable const * dumpable_obj, LPCSTR sec
 	}
 }
 
-void mp_active_params::load_to	(LPCSTR sect_name, CInifile & dest_dumper)
+void mp_active_params::load_to	(const char* sect_name, CInifile & dest_dumper)
 {
 	if (!pSettings->section_exist(sect_name))
 		return;
@@ -122,8 +122,8 @@ void mp_active_params::load_to	(LPCSTR sect_name, CInifile & dest_dumper)
 	u32 lines_count = pSettings->line_count(sect_name);
 	for (u32 i = 0; i < lines_count; ++i)
 	{
-		LPCSTR	line_name = nullptr;
-		LPCSTR	line_value = nullptr;
+		const char*	line_name = nullptr;
+		const char*	line_value = nullptr;
 		pSettings->r_line		(sect_name, i, &line_name, &line_value);
 		dest_dumper.w_string	(sect_name, line_name, line_value);
 	}

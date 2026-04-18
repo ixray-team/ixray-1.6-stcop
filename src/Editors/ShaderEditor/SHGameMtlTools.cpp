@@ -127,7 +127,7 @@ bool CSHGameMtlTools::Save()
     return bRes;
 }
 
-SGameMtl* CSHGameMtlTools::FindItem(LPCSTR name)
+SGameMtl* CSHGameMtlTools::FindItem(const char* name)
 {
 	if (name && name[0]){
     	return GameMaterialLibraryEditors->GetMaterial(name);
@@ -140,7 +140,7 @@ void CSHGameMtlTools::FillChooseMtlType(ChooseItemVec& items, void* param)
     items.push_back(SChooseItem("Static",	"Static material"));
 }
 
-void CSHGameMtlTools::AppendItem(LPCSTR path, LPCSTR parent_name)
+void CSHGameMtlTools::AppendItem(const char* path, const char* parent_name)
 {
 	SGameMtl* parent 	= FindItem(parent_name);
     if (!parent)
@@ -156,7 +156,7 @@ void CSHGameMtlTools::AppendItem(LPCSTR path, LPCSTR parent_name)
    
 }
 
-void CSHGameMtlTools::AppendItem(LPCSTR path, bool dynamic, SGameMtl* parent )
+void CSHGameMtlTools::AppendItem(const char* path, bool dynamic, SGameMtl* parent )
 {
     SGameMtl* S = GameMaterialLibraryEditors->AppendMaterial(parent);
     m_LastSelection = path;
@@ -167,7 +167,7 @@ void CSHGameMtlTools::AppendItem(LPCSTR path, bool dynamic, SGameMtl* parent )
     Modified();
 }
 
-void CSHGameMtlTools::OnRenameItem(UIItemListForm::Node& node, LPCSTR old_full_name, LPCSTR new_full_name, EItemType type)
+void CSHGameMtlTools::OnRenameItem(UIItemListForm::Node& node, const char* old_full_name, const char* new_full_name, EItemType type)
 {
 	if (type==TYPE_OBJECT){
         SGameMtl* S = FindItem(old_full_name); R_ASSERT(S);
@@ -184,7 +184,7 @@ void CSHGameMtlTools::OnRenameItem(UIItemListForm::Node& node, LPCSTR old_full_n
     }
 }
 
-void CSHGameMtlTools::OnRemoveItem(UIItemListForm::Node& node/*, LPCSTR name, EItemType type*/)
+void CSHGameMtlTools::OnRemoveItem(UIItemListForm::Node& node/*, const char* name, EItemType type*/)
 {
     string_path path;
     if (node.Path.size())
@@ -194,7 +194,7 @@ void CSHGameMtlTools::OnRemoveItem(UIItemListForm::Node& node/*, LPCSTR name, EI
     {
         xr_strcpy(path, node.Name.c_str());
     }
-    LPCSTR name = path;
+    const char* name = path;
 	if (node.IsObject()){
         R_ASSERT(name && name[0]);
         if (m_Mtl&&m_Mtl->m_Name == name)
@@ -206,7 +206,7 @@ void CSHGameMtlTools::OnRemoveItem(UIItemListForm::Node& node/*, LPCSTR name, EI
     }
 }
 
-void CSHGameMtlTools::SetCurrentItem(LPCSTR name, bool bView)
+void CSHGameMtlTools::SetCurrentItem(const char* name, bool bView)
 {
     if (m_bLockUpdate) return;
 

@@ -62,10 +62,10 @@ BIND_FUNCTION10	(&object(),	CScriptGameObject::Position,			CGameObject,	Position
 BIND_FUNCTION10	(&object(),	CScriptGameObject::Direction,			CGameObject,	Direction,			Fvector,						Fvector());
 BIND_FUNCTION10	(&object(),	CScriptGameObject::Mass,		CPhysicsShellHolder,	GetMass,			float,							float(-1));
 BIND_FUNCTION10	(&object(),	CScriptGameObject::ID,					CGameObject,	ID,					u16,							u16(-1));
-BIND_FUNCTION10	(&object(),	CScriptGameObject::getVisible,			CGameObject,	getVisible,			BOOL,							FALSE);
-//BIND_FUNCTION01	(&object(),	CScriptGameObject::setVisible,			CGameObject,	setVisible,			BOOL,							BOOL);
-BIND_FUNCTION10	(&object(),	CScriptGameObject::getEnabled,			CGameObject,	getEnabled,			BOOL,							FALSE);
-//BIND_FUNCTION01	(&object(),	CScriptGameObject::setEnabled,			CGameObject,	setEnabled,			BOOL,							BOOL);
+BIND_FUNCTION10	(&object(),	CScriptGameObject::getVisible,			CGameObject,	getVisible,			bool,							FALSE);
+//BIND_FUNCTION01	(&object(),	CScriptGameObject::setVisible,			CGameObject,	setVisible,			bool,							bool);
+BIND_FUNCTION10	(&object(),	CScriptGameObject::getEnabled,			CGameObject,	getEnabled,			bool,							FALSE);
+//BIND_FUNCTION01	(&object(),	CScriptGameObject::setEnabled,			CGameObject,	setEnabled,			bool,							bool);
 BIND_FUNCTION10	(&object(),	CScriptGameObject::story_id,			CGameObject,	story_id,			ALife::_STORY_ID,				ALife::_STORY_ID(-1));
 BIND_FUNCTION10	(&object(),	CScriptGameObject::DeathTime,			CEntity,		GetLevelDeathTime,	u32,							0);
 BIND_FUNCTION10	(&object(),	CScriptGameObject::MaxHealth,			CEntity,		GetMaxHealth,		float,							-1);
@@ -94,9 +94,9 @@ BIND_FUNCTION01	(&object(),	CScriptGameObject::SetSleepiness,		CEntityAlive,	con
 BIND_FUNCTION01	(&object(),	CScriptGameObject::SetThirst,			CEntityAlive,	conditions().ChangeThirst,		float,							float);
 BIND_FUNCTION01	(&object(),	CScriptGameObject::SetCircumspection,	CEntityAlive,	conditions().ChangeCircumspection,float,							float);
 BIND_FUNCTION01	(&object(),	CScriptGameObject::SetMorale,			CEntityAlive,	conditions().ChangeEntityMorale,	float,							float);
-BIND_FUNCTION02	(&object(),	CScriptGameObject::SetScriptControl,	CScriptEntity,	SetScriptControl,	bool,								LPCSTR,					bool,					shared_str);
+BIND_FUNCTION02	(&object(),	CScriptGameObject::SetScriptControl,	CScriptEntity,	SetScriptControl,	bool,								const char*,					bool,					shared_str);
 BIND_FUNCTION10	(&object(),	CScriptGameObject::GetScriptControl,	CScriptEntity,	GetScriptControl,	bool,								false);
-BIND_FUNCTION10	(&object(),	CScriptGameObject::GetScriptControlName,CScriptEntity,GetScriptControlName,LPCSTR,					"");
+BIND_FUNCTION10	(&object(),	CScriptGameObject::GetScriptControlName,CScriptEntity,GetScriptControlName,const char*,					"");
 BIND_FUNCTION10	(&object(),	CScriptGameObject::GetEnemyStrength,	CScriptEntity,	get_enemy_strength,	int,					0);
 BIND_FUNCTION10	(&object(),	CScriptGameObject::GetActionCount,		CScriptEntity,	GetActionCount,		u32,					0);
 BIND_FUNCTION10	(&object(),	CScriptGameObject::can_script_capture,	CScriptEntity,	can_script_capture,	bool,					0);
@@ -176,7 +176,7 @@ const CScriptEntityAction* CScriptGameObject::GetActionByIndex(u32 action_index)
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-u16 CScriptGameObject::get_bone_id(LPCSTR bone_name) const
+u16 CScriptGameObject::get_bone_id(const char* bone_name) const
 {
 	return object().Visual()->dcast_PKinematics()->LL_BoneID(bone_name);
 }
@@ -235,7 +235,7 @@ CHolderCustom* CScriptGameObject::get_custom_holder()
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-LPCSTR CScriptGameObject::WhoHitName()
+const char* CScriptGameObject::WhoHitName()
 {
 	if (CEntityAlive* entity_alive = object().cast_entity_alive())
 	{
@@ -246,7 +246,7 @@ LPCSTR CScriptGameObject::WhoHitName()
 	return 0;
 }
 
-LPCSTR CScriptGameObject::WhoHitSectionName()
+const char* CScriptGameObject::WhoHitSectionName()
 {
 	if (CEntityAlive* entity_alive = object().cast_entity_alive())
 	{
@@ -344,7 +344,7 @@ Fvector	CScriptGameObject::bone_position(u16 _bone_id)
 
 	if (IKinematics* kin = PKinematics(object().Visual()))
 	{
-		LPCSTR bone_name = kin->LL_BoneName_dbg(_bone_id);
+		const char* bone_name = kin->LL_BoneName_dbg(_bone_id);
 		if (xr_strlen(bone_name))
 		{
 			bone_id = kin->LL_BoneID(bone_name);
@@ -376,7 +376,7 @@ Fvector	CScriptGameObject::bone_direction(u16 _bone_id)
 
 	if (IKinematics* kin = PKinematics(object().Visual()))
 	{
-		LPCSTR bone_name = kin->LL_BoneName_dbg(_bone_id);
+		const char* bone_name = kin->LL_BoneName_dbg(_bone_id);
 		if (xr_strlen(bone_name))
 		{
 			bone_id = kin->LL_BoneID(bone_name);
@@ -397,7 +397,7 @@ Fvector	CScriptGameObject::bone_direction(u16 _bone_id)
 	return {};
 }
 
-Fvector	CScriptGameObject::bone_position(LPCSTR bone_name)
+Fvector	CScriptGameObject::bone_position(const char* bone_name)
 {
 	u16 bone_id = BI_NONE;
 
@@ -425,7 +425,7 @@ Fvector	CScriptGameObject::bone_position(LPCSTR bone_name)
 	return res;
 }
 
-Fvector	CScriptGameObject::bone_direction(LPCSTR bone_name)
+Fvector	CScriptGameObject::bone_direction(const char* bone_name)
 {
 	u16 bone_id = BI_NONE;
 
@@ -453,7 +453,7 @@ Fvector	CScriptGameObject::bone_direction(LPCSTR bone_name)
 	return res.k;
 }
 
-LPCSTR	CScriptGameObject::get_root_bone_name() const
+const char*	CScriptGameObject::get_root_bone_name() const
 {
 	u16 bone_id = BI_NONE;
 
@@ -482,7 +482,7 @@ u16	CScriptGameObject::get_root_bone_id() const
 	return BI_NONE;
 }
 
-LPCSTR	CScriptGameObject::get_bone_name_by_id(u16 bone_id) const
+const char*	CScriptGameObject::get_bone_name_by_id(u16 bone_id) const
 {
 	if (bone_id == BI_NONE)
 	{
@@ -498,7 +498,7 @@ LPCSTR	CScriptGameObject::get_bone_name_by_id(u16 bone_id) const
 	return "";
 }
 
-u16	CScriptGameObject::get_bone_id_by_name(LPCSTR bone_name) const
+u16	CScriptGameObject::get_bone_id_by_name(const char* bone_name) const
 {
 	u16 bone_id = BI_NONE;
 
@@ -531,7 +531,7 @@ u32 CScriptGameObject::GetAmmoElapsed()
 }
 
 //FFx0001++
-LPCSTR CScriptGameObject::GetItemAdditionalDescription()
+const char* CScriptGameObject::GetItemAdditionalDescription()
 {
 	if (CInventoryItem* inventory_item = object().cast_inventory_item())
 	{
@@ -542,7 +542,7 @@ LPCSTR CScriptGameObject::GetItemAdditionalDescription()
 }
 
 //FFx0001++
-void CScriptGameObject::SetItemAdditionalDescription(LPCSTR additionalDescription)
+void CScriptGameObject::SetItemAdditionalDescription(const char* additionalDescription)
 {
 	if (CInventoryItem* inventory_item = object().cast_inventory_item())
 	{
@@ -916,7 +916,7 @@ void CScriptGameObject::invulnerable(bool invulnerable)
 	}
 }
 
-LPCSTR CScriptGameObject::get_smart_cover_description() const
+const char* CScriptGameObject::get_smart_cover_description() const
 {
 	if (smart_cover::object* smart_cover_object = smart_cast<smart_cover::object*>(&object()))
 	{
@@ -1120,7 +1120,7 @@ void CScriptGameObject::SetLightVolumetric(bool b_volumetric)
 }
 
 // Applies a specific color/flicker animation from light_anims.ltx
-void CScriptGameObject::SetLightAnim(LPCSTR anim_name)
+void CScriptGameObject::SetLightAnim(const char* anim_name)
 {
 	CHangingLamp* lamp = smart_cast<CHangingLamp*>(&object());
 	if (!lamp) return;

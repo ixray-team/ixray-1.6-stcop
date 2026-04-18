@@ -25,8 +25,8 @@ public:
 	virtual void		Clear					(bool bSpecific=false);
 
 	// definition
-	IC LPCSTR			ClassName				(){return "puddles";}
-	IC LPCSTR			ClassDesc				(){return "Puddles";}
+	IC const char*			ClassName				(){return "puddles";}
+	IC const char*			ClassDesc				(){return "Puddles";}
 	IC int				RenderPriority			(){return 11;}
 
 	// IO
@@ -45,9 +45,9 @@ public:
 	virtual void		OnRender				(int priority, bool strictB2F);
 	virtual void		AfterRender				();
 
-	virtual void 		FillProp				(LPCSTR pref, PropItemVec& items);
+	virtual void 		FillProp				(const char* pref, PropItemVec& items);
 
-	virtual CCustomObject* CreateObject			(LPVOID data, LPCSTR name);
+	virtual CCustomObject* CreateObject			(LPVOID data, const char* name);
 private:
 	virtual void OnDrawUI();
 };

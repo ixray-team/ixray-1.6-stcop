@@ -51,12 +51,12 @@ float game_sv_mp_script::GetHitParamsImpulse (NET_Packet* P)
 void game_sv_mp_script::Create	(shared_str &options)
 {
 	inherited::Create(options);
-	LPCSTR lpcstr_options = options.c_str();
+	const char* lpcstr_options = options.c_str();
 	Create(lpcstr_options);
 
 }
 
-void	game_sv_mp_script::SpawnPlayer				(ClientID id, LPCSTR N, LPCSTR SkinName, RPoint rp)
+void	game_sv_mp_script::SpawnPlayer				(ClientID id, const char* N, const char* SkinName, RPoint rp)
 {
 	xrClientData* CL	= m_server->ID_to_client(id);
 	game_PlayerState*	ps_who	=	CL->ps;
@@ -163,11 +163,11 @@ template <typename T>
 struct CWrapperBase_sv_mp : public T, public luabind::wrap_base {
 	typedef T inherited;
 	typedef CWrapperBase_sv_mp<T>	self_type;
-	DEFINE_LUA_WRAPPER_CONST_METHOD_0(type_name, LPCSTR)
+	DEFINE_LUA_WRAPPER_CONST_METHOD_0(type_name, const char*)
 
 	DEFINE_LUA_WRAPPER_METHOD_V0(Update)
 	DEFINE_LUA_WRAPPER_METHOD_R2P1_V4(OnEvent, NET_Packet, u16, u32, ClientID)
-	DEFINE_LUA_WRAPPER_METHOD_V1(Create, LPCSTR)
+	DEFINE_LUA_WRAPPER_METHOD_V1(Create, const char*)
 	DEFINE_LUA_WRAPPER_METHOD_R2P1_V2(net_Export_State, NET_Packet, ClientID)
 
 	DEFINE_LUA_WRAPPER_METHOD_V0(OnRoundStart)
@@ -218,7 +218,7 @@ void game_sv_mp_script::script_register(lua_State *L)
 			.def("type_name",			&BaseType::type_name, &WrapType::type_name_static)
 			.def("Update",				&BaseType::Update, &WrapType::Update_static)
 			.def("OnEvent",				&BaseType::OnEvent, &WrapType::OnEvent_static)
-			.def("Create",				(void (BaseType::*)(LPCSTR))(&BaseType::Create), &WrapType::Create_static)
+			.def("Create",				(void (BaseType::*)(const char*))(&BaseType::Create), &WrapType::Create_static)
 
 			.def("OnPlayerHitPlayer",	&BaseType::OnPlayerHitPlayer,	&WrapType::OnPlayerHitPlayer_static)
 

@@ -54,7 +54,7 @@ void SAINode::PointBL(Fvector& D, float patch_size)
 	Plane.intersectRayPoint(v,d,D);
 }
 
-void SAINode::LoadLTX(CInifile& ini, LPCSTR sect_name, ESceneAIMapTool* tools)
+void SAINode::LoadLTX(CInifile& ini, const char* sect_name, ESceneAIMapTool* tools)
 {
     u32 id;
     u16 pl;
@@ -85,7 +85,7 @@ void SAINode::LoadLTX(CInifile& ini, LPCSTR sect_name, ESceneAIMapTool* tools)
     flags.assign(ini.r_u8(sect_name, "flags"));
 }
 
-void SAINode::SaveLTX(CInifile& ini, LPCSTR sect_name, ESceneAIMapTool* tools)
+void SAINode::SaveLTX(CInifile& ini, const char* sect_name, ESceneAIMapTool* tools)
 {
 	u32 id;
     u16 pl;
@@ -214,7 +214,7 @@ void ESceneAIMapTool::CalculateNodesBBox(Fbox& bb)
     }
 }
 
-extern BOOL ai_map_shown;
+extern bool ai_map_shown;
 void ESceneAIMapTool::OnActivate()
 {
 	inherited::OnActivate		();
@@ -329,7 +329,7 @@ bool ESceneAIMapTool::LoadLTX(CInifile& ini)
     {
         string128 sect_name;
         sprintf(sect_name, "snap_object_%d", i);
-        LPCSTR s = ini.r_string(sect_name,"name");
+        const char* s = ini.r_string(sect_name,"name");
         CCustomObject* O = Scene->FindObjectByName(s, OBJCLASS_SCENEOBJECT);
         if (!O) ELog.Msg(mtError, "AI-Map: Can't find snap object '%s'.", s);
         else m_SnapObjects.push_back(O);
@@ -734,7 +734,7 @@ int ESceneAIMapTool::SelectionCount(bool testflag)
     return count;
 }
 
-void ESceneAIMapTool::FillProp(LPCSTR pref, PropItemVec& items)
+void ESceneAIMapTool::FillProp(const char* pref, PropItemVec& items)
 {
     PHelper().CreateFlag32	(items, PrepareKey(pref,"Common\\Draw Nodes"),			&m_Flags, 		flHideNodes, 0,0, FlagValueCustom::flInvertedDraw);
     PHelper().CreateFlag32	(items, PrepareKey(pref,"Common\\Slow Calculate Mode"),	&m_Flags, 		flSlowCalculate);

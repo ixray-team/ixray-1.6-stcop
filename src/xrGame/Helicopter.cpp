@@ -70,7 +70,7 @@ void CHelicopter::reinit(){
 };
 
 
-void CHelicopter::Load(LPCSTR section)
+void CHelicopter::Load(const char* section)
 {
 	inherited::Load						(section);
 	m_movement.Load						(section);
@@ -116,13 +116,13 @@ void CHelicopter::Load(LPCSTR section)
 	m_light_color						= pSettings->r_fcolor(section,"light_color");
 	m_light_color.a						= 1.f;
 	m_light_color.mul_rgb				(m_light_brightness);
-	LPCSTR lanim						= pSettings->r_string	(section,"light_color_animmator");
+	const char* lanim						= pSettings->r_string	(section,"light_color_animmator");
 	m_lanim								= LALib.FindItem(lanim);
 
 
 }
 
-void CHelicopter::reload(LPCSTR section)
+void CHelicopter::reload(const char* section)
 {
 	inherited::reload	(section);
 }
@@ -133,7 +133,7 @@ void CollisionCallbackAlife(bool& do_colide,bool bo1,dContact& c,SGameMtl* mater
 void ContactCallbackAlife(CDB::TRI* T,dContactGeom* c)
 {
 }
-BOOL CHelicopter::net_Spawn(CSE_Abstract*	DC)
+bool CHelicopter::net_Spawn(CSE_Abstract*	DC)
 {
 
 	SetfHealth(100.0f);
@@ -173,12 +173,12 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract*	DC)
 	CExplosive::Load		(pUserData,"explosion");
 	CExplosive::SetInitiator(ID());
 	
-	LPCSTR s = pUserData->r_string("helicopter_definition","hit_section");
+	const char* s = pUserData->r_string("helicopter_definition","hit_section");
 
 	if( pUserData->section_exist(s) ){
 		int lc = pUserData->line_count(s);
-		LPCSTR name;
-		LPCSTR value;
+		const char* name;
+		const char* value;
 		s16 boneID;
 		for (int i=0 ;i<lc; ++i){
 			pUserData->r_line( s, i, &name, &value);
@@ -445,7 +445,7 @@ void CHelicopter::shedule_Update(u32 time_delta)
 		ExplodeHelicopter();
 }
 
-void CHelicopter::goPatrolByPatrolPath (LPCSTR path_name, int start_idx)
+void CHelicopter::goPatrolByPatrolPath (const char* path_name, int start_idx)
 {
 	m_movement.goPatrolByPatrolPath (path_name, start_idx);
 }
@@ -514,7 +514,7 @@ void CHelicopter::net_Export(NET_Packet& P)
 	inherited::net_Export(P);
 }
 
-BOOL CHelicopter::net_Relevant()
+bool CHelicopter::net_Relevant()
 {
 	return !IsGameTypeSingle();
 }

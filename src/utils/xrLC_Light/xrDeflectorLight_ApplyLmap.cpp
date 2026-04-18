@@ -79,7 +79,7 @@ void GET(const lm_line& l, int x, u32 width, u32 ref, u32& count, base_color_c& 
 	count++;
 }
 
-BOOL NEW_ApplyBorders(lm_layer& lm, u32 ref)
+bool NEW_ApplyBorders(lm_layer& lm, u32 ref)
 {
 	bool			bNeedContinue = false;
 
@@ -164,7 +164,7 @@ thread_local CStatTimer tRmsTests;
 thread_local CStatTimer tRmsTestsZero;
 
 
-BOOL ApplyBorders(lm_layer& lm, u32 ref)
+bool ApplyBorders(lm_layer& lm, u32 ref)
 {
 	tApplyBorders.Begin();
 	bool ret =  NEW_ApplyBorders(lm, ref);
@@ -199,7 +199,7 @@ IC u32	rms_diff(u32 a, u32 b)
 }
  
 // Это при сжатии используется
-BOOL	__stdcall rms_test_compress(lm_layer& lm, u32 w, u32 h, u32 rms)
+bool	__stdcall rms_test_compress(lm_layer& lm, u32 w, u32 h, u32 rms)
 {
 	CScopeTimer T(tRmsTests);
 
@@ -260,7 +260,7 @@ BOOL	__stdcall rms_test_compress(lm_layer& lm, u32 w, u32 h, u32 rms)
 }
 
 // Это при проверке используется
-BOOL	__stdcall rms_test(lm_layer& lm, u32 _r, u32 _g, u32 _b, u32 _s, u32 _h, u32 rms)
+bool	__stdcall rms_test(lm_layer& lm, u32 _r, u32 _g, u32 _b, u32 _s, u32 _h, u32 rms)
 {
 	u32 x, y;
 	for (y = 0; y < lm.height; y++)
@@ -312,7 +312,7 @@ u32	__stdcall rms_average(lm_layer& lm, base_color_c& C)
 	return	_count;
 }
 
-BOOL	compress_Zero(lm_layer& lm, u32 rms)
+bool	compress_Zero(lm_layer& lm, u32 rms)
 {
 	CScopeTimer T(tRmsTestsZero);
 
@@ -361,7 +361,7 @@ BOOL	compress_Zero(lm_layer& lm, u32 rms)
 	return FALSE;
 }
 
-BOOL	compress_RMS(lm_layer& lm, u32 rms, u32& w, u32& h)
+bool	compress_RMS(lm_layer& lm, u32 rms, u32& w, u32& h)
 {
 	// *** Try to bilinearly filter lightmap down and up
 	w = 0, h = 0;

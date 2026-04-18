@@ -102,7 +102,7 @@ void TParticlesPlayer::LoadParticles(IKinematics* K)
 		AppendBone(K->LL_GetBoneRoot());
 }
 
-void TParticlesPlayer::LoadParticles(LPCSTR section, IKinematics* K)
+void TParticlesPlayer::LoadParticles(const char* section, IKinematics* K)
 {
 	VERIFY				(K);
 
@@ -120,11 +120,11 @@ void TParticlesPlayer::LoadParticles(LPCSTR section, IKinematics* K)
 	}
 }
 
-void TParticlesPlayer::LoadParticles(LPCSTR section, LPCSTR line, IKinematics* K)
+void TParticlesPlayer::LoadParticles(const char* section, const char* line, IKinematics* K)
 {
 	VERIFY				(K);
 
-	LPCSTR line_items = pSettings->r_string(section, line);
+	const char* line_items = pSettings->r_string(section, line);
 
 	int count = _GetItemCount(line_items);
 	string64 S1;

@@ -19,7 +19,7 @@
 #include "doors_manager.h"
 #include "Legacy/StalkerPlanner/stalker_planner.h"
 
-void CScriptGameObject::SetTipText(LPCSTR tip_text)
+void CScriptGameObject::SetTipText(const char* tip_text)
 {
 	if (CUsableScriptObject* l_tpUseableScriptObject = object().cast_usable_script_object())
 	{
@@ -97,7 +97,7 @@ int	CScriptGameObject::clsid() const
 	return object().clsid();
 }
 
-LPCSTR CScriptGameObject::Name() const
+const char* CScriptGameObject::Name() const
 {
 	return *object().cName();
 }
@@ -107,7 +107,7 @@ shared_str CScriptGameObject::cName() const
 	return object().cName();
 }
 
-LPCSTR CScriptGameObject::Section() const
+const char* CScriptGameObject::Section() const
 {
 	if (m_game_object == nullptr)
 	{

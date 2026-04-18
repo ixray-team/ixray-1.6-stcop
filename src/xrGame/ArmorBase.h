@@ -19,18 +19,18 @@ public:
 	virtual void UpdateCL() override;
 
 	virtual void			Hit						(float P, ALife::EHitType hit_type);
-	virtual void			Load					(LPCSTR section);
+	virtual void			Load					(const char* section);
 
 	virtual void			ReloadBonesProtection	();
-	virtual bool			install_upgrade_impl	(LPCSTR section, bool test);
+	virtual bool			install_upgrade_impl	(const char* section, bool test);
 	virtual void			save(NET_Packet& packet) override;
 	virtual void			load(IReader& packet) override;
 	virtual float			HitThroughArmor			(float hit_power, s16 element, float ap, bool& add_wound, ALife::EHitType hit_type);
 	virtual float			GetDefHitTypeProtection	(ALife::EHitType hit_type);
 	virtual float			GetHitTypeProtection	(ALife::EHitType hit_type, s16 element);
 	virtual float			GetBoneArmor			(s16 element);
-	virtual void			AddBonesProtection		(LPCSTR bones_section);
-	virtual BOOL			net_Spawn				(CSE_Abstract* DC);
+	virtual void			AddBonesProtection		(const char* bones_section);
+	virtual bool			net_Spawn				(CSE_Abstract* DC);
 	virtual void			net_Export				(NET_Packet& P);
 	virtual void			net_Import				(NET_Packet& P);
 	virtual void			OnH_A_Chield			();

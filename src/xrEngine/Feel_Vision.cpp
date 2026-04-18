@@ -185,7 +185,7 @@ void Vision::o_trace(Fvector& P, float dt, float vis_threshold) {
 					// cache outdated. real query.
 					VERIFY(!fis_zero(RD.dir.magnitude()));
 
-					if (g_pGameLevel->ObjectSpace.RayQuery(RQR, RD, [](collide::rq_result & result, LPVOID params) -> BOOL
+					if (g_pGameLevel->ObjectSpace.RayQuery(RQR, RD, [](collide::rq_result & result, LPVOID params) -> bool
 					{
 						SFeelParam* fp = (SFeelParam*)params;
 						float vis = fp->parent->feel_vision_mtl_transp(result.O, result.element);
@@ -198,7 +198,7 @@ void Vision::o_trace(Fvector& P, float dt, float vis_threshold) {
 							fp->item->Cache.verts[1] = V[Tidxs[1]];
 							fp->item->Cache.verts[2] = V[Tidxs[2]];
 						}
-						return BOOL(fp->vis > fp->vis_threshold);
+						return bool(fp->vis > fp->vis_threshold);
 					}, &feel_params, nullptr, m_owner))
 
 					{

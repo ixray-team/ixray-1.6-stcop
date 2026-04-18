@@ -772,9 +772,9 @@ void CGameGraphBuilder::build_graph			(const float &start, const float &amount)
 }
 
 void CGameGraphBuilder::build_graph			(
-		LPCSTR graph_name,
-		LPCSTR cross_table_name,
-		LPCSTR level_name
+		const char* graph_name,
+		const char* cross_table_name,
+		const char* level_name
 	)
 {
 	Phase					("Building level game graph");

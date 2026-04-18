@@ -105,7 +105,7 @@ public:
 	void			SimplifyPoly_AABB	(sPoly* P, Fplane& plane);
 
 	CFrustum&		CreateOccluder		(Fvector* p,	int count,		Fvector& vBase, CFrustum& clip);
-	BOOL			CreateFromClipPoly	(Fvector* p,	int count,		Fvector& vBase, CFrustum& clip);	// returns 'false' if creation failed
+	bool			CreateFromClipPoly	(Fvector* p,	int count,		Fvector& vBase, CFrustum& clip);	// returns 'false' if creation failed
 	CFrustum&		CreateFromPoints	(Fvector* p,	int count,		Fvector& vBase );
 	CFrustum&		CreateFromMatrix	(Fmatrix &M,	u32 mask);
 	CFrustum&		CreateFromPortal	(sPoly* P,		Fvector& vPN,	Fvector& vBase, Fmatrix& mFullXFORM);
@@ -188,7 +188,7 @@ public:
 		return test_mask ? fcvPartial : fcvFully;
 	}
 
-	ICF BOOL testSphere_dirty(const Fvector& c, float r) const
+	ICF bool testSphere_dirty(const Fvector& c, float r) const
 	{
 		switch (p_count) {
 		case 12:if (planes[11].classify(c) > r)	return FALSE;
@@ -244,7 +244,7 @@ public:
 		return test_mask ? fcvPartial : fcvFully;
 	}
 
-	ICF BOOL testPoint(const Fvector& pt) const
+	ICF bool testPoint(const Fvector& pt) const
 	{
 		for (int i = 0; i < p_count; i++)
 		{
@@ -254,7 +254,7 @@ public:
 		return TRUE;
 	}
 
-	ICF BOOL testPolyInside_dirty(Fvector* p, int count) const
+	ICF bool testPolyInside_dirty(Fvector* p, int count) const
 	{
 		Fvector* e = p + count;
 		for (int i = 0; i < p_count; i++)
@@ -266,12 +266,12 @@ public:
 		return true;
 	}
 
-	ICF BOOL testPolyInside(sPoly& src)											const
+	ICF bool testPolyInside(sPoly& src)											const
     {
     	sPoly d;
         return !!ClipPoly(src,d);
     }
-	ICF BOOL testPolyInside(Fvector* p, int count)									const
+	ICF bool testPolyInside(Fvector* p, int count)									const
     {
     	sPoly src(p,count);
         return testPolyInside(src);

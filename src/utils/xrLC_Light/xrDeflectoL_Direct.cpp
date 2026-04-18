@@ -12,8 +12,8 @@ extern void Jitter_Select	(Fvector2* &Jitter, u32& Jcount);
 // Освещение
 
 // Compression 
-extern BOOL	compress_Zero(lm_layer& lm, u32 rms);
-extern BOOL	compress_RMS(lm_layer& lm, u32 rms, u32& w, u32& h);
+extern bool	compress_Zero(lm_layer& lm, u32 rms);
+extern bool	compress_RMS(lm_layer& lm, u32 rms, u32& w, u32& h);
  
 // GPU Deflectors
 void CDeflector::PrepareForLighting()

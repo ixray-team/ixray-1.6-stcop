@@ -41,8 +41,8 @@ private:
 	extrapolation::points _pose_extrapolation;
 
 #ifdef DEBUG
-	LPCSTR anim_name;
-	LPCSTR anim_set_name;
+	const char* anim_name;
+	const char* anim_set_name;
 #endif
 
 private:

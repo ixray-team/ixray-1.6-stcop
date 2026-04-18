@@ -26,7 +26,7 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 	RHIInputElementDesc*	vFormat	= 0;
 	size_t FormatSize = 0;
 	dwPrimitives				= 0;
-	BOOL				loaded_v=false;
+	bool				loaded_v=false;
 
 	if (data->find_chunk(OGF_GCONTAINER))
 	{

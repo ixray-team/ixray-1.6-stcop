@@ -62,11 +62,11 @@ protected:
 	IC		const OBJECT_ITEM_STORAGE	&clsids							() const;
 	IC		void						actualize						() const;
 	template <typename _unknown_type>
-	IC		void						add								(const CLASS_ID &clsid, LPCSTR script_clsid);
+	IC		void						add								(const CLASS_ID &clsid, const char* script_clsid);
 
 #ifndef NO_XR_GAME
 	template <typename _client_type, typename _server_type>
-	IC		void						add								(const CLASS_ID &clsid, LPCSTR script_clsid);
+	IC		void						add								(const CLASS_ID &clsid, const char* script_clsid);
 	IC		const CObjectItemAbstract	&item							(const CLASS_ID &clsid) const;
 #else
 	IC		const CObjectItemAbstract	*item							(const CLASS_ID &clsid, bool no_assert) const;
@@ -78,15 +78,15 @@ public:
 	virtual	void						init							();
 #ifndef NO_XR_GAME
 	IC		CLIENT_BASE_CLASS			*client_object					(const CLASS_ID &clsid) const;
-	IC		SERVER_BASE_CLASS			*server_object					(const CLASS_ID &clsid, LPCSTR section) const;
+	IC		SERVER_BASE_CLASS			*server_object					(const CLASS_ID &clsid, const char* section) const;
 #else
-	IC		SERVER_BASE_CLASS			*server_object					(const CLASS_ID &clsid, LPCSTR section) const;
+	IC		SERVER_BASE_CLASS			*server_object					(const CLASS_ID &clsid, const char* section) const;
 #endif
 
 	IC virtual int						script_clsid					(const CLASS_ID &clsid) const;
 	virtual	void						register_script					() const;
-			void						register_script_class			(LPCSTR client_class, LPCSTR server_class, LPCSTR clsid, LPCSTR script_clsid);
-			void						register_script_class			(LPCSTR unknown_class, LPCSTR clsid, LPCSTR script_clsid);
+			void						register_script_class			(const char* client_class, const char* server_class, const char* clsid, const char* script_clsid);
+			void						register_script_class			(const char* unknown_class, const char* clsid, const char* script_clsid);
 			void						register_script_classes			();
 
 	virtual	void						init_script(const char* str);

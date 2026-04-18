@@ -26,7 +26,7 @@ protected:
 	typedef CStalkerActionCombatBase inherited;
 
 public:
-					CStalkerActionReachEnemyLocation(CAI_Stalker *object, CPropertyStorage *combat_storage, LPCSTR action_name = "");
+					CStalkerActionReachEnemyLocation(CAI_Stalker *object, CPropertyStorage *combat_storage, const char* action_name = "");
 	virtual void	initialize						();
 	virtual void	execute							();
 	virtual void	finalize						();
@@ -45,7 +45,7 @@ protected:
 	typedef CStalkerActionCombatBase inherited;
 
 public:
-					CStalkerActionReachAmbushLocation	(CAI_Stalker *object, CPropertyStorage *combat_storage, LPCSTR action_name = "");
+					CStalkerActionReachAmbushLocation	(CAI_Stalker *object, CPropertyStorage *combat_storage, const char* action_name = "");
 	virtual void	initialize						();
 	virtual void	execute							();
 	virtual void	finalize						();
@@ -64,7 +64,7 @@ protected:
 	typedef CStalkerActionCombatBase inherited;
 
 public:
-					CStalkerActionHoldAmbushLocation(CAI_Stalker *object, CPropertyStorage *combat_storage, LPCSTR action_name = "");
+					CStalkerActionHoldAmbushLocation(CAI_Stalker *object, CPropertyStorage *combat_storage, const char* action_name = "");
 	virtual void	initialize						();
 	virtual void	execute							();
 	virtual void	finalize						();

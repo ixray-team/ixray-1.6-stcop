@@ -32,7 +32,7 @@ public:
 
 	virtual	void		Init					(int stage);
 	virtual	void		UnLoad					();
-			void		SetBuyMsgCaption		(LPCSTR str);
+			void		SetBuyMsgCaption		(const char* str);
 	virtual void		Render					();
 	virtual void		OnFrame					();
 

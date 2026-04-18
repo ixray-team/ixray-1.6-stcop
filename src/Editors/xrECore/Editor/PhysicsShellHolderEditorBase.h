@@ -18,9 +18,9 @@ protected:
 	CPhysicsShell*						m_physics_shell;
     Fmatrix								m_object_xform;
 private:
-  	virtual	LPCSTR						_BCL	ObjectName							()		const	 { return "EditorActor"; }
-	virtual	LPCSTR						_BCL	ObjectNameVisual					()		const	 { return "unknown"; }
-	virtual	LPCSTR						_BCL	ObjectNameSect						()		const	 { return "unknown"; }
+  	virtual	const char*						_BCL	ObjectName							()		const	 { return "EditorActor"; }
+	virtual	const char*						_BCL	ObjectNameVisual					()		const	 { return "unknown"; }
+	virtual	const char*						_BCL	ObjectNameSect						()		const	 { return "unknown"; }
 	virtual	bool						_BCL	ObjectGetDestroy					()		const	 { return false; };
 	virtual ICollisionHitCallback*		_BCL	ObjectGetCollisionHitCallback		()				 { return 0;}
 	virtual	u16							_BCL	ObjectID							()		const	 { return u16(-1);}

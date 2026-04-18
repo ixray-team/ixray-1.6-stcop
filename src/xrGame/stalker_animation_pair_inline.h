@@ -57,7 +57,7 @@ IC	bool CStalkerAnimationPair::step_dependence		() const
 }
 
 #ifdef DEBUG
-IC	void CStalkerAnimationPair::set_dbg_info		(LPCSTR object_name, LPCSTR animation_type_name)
+IC	void CStalkerAnimationPair::set_dbg_info		(const char* object_name, const char* animation_type_name)
 {
 	m_object_name				= object_name;
 	m_animation_type_name		= animation_type_name;

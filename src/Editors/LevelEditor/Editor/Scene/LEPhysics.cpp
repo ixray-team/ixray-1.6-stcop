@@ -12,10 +12,10 @@ bool CScenePhysics::Simulating()
 	return !!physics_world();
 }
 
-BOOL  GetStaticCformData(const Fmatrix& parent, CEditableMesh* mesh, CEditableObject* object, Fvector* verts, int& vert_cnt, int& vert_it, CDB::TRI* faces, int& face_cnt, int& face_it, CSceneObject* obj);
+bool  GetStaticCformData(const Fmatrix& parent, CEditableMesh* mesh, CEditableObject* object, Fvector* verts, int& vert_cnt, int& vert_it, CDB::TRI* faces, int& face_cnt, int& face_it, CSceneObject* obj);
 
 template<class ObjectClass>
-BOOL GetStaticCformData(ObjectClass* obj, mesh_build_data& data, bool b_selected_only)
+bool GetStaticCformData(ObjectClass* obj, mesh_build_data& data, bool b_selected_only)
 {
 	Fmatrix T = obj->_Transform();
 	CEditableObject* O = obj->GetReference();
@@ -35,9 +35,9 @@ BOOL GetStaticCformData(ObjectClass* obj, mesh_build_data& data, bool b_selected
 	return FALSE;
 }
 
-BOOL GetStaticCformData(ObjectList& lst, mesh_build_data& data, bool b_selected_only)
+bool GetStaticCformData(ObjectList& lst, mesh_build_data& data, bool b_selected_only)
 {
-	BOOL bResult = TRUE;
+	bool bResult = TRUE;
 
 	for (ObjectIt _F = lst.begin(); _F != lst.end(); _F++)
 	{

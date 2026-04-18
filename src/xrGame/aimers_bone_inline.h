@@ -15,10 +15,10 @@
 TEMPLATE_SPECIALIZATION
 inline BONE::bone					(
 		CGameObject* object,
-		LPCSTR animation_id,
+		const char* animation_id,
 		bool animation_start,
 		Fvector const& target,
-		LPCSTR (&bones)[bone_count]
+		const char* (&bones)[bone_count]
 	) :
 	inherited			( object, animation_id, animation_start, target )
 {

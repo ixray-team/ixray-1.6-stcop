@@ -109,7 +109,7 @@ CUIStatic* CUIListBoxItem::AddIconField(float width)
 	return					st;
 }
 
-CUIStatic* CUIListBoxItem::AddTextField(LPCSTR txt, float width)
+CUIStatic* CUIListBoxItem::AddTextField(const char* txt, float width)
 {
 	CUIStatic* st			= new CUIStatic();
 	st->SetAutoDelete		(true);
@@ -135,12 +135,12 @@ void* CUIListBoxItem::GetData()
 	return pData;
 }
 
-void CUIListBoxItem::SetText(LPCSTR txt)
+void CUIListBoxItem::SetText(const char* txt)
 {
 	m_text->SetText(txt);
 }
 
-LPCSTR CUIListBoxItem::GetText()							
+const char* CUIListBoxItem::GetText()							
 {
 	return m_text->GetText();
 }

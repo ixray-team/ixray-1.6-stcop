@@ -22,7 +22,7 @@ void fix_texture_name(LPSTR fn) {
 		*_ext = 0;
 }
 
-int get_texture_load_lod(LPCSTR fn) {
+int get_texture_load_lod(const char* fn) {
 	auto& sect = pSettings->r_section("reduce_lod_texture_list");
 
 	for (const auto& data : sect.Data) {
@@ -241,7 +241,7 @@ void PrintTextureError(HRESULT hr, const char* fname, const void* ddsData, size_
 }
 
 #include <DirectXTex.h>
-bool CRender::get_texture_metadata(LPCSTR absolute_path, RHITextureMetadata* p_data)
+bool CRender::get_texture_metadata(const char* absolute_path, RHITextureMetadata* p_data)
 {
 	bool status = false;
 
@@ -278,7 +278,7 @@ bool CRender::get_texture_metadata(LPCSTR absolute_path, RHITextureMetadata* p_d
 	return status;
 }
 
-IRHISurface* CRender::load_texture(LPCSTR fname, u32& msize, bool bStaging /*= false*/)
+IRHISurface* CRender::load_texture(const char* fname, u32& msize, bool bStaging /*= false*/)
 {
 	ID3DBaseTexture* pTexture = this->texture_load(fname, msize);
 	IRHISurface* pResult = nullptr;
@@ -300,7 +300,7 @@ IRHISurface* CRender::load_texture(LPCSTR fname, u32& msize, bool bStaging /*= f
 	return pResult;
 }
 
-ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize)
+ID3DBaseTexture* CRender::texture_load(const char* fRName, u32& ret_msize)
 {
 	ID3DBaseTexture* pTexture3D = nullptr;
 	ID3DTexture2D* pTexture2D = nullptr;

@@ -99,19 +99,19 @@ public:
 			void			DrawHint			();
 
 			void			SetActiveCaption	();
-			void			SetCaption			(LPCSTR text);
+			void			SetCaption			(const char* text);
 			void			Show_SecondTaskWnd	(bool status);
 			void			Show_MapLegendWnd	(bool status);
 
 			void 			SetActiveDialog		(CUIWindow* pUI) 	{ m_pActiveDialog = pUI; };
 			CUIWindow*		GetActiveDialog		() 					{return m_pActiveDialog;};
-			LPCSTR			GetActiveSection	()					{return m_sActiveSection.c_str();};
+			const char*			GetActiveSection	()					{return m_sActiveSection.c_str();};
 			CUITabControl*	GetTabControl		()					{return UITabControl;};
 	
 			virtual void HideDialog() override;
 
 			void			SetActiveSubdialog	(const shared_str& section);
-			void			SetActiveSubdialog_script(LPCSTR section)				{ SetActiveSubdialog((const shared_str&)section); };
+			void			SetActiveSubdialog_script(const char* section)				{ SetActiveSubdialog((const shared_str&)section); };
 	virtual bool			StopAnyMove			();
 			void			PdaContentsChanged	(pda_section::part type);
 

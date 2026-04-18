@@ -16,12 +16,12 @@ CSilencer::~CSilencer()
 {
 }
 
-BOOL CSilencer::net_Spawn(CSE_Abstract* DC) 
+bool CSilencer::net_Spawn(CSE_Abstract* DC) 
 {
 	return		(inherited::net_Spawn(DC));
 }
 
-void CSilencer::Load(LPCSTR section) 
+void CSilencer::Load(const char* section) 
 {
 	inherited::Load(section);
 }

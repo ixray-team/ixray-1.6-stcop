@@ -14,7 +14,7 @@ void CEditableObject::OnChangeShader(PropValue*)
     UI->RedrawScene	();
 }
 
-void CEditableObject::FillSurfaceProps(CSurface* SURF, LPCSTR pref, PropItemVec& items)
+void CEditableObject::FillSurfaceProps(CSurface* SURF, const char* pref, PropItemVec& items)
 {
     MultiChooseValue* MultiValue = PHelper().CreateChooseTexture(items, PrepareKey(pref, "TextureView"));
     PropValue* V = nullptr;
@@ -45,7 +45,7 @@ xr_token ECORE_API eo_type_token[]={
 	{ 0,						0}
 };
 
-void CEditableObject::FillBasicProps(LPCSTR pref, PropItemVec& items)
+void CEditableObject::FillBasicProps(const char* pref, PropItemVec& items)
 {
     xr_string ct(_ctime32(&m_CreateTime));
     _Trim(ct);
@@ -70,7 +70,7 @@ void CEditableObject::FillBasicProps(LPCSTR pref, PropItemVec& items)
 }
 //---------------------------------------------------------------------------
 
-void CEditableObject::FillSummaryProps(LPCSTR pref, PropItemVec& items)
+void CEditableObject::FillSummaryProps(const char* pref, PropItemVec& items)
 {
     string128 t; 
     sprintf(t, "V: %d, F: %d", GetVertexCount(), GetFaceCount());
@@ -107,7 +107,7 @@ xr_string MakeFullBonePath(CBone* bone)
 	}
 }
 
-void CEditableObject::FillSurfaceList(LPCSTR pref, ListItemsVec& items, int modeID)
+void CEditableObject::FillSurfaceList(const char* pref, ListItemsVec& items, int modeID)
 {
     SurfaceVec& s_lst 	= Surfaces();
 	if (pref) LHelper().CreateItem(items, pref, modeID, ListItem::flSorted);
@@ -116,7 +116,7 @@ void CEditableObject::FillSurfaceList(LPCSTR pref, ListItemsVec& items, int mode
 }
 //---------------------------------------------------------------------------
 
-void CEditableObject::FillBoneList(LPCSTR pref, ListItemsVec& items, int modeID)
+void CEditableObject::FillBoneList(const char* pref, ListItemsVec& items, int modeID)
 {
     BoneVec& b_lst 		= Bones();
     if (pref) LHelper().CreateItem(items, pref, modeID, ListItem::flSorted);
@@ -127,7 +127,7 @@ void CEditableObject::FillBoneList(LPCSTR pref, ListItemsVec& items, int modeID)
     }
 }
 
-void CEditableObject::FillMotionList(LPCSTR pref, ListItemsVec& items, int modeID)
+void CEditableObject::FillMotionList(const char* pref, ListItemsVec& items, int modeID)
 {
     SMotionVec&	m_lst	= SMotions();
 	if (pref) LHelper().CreateItem(items, pref,  modeID, ListItem::flSorted);

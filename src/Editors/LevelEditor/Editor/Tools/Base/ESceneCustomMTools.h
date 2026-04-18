@@ -30,14 +30,14 @@ public:
 		flVisible		= (1<<4),
 	};
 	Flags32				m_EditFlags;
-	BOOL				IsEnabled				(){return m_EditFlags.is(flEnable);}
-	BOOL				IsEditable				(){return !m_EditFlags.is_any(flReadonly|flForceReadonly);}
-	BOOL				IsReadonly				(){return m_EditFlags.is(flReadonly);}
-	BOOL				IsForceReadonly			(){return m_EditFlags.is(flForceReadonly);}
-	BOOL				IsChanged				(){return m_EditFlags.is(flChanged);}
-	void				SetChanged				(BOOL b){m_EditFlags.set(flChanged,b);}
-	BOOL				IsVisible				(){return m_EditFlags.is(flVisible);}
-	virtual BOOL 		AllowMouseStart			()=0;
+	bool				IsEnabled				(){return m_EditFlags.is(flEnable);}
+	bool				IsEditable				(){return !m_EditFlags.is_any(flReadonly|flForceReadonly);}
+	bool				IsReadonly				(){return m_EditFlags.is(flReadonly);}
+	bool				IsForceReadonly			(){return m_EditFlags.is(flForceReadonly);}
+	bool				IsChanged				(){return m_EditFlags.is(flChanged);}
+	void				SetChanged				(bool b){m_EditFlags.set(flChanged,b);}
+	bool				IsVisible				(){return m_EditFlags.is(flVisible);}
+	virtual bool 		AllowMouseStart			()=0;
 public:
 	// modifiers
 	shared_str			m_ModifName;
@@ -68,8 +68,8 @@ public:
 	virtual void    	OnObjectsUpdate			(){;}
 public:
 	// definition
-	virtual LPCSTR		ClassName				()=0;
-	virtual LPCSTR		ClassDesc				()=0;
+	virtual const char*		ClassName				()=0;
+	virtual const char*		ClassDesc				()=0;
 	virtual int			RenderPriority			()=0;
 public:
 						ESceneToolBase			(ObjClassID cls);
@@ -85,7 +85,7 @@ public:
 	
 	// selection manipulate
 	// flags: [0 - FALSE, 1 - TRUE, -1 - INVERT]
-	virtual int			RaySelect				(int flag, float& distance, const Fvector& start, const Fvector& direction, BOOL bDistanceOnly)=0;
+	virtual int			RaySelect				(int flag, float& distance, const Fvector& start, const Fvector& direction, bool bDistanceOnly)=0;
 	virtual int			FrustumSelect			(int flag, const CFrustum& frustum)=0;
 	virtual void 		SelectObjects           (bool flag)=0;
 	virtual void		InvertSelection         ()=0;
@@ -128,7 +128,7 @@ public:
 	virtual bool		LoadSelection      		(IReader&)=0;
 	virtual void		SaveSelection      		(IWriter&)=0;
 
-	virtual bool		Export          		(LPCSTR path){return true;}
+	virtual bool		Export          		(const char* path){return true;}
 	virtual bool		ExportGame         		(SExportStreams* F){return true;}
 
 	virtual bool		ExportStatic			(SceneBuilder* B, bool b_selected_only){return true;}
@@ -143,13 +143,13 @@ public:
 	virtual bool		GetStaticCformData		( XRay::CForm::IFormat& CForm, bool b_selected_only ){return true;}
 
 	// properties
-	virtual void		FillProp          		(LPCSTR pref, PropItemVec& items)=0;
+	virtual void		FillProp          		(const char* pref, PropItemVec& items)=0;
 
-	virtual void		FillPropObjects          (LPCSTR pref, PropItemVec& items)=0;
+	virtual void		FillPropObjects          (const char* pref, PropItemVec& items)=0;
 
 	// utils
 	virtual bool 		GetSummaryInfo			(SSceneSummary* inf)=0;
-	virtual void 		HighlightTexture		(LPCSTR tex_name, bool allow_ratio, u32 t_width, u32 t_height, BOOL mark){}
+	virtual void 		HighlightTexture		(const char* tex_name, bool allow_ratio, u32 t_width, u32 t_height, bool mark){}
 	virtual void		GetBBox 				(Fbox& bb, bool bSelOnly)=0;
 	virtual const CCustomObject* LastSelected	() const {return NULL;}
 	virtual class ESceneCustomOTool* CastObjectTool() { return nullptr; }

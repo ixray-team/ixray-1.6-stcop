@@ -183,7 +183,7 @@ int main(int argc, char* argv[])
 		C.SetFastMode	(0!=strstr(params,"-fast"));
 		C.SetTargetName	(argv[1]);
 
-		LPCSTR p = strstr(params,"-ltx");
+		const char* p = strstr(params,"-ltx");
 
 		if(0!=p)
 		{

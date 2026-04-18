@@ -33,9 +33,9 @@ CALifeStorageManager::~CALifeStorageManager()
 {
 }
 
-void CALifeStorageManager::save(LPCSTR save_name_no_check, bool update_name)
+void CALifeStorageManager::save(const char* save_name_no_check, bool update_name)
 {
-	LPCSTR game_saves_path		= FS.get_path("$game_saves$")->m_Path;
+	const char* game_saves_path		= FS.get_path("$game_saves$")->m_Path;
 
 	string_path					save_name;
 	strncpy_s					(save_name, sizeof(save_name), save_name_no_check, sizeof(save_name)-5-xr_strlen(IXRAY_DEF_SAVE_EXTENSION)-xr_strlen(game_saves_path));
@@ -61,7 +61,7 @@ void CALifeStorageManager::save(LPCSTR save_name_no_check, bool update_name)
 	luabind::functor<void> funct1;
 	if (ai().script_engine().functor("alife_storage_manager.CALifeStorageManager_before_save", funct1))
 	{
-		funct1((LPCSTR)m_save_name);
+		funct1((const char*)m_save_name);
 	}
 
 	u32 source_count;
@@ -102,21 +102,21 @@ void CALifeStorageManager::save(LPCSTR save_name_no_check, bool update_name)
 	luabind::functor<void> funct2;
 	if (ai().script_engine().functor("alife_storage_manager.CALifeStorageManager_before_save", funct2))
 	{
-		funct2((LPCSTR)m_save_name);
+		funct2((const char*)m_save_name);
 	}
 
 	// To get the savegame fname to make our own custom save states
 	luabind::functor<void> funct3;
 	if (ai().script_engine().functor("alife_storage_manager.CALifeStorageManager_after_save", funct3))
 	{
-		funct3((LPCSTR)m_save_name);
+		funct3((const char*)m_save_name);
 	}
 
 	if (!update_name)
 		xr_strcpy					(m_save_name,saveBackup);
 }
 
-void CALifeStorageManager::load(void* buffer, const u32& buffer_size, LPCSTR file_name)
+void CALifeStorageManager::load(void* buffer, const u32& buffer_size, const char* file_name)
 {
 	// So we can get the fname to make our own custom save states
 	luabind::functor<void> funct;
@@ -158,9 +158,9 @@ void CALifeStorageManager::load(void* buffer, const u32& buffer_size, LPCSTR fil
 	Level().autosave_manager().on_game_loaded();
 }
 
-bool CALifeStorageManager::load(LPCSTR save_name_no_check)
+bool CALifeStorageManager::load(const char* save_name_no_check)
 {
-	LPCSTR game_saves_path		= FS.get_path("$game_saves$")->m_Path;
+	const char* game_saves_path		= FS.get_path("$game_saves$")->m_Path;
 
 	string_path					save_name;
 	strncpy_s					(save_name, sizeof(save_name), save_name_no_check, sizeof(save_name)-5-xr_strlen(IXRAY_DEF_SAVE_EXTENSION)-xr_strlen(game_saves_path));
@@ -199,7 +199,7 @@ bool CALifeStorageManager::load(LPCSTR save_name_no_check)
         return false;
     }
 
-	constexpr pcstr mismatch = "Saved game version mismatch or saved game is corrupted";
+	constexpr const char* mismatch = "Saved game version mismatch or saved game is corrupted";
 	const bool gameSaveIsValid = CSavedGameWrapper::valid_saved_game(*stream);
 	VERIFY3(gameSaveIsValid, mismatch, file_name);
 

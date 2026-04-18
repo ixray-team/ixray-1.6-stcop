@@ -25,7 +25,7 @@ CBreakableObject::~CBreakableObject	()
 {
 }
 
-void CBreakableObject::Load		(LPCSTR section)
+void CBreakableObject::Load		(const char* section)
 {
 	inherited::Load			(section);
 	m_remove_time=pSettings	->r_u32(section,"remove_time")*1000;
@@ -36,7 +36,7 @@ void CBreakableObject::Load		(LPCSTR section)
 	this->shedule.t_max	= 1000;
 }
 
-BOOL CBreakableObject::net_Spawn(CSE_Abstract* DC)
+bool CBreakableObject::net_Spawn(CSE_Abstract* DC)
 {
 
 	CSE_Abstract			*e		= (CSE_Abstract*)(DC);
@@ -106,7 +106,7 @@ void CBreakableObject::net_Import(NET_Packet& P)
 	VERIFY					(Remote());
 }
 
-BOOL CBreakableObject::UsedAI_Locations()
+bool CBreakableObject::UsedAI_Locations()
 {
 	return					(FALSE);
 }

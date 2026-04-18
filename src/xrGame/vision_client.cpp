@@ -121,7 +121,7 @@ void vision_client::reinit						()
 	visual().reinit				();
 }
 
-void vision_client::reload						(LPCSTR section)
+void vision_client::reload						(const char* section)
 {
 	visual().reload				(section);
 }

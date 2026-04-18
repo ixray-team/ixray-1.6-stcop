@@ -8,8 +8,8 @@
 #include "../../xrEngine/xr_object.h"
 
 #ifdef	DEBUG
-static BOOL _cdb_bDebug = false;
-XRCORE_API BOOL *cdb_bDebug = &_cdb_bDebug;
+static bool _cdb_bDebug = false;
+XRCORE_API bool *cdb_bDebug = &_cdb_bDebug;
 bool bDebug()
 {
 	return !!(*cdb_bDebug);
@@ -27,7 +27,7 @@ namespace CObjectSpaceThreadData
 //--------------------------------------------------------------------------------
 // RayTest - Occluded/No
 //--------------------------------------------------------------------------------
-BOOL CObjectSpace::RayTest(const Fvector& start, const Fvector& dir, float range, collide::rq_target tgt, collide::ray_cache* cache, CObject* ignore_object)
+bool CObjectSpace::RayTest(const Fvector& start, const Fvector& dir, float range, collide::rq_target tgt, collide::ray_cache* cache, CObject* ignore_object)
 {
 	VERIFY(std::abs(dir.magnitude() - 1) < EPS);
 
@@ -106,7 +106,7 @@ BOOL CObjectSpace::RayTest(const Fvector& start, const Fvector& dir, float range
 //--------------------------------------------------------------------------------
 // RayPick
 //--------------------------------------------------------------------------------
-BOOL CObjectSpace::RayPick(const Fvector& start, const Fvector& dir, float range, rq_target tgt, rq_result& R, CObject* ignore_object)
+bool CObjectSpace::RayPick(const Fvector& start, const Fvector& dir, float range, rq_target tgt, rq_result& R, CObject* ignore_object)
 {
 	CObjectSpaceThreadData::r_temp.r_clear();
 
@@ -164,7 +164,7 @@ BOOL CObjectSpace::RayPick(const Fvector& start, const Fvector& dir, float range
 //--------------------------------------------------------------------------------
 // RayQuery
 //--------------------------------------------------------------------------------
-BOOL CObjectSpace::RayQuery(collide::rq_results& dest, const collide::ray_defs& R, collide::rq_callback* CB, LPVOID user_data, collide::test_callback* tb, CObject* ignore_object)
+bool CObjectSpace::RayQuery(collide::rq_results& dest, const collide::ray_defs& R, collide::rq_callback* CB, LPVOID user_data, collide::test_callback* tb, CObject* ignore_object)
 {
 	// initialize query
 	dest.r_clear();
@@ -231,7 +231,7 @@ BOOL CObjectSpace::RayQuery(collide::rq_results& dest, const collide::ray_defs& 
 	return dest.r_count();
 }
 
-BOOL CObjectSpace::RayQuery(collide::rq_results& r_dest, ICollisionForm* target, const collide::ray_defs& R)
+bool CObjectSpace::RayQuery(collide::rq_results& r_dest, ICollisionForm* target, const collide::ray_defs& R)
 {
 	VERIFY(target);
 	r_dest.r_clear();

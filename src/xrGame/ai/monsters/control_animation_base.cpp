@@ -241,7 +241,7 @@ void CControlAnimationBase::select_animation(bool anim_end)
 
 	// установить анимацию	
 	string128	s1,s2;
-	LPCSTR animation_name_buffer;
+	const char* animation_name_buffer;
 	if (anim_it->target_name[anim_it->target_name.size() - 1] == '_') {
 		animation_name_buffer = xr_strconcat(s2, *anim_it->target_name, itoa(index, s1, 10));
 	}
@@ -329,7 +329,7 @@ void CControlAnimationBase::CheckReplacedAnim()
 		}
 }
 
-SAAParam &CControlAnimationBase::AA_GetParams(LPCSTR anim_name)
+SAAParam &CControlAnimationBase::AA_GetParams(const char* anim_name)
 {
 	// искать текущую анимацию в AA_VECTOR
 	MotionID motion = m_object->Visual()->dcast_PKinematicsAnimated()->LL_MotionID(anim_name);
@@ -466,7 +466,7 @@ EAction CControlAnimationBase::GetActionFromPath()
 //////////////////////////////////////////////////////////////////////////
 // Debug
 
-LPCSTR CControlAnimationBase::GetAnimationName(EMotionAnim anim)
+const char* CControlAnimationBase::GetAnimationName(EMotionAnim anim)
 {
 	SAnimItem *item_it = m_anim_storage[anim];
 	VERIFY2(item_it, make_string<const char*>("animation not found in m_anim_storage!"));;
@@ -474,7 +474,7 @@ LPCSTR CControlAnimationBase::GetAnimationName(EMotionAnim anim)
 	return *item_it->target_name;
 }
 
-LPCSTR CControlAnimationBase::GetActionName(EAction action)
+const char* CControlAnimationBase::GetActionName(EAction action)
 {
 	return dbg_action_name_table[action];
 }
@@ -535,7 +535,7 @@ void CControlAnimationBase::UpdateAnimCount()
 
 		for (int i=0; ; ++i) {
 			xr_strconcat(s_temp, *((*it)->target_name),_itoa(i,s,10));
-			LPCSTR		name	= s_temp;
+			const char*		name	= s_temp;
 			MotionID	id		= skel->ID_Cycle_Safe(name);
 
 			if (id.valid())  {
@@ -594,7 +594,7 @@ CMotionDef *CControlAnimationBase::get_motion_def(SAnimItem *it, u32 index)
 	return				(skeleton_animated->LL_GetMotionDef(motion_id));
 }
 
-void CControlAnimationBase::AddAnimTranslation(const MotionID &motion, LPCSTR str)
+void CControlAnimationBase::AddAnimTranslation(const MotionID &motion, const char* str)
 {
 	m_anim_motion_map.insert(std::make_pair(motion, str));	
 }
@@ -654,7 +654,7 @@ public:
 	}
 };
 
-ICF static BOOL check_hit_trace_callback(collide::rq_result& result, LPVOID params)
+ICF static bool check_hit_trace_callback(collide::rq_result& result, LPVOID params)
 {
 	ray_query_param* param = (ray_query_param*)params;
 	if (result.O != nullptr)
@@ -739,7 +739,7 @@ void CControlAnimationBase::check_hit(MotionID motion, float time_perc)
 	m_object->MeleeChecker.on_hit_attempt(should_hit);
 }
 
-void parse_anim_params(LPCSTR val, SAAParam &anim) 
+void parse_anim_params(const char* val, SAAParam &anim) 
 {
 	auto ParseFloatLambda = [](const char* str, float& out)
 	{
@@ -771,37 +771,40 @@ void parse_anim_params(LPCSTR val, SAAParam &anim)
 
 }
 
-void CControlAnimationBase::AA_reload(LPCSTR section)
+void CControlAnimationBase::AA_reload(const char* section)
 {
 	if (!pSettings->section_exist(section)) return;
 
 	m_attack_anims.clear();
-	
-	SAAParam			anim;
-	LPCSTR				anim_name,val;
 
-	IKinematicsAnimated	*skel_animated = m_object->Visual()->dcast_PKinematicsAnimated();
+	SAAParam anim;
+	const char* anim_name, * val;
 
-	for (u32 i=0; pSettings->r_line(section,i,&anim_name,&val); ++i) {
-		
+	IKinematicsAnimated* skel_animated = m_object->Visual()->dcast_PKinematicsAnimated();
 
-		anim.motion				= skel_animated->LL_MotionID(anim_name);
+	for (u32 i = 0; pSettings->r_line(section, i, &anim_name, &val); ++i)
+	{
+		anim.motion = skel_animated->LL_MotionID(anim_name);
 		if (!anim.motion.valid())	continue;
 
 		// check if it is compound (if there is one item, mean it as a section)
-		if (_GetItemCount(val) == 1) {
-			LPCSTR compound_section = val;
-			LPCSTR unused_line_name;
+		if (_GetItemCount(val) == 1) 
+		{
+			const char* compound_section = val;
+			const char* unused_line_name;
 
-			for (u32 k=0; pSettings->r_line(compound_section,k,&unused_line_name,&val); ++k) {
-				parse_anim_params	(val, anim);
-				
+			for (u32 k = 0; pSettings->r_line(compound_section, k, &unused_line_name, &val); ++k)
+			{
+				parse_anim_params(val, anim);
+
 				m_attack_anims.push_back(anim);
 				m_man->animation().add_anim_event(anim.motion, anim.time, CControlAnimation::eAnimationHit);
 			}
-		} else {
+		}
+		else
+		{
 			parse_anim_params(val, anim);
-			
+
 			m_attack_anims.push_back(anim);
 			m_man->animation().add_anim_event(anim.motion, anim.time, CControlAnimation::eAnimationHit);
 		}

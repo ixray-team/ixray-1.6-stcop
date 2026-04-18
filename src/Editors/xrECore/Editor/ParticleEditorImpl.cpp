@@ -13,7 +13,7 @@
 
 ECORE_API xr_token2* actions_token = nullptr;
 
-BOOL PS::CPEDef::Equal(const CPEDef* pe)
+bool PS::CPEDef::Equal(const CPEDef* pe)
 {
     if (!m_Flags.equal(pe->m_Flags)) 						return FALSE;
     if (!m_ShaderName.equal(pe->m_ShaderName)) 				return FALSE;
@@ -54,7 +54,7 @@ void PS::CPEDef::Copy(const CPEDef& src)
 	Compile				(m_EActionList);
 }
 
-void  PS::CPEDef::FindActionByName(LPCSTR new_name, bool& res)
+void  PS::CPEDef::FindActionByName(const char* new_name, bool& res)
 {
 	res 				= false;
 	for (EPAVecIt s_it=m_EActionList.begin(); s_it!=m_EActionList.end(); s_it++)
@@ -182,7 +182,7 @@ bool PS::CPEDef::OnAfterActionNameEdit(PropValue* sender, shared_str& edit_val)
     return 					!found;
 }
 
-void PS::CPEDef::FillProp(LPCSTR pref, ::PropItemVec& items, void* owner)
+void PS::CPEDef::FillProp(const char* pref, ::PropItemVec& items, void* owner)
 {
 	ButtonValue* B;
     PropValue* P = 0;
@@ -515,7 +515,7 @@ bool PS::CPEDef::NameOnAfterEdit(PropValue* sender, shared_str& edit_val)
 }
 
 
-BOOL PS::CPGDef::SEffect::Equal(const SEffect& src)
+bool PS::CPGDef::SEffect::Equal(const SEffect& src)
 {
 	if (!m_Flags.equal(src.m_Flags))	return FALSE;
     if (!m_EffectName.equal(src.m_EffectName)) return FALSE;
@@ -524,7 +524,7 @@ BOOL PS::CPGDef::SEffect::Equal(const SEffect& src)
 	return TRUE;
 }
 
-void PS::CPGDef::SEffect::FillProp(LPCSTR pref, PropItemVec& items, u32 clr)
+void PS::CPGDef::SEffect::FillProp(const char* pref, PropItemVec& items, u32 clr)
 {
 	PropValue* V;
     V=PHelper().CreateChoose(items,PrepareKey(pref,"Name"),&m_EffectName,smPE);
@@ -571,7 +571,7 @@ void PS::CPGDef::SEffect::FillProp(LPCSTR pref, PropItemVec& items, u32 clr)
     }
 }
 
-void PS::CPGDef::SEffect::FillPropInit(PropItemVec& items, LPCSTR pref)
+void PS::CPGDef::SEffect::FillPropInit(PropItemVec& items, const char* pref)
 {
 	u32 clr					= m_Flags.is(CPGDef::SEffect::flEnabled)? 0xFF000000 :0xFFC0C0C0;
 	xr_string nm;
@@ -588,7 +588,7 @@ void PS::CPGDef::SEffect::FillPropInit(PropItemVec& items, LPCSTR pref)
 	FillProp(FullPref.c_str(), items, clr);
 }
 
-BOOL PS::CPGDef::Equal(const CPGDef* pg)
+bool PS::CPGDef::Equal(const CPGDef* pg)
 {
 	if (!m_Flags.equal(pg->m_Flags))				return FALSE;
 	if (!fsimilar(m_fTimeLimit,pg->m_fTimeLimit))	return FALSE;
@@ -738,7 +738,7 @@ void PS::CPGDef::OnParamsChangeInternal()
 	//Tools->SetCurrentPG(this);
 }
 
-void PS::CPGDef::FillProp(LPCSTR pref, PropItemVec& items, void* owner)
+void PS::CPGDef::FillProp(const char* pref, PropItemVec& items, void* owner)
 {                                   
     ButtonValue* B;
 	B=PHelper().CreateButton	(items,PrepareKey(pref,"Control"),"Play,Stop,Stop...",ButtonValue::flFirstOnly);

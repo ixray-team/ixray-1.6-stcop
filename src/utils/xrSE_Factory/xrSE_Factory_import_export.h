@@ -8,7 +8,7 @@
 #endif
 
 extern "C" {
-	FACTORY_API ISE_Abstract* __stdcall create_entity	(LPCSTR section);
+	FACTORY_API ISE_Abstract* __stdcall create_entity	(const char* section);
 	FACTORY_API void		  __stdcall destroy_entity	(ISE_Abstract *&);
 };
 

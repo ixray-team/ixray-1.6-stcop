@@ -146,7 +146,7 @@ void CUIPdaWnd::Init()
 	CUIXmlInit::InitTabControl		(uiXml, "tab", 0, UITabControl);
 	UITabControl->SetMessageTarget	(this);
 
-	std::tuple<LPCSTR,LPCSTR> 
+	std::tuple<const char*,const char*> 
 		tabLegacyList[] = 
 	{ 
 		{"0", "eptQuests"},
@@ -444,7 +444,7 @@ void CUIPdaWnd::SetActiveSubdialog(const shared_str& section)
 		luabind::functor<CUIDialogWndEx*> funct;
 		R_ASSERT2(ai().script_engine().functor(m_onSetActiveSubdialog, funct), "failed to get OnSetActiveSubdialog functor");
 
-		CUIDialogWndEx* ret = funct((LPCSTR)section.c_str());
+		CUIDialogWndEx* ret = funct((const char*)section.c_str());
 		CUIWindow* pScriptWnd = ret ? smart_cast<CUIWindow*>(ret) : (0);
 		if (pScriptWnd)
 			m_pActiveDialog = pScriptWnd;
@@ -485,7 +485,7 @@ void CUIPdaWnd::SetActiveCaption()
 	{
 		if ( (*it_b)->m_btn_id == m_sActiveSection )
 		{
-			LPCSTR cur = (*it_b)->TextItemControl()->GetText();
+			const char* cur = (*it_b)->TextItemControl()->GetText();
 			string256 buf;
 			xr_strconcat(buf, m_caption_const.c_str(), cur );
 			SetCaption( buf );
@@ -734,7 +734,7 @@ void CUIPdaWnd::Reset()
 		pUIMapWnd->ResetAll();
 }
 
-void CUIPdaWnd::SetCaption( LPCSTR text )
+void CUIPdaWnd::SetCaption( const char* text )
 {
 	if (m_caption)
 		m_caption->TextItemControl()->SetText( text );

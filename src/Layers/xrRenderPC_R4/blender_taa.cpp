@@ -12,7 +12,7 @@ void CBlender_taa::Compile(CBlender_Compile& C)
     {
         case 0:
         {
-            C.r_Pass("stub_fullscreen_triangle", "taa_render", FALSE, FALSE, FALSE);
+            C.r_Pass("stub_fullscreen_triangle", "taa_render", false, false, false);
             C.r_dx10Texture("s_image", r2_RT_generic0);
             C.r_dx10Texture("s_image_prev", r2_RT_generic0_prev);
             C.r_dx10Texture("s_position", r2_RT_P);
@@ -24,7 +24,7 @@ void CBlender_taa::Compile(CBlender_Compile& C)
         }
         case 1:
         {
-            C.r_Pass("stub_fullscreen_triangle", "combine_mblur", FALSE, FALSE, FALSE);
+            C.r_Pass("stub_fullscreen_triangle", "combine_mblur", false, false, false);
             C.r_dx10Texture("s_image", r2_RT_generic0);
 
             C.r_dx10Texture("s_velocity", r2_RT_velocity);
@@ -37,7 +37,7 @@ void CBlender_taa::Compile(CBlender_Compile& C)
         }
         case 2:
         {
-            C.r_Pass("stub_fullscreen_triangle", "upscale_depth", FALSE, FALSE, FALSE);
+            C.r_Pass("stub_fullscreen_triangle", "upscale_depth", false, false, false);
 
             C.r_dx10Texture("s_image", r2_RT_upscaled_depth_old);
             C.r_dx10Texture("s_velocity", r2_RT_velocity);

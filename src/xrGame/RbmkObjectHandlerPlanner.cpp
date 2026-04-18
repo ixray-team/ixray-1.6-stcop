@@ -669,7 +669,7 @@ public:
 				CInventory& inventory = *weapon.m_pInventory;
 				for (u8 i = 0; i < u8(weapon.m_ammoTypes.size()); ++i)
 				{
-					LPCSTR l_ammoType = weapon.m_ammoTypes[i].c_str();
+					const char* l_ammoType = weapon.m_ammoTypes[i].c_str();
 
 					for (TIItemContainer::iterator l_it = inventory.m_belt.begin(); inventory.m_belt.end() != l_it; ++l_it)
 					{

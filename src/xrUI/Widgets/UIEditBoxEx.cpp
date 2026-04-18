@@ -23,11 +23,11 @@ void CUIEditBoxEx::InitCustomEdit(Fvector2 pos, Fvector2 size)
 	CUICustomEdit::InitCustomEdit	(pos, size);
 }
 
-bool CUIEditBoxEx::InitTextureEx(LPCSTR texture, LPCSTR shader, bool fatal /*= true*/)
+bool CUIEditBoxEx::InitTextureEx(const char* texture, const char* shader, bool fatal /*= true*/)
 {
     return m_pFrameWindow->InitTextureEx(texture, shader, fatal);
 }
-bool CUIEditBoxEx::InitTexture(LPCSTR texture, bool fatal /*= true*/)
+bool CUIEditBoxEx::InitTexture(const char* texture, bool fatal /*= true*/)
 {
     return m_pFrameWindow->InitTexture(texture, fatal);
 }
