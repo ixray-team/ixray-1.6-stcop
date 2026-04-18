@@ -200,6 +200,24 @@ CImGuiOMFEditor* g_pOMFEditor = nullptr;
 
 void OMFEditor_OnPressed(int key)
 {
+	switch (key)
+	{
+	case SDL_Scancode::SDL_SCANCODE_ESCAPE:
+	{
+		if (Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_OMFEditor)])
+		{
+			if (g_pOMFEditor)
+			{
+				SRequestData req;
+				req.editor_type = (u32)eImGuiEditorType::kOMFEditor;
+				req.request_type = (u32)eRequestType_OMFEditor::kDeselectCurrentSelectedOrHideWindow;
+
+				AllEditors_SendRequest(req);
+			}
+		}
+		break;
+	}
+	}
 }
 
 void OMFEditor_OnReleased(int key)
@@ -616,6 +634,15 @@ void RequestHandler_OMFEditor(const SRequestData& req)
 	{
 		break;
 	}
+	case eRequestType_OMFEditor::kDeselectCurrentSelectedOrHideWindow:
+	{
+		if (g_pOMFEditor)
+		{
+			Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_OMFEditor)] = false;
+		}
+		
+		break;
+	}
 	case eRequestType_OMFEditor::kShutdown:
 	{
 		if (g_pOMFEditor)
@@ -646,8 +673,7 @@ void RenderToolsOMFEditorWindow()
 
 	if (g_pOMFEditor)
 	{
-
-		if (ImGui::Begin("Editor - [OMF]##ToolsInGameImGui", &Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_OMFEditor)]))
+		if (ImGui::Begin("Editor - [OMF]##ToolsInGameImGui"))
 		{
 			if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_MainTable", 10))
 			{

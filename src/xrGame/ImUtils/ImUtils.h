@@ -567,6 +567,7 @@ enum class eRequestType_OMFEditor : u32
 	kReadSettings,
 	kWriteSettings,
 	kLoadFile,
+	kDeselectCurrentSelectedOrHideWindow,
 	kShutdown
 };
 
