@@ -1132,6 +1132,63 @@ void CInifile::LTXLoad(IReader* F, LPCSTR path, xr_string_map<xr_string, Sect>& 
 		Current = nullptr;
 	};
 
+	auto LoadOverrides = [&](const xr_string& FilePath, const xr_string& FileName)
+	{
+		// Collect all files that could potentially be confused as a root file by our mod files
+		FS_FileSet AmbiguousFiles;
+		FS.file_list(AmbiguousFiles, FilePath.c_str(), FS_ListFiles, (FileName + "_*.ltx").c_str());
+
+		// Collect all matching mod files
+		FS_FileSet ModFiles;
+		FS.file_list(ModFiles, FilePath.c_str(), FS_ListFiles, ("mod_" + FileName + "_*.ltx").c_str());
+
+		auto GetRegexMatch = [](const xr_string& InputString, const xr_string& PatternString)->xr_string
+		{
+			std::regex Pattern = std::regex(PatternString);
+			std::smatch MatchResult;
+
+			std::string searcher = InputString.c_str();
+			std::regex_search(searcher, MatchResult, Pattern);
+
+			if (MatchResult.begin() == MatchResult.end())
+			{
+				return "";
+			}
+
+			return MatchResult.begin()->str().c_str();
+		};
+
+		for (const FS_File& ModFile : ModFiles)
+		{
+			// Determine if we should load this mod file, or if it's meant for a different root file
+			bool bIsModfileMeantForMe = true;
+
+			for (const FS_File& AmbiguousFile : AmbiguousFiles)
+			{
+				xr_string AmbiguousFileName = GetRegexMatch(AmbiguousFile.name, "^.+(?=.ltx$)");
+				xr_string AmbiguousFileMatchPattern = xr_string("mod_") + AmbiguousFileName + "_.+.ltx";
+
+				auto IsFullRegexMatch = [](const xr_string& InputString, const xr_string& PatternString)
+				{
+					return std::regex_match(InputString, std::regex(PatternString));
+				};
+
+				if (IsFullRegexMatch(ModFile.name, AmbiguousFileMatchPattern))
+				{
+					bIsModfileMeantForMe = false;
+					break;
+				}
+			}
+
+			if (!bIsModfileMeantForMe)
+			{
+				continue;
+			}
+
+			loadFile((FilePath + ModFile.name).c_str(), FilePath.c_str(), ModFile.name.c_str());
+		}
+	};
+
 	bool bHasLoadedModFiles = false;
 	while (!F->eof() || (bIsRootFile && !bHasLoadedModFiles))
 	{
@@ -1165,60 +1222,8 @@ void CInifile::LTXLoad(IReader* F, LPCSTR path, xr_string_map<xr_string, Sect>& 
 				FilePath = xr_string(split_drive) + xr_string(split_dir);
 				FileName = split_name;
 			}
-				
-			// Collect all files that could potentially be confused as a root file by our mod files
-			FS_FileSet AmbiguousFiles;
-			FS.file_list(AmbiguousFiles, FilePath.c_str(), FS_ListFiles, (FileName + "_*.ltx").c_str());
 
-			// Collect all matching mod files
-			FS_FileSet ModFiles;
-			FS.file_list(ModFiles, FilePath.c_str(), FS_ListFiles, ("mod_" + FileName + "_*.ltx").c_str());
-
-			auto GetRegexMatch = [](const xr_string& InputString, const xr_string& PatternString)->xr_string
-			{
-				std::regex Pattern = std::regex(PatternString);
-				std::smatch MatchResult;
-
-                                std::string searcher = InputString.c_str();
-				std::regex_search(searcher, MatchResult, Pattern);
-
-				if (MatchResult.begin() == MatchResult.end())
-				{
-					return "";
-				}
-
-				return MatchResult.begin()->str().c_str();
-			};
-
-			for (const FS_File& ModFile : ModFiles)
-			{
-				// Determine if we should load this mod file, or if it's meant for a different root file
-				bool bIsModfileMeantForMe = true;
-
-				for (const FS_File& AmbiguousFile : AmbiguousFiles)
-				{
-					xr_string AmbiguousFileName = GetRegexMatch(AmbiguousFile.name, "^.+(?=.ltx$)");
-					xr_string AmbiguousFileMatchPattern = xr_string("mod_") + AmbiguousFileName + "_.+.ltx";
-
-					auto IsFullRegexMatch = [](const xr_string& InputString, const xr_string& PatternString)
-					{
-						return std::regex_match(InputString, std::regex(PatternString));
-					};
-
-					if (IsFullRegexMatch(ModFile.name, AmbiguousFileMatchPattern))
-					{
-						bIsModfileMeantForMe = false;
-						break;
-					}
-				}
-
-				if (!bIsModfileMeantForMe)
-				{
-					continue;
-				}
-
-				loadFile((FilePath + ModFile.name).c_str(), FilePath.c_str(), ModFile.name.c_str());
-			}
+			LoadOverrides(FilePath, FileName);
 
 			continue;
 		}
@@ -1280,10 +1285,18 @@ void CInifile::LTXLoad(IReader* F, LPCSTR path, xr_string_map<xr_string, Sect>& 
 						string_path _fn;
 						xr_strconcat(_fn, inc_path, _name);
 						loadFile(_fn, inc_path, _name);
+						string_path inc_file_name;
+						_splitpath(_name,nullptr,nullptr,inc_file_name,nullptr);
+						LoadOverrides(inc_path, inc_file_name);
 					}
 				}
 				else
+				{
 					loadFile(fn, inc_path, inc_name);
+					string_path inc_file_name;
+					_splitpath(inc_name,nullptr,nullptr,inc_file_name,nullptr);
+					LoadOverrides(inc_path, inc_file_name);
+				}
 			}
 
 			continue;
