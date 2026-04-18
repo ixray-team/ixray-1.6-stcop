@@ -5,6 +5,7 @@
 #include "UIDragDropListEx.h"
 #include "../../xrUI/Widgets/UIProgressBar.h"
 #include "../../xrUI/Widgets/UI3dStatic.h"
+#include "../../xrUI/UIVectorBinding.h"
 
 using namespace InventoryUtilities;
 
@@ -55,8 +56,8 @@ CUIInventoryCellItem::CUIInventoryCellItem(CInventoryItem* itm)
 		// todo: it is estimated but not real (true) values that render expects and when it applies to polygon so think about how to extract real values... (but probably in most cases should be fine and wouldn't be noticable, but if noticable so I refer to this todo so you need to use accurate and exact values for requested width and height)
 		rect.rb.set(rect.lt.x + INV_GRID_WIDTH(itm->ScaleIcon) * m_grid_size.x,
 			rect.lt.y + INV_GRID_HEIGHT(itm->ScaleIcon) * m_grid_size.y);
-		float fRequestedWidth = rect.width();
-		float fRequestedHeight = rect.height();
+		const float fRequestedWidth = rect.width();
+		const float fRequestedHeight = rect.height();
 
 		Fvector2 vScaled;
 		UI().ClientToScreenScaled(vScaled, fRequestedWidth, fRequestedHeight);
@@ -64,38 +65,12 @@ CUIInventoryCellItem::CUIInventoryCellItem(CInventoryItem* itm)
 		vScaled.x = fRequestedWidth;
 		vScaled.y = fRequestedHeight;
 
+		xr_string_view iconSubpath{};
 		if (pSettings->line_exist(itm->m_section_id, kUIConfigField_InventoryVectorIcon))
-		{
-			xr_string_view icon_subpath = pSettings->r_string(itm->m_section_id, kUIConfigField_InventoryVectorIcon);
+			iconSubpath = pSettings->r_string(itm->m_section_id, kUIConfigField_InventoryVectorIcon);
 
-			if (icon_subpath.empty() == false)
-			{
-				const ui_shader& svg_shader = UI().GetVectorShader(icon_subpath, vScaled.x, vScaled.y);
-				rect = UI().GetVectorUV(icon_subpath, vScaled.x, vScaled.y);
-
-				inherited::SetShader(svg_shader);
-				inherited::SetTextureRect(rect);
-				inherited::SetStretchTexture(true);
-			}
-			else
-			{
-				const ui_shader& default_shader = UI().GetVectorShader(_kDefaultSVGShader, vScaled.x, vScaled.y);
-
-				rect = UI().GetVectorUV(_kDefaultSVGShader, vScaled.x, vScaled.y);
-				inherited::SetShader(default_shader);
-				inherited::SetTextureRect(rect);
-				inherited::SetStretchTexture(true);
-			}
-		}
-		else
-		{
-			const ui_shader& default_shader = UI().GetVectorShader(_kDefaultSVGShader, vScaled.x, vScaled.y);
-
-			rect = UI().GetVectorUV(_kDefaultSVGShader, vScaled.x, vScaled.y);
-			inherited::SetShader(default_shader);
-			inherited::SetTextureRect(rect);
-			inherited::SetStretchTexture(true);
-		}
+		CUIVectorBinding::ApplyVectorPathToStatic(*this, iconSubpath, vScaled.x, vScaled.y, {});
+		inherited::SetStretchTexture(true);
 	}
 
     // Для 3d иконок

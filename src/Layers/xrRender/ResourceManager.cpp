@@ -509,7 +509,7 @@ void CResourceManager::Initialize_SVGStorage()
 	// we don't use storage svg if rendering ui is raster because there's no need in such creation
 	if (m_pStorageSVG == nullptr)
 	{
-		m_pStorageSVG = new CSVGStorage(eSVGStorageFlags::kFeatureSVGStorage_Static_Allocation);
+		m_pStorageSVG = new CSVGStorage(static_cast<u32>(eSVGStorageFlags::kFeatureSVGStorage_Static_Allocation));
 		m_pStorageSVG->init();
 	}
 }

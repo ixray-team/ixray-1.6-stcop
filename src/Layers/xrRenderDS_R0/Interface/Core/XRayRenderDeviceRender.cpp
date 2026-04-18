@@ -164,13 +164,21 @@ void CDS0_RenderDeviceRender::SetCacheXformOld(Fmatrix& mView, Fmatrix& mProject
 {
 }
 
-const FactoryPtr<IUIShader>& CDS0_RenderDeviceRender::GetSVGShader(const std::string_view& subpath, float width, float height)
+const FactoryPtr<IUIShader>& CDS0_RenderDeviceRender::GetSVGShader(const std::string_view& subpath, float width, float height, SVGTintRGBA tint)
 {
+	(void)subpath;
+	(void)width;
+	(void)height;
+	(void)tint;
 	return m_empty_default;
 }
 
-const FactoryPtr<IUIShader>& CDS0_RenderDeviceRender::GetSVGShader(const char* pSubpath, float width, float height)
+const FactoryPtr<IUIShader>& CDS0_RenderDeviceRender::GetSVGShader(const char* pSubpath, float width, float height, SVGTintRGBA tint)
 {
+	(void)pSubpath;
+	(void)width;
+	(void)height;
+	(void)tint;
 	return m_empty_default;
 }
 
@@ -179,8 +187,12 @@ const FactoryPtr<IUIShader>& CDS0_RenderDeviceRender::GetSVGDefaultShader()
 	return m_empty_default;
 }
 
-Frect CDS0_RenderDeviceRender::GetSVGUV(const std::string_view& subpath, float requested_width, float requested_height)
+Frect CDS0_RenderDeviceRender::GetSVGUV(const std::string_view& subpath, float requested_width, float requested_height, SVGTintRGBA tint)
 {
+	(void)subpath;
+	(void)requested_width;
+	(void)requested_height;
+	(void)tint;
 	return Frect();
 }
 
