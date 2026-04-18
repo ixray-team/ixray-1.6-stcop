@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "UIStatic.h"
-#include "UIXmlInit.h"
 #include "UITextureMaster.h"
 #include "../../xrEngine/LightAnimLibrary.h"
 #include "UILines.h"
@@ -38,7 +37,6 @@ m_pTextControl(nullptr)
 	m_TextureOffset.set		(0.0f,0.0f);
 	m_lanim_xform.set_defaults	();
 	m_bEnableTextHighlighting = false;
-	m_bHasSvgAttribute = false;
 }
 
 CUIStatic::~CUIStatic()
@@ -66,7 +64,8 @@ bool CUIStatic::InitTexture(const char* texture, bool fatal)
 
 bool CUIStatic::InitTexture(const char* raster_texture_name, const char* svg_texture_name)
 {
-	bool result = CUITextureMaster::InitTexture(svg_texture_name, &m_UIStaticItem, GetWidth(), GetHeight());
+	(void)raster_texture_name;
+	bool result = CUITextureMaster::InitTexture(svg_texture_name, &m_UIStaticItem, GetWidth(), GetHeight(), _svgBinding.GetTint());
 
 	Fvector2 p = GetWndPos();
 	m_UIStaticItem.SetPos(p.x, p.y);
@@ -76,30 +75,21 @@ bool CUIStatic::InitTexture(const char* raster_texture_name, const char* svg_tex
 
 void CUIStatic::InitSVG(CUIXml& xml_doc, const char* path, int index)
 {
-	const char* svg = xml_doc.ReadAttrib(path, index, "svg");
-	m_bHasSvgAttribute = strlen(svg) > 0;
+	_svgBinding.LoadFromXml(xml_doc, path, index);
 }
 
 bool CUIStatic::isSVGPresented(void) const
 {
-	return m_bHasSvgAttribute;
+	return _svgBinding.IsActive();
 }
 
 const char* CUIStatic::getSVGFilename(CUIXml& xml_doc, const char* path, int index)
 {
-	R_ASSERT(m_bHasSvgAttribute && "must be initialized!");
-
-	if (m_bHasSvgAttribute)
-	{
-		bool validNode = xml_doc.NavigateToNode(path, index);
-
-		R_ASSERT2(validNode, "not presented");
-
-		const char* result = xml_doc.ReadAttrib(path, index, "svg");
-		return result;
-	}
-
-	return inherited::getSVGFilename(xml_doc, path);
+	(void)xml_doc;
+	(void)path;
+	(void)index;
+	R_ASSERT(_svgBinding.IsActive() && "must be initialized!");
+	return _svgBinding.GetFileName();
 }
 
 void CUIStatic::CreateShader(const char* tex, const char* sh)

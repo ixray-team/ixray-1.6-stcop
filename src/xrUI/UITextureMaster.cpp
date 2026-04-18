@@ -10,10 +10,10 @@
 
 #include "stdafx.h"
 #include "UITextureMaster.h"
+#include "UIVectorBinding.h"
 #include "Widgets/UIStaticItem.h"
 #include "uiabstract.h"
 #include "xrUIXmlParser.h"
-#include "../Include/xrRender/UIShader.h"
 
 xr_map<shared_str, TEX_INFO>	CUITextureMaster::m_textures;
 xr_map<sh_pair, ui_shader>		CUITextureMaster::m_shaders;
@@ -154,47 +154,11 @@ bool CUITextureMaster::InitTexture(const shared_str& texture_name, CUIStaticItem
 	return false;
 }
 
-bool CUITextureMaster::InitTexture(const shared_str& svg_texture_name, CUIStaticItem* tc, float fWidgetWidth, float fWidgetHeight)
+bool CUITextureMaster::InitTexture(const shared_str& svg_texture_name, CUIStaticItem* tc, float fWidgetWidth, float fWidgetHeight, SVGTintRGBA svgTint)
 {
-	//	sh_pair p = { it->second.file, shader_name };
-	//	xr_map<sh_pair, ui_shader>::iterator sh_it = m_shaders.find(p);
-	//	if (sh_it == m_shaders.end())
-	//		m_shaders[p]->create(shader_name.c_str(), it->second.file.c_str());
-
-	//	tc->SetShader(m_shaders[p]);
-	//	tc->SetTextureRect((*it).second.rect);
-	//	tc->SetSize(Fvector2().set(it->second.rect.width(), it->second.rect.height()));
-
-		float fRequestedWidth = fWidgetWidth;
-		float fRequestedHeight = fWidgetHeight;
-
-		Fvector2 scaled;
-		UI().ClientToScreenScaled(scaled, fRequestedWidth, fRequestedHeight);
-
-		fRequestedWidth = scaled.x;
-		fRequestedHeight = scaled.y;
-
-		if (svg_texture_name.size() > 0)
-		{
-			const ui_shader& svg_shader = UI().GetVectorShader(svg_texture_name.c_str(), fRequestedWidth, fRequestedHeight);
-			Frect texture_rect = UI().GetVectorUV(svg_texture_name.c_str(), fRequestedWidth, fRequestedHeight);
-
-			tc->SetShader(svg_shader);
-			tc->SetTextureRect(texture_rect);
-			tc->SetSize(Fvector2().set(fRequestedWidth, fRequestedHeight));
-		}
-		else
-		{
-			const ui_shader& default_shader = UI().GetVectorShader(_kDefaultSVGShader, fRequestedWidth, fRequestedHeight);
-			Frect texture_rect = UI().GetVectorUV(_kDefaultSVGShader, fRequestedWidth, fRequestedHeight);
-
-			tc->SetShader(default_shader);
-			tc->SetTextureRect(texture_rect);
-			tc->SetSize(Fvector2().set(fRequestedWidth, fRequestedHeight));
-		}
-
-
-	return true;
+	if (tc == nullptr)
+		return false;
+	return CUIVectorBinding::ApplyVectorFileToStaticItem(svg_texture_name, svgTint, *tc, fWidgetWidth, fWidgetHeight);
 }
 
 Frect CUITextureMaster::GetTextureRect(const shared_str&  texture_name){

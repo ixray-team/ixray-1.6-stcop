@@ -5,6 +5,7 @@ class CUIWindow;
 class CUIGameCustom;
 
 #include "ui_defs.h"
+#include "../../Include/xrRender/SVGTypes.h"
 
 class UI_API CDeviceResetNotifier :
 	public pureDeviceReset
@@ -70,9 +71,12 @@ public:
 	shared_str		get_xml_name					(LPCSTR fn);
 
 	const ui_shader& GetVectorShader(const std::string_view& subpath, float requested_width, float requested_height);
+	const ui_shader& GetVectorShader(const std::string_view& subpath, float requested_width, float requested_height, SVGTintRGBA tint);
 	const ui_shader& GetVectorShader(const char* pSubpath, float requested_width, float requested_height);
+	const ui_shader& GetVectorShader(const char* pSubpath, float requested_width, float requested_height, SVGTintRGBA tint);
 
 	Frect GetVectorUV(const std::string_view& subpath, float requested_width, float requested_height);
+	Frect GetVectorUV(const std::string_view& subpath, float requested_width, float requested_height, SVGTintRGBA tint);
 	
 	IUIRender::ePointType		m_currentPointType;
 };
