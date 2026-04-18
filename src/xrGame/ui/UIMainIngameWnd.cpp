@@ -35,6 +35,7 @@
 
 #include "UIInventoryUtilities.h"
 #include "../../xrUI/UIHelper.h"
+#include "../../xrUI/UIVectorBinding.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "UIMotionIcon.h"
 
@@ -253,43 +254,23 @@ void CUIMainIngameWnd::Init()
 	if (uiXml.NavigateToNode("indicator_overweight", 0))
 		m_ind_overweight = UIHelper::CreateStatic(uiXml, "indicator_overweight", indicatorParent);
 
-	auto pInitSVGForCUIStatic = [](CUIStatic* pElement, CUIXml& uiXml, bool& svg_init) -> void
+	auto initSvgForStaticLambda = [](CUIStatic* element, CUIXml& uiXml, bool& svgInited) -> void
 	{
-		if (pElement == nullptr || !pElement->isSVGPresented())
-		{
+		if (element == nullptr || !element->isSVGPresented())
 			return;
-		}
-
-		R_ASSERT(pElement->WindowNodeName().size() > 0 && "must be valid! otherwise you passed invalid or not initialized element");
-
-		LPCSTR pSVGFilename = pElement->getSVGFilename(uiXml, pElement->WindowNodeName().c_str(), 0);
-
-		if (pSVGFilename)
-		{
-			Fvector2 scaled_w_and_h;
-			UI().ClientToScreenScaled(scaled_w_and_h, pElement->GetWidth(), pElement->GetHeight());
-
-			float fRequestedWidth = scaled_w_and_h.x;
-			float fRequestedHeight = scaled_w_and_h.y;
-
-			const ui_shader& svg_shader = UI().GetVectorShader(pSVGFilename, fRequestedWidth, fRequestedHeight);
-			const Frect& svg_uv = UI().GetVectorUV(pSVGFilename, fRequestedWidth, fRequestedHeight);
-
-			pElement->SetShader(svg_shader);
-			pElement->SetTextureRect(svg_uv);
-
-			svg_init = true;
-		}
+		R_ASSERT(element->WindowNodeName().size() > 0 && "must be valid! otherwise you passed invalid or not initialized element");
+		if (CUIVectorBinding::ApplyXmlStaticVectorToWindow(*element, uiXml))
+			svgInited = true;
 	};
 
-	pInitSVGForCUIStatic(m_ind_bleeding, uiXml, m_ind_bleeding_svg_inited);
+	initSvgForStaticLambda(m_ind_bleeding, uiXml, m_ind_bleeding_svg_inited);
 
-	pInitSVGForCUIStatic(m_ind_weapon_broken, uiXml, m_ind_weapon_broken_svg_inited);
-	pInitSVGForCUIStatic(m_ind_helmet_broken, uiXml, m_ind_helmet_broken_svg_inited);
-	pInitSVGForCUIStatic(m_ind_outfit_broken, uiXml, m_ind_outfit_broken_svg_inited);
-	pInitSVGForCUIStatic(m_ind_overweight, uiXml, m_ind_overweight_svg_inited);
-	pInitSVGForCUIStatic(m_ind_radiation, uiXml, m_ind_radiation_svg_inited);
-	pInitSVGForCUIStatic(m_ind_starvation, uiXml, m_ind_starvation_svg_inited);
+	initSvgForStaticLambda(m_ind_weapon_broken, uiXml, m_ind_weapon_broken_svg_inited);
+	initSvgForStaticLambda(m_ind_helmet_broken, uiXml, m_ind_helmet_broken_svg_inited);
+	initSvgForStaticLambda(m_ind_outfit_broken, uiXml, m_ind_outfit_broken_svg_inited);
+	initSvgForStaticLambda(m_ind_overweight, uiXml, m_ind_overweight_svg_inited);
+	initSvgForStaticLambda(m_ind_radiation, uiXml, m_ind_radiation_svg_inited);
+	initSvgForStaticLambda(m_ind_starvation, uiXml, m_ind_starvation_svg_inited);
 
 
 	if (!IsGameTypeSingle())
@@ -1183,32 +1164,12 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 		Fvector2 vRealWH;
 		UI().ClientToScreenScaled(vRealWH, fRequestedWidth, fRequestedHeight);
 
+		xr_string_view iconSubpath{};
 		if (pSettings->line_exist(sect_name, kUIConfigField_InventoryVectorIcon))
-		{
-			xr_string_view icon_subpath = pSettings->r_string(sect_name, kUIConfigField_InventoryVectorIcon);
+			iconSubpath = pSettings->r_string(sect_name, kUIConfigField_InventoryVectorIcon);
 
-			if (icon_subpath.empty() == false)
-			{
-				const ui_shader& svg_shader = UI().GetVectorShader(icon_subpath, vRealWH.x, vRealWH.y);
-
-				texture_rect = UI().GetVectorUV(icon_subpath, vRealWH.x, vRealWH.y);
-
-				UIPickUpItemIcon->SetShader(svg_shader);
-			}
-			else
-			{
-				const ui_shader& default_shader = UI().GetVectorShader(_kDefaultSVGShader, vRealWH.x, vRealWH.y);
-
-				texture_rect = UI().GetVectorUV(_kDefaultSVGShader, vRealWH.x, vRealWH.y);
-				UIPickUpItemIcon->SetShader(default_shader);
-			}
-		}
-		else
-		{
-			const ui_shader& default_shader = UI().GetVectorShader(_kDefaultSVGShader, vRealWH.x, vRealWH.y);
-			texture_rect = UI().GetVectorUV(_kDefaultSVGShader, vRealWH.x, vRealWH.y);
-			UIPickUpItemIcon->SetShader(default_shader);
-		}
+		CUIVectorBinding::ApplyVectorPathToStatic(*UIPickUpItemIcon, iconSubpath, vRealWH.x, vRealWH.y, {});
+		texture_rect = UIPickUpItemIcon->GetTextureRect();
 	}
 
 	UIPickUpItemIcon->GetStaticItem()->SetTextureRect(texture_rect);
@@ -1627,25 +1588,10 @@ void CUIMainIngameWnd::UpdateQuickSlots()
 				}
 				else
 				{
-					float fWidth = texture_rect.width();
-					float fHeight = texture_rect.height();
-
-					xr_string_view svg_icon_name = pSettings->r_string(item_name, kUIConfigField_InventoryVectorIcon);
-
-					if (!svg_icon_name.empty())
-					{
-						const ui_shader& svg_shader = UI().GetVectorShader(svg_icon_name, fWidth, fHeight);
-						texture_rect = UI().GetVectorUV(svg_icon_name, fWidth, fHeight);
-						slot->SetShader(svg_shader);
-						slot->SetTextureRect(texture_rect);
-					}
-					else
-					{
-						const ui_shader& default_shader = UI().GetVectorShader(_kDefaultSVGShader, fWidth, fHeight);
-						texture_rect = UI().GetVectorUV(_kDefaultSVGShader, fWidth, fHeight);
-						slot->SetShader(default_shader);
-						slot->SetTextureRect(texture_rect);
-					}
+					const float fWidth = texture_rect.width();
+					const float fHeight = texture_rect.height();
+					const xr_string_view svgIconName = pSettings->r_string(item_name, kUIConfigField_InventoryVectorIcon);
+					CUIVectorBinding::ApplyVectorPathToStatic(*slot, svgIconName, fWidth, fHeight, {});
 				}
 
 				slot->TextureOn();
