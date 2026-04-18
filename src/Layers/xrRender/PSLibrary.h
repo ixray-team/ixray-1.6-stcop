@@ -32,16 +32,16 @@ class ECORE_API CPSLibrary : public particles_systems::library_interface, public
 #ifdef _EDITOR    
     xr_string			m_CurrentParticles;
 public:
-	void 	 	FindByName		(LPCSTR new_name, bool& res);
+	void 	 	FindByName		(const char* new_name, bool& res);
 #endif
 
 public:
 	// stream
-    bool Load(LPCSTR nm);
+    bool Load(const char* nm);
 	bool LoadOriginal(IReader& F);
 	bool LoadExtended(IReader& F);
 	
-    bool Save(LPCSTR nm);
+    bool Save(const char* nm);
 
 	// individuals INI
 	bool Load2();
@@ -54,14 +54,14 @@ public:
     void				OnCreate		();
     void				OnDestroy		();
 
-    PS::CPEDef*			FindPED			(LPCSTR name);
-    PS::PEDIt			FindPEDIt		(LPCSTR name);
-    PS::CPGDef*			FindPGD			(LPCSTR name);
-	PS::PGDIt			FindPGDIt		(LPCSTR name);
-	PS::CPACDef*		FindPACD		(LPCSTR name);
-	PS::PACDIt			FindPACDIt		(LPCSTR name);
+    PS::CPEDef*			FindPED			(const char* name);
+    PS::PEDIt			FindPEDIt		(const char* name);
+    PS::CPGDef*			FindPGD			(const char* name);
+	PS::PGDIt			FindPGDIt		(const char* name);
+	PS::CPACDef*		FindPACD		(const char* name);
+	PS::PACDIt			FindPACDIt		(const char* name);
 
-	virtual PS::IPAC*	FindIPAC		(LPCSTR name) override;
+	virtual PS::IPAC*	FindIPAC		(const char* name) override;
 
     // get object properties methods
 	IC const PS::PEDVec& VecPEDs		()	{ return m_PEDs; }
@@ -77,10 +77,10 @@ public:
     PS::CPEDef*			AppendPED		(PS::CPEDef* src=nullptr);
     PS::CPGDef*			AppendPGD		(PS::CPGDef* src=nullptr);
     PS::CPACDef*		AppendPACD		(PS::CPACDef* src=nullptr);
-    void				Remove			(LPCSTR name);
-    void				RenamePED		(PS::CPEDef* src, LPCSTR new_name);
-    void				RenamePGD		(PS::CPGDef* src, LPCSTR new_name);
-    void				RenamePACD		(PS::CPACDef* src, LPCSTR new_name);
+    void				Remove			(const char* name);
+    void				RenamePED		(PS::CPEDef* src, const char* new_name);
+    void				RenamePGD		(PS::CPGDef* src, const char* new_name);
+    void				RenamePACD		(PS::CPACDef* src, const char* new_name);
 
     void				Reload			();
     bool				Save			();

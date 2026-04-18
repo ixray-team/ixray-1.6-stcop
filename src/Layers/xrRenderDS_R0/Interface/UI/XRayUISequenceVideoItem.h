@@ -8,8 +8,8 @@ public:
 	virtual bool HasTexture();
 	virtual void CaptureTexture();
 	virtual void ResetTexture() ;
-	virtual BOOL video_IsPlaying() ;
+	virtual bool video_IsPlaying() ;
 	virtual void video_Sync(u32 _time);;
-	virtual void video_Play(BOOL looped, u32 _time = 0xFFFFFFFF);;
+	virtual void video_Play(bool looped, u32 _time = 0xFFFFFFFF);;
 	virtual void video_Stop();
 };

@@ -7,19 +7,19 @@
 
 namespace detail
 {
-	static pcstr const	s_pp_effector_name_string	=	"_pp_effector_name";
-	static pcstr const	s_pp_highest_at_string		=	"_pp_highest_at";
-	static pcstr const	s_linear_factor_string		=	"_linear_factor";
-	static pcstr const	s_quadratic_factor_string	=	"_quadratic_factor";
-	static pcstr const	s_max_power_string			=	"_max_power";
-	static pcstr const	s_max_distance_string		=	"_max_distance";
-	static pcstr const	s_sound_string				=	"_sound";
-	static pcstr const	s_detect_sound_string		=	"_detect_sound";
-	static pcstr const	s_enable_for_dead_string	=	"_enable_for_dead";
+	static const char* const	s_pp_effector_name_string	=	"_pp_effector_name";
+	static const char* const	s_pp_highest_at_string		=	"_pp_highest_at";
+	static const char* const	s_linear_factor_string		=	"_linear_factor";
+	static const char* const	s_quadratic_factor_string	=	"_quadratic_factor";
+	static const char* const	s_max_power_string			=	"_max_power";
+	static const char* const	s_max_distance_string		=	"_max_distance";
+	static const char* const	s_sound_string				=	"_sound";
+	static const char* const	s_detect_sound_string		=	"_detect_sound";
+	static const char* const	s_enable_for_dead_string	=	"_enable_for_dead";
 
 } // namespace detail
 
-monster_aura::monster_aura (CBaseMonster* const object, pcstr const name) 
+monster_aura::monster_aura (CBaseMonster* const object, const char* const name) 
 						: m_object(object), m_pp_effector_name(nullptr), m_pp_index(0)
 {
 	xr_strcpy							(m_name, sizeof(m_name), name); 
@@ -33,7 +33,7 @@ monster_aura::~monster_aura ()
 	remove_pp_effector();
 }
 
-float   monster_aura::override_if_debug(pcstr var_name, float const value) const
+float   monster_aura::override_if_debug(const char* var_name, float const value) const
 {
 #ifdef DEBUG
 	string256 full_var_name;
@@ -75,7 +75,7 @@ float   monster_aura::calculate () const
 	return								(power < max_power) ? power : max_power;
 }
 
-void   monster_aura::load_from_ini (CInifile const* ini, pcstr const section, bool enable_for_dead_default)
+void   monster_aura::load_from_ini (CInifile const* ini, const char* const section, bool enable_for_dead_default)
 {
 	using namespace						::detail;
 	string256 pp_effector_name_string	= {};
@@ -112,8 +112,8 @@ void   monster_aura::load_from_ini (CInifile const* ini, pcstr const section, bo
 	m_max_power						=	READ_IF_EXISTS(ini, r_float, section, max_power_string, 0.f);
 	m_max_distance					=	READ_IF_EXISTS(ini, r_float, section, max_distance_string, 0.f);
 	m_enable_for_dead				=	!!READ_IF_EXISTS(ini, r_bool, section, enable_for_dead_string, enable_for_dead_default);
-	pcstr const sound_name			=	READ_IF_EXISTS(ini, r_string, section, sound_string, nullptr);
-	pcstr const detect_sound_name	=	READ_IF_EXISTS(ini, r_string, section, detect_sound_string, nullptr);
+	const char* const sound_name			=	READ_IF_EXISTS(ini, r_string, section, sound_string, nullptr);
+	const char* const detect_sound_name	=	READ_IF_EXISTS(ini, r_string, section, detect_sound_string, nullptr);
 
 	if(sound_name)
 		m_sound.create					(sound_name, st_Effect, sg_SourceType);

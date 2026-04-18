@@ -3,7 +3,7 @@
 #define BLINK_TIME 300.f
 
 
-CSceneObject::CSceneObject(LPVOID data, LPCSTR name):CCustomObject(data,name)
+CSceneObject::CSceneObject(LPVOID data, const char* name):CCustomObject(data,name)
 {
 	Construct	(data);
 }
@@ -46,7 +46,7 @@ void CSceneObject::EvictObject()
 }
 
 
-void CSceneObject::Select(BOOL flag)
+void CSceneObject::Select(bool flag)
 {
 	inherited::Select(flag);
 	if (flag) Blink();
@@ -244,7 +244,7 @@ CEditableObject* CSceneObject::UpdateReference()
 	return m_pReference;
 }
 
-CEditableObject* CSceneObject::SetReference(LPCSTR ref_name)
+CEditableObject* CSceneObject::SetReference(const char* ref_name)
 {
 	m_ReferenceName	= ref_name;
 	return UpdateReference();
@@ -311,7 +311,7 @@ void CSceneObject::OnClickClearSurface(ButtonValue*, bool&, bool&)
 	ClearSurface();
 }
 
-void CSceneObject::FillProp(LPCSTR pref, PropItemVec& items)
+void CSceneObject::FillProp(const char* pref, PropItemVec& items)
 {
 	static shared_str occ_name = "materials\\occ";
 	inherited::FillProp(pref, items);

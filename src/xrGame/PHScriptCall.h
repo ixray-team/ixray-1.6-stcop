@@ -52,7 +52,7 @@ class CPHScriptObjectCondition:
 	luabind::object					*m_lua_object;
 	shared_str						m_method_name;
 public:
-							CPHScriptObjectCondition		(const luabind::object &lua_object, LPCSTR method)	;
+							CPHScriptObjectCondition		(const luabind::object &lua_object, const char* method)	;
 							CPHScriptObjectCondition		(const CPHScriptObjectCondition &object)			;
 	virtual					~CPHScriptObjectCondition		()													;
 	virtual bool 			is_true							()													;
@@ -70,7 +70,7 @@ class CPHScriptObjectAction :
 	luabind::object					*m_lua_object;
 	shared_str						m_method_name;
 public:
-							CPHScriptObjectAction			(const luabind::object &lua_object, LPCSTR method)	;
+							CPHScriptObjectAction			(const luabind::object &lua_object, const char* method)	;
 							CPHScriptObjectAction			(const CPHScriptObjectAction &object)				;
 	virtual					~CPHScriptObjectAction			()													;
 	virtual void 			run								()													;

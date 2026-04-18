@@ -31,19 +31,19 @@ public:
 
 	virtual void UpdateCL() override;
 	virtual void net_Destroy() override;
-	virtual BOOL net_Spawn(CSE_Abstract* DC) override;
+	virtual bool net_Spawn(CSE_Abstract* DC) override;
 
 	virtual void save(NET_Packet& output_packet) override;
 	virtual void load(IReader& input_packet) override;
 
-	virtual BOOL net_SaveRelevant() override  { return TRUE; }
+	virtual bool net_SaveRelevant() override  { return TRUE; }
 
 	void SetText();
 	void DestroySoundsArray(xr_vector<ref_sound>& soundsArray);
-	virtual void Load(LPCSTR section) override;
-	void SetVisible(shared_str bone_name, BOOL bVisibility);
-	void ParseRandomSounds(LPCSTR section, LPCSTR soundParameter, xr_vector<ref_sound>& soundsArray);
-	void ParseToVector(LPCSTR section, LPCSTR bonesParameter, xr_vector<xr_string>& _array);
+	virtual void Load(const char* section) override;
+	void SetVisible(shared_str bone_name, bool bVisibility);
+	void ParseRandomSounds(const char* section, const char* soundParameter, xr_vector<ref_sound>& soundsArray);
+	void ParseToVector(const char* section, const char* bonesParameter, xr_vector<xr_string>& _array);
 	ICF ref_sound& GetRandomSound(xr_vector<ref_sound>& soundsArray) { return soundsArray[::Random.randI(soundsArray.size())]; }
 	void OnUse();
 

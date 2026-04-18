@@ -202,7 +202,7 @@ void Face::OA_Unwarp( CDeflector *D, xr_vector<type_face*>& faces)
 	}
 }
 
-BOOL DataFace::RenderEqualTo(Face *F)
+bool DataFace::RenderEqualTo(Face *F)
 {
 	if (F->dwMaterial	!= dwMaterial		)	
 		return FALSE;
@@ -216,7 +216,7 @@ void DataFace::AddChannel(Fvector2 &p1, Fvector2 &p2, Fvector2 &p3)
 	tc.push_back(TC);
 }
 
-BOOL DataFace::hasImplicitLighting()
+bool DataFace::hasImplicitLighting()
 {
 	if (0==this)								return FALSE;
 	if (!Shader().flags.bRendering)				return FALSE;

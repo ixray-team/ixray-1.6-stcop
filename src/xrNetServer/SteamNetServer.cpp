@@ -26,7 +26,7 @@ void steam_net_update_server(void* P)
 
 // -----------------------------------------------------------------------------
 
-SteamNetServer::SteamNetServer(CTimer* timer, BOOL	dedicated)
+SteamNetServer::SteamNetServer(CTimer* timer, bool dedicated)
 	: BaseServer(timer, dedicated)
 {
 	m_players.reserve((dedicated) ? GetMaxPlayers() + 1 : GetMaxPlayers()); // 

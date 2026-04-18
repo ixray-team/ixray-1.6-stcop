@@ -15,7 +15,7 @@ public:
 	CBottleItem() = default;
 	virtual	~CBottleItem();
 
-	virtual void Load(LPCSTR section) override;
+	virtual void Load(const char* section) override;
 	virtual void OnEvent(NET_Packet& P, u16 type) override;
 	virtual	void Hit(SHit* pHDS) override;
 	void BreakToPieces();

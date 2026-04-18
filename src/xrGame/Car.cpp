@@ -108,7 +108,7 @@ void CCar::reinit()
 		m_memory->reinit();
 }
 
-void CCar::reload(LPCSTR section)
+void CCar::reload(const char* section)
 {
 	CEntity::reload(section);
 	if (m_memory)
@@ -143,7 +143,7 @@ void CCar::cb_Steer(CBoneInstance* B)
 }
 
 // Core events
-void	CCar::Load(LPCSTR section)
+void	CCar::Load(const char* section)
 {
 	inherited::Load(section);
 	SpatialComponent->spatial.type |= ESPATIAL_TYPE::VISIBLEFORAI;
@@ -152,7 +152,7 @@ void	CCar::Load(LPCSTR section)
 	inventory().m_pOwner = this;
 }
 
-BOOL CCar::net_Spawn(CSE_Abstract* DC)
+bool CCar::net_Spawn(CSE_Abstract* DC)
 {
 #ifdef DEBUG
 	InitDebug();
@@ -160,7 +160,7 @@ BOOL CCar::net_Spawn(CSE_Abstract* DC)
 
 	CSE_Abstract* e = (CSE_Abstract*)(DC);
 	CSE_ALifeCar* co = smart_cast<CSE_ALifeCar*>(e);
-	BOOL							R = inherited::net_Spawn(DC);
+	bool							R = inherited::net_Spawn(DC);
 
 	PKinematics(Visual())->CalculateBones_Invalidate();
 	PKinematics(Visual())->CalculateBones(TRUE);
@@ -278,7 +278,7 @@ void CCar::net_Save(NET_Packet& P)
 	SaveNetState(P);
 }
 
-BOOL CCar::net_SaveRelevant()
+bool CCar::net_SaveRelevant()
 {
 	return TRUE;
 }
@@ -426,7 +426,7 @@ void CCar::UpdateEx(float fov)
 	}
 }
 
-BOOL CCar::AlwaysTheCrow()
+bool CCar::AlwaysTheCrow()
 {
 	return Owner() || (m_car_weapon && m_car_weapon->IsActive());
 }
@@ -1762,7 +1762,7 @@ void CCar::DoExit()
 
 		A->detach_Vehicle();
 
-		if (A->g_Alive() <= 0.f)
+		if (!A->g_Alive())
 		{
 			A->character_physics_support()->movement()->DestroyCharacter();
 		}
@@ -2088,7 +2088,7 @@ void CCar::PhDataUpdate(float step)
 	VERIFY(_valid(m_steer_angle));
 }
 
-BOOL CCar::UsedAI_Locations()
+bool CCar::UsedAI_Locations()
 {
 	return (FALSE);
 }
@@ -2128,18 +2128,22 @@ void CCar::CarExplode()
 	{
 		if (!m_doors.empty())
 			m_doors.begin()->second.GetExitPosition(m_exit_position);
-		else 
+		else
 			m_exit_position.set(Position());
 
 		A->detach_Vehicle();
-		if (A->g_Alive() <= 0.f)A->character_physics_support()->movement()->DestroyCharacter();
+		if (!A->g_Alive())
+		{
+			A->character_physics_support()->movement()->DestroyCharacter();
+		}
 	}
 
 	if (CPHDestroyable::CanDestroy())
 		CPHDestroyable::Destroy(ID(), "physic_destroyable_object");
 }
 
-template <class T> IC void CCar::fill_wheel_vector(LPCSTR S, xr_vector<T>& type_wheels)
+template <class T> 
+void CCar::fill_wheel_vector(const char* S, xr_vector<T>& type_wheels)
 {
 	IKinematics* pKinematics = PKinematics(Visual());
 	string64 S1;
@@ -2171,7 +2175,7 @@ template <class T> IC void CCar::fill_wheel_vector(LPCSTR S, xr_vector<T>& type_
 	}
 }
 
-IC void CCar::fill_exhaust_vector(LPCSTR S, xr_vector<SExhaust>& exhausts)
+IC void CCar::fill_exhaust_vector(const char* S, xr_vector<SExhaust>& exhausts)
 {
 	IKinematics* pKinematics = PKinematics(Visual());
 	string64					S1;
@@ -2193,7 +2197,7 @@ IC void CCar::fill_exhaust_vector(LPCSTR S, xr_vector<SExhaust>& exhausts)
 	}
 }
 
-IC void CCar::fill_doors_map(LPCSTR S, xr_map<u16, CCarDoor>& doors)
+IC void CCar::fill_doors_map(const char* S, xr_map<u16, CCarDoor>& doors)
 {
 	IKinematics* pKinematics = PKinematics(Visual());
 	string64 S1;

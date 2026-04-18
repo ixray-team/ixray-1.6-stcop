@@ -13,7 +13,7 @@ void	CBlender_combine::Compile(CBlender_Compile& C) {
 
 	switch(C.iElement) {
 	case 0:	// combine
-		C.r_Pass("combine_1", "combine_1", FALSE, FALSE, FALSE, TRUE, D3DBLEND_INVSRCALPHA, D3DBLEND_SRCALPHA);	//. MRT-blend?
+		C.r_Pass("combine_1", "combine_1", false, false, false, TRUE, D3DBLEND_INVSRCALPHA, D3DBLEND_SRCALPHA);	//. MRT-blend?
 		C.r_Sampler_rtf("s_position", r2_RT_P);
 		C.r_Sampler_rtf("s_normal", r2_RT_N);
 		C.r_Sampler_rtf("s_diffuse", r2_RT_albedo);
@@ -31,7 +31,7 @@ void	CBlender_combine::Compile(CBlender_Compile& C) {
 	case 1:
 		RImplementation.addShaderOption("USE_DISTORT", "1");
 	case 2:
-		C.r_Pass("null", "combine_2", FALSE, FALSE, FALSE);
+		C.r_Pass("null", "combine_2", false, false, false);
 		C.r_Sampler_rtf("s_position", r2_RT_P);
 		C.r_Sampler_rtf("s_normal", r2_RT_N);
 		C.r_Sampler_clf("s_image", r2_RT_generic0);

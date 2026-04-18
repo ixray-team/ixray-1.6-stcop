@@ -11,7 +11,7 @@
 #include "ai_object_location.h"
 #include "../xrEngine/IGame_Persistent.h"
 
-void CRocketLauncher::Load(LPCSTR section)
+void CRocketLauncher::Load(const char* section)
 {
 	m_fLaunchSpeed = pSettings->r_float(section, "launch_speed");
 }

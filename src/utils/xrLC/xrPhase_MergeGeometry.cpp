@@ -50,7 +50,7 @@ ICF void	CreateBox(vecFace& subdiv, Fbox& bb_base)
 	}
 } 
 
-ICF BOOL	FaceEqual(Face* F1, Face* F2)
+ICF bool	FaceEqual(Face* F1, Face* F2)
 {
 	if (F1->dwMaterial != F2->dwMaterial)		return FALSE;
 	if (F1->tc.size() != F2->tc.size())			return FALSE;
@@ -58,7 +58,7 @@ ICF BOOL	FaceEqual(Face* F1, Face* F2)
 	return TRUE;
 }
 
-BOOL	NeedMerge(vecFace& subdiv, Fbox& bb_base)
+bool	NeedMerge(vecFace& subdiv, Fbox& bb_base)
 {
 	// 1. Amount of polygons
 	if (subdiv.size() >= u32(3 * c_SS_HighVertLimit / 4))
@@ -83,7 +83,7 @@ BOOL	NeedMerge(vecFace& subdiv, Fbox& bb_base)
 }
  
 // Без постройки Fbox
-ICF BOOL	NeedMerge_for(vecFace& subdiv, Fbox bb_base)
+ICF bool	NeedMerge_for(vecFace& subdiv, Fbox bb_base)
 {
 	// 1. Amount of polygons
 	if (subdiv.size() >= u32(3 * c_SS_HighVertLimit / 4))
@@ -104,7 +104,7 @@ ICF BOOL	NeedMerge_for(vecFace& subdiv, Fbox bb_base)
 	return true;
 }
 
-BOOL	ValidateMergeLinearSize(const Fvector& merged, const Fvector& orig1, const Fvector& orig2, int iAxis)
+bool	ValidateMergeLinearSize(const Fvector& merged, const Fvector& orig1, const Fvector& orig2, int iAxis)
 {
 	if ((merged[iAxis] > (4 * c_SS_maxsize / 3)) &&
 		(merged[iAxis] > (orig1[iAxis] + 1)) &&
@@ -114,7 +114,7 @@ BOOL	ValidateMergeLinearSize(const Fvector& merged, const Fvector& orig1, const 
 		return TRUE;
 }
 
-ICF BOOL	ValidateMerge(u32 f1, u32 f2, float& volume, const Fbox& bb_subdiv, const Fbox& bb_base, const Fbox& bb_base_orig)
+ICF bool	ValidateMerge(u32 f1, u32 f2, float& volume, const Fbox& bb_subdiv, const Fbox& bb_base, const Fbox& bb_base_orig)
 {
 	// Polygons
 	if ((f1 + f2) > u32(4 * c_SS_HighVertLimit / 3))

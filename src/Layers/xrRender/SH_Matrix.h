@@ -65,7 +65,7 @@ public:
 	}
 	void			Calculate	();
 
-	IC	BOOL		Similar		(CMatrix& M)		// comare by modes and params
+	IC	bool		Similar		(CMatrix& M)		// comare by modes and params
 	{
 		if (dwMode!=M.dwMode)				return FALSE;
 		if (tcm!=M.tcm)						return FALSE;

@@ -9,13 +9,13 @@
 #include "ItemListTypes.h"
 #include "xrEPropsTypes.h"
 
-//typedef fastdelegate::FastDelegate<void(LPCSTR, LPCSTR)>	    TOnItemClone;
-//typedef fastdelegate::FastDelegate<void(LPCSTR)>	            TOnItemCreate;
+//typedef fastdelegate::FastDelegate<void(const char*, const char*)>	    TOnItemClone;
+//typedef fastdelegate::FastDelegate<void(const char*)>	            TOnItemCreate;
 
 //typedef fastdelegate::FastDelegate<void(ListItemsVec&)> 			TOnILItemsFocused;
 typedef fastdelegate::FastDelegate<void()>							TOnILCloseEvent;
-//typedef fastdelegate::FastDelegate<void(LPCSTR, LPCSTR, EItemType)>	TOnItemRename;
-//typedef fastdelegate::FastDelegate<void(LPCSTR, EItemType)>	        TOnItemRemove;
+//typedef fastdelegate::FastDelegate<void(const char*, const char*, EItemType)>	TOnItemRename;
+//typedef fastdelegate::FastDelegate<void(const char*, EItemType)>	        TOnItemRemove;
 //typedef fastdelegate::FastDelegate<void()>							TOnItemAfterRemove;
 typedef fastdelegate::FastDelegate<void()> 							TOnCloseEvent;
 typedef fastdelegate::FastDelegate<void()>		  					TOnModifiedEvent;
@@ -28,23 +28,23 @@ typedef fastdelegate::FastDelegate<void()>		  					TOnModifiedEvent;
 //------------------------------------------------------------------------------
 // Prepare Key
 //------------------------------------------------------------------------------
-IC xr_string FolderAppend	(LPCSTR val)
+IC xr_string FolderAppend	(const char* val)
 {
 	xr_string	tmp 	= (val&&val[0])?val:"";
     if (val&&val[0])tmp	+= "\\";
     return 	tmp;
 }
-IC shared_str PrepareKey	(LPCSTR pref, 	LPCSTR key)
+IC shared_str PrepareKey	(const char* pref, 	const char* key)
 {
     R_ASSERT	(key);
 	return 		shared_str((FolderAppend(pref)+key).c_str());
 }
-IC shared_str PrepareKey (LPCSTR pref0, 	LPCSTR pref1,	LPCSTR key)
+IC shared_str PrepareKey (const char* pref0, 	const char* pref1,	const char* key)
 {
     R_ASSERT	(key);
     return 		shared_str((FolderAppend(pref0)+FolderAppend(pref1)+key).c_str());
 }
-IC shared_str PrepareKey (LPCSTR pref0,	LPCSTR pref1, 	LPCSTR pref2,	LPCSTR key)
+IC shared_str PrepareKey (const char* pref0,	const char* pref1, 	const char* pref2,	const char* key)
 {
     R_ASSERT	(key);
     return 		shared_str((FolderAppend(pref0)+FolderAppend(pref1)+FolderAppend(pref2)+key).c_str());
@@ -77,7 +77,7 @@ public:
     virtual CaptionValue*  			CreateCaption	    (PropItemVec& items, shared_str key, shared_str val)=0;
     virtual CanvasValue*			CreateCanvas	    (PropItemVec& items, shared_str key, shared_str val, int height)=0;
     virtual ButtonValue*			CreateButton	    (PropItemVec& items, shared_str key, shared_str val, u32 flags, ButtonValue::TOnBtnClick onclick=0)=0;
-    virtual ChooseValue*			CreateChoose	    (PropItemVec& items, shared_str key, shared_str* val, u32 mode, LPCSTR path=0, void* fill_param=0, u32 sub_item_count=1, u32 choose_flags=cfAllowNone)=0;
+    virtual ChooseValue*			CreateChoose	    (PropItemVec& items, shared_str key, shared_str* val, u32 mode, const char* path=0, void* fill_param=0, u32 sub_item_count=1, u32 choose_flags=cfAllowNone)=0;
     virtual MultiChooseValue*		CreateChooseTexture (PropItemVec& items, shared_str key) = 0;
     virtual S8Value* 				CreateS8		    (PropItemVec& items, shared_str key, s8* val, s8 mn=0, s8 mx=100, s8 inc=1)=0;
     virtual S16Value* 				CreateS16		    (PropItemVec& items, shared_str key, s16* val, s16 mn=0, s16 mx=100, s16 inc=1)=0;
@@ -86,12 +86,12 @@ public:
     virtual U16Value* 				CreateU16		    (PropItemVec& items, shared_str key, u16* val, u16 mn=0, u16 mx=100, u16 inc=1)=0;
     virtual U32Value* 	  			CreateU32		    (PropItemVec& items, shared_str key, u32* val, u32 mn=0, u32 mx=100, u32 inc=1)=0;
     virtual FloatValue* 			CreateFloat		    (PropItemVec& items, shared_str key, float* val, float mn=0.f, float mx=1.f, float inc=0.01f, int decim=2)=0;
-    virtual BOOLValue* 	  			CreateBOOL		    (PropItemVec& items, shared_str key, BOOL* val)=0;
+    virtual BOOLValue* 	  			CreateBOOL		    (PropItemVec& items, shared_str key, int* val)=0;
     virtual BoolValue* 	  			CreateBool		    (PropItemVec& items, shared_str key, bool* val)=0;
     virtual VectorValue*  	 		CreateVector	    (PropItemVec& items, shared_str key, Fvector* val, float mn=0.f, float mx=1.f, float inc=0.01f, int decim=2)=0;
-    virtual Flag8Value*				CreateFlag8		    (PropItemVec& items, shared_str key, Flags8* val, u8 mask, LPCSTR c0=0, LPCSTR c1=0, u32 flags=0)=0;
-    virtual Flag16Value*			CreateFlag16	    (PropItemVec& items, shared_str key, Flags16* val, u16 mask, LPCSTR c0=0, LPCSTR c1=0, u32 flags=0)=0;
-    virtual Flag32Value*			CreateFlag32	    (PropItemVec& items, shared_str key, Flags32* val, u32 mask, LPCSTR c0=0, LPCSTR c1=0, u32 flags=0)=0;
+    virtual Flag8Value*				CreateFlag8		    (PropItemVec& items, shared_str key, Flags8* val, u8 mask, const char* c0=0, const char* c1=0, u32 flags=0)=0;
+    virtual Flag16Value*			CreateFlag16	    (PropItemVec& items, shared_str key, Flags16* val, u16 mask, const char* c0=0, const char* c1=0, u32 flags=0)=0;
+    virtual Flag32Value*			CreateFlag32	    (PropItemVec& items, shared_str key, Flags32* val, u32 mask, const char* c0=0, const char* c1=0, u32 flags=0)=0;
 	virtual Token8Value*			CreateToken8	    (PropItemVec& items, shared_str key, u8* val, xr_token* token)=0;
 	virtual Token16Value*			CreateToken16	    (PropItemVec& items, shared_str key, u16* val, xr_token* token)=0;
 	virtual Token32Value*			CreateToken32	    (PropItemVec& items, shared_str key, u32* val, xr_token* token)=0;
@@ -132,10 +132,10 @@ extern XREPROPS_API IPropHelper &PHelper();
 class XREPROPS_API IListHelper
 {
 public:
-    virtual ListItem* 				FindItem			(ListItemsVec& items,	LPCSTR key)=0;
- 	virtual bool 					NameAfterEdit		(ListItem* sender, LPCSTR value, shared_str& edit_val)=0;
+    virtual ListItem* 				FindItem			(ListItemsVec& items,	const char* key)=0;
+ 	virtual bool 					NameAfterEdit		(ListItem* sender, const char* value, shared_str& edit_val)=0;
 public:
-	virtual ListItem*				CreateItem			(ListItemsVec& items, LPCSTR key, int type, u32 item_flags=0, void* object=0)=0;
+	virtual ListItem*				CreateItem			(ListItemsVec& items, const char* key, int type, u32 item_flags=0, void* object=0)=0;
 };
 
 XREPROPS_API IListHelper& LHelper ();

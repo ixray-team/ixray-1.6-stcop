@@ -53,28 +53,28 @@ CScriptIniFile *get_game_ini()
 }
 #endif // XRGAME_EXPORTS
 
-bool r_line(CScriptIniFile *self_, LPCSTR S, int L,	luabind::internal_string &N, luabind::internal_string&V)
+bool r_line(CScriptIniFile* self_, const char* S, int L, luabind::internal_string& N, luabind::internal_string& V)
 {
-	VERIFY3			(self_->section_exist(S),"Cannot find section",S);
-	VERIFY2			((int)self_->line_count(S) > L,"Invalid line number");
-	
-	N				= "";
-	V				= "";
-	
-	LPCSTR			n,v;
-	bool			result_ = !!self_->r_line(S,L,&n,&v);
+	VERIFY3(self_->section_exist(S), "Cannot find section", S);
+	VERIFY2((int)self_->line_count(S) > L, "Invalid line number");
+
+	N = "";
+	V = "";
+
+	const char* n, * v;
+	bool			result_ = !!self_->r_line(S, L, &n, &v);
 	if (!result_)
 		return		(false);
 
-	N				= n;
+	N = n;
 	if (v)
-		V			= v;
+		V = v;
 	return			(true);
 }
 
 #pragma warning(push)
 #pragma warning(disable:4238)
-SCRIPTS_API CScriptIniFile *create_ini_file	(LPCSTR ini_string)
+SCRIPTS_API CScriptIniFile *create_ini_file	(const char* ini_string)
 {
 	IReader temp(
 		(void*)ini_string,
@@ -96,18 +96,18 @@ void section_for_each(CScriptIniFile* self, luabind::functor<bool> functor)
 	CInifile::Root& sections = self->sections();
 	for (CInifile::Sect& sect : sections)
 	{
-		if (functor((LPCSTR)sect.Name.c_str()))
+		if (functor((const char*)sect.Name.c_str()))
 			return;
 	}
 }
 
-CScriptIniFile* create_ini(LPCSTR path, LPCSTR ini_file)
+CScriptIniFile* create_ini(const char* path, const char* ini_file)
 {
 	return new CScriptIniFile(false, ini_file, path, false);
 }
 
 
-CScriptIniFile* read_ini(LPCSTR path, LPCSTR ini_file)
+CScriptIniFile* read_ini(const char* path, const char* ini_file)
 {
 	return new CScriptIniFile(true, ini_file, path, true);
 }
@@ -119,7 +119,7 @@ void CScriptIniFile::script_register(lua_State *L)
 	[
 		class_<CScriptIniFile>("ini_file")
 
-            .def(constructor<LPCSTR,BOOL,BOOL,BOOL,LPCSTR>())
+            .def(constructor<const char*,bool,bool,bool,const char*>())
 			.def("w_bool",&CScriptIniFile::w_bool)
 			.def("w_color", &CScriptIniFile::w_color)
 			.def("w_fcolor", &CScriptIniFile::w_fcolor)
@@ -144,7 +144,7 @@ void CScriptIniFile::script_register(lua_State *L)
 			.def("section_for_each", &::section_for_each)
 			.def("set_readonly", &CScriptIniFile::set_readonly)
 
-			.def(					constructor<LPCSTR>())
+			.def(					constructor<const char*>())
 			.def("section_exist",	&CScriptIniFile::section_exist	)
 			.def("line_exist",		&CScriptIniFile::line_exist		)
 			.def("r_clsid",			&CScriptIniFile::r_clsid		)

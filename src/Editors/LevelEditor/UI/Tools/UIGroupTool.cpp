@@ -117,7 +117,7 @@ void UIGroupTool::MultiSelByRefObject(bool clear_prev)
 	LPU32Vec 	sellist;
 	if (Scene->GetQueryObjects(objlist, OBJCLASS_GROUP, 1, 1, -1)) {
 		for (ObjectIt it = objlist.begin(); it != objlist.end(); it++) {
-			LPCSTR N = ((CGroupObject*)*it)->RefName();
+			const char* N = ((CGroupObject*)*it)->RefName();
 			ObjectIt _F = Scene->FirstObj(OBJCLASS_GROUP);
 			ObjectIt _E = Scene->LastObj(OBJCLASS_GROUP);
 			for (; _F != _E; _F++) {
@@ -151,7 +151,7 @@ void UIGroupTool::SelByRefObject(bool flag)
 	ObjectList objlist;
 	
 	if (m_Current.empty()) {
-		LPCSTR N = m_Current.c_str();
+		const char* N = m_Current.c_str();
 		ObjectIt _F = Scene->FirstObj(OBJCLASS_GROUP);
 		ObjectIt _E = Scene->LastObj(OBJCLASS_GROUP);
 		for (; _F != _E; _F++) {

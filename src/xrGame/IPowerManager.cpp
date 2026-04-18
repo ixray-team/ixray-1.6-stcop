@@ -25,7 +25,7 @@ IPowerManager::~IPowerManager()
 	Device.seqFrame.Remove(this);
 }
 
-void IPowerManager::Load(LPCSTR section, CInventoryItem* iitem)
+void IPowerManager::Load(const char* section, CInventoryItem* iitem)
 {
 	if (!initialized)
 	{
@@ -162,7 +162,7 @@ bool IPowerManager::IstallPowerCell(PowerCell* oPowerCell)
 
 extern CSE_Abstract* CALifeSimulator__spawn_item2(
 	CALifeSimulator* self_,
-	LPCSTR section,
+	const char* section,
 	const Fvector& position,
 	u32 level_vertex_id,
 	GameGraph::_GRAPH_ID game_vertex_id,

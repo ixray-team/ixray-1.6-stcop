@@ -68,7 +68,7 @@ public:
 	static	float	get_current_kx					();
 	static	float	get_current_zx					();
 	static	float	get_current_zy					();
-	shared_str		get_xml_name					(LPCSTR fn);
+	shared_str		get_xml_name					(const char* fn);
 
 	const ui_shader& GetVectorShader(const std::string_view& subpath, float requested_width, float requested_height);
 	const ui_shader& GetVectorShader(const std::string_view& subpath, float requested_width, float requested_height, SVGTintRGBA tint);

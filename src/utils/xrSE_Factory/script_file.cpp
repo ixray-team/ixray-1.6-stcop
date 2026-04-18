@@ -133,12 +133,12 @@ int CScriptFile::GetNearestDebugLine(int nLine)
 	return 0;
 }
 
-BOOL CScriptFile::PositionBreakPoints()
+bool CScriptFile::PositionBreakPoints()
 {
 	if ( !CDbgLuaHelper::LoadDebugLines(this) )
 		return FALSE;
 
-/*	BOOL bModified = FALSE;
+/*	bool bModified = FALSE;
 	POSITION pos = m_breakPoints.GetStartPosition();
 	int nLine, nTemp, nNearest;
 	while (pos != NULL)
@@ -192,7 +192,7 @@ CString CProjectFile::GetNameExt()
 }
 */
 
-BOOL CScriptFile::HasBreakPoint(int nLine)
+bool CScriptFile::HasBreakPoint(int nLine)
 {
 	return m_breakPoints.find(nLine) != m_breakPoints.end();
 }
@@ -211,7 +211,7 @@ void CScriptFile::SetBreakPointsIn(CLuaEditor *pEditor)
 */
 }
 /*
-BOOL CScriptFile::HasFile(CString strPathName)
+bool CScriptFile::HasFile(CString strPathName)
 {
 	if(!m_strPathName.CompareNoCase(strPathName))
 		return TRUE;
@@ -229,7 +229,7 @@ BOOL CScriptFile::HasFile(CString strPathName)
 
 */
 /*
-BOOL CProjectFile::Load(CArchive &ar)
+bool CProjectFile::Load(CArchive &ar)
 {
 	RemoveAllDebugLines();
 	RemoveAllBreakPoints();
@@ -257,7 +257,7 @@ BOOL CProjectFile::Load(CArchive &ar)
 	return TRUE;
 }
 
-BOOL CProjectFile::Save(CArchive &ar)
+bool CProjectFile::Save(CArchive &ar)
 {
 	ar << m_strRelPathName;
 	ar << m_nMinBreakPoint;
@@ -278,7 +278,7 @@ BOOL CProjectFile::Save(CArchive &ar)
 }
 
 
-BOOL CProjectFile::IsModified()
+bool CProjectFile::IsModified()
 {
 	WIN32_FILE_ATTRIBUTE_DATA sourceFile, compiledFile;
 
@@ -297,7 +297,7 @@ BOOL CProjectFile::IsModified()
 	return ( sourceTime.QuadPart > compiledTime.QuadPart );
 }
 
-BOOL CProjectFile::Compile()
+bool CProjectFile::Compile()
 {
 	CExecutor m_exe;
 

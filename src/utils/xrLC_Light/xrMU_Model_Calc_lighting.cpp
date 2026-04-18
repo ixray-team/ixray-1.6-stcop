@@ -116,7 +116,7 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 		if (it2!=g_trans.end())	it2++;
 
 		// Search
-		BOOL found = FALSE;
+		bool found = FALSE;
 		for (; it!=it2; it++)
 		{
 			v_vertices&	VL		= it->second;

@@ -62,10 +62,10 @@ protected:
     FVF::L*		m_DD_pv;
     FVF::L*		m_DD_pv_start;
     u32 		m_DD_base;
-    BOOL		m_DD_wire;
-	void 		DD_DrawFace_flush		(BOOL try_again);
+    bool		m_DD_wire;
+	void 		DD_DrawFace_flush		(bool try_again);
 public:
-	void 		DD_DrawFace_begin		(BOOL bWire);
+	void 		DD_DrawFace_begin		(bool bWire);
 	void 		DD_DrawFace_push		(const Fvector& p0, const Fvector& p1, const Fvector& p2, u32 clr);
 	void 		DD_DrawFace_end			();
 public:
@@ -86,10 +86,10 @@ public:
 	void UpdateGrid(int number_of_cell, float square_size, int subdiv=10);
     void DestroyObjects();
     //----------------------------------------------------
-    virtual void  DrawCross(const Fvector& p, float szx1, float szy1, float szz1, float szx2, float szy2, float szz2, u32 clr, BOOL bRot45=false);
-    virtual void  DrawCross(const Fvector& p, float sz, u32 clr, BOOL bRot45=false){ DrawCross(p, sz,sz,sz, sz,sz,sz, clr, bRot45); }
+    virtual void  DrawCross(const Fvector& p, float szx1, float szy1, float szz1, float szx2, float szy2, float szz2, u32 clr, bool bRot45=false);
+    virtual void  DrawCross(const Fvector& p, float sz, u32 clr, bool bRot45=false){ DrawCross(p, sz,sz,sz, sz,sz,sz, clr, bRot45); }
     virtual void  DrawEntity(u32 clr, ref_shader s);
-    virtual void  DrawFlag(const Fvector& p, float heading, float height, float sz, float sz_fl, u32 clr, BOOL bDrawEntity);
+    virtual void  DrawFlag(const Fvector& p, float heading, float height, float sz, float sz_fl, u32 clr, bool bDrawEntity);
     virtual void  DrawRomboid(const Fvector& p, float radius, u32 clr);
 	virtual void  DrawJoint(const Fvector& p, float radius, u32 clr);
 
@@ -98,14 +98,14 @@ public:
     virtual void  DrawPointLight(const Fvector& p, float radius, u32 clr);
 
     virtual void  DrawSound(const Fvector& p, float radius, u32 clr);
-    virtual void  DrawLineSphere(const Fvector& p, float radius, u32 clr, BOOL bCross);
+    virtual void  DrawLineSphere(const Fvector& p, float radius, u32 clr, bool bCross);
 
-	virtual void  dbgDrawPlacement(const Fvector& p, int sz, u32 clr, LPCSTR caption=0, u32 clr_font=0xffffffff);
-    virtual void  dbgDrawVert(const Fvector& p0, u32 clr, LPCSTR caption=0);
-    virtual void  dbgDrawEdge(const Fvector& p0,	const Fvector& p1, u32 clr, LPCSTR caption=0);
-    virtual void  dbgDrawFace(const Fvector& p0,	const Fvector& p1, const Fvector& p2, u32 clr, LPCSTR caption=0);
+	virtual void  dbgDrawPlacement(const Fvector& p, int sz, u32 clr, const char* caption=0, u32 clr_font=0xffffffff);
+    virtual void  dbgDrawVert(const Fvector& p0, u32 clr, const char* caption=0);
+    virtual void  dbgDrawEdge(const Fvector& p0,	const Fvector& p1, u32 clr, const char* caption=0);
+    virtual void  dbgDrawFace(const Fvector& p0,	const Fvector& p1, const Fvector& p2, u32 clr, const char* caption=0);
 
-    virtual void  DrawFace(const Fvector& p0,	const Fvector& p1, const Fvector& p2, u32 clr_s, u32 clr_w, BOOL bSolid, BOOL bWire);
+    virtual void  DrawFace(const Fvector& p0,	const Fvector& p1, const Fvector& p2, u32 clr_s, u32 clr_w, bool bSolid, bool bWire);
     virtual void  DrawLine(const Fvector& p0,	const Fvector& p1, u32 clr);
     virtual void  DrawLink(const Fvector& p0, const Fvector& p1, float sz, u32 clr);
     IC virtual void  DrawFaceNormal(const Fvector& p0, const Fvector& p1, const Fvector& p2, float size, u32 clr){
@@ -122,28 +122,28 @@ public:
         box.getcenter(C);
         DrawSelectionBox(C,S,c);
     }
-    virtual void  DrawIdentSphere	(BOOL bSolid, BOOL bWire, u32 clr_s, u32 clr_w);
-    virtual void  DrawIdentSpherePart(BOOL bSolid, BOOL bWire, u32 clr_s, u32 clr_w);
-    virtual void  DrawIdentCone		(BOOL bSolid, BOOL bWire, u32 clr_s, u32 clr_w);
-	virtual void  DrawIdentCylinder	(BOOL bSolid, BOOL bWire, u32 clr_s, u32 clr_w);
-    virtual void  DrawIdentBox		(BOOL bSolid, BOOL bWire, u32 clr_s, u32 clr_w);
+    virtual void  DrawIdentSphere	(bool bSolid, bool bWire, u32 clr_s, u32 clr_w);
+    virtual void  DrawIdentSpherePart(bool bSolid, bool bWire, u32 clr_s, u32 clr_w);
+    virtual void  DrawIdentCone		(bool bSolid, bool bWire, u32 clr_s, u32 clr_w);
+	virtual void  DrawIdentCylinder	(bool bSolid, bool bWire, u32 clr_s, u32 clr_w);
+    virtual void  DrawIdentBox		(bool bSolid, bool bWire, u32 clr_s, u32 clr_w);
 
-    virtual void  DrawBox	(const Fvector& offs, const Fvector& Size, BOOL bSolid, BOOL bWire, u32 clr_s, u32 clr_w);
-    virtual void  DrawAABB	(const Fvector& p0, const Fvector& p1, u32 clr_s, u32 clr_w, BOOL bSolid, BOOL bWire);
-    virtual void  DrawAABB	(const Fmatrix& parent, const Fvector& center, const Fvector& size, u32 clr_s, u32 clr_w, BOOL bSolid, BOOL bWire);
+    virtual void  DrawBox	(const Fvector& offs, const Fvector& Size, bool bSolid, bool bWire, u32 clr_s, u32 clr_w);
+    virtual void  DrawAABB	(const Fvector& p0, const Fvector& p1, u32 clr_s, u32 clr_w, bool bSolid, bool bWire);
+    virtual void  DrawAABB	(const Fmatrix& parent, const Fvector& center, const Fvector& size, u32 clr_s, u32 clr_w, bool bSolid, bool bWire);
     virtual void  DrawOBB	(const Fmatrix& parent, const Fobb& box, u32 clr_s, u32 clr_w);
-	virtual void  DrawSphere	(const Fmatrix& parent, const Fvector& center, float radius, u32 clr_s, u32 clr_w, BOOL bSolid, BOOL bWire);
-	virtual void  DrawSphere	(const Fmatrix& parent, const Fsphere& S, u32 clr_s, u32 clr_w, BOOL bSolid, BOOL bWire){DrawSphere(parent,S.P,S.R,clr_s,clr_w,bSolid,bWire);}
-	virtual void  DrawCylinder(const Fmatrix& parent, const Fvector& center, const Fvector& dir, float height, float radius, u32 clr_s, u32 clr_w, BOOL bSolid, BOOL bWire);
-	virtual void  DrawCone	(const Fmatrix& parent, const Fvector& apex, const Fvector& dir, float height, float radius, u32 clr_s, u32 clr_w, BOOL bSolid, BOOL bWire);
-    virtual void  DrawPlane	(const Fvector& center, const Fvector2& scale, const Fvector& rotate, u32 clr_s, u32 clr_w, BOOL bCull, BOOL bSolid, BOOL bWire);
-    virtual void  DrawPlane	(const Fvector& p, const Fvector& n, const Fvector2& scale, u32 clr_s, u32 clr_w, BOOL bCull, BOOL bSolid, BOOL bWire);
-    virtual void  DrawRectangle(const Fvector& o, const Fvector& u, const Fvector& v, u32 clr_s, u32 clr_w, BOOL bSolid, BOOL bWire);
+	virtual void  DrawSphere	(const Fmatrix& parent, const Fvector& center, float radius, u32 clr_s, u32 clr_w, bool bSolid, bool bWire);
+	virtual void  DrawSphere	(const Fmatrix& parent, const Fsphere& S, u32 clr_s, u32 clr_w, bool bSolid, bool bWire){DrawSphere(parent,S.P,S.R,clr_s,clr_w,bSolid,bWire);}
+	virtual void  DrawCylinder(const Fmatrix& parent, const Fvector& center, const Fvector& dir, float height, float radius, u32 clr_s, u32 clr_w, bool bSolid, bool bWire);
+	virtual void  DrawCone	(const Fmatrix& parent, const Fvector& apex, const Fvector& dir, float height, float radius, u32 clr_s, u32 clr_w, bool bSolid, bool bWire);
+    virtual void  DrawPlane	(const Fvector& center, const Fvector2& scale, const Fvector& rotate, u32 clr_s, u32 clr_w, bool bCull, bool bSolid, bool bWire);
+    virtual void  DrawPlane	(const Fvector& p, const Fvector& n, const Fvector2& scale, u32 clr_s, u32 clr_w, bool bCull, bool bSolid, bool bWire);
+    virtual void  DrawRectangle(const Fvector& o, const Fvector& u, const Fvector& v, u32 clr_s, u32 clr_w, bool bSolid, bool bWire);
 
     virtual void  DrawGrid	();
     virtual void  DrawPivot	(const Fvector& pos, float sz=5.f);
 	virtual void  DrawAxis	(const Fmatrix& T);
-	virtual void  DrawObjectAxis(const Fmatrix& T, float sz, BOOL sel);
+	virtual void  DrawObjectAxis(const Fmatrix& T, float sz, bool sel);
 	virtual void  DrawSelectionRect(const Ivector2& m_SelStart, const Ivector2& m_SelEnd);
 
     virtual void  DrawIndexedPrimitive(ERHI_PRIMITIVE_TOPOLOGY prim_type, u32 pc, const Fvector& pos, const Fvector* vb, const u32& vb_size, const u32* ib, const u32& ib_size, const u32& clr_argb, float scale = 1.0f)
@@ -151,11 +151,11 @@ public:
     {}
 #endif
     ;
-    virtual void  DrawPrimitiveL(ERHI_PRIMITIVE_TOPOLOGY pt, u32 pc, Fvector* vertices, int vc, u32 color, BOOL bCull, BOOL bCycle);
-    virtual void  DrawPrimitiveTL(ERHI_PRIMITIVE_TOPOLOGY pt, u32 pc, FVF::TL* vertices, int vc, BOOL bCull, BOOL bCycle);
-    virtual void  DrawPrimitiveLIT(ERHI_PRIMITIVE_TOPOLOGY pt, u32 pc, FVF::LIT* vertices, int vc, BOOL bCull, BOOL bCycle);
+    virtual void  DrawPrimitiveL(ERHI_PRIMITIVE_TOPOLOGY pt, u32 pc, Fvector* vertices, int vc, u32 color, bool bCull, bool bCycle);
+    virtual void  DrawPrimitiveTL(ERHI_PRIMITIVE_TOPOLOGY pt, u32 pc, FVF::TL* vertices, int vc, bool bCull, bool bCycle);
+    virtual void  DrawPrimitiveLIT(ERHI_PRIMITIVE_TOPOLOGY pt, u32 pc, FVF::LIT* vertices, int vc, bool bCull, bool bCycle);
 
-    virtual void  OutText	(const Fvector& pos, LPCSTR text, u32 color=0xFF000000, u32 shadow_color=0xFF909090);
+    virtual void  OutText	(const Fvector& pos, const char* text, u32 color=0xFF000000, u32 shadow_color=0xFF909090);
 
 	virtual void 			OnRender		();
 };

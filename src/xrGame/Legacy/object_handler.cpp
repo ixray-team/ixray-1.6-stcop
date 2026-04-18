@@ -39,7 +39,7 @@ CObjectHandler::~CObjectHandler		()
 	xr_delete					(m_planner);
 }
 
-void CObjectHandler::Load			(LPCSTR section)
+void CObjectHandler::Load			(const char* section)
 {
 	inherited::Load				(section);
 }
@@ -59,12 +59,12 @@ void CObjectHandler::reinit			(CAI_Stalker *object)
 	m_clutched_hammer_enabled	= false;
 }
 
-void CObjectHandler::reload			(LPCSTR section)
+void CObjectHandler::reload			(const char* section)
 {
 	inherited::reload			(section);
 }
 
-BOOL CObjectHandler::net_Spawn		(CSE_Abstract* DC)
+bool CObjectHandler::net_Spawn		(CSE_Abstract* DC)
 {
 	if (!inherited::net_Spawn(DC))
 		return					(FALSE);

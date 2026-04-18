@@ -301,7 +301,7 @@ Fvector4 PS::CPACDef::FastUpdateValue(size_t& CurrentIndex, float& CurrentTime, 
     return CalculateIntermedialeValue(LowerKey, UpperKey, CurrentTime);
 }
 
-void PS::CPACDef::setName(LPCSTR name)
+void PS::CPACDef::setName(const char* name)
 {
     m_Name = name;
 }
@@ -319,7 +319,7 @@ void PS::CPACDef::Clone(PS::CPACDef* source)
     }
 }
 
-void PS::CPACDef::FillProp(LPCSTR pref, PropItemVec& items, void* owner)
+void PS::CPACDef::FillProp(const char* pref, PropItemVec& items, void* owner)
 {
     PHelper().CreateName(items,PrepareKey(pref,"Name"),&m_Name,(::ListItem*)owner);
     // TODO: Add disabled

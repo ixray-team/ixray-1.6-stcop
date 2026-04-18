@@ -200,7 +200,7 @@ void CUIRankingWnd::Init()
 		m_factions_list->SetWindowName("---fraction_list");
 		m_factions_list->m_sort_function = fastdelegate::MakeDelegate(this, &CUIRankingWnd::SortingLessFunction);
 
-		pcstr fract_section = "pda_rank_communities";
+		const char* fract_section = "pda_rank_communities";
 
 		if (pSettings->section_exist(fract_section))
 		{
@@ -248,7 +248,7 @@ void CUIRankingWnd::Init()
 	{
 		m_achievements->SetWindowName("achievements_list");
 
-		pcstr section = "achievements";
+		const char* section = "achievements";
 
 		if (pSettings->section_exist(section))
 		{
@@ -421,10 +421,10 @@ void CUIRankingWnd::get_statistic()
 
 	for(u8 i = 0; i < m_stat_count; ++i)
 	{
-		luabind::functor<LPCSTR> funct;
+		luabind::functor<const char*> funct;
 		if (ai().script_engine().functor("pda.get_stat", funct))
 		{
-			LPCSTR str = funct(i);
+			const char* str = funct(i);
 			//m_stat_info[i]->SetTextColor(color_rgba(170, 170, 170, 255));
 			m_stat_info[i]->TextItemControl()->SetColoringMode(true);
 			m_stat_info[i]->SetTextST(str);
@@ -435,8 +435,8 @@ void CUIRankingWnd::get_statistic()
 
 void CUIRankingWnd::get_best_monster()
 {
-	pcstr str;
-	luabind::functor<pcstr> functor;
+	const char* str;
+	luabind::functor<const char*> functor;
 
 	if (ai().script_engine().functor("pda.get_monster_back", functor))
 	{
@@ -475,10 +475,10 @@ void CUIRankingWnd::get_best_monster()
 
 void CUIRankingWnd::get_favorite_weapon()
 {
-	luabind::functor<pcstr> functor;
+	luabind::functor<const char*> functor;
 	if (!ai().script_engine().functor("pda.get_favorite_weapon", functor))
 		return;
-	pcstr str = functor();
+	const char* str = functor();
 
 	if(!xr_strcmp(str, ""))
 		return;
@@ -524,10 +524,10 @@ void CUIRankingWnd::get_value_from_script()
 
 	for (u8 i = 1; i < m_stat_count; ++i)
 	{
-		luabind::functor<pcstr> functor;
+		luabind::functor<const char*> functor;
 		if (ai().script_engine().functor("pda.get_stat", functor))
 		{
-			pcstr str = functor(i);
+			const char* str = functor(i);
 			m_stat_info[i]->SetTextST(str);
 		}
 	}

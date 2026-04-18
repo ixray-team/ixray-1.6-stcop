@@ -43,9 +43,9 @@ public:
 
 	virtual		u32						GetFacesCount(u16 bone_id = u16(-1)) { return 0; }
 	// Low level interface
-	virtual u16					_BCL	LL_BoneID(LPCSTR  B) = 0;
+	virtual u16					_BCL	LL_BoneID(const char*  B) = 0;
 	virtual u16					_BCL	LL_BoneID(const shared_str& B) = 0;
-	virtual LPCSTR				_BCL	LL_BoneName_dbg(u16 ID) = 0;
+	virtual const char*				_BCL	LL_BoneName_dbg(u16 ID) = 0;
 
 	virtual CInifile*			_BCL	LL_UserData() = 0;
 	virtual accel*						LL_Bones() = 0;
@@ -66,7 +66,7 @@ virtual	const IBoneData&		_BCL	GetBoneData(u16 bone_id) const = 0;
 	virtual ICF			void	 _BCL	LL_GetBoneLocalTransform(u16 bone_id, Fmatrix& result) {};
 	virtual ICF			void	 _BCL	LL_GetBoneWorldPosition(u16 bone_id, const Fmatrix& xform, Fvector& result) {};
 	virtual ICF			void	 _BCL	LL_GetBoneWorldTransform(u16 bone_id, const Fmatrix& xform, Fmatrix& result) {};
-	virtual ICF			void	 _BCL	CalculateBBox(BOOL bforce = TRUE) {};
+	virtual ICF			void	 _BCL	CalculateBBox(bool bforce = TRUE) {};
 
 	virtual ICF Fmatrix&				LL_GetTransform_R(u16 bone_id) = 0;
 	virtual Fobb&						LL_GetBox(u16 bone_id) = 0;
@@ -78,14 +78,14 @@ virtual	const IBoneData&		_BCL	GetBoneData(u16 bone_id) const = 0;
 	virtual u16					_BCL	LL_GetBoneRoot() = 0;
 	virtual void						LL_SetBoneRoot(u16 bone_id) = 0;
 
-	virtual BOOL				_BCL	LL_GetBoneVisible(u16 bone_id) = 0;
-	virtual void						LL_SetBoneVisible(u16 bone_id, BOOL val, BOOL bRecursive) = 0;
+	virtual bool				_BCL	LL_GetBoneVisible(u16 bone_id) = 0;
+	virtual void						LL_SetBoneVisible(u16 bone_id, bool val, bool bRecursive) = 0;
 	virtual VisMask				_BCL	LL_GetBonesVisible() = 0;
 	virtual void						LL_SetBonesVisible(VisMask mask) = 0;
 	virtual void						LL_SetBonesVisibleAll() = 0;
 
 	// Main functionality
-	virtual void						CalculateBones(BOOL bForceExact	= FALSE) = 0; // Recalculate skeleton
+	virtual void						CalculateBones(bool bForceExact	= FALSE) = 0; // Recalculate skeleton
 	virtual void						CalculateBones_Invalidate() = 0;
 	virtual void						Callback(UpdateCallback C, void* Param) = 0;
 

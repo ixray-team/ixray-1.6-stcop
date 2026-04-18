@@ -5,27 +5,27 @@
 
 using namespace luabind;
 
-void CDialogScriptHelper::AddPrecondition	(LPCSTR str)
+void CDialogScriptHelper::AddPrecondition	(const char* str)
 {
 	m_Preconditions.push_back	(str);
 }
-void CDialogScriptHelper::AddAction		(LPCSTR str)
+void CDialogScriptHelper::AddAction		(const char* str)
 {
 	m_ScriptActions.push_back	(str);
 }
-void CDialogScriptHelper::AddHasInfo		(LPCSTR str)
+void CDialogScriptHelper::AddHasInfo		(const char* str)
 {
 	m_HasInfo.push_back	(str);
 }
-void CDialogScriptHelper::AddDontHasInfo	(LPCSTR str)
+void CDialogScriptHelper::AddDontHasInfo	(const char* str)
 {
 	m_DontHasInfo.push_back	(str);
 }
-void CDialogScriptHelper::AddGiveInfo		(LPCSTR str)
+void CDialogScriptHelper::AddGiveInfo		(const char* str)
 {
 	m_GiveInfo.push_back	(str);
 }
-void CDialogScriptHelper::AddDisableInfo	(LPCSTR str)
+void CDialogScriptHelper::AddDisableInfo	(const char* str)
 {
 	m_DisableInfo.push_back	(str);
 }

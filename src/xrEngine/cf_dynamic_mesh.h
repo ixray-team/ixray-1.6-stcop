@@ -10,5 +10,5 @@ public:
 	CCF_DynamicMesh(CObject* _owner) :CCF_Skeleton(_owner)
 	{};
 
-	virtual BOOL _RayQuery(const collide::ray_defs& Q, collide::rq_results& R);
+	virtual bool _RayQuery(const collide::ray_defs& Q, collide::rq_results& R);
 };

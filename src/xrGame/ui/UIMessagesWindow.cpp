@@ -118,7 +118,7 @@ void CUIMessagesWindow::AddIconedPdaMessage(GAME_NEWS_DATA* news)
 {
 	CUIPdaMsgListItem *pItem			= m_pGameLog->AddPdaMessage();
 	
-	LPCSTR time_str = InventoryUtilities::GetTimeAsString( news->receive_time, InventoryUtilities::etpTimeToMinutes ).c_str();
+	const char* time_str = InventoryUtilities::GetTimeAsString( news->receive_time, InventoryUtilities::etpTimeToMinutes ).c_str();
 	pItem->UITimeText.SetText			(time_str);
 	if (pItem->UICaptionText)
 	{

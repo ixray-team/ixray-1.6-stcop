@@ -20,7 +20,7 @@
 #	include "phdebug.h"
 #endif
 
-void CWeaponMagazinedWGrenade::Load(LPCSTR section)
+void CWeaponMagazinedWGrenade::Load(const char* section)
 {
 	inherited::Load(section);
 	CRocketLauncher::Load(section);
@@ -32,7 +32,7 @@ void CWeaponMagazinedWGrenade::Load(LPCSTR section)
 
 	// load ammo classes SECOND (grenade_class)
 	m_ammoTypes2.clear();
-	LPCSTR				S = pSettings->r_string(section, "grenade_class");
+	const char*				S = pSettings->r_string(section, "grenade_class");
 	if (S && S[0])
 	{
 		string128		_ammoItem;
@@ -46,9 +46,9 @@ void CWeaponMagazinedWGrenade::Load(LPCSTR section)
 
 	iMagazineSize2 = iMagazineSize;
 
-	auto ReachInAllSections = [&](LPCSTR param_name)
+	auto ReachInAllSections = [&](const char* param_name)
 	{
-		LPCSTR reached_sect = section;
+		const char* reached_sect = section;
 		const shared_str hud_section = HudSection();
 		if (pSettings->line_exist(hud_section, param_name))
 		{
@@ -69,7 +69,7 @@ void CWeaponMagazinedWGrenade::Load(LPCSTR section)
 	}
 }
 
-void CWeaponMagazinedWGrenade::LoadSounds(LPCSTR section)
+void CWeaponMagazinedWGrenade::LoadSounds(const char* section)
 {
 	inherited::LoadSounds(section);
 
@@ -110,7 +110,7 @@ void CWeaponMagazinedWGrenade::net_Destroy()
 	inherited::net_Destroy();
 }
 
-BOOL CWeaponMagazinedWGrenade::net_Spawn(CSE_Abstract* DC)
+bool CWeaponMagazinedWGrenade::net_Spawn(CSE_Abstract* DC)
 {
 	CSE_ALifeItemWeapon* const weapon = DC->cast_item_weapon();
 	R_ASSERT(weapon);
@@ -119,7 +119,7 @@ BOOL CWeaponMagazinedWGrenade::net_Spawn(CSE_Abstract* DC)
 		inherited::net_Spawn_install_upgrades(weapon->m_upgrades);
 	}
 
-	BOOL l_res = inherited::net_Spawn(DC);
+	bool l_res = inherited::net_Spawn(DC);
 
 	UpdateGrenadeVisibility(!!iAmmoElapsed);
 	SetPending(FALSE);
@@ -176,7 +176,7 @@ shared_str CWeaponMagazinedWGrenade::SetCurrentReloadAnimation()
 
 	if (H_Parent() && H_Parent() == Level().CurrentControlEntity())
 	{
-		LPCSTR end_suffix = m_bGrenadeMode ? "_g" : "_w_gl";
+		const char* end_suffix = m_bGrenadeMode ? "_g" : "_w_gl";
 
 		if (m_bUseRevolverScheme && !IsGrenadeMode() && !IsMisfire() && !IsChangeAmmoType())
 		{
@@ -582,7 +582,7 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 			setEnabled(FALSE);
 
 			collide::rq_result RQ;
-			BOOL HasPick = Level().ObjectSpace.RayPick(p1, d, 300.0f, collide::rqtStatic, RQ, this);
+			bool HasPick = Level().ObjectSpace.RayPick(p1, d, 300.0f, collide::rqtStatic, RQ, this);
 
 			setEnabled(TRUE);
 			H_Parent()->setEnabled(TRUE);
@@ -812,7 +812,7 @@ bool CWeaponMagazinedWGrenade::CanAttach(PIItem pIItem)
 	}
 }
 
-bool CWeaponMagazinedWGrenade::CanDetach(LPCSTR item_section_name)
+bool CWeaponMagazinedWGrenade::CanDetach(const char* item_section_name)
 {
 	if (ALife::eAddonAttachable == m_eGrenadeLauncherStatus && 0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) && !xr_strcmp(*m_sGrenadeLauncherName, item_section_name))
 	{
@@ -866,7 +866,7 @@ bool CWeaponMagazinedWGrenade::Attach(PIItem pIItem, bool b_send_event)
 	}
 }
 
-bool CWeaponMagazinedWGrenade::Detach(LPCSTR item_section_name, bool b_spawn_item)
+bool CWeaponMagazinedWGrenade::Detach(const char* item_section_name, bool b_spawn_item)
 {
 	if (ALife::eAddonAttachable == m_eGrenadeLauncherStatus && 0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) && !xr_strcmp(*m_sGrenadeLauncherName, item_section_name))
 	{
@@ -955,7 +955,7 @@ shared_str CWeaponMagazinedWGrenade::SetCurrentStateAnimation(const shared_str& 
 		int GetElapsed = m_bGrenadeMode ? iAmmoElapsed2 : iAmmoElapsed;
 		bool empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 && GetElapsed == 0 : GetElapsed == 0;
 
-		LPCSTR end_suffix = m_bGrenadeMode ? "_g" : "_w_gl";
+		const char* end_suffix = m_bGrenadeMode ? "_g" : "_w_gl";
 
 		if (IsZoomed() && IsMisfire())
 		{
@@ -1102,9 +1102,9 @@ bool CWeaponMagazinedWGrenade::IsNecessaryItem(const shared_str& item_sect)
 		);
 }
 
-bool CWeaponMagazinedWGrenade::install_upgrade_ammo_class(LPCSTR section, bool test)
+bool CWeaponMagazinedWGrenade::install_upgrade_ammo_class(const char* section, bool test)
 {
-	LPCSTR str = {};
+	const char* str = {};
 
 	bool result = false;
 	bool result2 = false;
@@ -1137,9 +1137,9 @@ bool CWeaponMagazinedWGrenade::install_upgrade_ammo_class(LPCSTR section, bool t
 	return result2;
 }
 
-bool CWeaponMagazinedWGrenade::install_upgrade_impl(LPCSTR section, bool test)
+bool CWeaponMagazinedWGrenade::install_upgrade_impl(const char* section, bool test)
 {
-	LPCSTR str = {};
+	const char* str = {};
 	bool result = inherited::install_upgrade_impl(section, test);
 
 	bool result2 = process_if_exists_set(section, "grenade_class", str, test);
@@ -1286,13 +1286,13 @@ bool CWeaponMagazinedWGrenade::GetBriefInfo(II_BriefInfo& info)
 
 	if (ae != 0 && CurrVector.size() != 0)
 	{
-		LPCSTR ammo_type = m_ammoTypes[CurrVector.back().m_LocalAmmoType].c_str();
+		const char* ammo_type = m_ammoTypes[CurrVector.back().m_LocalAmmoType].c_str();
 		info.name._set(g_pStringTable->translate(pSettings->r_string(ammo_type, "inv_name_short")));
 		info.icon._set(ammo_type);
 	}
 	else
 	{
-		LPCSTR ammo_type = m_ammoTypes[CurrAmmoType].c_str();
+		const char* ammo_type = m_ammoTypes[CurrAmmoType].c_str();
 		info.name._set(g_pStringTable->translate(pSettings->r_string(ammo_type, "inv_name_short")));
 		info.icon._set(ammo_type);
 	}

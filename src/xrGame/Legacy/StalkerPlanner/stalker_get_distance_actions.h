@@ -19,7 +19,7 @@ protected:
 	typedef CStalkerActionCombatBase inherited;
 
 public:
-						CStalkerActionRunToCover	(CAI_Stalker *object, LPCSTR action_name = "");
+						CStalkerActionRunToCover	(CAI_Stalker *object, const char* action_name = "");
 	virtual void		initialize					();
 	virtual void		execute						();
 	virtual void		finalize					();
@@ -34,7 +34,7 @@ protected:
 	typedef CStalkerActionCombatBase inherited;
 
 public:
-						CStalkerActionWaitInCover	(CAI_Stalker *object, LPCSTR action_name = "");
+						CStalkerActionWaitInCover	(CAI_Stalker *object, const char* action_name = "");
 	virtual void		initialize					();
 	virtual void		execute						();
 	virtual void		finalize					();

@@ -9,7 +9,7 @@ class CDS0_Kinematics :
 {
 public:
 #ifdef DEBUG
-	BOOL dbg_single_use_marker;
+	bool dbg_single_use_marker;
 #endif
 	void CLBone(const CBoneData* bd, CBoneInstance& bi, const Fmatrix* parent, u8 mask_channel = (1 << 0));
 	virtual CBoneData* CreateBoneData(u16 ID) { return new CBoneData(ID); }
@@ -107,14 +107,14 @@ public:
 		iRoot = bone_id;
 	}
 
-	BOOL LL_GetBoneVisible(u16 bone_id) { VERIFY(bone_id < LL_BoneCount()); return visimask.is(bone_id); }
-	virtual void LL_SetBoneVisible(u16 bone_id, BOOL val, BOOL bRecursive);
+	bool LL_GetBoneVisible(u16 bone_id) { VERIFY(bone_id < LL_BoneCount()); return visimask.is(bone_id); }
+	virtual void LL_SetBoneVisible(u16 bone_id, bool val, bool bRecursive);
 	VisMask LL_GetBonesVisible() { return visimask; }
 	void LL_SetBonesVisible(VisMask mask);
 
 	virtual void				Release();
 	// Main functionality
-	virtual void CalculateBones(BOOL bForceExact = FALSE); // Recalculate skeleton
+	virtual void CalculateBones(bool bForceExact = FALSE); // Recalculate skeleton
 	virtual void CalculateBones_Invalidate();
 	virtual void Callback(UpdateCallback C, void* Param)
 	{
@@ -158,7 +158,7 @@ protected:
 	accel* bone_map_N; // bones  associations	(shared)	- sorted by name
 	accel* bone_map_P; // bones  associations	(shared)	- sorted by name-pointer
 
-	BOOL Update_Visibility;
+	bool Update_Visibility;
 	u32 UCalc_Time;
 	s32 UCalc_Visibox;
 

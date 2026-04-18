@@ -178,7 +178,7 @@ bool CScriptGameObject::in_smart_cover() const
 	return false;
 }
 
-void CScriptGameObject::set_dest_smart_cover(LPCSTR cover_id)
+void CScriptGameObject::set_dest_smart_cover(const char* cover_id)
 {
 	if (CAI_Stalker* stalker = object().cast_stalker())
 	{
@@ -213,7 +213,7 @@ CCoverPoint const* CScriptGameObject::get_dest_smart_cover()
 	return 0;
 }
 
-LPCSTR CScriptGameObject::get_dest_smart_cover_name()
+const char* CScriptGameObject::get_dest_smart_cover_name()
 {
 	if (CAI_Stalker* stalker = object().cast_stalker())
 	{
@@ -224,7 +224,7 @@ LPCSTR CScriptGameObject::get_dest_smart_cover_name()
 	return 0;
 }
 
-void CScriptGameObject::set_dest_loophole(LPCSTR loophole_id)
+void CScriptGameObject::set_dest_loophole(const char* loophole_id)
 {
 	if (CAI_Stalker* stalker = object().cast_stalker())
 	{
@@ -284,7 +284,7 @@ void CScriptGameObject::set_smart_cover_target(CScriptGameObject *enemy_object)
 	}
 }
 
-bool CScriptGameObject::in_loophole_fov(LPCSTR cover_id, LPCSTR loophole_id, Fvector object_position) const
+bool CScriptGameObject::in_loophole_fov(const char* cover_id, const char* loophole_id, Fvector object_position) const
 {
 	if (CAI_Stalker* stalker = object().cast_stalker())
 	{
@@ -306,7 +306,7 @@ bool CScriptGameObject::in_current_loophole_fov(Fvector object_position) const
 	return false;
 }
 
-bool CScriptGameObject::in_loophole_range(LPCSTR cover_id, LPCSTR loophole_id, Fvector object_position) const
+bool CScriptGameObject::in_loophole_range(const char* cover_id, const char* loophole_id, Fvector object_position) const
 {
 	if (CAI_Stalker* stalker = object().cast_stalker())
 	{

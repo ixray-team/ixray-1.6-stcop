@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-LPCSTR SIniFileStream::gen_name()
+const char* SIniFileStream::gen_name()
 {
 	++counter;
 	sprintf(tmp_buff,"%06d",counter);
@@ -53,7 +53,7 @@ void SIniFileStream::w_s8( s8 a)
 {
 	ini->w_s8(sect.c_str(),gen_name(),a);
 }
-void SIniFileStream::w_stringZ( LPCSTR S)
+void SIniFileStream::w_stringZ( const char* S)
 {
 	string4096		buff;
 	xr_sprintf	    (buff, sizeof(buff), "\"%s\"",(S)?S:"");

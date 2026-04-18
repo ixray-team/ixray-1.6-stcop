@@ -20,7 +20,7 @@ IC	CScriptWatchAction::CScriptWatchAction		(SightManager::ESightType tWatchType,
 	SetWatchType		(tWatchType);
 }
 
-IC	CScriptWatchAction::CScriptWatchAction		(SightManager::ESightType tWatchType, CScriptGameObject *tpObjectToWatch, LPCSTR bone_to_watch)
+IC	CScriptWatchAction::CScriptWatchAction		(SightManager::ESightType tWatchType, CScriptGameObject *tpObjectToWatch, const char* bone_to_watch)
 {
 	SetWatchType		(tWatchType);
 	SetWatchObject		(tpObjectToWatch);
@@ -58,7 +58,7 @@ IC	void CScriptWatchAction::SetWatchDirection	(const Fvector &tDirection)
 	m_bCompleted		= false;
 }
 
-IC	void CScriptWatchAction::SetWatchBone		(LPCSTR bone_to_watch)
+IC	void CScriptWatchAction::SetWatchBone		(const char* bone_to_watch)
 {
 	m_bone_to_watch		= bone_to_watch;
 	m_bCompleted		= false;

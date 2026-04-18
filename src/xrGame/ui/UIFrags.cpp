@@ -20,12 +20,12 @@ CUIFrags::~CUIFrags()
 	xr_delete(m_pBackB);
 }
 
-void CUIFrags::Init(CUIXml& xml_doc, LPCSTR path, LPCSTR backgrnd_path){
+void CUIFrags::Init(CUIXml& xml_doc, const char* path, const char* backgrnd_path){
 	m_pStats->InitStats(xml_doc, path, 0);
 	InitBackground(xml_doc, backgrnd_path);	
 }
 
-void CUIFrags::InitBackground(CUIXml& xml_doc, LPCSTR path){
+void CUIFrags::InitBackground(CUIXml& xml_doc, const char* path){
 	string256 _path;
 	CUIXmlInit::InitWindow(xml_doc, path, 0, this);
 	CUIXmlInit::InitStatic(xml_doc, xr_strconcat(_path, path, ":back_c"), 0, m_pBackC);

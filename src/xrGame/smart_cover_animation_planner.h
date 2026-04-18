@@ -51,7 +51,7 @@ private:
 			bool		hit_callback				(SHit const *hit);
 
 public:
-						animation_planner			(CAI_Stalker *object, LPCSTR action_name);
+						animation_planner			(CAI_Stalker *object, const char* action_name);
 	virtual				~animation_planner			();
 	virtual	void		setup						(CAI_Stalker *object, CPropertyStorage *storage);
 	virtual void		update						();
@@ -81,7 +81,7 @@ public:
 	IC		void		last_idle_time				(u32 const &value);
 	IC		u32 const	&last_lookout_time			() const;
 	IC		void		last_lookout_time			(u32 const &value);
-	virtual	LPCSTR		object_name					() const;
+	virtual	const char*		object_name					() const;
 };
 
 } // namespace smart_cover

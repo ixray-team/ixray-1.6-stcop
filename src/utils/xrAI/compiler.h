@@ -137,13 +137,13 @@ extern xr_vector<b_BuildTexture>	g_textures		;
 extern xr_vector<b_rc_face>			g_rc_faces		;
 
 // phases
-void	xrLoad			(LPCSTR name, bool draft_mode, bool skipThm);
+void	xrLoad			(const char* name, bool draft_mode, bool skipThm);
 void	xrCover			(bool pure_covers);
 void	xrMerge			();
 void	xrConvertAndLink();
 void	xrDisplay		();
 //void	xrPalettizeCovers();
-void	xrSaveNodes		(LPCSTR name, LPCSTR out_name);
+void	xrSaveNodes		(const char* name, const char* out_name);
 
 // constants
 const int	RCAST_MaxTris	= (2*1024);

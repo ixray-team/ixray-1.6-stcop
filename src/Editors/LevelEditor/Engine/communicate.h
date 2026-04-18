@@ -43,7 +43,7 @@ struct b_texture_real
 	string128			name;
 	u32					dwWidth;
 	u32					dwHeight;
-	BOOL				bHasAlpha;
+	bool				bHasAlpha;
 	u32					RESERVE;
 };
 
@@ -52,7 +52,7 @@ struct b_texture
 	string128			name = {};
 	u32					dwWidth;
 	u32					dwHeight;
-	BOOL				bHasAlpha;
+	bool				bHasAlpha;
 	RedImageTool::RedImage pSurface;
 };
 
@@ -159,7 +159,7 @@ struct b_params
 
     void SaveLTX(CInifile& ini)
     {
-    	LPCSTR section 	= "build_params";
+    	const char* section 	= "build_params";
     	ini.w_float		(section,"smooth_angle",m_sm_angle);
     	ini.w_float		(section,"weld_distance",m_weld_distance);
     	ini.w_float		(section,"light_pixel_per_meter",m_lm_pixels_per_meter);
@@ -177,7 +177,7 @@ struct b_params
     }
     void LoadLTX(CInifile& ini)
     {
-    	LPCSTR section 			= "build_params";
+    	const char* section 			= "build_params";
     	m_sm_angle				= ini.r_float		(section,"smooth_angle");
     	m_weld_distance			= ini.r_float		(section,"weld_distance");
     	m_lm_pixels_per_meter 	= ini.r_float		(section,"light_pixel_per_meter");

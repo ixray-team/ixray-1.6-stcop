@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Terrain.h"
 
-CTerrain::CTerrain(LPVOID data, LPCSTR name):
+CTerrain::CTerrain(LPVOID data, const char* name):
 	inherited(data,name), TerrainObject(new CEditableObject(name ? name : "terrain"))
 {
 	Construct(data);
@@ -129,7 +129,7 @@ void CTerrain::Scale(Fvector& amount)
 	HMap.Size = FScale;
 }
 
-void CTerrain::FillProp(LPCSTR pref, PropItemVec& items)
+void CTerrain::FillProp(const char* pref, PropItemVec& items)
 {
 	inherited::FillProp(pref, items);
 

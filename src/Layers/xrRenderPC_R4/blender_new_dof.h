@@ -3,9 +3,9 @@
 class CBlender_new_dof : public IBlender
 {
 public:
-    virtual LPCSTR  getComment()     { return "INTERNAL: new depth of field"; }
-    virtual BOOL    canBeDetailed()  { return FALSE; }
-    virtual BOOL    canBeLMAPped()   { return FALSE; }
+    virtual const char*  getComment()     { return "INTERNAL: new depth of field"; }
+    virtual bool    canBeDetailed()  { return FALSE; }
+    virtual bool    canBeLMAPped()   { return FALSE; }
 
     virtual void    Compile(CBlender_Compile& C);
 

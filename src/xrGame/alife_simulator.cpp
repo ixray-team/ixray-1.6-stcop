@@ -23,7 +23,7 @@
 #	include "moving_objects.h"
 #endif // DEBUG
 
-LPCSTR alife_section = "alife";
+const char* alife_section = "alife";
 
 XRCORE_API xr_hash_map<xr_string, CInifile*>* cached_ini_map;
 
@@ -83,7 +83,7 @@ CALifeSimulator::CALifeSimulator(xrServer* server, shared_str* command_line) :
 
 	}
 
-	LPCSTR						start_game_callback = pSettings->r_string(alife_section,"start_game_callback");
+	const char*						start_game_callback = pSettings->r_string(alife_section,"start_game_callback");
 	luabind::functor<void>		functor;
 	R_ASSERT2					(ai().script_engine().functor(start_game_callback,functor),"failed to get start game callback");
 	functor						();
@@ -124,7 +124,7 @@ void CALifeSimulator::setup_simulator	(CSE_ALifeObject *object)
 	object->m_alife_simulator	= this;
 }
 
-void CALifeSimulator::reload			(LPCSTR section)
+void CALifeSimulator::reload			(const char* section)
 {
 	CALifeUpdateManager::reload	(section);
 }

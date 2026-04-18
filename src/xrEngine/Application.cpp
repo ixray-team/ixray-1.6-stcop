@@ -8,7 +8,7 @@
 #include "../xrCore/Collision/ISpatial.h"
 #include "ILoadingScreen.h"
 
-ENGINE_API BOOL g_appLoaded = FALSE;
+ENGINE_API bool g_appLoaded = FALSE;
 
 struct _SoundProcessor :
 	public pureFrame
@@ -47,7 +47,7 @@ CApplication::CApplication()
 	Console->Show();
 
 	// App Title
-	loadingScreen = nullptr;
+	GLoadingScreen = nullptr;
 }
 
 CApplication::~CApplication()
@@ -198,15 +198,15 @@ void CApplication::LoadEnd()
 }
 
 void CApplication::SetLoadingScreen(ILoadingScreen* newScreen) {
-	if (loadingScreen) {
+	if (GLoadingScreen) {
 		Log("! Trying to create new loading screen, but there is already one..");
 		DestroyLoadingScreen();
 	}
 
-	loadingScreen = newScreen;
+	GLoadingScreen = newScreen;
 }
 
-void CApplication::DestroyLoadingScreen() { xr_delete(loadingScreen); }
+void CApplication::DestroyLoadingScreen() { xr_delete(GLoadingScreen); }
 
 void CApplication::LoadDraw()
 {
@@ -224,32 +224,34 @@ void CApplication::LoadDraw()
 	Device.End();
 }
 
-void CApplication::LoadForceFinish() {
-	if (loadingScreen)
-		loadingScreen->ForceFinish();
+void CApplication::LoadForceFinish()
+{
+	if (GLoadingScreen)
+		GLoadingScreen->ForceFinish();
 }
 
-void CApplication::SetLoadStageTitle(pcstr _ls_title)
+void CApplication::SetLoadStageTitle(const char* _ls_title)
 {
 	const static bool isLoadingStagesEnabled = EngineExternal()[EEngineExternalUI::ShowLoadingStages];
-	if (loadingScreen && isLoadingStagesEnabled)
-		loadingScreen->SetStageTitle(_ls_title);
+	if (GLoadingScreen && isLoadingStagesEnabled)
+	{
+		GLoadingScreen->SetStageTitle(_ls_title);
+	}
+	
 	Log(_ls_title);
 }
 
-void CApplication::LoadTitleInt(LPCSTR str1, LPCSTR str2, LPCSTR str3)
+void CApplication::LoadTitleInt(const char* str1, const char* str2, const char* str3)
 {
-	if (loadingScreen)
+	if (GLoadingScreen)
 	{
-		loadingScreen->SetStageTip(str1, str2, str3);
+		GLoadingScreen->SetStageTip(str1, str2, str3);
 	}
 }
 
 void CApplication::LoadStage()
 {
 	VERIFY(ll_dwReference);
-	// Msg("* phase time: %d ms", phase_timer.GetElapsed_ms());	phase_timer.Start();
-	// Msg("* phase cmem: %d K", Memory.mem_usage() / 1024);
 
 	if (g_pGamePersistent->GameType() == 1 && !xr_strcmp(g_pGamePersistent->m_game_params.m_alife, "alife"))
 		max_load_stage = 17;
@@ -269,7 +271,7 @@ void CApplication::OnFrame()
 	g_pEventManager->Event.OnFrame();
 }
 
-void CApplication::Level_Append(LPCSTR folder)
+void CApplication::Level_Append(const char* folder)
 {
 	string_path	N1, N2, N3, N4;
 	xr_strconcat(N1, folder, "level");
@@ -309,7 +311,7 @@ void CApplication::Level_Scan()
 	FS.file_list_close(folder);
 }
 
-void gen_logo_name(string_path& dest, LPCSTR level_name, int num)
+void gen_logo_name(string_path& dest, const char* level_name, int num)
 {
 	xr_strconcat(dest, "intro\\intro_", level_name);
 
@@ -370,11 +372,11 @@ void CApplication::Level_Set(u32 L)
 		}
 	}
 
-	if (path[0] && loadingScreen)
-		loadingScreen->SetLevelLogo(path);
+	if (path[0] && GLoadingScreen)
+		GLoadingScreen->SetLevelLogo(path);
 }
 
-int CApplication::Level_ID(LPCSTR name, LPCSTR ver, bool bSet)
+int CApplication::Level_ID(const char* name, const char* ver, bool bSet)
 {
 	int result = -1;
 
@@ -384,8 +386,8 @@ int CApplication::Level_ID(LPCSTR name, LPCSTR ver, bool bSet)
 	{
 		if (Arch.hSrcFile == 0)
 		{
-			LPCSTR ln = Arch.header->r_string("header", "level_name");
-			LPCSTR lv = Arch.header->r_string("header", "level_ver");
+			const char* ln = Arch.header->r_string("header", "level_name");
+			const char* lv = Arch.header->r_string("header", "level_ver");
 
 			if (0 == _stricmp(ln, name) && 0 == _stricmp(lv, ver))
 			{
@@ -418,15 +420,15 @@ int CApplication::Level_ID(LPCSTR name, LPCSTR ver, bool bSet)
 	return result;
 }
 
-CInifile* CApplication::GetArchiveHeader(LPCSTR name, LPCSTR ver)
+CInifile* CApplication::GetArchiveHeader(const char* name, const char* ver)
 {
 	for (CLocatorAPI::archive& Arch : FS.m_archives)
 	{
 		if (!Arch.header)
 			break;
 
-		LPCSTR ln = Arch.header->r_string("header", "level_name");
-		LPCSTR lv = Arch.header->r_string("header", "level_ver");
+		const char* ln = Arch.header->r_string("header", "level_name");
+		const char* lv = Arch.header->r_string("header", "level_ver");
 
 		if (0 == _stricmp(ln, name) && 0 == _stricmp(lv, ver))
 		{
@@ -449,8 +451,8 @@ void CApplication::load_draw_internal()
 {
 	Device.m_pRender->SetupDefaultTarget();
 
-	if (loadingScreen)
-		loadingScreen->Update(load_stage, max_load_stage);
+	if (GLoadingScreen)
+		GLoadingScreen->Update(load_stage, max_load_stage);
 	else
 		Device.m_pRender->ClearTarget();
 }

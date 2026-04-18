@@ -118,7 +118,7 @@ void CShaderTool::OnFrame()
 	Current()->OnFrame();
 }
 
-void CShaderTool::ZoomObject(BOOL bOnlySel)
+void CShaderTool::ZoomObject(bool bOnlySel)
 {
 	Current()->ZoomObject(bOnlySel);
 }
@@ -177,17 +177,17 @@ void CShaderTool::ApplyChanges()
 	Current()->ApplyChanges();
 }
 
-void CShaderTool::ShowProperties(LPCSTR focused_item)
+void CShaderTool::ShowProperties(const char* focused_item)
 {
 	//m_ItemProps->ShowProperties();
 }
 
-LPCSTR CShaderTool::CurrentToolsName()
+const char* CShaderTool::CurrentToolsName()
 {
 	return Current()?Current()->ToolsName():"";
 }
 
-LPCSTR CShaderTool::GetInfo()
+const char* CShaderTool::GetInfo()
 {
 	return 0;
 }
@@ -205,12 +205,12 @@ ISHTools* CShaderTool::FindTools(TElTabSheet* sheet)
     return 0;
 }*/
 
-bool CShaderTool::Load(LPCSTR name)
+bool CShaderTool::Load(const char* name)
 {
 	return true;
 }
 
-bool CShaderTool::Save(LPCSTR name, bool bInternal)
+bool CShaderTool::Save(const char* name, bool bInternal)
 {
 	bool bRes = true;
     for (ToolsPairIt it=m_Tools.begin(); it!=m_Tools.end(); it++)
@@ -296,7 +296,7 @@ void CShaderTool::RealUpdateList()
 void  CShaderTool::OnItemFocused(ListItem* items)
 {
     if (!items)return;
-    LPCSTR name = 0;
+    const char* name = 0;
     Current()->m_CurrentItem = 0;
 
     Current()->m_CurrentItem = items;

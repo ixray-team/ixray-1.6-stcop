@@ -38,7 +38,7 @@ struct SDrawStaticStruct :public IPureDestroyableObject
 	void			Update();
 	CUIStatic*		wnd()		{return m_static;}
 	bool			IsActual()	const;
-	void			SetText		(LPCSTR);
+	void			SetText		(const char*);
 };
 
 
@@ -71,7 +71,7 @@ class CMapListHelper
 	TSTORAGE							m_storage;
 	GAME_WEATHERS						m_weathers;
 	void						Load			();
-	void						LoadMapInfo		(LPCSTR file_name, const xr_string& map_name, LPCSTR map_ver="1.0");
+	void						LoadMapInfo		(const char* file_name, const xr_string& map_name, const char* map_ver="1.0");
 	SGameTypeMaps*				GetMapListInt	(const shared_str& game_type);
 public:
 	const SGameTypeMaps&		GetMapListFor	(const shared_str& game_type);
@@ -191,20 +191,20 @@ public:
 
 	virtual void		HideShownDialogs		();
 
-			void		AddCustomMessage		(LPCSTR id, float x, float y, float font_size, CGameFont *pFont, u16 alignment, u32 color);
-			void		AddCustomMessage		(LPCSTR id, float x, float y, float font_size, CGameFont *pFont, u16 alignment, u32 color/*, LPCSTR def_text*/, float flicker );
-			void		CustomMessageOut		(LPCSTR id, LPCSTR msg, u32 color);
-			void		RemoveCustomMessage		(LPCSTR id);
+			void		AddCustomMessage		(const char* id, float x, float y, float font_size, CGameFont *pFont, u16 alignment, u32 color);
+			void		AddCustomMessage		(const char* id, float x, float y, float font_size, CGameFont *pFont, u16 alignment, u32 color/*, const char* def_text*/, float flicker );
+			void		CustomMessageOut		(const char* id, const char* msg, u32 color);
+			void		RemoveCustomMessage		(const char* id);
 
-	SDrawStaticStruct*	AddCustomStatic			(LPCSTR id, bool bSingleInstance, float ttlDefault = -1.0f);
-	SDrawStaticStruct*	AddHudMessage			(LPCSTR text, LPCSTR text2 = nullptr, LPCSTR id = nullptr, bool trnslate_second_text = false, float time = 3.f, bool bSingleInstance = true);
-	SDrawStaticStruct*	GetCustomStatic			(LPCSTR id);
-	void				RemoveCustomStatic		(LPCSTR id);
+	SDrawStaticStruct*	AddCustomStatic			(const char* id, bool bSingleInstance, float ttlDefault = -1.0f);
+	SDrawStaticStruct*	AddHudMessage			(const char* text, const char* text2 = nullptr, const char* id = nullptr, bool trnslate_second_text = false, float time = 3.f, bool bSingleInstance = true);
+	SDrawStaticStruct*	GetCustomStatic			(const char* id);
+	void				RemoveCustomStatic		(const char* id);
 
-	void				CommonMessageOut		(LPCSTR text);
+	void				CommonMessageOut		(const char* text);
 
-	virtual void		ChangeTotalMoneyIndicator(LPCSTR newMoneyString)		{};
-	virtual void		DisplayMoneyChange		(LPCSTR deltaMoney)			{};
+	virtual void		ChangeTotalMoneyIndicator(const char* newMoneyString)		{};
+	virtual void		DisplayMoneyChange		(const char* deltaMoney)			{};
 	virtual void		DisplayMoneyBonus		(KillMessageStruct* bonus)	{};
 	
 	virtual void		UnLoad					();

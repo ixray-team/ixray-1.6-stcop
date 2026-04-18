@@ -6,23 +6,23 @@
 // token type definition
 struct XRCORE_API xr_token
 {
-	LPCSTR name = nullptr;
+	const char* name = nullptr;
 	int id = 0;
 
 	xr_token() = default;
-	xr_token(LPCSTR _name, int _id) : name(_name), id(_id) {}
+	xr_token(const char* _name, int _id) : name(_name), id(_id) {}
 	template<XRay::Concepts::Enum enumT>
-	xr_token(LPCSTR _name, enumT _id) : name(_name), id((int)_id) {}
+	xr_token(const char* _name, enumT _id) : name(_name), id((int)_id) {}
 };
 
-ICF LPCSTR get_token_name(xr_token* tokens, int key)
+ICF const char* get_token_name(xr_token* tokens, int key)
 {
     for (int k=0; tokens[k].name; k++)
     	if (key==tokens[k].id) return tokens[k].name;
     return "";
 }
 
-ICF int get_token_id(xr_token* tokens, LPCSTR key)
+ICF int get_token_id(xr_token* tokens, const char* key)
 {
     for (int k=0; tokens[k].name; k++)
     	if ( _stricmp(tokens[k].name,key)==0 ) 
@@ -32,8 +32,8 @@ ICF int get_token_id(xr_token* tokens, LPCSTR key)
 
 struct XRCORE_API xr_token2
 {
-	LPCSTR	name;
-	LPCSTR	info;
+	const char*	name;
+	const char*	info;
 	int 	id;
 };
 
@@ -54,7 +54,7 @@ ICF float	_sqrt_sse	(float x)
 ICF float	_sqrt	(float x)		{ return sqrtf(x); }
 
 // check for: Signaling NaN, Quiet NaN, Negative infinity ( �INF), Positive infinity (+INF), Negative denormalized, Positive denormalized
-ICF BOOL _valid(const float x)
+ICF bool _valid(const float x)
 {
 	const int cls = std::fpclassify(x);
 	switch (cls)
@@ -71,7 +71,7 @@ ICF BOOL _valid(const float x)
 }
 
 // check for: Signaling NaN, Quiet NaN, Negative infinity ( �INF), Positive infinity (+INF), Negative denormalized, Positive denormalized
-ICF BOOL _valid(const double x)
+ICF bool _valid(const double x)
 {
 	const int cls = std::fpclassify(x);
 	switch (cls)
@@ -107,12 +107,12 @@ ICF int							xr_strcmp				( const char* S1, const char* S2 )
 ICF int							xr_strncmp				( const char* S1, const char* S2, int n )
 {	return (int)strncmp(S1,S2,n);	}
 
-ICF errno_t xr_strcpy	( LPSTR destination, size_t const destination_size, LPCSTR source )
+ICF errno_t xr_strcpy	( LPSTR destination, size_t const destination_size, const char* source )
 {
 	return						strncpy_s( destination, destination_size, source, destination_size );
 }
 
-ICF errno_t xr_strcat		( LPSTR destination, size_t const buffer_size, LPCSTR source )
+ICF errno_t xr_strcat		( LPSTR destination, size_t const buffer_size, const char* source )
 {
 	size_t const destination_length	= xr_strlen(destination);
 	LPSTR i						= destination + destination_length;
@@ -120,14 +120,14 @@ ICF errno_t xr_strcat		( LPSTR destination, size_t const buffer_size, LPCSTR sou
 	if ( i > e )
 		return					0;
 
-	for ( LPCSTR j = source; *j && (i != e); ++i, ++j )
+	for ( const char* j = source; *j && (i != e); ++i, ++j )
 		*i						= *j;
 
 	*i							= 0;
 	return						0;
 }
 
-ICF int __cdecl xr_sprintf	( LPSTR destination, size_t const buffer_size, LPCSTR format_string, ... )
+ICF int __cdecl xr_sprintf	( LPSTR destination, size_t const buffer_size, const char* format_string, ... )
 {
 	va_list args;
 	va_start					( args, format_string);
@@ -135,7 +135,7 @@ ICF int __cdecl xr_sprintf	( LPSTR destination, size_t const buffer_size, LPCSTR
 }
 
 template <int count>
-ICF int __cdecl xr_sprintf	( char (&destination)[count], LPCSTR format_string, ... )
+ICF int __cdecl xr_sprintf	( char (&destination)[count], const char* format_string, ... )
 {
 	va_list args;
 	va_start					( args, format_string);
@@ -143,13 +143,13 @@ ICF int __cdecl xr_sprintf	( char (&destination)[count], LPCSTR format_string, .
 }
 
 template <int count>
-ICF errno_t xr_strcpy	( char (&destination)[count], LPCSTR source )
+ICF errno_t xr_strcpy	( char (&destination)[count], const char* source )
 {
 	return						xr_strcpy( destination, count, source );
 }
 
 template <int count>
-ICF errno_t xr_strcat	( char (&destination)[count], LPCSTR source )
+ICF errno_t xr_strcat	( char (&destination)[count], const char* source )
 {
 	return						xr_strcat( destination, count, source );
 }

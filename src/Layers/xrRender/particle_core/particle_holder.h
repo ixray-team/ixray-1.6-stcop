@@ -72,7 +72,7 @@ namespace PAPI
 			particles[i] = std::move(particles[--p_count]);
 		}
 
-		ICF BOOL AddParticle(const Fvector& pos, const Fvector& posB,
+		ICF bool AddParticle(const Fvector& pos, const Fvector& posB,
 			const Fvector& size, const Fvector& rot, const Fvector& vel, const Fvector& rot_vel,
 			u32 color, const float age = 0.0f, u16 frame = 0, u16 flags = 0)
 		{
@@ -204,7 +204,7 @@ namespace PAPI
 			// Step through all the actions in the action list.
 			for (ParticleAction* PA : m_actions)
 			{
-				BOOL r = PA->m_Flags.is(ParticleAction::ALLOW_ROTATE);
+				bool r = PA->m_Flags.is(ParticleAction::ALLOW_ROTATE);
 				const Fmatrix& m = r ? full : mT;
 				PA->Transform(m);
 				switch (PA->type)
@@ -230,7 +230,7 @@ namespace PAPI
 
 		}
 
-		ICF void StopEffect(BOOL deffered)
+		ICF void StopEffect(bool deffered)
 		{
 			for (ParticleAction* PA : m_actions)
 			{

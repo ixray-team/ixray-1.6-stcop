@@ -10,10 +10,10 @@ public:
 					CWeaponAutomaticShotgun	();
 	virtual			~CWeaponAutomaticShotgun();
 
-	virtual void	Load					(LPCSTR section);
-	virtual void	LoadSounds				(LPCSTR section);
+	virtual void	Load					(const char* section);
+	virtual void	LoadSounds				(const char* section);
 	
-	virtual BOOL	net_Spawn				(CSE_Abstract* DC);
+	virtual bool	net_Spawn				(CSE_Abstract* DC);
 	virtual void	net_Export				(NET_Packet& P);
 	virtual void	net_Import				(NET_Packet& P);
 

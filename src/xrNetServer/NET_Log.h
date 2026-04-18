@@ -23,7 +23,7 @@ private:
 	void		FlushLog();
 	
 public:
-	INetLog(LPCSTR sFileName, u32 dwStartTime);
+	INetLog(const char* sFileName, u32 dwStartTime);
 	~INetLog();	
 
 	void		LogPacket(u32 Time, NET_Packet* pPacket, bool IsIn = FALSE);

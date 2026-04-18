@@ -12,7 +12,7 @@ void InitHudSoundSettings()
 	psHUDStepSoundVolume = READ_IF_EXISTS(pSettings, r_float, "hud_sound", "hud_step_sound_vol_k", 1.0f);
 }
 
-void HUD_SOUND_ITEM::LoadSound(LPCSTR section, LPCSTR line, HUD_SOUND_ITEM& hud_snd, int type)
+void HUD_SOUND_ITEM::LoadSound(const char* section, const char* line, HUD_SOUND_ITEM& hud_snd, int type)
 {
 	hud_snd.m_activeSnd = nullptr;
 	hud_snd.sounds.clear();
@@ -31,9 +31,9 @@ void HUD_SOUND_ITEM::LoadSound(LPCSTR section, LPCSTR line, HUD_SOUND_ITEM& hud_
 	}//while
 }
 
-void HUD_SOUND_ITEM::LoadSound(LPCSTR section, LPCSTR line, ref_sound& snd, int type, float* volume, float* delay)
+void HUD_SOUND_ITEM::LoadSound(const char* section, const char* line, ref_sound& snd, int type, float* volume, float* delay)
 {
-	LPCSTR str = pSettings->r_string(section, line);
+	const char* str = pSettings->r_string(section, line);
 	string256 buf_str;
 
 	int	count = _GetItemCount(str);
@@ -164,7 +164,7 @@ void HUD_SOUND_COLLECTION::Clear()
 	m_sound_items.clear();
 }
 
-HUD_SOUND_ITEM* HUD_SOUND_COLLECTION::FindSoundItem(LPCSTR alias, bool b_assert)
+HUD_SOUND_ITEM* HUD_SOUND_COLLECTION::FindSoundItem(const char* alias, bool b_assert)
 {
 	xr_vector<HUD_SOUND_ITEM>::iterator it = std::find(m_sound_items.begin(),m_sound_items.end(),alias);
 	
@@ -201,13 +201,13 @@ void HUD_SOUND_COLLECTION::PlaySound(const char* alias, const Fvector& position,
 	}
 }
 
-void HUD_SOUND_COLLECTION::StopSound(LPCSTR alias)
+void HUD_SOUND_COLLECTION::StopSound(const char* alias)
 {
 	HUD_SOUND_ITEM* snd_item = FindSoundItem(alias, true);
 	HUD_SOUND_ITEM::StopSound(*snd_item);
 }
 
-void HUD_SOUND_COLLECTION::SetPosition(LPCSTR alias, const Fvector& pos)
+void HUD_SOUND_COLLECTION::SetPosition(const char* alias, const Fvector& pos)
 {
     HUD_SOUND_ITEM* snd_item = FindSoundItem(alias, false);
     if (snd_item != nullptr && snd_item->playing())
@@ -224,7 +224,7 @@ void HUD_SOUND_COLLECTION::StopAllSounds()
 	}
 }
 
-void HUD_SOUND_COLLECTION::LoadSound(LPCSTR section, LPCSTR line, LPCSTR alias, bool exclusive, int type)
+void HUD_SOUND_COLLECTION::LoadSound(const char* section, const char* line, const char* alias, bool exclusive, int type)
 {
 	HUD_SOUND_ITEM* snd_item = FindSoundItem(alias, false);
 	if (snd_item)
@@ -268,7 +268,7 @@ void HUD_SOUND_COLLECTION_LAYERED::StopAllSounds()
 	}
 }
 
-void HUD_SOUND_COLLECTION_LAYERED::StopSound(LPCSTR alias)
+void HUD_SOUND_COLLECTION_LAYERED::StopSound(const char* alias)
 {
 	for (HUD_SOUND_COLLECTION& it : m_sound_items)
 	{
@@ -279,7 +279,7 @@ void HUD_SOUND_COLLECTION_LAYERED::StopSound(LPCSTR alias)
 	}
 }
 
-void HUD_SOUND_COLLECTION_LAYERED::SetPosition(LPCSTR alias, const Fvector& pos)
+void HUD_SOUND_COLLECTION_LAYERED::SetPosition(const char* alias, const Fvector& pos)
 {
 	for (HUD_SOUND_COLLECTION& it : m_sound_items)
 	{
@@ -290,7 +290,7 @@ void HUD_SOUND_COLLECTION_LAYERED::SetPosition(LPCSTR alias, const Fvector& pos)
 	}
 }
 
-void HUD_SOUND_COLLECTION_LAYERED::PlaySound(LPCSTR alias, const Fvector& position, const CObject* parent, bool hud_mode, bool looped, bool allowOverlap, u8 index)
+void HUD_SOUND_COLLECTION_LAYERED::PlaySound(const char* alias, const Fvector& position, const CObject* parent, bool hud_mode, bool looped, bool allowOverlap, u8 index)
 {
 	for (HUD_SOUND_COLLECTION& it : m_sound_items)
 	{
@@ -301,7 +301,7 @@ void HUD_SOUND_COLLECTION_LAYERED::PlaySound(LPCSTR alias, const Fvector& positi
 	}
 }
 
-HUD_SOUND_ITEM* HUD_SOUND_COLLECTION_LAYERED::FindSoundItem(LPCSTR alias, bool b_assert)
+HUD_SOUND_ITEM* HUD_SOUND_COLLECTION_LAYERED::FindSoundItem(const char* alias, bool b_assert)
 {
 	for (HUD_SOUND_COLLECTION& it : m_sound_items)
 	{
@@ -314,14 +314,14 @@ HUD_SOUND_ITEM* HUD_SOUND_COLLECTION_LAYERED::FindSoundItem(LPCSTR alias, bool b
     return nullptr;
 }
 
-void HUD_SOUND_COLLECTION_LAYERED::LoadSound(LPCSTR section, LPCSTR line, LPCSTR alias, bool exclusive, int type)
+void HUD_SOUND_COLLECTION_LAYERED::LoadSound(const char* section, const char* line, const char* alias, bool exclusive, int type)
 {
 	if (!pSettings->line_exist(section, line))
 	{
 		return;
 	}
 
-	LPCSTR str = pSettings->r_string(section, line);
+	const char* str = pSettings->r_string(section, line);
 	string256 buf_str;
 
 	int	count = _GetItemCount(str);
@@ -354,9 +354,9 @@ void HUD_SOUND_COLLECTION_LAYERED::LoadSound(LPCSTR section, LPCSTR line, LPCSTR
 	}
 }
 
-void HUD_SOUND_COLLECTION_LAYERED::LoadSound(CInifile const* ini, LPCSTR section, LPCSTR line, LPCSTR alias, bool exclusive, int type)
+void HUD_SOUND_COLLECTION_LAYERED::LoadSound(CInifile const* ini, const char* section, const char* line, const char* alias, bool exclusive, int type)
 {
-	LPCSTR str = ini->r_string(section, line);
+	const char* str = ini->r_string(section, line);
 	string256 buf_str;
 
 	int	count = _GetItemCount(str);

@@ -49,15 +49,15 @@ public:
 	virtual					~CWeapon			();
 
 	// Generic
-	virtual void			Load				(LPCSTR section);
+	virtual void			Load				(const char* section);
 
-	virtual BOOL			net_Spawn			(CSE_Abstract* DC);
+	virtual bool			net_Spawn			(CSE_Abstract* DC);
 	virtual void			net_Destroy			();
 	virtual void			net_Export			(NET_Packet& P);
 	virtual void			net_Import			(NET_Packet& P);
 	virtual void			net_Relcase			(CObject* object);
 
-	virtual BOOL			AlwaysTheCrow       ();
+	virtual bool			AlwaysTheCrow       ();
 	virtual CWeapon			*cast_weapon			()					{return this;}
 	virtual CWeaponBinoculars* cast_weapon_binoculars() { return nullptr; }
 	virtual CWeaponKnife* cast_weapon_knife() { return nullptr; }
@@ -72,7 +72,7 @@ public:
 	//serialization
 	virtual void			save				(NET_Packet &output_packet);
 	virtual void			load				(IReader &input_packet);
-	virtual BOOL			net_SaveRelevant	()								{return inherited::net_SaveRelevant();}
+	virtual bool			net_SaveRelevant	()								{return inherited::net_SaveRelevant();}
 
 	virtual void			UpdateCL			();
 	virtual void			shedule_Update		(u32 dt);
@@ -95,7 +95,7 @@ public:
 	virtual	void			Hit					(SHit* pHDS);
 
 	virtual void			reinit				();
-	virtual void			reload				(LPCSTR section);
+	virtual void			reload				(const char* section);
 	virtual void			create_physic_shell	();
 	virtual void			activate_physic_shell();
 	virtual void			setup_physic_shell	();
@@ -168,16 +168,16 @@ public:
 
 	enum { undefined_ammo_type = u8(-1) };
 
-	IC BOOL					IsValid				()	const		{	return iAmmoElapsed;						}
+	IC bool					IsValid				()	const		{	return iAmmoElapsed;						}
 	// Does weapon need's update?
-	BOOL					IsUpdating			();
+	bool					IsUpdating			();
 
 
 	bool					IsMisfire			() const;
 	bool					CheckForMisfire		();
 
 
-	BOOL					AutoSpawnAmmo		() const		{ return m_bAutoSpawnAmmo; };
+	bool					AutoSpawnAmmo		() const		{ return m_bAutoSpawnAmmo; };
 	bool					IsTriStateReload	() const		{ return m_bTriStateReload;}
 	EWeaponSubStates		GetReloadState		() const		{ return (EWeaponSubStates)m_sub_state;}
 	u8						m_sub_state;
@@ -186,7 +186,7 @@ protected:
 	// a misfire happens, you'll need to rearm weapon
 	bool					bMisfire;				
 
-	BOOL					m_bAutoSpawnAmmo;
+	bool					m_bAutoSpawnAmmo;
 public:
 			bool IsGrenadeLauncherAttached	() const;
 			bool IsScopeAttached			() const;
@@ -224,7 +224,7 @@ public:
 		SRecoilPattern m_hipfire_pattern;
 		SRecoilPattern* m_current_pattern;
 
-		void LoadRecoilPatterns(LPCSTR section);
+		void LoadRecoilPatterns(const char* section);
 		void ApplyPattern();
 		void StopPattern();
 		// для доступа к паттерну отдачи
@@ -241,7 +241,7 @@ public:
 
 protected:
 	// Вспомогательные методы
-	void LoadBulletPattern(LPCSTR section, LPCSTR line, SRecoilPattern& pattern);
+	void LoadBulletPattern(const char* section, const char* line, SRecoilPattern& pattern);
 	void StartRecoilPattern();
 	SRecoilPattern* GetPatternByName(const shared_str& name);
 
@@ -272,10 +272,10 @@ protected:
 	const shared_str GetScopeName() const;
 	void UpdateAltScope();
 	shared_str GetNameWithAttachmentScope();
-	bool bReloadSectionScope(LPCSTR section);
-	bool bLoadAltScopesParams(LPCSTR section);
-	void LoadOriginalScopesParams(LPCSTR section);
-	void LoadCurrentScopeParams(LPCSTR section);
+	bool bReloadSectionScope(const char* section);
+	bool bLoadAltScopesParams(const char* section);
+	void LoadOriginalScopesParams(const char* section);
+	void LoadCurrentScopeParams(const char* section);
 	const shared_str& GetSilencerName			() const{return m_sSilencerName;}
 
 	IC void	ForceUpdateAmmo						()		{ m_BriefInfo_CalcFrame = 0; }
@@ -480,7 +480,7 @@ protected:
 		
 //		Fvector			m_ZoomDof;
 		Fvector4		m_ReloadDof;
-		BOOL			m_bUseDynamicZoom;
+		bool			m_bUseDynamicZoom;
 		shared_str		m_sUseZoomPostprocess;
 		shared_str		m_sUseBinocularVision;
 
@@ -556,15 +556,15 @@ public:
 	int m_strap_bone0_id;
 	int m_strap_bone1_id;
 	bool m_strapped_mode_rifle;
-	IC		LPCSTR			strap_bone0			() const {return m_strap_bone0;}
-	IC		LPCSTR			strap_bone1			() const {return m_strap_bone1;}
+	IC		const char*			strap_bone0			() const {return m_strap_bone0;}
+	IC		const char*			strap_bone1			() const {return m_strap_bone1;}
 	IC		void			strapped_mode		(bool value) {m_strapped_mode = value;}
 	IC		bool			strapped_mode		() const {return m_strapped_mode;}
 	bool m_can_be_strapped_rifle;
 
 protected:
-	LPCSTR					m_strap_bone0;
-	LPCSTR					m_strap_bone1;
+	const char*					m_strap_bone0;
+	const char*					m_strap_bone1;
 	Fmatrix					m_StrapOffset;
 	Fmatrix m_StrapOffset_alt;
 	bool					m_strapped_mode;
@@ -592,7 +592,7 @@ protected:
 	virtual void			UpdateHudAdditonal		(Fmatrix&);
 	IC		void			UpdateFireDependencies	()			{ if (dwFP_Frame==Device.dwFrame) return; UpdateFireDependencies_internal(); };
 
-	virtual void			LoadFireParams		(LPCSTR section);
+	virtual void			LoadFireParams		(const char* section);
 public:	
 	IC		const Fvector&	get_LastFP				()			{ UpdateFireDependencies(); return m_current_firedeps.vLastFP;	}
 	IC		const Fvector&	get_LastFP2				()			{ UpdateFireDependencies(); return m_current_firedeps.vLastFP2;	}
@@ -723,7 +723,7 @@ public:
 
 	virtual void			OnMagazineEmpty		();
 			void			SpawnAmmo			(u32 boxCurr = 0xffffffff, 
-													LPCSTR ammoSect = NULL, 
+													const char* ammoSect = NULL, 
 													u32 ParentID = 0xffffffff);
 	bool					SwitchAmmoType		(u32 flags);
 
@@ -838,29 +838,29 @@ public:
 	virtual bool			use_crosshair				() const;
 			bool			show_crosshair				();
 			bool			show_indicators				();
-	virtual BOOL			ParentMayHaveAimBullet		();
-	virtual BOOL			ParentIsActor				();
+	virtual bool			ParentMayHaveAimBullet		();
+	virtual bool			ParentIsActor				();
 	
 private:
-	virtual	bool			install_upgrade_ammo_class	( LPCSTR section, bool test );
-			bool			install_upgrade_disp		( LPCSTR section, bool test );
-			bool			install_upgrade_hit			( LPCSTR section, bool test );
-			bool			install_upgrade_addon		( LPCSTR section, bool test );
+	virtual	bool			install_upgrade_ammo_class	( const char* section, bool test );
+			bool			install_upgrade_disp		( const char* section, bool test );
+			bool			install_upgrade_hit			( const char* section, bool test );
+			bool			install_upgrade_addon		( const char* section, bool test );
 			
-			bool			install_upgrade_hud_sect(LPCSTR section, bool test);
-			bool			install_upgrade_hud_sect_silencer(LPCSTR section, bool test);
-			bool			install_upgrade_hud_sect_scope(LPCSTR section, bool test);
-			bool			install_upgrade_hud_sect_gl(LPCSTR section, bool test);
+			bool			install_upgrade_hud_sect(const char* section, bool test);
+			bool			install_upgrade_hud_sect_silencer(const char* section, bool test);
+			bool			install_upgrade_hud_sect_scope(const char* section, bool test);
+			bool			install_upgrade_hud_sect_gl(const char* section, bool test);
 
-			bool			install_upgrade_bones		( LPCSTR section, bool test );
-			bool			install_upgrade_ammo_bones	( LPCSTR section, bool test );
+			bool			install_upgrade_bones		( const char* section, bool test );
+			bool			install_upgrade_ammo_bones	( const char* section, bool test );
 
-			bool			install_upgrade_torch_laser	( LPCSTR section, bool test );
-			bool			install_upgrade_scope_zoom( LPCSTR section, bool test );
+			bool			install_upgrade_torch_laser	( const char* section, bool test );
+			bool			install_upgrade_scope_zoom( const char* section, bool test );
 
-			bool			install_upgrade_fast_knife ( LPCSTR section, bool test );
+			bool			install_upgrade_fast_knife ( const char* section, bool test );
 protected:
-	virtual bool			install_upgrade_impl		( LPCSTR section, bool test );
+	virtual bool			install_upgrade_impl		( const char* section, bool test );
 
 private:
 	float					m_hit_probability[egdCount];

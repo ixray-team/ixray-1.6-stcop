@@ -74,7 +74,7 @@ void ExtractCubeFacesFromCrossRGBA(const u8* src, int W, int H, int pitch, std::
 }
 
 
-int DXTCompressImageNVTT(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth)
+int DXTCompressImageNVTT(const char* out_name, u8* raw_data, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth)
 {
 	R_ASSERT(0 != w && 0 != h);
 	gFileOut = _open(out_name, _O_WRONLY | _O_BINARY | _O_CREAT | _O_TRUNC, _S_IWRITE);

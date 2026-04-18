@@ -6,7 +6,7 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "Torch.h"
 
-void CHelmet::Load(LPCSTR section)
+void CHelmet::Load(const char* section)
 {
 	inherited::Load(section);
 
@@ -42,7 +42,7 @@ void CHelmet::OnMoveToRuck(const SInvItemPlace& previous_place)
 	}
 }
 
-bool CHelmet::install_upgrade_impl(LPCSTR section, bool test)
+bool CHelmet::install_upgrade_impl(const char* section, bool test)
 {
 	bool result = inherited::install_upgrade_impl(section, test);
 

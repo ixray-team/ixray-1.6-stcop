@@ -6,7 +6,7 @@
 
 constexpr u32 m_sounds_num = 20;
 
-void CAnimNotifyPlaySound::Construct(const CInifile& ini, LPCSTR sect)
+void CAnimNotifyPlaySound::Construct(const CInifile& ini, const char* sect)
 {
     m_sound_to_play = ini.r_string(sect, "sound");
     for (u32 i = 0; i < m_sounds_num; i++)

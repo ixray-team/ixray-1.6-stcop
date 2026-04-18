@@ -44,7 +44,7 @@ CUIStatic::~CUIStatic()
 	xr_delete(m_pTextControl);
 }
 
-void CUIStatic::SetXformLightAnim(LPCSTR lanim, bool bCyclic)
+void CUIStatic::SetXformLightAnim(const char* lanim, bool bCyclic)
 {
 	if(lanim && lanim[0]!=0)
 		m_lanim_xform.m_lanim			= LALib.FindItem(lanim);
@@ -367,12 +367,12 @@ CGameFont* CUIStatic::GetFont()
 	return TextItemControl()->GetFont();
 }
 
-void CUIStatic::SetText(LPCSTR txt)
+void CUIStatic::SetText(const char* txt)
 {
 	TextItemControl()->SetText(txt); 
 }
 
-void CUIStatic::SetTextIfNodeExist(LPCSTR txt)
+void CUIStatic::SetTextIfNodeExist(const char* txt)
 {
 	if (!m_text_control_exists)
 		return;

@@ -77,7 +77,7 @@ void UISpawnTool::DrawObjectsList()
 void UISpawnTool::SelByRefObject(bool flag)
 {
 	ObjectList objlist;
-	LPCSTR N = Current();
+	const char* N = Current();
 	if (N) {
 		ObjectIt _F = Scene->FirstObj(OBJCLASS_SPAWNPOINT);
 		ObjectIt _E = Scene->LastObj(OBJCLASS_SPAWNPOINT);
@@ -95,7 +95,7 @@ void UISpawnTool::MultiSelByRefObject(bool clear_prev)
 	LPU32Vec 	sellist;
 	if (Scene->GetQueryObjects(objlist, OBJCLASS_SPAWNPOINT, 1, 1, -1)) {
 		for (ObjectIt it = objlist.begin(); it != objlist.end(); it++) {
-			LPCSTR N = ((CSpawnPoint*)*it)->RefName();
+			const char* N = ((CSpawnPoint*)*it)->RefName();
 			ObjectIt _F = Scene->FirstObj(OBJCLASS_SPAWNPOINT);
 			ObjectIt _E = Scene->LastObj(OBJCLASS_SPAWNPOINT);
 			for (; _F != _E; _F++) {
@@ -134,7 +134,7 @@ void UISpawnTool::RefreshList()
 	for (CInifile::Sect& sect : sections)
 	{
 		shared_str& sect_name = sect.Name;
-		LPCSTR val;
+		const char* val;
 		if (sect.line_exist("$spawn", &val))
 		{
 			shared_str caption = pSettings->r_string_wb(sect_name, "$spawn");
@@ -180,7 +180,7 @@ void UISpawnTool::OnItemFocused(ListItem* item)
 		else if (strcmp(item->Key(), ENVMOD_CHOOSE_NAME) == 0)
 			m_Current = ENVMOD_CHOOSE_NAME;
 		else
-			m_Current = (LPCSTR)item->m_Object;
+			m_Current = (const char*)item->m_Object;
 	}
 	ExecCommand(COMMAND_RENDER_FOCUS);
 }

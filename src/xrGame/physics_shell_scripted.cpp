@@ -9,7 +9,7 @@
 using namespace luabind;
 
 
-cphysics_element_scripted*	cphysics_shell_scripted::get_Element( LPCSTR bone_name )				
+cphysics_element_scripted*	cphysics_shell_scripted::get_Element( const char* bone_name )				
 { 
 	CPhysicsElement* E = 	physics_impl().get_Element( bone_name );
 	if( !E )
@@ -32,7 +32,7 @@ cphysics_element_scripted*	cphysics_shell_scripted::get_ElementByStoreOrder		( u
 }
 
 
-cphysics_joint_scripted	*cphysics_shell_scripted::get_Joint( LPCSTR bone_name )
+cphysics_joint_scripted	*cphysics_shell_scripted::get_Joint( const char* bone_name )
 {
 	CPhysicsJoint* J = 	physics_impl().get_Joint( bone_name );
 	if(!J)
@@ -61,11 +61,11 @@ void cphysics_shell_scripted::script_register( lua_State *L )
 		[
 			class_<cphysics_shell_scripted>("physics_shell")
 			.def("apply_force",					(void (cphysics_shell_scripted::*)(float,float,float))(&cphysics_shell_scripted::applyForce))
-			.def("get_element_by_bone_name",	(cphysics_element_scripted*(cphysics_shell_scripted::*)(LPCSTR))(&cphysics_shell_scripted::get_Element))
+			.def("get_element_by_bone_name",	(cphysics_element_scripted*(cphysics_shell_scripted::*)(const char*))(&cphysics_shell_scripted::get_Element))
 			.def("get_element_by_bone_id",		(cphysics_element_scripted*(cphysics_shell_scripted::*)(u16))(&cphysics_shell_scripted::get_Element))
 			.def("get_element_by_order",		(cphysics_element_scripted*(cphysics_shell_scripted::*)(u16))(&cphysics_shell_scripted::get_ElementByStoreOrder))
 			.def("get_elements_number",			&cphysics_shell_scripted::get_ElementsNumber)
-			.def("get_joint_by_bone_name",		(cphysics_joint_scripted*(cphysics_shell_scripted::*)(LPCSTR))(&cphysics_shell_scripted::get_Joint))
+			.def("get_joint_by_bone_name",		(cphysics_joint_scripted*(cphysics_shell_scripted::*)(const char*))(&cphysics_shell_scripted::get_Joint))
 			.def("get_joint_by_bone_id",		(cphysics_joint_scripted*(cphysics_shell_scripted::*)(u16))(&cphysics_shell_scripted::get_Joint))
 			.def("get_joint_by_order",			&cphysics_shell_scripted::get_JointByStoreOrder)
 			.def("get_joints_number",			&cphysics_shell_scripted::get_JointsNumber)

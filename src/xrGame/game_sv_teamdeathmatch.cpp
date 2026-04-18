@@ -12,25 +12,25 @@
 
 //-------------------------------------------------------
 extern	s32		g_sv_dm_dwFragLimit;
-extern	BOOL	g_sv_dm_bPDAHunt;
+extern	bool	g_sv_dm_bPDAHunt;
 //-------------------------------------------------------
-BOOL		g_sv_tdm_bAutoTeamBalance		= FALSE;
-BOOL		g_sv_tdm_bAutoTeamSwap			= TRUE;
-BOOL		g_sv_tdm_bFriendlyIndicators	= FALSE;
-BOOL		g_sv_tdm_bFriendlyNames			= FALSE;
+bool		g_sv_tdm_bAutoTeamBalance		= FALSE;
+bool		g_sv_tdm_bAutoTeamSwap			= TRUE;
+bool		g_sv_tdm_bFriendlyIndicators	= FALSE;
+bool		g_sv_tdm_bFriendlyNames			= FALSE;
 float		g_sv_tdm_fFriendlyFireModifier	= 1.0f;
 //-------------------------------------------------------
 int			g_sv_tdm_iTeamKillLimit			= 3;
 int			g_sv_tdm_bTeamKillPunishment	= TRUE;
 //-------------------------------------------------------
-BOOL	game_sv_TeamDeathmatch::isFriendlyFireEnabled	()	{return (int(g_sv_tdm_fFriendlyFireModifier*100.0f) > 0);};
+bool	game_sv_TeamDeathmatch::isFriendlyFireEnabled	()	{return (int(g_sv_tdm_fFriendlyFireModifier*100.0f) > 0);};
 float	game_sv_TeamDeathmatch::GetFriendlyFire			()	{ return (int(g_sv_tdm_fFriendlyFireModifier*100.0f) > 0) ? g_sv_tdm_fFriendlyFireModifier : 0.0f;};
-BOOL	game_sv_TeamDeathmatch::Get_AutoTeamBalance		()	{return g_sv_tdm_bAutoTeamBalance		; };
-BOOL	game_sv_TeamDeathmatch::Get_AutoTeamSwap		()	{return g_sv_tdm_bAutoTeamSwap			; };
-BOOL	game_sv_TeamDeathmatch::Get_FriendlyIndicators	()	{return g_sv_tdm_bFriendlyIndicators	; };
-BOOL	game_sv_TeamDeathmatch::Get_FriendlyNames		()	{return g_sv_tdm_bFriendlyNames			; };
+bool	game_sv_TeamDeathmatch::Get_AutoTeamBalance		()	{return g_sv_tdm_bAutoTeamBalance		; };
+bool	game_sv_TeamDeathmatch::Get_AutoTeamSwap		()	{return g_sv_tdm_bAutoTeamSwap			; };
+bool	game_sv_TeamDeathmatch::Get_FriendlyIndicators	()	{return g_sv_tdm_bFriendlyIndicators	; };
+bool	game_sv_TeamDeathmatch::Get_FriendlyNames		()	{return g_sv_tdm_bFriendlyNames			; };
 int		game_sv_TeamDeathmatch::Get_TeamKillLimit		()	{return g_sv_tdm_iTeamKillLimit			; };
-BOOL	game_sv_TeamDeathmatch::Get_TeamKillPunishment	()	{return g_sv_tdm_bTeamKillPunishment	; };
+bool	game_sv_TeamDeathmatch::Get_TeamKillPunishment	()	{return g_sv_tdm_bTeamKillPunishment	; };
 //-------------------------------------------------------
 void	game_sv_TeamDeathmatch::Create					(shared_str& options)
 {
@@ -234,7 +234,7 @@ void game_sv_TeamDeathmatch::OnPlayerConnect	(ClientID id_who)
 
 	xrClientData* xrCData	=	m_server->ID_to_client(id_who);
 	game_PlayerState*	ps_who	=	get_id	(id_who);
-//	LPCSTR	options				=	get_name_id	(id_who);
+//	const char*	options				=	get_name_id	(id_who);
 	ps_who->team				=	AutoTeam();//u8(get_option_i(options,"team",AutoTeam()));
 
 
@@ -599,7 +599,7 @@ void	game_sv_TeamDeathmatch::AutoSwapTeams			()
 	teams_swaped = true;
 }
 
-void game_sv_TeamDeathmatch::WriteGameState(CInifile& ini, LPCSTR sect, bool bRoundResult)
+void game_sv_TeamDeathmatch::WriteGameState(CInifile& ini, const char* sect, bool bRoundResult)
 {
 	inherited::WriteGameState(ini, sect, bRoundResult);
 
@@ -611,7 +611,7 @@ void game_sv_TeamDeathmatch::WriteGameState(CInifile& ini, LPCSTR sect, bool bRo
 	}
 }
 
-BOOL game_sv_TeamDeathmatch::OnTouchItem(CSE_ActorMP *actor, CSE_Abstract *item)
+bool game_sv_TeamDeathmatch::OnTouchItem(CSE_ActorMP *actor, CSE_Abstract *item)
 {
 	VERIFY(actor);
 	VERIFY(item);
@@ -743,7 +743,7 @@ void game_sv_TeamDeathmatch::OnDetachItem(CSE_ActorMP *actor, CSE_Abstract *item
 }
 
 
-BOOL game_sv_TeamDeathmatch::OnTouch(u16 eid_who, u16 eid_what, BOOL bForced)
+bool game_sv_TeamDeathmatch::OnTouch(u16 eid_who, u16 eid_what, bool bForced)
 {
 	CSE_ActorMP *e_who = smart_cast<CSE_ActorMP*>(m_server->ID_to_entity(eid_who));
 	if (!e_who)

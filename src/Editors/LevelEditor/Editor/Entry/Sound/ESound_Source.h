@@ -40,13 +40,13 @@ public:
     virtual const Fvector& GetPosition	()		 const				{ return m_Params.position; 	}
     virtual void 	SetPosition		(const Fvector& pos)	{ m_Params.position.set(pos); if (m_Source._feedback()) m_Source.set_position(m_Params.position);	}
 public:
-					ESoundSource	(LPVOID data, LPCSTR name);
+					ESoundSource	(LPVOID data, const char* name);
 	void 			Construct		(LPVOID data);
 					~ESoundSource	();
     virtual bool	CanAttach		() {return true;}
     
-    LPCSTR			GetSourceWAV	(){return *m_WAVName;}
-    void			SetSourceWAV	(LPCSTR fname);
+    const char*			GetSourceWAV	(){return *m_WAVName;}
+    void			SetSourceWAV	(const char* fname);
     void			Play			(){m_Command=stPlay;}
     void			Stop			(){m_Command=stStop;}
     void			Simulate		(){m_Command=stSimulate;}
@@ -56,12 +56,12 @@ public:
     virtual bool 	FrustumPick		(const CFrustum& frustum);
     virtual	void	OnFrame			();
   	virtual bool 		LoadStream			(IReader&);
-  	virtual bool 		LoadLTX				(CInifile& ini, LPCSTR sect_name);
+  	virtual bool 		LoadLTX				(CInifile& ini, const char* sect_name);
 	virtual void 		SaveStream			(IWriter&);
-  	virtual void 		SaveLTX				(CInifile& ini, LPCSTR sect_name);
+  	virtual void 		SaveLTX				(CInifile& ini, const char* sect_name);
 	virtual bool 	GetBox			(Fbox& box) ;
 	virtual void 	Scale			(Fvector& amount){;}
-	virtual void	FillProp		(LPCSTR pref, PropItemVec& values);
+	virtual void	FillProp		(const char* pref, PropItemVec& values);
 	virtual bool 	GetSummaryInfo	(SSceneSummary* inf);
     virtual bool	ExportGame		(SExportStreams* data);
 };

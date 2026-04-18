@@ -10,7 +10,7 @@
 #include "alife_object_registry.h"
 #include "ai_debug.h"
 
-CALifeObjectRegistry::CALifeObjectRegistry	(LPCSTR section)
+CALifeObjectRegistry::CALifeObjectRegistry	(const char* section)
 {
 }
 

@@ -15,7 +15,7 @@ public:
 	AntigasFilter();
 	virtual	~AntigasFilter();
 
-	virtual void Load(LPCSTR section) override;
+	virtual void Load(const char* section) override;
 
 	bool IsAllowed();
 

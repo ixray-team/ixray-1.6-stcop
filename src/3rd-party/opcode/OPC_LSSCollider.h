@@ -82,11 +82,11 @@
 							void			_CollideNoPrimitiveTest(const AABBQuantizedNode* node);
 							void			_CollideNoPrimitiveTest(const AABBQuantizedNoLeafNode* node);
 			// Overlap tests
-		inline_				BOOL			LSSContainsBox(const IceMaths::Point& bc, const IceMaths::Point& be);
-		inline_				BOOL			LSSAABBOverlap(const IceMaths::Point& center, const IceMaths::Point& extents);
-		inline_				BOOL			LSSTriOverlap(const IceMaths::Point& vert0, const IceMaths::Point& vert1, const IceMaths::Point& vert2);
+		inline_				bool			LSSContainsBox(const IceMaths::Point& bc, const IceMaths::Point& be);
+		inline_				bool			LSSAABBOverlap(const IceMaths::Point& center, const IceMaths::Point& extents);
+		inline_				bool			LSSTriOverlap(const IceMaths::Point& vert0, const IceMaths::Point& vert1, const IceMaths::Point& vert2);
 			// Init methods
-							BOOL			InitQuery(LSSCache& cache, const IceMaths::LSS& lss, const IceMaths::Matrix4x4* worldl=null, const IceMaths::Matrix4x4* worldm=null);
+							bool			InitQuery(LSSCache& cache, const IceMaths::LSS& lss, const IceMaths::Matrix4x4* worldl=null, const IceMaths::Matrix4x4* worldm=null);
 	};
 
 	class OPCODE_API HybridLSSCollider : public LSSCollider

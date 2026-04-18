@@ -7,7 +7,7 @@ class CAnimNotifyPlayParticle : public IAnimNotify
 {
     shared_str m_particle_to_play;
 public:
-    void Construct(const CInifile& ini, LPCSTR sect) override;
+    void Construct(const CInifile& ini, const char* sect) override;
     void Execute(IRenderVisual* visual, u16 bone_id) override;
     
 };

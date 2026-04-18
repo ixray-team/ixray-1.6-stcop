@@ -10,7 +10,7 @@
 #include "UIInventoryUtilities.h"
 #include "../../xrEngine/string_table.h"
 
-CUIStatic* init_static_field(CUIXml& uiXml, LPCSTR path, LPCSTR path2)
+CUIStatic* init_static_field(CUIXml& uiXml, const char* path, const char* path2)
 {
 	CUIStatic* S					= new CUIStatic();
 	string512						buff;
@@ -21,7 +21,7 @@ CUIStatic* init_static_field(CUIXml& uiXml, LPCSTR path, LPCSTR path2)
 	return							S;
 }
 
-void CUIMapLocationHint::Init(CUIXml& uiXml, LPCSTR path)
+void CUIMapLocationHint::Init(CUIXml& uiXml, const char* path)
 {
 	CUIXmlInit						xml_init;
 
@@ -91,7 +91,7 @@ void CUIMapLocationHint::Draw_()
 	inherited::Draw			();
 }
 
-void CUIMapLocationHint::SetInfoStr(LPCSTR text)
+void CUIMapLocationHint::SetInfoStr(const char* text)
 {
 	SetInfoMode				(1);
 	CUIStatic* S			= m_info["simple_text"];

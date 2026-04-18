@@ -21,7 +21,7 @@ CAI_Flesh::~CAI_Flesh()
 	xr_delete(StateMan);
 }
 
-BOOL CAI_Flesh::net_Spawn (CSE_Abstract* DC) 
+bool CAI_Flesh::net_Spawn (CSE_Abstract* DC) 
 {
 	if (!inherited::net_Spawn(DC))
 		return(FALSE);
@@ -29,7 +29,7 @@ BOOL CAI_Flesh::net_Spawn (CSE_Abstract* DC)
 	return TRUE;
 }
 
-void CAI_Flesh::Load(LPCSTR section)
+void CAI_Flesh::Load(const char* section)
 {
 	inherited::Load(section);
 

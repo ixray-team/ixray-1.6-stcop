@@ -1096,7 +1096,7 @@ void CSVGStorage::EraseDocumentLruByPathKey(const xr_string& pathKey)
 	}
 }
 
-CSVGStorage::SvgDocumentLruEntry* CSVGStorage::AccessDocumentLru(const xr_string& pathKey, LPCSTR resolvedPathForValidate)
+CSVGStorage::SvgDocumentLruEntry* CSVGStorage::AccessDocumentLru(const xr_string& pathKey, const char* resolvedPathForValidate)
 {
 	for (size_t i = 0; i < m_docLruSlots.size(); ++i)
 	{
@@ -1121,7 +1121,7 @@ CSVGStorage::SvgDocumentLruEntry* CSVGStorage::AccessDocumentLru(const xr_string
 	return nullptr;
 }
 
-void CSVGStorage::InsertDocumentLru(const xr_string& pathKey, LPCSTR resolvedPath, std::unique_ptr<lunasvg::Document> doc, time_t mtime, u32 fileSize)
+void CSVGStorage::InsertDocumentLru(const xr_string& pathKey, const char* resolvedPath, std::unique_ptr<lunasvg::Document> doc, time_t mtime, u32 fileSize)
 {
 	EraseDocumentLruByPathKey(pathKey);
 	SvgDocumentLruEntry slot;

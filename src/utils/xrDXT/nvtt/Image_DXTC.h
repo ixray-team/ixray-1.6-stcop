@@ -59,7 +59,7 @@ public:
     Image_DXTC();
     virtual ~Image_DXTC();
 
-    bool LoadFromFile(LPCSTR filename); // true if success
+    bool LoadFromFile(const char* filename); // true if success
     void Decompress();
     void SaveAsRaw(); // save decompressed bits
     BYTE* GetCompDataPointer() { return m_pCompBytes; };

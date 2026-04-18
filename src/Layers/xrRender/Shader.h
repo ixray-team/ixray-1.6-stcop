@@ -31,7 +31,7 @@ struct ECORE_API STextureList :
 	typedef xr_vector<std::pair<u32,ref_texture> > inherited_vec;
 						~STextureList	();
 
-						IC BOOL		equal (const STextureList& base) const
+						IC bool		equal (const STextureList& base) const
 						{
 							if (size()!=base.size())			return FALSE;
 							for (u32 cmp=0; cmp<size(); cmp++)	{
@@ -121,7 +121,7 @@ struct	  ECORE_API		SPass			: public xr_resource_flagged									{
 
 						~SPass			();
 
-	BOOL equal(const SPass& other);
+	bool equal(const SPass& other);
 };
 typedef	resptr_core<SPass,resptr_base<SPass> >												ref_pass;
 
@@ -147,8 +147,8 @@ public:
 
 						ShaderElement& operator=(const ShaderElement& Other) = delete;
 
-	BOOL				equal			(ShaderElement& S);
-	BOOL				equal			(ShaderElement* S);
+	bool				equal			(ShaderElement& S);
+	bool				equal			(ShaderElement* S);
 	void _copy(const ShaderElement& Other);
 };
 typedef	resptr_core<ShaderElement,resptr_base<ShaderElement> >								ref_selement;
@@ -163,15 +163,15 @@ public:
 	Shader& operator=(const Shader& Other) = delete;
 
 						~Shader			();
-	BOOL				equal			(Shader& S);
-	BOOL				equal			(Shader* S);
+	bool				equal			(Shader& S);
+	bool				equal			(Shader* S);
 
 	void _copy(Shader& Other);
 };
 struct 	 ECORE_API	resptrcode_shader	: public resptr_base<Shader>
 {
-	void				create			(LPCSTR s_shader=0, LPCSTR s_textures=0, LPCSTR s_constants=0, LPCSTR s_matrices=0);
-	void				create			(IBlender*	B,	LPCSTR s_shader=0, LPCSTR s_textures=0, LPCSTR s_constants=0, LPCSTR s_matrices=0);
+	void				create			(const char* s_shader=0, const char* s_textures=0, const char* s_constants=0, const char* s_matrices=0);
+	void				create			(IBlender*	B,	const char* s_shader=0, const char* s_textures=0, const char* s_constants=0, const char* s_matrices=0);
 	void				destroy			()	{ _set(NULL);		}
 };
 typedef	resptr_core<Shader,resptrcode_shader>												ref_shader;

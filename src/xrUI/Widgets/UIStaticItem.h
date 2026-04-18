@@ -26,9 +26,9 @@ public:
 	shared_str		dbg_tex_name;
 #endif
 
-			void	CreateShader			(LPCSTR tex, LPCSTR sh = "hud\\default");
+			void	CreateShader			(const char* tex, const char* sh = "hud\\default");
 			void	SetShader(const ui_shader& sh);
-	void			Init					(LPCSTR tex, LPCSTR sh, float left, float top);
+	void			Init					(const char* tex, const char* sh, float left, float top);
 	void			Render					();
 	void			Render					(float angle);
 	void ResetOriginalRect() { uFlags.set(flValidTextureRect, FALSE); }

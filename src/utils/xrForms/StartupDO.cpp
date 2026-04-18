@@ -3,7 +3,7 @@
 #include "../xrLC_Light/global_calculation_data.h"
 #include "cl_log.h"
 
-extern volatile BOOL bClose;
+extern volatile bool bClose;
 
 static const char* h_str =
 "The following keys are supported / required:\n"

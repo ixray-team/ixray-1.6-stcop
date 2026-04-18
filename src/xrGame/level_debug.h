@@ -20,8 +20,8 @@ public:
 		typedef typename xr_vector<T>::iterator		ITEM_STORAGE_VEC_IT;
 
 		struct remove_text_pred {
-			LPCSTR text;
-			remove_text_pred(LPCSTR t) : text(t) {}
+			const char* text;
+			remove_text_pred(const char* t) : text(t) {}
 			bool operator () (const T &item) {
 				return (item.text == text);
 			}
@@ -47,7 +47,7 @@ public:
 			std::sort			(m_data.begin(), m_data.end(), sort_id_pred());
 		}
 
-		IC	void	remove_item		(LPCSTR text) {
+		IC	void	remove_item		(const char* text) {
 			ITEM_STORAGE_VEC_IT it = std::remove_if(m_data.begin(), m_data.end(), remove_text_pred(text));
 			m_data.erase(it, m_data.end());
 
@@ -76,7 +76,7 @@ public:
 		u32			color;
 		u32			id;
 
-		SInfoItem	(LPCSTR str, u32 col, u32 i) : text(str), color(col), id(i) {}
+		SInfoItem	(const char* str, u32 col, u32 i) : text(str), color(col), id(i) {}
 	};
 	
 	class CObjectInfo : public CItemBase<SInfoItem> {
@@ -93,7 +93,7 @@ public:
 
 					CObjectInfo		() {setup();}
 
-			void	add_item		(LPCSTR text, u32 color, u32 id = u32(-1));
+			void	add_item		(const char* text, u32 color, u32 id = u32(-1));
 			
 			void	draw_info		(float x, float &y);
 		IC	void	setup			(const Fvector &shift = SHIFT_POS_DEFAULT, float delta = DELTA_HEIGHT_DEFAULT) {m_shift_pos.set(shift); m_delta_height = delta;}
@@ -112,14 +112,14 @@ public:
 		u32			color;
 		u32			id;
 
-		STextItem	(LPCSTR str, float coord_x, float coord_y, u32 col, u32 i) : text(str), x(coord_x), y(coord_y), color(col), id(i) {}
+		STextItem	(const char* str, float coord_x, float coord_y, u32 col, u32 i) : text(str), x(coord_x), y(coord_y), color(col), id(i) {}
 	};
 
 	class CTextInfo : public CItemBase<STextItem> {
 		typedef CItemBase<STextItem> inherited;
 
 	public: 
-			void	add_item		(LPCSTR text, float x, float y, u32 color, u32 id = u32(-1));
+			void	add_item		(const char* text, float x, float y, u32 color, u32 id = u32(-1));
 			void	draw_text		();
 	};
 
@@ -215,17 +215,17 @@ public:
 private:
 	void		free_mem			();
 	
-	CObjectInfo &object_info		(CObject *obj, LPCSTR class_name);
-	CTextInfo	&text				(void *class_ptr, LPCSTR class_name);
-	CLevelInfo	&level_info			(void *class_ptr, LPCSTR class_name);
+	CObjectInfo &object_info		(CObject *obj, const char* class_name);
+	CTextInfo	&text				(void *class_ptr, const char* class_name);
+	CLevelInfo	&level_info			(void *class_ptr, const char* class_name);
 
 private:
 	
 	struct SKey {
 		void	*class_ptr;
-		LPCSTR	class_name;
+		const char*	class_name;
 
-				SKey		(void *ptr, LPCSTR name) {class_ptr = ptr; class_name = name;}
+				SKey		(void *ptr, const char* name) {class_ptr = ptr; class_name = name;}
 
 		bool	operator <	(const SKey &val) const {
 			return (class_ptr < val.class_ptr);
@@ -233,7 +233,7 @@ private:
 
 	};
 
-	using CLASS_INFO_MAP = xr_map<LPCSTR, CObjectInfo*>;
+	using CLASS_INFO_MAP = xr_map<const char*, CObjectInfo*>;
 	using CLASS_INFO_MAP_IT = CLASS_INFO_MAP::iterator;
 
 	using OBJECT_INFO_MAP = xr_map<CObject*, CLASS_INFO_MAP>;

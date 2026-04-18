@@ -17,8 +17,8 @@
 
 #define			MAPROT_LIST_NAME		"maprot_list.ltx"
 string_path		MAPROT_LIST		= "";
-BOOL	net_sv_control_hit	= FALSE		;
-BOOL	g_bCollectStatisticData = TRUE;
+bool	net_sv_control_hit	= FALSE		;
+bool	g_bCollectStatisticData = TRUE;
 //-----------------------------------------------------------------
 u32		g_sv_base_dwRPointFreezeTime	= 0;
 int		g_sv_base_iVotingEnabled		= 0x00ff;
@@ -43,13 +43,13 @@ game_PlayerState*	game_sv_GameState::get_id					(ClientID id)
 	else				return C->ps;
 }
 
-LPCSTR				game_sv_GameState::get_name_id				(ClientID id)							
+const char*				game_sv_GameState::get_name_id				(ClientID id)							
 {
 	xrClientData*	C	= (xrClientData*)m_server->ID_to_client	(id);
 	return C == nullptr ? nullptr : C->ps->getName();
 }
 
-LPCSTR				game_sv_GameState::get_player_name_id				(ClientID id)								
+const char*				game_sv_GameState::get_player_name_id				(ClientID id)								
 {
 	xrClientData* xrCData	=	m_server->ID_to_client(id);
 	return xrCData == nullptr ? "unknown" : xrCData->ps->getName();
@@ -166,7 +166,7 @@ xr_vector<u16>*		game_sv_GameState::get_children				(ClientID id)
 	return	&(E->children);
 }
 
-s32					game_sv_GameState::get_option_i				(LPCSTR lst, LPCSTR name, s32 def)
+s32					game_sv_GameState::get_option_i				(const char* lst, const char* name, s32 def)
 {
 	string64		op;
 	xr_strconcat(op,"/",name,"=");
@@ -174,11 +174,11 @@ s32					game_sv_GameState::get_option_i				(LPCSTR lst, LPCSTR name, s32 def)
 	else				return def;
 }
 
-float					game_sv_GameState::get_option_f				(LPCSTR lst, LPCSTR name, float def)
+float					game_sv_GameState::get_option_f				(const char* lst, const char* name, float def)
 {
 	string64		op;
 	xr_strconcat(op,"/",name,"=");
-	LPCSTR			found =	strstr(lst,op);
+	const char*			found =	strstr(lst,op);
 
 	if (found)
 	{	
@@ -190,16 +190,16 @@ float					game_sv_GameState::get_option_f				(LPCSTR lst, LPCSTR name, float def
 		return def;
 }
 
-LPCSTR			game_sv_GameState::get_option_s				(LPCSTR lst, LPCSTR name, LPCSTR def)
+const char*			game_sv_GameState::get_option_s				(const char* lst, const char* name, const char* def)
 {
 	static string64	ret;
 
 	string64		op;
 	xr_strconcat(op,"/",name,"=");
-	LPCSTR			start	= strstr(lst,op);
+	const char*			start	= strstr(lst,op);
 	if (start)		
 	{
-		LPCSTR			begin	= start + xr_strlen(op); 
+		const char*			begin	= start + xr_strlen(op); 
 		sscanf			(begin, "%[^/]",ret);
 	}
 	else			
@@ -440,7 +440,7 @@ void game_sv_GameState::Create					(shared_str &options)
 //	pTmp->Execute				(Console->ConfigFile);
 //	xr_delete					(pTmp);
 	//---------------------------------------------------------------------
-	LPCSTR		svcfg_ltx_name = "-svcfg ";
+	const char*		svcfg_ltx_name = "-svcfg ";
 	if (strstr(Core.Params, svcfg_ltx_name))
 	{
 		string_path svcfg_name = "";
@@ -564,7 +564,7 @@ void				game_sv_GameState::SetPointFreezed		(RPoint* rp)
 	rp->TimeToUnfreeze	= Level().timeServer() + g_sv_base_dwRPointFreezeTime;
 }
 
-CSE_Abstract*		game_sv_GameState::spawn_begin				(LPCSTR N)
+CSE_Abstract*		game_sv_GameState::spawn_begin				(const char* N)
 {
 	CSE_Abstract*	A	=   F_entity_Create(N);	R_ASSERT(A);	// create SE
 	A->s_name			=   N;							// ltx-def
@@ -979,7 +979,7 @@ void game_sv_GameState::remove_all_restrictions	(NET_Packet &packet, u16 id)
 {
 }
 
-void game_sv_GameState::MapRotation_AddMap(LPCSTR MapName, LPCSTR MapVer)
+void game_sv_GameState::MapRotation_AddMap(const char* MapName, const char* MapVer)
 {
 	SMapRot R;
 	R.map_name = MapName;
@@ -1066,8 +1066,8 @@ shared_str game_sv_GameState::level_name		(const shared_str &server_options) con
 	return parse_level_name(server_options);
 }
 
-LPCSTR default_map_version	= "1.0";
-LPCSTR map_ver_string		= "ver=";
+const char* default_map_version	= "1.0";
+const char* map_ver_string		= "ver=";
 
 shared_str game_sv_GameState::parse_level_version			(const shared_str &server_options)
 {
@@ -1189,8 +1189,8 @@ void		game_sv_GameState::OnRender				()
 #endif
 //  [7/5/2005]
 
-BOOL	game_sv_GameState::IsVotingEnabled			()	{return g_sv_base_iVotingEnabled != 0;};
-BOOL	game_sv_GameState::IsVotingEnabled			(u16 flag) {return (g_sv_base_iVotingEnabled&flag) != 0;};
+bool	game_sv_GameState::IsVotingEnabled			()	{return g_sv_base_iVotingEnabled != 0;};
+bool	game_sv_GameState::IsVotingEnabled			(u16 flag) {return (g_sv_base_iVotingEnabled&flag) != 0;};
 
 class NameSearcherPredicate
 {

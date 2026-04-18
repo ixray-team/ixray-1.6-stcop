@@ -23,7 +23,7 @@
 int		g_cl_save_demo = 0;
 extern XRCORE_API bool g_allow_heap_min;
 
-shared_str CLevel::OpenDemoFile(LPCSTR demo_file_name)
+shared_str CLevel::OpenDemoFile(const char* demo_file_name)
 {
 	PrepareToPlayDemo(demo_file_name);
 	return m_demo_server_options;
@@ -33,7 +33,7 @@ void CLevel::net_StartPlayDemo()
 	net_Start(m_demo_server_options.c_str(), "localhost");
 }
 
-BOOL CLevel::net_Start	( LPCSTR op_server, LPCSTR op_client )
+bool CLevel::net_Start	( const char* op_server, const char* op_client )
 {
 	PROF_EVENT("CLevel::net_Start");
 	object_factory();
@@ -52,7 +52,7 @@ BOOL CLevel::net_Start	( LPCSTR op_server, LPCSTR op_client )
 	VERIFY( xr_strlen(player_name) );
 
 	//make Client Name if options doesn't have it
-	LPCSTR	NameStart	= strstr(op_client,"/name=");
+	const char*	NameStart	= strstr(op_client,"/name=");
 	if (!NameStart)
 	{
 		string512 tmp;
@@ -62,7 +62,7 @@ BOOL CLevel::net_Start	( LPCSTR op_server, LPCSTR op_client )
 		m_caClientOptions			= tmp;
 	} else {
 		string1024	ret="";
-		LPCSTR		begin	= NameStart + xr_strlen("/name="); 
+		const char*		begin	= NameStart + xr_strlen("/name="); 
 		sscanf			(begin, "%[^/]",ret);
 		if (!xr_strlen(ret))
 		{
@@ -84,7 +84,7 @@ BOOL CLevel::net_Start	( LPCSTR op_server, LPCSTR op_client )
 	//---------------------------------------------------------------------
 	if (!IsDemoPlay())
 	{
-		LPCSTR pdemosave = strstr(op_client, "/mpdemosave=");
+		const char* pdemosave = strstr(op_client, "/mpdemosave=");
 		bool is_single = m_caServerOptions.size() != 0 ? 
 			(strstr(m_caServerOptions.c_str(), "single") != nullptr) :
 			false;
@@ -291,8 +291,8 @@ bool CLevel::net_start6				()
 		{
 			string256 level_id_string = {};
 			string256 dialog_string = {};
-			LPCSTR download_url = !!map_data.m_map_download_url ? map_data.m_map_download_url.c_str() : "";
-			LPCSTR tmp_map_ver = !!map_data.m_map_version ? map_data.m_map_version.c_str() : "";
+			const char* download_url = !!map_data.m_map_download_url ? map_data.m_map_download_url.c_str() : "";
+			const char* tmp_map_ver = !!map_data.m_map_version ? map_data.m_map_version.c_str() : "";
 			
 			xr_strconcat(level_id_string, g_pStringTable->translate("st_level").c_str(), ":",
 				map_data.m_name.c_str(), "(", tmp_map_ver, "). ");
@@ -312,8 +312,8 @@ bool CLevel::net_start6				()
 		{
 			string256 level_id_string = {};
 			string256 dialog_string = {};
-			LPCSTR download_url = !!map_data.m_map_download_url ? map_data.m_map_download_url.c_str() : "";
-			LPCSTR tmp_map_ver = !!map_data.m_map_version ? map_data.m_map_version.c_str() : "";
+			const char* download_url = !!map_data.m_map_download_url ? map_data.m_map_download_url.c_str() : "";
+			const char* tmp_map_ver = !!map_data.m_map_version ? map_data.m_map_version.c_str() : "";
 
 			xr_strconcat(level_id_string, g_pStringTable->translate("st_level").c_str(), ":",
 				map_data.m_name.c_str(), "(", tmp_map_ver, "). ");

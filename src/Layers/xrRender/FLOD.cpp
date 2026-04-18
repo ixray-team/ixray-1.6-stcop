@@ -28,7 +28,7 @@ static RHIInputElementDesc dwDecl[] =
 	{ "TEXCOORD", 3, ERHI_FORMAT::R8G8B8A8_UNORM, 0, 72, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 }
 };
 
-void FLOD::Load			(LPCSTR N, IReader *data, u32 dwFlags)
+void FLOD::Load			(const char* N, IReader *data, u32 dwFlags)
 {
 	inherited::Load		(N,data,dwFlags);
 

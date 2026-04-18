@@ -301,15 +301,15 @@ void STextureParams::OnTypeChange(PropValue* prop)
 		OnTypeChangeEvent(prop);
 }
 
-void STextureParams::FillProp(LPCSTR base_name, xr_vector<PropItem*>& items, TOnChange OnChangeEvent)
+void STextureParams::FillProp(const char* base_name, xr_vector<PropItem*>& items, TOnChange OnChangeEvent)
 {
 	VERIFY(FillPropImpl);
 	FillPropImpl(this, base_name, items, OnChangeEvent);
 }
 
-BOOL STextureParams::similar(STextureParams& tp1, xr_vector<xr_string>& sel_params)
+bool STextureParams::similar(STextureParams& tp1, xr_vector<xr_string>& sel_params)
 {
-	BOOL res 				= TRUE;
+	bool res 				= TRUE;
 	
 	xr_vector<xr_string>::iterator it = sel_params.begin();
 	xr_vector<xr_string>::iterator it_e = sel_params.end();
@@ -445,12 +445,12 @@ BOOL STextureParams::similar(STextureParams& tp1, xr_vector<xr_string>& sel_para
 	return res;
 }
 
-LPCSTR STextureParams::FormatString	()
+const char* STextureParams::FormatString	()
 {
 	return get_token_name(tfmt_token,fmt);
 }
 
-u32 STextureParams::MemoryUsage(LPCSTR base_name)
+u32 STextureParams::MemoryUsage(const char* base_name)
 {
 	u32 mem_usage	= width*height*4;
 	if (flags.test(flGenerateMipMaps))	{ mem_usage*=3ul; mem_usage/=2ul; }

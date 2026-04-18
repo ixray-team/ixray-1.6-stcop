@@ -21,7 +21,7 @@ void ESceneSoundEnvTool::Clear(bool bSpecific)
 	}
 }
 
-CCustomObject* ESceneSoundEnvTool::CreateObject(LPVOID data, LPCSTR name)
+CCustomObject* ESceneSoundEnvTool::CreateObject(LPVOID data, const char* name)
 {
 	CCustomObject* O	= new ESoundEnvironment(data,name);
     O->FParentTools		= this;

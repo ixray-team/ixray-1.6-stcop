@@ -10,8 +10,8 @@ protected:
 public:
 						EScenePSTool			():ESceneCustomOTool(OBJCLASS_PS){;}
 	// definition
-    IC LPCSTR			ClassName				(){return "ps";}
-    IC LPCSTR			ClassDesc				(){return "Static Particles";}
+    IC const char*			ClassName				(){return "ps";}
+    IC const char*			ClassDesc				(){return "Static Particles";}
     IC int				RenderPriority			(){return 30;}
 
     virtual void		Clear					(bool bSpecific=false){inherited::Clear(bSpecific);}
@@ -25,5 +25,5 @@ public:
     virtual void		SaveSelection      		(IWriter&);
     virtual bool		ExportGame         		(SExportStreams* F);
 
-    virtual CCustomObject* CreateObject			(LPVOID data, LPCSTR name);
+    virtual CCustomObject* CreateObject			(LPVOID data, const char* name);
 };

@@ -9,7 +9,7 @@
 #include "object_broker.h"
 #include "Inventory.h"
 
-void CWeaponBinoculars::Load(LPCSTR section)
+void CWeaponBinoculars::Load(const char* section)
 {
 	inherited::Load(section);
 
@@ -38,7 +38,7 @@ bool CWeaponBinoculars::Action(u16 cmd, u32 flags)
 	return inherited::Action(cmd, flags);
 }
 
-void CWeaponBinoculars::LoadSounds(LPCSTR section)
+void CWeaponBinoculars::LoadSounds(const char* section)
 {
 	inherited::LoadSounds(section);
 
@@ -97,7 +97,7 @@ void CWeaponBinoculars::OnZoomOut()
 	inherited::OnZoomOut();
 }
 
-BOOL CWeaponBinoculars::net_Spawn(CSE_Abstract* DC)
+bool CWeaponBinoculars::net_Spawn(CSE_Abstract* DC)
 {
 	inherited::net_Spawn(DC);
 	return					TRUE;

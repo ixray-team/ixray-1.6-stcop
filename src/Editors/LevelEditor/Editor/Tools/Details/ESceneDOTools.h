@@ -88,14 +88,14 @@ public:
     virtual 			~EDetailManager			();
 
 	virtual	bool		AllowEnabling    		(){return true;}
-    virtual BOOL 		AllowMouseStart			(){return true;}
+    virtual bool 		AllowMouseStart			(){return true;}
 
     // snap 
 	virtual ObjectList* GetSnapList				(){return &m_SnapObjects;}
     virtual void		UpdateSnapList			(){};
 
 	// selection manipulate
-	virtual int			RaySelect				(int flag, float& distance, const Fvector& start, const Fvector& direction, BOOL bDistanceOnly);
+	virtual int			RaySelect				(int flag, float& distance, const Fvector& start, const Fvector& direction, bool bDistanceOnly);
 	virtual int			FrustumSelect			(int flag, const CFrustum& frustum);
 	virtual void		SelectObjects           (bool flag);
 	virtual void		InvertSelection         ();
@@ -106,8 +106,8 @@ public:
     virtual void		Clear					(bool bSpecific=false);
 
 	// definition
-    IC LPCSTR			ClassName				(){return "detail_object";}
-    IC LPCSTR			ClassDesc				(){return "Detail Objects";}
+    IC const char*			ClassName				(){return "detail_object";}
+    IC const char*			ClassDesc				(){return "Detail Objects";}
     IC int				RenderPriority			(){return 10;}
 
     // validation
@@ -134,12 +134,12 @@ public:
 
     virtual bool		LoadSelection      		(IReader&);
     virtual void		SaveSelection      		(IWriter&);
-    virtual bool		Export          		(LPCSTR fn);
+    virtual bool		Export          		(const char* fn);
 
 	// properties
 
-    virtual void		FillPropObjects(LPCSTR pref, PropItemVec& items) {}
-	virtual void		FillProp                (LPCSTR pref, PropItemVec& items);
+    virtual void		FillPropObjects(const char* pref, PropItemVec& items) {}
+	virtual void		FillProp                (const char* pref, PropItemVec& items);
 
     // utils
 	virtual bool 		GetSummaryInfo			(SSceneSummary* inf);
@@ -154,17 +154,17 @@ public:
     bool				Reinitialize			();
     void				InvalidateSlots			();
 
-    EDetail*			AppendDO				(LPCSTR name, bool bTestUnique=true);
-    bool				RemoveDO				(LPCSTR name);
+    EDetail*			AppendDO				(const char* name, bool bTestUnique=true);
+    bool				RemoveDO				(const char* name);
     int					RemoveDOs				();
-    DetailIt			FindDOByNameIt			(LPCSTR name);
-    EDetail*			FindDOByName			(LPCSTR name);
+    DetailIt			FindDOByNameIt			(const char* name);
+    EDetail*			FindDOByName			(const char* name);
 
     void				RemoveColorIndices		();
-	void				AppendIndexObject		(u32 color,LPCSTR name,bool bTestUnique=true);
-    EDetail*			FindObjectInColorIndices(u32 index, LPCSTR name);
-    void				ExportColorIndices		(LPCSTR fname);
-    bool				ImportColorIndices		(LPCSTR fname);
+	void				AppendIndexObject		(u32 color,const char* name,bool bTestUnique=true);
+    EDetail*			FindObjectInColorIndices(u32 index, const char* name);
+    void				ExportColorIndices		(const char* fname);
+    bool				ImportColorIndices		(const char* fname);
 
     void				ClearColorIndices		();
     void				ClearSlots				();

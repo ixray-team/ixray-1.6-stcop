@@ -115,7 +115,7 @@ void CActorMP::fill_state(actor_mp_state& state)
 	state.radiation = g_Radiation() / 100.0f;
 }
 
-BOOL CActorMP::net_Relevant()
+bool CActorMP::net_Relevant()
 {
 	if (Holder())
 	{
@@ -267,7 +267,7 @@ void CActorMP::process_packet(net_update& N)
 		return;
 
 	if (g_Alive()) {
-		setVisible((BOOL)!HUDview());
+		setVisible((bool)!HUDview());
 		setEnabled(TRUE);
 	};
 

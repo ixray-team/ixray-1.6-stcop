@@ -58,7 +58,7 @@ void transfer(const char *name, xr_vector<T> &dest, IReader& F, u32 chunk)
 	if (O)		O->close	();
 }
 
-void xrLoad(LPCSTR name, bool draft_mode, bool skipThm)
+void xrLoad(const char* name, bool draft_mode, bool skipThm)
 {
 	FS.get_path("$level$")->_set((LPSTR)name);
 	string256					N;
@@ -181,7 +181,7 @@ void xrLoad(LPCSTR name, bool draft_mode, bool skipThm)
 						BT.THM.mip_filter = THM->r_u32();
 						BT.THM.width = THM->r_u32();
 						BT.THM.height = THM->r_u32();
-						BOOL			bLOD = FALSE;
+						bool			bLOD = FALSE;
 						if (N_[0] == 'l' && N_[1] == 'o' && N_[2] == 'd' && N_[3] == '\\') bLOD = TRUE;
 
 						// load surface if it has an alpha channel or has "implicit lighting" flag

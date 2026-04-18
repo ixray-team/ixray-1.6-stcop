@@ -13,8 +13,8 @@ public:
 	string64	oT2_xform;		// xform for secondary texture
 	xrP_BOOL	oBlend;
 public:
-	virtual		LPCSTR		getComment()	{ return "LEVEL: lmap*(env^base)";	}
-	virtual		BOOL		canBeLMAPped()	{ return TRUE; }
+	virtual		const char*		getComment()	{ return "LEVEL: lmap*(env^base)";	}
+	virtual		bool		canBeLMAPped()	{ return TRUE; }
 
 	virtual		void		Save			(IWriter&  fs);
 	virtual		void		Load			(IReader&	fs, u16 version);

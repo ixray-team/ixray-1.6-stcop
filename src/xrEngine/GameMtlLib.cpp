@@ -154,7 +154,7 @@ void CGameMtlLibrary::Load()
 }
 
 #ifdef DEBUG
-LPCSTR SGameMtlPair::dbg_Name()
+const char* SGameMtlPair::dbg_Name()
 {
 	static string256 nm;
 	SGameMtl* M0 = GMLib.GetMaterialByID(GetMtl0());

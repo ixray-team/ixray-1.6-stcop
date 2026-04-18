@@ -133,7 +133,7 @@ void game_sv_freemp::OnPlayerTrade(NET_Packet& P, ClientID const& clientID)
 		auto it = sellMap.cbegin(), it_e = sellMap.cend();
 		for (; it != it_e; it++)
 		{
-			LPCSTR itemName = *it->first;
+			const char* itemName = *it->first;
 			u16 itemsCount = it->second;
 			for (u16 i = 0; i < itemsCount; ++i)
 			{

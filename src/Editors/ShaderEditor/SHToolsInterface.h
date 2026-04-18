@@ -37,19 +37,19 @@ protected:
 
 	ISHInit					Ext;
 
-	BOOL					m_bModified;
+	bool					m_bModified;
 
-    BOOL					m_bLockUpdate;		// ���� ������� ������ ���������������  Update____From___()
+    bool					m_bLockUpdate;		// ���� ������� ������ ���������������  Update____From___()
 
     xr_string				m_LastSelection;
 public:
 	ListItem* 				m_CurrentItem;
 public:
-    void					ViewSetCurrentItem	(LPCSTR full_name);
+    void					ViewSetCurrentItem	(const char* full_name);
     xr_string				ViewGetCurrentItem	(bool bFolderOnly);
    // UIItemListForm::Node			ViewGetCurrentItem();
 public:
-    virtual void			AppendItem			(LPCSTR folder_name, LPCSTR parent=0)=0; 
+    virtual void			AppendItem			(const char* folder_name, const char* parent=0)=0; 
 	virtual void			FillItemList		()=0;
 public:
 							ISHTools 			(const ISHInit& init);
@@ -60,7 +60,7 @@ public:
     void					RemoveCurrent		();
     void					RenameCurrent		();
 
-    virtual LPCSTR			ToolsName			()=0;
+    virtual const char*			ToolsName			()=0;
     
 	virtual void			Reload				()=0;
 	virtual void			Load				()=0;
@@ -77,7 +77,7 @@ public:
 
     // misc
     virtual void			ResetCurrentItem	()=0;
-    virtual void			SetCurrentItem		(LPCSTR name, bool bView)=0;
+    virtual void			SetCurrentItem		(const char* name, bool bView)=0;
     virtual void			ApplyChanges		(bool bForced=false)=0;
 
 	virtual void 			RealUpdateProperties()=0;
@@ -92,8 +92,8 @@ public:
     virtual void			ZoomObject			(bool bOnlySel);
 	virtual void 			OnShowHint			(AStringVec& ss){;}
     virtual void            OnDrawUI() {}
-    virtual void            OnCloneItem(LPCSTR parent_path, LPCSTR new_full_name);
-    virtual void            OnCreateItem(LPCSTR path);
+    virtual void            OnCloneItem(const char* parent_path, const char* new_full_name);
+    virtual void            OnCreateItem(const char* path);
 };
 //---------------------------------------------------------------------------
 #endif

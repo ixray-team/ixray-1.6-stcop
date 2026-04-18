@@ -25,7 +25,7 @@ CRT::~CRT()
 	DEV->_DeleteRT(this);
 }
 
-void CRT::create(LPCSTR Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount, CRT::CRTCreationFlags CreationFlags)
+void CRT::create(const char* Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount, CRT::CRTCreationFlags CreationFlags)
 {
 	if(pSurface) return;
 	PROF_EVENT("CRT::create");
@@ -233,7 +233,7 @@ void CRT::reset_end()
 	create(*cName, dwWidth, dwHeight, fmt);
 }
 
-void resptrcode_crt::create(LPCSTR Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount, CRT::CRTCreationFlags CreationFlags)
+void resptrcode_crt::create(const char* Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount, CRT::CRTCreationFlags CreationFlags)
 {
 	_set(DEV->_CreateRT(Name, w, h, f, SampleCount, CreationFlags));
 }
@@ -256,7 +256,7 @@ CRTC::~CRTC()
 	DEV->_DeleteRTC(this);
 }
 
-void CRTC::create(LPCSTR Name, u32 size, ERHI_FORMAT f, CRT::CRTCreationFlags CreationFlags)
+void CRTC::create(const char* Name, u32 size, ERHI_FORMAT f, CRT::CRTCreationFlags CreationFlags)
 {
 	R_ASSERT(RDevice && Name && Name[0] && size && btwIsPow2(size));
 	_order = CPU::GetCLK();
@@ -343,7 +343,7 @@ void CRTC::reset_end()
 	create(*cName, dwSize, fmt);
 }
 
-void resptrcode_crtc::create(LPCSTR Name, u32 size, ERHI_FORMAT f, CRT::CRTCreationFlags CreationFlags)
+void resptrcode_crtc::create(const char* Name, u32 size, ERHI_FORMAT f, CRT::CRTCreationFlags CreationFlags)
 {
 	_set(DEV->_CreateRTC(Name, size, f, CreationFlags));
 }

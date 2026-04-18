@@ -64,7 +64,7 @@ public:
 
 #ifdef DEBUG
 #	ifndef AI_COMPILER
-		extern BOOL	g_bDebugNode;
+		extern bool	g_bDebugNode;
 		extern u32	g_dwDebugNodeSource;
 		extern u32	g_dwDebugNodeDest;
 #	endif

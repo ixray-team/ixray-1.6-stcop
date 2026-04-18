@@ -22,7 +22,7 @@ void CUIEditBox::InitCustomEdit(Fvector2 pos, Fvector2 size)
 	CUICustomEdit::InitCustomEdit	(pos, size);
 }
 
-bool CUIEditBox::InitTextureEx(LPCSTR texture, LPCSTR  shader, bool fatal)
+bool CUIEditBox::InitTextureEx(const char* texture, const char*  shader, bool fatal)
 {
 	if(!m_frameLine)
 	{
@@ -36,7 +36,7 @@ bool CUIEditBox::InitTextureEx(LPCSTR texture, LPCSTR  shader, bool fatal)
 	return result;
 }
 
-bool CUIEditBox::InitTexture(LPCSTR texture, bool fatal)
+bool CUIEditBox::InitTexture(const char* texture, bool fatal)
 {
 	return InitTextureEx(texture, "hud\\default", fatal);
 }
@@ -68,7 +68,7 @@ void CUIEditBox::UndoOptValue()
 
 bool CUIEditBox::IsChangedOptValue() const
 {
-	LPCSTR current = GetText();
+	const char* current = GetText();
 	const char* const backup = !m_opt_backup_value ? GetOptStringValue() : m_opt_backup_value.c_str();
 	if (!current || !backup)
 		return false;

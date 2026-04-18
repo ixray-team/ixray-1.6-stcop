@@ -52,7 +52,7 @@ void CBlender_Compile::i_Filter_Mag(u32 s, u32 f)
     RS.SetSAMP(s, D3DSAMP_MAGFILTER, f);
 }
 
-void CBlender_Compile::i_FilterAnizo(u32 s, BOOL value)
+void CBlender_Compile::i_FilterAnizo(u32 s, bool value)
 {
 #ifdef USE_DX11
     VERIFY(s != u32(-1));
@@ -79,7 +79,7 @@ void CBlender_Compile::i_Projective(u32 s, bool b)
         RS.SetTSS(s, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
 }
 
-u32 CBlender_Compile::i_Sampler(LPCSTR _name)
+u32 CBlender_Compile::i_Sampler(const char* _name)
 {
     string256 name;
     xr_strcpy(name, _name);
@@ -93,7 +93,7 @@ u32 CBlender_Compile::i_Sampler(LPCSTR _name)
     return stage;
 }
 
-u32 CBlender_Compile::r_Sampler(LPCSTR _name, LPCSTR texture, bool b_ps1x_ProjectiveDivide, u32 address, u32 fmin, u32 fmip, u32 fmag)
+u32 CBlender_Compile::r_Sampler(const char* _name, const char* texture, bool b_ps1x_ProjectiveDivide, u32 address, u32 fmin, u32 fmip, u32 fmag)
 {
     dwStage = i_Sampler(_name);
     if (u32(-1) != dwStage)
@@ -128,34 +128,34 @@ u32 CBlender_Compile::r_Sampler(LPCSTR _name, LPCSTR texture, bool b_ps1x_Projec
     return dwStage;
 }
 
-void CBlender_Compile::i_Texture(u32 s, LPCSTR name)
+void CBlender_Compile::i_Texture(u32 s, const char* name)
 {
     if (name) passTextures.push_back(std::make_pair(s, ref_texture(DEV->_CreateTexture(name))));
 }
 
-void CBlender_Compile::r_Sampler_rtf(LPCSTR name, LPCSTR texture, bool b_ps1x_ProjectiveDivide)
+void CBlender_Compile::r_Sampler_rtf(const char* name, const char* texture, bool b_ps1x_ProjectiveDivide)
 {
     r_Sampler(name, texture, b_ps1x_ProjectiveDivide, D3DTADDRESS_CLAMP, D3DTEXF_POINT, D3DTEXF_NONE, D3DTEXF_POINT);
 }
 
-void CBlender_Compile::r_Sampler_clf(LPCSTR name, LPCSTR texture, bool b_ps1x_ProjectiveDivide)
+void CBlender_Compile::r_Sampler_clf(const char* name, const char* texture, bool b_ps1x_ProjectiveDivide)
 {
     r_Sampler(name, texture, b_ps1x_ProjectiveDivide, D3DTADDRESS_CLAMP, D3DTEXF_LINEAR, D3DTEXF_NONE, D3DTEXF_LINEAR);
 }
 
-void CBlender_Compile::r_Sampler_waf(LPCSTR name, LPCSTR texture, bool b_ps1x_ProjectiveDivide)
+void CBlender_Compile::r_Sampler_waf(const char* name, const char* texture, bool b_ps1x_ProjectiveDivide)
 {
     r_Sampler(name, texture, b_ps1x_ProjectiveDivide, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 }
 
-void CBlender_Compile::r_Sampler_clw(LPCSTR name, LPCSTR texture, bool b_ps1x_ProjectiveDivide)
+void CBlender_Compile::r_Sampler_clw(const char* name, const char* texture, bool b_ps1x_ProjectiveDivide)
 {
     u32 s = r_Sampler(name, texture, b_ps1x_ProjectiveDivide, D3DTADDRESS_CLAMP, D3DTEXF_LINEAR, D3DTEXF_NONE, D3DTEXF_LINEAR);
     if (u32(-1) != s) RS.SetSAMP(s, D3DSAMP_ADDRESSW, D3DTADDRESS_WRAP);
 }
 #else
 
-void CBlender_Compile::r_Stencil(BOOL Enable, u32 Func, u32 Mask, u32 WriteMask, u32 Fail, u32 Pass, u32 ZFail)
+void CBlender_Compile::r_Stencil(bool Enable, u32 Func, u32 Mask, u32 WriteMask, u32 Fail, u32 Pass, u32 ZFail)
 {
     RS.SetRS(D3DRS_STENCILENABLE, BC(Enable));
     if (!Enable)
@@ -186,7 +186,7 @@ void CBlender_Compile::r_CullMode(D3DCULL Mode)
     RS.SetRS(D3DRS_CULLMODE, (u32)Mode);
 }
 
-u32 CBlender_Compile::r_dx10Sampler(LPCSTR ResourceName)
+u32 CBlender_Compile::r_dx10Sampler(const char* ResourceName)
 {
     VERIFY(ResourceName);
     string256 name;
@@ -246,7 +246,7 @@ u32 CBlender_Compile::r_dx10Sampler(LPCSTR ResourceName)
     return stage;
 }
 
-void CBlender_Compile::r_dx10Texture(LPCSTR ResourceName, LPCSTR texture)
+void CBlender_Compile::r_dx10Texture(const char* ResourceName, const char* texture)
 {
     VERIFY(ResourceName);
     if (!texture) return;
@@ -263,7 +263,7 @@ void CBlender_Compile::r_dx10Texture(LPCSTR ResourceName, LPCSTR texture)
 }
 #endif
 
-void CBlender_Compile::r_Constant(LPCSTR name, RHIShaderConstant::Setup* s)
+void CBlender_Compile::r_Constant(const char* name, RHIShaderConstant::Setup* s)
 {
     R_ASSERT(s);
     ref_constant C = ctable.get(name);
@@ -284,12 +284,12 @@ void CBlender_Compile::r_ColorWriteEnable(bool cR, bool cG, bool cB, bool cA)
     RS.SetRS(D3DRS_COLORWRITEENABLE3, Mask);
 }
 
-void CBlender_Compile::r_Pass(LPCSTR _vs, LPCSTR _ps, bool bFog, BOOL bZtest, BOOL bZwrite, BOOL bABlend, D3DBLEND abSRC, D3DBLEND abDST, BOOL aTest, u32 aRef)
+void CBlender_Compile::r_Pass(const char* _vs, const char* _ps, bool bFog, bool bZtest, bool bZwrite, bool bABlend, D3DBLEND abSRC, D3DBLEND abDST, bool aTest, u32 aRef)
 {
     r_Pass(_vs, "null", _ps, bFog, bZtest, bZwrite, bABlend, abSRC, abDST, aTest, aRef);
 }
 
-void CBlender_Compile::r_Pass(LPCSTR _vs, LPCSTR _gs, LPCSTR _ps, bool bFog, BOOL bZtest, BOOL bZwrite, BOOL bABlend, D3DBLEND abSRC, D3DBLEND abDST, BOOL aTest, u32 aRef)
+void CBlender_Compile::r_Pass(const char* _vs, const char* _gs, const char* _ps, bool bFog, bool bZtest, bool bZwrite, bool bABlend, D3DBLEND abSRC, D3DBLEND abDST, bool aTest, u32 aRef)
 {
     RS.Invalidate();
     ctable.clear();
@@ -327,7 +327,7 @@ void CBlender_Compile::r_Pass(LPCSTR _vs, LPCSTR _gs, LPCSTR _ps, bool bFog, BOO
 }
 
 #ifdef USE_DX11
-void CBlender_Compile::r_TessPass(LPCSTR vs, LPCSTR hs, LPCSTR ds, LPCSTR gs, LPCSTR ps, bool bFog, BOOL bZtest, BOOL bZwrite, BOOL bABlend, D3DBLEND abSRC, D3DBLEND abDST, BOOL aTest, u32 aRef)
+void CBlender_Compile::r_TessPass(const char* vs, const char* hs, const char* ds, const char* gs, const char* ps, bool bFog, bool bZtest, bool bZwrite, bool bABlend, D3DBLEND abSRC, D3DBLEND abDST, bool aTest, u32 aRef)
 {
     // Reuse r_Pass to create base shaders then overwrite HS/DS and merge their consts.
     r_Pass(vs, gs, ps, bFog, bZtest, bZwrite, bABlend, abSRC, abDST, aTest, aRef);
@@ -339,7 +339,7 @@ void CBlender_Compile::r_TessPass(LPCSTR vs, LPCSTR hs, LPCSTR ds, LPCSTR gs, LP
     ctable.merge(&dest.ds->constants);
 }
 
-void CBlender_Compile::r_ComputePass(LPCSTR cs)
+void CBlender_Compile::r_ComputePass(const char* cs)
 {
     ctable.clear();
     dest.cs = DEV->_CreateCS(cs);

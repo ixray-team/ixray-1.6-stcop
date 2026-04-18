@@ -14,7 +14,7 @@ struct xrGUID
 		return !(*this == o);
 	}
 
-	ICF void LoadLTX(CInifile& ini, LPCSTR section, LPCSTR name)
+	ICF void LoadLTX(CInifile& ini, const char* section, const char* name)
 	{
 		string128 buff;
 
@@ -22,7 +22,7 @@ struct xrGUID
 		g[1] = ini.r_u64(section, xr_strconcat(buff, name, "_g1"));
 	}
 
-	ICF void SaveLTX(CInifile& ini, LPCSTR section, LPCSTR name)
+	ICF void SaveLTX(CInifile& ini, const char* section, const char* name)
 	{
 		string128 buff;
 
@@ -32,4 +32,4 @@ struct xrGUID
 };
 
 XRCORE_API xrGUID generate_guid();
-XRCORE_API LPCSTR generate_guid(const xrGUID& guid, LPSTR buffer, const u32& buffer_size);
+XRCORE_API const char* generate_guid(const xrGUID& guid, LPSTR buffer, const u32& buffer_size);

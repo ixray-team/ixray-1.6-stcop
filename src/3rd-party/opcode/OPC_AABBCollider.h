@@ -74,11 +74,11 @@
 							void			_CollideNoPrimitiveTest(const AABBQuantizedNode* node);
 							void			_CollideNoPrimitiveTest(const AABBQuantizedNoLeafNode* node);
 			// Overlap tests
-		inline_				BOOL			AABBContainsBox(const IceMaths::Point& bc, const IceMaths::Point& be);
-		inline_				BOOL			AABBAABBOverlap(const IceMaths::Point& b, const IceMaths::Point& Pb);
-		inline_				BOOL			TriBoxOverlap();
+		inline_				bool			AABBContainsBox(const IceMaths::Point& bc, const IceMaths::Point& be);
+		inline_				bool			AABBAABBOverlap(const IceMaths::Point& b, const IceMaths::Point& Pb);
+		inline_				bool			TriBoxOverlap();
 			// Init methods
-							BOOL			InitQuery(AABBCache& cache, const CollisionAABB& box);
+							bool			InitQuery(AABBCache& cache, const CollisionAABB& box);
 	};
 
 	class OPCODE_API HybridAABBCollider : public AABBCollider

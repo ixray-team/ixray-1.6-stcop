@@ -26,7 +26,7 @@ static void build_callback(Fvector* V, size_t Vcnt, CDB::TRI* T, size_t Tcnt, vo
 	g_pGameLevel->Load_GameSpecific_CFORM(T, Tcnt);
 }
 
-BOOL CLevelEditor::net_Start(LPCSTR op_server, LPCSTR op_client)
+bool CLevelEditor::net_Start(const char* op_server, const char* op_client)
 {
 	auto& p = g_pGamePersistent->m_game_params;
 	xr_strcpy(p.m_game_type, "single");
@@ -66,9 +66,9 @@ BOOL CLevelEditor::net_Start(LPCSTR op_server, LPCSTR op_client)
 
 	if (connected_to_server)
 	{
-		LPCSTR					level_name = NULL;
-		LPCSTR					level_ver = NULL;
-		LPCSTR					download_url = NULL;
+		const char*					level_name = NULL;
+		const char*					level_ver = NULL;
+		const char*					download_url = NULL;
 
 		if (psNET_direct_connect)	//single
 		{

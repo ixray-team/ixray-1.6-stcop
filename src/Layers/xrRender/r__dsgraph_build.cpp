@@ -457,7 +457,7 @@ void R_dsgraph_structure::add_leafs_Dynamic(dxRender_Visual *pVisual, bool Ignor
 		{
 			// Add all children, doesn't perform any tests
 			CKinematics * pV = (CKinematics*)pVisual;
-			BOOL _use_lod = FALSE;
+			bool _use_lod = FALSE;
 			if (pV->m_lod)				
 			{
 				Fvector Tpos; float D;

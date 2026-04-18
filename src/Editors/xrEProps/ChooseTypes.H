@@ -9,7 +9,7 @@ struct SChooseItem
 
 	shared_str				name;
 	shared_str				hint;
-    SChooseItem	(LPCSTR nm, LPCSTR ht):name(nm),hint(ht){}
+    SChooseItem	(const char* nm, const char* ht):name(nm),hint(ht){}
 };
 
 class IRHISurface;
@@ -20,10 +20,10 @@ using ChooseItemVecIt = ChooseItemVec::iterator;
 // typedef
 typedef xr_delegate<void(ChooseItemVec&,void*)>	   	TOnChooseFillItems;
 typedef xr_delegate<void(SChooseItem*, PropItemVec&)>	TOnChooseSelectItem;
-typedef xr_delegate<void(LPCSTR, HDC, const Irect&)> 	TOnDrawThumbnail;
+typedef xr_delegate<void(const char*, HDC, const Irect&)> 	TOnDrawThumbnail;
 typedef xr_delegate<void()>						   	TOnChooseClose;
 
-using TGetTexture = xr_delegate<void(LPCSTR, IRHISurface*&)>;
+using TGetTexture = xr_delegate<void(const char*, IRHISurface*&)>;
 
 typedef void (*TOnChooseFillEvents)();
 
@@ -41,11 +41,11 @@ struct SChooseEvents{
     Flags32				flags;
 
     SChooseEvents	(){caption="Select Item";flags.zero();}
-    SChooseEvents	(LPCSTR capt, TOnChooseFillItems f, TOnChooseSelectItem s, TGetTexture t, TOnChooseClose c, u32 fl)
+    SChooseEvents	(const char* capt, TOnChooseFillItems f, TOnChooseSelectItem s, TGetTexture t, TOnChooseClose c, u32 fl)
     {
     	Set				(capt,f,s,t,c,fl);
     }
-    void				Set				(LPCSTR capt, TOnChooseFillItems f, TOnChooseSelectItem s, TGetTexture t, TOnChooseClose c, u32 fl)
+    void				Set				(const char* capt, TOnChooseFillItems f, TOnChooseSelectItem s, TGetTexture t, TOnChooseClose c, u32 fl)
     {
         caption			= capt;
         on_fill			= f;

@@ -11,11 +11,11 @@ class	CTimer_paused;
 class XRCORE_API				pauseMngr
 {
 	xr_vector<CTimer_paused*>	m_timers;
-	BOOL						m_paused;
+	bool						m_paused;
 public:
 			pauseMngr			();
-	BOOL	Paused				(){return m_paused;};
-	void	Pause				(BOOL b);
+	bool	Paused				(){return m_paused;};
+	void	Pause				(bool b);
 	static pauseMngr& Instance	();
 	void	Register			(CTimer_paused* t);
 	void	UnRegister			(CTimer_paused* t);
@@ -32,7 +32,7 @@ protected:
 	u64 pausedTime_;
 	u64	pauseAccum_;
 
-	BOOL		bPause			;
+	bool		bPause			;
 public:
 	CTimer() : startTimePoint_(high_resolution_clock::now()), pausedTime_(0), pauseAccum_(0), bPause(FALSE) {
 	}
@@ -190,9 +190,9 @@ public:
 	CTimer_paused_ex			()		{ }
 	virtual ~CTimer_paused_ex	()		{ }
 
-	IC BOOL		Paused() const { return bPause; }
+	IC bool		Paused() const { return bPause; }
 
-	IC void		Pause(BOOL b)
+	IC void		Pause(bool b)
 	{
 		if (bPause == b)
 			return;
@@ -220,7 +220,7 @@ public:
 	virtual ~CTimer_paused		()		{ g_pauseMngr.UnRegister(this);	}
 };
 
-extern XRCORE_API BOOL			g_bEnableStatGather;
+extern XRCORE_API bool			g_bEnableStatGather;
 class XRCORE_API CStatTimer
 {
 private:

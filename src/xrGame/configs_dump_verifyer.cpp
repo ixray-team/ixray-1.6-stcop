@@ -95,7 +95,7 @@ bool const configs_verifyer::verify_dsign(u8* data,
 	return true;
 }
 
-LPCSTR configs_verifyer::get_section_diff(CInifile::Sect* sect_ptr, CInifile & active_params, string256 & dst_diff)
+const char* configs_verifyer::get_section_diff(CInifile::Sect* sect_ptr, CInifile & active_params, string256 & dst_diff)
 {
 	string256 diff_str = {};
 	bool	tmp_active_param = false;
@@ -164,11 +164,11 @@ LPCSTR configs_verifyer::get_section_diff(CInifile::Sect* sect_ptr, CInifile & a
 	return nullptr;
 }
 
-LPCSTR configs_verifyer::get_diff(CInifile & received,
+const char* configs_verifyer::get_diff(CInifile & received,
 								  CInifile & active_params,
 								  string256 & dst_diff)
 {
-	LPCSTR diff_str = nullptr;
+	const char* diff_str = nullptr;
 	CInifile::Root& sections = received.sections();
 	for (CInifile::Sect& sect : sections)
 	{
@@ -210,7 +210,7 @@ bool const configs_verifyer::verify(u8* data, u32 data_size, string256 & diff)
 	xr_sprintf	(tmp_digit, "%d", ap_index);
 	while		(tmp_ini.line_exist(active_params_section, tmp_digit))
 	{
-		LPCSTR	tmp_ap_section		= tmp_ini.r_string(active_params_section, tmp_digit);
+		const char*	tmp_ap_section		= tmp_ini.r_string(active_params_section, tmp_digit);
 		tmp_active_params.w_string	(active_params_section, tmp_digit, tmp_ap_section);
 		if (!tmp_active_params.section_exist(tmp_ap_section))
 			m_original_ap.load_to		(tmp_ap_section, tmp_active_params);

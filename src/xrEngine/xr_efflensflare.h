@@ -25,7 +25,7 @@ public:
 	};
     struct SSource: public SFlare
     {
-    	BOOL			ignore_color;
+    	bool			ignore_color;
     };
 
     using FlareVec = xr_vector<SFlare>;
@@ -49,15 +49,15 @@ public:
     float				m_StateBlendUpSpeed;
     float				m_StateBlendDnSpeed;
     
-	void				SetGradient		(float fMaxRadius, float fOpacity, LPCSTR tex_name, LPCSTR sh_name);
-    void				SetSource		(float fRadius, BOOL ign_color, LPCSTR tex_name, LPCSTR sh_name);
-    void				AddFlare		(float fRadius, float fOpacity, float fPosition, LPCSTR tex_name, LPCSTR sh_name);
-    //ref_shader			CreateShader	(LPCSTR tex_name, LPCSTR sh_name);
+	void				SetGradient		(float fMaxRadius, float fOpacity, const char* tex_name, const char* sh_name);
+    void				SetSource		(float fRadius, bool ign_color, const char* tex_name, const char* sh_name);
+    void				AddFlare		(float fRadius, float fOpacity, float fPosition, const char* tex_name, const char* sh_name);
+    //ref_shader			CreateShader	(const char* tex_name, const char* sh_name);
 
 	shared_str			section;
 public:
     					CLensFlareDescriptor(){m_Flags.zero();section=0;m_StateBlendUpSpeed=m_StateBlendDnSpeed=0.1f;}
-    void				load				(CInifile* pIni, LPCSTR section);
+    void				load				(CInifile* pIni, const char* section);
 	void 				OnDeviceCreate	();
 	void 				OnDeviceDestroy	();
 };
@@ -87,7 +87,7 @@ protected:
 	Fvector				vSunDir;
 	Fvector				vecLight;
 	Fvector				vecX, vecY, vecDir, vecAxis, vecCenter;
-	BOOL				bRender;
+	bool				bRender;
 
 	// variable
     Fcolor				LightColor;
@@ -118,11 +118,11 @@ public:
 	virtual				~CLensFlare		();
 
 	void				OnFrame			(shared_str id);
-    void __fastcall		Render			(BOOL bSun, BOOL bFlares, BOOL bGradient);
+    void __fastcall		Render			(bool bSun, bool bFlares, bool bGradient);
 	void 				OnDeviceCreate	();         
 	void 				OnDeviceDestroy	();
 
-    shared_str			AppendDef		(CEnvironment& environment, CInifile* pIni, LPCSTR sect);
+    shared_str			AppendDef		(CEnvironment& environment, CInifile* pIni, const char* sect);
 
 	void				Invalidate		(){m_State=lfsNone;}
 };

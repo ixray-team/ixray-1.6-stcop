@@ -42,7 +42,7 @@ void CHolderEntityObject::ResetBoneCallbacks()
 	m_pPhysicsShell->EnabledCallbacks(TRUE);
 }
 
-void CHolderEntityObject::Load(LPCSTR section)
+void CHolderEntityObject::Load(const char* section)
 {
 	inheritedPH::Load(section);
 	m_bAllowWeapon = !!pSettings->r_bool(section,"allow_weapon");
@@ -55,7 +55,7 @@ void CHolderEntityObject::Load(LPCSTR section)
 	m_sUseAction = READ_IF_EXISTS(pSettings, r_string, section, "use_action_hint", NULL);
 }
 
-BOOL CHolderEntityObject::net_Spawn(CSE_Abstract* DC)
+bool CHolderEntityObject::net_Spawn(CSE_Abstract* DC)
 {
 	if(!inheritedPH::net_Spawn	(DC)) return FALSE;
 

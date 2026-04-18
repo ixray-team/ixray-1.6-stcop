@@ -72,7 +72,7 @@ void CToolCustom::SetAxis(ETAxis axis)
 }
 
 
-void CToolCustom::SetSettings(u32 mask, BOOL val)
+void CToolCustom::SetSettings(u32 mask, bool val)
 {
 	m_Settings.set(mask,val);
 	UI->RedrawScene();
@@ -232,7 +232,7 @@ void CToolCustom::Render()
 	int cnt = 0;
 	for (SDebugDraw::PointIt vit = m_DebugDraw.m_Points.begin(); vit != m_DebugDraw.m_Points.end(); ++vit)
 	{
-		LPCSTR s = NULL;
+		const char* s = NULL;
 		if (vit->i)
 		{
 			sprintf(temp.data(), "P: %d", cnt++);

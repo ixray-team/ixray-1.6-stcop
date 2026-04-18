@@ -46,7 +46,7 @@ public:
 	void			propagade	();
 	u32				rasterize	(occTri* T);
 
-	ICF	BOOL test_Level(occD* depth, int dim, float _x0, float _y0, float _x1, float _y1, occD z)
+	ICF	bool test_Level(occD* depth, int dim, float _x0, float _y0, float _x1, float _y1, occD z)
 	{
 		int x0 = iFloor(_x0 * dim + .5f);	clamp(x0, 0, dim - 1);
 		int x1 = iFloor(_x1 * dim + .5f);	clamp(x1, x0, dim - 1);
@@ -64,7 +64,7 @@ public:
 		return FALSE;
 	}
 
-	ICF BOOL test(float _x0, float _y0, float _x1, float _y1, float _z)
+	ICF bool test(float _x0, float _y0, float _x1, float _y1, float _z)
 	{
 		occD z = df_2_s32up(_z) + 1;
 		return test_Level(get_depth_level(0), occ_dim_0, _x0, _y0, _x1, _y1, z);

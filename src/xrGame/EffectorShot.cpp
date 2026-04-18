@@ -340,7 +340,7 @@ CCameraShotEffector::~CCameraShotEffector()
 {
 }
 
-BOOL CCameraShotEffector::ProcessCam(SCamEffectorInfo& info)
+bool CCameraShotEffector::ProcessCam(SCamEffectorInfo& info)
 {
 	Update();
 	return TRUE;

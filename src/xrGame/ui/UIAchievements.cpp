@@ -73,12 +73,12 @@ bool CUIAchievements::ParentHasMe()
 	WINDOW_LIST::const_iterator it = std::find(m_parent->Items().begin(), m_parent->Items().end(), this);
 	return it != m_parent->Items().end();
 }
-void CUIAchievements::SetName(LPCSTR name)
+void CUIAchievements::SetName(const char* name)
 {
 	m_name->SetTextST(name);
 }
 
-void CUIAchievements::SetDescription(LPCSTR desc)
+void CUIAchievements::SetDescription(const char* desc)
 {
 	m_descr->SetTextST(desc);
 	m_descr->AdjustHeightToText();
@@ -88,17 +88,17 @@ void CUIAchievements::SetDescription(LPCSTR desc)
 		SetWndSize(Fvector2().set(GetWndSize().x, descr_size.y));
 }
 
-void CUIAchievements::SetHint(LPCSTR hint)
+void CUIAchievements::SetHint(const char* hint)
 {
 	m_hint->set_text(g_pStringTable->translate(hint).c_str());
 }
 
-void CUIAchievements::SetIcon(LPCSTR icon)
+void CUIAchievements::SetIcon(const char* icon)
 {
 	m_icon->InitTexture(icon);
 }
 
-void CUIAchievements::SetFunctor(LPCSTR func)
+void CUIAchievements::SetFunctor(const char* func)
 {
 //	string128 str = "xr_statistic.";
 	xr_sprintf(m_functor_str, sizeof(m_functor_str), "%s", func);

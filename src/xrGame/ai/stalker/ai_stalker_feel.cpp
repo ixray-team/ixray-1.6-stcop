@@ -20,7 +20,7 @@
 	extern Flags32 psAI_Flags;
 #endif // DEBUG
 
-BOOL CAI_Stalker::feel_vision_isRelevant(CObject* O)
+bool CAI_Stalker::feel_vision_isRelevant(CObject* O)
 {
 	if (!g_Alive())
 		return FALSE;
@@ -55,7 +55,7 @@ bool CAI_Stalker::bfCheckForNodeVisibility(u32 dwNodeID, bool bIfRayPick)
 	return							(memory().visual().visible(dwNodeID,movement().m_head.current.yaw,ffGetFov()));
 }
 
-BOOL CAI_Stalker::feel_touch_contact	(CObject *O)
+bool CAI_Stalker::feel_touch_contact	(CObject *O)
 {
 	if ( !m_take_items_enabled && O->cast_inventory_item())
 		return						(FALSE);
@@ -73,7 +73,7 @@ BOOL CAI_Stalker::feel_touch_contact	(CObject *O)
 	return							(game_object->feel_touch_on_contact(this));
 }
 
-BOOL CAI_Stalker::feel_touch_on_contact	(CObject *O)
+bool CAI_Stalker::feel_touch_on_contact	(CObject *O)
 {
 	VERIFY							(O != this);
 

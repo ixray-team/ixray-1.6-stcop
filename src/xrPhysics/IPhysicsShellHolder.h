@@ -35,9 +35,9 @@ class IPhysicsShellHolder
 
 	virtual	Fmatrix&					_BCL	ObjectXFORM						()						=0;
 	virtual	Fvector&					_BCL	ObjectPosition						()						=0;
-	virtual	LPCSTR						_BCL	ObjectName							()		const			=0;
-	virtual	LPCSTR						_BCL	ObjectNameVisual					()		const			=0;
-	virtual	LPCSTR						_BCL	ObjectNameSect						()		const			=0;
+	virtual	const char*						_BCL	ObjectName							()		const			=0;
+	virtual	const char*						_BCL	ObjectNameVisual					()		const			=0;
+	virtual	const char*						_BCL	ObjectNameSect						()		const			=0;
 	virtual	bool						_BCL	ObjectGetDestroy					()		const			=0;
 	virtual ICollisionHitCallback*		_BCL	ObjectGetCollisionHitCallback		()						=0;
 	virtual	u16							_BCL	ObjectID							()		const			=0;

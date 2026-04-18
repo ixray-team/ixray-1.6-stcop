@@ -6,11 +6,11 @@ class  CThread
 public:
 	volatile u32		thID;
 	volatile float		thProgress;
-	volatile BOOL		thCompleted;
-	volatile BOOL		thMessages;
-	volatile BOOL		thMonitor;
+	volatile bool		thCompleted;
+	volatile bool		thMessages;
+	volatile bool		thMonitor;
 	volatile float		thPerformance;
-	volatile BOOL		thDestroyOnComplete;
+	volatile bool		thDestroyOnComplete;
 
 	CThread				(u32 _ID)	
 	{

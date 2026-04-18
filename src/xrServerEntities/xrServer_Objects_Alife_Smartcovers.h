@@ -33,8 +33,8 @@ public:
 	float							m_hold_position_time;
 	float							m_enter_min_enemy_distance;
 	float							m_exit_min_enemy_distance;
-	BOOL							m_is_combat_cover;
-	BOOL							m_can_fire;
+	bool							m_is_combat_cover;
+	bool							m_can_fire;
 	bool							m_need_to_reparse_loopholes;
 #ifndef AI_COMPILER
 	luabind::object					m_available_loopholes;
@@ -54,7 +54,7 @@ private:
 
 
 public:
-	CSE_SmartCover			(LPCSTR caSection);
+	CSE_SmartCover			(const char* caSection);
 	virtual							~CSE_SmartCover			();
 	virtual ISE_Shape*  	shape					();
 	virtual bool					used_ai_locations		() const;
@@ -62,7 +62,7 @@ public:
 	virtual bool					can_switch_online		() const;
 	virtual bool					can_switch_offline		() const;
 	virtual bool					interactive				() const;
-	LPCSTR					description				() const;
+	const char*					description				() const;
 #ifndef AI_COMPILER
 	void					set_available_loopholes (luabind::object table);
 #endif // #ifndef AI_COMPILER

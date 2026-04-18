@@ -24,8 +24,8 @@ public:
 		Plain
 	};
 
-		InitResult	Init				( CUIXml& xml_doc, LPCSTR section );
-			void	SetCaption			( LPCSTR name );
+		InitResult	Init				( CUIXml& xml_doc, const char* section );
+			void	SetCaption			( const char* name );
 			void	SetProgressValue	( float cur, float comp );
 			void	SetDefaultValuesPlain(float magnitude, const shared_str& unit);
 			bool	GetLegacyMode		() { return m_legacy_mode; }
@@ -43,7 +43,7 @@ protected:
 	float					m_af_value = 0.0f;
 	shared_str				m_unit_str;
 
-	InitResult	InitPlain(CUIXml& xml, pcstr section);
+	InitResult	InitPlain(CUIXml& xml, const char* section);
 
 }; // class CUIOutfitImmunity
 
@@ -60,7 +60,7 @@ public:
 			void 	UpdateInfo			( CHelmet* cur_helmet, CHelmet* slot_helmet = NULL );
 //			void	SetItem				(CCustomOutfit* outfit, u32 hitType, bool force_add);
 
-    CUIOutfitImmunity* CreateItem(CUIXml& uiXml, pcstr section,
+    CUIOutfitImmunity* CreateItem(CUIXml& uiXml, const char* section,
         float magnitude, const shared_str& unit,
         shared_str translationId);
 

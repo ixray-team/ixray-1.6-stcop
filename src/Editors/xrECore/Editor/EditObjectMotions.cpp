@@ -277,13 +277,13 @@ bool CEditableObject::RemoveSMotion(const char* name)
 	return false;
 }
 
-bool CEditableObject::AppendSMotion(LPCSTR fname, SMotionVec* inserted)
+bool CEditableObject::AppendSMotion(const char* fname, SMotionVec* inserted)
 {
 	VERIFY(IsSkeleton());
 
 	bool bRes	= true;
 	
-	LPCSTR ext	= strext(fname);
+	const char* ext	= strext(fname);
 	if (0==stricmp(ext,".skl")){
 		CSMotion* M = new CSMotion();
 		if (!M->LoadMotion(fname)){
@@ -450,7 +450,7 @@ BoneIt CEditableObject::FindBoneByNameIt(const char* name)
 	return std::find_if(m_Bones.begin(),m_Bones.end(),fBoneNameEQ(name));
 }
 
-int CEditableObject::FindBoneByNameIdx(LPCSTR name)
+int CEditableObject::FindBoneByNameIdx(const char* name)
 {
 	BoneIt b_it = FindBoneByNameIt(name);
 	return (b_it==m_Bones.end())?-1:b_it-m_Bones.begin();
@@ -470,7 +470,7 @@ int CEditableObject::GetRootBoneID()
 	return -1;
 }
 
-int CEditableObject::PartIDByName(LPCSTR name)
+int CEditableObject::PartIDByName(const char* name)
 {
 	for (BPIt it=m_BoneParts.begin(); it!=m_BoneParts.end(); it++)
 		if (it->alias==name) return it-m_BoneParts.begin();

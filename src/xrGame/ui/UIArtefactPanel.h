@@ -15,7 +15,7 @@ public:
 
 	virtual void InitIcons		(const xr_vector<const CArtefact*>& artefacts);
 	virtual void Draw			();
-			void InitFromXML	(CUIXml& xml, LPCSTR path, int index);
+			void InitFromXML	(CUIXml& xml, const char* path, int index);
 
 protected:
 	float						m_fScale;

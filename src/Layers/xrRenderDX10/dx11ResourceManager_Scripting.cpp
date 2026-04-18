@@ -27,7 +27,7 @@ public:
 	adopt_dx10sampler	(CBlender_Compile*	C, u32 SamplerIndex)	: m_pC(C), m_SI(SamplerIndex)		{ if (u32(-1)==m_SI) m_pC=0;}
 	adopt_dx10sampler	(const adopt_dx10sampler&	_C)				: m_pC(_C.m_pC), m_SI(_C.m_SI)	{ if (u32(-1)==m_SI) m_pC=0;}
 
-//	adopt_sampler&			_texture		(LPCSTR texture)		{ if (C) C->i_Texture	(stage,texture);											return *this;	}
+//	adopt_sampler&			_texture		(const char* texture)		{ if (C) C->i_Texture	(stage,texture);											return *this;	}
 //	adopt_sampler&			_projective		(bool _b)				{ if (C) C->i_Projective(stage,_b);													return *this;	}
 //	adopt_sampler&			_clamp			()						{ if (C) C->i_Address	(stage,D3DTADDRESS_CLAMP);									return *this;	}
 //	adopt_sampler&			_wrap			()						{ if (C) C->i_Address	(stage,D3DTADDRESS_WRAP);									return *this;	}
@@ -77,21 +77,21 @@ public:
 	adopt_compiler&			_o_scope		(bool	E)								{	C->SH->flags.bScopeMask=E;					return	*this;		}
 	adopt_compiler&			_o_distort		(bool	E)								{	C->SH->flags.bDistort=E;					return	*this;		}
 	adopt_compiler&			_o_wmark		(bool	E)								{	C->SH->flags.bWmark=E;						return	*this;		}
-	adopt_compiler&			_pass			(LPCSTR	vs,		LPCSTR ps)				{	TryEndPass();	C->r_Pass(vs,ps,true);		return	*this;		}
-	adopt_compiler&			_passgs			(LPCSTR	vs,		LPCSTR	gs,		LPCSTR ps){	TryEndPass();	C->r_Pass(vs,gs,ps,true);	return	*this;		}
+	adopt_compiler&			_pass			(const char*	vs,		const char* ps)				{	TryEndPass();	C->r_Pass(vs,ps,true);		return	*this;		}
+	adopt_compiler&			_passgs			(const char*	vs,		const char*	gs,		const char* ps){	TryEndPass();	C->r_Pass(vs,gs,ps,true);	return	*this;		}
 	adopt_compiler&			_fog			(bool	_fog)							{	C->PassSET_LightFog	(FALSE,_fog);			return	*this;		}
 	adopt_compiler&			_ZB				(bool	_test,	bool _write)			{	C->PassSET_ZB		(_test,_write);			return	*this;		}
 	adopt_compiler&			_blend			(bool	_blend, u32 abSRC, u32 abDST)	{	C->PassSET_ablend_mode(_blend,abSRC,abDST);	return 	*this;		}
 	adopt_compiler&			_aref			(bool	_aref,  u32 aref)				{	C->PassSET_ablend_aref(_aref,aref);			return 	*this;		}
-	adopt_compiler&			_dx10texture	(LPCSTR _resname, LPCSTR _texname)		{	C->r_dx10Texture(_resname, _texname);		return	*this;		}
-	adopt_dx10sampler		_dx10sampler	(LPCSTR _name)							{	u32 s = C->r_dx10Sampler(_name);			return	adopt_dx10sampler(C,s);	}
+	adopt_compiler&			_dx10texture	(const char* _resname, const char* _texname)		{	C->r_dx10Texture(_resname, _texname);		return	*this;		}
+	adopt_dx10sampler		_dx10sampler	(const char* _name)							{	u32 s = C->r_dx10Sampler(_name);			return	adopt_dx10sampler(C,s);	}
 
 	//	DX10 specific
 	adopt_compiler&			_dx10color_write_enable (bool cR, bool cG, bool cB, bool cA)		{	C->r_ColorWriteEnable(cR, cG, cB, cA);		return	*this;		}
 	adopt_compiler&			_dx10Stencil	(bool Enable, u32 Func, u32 Mask, u32 WriteMask, u32 Fail, u32 Pass, u32 ZFail) {C->r_Stencil(Enable, Func, Mask, WriteMask, Fail, Pass, ZFail);		return	*this;		}
 	adopt_compiler&			_dx10StencilRef	(u32 Ref) {C->r_StencilRef(Ref);		return	*this;		}
 	adopt_compiler&			_dx10ZFunc		(u32 Func)								{	C->RS.SetRS	( D3DRS_ZFUNC, Func);			return	*this;		}
-	//adopt_dx10texture		_dx10texture	(LPCSTR _name)							{	u32 s = C->r_dx10Texture(_name,0);			return	adopt_dx10sampler(C,s);	}
+	//adopt_dx10texture		_dx10texture	(const char* _name)							{	u32 s = C->r_dx10Texture(_name,0);			return	adopt_dx10sampler(C,s);	}
 };
 #pragma warning( pop )
 
@@ -111,7 +111,7 @@ public:
 };
 
 
-void LuaLog(LPCSTR caMessage)
+void LuaLog(const char* caMessage)
 {
 	Lua::LuaOut	(Lua::eLuaMessageTypeMessage,"%s",caMessage);
 }
@@ -242,7 +242,7 @@ void	CResourceManager::LS_Unload			()
 	LSVM		= nullptr;
 }
 
-BOOL	CResourceManager::_lua_HasShader	(LPCSTR s_shader)
+bool	CResourceManager::_lua_HasShader	(const char* s_shader)
 {
 	string256	undercorated;
 	for (int i=0, l=xr_strlen(s_shader)+1; i<l; i++)
@@ -257,7 +257,7 @@ BOOL	CResourceManager::_lua_HasShader	(LPCSTR s_shader)
 #endif
 }
 
-Shader*	CResourceManager::_lua_Create		(LPCSTR d_shader, LPCSTR s_textures)
+Shader*	CResourceManager::_lua_Create		(const char* d_shader, const char* s_textures)
 {
 	CBlender_Compile	C;
 	Shader				S;
@@ -266,7 +266,7 @@ Shader*	CResourceManager::_lua_Create		(LPCSTR d_shader, LPCSTR s_textures)
 	string256	undercorated;
 	for (int i=0, l=xr_strlen(d_shader)+1; i<l; i++)
 		undercorated[i]=('\\'==d_shader[i])?'_':d_shader[i];
-	LPCSTR		s_shader = undercorated;
+	const char*		s_shader = undercorated;
 
 	// Access to template
 	C.BT				= nullptr;
@@ -341,16 +341,16 @@ Shader*	CResourceManager::_lua_Create		(LPCSTR d_shader, LPCSTR s_textures)
 	return N;
 }
 
-ShaderElement*		CBlender_Compile::_lua_Compile	(LPCSTR namesp, LPCSTR name)
+ShaderElement*		CBlender_Compile::_lua_Compile	(const char* namesp, const char* name)
 {
 	ShaderElement		E;
 	SH =				&E;
 	RS.Invalidate		();
 
 	// Compile
-	LPCSTR				t_0		= *L_textures[0]			? *L_textures[0] : "null";
-	LPCSTR				t_1		= (L_textures.size() > 1)	? *L_textures[1] : "null";
-	LPCSTR				t_d		= detail_texture			? detail_texture : "null" ;
+	const char*				t_0		= *L_textures[0]			? *L_textures[0] : "null";
+	const char*				t_1		= (L_textures.size() > 1)	? *L_textures[1] : "null";
+	const char*				t_d		= detail_texture			? detail_texture : "null" ;
 	lua_State*			LSVM	= dxRenderDeviceRender::Instance().Resources->LSVM;
 	object				shader	= get_globals(LSVM)[namesp];
 	functor<void>		element	= object_cast<functor<void> >(shader[name]);

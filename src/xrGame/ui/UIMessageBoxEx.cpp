@@ -15,7 +15,7 @@ CUIMessageBoxEx::~CUIMessageBoxEx(){
 	xr_delete(m_pMessageBox);
 }
 
-void CUIMessageBoxEx::InitMessageBox(LPCSTR xml_template)
+void CUIMessageBoxEx::InitMessageBox(const char* xml_template)
 {
 	//CUIDialogWnd::SetWndRect(Frect().set(0.0f,0.0f,1024.0f,768.0f));
 	m_pMessageBox->InitMessageBox(xml_template);
@@ -46,12 +46,12 @@ void CUIMessageBoxEx::OnNOClicked( CUIWindow* w, void* d )
 	}
 }
 
-void CUIMessageBoxEx::SetText(LPCSTR text){
+void CUIMessageBoxEx::SetText(const char* text){
 	m_pMessageBox->SetText(text);
 
 }
 
-LPCSTR CUIMessageBoxEx::GetText ()
+const char* CUIMessageBoxEx::GetText ()
 {
 	return m_pMessageBox->GetText();
 }
@@ -79,12 +79,12 @@ void CUIMessageBoxEx::SendMessage(CUIWindow* pWnd, s16 msg, void* pData /* = nul
 	
 }
 
-LPCSTR CUIMessageBoxEx::GetHost()
+const char* CUIMessageBoxEx::GetHost()
 {
 	return m_pMessageBox->GetHost();
 }
 
-LPCSTR CUIMessageBoxEx::GetPassword()
+const char* CUIMessageBoxEx::GetPassword()
 {
 	return m_pMessageBox->GetPassword();
 }
@@ -147,12 +147,12 @@ bool CUIMessageBoxEx::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
 	return CUIDialogWnd::OnKeyboardAction(id, gamepad_action);
 }
 
-void  CUIMessageBoxEx::SetTextEditURL( LPCSTR text )
+void  CUIMessageBoxEx::SetTextEditURL( const char* text )
 {
 	m_pMessageBox->SetTextEditURL( text );
 }
 
-LPCSTR  CUIMessageBoxEx::GetTextEditURL()
+const char*  CUIMessageBoxEx::GetTextEditURL()
 {
 	return m_pMessageBox->GetTextEditURL();
 }

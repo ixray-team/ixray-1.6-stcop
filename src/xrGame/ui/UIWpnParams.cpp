@@ -261,7 +261,7 @@ bool CUIWpnParams::Check(CInventoryItem& wpn_section)
 		return false;
 	}
 
-	LPCSTR wpn_sect = wpn_section.object().cNameSect().c_str();
+	const char* wpn_sect = wpn_section.object().cNameSect().c_str();
 	if (pSettings->line_exist(wpn_sect, "fire_dispersion_base"))
 	{
 		//Alundaio: Most likely a fake weapon or melee weapon

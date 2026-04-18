@@ -111,7 +111,7 @@ void CObjectHandlerPlanner::set_goal	(MonsterSpace::EObjectAction object_action,
 }
 
 #ifdef LOG_ACTION
-LPCSTR CObjectHandlerPlanner::action2string(const _action_id_type &id)
+const char* CObjectHandlerPlanner::action2string(const _action_id_type &id)
 {
 	LPSTR S = m_temp_string;
 	if (action_object_id(id) != 0xffff)
@@ -163,7 +163,7 @@ LPCSTR CObjectHandlerPlanner::action2string(const _action_id_type &id)
 	return		(S);
 }
 
-LPCSTR CObjectHandlerPlanner::property2string(const _condition_type &id)
+const char* CObjectHandlerPlanner::property2string(const _condition_type &id)
 {
 	if (action_object_id(id) != 0xffff)
 		if (Level().Objects.net_Find(action_object_id(id)))

@@ -62,7 +62,7 @@ AntigasFilter* CScriptGameObject::cast_AntigasFilter()
 	return nullptr;
 }
 
-void CInventoryOwner::Load(LPCSTR section)
+void CInventoryOwner::Load(const char* section)
 {
 	if (pSettings->line_exist(section, "inv_max_weight"))
 	{
@@ -73,7 +73,7 @@ void CInventoryOwner::Load(LPCSTR section)
 	m_need_osoznanie_mode = READ_IF_EXISTS(pSettings, r_bool, section, "need_osoznanie_mode", FALSE);
 }
 
-void CInventoryOwner::reload(LPCSTR section)
+void CInventoryOwner::reload(const char* section)
 {
 	inventory().Clear();
 	inventory().m_pOwner = this;
@@ -95,7 +95,7 @@ void CInventoryOwner::reinit()
 }
 
 //call this after CGameObject::net_Spawn
-BOOL CInventoryOwner::net_Spawn(CSE_Abstract* DC)
+bool CInventoryOwner::net_Spawn(CSE_Abstract* DC)
 {
 	if (m_pTrade == nullptr)
 	{
@@ -627,7 +627,7 @@ CBackpack* CInventoryOwner::GetBackpack() const
 }
 
 
-LPCSTR CInventoryOwner::trade_section() const
+const char* CInventoryOwner::trade_section() const
 {
 	const CGameObject* game_object = smart_cast<const CGameObject*>(this);
 	VERIFY(game_object);
@@ -644,7 +644,7 @@ float CInventoryOwner::deficit_factor(const shared_str& section) const
 	return m_purchase_list->deficit(section);
 }
 
-void CInventoryOwner::buy_supplies(CInifile& ini_file, LPCSTR section)
+void CInventoryOwner::buy_supplies(CInifile& ini_file, const char* section)
 {
 	if (m_purchase_list == nullptr)
 	{

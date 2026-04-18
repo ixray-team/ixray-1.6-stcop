@@ -647,7 +647,7 @@ void RequestHandler_QuestEditor(const SRequestData& req);
 void RequestHandler_OMFEditor(const SRequestData& req);
 
 void RegisterImGuiInGame();
-void execute_console_command_deferred(CConsole* c, LPCSTR string_to_execute);
+void execute_console_command_deferred(CConsole* c, const char* string_to_execute);
 
 extern clsid_manager* g_pClsidManager;
 extern CImGuiGameSearchManager imgui_search_manager;

@@ -75,7 +75,7 @@ bool CInventoryItem::get_upgrades_str(string2048& res) const
 			continue;
 		}
 
-		LPCSTR upgr_section = upgr->section();
+		const char* upgr_section = upgr->section();
 		if (prop_count > 0)
 		{
 			xr_strcat(res, sizeof(res), ", ");
@@ -150,17 +150,17 @@ void CInventoryItem::net_Spawn_install_upgrades(Upgrades_type saved_upgrades) //
 	}
 }
 
-bool CInventoryItem::install_upgrade(LPCSTR section)
+bool CInventoryItem::install_upgrade(const char* section)
 {
 	return install_upgrade_impl(section, false);
 }
 
-bool CInventoryItem::verify_upgrade(LPCSTR section)
+bool CInventoryItem::verify_upgrade(const char* section)
 {
 	return install_upgrade_impl(section, true);
 }
 
-bool CInventoryItem::install_upgrade_impl(LPCSTR section, bool test)
+bool CInventoryItem::install_upgrade_impl(const char* section, bool test)
 {
 	bool result = process_if_exists(section, "cost", m_cost, test);
 	result |= process_if_exists(section, "inv_weight", m_weight, test);
@@ -189,7 +189,7 @@ bool CInventoryItem::install_upgrade_impl(LPCSTR section, bool test)
 		result |= process_if_exists(section, "control_inertion_factor", m_fControlInertionFactor, test);
 	}
 
-	LPCSTR str;
+	const char* str;
 	result2 = process_if_exists_set(section, "immunities_sect", str, test);
 	if (result2 && !test)
 	{

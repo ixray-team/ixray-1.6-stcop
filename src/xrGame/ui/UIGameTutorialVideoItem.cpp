@@ -12,7 +12,7 @@
 #include "../Include/xrRender/UIRender.h"
 #include "../../xrUI/UICursor.h"
 
-extern ENGINE_API BOOL bShowPauseString;
+extern ENGINE_API bool bShowPauseString;
 
 //-----------------------------------------------------------------------------
 // Tutorial Item
@@ -50,7 +50,7 @@ void CUISequenceVideoItem::Load(CUIXml* xml, int idx)
 	XML_NODE* _stored_root	= xml->GetLocalRoot();
 	xml->SetLocalRoot		(xml->NavigateToNode("item",idx));
 	
-	LPCSTR str				= xml->Read				("pause_state", 0, "ignore");
+	const char* str				= xml->Read				("pause_state", 0, "ignore");
 	m_flags.set										(etiNeedPauseOn,	0==_stricmp(str, "on"));
 	m_flags.set										(etiNeedPauseOff,	0==_stricmp(str, "off"));
 	m_flags.set										(etiNeedPauseSound, 0==_stricmp(str, "on"));
@@ -94,7 +94,7 @@ void CUISequenceVideoItem::Load(CUIXml* xml, int idx)
 
 		m_wnd->SetWndSize								(wnd_size);
 	}
-	LPCSTR snd_name										= xml->Read("sound",0,"");
+	const char* snd_name										= xml->Read("sound",0,"");
 
 	if (snd_name && snd_name[0])
 	{
@@ -146,7 +146,7 @@ void CUISequenceVideoItem::Update()
 
 	if (m_texture->HasTexture())
 	{
-		BOOL is_playing		= snd.handle() ? snd.is_playing() : m_texture->video_IsPlaying();
+		bool is_playing		= snd.handle() ? snd.is_playing() : m_texture->video_IsPlaying();
 		if (is_playing)
 		{
 			m_texture->video_Sync(m_sync_time);

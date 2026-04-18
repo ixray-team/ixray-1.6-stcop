@@ -111,7 +111,7 @@ int CScriptGameObject::get_visibility_state()
 	return CAI_Bloodsucker::full_visibility;
 }
 
-void CScriptGameObject::set_override_animation(pcstr anim_name)
+void CScriptGameObject::set_override_animation(const char* anim_name)
 {
 	if (CBaseMonster* monster = object().cast_base_monster())
 	{
@@ -190,7 +190,7 @@ void CScriptGameObject::set_manual_invisibility(bool val)
 	}
 }
 
-void CScriptGameObject::bloodsucker_drag_jump(CScriptGameObject* e, LPCSTR e_str, const Fvector& position, float factor)
+void CScriptGameObject::bloodsucker_drag_jump(CScriptGameObject* e, const char* e_str, const Fvector& position, float factor)
 {
 	if (CAI_Bloodsucker* monster = smart_cast<CAI_Bloodsucker*>(&object()))
 	{
@@ -319,7 +319,7 @@ void CScriptGameObject::skip_transfer_enemy(bool val)
 	}
 }
 
-void CScriptGameObject::set_home(LPCSTR name, float r_min, float r_max, bool aggressive, float r_mid)
+void CScriptGameObject::set_home(const char* name, float r_min, float r_max, bool aggressive, float r_mid)
 {
 	if (CBaseMonster* monster = object().cast_base_monster())
 	{

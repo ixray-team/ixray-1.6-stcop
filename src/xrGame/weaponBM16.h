@@ -11,8 +11,8 @@ public:
 	CWeaponBM16() = default;
 	virtual	~CWeaponBM16() = default;
 
-	virtual void	Load							(LPCSTR section);
-	virtual void	LoadSounds						(LPCSTR section);
+	virtual void	Load							(const char* section);
+	virtual void	LoadSounds						(const char* section);
 
 	virtual bool	HudAnimationExist				(const shared_str& anim_name);
 

@@ -21,14 +21,14 @@
 #include "../xrScripts/script_callback_ex.h"
 #include "alife_registry_wrappers.h"
 
-ALife::_STORY_ID	story_id(LPCSTR story_id);
+ALife::_STORY_ID	story_id(const char* story_id);
 u16					storyId2GameId(ALife::_STORY_ID);
 
 using namespace luabind;
 CUIXml* g_gameTaskXml = nullptr;
 
 
-ALife::_STORY_ID	story_id	(LPCSTR story_id)
+ALife::_STORY_ID	story_id	(const char* story_id)
 {
 	int res=
 							(
@@ -154,7 +154,7 @@ void CGameTask::Load(const shared_str& id)
 			: m_Objectives.emplace_back(this, i);
 
 		//.
-		pcstr tag_text = g_gameTaskXml->Read(l_root, "text", 0, nullptr);
+		const char* tag_text = g_gameTaskXml->Read(l_root, "text", 0, nullptr);
 		objective.m_Description = tag_text;
 
 		//.
@@ -189,7 +189,7 @@ void CGameTask::Load(const shared_str& id)
 		//.
 		objective.m_map_location = g_gameTaskXml->Read(l_root, "map_location_type", 0, nullptr);
 
-		LPCSTR object_story_id = g_gameTaskXml->Read(l_root, "object_story_id", 0, nullptr);
+		const char* object_story_id = g_gameTaskXml->Read(l_root, "object_story_id", 0, nullptr);
 
 		//*
 		objective.m_def_location_enabled = !g_gameTaskXml->ReadInt(l_root, "map_location_hidden", 0, 0);
@@ -259,7 +259,7 @@ void CGameTask::Load(const shared_str& id)
 			objective.m_complete_lua_functions.resize(info_num);
 			for (int j = 0; j < info_num; ++j)
 			{
-				LPCSTR str = g_gameTaskXml->Read(l_root, "function_complete", j, nullptr);
+				const char* str = g_gameTaskXml->Read(l_root, "function_complete", j, nullptr);
 				const bool functor_exists = ai().script_engine().functor(str, objective.m_complete_lua_functions[j]);
 				THROW3(functor_exists, "Cannot find script function described in task objective  ", str);
 			}
@@ -271,7 +271,7 @@ void CGameTask::Load(const shared_str& id)
 			objective.m_fail_lua_functions.resize(info_num);
 			for (int j = 0; j < info_num; ++j)
 			{
-				LPCSTR str = g_gameTaskXml->Read(l_root, "function_fail", j, nullptr);
+				const char* str = g_gameTaskXml->Read(l_root, "function_fail", j, nullptr);
 				const bool functor_exists = ai().script_engine().functor(str, objective.m_fail_lua_functions[j]);
 				THROW3(functor_exists, "Cannot find script function described in task objective  ", str);
 			}
@@ -283,7 +283,7 @@ void CGameTask::Load(const shared_str& id)
 			objective.m_lua_functions_on_complete.resize(info_num);
 			for (int i = 0; i < info_num; ++i)
 			{
-				LPCSTR str = g_gameTaskXml->Read(l_root, "function_call_complete", i, nullptr);
+				const char* str = g_gameTaskXml->Read(l_root, "function_call_complete", i, nullptr);
 				const bool functor_exists = ai().script_engine().functor(str, objective.m_lua_functions_on_complete[i]);
 				THROW3(functor_exists, "Cannot find script function described in task objective  ", str);
 			}
@@ -295,7 +295,7 @@ void CGameTask::Load(const shared_str& id)
 			objective.m_lua_functions_on_fail.resize(info_num);
 			for (int j = 0; j < info_num; ++j)
 			{
-				LPCSTR str = g_gameTaskXml->Read(l_root, "function_call_fail", j, nullptr);
+				const char* str = g_gameTaskXml->Read(l_root, "function_call_fail", j, nullptr);
 				const bool functor_exists = ai().script_engine().functor(str, objective.m_lua_functions_on_fail[j]);
 				THROW3(functor_exists, "Cannot find script function described in task objective  ", str);
 			}
@@ -495,7 +495,7 @@ void SGameTaskObjective::RemoveMapLocations(bool notify)
 	m_map_object_id			= u16(-1);
 }
 
-void SGameTaskObjective::ChangeMapLocation( LPCSTR new_map_location, u16 new_map_object_id )
+void SGameTaskObjective::ChangeMapLocation( const char* new_map_location, u16 new_map_object_id )
 {
 	RemoveMapLocations	( false );
 
@@ -725,7 +725,7 @@ void CGameTask::load(IReader& stream)
 	CreateMapLocation		(true);
 }
 
-void SGameTaskObjective::SetIconName_script(pcstr tex)
+void SGameTaskObjective::SetIconName_script(const char* tex)
 {
 	m_icon_texture_name = tex;
 	m_icon_rect = CUITextureMaster::GetTextureRect(m_icon_texture_name.c_str());
@@ -749,42 +749,42 @@ void SGameTaskObjective::CommitScriptHelperContents()
 }
 
 
-void SGameTaskObjective::AddCompleteInfo_script(LPCSTR str) 
+void SGameTaskObjective::AddCompleteInfo_script(const char* str) 
 { 
 	m_completeInfos.emplace_back(str); 
 }
 
-void SGameTaskObjective::AddCompleteFunc_script(LPCSTR str) 
+void SGameTaskObjective::AddCompleteFunc_script(const char* str) 
 { 
 	m_pScriptHelper.m_s_complete_lua_functions.emplace_back(str); 
 }
 
-void SGameTaskObjective::AddOnCompleteInfo_script(LPCSTR str) 
+void SGameTaskObjective::AddOnCompleteInfo_script(const char* str) 
 { 
 	m_infos_on_complete.emplace_back(str); 
 }
 
-void SGameTaskObjective::AddOnCompleteFunc_script(LPCSTR str) 
+void SGameTaskObjective::AddOnCompleteFunc_script(const char* str) 
 { 
 	m_pScriptHelper.m_s_lua_functions_on_complete.emplace_back(str); 
 }
 
-void SGameTaskObjective::AddFailInfo_script(LPCSTR str) 
+void SGameTaskObjective::AddFailInfo_script(const char* str) 
 { 
 	m_failInfos.emplace_back(str); 
 }
 
-void SGameTaskObjective::AddFailFunc_script(LPCSTR str) 
+void SGameTaskObjective::AddFailFunc_script(const char* str) 
 { 
 	m_pScriptHelper.m_s_fail_lua_functions.emplace_back(str); 
 }
 
-void SGameTaskObjective::AddOnFailInfo_script(LPCSTR str) 
+void SGameTaskObjective::AddOnFailInfo_script(const char* str) 
 { 
 	m_infos_on_fail.emplace_back(str); 
 }
 
-void SGameTaskObjective::AddOnFailFunc_script(LPCSTR str) 
+void SGameTaskObjective::AddOnFailFunc_script(const char* str) 
 { 
 	m_pScriptHelper.m_s_lua_functions_on_fail.emplace_back(str); 
 }

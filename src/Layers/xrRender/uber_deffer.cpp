@@ -4,7 +4,7 @@
 #include "dxRenderDeviceRender.h"
 void fix_texture_name(LPSTR fn);
 
-void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, LPCSTR detail_replace, bool DO_NOT_FINISH, bool DO_NOT_START)
+void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, bool aref, const char* detail_replace, bool DO_NOT_FINISH, bool DO_NOT_START)
 {
 	string256 fname, fnameA, fnameB;
 	xr_strcpy(fname, *C.L_textures[0]);
@@ -39,7 +39,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 
 	if(C.bDetail_Bump)
 	{
-		LPCSTR detail_bump_texture = DEV->m_textures_description.GetBumpName(dt).c_str();
+		const char* detail_bump_texture = DEV->m_textures_description.GetBumpName(dt).c_str();
 		if(detail_bump_texture != nullptr && detail_bump_texture[0] != '\0') {
 			bHasDetailBump = true;
 			xr_strcpy(texDetailBump, sizeof(texDetailBump), detail_bump_texture);
@@ -168,12 +168,12 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 			RImplementation.addShaderOption("TESS_HM", "1");
 		}
 
-		C.r_TessPass(vs, hs, ds, "null", ps, FALSE);
+		C.r_TessPass(vs, hs, ds, "null", ps, false);
 
 		u32 stage = C.r_dx10Sampler("smp_bump_ds");
 		if (stage != u32(-1)) {
 			C.i_Address(stage, D3DTADDRESS_WRAP);
-			C.i_FilterAnizo(stage, TRUE);
+			C.i_FilterAnizo(stage, true);
 		}
 
 		if (ps_r2_ls_flags_ext.test(R2FLAGEXT_WIREFRAME))
@@ -196,11 +196,11 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 	{
 		if (C.SH->flags.bLandscape)
 		{
-			C.r_Pass(vs, ps, FALSE, TRUE, FALSE);
+			C.r_Pass(vs, ps, false, true, false);
 		}
 		else
 		{
-			C.r_Pass(vs, ps, FALSE);
+			C.r_Pass(vs, ps, false);
 		}
 	}
 
@@ -251,7 +251,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 
 	if (!DO_NOT_START)
 	{
-		C.r_Pass(vs, ps, FALSE);
+		C.r_Pass(vs, ps, false);
 	}
 
 	C.r_Sampler_waf("s_base", C.L_textures[0].c_str(), false);
@@ -292,13 +292,13 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 	}
 }
 
-void uber_forward(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, BOOL blend, LPCSTR detail_replace, bool DO_NOT_FINISH, bool DO_NOT_START)
+void uber_forward(CBlender_Compile& C, bool hq, const char* vs, const char* ps, bool aref, bool blend, const char* detail_replace, bool DO_NOT_FINISH, bool DO_NOT_START)
 {
 	uber_deffer(C, hq, vs, ps, aref, detail_replace, true, DO_NOT_START);
 
 	if (blend) 
 	{
-		C.PassSET_ZB(TRUE, FALSE);
+		C.PassSET_ZB(TRUE, false);
 		C.PassSET_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, 0);
 	}
 

@@ -51,7 +51,7 @@ void CPEDef::DestroyShader()
 {
     m_CachedShader.destroy();
 }
-void CPEDef::SetName(LPCSTR name)
+void CPEDef::SetName(const char* name)
 {
     m_Name				= name;
 }
@@ -137,7 +137,7 @@ void CPEDef::ExecuteCollision(PAPI::Particle* particles, u32 p_cnt, float dt, CP
 //------------------------------------------------------------------------------
 // I/O part
 //------------------------------------------------------------------------------
-BOOL CPEDef::LoadOriginal(IReader& F)
+bool CPEDef::LoadOriginal(IReader& F)
 {
 	bool FoundedChunk = !!F.find_chunk(PS::PE::Chunks::VERSION);
 	R_ASSERT2(FoundedChunk, "Not found chunk PED_CHUNK_VERSION");
@@ -239,13 +239,13 @@ BOOL CPEDef::LoadOriginal(IReader& F)
 	return TRUE;
 }
 
-BOOL CPEDef::LoadExtended(IReader& F)
+bool CPEDef::LoadExtended(IReader& F)
 {
 	R_ASSERT(false);
 	return false;
 }
 
-BOOL CPEDef::Load2(CInifile& ini)
+bool CPEDef::Load2(CInifile& ini)
 {
 	auto ver = ini.r_enum<PS::PE::Version>("_effect", "version");
 
@@ -266,7 +266,7 @@ BOOL CPEDef::Load2(CInifile& ini)
 	}
 }
 
-BOOL CPEDef::Load2Original(CInifile& ini)
+bool CPEDef::Load2Original(CInifile& ini)
 {
 	m_MaxParticles	= ini.r_u32("_effect", "max_particles");
 	m_Flags.assign	(ini.r_u32("_effect", "flags"));
@@ -345,7 +345,7 @@ BOOL CPEDef::Load2Original(CInifile& ini)
 	return TRUE;
 }
 
-BOOL CPEDef::Load2Entended(CInifile& ini)
+bool CPEDef::Load2Entended(CInifile& ini)
 {
 	R_ASSERT(false);
 	return false;

@@ -54,8 +54,8 @@ public:
     virtual void		Clear					(bool bSpecific=false);
 
 	// definition
-    IC LPCSTR			ClassName				(){return "light";}
-    IC LPCSTR			ClassDesc				(){return "Light";}
+    IC const char*			ClassName				(){return "light";}
+    IC const char*			ClassDesc				(){return "Light";}
     IC int				RenderPriority			(){return 10;}
 
     // IO
@@ -76,16 +76,16 @@ public:
 
 	void 				SelectLightsForObject	(CCustomObject* obj);
     
-	virtual void 		FillProp				(LPCSTR pref, PropItemVec& items);
+	virtual void 		FillProp				(const char* pref, PropItemVec& items);
 
     xr_string			GenLightControlName		();
     xr_rtoken*   		FindLightControl		(int id);
-    RTokenVecIt	   		FindLightControlIt		(LPCSTR name);
-    xr_rtoken*   		FindLightControl		(LPCSTR name){RTokenVecIt it = FindLightControlIt(name); return it!=lcontrols.end()?&*it:0;}
-    void				AppendLightControl		(LPCSTR name, u32* idx=0);
-    void				RemoveLightControl		(LPCSTR name);
+    RTokenVecIt	   		FindLightControlIt		(const char* name);
+    xr_rtoken*   		FindLightControl		(const char* name){RTokenVecIt it = FindLightControlIt(name); return it!=lcontrols.end()?&*it:0;}
+    void				AppendLightControl		(const char* name, u32* idx=0);
+    void				RemoveLightControl		(const char* name);
 
-    virtual CCustomObject* CreateObject			(LPVOID data, LPCSTR name);
+    virtual CCustomObject* CreateObject			(LPVOID data, const char* name);
 private:
     virtual void OnDrawUI();
 };

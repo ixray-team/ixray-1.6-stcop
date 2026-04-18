@@ -18,14 +18,14 @@ class ECORE_API ELibrary//:	public pureDeviceCreate, public pureDeviceDestroy
 	friend class TfrmChoseObject;
 	EditObjMap			m_EditObjects;
 
-    CEditableObject*	LoadEditObject		(LPCSTR full_name);
-    void				UnloadEditObject	(LPCSTR full_name);
+    CEditableObject*	LoadEditObject		(const char* full_name);
+    void				UnloadEditObject	(const char* full_name);
 public:
 						ELibrary			();
 	virtual 			~ELibrary			();
                     
-    void  		RemoveObject		(LPCSTR fname, EItemType type, bool& res);
-    void  		RenameObject		(LPCSTR fn0, LPCSTR fn1, EItemType type);
+    void  		RemoveObject		(const char* fname, EItemType type, bool& res);
+    void  		RenameObject		(const char* fn0, const char* fn1, EItemType type);
 
 	void 				OnCreate			();
 	void 				OnDestroy			();
@@ -33,9 +33,9 @@ public:
 
     void 				ReloadObjects		();
     void 				CleanLibrary		();
-    void 				ReloadObject		(LPCSTR name);
+    void 				ReloadObject		(const char* name);
 
-    CEditableObject*	CreateEditObject	(LPCSTR name);
+    CEditableObject*	CreateEditObject	(const char* name);
     void				RemoveEditObject	(CEditableObject*& object);
 
     int					GetObjects			(FS_FileSet& files);

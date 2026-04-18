@@ -18,7 +18,7 @@
 ////////////////////////////////////////////////////////////////////////////
 // CSE_Visual
 ////////////////////////////////////////////////////////////////////////////
-CSE_Visual::CSE_Visual		   	(LPCSTR name)
+CSE_Visual::CSE_Visual		   	(const char* name)
 {
 	if(name)
 	{
@@ -39,7 +39,7 @@ CSE_Visual::~CSE_Visual			()
 {
 }
 
-void CSE_Visual::set_visual	   	(LPCSTR name, bool load)
+void CSE_Visual::set_visual	   	(const char* name, bool load)
 {
 	string_path					tmp;
     xr_strcpy						(tmp,name);
@@ -74,7 +74,7 @@ void CSE_Visual::OnChangeAnim(PropValue* sender)
 }
 
 #ifndef XRGAME_EXPORTS
-void CSE_Visual::FillProps		(LPCSTR pref, PropItemVec &items)
+void CSE_Visual::FillProps		(const char* pref, PropItemVec &items)
 {
 	ISE_Abstract* abstract		= smart_cast<ISE_Abstract*>(this); VERIFY(abstract);
 	ChooseValue *V 				= PHelper().CreateChoose(items, PrepareKey(pref,abstract->name(),"Model\\Visual"),		&visual_name,		smVisual);
@@ -88,7 +88,7 @@ void CSE_Visual::FillProps		(LPCSTR pref, PropItemVec &items)
 ////////////////////////////////////////////////////////////////////////////
 // CSE_Animated
 ////////////////////////////////////////////////////////////////////////////
-CSE_Motion::CSE_Motion			(LPCSTR name)
+CSE_Motion::CSE_Motion			(const char* name)
 {
 	motion_name					= name;
 }
@@ -97,7 +97,7 @@ CSE_Motion::~CSE_Motion			()
 {
 }
 
-void CSE_Motion::set_motion		(LPCSTR name)
+void CSE_Motion::set_motion		(const char* name)
 {
 	motion_name					= name;
 }
@@ -119,7 +119,7 @@ void CSE_Motion::OnChangeMotion	(PropValue* sender)
 }
 
 #ifndef XRGAME_EXPORTS
-void CSE_Motion::FillProps(		LPCSTR pref, PropItemVec &items)
+void CSE_Motion::FillProps(		const char* pref, PropItemVec &items)
 {
 	ISE_Abstract* abstract		= smart_cast<ISE_Abstract*>(this); VERIFY(abstract);
 	ChooseValue *V				= PHelper().CreateChoose(items, PrepareKey(pref,abstract->name(),"Motion"),&motion_name, smGameAnim);

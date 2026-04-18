@@ -101,7 +101,7 @@ namespace PAPI{
 		{
 			copy_pos
 		};
-		BOOL copy_pos;		// True to copy pos to posB.
+		bool copy_pos;		// True to copy pos to posB.
 
         _METHODS;
 	};
@@ -224,7 +224,7 @@ namespace PAPI{
 			kill_less_than
 		};
     	float age_limit;		// Exact age at which to kill particles.
-		BOOL kill_less_than;	// True to kill particles less than limit.
+		bool kill_less_than;	// True to kill particles less than limit.
 
         _METHODS;
 	};
@@ -372,7 +372,7 @@ namespace PAPI{
 			kill_inside,
 			position
 		};
-		BOOL kill_inside;	// True to dispose of particles *inside* domain
+		bool kill_inside;	// True to dispose of particles *inside* domain
 		pDomain positionL;	// Disposal region (in local space)
 		pDomain position;	// Disposal region
 
@@ -386,7 +386,7 @@ namespace PAPI{
 			kill_inside,
 			velocity
 		};
-		BOOL kill_inside;	// True to dispose of particles with vel *inside* domain
+		bool kill_inside;	// True to dispose of particles with vel *inside* domain
 		pDomain velocityL;	// Disposal region (in local space)
 		pDomain velocity;	// Disposal region
 

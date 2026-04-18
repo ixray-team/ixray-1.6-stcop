@@ -668,7 +668,7 @@ static float OPC_SegmentTriangleSqrDist(const IceMaths::Segment& segment, const 
     return fabsf(fSqrDist);
 }
 
-inline_ BOOL LSSCollider::LSSTriOverlap(const IceMaths::Point& vert0_, const IceMaths::Point& vert1_, const IceMaths::Point& vert2_)
+inline_ bool LSSCollider::LSSTriOverlap(const IceMaths::Point& vert0_, const IceMaths::Point& vert1_, const IceMaths::Point& vert2_)
 {
 	// Applies the model's local scale
 	const IceMaths::Point vert0 = vert0_*mLocalScale;

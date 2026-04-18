@@ -11,7 +11,7 @@ CMMSound::~CMMSound()
 	all_Stop();
 }
 
-void CMMSound::Init(CUIXml& xml_doc, LPCSTR path){
+void CMMSound::Init(CUIXml& xml_doc, const char* path){
 	string256 _path;	
 	m_bRandom = xml_doc.ReadAttribInt(path, 0, "random")? true : false;
 
@@ -33,7 +33,7 @@ void CMMSound::Init(CUIXml& xml_doc, LPCSTR path){
 
 }
 
-bool CMMSound::check_file(LPCSTR fname){
+bool CMMSound::check_file(const char* fname){
 	string_path		_path;
 	xr_strconcat(_path, fname, ".ogg");
 	return FS.exist(_game_sounds_, _path) ? true : false;		

@@ -197,19 +197,19 @@ IC	void CPlanner::add_effect		(_world_operator *action, u32 condition_id, bool c
 
 #ifdef LOG_ACTION
 TEMPLATE_SPECIALIZATION
-LPCSTR CPlanner::action2string		(const u32& action_id)
+const char* CPlanner::action2string		(const u32& action_id)
 {
 	return			(action(action_id).m_action_name);
 }
 
 TEMPLATE_SPECIALIZATION
-LPCSTR CPlanner::property2string	(const u32&property_id)
+const char* CPlanner::property2string	(const u32&property_id)
 {
 	return			(evaluator(property_id).m_evaluator_name);//_itoa(property_id,m_temp_string,10));
 }
 
 TEMPLATE_SPECIALIZATION
-LPCSTR CPlanner::object_name() const
+const char* CPlanner::object_name() const
 {
 	return (*m_object->cName());
 }
@@ -320,7 +320,7 @@ IC	void CPlanner::show_target_world_state	()
 }
 
 TEMPLATE_SPECIALIZATION
-IC	void CPlanner::show				(LPCSTR offset)
+IC	void CPlanner::show				(const char* offset)
 {
 	string256		temp;
 	xr_strconcat(temp,offset,"    ");

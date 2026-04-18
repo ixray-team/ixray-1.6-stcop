@@ -17,14 +17,14 @@ void EScenePortalTool::RemoveControls()
 }
 
 
-void EScenePortalTool::FillProp(LPCSTR pref, PropItemVec& items)
+void EScenePortalTool::FillProp(const char* pref, PropItemVec& items)
 {
 	PHelper().CreateFlag32(items, PrepareKey(pref,"Draw Simple Model"),&m_Flags,			flDrawSimpleModel);
 	inherited::FillProp	(pref, items);
 }
 
 
-CCustomObject* EScenePortalTool::CreateObject(LPVOID data, LPCSTR name)
+CCustomObject* EScenePortalTool::CreateObject(LPVOID data, const char* name)
 {
 	CCustomObject* O	= new CPortal(data,name);
     O->FParentTools		= this;

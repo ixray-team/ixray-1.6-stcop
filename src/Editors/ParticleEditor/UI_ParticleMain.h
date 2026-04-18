@@ -32,11 +32,11 @@ public:
     virtual LPSTR	GetCaption				();
 
     virtual void 	ResetStatus				();
-    virtual void 	SetStatus				(LPCSTR s, bool bOutLog);
+    virtual void 	SetStatus				(const char* s, bool bOutLog);
     virtual void	ProgressDraw			();
 
-    virtual LPCSTR	EditorName				(){return "particle";}
-    virtual LPCSTR	EditorDesc				(){return "Particle Editor";}
+    virtual const char*	EditorName				(){return "particle";}
+    virtual const char*	EditorDesc				(){return "Particle Editor";}
 
     virtual bool 	ApplyShortCut			(DWORD Key, TShiftState Shift);
     virtual bool 	ApplyGlobalShortCut		(DWORD Key, TShiftState Shift);

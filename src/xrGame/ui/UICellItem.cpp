@@ -413,7 +413,7 @@ bool CUICellItem::OnMouseAction(float x, float y, EUIMessages mouse_action)
 	return false;
 };
 
-BOOL g_Adjust3dIcon = FALSE;
+bool g_Adjust3dIcon = FALSE;
 float g_Adjust3dIconValue = 0.1f;
 bool CUICellItem::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
@@ -615,7 +615,7 @@ bool CUICellItem::HasChild(CUICellItem* item)
 void CUICellItem::UpdateItemText()
 {
     string32 tempStr;
-    pcstr finalText = nullptr;
+    const char* finalText = nullptr;
     if (ChildsCount())
     {
         xr_sprintf(tempStr, "x%d", ChildsCount() + 1);

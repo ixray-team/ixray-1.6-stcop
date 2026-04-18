@@ -28,7 +28,7 @@ COperatorAbstract::~COperatorAbstract	()
 {
 }
 
-void COperatorAbstract::Load						(LPCSTR section)
+void COperatorAbstract::Load						(const char* section)
 {
 }
 

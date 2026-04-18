@@ -8,7 +8,7 @@ ENGINE_API CStringTable* g_pStringTable = nullptr;
 
 STRING_TABLE_DATA* CStringTable::pData = nullptr;
 xr_vector<xr_token> CStringTable::languages_token;
-BOOL CStringTable::m_bWriteErrorsToLog = FALSE;
+bool CStringTable::m_bWriteErrorsToLog = FALSE;
 
 CStringTable::CStringTable	()
 {
@@ -176,7 +176,7 @@ void CStringTable::Init		()
 	ReparseKeyBindings();
 }
 
-void CStringTable::Load	(LPCSTR xml_file_full)
+void CStringTable::Load	(const char* xml_file_full)
 {
 	CXml						uiXml;
 	string_path					_s;
@@ -189,7 +189,7 @@ void CStringTable::Load	(LPCSTR xml_file_full)
 
 	for(int i=0; i<string_num; ++i)
 	{
-		LPCSTR string_name = uiXml.ReadAttrib(uiXml.GetRoot(), "string", i, "id", nullptr);
+		const char* string_name = uiXml.ReadAttrib(uiXml.GetRoot(), "string", i, "id", nullptr);
 
 		bool isDublicate = pData->m_StringTable.find(string_name) != pData->m_StringTable.end();
 		if (isDublicate)
@@ -198,7 +198,7 @@ void CStringTable::Load	(LPCSTR xml_file_full)
 			Msg("! duplicate string table id: %s", string_name);
 		}
 
-		LPCSTR string_text		= uiXml.Read(uiXml.GetRoot(), "string:text", i,  nullptr);
+		const char* string_text		= uiXml.Read(uiXml.GetRoot(), "string:text", i,  nullptr);
 
 		if(m_bWriteErrorsToLog && string_text)
 			Msg("[string table] '%s' no translation in '%s'", string_name, pData->m_sLanguage.c_str() );
@@ -211,7 +211,7 @@ void CStringTable::Load	(LPCSTR xml_file_full)
 	}
 }
 
-void CStringTable::LoadFallback	(LPCSTR xml_file_full)
+void CStringTable::LoadFallback	(const char* xml_file_full)
 {
 	CXml						uiXml;
 	string_path					_s;
@@ -224,7 +224,7 @@ void CStringTable::LoadFallback	(LPCSTR xml_file_full)
 
 	for(int i=0; i<string_num; ++i)
 	{
-		LPCSTR string_name = uiXml.ReadAttrib(uiXml.GetRoot(), "string", i, "id", nullptr);
+		const char* string_name = uiXml.ReadAttrib(uiXml.GetRoot(), "string", i, "id", nullptr);
 
 		bool isDublicate = pData->m_FallbackStringTable.find(string_name) != pData->m_FallbackStringTable.end();
 		if (isDublicate)
@@ -233,7 +233,7 @@ void CStringTable::LoadFallback	(LPCSTR xml_file_full)
 			Msg("! duplicate fallback string table id: %s", string_name);
 		}
 
-		LPCSTR string_text		= uiXml.Read(uiXml.GetRoot(), "string:text", i,  nullptr);
+		const char* string_text		= uiXml.Read(uiXml.GetRoot(), "string:text", i,  nullptr);
 
 		if(m_bWriteErrorsToLog && string_text)
 			Msg("[fallback string table] '%s' no translation in '%s'", string_name, pData->m_sFallbackLanguage.c_str() );
@@ -331,9 +331,9 @@ xr_string CStringTable::LangName()
 	return pData->m_sLanguage.c_str();
 }
 
-STRING_VALUE CStringTable::ParseLine(LPCSTR str, LPCSTR skey, bool bFirst)
+STRING_VALUE CStringTable::ParseLine(const char* str, const char* skey, bool bFirst)
 {
-//	LPCSTR str = "1 $$action_left$$ 2 $$action_right$$ 3 $$action_left$$ 4";
+//	const char* str = "1 $$action_left$$ 2 $$action_right$$ 3 $$action_left$$ 4";
 	xr_string			res;
 	int k = 0;
 	const char*			b;

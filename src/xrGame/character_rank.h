@@ -10,7 +10,7 @@
 
 struct RANK_DATA
 {
-	RANK_DATA (int, shared_str, LPCSTR);
+	RANK_DATA (int, shared_str, const char*);
 
 	shared_str				id;
 	int						index;

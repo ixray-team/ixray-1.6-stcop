@@ -31,7 +31,7 @@ public:
 	virtual void					set_position		(const Fvector& P)			{ }
 	virtual void					set_direction		(const Fvector& D)			{ }
 	virtual void					set_radius			(float R)					{ }
-	virtual void					set_texture			(LPCSTR name)				{ }
+	virtual void					set_texture			(const char* name)				{ }
 	virtual void					set_color			(const Fcolor& C)			{ }
 	virtual void					set_color			(float r, float g, float b)	{ }
 };
@@ -368,11 +368,11 @@ void CRender::ros_destroy(IRender_ObjectSpecific*& p) {
 	xr_delete(p);
 }
 
-IRenderVisual* CRender::model_Create(LPCSTR name, IReader* data) {
+IRenderVisual* CRender::model_Create(const char* name, IReader* data) {
 	return Models->Create(name, data);
 }
 
-IRenderVisual* CRender::model_CreateChild(LPCSTR name, IReader* data) {
+IRenderVisual* CRender::model_CreateChild(const char* name, IReader* data) {
 	return Models->CreateChild(name, data);
 }
 
@@ -380,7 +380,7 @@ IRenderVisual* CRender::model_Duplicate(IRenderVisual* V) {
 	return Models->Instance_Duplicate((dxRender_Visual*)V);
 }
 
-void CRender::model_Delete(IRenderVisual*& V, BOOL bDiscard) {
+void CRender::model_Delete(IRenderVisual*& V, bool bDiscard) {
 	dxRender_Visual* pVisual = (dxRender_Visual*)V;
 	Models->Delete(pVisual, bDiscard);
 	V = 0;
@@ -407,13 +407,13 @@ void CRender::model_Delete(IRender_DetailModel*& F) {
 	}
 }
 
-IRenderVisual* CRender::model_CreatePE(LPCSTR name) {
+IRenderVisual* CRender::model_CreatePE(const char* name) {
 	PS::CPEDef* SE = PSLibrary.FindPED(name);
 	R_ASSERT3(SE, "Particle effect doesn't exist", name);
 	return Models->CreatePE(SE);
 }
 
-IRenderVisual* CRender::model_CreateParticles(LPCSTR name) {
+IRenderVisual* CRender::model_CreateParticles(const char* name) {
 	PS::CPEDef* SE = PSLibrary.FindPED(name);
 	if(SE) {
 		return Models->CreatePE(SE);
@@ -425,7 +425,7 @@ IRenderVisual* CRender::model_CreateParticles(LPCSTR name) {
 	}
 }
 
-RHIInputElementDesc* CRender::getVB_Format(int id, size_t* Count, BOOL	_alt)
+RHIInputElementDesc* CRender::getVB_Format(int id, size_t* Count, bool	_alt)
 {
 	if(_alt)
 	{
@@ -439,7 +439,7 @@ RHIInputElementDesc* CRender::getVB_Format(int id, size_t* Count, BOOL	_alt)
 	}
 }
 
-IRHIBuffer* CRender::getVB(int id, BOOL	_alt) {
+IRHIBuffer* CRender::getVB(int id, bool	_alt) {
 	if(_alt) {
 		VERIFY(id<int(xVB.size()));	return xVB[id];
 	}
@@ -448,7 +448,7 @@ IRHIBuffer* CRender::getVB(int id, BOOL	_alt) {
 	}
 }
 
-IRHIBuffer* CRender::getIB(int id, BOOL	_alt) {
+IRHIBuffer* CRender::getIB(int id, bool	_alt) {
 	if(_alt) {
 		VERIFY(id<int(xIB.size()));	return xIB[id];
 	}
@@ -577,10 +577,10 @@ void CRender::addShaderOption(const char* name, const char* value)
 
 template <typename T>
 static HRESULT create_shader(
-		LPCSTR const pTarget,
+		const char* const pTarget,
 		DWORD const* buffer,
 		u32	const buffer_size,
-		LPCSTR const file_name,
+		const char* const file_name,
 		T*& result,
 		bool const disasm
 ) {
@@ -603,10 +603,10 @@ static HRESULT create_shader(
 }
 
 static HRESULT create_shader(
-		LPCSTR const pTarget,
+		const char* const pTarget,
 		DWORD const* buffer,
 		u32	const buffer_size,
-		LPCSTR const file_name,
+		const char* const file_name,
 		void*& result,
 		bool const disasm
 ) {
@@ -719,7 +719,7 @@ static HRESULT create_shader(
 
 class includer : public ID3DInclude {
 public:
-	HRESULT  __stdcall Open(D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID* ppData, UINT* pBytes) {
+	HRESULT  __stdcall Open(D3D_INCLUDE_TYPE IncludeType, const char* pFileName, LPCVOID pParentData, LPCVOID* ppData, UINT* pBytes) {
 		string_path pname;
 		xr_strconcat(pname, ::Render->getShaderPath(), pFileName);
 		IReader* R = FS.r_open(_game_shaders_, pname);
@@ -750,11 +750,11 @@ public:
 };
 
 HRESULT	CRender::shader_compile(
-	LPCSTR name,
+	const char* name,
 	DWORD const* pSrcData,
 	UINT SrcDataLen,
-	LPCSTR pFunctionName,
-	LPCSTR pTarget,
+	const char* pFunctionName,
+	const char* pTarget,
 	DWORD Flags,
 	void*& result) 
 {
@@ -1099,7 +1099,7 @@ HRESULT	CRender::shader_compile(
 		_result = D3DCompile(
 			pSrcData,
 			SrcDataLen,
-			"",//nullptr, //LPCSTR pFileName,	//	NVPerfHUD bug workaround.
+			"",//nullptr, //const char* pFileName,	//	NVPerfHUD bug workaround.
 			defines, &Includer, pFunctionName,
 			pTarget,
 			Flags, 0,
@@ -1122,7 +1122,7 @@ HRESULT	CRender::shader_compile(
 			Msg("! %s", file_name);
 
 			if(pErrorBuf) {
-				Msg("! error: %s", (LPCSTR)pErrorBuf->GetBufferPointer());
+				Msg("! error: %s", (const char*)pErrorBuf->GetBufferPointer());
 			}
 			else {
 				Msg("Can't compile shader hr=0x%08x", _result);

@@ -26,7 +26,7 @@ public:
 
 public:
 	using ANIMATION_WEIGHTS = xr_vector<float>;
-	using BLEND_ID = std::pair<LPCSTR, LPCSTR>;
+	using BLEND_ID = std::pair<const char*, const char*>;
 
 public:
 	using CALLBACK_ID = xr_delegate<void()>;
@@ -45,8 +45,8 @@ private:
 	Fmatrix					*m_target_matrix;
 	CAI_Stalker*			m_object;
 
-	LPCSTR					m_object_name;
-	LPCSTR					m_animation_type_name;
+	const char*					m_object_name;
+	const char*					m_animation_type_name;
 
 public:
 	bool					m_just_started;
@@ -84,7 +84,7 @@ public:
 
 #ifdef DEBUG
 public:
-	IC		void			set_dbg_info			(LPCSTR object_name, LPCSTR animation_type_name);
+	IC		void			set_dbg_info			(const char* object_name, const char* animation_type_name);
 			BLEND_ID		*blend_id				(IKinematicsAnimated *skeleton_animated, BLEND_ID &result) const;
 #endif // DEBUG
 

@@ -116,7 +116,7 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 				string256 mask;
 				xr_strconcat(mask, C.L_textures[0].c_str(), "_mask");
 
-				C.r_Pass("impl_dt", "impl_dt_hq", TRUE);
+				C.r_Pass("impl_dt", "impl_dt_hq", true);
 				C.r_Sampler("s_mask", mask);
 				C.r_Sampler("s_dt_r", oR_Name, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
 				C.r_Sampler("s_dt_g", oG_Name, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
@@ -126,7 +126,7 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 			else
 #endif 
 			{
-				C.r_Pass("impl_dt", "impl_dt", TRUE);
+				C.r_Pass("impl_dt", "impl_dt", true);
 			}
 			C.r_Sampler		("s_base",	C.L_textures[0]);
 			C.r_Sampler		("s_lmap",	C.L_textures[1]);
@@ -134,28 +134,28 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 			C.r_End			();
 			break;
 		case SE_R1_NORMAL_LQ:
-			C.r_Pass		("impl_dt",	"impl_dt",TRUE);
+			C.r_Pass		("impl_dt",	"impl_dt", true);
 			C.r_Sampler		("s_base",	C.L_textures[0]);
 			C.r_Sampler		("s_lmap",	C.L_textures[1]);
 			C.r_Sampler		("s_detail",oT2_Name);
 			C.r_End			();
 			break;
 		case SE_R1_LPOINT:
-			C.r_Pass		("impl_point","add_point",FALSE,TRUE,FALSE,TRUE,D3DBLEND_ONE,D3DBLEND_ONE,TRUE);
+			C.r_Pass("impl_point", "add_point", false, true, false, true, D3DBLEND_ONE, D3DBLEND_ONE, true);
 			C.r_Sampler		("s_base",	C.L_textures[0]);
 			C.r_Sampler_clf	("s_lmap",	TEX_POINT_ATT		);
 			C.r_Sampler_clf	("s_att",	TEX_POINT_ATT		);
 			C.r_End			();
 			break;
 		case SE_R1_LSPOT:
-			C.r_Pass		("impl_spot","add_spot",FALSE,TRUE,FALSE,TRUE,D3DBLEND_ONE,D3DBLEND_ONE,TRUE);
+			C.r_Pass("impl_spot", "add_spot", false, true, false, true, D3DBLEND_ONE, D3DBLEND_ONE, true);
 			C.r_Sampler		("s_base",	C.L_textures[0]);
 			C.r_Sampler_clf	("s_lmap",	"internal\\internal_light_att",		true);
 			C.r_Sampler_clf	("s_att",	TEX_SPOT_ATT		);
 			C.r_End			();
 			break;
 		case SE_R1_LMODELS:
-			C.r_Pass		("impl_l","impl_l",FALSE);
+			C.r_Pass		("impl_l","impl_l", false);
 			C.r_Sampler		("s_base",C.L_textures[0]);
 			C.r_Sampler		("s_lmap",C.L_textures[1]);
 			C.r_End			();
@@ -197,7 +197,7 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 		C.r_End();
 		break;
 	case SE_R2_SHADOW:
-		C.r_Pass("shadow_base", "shadow_base", FALSE);
+		C.r_Pass("shadow_base", "shadow_base", false);
 		C.r_Sampler("s_base", C.L_textures[0]);
 		C.r_End();
 		break;
@@ -223,7 +223,7 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 	case SE_R2_NORMAL_HQ:
 	case SE_R2_NORMAL_LQ:
 		C.SH->flags.bLandscape = true;
-		C.r_Pass("deffer_base", "dumb", FALSE, TRUE, TRUE);
+		C.r_Pass("deffer_base", "dumb", false, true, true);
 		C.r_ColorWriteEnable(false, false, false, false);
 		C.r_End(false);
 
@@ -263,7 +263,7 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 		C.r_End ();
 		break;
 	case SE_R2_SHADOW:
-		C.r_Pass("shadow_base", "shadow_base", FALSE);
+		C.r_Pass("shadow_base", "shadow_base", false);
 		C.r_dx10Texture("s_base", C.L_textures[0]);
 		C.r_dx10Sampler("smp_base");
 		C.r_dx10Sampler("smp_linear");

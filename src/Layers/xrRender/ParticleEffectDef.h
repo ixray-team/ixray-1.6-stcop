@@ -27,7 +27,7 @@ namespace PS
 {
 	class CParticleEffect;
 
-	typedef BOOL ( * CollisionCallback)(CParticleEffect* E, PAPI::Particle& P, const Fvector& pt, const Fvector& norm); // TRUE-continue collision exec
+	typedef bool ( * CollisionCallback)(CParticleEffect* E, PAPI::Particle& P, const Fvector& pt, const Fvector& norm); // TRUE-continue collision exec
 	typedef void ( * DestroyCallback)	(CParticleEffect* E, PAPI::Particle& P);
 
 	class PFunction;
@@ -98,8 +98,8 @@ namespace PS
         float 				m_fCollideResilience;
         float 				m_fCollideSqrCutoff; 
 	public:
-		BOOL 				SaveActionList		(IWriter& F);
-		BOOL 				LoadActionList		(IReader& F);
+		bool 				SaveActionList		(IWriter& F);
+		bool 				LoadActionList		(IReader& F);
 	// execute
 		void				ExecuteAnimate		(PAPI::Particle *particles, u32 p_cnt, float dt);
         void				ExecuteCollision	(PAPI::Particle *particles, u32 p_cnt, float dt, CParticleEffect* owner, CollisionCallback cb);
@@ -107,19 +107,19 @@ namespace PS
                             CPEDef				();
                             ~CPEDef				();
         
-		void				SetName				(LPCSTR name);
-        IC LPCSTR			Name				()const{return *m_Name;}
+		void				SetName				(const char* name);
+        IC const char*			Name				()const{return *m_Name;}
         void				CreateShader		();
         void				DestroyShader		();
 
 		void 				Save				(IWriter& F);
-		BOOL 				LoadOriginal		(IReader& F);
-		BOOL 				LoadExtended		(IReader& F);
+		bool 				LoadOriginal		(IReader& F);
+		bool 				LoadExtended		(IReader& F);
 
 		void 				Save2				(CInifile& ini);
-		BOOL 				Load2				(CInifile& ini);
-		BOOL				Load2Original		(CInifile& ini);
-		BOOL				Load2Entended		(CInifile& ini);
+		bool 				Load2				(CInifile& ini);
+		bool				Load2Original		(CInifile& ini);
+		bool				Load2Entended		(CInifile& ini);
 
 #ifndef _EDITOR
 		using EPAVec = xr_vector<EPALegacy::EParticleAction*>;
@@ -132,7 +132,7 @@ namespace PS
 
 		EPAVec m_EActionList;
 	public:             
-		void   	FindActionByName	(LPCSTR new_name, bool& res);
+		void   	FindActionByName	(const char* new_name, bool& res);
 		bool   	NameOnAfterEdit					(PropValue* sender, shared_str& edit_val);
 		bool   	CollisionFrictionOnAfterEdit	(PropValue* sender, float& edit_val);
 		void   	CollisionFrictionOnBeforeEdit	(PropValue* sender, float& edit_val);
@@ -153,7 +153,7 @@ namespace PS
 		void   	OnControlClick		(ButtonValue* sender, bool& bDataModified, bool& bSafe);
 		void   	OnActionsClick		(ButtonValue* sender, bool& bDataModified, bool& bSafe);
         bool   	OnAfterActionNameEdit(PropValue* sender, shared_str& edit_val);
-		void				FillProp		   	(LPCSTR pref, ::PropItemVec& items, void* owner);
+		void				FillProp		   	(const char* pref, ::PropItemVec& items, void* owner);
 		
 		void OnSpriteFrameClicked(ButtonValue* value, bool& bModif, bool& bSafe);
 		void OnSpriteAnimatedClicked(ButtonValue* value, bool& bModif, bool& bSafe);
@@ -165,9 +165,9 @@ namespace PS
 		void OnMovementCollisionClicked(ButtonValue* value, bool& bModif, bool& bSafe);
 		
 		void				Copy				(const CPEDef& src);
-		BOOL				Equal				(const CPEDef* pe);
+		bool				Equal				(const CPEDef* pe);
 		void 				Render				(const Fmatrix& parent);
-		static PFunction*	FindCommandPrototype(LPCSTR src, LPCSTR& dest);
+		static PFunction*	FindCommandPrototype(const char* src, const char*& dest);
 		void   	FillActionList		(ChooseItemVec& items, void* param);
         bool 				Validate 			(bool bMsg);
 		void				OnDrawUI			();

@@ -72,7 +72,7 @@
 				size_t				mNeg;		/* "Negative" child */
 #endif
 
-	typedef		void				(*CullingCallback)		(udword nb_primitives, udword* node_primitives, BOOL need_clipping, void* user_data);
+	typedef		void				(*CullingCallback)		(udword nb_primitives, udword* node_primitives, bool need_clipping, void* user_data);
 
 	class OPCODE_API AABBTreeNode
 	{

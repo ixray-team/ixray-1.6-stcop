@@ -18,7 +18,7 @@ public:
 	CLightmap					();
 	~CLightmap					();
  
-	void	Capture				( CDeflector *D, int b_u, int b_v, int s_u, int s_v, BOOL bRotate );
-	void	Save				( LPCSTR path );
+	void	Capture				( CDeflector *D, int b_u, int b_v, int s_u, int s_v, bool bRotate );
+	void	Save				( const char* path );
 	void	DealocateMemory() { lm.clear_memory(); };
 };

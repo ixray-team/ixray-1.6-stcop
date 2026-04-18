@@ -39,7 +39,7 @@ private:
 	void SetFilterSection(shared_str new_section);
 	void SetFilterInstalledState(bool flag);
 	float GetScaledByConditionFilterProtection(ALife::EHitType hit_type);
-	void AddSound(LPCSTR path, bool isFilter);
+	void AddSound(const char* path, bool isFilter);
 public:
 	IAntigas();
 
@@ -59,7 +59,7 @@ public:
 	void SetOwnerOutfit(CCustomOutfit* CItem, HitImmunity::HitTypeSVec m_HitTypeProtection);
 	void SetOwnerHelmet(CHelmet* CItem, HitImmunity::HitTypeSVec m_HitTypeProtection);
 	void SetOwner(CArmorBase* CItem, HitImmunity::HitTypeSVec m_HitTypeProtection);
-	void Load(LPCSTR section);
+	void Load(const char* section);
 
 	void CloneInitialProtectionParams(HitImmunity::HitTypeSVec m_HitTypeProtection);
 	void RestoreDefaultValues();
@@ -70,7 +70,7 @@ public:
 	bool IsOutfit();
 
 	bool IsFilterInstalled();
-	LPCSTR GetFilterSection();
+	const char* GetFilterSection();
 	bool IsFilterInWhiteList(shared_str filter_section);
 
 	bool InstallFilter(CInventoryItem* inventory_item);

@@ -57,7 +57,7 @@ CMovementManager::~CMovementManager	()
 	xr_delete					(m_detail_path_builder		);
 }
 
-void CMovementManager::Load(LPCSTR section)
+void CMovementManager::Load(const char* section)
 {
 	m_restricted_object = create_restricted_object();
 	m_location_manager = new CLocationManager(m_object);
@@ -101,12 +101,12 @@ void CMovementManager::reinit		()
 	game_selector().set_dest_path	(game_path().m_path);
 }
 
-void CMovementManager::reload		(LPCSTR section)
+void CMovementManager::reload		(const char* section)
 {
 	locations().reload				(section);
 }
 
-BOOL CMovementManager::net_Spawn	(CSE_Abstract* data)
+bool CMovementManager::net_Spawn	(CSE_Abstract* data)
 {
 	return							(restrictions().net_Spawn(data));
 }

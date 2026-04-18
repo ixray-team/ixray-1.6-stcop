@@ -6,17 +6,17 @@
 using namespace luabind;
 #pragma optimize("s",on)
 
-LPCSTR get_addon_name_script(CAddonManager::AddonInfo info)
+const char* get_addon_name_script(CAddonManager::AddonInfo info)
 {
 	return info.AddonName.c_str();
 }
 
-LPCSTR get_addon_script_init(CAddonManager::AddonInfo info)
+const char* get_addon_script_init(CAddonManager::AddonInfo info)
 {
 	return info.ScriptInit.c_str();
 }
 
-LPCSTR get_addon_entry_script(CAddonManager::AddonInfo info)
+const char* get_addon_entry_script(CAddonManager::AddonInfo info)
 {
 	return info.EntryDir.c_str();
 }

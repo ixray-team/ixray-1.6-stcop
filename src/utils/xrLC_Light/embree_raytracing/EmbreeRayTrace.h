@@ -79,4 +79,4 @@ public:
 
 extern EmbreeRayTraceModel EmbreeMain;
  
-void GetEmbreeDeviceProperty(LPCSTR msg, RTCDevice& device, RTCDeviceProperty prop);
+void GetEmbreeDeviceProperty(const char* msg, RTCDevice& device, RTCDeviceProperty prop);

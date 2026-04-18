@@ -14,7 +14,7 @@
 #include "../xrGame/AnimNotify/AnimNotifyGame.h"
 
 ENGINE_API	IGame_Level*	g_pGameLevel	= nullptr;
-extern	BOOL g_bLoaded;
+extern	bool g_bLoaded;
 
 IGame_Level::IGame_Level	()
 {
@@ -175,7 +175,7 @@ void IGame_Level::Load_GameSpecific_CFORM(CDB::TRI* tris, size_t count)
 	}
 }
 
-BOOL IGame_Level::Load			(u32 dwNum) 
+bool IGame_Level::Load			(u32 dwNum) 
 {
 	PROF_EVENT("IGame_Level::Load");
 	// Initialize level data
@@ -298,13 +298,13 @@ void	IGame_Level::OnFrame		( )
 }
 // ==================================================================================================
 
-void CServerInfo::AddItem( LPCSTR name_, LPCSTR value_, u32 color_ )
+void CServerInfo::AddItem( const char* name_, const char* value_, u32 color_ )
 {
 	shared_str s_name( name_ );
 	AddItem( s_name, value_, color_ );
 }
 
-void CServerInfo::AddItem( shared_str& name_, LPCSTR value_, u32 color_ )
+void CServerInfo::AddItem( shared_str& name_, const char* value_, u32 color_ )
 {
 	SItem_ServerInfo it;
 	//	shared_str s_name = CStringTable().translate( name_ );

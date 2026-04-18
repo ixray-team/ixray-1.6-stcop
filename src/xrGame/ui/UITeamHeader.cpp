@@ -42,7 +42,7 @@ void UITeamHeader::InitColumnsStatics(CUIXml& uiXml)
 		XML_NODE* tempColumnNode = uiXml.NavigateToNode(COLUMN_NODE_NAME, i);
 		if (!tempColumnNode)
 			break;
-		LPCSTR tempColumnName = uiXml.ReadAttrib(tempColumnNode, "name", 
+		const char* tempColumnName = uiXml.ReadAttrib(tempColumnNode, "name", 
 			"column_not_set_in_name_attribute");
 		CUIStatic* tempColumn = new CUIStatic();
 		VERIFY(tempColumn);
@@ -65,7 +65,7 @@ void UITeamHeader::InitFieldsStatics	(CUIXml& uiXml)
 		XML_NODE* tempFieldNode = uiXml.NavigateToNode(FILED_NODE_NAME, i);
 		if (!tempFieldNode)
 			break;
-		LPCSTR tempFieldName = uiXml.ReadAttrib(tempFieldNode, "name", 
+		const char* tempFieldName = uiXml.ReadAttrib(tempFieldNode, "name", 
 			"field_not_set_in_name_attribute");
 		CUIStatic* tempField = new CUIStatic();
 		VERIFY(tempField);
@@ -79,7 +79,7 @@ void UITeamHeader::InitFieldsStatics	(CUIXml& uiXml)
 }
 
 
-void UITeamHeader::Init(CUIXml& uiXml, LPCSTR path)
+void UITeamHeader::Init(CUIXml& uiXml, const char* path)
 {	
 	CUIXmlInit::InitWindow	(uiXml, path, 0, this);
 	m_team_header_root		= uiXml.NavigateToNode(path, 0);

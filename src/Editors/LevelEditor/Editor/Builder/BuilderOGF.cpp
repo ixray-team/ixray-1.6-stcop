@@ -23,7 +23,7 @@ bool SceneBuilder::BuildHOMModel()
 			{
 				for (SurfFacesPairIt sf_it=(*m_it)->m_SurfFaces.begin(); sf_it!=(*m_it)->m_SurfFaces.end(); ++sf_it)
 				{
-					BOOL b2Sided = sf_it->first->m_Flags.is(CSurface::sf2Sided);
+					bool b2Sided = sf_it->first->m_Flags.is(CSurface::sf2Sided);
 					IntVec& i_lst= sf_it->second;
 					for (IntIt i_it=i_lst.begin(); i_it!=i_lst.end(); ++i_it)
 					{
@@ -48,7 +48,7 @@ bool SceneBuilder::BuildHOMModel()
 					CSurface* S 	= sf_it->first;
 					if(S->m_GameMtlName=="materials\\occ")
 					{
-						BOOL b2Sided 	= S->m_Flags.is(CSurface::sf2Sided);
+						bool b2Sided 	= S->m_Flags.is(CSurface::sf2Sided);
 						IntVec& i_lst	= sf_it->second;
 						for (IntIt i_it=i_lst.begin(); i_it!=i_lst.end(); ++i_it)
 						{
@@ -66,7 +66,7 @@ bool SceneBuilder::BuildHOMModel()
 		}
 	}
 	
-	BOOL bValid = !!F.chunk_size();
+	bool bValid = !!F.chunk_size();
 	F.close_chunk();
 	if (bValid){
 		xr_string hom_name 	= MakeLevelPath("level.hom");
@@ -77,7 +77,7 @@ bool SceneBuilder::BuildHOMModel()
 
 bool SceneBuilder::BuildSOMModel()
 {
-	BOOL bResult 	= TRUE;
+	bool bResult 	= TRUE;
 	CMemoryWriter 	F;
 
 	F.open_chunk	(0);
@@ -112,7 +112,7 @@ bool SceneBuilder::BuildSOMModel()
 						bResult 		= FALSE; 
 						break; 
 					}
-					BOOL b2Sided 		= surf->m_Flags.is(CSurface::sf2Sided);
+					bool b2Sided 		= surf->m_Flags.is(CSurface::sf2Sided);
 					IntVec& i_lst		= sf_it->second;
 					for (IntIt i_it=i_lst.begin(); i_it!=i_lst.end(); i_it++){
 						st_Face& face 	= (*m_it)->m_Faces[*i_it];
@@ -127,7 +127,7 @@ bool SceneBuilder::BuildSOMModel()
 			}
 		}
 	}
-	BOOL bValid = !!F.chunk_size()&&bResult;
+	bool bValid = !!F.chunk_size()&&bResult;
 	F.close_chunk();
 	if (bValid){
 		xr_string som_name 	= MakeLevelPath("level.som");

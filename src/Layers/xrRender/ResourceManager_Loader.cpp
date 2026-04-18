@@ -4,7 +4,7 @@
 #include "ResourceManager.h"
 #include "blenders/Blender.h"
 
-void CResourceManager::OnDeviceDestroy(BOOL )
+void CResourceManager::OnDeviceDestroy(bool )
 {
 	if (RDEVICE.b_is_Ready)				return;
 
@@ -123,7 +123,7 @@ void	CResourceManager::OnDeviceCreate	(IReader* F)
 	m_textures_description.Load				();
 }
 
-void	CResourceManager::OnDeviceCreate	(LPCSTR shName)
+void	CResourceManager::OnDeviceCreate	(const char* shName)
 {
 #ifdef _EDITOR
 	if (!FS.exist(shName)) return;
@@ -153,7 +153,7 @@ void CResourceManager::StoreNecessaryTextures()
 
 	for (;it!=it_e;++it)
 	{
-		LPCSTR texture_name		= it->first;
+		const char* texture_name		= it->first;
 		if(strstr(texture_name,"\\levels\\"))	continue;
 		if(!strchr(texture_name,'\\'))			continue;
 

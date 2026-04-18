@@ -12,8 +12,8 @@ public:
 	xrP_Integer	oAREF;
 	xrP_BOOL	oBlend;
 public:
-	virtual		LPCSTR		getComment()	{ return "LEVEL: diffuse*base.aref";	}
-	virtual		BOOL		canBeLMAPped()	{ return FALSE; }
+	virtual		const char*		getComment()	{ return "LEVEL: diffuse*base.aref";	}
+	virtual		bool		canBeLMAPped()	{ return FALSE; }
 
 	virtual		void		Save			(IWriter&	fs);
 	virtual		void		Load			(IReader&	fs, u16 version);

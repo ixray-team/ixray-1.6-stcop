@@ -247,7 +247,7 @@ void CActor::reinit	()
 	m_time_lock_accel							= 0;
 }
 
-void CActor::reload	(LPCSTR section)
+void CActor::reload	(const char* section)
 {
 	CEntityAlive::reload		(section);
 	CInventoryOwner::reload		(section);
@@ -257,7 +257,7 @@ void CActor::reload	(LPCSTR section)
 		memory().reload			(section);
 	m_location_manager->reload	(section);
 }
-void set_box(LPCSTR section, CPHMovementControl &mc, u32 box_num )
+void set_box(const char* section, CPHMovementControl &mc, u32 box_num )
 {
 	Fbox	bb;Fvector	vBOX_center,vBOX_size;
 	// m_PhysicMovementControl: BOX
@@ -433,7 +433,7 @@ void CActor::SetActorDirection(float dir)
 	this->cam_Active()->Set(dir, 0.0f, 0.0f);
 }
 
-void CActor::Load	(LPCSTR section )
+void CActor::Load	(const char* section )
 {
 	// Msg						("Loading actor: %s",section);
 	inherited::Load				(section);
@@ -534,11 +534,11 @@ void CActor::Load	(LPCSTR section )
 
 if(!g_dedicated_server)
 {
-	LPCSTR hit_snd_sect = pSettings->r_string(section,"hit_sounds");
+	const char* hit_snd_sect = pSettings->r_string(section,"hit_sounds");
 	for(int hit_type=0; hit_type<(int)ALife::eHitTypeMax; ++hit_type)
 	{
-		LPCSTR hit_name = ALife::g_cafHitType2String((ALife::EHitType)hit_type);
-		LPCSTR hit_snds = READ_IF_EXISTS(pSettings, r_string, hit_snd_sect, hit_name, "");
+		const char* hit_name = ALife::g_cafHitType2String((ALife::EHitType)hit_type);
+		const char* hit_snds = READ_IF_EXISTS(pSettings, r_string, hit_snd_sect, hit_name, "");
 		int cnt = _GetItemCount(hit_snds);
 		string128		tmp;
 		if (hit_type != (int)ALife::eHitTypeLightBurn && hit_type != (int)ALife::eHitTypePhysicStrike)
@@ -583,7 +583,7 @@ if(!g_dedicated_server)
 	m_fAgilityCrouchFactor = READ_IF_EXISTS(pSettings, r_float, section, "agility_crouch_factor", 0.98f);
 	m_fAgilityCrouchNoAccelFactor = READ_IF_EXISTS(pSettings, r_float, section, "agility_crouch_no_acc_factor", 0.96f);
 
-	LPCSTR							default_outfit = READ_IF_EXISTS(pSettings,r_string,section,"default_outfit",0);
+	const char*							default_outfit = READ_IF_EXISTS(pSettings,r_string,section,"default_outfit",0);
 	SetDefaultVisualOutfit			(default_outfit);
 
 	invincibility_fire_shield_1st	= READ_IF_EXISTS(pSettings,r_string,section,"Invincibility_Shield_1st",0);
@@ -636,7 +636,7 @@ if(!g_dedicated_server)
 	}
 	if (pGameGlobals->line_exist("night_vision", "night_vision_animator"))
 	{
-		LPCSTR nvg_animator = pGameGlobals->r_string("night_vision", "night_vision_animator");
+		const char* nvg_animator = pGameGlobals->r_string("night_vision", "night_vision_animator");
 		if (pSettings->section_exist(nvg_animator))
 		{
 			m_sNVGAnimator = nvg_animator;
@@ -645,7 +645,7 @@ if(!g_dedicated_server)
 
 	if (pGameGlobals->line_exist("headlamp", "headlamp_animator"))
 	{
-		LPCSTR headlamp_animator = pGameGlobals->r_string("headlamp", "headlamp_animator");
+		const char* headlamp_animator = pGameGlobals->r_string("headlamp", "headlamp_animator");
 		if (pSettings->section_exist(headlamp_animator))
 		{
 			m_sHeadlampAnimator = headlamp_animator;
@@ -654,7 +654,7 @@ if(!g_dedicated_server)
 
 	if (pGameGlobals->line_exist("glass_mask", "clearmask_animator"))
 	{
-		LPCSTR clearmask_animator = pGameGlobals->r_string("glass_mask", "clearmask_animator");
+		const char* clearmask_animator = pGameGlobals->r_string("glass_mask", "clearmask_animator");
 		if (pSettings->section_exist(clearmask_animator))
 		{
 			m_sClearMaskAnimator = clearmask_animator;
@@ -663,7 +663,7 @@ if(!g_dedicated_server)
 
 	if (pGameGlobals->line_exist("quick_kick", "quick_kick_animator"))
 	{
-		LPCSTR quick_kick_animator = pGameGlobals->r_string("quick_kick", "quick_kick_animator");
+		const char* quick_kick_animator = pGameGlobals->r_string("quick_kick", "quick_kick_animator");
 		if (pSettings->section_exist(quick_kick_animator))
 		{
 			m_sQuickKickAnimator = quick_kick_animator;
@@ -672,7 +672,7 @@ if(!g_dedicated_server)
 
 	if (pGameGlobals->line_exist("mutant_kicks", "burer_kick_animator"))
 	{
-		LPCSTR burer_kick_animator = pGameGlobals->r_string("mutant_kicks", "burer_kick_animator");
+		const char* burer_kick_animator = pGameGlobals->r_string("mutant_kicks", "burer_kick_animator");
 		if (pSettings->section_exist(burer_kick_animator))
 		{
 			m_sBurerKickAnimator = burer_kick_animator;
@@ -681,7 +681,7 @@ if(!g_dedicated_server)
 
 	if (pGameGlobals->line_exist("mutant_kicks", "front_kick_animator"))
 	{
-		LPCSTR front_kick_animator = pGameGlobals->r_string("mutant_kicks", "front_kick_animator");
+		const char* front_kick_animator = pGameGlobals->r_string("mutant_kicks", "front_kick_animator");
 		if (pSettings->section_exist(front_kick_animator))
 		{
 			m_sFrontKickAnimator = front_kick_animator;
@@ -690,7 +690,7 @@ if(!g_dedicated_server)
 
 	if (pGameGlobals->line_exist("mutant_kicks", "back_kick_animator"))
 	{
-		LPCSTR back_kick_animator = pGameGlobals->r_string("mutant_kicks", "back_kick_animator");
+		const char* back_kick_animator = pGameGlobals->r_string("mutant_kicks", "back_kick_animator");
 		if (pSettings->section_exist(back_kick_animator))
 		{
 			m_sBackKickAnimator = back_kick_animator;
@@ -1183,7 +1183,7 @@ void CActor::HitSignal(float perc, Fvector& vLocalDir, CObject* who, s16 element
 		tpKinematics->PlayFX(motion_ID,power_factor);
 	}
 }
-void start_tutorial(LPCSTR name);
+void start_tutorial(const char* name);
 void CActor::Die	(CObject* who)
 {
 	SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::ACTOR_ALIVE;
@@ -1883,7 +1883,7 @@ void CActor::UpdateCL()
 			HUD().SetFirstBulletCrosshairDisp(pWeapon->GetFirstBulletDisp());
 #endif
 			
-			BOOL B = ! ((mstate_real & mcLookout) && !IsGameTypeSingleCompatible());
+			bool B = ! ((mstate_real & mcLookout) && !IsGameTypeSingleCompatible());
 
 			psHUD_Flags.set( HUD_WEAPON_RT, B );
 			B = B && pWeapon->show_crosshair();
@@ -2054,8 +2054,8 @@ void CActor::CheckFlyhack()
 void CActor::UpdatePlayerView()
 {
 	//если в режиме HUD, то сама модель актера не рисуется
-	BOOL has_visible = 1;
-	BOOL has_shadow_only = 0;
+	bool has_visible = 1;
+	bool has_shadow_only = 0;
 	if (character_physics_support()->IsRemoved())
 		has_visible = 0;
 	if (HUDview())
@@ -2561,7 +2561,7 @@ void CActor::RenderItemUI()
 	}
 }
 
-BOOL CActor::renderable_ShadowGenerate	() 
+bool CActor::renderable_ShadowGenerate	() 
 {
 	if(m_holder)
 		return FALSE;
@@ -2605,7 +2605,7 @@ float CActor::missile_throw_force()
 }
 
 #ifdef DEBUG
-extern	BOOL	g_ShowAnimationInfo		;
+extern	bool	g_ShowAnimationInfo		;
 #endif // DEBUG
 // HUD
 
@@ -2706,7 +2706,7 @@ void CActor::RenderIndicator(Fvector dpos, float r1, float r2, const ui_shader &
 static float mid_size = 0.097f;
 static float fontsize = 15.0f;
 static float upsize	= 0.33f;
-void CActor::RenderText(LPCSTR Text, Fvector dpos, float* pdup, u32 color)
+void CActor::RenderText(const char* Text, Fvector dpos, float* pdup, u32 color)
 {
 	if (!g_Alive())
 	{
@@ -3199,7 +3199,7 @@ void CActor::OnDifficultyChanged	()
 {
 	// immunities
 	VERIFY(g_SingleGameDifficulty>=egdNovice && g_SingleGameDifficulty<=egdMaster); 
-	LPCSTR diff_name				= get_token_name(difficulty_type_token, g_SingleGameDifficulty);
+	const char* diff_name				= get_token_name(difficulty_type_token, g_SingleGameDifficulty);
 	string128						tmp;
 	xr_strconcat(tmp,"actor_immunities_",diff_name);
 	conditions().LoadImmunities		(tmp,pSettings);
@@ -3484,9 +3484,9 @@ bool CActor::IsActorBurning()
 	return m_actor_burning;
 }
 
-float CActor::GetMaterialBurnRestoreSpeed(LPCSTR mtl)
+float CActor::GetMaterialBurnRestoreSpeed(const char* mtl)
 {
-	for (LPCSTR material_name : m_burn_restore_materials)
+	for (const char* material_name : m_burn_restore_materials)
 	{
 		if (!xr_strcmp(material_name, mtl))
 		{

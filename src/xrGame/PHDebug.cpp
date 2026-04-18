@@ -67,7 +67,7 @@ struct SPHDBGOutText : public SPHDBGDrawAbsract
 {
 	string1024 s;
 	bool	 rendered;
-	SPHDBGOutText(LPCSTR t)
+	SPHDBGOutText(const char* t)
 	{
 		xr_strcpy(s, t);
 		rendered = false;
@@ -122,7 +122,7 @@ void DBG_TextOutSet(float x, float y)
 	DBG_DrawPHAbstruct(new SPHDBGTextOutSet(x, y));
 }
 
-void _cdecl DBG_OutText(LPCSTR s, ...)
+void _cdecl DBG_OutText(const char* s, ...)
 {
 	string1024 t;
 	va_list   marker;
@@ -161,7 +161,7 @@ void _cdecl DBG_OutText(LPCSTR s, ...)
 Flags32		ph_dbg_draw_mask						;
 Flags32		ph_dbg_draw_mask1						;
 
-//LPCSTR	dbg_trace_object_name					=nullptr;
+//const char*	dbg_trace_object_name					=nullptr;
 string64 s_dbg_trace_obj_name					="none";
 CObject	 *trace_object							= nullptr;
 u32	 	dbg_bodies_num							=0;
@@ -733,7 +733,7 @@ bool CFunctionGraph::IsActive()
 	return !!m_stat_graph;
 }
 
-LPCSTR PH_DBG_ObjectTrackName()
+const char* PH_DBG_ObjectTrackName()
 {
 	return s_dbg_trace_obj_name;
 }
@@ -744,13 +744,13 @@ void PH_DBG_SetTrackObject()
 		trace_object = Level().Objects.FindObjectByName(PH_DBG_ObjectTrackName());
 }
 
-static LPCSTR name_bool( BOOL v )
+static const char* name_bool( bool v )
 {
 	static  xr_token token_bool[] = { { "false", 0 }, { "true", 1 } };
 	return get_token_name( token_bool, v );
 }
 
-static LPCSTR name_blend_type( CBlend::ECurvature blend )
+static const char* name_blend_type( CBlend::ECurvature blend )
 {
 	static xr_token token_blend[] = 
 	{
@@ -769,7 +769,7 @@ void DBG_AnimBlend(IKinematicsAnimated& ka, const CBlend& B)
 	DBG_OutText("-------------------------------------");
 	if (dbg_track_obj_flags.test(dbg_track_obj_blends_motion_name))
 	{
-		std::pair< LPCSTR, LPCSTR > motion = ka.LL_MotionDefName_dbg(B.motionID);
+		std::pair< const char*, const char* > motion = ka.LL_MotionDefName_dbg(B.motionID);
 		DBG_OutText("motion : name %s, set: %s ", motion.first, motion.second);
 	}
 	if (dbg_track_obj_flags.test(dbg_track_obj_blends_time))
@@ -1108,7 +1108,7 @@ class CPHDebugOutput :
 		::DBG_DrawMatrix(m, size, a);
 	}
 
-	virtual	void _cdecl DBG_OutText(LPCSTR s, ...)
+	virtual	void _cdecl DBG_OutText(const char* s, ...)
 	{
 		string1024 t;
 		va_list   marker;
@@ -1133,7 +1133,7 @@ class CPHDebugOutput :
 		::PH_DBG_Clear();
 	}
 
-	virtual	LPCSTR PH_DBG_ObjectTrackName()
+	virtual	const char* PH_DBG_ObjectTrackName()
 	{
 		return ::PH_DBG_ObjectTrackName();
 	}

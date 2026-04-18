@@ -5,7 +5,7 @@ void CMonsterMorale::init_external(CBaseMonster *obj)
 {
 	m_object = obj;
 }
-void CMonsterMorale::load(LPCSTR section)
+void CMonsterMorale::load(const char* section)
 {
 	m_hit_quant				= pSettings->r_float(section,"Morale_Hit_Quant");
 	m_attack_success_quant	= pSettings->r_float(section,"Morale_Attack_Success_Quant");

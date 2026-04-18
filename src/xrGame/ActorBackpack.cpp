@@ -4,8 +4,8 @@
 #include "Inventory.h"
 //#include "../../xrSound/ai_sounds.h"
 
-static constexpr LPCSTR backpack_on = "interface\\inv_backpack_on";
-static constexpr LPCSTR backpack_off = "interface\\inv_backpack_off";
+static constexpr const char* backpack_on = "interface\\inv_backpack_on";
+static constexpr const char* backpack_off = "interface\\inv_backpack_off";
 
 CBackpack::CBackpack()
 {
@@ -16,7 +16,7 @@ CBackpack::CBackpack()
     //m_dress_snd[1].create(backpack_off, st_Effect, SOUND_TYPE_IDLE);
 }
 
-void CBackpack::Load(LPCSTR section)
+void CBackpack::Load(const char* section)
 {
     inherited::Load(section);
 
@@ -49,7 +49,7 @@ void CBackpack::OnMoveToRuck(const SInvItemPlace& previous_place)
     }
 }
 
-bool CBackpack::install_upgrade_impl(LPCSTR section, bool test)
+bool CBackpack::install_upgrade_impl(const char* section, bool test)
 {
     bool result = inherited::install_upgrade_impl(section, test);
 

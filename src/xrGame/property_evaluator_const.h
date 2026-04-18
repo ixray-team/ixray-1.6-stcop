@@ -19,7 +19,7 @@ protected:
 	bool m_value;
 
 public:
-	IC CPropertyEvaluatorConst	(bool value, LPCSTR evaluator_name = "");
+	IC CPropertyEvaluatorConst	(bool value, const char* evaluator_name = "");
 	virtual bool evaluate()
 	{
 		return (this->m_value);

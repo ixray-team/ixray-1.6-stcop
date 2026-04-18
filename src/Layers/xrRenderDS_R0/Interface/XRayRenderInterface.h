@@ -30,10 +30,10 @@ public:
 	virtual IRender_Target* getTarget();
 
 	virtual void set_Transform(Fmatrix* M);
-	virtual void set_HUD(BOOL V);
-	virtual void set_UI(BOOL V);
-	virtual BOOL get_HUD();
-	virtual void set_Invisible(BOOL V);
+	virtual void set_HUD(bool V);
+	virtual void set_UI(bool V);
+	virtual bool get_HUD();
+	virtual void set_Invisible(bool V);
 	virtual void set_Object(IRenderable* O);
 	virtual	GenerationLevel			get_generation() { return GenerationLevel::GENERATION_R1; }
 
@@ -63,13 +63,13 @@ public:
 
 	virtual IRenderVisual* model_Duplicate(IRenderVisual* V);
 
-	virtual void model_Delete(IRenderVisual*& V, BOOL bDiscard = FALSE);
+	virtual void model_Delete(IRenderVisual*& V, bool bDiscard = FALSE);
 	virtual void models_Prefetch();
-	virtual void models_Clear(BOOL b_complete);
+	virtual void models_Clear(bool b_complete);
 
-	virtual BOOL occ_visible(vis_data& V);
-	virtual BOOL occ_visible(Fbox& B);
-	virtual BOOL occ_visible(sPoly& P);
+	virtual bool occ_visible(vis_data& V);
+	virtual bool occ_visible(Fbox& B);
+	virtual bool occ_visible(sPoly& P);
 
 	virtual void Screenshot(ScreenshotMode mode = SM_NORMAL, LPCSTR name = 0);
 	virtual void Screenshot(ScreenshotMode mode, CMemoryWriter& memory_writer);

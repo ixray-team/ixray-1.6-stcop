@@ -290,7 +290,7 @@ void					CRender::ros_destroy			(IRender_ObjectSpecific* &p)		{ xr_delete(p);			
 IRenderVisual*			CRender::model_Create			(LPCSTR name, IReader* data)		{ return Models->Create(name,data);		}
 IRenderVisual*			CRender::model_CreateChild		(LPCSTR name, IReader* data)		{ return Models->CreateChild(name,data);}
 IRenderVisual*			CRender::model_Duplicate		(IRenderVisual* V)					{ return Models->Instance_Duplicate((dxRender_Visual*)V);	}
-void					CRender::model_Delete			(IRenderVisual* &V, BOOL bDiscard)	
+void					CRender::model_Delete			(IRenderVisual* &V, bool bDiscard)
 { 
 	dxRender_Visual* pVisual = (dxRender_Visual*)V;
 	Models->Delete(pVisual, bDiscard);
@@ -333,7 +333,7 @@ IRenderVisual*			CRender::model_CreateParticles	(LPCSTR name)
 	}
 }
 
-RHIInputElementDesc* CRender::getVB_Format(int id, size_t* Count, BOOL	_alt)
+RHIInputElementDesc* CRender::getVB_Format(int id, size_t* Count, bool	_alt)
 {
 	if (_alt)
 	{
@@ -347,11 +347,11 @@ RHIInputElementDesc* CRender::getVB_Format(int id, size_t* Count, BOOL	_alt)
 	}
 }
 
-IRHIBuffer*	CRender::getVB					(int id, BOOL	_alt)	{
+IRHIBuffer*	CRender::getVB					(int id, bool	_alt)	{
 	if (_alt)	{ VERIFY(id<int(xVB.size()));	return xVB[id];		}
 	else		{ VERIFY(id<int(nVB.size()));	return nVB[id];		}
 }
-IRHIBuffer*	CRender::getIB					(int id, BOOL	_alt)	{
+IRHIBuffer*	CRender::getIB					(int id, bool	_alt)	{
 	if (_alt)	{ VERIFY(id<int(xIB.size()));	return xIB[id];		}
 	else		{ VERIFY(id<int(nIB.size()));	return nIB[id];		}
 }

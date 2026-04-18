@@ -24,7 +24,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	Debug._initialize(false);
 
 	const char* FSName = "fs.ltx";
-    LPCSTR fsgame_ltx_name = "-fsltx ";
+    const char* fsgame_ltx_name = "-fsltx ";
     string_path fsgame = "";
 
     if (strstr(pCmdLine, fsgame_ltx_name)) {

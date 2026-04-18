@@ -10,7 +10,7 @@
 #ifdef DEBUG
 #include "PHDebug.h"
 #endif
-moving_bones_snd_player::moving_bones_snd_player( IKinematics *K, CInifile* ini, LPCSTR section, const Fmatrix &object  ):
+moving_bones_snd_player::moving_bones_snd_player( IKinematics *K, CInifile* ini, const char* section, const Fmatrix &object  ):
 	bone_id( BI_NONE ),
 	min_factor( -FLT_MAX ),
 	max_factor( -FLT_MAX ),
@@ -34,7 +34,7 @@ Fmatrix& moving_bones_snd_player::bone_matrix( )
 	return ( kinematics->LL_GetTransform( bone_id ) );
 }
 #ifdef DEBUG
-BOOL dbg_moving_bones_snd_player = FALSE;
+bool dbg_moving_bones_snd_player = FALSE;
 #endif
 static const float sm_factor = 0.99f;
 static const float play_threthhold = 0.2f; 
@@ -127,7 +127,7 @@ moving_bones_snd_player* create_moving_bones_snd_player( CGameObject &O )
 }
 
 
-void moving_bones_snd_player::load( IKinematics &K, CInifile& ini, LPCSTR section, const Fmatrix &object )
+void moving_bones_snd_player::load( IKinematics &K, CInifile& ini, const char* section, const Fmatrix &object )
 {
 	VERIFY( ini.section_exist( section ) );
 	kinematics = &K;

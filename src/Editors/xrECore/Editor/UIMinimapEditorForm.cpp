@@ -1236,7 +1236,7 @@ void UIMinimapEditorForm::Show()
 	Form->bOpen = true;
 }
 
-extern bool Stbi_Load(LPCSTR full_name, U32Vec& data, u32& w, u32& h, u32& a);
+extern bool Stbi_Load(const char* full_name, U32Vec& data, u32& w, u32& h, u32& a);
 
 int UIMinimapEditorForm::LoadTexture(Element& el, const xr_string texture)
 {

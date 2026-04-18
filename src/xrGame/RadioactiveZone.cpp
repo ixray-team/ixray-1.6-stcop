@@ -14,7 +14,7 @@ CRadioactiveZone::CRadioactiveZone(void)
 CRadioactiveZone::~CRadioactiveZone(void) 
 {}
 
-void CRadioactiveZone::Load(LPCSTR section) 
+void CRadioactiveZone::Load(const char* section) 
 {
 	inherited::Load(section);
 }
@@ -87,7 +87,7 @@ void CRadioactiveZone::feel_touch_new(CObject* O)
 	};
 };
 
-BOOL CRadioactiveZone::feel_touch_contact(CObject* O)
+bool CRadioactiveZone::feel_touch_contact(CObject* O)
 {
 	if (CActor* A = O != nullptr ? O->cast_actor() : nullptr)
 	{

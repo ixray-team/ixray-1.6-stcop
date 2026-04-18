@@ -20,7 +20,7 @@ protected:
 	bool m_equality;
 
 public:
-						CPropertyEvaluatorMember(CPropertyStorage *storage, u32 condition_id, bool value, bool equality = true, LPCSTR evaluator_name = "");
+						CPropertyEvaluatorMember(CPropertyStorage *storage, u32 condition_id, bool value, bool equality = true, const char* evaluator_name = "");
 	virtual void		setup					(_object_type *object, CPropertyStorage *storage);
 	virtual bool	evaluate				();
 };

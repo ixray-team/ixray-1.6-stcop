@@ -52,8 +52,8 @@ inline_ void Sort(udword& id0, udword& id1)
 				SAP_EndPoint*	Next;		// Next EndPoint whose Value is greater than ours (or null)
 				udword			Data;		// Parent box ID *2 | MinMax flag
 
-		inline_	void			SetData(udword box_id, BOOL is_max)			{ Data = (box_id<<1)|is_max;	}
-		inline_	BOOL			IsMax()								const	{ return Data & 1;				}
+		inline_	void			SetData(udword box_id, bool is_max)			{ Data = (box_id<<1)| static_cast<udword>(is_max);	}
+		inline_	bool			IsMax()								const	{ return Data & 1;				}
 		inline_	udword			GetBoxID()							const	{ return Data>>1;				}
 
 		inline_	void InsertAfter(SAP_EndPoint* element)
@@ -519,7 +519,7 @@ bool SweepAndPrune::CheckListsIntegrity()
 	return true;
 }
 
-inline_ BOOL Intersect(const IceMaths::AABB& a, const SAP_Box& b)
+inline_ bool Intersect(const IceMaths::AABB& a, const SAP_Box& b)
 {
 	if(b.Max[0]->Value < a.GetMin(0) || a.GetMax(0) < b.Min[0]->Value
 	|| b.Max[1]->Value < a.GetMin(1) || a.GetMax(1) < b.Min[1]->Value

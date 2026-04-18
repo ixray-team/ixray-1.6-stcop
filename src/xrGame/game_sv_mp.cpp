@@ -37,18 +37,18 @@
 
 u32		g_dwMaxCorpses = 10;
 //-----------------------------------------------------------------
-BOOL		g_sv_mp_bSpectator_FreeFly		= FALSE;
-BOOL		g_sv_mp_bSpectator_FirstEye		= TRUE;
-BOOL		g_sv_mp_bSpectator_LookAt		= TRUE;
-BOOL		g_sv_mp_bSpectator_FreeLook		= TRUE;
-BOOL		g_sv_mp_bSpectator_TeamCamera	= TRUE;
+bool		g_sv_mp_bSpectator_FreeFly		= FALSE;
+bool		g_sv_mp_bSpectator_FirstEye		= TRUE;
+bool		g_sv_mp_bSpectator_LookAt		= TRUE;
+bool		g_sv_mp_bSpectator_FreeLook		= TRUE;
+bool		g_sv_mp_bSpectator_TeamCamera	= TRUE;
 int			g_sv_mp_iDumpStatsPeriod		= 0;
 int			g_sv_mp_iDumpStats_last			= 0;
-BOOL		g_sv_mp_bCountParticipants		= FALSE;
+bool		g_sv_mp_bCountParticipants		= FALSE;
 float		g_sv_mp_fVoteQuota				= VOTE_QUOTA;
 float		g_sv_mp_fVoteTime				= VOTE_LENGTH_TIME;
-BOOL		g_sv_mp_save_proxy_screenshots	= FALSE;
-BOOL		g_sv_mp_save_proxy_configs		= FALSE;
+bool		g_sv_mp_save_proxy_screenshots	= FALSE;
+bool		g_sv_mp_save_proxy_configs		= FALSE;
 //-----------------------------------------------------------------
 u32			g_sv_adm_menu_ban_time			= 600;
 int			g_sv_adm_menu_ping_limit		= 25;
@@ -183,7 +183,7 @@ void game_sv_mp::OnRoundStart()
 	signal_Syncronize();
 }
 
-bool game_sv_mp::SpawnItem(LPCSTR section, u16 parent)
+bool game_sv_mp::SpawnItem(const char* section, u16 parent)
 {
 	if (!pSettings->section_exist(section))
 	{
@@ -199,7 +199,7 @@ bool game_sv_mp::SpawnItem(LPCSTR section, u16 parent)
 };
 
 
-bool game_sv_mp::SpawnItemToPos(LPCSTR section, Fvector3 position)
+bool game_sv_mp::SpawnItemToPos(const char* section, Fvector3 position)
 {
 	if (!pSettings->section_exist(section))
 	{
@@ -514,7 +514,7 @@ bool game_sv_mp::CheckPlayerMapName(ClientID const & clientID, NET_Packet & P)
 	return true;
 }
 
-LPCSTR GameTypeToString(EGameIDs gt, bool bShort);
+const char* GameTypeToString(EGameIDs gt, bool bShort);
 
 void game_sv_mp::ReconnectPlayer(ClientID const & clientID)
 {
@@ -648,7 +648,7 @@ void	game_sv_mp::RespawnPlayer			(ClientID id_who, bool NoSpectator)
 };
 
 
-void game_sv_mp::SpawnPlayer(ClientID id, LPCSTR N)
+void game_sv_mp::SpawnPlayer(ClientID id, const char* N)
 {
 	xrClientData* CL = m_server->ID_to_client(id);
 	//-------------------------------------------------
@@ -823,7 +823,7 @@ TeamStruct* game_sv_mp::GetTeamData				(u32 Team)
 	return &(TeamList[Team]);
 };
 
-/*void	game_sv_mp::SpawnWeaponForActor		(u16 actorId,  LPCSTR N, bool isScope, bool isGrenadeLauncher, bool isSilencer)
+/*void	game_sv_mp::SpawnWeaponForActor		(u16 actorId,  const char* N, bool isScope, bool isGrenadeLauncher, bool isSilencer)
 {
 		u8 addon_flags = 0;
 		if(isScope)
@@ -838,7 +838,7 @@ TeamStruct* game_sv_mp::GetTeamData				(u32 Team)
 		SpawnWeapon4Actor(actorId, N, addon_flags);
 }*/
 void game_sv_mp::ChargeAmmo(CSE_ALifeItemWeapon* weapon,
-							LPCSTR ammo_string,
+							const char* ammo_string,
 							game_PlayerState::PLAYER_ITEMS_LIST & playerItems,
 							ammo_diff_t & ammo_diff)
 {
@@ -890,7 +890,7 @@ void game_sv_mp::ChargeAmmo(CSE_ALifeItemWeapon* weapon,
 	}
 }
 
-void game_sv_mp::ChargeGrenades(CSE_ALifeItemWeapon* weapon, LPCSTR grenade_string, game_PlayerState::PLAYER_ITEMS_LIST & playerItems)
+void game_sv_mp::ChargeGrenades(CSE_ALifeItemWeapon* weapon, const char* grenade_string, game_PlayerState::PLAYER_ITEMS_LIST & playerItems)
 {
 	int grenades_count		= _GetItemCount(grenade_string);
 	R_ASSERT2(grenades_count <= 4,
@@ -979,7 +979,7 @@ void	game_sv_mp::SpawnAmmoDifference(u16 actorId, ammo_diff_t const & ammo_diff)
 	spawn_end(ammo_entity,m_server->GetServerClient()->ID);
 }
 
-void	game_sv_mp::SpawnWeapon4Actor(u16 actorId,  LPCSTR N, u8 Addons, game_PlayerState::PLAYER_ITEMS_LIST & playerItems)
+void	game_sv_mp::SpawnWeapon4Actor(u16 actorId,  const char* N, u8 Addons, game_PlayerState::PLAYER_ITEMS_LIST & playerItems)
 {
 	if (!N) return;
 	
@@ -1097,7 +1097,7 @@ s32 game_sv_mp::ExcludeBanTimeFromVoteStr(char const * vote_string, char* new_vo
 struct SearcherClientByName
 {
 	string128 player_name;
-	SearcherClientByName(LPCSTR name)
+	SearcherClientByName(const char* name)
 	{
 		strncpy_s(player_name, name, sizeof(player_name) - 1);
 		xr_strlwr(player_name);
@@ -1115,7 +1115,7 @@ struct SearcherClientByName
 	}
 };
 
-void game_sv_mp::OnVoteStart				(LPCSTR VoteCommand, ClientID sender)
+void game_sv_mp::OnVoteStart				(const char* VoteCommand, ClientID sender)
 {
 	if (!IsVotingEnabled()) return;
 	char	CommandName[256];	CommandName[0]=0;
@@ -1800,7 +1800,7 @@ bool	game_sv_mp::GetTeamItem_ByID		(WeaponDataStruct** pRes, TEAM_WPN_LIST* pWpn
 	return true;
 };
 
-bool	game_sv_mp::GetTeamItem_ByName		(WeaponDataStruct** pRes,TEAM_WPN_LIST* pWpnList, LPCSTR ItemName)
+bool	game_sv_mp::GetTeamItem_ByName		(WeaponDataStruct** pRes,TEAM_WPN_LIST* pWpnList, const char* ItemName)
 {
 	if (!pWpnList) return false;
 	TEAM_WPN_LIST_it pWpnI	= std::find(pWpnList->begin(), pWpnList->end(), ItemName);
@@ -2038,7 +2038,7 @@ void game_sv_mp::DumpOnlineStatistic()
 	WriteGameState				(ini, current_section.c_str(), false);
 }
 
-void game_sv_mp::WritePlayerStats(CInifile& ini, LPCSTR sect, xrClientData* pCl)
+void game_sv_mp::WritePlayerStats(CInifile& ini, const char* sect, xrClientData* pCl)
 {
 	ini.w_string(sect,"player_name",	pCl->ps->getName());
 	if (pCl->ps->m_account.is_online())
@@ -2075,7 +2075,7 @@ void game_sv_mp::WritePlayerStats(CInifile& ini, LPCSTR sect, xrClientData* pCl)
 	}
 }
 
-void game_sv_mp::WriteGameState(CInifile& ini, LPCSTR sect, bool bRoundResult)
+void game_sv_mp::WriteGameState(CInifile& ini, const char* sect, bool bRoundResult)
 {
 	if(!bRoundResult)
 		ini.w_u32						(sect, "online_time_sec", Device.dwTimeGlobal/1000);
@@ -2290,7 +2290,7 @@ void game_sv_mp::DestroyAllPlayerItems(ClientID id_who)	//except rukzak
 	}
 }
 
-void game_sv_mp::SvSendChatMessage(LPCSTR str)
+void game_sv_mp::SvSendChatMessage(const char* str)
 {
 	NET_Packet			P;	
 	P.w_begin			(M_CHAT_MESSAGE);

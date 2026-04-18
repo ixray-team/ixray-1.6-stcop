@@ -19,9 +19,9 @@ protected:
 
 protected:
 	struct CTokenPredicateName {
-		LPCSTR			m_name;
+		const char*			m_name;
 
-		IC				CTokenPredicateName	(LPCSTR name)
+		IC				CTokenPredicateName	(const char* name)
 		{
 			m_name		= name;
 		}
@@ -50,17 +50,17 @@ protected:
 	TOKEN_LIST					m_token_list;
 
 protected:
-	IC		iterator			token				(LPCSTR name);
+	IC		iterator			token				(const char* name);
 	IC		iterator			token				(int id);
 
 public:
 	IC							CScriptTokenList	();
 								~CScriptTokenList	();
-	IC		void				add					(LPCSTR name, int id);
-	IC		void				remove				(LPCSTR name);
+	IC		void				add					(const char* name, int id);
+	IC		void				remove				(const char* name);
 	IC		void				clear				();
-	IC		int					id					(LPCSTR name);
-	IC		LPCSTR				name				(int id);
+	IC		int					id					(const char* name);
+	IC		const char*				name				(int id);
 	IC		const TOKEN_LIST	&tokens				() const;
 	IC		TOKEN_LIST			&tokens				();
 	DECLARE_SCRIPT_REGISTER_FUNCTION

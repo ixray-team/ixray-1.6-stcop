@@ -76,7 +76,7 @@ CCarWeapon::~CCarWeapon()
 	CShootingObject::DestroyEffects();
 }
 
-void CCarWeapon::Load(LPCSTR section)
+void CCarWeapon::Load(const char* section)
 {
 	inheritedShooting::Load(section);
     SoundsLayered.LoadSound(section, "snd_shoot", "m_sndShot", false);

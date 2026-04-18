@@ -11,7 +11,7 @@ class CSoundRender_Core
 {
     volatile BOOL						bLocked;
 protected:
-	virtual void						_create_data			( ref_sound_data& S, LPCSTR fName,	esound_type sound_type, int game_type); 
+	virtual void						_create_data			( ref_sound_data& S, const char* fName,	esound_type sound_type, int game_type); 
 	virtual void						_destroy_data			( ref_sound_data& S);
 protected:
     BOOL								bListenerMoved;
@@ -23,9 +23,9 @@ public:
 	typedef	std::pair<ref_sound_data_ptr,float>	event;                                               
 	xr_vector<event>					s_events;
 public:
-	BOOL								bPresent;
-	BOOL								bUserEnvironment;
-    BOOL								bReady;
+	bool								bPresent;
+	bool								bUserEnvironment;
+    bool								bReady;
 
 	bool m_is_supported; // Boolean variable to indicate presence of EFX Extension
 
@@ -67,8 +67,8 @@ public:
 
 	// Sound interface
 			void						verify_refsound			( ref_sound& S);
-	virtual void						create					( ref_sound& S, LPCSTR fName,			esound_type sound_type, int	game_type);
-	virtual void						attach_tail				( ref_sound& S, LPCSTR fName);
+	virtual void						create					( ref_sound& S, const char* fName, esound_type sound_type, int	game_type);
+	virtual void						attach_tail				( ref_sound& S, const char* fName);
 
 	virtual void						clone					( ref_sound& S, const ref_sound& from,	esound_type sound_type, int	game_type);
 	virtual void						destroy					( ref_sound& S);
@@ -105,7 +105,7 @@ public:
     virtual void						set_environment_size	(CSound_environment* src_env, CSound_environment** dst_env);
 
 public:
-	CSoundRender_Source*				i_create_source			( LPCSTR name				);
+	CSoundRender_Source*				i_create_source			( const char* name				);
 	void								i_destroy_source		( CSoundRender_Source*  S	);
 	CSoundRender_Emitter*				i_play					( ref_sound* S, BOOL _loop, float delay	);
 	void								i_start					( CSoundRender_Emitter* E	);

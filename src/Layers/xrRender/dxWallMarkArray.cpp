@@ -14,14 +14,14 @@ dxWallMarkArray::~dxWallMarkArray()
 		it->destroy();
 }
 
-void dxWallMarkArray::AppendMark(LPCSTR s_textures)
+void dxWallMarkArray::AppendMark(const char* s_textures)
 {
 	ref_shader	s;
 	s.create("effects\\wallmark",s_textures);
 	m_CollideMarks.push_back(s);
 }
 
-void dxWallMarkArray::AppendMark(LPCSTR s_shader, LPCSTR s_textures)
+void dxWallMarkArray::AppendMark(const char* s_shader, const char* s_textures)
 {
 	ref_shader	s;
 	s.create(s_shader,s_textures);

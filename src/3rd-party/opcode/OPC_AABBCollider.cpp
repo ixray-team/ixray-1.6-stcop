@@ -153,7 +153,7 @@ bool AABBCollider::Collide(AABBCache& cache, const CollisionAABB& box, const Mod
  *	\return		TRUE if we can return immediately
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-BOOL AABBCollider::InitQuery(AABBCache& cache, const CollisionAABB& box)
+bool AABBCollider::InitQuery(AABBCache& cache, const CollisionAABB& box)
 {
 	// 1) Call the base method
 	VolumeCollider::InitQuery();
@@ -285,7 +285,7 @@ bool AABBCollider::Collide(AABBCache& cache, const CollisionAABB& box, const AAB
  *	\return		true if the AABB contains the whole box
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-inline_ BOOL AABBCollider::AABBContainsBox(const IceMaths::Point& bc, const IceMaths::Point& be)
+inline_ bool AABBCollider::AABBContainsBox(const IceMaths::Point& bc, const IceMaths::Point& be)
 {
 	if(mMin.x > bc.x - be.x)	return FALSE;
 	if(mMin.y > bc.y - be.y)	return FALSE;

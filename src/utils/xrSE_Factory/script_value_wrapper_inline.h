@@ -9,7 +9,7 @@
 #pragma once
 
 template <typename _type>
-IC	CScriptValueWrapperImpl<_type>::CScriptValueWrapperImpl	(luabind::object object, LPCSTR name) :
+IC	CScriptValueWrapperImpl<_type>::CScriptValueWrapperImpl	(luabind::object object, const char* name) :
 	inherited			(object,name)
 {
 	m_value				= luabind::object_cast<_type>(object[name]);
@@ -28,7 +28,7 @@ IC	_type *CScriptValueWrapperImpl<_type>::value		()
 }
 
 template <typename _type>
-IC	CScriptValueWrapper<_type>::CScriptValueWrapper	(luabind::object object, LPCSTR name) :
+IC	CScriptValueWrapper<_type>::CScriptValueWrapper	(luabind::object object, const char* name) :
 	inherited			(object,name)
 {
 }

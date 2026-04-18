@@ -26,7 +26,7 @@ void Root::construct(const shared_str& root_id, Manager& manager_r)
 		return;
 	}
 
-	LPCSTR upgrade_groups_str = pSettings->r_string(root_id, "upgrades");
+	const char* upgrade_groups_str = pSettings->r_string(root_id, "upgrades");
 	if (!upgrade_groups_str || !xr_strlen(upgrade_groups_str))
 	{
 		return;
@@ -34,7 +34,7 @@ void Root::construct(const shared_str& root_id, Manager& manager_r)
 
 	add_dependent_groups(upgrade_groups_str, manager_r);
 
-	LPCSTR upgrade_scheme_str = pSettings->r_string(root_id, "upgrade_scheme");
+	const char* upgrade_scheme_str = pSettings->r_string(root_id, "upgrade_scheme");
 	VERIFY2(upgrade_scheme_str, make_string<const char*>("In inventory item <%s> `upgrade_scheme` is empty!", root_id.c_str()));
 	m_upgrade_scheme._set(upgrade_scheme_str);
 
@@ -58,7 +58,7 @@ void Root::add_upgrade(Upgrade* upgr)
 
 #ifdef DEBUG
 
-void Root::log_hierarchy(LPCSTR nest)
+void Root::log_hierarchy(const char* nest)
 {
 	string512 nest2 = {};
 	xr_strcpy(nest2, sizeof(nest2), nest);

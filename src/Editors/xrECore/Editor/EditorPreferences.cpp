@@ -12,8 +12,8 @@
 //---------------------------------------------------------------------------
 CCustomPreferences* EPrefs=0;
 //---------------------------------------------------------------------------
-// extern ENGINE_API BOOL bIsRaindropCollision;
-// extern ENGINE_API BOOL bIsSndOnRoof;
+// extern ENGINE_API bool bIsRaindropCollision;
+// extern ENGINE_API bool bIsSndOnRoof;
 
 CCustomPreferences::CCustomPreferences()
 {
@@ -166,10 +166,10 @@ void CCustomPreferences::FillProp(PropItemVec& props)
 {
 	PHelper().CreateU32		(props,"Common\\Recent Count", 						&scene_recent_count, 	0, 		25);
 	PHelper().CreateU32		(props,"Common\\Undo Level", 						&scene_undo_level, 		0, 		125);
-	PHelper().CreateBOOL	(props,"Common\\More Stats Info", 					&bMoreStats);
+	PHelper().CreateBool	(props,"Common\\More Stats Info", 					&bMoreStats);
 
-	PHelper().CreateBOOL	(props,"Viewport\\Buttons\\Axis", 					&ShowAxisButtons);
-	PHelper().CreateBOOL	(props,"Viewport\\Buttons\\Old Camera Controls", 	&ShowOldCameraButtons);
+	PHelper().CreateBool	(props,"Viewport\\Buttons\\Axis", 					&ShowAxisButtons);
+	PHelper().CreateBool	(props,"Viewport\\Buttons\\Old Camera Controls", 	&ShowOldCameraButtons);
 
 	PHelper().CreateFloat	(props,"Viewport\\Grid\\Cell Size", 				&grid_cell_size, 		0.1f, 	10.f);
 	PHelper().CreateU32		(props,"Viewport\\Grid\\Cell Count", 				&grid_cell_count, 		10, 	1000);
@@ -205,8 +205,8 @@ void CCustomPreferences::FillProp(PropItemVec& props)
 
 	PHelper().CreateFlag32	(props,"Objects\\Library\\Discard Instance", 		&object_flags, 			epoDiscardInstance);
 
-	PHelper().CreateBOOL	(props,"Tools\\Box Pick\\Limited Depth", 			&bp_lim_depth);
-	PHelper().CreateBOOL	(props,"Tools\\Box Pick\\Back Face Culling", 		&bp_cull);
+	PHelper().CreateBool	(props,"Tools\\Box Pick\\Limited Depth", 			&bp_lim_depth);
+	PHelper().CreateBool	(props,"Tools\\Box Pick\\Back Face Culling", 		&bp_cull);
 	PHelper().CreateFloat	(props,"Tools\\Box Pick\\Depth Tolerance", 			&bp_depth_tolerance, 	0.f, 	10000.f);
 
 	PHelper().CreateFloat	(props,"Tools\\Sens\\Move", 						&tools_sens_move);
@@ -634,7 +634,7 @@ void CCustomPreferences::SaveConfig()
 
 }
 
-void CCustomPreferences::AppendRecentFile(LPCSTR name)
+void CCustomPreferences::AppendRecentFile(const char* name)
 {
 	for (AStringIt it = scene_recent_list.begin(); it != scene_recent_list.end(); it++)
 	{

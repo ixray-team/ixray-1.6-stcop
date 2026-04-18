@@ -10,8 +10,8 @@ protected:
 public:
 						ESceneWayTool			():ESceneCustomOTool(OBJCLASS_WAY){;}
 	// definition
-    IC LPCSTR			ClassName				(){return "way";}
-    IC LPCSTR			ClassDesc				(){return "Way Points";}
+    IC const char*			ClassName				(){return "way";}
+    IC const char*			ClassDesc				(){return "Way Points";}
     IC int				RenderPriority			(){return 1;}
 
     virtual void		Clear					(bool bSpecific=false){inherited::Clear(bSpecific);}
@@ -26,5 +26,5 @@ public:
 
     virtual void    	OnActivate  			();
 
-    virtual CCustomObject* CreateObject			(LPVOID data, LPCSTR name);
+    virtual CCustomObject* CreateObject			(LPVOID data, const char* name);
 };

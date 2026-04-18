@@ -15,5 +15,5 @@ class CALifeInteractionManager :
 	public CALifeCommunicationManager
 {
 public:
-	CALifeInteractionManager(xrServer *server, LPCSTR section);
+	CALifeInteractionManager(xrServer *server, const char* section);
 };

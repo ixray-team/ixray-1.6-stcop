@@ -87,7 +87,7 @@ dxRender_Visual*	CModelPool::Instance_Duplicate	(dxRender_Visual* V)
 	return N;
 }
 
-dxRender_Visual*	CModelPool::Instance_Load		(const char* N, BOOL allow_register)
+dxRender_Visual*	CModelPool::Instance_Load		(const char* N, bool allow_register)
 {
 	PROF_EVENT(__FUNCTION__);
 	dxRender_Visual	*V;
@@ -128,7 +128,7 @@ dxRender_Visual*	CModelPool::Instance_Load		(const char* N, BOOL allow_register)
 	return V;
 }
 
-dxRender_Visual* CModelPool::Instance_Load(const char* name, IReader* data, BOOL allow_register)
+dxRender_Visual* CModelPool::Instance_Load(const char* name, IReader* data, bool allow_register)
 {
 	PROF_EVENT(__FUNCTION__);
 	dxRender_Visual	*V;
@@ -251,7 +251,7 @@ dxRender_Visual* CModelPool::Create(const char* name, IReader* data)
 	}
 }
 
-dxRender_Visual* CModelPool::CreateChild(LPCSTR name, IReader* data)
+dxRender_Visual* CModelPool::CreateChild(const char* name, IReader* data)
 {
 	string256 low_name;		VERIFY	(xr_strlen(name)<256);
 	xr_strcpy(low_name,name);	_strlwr	(low_name);
@@ -271,7 +271,7 @@ dxRender_Visual* CModelPool::CreateChild(LPCSTR name, IReader* data)
 }
 
 extern  xr_atomic_bool ENGINE_API g_bRendering; 
-void	CModelPool::DeleteInternal	(dxRender_Visual* &V, BOOL bDiscard)
+void	CModelPool::DeleteInternal	(dxRender_Visual* &V, bool bDiscard)
 {
 	VERIFY					(!g_bRendering);
     if (!V)					return;
@@ -304,7 +304,7 @@ void CModelPool::DeleteDeffered(dxRender_Visual* &V)
 	V = nullptr;
 }
 
-void CModelPool::Delete(dxRender_Visual* &V, BOOL bDiscard)
+void CModelPool::Delete(dxRender_Visual* &V, bool bDiscard)
 {
 	if (nullptr==V)
 		return;
@@ -339,7 +339,7 @@ void CModelPool::DeleteQueuedDeffer()
 	ModelsToDeleteDeffer.clear();
 }
 
-void CModelPool::Discard(dxRender_Visual*& V, BOOL b_complete)
+void CModelPool::Discard(dxRender_Visual*& V, bool b_complete)
 {
 	//
 	REGISTRY_IT	it = Registry.find(V);
@@ -414,7 +414,7 @@ void CModelPool::Prefetch()
 	}
 }
 
-void CModelPool::ClearPool( BOOL b_complete)
+void CModelPool::ClearPool( bool b_complete)
 {
 	POOL_IT	_I			=	Pool.begin();
 	POOL_IT	_E			=	Pool.end();

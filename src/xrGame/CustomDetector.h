@@ -23,7 +23,7 @@ public:
 	~CCustomDetector() override;
 
 	bool IsNeedReloadUI() { return m_bWorking && m_need_refresh; }
-	void Load(LPCSTR section) override;
+	void Load(const char* section) override;
 	void OnH_B_Independent(bool just_before_destroy) override;
 	void shedule_Update(u32 dt) override;
 	void TurnDetectorInternal(bool b) final override;

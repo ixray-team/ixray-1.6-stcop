@@ -97,7 +97,7 @@ void CUICustomEdit::SetPasswordMode( bool mode )
 	TextItemControl()->SetPasswordMode( mode );
 }
 
-void CUICustomEdit::SetPlaceholder( LPCSTR stId, bool blink )
+void CUICustomEdit::SetPlaceholder( const char* stId, bool blink )
 {
 	if ( !stId || !stId[0] )
 		return;
@@ -213,10 +213,10 @@ void  CUICustomEdit::Draw()
 	{
 		float ui_width   = GetWidth();
 
-		LPCSTR cursor_str   = ec().str_before_cursor();
+		const char* cursor_str   = ec().str_before_cursor();
 		u32 cursor_str_size = xr_strlen( cursor_str );
 
-		LPCSTR istr			= cursor_str;
+		const char* istr			= cursor_str;
 		float str_length	= font->SizeOf_( istr );
 		UI().ClientToScreenScaledWidth( str_length );
 
@@ -229,7 +229,7 @@ void  CUICustomEdit::Draw()
 			++ix;
 		}
 		istr				= cursor_str + ix;
-		LPCSTR astr			= ec().str_edit() + ix;
+		const char* astr			= ec().str_edit() + ix;
 		u32 str_size		= xr_strlen( ec().str_edit() );
 
 		u32 jx = 1;
@@ -293,12 +293,12 @@ void CUICustomEdit::ClearText()
 	ec().set_edit( "" );
 }
 
-void CUICustomEdit::SetText(LPCSTR str)
+void CUICustomEdit::SetText(const char* str)
 {
 	ec().set_edit( str );
 }
 
-LPCSTR CUICustomEdit::GetText() const
+const char* CUICustomEdit::GetText() const
 {
 	return ec().str_edit();
 }

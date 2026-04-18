@@ -17,7 +17,7 @@ struct SCollisionData
 		
 	// for error handling  
 	Fvector				vLastSafePosition;
-	BOOL				bStuck; 
+	bool				bStuck; 
 		
 	// data for collision response 
 	bool				bFoundCollision;
@@ -236,7 +236,7 @@ void msimulator_CheckCollision(SCollisionData& cl)
 			
 			// find the plane intersection point
 			// classify point to determine if ellipsoid span the plane
-			BOOL bInsideTri;
+			bool bInsideTri;
 			if ((sIPoint.dotproduct(T.N)+T.d) < -EPS_S) 
 			{ 
 				// plane is embedded in ellipsoid / sphere

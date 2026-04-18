@@ -20,7 +20,7 @@ protected:
 	Fmatrix						xform;
 public:
 	virtual void Render			(float LOD		);									// LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored
-	virtual void Load			(LPCSTR N, IReader *data, u32 dwFlags);
+	virtual void Load			(const char* N, IReader *data, u32 dwFlags);
 	virtual void Copy			(dxRender_Visual *pFrom	);
 	virtual void Release		();
 
@@ -36,7 +36,7 @@ public:
 	virtual			~FTreeVisual_ST	(void);
 
 	virtual void	Render			(float LOD		);									// LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored
-	virtual void	Load			(LPCSTR N, IReader *data, u32 dwFlags);
+	virtual void	Load			(const char* N, IReader *data, u32 dwFlags);
 	virtual void	Copy			(dxRender_Visual *pFrom	);
 	virtual void	Release			();
 private:
@@ -55,7 +55,7 @@ public:
 	virtual			~FTreeVisual_PM	(void);
 
 	virtual void	Render			(float LOD		);									// LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored
-	virtual void	Load			(LPCSTR N, IReader *data, u32 dwFlags);
+	virtual void	Load			(const char* N, IReader *data, u32 dwFlags);
 	virtual void	Copy			(dxRender_Visual *pFrom	);
 	virtual void	Release			();
 private:

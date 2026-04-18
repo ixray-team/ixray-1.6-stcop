@@ -113,7 +113,7 @@ struct	VDeclarator	: public svector<D3DVERTEXELEMENT9, MAXD3DDECLLENGTH + 1> {
 	u32 vertex() const {
 		return (u32)FVF::ComputeVertexSize(begin(), 0);
 	}
-	BOOL	equal	(VDeclarator& d)
+	bool	equal	(VDeclarator& d)
 	{
 		if (size()!=d.size())	return false;
 		else					return 0==memcmp(begin(),d.begin(),size()*sizeof(D3DVERTEXELEMENT9));

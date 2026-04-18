@@ -87,7 +87,7 @@ CEditableObject* ESceneSpawnTool::get_draw_visual(u8 _RP_TeamID, u8 _RP_Type, co
 
 void   FillSpawnItems	(ChooseItemVec& lst, void* param)
 {
-	LPCSTR gcs					= (LPCSTR)param;
+	const char* gcs					= (const char*)param;
     ObjectList objects;
     Scene->GetQueryObjects		(objects,OBJCLASS_SPAWNPOINT,-1,-1,-1);
     
@@ -108,7 +108,7 @@ ESceneSpawnTool::ESceneSpawnTool():ESceneCustomOTool(OBJCLASS_SPAWNPOINT)
     CInifile::Root& sections = pSettings->sections();
     for (CInifile::Sect& sect : sections)
     {
-    	LPCSTR val;
+    	const char* val;
     	if (sect.line_exist	("$spawn",&val))
         {
             shared_str& sect_name = sect.Name;
@@ -149,7 +149,7 @@ void ESceneSpawnTool::RemoveControls()
 }
 
 
-void ESceneSpawnTool::FillProp(LPCSTR pref, PropItemVec& items)
+void ESceneSpawnTool::FillProp(const char* pref, PropItemVec& items)
 {            
 //.	PHelper().CreateFlag32(items, PrepareKey(pref,"Common\\Show Spawn Type"),	&m_Flags,		flShowSpawnType);
 //.	PHelper().CreateFlag32(items, PrepareKey(pref,"Common\\Trace Visibility"),	&m_Flags,		flPickSpawnType);
@@ -160,7 +160,7 @@ ref_shader ESceneSpawnTool::CreateIcon(shared_str name)
 {
     ref_shader S;
     if (pSettings->line_exist(name,"$ed_icon")){
-	    LPCSTR tex_name = pSettings->r_string(name,"$ed_icon");
+	    const char* tex_name = pSettings->r_string(name,"$ed_icon");
     	S.create("editor\\spawn_icon",tex_name);
         m_Icons[name] = S;
     }else{
@@ -176,16 +176,16 @@ ref_shader ESceneSpawnTool::GetIcon(shared_str name)
 	else					return it->second;
 }
 
-CCustomObject* ESceneSpawnTool::CreateObject(LPVOID data, LPCSTR name)
+CCustomObject* ESceneSpawnTool::CreateObject(LPVOID data, const char* name)
 {
 	CSpawnPoint* O	= new CSpawnPoint(data,name);
     O->FParentTools		= this;
 
 	if(data && name)
     {
-        if(pSettings->line_exist( (LPCSTR)data, "$def_sphere") )
+        if(pSettings->line_exist( (const char*)data, "$def_sphere") )
         {
-        	float size 			= pSettings->r_float( (LPCSTR)data, "$def_sphere");
+        	float size 			= pSettings->r_float( (const char*)data, "$def_sphere");
 
             CCustomObject* S	= Scene->GetOTool(OBJCLASS_SHAPE)->CreateObject(0,0);
             CEditShape* shape 	= smart_cast<CEditShape*>(S);

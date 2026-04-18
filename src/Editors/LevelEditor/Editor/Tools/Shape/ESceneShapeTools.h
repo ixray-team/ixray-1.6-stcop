@@ -10,8 +10,8 @@ protected:
 public:
 						ESceneShapeTool			():ESceneCustomOTool(OBJCLASS_SHAPE){;}
 	// definition
-    IC LPCSTR			ClassName				(){return "shape";}
-    IC LPCSTR			ClassDesc				(){return "Shape";}
+    IC const char*			ClassName				(){return "shape";}
+    IC const char*			ClassDesc				(){return "Shape";}
     IC int				RenderPriority			(){return 20;}
 
     virtual void		Clear					(bool bSpecific=false){inherited::Clear(bSpecific);}
@@ -24,7 +24,7 @@ public:
     virtual bool		LoadSelection      		(IReader&);
     virtual void		SaveSelection      		(IWriter&);
 
-    virtual CCustomObject* CreateObject			(LPVOID data, LPCSTR name);
+    virtual CCustomObject* CreateObject			(LPVOID data, const char* name);
     		void		OnEditLevelBounds		(bool recalc);
 
     virtual void    	OnActivate  			();

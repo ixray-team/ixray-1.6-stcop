@@ -21,7 +21,7 @@ class CUIPdaSpot final :
 	CUI3tButton* m_btn_cancel;
 
 	bool m_mainWnd;
-	LPCSTR m_levelName;
+	const char* m_levelName;
 	Fvector m_position;
 	u16 m_spotID;
 	shared_str m_spotType;
@@ -30,7 +30,7 @@ public:
 	CUIPdaSpot();
 	~CUIPdaSpot();
 
-	void Init(u16 spot_id, LPCSTR level_name, Fvector pos, bool main_wnd);
+	void Init(u16 spot_id, const char* level_name, Fvector pos, bool main_wnd);
 	void InitControls();
 
 	void OnAdd(CUIWindow* w, void* d);

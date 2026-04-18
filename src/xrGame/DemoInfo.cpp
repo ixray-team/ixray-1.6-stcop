@@ -6,7 +6,7 @@
 #include "../xrCore/stream_reader.h"
 #include "object_broker.h"
 
-LPCSTR GameTypeToString(EGameIDs gt, bool bShort);
+const char* GameTypeToString(EGameIDs gt, bool bShort);
 
 u32 const demo_player_info::demo_info_max_size = DEMOSTRING_MAX_SIZE + 80;
 /*

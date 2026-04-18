@@ -54,8 +54,8 @@ public:
 	void	Save			(NET_Packet& Packet);
 	void	Load			(NET_Packet& Packet);
 
-	LPCSTR	dateToString	(int mode);
-	LPCSTR	timeToString	(int mode);
+	const char*	dateToString	(int mode);
+	const char*	timeToString	(int mode);
 };
 
 

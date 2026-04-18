@@ -14,7 +14,7 @@ CMosquitoBald::~CMosquitoBald(void)
 {
 }
 
-void CMosquitoBald::Load(LPCSTR section) 
+void CMosquitoBald::Load(const char* section) 
 {
 	inherited::Load(section);
 }

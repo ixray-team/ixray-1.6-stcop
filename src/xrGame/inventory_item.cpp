@@ -85,7 +85,7 @@ CInventoryItem::~CInventoryItem()
 #endif // #ifndef MASTER_GOLD
 }
 
-void CInventoryItem::Load(LPCSTR section)
+void CInventoryItem::Load(const char* section)
 {
 	CHitImmunity::LoadImmunities(pSettings->r_string(section, "immunities_sect"), pSettings);
 
@@ -182,7 +182,7 @@ void CInventoryItem::Load(LPCSTR section)
 	Read3dStaticsData(section);
 }
 
-void CInventoryItem::SetAdditionalDescription(LPCSTR additionalDescription)
+void CInventoryItem::SetAdditionalDescription(const char* additionalDescription)
 {
 	m_AdditionalDescription = additionalDescription;
 	m_IsUsedAdditionalDescription = xr_strcmp(m_AdditionalDescription, "") != 0;
@@ -193,7 +193,7 @@ void CInventoryItem::SetAdditionalDescription(LPCSTR additionalDescription)
 	}
 }
 
-void CInventoryItem::ReadCustomTextAndMarks(LPCSTR section)
+void CInventoryItem::ReadCustomTextAndMarks(const char* section)
 {
 	m_custom_text = READ_IF_EXISTS(pSettings, r_string, section, "item_custom_text", nullptr);
 	m_custom_text_offset = READ_IF_EXISTS(pSettings, r_fvector2, section, "item_custom_text_offset", Fvector2().set(0.f, 0.f));
@@ -220,7 +220,7 @@ void CInventoryItem::ReadCustomTextAndMarks(LPCSTR section)
 	m_custom_mark_clr = READ_IF_EXISTS(pSettings, r_color, section, "item_custom_mark_clr", 0);
 }
 
-void CInventoryItem::Read3dStaticsData(LPCSTR section)
+void CInventoryItem::Read3dStaticsData(const char* section)
 {
 	m_3d_static_visual_name = READ_IF_EXISTS(pSettings, r_string, section, "3d_static_visual_name", *object().cNameVisual());
 
@@ -236,7 +236,7 @@ void CInventoryItem::RefreshTranslations()
 	if (!m_section_id.size())
 		return;
 
-	LPCSTR section = m_section_id.c_str();
+	const char* section = m_section_id.c_str();
 
 	if (pSettings->line_exist(section, "inv_name"))
 	{
@@ -429,7 +429,7 @@ bool CInventoryItem::Detach(const char* item_section_name, bool b_spawn_item)
 }
 
 /////////// network ///////////////////////////////
-BOOL CInventoryItem::net_Spawn(CSE_Abstract* DC)
+bool CInventoryItem::net_Spawn(CSE_Abstract* DC)
 {
 	VERIFY(!m_pInventory);
 
@@ -846,7 +846,7 @@ float CInventoryItem::interpolate_states(net_update_IItem const& first, net_upda
 	return ret_val;
 }
 
-void CInventoryItem::reload(LPCSTR section)
+void CInventoryItem::reload(const char* section)
 {
 	inherited::reload(section);
 
@@ -1105,7 +1105,7 @@ bool CInventoryItem::IsNecessaryItem(CInventoryItem* item)
 	return IsNecessaryItem(item->object().cNameSect());
 };
 
-BOOL CInventoryItem::IsInvalid() const
+bool CInventoryItem::IsInvalid() const
 {
 	return object().getDestroy() || GetDropManual();
 }
@@ -1130,7 +1130,7 @@ u16 CInventoryItem::parent_id() const
 	return (object().H_Parent()) ? object().H_Parent()->ID() : u16(-1);
 }
 
-void CInventoryItem::SetDropManual(BOOL val)
+void CInventoryItem::SetDropManual(bool val)
 {
 	m_flags.set(FdropManual, val);
 

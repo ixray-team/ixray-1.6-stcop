@@ -29,7 +29,7 @@ struct CLevelInfo {
 };
 
 extern void xrMergeGraphs(
-	LPCSTR game_graph_id,
-	LPCSTR name,
+	const char* game_graph_id,
+	const char* name,
 	bool rebuild
 );

@@ -9,14 +9,14 @@
 #include "StdAfx.h"
 #include "stalker_animation_names.h"
 
-LPCSTR state_names			[] = {
+const char* state_names			[] = {
 	"cr_",
 	"norm_",
 	"dmg_norm_",
 	0
 };
 
-LPCSTR weapon_names			[] = {
+const char* weapon_names			[] = {
 	"0_",
 	"1_",
 	"2_",
@@ -31,7 +31,7 @@ LPCSTR weapon_names			[] = {
 	0
 };
 
-LPCSTR weapon_action_names	[] = {
+const char* weapon_action_names	[] = {
 	"draw_",			// 0
 	"attack_",			// 1
 	"drop_",			// 2
@@ -51,14 +51,14 @@ LPCSTR weapon_action_names	[] = {
 	0
 };
 
-LPCSTR movement_names		[] = {
+const char* movement_names		[] = {
 	"walk_",
 	"run_",
 	"escape_",
 	0
 };
 
-LPCSTR movement_action_names[] = {
+const char* movement_action_names[] = {
 	"fwd_",
 	"back_",
 	"ls_",
@@ -67,7 +67,7 @@ LPCSTR movement_action_names[] = {
 	0
 };
 
-LPCSTR in_place_names		[] = {
+const char* in_place_names		[] = {
 	"idle_0",
 	"idle_1",
 	"turn_right_0",
@@ -81,7 +81,7 @@ LPCSTR in_place_names		[] = {
 	0
 };
 
-LPCSTR global_names			[] = {
+const char* global_names			[] = {
 	"damage_",						// 0
 	"escape_",						// 1
 	"dead_stop_",					// 2
@@ -112,7 +112,7 @@ LPCSTR global_names			[] = {
 	0
 };
 
-LPCSTR head_names			[] = {
+const char* head_names			[] = {
 	"head_idle_0",
 	"head_talk_0",
 	0

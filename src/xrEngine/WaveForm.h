@@ -48,7 +48,7 @@ public:
 		arg[3]	= 1;
 	}
 
-	IC	BOOL	Similar	(const WaveForm& W) const
+	IC	bool	Similar	(const WaveForm& W) const
 	{
 		if (!fsimilar(arg[0],W.arg[0],EPS_L))	return FALSE;
 		if (!fsimilar(arg[1],W.arg[1],EPS_L))	return FALSE;

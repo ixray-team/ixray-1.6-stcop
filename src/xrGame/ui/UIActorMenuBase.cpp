@@ -328,9 +328,9 @@ bool CUIActorMenuBase::CanUpgradeItem( PIItem item )
 {
 	VERIFY( item );
 
-	LPCSTR item_name = item->m_section_id.c_str();
-	LPCSTR partner = GetPartner() ? GetPartner()->CharacterInfo().Profile().c_str() : Actor()->CharacterInfo().Profile().c_str();
-	LPCSTR section = GetPartner() ? GetPartner()->cast_game_object()->cNameSect_str() : Actor()->cast_game_object()->cNameSect_str();
+	const char* item_name = item->m_section_id.c_str();
+	const char* partner = GetPartner() ? GetPartner()->CharacterInfo().Profile().c_str() : Actor()->CharacterInfo().Profile().c_str();
+	const char* section = GetPartner() ? GetPartner()->cast_game_object()->cNameSect_str() : Actor()->cast_game_object()->cNameSect_str();
 		
 	luabind::functor<bool> funct; 
 	R_ASSERT2(

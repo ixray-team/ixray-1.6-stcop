@@ -21,8 +21,8 @@ public:
 	CExplosiveItem() = default;
 	virtual ~CExplosiveItem() = default;
 
-	virtual void Load(LPCSTR section) override;
-	virtual BOOL net_Spawn(CSE_Abstract* DC) override { return CInventoryItemObject::net_Spawn(DC); }
+	virtual void Load(const char* section) override;
+	virtual bool net_Spawn(CSE_Abstract* DC) override { return CInventoryItemObject::net_Spawn(DC); }
 	virtual void net_Destroy() override;
 	virtual void net_Export(NET_Packet& P) override { CInventoryItemObject::net_Export(P); }
 	virtual void net_Import(NET_Packet& P) override { CInventoryItemObject::net_Import(P); }

@@ -37,13 +37,13 @@ public:
 			void	SetNextFocusCapturer(CUICustomEdit* next_capturer) { m_next_focus_capturer = next_capturer; };
 	
 			void	ClearText		();
-	virtual	void	SetText			(LPCSTR str);
-	virtual LPCSTR	GetText			()	const;
+	virtual	void	SetText			(const char* str);
+	virtual const char*	GetText			()	const;
 
 	virtual void	Enable			(bool status);
 			
 			void	SetPasswordMode	(bool mode = true);
-			void	SetPlaceholder	(LPCSTR stId, bool blink = false);
+			void	SetPlaceholder	(const char* stId, bool blink = false);
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 	virtual CUIStatic* ui_cast_static() { return this; }

@@ -50,7 +50,7 @@ int PickStaticWpnIconXmlIndex(CUIXml& xml)
     }
     for (int i = count - 1; i >= 0; --i)
     {
-        LPCSTR dm = xml.ReadAttrib(root, "static_wpn_icon", i, "display_mode", nullptr);
+        const char* dm = xml.ReadAttrib(root, "static_wpn_icon", i, "display_mode", nullptr);
         if (dm && xr_strcmp(dm, "text") == 0)
         {
             return i;
@@ -120,7 +120,7 @@ static void ApplyCaliberCatalogGadgetLine(
     CUIStatic* uiCaliberText,
     CUIStatic* uiWeaponIcon,
     CUIStatic* uiCaliberIcon,
-    LPCSTR nameShortFallback)
+    const char* nameShortFallback)
 {
     shared_str sectionLabel;
     const bool hasCatalogText = catalog.FindSectionLabel(sectionId, sectionLabel) && sectionLabel.size();
@@ -216,7 +216,7 @@ ALife::EInfluenceType CUIHudStatesWnd::get_indik_type( ALife::EHitType hit_type 
     return iz_type;
 }
 
-void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
+void CUIHudStatesWnd::InitFromXml( CUIXml& xml, const char* path )
 {
     XML_NODE* stored_root = xml.GetLocalRoot();
     if (xml.NavigateToNode(path))
@@ -482,7 +482,7 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
     shared_str catalogFile;
     if (isCaliberHudEnabled)
     {
-        LPCSTR explicitCat = xml.ReadAttrib("static_wpn_icon", wpnIconXmlIdx, "hud_group_catalog", "");
+        const char* explicitCat = xml.ReadAttrib("static_wpn_icon", wpnIconXmlIdx, "hud_group_catalog", "");
         if (explicitCat && explicitCat[0])
         {
             catalogFile = explicitCat;
@@ -521,7 +521,7 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 
     if (m_wpnIconHudMode != EWpnIconHudMode::Caliber)
     {
-        LPCSTR displayMode = xml.ReadAttrib("static_wpn_icon", wpnIconXmlIdx, "display_mode", nullptr);
+        const char* displayMode = xml.ReadAttrib("static_wpn_icon", wpnIconXmlIdx, "display_mode", nullptr);
         if (displayMode && xr_strcmp(displayMode, "text") == 0)
         {
             m_wpnIconHudMode = EWpnIconHudMode::AmmoText;
@@ -607,7 +607,7 @@ void CUIHudStatesWnd::Load_section()
     Load_section_type( ALife::infl_electra, "electra_zone_detector" );  //no uistatic
 }
 
-void CUIHudStatesWnd::Load_section_type( ALife::EInfluenceType type, LPCSTR section )
+void CUIHudStatesWnd::Load_section_type( ALife::EInfluenceType type, const char* section )
 {
     if (!pSettings->section_exist(section))
     {
@@ -1040,7 +1040,7 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
                         u8 currAmmoType = weapon->GetAmmoType();
                         if (currAmmoType < weapon->m_ammoTypes.size())
                         {
-                            LPCSTR ammoSection = weapon->m_ammoTypes[currAmmoType].c_str();
+                            const char* ammoSection = weapon->m_ammoTypes[currAmmoType].c_str();
                             if (pSettings->section_exist(ammoSection))
                             {
                                 shared_str invNameShortId = pSettings->r_string(ammoSection, "inv_name_short");
@@ -1716,7 +1716,7 @@ void CUIHudStatesWnd::UpdateIndicatorType( CActor* actor, ALife::EInfluenceType 
     constexpr u32 c_yellow = color_rgba( 255, 255, 0, 255 );
     constexpr u32 c_red    = color_rgba( 255, 0, 0, 255 );
 
-    LPCSTR texture = "";
+    const char* texture = "";
     string256 str;
     switch (type)
     {
@@ -1909,7 +1909,7 @@ void CUIHudStatesWnd::FakeUpdateIndicatorType(u8 t, float power)
         return;
     }
 
-    LPCSTR texture = "";
+    const char* texture = "";
     string128 str;
     switch (type)
     {

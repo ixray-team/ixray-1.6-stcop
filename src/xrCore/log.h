@@ -16,8 +16,8 @@ class XRCORE_API xrLogger
 public:
 	using LogCallback = void(*)	(const char* string);
 
-	void Msg(LPCSTR Msg, va_list argList);
-	void SimpleMessage(LPCSTR Message, u32 MessageSize = 0);
+	void Msg(const char* Msg, va_list argList);
+	void SimpleMessage(const char* Message, u32 MessageSize = 0);
 
 	static void OpenLogFile();
 	static const string_path& GetLogPath();
@@ -47,7 +47,7 @@ private:
 	struct LogRecord
 	{
 		LogRecord() {}
-		LogRecord(LPCSTR Msg, u32 sizeMsg);
+		LogRecord(const char* Msg, u32 sizeMsg);
 		xr_string Message;
 		Time time;
 	};

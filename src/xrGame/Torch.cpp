@@ -78,7 +78,7 @@ inline bool CTorch::can_use_dynamic_lights()
 	return owner->can_use_dynamic_lights();
 }
 
-void CTorch::Load(LPCSTR section)
+void CTorch::Load(const char* section)
 {
 	inherited::Load(section);
 	light_trace_bone = pSettings->r_string(section, "light_trace_bone");
@@ -154,7 +154,7 @@ bool CTorch::torch_active() const
 	return (m_switched_on);
 }
 
-BOOL CTorch::net_Spawn(CSE_Abstract* DC)
+bool CTorch::net_Spawn(CSE_Abstract* DC)
 {
 	CSE_Abstract* e = (CSE_Abstract*)(DC);
 	CSE_ALifeItemTorch* torch = smart_cast<CSE_ALifeItemTorch*>(e);

@@ -55,7 +55,7 @@
 int			g_cl_InterpolationType		= 0;
 u32			g_cl_InterpolationMaxPoints = 0;
 int			g_dwInputUpdateDelta		= 20;
-BOOL		net_cl_inputguaranteed		= FALSE;
+bool		net_cl_inputguaranteed		= FALSE;
 int g_start_game_vertex_id = 0;
 shared_str g_start_position_smart = nullptr;
 Fvector g_start_position {};
@@ -375,7 +375,7 @@ void CActor::net_Import_Base_proceed()
 {
 	if (g_Alive())
 	{
-		setVisible((BOOL)!HUDview());
+		setVisible((bool)!HUDview());
 		setEnabled(TRUE);
 	};
 	//---------------------------------------------
@@ -474,7 +474,7 @@ void	CActor::net_Import_Physic_proceed	( )
 	CrPr_SetActivationStep(0);
 };
 
-BOOL CActor::net_Spawn(CSE_Abstract* DC)
+bool CActor::net_Spawn(CSE_Abstract* DC)
 {
 	m_holder_id				= ALife::_OBJECT_ID(-1);
 	m_snd_noise			= 0.0f;
@@ -830,7 +830,7 @@ void CActor::net_Relcase(CObject* O)
 	feel_touch_relcase(O);
 }
 
-BOOL	CActor::net_Relevant		()				// relevant for export to server
+bool	CActor::net_Relevant		()				// relevant for export to server
 { 
 	if (OnServer())
 	{
@@ -1901,7 +1901,7 @@ void CActor::net_Save(NET_Packet& P)
 #endif
 }
 
-BOOL CActor::net_SaveRelevant()
+bool CActor::net_SaveRelevant()
 {
 	return TRUE;
 }
@@ -2108,7 +2108,7 @@ bool CActor::InventoryAllowSprint()
 	return true;
 };
 
-BOOL CActor::BonePassBullet(int boneID)
+bool CActor::BonePassBullet(int boneID)
 {
 	if (IsGameTypeSingle())
 	{

@@ -149,7 +149,7 @@ void CControlAnimationBase::set_override_animation (EMotionAnim anim, u32 index)
 	m_override_animation_index	=	index;
 }
 
-void CControlAnimationBase::set_override_animation (pcstr name)
+void CControlAnimationBase::set_override_animation (const char* name)
 {
 	for (	u32 anim_type	=	0;
 				anim_type	<	m_anim_storage.size();
@@ -160,10 +160,10 @@ void CControlAnimationBase::set_override_animation (pcstr name)
 		if ( !anim_item )
 			continue;
 
-		pcstr anim_name						=	anim_item->target_name.c_str();
+		const char* anim_name						=	anim_item->target_name.c_str();
 		if ( strstr(name, anim_name ? anim_name : "") == name )
 		{
-			pcstr const anim_index_string	=	name + anim_item->target_name.size();
+			const char* const anim_index_string	=	name + anim_item->target_name.size();
 
 			u32 anim_index			=	0;
 			sscanf						(anim_index_string, "%d", &anim_index);

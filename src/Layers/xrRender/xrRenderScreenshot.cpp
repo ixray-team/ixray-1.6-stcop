@@ -2,7 +2,7 @@
 #include "../../xrEngine/string_table.h"
 #include "ScreenshotManager.h"
 
-void CRender::ScreenshotImpl(ScreenshotMode Mode, LPCSTR Name, CMemoryWriter* MemoryWriter)
+void CRender::ScreenshotImpl(ScreenshotMode Mode, const char* Name, CMemoryWriter* MemoryWriter)
 {
 	ScreenshotManager::SaveScreenshot(Mode, Name, MemoryWriter);
 }

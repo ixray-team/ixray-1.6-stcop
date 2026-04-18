@@ -17,7 +17,7 @@ void CCustomDevice::UpdateXForm()
 	CInventoryItem::UpdateXForm();
 }
 
-void CCustomDevice::LoadSounds(LPCSTR section)
+void CCustomDevice::LoadSounds(const char* section)
 {
 	inherited::LoadSounds(section);
 
@@ -25,7 +25,7 @@ void CCustomDevice::LoadSounds(LPCSTR section)
 	m_sounds.LoadSound(section, "snd_holster", "sndHide");
 }
 
-BOOL CCustomDevice::net_Spawn(CSE_Abstract* DC)
+bool CCustomDevice::net_Spawn(CSE_Abstract* DC)
 {
 	TurnDetectorInternal(false);
 	return inherited::net_Spawn(DC);

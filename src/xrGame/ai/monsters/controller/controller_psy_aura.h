@@ -25,7 +25,7 @@ class CPPEffectorControllerAura : public CPPEffectorCustom {
 
 public:
 					CPPEffectorControllerAura	(const SPPInfo &ppi, u32 time_to_fade, const ref_sound &snd_left, const ref_sound &snd_right);
-	virtual BOOL	update						();
+	virtual bool	update						();
 	void			switch_off					();
 };
 
@@ -50,7 +50,7 @@ class CControllerAura : public CPPEffectorCustomController<CPPEffectorController
 
 public:
 					CControllerAura			(CController *monster) : m_object(monster){}
-	virtual void	load					(LPCSTR section);
+	virtual void	load					(const char* section);
 
 			void	on_death				();
 			void	update_schedule			();

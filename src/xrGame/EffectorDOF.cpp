@@ -9,7 +9,7 @@ CEffectorDOF::CEffectorDOF(const Fvector4& dof, float life_time) : CEffectorCam(
 	m_fPhase = Device.fTimeGlobal + dof.w;
 }
 
-BOOL CEffectorDOF::ProcessCam(SCamEffectorInfo& info)
+bool CEffectorDOF::ProcessCam(SCamEffectorInfo& info)
 {
 	if (m_fPhase < Device.fTimeGlobal)
 	{

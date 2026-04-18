@@ -13,7 +13,7 @@ public:
 	void						prefetch			( );
 	void						clear				( );
 
-	CObject*					create				( LPCSTR	name	);
+	CObject*					create				( const char*	name	);
 	void						destroy				( CObject*	O		);
 
 	IGame_ObjectPool			();

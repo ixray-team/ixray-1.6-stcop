@@ -10,13 +10,13 @@ extern "C"
 
 XrGameManager::XrGameManager()
 {
-	LPCSTR			g_name = "xrGame.dll";
+	const char*			g_name = "xrGame.dll";
 	Log("Loading DLL:", g_name);
 	m_hGame = LoadLibraryA(g_name);
 	if (0 == m_hGame)	R_CHK(GetLastError());
 	R_ASSERT2(m_hGame, "Game DLL raised exception during loading or there is no game DLL at all");
 	m_pCreate = (Factory_Create*)GetProcAddress(m_hGame, "xrFactory_Create");	R_ASSERT(m_pCreate);
-	m_pCreateFromSection = (ISE_Abstract * (__cdecl * )(LPCSTR))GetProcAddress(m_hGame, "xrFactory_Create_From_Section");	R_ASSERT(m_pCreate);
+	m_pCreateFromSection = (ISE_Abstract * (__cdecl * )(const char*))GetProcAddress(m_hGame, "xrFactory_Create_From_Section");	R_ASSERT(m_pCreate);
 	m_pDestroy = (Factory_Destroy*)GetProcAddress(m_hGame, "xrFactory_Destroy");	R_ASSERT(m_pCreate);
 	Engine.External.pCreate = m_pCreate;
 	Engine.External.pDestroy = m_pDestroy;
@@ -35,7 +35,7 @@ DLL_Pure* XrGameManager::Create(CLASS_ID clsid)
 	return m_pCreate(clsid);
 }
 
-ISE_Abstract* XrGameManager::CreateFromSection(LPCSTR Name)
+ISE_Abstract* XrGameManager::CreateFromSection(const char* Name)
 {
 	return m_pCreateFromSection(Name);
 }

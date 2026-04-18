@@ -36,7 +36,7 @@ CAI_Trader::~CAI_Trader()
 	xr_delete		(AnimMan);
 }
 
-void CAI_Trader::Load(LPCSTR section)
+void CAI_Trader::Load(const char* section)
 {
 	//	setEnabled						(FALSE);
 	inherited::Load					(section);
@@ -61,7 +61,7 @@ void CAI_Trader::reinit	()
 	m_busy_now				= false;
 }
 
-void CAI_Trader::reload	(LPCSTR section)
+void CAI_Trader::reload	(const char* section)
 {
 	CEntityAlive::reload	(section);
 	CInventoryOwner::reload	(section);
@@ -116,7 +116,7 @@ void CAI_Trader::LookAtActor(CBoneInstance *B)
 
 //////////////////////////////////////////////////////////////////////////
 
-BOOL CAI_Trader::net_Spawn(CSE_Abstract* DC)
+bool CAI_Trader::net_Spawn(CSE_Abstract* DC)
 {
 	CSE_Abstract* e = (CSE_Abstract*)(DC);
 	CSE_ALifeTrader* l_tpTrader = e->cast_trader();
@@ -308,7 +308,7 @@ void CAI_Trader::UpdateCL()
 		animation().update_frame();
 }
 
-BOOL CAI_Trader::UsedAI_Locations()
+bool CAI_Trader::UsedAI_Locations()
 {
 	return					(TRUE);
 }
@@ -414,7 +414,7 @@ bool CAI_Trader::AllowItemToTrade 	(CInventoryItem const * item, const SInvItemP
 	return						(CInventoryOwner::AllowItemToTrade(item,place));
 }
 
-void CAI_Trader::dialog_sound_start(LPCSTR phrase)
+void CAI_Trader::dialog_sound_start(const char* phrase)
 {
 	animation().external_sound_start(phrase);
 }

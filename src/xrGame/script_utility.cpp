@@ -116,7 +116,7 @@ bool ixray::is_weapon(CScriptGameObject* pObject)
 	return result;
 }
 
-bool ixray::has_alife_info(LPCSTR info_id)
+bool ixray::has_alife_info(const char* info_id)
 {
 	bool result{};
 	if (!info_id)
@@ -137,7 +137,7 @@ bool ixray::has_alife_info(LPCSTR info_id)
 	return result;
 }
 
-int ixray::get_script_clsid(LPCSTR str)
+int ixray::get_script_clsid(const char* str)
 {
 	R_ASSERT(str && "provide a valid string alwasys!");
 	return object_factory().script_clsid(TEXT2CLSID(str));

@@ -571,14 +571,14 @@ u32 CGameTaskManager::GetTaskCount(ETaskState state, ETaskType type)
 	return res;
 }
 
-constexpr pcstr sTaskStates[] = 
+constexpr const char* sTaskStates[] = 
 { 
 	"TaskStateFail", 
 	"TaskStateInProgress", 
 	"TaskStateCompleted", 
 	"TaskStateDummy" 
 };
-constexpr pcstr sTaskTypes[] = 
+constexpr const char* sTaskTypes[] = 
 { 
 	"TaskTypeStoryline", 
 	"TaskTypeAdditional", 

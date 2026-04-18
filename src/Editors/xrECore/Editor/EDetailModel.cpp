@@ -50,12 +50,12 @@ void EDetail::Unload()
 	OnDeviceDestroy		();
 }
 
-LPCSTR EDetail::GetName	()
+const char* EDetail::GetName	()
 {
 	return m_pRefs?m_pRefs->GetName():m_sRefs.c_str();
 }
 
-LPCSTR EDetail::GetTextureName()
+const char* EDetail::GetTextureName()
 {
 	VERIFY(m_pRefs);
 	CSurface* surf		= *m_pRefs->FirstSurface(); VERIFY(surf);
@@ -92,11 +92,11 @@ u16 EDetail::_AddVert(const Fvector& p, float u, float v)
 	return u16(number_vertices-1);
 }
 
-IC BOOL isDegenerated(u16 v[3])
+IC bool isDegenerated(u16 v[3])
 {
 	return (v[0]==v[1] || v[0]==v[2] || v[1]==v[2]);
 };
-IC BOOL isEqual(U16Vec& ind, u16 v[3])
+IC bool isEqual(U16Vec& ind, u16 v[3])
 {
 	for (U16It it=ind.begin(); it!=ind.end(); it+=3){
 		// Test for 6 variations
@@ -110,7 +110,7 @@ IC BOOL isEqual(U16Vec& ind, u16 v[3])
 	return false;
 }
 
-bool EDetail::Update(LPCSTR name)
+bool EDetail::Update(const char* name)
 {
 	m_sRefs = name;
 	// update link    
@@ -251,7 +251,7 @@ void EDetail::Save(IWriter& F)
 	F.close_chunk		();
 }
 
-bool EDetail::LoadLTX(CInifile& ini, LPCSTR sect_name)
+bool EDetail::LoadLTX(CInifile& ini, const char* sect_name)
 {
 	// check version
 	u32 version = ini.r_u32(sect_name, "version");
@@ -278,7 +278,7 @@ bool EDetail::LoadLTX(CInifile& ini, LPCSTR sect_name)
 	return Update(ini.r_string(sect_name, "reference"));
 }
 
-void EDetail::SaveLTX(CInifile& ini, LPCSTR sect_name)
+void EDetail::SaveLTX(CInifile& ini, const char* sect_name)
 {
 	// version
 	ini.w_u32(sect_name, "version", DETOBJ_VERSION);
@@ -297,7 +297,7 @@ void EDetail::SaveLTX(CInifile& ini, LPCSTR sect_name)
 	ini.w_u32(sect_name, "flags", m_Flags.get());
 }
 
-void EDetail::Export(IWriter& F, LPCSTR tex_name, const Fvector2& offs, const Fvector2& scale, bool rot)
+void EDetail::Export(IWriter& F, const char* tex_name, const Fvector2& offs, const Fvector2& scale, bool rot)
 {
 	R_ASSERT			(m_pRefs);
 	CSurface* surf		= *m_pRefs->FirstSurface();
@@ -323,7 +323,7 @@ void EDetail::Export(IWriter& F, LPCSTR tex_name, const Fvector2& offs, const Fv
 	xr_free				(rm_vertices);
 }
 
-void EDetail::Export(LPCSTR name)
+void EDetail::Export(const char* name)
 {
 	CSurface* surf		= *m_pRefs->FirstSurface();
 	R_ASSERT			(surf);

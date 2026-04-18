@@ -30,7 +30,7 @@ public:
 	using vecLRU	= xr_vector<shared_str>;
 
 protected	:
-	LPCSTR			cName;
+	const char*			cName;
 	bool			bEnabled;
 	bool			bLowerCaseArgs;
 	bool			bEmptyArgsHandled;
@@ -41,9 +41,9 @@ protected	:
 		LRU_MAX_COUNT = 10
 	};
 
-	IC	bool		EQ(LPCSTR S1, LPCSTR S2) { return xr_strcmp(S1,S2)==0; }
+	IC	bool		EQ(const char* S1, const char* S2) { return xr_strcmp(S1,S2)==0; }
 public		:
-	IConsole_Command		(LPCSTR N) : 
+	IConsole_Command		(const char* N) : 
 	  cName				(N),
 	  bEnabled			(TRUE),
 	  bLowerCaseArgs	(TRUE),
@@ -57,13 +57,13 @@ public		:
 			Console->RemoveCommand(this);
 	};
 
-	LPCSTR			Name()			{ return cName;	}
+	const char*			Name()			{ return cName;	}
 	void			InvalidSyntax() {
 		TInfo I; Info(I);
 		Msg("~ Invalid syntax in call to '%s'",cName);
 		Msg("~ Valid arguments: %s", I);
 	}
-	virtual void	Execute	(LPCSTR args)	= 0;
+	virtual void	Execute	(const char* args)	= 0;
 	virtual void	Status	(TStatus& S)	{ S[0]=0; }
 	virtual void	Info	(TInfo& I)		{ xr_strcpy(I,"(no arguments)"); }
 	virtual void	Save	(IWriter *F)	{
@@ -98,7 +98,7 @@ protected :
 	u64 mask;
 
 public :
-	CCC_Mask64(LPCSTR N, Flags64* V, u64 M) :
+	CCC_Mask64(const char* N, Flags64* V, u64 M) :
 		IConsole_Command(N),
 		value(V),
 		mask(M)
@@ -120,7 +120,7 @@ public :
 		value->invert(mask);
 	}
 
-	void Execute(LPCSTR args) override
+	void Execute(const char* args) override
 	{
 		if (EQ(args, "on") || EQ(args, "1"))
 			value->set(mask,TRUE);
@@ -149,7 +149,7 @@ public :
 		IConsole_Command::fill_tips(tips, mode);
 	}
 
-	static Flags64& FastCommand(LPCSTR command_name, Flags64 default_value = {}, u64 mask = 0)
+	static Flags64& FastCommand(const char* command_name, Flags64 default_value = {}, u64 mask = 0)
 	{
 		auto it = Console->Commands.find(command_name);
 
@@ -173,7 +173,7 @@ protected :
 	u32 mask;
 
 public :
-	CCC_Mask32(LPCSTR N, Flags32* V, u32 M) :
+	CCC_Mask32(const char* N, Flags32* V, u32 M) :
 		IConsole_Command(N),
 		value(V),
 		mask(M)
@@ -195,7 +195,7 @@ public :
 		value->invert(mask);
 	}
 
-	virtual void Execute(LPCSTR args)
+	virtual void Execute(const char* args)
 	{
 		if (EQ(args, "on") || EQ(args, "1"))
 			value->set(mask,TRUE);
@@ -224,7 +224,7 @@ public :
 		IConsole_Command::fill_tips(tips, mode);
 	}
 
-	static Flags32& FastCommand(LPCSTR command_name, Flags32 default_value = {0}, u32 mask = 0)
+	static Flags32& FastCommand(const char* command_name, Flags32 default_value = {0}, u32 mask = 0)
 	{
 		auto it = Console->Commands.find(command_name);
 
@@ -248,7 +248,7 @@ protected	:
 	Flags16*	value;
 	u16			mask;
 public		:
-	CCC_Mask16(LPCSTR N, Flags16* V, u32 M) :
+	CCC_Mask16(const char* N, Flags16* V, u32 M) :
 	  IConsole_Command(N),
 	  value(V),
 	  mask(M)
@@ -266,7 +266,7 @@ public		:
 		value->invert(mask);
 	}
 
-	virtual void Execute	(LPCSTR args)
+	virtual void Execute	(const char* args)
 	{
 		if (EQ(args, "on") || EQ(args, "1"))
 			value->set(mask,TRUE);
@@ -289,7 +289,7 @@ public		:
 		IConsole_Command::fill_tips(tips, mode);
 	}
 
-	static Flags16& FastCommand(LPCSTR command_name, Flags16 default_value = { 0 }, u32 mask = 0)
+	static Flags16& FastCommand(const char* command_name, Flags16 default_value = { 0 }, u32 mask = 0)
 	{
 		auto it = Console->Commands.find(command_name);
 		if (it == Console->Commands.end())
@@ -312,13 +312,13 @@ protected	:
 	Flags32*	value;
 	u32			mask;
 public		:
-	CCC_ToggleMask(LPCSTR N, Flags32* V, u32 M) :
+	CCC_ToggleMask(const char* N, Flags32* V, u32 M) :
 	  IConsole_Command(N),
 	  value(V),
 	  mask(M)
 	{bEmptyArgsHandled=TRUE;};
-	  const BOOL GetValue()const{ return value->test(mask); }
-	virtual void	Execute	(LPCSTR args)
+	  const bool GetValue()const{ return value->test(mask); }
+	virtual void	Execute	(const char* args)
 	{
 		value->set(mask,!GetValue());
 		TStatus S;
@@ -340,7 +340,7 @@ public		:
 		IConsole_Command::fill_tips(tips, mode);
 	}
 
-	static Flags32& FastCommand(LPCSTR command_name, Flags32 default_value = { 0 }, u32 mask = 0)
+	static Flags32& FastCommand(const char* command_name, Flags32 default_value = { 0 }, u32 mask = 0)
 	{
 		auto it = Console->Commands.find(command_name);
 		if (it == Console->Commands.end())
@@ -364,13 +364,13 @@ protected	:
 public		:
 	u32* value;
 
-	CCC_Token(LPCSTR N, u32* V, xr_token* T) :
+	CCC_Token(const char* N, u32* V, xr_token* T) :
 	  IConsole_Command(N),
 	  value(V),
 	  tokens(T)
 	{};
 
-	virtual void	Execute	(LPCSTR args)
+	virtual void	Execute	(const char* args)
 	{
 		xr_token* tok = tokens;
 		while (tok->name) {
@@ -441,7 +441,7 @@ public		:
 		IConsole_Command::fill_tips(tips, mode);
 	}
 
-	static u32& FastCommand(LPCSTR command_name, xr_token&& token, u32 default_value = 0)
+	static u32& FastCommand(const char* command_name, xr_token&& token, u32 default_value = 0)
 	{
 		auto it = Console->Commands.find(command_name);
 		if (it == Console->Commands.end())
@@ -467,7 +467,7 @@ public:
 	float*			value;
 	float			min, max;
 
-	CCC_Float(LPCSTR N, float* V, float _min=0, float _max=1) :
+	CCC_Float(const char* N, float* V, float _min=0, float _max=1) :
 	  IConsole_Command(N),
 	  value(V),
 	  min(_min),
@@ -479,7 +479,7 @@ public:
 		fmax = max;
 	}
 
-	virtual void	Execute	(LPCSTR args)
+	virtual void	Execute	(const char* args)
 	{
 		float v = float(atof(args));
 		if (v<(min-EPS) || v>(max+EPS) ) InvalidSyntax();
@@ -505,7 +505,7 @@ public:
 		IConsole_Command::fill_tips(tips, mode);
 	}
 
-	static float& FastCommand(LPCSTR command_name, float default_value = 0.f, float min = -1000.f, float max = 1000.f)
+	static float& FastCommand(const char* command_name, float default_value = 0.f, float min = -1000.f, float max = 1000.f)
 	{
 		auto it = Console->Commands.find(command_name);
 		if (it == Console->Commands.end())
@@ -528,7 +528,7 @@ public:
 	Fvector*		value;
 	Fvector			min, max;
 
-	CCC_Vector3(LPCSTR N, Fvector* V, Fvector _min = {-1000.f, -1000.f, -1000.f }, Fvector _max = { 1000.f, 1000.f, 1000.f }) :
+	CCC_Vector3(const char* N, Fvector* V, Fvector _min = {-1000.f, -1000.f, -1000.f }, Fvector _max = { 1000.f, 1000.f, 1000.f }) :
 	  IConsole_Command(N),
 	  value(V)
 	{
@@ -538,7 +538,7 @@ public:
 	const Fvector	GetValue	() const {return *value;};
 	Fvector*		GetValuePtr	() const {return value;};
 
-	virtual void Execute(pcstr args)
+	virtual void Execute(const char* args)
 	{
 		Fvector v;
 		if (3 != sscanf(args, "%f,%f,%f", &v.x, &v.y, &v.z))
@@ -585,7 +585,7 @@ public:
 		IConsole_Command::fill_tips(tips, mode);
 	}
 
-	static Fvector& FastCommand(LPCSTR command_name, Fvector default_value = zero_vel, Fvector min = { -1000.f, -1000.f, -1000.f }, Fvector max = { 1000.f, 1000.f, 1000.f })
+	static Fvector& FastCommand(const char* command_name, Fvector default_value = zero_vel, Fvector min = { -1000.f, -1000.f, -1000.f }, Fvector max = { 1000.f, 1000.f, 1000.f })
 	{
 		auto it = Console->Commands.find(command_name);
 		if (it == Console->Commands.end())
@@ -629,7 +629,7 @@ public:
 		imax = max;
 	}
 
-	CCC_Integer(LPCSTR N, int* V, int _min = 0, int _max = 999) :
+	CCC_Integer(const char* N, int* V, int _min = 0, int _max = 999) :
 		IConsole_Command(N),
 		value(V),
 		min(_min),
@@ -637,7 +637,7 @@ public:
 	{
 	};
 
-	void Execute(LPCSTR args) override
+	void Execute(const char* args) override
 	{
 		int v = atoi(args);
 		if (v < min || v > max) InvalidSyntax();
@@ -664,7 +664,7 @@ public:
 		IConsole_Command::fill_tips(tips, mode);
 	}
 
-	static int& FastCommand(LPCSTR command_name, int default_value = 0, int min = -1000, int max = 1000)
+	static int& FastCommand(const char* command_name, int default_value = 0, int min = -1000, int max = 1000)
 	{
 		auto it = Console->Commands.find(command_name);
 		if (it == Console->Commands.end())
@@ -700,12 +700,12 @@ public:
 		*value = !GetValue();
 	}
 
-	CCC_Boolean(LPCSTR N, bool* V, bool min = false, bool max = true) :
+	CCC_Boolean(const char* N, bool* V, bool min = false, bool max = true) :
 	  IConsole_Command(N),
 	  value(V)
 	{}
 
-	virtual void	Execute	(LPCSTR args)
+	virtual void	Execute	(const char* args)
 	{
 		int Value = 0;
 		if (std::from_chars(args, args + std::strlen(args), Value).ec != std::errc{}) 
@@ -738,7 +738,7 @@ public:
 		IConsole_Command::fill_tips(tips, mode);
 	}
 
-	static bool& FastCommand(LPCSTR command_name, bool default_value = false, bool min = false, bool max = true)
+	static bool& FastCommand(const char* command_name, bool default_value = false, bool min = false, bool max = true)
 	{
 		auto it = Console->Commands.find(command_name);
 		if (it == Console->Commands.end())
@@ -761,7 +761,7 @@ public:
 	LPSTR			value;
 	int				size;
 
-	CCC_String(LPCSTR N, LPSTR V, int _size=2) :
+	CCC_String(const char* N, LPSTR V, int _size=2) :
 		IConsole_Command(N),
 		value	(V),
 		size	(_size)
@@ -771,7 +771,7 @@ public:
 		R_ASSERT(size>1);
 	}
 
-	virtual void Execute(LPCSTR args)
+	virtual void Execute(const char* args)
 	{
 		strncpy_s(value, size, args, size - 1);
 	}
@@ -796,7 +796,7 @@ public:
 		IConsole_Command::fill_tips(tips, mode);
 	}
 
-	static LPSTR FastCommand(LPCSTR command_name, LPCSTR default_value = "\0", int _size = 512)
+	static LPSTR FastCommand(const char* command_name, const char* default_value = "\0", int _size = 512)
 	{
 		auto it = Console->Commands.find(command_name);
 		if (it == Console->Commands.end())
@@ -815,22 +815,22 @@ public:
 class ENGINE_API CCC_SaveCFG : public IConsole_Command
 {
 public:
-	CCC_SaveCFG(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
-	virtual void Execute(LPCSTR args);
+	CCC_SaveCFG(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+	virtual void Execute(const char* args);
 };
 
 class ENGINE_API CCC_LoadCFG : public IConsole_Command
 {
 public:
-	CCC_LoadCFG(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
-	virtual bool	allow(LPCSTR cmd) { return true; };
-	virtual void	Execute			(LPCSTR args);
+	CCC_LoadCFG(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+	virtual bool	allow(const char* cmd) { return true; };
+	virtual void	Execute			(const char* args);
 };
 
 class ENGINE_API CCC_LoadCFG_custom : public CCC_LoadCFG
 {
 	string64		m_cmd;
 public:
-					CCC_LoadCFG_custom(LPCSTR cmd);
-	virtual bool	allow			(LPCSTR cmd);
+					CCC_LoadCFG_custom(const char* cmd);
+	virtual bool	allow			(const char* cmd);
 };

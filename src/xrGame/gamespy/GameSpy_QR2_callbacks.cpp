@@ -27,7 +27,7 @@ void __cdecl callback_serverkey(int keyid, qr2_buffer_t outbuf, void *userdata)
 	game_sv_TeamDeathmatch* gmTDM = pServer->game != nullptr ? pServer->game->cast_game_sv_teamdeathmatch() : nullptr;
 	game_sv_ArtefactHunt* gmAhunt = pServer->game != nullptr ? pServer->game->cast_game_sv_artefacthunt() : nullptr;
 
-	LPCSTR time_str = InventoryUtilities::GetTimeAsString( Device.dwTimeGlobal, InventoryUtilities::etpTimeToSecondsAndDay ).c_str();
+	const char* time_str = InventoryUtilities::GetTimeAsString( Device.dwTimeGlobal, InventoryUtilities::etpTimeToSecondsAndDay ).c_str();
 
 	string4096		game_version;
 

@@ -338,7 +338,7 @@ public:
 
 using Fcolor = _color;
 
-ICF BOOL _valid(const Fcolor& c)
+ICF bool _valid(const Fcolor& c)
 {
     return _valid(c.r) && _valid(c.g) && _valid(c.b) && _valid(c.a);
 }

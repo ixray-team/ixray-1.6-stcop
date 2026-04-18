@@ -51,7 +51,7 @@ void VIMP_Processor::CalculateAllCollapses(Object* m_pObject, u32 max_sliding_wi
 		for ( ppt = m_pObject->CurPtRoot.ListNext(); ppt != NULL; ppt = ppt->ListNext() ){
 			if (0==ppt->FirstEdge())	continue;
 			// Disallow any pts that are on an edge - shouldn't be collapsing them.
-			BOOL bAllowed = TRUE;
+			bool bAllowed = TRUE;
 			for ( pedge = ppt->FirstEdge(); pedge != NULL; pedge = ppt->NextEdge() ){
 				if ( ( pedge->pTri12 == NULL ) || ( pedge->pTri21 == NULL ) ){
 					// This edge does not have two tris on it - disallow it.
@@ -61,7 +61,7 @@ void VIMP_Processor::CalculateAllCollapses(Object* m_pObject, u32 max_sliding_wi
 			}
 			if ( !bAllowed ) continue;
 
-			BOOL bRequiresNewLevel = FALSE;
+			bool bRequiresNewLevel = FALSE;
 			if ( !m_pObject->CollapseAllowedForLevel ( ppt, m_pObject->iCurSlidingWindowLevel ) ){
 				// This collapse would force a new level.
 				bRequiresNewLevel = TRUE;

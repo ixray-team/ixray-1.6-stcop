@@ -98,11 +98,11 @@ public:
     virtual LPSTR	GetCaption				();
 
     virtual void 	ResetStatus				();
-    virtual void 	SetStatus				(LPCSTR s, bool bOutLog=true);
+    virtual void 	SetStatus				(const char* s, bool bOutLog=true);
     virtual void	ProgressDraw			();
 
-    virtual LPCSTR	EditorName				(){return "level";}
-    virtual LPCSTR	EditorDesc				(){return "Level Editor";}
+    virtual const char*	EditorName				(){return "level";}
+    virtual const char*	EditorDesc				(){return "Level Editor";}
 
     void 			ShowContextMenu			(int cls);
 	bool 			PickGround				(Fvector& hitpoint, const Fvector& start, const Fvector& direction, int bSnap=1, Fvector* hitnormal=0);

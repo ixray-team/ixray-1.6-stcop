@@ -33,11 +33,11 @@ struct ECORE_API SPBItem
 	volatile float progress;
 
 public:
-				SPBItem				(LPCSTR txt, LPCSTR inf, float mx):text(txt),info(inf),max(mx),progress(0.f){}
+				SPBItem				(const char* txt, const char* inf, float mx):text(txt),info(inf),max(mx),progress(0.f){}
 	void		GetInfo				(xr_string& txt, float& p, float& m);
-	void		Inc					(LPCSTR info=0, bool bWarn=false);
+	void		Inc					(const char* info=0, bool bWarn=false);
 	void		Update				(float val);
-	void 		Info				(LPCSTR text, bool bWarn=false);
+	void 		Info				(const char* text, bool bWarn=false);
 };
 
 typedef xr_vector<EEditorState> EStateList;
@@ -199,7 +199,7 @@ public:
 	EEditorState 	GetEState			(){ return m_EditorState.back(); }
 	bool 			ContainEState		(EEditorState st){ return std::find(m_EditorState.begin(),m_EditorState.end(),st)!=m_EditorState.end(); }
 
-	virtual void 	SetStatus			(LPCSTR s, bool bOutLog=true)=0;
+	virtual void 	SetStatus			(const char* s, bool bOutLog=true)=0;
 	virtual void 	ResetStatus			()=0;
 	
 	// direct input
@@ -220,8 +220,8 @@ public:
 	void 			OnDeviceCreate		();
 	void			OnDeviceDestroy		();
 
-	virtual LPCSTR 	EditorName			()=0;
-	virtual LPCSTR	EditorDesc			()=0;
+	virtual const char* 	EditorName			()=0;
+	virtual const char*	EditorDesc			()=0;
 	virtual ImTextureID LoadTexture(const char*) const override;
 // commands   
 	virtual	void	RegisterCommands			()=0; 
@@ -241,7 +241,7 @@ protected:
 	PBVec			m_ProgressItems;
 
 public:
-	SPBItem*		ProgressStart		(float max_val, LPCSTR text);
+	SPBItem*		ProgressStart		(float max_val, const char* text);
 	void 			ProgressEnd			(SPBItem*&);
 	virtual void	ProgressDraw();
 	SPBItem*		ProgressLast		(){return m_ProgressItems.empty()?0:m_ProgressItems.back();}

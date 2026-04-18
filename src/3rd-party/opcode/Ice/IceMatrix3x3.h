@@ -109,7 +109,7 @@
 								}
 
 		//! Checks matrix validity
-		inline_	BOOL			IsValid()				const
+		inline_	bool			IsValid()				const
 								{
 									for(udword j=0;j<3;j++)
 									{

@@ -24,10 +24,10 @@ public:
 	CBastArtefact(void);
 	virtual ~CBastArtefact(void);
 
-	virtual void Load				(LPCSTR section);
+	virtual void Load				(const char* section);
 	virtual void shedule_Update		(u32 dt);
 	
-	virtual BOOL net_Spawn			(CSE_Abstract* DC);
+	virtual bool net_Spawn			(CSE_Abstract* DC);
 	virtual void net_Destroy		();
 
 	virtual	void Hit				(SHit* pHDS);
@@ -37,7 +37,7 @@ public:
 
 	virtual void feel_touch_new	(CObject* O);
 	virtual void feel_touch_delete	(CObject* O);
-	virtual BOOL feel_touch_contact	(CObject* O);
+	virtual bool feel_touch_contact	(CObject* O);
 
 	bool IsAttacking() {return NULL!=m_AttakingEntity;}
 

@@ -19,10 +19,10 @@ ENGINE_API xr_atomic_bool g_bRendering = false;
 extern ENGINE_API float psHUD_FOV;
 bool IsFpsShow = false;
 
-BOOL g_bLoaded = FALSE;
+bool g_bLoaded = FALSE;
 ref_light precache_light = 0;
 
-BOOL CRenderDevice::Begin()
+bool CRenderDevice::Begin()
 {
 	PROF_EVENT("Render: Begin");
 
@@ -511,8 +511,8 @@ CRenderDevice::CRenderDevice() : dwPrecacheTotal(0), m_pRender(nullptr), Statist
 	m_bNearer = FALSE;
 }
 
-ENGINE_API BOOL bShowPauseString = TRUE;
-void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason)
+ENGINE_API bool bShowPauseString = TRUE;
+void CRenderDevice::Pause(bool bOn, bool bTimer, bool bSound, const char* reason)
 {
 	static int snd_emitters_ = -1;
 
@@ -552,14 +552,14 @@ void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason)
 	}
 }
 
-BOOL CRenderDevice::Paused()
+bool CRenderDevice::Paused()
 {
 	return g_pauseMngr.Paused();
 };
 
 void CRenderDevice::OnWM_Activate(bool active, bool minimized)
 {
-	BOOL NewState = (active && (!minimized)) ? TRUE : FALSE;
+	bool NewState = (active && (!minimized)) ? TRUE : FALSE;
 	bool OldState = Device.b_is_Active;
 
 	Device.b_is_Active = psDeviceFlags.test(rsDeviceActive) || NewState;

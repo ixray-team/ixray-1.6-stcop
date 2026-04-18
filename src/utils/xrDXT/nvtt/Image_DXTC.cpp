@@ -71,7 +71,7 @@ void Image_DXTC::SaveAsRaw()
     pf = NULL;
 }
 
-bool Image_DXTC::LoadFromFile(LPCSTR filename)
+bool Image_DXTC::LoadFromFile(const char* filename)
 {
     if (m_pCompBytes)
     {

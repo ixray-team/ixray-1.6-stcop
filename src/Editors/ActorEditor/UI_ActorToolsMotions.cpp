@@ -13,14 +13,14 @@
 #include "../xrEProps/FolderLib.h"
 #include "../../xrPhysics/PhysicsShell.h"
 //---------------------------------------------------------------------------
-MotionID EngineModel::FindMotionID(LPCSTR name, u16 slot)
+MotionID EngineModel::FindMotionID(const char* name, u16 slot)
 {
 	MotionID M;
 	CKinematicsAnimated* VA = PKinematicsAnimated(m_pVisual);
 	if (VA) M				= VA->ID_Motion	(name,slot);
 	return M;
 }
-CMotionDef*	EngineModel::FindMotionDef(LPCSTR name, u16 slot)
+CMotionDef*	EngineModel::FindMotionDef(const char* name, u16 slot)
 {
 	CKinematicsAnimated* VA 	= PKinematicsAnimated(m_pVisual);
 	if (VA){
@@ -29,7 +29,7 @@ CMotionDef*	EngineModel::FindMotionDef(LPCSTR name, u16 slot)
 	}
 	return 0;
 }
-CMotion*	EngineModel::FindMotionKeys(LPCSTR name, u16 slot)
+CMotion*	EngineModel::FindMotionKeys(const char* name, u16 slot)
 {
 	CKinematicsAnimated* VA 	= PKinematicsAnimated(m_pVisual);
 	if (VA){
@@ -39,7 +39,7 @@ CMotion*	EngineModel::FindMotionKeys(LPCSTR name, u16 slot)
 	return 0;
 }
 
-void EngineModel::FillMotionList(LPCSTR pref, ListItemsVec& items, int modeID)
+void EngineModel::FillMotionList(const char* pref, ListItemsVec& items, int modeID)
 {
 	LHelper().CreateItem(items, pref, modeID, 0);
 	if (IsRenderable() && MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Engine) 
@@ -142,7 +142,7 @@ bool EngineModel::UpdateVisual(CEditableObject* source, bool bUpdGeom, bool bUpd
 
 //---------------------------------------------------------------------------
 
-void EngineModel::PlayMotion(LPCSTR name, u16 slot)
+void EngineModel::PlayMotion(const char* name, u16 slot)
 {
 	for (int k=0; k<MAX_PARTS; k++)
 	   m_BPPlayItems[k].name = "";
@@ -294,20 +294,20 @@ void CActorTools::OnGeometryModified()
 }
 //---------------------------------------------------------------------------
 
-bool CActorTools::AppendMotion(LPCSTR fn)
+bool CActorTools::AppendMotion(const char* fn)
 {
 	VERIFY(m_pEditObject);
 	bool bRes = m_pEditObject->AppendSMotion(fn,&appended_motions);
 	return bRes;
 }
 
-bool CActorTools::RemoveMotion(LPCSTR name)
+bool CActorTools::RemoveMotion(const char* name)
 {
 	VERIFY(m_pEditObject);
 	return m_pEditObject->RemoveSMotion(name);
 }
 
-bool CActorTools::SaveMotions(LPCSTR name, bool bSelOnly)
+bool CActorTools::SaveMotions(const char* name, bool bSelOnly)
 {
 	VERIFY(m_pEditObject);
 	ListItemsVec items;
@@ -416,7 +416,7 @@ void CActorTools::PauseMotion()
 	}
 }
 
-bool CActorTools::RenameMotion(LPCSTR old_name, LPCSTR new_name)
+bool CActorTools::RenameMotion(const char* old_name, const char* new_name)
 {
 	R_ASSERT(m_pEditObject);
 	CSMotion* M = m_pEditObject->FindSMotionByName(old_name);	R_ASSERT(M);

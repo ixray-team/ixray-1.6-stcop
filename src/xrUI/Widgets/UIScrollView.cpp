@@ -102,7 +102,7 @@ void CUIScrollView::InitScrollView()
 	m_VScrollBar->SetPageSize		(iFloor(GetHeight()));
 }
 
-void CUIScrollView::SetScrollBarProfile(LPCSTR profile){
+void CUIScrollView::SetScrollBarProfile(const char* profile){
 	m_scrollbar_profile = profile;
 }
 

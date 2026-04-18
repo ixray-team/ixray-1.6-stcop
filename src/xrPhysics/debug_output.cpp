@@ -74,7 +74,7 @@ static class DebugOutputEmptyImpl :
 
 	}
 
-	virtual	void _cdecl DBG_OutText(LPCSTR s, ...)
+	virtual	void _cdecl DBG_OutText(const char* s, ...)
 	{
 
 	}
@@ -92,7 +92,7 @@ static class DebugOutputEmptyImpl :
 
 	}
 
-	virtual	LPCSTR PH_DBG_ObjectTrackName()
+	virtual	const char* PH_DBG_ObjectTrackName()
 	{
 		return "none";
 	}

@@ -23,7 +23,7 @@ void CPPEffectorPsyDogAura::switch_off()
 }
 
 
-BOOL CPPEffectorPsyDogAura::update()
+bool CPPEffectorPsyDogAura::update()
 {
 	// update factor
 	if (m_effector_state == eStatePermanent) {

@@ -30,7 +30,7 @@ public:
 
 	virtual void	SetActivePoint					(const Fvector &vNewPoint);
 	
-	void			Initialize						(shared_str name, LPCSTR sh_name);
+	void			Initialize						(shared_str name, const char* sh_name);
 	virtual Fvector2 ConvertRealToLocal				(const Fvector2& src, bool for_drawing);// meters->pixels (relatively own left-top pos)
 	Fvector2		ConvertLocalToReal				(const Fvector2& src, Frect const& bound_rect);
 	Fvector2		ConvertRealToLocalNoTransform	(const Fvector2& src, Frect const& bound_rect);// meters->pixels (relatively own left-top pos)
@@ -62,7 +62,7 @@ public:
 	virtual CUIStatic* ui_cast_static() { return this; }
 
 protected:
-	virtual void	Init_internal					(const shared_str& name, CInifile& pLtx, const shared_str& sect_name, LPCSTR sh_name);
+	virtual void	Init_internal					(const shared_str& name, CInifile& pLtx, const shared_str& sect_name, const char* sh_name);
 	virtual void	UpdateSpots						() {};
 };
 
@@ -98,7 +98,7 @@ public:
 	virtual void	Update					();
 	void			Initialize				();
 protected:
-	virtual void	Init_internal			(const shared_str& name, CInifile& pLtx, const shared_str& sect_name, LPCSTR sh_name);
+	virtual void	Init_internal			(const shared_str& name, CInifile& pLtx, const shared_str& sect_name, const char* sh_name);
 };
 
 class CUILevelMap final :
@@ -137,7 +137,7 @@ public:
 
 protected:
 	virtual void				UpdateSpots			();
-	virtual void				Init_internal		(const shared_str& name, CInifile& pLtx, const shared_str& sect_name, LPCSTR sh_name);
+	virtual void				Init_internal		(const shared_str& name, CInifile& pLtx, const shared_str& sect_name, const char* sh_name);
 };
 
 class CUIMiniMap final : public CUICustomMap
@@ -153,5 +153,5 @@ public:
 	virtual bool				IsRectVisible		(Frect r);
 protected:
 	virtual void				UpdateSpots			();
-	virtual void				Init_internal		(const shared_str& name, CInifile& pLtx, const shared_str& sect_name, LPCSTR sh_name);
+	virtual void				Init_internal		(const shared_str& name, CInifile& pLtx, const shared_str& sect_name, const char* sh_name);
 };

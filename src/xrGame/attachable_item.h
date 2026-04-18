@@ -33,12 +33,12 @@ public:
 	virtual CInventoryItem*		cast_inventory_item		()	{ return nullptr; }
 	virtual CTorch*				cast_torch				()  { return nullptr; }
 
-	virtual	void				reload					(LPCSTR section);
+	virtual	void				reload					(const char* section);
 	virtual void				OnH_A_Chield			();
 	virtual void				OnH_A_Independent		();
 	virtual void				renderable_Render		();
 	virtual bool				can_be_attached			() const;
-			bool				load_attach_position	(LPCSTR section);
+			bool				load_attach_position	(const char* section);
 	virtual	void				afterAttach				();
 	virtual	void				afterDetach				();
 	IC		CInventoryItem		&item					() const;

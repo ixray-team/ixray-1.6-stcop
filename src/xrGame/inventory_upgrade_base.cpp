@@ -25,7 +25,7 @@ void UpgradeBase::construct(const shared_str& upgrade_id, Manager& manager_r)
 	VERIFY2(pSettings->section_exist(m_id), make_string<const char*>("Section of upgrade [%s] not exist!", m_id.c_str()));
 }
 
-void UpgradeBase::add_dependent_groups(LPCSTR groups_str, Manager& manager_r)
+void UpgradeBase::add_dependent_groups(const char* groups_str, Manager& manager_r)
 {
 	string512 temp = {};
 
@@ -42,7 +42,7 @@ void UpgradeBase::add_dependent_groups(LPCSTR groups_str, Manager& manager_r)
 }
 
 #ifdef DEBUG
-void UpgradeBase::log_hierarchy(LPCSTR nest)
+void UpgradeBase::log_hierarchy(const char* nest)
 {
 	for (const auto& depended_group : m_depended_groups)
 	{

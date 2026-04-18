@@ -182,7 +182,7 @@ enum EGameActions
 
 struct _keyboard		
 {
-	LPCSTR		key_name;
+	const char*		key_name;
 	int			dik;
 	xr_string	key_local_name;
 };
@@ -210,20 +210,20 @@ ENGINE_API bool is_action_group_matching(_action_group g1, _action_group g2);
 
 struct _action
 {
-	LPCSTR			action_name;
+	const char*			action_name;
 	EGameActions	id;
 	_key_group		key_group;
 	_action_group	action_group;
 };
 
-ENGINE_API LPCSTR			dik_to_keyname			(int _dik);
-ENGINE_API int				keyname_to_dik			(LPCSTR _name);
-ENGINE_API _keyboard*		keyname_to_ptr			(LPCSTR _name);
+ENGINE_API const char*			dik_to_keyname			(int _dik);
+ENGINE_API int				keyname_to_dik			(const char* _name);
+ENGINE_API _keyboard*		keyname_to_ptr			(const char* _name);
 ENGINE_API _keyboard*		dik_to_ptr				(int _dik, bool bSafe);
 
-ENGINE_API LPCSTR			id_to_action_name		(EGameActions _id);
-ENGINE_API EGameActions	action_name_to_id		(LPCSTR _name);
-ENGINE_API _action*		action_name_to_ptr		(LPCSTR _name);
+ENGINE_API const char*			id_to_action_name		(EGameActions _id);
+ENGINE_API EGameActions	action_name_to_id		(const char* _name);
+ENGINE_API _action*		action_name_to_ptr		(const char* _name);
 
 extern ENGINE_API _action		actions		[];
 //extern _keyboard	keyboards	[];
@@ -256,14 +256,14 @@ class ENGINE_API ConsoleBindCmds
 public:
 	xr_map<int,_conCmd>		m_bindConsoleCmds;
 
-	void 	bind			(int dik, LPCSTR N);
+	void 	bind			(int dik, const char* N);
 	void 	unbind			(int dik);
 	bool 	execute			(int dik);
 	void 	clear			();
 	void 	save			(IWriter* F);
 };
 
-ENGINE_API void GetActionAllBinding	(LPCSTR action, char* dst_buff, int dst_buff_sz);
+ENGINE_API void GetActionAllBinding	(const char* action, char* dst_buff, int dst_buff_sz);
 
 extern ENGINE_API ConsoleBindCmds bindConsoleCmds;
 

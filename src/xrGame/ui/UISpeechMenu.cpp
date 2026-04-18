@@ -8,7 +8,7 @@
 #include "../Level.h"
 #include "../../xrEngine/string_table.h"
 
-CUISpeechMenu::CUISpeechMenu(LPCSTR section_name)
+CUISpeechMenu::CUISpeechMenu(const char* section_name)
 {
 	m_pList						= new CUIScrollView();
 	AttachChild					(m_pList);
@@ -27,7 +27,7 @@ CUISpeechMenu::~CUISpeechMenu()
 {
 }
 
-void CUISpeechMenu::InitList(LPCSTR section_name)
+void CUISpeechMenu::InitList(const char* section_name)
 {
 	R_ASSERT2(pSettings->section_exist(section_name), section_name);
 	CUIStatic* pItem = nullptr;
@@ -40,7 +40,7 @@ void CUISpeechMenu::InitList(LPCSTR section_name)
 		if (pSettings->line_exist(section_name, phrase))
 		{
 			
-            LPCSTR s				= pSettings->r_string(section_name, phrase);
+            const char* s				= pSettings->r_string(section_name, phrase);
 			_GetItem				(s,0,phrase);
 			xr_sprintf				(str, "%d. %s",i+1, g_pStringTable->translate(phrase).c_str());
 

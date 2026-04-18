@@ -160,8 +160,8 @@ class  CLWMemoryStream: public CMemoryStream{
 
 public:
 	IC void		begin_save		()				{ open_chunk(ID_FORM); w_u32(ID_LWO2);}
-	IC void		end_save		(LPCSTR name)	{ close_chunk(); SaveTo(name);}
-	IC void		w_layer			(u16 number, LPCSTR name){
+	IC void		end_save		(const char* name)	{ close_chunk(); SaveTo(name);}
+	IC void		w_layer			(u16 number, const char* name){
 		open_chunk(ID_LAYR);
 			w_u16	(number);	// num
 			w_u16	(0);
@@ -183,7 +183,7 @@ public:
 	IC void		w_face3			(int i0, int i1, int i2)
 	{	w_u16(3); w_vx(i0); w_vx(i1); w_vx(i2); }
 
-	IC void		begin_vmap		(BOOL polymap, u32 type, int dim, LPCSTR name){
+	IC void		begin_vmap		(bool polymap, u32 type, int dim, const char* name){
 		open_chunk(polymap?ID_VMAD:ID_VMAP);
 		w_u32	(type);
 		w_u16	((u16)dim);
@@ -199,7 +199,7 @@ public:
 	IC void		w_vmad			(int v_index, int f_index, int dim, float* uv)
 	{	w_vx(v_index); w_vx(f_index); w_float(uv[0]); if (dim==2) w_float(1.f-uv[1]); }
 
-	IC void Wsurface(LPCSTR name, BOOL b2Sided, u16 image, LPCSTR vmap, LPCSTR sh_eng, LPCSTR sh_comp){
+	IC void Wsurface(const char* name, bool b2Sided, u16 image, const char* vmap, const char* sh_eng, const char* sh_comp){
 		// surf screen
 		char ord[2];
 		open_chunk(ID_SURF);

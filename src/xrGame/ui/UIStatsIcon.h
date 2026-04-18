@@ -9,7 +9,7 @@ class CUIStatsIcon final : public CUIStatic
 
 public:
 	CUIStatsIcon		();
-	void SetValue		(LPCSTR str);
+	void SetValue		(const char* str);
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 	virtual CUIStatic* ui_cast_static() { return this; }

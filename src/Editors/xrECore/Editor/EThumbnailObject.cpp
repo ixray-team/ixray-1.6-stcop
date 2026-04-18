@@ -10,7 +10,7 @@
 //------------------------------------------------------------------------------
 #define THM_CHUNK_OBJECTPARAM			0x0816
 //------------------------------------------------------------------------------
-EObjectThumbnail::EObjectThumbnail(LPCSTR src_name, bool bLoad):EImageThumbnail(src_name,ETObject)
+EObjectThumbnail::EObjectThumbnail(const char* src_name, bool bLoad):EImageThumbnail(src_name,ETObject)
 {
     face_count = 0;
     vertex_count = 0;
@@ -33,7 +33,7 @@ void EObjectThumbnail::CreateFromData(u32* p, u32 w, u32 h, int fc, int vc)
 }
 //------------------------------------------------------------------------------
 
-bool EObjectThumbnail::Load(LPCSTR src_name, LPCSTR path)
+bool EObjectThumbnail::Load(const char* src_name, const char* path)
 {
 	string_path fn;
     strcpy(fn,EFS.ChangeFileExt(src_name?src_name:m_Name.c_str(),".thm").c_str());
@@ -76,7 +76,7 @@ bool EObjectThumbnail::Load(LPCSTR src_name, LPCSTR path)
 }
 //------------------------------------------------------------------------------
 
-void EObjectThumbnail::Save(int age, LPCSTR path)
+void EObjectThumbnail::Save(int age, const char* path)
 {
 	if (!Valid()) 	return;
 

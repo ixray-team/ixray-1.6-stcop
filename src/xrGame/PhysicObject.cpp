@@ -19,7 +19,7 @@
 #include "PHDebug.h"
 #include "../xrEngine/ObjectDump.h"
 #endif
-BOOL dbg_draw_doors = false;
+bool dbg_draw_doors = false;
 CPhysicObject::CPhysicObject(void): 
 m_anim_blend( 0 ),
 m_type( epotBox ),
@@ -35,7 +35,7 @@ CPhysicObject::~CPhysicObject(void)
 	xr_delete(m_net_updateData);
 }
 
-BOOL CPhysicObject::net_Spawn(CSE_Abstract* DC)
+bool CPhysicObject::net_Spawn(CSE_Abstract* DC)
 {
 	CSE_Abstract			*e	= (CSE_Abstract*)(DC);
 	CSE_ALifeObjectPhysic	*po	= smart_cast<CSE_ALifeObjectPhysic*>(e);
@@ -231,7 +231,7 @@ void CPhysicObject::RunStartupAnim(CSE_Abstract* D)
 	}
 }
 
-IC	bool check_blend(CBlend * b, LPCSTR name, LPCSTR sect, LPCSTR visual)
+IC	bool check_blend(CBlend * b, const char* name, const char* sect, const char* visual)
 {
 #ifdef	DEBUG
 	if(!b)
@@ -318,13 +318,13 @@ void CPhysicObject::CreateSkeleton(CSE_ALifeObjectPhysic* po)
 {
 	if(m_pPhysicsShell) return;
 	if(!Visual()) return;
-	LPCSTR	fixed_bones=*po->fixed_bones;
+	const char*	fixed_bones=*po->fixed_bones;
 	m_pPhysicsShell=P_build_Shell(this,!po->_flags.test(CSE_PHSkeleton::flActive),fixed_bones);
 	ApplySpawnIniToPhysicShell(&po->spawn_ini(),m_pPhysicsShell,fixed_bones[0]!='\0');
 	ApplySpawnIniToPhysicShell(PKinematics(Visual())->LL_UserData(),m_pPhysicsShell,fixed_bones[0]!='\0');
 }
 
-void CPhysicObject::Load(LPCSTR section)
+void CPhysicObject::Load(const char* section)
 {
 	inherited::Load(section);
 	CPHSkeleton::Load(section);
@@ -493,13 +493,13 @@ void CPhysicObject::CreateBody(CSE_ALifeObjectPhysic* po) {
 
 
 
-BOOL CPhysicObject::net_SaveRelevant()
+bool CPhysicObject::net_SaveRelevant()
 {
 	return TRUE;//!m_flags.test(CSE_ALifeObjectPhysic::flSpawnCopy);
 }
 
 
-BOOL CPhysicObject::UsedAI_Locations()
+bool CPhysicObject::UsedAI_Locations()
 {
 	return					(FALSE);
 }
@@ -526,7 +526,7 @@ void	CPhysicObject::	set_collision_hit_callback	(ICollisionHitCallback *cc)
 //////////////////////////////////////////////////////////////////////////
 /*
 
-using JOINT_P_MAP =	xr_map<LPCSTR,	CPhysicsJoint*,	pred_str>;
+using JOINT_P_MAP =	xr_map<const char*,	CPhysicsJoint*,	pred_str>;
 using JOINT_P_PAIR_IT = JOINT_P_MAP::iterator;
 
 JOINT_P_MAP			*l_tpJointMap = new JOINT_P_MAP();

@@ -11,7 +11,7 @@ bool  TUI_ControlGroupAdd::AfterAppendCallback(TShiftState Shift, CCustomObject*
     if (ot->GetCurrentObject())
     {
         CGroupObject* group	= smart_cast<CGroupObject*>(obj); R_ASSERT(group);
-        LPCSTR short_name	= ot->GetCurrentObject();
+        const char* short_name	= ot->GetCurrentObject();
         result 				= group->SetReference(short_name);
         if (result){
             string256 			namebuffer;

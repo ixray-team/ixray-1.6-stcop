@@ -68,7 +68,7 @@ IC	bool CScriptSound::IsPlaying			() const
 	return				(m_sound.is_playing());
 }
 
-IC void CScriptSound::AttachTail(LPCSTR caSoundName)
+IC void CScriptSound::AttachTail(const char* caSoundName)
 {
 	m_sound.attach_tail		(caSoundName);
 }

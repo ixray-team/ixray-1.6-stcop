@@ -267,7 +267,7 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 }
 
 
-BOOL  CBaseMonster::feel_vision_isRelevant(CObject* O)
+bool  CBaseMonster::feel_vision_isRelevant(CObject* O)
 {
 	if(!O || O->getDestroy())		return FALSE;
 	if (!g_Alive())					return FALSE;
@@ -391,7 +391,7 @@ void CBaseMonster::critical_wounded_state_start()
 {
 	VERIFY	(m_critical_wound_type != u32(-1));
 
-	LPCSTR anim = 0;
+	const char* anim = 0;
 	switch (m_critical_wound_type)	{
 	case critical_wound_type_head:
 		anim = m_critical_wound_anim_head;
