@@ -414,6 +414,12 @@ ENGINE_API void EngineLoadStage1(char* lpCmdLine)
 	EngineExternal();
 }
 
+ENGINE_API LPCSTR GetClipboardErrorMessage()
+{
+	VERIFY(g_pStringTable);
+	return g_pStringTable->translate( "st_clipboard_error_message").c_str();
+}
+
 ENGINE_API void EngineLoadStage2()
 {
 	PROF_EVENT("EngineLoadStage2");
@@ -427,6 +433,7 @@ ENGINE_API void EngineLoadStage2()
 	InitInput();
 
 	g_pStringTable = new CStringTable();
+	ClipboardMessageCallback::instance().SetFunc(&GetClipboardErrorMessage);
 }
 
 ENGINE_API void EngineLoadStage3()
