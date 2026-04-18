@@ -70,7 +70,7 @@ public:
 		void	SetValue			( float value );
 	
 	virtual CUIWindow* ui_cast_window() { return this; }
-		bool	GetLegacyMode		() { return !(m_caption->IsShown() && m_value->IsShown()); }
+		bool	GetLegacyMode		() { return !(m_caption && m_caption->IsShown() && m_value && m_value->IsShown()); }
 
 protected:
 	InitResult	InitPlain			(CUIXml& xml, pcstr section);
