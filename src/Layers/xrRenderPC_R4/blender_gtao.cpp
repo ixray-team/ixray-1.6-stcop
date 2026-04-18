@@ -11,7 +11,7 @@ void CBlender_gtao::Compile(CBlender_Compile& C)
     switch (C.iElement)
     {
     case 0:
-        C.r_Pass("stub_fullscreen_triangle", "gtao_render", FALSE, FALSE, FALSE);
+        C.r_Pass("stub_fullscreen_triangle", "gtao_render", false, false, false);
         C.r_dx10Texture("s_half_depth", r2_RT_half_depth);
         C.r_dx10Texture("s_position", r2_RT_P);
         C.r_dx10Texture("s_normal", r2_RT_N);
@@ -23,7 +23,7 @@ void CBlender_gtao::Compile(CBlender_Compile& C)
 
         break;
     case 1:
-        C.r_Pass("stub_fullscreen_triangle", "gtao_filter", FALSE, FALSE, FALSE);
+        C.r_Pass("stub_fullscreen_triangle", "gtao_filter", false, false, false);
         C.r_dx10Texture("t_gtao_packed", "$user$gtao_0");
         C.r_dx10Sampler("smp_nofilter");
 
@@ -31,7 +31,7 @@ void CBlender_gtao::Compile(CBlender_Compile& C)
 
         break;
     case 2:
-        C.r_Pass("stub_fullscreen_triangle", "sslr_render", FALSE, FALSE, FALSE);
+        C.r_Pass("stub_fullscreen_triangle", "sslr_render", false, false, false);
 
         C.r_dx10Texture("s_position", r2_RT_P);
         C.r_dx10Texture("s_surface", r2_RT_S);
@@ -58,7 +58,7 @@ void CBlender_gtao::Compile(CBlender_Compile& C)
 
         break;
     case 3:
-        C.r_Pass("stub_fullscreen_triangle", "sslr_filter", FALSE, FALSE, FALSE);
+        C.r_Pass("stub_fullscreen_triangle", "sslr_filter", false, false, false);
 
         C.r_dx10Texture("s_position", r2_RT_P);
         C.r_dx10Texture("s_surface", r2_RT_S);
@@ -84,7 +84,7 @@ void CBlender_gtao::Compile(CBlender_Compile& C)
 
         break;
     case 4:
-        C.r_Pass("stub_fullscreen_triangle", "sslr_temporal", FALSE, FALSE, FALSE);
+        C.r_Pass("stub_fullscreen_triangle", "sslr_temporal", false, false, false);
         C.r_dx10Texture("s_position", r2_RT_P);
         C.r_dx10Texture("s_surface", r2_RT_S);
         C.r_dx10Texture("s_normal", r2_RT_N);

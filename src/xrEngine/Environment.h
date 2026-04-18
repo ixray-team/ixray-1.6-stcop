@@ -74,7 +74,7 @@ public:
 
 		typedef xr_vector<ref_sound>	sounds_type;
 
-		void					load					(CInifile& config, LPCSTR sect, LPCSTR sectionToReadFrom = nullptr);
+		void					load					(CInifile& config, const char* sect, const char* sectionToReadFrom = nullptr);
 		ref_sound&				get_rnd_sound			()	{return sounds()[Random.randI((u32)sounds().size())];}
 		u32						get_rnd_sound_time		()	{return (m_sound_period.z < m_sound_period.w) ? Random.randI(m_sound_period.z,m_sound_period.w) : 0;}
 		u32						get_rnd_sound_first_time()	{return (m_sound_period.x < m_sound_period.y) ? Random.randI(m_sound_period.x,m_sound_period.y) : 0;}
@@ -111,8 +111,8 @@ public:
 	IC SEffect*				get_rnd_effect		()	{return effects().empty()?0:effects()[Random.randI((u32)effects().size())];}
 	IC u32					get_rnd_effect_time ()	{return Random.randI(m_effect_period.x, m_effect_period.y);}
 
-		SEffect*		create_effect			(CInifile& config, LPCSTR id);
-		SSndChannel*	create_sound_channel	(CInifile& config, LPCSTR id, LPCSTR sectionToReadFrom = nullptr);
+		SEffect*		create_effect			(CInifile& config, const char* id);
+		SSndChannel*	create_sound_channel	(CInifile& config, const char* id, const char* sectionToReadFrom = nullptr);
 						~CEnvAmbient			();
 							void			destroy					();
 	inline  EffectVec&			effects			() { return m_effects; }
@@ -187,7 +187,7 @@ public:
 
 						CEnvDescriptor	(shared_str const& identifier);
 
-	void				load			(CEnvironment& environment, CInifile& config, LPCSTR section = nullptr);
+	void				load			(CEnvironment& environment, CInifile& config, const char* section = nullptr);
 	void				copy			(const CEnvDescriptor& src)
 	{
 		float tm0		= exec_time;
@@ -252,7 +252,7 @@ private:
 
 	void					calculate_dynamic_sun_dir();
 public:
-	void SetEnvDesc(LPCSTR weather_section, CEnvDescriptor*& e);
+	void SetEnvDesc(const char* weather_section, CEnvDescriptor*& e);
 
 	static bool sort_env_pred	(const CEnvDescriptor* x, const CEnvDescriptor* y)
 	{	return x->exec_time < y->exec_time;	}
@@ -264,7 +264,7 @@ protected:
 	float					fGameTime;
 public:
 	FactoryPtr<IEnvironmentRender>	m_pRender;
-	BOOL					bNeed_re_create_env;
+	bool					bNeed_re_create_env;
 
 	float					wind_strength_factor;	
 	float					wind_gust_factor;
@@ -370,7 +370,7 @@ public:
 	CInifile*				m_thunderbolts_config;
 
 protected:
-		CEnvDescriptor* create_descriptor	(shared_str const& identifier, CInifile* config, LPCSTR section = nullptr);
+		CEnvDescriptor* create_descriptor	(shared_str const& identifier, CInifile* config, const char* section = nullptr);
 		void load_weathers					();
 		void load_weather_effects			();
 		void create_mixer					();
@@ -380,7 +380,7 @@ protected:
 
 public:
 		SThunderboltDesc* thunderbolt_description		(CInifile& config, shared_str const& section);
-		SThunderboltCollection* thunderbolt_collection	(CInifile* pIni, CInifile* thunderbolts, LPCSTR section);
+		SThunderboltCollection* thunderbolt_collection	(CInifile* pIni, CInifile* thunderbolts, const char* section);
 		SThunderboltCollection* thunderbolt_collection	(xr_vector<SThunderboltCollection*>& collection,  shared_str const& id);
 		CLensFlareDescriptor*	add_flare				(xr_vector<CLensFlareDescriptor*>& collection, shared_str const& id, CInifile * pIni);
 

@@ -7,7 +7,7 @@
 #include "StdAfx.h"
 #include "ExplosiveItem.h"
 
-void CExplosiveItem::Load(LPCSTR section)
+void CExplosiveItem::Load(const char* section)
 {
 	inherited::Load(section);
 	CExplosive::Load(section);

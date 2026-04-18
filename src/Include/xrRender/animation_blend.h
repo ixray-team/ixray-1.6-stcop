@@ -54,11 +54,11 @@ public:
 	float			blendPower = 0.0f;			
 	float			speed = 0.0f;
 
-	BOOL			playing = false;
-	BOOL			stop_at_end_callback = false;
-	BOOL			update_callback = false;
-	BOOL			stop_at_end = false;
-	BOOL			fall_at_end = false;
+	bool			playing = false;
+	bool			stop_at_end_callback = false;
+	bool			update_callback = false;
+	bool			stop_at_end = false;
+	bool			fall_at_end = false;
 	PlayCallback	Callback = nullptr;
 	void*			CallbackParam = nullptr;
 

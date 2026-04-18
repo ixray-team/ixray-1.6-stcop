@@ -22,7 +22,7 @@ public:
 	CMissile() = default;
 	virtual ~CMissile() = default;
 
-	virtual BOOL			AlwaysTheCrow				()				{ return TRUE; }
+	virtual bool			AlwaysTheCrow				()				{ return TRUE; }
 	virtual void			render_item_ui					();
 	virtual bool			render_item_ui_query					();
 
@@ -31,9 +31,9 @@ public:
 	virtual CBolt* cast_bolt() { return nullptr; }
 	virtual CGrenade* cast_grenade() { return nullptr; }
 
-	virtual void 			Load						(LPCSTR section);
-	virtual void 			LoadSounds					(LPCSTR section);
-	virtual BOOL 			net_Spawn					(CSE_Abstract* DC);
+	virtual void 			Load						(const char* section);
+	virtual void 			LoadSounds					(const char* section);
+	virtual bool 			net_Spawn					(CSE_Abstract* DC);
 	virtual void 			net_Destroy					();
 
 	virtual void 			UpdateCL					();

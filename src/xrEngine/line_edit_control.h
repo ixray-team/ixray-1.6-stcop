@@ -13,7 +13,7 @@ namespace text_editor
 {
 
 void remove_spaces( char* str ); // in & out
-void split_cmd( char* first, char* second, LPCSTR str );
+void split_cmd( char* first, char* second, const char* str );
 
 class base;
 
@@ -74,13 +74,13 @@ public:
 	IC	bool		cursor_view			()	const	{ return m_cursor_view; }
 	IC	bool		need_update			()	const	{ return m_need_update; }
 
-	IC	LPCSTR		str_edit			()	const	{ return m_edit_str; }
-	IC	LPCSTR		str_before_cursor	()	const	{ return m_buf0; }
-	IC	LPCSTR		str_before_mark		()	const	{ return m_buf1; }
-	IC	LPCSTR		str_mark			()	const	{ return m_buf2; }
-	IC	LPCSTR		str_after_mark		()	const	{ return m_buf3; }
+	IC	const char*		str_edit			()	const	{ return m_edit_str; }
+	IC	const char*		str_before_cursor	()	const	{ return m_buf0; }
+	IC	const char*		str_before_mark		()	const	{ return m_buf1; }
+	IC	const char*		str_mark			()	const	{ return m_buf2; }
+	IC	const char*		str_after_mark		()	const	{ return m_buf3; }
 
-		void		set_edit			( LPCSTR str );
+		void		set_edit			( const char* str );
 		void		set_selected_mode	( bool status )		{ m_unselected_mode = !status; }
 		bool		get_selected_mode	() const			{ return !m_unselected_mode; }
 

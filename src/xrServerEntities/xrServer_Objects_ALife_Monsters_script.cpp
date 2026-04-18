@@ -17,22 +17,22 @@ using namespace luabind;
 #ifdef XRGAME_EXPORTS
 #include "InventoryOwner.h"
 
-LPCSTR profile_name_script(CSE_ALifeTraderAbstract* ta)
+const char* profile_name_script(CSE_ALifeTraderAbstract* ta)
 {
 	return *ta->character_profile();
 }
 
-void profile_name_set_script(CSE_ALifeTraderAbstract* ta, LPCSTR str)
+void profile_name_set_script(CSE_ALifeTraderAbstract* ta, const char* str)
 {
 	ta->set_character_profile(str);
 }
 
-LPCSTR character_name_script(CSE_ALifeTraderAbstract* ta)
+const char* character_name_script(CSE_ALifeTraderAbstract* ta)
 {
 	return ta->m_character_name.c_str();
 }
 
-LPCSTR icon_name_script(CSE_ALifeTraderAbstract* ta)
+const char* icon_name_script(CSE_ALifeTraderAbstract* ta)
 {
 	ta->specific_character();
 	if (!ta->m_icon_name.size())
@@ -44,7 +44,7 @@ LPCSTR icon_name_script(CSE_ALifeTraderAbstract* ta)
 	return *ta->m_icon_name;
 }
 
-void set_character_name_script(CSE_ALifeTraderAbstract* ta, LPCSTR str) {
+void set_character_name_script(CSE_ALifeTraderAbstract* ta, const char* str) {
 	ta->m_character_name_raw = str;
 	ta->m_character_name = TranslateName(ta->m_character_name_raw.c_str());
 
@@ -56,7 +56,7 @@ void set_character_name_script(CSE_ALifeTraderAbstract* ta, LPCSTR str) {
 			owner->ChangeName(str);
 	}
 }
-LPCSTR character_name_str_script(CSE_ALifeTraderAbstract* ta) {
+const char* character_name_str_script(CSE_ALifeTraderAbstract* ta) {
 	return ta->m_character_name_raw.c_str();
 }
 #endif
@@ -67,7 +67,7 @@ void CSE_ALifeTraderAbstract::script_register(lua_State *L)
 	module(L)[
 		class_<CSE_ALifeTraderAbstract>
 			("cse_alife_trader_abstract")
-//			.def(		constructor<LPCSTR>())
+//			.def(		constructor<const char*>())
 #ifdef XRGAME_EXPORTS
 			.def("community",		&CSE_ALifeTraderAbstract::CommunityName)
 			.def("profile_name",	&profile_name_script)

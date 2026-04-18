@@ -34,7 +34,7 @@ void CScriptWatchAction::script_register(lua_State *L)
 			.def(								constructor<SightManager::ESightType>())
 			.def(								constructor<SightManager::ESightType, Fvector &>())
 			.def(								constructor<SightManager::ESightType, CScriptGameObject*>())
-			.def(								constructor<SightManager::ESightType, CScriptGameObject*, LPCSTR>())
+			.def(								constructor<SightManager::ESightType, CScriptGameObject*, const char*>())
 
 			// searchlight 
 			.def(								constructor<const Fvector &,float,float>())

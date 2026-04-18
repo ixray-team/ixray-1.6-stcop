@@ -20,7 +20,7 @@ xrTime CSavedGameWrapper__game_time		(const CSavedGameWrapper *self_)
 	return			(xrTime(self_->game_time()));
 }
 
-LPCSTR CSavedGameWrapper__save_extension()
+const char* CSavedGameWrapper__save_extension()
 {
 	return IXRAY_DEF_SAVE_EXTENSION;
 }
@@ -31,13 +31,13 @@ void CSavedGameWrapper::script_register	(lua_State *L)
 	module(L)
 	[
 		class_<CSavedGameWrapper>("CSavedGameWrapper")
-			.def(constructor<LPCSTR>())
+			.def(constructor<const char*>())
 			.def("game_time",		&CSavedGameWrapper__game_time)
 			.def("level_id",		&CSavedGameWrapper::level_id)
 			.def("level_name",		&CSavedGameWrapper::level_name)
 			.def("actor_health",	&CSavedGameWrapper::actor_health),
 
-		def("valid_saved_game",		(bool (*)(LPCSTR))(&valid_saved_game)),
+		def("valid_saved_game",		(bool (*)(const char*))(&valid_saved_game)),
 		def("save_extension",	&CSavedGameWrapper__save_extension)
 	];
 }

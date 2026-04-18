@@ -315,7 +315,7 @@ bool line_edit_control::empty_inserted()
 	return (m_inserted[0] == 0);
 }
 
-void line_edit_control::set_edit( LPCSTR str )
+void line_edit_control::set_edit( const char* str )
 {
 	u32 str_size = xr_strlen( str );
 	clamp( str_size, (u32)0, (u32)(m_buffer_size-1) );
@@ -730,7 +730,7 @@ void remove_spaces(char* str) // in & out
     str[writeIndex] = 0;
 }
 
-void split_cmd( char* first, char* second, LPCSTR str )
+void split_cmd( char* first, char* second, const char* str )
 {
 	first[0] = 0;
 	second[0] = 0;

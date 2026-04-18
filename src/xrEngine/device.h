@@ -59,8 +59,8 @@ public:
 	u32										TargetHeight;
 	
 	u32										dwPrecacheFrame;
-	BOOL									b_is_Ready;
-	BOOL									b_is_Active;
+	bool									b_is_Ready;
+	bool									b_is_Active;
 public:
 	struct {
 		float renderZoomFactor = 1.0f;
@@ -163,8 +163,8 @@ public:
 
 	CTimer									TimerMM;
 
-	void									_Create		(LPCSTR shName);
-	void									_Destroy	(BOOL	bKeepTextures);
+	void									_Create		(const char* shName);
+	void									_Destroy	(bool	bKeepTextures);
 	void									_SetupStates();
 
 	bool InitRenderDeviceEditor();
@@ -197,8 +197,8 @@ public:
 public:
 	IRenderDeviceRender						*m_pRender;
 
-	BOOL									m_bNearer;
-	void									SetNearer	(BOOL enabled)
+	bool									m_bNearer;
+	void									SetNearer	(bool enabled)
 	{
 		if (enabled&&!m_bNearer){
 			m_bNearer						= TRUE;
@@ -231,12 +231,12 @@ public:
 	CRenderDevice();
 	virtual ~CRenderDevice() noexcept = default;
 
-	virtual void	Pause							(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason);
-	BOOL	Paused							();
+	virtual void	Pause							(bool bOn, bool bTimer, bool bSound, const char* reason);
+	bool	Paused							();
 
 	// Scene control
 	virtual void PreCache							(u32 amount, bool b_draw_loadscreen, bool b_wait_user_input);
-	BOOL Begin								();
+	bool Begin								();
 	virtual void Clear						();
 	void End								();
 	void FrameMove							();

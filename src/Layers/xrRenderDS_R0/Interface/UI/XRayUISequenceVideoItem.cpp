@@ -20,7 +20,7 @@ void CDS0_UISequenceVideoItem::ResetTexture()
 {
 }
 
-BOOL CDS0_UISequenceVideoItem::video_IsPlaying()
+bool CDS0_UISequenceVideoItem::video_IsPlaying()
 {
 	return FALSE;
 }
@@ -29,7 +29,7 @@ void CDS0_UISequenceVideoItem::video_Sync(u32 _time)
 {
 }
 
-void CDS0_UISequenceVideoItem::video_Play(BOOL looped, u32 _time)
+void CDS0_UISequenceVideoItem::video_Play(bool looped, u32 _time)
 {
 }
 

@@ -15,8 +15,8 @@
 #include "../xrCore/os_clipboard.h"
 
 extern string64	gsCDKey;
-LPCSTR AddHyphens( LPCSTR c );
-LPCSTR DelHyphens( LPCSTR c );
+const char* AddHyphens( const char* c );
+const char* DelHyphens( const char* c );
 
 CUICDkey::CUICDkey()
 {
@@ -77,7 +77,7 @@ void CUICDkey::OnFocusLost()
 
 void CUICDkey::Draw()
 {
-	LPCSTR  edt_str = ec().str_edit();
+	const char*  edt_str = ec().str_edit();
 	u32    edt_size = xr_strlen( edt_str );
 
 	if ( edt_size == 0 )
@@ -106,15 +106,15 @@ void CUICDkey::Draw()
 	xx_str[edt_size] = 0;
 
 	string64 xx_str1 = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-	LPCSTR  edt_str1 = ec().str_before_cursor();
+	const char*  edt_str1 = ec().str_before_cursor();
 	u32    edt_size1 = xr_strlen( edt_str1 );
 	if ( edt_size1 > 63 ) { edt_size1 = 63; }
 	xx_str1[edt_size1] = 0;
 
 	if ( m_bInputFocus )
 	{		
-		LPCSTR res  = ( m_view_access )? edt_str  : xx_str;
-		LPCSTR res1 = ( m_view_access )? edt_str1 : xx_str1;
+		const char* res  = ( m_view_access )? edt_str  : xx_str;
+		const char* res1 = ( m_view_access )? edt_str1 : xx_str1;
 
 		TextItemControl()->m_pFont->Out	( pos.x, pos.y, "%s", AddHyphens( res ) );
 		
@@ -148,7 +148,7 @@ void CUICDkey::Draw()
 	TextItemControl()->m_pFont->OnRender();
 }
 
-LPCSTR CUICDkey::GetText()
+const char* CUICDkey::GetText()
 {
 	return AddHyphens(inherited::GetText());
 }

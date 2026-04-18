@@ -101,7 +101,7 @@ protected:
 	CTimer*					device_timer;
 
 public:
-	BaseServer(CTimer* timer, BOOL	Dedicated);
+	BaseServer(CTimer* timer, bool	Dedicated);
 	virtual ~BaseServer();
 
 protected:
@@ -110,11 +110,11 @@ protected:
 	void					BannedList_Load();
 	void					IpList_Load();
 	void					IpList_Unload();
-	LPCSTR					GetBannedListName();
+	const char*					GetBannedListName();
 
 	void					UpdateBannedList();
 
-	void					ParseConnectionOptions(LPCSTR options, ServerConnectionOptions& out);
+	void					ParseConnectionOptions(const char* options, ServerConnectionOptions& out);
 
 	virtual bool			CreateConnection(GameDescriptionData& game_descr, ServerConnectionOptions& opt);
 	virtual void			DestroyConnection() {}
@@ -134,7 +134,7 @@ public:
 	IC int					GetPort() const { return psNET_Port; };
 	IC u32					GetMaxPlayers() const { return 32; }
 
-	EConnect				Connect(LPCSTR options, GameDescriptionData & game_descr);
+	EConnect				Connect(const char* options, GameDescriptionData & game_descr);
 	void					Disconnect();
 
 	IClient*            ID_to_client(ClientID ID, bool ScanAll = false);
@@ -156,8 +156,8 @@ public:
 	virtual void			UpdateClientStatistic(IClient* C) {}
 
 	// disconnect
-	virtual bool			DisconnectClient(IClient* C, LPCSTR Reason) { return false; }
-	virtual bool			DisconnectAddress(const ip_address& Address, LPCSTR reason);
+	virtual bool			DisconnectClient(IClient* C, const char* Reason) { return false; }
+	virtual bool			DisconnectAddress(const ip_address& Address, const char* reason);
 
 	// send
 	virtual void			SendTo_LL(ClientID ID, void* data, u32 size, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0);

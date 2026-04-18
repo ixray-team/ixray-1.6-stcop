@@ -19,7 +19,7 @@ inline bool MixedNumeric(PropItem* item, bool& change)
 //-----------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------
 template <class T>
-BOOL MixedFlag(PropItem* prop, bool& change)
+bool MixedFlag(PropItem* prop, bool& change)
 {
 	FlagValue<_flags<T> >* V = dynamic_cast<FlagValue<_flags<T> >*>(prop->GetFrontValue());
 	if (!V)					return FALSE;
@@ -34,7 +34,7 @@ BOOL MixedFlag(PropItem* prop, bool& change)
 //-----------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------
 template <class T>
-BOOL MixedToken(PropItem* prop, bool& change)
+bool MixedToken(PropItem* prop, bool& change)
 {
 	TokenValue<T>* V = dynamic_cast<TokenValue<T>*>(prop->GetFrontValue());
 	if (!V)					return FALSE;
@@ -48,7 +48,7 @@ BOOL MixedToken(PropItem* prop, bool& change)
 //-----------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------
 template <class T>
-BOOL MixedRToken(PropItem* prop, bool& change)
+bool MixedRToken(PropItem* prop, bool& change)
 {
 	RTokenValue<T>* V = dynamic_cast<RTokenValue<T>*>(prop->GetFrontValue());
 	if (!V)					return FALSE;
@@ -101,11 +101,11 @@ void UIPropertiesItem::RemoveMixed()
 	case PROP_BOOLEAN:
 	{
 		BOOLValue* V = dynamic_cast<BOOLValue*>(PItem->GetFrontValue()); VERIFY(V);
-		BOOL val = V->GetValue();
-		PItem->BeforeEdit<BOOLValue, BOOL>(val);
+		int val = V->GetValue();
+		PItem->BeforeEdit<BOOLValue, int>(val);
 
-		if (PItem->AfterEdit<BOOLValue, BOOL>(val))
-			if (PItem->ApplyValue<BOOLValue, BOOL>(val))
+		if (PItem->AfterEdit<BOOLValue, int>(val))
+			if (PItem->ApplyValue<BOOLValue, int>(val))
 			{
 				change = true;
 			}
@@ -151,7 +151,7 @@ void UIPropertiesItem::RemoveMixed()
 	case PROP_RLIST:
 	{
 		RListValue* V = dynamic_cast<RListValue*>(PItem->GetFrontValue()); R_ASSERT(V);
-		LPCSTR edit_value = V->value ? V->value->c_str() : 0;
+		const char* edit_value = V->value ? V->value->c_str() : 0;
 		int index = 0;
 		const char* InTokens[256];
 		int i = 0;
@@ -215,7 +215,7 @@ void UIPropertiesItem::RemoveMixed()
 			xr_string out = PItem->GetDrawText();
 			if (PropertiesFrom->m_EditTextValue->AfterEdit<CTextValue, xr_string>(out))
 			{
-				if (PropertiesFrom->m_EditTextValue->ApplyValue<CTextValue, LPCSTR>(out.c_str()))
+				if (PropertiesFrom->m_EditTextValue->ApplyValue<CTextValue, const char*>(out.c_str()))
 				{
 					change = true;
 				}
@@ -256,7 +256,7 @@ void UIPropertiesItem::RemoveMixed()
 	case PROP_CLIST:
 	{
 		CListValue* V = dynamic_cast<CListValue*>(PItem->GetFrontValue()); R_ASSERT(V);
-		LPCSTR edit_value = V->value;
+		const char* edit_value = V->value;
 		int index = 0;
 		int i = 0;
 		for (; i < V->item_count; i++)
@@ -267,7 +267,7 @@ void UIPropertiesItem::RemoveMixed()
 			}
 		}
 		if (PItem->AfterEdit<CListValue, xr_string>(V->items[index]))
-			if (PItem->ApplyValue<CListValue, LPCSTR>(V->items[index].c_str()))change = true;
+			if (PItem->ApplyValue<CListValue, const char*>(V->items[index].c_str()))change = true;
 	}
 		break;
 	case PROP_SH_TOKEN:
@@ -290,7 +290,7 @@ void UIPropertiesItem::RemoveMixed()
 
 		if (PItem->AfterEdit<CTextValue, xr_string>(edit_val))
 		{
-			if (PItem->ApplyValue<CTextValue, LPCSTR>(edit_val.c_str()))
+			if (PItem->ApplyValue<CTextValue, const char*>(edit_val.c_str()))
 			{
 				change = true;
 			}

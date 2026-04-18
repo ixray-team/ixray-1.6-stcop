@@ -18,7 +18,7 @@ CUIArrow::~CUIArrow()
 {
 }
 
-void CUIArrow::init_from_xml( CUIXml& xml, LPCSTR path, CUIWindow* parent )
+void CUIArrow::init_from_xml( CUIXml& xml, const char* path, CUIWindow* parent )
 {
 	//m_arrow = UIHelper::CreateStatic( xml, "arrow", this );
 	parent->AttachChild( this );

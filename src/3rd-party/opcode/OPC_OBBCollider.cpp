@@ -175,7 +175,7 @@ bool OBBCollider::Collide(OBBCache& cache, const IceMaths::OBB& box, const Model
  *	\warning	SCALE NOT SUPPORTED IN OBB WORLD MATRIX. The matrix must contain rotation & translation parts only.
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-BOOL OBBCollider::InitQuery(OBBCache& cache, const IceMaths::OBB& box, const IceMaths::Matrix4x4* worldb, const IceMaths::Matrix4x4* worldm)
+bool OBBCollider::InitQuery(OBBCache& cache, const IceMaths::OBB& box, const IceMaths::Matrix4x4* worldb, const IceMaths::Matrix4x4* worldm)
 {
 	// 1) Call the base method
 	VolumeCollider::InitQuery();
@@ -359,7 +359,7 @@ BOOL OBBCollider::InitQuery(OBBCache& cache, const IceMaths::OBB& box, const Ice
  *	\return		true if the OBB contains the whole box
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-inline_ BOOL OBBCollider::OBBContainsBox(const IceMaths::Point& bc_, const IceMaths::Point& be_)
+inline_ bool OBBCollider::OBBContainsBox(const IceMaths::Point& bc_, const IceMaths::Point& be_)
 {
 	// Applies the model's local scale
 	const IceMaths::Point bc = bc_ * mLocalScale;

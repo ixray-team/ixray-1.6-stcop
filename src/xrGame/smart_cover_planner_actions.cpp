@@ -46,7 +46,7 @@ namespace smart_cover {
 // action_base
 //////////////////////////////////////////////////////////////////////////
 
-action_base::action_base			(CAI_Stalker *object, LPCSTR action_name) :
+action_base::action_base			(CAI_Stalker *object, const char* action_name) :
 	inherited						(object, action_name)
 {
 
@@ -76,7 +76,7 @@ void action_base::setup_orientation	()
 // change_loophole
 //////////////////////////////////////////////////////////////////////////
 
-change_loophole::change_loophole	(CAI_Stalker *object, LPCSTR action_name) :
+change_loophole::change_loophole	(CAI_Stalker *object, const char* action_name) :
 	inherited						(object, action_name)
 {
 }
@@ -141,7 +141,7 @@ void change_loophole::on_animation_end	()
 // non_animated_change_loophole
 //////////////////////////////////////////////////////////////////////////
 
-non_animated_change_loophole::non_animated_change_loophole(CAI_Stalker *object, LPCSTR action_name) :
+non_animated_change_loophole::non_animated_change_loophole(CAI_Stalker *object, const char* action_name) :
 	inherited					(object, action_name)
 {
 
@@ -189,7 +189,7 @@ void non_animated_change_loophole::on_animation_end	()
 // exit
 //////////////////////////////////////////////////////////////////////////
 
-exit::exit(CAI_Stalker *object, LPCSTR action_name) :
+exit::exit(CAI_Stalker *object, const char* action_name) :
 	inherited					(object, action_name)
 {
 

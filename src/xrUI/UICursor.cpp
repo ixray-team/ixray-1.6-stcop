@@ -82,7 +82,7 @@ void CUICursor::InitInternal()
 		{
 			XML_NODE* pNode = xml_doc.NavigateToNode("cursor_3d");
 			xml_doc.SetLocalRoot(pNode);
-			LPCSTR model = xml_doc.Read("visual", 0, nullptr);
+			const char* model = xml_doc.Read("visual", 0, nullptr);
 			float scale = xml_doc.ReadAttribFlt(pNode, "visual", 0, "scale", 1.f);
 			m_3dstatic->SetVisual(model);
 			m_3dstatic->SetScaleFactor(scale);

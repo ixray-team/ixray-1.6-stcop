@@ -19,9 +19,9 @@ void XrGameMaterialLibraryEditors::CopyMtlPairs(SGameMtl* from, SGameMtl* to)
 
 }
 
-BOOL XrGameMaterialLibraryEditors::UpdateMtlPairs(SGameMtl* src)
+bool XrGameMaterialLibraryEditors::UpdateMtlPairs(SGameMtl* src)
 {
-    BOOL bRes = FALSE;
+    bool bRes = FALSE;
     SGameMtl* M0 = src;
     for (GameMtlIt m1_it = materials.begin(); m1_it != materials.end(); ++m1_it)
     {
@@ -44,9 +44,9 @@ BOOL XrGameMaterialLibraryEditors::UpdateMtlPairs(SGameMtl* src)
     return bRes;
 }
 
-BOOL XrGameMaterialLibraryEditors::UpdateMtlPairs()
+bool XrGameMaterialLibraryEditors::UpdateMtlPairs()
 {
-    BOOL bRes = FALSE;
+    bool bRes = FALSE;
     for (GameMtlIt m0_it = materials.begin(); m0_it != materials.end(); m0_it++)
         if (UpdateMtlPairs(*m0_it)) bRes = TRUE;
     return bRes;
@@ -74,7 +74,7 @@ SGameMtl* XrGameMaterialLibraryEditors::AppendMaterial(SGameMtl* parent)
     if (parent)	CopyMtlPairs(parent, M);
     return 					M;
 }
-void XrGameMaterialLibraryEditors::RemoveMaterial(LPCSTR name)
+void XrGameMaterialLibraryEditors::RemoveMaterial(const char* name)
 {
     // find material
     GameMtlIt 	rem_it = GetMaterialIt(name);
@@ -88,7 +88,7 @@ void XrGameMaterialLibraryEditors::RemoveMaterial(LPCSTR name)
 //------------------------------------------------------------------------------
 // material library routines
 //------------------------------------------------------------------------------
-LPCSTR XrGameMaterialLibraryEditors::MtlPairToName(int mtl0, int mtl1)
+const char* XrGameMaterialLibraryEditors::MtlPairToName(int mtl0, int mtl1)
 {
     static string512 buf;
     SGameMtl* M0 = GetMaterialByID(mtl0);	R_ASSERT(M0);
@@ -99,7 +99,7 @@ LPCSTR XrGameMaterialLibraryEditors::MtlPairToName(int mtl0, int mtl1)
     sprintf(buf, "%s \\ %s", buf0, buf1);
     return buf;
 }
-void XrGameMaterialLibraryEditors::NameToMtlPair(LPCSTR name, int& mtl0, int& mtl1)
+void XrGameMaterialLibraryEditors::NameToMtlPair(const char* name, int& mtl0, int& mtl1)
 {
     string256 		buf0, buf1;
     if (_GetItemCount(name, '\\') < 2) {
@@ -114,7 +114,7 @@ void XrGameMaterialLibraryEditors::NameToMtlPair(LPCSTR name, int& mtl0, int& mt
     SGameMtl* M0 = GetMaterial(buf0);	mtl0 = M0 ? M0->GetID() : GAMEMTL_NONE_ID;
     SGameMtl* M1 = GetMaterial(buf1);	mtl1 = M1 ? M1->GetID() : GAMEMTL_NONE_ID;
 }
-void XrGameMaterialLibraryEditors::MtlNameToMtlPair(LPCSTR name, int& mtl0, int& mtl1)
+void XrGameMaterialLibraryEditors::MtlNameToMtlPair(const char* name, int& mtl0, int& mtl1)
 {
     string256 buf;
     SGameMtl* M0 = GetMaterial(_GetItem(name, 0, buf, ','));	R_ASSERT(M0); 	mtl0 = M0->GetID();
@@ -143,7 +143,7 @@ SGameMtlPair* XrGameMaterialLibraryEditors::AppendMaterialPair(int m0, int m1, S
         return 		S;
     }
 }
-void XrGameMaterialLibraryEditors::RemoveMaterialPair(LPCSTR name)
+void XrGameMaterialLibraryEditors::RemoveMaterialPair(const char* name)
 {
     int mtl0, mtl1;
     NameToMtlPair(name, mtl0, mtl1);
@@ -202,7 +202,7 @@ SGameMtlPair* XrGameMaterialLibraryEditors::GetMaterialPair(u16 mtl0, u16 mtl1)
     GameMtlPairIt it = GetMaterialPairIt(mtl0, mtl1);
     return it != material_pairs.end() ? *it : 0;
 }
-SGameMtlPairEditor* XrGameMaterialLibraryEditors::GetMaterialPair(LPCSTR name)
+SGameMtlPairEditor* XrGameMaterialLibraryEditors::GetMaterialPair(const char* name)
 {
     if (name && name[0]) {
         int mtl0, mtl1;
@@ -375,14 +375,14 @@ IC SGameMtlPairEditor* GetLastParentValue(SGameMtlPairEditor* who, u32 flag)
     else						return GetLastParentValue(GameMaterialLibraryEditors->GetMaterialPair(who->GetParent()), flag);
 }
 
-IC BOOL ValidateParent(SGameMtlPair* who, SGameMtlPair* parent)
+IC bool ValidateParent(SGameMtlPair* who, SGameMtlPair* parent)
 {
     if (!parent)				return TRUE;
     if (who == parent)			return FALSE;
     else						return ValidateParent(who, GameMaterialLibraryEditors->GetMaterialPair(parent->GetParent()));
 }
 
-BOOL SGameMtlPairEditor::SetParent(int parent)
+bool SGameMtlPairEditor::SetParent(int parent)
 {
     int ID_parent_save = ID_parent;
     ID_parent = parent;
@@ -428,7 +428,7 @@ void  SGameMtlPairEditor::OnParentClick(ButtonValue* V, bool& bModif, bool& bSaf
     {
     case 0:
     {
-        LPCSTR MP = 0;
+        const char* MP = 0;
         SGameMtlPair* P = GameMaterialLibraryEditors->GetMaterialPair(ID_parent);
         xr_string nm = P ? GameMaterialLibraryEditors->MtlPairToName(P->GetMtl0(), P->GetMtl1()) : NONE_CAPTION;
         UIChooseForm::SelectItem(smCustom, 1, (nm == NONE_CAPTION) ? 0 : nm.c_str(), TOnChooseFillItems(this, &SGameMtlPairEditor::FillChooseMtl));

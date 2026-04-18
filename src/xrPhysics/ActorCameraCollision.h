@@ -4,7 +4,7 @@ class CCameraBase;
 class IPhysicsShellHolder;
 extern XRPHYSICS_API CPhysicsShell*	actor_camera_shell;
 #ifdef DEBUG
-extern XRPHYSICS_API BOOL dbg_draw_camera_collision;
+extern XRPHYSICS_API bool dbg_draw_camera_collision;
 extern XRPHYSICS_API float	camera_collision_character_skin_depth ;
 extern XRPHYSICS_API float	camera_collision_character_shift_z ;
 #endif

@@ -91,24 +91,24 @@ public:
 			void		ScheduledInit	();
 
 	// создание карты анимаций (выполнять на Monster::Load)
-    void AddAnim(EMotionAnim ma, LPCSTR tn, int s_id, SVelocityParam* vel, EPState p_s);
+    void AddAnim(EMotionAnim ma, const char* tn, int s_id, SVelocityParam* vel, EPState p_s);
 
-    void AddAnim(EMotionAnim ma, std::pair<LPCSTR, bool> target, int s_id, SVelocityParam* vel, EPState p_s);
+    void AddAnim(EMotionAnim ma, std::pair<const char*, bool> target, int s_id, SVelocityParam* vel, EPState p_s);
 
-    void AddAnim(EMotionAnim ma, LPCSTR tn, int s_id, SVelocityParam* vel, EPState p_s, LPCSTR fx_front, LPCSTR fx_back,
-        LPCSTR fx_left, LPCSTR fx_right);
+    void AddAnim(EMotionAnim ma, const char* tn, int s_id, SVelocityParam* vel, EPState p_s, const char* fx_front, const char* fx_back,
+        const char* fx_left, const char* fx_right);
 
-    void AddAnim(EMotionAnim ma, std::pair<LPCSTR, bool> target, int s_id, SVelocityParam* vel, EPState p_s,
-        LPCSTR fx_front, LPCSTR fx_back,
-        LPCSTR fx_left, LPCSTR fx_right);
+    void AddAnim(EMotionAnim ma, std::pair<const char*, bool> target, int s_id, SVelocityParam* vel, EPState p_s,
+        const char* fx_front, const char* fx_back,
+        const char* fx_left, const char* fx_right);
 
-    void AddAnim(EMotionAnim ma, std::pair<LPCSTR, bool> target, int s_id, SVelocityParam* vel, EPState p_s,
-        std::pair<LPCSTR, bool> fx_front, std::pair<LPCSTR, bool> fx_back,
-        std::pair<LPCSTR, bool> fx_left, std::pair<LPCSTR, bool> fx_right);
+    void AddAnim(EMotionAnim ma, std::pair<const char*, bool> target, int s_id, SVelocityParam* vel, EPState p_s,
+        std::pair<const char*, bool> fx_front, std::pair<const char*, bool> fx_back,
+        std::pair<const char*, bool> fx_left, std::pair<const char*, bool> fx_right);
 
-    void AddAnim(EMotionAnim ma, LPCSTR tn, int s_id, SVelocityParam* vel, EPState p_s,
-        std::pair<LPCSTR, bool> fx_front, std::pair<LPCSTR, bool> fx_back,
-        std::pair<LPCSTR, bool> fx_left, std::pair<LPCSTR, bool> fx_right);
+    void AddAnim(EMotionAnim ma, const char* tn, int s_id, SVelocityParam* vel, EPState p_s,
+        std::pair<const char*, bool> fx_front, std::pair<const char*, bool> fx_back,
+        std::pair<const char*, bool> fx_left, std::pair<const char*, bool> fx_right);
 	// -------------------------------------
 
 	// добавить анимацию перехода (A - Animation, S - Position)
@@ -135,8 +135,8 @@ public:
 	EMotionAnim	GetCurAnim				() {return  cur_anim_info().get_motion();} 
 
 	// работа с анимациями атак
-	void		AA_reload				(LPCSTR section);
-	SAAParam	&AA_GetParams			(LPCSTR anim_name);
+	void		AA_reload				(const char* section);
+	SAAParam	&AA_GetParams			(const char* anim_name);
 	SAAParam	&AA_GetParams			(MotionID motion, float time_perc);
 
 	// FX's
@@ -182,8 +182,8 @@ protected:
 	// DEBUG
 
 protected:
-	LPCSTR		GetAnimationName		(EMotionAnim anim);
-	LPCSTR		GetActionName			(EAction action);
+	const char*		GetAnimationName		(EMotionAnim anim);
+	const char*		GetActionName			(EAction action);
 
 	// end DEBUG
 	//////////////////////////////////////////////////////////////////////////
@@ -193,7 +193,7 @@ public:
 	// Acceleration
 
 	void	accel_init				();
-	void	accel_load				(LPCSTR section);
+	void	accel_load				(const char* section);
 
 	void	accel_activate			(EAccelType type);
 	IC	void	accel_deactivate		() {m_accel.active = false;	m_accel.enable_braking = false;}
@@ -218,7 +218,7 @@ public:
 	void	SetTurnAnimation		();
 
 	// MotionDef to animation name translation
-	void		AddAnimTranslation		(const MotionID &motion, LPCSTR str);
+	void		AddAnimTranslation		(const MotionID &motion, const char* str);
 	shared_str	GetAnimTranslation		(const MotionID &motion);
 public:
 
@@ -237,7 +237,7 @@ public:
 	u32						get_animation_variants_count (EMotionAnim anim) const;
 	// you need to call it with default arguments to turn it off
 	void					set_override_animation (EMotionAnim anim=eAnimUndefined, u32 index=-1);
-	void					set_override_animation (pcstr name);
+	void					set_override_animation (const char* name);
 	void					clear_override_animation ();
 	EMotionAnim				get_override_animation () const { return m_override_animation; }
 	bool					has_override_animation () const { return get_override_animation() != eAnimUndefined; }

@@ -390,7 +390,7 @@ bool UIEditLightAnim::OnFrameCountAfterEdit(PropValue* v, s32& val)
 	return true;
 }
 
-void UIEditLightAnim::OnCloneItem(LPCSTR parent_path, LPCSTR new_full_name)
+void UIEditLightAnim::OnCloneItem(const char* parent_path, const char* new_full_name)
 {
 	LALib.AppendItem(new_full_name, LALib.FindItem(parent_path));;
 	InitializeItems();
@@ -398,7 +398,7 @@ void UIEditLightAnim::OnCloneItem(LPCSTR parent_path, LPCSTR new_full_name)
 	OnModified();
 }
 
-void UIEditLightAnim::OnCreateItem(LPCSTR path)
+void UIEditLightAnim::OnCreateItem(const char* path)
 {
 	LALib.AppendItem(path, 0);;
 	InitializeItems();
@@ -422,7 +422,7 @@ void UIEditLightAnim::OnRemoveItem(UIItemListForm::Node& node)
 	OnModified();
 }
 
-void UIEditLightAnim::OnRenameItem(UIItemListForm::Node& node, LPCSTR old_full_name, LPCSTR new_full_name, EItemType type)
+void UIEditLightAnim::OnRenameItem(UIItemListForm::Node& node, const char* old_full_name, const char* new_full_name, EItemType type)
 {
 	bool res = false;
 	LALib.RenameObject(old_full_name, new_full_name,type);

@@ -356,7 +356,7 @@ bool UIChooseForm::GetResult(bool& change, xr_vector<xr_string>& result)
 
 	return false;
 }
-void UIChooseForm::SelectItem(u32 choose_ID, int sel_cnt, LPCSTR init_name, TOnChooseFillItems item_fill, void* fill_param, TOnChooseSelectItem item_select, ChooseItemVec* items, u32 mask)
+void UIChooseForm::SelectItem(u32 choose_ID, int sel_cnt, const char* init_name, TOnChooseFillItems item_fill, void* fill_param, TOnChooseSelectItem item_select, ChooseItemVec* items, u32 mask)
 {
 	VERIFY(!Form);
 
@@ -442,7 +442,7 @@ void UIChooseForm::SelectItem(u32 choose_ID, int sel_cnt, LPCSTR init_name, TOnC
 	}
 }
 
-void UIChooseForm::AppendEvents(u32 choose_ID, LPCSTR caption, TOnChooseFillItems on_fill, TOnChooseSelectItem on_sel, TGetTexture on_thm, TOnChooseClose on_close, u32 flags)
+void UIChooseForm::AppendEvents(u32 choose_ID, const char* caption, TOnChooseFillItems on_fill, TOnChooseSelectItem on_sel, TGetTexture on_thm, TOnChooseClose on_close, u32 flags)
 {
 	EventsMapIt it = m_Events.find(choose_ID); VERIFY(it == m_Events.end());
 	m_Events.insert(std::make_pair(choose_ID, SChooseEvents(caption, on_fill, on_sel, on_thm, on_close, flags)));

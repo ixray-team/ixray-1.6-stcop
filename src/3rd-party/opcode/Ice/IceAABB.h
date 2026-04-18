@@ -28,7 +28,7 @@
 			const Point*	GetVertexNormals()																				const;	\
 			const udword*	GetEdges()																						const;	\
 			const Point*	GetEdgeNormals()																				const;	\
-	inline_	BOOL			ContainsPoint(const Point& p)																	const	\
+	inline_	bool			ContainsPoint(const Point& p)																	const	\
 							{																										\
 								if(p.x > GetMax(0) || p.x < GetMin(0)) return FALSE;												\
 								if(p.y > GetMax(1) || p.y < GetMin(1)) return FALSE;												\
@@ -158,7 +158,7 @@
 		 *	\return		true on intersection
 		 */
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		inline_			BOOL		Intersect(const AABB& a)				const
+		inline_			bool		Intersect(const AABB& a)				const
 									{
 										if(mMax.x < a.mMin.x
 										|| a.mMax.x < mMin.x
@@ -178,7 +178,7 @@
 		 *	\return		true on intersection
 		 */
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		inline_			BOOL		Intersect(const AABB& a, udword axis)	const
+		inline_			bool		Intersect(const AABB& a, udword axis)	const
 									{
 										if(mMax[axis] < a.mMin[axis] || a.mMax[axis] < mMin[axis])	return FALSE;
 										return TRUE;
@@ -223,7 +223,7 @@
 		 *	\return		true if the box is valid
 		 */
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		inline_			BOOL		IsValid()	const
+		inline_			bool		IsValid()	const
 									{
 										// Consistency condition for (Min, Max) boxes: min < max
 										if(mMin.x > mMax.x)	return FALSE;
@@ -375,7 +375,7 @@
 		 *	\return		true on intersection
 		 */
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		inline_			BOOL		Intersect(const AABB& a)				const
+		inline_			bool		Intersect(const AABB& a)				const
 									{
 										float tx = mCenter.x - a.mCenter.x;	float ex = a.mExtents.x + mExtents.x;	if(AIR(tx) > IR(ex))	return FALSE;
 										float ty = mCenter.y - a.mCenter.y;	float ey = a.mExtents.y + mExtents.y;	if(AIR(ty) > IR(ey))	return FALSE;
@@ -406,7 +406,7 @@
 		 *	\return		true on intersection
 		 */
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		inline_			BOOL		Intersect(const AABB& a, udword axis)	const
+		inline_			bool		Intersect(const AABB& a, udword axis)	const
 									{
 										float t = mCenter[axis] - a.mCenter[axis];
 										float e = a.mExtents[axis] + mExtents[axis];
@@ -456,7 +456,7 @@
 		 *	\return		true if the box is valid
 		 */
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		inline_			BOOL		IsValid()	const
+		inline_			bool		IsValid()	const
 									{
 										// Consistency condition for (Center, Extents) boxes: Extents >= 0
 										if(IS_NEGATIVE_FLOAT(mExtents.x))	return FALSE;

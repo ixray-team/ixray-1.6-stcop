@@ -16,7 +16,7 @@
 #include "ElectronicsProblemsManager.h"
 #include "ParticlesObject.h"
 
-BOOL CLevel::Load_GameSpecific_Before()
+bool CLevel::Load_GameSpecific_Before()
 {
 	// AI space
 	g_pGamePersistent->SetLoadStageTitle("st_loading_ai_objects");
@@ -66,7 +66,7 @@ BOOL CLevel::Load_GameSpecific_Before()
 	return (TRUE);
 }
 
-BOOL CLevel::Load_GameSpecific_After()
+bool CLevel::Load_GameSpecific_After()
 {
 	R_ASSERT(m_StaticParticles.empty());
 	// loading static particles

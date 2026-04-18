@@ -41,7 +41,7 @@ void CLevel::remove_objects	()
 {
 	PROF_EVENT("remove_objects");
 	if (!IsGameTypeSingle()) Msg("CLevel::remove_objects - Start");
-	BOOL						b_stored = psDeviceFlags.test(rsDisableObjectsAsCrows);
+	bool						b_stored = psDeviceFlags.test(rsDisableObjectsAsCrows);
 	
 	int loop = 5;
 	while(loop)
@@ -301,7 +301,7 @@ void CLevel::ClientSave()
 	}
 }
 
-extern BOOL g_SV_Disable_Auth_Check;
+extern bool g_SV_Disable_Auth_Check;
 
 void CLevel::Send(NET_Packet& P, u32 dwFlags, u32 dwTimeout)
 {
@@ -357,7 +357,7 @@ pureFrame*	g_pNetProcessor	= &NET_processor;
 
 const int ConnectionTimeOut = 60000; //1 min
 
-BOOL CLevel::Connect2Server(LPCSTR options)
+bool CLevel::Connect2Server(const char* options)
 {
 	NET_Packet					P;
 	m_bConnectResultReceived	= false	;

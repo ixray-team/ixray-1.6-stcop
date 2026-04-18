@@ -10,8 +10,8 @@ constexpr float c_PM_MetricLimit_mu		= 0.05f;		// vertex-count-simplification-li
 
 struct SBuildOptions
 {
-	BOOL b_radiosity;
-	BOOL b_noise;
+	bool b_radiosity;
+	bool b_noise;
 	SBuildOptions() :b_radiosity(FALSE), b_noise(FALSE)
 	{
 	}

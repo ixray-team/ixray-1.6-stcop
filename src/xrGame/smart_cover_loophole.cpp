@@ -21,7 +21,7 @@ using smart_cover::detail::parse_bool;
 
 namespace smart_cover {
 	shared_str	transform_vertex(shared_str const &vertex_id, bool const &in);
-	shared_str	parse_vertex	(luabind::object const &table, LPCSTR identifier, bool const &in);
+	shared_str	parse_vertex	(luabind::object const &table, const char* identifier, bool const &in);
 } // namespace smart_cover
 
 class id_predicate {
@@ -122,7 +122,7 @@ loophole::loophole	(luabind::object const &description) :
 	m_range			= parse_float(description, "range", 0.f);
 }
 
-void loophole::add_action(LPCSTR type, luabind::object const &table)
+void loophole::add_action(const char* type, luabind::object const &table)
 {	
 	VERIFY		(luabind::get_type(table) == LUA_TTABLE);
 	smart_cover::action	*action = new smart_cover::action(table);
@@ -165,7 +165,7 @@ void loophole::fill_transitions(luabind::object const & transitions_table)
 				continue;
 			}
 
-			shared_str animation = luabind::object_cast<LPCSTR>(string);
+			shared_str animation = luabind::object_cast<const char*>(string);
 			VERIFY2(std::find(tmp.begin(), tmp.end(), animation) == tmp.end(),
 				make_string<const char*>("duplicated_animation found: %s", animation.c_str()));
 			tmp.push_back(animation);

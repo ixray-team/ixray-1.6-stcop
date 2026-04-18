@@ -3,7 +3,7 @@
 int SM_FOR_SEND_WIDTH = 640;
 int SM_FOR_SEND_HEIGHT = 480;
 
-void CRender::Screenshot(ScreenshotMode mode, LPCSTR name) {
+void CRender::Screenshot(ScreenshotMode mode, const char* name) {
     ScreenshotImpl(mode, name, nullptr);
 
     if (mode == SM_FOR_GAMESAVE && name && name[0])

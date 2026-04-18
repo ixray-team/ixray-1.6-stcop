@@ -21,7 +21,7 @@ void CEditorRenderDevice::RemoveSeqFrame(pureFrame* f) { seqFrame.Remove(f); }
 ENGINE_API xr_atomic_bool g_bRendering;
 //---------------------------------------------------------------------------
 #include <luabind/luabind.hpp>
-void EditorFillPropTextureParams(STextureParams* ThisCall, LPCSTR base_name, xr_vector<PropItem*>& items, PropValue::TOnChange OnChangeEvent);
+void EditorFillPropTextureParams(STextureParams* ThisCall, const char* base_name, xr_vector<PropItem*>& items, PropValue::TOnChange OnChangeEvent);
 
 static LPVOID __cdecl luabind_allocator(
 	luabind::memory_allocation_function_parameter const,
@@ -343,7 +343,7 @@ void CEditorRenderDevice::_Create(IReader* F)
 	EDevice->InitWindowStyle();
 }
 
-void CEditorRenderDevice::_Destroy(BOOL	bKeepTextures)
+void CEditorRenderDevice::_Destroy(bool	bKeepTextures)
 {
 	b_is_Ready 						= FALSE;
     m_CurrentShader				= 0;
@@ -405,7 +405,7 @@ void CEditorRenderDevice::Reset(bool)
 	Msg("*** RESET [%d ms]", tm_end - tm_start);
 }
 
-void CEditorRenderDevice::Reset(IReader* F, BOOL bKeepTextures)
+void CEditorRenderDevice::Reset(IReader* F, bool bKeepTextures)
 {
 	CTimer tm;
 	tm.Start();

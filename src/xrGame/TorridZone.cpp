@@ -13,7 +13,7 @@ CTorridZone::~CTorridZone()
 	xr_delete			(m_animator);
 }
 
-BOOL CTorridZone::net_Spawn(CSE_Abstract* DC)
+bool CTorridZone::net_Spawn(CSE_Abstract* DC)
 {
 	if (!inherited::net_Spawn(DC))
 		return			(FALSE);
@@ -72,7 +72,7 @@ bool   CTorridZone::light_in_slow_mode ()
 	return true;
 }
 
-BOOL   CTorridZone::AlwaysTheCrow ()
+bool CTorridZone::AlwaysTheCrow ()
 {
-	return TRUE;
+	return true;
 }

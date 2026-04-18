@@ -14,7 +14,7 @@
 class CLevelGraph : public ILevelGraph
 {
 public:
-				CLevelGraph	(LPCSTR file_name);
+				CLevelGraph	(const char* file_name);
 	virtual		~CLevelGraph	();
 	IReader*	m_reader;
 };

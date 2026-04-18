@@ -82,7 +82,7 @@ static float trajectory_select_pick_time			(
 	return					(low);
 }
 
-IC BOOL trajectory_query_callback				(collide::rq_result& result, LPVOID params)
+IC bool trajectory_query_callback				(collide::rq_result& result, LPVOID params)
 {
 	*(float*)params					= result.range;
 	return							(false);
@@ -119,10 +119,10 @@ bool trajectory_check_collision (float 							low,
 
 	float					range = distance;
 
-	BOOL					previous_enabled = self_object->getEnabled();
+	bool					previous_enabled = self_object->getEnabled();
 	self_object->setEnabled	(FALSE);
 	
-	BOOL					throw_ignore_object_enabled = FALSE;
+	bool					throw_ignore_object_enabled = FALSE;
 	if (ignored_object) {
 		throw_ignore_object_enabled			= ignored_object->getEnabled();
 		ignored_object->setEnabled	(FALSE);

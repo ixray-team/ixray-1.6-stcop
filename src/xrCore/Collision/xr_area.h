@@ -34,20 +34,20 @@ public:
 										~CObjectSpace		( );
 
 	void								Load				(  CDB::build_callback build_callback  );
-	void								Load				(  LPCSTR initial, LPCSTR fname, CDB::build_callback build_callback, bool NotFromLevel = false);
+	void								Load				(  const char* initial, const char* fname, CDB::build_callback build_callback, bool NotFromLevel = false);
 	//void								Load				(  IReader* R, CDB::build_callback build_callback  );
 	//void								Create				(  Fvector*	verts, CDB::TRI* tris, const hdrCFORM &H, CDB::build_callback build_callback, void* pRW, bool RWMode);
 	void								Create				(  const XRay::CForm::IFormat& Data, CDB::build_callback build_callback, void* pRW, bool RWMode);
 	
 	// Occluded/No
-	BOOL								RayTest				( const Fvector &start, const Fvector &dir, float range, collide::rq_target tgt, collide::ray_cache* cache, CObject* ignore_object);
+	bool								RayTest				( const Fvector &start, const Fvector &dir, float range, collide::rq_target tgt, collide::ray_cache* cache, CObject* ignore_object);
 
 	// Game raypick (nearest) - returns object and addititional params
-	BOOL								RayPick				( const Fvector &start, const Fvector &dir, float range, collide::rq_target tgt, collide::rq_result& R, CObject* ignore_object );
+	bool								RayPick				( const Fvector &start, const Fvector &dir, float range, collide::rq_target tgt, collide::rq_result& R, CObject* ignore_object );
 
 	// General collision query
-	BOOL								RayQuery			( collide::rq_results& dest, const collide::ray_defs& rq, collide::rq_callback* cb, LPVOID user_data, collide::test_callback* tb, CObject* ignore_object);
-	BOOL								RayQuery			( collide::rq_results& dest, ICollisionForm* target, const collide::ray_defs& rq);
+	bool								RayQuery			( collide::rq_results& dest, const collide::ray_defs& rq, collide::rq_callback* cb, LPVOID user_data, collide::test_callback* tb, CObject* ignore_object);
+	bool								RayQuery			( collide::rq_results& dest, ICollisionForm* target, const collide::ray_defs& rq);
 
 	ICF xr_vector<CDB::TRI>&			GetStaticTris		() { return Static.get_tris();	}
 	ICF xr_vector<Fvector>&				GetStaticVerts		() { return Static.get_verts(); }

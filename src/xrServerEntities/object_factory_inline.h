@@ -174,12 +174,12 @@ IC	CObjectFactory::CLIENT_BASE_CLASS *CObjectFactory::client_object	(const CLASS
 	return				(item(clsid).client_object());
 }
 
-IC	CObjectFactory::SERVER_BASE_CLASS *CObjectFactory::server_object	(const CLASS_ID &clsid, LPCSTR section) const
+IC	CObjectFactory::SERVER_BASE_CLASS *CObjectFactory::server_object	(const CLASS_ID &clsid, const char* section) const
 {
 	return				(item(clsid).server_object(section));
 }
 #else
-IC	CObjectFactory::SERVER_BASE_CLASS *CObjectFactory::server_object	(const CLASS_ID &clsid, LPCSTR section) const
+IC	CObjectFactory::SERVER_BASE_CLASS *CObjectFactory::server_object	(const CLASS_ID &clsid, const char* section) const
 {
 	const CObjectItemAbstract	*object = item(clsid,true);
 	return				(object ? object->server_object(section) : 0);

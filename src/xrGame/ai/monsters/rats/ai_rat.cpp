@@ -123,7 +123,7 @@ void CAI_Rat::reinit					()
 	init_state_manager		();
 }
 
-void CAI_Rat::reload					(LPCSTR	section)
+void CAI_Rat::reload					(const char*	section)
 {
 	inherited::reload		(section);
 	CEatableItem::reload	(section);
@@ -131,7 +131,7 @@ void CAI_Rat::reload					(LPCSTR	section)
 	{
 		return;
 	}
-	LPCSTR					head_bone_name = pSettings->r_string(section,"bone_head");
+	const char*					head_bone_name = pSettings->r_string(section,"bone_head");
 	sound().add		(pSettings->r_string(section,"sound_death"),	100, SOUND_TYPE_MONSTER_DYING,		0, u32(eRatSoundMaskDie),		eRatSoundDie,		head_bone_name);
 	sound().add		(pSettings->r_string(section,"sound_hit"),		100, SOUND_TYPE_MONSTER_INJURING,	1, u32(eRatSoundMaskInjuring),	eRatSoundInjuring,	head_bone_name);
 	sound().add		(pSettings->r_string(section,"sound_attack"),	100, SOUND_TYPE_MONSTER_ATTACKING,	2, u32(eRatSoundMaskAttack),	eRatSoundAttack,	head_bone_name);
@@ -160,7 +160,7 @@ void CAI_Rat::Die(CObject* who)
 	m_eCurrentState = aiRatDeath;
 }
 
-void CAI_Rat::Load(LPCSTR section)
+void CAI_Rat::Load(const char* section)
 { 
 	init();
 
@@ -217,7 +217,7 @@ void CAI_Rat::Load(LPCSTR section)
 	m_dwActiveScheduleMax			= shedule.t_max;
 }
 
-BOOL CAI_Rat::net_Spawn	(CSE_Abstract* DC)
+bool CAI_Rat::net_Spawn	(CSE_Abstract* DC)
 {
 	//////////////////////////////////////////////////////////////////////////
 	CSE_Abstract					*e	= (CSE_Abstract*)(DC);
@@ -585,7 +585,7 @@ void CAI_Rat::OnRender()
 }
 #endif
 
-BOOL CAI_Rat::UsedAI_Locations()
+bool CAI_Rat::UsedAI_Locations()
 {
 	return					(TRUE);
 }
@@ -664,12 +664,12 @@ float CAI_Rat::get_custom_pitch_speed	(float def_speed)
 	return					(PI_DIV_2);
 }
 
-BOOL CAI_Rat::renderable_ShadowReceive	()
+bool CAI_Rat::renderable_ShadowReceive	()
 {
 	return TRUE;
 }
 
-BOOL CAI_Rat::renderable_ShadowGenerate	()
+bool CAI_Rat::renderable_ShadowGenerate	()
 {
 	return FALSE;
 }

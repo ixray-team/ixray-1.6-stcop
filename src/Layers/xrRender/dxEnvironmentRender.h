@@ -8,13 +8,13 @@
 class CBlender_skybox		: public IBlender  
 {
 public:
-	virtual		LPCSTR		getComment()	{ return "INTERNAL: combiner";	}
-	virtual		BOOL		canBeDetailed()	{ return FALSE;	}
-	virtual		BOOL		canBeLMAPped()	{ return FALSE;	}
+	virtual		const char*		getComment()	{ return "INTERNAL: combiner";	}
+	virtual		bool		canBeDetailed()	{ return false;	}
+	virtual		bool		canBeLMAPped()	{ return false;	}
 
 	virtual		void		Compile			(CBlender_Compile& C)
 	{
-		C.r_Pass("sky", "sky", FALSE, TRUE, FALSE);
+		C.r_Pass("sky", "sky", false, true, false);
 
 #ifdef USE_DX11
 		C.r_dx10Texture("s_sky0", "$null");
@@ -24,7 +24,7 @@ public:
 		C.r_dx10Sampler("smp_linear");
 		C.r_dx10Sampler("smp_base");
 
-		C.PassSET_ZB(FALSE, FALSE);
+		C.PassSET_ZB(false, false);
 #else //USE_DX11
 		C.r_Sampler_clf("s_sky0", "$null");
 		C.r_Sampler_clf("s_sky1", "$null");

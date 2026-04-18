@@ -18,9 +18,9 @@ public:
 
 	void Register(ALife::_OBJECT_ID obj_id, shared_str script_story_id);
 	void Unregister(ALife::_OBJECT_ID obj_id);
-	void Unregister(LPCSTR script_story_id);
-	ALife::_OBJECT_ID GetID(LPCSTR script_story_id) const;
-	LPCSTR GetID(ALife::_OBJECT_ID obj_id) const;
+	void Unregister(const char* script_story_id);
+	ALife::_OBJECT_ID GetID(const char* script_story_id) const;
+	const char* GetID(ALife::_OBJECT_ID obj_id) const;
 	
 	static CScriptStoryIDManager& GetInstance();
 	static void VerifiedRegisterObject(CSE_Abstract* se_obj);

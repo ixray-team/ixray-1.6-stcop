@@ -417,7 +417,7 @@ void  CEditableObject::OnChangeTransform(PropValue*)
 //---------------------------------------------------------------------------
 
 //. #include "../../xrEngine/blenders/Blender.h"
-IC BOOL BE      (BOOL A, BOOL B)
+IC bool BE      (bool A, bool B)
 {
 	bool a = !!A;
 	bool b = !!B;
@@ -579,7 +579,7 @@ BPIt CEditableObject::BonePart(CBone* B)
 	return it_e;
 }
 
-void CEditableObject::RenameBone(CBone* bone, LPCSTR new_name)
+void CEditableObject::RenameBone(CBone* bone, const char* new_name)
 {
 	BPIt bpit 			= BonePart(bone);
 	RStringVec::iterator iit 	= (*bpit).bones.begin();

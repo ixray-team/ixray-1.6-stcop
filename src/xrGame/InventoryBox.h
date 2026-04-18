@@ -19,7 +19,7 @@ public:
 	virtual	~CInventoryBox() = default;
 
 	virtual void OnEvent(NET_Packet& P, u16 type) override;
-	virtual BOOL net_Spawn(CSE_Abstract* DC) override;
+	virtual bool net_Spawn(CSE_Abstract* DC) override;
 	virtual void net_Destroy() override;
 	virtual void net_Relcase(CObject* O) override;
 	void AddAvailableItems(TIItemContainer& items_container) const;
@@ -32,7 +32,7 @@ public:
 	void set_can_take(bool status);
 	IC bool can_take() const { return m_can_take; }
 
-	void set_closed(bool status, LPCSTR reason);
+	void set_closed(bool status, const char* reason);
 	IC bool closed() const { return m_closed; }
 
 	virtual CInventoryBox* cast_inventory_box() override { return this; }

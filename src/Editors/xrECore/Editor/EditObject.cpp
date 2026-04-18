@@ -34,7 +34,7 @@ void CSurface::RemoveImageData()
 }
 #endif
 
-CEditableObject::CEditableObject(LPCSTR name):
+CEditableObject::CEditableObject(const char* name):
 	m_physics_shell(0),
     m_object_xform(0)
 {
@@ -202,7 +202,7 @@ CSurface*	CEditableObject::FindSurfaceByName(const char* surf_name, int* s_id){
     return 0;
 }
 
-LPCSTR CEditableObject::GenerateSurfaceName(const char* base_name)
+const char* CEditableObject::GenerateSurfaceName(const char* base_name)
 {
 	static string1024 nm;
 	strcpy(nm, base_name);
@@ -247,7 +247,7 @@ void CEditableObject::PrepareOGFDesc(ogf_desc& desc)
     ctime(&desc.build_time);
 }
 
-void CEditableObject::SetVersionToCurrent(BOOL bCreate, BOOL bModif)
+void CEditableObject::SetVersionToCurrent(bool bCreate, bool bModif)
 {
 	string512			tmp;
 	if (bCreate){
@@ -295,7 +295,7 @@ bool CEditableObject::Validate()
 //----------------------------------------------------------------------------
 //#ifdef DEBUG
 
-LPCSTR	CEditableObject::LL_BoneName_dbg(u16 ID)
+const char*	CEditableObject::LL_BoneName_dbg(u16 ID)
 {
 	return 	GetBone( ID )->Name().c_str();
 }

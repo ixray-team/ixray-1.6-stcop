@@ -20,7 +20,7 @@ void BoosterForEach(CActorCondition* conditions, const luabind::functor<bool> &f
 	}
 }
 
-bool ApplyBooster_script(CActorCondition* cond, const SBooster& B, LPCSTR sect)
+bool ApplyBooster_script(CActorCondition* cond, const SBooster& B, const char* sect)
 {
 	return cond->ApplyBooster(B, sect);
 }

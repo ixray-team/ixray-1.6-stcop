@@ -83,7 +83,7 @@ protected:
 
 
 	//загрузка из XML файла
-	virtual void				load_shared			(LPCSTR);
+	virtual void				load_shared			(const char*);
 
 	//индекс загруженного профиля
 	shared_str					m_ProfileId;
@@ -104,7 +104,7 @@ public:
 
 #ifdef XRGAME_EXPORTS
 	shared_str					Profile()			const;
-	LPCSTR						Name()				const;
+	const char*						Name()				const;
 	shared_str					Bio()				const;
 
 

@@ -85,7 +85,7 @@ void   log_text_tree  (text_tree& tree);
 
 } // namespace debug
 
-IC	xr_string __cdecl	make_xrstr (LPCSTR format,...)
+IC	xr_string __cdecl	make_xrstr (const char* format,...)
 {
 	va_list		args;
 	va_start	(args,format);

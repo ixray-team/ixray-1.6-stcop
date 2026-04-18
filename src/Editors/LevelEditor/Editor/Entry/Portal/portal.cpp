@@ -7,7 +7,7 @@
 #define PORTAL_CHUNK_SECTOR_BACK			0xFA40
 #define PORTAL_CHUNK_VERTICES				0xFA50
 
-CPortal::CPortal(LPVOID data, LPCSTR name):CCustomObject(data,name){
+CPortal::CPortal(LPVOID data, const char* name):CCustomObject(data,name){
 	Construct(data);
 }
 
@@ -410,7 +410,7 @@ void CPortal::Simplify()
 	}
 }
 
-bool CPortal::LoadLTX(CInifile& ini, LPCSTR sect_name)
+bool CPortal::LoadLTX(CInifile& ini, const char* sect_name)
 {
 	u32 version = ini.r_u32(sect_name, "version");
 
@@ -422,7 +422,7 @@ bool CPortal::LoadLTX(CInifile& ini, LPCSTR sect_name)
 	}
 
 	CCustomObject::LoadLTX(ini, sect_name);
-	LPCSTR str = ini.r_string(sect_name, "sector_front");
+	const char* str = ini.r_string(sect_name, "sector_front");
 	m_SectorFront = (CSector*)Scene->FindObjectByName(str, OBJCLASS_SECTOR);
 
 	str = ini.r_string(sect_name, "sector_back");
@@ -458,7 +458,7 @@ bool CPortal::LoadLTX(CInifile& ini, LPCSTR sect_name)
 	return true;
 }
 
-void CPortal::SaveLTX(CInifile& ini, LPCSTR sect_name)
+void CPortal::SaveLTX(CInifile& ini, const char* sect_name)
 {
 	CCustomObject::SaveLTX	(ini, sect_name);
 

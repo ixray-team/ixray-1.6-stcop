@@ -184,8 +184,8 @@ static const Fvector down_dir={0.f,-1.f,0.f};
 void CUI_Camera::Update(float dt)
 {
 	if (m_bMoving){
-    	BOOL bLeftDn = m_Shift&ssLeft;
-    	BOOL bRightDn = m_Shift&ssRight;
+    	bool bLeftDn = m_Shift&ssLeft;
+    	bool bRightDn = m_Shift&ssRight;
 		if ((m_Style==csFreeFly)&&(bLeftDn||bRightDn)&&!(bLeftDn&&bRightDn)){
 			Fvector vmove;
 	        vmove.set( m_CamMat.k );

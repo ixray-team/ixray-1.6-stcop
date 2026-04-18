@@ -13,18 +13,18 @@ class ESoundEnvironment: public CEditShape
 public:
     void				get_box			(Fmatrix& m);
 public:
-						ESoundEnvironment(LPVOID data, LPCSTR name);
+						ESoundEnvironment(LPVOID data, const char* name);
 	void 				Construct		(LPVOID data);
 						~ESoundEnvironment();
     virtual bool		CanAttach		() {return true;}
     virtual void		OnUpdateTransform();
                         
   	virtual bool 		LoadStream			(IReader&);
-  	virtual bool 		LoadLTX				(CInifile& ini, LPCSTR sect_name);
+  	virtual bool 		LoadLTX				(CInifile& ini, const char* sect_name);
 	virtual void 		SaveStream			(IWriter&);
-  	virtual void 		SaveLTX				(CInifile& ini, LPCSTR sect_name);
+  	virtual void 		SaveLTX				(CInifile& ini, const char* sect_name);
 
-	virtual void		FillProp		(LPCSTR pref, PropItemVec& values);
+	virtual void		FillProp		(const char* pref, PropItemVec& values);
 	virtual bool 		GetSummaryInfo	(SSceneSummary* inf);
 	virtual void 		OnSceneUpdate	();
 };

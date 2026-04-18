@@ -12,7 +12,7 @@
 
 //using namespace PS;
 
-EParticlesObject::EParticlesObject(LPVOID data, LPCSTR name):CCustomObject(data,name)
+EParticlesObject::EParticlesObject(LPVOID data, const char* name):CCustomObject(data,name)
 {
 	Construct(data);
 }
@@ -152,7 +152,7 @@ void EParticlesObject::Stop()
         m_Particles->Stop();
 }
 
-bool EParticlesObject::LoadLTX(CInifile& ini, LPCSTR sect_name)
+bool EParticlesObject::LoadLTX(CInifile& ini, const char* sect_name)
 {
     u32 version = ini.r_u32(sect_name, "version");
 
@@ -175,7 +175,7 @@ bool EParticlesObject::LoadLTX(CInifile& ini, LPCSTR sect_name)
     return true;
 }
 
-void EParticlesObject::SaveLTX(CInifile& ini, LPCSTR sect_name)
+void EParticlesObject::SaveLTX(CInifile& ini, const char* sect_name)
 {
 	CCustomObject::SaveLTX(ini, sect_name);
 
@@ -266,7 +266,7 @@ bool EParticlesObject::ExportGame(SExportStreams* F)
 }
 
 
-bool EParticlesObject::Compile(LPCSTR ref_name)
+bool EParticlesObject::Compile(const char* ref_name)
 {
     auto model = smart_cast<IRenderVisual*>(m_Particles);
     ::Render->model_Delete(model);
@@ -305,7 +305,7 @@ void EParticlesObject::OnControlClick(ButtonValue* sender, bool& bModif, bool& b
     bModif = false;
 }
 
-void EParticlesObject::FillProp(LPCSTR pref, PropItemVec& items)
+void EParticlesObject::FillProp(const char* pref, PropItemVec& items)
 {
 	inherited::FillProp(pref, items);
     PropValue* V;

@@ -50,11 +50,11 @@ void CDestroyablePhysicsObject::net_Destroy()
 	CPHCollisionDamageReceiver::Clear();
 }
 
-BOOL CDestroyablePhysicsObject::net_Spawn(CSE_Abstract* DC)
+bool CDestroyablePhysicsObject::net_Spawn(CSE_Abstract* DC)
 {
 	CSE_PHSkeleton *l_tpPHSkeleton = smart_cast<CSE_PHSkeleton*>(DC);
 	child_part = l_tpPHSkeleton && l_tpPHSkeleton->source_id != u16(-1);
-	BOOL res=inherited::net_Spawn(DC);
+	bool res=inherited::net_Spawn(DC);
 	IKinematics		*K=PKinematics(Visual());
 	CInifile* ini=K->LL_UserData();
 

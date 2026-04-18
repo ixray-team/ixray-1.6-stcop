@@ -65,7 +65,7 @@ std::pair<LPCSTR, LPCSTR> CDS0_KinematicsAnimated::LL_MotionDefName_dbg(MotionID
 
 
 
-static LPCSTR name_bool(BOOL v)
+static LPCSTR name_bool(bool v)
 {
 	static  xr_token token_bool[] = { { "false", 0 }, { "true", 1 } };
 	return get_token_name(token_bool, v);
@@ -264,7 +264,7 @@ float CDS0_KinematicsAnimated::get_animation_length(MotionID motion_ID)
 	return							bone_motions->at(motion_ID.idx).GetLength() / anim_speed;
 }
 
-void CDS0_KinematicsAnimated::IBlendSetup(CBlend& B, u16 part, u8 channel, MotionID motion_ID, BOOL  bMixing, float blendAccrue, float blendFalloff, float Speed, BOOL noloop, PlayCallback Callback, LPVOID CallbackParam)
+void CDS0_KinematicsAnimated::IBlendSetup(CBlend& B, u16 part, u8 channel, MotionID motion_ID, bool  bMixing, float blendAccrue, float blendFalloff, float Speed, bool noloop, PlayCallback Callback, LPVOID CallbackParam)
 {
 	VERIFY(B.channel < MAX_CHANNELS);
 	// Setup blend params
@@ -320,7 +320,7 @@ void CDS0_KinematicsAnimated::IFXBlendSetup(CBlend& B, MotionID motion_ID, float
 	B.channel = 0;
 	B.fall_at_end = FALSE;
 }
-CBlend* CDS0_KinematicsAnimated::LL_PlayCycle(u16 part, MotionID motion_ID, BOOL  bMixing, float blendAccrue, float blendFalloff, float Speed, BOOL noloop, PlayCallback Callback, LPVOID CallbackParam, u8 channel/*=0*/)
+CBlend* CDS0_KinematicsAnimated::LL_PlayCycle(u16 part, MotionID motion_ID, bool  bMixing, float blendAccrue, float blendFalloff, float Speed, bool noloop, PlayCallback Callback, LPVOID CallbackParam, u8 channel/*=0*/)
 {
 	// validate and unroll
 	if (!motion_ID.valid())	return 0;
@@ -352,7 +352,7 @@ CBlend* CDS0_KinematicsAnimated::LL_PlayCycle(u16 part, MotionID motion_ID, BOOL
 	blend_cycles[part].push_back(B);
 	return		B;
 }
-CBlend* CDS0_KinematicsAnimated::LL_PlayCycle(u16 part, MotionID motion_ID, BOOL bMixIn, PlayCallback Callback, LPVOID CallbackParam, u8 channel /*=0*/)
+CBlend* CDS0_KinematicsAnimated::LL_PlayCycle(u16 part, MotionID motion_ID, bool bMixIn, PlayCallback Callback, LPVOID CallbackParam, u8 channel /*=0*/)
 {
 	VERIFY(motion_ID.valid());
 	CMotionDef* m_def = m_Motions[motion_ID.slot].motions.motion_def(motion_ID.idx);
@@ -361,13 +361,13 @@ CBlend* CDS0_KinematicsAnimated::LL_PlayCycle(u16 part, MotionID motion_ID, BOOL
 		m_def->Accrue(), m_def->Falloff(), m_def->Speed(), m_def->StopAtEnd(),
 		Callback, CallbackParam, channel);
 }
-CBlend* CDS0_KinematicsAnimated::PlayCycle(LPCSTR  N, BOOL bMixIn, PlayCallback Callback, LPVOID CallbackParam, u8 channel  /*= 0*/)
+CBlend* CDS0_KinematicsAnimated::PlayCycle(LPCSTR  N, bool bMixIn, PlayCallback Callback, LPVOID CallbackParam, u8 channel  /*= 0*/)
 {
 	MotionID motion_ID = ID_Cycle(N);
 	if (motion_ID.valid())	return PlayCycle(motion_ID, bMixIn, Callback, CallbackParam, channel);
 	else { Debug.fatal(DEBUG_INFO, "! MODEL: can't find cycle: %s", N); return 0; }
 }
-CBlend* CDS0_KinematicsAnimated::PlayCycle(MotionID motion_ID, BOOL bMixIn, PlayCallback Callback, LPVOID CallbackParam, u8 channel /*= 0*/)
+CBlend* CDS0_KinematicsAnimated::PlayCycle(MotionID motion_ID, bool bMixIn, PlayCallback Callback, LPVOID CallbackParam, u8 channel /*= 0*/)
 {
 	VERIFY(motion_ID.valid());
 	CMotionDef* m_def = m_Motions[motion_ID.slot].motions.motion_def(motion_ID.idx);
@@ -377,7 +377,7 @@ CBlend* CDS0_KinematicsAnimated::PlayCycle(MotionID motion_ID, BOOL bMixIn, Play
 		Callback, CallbackParam, channel);
 }
 
-CBlend* CDS0_KinematicsAnimated::PlayCycle(u16 partition, MotionID motion_ID, BOOL bMixIn, PlayCallback Callback, LPVOID CallbackParam, u8 channel /*= 0*/)
+CBlend* CDS0_KinematicsAnimated::PlayCycle(u16 partition, MotionID motion_ID, bool bMixIn, PlayCallback Callback, LPVOID CallbackParam, u8 channel /*= 0*/)
 {
 	VERIFY(motion_ID.valid());
 	CMotionDef* m_def = m_Motions[motion_ID.slot].motions.motion_def(motion_ID.idx);
@@ -426,7 +426,7 @@ CBlend* CDS0_KinematicsAnimated::PlayFX(LPCSTR  N, float power_scale)
 	MotionID motion_ID = ID_FX(N);
 	return PlayFX(motion_ID, power_scale);
 }
-//u16 part,u8 channel, MotionID motion_ID, BOOL  bMixing, float blendAccrue, float blendFalloff, float Speed, BOOL noloop, PlayCallback callback(), LPVOID CallbackParam)
+//u16 part,u8 channel, MotionID motion_ID, bool  bMixing, float blendAccrue, float blendFalloff, float Speed, bool noloop, PlayCallback callback(), LPVOID CallbackParam)
 
 CBlend* CDS0_KinematicsAnimated::LL_PlayFX(u16 bone, MotionID motion_ID, float blendAccrue, float blendFalloff, float Speed, float Power)
 {

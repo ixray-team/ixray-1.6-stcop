@@ -20,7 +20,7 @@
 #include <FlexibleVertexFormat.h>
 using namespace FVF;
 
-SHS*	CResourceManager::_CreateHS			(LPCSTR Name)
+SHS*	CResourceManager::_CreateHS			(const char* Name)
 {
 	return CreateShader<SHS>(Name);
 }
@@ -30,7 +30,7 @@ void	CResourceManager::_DeleteHS			(const SHS*	HS	)
 	DestroyShader(HS);
 }
 
-SDS*	CResourceManager::_CreateDS			(LPCSTR Name)
+SDS*	CResourceManager::_CreateDS			(const char* Name)
 {
 	return CreateShader<SDS>(Name);
 }
@@ -40,7 +40,7 @@ void	CResourceManager::_DeleteDS			(const SDS*	DS	)
 	DestroyShader(DS);
 }
 
-SCS*	CResourceManager::_CreateCS			(LPCSTR Name)
+SCS*	CResourceManager::_CreateCS			(const char* Name)
 {
 	return CreateShader<SCS>(Name);
 }
@@ -53,7 +53,7 @@ void	CResourceManager::_DeleteCS			(const SCS*	CS	)
 void fix_texture_name(LPSTR fn);
 
 template <class T>
-BOOL	reclaim		(xr_vector<T*>& vec, const T* ptr)
+bool	reclaim		(xr_vector<T*>& vec, const T* ptr)
 {
 	typename xr_vector<T*>::iterator it	= vec.begin	();
 	typename xr_vector<T*>::iterator end	= vec.end	();
@@ -127,7 +127,7 @@ void		CResourceManager::_DeletePass			(const SPass* P)
 }
 
 //--------------------------------------------------------------------------------------------------------------
-SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
+SVS*	CResourceManager::_CreateVS		(const char* _name)
 {
 	xrCriticalSectionGuard guard(creationGuard);
 	xr_string res_name = _name;
@@ -139,7 +139,7 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 	}
 
 	res_name += RImplementation.getShaderParams();
-	LPCSTR name = res_name.c_str();
+	const char* name = res_name.c_str();
 
 	LPSTR N				= LPSTR		(name);
 	map_VS::iterator I	= m_vs.find	(N);
@@ -156,7 +156,7 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 		string_path					cname;
 		xr_strconcat(cname,::Render->getShaderPath(), _name,".vs.hlsl");
 		FS.update_path				(cname,	_game_shaders_, cname);
-		//		LPCSTR						target		= nullptr;
+		//		const char*						target		= nullptr;
 
 		// duplicate and zero-terminate
 		IReader* file			= FS.r_open(cname);
@@ -177,8 +177,8 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 		FS.r_close				( file );
 
 		// Select target
-		LPCSTR						c_target	= "vs_2_0";
-		LPCSTR						c_entry		= "main";
+		const char*						c_target	= "vs_2_0";
+		const char*						c_entry		= "main";
 
 		if (strstr(data, "main_vs_1_1"))	{ c_target = "vs_1_1"; c_entry = "main_vs_1_1";	}
 		if (strstr(data, "main_vs_2_0"))	{ c_target = "vs_2_0"; c_entry = "main_vs_2_0";	}
@@ -227,11 +227,11 @@ void	CResourceManager::_DeleteVS			(const SVS* vs)
 }
 
 //--------------------------------------------------------------------------------------------------------------
-SPS*	CResourceManager::_CreatePS			(LPCSTR _name)
+SPS*	CResourceManager::_CreatePS			(const char* _name)
 {
 	xrCriticalSectionGuard guard(creationGuard);
 	xr_string res_name = _name + RImplementation.getShaderParams();
-	LPCSTR name = res_name.c_str();
+	const char* name = res_name.c_str();
 
 	LPSTR N				= LPSTR(name);
 	map_PS::iterator I	= m_ps.find	(N);
@@ -274,8 +274,8 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR _name)
 		FS.r_close(R);
 
 		// Select target
-		LPCSTR						c_target	= "ps_2_0";
-		LPCSTR						c_entry		= "main";
+		const char*						c_target	= "ps_2_0";
+		const char*						c_entry		= "main";
 		if (strstr(data,"main_ps_1_1"))			{ c_target = "ps_1_1"; c_entry = "main_ps_1_1";	}
 		if (strstr(data,"main_ps_1_2"))			{ c_target = "ps_1_2"; c_entry = "main_ps_1_2";	}
 		if (strstr(data,"main_ps_1_3"))			{ c_target = "ps_1_3"; c_entry = "main_ps_1_3";	}
@@ -314,11 +314,11 @@ void	CResourceManager::_DeletePS			(const SPS* ps)
 }
 
 //--------------------------------------------------------------------------------------------------------------
-SGS*	CResourceManager::_CreateGS			(LPCSTR _name)
+SGS*	CResourceManager::_CreateGS			(const char* _name)
 {
 	xrCriticalSectionGuard guard(creationGuard);
 	xr_string res_name = _name + RImplementation.getShaderParams();
-	LPCSTR name = res_name.c_str();
+	const char* name = res_name.c_str();
 
 	LPSTR N = LPSTR(name);
 	map_GS::iterator I	= m_gs.find	(N);
@@ -356,8 +356,8 @@ SGS*	CResourceManager::_CreateGS			(LPCSTR _name)
 		R_ASSERT2				( file, cname );
 
 		// Select target
-		LPCSTR						c_target	= "gs_4_0";
-		LPCSTR						c_entry		= "main";
+		const char*						c_target	= "gs_4_0";
+		const char*						c_entry		= "main";
 
 		DWORD flags = D3DCOMPILE_PACK_MATRIX_ROW_MAJOR;
 
@@ -482,7 +482,7 @@ void				CResourceManager::_DeleteConstantTable	(const R_constant_table* C)
 }
 
 //--------------------------------------------------------------------------------------------------------------
-CRT* CResourceManager::_CreateRT(LPCSTR Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount, CRT::CRTCreationFlags CreationFlags)
+CRT* CResourceManager::_CreateRT(const char* Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount, CRT::CRTCreationFlags CreationFlags)
 {
 	R_ASSERT(Name && Name[0] && w && h);
 
@@ -519,7 +519,7 @@ void	CResourceManager::_DeleteRT		(const CRT* RT)
 	Msg	("! ERROR: Failed to find render-target '%s'",*RT->cName);
 }
 
-CRTC* CResourceManager::_CreateRTC(LPCSTR Name, u32 size, ERHI_FORMAT f, CRT::CRTCreationFlags CreationFlags)
+CRTC* CResourceManager::_CreateRTC(const char* Name, u32 size, ERHI_FORMAT f, CRT::CRTCreationFlags CreationFlags)
 {
 	R_ASSERT(Name && Name[0] && size);
 
@@ -619,7 +619,7 @@ void CResourceManager::DeleteGeom(const SGeometry* Geom)
 }
 
 //--------------------------------------------------------------------------------------------------------------
-CTexture* CResourceManager::_CreateTexture	(LPCSTR _Name)
+CTexture* CResourceManager::_CreateTexture	(const char* _Name)
 {
 	PROF_EVENT("_CreateTexture");
 	// DBG_VerifyTextures	();
@@ -646,7 +646,7 @@ CTexture* CResourceManager::_CreateTexture	(LPCSTR _Name)
 	}
 }
 
-CTexture* CResourceManager::_CreateEmptyTexture(LPCSTR _Name, u32 w, u32 h)
+CTexture* CResourceManager::_CreateEmptyTexture(const char* _Name, u32 w, u32 h)
 {
 	// DBG_VerifyTextures	();
 
@@ -702,7 +702,7 @@ void	CResourceManager::_DeleteTexture		(const CTexture* T)
 }
 
 //--------------------------------------------------------------------------------------------------------------
-CMatrix*	CResourceManager::_CreateMatrix	(LPCSTR Name)
+CMatrix*	CResourceManager::_CreateMatrix	(const char* Name)
 {
 	R_ASSERT(Name && Name[0]);
 	if (0==_stricmp(Name,"$null"))	return nullptr;
@@ -737,7 +737,7 @@ void	CResourceManager::_DeleteMatrix		(const CMatrix* M)
 	Msg	("! ERROR: Failed to find xform-def '%s'",*M->cName);
 }
 //--------------------------------------------------------------------------------------------------------------
-CConstant*	CResourceManager::_CreateConstant	(LPCSTR Name)
+CConstant*	CResourceManager::_CreateConstant	(const char* Name)
 {
 	R_ASSERT(Name && Name[0]);
 	if (0==_stricmp(Name,"$null"))	return nullptr;
@@ -801,7 +801,7 @@ void			CResourceManager::_DeleteTextureList(const STextureList* L)
 //--------------------------------------------------------------------------------------------------------------
 SMatrixList*	CResourceManager::_CreateMatrixList(SMatrixList& L)
 {
-	BOOL bEmpty = TRUE;
+	bool bEmpty = TRUE;
 	xrCriticalSectionGuard guard(creationGuard);
 	for (u32 i=0; i<L.size(); i++)	if (L[i]) { bEmpty=FALSE; break; }
 	if (bEmpty)	return nullptr;
@@ -829,7 +829,7 @@ void			CResourceManager::_DeleteMatrixList ( const SMatrixList* L )
 //--------------------------------------------------------------------------------------------------------------
 SConstantList*	CResourceManager::_CreateConstantList(SConstantList& L)
 {
-	BOOL bEmpty = TRUE;
+	bool bEmpty = TRUE;
 	xrCriticalSectionGuard guard(creationGuard);
 	for (u32 i=0; i<L.size(); i++)	if (L[i]) { bEmpty=FALSE; break; }
 	if (bEmpty)	return nullptr;

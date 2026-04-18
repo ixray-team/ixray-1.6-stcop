@@ -11,10 +11,10 @@ private:
 	
 	CUIGameCTA * m_game_ui;
 
-	BOOL	m_bReadMapDesc;
-	BOOL	m_bTeamSelected;
-	BOOL	m_bSkinSelected;
-	BOOL	m_winnerTeamShowed;
+	bool	m_bReadMapDesc;
+	bool	m_bTeamSelected;
+	bool	m_bSkinSelected;
+	bool	m_winnerTeamShowed;
 	
 	CTAGameClCaptionsManager	m_captions_manager;
 
@@ -102,10 +102,10 @@ public:
 	virtual	bool OnKeyboardRelease(int key);
 	
 	virtual	void OnSpawn(CObject* pObj);
-	virtual	BOOL CanCallBuyMenu();
-	virtual BOOL CanCallSkinMenu() {return TRUE;};
-	virtual BOOL CanCallTeamSelectMenu();
-	virtual	BOOL CanCallInventoryMenu();
+	virtual	bool CanCallBuyMenu();
+	virtual bool CanCallSkinMenu() {return TRUE;};
+	virtual bool CanCallTeamSelectMenu();
+	virtual	bool CanCallInventoryMenu();
 			bool LocalPlayerCanBuyItem(shared_str const & name_sect);
 	
 			void	Set_ShowPlayerNames			(bool Show) {m_bShowPlayersNames = Show;};
@@ -163,7 +163,7 @@ public:
 	bool			InWarmUp				()	const;
 	bool			HasTimeLimit			()	const;
 
-	virtual	LPCSTR	GetGameScore			(string32&	score_dest);
+	virtual	const char*	GetGameScore			(string32&	score_dest);
 	virtual	void	OnConnected				();
 	s32				GetGreenTeamScore		() const { return greenTeamScore; };
 	s32				GetBlueTeamScore		() const { return blueTeamScore; };

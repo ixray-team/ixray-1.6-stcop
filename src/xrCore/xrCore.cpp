@@ -16,7 +16,7 @@
 
 XRCORE_API xrCore	Core;
 XRCORE_API u32		build_id;
-XRCORE_API LPCSTR	build_date;
+XRCORE_API const char*	build_date;
 XRCORE_API bool ignore_error_window = false;
 namespace CPU
 {
@@ -31,7 +31,7 @@ char g_application_path[256];
 
 extern xr_hash_map<xr_string, CInifile*>* cached_ini_map;
 
-void xrCore::_initialize	(LPCSTR _ApplicationName, xrLogger::LogCallback cb, BOOL init_fs, LPCSTR fs_fname)
+void xrCore::_initialize	(const char* _ApplicationName, xrLogger::LogCallback cb, bool init_fs, const char* fs_fname)
 {
 	GECSManager = new CECSManager;
 
@@ -134,7 +134,7 @@ void xrCore::_destroy()
 
 //. why ??? 
 #ifdef IXR_WINDOWS
-	BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD ul_reason_for_call, LPVOID lpvReserved)
+BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD ul_reason_for_call, LPVOID lpvReserved)
 {
 	switch (ul_reason_for_call)
 	{

@@ -62,14 +62,22 @@ void _STDCALL StopSubAllocator() {
         SubAllocatorSize=0;                 delete[] HeapStart;
     }
 }
-BOOL _STDCALL StartSubAllocator(UINT SASize)
+
+bool _STDCALL StartSubAllocator(UINT SASize)
 {
-    DWORD t=SASize << 20U;
-    if (SubAllocatorSize == t)              return TRUE;
+    DWORD t = SASize << 20U;
+    if (SubAllocatorSize == t)
+        return true;
+
     StopSubAllocator();
-    if ((HeapStart=new BYTE[t]) == 0)    return FALSE;
-    SubAllocatorSize=t;                     return TRUE;
+    if ((HeapStart = new BYTE[t]) == 0) 
+        return false;
+
+    SubAllocatorSize = t;
+    
+    return true;
 }
+
 static inline void InitSubAllocator()
 {
     memset(BList,0,sizeof(BList));

@@ -57,7 +57,7 @@ public:
 
 							CSoundCollection	(const CSoundCollectionParams &params);
 							~CSoundCollection	();
-		IC	ref_sound		*add				(ESoundTypes type, LPCSTR name) const;
+		IC	ref_sound		*add				(ESoundTypes type, const char* name) const;
 			const ref_sound	&random				(const u32 &id);
 	};
 
@@ -136,9 +136,9 @@ public:
 						CSoundPlayer				(CObject *object);
 	virtual				~CSoundPlayer				();
 	virtual	void		reinit						();
-	virtual	void		reload						(LPCSTR section);
+	virtual	void		reload						(const char* section);
 			void		unload						();
-			u32			add							(LPCSTR prefix, u32 max_count, ESoundTypes type, u32 priority, u32 mask, u32 internal_type, LPCSTR bone_name, CSound_UserDataPtr data = 0);
+			u32			add							(const char* prefix, u32 max_count, ESoundTypes type, u32 priority, u32 mask, u32 internal_type, const char* bone_name, CSound_UserDataPtr data = 0);
 			void		remove						(u32 internal_type);
 			void		clear						();
 			void		play						(u32 internal_type, u32 max_start_time = 0, u32 min_start_time = 0, u32 max_stop_time = 0, u32 min_stop_time = 0, u32 id = u32(-1));

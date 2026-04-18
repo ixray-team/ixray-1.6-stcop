@@ -11,13 +11,13 @@
 #include "CustomHUD.h"
 #include "CameraManager.h"
 
-extern BOOL g_bDisableRedText;
+extern bool g_bDisableRedText;
 static Flags32	s_hud_flag	= {0};
 static Flags32	s_dev_flags	= {0};
 
-BOOL stored_weapon;
-BOOL stored_cross;
-BOOL stored_red_text;
+bool stored_weapon;
+bool stored_cross;
+bool stored_red_text;
 
 CDemoRecord * xrDemoRecord = 0;
 CDemoRecord::force_position CDemoRecord:: g_position = { false, { 0, 0, 0 } };
@@ -278,7 +278,7 @@ void CDemoRecord::MakeCubeMapFace(Fvector &D, Fvector &N)
 	m_Stage++;
 }
 
-BOOL CDemoRecord::ProcessCam(SCamEffectorInfo& info)
+bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 {
 	info.dont_apply					= false;
 	if (0==file)					return TRUE;
@@ -523,7 +523,7 @@ void CDemoRecord::MakeScreenshot	()
 	m_Stage = 0;
 }
 
-void CDemoRecord::MakeLevelMapScreenshot(BOOL bHQ)
+void CDemoRecord::MakeLevelMapScreenshot(bool bHQ)
 {
 	Console->Execute("run_string level.set_weather(\"map\",true)");
 

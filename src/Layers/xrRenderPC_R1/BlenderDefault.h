@@ -6,12 +6,12 @@
 class CBlender_default		: public IBlender  
 {
 public:
-	virtual		LPCSTR		getComment()	{ return "LEVEL: lmap*base (default)";	}
-	virtual		BOOL		canBeDetailed()	{ return TRUE; }
-	virtual		BOOL		canBeLMAPped()	{ return TRUE; }
+	virtual		const char*		getComment()	{ return "LEVEL: lmap*base (default)";	}
+	virtual		bool		canBeDetailed()	{ return TRUE; }
+	virtual		bool		canBeLMAPped()	{ return TRUE; }
 
 #ifdef _EDITOR
-	virtual		BOOL		canUseSteepParallax() {
+	virtual		bool		canUseSteepParallax() {
 		return TRUE;
 	}
 #endif

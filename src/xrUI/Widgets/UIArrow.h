@@ -13,7 +13,7 @@ public:
 					CUIArrow		();
 	virtual			~CUIArrow		();
 
-			void	init_from_xml	( CUIXml& xml, LPCSTR path, CUIWindow* parent );
+			void	init_from_xml	( CUIXml& xml, const char* path, CUIWindow* parent );
 			void	SetNewValue		( float new_value );
 			void	SetPos			( float pos );
 	IC		float	GetPos			()	{	return m_pos;	}

@@ -14,13 +14,13 @@ class CSHGameMtlPairTools: public ISHTools
     u32						m_StoreFlags;
 public:
     SGameMtlPair*			m_MtlPair;                                
-    virtual void			AppendItem			(LPCSTR folder_name, LPCSTR parent_name=0){}
+    virtual void			AppendItem			(const char* folder_name, const char* parent_name=0){}
 	virtual void 			FillItemList		();
 public:
 							CSHGameMtlPairTools (const ISHInit& init);
     virtual 				~CSHGameMtlPairTools();
 
-    virtual LPCSTR			ToolsName			(){return "Game Material Pairs";}
+    virtual const char*			ToolsName			(){return "Game Material Pairs";}
 
 	virtual void			Reload				();
 	virtual void			Load				();
@@ -34,7 +34,7 @@ public:
 
     // misc
     virtual void			ResetCurrentItem	();
-    virtual void			SetCurrentItem		(LPCSTR name, bool bView);
+    virtual void			SetCurrentItem		(const char* name, bool bView);
 
 	virtual void 			RealUpdateProperties();
 	virtual void 			RealUpdateList		();

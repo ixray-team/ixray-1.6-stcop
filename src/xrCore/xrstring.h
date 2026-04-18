@@ -53,11 +53,11 @@ public:
 	xr_string(const xr_string& other) = default;
 	xr_string(xr_string&& other) noexcept = default;
 
-	xr_string(LPCSTR Str);
-	xr_string(LPCSTR Str, u32 Size);
+	xr_string(const char* Str);
+	xr_string(const char* Str, u32 Size);
 	xr_string(Super&& other);
 
-	xr_string& operator=(LPCSTR Str);
+	xr_string& operator=(const char* Str);
 	xr_string& operator=(const Super& other);
 
 	xr_string& operator=(const xr_string& other) = default;
@@ -71,8 +71,8 @@ public:
 	xr_vector<xr_string> Split(u32 NumberOfSplits, ...) const;
 
 	bool StartWith(const xr_string& Other) const;
-	bool StartWith(LPCSTR Str) const;
-	bool StartWith(LPCSTR Str, size_t Size) const;
+	bool StartWith(const char* Str) const;
+	bool StartWith(const char* Str, size_t Size) const;
 
 	bool Contains(const xr_string& SubStr) const;
 	bool EqualWithCaseInsensitive(const xr_string& SubStr) const;

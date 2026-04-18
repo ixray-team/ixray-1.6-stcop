@@ -18,7 +18,7 @@ namespace StackTrace
 
 	bool GetNextStackFrameString(LPSTACKFRAME stackFrame, PCONTEXT threadCtx, std::string& frameStr)
 	{
-		BOOL result = StackWalk(MACHINE_TYPE, GetCurrentProcess(), GetCurrentThread(), stackFrame, threadCtx, nullptr,
+		bool result = StackWalk(MACHINE_TYPE, GetCurrentProcess(), GetCurrentThread(), stackFrame, threadCtx, nullptr,
 			SymFunctionTableAccess, SymGetModuleBase, nullptr);
 
 		if (result == FALSE || stackFrame->AddrPC.Offset == 0)

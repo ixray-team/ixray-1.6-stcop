@@ -13,7 +13,7 @@ void CDS0_LensFlareRender::Copy(ILensFlareRender& _in)
 #define FAR_DIST g_pGamePersistent->Environment().CurrentEnv->far_plane
 
 
-void CDS0_LensFlareRender::Render(CLensFlare& owner, BOOL bSun, BOOL bFlares, BOOL bGradient)
+void CDS0_LensFlareRender::Render(CLensFlare& owner, bool bSun, bool bFlares, bool bGradient)
 {
 	
 

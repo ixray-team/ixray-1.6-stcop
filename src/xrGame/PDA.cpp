@@ -15,7 +15,7 @@
 #include "../ui/UIGameCustom.h"
 #include "../ui/UIPdaWnd.h"
 
-BOOL CPda::net_Spawn(CSE_Abstract* DC)
+bool CPda::net_Spawn(CSE_Abstract* DC)
 {
 	inherited::net_Spawn(DC);
 
@@ -36,7 +36,7 @@ void CPda::net_Destroy()
 	UpdateActiveContacts();
 }
 
-void CPda::Load(LPCSTR section)
+void CPda::Load(const char* section)
 {
 	inherited::Load(section);
 
@@ -149,7 +149,7 @@ void CPda::feel_touch_delete(CObject* O)
 	}
 }
 
-BOOL CPda::feel_touch_contact(CObject* O)
+bool CPda::feel_touch_contact(CObject* O)
 {
 	if (O == nullptr || O->getDestroy())
 	{

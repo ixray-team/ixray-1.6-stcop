@@ -58,10 +58,10 @@ public:
 	ICF	SelfRef	mul(const Self& r, T x, T y)				{ x1=r.x1*x;	y1=r.y1*y;	x2=r.x2*x;	y2=r.y2*y;	return *this;	};
 	ICF	SelfRef	div(const Self& r, T x, T y)				{ x1=r.x1/x;	y1=r.y1/y;	x2=r.x2/x;	y2=r.y2/y;	return *this;	};
 
-	ICF	BOOL	in (T  x, T  y)		const					{ return (x>=x1) && (x<=x2) && (y>=y1) && (y<=y2);	};
-	ICF	BOOL	in (Tvector &p)		const					{ return (p.x>=x1) && (p.x<=x2) && (p.y>=y1) && (p.y<=y2);	};
-	ICF	BOOL	cmp(_rect<int> &r)							{ return x1==r.x1 && y1==r.y1 && x2==r.x2 && y2==r.y2; };
-	ICF	BOOL	cmp(_rect<float> &r)						{ return fsimilar(x1,r.x1) && fsimilar(y1,r.y1) && fsimilar(x2,r.x2) && fsimilar(y2,r.y2); };
+	ICF	bool	in (T  x, T  y)		const					{ return (x>=x1) && (x<=x2) && (y>=y1) && (y<=y2);	};
+	ICF	bool	in (Tvector &p)		const					{ return (p.x>=x1) && (p.x<=x2) && (p.y>=y1) && (p.y<=y2);	};
+	ICF	bool	cmp(_rect<int> &r)							{ return x1==r.x1 && y1==r.y1 && x2==r.x2 && y2==r.y2; };
+	ICF	bool	cmp(_rect<float> &r)						{ return fsimilar(x1,r.x1) && fsimilar(y1,r.y1) && fsimilar(x2,r.x2) && fsimilar(y2,r.y2); };
 	
 	ICF	void	getcenter(Tvector& center)	const			{ center.add(rb,lt); center.div(2); }
 	ICF	void	getsize(Tvector& sz)	const				{ sz.sub(rb,lt); }
@@ -74,10 +74,10 @@ public:
 
 
 
-	ICF BOOL intersected(SelfCRef b1, SelfCRef b2) const {return !(b1.x1>b2.x2 || b1.x2<b2.x1 || b1.y1>b2.y2 ||  b1.y2<b2.y1);}
-	ICF BOOL intersected(SelfCRef b) const {return intersected(*this,b);}
+	ICF bool intersected(SelfCRef b1, SelfCRef b2) const {return !(b1.x1>b2.x2 || b1.x2<b2.x1 || b1.y1>b2.y2 ||  b1.y2<b2.y1);}
+	ICF bool intersected(SelfCRef b) const {return intersected(*this,b);}
 
-	ICF BOOL intersection(SelfCRef b1, SelfCRef b2)
+	ICF bool intersection(SelfCRef b1, SelfCRef b2)
 	{
 		if (!intersected(b1,b2))
 			return	(FALSE);
@@ -96,7 +96,7 @@ typedef _rect<double>	Drect;
 typedef _rect<int>		Irect;
 
 template <class T>
-ICF BOOL	_valid			(const _rect<T>& m)
+ICF bool	_valid			(const _rect<T>& m)
 { 
 	return _valid(m.lt) && _valid(m.rb);
 }

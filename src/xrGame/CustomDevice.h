@@ -39,8 +39,8 @@ public:
 	CCustomDevice() = default;
 	~CCustomDevice() override;
 
-	BOOL net_Spawn(CSE_Abstract* DC) override;
-	void LoadSounds(LPCSTR section) override;
+	bool net_Spawn(CSE_Abstract* DC) override;
+	void LoadSounds(const char* section) override;
 
 	void OnH_B_Independent(bool just_before_destroy) override;
 

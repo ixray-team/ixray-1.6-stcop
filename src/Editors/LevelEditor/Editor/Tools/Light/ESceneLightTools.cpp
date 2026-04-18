@@ -145,7 +145,7 @@ void ESceneLightTool::OnControlRenameRemoveClick(ButtonValue* V, bool& bDataModi
 	ExecCommand(COMMAND_UPDATE_PROPERTIES);
 	bDataModified = true;*/
 }
-void ESceneLightTool::FillProp(LPCSTR pref, PropItemVec& items)
+void ESceneLightTool::FillProp(const char* pref, PropItemVec& items)
 {
     ButtonValue *B = 0;
     PropValue* V = 0;
@@ -218,7 +218,7 @@ xr_rtoken* ESceneLightTool::FindLightControl(int id)
 	return 0;
 }
 
-RTokenVecIt ESceneLightTool::FindLightControlIt(LPCSTR name)
+RTokenVecIt ESceneLightTool::FindLightControlIt(const char* name)
 {
 	RTokenVecIt		_I 	= lcontrols.begin();
 	RTokenVecIt		_E 	= lcontrols.end();
@@ -227,7 +227,7 @@ RTokenVecIt ESceneLightTool::FindLightControlIt(LPCSTR name)
 	return lcontrols.end();
 }
 
-void ESceneLightTool::AppendLightControl(LPCSTR nm, u32* idx)
+void ESceneLightTool::AppendLightControl(const char* nm, u32* idx)
 {
 	xr_string name = nm; _Trim(name);
 	if (name.empty()) return;
@@ -235,7 +235,7 @@ void ESceneLightTool::AppendLightControl(LPCSTR nm, u32* idx)
 	lcontrols.push_back	(xr_rtoken(name.c_str(),idx?*idx:lcontrol_last_idx++));
 }
 
-void ESceneLightTool::RemoveLightControl(LPCSTR name)
+void ESceneLightTool::RemoveLightControl(const char* name)
 {
 	RTokenVecIt it	= FindLightControlIt(name);
 	if (it!=lcontrols.end()) lcontrols.erase(it);
@@ -272,7 +272,7 @@ void ESceneLightTool::RemoveControls()
 }
 
 
-CCustomObject* ESceneLightTool::CreateObject(LPVOID data, LPCSTR name)
+CCustomObject* ESceneLightTool::CreateObject(LPVOID data, const char* name)
 {
 	CCustomObject* O	= new CLight(data,name);
 	O->FParentTools		= this;
@@ -335,7 +335,7 @@ void CLight:xr_token sun_quality[]={
 	{ 0,				0	}
 };
 
-:FillSunProp(LPCSTR pref, PropItemVec& items)
+:FillSunProp(const char* pref, PropItemVec& items)
 {
 	CEditFlare& F 			= m_LensFlare;
 	PropValue* prop			= 0;

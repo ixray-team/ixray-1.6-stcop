@@ -2,7 +2,7 @@
 #include "PowerCell.h"
 #include "UICellItem.h"
 
-void PowerCell::Load(LPCSTR section)
+void PowerCell::Load(const char* section)
 {
     CInventoryItemObject::Load(section);
 

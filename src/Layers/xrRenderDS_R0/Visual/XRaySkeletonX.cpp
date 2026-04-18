@@ -271,7 +271,7 @@ inline void 	get_pos_bones(const vertBoned4W& vert, Fvector& p, CDS0_Kinematics*
 	p.add(P3);
 }
 template<typename T_vertex, typename T_buffer >
-inline BOOL pick_bone(T_buffer vertices, CDS0_Kinematics* Parent, IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)
+inline bool pick_bone(T_buffer vertices, CDS0_Kinematics* Parent, IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)
 {
 
 
@@ -291,28 +291,28 @@ inline BOOL pick_bone(T_buffer vertices, CDS0_Kinematics* Parent, IKinematics::p
 	}
 	return FALSE;
 }
-BOOL CDS0_SkeletonX::_PickBoneSoft1W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)
+bool CDS0_SkeletonX::_PickBoneSoft1W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)
 {
 	return pick_bone<vertBoned1W>(Vertices1W, Parent, r, dist, S, D, indices, faces);
 }
 
-BOOL CDS0_SkeletonX::_PickBoneSoft2W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)
+bool CDS0_SkeletonX::_PickBoneSoft2W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)
 {
 	return pick_bone<vertBoned2W>(Vertices2W, Parent, r, dist, S, D, indices, faces);
 }
 
-BOOL CDS0_SkeletonX::_PickBoneSoft3W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)
+bool CDS0_SkeletonX::_PickBoneSoft3W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)
 {
 	return pick_bone<vertBoned3W>(Vertices3W, Parent, r, dist, S, D, indices, faces);
 }
 
-BOOL CDS0_SkeletonX::_PickBoneSoft4W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)
+bool CDS0_SkeletonX::_PickBoneSoft4W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)
 {
 	return pick_bone<vertBoned4W>(Vertices4W, Parent, r, dist, S, D, indices, faces);
 }
 
 
-BOOL CDS0_SkeletonX::has_visible_bones()
+bool CDS0_SkeletonX::has_visible_bones()
 {
 	if (RM_SINGLE == RenderMode)
 	{

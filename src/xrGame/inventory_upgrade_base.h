@@ -45,11 +45,11 @@ public:
 	void construct(const shared_str& upgrade_id, Manager& manager_r);
 	
 	IC const shared_str& id() const { return m_id; }
-	IC LPCSTR id_str() const { return m_id.c_str(); }
+	IC const char* id_str() const { return m_id.c_str(); }
 	IC bool is_known() const { return m_known; }
 
 #ifdef DEBUG
-	virtual void log_hierarchy(LPCSTR nest);
+	virtual void log_hierarchy(const char* nest);
 #endif // DEBUG
 
 	virtual bool is_root();
@@ -73,7 +73,7 @@ protected:
 	Groups_type m_depended_groups = {};
 
 protected:
-	void add_dependent_groups(LPCSTR groups_str, Manager& manager_r);
+	void add_dependent_groups(const char* groups_str, Manager& manager_r);
 
 }; // class UpgradeBase
 } // namespace inventory::upgrade

@@ -45,7 +45,7 @@ using namespace inventory::upgrade;
 using namespace InventoryUtilities;
 
 
-const LPCSTR g_inventory_upgrade_xml = "inventory_upgrade.xml";
+const char* g_inventory_upgrade_xml = "inventory_upgrade.xml";
 
 CUIInventoryUpgradeWnd::Scheme::~Scheme()
 {
@@ -292,7 +292,7 @@ void CUIInventoryUpgradeWnd::SetCurScheme(const shared_str& id)
 
 bool CUIInventoryUpgradeWnd::CheckEnableDisassembleButton(CInventoryItem& inv_item)
 {
-	LPCSTR item_name = inv_item.m_section_id.c_str();
+	const char* item_name = inv_item.m_section_id.c_str();
 	float condition = inv_item.GetCondition();
 
 	luabind::functor<bool> funct;
@@ -327,7 +327,7 @@ bool CUIInventoryUpgradeWnd::install_item(CInventoryItem& inv_item, bool can_upg
 		return false;
 	}
 
-	LPCSTR scheme_name = Level().m_upgrade_manager->get_item_scheme(inv_item);
+	const char* scheme_name = Level().m_upgrade_manager->get_item_scheme(inv_item);
 	if (!scheme_name)
 	{
 #ifdef DEBUG
@@ -348,7 +348,7 @@ bool CUIInventoryUpgradeWnd::install_item(CInventoryItem& inv_item, bool can_upg
 			m_back->AttachChild(ui_item->m_point);
 		}
 
-		LPCSTR upgrade_name = Level().m_upgrade_manager->get_upgrade_by_index(inv_item, ui_item->get_scheme_index());
+		const char* upgrade_name = Level().m_upgrade_manager->get_upgrade_by_index(inv_item, ui_item->get_scheme_index());
 		ui_item->init_upgrade(upgrade_name, inv_item);
 
 		Upgrade_type* upgrade_p = Level().m_upgrade_manager->get_upgrade(upgrade_name);
@@ -418,7 +418,7 @@ bool CUIInventoryUpgradeWnd::DBClickOnUIUpgrade(Upgrade_type const* upgr)
 	return false;
 }
 
-void CUIInventoryUpgradeWnd::AskUsing(LPCSTR text, LPCSTR upgrade_name)
+void CUIInventoryUpgradeWnd::AskUsing(const char* text, const char* upgrade_name)
 {
 	VERIFY(m_inv_item);
 	VERIFY(upgrade_name);

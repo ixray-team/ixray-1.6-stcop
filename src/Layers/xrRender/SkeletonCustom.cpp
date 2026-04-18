@@ -14,10 +14,10 @@ int psSkeletonUpdate = 32;
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-bool	pred_N(const std::pair<shared_str,u32>&	N, LPCSTR B)			{
+bool	pred_N(const std::pair<shared_str,u32>&	N, const char* B)			{
 	return xr_strcmp(*N.first,B)<0;
 }
-u16		CKinematics::LL_BoneID		(LPCSTR B)			{
+u16		CKinematics::LL_BoneID		(const char* B)			{
 	accel::iterator I	= std::lower_bound	(bone_map_N->begin(),bone_map_N->end(),B,pred_N);
 	if (I == bone_map_N->end())			return BI_NONE;
 	if (0 != xr_strcmp(*(I->first),B))	return BI_NONE;
@@ -34,7 +34,7 @@ u16		CKinematics::LL_BoneID		(const shared_str& B)	{
 }
 
 //
-LPCSTR CKinematics::LL_BoneName_dbg	(u16 ID)
+const char* CKinematics::LL_BoneName_dbg	(u16 ID)
 {
 	CKinematics::accel::iterator _I, _E=bone_map_N->end();
 	for (_I	= bone_map_N->begin(); _I!=_E; ++_I)	if (_I->second==ID) return *_I->first;
@@ -314,7 +314,7 @@ void iBuildGroups(CBoneData* B, buffer_vector<u16>& tgt, u16 id, u16& last_id)
 void CKinematics::LL_Validate()
 {
 	// check breakable
-    BOOL bCheckBreakable			= FALSE;
+    bool bCheckBreakable			= FALSE;
     for (u16 k=0; k<LL_BoneCount(); k++){
         if (LL_GetData(k).IK_data.ik_flags.is(SJointIKData::flBreakable)&&(LL_GetData(k).IK_data.type!=jtNone)) {
         	bCheckBreakable			= TRUE;
@@ -323,7 +323,7 @@ void CKinematics::LL_Validate()
     }
 
     if (bCheckBreakable){
-        BOOL bValidBreakable		= TRUE;
+        bool bValidBreakable		= TRUE;
 
 		GroupIDs.clear();
         LL_GetBoneGroups			(GroupIDs);
@@ -452,7 +452,7 @@ void CKinematics::Release		()
 	inherited::Release();
 }
 
-void CKinematics::LL_SetBoneVisible(u16 bone_id, BOOL val, BOOL bRecursive)
+void CKinematics::LL_SetBoneVisible(u16 bone_id, bool val, bool bRecursive)
 {
 	VERIFY2(bone_id < LL_BoneCount(), make_string<const char*>("visual_name: %s, bone: %s, bone_id: %d", dbg_name.c_str(), LL_BoneName_dbg(bone_id), bone_id));
 
@@ -688,7 +688,7 @@ void CKinematics::AddWallmark(const Fmatrix* parent_xform, const Fvector3& start
 	P.transform_dir(D,dir);
 	// find pick point
 	float dist = flt_max;
-	BOOL picked = FALSE;
+	bool picked = FALSE;
 	size_t bones_count = bones->size();
 	buffer_vector<Fobb> cache_obb(_alloca(bones_count * sizeof(Fobb)), bones_count);
 	//если поймаете исключение замените на xr_vector

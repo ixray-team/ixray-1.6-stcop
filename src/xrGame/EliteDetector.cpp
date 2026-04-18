@@ -13,7 +13,7 @@ CEliteDetector::CEliteDetector()
 	m_ui_xml_tag = "elite";
 }
 
-void CEliteDetector::Load(LPCSTR section)
+void CEliteDetector::Load(const char* section)
 {
 	inherited::Load(section);
 	m_ui_xml_tag = READ_IF_EXISTS(pSettings, r_string, section, "ui_xml_tag", m_ui_xml_tag);
@@ -249,7 +249,7 @@ CScientificDetector::~CScientificDetector()
 	m_zones.destroy();
 }
 
-void  CScientificDetector::Load(LPCSTR section)
+void  CScientificDetector::Load(const char* section)
 {
 	inherited::Load(section);
 	m_zones.load(section, "zone");

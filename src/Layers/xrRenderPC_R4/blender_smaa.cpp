@@ -11,7 +11,7 @@ void CBlender_SMAA::Compile(CBlender_Compile& C)
     switch (C.iElement)
     {
     case 0:
-        C.r_Pass("smaa_edge_detect", "smaa_edge_detect", FALSE, FALSE, FALSE);
+        C.r_Pass("smaa_edge_detect", "smaa_edge_detect", false, false, false);
         C.r_dx10Texture("s_image", r2_RT_generic0);
         C.r_dx10Texture("s_position", r2_RT_P);
 
@@ -22,7 +22,7 @@ void CBlender_SMAA::Compile(CBlender_Compile& C)
 
         break;
     case 1:
-        C.r_Pass("smaa_bweight_calc", "smaa_bweight_calc", FALSE, FALSE, FALSE);
+        C.r_Pass("smaa_bweight_calc", "smaa_bweight_calc", false, false, false);
 
         C.r_dx10Texture("s_edgetex", r2_RT_smaa_edgetex);
         C.r_dx10Texture("s_areatex", "shaders\\smaa\\smaa_area_tex_dx10");
@@ -35,7 +35,7 @@ void CBlender_SMAA::Compile(CBlender_Compile& C)
 
         break;
     case 2:
-        C.r_Pass("smaa_neighbour_blend", "smaa_neighbour_blend", FALSE, FALSE, FALSE);
+        C.r_Pass("smaa_neighbour_blend", "smaa_neighbour_blend", false, false, false);
 
         C.r_dx10Texture("s_image", r2_RT_generic0);
         C.r_dx10Texture("s_blendtex", r2_RT_smaa_blendtex);

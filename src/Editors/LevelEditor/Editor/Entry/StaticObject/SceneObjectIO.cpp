@@ -8,7 +8,7 @@
 #define SCENEOBJ_CHUNK_PLACEMENT     	0x0904
 #define SCENEOBJ_CHUNK_FLAGS			0x0905
 #define SCENEOBJ_CHUNK_SURFACE			0x0906
-bool CSceneObject::LoadLTX(CInifile& ini, LPCSTR sect_name)
+bool CSceneObject::LoadLTX(CInifile& ini, const char* sect_name)
 {
     bool bRes = true;
 	do
@@ -113,7 +113,7 @@ bool CSceneObject::LoadLTX(CInifile& ini, LPCSTR sect_name)
     return bRes;
 }
 
-void CSceneObject::SaveLTX(CInifile& ini, LPCSTR sect_name)
+void CSceneObject::SaveLTX(CInifile& ini, const char* sect_name)
 {
 	CCustomObject::SaveLTX		(ini, sect_name);
 

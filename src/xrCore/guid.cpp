@@ -38,7 +38,7 @@ XRCORE_API xrGUID generate_guid()
 	return (result);
 }
 
-XRCORE_API LPCSTR generate_guid(const xrGUID& guid, LPSTR buffer, const u32& buffer_size)
+XRCORE_API const char* generate_guid(const xrGUID& guid, LPSTR buffer, const u32& buffer_size)
 {
 #ifdef IXR_WINDOWS
 	static_assert(sizeof(xrGUID) == sizeof(GUID), "Different GUID types");
@@ -52,8 +52,8 @@ XRCORE_API LPCSTR generate_guid(const xrGUID& guid, LPSTR buffer, const u32& buf
 		case RPC_S_OUT_OF_MEMORY: NODEFAULT;
 		default: NODEFAULT;
 	}
-	VERIFY(buffer_size > xr_strlen((LPCSTR)temp2));
-	xr_strcpy(buffer, buffer_size, (LPCSTR)temp2);
+	VERIFY(buffer_size > xr_strlen((const char*)temp2));
+	xr_strcpy(buffer, buffer_size, (const char*)temp2);
 	RpcStringFreeA(&temp2);
 #else
 //	uuid_t uuid;

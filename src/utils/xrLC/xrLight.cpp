@@ -62,7 +62,7 @@ void CBuild::ProcessLMAPS_CPU()
 #include "../xrLC_Light/light_point.h"
 #endif
 
-extern XRCORE_API BOOL			g_bEnableStatGather;
+extern XRCORE_API bool			g_bEnableStatGather;
 
 void	CBuild::LMaps					()
 {

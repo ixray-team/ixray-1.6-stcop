@@ -23,7 +23,7 @@ CEF_Storage *ef_storage()
 	return	(&ai().ef_storage());
 }
 
-float evaluate(CEF_Storage *ef_storage, LPCSTR function, CScriptGameObject *object0, CScriptGameObject *object1, CScriptGameObject *object2, CScriptGameObject *object3)
+float evaluate(CEF_Storage *ef_storage, const char* function, CScriptGameObject *object0, CScriptGameObject *object1, CScriptGameObject *object2, CScriptGameObject *object3)
 {
 	ef_storage->alife_evaluation(false);
 
@@ -51,22 +51,22 @@ float evaluate(CEF_Storage *ef_storage, LPCSTR function, CScriptGameObject *obje
 	return			(f->ffGetValue());
 }
 
-float evaluate(CEF_Storage *ef_storage, LPCSTR function, CScriptGameObject *object0, CScriptGameObject *object1, CScriptGameObject *object2)
+float evaluate(CEF_Storage *ef_storage, const char* function, CScriptGameObject *object0, CScriptGameObject *object1, CScriptGameObject *object2)
 {
 	return			(evaluate(ef_storage,function, object0, object1, object2,0));
 }
 
-float evaluate(CEF_Storage *ef_storage, LPCSTR function, CScriptGameObject *object0, CScriptGameObject *object1)
+float evaluate(CEF_Storage *ef_storage, const char* function, CScriptGameObject *object0, CScriptGameObject *object1)
 {
 	return			(evaluate(ef_storage,function, object0, object1,0,0));
 }
 
-float evaluate(CEF_Storage *ef_storage, LPCSTR function, CScriptGameObject *_0)
+float evaluate(CEF_Storage *ef_storage, const char* function, CScriptGameObject *_0)
 {
 	return			(evaluate(ef_storage,function,_0,0,0,0));
 }
 
-float evaluate(CEF_Storage *ef_storage, LPCSTR function, CSE_ALifeObject *object0, CSE_ALifeObject *object1, CSE_ALifeObject *object2, CSE_ALifeObject *object3)
+float evaluate(CEF_Storage *ef_storage, const char* function, CSE_ALifeObject *object0, CSE_ALifeObject *object1, CSE_ALifeObject *object2, CSE_ALifeObject *object3)
 {
 	ef_storage->alife_evaluation(true);
 
@@ -94,17 +94,17 @@ float evaluate(CEF_Storage *ef_storage, LPCSTR function, CSE_ALifeObject *object
 	return			(f->ffGetValue());
 }
 
-float evaluate(CEF_Storage *ef_storage, LPCSTR function, CSE_ALifeObject *object0, CSE_ALifeObject *object1, CSE_ALifeObject *object2)
+float evaluate(CEF_Storage *ef_storage, const char* function, CSE_ALifeObject *object0, CSE_ALifeObject *object1, CSE_ALifeObject *object2)
 {
 	return			(evaluate(ef_storage,function, object0, object1, object2,0));
 }
 
-float evaluate(CEF_Storage *ef_storage, LPCSTR function, CSE_ALifeObject *object0, CSE_ALifeObject *object1)
+float evaluate(CEF_Storage *ef_storage, const char* function, CSE_ALifeObject *object0, CSE_ALifeObject *object1)
 {
 	return			(evaluate(ef_storage,function, object0, object1,0,0));
 }
 
-float evaluate(CEF_Storage *ef_storage, LPCSTR function, CSE_ALifeObject *object0)
+float evaluate(CEF_Storage *ef_storage, const char* function, CSE_ALifeObject *object0)
 {
 	return			(evaluate(ef_storage,function, object0,0,0,0));
 }
@@ -117,13 +117,13 @@ void CEF_Storage::script_register(lua_State *L)
 		def("ef_storage",&ef_storage),
 
 		class_<CEF_Storage>("cef_storage")
-			.def("evaluate",	(float (*)(CEF_Storage*,LPCSTR,CScriptGameObject*))(&evaluate))
-			.def("evaluate",	(float (*)(CEF_Storage*,LPCSTR,CScriptGameObject*,CScriptGameObject*))(&evaluate))
-			.def("evaluate",	(float (*)(CEF_Storage*,LPCSTR,CScriptGameObject*,CScriptGameObject*,CScriptGameObject*))(&evaluate))
-			.def("evaluate",	(float (*)(CEF_Storage*,LPCSTR,CScriptGameObject*,CScriptGameObject*,CScriptGameObject*,CScriptGameObject*))(&evaluate))
-			.def("evaluate",	(float (*)(CEF_Storage*,LPCSTR,CSE_ALifeObject*))(&evaluate))
-			.def("evaluate",	(float (*)(CEF_Storage*,LPCSTR,CSE_ALifeObject*,CSE_ALifeObject*))(&evaluate))
-			.def("evaluate",	(float (*)(CEF_Storage*,LPCSTR,CSE_ALifeObject*,CSE_ALifeObject*,CSE_ALifeObject*))(&evaluate))
-			.def("evaluate",	(float (*)(CEF_Storage*,LPCSTR,CSE_ALifeObject*,CSE_ALifeObject*,CSE_ALifeObject*,CSE_ALifeObject*))(&evaluate))
+			.def("evaluate",	(float (*)(CEF_Storage*,const char*,CScriptGameObject*))(&evaluate))
+			.def("evaluate",	(float (*)(CEF_Storage*,const char*,CScriptGameObject*,CScriptGameObject*))(&evaluate))
+			.def("evaluate",	(float (*)(CEF_Storage*,const char*,CScriptGameObject*,CScriptGameObject*,CScriptGameObject*))(&evaluate))
+			.def("evaluate",	(float (*)(CEF_Storage*,const char*,CScriptGameObject*,CScriptGameObject*,CScriptGameObject*,CScriptGameObject*))(&evaluate))
+			.def("evaluate",	(float (*)(CEF_Storage*,const char*,CSE_ALifeObject*))(&evaluate))
+			.def("evaluate",	(float (*)(CEF_Storage*,const char*,CSE_ALifeObject*,CSE_ALifeObject*))(&evaluate))
+			.def("evaluate",	(float (*)(CEF_Storage*,const char*,CSE_ALifeObject*,CSE_ALifeObject*,CSE_ALifeObject*))(&evaluate))
+			.def("evaluate",	(float (*)(CEF_Storage*,const char*,CSE_ALifeObject*,CSE_ALifeObject*,CSE_ALifeObject*,CSE_ALifeObject*))(&evaluate))
 	];
 }

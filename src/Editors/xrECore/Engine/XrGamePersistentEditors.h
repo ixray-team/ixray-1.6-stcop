@@ -7,8 +7,8 @@ class ECORE_API XrGamePersistentEditors :public IGame_Persistent
 public:
 	XrGamePersistentEditors();
 	virtual ~XrGamePersistentEditors();
-	virtual void					PreStart			(LPCSTR op);
-	virtual void					Start				(LPCSTR op);
+	virtual void					PreStart			(const char* op);
+	virtual void					Start				(const char* op);
 	virtual void					Disconnect			();
 
 

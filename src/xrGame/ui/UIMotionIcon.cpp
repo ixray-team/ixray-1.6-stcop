@@ -7,7 +7,7 @@
 #include "../../xrEngine/CustomHUD.h"
 #include "../game_cl_single.h"
 
-const LPCSTR MOTION_ICON_XML = "motion_icon.xml";
+const char* MOTION_ICON_XML = "motion_icon.xml";
 static const float OVERLAY_LUMINOSITY_SMOOTH_SPEED = 4.5f;
 static const float OVERLAY_NOISE_SMOOTH_SPEED = 5.5f;
 

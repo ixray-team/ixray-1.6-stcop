@@ -18,7 +18,7 @@ struct UVpoint {
 	IC void norm(void)						{ float m=_sqrt(u*u+v*v); u/=m; v/=m; }
 	IC float dist(UVpoint &p)				{ return _sqrt((u-p.u)*(u-p.u) + (v-p.v)*(v-p.v)); }
 
-	IC BOOL similar(UVpoint &p, float eu, float ev) { 
+	IC bool similar(UVpoint &p, float eu, float ev) { 
 		return std::abs(u-p.u)<eu && std::abs(v-p.v)<ev;
 	}
 

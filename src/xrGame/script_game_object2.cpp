@@ -131,13 +131,13 @@ void CScriptGameObject::set_item(MonsterSpace::EObjectAction object_action, CScr
 	}
 }
 
-void CScriptGameObject::play_cycle(LPCSTR anim, bool mix_in)
+void CScriptGameObject::play_cycle(const char* anim, bool mix_in)
 {
 	if (IKinematicsAnimated* sa = object().Visual()->dcast_PKinematicsAnimated())
 	{
 		if (MotionID m = sa->ID_Cycle(anim))
 		{
-			sa->PlayCycle(m, (BOOL)mix_in);
+			sa->PlayCycle(m, (bool)mix_in);
 		}
 		else
 		{
@@ -150,7 +150,7 @@ void CScriptGameObject::play_cycle(LPCSTR anim, bool mix_in)
 	}
 }
 
-void CScriptGameObject::play_cycle(LPCSTR anim)
+void CScriptGameObject::play_cycle(const char* anim)
 {
 	play_cycle(anim, true);
 }
@@ -355,7 +355,7 @@ void CScriptGameObject::restore_sound_threshold()
 	}
 }
 
-void CScriptGameObject::SetStartDialog(LPCSTR dialog_id)
+void CScriptGameObject::SetStartDialog(const char* dialog_id)
 {
 	if (CAI_PhraseDialogManager* pDialogManager = smart_cast<CAI_PhraseDialogManager*>(&object()))
 	{
@@ -636,7 +636,7 @@ bool CScriptGameObject::IsActorLadder() const
 	return false;
 }
 
-void CScriptGameObject::ResetBoneProtections(LPCSTR imm_sect, LPCSTR bone_sect)
+void CScriptGameObject::ResetBoneProtections(const char* imm_sect, const char* bone_sect)
 {
 	if (CAI_Stalker* stalker = object().cast_stalker())
 	{
@@ -644,7 +644,7 @@ void CScriptGameObject::ResetBoneProtections(LPCSTR imm_sect, LPCSTR bone_sect)
 	}
 }
 
-void CScriptGameObject::set_visual_name(LPCSTR visual, bool bForce)
+void CScriptGameObject::set_visual_name(const char* visual, bool bForce)
 {
 	if (strcmp(visual, *object().cNameVisual()) == 0)
 	{
@@ -696,12 +696,12 @@ void CScriptGameObject::set_visual_name(LPCSTR visual, bool bForce)
 	}
 }
 
-void CScriptGameObject::set_visual_name_notForce(LPCSTR visual)
+void CScriptGameObject::set_visual_name_notForce(const char* visual)
 {
 	set_visual_name(visual, false);
 }
 
-LPCSTR CScriptGameObject::get_visual_name() const
+const char* CScriptGameObject::get_visual_name() const
 {
 	return object().cNameVisual().c_str();
 }

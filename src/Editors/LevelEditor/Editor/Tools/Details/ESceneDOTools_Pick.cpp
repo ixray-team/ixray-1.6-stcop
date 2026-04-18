@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-int EDetailManager::RaySelect(int flag, float& dist, const Fvector& start, const Fvector& direction, BOOL bDistanceOnly)
+int EDetailManager::RaySelect(int flag, float& dist, const Fvector& start, const Fvector& direction, bool bDistanceOnly)
 {
 // box selected only
 

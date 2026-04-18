@@ -13,7 +13,7 @@
 #include "ai_space.h"
 #include "../xrScripts/script_engine.h"
 
-CScriptSound::CScriptSound				(LPCSTR caSoundName, ESoundTypes sound_type)
+CScriptSound::CScriptSound				(const char* caSoundName, ESoundTypes sound_type)
 {
 	m_caSoundToPlay			= caSoundName;
 	string_path				l_caFileName;

@@ -3,9 +3,9 @@
 class CBlender_SMAA : public IBlender
 {
 public:
-    virtual LPCSTR getComment() { return "CBlender_SMAA"; }
-    virtual BOOL canBeDetailed() { return FALSE; }
-    virtual BOOL canBeLMAPped() { return FALSE; }
+    virtual const char* getComment() { return "CBlender_SMAA"; }
+    virtual bool canBeDetailed() { return FALSE; }
+    virtual bool canBeLMAPped() { return FALSE; }
 
     virtual void Compile(CBlender_Compile& C);
 

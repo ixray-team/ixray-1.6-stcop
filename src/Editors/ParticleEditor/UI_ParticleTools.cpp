@@ -332,7 +332,7 @@ void CParticleTool::OnFrame()
     }
 }
 
-void CParticleTool::ZoomObject(BOOL bSelOnly)
+void CParticleTool::ZoomObject(bool bSelOnly)
 {
 	VERIFY(m_bReady);
     if (!bSelOnly&&m_EditObject){
@@ -429,7 +429,7 @@ void CParticleTool::ResetPreviewObject()
     UI->RedrawScene();
 }
 
-bool CParticleTool::Load(LPCSTR name)
+bool CParticleTool::Load(const char* name)
 {
 	VERIFY(m_bReady);
     UpdateProperties();
@@ -634,14 +634,14 @@ bool CParticleTool::Validate(bool bMsg)
     return error_cnt==0;
 }
 
-/*void CParticleTool::Rename(LPCSTR old_full_name, LPCSTR ren_part, int level)
+/*void CParticleTool::Rename(const char* old_full_name, const char* ren_part, int level)
 {
     VERIFY(level<_GetItemCount(old_full_name,'\\'));
     xr_string new_full_name;
     Rename(old_full_name, new_full_name.c_str());
 }*/
 
-void CParticleTool::Rename(UIItemListForm::Node& Node, LPCSTR old_full_name, LPCSTR new_full_name)
+void CParticleTool::Rename(UIItemListForm::Node& Node, const char* old_full_name, const char* new_full_name)
 {
 	VERIFY(m_bReady);
     if (!Node.Object)
@@ -905,7 +905,7 @@ void CParticleTool::DrawReferenceList()
     }
 }
 
-PS::CPACDef* CParticleTool::FindPAC(LPCSTR name)
+PS::CPACDef* CParticleTool::FindPAC(const char* name)
 {
 	return RImplementation.PSLibrary.FindPACD(name);
 }
@@ -966,12 +966,12 @@ void CParticleTool::ImportPE()
     }
 }
 
-PS::CPEDef*	CParticleTool::FindPE(LPCSTR name)
+PS::CPEDef*	CParticleTool::FindPE(const char* name)
 {
 	return RImplementation.PSLibrary.FindPED(name);
 }
 
-PS::CPGDef*	CParticleTool::FindPG(LPCSTR name)
+PS::CPGDef*	CParticleTool::FindPG(const char* name)
 {
 	return RImplementation.PSLibrary.FindPGD(name);
 }
@@ -1036,7 +1036,7 @@ void CParticleTool::StopCurrent(bool bFinishPlaying)
     m_EditPG->Stop(bFinishPlaying);
 }
 
-void CParticleTool::SelectEffect(LPCSTR name)
+void CParticleTool::SelectEffect(const char* name)
 {
 	sel_eff_name 	= name;
     m_Flags.set		(flSelectEffect,TRUE);
@@ -1187,13 +1187,13 @@ void CParticleTool::RealRemoveAction()
 	m_Flags.set(flRemoveAction,FALSE);
 }
 
-LPCSTR CParticleTool::GetInfo()
+const char* CParticleTool::GetInfo()
 {
 	return 0;
 }
 //------------------------------------------------------------------------------
 
-void CParticleTool::SelectListItem(LPCSTR pref, LPCSTR name, bool bVal, bool bLeaveSel, bool bExpand)
+void CParticleTool::SelectListItem(const char* pref, const char* name, bool bVal, bool bLeaveSel, bool bExpand)
 {
 	xr_string nm = (name&&name[0])?PrepareKey(pref,name).c_str():pref;
     UIItemListForm* List = GetCurrentList();
@@ -1356,14 +1356,14 @@ void CParticleTool::FillChooseParticleType(ChooseItemVec& items, void* param)
     items.push_back(SChooseItem("AnimCurve", "Particle Animation Curve"));
 }
 
-void CParticleTool::OnParticleCreateItem(LPCSTR path)
+void CParticleTool::OnParticleCreateItem(const char* path)
 {
     UIChooseForm::SelectItem(smCustom, 1, 0, TOnChooseFillItems(this, &CParticleTool::FillChooseParticleType), 0, 0, 0, 0);
     m_CreatingParticle = TRUE;
     m_CreatingParticlePath = path;
 }
 
-void CParticleTool::OnParticleCloneItem(LPCSTR parent_path, LPCSTR new_full_name)
+void CParticleTool::OnParticleCloneItem(const char* parent_path, const char* new_full_name)
 {
     PS::CPEDef* PE = FindPE(parent_path);
     if (PE) 
@@ -1501,7 +1501,7 @@ bool CParticleTool::ActionItemMoveAction(UIItemListForm::Node* Node)
     return IsProcessed;
 }
 
-void CParticleTool::OnParticleItemRename(UIItemListForm::Node& Node, LPCSTR old_name, LPCSTR new_name, EItemType type)
+void CParticleTool::OnParticleItemRename(UIItemListForm::Node& Node, const char* old_name, const char* new_name, EItemType type)
 {
     Rename(Node, old_name, new_name);
     Modified();
@@ -1549,7 +1549,7 @@ void  CParticleTool::OnControlClick(ButtonValue* sender, bool& bDataModified, bo
     bDataModified = false;
 }
 
-/*LPCSTR CParticleTool::InsertBeforeLast(LPSTR buffer, u32 buf_size, LPCSTR path, LPCSTR insert_str)
+/*const char* CParticleTool::InsertBeforeLast(LPSTR buffer, u32 buf_size, const char* path, const char* insert_str)
 {
     xr_string builder;
     auto ItemCount = _GetItemCount(path, '\\');
@@ -1564,7 +1564,7 @@ void  CParticleTool::OnControlClick(ButtonValue* sender, bool& bDataModified, bo
     return buffer;
 }*/
 
-/*EEditMode CParticleTool::GetAffectedItemType(LPCSTR path)
+/*EEditMode CParticleTool::GetAffectedItemType(const char* path)
 {
     string_path buffer;
     xr_string Item = _GetItem(path, _GetItemCount(path, '\\')-1, buffer, sizeof(buffer), '\\');
@@ -1682,11 +1682,11 @@ void CParticleTool::RealUpdateProperties()
     m_Flags.set(flRefreshProps, FALSE);
 
     // Make path functions
-    //auto MakePGPathFunc = [&](LPCSTR OrigName)
+    //auto MakePGPathFunc = [&](const char* OrigName)
     //{
     //    return InsertBeforeLast(buffer, sizeof(buffer), OrigName, "[PG] ");
     //};
-    //auto MakePEPathFunc = [&](LPCSTR OrigName)
+    //auto MakePEPathFunc = [&](const char* OrigName)
     //{
     //    return InsertBeforeLast(buffer, sizeof(buffer), OrigName, "[PE] ");
     //};
@@ -1728,7 +1728,7 @@ void CParticleTool::RealUpdateProperties()
             I->SetPrefix("[PG] ");
             for (auto Effect : (*Pg)->m_Effects)
             {
-                LPCSTR EffectName = nullptr;
+                const char* EffectName = nullptr;
                 if (Effect->m_EffectName.c_str())
                 {
                     EffectName = _GetItem(

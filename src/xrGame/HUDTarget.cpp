@@ -77,8 +77,8 @@ void CHUDTarget::Load		()
 	u32 color;
 	xml.Load(CONFIG_PATH, UI_PATH, "backend\\hud_target.xml");
 
-	LPCSTR texture = xml.Read("texture", 0, "ui\\cursor");
-	LPCSTR shader = xml.Read("shader", 0, "hud\\cursor");
+	const char* texture = xml.Read("texture", 0, "ui\\cursor");
+	const char* shader = xml.Read("shader", 0, "hud\\cursor");
 
 	colorEnemy = CUIXmlInit::GetColor(xml, "enemy_color", 0, color_rgba(0xff, 0, 0, 0x80));
 	colorFriend = CUIXmlInit::GetColor(xml, "friend_color", 0, color_rgba(0, 0xff, 0, 0x80));
@@ -99,7 +99,7 @@ void CHUDTarget::ShowCrosshair(bool b)
 }
 //. fVisTransparencyFactor
 float fCurrentPickPower;
-ICF static BOOL pick_trace_callback(collide::rq_result& result, LPVOID params)
+ICF static bool pick_trace_callback(collide::rq_result& result, LPVOID params)
 {
 	SPickParam*	pp			= (SPickParam*)params;
 //	collide::rq_result* RQ	= pp->RQ;
@@ -159,7 +159,7 @@ void CHUDTarget::Render()
 	}
 	const static bool noHUDonMaster = EngineExternal()[EEngineExternalUI::DisableHudRenderingOnMaster];
 	bool renderHUDTarget = noHUDonMaster ? g_SingleGameDifficulty < egdVeteran : true;
-	BOOL  b_do_rendering = ( psHUD_Flags.is(HUD_CROSSHAIR|HUD_CROSSHAIR_RT|HUD_CROSSHAIR_RT2) && renderHUDTarget );
+	bool  b_do_rendering = ( psHUD_Flags.is(HUD_CROSSHAIR|HUD_CROSSHAIR_RT|HUD_CROSSHAIR_RT2) && renderHUDTarget );
 	
 	if(!b_do_rendering)
 		return;

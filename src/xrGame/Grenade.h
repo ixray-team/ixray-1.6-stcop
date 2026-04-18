@@ -12,10 +12,10 @@ public:
 	virtual ~CGrenade() = default;
 
 
-	virtual void			Load								(LPCSTR section);
-	virtual void			LoadSounds							(LPCSTR section) override;
+	virtual void			Load								(const char* section);
+	virtual void			LoadSounds							(const char* section) override;
 	
-	virtual BOOL 			net_Spawn							(CSE_Abstract* DC);
+	virtual bool 			net_Spawn							(CSE_Abstract* DC);
 	virtual void 			net_Destroy							();
 	virtual void 			net_Relcase							(CObject* O );
 
@@ -76,7 +76,7 @@ protected:
 	virtual	void			UpdateXForm							()		{ CMissile::UpdateXForm(); };
 public:
 
-	virtual BOOL			UsedAI_Locations					();
+	virtual bool			UsedAI_Locations					();
 	virtual CGrenade		*cast_grenade						()	{return this;}
 	virtual CExplosive		*cast_explosive						()	{return this;}
 	virtual CMissile		*cast_missile						()	{return this;}

@@ -37,7 +37,7 @@ void CRenderTarget::accum_spot(light* L)
 		RImplementation.rmNear();
 	}
 
-	BOOL	bIntersect = FALSE; //enable_scissor(L);
+	bool	bIntersect = FALSE; //enable_scissor(L);
 	{
 		// setup xform
 		RCache.set_xform_world(L->m_xform);
@@ -190,7 +190,7 @@ void CRenderTarget::accum_volumetric(light* L) {
 
 	// *** assume accumulator setted up ***
 	// *****************************	Mask by stencil		*************************************
-	BOOL	bIntersect = FALSE; //enable_scissor(L);
+	bool	bIntersect = FALSE; //enable_scissor(L);
 	{
 		// setup xform
 		RCache.set_xform_world(L->m_xform);

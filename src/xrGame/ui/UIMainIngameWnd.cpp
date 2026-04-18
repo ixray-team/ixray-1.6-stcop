@@ -64,7 +64,7 @@
 void test_draw	();
 void test_key	(int dik);
 
-static CUIStatic* CreateBoosterIndicator(CUIXml& xml, LPCSTR path, CUIWindow* parent)
+static CUIStatic* CreateBoosterIndicator(CUIXml& xml, const char* path, CUIWindow* parent)
 {
 	bool isRadial = xml.ReadAttribInt(path, 0, "sector_count", 0) > 0;
 	if (isRadial)
@@ -93,7 +93,7 @@ static void UpdateBoosterProgress(CUIStatic* indicator, const SBooster& booster)
 #include "../Include/xrRender/Kinematics.h"
 
 using namespace InventoryUtilities;
-//BOOL		g_old_style_ui_hud			= FALSE;
+//bool		g_old_style_ui_hud			= FALSE;
 const u32	g_clWhite					= 0xffffffff;
 
 #define		DEFAULT_MAP_SCALE			1.f
@@ -833,7 +833,7 @@ void CUIMainIngameWnd::RenderQuickInfos()
 	}
 
 	static CGameObject *pObject = nullptr;
-	LPCSTR actor_action	= pActor->GetDefaultActionForObject();
+	const char* actor_action	= pActor->GetDefaultActionForObject();
 	UIStaticQuickHelp->Show(nullptr!=actor_action);
 
 	if (nullptr != actor_action)
@@ -1501,7 +1501,7 @@ void CUIMainIngameWnd::UpdateMainIndicators()
 void CUIMainIngameWnd::UpdateQuickSlots()
 {
 	string32 tmp{};
-	LPCSTR str = g_pStringTable->translate("quick_use_str_1").c_str();
+	const char* str = g_pStringTable->translate("quick_use_str_1").c_str();
 	xr_strcpy(tmp, sizeof(tmp), str);
 	if (tmp[2] == ',')
 		tmp[1] = '\0';
@@ -1747,7 +1747,7 @@ void CUIMainIngameWnd::UpdateBoosterIndicators(const xr_map<EBoostParams, SBoost
 	if (m_ind_boost_rad)
 		m_ind_boost_rad->Show(false);
 
-	LPCSTR str_flag	= "ui_slow_blinking_alpha";
+	const char* str_flag	= "ui_slow_blinking_alpha";
 	u8 flags = 0;
 	flags |= LA_CYCLIC;
 	flags |= LA_ONLYALPHA;

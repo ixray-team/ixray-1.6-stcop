@@ -11,7 +11,7 @@ void CBlender_bloom_upsample::Compile(CBlender_Compile& C)
     switch (C.iElement)
     {
     case 0:
-        C.r_Pass("stub_fullscreen_triangle", "bloom_upsample", FALSE, FALSE, FALSE);
+        C.r_Pass("stub_fullscreen_triangle", "bloom_upsample", false, false, false);
         C.r_dx10Texture("b_image", r2_RT_bloomG);
         C.r_dx10Texture("t_image", r2_RT_bloomF);
 
@@ -22,7 +22,7 @@ void CBlender_bloom_upsample::Compile(CBlender_Compile& C)
 
         break;
     case 1:
-        C.r_Pass("stub_fullscreen_triangle", "bloom_upsample", FALSE, FALSE, FALSE);
+        C.r_Pass("stub_fullscreen_triangle", "bloom_upsample", false, false, false);
         C.r_dx10Texture("b_image", r2_RT_bloomF2);
         C.r_dx10Texture("t_image", r2_RT_bloomE);
 
@@ -33,7 +33,7 @@ void CBlender_bloom_upsample::Compile(CBlender_Compile& C)
 
         break;
     case 2:
-        C.r_Pass("stub_fullscreen_triangle", "bloom_upsample", FALSE, FALSE, FALSE);
+        C.r_Pass("stub_fullscreen_triangle", "bloom_upsample", false, false, false);
         C.r_dx10Texture("b_image", r2_RT_bloomE2);
         C.r_dx10Texture("t_image", r2_RT_bloomD);
 
@@ -44,7 +44,7 @@ void CBlender_bloom_upsample::Compile(CBlender_Compile& C)
 
         break;
     case 3:
-        C.r_Pass("stub_fullscreen_triangle", "bloom_upsample", FALSE, FALSE, FALSE);
+        C.r_Pass("stub_fullscreen_triangle", "bloom_upsample", false, false, false);
         C.r_dx10Texture("b_image", r2_RT_bloomD2);
         C.r_dx10Texture("t_image", r2_RT_bloomC);
 
@@ -55,7 +55,7 @@ void CBlender_bloom_upsample::Compile(CBlender_Compile& C)
 
         break;
     case 4:
-        C.r_Pass("stub_fullscreen_triangle", "bloom_upsample", FALSE, FALSE, FALSE);
+        C.r_Pass("stub_fullscreen_triangle", "bloom_upsample", false, false, false);
         C.r_dx10Texture("b_image", r2_RT_bloomC2);
         C.r_dx10Texture("t_image", r2_RT_bloomB);
 
@@ -66,7 +66,7 @@ void CBlender_bloom_upsample::Compile(CBlender_Compile& C)
 
         break;
     case 5:
-        C.r_Pass("stub_fullscreen_triangle", "bloom_upsample", FALSE, FALSE, FALSE);
+        C.r_Pass("stub_fullscreen_triangle", "bloom_upsample", false, false, false);
         C.r_dx10Texture("b_image", r2_RT_bloomB2);
         C.r_dx10Texture("t_image", r2_RT_bloomA);
 

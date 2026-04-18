@@ -108,7 +108,7 @@ void CTextureDescrMngr::LoadLTX()
 	}//file-exist
 }
 
-void CTextureDescrMngr::LoadTHM(LPCSTR initial)
+void CTextureDescrMngr::LoadTHM(const char* initial)
 {
 	FS_FileSet				flist;
 	FS.file_list			(flist, initial, FS_ListFiles, "*.thm");
@@ -302,7 +302,7 @@ shared_str CTextureDescrMngr::GetBumpName(const shared_str& tex_name) const
 	return "";
 }
 
-BOOL CTextureDescrMngr::UseSteepParallax(const shared_str& tex_name) const
+bool CTextureDescrMngr::UseSteepParallax(const shared_str& tex_name) const
 {
 	map_TD::const_iterator I = m_texture_details.find	(tex_name);
 	if (I!=m_texture_details.end())
@@ -315,7 +315,7 @@ BOOL CTextureDescrMngr::UseSteepParallax(const shared_str& tex_name) const
 	return FALSE;
 }
 
-BOOL CTextureDescrMngr::UsePBRTexures(const shared_str& tex_name) const {
+bool CTextureDescrMngr::UsePBRTexures(const shared_str& tex_name) const {
 	auto I = m_texture_details.find(tex_name);
 	if(I != m_texture_details.end()) {
 		if(I->second.m_spec) {
@@ -338,7 +338,7 @@ float CTextureDescrMngr::GetMaterial(const shared_str& tex_name) const
 	return 1.0f;
 }
 
-void CTextureDescrMngr::GetTextureUsage	(const shared_str& tex_name, BOOL& bDiffuse, BOOL& bBump) const
+void CTextureDescrMngr::GetTextureUsage	(const shared_str& tex_name, bool& bDiffuse, bool& bBump) const
 {
 	map_TD::const_iterator I = m_texture_details.find	(tex_name);
 	if (I!=m_texture_details.end())
@@ -352,7 +352,7 @@ void CTextureDescrMngr::GetTextureUsage	(const shared_str& tex_name, BOOL& bDiff
 	}
 }
 
-BOOL CTextureDescrMngr::GetDetailTexture(const shared_str& tex_name, LPCSTR& res, RHIShaderConstant::Setup* &CS) const
+bool CTextureDescrMngr::GetDetailTexture(const shared_str& tex_name, const char*& res, RHIShaderConstant::Setup* &CS) const
 {
 	map_TD::const_iterator I = m_texture_details.find	(tex_name);
 	if (I!=m_texture_details.end())

@@ -31,8 +31,8 @@ void xrDebug::gather_info		(const char *expression, const char *description, con
 	LPSTR				buffer_base = assertion_info;
 	LPSTR				buffer = assertion_info;
 	int assertion_size	= (int)assertion_info_size;
-	LPCSTR				endline = "\n";
-	LPCSTR				prefix = "[error]";
+	const char*				endline = "\n";
+	const char*				prefix = "[error]";
 	bool				extended_description = (description && !argument0 && strchr(description,'\n'));
 	for (int i=0; i<2; ++i) {
 		if (!i)
@@ -152,7 +152,7 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 	gather_info			(expression, description, argument0, argument1, file, line, function, assertion_info, sizeof(assertion_info) );
 
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
-	LPCSTR				endline = "\r\n";
+	const char*				endline = "\r\n";
 	LPSTR				buffer = assertion_info + xr_strlen(assertion_info);
 	buffer				+= xr_sprintf(buffer,sizeof(assertion_info) - u32(buffer - &assertion_info[0]),"%sPress CANCEL to abort execution%s",endline,endline);
 	buffer				+= xr_sprintf(buffer,sizeof(assertion_info) - u32(buffer - &assertion_info[0]),"Press TRY AGAIN to continue execution%s",endline);
@@ -268,7 +268,7 @@ void xrDebug::show_dialog(const std::string& message, bool& ignore_always)
 		get_on_dialog()	(false);
 }
 
-LPCSTR xrDebug::error2string(long code)
+const char* xrDebug::error2string(long code)
 {
 	static char desc_storage[1024] = {};
 #ifdef IXR_WINDOWS
@@ -277,7 +277,7 @@ LPCSTR xrDebug::error2string(long code)
 	return desc_storage;
 }
 
-LPCSTR xrDebug::dxerror2string(long code)
+const char* xrDebug::dxerror2string(long code)
 {
 	static string512 Err = {};
 	memset(Err, 0, sizeof(Err));
@@ -374,12 +374,12 @@ XRCORE_API string_path g_bug_report_file;
 #if defined(IXR_WINDOWS)
 typedef long WINAPI UnhandledExceptionFilterType(struct _EXCEPTION_POINTERS *pExceptionInfo);
 typedef long (  *PFNCHFILTFN ) ( EXCEPTION_POINTERS * pExPtrs ) ;
-extern "C" BOOL  SetCrashHandlerFilter ( PFNCHFILTFN pFn );
+extern "C" bool  SetCrashHandlerFilter ( PFNCHFILTFN pFn );
 
 static UnhandledExceptionFilterType	*previous_filter = 0;
 
 #ifdef USE_OWN_MINI_DUMP
-typedef BOOL (WINAPI *MINIDUMPWRITEDUMP)(HANDLE hProcess, DWORD dwPid, HANDLE hFile, MINIDUMP_TYPE DumpType,
+typedef bool (WINAPI *MINIDUMPWRITEDUMP)(HANDLE hProcess, DWORD dwPid, HANDLE hFile, MINIDUMP_TYPE DumpType,
 										 CONST PMINIDUMP_EXCEPTION_INFORMATION ExceptionParam,
 										 CONST PMINIDUMP_USER_STREAM_INFORMATION UserStreamParam,
 										 CONST PMINIDUMP_CALLBACK_INFORMATION CallbackParam
@@ -431,7 +431,7 @@ void save_mini_dump			(_EXCEPTION_POINTERS *pExceptionInfo)
 		// write the dump
 		MINIDUMP_TYPE dump_flags = MINIDUMP_TYPE(MiniDumpNormal | MiniDumpFilterMemory | MiniDumpScanMemory | MiniDumpWithDataSegs | MiniDumpWithThreadInfo | MiniDumpWithFullMemoryInfo);
 
-		BOOL bOK = MiniDumpWriteDump( GetCurrentProcess(), GetCurrentProcessId(), hFile, dump_flags, &ExInfo, nullptr, nullptr );
+		bool bOK = MiniDumpWriteDump( GetCurrentProcess(), GetCurrentProcessId(), hFile, dump_flags, &ExInfo, nullptr, nullptr );
 		if (bOK)
 		{
 			xr_sprintf( szScratch, "Saved dump file to '%s'", szDumpPath );
@@ -589,7 +589,7 @@ void _terminate()
 		assertion_info
 	);
 
-	LPCSTR endline = "\r\n";
+	const char* endline = "\r\n";
 	LPSTR buffer = assertion_info + xr_strlen(assertion_info);
 	buffer += xr_sprintf(buffer, xr_strlen(assertion_info), "Press OK to abort execution%s", endline);
 

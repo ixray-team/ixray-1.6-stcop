@@ -188,14 +188,14 @@ public:
 private:
 	SE_VEC						library;
 public:
-	void						Load	(LPCSTR name);
-	bool						Save	(LPCSTR name);
+	void						Load	(const char* name);
+	bool						Save	(const char* name);
 	void						Unload	();
-	int							GetID	(LPCSTR name);
-	CSoundRender_Environment*	Get		(LPCSTR name);
+	int							GetID	(const char* name);
+	CSoundRender_Environment*	Get		(const char* name);
 	CSoundRender_Environment*	Get		(int id);
 	CSoundRender_Environment*	Append	(CSoundRender_Environment* parent=0);
-	void						Remove	(LPCSTR name);
+	void						Remove	(const char* name);
 	void						Remove	(int id);
 	SE_VEC&						Library	();
 };

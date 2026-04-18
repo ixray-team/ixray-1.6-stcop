@@ -81,7 +81,7 @@ CEntityAlive::~CEntityAlive()
 	xr_delete				(m_material_manager);
 }
 
-void CEntityAlive::Load		(LPCSTR section)
+void CEntityAlive::Load		(const char* section)
 {
 	CEntity::Load					(section);
 	conditions().LoadCondition		(section);
@@ -101,7 +101,7 @@ void CEntityAlive::Load		(LPCSTR section)
 		monster_community->set	(pSettings->r_string(section, "species"));
 }
 
-void CEntityAlive::LoadBloodyWallmarks (LPCSTR section)
+void CEntityAlive::LoadBloodyWallmarks (const char* section)
 {
 	VERIFY					(0==m_pBloodMarksVector);
 	VERIFY					(0==m_pBloodDropsVector);
@@ -110,7 +110,7 @@ void CEntityAlive::LoadBloodyWallmarks (LPCSTR section)
 	
 	//кровавые отметки на стенах
 	string256	tmp;
-	LPCSTR wallmarks_name = pSettings->r_string(section, "wallmarks"); 
+	const char* wallmarks_name = pSettings->r_string(section, "wallmarks"); 
 	
 	int cnt		=_GetItemCount(wallmarks_name);
 	
@@ -158,12 +158,12 @@ void CEntityAlive::UnloadBloodyWallmarks	()
 	}
 }
 
-void CEntityAlive::LoadFireParticles(LPCSTR section)
+void CEntityAlive::LoadFireParticles(const char* section)
 {
 	m_pFireParticlesVector = new STR_VECTOR();
 
 	string256	tmp;
-	LPCSTR particles_name = pSettings->r_string(section, "fire_particles"); 
+	const char* particles_name = pSettings->r_string(section, "fire_particles"); 
 
 	int cnt		=_GetItemCount(particles_name);
 
@@ -196,7 +196,7 @@ void CEntityAlive::reinit()
 	m_fIntelligence			= 25.f;
 }
 
-void CEntityAlive::reload		(LPCSTR section)
+void CEntityAlive::reload		(const char* section)
 {
 	CEntity::reload			(section);
 //	CEntityCondition::reload(section);
@@ -208,7 +208,7 @@ void CEntityAlive::reload		(LPCSTR section)
 	m_fFood					= 100*pSettings->r_float	(section,"ph_mass");
 }
 
-BOOL	g_fight_fast_respawn = FALSE;
+bool	g_fight_fast_respawn = FALSE;
 void CEntityAlive::shedule_Update(u32 dt)
 {
 	PROF_EVENT("CEntityAlive::shedule_Update");
@@ -246,7 +246,7 @@ void CEntityAlive::shedule_Update(u32 dt)
 	}
 }
 
-BOOL CEntityAlive::net_Spawn	(CSE_Abstract* DC)
+bool CEntityAlive::net_Spawn	(CSE_Abstract* DC)
 {
 	//установить команду в соответствии с community
 /*	if(monster_community->team() != 255)
@@ -422,7 +422,7 @@ void CEntityAlive::PlaceBloodWallmark(const Fvector& dir, const Fvector& start_p
 									  IWallMarkArray *pwallmarks_vector)
 {
 	collide::rq_result	result;
-	BOOL				reach_wall = 
+	bool				reach_wall = 
 		Level().ObjectSpace.RayPick(
 			start_pos,
 			dir,
@@ -624,7 +624,7 @@ void CEntityAlive::load	(IReader &input_packet)
 	conditions().load(input_packet);
 }
 
-BOOL	CEntityAlive::net_SaveRelevant		()
+bool	CEntityAlive::net_SaveRelevant		()
 {
 	return		(TRUE);
 }
@@ -857,7 +857,7 @@ void CEntityAlive::fill_hit_bone_surface_areas		( ) const
 	std::sort							( m_hit_bone_surface_areas.begin(), m_hit_bone_surface_areas.end(), sort_surface_area_predicate() );
 }
 
-BOOL g_ai_use_old_vision				= 0;
+bool g_ai_use_old_vision				= 0;
 
 Fvector	CEntityAlive::get_new_local_point_on_mesh	( u16& bone_id ) const
 {

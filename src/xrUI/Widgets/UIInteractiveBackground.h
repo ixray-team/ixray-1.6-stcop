@@ -34,10 +34,10 @@ public:
 	virtual ~CUIInteractiveBackground() {};
 
 			void InitIB				(Fvector2 pos, Fvector2 size);
-			void InitIB				(LPCSTR texture_e, Fvector2 pos, Fvector2 size);
+			void InitIB				(const char* texture_e, Fvector2 pos, Fvector2 size);
 			T*	 Get				(IBState state){return m_states[state];};
 
-			void InitState			(IBState state, LPCSTR texture, bool fatal = true);
+			void InitState			(IBState state, const char* texture, bool fatal = true);
 			void SetCurrentState	(IBState state);
 
 	virtual void Draw				();
@@ -65,7 +65,7 @@ void CUIInteractiveBackground<T>::InitIB(Fvector2 pos, Fvector2 size)
 }
 
 template <class T>
-void CUIInteractiveBackground<T>::InitIB(LPCSTR texture, Fvector2 pos, Fvector2 size)
+void CUIInteractiveBackground<T>::InitIB(const char* texture, Fvector2 pos, Fvector2 size)
 {
 	CUIWindow::SetWndPos	(pos);
 	CUIWindow::SetWndSize	(size);
@@ -74,7 +74,7 @@ void CUIInteractiveBackground<T>::InitIB(LPCSTR texture, Fvector2 pos, Fvector2 
 }
 
 template <class T>
-void CUIInteractiveBackground<T>::InitState(IBState state, LPCSTR texture, bool fatal)
+void CUIInteractiveBackground<T>::InitState(IBState state, const char* texture, bool fatal)
 {
 	Fvector2 size					= GetWndSize();
 

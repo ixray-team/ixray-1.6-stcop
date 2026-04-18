@@ -718,7 +718,7 @@ void PABounce::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 				if(position.Within(pnext))
 				{
 					// See if we were inside on previous timestep.
-					BOOL pinside = position.Within(m.pos);
+					bool pinside = position.Within(m.pos);
 					
 					// Normal to surface. This works for a sphere. Isn't
 					// computed quite right, should extrapolate particle

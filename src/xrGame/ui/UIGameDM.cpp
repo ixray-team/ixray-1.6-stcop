@@ -240,7 +240,7 @@ CUIGameDM::~CUIGameDM()
 }
 
 
-void CUIGameDM::SetTimeMsgCaption(LPCSTR str)
+void CUIGameDM::SetTimeMsgCaption(const char* str)
 {
 	if (m_time_caption)
 		m_time_caption->SetTextST(str);
@@ -285,7 +285,7 @@ void CUIGameDM::ShowPlayersList(bool bShow)
 }
 
 
-void CUIGameDM::SetSpectrModeMsgCaption(LPCSTR str)
+void CUIGameDM::SetSpectrModeMsgCaption(const char* str)
 {
 	if (m_spectrmode_caption)
 		m_spectrmode_caption->SetTextST(str);
@@ -293,7 +293,7 @@ void CUIGameDM::SetSpectrModeMsgCaption(LPCSTR str)
 		GameCaptions()->setCaption(m_spectrmode_caption_legacy, str, SPECTRMODE_MSG_COLOR, true);
 }
 
-void CUIGameDM::SetSpectatorMsgCaption(LPCSTR str)
+void CUIGameDM::SetSpectatorMsgCaption(const char* str)
 {
 	if (m_spectator_caption)
 		m_spectator_caption->SetTextST(str);
@@ -301,7 +301,7 @@ void CUIGameDM::SetSpectatorMsgCaption(LPCSTR str)
 		GameCaptions()->setCaption(m_spectator_caption_legacy, str, NORMAL_MSG_COLOR, true);
 }
 
-void CUIGameDM::SetPressJumpMsgCaption(LPCSTR str)
+void CUIGameDM::SetPressJumpMsgCaption(const char* str)
 {
 	if (m_pressjump_caption)
 		m_pressjump_caption->SetTextST(str);
@@ -309,7 +309,7 @@ void CUIGameDM::SetPressJumpMsgCaption(LPCSTR str)
 		GameCaptions()->setCaption(m_pressjump_caption_legacy, str, NORMAL_MSG_COLOR, true);
 }
 
-void CUIGameDM::SetPressBuyMsgCaption(LPCSTR str)
+void CUIGameDM::SetPressBuyMsgCaption(const char* str)
 {
 	if (m_pressbuy_caption)
 		m_pressbuy_caption->SetTextST(str);
@@ -318,7 +318,7 @@ void CUIGameDM::SetPressBuyMsgCaption(LPCSTR str)
 }
 
 
-void CUIGameDM::SetRoundResultCaption(LPCSTR str)
+void CUIGameDM::SetRoundResultCaption(const char* str)
 {
 	if (m_round_result_caption)
 		m_round_result_caption->SetTextST(str);
@@ -326,7 +326,7 @@ void CUIGameDM::SetRoundResultCaption(LPCSTR str)
 		GameCaptions()->setCaption(m_round_result_caption_legacy, str, ROUND_RESULT_COLOR, true);
 }
 
-void CUIGameDM::SetForceRespawnTimeCaption(LPCSTR str)
+void CUIGameDM::SetForceRespawnTimeCaption(const char* str)
 {
 	if (m_force_respawn_time_caption)
 		m_force_respawn_time_caption->SetTextST(str);
@@ -334,7 +334,7 @@ void CUIGameDM::SetForceRespawnTimeCaption(LPCSTR str)
 		GameCaptions()->setCaption(m_force_respawn_time_caption_legacy, str, NORMAL_MSG_COLOR, true);
 }
 
-void CUIGameDM::SetDemoPlayCaption(LPCSTR str)
+void CUIGameDM::SetDemoPlayCaption(const char* str)
 {
 	if (m_demo_play_caption)
 		m_demo_play_caption->SetTextST(str);
@@ -342,7 +342,7 @@ void CUIGameDM::SetDemoPlayCaption(LPCSTR str)
 		GameCaptions()->setCaption(m_demo_play_caption_legacy, str, DEMOPLAY_COLOR, true);
 }
 
-void CUIGameDM::SetWarmUpCaption(LPCSTR str)
+void CUIGameDM::SetWarmUpCaption(const char* str)
 {
 	if (m_warm_up_caption)
 		m_warm_up_caption->SetTextST(str);
@@ -350,7 +350,7 @@ void CUIGameDM::SetWarmUpCaption(LPCSTR str)
 		GameCaptions()->setCaption(m_warm_up_caption_legacy, str, WARM_UP_COLOR, true);
 }
 
-void CUIGameDM::SetVoteMessage					(LPCSTR str)
+void CUIGameDM::SetVoteMessage					(const char* str)
 {
 	if(!str)
 		xr_delete(m_voteStatusWnd);
@@ -367,7 +367,7 @@ void CUIGameDM::SetVoteMessage					(LPCSTR str)
 	}
 };
 
-void CUIGameDM::SetVoteTimeResultMsg			(LPCSTR str)
+void CUIGameDM::SetVoteTimeResultMsg			(const char* str)
 {
 	if(m_voteStatusWnd)
 		m_voteStatusWnd->SetVoteTimeResultMsg(str);
@@ -387,7 +387,7 @@ void CUIGameDM::Render()
 		m_voteStatusWnd->Draw		();
 }
 
-void CUIGameDM::DisplayMoneyChange(LPCSTR deltaMoney)
+void CUIGameDM::DisplayMoneyChange(const char* deltaMoney)
 {
 	m_pMoneyIndicator->SetMoneyChange(deltaMoney);
 }
@@ -396,7 +396,7 @@ void CUIGameDM::DisplayMoneyBonus(KillMessageStruct* bonus){
 	m_pMoneyIndicator->AddBonusMoney(*bonus);
 }
 
-void CUIGameDM::ChangeTotalMoneyIndicator(LPCSTR newMoneyString)
+void CUIGameDM::ChangeTotalMoneyIndicator(const char* newMoneyString)
 {
 	m_pMoneyIndicator->SetMoneyAmount(newMoneyString);
 }

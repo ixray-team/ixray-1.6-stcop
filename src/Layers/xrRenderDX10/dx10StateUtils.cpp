@@ -401,7 +401,7 @@ void ValidateState(D3D_DEPTH_STENCIL_DESC &desc)
 
 void ValidateState(D3D_BLEND_DESC &desc)
 {
-	BOOL	bBlendEnable = FALSE;
+	int bBlendEnable = FALSE;
 
 	for ( int i=0; i<8; ++i)
 	{

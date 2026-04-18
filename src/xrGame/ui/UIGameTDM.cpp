@@ -180,7 +180,7 @@ void CUIGameTDM::SetFraglimit(int local_frags, int fraglimit)
 	m_pFragLimitIndicator->SetText(str);
 }
 
-void CUIGameTDM::SetBuyMsgCaption(LPCSTR str)
+void CUIGameTDM::SetBuyMsgCaption(const char* str)
 {
 	if (m_buy_msg_caption)
 	{

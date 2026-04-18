@@ -49,7 +49,7 @@
 #define KILLEVENT_GRID_HEIGHT	64
 
 
-BOOL g_draw_downloads = FALSE;
+bool g_draw_downloads = FALSE;
 
 game_cl_mp::game_cl_mp()
 {
@@ -258,7 +258,7 @@ void	game_cl_mp::Vote()
 	m_pVoteRespondWindow->ShowDialog(true);
 }
 
-void	game_cl_mp::OnCantVoteMsg(LPCSTR Text)
+void	game_cl_mp::OnCantVoteMsg(const char* Text)
 {
 	if(CurrentGameUI()) 
 		CurrentGameUI()->CommonMessageOut(Text);
@@ -273,7 +273,7 @@ void game_cl_mp::GetActiveVoting()
 }
 
 constexpr u32		Color_Teams_u32[3]	= {color_rgba(255,240,190,255), color_rgba(64,255,64,255), color_rgba(64,64,255,255)};
-LPCSTR	Color_Teams[3]	= {"%c[255,255,240,190]", "%c[255,64,255,64]", "%c[255,64,64,255]"};
+const char*	Color_Teams[3]	= {"%c[255,255,240,190]", "%c[255,64,255,64]", "%c[255,64,64,255]"};
 char	Color_Main[]	= "%c[255,192,192,192]";
 constexpr u32		Color_Neutral_u32	= color_rgba(255,0,255,255);
 char	Color_Red[]	= "%c[255,255,1,1]";
@@ -414,7 +414,7 @@ void game_cl_mp::TranslateGameMessage	(u32 msg, NET_Packet& P)
 
 //////////////////////////////////////////////////////////////////////////
 
-void game_cl_mp::ChatSay(LPCSTR	phrase, bool bAll)
+void game_cl_mp::ChatSay(const char*	phrase, bool bAll)
 {
 	s16 team = ModifyTeam(local_player->team)+1;
 
@@ -546,7 +546,7 @@ void game_cl_mp::shedule_Update(u32 dt)
 	}
 }
 
-void game_cl_mp::SendStartVoteMessage	(LPCSTR args)
+void game_cl_mp::SendStartVoteMessage	(const char* args)
 {
 	if (!args) return;
 	if (!IsVotingEnabled()) return;
@@ -618,8 +618,8 @@ void game_cl_mp::LoadTeamData			(const shared_str& TeamName)
 		Team.IndicatorPos.y =  pSettings->r_float(TeamName, "indicator_y");
 		Team.IndicatorPos.z =  pSettings->r_float(TeamName, "indicator_z");
 		
-		LPCSTR ShaderType	= pSettings->r_string(TeamName, "indicator_shader");
-		LPCSTR ShaderTexture = pSettings->r_string(TeamName, "indicator_texture");
+		const char* ShaderType	= pSettings->r_string(TeamName, "indicator_shader");
+		const char* ShaderTexture = pSettings->r_string(TeamName, "indicator_texture");
 		Team.IndicatorShader->create(ShaderType, ShaderTexture);
 
 		ShaderType	= pSettings->r_string(TeamName, "invincible_shader");
@@ -1229,7 +1229,7 @@ void	game_cl_mp::OnGameRoundStarted				()
 
 void game_cl_mp::SendPlayerStarted()
 {
-	LPCSTR map_name	= Level().name().c_str();
+	const char* map_name	= Level().name().c_str();
 	R_ASSERT2(map_name && (xr_strlen(map_name) > 0), "map name not present");
 
 	NET_Packet P;
@@ -1251,7 +1251,7 @@ void game_cl_mp::LoadBonuses				()
 	u32 BonusCount = pSettings->line_count("mp_bonus_money");
 	for (u32 i=0; i<BonusCount; i++)
 	{
-		LPCSTR line, name;
+		const char* line, *name;
 		pSettings->r_line("mp_bonus_money", i, &name, &line);
 		//-------------------------------------
 		string1024 tmp0, tmp1, IconStr;
@@ -1431,7 +1431,7 @@ void game_cl_mp::SendCollectedData(u8 const* buffer, u32 buffer_size, u32 uncomp
 
 void game_cl_mp::generate_file_name(
 		string_path& file_name,
-		LPCSTR file_suffix,
+		const char* file_suffix,
 		SYSTEMTIME const& date_time)
 {
 	xr_sprintf(
@@ -1448,7 +1448,7 @@ void game_cl_mp::generate_file_name(
 }
 
 
-LPCSTR game_cl_mp::make_file_name(LPCSTR session_id, string_path & dest)
+const char* game_cl_mp::make_file_name(const char* session_id, string_path & dest)
 {
 	xr_strcpy(dest, sizeof(dest), session_id);
 	static const char* denied_symbols = "/\\?%%*:|\"<>.";
@@ -1648,7 +1648,7 @@ void  game_cl_mp::fr_callback_binder::receiving_serverinfo_callback(
 };
 
 
-void game_cl_mp::decompress_and_save_screenshot(LPCSTR file_name, u8* data, u32 data_size, u32 file_size)
+void game_cl_mp::decompress_and_save_screenshot(const char* file_name, u8* data, u32 data_size, u32 file_size)
 {
 	if (!file_size)
 	{
@@ -1683,7 +1683,7 @@ void game_cl_mp::decompress_and_save_screenshot(LPCSTR file_name, u8* data, u32 
 	FS.w_close(ftosave);
 }
 
-void game_cl_mp::decompress_and_process_config(LPCSTR file_name, u8* data, u32 data_size, u32 file_size)
+void game_cl_mp::decompress_and_process_config(const char* file_name, u8* data, u32 data_size, u32 file_size)
 {
 	if (!file_size)
 	{

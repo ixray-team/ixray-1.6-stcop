@@ -42,7 +42,7 @@ game_sv_freemp::~game_sv_freemp()
 #endif
 }
 
-void game_sv_freemp::SpawnItemToActor(u16 actorId, LPCSTR name)
+void game_sv_freemp::SpawnItemToActor(u16 actorId, const char* name)
 {
 	if (!name) return;
 
@@ -586,7 +586,7 @@ void game_sv_freemp::Update()
 	DoSpawnList.clear();
 }
 
-BOOL game_sv_freemp::OnTouch(u16 eid_who, u16 eid_what, BOOL bForced)
+bool game_sv_freemp::OnTouch(u16 eid_who, u16 eid_what, bool bForced)
 {
 	CSE_ActorMP* e_who = smart_cast<CSE_ActorMP*>(m_server->ID_to_entity(eid_who));
 	if (!e_who)

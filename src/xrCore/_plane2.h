@@ -18,7 +18,7 @@ public:
 		d		= P.d;
 		return *this;
 	}
-	ICF	 BOOL 	similar (Self &P, T eps_n=EPS, T eps_d=EPS)
+	ICF	 bool 	similar (Self &P, T eps_n=EPS, T eps_d=EPS)
 	{
 		return (n.similar(P.n,eps_n)&&(_abs(d-P.d)<eps_d));
 	}
@@ -47,7 +47,7 @@ public:
 	{
 		return std::abs(classify(v));
 	}
-	ICF BOOL intersectRayDist(const _vector2<T>& P, const _vector2<T>& D, T& dist)
+	ICF bool intersectRayDist(const _vector2<T>& P, const _vector2<T>& D, T& dist)
 	{
 		T numer = classify(P);
 		T denom = n.dotproduct(D);
@@ -58,7 +58,7 @@ public:
 		dist = -(numer / denom);
 		return ((dist>0.f)||fis_zero(dist));
 	}
-	ICF BOOL intersectRayPoint(const _vector2<T>& P, const _vector2<T>& D, _vector2<T>& dest) 
+	ICF bool intersectRayPoint(const _vector2<T>& P, const _vector2<T>& D, _vector2<T>& dest) 
 	{
 		T numer = classify(P);
 		T denom = n.dotproduct(D);
@@ -70,7 +70,7 @@ public:
 			return 		((dist>0.f)||fis_zero(dist));
 		}
 	}
-	ICF	BOOL	intersect (
+	ICF	bool	intersect (
 		const _vector2<T>& u, const _vector2<T>& v,	// segment
 		_vector2<T>&	isect)                  // intersection point
 	{
@@ -87,7 +87,7 @@ public:
 		return true;
 	}
 
-	ICF	BOOL	intersect_2 (
+	ICF	bool	intersect_2 (
 		const _vector2<T>& u, const _vector2<T>& v,				// segment
 		_vector2<T>& isect)						// intersection point
 	{
@@ -111,6 +111,6 @@ typedef _plane2<float>	Fplane2;
 typedef _plane2<double>	Dplane2;
 
 template <class T>
-BOOL	_valid			(const _plane2<T>& s)		{ return _valid(s.n) && _valid(s.d);	}
+bool	_valid			(const _plane2<T>& s)		{ return _valid(s.n) && _valid(s.d);	}
 
 #endif

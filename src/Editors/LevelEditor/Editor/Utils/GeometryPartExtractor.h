@@ -112,6 +112,6 @@ public:
 	void			AppendFace			(CSurface* surf, const Fvector* v, const Fvector* n, const Fvector2* uvs[3]);
     SBPartVec&		GetParts			(){return m_Parts;}
     // utilities
-    BOOL			Process				();
+    bool			Process				();
 };
 

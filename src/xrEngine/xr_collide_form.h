@@ -99,7 +99,7 @@ public:
 					ICollisionForm	( CObject* _owner, ECollisionFormType tp );
 	virtual			~ICollisionForm	( );
 
-	virtual BOOL	_RayQuery		( const collide::ray_defs& Q, collide::rq_results& R) = 0;
+	virtual bool	_RayQuery		( const collide::ray_defs& Q, collide::rq_results& R) = 0;
 	//virtual void	_BoxQuery		( const Fbox& B, const Fmatrix& M, u32 flags)	= 0;
 
 	IC CObject*		Owner			( )	const				{ return owner;			}
@@ -134,7 +134,7 @@ public:
 	public:
 						SElement	()				:elem_id(u16(-1)),type(0)	{}
 						SElement	(u16 id, u16 t)	:elem_id(id),type(t)		{}
-		BOOL			valid		() const									{return (elem_id!=(u16(-1)))&&(type!=0);}
+		bool			valid		() const									{return (elem_id!=(u16(-1)))&&(type!=0);}
 		void			center		(Fvector& center) const;
 	};
 
@@ -160,7 +160,7 @@ public:
 		CCF_bone_callback = callback;
 		CCF_bone_callback_param = param;
 	};
-	virtual BOOL		_RayQuery		( const collide::ray_defs& Q, collide::rq_results& R);
+	virtual bool		_RayQuery		( const collide::ray_defs& Q, collide::rq_results& R);
 	bool				_ElementCenter	(u16 elem_id, Fvector& e_center);
 	const ElementVec&	_GetElements	() {return elements;}
 #ifdef DEBUG
@@ -177,10 +177,10 @@ private:
 public:
 					CCF_EventBox	( CObject* _owner );
 
-	virtual BOOL	_RayQuery		( const collide::ray_defs& Q, collide::rq_results& R);
+	virtual bool	_RayQuery		( const collide::ray_defs& Q, collide::rq_results& R);
 	//virtual void	_BoxQuery		( const Fbox& B, const Fmatrix& M, u32 flags);
 
-	BOOL			Contact			( CObject* O );
+	bool			Contact			( CObject* O );
 
 	virtual	CCF_EventBox* cast_event_box() { return this; };
 };
@@ -210,13 +210,13 @@ public:
 public:
 					CCF_Shape		( CObject* _owner );
 
-	virtual BOOL	_RayQuery		( const collide::ray_defs& Q, collide::rq_results& R);
+	virtual bool	_RayQuery		( const collide::ray_defs& Q, collide::rq_results& R);
 	//virtual void	_BoxQuery		( const Fbox& B, const Fmatrix& M, u32 flags);
 
 	void			add_sphere		( Fsphere& S	);
 	void			add_box			( Fmatrix& B	);
 	void			ComputeBounds	( );
-	BOOL			Contact			( CObject* O	);
+	bool			Contact			( CObject* O	);
 	xr_vector<shape_def>& Shapes	(){return shapes;}
 
 	virtual	CCF_Shape* cast_shape() { return this; };

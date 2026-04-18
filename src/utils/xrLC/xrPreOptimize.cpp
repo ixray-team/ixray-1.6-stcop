@@ -140,7 +140,7 @@ void CBuild::PreOptimize()
 
 #include "../xrLC_Light/xrMU_Model.h"
 #include "../xrLC_Light/xrMU_Model_Reference.h"
-void CBuild::IsolateVertices	(BOOL bProgress)
+void CBuild::IsolateVertices	(bool bProgress)
 {
 	isolate_vertices<Vertex>( bProgress, lc_global_data()->g_vertices() );
 }

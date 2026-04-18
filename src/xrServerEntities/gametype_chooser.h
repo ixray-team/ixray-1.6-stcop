@@ -23,13 +23,13 @@ struct GameTypeChooser
 {
     Flags16	m_GameType;
 #ifndef XRGAME_EXPORTS
-		void	FillProp		(LPCSTR pref, PropItemVec& items);
+		void	FillProp		(const char* pref, PropItemVec& items);
 #endif // #ifndef XRGAME_EXPORTS
 
 	bool 	LoadStream		(IReader&F);
-	bool 	LoadLTX			(CInifile& ini, LPCSTR sect_name, bool bOldFormat);
+	bool 	LoadLTX			(CInifile& ini, const char* sect_name, bool bOldFormat);
 	void 	SaveStream		(IWriter&);
-	void 	SaveLTX			(CInifile& ini, LPCSTR sect_name);
+	void 	SaveLTX			(CInifile& ini, const char* sect_name);
 	void	SetDefaults		()				{m_GameType.one();}
 	bool	MatchType		(const u16 t) const		{return (t==eGameIDNoGame) || !!m_GameType.test(t);};
 };

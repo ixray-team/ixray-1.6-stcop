@@ -21,7 +21,7 @@ private:
 		bool						m_do_string;
 		bool						m_reload;
 
-		IC		CScriptToRun		(LPCSTR script_name, bool do_string, bool reload = false)
+		IC		CScriptToRun		(const char* script_name, bool do_string, bool reload = false)
 		{
 			m_script_name			= xr_strdup(script_name);
 			m_do_string				= do_string;
@@ -59,7 +59,7 @@ public:
 									CScriptProcess	(shared_str anme, shared_str scripts);
 	virtual							~CScriptProcess	();
 			void					update			();
-			void					add_script		(LPCSTR	script_name, bool string, bool reload);
+			void					add_script		(const char*	script_name, bool string, bool reload);
 	IC		const SCRIPT_REGISTRY	&scripts		() const;
 	IC		shared_str				name			() const;
 	void DestroyScripts();

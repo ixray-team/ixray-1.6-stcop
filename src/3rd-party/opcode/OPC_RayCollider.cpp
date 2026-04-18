@@ -358,7 +358,7 @@ bool RayCollider::Collide(const IceMaths::Ray& world_ray, const Model& model, co
  *	\return		TRUE if we can return immediately
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-BOOL RayCollider::InitQuery(const IceMaths::Ray& world_ray, const IceMaths::Matrix4x4* world, udword* face_id)
+bool RayCollider::InitQuery(const IceMaths::Ray& world_ray, const IceMaths::Matrix4x4* world, udword* face_id)
 {
 	// Reset stats & contact status
 	Collider::InitQuery();

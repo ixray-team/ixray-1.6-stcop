@@ -27,7 +27,7 @@ void CScriptBinderObject::reinit			()
 {
 }
 
-void CScriptBinderObject::reload			(LPCSTR section)
+void CScriptBinderObject::reload			(const char* section)
 {
 }
 

@@ -54,7 +54,7 @@ private:
 public:
 							ui_actor_state_wnd	() = default;
 	virtual					~ui_actor_state_wnd	();
-			void			init_from_xml			( CUIXml& xml, LPCSTR path );
+			void			init_from_xml			( CUIXml& xml, const char* path );
 			void			UpdateActorInfo			( CInventoryOwner* owner );
 			void			UpdateHitZone			();
 
@@ -85,7 +85,7 @@ public:
 	CUIProgressBar*			m_progress;
 					ui_actor_state_item		();
 	virtual			~ui_actor_state_item	();
-			void	init_from_xml			( CUIXml& xml, LPCSTR path );
+			void	init_from_xml			( CUIXml& xml, const char* path );
 	
 			bool	set_text				( float value ); // 0..1
 			bool	set_progress			( float value ); // 0..1

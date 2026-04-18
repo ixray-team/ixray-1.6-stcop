@@ -29,7 +29,7 @@ void CUITextureMaster::FreeCachedShaders()
 	m_shaders.clear();
 }
 
-void CUITextureMaster::ParseShTexInfoLegacy(LPCSTR xml_file)
+void CUITextureMaster::ParseShTexInfoLegacy(const char* xml_file)
 {
 	CUIXml xml;
 	xml.Load(CONFIG_PATH, UI_PATH, xml_file);
@@ -57,7 +57,7 @@ void CUITextureMaster::ParseShTexInfoLegacy(LPCSTR xml_file)
 //		m_shTex.insert(std::make_pair(texture, regs));
 //	}
 }
-void CUITextureMaster::ParseShTexInfo(LPCSTR xml_file)
+void CUITextureMaster::ParseShTexInfo(const char* xml_file)
 {
 	CUIXml						xml;
 	xml.Load					(CONFIG_PATH, "ui\\textures_descr", xml_file);
@@ -166,7 +166,7 @@ Frect CUITextureMaster::GetTextureRect(const shared_str&  texture_name){
 	return info.rect;
 }
 
-LPCSTR CUITextureMaster::GetTextureFileName(const char* texture_name) {
+const char* CUITextureMaster::GetTextureFileName(const char* texture_name) {
 	xr_map<shared_str, TEX_INFO>::iterator	it;
 	it = m_textures.find(texture_name);
 

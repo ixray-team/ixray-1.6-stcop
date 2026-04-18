@@ -14,7 +14,7 @@ CUIFrags2::~CUIFrags2(){
 }
 
 
-void CUIFrags2::Init(CUIXml& xml_doc, LPCSTR path, LPCSTR backgrnd_path){
+void CUIFrags2::Init(CUIXml& xml_doc, const char* path, const char* backgrnd_path){
 	InitBackground(xml_doc, backgrnd_path);
 
 	CUIWindow* pTeam1 = nullptr;

@@ -90,7 +90,7 @@ public:
 		SetVertex(1,V2);
 		SetVertex(2,V3);
 	};
-	IC BOOL isDegenerated()
+	IC bool isDegenerated()
 	{
 		return (v[0]==v[1] || v[0]==v[2] || v[1]==v[2]);
 	};
@@ -106,7 +106,7 @@ public:
 		*B = v[edge2idx[e][1]];
 	}
 
-	BOOL			isEqual		(type_face& F)
+	bool			isEqual		(type_face& F)
 	{
 		// Test for 6 variations
 		if ((v[0]==F.v[0]) && (v[1]==F.v[1]) && (v[2]==F.v[2])) return true;
@@ -284,7 +284,7 @@ struct remove_pred
 } ;
  
 template<typename typeVertex>
-IC void isolate_vertices(BOOL bProgress, xr_vector<typeVertex*> &vertices )
+IC void isolate_vertices(bool bProgress, xr_vector<typeVertex*> &vertices )
 {
  	// Status		("Isolating vertices...");
 

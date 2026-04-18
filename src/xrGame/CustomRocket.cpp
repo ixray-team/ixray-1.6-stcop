@@ -55,10 +55,10 @@ void CCustomRocket::reinit()
 	m_vPrevVel.set(0, 0, 0);
 }
 
-BOOL CCustomRocket::net_Spawn(CSE_Abstract* DC)
+bool CCustomRocket::net_Spawn(CSE_Abstract* DC)
 {
 	m_eState = eInactive;
-	BOOL result = inherited::net_Spawn(DC);
+	bool result = inherited::net_Spawn(DC);
 	m_LaunchXForm.set(XFORM());
 	SpatialComponent->spatial.type |= ESPATIAL_TYPE::ROCKET;
 	return result;
@@ -268,14 +268,14 @@ void CCustomRocket::ObjectContactCallback(bool& do_colide, bool bo1, dContact& c
 	}
 }
 
-void CCustomRocket::Load(LPCSTR section)
+void CCustomRocket::Load(const char* section)
 {
 	inherited::Load(section);
 
 	reload(section);
 }
 
-void CCustomRocket::reload(LPCSTR section)
+void CCustomRocket::reload(const char* section)
 {
 	inherited::reload(section);
 	m_eState = eInactive;

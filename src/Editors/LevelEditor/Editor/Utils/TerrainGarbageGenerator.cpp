@@ -50,7 +50,7 @@ void EGarbageGenerator::Generate(CSceneObject* terrain)
 				);
 			else
 				up.set(0.f, 1.f, 0.f);
-			LPCSTR N = ot->m_AppendRandomObjects[::Random.randI(ot->m_AppendRandomObjects.size())].c_str();
+			const char* N = ot->m_AppendRandomObjects[::Random.randI(ot->m_AppendRandomObjects.size())].c_str();
 			string256 namebuffer;
 			Scene->GenObjectName(OBJCLASS_SCENEOBJECT, namebuffer, N);
 			CSceneObject* obj = new CSceneObject((LPVOID)0, namebuffer);

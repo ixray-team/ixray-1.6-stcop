@@ -179,7 +179,7 @@ bool SphereCollider::Collide(SphereCache& cache, const IceMaths::Sphere& sphere,
  *	\warning	SCALE NOT SUPPORTED IN SPHERE WORLD MATRIX. The matrix must contain rotation & translation parts only.
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-BOOL SphereCollider::InitQuery(SphereCache& cache, const IceMaths::Sphere& sphere, const IceMaths::Matrix4x4* worlds, const IceMaths::Matrix4x4* worldm)
+bool SphereCollider::InitQuery(SphereCache& cache, const IceMaths::Sphere& sphere, const IceMaths::Matrix4x4* worlds, const IceMaths::Matrix4x4* worldm)
 {
 	// 1) Call the base method
 	VolumeCollider::InitQuery();
@@ -331,7 +331,7 @@ bool SphereCollider::Collide(SphereCache& cache, const IceMaths::Sphere& sphere,
  *	\return		true if the sphere contains the whole box
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-inline_ BOOL SphereCollider::SphereContainsBox(const IceMaths::Point& bc_, const IceMaths::Point& be_)
+inline_ bool SphereCollider::SphereContainsBox(const IceMaths::Point& bc_, const IceMaths::Point& be_)
 {
 	// I assume if all 8 box vertices are inside the sphere, so does the whole box.
 	// Sounds ok but maybe there's a better way?

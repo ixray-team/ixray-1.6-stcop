@@ -39,7 +39,7 @@ void CMincer::OnStateSwitch(EZoneState new_state)
 	inherited::OnStateSwitch(new_state);
 }
 
-void CMincer::Load (LPCSTR section)
+void CMincer::Load (const char* section)
 {
 	inherited::Load(section);
 	
@@ -52,9 +52,9 @@ void CMincer::Load (LPCSTR section)
 	//pSettings->r_fvector3(section,whirlwind_center);
 }
 
-BOOL CMincer::net_Spawn(CSE_Abstract* DC)
+bool CMincer::net_Spawn(CSE_Abstract* DC)
 {
-	BOOL result=inherited::net_Spawn(DC);
+	bool result=inherited::net_Spawn(DC);
 	Fvector C;
 	Center(C);
 	C.y+=m_fTeleHeight;
@@ -77,7 +77,7 @@ void CMincer::feel_touch_new				(CObject* O)
 		Telekinesis().activate(GO, m_fThrowInImpulse, m_fTeleHeight, 100000);
 	}
 }
-BOOL CMincer::feel_touch_contact(CObject* O)
+bool CMincer::feel_touch_contact(CObject* O)
 {
 	return inherited::feel_touch_contact(O) && O->cast_physics_shell_holder() != nullptr;
 }

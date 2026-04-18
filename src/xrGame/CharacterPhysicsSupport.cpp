@@ -31,8 +31,8 @@
 #ifdef DEBUG
 #	include "PHDebug.h"
 
-extern BOOL death_anim_debug;
-BOOL dbg_draw_ragdoll_spawn = FALSE;
+extern bool death_anim_debug;
+bool dbg_draw_ragdoll_spawn = FALSE;
 #endif // DEBUG
 
 #include "../xrEngine/device.h"
@@ -44,7 +44,7 @@ BOOL dbg_draw_ragdoll_spawn = FALSE;
 string64 sdbg_stalker_death_anim = "none";
 LPSTR dbg_stalker_death_anim = sdbg_stalker_death_anim;
 #endif
-BOOL  b_death_anim_velocity = TRUE;
+bool  b_death_anim_velocity = TRUE;
 constexpr u32 hit_valide_time = 1000;
 static constexpr u32 physics_shell_animated_destroy_delay = 3000;
 const float cmp_angle = M_PI / 10.f;
@@ -122,7 +122,7 @@ void CCharacterPhysicsSupport::SetRemoved()
 	}
 }
 
-void CCharacterPhysicsSupport::in_Load(LPCSTR section)
+void CCharacterPhysicsSupport::in_Load(const char* section)
 {
 	m_character_shell_control.Load(section);
 	m_flags.set(fl_specific_bonce_demager, TRUE);
@@ -536,10 +536,10 @@ IC void CCharacterPhysicsSupport::UpdateDeathAnims()
 void	DBG_PhysBones( CObject &O );
 void	DBG_DrawBones( CObject &O );
 void	DBG_DrawBind ( CObject &O );
-BOOL dbg_draw_character_bones			=false;
-BOOL dbg_draw_character_physics			=false;
-BOOL dbg_draw_character_binds			=false;
-BOOL dbg_draw_character_physics_pones	=false;
+bool dbg_draw_character_bones			=false;
+bool dbg_draw_character_physics			=false;
+bool dbg_draw_character_binds			=false;
+bool dbg_draw_character_physics_pones	=false;
 
 void dbg_draw_geoms(xr_vector<CODEGeom*>& m_weapon_geoms)
 {

@@ -14,7 +14,7 @@ CAnomalyDetector::~CAnomalyDetector()
 {
 }
 
-void CAnomalyDetector::load(LPCSTR section)
+void CAnomalyDetector::load(const char* section)
 {
 	m_radius				= READ_IF_EXISTS(pSettings,r_float,section,"Anomaly_Detect_Radius",15.f);
 	m_time_to_rememeber		= READ_IF_EXISTS(pSettings,r_u32,section,"Anomaly_Detect_Time_Remember",30000);

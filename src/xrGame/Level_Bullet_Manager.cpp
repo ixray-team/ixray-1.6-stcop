@@ -147,7 +147,7 @@ void CBulletManager::Load		()
 	}
 
 
-	LPCSTR whine_sounds		= pSettings->r_string(bullet_manager_sect, "whine_sounds");
+	const char* whine_sounds		= pSettings->r_string(bullet_manager_sect, "whine_sounds");
 	int cnt					= _GetItemCount(whine_sounds);
 	xr_string tmp;
 	for (int k=0; k<cnt; ++k)
@@ -156,13 +156,13 @@ void CBulletManager::Load		()
 		m_WhineSounds.back().create(_GetItem(whine_sounds,k,tmp),st_Effect,sg_SourceType);
 	}
 
-	LPCSTR explode_particles= pSettings->r_string(bullet_manager_sect, "explode_particles");
+	const char* explode_particles= pSettings->r_string(bullet_manager_sect, "explode_particles");
 	cnt						= _GetItemCount(explode_particles);
 	for (int k=0; k<cnt; ++k)
 		m_ExplodeParticles.push_back	(_GetItem(explode_particles,k,tmp));
 
-	LPCSTR sh_name = READ_IF_EXISTS(pSettings, r_string, bullet_manager_sect, "tracer_shader", "effects\\bullet_tracer");
-	LPCSTR tx_name = READ_IF_EXISTS(pSettings, r_string, bullet_manager_sect, "tracer_texture", "fx\\fx_tracer");
+	const char* sh_name = READ_IF_EXISTS(pSettings, r_string, bullet_manager_sect, "tracer_shader", "effects\\bullet_tracer");
+	const char* tx_name = READ_IF_EXISTS(pSettings, r_string, bullet_manager_sect, "tracer_texture", "fx\\fx_tracer");
 	m_circle_size_k = READ_IF_EXISTS(pSettings, r_float, bullet_manager_sect, "fire_circle_k", .5f);
 
 	sh_Tracer->create(sh_name, tx_name);
@@ -375,7 +375,7 @@ static Fvector parabolic_position			(
 	);
 }
 
-//BOOL g_use_new_ballistics	= 0;
+//bool g_use_new_ballistics	= 0;
 #ifdef DEBUG
 float dbg_bullet_time_factor = 1.f;
 #endif
@@ -727,7 +727,7 @@ static void update_bullet			(
 	update_bullet_parabolic			(bullet, data, gravity, air_resistance);
 }
 
-BOOL CBulletManager::firetrace_callback	(collide::rq_result& result, LPVOID params)
+bool CBulletManager::firetrace_callback	(collide::rq_result& result, LPVOID params)
 {
 	bullet_test_callback_data& data = *(bullet_test_callback_data*)params;
 	SBullet& bullet					= *data.pBullet;
@@ -851,7 +851,7 @@ bool CBulletManager::trajectory_check_error	(
 	bullet.dir				= start_to_target;
 
 	collide::ray_defs RD	(start, start_to_target, distance, CDB::OPT_FULL_TEST, collide::rq_target(collide::rqtBoth|collide::rqtShape));
-	BOOL const result		= Level().ObjectSpace.RayQuery(storage, RD, CBulletManager::firetrace_callback, &data, CBulletManager::test_callback, nullptr);
+	bool const result		= Level().ObjectSpace.RayQuery(storage, RD, CBulletManager::firetrace_callback, &data, CBulletManager::test_callback, nullptr);
 	if ( !result || (data.collide_time == 0.f) ) {
 		add_bullet_point	(bullet.start_position, previous_position, bullet.start_velocity, gravity, air_resistance, high);
 		return				(true);
@@ -919,7 +919,7 @@ bool CBulletManager::process_bullet			(collide::rq_results & storage, SBullet& b
 
 
 #if 0//def DEBUG
-	extern BOOL g_bDrawBulletHit;
+	extern bool g_bDrawBulletHit;
 	if (g_bDrawBulletHit)
 	{
 		Msg	(
@@ -987,7 +987,7 @@ bool CBulletManager::process_bullet			(collide::rq_results & storage, SBullet& b
 }
 
 #ifdef DEBUG
-	BOOL g_bDrawBulletHit = FALSE;
+	int g_bDrawBulletHit = FALSE;
 #endif
 
 IC float SqrDistancePointToSegment(const Fvector& pt, const Fvector& orig, const Fvector& dir)
@@ -1344,7 +1344,7 @@ void CBulletManager::CommitEvents()	// @ the start of frame
 	std::swap(bp_update_idx, bp_render_idx);
 }
 
-void CBulletManager::RegisterEvent(EventType Type, BOOL _dynamic, SBullet* bullet, const Fvector& end_point, collide::rq_result& R, u16 tgt_material)
+void CBulletManager::RegisterEvent(EventType Type, bool _dynamic, SBullet* bullet, const Fvector& end_point, collide::rq_result& R, u16 tgt_material)
 {
 	m_Events.push_back	(_event())		;
 	_event&	E		= m_Events.back()	;

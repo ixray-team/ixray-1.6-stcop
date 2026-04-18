@@ -57,7 +57,7 @@ CUIMMShniaga::~CUIMMShniaga()
 	ActionRepeaters()->UnregisterOwner(this);
 }
 
-void CUIMMShniaga::InitShniaga(CUIXml& xml_doc, LPCSTR path)
+void CUIMMShniaga::InitShniaga(CUIXml& xml_doc, const char* path)
 {
 	string256 _path;
 
@@ -123,7 +123,7 @@ void CUIMMShniaga::OnDeviceReset()
 {
 }
 
-void CUIMMShniaga::CreateList(xr_vector<CUIStatic*>& lst, CUIXml& xml_doc, LPCSTR path)
+void CUIMMShniaga::CreateList(xr_vector<CUIStatic*>& lst, CUIXml& xml_doc, const char* path)
 {
 	CGameFont* pF;
 	u32	color;
@@ -166,7 +166,7 @@ void CUIMMShniaga::CreateList(xr_vector<CUIStatic*>& lst, CUIXml& xml_doc, LPCST
 
 }
 
-void CUIMMShniaga::SetPage		(enum_page_id page_id, LPCSTR xml_file, LPCSTR xml_path)
+void CUIMMShniaga::SetPage		(enum_page_id page_id, const char* xml_file, const char* xml_path)
 {
 	VERIFY(m_page != page_id);
 	xr_vector<CUIStatic*>*		lst = nullptr;

@@ -3,9 +3,9 @@
 class CBlender_SSAO : public IBlender  
 {
 public:
-	virtual		LPCSTR		getComment()	{ return "INTERNAL: calc SSAO";	}
-	virtual		BOOL		canBeDetailed()	{ return FALSE;	}
-	virtual		BOOL		canBeLMAPped()	{ return FALSE;	}
+	virtual		const char* getComment()	{ return "INTERNAL: calc SSAO";	}
+	virtual		bool		canBeDetailed()	{ return false;	}
+	virtual		bool		canBeLMAPped()	{ return false;	}
 
 	virtual		void		Compile			(CBlender_Compile& C);
 
