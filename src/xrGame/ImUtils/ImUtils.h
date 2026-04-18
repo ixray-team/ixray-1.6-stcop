@@ -562,6 +562,14 @@ enum class eRequestType_QuestEditor : u32
 	kShutdown
 };
 
+enum class eRequestType_OMFEditor : u32
+{
+	kReadSettings,
+	kWriteSettings,
+	kLoadFile,
+	kShutdown
+};
+
 struct SRequestData
 {
 	u32 editor_type = static_cast<u32>(eImGuiEditorType::kInvalid);
@@ -600,7 +608,6 @@ void RenderQuestEditor();
 /* MISCELLANEOUS */
 
 void DestroySpawnManagerWindow();
-void DestroyQuestEditorWindow();
 
 /* WORKER THREAD of Tools */
 
@@ -623,6 +630,9 @@ void SpawnManager_OnReleased(int key);
 
 void QuestEditor_OnPressed(int key);
 void QuestEditor_OnReleased(int key);
+
+void OMFEditor_OnPressed(int key);
+void OMFEditor_OnReleased(int key);
 
 void RequestHandler_TextureEditor(const SRequestData& req);
 void RequestHandler_QuestEditor(const SRequestData& req);
