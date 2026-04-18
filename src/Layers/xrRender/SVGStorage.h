@@ -30,7 +30,6 @@ namespace lunasvg
 	class Bitmap;
 };
 
-/// @brief author: wh1t3lord
 class ECORE_API CSVGStorage
 {
 public:
