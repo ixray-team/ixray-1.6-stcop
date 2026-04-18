@@ -168,7 +168,7 @@ void spline1( float t, Fvector *p, Fvector *ret )
 	}
 }
 
-BOOL CDemoPlay::ProcessCam(SCamEffectorInfo& info)
+bool CDemoPlay::ProcessCam(SCamEffectorInfo& info)
 {
 	// skeep a few frames before counting
 	if (Device.dwPrecacheFrame)	return	TRUE;

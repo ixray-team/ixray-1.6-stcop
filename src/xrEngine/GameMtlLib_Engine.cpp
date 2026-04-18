@@ -15,7 +15,7 @@ void DestroyPSs(PSVec& lst)
 {
 }
 
-void CreateSounds(SoundVec& lst, LPCSTR buf)
+void CreateSounds(SoundVec& lst, const char* buf)
 {
 	string128 tmp;
 	int cnt = _GetItemCount(buf);
@@ -27,7 +27,7 @@ void CreateSounds(SoundVec& lst, LPCSTR buf)
 	}
 }
 
-void CreateMarks(IWallMarkArray* pMarks, LPCSTR buf)
+void CreateMarks(IWallMarkArray* pMarks, const char* buf)
 {
 	string256	tmp;
 	int cnt = _GetItemCount(buf);	R_ASSERT(cnt <= GAMEMTL_SUBITEM_COUNT);
@@ -36,7 +36,7 @@ void CreateMarks(IWallMarkArray* pMarks, LPCSTR buf)
 }
 
 
-void CreatePSs(PSVec& lst, LPCSTR buf)
+void CreatePSs(PSVec& lst, const char* buf)
 {
 	string256 tmp;
 	int cnt = _GetItemCount(buf);	R_ASSERT(cnt <= GAMEMTL_SUBITEM_COUNT);

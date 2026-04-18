@@ -13,12 +13,12 @@ public:
 	CEvent	(const char* S);
 	~CEvent	();
 
-	LPCSTR	GetFull()
+	const char*	GetFull()
 	{	return Name; }
 	u32	RefCount()
 	{	return dwRefCount; }
 
-	BOOL	Equal(CEvent& E)
+	bool	Equal(CEvent& E)
 	{ return _stricmp(Name,E.Name)==0; }
 
 	void	Attach(IEventReceiver* H)
@@ -117,7 +117,7 @@ void	CEventAPI::Signal(EVENT E, u64 P1, u64 P2)
 	E->Signal(P1, P2);
 }
 
-void CEventAPI::Signal(LPCSTR N, u64 P1, u64 P2)
+void CEventAPI::Signal(const char* N, u64 P1, u64 P2)
 {
 	xrCriticalSectionGuard guard(CS);
 	EVENT E = Create(N);
@@ -135,7 +135,7 @@ void CEventAPI::Defer(EVENT E, u64 P1, u64 P2)
 	Events_Deferred.back().P2	= P2;
 }
 
-void CEventAPI::Defer(LPCSTR N, u64 P1, u64 P2)
+void CEventAPI::Defer(const char* N, u64 P1, u64 P2)
 {
 	xrCriticalSectionGuard guard(CS);
 	EVENT	E = Create(N);
@@ -160,7 +160,7 @@ void CEventAPI::OnFrame()
 	Events_Deferred.clear();
 }
 
-BOOL CEventAPI::Peek(LPCSTR EName)
+bool CEventAPI::Peek(const char* EName)
 {
 	xrCriticalSectionGuard guard(CS);
 	if (Events_Deferred.empty())

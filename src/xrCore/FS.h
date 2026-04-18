@@ -8,7 +8,7 @@
 #define CFS_HeaderChunkID	(666)
 #include "Concepts.h"
 
-XRCORE_API void VerifyPath	(LPCSTR path);
+XRCORE_API void VerifyPath	(const char* path);
 
 #include "Concepts.h"
 
@@ -136,7 +136,7 @@ public:
 #pragma warning(disable:4995)
 	IC void free() {file_size=0; position=0; mem_size=0; xr_free(data);}
 #pragma warning(pop)
-	bool save_to(LPCSTR fn);
+	bool save_to(const char* fn);
 	virtual	void flush(){}
 };
 
@@ -184,7 +184,7 @@ public:
 	virtual IReader* cast_reader() { return nullptr; }
 
 	virtual intptr_t		elapsed()	const = 0;
-	IC		BOOL			eof		()	const		{return elapsed() <= 0;	};
+	IC		bool			eof		()	const		{return elapsed() <= 0;	};
 
 	virtual intptr_t		tell() const = 0;
 	virtual intptr_t		length() const = 0;
@@ -243,10 +243,10 @@ public:
 	// Set file pointer to start of chunk data (0 for root chunk)
 	IC	void		rewind		()			{	seek(0); }
 
-	virtual intptr_t find_chunk  (u32 ID, BOOL* bCompressed = 0);
+	virtual intptr_t find_chunk  (u32 ID, bool* bCompressed = 0);
 	virtual IReaderBase* open_chunk_base(u32 chunk_id) = 0;
 	
-	IC	BOOL		r_chunk		(u32 ID, void *dest)	// чтение XR Chunk'ов (4b-ID,4b-size,??b-data)
+	IC	bool		r_chunk		(u32 ID, void *dest)	// чтение XR Chunk'ов (4b-ID,4b-size,??b-data)
 	{
 		u32	dwSize = this->find_chunk(ID);
 		if (dwSize!=0) {
@@ -255,7 +255,7 @@ public:
 		} else return FALSE;
 	}
 	
-	IC	BOOL		r_chunk_safe(u32 ID, void *dest, u32 dest_size)	// чтение XR Chunk'ов (4b-ID,4b-size,??b-data)
+	IC	bool		r_chunk_safe(u32 ID, void *dest, u32 dest_size)	// чтение XR Chunk'ов (4b-ID,4b-size,??b-data)
 	{
 		u32	dwSize = this->find_chunk(ID);
 		if (dwSize!=0) {
@@ -266,13 +266,13 @@ public:
 	}
 
 	template<XRay::Concepts::Enum EnumT>
-	IC BOOL r_chunk(EnumT ID, void* dest)
+	IC bool r_chunk(EnumT ID, void* dest)
 	{
 		return r_chunk(u32(ID),dest);
 	}
 
 	template<XRay::Concepts::Enum EnumT>
-	IC BOOL r_chunk_safe(EnumT ID, void* dest, u32 dest_size)
+	IC bool r_chunk_safe(EnumT ID, void* dest, u32 dest_size)
 	{
 		return r_chunk_safe(u32(ID),dest,dest_size);
 	}
@@ -405,10 +405,10 @@ public:
 		return Reader;
 	}
 
-	intptr_t find_chunk(u32 ID, BOOL* bCompressed = 0) override;
+	intptr_t find_chunk(u32 ID, bool* bCompressed = 0) override;
 
 	template<XRay::Concepts::Enum EnumT>
-	intptr_t find_chunk(EnumT ID, BOOL* bCompressed = 0)
+	intptr_t find_chunk(EnumT ID, bool* bCompressed = 0)
 	{
 		return find_chunk(u32(ID), bCompressed);
 	}

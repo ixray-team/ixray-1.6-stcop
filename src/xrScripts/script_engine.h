@@ -44,8 +44,8 @@ private:
 	string128					m_last_no_file;
 	u32							m_last_no_file_length;
 
-			bool				no_file_exists				(LPCSTR file_name, u32 string_length);
-			void				add_no_file					(LPCSTR file_name, u32 string_length);
+			bool				no_file_exists				(const char* file_name, u32 string_length);
+			void				add_no_file					(const char* file_name, u32 string_length);
 
 public:
 								CScriptEngine				();
@@ -60,20 +60,20 @@ public:
 #endif // #ifdef DEBUG
 			void				setup_callbacks				();
 			void				load_common_scripts			();
-			bool				load_file					(LPCSTR	caScriptName, LPCSTR namespace_name);
+			bool				load_file					(const char*	caScriptName, const char* namespace_name);
 	IC		CScriptProcess		*script_process				(const EScriptProcessors &process_id) const;
 	IC		void				add_script_process			(const EScriptProcessors &process_id, CScriptProcess *script_process);
 			void				remove_script_process		(const EScriptProcessors &process_id);
 			void				setup_auto_load				();
-			void				process_file_if_exists		(LPCSTR file_name, bool warn_if_not_exist);
-			void				process_file				(LPCSTR file_name);
-			void				process_file				(LPCSTR file_name, bool reload_modules);
-			bool				function_object				(LPCSTR function_to_call, luabind::object &object, int type = LUA_TFUNCTION);
+			void				process_file_if_exists		(const char* file_name, bool warn_if_not_exist);
+			void				process_file				(const char* file_name);
+			void				process_file				(const char* file_name, bool reload_modules);
+			bool				function_object				(const char* function_to_call, luabind::object &object, int type = LUA_TFUNCTION);
 			void				register_script_classes		();
-	IC		void				parse_script_namespace		(LPCSTR function_to_call, LPSTR name_space, u32 const namespace_size, LPSTR function, u32 const function_size);
+	IC		void				parse_script_namespace		(const char* function_to_call, LPSTR name_space, u32 const namespace_size, LPSTR function, u32 const function_size);
 
 	template <typename _result_type>
-	IC		bool				functor						(LPCSTR function_to_call, luabind::functor<_result_type> &lua_function);
+	IC		bool				functor						(const char* function_to_call, luabind::functor<_result_type> &lua_function);
 
 	virtual	void				on_error					(lua_State* state);
 			void				collect_all_garbage			();

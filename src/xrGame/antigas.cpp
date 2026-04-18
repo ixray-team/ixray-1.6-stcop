@@ -117,7 +117,7 @@ float IAntigas::GetFilterIconHeight()
 	return fFilterIconHeight;
 }
 
-void IAntigas::AddSound(LPCSTR snd_path, bool isFilter)
+void IAntigas::AddSound(const char* snd_path, bool isFilter)
 {
 	ref_sound r_sound;
 	string_path s_path = {};
@@ -136,7 +136,7 @@ void IAntigas::AddSound(LPCSTR snd_path, bool isFilter)
 	}
 }
 
-void IAntigas::Load(LPCSTR section)
+void IAntigas::Load(const char* section)
 {
 	SetAllowed(READ_IF_EXISTS(pSettings, r_bool, section, "is_antigas", FALSE));
 	if (IsAllowed())
@@ -187,7 +187,7 @@ void IAntigas::Load(LPCSTR section)
 	}
 }
 
-void OnInstall_upgrade_impl(LPCSTR section, bool test)
+void OnInstall_upgrade_impl(const char* section, bool test)
 {
 	
 }
@@ -307,7 +307,7 @@ void IAntigas::CloneInitialProtectionParams(HitImmunity::HitTypeSVec m_HitTypePr
 	clamp(m_InitialItemProtections[ALife::eHitTypeLightBurn], 0.0f, 1.0f);
 }
 
-LPCSTR IAntigas::GetFilterSection()
+const char* IAntigas::GetFilterSection()
 {
 	return m_filter_section.c_str();
 }
@@ -364,7 +364,7 @@ bool IAntigas::IsFilterInWhiteList(shared_str filter_section)
 
 extern CSE_Abstract* CALifeSimulator__spawn_item2(
 	CALifeSimulator* self_,
-	LPCSTR section,
+	const char* section,
 	const Fvector& position,
 	u32 level_vertex_id,
 	GameGraph::_GRAPH_ID game_vertex_id,

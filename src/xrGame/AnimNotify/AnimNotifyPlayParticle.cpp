@@ -8,7 +8,7 @@
 
 constexpr u32 m_particles_num = 20;
 
-void CAnimNotifyPlayParticle::Construct(const CInifile& ini, LPCSTR sect)
+void CAnimNotifyPlayParticle::Construct(const CInifile& ini, const char* sect)
 {
     m_particle_to_play = ini.r_string(sect, "particle");
 }

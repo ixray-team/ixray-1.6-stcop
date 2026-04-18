@@ -19,7 +19,7 @@ IC void iBuildGroups(CBoneData* B, U16Vec& tgt, u16 id, u16& last_id)
 }
 void CDS0_Kinematics::LL_Validate()
 {
-	BOOL bCheckBreakable = FALSE;
+	bool bCheckBreakable = FALSE;
 	for (u16 k = 0; k < LL_BoneCount(); k++) {
 		if (LL_GetData(k).IK_data.ik_flags.is(SJointIKData::flBreakable) && (LL_GetData(k).IK_data.type != jtNone)) {
 			bCheckBreakable = TRUE;
@@ -29,7 +29,7 @@ void CDS0_Kinematics::LL_Validate()
 
 	if (bCheckBreakable)
 	{
-		BOOL bValidBreakable = TRUE;
+		bool bValidBreakable = TRUE;
 
 #pragma todo("container is created in stack!")
 		xr_vector<xr_vector<u16> > 	groups;
@@ -327,7 +327,7 @@ void CDS0_Kinematics::BoneChain_Calculate(const CBoneData* bd, CBoneInstance& bi
 	//CBlendInstance::BlendSVec &Blend = BLEND_INST.blend_vector();
 //ignore callbacks
 	BoneCallback bc = bi.callback();
-	BOOL		 ow = bi.callback_overwrite();
+	bool		 ow = bi.callback_overwrite();
 	if (ignore_callbacks)
 	{
 		bi.set_callback(bi.callback_type(), 0, bi.callback_param(), 0);
@@ -545,7 +545,7 @@ int CDS0_Kinematics::LL_GetBoneGroups(xr_vector<xr_vector<u16>>& groups)
 	return groups.size();
 }
 
-void CDS0_Kinematics::LL_SetBoneVisible(u16 bone_id, BOOL val, BOOL bRecursive)
+void CDS0_Kinematics::LL_SetBoneVisible(u16 bone_id, bool val, bool bRecursive)
 {
 	//VERIFY2(bone_id < LL_BoneCount(), make_string<const char*>("visual_name: %s, bone: %s, bone_id: %d", dbg_name.c_str(), LL_BoneName_dbg(bone_id), bone_id));
 	visimask.set(bone_id, !!val);
@@ -586,7 +586,7 @@ void CDS0_Kinematics::LL_SetBonesVisible(VisMask mask)
 	Visibility_Invalidate();
 }
 
-void CDS0_Kinematics::CalculateBones(BOOL bForceExact)
+void CDS0_Kinematics::CalculateBones(bool bForceExact)
 {
 	// early out.
 	// check if the info is still relevant

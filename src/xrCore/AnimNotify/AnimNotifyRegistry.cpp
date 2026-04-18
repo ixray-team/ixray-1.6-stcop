@@ -21,7 +21,7 @@ CAnimNotifyRegistry::CAnimNotifyRegistry()
         {
             VERIFY(IAnimNotifyHandler::IsValid());
             shared_str& sect_name = sect.Name;
-            LPCSTR type_str = ini.r_string(sect_name, "type");
+            const char* type_str = ini.r_string(sect_name, "type");
             auto type = magic_enum::enum_cast<EAnimNotifyType>(type_str);
             R_ASSERT4(type.has_value(), "Invalid notify type", sect_name.c_str(), type_str);
             auto NewNotify = IAnimNotifyHandler::Get().ConstructNotify(type.value());

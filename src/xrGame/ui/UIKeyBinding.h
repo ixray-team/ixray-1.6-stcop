@@ -14,17 +14,17 @@ class CUIKeyBinding final : public CUIWindow
 {
 public:
 					CUIKeyBinding			();
-	void			InitFromXml				(CUIXml& xml_doc, LPCSTR path);
+	void			InitFromXml				(CUIXml& xml_doc, const char* path);
 #ifdef DEBUG
 	void			CheckStructure			(CUIXml& xml_doc);
-	bool			IsActionExist			(LPCSTR action, CUIXml& xml_doc);
+	bool			IsActionExist			(const char* action, CUIXml& xml_doc);
 #endif
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 	virtual void		Update					();
 
 protected:
-	void			FillUpList				(CUIXml& xml_doc, LPCSTR path);
+	void			FillUpList				(CUIXml& xml_doc, const char* path);
 	void			UpdateQuickSlotsBindingState();
 
 	CUIFrameLineWnd	m_header[3];

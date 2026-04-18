@@ -9,7 +9,7 @@ void CRenderTarget::accum_reflected		(light* L)
 	// *****************************	Mask by stencil		*************************************
 	ref_shader		shader				= s_accum_reflected;
 
-	BOOL	bIntersect			= FALSE; //enable_scissor(L);
+	bool	bIntersect			= FALSE; //enable_scissor(L);
 	RCache.set_xform_world		(L->m_xform			);
 	RCache.set_xform_view		(Device.mView		);
 	RCache.set_xform_project	(Device.mProject	);

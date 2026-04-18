@@ -184,7 +184,7 @@ void CRenderTarget::phase_combine()
 	}
 
 	// Distortion filter
-	BOOL bDistort = RImplementation.o.distortion_enabled; // This can be modified
+	bool bDistort = RImplementation.o.distortion_enabled; // This can be modified
 	{
 		u32 count = RImplementation.mapDistort.size() + RImplementation.mapHUDDistort.size();
 		if((count < 1 && !_menu_pp)) {

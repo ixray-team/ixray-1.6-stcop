@@ -74,9 +74,9 @@ void CUIArrowStepper::InitArrowStepper(Fvector2 pos, Fvector2 size)
 	CUIXml xml_doc;
 	xml_doc.Load					(CONFIG_PATH, UI_PATH, "backend\\arrowstepper.xml");
 
-	LPCSTR nodevalue_track			= xml_doc.Read("track_texture_name", 0, "ui_inGame2_opt_slider_bar");
-	LPCSTR left_btn_texture_name	= xml_doc.Read("left_btn_texture_name", 0, "ui_date_bt_left");
-	LPCSTR right_btn_texture_name	= xml_doc.Read("right_btn_texture_name", 0, "ui_date_bt_right");
+	const char* nodevalue_track			= xml_doc.Read("track_texture_name", 0, "ui_inGame2_opt_slider_bar");
+	const char* left_btn_texture_name	= xml_doc.Read("left_btn_texture_name", 0, "ui_date_bt_left");
+	const char* right_btn_texture_name	= xml_doc.Read("right_btn_texture_name", 0, "ui_date_bt_right");
 
 	Fvector2 TrySize				= size;
 	float ib_pos					= xml_doc.ReadFlt("ib_pos", 0, 30.0f);
@@ -202,7 +202,7 @@ void CUIArrowStepper::UpdateText()
 		case eStepperModeToken:
 		{
 			xr_token* tok = GetOptToken();
-			LPCSTR cur_val = get_token_name(tok, m_i_val - 1);
+			const char* cur_val = get_token_name(tok, m_i_val - 1);
 			out_str = g_pStringTable->translate(cur_val);
 		}break;
 		case eStepperModeBool:
@@ -218,7 +218,7 @@ void CUIArrowStepper::SetCurrentOptValue()
 	CUIOptionsItem::SetCurrentOptValue();
 	if (IsTokenMode())
 	{
-		LPCSTR val = GetOptStringValue();
+		const char* val = GetOptStringValue();
 		for (xr_token* tok = GetOptToken(); tok->name; ++tok)
 		{
 			if (stricmp(tok->name, val) == 0)
@@ -269,7 +269,7 @@ void CUIArrowStepper::SaveOptValue()
 		if (strcmp("not_an_option", GetEntry()))
 		{
 			xr_token* tok = GetOptToken();
-			LPCSTR cur_val = get_token_name(tok, m_i_val - 1);
+			const char* cur_val = get_token_name(tok, m_i_val - 1);
 			SaveOptStringValue(cur_val);
 		}
 	}
@@ -354,7 +354,7 @@ void CUIArrowStepper::SetTokenValues(xr_token* tokens)
 		m_i_max = count;
 	}
 
-	LPCSTR current_value = GetOptStringValue();
+	const char* current_value = GetOptStringValue();
 	m_i_val = m_i_min;
 
 	if (!GetInvert())
@@ -385,7 +385,7 @@ void CUIArrowStepper::SetTokenValues(xr_token* tokens)
 	VERIFY(m_mode == eStepperModeToken);
 }
 
-void CUIArrowStepper::OnMessage(LPCSTR message)
+void CUIArrowStepper::OnMessage(const char* message)
 {
 	if (0 == xr_strcmp(message, "set_default_value"))
 	{

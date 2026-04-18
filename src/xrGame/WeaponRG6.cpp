@@ -13,9 +13,9 @@
 #	include "PHDebug.h"
 #endif
 
-BOOL CWeaponRG6::net_Spawn(CSE_Abstract* DC)
+bool CWeaponRG6::net_Spawn(CSE_Abstract* DC)
 {
-	BOOL l_res = inheritedSG::net_Spawn(DC);
+	bool l_res = inheritedSG::net_Spawn(DC);
 	if (!l_res) return l_res;
 
 	if (iAmmoElapsed && !getCurrentRocket())
@@ -37,7 +37,7 @@ BOOL CWeaponRG6::net_Spawn(CSE_Abstract* DC)
 	return l_res;
 }
 
-void CWeaponRG6::Load(LPCSTR section)
+void CWeaponRG6::Load(const char* section)
 {
 	inheritedRL::Load(section);
 	inheritedSG::Load(section);
@@ -76,7 +76,7 @@ void CWeaponRG6::FireTrace(const Fvector& P, const Fvector& D)
 		setEnabled(FALSE);
 	
 		collide::rq_result RQ;
-		BOOL HasPick = Level().ObjectSpace.RayPick(p1, d, 300.0f, collide::rqtStatic, RQ, this);
+		bool HasPick = Level().ObjectSpace.RayPick(p1, d, 300.0f, collide::rqtStatic, RQ, this);
 
 		setEnabled(TRUE);
 		H_Parent()->setEnabled(TRUE);
@@ -147,7 +147,7 @@ void CWeaponRG6::ReloadMagazine()
 		if (m_ammoTypes.size() <= m_ammoType)
 			return;
 
-		LPCSTR tmp_sect_name = m_ammoTypes[m_ammoType].c_str();
+		const char* tmp_sect_name = m_ammoTypes[m_ammoType].c_str();
 
 		if (!tmp_sect_name)
 			return;

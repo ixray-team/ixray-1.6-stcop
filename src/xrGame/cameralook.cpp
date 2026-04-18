@@ -17,7 +17,7 @@ CCameraLook::CCameraLook(CObject* p, u32 flags )
 {
 }
 
-void CCameraLook::Load(LPCSTR section)
+void CCameraLook::Load(const char* section)
 {
 	inherited::Load		(section);
 	style				= csLookAt;
@@ -56,7 +56,7 @@ void CCameraLook::Update(Fvector& point, Fvector& /**noise_dangle/**/)
 	UpdateDistance		(point);
 }
 
-ICF static BOOL GetPickDist_Callback(collide::rq_result& result, LPVOID params)
+ICF static bool GetPickDist_Callback(collide::rq_result& result, LPVOID params)
 {
 	collide::rq_result* RQ = (collide::rq_result*)params;
 
@@ -266,7 +266,7 @@ void CCameraLook2::Update(Fvector& point, Fvector& noise_dangle)
 	}
 }
 
-void CCameraLook2::Load(LPCSTR section)
+void CCameraLook2::Load(const char* section)
 {
 	CCameraLook::Load		(section);
 
@@ -283,7 +283,7 @@ void CCameraLook2::Load(LPCSTR section)
 	prev_d = 0.0f;
 }
 
-void CCameraFixedLook::Load	(LPCSTR section)
+void CCameraFixedLook::Load	(const char* section)
 {
 	CCameraLook::Load(section);
 	style = csFixed;

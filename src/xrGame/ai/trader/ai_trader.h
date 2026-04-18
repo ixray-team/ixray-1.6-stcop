@@ -49,15 +49,15 @@ public:
 	virtual CAI_PhraseDialogManager*		cast_ai_phrase_dialog_manager()				{ return this; }
 
 	virtual DLL_Pure	*_construct		();
-	virtual void		Load			( LPCSTR section );
-	virtual BOOL		net_Spawn		( CSE_Abstract* DC );
+	virtual void		Load			( const char* section );
+	virtual bool		net_Spawn		( CSE_Abstract* DC );
 	virtual void		net_Export		(NET_Packet& P);
 	virtual void		net_Import		(NET_Packet& P);
 	virtual	void		net_Destroy		();
 
 	virtual void		save			(NET_Packet &output_packet);
 	virtual void		load			(IReader &input_packet);
-	virtual BOOL		net_SaveRelevant()							{return inherited::net_SaveRelevant();}
+	virtual bool		net_SaveRelevant()							{return inherited::net_SaveRelevant();}
 
 	virtual void		Die				(CObject* who);
 	virtual void		Think			();
@@ -75,7 +75,7 @@ public:
 	virtual	void		DropItemSendMessage		(CObject *O);
 	virtual void		shedule_Update			(u32 dt);
 
-	virtual BOOL		UsedAI_Locations		();
+	virtual bool		UsedAI_Locations		();
 
 	virtual bool CanPutInSlot(PIItem item, u32 slot) override { return false; }
 
@@ -87,7 +87,7 @@ public:
 	///////////////////////////////////////////////////////////////////////
 
 	virtual void			reinit					();
-	virtual void			reload					(LPCSTR section);
+	virtual void			reload					(const char* section);
 
 static	void	_BCL		BoneCallback			(CBoneInstance *B);
 
@@ -97,7 +97,7 @@ static	void	_BCL		BoneCallback			(CBoneInstance *B);
 	void			OnStopTrade				();
 
 	//игровое имя 
-	virtual LPCSTR			Name					() const {return CInventoryOwner::Name();}
+	virtual const char*			Name					() const {return CInventoryOwner::Name();}
 
 	virtual	bool			can_attach				(const CInventoryItem *inventory_item) const;
 	virtual bool			use_bolts				() const;
@@ -137,7 +137,7 @@ public:
 	virtual bool			natural_detector		() const {return false;}
 	virtual bool			AllowItemToTrade 		(CInventoryItem const * item, const SInvItemPlace& place) const;
 
-			void			dialog_sound_start		(LPCSTR phrase);
+			void			dialog_sound_start		(const char* phrase);
 			void			dialog_sound_stop		();
 
 private:

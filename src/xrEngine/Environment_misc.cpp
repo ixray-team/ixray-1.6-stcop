@@ -129,7 +129,7 @@ float CEnvModifier::sum(CEnvModifier& M, Fvector3& view)
 //-----------------------------------------------------------------------------
 // Environment ambient
 //-----------------------------------------------------------------------------
-void CEnvAmbient::SSndChannel::load(CInifile& config, LPCSTR sect, pcstr sectionToReadFrom)
+void CEnvAmbient::SSndChannel::load(CInifile& config, const char* sect, const char* sectionToReadFrom)
 {
 	m_load_section = sectionToReadFrom ? sectionToReadFrom : sect;
 
@@ -176,7 +176,7 @@ void CEnvAmbient::SSndChannel::load(CInifile& config, LPCSTR sect, pcstr section
 
 	R_ASSERT				(m_sound_period.x <= m_sound_period.y && m_sound_period.z <= m_sound_period.w);
 
-    pcstr snds = config.r_string(m_load_section, "sounds");
+    const char* snds = config.r_string(m_load_section, "sounds");
     const int cnt = _GetItemCount(snds);
     string_path tmp;
     R_ASSERT3(cnt, "sounds empty", m_load_section.c_str());
@@ -190,7 +190,7 @@ void CEnvAmbient::SSndChannel::load(CInifile& config, LPCSTR sect, pcstr section
 	}
 }
 
-CEnvAmbient::SEffect* CEnvAmbient::create_effect	(CInifile& config, LPCSTR id)
+CEnvAmbient::SEffect* CEnvAmbient::create_effect	(CInifile& config, const char* id)
 {
 	SEffect*					result = new SEffect();
 	result->life_time			= iFloor(config.r_float(id,"life_time")*1000.f);
@@ -218,7 +218,7 @@ CEnvAmbient::SEffect* CEnvAmbient::create_effect	(CInifile& config, LPCSTR id)
 	return								(result);
 }
 
-CEnvAmbient::SSndChannel* CEnvAmbient::create_sound_channel	(CInifile& config, LPCSTR id, pcstr sectionToReadFrom)
+CEnvAmbient::SSndChannel* CEnvAmbient::create_sound_channel	(CInifile& config, const char* id, const char* sectionToReadFrom)
 {
 	SSndChannel*			result = new SSndChannel();
 	result->load			(config, id, sectionToReadFrom);
@@ -248,7 +248,7 @@ void CEnvAmbient::load(
 	string_path			tmp;
 	
 	// sounds
-    pcstr channels = nullptr;
+    const char* channels = nullptr;
 	bool overrideReadingSection = false;
 	if (ambients_config.line_exist(sect, "sounds"))
 	{
@@ -291,7 +291,7 @@ void CEnvAmbient::load(
 
 	if (ambients_config.line_exist(sect, "effects"))
 	{
-		LPCSTR effs = ambients_config.r_string(sect, "effects");
+		const char* effs = ambients_config.r_string(sect, "effects");
 		cnt = _GetItemCount(effs);
 		//	R_ASSERT3				(cnt,"effects empty", sect.c_str());
 
@@ -362,9 +362,9 @@ CEnvDescriptor::CEnvDescriptor	(shared_str const& identifier) :
 }
 
 #define	C_CHECK(C)	if (C.x<0 || C.x>2 || C.y<0 || C.y>2 || C.z<0 || C.z>2)	{ Msg("! Invalid '%s' in env-section '%s'",#C,identifier);}
-void CEnvDescriptor::load	(CEnvironment& environment, CInifile& config, pcstr section)
+void CEnvDescriptor::load	(CEnvironment& environment, CInifile& config, const char* section)
 {
-	pcstr identifier = m_identifier.c_str();
+	const char* identifier = m_identifier.c_str();
 	bool oldStyle = false;
 	if (section)
 	{
@@ -384,7 +384,7 @@ void CEnvDescriptor::load	(CEnvironment& environment, CInifile& config, pcstr se
 	sky_texture_name		= st;
 	sky_texture_env_name	= st_env;
 	clouds_texture_name		= config.r_string	(identifier,"clouds_texture");
-	LPCSTR	cldclr			= config.r_string	(identifier,"clouds_color");
+	const char*	cldclr			= config.r_string	(identifier,"clouds_color");
 	float	multiplier		= environment.multiplier_clouds_color, save=0;
 	sscanf					(cldclr,"%f,%f,%f,%f,%f",&clouds_color.x,&clouds_color.y,&clouds_color.z,&clouds_color.w,&multiplier);
 	save=clouds_color.w;	clouds_color.mul		(.5f*multiplier);		
@@ -881,7 +881,7 @@ void    CEnvironment::load_level_specific_ambients ()
 	xr_delete(level_ambients);
 }
 
-CEnvDescriptor* CEnvironment::create_descriptor	(shared_str const& identifier, CInifile* config, pcstr section)
+CEnvDescriptor* CEnvironment::create_descriptor	(shared_str const& identifier, CInifile* config, const char* section)
 {
 	CEnvDescriptor*	result = new CEnvDescriptor(identifier);
 	if (config)
@@ -901,7 +901,7 @@ void CEnvironment::load_weathers		()
     xr_string id;
     for (const auto& file : weathers)
     {
-        pcstr fileName = file.name.c_str();
+        const char* fileName = file.name.c_str();
         const size_t length = xr_strlen(fileName);
         id.assign(fileName, length - 4);
         EnvVec& env = WeatherCycles[id.c_str()];
@@ -929,7 +929,7 @@ void CEnvironment::load_weathers		()
 
     for (int weatherIdx = 0; weatherIdx < weatherCount; ++weatherIdx)
     {
-        pcstr weatherName, weatherSection;
+        const char* weatherName, *weatherSection;
         if (pSettings->r_line("weathers", weatherIdx, &weatherName, &weatherSection))
         {
             const int envCount = pSettings->line_count(weatherSection);
@@ -937,7 +937,7 @@ void CEnvironment::load_weathers		()
             EnvVec& env = WeatherCycles[weatherName];
             env.reserve(envCount);
             
-            pcstr executionTime, envSection;
+            const char* executionTime, *envSection;
             for (int envIdx = 0; envIdx < envCount; ++envIdx)
             {
                 if (pSettings->r_line(weatherSection, envIdx, &executionTime, &envSection))
@@ -969,7 +969,7 @@ void CEnvironment::load_weather_effects()
     xr_string id;
     for (const auto& file : weathersEffects)
     {
-        pcstr fileName = file.name.c_str();
+        const char* fileName = file.name.c_str();
         const size_t length = xr_strlen(fileName);
         id.assign(fileName, length - 4);
         EnvVec& env = WeatherFXs[id.c_str()];
@@ -1002,14 +1002,14 @@ void CEnvironment::load_weather_effects()
 
     for (u32 weatherIdx = 0; weatherIdx < weatherEffectsCount; ++weatherIdx)
     {
-        pcstr weatherName, weatherSection, envSection;
+        const char* weatherName, *weatherSection, *envSection;
         if (pSettings->r_line("weather_effects", weatherIdx, &weatherName, &weatherSection))
         {
             EnvVec& env = WeatherFXs[weatherName];
             env.emplace_back(create_descriptor("00:00:00", nullptr));
 
             const u32 envCount = pSettings->line_count(weatherSection);
-            pcstr executionTime;
+            const char* executionTime;
             for (u32 envIdx = 0; envIdx < envCount; ++envIdx)
             {
                 if (pSettings->r_line(weatherSection, envIdx, &executionTime, &envSection))

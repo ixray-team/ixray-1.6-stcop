@@ -209,7 +209,7 @@
 		inline_	udword			GetGrowthFactor()				const	{ return mGrowthFactor;					}	//!< Returns the growth factor
 		inline_	void			SetGrowthFactor(udword growth)			{ mGrowthFactor = growth;				}	//!< Sets the growth factor
 		inline_	bool			IsFull()						const	{ return mCurNbEntries==mMaxNbEntries;	}	//!< Checks the container is full
-		inline_	BOOL			IsNotEmpty()					const	{ return mCurNbEntries;					}	//!< Checks the container is empty
+		inline_	bool			IsNotEmpty()					const	{ return mCurNbEntries;					}	//!< Checks the container is empty
 
 		//! Read-access as an array
 		inline_	udword			operator[](udword i)			const	{ ASSERT(i>=0 && i<mCurNbEntries); return mEntries[i];	}

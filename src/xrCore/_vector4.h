@@ -41,7 +41,7 @@ public:
 	ICF	SelfRef		div(const Self &a, const Self &v)	{ x=a.x/v.x;y=a.y/v.y;	z=a.z/v.z;	w=a.w/v.w;	return *this; }
 	ICF  SelfRef		div(const Self &a, T s)				{ x=a.x/s;  y=a.y/s;	z=a.z/s;	w=a.w/s;	return *this; }
 
-	ICF	BOOL 		similar(const Self& v, T E=EPS_L)	{ return std::abs(x-v.x)<E && std::abs(y-v.y)<E && std::abs(z-v.z)<E && std::abs(w-v.w)<E;};
+	ICF	bool 		similar(const Self& v, T E=EPS_L)	{ return std::abs(x-v.x)<E && std::abs(y-v.y)<E && std::abs(z-v.z)<E && std::abs(w-v.w)<E;};
 
 	ICF	T			magnitude_sqr ()					{ return x*x + y*y + z*z + w*w;		}
 	ICF	T			magnitude()							{ return _sqrt(magnitude_sqr());	}
@@ -69,4 +69,4 @@ typedef __declspec(align(16))	_vector4<double>	Dvector4a;
 typedef __declspec(align(16))	_vector4<s32>		Ivector4a;
 
 template <class T>
-ICF BOOL	_valid			(const _vector4<T>& v)	{ return _valid((T)v.x) && _valid((T)v.y) && _valid((T)v.z) && _valid((T)v.w);	}
+ICF bool	_valid			(const _vector4<T>& v)	{ return _valid((T)v.x) && _valid((T)v.y) && _valid((T)v.z) && _valid((T)v.w);	}

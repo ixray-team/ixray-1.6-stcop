@@ -21,7 +21,7 @@ CUIEncyclopediaArticleWnd::~CUIEncyclopediaArticleWnd()
 {
 }
 
-void CUIEncyclopediaArticleWnd::Init(LPCSTR xml_name, LPCSTR start_from)
+void CUIEncyclopediaArticleWnd::Init(const char* xml_name, const char* start_from)
 {
 	CUIXml uiXml;
 	uiXml.Load(CONFIG_PATH, UI_PATH, xml_name);
@@ -98,7 +98,7 @@ void CUIEncyclopediaArticleWnd::AdjustLauout()
 	SetHeight							(pic_or_model->GetWndPos().y + pic_or_model->GetHeight() + m_UIText->GetHeight());
 }
 
-void CUIEncyclopediaArticleWnd::SetArticle(LPCSTR article)
+void CUIEncyclopediaArticleWnd::SetArticle(const char* article)
 {
 	CEncyclopediaArticle				A;
 	A.Load								(article);

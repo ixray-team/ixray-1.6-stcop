@@ -69,7 +69,7 @@ public:
 		Feel::Touch::feel_touch.clear();
 	}
 
-	void load(LPCSTR sect, LPCSTR prefix)
+	void load(const char* sect, const char* prefix)
 	{
 		u32 i = 1;
 		string256 temp = {};
@@ -102,7 +102,7 @@ class CAnomalyZone;
 class CAfList final : public CDetectList<CArtefact>
 {
 protected:
-	BOOL feel_touch_contact(CObject* O) override;
+	bool feel_touch_contact(CObject* O) override;
 public:
 	CAfList() = default;
 	int m_af_rank = 0;
@@ -111,7 +111,7 @@ public:
 class CZoneList final : public CDetectList<CAnomalyZone>
 {
 protected:
-	BOOL feel_touch_contact(CObject* O) override;
+	bool feel_touch_contact(CObject* O) override;
 public:
 	CZoneList() = default;
 	virtual	~CZoneList();

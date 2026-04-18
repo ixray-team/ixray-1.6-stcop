@@ -287,14 +287,14 @@ void EScene::Reset()
 	g_scene_physics.UpdateLevelCollision();
 }
 
-void EScene::Unload(BOOL bEditableOnly)
+void EScene::Unload(bool bEditableOnly)
 {
 	m_LastAvailObject = 0;
 	Clear(bEditableOnly);
 }
 
 ECORE_API xrGUID generate_guid();
-void EScene::Clear(BOOL bEditableToolsOnly)
+void EScene::Clear(bool bEditableToolsOnly)
 {
 	Device.details_task.wait();
 
@@ -631,7 +631,7 @@ void EScene::SelectLightsForObject(CCustomObject* obj)
 	lt->SelectLightsForObject	(obj);
 }
 
-void EScene::HighlightTexture(LPCSTR t_name, bool allow_ratio, u32 t_width, u32 t_height, bool leave_previous)
+void EScene::HighlightTexture(const char* t_name, bool allow_ratio, u32 t_width, u32 t_height, bool leave_previous)
 {
 	if (!leave_previous)
 		Tools->ClearDebugDraw();
@@ -674,7 +674,7 @@ void EScene::OnNameChange(PropValue* sender)
 }
 
 // TODO: Fix this shit (it doesn't show up in LE props)
-void EScene::FillProp(LPCSTR pref, PropItemVec& items, ObjClassID cls_id)
+void EScene::FillProp(const char* pref, PropItemVec& items, ObjClassID cls_id)
 {
 	PHelper().CreateCaption		(items,PrepareKey(pref,"Scene\\Name"),			LTools->m_LastFileName.c_str());
 
@@ -693,7 +693,7 @@ void EScene::FillProp(LPCSTR pref, PropItemVec& items, ObjClassID cls_id)
 	B=PHelper().CreateButton	(items,PrepareKey(pref,"Scene\\Build options\\Quality"), "Draft,High,Custom",0);
 	B->OnBtnClickEvent.bind		(this,&EScene::OnBuildControlClick);
 
-	BOOL enabled				= (m_LevelOp.m_BuildParams.m_quality==ebqCustom);
+	bool enabled				= (m_LevelOp.m_BuildParams.m_quality==ebqCustom);
 	V=PHelper().CreateU8		(items,PrepareKey(pref,"Scene\\Build options\\Lighting\\Hemisphere quality [0-3]"),	&m_LevelOp.m_LightHemiQuality,	0,3);		V->Owner()->Enable(enabled);
 	V=PHelper().CreateU8		(items,PrepareKey(pref,"Scene\\Build options\\Lighting\\Sun shadow quality [0-3]"),	&m_LevelOp.m_LightSunQuality,	0,3);       V->Owner()->Enable(enabled);
 
@@ -723,7 +723,7 @@ void EScene::FillProp(LPCSTR pref, PropItemVec& items, ObjClassID cls_id)
 	}
 }
 
-void EScene::FillPropObjects(LPCSTR pref, PropItemVec& items, ObjClassID cls_id)
+void EScene::FillPropObjects(const char* pref, PropItemVec& items, ObjClassID cls_id)
 {
 	if (OBJCLASS_DUMMY == cls_id)
 	{

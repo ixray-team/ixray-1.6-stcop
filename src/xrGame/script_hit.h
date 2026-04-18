@@ -32,7 +32,7 @@ public:
 		*this = *tpLuaHit;
 	}
 
-	IC void set_bone_name(LPCSTR bone_name)
+	IC void set_bone_name(const char* bone_name)
 	{
 		m_caBoneName = bone_name;
 	}

@@ -16,15 +16,15 @@ public:
 	CWeaponBinoculars() = default;
 	virtual	~CWeaponBinoculars() = default;
 
-	virtual void	Load				(LPCSTR section) override;
-	virtual void	LoadSounds			(LPCSTR section) override;
+	virtual void	Load				(const char* section) override;
+	virtual void	LoadSounds			(const char* section) override;
 
 	virtual void	OnZoomIn			();
 	virtual void	OnZoomOut			();
 	virtual	void	ZoomInc				();
 	virtual	void	ZoomDec				();
 	virtual void	net_Destroy			();
-	virtual BOOL	net_Spawn			(CSE_Abstract* DC);
+	virtual bool	net_Spawn			(CSE_Abstract* DC);
 	bool			can_kill() const { return false; }
 	virtual void	save				(NET_Packet &output_packet);
 	virtual void	load				(IReader &input_packet);

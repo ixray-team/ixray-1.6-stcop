@@ -157,7 +157,7 @@ void _initialize_cpu	(void)
 #	define _MM_SET_DENORMALS_ZERO_MODE(mode) _mm_setcsr((_mm_getcsr() & ~_MM_DENORMALS_ZERO_MASK) | (mode))
 #endif
 
-static	BOOL	_denormals_are_zero_supported	= TRUE;
+static	bool	_denormals_are_zero_supported	= TRUE;
 extern void __cdecl _terminate		();
 void debug_on_thread_spawn	();
 

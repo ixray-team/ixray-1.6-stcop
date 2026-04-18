@@ -27,7 +27,7 @@ UI_API void dump_list_wnd(){}
 #endif
 
 xr_vector<Frect> g_wnds_rects;
-UI_API BOOL g_show_wnd_rect2 = FALSE;
+UI_API bool g_show_wnd_rect2 = FALSE;
 
 UI_API void clean_wnd_rects()
 {

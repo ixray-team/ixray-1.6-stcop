@@ -13,26 +13,26 @@ CConsole*	console()
 	return Console;
 }
 
-int get_console_integer( CConsole* c, LPCSTR cmd )
+int get_console_integer( CConsole* c, const char* cmd )
 {
 	int min = 0, max = 0;
 	int val = c->GetInteger ( cmd, min, max );
 	return val;
 }
 
-float get_console_float( CConsole* c, LPCSTR cmd )
+float get_console_float( CConsole* c, const char* cmd )
 {
 	float min = 0.0f, max = 0.0f;
 	float val = c->GetFloat ( cmd, min, max );
 	return val;
 }
 
-bool get_console_bool( CConsole* c, LPCSTR cmd )
+bool get_console_bool( CConsole* c, const char* cmd )
 {
 	return c->GetBool( cmd );
 }
 
-void execute_console_command_deferred	(CConsole* c, LPCSTR string_to_execute)
+void execute_console_command_deferred	(CConsole* c, const char* string_to_execute)
 {
 	g_pEventManager->Event.Defer	("KERNEL:console", size_t(xr_strdup(string_to_execute)) );
 }
@@ -42,7 +42,7 @@ public:
 	xr_vector<shared_str> m_fill_tips;
 	luabind::functor<void> functor;
 
-	CCC_ScriptLuaCommand(LPCSTR N, luabind::functor<void>& funct, LPCSTR m_tips_string) : IConsole_Command(N)
+	CCC_ScriptLuaCommand(const char* N, luabind::functor<void>& funct, const char* m_tips_string) : IConsole_Command(N)
 	{
 		bEmptyArgsHandled = true;
 		functor = funct;
@@ -57,7 +57,7 @@ public:
 		}
 	};
 
-	virtual void Execute(LPCSTR args)
+	virtual void Execute(const char* args)
 	{
 		int cnt = _GetItemCount(args);
 		luabind::object params_to_lua = luabind::newtable(ai().script_engine().lua());
@@ -78,7 +78,7 @@ public:
 	}
 };
 
-void registerLuaCommand(CConsole* c, LPCSTR command_name, luabind::functor<void> functor, LPCSTR m_tips_string)
+void registerLuaCommand(CConsole* c, const char* command_name, luabind::functor<void> functor, const char* m_tips_string)
 {
 	if (!command_name)
 	{

@@ -47,7 +47,7 @@ void CInteractiveObject::net_Destroy()
 	inherited::net_Destroy();
 }
 
-BOOL CInteractiveObject::net_Spawn(CSE_Abstract* DC)
+bool CInteractiveObject::net_Spawn(CSE_Abstract* DC)
 {
 	inherited::net_Spawn(DC);
 	setVisible(TRUE);
@@ -62,7 +62,7 @@ BOOL CInteractiveObject::net_Spawn(CSE_Abstract* DC)
 	return TRUE;
 }
 
-void CInteractiveObject::Load(LPCSTR section)
+void CInteractiveObject::Load(const char* section)
 {
 	inherited::Load(section);
 
@@ -80,7 +80,7 @@ void CInteractiveObject::Load(LPCSTR section)
 	SetText();
 }
 
-void CInteractiveObject::ParseToVector(LPCSTR section, LPCSTR bonesParameter, xr_vector<xr_string>& _array)
+void CInteractiveObject::ParseToVector(const char* section, const char* bonesParameter, xr_vector<xr_string>& _array)
 {
 	_array.clear();
 
@@ -94,7 +94,7 @@ void CInteractiveObject::ParseToVector(LPCSTR section, LPCSTR bonesParameter, xr
 	}
 }
 
-void CInteractiveObject::ParseRandomSounds(LPCSTR section, LPCSTR soundParameter, xr_vector<ref_sound>& soundsArray)
+void CInteractiveObject::ParseRandomSounds(const char* section, const char* soundParameter, xr_vector<ref_sound>& soundsArray)
 {
 	soundsArray.clear();
 
@@ -114,7 +114,7 @@ void CInteractiveObject::ParseRandomSounds(LPCSTR section, LPCSTR soundParameter
 
 extern CSE_Abstract* CALifeSimulator__spawn_item2(
 	CALifeSimulator* self_,
-	LPCSTR section,
+	const char* section,
 	const Fvector& position,
 	u32 level_vertex_id,
 	GameGraph::_GRAPH_ID game_vertex_id,
@@ -157,7 +157,7 @@ void CInteractiveObject::OnUse()
 			{
 				if (CALifeSimulator* sim = const_cast<CALifeSimulator*>(&ai().alife()))
 				{
-					LPCSTR section = m_spawn_sections[0].c_str();
+					const char* section = m_spawn_sections[0].c_str();
 
 					if (useSpawnRandomSections)
 					{
@@ -217,7 +217,7 @@ void CInteractiveObject::SetText()
 	set_tip_text(m_tip_text.c_str());
 }
 
-void CInteractiveObject::SetVisible(shared_str bone_name, BOOL bVisibility)
+void CInteractiveObject::SetVisible(shared_str bone_name, bool bVisibility)
 {
 	IKinematics* KI = PKinematics(Visual());
 	if (!KI)

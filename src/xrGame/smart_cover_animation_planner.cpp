@@ -31,7 +31,7 @@
 using smart_cover::animation_planner;
 using namespace StalkerDecisionSpace;
 
-animation_planner::animation_planner	(CAI_Stalker *object, LPCSTR action_name) :
+animation_planner::animation_planner	(CAI_Stalker *object, const char* action_name) :
 	inherited					(),
 	m_time_object_hit			(0),
 	m_last_transition_time		(0),
@@ -402,7 +402,7 @@ bool animation_planner::hit_callback	(SHit const *hit)
 	return					(false);
 }
 
-LPCSTR animation_planner::object_name		() const
+const char* animation_planner::object_name		() const
 {
 	return					("animation_planner");
 }

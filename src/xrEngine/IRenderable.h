@@ -14,7 +14,7 @@ public:
 		Fmatrix							xform						;
 		IRenderVisual*					visual						;
 		IRender_ObjectSpecific*			pROS						;
-		BOOL							pROS_Allowed				;
+		bool							pROS_Allowed				;
 	}	renderable;
 
 public:
@@ -23,8 +23,8 @@ public:
 	IRender_ObjectSpecific*				renderable_ROS				()	;
 
 	virtual	void						renderable_Render			()	= 0;
-	virtual	BOOL						renderable_ShadowGenerate	()	{ return FALSE; };
-	virtual	BOOL						renderable_ShadowReceive	()	{ return FALSE; };
+	virtual	bool						renderable_ShadowGenerate	()	{ return FALSE; };
+	virtual	bool						renderable_ShadowReceive	()	{ return FALSE; };
 
 
 	virtual IRenderable* dcast_Renderable() override { return this; }

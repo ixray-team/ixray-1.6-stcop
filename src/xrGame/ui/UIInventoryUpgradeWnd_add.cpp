@@ -25,9 +25,9 @@ void CUIInventoryUpgradeWnd::LoadCellsBacks(CUIXml& uiXml)
 	{
 		uiXml.SetLocalRoot(uiXml.NavigateToNode("state", i_st));
 
-		LPCSTR type = uiXml.Read("type", 0, "");
-		LPCSTR txr = uiXml.Read("back_texture", 0, nullptr);
-		LPCSTR txr2 = uiXml.Read("point_texture", 0, nullptr);
+		const char* type = uiXml.Read("type", 0, "");
+		const char* txr = uiXml.Read("back_texture", 0, nullptr);
+		const char* txr2 = uiXml.Read("point_texture", 0, nullptr);
 		u32    color = CUIXmlInit::GetColor(uiXml, "item_color", 0, 0);
 		LoadCellStates(type, txr, txr2, color);
 
@@ -36,7 +36,7 @@ void CUIInventoryUpgradeWnd::LoadCellsBacks(CUIXml& uiXml)
 	uiXml.SetLocalRoot(stored_root);
 }
 
-void CUIInventoryUpgradeWnd::LoadCellStates(LPCSTR state_str, LPCSTR texture_name, LPCSTR texture_name2, u32 color)
+void CUIInventoryUpgradeWnd::LoadCellStates(const char* state_str, const char* texture_name, const char* texture_name2, u32 color)
 {
 	VERIFY(state_str && xr_strcmp(state_str, ""));
 	if (texture_name && !xr_strcmp(texture_name, ""))
@@ -51,7 +51,7 @@ void CUIInventoryUpgradeWnd::LoadCellStates(LPCSTR state_str, LPCSTR texture_nam
 	SetCellState(SelectCellState(state_str), texture_name, texture_name2, color);
 }
 
-UIUpgrade::ViewState CUIInventoryUpgradeWnd::SelectCellState(LPCSTR state_str)
+UIUpgrade::ViewState CUIInventoryUpgradeWnd::SelectCellState(const char* state_str)
 {
 	if (!xr_strcmp(state_str, "enabled")) { return UIUpgrade::STATE_ENABLED; }
 	if (!xr_strcmp(state_str, "highlight")) { return UIUpgrade::STATE_FOCUSED; }
@@ -70,7 +70,7 @@ UIUpgrade::ViewState CUIInventoryUpgradeWnd::SelectCellState(LPCSTR state_str)
 	return UIUpgrade::STATE_UNKNOWN;
 }
 
-void CUIInventoryUpgradeWnd::SetCellState(UIUpgrade::ViewState state, LPCSTR texture_name, LPCSTR texture_name2, u32 color)
+void CUIInventoryUpgradeWnd::SetCellState(UIUpgrade::ViewState state, const char* texture_name, const char* texture_name2, u32 color)
 {
 	m_cell_textures[state] = texture_name;
 	m_point_textures[state] = texture_name2;
@@ -123,7 +123,7 @@ void CUIInventoryUpgradeWnd::LoadSchemes(CUIXml& uiXml)
 		Scheme* scheme = new Scheme();
 		scheme->cells.reserve(MAX_UI_UPGRADE_CELLS);
 
-		LPCSTR name = uiXml.ReadAttrib(tmpl_node, "name", "");
+		const char* name = uiXml.ReadAttrib(tmpl_node, "name", "");
 		VERIFY(name && xr_strcmp(name, ""));
 		scheme->name._set(name);
 
@@ -139,8 +139,8 @@ void CUIInventoryUpgradeWnd::LoadSchemes(CUIXml& uiXml)
 				UIUpgrade* item = new UIUpgrade(this, border);
 				item->load_from_xml(uiXml, i_clm, i_cell, border ? &t_cell_border : nullptr, t_cell_item);
 
-				pcstr point_x = uiXml.ReadAttrib("cell", i_cell, "point_x", nullptr);
-				pcstr point_y = uiXml.ReadAttrib("cell", i_cell, "point_y", nullptr);
+				const char* point_x = uiXml.ReadAttrib("cell", i_cell, "point_x", nullptr);
+				const char* point_y = uiXml.ReadAttrib("cell", i_cell, "point_y", nullptr);
 				if (point_x || point_y)
 				{
 					CUIUpgradePoint* item_point = new CUIUpgradePoint(item);

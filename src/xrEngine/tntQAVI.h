@@ -134,7 +134,7 @@ protected:
 
 	DWORD				CalcFrame			();
 
-	BOOL				DecompressFrame		( DWORD	dwFrameNum );
+	bool				DecompressFrame		( DWORD	dwFrameNum );
 	void				PreRoll				( DWORD dwFrameNum );
 
 public:
@@ -145,10 +145,10 @@ public:
 
 	void				GetSize				( DWORD *dwWidth, DWORD *dwHeight );
 	
-	BOOL				Load				( char *fname  );
-	BOOL				GetFrame			( BYTE **pDest );
+	bool				Load				( char *fname  );
+	bool				GetFrame			( BYTE **pDest );
 
-	BOOL				NeedUpdate			( ) { return CalcFrame( ) != m_dwFrameCurrent; }
+	bool				NeedUpdate			( ) { return CalcFrame( ) != m_dwFrameCurrent; }
 	int					SetSpeed			( int nPercent );
 };
 #endif

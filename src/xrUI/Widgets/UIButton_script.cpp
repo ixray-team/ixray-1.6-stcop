@@ -12,12 +12,12 @@
 
 using namespace luabind;
 
-void AssignProps_script_track(CUITrackBar* track, LPCSTR entry, LPCSTR group) 
+void AssignProps_script_track(CUITrackBar* track, const char* entry, const char* group) 
 { 
 	track->AssignProps(entry, group); 
 }
 
-void AssignProps_script_check(CUICheckButton* btn, LPCSTR entry, LPCSTR group)
+void AssignProps_script_check(CUICheckButton* btn, const char* entry, const char* group)
 {
 	btn->AssignProps(entry, group);
 }

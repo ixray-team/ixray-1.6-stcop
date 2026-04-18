@@ -519,7 +519,7 @@ float ui_core::get_current_zy()
 	float res = h / UI_BASE_HEIGHT;
 	return res;
 }
-shared_str	ui_core::get_xml_name(LPCSTR fn)
+shared_str	ui_core::get_xml_name(const char* fn)
 {
 	string_path				str;
 	if(!is_widescreen())

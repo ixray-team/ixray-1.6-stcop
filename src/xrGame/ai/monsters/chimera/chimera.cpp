@@ -23,7 +23,7 @@ CChimera::~CChimera ()
 	xr_delete								(StateMan);
 }
 
-void   CChimera::Load (LPCSTR section)
+void   CChimera::Load (const char* section)
 {
 	inherited::Load							(section);
 
@@ -138,8 +138,8 @@ void   CChimera::reinit ()
 	static string16 def_s3 = "jump_attack_1";
 	static string16 def_s4 = "jump_attack_2";
 
-	LPCSTR s3_anim = READ_IF_EXISTS(pSettings, r_string, get_section(), "jump_data_s3", def_s3);
-	LPCSTR s4_anim = READ_IF_EXISTS(pSettings, r_string, get_section(), "jump_data_s4", def_s4);
+	const char* s3_anim = READ_IF_EXISTS(pSettings, r_string, get_section(), "jump_data_s3", def_s3);
+	const char* s4_anim = READ_IF_EXISTS(pSettings, r_string, get_section(), "jump_data_s4", def_s4);
 
 	com_man().load_jump_data				(0,//"jump_attack_0",
 											 0,//"jump_attack_0",

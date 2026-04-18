@@ -63,7 +63,7 @@ bool UITeamState::SortingLessFunction(CUIWindow* left, CUIWindow* right)
 	return false;
 }
 
-void UITeamState::Init(CUIXml& uiXml, LPCSTR teamNodeName, int index)
+void UITeamState::Init(CUIXml& uiXml, const char* teamNodeName, int index)
 {
 	VERIFY(teamNodeName);
 	mainUiXml = &uiXml;	//warning !

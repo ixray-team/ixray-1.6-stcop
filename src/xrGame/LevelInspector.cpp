@@ -499,7 +499,7 @@ ICF void fontselectioncombo(LevelInspector& LI)
 	}
 }
 
-LevelInspector::LevelInspector(BOOL hm) : hud_mode(hm)
+LevelInspector::LevelInspector(bool hm) : hud_mode(hm)
 {
 	shader->create("portal");
 
@@ -592,7 +592,7 @@ LevelInspector::LevelInspector(BOOL hm) : hud_mode(hm)
 						for (ImU64 i = 0; i < flags_cnt; ++i)
 						{
 							ImU64 flag = 1ULL << i;
-							LPCSTR name = magic_enum::enum_name<ESPATIAL_TYPE, magic_enum::detail::enum_subtype::flags>(ESPATIAL_TYPE(flag)).data();
+							const char* name = magic_enum::enum_name<ESPATIAL_TYPE, magic_enum::detail::enum_subtype::flags>(ESPATIAL_TYPE(flag)).data();
 
 							if (!name || !name[0]) continue;
 
@@ -2695,7 +2695,7 @@ void LevelInspector::DrawObjectInfo(CGameObject* GO, const Fvector& pos, Fvector
 			selected_info_height++;
 		}
 
-		LPCSTR class_name = typeid(*GO).name();
+		const char* class_name = typeid(*GO).name();
 		if (!visible_currents)
 		{
 			selected_info_str += class_name;
@@ -2831,7 +2831,7 @@ void LevelInspector::DrawObjectInfo(CGameObject* GO, const Fvector& pos, Fvector
 			{
 				if(restr_type != RestrictionSpace::ERestrictorTypes::eRestrictorTypeNone)
 				{
-					if (LPCSTR enmname = magic_enum::enum_name(restr_type).data())
+					if (const char* enmname = magic_enum::enum_name(restr_type).data())
 					{
 						if (text3d)
 							append_text_next(enmname);
@@ -3084,7 +3084,7 @@ void LevelInspector::DrawObjectsInfo()
 	Level().ObjectSpace.RayQuery(
 	RQR, 
 	RD,
-	[](collide::rq_result & result, LPVOID params) -> BOOL
+	[](collide::rq_result & result, LPVOID params) -> bool
 	{
 		collide::rq_result* RQ = (collide::rq_result*)params;
 
@@ -3100,7 +3100,7 @@ void LevelInspector::DrawObjectsInfo()
 		return FALSE;
 	},
 	&RQ,
-	[](const collide::ray_defs& rd, CObject* object, LPVOID params) -> BOOL
+	[](const collide::ray_defs& rd, CObject* object, LPVOID params) -> bool
 	{
 		if (object && (object->SpatialComponent->spatial.type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE)
 		{

@@ -772,7 +772,7 @@ void TUI::OnDestroy()
 	EDevice->ShutDown();    
 }
 
-SPBItem* TUI::ProgressStart(float max_val, LPCSTR text)
+SPBItem* TUI::ProgressStart(float max_val, const char* text)
 {
 	VERIFY(m_bReady);
 	SPBItem* item = new SPBItem(text, "", max_val);
@@ -895,7 +895,7 @@ void SPBItem::GetInfo(xr_string& txt, float& p, float& m)
 	m = max;
 }
 
-void SPBItem::Inc(LPCSTR info, bool bWarn)
+void SPBItem::Inc(const char* info, bool bWarn)
 {
 	Info(info, bWarn);
 	Update(progress + 1.f);
@@ -907,7 +907,7 @@ void SPBItem::Update(float val)
 	UI->ProgressDraw();
 }
 
-void SPBItem::Info(LPCSTR text, bool bWarn)
+void SPBItem::Info(const char* text, bool bWarn)
 {
 	if (text && text[0])
 	{

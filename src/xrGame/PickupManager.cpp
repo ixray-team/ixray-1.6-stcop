@@ -73,7 +73,7 @@ bool CPickUpManager::CanPickItem(const CFrustum& frustum, const Fvector& from, C
 			VERIFY(!fis_zero(RD.dir.square_magnitude()));
 
 			RQR.r_clear();
-			Level().ObjectSpace.RayQuery(RQR, RD, [](collide::rq_result& result, LPVOID params) -> BOOL
+			Level().ObjectSpace.RayQuery(RQR, RD, [](collide::rq_result& result, LPVOID params) -> bool
 			{
 				bool& bOverlaped = *(bool*)params;
 				if (result.O)

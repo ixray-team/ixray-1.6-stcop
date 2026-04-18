@@ -116,7 +116,7 @@ struct CLoader {
 		}
 	};
 
-	IC	static void load_data(LPCSTR &data, M &stream, const P &p)
+	IC	static void load_data(const char* &data, M &stream, const P &p)
 	{
 		NODEFAULT;
 	}
@@ -144,7 +144,7 @@ struct CLoader {
 	IC	static void load_data(std::pair<T1,T2> &data, M &stream, const P &p)
 	{
 		if (p(data,const_cast<std::remove_const<T1>::type&>(data.first),true)) {
-			const bool					value = std::is_same<T1,LPCSTR>::value;
+			const bool					value = std::is_same<T1,const char*>::value;
 			VERIFY						(!value);
 			load_data					(const_cast<std::remove_const<T1>::type&>(data.first),stream,p);
 		}

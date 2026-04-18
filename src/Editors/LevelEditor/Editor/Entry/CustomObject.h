@@ -110,8 +110,8 @@ public:
 	void  	OnMotionCurrentFrameChange(PropValue* value); 
 	void  	OnMotionCameraViewChange(PropValue* value); 
 public:
-	LPCSTR			GetName			() const {return *FName; }
-	void			SetName			(LPCSTR N){string256 tmp; strcpy(tmp,N); strlwr(tmp); FName=tmp;}
+	const char*			GetName			() const {return *FName; }
+	void			SetName			(const char* N){string256 tmp; strcpy(tmp,N); strlwr(tmp); FName=tmp;}
 
 	virtual const Fvector& GetPosition	()	const { return FPosition; 	}
 	virtual const Fvector& GetRotation	()	const { return FRotation;	}
@@ -132,29 +132,29 @@ public:
 
 	virtual void	DeleteThis		(){m_RT_Flags.set(flRT_NeedSelfDelete,TRUE);}
 public:
-					CCustomObject	(LPVOID data, LPCSTR name);
+					CCustomObject	(LPVOID data, const char* name);
 	virtual 		~CCustomObject	();
 
-	BOOL 			Editable		() const ;
+	bool 			Editable		() const ;
 	
-	IC BOOL 		Motionable		()const {return m_CO_Flags.is(flMotion); 	}
-	IC BOOL 		Visible			()const {return m_RT_Flags.is(flRT_Visible);	}
-	IC BOOL 		Selected		()const {return m_RT_Flags.is(flRT_Selected);}
-	IC BOOL			Locked			()const {return m_CO_Flags.is(flRT_Locked);}
-	IC BOOL			Valid			()const {return m_RT_Flags.is(flRT_Valid);}
-	IC BOOL			IsDeleted		()const {return m_RT_Flags.is(flRT_NeedSelfDelete);}
+	IC bool 		Motionable		()const {return m_CO_Flags.is(flMotion); 	}
+	IC bool 		Visible			()const {return m_RT_Flags.is(flRT_Visible);	}
+	IC bool 		Selected		()const {return m_RT_Flags.is(flRT_Selected);}
+	IC bool			Locked			()const {return m_CO_Flags.is(flRT_Locked);}
+	IC bool			Valid			()const {return m_RT_Flags.is(flRT_Valid);}
+	IC bool			IsDeleted		()const {return m_RT_Flags.is(flRT_NeedSelfDelete);}
 
 	// editor integration
 	virtual bool	Validate		(bool bMsg){return true;}
-	virtual void	FillProp		(LPCSTR pref, PropItemVec& items);
-	void			AnimationFillProp(LPCSTR pref, PropItemVec& items);
+	virtual void	FillProp		(const char* pref, PropItemVec& items);
+	void			AnimationFillProp(const char* pref, PropItemVec& items);
 	virtual bool 	GetSummaryInfo	(SSceneSummary* inf);
 
 	virtual void 	Select			(int  flag);
-	virtual void 	Show			(BOOL flag);
-	virtual void 	Lock			(BOOL flag);
-	void			SetValid		(BOOL flag)	{m_RT_Flags.set(flRT_Valid,flag);}
-	void			SetRenderIfSelected(BOOL flag){m_CO_Flags.set(flRenderAnyWayIfSelected,flag);}
+	virtual void 	Show			(bool flag);
+	virtual void 	Lock			(bool flag);
+	void			SetValid		(bool flag)	{m_RT_Flags.set(flRT_Valid,flag);}
+	void			SetRenderIfSelected(bool flag){m_CO_Flags.set(flRenderAnyWayIfSelected,flag);}
 
 	virtual bool 	IsRender		();
 	virtual void 	Render			(int priority, bool strictB2F);
@@ -191,7 +191,7 @@ public:
 	CCustomObject* 	GetOwner		(){return m_pOwnerObject;}
 	virtual bool	CanAttach		()=0;
 
-	virtual bool	OnChooseQuery	(LPCSTR specific){return true;}
+	virtual bool	OnChooseQuery	(const char* specific){return true;}
 	
 	// change position/orientation methods
 	virtual void 	NumSetPosition	(const Fvector& pos)	{ SetPosition(pos); }
@@ -206,9 +206,9 @@ public:
 	virtual void 	ScalePivot		(const Fmatrix& prev_inv, const Fmatrix& current, Fvector& amount);
 
 	virtual bool 	LoadStream		(IReader&);
-	virtual bool 	LoadLTX			(CInifile& ini, LPCSTR sect_name);
+	virtual bool 	LoadLTX			(CInifile& ini, const char* sect_name);
 	virtual void 	SaveStream			(IWriter&);
-	virtual void 	SaveLTX			(CInifile& ini, LPCSTR sect_name);
+	virtual void 	SaveLTX			(CInifile& ini, const char* sect_name);
 
 	virtual bool	ExportGame		(SExportStreams* data){return true;}
 	virtual void	PreExportSpawn  () {}
@@ -225,7 +225,7 @@ public:
 	virtual void 	OnSynchronize	();
 	virtual void    OnShowHint      (AStringVec& dest);
 
-	virtual LPCSTR	RefName			(){return 0;}
+	virtual const char*	RefName			(){return 0;}
 
 	IC const Fmatrix& _ITransform			(){return FITransform;}
 	IC const Fmatrix& _Transform			(){return FTransform;}

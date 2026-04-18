@@ -8,7 +8,7 @@ class CSoundRender_Core	:
 {
 protected:
 	Fvector								listenerPos;
-	BOOL								bListenerMoved;
+	bool								bListenerMoved;
 	float								master_volume;
 	CSoundRender_Environment			e_current;
 	CSoundRender_Environment			e_target;
@@ -17,9 +17,9 @@ public:
 	typedef	std::pair<ref_sound_data_ptr,float>	event;                                               
 	xr_vector<event>					s_events;
 
-	BOOL								bPresent;
-	BOOL								bUserEnvironment;
-	BOOL								bReady;
+	bool								bPresent;
+	bool								bUserEnvironment;
+	bool								bReady;
 
 	SoundVoiceChat* pSoundVoiceChat = nullptr;
 
@@ -42,7 +42,7 @@ protected:
 	int									m_iPauseCounter;
 
 protected:
-	virtual void						_create_data			( ref_sound_data& S, LPCSTR fName,	esound_type sound_type, int game_type); 
+	virtual void						_create_data			( ref_sound_data& S, const char* fName,	esound_type sound_type, int game_type); 
 	virtual void						_destroy_data			( ref_sound_data& S);
 			void						GenerateDevicesToken	();
 	virtual void						SwitchAuidoDevice		(const xr_string& Name) override;
@@ -56,8 +56,8 @@ public:
 	virtual void						_restart				( );
 
 	// Sound interface
-	virtual void						create					( ref_sound& S, LPCSTR fName,			esound_type sound_type, int	game_type);
-	virtual void						attach_tail				( ref_sound& S, LPCSTR fName);
+	virtual void						create					( ref_sound& S, const char* fName,			esound_type sound_type, int	game_type);
+	virtual void						attach_tail				( ref_sound& S, const char* fName);
 
 	virtual void						clone					( ref_sound& S, const ref_sound& from,	esound_type sound_type, int	game_type);
 	virtual void						destroy					( ref_sound& S);

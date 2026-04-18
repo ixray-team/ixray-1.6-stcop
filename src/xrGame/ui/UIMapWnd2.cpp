@@ -7,7 +7,7 @@
 #include "../../xrUI/UIHelper.h"
 #include "UITaskWnd.h"
 
-void CUIMapWnd::init_xml_nav( CUIXml& xml, LPCSTR start_from )
+void CUIMapWnd::init_xml_nav( CUIXml& xml, const char* start_from )
 {
 	if (xml.NavigateToNode("btn_nav_parent"))
 	{

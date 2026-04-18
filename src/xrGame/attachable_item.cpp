@@ -36,7 +36,7 @@ DLL_Pure* CAttachableItem::_construct()
 CAttachableItem::~CAttachableItem()
 {}
 
-void CAttachableItem::reload(LPCSTR section)
+void CAttachableItem::reload(const char* section)
 {
 #ifdef DEBUG
 	m_valid = true;
@@ -48,7 +48,7 @@ void CAttachableItem::reload(LPCSTR section)
 	}
 }
 
-bool CAttachableItem::load_attach_position(LPCSTR section)
+bool CAttachableItem::load_attach_position(const char* section)
 {
 	if (!pSettings->line_exist(section, "attach_angle_offset"))
 	{

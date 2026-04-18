@@ -11,8 +11,8 @@ namespace MonsterSpace {
 class CTraderAnimation {
 	CAI_Trader			*m_trader;
 
-	LPCSTR				m_anim_global;
-	LPCSTR				m_anim_head;
+	const char*				m_anim_global;
+	const char*				m_anim_head;
 	
 	MotionID			m_motion_head;	
 	MotionID			m_motion_global;
@@ -26,9 +26,9 @@ public:
 
 	void			reinit					();
 
-	void			set_animation			(LPCSTR anim);
-	void			set_head_animation		(LPCSTR anim);
-	void			set_sound				(LPCSTR sound, LPCSTR head_anim);
+	void			set_animation			(const char* anim);
+	void			set_head_animation		(const char* anim);
+	void			set_sound				(const char* sound, const char* head_anim);
 
 	// Callbacks
 	static void		global_callback			(CBlend* B);
@@ -36,7 +36,7 @@ public:
 
 	void			update_frame			();
 
-	void			external_sound_start	(LPCSTR phrase);
+	void			external_sound_start	(const char* phrase);
 	void			external_sound_stop		();
 
 private:

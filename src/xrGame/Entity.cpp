@@ -126,7 +126,7 @@ void CEntity::Hit(SHit* pHDS)
 	inherited::Hit(pHDS);
 }
 
-void CEntity::Load		(LPCSTR section)
+void CEntity::Load		(const char* section)
 {
 	inherited::Load		(section);
 
@@ -145,7 +145,7 @@ void CEntity::Load		(LPCSTR section)
 	//////////////////////////////////////
 }
 
-BOOL CEntity::net_Spawn		(CSE_Abstract* DC)
+bool CEntity::net_Spawn		(CSE_Abstract* DC)
 {
 	m_level_death_time		= 0;
 	m_game_death_time		= 0;
@@ -307,7 +307,7 @@ void CEntity::reinit()
 	inherited::reinit();
 }
 
-void CEntity::reload(LPCSTR section)
+void CEntity::reload(const char* section)
 {
 	inherited::reload(section);
 	if (!use_simplified_visual())

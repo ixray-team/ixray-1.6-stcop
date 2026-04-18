@@ -22,10 +22,10 @@ class bone : public base
 public:
 							bone	(
 								CGameObject* object,
-								LPCSTR animation_id,
+								const char* animation_id,
 								bool animation_start,
 								Fvector const& target,
-								LPCSTR (&bones)[bone_count]
+								const char* (&bones)[bone_count]
 							);
 	inline	Fmatrix const&	get_bone			(u32 const& bone_id) const;
 

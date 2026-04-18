@@ -29,7 +29,7 @@ XRNETSERVER_API extern char		psNET_Name[];
 XRNETSERVER_API extern int		psNET_ServerUpdate;
 XRNETSERVER_API extern int		psNET_ServerPending;
 
-XRNETSERVER_API extern BOOL		psNET_direct_connect;
+XRNETSERVER_API extern bool		psNET_direct_connect;
 
 enum
 {

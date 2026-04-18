@@ -22,7 +22,7 @@ IC	CScriptParticleAction::CScriptParticleAction	()
 	m_bAutoRemove		= true;
 }
 
-IC	CScriptParticleAction::CScriptParticleAction	(LPCSTR caPartcileToRun, LPCSTR caBoneName, const CParticleParams &tParticleParams, bool bAutoRemove)
+IC	CScriptParticleAction::CScriptParticleAction	(const char* caPartcileToRun, const char* caBoneName, const CParticleParams &tParticleParams, bool bAutoRemove)
 {
 	SetBone				(caBoneName);
 	SetPosition			(tParticleParams.m_tParticlePosition);
@@ -31,7 +31,7 @@ IC	CScriptParticleAction::CScriptParticleAction	(LPCSTR caPartcileToRun, LPCSTR 
 	SetParticle			(caPartcileToRun,bAutoRemove);
 }
 
-IC	CScriptParticleAction::CScriptParticleAction	(LPCSTR caPartcileToRun, const CParticleParams &tParticleParams, bool bAutoRemove)
+IC	CScriptParticleAction::CScriptParticleAction	(const char* caPartcileToRun, const CParticleParams &tParticleParams, bool bAutoRemove)
 {
 	SetParticle			(caPartcileToRun,bAutoRemove);
 	SetPosition			(tParticleParams.m_tParticlePosition);
@@ -47,7 +47,7 @@ IC	void CScriptParticleAction::SetPosition			(const Fvector &tPosition)
 	m_bCompleted		= false;
 }
 
-IC	void CScriptParticleAction::SetBone				(LPCSTR caBoneName)
+IC	void CScriptParticleAction::SetBone				(const char* caBoneName)
 {
 	m_caBoneName		= caBoneName;
 	m_bStartedToPlay	= false;

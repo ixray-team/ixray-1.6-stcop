@@ -7,35 +7,35 @@
 
 EFS_Utils* xr_EFS = nullptr;
 //----------------------------------------------------
-xr_string	EFS_Utils::ExtractFileName(LPCSTR src)
+xr_string	EFS_Utils::ExtractFileName(const char* src)
 {
 	string_path name;
 	_splitpath(src, 0, 0, name, 0);
 	return xr_string(name);
 }
 
-xr_string	EFS_Utils::ExtractFileExt(LPCSTR src)
+xr_string	EFS_Utils::ExtractFileExt(const char* src)
 {
 	string_path ext;
 	_splitpath(src, 0, 0, 0, ext);
 	return xr_string(ext);
 }
 
-xr_string	EFS_Utils::ExtractFilePath(LPCSTR src)
+xr_string	EFS_Utils::ExtractFilePath(const char* src)
 {
 	string_path drive, dir;
 	_splitpath(src, drive, dir, 0, 0);
 	return xr_string(drive) + dir;
 }
 
-xr_string	EFS_Utils::ExcludeBasePath(LPCSTR full_path, LPCSTR excl_path)
+xr_string	EFS_Utils::ExcludeBasePath(const char* full_path, const char* excl_path)
 {
-	LPCSTR sub = strstr(full_path, excl_path);
+	const char* sub = strstr(full_path, excl_path);
 	if (0 != sub) 	return xr_string(sub + xr_strlen(excl_path));
 	else	   		return xr_string(full_path);
 }
 
-xr_string	EFS_Utils::ChangeFileExt(LPCSTR src, LPCSTR ext)
+xr_string	EFS_Utils::ChangeFileExt(const char* src, const char* ext)
 {
 	xr_string	tmp;
 	LPSTR src_ext = strext(src);
@@ -50,13 +50,13 @@ xr_string	EFS_Utils::ChangeFileExt(LPCSTR src, LPCSTR ext)
 	return tmp;
 }
 
-xr_string	EFS_Utils::ChangeFileExt(const xr_string& src, LPCSTR ext)
+xr_string	EFS_Utils::ChangeFileExt(const xr_string& src, const char* ext)
 {
 	return ChangeFileExt(src.c_str(), ext);
 }
 
 //----------------------------------------------------
-void MakeFilter(string1024& dest, LPCSTR info, LPCSTR ext)
+void MakeFilter(string1024& dest, const char* info, const char* ext)
 {
 	std::string res;
 
@@ -112,7 +112,7 @@ UINT_PTR CALLBACK OFNHookProcOldStyle(HWND, UINT, WPARAM, LPARAM)
 	return 0;
 }
 
-bool EFS_Utils::GetOpenNameInternal(LPCSTR initial, LPSTR buffer, int sz_buf, bool bMulti, LPCSTR offset, int start_flt_ext, const char* ext)
+bool EFS_Utils::GetOpenNameInternal(const char* initial, LPSTR buffer, int sz_buf, bool bMulti, const char* offset, int start_flt_ext, const char* ext)
 {
 #ifdef IXR_WINDOWS
 	VERIFY(buffer && (sz_buf > 0));
@@ -201,7 +201,7 @@ bool EFS_Utils::GetOpenNameInternal(LPCSTR initial, LPSTR buffer, int sz_buf, bo
 }
 
 
-bool EFS_Utils::GetOpenName(LPCSTR initial, xr_string& buffer, bool bMulti, LPCSTR offset, int start_flt_ext, const char* ext)
+bool EFS_Utils::GetOpenName(const char* initial, xr_string& buffer, bool bMulti, const char* offset, int start_flt_ext, const char* ext)
 {
 	char			buf[255 * 255]; //max files to select
 	xr_strcpy(buf, buffer.c_str());
@@ -214,13 +214,13 @@ bool EFS_Utils::GetOpenName(LPCSTR initial, xr_string& buffer, bool bMulti, LPCS
 	return bRes;
 }
 
-bool EFS_Utils::GetSaveName(LPCSTR initial, string_path& buffer, LPCSTR offset, int start_flt_ext, const char* ext)
+bool EFS_Utils::GetSaveName(const char* initial, string_path& buffer, const char* offset, int start_flt_ext, const char* ext)
 {
 #ifdef IXR_WINDOWS
 	FS_Path& P = *FS.get_path(initial);
 	string1024 			flt;
 
-	LPCSTR def_ext = P.m_DefExt;
+	const char* def_ext = P.m_DefExt;
 
 	MakeFilter(flt, P.m_FilterCaption ? P.m_FilterCaption : "", ext ? ext : def_ext);
 	OPENFILENAMEA ofn;
@@ -261,7 +261,7 @@ bool EFS_Utils::GetSaveName(LPCSTR initial, string_path& buffer, LPCSTR offset, 
 }
 
 
-bool EFS_Utils::GetSaveName(LPCSTR initial, xr_string& buffer, LPCSTR offset, int start_flt_ext, const char* ext)
+bool EFS_Utils::GetSaveName(const char* initial, xr_string& buffer, const char* offset, int start_flt_ext, const char* ext)
 {
 	string_path				buf;
 	xr_strcpy(buf, sizeof(buf), buffer.c_str());
@@ -272,7 +272,7 @@ bool EFS_Utils::GetSaveName(LPCSTR initial, xr_string& buffer, LPCSTR offset, in
 	return bRes;
 }
 
-xr_string EFS_Utils::AppendFolderToName(xr_string& tex_name, int depth, BOOL full_name)
+xr_string EFS_Utils::AppendFolderToName(xr_string& tex_name, int depth, bool full_name)
 {
 	string1024 nm;
 	xr_strcpy(nm, tex_name.c_str());
@@ -280,7 +280,7 @@ xr_string EFS_Utils::AppendFolderToName(xr_string& tex_name, int depth, BOOL ful
 	return tex_name;
 }
 
-void EFS_Utils::MarkFile(LPCSTR fn, bool bDeleteSource)
+void EFS_Utils::MarkFile(const char* fn, bool bDeleteSource)
 {
 	xr_string ext = strext(fn);
 	ext.insert(1, "~");
@@ -294,17 +294,17 @@ void EFS_Utils::MarkFile(LPCSTR fn, bool bDeleteSource)
 }
 
 //----------------------------------------------------
-LPCSTR EFS_Utils::AppendFolderToName(LPSTR tex_name, u32 const tex_name_size, int depth, BOOL full_name)
+const char* EFS_Utils::AppendFolderToName(LPSTR tex_name, u32 const tex_name_size, int depth, bool full_name)
 {
 	string256 _fn;
 	xr_strcpy(tex_name, tex_name_size, AppendFolderToName(tex_name, _fn, sizeof(_fn), depth, full_name));
 	return tex_name;
 }
 
-LPCSTR EFS_Utils::AppendFolderToName(LPCSTR src_name, LPSTR dest_name, u32 const dest_name_size, int depth, BOOL full_name)
+const char* EFS_Utils::AppendFolderToName(const char* src_name, LPSTR dest_name, u32 const dest_name_size, int depth, bool full_name)
 {
 	shared_str tmp = src_name;
-	LPCSTR s = src_name;
+	const char* s = src_name;
 	LPSTR d = dest_name;
 	int sv_depth = depth;
 	for (; *s && depth; s++, d++) {
@@ -322,7 +322,7 @@ LPCSTR EFS_Utils::AppendFolderToName(LPCSTR src_name, LPSTR dest_name, u32 const
 	return dest_name;
 }
 
-LPCSTR EFS_Utils::GenerateName(LPCSTR base_path, LPCSTR base_name, LPCSTR def_ext, LPSTR out_name, u32 const out_name_size)
+const char* EFS_Utils::GenerateName(const char* base_path, const char* base_name, const char* def_ext, LPSTR out_name, u32 const out_name_size)
 {
 	int cnt = 0;
 	string_path fn;

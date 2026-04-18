@@ -41,7 +41,7 @@ public:
 					CControlPathBuilder		(CCreature *monster);
 	virtual			~CControlPathBuilder	();
 
-	virtual void	load					(LPCSTR section);
+	virtual void	load					(const char* section);
 	virtual void	reinit					();
 	virtual void	update_schedule			();
 

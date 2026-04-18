@@ -21,6 +21,6 @@ protected:
 	virtual				void		PhDataUpdate		(float step)			{;}
 	virtual				bool		BlowoutState		()						;
 	virtual				void		SwitchZoneState		(EZoneState new_state)	;
-	virtual				void		Load				(LPCSTR section)		;
+	virtual				void		Load				(const char* section)		;
 	virtual				float		distance_to_center	(CObject* O)			;	
 };

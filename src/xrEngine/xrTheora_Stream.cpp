@@ -49,11 +49,11 @@ int	CTheoraStream::ReadData()
 	return bytes;
 }
 
-BOOL CTheoraStream::ParseHeaders		()
+bool CTheoraStream::ParseHeaders		()
 {
 	ogg_packet			o_packet;
 	int header_count	= 0;
-	BOOL stateflag		= FALSE;
+	bool stateflag		= FALSE;
 
 	// find Theora stream
 	while(!stateflag){
@@ -153,7 +153,7 @@ BOOL CTheoraStream::ParseHeaders		()
 	return TRUE;
 }
 
-BOOL CTheoraStream::Decode(u32 in_tm_play)
+bool CTheoraStream::Decode(u32 in_tm_play)
 {
 	VERIFY				(in_tm_play<tm_total);
 	ogg_int64_t			t_frame;
@@ -161,7 +161,7 @@ BOOL CTheoraStream::Decode(u32 in_tm_play)
 	ogg_int64_t	k_frame	= t_frame-t_frame%key_rate;
 
 	if (d_frame<t_frame){
-		BOOL result		= FALSE;
+		bool result		= FALSE;
 		ogg_packet		o_packet;
 		while (d_frame<t_frame){
 			while(FALSE==result){
@@ -174,7 +174,7 @@ BOOL CTheoraStream::Decode(u32 in_tm_play)
 						VERIFY				((0!=d_frame%key_rate)||(0==d_frame%key_rate)&&theora_packet_iskeyframe(&o_packet));
 						continue; 
 					}
-					BOOL is_key				= theora_packet_iskeyframe(&o_packet);
+					bool is_key				= theora_packet_iskeyframe(&o_packet);
 					VERIFY					( (d_frame!=k_frame) || ((d_frame==k_frame) && is_key) );
 					// real decode
 //.					dbg_log					((stderr,"%04d: decode\n",d_frame)); 
@@ -204,7 +204,7 @@ BOOL CTheoraStream::Decode(u32 in_tm_play)
 	return FALSE;
 }
 
-BOOL CTheoraStream::Load(const char* fname)
+bool CTheoraStream::Load(const char* fname)
 {
 	VERIFY				(0==source);
 	// open source
@@ -212,7 +212,7 @@ BOOL CTheoraStream::Load(const char* fname)
 	VERIFY				(source);
 
 	// parse headers
-	BOOL res			= ParseHeaders();
+	bool res			= ParseHeaders();
 	// seek to start
 	Reset				();
 	return				res;

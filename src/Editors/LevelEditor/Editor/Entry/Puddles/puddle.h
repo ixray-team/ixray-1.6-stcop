@@ -9,7 +9,7 @@ class CPuddle:
 	typedef CCustomObject inherited ;
 
 public:
-					CPuddle		(LPVOID data, LPCSTR name);
+					CPuddle		(LPVOID data, const char* name);
 	virtual 		~CPuddle();
 
 	void 			Construct	(LPVOID data);
@@ -17,10 +17,10 @@ public:
 
 	//virtual void 	Move				( Fvector& amount ); // need for Shift Level
   	virtual bool 	LoadStream			(IReader&);
-  	virtual bool 	LoadLTX				(CInifile& ini, LPCSTR sect_name);
+  	virtual bool 	LoadLTX				(CInifile& ini, const char* sect_name);
 	virtual void 	SaveStream			(IWriter&);
 	virtual void	OnFrame				() override;
-  	virtual void 	SaveLTX				(CInifile& ini, LPCSTR sect_name);
+  	virtual void 	SaveLTX				(CInifile& ini, const char* sect_name);
 
 	virtual void 	OnUpdateTransform() override;
 };

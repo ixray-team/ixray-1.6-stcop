@@ -9,7 +9,7 @@ bool IsPointMode()
 }
 
 // Way Point
-CWayPoint::CWayPoint(LPCSTR name)
+CWayPoint::CWayPoint(const char* name)
 {
 	m_Name			= name;
 	m_vPosition.set	(0,0,0);
@@ -34,7 +34,7 @@ void CWayPoint::GetBox(Fbox& bb)
 	bb.min.z-=WAYPOINT_RADIUS;
 }
 
-void CWayPoint::Render(LPCSTR parent_name, bool bParentSelect)
+void CWayPoint::Render(const char* parent_name, bool bParentSelect)
 {
 	Fvector pos;
 	pos.set	(m_vPosition.x,m_vPosition.y+WAYPOINT_SIZE*0.85f,m_vPosition.z);
@@ -211,7 +211,7 @@ bool CWayPoint::RemoveLink(CWayPoint* P)
 	return false;
 }
 // Way Object
-CWayObject::CWayObject(LPVOID data, LPCSTR name):CCustomObject(data,name)
+CWayObject::CWayObject(LPVOID data, const char* name):CCustomObject(data,name)
 {
 	Construct(data);
 }
@@ -560,7 +560,7 @@ bool CWayObject::FrustumPick(const CFrustum& frustum)
 	return false;
 }
 
-bool CWayObject::LoadLTX(CInifile& ini, LPCSTR sect_name)
+bool CWayObject::LoadLTX(CInifile& ini, const char* sect_name)
 {
 	Clear();
 
@@ -629,7 +629,7 @@ bool CWayObject::LoadLTX(CInifile& ini, LPCSTR sect_name)
 	return true;
 }
 
-void CWayObject::SaveLTX(CInifile& ini, LPCSTR sect_name)
+void CWayObject::SaveLTX(CInifile& ini, const char* sect_name)
 {
 	CCustomObject::SaveLTX	(ini, sect_name);
 	ini.w_u32				(sect_name, "version", WAYOBJECT_VERSION);
@@ -819,7 +819,7 @@ void CWayObject::OnNameChange(PropValue* sender)
 	ExecCommand(COMMAND_UPDATE_PROPERTIES);
 }
 
-void CWayObject::FillProp(LPCSTR pref, PropItemVec& items)
+void CWayObject::FillProp(const char* pref, PropItemVec& items)
 {
 //.	inherited::FillProp	(pref,items);
 

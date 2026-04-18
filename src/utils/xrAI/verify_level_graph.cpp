@@ -65,7 +65,7 @@ bool verify_invalid_links	(const CLevelGraph &graph)
 	return								(result);
 }
 
-void verify_level_graph	(LPCSTR name, bool verbose)
+void verify_level_graph	(const char* name, bool verbose)
 {
 	Msg				("Verifying level %s",name);
 	Phase			("Verifying level graph");

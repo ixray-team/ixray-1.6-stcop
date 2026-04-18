@@ -18,7 +18,7 @@ enum{
 };
 
 
-void CLight::SFuzzyData::SaveLTX(CInifile& ini, LPCSTR sect_name)
+void CLight::SFuzzyData::SaveLTX(CInifile& ini, const char* sect_name)
 {
     ini.w_u8		(sect_name, "fuzzy_shape_type", 	m_ShapeType);
     ini.w_float		(sect_name, "fuzzy_sphere_radius",  m_SphereRadius);
@@ -33,7 +33,7 @@ void CLight::SFuzzyData::SaveLTX(CInifile& ini, LPCSTR sect_name)
     }
 }
 
-void CLight::SFuzzyData::LoadLTX(CInifile& ini, LPCSTR sect_name)
+void CLight::SFuzzyData::LoadLTX(CInifile& ini, const char* sect_name)
 {
     m_ShapeType = static_cast<EShapeType>(ini.r_u8(sect_name, "fuzzy_shape_type"));
     m_SphereRadius	= ini.r_float		(sect_name, "fuzzy_sphere_radius");
@@ -69,7 +69,7 @@ void CLight::SFuzzyData::LoadStream(IReader& F)
     F.r				(&*m_Positions.begin(),sizeof(Fvector)*m_PointCount);
 }
 
-bool CLight::LoadLTX(CInifile& ini, LPCSTR sect_name)
+bool CLight::LoadLTX(CInifile& ini, const char* sect_name)
 {
 	u32 version = ini.r_u32(sect_name, "version");
 
@@ -95,7 +95,7 @@ bool CLight::LoadLTX(CInifile& ini, LPCSTR sect_name)
     m_Flags.assign	(ini.r_u32			(sect_name, "light_flags"));
     m_LControl		= ini.r_u32			(sect_name, "light_control");
 
-	LPCSTR anm		= ini.r_string		(sect_name,"anim_ref_name");
+	const char* anm		= ini.r_string		(sect_name,"anim_ref_name");
     if(anm)
     {
         m_pAnimRef	= LALib.FindItem(anm);
@@ -115,7 +115,7 @@ bool CLight::LoadLTX(CInifile& ini, LPCSTR sect_name)
 	return true;
 }
 
-void CLight::SaveLTX(CInifile& ini, LPCSTR sect_name)
+void CLight::SaveLTX(CInifile& ini, const char* sect_name)
 {
 	CCustomObject::SaveLTX(ini, sect_name);
 
