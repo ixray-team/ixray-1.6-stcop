@@ -25,7 +25,7 @@ struct SAttackGoodwillStorage
 	s32	neutral_attack_reputation;
 	s32	enemy_attack_reputation;
 	
-	void load(LPCSTR prefix)
+	void load(const char* prefix)
 	{
 		string128					s;
 		xr_strconcat(s,prefix,"friend_attack_goodwill");

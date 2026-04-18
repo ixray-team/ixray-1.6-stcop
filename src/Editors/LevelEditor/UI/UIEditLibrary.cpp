@@ -238,7 +238,7 @@ void UIEditLibrary::GenerateLOD(const RStringVec& props, bool bHighQuality)
 		if (O && O->IsMUStatic())
 		{
 			pb->Inc(O->GetName());
-			BOOL bLod = O->m_objectFlags.is(CEditableObject::eoUsingLOD);
+			bool bLod = O->m_objectFlags.is(CEditableObject::eoUsingLOD);
 			O->m_objectFlags.set(CEditableObject::eoUsingLOD, FALSE);
 			xr_string tex_name;
 			tex_name = EFS.ChangeFileExt(O->GetName(), "");
@@ -893,7 +893,7 @@ void UIEditLibrary::ImportClick()
 
 			xr_delete(O);
 
-			LPCSTR p = FS.get_path(_objects_)->m_Path;
+			const char* p = FS.get_path(_objects_)->m_Path;
 			if (folder.Contains(p))
 			{
 				m_LastSelection = xr_string(folder.c_str() + strlen(p)) + nm;

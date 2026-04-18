@@ -20,7 +20,7 @@ xr_vector<xr_string>& GetLogVector()
 	return myLogVector;
 }
 
-volatile BOOL				bClose = FALSE;
+volatile bool				bClose = FALSE;
 
 static char					status[1024] = "";
 static char					additional_data[1024] = "";
@@ -163,7 +163,7 @@ void logThread(void* dummy)
 	xrLogger::RemoveLogCallback(MyLogCallback);
 }
 
-void clLog(LPCSTR msg) {
+void clLog(const char* msg) {
 	csLog.Enter();
 	Log(msg);
 	csLog.Leave();
@@ -183,11 +183,11 @@ void __cdecl clMsg(const char* format, ...) {
 class client_log_impl : public i_lc_log
 {
 
-	virtual void clMsg(LPCSTR msg) override { ::clMsg(msg); }
-	virtual void clLog(LPCSTR msg) override { ::clLog(msg); }
-	virtual void Status(LPCSTR msg) override { ::Status(msg); }
+	virtual void clMsg(const char* msg) override { ::clMsg(msg); }
+	virtual void clLog(const char* msg) override { ::clLog(msg); }
+	virtual void Status(const char* msg) override { ::Status(msg); }
 	virtual	void Progress(const float F) override { ::Progress(F); }
-	virtual	void Phase(LPCSTR phase_name) override { ::Phase(phase_name); }
+	virtual	void Phase(const char* phase_name) override { ::Phase(phase_name); }
 public:
 	client_log_impl() { lc_log = this; }
 } client_log_impl;

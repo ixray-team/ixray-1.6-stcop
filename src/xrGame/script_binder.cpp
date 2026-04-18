@@ -55,11 +55,11 @@ void CScriptBinder::reinit			()
 	}
 }
 
-void CScriptBinder::Load			(LPCSTR section)
+void CScriptBinder::Load			(const char* section)
 {
 }
 
-void CScriptBinder::reload(LPCSTR section)
+void CScriptBinder::reload(const char* section)
 {
 	PROF_EVENT("CScriptBinder::reload");
 
@@ -99,7 +99,7 @@ void CScriptBinder::reload(LPCSTR section)
 	}
 }
 
-BOOL CScriptBinder::net_Spawn(CSE_Abstract* DC)
+bool CScriptBinder::net_Spawn(CSE_Abstract* DC)
 {
 	PROF_EVENT("CScriptBinder::net_Spawn");
 	CSE_Abstract* abstract = (CSE_Abstract*)DC;
@@ -193,7 +193,7 @@ void CScriptBinder::load			(IReader &input_packet)
 	}
 }
 
-BOOL CScriptBinder::net_SaveRelevant()
+bool CScriptBinder::net_SaveRelevant()
 {
 	if (m_object) {
 		try {

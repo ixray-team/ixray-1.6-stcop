@@ -8,7 +8,7 @@
 XRNETSERVER_API ClientID BroadcastCID(0xffffffff);
 XRNETSERVER_API int psNET_ServerUpdate = 30; // FPS
 XRNETSERVER_API int psNET_ServerPending = 3;
-XRNETSERVER_API BOOL psNET_direct_connect = FALSE;
+XRNETSERVER_API bool psNET_direct_connect = FALSE;
 
 // -----------------------------------------------------------------------------
 
@@ -16,7 +16,7 @@ static	INetLog* pSvNetLog = nullptr;
 
 // -----------------------------------------------------------------------------
 
-BaseServer::BaseServer(CTimer* timer, BOOL	Dedicated)
+BaseServer::BaseServer(CTimer* timer, bool	Dedicated)
 	: m_bDedicated(Dedicated)
 {
 	SV_Client = nullptr;
@@ -62,7 +62,7 @@ IClient* BaseServer::ID_to_client(ClientID ID, bool ScanAll)
 
 #pragma region connect / disconnect
 
-void BaseServer::ParseConnectionOptions(LPCSTR options, ServerConnectionOptions& out)
+void BaseServer::ParseConnectionOptions(const char* options, ServerConnectionOptions& out)
 {
 	// SESSION NAME	
 	xr_strcpy(out.session_name, options); //sertanly we can use game_descr structure for determinig level_name,
@@ -122,7 +122,7 @@ bool BaseServer::CreateConnection(GameDescriptionData& game_descr, ServerConnect
 }
 
 
-BaseServer::EConnect BaseServer::Connect(LPCSTR options, GameDescriptionData & game_descr)
+BaseServer::EConnect BaseServer::Connect(const char* options, GameDescriptionData & game_descr)
 {
 	connect_options = options;
 	psNET_direct_connect = FALSE;
@@ -248,7 +248,7 @@ void BaseServer::Print_Banned_Addreses()
 
 #pragma region banned list
 
-LPCSTR BaseServer::GetBannedListName()
+const char* BaseServer::GetBannedListName()
 {
 	return "banned_list_ip.ltx";
 }
@@ -349,7 +349,7 @@ void	BaseServer::ClearStatistic()
 
 #pragma region disconnect
 
-bool BaseServer::DisconnectAddress(const ip_address & Address, LPCSTR reason)
+bool BaseServer::DisconnectAddress(const ip_address & Address, const char* reason)
 {
 	u32 players_count = net_players.ClientsCount();
 	buffer_vector<IClient*>	PlayersToDisconnect(

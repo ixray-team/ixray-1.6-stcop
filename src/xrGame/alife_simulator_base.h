@@ -71,7 +71,7 @@ public:
 	IC		CALifeRegistryContainer				&registry					() const;
 
 public:
-												CALifeSimulatorBase			(xrServer *server, LPCSTR section);
+												CALifeSimulatorBase			(xrServer *server, const char* section);
 	virtual										~CALifeSimulatorBase		();
 	virtual	void								destroy						();
 	IC		bool								initialized					() const;
@@ -93,7 +93,7 @@ public:
 
 protected:
 			void								unload						();
-	virtual	void								reload						(LPCSTR section);
+	virtual	void								reload						(const char* section);
 	IC		void								setup_command_line			(shared_str *command_line);
 			void								assign_death_position		(CSE_ALifeCreatureAbstract *tpALifeCreatureAbstract, GameGraph::_GRAPH_ID tGraphID,	CSE_ALifeSchedulable *tpALifeSchedulable = 0);
 	virtual void								setup_simulator				(CSE_ALifeObject *object) = 0;
@@ -105,7 +105,7 @@ public:
 			void								create						(CSE_ALifeDynamicObject	*&object, CSE_ALifeDynamicObject *spawn_object,	const ALife::_SPAWN_ID &spawn_id);
 			void								create						(CSE_ALifeObject		*object);
 			CSE_Abstract						*create						(CSE_ALifeGroupAbstract	*object, CSE_ALifeDynamicObject	*j);
-			CSE_Abstract						*spawn_item					(LPCSTR section,		const Fvector &position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, u16 parent_id, bool registration = true);
+			CSE_Abstract						*spawn_item					(const char* section,		const Fvector &position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, u16 parent_id, bool registration = true);
 			void								append_item_vector			(ALife::OBJECT_VECTOR	&tObjectVector,	ALife::ITEM_P_VECTOR &tItemList);
 			shared_str							level_name					() const;
 			void								on_death					(CSE_Abstract *killed, CSE_Abstract *killer);

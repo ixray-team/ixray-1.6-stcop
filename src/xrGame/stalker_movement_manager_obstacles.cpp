@@ -42,7 +42,7 @@ stalker_movement_manager_obstacles::~stalker_movement_manager_obstacles	()
 	xr_delete						(m_doors_actor);
 }
 
-void stalker_movement_manager_obstacles::Load	( LPCSTR section )
+void stalker_movement_manager_obstacles::Load	( const char* section )
 {
 	inherited::Load					( section );
 

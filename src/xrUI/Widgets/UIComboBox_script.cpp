@@ -14,7 +14,7 @@
 #include <luabind/luabind.hpp>
 using namespace luabind;
 
-void AssignProps_script_combo(CUIComboBox* cb, LPCSTR entry, LPCSTR group)
+void AssignProps_script_combo(CUIComboBox* cb, const char* entry, const char* group)
 {
 	cb->AssignProps(entry, group);
 }

@@ -46,15 +46,15 @@ public:
 	virtual void			Draw					();
 	virtual void			Update					();
 	virtual void			OnFocusLost				();
-	bool InitTexture(LPCSTR raster_texture_name, LPCSTR svg_texture_name) override;
-	virtual pcstr GetText() { return TextItemControl()->GetText(); }
-	virtual void SetText(LPCSTR txt);
-			void SetTextIfNodeExist(LPCSTR txt);
-	virtual void SetTextST(pcstr txt) { TextItemControl()->SetTextST(txt); }
+	bool InitTexture(const char* raster_texture_name, const char* svg_texture_name) override;
+	virtual const char* GetText() { return TextItemControl()->GetText(); }
+	virtual void SetText(const char* txt);
+			void SetTextIfNodeExist(const char* txt);
+	virtual void SetTextST(const char* txt) { TextItemControl()->SetTextST(txt); }
 	virtual void SetTextColor(u32 clr) { TextItemControl()->SetTextColor(clr); }
-	void InitSVG(CUIXml& xml_doc, LPCSTR path, int index) override;
+	void InitSVG(CUIXml& xml_doc, const char* path, int index) override;
 	bool isSVGPresented(void) const override;
-	LPCSTR getSVGFilename(CUIXml& xml_doc, LPCSTR path, int index = 0) override;
+	const char* getSVGFilename(CUIXml& xml_doc, const char* path, int index = 0) override;
 	const SVGTintRGBA& GetVectorTint() const { return _svgBinding.GetTint(); }
 	void SetTextColor_script(int a, int r, int g, int b)
 	{
@@ -72,7 +72,7 @@ public:
 		TextItemControl()->GetFont()->SetAligment((CGameFont::EAligment)align);
 	}
 
-	virtual void			CreateShader			(LPCSTR tex, LPCSTR sh = "hud\\default");
+	virtual void			CreateShader			(const char* tex, const char* sh = "hud\\default");
 	ui_shader&				GetShader				()							{return m_UIStaticItem.GetShader();};
 
 	virtual void			SetTextureColor			(u32 color)					{ m_UIStaticItem.SetTextureColor(color);}
@@ -80,8 +80,8 @@ public:
 	virtual void			SetTextureRect			(const Frect& r)			{m_UIStaticItem.SetTextureRect(r);}
 	virtual const Frect&	GetTextureRect			() const					{return m_UIStaticItem.GetTextureRect();}
 	
-	virtual bool			InitTexture				(LPCSTR tex_name, bool fatal = true);
-	virtual bool			InitTextureEx			(LPCSTR tex_name, LPCSTR sh_name="hud\\default", bool fatal = true);
+	virtual bool			InitTexture				(const char* tex_name, bool fatal = true);
+	virtual bool			InitTextureEx			(const char* tex_name, const char* sh_name="hud\\default", bool fatal = true);
 	CUIStaticItem*			GetStaticItem			()							{return &m_UIStaticItem;}
 	void ResetOriginalRect() { m_UIStaticItem.ResetOriginalRect(); }
 			void			SetTextureRect_script	(Frect* pr)					{m_UIStaticItem.SetTextureRect(*pr);}
@@ -114,7 +114,7 @@ public:
 	// own
 	virtual void			SetHighlightColor		(const u32 uColor)			{ m_HighlightColor = uColor; }
 			void			EnableTextHighlighting	(bool value)				{ m_bEnableTextHighlighting = value; }
-			void			SetXformLightAnim		(LPCSTR lanim, bool bCyclic);
+			void			SetXformLightAnim		(const char* lanim, bool bCyclic);
 			void			ResetXformAnimation		();
 
 	virtual void			DrawTexture				();

@@ -95,7 +95,7 @@ bool CSHCompilerTools::Save()
     return bRes;
 }
 
-Shader_xrLC* CSHCompilerTools::FindItem(LPCSTR name)
+Shader_xrLC* CSHCompilerTools::FindItem(const char* name)
 {
     if (name && name[0])
     {
@@ -104,7 +104,7 @@ Shader_xrLC* CSHCompilerTools::FindItem(LPCSTR name)
     else return 0;
 }
 
-void CSHCompilerTools::AppendItem(LPCSTR path, LPCSTR parent_name)
+void CSHCompilerTools::AppendItem(const char* path, const char* parent_name)
 {
     Shader_xrLC* parent = FindItem(parent_name);
     xr_string pref = path;
@@ -117,7 +117,7 @@ void CSHCompilerTools::AppendItem(LPCSTR path, LPCSTR parent_name)
 
 }
 
-void CSHCompilerTools::OnRenameItem(UIItemListForm::Node& node, LPCSTR old_full_name, LPCSTR new_full_name, EItemType type)
+void CSHCompilerTools::OnRenameItem(UIItemListForm::Node& node, const char* old_full_name, const char* new_full_name, EItemType type)
 {
     if (type == TYPE_OBJECT)
     {
@@ -136,7 +136,7 @@ void CSHCompilerTools::OnRenameItem(UIItemListForm::Node& node, LPCSTR old_full_
 }
 
 
-void CSHCompilerTools::OnRemoveItem(UIItemListForm::Node& node/*, LPCSTR name, EItemType type*/)
+void CSHCompilerTools::OnRemoveItem(UIItemListForm::Node& node/*, const char* name, EItemType type*/)
 {
     string_path path;
     if (node.Path.size())
@@ -146,7 +146,7 @@ void CSHCompilerTools::OnRemoveItem(UIItemListForm::Node& node/*, LPCSTR name, E
     {
         xr_strcpy(path, node.Name.c_str());
     }
-    LPCSTR name = path;
+    const char* name = path;
     if (node.IsObject()) {
         R_ASSERT(name && name[0]);
         if (m_Shader && stricmp(m_Shader->Name, name) == 0)
@@ -158,7 +158,7 @@ void CSHCompilerTools::OnRemoveItem(UIItemListForm::Node& node/*, LPCSTR name, E
     }
 }
 
-void CSHCompilerTools::SetCurrentItem(LPCSTR name, bool bView)
+void CSHCompilerTools::SetCurrentItem(const char* name, bool bView)
 {
     if (m_bLockUpdate) return;
 

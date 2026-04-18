@@ -63,7 +63,7 @@ public:
 		m_buffer[0] = char_t(0);
 	}
 	
-	stack_string(LPCSTR Str)
+	stack_string(const char* Str)
 	{
 		m_buffer[0] = char_t(0);
 		append(Str); // maybe need to optimize

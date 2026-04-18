@@ -8,7 +8,7 @@
 
 #pragma once
 
-IC CGameGraph::CGameGraph									(LPCSTR file_name, u32 current_version)
+IC CGameGraph::CGameGraph									(const char* file_name, u32 current_version)
 {
 	m_reader						= FS.r_open(file_name);
 	VERIFY							(m_reader);

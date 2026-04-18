@@ -23,7 +23,7 @@ public:
 	CUIFixedScrollBar();
 	virtual	~CUIFixedScrollBar();
 
-	virtual	bool InitScrollBar(Fvector2 pos, bool horizontal, LPCSTR profile = "pda");
+	virtual	bool InitScrollBar(Fvector2 pos, bool horizontal, const char* profile = "pda");
 	virtual void SetWidth(float width) {};
 	virtual void SetHeight(float height) {};
 	virtual void Draw() {inherited::Draw();};

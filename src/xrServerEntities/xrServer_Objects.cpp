@@ -87,7 +87,7 @@ void CSE_Shape::assign_shapes	(CShapeData::shape_def* _shapes, u32 _cnt)
 ////////////////////////////////////////////////////////////////////////////
 // CSE_Spectator
 ////////////////////////////////////////////////////////////////////////////
-CSE_Spectator::CSE_Spectator				(LPCSTR caSection) : CSE_Abstract(caSection)
+CSE_Spectator::CSE_Spectator				(const char* caSection) : CSE_Abstract(caSection)
 {
 }
 
@@ -117,7 +117,7 @@ void CSE_Spectator::UPDATE_Write			(NET_Packet	&tNetPacket)
 }
 
 #if !defined(XRGAME_EXPORTS)
-void CSE_Spectator::FillProps				(LPCSTR pref, PropItemVec& items)
+void CSE_Spectator::FillProps				(const char* pref, PropItemVec& items)
 {
   	inherited::FillProps			(pref,items);
 }
@@ -126,7 +126,7 @@ void CSE_Spectator::FillProps				(LPCSTR pref, PropItemVec& items)
 ////////////////////////////////////////////////////////////////////////////
 // CSE_Temporary
 ////////////////////////////////////////////////////////////////////////////
-CSE_Temporary::CSE_Temporary				(LPCSTR caSection) : CSE_Abstract(caSection)
+CSE_Temporary::CSE_Temporary				(const char* caSection) : CSE_Abstract(caSection)
 {
 	m_tNodeID					= u32(-1);
 }
@@ -154,7 +154,7 @@ void CSE_Temporary::UPDATE_Write			(NET_Packet	&tNetPacket)
 };
 
 #ifndef XRGAME_EXPORTS
-void CSE_Temporary::FillProps				(LPCSTR pref, PropItemVec& values)
+void CSE_Temporary::FillProps				(const char* pref, PropItemVec& values)
 {
 };
 #endif // #ifndef XRGAME_EXPORTS
@@ -164,7 +164,7 @@ void CSE_Temporary::FillProps				(LPCSTR pref, PropItemVec& values)
 // CSE_SpawnGroup
 ////////////////////////////////////////////////////////////////////////////
 
-CSE_SpawnGroup::CSE_SpawnGroup				(LPCSTR caSection) : CSE_Abstract(caSection)
+CSE_SpawnGroup::CSE_SpawnGroup				(const char* caSection) : CSE_Abstract(caSection)
 {
 }
 
@@ -206,7 +206,7 @@ void CSE_SpawnGroup::UPDATE_Write			(NET_Packet	&tNetPacket)
 }
 
 #ifndef XRGAME_EXPORTS
-void CSE_SpawnGroup::FillProps				(LPCSTR pref, PropItemVec& values)
+void CSE_SpawnGroup::FillProps				(const char* pref, PropItemVec& values)
 {
 	inherited::FillProps		(pref,values);
 	PHelper().CreateFlag32		(values,PrepareKey(pref,*s_name,"Spawn\\spawn single item only"),	&m_spawn_flags,	flSpawnSingleItemOnly);
@@ -217,7 +217,7 @@ void CSE_SpawnGroup::FillProps				(LPCSTR pref, PropItemVec& values)
 ////////////////////////////////////////////////////////////////////////////
 // CSE_PHSkeleton
 ////////////////////////////////////////////////////////////////////////////
-CSE_PHSkeleton::CSE_PHSkeleton(LPCSTR caSection)
+CSE_PHSkeleton::CSE_PHSkeleton(const char* caSection)
 {
 	source_id					= u16(-1);
 	_flags.zero					();
@@ -286,12 +286,12 @@ void CSE_PHSkeleton::UPDATE_Read(NET_Packet &tNetPacket)
 }
 
 #ifndef XRGAME_EXPORTS
-void CSE_PHSkeleton::FillProps				(LPCSTR pref, PropItemVec& values)
+void CSE_PHSkeleton::FillProps				(const char* pref, PropItemVec& values)
 {
 }
 #endif // #ifndef XRGAME_EXPORTS
 
-CSE_AbstractVisual::CSE_AbstractVisual(LPCSTR section):inherited1(section),inherited2(section)
+CSE_AbstractVisual::CSE_AbstractVisual(const char* section):inherited1(section),inherited2(section)
 {
 }
 
@@ -312,7 +312,7 @@ void CSE_AbstractVisual::STATE_Write	(NET_Packet	&tNetPacket)
 }
 
 #if !defined(XRGAME_EXPORTS)
-void CSE_AbstractVisual::FillProps		(LPCSTR pref, PropItemVec& values)
+void CSE_AbstractVisual::FillProps		(const char* pref, PropItemVec& values)
 {
 	inherited1::FillProps			(pref,values);
 	inherited2::FillProps			(pref,values);
@@ -326,7 +326,7 @@ void CSE_AbstractVisual::UPDATE_Read	(NET_Packet	&tNetPacket)
 void CSE_AbstractVisual::UPDATE_Write	(NET_Packet	&tNetPacket)
 {
 }
-LPCSTR	CSE_AbstractVisual::getStartupAnimation		()
+const char*	CSE_AbstractVisual::getStartupAnimation		()
 {
 	return *startup_animation;
 }

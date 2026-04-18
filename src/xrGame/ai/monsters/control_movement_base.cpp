@@ -17,7 +17,7 @@ void CControlMovementBase::reinit()
 	m_man->capture		(this, ControlCom::eControlMovement);
 }
 
-void CControlMovementBase::load(LPCSTR section)
+void CControlMovementBase::load(const char* section)
 {
 	load_velocity	(section, "Velocity_Stand",			eVelocityParameterStand);
 	load_velocity	(section, "Velocity_WalkFwdNormal",	eVelocityParameterWalkNormal);
@@ -36,7 +36,7 @@ void CControlMovementBase::load(LPCSTR section)
 	m_man->path_builder().detail().add_velocity(eVelocityParameterIdle, CDetailPathManager::STravelParams(velocity_param.velocity.linear,velocity_param.velocity.angular_path,velocity_param.velocity.angular_real));	
 }
 
-void CControlMovementBase::load_velocity(LPCSTR section, LPCSTR line, u32 velocity_id)
+void CControlMovementBase::load_velocity(const char* section, const char* line, u32 velocity_id)
 {
 	SVelocityParam velocity_param;
 	if(pSettings->line_exist(section,line)) velocity_param.Load(section,line);

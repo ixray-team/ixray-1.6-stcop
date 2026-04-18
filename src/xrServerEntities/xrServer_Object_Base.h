@@ -60,8 +60,8 @@ private:
 	LPSTR							s_name_replace;
 
 public:
-	BOOL							net_Ready;
-	BOOL							net_Processed;	// Internal flag for connectivity-graph
+	bool							net_Ready;
+	bool							net_Processed;	// Internal flag for connectivity-graph
 	
 	u16								m_wVersion;
 	u16								m_script_version;
@@ -102,12 +102,12 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	
-									CSE_Abstract			(LPCSTR caSection);
+									CSE_Abstract			(const char* caSection);
 	virtual							~CSE_Abstract			();
 	virtual void					OnEvent					(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender ){};
 #if !defined(XRGAME_EXPORTS)
-	virtual void					FillProps				(LPCSTR pref, PropItemVec &items);
-	virtual void					FillProp				(LPCSTR pref, PropItemVec &items);
+	virtual void					FillProps				(const char* pref, PropItemVec &items);
+	virtual void					FillProp				(const char* pref, PropItemVec &items);
 #if !defined(AI_COMPILER)
 	virtual void 			on_render				(CDUInterface* du, ISE_AbstractLEOwner* owner_, bool bSelected, const Fmatrix& parent,int priority, bool strictB2F){} 
 	virtual	visual_data*	visual_collection		() const { return 0; }
@@ -115,17 +115,17 @@ public:
 	virtual	void			set_additional_info		(void* info) {};
 #endif
 #endif
-	virtual BOOL					Net_Relevant			(){return FALSE;}; // !!!! WARNING!!!
+	virtual bool					Net_Relevant			(){return FALSE;}; // !!!! WARNING!!!
 	//
-	virtual void			Spawn_Write				(NET_Packet &tNetPacket, BOOL bLocal);
-	virtual BOOL			Spawn_Read				(NET_Packet &tNetPacket);
-	virtual LPCSTR			name					() const override;
-	virtual LPCSTR			name_replace			() const override;
-	virtual void			set_name				(LPCSTR s) override
+	virtual void			Spawn_Write				(NET_Packet &tNetPacket, bool bLocal);
+	virtual bool			Spawn_Read				(NET_Packet &tNetPacket);
+	virtual const char*			name					() const override;
+	virtual const char*			name_replace			() const override;
+	virtual void			set_name				(const char* s) override
 	{
 		s_name		= s;
 	};
-	virtual void			set_name_replace		(LPCSTR s) override {xr_free(s_name_replace); s_name_replace = xr_strdup(s);};
+	virtual void			set_name_replace		(const char* s) override {xr_free(s_name_replace); s_name_replace = xr_strdup(s);};
 	virtual Fvector&		position				();
 	virtual Fvector&		angle					();
 	virtual Flags16&		flags					();

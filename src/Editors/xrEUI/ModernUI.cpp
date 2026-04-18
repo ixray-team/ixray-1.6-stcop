@@ -230,6 +230,8 @@ XREUI_API ImColor XRay::ImGui::GetEditorColor(EEditorColors Color)
 			return EditorColors[Color];
 		}
 	}
+
+	return Clr;
 }
 
 const size_t SizeCount = 17;

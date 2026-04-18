@@ -134,7 +134,7 @@ public:
 	UIHint*						hint_wnd;
 
 protected:
-	void						init_xml_nav			(CUIXml& xml, LPCSTR start_from);
+	void						init_xml_nav			(CUIXml& xml, const char* start_from);
 	void						ShowHint				(bool extra = false);
 	void						Activated				();
 
@@ -142,7 +142,7 @@ public:
 								CUIMapWnd				();
 	virtual						~CUIMapWnd				();
 
-	virtual void				Init					(LPCSTR xml_name, LPCSTR start_from);
+	virtual void				Init					(const char* xml_name, const char* start_from);
 	virtual void				Show					(bool status);
 	virtual void				Draw					();
 	virtual void				Reset					();
@@ -157,7 +157,7 @@ public:
 			bool				UpdateZoom				(bool b_zoom_in, bool b_use_dt = false);
 
 
-			void				ShowHintStr				(CUIWindow* parent, LPCSTR text);
+			void				ShowHintStr				(CUIWindow* parent, const char* text);
 			void				ShowHintSpot			(CMapSpot* spot);
 			void				ShowHintTask			(CGameTask* task, CUIWindow* owner);
 

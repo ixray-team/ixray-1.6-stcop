@@ -223,11 +223,11 @@ int CEditableObject::GetSelectedBones(BoneVec& sel_bones)
 #include "../../3rd-party/MagicSoftware/FreeMagic/Include/MgcCont3DMinSphere.h"
 #include "ExportSkeleton.h"
 
-BOOL	f_valid		(float f)
+bool	f_valid		(float f)
 {
 	return _finite(f) && !_isnan(f);
 }
-BOOL	SphereValid	(FvectorVec& geom, Fsphere& test)
+bool	SphereValid	(FvectorVec& geom, Fsphere& test)
 {
 	if (!f_valid(test.P.x) || !f_valid(test.R))	{
 		Msg	("*** Attention ***: invalid sphere: %f,%f,%f - %f",test.P.x,test.P.y,test.P.z,test.R);
@@ -246,7 +246,7 @@ void ComputeSphere(Fsphere &B, FvectorVec& V)
 	// 1: calc first variation
 	Fsphere	S1;
     Fsphere_compute		(S1,V.data(),V.size());
-	BOOL B1				= SphereValid(V,S1);
+	bool B1				= SphereValid(V,S1);
     
 	// 2: calc ordinary algorithm (2nd)
 	Fsphere	S2;
@@ -261,14 +261,14 @@ void ComputeSphere(Fsphere &B, FvectorVec& V)
 		if (d>S2.R) S2.R=d;
 	}
 	S2.R = _sqrt (std::abs(S2.R));
-	BOOL B2				= SphereValid(V,S2);
+	bool B2				= SphereValid(V,S2);
 
 	// 3: calc magic-fm
 	Mgc::Sphere _S3 = Mgc::MinSphere(V.size(), (const Mgc::Vector3*) V.data());
 	Fsphere	S3;
 	S3.P.set			(_S3.Center().x,_S3.Center().y,_S3.Center().z);
 	S3.R				= _S3.Radius();
-	BOOL B3				= SphereValid(V,S3);
+	bool B3				= SphereValid(V,S3);
 
 	// select best one
 	if (B1 && (S1.R<S2.R)){		// miniball or FM

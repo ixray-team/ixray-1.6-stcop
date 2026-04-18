@@ -16,7 +16,7 @@ CUIFixedScrollBar::~CUIFixedScrollBar(void)
 {
 }
 
-bool CUIFixedScrollBar::InitScrollBar(Fvector2 pos, bool horizontal, LPCSTR profile)
+bool CUIFixedScrollBar::InitScrollBar(Fvector2 pos, bool horizontal, const char* profile)
 {
 	string256 _path;
 	CUIXml xml_doc;

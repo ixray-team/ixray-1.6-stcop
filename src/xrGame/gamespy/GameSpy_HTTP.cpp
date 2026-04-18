@@ -92,7 +92,7 @@ GHTTPBool	__cdecl	CompletedCallBack	(GHTTPRequest request, GHTTPResult result, c
 	return GHTTPTrue;
 }
 
-void		CGameSpy_HTTP::DownloadFile(LPCSTR URL, LPCSTR FileName)
+void		CGameSpy_HTTP::DownloadFile(const char* URL, const char* FileName)
 {	
 
 //	GHTTPRequest res = xrGS_ghttpSaveA(URL, FileName, GHTTPFalse, CompletedCallBack, this);

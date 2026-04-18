@@ -19,8 +19,8 @@ void CSE_ALifeMonsterBase::on_spawn				()
     if (!pSettings->line_exist(s_name, "Spawn_Inventory_Item_Section"))
         return;
 
-    LPCSTR item_sections = pSettings->r_string(s_name, "Spawn_Inventory_Item_Section");
-    LPCSTR item_probabilities = pSettings->r_string(s_name, "Spawn_Inventory_Item_Probability");
+    const char* item_sections = pSettings->r_string(s_name, "Spawn_Inventory_Item_Section");
+    const char* item_probabilities = pSettings->r_string(s_name, "Spawn_Inventory_Item_Probability");
 
     xr_vector<float> probabilities;
     xr_vector<shared_str> sections;

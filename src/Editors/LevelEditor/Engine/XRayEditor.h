@@ -6,15 +6,15 @@ public:
 	XRayEditor();
 	virtual	~XRayEditor();
 	virtual void					Level_Scan();
-	virtual int						Level_ID(LPCSTR name, LPCSTR ver, bool bSet);
+	virtual int						Level_ID(const char* name, const char* ver, bool bSet);
 	virtual void					Level_Set(u32 ID);
 	virtual void					LoadAllArchives();
-	virtual CInifile* GetArchiveHeader(LPCSTR name, LPCSTR ver);
+	virtual CInifile* GetArchiveHeader(const char* name, const char* ver);
 
 	// Loading
 	virtual void					LoadBegin();
 	virtual void					LoadEnd();
-	virtual void					LoadTitleInt(LPCSTR str1, LPCSTR str2, LPCSTR str3);
+	virtual void					LoadTitleInt(const char* str1, const char* str2, const char* str3);
 	virtual void					LoadStage();
 	virtual void					LoadSwitch();
 	virtual void					LoadDraw();

@@ -20,13 +20,13 @@ public:
                     CCustom2DProjector	();
     IC bool			Valid				(){return (w>0)&&(h>0)&&(!!data.size());}
     IC void			Clear				(){name=""; w=0; h=0; geom=0; data.clear(); mesh.clear(); DestroyShader();}
-    bool			LoadImage			(LPCSTR nm);
+    bool			LoadImage			(const char* nm);
     void			ReloadImage			();
     void			CreateRMFromObjects	(const Fbox& box, ObjectList& lst);
     void			Render				(bool blended);
     void			CreateShader		();
     void			DestroyShader		();
-    IC LPCSTR 		GetName				(){ return *name; }
+    IC const char* 		GetName				(){ return *name; }
     IC bool 		GetColor			(u32& color, int U, int V){
         if (Valid()&&(U<(int)w)&&(V<(int)h)){
             color 	= data[V*w+U];

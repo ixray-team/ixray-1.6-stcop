@@ -4,7 +4,7 @@
 #include "../Include/xrRender/ParticleCustom.h"
 #include "GamePersistent.h"
 
-CParticlesObject::CParticlesObject(LPCSTR p_name, BOOL bAutoRemove, bool destroy_on_game_load) :
+CParticlesObject::CParticlesObject(const char* p_name, bool bAutoRemove, bool destroy_on_game_load) :
 	m_bAutoRemove(bAutoRemove), m_destroy_on_game_load(destroy_on_game_load)
 {
 	renderable.pROS_Allowed = FALSE;
@@ -66,7 +66,7 @@ PAPI::ParticleAction* CParticlesObject::FindAction(shared_str PEName, PAPI::PAct
 	return (V) ? V->FindPA(PEName, type) : nullptr;
 }
 
-xr_shared_ptr<CParticlesObject> Particles::Details::Create(LPCSTR p_name, BOOL bAutoRemove, bool remove_on_game_load)
+xr_shared_ptr<CParticlesObject> Particles::Details::Create(const char* p_name, bool bAutoRemove, bool remove_on_game_load)
 {
 	auto Particle = xr_make_shared<CParticlesObject>(p_name, bAutoRemove, remove_on_game_load);
 	GamePersistent().ps_active_deffer.push_back(Particle);
@@ -89,7 +89,7 @@ void CParticlesObject::Play(bool bHudMode)
 	m_bPlaying = true;
 }
 
-void CParticlesObject::play_at_pos(const Fvector& pos, BOOL xform)
+void CParticlesObject::play_at_pos(const Fvector& pos, bool xform)
 {
 	if (g_dedicated_server || renderable.visual == nullptr || m_bPlaying)
 		return;
@@ -105,7 +105,7 @@ void CParticlesObject::play_at_pos(const Fvector& pos, BOOL xform)
 	m_bPlaying = true;
 }
 
-void CParticlesObject::Stop(BOOL bDefferedStop)
+void CParticlesObject::Stop(bool bDefferedStop)
 {
 	if (g_dedicated_server || renderable.visual == nullptr || !m_bPlaying)
 		return;
@@ -185,7 +185,7 @@ void CParticlesObject::SetXFORM(const Fmatrix& m)
 	renderable.xform.set(m);
 }
 
-void CParticlesObject::SetLiveUpdate(BOOL b)
+void CParticlesObject::SetLiveUpdate(bool b)
 {
 	if (g_dedicated_server || renderable.visual == nullptr)
 		return;

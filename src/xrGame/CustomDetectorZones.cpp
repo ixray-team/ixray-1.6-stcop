@@ -4,7 +4,7 @@
 ////////////////////////////////////////////////////////////////////////
 // CAfList
 
-BOOL CAfList::feel_touch_contact(CObject* O)
+bool CAfList::feel_touch_contact(CObject* O)
 {
 	TypesMapIt it = m_TypesMap.find(O->cNameSect());
 
@@ -25,7 +25,7 @@ BOOL CAfList::feel_touch_contact(CObject* O)
 ////////////////////////////////////////////////////////////////////////
 // CZoneList
 
-BOOL CZoneList::feel_touch_contact(CObject* O)
+bool CZoneList::feel_touch_contact(CObject* O)
 {
 	TypesMapIt it = m_TypesMap.find(O->cNameSect());
 	bool res = (it != m_TypesMap.end());

@@ -6,7 +6,7 @@
 using namespace PS;
 
 #ifdef _EDITOR
-extern BOOL ps_r2_particle_dt;
+extern bool ps_r2_particle_dt;
 #endif
 
 //------------------------------------------------------------------------------
@@ -23,7 +23,7 @@ CPGDef::~CPGDef()
 	m_Effects.clear	();
 }
 
-void CPGDef::SetName(LPCSTR name)
+void CPGDef::SetName(const char* name)
 {
 	m_Name			= name;
 }
@@ -44,7 +44,7 @@ void CPGDef::Clone	(CPGDef* source)
 //------------------------------------------------------------------------------
 // I/O part
 //------------------------------------------------------------------------------
-BOOL CPGDef::LoadOriginal(IReader& F)
+bool CPGDef::LoadOriginal(IReader& F)
 {
 	bool FoundedChunk = !!F.find_chunk(PS::PG::Chunks::VERSION);
 	R_ASSERT2(FoundedChunk, "Not found chunk PGD_CHUNK_VERSION");
@@ -92,7 +92,7 @@ BOOL CPGDef::LoadOriginal(IReader& F)
 	return TRUE;
 }                   
 
-BOOL CPGDef::Load2(CInifile& ini)
+bool CPGDef::Load2(CInifile& ini)
 {
 //.	u16 version						= ini.r_u16("_group", "version");
 	
@@ -114,7 +114,7 @@ BOOL CPGDef::Load2(CInifile& ini)
 	}
 }
 
-BOOL CPGDef::Load2Original(CInifile& ini)
+bool CPGDef::Load2Original(CInifile& ini)
 {
 	m_Flags.assign					(ini.r_u32("_group", "flags"));
 	m_Effects.resize				(ini.r_u32("_group", "effects_count"));
@@ -143,7 +143,7 @@ BOOL CPGDef::Load2Original(CInifile& ini)
 	return							TRUE;
 }
 
-BOOL CPGDef::Load2Extended(CInifile& ini)
+bool CPGDef::Load2Extended(CInifile& ini)
 {
 	return true;
 }
@@ -221,7 +221,7 @@ void CParticleGroup::SItem::Clear()
 	children_free.clear();
 }
 
-void CParticleGroup::SItem::StartRelatedChild(CParticleEffect* emitter, LPCSTR eff_name, PAPI::Particle& m)
+void CParticleGroup::SItem::StartRelatedChild(CParticleEffect* emitter, const char* eff_name, PAPI::Particle& m)
 {
 	CParticleEffect* C = static_cast<CParticleEffect*>(RImplementation.model_CreatePE(eff_name));
 	
@@ -256,7 +256,7 @@ void CParticleGroup::SItem::StopRelatedChild(u32 idx)
 	
 	fast_erase(children_related, idx);
 }
-void CParticleGroup::SItem::StartFreeChild(CParticleEffect* emitter, LPCSTR nm, PAPI::Particle& m)
+void CParticleGroup::SItem::StartFreeChild(CParticleEffect* emitter, const char* nm, PAPI::Particle& m)
 {
 	CParticleEffect* C = static_cast<CParticleEffect*>(RImplementation.model_CreatePE(nm));
 	C->SetHudMode(emitter->GetHudMode());
@@ -293,7 +293,7 @@ void CParticleGroup::SItem::Play()
 		root_effect->Play();
 }
 
-void CParticleGroup::SItem::Stop(BOOL def_stop)
+void CParticleGroup::SItem::Stop(bool def_stop)
 {
 	// stop all effects
 	if (root_effect)
@@ -324,12 +324,12 @@ void CParticleGroup::SItem::Stop(BOOL def_stop)
 	}
 }
 
-BOOL CParticleGroup::SItem::IsPlaying() const
+bool CParticleGroup::SItem::IsPlaying() const
 {
 	return root_effect ? root_effect->IsPlaying() : FALSE;
 }
 
-void CParticleGroup::SItem::UpdateParent(const Fmatrix& m, const Fvector& velocity, BOOL bXFORM)
+void CParticleGroup::SItem::UpdateParent(const Fmatrix& m, const Fvector& velocity, bool bXFORM)
 {
 	if (root_effect)
 		root_effect->UpdateParent(m,velocity,bXFORM);
@@ -559,7 +559,7 @@ void CParticleGroup::UpdateCache()
 }
 #endif
 
-void CParticleGroup::UpdateParent(const Fmatrix& m, const Fvector& velocity, BOOL bXFORM)
+void CParticleGroup::UpdateParent(const Fmatrix& m, const Fvector& velocity, bool bXFORM)
 {
 	{
 		xrCriticalSectionGuard guard(&onframe_lock);
@@ -599,7 +599,7 @@ void CParticleGroup::Play()
 	m_RT_Flags.set(flRT_Playing,TRUE);
 }
 
-void CParticleGroup::Stop(BOOL bDefferedStop)
+void CParticleGroup::Stop(bool bDefferedStop)
 {
 	{
 		xrCriticalSectionGuard guard(&onframe_lock);
@@ -632,7 +632,7 @@ PAPI::ParticleAction* CParticleGroup::FindPA(shared_str PEName, PAPI::PActionEnu
 	return it != items.end() ? it->root_effect->dcast_ParticleCustom()->FindPA(PEName, Action) : nullptr;
 }
 
-void CParticleGroup::SetHudMode(BOOL b)
+void CParticleGroup::SetHudMode(bool b)
 {
 	for (SItem& item : items)
 	{
@@ -641,7 +641,7 @@ void CParticleGroup::SetHudMode(BOOL b)
 	}
 }
 
-BOOL CParticleGroup::GetHudMode()
+bool CParticleGroup::GetHudMode()
 {
 	if(!items.empty() && items[0].root_effect)
 		return items[0].root_effect->GetHudMode();
@@ -649,7 +649,7 @@ BOOL CParticleGroup::GetHudMode()
 	return FALSE;
 }
 
-void CParticleGroup::SetLiveUpdate(BOOL b)
+void CParticleGroup::SetLiveUpdate(bool b)
 {
 	for (SItem& item : items)
 	{
@@ -658,7 +658,7 @@ void CParticleGroup::SetLiveUpdate(BOOL b)
 	}
 }
 
-BOOL CParticleGroup::GetLiveUpdate()
+bool CParticleGroup::GetLiveUpdate()
 {
 	if(!items.empty() && items[0].root_effect)
 		return items[0].root_effect->GetLiveUpdate();

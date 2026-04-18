@@ -34,8 +34,8 @@ public:
 	CTorch();
 	virtual	~CTorch();
 
-	virtual void Load(LPCSTR section) override;
-	virtual BOOL net_Spawn(CSE_Abstract* DC) override;
+	virtual void Load(const char* section) override;
+	virtual bool net_Spawn(CSE_Abstract* DC) override;
 	virtual void net_Destroy() override;
 	virtual void net_Export(NET_Packet& P) override;				// export to server
 	virtual void net_Import(NET_Packet& P) override;				// import from server

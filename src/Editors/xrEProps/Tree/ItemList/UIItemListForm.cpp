@@ -115,7 +115,7 @@ bool UIItemListForm::GetSelected(RStringVec& items) const
 	}
 	return true;
 }
-int UIItemListForm::GetSelected(LPCSTR pref, ListItemsVec& items, bool bOnlyObject)
+int UIItemListForm::GetSelected(const char* pref, ListItemsVec& items, bool bOnlyObject)
 {
 	for (ListItem* prop : m_SelectedItems)
 	{

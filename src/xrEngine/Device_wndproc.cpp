@@ -25,7 +25,7 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 			{
 				pInput->pGamePad = SDL_OpenGamepad(Event.jdevice.which);
 
-				LPCSTR tempPrefix = pInput->GamepadPrefix();
+				const char* tempPrefix = pInput->GamepadPrefix();
 				pInput->SelectGamepadPrefix();
 				if (!xr_strcmp(tempPrefix, pInput->GamepadPrefix()))
 					Console->Execute("ui_reload");

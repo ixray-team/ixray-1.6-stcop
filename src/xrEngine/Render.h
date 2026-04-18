@@ -58,7 +58,7 @@ public:
 	virtual void					set_cone			(float angle)						= 0;
 	virtual void					set_range			(float R)							= 0;
 	virtual void					set_virtual_size	(float R)							= 0;
-	virtual void					set_texture			(LPCSTR name)						= 0;
+	virtual void					set_texture			(const char* name)						= 0;
 	virtual void					set_color			(const Fcolor& C)					= 0;
 	virtual void					set_color			(float r, float g, float b)			= 0;
 	virtual void					set_hud_mode		(bool b)							= 0;
@@ -99,7 +99,7 @@ public:
 	virtual void					set_position		(const Fvector& P)					= 0;
 	virtual void					set_direction		(const Fvector& P)					= 0;
 	virtual void					set_radius			(float R)							= 0;
-	virtual void					set_texture			(LPCSTR name)						= 0;
+	virtual void					set_texture			(const char* name)						= 0;
 	virtual void					set_color			(const Fcolor& C)					= 0;
 	virtual void					set_color			(float r, float g, float b)			= 0;
 	virtual ~IRender_Glow()			;
@@ -223,15 +223,15 @@ public:
 	virtual	void					level_Load				(IReader*)									{};
 	virtual void					level_Unload			()											{};
 
-	virtual BOOL					InIndoor				()											{ return false; }
+	virtual bool					InIndoor				()											{ return false; }
 	virtual size_t					SectorsCount			()											{ return size_t(0); }
 
 	virtual HRESULT					shader_compile			(
-		LPCSTR							name,
+		const char*							name,
 		DWORD const*                    pSrcData,
 		UINT                            SrcDataLen,
-		LPCSTR                          pFunctionName,
-		LPCSTR                          pTarget,
+		const char*                          pFunctionName,
+		const char*                          pTarget,
 		DWORD                           Flags,
 		void*&							result
 	)																									{return S_OK;};
@@ -239,7 +239,7 @@ public:
 	// Information
 	virtual	void					Statistics				(CGameFont* F	)							{};
 
-	virtual LPCSTR					getShaderPath			()											{return 0;};
+	virtual const char*					getShaderPath			()											{return 0;};
 	virtual IRender_Sector*			getSector				(int id)									{return 0;};
 	virtual IRenderVisual*			getVisual				(int id)									{return 0;};
 	virtual IRender_Sector*			detectSector			(const Fvector& P)							{return 0;};
@@ -258,10 +258,10 @@ public:
 	IC		void					set_Frustum				(CFrustum*	O	)							{ VERIFY(O);	View = O;			}
 	virtual void					set_Transform			(Fmatrix*	M	)							{};
 	virtual void					set_LocalTransform		(Fmatrix*	M	)							{};
-	virtual void					set_UI					(BOOL 		V	)							= 0;
-	virtual void					set_HUD					(BOOL 		V	)							{};
-	virtual BOOL					get_HUD					()											{ return 0; };
-	virtual void					set_Invisible			(BOOL 		V	)							{};
+	virtual void					set_UI					(bool 		V	)							= 0;
+	virtual void					set_HUD					(bool 		V	)							{};
+	virtual bool					get_HUD					()											{ return 0; };
+	virtual void					set_Invisible			(bool 		V	)							{};
 	virtual void					flush					()											{};	
 	virtual void					set_Object				(IRenderable*		O	)					{};
 	virtual	void					add_Occluder			(Fbox2&	bb_screenspace	)					{};	// mask screen region as oclluded (-1..1, -1..1)
@@ -288,19 +288,19 @@ public:
 	virtual void					glow_destroy			(IRender_Glow* p_)							{ };
 
 	// Models
-	virtual IRenderVisual*			model_CreateParticles	(LPCSTR name)								{return 0;};
-	virtual IRenderVisual*			model_Create			(LPCSTR name, IReader*	data=0)				{return 0;};
-	virtual IRenderVisual*			model_CreateChild		(LPCSTR name, IReader*	data)				{return 0;};
+	virtual IRenderVisual*			model_CreateParticles	(const char* name)								{return 0;};
+	virtual IRenderVisual*			model_Create			(const char* name, IReader*	data=0)				{return 0;};
+	virtual IRenderVisual*			model_CreateChild		(const char* name, IReader*	data)				{return 0;};
 	virtual IRenderVisual*			model_Duplicate			(IRenderVisual*	V)							{return 0;};
-	virtual void					model_Delete			(IRenderVisual* &	V, BOOL bDiscard=FALSE)	{};
+	virtual void					model_Delete			(IRenderVisual* &	V, bool bDiscard=FALSE)	{};
 	virtual void					model_Delete_Deffered	(IRenderVisual* &	V)						{};
 	virtual void					models_Prefetch			()											{};
-	virtual void					models_Clear			(BOOL b_complete)							{};
+	virtual void					models_Clear			(bool b_complete)							{};
 
 	// Occlusion culling
-	virtual BOOL					occ_visible				(vis_data&	V)								{return false;};
-	virtual BOOL					occ_visible				(Fbox&		B)								{return false;};
-	virtual BOOL					occ_visible				(sPoly&		P)								{return false;};
+	virtual bool					occ_visible				(vis_data&	V)								{return false;};
+	virtual bool					occ_visible				(Fbox&		B)								{return false;};
+	virtual bool					occ_visible				(sPoly&		P)								{return false;};
 	virtual CDB::MODEL* GetHOMModel() { return nullptr; }
 	virtual xr_vector<u32>* GetHOMInvaltids() { return nullptr; }
 	// Main
@@ -308,7 +308,7 @@ public:
 	virtual void					Render					()											= 0;
 	virtual void					RenderUI				(bool = false)								= 0;
 	
-	virtual void					Screenshot				(ScreenshotMode mode=SM_NORMAL, LPCSTR name = 0) {};
+	virtual void					Screenshot				(ScreenshotMode mode=SM_NORMAL, const char* name = 0) {};
 	virtual	void					Screenshot				(ScreenshotMode mode, CMemoryWriter& memory_writer) {};
 	virtual void					ScreenshotAsyncBegin	() {};
 	virtual void					ScreenshotAsyncEnd		(CMemoryWriter& memory_writer) {};
@@ -319,15 +319,15 @@ public:
 	virtual void					rmNormal				()											{};
 	virtual u32						memory_usage			()											{ return 0;};
 
-	virtual IRHISurface* load_texture(LPCSTR fname, u32& msize, bool bStaging=false)=0;
-	virtual bool get_texture_metadata(LPCSTR fname, RHITextureMetadata* p_data) = 0;
+	virtual IRHISurface* load_texture(const char* fname, u32& msize, bool bStaging=false)=0;
+	virtual bool get_texture_metadata(const char* fname, RHITextureMetadata* p_data) = 0;
 
 	virtual void renderImGuiDebugWindow_SVGStorage() {}
 		
 	// Constructor/destructor
 	virtual ~IRender_interface() = default;
 protected:
-	virtual	void					ScreenshotImpl			(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer) {};
+	virtual	void					ScreenshotImpl			(ScreenshotMode mode, const char* name, CMemoryWriter* memory_writer) {};
 };
 
 //extern ENGINE_API	IRender_interface*	Render;

@@ -8,7 +8,7 @@ struct SIniFileStream :public IIniFileStream
 	shared_str		sect;
 	string128		tmp_buff;
 	u32				counter;
-	LPCSTR			gen_name	();
+	const char*			gen_name	();
 
 	virtual void	  	move_begin		()		{counter=0;};
 
@@ -23,7 +23,7 @@ struct SIniFileStream :public IIniFileStream
 	virtual void 		w_s16			( s16 a);				
 	virtual void		w_u8			( u8 a);				
 	virtual void		w_s8			( s8 a);
-	virtual void		w_stringZ		( LPCSTR S);
+	virtual void		w_stringZ		( const char* S);
 	
 	virtual void		r_vec3			(Fvector&);			
 	virtual void		r_vec4			(Fvector4&);

@@ -26,14 +26,14 @@ CArmorBase::~CArmorBase()
 	xr_delete(m_boneProtection);
 }
 
-BOOL CArmorBase::net_Spawn(CSE_Abstract* DC)
+bool CArmorBase::net_Spawn(CSE_Abstract* DC)
 {
 	if (IsGameTypeSingle())
 	{
 		ReloadBonesProtection();
 	}
 
-	BOOL res = inherited::net_Spawn(DC);
+	bool res = inherited::net_Spawn(DC);
 	return res;
 }
 
@@ -60,7 +60,7 @@ void CArmorBase::OnH_A_Chield()
 	}
 }
 
-void CArmorBase::Load(LPCSTR section)
+void CArmorBase::Load(const char* section)
 {
 	inherited::Load(section);
 
@@ -139,7 +139,7 @@ void CArmorBase::Hit(float hit_power, ALife::EHitType hit_type)
 	}
 }
 
-void CArmorBase::AddBonesProtection(LPCSTR bones_section)
+void CArmorBase::AddBonesProtection(const char* bones_section)
 {
 	CObject* parent = H_Parent();
 	if (IsGameTypeSingle())
@@ -163,7 +163,7 @@ void CArmorBase::ReloadBonesProtection()
 	}
 }
 
-bool CArmorBase::install_upgrade_impl(LPCSTR section, bool test)
+bool CArmorBase::install_upgrade_impl(const char* section, bool test)
 {
 	if (!test)
 	{
@@ -172,7 +172,7 @@ bool CArmorBase::install_upgrade_impl(LPCSTR section, bool test)
 
 	bool result = inherited::install_upgrade_impl(section, test);
 	bool result2 = false;
-	LPCSTR str = {};
+	const char* str = {};
 
 	result |= process_if_exists(section, "burn_protection", m_HitTypeProtection[ALife::eHitTypeBurn], test);
 	result |= process_if_exists(section, "shock_protection", m_HitTypeProtection[ALife::eHitTypeShock], test);

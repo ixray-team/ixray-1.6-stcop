@@ -17,7 +17,7 @@
 // Environment render
 //-----------------------------------------------------------------------------
 extern ENGINE_API float psHUD_FOV;
-//BOOL bNeed_re_create_env = FALSE;
+//bool bNeed_re_create_env = FALSE;
 void CEnvironment::RenderSky		()
 {
 	if (0==g_pGameLevel&&!Device.IsEditorMode())

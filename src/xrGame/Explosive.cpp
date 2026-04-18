@@ -82,12 +82,12 @@ CExplosive::~CExplosive(void)
 {
 }
 
-void CExplosive::Load(LPCSTR section) 
+void CExplosive::Load(const char* section) 
 {
 	Load				(pSettings,section);
 }
 
-void CExplosive::Load(CInifile const *ini,LPCSTR section)
+void CExplosive::Load(CInifile const *ini,const char* section)
 {
 	m_bDisableEffector = READ_IF_EXISTS(pSettings, r_bool, section, "disable_effector", false);
 	m_fBlastHit			= ini->r_float(section,"blast");
@@ -172,7 +172,7 @@ struct SExpQParams
 	float		shoot_factor		;
 };
 //проверка на попадание "осколком" по объекту
-ICF static BOOL grenade_hit_callback(collide::rq_result& result, LPVOID params)
+ICF static bool grenade_hit_callback(collide::rq_result& result, LPVOID params)
 {
 	SExpQParams& ep	= *(SExpQParams*)params;
 	u16 mtl_idx			= GAMEMTL_NONE_IDX;
@@ -654,7 +654,7 @@ void CExplosive::FindNormal(Fvector& normal)
 	dir.set(0,-1.f,0);
 	cast_game_object()->Center(pos);
 
-	BOOL result = Level().ObjectSpace.RayPick(pos, dir, cast_game_object()->Radius(), 
+	bool result = Level().ObjectSpace.RayPick(pos, dir, cast_game_object()->Radius(), 
 											 collide::rqtBoth, RQ, nullptr);
 	if(!result || RQ.O){
 		normal.set(0,1,0);

@@ -25,7 +25,7 @@ namespace PS
     {
     public:
         virtual ~IPACLibrary() = default;
-        virtual PS::IPAC* FindIPAC(LPCSTR name) = 0;
+        virtual PS::IPAC* FindIPAC(const char* name) = 0;
     };
 
     class ENGINE_API CPACLibraryWrapper

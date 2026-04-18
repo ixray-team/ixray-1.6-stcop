@@ -51,7 +51,7 @@ void dxRenderDeviceRender::updateGamma()
 #endif
 }
 
-void dxRenderDeviceRender::OnDeviceDestroy( BOOL bKeepTextures)
+void dxRenderDeviceRender::OnDeviceDestroy( bool bKeepTextures)
 {
 #ifndef _EDITOR
 #ifdef USE_DX11
@@ -149,7 +149,7 @@ void dxRenderDeviceRender::SetupStates()
 #endif
 }
 
-void dxRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
+void dxRenderDeviceRender::OnDeviceCreate(const char* shName)
 {
 #ifndef _EDITOR
 	// Signal everyone - device created
@@ -184,7 +184,7 @@ void dxRenderDeviceRender::Create(SDL_Window* window, u32 &dwWidth, u32 &dwHeigh
 #endif
 }
 
-void dxRenderDeviceRender::SetupGPU( BOOL bForceGPU_SW, BOOL bForceGPU_NonPure, BOOL bForceGPU_REF)
+void dxRenderDeviceRender::SetupGPU( bool bForceGPU_SW, bool bForceGPU_NonPure, bool bForceGPU_REF)
 {
 }
 
@@ -255,7 +255,7 @@ void dxRenderDeviceRender::overdrawEnd()
 #endif
 }
 
-void dxRenderDeviceRender::DeferredLoad(BOOL E)
+void dxRenderDeviceRender::DeferredLoad(bool E)
 {
 #ifndef _EDITOR
 	Resources->DeferredLoad(E);
@@ -323,7 +323,7 @@ dxRenderDeviceRender::DeviceState dxRenderDeviceRender::GetDeviceState()
 	return dsOK;
 }
 
-BOOL dxRenderDeviceRender::GetForceGPU_REF()
+bool dxRenderDeviceRender::GetForceGPU_REF()
 {
 	return false;
 }

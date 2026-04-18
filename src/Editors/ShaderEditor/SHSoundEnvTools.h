@@ -9,8 +9,8 @@ class PropValue;
 
 class CSHSoundEnvTools: public ISHTools
 {
-	void  				ItemExist			(LPCSTR name, bool& res){res = !!FindItem(name);}
-	CSoundRender_Environment*	FindItem			(LPCSTR name);
+	void  				ItemExist			(const char* name, bool& res){res = !!FindItem(name);}
+	CSoundRender_Environment*	FindItem			(const char* name);
     void						SetCurrentEnv		(CSoundRender_Environment* B);
 
     SoundEnvironment_LIB		m_Library;
@@ -28,9 +28,9 @@ class CSHSoundEnvTools: public ISHTools
 public:
     CSoundRender_Environment 	m_EnvSrc;
     CSoundRender_Environment* 	m_Env;
-    virtual void				AppendItem			(LPCSTR folder_name, LPCSTR parent=0);            
+    virtual void				AppendItem			(const char* folder_name, const char* parent=0);            
     virtual void   	OnRemoveItem		(UIItemListForm::Node& node); 
-	virtual void   	OnRenameItem		(UIItemListForm::Node& node, LPCSTR old_full_name, LPCSTR new_full_name, EItemType type);
+	virtual void   	OnRenameItem		(UIItemListForm::Node& node, const char* old_full_name, const char* new_full_name, EItemType type);
 	virtual void 				FillItemList		();
 
     void						UseEnvironment		(){Sound->set_user_env(m_Env);}
@@ -38,7 +38,7 @@ public:
 								CSHSoundEnvTools 	(const ISHInit& init);
     virtual 					~CSHSoundEnvTools	();
 
-    virtual LPCSTR				ToolsName			(){return "Sound Environment";}
+    virtual const char*				ToolsName			(){return "Sound Environment";}
 
 	virtual void				Reload				();
 	virtual void				Load				();
@@ -51,7 +51,7 @@ public:
 
     // misc
     virtual void				ResetCurrentItem	();
-    virtual void				SetCurrentItem		(LPCSTR name, bool bView);
+    virtual void				SetCurrentItem		(const char* name, bool bView);
     virtual void				ApplyChanges		(bool bForced=false);
 
 	virtual void 				RealUpdateProperties();

@@ -178,19 +178,19 @@ public:
 };
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_Spectator,CSE_Abstract)
-									CSE_Spectator	(LPCSTR caSection);
+									CSE_Spectator	(const char* caSection);
 	virtual							~CSE_Spectator	();
 	virtual u8						g_team			();
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_Temporary,CSE_Abstract)
 	u32								m_tNodeID;
-									CSE_Temporary	(LPCSTR caSection);
+									CSE_Temporary	(const char* caSection);
 	virtual							~CSE_Temporary	();
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN0(CSE_PHSkeleton)
-								CSE_PHSkeleton(LPCSTR caSection);
+								CSE_PHSkeleton(const char* caSection);
 virtual							~CSE_PHSkeleton();
 
 enum{
@@ -217,12 +217,12 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_AbstractVisual,CSE_Abstract,CSE_Visual)
 	typedef CSE_Abstract			inherited1;
 	typedef CSE_Visual				inherited2;
 
-	CSE_AbstractVisual										(LPCSTR caSection);
+	CSE_AbstractVisual										(const char* caSection);
 	virtual	~CSE_AbstractVisual								();
 	virtual CSE_Visual* 	visual					();
-	LPCSTR							getStartupAnimation		();
+	const char*							getStartupAnimation		();
 SERVER_ENTITY_DECLARE_END
 
 #ifndef AI_COMPILER
-extern CSE_Abstract	*F_entity_Create	(LPCSTR caSection);
+extern CSE_Abstract	*F_entity_Create	(const char* caSection);
 #endif

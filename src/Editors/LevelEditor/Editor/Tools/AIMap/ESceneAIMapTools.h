@@ -49,8 +49,8 @@ struct SAINode					// definition of "patch" or "node"
 
     void   		LoadStream			(IReader&, ESceneAIMapTool*, bool = true);
     void   		SaveStream			(IWriter&, ESceneAIMapTool*);
-    void   		LoadLTX				(CInifile& ini, LPCSTR sect_name, ESceneAIMapTool*);
-    void   		SaveLTX				(CInifile& ini, LPCSTR sect_name, ESceneAIMapTool*);
+    void   		LoadLTX				(CInifile& ini, const char* sect_name, ESceneAIMapTool*);
+    void   		SaveLTX				(CInifile& ini, const char* sect_name, ESceneAIMapTool*);
 
 	//void*		operator 	new		(std::size_t size);
 	//void*		operator 	new		(std::size_t size, SAINode*);
@@ -93,8 +93,8 @@ protected:
 	SAINode* 			BuildNode				(Fvector& vFrom, Fvector& vAt, bool bIgnoreConstraints, bool bSuperIgnoreConstraints=false);
 	int	 				BuildNodes				(const Fvector& pos, int sz, bool bIgnoreConstraints);
 	void 				BuildNodes				(bool bFromSelectedOnly);
-	BOOL 				CreateNode				(Fvector& vAt, SAINode& N, bool bIgnoreConstraints);
-	BOOL 				CanTravel				(Fvector _from, Fvector _at);
+	bool 				CreateNode				(Fvector& vAt, SAINode& N, bool bIgnoreConstraints);
+	bool 				CanTravel				(Fvector _from, Fvector _at);
 
 	SAINode* 			GetNode					(Fvector vAt, bool bIgnoreConstraints);
 	void				UpdateLinks				(SAINode* N, bool bIgnoreConstraints);
@@ -137,7 +137,7 @@ public:
 	virtual        	 	~ESceneAIMapTool 		();
 
 	virtual	bool		AllowEnabling    		(){return true;}
-    virtual BOOL 		AllowMouseStart			(){return true;}
+    virtual bool 		AllowMouseStart			(){return true;}
 
     virtual void		OnObjectRemove			(CCustomObject* O, bool bDeleting);
     virtual	void		UpdateSnapList			(){m_Flags.set(flUpdateSnapList,TRUE);}
@@ -145,7 +145,7 @@ public:
 
 	// selection manipulate
     SAINode*			PickNode				(const Fvector& start, const Fvector& dir, float& dist);
-	virtual int			RaySelect				(int flag, float& distance, const Fvector& start, const Fvector& direction, BOOL bDistanceOnly);
+	virtual int			RaySelect				(int flag, float& distance, const Fvector& start, const Fvector& direction, bool bDistanceOnly);
 	virtual int	   		FrustumSelect			(int flag, const CFrustum& frustum);
 	virtual void   		SelectObjects           (bool flag);
 	virtual void   		InvertSelection         ();
@@ -156,8 +156,8 @@ public:
     virtual void		Clear					(bool bOnlyNodes=false);
 
 	// definition
-    IC LPCSTR			ClassName				(){return "ai_map";}
-    IC LPCSTR			ClassDesc				(){return "AI Map";}
+    IC const char*			ClassName				(){return "ai_map";}
+    IC const char*			ClassDesc				(){return "AI Map";}
     IC int				RenderPriority			(){return 10;}
 
     // validation
@@ -179,7 +179,7 @@ public:
 
     virtual bool		LoadSelection      		(IReader&);
     virtual void		SaveSelection      		(IWriter&);
-    virtual bool   		Export          		(LPCSTR path, bool Legacy);
+    virtual bool   		Export          		(const char* path, bool Legacy);
 
 	// device dependent funcs
 	virtual void		OnDeviceCreate			();
@@ -193,8 +193,8 @@ public:
     virtual void		GetBBox 				(Fbox& bb, bool bSelOnly);
 
 	// properties
-	virtual void		FillPropObjects(LPCSTR pref, PropItemVec& items) {};
-    virtual void		FillProp(LPCSTR pref, PropItemVec& items);
+	virtual void		FillPropObjects(const char* pref, PropItemVec& items) {};
+    virtual void		FillProp(const char* pref, PropItemVec& items);
 
     // other
     int					AddNode					(const Fvector& pos, bool bIgnoreConstraints, bool bAutoLink, int cnt);

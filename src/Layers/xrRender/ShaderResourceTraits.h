@@ -75,7 +75,7 @@
 	{
 		xrCriticalSectionGuard guard(creationGuard);
 		xr_string res_name = _name + RImplementation.getShaderParams();
-		LPCSTR name = res_name.c_str();
+		const char* name = res_name.c_str();
 		LPSTR N = LPSTR(name);
 
 		typename ShaderTypeTraits<T>::MapType& sh_map = GetShaderMap<typename ShaderTypeTraits<T>::MapType>();
@@ -105,8 +105,8 @@
 			R_ASSERT2					( file, cname );
 
 			// Select target
-			LPCSTR						c_target	= ShaderTypeTraits<T>::GetCompilationTarget();
-			LPCSTR						c_entry		= "main";
+			const char*						c_target	= ShaderTypeTraits<T>::GetCompilationTarget();
+			const char*						c_entry		= "main";
 
 			// Compile
 			HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, D3DCOMPILE_PACK_MATRIX_ROW_MAJOR, (void*&)sh);

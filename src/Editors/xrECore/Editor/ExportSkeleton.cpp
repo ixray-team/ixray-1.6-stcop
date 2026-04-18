@@ -23,8 +23,8 @@
 
 #define MAX_BONE 128
 
-ECORE_API BOOL g_force16BitTransformQuant = TRUE;
-ECORE_API BOOL g_force32BitTransformQuant = FALSE;
+ECORE_API bool g_force16BitTransformQuant = TRUE;
+ECORE_API bool g_force32BitTransformQuant = FALSE;
 ECORE_API float g_EpsSkelPositionDelta = EPS_L;
 
 u16 CSkeletonCollectorPacked::VPack(SSkelVert& V)
@@ -533,7 +533,7 @@ CExportSkeleton::CExportSkeleton(CEditableObject* object)
 #include "../WildMagic/WmlContMinBox3.h"
 #include "../WildMagic/WmlContBox3.h"
 
-extern BOOL RAPIDMinBox(Fobb& B, Fvector* vertices, u32 v_count);
+extern bool RAPIDMinBox(Fobb& B, Fvector* vertices, u32 v_count);
 void ComputeOBB_RAPID	(Fobb &B, FvectorVec& V, u32 t_cnt)
 {
 	VERIFY	(t_cnt==(V.size()/3));
@@ -1126,8 +1126,8 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
 			Fvector 		Mt={0,0,0};
 			Fvector 		Ct={0,0,0};
 			Fvector 		St={0,0,0};
-			BOOL			t_present = FALSE;
-			BOOL			r_present = FALSE;
+			bool			t_present = FALSE;
+			bool			r_present = FALSE;
 			Fvector At		= BM._keysT[0];
 			Fvector Bt		= BM._keysT[0];
 			for (u32 t_idx=0; t_idx<dwLen; ++t_idx)

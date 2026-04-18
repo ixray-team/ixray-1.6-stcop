@@ -155,8 +155,8 @@ public:
 					CPostprocessAnimator            ();
 		virtual    ~CPostprocessAnimator            ();
 		void        Clear                           ();
-		void        Load                            (LPCSTR name);
-	IC  LPCSTR      Name                            (){return *m_Name;}
+		void        Load                            (const char* name);
+	IC  const char*      Name                            (){return *m_Name;}
   virtual void      Stop                            (float speed);
 		void		SetDesiredFactor				(float f, float sp);
 		void		SetCurrentFactor				(float f);
@@ -169,13 +169,13 @@ public:
 		virtual float		GetRealLifeTime() const override { return f_length; }
 		virtual	bool		IsCyclic	   () const override { return m_bCyclic; }
 		virtual float		GetLifeTimeRemaining() const { return f_length - (Device.fTimeGlobal - m_start_time); }
-		virtual	BOOL		Valid							();
-		virtual	BOOL		Process							(SPPInfo &PPInfo);
+		virtual	bool		Valid							();
+		virtual	bool		Process							(SPPInfo &PPInfo);
 #else
-		virtual	BOOL		Process							(float dt, SPPInfo &PPInfo);
+		virtual	bool		Process							(float dt, SPPInfo &PPInfo);
 		CPostProcessParam*  GetParam                (pp_params param);
 		void        ResetParam                      (pp_params param);
-		void        Save                            (LPCSTR name);
+		void        Save                            (const char* name);
 #endif
 };
 
@@ -186,7 +186,7 @@ protected:
 		xr_delegate<float()>	m_get_factor_func;
 public:
 	void			SetFactorFunc				(xr_delegate<float()> f)	{m_get_factor_func=f;}
-virtual	BOOL		Process						(SPPInfo &PPInfo);
+virtual	bool		Process						(SPPInfo &PPInfo);
 };
 
 class CPostprocessAnimatorLerpConst :public CPostprocessAnimator
@@ -196,7 +196,7 @@ protected:
 public:
 					CPostprocessAnimatorLerpConst	()					{m_power = 1.0f;}
 		void		SetPower						(float val)			{m_power=val;}
-virtual	BOOL		Process							(SPPInfo &PPInfo);
+virtual	bool		Process							(SPPInfo &PPInfo);
 };
 
 class CPostprocessAnimatorControlled :public CPostprocessAnimatorLerp
@@ -205,7 +205,7 @@ class CPostprocessAnimatorControlled :public CPostprocessAnimatorLerp
 public:
 	virtual				~CPostprocessAnimatorControlled		();
 						CPostprocessAnimatorControlled		(CEffectorController* c);
-	virtual BOOL		Valid								();
+	virtual bool		Valid								();
 };
 
 #endif

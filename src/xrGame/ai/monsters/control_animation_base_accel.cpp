@@ -8,7 +8,7 @@ void CControlAnimationBase::accel_init()
 {
 	m_accel.active = false;
 }
-void CControlAnimationBase::accel_load(LPCSTR section)
+void CControlAnimationBase::accel_load(const char* section)
 {
 	m_accel.calm			= pSettings->r_float(section, "Accel_Calm");
 	m_accel.aggressive		= pSettings->r_float(section, "Accel_Aggressive");

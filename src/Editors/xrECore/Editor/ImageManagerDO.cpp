@@ -57,7 +57,7 @@ IC bool _rect_test(U8Vec& mask, int dest_width, int dest_height, Irect& R)
 }
 
 // Check for intersection
-IC bool _rect_place(U8Vec& mask, int dest_width, int dest_height, Irect& r, BOOL& bRotated)
+IC bool _rect_place(U8Vec& mask, int dest_width, int dest_height, Irect& r, bool& bRotated)
 {
     Irect R;
 
@@ -101,7 +101,7 @@ IC bool _rect_place(U8Vec& mask, int dest_width, int dest_height, Irect& r, BOOL
 };
 
 bool item_area_sort_pred(const SSimpleImage& item0, const SSimpleImage& item1){return ((item0.Area()>item1.Area())||(item0.LongestEdge()>item1.LongestEdge()));}
-extern bool Stbi_Load(LPCSTR full_name, U32Vec& data, u32& w, u32& h, u32& a);
+extern bool Stbi_Load(const char* full_name, U32Vec& data, u32& w, u32& h, u32& a);
 
 int CImageManager::CreateMergedTexture(u32 layer_cnt, SSimpleImageVec& src_images, SSimpleImage& dst_image, int dest_width, int dest_height, Fvector2Vec& dest_offset, Fvector2Vec& dest_scale, boolVec& dest_rotate, U32Vec& dest_remap)
 {
@@ -133,7 +133,7 @@ int CImageManager::CreateMergedTexture(u32 layer_cnt, SSimpleImageVec& src_image
 
     for (auto s_it = src_images.begin(); s_it!=src_images.end(); s_it++){
 		Irect R;		R.set(0,0, s_it->w-1,s_it->h-1);
-        BOOL bRotated;
+        bool bRotated;
         if (!_rect_place(dest_mask,dest_width,dest_height,R,bRotated)) return 0;
 		Fvector2 offs,scale;
         offs.x			= float(R.lt.x)/float(dest_width);
@@ -176,7 +176,7 @@ int	CImageManager::CreateMergedTexture	(u32 layer_cnt, SSimpleImageVec& src_imag
 }
 
 
-int CImageManager::CreateMergedTexture(const RStringVec& _names, LPCSTR dest_name, STextureParams::ETFormat fmt, int dest_width, int dest_height, Fvector2Vec& dest_offset, Fvector2Vec& dest_scale, boolVec& dest_rotate, U32Vec& dest_remap)
+int CImageManager::CreateMergedTexture(const RStringVec& _names, const char* dest_name, STextureParams::ETFormat fmt, int dest_width, int dest_height, Fvector2Vec& dest_offset, Fvector2Vec& dest_scale, boolVec& dest_rotate, U32Vec& dest_remap)
 {
 	if (_names.empty()) return -1;
 
@@ -222,7 +222,7 @@ int CImageManager::CreateMergedTexture(const RStringVec& _names, LPCSTR dest_nam
     
     for (s_it = src_items.begin(); s_it!=src_items.end(); s_it++){
 		Irect R;		R.set(0,0, s_it->w-1,s_it->h-1);
-        BOOL bRotated;
+        bool bRotated;
         if (!_rect_place(dest_mask,dest_width,dest_height,R,bRotated)) return 0;
 		Fvector2 offs,scale;
         offs.x			= float(R.lt.x)/float(dest_width);
@@ -250,7 +250,7 @@ int CImageManager::CreateMergedTexture(const RStringVec& _names, LPCSTR dest_nam
     return 1;
 }
 
-int	CImageManager::CreateMergedTexture	(const RStringVec& src_names, LPCSTR dest_name, STextureParams::ETFormat fmt, int dest_width_min, int dest_width_max, int dest_height_min, int dest_height_max, Fvector2Vec& dest_offset, Fvector2Vec& dest_scale, boolVec& dest_rotate, U32Vec& remap)
+int	CImageManager::CreateMergedTexture	(const RStringVec& src_names, const char* dest_name, STextureParams::ETFormat fmt, int dest_width_min, int dest_width_max, int dest_height_min, int dest_height_max, Fvector2Vec& dest_offset, Fvector2Vec& dest_scale, boolVec& dest_rotate, U32Vec& remap)
 {
     int res	= 0;
     int w	= dest_width_min;

@@ -24,15 +24,15 @@ public:
 	CBlackGraviArtefact(void);
 	virtual ~CBlackGraviArtefact(void);
 
-	virtual BOOL net_Spawn			(CSE_Abstract* DC);
+	virtual bool net_Spawn			(CSE_Abstract* DC);
 
-	virtual void Load				(LPCSTR section);
+	virtual void Load				(const char* section);
 
 	virtual	void Hit				(SHit* pHDS);
 
 	virtual void feel_touch_new		(CObject* O);
 	virtual void feel_touch_delete	(CObject* O);
-	virtual BOOL feel_touch_contact	(CObject* O);
+	virtual bool feel_touch_contact	(CObject* O);
 
 protected:
 	virtual void	net_Relcase		(CObject* O );

@@ -19,15 +19,15 @@ private:
 	virtual void				SendMessage			(CUIWindow* pWnd, s16 msg, void* pData = NULL);
 			SCallbackInfo*		NewCallback			();
 protected:
-			bool				Load				(LPCSTR xml_name);
+			bool				Load				(const char* xml_name);
 
 public:
 			void				Register			(CUIWindow* pChild);
-			void				Register			(CUIWindow* pChild, LPCSTR name);
+			void				Register			(CUIWindow* pChild, const char* name);
 								CUIDialogWndEx		();
 	virtual						~CUIDialogWndEx		();
-			void				AddCallback			(LPCSTR control_id, s16 event, const luabind::functor<void> &lua_function);
-			void				AddCallback			(LPCSTR control_id, s16 event, const luabind::functor<void> &functor, const luabind::object &object);
+			void				AddCallback			(const char* control_id, s16 event, const luabind::functor<void> &lua_function);
+			void				AddCallback			(const char* control_id, s16 event, const luabind::functor<void> &functor, const luabind::object &object);
 	virtual void				Update				();
 	virtual bool				OnKeyboardAction			(int dik, EUIMessages keyboard_action);
 	virtual bool				Dispatch			(int cmd, int param)				{return true;}
@@ -35,6 +35,6 @@ public:
 	virtual CUIWindow* ui_cast_window() { return this; }
 
 	template<typename T>
-	IC	T*	GetControl(LPCSTR name);
+	IC	T*	GetControl(const char* name);
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

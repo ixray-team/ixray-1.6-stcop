@@ -11,7 +11,7 @@
 
 #include "../dxRenderDeviceRender.h"
 
-static int ParseName(LPCSTR N)
+static int ParseName(const char* N)
 {
 	if (0==xr_strcmp(N,"$null"))	return -1;
 	if (0==xr_strcmp(N,"$base0"))	return	0;
@@ -47,7 +47,7 @@ void	CBlender_Compile::_cpp_Compile	(ShaderElement* _SH)
 	// Analyze possibility to detail this shader
 	detail_texture	= nullptr;
 	detail_scaler	= nullptr;
-	LPCSTR	base	= nullptr;
+	const char*	base	= nullptr;
 	if (bDetail && BT->canBeDetailed())
 	{
 		// 
@@ -191,19 +191,19 @@ void	CBlender_Compile::PassEnd			()
 	SH->passes.push_back	(_pass_);
 }
 
-void	CBlender_Compile::PassSET_PS		(LPCSTR name)
+void	CBlender_Compile::PassSET_PS		(const char* name)
 {
 	xr_strcpy	(pass_ps,name);
 	_strlwr	(pass_ps);
 }
 
-void	CBlender_Compile::PassSET_VS		(LPCSTR name)
+void	CBlender_Compile::PassSET_VS		(const char* name)
 {
 	xr_strcpy	(pass_vs,name);
 	_strlwr	(pass_vs);
 }
 
-void	CBlender_Compile::PassSET_ZB		(BOOL bZTest, BOOL bZWrite, BOOL bInvertZTest)
+void	CBlender_Compile::PassSET_ZB		(bool bZTest, bool bZWrite, bool bInvertZTest)
 {
 	if (Pass())	bZWrite = FALSE;
 	RS.SetRS	(D3DRS_ZFUNC,			bZTest?(bInvertZTest?D3DCMP_GREATER:D3DCMP_LESSEQUAL):D3DCMP_ALWAYS);
@@ -213,7 +213,7 @@ void	CBlender_Compile::PassSET_ZB		(BOOL bZTest, BOOL bZWrite, BOOL bInvertZTest
 	else								RS.SetRS	(D3DRS_ZENABLE,	D3DZB_FALSE);
 	*/
 }
-void	CBlender_Compile::PassSET_ablend_mode(u32 idx, BOOL bABlend, u32 abSRC, u32 abDST)
+void	CBlender_Compile::PassSET_ablend_mode(u32 idx, bool bABlend, u32 abSRC, u32 abDST)
 {
 	if (bABlend && D3DBLEND_ONE == abSRC && D3DBLEND_ZERO == abDST)
 	{
@@ -231,12 +231,12 @@ void	CBlender_Compile::PassSET_ablend_mode(u32 idx, BOOL bABlend, u32 abSRC, u32
 #endif	//	USE_DX11
 }
 
-void CBlender_Compile::PassSET_ablend_mode(BOOL bABlend, u32 abSRC, u32 abDST)
+void CBlender_Compile::PassSET_ablend_mode(bool bABlend, u32 abSRC, u32 abDST)
 {
 	PassSET_ablend_mode(u32(-1), bABlend, abSRC, abDST);
 }
 
-void CBlender_Compile::PassSET_ablend_aref(u32 idx, BOOL bATest, u32 aRef)
+void CBlender_Compile::PassSET_ablend_aref(u32 idx, bool bATest, u32 aRef)
 {
 	clamp(aRef, 0u, 255u);
 	RS.SetRS(idx, D3DRS_ALPHATESTENABLE, BC(bATest));
@@ -247,23 +247,23 @@ void CBlender_Compile::PassSET_ablend_aref(u32 idx, BOOL bATest, u32 aRef)
 	}
 }
 
-void CBlender_Compile::PassSET_ablend_aref(BOOL bATest, u32 aRef)
+void CBlender_Compile::PassSET_ablend_aref(bool bATest, u32 aRef)
 {
 	PassSET_ablend_aref(u32(-1), bATest, aRef);
 }
 
-void CBlender_Compile::PassSET_Blend(u32 idx, BOOL bABlend, u32 abSRC, u32 abDST, BOOL bATest, u32 aRef)
+void CBlender_Compile::PassSET_Blend(u32 idx, bool bABlend, u32 abSRC, u32 abDST, bool bATest, u32 aRef)
 {
 	PassSET_ablend_mode(idx, bABlend, abSRC, abDST);
 	PassSET_ablend_aref(idx, bATest, aRef);
 }
 
-void CBlender_Compile::PassSET_Blend(BOOL bABlend, u32 abSRC, u32 abDST, BOOL bATest, u32 aRef)
+void CBlender_Compile::PassSET_Blend(bool bABlend, u32 abSRC, u32 abDST, bool bATest, u32 aRef)
 {
 	PassSET_Blend(u32(-1), bABlend, abSRC, abDST, bATest, aRef);
 }
 
-void CBlender_Compile::PassSET_LightFog(BOOL bLight, BOOL bFog)
+void CBlender_Compile::PassSET_LightFog(bool bLight, bool bFog)
 {
 	RS.SetRS(D3DRS_LIGHTING, BC(bLight));
 	RS.SetRS(D3DRS_FOGENABLE, BC(bFog));
@@ -301,7 +301,7 @@ void	CBlender_Compile::StageSET_Alpha	(u32 a1, u32 op, u32 a2)
 {
 	RS.SetAlpha	(Stage(),a1,op,a2);
 }
-void	CBlender_Compile::StageSET_TMC		(LPCSTR T, LPCSTR M, LPCSTR C, int UVW_channel)
+void	CBlender_Compile::StageSET_TMC		(const char* T, const char* M, const char* C, int UVW_channel)
 {
 	Stage_Texture		(T);
 	Stage_Matrix		(M,UVW_channel);
@@ -316,11 +316,11 @@ void	CBlender_Compile::StageTemplate_LMAP0	()
 	StageSET_TMC		("$base1","$null","$null",1);
 }
 
-void	CBlender_Compile::Stage_Texture	(LPCSTR name, u32 ,	u32	 fmin, u32 fmip, u32 fmag)
+void	CBlender_Compile::Stage_Texture	(const char* name, u32 ,	u32	 fmin, u32 fmip, u32 fmag)
 {
 	sh_list& lst=	L_textures;
 	int id		=	ParseName(name);
-	LPCSTR N	=	name;
+	const char* N	=	name;
 	if (id>=0)	{
 		if (id>=int(lst.size()))	Debug.fatal(DEBUG_INFO,"Not enought textures for shader. Base texture: '%s'.",*lst[0]);
 		N = *lst [id];
@@ -330,7 +330,7 @@ void	CBlender_Compile::Stage_Texture	(LPCSTR name, u32 ,	u32	 fmin, u32 fmip, u3
 	i_Filter				(Stage(),fmin,fmip,fmag);
 }
 
-void CBlender_Compile::Stage_Matrix(LPCSTR name, int iChannel)
+void CBlender_Compile::Stage_Matrix(const char* name, int iChannel)
 {
 	sh_list& lst = L_matrices;
 	int id = ParseName(name);
@@ -355,7 +355,7 @@ void CBlender_Compile::Stage_Matrix(LPCSTR name, int iChannel)
 }
 #endif
 
-void CBlender_Compile::Stage_Constant(LPCSTR name)
+void CBlender_Compile::Stage_Constant(const char* name)
 {
 	sh_list& lst= L_constants;
 	int id		= ParseName(name);

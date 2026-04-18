@@ -42,7 +42,7 @@ class CTextureDescrMngr
 	map_TD									m_texture_details;
 	map_CS									m_detail_scalers;
 
-	void		LoadTHM		(LPCSTR initial);
+	void		LoadTHM		(const char* initial);
 	void		LoadLTX		();
 
 public:
@@ -52,9 +52,9 @@ public:
 public:
 	shared_str	GetBumpName		(const shared_str& tex_name) const;
 	float		GetMaterial		(const shared_str& tex_name) const;
-	void		GetTextureUsage	(const shared_str& tex_name, BOOL& bDiffuse, BOOL& bBump) const;
-	BOOL		GetDetailTexture(const shared_str& tex_name, LPCSTR& res, RHIShaderConstant::Setup* &CS) const;
-	BOOL		UseSteepParallax(const shared_str& tex_name) const;
-	BOOL		UsePBRTexures	(const shared_str& tex_name) const;
+	void		GetTextureUsage	(const shared_str& tex_name, bool& bDiffuse, bool& bBump) const;
+	bool		GetDetailTexture(const shared_str& tex_name, const char*& res, RHIShaderConstant::Setup* &CS) const;
+	bool		UseSteepParallax(const shared_str& tex_name) const;
+	bool		UsePBRTexures	(const shared_str& tex_name) const;
 };
 #endif

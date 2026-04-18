@@ -30,7 +30,7 @@ void CDS0_RenderDeviceRender::updateGamma()
 {
 }
 
-void CDS0_RenderDeviceRender::OnDeviceDestroy(BOOL bKeepTextures)
+void CDS0_RenderDeviceRender::OnDeviceDestroy(bool bKeepTextures)
 {
 	GRenderInterface.destroy();
 }
@@ -52,7 +52,7 @@ void CDS0_RenderDeviceRender::SetupStates()
 {
 }
 
-void CDS0_RenderDeviceRender::SetupGPU(BOOL bForceGPU_SW, BOOL bForceGPU_NonPure, BOOL bForceGPU_REF)
+void CDS0_RenderDeviceRender::SetupGPU(bool bForceGPU_SW, bool bForceGPU_NonPure, bool bForceGPU_REF)
 {
 }
 
@@ -64,7 +64,7 @@ void CDS0_RenderDeviceRender::overdrawEnd()
 {
 }
 
-void CDS0_RenderDeviceRender::DeferredLoad(BOOL E)
+void CDS0_RenderDeviceRender::DeferredLoad(bool E)
 {
 }
 
@@ -90,7 +90,7 @@ IRenderDeviceRender::DeviceState CDS0_RenderDeviceRender::GetDeviceState()
 	return DeviceState();
 }
 
-BOOL CDS0_RenderDeviceRender::GetForceGPU_REF()
+bool CDS0_RenderDeviceRender::GetForceGPU_REF()
 {
 	return 0;
 }

@@ -16,7 +16,7 @@ CFracture::~CFracture()
 	xr_delete(StateMan);
 }
 
-void CFracture::Load(LPCSTR section)
+void CFracture::Load(const char* section)
 {
 	inherited::Load	(section);
 

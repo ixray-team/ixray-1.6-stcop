@@ -12,7 +12,7 @@
 #define THM_CHUNK_SOUNDPARAM2			0x1001
 #define THM_CHUNK_SOUND_AI_DIST			0x1002
 //------------------------------------------------------------------------------
-ESoundThumbnail::ESoundThumbnail(LPCSTR src_name, bool bLoad, bool bFullPath) :
+ESoundThumbnail::ESoundThumbnail(const char* src_name, bool bLoad, bool bFullPath) :
     ECustomThumbnail(src_name,ETSound),
     IsFullPath(bFullPath)
 {
@@ -31,7 +31,7 @@ ESoundThumbnail::~ESoundThumbnail()
 }
 //------------------------------------------------------------------------------
 
-bool ESoundThumbnail::Load(LPCSTR src_name, LPCSTR path)
+bool ESoundThumbnail::Load(const char* src_name, const char* path)
 {
     string_path fn;
     strcpy(fn,EFS.ChangeFileExt(src_name?src_name:m_Name.c_str(),".thm").c_str());
@@ -84,7 +84,7 @@ bool ESoundThumbnail::Load(LPCSTR src_name, LPCSTR path)
 }
 //------------------------------------------------------------------------------
 
-void ESoundThumbnail::Save(int age, LPCSTR path)
+void ESoundThumbnail::Save(int age, const char* path)
 {
 	if (!Valid()) 	return;
 

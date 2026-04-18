@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 
-XRCORE_API BOOL g_bEnableStatGather	= FALSE;
+XRCORE_API bool g_bEnableStatGather	= FALSE;
 XRCORE_API pauseMngr* g_pauseMngrPtr = nullptr;
 
 CStatTimer::CStatTimer()
@@ -34,7 +34,7 @@ pauseMngr::pauseMngr	():m_paused(FALSE)
 	m_timers.reserve	(3);
 }
 
-void pauseMngr::Pause(BOOL b)
+void pauseMngr::Pause(bool b)
 {
 	if(m_paused == b)return;
 

@@ -63,7 +63,7 @@ void CSpecificCharacter::Load(shared_str id)
 }
 
 
-void CSpecificCharacter::load_shared	(LPCSTR)
+void CSpecificCharacter::load_shared	(const char*)
 {
 #if 0
 	CTimer			timer;
@@ -100,7 +100,7 @@ void CSpecificCharacter::load_shared	(LPCSTR)
 	
 #ifdef  XRGAME_EXPORTS
 
-	LPCSTR start_dialog = pXML->Read("start_dialog", 0, nullptr);
+	const char* start_dialog = pXML->Read("start_dialog", 0, nullptr);
 	if(start_dialog)
 	{
 		data()->m_StartDialog	= start_dialog;
@@ -163,7 +163,7 @@ void CSpecificCharacter::load_shared	(LPCSTR)
 	int classes_num					= pXML->GetNodesNum (pXML->GetLocalRoot(), "class");
 	for(int i=0; i<classes_num; i++)
 	{
-		LPCSTR char_class			= pXML->Read	("class", 0, "");
+		const char* char_class			= pXML->Read	("class", 0, "");
 		if(char_class)
 		{
 			char* buf_str			= xr_strdup(char_class);
@@ -176,7 +176,7 @@ void CSpecificCharacter::load_shared	(LPCSTR)
 
 #ifdef  XRGAME_EXPORTS
 
-	LPCSTR team = pXML->Read("community", 0, nullptr);
+	const char* team = pXML->Read("community", 0, nullptr);
 	R_ASSERT3(team != nullptr, "'community' field not fulfiled for specific character", *m_OwnId);
 	
 	char* buf_str = xr_strdup(team);
@@ -242,7 +242,7 @@ void CSpecificCharacter::load_shared	(LPCSTR)
 
 #ifdef  XRGAME_EXPORTS
 
-LPCSTR CSpecificCharacter::Name() const 
+const char* CSpecificCharacter::Name() const 
 {
 	return	data()->m_sGameName.c_str();
 }
@@ -257,17 +257,17 @@ const CHARACTER_COMMUNITY& CSpecificCharacter::Community() const
 	return	data()->m_Community;
 }
 
-LPCSTR CSpecificCharacter::SupplySpawn	() const 
+const char* CSpecificCharacter::SupplySpawn	() const 
 {
 	return data()->m_sSupplySpawn.c_str();
 }
 
-LPCSTR CSpecificCharacter::NpcConfigSect () const 
+const char* CSpecificCharacter::NpcConfigSect () const 
 {
 	return data()->m_sNpcConfigSect.c_str();
 }
 
-LPCSTR CSpecificCharacter::sound_voice_prefix () const 
+const char* CSpecificCharacter::sound_voice_prefix () const 
 {
 	return data()->m_sound_voice_prefix.c_str();
 }
@@ -292,7 +292,7 @@ bool CSpecificCharacter::upgrade_mechanic() const
 	return data()->m_upgrade_mechanic;
 }
 
-LPCSTR CSpecificCharacter::critical_wound_weights () const 
+const char* CSpecificCharacter::critical_wound_weights () const 
 {
 	return data()->m_critical_wound_weights.c_str();
 }
@@ -314,7 +314,7 @@ s32 CSpecificCharacter::Reputation	() const
 	return data()->m_Reputation;
 }
 
-LPCSTR CSpecificCharacter::Visual		() const 
+const char* CSpecificCharacter::Visual		() const 
 {
 	return data()->m_sVisual.c_str();
 }

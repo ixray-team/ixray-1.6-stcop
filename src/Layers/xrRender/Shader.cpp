@@ -21,11 +21,11 @@ SGeometry::~SGeometry					()			{	if (DEV) DEV->DeleteGeom			(this);			}
 Shader::~Shader							()			{	if (DEV) DEV->Delete				(this);			}
 																							 
 //////////////////////////////////////////////////////////////////////////					 
-void	resptrcode_shader::create		(LPCSTR s_shader, LPCSTR s_textures, LPCSTR s_constants, LPCSTR s_matrices)
+void	resptrcode_shader::create		(const char* s_shader, const char* s_textures, const char* s_constants, const char* s_matrices)
 {
 	_set(DEV->Create		(s_shader,s_textures,s_constants,s_matrices));
 }
-void	resptrcode_shader::create		(IBlender* B, LPCSTR s_shader, LPCSTR s_textures, LPCSTR s_constants, LPCSTR s_matrices)
+void	resptrcode_shader::create		(IBlender* B, const char* s_shader, const char* s_textures, const char* s_constants, const char* s_matrices)
 {
 	_set(DEV->Create		(B,s_shader,s_textures,s_constants,s_matrices));
 }
@@ -49,7 +49,7 @@ void resptrcode_geom::create(D3DVERTEXELEMENT9* decl, IRHIBuffer* vb, IRHIBuffer
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-BOOL SPass::equal(const SPass& other)
+bool SPass::equal(const SPass& other)
 {
 	if (state		!= other.state)		return FALSE;
 	if (ps			!= other.ps)			return FALSE;
@@ -82,7 +82,7 @@ ShaderElement::ShaderElement()
 	flags.bLandscape	= FALSE;
 }
 
-BOOL ShaderElement::equal	(ShaderElement& S)
+bool ShaderElement::equal	(ShaderElement& S)
 {
 	if (flags.iPriority		!= S.flags.iPriority)	return FALSE;
 	if (flags.bStrictB2F	!= S.flags.bStrictB2F)	return FALSE;
@@ -97,7 +97,7 @@ BOOL ShaderElement::equal	(ShaderElement& S)
 	return TRUE;
 }
 
-BOOL ShaderElement::equal	(ShaderElement* S)
+bool ShaderElement::equal	(ShaderElement* S)
 {	
 	if (0==S && 0==this)	return TRUE;
 	if (0==S || 0==this)	return FALSE;
@@ -105,7 +105,7 @@ BOOL ShaderElement::equal	(ShaderElement* S)
 }
 
 //
-BOOL Shader::equal	(Shader& S)
+bool Shader::equal	(Shader& S)
 {
 	return
 		E[0] && E[0]->equal(&*S.E[0]) &&
@@ -114,7 +114,7 @@ BOOL Shader::equal	(Shader& S)
 		E[3] && E[3]->equal(&*S.E[3]) &&
 		E[4] && E[4]->equal(&*S.E[4]);
 }
-BOOL Shader::equal	(Shader* S)
+bool Shader::equal	(Shader* S)
 {	return	equal(*S);	}
 
 void STextureList::clear()

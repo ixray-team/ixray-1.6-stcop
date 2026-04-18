@@ -192,7 +192,7 @@ void SGameMtlPair::Load(IReader& fs)
 #endif
 
 #ifdef DEBUG
-LPCSTR SGameMtlPair::dbg_Name()
+const char* SGameMtlPair::dbg_Name()
 {
 	static string256 nm;
 	SGameMtl* M0 = GMLib.GetMaterialByID(GetMtl0());
@@ -335,7 +335,7 @@ SGameMtlPair* CGameMtlLibrary::GetMaterialPair(int mtl0, int mtl1)
     GameMtlPairIt it = GetMaterialPairIt(mtl0, mtl1);
     return it != material_pairs.end() ? *it : 0;
 }
-SGameMtlPair* CGameMtlLibrary::GetMaterialPair(LPCSTR name)
+SGameMtlPair* CGameMtlLibrary::GetMaterialPair(const char* name)
 {
     if (name && name[0]) {
         int mtl0, mtl1;
@@ -346,7 +346,7 @@ SGameMtlPair* CGameMtlLibrary::GetMaterialPair(LPCSTR name)
     return 0;
 }
 
-void CGameMtlLibrary::NameToMtlPair(LPCSTR name, int& mtl0, int& mtl1)
+void CGameMtlLibrary::NameToMtlPair(const char* name, int& mtl0, int& mtl1)
 {
     string256 		buf0, buf1;
     if (_GetItemCount(name, '\\') < 2) {

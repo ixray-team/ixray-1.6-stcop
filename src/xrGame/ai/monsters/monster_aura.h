@@ -16,7 +16,7 @@ private:
 	bool				m_enable_for_dead;
 	
 	float				m_pp_highest_at;
-	pcstr				m_pp_effector_name;
+	const char*				m_pp_effector_name;
 	u32					m_pp_index;
 
 	ref_sound			m_sound;
@@ -25,10 +25,10 @@ private:
 
 	bool				m_enabled;
 public:
-						monster_aura				(CBaseMonster* object, pcstr name);
+						monster_aura				(CBaseMonster* object, const char* name);
 						~monster_aura				();
 
-	void				load_from_ini				(CInifile const * ini, pcstr section, bool enable_for_dead_default = false);
+	void				load_from_ini				(CInifile const * ini, const char* section, bool enable_for_dead_default = false);
 	float				calculate					() const;
 	void				update_schedule				();
 	void				play_detector_sound			();
@@ -37,7 +37,7 @@ public:
 private:
 	bool				check_work_condition		() const;
 	void				remove_pp_effector			();
-	float				override_if_debug			(pcstr var_name, float value) const;
+	float				override_if_debug			(const char* var_name, float value) const;
 	float   	get_post_process_factor		() const;
 };
 

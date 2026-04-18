@@ -18,7 +18,7 @@ void CScriptParticles::script_register(lua_State *L)
 	module(L)
 	[
 		class_<CScriptParticles>("particles_object")
-			.def(								constructor<LPCSTR>())
+			.def(								constructor<const char*>())
 			.def("play",						&CScriptParticles::Play)
 			.def("play_at_pos",					&CScriptParticles::PlayAtPos)
 			.def("stop",						&CScriptParticles::Stop)

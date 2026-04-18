@@ -12,8 +12,8 @@ public:
 		virtual bool		use						(CGameObject* who_use);
 	
 		//строчка по€вл€юща€с€ при наведении на объект (если NULL, то нет)
-		virtual LPCSTR		tip_text				();
-		void				set_tip_text			(LPCSTR new_text);
+		virtual const char*		tip_text				();
+		void				set_tip_text			(const char* new_text);
 		virtual void		set_tip_text_default	();
 
 		//можно ли использовать объект стандартным (не скриптовым) образом

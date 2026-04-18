@@ -88,7 +88,7 @@ bool CConsole::is_mark(Console_mark type) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void ConsoleLogCallback(LPCSTR line) {
+void ConsoleLogCallback(const char* line) {
 	Console->AddLogEntry(line);
 }
 
@@ -211,7 +211,7 @@ void CConsole::Destroy()
 	Commands.clear();
 }
 
-void CConsole::AddLogEntry(LPCSTR line) {
+void CConsole::AddLogEntry(const char* line) {
 	xrCriticalSectionGuard guard(&m_log_history_guard);
 
 	m_log_history.Get(m_log_history.GetHead())._set(line);
@@ -250,7 +250,7 @@ void CConsole::OnFrame()
 	}
 }
 
-void CConsole::OutFont( LPCSTR text, float& pos_y )
+void CConsole::OutFont( const char* text, float& pos_y )
 {
 	CGameFont* pFont = g_FontManager->GetFont(m_fontConsoleName);
 	float str_length = pFont->SizeOf_( text );
@@ -397,7 +397,7 @@ void CConsole::OnRender()
 			break;
 		}
 
-		LPCSTR ls = logLine.c_str();
+		const char* ls = logLine.c_str();
 
 		Console_mark cm = (Console_mark)ls[0];
 		pFont->SetColor( get_mark_color( cm ) );
@@ -563,7 +563,7 @@ void CConsole::DrawRect( Frect const& r, u32 color )
 	UIRender->PushPoint( r.x1, r.y2, 0.0f, color, 0.0f, 1.0f );
 }
 
-void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd, bool Silent)
+void CConsole::ExecuteCommand(const char* cmd_str, bool record_cmd, bool Silent)
 {
 	u32  str_size = xr_strlen( cmd_str );	
 	char* edt = new char[str_size + 1];
@@ -630,7 +630,7 @@ void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd, bool Silent)
 				cc->Execute( last );
 				if ( record_cmd )
 				{
-					cc->add_to_LRU( (LPCSTR)last );
+					cc->add_to_LRU( (const char*)last );
 				}
 			}
 		}
@@ -711,12 +711,12 @@ void CConsole::SelectCommand()
 	reset_selected_tip();
 }
 
-void CConsole::Execute( LPCSTR cmd )
+void CConsole::Execute( const char* cmd )
 {
 	ExecuteCommand( cmd, false );
 }
 
-void CConsole::ExecuteScript( LPCSTR str )
+void CConsole::ExecuteScript( const char* str )
 {
 	xr_string Buffer = "cfg_load ";
 	Buffer += str;
@@ -725,9 +725,9 @@ void CConsole::ExecuteScript( LPCSTR str )
 
 // -------------------------------------------------------------------------------------------------
 
-IConsole_Command* CConsole::find_next_cmd( LPCSTR in_str, shared_str& out_str )
+IConsole_Command* CConsole::find_next_cmd( const char* in_str, shared_str& out_str )
 {
-	LPCSTR radmin_cmd_name = "ra ";
+	const char* radmin_cmd_name = "ra ";
 	bool b_ra  = (in_str == strstr( in_str, radmin_cmd_name ) );
 	u32 offset = (b_ra)? xr_strlen( radmin_cmd_name ) : 0;
 
@@ -738,20 +738,20 @@ IConsole_Command* CConsole::find_next_cmd( LPCSTR in_str, shared_str& out_str )
 	if (it != Commands.end())
 	{
 		IConsole_Command* cc = it->second;
-		LPCSTR name_cmd      = cc->Name();
+		const char* name_cmd      = cc->Name();
 		u32    name_cmd_size = xr_strlen( name_cmd );
 		char*   new_str       = (char*)_alloca( (offset + name_cmd_size + 2) * sizeof(char) );
 
 		xr_strcpy( new_str, offset + name_cmd_size + 2, (b_ra)? radmin_cmd_name : "" );
 		xr_strcat( new_str, offset + name_cmd_size + 2, name_cmd );
 
-		out_str._set( (LPCSTR)new_str );
+		out_str._set( (const char*)new_str );
 		return cc;
 	}
 	return nullptr;
 }
 
-bool CConsole::add_next_cmds(LPCSTR in_str, vecTipsEx& out_v) {
+bool CConsole::add_next_cmds(const char* in_str, vecTipsEx& out_v) {
 	u32 cur_count = (u32)out_v.size();
 	if (cur_count >= MAX_TIPS_COUNT) {
 		return false;
@@ -788,7 +788,7 @@ bool CConsole::add_next_cmds(LPCSTR in_str, vecTipsEx& out_v) {
 	return res;
 }
 
-bool CConsole::add_internal_cmds( LPCSTR in_str, vecTipsEx& out_v )
+bool CConsole::add_internal_cmds( const char* in_str, vecTipsEx& out_v )
 {
 	u32 cur_count = (u32)out_v.size();
 	if (cur_count >= MAX_TIPS_COUNT) {
@@ -802,7 +802,7 @@ bool CConsole::add_internal_cmds( LPCSTR in_str, vecTipsEx& out_v )
 	vecCMD_IT itb = Commands.begin();
 	vecCMD_IT ite = Commands.end();
 	for (; itb != ite; ++itb) {
-		LPCSTR name = itb->first;
+		const char* name = itb->first;
 		u32 name_sz = xr_strlen(name);
 		
 		if (name_sz >= in_sz) {
@@ -827,8 +827,8 @@ bool CConsole::add_internal_cmds( LPCSTR in_str, vecTipsEx& out_v )
 	itb = Commands.begin();
 	ite = Commands.end();
 	for (; itb != ite; ++itb) {
-		LPCSTR name = itb->first;
-		LPCSTR fd_str = strstr( name, in_str );
+		const char* name = itb->first;
+		const char* fd_str = strstr( name, in_str );
 		if (fd_str) {
 			shared_str temp;
 			temp._set( name );
@@ -857,7 +857,7 @@ void CConsole::update_tips() {
 		return;
 	}
 
-	LPCSTR cur = ec().str_edit();
+	const char* cur = ec().str_edit();
 	u32    cur_length = xr_strlen( cur );
 
 	if (cur_length == 0) {
@@ -926,7 +926,7 @@ void CConsole::update_tips() {
 
 }
 
-void CConsole::select_for_filter(LPCSTR filter_str, vecTips& in_v, vecTipsEx& out_v)
+void CConsole::select_for_filter(const char* filter_str, vecTips& in_v, vecTipsEx& out_v)
 {
 	out_v.clear();
 
@@ -941,7 +941,7 @@ void CConsole::select_for_filter(LPCSTR filter_str, vecTips& in_v, vecTipsEx& ou
 		if (all) {
 			out_v.emplace_back(str);
 		} else {
-			LPCSTR fd_str = strstr(str.c_str(), filter_str);
+			const char* fd_str = strstr(str.c_str(), filter_str);
 			if (fd_str) {
 				int   fd_sz = str.size() - xr_strlen(fd_str);
 				TipString ts(str, fd_sz, fd_sz + xr_strlen(filter_str));

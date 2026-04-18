@@ -26,7 +26,7 @@ public:
     void			Clear1				(){ClearInternal(m_ObjectsInGroup);};
 	bool 			UpdateReference		(bool bForceReload);
 public:
-					CGroupObject	(LPVOID data, LPCSTR name);
+					CGroupObject	(LPVOID data, const char* name);
 	void 			Construct		(LPVOID data);
 	virtual 		~CGroupObject	();
     bool			CanUngroup		(bool bMsg);
@@ -35,11 +35,11 @@ public:
     u32				GetObjects		(ObjectList& lst);
     IC int			ObjectInGroupCount(){return m_ObjectsInGroup.size();}
 
-    bool			SetReference	(LPCSTR nm);
-	virtual LPCSTR  RefName			(){return m_ReferenceName_.size()?m_ReferenceName_.c_str():"group";}
-	bool    		RefCompare		(LPCSTR nm){return m_ReferenceName_.equal(nm);}
-	void 			SetRefName		(LPCSTR nm);
-	void			UpdatePivot		(LPCSTR nm, bool center);
+    bool			SetReference	(const char* nm);
+	virtual const char*  RefName			(){return m_ReferenceName_.size()?m_ReferenceName_.c_str():"group";}
+	bool    		RefCompare		(const char* nm){return m_ReferenceName_.equal(nm);}
+	void 			SetRefName		(const char* nm);
+	void			UpdatePivot		(const char* nm, bool center);
 	virtual bool 	GetBox			(Fbox& box) ;
     virtual bool	CanAttach		() {return false;}
 
@@ -62,9 +62,9 @@ public:
 	virtual void 	Select			(int  flag);
 
   	virtual bool 		LoadStream			(IReader&);
-  	virtual bool 		LoadLTX				(CInifile& ini, LPCSTR sect_name);
+  	virtual bool 		LoadLTX				(CInifile& ini, const char* sect_name);
 	virtual void 		SaveStream			(IWriter&);
-  	virtual void 		SaveLTX				(CInifile& ini, LPCSTR sect_name);
+  	virtual void 		SaveLTX				(CInifile& ini, const char* sect_name);
 
     virtual bool	ExportGame		(SExportStreams* data);
 
@@ -76,5 +76,5 @@ public:
     virtual void 	OnObjectRemove	(const CCustomObject* object);
 	virtual void 	OnSceneUpdate	();
 
-	virtual void	FillProp		(LPCSTR pref, PropItemVec& items);
+	virtual void	FillProp		(const char* pref, PropItemVec& items);
 };

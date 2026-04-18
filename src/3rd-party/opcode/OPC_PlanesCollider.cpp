@@ -178,7 +178,7 @@ bool PlanesCollider::Collide(PlanesCache& cache, const IceMaths::Plane* planes, 
  *	\return		TRUE if we can return immediately
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-BOOL PlanesCollider::InitQuery(PlanesCache& cache, const IceMaths::Plane* planes, udword nb_planes, const IceMaths::Matrix4x4* worldm)
+bool PlanesCollider::InitQuery(PlanesCache& cache, const IceMaths::Plane* planes, udword nb_planes, const IceMaths::Matrix4x4* worldm)
 {
 	// 1) Call the base method
 	VolumeCollider::InitQuery();

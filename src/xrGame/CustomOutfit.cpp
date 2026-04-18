@@ -14,7 +14,7 @@
 #include "UIGameCustom.h"
 #include "UIActorMenu.h"
 
-void CCustomOutfit::Load(LPCSTR section)
+void CCustomOutfit::Load(const char* section)
 {
 	inherited::Load(section);
 	isDisableChangeSkin = READ_IF_EXISTS(pSettings, r_bool, section, "forbid_change_skin", false);
@@ -88,7 +88,7 @@ void CCustomOutfit::OnMoveToRuck(const SInvItemPlace& prev)
 	}
 }
 
-bool CCustomOutfit::install_upgrade_impl(LPCSTR section, bool test)
+bool CCustomOutfit::install_upgrade_impl(const char* section, bool test)
 {
 	bool result = inherited::install_upgrade_impl(section, test);
 
@@ -106,7 +106,7 @@ bool CCustomOutfit::install_upgrade_impl(LPCSTR section, bool test)
 	return result;
 }
 
-BOOL CCustomOutfit::BonePassBullet(int boneID)
+bool CCustomOutfit::BonePassBullet(int boneID)
 {
 	return m_boneProtection->getBonePassBullet(s16(boneID));
 }

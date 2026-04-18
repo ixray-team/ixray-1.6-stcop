@@ -121,7 +121,7 @@ void CEditableMesh::GenerateFNormals()
 									m_Vertices[m_Faces[k].pv[1].pindex], 
 									m_Vertices[m_Faces[k].pv[2].pindex]);
 }
-BOOL CEditableMesh::m_bDraftMeshMode = FALSE;
+bool CEditableMesh::m_bDraftMeshMode = FALSE;
 
 void CEditableMesh::GenerateVNormals(const Fmatrix* parent_xform, bool force)
 {

@@ -3,7 +3,7 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "player_hud.h"
 
-void CCompass::Load(LPCSTR section)
+void CCompass::Load(const char* section)
 {
 	CHudItemObject::Load(section);
 }
@@ -67,7 +67,7 @@ void CUICompass::update()
 
 	IKinematics* kin = hid->m_model;
 
-	BOOL b_visible = !fis_zero(m_target_dir.magnitude());
+	bool b_visible = !fis_zero(m_target_dir.magnitude());
 	if (b_visible != kin->LL_GetBoneVisible(m_bid))
 	{
 		kin->LL_SetBoneVisible(m_bid, b_visible, TRUE);

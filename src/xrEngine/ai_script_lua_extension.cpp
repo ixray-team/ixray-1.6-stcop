@@ -29,7 +29,7 @@
 
 using namespace Script;
 
-int Lua::LuaOut(Lua::ELuaMessageType tLuaMessageType, LPCSTR caFormat, ...)
+int Lua::LuaOut(Lua::ELuaMessageType tLuaMessageType, const char* caFormat, ...)
 {
 #ifndef _EDITOR
 #if !defined(ENGINE_BUILD)
@@ -37,8 +37,8 @@ int Lua::LuaOut(Lua::ELuaMessageType tLuaMessageType, LPCSTR caFormat, ...)
 		return(0);
 #endif
 
-	LPCSTR		S = "", SS = "";
-	LPSTR		S1;
+	const char*		S = "", *SS = "";
+	char* S1;
 	string4096	S2;
 	switch (tLuaMessageType) {
 		case Lua::eLuaMessageTypeInfo : {
@@ -120,7 +120,7 @@ void Script::vfLoadStandardScripts(CLuaVirtualMachine *tpLuaVM)
 	FS.update_path	(S,_game_data_,"script.ltx");
 	CInifile		*l_tpIniFile = new CInifile(S);
 	R_ASSERT		(l_tpIniFile);
-	LPCSTR			caScriptString = l_tpIniFile->r_string("common","script");
+	const char*			caScriptString = l_tpIniFile->r_string("common","script");
 
 	u32				caNamespaceName = _GetItemCount(caScriptString);
 	string256		I;
@@ -169,7 +169,7 @@ void Script::vfExportToLua(CLuaVirtualMachine *tpLuaVM)
 	vfLoadStandardScripts		(tpLuaVM);
 }
 
-bool Script::bfLoadFile(CLuaVirtualMachine *tpLuaVM, LPCSTR caScriptName, bool bCall)
+bool Script::bfLoadFile(CLuaVirtualMachine *tpLuaVM, const char* caScriptName, bool bCall)
 {
 	string256		l_caNamespaceName;
 	_splitpath		(caScriptName,0,0,l_caNamespaceName,0);
@@ -180,7 +180,7 @@ bool Script::bfLoadFile(CLuaVirtualMachine *tpLuaVM, LPCSTR caScriptName, bool b
 }
 #endif
 
-bool bfCreateNamespaceTable(CLuaVirtualMachine *tpLuaVM, LPCSTR caNamespaceName)
+bool bfCreateNamespaceTable(CLuaVirtualMachine *tpLuaVM, const char* caNamespaceName)
 {
 	lua_pushstring	(tpLuaVM,"_G");
 	lua_gettable	(tpLuaVM,LUA_GLOBALSINDEX);
@@ -236,7 +236,7 @@ void vfCopyGlobals(CLuaVirtualMachine *tpLuaVM)
 	}
 }
 
-bool Script::bfLoadBuffer(CLuaVirtualMachine *tpLuaVM, LPCSTR caBuffer, size_t tSize, LPCSTR caScriptName, LPCSTR caNameSpaceName)
+bool Script::bfLoadBuffer(CLuaVirtualMachine *tpLuaVM, const char* caBuffer, size_t tSize, const char* caScriptName, const char* caNameSpaceName)
 {
 	int				l_iErrorCode;
 	if (caNameSpaceName) {
@@ -262,14 +262,14 @@ bool Script::bfLoadBuffer(CLuaVirtualMachine *tpLuaVM, LPCSTR caBuffer, size_t t
 	return			(true);
 }
 
-bool bfDoFile(CLuaVirtualMachine *tpLuaVM, LPCSTR caScriptName, LPCSTR caNameSpaceName, bool bCall)
+bool bfDoFile(CLuaVirtualMachine *tpLuaVM, const char* caScriptName, const char* caNameSpaceName, bool bCall)
 {
 	string_path		l_caLuaFileName;
 	IReader			*l_tpFileReader = FS.r_open(caScriptName);
 	R_ASSERT		(l_tpFileReader);
 	xr_strconcat(l_caLuaFileName,"@",caScriptName);
 	
-	if (!bfLoadBuffer(tpLuaVM,static_cast<LPCSTR>(l_tpFileReader->pointer()),(size_t)l_tpFileReader->length(),l_caLuaFileName,caNameSpaceName)) {
+	if (!bfLoadBuffer(tpLuaVM,static_cast<const char*>(l_tpFileReader->pointer()),(size_t)l_tpFileReader->length(),l_caLuaFileName,caNameSpaceName)) {
 		lua_pop			(tpLuaVM,4);
 		FS.r_close		(l_tpFileReader);
 		return		(false);
@@ -330,7 +330,7 @@ void vfSetNamespace(CLuaVirtualMachine *tpLuaVM)
 	lua_pop			(tpLuaVM,3);
 }
 
-bool Script::bfLoadFileIntoNamespace(CLuaVirtualMachine *tpLuaVM, LPCSTR caScriptName, LPCSTR caNamespaceName, bool bCall)
+bool Script::bfLoadFileIntoNamespace(CLuaVirtualMachine *tpLuaVM, const char* caScriptName, const char* caNamespaceName, bool bCall)
 {
 	if (!bfCreateNamespaceTable(tpLuaVM,caNamespaceName))
 		return		(false);
@@ -341,7 +341,7 @@ bool Script::bfLoadFileIntoNamespace(CLuaVirtualMachine *tpLuaVM, LPCSTR caScrip
 	return			(true);
 }
 
-bool Script::bfGetNamespaceTable(CLuaVirtualMachine *tpLuaVM, LPCSTR N)
+bool Script::bfGetNamespaceTable(CLuaVirtualMachine *tpLuaVM, const char* N)
 {
 	lua_pushstring 		(tpLuaVM,"_G"); 
 	lua_gettable 		(tpLuaVM,LUA_GLOBALSINDEX); 
@@ -370,7 +370,7 @@ bool Script::bfGetNamespaceTable(CLuaVirtualMachine *tpLuaVM, LPCSTR N)
 	return	(true); 
 }
 
-CLuaVirtualMachine *Script::get_namespace_table(CLuaVirtualMachine *tpLuaVM, LPCSTR N)
+CLuaVirtualMachine *Script::get_namespace_table(CLuaVirtualMachine *tpLuaVM, const char* N)
 {
 	if (!xr_strlen(N))
 		return				(tpLuaVM);
@@ -408,7 +408,7 @@ CLuaVirtualMachine *Script::get_namespace_table(CLuaVirtualMachine *tpLuaVM, LPC
 	return					(tpLuaVM); 
 }
 
-bool	Script::bfIsObjectPresent	(CLuaVirtualMachine *tpLuaVM, LPCSTR identifier, int type)
+bool	Script::bfIsObjectPresent	(CLuaVirtualMachine *tpLuaVM, const char* identifier, int type)
 {
 	lua_pushnil (tpLuaVM); 
 	while (lua_next(tpLuaVM, -2)) { 
@@ -422,14 +422,14 @@ bool	Script::bfIsObjectPresent	(CLuaVirtualMachine *tpLuaVM, LPCSTR identifier, 
 	return	(false); 
 }
 
-bool	Script::bfIsObjectPresent	(CLuaVirtualMachine *tpLuaVM, LPCSTR namespace_name, LPCSTR identifier, int type)
+bool	Script::bfIsObjectPresent	(CLuaVirtualMachine *tpLuaVM, const char* namespace_name, const char* identifier, int type)
 {
 	if (xr_strlen(namespace_name) && !bfGetNamespaceTable(tpLuaVM,namespace_name))
 		return				(false); 
 	return					(bfIsObjectPresent(tpLuaVM,identifier,type)); 
 }
 
-luabind::object Script::lua_namespace_table(CLuaVirtualMachine *tpLuaVM, LPCSTR namespace_name)
+luabind::object Script::lua_namespace_table(CLuaVirtualMachine *tpLuaVM, const char* namespace_name)
 {
 	string256			S1;
 	xr_strcpy				(S1,namespace_name);

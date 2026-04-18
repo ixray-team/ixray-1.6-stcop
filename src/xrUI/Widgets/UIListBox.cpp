@@ -18,7 +18,7 @@ CUIListBox::CUIListBox()
 	InitScrollView			();
 }
 
-void CUIListBox::SetSelectionTexture(LPCSTR texture){
+void CUIListBox::SetSelectionTexture(const char* texture){
 	m_selection_texture = texture;
 }
 
@@ -40,7 +40,7 @@ bool CUIListBox::OnMouseAction(float x, float y, EUIMessages mouse_action)
 }
 
 #include "../../xrEngine/string_table.h"
-CUIListBoxItem* CUIListBox::AddTextItem(LPCSTR text)
+CUIListBoxItem* CUIListBox::AddTextItem(const char* text)
 {
 	CUIListBoxItem* pItem			= AddItem();
 
@@ -117,7 +117,7 @@ CUIListBoxItem* CUIListBox::GetSelectedItem()
 	return nullptr;
 }
 
-LPCSTR CUIListBox::GetSelectedText()
+const char* CUIListBox::GetSelectedText()
 {
 	if (CUIWindow* w = GetSelected())
 	{
@@ -153,7 +153,7 @@ u32 CUIListBox::GetSelectedIDX()
 	return u32(-1);
 }
 
-LPCSTR CUIListBox::GetText(int idx)
+const char* CUIListBox::GetText(int idx)
 {
 	if (idx == -1)
 	{
@@ -240,7 +240,7 @@ void CUIListBox::SetSelectedTAG(u32 tag_val)
 	SetSelected(GetItemByTAG(tag_val));
 }
 
-void CUIListBox::SetSelectedText(LPCSTR txt)
+void CUIListBox::SetSelectedText(const char* txt)
 {
 	SetSelected(GetItemByText(txt));
 }
@@ -314,7 +314,7 @@ CUIListBoxItem* CUIListBox::GetItemByIDX(int idx)
 	return nullptr;
 }
 
-CUIListBoxItem* CUIListBox::GetItemByText(LPCSTR txt)
+CUIListBoxItem* CUIListBox::GetItemByText(const char* txt)
 {
 	xrCriticalSectionGuard guard(m_pad->csUi);
 
