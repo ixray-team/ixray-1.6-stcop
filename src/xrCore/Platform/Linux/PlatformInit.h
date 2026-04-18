@@ -77,6 +77,10 @@ using HMODULE = void*;
 using DWORD_PTR = uintptr_t;
 using HFILE = int;
 
+#define TRUE  1
+#define FALSE 0
+
+
 #define SUCCEEDED(hr) (((HRESULT)(hr)) >= 0)
 #define FAILED(hr) (((HRESULT)(hr)) < 0)
 #define S_OK 0x00000000
