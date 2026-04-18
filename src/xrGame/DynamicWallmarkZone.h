@@ -34,8 +34,8 @@ private:
         CDynamicWallmarkZone* self;
     };
 
-    static BOOL trace_callback(collide::rq_result& result, LPVOID params);
-    static BOOL test_callback(const collide::ray_defs& rd, CObject* object, LPVOID params);
+    static bool trace_callback(collide::rq_result& result, LPVOID params);
+    static bool test_callback(const collide::ray_defs& rd, CObject* object, LPVOID params);
 
 protected:
 
@@ -48,7 +48,7 @@ protected:
 
 public:
 
-    virtual BOOL					net_Spawn(CSE_Abstract* DC) override;
+    virtual bool					net_Spawn(CSE_Abstract* DC) override;
     
     virtual void			save				(NET_Packet &output_packet);
     virtual void			load				(IReader &input_packet);

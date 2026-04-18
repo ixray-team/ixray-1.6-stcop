@@ -340,10 +340,10 @@ Fvector& attachable_hud_item::hands_offset_rot()
 	return m_measures.m_hands_positions.hands_offsets[1][idx];
 }
 
-void attachable_hud_item::set_bone_visible(const shared_str& bone_name, BOOL bVisibility, BOOL bSilent)
+void attachable_hud_item::set_bone_visible(const shared_str& bone_name, bool bVisibility, bool bSilent)
 {
 	u16  bone_id;
-	BOOL bVisibleNow;
+	bool bVisibleNow;
 	bone_id			= m_model->LL_BoneID			(bone_name);
 	if(bone_id==BI_NONE)
 	{
@@ -729,7 +729,7 @@ void attachable_hud_item::anim_play(const shared_str& item_anm_name, EHudMixType
 	}
 }
 
-void attachable_hud_item::anim_play_bonepart(const shared_str& anim, BOOL bMixIn)
+void attachable_hud_item::anim_play_bonepart(const shared_str& anim, bool bMixIn)
 {
 	if (IKinematicsAnimated* ka = m_model->dcast_PKinematicsAnimated())
 	{
@@ -1303,7 +1303,7 @@ player_hud::player_hud(bool invert)
 	{
 		movement_layer* anm = new movement_layer();
 		layer_name.printf("movement_layer_%d", (EMovementLayers)i);
-		LPCSTR layer_line = pSettings->r_string("hud_movement_layers", *layer_name);
+		const char* layer_line = pSettings->r_string("hud_movement_layers", *layer_name);
 
 		string128 buff = {};
 		_GetItem(layer_line, 0, buff);
@@ -1695,7 +1695,7 @@ void player_hud::update(const Fmatrix& cam_trans)
 		m_animator_item->update(true);
 }
 
-u32 player_hud::anim_play(u16 part, const MotionID& M, BOOL bMixIn, const CMotionDef*& md, float speed)
+u32 player_hud::anim_play(u16 part, const MotionID& M, bool bMixIn, const CMotionDef*& md, float speed)
 {
 	///partitions info
 	// 0==default (root_bone)
@@ -1913,7 +1913,7 @@ void player_hud::attach_item(CHudItem* item)
 	g_player_hud->UpdateMovementLayers();
 }
 
-void player_hud::RestoreHandBlends(LPCSTR ignored_part)
+void player_hud::RestoreHandBlends(const char* ignored_part)
 {
 	u16 part_id			= m_model->partitions().part_id(ignored_part);
 	u32 blends_count	= m_model->LL_PartBlendsCount(part_id);
@@ -2156,7 +2156,7 @@ bool player_hud::check_anim(const shared_str& anim_name, u16 place_idx)
 //	static void Callback статическая функция которая будет вызвана по завершению анимации
 //	void* CallbackParam параметр в который можно поместить что угодно
 //	UpdateCallbackType тип каллбека 0 - сработает по окончанию анимации 1 - будет срабатывать пока анимация не закончится
-bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 part_id, BOOL bMixIn, float speed, u8 anm_idx, bool impact_on_item, bool similar_check, PlayCallback Callback, LPVOID CallbackParam, BOOL UpdateCallbackType)
+bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 part_id, bool bMixIn, float speed, u8 anm_idx, bool impact_on_item, bool similar_check, PlayCallback Callback, LPVOID CallbackParam, bool UpdateCallbackType)
 {
 	MotionID motion;
 	if(m_attached_items[place_idx] && place_idx>=0&&place_idx!=u16(-1))///ищем анимацию в библиотеке айтема на пример anm_show
@@ -2475,7 +2475,7 @@ void animator_item::render()
 	::Render->add_Visual(m_item->dcast_RenderVisual(), true);
 }
 
-void animator_item::anim_play(const shared_str& item_anm_name, BOOL bMixIn, float speed)
+void animator_item::anim_play(const shared_str& item_anm_name, bool bMixIn, float speed)
 {
 	if (m_item->dcast_PKinematicsAnimated())
 	{
@@ -2505,7 +2505,7 @@ void animator_item::anim_play(const shared_str& item_anm_name, BOOL bMixIn, floa
 	}
 }
 
-u32 animator_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, const CMotionDef*& md)
+u32 animator_item::anim_play(const shared_str& anm_name_b, bool bMixIn, const CMotionDef*& md)
 {
 	player_hud_motion* anm = m_hand_motions.find_motion(anm_name_b);
 

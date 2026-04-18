@@ -2,7 +2,7 @@
 #include "doug_lea_area_allocator.h"
 #include "doug_lea_memory_allocator.h"
 
-doug_lea_area_allocator::doug_lea_area_allocator(void* area, LPCSTR arena_id, size_t alloc_size)
+doug_lea_area_allocator::doug_lea_area_allocator(void* area, const char* arena_id, size_t alloc_size)
 {
 	area_space = create_mspace_with_base(area, alloc_size, 0);
 }

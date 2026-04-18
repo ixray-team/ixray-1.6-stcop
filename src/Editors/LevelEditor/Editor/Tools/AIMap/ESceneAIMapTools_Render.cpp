@@ -40,7 +40,7 @@ void ESceneAIMapTool::OnDeviceDestroy()
     m_RGeom.destroy();
 }
 
-BOOL ai_map_shown = TRUE;
+bool ai_map_shown = TRUE;
 
 static const u32 block_size = 0x2000;
 void ESceneAIMapTool::OnRender(int priority, bool strictB2F)

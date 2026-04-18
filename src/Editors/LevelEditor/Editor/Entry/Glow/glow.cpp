@@ -11,7 +11,7 @@
 
 #define VIS_RADIUS 		0.25f
 
-CGlow::CGlow(LPVOID data, LPCSTR name):CCustomObject(data,name){
+CGlow::CGlow(LPVOID data, const char* name):CCustomObject(data,name){
 	Construct(data);
 }
 
@@ -125,7 +125,7 @@ bool CGlow::RayPick(float& distance, const Fvector& start, const Fvector& direct
 	return false;
 }
 
-bool CGlow::LoadLTX(CInifile& ini, LPCSTR sect_name)
+bool CGlow::LoadLTX(CInifile& ini, const char* sect_name)
 {
 	u32 version = ini.r_u32(sect_name, "version");
 
@@ -148,7 +148,7 @@ bool CGlow::LoadLTX(CInifile& ini, LPCSTR sect_name)
     return true;
 }
 
-void CGlow::SaveLTX(CInifile& ini, LPCSTR sect_name)
+void CGlow::SaveLTX(CInifile& ini, const char* sect_name)
 {
 	CCustomObject::SaveLTX(ini, sect_name);
 
@@ -221,7 +221,7 @@ void CGlow::SaveStream(IWriter& F)
 }
 
 
-void CGlow::FillProp(LPCSTR pref, PropItemVec& items)
+void CGlow::FillProp(const char* pref, PropItemVec& items)
 {
 	inherited::FillProp(pref, items);
     PropValue* V=0;

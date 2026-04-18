@@ -6,7 +6,7 @@
 // Overall this approach should run faster.
 
 // Original code by David Eberly in Magic.
-BOOL SphereCollider::SphereTriOverlap(const IceMaths::Point& vert0_, const IceMaths::Point& vert1_, const IceMaths::Point& vert2_)
+bool SphereCollider::SphereTriOverlap(const IceMaths::Point& vert0_, const IceMaths::Point& vert1_, const IceMaths::Point& vert2_)
 {
 	// Stats
 	mNbVolumePrimTests++;

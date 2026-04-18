@@ -25,8 +25,8 @@ struct  Patch_Dawnload_Progress{
 
 	bool		GetInProgress	(){return IsInProgress;};
 	float		GetProgress		(){return Progress;};
-	LPCSTR		GetStatus		(){return Status.c_str();};
-	LPCSTR		GetFlieName		(){return FileName.c_str();};
+	const char*		GetStatus		(){return Status.c_str();};
+	const char*		GetFlieName		(){return FileName.c_str();};
 };
 
 class CMainMenu :
@@ -147,7 +147,7 @@ public:
 	virtual CDialogHolder* GetDialogHolder() override { return this; }
 	void			OnDeviceCreate					();
 
-	void			Screenshot						(IRender_interface::ScreenshotMode mode=IRender_interface::SM_NORMAL, LPCSTR name = 0);
+	void			Screenshot						(IRender_interface::ScreenshotMode mode=IRender_interface::SM_NORMAL, const char* name = 0);
 	virtual void	RegisterPPDraw					(CUIWindow* w) override;
 	virtual void	UnregisterPPDraw				(CUIWindow* w) override;
 
@@ -155,17 +155,17 @@ public:
 	EErrorDlg		GetErrorDialogType				() const { return m_NeedErrDialog; } ;
 	void			CheckForErrorDlg				();
 	void			SwitchToMultiplayerMenu			();
-	void			OnNewPatchFound					(LPCSTR VersionName, LPCSTR URL);
+	void			OnNewPatchFound					(const char* VersionName, const char* URL);
 	void			OnNoNewPatchFound				();
 	void  OnDownloadPatch					(CUIWindow*, void*);
 	void  OnConnectToMasterServerOkClicked(CUIWindow*, void*);
 
-	void			Show_DownloadMPMap				(LPCSTR text, LPCSTR url);
+	void			Show_DownloadMPMap				(const char* text, const char* url);
 	void  OnDownloadMPMap_CopyURL			(CUIWindow*, void*);
 	void  OnDownloadMPMap					(CUIWindow*, void*);
 
-	void			OnSessionTerminate				(LPCSTR reason);
-	void			OnLoadError						(LPCSTR module);
+	void			OnSessionTerminate				(const char* reason);
+	void			OnLoadError						(const char* module);
 	void			OnDownloadPatchError			();
 	void			OnDownloadPatchSuccess			();
 	void			OnDownloadPatchProgress			(u64 bytesReceived, u64 totalSize);
@@ -174,15 +174,15 @@ public:
 	void			Hide_CTMS_Dialog				();
 	void			SetNeedVidRestart				();
 	virtual void	OnDeviceReset					();
-	LPCSTR			GetGSVer						();
+	const char*			GetGSVer						();
 
 			bool	IsCDKeyIsValid					();
 			bool	ValidateCDKey					();
 
-	LPCSTR			GetPlayerName					();
-	LPCSTR			GetCDKeyFromRegistry			();
+	const char*			GetPlayerName					();
+	const char*			GetCDKeyFromRegistry			();
 	
-	demo_info const *	GetDemoInfo					(LPCSTR file_name);
+	demo_info const *	GetDemoInfo					(const char* file_name);
 };
 
 extern CMainMenu*	MainMenu();

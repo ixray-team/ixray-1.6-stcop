@@ -90,12 +90,12 @@ public:
 	virtual bool		IsModified			();
 	virtual void		Modified			(){;}
 
-	virtual LPCSTR		GetInfo				();
+	virtual const char*		GetInfo				();
 	
-	virtual void		ZoomObject			(BOOL bSelOnly);
+	virtual void		ZoomObject			(bool bSelOnly);
 
-	virtual bool		Load				(LPCSTR name){return true;}
-	virtual bool		Save				(LPCSTR name, bool bInternal=false){return true;}
+	virtual bool		Load				(const char* name){return true;}
+	virtual bool		Save				(const char* name, bool bInternal=false){return true;}
 	virtual void		Reload				(){;}
 	
 	virtual void		OnDeviceCreate		(){;}
@@ -116,8 +116,8 @@ public:
 	virtual bool		Pick				(TShiftState Shift);
 	virtual bool 		RayPick				(const Fvector& start, const Fvector& dir, float& dist, Fvector* pt, Fvector* n);
 
-	virtual void		ShowProperties		(LPCSTR focused_item);
-	virtual void		UpdateProperties	(BOOL bForced){m_Flags.set(flUpdateProperties|flUpdateObjectList,TRUE); if (bForced) OnFrame();}
+	virtual void		ShowProperties		(const char* focused_item);
+	virtual void		UpdateProperties	(bool bForced){m_Flags.set(flUpdateProperties|flUpdateObjectList,TRUE); if (bForced) OnFrame();}
 	virtual void		RefreshProperties	();
 	virtual bool UpdateCamera();
 private:

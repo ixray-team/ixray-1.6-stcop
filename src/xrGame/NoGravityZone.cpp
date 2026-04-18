@@ -50,7 +50,7 @@ void CNoGravityZone::switchGravity(SZoneObjectInfo& io, bool val)
 	{
 		CEntityAlive* ea = io.object->cast_entity_alive();
 		CPHMovementControl*mc=ea->character_physics_support()->movement();
-		mc->SetApplyGravity(BOOL(val));
+		mc->SetApplyGravity(bool(val));
 		mc->SetForcedPhysicsControl(!val);
 		if(!val&&mc->Environment()==CPHMovementControl::peOnGround)
 		{

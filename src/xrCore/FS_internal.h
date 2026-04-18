@@ -2,7 +2,7 @@
 #include "compression/lzss/lzhuf.h"
 #include <fcntl.h>
 
-void*			FileDownload	(LPCSTR fn, intptr_t& pdwSize);
+void*			FileDownload	(const char* fn, intptr_t& pdwSize);
 void			FileCompress	(const char *fn, const char* sign, void* data, intptr_t size);
 void * 			FileDecompress	(const char *fn, const char* sign, intptr_t& size);
 

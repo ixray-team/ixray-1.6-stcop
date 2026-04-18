@@ -225,15 +225,15 @@ public:
 
 public:
 			void						init								();
-	virtual void						Load								(LPCSTR	section );				
+	virtual void						Load								(const char*	section );				
 	virtual	void						reinit								();
-	virtual void						reload								(LPCSTR	section );				
-	virtual void						LoadSounds							(LPCSTR section );
+	virtual void						reload								(const char*	section );				
+	virtual void						LoadSounds							(const char* section );
 	
 	static void BoneCallback(CBoneInstance* B);
 	void LookAtActor(CBoneInstance* headBone);
 
-	virtual BOOL						net_Spawn							(CSE_Abstract* DC);
+	virtual bool						net_Spawn							(CSE_Abstract* DC);
 
 	virtual void						net_Export							(NET_Packet& P);
 	virtual void						net_Import							(NET_Packet& P);
@@ -243,7 +243,7 @@ public:
 
 	virtual void						net_Destroy							();
 	virtual void						net_Save							(NET_Packet& P);
-	virtual	BOOL						net_SaveRelevant					();
+	virtual	bool						net_SaveRelevant					();
 	virtual void						net_Relcase							(CObject*	 O);
 
 	//save/load server serialization
@@ -254,7 +254,7 @@ public:
 	virtual void						shedule_Update						(u32 dt);
 	virtual void						Think								();
 	virtual void						SelectAnimation						(const Fvector& _view, const Fvector& _move, float speed );
-	virtual BOOL						UsedAI_Locations					();
+	virtual bool						UsedAI_Locations					();
 
 	virtual void						g_WeaponBones						(int &L, int &R1, int &R2);
 	virtual void						g_fireParams						(const CHudItem* pHudItem, Fvector& P, Fvector& D);
@@ -269,7 +269,7 @@ public:
 	virtual void						Exec_Look							(float dt);
 	virtual	void						Hit									(SHit* pHDS);
 	virtual	void						PHHit								(SHit &H);
-	virtual BOOL						feel_vision_isRelevant				(CObject* who);
+	virtual bool						feel_vision_isRelevant				(CObject* who);
 	virtual float						Radius								() const;
 
 	virtual void						ChangeVisual						( shared_str NewVisual );
@@ -332,7 +332,7 @@ public:
 			bool						ready_to_detour			();
 			void						update_best_item_info	();
 			void						update_best_item_info_impl();
-			void						ResetBoneProtections	(LPCSTR imm_sect, LPCSTR bone_sect);
+			void						ResetBoneProtections	(const char* imm_sect, const char* bone_sect);
 	virtual float						GetWeaponAccuracy		() const;
 	virtual bool						unlimited_ammo			();
 	virtual bool						infinite_fire() override;
@@ -391,9 +391,9 @@ public:
 	IC		float						start_pick_distance		() const;
 			bool						fire_make_sense			();
 			
-	virtual LPCSTR						Name					() const;
-	virtual BOOL						feel_touch_contact		(CObject* O);
-	virtual BOOL						feel_touch_on_contact	(CObject* O);
+	virtual const char*						Name					() const;
+	virtual bool						feel_touch_contact		(CObject* O);
+	virtual bool						feel_touch_on_contact	(CObject* O);
 
 	//флаги, какие действия совершал актер по отношению к сталкеру
 	//(помог, атаковал и т.д.)
@@ -827,7 +827,7 @@ private:
 	virtual bool						critical_wound_external_conditions_suitable	();
 	virtual void						critical_wounded_state_start				();
 
-			void						fill_bones_body_parts						(LPCSTR bone_id, const ECriticalWoundType &wound_type);
+			void						fill_bones_body_parts						(const char* bone_id, const ECriticalWoundType &wound_type);
 public:
 	typedef xr_vector<float>			CRITICAL_WOUND_WEIGHTS;
 
@@ -900,7 +900,7 @@ public:
 	typedef xr_delegate<void (Fmatrix& )>							EyeMatrixCallback;
 
 private:
-	virtual BOOL						AlwaysTheCrow								();
+	virtual bool						AlwaysTheCrow								();
 
 public:
 	IC		void						take_items_enabled							(bool value);

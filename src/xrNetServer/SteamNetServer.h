@@ -36,7 +36,7 @@ private:
 	xr_vector<SClientConnectData>	m_pending_clients;
 
 public:
-	SteamNetServer(CTimer* timer, BOOL	dedicated);
+	SteamNetServer(CTimer* timer, bool	dedicated);
 	virtual ~SteamNetServer();
 
 private:
@@ -56,7 +56,7 @@ private:
 	void			        PollIncomingMessages();
 
 	void			        DisconnectAll();
-	void			        CloseConnection(HSteamNetConnection connection, enmDisconnectReason nReason = EUnknownReason, LPCSTR sReason = nullptr);
+	void			        CloseConnection(HSteamNetConnection connection, enmDisconnectReason nReason = EUnknownReason, const char* sReason = nullptr);
 	void			        DestroyCleint(ClientID clientId);
 
 	void			        GetIpAddress(SteamNetConnectionInfo_t& info, ip_address& out);
@@ -73,5 +73,5 @@ public:
 	virtual void			UpdateClientStatistic(IClient* C) override;
 
 	virtual bool			GetClientAddress(ClientID ID, ip_address& Address, DWORD* pPort = NULL) override;
-	virtual bool			DisconnectClient(IClient* C, LPCSTR Reason) override;
+	virtual bool			DisconnectClient(IClient* C, const char* Reason) override;
 };

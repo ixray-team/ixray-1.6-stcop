@@ -53,7 +53,7 @@ void dxUIRender::GetActiveTextureResolution(Fvector2 &res)
 	res.set(float(T->get_Width()),float(T->get_Height()));
 }
 
-LPCSTR dxUIRender::UpdateShaderName(LPCSTR tex_name, LPCSTR sh_name)
+const char* dxUIRender::UpdateShaderName(const char* tex_name, const char* sh_name)
 {
 	string_path buff;
 	if (FS.exist(buff, _game_textures_, tex_name, ".ogm"))

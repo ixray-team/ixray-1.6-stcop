@@ -129,7 +129,7 @@ bool CPhraseDialog::SayPhrase (DIALOG_SHARED_PTR& phrase_dialog, const shared_st
 #ifdef DEBUG
 				if(psAI_Flags.test(aiDialogs))
 				{
-					LPCSTR phrase_text = next_phrase_vertex->data()->GetText();
+					const char* phrase_text = next_phrase_vertex->data()->GetText();
 					shared_str id = next_phrase_vertex->data()->GetID();
 					Msg("----added phrase text [%s] phrase_id=[%s] id=[%s] to dialog [%s]", phrase_text, phrase_id.c_str(), id.c_str(), phrase_dialog->m_DialogId.c_str());
 				}
@@ -172,7 +172,7 @@ CPhrase* CPhraseDialog::GetPhrase(const shared_str& phrase_id)
 	return phrase_vertex->data();
 }
 
-LPCSTR CPhraseDialog::GetPhraseText	(const shared_str& phrase_id, bool current_speaking)
+const char* CPhraseDialog::GetPhraseText	(const shared_str& phrase_id, bool current_speaking)
 {
 	//CPhraseGraph::CVertex* phrase_vertex = data()->m_PhraseGraph.vertex(phrase_id);
 	//THROW(phrase_vertex);
@@ -194,7 +194,7 @@ LPCSTR CPhraseDialog::GetPhraseText	(const shared_str& phrase_id, bool current_s
 
 	if(ph->m_script_text_id.length() > 0 )
 	{
-		luabind::functor<LPCSTR>	lua_function;
+		luabind::functor<const char*>	lua_function;
 		bool functor_exists		= ai().script_engine().functor(ph->m_script_text_id.c_str() ,lua_function);
 		THROW3(functor_exists, "Cannot find function", ph->m_script_text_id.c_str());
 
@@ -204,7 +204,7 @@ LPCSTR CPhraseDialog::GetPhraseText	(const shared_str& phrase_id, bool current_s
 		return ph->GetScriptHelper()->GetScriptText(ph->GetText(), pSpeakerGO1, pSpeakerGO2, m_DialogId.c_str(), phrase_id.c_str());
 }
 
-LPCSTR CPhraseDialog::DialogCaption()
+const char* CPhraseDialog::DialogCaption()
 {
 	return data()->m_sCaption.size()?*data()->m_sCaption:GetPhraseText("0");
 }
@@ -224,7 +224,7 @@ void CPhraseDialog::Load(shared_str dialog_id)
 #include "../xrScripts/script_engine.h"
 #include "ai_space.h"
 
-void CPhraseDialog::load_shared	(LPCSTR)
+void CPhraseDialog::load_shared	(const char*)
 {
 	const ITEM_DATA& item_data = *id_to_index::GetById(m_DialogId);
 
@@ -251,7 +251,7 @@ void CPhraseDialog::load_shared	(LPCSTR)
 
 	XML_NODE* phrase_list_node = pXML->NavigateToNode(dialog_node, "phrase_list", 0);
 	if(nullptr == phrase_list_node){
-		LPCSTR func = pXML->Read(dialog_node, "init_func", 0, "");
+		const char* func = pXML->Read(dialog_node, "init_func", 0, "");
 
 		luabind::functor<void>	lua_function;
 		bool functor_exists = ai().script_engine().functor(func ,lua_function);
@@ -266,7 +266,7 @@ void CPhraseDialog::load_shared	(LPCSTR)
 	pXML->SetLocalRoot(phrase_list_node);
 
 #ifdef DEBUG // debug & mixed
-	LPCSTR wrong_phrase_id = pXML->CheckUniqueAttrib(phrase_list_node, "phrase", "id");
+	const char* wrong_phrase_id = pXML->CheckUniqueAttrib(phrase_list_node, "phrase", "id");
 	THROW3(wrong_phrase_id == nullptr, *item_data.id, wrong_phrase_id);
 #endif	
 
@@ -276,7 +276,7 @@ void CPhraseDialog::load_shared	(LPCSTR)
 	AddPhrase				(pXML, phrase_node, "0", "");
 }
 
-void CPhraseDialog::SetCaption	(LPCSTR str)
+void CPhraseDialog::SetCaption	(const char* str)
 {
 	data()->m_sCaption = str;
 }
@@ -286,7 +286,7 @@ void CPhraseDialog::SetPriority	(int val)
 	data()->m_iPriority = val;
 }
 
-CPhrase* CPhraseDialog::AddPhrase	(LPCSTR text, const shared_str& phrase_id, const shared_str& prev_phrase_id, int goodwil_level)
+CPhrase* CPhraseDialog::AddPhrase	(const char* text, const shared_str& phrase_id, const shared_str& prev_phrase_id, int goodwil_level)
 {
 	CPhrase* phrase					= nullptr;
 	CPhraseGraph::CVertex* _vertex	= data()->m_PhraseGraph.vertex(phrase_id);
@@ -309,7 +309,7 @@ CPhrase* CPhraseDialog::AddPhrase	(LPCSTR text, const shared_str& phrase_id, con
 
 void CPhraseDialog::AddPhrase	(CUIXml* pXml, XML_NODE* phrase_node, const shared_str& phrase_id, const shared_str& prev_phrase_id)
 {
-	LPCSTR sText			= pXml->Read(phrase_node, "text", 0, "");
+	const char* sText			= pXml->Read(phrase_node, "text", 0, "");
 	int		gw				= pXml->ReadInt(phrase_node, "goodwill", 0, -10000);
 	CPhrase* ph				= AddPhrase(sText, phrase_id, prev_phrase_id, gw);
 	if (!ph)
@@ -327,7 +327,7 @@ void CPhraseDialog::AddPhrase	(CUIXml* pXml, XML_NODE* phrase_node, const shared
 	int next_num = pXml->GetNodesNum(phrase_node, "next");
 	for (int i = 0; i < next_num; ++i)
 	{
-		LPCSTR next_phrase_id_str		= pXml->Read(phrase_node, "next", i, "");
+		const char* next_phrase_id_str		= pXml->Read(phrase_node, "next", i, "");
 		XML_NODE* next_phrase_node		= pXml->NavigateToNodeWithAttribute("phrase", "id", next_phrase_id_str);
 		R_ASSERT2						(next_phrase_node, next_phrase_id_str );
 		AddPhrase						(pXml, next_phrase_node, next_phrase_id_str, phrase_id);

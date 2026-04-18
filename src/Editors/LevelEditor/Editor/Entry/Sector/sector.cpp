@@ -29,7 +29,7 @@ bool CSectorItem::IsItem(const char* O, const char* M){
 	return (0==stricmp(O,object->GetName()))&&(0==stricmp(M,mesh->Name().c_str()));
 }
 
-CSector::CSector(LPVOID data, LPCSTR name):CCustomObject(data,name)
+CSector::CSector(LPVOID data, const char* name):CCustomObject(data,name)
 {
 	Construct(data);
 }
@@ -454,10 +454,10 @@ void CSector::LoadSectorDef(IReader* F)
 	sector_items.push_back(sitem);
 }
 
-void CSector::LoadSectorDefLTX(CInifile& ini, LPCSTR sect_name, u32 item_idx)
+void CSector::LoadSectorDefLTX(CInifile& ini, const char* sect_name, u32 item_idx)
 {
-	LPCSTR 		o_name = NULL;
-	LPCSTR 		m_name = NULL;
+	const char* 		o_name = NULL;
+	const char* 		m_name = NULL;
 
 	CSectorItem 	sitem;
 	string512 		buff;
@@ -501,7 +501,7 @@ void CSector::LoadSectorDefLTX(CInifile& ini, LPCSTR sect_name, u32 item_idx)
 	sector_items.push_back(sitem);
 }
 
-bool CSector::LoadLTX(CInifile& ini, LPCSTR sect_name)
+bool CSector::LoadLTX(CInifile& ini, const char* sect_name)
 {
 	u32 version = ini.r_u32		(sect_name, "version");
 	if( version<0x0011)
@@ -533,7 +533,7 @@ bool CSector::LoadLTX(CInifile& ini, LPCSTR sect_name)
 	return true;
 }
 
-void CSector::SaveLTX(CInifile& ini, LPCSTR sect_name)
+void CSector::SaveLTX(CInifile& ini, const char* sect_name)
 {
 	CCustomObject::SaveLTX(ini, sect_name);
 
@@ -665,7 +665,7 @@ xr_token level_sub_map[] =
     {NULL, 30}
 };
 
-void CSector::FillProp(LPCSTR pref, PropItemVec& items)
+void CSector::FillProp(const char* pref, PropItemVec& items)
 {
 	inherited::FillProp(pref,items);        
 	PHelper().CreateFColor(items, PrepareKey(pref,"Color"), &sector_color);

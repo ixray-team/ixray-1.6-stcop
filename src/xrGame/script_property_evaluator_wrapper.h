@@ -16,7 +16,7 @@ class CScriptPropertyEvaluatorWrapper :
 	public luabind::wrap_base
 {
 public:
-	IC CScriptPropertyEvaluatorWrapper(CScriptGameObject* object = 0, LPCSTR evaluator_name = "") :
+	IC CScriptPropertyEvaluatorWrapper(CScriptGameObject* object = 0, const char* evaluator_name = "") :
 		CScriptPropertyEvaluator(object, evaluator_name) 
 	{
 	};

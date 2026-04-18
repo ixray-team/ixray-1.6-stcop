@@ -105,7 +105,7 @@ void CScriptProcess::update()
 #endif
 }
 
-void CScriptProcess::add_script	(LPCSTR	script_name,bool do_string, bool reload)
+void CScriptProcess::add_script	(const char*	script_name,bool do_string, bool reload)
 {
 	m_scripts_to_run.push_back(CScriptToRun(script_name,do_string,reload));
 }

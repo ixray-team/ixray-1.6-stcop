@@ -28,7 +28,7 @@ static u32 g_batch_500;
 static u32 g_batch_1000;
 static u32 g_batch_5000;
 
-u16 RegisterShader(LPCSTR T)
+u16 RegisterShader(const char* T)
 {
 	for (u32 it = 0; it < pBuild->g_Shaders.size(); it++)
 	{
@@ -183,7 +183,7 @@ void CBuild::SaveTREE(IWriter& fs)
 	clMsg("Shader table...");
 	fs.open_chunk(fsL_SHADERS);
 	fs.w_u32(g_Shaders.size());
-	for (xr_vector<LPCSTR>::iterator T = g_Shaders.begin(); T != g_Shaders.end(); T++)
+	for (xr_vector<const char*>::iterator T = g_Shaders.begin(); T != g_Shaders.end(); T++)
 		fs.w_stringZ(*T);
 	fs.close_chunk();
 

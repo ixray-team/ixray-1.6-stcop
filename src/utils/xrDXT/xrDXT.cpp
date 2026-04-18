@@ -7,9 +7,9 @@
 
 #include "../../xrEngine/ETextureParams.h"
 
-extern int DXTCompressImageRI(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth);
-extern int DXTCompressImageNVTT(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth);
-extern int DXTCompressBump(LPCSTR out_name, u8* raw_data, u8* normal_map, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth);
+extern int DXTCompressImageRI(const char* out_name, u8* raw_data, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth);
+extern int DXTCompressImageNVTT(const char* out_name, u8* raw_data, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth);
+extern int DXTCompressBump(const char* out_name, u8* raw_data, u8* normal_map, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth);
 
 #ifdef IXR_WINDOWS
 void DXTUtils::Converter::MakeTGA(xr_path From, xr_path To)

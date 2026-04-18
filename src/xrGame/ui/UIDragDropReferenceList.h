@@ -23,7 +23,7 @@ public:
 
 	void Initialize();
 	CUICellContainer* GetContainer() {return m_container;};
-	void LoadItemTexture(LPCSTR section, Ivector2 cell_pos);
+	void LoadItemTexture(const char* section, Ivector2 cell_pos);
 	void ReloadReferences(CInventoryOwner* pActor);
 
 	virtual void 	OnItemDBClick		(CUIWindow* w, void* pData);

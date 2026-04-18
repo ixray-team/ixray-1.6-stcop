@@ -9,7 +9,7 @@ const char * const STATS_XML = "stats.xml";
 
 //////////////////////////////////////////////////////////////////////////
 
-CUIStatsWnd::CUIStatsWnd(LPCSTR XML)
+CUIStatsWnd::CUIStatsWnd(const char* XML)
 	: m_uHighlightedItem(0xffffffff)
 {
 	Init(XML);
@@ -24,7 +24,7 @@ CUIStatsWnd::~CUIStatsWnd()
 
 //////////////////////////////////////////////////////////////////////////
 
-void CUIStatsWnd::Init(LPCSTR XML)
+void CUIStatsWnd::Init(const char* XML)
 {
 	CUIXml uiXml;
 	if (XML) strcpy(XML_NAME, XML);

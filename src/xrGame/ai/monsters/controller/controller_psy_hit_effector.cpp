@@ -2,7 +2,7 @@
 #include "controller_psy_hit_effector.h"
 
 
-//void CPsyHitEffectorPP::load(LPCSTR section)
+//void CPsyHitEffectorPP::load(const char* section)
 //{
 //	inherited::load(section);
 //

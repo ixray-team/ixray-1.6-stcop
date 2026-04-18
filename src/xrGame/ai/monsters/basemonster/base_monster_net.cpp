@@ -24,9 +24,9 @@ void CBaseMonster::net_Save(NET_Packet& P)
 	m_pPhysics_support->in_NetSave(P);
 }
 
-BOOL CBaseMonster::net_SaveRelevant	()
+bool CBaseMonster::net_SaveRelevant	()
 {
-	return (inherited::net_SaveRelevant() || BOOL(PPhysicsShell() != nullptr));
+	return (inherited::net_SaveRelevant() || bool(PPhysicsShell() != nullptr));
 }
 
 void CBaseMonster::SyncRead(NET_Packet& Packet)

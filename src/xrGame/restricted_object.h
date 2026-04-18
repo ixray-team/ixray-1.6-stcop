@@ -40,7 +40,7 @@ protected:
 public:
 	IC						CRestrictedObject				(CCreature *object);
 	virtual					~CRestrictedObject				();
-	virtual BOOL			net_Spawn						(CSE_Abstract* data);
+	virtual bool			net_Spawn						(CSE_Abstract* data);
 	virtual void			net_Destroy						();
 
 public:

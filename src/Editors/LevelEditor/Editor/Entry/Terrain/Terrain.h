@@ -15,7 +15,7 @@ private:
 	Fbox m_TBBox;
 
 public:
-	CTerrain(LPVOID data, LPCSTR name);
+	CTerrain(LPVOID data, const char* name);
 	virtual ~CTerrain();
 
 	void Construct(LPVOID data);
@@ -31,7 +31,7 @@ public:
 	virtual void Scale(Fvector& amount);
 	virtual void OnUpdateTransform() override;
 
-	virtual void FillProp(LPCSTR pref, PropItemVec& items) override;
+	virtual void FillProp(const char* pref, PropItemVec& items) override;
 
 	virtual void BoxQuery(SPickQuery& pinf) override;
 	virtual void RayQuery(SPickQuery& pinf) override;

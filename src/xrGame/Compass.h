@@ -8,7 +8,7 @@ class CUICompass;
 class CCompass final : public CCustomDetector
 {
 public:
-	void Load(LPCSTR section) override;
+	void Load(const char* section) override;
 	void shedule_Update(u32 dt) override;
 	void on_a_hud_attach() override;
 	void on_b_hud_detach() override;

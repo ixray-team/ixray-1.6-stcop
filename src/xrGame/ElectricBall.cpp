@@ -16,7 +16,7 @@ CElectricBall::~CElectricBall(void)
 {
 }
 
-void CElectricBall::Load(LPCSTR section) 
+void CElectricBall::Load(const char* section) 
 {
 	inherited::Load(section);
 }

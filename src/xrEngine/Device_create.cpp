@@ -6,16 +6,16 @@
 #include "Render.h"
 #include "../xrCore/Collision/xrCDB.h"
 
-extern XRCORE_API BOOL *cdb_bDebug;
+extern XRCORE_API bool *cdb_bDebug;
 
 void	SetupGPU(IRenderDeviceRender *pRender)
 {
 	// Command line
 	char *lpCmdLine		= Core.Params;
 
-	BOOL bForceGPU_SW;
-	BOOL bForceGPU_NonPure;
-	BOOL bForceGPU_REF;
+	bool bForceGPU_SW;
+	bool bForceGPU_NonPure;
+	bool bForceGPU_REF;
 
 	if (strstr(lpCmdLine,"-gpu_sw")!=nullptr)		bForceGPU_SW		= TRUE;
 	else										bForceGPU_SW		= FALSE;
@@ -41,7 +41,7 @@ void CRenderDevice::_SetupStates	()
 	m_pRender->SetupStates();
 }
 
-void CRenderDevice::_Create	(LPCSTR shName)
+void CRenderDevice::_Create	(const char* shName)
 {
 	Memory.mem_compact			();
 

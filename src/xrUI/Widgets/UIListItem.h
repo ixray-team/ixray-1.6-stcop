@@ -12,7 +12,7 @@ public:
     virtual ~CUIListItem();
 
     void InitListItem(Fvector2 pos, Fvector2 size);
-    virtual void InitTexture(pcstr tex_name);
+    virtual void InitTexture(const char* tex_name);
 
     void* GetData() { return m_pData; }
     void SetData(void* pData) { m_pData = pData; }

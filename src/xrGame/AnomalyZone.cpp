@@ -108,7 +108,7 @@ void CAnomalyZone::UpdateSoundsPosition(xr_vector<ref_sound>& soundsArray, const
 	}
 }
 
-void CAnomalyZone::ParseRandomSounds(LPCSTR section, LPCSTR soundParameter, xr_vector<ref_sound> &soundsArray)
+void CAnomalyZone::ParseRandomSounds(const char* section, const char* soundParameter, xr_vector<ref_sound> &soundsArray)
 {
 	soundsArray.clear();
 
@@ -126,7 +126,7 @@ void CAnomalyZone::ParseRandomSounds(LPCSTR section, LPCSTR soundParameter, xr_v
 	}
 }
 
-void CAnomalyZone::Load(LPCSTR section) 
+void CAnomalyZone::Load(const char* section) 
 {
 	inherited::Load(section);
 
@@ -147,7 +147,7 @@ void CAnomalyZone::Load(LPCSTR section)
 	m_StateTime[eZoneStateBlowout]		= pSettings->r_s32(section, "blowout_time");
 	m_StateTime[eZoneStateAccumulate]	= pSettings->r_s32(section, "accamulate_time");
 	
-	LPCSTR sound_str = nullptr;
+	const char* sound_str = nullptr;
 	
 	ParseRandomSounds(section, "idle_sound", m_idle_sounds_variants);
 	ParseRandomSounds(section, "accum_sound", m_accum_sounds_variants);
@@ -314,7 +314,7 @@ void CAnomalyZone::Load(LPCSTR section)
 	if( m_zone_flags.test(eIdleLight) )
 	{
 		m_fIdleLightRange		= pSettings->r_float(section,"idle_light_range");
-		LPCSTR light_anim		= pSettings->r_string(section,"idle_light_anim");
+		const char* light_anim		= pSettings->r_string(section,"idle_light_anim");
 		m_pIdleLAnim			= LALib.FindItem(light_anim);
 		m_fIdleLightHeight		= pSettings->r_float(section,"idle_light_height");
 		m_zone_flags.set(eIdleLightVolumetric,READ_IF_EXISTS(pSettings, r_bool, section, "idle_light_volumetric", false) );
@@ -333,7 +333,7 @@ void CAnomalyZone::Load(LPCSTR section)
 	m_zone_flags.set			(eAffectPickDOF, READ_IF_EXISTS(pSettings, r_bool, section, "pick_dof_effector", false));
 }
 
-BOOL CAnomalyZone::net_Spawn(CSE_Abstract* DC) 
+bool CAnomalyZone::net_Spawn(CSE_Abstract* DC) 
 {
 	if (!inherited::net_Spawn(DC))
 		return					(FALSE);
@@ -672,7 +672,7 @@ void CAnomalyZone::feel_touch_delete(CObject* O)
 	SZoneObjectInfo::remove(this, pGameObject);
 }
 
-BOOL CAnomalyZone::feel_touch_contact(CObject* O) 
+bool CAnomalyZone::feel_touch_contact(CObject* O) 
 {
 	if (!O || O->getDestroy()) return FALSE;
 	CGameObject* pGameObject = O->cast_game_object();
@@ -857,7 +857,7 @@ void CAnomalyZone::PlayEntranceParticles(CGameObject* pObject)
 		GetRandomSound(m_entrance_sounds_variants).play_at_pos(0, pObject->Position());
 	}
 
-	LPCSTR particle_str = nullptr;
+	const char* particle_str = nullptr;
 
 	if (pObject->Radius() < SMALL_OBJECT_RADIUS)
 	{
@@ -919,7 +919,7 @@ u8 CAnomalyZone::PlayEntranceSmallParticles(const Fvector& pos, const Fvector& d
 	{
 		if (play_effect)
 		{
-			LPCSTR particles_str = m_sBulletEntranceParticles.size() ? m_sBulletEntranceParticles.c_str() : m_sEntranceParticlesSmall.size() ? m_sEntranceParticlesSmall.c_str() : nullptr;
+			const char* particles_str = m_sBulletEntranceParticles.size() ? m_sBulletEntranceParticles.c_str() : m_sEntranceParticlesSmall.size() ? m_sEntranceParticlesSmall.c_str() : nullptr;
 			if(particles_str)
 			{
 				if (!m_entrance_sounds_variants.empty())
@@ -1517,7 +1517,7 @@ void CAnomalyZone::GoEnabledState()
 		u_EventSend		(P);
 }
 
-BOOL CAnomalyZone::feel_touch_on_contact	(CObject *O)
+bool CAnomalyZone::feel_touch_on_contact	(CObject *O)
 {
 	if ((SpatialComponent->spatial.type & ESPATIAL_TYPE::VISIBLEFORAI) == ESPATIAL_TYPE::NONE)
 		return			(FALSE);
@@ -1525,7 +1525,7 @@ BOOL CAnomalyZone::feel_touch_on_contact	(CObject *O)
 	return				(inherited::feel_touch_on_contact(O));
 }
 
-BOOL CAnomalyZone::AlwaysTheCrow()
+bool CAnomalyZone::AlwaysTheCrow()
 {
 	bool b_idle = ZoneState()==eZoneStateIdle || ZoneState()==eZoneStateDisabled;
  	if(!b_idle || (m_zone_flags.test(eAlwaysFastmode) && IsEnabled()) )

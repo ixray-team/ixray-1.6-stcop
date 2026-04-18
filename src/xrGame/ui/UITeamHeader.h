@@ -34,7 +34,7 @@ private:
 public:
 					UITeamHeader	(UITeamState const * const parent);
 	virtual			~UITeamHeader	();
-			void	Init			(CUIXml& uiXml, LPCSTR path);
+			void	Init			(CUIXml& uiXml, const char* path);
 	virtual	void	Update			();
 
 	virtual CUIWindow* ui_cast_window() { return this; }

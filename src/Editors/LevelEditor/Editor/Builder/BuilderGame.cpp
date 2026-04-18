@@ -5,7 +5,7 @@ bool sort_fog_vol(EFogVolume* fv1, EFogVolume* fv2)
     return (fv1->m_volumeType < fv2->m_volumeType);
 }
 
-BOOL SceneBuilder::BuildGame()
+bool SceneBuilder::BuildGame()
 {
     SExportStreams F;
     F.envmodif.stream.open_chunk(F.envmodif.chunk++);
@@ -14,7 +14,7 @@ BOOL SceneBuilder::BuildGame()
 
     if (!Scene->ExportGame(&F))				return FALSE;
 
-    BOOL bRes = TRUE;
+    bool bRes = TRUE;
     // save spawn
     {
         xr_string lev_spawn = MakeLevelPath("level.spawn");

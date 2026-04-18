@@ -16,15 +16,15 @@ public:
 	// appearance
 
 	virtual	void 	InitButton					(Fvector2 pos, Fvector2 size);
-	virtual bool 	InitTexture					(LPCSTR tex_name, bool fatal = true);
-	virtual void 	InitTexture					(LPCSTR tex_enabled, LPCSTR tex_disabled, LPCSTR tex_touched, LPCSTR tex_highlighted, bool fatal = true);
+	virtual bool 	InitTexture					(const char* tex_name, bool fatal = true);
+	virtual void 	InitTexture					(const char* tex_enabled, const char* tex_disabled, const char* tex_touched, const char* tex_highlighted, bool fatal = true);
 
 //.			void 	SetTextColor				(u32 color);
 	virtual void 	SetTextureOffset			(float x, float y);	
 	virtual void 	SetWidth					(float width);
 	virtual void 	SetHeight					(float height);
-			void 	InitSoundH					(LPCSTR sound_file);
-			void 	InitSoundT					(LPCSTR sound_file);
+			void 	InitSoundH					(const char* sound_file);
+			void 	InitSoundT					(const char* sound_file);
 
 	virtual void 	SetBtnStaticClrE			(u32 clr);
 	virtual void 	SetBtnStaticClrD			(u32 clr);

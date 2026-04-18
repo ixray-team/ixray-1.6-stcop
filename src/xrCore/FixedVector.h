@@ -65,7 +65,7 @@ public:
 		array[id] = V;
 	}
 	IC void		assign(iterator p, int c) { VERIFY(c>0 && c<dim); CopyMemory(array,p,c*sizeof(value_type)); count=c; }
-	IC BOOL		equal (const svector<value_type,dim>& base) const
+	IC bool		equal (const svector<value_type,dim>& base) const
 	{
 		if (size()!=base.size())	return FALSE;
 		for (u32 cmp=0; cmp<size(); cmp++)	if ((*this)[cmp]!=base[cmp])	return FALSE;

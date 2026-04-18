@@ -253,7 +253,7 @@ public:
 	IC	void						set_Scissor			(Irect*	rect=NULL);
 
 	// constants
-	ICF	ref_constant				get_c				(LPCSTR			n)													{ if (ctable) return ctable->get(n); return 0;}
+	ICF	ref_constant				get_c				(const char*			n)													{ if (ctable) return ctable->get(n); return 0;}
 	ICF	ref_constant				get_c				(shared_str&	n)													{ if (ctable) return ctable->get(n); return 0;}
 
 	// constants - direct (fast)
@@ -269,16 +269,16 @@ public:
 #endif //USE_DX11
 
 
-	// constants - LPCSTR (slow)
-	ICF	void						set_c				(LPCSTR n, const Fmatrix& A)										{ if(!ctable) return; ref_constant c = ctable->get(n);  set_c(c ? &*c : nullptr,A);		}
-	ICF	void						set_c				(LPCSTR n, const Fvector4& A)										{ if(!ctable) return; ref_constant c = ctable->get(n);  set_c(c ? &*c : nullptr,A);		}
-	ICF	void						set_c				(LPCSTR n, float x, float y, float z, float w)						{ if(!ctable) return; ref_constant c = ctable->get(n);  set_c(c ? &*c : nullptr,x,y,z,w);	}
-	ICF	void						set_ca				(LPCSTR n, u32 e, const Fmatrix& A)									{ if(!ctable) return; ref_constant c = ctable->get(n);  set_ca(c ? &*c : nullptr,e,A);		}
-	ICF	void						set_ca				(LPCSTR n, u32 e, const Fvector4& A)								{ if(!ctable) return; ref_constant c = ctable->get(n);  set_ca(c ? &*c : nullptr,e,A);		}
-	ICF	void						set_ca				(LPCSTR n, u32 e, float x, float y, float z, float w)				{ if(!ctable) return; ref_constant c = ctable->get(n);  set_ca(c ? &*c : nullptr,e,x,y,z,w);}
+	// constants - const char* (slow)
+	ICF	void						set_c				(const char* n, const Fmatrix& A)										{ if(!ctable) return; ref_constant c = ctable->get(n);  set_c(c ? &*c : nullptr,A);		}
+	ICF	void						set_c				(const char* n, const Fvector4& A)										{ if(!ctable) return; ref_constant c = ctable->get(n);  set_c(c ? &*c : nullptr,A);		}
+	ICF	void						set_c				(const char* n, float x, float y, float z, float w)						{ if(!ctable) return; ref_constant c = ctable->get(n);  set_c(c ? &*c : nullptr,x,y,z,w);	}
+	ICF	void						set_ca				(const char* n, u32 e, const Fmatrix& A)									{ if(!ctable) return; ref_constant c = ctable->get(n);  set_ca(c ? &*c : nullptr,e,A);		}
+	ICF	void						set_ca				(const char* n, u32 e, const Fvector4& A)								{ if(!ctable) return; ref_constant c = ctable->get(n);  set_ca(c ? &*c : nullptr,e,A);		}
+	ICF	void						set_ca				(const char* n, u32 e, float x, float y, float z, float w)				{ if(!ctable) return; ref_constant c = ctable->get(n);  set_ca(c ? &*c : nullptr,e,x,y,z,w);}
 #ifdef USE_DX11																															 
-	ICF	void						set_c				(LPCSTR n, float A)													{ if(!ctable) return; ref_constant c = ctable->get(n);  set_c(c ? &*c : nullptr,A);		}
-	ICF	void						set_c				(LPCSTR n, int A)													{ if(!ctable) return; ref_constant c = ctable->get(n);  set_c(c ? &*c : nullptr,A);		}
+	ICF	void						set_c				(const char* n, float A)													{ if(!ctable) return; ref_constant c = ctable->get(n);  set_c(c ? &*c : nullptr,A);		}
+	ICF	void						set_c				(const char* n, int A)													{ if(!ctable) return; ref_constant c = ctable->get(n);  set_c(c ? &*c : nullptr,A);		}
 #endif //USE_DX11
 
 	// constants - shared_str (average)

@@ -53,8 +53,8 @@ private:
 	IC	EWorldProperties	object_property			(EObjectAction object_action) const;
 #ifdef LOG_ACTION
 public:
-	virtual LPCSTR			action2string			(const _action_id_type &action_id);
-	virtual LPCSTR			property2string			(const u32 &property_id);
+	virtual const char*			action2string			(const _action_id_type &action_id);
+	virtual const char*			property2string			(const u32 &property_id);
 #endif
 
 public:

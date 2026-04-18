@@ -60,7 +60,7 @@ IC	void construct_id_string					(LPSTR result, const xr_vector<ALife::_OBJECT_ID
 }
 #endif
 
-BOOL CRestrictedObject::net_Spawn			(CSE_Abstract* data)
+bool CRestrictedObject::net_Spawn			(CSE_Abstract* data)
 {
 	CSE_Abstract				*abstract	= (CSE_Abstract*)(data);
 	CSE_ALifeMonsterAbstract	*monster	= smart_cast<CSE_ALifeMonsterAbstract*>(abstract);

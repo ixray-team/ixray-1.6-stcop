@@ -250,7 +250,7 @@ float		ps_r__test_exp_to_shaders_2	= 1.0f;
 float		ps_r__test_exp_to_shaders_3	= 1.0f;
 float		ps_r__test_exp_to_shaders_4	= 1.0f;
 
-BOOL		ps_r2_particle_dt			= FALSE;
+bool		ps_r2_particle_dt			= FALSE;
 
 int			r_debug_render_depth		= 0;
 
@@ -276,8 +276,8 @@ public:
 			CHK_DX(RDevice->SetSamplerState( i, D3DSAMP_MAXANISOTROPY, val	));
 #endif //USE_DX11
 	}
-	CCC_tf_Aniso(LPCSTR N, int*	v) : CCC_Integer(N, v, 1, 16)		{ };
-	virtual void Execute	(LPCSTR args)
+	CCC_tf_Aniso(const char* N, int*	v) : CCC_Integer(N, v, 1, 16)		{ };
+	virtual void Execute	(const char* args)
 	{
 		CCC_Integer::Execute	(args);
 		apply					();
@@ -291,7 +291,7 @@ public:
 
 class CCC_tf_MipBias: public CCC_Float {
 public:
-	CCC_tf_MipBias(LPCSTR N, float* v) : CCC_Float(N, v, -3.0f, 3.0f) {};
+	CCC_tf_MipBias(const char* N, float* v) : CCC_Float(N, v, -3.0f, 3.0f) {};
 	void apply() {
 		if (0 == RDevice) {
 			return;
@@ -306,7 +306,7 @@ public:
 		}
 #endif
 	}
-	virtual void Execute(LPCSTR args) {
+	virtual void Execute(const char* args) {
 		CCC_Float::Execute(args);
 		apply();
 	}
@@ -320,8 +320,8 @@ public:
 class CCC_R2GM		: public CCC_Float
 {
 public:
-	CCC_R2GM(LPCSTR N, float*	v) : CCC_Float(N, v, 0.f, 4.f) { *v = 0; };
-	virtual void	Execute	(LPCSTR args)
+	CCC_R2GM(const char* N, float*	v) : CCC_Float(N, v, 0.f, 4.f) { *v = 0; };
+	virtual void	Execute	(const char* args)
 	{
 		if (0==xr_strcmp(args,"on"))	{
 			ps_r2_ls_flags.set	(R2FLAG_GLOBALMATERIAL,TRUE);
@@ -330,7 +330,7 @@ public:
 		} else {
 			CCC_Float::Execute	(args);
 			if (ps_r2_ls_flags.test(R2FLAG_GLOBALMATERIAL))	{
-				static LPCSTR	name[4]	=	{ "oren", "blin", "phong", "metal" };
+				static const char*	name[4]	=	{ "oren", "blin", "phong", "metal" };
 				float	mid		= *value	;
 				int		m0		= iFloor(mid)	% 4;
 				int		m1		= (m0+1)		% 4;
@@ -343,14 +343,14 @@ public:
 class CCC_Screenshot : public IConsole_Command
 {
 public:
-	CCC_Screenshot(LPCSTR N) : IConsole_Command(N)  { };
-	virtual void Execute(LPCSTR args) {
+	CCC_Screenshot(const char* N) : IConsole_Command(N)  { };
+	virtual void Execute(const char* args) {
 		if (g_dedicated_server)
 			return;
 
 		string_path	name;	name[0]=0;
 		sscanf		(args,"%s",	name);
-		LPCSTR		image	= xr_strlen(name)?name:0;
+		const char*		image	= xr_strlen(name)?name:0;
 		::Render->Screenshot(IRender_interface::SM_NORMAL,image);
 	}
 };
@@ -360,9 +360,9 @@ class CCC_Preset :
 	public CCC_Token
 {
 public:
-	CCC_Preset(LPCSTR N, u32* V, xr_token* T) : CCC_Token(N,V,T)	{}	;
+	CCC_Preset(const char* N, u32* V, xr_token* T) : CCC_Token(N,V,T)	{}	;
 
-	virtual void	Execute	(LPCSTR args)	{
+	virtual void	Execute	(const char* args)	{
 		CCC_Token::Execute	(args);
 		string_path		_cfg;
 		string_path		cmd;
@@ -400,9 +400,9 @@ protected	:
 
 public		:
 
-	CCC_memory_stats(LPCSTR N) :	IConsole_Command(N)	{ bEmptyArgsHandled = true; };
+	CCC_memory_stats(const char* N) :	IConsole_Command(N)	{ bEmptyArgsHandled = true; };
 
-	virtual void	Execute	(LPCSTR args)
+	virtual void	Execute	(const char* args)
 	{
 		u32 m_base = 0;
 		u32 c_base = 0;
@@ -417,10 +417,10 @@ public		:
 class CCC_DofFar : public CCC_Float
 {
 public:
-	CCC_DofFar(LPCSTR N, float* V, float _min=0.0f, float _max=10000.0f) 
+	CCC_DofFar(const char* N, float* V, float _min=0.0f, float _max=10000.0f) 
 		: CCC_Float( N, V, _min, _max){}
 
-	virtual void Execute(LPCSTR args) 
+	virtual void Execute(const char* args) 
 	{
 		float v = float(atof(args));
 
@@ -447,10 +447,10 @@ public:
 class CCC_DofNear : public CCC_Float
 {
 public:
-	CCC_DofNear(LPCSTR N, float* V, float _min=0.0f, float _max=10000.0f) 
+	CCC_DofNear(const char* N, float* V, float _min=0.0f, float _max=10000.0f) 
 		: CCC_Float( N, V, _min, _max){}
 
-	virtual void Execute(LPCSTR args) 
+	virtual void Execute(const char* args) 
 	{
 		float v = float(atof(args));
 
@@ -477,10 +477,10 @@ public:
 class CCC_DofFocus : public CCC_Float
 {
 public:
-	CCC_DofFocus(LPCSTR N, float* V, float _min=0.0f, float _max=10000.0f) 
+	CCC_DofFocus(const char* N, float* V, float _min=0.0f, float _max=10000.0f) 
 		: CCC_Float( N, V, _min, _max){}
 
-	virtual void Execute(LPCSTR args) 
+	virtual void Execute(const char* args) 
 	{
 		float v = float(atof(args));
 
@@ -514,10 +514,10 @@ public:
 class CCC_Dof : public CCC_Vector3
 {
 public:
-	CCC_Dof(LPCSTR N, Fvector* V, const Fvector _min, const Fvector _max) : 
+	CCC_Dof(const char* N, Fvector* V, const Fvector _min, const Fvector _max) : 
 	  CCC_Vector3(N, V, _min, _max) {;}
 
-	virtual void	Execute	(LPCSTR args)
+	virtual void	Execute	(const char* args)
 	{
 		Fvector v;
 		if (3!=sscanf(args,"%f,%f,%f",&v.x,&v.y,&v.z))	
@@ -549,8 +549,8 @@ public:
 class CCC_DumpResources : public IConsole_Command
 {
 public:
-	CCC_DumpResources(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
-	virtual void Execute(LPCSTR args) 
+	CCC_DumpResources(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+	virtual void Execute(const char* args) 
 	{
 		dxRenderDeviceRender::Instance().Resources->Dump(false);
 	}
@@ -563,8 +563,8 @@ public:
 class CCC_Fog_Reload : public IConsole_Command
 {
 public:
-	CCC_Fog_Reload(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
-	virtual void Execute(LPCSTR args) 
+	CCC_Fog_Reload(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+	virtual void Execute(const char* args) 
 	{
 		FluidManager.UpdateProfiles();
 	}
@@ -574,11 +574,11 @@ public:
 class CCC_DetailRadius : public CCC_Integer
 {
 public:
-	CCC_DetailRadius(LPCSTR N, int* V, int _min = 0, int _max = 999) : CCC_Integer(N, V, _min, _max)
+	CCC_DetailRadius(const char* N, int* V, int _min = 0, int _max = 999) : CCC_Integer(N, V, _min, _max)
 	{
 	};
 	
-	virtual void Execute(LPCSTR args) {
+	virtual void Execute(const char* args) {
 		CCC_Integer::Execute(args);
 
 		dm_current_size				= iFloor((float)ps_r__detail_radius/4)*2;
@@ -819,7 +819,7 @@ void		xrRender_initconsole	()
 	CMD2(CCC_Boolean, "ui_dbg_graphic", &Engine.External.EditorStates[(int)EditorUI::Shaders]);
 	CMD1(CCC_DumpResources, "dump_resources");
 
-	CMD4(CCC_Integer, "r_particles_real_dt", &ps_r2_particle_dt, 0, 1);
+	CMD2(CCC_Boolean, "r_particles_real_dt", &ps_r2_particle_dt);
 	tw_min.set(-10, -10, -EPS_S);	tw_max.set(10, 10, EPS_S);
 	CMD4(CCC_Vector3, "r_taa_jitter_scale", &ps_r_taa_jitter_scale, tw_min, tw_max);
 

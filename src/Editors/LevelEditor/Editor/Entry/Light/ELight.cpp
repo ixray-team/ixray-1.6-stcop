@@ -24,7 +24,7 @@ enum{
 #define NORM_DYN_COLOR 	0x0000FF00
 #define LOCK_COLOR 		0x00FF0000
 
-CLight::CLight(LPVOID data, LPCSTR name):CCustomObject(data,name)
+CLight::CLight(LPVOID data, const char* name):CCustomObject(data,name)
 {
 	Construct(data);
 }
@@ -70,7 +70,7 @@ void CLight::CopyFrom(CLight* src)
 	THROW2("CLight:: Go to AlexMX");
 }
 
-void CLight::AffectD3D(BOOL flag){
+void CLight::AffectD3D(bool flag){
 	m_UseInD3D = flag;
     UI->UpdateScene();
 }
@@ -193,7 +193,7 @@ void CLight::Update()
 }
 
 
-LPCSTR CLight::GetLControlName()
+const char* CLight::GetLControlName()
 {
     ESceneLightTool* lt		= smart_cast<ESceneLightTool*>(FParentTools); VERIFY(lt);
     xr_rtoken* lc			= lt->FindLightControl(m_LControl);

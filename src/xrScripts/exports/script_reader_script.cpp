@@ -18,7 +18,7 @@ static bool r_eof_semi(IReader *self_)
 	return			(!!self_->eof());
 }
 
-static LPCSTR r_stringZ_semi(IReader *self_)
+static const char* r_stringZ_semi(IReader *self_)
 {
 	shared_str		temp;
 	self_->r_stringZ	(temp);

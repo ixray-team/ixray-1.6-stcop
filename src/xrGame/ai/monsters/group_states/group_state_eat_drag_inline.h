@@ -34,7 +34,7 @@ void CStateGroupDragAbstract::initialize()
 		m_failed = true;
 		return;
 	}
-	LPCSTR bones = ini->r_string( "capture_used_bones","bones" );
+	const char* bones = ini->r_string( "capture_used_bones","bones" );
 
 	int				bone_number = _GetItemCount( bones );
 	u16				*vbones = (u16*)_alloca(bone_number*sizeof(u16));

@@ -249,9 +249,9 @@ public:
 #ifdef __BORLANDC__    
 	IC TElTreeItem*		Item			(){return (TElTreeItem*)item;}
 #endif
-	IC LPCSTR			Key				(){return key.c_str();}
-    IC void				Enable			(BOOL val){m_Flags.set(flDisabled,!val);}
-    IC BOOL				Enabled			(){return !m_Flags.is(flDisabled);}
+	IC const char*			Key				(){return key.c_str();}
+    IC void				Enable			(bool val){m_Flags.set(flDisabled,!val);}
+    IC bool				Enabled			(){return !m_Flags.is(flDisabled);}
 	IC void				OnChange		()
     {
     	for (PropValueIt it=values.begin(); values.end() != it; ++it)
@@ -405,7 +405,7 @@ public:
     {
         return (0==xr_strcmp(value,((CTextValue*)val)->value));
     }
-    bool				ApplyValue		(LPCSTR val)
+    bool				ApplyValue		(const char* val)
     {
         if (0!=xr_strcmp(value,val)){
             xr_strcpy	(value,xr_strlen(val)+1,val);
@@ -430,7 +430,7 @@ public:
     //TOnDrawThumbnail	OnDrawThumbnailEvent;
     void*				m_FillParam;
 // utils
-    void				AppendChooseItem	(LPCSTR name, LPCSTR hint)
+    void				AppendChooseItem	(const char* name, const char* hint)
     {
 #ifdef _EDITOR
         VERIFY(m_Items); 
@@ -438,7 +438,7 @@ public:
 #endif
 }
 public:
-						ChooseValue			(shared_str* val, u32 cid, LPCSTR path, void* param, u32 sub_item_count, u32 choose_flags):RTextValue(val),m_ChooseID(cid),m_StartPath(path),subitem(sub_item_count),m_Items(0),m_FillParam(param),OnChooseFillEvent(0),/*OnDrawThumbnailEvent(0),*/m_ChooseFlags(choose_flags){}
+						ChooseValue			(shared_str* val, u32 cid, const char* path, void* param, u32 sub_item_count, u32 choose_flags):RTextValue(val),m_ChooseID(cid),m_StartPath(path),subitem(sub_item_count),m_Items(0),m_FillParam(param),OnChooseFillEvent(0),/*OnDrawThumbnailEvent(0),*/m_ChooseFlags(choose_flags){}
 };
 
 class MultiChooseValue:
@@ -484,7 +484,7 @@ public:
     virtual xr_string GetDrawText(TOnDrawTextEvent OnDrawText) { return ""; };
 };
 
-using BOOLValue = CustomValue<BOOL>;
+using BOOLValue = CustomValue<int>;
 using BoolValue = CustomValue<bool>;
 //------------------------------------------------------------------------------
 
@@ -602,7 +602,7 @@ public:
     };
     Flags32				m_Flags;
 public:
-						FlagValueCustom	(u32 mask, LPCSTR c0, LPCSTR c1)
+						FlagValueCustom	(u32 mask, const char* c0, const char* c1)
     {
         caption[0]		= c0;
         caption[1]		= c1;
@@ -621,7 +621,7 @@ public:
 public:
     FLAG_TYPE			mask;
 public:
-						FlagValue		(T* val, FLAG_TYPE _mask, LPCSTR c0, LPCSTR c1, u32 flags):CustomValue<T>(val),FlagValueCustom(flags,c0,c1),mask(_mask){}
+						FlagValue		(T* val, FLAG_TYPE _mask, const char* c0, const char* c1, u32 flags):CustomValue<T>(val),FlagValueCustom(flags,c0,c1),mask(_mask){}
     virtual xr_string	GetDrawText		(TOnDrawTextEvent OnDrawText)
     {	
         xr_string		draw_val;

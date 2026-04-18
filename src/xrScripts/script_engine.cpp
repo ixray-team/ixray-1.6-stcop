@@ -19,7 +19,7 @@
 
 SCRIPTS_API CScriptEngine* g_pScriptEngine = nullptr;
 
-void jit_command(lua_State*, LPCSTR);
+void jit_command(lua_State*, const char*);
 
 CScriptEngine::CScriptEngine			()
 {
@@ -254,7 +254,7 @@ void CScriptEngine::load_common_scripts()
 
 	if (l_tpIniFile->line_exist("common", "script"))
 	{
-		LPCSTR caScriptString = l_tpIniFile->r_string("common", "script");
+		const char* caScriptString = l_tpIniFile->r_string("common", "script");
 		u32 n = _GetItemCount(caScriptString);
 		string256 I;
 		for (u32 i = 0; i < n; ++i)
@@ -273,7 +273,7 @@ void CScriptEngine::load_common_scripts()
 	xr_delete(l_tpIniFile);
 }
 
-shared_str ParseFolder(LPCSTR file_name, FS_FileSet& SET)
+shared_str ParseFolder(const char* file_name, FS_FileSet& SET)
 {
 	bool Finded = false;
 
@@ -305,7 +305,7 @@ shared_str ParseFolder(LPCSTR file_name, FS_FileSet& SET)
 		return nullptr;
 }
 
-void CScriptEngine::process_file_if_exists(LPCSTR file_name, bool warn_if_not_exist)
+void CScriptEngine::process_file_if_exists(const char* file_name, bool warn_if_not_exist)
 {
 	if (!*file_name)
 		return;
@@ -330,12 +330,12 @@ void CScriptEngine::process_file_if_exists(LPCSTR file_name, bool warn_if_not_ex
 
 }
 
-void CScriptEngine::process_file	(LPCSTR file_name)
+void CScriptEngine::process_file	(const char* file_name)
 {
 	process_file_if_exists	(file_name,true);
 }
 
-void CScriptEngine::process_file	(LPCSTR file_name, bool reload_modules)
+void CScriptEngine::process_file	(const char* file_name, bool reload_modules)
 {
 	m_reload_modules		= reload_modules;
 	process_file_if_exists	(file_name,true);
@@ -370,7 +370,7 @@ void CScriptEngine::register_script_classes		()
 	}
 }
 
-bool CScriptEngine::function_object(LPCSTR function_to_call, luabind::object &object, int type)
+bool CScriptEngine::function_object(const char* function_to_call, luabind::object &object, int type)
 {
 	if (!xr_strlen(function_to_call))
 		return				(false);
@@ -397,7 +397,7 @@ bool CScriptEngine::function_object(LPCSTR function_to_call, luabind::object &ob
 	return					(true);
 }
 
-bool CScriptEngine::no_file_exists	(LPCSTR file_name, u32 string_length)
+bool CScriptEngine::no_file_exists	(const char* file_name, u32 string_length)
 {
 	if (m_last_no_file_length != string_length)
 		return				(false);
@@ -405,7 +405,7 @@ bool CScriptEngine::no_file_exists	(LPCSTR file_name, u32 string_length)
 	return					(!memcmp(m_last_no_file,file_name,string_length*sizeof(char)));
 }
 
-void CScriptEngine::add_no_file		(LPCSTR file_name, u32 string_length)
+void CScriptEngine::add_no_file		(const char* file_name, u32 string_length)
 {
 	m_last_no_file_length	= string_length;
 	CopyMemory				(m_last_no_file,file_name,(string_length+1)*sizeof(char));

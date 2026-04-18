@@ -234,14 +234,14 @@
 			inline_			void			PrimTestTriIndex(udword id1);     // OK
 			inline_			void			PrimTestIndexTri(udword id0);	  // OK
 
-			inline_			BOOL			BoxBoxOverlap(const IceMaths::Point& ea, const IceMaths::Point& ca, const IceMaths::Point& eb, const IceMaths::Point& cb); // OK
-			inline_			BOOL			TriBoxOverlap(const IceMaths::Point& center, const IceMaths::Point& extents); // OK
-			inline_			BOOL			TriTriOverlap(const IceMaths::Point& V0, const IceMaths::Point& V1, const IceMaths::Point& V2, const IceMaths::Point& U0, const IceMaths::Point& U1, const IceMaths::Point& U2); // OK
+			inline_			bool			BoxBoxOverlap(const IceMaths::Point& ea, const IceMaths::Point& ca, const IceMaths::Point& eb, const IceMaths::Point& cb); // OK
+			inline_			bool			TriBoxOverlap(const IceMaths::Point& center, const IceMaths::Point& extents); // OK
+			inline_			bool			TriTriOverlap(const IceMaths::Point& V0, const IceMaths::Point& V1, const IceMaths::Point& V2, const IceMaths::Point& U0, const IceMaths::Point& U1, const IceMaths::Point& U2); // OK
 			// Init methods
 							void			InitQuery(const IceMaths::Matrix4x4* world0=null, const IceMaths::Matrix4x4* world1=null);
 							bool			CheckTemporalCoherence(Pair* cache);
 
-		inline_				BOOL			Setup(const MeshInterface* mi0, const MeshInterface* mi1)
+		inline_				bool			Setup(const MeshInterface* mi0, const MeshInterface* mi1)
 											{
 												mIMesh0	= mi0;
 												mIMesh1	= mi1;

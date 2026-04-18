@@ -23,8 +23,8 @@
 
 thread_local std::mt19937 rng = std::mt19937(std::random_device()());
 
-extern LPCSTR GAME_CONFIG;
-extern LPCSTR LEVEL_GRAPH_NAME;
+extern const char* GAME_CONFIG;
+extern const char* LEVEL_GRAPH_NAME;
 
 using namespace SpawnConstructorSpace;
 using namespace ALife;
@@ -43,15 +43,15 @@ CGameGraph::CHeader				tGraphHeader;
 
 class CCompareVertexPredicate {
 public:
-	IC bool operator()(LPCSTR S1, LPCSTR S2) const
+	IC bool operator()(const char* S1, const char* S2) const
 	{
 		return(xr_strcmp(S1,S2) < 0);
 	}
 };
 
-u32 dwfGetIDByLevelName(CInifile *Ini, LPCSTR caLevelName)
+u32 dwfGetIDByLevelName(CInifile *Ini, const char* caLevelName)
 {
-	LPCSTR				N,V;
+	const char*				N,*V;
 	for (u32 k = 0; Ini->r_line("levels",k,&N,&V); k++) {
 		R_ASSERT3		(Ini->section_exist(N),"Fill section properly!",N);
 		R_ASSERT3		(Ini->line_exist(N,"caption"),"Fill section properly!",N);
@@ -97,10 +97,10 @@ public:
 	CMemoryWriter				m_cross_table;
 
 								CLevelGameGraph	(
-									LPCSTR graph_file_name,
-									LPCSTR raw_cross_table_file_name,
+									const char* graph_file_name,
+									const char* raw_cross_table_file_name,
 									CGameGraph::SLevel *tLevel,
-									LPCSTR S,
+									const char* S,
 									u32 dwOffset,
 									u32 dwLevelID,
 									CInifile *Ini
@@ -415,15 +415,15 @@ public:
 class CGraphMerger {
 public:
 	CGraphMerger(
-		LPCSTR game_graph_id,
-		LPCSTR name,
+		const char* game_graph_id,
+		const char* name,
 		bool rebuild
 	);
 };
 
-void read_levels(CInifile *Ini, xr_set<CLevelInfo> &levels, bool rebuild_graph, xr_vector<LPCSTR> *needed_levels)
+void read_levels(CInifile *Ini, xr_set<CLevelInfo> &levels, bool rebuild_graph, xr_vector<const char*> *needed_levels)
 {
-	LPCSTR				_N,V;
+	const char*				_N,*V;
 	string_path			caFileName, file_name;
 	for (u32 k = 0; Ini->r_line("levels",k,&_N,&V); k++) {
 		string256		N;
@@ -451,15 +451,15 @@ void read_levels(CInifile *Ini, xr_set<CLevelInfo> &levels, bool rebuild_graph, 
 		}
 
 		u8				id = Ini->r_u8(N,"id");
-		LPCSTR			_S = Ini->r_string(N,"name");
+		const char*			_S = Ini->r_string(N,"name");
 		string256		S;
 		xr_strcpy		(S,_S);
 		_strlwr			(S);
 
 		if (needed_levels) {
 			bool		found = false;
-			xr_vector<LPCSTR>::const_iterator	I = needed_levels->begin();
-			xr_vector<LPCSTR>::const_iterator	E = needed_levels->end();
+			xr_vector<const char*>::const_iterator	I = needed_levels->begin();
+			xr_vector<const char*>::const_iterator	E = needed_levels->end();
 			for ( ; I != E; ++I)
 				if (!xr_strcmp(*I,S)) {
 					found	= true;
@@ -518,9 +518,9 @@ void read_levels(CInifile *Ini, xr_set<CLevelInfo> &levels, bool rebuild_graph, 
 	}
 }
 
-extern void xrBuildGraph(LPCSTR name);
+extern void xrBuildGraph(const char* name);
 
-LPCSTR generate_temp_file_name	(LPCSTR header0, LPCSTR header1, string_path& buffer)
+const char* generate_temp_file_name	(const char* header0, const char* header1, string_path& buffer)
 {
 	string_path			path;
 	FS.update_path		(path,"$app_data_root$","temp");
@@ -532,7 +532,7 @@ LPCSTR generate_temp_file_name	(LPCSTR header0, LPCSTR header1, string_path& buf
 	return				(buffer);
 }
 
-void fill_needed_levels	(LPSTR levels, xr_vector<LPCSTR> &result)
+void fill_needed_levels	(LPSTR levels, xr_vector<const char*> &result)
 {
 	LPSTR					I = levels;
 	for (LPSTR J = I; ; ++I) {
@@ -550,7 +550,7 @@ void fill_needed_levels	(LPSTR levels, xr_vector<LPCSTR> &result)
 	}
 }
 
-CGraphMerger::CGraphMerger(LPCSTR game_graph_id, LPCSTR name, bool rebuild)
+CGraphMerger::CGraphMerger(const char* game_graph_id, const char* name, bool rebuild)
 {
 	// load all the graphs
 	Phase("Processing level graphs");
@@ -569,7 +569,7 @@ CGraphMerger::CGraphMerger(LPCSTR game_graph_id, LPCSTR name, bool rebuild)
 	l_tpLevelPoints.clear();
 
 	xr_set<CLevelInfo> levels;
-	xr_vector<LPCSTR> needed_levels;
+	xr_vector<const char*> needed_levels;
 	string4096 levels_string;
 	xr_strcpy(levels_string, name);
 	_strlwr(levels_string);
@@ -736,8 +736,8 @@ CGraphMerger::CGraphMerger(LPCSTR game_graph_id, LPCSTR name, bool rebuild)
 }
 
 void xrMergeGraphs(
-		LPCSTR game_graph_id,
-		LPCSTR name,
+		const char* game_graph_id,
+		const char* name,
 		bool rebuild
 	)
 {

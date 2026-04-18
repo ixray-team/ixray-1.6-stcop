@@ -9,7 +9,7 @@ u32 Platform::GetCoresCount()
 	SYSTEM_LOGICAL_PROCESSOR_INFORMATION* ptr = &SLPI;
 	DWORD addr = sizeof(SLPI);
 	u32 sizeofStruct = sizeof(SLPI);
-	BOOL result = GetLogicalProcessorInformation(&SLPI, &addr);
+	bool result = GetLogicalProcessorInformation(&SLPI, &addr);
 	if (!result)
 	{
 		u32 errCode = GetLastError();
@@ -66,7 +66,7 @@ size_t Platform::GetThreadId(ThreadID ID)
 struct THREAD_NAME
 {
 	u32	dwType;
-	LPCSTR	szName;
+	const char*	szName;
 	u32	dwThreadID;
 	u32	dwFlags;
 };

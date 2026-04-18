@@ -2,5 +2,5 @@
 class WinsocksHelper
 {
 public:
-	static unsigned long GetIpAddress(LPCSTR hostName);
+	static unsigned long GetIpAddress(const char* hostName);
 };

@@ -19,11 +19,11 @@ public:
     virtual LPSTR	GetCaption				();
 
     virtual void 	ResetStatus				();
-    virtual void 	SetStatus				(LPCSTR s, bool bOutLog);
+    virtual void 	SetStatus				(const char* s, bool bOutLog);
     virtual void	ProgressDraw			();
 
-    virtual LPCSTR	EditorName				(){return "shader";}
-    virtual LPCSTR	EditorDesc				(){return "Shader Editor";}
+    virtual const char*	EditorName				(){return "shader";}
+    virtual const char*	EditorDesc				(){return "Shader Editor";}
 
     virtual bool 	ApplyShortCut			(DWORD Key, TShiftState Shift);
     virtual bool 	ApplyGlobalShortCut		(DWORD Key, TShiftState Shift);

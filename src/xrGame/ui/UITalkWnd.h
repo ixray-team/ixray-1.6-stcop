@@ -23,7 +23,7 @@ class CUITalkWnd final : public CUIDialogWnd
 private:
 	typedef CUIDialogWnd inherited;
 	ref_sound			m_sound;
-	void				PlaySnd					(LPCSTR text);
+	void				PlaySnd					(const char* text);
 	void				StopSnd					();
 
 public:
@@ -55,8 +55,8 @@ public:
 	virtual bool		OnGamepadKeyHold		(int id) override;
 	void				SwitchToTrade			();
 	void				SwitchToUpgrade			();
-	void				AddIconedMessage		(LPCSTR caption, LPCSTR text, LPCSTR texture_name, LPCSTR templ_name);
-    void				AddIconedMessage		(LPCSTR text, LPCSTR texture_name, Frect texture_rect, LPCSTR templ_name);
+	void				AddIconedMessage		(const char* caption, const char* text, const char* texture_name, const char* templ_name);
+    void				AddIconedMessage		(const char* text, const char* texture_name, Frect texture_rect, const char* templ_name);
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 
@@ -70,7 +70,7 @@ protected:
 	// Функции добавления строк в листы вопросов и ответов
 public:
 	void				AddQuestion				(const shared_str& text, const shared_str& id, int number, SPhraseInfo phInfo);
-	void				AddAnswer				(const shared_str& text, LPCSTR SpeakerName);
+	void				AddAnswer				(const shared_str& text, const char* SpeakerName);
 	bool				b_disable_break;
 	CUITalkDialogWnd*	UITalkDialogWnd;
 protected:

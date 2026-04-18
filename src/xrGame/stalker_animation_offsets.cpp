@@ -17,7 +17,7 @@ SRotation const animation_offsets::offsets				(shared_str const &animation_id) c
 	return				(SRotation());
 }
 
-void animation_offsets::load							(LPCSTR section)
+void animation_offsets::load							(const char* section)
 {
 	CInifile::Sect&						anim_section = pSettings->r_section(section);
 	CInifile::SectIt_					i = anim_section.Data.begin();
@@ -27,7 +27,7 @@ void animation_offsets::load							(LPCSTR section)
 		string256						tmp;
 
 		shared_str						anim_id = i->first;
-		LPCSTR							data = i->second.c_str();
+		const char*							data = i->second.c_str();
 		float							yaw = deg2rad((float)atof(_GetItem(data, 0, tmp)));
 		float							pitch = deg2rad((float)atof(_GetItem(data, 1, tmp)));
 

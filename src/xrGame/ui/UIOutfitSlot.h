@@ -19,5 +19,5 @@ public:
 	virtual CUICellItem*	RemoveItem				(CUICellItem* itm, bool force_root);
 	void					SetOutfit				();
 	virtual	void			Draw					();
-			void			SetDefaultOutfit		(LPCSTR default_outfit);
+			void			SetDefaultOutfit		(const char* default_outfit);
 };

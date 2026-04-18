@@ -48,7 +48,7 @@ void ESceneGroupTool::UngroupObjects(bool bUndo)
 }
 
 
-BOOL  ESceneGroupTool::_RemoveObject(CCustomObject* object)
+bool  ESceneGroupTool::_RemoveObject(CCustomObject* object)
 {
 	inherited::_RemoveObject(object);
 
@@ -147,7 +147,7 @@ void ESceneGroupTool::AlignToObject()
 }
 
 
-CCustomObject* ESceneGroupTool::CreateObject(LPVOID data, LPCSTR name)
+CCustomObject* ESceneGroupTool::CreateObject(LPVOID data, const char* name)
 {
 	CCustomObject* O	= new CGroupObject(data, name);
     O->FParentTools		= this;
@@ -243,7 +243,7 @@ void ESceneGroupTool::SaveSelectedObject()
 }
 
 
-void ESceneGroupTool::SetCurrentObject(LPCSTR nm)
+void ESceneGroupTool::SetCurrentObject(const char* nm)
 {
 	m_CurrentObject				= nm;
 /*	TfraGroup* frame			=(TfraGroup*)pFrame;

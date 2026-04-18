@@ -49,7 +49,7 @@ private:
 	UIItemListForm& ActualItemList() { if (SearchQuery.empty()) return *m_ObjectList; return SearchList; }
 	UIItemListForm* m_ObjectList;
 	UIItemListForm SearchList;
-	LPCSTR m_Current;
+	const char* m_Current;
 	bool m_Preview;
 	bool m_Dropper;
 

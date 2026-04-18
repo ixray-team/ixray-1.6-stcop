@@ -43,7 +43,7 @@ private:
             bReady			= false;
         }
         void		Prepare	();
-        void		FillProp(PropItemVec& items, LPCSTR pref, u32& mem_use);   
+        void		FillProp(PropItemVec& items, const char* pref, u32& mem_use);   
         void		Export	(IWriter* F, u32& mem_use);
 		bool operator < (const STextureInfo& other)	const{return xr_strcmp(file_name,other.file_name)<0;};
 		bool operator < (const shared_str& fn)		const{return xr_strcmp(file_name,fn)<0;};
@@ -75,7 +75,7 @@ private:
             bReady			= false;
         }
         void		Prepare	();
-        void		FillProp(PropItemVec& items, LPCSTR prvectoref);   
+        void		FillProp(PropItemVec& items, const char* prvectoref);   
         void		Export	(IWriter* F);
 		bool operator < (const SObjectInfo& other)	const{return xr_strcmp(object_name,other.object_name)<0;};
 		bool operator < (const shared_str& fn)		const{return xr_strcmp(object_name,fn)<0;};
@@ -160,7 +160,7 @@ public:
         SObjectInfo* info	= (SObjectInfo*)(&(*it));
         info->ref_count++;
     }
-    bool		ExportSummaryInfo	(LPCSTR fn);
+    bool		ExportSummaryInfo	(const char* fn);
     void		FillProp			(PropItemVec& items);
     void		Clear				(){
         bbox.invalidate		();

@@ -25,7 +25,7 @@ CControlPathBuilder::~CControlPathBuilder()
 {
 }
 
-void CControlPathBuilder::load(LPCSTR section)
+void CControlPathBuilder::load(const char* section)
 {
 }
 

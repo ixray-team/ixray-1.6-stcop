@@ -41,7 +41,7 @@ namespace smart_cover
 		return					(s_exit_loophole_id);
 	}
 	
-	shared_str	parse_vertex	(luabind::object const &table, LPCSTR identifier, bool const &in)
+	shared_str	parse_vertex	(luabind::object const &table, const char* identifier, bool const &in)
 	{
 		return					(
 			transform_vertex(

@@ -45,11 +45,11 @@ public:
 	ICF	SelfRef	offset		(const Tvector &p)			{ min.add(p); max.add(p);				return *this;	};
 	ICF	SelfRef	add			(SelfCRef b, const Tvector &p)	{ min.add(b.min, p); max.add(b.max, p);	return *this;	};
 
-	ICF	BOOL	contains	(T x, T y)					{ return (x>=x1) && (x<=x2) && (y>=y1) && (y<=y2); };
-	ICF	BOOL	contains	(const Tvector &p)			{ return contains(p.x,p.y);	};
-	ICF	BOOL	contains	(SelfCRef b)				{ return contains(b.min) && contains(b.max); };
+	ICF	bool	contains	(T x, T y)					{ return (x>=x1) && (x<=x2) && (y>=y1) && (y<=y2); };
+	ICF	bool	contains	(const Tvector &p)			{ return contains(p.x,p.y);	};
+	ICF	bool	contains	(SelfCRef b)				{ return contains(b.min) && contains(b.max); };
 
-	ICF	BOOL	similar		(SelfCRef b)				{ return min.similar(b.min) && max.similar(b.max); };
+	ICF	bool	similar		(SelfCRef b)				{ return min.similar(b.min) && max.similar(b.max); };
 
 	ICF	SelfRef	modify		(const Tvector &p)			{ min.min(p); max.max(p);				return *this;	}
 	ICF	SelfRef	merge		(SelfCRef b)				{ modify(b.min); modify(b.max);			return *this;	};
@@ -71,7 +71,7 @@ public:
 	};
 
 	// Detects if this box intersect other
-	ICF	BOOL	intersect(SelfCRef box )
+	ICF	bool	intersect(SelfCRef box )
 	{
 		if( max.x < box.min.x )	return FALSE;
 		if( max.y < box.min.y )	return FALSE;
@@ -90,7 +90,7 @@ public:
 	};
 
 	// Does the vector3 intersects box
-	ICF BOOL Pick( const Tvector& start, const Tvector& dir ){
+	ICF bool Pick( const Tvector& start, const Tvector& dir ){
 		T		alpha,xt,yt;
 		Tvector rvmin,rvmax;
 
@@ -120,7 +120,7 @@ public:
 		}
 		return false;
 	};
-	ICF BOOL pick_exact	( const Tvector& start, const Tvector& dir ){
+	ICF bool pick_exact	( const Tvector& start, const Tvector& dir ){
 		T		alpha,xt,yt;
 		Tvector rvmin,rvmax;
 
@@ -147,8 +147,8 @@ public:
 	};
 
 	ICF u32& IR(T &x) { return (u32&)x; }
-	ICF BOOL Pick2(const Tvector& origin, const Tvector& dir, Tvector& coord){
-		BOOL Inside = TRUE;
+	ICF bool Pick2(const Tvector& origin, const Tvector& dir, Tvector& coord){
+		bool Inside = TRUE;
 		Tvector	MaxT;
 		MaxT.x=MaxT.y=-1.0f;
 		
@@ -224,4 +224,4 @@ using Fbox2 = _box2<float>;
 using Dbox2 = _box2<double>;
 
 template <class T>
-BOOL	_valid			(const _box2<T>& c)	{ return _valid(c.min) && _valid(c.max); }
+bool	_valid			(const _box2<T>& c)	{ return _valid(c.min) && _valid(c.max); }

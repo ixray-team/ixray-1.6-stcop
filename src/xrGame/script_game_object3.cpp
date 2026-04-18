@@ -182,7 +182,7 @@ CScriptGameObject* CScriptGameObject::GetAttachedVehicle()
 	return GO->lua_game_object();
 }
 
-u32 CScriptGameObject::PlayHudMotion(LPCSTR M, bool bMixIn, u32 state)
+u32 CScriptGameObject::PlayHudMotion(const char* M, bool bMixIn, u32 state)
 {
 	if (CHudItem* itm = object().cast_hud_item())
 	{
@@ -237,7 +237,7 @@ float CScriptGameObject::GetTotalTelepaticProtection()
 	return 0.0f;
 }
 
-bool CScriptGameObject::InstallUpgrade(LPCSTR upgrade)
+bool CScriptGameObject::InstallUpgrade(const char* upgrade)
 {
 	if (CInventoryItem* item = object().cast_inventory_item())
 	{
@@ -257,7 +257,7 @@ bool CScriptGameObject::InstallUpgrade(LPCSTR upgrade)
 	return false;
 }
 
-bool CScriptGameObject::HasUpgrade(LPCSTR upgrade)
+bool CScriptGameObject::HasUpgrade(const char* upgrade)
 {
 	if (CInventoryItem* item = object().cast_inventory_item())
 	{
@@ -591,7 +591,7 @@ CScriptGameObject *CScriptGameObject::GetMedikit() const
 	return 0;
 }
 
-LPCSTR CScriptGameObject::GetPatrolPathName()
+const char* CScriptGameObject::GetPatrolPathName()
 {
 	if (CAI_Stalker* stalker = object().cast_stalker())
 	{
@@ -606,7 +606,7 @@ LPCSTR CScriptGameObject::GetPatrolPathName()
 	return "";
 }
 
-void CScriptGameObject::add_animation(LPCSTR animation, bool hand_usage, bool use_movement_controller)
+void CScriptGameObject::add_animation(const char* animation, bool hand_usage, bool use_movement_controller)
 {
 	if (CAI_Stalker* stalker = object().cast_stalker())
 	{
@@ -632,7 +632,7 @@ void CScriptGameObject::add_animation(LPCSTR animation, bool hand_usage, bool us
 
 }
 
-void CScriptGameObject::add_animation(LPCSTR animation, bool hand_usage, Fvector position, Fvector rotation, bool local_animation)
+void CScriptGameObject::add_animation(const char* animation, bool hand_usage, Fvector position, Fvector rotation, bool local_animation)
 {
 	if (CAI_Stalker* stalker = object().cast_stalker())
 	{
@@ -696,7 +696,7 @@ void CScriptGameObject::set_actor_relation_flags(Flags32 flags)
 	stalker->m_actor_relation_flags = flags;
 }
 
-void CScriptGameObject::set_patrol_path(LPCSTR path_name, const PatrolPathManager::EPatrolStartType patrol_start_type, const PatrolPathManager::EPatrolRouteType patrol_route_type, bool random)
+void CScriptGameObject::set_patrol_path(const char* path_name, const PatrolPathManager::EPatrolStartType patrol_start_type, const PatrolPathManager::EPatrolRouteType patrol_route_type, bool random)
 {
 	if (CAI_Stalker* stalker = object().cast_stalker())
 	{
@@ -1235,7 +1235,7 @@ CScriptGameObject* CScriptGameObject::GetActiveItem()
 	return 0;
 }
 
-CScriptGameObject* CScriptGameObject::GetObjectByName(LPCSTR caObjectName) const
+CScriptGameObject* CScriptGameObject::GetObjectByName(const char* caObjectName) const
 {
 	if (CInventoryOwner* l_tpInventoryOwner = object().cast_inventory_owner())
 	{
@@ -1366,7 +1366,7 @@ Fvector	CScriptGameObject::head_orientation() const
 	return Fvector().set(flt_max, flt_max, flt_max);
 }
 
-void CScriptGameObject::info_add(LPCSTR text)
+void CScriptGameObject::info_add(const char* text)
 {
 	if (g_dedicated_server)
 	{
@@ -1421,7 +1421,7 @@ void CScriptGameObject::make_object_visible_somewhen(CScriptGameObject* object)
 	}
 }
 
-void CScriptGameObject::sell_condition(CScriptIniFile* ini_file, LPCSTR section)
+void CScriptGameObject::sell_condition(CScriptIniFile* ini_file, const char* section)
 {
 	if (CInventoryOwner* inventory_owner = object().cast_inventory_owner())
 	{
@@ -1445,7 +1445,7 @@ void CScriptGameObject::sell_condition(float friend_factor, float enemy_factor)
 	}
 }
 
-void CScriptGameObject::buy_condition(CScriptIniFile* ini_file, LPCSTR section)
+void CScriptGameObject::buy_condition(CScriptIniFile* ini_file, const char* section)
 {
 	if (CInventoryOwner* inventory_owner = object().cast_inventory_owner())
 	{
@@ -1469,7 +1469,7 @@ void CScriptGameObject::buy_condition(float friend_factor, float enemy_factor)
 	}
 }
 
-void CScriptGameObject::show_condition(CScriptIniFile* ini_file, LPCSTR section)
+void CScriptGameObject::show_condition(CScriptIniFile* ini_file, const char* section)
 {
 	if (CInventoryOwner* inventory_owner = object().cast_inventory_owner())
 	{
@@ -1481,7 +1481,7 @@ void CScriptGameObject::show_condition(CScriptIniFile* ini_file, LPCSTR section)
 	}
 }
 
-void CScriptGameObject::buy_supplies(CScriptIniFile* ini_file, LPCSTR section)
+void CScriptGameObject::buy_supplies(CScriptIniFile* ini_file, const char* section)
 {
 	if (CInventoryOwner* inventory_owner = object().cast_inventory_owner())
 	{
@@ -1505,7 +1505,7 @@ void CScriptGameObject::buy_item_condition_factor(float factor)
 	}
 }
 
-void sell_condition(CScriptIniFile* ini_file, LPCSTR section)
+void sell_condition(CScriptIniFile* ini_file, const char* section)
 {
 	default_trade_parameters().process(CTradeParameters::action_sell(0), *ini_file, section);
 }
@@ -1515,7 +1515,7 @@ void sell_condition(float friend_factor, float enemy_factor)
 	default_trade_parameters().default_factors(CTradeParameters::action_sell(0), CTradeFactors(friend_factor, enemy_factor));
 }
 
-void buy_condition(CScriptIniFile* ini_file, LPCSTR section)
+void buy_condition(CScriptIniFile* ini_file, const char* section)
 {
 	default_trade_parameters().process(CTradeParameters::action_buy(0), *ini_file, section);
 }
@@ -1525,12 +1525,12 @@ void buy_condition(float friend_factor, float enemy_factor)
 	default_trade_parameters().default_factors(CTradeParameters::action_buy(0), CTradeFactors(friend_factor, enemy_factor));
 }
 
-void show_condition(CScriptIniFile* ini_file, LPCSTR section)
+void show_condition(CScriptIniFile* ini_file, const char* section)
 {
 	default_trade_parameters().process(CTradeParameters::action_show(0), *ini_file, section);
 }
 
-LPCSTR CScriptGameObject::sound_prefix() const
+const char* CScriptGameObject::sound_prefix() const
 {
 	if (CCreature* custom_monster = object().cast_creature())
 	{
@@ -1541,7 +1541,7 @@ LPCSTR CScriptGameObject::sound_prefix() const
 	return 0;
 }
 
-void CScriptGameObject::sound_prefix(LPCSTR sound_prefix)
+void CScriptGameObject::sound_prefix(const char* sound_prefix)
 {
 	if (CCreature* custom_monster = object().cast_creature())
 	{
@@ -1676,19 +1676,19 @@ bool CScriptGameObject::WeaponInGrenadeMode()
 	return false;
 }
 
-void CScriptGameObject::SetBoneVisible(LPCSTR bone_name, bool bVisibility, bool bRecursive)
+void CScriptGameObject::SetBoneVisible(const char* bone_name, bool bVisibility, bool bRecursive)
 {
 	if (IKinematics* k = PKinematics(object().Visual()))
 	{
 		u16 bone_id = k->LL_BoneID(bone_name);
-		if (bone_id != BI_NONE && k->LL_GetBoneVisible(bone_id) != (BOOL)bVisibility)
+		if (bone_id != BI_NONE && k->LL_GetBoneVisible(bone_id) != (bool)bVisibility)
 		{
 			k->LL_SetBoneVisible(bone_id, bVisibility, bRecursive);
 		}
 	}
 }
 
-bool CScriptGameObject::IsBoneVisible(LPCSTR bone_name)
+bool CScriptGameObject::IsBoneVisible(const char* bone_name)
 {
 	if (IKinematics* k = PKinematics(object().Visual()))
 	{
@@ -1750,7 +1750,7 @@ void CScriptGameObject::ForceSetPosition(Fvector pos, bool bActivate)
 	}
 }								 
 
-LPCSTR CScriptGameObject::bones_protection_sect()
+const char* CScriptGameObject::bones_protection_sect()
 {
 	if (IKinematics* pKinematics = PKinematics(object().Visual()))
 	{
@@ -1838,7 +1838,7 @@ void CScriptGameObject::SetHeadRotate(bool value)
 	}
 }
 
-void CScriptGameObject::SetSubIconText(LPCSTR m_custom_text, int m_custom_text_clr_inv, LPCSTR item_custom_text_font, Fvector2 m_custom_text_offset)
+void CScriptGameObject::SetSubIconText(const char* m_custom_text, int m_custom_text_clr_inv, const char* item_custom_text_font, Fvector2 m_custom_text_offset)
 {
 	if (CInventoryItem* iitem = this->object().cast_inventory_item())
 	{
@@ -1849,7 +1849,7 @@ void CScriptGameObject::SetSubIconText(LPCSTR m_custom_text, int m_custom_text_c
 	}
 }
 
-void CScriptGameObject::SetSubIcon(bool m_custom_mark, Fvector2 m_custom_mark_offset, Fvector2 m_custom_mark_size, LPCSTR m_custom_mark_texture, int m_custom_mark_clr)
+void CScriptGameObject::SetSubIcon(bool m_custom_mark, Fvector2 m_custom_mark_offset, Fvector2 m_custom_mark_size, const char* m_custom_mark_texture, int m_custom_mark_clr)
 {
 	if (CInventoryItem* iitem = this->object().cast_inventory_item())
 	{
@@ -1863,7 +1863,7 @@ void CScriptGameObject::SetSubIcon(bool m_custom_mark, Fvector2 m_custom_mark_of
 
 
 // FFx0001 ++
-bool CScriptGameObject::IsWorldObjectBoneVisible(LPCSTR boneName)
+bool CScriptGameObject::IsWorldObjectBoneVisible(const char* boneName)
 {
 	IKinematics* KI = PKinematics(object().Visual());
 	if (!KI) {
@@ -1879,7 +1879,7 @@ bool CScriptGameObject::IsWorldObjectBoneVisible(LPCSTR boneName)
 }
 
 // FFx0001 ++
-bool CScriptGameObject::IsHudObjectBoneVisible(LPCSTR boneName)
+bool CScriptGameObject::IsHudObjectBoneVisible(const char* boneName)
 {
 	CHudItem* HI = object().cast_hud_item();
 	if (!HI || !HI->HudItemData()) {
@@ -1902,7 +1902,7 @@ bool CScriptGameObject::IsHudObjectBoneVisible(LPCSTR boneName)
 }
 
 //FFx0001 ++
-bool CScriptGameObject::SetHudObjectBoneVisibility(LPCSTR boneName, bool bVisibility)
+bool CScriptGameObject::SetHudObjectBoneVisibility(const char* boneName, bool bVisibility)
 {
 	CHudItem* HI = object().cast_hud_item();
 	if (!HI || !HI->HudItemData()) {
@@ -1933,7 +1933,7 @@ bool CScriptGameObject::SetHudObjectBoneVisibility(LPCSTR boneName, bool bVisibi
 }
 
 // FFx0001 ++
-bool CScriptGameObject::SetWorldObjectBoneVisibility(LPCSTR boneName, bool bVisibility)
+bool CScriptGameObject::SetWorldObjectBoneVisibility(const char* boneName, bool bVisibility)
 {
 	IKinematics* KI = PKinematics(object().Visual());
 	if (!KI)

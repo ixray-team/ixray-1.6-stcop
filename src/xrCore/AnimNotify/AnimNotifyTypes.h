@@ -16,7 +16,7 @@ class IAnimNotify
 public:
     virtual ~IAnimNotify() = default;
 
-    virtual void Construct(const CInifile& ini, LPCSTR sect) = 0;
+    virtual void Construct(const CInifile& ini, const char* sect) = 0;
     virtual void Execute(IRenderVisual* visual, u16 bone_id) = 0;
 };
 

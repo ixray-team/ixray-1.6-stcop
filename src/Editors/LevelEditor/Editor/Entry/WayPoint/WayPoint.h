@@ -25,15 +25,15 @@ class CWayPoint
 	Fvector		m_vPosition;
 	Fvector		m_vSavePosition;
     Flags32		m_Flags;
-    BOOL		m_bSelected;
+    bool		m_bSelected;
     WPLVec		m_Links;
     void		CreateLink		(CWayPoint* P, float pb);
     bool		AppendLink		(CWayPoint* P, float pb);
     bool		DeleteLink		(CWayPoint* P);
 public:
-                CWayPoint		(LPCSTR name);
+                CWayPoint		(const char* name);
                 ~CWayPoint		();
-    void    	Render      	(LPCSTR parent_name, bool bParentSelect);
+    void    	Render      	(const char* parent_name, bool bParentSelect);
     bool    	RayPick	    	(float& distance, const Fvector& S, const Fvector& D);
     bool 		FrustumPick		(const CFrustum& frustum);
     bool 		FrustumSelect	(int flag, const CFrustum& frustum);
@@ -63,11 +63,11 @@ protected:
     WPVec			m_WayPoints;
     typedef CCustomObject inherited;
     CWayPoint*		FindWayPoint	(const shared_str& nm);
-	void   FindWPByName	(LPCSTR new_name,bool& res){res=!!FindWayPoint(new_name);}
+	void   FindWPByName	(const char* new_name,bool& res){res=!!FindWayPoint(new_name);}
 	bool  	OnWayPointNameAfterEdit(PropValue* sender, shared_str& edit_val);
     virtual void OnNameChange(PropValue* sender) override;
 public:
-					CWayObject		(LPVOID data, LPCSTR name);
+					CWayObject		(LPVOID data, const char* name);
     void            Construct   	(LPVOID data);
 	virtual			~CWayObject		();
     void			Clear			();
@@ -106,13 +106,13 @@ public:
     virtual bool 	FrustumPick		(const CFrustum& frustum);
 
   	virtual bool 	LoadStream		(IReader&);
-  	virtual bool 	LoadLTX			(CInifile& ini, LPCSTR sect_name);
+  	virtual bool 	LoadLTX			(CInifile& ini, const char* sect_name);
 	virtual void 	SaveStream		(IWriter&);
-  	virtual void 	SaveLTX			(CInifile& ini, LPCSTR sect_name);
+  	virtual void 	SaveLTX			(CInifile& ini, const char* sect_name);
 
     virtual bool	ExportGame		(SExportStreams* data);
 
-	virtual void	FillProp		(LPCSTR pref, PropItemVec& items);
+	virtual void	FillProp		(const char* pref, PropItemVec& items);
 
     virtual bool 	OnSelectionRemove();
 

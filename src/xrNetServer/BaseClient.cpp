@@ -30,7 +30,7 @@ BaseClient::~BaseClient()
 
 // -----------------------------------------------------------------------------
 #pragma region connect / disconnect
-void BaseClient::ParseConnectionOptions(LPCSTR options, ClientConnectionOptions& out)
+void BaseClient::ParseConnectionOptions(const char* options, ClientConnectionOptions& out)
 {
 	// SERVER NAME
 	if (strchr(options, '/'))
@@ -97,7 +97,7 @@ void BaseClient::ParseConnectionOptions(LPCSTR options, ClientConnectionOptions&
 	};
 }
 
-bool BaseClient::Connect(LPCSTR options)
+bool BaseClient::Connect(const char* options)
 {
 	R_ASSERT(options);
 

@@ -75,12 +75,12 @@ void CUI3tButton::OnFocusReceive()
 	PlaySoundH					();
 }
 
-void CUI3tButton::InitSoundH(LPCSTR sound_file)
+void CUI3tButton::InitSoundH(const char* sound_file)
 {
 	::Sound->create		(m_sound_h, sound_file,st_Effect,sg_SourceType);
 }
 
-void CUI3tButton::InitSoundT(LPCSTR sound_file)
+void CUI3tButton::InitSoundT(const char* sound_file)
 {
 	::Sound->create		(m_sound_t, sound_file,st_Effect,sg_SourceType); 
 }
@@ -151,7 +151,7 @@ void CUI3tButton::SetHeight(float height)
 	else if ( m_back_framewindow )	{	m_back_framewindow->SetHeight(height);	}
 }
 
-bool CUI3tButton::InitTexture(LPCSTR tex_name, bool fatal)
+bool CUI3tButton::InitTexture(const char* tex_name, bool fatal)
 {
 	string_path 		tex_enabled;
 	string_path 		tex_disabled;
@@ -178,10 +178,10 @@ bool CUI3tButton::InitTexture(LPCSTR tex_name, bool fatal)
 	return true;
 }
 
-void CUI3tButton::InitTexture(LPCSTR tex_enabled, 
-							  LPCSTR tex_disabled, 
-							  LPCSTR tex_touched, 
-							  LPCSTR tex_highlighted,
+void CUI3tButton::InitTexture(const char* tex_enabled, 
+							  const char* tex_disabled, 
+							  const char* tex_touched, 
+							  const char* tex_highlighted,
 							  bool fatal)
 {
 	if ( m_background )

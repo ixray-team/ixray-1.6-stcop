@@ -741,39 +741,39 @@ IC void get_pos_bones(const T& v, Fvector& p, CDS0_Kinematics* Parent)
 	v.get_pos_bones(p, Parent);
 }
 template<typename T>
-BOOL pick_bone(CDS0_Kinematics* Parent, IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, CDS0_FVisual* V, u16* indices, CBoneData::FacesVec& faces)
+bool pick_bone(CDS0_Kinematics* Parent, IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, CDS0_FVisual* V, u16* indices, CBoneData::FacesVec& faces)
 {
 	VERIFY(!"Not implemented");
 	return FALSE;
 }
-BOOL CDS0_SkeletonXExt::_PickBoneHW1W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, CDS0_FVisual* V, u16* indices, CBoneData::FacesVec& faces)
+bool CDS0_SkeletonXExt::_PickBoneHW1W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, CDS0_FVisual* V, u16* indices, CBoneData::FacesVec& faces)
 {
 	return pick_bone<vertHW_1W>(Parent, r, dist, S, D, V, indices, faces);
 }
 
-BOOL CDS0_SkeletonXExt::_PickBoneHW2W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, CDS0_FVisual* V, u16* indices, CBoneData::FacesVec& faces)
+bool CDS0_SkeletonXExt::_PickBoneHW2W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, CDS0_FVisual* V, u16* indices, CBoneData::FacesVec& faces)
 {
 	return pick_bone<vertHW_2W>(Parent, r, dist, S, D, V, indices, faces);
 }
 
-BOOL CDS0_SkeletonXExt::_PickBoneHW3W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, CDS0_FVisual* V, u16* indices, CBoneData::FacesVec& faces)
+bool CDS0_SkeletonXExt::_PickBoneHW3W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, CDS0_FVisual* V, u16* indices, CBoneData::FacesVec& faces)
 {
 	return pick_bone<vertHW_3W>(Parent, r, dist, S, D, V, indices, faces);
 }
 
-BOOL CDS0_SkeletonXExt::_PickBoneHW4W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, CDS0_FVisual* V, u16* indices, CBoneData::FacesVec& faces)
+bool CDS0_SkeletonXExt::_PickBoneHW4W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, CDS0_FVisual* V, u16* indices, CBoneData::FacesVec& faces)
 {
 	return pick_bone<vertHW_4W>(Parent, r, dist, S, D, V, indices, faces);
 }
 
-BOOL CDS0_SkeletonXExt::_PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, CDS0_FVisual* V, u16 bone_id, size_t OffsetIndex, size_t CountIndex)
+bool CDS0_SkeletonXExt::_PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, CDS0_FVisual* V, u16 bone_id, size_t OffsetIndex, size_t CountIndex)
 {
 	VERIFY(Parent && (ChildIDX != u16(-1)));
 
 	CBoneData& BD = Parent->LL_GetData(bone_id);
 	CBoneData::FacesVec* faces = &BD.child_faces[ChildIDX];
 
-	BOOL result = FALSE;
+	bool result = FALSE;
 	u16* indices = 0;
 
 	indices = *m_Indices;
@@ -819,7 +819,7 @@ void CDS0_SkeletonXExt::UpdateUniform(void* ptr)
 	}
 }
 
-BOOL CDS0_SkeletonX_ST::PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id)
+bool CDS0_SkeletonX_ST::PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id)
 {
 	return inherited2::_PickBone(r, dist, start, dir, this, bone_id, OffsetIndex, CountIndex);
 }
@@ -842,7 +842,7 @@ void CDS0_SkeletonX_PM::UpdateUniform(CDS0_UniformAllocator::EUniformType Type, 
 }
 #endif
 
-BOOL CDS0_SkeletonX_PM::PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id)
+bool CDS0_SkeletonX_PM::PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id)
 {
 	FSlideWindow& SW = nSWI.sw[0];
 	return inherited2::_PickBone(r, dist, start, dir, this, bone_id, OffsetIndex + SW.offset, SW.num_tris * 3);

@@ -20,7 +20,7 @@ IC	void CALifeMonsterPatrolPathManager::path					(const CPatrolPath *path)
 	m_path					= path;
 }
 
-IC	void CALifeMonsterPatrolPathManager::path					(LPCSTR path_name)
+IC	void CALifeMonsterPatrolPathManager::path					(const char* path_name)
 {
 	path					(shared_str(path_name));
 }

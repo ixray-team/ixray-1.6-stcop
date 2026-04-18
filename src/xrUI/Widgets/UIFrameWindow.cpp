@@ -41,7 +41,7 @@ void CUIFrameWindow::SetWndSize(const Fvector2& sz)
 	inherited::SetWndSize	(size);
 }
 
-bool CUIFrameWindow::InitTextureEx(pcstr texture, pcstr shader, bool fatal /*= true*/)
+bool CUIFrameWindow::InitTextureEx(const char* texture, const char* shader, bool fatal /*= true*/)
 {
     dbg_tex_name = texture;
     string256 buf;
@@ -159,7 +159,7 @@ bool CUIFrameWindow::InitTextureEx(pcstr texture, pcstr shader, bool fatal /*= t
 	return !failed;
 }
 
-bool CUIFrameWindow::InitTexture(pcstr texture, bool fatal)
+bool CUIFrameWindow::InitTexture(const char* texture, bool fatal)
 {
     return InitTextureEx(texture, "hud\\default", fatal);
 }

@@ -65,7 +65,7 @@ void ELibrary::CleanLibrary()
     }
 }
 //----------------------------------------------------
-void ELibrary::ReloadObject(LPCSTR nm)
+void ELibrary::ReloadObject(const char* nm)
 {
 	VERIFY(m_bReady);
 	R_ASSERT(nm&&nm[0]);
@@ -111,7 +111,7 @@ void ELibrary::EvictObjects()
 }
 //----------------------------------------------------
 
-CEditableObject* ELibrary::LoadEditObject(LPCSTR name)
+CEditableObject* ELibrary::LoadEditObject(const char* name)
 {
 	VERIFY(m_bReady);
     CEditableObject* m_EditObject = new CEditableObject(name);
@@ -139,7 +139,7 @@ CEditableObject* ELibrary::LoadEditObject(LPCSTR name)
 }
 //---------------------------------------------------------------------------
 
-CEditableObject* ELibrary::CreateEditObject(LPCSTR nm)
+CEditableObject* ELibrary::CreateEditObject(const char* nm)
 {
 	VERIFY(m_bReady);
     R_ASSERT(nm&&nm[0]);
@@ -211,7 +211,7 @@ int ELibrary::GetObjects(FS_FileSet& files)
 }
 //---------------------------------------------------------------------------
 
-void ELibrary::RemoveObject(LPCSTR _fname, EItemType type, bool& res)   
+void ELibrary::RemoveObject(const char* _fname, EItemType type, bool& res)   
 {
 	if (TYPE_FOLDER==type){
     	FS.dir_delete			(_objects_,_fname,FALSE);
@@ -239,7 +239,7 @@ void ELibrary::RemoveObject(LPCSTR _fname, EItemType type, bool& res)
 }
 //---------------------------------------------------------------------------
 
-void ELibrary::RenameObject(LPCSTR nm0, LPCSTR nm1, EItemType type)
+void ELibrary::RenameObject(const char* nm0, const char* nm1, EItemType type)
 {
 	if (TYPE_FOLDER==type){
     	FS.dir_delete			(_objects_,nm0,FALSE);
@@ -269,7 +269,7 @@ void ELibrary::RenameObject(LPCSTR nm0, LPCSTR nm1, EItemType type)
 }
 //---------------------------------------------------------------------------
 
-void ELibrary::UnloadEditObject(LPCSTR full_name)
+void ELibrary::UnloadEditObject(const char* full_name)
 {
     EditObjPairIt it 	= m_EditObjects.find(full_name);
     if (it!=m_EditObjects.end()){

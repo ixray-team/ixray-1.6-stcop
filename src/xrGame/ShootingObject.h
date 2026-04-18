@@ -22,8 +22,8 @@ protected:
 	CShootingObject();
 	virtual ~CShootingObject() = default;
 
-	void	reload(LPCSTR section) {};
-	void	Load(LPCSTR section);
+	void	reload(const char* section) {};
+	void	Load(const char* section);
 
 private:
 	float		m_air_resistance_factor;
@@ -39,7 +39,7 @@ protected:
 		eGlauncherFire = 2,
 	} fire_mode = eDefaultFire;
 
-	virtual void			LoadFireParams		(LPCSTR section); 		//сила выстрела
+	virtual void			LoadFireParams		(const char* section); 		//сила выстрела
 	virtual bool			SendHitAllowed		(CObject* pUser);
 	virtual void			FireBullet			(const Fvector& pos, 
         										const Fvector& dir, 
@@ -54,9 +54,9 @@ protected:
 	virtual void			FireStart			();
 	virtual void			FireEnd				();
 public:
-	IC BOOL					IsWorking			()	const	{return bWorking;}
-	virtual BOOL			ParentMayHaveAimBullet()		{return FALSE;}
-	virtual BOOL			ParentIsActor()					{return FALSE;}
+	IC bool					IsWorking			()	const	{return bWorking;}
+	virtual bool			ParentMayHaveAimBullet()		{return FALSE;}
+	virtual bool			ParentIsActor()					{return FALSE;}
 
 	float getFireDistance(void) const { return fireDistance; }
 	void setFireDistance(float value);
@@ -143,7 +143,7 @@ protected:
 	void					Light_Start			();
 	void					Light_Render		(const Fvector& P);
 
-			void			LoadLights			(LPCSTR section, LPCSTR prefix);
+			void			LoadLights			(const char* section, const char* prefix);
 			void			RenderLight			();
 			void			UpdateEffects		();
 			void			DestroyEffects		();
@@ -155,7 +155,7 @@ protected:
 	virtual const Fvector&	get_CurrentShellPoint()	{ return get_CurrentFirePoint(); };
 	virtual const Fmatrix&	get_ParticlesXFORM()	{ return Fidentity; };
 
-			void			LoadParticle		(LPCSTR section, LPCSTR line, xr_shared_ptr<CParticlesObject>& particle);
+			void			LoadParticle		(const char* section, const char* line, xr_shared_ptr<CParticlesObject>& particle);
 
 			void			StartFlameParticle();
 			void			StartSmokeParticle(const Fvector& parent_vel);
@@ -164,7 +164,7 @@ public:
 	Fvector					vLoadedShellPoint;
 	float					m_fPredBulletTime;
 	float					m_fTimeToAim;
-	BOOL					m_bUseAimBullet;
+	bool					m_bUseAimBullet;
 protected:
 
 	shared_str						m_sShellParticles;

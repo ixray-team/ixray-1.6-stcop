@@ -43,7 +43,7 @@ public:
 	xr_vector<b_portal>				portals;
 	xr_vector<b_lod>				lods;
 	string_path						path;
-	xr_vector<LPCSTR>				g_Shaders;
+	xr_vector<const char*>				g_Shaders;
 	CDB::CollectorPacked			CL;
 
 	xr_vector<b_material>			&materials()	;
@@ -59,7 +59,7 @@ public:
  
 public:
 	void	Load					(const b_params& P, const IReader&  fs);
-	void	Run						(LPCSTR path);
+	void	Run						(const char* path);
  
 	void	RunAfterLight			( IWriter* fs	);
 	void	Tesselate				();
@@ -80,11 +80,11 @@ public:
 	void	BuildCForm				();
 	void	BuildPortals			(IWriter &fs);
 
- 	void	BuildRapid				(BOOL bSave);
+ 	void	BuildRapid				(bool bSave);
 
 	void	xrPhase_Radiosity		();
 		
-	void	IsolateVertices			(BOOL bProgress);
+	void	IsolateVertices			(bool bProgress);
 	void	xrPhase_ResolveMaterials();
 	void	xrPhase_UVmap			();
 	void	xrPhase_Subdivide		();

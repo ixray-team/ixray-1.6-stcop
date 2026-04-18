@@ -44,7 +44,7 @@ UITaskListWnd::~UITaskListWnd()
 	ActionRepeaters()->UnregisterOwner(this);
 }
 
-void UITaskListWnd::init_from_xml( CUIXml& xml, LPCSTR path )
+void UITaskListWnd::init_from_xml( CUIXml& xml, const char* path )
 {
 	VERIFY( hint_wnd );
 	CUIXmlInit::InitWindow( xml, path, 0, this );

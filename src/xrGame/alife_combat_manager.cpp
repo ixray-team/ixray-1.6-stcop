@@ -12,7 +12,7 @@
 #include "alife_graph_registry.h"
 #include "alife_schedule_registry.h"
 
-CALifeCombatManager::CALifeCombatManager	(xrServer *server, LPCSTR section) :
+CALifeCombatManager::CALifeCombatManager	(xrServer *server, const char* section) :
 	CALifeSimulatorBase	(server,section)
 {
 }

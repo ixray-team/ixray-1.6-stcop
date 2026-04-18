@@ -1,14 +1,14 @@
 #include "StdAfx.h"
 #include "weaponBM16.h"
 
-void CWeaponBM16::Load(LPCSTR section)
+void CWeaponBM16::Load(const char* section)
 {
 	m_bUseAltReloadSystem = READ_IF_EXISTS(pSettings, r_bool, section, "use_alt_reload_system", false);
 
 	inherited::Load(section);
 }
 
-void CWeaponBM16::LoadSounds(LPCSTR section)
+void CWeaponBM16::LoadSounds(const char* section)
 {
 	inherited::LoadSounds(section);
 
@@ -30,7 +30,7 @@ void CWeaponBM16::PlayReloadSound()
 {
 	if (m_bUseAltReloadSystem)
 	{
-		LPCSTR sound = "sndReload";
+		const char* sound = "sndReload";
 
 		if (GetAmmoElapsed() == 0)
 		{

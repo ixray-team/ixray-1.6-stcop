@@ -32,7 +32,7 @@ struct functor_base
 	using functor_type = luabind::functor<return_type>;
 
 	functor_type functr;
-	LPCSTR parameter;
+	const char* parameter;
 };
 
 template <typename return_type>
@@ -47,7 +47,7 @@ struct functor : public functor_base<return_type>
 template <typename return_type>
 struct functor2 : public functor<return_type>
 {
-	LPCSTR parameter2;
+	const char* parameter2;
 
 	IC return_type operator()() const
 	{
@@ -78,7 +78,7 @@ struct functor<void> : public functor_base<void>
 template <>
 struct functor2<void> : public functor<void>
 {
-	LPCSTR parameter2;
+	const char* parameter2;
 	IC	void operator()() const
 	{
 		functr(parameter, parameter2);
@@ -109,14 +109,14 @@ public:
 	virtual	~Upgrade() = default;
 	void construct(const shared_str& upgrade_id, Group& parental_group, Manager& manager_r);
 
-	IC LPCSTR section() const { return m_section.c_str(); }
+	IC const char* section() const { return m_section.c_str(); }
 	IC shared_str const& parent_group_id() const { return m_parent_group->id(); }
 	IC Group const* parent_group() const { return m_parent_group; }
-	IC LPCSTR icon_name() const { return m_icon.c_str(); }
-	IC LPCSTR name() const { return m_name.c_str(); }
-	IC LPCSTR description_text() const { return m_description.c_str(); }
+	IC const char* icon_name() const { return m_icon.c_str(); }
+	IC const char* name() const { return m_name.c_str(); }
+	IC const char* description_text() const { return m_description.c_str(); }
 
-	LPCSTR get_prerequisites();
+	const char* get_prerequisites();
 	IC bool get_highlight() const { return m_highlight; }
 	IC shared_str const& get_property_name(u8 index = 0) const
 	{
@@ -127,7 +127,7 @@ public:
 	IC Ivector2 const& get_scheme_index() const { return m_scheme_index; }
 
 #ifdef DEBUG
-	virtual	void log_hierarchy(LPCSTR nest) override;
+	virtual	void log_hierarchy(const char* nest) override;
 #endif // DEBUG
 
 	virtual	void fill_root_container(Root* root) override;
@@ -149,7 +149,7 @@ protected:
 	using VoidFunctor2 = functor2<void>;
 	using VoidFunctor3 = functor3<void>;
 
-	using StrFunctor = functor2<LPCSTR>;
+	using StrFunctor = functor2<const char*>;
 	using IntFunctor = functor2<int>;
 
 protected:

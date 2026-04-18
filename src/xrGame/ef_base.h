@@ -64,7 +64,7 @@ public:
 		return	(m_fMinResultValue);
 	}
 
-	IC		LPCSTR	Name()
+	IC		const char*	Name()
 	{
 		return	(m_caName);
 	}

@@ -16,7 +16,7 @@ DLL_Pure* CEatableItemObject::_construct()
 	return this;
 }
 
-void CEatableItemObject::Load(LPCSTR section)
+void CEatableItemObject::Load(const char* section)
 {
 	CPhysicItem::Load(section);
 	CEatableItem::Load(section);
@@ -64,9 +64,9 @@ void CEatableItemObject::OnEvent(NET_Packet& P, u16 type)
 	CEatableItem::OnEvent(P, type);
 }
 
-BOOL CEatableItemObject::net_Spawn(CSE_Abstract* DC)
+bool CEatableItemObject::net_Spawn(CSE_Abstract* DC)
 {
-	BOOL res = CPhysicItem::net_Spawn(DC);
+	bool res = CPhysicItem::net_Spawn(DC);
 	CEatableItem::net_Spawn(DC);
 	return res;
 }
@@ -105,7 +105,7 @@ void CEatableItemObject::renderable_Render()
 	CEatableItem::renderable_Render();
 }
 
-void CEatableItemObject::reload(LPCSTR section)
+void CEatableItemObject::reload(const char* section)
 {
 	CPhysicItem::reload(section);
 	CEatableItem::reload(section);

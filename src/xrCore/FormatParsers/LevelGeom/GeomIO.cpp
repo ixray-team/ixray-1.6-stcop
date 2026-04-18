@@ -649,7 +649,7 @@ bool CGeomVanillaChunkedFormat::HasSWIData() const
     return std::holds_alternative<CMultiReader*>(SWI);
 }
 
-XRCORE_API xr_unique_ptr<IFormat> XRay::Geom::Read(LPCSTR Initial, xr_string_view Filename, xr_string_view Extension)
+XRCORE_API xr_unique_ptr<IFormat> XRay::Geom::Read(const char* Initial, xr_string_view Filename, xr_string_view Extension)
 {
     xr_stack_string_path Path = Filename.data();
     if (Initial&&Initial[0])
@@ -709,7 +709,7 @@ XRCORE_API xr_unique_ptr<IFormat> XRay::Geom::Read(xr_string_view Filename, xr_s
     return Read(nullptr, Filename, Extension);
 }
 
-XRCORE_API void XRay::Geom::Write(LPCSTR Initial, xr_string_view Filename, xr_string_view Extension, IFormat& Data)
+XRCORE_API void XRay::Geom::Write(const char* Initial, xr_string_view Filename, xr_string_view Extension, IFormat& Data)
 {
     xr_stack_string_path Path = Filename.data();
     if (Initial&&Initial[0])

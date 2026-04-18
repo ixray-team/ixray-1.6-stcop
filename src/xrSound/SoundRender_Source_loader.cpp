@@ -23,7 +23,7 @@ void CSoundRender_Source::decompress(u32 line, OggVorbis_File* ovf)
 	i_decompress_fr(ovf,dest,left);
 }
 
-void CSoundRender_Source::LoadWave	(LPCSTR pName)
+void CSoundRender_Source::LoadWave	(const char* pName)
 {
 	PROF_EVENT("Sound: Load ogg");
 	pname					= pName;
@@ -102,7 +102,7 @@ void CSoundRender_Source::LoadWave	(LPCSTR pName)
 	}
 }
 
-void CSoundRender_Source::load(LPCSTR name)
+void CSoundRender_Source::load(const char* name)
 {
 	string_path			fn,N;
 	xr_strcpy				(N,name);

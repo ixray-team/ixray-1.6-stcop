@@ -42,9 +42,9 @@ private:
 protected:
 	//имена xml файлов (разделенных запятой) из которых 
 	//производить загрузку элементов
-	static LPCSTR					file_str;
+	static const char*					file_str;
 	//имена тегов
-	static LPCSTR					tag_name;
+	static const char*					tag_name;
 public:
 									CXML_IdToIndex							();
 	virtual							~CXML_IdToIndex					();
@@ -76,9 +76,9 @@ TEMPLATE_SPECIALIZATION
 T_VECTOR* CSXML_IdToIndex::m_pItemDataVector = nullptr;
 
 TEMPLATE_SPECIALIZATION
-LPCSTR CSXML_IdToIndex::file_str = nullptr;
+const char* CSXML_IdToIndex::file_str = nullptr;
 TEMPLATE_SPECIALIZATION
-LPCSTR CSXML_IdToIndex::tag_name = nullptr;
+const char* CSXML_IdToIndex::tag_name = nullptr;
 
 
 TEMPLATE_SPECIALIZATION
@@ -172,7 +172,7 @@ void CSXML_IdToIndex::InitInternal ()
 
 		for(int i=0; i<items_num; ++i)
 		{
-			LPCSTR item_name	= uiXml->ReadAttrib(uiXml->GetRoot(), tag_name, i, "id", NULL);
+			const char* item_name	= uiXml->ReadAttrib(uiXml->GetRoot(), tag_name, i, "id", NULL);
 
 			string256			buf;
 			xr_sprintf				(buf, "id for item don't set, number %d in %s", i, xml_file);

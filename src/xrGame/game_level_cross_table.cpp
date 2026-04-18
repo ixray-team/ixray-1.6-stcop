@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "game_level_cross_table.h"
 
-CGameLevelCrossTable::CGameLevelCrossTable(LPCSTR fName)
+CGameLevelCrossTable::CGameLevelCrossTable(const char* fName)
 {
 	m_tpCrossTableVFS = FS.r_open(fName);
 	R_ASSERT2(m_tpCrossTableVFS, "Can't open cross table!");

@@ -16,11 +16,11 @@ protected:
 public:
 						ESceneGlowTool			():ESceneCustomOTool(OBJCLASS_GLOW){;}
 	// definition
-    IC LPCSTR			ClassName				(){return "glow";}
-    IC LPCSTR			ClassDesc				(){return "Glow";}
+    IC const char*			ClassName				(){return "glow";}
+    IC const char*			ClassDesc				(){return "Glow";}
     IC int				RenderPriority			(){return 20;}
 
-    void 				FillProp         (LPCSTR pref, PropItemVec& items);
+    void 				FillProp         (const char* pref, PropItemVec& items);
 
     virtual void		Clear					(bool bSpecific=false){inherited::Clear(bSpecific); m_Flags.zero();};
     // IO
@@ -32,5 +32,5 @@ public:
     virtual bool		LoadSelection      		(IReader&);
     virtual void		SaveSelection      		(IWriter&);
 
-    virtual CCustomObject* CreateObject			(LPVOID data, LPCSTR name);
+    virtual CCustomObject* CreateObject			(LPVOID data, const char* name);
 };

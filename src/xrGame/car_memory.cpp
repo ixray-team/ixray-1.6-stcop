@@ -24,7 +24,7 @@ car_memory::car_memory					(CCar *object) :
 	m_far_plane			= 1.0f;
 }
 
-void car_memory::reload(LPCSTR section)
+void car_memory::reload(const char* section)
 {
 	inherited::reload	(section);
 	m_fov_deg			= pSettings->r_float(section,"view_fov_deg");
@@ -32,7 +32,7 @@ void car_memory::reload(LPCSTR section)
 	m_far_plane			= pSettings->r_float(section,"view_far_plane");
 }
 #include "Actor.h"
-BOOL car_memory::feel_vision_isRelevant	(CObject *object)
+bool car_memory::feel_vision_isRelevant	(CObject *object)
 {
 	return object != nullptr && object->cast_actor() != nullptr;
 }

@@ -18,7 +18,7 @@ public:
 	IC bool operator() (CObject* O) { return cls==O->CLS_ID; }
 };
 #ifdef	DEBUG
-	BOOL debug_destroy = TRUE;
+	bool debug_destroy = TRUE;
 #endif
 
 CObjectList::CObjectList() :
@@ -44,7 +44,7 @@ CObject*	CObjectList::FindObjectByName	( shared_str name )
 		if ((*I)->cName().equal(name))	return (*I);
 	return	nullptr;
 }
-CObject*	CObjectList::FindObjectByName	( LPCSTR name )
+CObject*	CObjectList::FindObjectByName	( const char* name )
 {
 	return	FindObjectByName				(shared_str(name));
 }
@@ -472,7 +472,7 @@ void CObjectList::Unload	( )
 	}
 }
 
-CObject*	CObjectList::Create				( LPCSTR	name	)
+CObject*	CObjectList::Create				( const char*	name	)
 {
 	CObject*	O				= g_pGamePersistent->ObjectPool.create(name);
 //	Msg("CObjectList::Create [%x]%s", O, name);
@@ -559,7 +559,7 @@ void CObjectList::relcase_unregister	(int* ID)
 	m_relcase_callbacks.pop_back	();
 }
 
-void CObjectList::dump_list(Objects& v, LPCSTR reason)
+void CObjectList::dump_list(Objects& v, const char* reason)
 {
 	Objects::iterator it = v.begin();
 	Objects::iterator it_e = v.end();

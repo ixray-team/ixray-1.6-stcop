@@ -43,18 +43,18 @@ private:
 	IReader*				m_wave;
 
 	void 					i_decompress_fr			(OggVorbis_File* ovf, char* dest, u32 size);    
-	void					LoadWave 				(LPCSTR name);
+	void					LoadWave 				(const char* name);
 public:
 							CSoundRender_Source		();
 							~CSoundRender_Source	();
 
-	void					load					(LPCSTR name);
+	void					load					(const char* name);
     void					unload					();
 	void					decompress				(u32 line, OggVorbis_File* ovf);
 	
 	virtual	float			length_sec				() const	{return fTimeTotal;}
 	virtual u32				game_type				() const	{return m_uGameType;}
-	virtual LPCSTR			file_name				() const	{return *fname;}
+	virtual const char*			file_name				() const	{return *fname;}
 	virtual float			base_volume				() const	{return m_fBaseVolume;}
 	virtual u16				channels_num			() const	{return m_wformat.nChannels;}
 	virtual u32				bytes_total				() const	{return dwBytesTotal;}

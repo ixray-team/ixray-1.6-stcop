@@ -104,7 +104,7 @@ CNightVisionEffector::CNightVisionEffector(CActor* actor)
 		return;
 	}
 
-	LPCSTR section = pGameGlobals->r_string("night_vision", "night_vision_section");
+	const char* section = pGameGlobals->r_string("night_vision", "night_vision_section");
 
 	m_sounds.LoadSound(section, "snd_night_vision_on", "NightVisionOnSnd", true, SOUND_TYPE_ITEM_USING);
 	m_sounds.LoadSound(section, "snd_night_vision_off", "NightVisionOffSnd", true, SOUND_TYPE_ITEM_USING);
@@ -113,7 +113,7 @@ CNightVisionEffector::CNightVisionEffector(CActor* actor)
 
 	if (pSettings->line_exist(section, "night_vision_disabled_maps"))
 	{
-		LPCSTR disabled_maps = pSettings->r_string(section, "night_vision_disabled_maps");
+		const char* disabled_maps = pSettings->r_string(section, "night_vision_disabled_maps");
 		for (int i = 0, cnt = _GetItemCount(disabled_maps); i < cnt; ++i)
 		{
 			string512 level_name = {};

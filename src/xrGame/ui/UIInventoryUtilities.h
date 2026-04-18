@@ -75,12 +75,12 @@ enum EDatePrecision
 
 struct InventoryIconParams
 {
-	LPCSTR _3d_static_visual;
+	const char* _3d_static_visual;
 	Fvector _3d_static_rotate;
 	float _3d_static_scale;
 	float scaleIcon;
 
-	LPCSTR icons_texture;
+	const char* icons_texture;
 	float inv_grid_x;
 	float inv_grid_y;
 	float inv_grid_width;
@@ -105,23 +105,23 @@ const shared_str GetTimeAsString(ALife::_TIME_ID time, ETimePrecision timePrec, 
 const shared_str GetTimeAndDateAsString(ALife::_TIME_ID time, bool legacyMode = false);
 const shared_str Get_GameTimeAndDate_AsString();
 
-LPCSTR GetTimePeriodAsString	(LPSTR _buff, u32 buff_sz, ALife::_TIME_ID _from, ALife::_TIME_ID _to);
+const char* GetTimePeriodAsString	(LPSTR _buff, u32 buff_sz, ALife::_TIME_ID _from, ALife::_TIME_ID _to);
 // Отобразить вес, который несет (*pInvOwner)
 void UpdateWeight(CUIStatic& wnd, bool withPrefix = false);
 void UpdateWeightStr(CUIStatic&wnd, CUIStatic&wnd_max, CInventoryOwner *pInvOwner);
 
 // Функции получения строки-идентификатора ранга и отношения по их числовому идентификатору
-LPCSTR	GetRankAsText				(s32		rankID);
-LPCSTR	GetReputationAsText			(s32 rankID);
-LPCSTR	GetGoodwillAsText			(s32			goodwill);
+const char*	GetRankAsText				(s32		rankID);
+const char*	GetReputationAsText			(s32 rankID);
+const char*	GetGoodwillAsText			(s32			goodwill);
 
 void	ClearCharacterInfoStrings	();
 
-void	SendInfoToActor				(LPCSTR info_id);
+void	SendInfoToActor				(const char* info_id);
 void	SendInfoToLuaScripts		(shared_str info);
 u32		GetGoodwillColor			(s32 gw);
 u32		GetRelationColor			(ALife::ERelationType r);
 u32		GetReputationColor			(s32 rv);
-InventoryIconParams	GetInventoryIconParams(LPCSTR section);
+InventoryIconParams	GetInventoryIconParams(const char* section);
 ConditionDisplayParams GetConditionDisplayParams(CInventoryItem* item);
 };

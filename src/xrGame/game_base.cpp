@@ -12,7 +12,7 @@ u64		g_qwStartGameTime		= 12*60*60*1000;
 float	g_fTimeFactor			= pSettings->r_float("alife","time_factor");
 u64		g_qwEStartGameTime		= 12*60*60*1000;
 
-EGameIDs ParseStringToGameType(LPCSTR str);
+EGameIDs ParseStringToGameType(const char* str);
 
 game_PlayerState::game_PlayerState(NET_Packet* account_info)
 {
@@ -96,7 +96,7 @@ void game_PlayerState::resetFlag(u16 f)
 	flags__ &= ~(f);
 }
 
-void game_PlayerState::net_Export(NET_Packet& P, BOOL Full)
+void game_PlayerState::net_Export(NET_Packet& P, bool Full)
 {
 	P.w_u8(Full ? 1 : 0);
 
@@ -124,7 +124,7 @@ void game_PlayerState::net_Export(NET_Packet& P, BOOL Full)
 
 void	game_PlayerState::net_Import(NET_Packet& P)
 {
-	BOOL	bFullUpdate = !!P.r_u8();
+	bool	bFullUpdate = !!P.r_u8();
 
 	P.r_u8			(	team	);
 	
@@ -152,7 +152,7 @@ void	game_PlayerState::net_Import(NET_Packet& P)
 
 void	game_PlayerState::skip_Import(NET_Packet& P)
 {
-	BOOL	bFullUpdate = !!P.r_u8();
+	bool	bFullUpdate = !!P.r_u8();
 
 	P.r_u8			();//	team	);
 	
@@ -217,7 +217,7 @@ game_GameState::game_GameState()
 	m_fETimeFactor				= m_fTimeFactor			;
 }
 
-CLASS_ID game_GameState::getCLASS_ID(LPCSTR game_type_name, bool isServer)
+CLASS_ID game_GameState::getCLASS_ID(const char* game_type_name, bool isServer)
 {
 /*	if (!g_dedicated_server)
 	{
@@ -229,7 +229,7 @@ CLASS_ID game_GameState::getCLASS_ID(LPCSTR game_type_name, bool isServer)
 		string256				I;
 		xr_strcpy(I,l_tpIniFile->r_string("common","game_type_clsid_factory"));
 
-		luabind::functor<LPCSTR>	result;
+		luabind::functor<const char*>	result;
 		R_ASSERT					(ai().script_engine().functor(I,result));
 		shared_str clsid = result		(game_type_name, isServer);
 

@@ -11,7 +11,7 @@
 #include "PickupManager.h"
 #include "ai/monsters/ai_monster_utils.h"
 
-BOOL g_b_COD_PickUpMode = TRUE;
+bool g_b_COD_PickUpMode = TRUE;
 
 void CActor::feel_touch_new(CObject* O)
 {
@@ -23,7 +23,7 @@ void CActor::feel_touch_delete(CObject* O)
 
 }
 
-BOOL CActor::feel_touch_contact(CObject* O)
+bool CActor::feel_touch_contact(CObject* O)
 {
 	if (O == nullptr || O->getDestroy())
 	{
@@ -52,7 +52,7 @@ BOOL CActor::feel_touch_contact(CObject* O)
 	return FALSE;
 }
 
-BOOL CActor::feel_touch_on_contact(CObject* O)
+bool CActor::feel_touch_on_contact(CObject* O)
 {
 	if (O == nullptr || O->getDestroy())
 	{

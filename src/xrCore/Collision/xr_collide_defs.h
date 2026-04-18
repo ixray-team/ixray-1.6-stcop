@@ -12,17 +12,17 @@ namespace collide
 		Fvector start;
 		Fvector dir;
 		float range = 0.f;
-		BOOL result = FALSE;
+		bool result = FALSE;
 
 		// cached vertices
-		ICF void set(const Fvector& _start, const Fvector& _dir, const float _range,const BOOL _result)
+		ICF void set(const Fvector& _start, const Fvector& _dir, const float _range,const bool _result)
 		{
 			start	= _start;
 			dir		= _dir;
 			range	= _range;
 			result	= _result;
 		}
-		ICF BOOL similar(const Fvector& _start, const Fvector& _dir, const float _range)
+		ICF bool similar(const Fvector& _start, const Fvector& _dir, const float _range)
 		{
 			if (!_start.similar(start)) return FALSE;
 			if (!fsimilar(1.f,dir.dotproduct(_dir))) return FALSE;
@@ -62,10 +62,10 @@ namespace collide
 			element	= _element;
 			return *this;
 		}
-		ICF BOOL set_if_less(CDB::RESULT* I){if (I->range<range){ set(0,I->range,I->id); return TRUE;}else return FALSE;}
-		ICF BOOL set_if_less(rq_result*	R){if (R->range<range){ set(R->O,R->range,R->element); return TRUE;}else return FALSE;}
-		ICF BOOL set_if_less(CObject* _who, float _range, int _element)	{ if (_range<range) { set(_who,_range,_element); return TRUE;}else return FALSE;}
-		ICF BOOL valid() {return (element>=0);}
+		ICF bool set_if_less(CDB::RESULT* I){if (I->range<range){ set(0,I->range,I->id); return TRUE;}else return FALSE;}
+		ICF bool set_if_less(rq_result*	R){if (R->range<range){ set(R->O,R->range,R->element); return TRUE;}else return FALSE;}
+		ICF bool set_if_less(CObject* _who, float _range, int _element)	{ if (_range<range) { set(_who,_range,_element); return TRUE;}else return FALSE;}
+		ICF bool valid() {return (element>=0);}
 	};
 
 	using rqVec = xr_vector<rq_result>;
@@ -74,7 +74,7 @@ namespace collide
 	struct rq_results
 	{
 		rqVec results;
-		ICF BOOL append_result(CObject* _who, float _range, int _element, BOOL bNearest)
+		ICF bool append_result(CObject* _who, float _range, int _element, bool bNearest)
 		{
 			if (bNearest&&!results.empty()){
 				rq_result& R		= results.back();
@@ -106,6 +106,6 @@ namespace collide
 		ICF rqVec &r_results() { return results; }
 
 	};
-	typedef BOOL rq_callback(rq_result& result, LPVOID user_data);
-	typedef BOOL test_callback(const ray_defs& rd, CObject* object, LPVOID user_data);
+	typedef bool rq_callback(rq_result& result, LPVOID user_data);
+	typedef bool test_callback(const ray_defs& rd, CObject* object, LPVOID user_data);
 };

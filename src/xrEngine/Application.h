@@ -15,7 +15,7 @@ class ENGINE_API CApplication :
 	};
 
 private:
-	ILoadingScreen* loadingScreen;
+	ILoadingScreen* GLoadingScreen;
 
 	int		max_load_stage;
 
@@ -23,27 +23,27 @@ private:
 
 	u32						ll_dwReference;
 
-	void					Level_Append(LPCSTR lname);
+	void					Level_Append(const char* lname);
 public:
 
 	// Levels
 	xr_vector<sLevelInfo>	Levels;
 	u32						Level_Current;
 	virtual void			Level_Scan();
-	virtual int				Level_ID(LPCSTR name, LPCSTR ver, bool bSet);
+	virtual int				Level_ID(const char* name, const char* ver, bool bSet);
 	virtual void			Level_Set(u32 ID);
 	virtual void			LoadAllArchives();
-	virtual CInifile* GetArchiveHeader(LPCSTR name, LPCSTR ver);
+	virtual CInifile* GetArchiveHeader(const char* name, const char* ver);
 
 	// Loading
 	virtual void					LoadBegin();
 	virtual void					LoadEnd();
-	virtual void					LoadTitleInt(LPCSTR str1, LPCSTR str2, LPCSTR str3);
+	virtual void					LoadTitleInt(const char* str1, const char* str2, const char* str3);
 	virtual void					LoadStage();
 	virtual void					LoadSwitch();
 	virtual void					LoadDraw();
 	virtual void					LoadForceFinish();
-	virtual void					SetLoadStageTitle(pcstr _ls_title);
+	virtual void					SetLoadStageTitle(const char* _ls_title);
 
 	virtual	void			OnEvent(EVENT E, u64 P1, u64 P2);
 

@@ -71,8 +71,8 @@ public:
 
 	void LoadParticles(IKinematics* K);
 
-	void					LoadParticles			(LPCSTR section, IKinematics* K);
-	void					LoadParticles			(LPCSTR section, LPCSTR line, IKinematics* K);
+	void					LoadParticles			(const char* section, IKinematics* K);
+	void					LoadParticles			(const char* section, const char* line, IKinematics* K);
 	void					AppendBone				(u16 bone_id, Fvector offs = zero_vel);
 
 	void					net_DestroyParticles	();

@@ -23,7 +23,7 @@ private:
 public:
 	CNVG() = default;
 	~CNVG() = default;
-	virtual void Load(LPCSTR section) override;
+	virtual void Load(const char* section) override;
 	virtual void save(NET_Packet& output_packet) override;
 	virtual void load(IReader& input_packet) override;
 	virtual void UpdateCL() override;

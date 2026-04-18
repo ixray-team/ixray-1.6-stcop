@@ -246,7 +246,7 @@ void CUITalkDialogWnd::ClearQuestions()
 }
 
 
-void CUITalkDialogWnd::AddQuestion(LPCSTR str, LPCSTR value, int number, SPhraseInfo &phInfo)
+void CUITalkDialogWnd::AddQuestion(const char* str, const char* value, int number, SPhraseInfo &phInfo)
 {
 	CUIQuestionItem* itm			= new CUIQuestionItem(m_uiXml,"question_item");
 	itm->Init						(value, str, phInfo.bFinalizer);
@@ -310,7 +310,7 @@ void CUITalkDialogWnd::AddQuestion(LPCSTR str, LPCSTR value, int number, SPhrase
 }
 
 
-void CUITalkDialogWnd::AddAnswer(LPCSTR SpeakerName, LPCSTR str, bool bActor)
+void CUITalkDialogWnd::AddAnswer(const char* SpeakerName, const char* str, bool bActor)
 {
 	CUIAnswerItem* itm				= new CUIAnswerItem(m_uiXml,bActor?"actor_answer_item":"other_answer_item");
 	itm->Init						(str, SpeakerName);
@@ -345,7 +345,7 @@ void CUITalkDialogWnd::AddAnswer(LPCSTR SpeakerName, LPCSTR str, bool bActor)
 	Actor()->game_news_registry->registry().objects().push_back(news_data);
 }
 
-void CUITalkDialogWnd::AddIconedAnswer(LPCSTR caption, LPCSTR text, LPCSTR texture_name, LPCSTR templ_name)
+void CUITalkDialogWnd::AddIconedAnswer(const char* caption, const char* text, const char* texture_name, const char* templ_name)
 {
 	CUIAnswerItemIconed* itm		= new CUIAnswerItemIconed(m_uiXml,templ_name);
 	itm->Init						(text, caption, texture_name);
@@ -363,7 +363,7 @@ void CUITalkDialogWnd::AddIconedAnswer(LPCSTR caption, LPCSTR text, LPCSTR textu
 	Actor()->game_news_registry->registry().objects().push_back(news_data);
 }
 
-void CUITalkDialogWnd::AddIconedAnswer(LPCSTR text, LPCSTR texture_name, Frect texture_rect, LPCSTR templ_name)
+void CUITalkDialogWnd::AddIconedAnswer(const char* text, const char* texture_name, Frect texture_rect, const char* templ_name)
 {
 	CUIAnswerItemIconed* itm = new CUIAnswerItemIconed(m_uiXml, templ_name);
 	itm->Init(text, texture_name, texture_rect);
@@ -441,7 +441,7 @@ void CUIQuestionItem::SendMessage				(CUIWindow* pWnd, s16 msg, void* pData)
 	CUIWndCallback::OnEvent(pWnd, msg, pData);
 }
 
-CUIQuestionItem::CUIQuestionItem(CUIXml* xml_doc, LPCSTR path)
+CUIQuestionItem::CUIQuestionItem(CUIXml* xml_doc, const char* path)
 {
 	CUIXmlInit::InitWindow(*xml_doc, path, 0, this);
 
@@ -473,7 +473,7 @@ void CUIQuestionItem::Update()
 		m_num_text->Show(!pInput->GetControllerMode());
 }
 
-void CUIQuestionItem::Init			(LPCSTR val, LPCSTR text, bool isFinalizer)
+void CUIQuestionItem::Init			(const char* val, const char* text, bool isFinalizer)
 {
 	m_is_finalizer					= isFinalizer;
 	m_s_value						= val;
@@ -489,7 +489,7 @@ void	CUIQuestionItem::OnTextClicked(CUIWindow* w, void*)
 }
 
 
-CUIAnswerItem::CUIAnswerItem			(CUIXml* xml_doc, LPCSTR path)
+CUIAnswerItem::CUIAnswerItem			(CUIXml* xml_doc, const char* path)
 {
 	CUIXmlInit::InitWindow(*xml_doc, path, 0, this);
 
@@ -507,7 +507,7 @@ CUIAnswerItem::CUIAnswerItem			(CUIXml* xml_doc, LPCSTR path)
 	SetAutoDelete					(true);
 }
 
-void CUIAnswerItem::Init			(LPCSTR text, LPCSTR name)
+void CUIAnswerItem::Init			(const char* text, const char* name)
 {
 	m_name->SetText					(TranslateName(name).c_str());
 	m_text->SetText					(g_pStringTable->ParseStringFromScript(text).c_str());
@@ -517,7 +517,7 @@ void CUIAnswerItem::Init			(LPCSTR text, LPCSTR name)
 	SetHeight						(new_h);
 }
 
-CUIAnswerItemIconed::CUIAnswerItemIconed		(CUIXml* xml_doc, LPCSTR path)
+CUIAnswerItemIconed::CUIAnswerItemIconed		(CUIXml* xml_doc, const char* path)
 :CUIAnswerItem(xml_doc, path)
 {
 	m_icon							= new CUIStatic();m_icon->SetAutoDelete(true);
@@ -530,7 +530,7 @@ CUIAnswerItemIconed::CUIAnswerItemIconed		(CUIXml* xml_doc, LPCSTR path)
 	xml_init.InitStatic				(*xml_doc, str, 0, m_icon);
 }
 
-void CUIAnswerItemIconed::Init		(LPCSTR text, LPCSTR name, LPCSTR texture_name)
+void CUIAnswerItemIconed::Init		(const char* text, const char* name, const char* texture_name)
 {
 	xr_string res;
 	res += g_pStringTable->ParseStringFromScript(name).c_str();
@@ -543,7 +543,7 @@ void CUIAnswerItemIconed::Init		(LPCSTR text, LPCSTR name, LPCSTR texture_name)
 	m_icon->SetStretchTexture		(true);
 }
 
-void CUIAnswerItemIconed::Init(LPCSTR text, LPCSTR texture_name, Frect texture_rect)
+void CUIAnswerItemIconed::Init(const char* text, const char* texture_name, Frect texture_rect)
 {
 	inherited::Init(text, "");
 	m_icon->InitTexture(texture_name);

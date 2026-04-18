@@ -2,7 +2,7 @@
 
 #include "ExportDefines.h"
 
-//BOOL ValidateIndices		(u32 vCount, u32 iCount, u16* pIndices);
+//bool ValidateIndices		(u32 vCount, u32 iCount, u16* pIndices);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 // MESH as it is represented in file

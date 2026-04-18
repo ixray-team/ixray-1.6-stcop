@@ -12,7 +12,7 @@ public:
 	CFlashlight() = default;
 	~CFlashlight() override;
 
-	void Load(LPCSTR section) override;
+	void Load(const char* section) override;
 	void UpdateCL() override;
 	void OnMotionMark(u32 state, const motion_marks& m) override;
 	void OnH_B_Independent(bool just_before_destroy) override;

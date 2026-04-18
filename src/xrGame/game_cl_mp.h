@@ -22,7 +22,7 @@ struct SND_Message{
 	u32			SoundID;
 	u32			LastStarted;
 	bool operator == (u32 ID){return SoundID == ID;}
-	void Load(u32 const ID, u32 const prior, LPCSTR name)
+	void Load(u32 const ID, u32 const prior, const char* name)
 	{
 		SoundID = ID;
 		priority = prior;
@@ -104,7 +104,7 @@ struct Bonus_Struct
 		IconRects.clear();
 	}
 
-	bool operator == (LPCSTR TypeName){return !xr_strcmp(BonusTypeName.c_str(), TypeName);}
+	bool operator == (const char* TypeName){return !xr_strcmp(BonusTypeName.c_str(), TypeName);}
 };
 
 class CUIVotingCategory;
@@ -140,12 +140,12 @@ protected:
 	CUIMpAdminMenu*					m_pAdminMenuWindow;
 	CUIVote*						m_pVoteRespondWindow;
 	CUIMessageBoxEx*				m_pMessageBox;
-	BOOL							m_bSpectatorSelected;
+	bool							m_bSpectatorSelected;
 		
 	
 	virtual void			LoadTeamData			(const shared_str&	TeamName);
 	
-	virtual	void			ChatSay					(LPCSTR	phrase, bool bAll);
+	virtual	void			ChatSay					(const char*	phrase, bool bAll);
 
 	virtual	void			OnChatMessage			(NET_Packet* P);
 	virtual	void			OnWarnMessage			(NET_Packet* P);
@@ -170,7 +170,7 @@ protected:
 	virtual bool			NeedToSendReady_Actor(int key, game_PlayerState* ps) { return false; };
 	virtual bool			NeedToSendReady_Spectator(int key, game_PlayerState* ps) { return false; };
 
-	virtual	void			LoadSndMessage			(LPCSTR caSection, LPCSTR caLine, u32 ID);
+	virtual	void			LoadSndMessage			(const char* caSection, const char* caLine, u32 ID);
 	virtual		void				LoadSndMessages				();
 	virtual		void				UpdateSndMessages		();
 
@@ -201,12 +201,12 @@ public:
 	//// VOTING
 	virtual		bool				IsVotingActive			()	{ return m_bVotingActive; };
 	virtual		void				SetVotingActive			( bool Active )	{ m_bVotingActive = Active; };
-	virtual		void				SendStartVoteMessage	(LPCSTR args);
+	virtual		void				SendStartVoteMessage	(const char* args);
 	virtual		void				SendVoteYesMessage		();
 	virtual		void				SendVoteNoMessage		();
 				void				VotingBegin				();
 				void				Vote					();
-				void				OnCantVoteMsg			(LPCSTR Text);
+				void				OnCantVoteMsg			(const char* Text);
 	virtual		void				OnVoteStart				(NET_Packet& P);
 	virtual		void				OnVoteStop				(NET_Packet& P);
 	virtual		void				OnVoteEnd				(NET_Packet& P);
@@ -254,7 +254,7 @@ public:
 				
 				void				SendPlayerStarted();
 	virtual		void				OnConnected				();
-	virtual		LPCSTR				GetGameScore			(string32&	score_dest) {return ""; };
+	virtual		const char*				GetGameScore			(string32&	score_dest) {return ""; };
 #ifdef XR_MP_BUILD
 	screenshot_manager				ss_manager;
 #endif //  XR_MP_BUILD
@@ -262,7 +262,7 @@ public:
 	mp_anticheat::configs_dumper	cd_manager;
 	mp_anticheat::configs_verifyer	cd_verifyer;
 	
-				void				AddSoundMessage		(LPCSTR sound_name, u32 const sound_priority, u32 const soundID);
+				void				AddSoundMessage		(const char* sound_name, u32 const sound_priority, u32 const soundID);
 				void				PlaySndMessage		(u32 ID);
 				typedef xr_delegate<void (u32 const)> player_info_reply_cb_t;
 				bool				RequestPlayersInfo	(player_info_reply_cb_t const pinfo_repl_cb);
@@ -312,8 +312,8 @@ public:
 				bool				is_buy_menu_ready				() const { return m_ready_to_open_buy_menu; };
 				void				set_buy_menu_not_ready			() { m_ready_to_open_buy_menu = false; };
 
-				void				decompress_and_save_screenshot	(LPCSTR file_name, u8* data, u32 data_size, u32 file_size);
-				void				decompress_and_process_config	(LPCSTR file_name, u8* data, u32 data_size, u32 file_size);
+				void				decompress_and_save_screenshot	(const char* file_name, u8* data, u32 data_size, u32 file_size);
+				void				decompress_and_process_config	(const char* file_name, u8* data, u32 data_size, u32 file_size);
 
 				void				extract_server_info				(u8* data_ptr, u32 data_size);
 				fr_callback_binder*	get_receiver_cb_binder			();
@@ -322,8 +322,8 @@ public:
 				
 				void 		sending_screenshot_callback(file_transfer::sending_status_t status, u32 bytes_sent, u32 data_size);
 //-------------------------------------------------------------------------------------------------
-				static void	generate_file_name(string_path& file_name, LPCSTR file_suffix, SYSTEMTIME const& date_time);
-				static LPCSTR	make_file_name(LPCSTR session_id, string_path & dest);
+				static void	generate_file_name(string_path& file_name, const char* file_suffix, SYSTEMTIME const& date_time);
+				static const char*	make_file_name(const char* session_id, string_path & dest);
 //-------------------------------------------------------------------------------------------------
 
 	virtual game_cl_mp* cast_game_cl_mp() override { return this; }

@@ -17,15 +17,15 @@ protected:
 public:
 						ESceneSectorTool		():ESceneCustomOTool(OBJCLASS_SECTOR){m_Flags.zero();}
 	// definition
-    IC LPCSTR			ClassName				(){return "sector";}
-    IC LPCSTR			ClassDesc				(){return "Sector";}
+    IC const char*			ClassName				(){return "sector";}
+    IC const char*			ClassDesc				(){return "Sector";}
     IC int				RenderPriority			(){return 20;}
 
     virtual void 		OnObjectRemove			(CCustomObject* O, bool bDeleting);
     		void		_OnObjectRemove			(CSceneObject* O);
     virtual void 		OnBeforeObjectChange	(CCustomObject* O);
 
-	virtual void 		FillProp				(LPCSTR pref, PropItemVec& items);
+	virtual void 		FillProp				(const char* pref, PropItemVec& items);
 
     virtual void		Clear					(bool bSpecific=false){inherited::Clear(bSpecific);m_Flags.zero();}
     // IO
@@ -37,5 +37,5 @@ public:
     virtual bool		LoadSelection      		(IReader&);
     virtual void		SaveSelection      		(IWriter&);
 
-    virtual CCustomObject* CreateObject			(LPVOID data, LPCSTR name);
+    virtual CCustomObject* CreateObject			(LPVOID data, const char* name);
 };

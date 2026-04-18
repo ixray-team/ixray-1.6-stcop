@@ -7,7 +7,7 @@
 #include "character_community.h"
 
 //////////////////////////////////////////////////////////////////////////
-COMMUNITY_DATA::COMMUNITY_DATA (s32 idx, shared_str idn, LPCSTR team_str)
+COMMUNITY_DATA::COMMUNITY_DATA (s32 idx, shared_str idn, const char* team_str)
 {
 	index = idx;
 	id = idn;

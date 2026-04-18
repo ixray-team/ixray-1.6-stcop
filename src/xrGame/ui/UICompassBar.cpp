@@ -188,7 +188,7 @@ void CUICompassBar::ParseSpots(CUIXml& uiXml, const char* path)
     }
     
     const CUIXmlInit::ColorDefs* colorDefs = CUIXmlInit::GetColorDefs();
-    LPCSTR defaultColorName = uiXml.ReadAttrib(path, 0, "color", "ui_1");
+    const char* defaultColorName = uiXml.ReadAttrib(path, 0, "color", "ui_1");
     CUIXmlInit::ColorDefs::const_iterator colorIt = colorDefs->find(defaultColorName);
     _spotCfg.defaultSpotColor = (colorIt != colorDefs->end()) ? colorIt->second : _kDefaultColorWhite;
 }
@@ -324,18 +324,18 @@ CUIStatic* CUICompassBar::InitCardinalStatic(CUIXml& uiXml, CUIXmlInit& xmlInit,
     }
     else
     {
-        LPCSTR caption = uiXml.Read(childPath, 0, nullptr);
+        const char* caption = uiXml.Read(childPath, 0, nullptr);
         if (caption && *caption)
         {
             st->SetText(caption);
         }
-        LPCSTR colorAttr = uiXml.ReadAttrib(childPath, 0, "color", nullptr);
-        LPCSTR rAttr = uiXml.ReadAttrib(childPath, 0, "r", nullptr);
+        const char* colorAttr = uiXml.ReadAttrib(childPath, 0, "color", nullptr);
+        const char* rAttr = uiXml.ReadAttrib(childPath, 0, "r", nullptr);
         if (colorAttr || rAttr)
         {
             st->SetTextColor(CUIXmlInit::GetColor(uiXml, childPath, 0, _kDefaultColorWhite));
         }
-        LPCSTR alignStr = uiXml.ReadAttrib(childPath, 0, "align", nullptr);
+        const char* alignStr = uiXml.ReadAttrib(childPath, 0, "align", nullptr);
         if (alignStr && st->TextItemControl())
         {
             if (alignStr[0] == 'l' || alignStr[0] == 'L')
@@ -358,7 +358,7 @@ CUIStatic* CUICompassBar::InitCardinalStatic(CUIXml& uiXml, CUIXmlInit& xmlInit,
 void CUICompassBar::InitActiveTargetWidgets(CUIXml& uiXml, CUIXmlInit& xmlInit)
 {
     const char* markerPath = "compass_bar:active_target:marker";
-    LPCSTR texAttr = uiXml.ReadAttrib(markerPath, 0, "texture", nullptr);
+    const char* texAttr = uiXml.ReadAttrib(markerPath, 0, "texture", nullptr);
     if (texAttr && xr_strlen(texAttr) > 0)
     {
         _activeMarkerFallbackTexture = texAttr;
@@ -451,13 +451,13 @@ void CUICompassBar::CreateDefaultActiveTargetWidgets(CUIXml& uiXml)
         float distTextH = uiXml.ReadAttribFlt("compass_bar:active_target:distance_text", 0, "height", 14.0f);
         _activeDistText->SetWndSize(Fvector2().set(distTextW, distTextH));
         _activeDistText->SetWndPos(Fvector2().set(0.0f, 0.0f));
-        LPCSTR fontName = uiXml.ReadAttrib("compass_bar:active_target:distance_text", 0, "font", "ui_font_letterica18");
+        const char* fontName = uiXml.ReadAttrib("compass_bar:active_target:distance_text", 0, "font", "ui_font_letterica18");
         CGameFont* font = UI().Font().GetFont(fontName);
         if (font)
         {
             _activeDistText->SetFont(font);
         }
-        LPCSTR colorName = uiXml.ReadAttrib("compass_bar:active_target:distance_text", 0, "color", "ui_1");
+        const char* colorName = uiXml.ReadAttrib("compass_bar:active_target:distance_text", 0, "color", "ui_1");
         CUIXmlInit::ColorDefs::const_iterator colorIt = CUIXmlInit::GetColorDefs()->find(colorName);
         u32 textColor = (colorIt != CUIXmlInit::GetColorDefs()->end()) ? colorIt->second : _kDefaultColorWhite;
         _activeDistText->SetTextColor(textColor);

@@ -57,7 +57,7 @@ public:
 	// Use separate open_chunk with IReaderBase return to not break whole engine. But should be changed...
 	virtual IReaderBase* open_chunk_base(u32 chunk_id) override {return open_chunk(chunk_id);}
 	
-	intptr_t		find_chunk(u32 ID, BOOL* bCompressed = 0) override;
+	intptr_t		find_chunk(u32 ID, bool* bCompressed = 0) override;
 
 public:
 	void			r_stringZ(shared_str& dest);

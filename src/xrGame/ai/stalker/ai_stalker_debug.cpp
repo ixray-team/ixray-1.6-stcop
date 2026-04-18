@@ -141,7 +141,7 @@ void restore_actor()
 }
 
 template <typename planner_type>
-void draw_planner						(const planner_type &brain, LPCSTR start_indent, LPCSTR indent, LPCSTR planner_id)
+void draw_planner						(const planner_type &brain, const char* start_indent, const char* indent, const char* planner_id)
 {
 #ifdef DEBUG
 	planner_type						&_brain = const_cast<planner_type&>(brain);
@@ -187,21 +187,21 @@ void draw_planner						(const planner_type &brain, LPCSTR start_indent, LPCSTR i
 #endif
 }
 
-LPCSTR animation_name(CAI_Stalker *self, const MotionID &animation)
+const char* animation_name(CAI_Stalker *self, const MotionID &animation)
 {
 	if (!animation)
 		return			("");
 #ifdef DEBUG
 	IKinematicsAnimated	*skeleton_animated = self->Visual()->dcast_PKinematicsAnimated();
 	VERIFY				(skeleton_animated);
-	LPCSTR				name = skeleton_animated->LL_MotionDefName_dbg(animation).first;
+	const char*				name = skeleton_animated->LL_MotionDefName_dbg(animation).first;
 	return				(name);
 #else
 	return "";
 #endif
 }
 
-void draw_restrictions(const shared_str &restrictions, LPCSTR start_indent, LPCSTR indent, LPCSTR header)
+void draw_restrictions(const shared_str &restrictions, const char* start_indent, const char* indent, const char* header)
 {
 #ifdef DEBUG
 	DBG_OutText	("%s%s%s",start_indent,indent,header);
@@ -211,7 +211,7 @@ void draw_restrictions(const shared_str &restrictions, LPCSTR start_indent, LPCS
 #endif
 }
 
-LPCSTR movement_type(const MonsterSpace::EMovementType &movement_type)
+const char* movement_type(const MonsterSpace::EMovementType &movement_type)
 {
 	switch (movement_type) {
 		case MonsterSpace::eMovementTypeStand :
@@ -225,7 +225,7 @@ LPCSTR movement_type(const MonsterSpace::EMovementType &movement_type)
 	return				("invalid");
 }
 
-LPCSTR danger_type(const CDangerObject::EDangerType &danger_type)
+const char* danger_type(const CDangerObject::EDangerType &danger_type)
 {
 	switch (danger_type) {
 		case CDangerObject::eDangerTypeBulletRicochet		: return	("bullet ricochet");
@@ -264,7 +264,7 @@ void CAI_Stalker::debug_text			()
 	}
 
 	float								up_indent = 40.f;
-	LPCSTR								indent = "  ";
+	const char*								indent = "  ";
 
 	DBG_TextSetColor(color_xrgb(0, 255, 0));
 	DBG_TextOutSet	(0,up_indent);
@@ -362,7 +362,7 @@ void CAI_Stalker::debug_text			()
 		DBG_OutText	("%s%s%sobject    : %s",indent,indent,indent,*memory().enemy().selected()->cName());
 		if (g_Alive()) {
 			float								interval = (1.f - panic_threshold())*.25f, left = -1.f, right = -1.f;
-			LPCSTR								description = "invalid";
+			const char*								description = "invalid";
 			u32									result = dwfChooseAction(
 				2000,
 				1.f - interval,
@@ -568,7 +568,7 @@ void CAI_Stalker::debug_text			()
 	DBG_OutText	("%smovement",indent);
 	DBG_OutText	("%s%senabled         : %s",indent,indent,movement().enabled() ? "+" : "-");
 
-	LPCSTR								mental_state = "invalid";
+	const char*								mental_state = "invalid";
 	switch (movement().mental_state()) {
 		case MonsterSpace::eMentalStateFree : {
 			mental_state				= "free";
@@ -586,7 +586,7 @@ void CAI_Stalker::debug_text			()
 	}
 	DBG_OutText	("%s%smental state    : %s",indent,indent,mental_state);
 
-	LPCSTR								body_state = "invalid";
+	const char*								body_state = "invalid";
 	switch (movement().body_state()) {
 		case MonsterSpace::eBodyStateStand : {
 			body_state					= "stand";
@@ -602,7 +602,7 @@ void CAI_Stalker::debug_text			()
 	DBG_OutText	("%s%smovement type   : %s (current)",indent,indent,movement_type(movement().movement_type()));
 	DBG_OutText	("%s%smovement type   : %s (target)",indent,indent, movement_type(movement().target_movement_type()));
 
-	LPCSTR						path_type = "invalid";
+	const char*						path_type = "invalid";
 	switch (movement().path_type()) {
 		case MovementManager::ePathTypeGamePath : {
 			path_type			= "game path";
@@ -840,7 +840,7 @@ void CAI_Stalker::debug_text			()
 	DBG_OutText	(" ");
 	DBG_OutText	("%ssight",indent);
 
-	LPCSTR								sight_type = "invalid";
+	const char*								sight_type = "invalid";
 	switch (sight().current_action().sight_type()) {
 		case SightManager::eSightTypeCurrentDirection : {
 			sight_type					= "current direction";
@@ -1010,7 +1010,7 @@ public:
 	}
 };
 
-BOOL _ray_query_callback	(collide::rq_result& result, LPVOID params)
+bool _ray_query_callback	(collide::rq_result& result, LPVOID params)
 {
 	ray_query_param						*param = (ray_query_param*)params;
 	param->m_points->push_back			(
@@ -1254,7 +1254,7 @@ static Fmatrix aim_on_actor		(
 	return								(transform);
 }
 
-static void fill_bones				(CAI_Stalker& self, Fmatrix const& transform, IKinematicsAnimated* kinematics_animated, LPCSTR animation_id, bool const local)
+static void fill_bones				(CAI_Stalker& self, Fmatrix const& transform, IKinematicsAnimated* kinematics_animated, const char* animation_id, bool const local)
 {
 	IKinematics*						kinematics = kinematics_animated->dcast_PKinematics();
 	u16									bone_count = kinematics->LL_BoneCount();
@@ -1371,7 +1371,7 @@ static void draw_bones				(
 }
 #endif // #ifdef DEBUG_RENDER
 
-static void draw_animation_bones	(CAI_Stalker& self, Fmatrix const& transform, IKinematicsAnimated* kinematics_animated, LPCSTR animation_id)
+static void draw_animation_bones	(CAI_Stalker& self, Fmatrix const& transform, IKinematicsAnimated* kinematics_animated, const char* animation_id)
 {
 	IKinematics* kinematics				= kinematics_animated->dcast_PKinematics();
 

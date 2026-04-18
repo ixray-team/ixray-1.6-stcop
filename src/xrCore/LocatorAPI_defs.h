@@ -59,12 +59,12 @@ public:
 	LPSTR		m_FilterCaption;
     Flags32		m_Flags;
 public:
-				FS_Path		(LPCSTR _Root, LPCSTR _Add, LPCSTR _DefExt=0, LPCSTR _FilterString=0, u32 flags=0);
+				FS_Path		(const char* _Root, const char* _Add, const char* _DefExt=0, const char* _FilterString=0, u32 flags=0);
 				~FS_Path	();
-	LPCSTR		_update		(string_path& dest, LPCSTR src) const;
-	LPCSTR		_update		(xr_stack_string_path& dest, LPCSTR src) const;
-	void		_set		(LPCSTR add);
-	void		_set_root	(LPCSTR root);
+	const char*		_update		(string_path& dest, const char* src) const;
+	const char*		_update		(xr_stack_string_path& dest, const char* src) const;
+	void		_set		(const char* add);
+	void		_set_root	(const char* root);
 
     void  rescan_path_cb	();
 };
@@ -91,4 +91,4 @@ public:
 using FS_FileSet = xr_set<FS_File>;
 using FS_FileSetIt = FS_FileSet::iterator;
 
-extern bool	XRCORE_API PatternMatch(LPCSTR s, LPCSTR mask);
+extern bool	XRCORE_API PatternMatch(const char* s, const char* mask);

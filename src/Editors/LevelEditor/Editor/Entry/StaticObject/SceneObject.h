@@ -42,21 +42,21 @@ protected:
 
 public:
     // constructor/destructor methods
-					CSceneObject			(LPVOID data, LPCSTR name);
+					CSceneObject			(LPVOID data, const char* name);
 	virtual 		~CSceneObject			();
 	
-	virtual void 	Select					(BOOL flag);
+	virtual void 	Select					(bool flag);
 	void 			Construct				(LPVOID data);
 	void			ReloadReferences();
 
     // get object properties methods
 	IC bool 		RefCompare				(CEditableObject *to){return m_pReference?!!(m_pReference==to):false; }
-	IC bool 		RefCompare				(LPCSTR ref){return ref&&m_pReference?(strcmp(ref,m_pReference->GetName())==0):false; }
+	IC bool 		RefCompare				(const char* ref){return ref&&m_pReference?(strcmp(ref,m_pReference->GetName())==0):false; }
 	IC CEditableObject*	GetReference		()	{return m_pReference; }
-	CEditableObject*SetReference			(LPCSTR ref_name);
+	CEditableObject*SetReference			(const char* ref_name);
 	CEditableObject*UpdateReference			();
 	IC EditMeshVec* Meshes					() {return m_pReference?&m_pReference->Meshes():0;}
-    virtual LPCSTR	RefName					() {return m_pReference?m_pReference->GetName():0;}
+    virtual const char*	RefName					() {return m_pReference?m_pReference->GetName():0;}
     virtual bool	CanAttach				() {return true;}
 
     // statistics methods
@@ -97,14 +97,14 @@ public:
     void 			GetFullTransformToLocal	(Fmatrix& m);
 
 	// editor integration
-	virtual void	FillProp				(LPCSTR pref, PropItemVec& values);
+	virtual void	FillProp				(const char* pref, PropItemVec& values);
 	virtual bool 	GetSummaryInfo			(SSceneSummary* inf);
 
     // load/save methods
 	virtual bool 	LoadStream				(IReader&);
-	virtual bool 	LoadLTX					(CInifile& ini, LPCSTR sect_name);
+	virtual bool 	LoadLTX					(CInifile& ini, const char* sect_name);
 	virtual void 	SaveStream				(IWriter&);
-	virtual void 	SaveLTX					(CInifile& ini, LPCSTR sect_name);
+	virtual void 	SaveLTX					(CInifile& ini, const char* sect_name);
 
     virtual void 	OnShowHint				(AStringVec& dest);
 

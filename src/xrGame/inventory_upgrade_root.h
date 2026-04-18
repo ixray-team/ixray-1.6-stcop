@@ -23,13 +23,13 @@ public:
 	Root() = default;
 	virtual ~Root() = default;
 	void construct(const shared_str& root_id, Manager& manager_r);
-	IC LPCSTR scheme() const { return m_upgrade_scheme.c_str(); }
+	IC const char* scheme() const { return m_upgrade_scheme.c_str(); }
 
 	void add_upgrade(Upgrade* upgr);
 	virtual	bool is_root() override { return true; }
 
 #ifdef DEBUG
-	virtual void log_hierarchy(LPCSTR nest) override;
+	virtual void log_hierarchy(const char* nest) override;
 	void test_all_upgrades(CInventoryItem& item);
 #endif // DEBUG
 

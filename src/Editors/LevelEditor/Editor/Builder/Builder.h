@@ -67,41 +67,41 @@ public:
 
     void    GetBBox         (u32 st_fid, u32 cnt, Fbox& box);
 
-    BOOL    BuildGlow       (CGlow* e);
+    bool    BuildGlow       (CGlow* e);
     void    BuildPortal   	(b_portal* b, CPortal* e);
-    BOOL    BuildMesh       (const Fmatrix& parent, CEditableObject* object, CEditableMesh* mesh, int sector_num,
+    bool    BuildMesh       (const Fmatrix& parent, CEditableObject* object, CEditableMesh* mesh, int sector_num,
     						b_vertex* verts, int& vert_cnt, int& vert_it,
                             b_face* faces, int& face_cnt, int& face_it, u32* smooth_groups, const Fmatrix& real_transform, CSceneObject* obj);
-    BOOL    BuildObject     (CSceneObject* obj);
+    bool    BuildObject     (CSceneObject* obj);
     bool    BuildEditableObject(CEditableObject* obj, Fmatrix T, CSceneObject* Owner);
-    BOOL    BuildMUObject   (CSceneObject* obj);
+    bool    BuildMUObject   (CSceneObject* obj);
 
     void    Clear 			();
 
-    int		BuildLightControl(LPCSTR name);
-    void 	BuildHemiLights	(u8 quality, LPCSTR lcontrol);
+    int		BuildLightControl(const char* name);
+    void 	BuildHemiLights	(u8 quality, const char* lcontrol);
 	void	AppendLight		();
-    BOOL 	BuildSun		(u8 quality, Fvector2 dir);
-    BOOL 	BuildPointLight	(b_light* b, const Flags32& usage, svector<WORD,16>* sectors, FvectorVec* soft_points, const Fmatrix* soft_transform=0);
-    BOOL    BuildLight		(CLight* e);
+    bool 	BuildSun		(u8 quality, Fvector2 dir);
+    bool 	BuildPointLight	(b_light* b, const Flags32& usage, svector<WORD,16>* sectors, FvectorVec* soft_points, const Fmatrix* soft_transform=0);
+    bool    BuildLight		(CLight* e);
 
     int     FindInLODs   	(b_lod* s);
     int		BuildObjectLOD  (const Fmatrix& parent, CEditableObject* e, int sector_num);
 
     int     FindInShaders   (b_shader* s);
-    int     BuildShader     (LPCSTR s);
+    int     BuildShader     (const char* s);
 
 	int 	FindInShadersXRLC(b_shader* s);
 	int 	BuildShaderXRLC	(const char * s);
 
-	int 	FindInTextures	(LPCSTR name);
-    int     BuildTexture    (LPCSTR name);
+	int 	FindInTextures	(const char* name);
+    int     BuildTexture    (const char* name);
 
     int     FindInMaterials (b_material* m);
 	int 	BuildMaterial	(CSurface* surf, int sector_num, bool allow_draft);
-	int 	BuildMaterial	(LPCSTR esh_name, LPCSTR csh_name, LPCSTR tx_name, u32 tx_cnt, int sector_num, bool allow_draft);
+	int 	BuildMaterial	(const char* esh_name, const char* csh_name, const char* tx_name, u32 tx_cnt, int sector_num, bool allow_draft);
 
-    BOOL	ParseStaticObjects	(ObjectList& lst, LPCSTR prefix, bool b_selected_only);
+    bool	ParseStaticObjects	(ObjectList& lst, const char* prefix, bool b_selected_only);
 
 	int 	CalculateSector		(const Fvector& P, float R);
 
@@ -115,7 +115,7 @@ protected:
 public:
 	bool		m_save_as_object;
 	string_path	m_LevelPath;
-    xr_string	MakeLevelPath		(LPCSTR nm){return xr_string(m_LevelPath)+xr_string(nm);}
+    xr_string	MakeLevelPath		(const char* nm){return xr_string(m_LevelPath)+xr_string(nm);}
     bool 	PreparePath				();
 protected:
 	bool 	EvictResource			();
@@ -123,17 +123,17 @@ protected:
 
 	bool 	GetBounding            	();
 
-    BOOL	ParseLTX				(CInifile* pIni, ObjectList& lst, LPCSTR prefix=0);
-	BOOL 	BuildLTX                ();
-    BOOL	ParseGAME				(IWriter& game, IWriter& spawn, ObjectList& lst, LPCSTR prefix=0);
-    BOOL 	BuildGame				();
+    bool	ParseLTX				(CInifile* pIni, ObjectList& lst, const char* prefix=0);
+	bool 	BuildLTX                ();
+    bool	ParseGAME				(IWriter& game, IWriter& spawn, ObjectList& lst, const char* prefix=0);
+    bool 	BuildGame				();
 
-    BOOL	BuildSceneStat			();
+    bool	BuildSceneStat			();
     bool 	BuildHOMModel			();
     bool 	BuildSOMModel			();
     bool	BuildAIMap				(bool Legacy);
     bool	BuildWallmarks			();
-    BOOL 	CompileStatic		   	(bool b_selected_only);
+    bool 	CompileStatic		   	(bool b_selected_only);
 
 	int 	m_iDefaultSectorNum;
 	bool 	RenumerateSectors		();
@@ -141,13 +141,13 @@ public:
 			SceneBuilder            ();
 	virtual ~SceneBuilder           ();
 
-	BOOL	Compile            		(bool b_selected_only,bool show_message=true);
-	BOOL 	MakeGame				();
-	BOOL 	MakePuddles				();
-    BOOL 	MakeDetails				();
-    BOOL 	MakeHOM					();
-	BOOL 	MakeSOM					();
-    BOOL	MakeAIMap				(bool Legacy);
+	bool	Compile            		(bool b_selected_only,bool show_message=true);
+	bool 	MakeGame				();
+	bool 	MakePuddles				();
+    bool 	MakeDetails				();
+    bool 	MakeHOM					();
+	bool 	MakeSOM					();
+    bool	MakeAIMap				(bool Legacy);
 
     void	OnRender				();
 };

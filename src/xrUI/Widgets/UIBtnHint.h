@@ -20,7 +20,7 @@ public:
 	void			Discard			()	{m_ownerWnd=NULL;};
 	void			OnRender		();
 	void			Draw_			()	{m_enabledOnFrame = true;};
-	void			SetHintText		(CUIWindow* w, LPCSTR text);
+	void			SetHintText		(CUIWindow* w, const char* text);
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 

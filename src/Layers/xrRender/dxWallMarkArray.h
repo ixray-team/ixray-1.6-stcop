@@ -10,8 +10,8 @@ public:
 	virtual ~dxWallMarkArray();
 	virtual void Copy(IWallMarkArray &_in);
 
-	virtual void AppendMark(LPCSTR s_textures);
-	virtual void AppendMark(LPCSTR s_shader, LPCSTR s_textures);
+	virtual void AppendMark(const char* s_textures);
+	virtual void AppendMark(const char* s_shader, const char* s_textures);
 	virtual void clear();
 	virtual bool empty();
 	virtual wm_shader GenerateWallmark();

@@ -34,7 +34,7 @@ CUIBoosterInfo::~CUIBoosterInfo()
 		xr_delete(m_Prop_line);
 }
 
-LPCSTR boost_influence_caption[] =
+const char* boost_influence_caption[] =
 {
 	"ui_inv_health",
 	"ui_inv_power",
@@ -53,7 +53,7 @@ LPCSTR boost_influence_caption[] =
 
 void CUIBoosterInfo::InitFromXml(CUIXml& xml)
 {
-	LPCSTR base	= "booster_params";
+	const char* base	= "booster_params";
 	XML_NODE* stored_root = xml.GetLocalRoot();
 	XML_NODE* base_node   = xml.NavigateToNode( base, 0 );
 	if(!base_node)
@@ -76,7 +76,7 @@ void CUIBoosterInfo::InitFromXml(CUIXml& xml)
 			m_booster_items[i]->Init(xml, ef_boosters_section_names[i]);
 			m_booster_items[i]->SetAutoDelete(false);
 
-			LPCSTR name = g_pStringTable->translate(boost_influence_caption[i]).c_str();
+			const char* name = g_pStringTable->translate(boost_influence_caption[i]).c_str();
 			m_booster_items[i]->SetCaption(name);
 
 			xml.SetLocalRoot(base_node);
@@ -86,7 +86,7 @@ void CUIBoosterInfo::InitFromXml(CUIXml& xml)
 	m_booster_satiety = new UIBoosterInfoItem();
 	m_booster_satiety->Init(xml, "boost_satiety");
 	m_booster_satiety->SetAutoDelete(false);
-	LPCSTR name = g_pStringTable->translate("ui_inv_satiety").c_str();
+	const char* name = g_pStringTable->translate("ui_inv_satiety").c_str();
 	m_booster_satiety->SetCaption(name);
 	xml.SetLocalRoot( base_node );
 
@@ -290,7 +290,7 @@ UIBoosterInfoItem::~UIBoosterInfoItem()
 {
 }
 
-void UIBoosterInfoItem::Init(CUIXml& xml, LPCSTR section)
+void UIBoosterInfoItem::Init(CUIXml& xml, const char* section)
 {
 	CUIXmlInit::InitWindow(xml, section, 0, this);
 	xml.SetLocalRoot(xml.NavigateToNode(section));
@@ -301,21 +301,21 @@ void UIBoosterInfoItem::Init(CUIXml& xml, LPCSTR section)
 	m_sign_inverse = (xml.ReadAttribInt( "value", 0, "sign_inverse", 0 ) == 1);
 	m_show_sign = (xml.ReadAttribInt("value", 0, "show_sign", 1) == 1);
 	
-	LPCSTR unit_str = xml.ReadAttrib("value", 0, "unit_str", "");
+	const char* unit_str = xml.ReadAttrib("value", 0, "unit_str", "");
 	m_unit_str._set(g_pStringTable->translate(unit_str));
 	
-	LPCSTR texture_minus = xml.Read("texture_minus", 0, "");
+	const char* texture_minus = xml.Read("texture_minus", 0, "");
 	if(texture_minus && xr_strlen(texture_minus))
 	{
 		m_texture_minus._set(texture_minus);
 		
-		LPCSTR texture_plus = xml.Read("caption:texture", 0, "");
+		const char* texture_plus = xml.Read("caption:texture", 0, "");
 		m_texture_plus._set(texture_plus);
 		VERIFY(m_texture_plus.size());
 	}
 }
 
-void UIBoosterInfoItem::SetCaption(LPCSTR name)
+void UIBoosterInfoItem::SetCaption(const char* name)
 {
 	m_caption->TextItemControl()->SetText(name);
 }

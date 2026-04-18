@@ -95,7 +95,7 @@ protected:
 	void						ChannelFactorsStartup();
 	CBlend* IBlend_Create();
 private:
-	void						IBlendSetup(CBlend& B, u16 part, u8 channel, MotionID motion_ID, BOOL  bMixing, float blendAccrue, float blendFalloff, float Speed, BOOL noloop, PlayCallback Callback, LPVOID CallbackParam);
+	void						IBlendSetup(CBlend& B, u16 part, u8 channel, MotionID motion_ID, bool  bMixing, float blendAccrue, float blendFalloff, float Speed, bool noloop, PlayCallback Callback, LPVOID CallbackParam);
 	void						IFXBlendSetup(CBlend& B, MotionID motion_ID, float blendAccrue, float blendFalloff, float Power, float Speed, u16 bone);
 	//.	bool						LoadMotions				(LPCSTR N, IReader *data);
 public:
@@ -131,8 +131,8 @@ public:
 	u16							LL_PartID(LPCSTR B);
 
 	CBlend* LL_PlayFX(u16 bone, MotionID motion, float blendAccrue, float blendFalloff, float Speed, float Power);
-	CBlend* LL_PlayCycle(u16 partition, MotionID motion, BOOL  bMixing, float blendAccrue, float blendFalloff, float Speed, BOOL noloop, PlayCallback Callback, LPVOID CallbackParam, u8 channel = 0);
-	CBlend* LL_PlayCycle(u16 partition, MotionID motion, BOOL bMixIn, PlayCallback Callback, LPVOID CallbackParam, u8 channel = 0);
+	CBlend* LL_PlayCycle(u16 partition, MotionID motion, bool  bMixing, float blendAccrue, float blendFalloff, float Speed, bool noloop, PlayCallback Callback, LPVOID CallbackParam, u8 channel = 0);
+	CBlend* LL_PlayCycle(u16 partition, MotionID motion, bool bMixIn, PlayCallback Callback, LPVOID CallbackParam, u8 channel = 0);
 	void						LL_FadeCycle(u16 partition, float	falloff, u8 mask_channel = (1 << 0));
 	void						LL_CloseCycle(u16 partition, u8 mask_channel = (1 << 0));
 	void						LL_SetChannelFactor(u16 channel, float factor);
@@ -150,9 +150,9 @@ public:
 	MotionID					ID_Cycle_Safe(LPCSTR  N);
 	MotionID					ID_Cycle(shared_str  N);
 	MotionID					ID_Cycle_Safe(shared_str  N);
-	CBlend* PlayCycle(LPCSTR  N, BOOL bMixIn = TRUE, PlayCallback Callback = 0, LPVOID CallbackParam = 0, u8 channel = 0);
-	CBlend* PlayCycle(MotionID M, BOOL bMixIn = TRUE, PlayCallback Callback = 0, LPVOID CallbackParam = 0, u8 channel = 0);
-	CBlend* PlayCycle(u16 partition, MotionID M, BOOL bMixIn = TRUE, PlayCallback Callback = 0, LPVOID CallbackParam = 0, u8 channel = 0);
+	CBlend* PlayCycle(LPCSTR  N, bool bMixIn = TRUE, PlayCallback Callback = 0, LPVOID CallbackParam = 0, u8 channel = 0);
+	CBlend* PlayCycle(MotionID M, bool bMixIn = TRUE, PlayCallback Callback = 0, LPVOID CallbackParam = 0, u8 channel = 0);
+	CBlend* PlayCycle(u16 partition, MotionID M, bool bMixIn = TRUE, PlayCallback Callback = 0, LPVOID CallbackParam = 0, u8 channel = 0);
 	// fx'es
 	MotionID					ID_FX(LPCSTR  N);
 	MotionID					ID_FX_Safe(LPCSTR  N);

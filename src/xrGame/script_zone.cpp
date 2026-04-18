@@ -33,7 +33,7 @@ void CScriptZone::reinit		()
 	inherited::reinit		();
 }
 
-BOOL CScriptZone::net_Spawn	(CSE_Abstract* DC) 
+bool CScriptZone::net_Spawn	(CSE_Abstract* DC) 
 {
 	feel_touch.clear			();
 
@@ -97,7 +97,7 @@ void CScriptZone::net_Relcase(CObject* O)
 	}
 }
 
-BOOL CScriptZone::feel_touch_contact	(CObject* O)
+bool CScriptZone::feel_touch_contact	(CObject* O)
 {
 	return (((CCF_Shape*)CFORM())->Contact(O)) != 0;
 }

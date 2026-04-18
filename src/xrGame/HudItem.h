@@ -99,9 +99,9 @@ protected:
 	virtual void switch2_Bore();
 
 public:
-	virtual void				Load				(LPCSTR section);
-	virtual void				LoadSounds			(LPCSTR section);
-	virtual	BOOL				net_Spawn			(CSE_Abstract* DC)				{return TRUE;};
+	virtual void				Load				(const char* section);
+	virtual void				LoadSounds			(const char* section);
+	virtual	bool				net_Spawn			(CSE_Abstract* DC)				{return TRUE;};
 	virtual void				net_Destroy			()								{};
 	virtual void				OnEvent				(NET_Packet& P, u16 type);
 
@@ -110,16 +110,16 @@ public:
 	virtual void				OnH_B_Independent	(bool just_before_destroy);
 	virtual void				OnH_A_Independent	();
 	
-	virtual void				PlaySound			(LPCSTR alias, const Fvector& position, bool allowOverlap = false);
+	virtual void				PlaySound			(const char* alias, const Fvector& position, bool allowOverlap = false);
 
 	virtual bool				Action				(u16 cmd, u32 flags)			{return false;}
 			void				OnMovementChanged	(ACTOR_DEFS::EMoveCommand cmd)	;
 	
 	virtual	EHudOffsetType		GetCurrentHudOffsetIdx () const {return EHudOffsetType::eDefault;}
 
-	BOOL						GetHUDmode			();
-	BOOL						GetHUDSoundMode		();
-	IC BOOL						IsPending			()		const					{ return !!m_huditem_flags.test(fl_pending);}
+	bool						GetHUDmode			();
+	bool						GetHUDSoundMode		();
+	IC bool						IsPending			()		const					{ return !!m_huditem_flags.test(fl_pending);}
 
 	virtual bool				ActivateItem		();
 	virtual void				DeactivateItem		();
@@ -163,12 +163,12 @@ public:
 	u32							PlayHUDMotion		(const shared_str& M, EHudMixType bMixIn, u32 state);
 	u32							PlayHUDMotion_noCB	(const shared_str& M, EHudMixType bMixIn);
 	void						StopCurrentAnimWithoutCallback();
-	bool						AddSuffixName		(shared_str& anim, LPCSTR suffix, LPCSTR test_suffix = "");
+	bool						AddSuffixName		(shared_str& anim, const char* suffix, const char* test_suffix = "");
 	shared_str					SetCurrentIdleAnimation();
 	virtual shared_str			SetCurrentStateAnimation(const shared_str& first_name) { return first_name; }
 
-	IC void						RenderHud				(BOOL B)	{ m_huditem_flags.set(fl_renderhud, B);}
-	IC BOOL						RenderHud				()			{ return m_huditem_flags.test(fl_renderhud);}
+	IC void						RenderHud				(bool B)	{ m_huditem_flags.set(fl_renderhud, B);}
+	IC bool						RenderHud				()			{ return m_huditem_flags.test(fl_renderhud);}
 	attachable_hud_item*		HudItemData				();
 	virtual void				on_a_hud_attach			();
 	virtual bool				HudAnimationExist		(const shared_str& anim_name);
@@ -180,10 +180,10 @@ public:
 
 	virtual bool				CheckCompatibility		(CHudItem*)			{return true;}
 
-	void PlayBonePartAnim(const shared_str& anim, BOOL bMixIn);
+	void PlayBonePartAnim(const shared_str& anim, bool bMixIn);
 
 	virtual float GetHudFov();
-	void PlaySoundIfExist(LPCSTR alias, const Fvector& position, bool allowOverlap);
+	void PlaySoundIfExist(const char* alias, const Fvector& position, bool allowOverlap);
 	virtual bool AllowBore() { return !m_bDisableBore && m_eAnimationsFlags.test(EAnimationsFlags::af_bore); }
 
 	float getLookOutSpeedKoef() const { return m_fLookOutSpeedKoef; }
@@ -322,7 +322,7 @@ public:
 	bool bDisablePrepareAnimation = false;
 
 	virtual bool WpnCanShoot() const { return false; }
-	bool SoundExist(LPCSTR section, LPCSTR sound_name);
+	bool SoundExist(const char* section, const char* sound_name);
 
 	struct jitter_params
 	{
@@ -336,7 +336,7 @@ public:
 
 protected:
 
-	IC		void				SetPending			(BOOL H)			{ m_huditem_flags.set(fl_pending, H);}
+	IC		void				SetPending			(bool H)			{ m_huditem_flags.set(fl_pending, H);}
 	shared_str					hud_sect;
 	shared_str					hud_sect_cache;
 
@@ -363,8 +363,8 @@ protected:
 	bool						m_bDisableBore;
 	bool						m_bSwitchSprint = false;
 
-	virtual void				SetModelBoneStatus(const char* bone, BOOL show);
-	virtual void				SetMultipleBonesStatus(const char* section, const char* line, BOOL show);
+	virtual void				SetModelBoneStatus(const char* bone, bool show);
+	virtual void				SetMultipleBonesStatus(const char* section, const char* line, bool show);
 
 private:
 	CPhysicItem					*m_object;

@@ -561,7 +561,7 @@ void remap_keys()
 	}
 }
 
-ENGINE_API LPCSTR id_to_action_name(EGameActions _id)
+ENGINE_API const char* id_to_action_name(EGameActions _id)
 {
 	int idx				= 0;
 	while( actions[idx].action_name )
@@ -574,7 +574,7 @@ ENGINE_API LPCSTR id_to_action_name(EGameActions _id)
 	return			nullptr;
 }
 
-ENGINE_API EGameActions action_name_to_id(LPCSTR _name)
+ENGINE_API EGameActions action_name_to_id(const char* _name)
 {
 	_action* action = action_name_to_ptr(_name);
 	if(action)
@@ -583,7 +583,7 @@ ENGINE_API EGameActions action_name_to_id(LPCSTR _name)
 		return	kNOTBINDED;
 }
 
-ENGINE_API _action* action_name_to_ptr(LPCSTR _name)
+ENGINE_API _action* action_name_to_ptr(const char* _name)
 {
 	int idx				= 0;
 	while( actions[idx].action_name )
@@ -596,7 +596,7 @@ ENGINE_API _action* action_name_to_ptr(LPCSTR _name)
 	return			nullptr;
 }
 
-ENGINE_API LPCSTR	dik_to_keyname			(int _dik)
+ENGINE_API const char*	dik_to_keyname			(int _dik)
 {
 	_keyboard* kb = dik_to_ptr(_dik, true);
 	if(kb)
@@ -628,7 +628,7 @@ ENGINE_API _keyboard* dik_to_ptr(int _dik, bool bSafe)
 	return			nullptr;
 }
 
-ENGINE_API int	keyname_to_dik (LPCSTR _name)
+ENGINE_API int	keyname_to_dik (const char* _name)
 {
 	_keyboard* _kb = keyname_to_ptr(_name);
     if (_kb)
@@ -636,7 +636,7 @@ ENGINE_API int	keyname_to_dik (LPCSTR _name)
     return 0;
 }
 
-ENGINE_API _keyboard* keyname_to_ptr(LPCSTR _name)
+ENGINE_API _keyboard* keyname_to_ptr(const char* _name)
 {
 	xr_string TestName = _name;
 
@@ -774,7 +774,7 @@ ENGINE_API EGameActions get_binded_action(int _dik, _action_group _ai)
 	return kNOTBINDED;
 }
 
-ENGINE_API void GetActionAllBinding(LPCSTR _action, char* dst_buff, int dst_buff_sz)
+ENGINE_API void GetActionAllBinding(const char* _action, char* dst_buff, int dst_buff_sz)
 {
 	int action_id = action_name_to_id(_action);
 	_binding* pbinding = &g_key_bindings[action_id];
@@ -844,14 +844,14 @@ ENGINE_API bool any_binded_key_for_action_pressed_c(int actionId)
 }
 
 ENGINE_API ConsoleBindCmds bindConsoleCmds;
-BOOL bRemapped = FALSE;
+bool bRemapped = FALSE;
 
 class CCC_Bind : public IConsole_Command
 {
 	int m_work_idx;
 public:
-	CCC_Bind(LPCSTR N, int idx) : IConsole_Command(N),m_work_idx(idx) {};
-	virtual void Execute(LPCSTR args) 
+	CCC_Bind(const char* N, int idx) : IConsole_Command(N),m_work_idx(idx) {};
+	virtual void Execute(const char* args) 
 	{
 		string256							action;
 		string256							key;
@@ -944,8 +944,8 @@ class CCC_BindGamepad : public IConsole_Command
 {
 	int m_work_idx;
 public:
-	CCC_BindGamepad(LPCSTR N, int idx) : IConsole_Command(N), m_work_idx(idx) {};
-	virtual void Execute(LPCSTR args) 
+	CCC_BindGamepad(const char* N, int idx) : IConsole_Command(N), m_work_idx(idx) {};
+	virtual void Execute(const char* args) 
 	{
 		string256							action;
 		string256							key;
@@ -1035,9 +1035,9 @@ class CCC_UnBind : public IConsole_Command
 {
 	int m_work_idx;
 public:
-	CCC_UnBind(LPCSTR N, int idx) : IConsole_Command(N),m_work_idx(idx) 
+	CCC_UnBind(const char* N, int idx) : IConsole_Command(N),m_work_idx(idx) 
 	{ bEmptyArgsHandled=TRUE; };
-	virtual void Execute(LPCSTR args)
+	virtual void Execute(const char* args)
 	{
 		int action_id						= action_name_to_id			(args);
 		_binding*	pbinding				= &g_key_bindings[action_id];
@@ -1068,9 +1068,9 @@ class CCC_UnBindGamepad : public IConsole_Command
 {
 	int m_work_idx;
 public:
-	CCC_UnBindGamepad(LPCSTR N, int idx) : IConsole_Command(N), m_work_idx(idx)
+	CCC_UnBindGamepad(const char* N, int idx) : IConsole_Command(N), m_work_idx(idx)
 	{ bEmptyArgsHandled=TRUE; };
-	virtual void Execute(LPCSTR args)
+	virtual void Execute(const char* args)
 	{
 		int action_id						= action_name_to_id			(args);
 		_binding*	pbinding				= &g_key_bindings[action_id];
@@ -1100,10 +1100,10 @@ public:
 class CCC_ListActions : public IConsole_Command
 {
 public:
-	CCC_ListActions(LPCSTR N) : IConsole_Command(N)
+	CCC_ListActions(const char* N) : IConsole_Command(N)
 	{ bEmptyArgsHandled=TRUE; };
 
-	virtual void Execute(LPCSTR args) {
+	virtual void Execute(const char* args) {
 		Log("- --- Action list start ---");
 		for(int idx=0; idx<bindings_count;++idx)
 		{
@@ -1117,10 +1117,10 @@ public:
 class CCC_UnBindAll : public IConsole_Command
 {
 public:
-	CCC_UnBindAll(LPCSTR N) : IConsole_Command(N)
+	CCC_UnBindAll(const char* N) : IConsole_Command(N)
 	{ bEmptyArgsHandled=TRUE; };
 
-	virtual void Execute(LPCSTR args) 
+	virtual void Execute(const char* args) 
 	{
 		for(int idx=0; idx<bindings_count;++idx)
 		{
@@ -1137,14 +1137,14 @@ public:
 class CCC_DefControls : public CCC_UnBindAll
 {
 public:
-	CCC_DefControls(LPCSTR N) : CCC_UnBindAll(N){}
+	CCC_DefControls(const char* N) : CCC_UnBindAll(N){}
 
-	virtual void Execute(LPCSTR args) 
+	virtual void Execute(const char* args) 
 	{
 		CCC_UnBindAll::Execute(args);
 		string_path				_cfg;
 		string_path				cmd;
-		LPCSTR file_dir = "ixray_settings\\default_controls.ltx";
+		const char* file_dir = "ixray_settings\\default_controls.ltx";
 		if (!FS.exist(_game_config_, file_dir))
 		{
 			file_dir = "default_controls.ltx";
@@ -1167,10 +1167,10 @@ public:
 class CCC_BindList : public IConsole_Command
 {
 public:
-	CCC_BindList(LPCSTR N) : IConsole_Command(N)
+	CCC_BindList(const char* N) : IConsole_Command(N)
 	{ bEmptyArgsHandled=TRUE; };
 
-	virtual void Execute(LPCSTR args) {
+	virtual void Execute(const char* args) {
 		Log				("- --- Bind list start ---");
 		string512		buff;			
 		
@@ -1192,8 +1192,8 @@ public:
 class CCC_BindConsoleCmd : public IConsole_Command
 {
 public:
-	CCC_BindConsoleCmd(LPCSTR N) : IConsole_Command(N) {};
-	virtual void Execute(LPCSTR args) 
+	CCC_BindConsoleCmd(const char* N) : IConsole_Command(N) {};
+	virtual void Execute(const char* args) 
 	{
 		string512				console_command;
 		string256				key;
@@ -1226,10 +1226,10 @@ public:
 class CCC_UnBindConsoleCmd : public IConsole_Command
 {
 public:
-	CCC_UnBindConsoleCmd(LPCSTR N) : IConsole_Command(N)
+	CCC_UnBindConsoleCmd(const char* N) : IConsole_Command(N)
 	{ bEmptyArgsHandled=FALSE; };
 
-	virtual void Execute(LPCSTR args) 
+	virtual void Execute(const char* args) 
 	{
         if (bindConsoleCmds.m_bindConsoleCmds.empty())
             return;
@@ -1244,13 +1244,13 @@ public:
 		{
             if (bindConsoleCmds.m_bindConsoleCmds.empty())
                 continue;
-            LPCSTR keyname = dik_to_keyname(it->first);
+            const char* keyname = dik_to_keyname(it->first);
             tips.push_back(keyname);
         }
     }
 };
 
-void ConsoleBindCmds::bind(int dik, LPCSTR N)
+void ConsoleBindCmds::bind(int dik, const char* N)
 {
 	_conCmd& c	= m_bindConsoleCmds[dik];
 	c.cmd		= N;
@@ -1330,7 +1330,7 @@ void ConsoleBindCmds::save(IWriter* F)
 	
 	for(;it!=m_bindConsoleCmds.end();++it)
 	{
-		LPCSTR keyname		= dik_to_keyname(it->first);
+		const char* keyname		= dik_to_keyname(it->first);
 		F->w_printf("bind_console %s%s\r\n", *it->second.cmd, keyname);
 	}
 }

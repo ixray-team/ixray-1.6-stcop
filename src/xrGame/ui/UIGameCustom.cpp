@@ -25,7 +25,7 @@
 #include "../xrEngine/x_ray.h"
 #include "ui/UICellItem.h"
 
-EGameIDs ParseStringToGameType(LPCSTR str);
+EGameIDs ParseStringToGameType(const char* str);
 
 bool predicate_sort_stat(const SDrawStaticStruct* s1, const SDrawStaticStruct* s2) 
 {
@@ -34,8 +34,8 @@ bool predicate_sort_stat(const SDrawStaticStruct* s1, const SDrawStaticStruct* s
 
 struct predicate_find_stat 
 {
-	LPCSTR	m_id;
-	predicate_find_stat(LPCSTR id):m_id(id)	{}
+	const char*	m_id;
+	predicate_find_stat(const char* id):m_id(id)	{}
 	bool	operator() (SDrawStaticStruct* s) 
 	{
 		return ( s->m_name==m_id );
@@ -162,28 +162,28 @@ void CUIGameCustom::Render()
 	DoRenderDialogs();
 }
 
-void CUIGameCustom::AddCustomMessage		(LPCSTR id, float x, float y, float font_size, CGameFont *pFont, u16 alignment, u32 color/* LPCSTR def_text*/ )
+void CUIGameCustom::AddCustomMessage		(const char* id, float x, float y, float font_size, CGameFont *pFont, u16 alignment, u32 color/* const char* def_text*/ )
 {
 	GameCaptions()->addCustomMessage(id,x,y,font_size,pFont,(CGameFont::EAligment)alignment,color,"");
 }
 
-void CUIGameCustom::AddCustomMessage		(LPCSTR id, float x, float y, float font_size, CGameFont *pFont, u16 alignment, u32 color, /*LPCSTR def_text,*/ float flicker )
+void CUIGameCustom::AddCustomMessage		(const char* id, float x, float y, float font_size, CGameFont *pFont, u16 alignment, u32 color, /*const char* def_text,*/ float flicker )
 {
 	AddCustomMessage(id,x,y,font_size, pFont, alignment, color);
 	GameCaptions()->customizeMessage(id, CUITextBanner::tbsFlicker)->fPeriod = flicker;
 }
 
-void CUIGameCustom::CustomMessageOut(LPCSTR id, LPCSTR msg, u32 color)
+void CUIGameCustom::CustomMessageOut(const char* id, const char* msg, u32 color)
 {
 	GameCaptions()->setCaption(id,msg,color,true);
 }
 
-void CUIGameCustom::RemoveCustomMessage		(LPCSTR id)
+void CUIGameCustom::RemoveCustomMessage		(const char* id)
 {
 	GameCaptions()->removeCustomMessage(id);
 }
 
-SDrawStaticStruct* CUIGameCustom::AddCustomStatic(LPCSTR id, bool bSingleInstance, float ttlDefault)
+SDrawStaticStruct* CUIGameCustom::AddCustomStatic(const char* id, bool bSingleInstance, float ttlDefault)
 {
 	xrCriticalSectionGuard guard(ui_lock);
 
@@ -208,7 +208,7 @@ SDrawStaticStruct* CUIGameCustom::AddCustomStatic(LPCSTR id, bool bSingleInstanc
 	return sss;
 }
 
-SDrawStaticStruct * CUIGameCustom::AddHudMessage(LPCSTR text, LPCSTR text2, LPCSTR id, bool trnslate_second_text, float time, bool bSingleInstance) {
+SDrawStaticStruct * CUIGameCustom::AddHudMessage(const char* text, const char* text2, const char* id, bool trnslate_second_text, float time, bool bSingleInstance) {
 	VERIFY(text);
 
 	SDrawStaticStruct* HudMessage = AddCustomStatic(id ? id : "hud_message", bSingleInstance);
@@ -226,7 +226,7 @@ SDrawStaticStruct * CUIGameCustom::AddHudMessage(LPCSTR text, LPCSTR text2, LPCS
 	return HudMessage;
 }
 
-SDrawStaticStruct* CUIGameCustom::GetCustomStatic(LPCSTR id)
+SDrawStaticStruct* CUIGameCustom::GetCustomStatic(const char* id)
 {
 	xrCriticalSectionGuard guard(ui_lock);
 	st_vec::iterator it = std::find_if(m_custom_statics.begin(),m_custom_statics.end(), predicate_find_stat(id));
@@ -236,7 +236,7 @@ SDrawStaticStruct* CUIGameCustom::GetCustomStatic(LPCSTR id)
 	return nullptr;
 }
 
-void CUIGameCustom::RemoveCustomStatic(LPCSTR id)
+void CUIGameCustom::RemoveCustomStatic(const char* id)
 {
 	xrCriticalSectionGuard guard(ui_lock);
 	st_vec::iterator it = std::find_if(m_custom_statics.begin(),m_custom_statics.end(), predicate_find_stat(id) );
@@ -584,7 +584,7 @@ void CUIGameCustom::OnConnected()
 	}
 }
 
-void CUIGameCustom::CommonMessageOut(LPCSTR text)
+void CUIGameCustom::CommonMessageOut(const char* text)
 {
 	m_pMessagesWnd->AddLogMessage(text);
 }
@@ -620,7 +620,7 @@ bool SDrawStaticStruct::IsActual() const
 	return (Device.fTimeGlobal < m_endTime);
 }
 
-void SDrawStaticStruct::SetText(LPCSTR text)
+void SDrawStaticStruct::SetText(const char* text)
 {
 	m_static->Show(text!=nullptr);
 	if(text)
@@ -645,7 +645,7 @@ void SDrawStaticStruct::Update()
 CMapListHelper	gMapListHelper;
 extern xr_token game_types[];
 
-void CMapListHelper::LoadMapInfo(LPCSTR map_cfg_fn, const xr_string& map_name, LPCSTR map_ver)
+void CMapListHelper::LoadMapInfo(const char* map_cfg_fn, const xr_string& map_name, const char* map_ver)
 {
 	CInifile	ini				(map_cfg_fn);
 
@@ -742,7 +742,7 @@ void CMapListHelper::Load()
 		LoadMapInfo					(map_cfg_fn, (*fit).name);
 	}
 	//scan all not laoded archieves
-	LPCSTR tmp_entrypoint			= "temporary_gamedata\\";
+	const char* tmp_entrypoint			= "temporary_gamedata\\";
 	FS_Path* game_levels			= FS.get_path(_game_levels_);
 	xr_string prev_root				= game_levels->m_Root;
 	game_levels->_set_root			(tmp_entrypoint);
@@ -755,8 +755,8 @@ void CMapListHelper::Load()
 		CLocatorAPI::archive& A		= *arch_it;
 		if(A.hSrcFile)				continue;
 
-		LPCSTR ln					= A.header->r_string("header", "level_name");
-		LPCSTR lv					= A.header->r_string("header", "level_ver");
+		const char* ln					= A.header->r_string("header", "level_name");
+		const char* lv					= A.header->r_string("header", "level_ver");
 		FS.LoadArchive				(A, tmp_entrypoint);
 
 		string_path					map_cfg_fn;
@@ -823,7 +823,7 @@ const GAME_WEATHERS& CMapListHelper::GetGameWeathers()
 
 // Change Level Wnd
 
-extern ENGINE_API BOOL bShowPauseString;
+extern ENGINE_API bool bShowPauseString;
 void CUIGameCustom::ChangeLevel(GameGraph::_GRAPH_ID game_vert_id,
 	u32 level_vert_id,
 	Fvector pos,

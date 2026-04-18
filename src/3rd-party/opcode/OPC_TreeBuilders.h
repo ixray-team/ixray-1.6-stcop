@@ -104,7 +104,7 @@
 		 *	\return		TRUE if the node should be subdivised
 		 */
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		virtual						BOOL			ValidateSubdivision(const dTriIndex* primitives, udword nb_prims, const IceMaths::AABB& global_box)
+		virtual						bool			ValidateSubdivision(const dTriIndex* primitives, udword nb_prims, const IceMaths::AABB& global_box)
 													{
 														// Check the user-defined limit
 														if(nb_prims<=mSettings.mLimit)	return FALSE;

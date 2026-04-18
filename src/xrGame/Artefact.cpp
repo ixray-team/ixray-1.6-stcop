@@ -46,7 +46,7 @@ CArtefact::CArtefact()
 	m_LightBoneID				= BI_NONE;
 }
 
-void CArtefact::Load(LPCSTR section) 
+void CArtefact::Load(const char* section) 
 {
 	inherited::Load(section);
 
@@ -116,12 +116,12 @@ void CArtefact::Load(LPCSTR section)
 	m_fDegradationRate		= READ_IF_EXISTS(pSettings, r_float, section, "degrade_rate", 0.0f);
 }
 
-BOOL CArtefact::net_Spawn(CSE_Abstract* DC) 
+bool CArtefact::net_Spawn(CSE_Abstract* DC) 
 {
 	if(READ_IF_EXISTS(pSettings, r_bool, cNameSect(),"can_be_controlled", false) )
 		m_detectorObj				= new SArtefactDetectorsSupport(this);
 
-	BOOL result						= inherited::net_Spawn(DC);
+	bool result						= inherited::net_Spawn(DC);
 
 	m_CarringBoneID					= u16(-1);
 	IKinematicsAnimated	*K			= Visual()->dcast_PKinematicsAnimated();
@@ -312,7 +312,7 @@ void CArtefact::shedule_Update		(u32 dt)
 	if (H_Parent())			o_switch_2_slow	();
 	else					{
 		Fvector	center;			Center(center);
-		BOOL	rendering		= (Device.dwFrame==o_render_frame);
+		bool	rendering		= (Device.dwFrame==o_render_frame);
 		float	cam_distance	= Device.vCameraPosition.distance_to(center)-Radius();
 		if (rendering || (cam_distance < FASTMODE_DISTANCE))	o_switch_2_fast	();
 		else													o_switch_2_slow	();
@@ -546,7 +546,7 @@ void CArtefact::OnAnimationEnd(u32 state)
 	};
 }
 
-void CArtefact::FollowByPath(LPCSTR path_name, int start_idx, Fvector magic_force)
+void CArtefact::FollowByPath(const char* path_name, int start_idx, Fvector magic_force)
 {
 	if(m_detectorObj)
 		m_detectorObj->FollowByPath(path_name, start_idx, magic_force);
@@ -612,7 +612,7 @@ void SArtefactDetectorsSupport::SetVisible(bool b)
 	{
 		TParticlesPlayer* PPlayer = m_parent->GetOrCreateComponent<TParticlesPlayer>();
 
-		LPCSTR curr				= pSettings->r_string(m_parent->cNameSect().c_str(), (b)?"det_show_particles":"det_hide_particles");
+		const char* curr				= pSettings->r_string(m_parent->cNameSect().c_str(), (b)?"det_show_particles":"det_hide_particles");
 		if(nullptr==m_parent->PS_bone())
 			PPlayer->StartParticles(curr,Fvector().set(0,1,0),m_parent->ID());
 		else
@@ -646,7 +646,7 @@ void SArtefactDetectorsSupport::Blink()
 {
 	TParticlesPlayer* PPlayer = m_parent->GetOrCreateComponent<TParticlesPlayer>();
 
-	LPCSTR curr = pSettings->r_string(m_parent->cNameSect().c_str(), "det_show_particles");
+	const char* curr = pSettings->r_string(m_parent->cNameSect().c_str(), "det_show_particles");
 	if (nullptr == m_parent->PS_bone())
 	{
 		PPlayer->StartParticles(curr, Fvector().set(0, 1, 0), m_parent->ID(), 1000, true);
@@ -715,7 +715,7 @@ void SArtefactDetectorsSupport::UpdateOnFrame()
 	}
 }
 
-void SArtefactDetectorsSupport::FollowByPath(LPCSTR path_name, int start_idx, Fvector force)
+void SArtefactDetectorsSupport::FollowByPath(const char* path_name, int start_idx, Fvector force)
 {
 	m_currPatrolPath		= ai().patrol_paths().path(path_name,true);
 	if(m_currPatrolPath)

@@ -18,8 +18,8 @@ protected:
 public:
 						ESceneFogVolumeTool		():ESceneCustomOTool(OBJCLASS_FOG_VOL){;}
 	// definition
-    IC LPCSTR			ClassName				(){return "fog_volume";}
-    IC LPCSTR			ClassDesc				(){return "Fog Volumes";}
+    IC const char*			ClassName				(){return "fog_volume";}
+    IC const char*			ClassDesc				(){return "Fog Volumes";}
     IC int				RenderPriority			(){return 11;}
 
     virtual void		Clear					(bool bSpecific=false);
@@ -32,7 +32,7 @@ public:
     virtual bool		LoadSelection      		(IReader&);
     virtual void		SaveSelection      		(IWriter&);
 
-    virtual CCustomObject* CreateObject			(LPVOID data, LPCSTR name);
+    virtual CCustomObject* CreateObject			(LPVOID data, const char* name);
 
 	void				GroupSelected			();
 	void				UnGroupCurrent			();
@@ -49,18 +49,18 @@ public:
     u32					m_group_id;
     shared_str			m_volume_profile;
 
-						EFogVolume		(LPVOID data, LPCSTR name);
+						EFogVolume		(LPVOID data, const char* name);
 	void 				Construct		(LPVOID data);
 	virtual				~EFogVolume		();
     virtual bool		CanAttach		() {return true;}
     virtual void		OnUpdateTransform();
 
   	virtual bool 		LoadStream		(IReader&);
-  	virtual bool 		LoadLTX			(CInifile& ini, LPCSTR sect_name);
+  	virtual bool 		LoadLTX			(CInifile& ini, const char* sect_name);
 	virtual void 		SaveStream		(IWriter&);
-  	virtual void 		SaveLTX			(CInifile& ini, LPCSTR sect_name);
+  	virtual void 		SaveLTX			(CInifile& ini, const char* sect_name);
 
-	virtual void		FillPropObjects		(LPCSTR pref, PropItemVec& values);
+	virtual void		FillPropObjects		(const char* pref, PropItemVec& values);
 	virtual bool 		GetSummaryInfo	(SSceneSummary* inf);
 	virtual void 		OnSceneUpdate	();
 protected:

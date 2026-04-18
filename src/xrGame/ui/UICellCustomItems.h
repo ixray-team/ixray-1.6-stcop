@@ -53,7 +53,7 @@ protected:
 	void						DestroyIcon					(eAddonType);
 	void						RefreshOffset				();
 	CUIStatic*					GetIcon						(eAddonType);
-	void						InitAddon					(CUIStatic* s, LPCSTR section, Fvector2 offset, bool use_heading);
+	void						InitAddon					(CUIStatic* s, const char* section, Fvector2 offset, bool use_heading);
 	bool						is_scope					();
 	bool						is_silencer					();
 	bool						is_launcher					();
@@ -80,7 +80,7 @@ class CBuyItemCustomDrawCell final :public ICustomDrawCellItem
 	CGameFont*			m_pFont;
 	string16			m_string;
 public:
-						CBuyItemCustomDrawCell	(LPCSTR str, CGameFont* pFont);
+						CBuyItemCustomDrawCell	(const char* str, CGameFont* pFont);
 	virtual void		OnDraw					(CUICellItem* cell);
 
 };

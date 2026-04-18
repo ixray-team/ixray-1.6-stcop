@@ -13,7 +13,7 @@
 #include "../../../enemy_manager.h"
 #include "../../../../xrSound/ai_sounds.h"
 
-BOOL CAI_Rat::feel_vision_isRelevant(CObject* O)
+bool CAI_Rat::feel_vision_isRelevant(CObject* O)
 {
 	CEntityAlive* E = O != nullptr ? O->cast_entity_alive() : nullptr;
 	if (!E) return FALSE;
@@ -50,7 +50,7 @@ void CAI_Rat::feel_sound_new(CObject* who, int eType, CSound_UserDataPtr user_da
 	inherited::feel_sound_new	(who,eType,user_data,Position,power);
 }
 
-BOOL CAI_Rat::feel_touch_on_contact	(CObject *O)
+bool CAI_Rat::feel_touch_on_contact	(CObject *O)
 {
 	return		(inherited::feel_touch_on_contact(O));
 }

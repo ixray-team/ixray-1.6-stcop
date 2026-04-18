@@ -44,12 +44,12 @@ void ESceneTerrainTool::OnControlRenameRemoveClick(ButtonValue* V, bool& bDataMo
 {
 }
 
-void ESceneTerrainTool::FillProp(LPCSTR pref, PropItemVec& items)
+void ESceneTerrainTool::FillProp(const char* pref, PropItemVec& items)
 {
 	inherited::FillProp(pref, items);
 }
 
-BOOL ESceneTerrainTool::_AppendObject(CCustomObject* object)
+bool ESceneTerrainTool::_AppendObject(CCustomObject* object)
 {
 	if (object->GetName())
 	{
@@ -82,7 +82,7 @@ void ESceneTerrainTool::RemoveControls()
 }
 
 
-CCustomObject* ESceneTerrainTool::CreateObject(LPVOID data, LPCSTR name)
+CCustomObject* ESceneTerrainTool::CreateObject(LPVOID data, const char* name)
 {
 	CCustomObject* O = new CTerrain(data, name);
 	O->FParentTools = this;
