@@ -67,7 +67,7 @@ void CParticleEffect::Play()
 	m_RT_Flags.set(flRT_Playing,TRUE);
 	Pholder.PlayEffect();
 }
-void CParticleEffect::Stop(BOOL bDefferedStop)
+void CParticleEffect::Stop(bool bDefferedStop)
 {
 	xrCriticalSectionGuard guard(&onframe_lock);
 	Pholder.StopEffect(bDefferedStop);
@@ -77,7 +77,7 @@ void CParticleEffect::Stop(BOOL bDefferedStop)
 		m_RT_Flags.set(flRT_Playing,FALSE);
 }
 
-void CParticleEffect::UpdateParent(const Fmatrix& m, const Fvector& velocity, BOOL bXFORM)
+void CParticleEffect::UpdateParent(const Fmatrix& m, const Fvector& velocity, bool bXFORM)
 {
 	xrCriticalSectionGuard guard(&onframe_lock);
 	m_RT_Flags.set(flRT_XFORM, bXFORM);

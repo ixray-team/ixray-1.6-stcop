@@ -6,7 +6,7 @@
 #include "Actor.h"
 
 
-void CAnimNotifyLuaFunctor::Construct(const CInifile& ini, LPCSTR _sect)
+void CAnimNotifyLuaFunctor::Construct(const CInifile& ini, const char* _sect)
 {
     sect = _sect;
     Func = ini.r_string(_sect, "Func");

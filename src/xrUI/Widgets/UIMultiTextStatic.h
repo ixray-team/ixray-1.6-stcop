@@ -60,9 +60,9 @@ class UI_API CUICaption :protected CUIMultiTextStatic
 	u32					findIndexOf_(const shared_str& key);
 public:
 	virtual void		Draw();
-	void				addCustomMessage(const shared_str& msg_name, float x, float y, float font_size, CGameFont *pFont, CGameFont::EAligment al, u32 color, LPCSTR def_str="");
+	void				addCustomMessage(const shared_str& msg_name, float x, float y, float font_size, CGameFont *pFont, CGameFont::EAligment al, u32 color, const char* def_str="");
 	EffectParams*		customizeMessage(const shared_str& msg_name, const CUITextBanner::TextBannerStyles styleName);
-	void				setCaption(const shared_str& msg_name, LPCSTR message_to_out, u32 color=0, bool replaceColor=false);
+	void				setCaption(const shared_str& msg_name, const char* message_to_out, u32 color=0, bool replaceColor=false);
 	void				removeCustomMessage(const shared_str& msg_name);
 };
 #endif	//UI_MULTITEXT_STATIC_H_

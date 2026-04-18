@@ -18,9 +18,9 @@
 #include "alife_spawn_registry.h"
 #include "../xrEngine/string_table.h"
 
-extern LPCSTR alife_section;
+extern const char* alife_section;
 
-LPCSTR CSavedGameWrapper::saved_game_full_name	(LPCSTR saved_game_name, string_path& result, pcstr extension)
+const char* CSavedGameWrapper::saved_game_full_name	(const char* saved_game_name, string_path& result, const char* extension)
 {
 	string_path					temp;
 	xr_strconcat(temp,saved_game_name,extension);
@@ -28,7 +28,7 @@ LPCSTR CSavedGameWrapper::saved_game_full_name	(LPCSTR saved_game_name, string_p
 	return						(result);
 }
 
-bool CSavedGameWrapper::saved_game_exist		(LPCSTR saved_game_name)
+bool CSavedGameWrapper::saved_game_exist		(const char* saved_game_name)
 {
 	string_path					file_name;
 	return FS.exist(saved_game_full_name(saved_game_name, file_name, IXRAY_DEF_SAVE_EXTENSION));
@@ -48,7 +48,7 @@ bool CSavedGameWrapper::valid_saved_game		(IReader &stream)
 	return						(true);
 }
 
-bool CSavedGameWrapper::valid_saved_game		(LPCSTR saved_game_name)
+bool CSavedGameWrapper::valid_saved_game		(const char* saved_game_name)
 {
 	string_path					file_name;
 	if (!FS.exist(saved_game_full_name(saved_game_name, file_name, IXRAY_DEF_SAVE_EXTENSION)))
@@ -60,7 +60,7 @@ bool CSavedGameWrapper::valid_saved_game		(LPCSTR saved_game_name)
 	return						(result);
 }
 
-CSavedGameWrapper::CSavedGameWrapper			(LPCSTR saved_game_name)
+CSavedGameWrapper::CSavedGameWrapper			(const char* saved_game_name)
 {
 	string_path					file_name;
     saved_game_full_name(saved_game_name, file_name, IXRAY_DEF_SAVE_EXTENSION);

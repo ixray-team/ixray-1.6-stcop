@@ -18,14 +18,14 @@
 /// intersection code easier to maintain. This code will be moved to RayCollider macros sooner or later
 
 #if defined(OPC_RAYCOLLIDER_SCALE_BEFORE_OVERLAP)
- inline_ BOOL RayCollider::SegmentAABBOverlap(const Point& center_, const Point& extents_)
+ inline_ bool RayCollider::SegmentAABBOverlap(const Point& center_, const Point& extents_)
  {
 	// Applies model's local scale
 	const IceMaths::Point center = center_  * mLocalScale;
 	const IceMaths::Point extents = extents_* mLocalScale;
 
 #else
-inline_ BOOL RayCollider::SegmentAABBOverlap(const Point& center, const Point& extents)
+inline_ bool RayCollider::SegmentAABBOverlap(const Point& center, const Point& extents)
 {
 #endif
 	// Stats
@@ -54,12 +54,12 @@ inline_ BOOL RayCollider::SegmentAABBOverlap(const Point& center, const Point& e
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #if defined(OPC_RAYCOLLIDER_SCALE_BEFORE_OVERLAP)
- inline_ BOOL RayCollider::RayAABBOverlap(const Point& center_, const Point& extents_)
+ inline_ bool RayCollider::RayAABBOverlap(const Point& center_, const Point& extents_)
  {
 	const Point center  = center_*mLocalScale;
 	const Point extents = extents_*mLocalScale;
 #else
- inline_ BOOL RayCollider::RayAABBOverlap(const Point& center, const Point& extents)
+ inline_ bool RayCollider::RayAABBOverlap(const Point& center, const Point& extents)
  {
 #endif
 

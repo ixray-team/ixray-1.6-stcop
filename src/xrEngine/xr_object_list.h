@@ -42,13 +42,13 @@ public:
 								~CObjectList		( );
 
 	CObject*					FindObjectByName	( shared_str	name	);
-	CObject*					FindObjectByName	( LPCSTR		name	);
+	CObject*					FindObjectByName	( const char*		name	);
 	CObject*					FindObjectByCLS_ID	( CLASS_ID		cls		);
 
 	void						Load				( );
 	void						Unload				( );
 
-	CObject*					Create				( LPCSTR		name	);
+	CObject*					Create				( const char*		name	);
 	void						Destroy				( CObject*		O		);
 
 	void						SingleUpdate		( CObject*		O		);
@@ -95,7 +95,7 @@ private:
 	}
 
 	static	void				clear_crow_vec		(Objects& o);
-	static	void				dump_list			(Objects& v, LPCSTR reason);
+	static	void				dump_list			(Objects& v, const char* reason);
 };
 
 #endif //__XR_OBJECT_LIST_H__

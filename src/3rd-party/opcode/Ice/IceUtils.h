@@ -122,7 +122,7 @@
 	inline_ sdword	min_(sdword a, sdword b)			{ sdword delta = b-a;	return a + (delta&(delta>>31));	}
 
 	// Determine if one of the bytes in a 4 byte word is zero
-	inline_	BOOL	HasNullByte(udword x)			{ return ((x + 0xfefefeff) & (~x) & 0x80808080);		}
+	inline_	bool	HasNullByte(udword x)			{ return ((x + 0xfefefeff) & (~x) & 0x80808080);		}
 
 	// To find the smallest 1 bit in a word  EG: ~~~~~~10---0    =>    0----010---0
 	inline_	udword	LowestOneBit(udword w)			{ return ((w) & (~(w)+1));					}

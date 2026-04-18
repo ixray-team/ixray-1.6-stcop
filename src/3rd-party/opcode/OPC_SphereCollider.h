@@ -75,11 +75,11 @@
 							void			_CollideNoPrimitiveTest(const AABBQuantizedNode* node);
 							void			_CollideNoPrimitiveTest(const AABBQuantizedNoLeafNode* node);
 			// Overlap tests
-		inline_				BOOL			SphereContainsBox(const IceMaths::Point& bc, const IceMaths::Point& be);
-		inline_				BOOL			SphereAABBOverlap(const IceMaths::Point& center, const IceMaths::Point& extents);
-							BOOL			SphereTriOverlap(const IceMaths::Point& vert0, const IceMaths::Point& vert1, const IceMaths::Point& vert2);
+		inline_				bool			SphereContainsBox(const IceMaths::Point& bc, const IceMaths::Point& be);
+		inline_				bool			SphereAABBOverlap(const IceMaths::Point& center, const IceMaths::Point& extents);
+							bool			SphereTriOverlap(const IceMaths::Point& vert0, const IceMaths::Point& vert1, const IceMaths::Point& vert2);
 			// Init methods
-							BOOL			InitQuery(SphereCache& cache, const IceMaths::Sphere& sphere, const IceMaths::Matrix4x4* worlds=null, const IceMaths::Matrix4x4* worldm=null);
+							bool			InitQuery(SphereCache& cache, const IceMaths::Sphere& sphere, const IceMaths::Matrix4x4* worlds=null, const IceMaths::Matrix4x4* worldm=null);
 	};
 
 	class OPCODE_API HybridSphereCollider : public SphereCollider

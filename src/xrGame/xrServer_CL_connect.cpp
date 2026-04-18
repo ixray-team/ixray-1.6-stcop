@@ -193,7 +193,7 @@ void xrServer::Check_GameSpy_CDKey_Success			(IClient* CL)
 	RequestClientDigest(CL);
 };
 
-BOOL	g_SV_Disable_Auth_Check = FALSE;
+bool	g_SV_Disable_Auth_Check = FALSE;
 
 bool xrServer::NeedToCheckClient_BuildVersion		(IClient* CL)	
 {

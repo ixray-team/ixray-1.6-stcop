@@ -40,7 +40,7 @@ void CObjectSpace::Load(CDB::build_callback build_callback)
 	Load("$level$", "level", build_callback);
 }
 
-void CObjectSpace::Load(LPCSTR initial, LPCSTR fname, CDB::build_callback build_callback, bool NotFromLevel)
+void CObjectSpace::Load(const char* initial, const char* fname, CDB::build_callback build_callback, bool NotFromLevel)
 {
 	xr_string Filename;
 	auto CFormData = XRay::CForm::Read(initial, fname);

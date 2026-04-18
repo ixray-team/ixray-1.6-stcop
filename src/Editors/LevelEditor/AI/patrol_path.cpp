@@ -9,7 +9,7 @@
 #include "stdafx.h"
 #include "patrol_path.h"
 
-LPCSTR TEST_PATROL_PATH_NAME		= "val_dogs_nest4_centre";
+const char* TEST_PATROL_PATH_NAME		= "val_dogs_nest4_centre";
 
 CPatrolPath::CPatrolPath			(shared_str name)
 {

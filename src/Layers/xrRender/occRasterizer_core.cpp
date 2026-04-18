@@ -53,7 +53,7 @@ IC void Vclamp(int& v, int a, int b)
 {
 	if (v<a)	v=a; else if (v>=b) v=b-1;
 }
-IC BOOL shared(occTri* T1, occTri* T2)
+IC bool shared(occTri* T1, occTri* T2)
 {
 	if (T1==T2)					return TRUE;
 	if (T1->adjacent[0]==T2)	return TRUE;
@@ -61,7 +61,7 @@ IC BOOL shared(occTri* T1, occTri* T2)
 	if (T1->adjacent[2]==T2)	return TRUE;
 	return FALSE;
 }
-IC BOOL lesser(float& a, float& b)
+IC bool lesser(float& a, float& b)
 {
 	u32* A = (u32*)(&a);
 	u32* B = (u32*)(&b);
@@ -213,7 +213,7 @@ p2.y >= p1.y, p1, p2 are start/end vertices
 E1 E2 are the triangle edge differences of the 2 bounding edges for this section
 */
 
-IC void i_section	(int Sect, BOOL bMiddle)
+IC void i_section	(int Sect, bool bMiddle)
 {
 	// Find the start/end Y pixel coord, set the starting pts for scan line ends
 	int		startY, endY;

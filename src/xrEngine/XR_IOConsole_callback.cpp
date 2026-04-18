@@ -85,8 +85,8 @@ void CConsole::Find_cmd() { // DIK_TAB
 
 void CConsole::Find_cmd_back() // DIK_TAB+shift
 {
-	LPCSTR edt      = ec().str_edit();
-	LPCSTR radmin_cmd_name = "ra ";
+	const char* edt      = ec().str_edit();
+	const char* radmin_cmd_name = "ra ";
 	bool b_ra  = (edt == strstr( edt, radmin_cmd_name ) );
 	u32 offset = (b_ra)? xr_strlen( radmin_cmd_name ) : 0;
 
@@ -95,7 +95,7 @@ void CConsole::Find_cmd_back() // DIK_TAB+shift
 	{
 		--it;
 		IConsole_Command& cc = *(it->second);
-		LPCSTR name_cmd      = cc.Name();
+		const char* name_cmd      = cc.Name();
 		u32    name_cmd_size = xr_strlen( name_cmd );
 		char*   new_str  = (char*)_alloca( (offset + name_cmd_size + 2) * sizeof(char) );
 

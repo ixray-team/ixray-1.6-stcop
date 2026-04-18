@@ -77,7 +77,7 @@ struct CSaver {
 		stream.w_stringZ				(data);
 	}
 
-	IC	static void save_data(LPCSTR data, M &stream, const P &p)
+	IC	static void save_data(const char* data, M &stream, const P &p)
 	{
 		stream.w_stringZ				(data);
 	}

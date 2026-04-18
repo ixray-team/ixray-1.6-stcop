@@ -42,7 +42,7 @@ private:
 	doors::manager						*m_doors_manager;
 
 private:
-			void						load					(LPCSTR level_name);
+			void						load					(const char* level_name);
 			void						unload					(bool reload = false);
 			void						patrol_path_storage_raw	(IReader &stream);
 			void						patrol_path_storage		(IReader &stream);

@@ -226,7 +226,7 @@ void CUIActorMenu::UpdatePartnerBag()
 		m_PartnerMoney->SetText( buf );
 	}	
 
-	LPCSTR kg_str = g_pStringTable->translate( "st_kg" ).c_str();
+	const char* kg_str = g_pStringTable->translate( "st_kg" ).c_str();
 	float total	= CalcItemsWeight( m_pTradePartnerBagList );
 	xr_sprintf( buf, "%.1f %s", total, kg_str );
 	m_PartnerWeight->SetText( buf );
@@ -241,7 +241,7 @@ void CUIActorMenu::UpdatePartnerBag()
 
 void CUIActorMenu::UpdatePrices()
 {
-	LPCSTR kg_str = g_pStringTable->translate( "st_kg" ).c_str();
+	const char* kg_str = g_pStringTable->translate( "st_kg" ).c_str();
 
 	UpdateActor();
 	UpdatePartnerBag();

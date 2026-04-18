@@ -43,11 +43,11 @@ void CUIComboBox::InitComboBox(Fvector2 pos, float width)
 	CUIXml xml_doc;
 	xml_doc.Load(CONFIG_PATH, UI_PATH, "backend\\combobox.xml");
 	float comboBoxHeight = xml_doc.ReadFlt("height", 0, 20.0f);
-	LPCSTR frameLineDefault = xml_doc.Read("frameline_default", 0, "ui_inGame2_combobox_linetext");
-	LPCSTR frameLineHighlighted = xml_doc.Read("frameline_highlighted", 0, "ui_inGame2_combobox_linetext");
-	LPCSTR arrow = xml_doc.Read("arrow", 0, "ui_inGame2_combobox_arrow");
-	LPCSTR listBoxTexture = xml_doc.Read("list_box", 0, "ui_inGame2_combobox_line");
-	LPCSTR listFrameTexture = xml_doc.Read("list_frame", 0, "ui_inGame2_combobox");
+	const char* frameLineDefault = xml_doc.Read("frameline_default", 0, "ui_inGame2_combobox_linetext");
+	const char* frameLineHighlighted = xml_doc.Read("frameline_highlighted", 0, "ui_inGame2_combobox_linetext");
+	const char* arrow = xml_doc.Read("arrow", 0, "ui_inGame2_combobox_arrow");
+	const char* listBoxTexture = xml_doc.Read("list_box", 0, "ui_inGame2_combobox_line");
+	const char* listFrameTexture = xml_doc.Read("list_frame", 0, "ui_inGame2_combobox");
 
 	string256 listBoxTextureHeight;
 	xr_strconcat(listBoxTextureHeight, listBoxTexture, "_b");
@@ -106,7 +106,7 @@ void CUIComboBox::InitComboBox(Fvector2 pos, float width)
 	m_list_box.SetMessageTarget			(this);
 }
 
-CUIListBoxItem* CUIComboBox::AddItem_(LPCSTR str, int _data)
+CUIListBoxItem* CUIComboBox::AddItem_(const char* str, int _data)
 {
 	R_ASSERT2			(m_bInited, "Can't add item to ComboBox before Initialization");
 	CUIListBoxItem* itm = m_list_box.AddTextItem(str);
@@ -129,7 +129,7 @@ void CUIComboBox::OnListItemSelect()
 		GetMessageTarget()->SendMessage(this, LIST_ITEM_SELECT, nullptr);
 }
 
-void CUIComboBox::SetText(LPCSTR text)
+void CUIComboBox::SetText(const char* text)
 {
 	if (!text)
 		return;
@@ -170,7 +170,7 @@ void CUIComboBox::SetCurrentOptValue()
 		tok++;
 	}
 
-	LPCSTR cur_val		= *g_pStringTable->translate( GetOptTokenValue());
+	const char* cur_val		= *g_pStringTable->translate( GetOptTokenValue());
 	m_text.SetText		( cur_val );
 	m_list_box.SetSelectedText( cur_val );
 	
@@ -201,7 +201,7 @@ void CUIComboBox::SaveOptValue()
 	xr_token* tok					= GetOptToken();
 	if(tok)
 	{
-		LPCSTR	cur_val				= get_token_name(tok, m_itoken_id);
+		const char*	cur_val				= get_token_name(tok, m_itoken_id);
 		SaveOptStringValue			(cur_val);
 	}
 }
@@ -211,7 +211,7 @@ bool CUIComboBox::IsChangedOptValue() const
 	return		(m_opt_backup_value != m_itoken_id);
 }
 
-LPCSTR CUIComboBox::GetText()
+const char* CUIComboBox::GetText()
 {
 	return m_text.GetText	();
 }
@@ -221,7 +221,7 @@ u32 CUIComboBox::GetSize()
 	return m_list_box.GetSize();
 }
 
-LPCSTR CUIComboBox::GetTextOf(int index)
+const char* CUIComboBox::GetTextOf(int index)
 {
 	if (u32(index) >= GetSize())
 		return "";
@@ -229,7 +229,7 @@ LPCSTR CUIComboBox::GetTextOf(int index)
 	return m_list_box.GetText(index);
 }
 
-LPCSTR CUIComboBox::GetValueOf(int index) {
+const char* CUIComboBox::GetValueOf(int index) {
 	if (u32(index) >= GetSize())
 		return "";
 

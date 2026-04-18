@@ -147,7 +147,7 @@ void dxDebugRender::SetDebugShader(dbgShaderHandle shdHandle)
 {
 	R_ASSERT(shdHandle<dbgShaderCount);
 
-	static const LPCSTR dbgShaderParams[][2] = 
+	static const char* dbgShaderParams[][2] = 
 	{
 		{ "hud\\default" , "ui\\ui_pop_up_active_back" } , // dbgShaderWindow
 		{ "debug_draw", nullptr } // dbgShaderWorld

@@ -24,8 +24,8 @@ public:
 	CPda() = default;
 	virtual	~CPda() = default;
 
-	virtual BOOL net_Spawn(CSE_Abstract* DC) override;
-	virtual void Load(LPCSTR section) override;
+	virtual bool net_Spawn(CSE_Abstract* DC) override;
+	virtual void Load(const char* section) override;
 	virtual void net_Destroy() override;
 
 	virtual void OnH_A_Chield() override;
@@ -35,7 +35,7 @@ public:
 
 	virtual void feel_touch_new(CObject* O) override;
 	virtual void feel_touch_delete(CObject* O) override;
-	virtual BOOL feel_touch_contact(CObject* O) override;
+	virtual bool feel_touch_contact(CObject* O) override;
 
 	virtual u16	GetOriginalOwnerID() { return m_idOriginalOwner; }
 	virtual CInventoryOwner* GetOriginalOwner();

@@ -167,7 +167,7 @@ void EDetailManager::OnFrame()
     }
 }
 
-void EDetailManager::ExportColorIndices(LPCSTR fname)
+void EDetailManager::ExportColorIndices(const char* fname)
 {
 	IWriter* F 	= FS.w_open(fname);
     if (F){
@@ -176,7 +176,7 @@ void EDetailManager::ExportColorIndices(LPCSTR fname)
     }
 }
 
-bool EDetailManager::ImportColorIndices(LPCSTR fname)
+bool EDetailManager::ImportColorIndices(const char* fname)
 {
     FS.TryLoad(fname);
 	IReader* F=FS.r_open(fname);
@@ -397,7 +397,7 @@ bool EDetailManager::LoadLTX(CInifile& ini)
     {
         string128 sect_name;
         sprintf(sect_name, "snap_object_%d", i);
-        LPCSTR s = ini.r_string(sect_name, "name");
+        const char* s = ini.r_string(sect_name, "name");
         CCustomObject* O = Scene->FindObjectByName(s, OBJCLASS_SCENEOBJECT);
         if (!O) ELog.Msg(mtError, "EDetailManager: Can't find snap object '%s'.", s);
         else m_SnapObjects.push_back(O);
@@ -407,7 +407,7 @@ bool EDetailManager::LoadLTX(CInifile& ini)
     ps_r__Detail_density = ini.r_float("main", "detail_density");
 
     // base texture
-    LPCSTR s = ini.r_string("main", "base_texture");
+    const char* s = ini.r_string("main", "base_texture");
     if (s)
     {
         string256 image_name;
@@ -676,7 +676,7 @@ void EDetailManager::SaveSelection(IWriter& F)
 	SaveStream(F);
 }
 
-bool EDetailManager::Export(LPCSTR path) 
+bool EDetailManager::Export(const char* path) 
 {
     xr_string fn		= xr_string(path)+"build.details";
     bool bRes=true;
@@ -730,7 +730,7 @@ bool EDetailManager::Export(LPCSTR path)
                     ELog.DlgMsg(mtError, "Bad object or object not found '%s'.", ((EDetail*)(*it))->m_sRefs.c_str());
                     bRes=false;
                 }else{
-                    LPCSTR tex_name = ((EDetail*)(*it))->GetTextureName();
+                    const char* tex_name = ((EDetail*)(*it))->GetTextureName();
                     u32 t_idx = 0;
                     for (; t_idx<textures.size(); t_idx++) 
                         if (textures[t_idx]==tex_name) break;
@@ -794,7 +794,7 @@ void EDetailManager::OnBaseTextureChange(PropValue* prop)
     ELog.DlgMsg				(mtInformation,"Texture changed. Reinitialize objects.");
 }
 
-void EDetailManager::FillProp(LPCSTR pref, PropItemVec& items)
+void EDetailManager::FillProp(const char* pref, PropItemVec& items)
 {
 	PropValue* P;
     P=PHelper().CreateFloat	(items, PrepareKey(pref,"Objects per square"),				&ps_r__Detail_density);

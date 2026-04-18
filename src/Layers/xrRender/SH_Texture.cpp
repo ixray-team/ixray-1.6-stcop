@@ -572,7 +572,7 @@ IRHIShaderResourceView* CTexture::GetView()
 	return m_pSRView;
 }
 
-void CTexture::video_Play(BOOL looped, u32 _time)
+void CTexture::video_Play(bool looped, u32 _time)
 {
 	if (pTheora)
 	{
@@ -580,7 +580,7 @@ void CTexture::video_Play(BOOL looped, u32 _time)
 	}
 }
 
-void CTexture::video_Pause(BOOL state)
+void CTexture::video_Pause(bool state)
 {
 	if (pTheora)
 	{

@@ -13,7 +13,7 @@
 #include "../../xrEngine/string_table.h"
 
 
-constexpr std::tuple<ALife::EHitType, LPCSTR, LPCSTR, float, LPCSTR> outfit_immunity[] =
+constexpr std::tuple<ALife::EHitType, const char*, const char*, float, const char*> outfit_immunity[] =
 {
 
 	{ ALife::eHitTypeBurn,			"burn_immunity",            "ui_inv_outfit_burn_protection",            100.0f,      "%" },
@@ -41,8 +41,8 @@ CUIOutfitImmunity::~CUIOutfitImmunity()
 {
 }
 
-LPCSTR outfit_info = "outfit_info";
-CUIOutfitImmunity::InitResult CUIOutfitImmunity::Init( CUIXml& xml_doc, LPCSTR section )
+const char* outfit_info = "outfit_info";
+CUIOutfitImmunity::InitResult CUIOutfitImmunity::Init( CUIXml& xml_doc, const char* section )
 {
 	if(!CUIXmlInit::InitStatic(xml_doc, section, 0, this, false))
 		return InitPlain(xml_doc, section);
@@ -65,14 +65,14 @@ CUIOutfitImmunity::InitResult CUIOutfitImmunity::Init( CUIXml& xml_doc, LPCSTR s
 
 	m_magnitude = xml_doc.ReadAttribFlt( "static_value", 0, "magnitude", 1.0f);
 
-	LPCSTR unit_str = xml_doc.ReadAttrib("static_value", 0, "unit_str", "");
+	const char* unit_str = xml_doc.ReadAttrib("static_value", 0, "unit_str", "");
 	m_unit_str._set(g_pStringTable->translate(unit_str));
 
 	xml_doc.SetLocalRoot(base_node);
 	return InitResult::Normal;
 }
 
-CUIOutfitImmunity::InitResult CUIOutfitImmunity::InitPlain(CUIXml& xml, pcstr section)
+CUIOutfitImmunity::InitResult CUIOutfitImmunity::InitPlain(CUIXml& xml, const char* section)
 {
     string256 buf;
     xr_strconcat(buf, "static_", section);
@@ -138,7 +138,7 @@ void CUIOutfitImmunity::SetDefaultValuesPlain(float magnitude, const shared_str&
 	m_unit_str = unit;
 }
 
-void CUIOutfitImmunity::SetCaption(LPCSTR name)
+void CUIOutfitImmunity::SetCaption(const char* name)
 {
 	m_name->TextItemControl()->SetText(name);
 }
@@ -203,7 +203,7 @@ void CUIOutfitInfo::InitFromXml( CUIXml& xml_doc )
 	xml_doc.SetLocalRoot(stored_root);
 }
 
-CUIOutfitImmunity* CUIOutfitInfo::CreateItem(CUIXml& uiXml, pcstr section,
+CUIOutfitImmunity* CUIOutfitInfo::CreateItem(CUIXml& uiXml, const char* section,
     float magnitude, const shared_str& unit,
     shared_str translationId)
 		{

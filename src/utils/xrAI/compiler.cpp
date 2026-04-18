@@ -58,7 +58,7 @@ void mem_Optimize()
 	Msg("* Memory usage: %d M", Memory.mem_usage() / (1024 * 1024));
 }
 
-void xrCompiler(LPCSTR name, bool draft_mode, bool pure_covers, bool skipThm, LPCSTR out_name)
+void xrCompiler(const char* name, bool draft_mode, bool pure_covers, bool skipThm, const char* out_name)
 {
 	Phase("Loading level...");
 	LevelPtr = xr_make_unique<CDB::MODEL>();

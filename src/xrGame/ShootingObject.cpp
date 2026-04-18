@@ -37,7 +37,7 @@ CShootingObject::CShootingObject(void)
 	light_render					= 0;
 }
 
-void CShootingObject::Load	(LPCSTR section)
+void CShootingObject::Load	(const char* section)
 {
 	if(pSettings->line_exist(section,"light_disabled"))
 	{
@@ -62,7 +62,7 @@ void CShootingObject::Load	(LPCSTR section)
 
 	if (pSettings->line_exist(section, "shell_particles"))
 	{
-		if (LPCSTR pname = pSettings->r_string(section, "shell_particles"))
+		if (const char* pname = pSettings->r_string(section, "shell_particles"))
 			m_sShellParticles = pname;
 
 		vLoadedShellPoint = pSettings->line_exist(section, "shell_point") ? pSettings->r_fvector3(section, "shell_point") : zero_vel;
@@ -93,7 +93,7 @@ void CShootingObject::DestroyEffects()
 		m_pFlameGlaucherParticles->Destroy();
 }
 
-void CShootingObject::LoadFireParams( LPCSTR section )
+void CShootingObject::LoadFireParams( const char* section )
 {
 	string32	buffer;
 	shared_str	s_sHitPower;
@@ -151,7 +151,7 @@ void CShootingObject::LoadFireParams( LPCSTR section )
 	}
 }
 
-void CShootingObject::LoadLights		(LPCSTR section, LPCSTR prefix)
+void CShootingObject::LoadLights		(const char* section, const char* prefix)
 {
 	string256				full_name;
 	// light
@@ -210,11 +210,11 @@ void CShootingObject::Light_Render	(const Fvector& P)
 //////////////////////////////////////////////////////////////////////////
 // Particles
 //////////////////////////////////////////////////////////////////////////
-void CShootingObject::LoadParticle(LPCSTR section, LPCSTR line, xr_shared_ptr<CParticlesObject>& particle)
+void CShootingObject::LoadParticle(const char* section, const char* line, xr_shared_ptr<CParticlesObject>& particle)
 {
 	if (pSettings->line_exist(section, line))
 	{
-		if (LPCSTR pname = pSettings->r_string(section, line))
+		if (const char* pname = pSettings->r_string(section, line))
 		{
 			if (particle)
 				particle->Destroy();

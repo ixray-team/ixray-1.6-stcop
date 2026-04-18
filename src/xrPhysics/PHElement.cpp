@@ -1526,7 +1526,7 @@ void CPHElement::Fix()
 
 void CPHElement::SetAnimated( bool v )
 {
-	m_flags.set( flAnimated, BOOL( v ) );
+	m_flags.set( flAnimated, bool( v ) );
 }
 
 void CPHElement::ReleaseFixed()

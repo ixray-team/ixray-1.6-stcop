@@ -32,7 +32,7 @@ struct SHeliEnemy{
 	void Update						();
 	void save						(NET_Packet &output_packet);
 	void load						(IReader &input_packet);
-	void Load						(LPCSTR section);
+	void Load						(const char* section);
 };
 
 enum EHeliBodyState{eBodyByPath,eBodyToPoint};
@@ -55,7 +55,7 @@ struct SHeliBodyState{
 
 	void save						(NET_Packet &output_packet);
 	void load						(IReader &input_packet);
-	void Load						(LPCSTR section);
+	void Load						(const char* section);
 
 };
 
@@ -120,11 +120,11 @@ public:
 	float	GetDistanceToDestPosition	();
 	void	getPathAltitude				(Fvector& point, float base_altitude);
 	void	SetDestPosition				(Fvector* pos);
-	void	goPatrolByPatrolPath		(LPCSTR path_name,int start_idx);
+	void	goPatrolByPatrolPath		(const char* path_name,int start_idx);
 	void	CreateRoundPoints			(Fvector center, float radius, float start_h, float end_h, xr_vector<STmpPt>& round_points);
 	void	save						(NET_Packet &output_packet);
 	void	load						(IReader &input_packet);
-	void	Load						(LPCSTR section);
+	void	Load						(const char* section);
 	void	net_Destroy					();
 };
 
@@ -265,10 +265,10 @@ public:
 	void							init		();
 	virtual	void					reinit		();
 
-	virtual	void					Load				(LPCSTR		section);
-	virtual	void					reload				(LPCSTR		section);
+	virtual	void					Load				(const char*		section);
+	virtual	void					reload				(const char*		section);
 
-	virtual BOOL					net_Spawn			(CSE_Abstract*		DC);
+	virtual bool					net_Spawn			(CSE_Abstract*		DC);
 	virtual void					net_Destroy			();
 	virtual void					net_Export			(NET_Packet &P) override;
 	virtual void					net_Import			(NET_Packet &P) override;
@@ -276,7 +276,7 @@ public:
 	virtual void SyncRead(NET_Packet& Packet) override;
 	virtual void SyncWrite(NET_Packet& Packet)override;
 
-	virtual BOOL					net_Relevant		() override;
+	virtual bool					net_Relevant		() override;
 	virtual void					net_Relcase			(CObject* O );
 	virtual void					save				(NET_Packet &output_packet);
 	virtual void					load				(IReader &input_packet);
@@ -284,11 +284,11 @@ public:
 	virtual void					SpawnInitPhysics	(CSE_Abstract	*D);
 	virtual CPhysicsShellHolder*	PPhysicsShellHolder	()						{return PhysicsShellHolder();}
 	virtual void					net_Save			(NET_Packet& P);
-	virtual	BOOL					net_SaveRelevant	()						{return (inherited::net_SaveRelevant() && BOOL(PPhysicsShell()!=NULL))||m_exploded;};					
+	virtual	bool					net_SaveRelevant	()						{return (inherited::net_SaveRelevant() && bool(PPhysicsShell()!=NULL))||m_exploded;};					
 
 	virtual void					renderable_Render				()			{ inherited::renderable_Render();};
-	virtual BOOL					renderable_ShadowGenerate		()			{ return FALSE;	}
-	virtual BOOL					renderable_ShadowReceive		()			{ return TRUE;	}
+	virtual bool					renderable_ShadowGenerate		()			{ return FALSE;	}
+	virtual bool					renderable_ShadowReceive		()			{ return TRUE;	}
 
 	virtual void					OnEvent				(NET_Packet& P, u16 type);
 	virtual void					UpdateCL			();
@@ -316,7 +316,7 @@ public:
 	bool					isObjectVisible					(CObject* O);
 	bool			 		isOnAttack						()				{return m_enemy.type!=eEnemyNone;}
 
-	void					goPatrolByPatrolPath			(LPCSTR path_name,int start_idx);
+	void					goPatrolByPatrolPath			(const char* path_name,int start_idx);
 	void					goByRoundPath					(Fvector center, float radius, bool clockwise);
 	void					LookAtPoint						(Fvector point, bool do_it);
 	void					SetDestPosition					(Fvector* pos);

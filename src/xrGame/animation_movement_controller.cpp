@@ -10,7 +10,7 @@
 
 void	DBG_DrawBones( const Fmatrix &xform,  IKinematics *K );
 #ifdef	 DEBUG
-BOOL	dbg_draw_animation_movement_controller  = FALSE;
+bool	dbg_draw_animation_movement_controller  = FALSE;
 u16		dbg_frame_count = 0;
 #endif
 

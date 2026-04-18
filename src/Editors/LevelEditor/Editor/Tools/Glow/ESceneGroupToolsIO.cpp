@@ -25,7 +25,7 @@ bool ESceneGroupTool::LoadStream(IReader& F)
 
 bool ESceneGroupTool::LoadLTX(CInifile& ini)
 {
-	LPCSTR section = "main";
+	const char* section = "main";
 	u16 version 	= ini.r_u16(section, "version");
 
     if( version!=GROUP_TOOLS_VERSION )
@@ -40,7 +40,7 @@ bool ESceneGroupTool::LoadLTX(CInifile& ini)
 
 void ESceneGroupTool::SaveLTX(CInifile& ini, int id)
 {
-	LPCSTR section	= "main";
+	const char* section	= "main";
 	ini.w_u16(section, "version", GROUP_TOOLS_VERSION);
 
 	inherited::SaveLTX	(ini, id);

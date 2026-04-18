@@ -75,20 +75,20 @@ public:
         {
         	Destroy	();
         }
-        void			Create			(LPCSTR entity_ref);
+        void			Create			(const char* entity_ref);
         void			Destroy			();
         bool			Valid			()const{return m_Data;}
 
         bool		    LoadStream		(IReader&);
         void		    SaveStream		(IWriter&);
-        bool		    LoadLTX			(CInifile& ini, LPCSTR sect_name);
-        void		    SaveLTX			(CInifile& ini, LPCSTR sect_name);
+        bool		    LoadLTX			(CInifile& ini, const char* sect_name);
+        void		    SaveLTX			(CInifile& ini, const char* sect_name);
 
 		bool 			ExportGame		(SExportStreams* F, CSpawnPoint* owner);
         void            ExportSpawn     (xr_vector<NET_Packet>& Ps, CSpawnPoint* owner);
         void            PreExportSpawn( CSpawnPoint* owner);
 
-		void			FillProp		(LPCSTR pref, PropItemVec& values);
+		void			FillProp		(const char* pref, PropItemVec& values);
 
 		void    		Render			(bool bSelected, const Fmatrix& parent,int priority, bool strictB2F);
 		void    		OnFrame			();
@@ -96,7 +96,7 @@ public:
 		void	OnWallmarkUpdateClick	(ButtonValue* value, bool& bModif, bool& bSafe);
 		void	OnWallmarkDetachClick	(ButtonValue* value, bool& bModif, bool& bSafe);
         
-		virtual void get_bone_xform				(LPCSTR name, Fmatrix& xform);
+		virtual void get_bone_xform				(const char* name, Fmatrix& xform);
         IC CSE_Abstract* GetEntity()const { return m_Data; }
 	};
 
@@ -145,15 +145,15 @@ protected:
 protected:
 	virtual void 	Move			(Fvector& amount);
 public:
-	                CSpawnPoint    	(LPVOID data, LPCSTR name);
+	                CSpawnPoint    	(LPVOID data, const char* name);
     void            Construct   	(LPVOID data);
     virtual         ~CSpawnPoint   	();
     virtual bool	CanAttach		() {return true;}
     
-	bool 			RefCompare		(LPCSTR ref);
-    virtual LPCSTR	RefName			();
+	bool 			RefCompare		(const char* ref);
+    virtual const char*	RefName			();
 
-    bool			CreateSpawnData	(LPCSTR entity_ref);
+    bool			CreateSpawnData	(const char* entity_ref);
 	virtual void    Render      	( int priority, bool strictB2F );
 
 	virtual bool    RayPick     	( float& distance,	const Fvector& start,	const Fvector& direction, SRayPickInfo* pinf = NULL );
@@ -165,18 +165,18 @@ public:
 	virtual void 	Select			(int  flag);
 
 	virtual bool 	LoadStream		(IReader&);
-	virtual bool 	LoadLTX			(CInifile& ini, LPCSTR sect_name);
+	virtual bool 	LoadLTX			(CInifile& ini, const char* sect_name);
 	virtual void 	SaveStream		 (IWriter&);
-	virtual void 	SaveLTX			(CInifile& ini, LPCSTR sect_name);
+	virtual void 	SaveLTX			(CInifile& ini, const char* sect_name);
 
     virtual bool	ExportGame		(SExportStreams* data);
 
-	virtual void	FillProp		(LPCSTR pref, PropItemVec& values);
+	virtual void	FillProp		(const char* pref, PropItemVec& values);
 
     bool			AttachObject	(CCustomObject* obj);
     void			DetachObject	();
     
-    virtual bool	OnChooseQuery	(LPCSTR specific);
+    virtual bool	OnChooseQuery	(const char* specific);
     virtual	void	OnSceneRemove	();
     		void 	UseSimulatePose ();
     virtual	void  ExportSpawn(xr_vector<NET_Packet>& Ps);

@@ -8,7 +8,7 @@
 #include "StdAfx.h"
 #include "alife_interaction_manager.h"
 
-CALifeInteractionManager::CALifeInteractionManager	(xrServer*server, LPCSTR section) : 
+CALifeInteractionManager::CALifeInteractionManager	(xrServer*server, const char* section) : 
 	CALifeCombatManager			(server,section),
 	CALifeCommunicationManager	(server,section),
 	CALifeSimulatorBase			(server,section)

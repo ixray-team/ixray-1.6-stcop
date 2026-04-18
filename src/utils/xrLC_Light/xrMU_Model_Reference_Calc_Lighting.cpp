@@ -260,7 +260,7 @@ void xrMU_Reference::calc_lighting_cuda_2()
 		if (it2 != g_trans.end())	it2++;
 
 		// Search
-		BOOL found = FALSE;
+		bool found = FALSE;
 		for (; it != it2; it++)
 		{
 			xrMU_Model::v_vertices& VL = it->second;

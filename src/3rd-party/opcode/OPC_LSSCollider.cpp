@@ -165,7 +165,7 @@ bool LSSCollider::Collide(LSSCache& cache, const IceMaths::LSS& lss, const Model
  *	\warning	SCALE NOT SUPPORTED. The matrices must contain rotation & translation parts only.
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-BOOL LSSCollider::InitQuery(LSSCache& cache, const IceMaths::LSS& lss, const IceMaths::Matrix4x4* worldl, const IceMaths::Matrix4x4* worldm)
+bool LSSCollider::InitQuery(LSSCache& cache, const IceMaths::LSS& lss, const IceMaths::Matrix4x4* worldl, const IceMaths::Matrix4x4* worldm)
 {
 	// 1) Call the base method
 	VolumeCollider::InitQuery();
@@ -331,7 +331,7 @@ bool LSSCollider::Collide(LSSCache& cache, const IceMaths::LSS& lss, const AABBT
  *	\return		true if the LSS contains the whole box
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-inline_ BOOL LSSCollider::LSSContainsBox(const IceMaths::Point& bc, const IceMaths::Point& be)
+inline_ bool LSSCollider::LSSContainsBox(const IceMaths::Point& bc, const IceMaths::Point& be)
 {
 	// Not implemented
 	return FALSE;

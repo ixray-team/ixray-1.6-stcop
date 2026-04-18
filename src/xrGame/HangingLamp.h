@@ -31,7 +31,7 @@ private:
 	ref_light		light_ambient;
 	CLAItem*		lanim;
 	float			ambient_power;
-	BOOL			m_bState;
+	bool			m_bState;
 	
 	ref_glow		glow_render;
 	
@@ -49,8 +49,8 @@ public:
 	void			TurnOn			();
 	void			TurnOff			();
 	bool			IsActive();
-	virtual void	Load			( LPCSTR section);
-	virtual BOOL	net_Spawn		( CSE_Abstract* DC);
+	virtual void	Load			( const char* section);
+	virtual bool	net_Spawn		( CSE_Abstract* DC);
 	virtual void	net_Destroy		();
 	virtual void	shedule_Update	( u32 dt);							// Called by sheduler
 	virtual void	UpdateCL		( );								// Called each frame, so no need for dt
@@ -60,17 +60,17 @@ public:
 	virtual CPhysicsShellHolder*	PPhysicsShellHolder	()	{return PhysicsShellHolder();}								;
 	virtual	void	CopySpawnInit		()																				;
 	virtual void	net_Save			(NET_Packet& P)																	;
-	virtual	BOOL	net_SaveRelevant	();
+	virtual	bool	net_SaveRelevant	();
 	virtual void	save				(NET_Packet &output_packet);
 	virtual void	load				(IReader &input_packet);
 
-	virtual BOOL	renderable_ShadowGenerate	( ) { return TRUE;	}
-	virtual BOOL	renderable_ShadowReceive	( ) { return TRUE;	}
+	virtual bool	renderable_ShadowGenerate	( ) { return TRUE;	}
+	virtual bool	renderable_ShadowReceive	( ) { return TRUE;	}
 	
 	virtual	void	Hit				(SHit* pHDS);
 	virtual void	net_Export		(NET_Packet& P);
 	virtual void	net_Import		(NET_Packet& P);
-	virtual BOOL	UsedAI_Locations();
+	virtual bool	UsedAI_Locations();
 
 	virtual CHangingLamp* cast_hanging_lamp() { return this; }
 

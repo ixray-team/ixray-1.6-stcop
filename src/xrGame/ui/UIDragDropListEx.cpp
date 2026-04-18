@@ -661,7 +661,7 @@ bool CUIDragDropListEx::MoveSelectorToItem(CUICellItem* pItem)
 	return true;
 }
 
-void CUIDragDropListEx::InitSelector(LPCSTR texture_name)
+void CUIDragDropListEx::InitSelector(const char* texture_name)
 {
 	m_selectorFrame->InitTexture(texture_name, false);
 }

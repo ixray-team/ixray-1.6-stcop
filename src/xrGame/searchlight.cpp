@@ -27,7 +27,7 @@ CProjector::~CProjector()
 	glow_render.destroy		();
 }
 
-void CProjector::Load(LPCSTR section)
+void CProjector::Load(const char* section)
 {
 	inherited::Load(section);
 }
@@ -54,7 +54,7 @@ void  CProjector::BoneCallbackY(CBoneInstance *B)
 	B->mTransform.mulB_43(M);
 }
 
-BOOL CProjector::net_Spawn(CSE_Abstract* DC)
+bool CProjector::net_Spawn(CSE_Abstract* DC)
 {
 	CSE_Abstract				*e		= (CSE_Abstract*)(DC);
 	CSE_ALifeObjectProjector	*slight	= smart_cast<CSE_ALifeObjectProjector*>(e);
@@ -175,7 +175,7 @@ void CProjector::renderable_Render()
 	inherited::renderable_Render	();
 }
 
-BOOL CProjector::UsedAI_Locations()
+bool CProjector::UsedAI_Locations()
 {
 	return					(FALSE);
 }

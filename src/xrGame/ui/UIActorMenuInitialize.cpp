@@ -313,13 +313,13 @@ void CUIActorMenu::Construct()
 
 	if (uiXml.NavigateToNode("inventory_sort_tabs", 0))
 	{
-		constexpr LPCSTR kBaseSortTabsNode = "inventory_sort_tabs";
+		constexpr const char* kBaseSortTabsNode = "inventory_sort_tabs";
 
 		const struct SSortTabsLayoutNode
 		{
 			ESortTabsLayoutSlot slot;
-			LPCSTR node;
-			LPCSTR windowName;
+			const char* node;
+			const char* windowName;
 		} layoutNodes[] = {
 			{ eSortTabsInventory, "inventory_sort_tabs", "inventory_sort_tabs" },
 			{ eSortTabsUpgrade, "inventory_sort_tabs_container_upgrade", "inventory_sort_tabs_container_upgrade" },
@@ -506,7 +506,7 @@ void CUIActorMenu::UpdateButtonsLayout()
 	}
 
 	string32 tmp;
-	LPCSTR str = g_pStringTable->translate("quick_use_str_1").c_str();
+	const char* str = g_pStringTable->translate("quick_use_str_1").c_str();
 	strncpy_s(tmp, sizeof(tmp), str, 3);
 	if(tmp[2]==',')
 		tmp[1] = '\0';

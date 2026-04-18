@@ -6,7 +6,7 @@ typedef	void		on_dialog			(bool before);
 class XRCORE_API ClipboardMessageCallback
 {
 public:
-	using Func = LPCSTR(*)();
+	using Func = const char*(*)();
 
 	void SetFunc(Func func) {OnGetClipboardMessage = func;}
 	Func GetFunc() {return OnGetClipboardMessage;}
@@ -36,8 +36,8 @@ public:
 	on_dialog*		get_on_dialog		()							{ return m_on_dialog;	}
 	void			set_on_dialog		(on_dialog* on_dialog)		{ m_on_dialog = on_dialog;	}
 
-	LPCSTR			error2string		(long  code	);
-	LPCSTR			dxerror2string		(long  code	);
+	const char*			error2string		(long  code	);
+	const char*			dxerror2string		(long  code	);
 
 	void			gather_info			(const char *expression, const char *description, const char *argument0, const char *argument1, const char *file, int line, const char *function, LPSTR assertion_info, unsigned int assertion_info_size);
 	template <int count>

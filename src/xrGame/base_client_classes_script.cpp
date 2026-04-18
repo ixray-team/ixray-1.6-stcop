@@ -89,7 +89,7 @@ void IRender_VisualScript::script_register		(lua_State *L)
 	];
 }
 
-void IKinematicsAnimated_PlayCycle(IKinematicsAnimated* sa, LPCSTR anim)
+void IKinematicsAnimated_PlayCycle(IKinematicsAnimated* sa, const char* anim)
 {
 	sa->PlayCycle(anim);
 }

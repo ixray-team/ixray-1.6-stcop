@@ -8,7 +8,7 @@
 struct IReaderBase_Test {};
 #pragma warning (disable:4701)
 
-IC intptr_t IReaderBase::find_chunk(u32 ID, BOOL* bCompressed)
+IC intptr_t IReaderBase::find_chunk(u32 ID, bool* bCompressed)
 {
 #ifdef FIND_CHUNK_BENCHMARK_ENABLE
 	find_chunk_auto_timer timer;

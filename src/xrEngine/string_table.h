@@ -30,16 +30,16 @@ public:
 	STRING_VALUE				translate				(const STRING_ID& str_id) const;
 			void				rescan					();
 
-	static	BOOL				m_bWriteErrorsToLog;
+	static	bool				m_bWriteErrorsToLog;
 	static	void				ReparseKeyBindings		();
 	static	xr_string			LangName				();
 			void				ReloadLanguage(const char* lang);
 			STRING_VALUE		ParseStringFromScript	(STRING_ID input);
 private:
 			void				Init					();
-			void				Load					(LPCSTR xml_file);
-			void				LoadFallback			(LPCSTR xml_file);
-	static STRING_VALUE			ParseLine				(LPCSTR str, LPCSTR key, bool bFirst);
+			void				Load					(const char* xml_file);
+			void				LoadFallback			(const char* xml_file);
+	static STRING_VALUE			ParseLine				(const char* str, const char* key, bool bFirst);
 	static STRING_TABLE_DATA*	pData;
 };
 

@@ -93,8 +93,8 @@ struct game_PlayerState
 			bool	testFlag				(u16 f) const;
 			void	setFlag					(u16 f);
 			void	resetFlag				(u16 f);
-			LPCSTR	getName					() const {return m_account.name().c_str();}
-			//void	setName					(LPCSTR s){xr_strcpy(name,s);}
+			const char*	getName					() const {return m_account.name().c_str();}
+			//void	setName					(const char* s){xr_strcpy(name,s);}
 			void	SetGameID				(u16 NewID);
 			bool	HasOldID				(u16 ID);
 			bool	IsSkip					() const {return testFlag(GAME_PLAYER_FLAG_SKIP);}
@@ -102,7 +102,7 @@ struct game_PlayerState
 			s16		frags					() const {return m_iRivalKills - m_iSelfKills - m_iTeamKills;} 
 
 #ifndef AI_COMPILER
-			void	net_Export				(NET_Packet& P, BOOL Full = FALSE);
+			void	net_Export				(NET_Packet& P, bool Full = FALSE);
 			void	net_Import				(NET_Packet& P);
 	static	void	skip_Import				(NET_Packet& P);
 #endif
@@ -182,9 +182,9 @@ public:
 				s32					Round					() const						{return m_round;};
 				u32					StartTime				() const						{return m_start_time;};
 	virtual		void				Create					(shared_str& options)				{};
-	virtual		LPCSTR				type_name				() const						{return "base game";};
+	virtual		const char*				type_name				() const						{return "base game";};
 //for scripting enhancement
-	static		CLASS_ID			getCLASS_ID				(LPCSTR game_type_name, bool bServer);
+	static		CLASS_ID			getCLASS_ID				(const char* game_type_name, bool bServer);
 	virtual		game_PlayerState*	createPlayerState		(NET_Packet* account_info)		{return new game_PlayerState(account_info); };
 
 	virtual game_cl_Single* cast_game_cl_single() { return nullptr; }

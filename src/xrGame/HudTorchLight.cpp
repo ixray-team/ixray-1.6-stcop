@@ -101,7 +101,7 @@ void THudLightTorch::NewTorchlight(const char* section)
 		ConeBones.clear();
 		string128 bone_name = {};
 
-		LPCSTR lineStr = pSettings->r_string(section, "torch_cone_bones");
+		const char* lineStr = pSettings->r_string(section, "torch_cone_bones");
 		for (auto i = 0, cnt = _GetItemCount(lineStr); i < cnt; ++i)
 		{
 			ConeBones.push_back(_GetItem(lineStr, i, bone_name));
@@ -290,7 +290,7 @@ void THudLightTorch::UpdateTorch(CHudItemObject* item, bool& saved_status)
 		SwitchTorchlight(false);
 	}
 
-	auto SetVisible = [&](IKinematics* kin, const shared_str& bone_name, BOOL status)
+	auto SetVisible = [&](IKinematics* kin, const shared_str& bone_name, bool status)
 	{
 		if (kin != nullptr)
 		{
@@ -378,7 +378,7 @@ void THudLightLaser::NewTorchlight(const char* section)
 		ConeBones.clear();
 		string128 bone_name = {};
 
-		LPCSTR lineStr = pSettings->r_string(section, "laser_ray_bones");
+		const char* lineStr = pSettings->r_string(section, "laser_ray_bones");
 		for (auto i = 0, cnt = _GetItemCount(lineStr); i < cnt; ++i)
 		{
 			ConeBones.push_back(_GetItem(lineStr, i, bone_name));
@@ -565,7 +565,7 @@ void THudLightLaser::UpdateLaser(CHudItemObject* item, bool& saved_status)
 		SwitchTorchlight(false);
 	}
 
-	auto SetVisible = [&](IKinematics* kin, const shared_str& bone_name, BOOL status)
+	auto SetVisible = [&](IKinematics* kin, const shared_str& bone_name, bool status)
 	{
 		if (kin != nullptr)
 		{

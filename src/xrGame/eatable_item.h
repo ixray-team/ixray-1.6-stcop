@@ -15,8 +15,8 @@ protected:
 
 	u8 m_iMaxUses = 1;
 	u8 m_iRemainingUses = 1;
-	BOOL m_bRemoveAfterUse = TRUE;
-	BOOL m_bConsumeChargeOnUse = FALSE;
+	bool m_bRemoveAfterUse = TRUE;
+	bool m_bConsumeChargeOnUse = FALSE;
 	float m_fWeightFull = 0.0f;
 	float m_fWeightEmpty = 0.0f;
 	shared_str m_sUseAnimator;
@@ -33,12 +33,12 @@ public:
 	virtual CEatableItem* cast_eatable_item() override { return this; }
 	virtual CInventoryItem* cast_inventory_item() override { return this; }
 
-	virtual void Load(LPCSTR section) override;
+	virtual void Load(const char* section) override;
 	virtual void load(IReader& packet) override;
 	virtual void save(NET_Packet& packet) override;
 	virtual bool Useful() const override;
 
-	virtual BOOL net_Spawn(CSE_Abstract* DC) override;
+	virtual bool net_Spawn(CSE_Abstract* DC) override;
 
 	virtual void OnH_B_Independent(bool just_before_destroy) override;
 	virtual void OnH_A_Independent() override;

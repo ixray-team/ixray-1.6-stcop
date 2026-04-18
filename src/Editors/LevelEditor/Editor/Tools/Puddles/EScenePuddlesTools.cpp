@@ -44,7 +44,7 @@ void EScenePuddlesTool::OnControlRenameRemoveClick(ButtonValue* V, bool& bDataMo
 {
 }
 
-void EScenePuddlesTool::FillProp(LPCSTR pref, PropItemVec& items)
+void EScenePuddlesTool::FillProp(const char* pref, PropItemVec& items)
 {
 	inherited::FillProp(pref, items);
 }
@@ -65,7 +65,7 @@ void EScenePuddlesTool::RemoveControls()
 }
 
 
-CCustomObject* EScenePuddlesTool::CreateObject(LPVOID data, LPCSTR name)
+CCustomObject* EScenePuddlesTool::CreateObject(LPVOID data, const char* name)
 {
 	CCustomObject* O = new CPuddle(data, name);
 	O->FParentTools = this;

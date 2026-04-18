@@ -2,8 +2,8 @@
 
 #include "../xrECore/Editor/EditMesh.h"
 
-extern ECORE_API BOOL g_force16BitTransformQuant;
-extern ECORE_API BOOL g_force32BitTransformQuant;
+extern ECORE_API bool g_force16BitTransformQuant;
+extern ECORE_API bool g_force32BitTransformQuant;
 
 UILeftBarForm::UILeftBarForm()
 {

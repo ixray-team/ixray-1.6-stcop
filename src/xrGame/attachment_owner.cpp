@@ -16,7 +16,7 @@
 CAttachmentOwner::~CAttachmentOwner()
 {}
 
-void CAttachmentOwner::reload(LPCSTR section)
+void CAttachmentOwner::reload(const char* section)
 {
 	if (!pSettings->line_exist(section, "attachable_items"))
 	{
@@ -24,7 +24,7 @@ void CAttachmentOwner::reload(LPCSTR section)
 		return;
 	}
 
-	LPCSTR attached_sections = pSettings->r_string(section, "attachable_items");
+	const char* attached_sections = pSettings->r_string(section, "attachable_items");
 	u32 item_count = _GetItemCount(attached_sections);
 	string256 current_item_section = {};
 	m_attach_item_sections.resize(item_count);

@@ -13,14 +13,14 @@
 
 using namespace luabind;
 
-void LuaLog(LPCSTR caMessage)
+void LuaLog(const char* caMessage)
 {
 #ifndef MASTER_GOLD
 	g_pScriptEngine->script_log	(ScriptStorage::eLuaMessageTypeMessage,"%s",caMessage);
 #endif // #ifndef MASTER_GOLD
 }
 
-void ErrorLog(LPCSTR caMessage)
+void ErrorLog(const char* caMessage)
 {
 	g_pScriptEngine->error_log("%s",caMessage);
 	g_pScriptEngine->print_stack();
@@ -76,18 +76,18 @@ void trigger_vs_log(const char* pStringFromLua)
 	#endif
 }
 
-void LoadScriptToGlobal_script(LPCSTR script_name)
+void LoadScriptToGlobal_script(const char* script_name)
 {
 	LoadScriptToGlobal(g_pScriptEngine->lua(), script_name, false);
 }
 #endif
 
-LPCSTR user_name()
+const char* user_name()
 {
 	return (Core.UserName);
 }
 
-void prefetch_module(LPCSTR file_name)
+void prefetch_module(const char* file_name)
 {
 	g_pScriptEngine->process_file(file_name);
 }
@@ -220,7 +220,7 @@ void TryLoadFile(const char* FileName)
 	FS.TryLoad(FileName);
 }
 
-void lua_debug_print(LPCSTR str)
+void lua_debug_print(const char* str)
 {
 	if (!xr_strlen(str))
 		return;
@@ -338,7 +338,7 @@ void CScriptEngine::script_register(lua_State *L)
 			.def("stop",&profile_timer_script::stop)
 			.def("time",&profile_timer_script::time),
 
-		def("log1",								(void (*)(LPCSTR)) & Log),
+		def("log1",								(void (*)(const char*)) & Log),
 		def("error_log",						&ErrorLog),
 		def("flush",							&FlushLogs),
 		def("prefetch",							&prefetch_module),
