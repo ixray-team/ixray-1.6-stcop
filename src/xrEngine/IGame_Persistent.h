@@ -37,7 +37,7 @@ public:
 				xr_strcpy(m_params[i], "");
 		}
 
-		void parse_cmd_line(LPCSTR cmd_line)
+		void parse_cmd_line(const char* cmd_line)
 		{
 			reset();
 			int n = std::min(4, _GetItemCount(cmd_line, '/'));
@@ -59,8 +59,8 @@ public:
 	params m_game_params;
 	ShaderParamsData ShaderParams;
 public:
-	virtual void					PreStart			(LPCSTR op);
-	virtual void					Start				(LPCSTR op);
+	virtual void					PreStart			(const char* op);
+	virtual void					Start				(const char* op);
 	virtual void					Disconnect			();
 	IGame_ObjectPool				ObjectPool;
 	class CEnvironment*				pEnvironment;
@@ -101,7 +101,7 @@ public:
 	ICF		u32						GameType			() {return m_game_params.m_e_game_type;};
 	virtual void					Statistics			(CGameFont* F) {}
 	virtual	void					LoadTitle			(bool change_tip=false, shared_str map_name=""){}
-	virtual void					SetLoadStageTitle	(pcstr /*ls_title*/) {}
+	virtual void					SetLoadStageTitle	(const char* /*ls_title*/) {}
 	virtual bool					CanBePaused			()		{ return true;}
 };
 

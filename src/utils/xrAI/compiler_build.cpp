@@ -26,7 +26,7 @@ struct tri {
 };
 
 const float RCAST_VALID = 0.55f;
-BOOL CreateNode(Fvector& vAt, vertex& N)
+bool CreateNode(Fvector& vAt, vertex& N)
 {
 	// *** Query and cache polygons for ray-casting
 	Fvector	PointUp;		PointUp.set(vAt);	PointUp.y	+= RCAST_Depth;		SnapXZ	(PointUp);
@@ -276,7 +276,7 @@ u32	FindNode(Fvector& vAt)
 	return InvalidNode;
 }
  
-BOOL	CanTravel(Fvector& _from, Fvector& _at)
+bool	CanTravel(Fvector& _from, Fvector& _at)
 {
 	float eps	= 0.1f;
 	float eps_y = g_params.fPatchSize*1.5f; // * tan(56) = 1.5
@@ -284,12 +284,12 @@ BOOL	CanTravel(Fvector& _from, Fvector& _at)
 
 	// 1
 	msimulator_Simulate(Result,_from,_at,radius,0.7f);
-	BOOL b1 = fsimilar(Result.x,_at.x,eps)&&fsimilar(Result.z,_at.z,eps)&&fsimilar(Result.y,_at.y,eps_y);
+	bool b1 = fsimilar(Result.x,_at.x,eps)&&fsimilar(Result.z,_at.z,eps)&&fsimilar(Result.y,_at.y,eps_y);
 	if (b1) return TRUE;
 
 	// 2
 	msimulator_Simulate(Result,_from,_at,radius,2.f);
-	BOOL b2 = fsimilar(Result.x,_at.x,eps)&&fsimilar(Result.z,_at.z,eps)&&fsimilar(Result.y,_at.y,eps_y);
+	bool b2 = fsimilar(Result.x,_at.x,eps)&&fsimilar(Result.z,_at.z,eps)&&fsimilar(Result.y,_at.y,eps_y);
 	if (b2) return TRUE;
 
 	return FALSE;

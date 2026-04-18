@@ -53,7 +53,7 @@ void CMissile::reinit		()
 	SetState			( eHidden );
 }
 
-void CMissile::Load(LPCSTR section) 
+void CMissile::Load(const char* section) 
 {
 	inherited::Load		(section);
 
@@ -72,7 +72,7 @@ void CMissile::Load(LPCSTR section)
 	if (pSettings->line_exist(section, "checkout_bones"))
 	{
 		m_sCheckoutBones.clear();
-		LPCSTR lineStr = pSettings->r_string(section, "checkout_bones");
+		const char* lineStr = pSettings->r_string(section, "checkout_bones");
 		for (int j = 0, cnt = _GetItemCount(lineStr); j < cnt; ++j)
 		{
 			string128 bone_name;
@@ -82,7 +82,7 @@ void CMissile::Load(LPCSTR section)
 	}
 }
 
-void CMissile::LoadSounds(LPCSTR section)
+void CMissile::LoadSounds(const char* section)
 {
 	inherited::LoadSounds(section);
 
@@ -116,9 +116,9 @@ void CMissile::LoadSounds(LPCSTR section)
 	}
 }
 
-BOOL CMissile::net_Spawn(CSE_Abstract* DC) 
+bool CMissile::net_Spawn(CSE_Abstract* DC) 
 {
-	BOOL l_res = inherited::net_Spawn(DC);
+	bool l_res = inherited::net_Spawn(DC);
 
 	dwXF_Frame					= 0xffffffff;
 

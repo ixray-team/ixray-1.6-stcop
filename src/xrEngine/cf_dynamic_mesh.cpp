@@ -9,7 +9,7 @@
 #	include "IPHdebug.h"
 #endif
 
-BOOL CCF_DynamicMesh::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
+bool CCF_DynamicMesh::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
 {
 	const int StartCount = R.r_count();
 

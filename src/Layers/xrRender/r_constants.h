@@ -58,11 +58,11 @@ public:
 	cb_table							m_CBTable;
 #endif //USE_DX11
 private:
-	void					fatal		(LPCSTR s);
+	void					fatal		(const char* s);
 
 #ifdef USE_DX11
-	BOOL					parseConstants(ID3DShaderReflectionConstantBuffer* pTable, u32 destination);
-	BOOL					parseResources(ID3DShaderReflection* pReflection, int ResNum, u32 destination);
+	bool					parseConstants(ID3DShaderReflectionConstantBuffer* pTable, u32 destination);
+	bool					parseResources(ID3DShaderReflection* pReflection, int ResNum, u32 destination);
 #endif //USE_DX11
 
 public:
@@ -73,14 +73,14 @@ public:
 
 	void					_copy		(const R_constant_table& Other);
 	void					clear		();
-	BOOL					parse		(void* desc, u32 destination);
+	bool					parse		(void* desc, u32 destination);
 	void					merge		(R_constant_table* C);
-	ref_constant			get			(LPCSTR		name);		// slow search
+	ref_constant			get			(const char*		name);		// slow search
 	ref_constant			get			(shared_str&	name);		// fast search
 
-	BOOL					equal		(R_constant_table& C);
-	BOOL					equal		(R_constant_table* C)	{	return equal(*C);		}
-	BOOL					empty		()						{	return 0==table.size();	}
+	bool					equal		(R_constant_table& C);
+	bool					equal		(R_constant_table* C)	{	return equal(*C);		}
+	bool					empty		()						{	return 0==table.size();	}
 private:
 
 };

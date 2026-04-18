@@ -146,17 +146,17 @@ public:
 		void							MakeMeCrow			();
 
 	ICF	void							IAmNotACrowAnyMore	()					{ Props.crow = false;		}
-	virtual BOOL						AlwaysTheCrow		()					{ return FALSE;				}
+	virtual bool						AlwaysTheCrow		()					{ return FALSE;				}
 	ICF	bool							AmICrow				() const			{ return !!Props.crow;		}
 
 	// Network
-	ICF BOOL							Local				()			const	{ return Props.net_Local;	}
-	ICF BOOL							Remote				()			const	{ return !Props.net_Local;	}
+	ICF bool							Local				()			const	{ return Props.net_Local;	}
+	ICF bool							Remote				()			const	{ return !Props.net_Local;	}
 	ICF u16								ID					()			const	{ return Props.net_ID;		}
 	ICF void							setID				(u16 _ID)			{ Props.net_ID = _ID;		}
-	virtual BOOL						Ready				()					{ return Props.net_Ready;	}
-	BOOL								GetTmpPreDestroy		()		const	{ return Props.bPreDestroy;	}
-	void								SetTmpPreDestroy	(BOOL b)			{ Props.bPreDestroy = b;}
+	virtual bool						Ready				()					{ return Props.net_Ready;	}
+	bool								GetTmpPreDestroy		()		const	{ return Props.bPreDestroy;	}
+	void								SetTmpPreDestroy	(bool b)			{ Props.bPreDestroy = b;}
 	virtual float						shedule_Scale();
 	virtual float shedule_Scale_Base();
 	virtual bool						shedule_Needed		()					{return processing_enabled();};
@@ -186,8 +186,8 @@ public:
 	
 	IC IRender_Sector*					Sector				()					{ return H_Root()->SpatialComponent->spatial.sector;	}
 	IC IRender_ObjectSpecific*			ROS					()					{ return renderable_ROS();			}
-	virtual BOOL						renderable_ShadowGenerate	()			{ return TRUE;						}
-	virtual BOOL						renderable_ShadowReceive	()			{ return TRUE;						}
+	virtual bool						renderable_ShadowGenerate	()			{ return TRUE;						}
+	virtual bool						renderable_ShadowReceive	()			{ return TRUE;						}
 
 	// Accessors and converters
 	ICF IRenderVisual*					Visual				() const			{ return renderable.visual;			}
@@ -267,7 +267,7 @@ virtual	const IObjectPhysicsCollision	*physics_collision	()					{ return  0; }
 	ICF shared_str						cName				()			const	{ return NameObject;				}
 	void								cName_set			(shared_str N);
 	ICF shared_str						cNameSect			()			const	{ return NameSection;				}
-	ICF LPCSTR							cNameSect_str		()			const	{ return NameSection.c_str();		}
+	ICF const char*							cNameSect_str		()			const	{ return NameSection.c_str();		}
 	void								cNameSect_set		(shared_str N);
 	ICF shared_str						cNameVisual			()			const	{ return NameVisual;				}
 	void								cNameVisual_set		(shared_str N);
@@ -278,31 +278,31 @@ virtual	const IObjectPhysicsCollision	*physics_collision	()					{ return  0; }
 	void								processing_deactivate	();				// request	to disable	UpdateCL
 	bool								processing_enabled		()				{ return 0!=Props.bActiveCounter;	}
 
-	void                                setVisible(BOOL _visible, BOOL _visibleshadow = FALSE);
-	ICF BOOL							getVisible			()			const	{ return Props.bVisible;			}
-	void								setEnabled			(BOOL _enabled);
-	ICF BOOL							getEnabled			()			const	{ return Props.bEnabled;			}
-		void							setDestroy			(BOOL _destroy);
-	ICF BOOL							getDestroy			()			const	{ return Props.bDestroy;			}
-	ICF void							setLocal			(BOOL _local)		{ Props.net_Local = _local?1:0;		}
-	ICF BOOL							getLocal			()			const	{ return Props.net_Local;			}
-	ICF void							setSVU				(BOOL _svu)			{ Props.net_SV_Update	= _svu?1:0;	}
-	ICF BOOL							getSVU				()			const	{ return Props.net_SV_Update;		}
-	ICF void							setReady			(BOOL _ready)		{ Props.net_Ready = _ready?1:0;		}
-	ICF BOOL							getReady			()			const	{ return Props.net_Ready;			}
+	void                                setVisible(bool _visible, bool _visibleshadow = FALSE);
+	ICF bool							getVisible			()			const	{ return Props.bVisible;			}
+	void								setEnabled			(bool _enabled);
+	ICF bool							getEnabled			()			const	{ return Props.bEnabled;			}
+		void							setDestroy			(bool _destroy);
+	ICF bool							getDestroy			()			const	{ return Props.bDestroy;			}
+	ICF void							setLocal			(bool _local)		{ Props.net_Local = _local?1:0;		}
+	ICF bool							getLocal			()			const	{ return Props.net_Local;			}
+	ICF void							setSVU				(bool _svu)			{ Props.net_SV_Update	= _svu?1:0;	}
+	ICF bool							getSVU				()			const	{ return Props.net_SV_Update;		}
+	ICF void							setReady			(bool _ready)		{ Props.net_Ready = _ready?1:0;		}
+	ICF bool							getReady			()			const	{ return Props.net_Ready;			}
 
 	//---------------------------------------------------------------------
 										CObject				();
 	virtual								~CObject			();
 
-	virtual void						Load				(LPCSTR section);
+	virtual void						Load				(const char* section);
 	
 	// Update
 	virtual void						shedule_Update		(u32 dt);							// Called by sheduler
 	virtual void						renderable_Render	();
 
 	virtual void						UpdateCL			();									// Called each frame, so no need for dt
-	virtual BOOL						net_Spawn			(CSE_Abstract* data);
+	virtual bool						net_Spawn			(CSE_Abstract* data);
 	virtual void						net_Destroy			();
 	virtual void						net_Export			(NET_Packet& P) {};					// export to server
 	virtual void						net_Import			(NET_Packet& P) {};					// import from server
@@ -311,7 +311,7 @@ virtual	const IObjectPhysicsCollision	*physics_collision	()					{ return  0; }
 	virtual void						SyncWrite			(NET_Packet& Packet) {};
 
 	virtual	void						net_ImportInput		(NET_Packet& P)	{};
-	virtual BOOL						net_Relevant		()				{ return FALSE; };	// relevant for export to server
+	virtual bool						net_Relevant		()				{ return FALSE; };	// relevant for export to server
 	virtual void						net_MigrateInactive	(NET_Packet& P)	{ Props.net_Local = FALSE;		};
 	virtual void						net_MigrateActive	(NET_Packet& P)	{ Props.net_Local = TRUE;		};
 	virtual void						net_Relcase			(CObject*	 O) { };				// destroy all links to another objects

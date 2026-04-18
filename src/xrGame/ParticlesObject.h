@@ -18,7 +18,7 @@ public:
 	u32					dwLastTime = 0U;
 	int					m_iLifeTime = int_max;
 
-						CParticlesObject	(LPCSTR p_name, BOOL bAutoRemove, bool destroy_on_game_load);
+						CParticlesObject	(const char* p_name, bool bAutoRemove, bool destroy_on_game_load);
 	virtual				~CParticlesObject	();
 
 	virtual void		renderable_Render	();
@@ -29,12 +29,12 @@ public:
 	void				SetXFORM			(const Fmatrix& m);
 	IC	Fmatrix&		XFORM				() {return renderable.xform;}
 	void				UpdateParent		(const Fmatrix& m, const Fvector& vel);
-	void				SetLiveUpdate		(BOOL b);
+	void				SetLiveUpdate		(bool b);
 	bool				GetLiveUpdate		();
 	u32					GetSpriteCount		();
-	void				play_at_pos			(const Fvector& pos, BOOL xform=FALSE);
+	void				play_at_pos			(const Fvector& pos, bool xform=FALSE);
 	void				Play				(bool bHudMode);
-	void				Stop				(BOOL bDefferedStop=TRUE);
+	void				Stop				(bool bDefferedStop=TRUE);
 	bool				IsPlaying			();
 
 	IC bool				IsLooped			() { return m_bLooped; }
@@ -50,7 +50,7 @@ public:
 
 namespace Particles::Details
 {
-	xr_shared_ptr<CParticlesObject> Create(LPCSTR p_name, BOOL bAutoRemove = TRUE, bool remove_on_game_load = true);
+	xr_shared_ptr<CParticlesObject> Create(const char* p_name, bool bAutoRemove = TRUE, bool remove_on_game_load = true);
 
 	template <class T>
 	static IC void Destroy(T& p)

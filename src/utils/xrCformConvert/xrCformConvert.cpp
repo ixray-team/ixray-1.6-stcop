@@ -68,7 +68,7 @@ void Startup(LPSTR lpCmdLine)
 		MessageBoxA(nullptr, stats, "Congratulations!", MB_OK | MB_ICONINFORMATION);
 	}*/
 
-	extern volatile BOOL bClose;
+	extern volatile bool bClose;
 
 	// Close log
 	bClose = TRUE;
@@ -196,7 +196,7 @@ int APIENTRY WinMain
 	// Initialize debugging
 	Debug._initialize(false);
 
-	LPCSTR fsgame_ltx_name = "-fsltx ";
+	const char* fsgame_ltx_name = "-fsltx ";
 	string_path fsgame = "";
 
 	if (strstr(lpCmdLine, fsgame_ltx_name))

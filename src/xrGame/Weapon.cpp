@@ -260,7 +260,7 @@ void CWeapon::UpdateFireDependencies_internal()
 	}
 }
 
-void CWeapon::Load		(LPCSTR section)
+void CWeapon::Load		(const char* section)
 {
 	inherited::Load					(section);
 	CShootingObject::Load			(section);
@@ -282,7 +282,7 @@ void CWeapon::Load		(LPCSTR section)
 
 	// load ammo classes
 	m_ammoTypes.clear	(); 
-	LPCSTR				S = pSettings->r_string(section,"ammo_class");
+	const char*				S = pSettings->r_string(section,"ammo_class");
 	if (S && S[0]) 
 	{
 		string128		_ammoItem;
@@ -555,9 +555,9 @@ void CWeapon::Load		(LPCSTR section)
 		}
 	}
 
-	auto ReachInAllSections = [&](LPCSTR param_name)
+	auto ReachInAllSections = [&](const char* param_name)
 	{
-		LPCSTR reached_sect = section;
+		const char* reached_sect = section;
 		const shared_str hud_section = HudSection();
 		if (pSettings->line_exist(hud_section, param_name))
 		{
@@ -620,7 +620,7 @@ void CWeapon::Load		(LPCSTR section)
 		{
 			if (pSettings->line_exist(section, sect))
 			{
-				LPCSTR S = pSettings->r_string(section, sect);
+				const char* S = pSettings->r_string(section, sect);
 				if (S && S[0])
 				{
 					string128 Item = "";
@@ -800,7 +800,7 @@ void CWeapon::Load		(LPCSTR section)
 	LoadRecoilPatterns(section);
 }
 
-void CWeapon::LoadFireParams		(LPCSTR section)
+void CWeapon::LoadFireParams		(const char* section)
 {
 	cam_recoil.Dispersion = deg2rad( pSettings->r_float( section,"cam_dispersion" ) ); 
 	cam_recoil.DispersionInc = 0.0f;
@@ -822,7 +822,7 @@ void CWeapon::LoadFireParams		(LPCSTR section)
 	CShootingObject::LoadFireParams(section);
 };
 
-void CWeapon::LoadRecoilPatterns(LPCSTR section)
+void CWeapon::LoadRecoilPatterns(const char* section)
 {
 	LoadBulletPattern(section, "hipfire_pattern", m_hipfire_pattern);
 	m_hipfire_pattern.name = "hipfire";
@@ -896,7 +896,7 @@ void CWeapon::LoadRecoilPatterns(LPCSTR section)
 //		m_hipfire_pattern.bullet_patterns.size(), cam_recoil.Pattern.Factor, zoom_cam_recoil.Pattern.Factor);
 }
 
-void CWeapon::LoadBulletPattern(LPCSTR section, LPCSTR pattern_name, SRecoilPattern& pattern)
+void CWeapon::LoadBulletPattern(const char* section, const char* pattern_name, SRecoilPattern& pattern)
 {
 	pattern.bullet_patterns.clear();
 	pattern.current_bullet = 0;
@@ -933,9 +933,9 @@ void CWeapon::LoadBulletPattern(LPCSTR section, LPCSTR pattern_name, SRecoilPatt
 //		pattern.bullet_patterns.size(), subsection_name);
 }
 
-BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
+bool CWeapon::net_Spawn		(CSE_Abstract* DC)
 {
-	BOOL bResult					= inherited::net_Spawn(DC);
+	bool bResult					= inherited::net_Spawn(DC);
 	CSE_Abstract					*e	= (CSE_Abstract*)(DC);
 	CSE_ALifeItemWeapon* E = e->cast_item_weapon();
 
@@ -1025,7 +1025,7 @@ void CWeapon::net_Destroy()
 	m_chamber.clear();
 }
 
-BOOL CWeapon::IsUpdating()
+bool CWeapon::IsUpdating()
 {	
 	bool bIsActiveItem = m_pInventory && m_pInventory->ActiveItem()==this;
 	return bIsActiveItem || bWorking;// || IsPending() || getVisible();
@@ -1565,7 +1565,7 @@ void CWeapon::LoadUpgradeBonesToHide(const char* section, const char* line)
 
 	if (!!pSettings->line_exist(section, line))
 	{
-		LPCSTR	S = pSettings->r_string(section, line);
+		const char*	S = pSettings->r_string(section, line);
 		if (S && S[0])
 		{
 			string128 _Item = "";
@@ -1651,7 +1651,7 @@ void CWeapon::HideOneUpgradeLevel(const char* section)
 {
 	if (!!pSettings->line_exist(section, "elements"))
 	{
-		LPCSTR	S = pSettings->r_string(section, "elements");
+		const char*	S = pSettings->r_string(section, "elements");
 		if (S && S[0])
 		{
 			string128 _Item;
@@ -1661,7 +1661,7 @@ void CWeapon::HideOneUpgradeLevel(const char* section)
 				_GetItem(S, it, _Item);
 				if (!!pSettings->line_exist(_Item, "effects"))
 				{
-					LPCSTR St = pSettings->r_string(_Item, "effects");
+					const char* St = pSettings->r_string(_Item, "effects");
 					if (St && St[0])
 					{
 						string128 _tmp = "";
@@ -1674,7 +1674,7 @@ void CWeapon::HideOneUpgradeLevel(const char* section)
 					}
 				}
 
-				LPCSTR up_sect = pSettings->r_string(_Item, "section");
+				const char* up_sect = pSettings->r_string(_Item, "section");
 				LoadUpgradeBonesToHide(up_sect, "show_bones");
 			}
 		}
@@ -2113,7 +2113,7 @@ void CWeapon::setCrosshairInertion(float value)
 	m_crosshair_inertion = value;
 }
 
-void CWeapon::SpawnAmmo(u32 boxCurr, LPCSTR ammoSect, u32 ParentID) 
+void CWeapon::SpawnAmmo(u32 boxCurr, const char* ammoSect, u32 ParentID) 
 {
 	if(!m_ammoTypes.size())			return;
 	if (OnClient())					return;
@@ -2529,7 +2529,7 @@ void CWeapon::UpdateHUDAddonsVisibility()
 	{
 		if (!!pSettings->line_exist(m_section_id.c_str(), "upgrades"))
 		{
-			LPCSTR S = pSettings->r_string(m_section_id.c_str(), "upgrades");
+			const char* S = pSettings->r_string(m_section_id.c_str(), "upgrades");
 			if (S && S[0])
 			{
 				string128 _Item;
@@ -2560,7 +2560,7 @@ void CWeapon::UpdateHUDAddonsVisibility()
 
 	for (u32 i = 0; i < m_upgrades.size(); i++)
 	{
-		LPCSTR section = pSettings->r_string(m_upgrades.at(i).c_str(), "section");
+		const char* section = pSettings->r_string(m_upgrades.at(i).c_str(), "section");
 
 		if (pSettings->line_exist(section, "show_bones"))
 			SetMultipleBonesStatus(section, "show_bones", TRUE);
@@ -2642,7 +2642,7 @@ void CWeapon::UpdateAddonsVisibility()
 	{
 		if (!!pSettings->line_exist(m_section_id.c_str(), "upgrades"))
 		{
-			LPCSTR S = pSettings->r_string(m_section_id.c_str(), "upgrades");
+			const char* S = pSettings->r_string(m_section_id.c_str(), "upgrades");
 			if (S && S[0])
 			{
 				string128 _Item;
@@ -2673,7 +2673,7 @@ void CWeapon::UpdateAddonsVisibility()
 
 	for (u32 i = 0; i < m_upgrades.size(); i++)
 	{
-		LPCSTR section = pSettings->r_string(m_upgrades.at(i).c_str(), "section");
+		const char* section = pSettings->r_string(m_upgrades.at(i).c_str(), "section");
 
 		if (pSettings->line_exist(section, "show_bones"))
 			SetMultipleBonesStatus(section, "show_bones", TRUE);
@@ -2725,9 +2725,9 @@ void CWeapon::InitAddons()
 {
 	if (ScopeAttachable())
 	{
-		auto ReachInAllSections = [&](LPCSTR param_name)
+		auto ReachInAllSections = [&](const char* param_name)
 		{
-			LPCSTR reached_sect = m_section_id.c_str();
+			const char* reached_sect = m_section_id.c_str();
 			const shared_str hud_section = HudSection();
 
 			if (pSettings->line_exist(hud_section, param_name))
@@ -2740,7 +2740,7 @@ void CWeapon::InitAddons()
 
 		if (IsScopeAttached())
 		{
-			LPCSTR scope_sect = GetCurrentScopeSection().c_str();
+			const char* scope_sect = GetCurrentScopeSection().c_str();
 			if (m_eScopeStatus == ALife::EWeaponAddonStatus::eAddonPermanent)
 			{
 				scope_sect = cNameSect().c_str();
@@ -3094,7 +3094,7 @@ void CWeapon::reinit			()
 	CHudItemObject::reinit			();
 }
 
-void CWeapon::reload(LPCSTR section) {
+void CWeapon::reload(const char* section) {
 	CShootingObject::reload(section);
 	CHudItemObject::reload(section);
 
@@ -3654,12 +3654,12 @@ float CWeapon::GetConditionToShow	() const
 	return	(GetCondition());//powf(GetCondition(),4.0f));
 }
 
-BOOL CWeapon::ParentMayHaveAimBullet	()
+bool CWeapon::ParentMayHaveAimBullet	()
 {
 	return H_Parent() && H_Parent()->cast_actor();
 }
 
-BOOL CWeapon::ParentIsActor	()
+bool CWeapon::ParentIsActor	()
 {
 	return H_Parent() && H_Parent()->cast_actor();
 }
@@ -3689,7 +3689,7 @@ const float &CWeapon::hit_probability	() const
 	return					(m_hit_probability[egdNovice]);
 }
 
-BOOL EnableDof = true;
+bool EnableDof = true;
 
 void CWeapon::OnStateSwitch	(u32 S)
 {
@@ -4039,7 +4039,7 @@ shared_str CWeapon::GetNameWithAttachmentScope()
 	return (shared_str)str;
 }
 
-bool CWeapon::bReloadSectionScope(LPCSTR section)
+bool CWeapon::bReloadSectionScope(const char* section)
 {
 	if (!pSettings->line_exist(section, "scopes"))
 		return false;
@@ -4053,7 +4053,7 @@ bool CWeapon::bReloadSectionScope(LPCSTR section)
 	return true;
 }
 
-bool CWeapon::bLoadAltScopesParams(LPCSTR section)
+bool CWeapon::bLoadAltScopesParams(const char* section)
 {
 	if (!pSettings->line_exist(section, "scopes"))
 		return false;
@@ -4066,7 +4066,7 @@ bool CWeapon::bLoadAltScopesParams(LPCSTR section)
 
 	if (m_eScopeStatus == ALife::eAddonAttachable)
 	{
-		LPCSTR str = pSettings->r_string(section, "scopes");
+		const char* str = pSettings->r_string(section, "scopes");
 		for (int i = 0, count = _GetItemCount(str); i < count; ++i)
 		{
 			string128 scope_section;
@@ -4082,14 +4082,14 @@ bool CWeapon::bLoadAltScopesParams(LPCSTR section)
 	return true;
 }
 
-void CWeapon::LoadOriginalScopesParams(LPCSTR section)
+void CWeapon::LoadOriginalScopesParams(const char* section)
 {
 
 	if (m_eScopeStatus == ALife::eAddonAttachable)
 	{
 		if (pSettings->line_exist(section, "scopes_sect"))
 		{
-			LPCSTR str = pSettings->r_string(section, "scopes_sect");
+			const char* str = pSettings->r_string(section, "scopes_sect");
 			for (int i = 0, count = _GetItemCount(str); i < count; ++i)
 			{
 				string128						scope_section;
@@ -4117,7 +4117,7 @@ bool createWpnScopeXML()
 	return pWpnScopeXml->Load(CONFIG_PATH, UI_PATH, "scopes.xml");
 }
 
-void CWeapon::LoadCurrentScopeParams(LPCSTR section)
+void CWeapon::LoadCurrentScopeParams(const char* section)
 {
 	shared_str scope_tex_name = "none";
 	bScopeIsHasTexture = false;
@@ -4224,12 +4224,12 @@ void CWeapon::DeleteAmmoInChamber()
 
 void CWeapon::UnloadChamber(bool spawn_ammo)
 {
-	xr_map<LPCSTR, u16> l_ammo;
+	xr_map<const char*, u16> l_ammo;
 
 	while (!m_chamber.empty())
 	{
 		CCartridge& l_cartridge = m_chamber.back();
-		xr_map<LPCSTR, u16>::iterator l_it;
+		xr_map<const char*, u16>::iterator l_it;
 		for (l_it = l_ammo.begin(); l_ammo.end() != l_it; ++l_it)
 		{
 			if (!xr_strcmp(*l_cartridge.m_ammoSect, l_it->first))
@@ -4255,7 +4255,7 @@ void CWeapon::UnloadChamber(bool spawn_ammo)
 	if (!spawn_ammo)
 		return;
 
-	xr_map<LPCSTR, u16>::iterator l_it;
+	xr_map<const char*, u16>::iterator l_it;
 	for (l_it = l_ammo.begin(); l_ammo.end() != l_it; ++l_it)
 	{
 		if (m_pInventory)
@@ -4313,7 +4313,7 @@ void CWeapon::LoadChamber()
 			return;
 		}
 
-		LPCSTR tmp_sect_name = m_ammoTypes[m_ChamberAmmoType].c_str();
+		const char* tmp_sect_name = m_ammoTypes[m_ChamberAmmoType].c_str();
 
 		if (!tmp_sect_name)
 		{
@@ -4866,7 +4866,7 @@ void CWeapon::on_a_hud_attach()
 // чтобы сталкеры которые не попадают в камеру
 // и находятся далеко от нас могли полноценно поддерживать бой
 // а не устраивать пистолетные дуэли
-BOOL CWeapon::AlwaysTheCrow()
+bool CWeapon::AlwaysTheCrow()
 {
 	if (H_Parent() && H_Parent()->cast_stalker() && H_Parent()->cast_stalker()->memory().enemy().selected() && m_pInventory && m_pInventory->ActiveItem() == this && !m_strapped_mode)
 		return TRUE;

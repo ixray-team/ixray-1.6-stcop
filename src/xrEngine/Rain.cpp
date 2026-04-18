@@ -10,8 +10,8 @@
 #include "../xrCore/Collision/xr_area.h"
 #include "xr_object.h"
 
-ENGINE_API BOOL bIsRaindropCollision = false;
-ENGINE_API BOOL bIsSndOnRoof = false;
+ENGINE_API bool bIsRaindropCollision = false;
+ENGINE_API bool bIsSndOnRoof = false;
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -75,7 +75,7 @@ ICF bool RayPick(const Fvector& s, const Fvector& d, float& range, collide::rq_t
 	return bRes;
 }
 
-ICF void RenewItem(CEffect_Rain::Item& dest, float height, BOOL bHit, u32 time_global, u32 dt)
+ICF void RenewItem(CEffect_Rain::Item& dest, float height, bool bHit, u32 time_global, u32 dt)
 {
 	dest.uv_set			= Random.randI(2);
 	if (bHit)

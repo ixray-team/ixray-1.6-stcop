@@ -27,21 +27,21 @@
 u32		g_sv_dm_dwForceRespawn			= 0;
 s32		g_sv_dm_dwFragLimit				= 10;
 s32		g_sv_dm_dwTimeLimit				= 0;
-BOOL	g_sv_dm_bDamageBlockIndicators	= TRUE;
+bool	g_sv_dm_bDamageBlockIndicators	= TRUE;
 u32		g_sv_dm_dwDamageBlockTime		= 0;
-BOOL	g_sv_dm_bAnomaliesEnabled		= TRUE;
+bool	g_sv_dm_bAnomaliesEnabled		= TRUE;
 u32		g_sv_dm_dwAnomalySetLengthTime	= 3;
-BOOL	g_sv_dm_bPDAHunt				= TRUE;
+bool	g_sv_dm_bPDAHunt				= TRUE;
 u32		g_sv_dm_dwWarmUp_MaxTime		= 0;
-BOOL	g_sv_dm_bDMIgnore_Money_OnBuy	= FALSE;
+bool	g_sv_dm_bDMIgnore_Money_OnBuy	= FALSE;
 //-----------------------------------------------------------------
-BOOL				game_sv_Deathmatch::IsDamageBlockIndEnabled	() {return g_sv_dm_bDamageBlockIndicators; };
+bool				game_sv_Deathmatch::IsDamageBlockIndEnabled	() {return g_sv_dm_bDamageBlockIndicators; };
 s32					game_sv_Deathmatch::GetTimeLimit			() {return g_sv_dm_dwTimeLimit; };
 s32					game_sv_Deathmatch::GetFragLimit			() {return g_sv_dm_dwFragLimit; };
 u32					game_sv_Deathmatch::GetDMBLimit				() {return g_sv_dm_dwDamageBlockTime; };
 u32					game_sv_Deathmatch::GetForceRespawn			() {return g_sv_dm_dwForceRespawn; };
 u32					game_sv_Deathmatch::GetWarmUpTime			() {return g_sv_dm_dwWarmUp_MaxTime; };
-BOOL				game_sv_Deathmatch::IsAnomaliesEnabled		() {return g_sv_dm_bAnomaliesEnabled; };
+bool				game_sv_Deathmatch::IsAnomaliesEnabled		() {return g_sv_dm_bAnomaliesEnabled; };
 u32					game_sv_Deathmatch::GetAnomaliesTime		() {return g_sv_dm_dwAnomalySetLengthTime; };
 //-----------------------------------------------------------------
 
@@ -635,7 +635,7 @@ void	game_sv_Deathmatch::SM_SwitchOnPlayer(CObject* pNewObject)
 }
 
 
-BOOL	game_sv_Deathmatch::AllPlayers_Ready ()
+bool	game_sv_Deathmatch::AllPlayers_Ready ()
 {
 	if (!m_server->GetServerClient()) return FALSE;	
 	// Check if all players ready
@@ -850,7 +850,7 @@ void game_sv_Deathmatch::assign_RP(CSE_Abstract* E, game_PlayerState* ps_who)
 	E->o_Angle.set		(r.A);	
 };
 
-bool	game_sv_Deathmatch::IsBuyableItem			(LPCSTR	ItemName)
+bool	game_sv_Deathmatch::IsBuyableItem			(const char*	ItemName)
 {
 	if (m_strWeaponsData->GetItemIdx(ItemName) == u32(-1)) return false;
 	return true;
@@ -1487,7 +1487,7 @@ void	game_sv_Deathmatch::StartAnomalies			(int AnomalySet)
 #endif
 };
 
-BOOL	game_sv_Deathmatch::OnTouch			(u16 eid_who, u16 eid_what, BOOL bForced)
+bool	game_sv_Deathmatch::OnTouch			(u16 eid_who, u16 eid_what, bool bForced)
 {
 	CSE_Abstract*		e_who	= m_server->ID_to_entity(eid_who);		VERIFY(e_who	);
 	CSE_Abstract*		e_what	= m_server->ID_to_entity(eid_what);		VERIFY(e_what	);	
@@ -1886,15 +1886,15 @@ bool game_sv_Deathmatch::check_for_Anomalies()
 	return true;
 }
 
-BOOL game_sv_Deathmatch::Is_Anomaly_InLists(CSE_Abstract* E)
+bool game_sv_Deathmatch::Is_Anomaly_InLists(CSE_Abstract* E)
 {
 	if (!E) return FALSE;
 	return TRUE;
 }
 
-BOOL game_sv_Deathmatch::OnPreCreate(CSE_Abstract* E)
+bool game_sv_Deathmatch::OnPreCreate(CSE_Abstract* E)
 {
-	BOOL res = inherited::OnPreCreate(E);
+	bool res = inherited::OnPreCreate(E);
 	if (!res) return res;
 
 	CSE_ALifeAnomalyZone* pCustomZone	=	smart_cast<CSE_ALifeAnomalyZone*> (E);
@@ -2110,7 +2110,7 @@ void		game_sv_Deathmatch::OnPlayer_Sell_Item		(ClientID id_who, NET_Packet &P)
 {
 };
 
-void game_sv_Deathmatch::WriteGameState(CInifile& ini, LPCSTR sect, bool bRoundResult)
+void game_sv_Deathmatch::WriteGameState(CInifile& ini, const char* sect, bool bRoundResult)
 {
 	inherited::WriteGameState(ini, sect, bRoundResult);
 

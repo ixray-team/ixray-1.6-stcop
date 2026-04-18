@@ -29,7 +29,7 @@ ObjectFactory::CLIENT_BASE_CLASS *CObjectItemScript::client_object	() const
 
 #endif
 
-ObjectFactory::SERVER_BASE_CLASS *CObjectItemScript::server_object	(LPCSTR section) const
+ObjectFactory::SERVER_BASE_CLASS *CObjectItemScript::server_object	(const char* section) const
 {
 	typedef ObjectFactory::SERVER_SCRIPT_BASE_CLASS		SERVER_SCRIPT_BASE_CLASS;
 	typedef ObjectFactory::SERVER_BASE_CLASS			SERVER_BASE_CLASS;
@@ -72,7 +72,7 @@ CObjectItemScript::CObjectItemScript	(
 #endif
 	luabind::object		server_creator, 
 	const CLASS_ID		&clsid, 
-	LPCSTR				script_clsid
+	const char*				script_clsid
 ) : 
 	inherited								(clsid,script_clsid)
 {
@@ -87,7 +87,7 @@ CObjectItemScript::CObjectItemScript	(
 CObjectItemScript::CObjectItemScript	(
 	luabind::object		unknown_creator, 
 	const CLASS_ID		&clsid, 
-	LPCSTR				script_clsid
+	const char*				script_clsid
 ) : 
 	inherited								(clsid,script_clsid)
 {

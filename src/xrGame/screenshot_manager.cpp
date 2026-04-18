@@ -330,7 +330,7 @@ void screenshot_manager::compress_image()
 
 #ifdef DEBUG
 
-void screenshot_manager::timer_begin(LPCSTR comment)
+void screenshot_manager::timer_begin(const char* comment)
 {
 	m_timer_comment = comment;
 	m_debug_timer.Start();

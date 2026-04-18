@@ -279,18 +279,18 @@ void CRender::OnDeviceDestroy()
 
 ref_shader	CRender::getShader(int id) { return 0; }
 
-BOOL CRender::occ_visible(Fbox& B)
+bool CRender::occ_visible(Fbox& B)
 {
 	u32 mask = 0xff;
 	return ViewBase.testAABB(B.data(), mask);
 }
 
-BOOL CRender::occ_visible(sPoly& P)
+bool CRender::occ_visible(sPoly& P)
 {
 	return ViewBase.testPolyInside(P);
 }
 
-BOOL CRender::occ_visible(vis_data& P)
+bool CRender::occ_visible(vis_data& P)
 {
 	return occ_visible(P.box);
 }
@@ -434,13 +434,13 @@ IRender_DetailModel* CRender::model_CreateDM(IReader* F)
 	return D;
 }
 
-IRenderVisual* CRender::model_CreatePE(LPCSTR name)
+IRenderVisual* CRender::model_CreatePE(const char* name)
 {
 	PS::CPEDef* source = PSLibrary.FindPED(name);
 	return Models->CreatePE(source);
 }
 
-IRenderVisual* CRender::model_CreateParticles(LPCSTR name)
+IRenderVisual* CRender::model_CreateParticles(const char* name)
 {
 	PS::CPEDef* SE = PSLibrary.FindPED(name);
 	if (SE) return		Models->CreatePE(SE);
@@ -495,9 +495,9 @@ void CRender::add_Visual(IRenderVisual* visual, bool)
 	Models->RenderSingle(dynamic_cast<dxRender_Visual*>(visual), current_matrix, 1.f);
 }
 
-IRenderVisual* CRender::model_Create(LPCSTR name, IReader* data) { return Models->Create(name, data); }
-IRenderVisual* CRender::model_CreateChild(LPCSTR name, IReader* data) { return Models->CreateChild(name, data); }
-void 			CRender::model_Delete(IRenderVisual*& V, BOOL bDiscard) { auto v = dynamic_cast<dxRender_Visual*>(V); Models->Delete(v, bDiscard); if (v == nullptr)V = nullptr; }
+IRenderVisual* CRender::model_Create(const char* name, IReader* data) { return Models->Create(name, data); }
+IRenderVisual* CRender::model_CreateChild(const char* name, IReader* data) { return Models->CreateChild(name, data); }
+void 			CRender::model_Delete(IRenderVisual*& V, bool bDiscard) { auto v = dynamic_cast<dxRender_Visual*>(V); Models->Delete(v, bDiscard); if (v == nullptr)V = nullptr; }
 IRenderVisual* CRender::model_Duplicate(IRenderVisual* V) { return Models->Instance_Duplicate(dynamic_cast<dxRender_Visual*>(V)); }
 void 			CRender::model_Render(IRenderVisual* m_pVisual, const Fmatrix& mTransform, int priority, bool strictB2F, float m_fLOD) { Models->Render(dynamic_cast<dxRender_Visual*>(m_pVisual), mTransform, priority, strictB2F, m_fLOD); }
 void 			CRender::model_RenderSingle(IRenderVisual* m_pVisual, const Fmatrix& mTransform, float m_fLOD) { Models->RenderSingle(dynamic_cast<dxRender_Visual*>(m_pVisual), mTransform, m_fLOD); }
@@ -510,7 +510,7 @@ void CRender::reset_end() {
 	Target = new CRenderTarget();
 }
 
-void CRender::set_HUD(BOOL V)
+void CRender::set_HUD(bool V)
 {
 	static CHudInitializer initalizer(false);
 
@@ -533,16 +533,16 @@ void CRender::set_HUD(BOOL V)
 	}
 }
 
-BOOL CRender::get_HUD() {
+bool CRender::get_HUD() {
 	return false;
 }
 
-void CRender::set_UI(BOOL V)
+void CRender::set_UI(bool V)
 {
 	val_bUI = V;
 }
 
-void CRender::set_Invisible(BOOL V)
+void CRender::set_Invisible(bool V)
 {
 	val_bInvisible = V;
 }
@@ -585,7 +585,7 @@ void CRender::level_Unload()
 
 }
 
-// IDirect3DBaseTexture9*	texture_load			(LPCSTR	fname, u32& msize)					= 0;
+// IDirect3DBaseTexture9*	texture_load			(const char*	fname, u32& msize)					= 0;
 
 
 
@@ -642,7 +642,7 @@ public:
 	virtual void set_cone(float angle) {}
 	virtual void set_range(float R) {}
 	virtual void set_virtual_size(float R) {}
-	virtual void set_texture(LPCSTR name) {}
+	virtual void set_texture(const char* name) {}
 	virtual void set_color(const Fcolor& C) {}
 	virtual void set_color(float r, float g, float b) {}
 	virtual void set_hud_mode(bool b) {}
@@ -685,7 +685,7 @@ public:
 	virtual void					set_position(const Fvector& P) { return; }
 	virtual void					set_direction(const Fvector& P) { return; }
 	virtual void					set_radius(float			R) { return; }
-	virtual void					set_texture(LPCSTR			name) { return; }
+	virtual void					set_texture(const char*			name) { return; }
 	virtual void					set_color(const Fcolor& C) { return; }
 	virtual void					set_color(float r, float g, float b) { return; }
 	virtual void					spatial_move() { return; }
@@ -694,8 +694,8 @@ public:
 IRender_Glow* CRender::glow_create() { return new RGlow(); }
 void CRender::glow_destroy(IRender_Glow* p_) {  }
 void CRender::models_Prefetch() {}
-void CRender::models_Clear(BOOL b_complete) {}
-void CRender::Screenshot(ScreenshotMode mode, LPCSTR name) {}
+void CRender::models_Clear(bool b_complete) {}
+void CRender::Screenshot(ScreenshotMode mode, const char* name) {}
 void CRender::Screenshot(ScreenshotMode mode, CMemoryWriter& memory_writer) {}
 void CRender::ScreenshotAsyncBegin() {}
 void CRender::ScreenshotAsyncEnd(CMemoryWriter& memory_writer) {}
@@ -706,7 +706,7 @@ u32 CRender::memory_usage() { return 0; }
 //--------------------------------------------------------------------------------------------------------------
 class includer : public ID3DInclude {
 public:
-	HRESULT __stdcall Open(D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID* ppData, UINT* pBytes) {
+	HRESULT __stdcall Open(D3D_INCLUDE_TYPE IncludeType, const char* pFileName, LPCVOID pParentData, LPCVOID* ppData, UINT* pBytes) {
 		string_path pname;
 		xr_strconcat(pname, ::Render->getShaderPath(), pFileName);
 		IReader* R = FS.r_open("$game_shaders$", pname);
@@ -736,7 +736,7 @@ public:
 	}
 };
 
-static HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 const buffer_size, LPCSTR const file_name, void*& result)
+static HRESULT create_shader(const char* const pTarget, DWORD const* buffer, u32 const buffer_size, const char* const file_name, void*& result)
 {
 	HRESULT _result = E_FAIL;
 	if (pTarget[0] == 'p')
@@ -791,11 +791,11 @@ static HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 cons
 
 
 HRESULT	CRender::shader_compile(
-	LPCSTR							name,
+	const char*							name,
 	DWORD const* pSrcData,
 	UINT                            SrcDataLen,
-	LPCSTR                          pFunctionName,
-	LPCSTR                          pTarget,
+	const char*                          pFunctionName,
+	const char*                          pTarget,
 	DWORD                           Flags,
 	void*& result
 )
@@ -931,7 +931,7 @@ HRESULT	CRender::shader_compile(
 		{
 			Msg("! %s", file_name);
 			if (pErrorBuf)
-				Msg("! error: %s", (LPCSTR)pErrorBuf->GetBufferPointer());
+				Msg("! error: %s", (const char*)pErrorBuf->GetBufferPointer());
 			else
 				Msg("Can't compile shader hr=0x%08x", _result);
 		}
@@ -940,11 +940,12 @@ HRESULT	CRender::shader_compile(
 	return						_result;
 }
 
-void CBlender_accum::Compile(CBlender_Compile& C) {
+void CBlender_accum::Compile(CBlender_Compile& C) 
+{
 	IBlender::Compile(C);
 
 	if(C.iElement == 0) {
-		C.r_Pass("accum_mask", "dumb", false, TRUE, FALSE);
+		C.r_Pass("accum_mask", "dumb", false, true, false);
 		C.r_End();
 
 		return;
@@ -958,7 +959,7 @@ void CBlender_accum::Compile(CBlender_Compile& C) {
 		RImplementation.addShaderOption("USE_LMAP", "1");
 	}
 
-	C.r_Pass("accum_volume", "accum_base", false, FALSE, FALSE, TRUE, D3DBLEND_ONE, D3DBLEND_ONE);
+	C.r_Pass("accum_volume", "accum_base", false, false, false, true, D3DBLEND_ONE, D3DBLEND_ONE);
 
 	C.r_Sampler_rtf("s_base", "$user$diffuse");
 	C.r_Sampler_rtf("s_position", "$user$position");

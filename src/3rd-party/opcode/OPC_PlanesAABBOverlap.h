@@ -11,7 +11,7 @@
  *	\return		TRUE if boxes overlap planes
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-inline_ BOOL PlanesCollider::PlanesAABBOverlap(const IceMaths::Point& center_, const IceMaths::Point& extents_, udword& out_clip_mask, udword in_clip_mask)
+inline_ bool PlanesCollider::PlanesAABBOverlap(const IceMaths::Point& center_, const IceMaths::Point& extents_, udword& out_clip_mask, udword in_clip_mask)
 {
 	// Applies the model's local scale
 	const IceMaths::Point center  = center_  * mLocalScale;

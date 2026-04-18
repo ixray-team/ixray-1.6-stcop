@@ -55,11 +55,11 @@ CClimableObject::~CClimableObject	()
 {
 
 }
-void CClimableObject::	Load				( LPCSTR section)
+void CClimableObject::	Load				( const char* section)
 {
 	inherited::Load(section);
 }
-BOOL CClimableObject::	net_Spawn			( CSE_Abstract* DC)
+bool CClimableObject::	net_Spawn			( CSE_Abstract* DC)
 {
 	CSE_Abstract				*e = (CSE_Abstract*)(DC);
 	CSE_ALifeObjectClimable	*CLB=smart_cast<CSE_ALifeObjectClimable*>(e);
@@ -70,7 +70,7 @@ BOOL CClimableObject::	net_Spawn			( CSE_Abstract* DC)
 	m_radius= std::max(std::max(m_box.m_halfsize.x,m_box.m_halfsize.y),m_box.m_halfsize.z);
 
 	//m_box.m_halfsize.set(1.f,1.f,1.f);
-	BOOL ret	= inherited::net_Spawn(DC);
+	bool ret	= inherited::net_Spawn(DC);
 
 	SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::VISIBLEFORAI;
 	SpatialComponent->spatial.type |= ESPATIAL_TYPE::LADDER;
@@ -299,7 +299,7 @@ bool CClimableObject::BeforeLadder(CPHCharacter *actor,float tolerance/*=0.f*/)c
 	return d.dotproduct(n)<-(width+actor->FootRadius()/2.f+tolerance);
 }
 
-BOOL CClimableObject::UsedAI_Locations()
+bool CClimableObject::UsedAI_Locations()
 {
 	return FALSE;
 }

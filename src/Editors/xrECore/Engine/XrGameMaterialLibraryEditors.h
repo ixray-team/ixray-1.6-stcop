@@ -29,7 +29,7 @@ public:
 	SGameMtlPairEditor(CGameMtlLibrary* owner);
     ~SGameMtlPairEditor();
 
-	BOOL				SetParent(int parent);
+	bool				SetParent(int parent);
     virtual void		Load(IReader& fs);
 	virtual void		Save(IWriter& fs);
 };
@@ -49,7 +49,7 @@ public:
 		material_pairs.clear();
 	}
 	// material routine
-	virtual GameMtlIt 		GetMaterialIt(LPCSTR name)
+	virtual GameMtlIt 		GetMaterialIt(const char* name)
 	{
 		for (GameMtlIt it = materials.begin(); materials.end() != it; ++it)
 			if (0 == strcmpi(*(*it)->m_Name, name)) return it;
@@ -67,26 +67,26 @@ public:
 			if ((*it)->ID == id) return it;
 		return materials.end();
 	}
-	virtual u32				GetMaterialID(LPCSTR name)
+	virtual u32				GetMaterialID(const char* name)
 	{
 		GameMtlIt it = GetMaterialIt(name);
 		return (it == materials.end()) ? GAMEMTL_NONE_ID : (*it)->ID;
 	}
 	// editor
 	SGameMtl* AppendMaterial(SGameMtl* parent);
-	void				RemoveMaterial(LPCSTR name);
+	void				RemoveMaterial(const char* name);
 	virtual SGameMtl* GetMaterialByID(int ID)
 	{
 		GameMtlIt it = GetMaterialItByID(ID);
 		return materials.end() != it ? *it : 0;
 	}
-	virtual SGameMtl* GetMaterial(LPCSTR name)
+	virtual SGameMtl* GetMaterial(const char* name)
 	{
 		GameMtlIt it = GetMaterialIt(name);
 		return materials.end() != it ? *it : 0;
 	}
 	virtual u16				GetMaterialIdx(int ID) { GameMtlIt it = GetMaterialItByID(ID); VERIFY(materials.end() != it); return (u16)(it - materials.begin()); }
-	virtual u16				GetMaterialIdx(LPCSTR name) { GameMtlIt it = GetMaterialIt(name); VERIFY(materials.end() != it); return (u16)(it - materials.begin()); }
+	virtual u16				GetMaterialIdx(const char* name) { GameMtlIt it = GetMaterialIt(name); VERIFY(materials.end() != it); return (u16)(it - materials.begin()); }
 	virtual SGameMtl* GetMaterialByIdx(u16 idx) { VERIFY(idx < (u16)materials.size()); return materials[idx]; }
 
 
@@ -95,14 +95,14 @@ public:
 	virtual u32				CountMaterial() { return materials.size(); }
 
 	void 				CopyMtlPairs(SGameMtl* from, SGameMtl* to);
-	BOOL				UpdateMtlPairs(SGameMtl* src);
-	BOOL				UpdateMtlPairs();
-	LPCSTR				MtlPairToName(int mtl0, int mtl1);
-	void				NameToMtlPair(LPCSTR name, int& mtl0, int& mtl1);
-	void				MtlNameToMtlPair(LPCSTR name, int& mtl0, int& mtl1);
+	bool				UpdateMtlPairs(SGameMtl* src);
+	bool				UpdateMtlPairs();
+	const char*				MtlPairToName(int mtl0, int mtl1);
+	void				NameToMtlPair(const char* name, int& mtl0, int& mtl1);
+	void				MtlNameToMtlPair(const char* name, int& mtl0, int& mtl1);
 	SGameMtlPair* CreateMaterialPair(int m0, int m1, SGameMtlPair* parent = 0);
 	SGameMtlPair* AppendMaterialPair(int m0, int m1, SGameMtlPair* parent = 0);
-	void				RemoveMaterialPair(LPCSTR name);
+	void				RemoveMaterialPair(const char* name);
 	void				RemoveMaterialPair(GameMtlPairIt rem_it);
 	void				RemoveMaterialPair(int mtl);
 	void				RemoveMaterialPair(int mtl0, int mtl1);
@@ -110,7 +110,7 @@ public:
 	SGameMtlPairEditor* GetMaterialPair(int id);
 	GameMtlPairIt		GetMaterialPairIt(u16 mtl0, u16 mtl1);
 	virtual SGameMtlPair* GetMaterialPair(u16 mtl0, u16 mtl1);
-	SGameMtlPairEditor* GetMaterialPair(LPCSTR name);
+	SGameMtlPairEditor* GetMaterialPair(const char* name);
 	virtual GameMtlPairIt	FirstMaterialPair() { return material_pairs.begin(); }
 	virtual GameMtlPairIt	LastMaterialPair() { return material_pairs.end(); }
 

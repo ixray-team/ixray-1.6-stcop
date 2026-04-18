@@ -91,7 +91,7 @@ public:
 public:    
     void				set_flags			(u8 val)			{_flags=val;}
     void				set_flag			(u8 mask, u8 val)	{if (val)_flags|=mask; else _flags&=~mask;}
-    BOOL				test_flag			(u8 mask) const		{return BOOL(_flags&mask);}
+    bool				test_flag			(u8 mask) const		{return bool(_flags&mask);}
 
     void				set_count			(u32 cnt){VERIFY(cnt); _count=cnt;}
     ICF u32					get_count			() const {return (u32(_count)&0x00FFFFFF);}
@@ -205,7 +205,7 @@ public:
 	IC const CPartDef& part(u16 id)	const { return P[id]; }
 	u16	part_id(const shared_str& name) const;
 	u32	mem_usage() { return P[0].mem_usage() * MAX_PARTS; }
-	void load(IKinematics* V, LPCSTR model_name);
+	void load(IKinematics* V, const char* model_name);
 	u8 count() const { u8 ret = 0; for (u8 i = 0; i < MAX_PARTS; ++i) if (P[i].Name.size())ret++; return ret; };
 
 	CPartition() = default;
@@ -227,7 +227,7 @@ struct 	ENGINE_API	motions_value
 	shared_str			m_id;
 
 
-	BOOL				load				(LPCSTR N, IReader *data, vecBones* bones);
+	bool				load				(const char* N, IReader *data, vecBones* bones);
 	MotionVec*			bone_motions		(shared_str bone_name);
 
 	u32					mem_usage			(){ 

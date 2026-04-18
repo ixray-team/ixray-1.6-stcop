@@ -19,13 +19,13 @@ public:
 	virtual					~CAI_Bloodsucker();	
 
 	virtual void			reinit					();
-	virtual	void			reload					(LPCSTR section);
+	virtual	void			reload					(const char* section);
 
 	virtual void			UpdateCL				();
 	virtual void			shedule_Update			(u32 dt);
 	virtual void			Die						(CObject* who);
-	virtual BOOL			net_Spawn				(CSE_Abstract* DC);
-	virtual	void			Load					(LPCSTR section);
+	virtual bool			net_Spawn				(CSE_Abstract* DC);
+	virtual	void			Load					(const char* section);
 	virtual	void			Hit						(SHit* pHDS);
 
 	virtual void			OnEvent(NET_Packet& P, u16 type);
@@ -36,7 +36,7 @@ public:
 	virtual bool			ability_can_drag		() {return true;}
 
 	virtual	void			post_fsm_update			();
-	virtual BOOL			AlwaysTheCrow			();
+	virtual bool			AlwaysTheCrow			();
 	
 	virtual bool			use_center_to_aim		() const {return true;}
 	virtual bool			check_start_conditions	(ControlCom::EControlType);
@@ -71,7 +71,7 @@ private:
 	//--------------------------------------------------------------------
 private:
 	SMotionVel				invisible_vel;
-	LPCSTR					invisible_particle_name;
+	const char*					invisible_particle_name;
 
 public:
 			void			start_invisible_predator ();
@@ -135,7 +135,7 @@ private:
 	bool					m_client_effector;
 
 
-			void			LoadVampirePPEffector	(LPCSTR section);	
+			void			LoadVampirePPEffector	(const char* section);	
 
 	//--------------------------------------------------------------------
 	// Alien
@@ -152,10 +152,10 @@ public:
 	//--------------------------------------------------------------------
 public:
 	shared_str				m_visual_default;
-	LPCSTR					m_visual_predator;
+	const char*					m_visual_predator;
 	bool					m_predator;
 	CEntityAlive			*m_cob;
-	LPCSTR					m_str_cel;
+	const char*					m_str_cel;
 	Fvector					j_position;
 	float					j_factor;
 			
@@ -167,7 +167,7 @@ public:
 			void			set_invis				();
 			void			jump					(const Fvector &position, float factor);
 			void			start_drag				();
-			void			set_drag_jump			(CEntityAlive* e, LPCSTR s, const Fvector &position, float factor);
+			void			set_drag_jump			(CEntityAlive* e, const char* s, const Fvector &position, float factor);
 			bool			is_drag_anim_jump		();
 			bool			is_animated				();
 	//--------------------------------------------------------------------

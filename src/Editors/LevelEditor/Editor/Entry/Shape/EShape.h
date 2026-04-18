@@ -25,13 +25,13 @@ public:
 	void			add_sphere		(const Fsphere& S);
 	void			add_box			(const Fmatrix& B);
     const shape_def&get_shape		(int idx){R_ASSERT(idx<(int)shapes.size());return shapes[idx];}
-	virtual void	FillProp		(LPCSTR pref, PropItemVec& values);
+	virtual void	FillProp		(const char* pref, PropItemVec& values);
     
 protected:
 	virtual void 	SetScale		(const Fvector& val);
     virtual void	OnUpdateTransform();
 public:
-					CEditShape 		(LPVOID data, LPCSTR name);
+					CEditShape 		(LPVOID data, const char* name);
 	void 			Construct		(LPVOID data);
 	virtual 		~CEditShape		();
     virtual bool	CanAttach		() {return true;}
@@ -48,9 +48,9 @@ public:
 
     // file system function
   	virtual bool 		LoadStream			(IReader&);
-  	virtual bool 		LoadLTX				(CInifile& ini, LPCSTR sect_name);
+  	virtual bool 		LoadLTX				(CInifile& ini, const char* sect_name);
 	virtual void 		SaveStream			(IWriter&);
-  	virtual void 		SaveLTX				(CInifile& ini, LPCSTR sect_name);
+  	virtual void 		SaveLTX				(CInifile& ini, const char* sect_name);
 
     // render utility function
 	virtual void 	Render		(int priority, bool strictB2F);

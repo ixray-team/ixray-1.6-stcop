@@ -227,7 +227,7 @@ bool CEditableMesh::OptimizeFace(st_Face& face){
 	}
 }
 
-void CEditableMesh::OptimizeMesh(BOOL NoOpt)
+void CEditableMesh::OptimizeMesh(bool NoOpt)
 {
 	if (!NoOpt){
 #if 1

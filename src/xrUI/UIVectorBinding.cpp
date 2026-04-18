@@ -8,7 +8,7 @@
 
 namespace
 {
-    bool hasNonEmptyString(pcstr str)
+    bool hasNonEmptyString(const char* str)
     {
         return str != nullptr && str[0] != 0;
     }
@@ -29,16 +29,16 @@ void CUIVectorBinding::Reset()
     _hasVector = false;
 }
 
-bool CUIVectorBinding::HasSvgChildElement(CUIXml& xmlDoc, pcstr elementPath, int index)
+bool CUIVectorBinding::HasSvgChildElement(CUIXml& xmlDoc, const char* elementPath, int index)
 {
     string256 svgPath;
     xr_strconcat(svgPath, elementPath, ":svg");
     return xmlDoc.NavigateToNode(svgPath, index) != nullptr;
 }
 
-pcstr CUIVectorBinding::QueryFileNameFromXml(CUIXml& xmlDoc, pcstr elementPath, int index)
+const char* CUIVectorBinding::QueryFileNameFromXml(CUIXml& xmlDoc, const char* elementPath, int index)
 {
-    pcstr svg = xmlDoc.ReadAttrib(elementPath, index, "svg");
+    const char* svg = xmlDoc.ReadAttrib(elementPath, index, "svg");
     if (!hasNonEmptyString(svg))
     {
         string256 svgNode;
@@ -51,15 +51,15 @@ pcstr CUIVectorBinding::QueryFileNameFromXml(CUIXml& xmlDoc, pcstr elementPath, 
     return svg;
 }
 
-void CUIVectorBinding::LoadTintFromXml(SVGTintRGBA& outTint, CUIXml& xmlDoc, pcstr elementPath, int index)
+void CUIVectorBinding::LoadTintFromXml(SVGTintRGBA& outTint, CUIXml& xmlDoc, const char* elementPath, int index)
 {
     outTint.SetFromColourDword(CUIXmlInit::GetColor(xmlDoc, elementPath, index, 255));
 }
 
-void CUIVectorBinding::LoadFromXml(CUIXml& xmlDoc, pcstr elementPath, int index)
+void CUIVectorBinding::LoadFromXml(CUIXml& xmlDoc, const char* elementPath, int index)
 {
     Reset();
-    pcstr name = QueryFileNameFromXml(xmlDoc, elementPath, index);
+    const char* name = QueryFileNameFromXml(xmlDoc, elementPath, index);
     if (hasNonEmptyString(name))
     {
         _svgFile = name;
@@ -68,7 +68,7 @@ void CUIVectorBinding::LoadFromXml(CUIXml& xmlDoc, pcstr elementPath, int index)
     }
 }
 
-void CUIVectorBinding::Assign(pcstr svgFileName, SVGTintRGBA tint)
+void CUIVectorBinding::Assign(const char* svgFileName, SVGTintRGBA tint)
 {
     Reset();
     if (hasNonEmptyString(svgFileName))
@@ -79,7 +79,7 @@ void CUIVectorBinding::Assign(pcstr svgFileName, SVGTintRGBA tint)
     }
 }
 
-pcstr CUIVectorBinding::GetFileName() const
+const char* CUIVectorBinding::GetFileName() const
 {
     return (_hasVector && _svgFile.size() != 0) ? _svgFile.c_str() : nullptr;
 }
@@ -122,7 +122,7 @@ bool CUIVectorBinding::ApplyXmlStaticVectorToWindow(CUIStatic& uiStatic, CUIXml&
     if (!uiStatic.isSVGPresented())
         return false;
     R_ASSERT(uiStatic.WindowNodeName().size() > 0);
-    pcstr fileName = uiStatic.getSVGFilename(xmlDoc, uiStatic.WindowNodeName().c_str(), 0);
+    const char* fileName = uiStatic.getSVGFilename(xmlDoc, uiStatic.WindowNodeName().c_str(), 0);
     if (fileName == nullptr)
         return false;
     Fvector2 scaledWH;
@@ -141,7 +141,7 @@ bool CUIVectorBinding::ApplyVectorPathToStatic(CUIStatic& uiStatic, xr_string_vi
     return ApplyVectorRasterToStaticItem(vectorSubpath, tint, *item, requestedWidth, requestedHeight, false);
 }
 
-bool CUIVectorBinding::CaptureMiniMapSpotNormalVectorIcon(CUIStatic& spot, CUIXml& xmlDoc, pcstr elementPath, int nodeIndex, ui_shader& outIconNormal, Frect& outTexRectNormal, const Frect& restoreTextureRect)
+bool CUIVectorBinding::CaptureMiniMapSpotNormalVectorIcon(CUIStatic& spot, CUIXml& xmlDoc, const char* elementPath, int nodeIndex, ui_shader& outIconNormal, Frect& outTexRectNormal, const Frect& restoreTextureRect)
 {
     auto restoreAndFailLambda = [&]() -> bool
     {
@@ -157,7 +157,7 @@ bool CUIVectorBinding::CaptureMiniMapSpotNormalVectorIcon(CUIStatic& spot, CUIXm
     if (!xmlDoc.NavigateToNode(buf, nodeIndex))
         return restoreAndFailLambda();
 
-    pcstr svgFileName = spot.getSVGFilename(xmlDoc, elementPath, nodeIndex);
+    const char* svgFileName = spot.getSVGFilename(xmlDoc, elementPath, nodeIndex);
     if (!hasNonEmptyString(svgFileName))
         return restoreAndFailLambda();
 

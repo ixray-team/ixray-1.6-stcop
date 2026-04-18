@@ -8,7 +8,7 @@
 
 #ifndef XRGAME_EXPORTS
 #include "xrServer_Objects_Abstract.h"
-void  GameTypeChooser::FillProp(LPCSTR pref, PropItemVec& items)
+void  GameTypeChooser::FillProp(const char* pref, PropItemVec& items)
 {
 	PHelper().CreateGameType		(items, PrepareKey(pref, "Game Type"), this);
 /*

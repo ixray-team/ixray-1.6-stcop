@@ -83,7 +83,7 @@ void	game_sv_Single::OnCreate		(u16 id_who)
 		alife().create					(alife_object);
 }
 
-BOOL	game_sv_Single::OnTouch			(u16 eid_who, u16 eid_what, BOOL bForced)
+bool	game_sv_Single::OnTouch			(u16 eid_who, u16 eid_what, bool bForced)
 {
 	CSE_Abstract*		e_who	= get_entity_from_eid(eid_who);		VERIFY(e_who	);
 	CSE_Abstract*		e_what	= get_entity_from_eid(eid_what);	VERIFY(e_what	);
@@ -308,7 +308,7 @@ void game_sv_Single::on_death					(CSE_Abstract *e_dest, CSE_Abstract *e_src)
 	alife().on_death		(e_dest,e_src);
 }
 
-void game_sv_Single::restart_simulator			(LPCSTR saved_game_name)
+void game_sv_Single::restart_simulator			(const char* saved_game_name)
 {
 	PROF_EVENT("restart_simulator");
 	shared_str				&options = *alife().server_command_line();

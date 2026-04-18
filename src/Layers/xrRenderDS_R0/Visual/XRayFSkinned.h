@@ -17,12 +17,12 @@ protected:
 	virtual void			_CollectBoneFaces(CDS0_FVisual* V, size_t iBase, size_t iCount);
 	void			        _EnumBoneVertices(SEnumVerticesCallback& C, CDS0_FVisual* V, u16 bone_id, size_t iBase, size_t iCount) const;
 
-	virtual BOOL			_PickBoneHW1W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, CDS0_FVisual* V, u16* indices, CBoneData::FacesVec& faces);
-	virtual BOOL			_PickBoneHW2W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, CDS0_FVisual* V, u16* indices, CBoneData::FacesVec& faces);
-	virtual BOOL			_PickBoneHW3W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, CDS0_FVisual* V, u16* indices, CBoneData::FacesVec& faces);
-	virtual BOOL			_PickBoneHW4W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, CDS0_FVisual* V, u16* indices, CBoneData::FacesVec& faces);
+	virtual bool			_PickBoneHW1W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, CDS0_FVisual* V, u16* indices, CBoneData::FacesVec& faces);
+	virtual bool			_PickBoneHW2W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, CDS0_FVisual* V, u16* indices, CBoneData::FacesVec& faces);
+	virtual bool			_PickBoneHW3W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, CDS0_FVisual* V, u16* indices, CBoneData::FacesVec& faces);
+	virtual bool			_PickBoneHW4W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, CDS0_FVisual* V, u16* indices, CBoneData::FacesVec& faces);
 
-	virtual BOOL			_PickBone(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, CDS0_FVisual* V, u16 bone_id, size_t iBase, size_t iCount);
+	virtual bool			_PickBone(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, CDS0_FVisual* V, u16 bone_id, size_t iBase, size_t iCount);
 	void UpdateUniform( void* ptr);
 public:
 };
@@ -40,7 +40,7 @@ public:
 	virtual void			Copy(CDS0_RenderVisual* pFrom);
 	virtual void			AfterLoad(CDS0_Kinematics* parent, u16 child_idx);
 	virtual void			EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id);
-	virtual BOOL			PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id);
+	virtual bool			PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id);
 //	virtual  void UpdateUniform(CDS0_UniformAllocator::EUniformType Type, void* ptr);;
 private:
 };
@@ -58,7 +58,7 @@ public:
 	virtual void			Copy(CDS0_RenderVisual* pFrom);
 	virtual void			AfterLoad(CDS0_Kinematics* parent, u16 child_idx);
 	virtual void			EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id);
-	virtual BOOL			PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id);
+	virtual bool			PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id);
 //	virtual  void UpdateUniform(CDS0_UniformAllocator::EUniformType Type, void* ptr);;
 private:
 };

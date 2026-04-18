@@ -1086,7 +1086,7 @@ void load(lua_State* L)
     }
     MODULEENTRY32 mi;
     mi.dwSize = sizeof(MODULEENTRY32);
-    BOOL bRet = Module32First(hSnapshot, &mi);
+    bool bRet = Module32First(hSnapshot, &mi);
     while (bRet)
     {
 #if LUA_VERSION_NUM > 501

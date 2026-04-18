@@ -25,7 +25,7 @@ protected:
 public:
 	IInputReceiver*			m_pStoredInputReceiver;
 							CUISequencer		();
-	void					Start				(LPCSTR tutor_name);
+	void					Start				(const char* tutor_name);
 	void					Stop				();
 	void					Next				();
 
@@ -37,7 +37,7 @@ public:
 	bool					IsActive			()				{return !!m_flags.test(etsActive);}
 
 
-	LPCSTR					m_name;
+	const char*					m_name;
 	//IInputReceiver
 	virtual void			IR_OnMousePress		(int btn);
 	virtual void			IR_OnMouseRelease	(int btn);

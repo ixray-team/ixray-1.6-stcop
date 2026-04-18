@@ -42,7 +42,7 @@ void CUIStatsPlayerList::AddField(const char* name, float width)
 	m_field_info.push_back	(fi);
 }
 
-void CUIStatsPlayerList::Init(CUIXml& xml_doc, LPCSTR path)
+void CUIStatsPlayerList::Init(CUIXml& xml_doc, const char* path)
 {
 	// init window
 	CUIXmlInit::InitScrollView	(xml_doc, path, 0, this);
@@ -60,7 +60,7 @@ void CUIStatsPlayerList::Init(CUIXml& xml_doc, LPCSTR path)
 
 	for (int i = 0; i < tabsCount; ++i)
 	{
-		LPCSTR name 			= xml_doc.ReadAttrib("field",i,"name");
+		const char* name 			= xml_doc.ReadAttrib("field",i,"name");
 		float width 			= xml_doc.ReadAttribFlt("field",i,"width");
 
 		if (0 == xr_strcmp(name, "artefacts") && GameID() != eGameIDArtefactHunt)
@@ -89,14 +89,14 @@ void CUIStatsPlayerList::Init(CUIXml& xml_doc, LPCSTR path)
 	}
 }
 
-LPCSTR CUIStatsPlayerList::GetST_entry(LPCSTR itm)
+const char* CUIStatsPlayerList::GetST_entry(const char* itm)
 {
-	static LPCSTR mp_name		= "mp_name";
-	static LPCSTR mp_frags		= "mp_frags";
-	static LPCSTR mp_deaths		= "mp_deaths";
-	static LPCSTR mp_ping		= "mp_ping";
-	static LPCSTR mp_artefacts	= "mp_artefacts";
-	static LPCSTR mp_status		= "mp_status";
+	static const char* mp_name		= "mp_name";
+	static const char* mp_frags		= "mp_frags";
+	static const char* mp_deaths		= "mp_deaths";
+	static const char* mp_ping		= "mp_ping";
+	static const char* mp_artefacts	= "mp_artefacts";
+	static const char* mp_status		= "mp_status";
 
 	if (0 == xr_strcmp(itm, "name"))
 		return mp_name;
@@ -118,7 +118,7 @@ LPCSTR CUIStatsPlayerList::GetST_entry(LPCSTR itm)
 #endif // DEBUG
 }
 
-void CUIStatsPlayerList::InitHeader(CUIXml& xml_doc, LPCSTR path)
+void CUIStatsPlayerList::InitHeader(CUIXml& xml_doc, const char* path)
 {
 	string256 _path;
 	CUIXmlInit::InitStatic(xml_doc, xr_strconcat(_path, path, ":list_header"), 0, m_header);
@@ -173,7 +173,7 @@ void CUIStatsPlayerList::InitHeader(CUIXml& xml_doc, LPCSTR path)
 	}
 }
 
-void CUIStatsPlayerList::InitTeamHeader(CUIXml& xml_doc, LPCSTR path){
+void CUIStatsPlayerList::InitTeamHeader(CUIXml& xml_doc, const char* path){
 	string256 _path;
 	m_header_team = new CUIWindow();
 	m_header_team->SetAutoDelete(true);

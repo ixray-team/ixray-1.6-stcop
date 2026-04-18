@@ -18,7 +18,7 @@
 #include "../../xrCore/Mesh/object.h"
 #include "object_sliding.h"
 
-//BOOL g_bUseFastButBadOptimise = FALSE;
+//bool g_bUseFastButBadOptimise = FALSE;
 
 // Call this to reorder the tris in this trilist to get good vertex-cache coherency.
 // *pwList is modified (but obviously not changed in size or memory location).
@@ -49,7 +49,7 @@ void OptimiseVertexCoherencyTriList (WORD* pwList, int iHowManyTris, u32 optimiz
 	}
 }
 
-BOOL CalculateSW(Object* object, VIPM_Result* result, u32 optimize_vertex_order)
+bool CalculateSW(Object* object, VIPM_Result* result, u32 optimize_vertex_order)
 {
 	result->swr_records.resize(0);
 
@@ -178,7 +178,7 @@ BOOL CalculateSW(Object* object, VIPM_Result* result, u32 optimize_vertex_order)
 		}
 		R_ASSERT ( iJustCheckingNumTris == iCurNumTris );
 
-		BOOL bJustStartedANewLevel = TRUE;
+		bool bJustStartedANewLevel = TRUE;
 
 		// Now undo all the collapses for this level in turn, adding vertices,
 		// binned tris, and SlidingWindowRecords as we go.
@@ -352,7 +352,7 @@ BOOL CalculateSW(Object* object, VIPM_Result* result, u32 optimize_vertex_order)
 	}
 */
 
-	BOOL bRes = TRUE;
+	bool bRes = TRUE;
 	// And now check everything is OK.
 	R_ASSERT ( result->swr_records.size() == u32(iNumCollapses + 1) );
 	for ( int i = 0; i <= iNumCollapses; i++ ){

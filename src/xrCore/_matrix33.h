@@ -401,7 +401,7 @@ typedef		_matrix33<float>	Fmatrix33;
 typedef		_matrix33<double>	Dmatrix33;
 
 template <class T>
-ICF BOOL	_valid			(const _matrix33<T>& m)
+ICF bool	_valid			(const _matrix33<T>& m)
 { 
 	return 
 		_valid(m.i)&& 

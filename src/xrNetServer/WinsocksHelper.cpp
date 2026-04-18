@@ -11,7 +11,7 @@
 
 #pragma warning(pop)
 
-unsigned long WinsocksHelper::GetIpAddress(LPCSTR hostName)
+unsigned long WinsocksHelper::GetIpAddress(const char* hostName)
 {
     // Initialize Winsock
     WSADATA wsaData;

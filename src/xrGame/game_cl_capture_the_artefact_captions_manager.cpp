@@ -106,7 +106,7 @@ void CTAGameClCaptionsManager::ShowScoreCaptions()
 {
 	VERIFY			(m_winner_team != etSpectatorsTeam);
 
-	LPCSTR			team_name = CTeamInfo::GetTeam_name(m_winner_team + 1);
+	const char*			team_name = CTeamInfo::GetTeam_name(m_winner_team + 1);
 	u32				win_str_size = g_pStringTable->translate("mp_team_wins").size() +
 									xr_strlen(team_name) + 1;
 	char*			win_str = static_cast<char*>(_alloca(win_str_size));

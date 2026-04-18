@@ -15,11 +15,11 @@ protected:
 public:
 						EScenePortalTool		():ESceneCustomOTool(OBJCLASS_PORTAL){m_Flags.zero();}
 	// definition
-    IC LPCSTR			ClassName				(){return "portal";}
-    IC LPCSTR			ClassDesc				(){return "Portal";}
+    IC const char*			ClassName				(){return "portal";}
+    IC const char*			ClassDesc				(){return "Portal";}
     IC int				RenderPriority			(){return 20;}
 
-	virtual void 		FillProp				(LPCSTR pref, PropItemVec& items);
+	virtual void 		FillProp				(const char* pref, PropItemVec& items);
 
     virtual void		Clear					(bool bSpecific=false){inherited::Clear(bSpecific);m_Flags.zero();}
     // IO
@@ -31,5 +31,5 @@ public:
     virtual bool		LoadSelection      		(IReader&);
     virtual void		SaveSelection      		(IWriter&);
     void 				RemoveSimilar			();
-    virtual CCustomObject* CreateObject			(LPVOID data, LPCSTR name);
+    virtual CCustomObject* CreateObject			(LPVOID data, const char* name);
 };

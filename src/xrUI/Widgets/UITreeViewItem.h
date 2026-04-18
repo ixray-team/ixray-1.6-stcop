@@ -64,7 +64,7 @@ public:
 	void DeleteAllSubItems();
 	// Найти элемент с заданным именем
 	// Return:	указатель на элемент, если нашли, либо NULL в противном случае
-	CUITreeViewItem * Find(LPCSTR text) const;
+	CUITreeViewItem * Find(const char* text) const;
 	// Найти элемент с заданным значением
 	// Return:	указатель на элемент, если нашли, либо NULL в противном случае
 	CUITreeViewItem * Find(int value) const;
@@ -78,7 +78,7 @@ public:
 	// Redefine some stuff
 	// ATTENTION! Для корректного функционирования значков [+-] вызов SetText
 	// Должен предшествовать SetRoot
-	virtual void SetText(LPCSTR str);
+	virtual void SetText(const char* str);
 	virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData);
 
 	// Ctor and Dtor

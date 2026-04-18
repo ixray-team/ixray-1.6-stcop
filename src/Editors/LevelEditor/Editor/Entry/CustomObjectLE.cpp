@@ -81,8 +81,8 @@ void CCustomObject::Move(Fvector& amount)
     Fvector r = FRotation;
     if (Tools->GetSettings(etfMTSnap))
     {
-        BOOL bVis = Visible();
-        BOOL bSel = Selected();
+        bool bVis = Visible();
+        bool bSel = Selected();
         Show(FALSE);
         Select(FALSE);
         SnapMove(v, r, FTransformRP, amount);
@@ -206,7 +206,7 @@ void CCustomObject::OnNameChange(PropValue* sender)
 	ExecCommand		(COMMAND_UPDATE_PROPERTIES);
 }
 
-void CCustomObject::FillProp(LPCSTR pref, PropItemVec& items)
+void CCustomObject::FillProp(const char* pref, PropItemVec& items)
 {
     PropValue* V;
     EName = GetName();

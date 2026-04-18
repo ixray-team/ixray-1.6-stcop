@@ -3,7 +3,7 @@
 #include "Weapons/Components/WeaponAmmoBones.h"
 #include "WeaponBinocularsVision.h"
 
-bool CWeapon::install_upgrade_impl(LPCSTR section, bool test)
+bool CWeapon::install_upgrade_impl(const char* section, bool test)
 {
 	//inherited::install_upgrade( section );
 	bool result = CInventoryItemObject::install_upgrade_impl(section, test);
@@ -46,9 +46,9 @@ bool CWeapon::install_upgrade_impl(LPCSTR section, bool test)
 	return result;
 }
 
-bool CWeapon::install_upgrade_ammo_class(LPCSTR section, bool test)
+bool CWeapon::install_upgrade_ammo_class(const char* section, bool test)
 {
-	LPCSTR str;
+	const char* str;
 
 	bool result = process_if_exists(section, "ammo_mag_size", iMagazineSize, test);
 
@@ -100,7 +100,7 @@ bool CWeapon::install_upgrade_ammo_class(LPCSTR section, bool test)
 	return result;
 }
 
-bool CWeapon::install_upgrade_disp(LPCSTR section, bool test)
+bool CWeapon::install_upgrade_disp(const char* section, bool test)
 {
 	bool result = process_if_exists(section, "fire_dispersion_condition_factor", fireDispersionConditionFactor, test);
 	result |= process_if_exists(section, "fire_distance", fireDistance, test);
@@ -190,7 +190,7 @@ bool CWeapon::install_upgrade_disp(LPCSTR section, bool test)
 	return result;
 }
 
-bool CWeapon::install_upgrade_hit(LPCSTR section, bool test)
+bool CWeapon::install_upgrade_hit(const char* section, bool test)
 {
 	bool result = false;
 
@@ -240,7 +240,7 @@ bool CWeapon::install_upgrade_hit(LPCSTR section, bool test)
 		result |= process_if_exists(section, "time_to_aim", m_fTimeToAim, test);
 	}
 
-	//	LPCSTR weapon_section = cNameSect().c_str(); 
+	//	const char* weapon_section = cNameSect().c_str(); 
 	float rpm = 60.0f / fOneShotTime;//pSettings->r_float( weapon_section, "rpm" ); // fOneShotTime * 60.0f;
 	result2 = process_if_exists(section, "rpm", rpm, test);
 	if (result2 && !test)
@@ -255,10 +255,10 @@ bool CWeapon::install_upgrade_hit(LPCSTR section, bool test)
 }
 
 
-bool CWeapon::install_upgrade_addon(LPCSTR section, bool test)
+bool CWeapon::install_upgrade_addon(const char* section, bool test)
 {
 	bool result = false;
-	//LPCSTR weapon_section = cNameSect().c_str(); 
+	//const char* weapon_section = cNameSect().c_str(); 
 
 	// 0 - no addon // 1 - permanent // 2 - attachable
 	int temp_int = (int)m_eScopeStatus;
@@ -274,7 +274,7 @@ bool CWeapon::install_upgrade_addon(LPCSTR section, bool test)
 
 			if (bUseAltScope)
 			{
-				LPCSTR str = pSettings->r_string(section, "scopes");
+				const char* str = pSettings->r_string(section, "scopes");
 				for (int i = 0, count = _GetItemCount(str); i < count; ++i)
 				{
 					string128 scope_section;
@@ -296,7 +296,7 @@ bool CWeapon::install_upgrade_addon(LPCSTR section, bool test)
 				{
 					if (pSettings->line_exist(section, "scopes_sect"))
 					{
-						LPCSTR str = pSettings->r_string(section, "scopes_sect");
+						const char* str = pSettings->r_string(section, "scopes_sect");
 						for (int i = 0, count = _GetItemCount(str); i < count; ++i)
 						{
 							string128						scope_section;
@@ -380,9 +380,9 @@ bool CWeapon::install_upgrade_addon(LPCSTR section, bool test)
 	return result;
 }
 
-bool CWeapon::install_upgrade_hud_sect(LPCSTR section, bool test)
+bool CWeapon::install_upgrade_hud_sect(const char* section, bool test)
 {
-	LPCSTR str;
+	const char* str;
 
 	bool result = process_if_exists_set(section, "hud", str, test);
 
@@ -404,9 +404,9 @@ bool CWeapon::install_upgrade_hud_sect(LPCSTR section, bool test)
 	return result;
 }
 
-bool CWeapon::install_upgrade_hud_sect_silencer(LPCSTR section, bool test)
+bool CWeapon::install_upgrade_hud_sect_silencer(const char* section, bool test)
 {
-	LPCSTR str;
+	const char* str;
 
 	bool result = process_if_exists_set(section, "hud_silencer", str, test);
 
@@ -421,9 +421,9 @@ bool CWeapon::install_upgrade_hud_sect_silencer(LPCSTR section, bool test)
 	return result;
 }
 
-bool CWeapon::install_upgrade_hud_sect_scope(LPCSTR section, bool test)
+bool CWeapon::install_upgrade_hud_sect_scope(const char* section, bool test)
 {
-	LPCSTR str;
+	const char* str;
 
 	bool result = process_if_exists_set(section, "hud_scope", str, test);
 
@@ -438,9 +438,9 @@ bool CWeapon::install_upgrade_hud_sect_scope(LPCSTR section, bool test)
 	return result;
 }
 
-bool CWeapon::install_upgrade_hud_sect_gl(LPCSTR section, bool test)
+bool CWeapon::install_upgrade_hud_sect_gl(const char* section, bool test)
 {
-	LPCSTR str;
+	const char* str;
 
 	bool result = process_if_exists_set(section, "hud_gl", str, test);
 
@@ -455,9 +455,9 @@ bool CWeapon::install_upgrade_hud_sect_gl(LPCSTR section, bool test)
 	return result;
 }
 
-bool CWeapon::install_upgrade_bones(LPCSTR section, bool test)
+bool CWeapon::install_upgrade_bones(const char* section, bool test)
 {
-	LPCSTR str;
+	const char* str;
 
 	bool result = false;
 
@@ -465,7 +465,7 @@ bool CWeapon::install_upgrade_bones(LPCSTR section, bool test)
 
 	if (result2 && !test)
 	{
-		LPCSTR S = pSettings->r_string(section, "hide_bones_override");
+		const char* S = pSettings->r_string(section, "hide_bones_override");
 		if (S && S[0])
 		{
 			string128 Item = "";
@@ -484,7 +484,7 @@ bool CWeapon::install_upgrade_bones(LPCSTR section, bool test)
 
 	if (result2 && !test)
 	{
-		LPCSTR S = pSettings->r_string(section, "hide_bones_override_when_silencer_attached");
+		const char* S = pSettings->r_string(section, "hide_bones_override_when_silencer_attached");
 		if (S && S[0])
 		{
 			string128 Item = "";
@@ -503,7 +503,7 @@ bool CWeapon::install_upgrade_bones(LPCSTR section, bool test)
 
 	if (result2 && !test)
 	{
-		LPCSTR S = pSettings->r_string(section, "hide_bones_override_when_gl_attached");
+		const char* S = pSettings->r_string(section, "hide_bones_override_when_gl_attached");
 		if (S && S[0])
 		{
 			string128 Item = "";
@@ -522,7 +522,7 @@ bool CWeapon::install_upgrade_bones(LPCSTR section, bool test)
 
 	if (result2 && !test)
 	{
-		LPCSTR S = pSettings->r_string(section, "hide_bones_override_when_scope_attached");
+		const char* S = pSettings->r_string(section, "hide_bones_override_when_scope_attached");
 		if (S && S[0])
 		{
 			string128 Item = "";
@@ -541,7 +541,7 @@ bool CWeapon::install_upgrade_bones(LPCSTR section, bool test)
 
 	if (result2 && !test)
 	{
-		LPCSTR S = pSettings->r_string(section, "hide_bones");
+		const char* S = pSettings->r_string(section, "hide_bones");
 		if (S && S[0])
 		{
 			string128 Item = "";
@@ -560,7 +560,7 @@ bool CWeapon::install_upgrade_bones(LPCSTR section, bool test)
 
 	if (result2 && !test)
 	{
-		LPCSTR S = pSettings->r_string(section, "show_bones");
+		const char* S = pSettings->r_string(section, "show_bones");
 		if (S && S[0])
 		{
 			string128 Item = "";
@@ -582,13 +582,13 @@ bool CWeapon::install_upgrade_bones(LPCSTR section, bool test)
 	return result;
 }
 
-bool CWeapon::install_upgrade_ammo_bones(LPCSTR section, bool test)
+bool CWeapon::install_upgrade_ammo_bones(const char* section, bool test)
 {
 	bool result = false;
 
-	auto ReachInAllSections = [&](LPCSTR param_name)
+	auto ReachInAllSections = [&](const char* param_name)
 	{
-		LPCSTR reached_sect = section;
+		const char* reached_sect = section;
 		const shared_str hud_section = HudSection();
 		if (pSettings->line_exist(hud_section, param_name))
 		{
@@ -633,7 +633,7 @@ bool CWeapon::install_upgrade_ammo_bones(LPCSTR section, bool test)
 	return result;
 }
 
-bool CWeapon::install_upgrade_torch_laser(LPCSTR section, bool test)
+bool CWeapon::install_upgrade_torch_laser(const char* section, bool test)
 {
 	bool result = false;
 
@@ -658,7 +658,7 @@ bool CWeapon::install_upgrade_torch_laser(LPCSTR section, bool test)
 	return result;
 }
 
-bool CWeapon::install_upgrade_scope_zoom(LPCSTR section, bool test)
+bool CWeapon::install_upgrade_scope_zoom(const char* section, bool test)
 {
 	bool result = false;
 
@@ -730,7 +730,7 @@ bool CWeapon::install_upgrade_scope_zoom(LPCSTR section, bool test)
 	return result;
 }
 
-bool CWeapon::install_upgrade_fast_knife(LPCSTR section, bool test)
+bool CWeapon::install_upgrade_fast_knife(const char* section, bool test)
 {
 	bool result = false;
 	bool result2 = false;

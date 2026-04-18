@@ -226,14 +226,14 @@
 		inline_	bool			ApproxZero()		const		{ return SquareMagnitude() < EPSILON2;									}
 
 		//! Tests for exact zero vector
-		inline_	BOOL			IsZero()			const
+		inline_	bool			IsZero()			const
 								{
 									if(IR(x) || IR(y) || IR(z))	return FALSE;
 									return TRUE;
 								}
 
 		//! Checks point validity
-		inline_	BOOL			IsValid()			const
+		inline_	bool			IsValid()			const
 								{
 									if(!IsValidFloat(x))	return FALSE;
 									if(!IsValidFloat(y))	return FALSE;
@@ -392,7 +392,7 @@
 		//! Stuff magic values in the point, marking it as explicitely not used.
 				void			SetNotUsed();
 		//! Checks the point is marked as not used
-				BOOL			IsNotUsed()							const;
+				bool			IsNotUsed()							const;
 
 		// Arithmetic operators
 

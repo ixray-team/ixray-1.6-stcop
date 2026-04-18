@@ -10,7 +10,7 @@
 using Fvector4Vec = xr_vector<Fvector4>;
 using Fvector4It = Fvector4Vec::iterator;
 
-BOOL GetPointColor(SPickQuery::SResult* R, u32& alpha, u32& color)
+bool GetPointColor(SPickQuery::SResult* R, u32& alpha, u32& color)
 {
     CSurface* surf			= R->e_mesh->GetSurfaceByFaceID(R->tag); VERIFY(surf);
     Shader_xrLC* c_sh		= EDevice->ShaderXRLC.Get(surf->_ShaderXRLCName());
@@ -333,7 +333,7 @@ void CImageManager::CreateLODTexture(CEditableObject* OBJECT, U32Vec& lod_pixels
 //------------------------------------------------------------------------------
 // 
 //------------------------------------------------------------------------------
-void CImageManager::CreateLODTexture(CEditableObject* OBJECT, LPCSTR tex_name, u32 tgt_w, u32 tgt_h, int samples, time_t age, int quality)
+void CImageManager::CreateLODTexture(CEditableObject* OBJECT, const char* tex_name, u32 tgt_w, u32 tgt_h, int samples, time_t age, int quality)
 {
     U32Vec lod_pixels, nm_pixels;
 

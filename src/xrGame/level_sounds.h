@@ -32,9 +32,9 @@ struct	SMusicTrack
 	Ivector2		m_PauseTime;
 	float			m_Volume;
 public:
-	void			Load			(LPCSTR fn, LPCSTR params);
-	BOOL			in				(u32 game_time);
-	BOOL			IsPlaying		();
+	void			Load			(const char* fn, const char* params);
+	bool			in				(u32 game_time);
+	bool			IsPlaying		();
 	void			Play			();
 	void			Stop			();
 	void			SetVolume		(float volume);

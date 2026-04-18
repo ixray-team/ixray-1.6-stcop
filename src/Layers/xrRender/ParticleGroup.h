@@ -35,9 +35,9 @@ namespace PS
 							SEffect				(){m_Flags.zero();/*set(flEnabled)*/m_Time0=0;m_Time1=0;}
 #ifdef _EDITOR
 			CPGDef* parent = nullptr;
-            BOOL			Equal				(const SEffect&);
-			void FillProp(LPCSTR pref, PropItemVec& items, u32 clr);
-			void FillPropInit(PropItemVec& items, LPCSTR pref);
+            bool			Equal				(const SEffect&);
+			void FillProp(const char* pref, PropItemVec& items, u32 clr);
+			void FillPropInit(PropItemVec& items, const char* pref);
 #endif
 		};
 
@@ -55,23 +55,23 @@ namespace PS
 		void   	OnControlClick	(ButtonValue* sender, bool& bDataModified, bool& bSafe);
 		void   	OnParamsChange	(PropValue* sender);
 		void	OnParamsChangeInternal();
-		void				FillProp	   	(LPCSTR pref, PropItemVec& items, void* owner);
-		BOOL				Equal			(const CPGDef* pe);
+		void				FillProp	   	(const char* pref, PropItemVec& items, void* owner);
+		bool				Equal			(const CPGDef* pe);
 		bool				Validate 			(bool bMsg);
 		int FindEffect(SEffect* effect);
 #endif
 	public:
 							CPGDef		  	();
 							~CPGDef		  	();
-		void				SetName		  	(LPCSTR name);
+		void				SetName		  	(const char* name);
 
 		void 				Save		  	(IWriter& F);
-		BOOL 				LoadOriginal	(IReader& F);
+		bool 				LoadOriginal	(IReader& F);
 
 		void 				Save2		  	(CInifile& ini);
-		BOOL 				Load2		 	(CInifile& ini);
-		BOOL				Load2Original	(CInifile& ini);
-		BOOL 				Load2Extended	(CInifile& ini);
+		bool 				Load2		 	(CInifile& ini);
+		bool				Load2Original	(CInifile& ini);
+		bool 				Load2Extended	(CInifile& ini);
 
 #ifdef _EDITOR
         void				Clone			(CPGDef* source);
@@ -101,17 +101,17 @@ namespace PS
 
 			void Clear();
 
-			void StartRelatedChild(CParticleEffect* emitter, LPCSTR eff_name, PAPI::Particle& m);
+			void StartRelatedChild(CParticleEffect* emitter, const char* eff_name, PAPI::Particle& m);
 			void StopRelatedChild(u32 idx);
-			void StartFreeChild(CParticleEffect* emitter, LPCSTR eff_name, PAPI::Particle& m);
+			void StartFreeChild(CParticleEffect* emitter, const char* eff_name, PAPI::Particle& m);
 
-			void UpdateParent(const Fmatrix& m, const Fvector& velocity, BOOL bXFORM);
+			void UpdateParent(const Fmatrix& m, const Fvector& velocity, bool bXFORM);
 			void OnFrame(u32 u_dt, const CPGDef::SEffect& def, Fbox& box, bool& bPlaying);
 
 			u32 SpriteCount();
-			BOOL IsPlaying() const;
+			bool IsPlaying() const;
 			void Play();
-			void Stop(BOOL def_stop);
+			void Stop(bool def_stop);
 		};
 		xr_vector<SItem> items;
 
@@ -131,21 +131,21 @@ namespace PS
 
 		virtual void Copy(dxRender_Visual* pFrom) {FATAL("Can't duplicate particle system - NOT IMPLEMENTED");}
 
-		virtual void UpdateParent(const Fmatrix& m, const Fvector& velocity, BOOL bXFORM);
+		virtual void UpdateParent(const Fmatrix& m, const Fvector& velocity, bool bXFORM);
 
 		void Compile(CPGDef* def);
 
 		const CPGDef* GetDefinition(){return m_Def;}
 
 		virtual void Play();
-		virtual void Stop(BOOL bDefferedStop=TRUE);
-		virtual BOOL IsPlaying(){return m_RT_Flags.is(flRT_Playing);}
+		virtual void Stop(bool bDefferedStop=TRUE);
+		virtual bool IsPlaying(){return m_RT_Flags.is(flRT_Playing);}
 
-		virtual void SetHudMode(BOOL b);
-		virtual BOOL GetHudMode();
+		virtual void SetHudMode(bool b);
+		virtual bool GetHudMode();
 
-		virtual void SetLiveUpdate(BOOL b);
-		virtual BOOL GetLiveUpdate();
+		virtual void SetLiveUpdate(bool b);
+		virtual bool GetLiveUpdate();
 
 		virtual float GetTimeLimit(){VERIFY(m_Def); return m_Def->m_fTimeLimit;}
 

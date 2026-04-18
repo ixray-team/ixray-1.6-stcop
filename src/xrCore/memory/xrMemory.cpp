@@ -8,7 +8,7 @@
 
 #include "xrsharedmem.h"
 
-BOOL mem_initialized	= FALSE;
+bool mem_initialized	= FALSE;
 bool shared_str_initialized	= false;
 
 //fake fix of memory corruptions in multiplayer game :(
@@ -110,7 +110,7 @@ wchar_t* xr_strdup(const wchar_t* string) {
 	return memory;
 }
 
-XRCORE_API		BOOL			is_stack_ptr		( void* _ptr)
+XRCORE_API		bool			is_stack_ptr		( void* _ptr)
 {
 	int			local_value		= 0;
 	void*		ptr_refsound	= _ptr;

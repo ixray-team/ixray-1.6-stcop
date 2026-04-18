@@ -511,7 +511,7 @@ inline_ float OPC_SegmentOBBSqrDist(const IceMaths::Segment& segment, const IceM
 	else				return OPC_PointAABBSqrDist(segment.mP0, c0, e0);
 }
 
-inline_ BOOL LSSCollider::LSSAABBOverlap(const IceMaths::Point& center_, const IceMaths::Point& extents_)
+inline_ bool LSSCollider::LSSAABBOverlap(const IceMaths::Point& center_, const IceMaths::Point& extents_)
 {
 	// applies the model's local scale
 	const IceMaths::Point& center  = center_ * mLocalScale ;

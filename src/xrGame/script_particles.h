@@ -22,10 +22,10 @@ public:
 	CObjectAnimator*			m_animator;
 	virtual						~CScriptParticlesCustom();
 	CScriptParticles* m_owner;
-								CScriptParticlesCustom(CScriptParticles* owner, LPCSTR caParticlesName);
+								CScriptParticlesCustom(CScriptParticles* owner, const char* caParticlesName);
 	virtual void				Update		(u32 dt, CFrustum& viewbase);
 
-	void						LoadPath			(LPCSTR caPathName);
+	void						LoadPath			(const char* caPathName);
 	void						StartPath			(bool looped);
 	void						StopPath			();
 	void						PausePath			(bool val);
@@ -36,7 +36,7 @@ class CScriptParticles
 {
 public:
 	xr_shared_ptr<CScriptParticlesCustom> m_particles;
-								CScriptParticles	(LPCSTR caParticlesName);
+								CScriptParticles	(const char* caParticlesName);
 	virtual						~CScriptParticles	();
 
 	void						Play				();
@@ -49,7 +49,7 @@ public:
 
 	void						MoveTo				(const Fvector &pos, const Fvector& vel);
 	void						SetXFORM			(const Fvector& pos, const Fvector& dir, const Fvector& vel);
-	void						LoadPath			(LPCSTR caPathName);
+	void						LoadPath			(const char* caPathName);
 	void						StartPath			(bool looped);
 	void						StopPath			();
 	void						PausePath			(bool val);

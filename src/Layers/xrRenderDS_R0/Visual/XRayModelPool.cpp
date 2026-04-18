@@ -81,7 +81,7 @@ CDS0_RenderVisual* CDS0_ModelPool::Instance_Duplicate(CDS0_RenderVisual* V)
 	return N;
 }
 
-CDS0_RenderVisual* CDS0_ModelPool::Instance_Load(const char* N, BOOL allow_register)
+CDS0_RenderVisual* CDS0_ModelPool::Instance_Load(const char* N, bool allow_register)
 {
 	CDS0_RenderVisual* V;
 	string_path		name;
@@ -120,7 +120,7 @@ CDS0_RenderVisual* CDS0_ModelPool::Instance_Load(const char* N, BOOL allow_regis
 	return V;
 }
 
-CDS0_RenderVisual* CDS0_ModelPool::Instance_Load(LPCSTR name, IReader* data, BOOL allow_register)
+CDS0_RenderVisual* CDS0_ModelPool::Instance_Load(LPCSTR name, IReader* data, bool allow_register)
 {
 	CDS0_RenderVisual* V;
 
@@ -262,7 +262,7 @@ CDS0_RenderVisual* CDS0_ModelPool::CreateChild(LPCSTR name, IReader* data)
 }
 
 extern ENGINE_API xr_atomic_bool g_bRendering;
-void CDS0_ModelPool::DeleteInternal(CDS0_RenderVisual*& V, BOOL bDiscard)
+void CDS0_ModelPool::DeleteInternal(CDS0_RenderVisual*& V, bool bDiscard)
 {
 	VERIFY(!g_bRendering);
 	if (!V)
@@ -290,7 +290,7 @@ void CDS0_ModelPool::DeleteInternal(CDS0_RenderVisual*& V, BOOL bDiscard)
 	V = NULL;
 }
 
-void CDS0_ModelPool::Delete(CDS0_RenderVisual*& V, BOOL bDiscard)
+void CDS0_ModelPool::Delete(CDS0_RenderVisual*& V, bool bDiscard)
 {
 	if (NULL == V)
 		return;
@@ -312,7 +312,7 @@ void CDS0_ModelPool::DeleteQueue()
 	ModelsToDelete.clear();
 }
 
-void CDS0_ModelPool::Discard(CDS0_RenderVisual*& V, BOOL b_complete)
+void CDS0_ModelPool::Discard(CDS0_RenderVisual*& V, bool b_complete)
 {
 	//
 	REGISTRY_IT	it = Registry.find(V);
@@ -376,7 +376,7 @@ void CDS0_ModelPool::Prefetch()
 	}
 }
 
-void CDS0_ModelPool::ClearPool(BOOL b_complete)
+void CDS0_ModelPool::ClearPool(bool b_complete)
 {
 	POOL_IT	_I = Pool.begin();
 	POOL_IT	_E = Pool.end();

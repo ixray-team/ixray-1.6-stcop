@@ -9,7 +9,7 @@ const int clpSMX = 28, clpSMY=16, clpSMZ=28;
 class CEditableObject;
 class CSurface;
 class CInifile;
-extern ECORE_API BOOL g_force16BitTransformQuant;
+extern ECORE_API bool g_force16BitTransformQuant;
 extern ECORE_API float g_EpsSkelPositionDelta;
 
 struct ECORE_API SSkelVert: public st_SVert{
@@ -37,11 +37,11 @@ struct ECORE_API SSkelVert: public st_SVert{
         sort_by_bone(); // need to similar 
     }
 
-    BOOL	similar_pos(SSkelVert& V)
+    bool	similar_pos(SSkelVert& V)
     {
         return offs.similar(V.offs, g_EpsSkelPositionDelta);
     }
-    BOOL	similar(SSkelVert& V)
+    bool	similar(SSkelVert& V)
     {
         if (bones.size() != V.bones.size())	return FALSE;
         for (u8 k = 0; k < (u8)bones.size(); k++)

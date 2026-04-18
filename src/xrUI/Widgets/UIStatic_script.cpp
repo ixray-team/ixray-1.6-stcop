@@ -30,8 +30,8 @@ void CUIStatic::script_register(lua_State *L)
 		.def("GetStretchTexture", 	&CUIStatic::GetStretchTexture)														  
 		.def("TextControl",			&CUIStatic::TextItemControl)
 			
-       .def("SetText",				(void (CUIStatic::*)(LPCSTR)) (&CUIStatic::SetText))
-       .def("SetTextST",			(void (CUIStatic::*)(LPCSTR)) (&CUIStatic::SetTextST))
+       .def("SetText",				(void (CUIStatic::*)(const char*)) (&CUIStatic::SetText))
+       .def("SetTextST",			(void (CUIStatic::*)(const char*)) (&CUIStatic::SetTextST))
 
        .def("GetText",				&CUIStatic::GetText)
 
@@ -49,10 +49,10 @@ void CUIStatic::script_register(lua_State *L)
 		.def("SetTextColor",		&CUIStatic::SetTextColor)
 		.def("GetTextColor",		&CUIStatic::GetTextColor)
 
-        .def("InitTexture",			(bool (CUIStatic::*)(LPCSTR, bool)) &CUIStatic::InitTexture)
-        .def("InitTexture",			+[](CUIStatic* self, pcstr texture) { self->InitTexture(texture); })
+        .def("InitTexture",			(bool (CUIStatic::*)(const char*, bool)) &CUIStatic::InitTexture)
+        .def("InitTexture",			+[](CUIStatic* self, const char* texture) { self->InitTexture(texture); })
         .def("InitTextureEx",		&CUIStatic::InitTextureEx)
-        .def("InitTextureEx",		+[](CUIStatic* self, pcstr texture, pcstr shader) { self->InitTextureEx(texture, shader); })
+        .def("InitTextureEx",		+[](CUIStatic* self, const char* texture, const char* shader) { self->InitTextureEx(texture, shader); })
         .def("ResetOriginalRect", &CUIStatic::ResetOriginalRect)
 
 		.def("SetTextureOffset",	&CUIStatic::SetTextureOffset)

@@ -26,13 +26,13 @@
 //---------------------------------------------------------------------
 ENGINE_API CInifile* pGameIni		= nullptr;
 ENGINE_API bool g_dedicated_server  = false;
-BOOL	g_bIntroFinished			= FALSE;
+bool	g_bIntroFinished			= FALSE;
 extern	void	Intro				( void* fn );
 extern	void	Intro_DSHOW			( void* fn );
 //int		max_load_stage = 0;
 
 // computing build id
-XRCORE_API	LPCSTR	build_date;
+XRCORE_API	const char*	build_date;
 XRCORE_API	u32		build_id;
 
 #ifdef MASTER_GOLD
@@ -40,7 +40,7 @@ XRCORE_API	u32		build_id;
 #endif // #ifdef MASTER_GOLD
 
 
-static LPCSTR month_id[12] =
+static const char* month_id[12] =
 {
 	"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"
 };
@@ -113,7 +113,7 @@ struct path_excluder_predicate
 		m_ignore(ignore)
 	{
 	}
-	bool  is_allow_include(LPCSTR path)
+	bool  is_allow_include(const char* path)
 	{
 		if (!m_ignore)
 			return true;
@@ -215,11 +215,11 @@ ENGINE_API void EngineLoadStage4()
 
 	// ...command line for auto start
 	{
-		LPCSTR	pStartup = strstr(Core.Params, "-start ");
+		const char*	pStartup = strstr(Core.Params, "-start ");
 		if (pStartup)				Console->Execute(pStartup + 1);
 	}
 	{
-		LPCSTR	pStartup = strstr(Core.Params, "-load ");
+		const char*	pStartup = strstr(Core.Params, "-load ");
 		if (pStartup)				Console->Execute(pStartup + 1);
 	}
 
@@ -286,7 +286,7 @@ ENGINE_API void EngineLoadStage6()
 #define dwToggleKeysStructSize sizeof( TOGGLEKEYS )
 
 struct damn_keys_filter {
-	BOOL bScreenSaverState;
+	bool bScreenSaverState;
 
 	// Sticky & Filter & Toggle keys
 
@@ -392,7 +392,7 @@ ENGINE_API void EngineLoadStage1(char* lpCmdLine)
 	g_sLaunchOnExit_app[0] = 0;
 	g_sLaunchOnExit_params[0] = 0;
 
-	LPCSTR fsgame_ltx_name = "-fsltx ";
+	const char* fsgame_ltx_name = "-fsltx ";
 	string_path fsgame = "";
 
 	if (strstr(lpCmdLine, fsgame_ltx_name)) {
@@ -414,7 +414,7 @@ ENGINE_API void EngineLoadStage1(char* lpCmdLine)
 	EngineExternal();
 }
 
-ENGINE_API LPCSTR GetClipboardErrorMessage()
+ENGINE_API const char* GetClipboardErrorMessage()
 {
 	VERIFY(g_pStringTable);
 	return g_pStringTable->translate( "st_clipboard_error_message").c_str();

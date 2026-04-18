@@ -160,12 +160,12 @@ public:
 
 	// Name of the window
 	const shared_str		WindowName			() const					{ return m_windowName; }
-	void					SetWindowName		(LPCSTR wn)					{ m_windowName = wn; }
-	LPCSTR					WindowName_script	()							{return m_windowName.c_str();}
+	void					SetWindowName		(const char* wn)					{ m_windowName = wn; }
+	const char*					WindowName_script	()							{return m_windowName.c_str();}
 	CUIWindow*				FindChild			(const shared_str name);
 	// Name of the window by node from XML
 	const shared_str		WindowNodeName		() const					{ return m_windowNodeName; }
-	void					SetWindowNodeName	(LPCSTR wn)					{ m_windowNodeName = wn; }
+	void					SetWindowNodeName	(const char* wn)					{ m_windowNodeName = wn; }
 
 	IC bool					CursorOverWindow	() const					{ return m_bCursorOverWindow; }
 	IC u32					FocusReceiveTime	() const					{ return m_dwFocusReceiveTime; }

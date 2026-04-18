@@ -231,7 +231,7 @@ public:
 	}
 
 	// validates numerical stability
-	ICF	const BOOL	isValid(void) const 
+	ICF	const bool	isValid(void) const 
 	{
 		if ((w * w) < 0.0f)	return false;
 		if ((x * x) < 0.0f)	return false;
@@ -241,7 +241,7 @@ public:
 	}
 
 	// checks for Unit-length quanternion
-	ICF	const BOOL	isUnit(void) 
+	ICF	const bool	isUnit(void) 
 	{
 		T m  =  magnitude();
 
@@ -388,7 +388,7 @@ public:
 	}
 
 	// return TRUE if quaternions differ elementwise by less than Tolerance.
-	ICF	BOOL	cmp(SelfCRef Q, T Tolerance=0.0001f)
+	ICF	bool	cmp(SelfCRef Q, T Tolerance=0.0001f)
 	{
 		if (	// they are the same but with opposite signs
 			(	(std::abs(x + Q.x) <= Tolerance )
@@ -435,7 +435,7 @@ typedef _quaternion<float>	Fquaternion;
 typedef _quaternion<double>	Dquaternion;
 
 template <class T>
-BOOL	_valid			(const _quaternion<T>& s)	{ return _valid(s.x) && _valid(s.y) && _valid(s.z) && _valid(s.w);	}
+bool	_valid			(const _quaternion<T>& s)	{ return _valid(s.x) && _valid(s.y) && _valid(s.z) && _valid(s.w);	}
 
 #undef UNIT_TOLERANCE
 #undef QZERO_TOLERANCE

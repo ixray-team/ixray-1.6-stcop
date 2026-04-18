@@ -72,7 +72,7 @@
 }
 
 //! TO BE DOCUMENTED
-BOOL CoplanarTriTri(const IceMaths::Point& n, const IceMaths::Point& v0, const IceMaths::Point& v1, const IceMaths::Point& v2, const IceMaths::Point& u0, const IceMaths::Point& u1, const IceMaths::Point& u2)
+bool CoplanarTriTri(const IceMaths::Point& n, const IceMaths::Point& v0, const IceMaths::Point& v1, const IceMaths::Point& v2, const IceMaths::Point& u0, const IceMaths::Point& u1, const IceMaths::Point& u2)
 {
 	float A[3];
 	short i0,i1;
@@ -176,7 +176,7 @@ BOOL CoplanarTriTri(const IceMaths::Point& n, const IceMaths::Point& v0, const I
  *	\return		true if triangles overlap
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-inline_ BOOL AABBTreeCollider::TriTriOverlap(const IceMaths::Point& V0, const IceMaths::Point& V1, const IceMaths::Point& V2, const IceMaths::Point& U0, const IceMaths::Point& U1, const IceMaths::Point& U2)
+inline_ bool AABBTreeCollider::TriTriOverlap(const IceMaths::Point& V0, const IceMaths::Point& V1, const IceMaths::Point& V2, const IceMaths::Point& U0, const IceMaths::Point& U1, const IceMaths::Point& U2)
 {
 	// Stats
 	mNbPrimPrimTests++;

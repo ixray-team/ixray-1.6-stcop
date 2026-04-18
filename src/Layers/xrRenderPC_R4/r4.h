@@ -143,13 +143,13 @@ public:
 public:
 	ShaderElement*					rimp_select_sh_static		(dxRender_Visual	*pVisual, float cdist_sq);
 	ShaderElement*					rimp_select_sh_dynamic		(dxRender_Visual	*pVisual, float cdist_sq);
-	RHIInputElementDesc*			getVB_Format				(int id, size_t* Count, BOOL	_alt=FALSE);
-	IRHIBuffer*			getVB						(int id, BOOL	_alt=FALSE);
-	IRHIBuffer*			getIB						(int id, BOOL	_alt=FALSE);
+	RHIInputElementDesc*			getVB_Format				(int id, size_t* Count, bool	_alt=FALSE);
+	IRHIBuffer*			getVB						(int id, bool	_alt=FALSE);
+	IRHIBuffer*			getIB						(int id, bool	_alt=FALSE);
 	FSlideWindowItem*				getSWI						(int id);
 	IRender_Portal*					getPortal					(int id);
 	IRender_Sector*					getSectorActive				();
-	IRenderVisual*					model_CreatePE				(LPCSTR name);
+	IRenderVisual*					model_CreatePE				(const char* name);
 	IRender_Sector*					detectSector				(const Fvector& P, Fvector& D);
 	IRender_Sector*					detectLastSector			(const Fvector& P);
 	int								translateSector				(IRender_Sector* pSector);
@@ -210,17 +210,17 @@ public:
 	virtual	void level_Load(IReader*);
 	virtual void level_Unload();
 
-	IRHISurface* load_texture(LPCSTR	fname, u32& msize, bool bStaging = false) override;
-	bool get_texture_metadata(LPCSTR absolute_path, RHITextureMetadata* p_data) override;
+	IRHISurface* load_texture(const char*	fname, u32& msize, bool bStaging = false) override;
+	bool get_texture_metadata(const char* absolute_path, RHITextureMetadata* p_data) override;
 
-	IRHISurface* texture_load(LPCSTR	fname, u32& msize, bool bStaging = false);
+	IRHISurface* texture_load(const char*	fname, u32& msize, bool bStaging = false);
 
 	virtual HRESULT					shader_compile			(
-		LPCSTR							name,
+		const char*							name,
 		DWORD const*					pSrcData,
 		UINT                            SrcDataLen,
-		LPCSTR                          pFunctionName,
-		LPCSTR                          pTarget,
+		const char*                          pFunctionName,
+		const char*                          pTarget,
 		DWORD                           Flags,
 		void*&							result);
 
@@ -237,7 +237,7 @@ public:
 
 	// Information
 	virtual void					Statistics					(CGameFont* F);
-	virtual LPCSTR					getShaderPath				()									{ return "d3d11\\";	}
+	virtual const char*					getShaderPath				()									{ return "d3d11\\";	}
 	virtual ref_shader				getShader					(int id);
 	virtual IRender_Sector*			getSector					(int id);
 	virtual IRenderVisual*			getVisual					(int id);
@@ -273,28 +273,28 @@ public:
 	virtual IRender_Glow*			glow_create					();
 
 	// Models
-	virtual IRenderVisual*			model_CreateParticles		(LPCSTR name);
+	virtual IRenderVisual*			model_CreateParticles		(const char* name);
 	virtual IRender_DetailModel*	model_CreateDM				(IReader* F);
-	virtual IRenderVisual*			model_Create				(LPCSTR name, IReader* data=0);
-	virtual IRenderVisual*			model_CreateChild			(LPCSTR name, IReader* data);
+	virtual IRenderVisual*			model_Create				(const char* name, IReader* data=0);
+	virtual IRenderVisual*			model_CreateChild			(const char* name, IReader* data);
 	virtual IRenderVisual*			model_Duplicate				(IRenderVisual*	V);
-	virtual void					model_Delete				(IRenderVisual* &	V, BOOL bDiscard);
+	virtual void					model_Delete				(IRenderVisual* &	V, bool bDiscard);
 	virtual void					model_Delete_Deffered		(IRenderVisual* &	V);
 	virtual void 					model_Delete				(IRender_DetailModel* & F);
 	virtual void					models_Prefetch				();
-	virtual void					models_Clear				(BOOL b_complete);
+	virtual void					models_Clear				(bool b_complete);
 
 	// Occlusion culling
-	virtual BOOL					occ_visible					(vis_data&	V);
-	virtual BOOL					occ_visible					(Fbox&		B);
-	virtual BOOL					occ_visible					(sPoly&		P);
+	virtual bool					occ_visible					(vis_data&	V);
+	virtual bool					occ_visible					(Fbox&		B);
+	virtual bool					occ_visible					(sPoly&		P);
 
 	// Main
 	virtual void					Calculate					();
 	virtual void					Render						();
 	virtual void					RenderUI					(bool = false);
 
-	virtual void					Screenshot					(ScreenshotMode mode=SM_NORMAL, LPCSTR name = 0);
+	virtual void					Screenshot					(ScreenshotMode mode=SM_NORMAL, const char* name = 0);
 	virtual void					Screenshot					(ScreenshotMode mode, CMemoryWriter& memory_writer);
 	virtual void					ScreenshotAsyncBegin		();
 	virtual void					ScreenshotAsyncEnd			(CMemoryWriter& memory_writer);
@@ -317,14 +317,14 @@ public:
 
 	auto							ShaderOptionsCount			() { return m_ShaderOptions.size(); }
 
-	virtual BOOL					InIndoor					() { return pLastSector!=pOutdoorSector; };
+	virtual bool					InIndoor					() { return pLastSector!=pOutdoorSector; };
 	virtual size_t					SectorsCount				() { return Sectors.size(); }
 
 private:
 	xr_string_map<xr_string, xr_string>							m_ShaderOptions;
 
 protected:
-	virtual	void					ScreenshotImpl				(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer);
+	virtual	void					ScreenshotImpl				(ScreenshotMode mode, const char* name, CMemoryWriter* memory_writer);
 
 private:
 	FS_FileSet						m_file_set;

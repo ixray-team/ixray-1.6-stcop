@@ -157,7 +157,7 @@ void CStalkerAnimationPair::play			(IKinematicsAnimated *skeleton_animated, Play
 	if (psAI_Flags.is(aiAnimation)) {
 		CMotionDef			*motion = skeleton_animated->LL_GetMotionDef(animation());
 		VERIFY				(motion);
-		LPCSTR				name = skeleton_animated->LL_MotionDefName_dbg(animation()).first;
+		const char*				name = skeleton_animated->LL_MotionDefName_dbg(animation()).first;
 		Msg					(
 			"%6d [%s][%s][%s][%d][%c][%c][%c][%f][%f][%f]",
 			Device.dwTimeGlobal,
@@ -175,7 +175,7 @@ void CStalkerAnimationPair::play			(IKinematicsAnimated *skeleton_animated, Play
 }
 
 #ifdef DEBUG
-std::pair<LPCSTR,LPCSTR> *CStalkerAnimationPair::blend_id	(IKinematicsAnimated *skeleton_animated, std::pair<LPCSTR,LPCSTR> &result) const
+std::pair<const char*,const char*> *CStalkerAnimationPair::blend_id	(IKinematicsAnimated *skeleton_animated, std::pair<const char*,const char*> &result) const
 {
 	if (!blend())
 		return				(0);

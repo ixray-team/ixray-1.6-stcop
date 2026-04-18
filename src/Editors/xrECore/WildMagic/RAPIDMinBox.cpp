@@ -213,7 +213,7 @@ void reaccum_moments(accum &A, int n, moment* RAPID_moment)
 		accum_moment(A, RAPID_moment[i]);
 }
 
-BOOL RAPIDMinBox(Fobb& B, Fvector* vertices, u32 v_count)
+bool RAPIDMinBox(Fobb& B, Fvector* vertices, u32 v_count)
 {
 	u32 num_tris 		= v_count/3;
 

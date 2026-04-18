@@ -2,7 +2,7 @@
 #include "actor_mp_server.h"
 #include "Level.h"
 
-CSE_ActorMP::CSE_ActorMP		(LPCSTR section) : 
+CSE_ActorMP::CSE_ActorMP		(const char* section) : 
 	inherited				(section)
 {
 	m_ready_to_update		= false;
@@ -27,7 +27,7 @@ void CSE_ActorMP::STATE_Write	(NET_Packet &packet)
 #endif // #ifdef DEBUG
 }
 
-BOOL CSE_ActorMP::Net_Relevant	()
+bool CSE_ActorMP::Net_Relevant	()
 {
 	if (get_health() <= 0) return (false);
 	return !IsGameTypeSingle();

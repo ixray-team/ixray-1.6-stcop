@@ -26,7 +26,7 @@ void CUIListItem::InitListItem(Fvector2 pos, Fvector2 size)
     inherited::SetWndSize(size);
 }
 
-void CUIListItem::InitTexture(pcstr tex_name)
+void CUIListItem::InitTexture(const char* tex_name)
 {
     CUIButton::InitTexture(tex_name);
     SetTextX(m_UIStaticItem.GetTextureRect().width());

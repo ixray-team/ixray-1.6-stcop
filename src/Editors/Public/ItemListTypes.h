@@ -37,15 +37,15 @@ public:
 public:
 						ListItem		(int _type):type(_type), selected(false),prop_color(0),item(0),key(0),tag(0),icon_index(-1),/*OnDrawThumbnail(0),*/OnItemFocused(0),m_Object(0){m_Flags.zero();}
 	virtual 			~ListItem		(){};
-    void				SetName			(LPCSTR _key){key=_key;}
-	void				SetPrefix		(LPCSTR _prefix){prefix = _prefix;}
+    void				SetName			(const char* _key){key=_key;}
+	void				SetPrefix		(const char* _prefix){prefix = _prefix;}
 
-    IC void				Visible			(BOOL val){m_Flags.set(flHidden, !val);}
-    IC BOOL				Visible			() const{ return !m_Flags.test(flHidden);}
+    IC void				Visible			(bool val){m_Flags.set(flHidden, !val);}
+    IC bool				Visible			() const{ return !m_Flags.test(flHidden);}
     IC int				Type			(){return type;}
 	IC void*			Item			(){return item;}
-	IC LPCSTR			Key				(){return *key;}
-	IC LPCSTR			Prefix			(){return *prefix;}
+	IC const char*			Key				(){return *key;}
+	IC const char*			Prefix			(){return *prefix;}
     IC void				SetIcon			(int index){icon_index=index;}
 };
 

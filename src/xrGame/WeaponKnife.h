@@ -49,13 +49,13 @@ protected:
 	u32					dwUpdateSounds_Frame;
 
 protected:
-	virtual void		LoadFireParams					(LPCSTR section);
+	virtual void		LoadFireParams					(const char* section);
 public:
 	CWeaponKnife(); 
 	virtual ~CWeaponKnife() = default; 
 
-	virtual void		Load							(LPCSTR section) override;
-	virtual void		LoadSounds						(LPCSTR section) override;
+	virtual void		Load							(const char* section) override;
+	virtual void		LoadSounds						(const char* section) override;
 
 	virtual bool		IsZoomEnabled					()	const	{return false;}
 
@@ -126,7 +126,7 @@ private:
 											 Fvector const & dir,
 											 float const dist);
 
-	static BOOL		RayQueryCallback		(collide::rq_result& result, LPVOID this_ptr);
+	static bool		RayQueryCallback		(collide::rq_result& result, LPVOID this_ptr);
 	collide::rq_results				m_ray_query_results;
 	u16								m_except_id;
 	CObject*						m_last_picked_obj;

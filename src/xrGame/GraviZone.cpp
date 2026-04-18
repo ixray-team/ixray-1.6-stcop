@@ -19,7 +19,7 @@ CBaseGraviZone ::~CBaseGraviZone (void)
 {
 }
 
-void CBaseGraviZone ::Load(LPCSTR section)
+void CBaseGraviZone ::Load(const char* section)
 {
 	inherited::Load(section);
 	
@@ -43,7 +43,7 @@ void CBaseGraviZone ::Load(LPCSTR section)
 		m_sTeleParticlesSmall = nullptr;
 }
 
-BOOL CBaseGraviZone ::net_Spawn(CSE_Abstract* DC)
+bool CBaseGraviZone ::net_Spawn(CSE_Abstract* DC)
 {
 	return inherited::net_Spawn(DC);
 }

@@ -57,26 +57,26 @@ void CUIRankingsCoC::Update()
 		{
 			if(!ParentHasMe())
 			{
-				luabind::functor<LPCSTR> functorSetName;
+				luabind::functor<const char*> functorSetName;
 				if (ai().script_engine().functor("pda.coc_rankings_set_name", functorSetName))
 					SetName(functorSetName(m_index));
 				 
-				luabind::functor<LPCSTR> functorSetDescription;
+				luabind::functor<const char*> functorSetDescription;
 				if (ai().script_engine().functor("pda.coc_rankings_set_description", functorSetDescription))
 					SetDescription(functorSetDescription(m_index));
 				 
 				
-				luabind::functor<LPCSTR> functorSetHint;
+				luabind::functor<const char*> functorSetHint;
 				if (ai().script_engine().functor("pda.coc_rankings_set_hint", functorSetHint))
 					SetHint(functorSetHint(m_index));
 				 
 				
-				luabind::functor<LPCSTR> functorSetIcon;
+				luabind::functor<const char*> functorSetIcon;
 				if (ai().script_engine().functor("pda.coc_rankings_set_icon", functorSetIcon))
 					SetIcon(functorSetIcon(m_index));
 
 				/*
-				luabind::functor<LPCSTR> functorShowBorder;
+				luabind::functor<const char*> functorShowBorder;
 				if (ai().script_engine().functor("pda.coc_rankings_show_border", functorShowBorder))
 				{
 					if (functorShowBorder(m_index))
@@ -115,14 +115,14 @@ bool CUIRankingsCoC::ParentHasMe()
 	WINDOW_LIST::const_iterator it = std::find(m_parent->Items().begin(), m_parent->Items().end(), this);
 	return it != m_parent->Items().end();
 }
-void CUIRankingsCoC::SetName(LPCSTR name)
+void CUIRankingsCoC::SetName(const char* name)
 {
 	m_name->TextItemControl()->SetColoringMode(true);
 	m_name->TextItemControl()->SetUseNewLineMode(true);
 	m_name->SetText(name);
 }
 
-void CUIRankingsCoC::SetDescription(LPCSTR desc)
+void CUIRankingsCoC::SetDescription(const char* desc)
 {
 	m_descr->TextItemControl()->SetColoringMode(true);
 	m_descr->TextItemControl()->SetUseNewLineMode(true);
@@ -134,12 +134,12 @@ void CUIRankingsCoC::SetDescription(LPCSTR desc)
 		SetWndSize(Fvector2().set(GetWndSize().x, descr_size.y));
 }
 
-void CUIRankingsCoC::SetHint(LPCSTR hint)
+void CUIRankingsCoC::SetHint(const char* hint)
 {
 	m_hint->set_text(g_pStringTable->translate(hint).c_str());
 }
 
-void CUIRankingsCoC::SetIcon(LPCSTR icon)
+void CUIRankingsCoC::SetIcon(const char* icon)
 {
 	if (!xr_strcmp(icon, ""))
 		return;

@@ -234,7 +234,7 @@ void CUITreeViewItem::SetRoot(bool set)
 
 //////////////////////////////////////////////////////////////////////////
 
-void CUITreeViewItem::SetText(LPCSTR str)
+void CUITreeViewItem::SetText(const char* str)
 {
 	xr_string s = str;
 	xr_string::size_type pos = s.find_first_not_of(" +-");
@@ -290,7 +290,7 @@ void CUITreeViewItem::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 
 //////////////////////////////////////////////////////////////////////////
 
-CUITreeViewItem * CUITreeViewItem::Find(LPCSTR text) const
+CUITreeViewItem * CUITreeViewItem::Find(const char* text) const
 {
 	// Пробегаемся по списку подчиненных элементов, и ищем элемент с заданным текстом
 	// Если среди подч. эл-тов есть root'ы, то ищем рекурсивно в них

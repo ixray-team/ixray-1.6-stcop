@@ -25,13 +25,13 @@ public:
 	virtual void		Clear					(bool bSpecific=false);
 
 	// definition
-	IC LPCSTR			ClassName				(){return "terrain";}
-	IC LPCSTR			ClassDesc				(){return "Terrain";}
+	IC const char*			ClassName				(){return "terrain";}
+	IC const char*			ClassDesc				(){return "Terrain";}
 	IC int				RenderPriority			(){return 1;}
 
 	// IO
 	virtual bool   		IsNeedSave				(){return true;}
-	virtual BOOL 		_AppendObject(CCustomObject* object);
+	virtual bool 		_AppendObject(CCustomObject* object);
 
 	// utils
 	virtual bool		Validate				(bool full_build);
@@ -41,9 +41,9 @@ public:
 	virtual void		AfterRender				();
 	virtual bool		can_use_inifile			() override { return false; }
 
-	virtual void 		FillProp				(LPCSTR pref, PropItemVec& items);
+	virtual void 		FillProp				(const char* pref, PropItemVec& items);
 
-	virtual CCustomObject* CreateObject			(LPVOID data, LPCSTR name);
+	virtual CCustomObject* CreateObject			(LPVOID data, const char* name);
 
 private:
 	virtual void OnDrawUI();

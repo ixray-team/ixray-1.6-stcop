@@ -29,7 +29,7 @@ static void on_error_dialog			(bool before)
 	pInput->acquire();
 }
 
-CInput::CInput						( BOOL bExclusive, int deviceForInit)
+CInput::CInput						( bool bExclusive, int deviceForInit)
 {
 	g_exclusive							= !!bExclusive;
 
@@ -335,7 +335,7 @@ bool CInput::iGetAsyncGamepadKeyState( int dik )
 	return false;
 }
 
-BOOL CInput::iGetAsyncKeyState( int dik )
+bool CInput::iGetAsyncKeyState( int dik )
 {
 	if(dik<COUNT_KB_BUTTONS)
 		return !!KBState[dik];
@@ -348,7 +348,7 @@ BOOL CInput::iGetAsyncKeyState( int dik )
 		return FALSE; //unknown key ???
 }
 
-BOOL CInput::iGetAsyncBtnState( int btn )
+bool CInput::iGetAsyncBtnState( int btn )
 {
 	return !!mouseState[btn];
 }

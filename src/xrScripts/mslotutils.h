@@ -29,45 +29,45 @@ public:
 	inline void	 SetLen(DWORD l){m_len=l;};
 	inline DWORD GetLen()const{return m_len;};
 	
-	inline BOOL	r_string(char* dst){
+	inline bool	r_string(char* dst){
 		int sz;
 		r_int(sz);
 		Read(dst,sz+1); 
 		return TRUE;
 	};
 
-	inline BOOL	w_string(const char* dst){
+	inline bool	w_string(const char* dst){
 		size_t sz = _strlen(dst);
 		w_int((int)sz);
 		Write(dst,(int)(sz+1)); return TRUE;
 	};
 
-	inline BOOL	r_float(float& dst){
+	inline bool	r_float(float& dst){
 		Read(&dst,sizeof(float));
 		return TRUE;
 	};
 
-	inline BOOL	w_float(const float src){
+	inline bool	w_float(const float src){
 		Write(&src,sizeof(float));
 		return TRUE;
 	};
 
-	inline BOOL	r_int(int& dst){
+	inline bool	r_int(int& dst){
 		Read(&dst,sizeof(int));
 		return TRUE;
 	};
 	
-	inline BOOL	w_int(const int src){
+	inline bool	w_int(const int src){
 		Write(&src,sizeof(int));
 		return TRUE;
 	};
 
-	inline BOOL	r_buff(void* dst, int sz){
+	inline bool	r_buff(void* dst, int sz){
 		Read(dst,sz);
 		return TRUE;
 	};
 	
-	inline BOOL	w_buff(void* src, int sz){
+	inline bool	w_buff(void* src, int sz){
 		Write(src,sz);
 		return TRUE;
 	};
@@ -82,10 +82,10 @@ inline HANDLE CreateMailSlotByName(LPSTR slotName)
  
     return hSlot; 
 }
-inline BOOL CheckExisting(LPSTR slotName)
+inline bool CheckExisting(LPSTR slotName)
 {
 	HANDLE hFile; 
-	BOOL res;
+	bool res;
 hFile = CreateFile(Platform::ANSI_TO_TCHAR(slotName),
     GENERIC_WRITE, 
     FILE_SHARE_READ,  // required to write to a mailslot 
@@ -101,8 +101,8 @@ hFile = CreateFile(Platform::ANSI_TO_TCHAR(slotName),
 	
 	return res;
 }
-inline BOOL SendMailslotMessage(LPSTR slotName, CMailSlotMsg& msg){
-	BOOL fResult; 
+inline bool SendMailslotMessage(LPSTR slotName, CMailSlotMsg& msg){
+	bool fResult; 
 	HANDLE hFile; 
 	DWORD cbWritten; 
  
@@ -132,9 +132,9 @@ fResult = WriteFile(hFile,
 	return fResult;
 }
 
-inline BOOL CheckMailslotMessage(HANDLE hSlot, CMailSlotMsg& msg){
+inline bool CheckMailslotMessage(HANDLE hSlot, CMailSlotMsg& msg){
     DWORD cbMessage, cMessage, cbRead; 
-    BOOL fResult; 
+    bool fResult; 
     HANDLE hEvent;
     OVERLAPPED ov;
  

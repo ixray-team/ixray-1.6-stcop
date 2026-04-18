@@ -24,7 +24,7 @@ public:
     CUIHudGroupCatalog(const CUIHudGroupCatalog&) = delete;
     CUIHudGroupCatalog& operator=(const CUIHudGroupCatalog&) = delete;
 
-    bool Load(LPCSTR fileName);
+    bool Load(const char* fileName);
     bool IsLoaded() const { return _isLoaded; }
     bool IsEmpty() const { return _groups.empty(); }
 

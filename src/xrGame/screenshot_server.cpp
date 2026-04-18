@@ -6,8 +6,8 @@
 #include "game_sv_base.h"
 #include "game_cl_mp.h"
 
-extern BOOL	g_sv_mp_save_proxy_screenshots;
-extern BOOL g_sv_mp_save_proxy_configs;
+extern bool	g_sv_mp_save_proxy_screenshots;
+extern bool g_sv_mp_save_proxy_configs;
 
 clientdata_proxy::clientdata_proxy(file_transfer::server_site * ft_server) :
 	m_ft_server(ft_server)
@@ -229,7 +229,7 @@ void clientdata_proxy::download_screenshot_callback(file_transfer::receiving_sta
 		}break;
 	case file_transfer::receiving_timeout:
 		{
-			LPCSTR error_msg = "* download screenshot incomplete - timeout";
+			const char* error_msg = "* download screenshot incomplete - timeout";
 			Msg(error_msg);
 			notify_admin(e_screenshot_error_notif, error_msg);
 		}break;
@@ -300,7 +300,7 @@ void clientdata_proxy::download_config_callback(file_transfer::receiving_status_
 		}break;
 	case file_transfer::receiving_timeout:
 		{
-			LPCSTR error_msg = "* download config incomplete - timeout";
+			const char* error_msg = "* download config incomplete - timeout";
 			Msg(error_msg);
 			notify_admin(e_configs_error_notif, error_msg);
 		}break;

@@ -25,7 +25,7 @@ protected:
 	float m_step = 0.0f;
 public:
 	CUIDetectorWave() = default;
-	void InitFromXML(CUIXml& xml, LPCSTR path);
+	void InitFromXML(CUIXml& xml, const char* path);
 	void SetVelocity(float v) { m_curr_v = v; }
 	void Update() override;
 

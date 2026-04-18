@@ -21,7 +21,7 @@ class CPortal: public CCustomObject
     CSector*		m_SectorFront;
     CSector*		m_SectorBack;
 public:
-					CPortal		(LPVOID data, LPCSTR name);
+					CPortal		(LPVOID data, const char* name);
 	void 			Construct	(LPVOID data);
 	virtual 		~CPortal	();
     virtual bool	CanAttach	() {return false;}
@@ -32,9 +32,9 @@ public:
     virtual bool 	FrustumPick	(const CFrustum& frustum);
 	virtual void 	Move		( Fvector& amount ); // need for Shift Level
   	virtual bool 		LoadStream			(IReader&);
-  	virtual bool 		LoadLTX				(CInifile& ini, LPCSTR sect_name);
+  	virtual bool 		LoadLTX				(CInifile& ini, const char* sect_name);
 	virtual void 		SaveStream			(IWriter&);
-  	virtual void 		SaveLTX				(CInifile& ini, LPCSTR sect_name);
+  	virtual void 		SaveLTX				(CInifile& ini, const char* sect_name);
 
 	virtual bool 	GetBox		(Fbox& box) ;
     void			Simplify	();

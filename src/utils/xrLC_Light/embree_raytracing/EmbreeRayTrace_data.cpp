@@ -50,7 +50,7 @@ void SetRay1(RTCRayHit& rayhit, Fvector& pos, Fvector& dir, float near_, float r
 }
 
 // OFF PACKED PROCESSING
-void GetEmbreeDeviceProperty(LPCSTR msg, RTCDevice& device, RTCDeviceProperty prop)
+void GetEmbreeDeviceProperty(const char* msg, RTCDevice& device, RTCDeviceProperty prop)
 {
 	Msg(" - EmbreeDevProp: %s : %llu", msg, rtcGetDeviceProperty(device, prop));
 }

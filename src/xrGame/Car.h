@@ -185,7 +185,7 @@ public:
 		static	void			WheellCollisionCallback					(bool& do_colide,bool bo1,dContact& c,SGameMtl* material_1,SGameMtl* material_2)							;
 				
 				void 			Init									();//asumptions: bone_map is 1. ini parsed 2. filled in 3. bone_id is set 
-				void			Load									(LPCSTR section);
+				void			Load									(const char* section);
 				void 			RestoreNetState							(const CSE_ALifeCar::SWheelState& a_state)														;
 				void 			SaveNetState							(NET_Packet& P)																					;
 				void 			ApplyDriveAxisVel						(float vel)																						;
@@ -217,7 +217,7 @@ virtual void ApplyDamage			(u16 level);
 		void	Neutral		()						;
 		void	UpdatePower	()						;
 		float	ASpeed		() const;
-		void	Load		(LPCSTR /*section*/){}	;
+		void	Load		(const char* /*section*/){}	;
 	};
 	struct SWheelSteer 
 	{
@@ -235,7 +235,7 @@ virtual void ApplyDamage			(u16 level);
 		void	 SteerLeft	()						;
 		void	 SteerIdle	()						;
 		void	 Limit		()						;
-		void	 Load		(LPCSTR /*section*/){}	;
+		void	 Load		(const char* /*section*/){}	;
 	};
 	struct SWheelBreak 
 	{
@@ -246,7 +246,7 @@ virtual void ApplyDamage			(u16 level);
 		void		 Break			(float k)			;
 		void		 HandBreak		()					;
 		void		 Neutral		()					;
-		void		 Load			(LPCSTR section)	;
+		void		 Load			(const char* section)	;
 	};
 
 	struct SExhaust
@@ -479,8 +479,8 @@ public:
 	u16						DriverAnimationType 		();
 	// Core events
 	virtual DLL_Pure		*_construct					();
-	virtual void			Load						( LPCSTR section );
-	virtual BOOL			net_Spawn					( CSE_Abstract* DC );
+	virtual void			Load						( const char* section );
+	virtual bool			net_Spawn					( CSE_Abstract* DC );
 	virtual void			net_Destroy					();
 	virtual void			UpdateCL					( ); 
 	virtual	void			UpdateEx					(float fov); //called by owner
@@ -493,8 +493,8 @@ public:
 	// Network
 	virtual void			net_Export					(NET_Packet& P);				// export to server
 	virtual void			net_Import					(NET_Packet& P);				// import from server
-	virtual BOOL			net_Relevant				()	{ return IsMyCar() || OnServer(); };		// relevant for export to server
-	virtual BOOL			UsedAI_Locations			();
+	virtual bool			net_Relevant				()	{ return IsMyCar() || OnServer(); };		// relevant for export to server
+	virtual bool			UsedAI_Locations			();
 	virtual	void			net_Relcase					(CObject* O );
 	// Input
 	virtual void			OnGamepadAxisMove			(int id, Fvector2 value);
@@ -539,7 +539,7 @@ public:
 protected:
 	virtual void					SpawnInitPhysics					(CSE_Abstract	*D)																;
 	virtual void					net_Save							(NET_Packet& P)																	;
-	virtual	BOOL					net_SaveRelevant					()																				;
+	virtual	bool					net_SaveRelevant					()																				;
 			void					SaveNetState						(NET_Packet& P)																	;
 	virtual	void					RestoreNetState						(CSE_PHSkeleton* po)															;
 			void					SetDefaultNetState					(CSE_PHSkeleton* po)															;
@@ -550,17 +550,17 @@ protected:
 public:
 	CCar(void);
 	virtual ~CCar(void);
-	virtual BOOL					AlwaysTheCrow						();
+	virtual bool					AlwaysTheCrow						();
 
 public:
 	virtual CEntity*					cast_entity				()						{return this;}
 private:
-	template <class T> IC void fill_wheel_vector(LPCSTR S,xr_vector<T>& type_wheels);
-	IC void fill_exhaust_vector(LPCSTR S,xr_vector<SExhaust>& exhausts);
-	IC void fill_doors_map(LPCSTR S,xr_map<u16, CCarDoor>& doors);
+	template <class T> IC void fill_wheel_vector(const char* S,xr_vector<T>& type_wheels);
+	IC void fill_exhaust_vector(const char* S,xr_vector<SExhaust>& exhausts);
+	IC void fill_doors_map(const char* S,xr_map<u16, CCarDoor>& doors);
 
 	virtual	void reinit			();
-	virtual	void reload			(LPCSTR section);
+	virtual	void reload			(const char* section);
 	virtual CGameObject			*cast_game_object			()	{return this;}
 	virtual CExplosive			*cast_explosive				()	{return this;}
 	virtual CPhysicsShellHolder	*cast_physics_shell_holder	()	{return this;}

@@ -102,27 +102,27 @@ protected:
 	};
 
 	Flags16	m_flags;
-	BOOL m_can_trade = TRUE;
+	bool m_can_trade = TRUE;
 public:
 	CInventoryItem();
 	virtual	~CInventoryItem();
 
 public:
-	virtual void Load(LPCSTR section);
-	void ReadCustomTextAndMarks(LPCSTR section);
-	void Read3dStaticsData(LPCSTR section);
+	virtual void Load(const char* section);
+	void ReadCustomTextAndMarks(const char* section);
+	void Read3dStaticsData(const char* section);
 	void RefreshTranslations();
 
 	// Дополнение описания предмета для кастомизации через скрипты к основному описанию в UIItemInfo.cpp
-	void SetAdditionalDescription(LPCSTR additionalDescription);
+	void SetAdditionalDescription(const char* additionalDescription);
 	bool IsDrawCost() { return m_draw_cost; }
 	void UnsetAdditionalDescription() { SetAdditionalDescription(""); }
 	bool IsUsedAdditionalDescription() const { return m_IsUsedAdditionalDescription; }
-	LPCSTR GetAdditionalDescription() const { return m_AdditionalDescription.c_str(); }
+	const char* GetAdditionalDescription() const { return m_AdditionalDescription.c_str(); }
 	shared_str GetExtendedUnionDescription() const { return m_ExtendedUnionDescription; }
 
-	LPCSTR NameItem() const { return m_name.c_str(); }
-	LPCSTR NameShort() const { return m_nameShort.c_str(); }
+	const char* NameItem() const { return m_name.c_str(); }
+	const char* NameShort() const { return m_nameShort.c_str(); }
 	shared_str ItemDescription() const { return m_Description; }
 	shared_str ItemDescriptionAdditional() const { return m_AdditionalDescription; }
 	virtual bool GetBriefInfo(II_BriefInfo& info) { info.clear(); return false; }
@@ -131,13 +131,13 @@ public:
 
 	virtual bool Useful() const { return CanTake(); }
 	virtual bool IsUsingCondition() const { return m_flags.test(FUsingCondition); }
-	virtual bool CanStack() const { return (m_flags.test(FCanStack) > 0); };
+	virtual bool CanStack() const { return (m_flags.test(FCanStack)); };
 	virtual bool Attach(PIItem pIItem, bool b_send_event) { return false; }
 	virtual bool Detach(PIItem pIItem) { return false; }
 	//при детаче спаунится новая вещь при заданно названии секции
 	virtual bool Detach(const char* item_section_name, bool b_spawn_item);
 	virtual bool CanAttach(PIItem pIItem) { return false; }
-	virtual bool CanDetach(LPCSTR item_section_name) { return false; }
+	virtual bool CanDetach(const char* item_section_name) { return false; }
 
 	virtual EHandDependence HandDependence()	const { return hd1Hand; };
 	virtual bool IsSingleHanded()	const { return true; };
@@ -153,7 +153,7 @@ public:
 
 	virtual void save(NET_Packet& output_packet);
 	virtual void load(IReader& input_packet);
-	virtual BOOL net_SaveRelevant() { return TRUE; }
+	virtual bool net_SaveRelevant() { return TRUE; }
 	void SetDrawCost(bool state) { m_draw_cost = state; }
 	virtual void render_item_ui() {}; //when in slot & query return TRUE
 	virtual bool render_item_ui_query() { return false; }; //when in slot
@@ -162,12 +162,12 @@ public:
 
 	virtual	void Hit(SHit* pHDS);
 
-	BOOL GetDropManual() const { return m_flags.test(FdropManual); }
-	void SetDropManual(BOOL val);
+	bool GetDropManual() const { return m_flags.test(FdropManual); }
+	void SetDropManual(bool val);
 
-	BOOL IsInvalid() const;
+	bool IsInvalid() const;
 
-	BOOL IsQuestItem() const { return m_flags.test(FIsQuestItem); }
+	bool IsQuestItem() const { return m_flags.test(FIsQuestItem); }
 	virtual	u32 Cost() const { return m_cost; }
 	void setCost(u32 nValue);
 
@@ -200,13 +200,13 @@ public:
 	Fvector2 m_custom_mark_offset;
 	Fvector2 m_custom_mark_size;
 	u32 m_custom_mark_clr = 0;
-	LPCSTR m_custom_mark_lanim = {};
+	const char* m_custom_mark_lanim = {};
 	float ScaleIcon = 1.0f;
 	shared_str IconsTexture;
 
 	Fvector m_3d_static_rotate{};
 	float m_3d_static_scale = 1.f;
-	LPCSTR m_3d_static_visual_name = "";
+	const char* m_3d_static_visual_name = "";
 
 	SInvItemPlace m_ItemCurrPlace = {};
 	RStringVec m_HiglightRelatedItemSections = {}; // FFx0001 ++
@@ -301,9 +301,9 @@ protected:
 	void CalculateInterpolationParams();
 
 public:
-	virtual BOOL net_Spawn(CSE_Abstract* DC);
+	virtual bool net_Spawn(CSE_Abstract* DC);
 	virtual void net_Destroy();
-	virtual void reload(LPCSTR section);
+	virtual void reload(const char* section);
 	virtual void reinit();
 	virtual bool can_kill() const;
 	virtual CInventoryItem* can_kill(CInventory* inventory) const;
@@ -387,8 +387,8 @@ public:
 
 	bool equal_upgrades(Upgrades_type const& other_upgrades) const;
 
-	bool verify_upgrade(LPCSTR section);
-	bool install_upgrade(LPCSTR section);
+	bool verify_upgrade(const char* section);
+	bool install_upgrade(const char* section);
 	void pre_install_upgrade();
 
 #ifdef DEBUG	
@@ -401,20 +401,20 @@ public:
 
 protected:
 	virtual	void net_Spawn_install_upgrades(Upgrades_type saved_upgrades);
-	virtual bool install_upgrade_impl(LPCSTR section, bool test);
+	virtual bool install_upgrade_impl(const char* section, bool test);
 
 	template <XRay::Concepts::Arithmetic T>
-	IC static bool process_if_exists(LPCSTR section, LPCSTR name, T& value, bool test);
+	IC static bool process_if_exists(const char* section, const char* name, T& value, bool test);
 
 	template <XRay::Concepts::Arithmetic T>
-	IC static bool process_if_exists_set(LPCSTR section, LPCSTR name, T& value, bool test);
+	IC static bool process_if_exists_set(const char* section, const char* name, T& value, bool test);
 
-	IC static bool process_if_exists_set(LPCSTR section, LPCSTR name, shared_str& value, bool test);
-	IC static bool process_if_exists_set(LPCSTR section, LPCSTR name, const char*& value, bool test);
-	IC static bool process_if_exists_set(LPCSTR section, LPCSTR name, xr_string& value, bool test);
+	IC static bool process_if_exists_set(const char* section, const char* name, shared_str& value, bool test);
+	IC static bool process_if_exists_set(const char* section, const char* name, const char*& value, bool test);
+	IC static bool process_if_exists_set(const char* section, const char* name, xr_string& value, bool test);
 
 	template <XRay::Concepts::FloatPoint T>
-	IC static bool process_if_exists_deg2rad(LPCSTR section, LPCSTR name, T& value, bool test);
+	IC static bool process_if_exists_deg2rad(const char* section, const char* name, T& value, bool test);
 
 	void net_Export_PH_Params(NET_Packet& P, SPHNetState& State, mask_inv_num_items& num_items);
 	void net_Import_PH_Params(NET_Packet& P, net_update_IItem& N, mask_inv_num_items& num_items);

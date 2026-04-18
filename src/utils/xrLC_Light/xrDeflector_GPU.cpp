@@ -225,7 +225,7 @@ void CDeflector::ApplyColor(size_t IKey, base_color_c& C)
 
 // se7kills: Убрал Перерасчет в сжатый формат
 // тестил на затоне не было замечено багов
-BOOL	compress_Zero(lm_layer& lm, u32 rms);
+bool	compress_Zero(lm_layer& lm, u32 rms);
 
 /// После сжатия пересчитываем
 void CDeflector::ApplyExpandBordersGPU()

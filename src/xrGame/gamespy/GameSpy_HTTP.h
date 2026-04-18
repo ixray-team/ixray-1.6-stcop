@@ -13,7 +13,7 @@ public:
 	void		StartUp		();
 	void		CleanUp		();
 
-	void		DownloadFile	(LPCSTR URL, LPCSTR FileName);
+	void		DownloadFile	(const char* URL, const char* FileName);
 	void		StopDownload	();
 	void		Think		();
 

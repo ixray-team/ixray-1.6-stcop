@@ -37,14 +37,14 @@ public:
 	void								surface_set		(IRHISurface* surf );
 	IRHISurface*						surface_get 	();
 
-	IC BOOL								isUser			()		{ return flags.bUser;					}
+	IC bool								isUser			()		{ return flags.bUser;					}
 	IC u32								get_Width		()		{ return pSurface->GetWidth();	}
 	IC u32								get_Height		()		{ return pSurface->GetHeight();	}
 	IC ERHI_FORMAT						get_Format		()		{ return pSurface ? pSurface->GetFormat() : ERHI_FORMAT::UNKNOWN; }
 
 	void								video_Sync		(u32 _time){m_play_time=_time;}
-	void								video_Play		(BOOL looped, u32 _time=0xFFFFFFFF);
-	void								video_Pause		(BOOL state);
+	void								video_Play		(bool looped, u32 _time=0xFFFFFFFF);
+	void								video_Pause		(bool state);
 	void								video_Stop		();
 	bool								video_IsPlaying	();
 

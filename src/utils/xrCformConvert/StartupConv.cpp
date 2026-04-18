@@ -22,13 +22,13 @@ void Help(const char* h_str);
 
 //string_path INI_FILE;
 
-//extern LPCSTR LEVEL_GRAPH_NAME;
+//extern const char* LEVEL_GRAPH_NAME;
 
-//extern LPCSTR GAME_CONFIG;
+//extern const char* GAME_CONFIG;
 
 extern void clear_temp_folder();
-extern void	xrCompiler(LPCSTR name, bool draft_mode, bool pure_covers, LPCSTR out_name);
-extern void	verify_level_graph(LPCSTR name, bool verbose);
+extern void	xrCompiler(const char* name, bool draft_mode, bool pure_covers, const char* out_name);
+extern void	verify_level_graph(const char* name, bool verbose);
 
 #include "ConverterUI.h"
 

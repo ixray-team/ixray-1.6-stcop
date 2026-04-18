@@ -394,7 +394,7 @@ ICF void BeginStream(ref_geom hGeom, u32& w_offset, FVF::LIT*& w_verts, FVF::LIT
 	w_start					= w_verts;
 }
 
-ICF void FlushStream(ref_geom hGeom, ref_shader shader, u32& w_offset, FVF::LIT*& w_verts, FVF::LIT*& w_start, BOOL bSuppressCull)
+ICF void FlushStream(ref_geom hGeom, ref_shader shader, u32& w_offset, FVF::LIT*& w_verts, FVF::LIT*& w_start, bool bSuppressCull)
 {
 	PROF_EVENT("FlushStream");
 	u32 w_count					= u32(w_verts-w_start);

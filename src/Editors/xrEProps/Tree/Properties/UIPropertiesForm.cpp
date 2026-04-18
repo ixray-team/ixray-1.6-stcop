@@ -57,7 +57,7 @@ void UIPropertiesForm::Draw()
 				{
 					xr_string result_as_str = "$null";
 					if (m_EditTextureValue->AfterEdit<CTextValue, xr_string>(result_as_str))
-						if (m_EditTextureValue->ApplyValue<CTextValue, LPCSTR>(result_as_str.c_str()))
+						if (m_EditTextureValue->ApplyValue<CTextValue, const char*>(result_as_str.c_str()))
 						{
 							Modified();
 						}
@@ -66,7 +66,7 @@ void UIPropertiesForm::Draw()
 				{
 					xr_string result_as_str = result.c_str();
 					if (m_EditTextureValue->AfterEdit<CTextValue, xr_string>(result_as_str))
-						if (m_EditTextureValue->ApplyValue<CTextValue, LPCSTR>(result_as_str.c_str()))
+						if (m_EditTextureValue->ApplyValue<CTextValue, const char*>(result_as_str.c_str()))
 						{
 							Modified();
 						}
@@ -309,7 +309,7 @@ void UIPropertiesForm::DrawEditText()
 				xr_string out = m_EditTextValueData;
 				if (m_EditTextValue->AfterEdit<CTextValue, xr_string>(out))
 				{
-					if (m_EditTextValue->ApplyValue<CTextValue, LPCSTR>(out.c_str()))
+					if (m_EditTextValue->ApplyValue<CTextValue, const char*>(out.c_str()))
 					{
 						xr_delete(m_EditTextValueData);
 						Modified();
@@ -377,7 +377,7 @@ void UIPropertiesForm::DrawEditText()
 				xr_string out = m_EditTextValueData;
 				if (m_EditTextValue->AfterEdit<CTextValue, xr_string>(out))
 				{
-					if (m_EditTextValue->ApplyValue<CTextValue, LPCSTR>(out.c_str()))
+					if (m_EditTextValue->ApplyValue<CTextValue, const char*>(out.c_str()))
 					{
 						Modified();
 					}

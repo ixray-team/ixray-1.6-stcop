@@ -8,7 +8,7 @@ class CGameSpy_QR2;
 struct GameInfo	{
 	shared_str	InfoName;
 	shared_str	InfoData;
-	GameInfo(LPCSTR Name, LPCSTR Data) { InfoName._set(Name); InfoData._set(Data); };
+	GameInfo(const char* Name, const char* Data) { InfoName._set(Name); InfoData._set(Data); };
 };
 
 struct BrowserPlayerInfo {
@@ -60,7 +60,7 @@ struct ServerInfo{
 		xr_strcpy(m_Address, NewAddress);
 	};
 
-	bool			operator	==		(LPCSTR Address){int res = xr_strcmp(m_Address, Address);return	res	 == 0;};
+	bool			operator	==		(const char* Address){int res = xr_strcmp(m_Address, Address);return	res	 == 0;};
 };
 
 class CGameSpy_Browser

@@ -4,7 +4,7 @@
 
 #include "tga.h"
 
-void tga_save(LPCSTR name, u32 w, u32 h, void* data, BOOL alpha)
+void tga_save(const char* name, u32 w, u32 h, void* data, bool alpha)
 {
     TGAdesc tga;
     tga.data = data;

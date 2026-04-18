@@ -20,6 +20,6 @@ public:
 				void				EventGen				( NET_Packet* P, u16 type, u16 dest);
 				void				GameEventGen			( NET_Packet* P, u16 dest);
 				void				EventSend				( NET_Packet* P);
-				LPCSTR				GetRoundTime			();
+				const char*				GetRoundTime			();
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

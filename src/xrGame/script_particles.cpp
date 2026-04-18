@@ -11,7 +11,7 @@
 #include "../xrEngine/ObjectAnimator.h"
 #include "../xrEngine/IGame_Persistent.h"
 #include "GamePersistent.h"
-CScriptParticlesCustom::CScriptParticlesCustom(CScriptParticles* owner, LPCSTR caParticlesName):
+CScriptParticlesCustom::CScriptParticlesCustom(CScriptParticles* owner, const char* caParticlesName):
 	CParticlesObject(caParticlesName,FALSE,true)
 {
 //	CScriptParticlesCustom* self = this;
@@ -48,7 +48,7 @@ void CScriptParticlesCustom::Update(u32 _dt, CFrustum& viewbase)
 		UpdateParent			(m_animator->XFORM(),vel);
 	}
 }
-void CScriptParticlesCustom::LoadPath(LPCSTR caPathName)
+void CScriptParticlesCustom::LoadPath(const char* caPathName)
 {
 	if (!m_animator) m_animator	= new CObjectAnimator();
 	if ((0==m_animator->Name())||(0!=xr_strcmp(m_animator->Name(),caPathName))){
@@ -79,7 +79,7 @@ void CScriptParticlesCustom::remove_owner	()
 	m_owner						= 0;
 }
 
-CScriptParticles::CScriptParticles(LPCSTR caParticlesName)
+CScriptParticles::CScriptParticles(const char* caParticlesName)
 {
 	m_particles = xr_make_shared<CScriptParticlesCustom>(this, caParticlesName);
 	GamePersistent().ps_active_deffer.push_back(m_particles);
@@ -152,7 +152,7 @@ bool CScriptParticles::IsLooped	() const
 	return m_particles->IsLooped();
 }
 
-void CScriptParticles::LoadPath(LPCSTR caPathName)
+void CScriptParticles::LoadPath(const char* caPathName)
 {
 	VERIFY						(m_particles);
 	m_particles->LoadPath		(caPathName);

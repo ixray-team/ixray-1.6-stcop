@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "puddle.h"
 
-CPuddle::CPuddle(LPVOID data, LPCSTR name):
+CPuddle::CPuddle(LPVOID data, const char* name):
 	CEditShape(data,name)
 {
 	Construct(data);
@@ -28,7 +28,7 @@ CPuddle::~CPuddle()
 {
 }
 
-bool CPuddle::LoadLTX(CInifile& ini, LPCSTR sect_name)
+bool CPuddle::LoadLTX(CInifile& ini, const char* sect_name)
 {
 	bool Result = CEditShape::LoadLTX(ini, sect_name);
 
@@ -36,7 +36,7 @@ bool CPuddle::LoadLTX(CInifile& ini, LPCSTR sect_name)
 	return Result;
 }
 
-void CPuddle::SaveLTX(CInifile& ini, LPCSTR sect_name)
+void CPuddle::SaveLTX(CInifile& ini, const char* sect_name)
 {
 	CEditShape::SaveLTX(ini, sect_name);
 }

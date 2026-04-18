@@ -10,7 +10,7 @@
 //------------------------------------------------------------------------------
 #define THM_CHUNK_GROUPPARAM			0x0001
 //------------------------------------------------------------------------------
-EGroupThumbnail::EGroupThumbnail(LPCSTR src_name, bool bLoad):EImageThumbnail(src_name,ETObject)
+EGroupThumbnail::EGroupThumbnail(const char* src_name, bool bLoad):EImageThumbnail(src_name,ETObject)
 {
     if (bLoad) 	Load();
 }
@@ -29,7 +29,7 @@ void EGroupThumbnail::CreateFromData(u32* p, u32 w, u32 h, const SStringVec& lst
 }
 //------------------------------------------------------------------------------
 
-bool EGroupThumbnail::Load(LPCSTR src_name, LPCSTR path)
+bool EGroupThumbnail::Load(const char* src_name, const char* path)
 {
 	string_path fn;
     strcpy(fn,EFS.ChangeFileExt(src_name?src_name:m_Name.c_str(),".thm").c_str());
@@ -73,7 +73,7 @@ bool EGroupThumbnail::Load(LPCSTR src_name, LPCSTR path)
 }
 //------------------------------------------------------------------------------
 
-void EGroupThumbnail::Save(int age, LPCSTR path)
+void EGroupThumbnail::Save(int age, const char* path)
 {
 	if (!Valid()) 	return;
 

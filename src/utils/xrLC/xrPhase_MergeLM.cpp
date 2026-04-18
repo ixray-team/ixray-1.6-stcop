@@ -54,7 +54,7 @@ u32 MergeLmap(vecDefl& Layer, CLightmap* lmap)
 		rT = rS;
 
 		// Нужен только в оригенальной LMerge
-		BOOL		bRotated = false;
+		bool		bRotated = false;
 		if (_Y < gCompilerMode.LC_sizeLmaps - HEIGHT)
 		{
 			lmap->Capture(Layer[it], rT.a.x, rT.a.y, rT.SizeX(), rT.SizeY(), bRotated);

@@ -21,15 +21,15 @@ public:
 	_object_type		*m_object;
 	CPropertyStorage	*m_storage;
 #ifdef LOG_ACTION
-	LPCSTR				m_evaluator_name;
+	const char*				m_evaluator_name;
 #endif
 
 public:
-	IC							CPropertyEvaluator	(_object_type *object = 0, LPCSTR evaluator_name = "");
+	IC							CPropertyEvaluator	(_object_type *object = 0, const char* evaluator_name = "");
 	virtual 					~CPropertyEvaluator	();
-	IC		void				init				(_object_type *object, LPCSTR evaluator_name);
+	IC		void				init				(_object_type *object, const char* evaluator_name);
 	virtual void				setup				(_object_type *object, CPropertyStorage *storage);
-	virtual void				Load				(LPCSTR section);
+	virtual void				Load				(const char* section);
 	virtual	bool			evaluate			();
 	IC		const bool &property			(const u32 &condition_id) const;
 

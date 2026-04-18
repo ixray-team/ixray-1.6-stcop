@@ -18,16 +18,16 @@
 #include "../xrEngine/string_table.h"
 
 #include "../xrEngine/XR_IOConsole.h"
-extern void execute_console_command_deferred(CConsole* c, LPCSTR string_to_execute);
+extern void execute_console_command_deferred(CConsole* c, const char* string_to_execute);
 
-extern LPCSTR alife_section;
+extern const char* alife_section;
 
 CAutosaveManager::CAutosaveManager			()
 {
 	save_str.printf("save %s - %s", Core.UserName, g_pStringTable->translate("autosave").c_str());
 
 	u32							hours,minutes,seconds;
-	LPCSTR						section = alife_section;
+	const char*						section = alife_section;
 
 	sscanf						(pSettings->r_string(section,"autosave_interval"),"%d:%d:%d",&hours,&minutes,&seconds);
 	m_autosave_interval			= (u32)generate_time(1,1,1,hours,minutes,seconds);

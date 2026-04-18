@@ -564,7 +564,7 @@ void CUIActorMenu::InfoCurItem( CUICellItem* cell_item )
 	}
 }
 
-void CUIActorMenu::CallMessageBoxYesNo( LPCSTR text )
+void CUIActorMenu::CallMessageBoxYesNo( const char* text )
 {
 	m_message_box_yes_no->SetText( text );
 	m_message_box_yes_no->func_on_ok = CUIWndCallback::void_function( this, &CUIActorMenu::OnMesBoxYes );
@@ -572,7 +572,7 @@ void CUIActorMenu::CallMessageBoxYesNo( LPCSTR text )
 	m_message_box_yes_no->ShowDialog(false);
 }
 
-void CUIActorMenu::CallMessageBoxOK( LPCSTR text )
+void CUIActorMenu::CallMessageBoxOK( const char* text )
 {
 	m_message_box_ok->SetText( text );
 	m_message_box_ok->ShowDialog(false);

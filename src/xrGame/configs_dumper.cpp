@@ -163,7 +163,7 @@ void configs_dumper::sign_configs		()
 	xr_strconcat(tmp_player_name, "\"",
 		tmp_cl_game->local_player ? tmp_cl_game->local_player->getName() : "unknown_just_connected",
 		"\"");
-	LPCSTR		tmp_cdkey_digest	= Level().get_cdkey_digest().c_str();
+	const char*		tmp_cdkey_digest	= Level().get_cdkey_digest().c_str();
 	if (!tmp_cdkey_digest)
 		tmp_cdkey_digest = "null";
 
@@ -307,7 +307,7 @@ void configs_dumper::realloc_compress_buffer(u32 need_size)
 }
 
 #ifdef DEBUG
-void configs_dumper::timer_begin(LPCSTR comment)
+void configs_dumper::timer_begin(const char* comment)
 {
 	m_timer_comment = comment;
 	m_debug_timer.Start();

@@ -82,8 +82,8 @@ public:
 	CWeaponMagazined();
 	virtual ~CWeaponMagazined();
 
-	virtual void	Load(LPCSTR section);
-	virtual void	LoadSounds(LPCSTR section);
+	virtual void	Load(const char* section);
+	virtual void	LoadSounds(const char* section);
 			void	LoadSilencerKoeffs();
 
 	virtual CWeaponBinoculars* cast_weapon_binoculars() { return nullptr; }
@@ -180,7 +180,7 @@ public:
 	virtual bool WpnCanShoot() const { return true; }
 
 protected:
-	virtual bool	install_upgrade_impl( LPCSTR section, bool test );
+	virtual bool	install_upgrade_impl( const char* section, bool test );
 
 protected:
 	virtual bool	AllowFireWhileWorking() {return false;}

@@ -31,10 +31,10 @@ public:
 						CAnomalyZone						();
 	virtual				~CAnomalyZone					();
 
-	virtual		BOOL	net_Spawn						(CSE_Abstract* DC);
+	virtual		bool	net_Spawn						(CSE_Abstract* DC);
 	virtual		void	net_Import						(NET_Packet& P);
 	virtual		void	net_Export						(NET_Packet& P);
-	virtual		void	Load							(LPCSTR section);
+	virtual		void	Load							(const char* section);
 	virtual		void	net_Destroy						();
 
 	virtual		void	save							(NET_Packet &output_packet);
@@ -47,8 +47,8 @@ public:
 	virtual		void	exit_Zone						(SZoneObjectInfo& io);
 	virtual		void	feel_touch_new					(CObject* O);
 	virtual		void	feel_touch_delete				(CObject* O);
-	virtual		BOOL	feel_touch_contact				(CObject* O);
-	virtual		BOOL	feel_touch_on_contact			(CObject* O);
+	virtual		bool	feel_touch_contact				(CObject* O);
+	virtual		bool	feel_touch_on_contact			(CObject* O);
 				
 				float	effective_radius				(float nearest_shape_radius);
 	virtual		void	net_Relcase						(CObject* O);
@@ -84,7 +84,7 @@ public:
 	void UpdateSoundsPosition(xr_vector<ref_sound>& soundsArray, const Fvector& pos);
 private:
 	void DestroySoundsArray(xr_vector<ref_sound>& soundsArray);
-	void ParseRandomSounds(LPCSTR section, LPCSTR soundPrefix, xr_vector<ref_sound>& soundsArray);
+	void ParseRandomSounds(const char* section, const char* soundPrefix, xr_vector<ref_sound>& soundsArray);
 	ICF ref_sound& GetRandomSound(xr_vector<ref_sound>& soundsArray) { return soundsArray[::Random.randI(soundsArray.size())]; }
 
 	void StopAllSounds(xr_vector<ref_sound>& soundsArray);
@@ -216,7 +216,7 @@ protected:
 	shared_str				m_sIdleParticles;
 	//выброс зоны
 	shared_str				m_sBlowoutParticles;
-	BOOL					m_bBlowoutOnce;
+	bool					m_bBlowoutOnce;
 	shared_str				m_sAccumParticles;
 	shared_str				m_sAwakingParticles;
 
@@ -322,7 +322,7 @@ public:
 	u8						PlayEntranceSmallParticles	(const Fvector& pos, const Fvector& dir, const Fvector& vel, bool play_effect = true);
 	// optimization FAST/SLOW mode
 public:	
-	virtual BOOL			AlwaysTheCrow				();
+	virtual bool			AlwaysTheCrow				();
 	void					o_switch_2_fast				();
 	void					o_switch_2_slow				();
 

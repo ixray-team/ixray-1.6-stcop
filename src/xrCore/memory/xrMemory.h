@@ -61,7 +61,7 @@ IC void		operator delete[]	(void* p)			{	xr_free(p);											}
 const		u32			mem_pools_count			=	54;
 const		u32			mem_pools_ebase			=	16;
 const		u32			mem_generic				=	mem_pools_count+1;
-extern		BOOL		mem_initialized;
+extern		bool		mem_initialized;
 
 XRCORE_API void vminfo			(size_t *_free, size_t *reserved, size_t *committed);
 XRCORE_API void log_vminfo		();

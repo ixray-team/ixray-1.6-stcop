@@ -22,15 +22,15 @@ class ISpatial;
 
 class CBlender_accum : public IBlender {
 public:
-	virtual LPCSTR getComment() {
+	virtual const char* getComment() {
 		return "INTERNAL: accumulate light";
 	}
 
-	virtual BOOL canBeDetailed() {
+	virtual bool canBeDetailed() {
 		return FALSE;
 	}
 
-	virtual BOOL canBeLMAPped() {
+	virtual bool canBeLMAPped() {
 		return FALSE;
 	}
 
@@ -136,8 +136,8 @@ class	ECORE_API CRender : public IRender_interface
 {
 	CRenderTarget* Target;
 	Fmatrix					current_matrix;
-	BOOL val_bInvisible;
-	BOOL val_bUI;
+	bool val_bInvisible;
+	bool val_bUI;
 	u32 dwFrameCalc = 0;
 public:
 	// options
@@ -156,9 +156,9 @@ public:
 
 public:
 	// Occlusion culling
-	virtual BOOL			occ_visible(Fbox& B);
-	virtual BOOL			occ_visible(sPoly& P);
-	virtual BOOL			occ_visible(vis_data& P);
+	virtual bool			occ_visible(Fbox& B);
+	virtual bool			occ_visible(sPoly& P);
+	virtual bool			occ_visible(vis_data& P);
 
 	// Constructor/destructor
 	CRender();
@@ -185,14 +185,14 @@ public:
 
 	void					reset_begin();
 	void					reset_end();
-	virtual IRenderVisual* model_Create(LPCSTR name, IReader* data = 0);
-	virtual IRenderVisual* model_CreateChild(LPCSTR name, IReader* data);
-	virtual IRenderVisual* model_CreatePE(LPCSTR name);
-	virtual IRenderVisual* model_CreateParticles(LPCSTR name);
+	virtual IRenderVisual* model_Create(const char* name, IReader* data = 0);
+	virtual IRenderVisual* model_CreateChild(const char* name, IReader* data);
+	virtual IRenderVisual* model_CreatePE(const char* name);
+	virtual IRenderVisual* model_CreateParticles(const char* name);
 
 	virtual IRender_DetailModel* model_CreateDM(IReader* R);
 	virtual IRenderVisual* model_Duplicate(IRenderVisual* V);
-	virtual void			model_Delete(IRenderVisual*& V, BOOL bDiscard = TRUE);
+	virtual void			model_Delete(IRenderVisual*& V, bool bDiscard = TRUE);
 	virtual void			model_Delete(IRender_DetailModel*& F)
 	{
 		if (F)
@@ -233,14 +233,14 @@ public:
 		RCache.hemi.set_material(0.7, 1, 0, (mtl + .5f) / 4.f);
 	}
 
-	virtual LPCSTR			getShaderPath()
+	virtual const char*			getShaderPath()
 	{
 		return "editor\\";
 	}
 
-	IRHISurface* load_texture(LPCSTR fname, u32& msize, bool bStaging = false) override;
-	bool get_texture_metadata(LPCSTR fname, RHITextureMetadata* p_data) override;
-	virtual IDirect3DBaseTexture9* texture_load(LPCSTR	fname, u32& mem_size);
+	IRHISurface* load_texture(const char* fname, u32& msize, bool bStaging = false) override;
+	bool get_texture_metadata(const char* fname, RHITextureMetadata* p_data) override;
+	virtual IDirect3DBaseTexture9* texture_load(const char*	fname, u32& mem_size);
 
 	virtual DWORD					get_dx_level();
 
@@ -251,7 +251,7 @@ public:
 		virtual	void					level_Load(IReader*);
 	virtual void					level_Unload();
 
-	//virtual IDirect3DBaseTexture9*	texture_load			(LPCSTR	fname, u32& msize)					= 0;
+	//virtual IDirect3DBaseTexture9*	texture_load			(const char*	fname, u32& msize)					= 0;
 
 	// Information
 	virtual	void					Statistics(CGameFont* F) {};
@@ -263,10 +263,10 @@ public:
 
 	// Main 
 	IC		void					set_Frustum(CFrustum* O) { VERIFY(O);	View = O; }
-	virtual	void					set_UI(BOOL 		V);
-	virtual void					set_HUD(BOOL 		V);
-	virtual BOOL					get_HUD();
-	virtual void					set_Invisible(BOOL 		V);
+	virtual	void					set_UI(bool 		V);
+	virtual void					set_HUD(bool 		V);
+	virtual bool					get_HUD();
+	virtual void					set_Invisible(bool 		V);
 	virtual void					flush();
 	virtual void					set_Object(IRenderable* O);
 	virtual	void					add_Occluder(Fbox2& bb_screenspace);	// mask screen region as oclluded (-1..1, -1..1)
@@ -287,11 +287,11 @@ public:
 
 	// Models
 	virtual void					models_Prefetch();
-	virtual void					models_Clear(BOOL b_complete);
+	virtual void					models_Clear(bool b_complete);
 
 	// Main
 
-	virtual void					Screenshot(ScreenshotMode mode = SM_NORMAL, LPCSTR name = 0);
+	virtual void					Screenshot(ScreenshotMode mode = SM_NORMAL, const char* name = 0);
 	virtual	void					Screenshot(ScreenshotMode mode, CMemoryWriter& memory_writer);
 	virtual void					ScreenshotAsyncBegin();
 	virtual void					ScreenshotAsyncEnd(CMemoryWriter& memory_writer);
@@ -324,13 +324,13 @@ public:
 protected:
 	xr_vector<D3D_SHADER_MACRO> m_ShaderOptions;
 
-	virtual	void					ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer) {};
+	virtual	void					ScreenshotImpl(ScreenshotMode mode, const char* name, CMemoryWriter* memory_writer) {};
 	HRESULT					shader_compile(
-		LPCSTR							name,
+		const char*							name,
 		DWORD const* pSrcData,
 		UINT                            SrcDataLen,
-		LPCSTR                          pFunctionName,
-		LPCSTR                          pTarget,
+		const char*                          pFunctionName,
+		const char*                          pTarget,
 		DWORD                           Flags,
 		void*& result
 	) override;

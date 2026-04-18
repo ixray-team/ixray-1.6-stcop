@@ -44,8 +44,8 @@ ENGINE_API int g_current_renderer = 0;
 
 void CEngineAPI::InitializeNotDedicated()
 {
-	LPCSTR r2_name	= "xrRender_R2";
-	LPCSTR r4_name	= "xrRender_R4";
+	const char* r2_name	= "xrRender_R2";
+	const char* r4_name	= "xrRender_R4";
 
 	if (psDeviceFlags.test(rsR4))
 	{
@@ -77,7 +77,7 @@ void CEngineAPI::InitializeNotDedicated()
 
 void CEngineAPI::InitializeDedicated()
 {
-	LPCSTR r1_name	= "xrRender_DS0";
+	const char* r1_name	= "xrRender_DS0";
 	psDeviceFlags.set	(rsR4,FALSE);
 	psDeviceFlags.set	(rsR2,FALSE);
 	renderer_value		= 0; //con cmd
@@ -103,7 +103,7 @@ void CEngineAPI::Initialize(void)
 	PROF_EVENT("CEngineAPI::Initialize");
 	//////////////////////////////////////////////////////////////////////////
 	// render
-	LPCSTR r1_name	= "xrRender_R1";
+	const char* r1_name	= "xrRender_R1";
 
 	if (!g_dedicated_server)
 		InitializeNotDedicated();
@@ -128,7 +128,7 @@ void CEngineAPI::Initialize(void)
 
 	// game
 	{
-		LPCSTR g_name	= "xrGame";
+		const char* g_name	= "xrGame";
 
 		Msg("Loading DLL: %s",g_name);
 		hGame = Platform::LoadLibrary(g_name);
@@ -155,7 +155,7 @@ void CEngineAPI::Initialize(void)
 
 	// GameSpy
 	{
-		LPCSTR g_name = "xrGameSpy";
+		const char* g_name = "xrGameSpy";
 		hGameSpy = Platform::LoadLibrary(g_name);
 
 		if (hGameSpy != 0)
@@ -210,9 +210,9 @@ void CEngineAPI::CreateRendererList()
 		bool bSupports_r2 = false;
 		bool bSupports_r4 = false;
 
-		LPCSTR r1_name	= "xrRender_R1.dll";
-		LPCSTR r2_name	= "xrRender_R2.dll";
-		LPCSTR r4_name	= "xrRender_R4.dll";
+		const char* r1_name	= "xrRender_R1.dll";
+		const char* r2_name	= "xrRender_R2.dll";
+		const char* r4_name	= "xrRender_R4.dll";
 
 		if (Core.ParamsData.test(ECoreParams::perfhud_hack))
 		{
@@ -230,7 +230,7 @@ void CEngineAPI::CreateRendererList()
 
 		hRender = 0;
 
-		xr_vector<LPCSTR> _tmp;
+		xr_vector<const char*> _tmp;
 		if (bSupports_r1)
 		{
 			_tmp.push_back(xr_strdup("renderer_r1"));

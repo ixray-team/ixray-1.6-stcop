@@ -13,7 +13,7 @@
 #define SOUND_CHUNK_ENV_REFS			0x1003
 
 
-ESoundEnvironment::ESoundEnvironment(LPVOID data, LPCSTR name)
+ESoundEnvironment::ESoundEnvironment(LPVOID data, const char* name)
 	:CEditShape(data,name)
 {
 	Construct(data);
@@ -40,7 +40,7 @@ void ESoundEnvironment::OnUpdateTransform()
 	ExecCommand		(COMMAND_REFRESH_SOUND_ENV_GEOMETRY);
 }
 
-bool ESoundEnvironment::LoadLTX(CInifile& ini, LPCSTR sect_name)
+bool ESoundEnvironment::LoadLTX(CInifile& ini, const char* sect_name)
 {
 	u32 version 	= ini.r_u32(sect_name, "version");
 
@@ -58,7 +58,7 @@ bool ESoundEnvironment::LoadLTX(CInifile& ini, LPCSTR sect_name)
 	return 			true;
 }
 
-void ESoundEnvironment::SaveLTX(CInifile& ini, LPCSTR sect_name)
+void ESoundEnvironment::SaveLTX(CInifile& ini, const char* sect_name)
 {
 	inherited::SaveLTX	(ini, sect_name);
 
@@ -108,7 +108,7 @@ void ESoundEnvironment::OnChangeEnvs(PropValue* prop)
 }
 
 
-void ESoundEnvironment::FillProp(LPCSTR pref, PropItemVec& values)
+void ESoundEnvironment::FillProp(const char* pref, PropItemVec& values)
 {
 	inherited::FillProp			(pref, values);
 	PropValue* P;

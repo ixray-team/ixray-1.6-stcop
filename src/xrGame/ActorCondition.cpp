@@ -23,7 +23,7 @@
 #define MAX_SATIETY					1.0f
 #define START_SATIETY				0.5f
 
-BOOL	GodMode	()	
+bool	GodMode	()	
 { 
 	if (IsGameTypeSingle()) 
 		return psActorFlags.test(AF_GOD_MODE|AF_DISABLE_CONDITION_TEST); 
@@ -86,11 +86,11 @@ CActorCondition::~CActorCondition()
 	m_booster_influences.clear();
 }
 
-void CActorCondition::LoadCondition(LPCSTR entity_section)
+void CActorCondition::LoadCondition(const char* entity_section)
 {
 	inherited::LoadCondition(entity_section);
 
-	LPCSTR						section = READ_IF_EXISTS(pSettings,r_string,entity_section,"condition_sect",entity_section);
+	const char*						section = READ_IF_EXISTS(pSettings,r_string,entity_section,"condition_sect",entity_section);
 
 	m_fJumpPower				= pSettings->r_float(section,"jump_power");
 	m_fStandPower				= pSettings->r_float(section,"stand_power");
@@ -983,8 +983,8 @@ void CActorCondition::UpdateTutorialThresholds()
 	}
 	
 	if(!b){
-		luabind::functor<LPCSTR>			fl;
-		R_ASSERT							(ai().script_engine().functor<LPCSTR>(cb_name,fl));
+		luabind::functor<const char*>			fl;
+		R_ASSERT							(ai().script_engine().functor<const char*>(cb_name,fl));
 		fl									();
 	}
 }
@@ -1107,7 +1107,7 @@ void enable_input();
 void hide_indicators();
 void show_indicators();
 
-CActorDeathEffector::CActorDeathEffector	(CActorCondition* parent, LPCSTR sect)	// -((
+CActorDeathEffector::CActorDeathEffector	(CActorCondition* parent, const char* sect)	// -((
 :m_pParent(parent)
 {
 	Actor()->SetWeaponHideState(INV_STATE_BLOCK_ALL,true);
@@ -1115,7 +1115,7 @@ CActorDeathEffector::CActorDeathEffector	(CActorCondition* parent, LPCSTR sect)	
 
 	AddEffector				(Actor(), effActorDeath, sect);
 	disable_input			();
-	LPCSTR snd				= pSettings->r_string(sect, "snd");
+	const char* snd				= pSettings->r_string(sect, "snd");
 	m_death_sound.create	(snd,st_Effect,0);
 	m_death_sound.play_at_pos(0,Fvector().set(0,0,0),sm_2D);
 

@@ -205,7 +205,7 @@ public:
 	shared_str		    ParentName		(){return parent_name;}
 	shared_str		    WMap			(){return wmap;}
 	IC CBone*		    Parent			(){return parent;}
-    IC BOOL			    IsRoot			(){return (parent==0);}
+    IC bool			    IsRoot			(){return (parent==0);}
 
     // transformation
     const Fvector&      _Offset			(){return mot_offset;}
@@ -247,7 +247,7 @@ public:
 
 	bool 			    Pick			(float& dist, const Fvector& S, const Fvector& D, const Fmatrix& parent);
 
-    void			    Select			(BOOL flag)	{ flags.set(flSelected,flag); }
+    void			    Select			(bool flag)	{ flags.set(flSelected,flag); }
     bool			    Selected		(){return flags.is(flSelected);}
 
     void			    ClampByLimits	();

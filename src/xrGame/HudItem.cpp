@@ -38,7 +38,7 @@ DLL_Pure *CHudItem::_construct()
 	return m_object;
 }
 
-void CHudItem::Load(LPCSTR section)
+void CHudItem::Load(const char* section)
 {
 	hud_sect				= READ_IF_EXISTS(pSettings, r_string, section,"hud", nullptr);
 	hud_sect_cache = hud_sect;
@@ -87,7 +87,7 @@ void CHudItem::Load(LPCSTR section)
 	LoadSounds(section);
 }
 
-void CHudItem::LoadSounds(LPCSTR section)
+void CHudItem::LoadSounds(const char* section)
 {
 	m_eSoundsFlags.zero();
 	m_eSoundsFlags2.zero();
@@ -146,7 +146,7 @@ void CHudItem::LoadSounds(LPCSTR section)
 	}
 }
 
-void CHudItem::PlaySound(LPCSTR alias, const Fvector& position, bool allowOverlap)
+void CHudItem::PlaySound(const char* alias, const Fvector& position, bool allowOverlap)
 {
 	m_sounds.PlaySound(alias, position, object().H_Root(), !!GetHUDSoundMode(), false, allowOverlap, m_started_rnd_anim_idx);
 }
@@ -154,7 +154,7 @@ void CHudItem::PlaySound(LPCSTR alias, const Fvector& position, bool allowOverla
 void CHudItem::renderable_Render()
 {
 	UpdateXForm					();
-	BOOL _hud_render			= ::Render->get_HUD() && GetHUDSoundMode();
+	bool _hud_render			= ::Render->get_HUD() && GetHUDSoundMode();
 	
 	if(_hud_render  && !IsHidden())
 	{ 
@@ -586,7 +586,7 @@ u32 CHudItem::PlayHUDMotion(const shared_str& M, EHudMixType bMixIn, u32 state)
 	return anim_time;
 }
 
-bool CHudItem::AddSuffixName(shared_str& anim, LPCSTR suffix, LPCSTR test_suffix)
+bool CHudItem::AddSuffixName(shared_str& anim, const char* suffix, const char* test_suffix)
 {
 	string128 new_name = {};
 	xr_strconcat(new_name, anim.c_str(), suffix, test_suffix);
@@ -632,7 +632,7 @@ void CHudItem::StopCurrentAnimWithoutCallback()
 	m_current_motion_def		= nullptr;
 }
 
-BOOL CHudItem::GetHUDmode()
+bool CHudItem::GetHUDmode()
 {
 	if (m_object && m_object->H_Parent()) {
 		CActor* A = m_object->H_Parent()->cast_actor();
@@ -642,7 +642,7 @@ BOOL CHudItem::GetHUDmode()
 	return FALSE;
 }
 
-BOOL CHudItem::GetHUDSoundMode()
+bool CHudItem::GetHUDSoundMode()
 {
 	if (m_object && m_object->H_Parent()) {
 		CActor* A = m_object->H_Parent()->cast_actor();
@@ -905,7 +905,7 @@ float CHudItem::GetHudFov()
 	return m_nearwall_last_hud_fov * m_fHudFovFactor;
 }
 
-void CHudItem::PlaySoundIfExist(LPCSTR alias, const Fvector& position, bool allowOverlap)
+void CHudItem::PlaySoundIfExist(const char* alias, const Fvector& position, bool allowOverlap)
 {
 	HUD_SOUND_ITEM* SndIter = m_sounds.FindSoundItem(alias, false);
 	if (SndIter != nullptr)
@@ -914,7 +914,7 @@ void CHudItem::PlaySoundIfExist(LPCSTR alias, const Fvector& position, bool allo
 	}
 }
 
-void CHudItem::SetModelBoneStatus(const char* bone, BOOL show)
+void CHudItem::SetModelBoneStatus(const char* bone, bool show)
 {
 	if (HudItemData())
 	{
@@ -930,7 +930,7 @@ void CHudItem::SetModelBoneStatus(const char* bone, BOOL show)
 	}
 }
 
-void CHudItem::SetMultipleBonesStatus(const char* section, const char* line, BOOL show)
+void CHudItem::SetMultipleBonesStatus(const char* section, const char* line, bool show)
 {
 	if (!pSettings->section_exist(section))
 	{
@@ -939,7 +939,7 @@ void CHudItem::SetMultipleBonesStatus(const char* section, const char* line, BOO
 
 	if (!!pSettings->line_exist(section, line))
 	{
-		LPCSTR	S = pSettings->r_string(section, line);
+		const char*	S = pSettings->r_string(section, line);
 		if (S && S[0])
 		{
 			string128 _Item = {};
@@ -1021,14 +1021,14 @@ void CHudItem::OnMotionMark(u32 state, const motion_marks& mark)
 	}
 }
 
-bool CHudItem::SoundExist(LPCSTR section, LPCSTR sound_name)
+bool CHudItem::SoundExist(const char* section, const char* sound_name)
 {
 	if (!pSettings->line_exist(section, sound_name))
 	{
 		return false;
 	}
 
-	LPCSTR str = pSettings->r_string(section, sound_name);
+	const char* str = pSettings->r_string(section, sound_name);
 	if (str == nullptr || xr_strlen(str) == 0)
 	{
 		return false;
@@ -1099,7 +1099,7 @@ bool CHudItem::SetKeyRepeatFlag(u32 kfACTTYPE)
 	return result;
 }
 
-void CHudItem::PlayBonePartAnim(const shared_str& anim, BOOL bMixIn)
+void CHudItem::PlayBonePartAnim(const shared_str& anim, bool bMixIn)
 {
 	if (attachable_hud_item* hid = HudItemData())
 	{

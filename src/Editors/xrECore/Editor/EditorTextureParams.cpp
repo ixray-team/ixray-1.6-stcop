@@ -2,7 +2,7 @@
 #include "../xrEProps/ChooseTypesHelper.H"
 #include "../../xrEngine/ETextureParams.H"
 
-void EditorFillPropTextureParams(STextureParams* ThisCall, LPCSTR base_name, xr_vector<PropItem*>& items, PropValue::TOnChange OnChangeEvent)
+void EditorFillPropTextureParams(STextureParams* ThisCall, const char* base_name, xr_vector<PropItem*>& items, PropValue::TOnChange OnChangeEvent)
 {
 	ThisCall->OnTypeChangeEvent = OnChangeEvent;
 	PropValue* P = PHelper().CreateToken32(items, "Type", (u32*)&ThisCall->type, ttype_token);

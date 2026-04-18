@@ -22,7 +22,7 @@ CGrenade::CGrenade(void)
 	m_eExplosionHitTypes.clear();
 }
 
-void CGrenade::Load(LPCSTR section) 
+void CGrenade::Load(const char* section) 
 {
 	inherited::Load(section);
 	CExplosive::Load(section);
@@ -33,7 +33,7 @@ void CGrenade::Load(LPCSTR section)
 	if (m_bExplosionOnHit)
 	{
 		string128 S1;
-		LPCSTR S_ = pSettings->r_string(section, "explosion_hit_types");
+		const char* S_ = pSettings->r_string(section, "explosion_hit_types");
 		int count = _GetItemCount(S_);
 		for (int i = 0; i < count; ++i)
 		{
@@ -57,7 +57,7 @@ void CGrenade::Load(LPCSTR section)
 	m_grenade_detonation_threshold_hit=READ_IF_EXISTS(pSettings,r_float,section,"detonation_threshold_hit",default_grenade_detonation_threshold_hit);
 }
 
-void CGrenade::LoadSounds(LPCSTR section)
+void CGrenade::LoadSounds(const char* section)
 {
 	inherited::LoadSounds(section);
 
@@ -102,10 +102,10 @@ void CGrenade::Hit					(SHit* pHDS)
 	inherited::Hit(pHDS);
 }
 
-BOOL CGrenade::net_Spawn(CSE_Abstract* DC) 
+bool CGrenade::net_Spawn(CSE_Abstract* DC) 
 {
 	m_dwGrenadeIndependencyTime			= 0;
-	BOOL ret= inherited::net_Spawn		(DC);
+	bool ret= inherited::net_Spawn		(DC);
 	Fvector box;BoundingBox().getsize	(box);
 	float max_size						= std::max(std::max(box.x,box.y),box.z);
 	box.set								(max_size,max_size,max_size);
@@ -466,7 +466,7 @@ ALife::_TIME_ID	 CGrenade::TimePassedAfterIndependant()	const
 		return 0;
 }
 
-BOOL CGrenade::UsedAI_Locations		()
+bool CGrenade::UsedAI_Locations		()
 {
 #pragma todo("Dima to Yura : It crashes, because on net_Spawn object doesn't use AI locations, but on net_Destroy it does use them")
 	return inherited::UsedAI_Locations( );//m_dwDestroyTime == 0xffffffff;

@@ -59,7 +59,7 @@ public:
     u32				m_LControl;
 
 	// build options
-    BOOL 			m_UseInD3D;
+    bool 			m_UseInD3D;
 
     // fuzzy
     struct SFuzzyData{
@@ -94,8 +94,8 @@ public:
         }
         void		SaveStream(IWriter& F);
         void		LoadStream(IReader& F);
-        void		SaveLTX(CInifile& ini, LPCSTR sect_name);
-        void		LoadLTX(CInifile& ini, LPCSTR sect_name);
+        void		SaveLTX(CInifile& ini, const char* sect_name);
+        void		LoadLTX(CInifile& ini, const char* sect_name);
     };
     SFuzzyData*		m_FuzzyData;
 
@@ -117,7 +117,7 @@ protected:
 //    virtual Fvector& GetPosition	()						{ return m_D3D.position; 	}
 //    virtual void 	SetPosition		(const Fvector& pos)	{ m_D3D.position.set(pos);	UpdateTransform();}
 public:
-					CLight			(LPVOID data, LPCSTR name);
+					CLight			(LPVOID data, const char* name);
 	void 			Construct		(LPVOID data);
 	virtual 		~CLight			();
     void			CopyFrom		(CLight* src);
@@ -136,26 +136,26 @@ public:
 
     // file system function
 	virtual bool 	LoadStream		(IReader&);
-	virtual bool 	LoadLTX			(CInifile& ini, LPCSTR sect_name);
+	virtual bool 	LoadLTX			(CInifile& ini, const char* sect_name);
 	virtual void 	SaveStream			(IWriter&);
-	virtual void 	SaveLTX			(CInifile& ini, LPCSTR sect_name);
+	virtual void 	SaveLTX			(CInifile& ini, const char* sect_name);
 
     
-	virtual void	FillProp		(LPCSTR pref, PropItemVec& items);
-	void			FillSunProp		(LPCSTR pref, PropItemVec& items);
-	void			FillPointProp	(LPCSTR pref, PropItemVec& items);
-	void			FillSpotProp	(LPCSTR pref, PropItemVec& items);
-    void			FillAttProp		(LPCSTR pref, PropItemVec& items);
+	virtual void	FillProp		(const char* pref, PropItemVec& items);
+	void			FillSunProp		(const char* pref, PropItemVec& items);
+	void			FillPointProp	(const char* pref, PropItemVec& items);
+	void			FillSpotProp	(const char* pref, PropItemVec& items);
+    void			FillAttProp		(const char* pref, PropItemVec& items);
 	virtual bool 	GetSummaryInfo	(SSceneSummary* inf);
 
     // render utility function
-    void 			AffectD3D		(BOOL flag);
+    void 			AffectD3D		(bool flag);
 
 	virtual void 	Render			(int priority, bool strictB2F);
 	virtual void 	OnFrame			();
     void 			Update			();
 
-    LPCSTR			GetLControlName	();
+    const char*			GetLControlName	();
     
     // events
     virtual void    OnShowHint  	(AStringVec& dest);

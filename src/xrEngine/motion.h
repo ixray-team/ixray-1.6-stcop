@@ -35,7 +35,7 @@ struct st_BoneMotion
 	CEnvelope*	envs			[ctMaxChannel];
 	Flags8		m_Flags;
     			st_BoneMotion()	{name=0; m_Flags.zero(); ZeroMemory(envs,sizeof(CEnvelope*)*ctMaxChannel);}
-    void        SetName(LPCSTR nm)	{	name=nm;	}
+    void        SetName(const char* nm)	{	name=nm;	}
 };
 
 // vector по костям
@@ -63,7 +63,7 @@ public:
 	virtual			~CCustomMotion	();
 
 	void			SetName			(const char* n)	{string256 tmp; tmp[0]=0; if(n){xr_strcpy(tmp,n); _strlwr(tmp);} name=tmp;}
-	LPCSTR			Name			()				{return name.c_str();}
+	const char*			Name			()				{return name.c_str();}
     int				FrameStart		()				{return iFrameStart;}
     int				FrameEnd		()				{return iFrameEnd;}
     float			FPS				()				{return fFPS;}
@@ -110,8 +110,8 @@ public:
     void			NormalizeKeys	();
     int				KeyCount		();
 	CEnvelope*		Envelope		(EChannelType et=ctPositionX);
-    BOOL			ScaleKeys		(float from_time, float to_time, float scale_factor);
-    BOOL			NormalizeKeys	(float from_time, float to_time, float speed);
+    bool			ScaleKeys		(float from_time, float to_time, float scale_factor);
+    bool			NormalizeKeys	(float from_time, float to_time, float speed);
     float			GetLength		(float* mn=0, float* mx=0);
 };
 
@@ -183,8 +183,8 @@ struct ECORE_API SAnimParams		{
     float			tmp;
     float			min_t;
     float			max_t;
-    BOOL			bPlay;
-	BOOL			bWrapped;
+    bool			bPlay;
+	bool			bWrapped;
 public:
 					SAnimParams(){bWrapped=false;bPlay=false;t_current=0.f;min_t=0.f;max_t=0.f;tmp=0.f;}
     void			Set		(CCustomMotion* M);

@@ -18,7 +18,7 @@
 #include "physics_game.h"
 extern	pureFrame*				g_pNetProcessor;
 
-BOOL CLevel::net_Start_client	( LPCSTR options )
+bool CLevel::net_Start_client	( const char* options )
 {
 	return FALSE;
 }
@@ -80,9 +80,9 @@ bool	CLevel::net_start_client3				()
 	PROF_EVENT("CLevel::net_start_client3");
 	if(connected_to_server)
 	{
-		LPCSTR					level_name = nullptr;
-		LPCSTR					level_ver = nullptr;
-		LPCSTR					download_url = nullptr;
+		const char*					level_name = nullptr;
+		const char*					level_ver = nullptr;
+		const char*					download_url = nullptr;
 
 		if (psNET_direct_connect)	//single
 		{

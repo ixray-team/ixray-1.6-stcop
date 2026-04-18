@@ -14,6 +14,6 @@ class CALifeCombatManager :
 {
 
 public:
-	CALifeCombatManager(xrServer* server, LPCSTR section);
+	CALifeCombatManager(xrServer* server, const char* section);
 	void kill_entity(CSE_ALifeMonsterAbstract* l_tpALifeMonsterAbstract, const GameGraph::_GRAPH_ID& l_tGraphID, CSE_ALifeSchedulable* schedulable);
 };

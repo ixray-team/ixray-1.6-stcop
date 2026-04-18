@@ -17,7 +17,7 @@
 // just check the method's declaration
 #if defined(OPC_RAYCOLLIDER_SCALE_BEFORE_OVERLAP)
 
- inline_ BOOL RayCollider::RayTriOverlap(const Point& vert0_, const Point& vert1_, const Point& vert2_)
+ inline_ bool RayCollider::RayTriOverlap(const Point& vert0_, const Point& vert1_, const Point& vert2_)
  {
 	// Applies model's local scale
 	const IceMaths::Point& vert0 = vert0_*mLocalScale;
@@ -26,7 +26,7 @@
 
 #else
 
- inline_ BOOL RayCollider::RayTriOverlap(const Point& vert0, const Point& vert1, const Point& vert2)
+ inline_ bool RayCollider::RayTriOverlap(const Point& vert0, const Point& vert1, const Point& vert2)
  {
 
 #endif

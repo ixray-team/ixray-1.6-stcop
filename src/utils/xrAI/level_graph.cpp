@@ -9,9 +9,9 @@
 #include "StdAfx.h"
 #include "level_graph.h"
 
-LPCSTR LEVEL_GRAPH_NAME = "level.ai";
+const char* LEVEL_GRAPH_NAME = "level.ai";
 
-CLevelGraph::CLevelGraph(LPCSTR filename)
+CLevelGraph::CLevelGraph(const char* filename)
 {
 	string256					file_name;
 	xr_strconcat(file_name, filename, LEVEL_GRAPH_NAME);

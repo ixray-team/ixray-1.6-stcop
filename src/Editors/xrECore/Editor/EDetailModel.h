@@ -17,7 +17,7 @@ class ECORE_API EDetail: public CDetail{
 						EVertexIn	(const Fvector& _P, float _u, float _v){P.set(_P); u=_u; v=_v;};
 		IC void			set			(EVertexIn& src){P.set(src.P); u=src.u; v=src.v;};
 		IC void			set			(const Fvector& _P, float _u, float _v){P.set(_P); u=_u; v=_v;};
-		IC BOOL			similar		(EVertexIn& V)
+		IC bool			similar		(EVertexIn& V)
 		{
 			if (!fsimilar	(u,V.u,EPS_L))	return FALSE;
 			if (!fsimilar	(v,V.v,EPS_L))	return FALSE;
@@ -33,7 +33,7 @@ class ECORE_API EDetail: public CDetail{
 						fvfVertexIn	(const Fvector& _P, float _u, float _v){P.set(_P); u=_u; v=_v;};
 		void			set			(fvfVertexIn& src){P.set(src.P); u=src.u; v=src.v;};
 		void			set			(const Fvector& _P, float _u, float _v){P.set(_P); u=_u; v=_v;};
-		BOOL			similar		(fvfVertexIn& V)
+		bool			similar		(fvfVertexIn& V)
 		{
 			if (!fsimilar	(u,V.u,EPS_L))	return FALSE;
 			if (!fsimilar	(v,V.v,EPS_L))	return FALSE;
@@ -78,16 +78,16 @@ public:
 
 	bool				Load            (IReader&);
 	void				Save            (IWriter&);
-	bool   				LoadLTX			(CInifile& ini, LPCSTR sect_name);
-	void   				SaveLTX			(CInifile& ini, LPCSTR sect_name);
-	void				Export			(IWriter&, LPCSTR tex_name, const Fvector2& offs, const Fvector2& scale, bool rot);
-	void				Export			(LPCSTR name);
+	bool   				LoadLTX			(CInifile& ini, const char* sect_name);
+	void   				SaveLTX			(CInifile& ini, const char* sect_name);
+	void				Export			(IWriter&, const char* tex_name, const Fvector2& offs, const Fvector2& scale, bool rot);
+	void				Export			(const char* name);
 
-	bool				Update			(LPCSTR name);
+	bool				Update			(const char* name);
 	virtual void		Unload			();
 
-	LPCSTR				GetName			();
-	LPCSTR				GetTextureName	();
+	const char*				GetName			();
+	const char*				GetTextureName	();
 	void				OnDeviceCreate	();
 	void				OnDeviceDestroy	();
 	void				DefferedLoad	();

@@ -30,7 +30,7 @@ CPsyDog::~CPsyDog()
 	xr_free							(m_phantoms_die_time);
 }
 
-void CPsyDog::Load(LPCSTR section)
+void CPsyDog::Load(const char* section)
 {
 	inherited::Load					(section);
 	
@@ -53,7 +53,7 @@ void CPsyDog::Load(LPCSTR section)
 		m_time_phantom_respawn		=	pSettings->r_u32(section,"Time_Phantom_Appear");
 }
 
-BOOL CPsyDog::net_Spawn(CSE_Abstract *dc)
+bool CPsyDog::net_Spawn(CSE_Abstract *dc)
 {
 	if (!inherited::net_Spawn(dc)) return FALSE;
 
@@ -64,7 +64,7 @@ void CPsyDog::reinit()
 	inherited::reinit	();
 	m_aura->reinit		();
 }
-void CPsyDog::reload(LPCSTR section)
+void CPsyDog::reload(const char* section)
 {
 	inherited::reload(section);
 }
@@ -106,7 +106,7 @@ bool CPsyDog::spawn_phantom()
 	if (!control().path_builder().get_node_in_radius(ai_location().level_vertex_id(), 4,8,5,node)) return false;
 	
  	// set id to created server object
-	LPCSTR phantomSection = READ_IF_EXISTS(pSettings, r_string, this->get_section(), "phantom_section", "psy_dog_phantom");
+	const char* phantomSection = READ_IF_EXISTS(pSettings, r_string, this->get_section(), "phantom_section", "psy_dog_phantom");
 	CSE_Abstract* phantom = Level().spawn_item(phantomSection, ai().level_graph().vertex_position(node), node, 0xffff, true);
 	CSE_ALifeMonsterBase	*pSE_Monster = smart_cast<CSE_ALifeMonsterBase*>(phantom);
 	VERIFY(pSE_Monster);
@@ -196,7 +196,7 @@ CPsyDogPhantom::CPsyDogPhantom()
 CPsyDogPhantom::~CPsyDogPhantom()
 {
 }
-BOOL CPsyDogPhantom::net_Spawn(CSE_Abstract *dc)
+bool CPsyDogPhantom::net_Spawn(CSE_Abstract *dc)
 {
 	if (!inherited::net_Spawn(dc)) return FALSE;
 

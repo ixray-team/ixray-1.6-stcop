@@ -2,7 +2,7 @@
 #include "WaveForm.h"
 #define TSTRING_COUNT 10
 
-const LPCSTR TEXTUREString[TSTRING_COUNT] = { "Custom...","$null","$base0", "$base1" ,"$base2" ,"$base3" ,"$base4","$base5" ,"$base6" ,"$base7" };
+const char* TEXTUREString[TSTRING_COUNT] = { "Custom...","$null","$base0", "$base1" ,"$base2" ,"$base3" ,"$base4","$base5" ,"$base6" ,"$base7" };
 
 xr_string FloatTimeToStrTime(float time)
 {
@@ -91,7 +91,7 @@ inline bool DrawNumeric<float>(PropItem* item, bool& change, bool read_only)
 //-----------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------
 template <class T>
-BOOL TokenOnEdit(PropItem* prop, bool& change)
+bool TokenOnEdit(PropItem* prop, bool& change)
 {
 	TokenValue<T>* V = dynamic_cast<TokenValue<T>*>(prop->GetFrontValue());
 	if (!V)					return FALSE;
@@ -119,7 +119,7 @@ BOOL TokenOnEdit(PropItem* prop, bool& change)
 //-----------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------
 template <class T>
-BOOL RTokenOnEdit(PropItem* prop, bool& change)
+bool RTokenOnEdit(PropItem* prop, bool& change)
 {
 	RTokenValue<T>* V = dynamic_cast<RTokenValue<T>*>(prop->GetFrontValue());
 	if (!V)					return FALSE;
@@ -147,7 +147,7 @@ BOOL RTokenOnEdit(PropItem* prop, bool& change)
 //-----------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------
 template <class T>
-BOOL FlagOnEdit(PropItem* prop, bool& change)
+bool FlagOnEdit(PropItem* prop, bool& change)
 {
 	FlagValue<_flags<T> >* V = dynamic_cast<FlagValue<_flags<T> >*>(prop->GetFrontValue());
 	if (!V)					return FALSE;
@@ -272,7 +272,7 @@ void UIPropertiesItem::DrawProp()
 			return false;
 		};
 		
-		if (!TryDrawBool.operator()<BOOLValue, BOOL>())
+		if (!TryDrawBool.operator()<BOOLValue, int>())
 		{
 			TryDrawBool.operator()<BoolValue, bool>();
 		}
@@ -553,7 +553,7 @@ void UIPropertiesItem::DrawProp()
 		xr_string edit_val = T->GetValue();
 		PItem->BeforeEdit<CTextValue, xr_string>(edit_val);
 		int index = 0; int cnt = TSTRING_COUNT ;
-		LPCSTR List[TSTRING_COUNT+1] = { TEXTUREString[0],TEXTUREString[1],TEXTUREString[2],TEXTUREString[3],TEXTUREString[4],TEXTUREString[5],TEXTUREString[6],TEXTUREString[7],TEXTUREString[8],TEXTUREString[9],0 };
+		const char* List[TSTRING_COUNT+1] = { TEXTUREString[0],TEXTUREString[1],TEXTUREString[2],TEXTUREString[3],TEXTUREString[4],TEXTUREString[5],TEXTUREString[6],TEXTUREString[7],TEXTUREString[8],TEXTUREString[9],0 };
 		if(edit_val == List[1])index = 1;
 		else if (edit_val == List[2])index = 2;
 		else if (!edit_val.empty()) { List[3] = edit_val.c_str(); index = 3; cnt = 4; }
@@ -570,7 +570,7 @@ void UIPropertiesItem::DrawProp()
 				edit_val = List[index];
 				if (PItem->AfterEdit<CTextValue, xr_string>(edit_val)) 
 				{
-					if (PItem->ApplyValue<CTextValue, LPCSTR>(edit_val.c_str()))
+					if (PItem->ApplyValue<CTextValue, const char*>(edit_val.c_str()))
 					{
 						PropertiesFrom->Modified();
 					}
@@ -584,7 +584,7 @@ void UIPropertiesItem::DrawProp()
 		CListValue* V = smart_cast<CListValue*>(PItem->GetFrontValue());
 		if (V)
 		{
-			LPCSTR edit_value = V->value;
+			const char* edit_value = V->value;
 			int index = 0;
 			int i = 0;
 			for (; i < V->item_count; i++)
@@ -597,7 +597,7 @@ void UIPropertiesItem::DrawProp()
 			if (ImGui::Combo("##value", &index, [](void* data, int idx, const char** out_text)->bool {*out_text = reinterpret_cast<xr_string*>(data)[idx].c_str(); return true; }, reinterpret_cast<void*>(V->items), i))
 			{
 				if (PItem->AfterEdit<CListValue, xr_string>(V->items[index]))
-					if (PItem->ApplyValue<CListValue, LPCSTR>(V->items[index].c_str()))PropertiesFrom->Modified();
+					if (PItem->ApplyValue<CListValue, const char*>(V->items[index].c_str()))PropertiesFrom->Modified();
 			}
 		}
 	}
@@ -608,7 +608,7 @@ void UIPropertiesItem::DrawProp()
 
 		if (V)
 		{
-			LPCSTR edit_value = V->value ? V->value->c_str() : 0;
+			const char* edit_value = V->value ? V->value->c_str() : 0;
 			int index = 0;
 			int i = 0;
 			for (; i < V->item_count; i++)

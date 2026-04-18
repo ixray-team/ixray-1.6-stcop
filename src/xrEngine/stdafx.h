@@ -49,5 +49,5 @@ extern ENGINE_API bool g_dedicated_server;
 
 
 struct ISE_AbstractLEOwner{
-	virtual void			get_bone_xform			(LPCSTR name, Fmatrix& xform) = 0;
+	virtual void			get_bone_xform			(const char* name, Fmatrix& xform) = 0;
 };

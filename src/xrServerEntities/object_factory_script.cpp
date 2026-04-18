@@ -14,7 +14,7 @@
 #include "../xrScripts/script_engine.h"
 #include "object_item_script.h"
 
-void CObjectFactory::register_script_class	(LPCSTR client_class, LPCSTR server_class, LPCSTR clsid, LPCSTR script_clsid)
+void CObjectFactory::register_script_class	(const char* client_class, const char* server_class, const char* clsid, const char* script_clsid)
 {
 #ifndef NO_XR_GAME
 	luabind::object				client;
@@ -41,7 +41,7 @@ void CObjectFactory::register_script_class	(LPCSTR client_class, LPCSTR server_c
 	);
 }
 
-void CObjectFactory::register_script_class			(LPCSTR unknown_class, LPCSTR clsid, LPCSTR script_clsid)
+void CObjectFactory::register_script_class			(const char* unknown_class, const char* clsid, const char* script_clsid)
 {
 	luabind::object				creator;
 	if (!ai().script_engine().function_object(unknown_class,creator,LUA_TUSERDATA)) {
@@ -117,7 +117,7 @@ void CObjectFactory::script_register(lua_State *L)
 	module(L)
 	[
 		class_<CObjectFactory>("object_factory")
-			.def("register",	(void (CObjectFactory::*)(LPCSTR,LPCSTR,LPCSTR,LPCSTR))(&CObjectFactory::register_script_class))
-			.def("register",	(void (CObjectFactory::*)(LPCSTR,LPCSTR,LPCSTR))(&CObjectFactory::register_script_class))
+			.def("register",	(void (CObjectFactory::*)(const char*,const char*,const char*,const char*))(&CObjectFactory::register_script_class))
+			.def("register",	(void (CObjectFactory::*)(const char*,const char*,const char*))(&CObjectFactory::register_script_class))
 	];
 }

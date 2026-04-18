@@ -14,8 +14,8 @@
 #include "game_cl_base_weapon_usage_statistic.h"
 #include "game_sv_mp_vote_flags.h"
 
-EGameIDs ParseStringToGameType	(LPCSTR str);
-LPCSTR GameTypeToString			(EGameIDs gt, bool bShort);
+EGameIDs ParseStringToGameType	(const char* str);
+const char* GameTypeToString			(EGameIDs gt, bool bShort);
 
 game_cl_GameState::game_cl_GameState()
 {
@@ -426,7 +426,7 @@ void game_cl_GameState::SendPickUpEvent(u16 ID_who, u16 ID_what)
 	u_EventSend		(P);
 };
 
-void game_cl_GameState::set_type_name(LPCSTR s)	
+void game_cl_GameState::set_type_name(const char* s)	
 { 
 	EGameIDs gid =			ParseStringToGameType	(s);
 	m_game_type_name		= GameTypeToString		(gid, false); 

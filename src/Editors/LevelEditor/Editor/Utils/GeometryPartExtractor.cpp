@@ -378,7 +378,7 @@ void CGeomPartExtractor::Clear		()
     m_Parts.clear	();
     m_Adjs.clear	();
 }
-BOOL CGeomPartExtractor::Process()
+bool CGeomPartExtractor::Process()
 {
     // make adjacement
     {

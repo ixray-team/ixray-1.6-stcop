@@ -9,7 +9,7 @@
 #include "StdAfx.h"
 #include "xrCrossTable.h"
 
-LPCSTR GAME_LEVEL_GRAPH = "level.graph";
+const char* GAME_LEVEL_GRAPH = "level.graph";
 
 using FLOAT_VECTOR = xr_vector<u32>;
 using FLOAT_IT = FLOAT_VECTOR::iterator;
@@ -87,7 +87,7 @@ void					vfRecurseMark(const CLevelGraph &tMap, xr_vector<bool> &tMarks, u32 dwS
 	}
 }
 
-void xrBuildCrossTable(LPCSTR caProjectName)
+void xrBuildCrossTable(const char* caProjectName)
 {
 	FILE_NAME caFileName;
 	xr_strconcat(caFileName, caProjectName, GAME_LEVEL_GRAPH);

@@ -10,5 +10,5 @@ class ScreenshotManager
 {
 public:
     // Save screenshot by reading pixels from current RHI render target (RTV 0)
-    static bool SaveScreenshot(IRender_interface::ScreenshotMode Mode, LPCSTR Name, CMemoryWriter* MemoryWriter = nullptr);
+    static bool SaveScreenshot(IRender_interface::ScreenshotMode Mode, const char* Name, CMemoryWriter* MemoryWriter = nullptr);
 };

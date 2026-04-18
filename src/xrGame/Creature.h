@@ -58,7 +58,7 @@ protected:
 		MotionID		ls;
 		MotionID		rs;
 
-		void			Create(IKinematicsAnimated* K, LPCSTR base);
+		void			Create(IKinematicsAnimated* K, const char* base);
 	};
 
 private:
@@ -77,7 +77,7 @@ public:
 	u32					eye_pp_timestamp;
 	Fvector				m_tEyeShift;
 	float				m_fEyeShiftYaw;
-	BOOL				NET_WasExtrapolating;
+	bool				NET_WasExtrapolating;
 
 	Fvector				tWatchDirection;
 
@@ -110,12 +110,12 @@ public:
 	};
 	xr_deque<net_update>	NET;
 	net_update				NET_Last;
-	BOOL					NET_WasInterpolating;	// previous update was by interpolation or by extrapolation
+	bool					NET_WasInterpolating;	// previous update was by interpolation or by extrapolation
 	u32						NET_Time;				// server time of last update
 //------------------------------
 
-	virtual BOOL		feel_touch_on_contact	(CObject *);
-	virtual BOOL		feel_touch_contact		(CObject *);
+	virtual bool		feel_touch_on_contact	(CObject *);
+	virtual bool		feel_touch_contact		(CObject *);
 	// utils
 	void				mk_orientation			( Fvector& dir, Fmatrix& mR );
 	void				mk_rotation				( Fvector& dir, SRotation &R);
@@ -141,7 +141,7 @@ public:
 public:
 
 	virtual DLL_Pure	*_construct				();
-	virtual BOOL		net_Spawn				( CSE_Abstract* DC);
+	virtual bool		net_Spawn				( CSE_Abstract* DC);
 	virtual void		Die						( CObject* who);
 
 	virtual void		HitSignal				( float P,	Fvector& vLocalDir, CObject* who);
@@ -176,13 +176,13 @@ public:
 			void				set_fov					(float new_fov);
 			void				set_range				(float new_range);
 //	virtual	void				feel_touch_new			(CObject	*O);
-	virtual BOOL				feel_visible_isRelevant	(CObject		*O);
+	virtual bool				feel_visible_isRelevant	(CObject		*O);
 	virtual	Feel::Sound*		dcast_FeelSound			()			{ return this;	}
 	virtual	void				Hit						(SHit* pHDS);
 
 	virtual void				OnEvent					( NET_Packet& P, u16 type		);
 	virtual void				net_Destroy				();
-	virtual BOOL				UsedAI_Locations		();
+	virtual bool				UsedAI_Locations		();
 	///////////////////////////////////////////////////////////////////////
 	virtual u16					PHGetSyncItemsNumber	()			{return inherited ::PHGetSyncItemsNumber();}
 	virtual CPHSynchronize*		PHGetSyncItem			(u16 item)	{return inherited ::PHGetSyncItem(item);}
@@ -190,9 +190,9 @@ public:
 	virtual void				PHFreeze				()			{return inherited ::PHFreeze();}
 	///////////////////////////////////////////////////////////////////////
 public:
-	virtual void				Load					(LPCSTR	section);				
+	virtual void				Load					(const char*	section);				
 	virtual	void				reinit					();
-	virtual void				reload					(LPCSTR	section);				
+	virtual void				reload					(const char*	section);				
 	virtual const SRotation		Orientation				() const;
 	virtual float				get_custom_pitch_speed	(float def_speed) {return def_speed;}
 	virtual bool				human_being				() const
@@ -203,7 +203,7 @@ public:
 
 	virtual void				save					(NET_Packet &output_packet);
 	virtual void				load					(IReader &input_packet);
-	virtual BOOL				net_SaveRelevant		()							{return inherited::net_SaveRelevant();}
+	virtual bool				net_SaveRelevant		()							{return inherited::net_SaveRelevant();}
 	
 	virtual	const MonsterSpace::SBoneRotation &head_orientation	() const;
 	
@@ -214,7 +214,7 @@ public:
 	virtual CScriptEntity*		cast_script_entity		()	{return this;}
 	virtual CGameObject*		cast_game_object		() override	{return this;}
 
-			void				load_killer_clsids		(LPCSTR section);
+			void				load_killer_clsids		(const char* section);
 			bool				is_special_killer		(CObject *obj);
 
 	IC		CMemoryManager		&memory					() const;
@@ -260,7 +260,7 @@ public:
 	virtual	void					on_restrictions_change	();
 
 	virtual bool					should_wait_to_use_corspe_visual () { return true; }
-	virtual	LPCSTR					visual_name				(CSE_Abstract *server_entity);
+	virtual	const char*					visual_name				(CSE_Abstract *server_entity);
 
 private:
 	bool							m_already_dead;

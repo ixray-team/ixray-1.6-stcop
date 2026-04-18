@@ -18,7 +18,7 @@ void CBlender_new_dof::Compile(CBlender_Compile& C)
     {
     // 0) Write rt_dof_focus (and lerp with rt_dof_focus_prev in shader)
     case 0:
-        C.r_Pass("stub_fullscreen_triangle", "dof_focus", FALSE, FALSE, FALSE);
+        C.r_Pass("stub_fullscreen_triangle", "dof_focus", false, false, false);
 
         // If you actually sample previous focus from a texture, uncomment and bind:
         C.r_dx10Texture("t_focus_prev", r2_RT_dof_focus_prev);
@@ -31,7 +31,7 @@ void CBlender_new_dof::Compile(CBlender_Compile& C)
 
     // 1) Build CoC (optionally lerp with rt_dof_coc_prev in shader)
     case 1:
-        C.r_Pass("stub_fullscreen_triangle", "dof_coc", FALSE, FALSE, FALSE);
+        C.r_Pass("stub_fullscreen_triangle", "dof_coc", false, false, false);
 
         // Typical inputs (adjust to your engine conventions):
         // C.r_dx10Texture("t_depth",   r2_RT_depth);          // or whatever your depth SRV is
@@ -46,7 +46,7 @@ void CBlender_new_dof::Compile(CBlender_Compile& C)
     
     // 2) Hex blur pass1 (vertical)
     case 2:
-        C.r_Pass("stub_fullscreen_triangle", "dof_blur1", FALSE, FALSE, FALSE);
+        C.r_Pass("stub_fullscreen_triangle", "dof_blur1", false, false, false);
 
         // Source HDR color + CoC
         C.r_dx10Texture("t_image", r2_RT_generic);   // your HDR scene color
@@ -57,32 +57,5 @@ void CBlender_new_dof::Compile(CBlender_Compile& C)
         C.r_dx10Sampler("smp_nofilter");
         C.r_End();
         break;
-       /*
-    // 3) Hex blur pass2 (diagonal)
-    case 3:
-        C.r_Pass("stub_fullscreen_triangle", "dof_blur2", FALSE, FALSE, FALSE);
-
-        // C.r_dx10Texture("t_blur1", r2_RT_dof_blur1);
-        // C.r_dx10Texture("t_coc",   r2_RT_dof_coc);
-
-        C.r_dx10Sampler("smp_rtlinear");
-        C.r_dx10Sampler("smp_nofilter");
-        C.r_End();
-        break;
-
-    // 4) Hex blur pass3 (rhomboid / final)
-    case 4:
-        C.r_Pass("stub_fullscreen_triangle", "dof_blur3", FALSE, FALSE, FALSE);
-
-        // In Colin's 3-pass version, pass3 reads both intermediate blurs
-        // C.r_dx10Texture("t_blur1", r2_RT_dof_blur1);
-        // C.r_dx10Texture("t_blur2", r2_RT_dof_blur2);
-        // C.r_dx10Texture("t_coc",   r2_RT_dof_coc);
-
-        C.r_dx10Sampler("smp_rtlinear");
-        C.r_dx10Sampler("smp_nofilter");
-        C.r_End();
-        break;
-    */
     }
 }

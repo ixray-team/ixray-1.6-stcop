@@ -26,9 +26,9 @@ public:
 					UIWarState	();
 	virtual			~UIWarState	() {};
 
-			void	InitXML			( CUIXml& xml, LPCSTR att_name, CUIWindow* parent );
+			void	InitXML			( CUIXml& xml, const char* att_name, CUIWindow* parent );
 			void	ClearInfo		();
-			bool	UpdateInfo		( LPCSTR icon, LPCSTR hint_text );
+			bool	UpdateInfo		( const char* icon, const char* hint_text );
 	virtual	void	Draw			();
 
 	virtual CUIWindow* ui_cast_window() { return this; }

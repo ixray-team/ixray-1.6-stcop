@@ -9,7 +9,7 @@
 
 #include "os_clipboard.h"
 
-void os_clipboard::copy_to_clipboard(LPCSTR buf)
+void os_clipboard::copy_to_clipboard(const char* buf)
 {
     SDL_SetClipboardText(buf);
 }
@@ -23,7 +23,7 @@ void os_clipboard::paste_from_clipboard	( LPSTR buffer, u32 const& buffer_size )
     strncpy_s(buffer, buffer_size, clipData, buffer_size - 1);
 }
 
-void os_clipboard::update_clipboard(LPCSTR string)
+void os_clipboard::update_clipboard(const char* string)
 {
     if (!SDL_HasClipboardText())
     {

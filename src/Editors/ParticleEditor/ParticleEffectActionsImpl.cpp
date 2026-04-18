@@ -717,7 +717,7 @@ void EParticleAction::Save2(CInifile& ini, const shared_str& sect)
 	}
 }
 
-void EParticleAction::FillPropInit(PropItemVec& items, LPCSTR pref)
+void EParticleAction::FillPropInit(PropItemVec& items, const char* pref)
 {
 	u32 clr				= flags.is(EParticleAction::flEnabled)?0xFF000000:0xFFC0C0C0;
 	string128 buffer;
@@ -735,12 +735,12 @@ void EParticleAction::FillPropInit(PropItemVec& items, LPCSTR pref)
 	FillProp	(items,a_pref.c_str(),clr);
 }
 
-void 	EParticleAction::FillProp	(PropItemVec& items, LPCSTR pref, u32 clr)
+void 	EParticleAction::FillProp	(PropItemVec& items, const char* pref, u32 clr)
 {
 	PropValue* V=0;
 	for (auto& order : orders)
 	{
-		LPCSTR name 				= order.name.c_str();
+		const char* name 				= order.name.c_str();
 		switch (order.type){           
 		case tpDomain:
 			{
@@ -827,56 +827,50 @@ EParticleAction::SOrder::SOrder(EValType _type, xr_string _name, EChooseMode _st
 	
 }
 
-EParticleAction::SOrder& EParticleAction::appendFloat	(LPCSTR name, float v, float mn, float mx)
+EParticleAction::SOrder& EParticleAction::appendFloat	(const char* name, float v, float mn, float mx)
 {
 	orders.push_back(SOrder(tpFloat,name));
 	floats[name] = PFloat(v,mn,mx);
 	return orders.back();
 }
-EParticleAction::SOrder& EParticleAction::appendInt		(LPCSTR name, int v, int mn, int mx)
+EParticleAction::SOrder& EParticleAction::appendInt		(const char* name, int v, int mn, int mx)
 {
 	orders.push_back(SOrder(tpInt,name));
 	ints[name] = PInt(v,mn,mx);
 	return orders.back();
 }
-EParticleAction::SOrder& EParticleAction::appendVector	(LPCSTR name, PVector::EType type, float vx, float vy, float vz, float mn, float mx)
+EParticleAction::SOrder& EParticleAction::appendVector	(const char* name, PVector::EType type, float vx, float vy, float vz, float mn, float mx)
 {
 	orders.push_back(SOrder(tpVector,name));
 	vectors[name] = PVector(type,Fvector().set(vx,vy,vz),mn,mx);
 	return orders.back();
 }
-EParticleAction::SOrder& EParticleAction::appendDomain	(LPCSTR name, PDomain v)
+EParticleAction::SOrder& EParticleAction::appendDomain	(const char* name, PDomain v)
 {
 	orders.push_back(SOrder(tpDomain,name));
 	domains[name] = v;
 	return orders.back();
 }
-EParticleAction::SOrder& EParticleAction::appendBool	(LPCSTR name, BOOL v)
+EParticleAction::SOrder& EParticleAction::appendBool	(const char* name, bool v)
 {
 	orders.push_back(SOrder(tpBool,name));
 	bools[name] = PBool(v);
 	return orders.back();
 }
-EParticleAction::SOrder& EParticleAction::appendBool	(LPCSTR name, bool v)
-{
-	orders.push_back(SOrder(tpBool,name));
-	bools[name] = PBool(v);
-	return orders.back();
-}
-EParticleAction::SOrder& EParticleAction::appendString(LPCSTR name, const shared_str& v, EChooseMode _string_type)
+EParticleAction::SOrder& EParticleAction::appendString(const char* name, const shared_str& v, EChooseMode _string_type)
 {
 	orders.push_back(SOrder(tpString,name, _string_type));
 	strings[name] = PString(v);
 	return orders.back();
 }
-EParticleAction::SOrder& EParticleAction::appendString(LPCSTR name, LPCSTR v, EChooseMode _string_type)
+EParticleAction::SOrder& EParticleAction::appendString(const char* name, const char* v, EChooseMode _string_type)
 {
 	orders.push_back(SOrder(tpString,name, _string_type));
 	strings[name] = PString(v);
 	return orders.back();
 }
 
-EParticleAction::SOrder& EParticleAction::appendEnum(LPCSTR name, xr_token* variants, u8 EnumSize, u32 index)
+EParticleAction::SOrder& EParticleAction::appendEnum(const char* name, xr_token* variants, u8 EnumSize, u32 index)
 {
 	orders.push_back(SOrder(tpEnum,name));
 	enums[name] = PEnum(variants,EnumSize,index);
@@ -905,7 +899,7 @@ void	EPAAvoid::Compile			(IWriter& F)
 	float magnitude = _float("Magnitude").val;
 	float epsilon = _float("Epsilon").val;
 	float look_ahead = _float("Look Ahead").val;
-	BOOL allow_rotate = _bool("Allow Rotate").val;
+	bool allow_rotate = _bool("Allow Rotate").val;
 	PAAvoid 		S;
 	S.type			= PAAvoidID;
 	S.positionL		= ConvDomain(_domain("Position"));
@@ -935,7 +929,7 @@ void	EPABounce::Compile			(IWriter& F)
 	float friction = _float("Friction").val;
 	float resilience = _float("Resilience").val;
 	float cutoff = _float("Cutoff").val;
-	BOOL allow_rotate = _bool("Allow Rotate").val;
+	bool allow_rotate = _bool("Allow Rotate").val;
 	PABounce 		S;
 	S.type			= PABounceID;
 	S.positionL		= ConvDomain(_domain("Position"));
@@ -957,7 +951,7 @@ EPACopyVertexB::EPACopyVertexB  	():EParticleAction(PAPI::PACopyVertexBID)
 }
 void	EPACopyVertexB::Compile	   	(IWriter& F)
 {
-	BOOL copy_pos = _bool("Copy Position").val;
+	bool copy_pos = _bool("Copy Position").val;
 	PACopyVertexB 	S;
 	S.type			= PACopyVertexBID;
 	S.copy_pos		= copy_pos;
@@ -1010,7 +1004,7 @@ void	EPAExplosion::Compile	  	(IWriter& F)
 	float stdev = _float("Standart Dev").val;
 	float epsilon = _float("Epsilon").val;
 	float age = _float("Age").val;
-	BOOL allow_rotate = _bool("Allow Rotate").val;
+	bool allow_rotate = _bool("Allow Rotate").val;
 	PAExplosion 	S;
 	S.type			= PAExplosionID;
 	S.centerL		= Fvector(center.x, center.y, center.z);
@@ -1086,7 +1080,7 @@ EPAGravity::EPAGravity				():EParticleAction(PAPI::PAGravityID)
 void	EPAGravity::Compile			(IWriter& F)
 {
 	const Fvector& dir = _vector("Direction").val;
-	BOOL allow_rotate = _bool("Allow Rotate").val;
+	bool allow_rotate = _bool("Allow Rotate").val;
 	PAGravity 	S;
 	S.type			= PAGravityID;
 	S.directionL	= Fvector(dir.x, dir.y, dir.z);
@@ -1114,7 +1108,7 @@ void	EPAJet::Compile				(IWriter& F)
 	float magnitude = _float("Magnitude").val;
 	float epsilon = _float("Epsilon").val;
 	float max_radius = _float("Max Radius").val;
-	BOOL allow_rotate = _bool("Allow Rotate").val;
+	bool allow_rotate = _bool("Allow Rotate").val;
 	PAJet 	S;
 	S.type			= PAJetID;
 	S.centerL		= Fvector(center.x, center.y, center.z);
@@ -1148,7 +1142,7 @@ EPAKillOld::EPAKillOld				():EParticleAction(PAPI::PAKillOldID)
 void	EPAKillOld::Compile			(IWriter& F)
 {
 	float age_limit = _float("Age Limit").val;
-	BOOL kill_less_than = _bool("Kill Less Than").val;
+	bool kill_less_than = _bool("Kill Less Than").val;
 	PAKillOld 	S;
 	S.type			= PAKillOldID;
 	S.age_limit		= age_limit;
@@ -1213,7 +1207,7 @@ void	EPAOrbitLine::Compile	 	(IWriter& F)
 	float magnitude = _float("Magnitude").val;
 	float epsilon = _float("Epsilon").val;
 	float max_radius = _float("Max Radius").val;
-	BOOL allow_rotate = _bool("Allow Rotate").val;
+	bool allow_rotate = _bool("Allow Rotate").val;
 	PAOrbitLine 	S;
 	S.type			= PAOrbitLineID;
 	S.pL			= Fvector(p.x, p.y, p.z);
@@ -1260,7 +1254,7 @@ void	EPAOrbitPoint::Compile	   	(IWriter& F)
 	float magnitude = _float("Magnitude").val;
 	float epsilon = _float("Epsilon").val;
 	float max_radius = _float("Max Radius").val;
-	BOOL allow_rotate = _bool("Allow Rotate").val;
+	bool allow_rotate = _bool("Allow Rotate").val;
 	PAOrbitPoint 	S;
 	S.type			= PAOrbitPointID;
 	S.centerL		= Fvector(center.x, center.y, center.z);
@@ -1292,7 +1286,7 @@ EPARandomAccel::EPARandomAccel		():EParticleAction(PAPI::PARandomAccelID)
 }
 void	EPARandomAccel::Compile	   	(IWriter& F)
 {
-	BOOL allow_rotate = _bool("Allow Rotate").val;
+	bool allow_rotate = _bool("Allow Rotate").val;
 	PARandomAccel 	S;
 	S.type			= PARandomAccelID;
 	S.gen_accL		= ConvDomain(_domain("Accelerate"));
@@ -1312,7 +1306,7 @@ EPARandomDisplace::EPARandomDisplace():EParticleAction(PAPI::PARandomDisplaceID)
 }
 void	EPARandomDisplace::Compile 	(IWriter& F)
 {
-	BOOL allow_rotate = _bool("Allow Rotate").val;
+	bool allow_rotate = _bool("Allow Rotate").val;
 	PARandomDisplace 	S;
 	S.type			= PARandomDisplaceID;
 	S.gen_dispL		= ConvDomain(_domain("Displace"));
@@ -1332,7 +1326,7 @@ EPARandomVelocity::EPARandomVelocity():EParticleAction(PAPI::PARandomVelocityID)
 }
 void	EPARandomVelocity::Compile 	(IWriter& F)
 {
-	BOOL allow_rotate = _bool("Allow Rotate").val;
+	bool allow_rotate = _bool("Allow Rotate").val;
 	PARandomVelocity 	S;
 	S.type			= PARandomVelocityID;
 	S.gen_velL		= ConvDomain(_domain("Velocity"));
@@ -1378,7 +1372,7 @@ void	EPAScatter::Compile	 		(IWriter& F)
 	float magnitude = _float("Magnitude").val;
 	float epsilon = _float("Epsilon").val;
 	float max_radius = _float("Max Radius").val;
-	BOOL allow_rotate = _bool("Allow Rotate").val;
+	bool allow_rotate = _bool("Allow Rotate").val;
 	PAScatter 		S;
 	S.type			= PAScatterID;
 	S.centerL		= Fvector(center.x, center.y, center.z);
@@ -1410,8 +1404,8 @@ EPASink::EPASink					():EParticleAction(PAPI::PASinkID)
 }
 void	EPASink::Compile			(IWriter& F)
 {
-	BOOL kill_inside = _bool("Kill Inside").val;
-	BOOL allow_rotate = _bool("Allow Rotate").val;
+	bool kill_inside = _bool("Kill Inside").val;
+	bool allow_rotate = _bool("Allow Rotate").val;
 	PASink 	S;
 	S.type			= PASinkID;
 	S.kill_inside	= kill_inside;
@@ -1432,8 +1426,8 @@ EPASinkVelocity::EPASinkVelocity	():EParticleAction(PAPI::PASinkVelocityID)
 }
 void	EPASinkVelocity::Compile   	(IWriter& F)
 {
-	BOOL kill_inside = _bool("Kill Inside").val;
-	BOOL allow_rotate = _bool("Allow Rotate").val;
+	bool kill_inside = _bool("Kill Inside").val;
+	bool allow_rotate = _bool("Allow Rotate").val;
 	PASinkVelocity 	S;
 	S.type			= PASinkVelocityID;
 	S.kill_inside	= kill_inside;

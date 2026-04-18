@@ -116,7 +116,7 @@ void CConsole::DrawUIConsole()
 			for (int i = CursorPos; i < (int)m_log_history.GetSize(); i++) {
 				logLine = m_log_history.GetLooped(m_log_history.GetTail() - i);
 
-				LPCSTR ls = logLine.c_str();
+				const char* ls = logLine.c_str();
 				if (ls == nullptr) {
 					continue;
 				}

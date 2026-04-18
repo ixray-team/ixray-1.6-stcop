@@ -4,7 +4,7 @@
 
 #define REGISTRY_BASE HKEY_CURRENT_USER
 
-bool	ReadRegistryValue(LPCSTR rKeyName, DWORD rKeyType, void* value )
+bool	ReadRegistryValue(const char* rKeyName, DWORD rKeyType, void* value )
 {	
 	HKEY hKey = 0;	
 	long res = RegOpenKeyExA(REGISTRY_BASE, 
@@ -54,7 +54,7 @@ bool	ReadRegistryValue(LPCSTR rKeyName, DWORD rKeyType, void* value )
 	return true;
 };
 
-bool WriteRegistryValue(LPCSTR rKeyName, DWORD rKeyType, const void* value)
+bool WriteRegistryValue(const char* rKeyName, DWORD rKeyType, const void* value)
 {
 	HKEY hKey;
 
@@ -105,26 +105,26 @@ bool WriteRegistryValue(LPCSTR rKeyName, DWORD rKeyType, const void* value)
 	return true;
 };
 
-bool	ReadRegistry_StrValue	(LPCSTR rKeyName, char* value )
+bool	ReadRegistry_StrValue	(const char* rKeyName, char* value )
 {
 	return ReadRegistryValue(rKeyName, REG_SZ, value);
 }
 
-void	WriteRegistry_StrValue	(LPCSTR rKeyName, const char* value )
+void	WriteRegistry_StrValue	(const char* rKeyName, const char* value )
 {
 	WriteRegistryValue(rKeyName, REG_SZ, value);
 }
 
-void	ReadRegistry_DWValue	(LPCSTR rKeyName, DWORD& value )
+void	ReadRegistry_DWValue	(const char* rKeyName, DWORD& value )
 {
 	ReadRegistryValue(rKeyName, REG_DWORD, &value);
 }
-void	WriteRegistry_DWValue	(LPCSTR rKeyName, const DWORD& value )
+void	WriteRegistry_DWValue	(const char* rKeyName, const DWORD& value )
 {
 	WriteRegistryValue(rKeyName, REG_DWORD, &value);
 }
 
-u32 const	ReadRegistry_BinaryValue	(LPCSTR rKeyName, u8 * buffer_dest, u32 const buffer_size)
+u32 const	ReadRegistry_BinaryValue	(const char* rKeyName, u8 * buffer_dest, u32 const buffer_size)
 {
 	HKEY hKey = 0;	
 	long res = RegOpenKeyExA(REGISTRY_BASE, REGISTRY_PATH, 0, KEY_READ, &hKey);
@@ -154,7 +154,7 @@ u32 const	ReadRegistry_BinaryValue	(LPCSTR rKeyName, u8 * buffer_dest, u32 const
 	return static_cast<u32>(tmp_buffer_size);
 }
 
-void	WriteRegistry_BinaryValue	(LPCSTR rKeyName, u8 const * buffer_src, u32 const buffer_size)
+void	WriteRegistry_BinaryValue	(const char* rKeyName, u8 const * buffer_src, u32 const buffer_size)
 {
 	HKEY hKey;
 

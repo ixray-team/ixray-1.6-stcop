@@ -22,9 +22,9 @@ xrCompressor::~xrCompressor()
 		FS.r_close	(pPackHeader);
 }
 
-bool is_tail(LPCSTR name, LPCSTR tail, const u32 tlen)
+bool is_tail(const char* name, const char* tail, const u32 tlen)
 {
-	LPCSTR p			= strstr(name,tail);
+	const char* p			= strstr(name,tail);
 	if(!p)				return false;
 
 	u32 nlen			= xr_strlen(name);
@@ -32,7 +32,7 @@ bool is_tail(LPCSTR name, LPCSTR tail, const u32 tlen)
 		
 }
 
-bool xrCompressor::testSKIP(LPCSTR path)
+bool xrCompressor::testSKIP(const char* path)
 {
 	string256			p_name;
 	string256			p_ext;
@@ -79,7 +79,7 @@ bool xrCompressor::testSKIP(LPCSTR path)
 	return false;
 }
 
-bool xrCompressor::testVFS(LPCSTR path)
+bool xrCompressor::testVFS(const char* path)
 {
 	if (bStoreFiles)
 		return			(true);
@@ -102,7 +102,7 @@ bool xrCompressor::testVFS(LPCSTR path)
 	return				(TRUE);
 }
 
-bool xrCompressor::testEqual(LPCSTR path, IReader* base)
+bool xrCompressor::testEqual(const char* path, IReader* base)
 {
 	bool res			= false;
 	IReader*	test	= FS.r_open	(path);
@@ -135,7 +135,7 @@ xrCompressor::ALIAS* xrCompressor::testALIAS(IReader* base, u32 crc, u32& a_test
 	return nullptr;
 }
 
-void xrCompressor::write_file_header(LPCSTR file_name, const u32 &crc, const u32 &ptr, const u32 &size_real, const lzo_uint& size_compressed)
+void xrCompressor::write_file_header(const char* file_name, const u32 &crc, const u32 &ptr, const u32 &size_real, const lzo_uint& size_compressed)
 {
 	u32					file_name_size = (xr_strlen(file_name) + 0)*sizeof(char);
 	u32					buffer_size = file_name_size + 4*sizeof(u32);
@@ -163,7 +163,7 @@ void xrCompressor::write_file_header(LPCSTR file_name, const u32 &crc, const u32
 	fs_desc.w			(buffer_start,full_buffer_size);
 }
 
-void xrCompressor::CompressOne(LPCSTR path)
+void xrCompressor::CompressOne(const char* path)
 {
 	filesTOTAL		++;
 
@@ -307,7 +307,7 @@ void xrCompressor::CompressOne(LPCSTR path)
 	FS.r_close	(src);
 }
 
-void xrCompressor::OpenPack(LPCSTR tgt_folder, int num)
+void xrCompressor::OpenPack(const char* tgt_folder, int num)
 {
 	VERIFY			(0==fs_pack_writer);
 
@@ -372,7 +372,7 @@ void xrCompressor::OpenPack(LPCSTR tgt_folder, int num)
 	fs_pack_writer->open_chunk	(0);
 }
 
-void xrCompressor::SetPackHeaderName(LPCSTR n)
+void xrCompressor::SetPackHeaderName(const char* n)
 {
 	pPackHeader		= FS.r_open	(n);
 	R_ASSERT2		(pPackHeader, n);
@@ -465,7 +465,7 @@ void xrCompressor::ProcessTargetFolder()
 	FS.file_list_close	(files_list);
 }
 
-void xrCompressor::GatherFiles(LPCSTR path)
+void xrCompressor::GatherFiles(const char* path)
 {
 	xr_vector<char*>*	i_list	= FS.file_list_open	("$target_folder$",path,FS_ListFiles|FS_RootOnly);
 	if (!i_list){
@@ -487,7 +487,7 @@ void xrCompressor::GatherFiles(LPCSTR path)
 	FS.file_list_close	(i_list);
 }
 
-bool xrCompressor::IsFolderAccepted(CInifile& ltx, LPCSTR path, BOOL& recurse)
+bool xrCompressor::IsFolderAccepted(CInifile& ltx, const char* path, bool& recurse)
 {
 	// exclude folders
 	if( ltx.section_exist("exclude_folders") )
@@ -526,19 +526,19 @@ void xrCompressor::ProcessLTX(CInifile& ltx)
 
 		for (auto if_it=if_sect.Data.begin(); if_it!=if_sect.Data.end(); ++if_it)
 		{
-			BOOL ifRecurse		= CInifile::IsBOOL(if_it->second.c_str());
+			bool ifRecurse		= CInifile::IsBOOL(if_it->second.c_str());
 			u32 folder_mask		= FS_ListFolders | (ifRecurse?0:FS_RootOnly);
 
 			string_path path;
-			LPCSTR _path		= 0==xr_strcmp(if_it->first.c_str(),".\\")?"":if_it->first.c_str();
+			const char* _path		= 0==xr_strcmp(if_it->first.c_str(),".\\")?"":if_it->first.c_str();
 			xr_strcpy			(path,_path);
 			u32 path_len		= xr_strlen(path);
 			if ((0!=path_len)&&(path[path_len-1]!='\\')) xr_strcat(path,"\\");
 
 			Msg					("");
 			Msg					("Processing folder: '%s'",path);
-			BOOL efRecurse;
-			BOOL val			= IsFolderAccepted(ltx,path,efRecurse);
+			bool efRecurse;
+			bool val			= IsFolderAccepted(ltx,path,efRecurse);
 			if (val || (!val&&!efRecurse))
 			{ 
 				if (val)		

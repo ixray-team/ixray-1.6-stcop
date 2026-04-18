@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "../Utils/FS2.h"
 
-int FindLPCSTR(LPCSTRVec& vec, LPCSTR key){
+int FindLPCSTR(LPCSTRVec& vec, const char* key){
 	for (LPCSTRIt it=vec.begin(); it!=vec.end(); it++)
 		if (0==strcmp(*it,key)) return it-vec.begin();
 	return -1;
 }
 
-bool CEditableObject::ExportLWO(LPCSTR fname)
+bool CEditableObject::ExportLWO(const char* fname)
 {
 	CLWMemoryStream* F = new CLWMemoryStream();
 
@@ -37,7 +37,7 @@ bool CEditableObject::ExportLWO(LPCSTR fname)
 			CSurface* S=*s_it;
 			int im_idx=FindLPCSTR(images,S->_Texture());
 			R_ASSERT(im_idx>=0);
-			LPCSTR vm_name=S->_VMap();
+			const char* vm_name=S->_VMap();
 			F->Wsurface(S->_Name(),S->m_Flags.is(CSurface::sf2Sided),(u16)im_idx,(vm_name&&vm_name[0])?vm_name:"Texture",S->_ShaderName(),S->_ShaderXRLCName());
 		}
 		// meshes/layers

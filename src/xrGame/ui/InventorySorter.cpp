@@ -168,8 +168,8 @@ void CInventorySorter::LoadCustomCategories()
     u32 customCount = pSettings->line_count("inventory_sort_custom");
     for (u32 i = 0; i < customCount; ++i)
     {
-        LPCSTR lineName = nullptr;
-        LPCSTR lineValue = nullptr;
+        const char* lineName = nullptr;
+        const char* lineValue = nullptr;
         if (!pSettings->r_line("inventory_sort_custom", i, &lineName, &lineValue))
         {
             continue;
@@ -190,8 +190,8 @@ void CInventorySorter::LoadCustomCategories()
         u32 itemCount = pSettings->line_count(path);
         for (u32 j = 0; j < itemCount; ++j)
         {
-            LPCSTR itemName = nullptr;
-            LPCSTR itemValue = nullptr;
+            const char* itemName = nullptr;
+            const char* itemValue = nullptr;
             if (!pSettings->r_line(path, j, &itemName, &itemValue))
             {
                 continue;
@@ -200,7 +200,7 @@ void CInventorySorter::LoadCustomCategories()
             {
                 continue;
             }
-            LPCSTR itemLine = itemName;
+            const char* itemLine = itemName;
 
             if (xr_strcmp(itemLine, "name") == 0 || xr_strcmp(itemLine, "hint") == 0 || 
                 xr_strcmp(itemLine, "icon") == 0 || xr_strcmp(itemLine, "show_text") == 0)

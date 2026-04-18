@@ -85,11 +85,11 @@ CGamePersistent::CGamePersistent(void)
 	//dSetFreeHandler				(ode_free		);
 
 	// 
-	BOOL bDemoMode	= Core.ParamsData.test(ECoreParams::demomode);
+	bool bDemoMode	= Core.ParamsData.test(ECoreParams::demomode);
 	if (bDemoMode)
 	{
 		string256	fname;
-		LPCSTR		name	=	strstr(Core.Params,"-demomode ") + 10;
+		const char*		name	=	strstr(Core.Params,"-demomode ") + 10;
 		sscanf				(name,"%s",fname);
 		R_ASSERT2			(fname[0],"Missing filename for 'demomode'");
 		Msg					("- playing in demo mode '%s'",fname);
@@ -128,7 +128,7 @@ CGamePersistent::~CGamePersistent(void)
 	g_pEventManager->Event.Handler_Detach	(eQuickLoad,this);
 }
 
-void CGamePersistent::PreStart(LPCSTR op) {
+void CGamePersistent::PreStart(const char* op) {
 	pApp->SetLoadingScreen(new UILoadingScreen());
 	inherited::PreStart(op);
 }
@@ -186,7 +186,7 @@ void CGamePersistent::OnAppEnd	()
 
 }
 
-void CGamePersistent::Start		(LPCSTR op)
+void CGamePersistent::Start		(const char* op)
 {
 	inherited::Start			(op);
 }
@@ -210,7 +210,7 @@ void CGamePersistent::OnGameStart()
 	UpdateGameType				();
 }
 
-LPCSTR GameTypeToString(EGameIDs gt, bool bShort)
+const char* GameTypeToString(EGameIDs gt, bool bShort)
 {
 	switch(gt)
 	{
@@ -242,7 +242,7 @@ LPCSTR GameTypeToString(EGameIDs gt, bool bShort)
 	}
 }
 
-EGameIDs ParseStringToGameType(LPCSTR str)
+EGameIDs ParseStringToGameType(const char* str)
 {
 	if (!xr_strcmp(str, "single")) 
 		return eGameIDSingle;
@@ -290,7 +290,7 @@ void CGamePersistent::WeathersUpdate()
 	PROF_EVENT("CGamePersistent WeathersUpdate");
 	if (g_pGameLevel && !g_dedicated_server && !no_amb_effects)
 	{
-		BOOL bIndoor = Render->InIndoor();
+		bool bIndoor = Render->InIndoor();
 
 		if(bIndoor==FALSE)
 		{
@@ -895,8 +895,8 @@ void CGamePersistent::OnEvent(EVENT E, u64 P1, u64 P2)
 	}
 	else if (E == eDemoStart)
 	{
-		string256			cmd;
-		LPCSTR				demo = LPCSTR(P1);
+		string256 cmd;
+		const char* demo = (const char*)(P1);
 		xr_sprintf(cmd, "demo_play %s", demo);
 		Console->Execute(cmd);
 		xr_free(demo);
@@ -912,8 +912,8 @@ float CGamePersistent::MtlTransparent(u32 mtl_idx)
 {
 	return GMLib.GetMaterialByIdx((u16)mtl_idx)->fVisTransparencyFactor;
 }
-static BOOL bRestorePause	= FALSE;
-static BOOL bEntryFlag		= TRUE;
+static bool bRestorePause	= FALSE;
+static bool bEntryFlag		= TRUE;
 
 void CGamePersistent::OnAppActivate		()
 {
@@ -1011,7 +1011,7 @@ void CGamePersistent::LoadTitle(bool change_tip, shared_str map_name)
 	}
 }
 
-void CGamePersistent::SetLoadStageTitle(pcstr ls_title)
+void CGamePersistent::SetLoadStageTitle(const char* ls_title)
 {
 	if (Device.IsEditorMode()) // idk why, but SDK keeps crashing here for some reason, so I decided to just turn off load stages for SDK
 		return;

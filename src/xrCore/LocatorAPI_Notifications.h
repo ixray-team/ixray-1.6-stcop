@@ -7,7 +7,7 @@ class	CThread
 	static void				startup			(void* P);
 protected:
 	volatile u32			thID;
-	volatile BOOL			Terminated;
+	volatile bool			Terminated;
 public:
 							CThread			(u32 _ID)
 	{
@@ -30,7 +30,7 @@ private:
     	shared_str						FDirectory;
         void* 							FWaitHandle;
         fastdelegate::FastDelegate0<>	FChangeEvent;
-		BOOL 						bRecurse;
+		bool 						bRecurse;
     };
 
 	using HANDLEVec = xr_vector<HANDLE>;

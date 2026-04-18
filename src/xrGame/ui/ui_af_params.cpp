@@ -41,7 +41,7 @@ CUIArtefactParams::~CUIArtefactParams()
 	xr_delete	( m_Prop_line );
 }
 
-constexpr std::tuple<ALife::EHitType, LPCSTR, LPCSTR, float, bool, LPCSTR> af_immunity[] =
+constexpr std::tuple<ALife::EHitType, const char*, const char*, float, bool, const char*> af_immunity[] =
 {
     //{ ALife::eHitType,			"section",                  "caption",                                  magnitude, sign_inverse, "unit" }
     { ALife::eHitTypeBurn,			"burn_immunity",            "ui_inv_outfit_burn_protection",            100.0f,      false,        "%" },
@@ -55,7 +55,7 @@ constexpr std::tuple<ALife::EHitType, LPCSTR, LPCSTR, float, bool, LPCSTR> af_im
     { ALife::eHitTypeExplosion,		"explosion_immunity",       "ui_inv_outfit_explosion_protection",       100.0f,      false,        "%" },
 };
 
-constexpr std::tuple<ALife::EConditionRestoreType, LPCSTR, LPCSTR, float, bool, LPCSTR> af_restore[] =
+constexpr std::tuple<ALife::EConditionRestoreType, const char*, const char*, float, bool, const char*> af_restore[] =
 {
 	//{ ALife::EConditionRestoreType,   "section",                  "caption",          magnitude, sign_inverse, "unit" }
 	{ ALife::eHealthRestoreSpeed,       "health_restore_speed",     "ui_inv_health",    100.0f,    false,        "%" },
@@ -66,7 +66,7 @@ constexpr std::tuple<ALife::EConditionRestoreType, LPCSTR, LPCSTR, float, bool, 
 	{ ALife::eRadiationRestoreSpeed,    "radiation_restore_speed",  "ui_inv_radiation", 1.0f,	    true,        nullptr },
 };
 
-LPCSTR af_actor_param_names[] = 
+const char* af_actor_param_names[] = 
 {
 	"satiety_health_v",
 	"satiety_v",
@@ -79,7 +79,7 @@ LPCSTR af_actor_param_names[] =
 static_assert(std::size(af_restore) == ALife::eRestoreTypeMax,
     "All restore types should be listed in the tuple above.");
 
-LPCSTR af_params = "af_params";
+const char* af_params = "af_params";
 void CUIArtefactParams::InitFromXml( CUIXml& xml )
 {
 	XML_NODE* stored_root = xml.GetLocalRoot();
@@ -97,7 +97,7 @@ void CUIArtefactParams::InitFromXml( CUIXml& xml )
 		m_Prop_line->SetAutoDelete(false);
 	}
 
-	LPCSTR name;
+	const char* name;
 	if (xml.NavigateToNode("condition"))
 	{
 		m_disp_condition = CreateItem(xml, "condition", "st_condition");
@@ -120,7 +120,7 @@ void CUIArtefactParams::InitFromXml( CUIXml& xml )
 	xml.SetLocalRoot( stored_root );
 }
 
-UIArtefactParamItem* CUIArtefactParams::CreateItem(CUIXml& uiXml, pcstr section,
+UIArtefactParamItem* CUIArtefactParams::CreateItem(CUIXml& uiXml, const char* section,
     float magnitude, bool isSignInverse, const shared_str& unit,
     shared_str translationId, shared_str translationId2 /*= nullptr*/)
 {
@@ -152,7 +152,7 @@ UIArtefactParamItem* CUIArtefactParams::CreateItem(CUIXml& uiXml, pcstr section,
 	return item;
 }
 
-UIArtefactParamItem* CUIArtefactParams::CreateItem(CUIXml& uiXml, pcstr section,
+UIArtefactParamItem* CUIArtefactParams::CreateItem(CUIXml& uiXml, const char* section,
 	shared_str translationId, shared_str translationId2 /*= nullptr*/)
 {
 	return CreateItem(uiXml, section, 1.0f, false, nullptr, translationId, translationId2);
@@ -283,7 +283,7 @@ UIArtefactParamItem::~UIArtefactParamItem()
 {
 }
 
-UIArtefactParamItem::InitResult UIArtefactParamItem::Init(CUIXml& xml, pcstr section)
+UIArtefactParamItem::InitResult UIArtefactParamItem::Init(CUIXml& xml, const char* section)
 {
 	if(!CUIXmlInit::InitStatic(xml, section, 0, this, false))
 		return InitPlain(xml, section);
@@ -297,15 +297,15 @@ UIArtefactParamItem::InitResult UIArtefactParamItem::Init(CUIXml& xml, pcstr sec
 	m_magnitude = xml.ReadAttribFlt( "value", 0, "magnitude", 1.0f );
 	m_sign_inverse = (xml.ReadAttribInt( "value", 0, "sign_inverse", 0 ) == 1);
 	
-	LPCSTR unit_str = xml.ReadAttrib( "value", 0, "unit_str", "" );
+	const char* unit_str = xml.ReadAttrib( "value", 0, "unit_str", "" );
 	m_unit_str._set( g_pStringTable->translate( unit_str ) );
 	
-	LPCSTR texture_minus = xml.Read( "texture_minus", 0, "" );
+	const char* texture_minus = xml.Read( "texture_minus", 0, "" );
 	if ( texture_minus && xr_strlen(texture_minus) )
 	{
 		m_texture_minus._set( texture_minus );
 		
-		LPCSTR texture_plus = xml.Read( "caption:texture", 0, "" );
+		const char* texture_plus = xml.Read( "caption:texture", 0, "" );
 		m_texture_plus._set( texture_plus );
 		VERIFY( m_texture_plus.size() );
 	}
@@ -313,7 +313,7 @@ UIArtefactParamItem::InitResult UIArtefactParamItem::Init(CUIXml& xml, pcstr sec
 	return InitResult::Normal;
 }
 
-UIArtefactParamItem::InitResult UIArtefactParamItem::InitPlain(CUIXml& xml, pcstr section)
+UIArtefactParamItem::InitResult UIArtefactParamItem::InitPlain(CUIXml& xml, const char* section)
 {
     string256 buf;
     xr_strconcat(buf, "static_", section);
@@ -345,7 +345,7 @@ void UIArtefactParamItem::SetDefaultValuesPlain(float magnitude, bool isSignInve
     m_sign_inverse = isSignInverse;
     m_unit_str = unit;
 }
-void UIArtefactParamItem::SetCaption( LPCSTR name )
+void UIArtefactParamItem::SetCaption( const char* name )
 {
 	m_caption->TextItemControl()->SetText( name );
 }

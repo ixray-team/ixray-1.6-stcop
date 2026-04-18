@@ -19,7 +19,7 @@ bool TUI::CreateMailslot()
 void TUI::CheckMailslot()
 {
     DWORD cbMessage, cMessage, cbRead;
-	BOOL fResult;
+	bool fResult;
 	LPSTR lpszBuffer;
 
     cbMessage = cMessage = cbRead = 0;
@@ -53,7 +53,7 @@ void TUI::CheckMailslot()
 }
 //---------------------------------------------------------------------------
 
-void TUI::OnReceiveMail(LPCSTR msg)
+void TUI::OnReceiveMail(const char* msg)
 {
 	int cnt = _GetItemCount(msg,' ');
     if (cnt){
@@ -96,11 +96,11 @@ void TUI::OnReceiveMail(LPCSTR msg)
 }
 //---------------------------------------------------------------------------
 
-void TUI::SendMail(LPCSTR name, LPCSTR dest, LPCSTR msg)
+void TUI::SendMail(const char* name, const char* dest, const char* msg)
 {
 	HANDLE	hFile; 
 	DWORD	cbWritten;
-	BOOL	fResult;
+	bool	fResult;
 	char    cName[256];
 
 	sprintf(cName,"\\\\%s\\mailslot\\%s",name,dest);

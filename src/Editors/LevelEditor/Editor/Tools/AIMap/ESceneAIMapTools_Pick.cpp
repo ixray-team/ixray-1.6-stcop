@@ -41,7 +41,7 @@ bool ESceneAIMapTool::PickObjects(Fvector& dest, const Fvector& start, const Fve
     return false;
 }
                              
-int ESceneAIMapTool::RaySelect(int flag, float& distance, const Fvector& start, const Fvector& direction, BOOL bDistanceOnly)
+int ESceneAIMapTool::RaySelect(int flag, float& distance, const Fvector& start, const Fvector& direction, bool bDistanceOnly)
 {
 	int count=0;
 	if (!m_Flags.is(flHideNodes)){

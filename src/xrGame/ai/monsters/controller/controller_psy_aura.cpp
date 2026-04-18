@@ -28,7 +28,7 @@ void CPPEffectorControllerAura::switch_off()
 }
 
 
-BOOL CPPEffectorControllerAura::update()
+bool CPPEffectorControllerAura::update()
 {
 	// update factor
 	if (m_effector_state == eStatePermanent) {
@@ -152,7 +152,7 @@ void CControllerAura::on_death()
 	}
 }
 
-void CControllerAura::load(LPCSTR section)
+void CControllerAura::load(const char* section)
 {
 	inherited::load				(pSettings->r_string(section,"aura_effector"));
 	

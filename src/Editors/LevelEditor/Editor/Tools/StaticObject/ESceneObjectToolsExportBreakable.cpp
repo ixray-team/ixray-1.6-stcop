@@ -5,7 +5,7 @@
 #include "../xrServerEntities/xrServer_Objects.h"
 static bool s_draw_dbg = false;
 
-IC bool build_mesh(const Fmatrix& parent, CEditableMesh* mesh, CGeomPartExtractor* extractor, u32 game_mtl_mask, BOOL ignore_shader)
+IC bool build_mesh(const Fmatrix& parent, CEditableMesh* mesh, CGeomPartExtractor* extractor, u32 game_mtl_mask, bool ignore_shader)
 {
 	bool bResult 			= true;
 	mesh->GenerateVNormals	(&parent);
@@ -173,7 +173,7 @@ bool ESceneObjectTool::ExportBreakableObjects(SExportStreams* F)
 }
 
 
-IC BOOL OrientToNorm(Fvector& local_norm, Fmatrix33& form, Fvector& hs)
+IC bool OrientToNorm(Fvector& local_norm, Fmatrix33& form, Fvector& hs)
 {
 	Fvector * ax_pointer= (Fvector*)&form;
 	int 	max_proj=0,min_size=0;
@@ -256,7 +256,7 @@ bool ESceneObjectTool::ExportClimableObjects(SExportStreams* F)
 
 				Fvector local_normal	        = {0,0,0};
 
-				LPCSTR mat_name = NULL;
+				const char* mat_name = NULL;
 				for (SBFaceVecIt it=P->m_Faces.begin(); it!=P->m_Faces.end(); it++)
 				{
 					for (u32 k=0; k<3; k++)

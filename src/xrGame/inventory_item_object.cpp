@@ -21,7 +21,7 @@ DLL_Pure* CInventoryItemObject::_construct()
 	return this;
 }
 
-void CInventoryItemObject::Load(LPCSTR section)
+void CInventoryItemObject::Load(const char* section)
 {
 	CPhysicItem::Load(section);
 	CInventoryItem::Load(section);
@@ -76,9 +76,9 @@ void CInventoryItemObject::OnEvent(NET_Packet& P, u16 type)
 	CInventoryItem::OnEvent(P, type);
 }
 
-BOOL CInventoryItemObject::net_Spawn(CSE_Abstract* DC)
+bool CInventoryItemObject::net_Spawn(CSE_Abstract* DC)
 {
-	BOOL res = CPhysicItem::net_Spawn(DC);
+	bool res = CPhysicItem::net_Spawn(DC);
 	CInventoryItem::net_Spawn(DC);
 
 	if (IKinematicsAnimated* pKA = Visual()->dcast_PKinematicsAnimated())
@@ -116,7 +116,7 @@ void CInventoryItemObject::OnChangeVisual()
 	}
 }
 
-bool CInventoryItemObject::install_upgrade_impl(LPCSTR section, bool test)
+bool CInventoryItemObject::install_upgrade_impl(const char* section, bool test)
 {
 	bool result = CInventoryItem::install_upgrade_impl(section, test);
 	result |= process_if_exists_set(section, "visual", m_sNewVisualName, test);
@@ -158,7 +158,7 @@ void CInventoryItemObject::renderable_Render()
 	CInventoryItem::renderable_Render();
 }
 
-void CInventoryItemObject::reload(LPCSTR section)
+void CInventoryItemObject::reload(const char* section)
 {
 	CPhysicItem::reload(section);
 	CInventoryItem::reload(section);

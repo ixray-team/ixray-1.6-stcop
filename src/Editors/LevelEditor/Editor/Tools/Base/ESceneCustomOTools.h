@@ -20,14 +20,14 @@ public:
 	virtual				~ESceneCustomOTool		();
 											   
 	virtual	bool		AllowEnabling    		(){return true;}
-	virtual BOOL 		AllowMouseStart			();
+	virtual bool 		AllowMouseStart			();
 
 	// snap 
 	virtual ObjectList* GetSnapList				();
 	virtual void		UpdateSnapList			();
 	
 	// selection manipulate
-	virtual int			RaySelect				(int flag, float& distance, const Fvector& start, const Fvector& direction, BOOL bDistanceOnly);
+	virtual int			RaySelect				(int flag, float& distance, const Fvector& start, const Fvector& direction, bool bDistanceOnly);
 	virtual int			FrustumSelect			(int flag, const CFrustum& frustum);
 	virtual void 		SelectObjects           (bool flag);
 	virtual void 		InvertSelection         ();
@@ -63,14 +63,14 @@ public:
 	virtual bool		LoadSelection      		(IReader&);
 	virtual void		SaveSelection      		(IWriter&);
 
-	virtual bool		Export          		(LPCSTR path);
+	virtual bool		Export          		(const char* path);
 	virtual bool		ExportGame         		(SExportStreams* F);
 	virtual bool		ExportStatic			(SceneBuilder* B, bool b_selected_only);
 	virtual bool 		GetStaticCformData		( mesh_build_data &data, bool b_selected_only );
 	virtual bool		GetStaticCformData		( XRay::CForm::IFormat& CForm, bool b_selected_only );
 	// properties
-	virtual void		FillPropObjects(LPCSTR pref, PropItemVec& items);
-	virtual void		FillProp(LPCSTR pref, PropItemVec& items) {}
+	virtual void		FillPropObjects(const char* pref, PropItemVec& items);
+	virtual void		FillProp(const char* pref, PropItemVec& items) {}
 
 	// utils
 	virtual bool 		GetSummaryInfo			(SSceneSummary* inf);
@@ -79,19 +79,19 @@ public:
 	IC ObjectList&		GetObjects				(){return m_Objects;}
 	IC int				ObjCount				(){return m_Objects.size();}
 
-	virtual BOOL 		_AppendObject			(CCustomObject* object);
-	virtual BOOL 		_RemoveObject			(CCustomObject* object);
+	virtual bool 		_AppendObject			(CCustomObject* object);
+	virtual bool 		_RemoveObject			(CCustomObject* object);
 
 	// pick function
-	virtual BOOL 		RayPick					(CCustomObject*& object, float& distance, const Fvector& start, const Fvector& direction, SRayPickInfo* pinf);
-	virtual BOOL 		FrustumPick				(ObjectList& lst, const CFrustum& frustum);
-	virtual BOOL 		SpherePick				(ObjectList& lst, const Fvector& center, float radius);
+	virtual bool 		RayPick					(CCustomObject*& object, float& distance, const Fvector& start, const Fvector& direction, SRayPickInfo* pinf);
+	virtual bool 		FrustumPick				(ObjectList& lst, const CFrustum& frustum);
+	virtual bool 		SpherePick				(ObjectList& lst, const Fvector& center, float radius);
 	virtual int 		GetQueryObjects			(ObjectList& lst, int iSel, int iVis, int iLock);
 	virtual int 		LockObjects				(bool flag, bool bAllowSelectionFlag, bool bSelFlag);
 
-	virtual CCustomObject* FindObjectByName		(LPCSTR name, CCustomObject* pass=0);
+	virtual CCustomObject* FindObjectByName		(const char* name, CCustomObject* pass=0);
 
-	virtual CCustomObject* CreateObject			(LPVOID data, LPCSTR name)=0;
+	virtual CCustomObject* CreateObject			(LPVOID data, const char* name)=0;
 
 	virtual int			MultiRenameObjects		();
 	void				OnSelected				(CCustomObject* object);

@@ -32,7 +32,7 @@ namespace
 	shared_str	strDiffuseLight("DiffuseLight");
 }
 
-LPCSTR dx103DFluidRenderer::m_pRTNames[ RRT_NumRT ] = 
+const char* dx103DFluidRenderer::m_pRTNames[ RRT_NumRT ] = 
 {
 	"$user$rayDataTex",
 	"$user$rayDataTexSmall",
@@ -40,7 +40,7 @@ LPCSTR dx103DFluidRenderer::m_pRTNames[ RRT_NumRT ] =
 	"$user$edgeTex"
 };
 
-LPCSTR dx103DFluidRenderer::m_pResourceRTNames[ RRT_NumRT ] = 
+const char* dx103DFluidRenderer::m_pResourceRTNames[ RRT_NumRT ] = 
 {
 	"rayDataTex",
 	"rayDataTexSmall",

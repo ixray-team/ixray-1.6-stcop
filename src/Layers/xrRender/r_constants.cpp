@@ -26,7 +26,7 @@ R_constant_table::~R_constant_table()
 }
 
 
-void	R_constant_table::fatal(LPCSTR S)
+void	R_constant_table::fatal(const char* S)
 {
 	//FATAL(S);
 }
@@ -40,7 +40,7 @@ void R_constant_table::_copy(const R_constant_table& Other)
 }
 
 // predicates
-IC bool	p_search(ref_constant C, LPCSTR S)
+IC bool	p_search(ref_constant C, const char* S)
 {
 	return xr_strcmp(*C->name, S) < 0;
 }
@@ -49,9 +49,9 @@ IC bool	p_sort_constants(ref_constant C1, ref_constant C2)
 	return xr_strcmp(C1->name, C2->name) < 0;
 }
 
-ref_constant R_constant_table::get(LPCSTR S)
+ref_constant R_constant_table::get(const char* S)
 {
-	//PROF_EVENT("R_constant_table::get LPCSTR")
+	//PROF_EVENT("R_constant_table::get const char*")
 	// assumption - sorted by name
 	c_table::iterator I = std::lower_bound(table.begin(), table.end(), S, p_search);
 	if (I == table.end() || (0 != xr_strcmp(*(*I)->name, S)))	return 0;
@@ -71,7 +71,7 @@ ref_constant R_constant_table::get(shared_str& S)
 }
 
 #ifndef USE_DX11
-BOOL	R_constant_table::parse(void* _desc, u32 destination)
+bool	R_constant_table::parse(void* _desc, u32 destination)
 {
 	D3DXSHADER_CONSTANTTABLE* desc = (D3DXSHADER_CONSTANTTABLE*)_desc;
 	D3DXSHADER_CONSTANTINFO* it = (D3DXSHADER_CONSTANTINFO*)(LPBYTE(desc) + desc->ConstantInfo);
@@ -79,7 +79,7 @@ BOOL	R_constant_table::parse(void* _desc, u32 destination)
 	for (u32 dwCount = desc->Constants; dwCount; dwCount--, it++)
 	{
 		// Name
-		LPCSTR	name = LPCSTR(ptr + it->Name);
+		const char*	name = (const char*)(ptr + it->Name);
 
 		// Type
 		u16		type = RC_float;
@@ -92,7 +92,7 @@ BOOL	R_constant_table::parse(void* _desc, u32 destination)
 
 		// TypeInfo + class
 		D3DXSHADER_TYPEINFO* T = (D3DXSHADER_TYPEINFO*)(ptr + it->TypeInfo);
-		BOOL bSkip = FALSE;
+		bool bSkip = FALSE;
 		switch (T->Class)
 		{
 		case D3DXPC_SCALAR:			r_type = RC_1x1;		break;
@@ -275,7 +275,7 @@ void R_constant_table::clear()
 #endif //USE_DX11
 }
 
-BOOL R_constant_table::equal(R_constant_table& C)
+bool R_constant_table::equal(R_constant_table& C)
 {
 	if (table.size() != C.table.size())	return FALSE;
 	u32 size = (u32)table.size();

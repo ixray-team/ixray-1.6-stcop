@@ -46,7 +46,7 @@ protected:
 	xr_vector<CUIActorStaticticHeader*> UIMasterSelectableItems;
 
 	void					FillPointsInfo				();
-	void					FillReputationDetails		(CUIXml* xml, LPCSTR path);
+	void					FillReputationDetails		(CUIXml* xml, const char* path);
 	void					FillMasterPart				(CUIXml* xml, const shared_str& key_name);
 	bool					MoveSelectionUp				(bool bAllowLoop);
 	bool					MoveSelectionDown			(bool bAllowLoop);
@@ -64,7 +64,7 @@ public:
 	bool			m_bSelectable = false;
 public:
 					CUIActorStaticticHeader	(CUIActorInfoWnd* w);
-	void			Init					(CUIXml* xml, LPCSTR path, int idx_in_xml);
+	void			Init					(CUIXml* xml, const char* path, int idx_in_xml);
 	virtual bool	OnMouseDown				(int mouse_btn);
 	virtual void	SetSelected				(bool b);
 
@@ -83,6 +83,6 @@ public:
 	CUIStatic*		m_text2;
 	CUIStatic*		m_text3;
 public:
-	void			Init					(CUIXml* xml, LPCSTR path, int xml_idx);
+	void			Init					(CUIXml* xml, const char* path, int xml_idx);
 	virtual CUIWindow* ui_cast_window() { return this; }
 };

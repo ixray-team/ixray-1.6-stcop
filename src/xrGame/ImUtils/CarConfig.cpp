@@ -9,14 +9,14 @@ CarConfig g_CarConfig;
 // ------------------------------------------------------------
 // Helpers
 // ------------------------------------------------------------
-static xr_vector<shared_str> ReadList(CInifile* ini, LPCSTR section, LPCSTR name)
+static xr_vector<shared_str> ReadList(CInifile* ini, const char* section, const char* name)
 {
 	xr_vector<shared_str> v;
 
 	if (!ini->line_exist(section, name))
 		return v;
 
-	LPCSTR S = ini->r_string(section, name);
+	const char* S = ini->r_string(section, name);
 	string256 token;
 	xr_strcpy(token, S);
 
@@ -34,7 +34,7 @@ static xr_vector<shared_str> ReadList(CInifile* ini, LPCSTR section, LPCSTR name
 }
 
 
-static void ReadFvector(CInifile* ini, LPCSTR sec, LPCSTR key, Fvector& out)
+static void ReadFvector(CInifile* ini, const char* sec, const char* key, Fvector& out)
 {
 	if (ini->line_exist(sec, key))
 		out = ini->r_fvector3(sec, key);
@@ -173,7 +173,7 @@ void CarConfig::Save(const shared_str& Section)
 	ini.w_fvector3(section, "exit_position", ExitPos);
 	ini.w_fvector3(section, "exit_position_driver", ExitPosDriver);
 
-	auto WriteList = [&](LPCSTR key, const xr_vector<shared_str>& v)
+	auto WriteList = [&](const char* key, const xr_vector<shared_str>& v)
 	{
 		string1024 out{};
 		for (size_t i = 0; i < v.size(); i++)

@@ -18,7 +18,7 @@ DECLARE_RP(Stats);
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-BOOL			g_bDisableRedText	= FALSE;
+bool			g_bDisableRedText	= FALSE;
 CStats::CStats	()
 {
 	fFPS				= 30.f;
@@ -367,7 +367,7 @@ void CStats::Show()
 	Particles_starting = Particles_active = Particles_destroy = 0;
 }
 
-void	_LogCallback(LPCSTR string)
+void	_LogCallback(const char* string)
 {
 	if (string && '!' == string[0] && ' ' == string[1])
 		Device.Statistic->errors.emplace_back(string);

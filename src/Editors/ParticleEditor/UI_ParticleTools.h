@@ -48,20 +48,20 @@ class CParticleTool:
 
     void  		OnParticleItemFocused	(ListItem* items);
 	bool		VerifyParticleCloneItem(UIItemListForm::Node* Node);
-    void        OnParticleCloneItem(LPCSTR parent_path, LPCSTR new_full_name);
+    void        OnParticleCloneItem(const char* parent_path, const char* new_full_name);
 	bool		VerifyParticleCreateItem(UIItemListForm::Node* Node);
 	bool		VerifyParticleCreateFolder(UIItemListForm::Node* Node);
 	bool		VerifyParticleRenameItem(UIItemListForm::Node* Node);
 	bool		VerifyParticleMoveItem(UIItemListForm::Node* Node);
 	ENodeMoveActionSlot GetItemMoveActionSlot(UIItemListForm::Node* Node);
 	bool		ActionItemMoveAction(UIItemListForm::Node* Node);
-    void        OnParticleCreateItem(LPCSTR path);
-	void  		OnParticleItemRename	(UIItemListForm::Node& Node, LPCSTR old_name, LPCSTR new_name, EItemType type);
+    void        OnParticleCreateItem(const char* path);
+	void  		OnParticleItemRename	(UIItemListForm::Node& Node, const char* old_name, const char* new_name, EItemType type);
 	bool		OnParticlePreItemRemove(UIItemListForm::Node& Node);
     void 	 	OnParticleItemRemove	(UIItemListForm::Node& Node);
 
     void				RealUpdateProperties();
-	void 				SelectListItem		(LPCSTR pref, LPCSTR name, bool bVal, bool bLeaveSel, bool bExpand);
+	void 				SelectListItem		(const char* pref, const char* name, bool bVal, bool bLeaveSel, bool bExpand);
 
     void				RealApplyParent		();
     void				ApplyParent			(bool bForce=false){m_Flags.set(flApplyParent,TRUE); if (bForce) RealApplyParent();}
@@ -72,8 +72,8 @@ class CParticleTool:
 
     void 		OnControlClick		(ButtonValue* sender, bool& bDataModified, bool& bSafe);
 
-	//LPCSTR InsertBeforeLast(LPSTR buffer, u32 buf_size, LPCSTR path, LPCSTR insert_str);
-	//EEditMode GetAffectedItemType(LPCSTR path);
+	//const char* InsertBeforeLast(LPSTR buffer, u32 buf_size, const char* path, const char* insert_str);
+	//EEditMode GetAffectedItemType(const char* path);
 	
 public:
     virtual void    	RemoveAction(u32 idx, bool bForced=false) {remove_action_num=idx;m_Flags.set(flRemoveAction,TRUE); if (bForced) RealRemoveAction();}
@@ -138,12 +138,12 @@ public:
     virtual bool		IsModified			(){return m_bModified;}
     virtual void		Modified			(); 
 
-    virtual LPCSTR		GetInfo				();
+    virtual const char*		GetInfo				();
     
-    virtual void		ZoomObject			(BOOL bSelOnly);
+    virtual void		ZoomObject			(bool bSelOnly);
 
-    virtual bool		Load				(LPCSTR name);
-    virtual bool		Save				(LPCSTR name, bool bInternal=false){R_ASSERT(0);return true;};
+    virtual bool		Load				(const char* name);
+    virtual bool		Save				(const char* name, bool bInternal=false){R_ASSERT(0);return true;};
     		bool		Save				(bool bAsXR);
     virtual void		Reload				();
     
@@ -161,16 +161,16 @@ public:
     virtual bool		Pick				(TShiftState Shift){return false;}
 	virtual bool 		RayPick				(const Fvector& start, const Fvector& dir, float& dist, Fvector* pt, Fvector* n);
 
-    virtual void		ShowProperties		(LPCSTR){;}
-    virtual void		UpdateProperties	(BOOL bForced=FALSE){m_Flags.set(flRefreshProps,TRUE); if (bForced) RealUpdateProperties();}
+    virtual void		ShowProperties		(const char*){;}
+    virtual void		UpdateProperties	(bool bForced=FALSE){m_Flags.set(flRefreshProps,TRUE); if (bForced) RealUpdateProperties();}
     virtual void		RefreshProperties	(){;}
 
     virtual void		PlayCurrent			(int idx=-1) override;
     virtual void		StopCurrent			(bool bFinishPlaying) override;
-    virtual void		SelectEffect		(LPCSTR name) override;
+    virtual void		SelectEffect		(const char* name) override;
 
-    //void				Rename				(LPCSTR src_name, LPCSTR part_name, int part_idx);
-    void				Rename				(UIItemListForm::Node& Node, LPCSTR src_name, LPCSTR dest_name);
+    //void				Rename				(const char* src_name, const char* part_name, int part_idx);
+    void				Rename				(UIItemListForm::Node& Node, const char* src_name, const char* dest_name);
 
     // PS routine
 	void 				CloneCurrent		();
@@ -180,20 +180,20 @@ public:
 
     // PG routine
     void                ImportPE            ();
-    PS::CPEDef*			FindPE				(LPCSTR name);
+    PS::CPEDef*			FindPE				(const char* name);
     PS::CPEDef*			AppendPE			(PS::CPEDef* src, const char* path);
     void 				SetCurrentPE		(PS::CPEDef* P, EParticleAction* CurrentPA = nullptr);
     void				CommandJumpToItem	();
 
     // PG routine
-    PS::CPGDef*			FindPG				(LPCSTR name);
+    PS::CPGDef*			FindPG				(const char* name);
     PS::CPGDef*			AppendPG			(PS::CPGDef* src,const char* path);
 	void				SetCurrentPG		(PS::CPGDef* P) override {SetCurrentPG(P, nullptr);}
     void 				SetCurrentPG		(PS::CPGDef* P, PS::CPGDef::SEffect* Ef);
     void				DrawReferenceList	();
 
 	// PAC routine
-	PS::CPACDef*		FindPAC				(LPCSTR name);
+	PS::CPACDef*		FindPAC				(const char* name);
 	PS::CPACDef*		AppendPAC			(PS::CPACDef* src,const char* path);
 	void 				SetCurrentPAC		(PS::CPACDef* P);
 	void				EditPAC				(PS::CPACDef* PAC) override;

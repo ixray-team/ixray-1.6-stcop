@@ -337,7 +337,7 @@ void	CActor::cam_Lookout	( const Fmatrix &xform, float camera_height )
 			//if (tri_count)		
 			{
 				float da		= 0.f;
-				BOOL bIntersect	= FALSE;
+				bool bIntersect	= FALSE;
 				Fvector	ext		= {w,h,Device.fViewportNear /2};
 				Fvector				pt;
 				calc_gl_point	( pt, xform, radius, alpha );
@@ -367,11 +367,11 @@ void	CActor::cam_Lookout	( const Fmatrix &xform, float camera_height )
 		}
 }
 #ifdef	DEBUG
-BOOL ik_cam_shift = true;
+bool ik_cam_shift = true;
 float ik_cam_shift_tolerance = 0.2f;
 float ik_cam_shift_speed = 0.01f;
 #else
-static const BOOL	ik_cam_shift = true;
+static const bool	ik_cam_shift = true;
 static const float	ik_cam_shift_tolerance = 0.2f;
 static const float	ik_cam_shift_speed = 0.01f;
 #endif
@@ -623,7 +623,7 @@ void CActor::update_camera (CCameraShotEffector* effector)
 #ifdef DEBUG_DRAW
 void dbg_draw_frustum (float FOV, float _FAR, float A, Fvector &P, Fvector &D, Fvector &U);
 extern	Flags32	dbg_net_Draw_Flags;
-extern	BOOL g_bDrawBulletHit;
+extern	int g_bDrawBulletHit;
 
 void CActor::OnRender	()
 {

@@ -22,7 +22,7 @@ protected:
 	typedef CActionScriptBase<CAI_Stalker> inherited;
 
 public:
-						CStalkerActionBase			(CAI_Stalker *object, LPCSTR action_name = "");
+						CStalkerActionBase			(CAI_Stalker *object, const char* action_name = "");
 	virtual void		initialize					();
 	virtual void		execute						();
 	virtual void		finalize					();

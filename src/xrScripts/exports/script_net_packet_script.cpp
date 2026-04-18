@@ -17,7 +17,7 @@ bool r_eof(NET_Packet *self_)
 	return			(!!self_->r_eof());
 }
 
-LPCSTR r_stringZ(NET_Packet *self_)
+const char* r_stringZ(NET_Packet *self_)
 {
 	shared_str			temp;
 	self_->r_stringZ	(temp);
@@ -47,8 +47,8 @@ u32 r_begin(NET_Packet* self)
 	return (self->r_begin(dummy_u16));
 }
 
-LPCSTR script_section = "script";
-LPCSTR current_version = "current_server_entity_version";
+const char* script_section = "script";
+const char* current_version = "current_server_entity_version";
 
 u16	SCRIPTS_API script_server_object_version()
 {
@@ -100,7 +100,7 @@ void CScriptNetPacket::script_register(lua_State *L)
 			.def("w_angle8",		&NET_Packet::w_angle8		)
 			.def("w_dir",			&NET_Packet::w_dir			)
 			.def("w_sdir",			&NET_Packet::w_sdir			)
-			.def("w_stringZ",		(void (NET_Packet::*)(LPCSTR))(&NET_Packet::w_stringZ	))
+			.def("w_stringZ",		(void (NET_Packet::*)(const char*))(&NET_Packet::w_stringZ	))
 			.def("w_matrix",		&NET_Packet::w_matrix		)
 			.def("w_clientID",		&NET_Packet::w_clientID		)
 			.def("w_chunk_open8",	&NET_Packet::w_chunk_open8, out_value<2>())

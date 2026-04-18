@@ -6,7 +6,7 @@
 
 static ERHI_API_LAYER CurrentAPILevel = ERHI_API_LAYER::D3D11;
 
-extern ENGINE_API BOOL g_appLoaded;
+extern ENGINE_API bool g_appLoaded;
 void DrawMainViewport()
 {
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);

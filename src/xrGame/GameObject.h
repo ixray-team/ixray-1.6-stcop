@@ -181,7 +181,7 @@ public:
 	virtual CWeaponShotgun* cast_weapon_shotgun() { return nullptr; }
 
 public:
-	virtual BOOL						feel_touch_on_contact	(CObject *)					{return TRUE;}
+	virtual bool						feel_touch_on_contact	(CObject *)					{return TRUE;}
 	virtual bool						use						(CGameObject* who_use)		{return CUsableScriptObject::use(who_use);};
 
 public:
@@ -192,8 +192,8 @@ public:
 	static void				u_EventSend			(NET_Packet& P, u32 dwFlags = DPNSEND_GUARANTEED	);
 	
 	// Methods
-	virtual void			Load				(LPCSTR section);
-	virtual BOOL			net_Spawn			(CSE_Abstract* DC);
+	virtual void			Load				(const char* section);
+	virtual bool			net_Spawn			(CSE_Abstract* DC);
 	virtual void			net_Destroy			();
 	virtual	void			net_Relcase			( CObject* O );	
 	virtual void			UpdateCL			( );
@@ -201,13 +201,13 @@ public:
 	//object serialization
 	virtual void			net_Save			(NET_Packet &net_packet);
 	virtual void			net_Load			(IReader	&ireader);
-	virtual BOOL			net_SaveRelevant	();
+	virtual bool			net_SaveRelevant	();
 	virtual void			save				(NET_Packet &output_packet);
 	virtual void			load				(IReader &input_packet);
 
-	virtual BOOL			net_Relevant		()	{ return getLocal();	}	// send messages only if active and local
+	virtual bool			net_Relevant		()	{ return getLocal();	}	// send messages only if active and local
 	virtual void			spatial_move		();
-	virtual BOOL			Ready				()	{ return getReady();	}	// update only if active and fully initialized by/for network
+	virtual bool			Ready				()	{ return getReady();	}	// update only if active and fully initialized by/for network
 //	virtual float			renderable_Ambient	();
 
 	virtual void			shedule_Update		(u32 dt);	
@@ -217,11 +217,11 @@ public:
 	virtual void			OnEvent				(NET_Packet& P, u16 type);
 	virtual	void			Hit					(SHit* pHDS) {};
 	virtual void			SetHitInfo				(CObject* who, CObject* weapon, s16 element, Fvector Pos, Fvector Dir)	{};
-	virtual	BOOL			BonePassBullet		(int boneID) { return FALSE; }
+	virtual	bool			BonePassBullet		(int boneID) { return FALSE; }
 
 
 	//игровое имя объекта
-	virtual LPCSTR			Name                () const;
+	virtual const char*			Name                () const;
 	
 	//virtual void			OnH_A_Independent	();
 	virtual void			OnH_B_Chield		();
@@ -248,8 +248,8 @@ const animation_movement_controller* animation_movement		( ) const	{ return	m_an
 	  animation_movement_controller* animation_movement		( )			{ return	m_anim_mov_ctrl; }
 	// Game-specific events
 
-	virtual BOOL			UsedAI_Locations				();
-			BOOL			TestServerFlag					(u32 Flag) const;
+	virtual bool			UsedAI_Locations				();
+			bool			TestServerFlag					(u32 Flag) const;
 	virtual	bool			can_validate_position_on_spawn	(){return true;}
 #ifdef DEBUG_DRAW
 	virtual void			OnRender			();
@@ -257,7 +257,7 @@ const animation_movement_controller* animation_movement		( ) const	{ return	m_an
 
 			void			init				();
 	virtual	void			reinit				();
-	virtual	void			reload				(LPCSTR section);
+	virtual	void			reload				(const char* section);
 	///////////////////// network /////////////////////////////////////////
 	bool					object_removed		() const { return m_bObjectRemoved; };
 public:
@@ -370,7 +370,7 @@ private:
 
 public:
 	CScriptCallbackExVoid	&callback			(GameObject::ECallbackType type) const;
-	virtual	LPCSTR			visual_name			(CSE_Abstract *server_entity);
+	virtual	const char*			visual_name			(CSE_Abstract *server_entity);
 
 	virtual	void			On_B_NotCurrentEntity () {};
 

@@ -150,7 +150,7 @@ void CControlManagerCustom::update_schedule()
 }
 
 //////////////////////////////////////////////////////////////////////////
-void CControlManagerCustom::ta_fill_data(SAnimationTripleData &data, LPCSTR s1, LPCSTR s2, LPCSTR s3, bool execute_once, bool skip_prep, u32 capture_type)
+void CControlManagerCustom::ta_fill_data(SAnimationTripleData &data, const char* s1, const char* s2, const char* s3, bool execute_once, bool skip_prep, u32 capture_type)
 {
 	// Load triple animations
 	IKinematicsAnimated	*skel_animated = m_object->Visual()->dcast_PKinematicsAnimated();
@@ -284,7 +284,7 @@ void CControlManagerCustom::jump(CObject *obj, const SControlJumpData &ta)
 	m_man->activate									(ControlCom::eControlJump);
 }
 
-void CControlManagerCustom::load_jump_data(LPCSTR s1, LPCSTR s2, LPCSTR s3, LPCSTR s4, u32 vel_mask_prepare, u32 vel_mask_ground, u32 flags)
+void CControlManagerCustom::load_jump_data(const char* s1, const char* s2, const char* s3, const char* s4, u32 vel_mask_prepare, u32 vel_mask_ground, u32 flags)
 {
 	IKinematicsAnimated	*skel_animated = m_object->Visual()->dcast_PKinematicsAnimated();
 	if ( !skel_animated )
@@ -550,7 +550,7 @@ void CControlManagerCustom::check_rotation_jump()
 	m_man->activate				(ControlCom::eControlRotationJump);
 }
 
-void CControlManagerCustom::add_rotation_jump_data(LPCSTR left1,LPCSTR left2,LPCSTR right1,LPCSTR right2, float angle, u32 flags)
+void CControlManagerCustom::add_rotation_jump_data(const char* left1,const char* left2,const char* right1,const char* right2, float angle, u32 flags)
 {
 	SControlRotationJumpData	data;
 	fill_rotation_data			(data,left1,left2,right1,right2,angle,flags);
@@ -587,7 +587,7 @@ void CControlManagerCustom::check_threaten()
 // MELEE JUMP
 //////////////////////////////////////////////////////////////////////////
 
-void CControlManagerCustom::add_melee_jump_data(LPCSTR left,LPCSTR right)
+void CControlManagerCustom::add_melee_jump_data(const char* left,const char* right)
 {
 	IKinematicsAnimated	*skel_animated = m_object->Visual()->dcast_PKinematicsAnimated();
 	m_melee_jump_data.anim_ls = skel_animated->ID_Cycle_Safe(left);
@@ -612,7 +612,7 @@ void CControlManagerCustom::check_melee_jump()
 //////////////////////////////////////////////////////////////////////////
 // Fill Rotation Data
 //////////////////////////////////////////////////////////////////////////
-void CControlManagerCustom::fill_rotation_data(SControlRotationJumpData	&data, LPCSTR left1,LPCSTR left2,LPCSTR right1,LPCSTR right2, float angle, u32 flags)
+void CControlManagerCustom::fill_rotation_data(SControlRotationJumpData	&data, const char* left1,const char* left2,const char* right1,const char* right2, float angle, u32 flags)
 {
 	VERIFY				(m_object->Visual());
 	IKinematicsAnimated	*skeleton_animated	= m_object->Visual()->dcast_PKinematicsAnimated();
@@ -655,7 +655,7 @@ void CControlManagerCustom::fill_rotation_data(SControlRotationJumpData	&data, L
 }
 
 //////////////////////////////////////////////////////////////////////////
-void CControlManagerCustom::critical_wound(LPCSTR anim)
+void CControlManagerCustom::critical_wound(const char* anim)
 {
 	if (!m_man->check_start_conditions(ControlCom::eComCriticalWound)) 
 		return;

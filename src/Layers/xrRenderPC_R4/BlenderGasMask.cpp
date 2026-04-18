@@ -15,7 +15,7 @@ void CBlenderGasMask::Compile(CBlender_Compile& C)
 		return;
 	}
 
-	C.r_Pass("stub_fullscreen_triangle", "effector_gasmask", FALSE, FALSE, FALSE);
+	C.r_Pass("stub_fullscreen_triangle", "effector_gasmask", false, false, false);
 	C.r_dx10Texture("s_image", r2_RT_backbuffer_final);
 
 	shared_str TexturePassName;

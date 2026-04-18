@@ -14,7 +14,7 @@ CUITaskDescrWnd::CUITaskDescrWnd	()
 CUITaskDescrWnd::~CUITaskDescrWnd	()
 {}
 
-void CUITaskDescrWnd::Init	(CUIXml* doc, LPCSTR start_from)
+void CUITaskDescrWnd::Init	(CUIXml* doc, const char* start_from)
 {
 	CUIXmlInit xml_init;
 	
@@ -53,7 +53,7 @@ void CUITaskDescrWnd::ClearAll					()
 	m_UITaskInfoWnd->Clear		();
 }
 
-void CUITaskDescrWnd::AddArticle				(LPCSTR article)
+void CUITaskDescrWnd::AddArticle				(const char* article)
 {
 	CUIEncyclopediaArticleWnd*	article_info = new CUIEncyclopediaArticleWnd();
 	article_info->Init			("encyclopedia_item.xml","events_wnd:objective_item");

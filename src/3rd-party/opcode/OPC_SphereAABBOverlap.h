@@ -6,7 +6,7 @@
  *	\return		TRUE on overlap
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-inline_ BOOL SphereCollider::SphereAABBOverlap(const IceMaths::Point& center_, const IceMaths::Point& extents_)
+inline_ bool SphereCollider::SphereAABBOverlap(const IceMaths::Point& center_, const IceMaths::Point& extents_)
 { 
 	// Stats
 	mNbVolumeBVTests++;

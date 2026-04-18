@@ -11,7 +11,7 @@
 #define CUSTOMOBJECT_CHUNK_MOTION_PARAM	0xF908
 
 
-CCustomObject::CCustomObject(LPVOID data, LPCSTR name)
+CCustomObject::CCustomObject(LPVOID data, const char* name)
 {
 	save_id				= 0;
     FClassID 			= OBJCLASS_DUMMY;
@@ -84,7 +84,7 @@ void CCustomObject::Select( int flag )
     }
 }
 
-void CCustomObject::Show( BOOL flag )
+void CCustomObject::Show( bool flag )
 {
 	m_RT_Flags.set	   	(flRT_Visible,flag);
 
@@ -94,19 +94,19 @@ void CCustomObject::Show( BOOL flag )
     UI->RedrawScene();
 };
 
-void CCustomObject::Lock( BOOL flag )
+void CCustomObject::Lock( bool flag )
 {
     m_CO_Flags.set		(flRT_Locked,flag);
 }
 
-BOOL   CCustomObject::Editable() const 
+bool   CCustomObject::Editable() const 
 {
-	BOOL b1 = m_CO_Flags.is(flObjectInGroup);
-    BOOL b2 = m_CO_Flags.is(flObjectInGroupUnique);
+	bool b1 = m_CO_Flags.is(flObjectInGroup);
+    bool b2 = m_CO_Flags.is(flObjectInGroupUnique);
 	return !b1 || (b1&&b2);
 }
 
-bool  CCustomObject::LoadLTX(CInifile& ini, LPCSTR sect_name)
+bool  CCustomObject::LoadLTX(CInifile& ini, const char* sect_name)
 {
     u32 flags = ini.r_u32(sect_name, "co_flags");
     m_CO_Flags.assign(flags);
@@ -182,7 +182,7 @@ bool CCustomObject::LoadStream(IReader& F)
 	return true;
 }
 
-void CCustomObject::SaveLTX(CInifile& ini, LPCSTR sect_name)
+void CCustomObject::SaveLTX(CInifile& ini, const char* sect_name)
 {
 	ini.w_u32		(sect_name, "co_flags", m_CO_Flags.get());
     ini.w_u32		(sect_name, "rt_flags", m_RT_Flags.get());

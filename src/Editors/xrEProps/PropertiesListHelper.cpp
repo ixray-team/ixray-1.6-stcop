@@ -67,17 +67,17 @@ U32Value* 	  	CPropHelper::CreateU32		(PropItemVec& items, shared_str key, u32* 
 {	return		(U32Value*)		AppendValue	(items,key,new U32Value(val,mn,mx,inc,0),PROP_NUMERIC);			}
 FloatValue* 	CPropHelper::CreateFloat	(PropItemVec& items, shared_str key, float* val, float mn, float mx, float inc, int decim)
 {   return		(FloatValue*)	AppendValue	(items,key,new FloatValue(val,mn,mx,inc,decim),PROP_NUMERIC);	}
-BOOLValue* 	  	CPropHelper::CreateBOOL		(PropItemVec& items, shared_str key, BOOL* val)
+BOOLValue* 	  	CPropHelper::CreateBOOL		(PropItemVec& items, shared_str key, int* val)
 {   return		(BOOLValue*)	AppendValue	(items,key,new BOOLValue(val),PROP_BOOLEAN);        			}
 BoolValue* 	  	CPropHelper::CreateBool		(PropItemVec& items, shared_str key, bool* val)
 {   return		(BoolValue*)	AppendValue	(items,key,new BoolValue(val),PROP_BOOLEAN);        			}
 VectorValue*   	CPropHelper::CreateVector	(PropItemVec& items, shared_str key, Fvector* val, float mn, float mx, float inc, int decim)
 {   return		(VectorValue*)	AppendValue	(items,key,new VectorValue(val,mn,mx,inc,decim),PROP_VECTOR);	}
-Flag8Value*		CPropHelper::CreateFlag8   	(PropItemVec& items, shared_str key, Flags8* val, u8 mask, LPCSTR c0, LPCSTR c1, u32 flags)
+Flag8Value*		CPropHelper::CreateFlag8   	(PropItemVec& items, shared_str key, Flags8* val, u8 mask, const char* c0, const char* c1, u32 flags)
 {   return		(Flag8Value*)	AppendValue	(items,key,new Flag8Value(val,mask,c0,c1,flags),PROP_FLAG);    	}
-Flag16Value*	CPropHelper::CreateFlag16	(PropItemVec& items, shared_str key, Flags16* val, u16 mask, LPCSTR c0, LPCSTR c1, u32 flags)
+Flag16Value*	CPropHelper::CreateFlag16	(PropItemVec& items, shared_str key, Flags16* val, u16 mask, const char* c0, const char* c1, u32 flags)
 {   return		(Flag16Value*)	AppendValue	(items,key,new Flag16Value(val,mask,c0,c1,flags),PROP_FLAG);    }
-Flag32Value*	CPropHelper::CreateFlag32	(PropItemVec& items, shared_str key, Flags32* val, u32 mask, LPCSTR c0, LPCSTR c1, u32 flags)
+Flag32Value*	CPropHelper::CreateFlag32	(PropItemVec& items, shared_str key, Flags32* val, u32 mask, const char* c0, const char* c1, u32 flags)
 {   return		(Flag32Value*)	AppendValue	(items,key,new Flag32Value(val,mask,c0,c1,flags),PROP_FLAG);    }
 Token8Value*	CPropHelper::CreateToken8	(PropItemVec& items, shared_str key, u8* val, xr_token* token)
 {   return		(Token8Value*)	AppendValue	(items,key,new Token8Value (val,token),PROP_TOKEN);				}
@@ -116,7 +116,7 @@ GameTypeValue* CPropHelper::CreateGameType(PropItemVec& items, shared_str key, G
 {	return		(GameTypeValue*)AppendValue	(items,key,new GameTypeValue(val),PROP_GAMETYPE);								}
 
 //---------------------------------------------------------------------------
-ChooseValue* CPropHelper::CreateChoose(PropItemVec& items, shared_str key, shared_str* val, u32 mode, LPCSTR path, void* fill_param, u32 sub_item_count, u32 choose_flags)
+ChooseValue* CPropHelper::CreateChoose(PropItemVec& items, shared_str key, shared_str* val, u32 mode, const char* path, void* fill_param, u32 sub_item_count, u32 choose_flags)
 {	
 	ChooseValue* cv = (ChooseValue*)AppendValue	(items,key,new ChooseValue(val,mode,path,fill_param,sub_item_count,choose_flags),PROP_CHOOSE);
 	SChooseEvents* E= UIChooseForm::GetEvents(mode); 

@@ -109,7 +109,7 @@ protected:
 	CUIDragDropListEx*			GetListByType				(EDDListType t);
 
 	void						AttachAddon					(PIItem item_to_upgrade);
-	void						DetachAddon					(LPCSTR addon_name, PIItem itm = nullptr);
+	void						DetachAddon					(const char* addon_name, PIItem itm = nullptr);
 
 	void						UnloadWeapon				(CWeaponMagazined* pWnp);
 

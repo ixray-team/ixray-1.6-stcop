@@ -7,9 +7,9 @@
 #include "IGame_Level.h"
 #include "CustomHUD.h"
 
-extern BOOL bNeed_re_create_env;
+extern bool bNeed_re_create_env;
 
-void CRenderDevice::_Destroy	(BOOL bKeepTextures)
+void CRenderDevice::_Destroy	(bool bKeepTextures)
 {
 	DU->OnDeviceDestroy();
 

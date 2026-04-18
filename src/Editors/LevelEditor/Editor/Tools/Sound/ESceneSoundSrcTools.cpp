@@ -13,7 +13,7 @@ void ESceneSoundSrcTool::RemoveControls()
 }
 
 
-CCustomObject* ESceneSoundSrcTool::CreateObject(LPVOID data, LPCSTR name)
+CCustomObject* ESceneSoundSrcTool::CreateObject(LPVOID data, const char* name)
 {
 	CCustomObject* O	= new ESoundSource(data,name);
     O->FParentTools		= this;

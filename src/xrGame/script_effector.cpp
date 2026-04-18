@@ -16,7 +16,7 @@ CScriptEffector::~CScriptEffector	()
 	Msg								("CScriptEffector::~CScriptEffector() called");
 }
 
-BOOL CScriptEffector::Process		(SPPInfo	&pp)
+bool CScriptEffector::Process		(SPPInfo	&pp)
 {
 	return							(!!process(&pp));
 }

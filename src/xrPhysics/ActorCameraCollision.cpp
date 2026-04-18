@@ -21,7 +21,7 @@
 #include "../xrCore/EngineExternal.h"
 CPhysicsShell*	actor_camera_shell = nullptr;
 #ifdef	DEBUG
-BOOL dbg_draw_camera_collision = FALSE;
+bool dbg_draw_camera_collision = FALSE;
 #endif
 static bool cam_collided = false;
 static bool cam_step	= false;

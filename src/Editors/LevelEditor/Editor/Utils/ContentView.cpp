@@ -2073,7 +2073,7 @@ xr_map<xr_string, CContentView::FileOptData> CContentView::ScanConfigs(const xr_
 	CInifile::Root& sections = pSettings->sections();
 	for (CInifile::Sect& sect : sections)
 	{
-		LPCSTR val;
+		const char* val;
 		if (sect.line_exist("$spawn", &val))
 		{
 			shared_str& sect_name = sect.Name;

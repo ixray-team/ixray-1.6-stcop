@@ -21,14 +21,14 @@ public:
 			void		SetData					(void* data);
 			void*		GetData					();
 
-		CUIStatic*		AddTextField			(LPCSTR txt, float width);
+		CUIStatic*		AddTextField			(const char* txt, float width);
 		CUIStatic*		AddIconField			(float width);
 
 		CUIStatic*		GetTextItem				(){return m_text;}
 
 		//TextControl
-		void			SetText					(LPCSTR txt);
-		LPCSTR			GetText					();
+		void			SetText					(const char* txt);
+		const char*			GetText					();
 		void			SetTextColor			(u32 color);
 		u32				GetTextColor			();
 		void			SetFont					(CGameFont* F);

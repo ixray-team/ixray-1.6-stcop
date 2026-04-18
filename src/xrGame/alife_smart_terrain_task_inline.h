@@ -10,12 +10,12 @@
 #include "ai_space.h"
 #include "game_graph.h"
 
-IC	CALifeSmartTerrainTask::CALifeSmartTerrainTask				(LPCSTR patrol_path_name)
+IC	CALifeSmartTerrainTask::CALifeSmartTerrainTask				(const char* patrol_path_name)
 {
 	init					(patrol_path_name,0);
 }
 
-IC	CALifeSmartTerrainTask::CALifeSmartTerrainTask				(LPCSTR patrol_path_name, const u32 &patrol_point_index)
+IC	CALifeSmartTerrainTask::CALifeSmartTerrainTask				(const char* patrol_path_name, const u32 &patrol_point_index)
 {
 	init					(patrol_path_name,patrol_point_index);
 }

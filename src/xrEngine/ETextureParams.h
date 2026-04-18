@@ -168,14 +168,14 @@ struct ENGINE_API STextureParams
 	using TOnChange = fastdelegate::FastDelegate<void(PropValue*)>;
 	TOnChange OnTypeChangeEvent;
 
-	using TFillPropImpl = void(*)(STextureParams* ThisCall, LPCSTR base_name, xr_vector<PropItem*>& items, TOnChange OnChangeEvent);
+	using TFillPropImpl = void(*)(STextureParams* ThisCall, const char* base_name, xr_vector<PropItem*>& items, TOnChange OnChangeEvent);
 	static TFillPropImpl FillPropImpl;
 
 	void OnTypeChange	(PropValue* v);
-	void FillProp		(LPCSTR base_name, xr_vector<PropItem*>& items, TOnChange OnChangeEvent);
-	LPCSTR FormatString	();
-	u32 MemoryUsage		(LPCSTR base_name);
-	BOOL similar		(STextureParams& tp1, xr_vector<xr_string>& sel_params);
+	void FillProp		(const char* base_name, xr_vector<PropItem*>& items, TOnChange OnChangeEvent);
+	const char* FormatString	();
+	u32 MemoryUsage		(const char* base_name);
+	bool similar		(STextureParams& tp1, xr_vector<xr_string>& sel_params);
 };
 #pragma pack( pop )
 

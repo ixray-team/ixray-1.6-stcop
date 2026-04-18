@@ -19,16 +19,16 @@ protected:
 
 protected:
 	string_path		m_save_name;
-	LPCSTR			m_section;
+	const char*			m_section;
 private:
 			void	prepare_objects_for_save();
-			void	load					(void *buffer, const u32 &buffer_size, LPCSTR file_name);
+			void	load					(void *buffer, const u32 &buffer_size, const char* file_name);
 
 public:
-	IC				CALifeStorageManager	(xrServer *server, LPCSTR section);
+	IC				CALifeStorageManager	(xrServer *server, const char* section);
 	virtual			~CALifeStorageManager	();
-			bool	load					(LPCSTR	save_name = 0);
-			void	save					(LPCSTR	save_name = 0, bool update_name = true);
+			bool	load					(const char*	save_name = 0);
+			void	save					(const char*	save_name = 0, bool update_name = true);
 			void	save					(NET_Packet &net_packet);
 };
 

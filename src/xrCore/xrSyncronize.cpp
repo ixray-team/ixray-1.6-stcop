@@ -46,7 +46,7 @@ void xrCriticalSection::Leave()
 #endif
 }
 
-BOOL xrCriticalSection::TryEnter()
+bool xrCriticalSection::TryEnter()
 {
 	PROF_EVENT("xrCriticalSection::TryEnter");
 #ifdef IXR_WINDOWS
@@ -141,7 +141,7 @@ void xrSRWLock::ReleaseShared()
 #endif
 }
 
-BOOL xrSRWLock::TryAcquireExclusive()
+bool xrSRWLock::TryAcquireExclusive()
 {
 #ifdef IXR_WINDOWS
 	return TryAcquireSRWLockExclusive(&smutex) ? TRUE : FALSE;
@@ -152,7 +152,7 @@ BOOL xrSRWLock::TryAcquireExclusive()
 #endif
 }
 
-BOOL xrSRWLock::TryAcquireShared()
+bool xrSRWLock::TryAcquireShared()
 {
 #ifdef IXR_WINDOWS
 	return TryAcquireSRWLockShared(&smutex) ? TRUE : FALSE;

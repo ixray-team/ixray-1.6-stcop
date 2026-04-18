@@ -37,15 +37,15 @@ public:
 	bool 		in_use;
 public:
 				CLog	(){in_use=false;}
-	void 		Msg   	(TMsgDlgType mt, LPCSTR _Format, ...);
-	int 		DlgMsg 	(TMsgDlgType mt, LPCSTR _Format, ...);
-	int 		DlgMsg 	(TMsgDlgType mt, int btn, LPCSTR _Format, ...);
+	void 		Msg   	(TMsgDlgType mt, const char* _Format, ...);
+	int 		DlgMsg 	(TMsgDlgType mt, const char* _Format, ...);
+	int 		DlgMsg 	(TMsgDlgType mt, int btn, const char* _Format, ...);
 	void Close();
 };
 
 inline void Log(const char*Text,const char*Text2){ Msg("%s %s",Text,Text2); }
 
-void ECORE_API ELogCallback(LPCSTR txt);
+void ECORE_API ELogCallback(const char* txt);
 
 extern ECORE_API CLog ELog;
 

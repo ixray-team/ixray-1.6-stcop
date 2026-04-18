@@ -9,8 +9,8 @@ private:
 
 public:
 					CUICDkey		();
-	virtual	void	SetText			(LPCSTR str) {}
-	virtual	LPCSTR	GetText			();
+	virtual	void	SetText			(const char* str) {}
+	virtual	const char*	GetText			();
 
 	// CUIOptionsItem
 	virtual void	SetCurrentOptValue	();	// opt->current
@@ -45,7 +45,7 @@ public:
 					CUIMPPlayerName	() {};
 	virtual			~CUIMPPlayerName() {};
 
-//	virtual	void	SetText			(LPCSTR str) {}
+//	virtual	void	SetText			(const char* str) {}
 
 //	virtual void	SetCurrentValue();
 //	virtual void	SaveValue();

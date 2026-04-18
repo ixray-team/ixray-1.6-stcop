@@ -19,9 +19,9 @@ public:
 				CUITaskDescrWnd				();
 	virtual		~CUITaskDescrWnd			();
 	virtual void Draw						();
-	void		Init						(CUIXml* doc, LPCSTR start_from);
+	void		Init						(CUIXml* doc, const char* start_from);
 	void		ClearAll					();
-	void		AddArticle					(LPCSTR article);
+	void		AddArticle					(const char* article);
 	void		AddArticle					(CEncyclopediaArticle* article);
 	
 	void		ScrollUp					();

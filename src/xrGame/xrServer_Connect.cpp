@@ -17,10 +17,10 @@
 #include <malloc.h>
 #pragma warning(pop)
 
-LPCSTR xrServer::get_map_download_url(LPCSTR level_name, LPCSTR level_version)
+const char* xrServer::get_map_download_url(const char* level_name, const char* level_version)
 {
 	R_ASSERT(level_name && level_version);
-	LPCSTR ret_url = "";
+	const char* ret_url = "";
 	CInifile* level_ini = pApp->GetArchiveHeader(level_name, level_version);
 	if (!level_ini)
 	{

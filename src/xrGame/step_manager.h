@@ -32,7 +32,7 @@ public:
 
 	// init on construction
 	virtual DLL_Pure	*_construct				();
-	virtual	void		reload					(LPCSTR section);
+	virtual	void		reload					(const char* section);
 	
 	// call on set animation
 			void		on_animation_start		(MotionID motion_id, CBlend *blend);

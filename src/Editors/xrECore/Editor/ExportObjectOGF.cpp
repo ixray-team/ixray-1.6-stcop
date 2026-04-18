@@ -521,7 +521,7 @@ bool CExportObjectOGF::ExportAsSimple(IWriter& F)
     return false;
 }
 
-bool CExportObjectOGF::ExportAsWavefrontOBJ(IWriter& F, LPCSTR fn)
+bool CExportObjectOGF::ExportAsWavefrontOBJ(IWriter& F, const char* fn)
 {
 	if (!Prepare(false,NULL)) 
 		return false;

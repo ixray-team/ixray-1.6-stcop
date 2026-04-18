@@ -116,8 +116,8 @@ namespace XRay::Geom
         
     };
 
-    XRCORE_API xr_unique_ptr<IFormat> Read(LPCSTR Initial, xr_string_view Filename, xr_string_view Extension);
+    XRCORE_API xr_unique_ptr<IFormat> Read(const char* Initial, xr_string_view Filename, xr_string_view Extension);
     XRCORE_API xr_unique_ptr<IFormat> Read(xr_string_view Filename, xr_string_view Extension);
-    XRCORE_API void Write(LPCSTR Initial, xr_string_view Filename, xr_string_view Extension, IFormat& Data);
+    XRCORE_API void Write(const char* Initial, xr_string_view Filename, xr_string_view Extension, IFormat& Data);
     XRCORE_API void Write(xr_string_view Filename, xr_string_view Extension, IFormat& Data);
 }

@@ -287,7 +287,7 @@ bool CLevelTool::UpdateCamera()
 	return false;
 }
 
-void CLevelTool::ShowProperties(LPCSTR focus_to_item)
+void CLevelTool::ShowProperties(const char* focus_to_item)
 {
 	RealUpdateProperties	();
 	if(MainForm)
@@ -300,7 +300,7 @@ void CLevelTool::ShowProperties(LPCSTR focus_to_item)
 	{
 		if(pCurTool && pCurTool->ClassID!=OBJCLASS_DUMMY)
 		{
-			LPCSTR cn = pCurTool->ClassDesc();
+			const char* cn = pCurTool->ClassDesc();
 			m_Props->SelectFolder	(cn);
 		}
 	}
@@ -378,7 +378,7 @@ bool CLevelTool::IfModified()
 }
 
 
-void CLevelTool::ZoomObject(BOOL bSelectedOnly)
+void CLevelTool::ZoomObject(bool bSelectedOnly)
 {
 	if( !Scene->locked() ){
 		Scene->ZoomExtents(CurrentClassID(),bSelectedOnly);
@@ -407,7 +407,7 @@ void CLevelTool::GetCurrentFog(u32& fog_color, float& s_fog, float& e_fog)
 }
 
 
-LPCSTR CLevelTool::GetInfo()
+const char* CLevelTool::GetInfo()
 {
 	static xr_string sel;
 	int cnt = Scene->SelectionCount(true,CurrentClassID());

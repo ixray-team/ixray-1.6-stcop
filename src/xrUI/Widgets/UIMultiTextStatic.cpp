@@ -123,7 +123,7 @@ void CUIMultiTextStatic::SPh::SetText(const char *fmt, ...)
 #include "../../xrEngine/string_table.h"
 
 void CUICaption::addCustomMessage(const shared_str& msg_name, float x, float y, float font_size, 
-								  CGameFont *pFont, CGameFont::EAligment al, u32 color, LPCSTR def_str)
+								  CGameFont *pFont, CGameFont::EAligment al, u32 color, const char* def_str)
 {
 //	R_ASSERT2( (m_indices.find(msg_name) == m_indices.end()),"message already defined !!!" );
 	R_ASSERT2( u32(-1)==findIndexOf_(msg_name),"message already defined !!!" );
@@ -176,7 +176,7 @@ EffectParams* CUICaption::customizeMessage(const shared_str& msg_name, const CUI
 	
 }
 
-void CUICaption::setCaption(const shared_str& msg_name, LPCSTR message_to_out, u32 color, bool replaceColor)
+void CUICaption::setCaption(const shared_str& msg_name, const char* message_to_out, u32 color, bool replaceColor)
 {
 //	R_ASSERT2( (m_indices.find(msg_name) != m_indices.end()),"message not defined !!!" );
 	SinglePhrase * sp = GetPhraseByIndex(findIndexOf(msg_name));

@@ -2,7 +2,7 @@
 #include "WeaponPistol.h"
 #include "Actor.h"
 
-void CWeaponPistol::Load	(LPCSTR section)
+void CWeaponPistol::Load	(const char* section)
 {
 	inherited::Load		(section);
 

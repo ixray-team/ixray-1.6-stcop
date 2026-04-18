@@ -88,7 +88,7 @@ CEnvironment::CEnvironment	() :
     const bool environmentFolderExist = FS.exist(_game_config_, "environment\\");
 
     CInifile* config = pSettings;
-    pcstr section = "thunderbolt_common";
+    const char* section = "thunderbolt_common";
 
     if (environmentFolderExist)
     {
@@ -368,7 +368,7 @@ void CEnvironment::StopWFX	()
 	Current[1]->on_device_create();
 }
 
-void CEnvironment::SetEnvDesc(LPCSTR weather_section, CEnvDescriptor*& e)
+void CEnvironment::SetEnvDesc(const char* weather_section, CEnvDescriptor*& e)
 {
 	for (const auto& [key, descriptors] : WeatherCycles) {
 		for (CEnvDescriptor* descriptor : descriptors) {
@@ -605,7 +605,7 @@ SThunderboltDesc* CEnvironment::thunderbolt_description			(CInifile& config, sha
 	return					(result);
 }
 
-SThunderboltCollection* CEnvironment::thunderbolt_collection	(CInifile* pIni, CInifile* thunderbolts, LPCSTR section)
+SThunderboltCollection* CEnvironment::thunderbolt_collection	(CInifile* pIni, CInifile* thunderbolts, const char* section)
 {
 	SThunderboltCollection*	result = new SThunderboltCollection();
 	result->load			(pIni, thunderbolts, section);

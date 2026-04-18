@@ -37,7 +37,7 @@ CUIPdaSpot::~CUIPdaSpot()
 {
 }
 
-void CUIPdaSpot::Init(u16 spot_id, LPCSTR level_name, Fvector pos, bool main_wnd)
+void CUIPdaSpot::Init(u16 spot_id, const char* level_name, Fvector pos, bool main_wnd)
 {
 	m_mainWnd = main_wnd;
 	m_levelName = level_name;

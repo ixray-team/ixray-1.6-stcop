@@ -21,7 +21,7 @@ CLightmap::~CLightmap()
 {
 }
  
-void CLightmap::Capture		(CDeflector *D, int b_u, int b_v, int s_u, int s_v, BOOL bRotated)
+void CLightmap::Capture		(CDeflector *D, int b_u, int b_v, int s_u, int s_v, bool bRotated)
 {
 	// Allocate texture if needed
 	if (lm.surface.empty())
@@ -107,7 +107,7 @@ IC void line	( int x1, int y1, int x2, int y2, b_texture* T )
 
 size_t GetMemory();
 
-void CLightmap::Save(LPCSTR path)
+void CLightmap::Save(const char* path)
 {
 	size_t StartMemory = GetMemory();
 

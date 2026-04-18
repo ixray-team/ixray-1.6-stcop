@@ -72,7 +72,7 @@ CPhysicsShell*	 P_build_Shell			( IPhysicsShellHolder* obj, bool not_active_stat
 	return pPhysicsShell;
 }
 
-void	fix_bones( LPCSTR	fixed_bones, CPhysicsShell* shell )
+void	fix_bones( const char*	fixed_bones, CPhysicsShell* shell )
 {
 		VERIFY(fixed_bones);
 		VERIFY(shell);
@@ -91,7 +91,7 @@ void	fix_bones( LPCSTR	fixed_bones, CPhysicsShell* shell )
 				E->Fix();
 		}
 }
-CPhysicsShell*	P_build_Shell( IPhysicsShellHolder* obj, bool not_active_state,BONE_P_MAP* p_bone_map, LPCSTR	fixed_bones )
+CPhysicsShell*	P_build_Shell( IPhysicsShellHolder* obj, bool not_active_state,BONE_P_MAP* p_bone_map, const char*	fixed_bones )
 {
 	CPhysicsShell* pPhysicsShell = nullptr;
 	IKinematics* pKinematics=obj->ObjectKinematics();
@@ -130,7 +130,7 @@ CPhysicsShell*	P_build_Shell( IPhysicsShellHolder* obj, bool not_active_state,BO
 	return pPhysicsShell;
 }
 
-CPhysicsShell*	P_build_Shell( IPhysicsShellHolder* obj, bool not_active_state, LPCSTR	fixed_bones )
+CPhysicsShell*	P_build_Shell( IPhysicsShellHolder* obj, bool not_active_state, const char*	fixed_bones )
 {
 	U16Vec f_bones;
 	if(fixed_bones){

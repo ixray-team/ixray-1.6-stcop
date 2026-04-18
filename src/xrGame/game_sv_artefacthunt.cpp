@@ -13,7 +13,7 @@
 #include "ui/UIBuyWndShared.h"
 #include "game_cl_base_weapon_usage_statistic.h"
 
-BOOL	g_SV_Force_Artefact_Spawn = FALSE;
+bool	g_SV_Force_Artefact_Spawn = FALSE;
 
 #ifdef DEBUG_DRAW
 #	include "debug_renderer.h"
@@ -21,24 +21,24 @@ BOOL	g_SV_Force_Artefact_Spawn = FALSE;
 //-------------------------------------------------------
 extern	s32		g_sv_dm_dwFragLimit				;
 extern	s32		g_sv_dm_dwTimeLimit				;
-extern	BOOL	g_sv_dm_bAnomaliesEnabled		;
-extern	BOOL	g_sv_tdm_bAutoTeamSwap			;
+extern	bool	g_sv_dm_bAnomaliesEnabled		;
+extern	bool	g_sv_tdm_bAutoTeamSwap			;
 //-------------------------------------------------------
 u32		g_sv_ah_dwArtefactRespawnDelta	= 30;
 int		g_sv_ah_dwArtefactsNum			= 10;
 u32		g_sv_ah_dwArtefactStayTime		= 3;
 int		g_sv_ah_iReinforcementTime		= 15;		//0 - Immediate, -1 - after artefact spawn , other - reinforcement
-BOOL	g_sv_ah_bBearerCantSprint		= FALSE;
-BOOL	g_sv_ah_bShildedBases			= TRUE;
-BOOL	g_sv_ah_bAfReturnPlayersToBases = TRUE;
+bool	g_sv_ah_bBearerCantSprint		= FALSE;
+bool	g_sv_ah_bShildedBases			= TRUE;
+bool	g_sv_ah_bAfReturnPlayersToBases = TRUE;
 //-------------------------------------------------------
 int		game_sv_ArtefactHunt::Get_ArtefactsCount		() {return g_sv_ah_dwArtefactsNum; };
 u32		game_sv_ArtefactHunt::Get_ArtefactsRespawnDelta	() {return g_sv_ah_dwArtefactRespawnDelta; };
 u32		game_sv_ArtefactHunt::Get_ArtefactsStayTime		() {return g_sv_ah_dwArtefactStayTime; };
 int		game_sv_ArtefactHunt::Get_ReinforcementTime		() {return g_sv_ah_iReinforcementTime; };
-BOOL	game_sv_ArtefactHunt::Get_BearerCantSprint		() { return g_sv_ah_bBearerCantSprint; }
-BOOL	game_sv_ArtefactHunt::Get_ShieldedBases			() { return g_sv_ah_bShildedBases; };
-BOOL	game_sv_ArtefactHunt::Get_ReturnPlayers			() {return g_sv_ah_bAfReturnPlayersToBases; };
+bool	game_sv_ArtefactHunt::Get_BearerCantSprint		() { return g_sv_ah_bBearerCantSprint; }
+bool	game_sv_ArtefactHunt::Get_ShieldedBases			() { return g_sv_ah_bShildedBases; };
+bool	game_sv_ArtefactHunt::Get_ReturnPlayers			() {return g_sv_ah_bAfReturnPlayersToBases; };
 //-------------------------------------------------------
 void	game_sv_ArtefactHunt::Create					(shared_str& options)
 {
@@ -490,7 +490,7 @@ void	game_sv_ArtefactHunt::LoadTeams			()
 	LoadTeamData("artefacthunt_team2");
 };
 
-BOOL	game_sv_ArtefactHunt::OnTouch				(u16 eid_who, u16 eid_what, BOOL bForced)
+bool	game_sv_ArtefactHunt::OnTouch				(u16 eid_who, u16 eid_what, bool bForced)
 {
 	CSE_Abstract*		e_who	= m_server->ID_to_entity(eid_who);		VERIFY(e_who	);
 	CSE_Abstract*		e_what	= m_server->ID_to_entity(eid_what);	VERIFY(e_what	);
@@ -1477,7 +1477,7 @@ void	game_sv_ArtefactHunt::OnPlayerHitPlayer		(u16 id_hitter, u16 id_hitted, NET
 
 void	game_sv_ArtefactHunt::SwapTeams					()
 {
-	BOOL old_team_swap = g_sv_tdm_bAutoTeamSwap;
+	bool old_team_swap = g_sv_tdm_bAutoTeamSwap;
 	//swap rpoints
 	/*xr_vector<RPoint> tmpRPoints;
 	tmpRPoints = rpoints[1];
@@ -1490,7 +1490,7 @@ void	game_sv_ArtefactHunt::SwapTeams					()
 	g_sv_tdm_bAutoTeamSwap = old_team_swap;
 };
 
-void game_sv_ArtefactHunt::WriteGameState(CInifile& ini, LPCSTR sect, bool bRoundResult)
+void game_sv_ArtefactHunt::WriteGameState(CInifile& ini, const char* sect, bool bRoundResult)
 {
 	inherited::WriteGameState(ini, sect, bRoundResult);
 

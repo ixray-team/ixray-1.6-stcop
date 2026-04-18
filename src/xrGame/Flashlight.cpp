@@ -11,7 +11,7 @@ CFlashlight::~CFlashlight()
 	m_bFlashlightStatus = false;
 }
 
-void CFlashlight::Load(LPCSTR section)
+void CFlashlight::Load(const char* section)
 {
 	inherited::Load(section);
 

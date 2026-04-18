@@ -44,7 +44,7 @@ xr_vector<xr_string> xr_string::Split(char splitCh) const
 	return Result;
 }
 
-xr_string::xr_string(LPCSTR Str, u32 Size)
+xr_string::xr_string(const char* Str, u32 Size)
 	: Super(Str, Size)
 {
 }
@@ -54,12 +54,12 @@ xr_string::xr_string(Super&& other)
 {
 }
 
-xr_string::xr_string(LPCSTR Str)
+xr_string::xr_string(const char* Str)
 	: Super(Str)
 {
 }
 
-xr_string& xr_string::operator=(LPCSTR Str) 
+xr_string& xr_string::operator=(const char* Str) 
 {
 	Super::operator=(Str);
 	return *this;
@@ -136,13 +136,13 @@ bool xr_string::StartWith(const xr_string& Other) const
 }
 
 
-bool xr_string::StartWith(LPCSTR Str) const 
+bool xr_string::StartWith(const char* Str) const 
 {
 	u32 StrLen = xr_strlen(Str);
 	return StartWith(Str, (int)StrLen);
 }
 
-bool xr_string::StartWith(LPCSTR Str, size_t Size) const 
+bool xr_string::StartWith(const char* Str, size_t Size) const 
 {
 	size_t OurSize = size();
 

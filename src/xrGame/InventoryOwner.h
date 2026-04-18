@@ -12,7 +12,7 @@
 #include "inventory_space.h"
 #include "../xrScripts/script_export_space.h"
 
-extern xr_string TranslateName(LPCSTR nameStr);
+extern xr_string TranslateName(const char* nameStr);
 
 class CSE_Abstract;
 class CInventory;
@@ -62,12 +62,12 @@ public:
 public:
 
 	virtual DLL_Pure* _construct();
-	virtual BOOL net_Spawn(CSE_Abstract* DC);
+	virtual bool net_Spawn(CSE_Abstract* DC);
 	virtual void net_Destroy();
 	void Init();
-	virtual void Load(LPCSTR section);
+	virtual void Load(const char* section);
 	virtual void reinit();
-	virtual void reload(LPCSTR section);
+	virtual void reload(const char* section);
 	virtual void OnEvent(NET_Packet& P, u16 type);
 
 	//serialization
@@ -83,7 +83,7 @@ public:
 
 	CPda* GetPDA() const;
 
-	void ChangeName(LPCSTR name)
+	void ChangeName(const char* name)
 	{
 		m_game_name_str = name;
 		m_game_name = TranslateName(name);
@@ -128,10 +128,10 @@ public:
 	virtual void LostPdaContact(CInventoryOwner*) {}
 
 	//игровое имя 
-	virtual LPCSTR Name() const { return m_game_name.c_str(); }
-	LPCSTR NameReal() const { return m_game_name_str.c_str(); }
-	void SetName(LPCSTR name) { m_game_name = name; }
-	LPCSTR IconName() const { return CharacterInfo().IconName().c_str(); }
+	virtual const char* Name() const { return m_game_name.c_str(); }
+	const char* NameReal() const { return m_game_name_str.c_str(); }
+	void SetName(const char* name) { m_game_name = name; }
+	const char* IconName() const { return CharacterInfo().IconName().c_str(); }
 	u32 get_money() const { return m_money; }
 	void set_money(u32 amount, bool bSendEvent);
 	bool is_alive();
@@ -265,9 +265,9 @@ public:
 		return *m_trade_parameters;
 	}
 
-	virtual	LPCSTR trade_section() const;
+	virtual	const char* trade_section() const;
 	float deficit_factor(const shared_str& section) const;
-	void buy_supplies(CInifile& ini_file, LPCSTR section);
+	void buy_supplies(CInifile& ini_file, const char* section);
 	void sell_useless_items();
 	virtual	void on_before_sell(CInventoryItem* item) {}
 	virtual	void on_before_buy(CInventoryItem* item) {}

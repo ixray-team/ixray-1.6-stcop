@@ -30,7 +30,7 @@ public:
 
 	virtual bool OnKeyboardRelease(int key) override;
 
-	virtual LPCSTR GetGameScore(string32& score_dest);
+	virtual const char* GetGameScore(string32& score_dest);
 	virtual void OnRender() override;
 	virtual void OnVoiceMessage(NET_Packet* P) override;
 

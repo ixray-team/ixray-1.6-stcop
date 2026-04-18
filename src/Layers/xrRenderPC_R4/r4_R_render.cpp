@@ -616,7 +616,7 @@ void CRender::Render()
 	r_pmask										(true,false);	// disable priority "1"
 	Device.Statistic->RenderCALC.End			();
 
-	BOOL	split_the_scene_to_minimize_wait		= FALSE;
+	bool	split_the_scene_to_minimize_wait		= FALSE;
 	if (ps_r2_ls_flags.test(R2FLAG_EXP_SPLIT_SCENE))	split_the_scene_to_minimize_wait=TRUE;
 
 	if (mapHUDScopeMask.size() > 0) {

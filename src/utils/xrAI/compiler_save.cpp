@@ -138,7 +138,7 @@ void SaveNodesByVersion(hdrNODES& H, IWriter*& fs, xr_vector<NodeClass> OutNodes
 	OutNodes.clear();
 }
 
-void xrSaveNodes(LPCSTR N, LPCSTR out_name)
+void xrSaveNodes(const char* N, const char* out_name)
 {
 	Msg("Renumbering nodes...");
 

@@ -40,11 +40,11 @@ public:
 	virtual				~ESceneSpawnTool		();
 
 	// definition
-    IC LPCSTR			ClassName				(){return "spawn";}
-    IC LPCSTR			ClassDesc				(){return "Spawn Element";}
+    IC const char*			ClassName				(){return "spawn";}
+    IC const char*			ClassDesc				(){return "Spawn Element";}
     IC int				RenderPriority			(){return 1;}
 
-    void 				FillProp				(LPCSTR pref, PropItemVec& items);
+    void 				FillProp				(const char* pref, PropItemVec& items);
 
     virtual void		Clear					(bool bSpecific=false){inherited::Clear(bSpecific);m_Flags.zero();}
     // IO
@@ -61,6 +61,6 @@ public:
     virtual void		GetStaticDesc			(int& v_cnt, int& f_cnt, bool b_selected_only);
     virtual bool		ExportStatic			(SceneBuilder* B, bool b_selected_only);
 */
-    virtual CCustomObject* CreateObject			(LPVOID data, LPCSTR name);
+    virtual CCustomObject* CreateObject			(LPVOID data, const char* name);
    CEditableObject*		get_draw_visual			(u8 _RP_TeamID, u8 _RP_Type, const GameTypeChooser& _GameType); 
 };

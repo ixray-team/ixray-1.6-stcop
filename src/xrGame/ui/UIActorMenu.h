@@ -211,8 +211,8 @@ public:
 	virtual void				Update								();
 	virtual void				Show								(bool status);
 
-	void						CallMessageBoxYesNo					(LPCSTR text);
-	void						CallMessageBoxOK					(LPCSTR text);
+	void						CallMessageBoxYesNo					(const char* text);
+	void						CallMessageBoxOK					(const char* text);
 	void						OnMesBoxYes							(CUIWindow*, void*);
 	void						OnMesBoxNo							(CUIWindow*, void*);
 
@@ -242,7 +242,7 @@ public:
 	bool						NeedToShowInfos				() const { return m_bShowInfoWnds; }
 	virtual bool				AnyInfoWindowOpen			() const;
 
-	void HighlightSectionInSlot(LPCSTR section, u8 type, u16 slot_id = 0);
+	void HighlightSectionInSlot(const char* section, u8 type, u16 slot_id = 0);
 	CScriptGameObject* GetCurrentItemAsGameObject();
 	void HighlightForEachInSlot(const luabind::functor<bool>& functor, u8 type, u16 slot_id);
 	DECLARE_SCRIPT_REGISTER_FUNCTION

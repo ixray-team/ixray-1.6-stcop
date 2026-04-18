@@ -73,7 +73,7 @@ PPM_CONTEXT
     inline void             update2(STATE* p);
     inline SEE2_CONTEXT*    makeEscFreq2() const;
     void                    rescale();
-    void                    refresh(int OldNU,BOOL Scale);
+    void                    refresh(int OldNU,bool Scale);
     PPM_CONTEXT*            cutOff(int Order);
     PPM_CONTEXT*            removeBinConts(int Order);
     void                    makeSuffix();
@@ -248,20 +248,21 @@ PPM_CONTEXT::write( int o, FILE* fp )
             if ( p->Successor )             p->Successor->write(o+1,fp);
 }
 */
-void PPM_CONTEXT::refresh(int OldNU,BOOL Scale)
+void PPM_CONTEXT::refresh(int OldNU, bool Scale)
 {
-    int i=NumStats, EscFreq;
-    STATE* p = Stats = (STATE*) ShrinkUnits(Stats,OldNU,(i+2) >> 1);
-    Flags=(Flags & (0x10+0x04*Scale))+0x08*(p->Symbol >= 0x40);
-    EscFreq=SummFreq-p->Freq;
-    SummFreq = (p->Freq=(p->Freq+Scale) >> Scale);
+    int i = NumStats, EscFreq;
+    STATE* p = Stats = (STATE*)ShrinkUnits(Stats, OldNU, (i + 2) >> 1);
+    Flags = (Flags & (0x10 + 0x04 * Scale)) + 0x08 * (p->Symbol >= 0x40);
+    EscFreq = SummFreq - p->Freq;
+    SummFreq = (p->Freq = (p->Freq + Scale) >> static_cast<int>(Scale));
     do {
         EscFreq -= (++p)->Freq;
-        SummFreq += (p->Freq=(p->Freq+Scale) >> Scale);
-        Flags |= 0x08*(p->Symbol >= 0x40);
-    } while ( --i );
-    SummFreq += (EscFreq=(EscFreq+Scale) >> Scale);
+        SummFreq += (p->Freq = (p->Freq + Scale) >> static_cast<int>(Scale));
+        Flags |= 0x08 * (p->Symbol >= 0x40);
+    } while (--i);
+    SummFreq += (EscFreq = (EscFreq + Scale) >> static_cast<int>(Scale));
 }
+
 #define P_CALL(F) ( PrefetchData(p->Successor), \
                     p->Successor=p->Successor->F(Order+1))
 PPM_CONTEXT* PPM_CONTEXT::cutOff(int Order)
@@ -353,7 +354,7 @@ static void RestoreModelRare(PPM_CONTEXT* pc1,PPM_CONTEXT* MinContext,
     }
 }
 
-static PPM_CONTEXT* _FASTCALL CreateSuccessors(BOOL Skip,PPM_CONTEXT::STATE* p,
+static PPM_CONTEXT* _FASTCALL CreateSuccessors(bool Skip,PPM_CONTEXT::STATE* p,
         PPM_CONTEXT* pc);
 static PPM_CONTEXT* _FASTCALL ReduceOrder(PPM_CONTEXT::STATE* p,PPM_CONTEXT* pc)
 {
@@ -432,7 +433,7 @@ void PPM_CONTEXT::rescale()
     SummFreq += (EscFreq -= (EscFreq >> 1));
     Flags |= 0x04;                          FoundState=Stats;
 }
-static PPM_CONTEXT* _FASTCALL CreateSuccessors(BOOL Skip,PPM_CONTEXT::STATE* p,
+static PPM_CONTEXT* _FASTCALL CreateSuccessors(bool Skip,PPM_CONTEXT::STATE* p,
         PPM_CONTEXT* pc)
 {
 

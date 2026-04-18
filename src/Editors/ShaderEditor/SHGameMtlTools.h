@@ -10,17 +10,17 @@ class PropValue;
 
 class CSHGameMtlTools: public ISHTools
 {
-	BOOL                    m_CreatingMtl;
+	bool                    m_CreatingMtl;
 	xr_string				m_CreatingMtlPath;
 	ISHTools*				m_GameMtlPairTools;
-	void  			ItemExist			(LPCSTR name, bool& res){res = !!FindItem(name);}
-	SGameMtl*				FindItem			(LPCSTR name);
+	void  			ItemExist			(const char* name, bool& res){res = !!FindItem(name);}
+	SGameMtl*				FindItem			(const char* name);
 public:
     SGameMtl*				m_Mtl;
-    virtual void			AppendItem			(LPCSTR path, LPCSTR parent_name=0);  
-	virtual void			AppendItem(LPCSTR path, bool dynamic=false, SGameMtl* parent=0);
+    virtual void			AppendItem			(const char* path, const char* parent_name=0);  
+	virtual void			AppendItem(const char* path, bool dynamic=false, SGameMtl* parent=0);
     virtual void   OnRemoveItem		(UIItemListForm::Node& node); 
-	virtual void   OnRenameItem		(UIItemListForm::Node& node, LPCSTR old_full_name, LPCSTR new_full_name, EItemType type);
+	virtual void   OnRenameItem		(UIItemListForm::Node& node, const char* old_full_name, const char* new_full_name, EItemType type);
 	void   		FillChooseMtlType	(ChooseItemVec& items, void* param);
 
     virtual void			FillItemList		();
@@ -28,7 +28,7 @@ public:
 							CSHGameMtlTools 	(const ISHInit& init);
     virtual 				~CSHGameMtlTools	();
 
-    virtual LPCSTR			ToolsName			(){return "Game Materials";}
+    virtual const char*			ToolsName			(){return "Game Materials";}
 
 	virtual void			Reload				();
 	virtual void			Load				();
@@ -42,7 +42,7 @@ public:
 
     // misc
     virtual void			ResetCurrentItem	();
-    virtual void			SetCurrentItem		(LPCSTR name, bool bView);
+    virtual void			SetCurrentItem		(const char* name, bool bView);
 
 	virtual void 			RealUpdateProperties();
 	virtual void 			RealUpdateList		();

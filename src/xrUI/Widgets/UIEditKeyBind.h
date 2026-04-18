@@ -30,7 +30,7 @@ public:
 	virtual bool	IsChangedOptValue		() const;	// backup!=current
 	
 			void	SetValue				();
-	virtual	void	OnMessage				(LPCSTR message);
+	virtual	void	OnMessage				(const char* message);
 
 	// CUIWindow methods
 			void	InitKeyBind				(Fvector2 pos, Fvector2 size);
@@ -39,7 +39,7 @@ public:
 	virtual void	OnFocusLost				();
 	virtual bool	OnKeyboardAction				(int dik, EUIMessages keyboard_action);
 
-	virtual void	SetText					(LPCSTR text);
+	virtual void	SetText					(const char* text);
 			void	SetEditMode				(bool b);
 
 	virtual CUIWindow* ui_cast_window() { return this; }

@@ -23,12 +23,12 @@
 //#include "character_reputation.h"
 extern SFillPropData			fp_data;
 
-extern CSE_Abstract *F_entity_Create	(LPCSTR section);
+extern CSE_Abstract *F_entity_Create	(const char* section);
 
 extern CScriptPropertiesListHelper	*g_property_list_helper;
 
 extern "C" {
-	FACTORY_API	ISE_Abstract* __stdcall create_entity	(LPCSTR section)
+	FACTORY_API	ISE_Abstract* __stdcall create_entity	(const char* section)
 	{
 		return					(F_entity_Create(section));
 	}

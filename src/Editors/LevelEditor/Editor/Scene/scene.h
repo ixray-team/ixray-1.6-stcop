@@ -129,7 +129,7 @@ protected:
 	void			CreateSceneTools();
 	void			DestroySceneTools();
 
-	void 			FindObjectByNameCB(LPCSTR new_name, bool& res) { res = !!FindObjectByName(new_name, (CCustomObject*)0); }
+	void 			FindObjectByNameCB(const char* new_name, bool& res) { res = !!FindObjectByName(new_name, (CCustomObject*)0); }
 
 	void  	OnBuildControlClick(ButtonValue* sender, bool& bModif, bool& bSafe);
 	void  	OnRTFlagsChange(PropValue* sender);
@@ -150,47 +150,47 @@ public:
 	typedef  xr_delegate<bool(CCustomObject*)> TAppendObject;
 
 	bool 			ReadObjectStream(IReader& F, CCustomObject*& O);
-	bool 			ReadObjectLTX(CInifile& ini, LPCSTR sect_name, CCustomObject*& O);
+	bool 			ReadObjectLTX(CInifile& ini, const char* sect_name, CCustomObject*& O);
 	bool 			ReadObjectsStream(IReader& F, u32 chunk_id, TAppendObject on_append, SPBItem* pb);
-	bool 			ReadObjectsLTX(CInifile& ini, LPCSTR sect_name_parent, LPCSTR sect_name_prefix, TAppendObject on_append, SPBItem* pb);
+	bool 			ReadObjectsLTX(CInifile& ini, const char* sect_name_parent, const char* sect_name_prefix, TAppendObject on_append, SPBItem* pb);
 
 
 	void 			SaveObjectStream(CCustomObject* O, IWriter& F);
-	void 			SaveObjectLTX(CCustomObject* O, LPCSTR sect_name, CInifile& ini);
+	void 			SaveObjectLTX(CCustomObject* O, const char* sect_name, CInifile& ini);
 	void 			SaveObjectsStream(ObjectList& lst, u32 chunk_id, IWriter& F);
-	void 			SaveObjectsLTX(ObjectList& lst, LPCSTR sect_name_parent, LPCSTR sect_name_prefix, CInifile& ini);
+	void 			SaveObjectsLTX(ObjectList& lst, const char* sect_name_parent, const char* sect_name_prefix, CInifile& ini);
 
-	xr_string		LevelPartPath(LPCSTR map_name);
-	xr_string		LevelPartName(LPCSTR map_name, ObjClassID cls);
+	xr_string		LevelPartPath(const char* map_name);
+	xr_string		LevelPartName(const char* map_name, ObjClassID cls);
 
-	BOOL			LoadLevelPart(ESceneToolBase* M, LPCSTR map_name);
-	BOOL			LoadLevelPartStream(ESceneToolBase* M, LPCSTR map_name);
-	BOOL			LoadLevelPartLTX(ESceneToolBase* M, LPCSTR map_name);
+	bool			LoadLevelPart(ESceneToolBase* M, const char* map_name);
+	bool			LoadLevelPartStream(ESceneToolBase* M, const char* map_name);
+	bool			LoadLevelPartLTX(ESceneToolBase* M, const char* map_name);
 
-	BOOL			LoadLevelPart(LPCSTR map_name, ObjClassID cls);
-	BOOL		 	UnloadLevelPart(ESceneToolBase* M);
-	BOOL			UnloadLevelPart(LPCSTR map_name, ObjClassID cls);
+	bool			LoadLevelPart(const char* map_name, ObjClassID cls);
+	bool		 	UnloadLevelPart(ESceneToolBase* M);
+	bool			UnloadLevelPart(const char* map_name, ObjClassID cls);
 public:
 	bool			ExportGame(SExportStreams* F);
 
-	bool 			Load(LPCSTR map_name, bool bUndo);
-	bool 			LoadLTX(LPCSTR map_name, bool bUndo);
+	bool 			Load(const char* map_name, bool bUndo);
+	bool 			LoadLTX(const char* map_name, bool bUndo);
 
-	void 			Save(LPCSTR map_name, bool bUndo, bool bForceSaveAll);
-	void 			SaveLTX(LPCSTR map_name, bool bUndo, bool bForceSaveAll);
+	void 			Save(const char* map_name, bool bUndo, bool bForceSaveAll);
+	void 			SaveLTX(const char* map_name, bool bUndo, bool bForceSaveAll);
 
-	bool 			LoadSelection(LPCSTR fname);
-	void 			SaveSelection(ObjClassID classfilter, LPCSTR fname);
+	bool 			LoadSelection(const char* fname);
+	void 			SaveSelection(ObjClassID classfilter, const char* fname);
 
-	void			SaveToolLTX(ObjClassID clsid, LPCSTR fn);
-	bool			LoadToolLTX(ObjClassID clsid, LPCSTR fn);
+	void			SaveToolLTX(ObjClassID clsid, const char* fn);
+	bool			LoadToolLTX(ObjClassID clsid, const char* fn);
 
-	void 			Unload(BOOL bEditableToolsOnly);
-	void 			Clear(BOOL bEditableToolsOnly);
+	void 			Unload(bool bEditableToolsOnly);
+	void 			Clear(bool bEditableToolsOnly);
 	void			Reset();
-	void 			LoadCompilerError(LPCSTR fn);
-	void			SaveCompilerError(LPCSTR fn);
-	void			HighlightTexture(LPCSTR t_name, bool allow_ratio, u32 t_width, u32 t_height, bool leave_previous);
+	void 			LoadCompilerError(const char* fn);
+	void			SaveCompilerError(const char* fn);
+	void			HighlightTexture(const char* t_name, bool allow_ratio, u32 t_width, u32 t_height, bool leave_previous);
 
 	int				MultiRenameObjects();
 
@@ -261,14 +261,14 @@ public:
 
 	void 			SelectLightsForObject(CCustomObject* obj);
 
-	void 			ZoomExtents(ObjClassID cls, BOOL bSelectedOnly);
+	void 			ZoomExtents(ObjClassID cls, bool bSelectedOnly);
 
 	int 			FrustumPick(const CFrustum& frustum, ObjClassID classfilter, ObjectList& ol);
 	int 			SpherePick(const Fvector& center, float radius, ObjClassID classfilter, ObjectList& ol);
 
 	virtual void			GenObjectName(ObjClassID cls_id, char* buffer, const char* prefix = NULL);
-	virtual CCustomObject* FindObjectByName(LPCSTR name, ObjClassID classfilter);
-	virtual CCustomObject* FindObjectByName(LPCSTR name, CCustomObject* pass_object);
+	virtual CCustomObject* FindObjectByName(const char* name, ObjClassID classfilter);
+	virtual CCustomObject* FindObjectByName(const char* name, CCustomObject* pass_object);
 	bool 			FindDuplicateName();
 
 	void 			UndoClear();
@@ -313,14 +313,14 @@ public:
 	void			CollectSummaryInfo();
 	void			ExportObj(bool b_selected_only);
 	void			ShowSummaryInfo();
-	void			ExportSummaryInfo(LPCSTR f_name);
+	void			ExportSummaryInfo(const char* f_name);
 	
-	void			LoadXrAICompilerError(LPCSTR fn);
+	void			LoadXrAICompilerError(const char* fn);
 	xr_string		LevelPath();
 	shared_str 		LevelPrefix() { return m_LevelOp.m_LevelPrefix; }
 
-	void 			FillProp(LPCSTR pref, PropItemVec& items, ObjClassID cls_id);
-	void 			FillPropObjects(LPCSTR pref, PropItemVec& items, ObjClassID cls_id);
+	void 			FillProp(const char* pref, PropItemVec& items, ObjClassID cls_id);
+	void 			FillPropObjects(const char* pref, PropItemVec& items, ObjClassID cls_id);
 	void Play();
 	bool IsPlayInEditor();
 	virtual void Stop();

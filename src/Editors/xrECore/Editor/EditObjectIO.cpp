@@ -439,7 +439,7 @@ bool CEditableObject::Load(IReader& F)
 	return bRes;
 }
 
-bool CEditableObject::ExportOGF(LPCSTR fn, u8 infl)
+bool CEditableObject::ExportOGF(const char* fn, u8 infl)
 {
 	UpdateBox		();
 	CMemoryWriter	F;
@@ -451,7 +451,7 @@ bool CEditableObject::ExportOGF(LPCSTR fn, u8 infl)
     return false;
 }
 //------------------------------------------------------------------------------
-bool CEditableObject::ExportOMF(LPCSTR fn)
+bool CEditableObject::ExportOMF(const char* fn)
 {
 	UpdateBox		();
 	CMemoryWriter	F;
@@ -462,7 +462,7 @@ bool CEditableObject::ExportOMF(LPCSTR fn)
     return false;
 }
 //------------------------------------------------------------------------------
-bool CEditableObject::ExportOBJ(LPCSTR fn)
+bool CEditableObject::ExportOBJ(const char* fn)
 {
 	UpdateBox			();
     CExportObjectOGF E(this);

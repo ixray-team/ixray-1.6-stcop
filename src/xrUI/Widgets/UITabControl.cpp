@@ -54,7 +54,7 @@ bool CUITabControl::IsChangedOptValue() const
 }
 
 // добавление кнопки-закладки в список закладок контрола
-bool CUITabControl::AddItem(LPCSTR pItemName, LPCSTR pTexName, Fvector2 pos, Fvector2 size)
+bool CUITabControl::AddItem(const char* pItemName, const char* pTexName, Fvector2 pos, Fvector2 size)
 {
 	CUITabButton *pNewButton = new CUITabButton();
 	pNewButton->SetAutoDelete	(true);
@@ -309,9 +309,9 @@ void CUITabControl::ResetTab()
 	m_sPrevPushedId	= "";
 }
 
-LPCSTR CUITabControl::GetActiveId_script()
+const char* CUITabControl::GetActiveId_script()
 { 
-	LPCSTR res = GetActiveId().c_str();
+	const char* res = GetActiveId().c_str();
 	return res;
 }
 

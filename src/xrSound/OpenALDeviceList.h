@@ -28,7 +28,7 @@ struct ALDeviceDesc{
 		u16 storage;
 	};
 	ESndProps				props;
-	ALDeviceDesc(LPCSTR nm,LPCSTR nml, int almn, int almj, int efxmn, int efxmj)
+	ALDeviceDesc(const char* nm,const char* nml, int almn, int almj, int efxmn, int efxmj)
 	{
 		xr_strcpy(name, nm);
 		xr_strcpy(name_al, nml);
@@ -53,7 +53,7 @@ public:
 
 	u32					GetNumDevices			()				{return (u32)m_devices.size();}
 	const ALDeviceDesc&	GetDeviceDesc			(u32 index)		{return m_devices[index];}
-	LPCSTR				GetDeviceName			(u32 index);
+	const char*				GetDeviceName			(u32 index);
 	void GetDeviceVersion(u32 index, int* ALmajor, int* ALminor, int* EFXmajor, int* EFXminor);
 	void				SelectBestDevice		();
 };

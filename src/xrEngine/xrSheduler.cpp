@@ -5,7 +5,7 @@
 float			psShedulerCurrent		= 10.f	;
 float			psShedulerTarget		= 10.f	;
 const	float	psShedulerReaction		= 0.1f	;
-BOOL			g_bSheduleInProgress	= FALSE	;
+bool			g_bSheduleInProgress	= FALSE	;
 
 //-------------------------------------------------------------------------------------
 void CSheduler::Initialize		()
@@ -50,7 +50,7 @@ void	CSheduler::internal_Registration()
 		if (R.OP)	{
 			// register
 			// search for paired "unregister"
-			BOOL	bFoundAndErased		= FALSE;
+			bool	bFoundAndErased		= FALSE;
 			for (u32 pair=it+1; pair<Registration.size(); pair++)
 			{
 				ItemReg&	R_pair	= Registration	[pair];
@@ -75,7 +75,7 @@ void	CSheduler::internal_Registration()
 	Registration.clear	();
 }
 
-void CSheduler::internal_Register	(ISheduled* O, BOOL RT)
+void CSheduler::internal_Register	(ISheduled* O, bool RT)
 {
 	VERIFY	(!O->shedule.b_locked)	;
 	if (RT)
@@ -103,7 +103,7 @@ void CSheduler::internal_Register	(ISheduled* O, BOOL RT)
 	}
 }
 
-bool CSheduler::internal_Unregister	(ISheduled* O, BOOL RT, bool warn_on_not_found)
+bool CSheduler::internal_Unregister	(ISheduled* O, bool RT, bool warn_on_not_found)
 {
 	//the object may be already dead
 	//VERIFY	(!O->shedule.b_locked)	;
@@ -209,7 +209,7 @@ bool CSheduler::Registered		(ISheduled *object) const
 }
 #endif // DEBUG
 
-void	CSheduler::Register		(ISheduled* A, BOOL RT				)
+void	CSheduler::Register		(ISheduled* A, bool RT				)
 {
 	VERIFY		(!Registered(A));
 

@@ -18,13 +18,13 @@ void CAnimatorCamEffectorScriptCB::ProcessIfInvalid(SCamEffectorInfo& info)
 	}
 }
 
-BOOL CAnimatorCamEffectorScriptCB::Valid()
+bool CAnimatorCamEffectorScriptCB::Valid()
 {
-	BOOL res = inherited::Valid();
+	bool res = inherited::Valid();
 	if(!res && cb_name.size() )
 	{
-		luabind::functor<LPCSTR>			fl;
-		R_ASSERT							(ai().script_engine().functor<LPCSTR>(*cb_name,fl));
+		luabind::functor<const char*>			fl;
+		R_ASSERT							(ai().script_engine().functor<const char*>(*cb_name,fl));
 		fl									();
 		cb_name								= "";
 	}

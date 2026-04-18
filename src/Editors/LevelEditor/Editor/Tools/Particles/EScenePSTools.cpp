@@ -17,7 +17,7 @@ void EScenePSTool::RemoveControls()
 }
 
 
-CCustomObject* EScenePSTool::CreateObject(LPVOID data, LPCSTR name)
+CCustomObject* EScenePSTool::CreateObject(LPVOID data, const char* name)
 {
 	CCustomObject* O	= new EParticlesObject(data,name);
     O->FParentTools		= this;

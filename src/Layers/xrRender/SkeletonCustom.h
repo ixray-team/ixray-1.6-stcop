@@ -75,7 +75,7 @@ private:
 
 public: 
 #ifdef DEBUG
-	BOOL						dbg_single_use_marker;
+	bool						dbg_single_use_marker;
 #endif
 			void				Bone_Calculate		(CBoneData* bd, Fmatrix* parent);
 			void				CLBone				(const CBoneData* bd, CBoneInstance &bi, const Fmatrix *parent, u8 mask_channel = (1<<0));
@@ -113,7 +113,7 @@ protected:
 	accel*						bone_map_N;		// bones  associations	(shared)	- sorted by name
 	accel*						bone_map_P;		// bones  associations	(shared)	- sorted by name-pointer
 
-	BOOL						Update_Visibility		;
+	bool						Update_Visibility		;
 	u32							UCalc_Time				;
 	s32							UCalc_Visibox			;
 	u32							Visibox_frame = 0;
@@ -153,9 +153,9 @@ public:
 	virtual						~CKinematics		();
 
 	// Low level interface
-				u16				_BCL	LL_BoneID			(LPCSTR  B);
+				u16				_BCL	LL_BoneID			(const char*  B);
 				u16				_BCL	LL_BoneID			(const shared_str& B);
-				LPCSTR			_BCL	LL_BoneName_dbg		(u16 ID);
+				const char*			_BCL	LL_BoneName_dbg		(u16 ID);
 
 				CInifile*		_BCL	LL_UserData			()						{return pUserData;}
 				accel*					LL_Bones			()						{return bone_map_N;}
@@ -230,7 +230,7 @@ public:
 		result.mulA_43(xform);
 	}
 
-	ICF void CalculateBBox(BOOL bforce = TRUE)
+	ICF void CalculateBBox(bool bforce = TRUE)
 	{
 		if (!bforce && Device.dwFrame == Visibox_frame)
 			return;
@@ -278,16 +278,16 @@ public:
 	u16						_BCL	LL_GetBoneRoot		()					{	return iRoot;													}
 	void							LL_SetBoneRoot		(u16 bone_id)		{ VERIFY2(bone_id < LL_BoneCount(), make_string<const char*>("visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id));	iRoot=bone_id;					}
 
-    BOOL					_BCL	LL_GetBoneVisible	(u16 bone_id)		{ 
+    bool					_BCL	LL_GetBoneVisible	(u16 bone_id)		{ 
 		VERIFY2(bone_id < LL_BoneCount(), make_string<const char*>("visual_name: %s, bone: %s, bone_id: %d", dbg_name.c_str(), LL_BoneName_dbg(bone_id), bone_id));
 		return visimask.is(bone_id);	}
-	void							LL_SetBoneVisible	(u16 bone_id, BOOL val, BOOL bRecursive);
+	void							LL_SetBoneVisible	(u16 bone_id, bool val, bool bRecursive);
 	VisMask					_BCL	LL_GetBonesVisible	()					{	return visimask;	}
 	void							LL_SetBonesVisible	(VisMask mask);
 	void							LL_SetBonesVisibleAll() { visimask.set_all(); };
 
 	// Main functionality
-	virtual void					CalculateBones				(BOOL bForceExact	=	FALSE);		// Recalculate skeleton
+	virtual void					CalculateBones				(bool bForceExact	=	FALSE);		// Recalculate skeleton
 	void							CalculateBones_Invalidate	();
 	void							Callback					(UpdateCallback C, void* Param)		{	Update_Callback	= C; Update_Callback_Param	= Param;	}
 

@@ -71,7 +71,7 @@ public:
 									game_sv_ArtefactHunt	(){m_type = eGameIDArtefactHunt;}
 	virtual		void				Create					(shared_str& options);
 
-	virtual		LPCSTR				type_name			() const { return "artefacthunt";};
+	virtual		const char*				type_name			() const { return "artefacthunt";};
 	// Events	
 	virtual		void				OnEvent					(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender );
 	virtual		void				OnRoundStart			();							// старт раунда
@@ -103,7 +103,7 @@ public:
 	
 	void							OnArtefactOnBase		(ClientID id_who);
 
-	virtual		BOOL				OnTouch					(u16 eid_who, u16 eid_what, BOOL bForced = FALSE);
+	virtual		bool				OnTouch					(u16 eid_who, u16 eid_what, bool bForced = FALSE);
 	virtual		void				OnDetach				(u16 eid_who, u16 eid_what);
 	virtual		void				OnCreate				(u16 id_who);
 
@@ -122,16 +122,16 @@ public:
 	virtual		void				MoveAllAlivePlayers			();
 	virtual		void				CheckForTeamElimination		();
 	virtual		void				CheckForTeamWin				();
-	virtual		BOOL				CanHaveFriendlyFire		()	{return TRUE;}
+	virtual		bool				CanHaveFriendlyFire		()	{return TRUE;}
 
 	//-----------------------------------------------------------------------------
 	virtual		int					Get_ArtefactsCount			();
 	virtual		u32					Get_ArtefactsRespawnDelta	();
 	virtual		u32					Get_ArtefactsStayTime		();
 	virtual		int					Get_ReinforcementTime		();
-	virtual		BOOL				Get_ShieldedBases			();
-	virtual		BOOL				Get_ReturnPlayers			();
-	virtual		BOOL				Get_BearerCantSprint		();
+	virtual		bool				Get_ShieldedBases			();
+	virtual		bool				Get_ReturnPlayers			();
+	virtual		bool				Get_BearerCantSprint		();
 
 				void				SwapTeams					();
 
@@ -147,5 +147,5 @@ public:
 	virtual game_sv_ArtefactHunt* cast_game_sv_artefacthunt() override { return this; }
 
 protected:
-	virtual		void				WriteGameState			(CInifile& ini, LPCSTR sect, bool bRoundResult);
+	virtual		void				WriteGameState			(CInifile& ini, const char* sect, bool bRoundResult);
 };

@@ -96,8 +96,8 @@ public:
 
 	shared_str					level_name;
 
-	void						SetLevelName(LPCSTR name) { level_name = name; }
-	LPCSTR						GetLavelName() { return level_name.c_str(); }
+	void						SetLevelName(const char* name) { level_name = name; }
+	const char*						GetLavelName() { return level_name.c_str(); }
 
 	bool SkipThm = false;
 	bool GetSkipTHM() { return SkipThm; };
@@ -157,7 +157,7 @@ extern "C" XRLC_LIGHT_API u32				InvalideFaces();
 
 extern xrLC_GlobalData* data;
 IC xrLC_GlobalData* inlc_global_data() { return data; }
-static LPCSTR gl_data_net_file_name = "tmp_global_data";
+static const char* gl_data_net_file_name = "tmp_global_data";
 
 XRLC_LIGHT_API base_Face* convert_nax(u32 dummy);
 XRLC_LIGHT_API u32 convert_nax(base_Face* F);

@@ -146,7 +146,7 @@ void CSHGameMtlPairTools::OnDeactivate()
     Ext.m_Items->m_Flags.assign(m_StoreFlags);
 }
 
-void CSHGameMtlPairTools::SetCurrentItem(LPCSTR name, bool bView)
+void CSHGameMtlPairTools::SetCurrentItem(const char* name, bool bView)
 {
     if (m_bLockUpdate) return;
 	SGameMtlPair* S=GameMaterialLibraryEditors->GetMaterialPair(name);

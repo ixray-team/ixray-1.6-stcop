@@ -17,7 +17,7 @@ void fix_texture_name(LPSTR fn)
 	}
 }
 
-int get_texture_load_lod(LPCSTR fn)
+int get_texture_load_lod(const char* fn)
 {
 	auto& sect = pSettings->r_section("reduce_lod_texture_list");
 
@@ -115,12 +115,12 @@ IC void PrintLoadTextureError(HRESULT hr, TexMetadata& imageInfo, const char* fn
 	Msg("! TEXTURE CREATION ERROR: %s", errorDetails);
 }
 
-IRHISurface* CRender::load_texture(LPCSTR fname, u32& msize, bool bStaging /* = false */)
+IRHISurface* CRender::load_texture(const char* fname, u32& msize, bool bStaging /* = false */)
 {
 	return this->texture_load(fname, msize, bStaging);
 }
 
-bool CRender::get_texture_metadata(LPCSTR absolute_path, RHITextureMetadata* p_data)
+bool CRender::get_texture_metadata(const char* absolute_path, RHITextureMetadata* p_data)
 {
 	bool status = false;
 
@@ -157,7 +157,7 @@ bool CRender::get_texture_metadata(LPCSTR absolute_path, RHITextureMetadata* p_d
 	return status;
 }
 
-IRHISurface* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStaging)
+IRHISurface* CRender::texture_load(const char* fRName, u32& ret_msize, bool bStaging)
 {
 	// Moved here just to avoid warning
 	TexMetadata imageInfo{};

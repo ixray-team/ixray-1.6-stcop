@@ -15,7 +15,7 @@ XML_NODE* FindCatalogRoot(CUIXml& xml)
         if (const tinyxml2::XMLElement* docEl = docRoot->ToElement())
         {
             const char* const elementName = docEl->Name();
-            for (LPCSTR rootTag : roots)
+            for (const char* rootTag : roots)
             {
                 if (xr_strcmp(elementName, rootTag) == 0)
                 {
@@ -24,7 +24,7 @@ XML_NODE* FindCatalogRoot(CUIXml& xml)
             }
         }
     }
-    for (LPCSTR rootTag : roots)
+    for (const char* rootTag : roots)
     {
         if (XML_NODE* node = xml.NavigateToNode(rootTag, 0))
         {
@@ -46,7 +46,7 @@ shared_str ReadGroupShortLabel(CUIXml& xml, XML_NODE* groupNode)
         XML_NODE* nameNode = xml.NavigateToNode(groupNode, "name", 0);
         if (nameNode)
         {
-            LPCSTR nameText = nullptr;
+            const char* nameText = nullptr;
             if (const tinyxml2::XMLElement* nameEl = nameNode->ToElement())
             {
                 nameText = nameEl->GetText();
@@ -68,7 +68,7 @@ bool InsertSectionFromNode(
     CUIXml& xml,
     XML_NODE* sectionNode,
     u32 groupIndex,
-    LPCSTR fileName,
+    const char* fileName,
     int groupIndexForLog,
     xr_map<shared_str, SHudSectionDesc>& sectionToDesc)
 {
@@ -109,7 +109,7 @@ CUIHudGroupCatalog::CUIHudGroupCatalog() = default;
 
 CUIHudGroupCatalog::~CUIHudGroupCatalog() = default;
 
-bool CUIHudGroupCatalog::Load(LPCSTR fileName)
+bool CUIHudGroupCatalog::Load(const char* fileName)
 {
     _groups.clear();
     _sectionToDesc.clear();

@@ -15,7 +15,7 @@ void ESceneShapeTool::RemoveControls()
 }
 
 
-CCustomObject* ESceneShapeTool::CreateObject(LPVOID data, LPCSTR name)
+CCustomObject* ESceneShapeTool::CreateObject(LPVOID data, const char* name)
 {
 	CCustomObject* O	= new CEditShape(data,name);
     O->FParentTools		= this;

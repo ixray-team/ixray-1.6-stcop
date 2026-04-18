@@ -12,7 +12,7 @@
 #include "../gamespy/GameSpy_Browser.h"
 
 
-LPCSTR GameTypeToString(EGameIDs gt, bool bShort);
+const char* GameTypeToString(EGameIDs gt, bool bShort);
 CGameSpy_Browser* g_gs_browser = nullptr;
 
 CServerList::CServerList()
@@ -413,7 +413,7 @@ void CServerList::SetFilters(SServerFilters& sf)
 	RefreshList();
 }
 
-void CServerList::SetPlayerName(LPCSTR name)
+void CServerList::SetPlayerName(const char* name)
 {
 	m_playerName = name;
 }
@@ -432,7 +432,7 @@ bool CServerList::IsValidItem(ServerInfo& item)
 	return result;
 }
 
-void CServerList::InitFromXml(CUIXml& xml_doc, LPCSTR path)
+void CServerList::InitFromXml(CUIXml& xml_doc, const char* path)
 {
 	CUIXmlInit::InitWindow			(xml_doc, path, 0, this);
 	string256 buf;

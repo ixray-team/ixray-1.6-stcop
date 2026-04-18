@@ -20,7 +20,7 @@ public:
 			void 	OnBtnYes	();
 			void 	OnBtnNo		();
 			void 	OnBtnCancel	();
-			void 	SetVoting	(LPCSTR txt);
+			void 	SetVoting	(const char* txt);
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 

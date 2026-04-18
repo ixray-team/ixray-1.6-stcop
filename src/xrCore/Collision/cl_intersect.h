@@ -207,7 +207,7 @@ namespace CDB
 	}
 	//---------------------------------------------------------------------------
 
-	ICF bool TestBBoxTri(const Fmatrix33& A, const Fvector& T, const Fvector& extA, Fvector** p, BOOL bCulling){
+	ICF bool TestBBoxTri(const Fmatrix33& A, const Fvector& T, const Fvector& extA, Fvector** p, bool bCulling){
 		// construct triangle normal, difference of center and vertex (18 ops)
 		Fvector D, E[2], N;
 		E[0].sub(*p[1],*p[0]);
@@ -307,7 +307,7 @@ namespace CDB
 		// intersection occurs
 		return true;
 	}
-	ICF bool TestBBoxTri(const Fmatrix33& A, const Fvector& T, const Fvector& extA, Fvector* p, BOOL bCulling){
+	ICF bool TestBBoxTri(const Fmatrix33& A, const Fvector& T, const Fvector& extA, Fvector* p, bool bCulling){
 		// construct triangle normal, difference of center and vertex (18 ops)
 		Fvector D, E[2], N;
 		E[0].sub(p[1],p[0]);

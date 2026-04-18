@@ -38,7 +38,7 @@ public:
 							CStoreHierarchy		();
 							~CStoreHierarchy	();
 					
-	void					Init				(CUIXml& xml, LPCSTR path);
+	void					Init				(CUIXml& xml, const char* path);
 	void					InitItemsInGroup	(const shared_str& sect, item* =NULL);
 	const item&				GetRoot				()								{VERIFY(m_root); return *m_root;};
 	void					Reset				()								{VERIFY(m_root); m_current_level = m_root;};

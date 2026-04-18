@@ -21,7 +21,7 @@ struct SCarLight
 	bool	isOn			();
 	void	Init			(CCarLights* holder);
 	void	Update			();
-	void	ParseDefinitions(LPCSTR section);
+	void	ParseDefinitions(const char* section);
 	
 
 };

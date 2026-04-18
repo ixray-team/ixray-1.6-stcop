@@ -95,7 +95,7 @@ void	CBlender_Vertex_aref::Compile(CBlender_Compile& C)
 		case SE_R1_NORMAL_HQ:
 			// Level view
 			{
-				LPCSTR					sname	= "vert";
+				const char*					sname	= "vert";
 				if (C.bDetail_Diffuse)	sname	= "vert_dt";
 				if (oBlend.value)	C.r_Pass(sname, sname, TRUE, TRUE, FALSE, TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, TRUE, oAREF.value);
 				else				C.r_Pass(sname, sname, TRUE, TRUE, TRUE, TRUE, D3DBLEND_ONE, D3DBLEND_ZERO, TRUE, oAREF.value);
@@ -107,7 +107,7 @@ void	CBlender_Vertex_aref::Compile(CBlender_Compile& C)
 		case SE_R1_NORMAL_LQ:
 			// Level view
 			{
-				LPCSTR				sname		= "vert";
+				const char*				sname		= "vert";
 				if (oBlend.value)	C.r_Pass(sname, sname, TRUE, TRUE, FALSE, TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, TRUE, oAREF.value);
 				else				C.r_Pass(sname, sname, TRUE, TRUE, TRUE, TRUE, D3DBLEND_ONE, D3DBLEND_ZERO, TRUE, oAREF.value);
 				C.r_Sampler		("s_base",	C.L_textures[0]);

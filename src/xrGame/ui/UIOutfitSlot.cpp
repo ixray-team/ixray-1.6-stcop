@@ -39,7 +39,7 @@ void CUIOutfitDragDropList::SetOutfit()
 	}
 }
 
-void CUIOutfitDragDropList::SetDefaultOutfit(LPCSTR default_outfit){
+void CUIOutfitDragDropList::SetDefaultOutfit(const char* default_outfit){
 	m_default_outfit = default_outfit;
 }
 

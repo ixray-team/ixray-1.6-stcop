@@ -54,21 +54,21 @@ namespace PS
 		virtual void 		GeomCreate();
 		virtual void 		GeomDestroy();
 
-		virtual void		UpdateParent		(const Fmatrix& m, const Fvector& velocity, BOOL bXFORM);
+		virtual void		UpdateParent		(const Fmatrix& m, const Fvector& velocity, bool bXFORM);
 
 		void				Compile				(CPEDef* def);
 
 		ICF CPEDef*			GetDefinition		(){return m_Def;}
 
 		virtual void		Play				();
-		virtual void		Stop				(BOOL bDefferedStop=TRUE);
-		virtual BOOL		IsPlaying			(){return m_RT_Flags.is(flRT_Playing);}
+		virtual void		Stop				(bool bDefferedStop=TRUE);
+		virtual bool		IsPlaying			(){return m_RT_Flags.is(flRT_Playing);}
 		
-		virtual void		SetHudMode			(BOOL b){m_RT_Flags.set(flRT_HUDmode,b);}
-		virtual BOOL		GetHudMode			()		{return m_RT_Flags.is(flRT_HUDmode);}
+		virtual void		SetHudMode			(bool b){m_RT_Flags.set(flRT_HUDmode,b);}
+		virtual bool		GetHudMode			()		{return m_RT_Flags.is(flRT_HUDmode);}
 
-		virtual void		SetLiveUpdate		(BOOL b){m_RT_Flags.set(flRT_LiveUpdate,b);}
-		virtual BOOL		GetLiveUpdate		()		{return m_RT_Flags.is(flRT_LiveUpdate);}
+		virtual void		SetLiveUpdate		(bool b){m_RT_Flags.set(flRT_LiveUpdate,b);}
+		virtual bool		GetLiveUpdate		()		{return m_RT_Flags.is(flRT_LiveUpdate);}
 
 		virtual float		GetTimeLimit		(){VERIFY(m_Def); return m_Def->m_Flags.is(CPEDef::dfTimeLimit)?m_Def->m_fTimeLimit:-1.f;}
 

@@ -8,7 +8,7 @@
 
 using namespace PAPI;
 
-PDomain::PDomain(EType et, BOOL ra, u32 color, PDomainEnum t,	
+PDomain::PDomain(EType et, bool ra, u32 color, PDomainEnum t,	
 										float inA0,	float inA1,	float inA2,	
 								   		float inA3,	float inA4,	float inA5,
 										float inA6,	float inA7,	float inA8	)
@@ -168,7 +168,7 @@ void PDomain::OnTypeChange(PropValue* sender)
 	ExecCommand				(COMMAND_UPDATE_PROPERTIES);
 }
 
-void 	PDomain::FillProp	(PropItemVec& items, LPCSTR pref, u32 clr)
+void 	PDomain::FillProp	(PropItemVec& items, const char* pref, u32 clr)
 {
     PropValue* V;
     V=PHelper().CreateToken32(items,PrepareKey(pref, "Type"),(u32*)&type,domain_token);

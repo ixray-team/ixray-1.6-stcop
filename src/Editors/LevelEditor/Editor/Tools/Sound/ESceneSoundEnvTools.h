@@ -10,8 +10,8 @@ protected:
 public:
 						ESceneSoundEnvTool		():ESceneCustomOTool(OBJCLASS_SOUND_ENV){;}
 	// definition
-    IC LPCSTR			ClassName				(){return "sound_env";}
-    IC LPCSTR			ClassDesc				(){return "Sound Env";}
+    IC const char*			ClassName				(){return "sound_env";}
+    IC const char*			ClassDesc				(){return "Sound Env";}
     IC int				RenderPriority			(){return 10;}
 
     virtual void		Clear					(bool bSpecific=false);
@@ -24,5 +24,5 @@ public:
     virtual bool		LoadSelection      		(IReader&);
     virtual void		SaveSelection      		(IWriter&);
 
-    virtual CCustomObject* CreateObject			(LPVOID data, LPCSTR name);
+    virtual CCustomObject* CreateObject			(LPVOID data, const char* name);
 };

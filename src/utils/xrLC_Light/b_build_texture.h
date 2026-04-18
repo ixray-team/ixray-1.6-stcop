@@ -6,12 +6,12 @@ struct b_BuildTexture :
 {
 	STextureParams THM;
 
-	IC void	SetHasSurface(BOOL val)
+	IC void	SetHasSurface(bool val)
 	{
 		THM.flags.set(STextureParams::flHasSurface, val);
 	}
 
-	IC BOOL HasSurface()const
+	IC bool HasSurface()const
 	{
 		return THM.flags.is(STextureParams::flHasSurface);
 	}

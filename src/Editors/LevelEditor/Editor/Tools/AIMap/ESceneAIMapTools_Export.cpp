@@ -33,7 +33,7 @@ void ESceneAIMapTool::PackPosition(SNodePositionOld& Dest, Fvector& Src, Fbox& b
 	clamp	(pz,-32767,32767);	Dest.z = s16	(pz);
 }
 
-bool ESceneAIMapTool::Export(LPCSTR path, bool Legacy)
+bool ESceneAIMapTool::Export(const char* path, bool Legacy)
 {
 //.?	if (!RealUpdateSnapList()) return false;
 	if (!Valid()) return false;

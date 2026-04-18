@@ -21,7 +21,7 @@ class ECORE_API CResourceManager
 {
 private:
 	struct str_pred {
-		IC bool operator()(LPCSTR x, LPCSTR y) const
+		IC bool operator()(const char* x, const char* y) const
 		{	return xr_strcmp(x,y)<0;	}
 	};
 	struct texture_detail	{
@@ -117,33 +117,33 @@ public:
 	CTextureDescrMngr									m_textures_description;
 	xr_vector<std::pair<shared_str,RHIShaderConstant::Setup*> >	v_constant_setup;
 	lua_State*											LSVM;
-	BOOL												bDeferredLoad;
+	bool												bDeferredLoad;
 private:
 	void							LS_Load				();
 	void							LS_Unload			();
 public:
 	// Miscelaneous
-	void							_ParseList			(sh_list& dest, LPCSTR names);
-	IBlender*						_GetBlender			(LPCSTR Name);
-	IBlender* 						_FindBlender		(LPCSTR Name);
+	void							_ParseList			(sh_list& dest, const char* names);
+	IBlender*						_GetBlender			(const char* Name);
+	IBlender* 						_FindBlender		(const char* Name);
 	void							_GetMemoryUsage		(u32& m_base, u32& c_base, u32& m_lmaps, u32& c_lmaps);
 	void							_DumpMemoryUsage	();
-//.	BOOL							_GetDetailTexture	(LPCSTR Name, LPCSTR& T, RHIShaderConstant::Setup* &M);
+//.	bool							_GetDetailTexture	(const char* Name, const char*& T, RHIShaderConstant::Setup* &M);
 
 	map_Blender&					_GetBlenders		()		{	return m_blenders;	}
 
 	// Editor cooperation
-	void							ED_UpdateBlender	(LPCSTR Name, IBlender*		data);
+	void							ED_UpdateBlender	(const char* Name, IBlender*		data);
 	void							ED_UpdateTextures	(xr_vector<xr_string>* names);
 
 	// Low level resource creation
-	CTexture*						_CreateTexture		(LPCSTR Name);
+	CTexture*						_CreateTexture		(const char* Name);
 	void							_DeleteTexture		(const CTexture* T);
 
-	CMatrix*						_CreateMatrix		(LPCSTR Name);
+	CMatrix*						_CreateMatrix		(const char* Name);
 	void							_DeleteMatrix		(const CMatrix*  M);
 	Shader*							_CreateShader		(Shader* InShader);
-	CConstant*						_CreateConstant		(LPCSTR Name);
+	CConstant*						_CreateConstant		(const char* Name);
 	void							_DeleteConstant		(const CConstant* C);
 
 	R_constant_table*				_CreateConstantTable(R_constant_table& C);
@@ -157,33 +157,33 @@ public:
 	void							_DeleteInputSignature(const SInputSignature* pSignature);
 #endif //USE_DX11
 
-	CRT*							_CreateRT			(LPCSTR Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount = 1, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)0);
+	CRT*							_CreateRT			(const char* Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount = 1, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)0);
 #ifdef USE_DX11
-	CRTC*							_CreateRTC			(LPCSTR Name, u32 size, ERHI_FORMAT f, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)0);
+	CRTC*							_CreateRTC			(const char* Name, u32 size, ERHI_FORMAT f, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)0);
 #endif
 	void							_DeleteRT			(const CRT*	RT	);
 
 #ifdef USE_DX11
-	SGS*							_CreateGS			(LPCSTR Name);
+	SGS*							_CreateGS			(const char* Name);
 	void							_DeleteGS			(const SGS*	GS);
 	void							_DeleteRTC			(const CRTC* RT);
 #endif //USE_DX11
 
 #ifdef USE_DX11
-	SHS*							_CreateHS			(LPCSTR Name);
+	SHS*							_CreateHS			(const char* Name);
 	void							_DeleteHS			(const SHS*	HS	);
 
-	SDS*							_CreateDS			(LPCSTR Name);
+	SDS*							_CreateDS			(const char* Name);
 	void							_DeleteDS			(const SDS*	DS	);
 
-    SCS*							_CreateCS			(LPCSTR Name);
+    SCS*							_CreateCS			(const char* Name);
 	void							_DeleteCS			(const SCS*	CS	);
 #endif //USE_DX11
 
-	SPS*							_CreatePS			(LPCSTR Name);
+	SPS*							_CreatePS			(const char* Name);
 	void							_DeletePS			(const SPS*	PS	);
 
-	SVS*							_CreateVS			(LPCSTR Name);
+	SVS*							_CreateVS			(const char* Name);
 	void							_DeleteVS			(const SVS*	VS	);
 
 	SPass*							_CreatePass			(const SPass& proto);
@@ -209,10 +209,10 @@ public:
 	ShaderElement*					_CreateElement		(ShaderElement& L);
 	void							_DeleteElement		(const ShaderElement* L);
 
-	Shader*							_cpp_Create			(LPCSTR		s_shader,	LPCSTR s_textures=0,	LPCSTR s_constants=0,	LPCSTR s_matrices=0);
-	Shader*							_cpp_Create			(IBlender*	B,			LPCSTR s_shader=0,		LPCSTR s_textures=0,	LPCSTR s_constants=0, LPCSTR s_matrices=0);
-	Shader*							_lua_Create			(LPCSTR		s_shader,	LPCSTR s_textures);
-	BOOL							_lua_HasShader		(LPCSTR		s_shader);
+	Shader*							_cpp_Create			(const char*		s_shader,	const char* s_textures=0,	const char* s_constants=0,	const char* s_matrices=0);
+	Shader*							_cpp_Create			(IBlender*	B,			const char* s_shader=0,		const char* s_textures=0,	const char* s_constants=0, const char* s_matrices=0);
+	Shader*							_lua_Create			(const char*		s_shader,	const char* s_textures);
+	bool							_lua_HasShader		(const char*		s_shader);
 
 	xr_vector<SGeometry*>&			_GetGeoms			()		{	return v_geoms;	}
 
@@ -220,23 +220,23 @@ public:
 	~CResourceManager						()	;
 
 	void			OnDeviceCreate			(IReader* F);
-	void			OnDeviceCreate			(LPCSTR name);
-	void			OnDeviceDestroy			(BOOL   bKeepTextures);
+	void			OnDeviceCreate			(const char* name);
+	void			OnDeviceDestroy			(bool   bKeepTextures);
 
 	void			reset_begin				();
 	void			reset_end				();
 
 	// Creation/Destroying
-	Shader*			Create					(LPCSTR s_shader=0, LPCSTR s_textures=0,	LPCSTR s_constants=0,	LPCSTR s_matrices=0);
-	Shader*			Create					(IBlender*	B,		LPCSTR s_shader=0,		LPCSTR s_textures=0,	LPCSTR s_constants=0, LPCSTR s_matrices=0);
+	Shader*			Create					(const char* s_shader=0, const char* s_textures=0,	const char* s_constants=0,	const char* s_matrices=0);
+	Shader*			Create					(IBlender*	B,		const char* s_shader=0,		const char* s_textures=0,	const char* s_constants=0, const char* s_matrices=0);
 	void			Delete					(const Shader*		S	);
-	void			RegisterConstantSetup	(LPCSTR name,		RHIShaderConstant::Setup* s)	{	v_constant_setup.push_back(std::make_pair(shared_str(name),s));	}
+	void			RegisterConstantSetup	(const char* name,		RHIShaderConstant::Setup* s)	{	v_constant_setup.push_back(std::make_pair(shared_str(name),s));	}
 
 	SGeometry*		CreateGeom				(RHIInputElementDesc* decl, size_t DeclSize, IRHIBuffer* vb, IRHIBuffer* ib);
 	SGeometry*		CreateGeom				(D3DVERTEXELEMENT9* decl, IRHIBuffer* vb, IRHIBuffer* ib);
 	SGeometry*		CreateGeom				(u32 FVF				, IRHIBuffer* vb, IRHIBuffer* ib);
 	void			DeleteGeom				(const SGeometry* VS		);
-	void			DeferredLoad			(BOOL E)					{ bDeferredLoad=E;	}
+	void			DeferredLoad			(bool E)					{ bDeferredLoad=E;	}
 	void			DeferredUpload			();
 	void			DeferredUnload			();
 	void			Evict					();
@@ -249,7 +249,7 @@ public:
 	/// @param w width in pixels (like 1920)
 	/// @param h height in pixels (like 1080)
 	/// @return allocated CTexture instance
-	CTexture* _CreateEmptyTexture(LPCSTR pName, u32 w, u32 h);
+	CTexture* _CreateEmptyTexture(const char* pName, u32 w, u32 h);
 	
 	CSVGStorage* GetSVGStorage() const;
 

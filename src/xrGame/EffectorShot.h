@@ -94,7 +94,7 @@ public:
 	CCameraShotEffector();
 	virtual			~CCameraShotEffector();
 
-	virtual BOOL	ProcessCam(SCamEffectorInfo& info);
+	virtual bool	ProcessCam(SCamEffectorInfo& info);
 	virtual void	SetActor(CActor* pActor) { m_pActor = pActor; };
 
 	virtual CCameraShotEffector* cast_effector_shot() { return this; }

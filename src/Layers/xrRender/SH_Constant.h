@@ -61,7 +61,7 @@ public:
 		const_dword		= c;
 	}
 	void			Calculate	();
-	IC	BOOL		Similar		(CConstant& C)		// comare by modes and params
+	IC	bool		Similar		(CConstant& C)		// comare by modes and params
 	{
 		if (dwMode!=C.dwMode)	return FALSE;
 		if (!_R.Similar(C._R))	return FALSE;

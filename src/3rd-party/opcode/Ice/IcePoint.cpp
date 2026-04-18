@@ -131,7 +131,7 @@ void Point::SetNotUsed()
 	x = y = z = FR(0xffffffff);
 }
 
-BOOL Point::IsNotUsed()	const
+bool Point::IsNotUsed()	const
 {
 	if(IR(x)!=0xffffffff)	return FALSE;
 	if(IR(y)!=0xffffffff)	return FALSE;

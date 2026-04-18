@@ -63,7 +63,7 @@
 		 *	\return		true if current box is inside input box
 		 */
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		inline_	BOOL		IsInside(const CollisionAABB& box) const
+		inline_	bool		IsInside(const CollisionAABB& box) const
 							{
 								if(box.GetMin(0)>GetMin(0))	return FALSE;
 								if(box.GetMin(1)>GetMin(1))	return FALSE;

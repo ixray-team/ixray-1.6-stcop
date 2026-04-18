@@ -4,12 +4,12 @@
 #pragma warning(disable:4995)
 #include "../../3rd-party/MagicSoftware/FreeMagic/Include/MgcCont3DMinSphere.h"
 
-BOOL	f_valid		(float f)
+bool	f_valid		(float f)
 {
 	return _finite(f) && !_isnan(f);
 }
 
-BOOL				SphereValid	(xr_vector<Fvector>& geom, Fsphere& test)
+bool				SphereValid	(xr_vector<Fvector>& geom, Fsphere& test)
 {
 	if (!f_valid(test.P.x) || !f_valid(test.R)) 
 	{
@@ -73,9 +73,9 @@ void OGF_Base::CalcBounds(bool useProgressBar)
  	Fsphere	S2 = CalculateSphere(V, bbox);
  	Fsphere S3 = CalculateMagic(V);
 
-	//BOOL B1 = SphereValid(V, S1);
-	BOOL B2 = SphereValid(V, S2);
-	BOOL B3 = SphereValid(V, S3); // Куда быстрее чем Miniball 
+	//bool B1 = SphereValid(V, S1);
+	bool B2 = SphereValid(V, S2);
+	bool B3 = SphereValid(V, S3); // Куда быстрее чем Miniball 
 
 	// base or FM
 	if (B3 && (S3.R<S2.R))

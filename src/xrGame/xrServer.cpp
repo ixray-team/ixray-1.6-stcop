@@ -550,7 +550,7 @@ void xrServer::SendUpdatesToAll()
 }
 
 xr_vector<shared_str>	_tmp_log;
-void console_log_cb(LPCSTR text)
+void console_log_cb(const char* text)
 {
 	_tmp_log.push_back	(text);
 }
@@ -961,7 +961,7 @@ void xrServer::SendBroadcast(ClientID exclude, NET_Packet& P, u32 dwFlags)
 	net_players.ForFoundClientsDo(ClientExcluderPredicate(exclude), temp_functor);
 }
 //--------------------------------------------------------------------
-CSE_Abstract*	xrServer::entity_Create		(LPCSTR name)
+CSE_Abstract*	xrServer::entity_Create		(const char* name)
 {
 	return F_entity_Create(name);
 }
@@ -1140,8 +1140,8 @@ void xrServer::OnVoiceMessage(NET_Packet& P, ClientID sender)
 
 #ifdef DEBUG
 
-static	BOOL	_ve_initialized			= FALSE;
-static	BOOL	_ve_use					= TRUE;
+static	bool	_ve_initialized			= FALSE;
+static	bool	_ve_use					= TRUE;
 
 bool xrServer::verify_entities				() const
 {
@@ -1296,10 +1296,10 @@ extern  s32		g_sv_ah_dwArtefactsNum;
 extern	s32		g_sv_dm_dwTimeLimit;
 extern	int		g_sv_ah_iReinforcementTime;
 extern	int		g_sv_mp_iDumpStatsPeriod;
-extern	BOOL	g_bCollectStatisticData;
+extern	bool	g_bCollectStatisticData;
 
 //xr_token game_types[];
-LPCSTR GameTypeToString(EGameIDs gt, bool bShort);
+const char* GameTypeToString(EGameIDs gt, bool bShort);
 
 void xrServer::GetServerInfo( CServerInfo* si )
 {
@@ -1307,7 +1307,7 @@ void xrServer::GetServerInfo( CServerInfo* si )
 	string256 tmp256;
 
 	si->AddItem( "Server port", _itoa( GetPort(), tmp, 10 ), RGB(128,128,255) );
-	LPCSTR time = InventoryUtilities::GetTimeAsString( Device.dwTimeGlobal, InventoryUtilities::etpTimeToSecondsAndDay ).c_str();
+	const char* time = InventoryUtilities::GetTimeAsString( Device.dwTimeGlobal, InventoryUtilities::etpTimeToSecondsAndDay ).c_str();
 	si->AddItem( "Uptime", time, RGB(255,228,0) );
 
 //	xr_strcpy( tmp256, get_token_name(game_types, game->Type() ) );
@@ -1520,8 +1520,8 @@ void xrServer::OnProcessClientMapData(NET_Packet& P, ClientID const& clientID)
 	P.r_stringZ_s(client_map_version);
 	P.r_u32(client_geom_crc32);
 
-	LPCSTR	server_map_name = Level().get_net_DescriptionData().map_name;
-	LPCSTR	server_map_version = Level().get_net_DescriptionData().map_version;
+	const char*	server_map_name = Level().get_net_DescriptionData().map_name;
+	const char*	server_map_version = Level().get_net_DescriptionData().map_version;
 
 	NET_Packet responseP;
 	responseP.w_begin(M_SV_MAP_NAME);

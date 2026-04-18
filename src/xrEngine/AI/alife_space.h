@@ -149,7 +149,7 @@ namespace ALife {
 		eAddonAttachable			= 2		//можно присоединять
 	};
 
-	IC EHitType	g_tfString2HitType(LPCSTR caHitType)
+	IC EHitType	g_tfString2HitType(const char* caHitType)
 	{
 		if (!_stricmp(caHitType,"burn"))
 			return(eHitTypeBurn);
@@ -183,7 +183,7 @@ namespace ALife {
 
 	extern ENGINE_API xr_token hit_types_token[ ];
 
-	IC LPCSTR g_cafHitType2String(EHitType tHitType)
+	IC const char* g_cafHitType2String(EHitType tHitType)
 	{
 		return get_token_name(hit_types_token, tHitType);
 	}

@@ -881,7 +881,7 @@ CHudAnimatorManager::CHudAnimatorManager(CActor* actor) : m_actor(actor)
 
 	if (pGameGlobals->line_exist("backpack", "backpack_animator"))
 	{
-		LPCSTR backpack_animator = pGameGlobals->r_string("backpack", "backpack_animator");
+		const char* backpack_animator = pGameGlobals->r_string("backpack", "backpack_animator");
 		if (pSettings->section_exist(backpack_animator))
 		{
 			m_backpack_animator = new CBackpackAnimator(this, backpack_animator);
@@ -890,7 +890,7 @@ CHudAnimatorManager::CHudAnimatorManager(CActor* actor) : m_actor(actor)
 
 	if (pGameGlobals->line_exist("burn", "burn_animator"))
 	{
-		LPCSTR burn_animator = pGameGlobals->r_string("burn", "burn_animator");
+		const char* burn_animator = pGameGlobals->r_string("burn", "burn_animator");
 		if (pSettings->section_exist(burn_animator))
 		{
 			m_burn_animator = new CBurnAnimator(this, burn_animator);
@@ -901,7 +901,7 @@ CHudAnimatorManager::CHudAnimatorManager(CActor* actor) : m_actor(actor)
 
 	if (Use3DPDA && pGameGlobals->line_exist("pda", "pda_animator"))
 	{
-		LPCSTR pda_animator = pGameGlobals->r_string("pda", "pda_animator");
+		const char* pda_animator = pGameGlobals->r_string("pda", "pda_animator");
 		if (pSettings->section_exist(pda_animator))
 		{
 			m_pda_animator = new CHudPdaAnimator(this, pda_animator);

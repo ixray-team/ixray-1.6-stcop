@@ -29,7 +29,7 @@ public:
 	virtual CEatableItem* cast_eatable_item() { return this; }
 
 public:
-	virtual void Load(LPCSTR section) override;
+	virtual void Load(const char* section) override;
 	virtual	void Hit(SHit* pHDS) override;
 
 	virtual void OnH_B_Independent(bool just_before_destroy) override;
@@ -38,15 +38,15 @@ public:
 	virtual void OnH_A_Chield() override;
 	virtual void UpdateCL() override;
 	virtual void OnEvent(NET_Packet& P, u16 type) override;
-	virtual BOOL net_Spawn(CSE_Abstract* DC) override;
+	virtual bool net_Spawn(CSE_Abstract* DC) override;
 	virtual void net_Destroy() override;
 	virtual void net_Import(NET_Packet& P) override;					// import from server
 	virtual void net_Export(NET_Packet& P) override;					// export to server
 	virtual void save(NET_Packet& output_packet) override;
 	virtual void load(IReader& input_packet) override;
-	virtual BOOL net_SaveRelevant() override { return TRUE; }
+	virtual bool net_SaveRelevant() override { return TRUE; }
 	virtual void renderable_Render() override;
-	virtual void reload(LPCSTR section) override;
+	virtual void reload(const char* section) override;
 	virtual void reinit() override;
 	virtual void activate_physic_shell() override;
 	virtual void on_activate_physic_shell() override;

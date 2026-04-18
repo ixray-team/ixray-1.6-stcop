@@ -9,7 +9,7 @@
 //------------------------------------------------------------------------------
 class CCollapseBlender: public CParseBlender{
 public:
-	virtual void Parse(CSHEngineTools* owner, DWORD type, LPCSTR key, LPVOID data){
+	virtual void Parse(CSHEngineTools* owner, DWORD type, const char* key, LPVOID data){
 		switch(type){
 		case xrPID_MATRIX: 		owner->CollapseMatrix	((LPSTR)data); break;
 		case xrPID_CONSTANT: 	owner->CollapseConstant	((LPSTR)data); break;
@@ -19,7 +19,7 @@ public:
 
 class CRefsBlender: public CParseBlender{
 public:
-	virtual void Parse(CSHEngineTools* owner, DWORD type, LPCSTR key, LPVOID data){
+	virtual void Parse(CSHEngineTools* owner, DWORD type, const char* key, LPVOID data){
 		switch(type){
 		case xrPID_MATRIX: 		owner->UpdateMatrixRefs		((LPSTR)data); break;
 		case xrPID_CONSTANT: 	owner->UpdateConstantRefs	((LPSTR)data); break;
@@ -29,7 +29,7 @@ public:
 
 class CRemoveBlender: public CParseBlender{
 public:
-	virtual void Parse(CSHEngineTools* owner, DWORD type, LPCSTR key, LPVOID data){
+	virtual void Parse(CSHEngineTools* owner, DWORD type, const char* key, LPVOID data){
 		switch(type){
 		case xrPID_MATRIX: 		owner->RemoveMatrix((LPSTR)data); break;
 		case xrPID_CONSTANT: 	owner->RemoveConstant((LPSTR)data); break;
@@ -104,7 +104,7 @@ xr_token preview_obj_token[]={
 
 bool CSHEngineTools::OnPreviewObjectRefChange(PropValue* sender, u32& new_val)
 {           
-   LPCSTR fn="";
+   const char* fn="";
 	m_bCustomEditObject = false; 
 	switch (new_val){
 	case pvoPlane: 	fn	= "editor\\ShaderTest_Plane"; 	break;
@@ -457,7 +457,7 @@ void CSHEngineTools::PrepareRender()
 	Save(m_RenderShaders);
 }
 
-IBlender* CSHEngineTools::FindItem(LPCSTR name){
+IBlender* CSHEngineTools::FindItem(const char* name){
 	if (name && name[0]){
 		LPSTR N = LPSTR(name);
 		BlenderPairIt I = m_Blenders.find	(N);
@@ -466,7 +466,7 @@ IBlender* CSHEngineTools::FindItem(LPCSTR name){
 	}else return 0;
 }
 
-CMatrix* CSHEngineTools::FindMatrix(LPCSTR name)
+CMatrix* CSHEngineTools::FindMatrix(const char* name)
 {
 	R_ASSERT(name && name[0]);
 	MatrixPairIt I = m_Matrices.find	((LPSTR)name);
@@ -489,7 +489,7 @@ CMatrix* CSHEngineTools::AppendMatrix(LPSTR name)
 	return M;
 }
 
-CConstant* CSHEngineTools::FindConstant(LPCSTR name)
+CConstant* CSHEngineTools::FindConstant(const char* name)
 {
 	R_ASSERT(name && name[0]);
 	ConstantPairIt I = m_Constants.find	((LPSTR)name);
@@ -507,7 +507,7 @@ CConstant* CSHEngineTools::AppendConstant(LPSTR name)
 	return C;
 }
 
-LPCSTR CSHEngineTools::GenerateMatrixName(LPSTR name)
+const char* CSHEngineTools::GenerateMatrixName(LPSTR name)
 {
 	int cnt = 0;
 	do sprintf(name,"%04x",cnt++);
@@ -515,7 +515,7 @@ LPCSTR CSHEngineTools::GenerateMatrixName(LPSTR name)
 	return name;
 }
 
-LPCSTR CSHEngineTools::GenerateConstantName(LPSTR name)
+const char* CSHEngineTools::GenerateConstantName(LPSTR name)
 {
 	int cnt = 0;
 	do sprintf(name,"%04x",cnt++);
@@ -529,7 +529,7 @@ void CSHEngineTools::FillChooseTemplate(ChooseItemVec& items, void* param)
 		items.push_back(SChooseItem((*it)->getComment(),""));
 }
 		
-void CSHEngineTools::AppendItem(LPCSTR path, LPCSTR parent_name)
+void CSHEngineTools::AppendItem(const char* path, const char* parent_name)
 {
 	IBlender* parent 	= FindItem(parent_name);
 	CLASS_ID cls_id;
@@ -544,7 +544,7 @@ void CSHEngineTools::AppendItem(LPCSTR path, LPCSTR parent_name)
 	AppendItem(path, cls_id, parent);
 }
 
-void CSHEngineTools::RealRenameItem(LPCSTR old_full_name, LPCSTR new_full_name)
+void CSHEngineTools::RealRenameItem(const char* old_full_name, const char* new_full_name)
 {
 	ApplyChanges	();
 	LPSTR N 		= LPSTR(old_full_name);
@@ -586,7 +586,7 @@ void CSHEngineTools::AddConstantRef(LPSTR name)
 	C->dwReference++;
 }
 
-LPCSTR CSHEngineTools::AppendConstant(CConstant* src, CConstant** dest)
+const char* CSHEngineTools::AppendConstant(CConstant* src, CConstant** dest)
 {
 	CConstant* C = new CConstant();
 	if (src)
@@ -601,7 +601,7 @@ LPCSTR CSHEngineTools::AppendConstant(CConstant* src, CConstant** dest)
 	return I.first->first;
 }
 
-LPCSTR CSHEngineTools::AppendMatrix(CMatrix* src, CMatrix** dest)
+const char* CSHEngineTools::AppendMatrix(CMatrix* src, CMatrix** dest)
 {
 	CMatrix* M = new CMatrix();
 	if (src)
@@ -617,7 +617,7 @@ LPCSTR CSHEngineTools::AppendMatrix(CMatrix* src, CMatrix** dest)
 	return I.first->first;
 }
 
-void CSHEngineTools::OnRenameItem(UIItemListForm::Node& node, LPCSTR old_full_name, LPCSTR new_full_name, EItemType type)
+void CSHEngineTools::OnRenameItem(UIItemListForm::Node& node, const char* old_full_name, const char* new_full_name, EItemType type)
 {
 	
 	if (type==TYPE_OBJECT)
@@ -637,7 +637,7 @@ void CSHEngineTools::OnRemoveItem(UIItemListForm::Node& node)
 	{
 		xr_strcpy(path, node.Name.c_str());
 	}
-	LPCSTR name = path;
+	const char* name = path;
 	if (node.IsObject()){
 		R_ASSERT(name && name[0]);
 		IBlender* B = FindItem(name);
@@ -661,7 +661,7 @@ void CSHEngineTools::OnRemoveItem(UIItemListForm::Node& node)
 	}
 }
 
-void CSHEngineTools::RemoveMatrix(LPCSTR name)
+void CSHEngineTools::RemoveMatrix(const char* name)
 {
 	if (*name=='$') return;
 	R_ASSERT(name && name[0]);
@@ -676,7 +676,7 @@ void CSHEngineTools::RemoveMatrix(LPCSTR name)
 	}
 }
 
-void CSHEngineTools::RemoveConstant(LPCSTR name)
+void CSHEngineTools::RemoveConstant(const char* name)
 {
 	if (*name=='$') return;
 	R_ASSERT(name && name[0]);
@@ -707,7 +707,7 @@ void CSHEngineTools::UpdateObjectFromStream()
 	}
 }
 
-void CSHEngineTools::SetCurrentItem(LPCSTR name, bool bView)
+void CSHEngineTools::SetCurrentItem(const char* name, bool bView)
 {
 	if (m_bLockUpdate) return;
 
@@ -916,7 +916,7 @@ void CSHEngineTools::OnDrawUI()
 	}
 }
 
-void CSHEngineTools::AppendItem(LPCSTR path, CLASS_ID cls_id, IBlender* parent )
+void CSHEngineTools::AppendItem(const char* path, CLASS_ID cls_id, IBlender* parent )
 {
 	R_ASSERT2(cls_id, "Invalid CLASS_ID.");
 	// append blender
@@ -986,7 +986,7 @@ xr_token							mode_token[] = {
 	{ 0,							0							}
 };
 //---------------------------------------------------------------------------
-void  CSHEngineTools::FillMatrixProps(PropItemVec& items, LPCSTR pref, LPSTR name)
+void  CSHEngineTools::FillMatrixProps(PropItemVec& items, const char* pref, LPSTR name)
 {
 	CMatrix* M = AppendMatrix(name);
 	VERIFY(M);
@@ -1019,7 +1019,7 @@ bool CSHEngineTools::MatrixOnAfterEdit(PropValue* sender, xr_string& nm)
 {
 	CListValue* V = dynamic_cast<CListValue*>(sender);  R_ASSERT(V);
 	VERIFY(nm.size());
-	LPCSTR src_val = V->GetValue();
+	const char* src_val = V->GetValue();
 
 	if (nm[0] != '$') {
 		if (src_val[0] == '$') {
@@ -1039,7 +1039,7 @@ bool CSHEngineTools::MatrixOnAfterEdit(PropValue* sender, xr_string& nm)
 }
 //------------------------------------------------------------------------------
 
-void  CSHEngineTools::FillConstProps(PropItemVec& items, LPCSTR pref, LPSTR name)
+void  CSHEngineTools::FillConstProps(PropItemVec& items, const char* pref, LPSTR name)
 {
 	CConstant* C = AppendConstant(name);
 	R_ASSERT(C);
@@ -1054,7 +1054,7 @@ bool CSHEngineTools::ConstOnAfterEdit(PropValue* sender, xr_string& nm)
 {
 	CListValue* V = dynamic_cast<CListValue*>(sender);  R_ASSERT(V);
 	VERIFY(nm.size());
-	LPCSTR src_val = V->GetValue();
+	const char* src_val = V->GetValue();
 
 	if (nm[0] != '$') {
 		if (src_val[0] == '$') {

@@ -3,7 +3,7 @@
 #include "UIMpTradeWnd.h"
 
 
-extern LPCSTR _list_names[];
+extern const char* _list_names[];
 
 void CItemMgr::Load(const shared_str& sect_cost)
 {	

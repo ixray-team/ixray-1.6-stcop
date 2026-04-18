@@ -45,7 +45,7 @@ public:
 
 	xrCriticalSection		UpdateCS;
 
-	void MapLocationsForEach(LPCSTR spot_type, u16 id, const luabind::functor<bool>& functor);
+	void MapLocationsForEach(const char* spot_type, u16 id, const luabind::functor<bool>& functor);
 	void AllLocationsForEach(const luabind::functor<bool>& functor);
 	static void script_register(lua_State* L);
 };

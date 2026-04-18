@@ -11,7 +11,7 @@
 #include "../xrScripts/exports/script_ini_file.h"
 class CScriptIniFile;
 
-SCRIPTS_API CScriptIniFile* create_ini_file(LPCSTR ini_string);
+SCRIPTS_API CScriptIniFile* create_ini_file(const char* ini_string);
 XRCORE_API xr_hash_map<xr_string, CInifile*>* cached_ini_map;
 
 CScriptIniFile* CacheIni(const char* Name)

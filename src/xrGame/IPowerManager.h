@@ -53,7 +53,7 @@ public:
 
 	float GetLeftPowerValue();
 
-	void Load(LPCSTR section, CInventoryItem* iitem);
+	void Load(const char* section, CInventoryItem* iitem);
 
 	virtual void OnFrame() override;
 	void DrainPower();

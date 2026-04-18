@@ -272,7 +272,7 @@ void	CUIActorInfoWnd::Reset()
 	inherited::Reset();
 }
 
-void	CUIActorInfoWnd::FillReputationDetails(CUIXml* xml, LPCSTR path)
+void	CUIActorInfoWnd::FillReputationDetails(CUIXml* xml, const char* path)
 {
 	XML_NODE* _list_node					= xml->NavigateToNode	("relation_communities_list",0);
 	int cnt = xml->GetNodesNum				("relation_communities_list",0,"r");
@@ -427,7 +427,7 @@ CUIActorStaticticHeader::CUIActorStaticticHeader(CUIActorInfoWnd* w)
 {}
 
 
-void CUIActorStaticticHeader::Init	(CUIXml* xml, LPCSTR path, int idx_in_xml)
+void CUIActorStaticticHeader::Init	(CUIXml* xml, const char* path, int idx_in_xml)
 {
 	XML_NODE* _stored_root				= xml->GetLocalRoot();
 
@@ -451,7 +451,7 @@ void CUIActorStaticticHeader::Init	(CUIXml* xml, LPCSTR path, int idx_in_xml)
 #ifndef PRIQUEL
 	m_id								= xml->ReadAttrib(xml->GetLocalRoot(),"id",nullptr);
 #else
-	LPCSTR _id							= strstr(path,"master_part_")+xr_strlen("master_part_");
+	const char* _id							= strstr(path,"master_part_")+xr_strlen("master_part_");
 	m_id								= _id;
 #endif
 
@@ -480,7 +480,7 @@ void CUIActorStaticticHeader::SetSelected(bool b)
 }
 
 
-void CUIActorStaticticDetail::Init		(CUIXml* xml, LPCSTR path, int idx)
+void CUIActorStaticticDetail::Init		(CUIXml* xml, const char* path, int idx)
 {
 	XML_NODE* _stored_root				= xml->GetLocalRoot();
 

@@ -124,7 +124,7 @@ IC	const GameGraph::SLevel &GameGraph::CHeader::level				(const _LEVEL_ID &id) c
 	return						((*I).second);
 }
 
-IC	const GameGraph::SLevel &GameGraph::CHeader::level				(LPCSTR level_name) const
+IC	const GameGraph::SLevel &GameGraph::CHeader::level				(const char* level_name) const
 {
 	LEVEL_MAP::const_iterator	I = levels().begin();
 	LEVEL_MAP::const_iterator	E = levels().end();
@@ -141,7 +141,7 @@ IC	const GameGraph::SLevel &GameGraph::CHeader::level				(LPCSTR level_name) con
 #endif
 }
 
-IC	const GameGraph::SLevel *GameGraph::CHeader::level				(LPCSTR level_name, bool) const
+IC	const GameGraph::SLevel *GameGraph::CHeader::level				(const char* level_name, bool) const
 {
 	LEVEL_MAP::const_iterator	I = levels().begin();
 	LEVEL_MAP::const_iterator	E = levels().end();
@@ -302,7 +302,7 @@ IC bool GameGraph::CHeader::level_exist(const _LEVEL_ID& id) const
 	return levels().find(id) != levels().end();
 }
 
-IC bool GameGraph::CHeader::level_exist(pcstr level_name) const
+IC bool GameGraph::CHeader::level_exist(const char* level_name) const
 {
 	for (const auto& level : levels())
 		if (xr_strcmp(level.second.name(), level_name) == 0)

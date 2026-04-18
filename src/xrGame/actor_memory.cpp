@@ -17,7 +17,7 @@ CActorMemory::CActorMemory(CActor* actor) : inherited(actor, 100), m_actor(actor
 	VERIFY(m_actor);
 }
 
-BOOL CActorMemory::feel_vision_isRelevant(CObject* O)
+bool CActorMemory::feel_vision_isRelevant(CObject* O)
 {
 	CEntityAlive* entity_alive = O != nullptr ? O->cast_entity_alive() : nullptr;
 	return !!(entity_alive != nullptr);

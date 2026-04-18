@@ -86,7 +86,7 @@ CAI_Space::~CAI_Space				()
 	VERIFY					(!m_game_graph);
 }
 
-void CAI_Space::load				(LPCSTR level_name)
+void CAI_Space::load				(const char* level_name)
 {
 	VERIFY					(m_game_graph);
 

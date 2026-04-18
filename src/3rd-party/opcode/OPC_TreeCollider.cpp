@@ -692,8 +692,8 @@ void AABBTreeCollider::_Collide(const AABBNoLeafNode* a, const AABBNoLeafNode* b
 	if(!BoxBoxOverlap(a->mAABB.mExtents, a->mAABB.mCenter, b->mAABB.mExtents, b->mAABB.mCenter))	return;
 
 	// Catch leaf status
-	BOOL BHasPosLeaf = b->HasPosLeaf();
-	BOOL BHasNegLeaf = b->HasNegLeaf();
+	bool BHasPosLeaf = b->HasPosLeaf();
+	bool BHasNegLeaf = b->HasNegLeaf();
 
 	if(a->HasPosLeaf())
 	{
@@ -900,8 +900,8 @@ void AABBTreeCollider::_Collide(const AABBQuantizedNoLeafNode* a, const AABBQuan
 	if(!BoxBoxOverlap(ea, Pa, eb, Pb))	return;
 
 	// Catch leaf status
-	BOOL BHasPosLeaf = b->HasPosLeaf();
-	BOOL BHasNegLeaf = b->HasNegLeaf();
+	bool BHasPosLeaf = b->HasPosLeaf();
+	bool BHasNegLeaf = b->HasNegLeaf();
 
 	if(a->HasPosLeaf())
 	{

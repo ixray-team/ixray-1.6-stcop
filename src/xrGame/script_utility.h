@@ -177,8 +177,8 @@ namespace ixray
 	constexpr const char* kReservedWordNever = "never";
 
 	bool is_weapon(CScriptGameObject* pObject);
-	bool has_alife_info(LPCSTR str);	
-	int get_script_clsid(LPCSTR str);
+	bool has_alife_info(const char* str);	
+	int get_script_clsid(const char* str);
 } // namespace ixray
 
 template <typename ReturnType>

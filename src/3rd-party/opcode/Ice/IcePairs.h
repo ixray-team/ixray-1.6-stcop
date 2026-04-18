@@ -33,7 +33,7 @@
 		inline_	const Pair*		GetPairs()			const		{ return (const Pair*)GetEntries();			}
 		inline_	const Pair*		GetPair(udword i)	const		{ return (const Pair*)&GetEntries()[i+i];	}
 
-		inline_	BOOL			HasPairs()			const		{ return IsNotEmpty();						}
+		inline_	bool			HasPairs()			const		{ return IsNotEmpty();						}
 
 		inline_	void			ResetPairs()					{ Reset();									}
 		inline_	void			DeleteLastPair()				{ DeleteLastEntry();	DeleteLastEntry();	}

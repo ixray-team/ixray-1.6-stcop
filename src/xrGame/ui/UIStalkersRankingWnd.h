@@ -63,7 +63,7 @@ public:
 public:
 							CUIStalkerRankingInfoItem(CUIStalkersRankingWnd*);
 	
-	void					Init			(CUIXml* xml, LPCSTR path, int idx);
+	void					Init			(CUIXml* xml, const char* path, int idx);
 	virtual void			SetSelected		(bool b);
 	virtual bool			OnMouseDown		(int mouse_btn);
 	virtual CUIWindow* ui_cast_window() { return this; }

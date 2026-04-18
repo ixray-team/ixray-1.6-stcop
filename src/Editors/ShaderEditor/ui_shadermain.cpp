@@ -116,7 +116,7 @@ void CShaderMain::ResetStatus()
 	    fraBottomBar->paStatus->Caption=""; fraBottomBar->paStatus->Repaint();
     }*/
 }
-void CShaderMain::SetStatus(LPCSTR s, bool bOutLog)
+void CShaderMain::SetStatus(const char* s, bool bOutLog)
 {
 /*	VERIFY(m_bReady);
     if (fraBottomBar->paStatus->Caption!=s){

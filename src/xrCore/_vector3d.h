@@ -65,7 +65,7 @@ public:
 	ICF	SelfRef	max(const Self &v)						{ x = std::max(x,v.x);	y = std::max(y,v.y);	z = std::max(z,v.z);			return *this;	}
 
 	ICF	SelfRef	abs(const Self &v)						{ x = std::abs(v.x); y=std::abs(v.y); z=std::abs(v.z);							return *this;	}
-	ICF BOOL	similar(const Self &v, T E=EPS_L) const	{ return std::abs(x-v.x)<E && std::abs(y-v.y)<E && std::abs(z-v.z)<E;};
+	ICF bool	similar(const Self &v, T E=EPS_L) const	{ return std::abs(x-v.x)<E && std::abs(y-v.y)<E && std::abs(z-v.z)<E;};
 
 	ICF	SelfRef	set_length(T l)
 	{
@@ -619,7 +619,7 @@ typedef _vector3<s32>		Ivector;
 typedef _vector3<s32>		Ivector3;
 
 template <class T>
-ICF BOOL _valid (const _vector3<T>& v)	{ return _valid((T)v.x) && _valid((T)v.y) && _valid((T)v.z); }
+ICF bool _valid (const _vector3<T>& v)	{ return _valid((T)v.x) && _valid((T)v.y) && _valid((T)v.z); }
 
 template <class T>
 ICF constexpr _vector3<T> lerp(const _vector3<T>& _val_a, const _vector3<T>& _val_b, const float& _factor)

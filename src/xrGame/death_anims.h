@@ -24,7 +24,7 @@ private:
 public:
 			rnd_motion	( );
 
-rnd_motion*	setup		( IKinematicsAnimated* k, LPCSTR s );
+rnd_motion*	setup		( IKinematicsAnimated* k, const char* s );
 MotionID	motion		( )	const;
 };
 
@@ -45,11 +45,11 @@ static const u16		dirs_number		= 4;
 public:	
 	type_motion			( ){}
 virtual				~type_motion		( );
-		type_motion	*setup				( IKinematicsAnimated* k, CInifile const * ini, LPCSTR section, LPCSTR type );
+		type_motion	*setup				( IKinematicsAnimated* k, CInifile const * ini, const char* section, const char* type );
 		MotionID	motion				( edirection dr )	const;
 virtual	bool		predicate			( CEntityAlive& ea, const SHit& H, MotionID &m, float &angle ) const=0;
 private:
-	void			set_motion			( IKinematicsAnimated* k, u16 motion_id, LPCSTR dir_anim );
+	void			set_motion			( IKinematicsAnimated* k, u16 motion_id, const char* dir_anim );
 	void			clear				( );
 public:
 static	edirection	dir					( CEntityAlive& ea, const SHit& H, float &angle );
@@ -63,7 +63,7 @@ class death_anims
 public:
 					death_anims	( );
 					~death_anims( );
-	void			setup		( IKinematicsAnimated* k, LPCSTR section, CInifile const * ini );
+	void			setup		( IKinematicsAnimated* k, const char* section, CInifile const * ini );
 	void			clear		( );
 	MotionID		motion		( CEntityAlive& ea, const SHit& H, float& angle )	const;
 	
@@ -74,5 +74,5 @@ private:
 };
 
 #ifdef	DEBUG
- extern	BOOL death_anim_debug;
+ extern	bool death_anim_debug;
 #endif

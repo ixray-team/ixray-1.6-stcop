@@ -57,9 +57,9 @@ public:
 
 	} m_gravi_object;
 
-	LPCSTR	 particle_gravi_wave;
-	LPCSTR   particle_gravi_prepare;
-	LPCSTR	 particle_tele_object;
+	const char*	 particle_gravi_wave;
+	const char*   particle_gravi_prepare;
+	const char*	 particle_tele_object;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Sounds
@@ -116,11 +116,11 @@ public:
 	TTime	m_shield_time;
 	TTime	m_shield_expire_time;
 	bool	m_shield_active;
-	LPCSTR	m_shield_keep_particle;
+	const char*	m_shield_keep_particle;
 	TTime	m_shield_keep_particle_period;
 	float	m_shield_penetration_border = 4.0f;
 	float	m_shield_penetration_damage_coeff = 0.25f;
-	LPCSTR	particle_fire_shield;
+	const char*	particle_fire_shield;
 
 	CBurerFastGravi	*m_fast_gravi;
 	bool m_use_three_gravi_anims{};
@@ -131,10 +131,10 @@ public:
 
 
 	virtual void	reinit				();
-	virtual void	reload				(LPCSTR section);
+	virtual void	reload				(const char* section);
 
-	virtual void	Load				(LPCSTR section);
-	virtual void	PostLoad			(LPCSTR section);
+	virtual void	Load				(const char* section);
+	virtual void	PostLoad			(const char* section);
 
 	virtual void	net_Destroy			();
 	virtual void	net_Relcase			(CObject *O);

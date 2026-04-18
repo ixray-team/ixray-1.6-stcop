@@ -44,7 +44,7 @@ void actor::on_door_destroy			( door& door )
 	::on_door_destroy				( m_closed_doors, door );
 }
 
-pcstr actor::get_name				( ) const
+const char* actor::get_name				( ) const
 {
 	return							m_object.cName().c_str();
 }
@@ -162,7 +162,7 @@ void actor::process_doors			(
 }
 
 #ifdef DEBUG
-BOOL g_debug_doors = 1;
+bool g_debug_doors = 1;
 #endif // #ifdef DEBUG
 
 bool actor::add_new_door			(
