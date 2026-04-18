@@ -558,6 +558,7 @@ enum class eRequestType_QuestEditor : u32
 	kReadSettings,
 	kWriteSettings,
 	kLoadCurrentQuests,
+	kDeselectCurrentSelectedOrHideWindow,
 	kShutdown
 };
 
