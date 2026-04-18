@@ -154,9 +154,9 @@ struct OMFData
 	AnimParamsData data_animparams;
 };
 
-struct OMFEditorState
+struct CImGuiOMFEditor
 {
-	~OMFEditorState()
+	~CImGuiOMFEditor()
 	{
 		if (omf)
 		{
@@ -193,9 +193,36 @@ struct OMFEditorState
 	xr_set<size_t> combo_bones_name_hashes;
 
 	xr_stack_string<sizeof(string_path) * 2> path;
-} g_omf_editor;
+};
 
-OMFEditorState* pEditor = &g_omf_editor;
+CImGuiOMFEditor* g_pOMFEditor = nullptr;
+
+
+void OMFEditor_OnPressed(int key)
+{
+	switch (key)
+	{
+	case SDL_Scancode::SDL_SCANCODE_ESCAPE:
+	{
+		if (Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_OMFEditor)])
+		{
+			if (g_pOMFEditor)
+			{
+				SRequestData req;
+				req.editor_type = (u32)eImGuiEditorType::kOMFEditor;
+				req.request_type = (u32)eRequestType_OMFEditor::kDeselectCurrentSelectedOrHideWindow;
+
+				AllEditors_SendRequest(req);
+			}
+		}
+		break;
+	}
+	}
+}
+
+void OMFEditor_OnReleased(int key)
+{
+}
 
 template<typename T>
 void OMFEditor_ReadString(T& str, std::ifstream& file)
@@ -359,7 +386,7 @@ bool OMFEditor_LoadOMF_AnimParamsData(int16_t ogf_version, int32_t animation_cou
 	return true;
 }
 
-void OMFEditor_Init_ComboAnimationParams(OMFEditorState* p_state, OMFData& data)
+void OMFEditor_Init_ComboAnimationParams(CImGuiOMFEditor* p_state, OMFData& data)
 {
 	R_ASSERT2(p_state->combo_animation_params_data.empty(), "did you clear data before init?");
 	R_ASSERT2(p_state->combo_animation_params_name_hashes.empty(), "did you clear data before init?");
@@ -375,7 +402,7 @@ void OMFEditor_Init_ComboAnimationParams(OMFEditorState* p_state, OMFData& data)
 	}
 }
 
-void OMFEditor_Init_ComboBones(OMFEditorState* p_state, OMFData& data)
+void OMFEditor_Init_ComboBones(CImGuiOMFEditor* p_state, OMFData& data)
 {
 	R_ASSERT2(p_state->combo_bones_data.empty(), "did you clear data before init?");
 	R_ASSERT2(p_state->combo_bones_name_hashes.empty(), "did you clear data before init?");
@@ -396,7 +423,7 @@ void OMFEditor_Init_ComboBones(OMFEditorState* p_state, OMFData& data)
 	}
 }
 
-void OMFEditor_Init_CurrentAnimationParams(int animation_param_id, OMFData& data, OMFEditorState* p_state)
+void OMFEditor_Init_CurrentAnimationParams(int animation_param_id, OMFData& data, CImGuiOMFEditor* p_state)
 {
 	if (p_state)
 	{
@@ -418,13 +445,19 @@ void OMFEditor_Init_CurrentAnimationParams(int animation_param_id, OMFData& data
 	}
 }
 
-void OMFEditor_Init(OMFEditorState* p_state, OMFData& data)
+void OMFEditor_Init(CImGuiOMFEditor* p_state, OMFData& data)
 {
 	if (!p_state)
 		return;
 
 	p_state->current_selected_animation_param = 0;
+
+#if IXRAY_OMF_EDITOR_ENABLE_DIRECT_BONE_RENAMING == 0
 	p_state->current_selected_bone_rename = 0;
+#else
+	p_state->current_selected_bone_rename = -1;
+#endif
+
 	p_state->animation_param_was_changed = false;
 
 	p_state->is_motion_time_format_seconds_selected = true;
@@ -476,7 +509,7 @@ bool OMFEditor_LoadOMF(OMFData& data, std::ifstream& file)
 	return status;
 }
 
-void OMFEditor_LoadFile(OMFEditorState* p_state)
+void OMFEditor_LoadFile(CImGuiOMFEditor* p_state)
 {
 	if (p_state)
 	{
@@ -523,7 +556,7 @@ void OMFEditor_LoadFile(OMFEditorState* p_state)
 	}
 }
 
-bool OMFEditor_CopyBonePartsToClipboard(OMFEditorState* p_state)
+bool OMFEditor_CopyBonePartsToClipboard(CImGuiOMFEditor* p_state)
 {
 	bool result{};
 	if (p_state)
@@ -591,9 +624,616 @@ void RequestHandler_OMFEditor(const SRequestData& req)
 {
 	R_ASSERT2(static_cast<eImGuiEditorType>(req.editor_type) == eImGuiEditorType::kOMFEditor, "mistaken workload calling! that means data was corrupted or some error occurred");
 
-	if (req.editor_type == static_cast<u32>(eImGuiEditorType::kOMFEditor))
+	eRequestType_OMFEditor req_type = static_cast<eRequestType_OMFEditor>(req.request_type);
+
+	switch (req_type)
 	{
-		//...
+	case eRequestType_OMFEditor::kReadSettings:
+	{
+		break;
+	}
+	case eRequestType_OMFEditor::kWriteSettings:
+	{
+		break;
+	}
+	case eRequestType_OMFEditor::kLoadFile:
+	{
+		break;
+	}
+	case eRequestType_OMFEditor::kDeselectCurrentSelectedOrHideWindow:
+	{
+		if (g_pOMFEditor)
+		{
+			bool can_hide_window = false;
+
+#if IXRAY_OMF_EDITOR_ENABLE_DIRECT_BONE_RENAMING == 1
+			can_hide_window = g_pOMFEditor->current_selected_bone_rename==-1;
+
+			if (can_hide_window==false)
+			{
+				g_pOMFEditor->current_selected_bone_rename = -1;
+			}
+#else
+			can_hide_window = true;
+#endif
+
+			if (can_hide_window)
+			{
+				Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_OMFEditor)] = false;
+			}
+		}
+
+		break;
+	}
+	case eRequestType_OMFEditor::kShutdown:
+	{
+		if (g_pOMFEditor)
+		{
+			delete g_pOMFEditor;
+			g_pOMFEditor = nullptr;
+		}
+
+		break;
+	}
+	default:
+	{
+		R_ASSERT(!"invalid request type or request type of different editor");
+		break;
+	}
+	}
+}
+
+void RenderOMFEditor_Draw_TableHeader()
+{
+	if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_MainTable", 10))
+	{
+		ImGui::TableNextRow();
+
+		ImGui::TableSetColumnIndex(0);
+		if (ImGui::Button("Load##ToolsInGameImGui_OMFEditor"))
+		{
+			OMFEditor_LoadFile(g_pOMFEditor);
+		}
+
+
+		if (g_pOMFEditor->is_file_loaded)
+		{
+			ImGui::TableSetColumnIndex(1);
+			if (ImGui::Button("Close##ToolsInGameImGui_OMFEditor"))
+			{
+				g_pOMFEditor->is_file_loaded = false;
+				g_pOMFEditor->path[0] = 0;
+			}
+
+			ImGui::TableSetColumnIndex(2);
+			if (ImGui::Button("Save##ToolsInGameImGui_OMFEditor"))
+			{
+
+			}
+
+			ImGui::TableSetColumnIndex(3);
+			if (ImGui::Button("Save As...##ToolsInGameImGui_OMFEditor"))
+			{
+
+			}
+
+			ImGui::TableSetColumnIndex(4);
+			if (ImGui::Button("Merge with##ToolsInGameImGui_OMFEditor"))
+			{
+
+			}
+
+			ImGui::TableSetColumnIndex(5);
+			if (ImGui::Button("Add anims from##ToolsInGameImGui_OMFEditor"))
+			{
+			}
+
+			ImGui::TableSetColumnIndex(6);
+			if (ImGui::Button("Try repair##ToolsInGameImGui_OMFEditor"))
+			{
+
+			}
+
+			ImGui::TableSetColumnIndex(7);
+			if (ImGui::Button("Swap anim marks##ToolsInGameImGui_OMFEditor"))
+			{
+
+			}
+
+			//ImGui::TableSetColumnIndex(8);
+			//if (ImGui::Button("Rename bones##ToolsInGameImGui_OMFEditor"))
+			//{
+			//}
+
+			//	ImGui::TableSetColumnIndex(9);
+			//	if (ImGui::Button("Show bone parts##ToolsInGameImGui_OMFEditor"))
+			//	{
+			//	}
+
+		}
+
+		ImGui::EndTable();
+	}
+
+}
+
+void RenderOMFEditor_Draw_TableMain_Bone_Renaming(int bone_id, OMFData::BoneParts::Bone& bone)
+{
+#if IXRAY_OMF_EDITOR_ENABLE_DIRECT_BONE_RENAMING == 1
+	ImGui::PushID(bone_id);
+
+	if (g_pOMFEditor->current_selected_bone_rename == bone_id)
+	{
+		if (ImGui::InputText(
+			"##ToolsOMFEditor_DirectRenamingOfBone", 
+			g_pOMFEditor->rename_temp_bone.data(), 
+			g_pOMFEditor->rename_temp_bone.max_size(),
+			ImGuiInputTextFlags_EnterReturnsTrue
+		) && g_pOMFEditor->rename_temp_bone.size()>0)
+		{
+			bone.name = g_pOMFEditor->rename_temp_bone;
+			g_pOMFEditor->current_selected_bone_rename = -1;
+		}
+	}
+	else
+	{
+		if (ImGui::Selectable(bone.name.c_str())) {
+			// Optional: handle selection
+
+			g_pOMFEditor->current_selected_bone_rename = -1;
+
+		}
+
+		// Activate editing on double-click
+		if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) {
+			g_pOMFEditor->current_selected_bone_rename = bone_id;
+			g_pOMFEditor->rename_temp_bone = bone.name;
+		}
+	}
+
+	ImGui::PopID();
+#endif
+}
+
+void RenderOMFEditor_Draw_TableMain_Bones_Section()
+{
+	ImGui::SeparatorText("Bone Parts");
+
+	if (g_pOMFEditor == nullptr)
+		return;
+
+	if (g_pOMFEditor->is_file_loaded == false)
+		return;
+
+	if (g_pOMFEditor->omf == nullptr)
+		return;
+
+	xr_vector<OMFData::BoneParts>& bone_parts = g_pOMFEditor->omf->data_bone.parts;
+
+	if (bone_parts.empty())
+	{
+		ImGui::Text("No bones!");
+	}
+	else
+	{
+		if (ImGui::BeginTabBar("##ToolsOMFEditor_TableMain_BonesPartSection"))
+		{
+			for (OMFData::BoneParts& bone_part : bone_parts)
+			{
+				if (ImGui::BeginTabItem(bone_part.name.c_str()))
+				{
+					ImGui::Text("bone count: %d", bone_part.bones.size());
+					ImGui::Separator();
+
+					//if (ImGui::CollapsingHeader("Bones"))
+					{
+						if (ImGui::BeginChild("##ToolsOMFEditor_BonesScrollableRegion"))
+						{
+#if IXRAY_OMF_EDITOR_ENABLE_DIRECT_BONE_RENAMING == 0
+							for (OMFData::BoneParts::Bone& bone : bone_part.bones)
+							{
+								ImGui::Text(bone.name.c_str());
+							}
+#else
+							for (int bone_id = 0; bone_id < bone_part.bones.size(); ++bone_id)
+							{
+								OMFData::BoneParts::Bone& bone = bone_part.bones[bone_id];
+								RenderOMFEditor_Draw_TableMain_Bone_Renaming(bone_id, bone);
+							}
+#endif
+						}
+
+						ImGui::EndChild();
+					}
+
+					ImGui::EndTabItem();
+				}
+			}
+
+			ImGui::EndTabBar();
+		}
+	}
+
+}
+
+void RenderOMFEditor_Draw_TableMain_BonesRenaming_Section()
+{
+#if IXRAY_OMF_EDITOR_ENABLE_DIRECT_BONE_RENAMING == 0
+	if (ImGui::CollapsingHeader("Rename bones##ToolsInGameImGui_OMFEditor_Data_Body"))
+	{
+		if (g_pOMFEditor->omf->data_bone.count > 0)
+		{
+			ImGui::SeparatorText("Select bone");
+
+			if (ImGui::Combo("Bones##ToolsInGameImGui_OMFEditor_RenameBones", &g_pOMFEditor->current_selected_bone_rename, g_pOMFEditor->combo_bones_data.data(), g_pOMFEditor->combo_bones_data.size()))
+			{
+				g_pOMFEditor->rename_temp_bone = g_pOMFEditor->combo_bones_data[g_pOMFEditor->current_selected_bone_rename];
+			}
+
+			ImGui::SeparatorText("Edit");
+
+			ImGui::Text("bone id: %d", g_pOMFEditor->current_selected_bone_rename);
+			ImGui::InputText("##ToolsInGameImGui_OMFEditor_RenameBoneIT", g_pOMFEditor->rename_temp_bone.data(), g_pOMFEditor->rename_temp_bone.max_size());
+			ImGui::SameLine();
+			if (ImGui::Button("apply##ToolsInGameImGui_OMFEditor_RenameBone"))
+			{
+				size_t hash_temp = std::hash<xr_string_view>()(xr_string_view(g_pOMFEditor->rename_temp_bone.c_str()));
+
+				if (g_pOMFEditor->combo_bones_name_hashes.find(hash_temp) != g_pOMFEditor->combo_bones_name_hashes.end() && g_pOMFEditor->combo_bones_data[g_pOMFEditor->current_selected_bone_rename] != g_pOMFEditor->rename_temp_bone)
+				{
+					ImGui::OpenPopup(_kOMFEditorModalWindow_BoneRenameHasCollion);
+				}
+				else
+				{
+					size_t hash_current = std::hash<std::string_view>()(g_pOMFEditor->combo_bones_data[g_pOMFEditor->current_selected_bone_rename]);
+					if (g_pOMFEditor->combo_bones_name_hashes.find(hash_current) != g_pOMFEditor->combo_bones_name_hashes.end())
+					{
+						g_pOMFEditor->combo_bones_name_hashes.erase(hash_current);
+					}
+
+					g_pOMFEditor->combo_bones_name_hashes.insert(hash_temp);
+					OMFEditor_RenameBone(g_pOMFEditor->current_selected_bone_rename, g_pOMFEditor->rename_temp_bone, *g_pOMFEditor->omf);
+				}
+			}
+
+			bool cross = true;
+			if (ImGui::BeginPopupModal(_kOMFEditorModalWindow_BoneRenameHasCollion, &cross, ImGuiWindowFlags_AlwaysAutoResize))
+			{
+				ImGui::Text("You have already same name, can't rename current bone!");
+				ImGui::EndPopup();
+			}
+		}
+		else
+		{
+			ImGui::Text("you don't have any bones for renaming!");
+		}
+	}
+#endif
+}
+
+void RenderOMFEditor_Draw_TableMain_MotionMarks()
+{
+	ImGui::BeginDisabled(g_pOMFEditor->has_motion_marks_selected == false);
+
+	if (ImGui::CollapsingHeader("Motion marks"))
+	{		
+		if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_Data_Body3", 2))
+		{
+			ImGui::TableNextRow();
+
+			ImGui::TableSetColumnIndex(0);
+
+			ImGui::TableSetColumnIndex(1);
+
+			ImGui::SeparatorText("Motion time format");
+
+			if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_MotionTimeFormat", 2))
+			{
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+
+				ImGui::BeginDisabled(!g_pOMFEditor->has_motion_marks_selected);
+				if (ImGui::RadioButton("Keys##ToolsInGameImGui_OMFEditor_KeysRB", g_pOMFEditor->is_motion_time_format_keys_selected))
+				{
+					g_pOMFEditor->is_motion_time_format_radiobutton_changed = true;
+					g_pOMFEditor->is_motion_time_format_seconds_selected = false;
+					g_pOMFEditor->is_motion_time_format_keys_selected = !g_pOMFEditor->is_motion_time_format_keys_selected;
+				}
+				ImGui::EndDisabled();
+
+				ImGui::TableSetColumnIndex(1);
+
+				ImGui::BeginDisabled(!g_pOMFEditor->has_motion_marks_selected);
+				if (ImGui::RadioButton("Seconds##ToolsInGameImGui_OMFEditor_SecondsRB", g_pOMFEditor->is_motion_time_format_seconds_selected))
+				{
+					g_pOMFEditor->is_motion_time_format_radiobutton_changed = true;
+					g_pOMFEditor->is_motion_time_format_keys_selected = false;
+					g_pOMFEditor->is_motion_time_format_seconds_selected = !g_pOMFEditor->is_motion_time_format_seconds_selected;
+				}
+				ImGui::EndDisabled();
+
+				if (g_pOMFEditor->has_motion_marks_selected && g_pOMFEditor->is_motion_time_format_radiobutton_changed)
+				{
+					R_ASSERT2(!(g_pOMFEditor->is_motion_time_format_keys_selected && g_pOMFEditor->is_motion_time_format_seconds_selected), "You can't select both keys and seconds format at the same time!");
+
+					// todo: add implemenetation here
+
+					g_pOMFEditor->is_motion_time_format_radiobutton_changed = false;
+				}
+
+				ImGui::EndTable();
+			}
+
+
+			ImGui::SeparatorText("Motion marks");
+
+			ImGui::BeginDisabled(!g_pOMFEditor->has_motion_marks_selected);
+			if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_MotionMarksTable", 3))
+			{
+				ImGui::TableNextRow();
+
+				ImGui::TableSetColumnIndex(0);
+
+				ImGui::SeparatorText("Mark Group");
+				//	ImGui::ListBox("##ToolsInGameImGui_OMFEditor_MarkGroupLB", 0, 0, 0);
+
+				ImGui::Button("Add##ToolsInGameImGui_OMFEditor_MotionMarksGroup");
+				ImGui::SameLine();
+				ImGui::Button("Delete##ToolsInGameImGui_OMFEditor_MotionMarksGroup");
+
+				ImGui::TableSetColumnIndex(1);
+
+				ImGui::SeparatorText("Marks");
+				//	ImGui::ListBox("##ToolsInGameImGui_OMFEditor_MarksLB", 0, 0, 0);
+
+				ImGui::Button("Add##ToolsInGameImGui_OMFEditor_MotionMarksMarks");
+				ImGui::SameLine();
+				ImGui::Button("Delete##ToolsInGameImGui_OMFEditor_MotionMarksMarks");
+
+				ImGui::TableSetColumnIndex(2);
+
+				ImGui::SeparatorText("Mark settings");
+
+				float fStart{};
+				ImGui::DragFloat("Start##ToolsInGameImGui_OMFEditor_MotionMarksMark", &fStart);
+
+
+				float fEnd{};
+				ImGui::DragFloat("End##ToolsInGameImGui_OMFEditor_MotionMarksMark", &fEnd);
+
+				ImGui::EndTable();
+			}
+
+			ImGui::EndTable();
+			ImGui::EndDisabled();
+		}
+	}
+
+	ImGui::EndDisabled();
+}
+
+void RenderOMFEditor_Draw_TableMain_Params()
+{
+	if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_Data_Body_Params", 2))
+	{
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0);
+
+		ImGui::DragFloat("Speed", &g_pOMFEditor->speed);
+		ImGui::DragFloat("Power", &g_pOMFEditor->power);
+		ImGui::DragFloat("Accrue", &g_pOMFEditor->accrue);
+		ImGui::DragFloat("Falloff", &g_pOMFEditor->falloff);
+
+		ImGui::TableSetColumnIndex(1);
+
+		ImGui::Checkbox("Stop at end", &g_pOMFEditor->stop_at_end_selected);
+		ImGui::Checkbox("No mix", &g_pOMFEditor->no_mix_selected);
+		ImGui::Checkbox("Sync part", &g_pOMFEditor->sync_part_selected);
+		ImGui::Checkbox("Use foot steps", &g_pOMFEditor->use_foot_steps_selected);
+		ImGui::Checkbox("Move XForm", &g_pOMFEditor->move_xform_selected);
+		ImGui::Checkbox("Idle", &g_pOMFEditor->idle_selected);
+		ImGui::Checkbox("Use weapon bone", &g_pOMFEditor->use_weapon_bone_selected);
+		ImGui::Checkbox("Has motion marks", &g_pOMFEditor->has_motion_marks_selected);
+
+		ImGui::EndTable();
+	}
+}
+
+void RenderOMFEditor_Draw_TableMain()
+{
+	if (g_pOMFEditor->is_file_loaded)
+	{
+		R_ASSERT2(g_pOMFEditor->omf, "must be initialized");
+		ImGui::TextWrapped("Loaded file: [%s]", g_pOMFEditor->path.c_str());
+		ImGui::Separator();
+
+		constexpr const char* _kColumnOfMainTableNames[] = {
+			"Editing",
+#if IXRAY_OMF_EDITOR_ENABLE_VIEWER == 1
+			"Viewer"
+#endif
+		};
+		constexpr u8 _kColumnOfMainTableSize = sizeof(_kColumnOfMainTableNames) / sizeof(_kColumnOfMainTableNames[0]);
+
+
+		if (ImGui::BeginTable("##TII_OE_Main", _kColumnOfMainTableSize, ImGuiTableFlags_SizingStretchProp))
+		{
+			for (u8 i = 0; i < static_cast<u8>(_kColumnOfMainTableSize); ++i)
+			{
+				ImGui::TableSetupColumn(_kColumnOfMainTableNames[i]);
+			}
+
+			ImGui::TableHeadersRow();
+
+			ImGui::TableNextRow();
+
+			for (u8 column = 0; column < _kColumnOfMainTableSize; ++column)
+			{
+				ImGui::TableSetColumnIndex(static_cast<int>(column));
+
+				switch (column)
+				{
+				case 0:
+				{
+					if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_Data_Header", 2))
+					{
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+
+						constexpr const char* _kEmptyAnimationParams = "";
+
+						bool is_empty = g_pOMFEditor->omf->data_animparams.count > 0;
+
+						if (ImGui::Combo("Animation params##ToolsInGameImGui_OMFEditor_Data_Header_Combo", &g_pOMFEditor->current_selected_animation_param, g_pOMFEditor->combo_animation_params_data.data(), g_pOMFEditor->omf->data_animparams.count))
+						{
+							if (g_pOMFEditor->current_selected_animation_param > -1)
+							{
+								OMFEditor_Init_CurrentAnimationParams(g_pOMFEditor->current_selected_animation_param, *g_pOMFEditor->omf, g_pOMFEditor);
+							}
+						}
+
+						ImGui::TableSetColumnIndex(1);
+
+						ImGui::Text("Selected: [%s]", g_pOMFEditor->combo_animation_params_data[g_pOMFEditor->current_selected_animation_param]);
+						ImGui::SameLine();
+
+						if (ImGui::Button("Rename##ToolsInGameImGui_OMFEditor"))
+						{
+							ImGui::OpenPopup(_kOMFEditorModalWindow_RenameAnimationParam);
+							g_pOMFEditor->rename_temp = g_pOMFEditor->omf->data_animparams.params[g_pOMFEditor->current_selected_animation_param].name;
+						}
+
+						if (ImGui::BeginPopupModal(_kOMFEditorModalWindow_RenameAnimationParam, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+						{
+							auto& current_param = g_pOMFEditor->omf->data_animparams.params[g_pOMFEditor->current_selected_animation_param];
+							ImGui::InputText("##ToolsInGameImGui_OMFEditor_RenameAnimationParamInputText", g_pOMFEditor->rename_temp.data(), g_pOMFEditor->rename_temp.max_size());
+
+							ImGui::SetItemDefaultFocus();
+							if (ImGui::Button("Save##ToolsInGameImGui_OMFEditor_RenameAnimationParam"))
+							{
+								size_t hash_temp = std::hash<std::string_view>()(g_pOMFEditor->rename_temp.c_str());
+
+								if (g_pOMFEditor->combo_animation_params_name_hashes.find(hash_temp) != g_pOMFEditor->combo_animation_params_name_hashes.end() && g_pOMFEditor->rename_temp != current_param.name)
+								{
+									ImGui::OpenPopup(_kOMFEditorModalWindow_WarningRenameHasCollision);
+								}
+								else
+								{
+									OMFData::omf_name_t previous = current_param.name;
+									size_t previous_temp = std::hash<std::string_view>()(previous.c_str());
+									if (g_pOMFEditor->combo_animation_params_name_hashes.find(previous_temp) != g_pOMFEditor->combo_animation_params_name_hashes.end())
+									{
+										g_pOMFEditor->combo_animation_params_name_hashes.erase(previous_temp);
+									}
+
+									current_param.name = g_pOMFEditor->rename_temp;
+									g_pOMFEditor->combo_animation_params_name_hashes.insert(std::hash<std::string_view>()(current_param.name.c_str()));
+									ImGui::CloseCurrentPopup();
+								}
+							}
+
+							ImGui::SameLine();
+
+							if (ImGui::Button("Cancel##ToolsInGameImGui_OMFEditor_RenameAnimationParam"))
+							{
+								ImGui::CloseCurrentPopup();
+							}
+
+							bool cross = true;
+							if (ImGui::BeginPopupModal(_kOMFEditorModalWindow_WarningRenameHasCollision, &cross, ImGuiWindowFlags_AlwaysAutoResize))
+							{
+								ImGui::Text("Failed to rename because you have already same name!");
+								ImGui::EndPopup();
+							}
+
+							ImGui::EndPopup();
+						}
+
+						ImGui::EndTable();
+					}
+					ImGui::Separator();
+					if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_Data_Body", 2))
+					{
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+
+						RenderOMFEditor_Draw_TableMain_BonesRenaming_Section();
+
+						if (ImGui::CollapsingHeader("Bones##ToolsInGameImGui_OMFEditor_Data_Body"))
+						{
+							if (ImGui::Button("copy to clipboard##ToolsInGameImGui_OMFEditor_ShowBoneParts"))
+							{
+								bool status = OMFEditor_CopyBonePartsToClipboard(g_pOMFEditor);
+
+								if (status)
+									ImGui::OpenPopup(_kOMFEditorModalWindow_BonePartsWasCopiedToClipboardSuccessful);
+								else
+									ImGui::OpenPopup(_kOMFEditorModalWindow_BonePartsWasCopiedToClipboardFailed);
+							}
+
+							ImGui::SameLine();
+
+							if (ImGui::Button("save as file##ToolsInGameImGui_OMFEditor_ShowBoneParts"))
+							{
+
+							}
+
+							RenderOMFEditor_Draw_TableMain_Bones_Section();
+
+							if (ImGui::BeginPopupModal(_kOMFEditorModalWindow_BonePartsWasCopiedToClipboardFailed, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+							{
+								ImGui::Text("Text wasn't copied to your clipboard! Try again or report to developers!");
+
+								if (ImGui::Button("OK##ToolsInGameImGui_OMFEditor_ClipBoard"))
+								{
+									ImGui::CloseCurrentPopup();
+								}
+
+								ImGui::EndPopup();
+							}
+
+							if (ImGui::BeginPopupModal(_kOMFEditorModalWindow_BonePartsWasCopiedToClipboardSuccessful, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+							{
+								ImGui::Text("Text was successfully copied to your clipboard!");
+
+								if (ImGui::Button("OK##ToolsInGameImGui_OMFEditor_ClipBoard"))
+								{
+									ImGui::CloseCurrentPopup();
+								}
+
+								ImGui::EndPopup();
+							}
+						}
+
+						ImGui::TableSetColumnIndex(1);
+
+						RenderOMFEditor_Draw_TableMain_Params();
+						RenderOMFEditor_Draw_TableMain_MotionMarks();
+						
+						ImGui::EndTable();
+					}
+
+					break;
+				}
+#if IXRAY_OMF_EDITOR_ENABLE_VIEWER == 1
+				case 1:
+				{
+					if (ImGui::CollapsingHeader("Viewer"))
+					{
+						ImGui::Text("______________________________________________________________________");
+					}
+
+					break;
+				}
+#endif
+				}
+
+			}
+
+
+			ImGui::EndTable();
+		}
+
 	}
 }
 
@@ -602,458 +1242,20 @@ void RenderToolsOMFEditorWindow()
 	if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_OMFEditor)])
 		return;
 
-
-	if (ImGui::Begin("Editor - [OMF]##ToolsInGameImGui", &Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_OMFEditor)]))
+	if (g_pOMFEditor == nullptr)
 	{
-		if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_MainTable", 10))
+		g_pOMFEditor = new CImGuiOMFEditor();
+	}
+
+	if (g_pOMFEditor)
+	{
+		if (ImGui::Begin("Editor - [OMF]##ToolsInGameImGui"))
 		{
-			ImGui::TableNextRow();
+			RenderOMFEditor_Draw_TableHeader();
 
-			ImGui::TableSetColumnIndex(0);
-			if (ImGui::Button("Load##ToolsInGameImGui_OMFEditor"))
-			{
-				OMFEditor_LoadFile(&g_omf_editor);
-			}
+			RenderOMFEditor_Draw_TableMain();
 
-
-			if (g_omf_editor.is_file_loaded)
-			{
-				ImGui::TableSetColumnIndex(1);
-				if (ImGui::Button("Close##ToolsInGameImGui_OMFEditor"))
-				{
-					g_omf_editor.is_file_loaded = false;
-					pEditor->path[0] = 0;
-				}
-
-				ImGui::TableSetColumnIndex(2);
-				if (ImGui::Button("Save##ToolsInGameImGui_OMFEditor"))
-				{
-
-				}
-
-				ImGui::TableSetColumnIndex(3);
-				if (ImGui::Button("Save As...##ToolsInGameImGui_OMFEditor"))
-				{
-
-				}
-
-				ImGui::TableSetColumnIndex(4);
-				if (ImGui::Button("Merge with##ToolsInGameImGui_OMFEditor"))
-				{
-
-				}
-
-				ImGui::TableSetColumnIndex(5);
-				if (ImGui::Button("Add anims from##ToolsInGameImGui_OMFEditor"))
-				{
-				}
-
-				ImGui::TableSetColumnIndex(6);
-				if (ImGui::Button("Try repair##ToolsInGameImGui_OMFEditor"))
-				{
-
-				}
-
-				ImGui::TableSetColumnIndex(7);
-				if (ImGui::Button("Swap anim marks##ToolsInGameImGui_OMFEditor"))
-				{
-
-				}
-
-				//ImGui::TableSetColumnIndex(8);
-				//if (ImGui::Button("Rename bones##ToolsInGameImGui_OMFEditor"))
-				//{
-				//}
-
-				//	ImGui::TableSetColumnIndex(9);
-				//	if (ImGui::Button("Show bone parts##ToolsInGameImGui_OMFEditor"))
-				//	{
-				//	}
-
-			}
-
-			ImGui::EndTable();
+			ImGui::End();
 		}
-
-
-		if (g_omf_editor.is_file_loaded)
-		{
-			R_ASSERT2(g_omf_editor.omf, "must be initialized");
-			ImGui::TextWrapped("Loaded file: [%s]", g_omf_editor.path.c_str());
-			ImGui::Separator();
-
-			constexpr const char* _kColumnOfMainTableNames[] = {
-				"Editing",
-				"Viewer"
-			};
-			constexpr u8 _kColumnOfMainTableSize = sizeof(_kColumnOfMainTableNames) / sizeof(_kColumnOfMainTableNames[0]);
-
-
-			if (ImGui::BeginTable("##TII_OE_Main", _kColumnOfMainTableSize, ImGuiTableFlags_SizingStretchProp))
-			{
-				for (u8 i = 0; i < static_cast<u8>(_kColumnOfMainTableSize); ++i)
-				{
-					ImGui::TableSetupColumn(_kColumnOfMainTableNames[i]);
-				}
-
-				ImGui::TableHeadersRow();
-
-				ImGui::TableNextRow();
-
-				for (u8 column = 0; column < _kColumnOfMainTableSize; ++column)
-				{
-					ImGui::TableSetColumnIndex(static_cast<int>(column));
-
-					switch (column)
-					{
-					case 0:
-					{
-						if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_Data_Header", 2))
-						{
-							ImGui::TableNextRow();
-							ImGui::TableSetColumnIndex(0);
-
-							constexpr const char* _kEmptyAnimationParams = "";
-
-							bool is_empty = g_omf_editor.omf->data_animparams.count > 0;
-
-							if (ImGui::Combo("Animation params##ToolsInGameImGui_OMFEditor_Data_Header_Combo", &g_omf_editor.current_selected_animation_param, g_omf_editor.combo_animation_params_data.data(), g_omf_editor.omf->data_animparams.count))
-							{
-								if (g_omf_editor.current_selected_animation_param > -1)
-								{
-									OMFEditor_Init_CurrentAnimationParams(g_omf_editor.current_selected_animation_param, *g_omf_editor.omf, &g_omf_editor);
-								}
-							}
-
-							ImGui::TableSetColumnIndex(1);
-
-							ImGui::Text("Selected: [%s]", g_omf_editor.combo_animation_params_data[g_omf_editor.current_selected_animation_param]);
-							ImGui::SameLine();
-
-							if (ImGui::Button("Rename##ToolsInGameImGui_OMFEditor"))
-							{
-								ImGui::OpenPopup(_kOMFEditorModalWindow_RenameAnimationParam);
-								g_omf_editor.rename_temp = g_omf_editor.omf->data_animparams.params[g_omf_editor.current_selected_animation_param].name;
-							}
-
-							if (ImGui::BeginPopupModal(_kOMFEditorModalWindow_RenameAnimationParam, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
-							{
-								auto& current_param = g_omf_editor.omf->data_animparams.params[g_omf_editor.current_selected_animation_param];
-								ImGui::InputText("##ToolsInGameImGui_OMFEditor_RenameAnimationParamInputText", g_omf_editor.rename_temp.data(), g_omf_editor.rename_temp.max_size());
-
-								ImGui::SetItemDefaultFocus();
-								if (ImGui::Button("Save##ToolsInGameImGui_OMFEditor_RenameAnimationParam"))
-								{
-									size_t hash_temp = std::hash<std::string_view>()(g_omf_editor.rename_temp.c_str());
-
-									if (g_omf_editor.combo_animation_params_name_hashes.find(hash_temp) != g_omf_editor.combo_animation_params_name_hashes.end() && g_omf_editor.rename_temp != current_param.name)
-									{
-										ImGui::OpenPopup(_kOMFEditorModalWindow_WarningRenameHasCollision);
-									}
-									else
-									{
-										OMFData::omf_name_t previous = current_param.name;
-										size_t previous_temp = std::hash<std::string_view>()(previous.c_str());
-										if (g_omf_editor.combo_animation_params_name_hashes.find(previous_temp) != g_omf_editor.combo_animation_params_name_hashes.end())
-										{
-											g_omf_editor.combo_animation_params_name_hashes.erase(previous_temp);
-										}
-
-										current_param.name = g_omf_editor.rename_temp;
-										g_omf_editor.combo_animation_params_name_hashes.insert(std::hash<std::string_view>()(current_param.name.c_str()));
-										ImGui::CloseCurrentPopup();
-									}
-								}
-
-								ImGui::SameLine();
-
-								if (ImGui::Button("Cancel##ToolsInGameImGui_OMFEditor_RenameAnimationParam"))
-								{
-									ImGui::CloseCurrentPopup();
-								}
-
-								bool cross = true;
-								if (ImGui::BeginPopupModal(_kOMFEditorModalWindow_WarningRenameHasCollision, &cross, ImGuiWindowFlags_AlwaysAutoResize))
-								{
-									ImGui::Text("Failed to rename because you have already same name!");
-									ImGui::EndPopup();
-								}
-
-								ImGui::EndPopup();
-							}
-
-							ImGui::EndTable();
-						}
-						ImGui::Separator();
-						if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_Data_Body", 2))
-						{
-							ImGui::TableNextRow();
-							ImGui::TableSetColumnIndex(0);
-
-							if (ImGui::CollapsingHeader("Rename bones##ToolsInGameImGui_OMFEditor_Data_Body"))
-							{
-								if (g_omf_editor.omf->data_bone.count > 0)
-								{
-									ImGui::SeparatorText("Select bone");
-
-									if (ImGui::Combo("Bones##ToolsInGameImGui_OMFEditor_RenameBones", &g_omf_editor.current_selected_bone_rename, g_omf_editor.combo_bones_data.data(), g_omf_editor.combo_bones_data.size()))
-									{
-										g_omf_editor.rename_temp_bone = g_omf_editor.combo_bones_data[g_omf_editor.current_selected_bone_rename];
-									}
-
-									ImGui::SeparatorText("Edit");
-
-									ImGui::Text("bone id: %d", g_omf_editor.current_selected_bone_rename);
-									ImGui::InputText("##ToolsInGameImGui_OMFEditor_RenameBoneIT", g_omf_editor.rename_temp_bone.data(), g_omf_editor.rename_temp_bone.max_size());
-									ImGui::SameLine();
-									if (ImGui::Button("apply##ToolsInGameImGui_OMFEditor_RenameBone"))
-									{
-										size_t hash_temp = std::hash<xr_string_view>()(xr_string_view(g_omf_editor.rename_temp_bone.c_str()));
-
-										if (g_omf_editor.combo_bones_name_hashes.find(hash_temp) != g_omf_editor.combo_bones_name_hashes.end() && g_omf_editor.combo_bones_data[g_omf_editor.current_selected_bone_rename] != g_omf_editor.rename_temp_bone)
-										{
-											ImGui::OpenPopup(_kOMFEditorModalWindow_BoneRenameHasCollion);
-										}
-										else
-										{
-											size_t hash_current = std::hash<std::string_view>()(g_omf_editor.combo_bones_data[g_omf_editor.current_selected_bone_rename]);
-											if (g_omf_editor.combo_bones_name_hashes.find(hash_current) != g_omf_editor.combo_bones_name_hashes.end())
-											{
-												g_omf_editor.combo_bones_name_hashes.erase(hash_current);
-											}
-
-											g_omf_editor.combo_bones_name_hashes.insert(hash_temp);
-											OMFEditor_RenameBone(g_omf_editor.current_selected_bone_rename, g_omf_editor.rename_temp_bone, *g_omf_editor.omf);
-										}
-									}
-
-									bool cross = true;
-									if (ImGui::BeginPopupModal(_kOMFEditorModalWindow_BoneRenameHasCollion, &cross, ImGuiWindowFlags_AlwaysAutoResize))
-									{
-										ImGui::Text("You have already same name, can't rename current bone!");
-										ImGui::EndPopup();
-									}
-								}
-								else
-								{
-									ImGui::Text("you don't have any bones for renaming!");
-								}
-							}
-
-							if (ImGui::CollapsingHeader("Show bone parts##ToolsInGameImGui_OMFEditor_Data_Body"))
-							{
-								if (ImGui::Button("copy to clipboard##ToolsInGameImGui_OMFEditor_ShowBoneParts"))
-								{
-									bool status = OMFEditor_CopyBonePartsToClipboard(&g_omf_editor);
-
-									if (status)
-										ImGui::OpenPopup(_kOMFEditorModalWindow_BonePartsWasCopiedToClipboardSuccessful);
-									else
-										ImGui::OpenPopup(_kOMFEditorModalWindow_BonePartsWasCopiedToClipboardFailed);
-								}
-
-								ImGui::SameLine();
-
-								if (ImGui::Button("save as file##ToolsInGameImGui_OMFEditor_ShowBoneParts"))
-								{
-
-								}
-
-								ImGui::SeparatorText("Bones");
-								for (const auto& bone_part : g_omf_editor.omf->data_bone.parts)
-								{
-									if (ImGui::TreeNode(bone_part.name.c_str()))
-									{
-										ImGui::Text("bone count: %d", bone_part.bones.size());
-										ImGui::Separator();
-										for (const auto& bone : bone_part.bones)
-										{
-											ImGui::Text(bone.name.c_str());
-										}
-
-										ImGui::TreePop();
-									}
-								}
-
-								if (ImGui::BeginPopupModal(_kOMFEditorModalWindow_BonePartsWasCopiedToClipboardFailed, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
-								{
-									ImGui::Text("Text wasn't copied to your clipboard! Try again or report to developers!");
-
-									if (ImGui::Button("OK##ToolsInGameImGui_OMFEditor_ClipBoard"))
-									{
-										ImGui::CloseCurrentPopup();
-									}
-
-									ImGui::EndPopup();
-								}
-
-								if (ImGui::BeginPopupModal(_kOMFEditorModalWindow_BonePartsWasCopiedToClipboardSuccessful, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
-								{
-									ImGui::Text("Text was successfully copied to your clipboard!");
-
-									if (ImGui::Button("OK##ToolsInGameImGui_OMFEditor_ClipBoard"))
-									{
-										ImGui::CloseCurrentPopup();
-									}
-
-									ImGui::EndPopup();
-								}
-							}
-
-							ImGui::TableSetColumnIndex(1);
-
-							if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_Data_Body_Params", 2))
-							{
-								ImGui::TableNextRow();
-								ImGui::TableSetColumnIndex(0);
-
-								ImGui::DragFloat("Speed", &g_omf_editor.speed);
-								ImGui::DragFloat("Power", &g_omf_editor.power);
-								ImGui::DragFloat("Accrue", &g_omf_editor.accrue);
-								ImGui::DragFloat("Falloff", &g_omf_editor.falloff);
-
-								ImGui::TableSetColumnIndex(1);
-
-								ImGui::Checkbox("Stop at end", &g_omf_editor.stop_at_end_selected);
-								ImGui::Checkbox("No mix", &g_omf_editor.no_mix_selected);
-								ImGui::Checkbox("Sync part", &g_omf_editor.sync_part_selected);
-								ImGui::Checkbox("Use foot steps", &g_omf_editor.use_foot_steps_selected);
-								ImGui::Checkbox("Move XForm", &g_omf_editor.move_xform_selected);
-								ImGui::Checkbox("Idle", &g_omf_editor.idle_selected);
-								ImGui::Checkbox("Use weapon bone", &g_omf_editor.use_weapon_bone_selected);
-								ImGui::Checkbox("Has motion marks", &g_omf_editor.has_motion_marks_selected);
-
-								ImGui::EndTable();
-							}
-
-							ImGui::EndTable();
-						}
-
-						ImGui::Separator();
-
-						if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_Data_Body2", 2))
-						{
-							ImGui::TableNextRow();
-							ImGui::TableSetColumnIndex(0);
-
-							ImGui::TableSetColumnIndex(1);
-
-							ImGui::SeparatorText("Motion time format");
-
-							if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_MotionTimeFormat", 2))
-							{
-								ImGui::TableNextRow();
-								ImGui::TableSetColumnIndex(0);
-
-								ImGui::BeginDisabled(!g_omf_editor.has_motion_marks_selected);
-								if (ImGui::RadioButton("Keys##ToolsInGameImGui_OMFEditor_KeysRB", g_omf_editor.is_motion_time_format_keys_selected))
-								{
-									g_omf_editor.is_motion_time_format_radiobutton_changed = true;
-									g_omf_editor.is_motion_time_format_seconds_selected = false;
-									g_omf_editor.is_motion_time_format_keys_selected = !g_omf_editor.is_motion_time_format_keys_selected;
-								}
-								ImGui::EndDisabled();
-
-								ImGui::TableSetColumnIndex(1);
-
-								ImGui::BeginDisabled(!g_omf_editor.has_motion_marks_selected);
-								if (ImGui::RadioButton("Seconds##ToolsInGameImGui_OMFEditor_SecondsRB", g_omf_editor.is_motion_time_format_seconds_selected))
-								{
-									g_omf_editor.is_motion_time_format_radiobutton_changed = true;
-									g_omf_editor.is_motion_time_format_keys_selected = false;
-									g_omf_editor.is_motion_time_format_seconds_selected = !g_omf_editor.is_motion_time_format_seconds_selected;
-								}
-								ImGui::EndDisabled();
-
-								if (g_omf_editor.has_motion_marks_selected && g_omf_editor.is_motion_time_format_radiobutton_changed)
-								{
-									R_ASSERT2(!(g_omf_editor.is_motion_time_format_keys_selected && g_omf_editor.is_motion_time_format_seconds_selected), "You can't select both keys and seconds format at the same time!");
-
-									// todo: add implemenetation here
-
-									g_omf_editor.is_motion_time_format_radiobutton_changed = false;
-								}
-
-								ImGui::EndTable();
-							}
-
-							ImGui::EndTable();
-						}
-
-						ImGui::Separator();
-
-						if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_Data_Body3", 2))
-						{
-							ImGui::TableNextRow();
-
-							ImGui::TableSetColumnIndex(0);
-
-							ImGui::TableSetColumnIndex(1);
-
-							ImGui::SeparatorText("Motion marks");
-
-							ImGui::BeginDisabled(!g_omf_editor.has_motion_marks_selected);
-							if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_MotionMarksTable", 3))
-							{
-								ImGui::TableNextRow();
-
-								ImGui::TableSetColumnIndex(0);
-
-								ImGui::SeparatorText("Mark Group");
-								//	ImGui::ListBox("##ToolsInGameImGui_OMFEditor_MarkGroupLB", 0, 0, 0);
-
-								ImGui::Button("Add##ToolsInGameImGui_OMFEditor_MotionMarksGroup");
-								ImGui::SameLine();
-								ImGui::Button("Delete##ToolsInGameImGui_OMFEditor_MotionMarksGroup");
-
-								ImGui::TableSetColumnIndex(1);
-
-								ImGui::SeparatorText("Marks");
-								//	ImGui::ListBox("##ToolsInGameImGui_OMFEditor_MarksLB", 0, 0, 0);
-
-								ImGui::Button("Add##ToolsInGameImGui_OMFEditor_MotionMarksMarks");
-								ImGui::SameLine();
-								ImGui::Button("Delete##ToolsInGameImGui_OMFEditor_MotionMarksMarks");
-
-								ImGui::TableSetColumnIndex(2);
-
-								ImGui::SeparatorText("Mark settings");
-
-								float fStart{};
-								ImGui::DragFloat("Start##ToolsInGameImGui_OMFEditor_MotionMarksMark", &fStart);
-
-
-								float fEnd{};
-								ImGui::DragFloat("End##ToolsInGameImGui_OMFEditor_MotionMarksMark", &fEnd);
-
-								ImGui::EndTable();
-							}
-
-							ImGui::EndTable();
-							ImGui::EndDisabled();
-						}
-
-						break;
-					}
-					case 1:
-					{
-						if (ImGui::CollapsingHeader("Viewer"))
-						{
-							ImGui::Text("______________________________________________________________________");
-						}
-
-						break;
-					}
-					}
-
-				}
-
-
-				ImGui::EndTable();
-			}
-
-		}
-
-		ImGui::End();
 	}
 }
