@@ -509,8 +509,7 @@ void AllEditors_OnPressed(int key)
 	if (!CImGuiManager::Instance().IsCapturingInputs() || pInput->xrgame_sdk_input_pressed == nullptr)
 		return;
 
-
-	if (Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_TextureEditor)])
+	if (Engine.External.EditorStates[u8(EditorUI::Tools_TextureEditor)])
 	{
 		TextureEditor_OnPressed(key);
 	}
@@ -524,6 +523,11 @@ void AllEditors_OnPressed(int key)
 	{
 		QuestEditor_OnPressed(key);
 	}
+
+	if (Engine.External.EditorStates[u8(EditorUI::Tools_OMFEditor)])
+	{
+		OMFEditor_OnPressed(key);
+	}
 }
 
 void AllEditors_OnReleased(int key)
@@ -531,7 +535,7 @@ void AllEditors_OnReleased(int key)
 	if (!CImGuiManager::Instance().IsCapturingInputs() || pInput->xrgame_sdk_input_released == nullptr)
 		return;
 
-	if (Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_TextureEditor)])
+	if (Engine.External.EditorStates[u8(EditorUI::Tools_TextureEditor)])
 	{
 		TextureEditor_OnReleased(key);
 	}
@@ -544,6 +548,11 @@ void AllEditors_OnReleased(int key)
 	if (Engine.External.EditorStates[u8(EditorUI::Tools_QuestEditor)])
 	{
 		QuestEditor_OnReleased(key);
+	}
+
+	if (Engine.External.EditorStates[u8(EditorUI::Tools_OMFEditor)])
+	{
+		OMFEditor_OnReleased(key);
 	}
 }
 
