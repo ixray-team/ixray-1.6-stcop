@@ -394,7 +394,6 @@ public:
 	}
 };
 
-/// @brief author: wh1t3lord, wt - means worker thread
 struct CImGuiTextureEditor
 {
 	enum eAnalyzedStatus
@@ -459,10 +458,10 @@ struct CImGuiTextureEditor
 		bool    wasDocked = false;
 		bool    isCentralNode = false;
 
-		ImVec2  pos = { FLT_MAX, FLT_MAX };  
+		ImVec2  pos = { FLT_MAX, FLT_MAX };
 		ImVec2  size = { 0,0 };
 		ImGuiDir dockDir = ImGuiDir_None;
-                 
+
 		void Capture(const char* windowName);
 		void Apply(const char* windowName);
 	};
@@ -584,8 +583,14 @@ struct CImGuiRequestManager
 };
 
 #define IXRAY_MAX_IMGUI_REQUESTS_COUNT 8
+
+
 // todo: implement viewer
+/// @brief \~english if enabled then you will have in-game viewer but right now it is not implemented feature
 #define IXRAY_OMF_EDITOR_ENABLE_VIEWER 0
+
+/// @brief \~english if enabled 'bone renaming' section won't exist and you can directly rename from bone list  otherwise you have to rename only through 'bone renaming' section
+#define IXRAY_OMF_EDITOR_ENABLE_DIRECT_BONE_RENAMING 1
 
 /* INIT */
 void InitSections();
