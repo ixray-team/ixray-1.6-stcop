@@ -584,6 +584,8 @@ struct CImGuiRequestManager
 };
 
 #define IXRAY_MAX_IMGUI_REQUESTS_COUNT 8
+// todo: implement viewer
+#define IXRAY_OMF_EDITOR_ENABLE_VIEWER 0
 
 /* INIT */
 void InitSections();
