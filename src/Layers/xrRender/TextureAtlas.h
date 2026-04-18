@@ -20,7 +20,6 @@ inline constexpr size_t calculate_reserve_count(size_t bytes, size_t amount)
 struct smol_atlas_t;
 struct smol_atlas_item_t;
 
-/// @brief author: wh1t3lord
 class ECORE_API CTextureAtlas
 {
 public:
