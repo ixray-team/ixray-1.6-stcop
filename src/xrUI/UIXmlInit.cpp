@@ -26,6 +26,7 @@
 #include "Widgets/UIGamepadLegend.h"
 #include "../../xrEngine/xr_input.h"
 #include "UITextureMaster.h"
+#include "UIVectorBinding.h"
 #include "Widgets/UITabButtonMP.h"
 #include "Widgets/UILines.h"
 //////////////////////////////////////////////////////////////////////////
@@ -1161,59 +1162,81 @@ bool CUIXmlInit::InitSleepStatic(CUIXml &xml_doc, const char *path, int index, C
 	return true;
 }
 
+// Raster vs vector: keep <svg> element (even when empty) on the vector path so :texture fallback and buf
+// (rect / tint attributes) stay aligned. Using only QueryFileNameFromXml for the raster/vector split misses
+// that case and can desync UI texture state.
 bool CUIXmlInit::InitTexture(CUIXml& xml_doc, LPCSTR path, int index, ITextureOwner* pWnd, bool fatal)
 {
 	bool result = true;
 
 	string256 buf;
-	LPCSTR texture	= nullptr;
-	LPCSTR shader	= nullptr;
-	LPCSTR raster_texture = nullptr;
+	pcstr textureName = nullptr;
+	pcstr shaderName = nullptr;
+	pcstr rasterTextureName = nullptr;
 
-		string256 buf2;
-		xr_strconcat(buf2, path, ":svg");
-	const bool isRaster = xml_doc.NavigateToNode(buf2) == nullptr;
+	const bool hasSvgChild = CUIVectorBinding::HasSvgChildElement(xml_doc, path, index);
+	const pcstr svgFromXml = CUIVectorBinding::QueryFileNameFromXml(xml_doc, path, index);
+	const bool isRasterPath = (!hasSvgChild && svgFromXml == nullptr);
 
-	if (isRaster)
+	if (isRasterPath)
 	{
 		xr_strconcat(buf, path, ":texture");
-		if (xml_doc.NavigateToNode(buf))
+		if (xml_doc.NavigateToNode(buf, index))
 		{
-			texture = xml_doc.Read(buf, index, nullptr);
-			shader = xml_doc.ReadAttrib(buf, index, "shader", nullptr);
+			textureName = xml_doc.Read(buf, index, nullptr);
+			shaderName = xml_doc.ReadAttrib(buf, index, "shader", nullptr);
 		}
 	}
 	else
 	{
 		xr_strconcat(buf, path, ":svg");
-		texture = xml_doc.Read(buf, index, nullptr);
+		if (svgFromXml != nullptr)
+			textureName = svgFromXml;
+		else if (hasSvgChild)
+			textureName = xml_doc.Read(buf, index, nullptr);
 
-		// todo: think how to avoid using raster data at all and use only data what user might specify for <svg> node think about it well, but it requires a lot of testing and time... For now as we use fallback raster version (GSC approach) we can obtain data for proper rasterization but generally saying it is not quite reasonable due to data duplication in terms of like if we want to use only svg without raster legacy data marking through texture_descr folder and etc
-		string256 buf2;
-		xr_strconcat(buf2, path, ":texture");
-		bool status = xml_doc.NavigateToNode(buf2);
-		R_ASSERT(status && "must exist otherwise can't obtain data for rasterization!");
-
-		raster_texture = xml_doc.Read(buf2, index, nullptr);
-		R_ASSERT(strlen(raster_texture) > 0 && "must be not empty!");
-	}
-	
-	if (texture)
-	{
-		if (isRaster)
+		string256 texFallbackPath;
+		xr_strconcat(texFallbackPath, path, ":texture");
+		const bool hasFallbackTex = xml_doc.NavigateToNode(texFallbackPath, index);
+		if (hasFallbackTex)
 		{
-			if (shader)
-				result = pWnd->InitTextureEx(texture, shader, fatal);
-			else
-				result = pWnd->InitTexture(texture, fatal);
+			rasterTextureName = xml_doc.Read(texFallbackPath, index, nullptr);
+			if (rasterTextureName == nullptr || rasterTextureName[0] == 0)
+				Msg("! CUIXmlInit::InitTexture empty <%s:texture> in [%s]", path, xml_doc.m_xml_file_name);
 		}
 		else
 		{
-			// we don't depend on raster texture at all so just specify <svg> in xml
-			result = pWnd->InitTexture("", texture);
+			Msg("! CUIXmlInit::InitTexture missing <%s:texture> for vector UI in [%s]", path, xml_doc.m_xml_file_name);
+		}
+
+		if (!xml_doc.NavigateToNode(buf, index))
+			xr_strcpy(buf, path);
+	}
+
+	const bool hasSvgFileName = (textureName != nullptr && textureName[0] != 0);
+	const bool hasRasterFallback = (rasterTextureName != nullptr && rasterTextureName[0] != 0);
+
+	// Vector path without a resolvable SVG file: load raster fallback only (valid CUIStatic / string state).
+	if (!isRasterPath && !hasSvgFileName && hasRasterFallback)
+	{
+		xr_strconcat(buf, path, ":texture");
+		result = pWnd->InitTexture(rasterTextureName, fatal);
+	}
+	else if (hasSvgFileName)
+	{
+		if (isRasterPath)
+		{
+			if (shaderName != nullptr)
+				result = pWnd->InitTextureEx(textureName, shaderName, fatal);
+			else
+				result = pWnd->InitTexture(textureName, fatal);
+		}
+		else
+		{
+			result = pWnd->InitTexture("", textureName);
 		}
 	}
-//--------------------
+
 	Frect			rect;
 	rect.x1			= xml_doc.ReadAttribFlt(buf, index, "x", 0);
 	rect.y1			= xml_doc.ReadAttribFlt(buf, index, "y", 0);
@@ -1763,6 +1786,7 @@ bool CUIXmlInit::InitHintWindow(CUIXml& xml_doc, LPCSTR path, int index, UIHintW
 	pWnd->set_hint_delay( (u32)xml_doc.ReadAttribInt( path, index, "delay" ) );
 	return true;
 }
+
 bool CUIXmlInit::InitMultiTextStatic(CUIXml& xml_doc, LPCSTR path, int index, CUIMultiTextStatic* pWnd)
 {
 	R_ASSERT4(xml_doc.NavigateToNode(path, index), "XML node not found", path, xml_doc.m_xml_file_name);

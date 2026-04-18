@@ -114,7 +114,8 @@ namespace std
 	public:
 		size_t operator()(const shared_str& s) const
 		{
-			return s._get()->dwCRC;
+			const str_value* p = s._get();
+			return p ? static_cast<size_t>(p->dwCRC) : 0;
 		}
 	};
 }

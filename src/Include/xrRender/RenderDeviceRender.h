@@ -2,6 +2,8 @@
 #define RenderDeviceRender_included
 #pragma once
 
+#include "SVGTypes.h"
+
 struct SDL_Window;
 
 class IRenderDeviceRender
@@ -63,11 +65,11 @@ public:
 	virtual void	SetCacheXform(Fmatrix &mView, Fmatrix &mProject) = 0;
 	virtual void	SetCacheXformOld(Fmatrix &mView, Fmatrix &mProject) = 0;
 	virtual void	OnAssetsChanged() = 0;
-	virtual const FactoryPtr<IUIShader>& GetSVGShader(const std::string_view& subpath, float width, float height) = 0;
-	virtual const FactoryPtr<IUIShader>& GetSVGShader(const char* pSubpath, float width, float height) = 0;
+	virtual const FactoryPtr<IUIShader>& GetSVGShader(const std::string_view& subpath, float width, float height, SVGTintRGBA tint = {}) = 0;
+	virtual const FactoryPtr<IUIShader>& GetSVGShader(const char* pSubpath, float width, float height, SVGTintRGBA tint = {}) = 0;
 	virtual const FactoryPtr<IUIShader>& GetSVGDefaultShader() = 0;
 
-	virtual Frect GetSVGUV(const std::string_view& subpath, float requested_width, float requested_height) = 0;
+	virtual Frect GetSVGUV(const std::string_view& subpath, float requested_width, float requested_height, SVGTintRGBA tint = {}) = 0;
 };
 
 #endif	//	RenderDeviceRender_included
