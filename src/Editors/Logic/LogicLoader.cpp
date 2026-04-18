@@ -297,12 +297,20 @@ xr_vector<FState> LogicLoader::LoadFromFile(const xr_string& filename)
 		s.StateType = ParseStateType(s.StateName);
 
 		FBaseParams base;
-		for (auto& it : sect.Data)
+		for (auto& [Key, Value] : sect.Data)
 		{
-			const char* k = it.first.c_str();
-			const char* v = it.second.c_str();
-			if (!k || !v) continue;
-			base.CustomVariables[k] = v;
+			if (!Key || !Value)
+			{
+				continue;
+			}
+
+			xr_string KeyStr = Key.c_str();
+			xr_strlwr(KeyStr);
+
+			if (!KeyStr.StartWith("on_") && KeyStr != "meet" && KeyStr != "wounded" && KeyStr != "danger" && KeyStr != "active")
+			{
+				base.CustomVariables[KeyStr] = Value.c_str();
+			}
 		}
 
 		// Parse per-type friendly fields
@@ -499,7 +507,7 @@ xr_vector<FState> LogicLoader::LoadFromFile(const xr_string& filename)
 					eventTrans.EventType = "on_timer";
 					eventTrans.Transition.Condition.Type = EConditionType::OnTimer;
 				}
-				else if (key == "on_info" || key == "on_info_yes")
+				else if (key == "on_info")
 				{
 					eventTrans.EventType = "on_info";
 					eventTrans.Transition.Condition.Type = EConditionType::OnInfo;
@@ -518,21 +526,6 @@ xr_vector<FState> LogicLoader::LoadFromFile(const xr_string& filename)
 				{
 					eventTrans.EventType = "on_combat";
 					eventTrans.Transition.Condition.Type = EConditionType::OnCombat;
-				}
-				else if (key == "on_talk")
-				{
-					eventTrans.EventType = "on_talk";
-					eventTrans.Transition.Condition.Type = EConditionType::OnTalk;
-				}
-				else if (key == "on_health_le")
-				{
-					eventTrans.EventType = "on_health_le";
-					eventTrans.Transition.Condition.Type = EConditionType::OnHealthLe;
-				}
-				else if (key == "on_enemy_in_radius")
-				{
-					eventTrans.EventType = "on_enemy_in_radius";
-					eventTrans.Transition.Condition.Type = EConditionType::OnEnemyInRadius;
 				}
 				else
 				{
@@ -584,9 +577,7 @@ xr_vector<FState> LogicLoader::LoadFromFile(const xr_string& filename)
 
 					// Целевое состояние
 					eventTrans.Transition.TargetState = vs;
-					if (!eventTrans.Transition.TargetState.empty() &&
-						(eventTrans.Transition.TargetState.back() == ',' ||
-							eventTrans.Transition.TargetState.back() == ';'))
+					if (!eventTrans.Transition.TargetState.empty() && (eventTrans.Transition.TargetState.back() == ',' || eventTrans.Transition.TargetState.back() == ';'))
 					{
 						eventTrans.Transition.TargetState.pop_back();
 					}
@@ -607,7 +598,8 @@ xr_vector<FState> LogicLoader::LoadFromFile(const xr_string& filename)
 					// Для не-таймеров пытаемся распарсить значение
 					if (eventTrans.EventType != "on_timer")
 					{
-						try {
+						try
+						{
 							eventTrans.Transition.Condition.Value = std::stof(vs.c_str());
 						}
 						catch (...)

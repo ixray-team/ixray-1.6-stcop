@@ -15,33 +15,15 @@ struct FColor
     uint8_t A = 255;
 };
 
-struct FVector2
-{
-    float X = 0.0f;
-    float Y = 0.0f;
-};
-
-// Типы условий перехода
 enum class EConditionType
 {
-    OnTimer,           // По таймеру
-    OnActorDistLe,     // Дистанция до игрока <= X
-    OnActorDistGe,     // Дистанция до игрока >= X
-    OnInfo,            // Инфопоршн получен
-    OnInfoNot,         // Инфопоршн не получен
-    OnDeath,           // Смерть NPC
-    OnHit,             // Попадание по NPC
-    OnCombat,          // Начало боя
-    OnItemTaken,       // Взятие предмета
-    OnTalk,            // Разговор с игроком
-    OnZoneEnter,       // Вход в зону-триггер
-    OnZoneExit,        // Выход из зоны
-    OnSpawn,           // При спавне
-    OnHealthLe,        // Здоровье <= X%
-    OnEnemyInRadius    // Враг в радиусе
+    OnTimer,
+    OnCombat,
+    OnInfo,
+    OnDeath,
+    OnHit,
 };
 
-// Типы схем поведения
 enum class EStateType
 {
     Walker,      // Патрулирование/ходьба
@@ -387,5 +369,4 @@ struct FLogicData
     xr_string Author;
     xr_string Version;
     float EditorZoom = 1.0f;                    // Масштаб в редакторе
-    FVector2 EditorOffset;                      // Смещение в редакторе
 };

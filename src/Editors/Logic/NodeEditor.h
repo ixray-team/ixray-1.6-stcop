@@ -10,7 +10,6 @@ struct FPin
     ed::PinKind Kind;
 };
 
-// Структура для связи между пинами
 struct FLink
 {
     ed::LinkId Id;
@@ -65,8 +64,6 @@ struct FRawLink
     ed::PinId EndPinId;
 };
 
-
-// Основной класс редактора
 class FNodeEditor
 {
 public:
@@ -106,12 +103,6 @@ private:
     int m_NextLinkId = 1000;
 
     bool m_ShowContextMenu = false;
-    ImVec2 m_ContextMenuPosition;
-
-    // Для создания новых связей
-    ed::PinId m_NewLinkStartPin;
-    ed::PinId m_NewLinkEndPin;
-
     bool m_ShowFileDialog = false;
     char m_FilePath[MAX_PATH] = { 0 };
 };
