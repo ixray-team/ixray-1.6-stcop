@@ -350,6 +350,13 @@ void dxRenderDeviceRender::Begin()
 	RCache.set_Z(TRUE);
 #endif
 
+	if (Resources)
+	{
+		CSVGStorage* svg = Resources->GetSVGStorage();
+		if (svg)
+			svg->BeginRasterFrameCache();
+	}
+
 	GRHI->GPUStatsBegin();
 }
 
@@ -475,7 +482,7 @@ void dxRenderDeviceRender::PostCreate()
 	}
 }
 
-const FactoryPtr<IUIShader>& dxRenderDeviceRender::GetSVGShader(const std::string_view& subpath, float width, float height)
+const FactoryPtr<IUIShader>& dxRenderDeviceRender::GetSVGShader(const std::string_view& subpath, float width, float height, SVGTintRGBA tint)
 {
 	if (Resources)
 	{
@@ -487,19 +494,19 @@ const FactoryPtr<IUIShader>& dxRenderDeviceRender::GetSVGShader(const std::strin
 
 		if (pStorage)
 		{
-			return pStorage->get_shader(subpath, width, height);
+			return pStorage->get_shader(subpath, width, height, tint);
 		}
 	}
 
 	return m_empty_default_shader;
 }
 
-const FactoryPtr<IUIShader>& dxRenderDeviceRender::GetSVGShader(const char* pSubpath, float width, float height)
+const FactoryPtr<IUIShader>& dxRenderDeviceRender::GetSVGShader(const char* pSubpath, float width, float height, SVGTintRGBA tint)
 {
 	R_ASSERT(pSubpath && "invalid string (nullptr)");
 	R_ASSERT(pSubpath[0] != '\0' && "empty string");
 
-	return GetSVGShader(std::string_view(pSubpath), width, height);
+	return GetSVGShader(std::string_view(pSubpath), width, height, tint);
 }
 
 const FactoryPtr<IUIShader>& dxRenderDeviceRender::GetSVGDefaultShader()
@@ -512,7 +519,7 @@ const FactoryPtr<IUIShader>& dxRenderDeviceRender::GetSVGDefaultShader()
 	return m_empty_default_shader;
 }
 
-Frect dxRenderDeviceRender::GetSVGUV(const std::string_view& subpath, float requested_width, float requested_height)
+Frect dxRenderDeviceRender::GetSVGUV(const std::string_view& subpath, float requested_width, float requested_height, SVGTintRGBA tint)
 {
 	if (Resources)
 	{
@@ -524,7 +531,7 @@ Frect dxRenderDeviceRender::GetSVGUV(const std::string_view& subpath, float requ
 
 		if (pStorage)
 		{
-			return pStorage->get_uv(subpath, requested_width, requested_height);
+			return pStorage->get_uv(subpath, requested_width, requested_height, tint);
 		}
 	}
 
