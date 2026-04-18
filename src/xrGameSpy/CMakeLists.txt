@@ -109,6 +109,7 @@ set_target_properties(xrGameSpy PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
 
 # Include directories
 target_include_directories(xrGameSpy PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(xrGameSpy PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../xrCore/")
 target_include_directories(xrGameSpy PUBLIC "${IXRAY_SDK_INC}")
 
 # Project defines

@@ -77,6 +77,12 @@ enum class EEngineExternalPlatform : u8
 	Unknown = static_cast<u8>(-1)
 };
 
+enum class EEngineExternalSystem : u8
+{
+	CustomMessageInClipboardOnCrash,
+	None
+};
+
 constexpr const char* kPlatformNameCOP = "cop";
 constexpr const char* kPlatformNameCS = "cs";
 constexpr const char* kPlatformNameSOC = "soc";
@@ -180,6 +186,12 @@ public:
 			return false;
 
 		return g_Platforms[static_cast<unsigned char>(ID)] == m_platform_type;
+	}
+	
+	ICF bool operator[](const EEngineExternalSystem& ID) const
+	{
+		static xr_stack_string16 Type = "system";
+		return CachedGetSettings<EEngineExternalSystem>(pOptions, Type, ID);
 	}
 
 	xr_string_map<xr_string, xr_string> ShadersOptions;
