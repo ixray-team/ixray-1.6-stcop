@@ -10,8 +10,8 @@
 #include "object_broker.h"
 #include "../../xrUI/UITextureMaster.h"
 #include "../../xrUI/UIHelper.h"
+#include "../../xrUI/UIVectorBinding.h"
 
-#include "../Include/xrRender/UIShader.h"
 #include "GametaskManager.h"
 #include "GameTask.h"
 
@@ -168,7 +168,6 @@ void CMiniMapSpot::Load(CUIXml* xml, LPCSTR path)
 
 	Frect _stored_rect = m_UIStaticItem.GetTextureRect();
 
-	// todo: think about it and implement for svg support
 	xr_strconcat(buf, path, ":texture_above");
 	n = xml->NavigateToNode(buf,0);
 	if(n){
@@ -187,7 +186,6 @@ void CMiniMapSpot::Load(CUIXml* xml, LPCSTR path)
 		m_icon_above				= m_UIStaticItem.GetShader		();
 	}
 
-	// todo: think about it and implement for svg support
 	xr_strconcat(buf, path, ":texture_below");
 	n = xml->NavigateToNode(buf,0);
 	if(n){
@@ -228,6 +226,10 @@ void CMiniMapSpot::Load(CUIXml* xml, LPCSTR path)
 		}
 
 		m_UIStaticItem.SetTextureRect(_stored_rect);
+	}
+	else
+	{
+		CUIVectorBinding::CaptureMiniMapSpotNormalVectorIcon(*this, *xml, path, 0, m_icon_normal, m_tex_rect_normal, _stored_rect);
 	}
 }
 
