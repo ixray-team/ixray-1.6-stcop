@@ -735,6 +735,59 @@ void RenderOMFEditor_Draw_TableHeader()
 
 }
 
+void RenderOMFEditor_Draw_TableMain_Bones_Section()
+{
+	ImGui::SeparatorText("Bone Parts");
+
+	if (g_pOMFEditor == nullptr)
+		return;
+
+	if (g_pOMFEditor->is_file_loaded == false)
+		return;
+
+	if (g_pOMFEditor->omf == nullptr)
+		return;
+
+	const xr_vector<OMFData::BoneParts>& bone_parts = g_pOMFEditor->omf->data_bone.parts;
+
+	if (bone_parts.empty())
+	{
+		ImGui::Text("No bones!");
+	}
+	else
+	{
+		if (ImGui::BeginTabBar("##ToolsOMFEditor_TableMain_BonesPartSection"))
+		{
+			for (const OMFData::BoneParts& bone_part : bone_parts)
+			{
+				if (ImGui::BeginTabItem(bone_part.name.c_str()))
+				{
+					ImGui::Text("bone count: %d", bone_part.bones.size());
+					ImGui::Separator();
+
+					//if (ImGui::CollapsingHeader("Bones"))
+					{
+						if (ImGui::BeginChild("##ToolsOMFEditor_BonesScrollableRegion"))
+						{
+							for (const auto& bone : bone_part.bones)
+							{
+								ImGui::Text(bone.name.c_str());
+							}
+						}
+
+						ImGui::EndChild();
+					}
+
+					ImGui::EndTabItem();
+				}
+			}
+
+			ImGui::EndTabBar();
+		}
+	}
+
+}
+
 void RenderOMFEditor_Draw_TableMain()
 {
 	if (g_pOMFEditor->is_file_loaded)
@@ -922,21 +975,7 @@ void RenderOMFEditor_Draw_TableMain()
 
 							}
 
-							ImGui::SeparatorText("Bones");
-							for (const auto& bone_part : g_pOMFEditor->omf->data_bone.parts)
-							{
-								if (ImGui::TreeNode(bone_part.name.c_str()))
-								{
-									ImGui::Text("bone count: %d", bone_part.bones.size());
-									ImGui::Separator();
-									for (const auto& bone : bone_part.bones)
-									{
-										ImGui::Text(bone.name.c_str());
-									}
-
-									ImGui::TreePop();
-								}
-							}
+							RenderOMFEditor_Draw_TableMain_Bones_Section();
 
 							if (ImGui::BeginPopupModal(_kOMFEditorModalWindow_BonePartsWasCopiedToClipboardFailed, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
 							{
