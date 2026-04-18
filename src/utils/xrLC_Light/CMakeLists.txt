@@ -115,6 +115,7 @@ add_library(xrLC_Light ${LCL_SRC_FILES})
 target_precompile_headers(xrLC_Light PRIVATE "stdafx.h")
 
 target_include_directories(xrLC_Light PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(xrLC_Light PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../xrCore/")
 target_include_directories(xrLC_Light PUBLIC "${IXRAY_SDK_INC}")
 
 target_link_directories(xrLC_Light PUBLIC "${IXRAY_SDK_LIB}")
