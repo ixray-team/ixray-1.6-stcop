@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "EventManager.h"
 #include "xrDebug.h"
+
+#include "EngineExternal.h"
 #include "os_clipboard.h"
 
 #pragma warning(push)
@@ -481,8 +483,9 @@ void format_message	(LPSTR buffer, const u32 &buffer_size)
 #include "StackTrace/StackTrace.h"
 static bool EnabledStackTrace = true;
 
-LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
+void ProcessStackTrace(_EXCEPTION_POINTERS *pExceptionInfo)
 {
+	
 	string256				error_message;
 	format_message			(error_message,sizeof(error_message));
 
@@ -500,7 +503,7 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 
 		for (size_t i = 0; i < stackTrace.size(); i++)
 		{
-			Log(stackTrace[i].c_str());
+			Msg(stackTrace[i].c_str());
 			xr_sprintf(buffer, sizeof(buffer), "%s\r\n", stackTrace[i].c_str());
 		}
 
@@ -508,16 +511,32 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 
 		if (*error_message)
 		{
-			if (shared_str_initialized)
-				Msg("\n%s", error_message);
+			//if (shared_str_initialized)
+			Msg("\n%s", error_message);
+			if (EngineExternal()[EEngineExternalSystem::CustomMessageInClipboardOnCrash])
+			{
+				xr_stack_string256 ClipboardMessage = "Please, provide a full log in bugreport";
+				auto GetFunc = ClipboardMessageCallback::instance().GetFunc();
+				if (GetFunc)
+				{
+					ClipboardMessage = GetFunc();
+				}
+				os_clipboard::update_clipboard(ClipboardMessage.c_str());
+			} else
+			{
 
-			xr_strcat(error_message, sizeof(error_message), "\r\n");
-			os_clipboard::update_clipboard(buffer);
+				xr_strcat(error_message, sizeof(error_message), "\r\n");
+				os_clipboard::update_clipboard(buffer);
+			}
 		}
-	}
+	}	
 
-	if (shared_str_initialized)
-		xrLogger::FlushLog();
+	xrLogger::FlushLog();
+}
+
+LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
+{
+	ProcessStackTrace(pExceptionInfo);
 
 #ifdef USE_OWN_MINI_DUMP
 	save_mini_dump		(pExceptionInfo);
@@ -650,4 +669,10 @@ void xrDebug::_initialize(bool dedicated)
 #ifdef IXR_WINDOWS
 	previous_filter = ::SetUnhandledExceptionFilter(UnhandledFilter);	// exception handler to all "unhandled" exceptions
 #endif
+}
+
+ClipboardMessageCallback& ClipboardMessageCallback::instance()
+{
+	static ClipboardMessageCallback s_instance;
+	return s_instance;
 }

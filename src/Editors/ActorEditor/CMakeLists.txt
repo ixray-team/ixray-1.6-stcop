@@ -31,6 +31,7 @@ list(FILTER EAE_SRC_FILES EXCLUDE REGEX "cl_raypick.cpp$")
 # ActorEditor project
 add_executable(ActorEditor WIN32 ${EAE_SRC_FILES})
 target_include_directories(ActorEditor PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(ActorEditor PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../xrCore/")
 target_precompile_headers(ActorEditor PRIVATE "stdafx.h")
 
 # Project defines
