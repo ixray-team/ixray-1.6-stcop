@@ -40,6 +40,7 @@ endif()
 add_library(xrRHI SHARED ${XRHI_SRC_FILES})
 target_include_directories(xrRHI PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrRHI PRIVATE "${IXRAY_SDK_INC}")
+target_include_directories(xrRHI PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../xrCore/")
 target_compile_definitions(xrRHI PRIVATE XR_RHI_EXPORTS)
 set_target_properties(xrRHI PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
 

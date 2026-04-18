@@ -19,6 +19,7 @@ list(APPEND MPSI_SRC_FILES ${MPSI_SOURCE_ALL_FILES})
 # mp_screenshots_info project
 add_executable(mp_screenshots_info ${MPSI_SRC_FILES})
 target_include_directories(mp_screenshots_info PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(mp_screenshots_info PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../xrCore/")
 
 # Project defines
 target_compile_definitions(mp_screenshots_info PRIVATE MPSI_EXPORTS)

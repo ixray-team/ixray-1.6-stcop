@@ -49,6 +49,7 @@ endif()
 # xrSE_Factory project
 add_library(xrSE_Factory SHARED ${SEF_SRC_FILES})
 target_include_directories(xrSE_Factory PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(xrSE_Factory PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../xrCore/")
 target_include_directories(xrSE_Factory PRIVATE "../../xrServerEntities/")
 target_precompile_headers(xrSE_Factory PRIVATE "stdafx.h")
 

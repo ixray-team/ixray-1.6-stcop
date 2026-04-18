@@ -3,6 +3,21 @@
 typedef	void		crashhandler		(void);
 typedef	void		on_dialog			(bool before);
 
+class XRCORE_API ClipboardMessageCallback
+{
+public:
+	using Func = LPCSTR(*)();
+
+	void SetFunc(Func func) {OnGetClipboardMessage = func;}
+	Func GetFunc() {return OnGetClipboardMessage;}
+
+	static ClipboardMessageCallback& instance();
+	
+private:
+	ClipboardMessageCallback() = default;
+	Func OnGetClipboardMessage = nullptr;
+};
+
 class XRCORE_API	xrDebug
 {
 private:
