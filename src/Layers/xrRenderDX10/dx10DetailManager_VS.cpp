@@ -1,38 +1,19 @@
 #include "stdafx.h"
 #include "../xrRender/DetailManager.h"
-
-#include "../../xrEngine/IGame_Persistent.h"
-#include "../../xrEngine/Environment.h"
-
-#include "dx10BufferUtils.h"
-
-const int quant	= 16384;
-const u32 bufferSizes[] = {64, 128, 256, 512, 1024, 2048, 4096, 8192/*, 16384, 32768, 65536*/ };
-
-void CDetailManager::hw_Load_Shaders()
+#include "../../xrEngine/xr_ioc_cmd.h"
+void CDetailManager::hw_Load()
 {
-	// Create shader to access constant storage
-	ref_shader		S;	S.create("details\\set");
-	R_constant_table&	T0	= *(S->E[0]->passes[0]->constants);
-	R_constant_table&	T1	= *(S->E[1]->passes[0]->constants);
-	hwc_consts			= T0.get("consts");
-	hwc_wave			= T0.get("wave");
-	hwc_wind			= T0.get("dir2D");
-	hwc_array			= T0.get("array");
-	hwc_s_consts		= T1.get("consts");
-	hwc_s_xform			= T1.get("xform");
-	hwc_s_array			= T1.get("array");
-
 	//Prepare descs
-	RHIBufferDesc bufferDesc = {};
+	RHIBufferDesc bufferDesc{};
 	bufferDesc.Usage = ERHI_USAGE::USAGE_DYNAMIC;
 	bufferDesc.Type = ERHI_BUFFER_TYPE::STRUCTURED;
 	bufferDesc.CPUAccessFlags = ERHI_CPU_ACCESS_FLAG::ERHI_CPU_ACCESS_FLAG_WRITE;
 	bufferDesc.StructureByteStride = sizeof(CDetail::SlotItem);
 
-	RHIShaderResourceViewDesc srvDesc = {};
+	RHIShaderResourceViewDesc srvDesc{};
 	srvDesc.Format = ERHI_FORMAT::UNKNOWN;
 
+	const u32 bufferSizes[] = { 64, 128, 256, 512, 1024, 2048, 4096, 8192/*, 16384, 32768, 65536*/ };
 	//Create the buffers & SRV
 	for (int i = 0; i < std::size(bufferSizes); ++i)
 	{
@@ -48,14 +29,22 @@ void CDetailManager::hw_Load_Shaders()
 	}
 }
 
+void CDetailManager::hw_Unload()
+{
+	for (auto& [_, it] : DetailInstanceBuffers)
+	{
+		_RELEASE(it.first);
+		_RELEASE(it.second);
+	}
+}
+
 void CDetailManager::hw_Render(light*L)
 {
 	PROF_EVENT("CDetailManager::hw_Render");
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-	RCache.set_xform_world	(Fidentity);
+	RCache.set_xform_world(Fidentity);
 
-	float scale = 1.f / float(quant);
-	Fvector4 wave, wave_old, consts;
+	Fvector4 wave, wave_old;
 
 	auto LodHQ = RImplementation.phase == RImplementation.PHASE_NORMAL ? SE_R2_NORMAL_HQ : SE_R2_DETAIL_SHADOW_HQ;
 	auto LodLQ = RImplementation.phase == RImplementation.PHASE_NORMAL ? SE_R2_NORMAL_LQ : SE_R2_DETAIL_SHADOW_LQ;
@@ -66,11 +55,10 @@ void CDetailManager::hw_Render(light*L)
 		wave.set(1.f / 5.f, 1.f / 7.f, 1.f / 3.f, m_time_pos);
 		wave_old.set(1.f / 5.f, 1.f / 7.f, 1.f / 3.f, m_time_pos_old);
 
-		consts.set(scale, scale, ps_r__Detail_l_aniso, ps_r__Detail_l_ambient);
 		if (CPU::ID().hasFeature(CPUFeature::AVX))
-			hw_Render_dump<__m256>(consts, wave.div(PI_MUL_2), wave_dir1, wave_old.div(PI_MUL_2), wave_dir1_old, 1, LodHQ, L);
+			hw_Render_dump<__m256>(wave.div(PI_MUL_2), wave_dir1, wave_old.div(PI_MUL_2), wave_dir1_old, 1, LodHQ, L);
 		else
-			hw_Render_dump<CDetail::SlotItem>(consts, wave.div(PI_MUL_2), wave_dir1, wave_old.div(PI_MUL_2), wave_dir1_old, 1, LodHQ, L);
+			hw_Render_dump<CDetail::SlotItem>(wave.div(PI_MUL_2), wave_dir1, wave_old.div(PI_MUL_2), wave_dir1_old, 1, LodHQ, L);
 	}
 
 	// Wave1
@@ -79,27 +67,26 @@ void CDetailManager::hw_Render(light*L)
 		wave.set(1.f / 3.f, 1.f / 7.f, 1.f / 5.f, m_time_pos);
 		wave_old.set(1.f / 3.f, 1.f / 7.f, 1.f / 5.f, m_time_pos_old);
 		if (CPU::ID().hasFeature(CPUFeature::AVX))
-			hw_Render_dump<__m256>(consts, wave.div(PI_MUL_2), wave_dir2, wave_old.div(PI_MUL_2), wave_dir2_old, 2, LodHQ, L);
+			hw_Render_dump<__m256>(wave.div(PI_MUL_2), wave_dir2, wave_old.div(PI_MUL_2), wave_dir2_old, 2, LodHQ, L);
 		else
-			hw_Render_dump<CDetail::SlotItem>(consts, wave.div(PI_MUL_2), wave_dir2, wave_old.div(PI_MUL_2), wave_dir2_old, 2, LodHQ, L);
+			hw_Render_dump<CDetail::SlotItem>(wave.div(PI_MUL_2), wave_dir2, wave_old.div(PI_MUL_2), wave_dir2_old, 2, LodHQ, L);
 	}
 
 	// Still
 	if(RImplementation.phase != CRender::PHASE_SMAP)
 	{
 		PROF_EVENT("Still")
-		consts.set(scale, scale, scale, 1.f);
 		if (CPU::ID().hasFeature(CPUFeature::AVX))
-			hw_Render_dump<__m256>(consts, wave.div(PI_MUL_2), wave_dir2, wave_old.div(PI_MUL_2), wave_dir2_old, 0, LodLQ, L);
+			hw_Render_dump<__m256>(wave, wave_dir2, wave_old, wave_dir2_old, 0, LodLQ, L);
 		else
-			hw_Render_dump<CDetail::SlotItem>(consts, wave.div(PI_MUL_2), wave_dir2, wave_old.div(PI_MUL_2), wave_dir2_old, 0, LodLQ, L);
+			hw_Render_dump<CDetail::SlotItem>(wave, wave_dir2, wave_old, wave_dir2_old, 0, LodLQ, L);
 	}
 
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 }
 
 template<typename T>
-void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave, const Fvector4& wind, const Fvector4& wave_old, const Fvector4& wind_old, u32 var_id, u32 lod_id, light* L)
+void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, const Fvector4& wave_old, const Fvector4& wind_old, u32 var_id, u32 lod_id, light* L)
 {
 	//Render state, shaders & so on [only 1st pass]
 	RCache.set_Element(objects[0].shader->E[lod_id], 0);
@@ -122,82 +109,123 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
 	if (!in_outdoor)
 		return;
 
-	for (CDetail& Object : objects)
+	if (phase_shmap && L)
 	{
-		auto& items = Object.m_items[var_id][render_key];
-		u32 totalInstances = items.size();
-		if (u32(0)==totalInstances) continue;
-
-		auto it = DetailInstanceBuffers.lower_bound(totalInstances);
-
-		//Use largest buffer possible [should keep HUGE buffer around in those cases]
-		if(it == DetailInstanceBuffers.end())
+		Fvector l_spatial_pos = L->SpatialComponent->spatial.sphere.P;
+		float l_range_sqr = _sqr(L->SpatialComponent->spatial.sphere.R);
+		for (CDetail& Object : objects)
 		{
-			it = std::prev(DetailInstanceBuffers.end());
-		}
+			auto& items = Object.m_items[render_key][var_id];
+			u32 totalInstances = items.size();
+			if (totalInstances == 0) continue;
 
-		//Current buffer size and resources
-		u32 currentSize = it->first;
-		IRHIBuffer* currentBuffer = it->second.first;
-		IRHIShaderResourceView* currentSRV = it->second.second;
+			auto it = DetailInstanceBuffers.lower_bound(totalInstances);
 
-		//Bind (current) buffer SRV
-		GRHI->ShaderResourceCache->SetVSResource(0, currentSRV);
-
-		//Set IB, VB and decls
-		RCache.set_Geometry(Object.hw_Geom);
-		if(phase_shmap && L)
-		{
-			if (!items.empty())
+			//Use largest buffer possible [should keep HUGE buffer around in those cases]
+			if (it == DetailInstanceBuffers.end())
 			{
-				u32 instanceCount = 0;
-				RHIMappedSubresource pSubRes;
-				for (CDetail::SlotItem& Instance : items)
-				{
-					if (L->position.distance_to_sqr(Instance.pos) >= _sqr(L->range))
-						continue;
+				it = std::prev(DetailInstanceBuffers.end());
+			}
 
-					if(instanceCount==0)
-						R_ASSERT(currentBuffer->Map(ERHI_BUFFER_MAP::WRITE_DISCARD, 0, &pSubRes));
+			//Current buffer size and resources
+			u32 currentSize = it->first;
+			IRHIBuffer* currentBuffer = it->second.first;
+			IRHIShaderResourceView* currentSRV = it->second.second;
 
-					static_cast<T*>(pSubRes.pData)[instanceCount] = reinterpret_cast<T&>(Instance);
-		
-					instanceCount++;
-		
-					if (instanceCount >= currentSize)
-					{
-						currentBuffer->Unmap();
-						RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, Object.number_vertices, 0, Object.number_indices / 3, instanceCount, 0, false);
-						instanceCount = 0; //Reset
-						
-					}
-				}
-		
-				//Render remaining instances
-				if (instanceCount > 0 && instanceCount < currentSize)
+			//Bind (current) buffer SRV
+			GRHI->ShaderResourceCache->SetVSResource(0, currentSRV);
+
+			//Set IB, VB and decls
+			RCache.set_Geometry(Object.hw_Geom);
+
+			u32 instanceCount = 0;
+			RHIMappedSubresource pSubRes;
+			for (CDetail::SlotItem& Instance : items)
+			{
+				if (l_spatial_pos.distance_to_sqr(Instance.pos) >= l_range_sqr)
+					continue;
+
+				if (instanceCount == 0)
+					R_ASSERT(currentBuffer->Map(ERHI_BUFFER_MAP::WRITE_DISCARD, 0, &pSubRes));
+
+				if constexpr (std::is_same_v<T, __m256>)
+					_mm256_stream_ps(&static_cast<T*>(pSubRes.pData)[instanceCount++].m256_f32[0], reinterpret_cast<T&>(Instance));//experimental
+				else
+					static_cast<T*>(pSubRes.pData)[instanceCount++] = reinterpret_cast<T&>(Instance);
+
+				if (instanceCount == currentSize)
 				{
 					currentBuffer->Unmap();
 					RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, Object.number_vertices, 0, Object.number_indices / 3, instanceCount, 0, false);
+					instanceCount = 0; //Reset
+
+				}
+			}
+
+			//Render remaining instances
+			if (instanceCount > 0)
+			{
+				currentBuffer->Unmap();
+				RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, Object.number_vertices, 0, Object.number_indices / 3, instanceCount, 0, false);
+			}
+		}
+	}
+	else
+	{
+		if (ps_r2_ls_flags.test(R2FLAG_FAST_DETAILS_UPDATE))//experimental
+		{
+			for (CDetail& D : objects)
+			{
+				u32 buff_size = D.m_items[render_key][var_id].size();
+				if (buff_size)
+				{
+					GRHI->ShaderResourceCache->SetVSResource(0, D.DetailGPUBoundBuffers[render_key][var_id].second);
+					RCache.set_Geometry(D.hw_Geom);
+					RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, D.number_vertices, 0, D.number_indices / 3, buff_size, 0, false);
 				}
 			}
 		}
 		else
 		{
-			u32 offset = 0u, chunkSize = 0u;
-			RHIMappedSubresource pSubRes;
-			while (offset < totalInstances)
+			for (CDetail& Object : objects)
 			{
-				chunkSize = std::min(currentSize, totalInstances - offset);
+				auto& items = Object.m_items[render_key][var_id];
+				u32 totalInstances = items.size();
+				if (u32(0) == totalInstances) continue;
 
-				R_ASSERT(currentBuffer->Map(ERHI_BUFFER_MAP::WRITE_DISCARD, 0, &pSubRes));
+				auto it = DetailInstanceBuffers.lower_bound(totalInstances);
 
-				// memcpy целого блока!
-				memcpy(pSubRes.pData, items.data() + offset, chunkSize * sizeof(T));
+				//Use largest buffer possible [should keep HUGE buffer around in those cases]
+				if (it == DetailInstanceBuffers.end())
+				{
+					it = std::prev(DetailInstanceBuffers.end());
+				}
 
-				currentBuffer->Unmap();
-				RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, Object.number_vertices, 0, Object.number_indices / 3, chunkSize, 0, false);
+				//Current buffer size and resources
+				u32 currentSize = it->first;
+				IRHIBuffer* currentBuffer = it->second.first;
+				IRHIShaderResourceView* currentSRV = it->second.second;
 
-				offset += chunkSize;
+				//Bind (current) buffer SRV
+				GRHI->ShaderResourceCache->SetVSResource(0, currentSRV);
+
+				//Set IB, VB and decls
+				RCache.set_Geometry(Object.hw_Geom);
+				u32 offset = 0u, chunkSize = 0u;
+				RHIMappedSubresource pSubRes;
+				while (offset < totalInstances)
+				{
+					chunkSize = std::min(currentSize, totalInstances - offset);
+
+					R_ASSERT(currentBuffer->Map(ERHI_BUFFER_MAP::WRITE_DISCARD, 0, &pSubRes));
+
+					memcpy(pSubRes.pData, items.data() + offset, chunkSize * sizeof(T));
+
+					currentBuffer->Unmap();
+					RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, Object.number_vertices, 0, Object.number_indices / 3, chunkSize, 0, false);
+
+					offset += chunkSize;
+				}
 			}
 		}
 	}

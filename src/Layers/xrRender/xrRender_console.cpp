@@ -244,6 +244,9 @@ float		ps_r2_gloss_factor = 3.14f;
 int			ps_r__detail_radius = 120;
 float		ps_r4_cas_sharpening = 0.0f;
 
+float		ps_r__detail_rnd_scale_min = 0.5f;
+float		ps_r__detail_rnd_scale_max = 0.9f;
+
 // Test float exported to shaders for development
 float		ps_r__test_exp_to_shaders_1	= 1.0f;
 float		ps_r__test_exp_to_shaders_2	= 1.0f;
@@ -582,7 +585,7 @@ public:
 		CCC_Integer::Execute(args);
 
 		dm_current_size				= iFloor((float)ps_r__detail_radius/4)*2;
-		dm_current_cache1_line		= dm_current_size*2/4;		// assuming cache1_count = 4
+		dm_current_slide_window_line		= dm_current_size*2/4;		// assuming cache1_count = 4
 		dm_current_cache_line		= dm_current_size+1+dm_current_size;
 		dm_current_cache_size		= dm_current_cache_line*dm_current_cache_line;
 		dm_current_fade				= float(2*dm_current_size)-.5f;
@@ -590,7 +593,7 @@ public:
 		if (RImplementation.b_loaded && (dm_current_size != dm_size))
 		{
 			Device.details_task.wait();
-			RImplementation.Details->cache_Initialize();
+			RImplementation.Details->cache_ReInitialize();
 		}
 	}
 	
@@ -598,6 +601,51 @@ public:
 		CCC_Integer::Status(S);
 	}
 };
+
+class CCC_DetailDensity : public CCC_Float
+{
+public:
+	CCC_DetailDensity(LPCSTR N, float* V, float _min = 0.0f, float _max = 10000.0f)
+		: CCC_Float(N, V, _min, _max) {
+	}
+
+	virtual void Execute(LPCSTR args) {
+		CCC_Float::Execute(args);
+
+		if (RImplementation.b_loaded)
+		{
+			Device.details_task.wait();
+			RImplementation.Details->cache_ReInitialize();
+		}
+	}
+
+	virtual void Status(TStatus& S) {
+		CCC_Float::Status(S);
+	}
+};
+
+class CCC_DetailReloadDetails : public CCC_Float
+{
+public:
+	CCC_DetailReloadDetails(LPCSTR N, float* V, float _min = 0.0f, float _max = 10000.0f)
+		: CCC_Float(N, V, _min, _max) {
+	}
+
+	virtual void Execute(LPCSTR args) {
+		CCC_Float::Execute(args);
+
+		if (RImplementation.b_loaded)
+		{
+			Device.details_task.wait();
+			RImplementation.Details->cache_ReInitialize();
+		}
+	}
+
+	virtual void Status(TStatus& S) {
+		CCC_Float::Status(S);
+	}
+};
+
 
 //-----------------------------------------------------------------------
 void		xrRender_initconsole	()
@@ -612,7 +660,6 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float, "r__wallmark_ttl", &ps_r__WallmarkTTL, 1.0f, 10.f * 60.f);
 
 	CMD4(CCC_Float,		"r__geometry_lod",		&ps_r__LOD,					0.1f,	1.2f		);
-	CMD4(CCC_Float,		"r__detail_density",	&ps_current_detail_density,		0.15f,	1.0f	);
 
 #ifdef DEBUG
 	CMD4(CCC_Float,		"r__detail_l_ambient",	&ps_r__Detail_l_ambient,	.5f,	.95f	);
@@ -730,7 +777,12 @@ void		xrRender_initconsole	()
 
 	// IX-Ray
 	CMD3(CCC_Mask32, "r__fast_details_update",&ps_r2_ls_flags, R2FLAG_FAST_DETAILS_UPDATE);
+	CMD4(CCC_DetailReloadDetails, "r__detail_density", &ps_current_detail_density, 0.15f, 1.0f);
 	CMD4(CCC_DetailRadius, "r__detail_radius", &ps_r__detail_radius, 50, 2000);
+	CMD4(CCC_DetailReloadDetails, "r__detail_rnd_scale_min", &ps_r__detail_rnd_scale_min, 0.0f, 100.0f);
+	CMD4(CCC_DetailReloadDetails, "r__detail_rnd_scale_max", &ps_r__detail_rnd_scale_max, 0.0f, 100.0f);
+
+
 	CMD3(CCC_Mask32, "r__no_ram_textures", &ps_r__common_flags, RFLAG_NO_RAM_TEXTURES);
 	CMD3(CCC_Mask32, "r__mt_texture_load", &ps_r__common_flags, RFLAG_MT_TEX_LOAD);
 	CMD3(CCC_Token, "r_aa", &ps_r2_aa_type, aa_type_token);
