@@ -36,15 +36,15 @@ ICF void bwdithermap	(int levels, int magic[16][16])
 }
 //--------------------------------------------------- Decompression
 
-void CDetailManager::cache_Initialize()
+void CDetailManager::cache_ReInitialize()
 {
 	// Centroid
 	cache_Free();
 	cache_Alloc();
 
 	bwdithermap(2, dither);
-	cache_cx			= 0;
-	cache_cz			= 0;
+	cache_cx = 0;
+	cache_cz = 0;
 
 	// Initialize cache-grid
 	for (u32 i = 0; i < dm_cache_line; i++)
@@ -54,94 +54,71 @@ void CDetailManager::cache_Initialize()
 	        Slot* slt = &cache_pool[i * dm_cache_line + j];
 	
 	        cache[i][j] = slt;
-	        cache_Task(j, i, slt, true);
+			UnpackSlot(j, i, slt);
 	    }
 	}
-	VERIFY	(cache_Validate());
 
-	u32 max_index = dm_cache1_line*dm_cache1_line;
+	u32 max_index = dm_slide_window_line*dm_slide_window_line;
 	for (u32 index = 0; index < max_index; index++)
 	{
-		u32 _mz = index / dm_cache1_line;
-		u32 _mx = index % dm_cache1_line;
-		CacheSlot1& MS = cache_level1[_mz][_mx];
+		u32 _mz = index / dm_slide_window_line;
+		u32 _mx = index % dm_slide_window_line;
+		SlideSlot& MS = slide_window[_mz][_mx];
 		for (int i = 0; i < dm_cache_count; i++)
 		{
-			int _z = i / dm_cache1_count;
-			int _x = i % dm_cache1_count;
-			MS.slots[_z * dm_cache1_count + _x] = &cache[_mz * dm_cache1_count + _z][_mx * dm_cache1_count + _x];
+			int _z = i / dm_slide_window_count;
+			int _x = i % dm_slide_window_count;
+			MS.slots[_z * dm_slide_window_count + _x] = &cache[_mz * dm_slide_window_count + _z][_mx * dm_slide_window_count + _x];
 		}
     }
 }
 
-CDetailManager::Slot*	CDetailManager::cache_Query	(int r_x, int r_z)
+void CDetailManager::UnpackSlot(int gx, int gz, Slot* D)
 {
-	int			gx		= w2cg_X(r_x + cache_cx);	VERIFY	(gx>=0 && gx<dm_cache_line);
-	int			gz		= w2cg_Z(r_z + cache_cz);	VERIFY	(gz>=0 && gz<dm_cache_line);
-	return		cache	[gz][gx];
-}
+	int sx = cg2w_X(gx);
+	int sz = cg2w_Z(gz);
+	DetailSlot&	DS = QueryDB(sx,sz);
 
-void 	CDetailManager::cache_Task		(int gx, int gz, Slot* D, bool init)
-{
-	int sx					= cg2w_X	(gx);
-	int sz					= cg2w_Z	(gz);
-	DetailSlot&	DS			= QueryDB	(sx,sz);
-
-	D->empty				=	(DS.id0==DetailSlot::ID_Empty)&&
-								(DS.id1==DetailSlot::ID_Empty)&&
-								(DS.id2==DetailSlot::ID_Empty)&&
-								(DS.id3==DetailSlot::ID_Empty);
+	D->empty = (DS.id0==DetailSlot::ID_Empty)&&
+				(DS.id1==DetailSlot::ID_Empty)&&
+				(DS.id2==DetailSlot::ID_Empty)&&
+				(DS.id3==DetailSlot::ID_Empty);
 
 	// Unpacking
-	u32 old_type			= D->type;
-	D->type					= stPending;
-	D->sx					= sx;
-	D->sz					= sz;
+	u32 old_type = D->type;
+	D->type = stPending;
+	D->DS = &DS;
 
-	D->vis.box.min.set		(sx*dm_slot_size,				DS.r_ybase(),					sz*dm_slot_size);
-	D->vis.box.max.set		(D->vis.box.min.x+dm_slot_size,	DS.r_ybase()+DS.r_yheight(),	D->vis.box.min.z+dm_slot_size);
-	D->vis.box.grow			(EPS_L);
+	D->vis.box.min.set(sx*dm_slot_size, DS.r_ybase(), sz*dm_slot_size);
+	D->vis.box.max.set(D->vis.box.min.x+dm_slot_size, DS.r_ybase()+DS.r_yheight(), D->vis.box.min.z+dm_slot_size);
+	D->vis.box.grow(EPS_L);
 
 	for (u32 i=0; i<dm_obj_in_slot; i++)
 	{
-		D->G[i].id = DS.r_id(i);
-		D->G[i].items[0].clear();
-		D->G[i].items[1].clear();
-		D->G[i].items[2].clear();
+		auto& items = D->G[i].items;
+		for (u32 i = 0; i < 3; i++)
+		{
+			for (CDetail::SlotItem* item : items[i])
+				items_pool.destroy(item);
+
+			items[i].clear();
+		}
 	}
 
 	if (old_type != stPending)
 	{
-		VERIFY		(stPending == D->type);
-		cache_task.push_back(D);
+		VERIFY(stPending == D->type);
+		unpacked_slots.push_back(D);
 	}
 }
 
-
-bool	CDetailManager::cache_Validate	()
-{
-	for (u32 z=0; z<dm_cache_line; z++)
-	{
-		for (u32 x=0; x<dm_cache_line; x++)
-		{
-			int		w_x		= cg2w_X(x);
-			int		w_z		= cg2w_Z(z);
-			Slot*	D		= cache[z][x];
-
-			if (D->sx	!= w_x)	return false;
-			if (D->sz	!= w_z)	return false;
-		}
-	}
-	return true;
-}
-
-void	CDetailManager::cache_Update(Fvector& view)
+void CDetailManager::cache_Update(const Fvector& view)
 {
 	PROF_EVENT("cache_Update");
 	int v_x = iFloor(view.x / dm_slot_size + .5f);
 	int v_z = iFloor(view.z / dm_slot_size + .5f);
 
-	bool bNeedMegaUpdate	= (cache_cx!=v_x)||(cache_cz!=v_z);
+	bool bUpdateSlideWindow = (cache_cx != v_x) || (cache_cz != v_z);
 	// *****	Cache shift
 	{
 		PROF_EVENT("cache_Tasks");
@@ -154,9 +131,10 @@ void	CDetailManager::cache_Update(Fvector& view)
 				for (u32 z = 0; z < dm_cache_line; z++)
 				{
 					Slot* S = cache[z][0];
-					for (u32 x = 1; x < dm_cache_line; x++)		cache[z][x - 1] = cache[z][x];
+					for (u32 x = 1; x < dm_cache_line; x++)
+						cache[z][x - 1] = cache[z][x];
 					cache[z][dm_cache_line - 1] = S;
-					cache_Task(dm_cache_line - 1, z, S);
+					UnpackSlot(dm_cache_line - 1, z, S);
 				}
 			}
 			else
@@ -166,9 +144,10 @@ void	CDetailManager::cache_Update(Fvector& view)
 				for (u32 z = 0; z < dm_cache_line; z++)
 				{
 					Slot* S = cache[z][dm_cache_line - 1];
-					for (u32 x = dm_cache_line - 1; x > 0; x--)	cache[z][x] = cache[z][x - 1];
+					for (u32 x = dm_cache_line - 1; x > 0; x--)
+						cache[z][x] = cache[z][x - 1];
 					cache[z][0] = S;
-					cache_Task(0, z, S);
+					UnpackSlot(0, z, S);
 				}
 			}
 		}
@@ -181,9 +160,10 @@ void	CDetailManager::cache_Update(Fvector& view)
 				for (u32 x = 0; x < dm_cache_line; x++)
 				{
 					Slot* S = cache[dm_cache_line - 1][x];
-					for (u32 z = dm_cache_line - 1; z > 0; z--)	cache[z][x] = cache[z - 1][x];
+					for (u32 z = dm_cache_line - 1; z > 0; z--)
+						cache[z][x] = cache[z - 1][x];
 					cache[0][x] = S;
-					cache_Task(x, 0, S);
+					UnpackSlot(x, 0, S);
 				}
 			}
 			else
@@ -193,9 +173,10 @@ void	CDetailManager::cache_Update(Fvector& view)
 				for (u32 x = 0; x < dm_cache_line; x++)
 				{
 					Slot* S = cache[0][x];
-					for (u32 z = 1; z < dm_cache_line; z++)		cache[z - 1][x] = cache[z][x];
+					for (u32 z = 1; z < dm_cache_line; z++)
+						cache[z - 1][x] = cache[z][x];
 					cache[dm_cache_line - 1][x] = S;
-					cache_Task(x, dm_cache_line - 1, S);
+					UnpackSlot(x, dm_cache_line - 1, S);
 				}
 			}
 		}
@@ -206,28 +187,33 @@ void	CDetailManager::cache_Update(Fvector& view)
 		PROF_EVENT("cache_Decompress");
 		if (!ps_r2_ls_flags.test(R2FLAG_FAST_DETAILS_UPDATE))
 		{
-			bool	bFullUnpack = false;
+			bool bFullUnpack = false;
 			int limit = dm_max_decompress;
-			if (cache_task.size() == dm_cache_size) { limit = dm_cache_size; bFullUnpack = true; }
+			if (unpacked_slots.size() == dm_cache_size)
+			{
+				limit = dm_cache_size;
+				bFullUnpack = true;
+			}
 
-			for (int iteration = 0; cache_task.size() && (iteration < limit); iteration++) {
-				u32		best_id = 0;
-				float	best_dist = flt_max;
+			for (int iteration = 0; unpacked_slots.size() && (iteration < limit); iteration++)
+			{
+				u32 best_id = 0;
+				float best_dist = flt_max;
 
 				if (bFullUnpack)
-					best_id = cache_task.size() - 1;
+					best_id = unpacked_slots.size() - 1;
 				else
 				{
-					for (u32 entry = 0; entry < cache_task.size(); entry++)
+					for (u32 entry = 0; entry < unpacked_slots.size(); entry++)
 					{
 						// Gain access to data
-						Slot* S = cache_task[entry];
+						Slot* S = unpacked_slots[entry];
 						VERIFY(stPending == S->type);
 
 						// Estimate
-						Fvector		C;
+						Fvector C;
 						S->vis.box.getcenter(C);
-						float		D = view.distance_to_sqr(C);
+						float D = view.distance_to_sqr(C);
 
 						// Select
 						if (D < best_dist)
@@ -239,36 +225,46 @@ void	CDetailManager::cache_Update(Fvector& view)
 				}
 
 				// Decompress and remove task
-				cache_Decompress(cache_task[best_id]);
-				cache_task.erase(cache_task.begin() + best_id);
+				UnpackSlotItems(unpacked_slots[best_id]);
+				unpacked_slots.erase(unpacked_slots.begin() + best_id);
 			}
 		}
 		else
 		{
-			for(Slot* S : cache_task)
-				cache_Decompress(S);
-			cache_task.clear();
+			for(Slot* S : unpacked_slots)
+				UnpackSlotItems(S);
+			unpacked_slots.clear();
 		}
 	}
 
-    if (bNeedMegaUpdate)
+    if (bUpdateSlideWindow)
 	{
 		PROF_EVENT("MegaUpdate");
-		u32 max_index = dm_cache1_line*dm_cache1_line;
+		u32 max_index = dm_slide_window_line*dm_slide_window_line;
 		for (u32 index = 0; index < max_index; index++)
 		{
-			u32 _mz = index / dm_cache1_line;
-			u32 _mx = index % dm_cache1_line;
-            CacheSlot1& MS 	= cache_level1[_mz][_mx];
-			MS.empty		= true;
-            MS.vis.clear	();
+			u32 _mz = index / dm_slide_window_line;
+			u32 _mx = index % dm_slide_window_line;
+			SlideSlot& MS = slide_window[_mz][_mx];
+			MS.empty = true;
+			MS.vis = { Fsphere{ {0.f,0.f,0.f}, 0.f }, Fbox{ { 0.f,0.f,0.f }, { 0.f,0.f,0.f } }};
+			bool empty_slot = true;
             for (int _i=0; _i<dm_cache_count; _i++)
 			{
-                Slot& 	S 		= **MS.slots[_i];
-                MS.vis.box.merge(S.vis.box);
-				if (!S.empty)	MS.empty = false;
+				Slot** slots = MS.slots[_i];
+				Slot* S = *slots;
+				if (!S->empty)
+				{
+					MS.vis.box.min.min(S->vis.box.min);
+					MS.vis.box.max.max(S->vis.box.max);
+					empty_slot = false;
+				}
             }
-            MS.vis.box.getsphere(MS.vis.sphere.P,MS.vis.sphere.R);
+			if(!empty_slot)
+			{
+				MS.vis.box.getsphere(MS.vis.sphere.P, MS.vis.sphere.R);
+				MS.empty = false;
+			}
         }
     }
 }
@@ -279,14 +275,16 @@ DetailSlot&	CDetailManager::QueryDB(int sx, int sz)
 	int db_z = sz+dtH.offs_z;
 	if ((db_x>=0) && (db_x<int(dtH.size_x)) && (db_z>=0) && (db_z<int(dtH.size_z)))
 	{
-		u32 linear_id				= db_z*dtH.size_x + db_x;
-		return dtSlots				[linear_id];
-	} else {
+		u32 linear_id = db_z*dtH.size_x + db_x;
+		return dtSlots[linear_id];
+	}
+	else
+	{
 		// Empty slot
-		DS_empty.w_id				(0,DetailSlot::ID_Empty);
-		DS_empty.w_id				(1,DetailSlot::ID_Empty);
-		DS_empty.w_id				(2,DetailSlot::ID_Empty);
-		DS_empty.w_id				(3,DetailSlot::ID_Empty);
+		DS_empty.w_id(0,DetailSlot::ID_Empty);
+		DS_empty.w_id(1,DetailSlot::ID_Empty);
+		DS_empty.w_id(2,DetailSlot::ID_Empty);
+		DS_empty.w_id(3,DetailSlot::ID_Empty);
 		return DS_empty;
 	}
 }
