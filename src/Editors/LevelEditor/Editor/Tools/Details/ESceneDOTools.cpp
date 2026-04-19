@@ -64,7 +64,7 @@ void EDetailManager::Clear(bool bSpecific)
 void EDetailManager::InvalidateCache()
 {
 	// Initialize 'vis' and 'cache'
-	cache_Initialize	();
+    cache_ReInitialize();
 }
 
 extern void bwdithermap	(int levels, int magic[16][16] );
