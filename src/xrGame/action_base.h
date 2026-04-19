@@ -8,7 +8,6 @@
 
 #pragma once
 
-#include "action_management_config.h"
 #include "property_storage.h"
 #include "../xrScripts/script_export_space.h"
 #include "operator_abstract.h"
