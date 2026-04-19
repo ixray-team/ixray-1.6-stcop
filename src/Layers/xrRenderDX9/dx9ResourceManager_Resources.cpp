@@ -41,8 +41,8 @@ bool	reclaim		(xr_vector<T*>& vec, const T* ptr)
 	typename xr_vector<T*>::iterator it	= vec.begin	();
 	typename xr_vector<T*>::iterator end	= vec.end	();
 	for (; it!=end; it++)
-		if (*it == ptr)	{ vec.erase	(it); return TRUE; }
-		return FALSE;
+		if (*it == ptr)	{ vec.erase	(it); return true; }
+		return false;
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -110,7 +110,7 @@ static bool	dcl_equal			(D3DVERTEXELEMENT9* a, D3DVERTEXELEMENT9* b)
 	// check sizes
 	u32 a_size = (u32)GetDeclLength(a);
 	u32 b_size = (u32)GetDeclLength(b);
-	if (a_size!=b_size)	return FALSE;
+	if (a_size!=b_size)	return false;
 	return 0==memcmp	(a,b,a_size*sizeof(D3DVERTEXELEMENT9));
 }
 
@@ -437,7 +437,7 @@ void		CResourceManager::DeleteGeom		(const SGeometry* Geom)
 CTexture* CResourceManager::_CreateTexture	(const char* _Name)
 {
 	// DBG_VerifyTextures	();
-	if (0==xr_strcmp(_Name,"null"))	return 0;
+	if (0==xr_strcmp(_Name,"null"))	return nullptr;
 	R_ASSERT		(_Name && _Name[0]);
 
 	xrCriticalSectionGuard guard(creationGuard);
@@ -609,8 +609,8 @@ void			CResourceManager::_DeleteTextureList(const STextureList* L)
 //--------------------------------------------------------------------------------------------------------------
 SMatrixList*	CResourceManager::_CreateMatrixList(SMatrixList& L)
 {
-	bool bEmpty = TRUE;
-	for (u32 i=0; i<L.size(); i++)	if (L[i]) { bEmpty=FALSE; break; }
+	bool bEmpty = true;
+	for (u32 i=0; i<L.size(); i++)	if (L[i]) { bEmpty=false; break; }
 	if (bEmpty)	return nullptr;
 	xrCriticalSectionGuard guard(creationGuard);
 
@@ -635,8 +635,8 @@ void			CResourceManager::_DeleteMatrixList ( const SMatrixList* L )
 //--------------------------------------------------------------------------------------------------------------
 SConstantList*	CResourceManager::_CreateConstantList(SConstantList& L)
 {
-	bool bEmpty = TRUE;
-	for (u32 i=0; i<L.size(); i++)	if (L[i]) { bEmpty=FALSE; break; }
+	bool bEmpty = true;
+	for (u32 i=0; i<L.size(); i++)	if (L[i]) { bEmpty=false; break; }
 	if (bEmpty)	return nullptr;
 	xrCriticalSectionGuard guard(creationGuard);
 

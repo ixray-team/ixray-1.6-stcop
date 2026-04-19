@@ -11,8 +11,8 @@
 xrGameSpyServer::xrGameSpyServer()
 {
 	m_iReportToMasterServer = 0;
-	m_bQR2_Initialized = FALSE;
-	m_bCDKey_Initialized = FALSE;
+	m_bQR2_Initialized = false;
+	m_bCDKey_Initialized = false;
 	m_bCheckCDKey = false;
 	ServerFlags.set( server_flag_all, 0 );
 	iGameSpyBasePort = 0;

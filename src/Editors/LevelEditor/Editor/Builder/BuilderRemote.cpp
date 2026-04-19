@@ -489,9 +489,9 @@ float CalcArea(const Fvector& v0, const Fvector& v1, const Fvector& v2)
 bool GetStaticCformData(const Fmatrix& parent, CEditableMesh* mesh, CEditableObject* object, Fvector* verts, int& vert_cnt, int& vert_it, CDB::TRI* faces, int& face_cnt, int& face_it, CSceneObject* obj)
 {
 	if (object->IsDynamic())
-		return FALSE;
+		return false;
 
-	bool bResult = TRUE;
+	bool bResult = true;
 	int point_offs = vert_it;
 
 	// fill vertices
@@ -580,7 +580,7 @@ bool SceneBuilder::BuildMesh(	const Fmatrix& parent,
 								const Fmatrix& real_transform,
 								CSceneObject* obj)
 {
-	bool bResult = TRUE;
+	bool bResult = true;
 	int point_offs;
 	point_offs = vert_it;  // save offset
 
@@ -637,20 +637,20 @@ bool SceneBuilder::BuildMesh(	const Fmatrix& parent,
 		int m_id			= BuildMaterial(surf,sect_num,!object->IsMUStatic());
 		int gm_id			= surf->_GameMtl();
 		if (m_id<0)			{
-			bResult = FALSE;
+			bResult = false;
 			break;
 		}
 		if (gm_id<0)
 		{
 			ELog.DlgMsg		(mtError,"Surface: '%s' contains bad game material.",surf->_Name());
-			bResult 		= FALSE;
+			bResult 		= false;
 			break;
 		}
 		SGameMtl* M = GameMaterialLibraryEditors->GetMaterialByID(gm_id);
 		if (0==M)
 		{
 			ELog.DlgMsg		(mtError,"Surface: '%s' contains undefined game material.",surf->_Name());
-			bResult 		= FALSE;
+			bResult 		= false;
 			break;
 		}
 		if (M->Flags.is(SGameMtl::flBreakable))
@@ -666,14 +666,14 @@ bool SceneBuilder::BuildMesh(	const Fmatrix& parent,
 		if (M->Flags.is(SGameMtl::flDynamic))
 		{
 			ELog.DlgMsg		(mtError,"Surface: '%s' contains non-static game material.",surf->_Name());
-			bResult 		= FALSE;
+			bResult 		= false;
 			break;
 		}
 		u32 dwTexCnt 		= ((surf->_FVF()&D3DFVF_TEXCOUNT_MASK)>>D3DFVF_TEXCOUNT_SHIFT);
 		if (dwTexCnt!=1)
 		{
 			ELog.DlgMsg		(mtError,"Surface: '%s' contains more than 1 texture refs.",surf->_Name());
-			bResult 		= FALSE; 
+			bResult 		= false; 
 			break; 
 		}
 		u32 dwInvalidFaces 	= 0;
@@ -863,7 +863,7 @@ bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 	{
 		// build LOD
 		int	lod_id 		= BuildObjectLOD(Fidentity,O,sect_num);
-		if (lod_id==-2) return FALSE;
+		if (lod_id==-2) return false;
 		// build model
 		model_idx		= l_mu_models.size();
 		l_mu_models.push_back(b_mu_model());
@@ -899,7 +899,7 @@ bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 
 		for(EditMeshIt MESH=O->FirstMesh();MESH!=O->LastMesh();++MESH)
 			if (!BuildMesh(T, O, *MESH, sect_num, M.m_pVertices, M.m_iVertexCount, vert_it, M.m_pFaces, M.m_iFaceCount, face_it, M.m_smgroups, obj->_Transform(), obj))
-				return FALSE;
+				return false;
 
 		M.m_iFaceCount			= face_it;
 		M.m_iVertexCount		= vert_it;
@@ -918,7 +918,7 @@ bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 	for (u32 mu_vi=0; mu_vi<(u32)M.m_iVertexCount; ++mu_vi)
 		l_scene_stat->add_muvert(obj->_Transform(),M.m_pVertices[mu_vi]);
 	
-	return TRUE;
+	return true;
 }
 
 
@@ -1025,7 +1025,7 @@ bool SceneBuilder::BuildSun(u8 quality, Fvector2 dir)
 		dl.data.direction.setHP(dir.y,dir.x);
 	}
 
-	return TRUE;
+	return true;
 }
 
 bool SceneBuilder::BuildPointLight(b_light* b, const Flags32& usage, svector<WORD,16>* sectors, FvectorVec* soft_points, const Fmatrix* soft_transform)
@@ -1064,17 +1064,17 @@ bool SceneBuilder::BuildPointLight(b_light* b, const Flags32& usage, svector<WOR
 		dl.sectors			= *sectors;
 	}
 
-	return TRUE;
+	return true;
 }
 
 bool SceneBuilder::BuildLight(CLight* e)
 {
 	if (!e->m_Flags.is_any(ELight::flAffectStatic|ELight::flAffectDynamic))
-		return FALSE;
+		return false;
 
 	if (!e->GetLControlName()){
 		ELog.Msg(mtError,"Invalid light control name: light '%s'.",e->GetName());
-		return FALSE;
+		return false;
 	}
 		
 	b_light	L;
@@ -1117,7 +1117,7 @@ bool SceneBuilder::BuildLight(CLight* e)
 				if (vis==fvPartialOutside)
 					sectors.push_back((u16)_S->m_sector_num);
 			}
-			if (sectors.empty()) return FALSE;
+			if (sectors.empty()) return false;
 		}else{
 			sectors.push_back((u16)m_iDefaultSectorNum);
 		}
@@ -1128,7 +1128,7 @@ bool SceneBuilder::BuildLight(CLight* e)
 	case ELight::ltPoint:		return BuildPointLight	(&L,e->m_Flags,lpSectors,e->m_FuzzyData?&e->m_FuzzyData->m_Positions:0,&e->_Transform());
 	default:
 		THROW2("Invalid light type.");
-		return FALSE;
+		return false;
 	}
 }
 
@@ -1148,7 +1148,7 @@ bool SceneBuilder::BuildGlow(CGlow* e)
 	mtl.shader      = (u16)BuildShader		(*e->m_ShaderName);
 	mtl.sector		= (u16)CalculateSector	(e->GetPosition(),e->m_fRadius);
 	mtl.shader_xrlc	= -1;
-	if ((u16(-1)==mtl.surfidx)||(u16(-1)==mtl.shader)) return FALSE;
+	if ((u16(-1)==mtl.surfidx)||(u16(-1)==mtl.shader)) return false;
 
 	mtl_idx 		= FindInMaterials(&mtl);
 	if (mtl_idx<0){
@@ -1161,7 +1161,7 @@ bool SceneBuilder::BuildGlow(CGlow* e)
 	b.size        	= e->m_fRadius;
 	b.dwMaterial   	= mtl_idx;
 	b.flags			= e->m_Flags.is(CGlow::gfFixedSize)?0x01:0x00;	// 0x01 - non scalable
-	return TRUE;
+	return true;
 }
 
 
@@ -1310,7 +1310,7 @@ int SceneBuilder::BuildMaterial(const char* esh_name, const char* csh_name, cons
 
 bool SceneBuilder::ParseStaticObjects(ObjectList& lst, const char* prefix, bool b_selected_only)
 {
-	bool bResult = TRUE;
+	bool bResult = true;
 	SPBItem* pb	= UI->ProgressStart(lst.size(),"Parse static objects...");
 	for (ObjectIt _F = lst.begin(); _F != lst.end(); _F++)
 	{
@@ -1370,10 +1370,10 @@ bool SceneBuilder::ParseStaticObjects(ObjectList& lst, const char* prefix, bool 
 bool SceneBuilder::CompileStatic(bool b_selected_only)
 {
 	ObjClassID cls = LTools->CurrentClassID();
-	if(cls==OBJCLASS_DUMMY)	return FALSE;
+	if(cls==OBJCLASS_DUMMY)	return false;
 	ESceneToolBase* pCurrentTool 	= Scene->GetOTool(cls);
 
-	bool bResult	= TRUE;
+	bool bResult	= true;
 
 	Clear			();
 
@@ -1381,7 +1381,7 @@ bool SceneBuilder::CompileStatic(bool b_selected_only)
 	SceneToolsMapPairIt t_end 	= Scene->LastTool();
 
 	int objcount = Scene->ObjCount();
-	if( objcount <= 0 )	return FALSE;
+	if( objcount <= 0 )	return false;
 
 // compute vertex/face count
 	l_vert_cnt	= 0;
@@ -1426,7 +1426,7 @@ bool SceneBuilder::CompileStatic(bool b_selected_only)
 	{
 		if(pCurrentTool)
 			if (!pCurrentTool->ExportStatic(this,b_selected_only))
-				{bResult = FALSE;}
+				{bResult = false;}
 	}else
 	{
 		t_it 				= Scene->FirstTool();
@@ -1436,7 +1436,7 @@ bool SceneBuilder::CompileStatic(bool b_selected_only)
 			ESceneToolBase* mt = t_it->second;
 			if (mt)
 				if (!mt->ExportStatic(this,b_selected_only))
-					{bResult = FALSE; break;}
+					{bResult = false; break;}
 		}
 	}
 	UI->ProgressEnd(pb);

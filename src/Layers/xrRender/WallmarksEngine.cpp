@@ -458,7 +458,7 @@ void CWallmarksEngine::Render()
 					if (ssa>=ssaCLIP)	{
 						u32 w_count		= u32(w_verts-w_start);
 						if ((w_count+W->verts.size())>=(MAX_TRIS*3)){
-							FlushStream	(hGeom,slot->shader,w_offset,w_verts,w_start,FALSE);
+							FlushStream	(hGeom,slot->shader,w_offset,w_verts,w_start,false);
 							BeginStream	(hGeom,w_offset,w_verts,w_start);
 						}
 						static_wm_render	(W,w_verts);
@@ -477,7 +477,7 @@ void CWallmarksEngine::Render()
 			}
 		}
 		// Flush stream
-		FlushStream				(hGeom,slot->shader,w_offset,w_verts,w_start,FALSE);	//. remove line if !(suppress cull needed)
+		FlushStream				(hGeom,slot->shader,w_offset,w_verts,w_start,false);	//. remove line if !(suppress cull needed)
 		BeginStream				(hGeom,w_offset,w_verts,w_start);
 
 		// dynamic wallmarks
@@ -494,7 +494,7 @@ void CWallmarksEngine::Render()
 					Device.Statistic->RenderDUMP_WMD_Count++;
 					u32 w_count		= u32(w_verts-w_start);
 					if ((w_count+W->VCount())>=(MAX_TRIS*3)){
-						FlushStream	(hGeom,slot->shader,w_offset,w_verts,w_start,TRUE);
+						FlushStream	(hGeom,slot->shader,w_offset,w_verts,w_start,true);
 						BeginStream	(hGeom,w_offset,w_verts,w_start);
 					}
 
@@ -511,7 +511,7 @@ void CWallmarksEngine::Render()
 			slot->skeleton_items.clear();
 		}
 		// Flush stream
-		FlushStream				(hGeom,slot->shader,w_offset,w_verts,w_start,TRUE);
+		FlushStream				(hGeom,slot->shader,w_offset,w_verts,w_start,true);
 	}
 
 	lock.Leave();				// Physics may add wallmarks in parallel with rendering

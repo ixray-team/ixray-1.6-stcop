@@ -27,9 +27,9 @@ struct VIPM_Result
 
 class VIMP_Processor
 {
-	Object* g_pObject = 0;
+	Object* g_pObject = nullptr;
 	ArbitraryList<MeshPt*>	g_ppTempPts = 0;
-	VIPM_Result* g_pResult = 0;
+	VIPM_Result* g_pResult = nullptr;
 
 public:
 	void				VIPM_Init				();

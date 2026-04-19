@@ -167,8 +167,8 @@ void global_claculation_data::xrLoad(bool skipThm)
 					// HACK for merged lod textures
 					BT.dwWidth	= 1024;
 					BT.dwHeight	= 1024;
-					BT.bHasAlpha= TRUE;
-					BT.SetHasSurface(FALSE);
+					BT.bHasAlpha= true;
+					BT.SetHasSurface(false);
 				}
 				else
 				{
@@ -196,21 +196,21 @@ void global_claculation_data::xrLoad(bool skipThm)
 					BT.THM.mip_filter		= THM->r_u32();
 					BT.THM.width			= THM->r_u32();
 					BT.THM.height           = THM->r_u32();
-					bool			bLOD=FALSE;
-					if (N[0]=='l' && N[1]=='o' && N[2]=='d' && N[3]=='\\') bLOD = TRUE;
+					bool			bLOD=false;
+					if (N[0]=='l' && N[1]=='o' && N[2]=='d' && N[3]=='\\') bLOD = true;
 
 					// load surface if it has an alpha channel or has "implicit lighting" flag
 					BT.dwWidth				= BT.THM.width;
 					BT.dwHeight				= BT.THM.height;
 					BT.bHasAlpha			= BT.THM.HasAlphaChannel();
-					BT.SetHasSurface(FALSE);
+					BT.SetHasSurface(false);
 
 					if (!bLOD) 
 					{
 						if (BT.bHasAlpha || BT.THM.flags.test(STextureParams::flImplicitLighted))
 						{
 							clMsg("- loading: %s",N);
-							BT.SetHasSurface(TRUE);
+							BT.SetHasSurface(true);
 
 							string_path OutName;
 							if (!Surface_Detect(OutName, N) || !BT.pSurface.LoadFromFile(OutName))

@@ -8,7 +8,7 @@
 XRNETSERVER_API ClientID BroadcastCID(0xffffffff);
 XRNETSERVER_API int psNET_ServerUpdate = 30; // FPS
 XRNETSERVER_API int psNET_ServerPending = 3;
-XRNETSERVER_API bool psNET_direct_connect = FALSE;
+XRNETSERVER_API bool psNET_direct_connect = false;
 
 // -----------------------------------------------------------------------------
 
@@ -41,7 +41,7 @@ BaseServer::~BaseServer()
 	BannedAddresses.clear();
 
 	SV_Client = nullptr;
-	psNET_direct_connect = FALSE;
+	psNET_direct_connect = false;
 
 	xr_delete(pSvNetLog);
 }
@@ -125,10 +125,10 @@ bool BaseServer::CreateConnection(GameDescriptionData& game_descr, ServerConnect
 BaseServer::EConnect BaseServer::Connect(const char* options, GameDescriptionData & game_descr)
 {
 	connect_options = options;
-	psNET_direct_connect = FALSE;
+	psNET_direct_connect = false;
 
 	if (strstr(options, "/single"))
-		psNET_direct_connect = TRUE;
+		psNET_direct_connect = true;
 
 
 	// Parse options
@@ -258,7 +258,7 @@ void BaseServer::BannedList_Save()
 	string_path					temp;
 	FS.update_path(temp, "$app_data_root$", GetBannedListName());
 
-	CInifile					ini(temp, FALSE, FALSE, TRUE);
+	CInifile					ini(temp, false, false, true);
 
 	for (u32 it = 0; it < BannedAddresses.size(); it++)
 	{
@@ -517,7 +517,7 @@ void BaseServer::_Recieve(const void* data, u32 data_size, u32 param)
 			pSvNetLog = new INetLog("logs\\net_sv_log.log", TimeGlobal(device_timer));
 
 		if (pSvNetLog)
-			pSvNetLog->LogPacket(TimeGlobal(device_timer), &packet, TRUE);
+			pSvNetLog->LogPacket(TimeGlobal(device_timer), &packet, true);
 	}*/
 }
 

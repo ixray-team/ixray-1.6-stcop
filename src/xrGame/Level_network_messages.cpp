@@ -231,7 +231,7 @@ void CLevel::ClientReceive()
 			break;
 		case M_SV_CONFIG_FINISHED:
 			{
-				game_configured			= TRUE;
+				game_configured			= true;
 				if (IsDemoPlayStarted() && !m_current_spectator)
 				{
 					SpawnDemoSpectator();

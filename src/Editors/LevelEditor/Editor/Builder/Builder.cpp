@@ -46,7 +46,7 @@ bool SceneBuilder::Compile(bool b_selected_only, bool show_message )
         GetBounding		();
         CompileStatic	(b_selected_only);
         EvictResource	();
-		return TRUE;
+		return true;
 	}
 
     xr_string error_text = {};

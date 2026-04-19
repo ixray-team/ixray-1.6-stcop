@@ -22,7 +22,7 @@ void CDS0_UISequenceVideoItem::ResetTexture()
 
 bool CDS0_UISequenceVideoItem::video_IsPlaying()
 {
-	return FALSE;
+	return false;
 }
 
 void CDS0_UISequenceVideoItem::video_Sync(u32 _time)

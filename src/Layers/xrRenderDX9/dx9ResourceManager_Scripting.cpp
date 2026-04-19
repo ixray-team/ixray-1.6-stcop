@@ -21,8 +21,8 @@ class	adopt_sampler
 	CBlender_Compile*		C;
 	u32						stage;
 public:
-	adopt_sampler			(CBlender_Compile*	_C, u32 _stage)		: C(_C), stage(_stage)		{ if (u32(-1)==stage) C=0;		}
-	adopt_sampler			(const adopt_sampler&	_C)				: C(_C.C), stage(_C.stage)	{ if (u32(-1)==stage) C=0;		}
+	adopt_sampler			(CBlender_Compile*	_C, u32 _stage)		: C(_C), stage(_stage)		{ if (u32(-1)==stage) C=nullptr;		}
+	adopt_sampler			(const adopt_sampler&	_C)				: C(_C.C), stage(_C.stage)	{ if (u32(-1)==stage) C=nullptr;		}
 
 	adopt_sampler&			_texture		(const char* texture)		{ if (C) C->i_Texture	(stage,texture);											return *this;	}
 	adopt_sampler&			_projective		(bool _b)				{ if (C) C->i_Projective(stage,_b);													return *this;	}
@@ -59,12 +59,12 @@ public:
 	adopt_compiler&			_o_distort		(bool	E)								{	C->SH->flags.bDistort=E;					return	*this;		}
 	adopt_compiler&			_o_wmark		(bool	E)								{	C->SH->flags.bWmark=E;						return	*this;		}
 	adopt_compiler&			_pass			(const char*	vs,		const char* ps)				{	C->r_Pass			(vs,ps,true);			return	*this;		}
-	adopt_compiler&			_fog			(bool	_fog)							{	C->PassSET_LightFog	(FALSE,_fog);			return	*this;		}
+	adopt_compiler&			_fog			(bool	_fog)							{	C->PassSET_LightFog	(false,_fog);			return	*this;		}
 	adopt_compiler&			_ZB				(bool	_test,	bool _write)			{	C->PassSET_ZB		(_test,_write);			return	*this;		}
 	adopt_compiler&			_blend			(bool	_blend, u32 abSRC, u32 abDST)	{	C->PassSET_ablend_mode(_blend,abSRC,abDST);	return 	*this;		}
 	adopt_compiler&			_aref			(bool	_aref,  u32 aref)				{	C->PassSET_ablend_aref(_aref,aref);			return 	*this;		}
 	adopt_compiler&			_color_write_enable (bool cR, bool cG, bool cB, bool cA)		{	C->r_ColorWriteEnable(cR, cG, cB, cA);		return	*this;		}
-	adopt_sampler			_sampler		(const char* _name)							{	u32 s = C->r_Sampler(_name,0);				return	adopt_sampler(C,s);	}
+	adopt_sampler			_sampler		(const char* _name)							{	u32 s = C->r_Sampler(_name,nullptr);				return	adopt_sampler(C,s);	}
 };
 
 class	adopt_blend
@@ -88,7 +88,7 @@ static void* lua_alloc(void* ud, void* ptr, size_t osize, size_t nsize) {
 	(void)osize;
 	if (!nsize) {
 		g_render_lua_allocator.free_impl(ptr);
-		return					0;
+		return					nullptr;
 	}
 
 	if (!ptr)
@@ -183,7 +183,7 @@ void	CResourceManager::LS_Load			()
 	for (u32 it=0; it<folder->size(); it++)	{
 		string_path						namesp,fn;
 		xr_strcpy							(namesp,(*folder)[it]);
-		if	(0==strext(namesp) || 0!=xr_strcmp(strext(namesp),".lua"))	continue;
+		if	(nullptr==strext(namesp) || 0!=xr_strcmp(strext(namesp),".lua"))	continue;
 		*strext	(namesp)=0;
 		if		(0==namesp[0])			xr_strcpy	(namesp,"_G");
 		xr_strconcat(fn,::Render->getShaderPath(),(*folder)[it]);
@@ -231,8 +231,8 @@ Shader*	CResourceManager::_lua_Create		(const char* d_shader, const char* s_text
 
 	// Access to template
 	C.BT				= nullptr;
-	C.bEditor			= FALSE;
-	C.bDetail			= FALSE;
+	C.bEditor			= false;
+	C.bDetail			= false;
 
 	// Prepare
 	_ParseList			(C.L_textures,	s_textures	);
@@ -275,7 +275,7 @@ Shader*	CResourceManager::_lua_Create		(const char* d_shader, const char* s_text
 	if (Script::bfIsObjectPresent(LSVM,s_shader,"l_point",LUA_TFUNCTION))
 	{
 		C.iElement			= 2;
-		C.bDetail			= FALSE;
+		C.bDetail			= false;
 		S.E[2]				= C._lua_Compile(s_shader,"l_point");;
 	}
 
@@ -283,7 +283,7 @@ Shader*	CResourceManager::_lua_Create		(const char* d_shader, const char* s_text
 	if (Script::bfIsObjectPresent(LSVM,s_shader,"l_spot",LUA_TFUNCTION))
 	{
 		C.iElement			= 3;
-		C.bDetail			= FALSE;
+		C.bDetail			= false;
 		S.E[3]				= C._lua_Compile(s_shader,"l_spot");;
 	}
 
@@ -291,7 +291,7 @@ Shader*	CResourceManager::_lua_Create		(const char* d_shader, const char* s_text
 	if (Script::bfIsObjectPresent(LSVM,s_shader,"l_special",LUA_TFUNCTION))
 	{
 		C.iElement			= 4;
-		C.bDetail			= FALSE;
+		C.bDetail			= false;
 		S.E[4]				= C._lua_Compile(s_shader,"l_special");
 	}
 

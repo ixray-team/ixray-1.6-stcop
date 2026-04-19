@@ -4,8 +4,8 @@ class CBlender_accum_point : public IBlender
 {
 public:
 	virtual		const char* getComment()	{ return "INTERNAL: accumulate point light";	}
-	virtual		bool		canBeDetailed()	{ return FALSE;	}
-	virtual		bool		canBeLMAPped()	{ return FALSE;	}
+	virtual		bool		canBeDetailed()	{ return false;	}
+	virtual		bool		canBeLMAPped()	{ return false;	}
 
 	virtual		void		Compile			(CBlender_Compile& C);
 

@@ -65,7 +65,7 @@ IC bool _rect_place(U8Vec& mask, int dest_width, int dest_height, Irect& r, bool
     if ((r.rb.x<dest_width)&&(r.rb.y<dest_height)){
         u32 x_max = dest_width -r.rb.x; 
         u32 y_max = dest_height-r.rb.y; 
-	    bRotated = FALSE;
+	    bRotated = false;
         for (u32 _Y=0; _Y<y_max; _Y++){
             for (u32 _X=0; _X<x_max; _X++){
                 if (mask[_Y*dest_width+_X]) continue;
@@ -83,7 +83,7 @@ IC bool _rect_place(U8Vec& mask, int dest_width, int dest_height, Irect& r, bool
     if ((r.rb.y<dest_width)&&(r.rb.x<dest_height)){
         u32 x_max = dest_width -r.rb.y; 
         u32 y_max = dest_height-r.rb.x; 
-	    bRotated = TRUE;
+	    bRotated = true;
         for (u32 _Y=0; _Y<y_max; _Y++){
             for (u32 _X=0; _X<x_max; _X++){
                 if (mask[_Y*dest_width+_X]) continue;
@@ -153,7 +153,7 @@ int CImageManager::CreateMergedTexture(u32 layer_cnt, SSimpleImageVec& src_image
 
     dst_image.w			= dest_width;
     dst_image.h			= dest_height;
-    dst_image.a			= TRUE;
+    dst_image.a			= true;
     dst_image.layers	= dest_layers;
 
     return 1;

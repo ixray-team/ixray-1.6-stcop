@@ -13,11 +13,11 @@ void	CBlender_light_occq::Compile(CBlender_Compile& C)
 	switch (C.iElement) 
 	{
 	case 0:			// occlusion testing
-		C.r_Pass	("dumb", "dumb",false,TRUE,FALSE,FALSE);
+		C.r_Pass	("dumb", "dumb",false,true,false,false);
 		C.r_End		();
 		break;
 	case 1:			// NV40 optimization :)
-		C.r_Pass	("null", "dumb",false,FALSE,FALSE,FALSE);
+		C.r_Pass	("null", "dumb",false,false,false,false);
 		C.r_End		();
 		break;
 	}

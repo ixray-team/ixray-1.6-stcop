@@ -72,7 +72,7 @@ bool R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable
 
 		// TypeInfo + class
 		//D3DXSHADER_TYPEINFO*	T	= (D3DXSHADER_TYPEINFO*)(ptr+it->TypeInfo);
-		bool bSkip					= FALSE;
+		bool bSkip					= false;
 		//switch (T->Class)
 		switch (TypeDesc.Class)
 		{
@@ -183,10 +183,10 @@ bool R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable
 				}
 				*/
 			}
-			bSkip		= TRUE;
+			bSkip		= true;
 			break;
 		default:
-			bSkip		= TRUE;
+			bSkip		= true;
 			break;
 		}
 		if (bSkip)			continue;
@@ -216,7 +216,7 @@ bool R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable
 			L.cls				=	r_type;
 		}
 	}
-	return TRUE;
+	return true;
 }
 
 bool R_constant_table::parseResources(ID3DShaderReflection* pReflection, int ResNum, u32 destination)
@@ -300,7 +300,7 @@ bool R_constant_table::parseResources(ID3DShaderReflection* pReflection, int Res
 		}
 		
 	}
-	return TRUE;
+	return true;
 }
 
 IC u32 dest_to_shift_value(u32 destination)
@@ -390,5 +390,5 @@ bool	R_constant_table::parse	(void* _desc, u32 destination)
 	}
 
 	std::sort	(table.begin(),table.end(),p_sort);
-	return		TRUE;
+	return		true;
 }

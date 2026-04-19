@@ -16,7 +16,7 @@ void CRenderTarget::phase_gtao()
 		//Render the AO and view-z into new rendertarget
 		u_setrt(rt_gtao_0, nullptr, nullptr, nullptr);
 		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-		RCache.set_Stencil(FALSE);
+		RCache.set_Stencil(false);
 
 		//Go go power rangers
 		RCache.set_Element(s_gtao->E[0]);
@@ -30,7 +30,7 @@ void CRenderTarget::phase_gtao()
 		//Blur...
 		u_setrt(rt_ssao_temp, nullptr, nullptr, nullptr);
 		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-		RCache.set_Stencil(FALSE);
+		RCache.set_Stencil(false);
 
 		//Go go power rangers
 		RCache.set_Element(s_gtao->E[1]);

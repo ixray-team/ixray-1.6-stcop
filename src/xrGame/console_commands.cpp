@@ -121,14 +121,14 @@ u32 particles_workers_count = 1;
 void register_mp_console_commands();
 //-----------------------------------------------------------
 
-bool	g_bCheckTime = FALSE;
+bool	g_bCheckTime = false;
 int		net_cl_inputupdaterate = 50;
 #ifdef DEBUG_DRAW
 Flags32	dbg_net_Draw_Flags = { 0 };
 #endif
 
 #ifdef DEBUG
-bool	g_bDebugNode = FALSE;
+bool	g_bDebugNode = false;
 u32		g_dwDebugNodeSource = 0;
 u32		g_dwDebugNodeDest = 0;
 extern	int	g_bDrawBulletHit;
@@ -193,7 +193,7 @@ class CCC_MemStats : public IConsole_Command
 {
 public:
 	CCC_MemStats(const char* N) : IConsole_Command(N) {
-		bEmptyArgsHandled = TRUE;
+		bEmptyArgsHandled = true;
 		g_full_memory_stats_callback = &full_memory_stats;
 	};
 	virtual void Execute(const char* args) {
@@ -313,7 +313,7 @@ public:
 				NET_Packet		P;
 				P.w_begin(M_SWITCH_DISTANCE);
 				P.w_float(id1);
-				Level().Send(P, net_flags(TRUE, TRUE));
+				Level().Send(P, net_flags(true, true));
 			}
 		}
 		else
@@ -422,7 +422,7 @@ public:
 	CCC_DemoPlay(const char* N) :
 		IConsole_Command(N)
 	{
-		bEmptyArgsHandled = TRUE;
+		bEmptyArgsHandled = true;
 	};
 	virtual void Execute(const char* args) {
 		if (0 == g_pGameLevel)
@@ -469,8 +469,8 @@ void get_files_list(xr_vector<shared_str>& files, const char* dir, const char* f
 	files.resize(0);
 
 	FS_Path* P = FS.get_path(dir);
-	P->m_Flags.set(FS_Path::flNeedRescan, TRUE);
-	FS.m_Flags.set(CLocatorAPI::flNeedCheck, TRUE);
+	P->m_Flags.set(FS_Path::flNeedRescan, true);
+	FS.m_Flags.set(CLocatorAPI::flNeedCheck, true);
 	FS.rescan_pathes();
 
 	string256 fext;
@@ -491,7 +491,7 @@ void get_files_list(xr_vector<shared_str>& files, const char* dir, const char* f
 		strncpy_s(fn, sizeof(fn), fn_ext, xr_strlen(fn_ext) - len_str_ext);
 		files.push_back(fn);
 	}
-	FS.m_Flags.set(CLocatorAPI::flNeedCheck, FALSE);
+	FS.m_Flags.set(CLocatorAPI::flNeedCheck, false);
 }
 
 #include "UIGameCustom.h"
@@ -558,7 +558,7 @@ public:
 			net_packet.w_begin(M_SAVE_GAME);
 			net_packet.w_stringZ(S);
 			net_packet.w_u8(0);
-			Level().Send(net_packet, net_flags(TRUE));
+			Level().Send(net_packet, net_flags(true));
 		}
 		else {
 			if (!valid_saved_game_name(S)) {
@@ -570,7 +570,7 @@ public:
 			net_packet.w_begin(M_SAVE_GAME);
 			net_packet.w_stringZ(S);
 			net_packet.w_u8(1);
-			Level().Send(net_packet, net_flags(TRUE));
+			Level().Send(net_packet, net_flags(true));
 		}
 #ifdef DEBUG
 		Msg("Game save overhead  : %f milliseconds", timer.GetElapsed_sec() * 1000.f);
@@ -646,12 +646,12 @@ public:
 //		Console->Execute("stat_memory");
 
 		if (Device.Paused())
-			Device.Pause(FALSE, TRUE, TRUE, "CCC_ALifeLoadFrom");
+			Device.Pause(false, true, true, "CCC_ALifeLoadFrom");
 
 		NET_Packet					net_packet;
 		net_packet.w_begin(M_LOAD_GAME);
 		net_packet.w_stringZ(saved_game);
-		Level().Send(net_packet, net_flags(TRUE));
+		Level().Send(net_packet, net_flags(true));
 	}
 
 	virtual void fill_tips(vecTips& tips, u32 mode)
@@ -946,12 +946,12 @@ public:
 		sscanf(param2, "%u", &value2);
 
 		if ((value1 > 0) && (value2 > 0)) {
-			g_bDebugNode = TRUE;
+			g_bDebugNode = true;
 			g_dwDebugNodeSource = value1;
 			g_dwDebugNodeDest = value2;
 		}
 		else {
-			g_bDebugNode = FALSE;
+			g_bDebugNode = false;
 		}
 	}
 };
@@ -988,16 +988,16 @@ public:
 		CCC_String::Execute(args);
 		if (!xr_strcmp(args, "none"))
 		{
-			ph_dbg_draw_mask1.set(ph_m1_DbgTrackObject, FALSE);
+			ph_dbg_draw_mask1.set(ph_m1_DbgTrackObject, false);
 			return;
 		}
-		ph_dbg_draw_mask1.set(ph_m1_DbgTrackObject, TRUE);
+		ph_dbg_draw_mask1.set(ph_m1_DbgTrackObject, true);
 		PH_DBG_SetTrackObject();
 		//CObject* O= Level().Objects.FindObjectByName(args);
 		//if(O)
 		//{
 		//	PH_DBG_SetTrackObject(*(O->cName()));
-		//	ph_dbg_draw_mask1.set(ph_m1_DbgTrackObject,TRUE);
+		//	ph_dbg_draw_mask1.set(ph_m1_DbgTrackObject,true);
 		//}
 
 	}
@@ -1016,7 +1016,7 @@ struct CCC_ReloadSystemLtx : public IConsole_Command {
 		string_path fname;
 		FS.update_path(fname, _game_config_, "system.ltx");
 		CInifile::Destroy(pSettings);
-		pSettings = new CInifile(fname, TRUE);
+		pSettings = new CInifile(fname, true);
 		CHECK_OR_EXIT(
 			0 != pSettings->section_count(),
 			make_string<const char*>("Cannot find file %s.\nReinstalling application may fix this problem.",
@@ -1163,7 +1163,7 @@ public:
 		{
 			// rescan pathes
 			FS_Path* P = FS.get_path("$game_scripts$");
-			P->m_Flags.set(FS_Path::flNeedRescan, TRUE);
+			P->m_Flags.set(FS_Path::flNeedRescan, true);
 			FS.rescan_pathes();
 			// run script
 			if (ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel))
@@ -1265,7 +1265,7 @@ public:
 
 class CCC_UI_Reload : public IConsole_Command {
 public:
-	CCC_UI_Reload(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+	CCC_UI_Reload(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
 	virtual void Execute(const char* args) override
 	{
 		CXml::InvalidateCache();
@@ -1284,16 +1284,16 @@ public:
 	CCC_MainMenu(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
 	virtual void Execute(const char* args) {
 
-		bool bWhatToDo = TRUE;
+		bool bWhatToDo = true;
 		if (0 == xr_strlen(args)) {
 			bWhatToDo = !MainMenu()->IsActive();
 		};
 
 		if (EQ(args, "on") || EQ(args, "1"))
-			bWhatToDo = TRUE;
+			bWhatToDo = true;
 
 		if (EQ(args, "off") || EQ(args, "0"))
-			bWhatToDo = FALSE;
+			bWhatToDo = false;
 
 		if (Device.IsEditorMode())
 		{
@@ -1500,7 +1500,7 @@ public:
 class CCC_InvUpgradesHierarchy : public IConsole_Command
 {
 public:
-	CCC_InvUpgradesHierarchy(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+	CCC_InvUpgradesHierarchy(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
 	virtual void Execute(const char* args)
 	{
 		if (ai().get_alife())
@@ -1514,7 +1514,7 @@ public:
 class CCC_InvUpgradesCurItem : public IConsole_Command
 {
 public:
-	CCC_InvUpgradesCurItem(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+	CCC_InvUpgradesCurItem(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
 	virtual void Execute(const char* args)
 	{
 		if (!g_pGameLevel || !CurrentGameUI())
@@ -1537,7 +1537,7 @@ public:
 class CCC_InvDropAllItems : public IConsole_Command
 {
 public:
-	CCC_InvDropAllItems(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+	CCC_InvDropAllItems(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
 	virtual void Execute(const char* args)
 	{
 		if (!g_pGameLevel || !CurrentGameUI())
@@ -1896,7 +1896,7 @@ public:
 				string128 str;
 				xr_sprintf(str, "spawn_on_position %s %f %f %f %d", nameSection, madPos.x, madPos.y, madPos.z, count);
 				P.w_stringZ(str);
-				Level().Send(P, net_flags(TRUE, TRUE));
+				Level().Send(P, net_flags(true, true));
 			}
 			else
 			{
@@ -2219,7 +2219,7 @@ class CCC_Particle_TEST : public IConsole_Command
 public:
 	CCC_Particle_TEST(const char* N)
 		: IConsole_Command(N) {
-		bEmptyArgsHandled = TRUE;
+		bEmptyArgsHandled = true;
 	};
 	virtual void Execute(const char* args)
 	{
@@ -2237,7 +2237,7 @@ public:
 			sscanf(args, "%s %d", &string, &count);
 			for (int i = 0; i < count; ++i)
 			{
-				xr_shared_ptr<CParticlesObject> pParticle = Particles::Details::Create(string, FALSE);
+				xr_shared_ptr<CParticlesObject> pParticle = Particles::Details::Create(string, false);
 
 				// вычислить позицию и направленность партикла
 				Fmatrix pos;
@@ -2300,7 +2300,7 @@ public:
 class CCC_ChZLoggerTest : public IConsole_Command {
 public:
 	CCC_ChZLoggerTest(const char* N) : IConsole_Command(N) {
-		bEmptyArgsHandled = TRUE;
+		bEmptyArgsHandled = true;
 	};
 	virtual void Execute(const char* args) {
 
@@ -2330,7 +2330,7 @@ public:
 class CCC_ConsoleColors : public IConsole_Command {
 public:
 	CCC_ConsoleColors(const char* N) : IConsole_Command(N) {
-		bEmptyArgsHandled = TRUE;
+		bEmptyArgsHandled = true;
 	};
 	virtual void Execute(const char* args) {
 
@@ -2355,7 +2355,7 @@ public:
 class CCC_NoClip : public CCC_Mask32
 {
 public:
-	CCC_NoClip(const char* N) : CCC_Mask32(N, &psActorFlags, AF_NO_CLIP) { bEmptyArgsHandled = TRUE; }
+	CCC_NoClip(const char* N) : CCC_Mask32(N, &psActorFlags, AF_NO_CLIP) { bEmptyArgsHandled = true; }
 
 	void Execute(const char* args) override
 	{
@@ -2386,7 +2386,7 @@ class CCC_ChangeLanguage : public CCC_Token
 public:
 	CCC_ChangeLanguage(const char* N): CCC_Token(N, &_dummy, nullptr)
 	{
-		bEmptyArgsHandled = FALSE;
+		bEmptyArgsHandled = false;
 	}
 
 	virtual void Execute(const char* args)
@@ -2819,7 +2819,7 @@ void CCC_RegisterCommands()
 
 
 	g_uCommonFlags.zero();
-	g_uCommonFlags.set(flAiUseTorchDynamicLights, TRUE);
+	g_uCommonFlags.set(flAiUseTorchDynamicLights, true);
 
 	CMD3(CCC_Mask32, "ai_use_torch_dynamic_lights", &g_uCommonFlags, flAiUseTorchDynamicLights);
 

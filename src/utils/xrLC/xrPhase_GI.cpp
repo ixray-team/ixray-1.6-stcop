@@ -81,7 +81,7 @@ static Fvector		GetPixel_7x7		(CDB::RESULT& rpinf)
 class CGI		: public CThread
 {
 public:
-	CGI			(u32 ID)	: CThread(ID)	{	thMessages	= FALSE; }
+	CGI			(u32 ID)	: CThread(ID)	{	thMessages	= false; }
 
 	virtual void	Execute	()
 	{

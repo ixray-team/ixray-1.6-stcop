@@ -46,7 +46,7 @@ bool game_sv_freemp::OnTouchPlayersBag(CSE_ActorMP* actor, CSE_Abstract* item)
 
 	if (item->ID_Parent != 0xffff)
 	{
-		return TRUE;
+		return true;
 	}
 
 	//move all items from rukzak to player
@@ -64,7 +64,7 @@ bool game_sv_freemp::OnTouchPlayersBag(CSE_ActorMP* actor, CSE_Abstract* item)
 			CSE_Abstract* e_child_item = get_entity_from_eid(item->children.back());
 			if (e_child_item)
 			{
-				if (!OnTouch(actor->ID, e_child_item->ID, FALSE))
+				if (!OnTouch(actor->ID, e_child_item->ID, false))
 				{
 					NET_Packet P;
 					u_EventGen(P, GE_OWNERSHIP_REJECT, item->ID);
@@ -89,7 +89,7 @@ bool game_sv_freemp::OnTouchPlayersBag(CSE_ActorMP* actor, CSE_Abstract* item)
 	//destroy the BAG
 	DestroyGameItem(item);
 
-	return FALSE;
+	return false;
 }
 
 void game_sv_freemp::OnDetachPlayersBag(CSE_ActorMP* actor, CSE_Abstract* item)

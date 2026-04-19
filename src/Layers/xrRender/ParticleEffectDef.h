@@ -27,7 +27,7 @@ namespace PS
 {
 	class CParticleEffect;
 
-	typedef bool ( * CollisionCallback)(CParticleEffect* E, PAPI::Particle& P, const Fvector& pt, const Fvector& norm); // TRUE-continue collision exec
+	typedef bool ( * CollisionCallback)(CParticleEffect* E, PAPI::Particle& P, const Fvector& pt, const Fvector& norm); // true-continue collision exec
 	typedef void ( * DestroyCallback)	(CParticleEffect* E, PAPI::Particle& P);
 
 	class PFunction;

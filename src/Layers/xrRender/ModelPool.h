@@ -25,7 +25,7 @@ private:
 		shared_str			name;
 		dxRender_Visual*		model;
         u32					refs;
-        ModelDef()			{ refs=0;model=0; }
+        ModelDef()			{ refs=0;model=nullptr; }
 	};
 
 	typedef xr_multimap<shared_str,dxRender_Visual*,str_pred>	POOL;
@@ -54,12 +54,12 @@ public:
 
 	dxRender_Visual*		CreatePE			(PS::CPEDef* source);
 	dxRender_Visual*		CreatePG			(PS::CPGDef* source);
-	dxRender_Visual*		Create				(const char* name, IReader* data=0);
+	dxRender_Visual*		Create				(const char* name, IReader* data=nullptr);
 	dxRender_Visual*		CreateChild			(const char* name, IReader* data);
-	void					Delete				(dxRender_Visual* &V, bool bDiscard=FALSE);
+	void					Delete				(dxRender_Visual* &V, bool bDiscard=false);
 	void					DeleteDeffered		(dxRender_Visual* &V);
 	void					Discard				(dxRender_Visual* &V, bool b_complete);
-	void					DeleteInternal		(dxRender_Visual* &V, bool bDiscard=FALSE);
+	void					DeleteInternal		(dxRender_Visual* &V, bool bDiscard=false);
 	void					DeleteQueue			();
 	void					DeleteQueuedDeffer	();
 	

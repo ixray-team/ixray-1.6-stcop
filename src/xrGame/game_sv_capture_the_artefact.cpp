@@ -80,7 +80,7 @@ s32		game_sv_CaptureTheArtefact::GetTimeLimit				() {return g_sv_dm_dwTimeLimit;
 game_sv_CaptureTheArtefact::game_sv_CaptureTheArtefact()
 {
 	m_type = eGameIDCaptureTheArtefact;
-	roundStarted = FALSE;
+	roundStarted = false;
 	teams_swaped = false;
 	m_bSpectatorMode = false;
 	
@@ -344,7 +344,7 @@ void game_sv_CaptureTheArtefact::net_Export_Update(NET_Packet& P, ClientID id_to
 
 bool game_sv_CaptureTheArtefact::CheckForAllPlayersReady()
 {
-	if (!m_server->GetServerClient()) return FALSE;	
+	if (!m_server->GetServerClient()) return false;	
 	// Check if all players ready
 	struct ready_checker
 	{
@@ -379,8 +379,8 @@ bool game_sv_CaptureTheArtefact::CheckForAllPlayersReady()
 	tmp_functor.ready = 0;
 	m_server->ForEachClientDo(tmp_functor);
 	u32		cnt		= get_players_count	();
-	if (tmp_functor.ready == cnt && tmp_functor.ready != 0) return TRUE;
-	return FALSE;
+	if (tmp_functor.ready == cnt && tmp_functor.ready != 0) return true;
+	return false;
 }
 
 void game_sv_CaptureTheArtefact::OnPlayerConnect(ClientID id_who)
@@ -425,7 +425,7 @@ void game_sv_CaptureTheArtefact::OnPlayerConnectFinished(ClientID id_who)
 	xrCData->ps->team = etSpectatorsTeam;
 	xrCData->ps->setFlag(GAME_PLAYER_FLAG_SPECTATOR);
 	xrCData->ps->m_iTeamKills = 0;
-	xrCData->ps->net_Export(P, TRUE);
+	xrCData->ps->net_Export(P, true);
 	u_EventSend(P);
 
 	SetPlayersDefItems	(xrCData->ps);
@@ -435,7 +435,7 @@ void game_sv_CaptureTheArtefact::OnPlayerConnectFinished(ClientID id_who)
 	}
 	SpawnPlayer(id_who, "spectator");
 
-	xrCData->net_Ready = TRUE;
+	xrCData->net_Ready = true;
 }
 
 void game_sv_CaptureTheArtefact::OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameID)
@@ -594,7 +594,7 @@ void game_sv_CaptureTheArtefact::OnRoundStart()
 
 	bool m_bFastRestartBefore = m_bFastRestart; //fake, because next inherited::OnRoundStart() sets it to false :(
 	inherited::OnRoundStart	();
-	roundStarted			= TRUE;
+	roundStarted			= true;
 	// Respawn all players and some info
 		
 	if ((round_end_reason != eRoundEnd_Force) && (round_end_reason != eRoundEnd_GameRestartedFast))
@@ -796,7 +796,7 @@ void game_sv_CaptureTheArtefact::Money_SetStart(game_PlayerState* ps)
 
 void game_sv_CaptureTheArtefact::OnRoundEnd()
 {
-	roundStarted = FALSE;
+	roundStarted = false;
 	struct spectator_spawner
 	{
 		game_sv_CaptureTheArtefact* m_owner;
@@ -809,7 +809,7 @@ void game_sv_CaptureTheArtefact::OnRoundEnd()
 			if (ps->IsSkip())		return;
 			if (l_pC->owner && Level().Objects.net_Find(l_pC->owner->ID) != nullptr && Level().Objects.net_Find(l_pC->owner->ID)->cast_actor() != nullptr)
 			{
-				m_server->Perform_destroy(l_pC->owner, net_flags(TRUE, TRUE));
+				m_server->Perform_destroy(l_pC->owner, net_flags(true, true));
 			}
 			m_owner->SpawnPlayer(l_pC->ID, "spectator");
 		};
@@ -836,7 +836,7 @@ void game_sv_CaptureTheArtefact::OnPlayerSelectSkin(NET_Packet& P, ClientID send
 	Px.w_u32(GAME_EVENT_PLAYER_GAME_MENU_RESPOND);
 	Px.w_u8(PLAYER_CHANGE_SKIN);
 	Px.w_s8(l_pC->ps->skin);
-	m_server->SendTo(sender,Px,net_flags(TRUE,TRUE));
+	m_server->SendTo(sender,Px,net_flags(true,true));
 }
 void game_sv_CaptureTheArtefact::OnPlayerSelectTeam(NET_Packet& P, ClientID sender)
 {
@@ -852,7 +852,7 @@ void game_sv_CaptureTheArtefact::OnPlayerSelectTeam(NET_Packet& P, ClientID send
 	selTeamRespPacket.w_u32(GAME_EVENT_PLAYER_GAME_MENU_RESPOND);
 	selTeamRespPacket.w_u8(PLAYER_CHANGE_TEAM);
 	selTeamRespPacket.w_u8(l_pC->ps->team);
-	m_server->SendTo(sender,selTeamRespPacket,net_flags(TRUE,TRUE));
+	m_server->SendTo(sender,selTeamRespPacket,net_flags(true,true));
 	if (prev_team != selectedTeam)
 		KillPlayer(l_pC->ID, l_pC->ps->GameID);
 }
@@ -1549,7 +1549,7 @@ void game_sv_CaptureTheArtefact::DropArtefact(CSE_ActorMP *aOwner, CSE_ALifeItem
 		P.w_u8(0);
 		P.w_vec3(*dropPosition);
 	}
-	//m_server->SendBroadcast(BroadcastCID, P, net_flags(TRUE, TRUE));*/
+	//m_server->SendBroadcast(BroadcastCID, P, net_flags(true, true));*/
 	m_server->Process_event_reject(P, m_server->GetServerClient()->ID, 0,
 		aOwner->ID, artefact->ID, true);
 }
@@ -1590,7 +1590,7 @@ void game_sv_CaptureTheArtefact::ProcessPlayerDeath(game_PlayerState *playerStat
 		NET_Packet				P;
 		u_EventGen				(P,GE_OWNERSHIP_REJECT, childArtefactTeam->second.artefactOwner->ID);
 		P.w_u16					(childArtefactTeam->second.artefact->ID);
-		//m_server->SendBroadcast(BroadcastCID, P, net_flags(TRUE, TRUE));
+		//m_server->SendBroadcast(BroadcastCID, P, net_flags(true, true));
 		m_server->Process_event_reject(P, m_server->GetServerClient()->ID, 0,
 			childArtefactTeam->second.artefactOwner->ID,
 			childArtefactTeam->second.artefact->ID, true);*/
@@ -1623,14 +1623,14 @@ void game_sv_CaptureTheArtefact::ReSpawnArtefacts()
 	signal_Syncronize();
 }
 
-// TRUE=allow ownership, FALSE=denied
+// true=allow ownership, false=denied
 bool game_sv_CaptureTheArtefact::OnTouch(u16 eid_who, u16 eid_target, bool bForced)
 {
 	CSE_ActorMP *e_who = smart_cast<CSE_ActorMP*>(m_server->ID_to_entity(eid_who));
 	
 	if (!e_who)
 	{
-		return TRUE;
+		return true;
 	}
 
 	/*VERIFY2(e_who, 
@@ -1658,7 +1658,7 @@ bool game_sv_CaptureTheArtefact::OnTouch(u16 eid_who, u16 eid_target, bool bForc
 				te,
 				std::bind2nd(SearchOwnerIdFunctor(), e_who->ID)) != te) 
 		{
-			return FALSE;
+			return false;
 		}*/
 		
 
@@ -1689,23 +1689,23 @@ bool game_sv_CaptureTheArtefact::OnTouch(u16 eid_who, u16 eid_target, bool bForc
 					P.w_u8(static_cast<u8>(artefactOfTeam->first));
 					P.w_clientID(xrCData->ID);
 					u_EventSend(P);
-					return FALSE;
+					return false;
 				}
 				if (std::find_if(teams.begin(), te, [e_who](const auto& team) {
 					return SearchOwnerIdFunctor()(team, e_who->ID);
 					}) != te) {
-					return FALSE;
+					return false;
 				}
 				artefactOfTeam->second.OnPlayerAttachArtefact(e_who);
-				return TRUE;
+				return true;
 			}
-			return FALSE;
+			return false;
 		} else
 		{
 			if (std::find_if(teams.begin(), te, [e_who](const auto& team) {
 				return SearchOwnerIdFunctor()(team, e_who->ID);
 				}) != te) {
-				return FALSE;
+				return false;
 			}
 			artefactOfTeam->second.OnPlayerAttachArtefact(e_who);
 			NET_Packet			P;
@@ -1715,7 +1715,7 @@ bool game_sv_CaptureTheArtefact::OnTouch(u16 eid_who, u16 eid_target, bool bForc
 			P.w_clientID(xrCData->ID);
 			u_EventSend(P);
 
-			return TRUE;
+			return true;
 		}
 	}
 
@@ -1745,7 +1745,7 @@ bool game_sv_CaptureTheArtefact::OnTouchItem(CSE_ActorMP *actor, CSE_Abstract *i
 				CSE_Abstract *e_child_item = get_entity_from_eid(item->children.back());
 				if (e_child_item)
 				{
-					if (!OnTouch(actor->ID, e_child_item->ID, FALSE))
+					if (!OnTouch(actor->ID, e_child_item->ID, false))
 					{
 						NET_Packet P;
 						u_EventGen(P,GE_OWNERSHIP_REJECT, item->ID);
@@ -1775,11 +1775,11 @@ bool game_sv_CaptureTheArtefact::OnTouchItem(CSE_ActorMP *actor, CSE_Abstract *i
 		};
 				
 		//-------------------------------
-		return FALSE;
+		return false;
 		
 	};
 	//---------------------------------------------------------------
-	return TRUE;
+	return true;
 }
 
 void game_sv_CaptureTheArtefact::OnDetach(u16 eid_who, u16 eid_target)
@@ -1848,10 +1848,10 @@ bool game_sv_CaptureTheArtefact::OnActivate(u16 eid_who, u16 eid_target)
 		if (ps_who->team == artefactOfTeam->first)
 		{
 			artefactOfTeam->second.OnPlayerActivateArtefact(eid_who);
-			return TRUE;
+			return true;
 		}
 	}
-	return FALSE;
+	return false;
 }
 
 void game_sv_CaptureTheArtefact::FillDeathActorRejectItems(CSE_ActorMP *actor, xr_vector<CSE_Abstract*> & to_reject)
@@ -1992,7 +1992,7 @@ void game_sv_CaptureTheArtefact::MoveArtefactToPoint(CSE_ALifeItemArtefact *arte
 	MovePacket.w_u8(1);
 	MovePacket.w_u16(artefact->ID);
 	MovePacket.w_vec3(toPoint.P);
-	m_server->SendBroadcast(BroadcastCID, MovePacket, net_flags(TRUE, TRUE));	//and to all clients, because it will freeze and will not send updates...
+	m_server->SendBroadcast(BroadcastCID, MovePacket, net_flags(true, true));	//and to all clients, because it will freeze and will not send updates...
 }
 
 void game_sv_CaptureTheArtefact::MoveLifeActors()
@@ -2039,7 +2039,7 @@ void game_sv_CaptureTheArtefact::MoveLifeActors()
 	MovePacket.w_begin(M_MOVE_PLAYERS);
 	MovePacket.w_u8(tmp_functor.lifeActors);
 	MovePacket.w(tmp_functor.tempPacket.B.data, tmp_functor.tempPacket.B.count);
-	m_server->SendBroadcast(BroadcastCID, MovePacket, net_flags(TRUE, TRUE));
+	m_server->SendBroadcast(BroadcastCID, MovePacket, net_flags(true, true));
 }
 
 void game_sv_CaptureTheArtefact::RespawnClient(xrClientData const * pclient)
@@ -2234,9 +2234,9 @@ void game_sv_CaptureTheArtefact::PrepareClientForNewRound(IClient* client)
 	}
 	NET_Packet	P;
 	u_EventGen(P, GE_ACTOR_MAX_POWER, clientData->owner->ID);
-	m_server->SendTo(clientData->ID,P,net_flags(TRUE,TRUE));
+	m_server->SendTo(clientData->ID,P,net_flags(true,true));
 	//u_EventGen(P, GE_ACTOR_MAX_HEALTH, clientData->owner->ID);
-	//m_server->SendTo(clientData->ID,P,net_flags(TRUE,TRUE));
+	//m_server->SendTo(clientData->ID,P,net_flags(true,true));
 	assign_RP(static_cast<CSE_ALifeCreatureActor*>(clientData->owner), ps);
 }
 
@@ -2344,24 +2344,24 @@ void game_sv_CaptureTheArtefact::CheckForArtefactDelivering()
 bool game_sv_CaptureTheArtefact::CheckForRoundEnd()
 {
 	VERIFY(TeamList.size() >= 2);
-	if (m_dwWarmUp_CurTime != 0 || m_bInWarmUp) return FALSE;
+	if (m_dwWarmUp_CurTime != 0 || m_bInWarmUp) return false;
 	if ((teams[etGreenTeam].score >= Get_ScoreLimit()) ||
 		(teams[etBlueTeam].score >= Get_ScoreLimit()))
 	{
 		round_end_reason = eRoundEnd_ArtrefactLimit;
-		return TRUE;
+		return true;
 	}
 	if (!GetTimeLimit())
-		return FALSE;
+		return false;
 	if ( (Level().timeServer() - StartTime()) > u32(GetTimeLimit()*60000) )
 	{
 		if (teams[etGreenTeam].score != teams[etBlueTeam].score)
 		{
 			round_end_reason = eRoundEnd_TimeLimit;
-			return TRUE;
+			return true;
 		}
 	}
-	return FALSE;
+	return false;
 }
 
 bool game_sv_CaptureTheArtefact::ResetInvincibility(ClientID const clientId)

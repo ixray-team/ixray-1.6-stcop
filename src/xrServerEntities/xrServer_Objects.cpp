@@ -257,7 +257,7 @@ void CSE_PHSkeleton::STATE_Write		(NET_Packet	&tNetPacket)
 void CSE_PHSkeleton::data_load(NET_Packet &tNetPacket)
 {
 	saved_bones.net_Load(tNetPacket);
-	_flags.set(flSavedData,TRUE);
+	_flags.set(flSavedData,true);
 }
 
 void CSE_PHSkeleton::data_save(NET_Packet &tNetPacket)
@@ -266,7 +266,7 @@ void CSE_PHSkeleton::data_save(NET_Packet &tNetPacket)
 //	this comment is added by Dima (correct me if this is wrong)
 //  if we call 2 times in a row StateWrite then we get different results
 //	WHY???
-//	_flags.set(flSavedData,FALSE);
+//	_flags.set(flSavedData,false);
 }
 
 void CSE_PHSkeleton::load(NET_Packet &tNetPacket)

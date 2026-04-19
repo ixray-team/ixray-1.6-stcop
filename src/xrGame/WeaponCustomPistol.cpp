@@ -17,7 +17,7 @@ void CWeaponCustomPistol::FireEnd()
 {
 	if(fShotTimeCounter<=0) 
 	{
-		SetPending			(FALSE);
+		SetPending			(false);
 		inherited::FireEnd	();
 	}
 }

@@ -71,7 +71,7 @@ struct CEnemyFiller {
 			return;
 		}
 
-		(*I).m_mask.set				(m_mask,TRUE);
+		(*I).m_mask.set				(m_mask,true);
 	}
 };
 
@@ -186,10 +186,10 @@ void CAgentEnemyManager::exchange_enemies		(CMemberOrder &member0, CMemberOrder 
 	u32								enemy1 = member1.selected_enemy();
 	u64					mask0 = object().member().mask(&member0.object());
 	u64					mask1 = object().member().mask(&member1.object());
-	m_enemies[enemy0].m_distribute_mask.set(mask0,FALSE);
-	m_enemies[enemy1].m_distribute_mask.set(mask1,FALSE);
-	m_enemies[enemy0].m_distribute_mask.set(mask1,TRUE);
-	m_enemies[enemy1].m_distribute_mask.set(mask0,TRUE);
+	m_enemies[enemy0].m_distribute_mask.set(mask0,false);
+	m_enemies[enemy1].m_distribute_mask.set(mask1,false);
+	m_enemies[enemy0].m_distribute_mask.set(mask1,true);
+	m_enemies[enemy1].m_distribute_mask.set(mask0,true);
 	member0.selected_enemy			(enemy1);
 	member1.selected_enemy			(enemy0);
 }
@@ -243,7 +243,7 @@ void CAgentEnemyManager::assign_enemies			()
 		if (!N)
 			break;
 		
-		(*I).m_distribute_mask.set		(N,TRUE);
+		(*I).m_distribute_mask.set		(N,true);
 		CAgentMemberManager::iterator	i = object().member().member(N);
 		(*i)->probability				(best);
 		(*I).m_probability				*= 1.f - best; 
@@ -464,7 +464,7 @@ void CAgentEnemyManager::assign_wounded			()
 				continue;
 
 			wounded_processor			((*J).m_object,(*I).second.first);
-			(*J).m_distribute_mask.set	(mask,TRUE);
+			(*J).m_distribute_mask.set	(mask,true);
 			VERIFY						((assigned | mask) != assigned);
 			assigned					|= mask;
 		}
@@ -565,7 +565,7 @@ void CAgentEnemyManager::assign_wounded			()
 			wounded_processor		(enemy->m_object,processor->ID());
 
 		u64				mask = object().member().mask(processor);
-		enemy->m_distribute_mask.set(mask,TRUE);
+		enemy->m_distribute_mask.set(mask,true);
 		VERIFY						((assigned | mask) != assigned);
 		assigned					|= mask;
 	}

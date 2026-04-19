@@ -140,7 +140,7 @@ void CUIActorMenuBase::SendEvent_Item_Drop(PIItem pItem, u16 recipient)
 	R_ASSERT(pItem->parent_id()==recipient);
 	if (!IsGameTypeSingle())
 		pItem->DenyTrade();
-	//pItem->SetDropManual			(TRUE);
+	//pItem->SetDropManual			(true);
 	NET_Packet					P;
 	pItem->object().u_EventGen	(P,GE_OWNERSHIP_REJECT,pItem->parent_id());
 	P.w_u16						(pItem->object().ID());

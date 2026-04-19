@@ -160,7 +160,7 @@
 //	float ret_val = flt_max;
 //	
 //	bool				enabled = m_object->getEnabled();
-//	m_object->setEnabled(FALSE);
+//	m_object->setEnabled(false);
 //	collide::rq_result	l_rq;
 //
 //	Fvector			trace_from;

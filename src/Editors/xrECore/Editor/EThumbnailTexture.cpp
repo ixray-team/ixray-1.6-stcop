@@ -58,7 +58,7 @@ int ETextureThumbnail::MemoryUsage()
     if (FS.exist(fn))
     {
         string128		buffer;
-        IReader* F		= FS.r_open(0,fn);
+        IReader* F		= FS.r_open(nullptr,fn);
         F->r_string		(buffer,sizeof(buffer));
         int cnt = 0;
         while (!F->eof()){
@@ -77,7 +77,7 @@ void ETextureThumbnail::CreateFromData(u32* p, u32 w, u32 h)
 	EImageThumbnail::CreatePixels(p, w, h);
     m_TexParams.width = w;
     m_TexParams.height= h;
-    m_TexParams.flags.set(STextureParams::flHasAlpha,FALSE);
+    m_TexParams.flags.set(STextureParams::flHasAlpha,false);
 }
 //------------------------------------------------------------------------------
 

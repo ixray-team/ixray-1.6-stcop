@@ -90,14 +90,14 @@ bool GetTranslucency(const Vertex* V,float &v_trans )
 {
 	// Get transluency factor
 			
-	bool		bVertexLight= FALSE;
+	bool		bVertexLight= false;
 	u32 		L_flags		= 0;
 	for (u32 f=0; f<V->m_adjacents.size(); ++f)
 	{
 		Face*	F								=	V->m_adjacents[f];
 		v_trans									+=	F->Shader().vert_translucency;
 		if	(F->Shader().flags.bLIGHT_Vertex)	
-			bVertexLight		= TRUE;
+			bVertexLight		= true;
 	}
 	v_trans				/=	float(V->m_adjacents.size());
 	return bVertexLight;
@@ -108,7 +108,7 @@ class CVertexLightThread : public CThread
 public:
 	CVertexLightThread(u32 ID) : CThread(ID)
 	{
-		thMessages	= FALSE;
+		thMessages	= false;
 	}
 	virtual void		Execute	()
 	{

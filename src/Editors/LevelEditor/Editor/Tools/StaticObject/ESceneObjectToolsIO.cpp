@@ -34,7 +34,7 @@ bool ESceneObjectTool::LoadLTX(CInifile& ini)
         m_AppendRandomObjects.push_back	(s);
     }
 
-    m_Flags.set(flAppendRandom,FALSE);
+    m_Flags.set(flAppendRandom,false);
 
     return true;
 }
@@ -94,7 +94,7 @@ bool ESceneObjectTool::LoadStream(IReader& F)
         }
     };
 
-    m_Flags.set(flAppendRandom,FALSE);
+    m_Flags.set(flAppendRandom,false);
 
     return true;
 }

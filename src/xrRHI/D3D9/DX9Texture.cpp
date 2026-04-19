@@ -631,7 +631,7 @@ IRHIDepthStencilView* DX9TextureFactory::CreateDepthStencilView(IRHISurface* sur
 			ConvertRHIFormatToDX9(SurfacePtr->GetFormat()),
 			D3DMULTISAMPLE_NONE,
 			0,
-			TRUE,
+			true,
 			&dx9SurfacePtr,
 			nullptr
 		);

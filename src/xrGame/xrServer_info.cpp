@@ -57,7 +57,7 @@ void xrServer::SendServerInfoToClient(ClientID const & new_client) //WARNING ! t
 	sinfo_packet.w_u32		(GAME_EVENT_RECEIVE_SERVER_LOGO);
 	sinfo_packet.w_u32		(GetServerClient()->ID.value());
 	
-	SendTo					(new_client, sinfo_packet, net_flags(TRUE, TRUE));
+	SendTo					(new_client, sinfo_packet, net_flags(true, true));
 
 	svinfo_upload_complete_cb				upload_compl_cb(this, &xrServer::SendConfigFinished);
 	server_info_uploader&	tmp_uploader	= GetServerInfoUploader();

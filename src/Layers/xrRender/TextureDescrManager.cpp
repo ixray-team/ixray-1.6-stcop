@@ -312,7 +312,7 @@ bool CTextureDescrMngr::UseSteepParallax(const shared_str& tex_name) const
 			return I->second.m_spec->m_use_steep_parallax;
 		}	
 	}
-	return FALSE;
+	return false;
 }
 
 bool CTextureDescrMngr::UsePBRTexures(const shared_str& tex_name) const {
@@ -322,7 +322,7 @@ bool CTextureDescrMngr::UsePBRTexures(const shared_str& tex_name) const {
 			return I->second.m_spec->m_use_pbr;
 		}
 	}
-	return FALSE;
+	return false;
 }
 
 float CTextureDescrMngr::GetMaterial(const shared_str& tex_name) const
@@ -362,10 +362,10 @@ bool CTextureDescrMngr::GetDetailTexture(const shared_str& tex_name, const char*
             texture_assoc* TA = I->second.m_assoc;
 			res	= TA->detail_name.c_str();
 			map_CS::const_iterator It2 = m_detail_scalers.find(tex_name);
-			CS	= It2==m_detail_scalers.end()?0:It2->second;//TA->cs;
-			return TRUE;
+			CS	= It2==m_detail_scalers.end()?nullptr:It2->second;//TA->cs;
+			return true;
 		}
 	}
-	return FALSE;
+	return false;
 }
 

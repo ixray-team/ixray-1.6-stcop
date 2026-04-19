@@ -46,12 +46,12 @@ void THudLightTorch::NewTorchlight(const char* section)
 	RenderLight = ::Render->light_create();
 	RenderLight->set_type((IRender_Light::LT)READ_IF_EXISTS(pSettings, r_u32, section, "torch_render_type", IRender_Light::SPOT));
 	RenderLight->set_range(READ_IF_EXISTS(pSettings, r_float, section, "torch_r2_range", 15.0f));
-	RenderLight->set_shadow(!!READ_IF_EXISTS(pSettings, r_bool, section, "torch_render_shadow", TRUE));
+	RenderLight->set_shadow(!!READ_IF_EXISTS(pSettings, r_bool, section, "torch_render_shadow", true));
 
 	OmniLight = ::Render->light_create();
 	OmniLight->set_type(IRender_Light::POINT); // (IRender_Light::LT)READ_IF_EXISTS(pSettings, r_u32, section, "torch_omni_type", IRender_Light::POINT));
 	OmniLight->set_range(READ_IF_EXISTS(pSettings, r_float, section, "torch_r2_omni_range", 0.75f));
-	OmniLight->set_shadow(!!READ_IF_EXISTS(pSettings, r_bool, section, "torch_omni_shadow", FALSE));
+	OmniLight->set_shadow(!!READ_IF_EXISTS(pSettings, r_bool, section, "torch_omni_shadow", false));
 
 	LightBone = pSettings->r_string(section, "torch_light_bone");
 
@@ -90,7 +90,7 @@ void THudLightTorch::NewTorchlight(const char* section)
 	RenderLight->set_cone(deg2rad(READ_IF_EXISTS(pSettings, r_float, section, "torch_spot_angle", 75.0f)));
 	RenderLight->set_texture(pSettings->r_string(section, "torch_spot_texture"));
 
-	IsLightDirByBone = !!READ_IF_EXISTS(pSettings, r_bool, section, "light_directions_by_bones", FALSE);
+	IsLightDirByBone = !!READ_IF_EXISTS(pSettings, r_bool, section, "light_directions_by_bones", false);
 	if (IsLightDirByBone)
 	{
 		LightDirBoneName = pSettings->r_string(section, "light_dir_bone");
@@ -297,7 +297,7 @@ void THudLightTorch::UpdateTorch(CHudItemObject* item, bool& saved_status)
 			u16 bone_id = kin->LL_BoneID(bone_name);
 			if (bone_id != BI_NONE)
 			{
-				kin->LL_SetBoneVisible(bone_id, status, FALSE);
+				kin->LL_SetBoneVisible(bone_id, status, false);
 			}
 		}
 	};
@@ -354,7 +354,7 @@ void THudLightLaser::NewTorchlight(const char* section)
 	RenderLight->set_range(LaserLightDist);
 	RenderLight->set_type(IRender_Light::SPOT);
 
-	RenderLight->set_shadow(!!READ_IF_EXISTS(pSettings, r_bool, section, "laser_render_shadow", TRUE));
+	RenderLight->set_shadow(!!READ_IF_EXISTS(pSettings, r_bool, section, "laser_render_shadow", true));
 
 	LightSpotAngle = READ_IF_EXISTS(pSettings, r_fvector2, section, "laser_spot_angle", LightSpotAngle.set(2, 5));
 	LightSpotAngle.mul(M_PI / 180);
@@ -572,7 +572,7 @@ void THudLightLaser::UpdateLaser(CHudItemObject* item, bool& saved_status)
 			u16 bone_id = kin->LL_BoneID(bone_name);
 			if (bone_id != BI_NONE)
 			{
-				kin->LL_SetBoneVisible(bone_id, status, FALSE);
+				kin->LL_SetBoneVisible(bone_id, status, false);
 			}
 		}
 	};

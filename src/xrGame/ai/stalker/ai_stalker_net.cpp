@@ -96,7 +96,7 @@ void CAI_Stalker::net_Import(NET_Packet& P)
 	//if (NET.empty() || (NET.back().dwTimeStamp < N.dwTimeStamp))
 	//{
 	//	NET.push_back(N);
-	//	NET_WasInterpolating = TRUE;
+	//	NET_WasInterpolating = true;
 	//}
 
 	P.r_float();
@@ -105,8 +105,8 @@ void CAI_Stalker::net_Import(NET_Packet& P)
 	shared_str temp;
 	P.r_stringZ(temp);
 
-	setVisible(TRUE);
-	setEnabled(TRUE);
+	setVisible(true);
+	setEnabled(true);
 }
 
 void CAI_Stalker::SyncRead(NET_Packet& Packet)
@@ -269,7 +269,7 @@ void ApplyBYParts_Event(IKinematicsAnimated* ka, CAI_Stalker* stalker, StalkerMo
 			CBlend* blend = 0;
 			if (!m_blend)
 			{
-				blend = ka->LL_PlayCycle(i, motion, TRUE, 0, 0);
+				blend = ka->LL_PlayCycle(i, motion, true, 0, 0);
 				if (blend && !m_blend)
 					m_blend = blend;
 
@@ -278,12 +278,12 @@ void ApplyBYParts_Event(IKinematicsAnimated* ka, CAI_Stalker* stalker, StalkerMo
 			}
 			else
 			{
-				ka->LL_PlayCycle(i, motion, TRUE, 0, 0);
+				ka->LL_PlayCycle(i, motion, true, 0, 0);
 			}
 		}
 		else
 		{
-			ka->LL_PlayCycle(i, motion, TRUE, 0, 0);
+			ka->LL_PlayCycle(i, motion, true, 0, 0);
 		}
 	}
 }
@@ -300,7 +300,7 @@ void ApplyBYParts(IKinematicsAnimated* ka, CAI_Stalker* stalker, StalkerMotionDa
 		CBlend* blend = 0;
 		if (!m_blend)
 		{
-			blend = ka->LL_PlayCycle(i, motion, TRUE, 0, 0);
+			blend = ka->LL_PlayCycle(i, motion, true, 0, 0);
 
 			if (blend && !m_blend)
 				m_blend = blend;
@@ -318,7 +318,7 @@ void ApplyBYParts(IKinematicsAnimated* ka, CAI_Stalker* stalker, StalkerMotionDa
 		}
 		else
 		{
-			ka->LL_PlayCycle(i, motion, TRUE, 0, 0);
+			ka->LL_PlayCycle(i, motion, true, 0, 0);
 		}
 	}
 }
@@ -499,7 +499,7 @@ void CAI_Stalker::UpdateScriptAnim(NET_Packet& packet)
 			anims.SetTorso(data);
 			try 
 			{
-				ka->LL_PlayCycle(1, data.id, TRUE, 0, 0);
+				ka->LL_PlayCycle(1, data.id, true, 0, 0);
 			}
 			catch (...)
 			{
@@ -515,7 +515,7 @@ void CAI_Stalker::UpdateScriptAnim(NET_Packet& packet)
 			anims.SetHead(data);
 			try
 			{
-				ka->LL_PlayCycle(2, data.id, TRUE, 0, 0);
+				ka->LL_PlayCycle(2, data.id, true, 0, 0);
 			}
 			catch (...)
 			{
@@ -531,7 +531,7 @@ void CAI_Stalker::UpdateScriptAnim(NET_Packet& packet)
 			anims.SetLegs(data);
 			try
 			{
-				ka->LL_PlayCycle(0, data.id, TRUE, 0, 0);
+				ka->LL_PlayCycle(0, data.id, true, 0, 0);
 			}
 			catch (...)
 			{

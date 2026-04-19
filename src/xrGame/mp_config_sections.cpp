@@ -33,7 +33,7 @@ static const char* important_sections[] =
 };
 
 mp_config_sections::mp_config_sections() :
-	m_tmp_dumper(nullptr, FALSE, FALSE, FALSE)
+	m_tmp_dumper(nullptr, false, false, false)
 {
 	u32		gcount	=  pSettings->line_count("mp_item_groups");
 	const char*	line;

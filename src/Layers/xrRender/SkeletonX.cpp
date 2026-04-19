@@ -311,7 +311,7 @@ ICF void transfer_matrices(CBoneInstance* BI, u16 bonecount, bool phase_normal)
 		}
 	}
 
-	//выполним в том случае если PHASE_SMAP или моушн вектора выключены
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ PHASE_SMAP пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	for (u16 bid = 0; bid < bonecount; bid++)
 	{
 		Fmatrix& M = BI[bid].mRenderTransform;
@@ -472,7 +472,7 @@ void CSkeletonX::_Load(const char* N, IReader *data, u32& dwVertCount)
 #endif
 
 	buffer_vector<u16> bids(_alloca(hw_bones_cnt * sizeof(u16)), hw_bones_cnt);
-	//если поймаете исключение замените на xr_vector
+	//пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ xr_vector
 
 	u32 dwVertType,size,it,crc;
 	dwVertType = data->r_u32(); 
@@ -647,9 +647,9 @@ bool CSkeletonX::has_visible_bones()
 	for (u32 it=0; it<BonesUsed.size(); it++)
 	{
 		if (Parent->visimask.is(BonesUsed[it]))
-			return TRUE;
+			return true;
 	}
-	return FALSE;
+	return false;
 }
 
 void CSkeletonX::_DuplicateIndices(IReader *data)

@@ -168,7 +168,7 @@ void CtaGameArtefact::PH_A_CrPr()
 		IKinematics *K = object().Visual()->dcast_PKinematics();
 		VERIFY( K );
 		K->CalculateBones_Invalidate();
-		K->CalculateBones(TRUE);
+		K->CalculateBones(true);
 		
 		object().PPhysicsShell()->GetGlobalTransformDynamic(&object().XFORM());
 		object().spatial_move();

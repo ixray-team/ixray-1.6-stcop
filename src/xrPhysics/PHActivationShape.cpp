@@ -165,7 +165,7 @@ CPHActivationShape::CPHActivationShape()
 	m_geom=nullptr;
 	m_body=nullptr;
 	m_flags.zero();
-	m_flags.set(flFixedRotation,TRUE);
+	m_flags.set(flFixedRotation,true);
 }
 CPHActivationShape::~CPHActivationShape()
 {
@@ -202,7 +202,7 @@ void	CPHActivationShape::Create(const Fvector start_pos,const Fvector start_size
 	dBodyEnable						(m_body)										;
 	m_safe_state					.create(m_body)									;
 	spatial_register				()												;
-	m_flags.set(flags,TRUE);
+	m_flags.set(flags,true);
 }
 void CPHActivationShape::	Destroy	()
 {

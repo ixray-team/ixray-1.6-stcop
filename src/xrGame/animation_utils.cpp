@@ -50,12 +50,12 @@ void anim_bone_fix::fix( u16 bone_id, IKinematics &K )
 	
 	parent = &K.LL_GetBoneInstance( bd.GetParentID() );
 	matrix.mul_43( Fmatrix().invert( parent->mTransform ), bi.mTransform );
-	bi.set_callback( bctCustom, callback, this, TRUE );
+	bi.set_callback( bctCustom, callback, this, true );
 }
 void	anim_bone_fix::refix		()
 {
 	//return;
-	bone->set_callback( bctCustom, callback, this, TRUE );
+	bone->set_callback( bctCustom, callback, this, true );
 }
 void	anim_bone_fix::deinit		()
 {

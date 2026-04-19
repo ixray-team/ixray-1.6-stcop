@@ -174,7 +174,7 @@ void CSightAction::execute_object				()
 			look_pos = pos;
 			look_pos.y -= 0.9f;
 		}
-		m_object->Visual()->dcast_PKinematics()->CalculateBBox(FALSE);
+		m_object->Visual()->dcast_PKinematics()->CalculateBBox(false);
 	}
 	else
 		m_object_to_look->Center(look_pos);

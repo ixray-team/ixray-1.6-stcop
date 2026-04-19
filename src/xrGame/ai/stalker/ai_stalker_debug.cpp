@@ -113,7 +113,7 @@ void try_change_current_entity()
 	Engine.Sheduler.Register	(actor);
 	
 	Engine.Sheduler.Unregister	(nearest_agent);
-	Engine.Sheduler.Register	(nearest_agent, TRUE);
+	Engine.Sheduler.Register	(nearest_agent, true);
 }
 
 void restore_actor()
@@ -127,7 +127,7 @@ void restore_actor()
 	Level().SetEntity			(g_debug_actor);
 
 	Engine.Sheduler.Unregister	(g_debug_actor);
-	Engine.Sheduler.Register	(g_debug_actor, TRUE);
+	Engine.Sheduler.Register	(g_debug_actor, true);
 
 	g_debug_actor->inventory().Items_SetCurrentEntityHud(true);
 
@@ -1276,7 +1276,7 @@ static void fill_bones				(CAI_Stalker& self, Fmatrix const& transform, IKinemat
 		u32 const blend_count			= kinematics_animated->LL_PartBlendsCount(i);
 		for (u32 j=0; j<blend_count; ++j) {
 			CBlend* const blend			= kinematics_animated->LL_PartBlend(i, j);
-			CBlend* const new_blend		= kinematics_animated->LL_PlayCycle( i, blend->motionID, TRUE, 0, 0, 1 );
+			CBlend* const new_blend		= kinematics_animated->LL_PlayCycle( i, blend->motionID, true, 0, 0, 1 );
 			VERIFY						(new_blend);
 			*new_blend					= *blend;
 			new_blend->channel			= 1;
@@ -1422,7 +1422,7 @@ static void draw_animation_bones	(CAI_Stalker& self, Fmatrix const& transform, I
 	fill_bones							(self, transform, kinematics_animated, animation_id, true);
 
 #ifdef DEBUG_RENDER
-//	self.setVisible						(FALSE);
+//	self.setVisible						(false);
 
 	draw_bones							(
 		*kinematics,
@@ -1580,7 +1580,7 @@ static void draw_animation_bones	(CAI_Stalker& self, Fmatrix const& transform, I
 			self.animation().assign_bone_callbacks();
 	}
 
-	kinematics->CalculateBones		(TRUE);
+	kinematics->CalculateBones		(true);
 
 	VERIFY							(!g_stalker_skeleton.empty());
 

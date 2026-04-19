@@ -13,7 +13,7 @@ public:
 
 	virtual void SetShader(IUIShader &shader);
 	virtual void SetAlphaRef(int aref);
-	virtual void SetScissor(Irect* rect=NULL);
+	virtual void SetScissor(Irect* rect= nullptr);
 
 	virtual Irect GetScissor() const { return copy_scissor; };
 

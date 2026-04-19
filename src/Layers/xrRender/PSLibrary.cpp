@@ -85,7 +85,7 @@ PS::PEDIt CPSLibrary::FindPEDIt(const char* Name)
 PS::CPEDef* CPSLibrary::FindPED(const char* Name)
 {
 	auto it = FindPEDIt(Name);
-    return (it==m_PEDs.end())?0:*it;
+    return (it==m_PEDs.end())?nullptr:*it;
 }
 
 PS::PGDIt CPSLibrary::FindPGDIt(const char* Name)
@@ -105,7 +105,7 @@ PS::PGDIt CPSLibrary::FindPGDIt(const char* Name)
 PS::CPGDef* CPSLibrary::FindPGD(const char* Name)
 {
 	auto it = FindPGDIt(Name);
-    return (it==m_PGDs.end())?0:*it;
+    return (it==m_PGDs.end())?nullptr:*it;
 }
 
 void CPSLibrary::RenamePED(PS::CPEDef* src, const char* new_name)
@@ -117,7 +117,7 @@ void CPSLibrary::RenamePED(PS::CPEDef* src, const char* new_name)
 PS::CPACDef* CPSLibrary::FindPACD(const char* Name)
 {
 	auto it = FindPACDIt(Name);
-	return (it==m_PACDs.end())?0:*it;
+	return (it==m_PACDs.end())?nullptr:*it;
 }
 
 PS::IPAC* CPSLibrary::FindIPAC(const char* name)
@@ -203,9 +203,9 @@ bool CPSLibrary::Load2()
 	for(;it!=it_e;++it)
 	{
 		const FS_File& f		= (*it);
-	    _splitpath				(f.name.c_str(), 0, p_path, p_name, p_ext );
+	    _splitpath				(f.name.c_str(), nullptr, p_path, p_name, p_ext );
         FS.update_path			(_path, "$game_particles$",f.name.c_str());
-        CInifile				ini (_path,TRUE,TRUE,FALSE);
+        CInifile				ini (_path,true,true,false);
 
 #ifdef _EDITOR
         if(pb) pb->Inc					();
@@ -509,12 +509,12 @@ using PS::CPGDef;
 
 CPGDef const* const* CPSLibrary::particles_group_begin	() const
 {
-	return	(m_PGDs.size() ? &*m_PGDs.begin() : 0);
+	return	(m_PGDs.size() ? &*m_PGDs.begin() : nullptr);
 }
 
 CPGDef const* const* CPSLibrary::particles_group_end	() const
 {
-	return	(m_PGDs.size() ? &*m_PGDs.end() : 0);
+	return	(m_PGDs.size() ? &*m_PGDs.end() : nullptr);
 }
 
 void CPSLibrary::particles_group_next			(PS::CPGDef const* const*& iterator) const

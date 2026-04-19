@@ -32,7 +32,7 @@ namespace Platform
     IC std::filesystem::path GetBinaryFolderPath()
     {
         char BinPath[MAX_PATH];
-        int bytes = GetModuleFileNameA(NULL, BinPath, sizeof(BinPath));
+        int bytes = GetModuleFileNameA(nullptr, BinPath, sizeof(BinPath));
         if (bytes == 0) 
         {
             return {};
@@ -43,7 +43,7 @@ namespace Platform
     IC std::string GetModuleName()
     {
         char ModuleName[MAX_PATH];
-        int bytes = GetModuleFileNameA(NULL, ModuleName, sizeof(ModuleName));
+        int bytes = GetModuleFileNameA(nullptr, ModuleName, sizeof(ModuleName));
         if (bytes == 0) 
         {
             return {};
@@ -107,7 +107,7 @@ namespace Platform
             FlagsRight |= FILE_SHARE_WRITE;
         }
 
-        auto FileSource = ::CreateFile(Path, FlagsLeft, FlagsRight, 0, OPEN_EXISTING, 0, 0);
+        auto FileSource = ::CreateFile(Path, FlagsLeft, FlagsRight, nullptr, OPEN_EXISTING, 0, nullptr);
         //R_ASSERT3(FileSource != INVALID_HANDLE_VALUE, cFileName, Debug.error2string(GetLastError()));
         return FileSource;
     }
@@ -115,7 +115,7 @@ namespace Platform
     IC FileHandle OpenFile(const char* FilePath)
     {
         const xr_special_char* Path = Platform::ANSI_TO_TCHAR_U8(FilePath);
-        auto Handle = ::CreateFile(Path, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, 0, 0);
+        auto Handle = ::CreateFile(Path, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, 0, nullptr);
 
         return Handle;
     }
@@ -127,13 +127,13 @@ namespace Platform
 
     IC size_t GetFileSize(FileHandle Src)
     {
-        return ::GetFileSize(Src, NULL);
+        return ::GetFileSize(Src, nullptr);
     }
 
     IC void* CreateMapData(FileHandle hSrcFile, bool ReadOnly = false)
     {
         auto MapFlags = ReadOnly ? PAGE_READONLY : PAGE_READWRITE;
-        return CreateFileMapping(hSrcFile, 0, MapFlags, 0, 0, 0);
+        return CreateFileMapping(hSrcFile, nullptr, MapFlags, 0, 0, nullptr);
     }
 
     IC void* MapFile(FileHandle hSrcFile, [[maybe_unused]] size_t Size, bool bRead = false, size_t Offset = 0)
