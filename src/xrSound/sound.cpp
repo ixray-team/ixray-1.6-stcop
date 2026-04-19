@@ -18,7 +18,7 @@ void CSound_manager_interface::_create(int stage)
 			SoundRender->bPresent = FALSE;
 			return;
 		}else
-			SoundRender->bPresent = TRUE;
+			SoundRender->bPresent = true;
 
 	}
 

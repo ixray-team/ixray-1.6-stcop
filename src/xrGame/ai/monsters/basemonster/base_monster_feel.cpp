@@ -138,7 +138,7 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 
 					if (device != nullptr)
 					{
-						device->SetDropManual(TRUE);
+						device->SetDropManual(true);
 						need_kick_animator = true;
 					}
 				}
@@ -292,7 +292,7 @@ bool  CBaseMonster::feel_vision_isRelevant(CObject* O)
 		}
 	}
 
-	return TRUE;
+	return true;
 }
 
 void CBaseMonster::HitSignal(float amount, Fvector& vLocalDir, CObject* who, s16 element)

@@ -171,13 +171,13 @@ void CRender::create()
 
 	// gloss
 	char*	g			= strstr(Core.Params,"-gloss ");
-	o.forcegloss		= g?	TRUE	:FALSE	;
+	o.forcegloss		= g?	true	:FALSE	;
 	if (g)				{
 		o.forcegloss_v		= float	(atoi	(g+xr_strlen("-gloss ")))/255.f;
 	}
 
 	// options
-	o.sunstatic			= !ps_r2_ls_flags.test(R2FLAG_SUN) ? TRUE : FALSE;
+	o.sunstatic			= !ps_r2_ls_flags.test(R2FLAG_SUN) ? true : FALSE;
 	o.noshadows			= Core.ParamsData.test(ECoreParams::noshadows);
 	o.Tshadows			= Core.ParamsData.test(ECoreParams::tsh);
 	o.distortion_enabled= !Core.ParamsData.test(ECoreParams::nodistort);

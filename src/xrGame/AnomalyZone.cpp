@@ -50,7 +50,7 @@ CAnomalyZone::CAnomalyZone(void)
 	m_actor_effector			= nullptr;
 	m_zone_flags.set			(eIdleObjectParticlesDontStop, FALSE);
 	m_zone_flags.set			(eBlowoutWindActive, FALSE);
-	m_zone_flags.set			(eFastMode, TRUE);
+	m_zone_flags.set			(eFastMode, true);
 
 	m_eZoneState				= eZoneStateIdle;
 
@@ -206,19 +206,19 @@ void CAnomalyZone::Load(const char* section)
 
 	if (pSettings->line_exist(section, "bullet_entrance_action"))
 	{
-		m_zone_flags.set(eBulletEntranceAction, TRUE);
+		m_zone_flags.set(eBulletEntranceAction, true);
 
 		if (pSettings->line_exist(section, "bullet_entrance_particles"))
 			m_sBulletEntranceParticles = pSettings->r_string(section, "bullet_entrance_particles");
 
 		if (pSettings->line_exist(section, "bullet_flies_through"))
-			m_zone_flags.set(eBulletFliesThrough, TRUE);
+			m_zone_flags.set(eBulletFliesThrough, true);
 
 		if (pSettings->line_exist(section, "bullet_ricochet"))
-			m_zone_flags.set(eBulletRicochet, TRUE);
+			m_zone_flags.set(eBulletRicochet, true);
 
 		if (pSettings->line_exist(section, "bullet_ricochet_random"))
-			m_zone_flags.set(eBulletRandom, TRUE);
+			m_zone_flags.set(eBulletRandom, true);
 	}
 
 	if(pSettings->line_exist(section,"blowout_particles_time")) 
@@ -409,8 +409,8 @@ bool CAnomalyZone::net_Spawn(CSE_Abstract* DC)
 	SpatialComponent->spatial.type |= ESPATIAL_TYPE::ANOMALY_ZONE;
 	SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::SPACE_RESTRICTOR;
 	if (Visual())
-		setEnabled(TRUE);
-	return						(TRUE);
+		setEnabled(true);
+	return						(true);
 }
 
 void CAnomalyZone::net_Destroy() 
@@ -590,7 +590,7 @@ void CAnomalyZone::shedule_Update(u32 dt)
 			//если есть хотя бы один не дисабленый объект, то
 			//зона считается активной
 			if(info.zone_ignore == false) 
-				m_zone_flags.set(eZoneIsActive,TRUE);
+				m_zone_flags.set(eZoneIsActive,true);
 		}
 
 		if(eZoneStateIdle ==  m_eZoneState)
@@ -802,7 +802,7 @@ void CAnomalyZone::PlayBlowoutParticles()
 	if(!m_sBlowoutParticles) return;
 
 	CParticlesObject* pParticles;
-	pParticles	= Particles::Details::Create(*m_sBlowoutParticles,TRUE).get();
+	pParticles	= Particles::Details::Create(*m_sBlowoutParticles,true).get();
 	pParticles->UpdateParent(XFORM(),zero_vel);
 	pParticles->Play(false);
 }
@@ -887,7 +887,7 @@ void CAnomalyZone::PlayEntranceParticles(CGameObject* pObject)
 
 	if (play_bone != BI_NONE)
 	{
-		CParticlesObject* pParticles = Particles::Details::Create(particle_str, TRUE).get();
+		CParticlesObject* pParticles = Particles::Details::Create(particle_str, true).get();
 		Fmatrix xform;
 		Fvector dir;
 		
@@ -927,7 +927,7 @@ u8 CAnomalyZone::PlayEntranceSmallParticles(const Fvector& pos, const Fvector& d
 				}
 
 
-				CParticlesObject* pParticles = Particles::Details::Create(particles_str, TRUE).get();
+				CParticlesObject* pParticles = Particles::Details::Create(particles_str, true).get();
 				Fmatrix xform;
 				Fvector::generate_orthonormal_basis(dir, xform.j, xform.i);
 				xform.c.set(pos);
@@ -995,7 +995,7 @@ void CAnomalyZone::PlayBoltEntranceParticles()
 
 				PXF.c					= sP1;
 
-				pParticles				= Particles::Details::Create(m_sBoltEntranceParticles.c_str(), TRUE).get();
+				pParticles				= Particles::Details::Create(m_sBoltEntranceParticles.c_str(), true).get();
 				pParticles->UpdateParent(PXF,vel);
 				pParticles->Play		(false);
 			}
@@ -1017,7 +1017,7 @@ void CAnomalyZone::PlayBulletParticles(Fvector& pos)
 	if(!m_sEntranceParticlesSmall) return;
 	
 	CParticlesObject* pParticles;
-	pParticles = Particles::Details::Create(*m_sEntranceParticlesSmall,TRUE).get();
+	pParticles = Particles::Details::Create(*m_sEntranceParticlesSmall,true).get();
 	
 	Fmatrix M;
 	M = XFORM();
@@ -1323,7 +1323,7 @@ void CAnomalyZone::StartWind()
 {
 	if(m_fDistanceToCurEntity>WIND_RADIUS) return;
 
-	m_zone_flags.set(eBlowoutWindActive, TRUE);
+	m_zone_flags.set(eBlowoutWindActive, true);
 
 	m_fStoreWindPower = g_pGamePersistent->Environment().wind_strength_factor;
 	clamp(g_pGamePersistent->Environment().wind_strength_factor, 0.f, 1.f);
@@ -1436,7 +1436,7 @@ void CAnomalyZone::PlayAccumParticles()
 	if(m_sAccumParticles.size())
 	{
 		CParticlesObject* pParticles;
-		pParticles	= Particles::Details::Create(*m_sAccumParticles,TRUE).get();
+		pParticles	= Particles::Details::Create(*m_sAccumParticles,true).get();
 		pParticles->UpdateParent(XFORM(),zero_vel);
 		pParticles->Play(false);
 	}
@@ -1452,7 +1452,7 @@ void CAnomalyZone::PlayAwakingParticles()
 	if(m_sAwakingParticles.size())
 	{
 		CParticlesObject* pParticles;
-		pParticles	= Particles::Details::Create(*m_sAwakingParticles,TRUE).get();
+		pParticles	= Particles::Details::Create(*m_sAwakingParticles,true).get();
 		pParticles->UpdateParent(XFORM(),zero_vel);
 		pParticles->Play(false);
 	}
@@ -1528,7 +1528,7 @@ bool CAnomalyZone::AlwaysTheCrow()
 {
 	bool b_idle = ZoneState()==eZoneStateIdle || ZoneState()==eZoneStateDisabled;
  	if(!b_idle || (m_zone_flags.test(eAlwaysFastmode) && IsEnabled()) )
-		return TRUE;
+		return true;
  	else
  		return inherited::AlwaysTheCrow();
 }
@@ -1612,7 +1612,7 @@ void CAnomalyZone::CalcDistanceTo(const Fvector& P, float& dist, float& radius)
 void CAnomalyZone::o_switch_2_fast				()
 {
 	if (m_zone_flags.test(eFastMode))		return	;
-	m_zone_flags.set(eFastMode, TRUE);
+	m_zone_flags.set(eFastMode, true);
 	StartIdleLight();
 	processing_activate			();
 }

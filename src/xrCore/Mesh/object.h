@@ -140,17 +140,17 @@ public:
 
 	// Bin the last collapse.
 	// Returns TRUE if these was a last collapse to do.
-	long		BinEdgeCollapse				( void );
+	bool		BinEdgeCollapse				( void );
 
 	// Returns TRUE if a collapse was undone.
-	long		UndoCollapse				( void );
+	bool		UndoCollapse				( void );
 
 	// Returns TRUE if a collapse was done.
-	long		DoCollapse					( void );
+	bool		DoCollapse					( void );
 	
 	void		SetNewLevel					( int iLevel );
 
-	long		CollapseAllowedForLevel		( MeshPt *pptBinned, int iLevel );
+	bool		CollapseAllowedForLevel		( MeshPt *pptBinned, int iLevel );
 
 	// Return the error from this edge collapse.
 	// Set bTryToCacheResult=TRUE if you can pass pptBinned in multiple times.

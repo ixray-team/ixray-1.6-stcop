@@ -60,7 +60,7 @@ bool CBlackGraviArtefact::net_Spawn(CSE_Abstract* DC)
 
 
 
-	return TRUE;
+	return true;
 }
 struct SRP
 {
@@ -96,7 +96,7 @@ void CBlackGraviArtefact::UpdateCLChild()
 
 			GraviStrike();
 
-			CParticlesObject* pStaticPG = Particles::Details::Create(*m_sParticleName,TRUE).get();
+			CParticlesObject* pStaticPG = Particles::Details::Create(*m_sParticleName,true).get();
 			Fmatrix pos; 
 			pos.set(XFORM()); 
 			Fvector vel; 
@@ -159,7 +159,7 @@ bool CBlackGraviArtefact::feel_touch_contact(CObject* O)
 	CGameObject* pGameObject = static_cast<CGameObject*>(O);
 
 	if(pGameObject)
-		return TRUE;
+		return true;
 	else
 		return FALSE;
 }

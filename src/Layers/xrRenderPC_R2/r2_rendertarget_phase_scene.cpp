@@ -35,7 +35,7 @@ void	CRenderTarget::phase_scene_begin	()
 	u_setrt(rt_Position, rt_Normal, rt_Color, RDepth);
 
 	// Stencil - write 0x1 at pixel pos
-	RCache.set_Stencil					( TRUE,D3DCMP_ALWAYS,0x01,0xff,0xff,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE,D3DSTENCILOP_KEEP);
+	RCache.set_Stencil					( true,D3DCMP_ALWAYS,0x01,0xff,0xff,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE,D3DSTENCILOP_KEEP);
 
 	// Misc		- draw only front-faces
 	CHK_DX(RDevice->SetRenderState	( D3DRS_TWOSIDEDSTENCILMODE,FALSE				));

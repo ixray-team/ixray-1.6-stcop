@@ -129,7 +129,7 @@ bool CTheoraStream::ParseHeaders		()
 	// calculate frame count & total length in ms & key rate
 	ogg_int64_t	frame_count	= 0;
 	ogg_int64_t p_key=0, c_key=0;
-	while (TRUE){
+	while (true){
 		while(ogg_stream_packetout(&o_stream_state,&o_packet)>0){
 			if ((0==key_rate)&&theora_packet_iskeyframe(&o_packet)){
 				p_key		= c_key;
@@ -150,7 +150,7 @@ bool CTheoraStream::ParseHeaders		()
 	// seek to 0
 	Reset					();
 
-	return TRUE;
+	return true;
 }
 
 bool CTheoraStream::Decode(u32 in_tm_play)
@@ -181,7 +181,7 @@ bool CTheoraStream::Decode(u32 in_tm_play)
 					int res					= theora_decode_packetin(&t_state,&o_packet);
 					VERIFY					(res!=OC_BADPACKET);
 //.					dbg_log					((stderr,"%04d: granule frame\n",theora_granule_frame(&t_state,t_state.granulepos)));
-					if (d_frame>=t_frame)	result = TRUE;
+					if (d_frame>=t_frame)	result = true;
 				}else						break;
 			}
 			// check eof
@@ -195,11 +195,11 @@ bool CTheoraStream::Decode(u32 in_tm_play)
 			}
 		}
 		// all right - get yuv buffer
-		VERIFY								(TRUE==result);
+		VERIFY								(true==result);
 		VERIFY								(d_frame==t_frame);
 		theora_decode_YUVout				(&t_state,&t_yuv_buffer);
 //.		dbg_log								((stderr,"%04d: yuv out\n",d_frame));
-		return TRUE;
+		return true;
 	}
 	return FALSE;
 }

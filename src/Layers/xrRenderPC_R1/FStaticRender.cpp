@@ -341,7 +341,7 @@ void CRender::Calculate				()
 		for (int K=0; K<Sectors_xrc.r_count(); K++)
 		{
 			CPortal*	pPortal		= (CPortal*) Portals[rmPortals->get_tris()[Sectors_xrc.r_begin()[K].id].dummy];
-			pPortal->bDualRender	= TRUE;
+			pPortal->bDualRender	= true;
 		}
 	}
 	//
@@ -531,7 +531,7 @@ void CRender::Render()
 	g_pGamePersistent->Environment().RenderClouds	();				// clouds
 
 	r_pmask										(true,false);	// disable priority "1"
-	o.vis_intersect								= TRUE			;
+	o.vis_intersect								= true			;
 	L_Dynamic->render							(0);				// addititional light sources
 	if(Wallmarks){
 		Wallmarks->Render						();				// wallmarks has priority as normal geometry

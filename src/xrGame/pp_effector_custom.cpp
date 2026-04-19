@@ -30,7 +30,7 @@ bool CPPEffectorCustom::Process(SPPInfo& pp)
 
 	pp.lerp				(pp_identity, m_state, m_factor);
 
-	return TRUE;
+	return true;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -42,7 +42,7 @@ CPPEffectorControlled::CPPEffectorControlled(CPPEffectorController *controller, 
 bool CPPEffectorControlled::update()
 {
 	m_controller->update_factor();
-	return TRUE;
+	return true;
 }
 
 

@@ -226,7 +226,7 @@ void CGameObject::OnEvent		(NET_Packet& P, u16 type)
 			Msg("--- Object: GE_DESTROY of [%d][%s]", ID(), cNameSect().c_str());
 #endif // MP_LOGGING
 
-			setDestroy		(TRUE);
+			setDestroy		(true);
 //			MakeMeCrow		();
 		}
 		break;
@@ -305,7 +305,7 @@ bool CGameObject::net_Spawn		(CSE_Abstract*	DC)
 		}
 	};
 
-	setReady						(TRUE);
+	setReady						(true);
 	if (!demo_spectator)
 		g_pGameLevel->Objects.net_Register	(this);
 
@@ -542,8 +542,8 @@ void CGameObject::spawn_supplies()
 				}
 
 				NET_Packet					P;
-				A->Spawn_Write				(P,TRUE);
-				Level().Send				(P,net_flags(TRUE));
+				A->Spawn_Write				(P,true);
+				Level().Send				(P,net_flags(true));
 				F_entity_Destroy			(A);
 		}
 	}

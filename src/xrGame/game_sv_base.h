@@ -150,12 +150,12 @@ public:
 	void							u_EventSend				(NET_Packet& P, u32 dwFlags = DPNSEND_GUARANTEED);
 
 	// Events
-	virtual		bool				OnPreCreate				(CSE_Abstract* E)				{return TRUE;};
+	virtual		bool				OnPreCreate				(CSE_Abstract* E)				{return true;};
 	virtual		void				OnCreate				(u16 id_who)					{};
 	virtual		void				OnPostCreate			(u16 id_who)					{};
-	virtual		bool				OnTouch					(u16 eid_who, u16 eid_target, bool bForced = FALSE)	= 0;			// TRUE=allow ownership, FALSE=denied
+	virtual		bool				OnTouch					(u16 eid_who, u16 eid_target, bool bForced = FALSE)	= 0;			// true=allow ownership, FALSE=denied
 	virtual		void				OnDetach				(u16 eid_who, u16 eid_target)	= 0;
-	virtual		bool				OnActivate				(u16 eid_who, u16 eid_target)	{return TRUE;};
+	virtual		bool				OnActivate				(u16 eid_who, u16 eid_target)	{return true;};
 
 	virtual		void				OnDestroyObject			(u16 eid_who);			
 

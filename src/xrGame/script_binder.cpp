@@ -117,7 +117,7 @@ bool CScriptBinder::net_Spawn(CSE_Abstract* DC)
 		}
 	}
 
-	return TRUE;
+	return true;
 }
 
 void CScriptBinder::net_Destroy()

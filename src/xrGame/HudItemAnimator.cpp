@@ -400,7 +400,7 @@ void CBurnAnimator::Load()
 
 	m_pFlameParticles = Particles::Details::Create(pSettings->r_string(m_section, "flame_particles"), FALSE);
 	m_pFlameParticles->m_bAutoStop = true;
-	m_pFlameParticles->SetLiveUpdate(TRUE);
+	m_pFlameParticles->SetLiveUpdate(true);
 
 	m_sounds.LoadSound(m_section.c_str(), "snd_burn", "sndBurned", true);
 }

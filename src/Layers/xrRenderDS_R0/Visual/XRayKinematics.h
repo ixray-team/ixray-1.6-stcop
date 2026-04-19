@@ -32,7 +32,7 @@ public:
 	}
 
 	VisMask visimask;
-	IC void Visibility_Invalidate() { Update_Visibility = TRUE; };
+	IC void Visibility_Invalidate() { Update_Visibility = true; };
 	void Visibility_Update();
 	virtual void IBoneInstances_Create();
 	virtual void IBoneInstances_Destroy();

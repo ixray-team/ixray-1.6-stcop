@@ -99,7 +99,7 @@ bool xrCompressor::testVFS(const char* path)
 	if (!_stricmp(p_ext,".script"))
 		return			(FALSE);
 
-	return				(TRUE);
+	return				(true);
 }
 
 bool xrCompressor::testEqual(const char* path, IReader* base)
@@ -110,7 +110,7 @@ bool xrCompressor::testEqual(const char* path, IReader* base)
 	if(test->length() == base->length())
 	{
 		if( 0==memcmp(test->pointer(),base->pointer(),base->length()) )
-			res			= TRUE;
+			res			= true;
 	}
 	FS.r_close			(test);
 	return				res;

@@ -57,7 +57,7 @@ void CUI3dStatic::SetBonesVisible(IKinematics* pVisual)
 		}
 
 		pK->CalculateBones_Invalidate();
-		pK->CalculateBones(TRUE);
+		pK->CalculateBones(true);
 	}
 }
 
@@ -89,7 +89,7 @@ void CUI3dStatic::Draw()
 		}
 
 		pCurrentVisual->dcast_PKinematics()->CalculateBones_Invalidate();
-		pCurrentVisual->dcast_PKinematics()->CalculateBones(TRUE);
+		pCurrentVisual->dcast_PKinematics()->CalculateBones(true);
 
 		Fmatrix matrix = Fidentity;
 		Fmatrix translate_matrix = Fidentity;
@@ -227,7 +227,7 @@ void CUI3dStatic::SetVisual(const shared_str& cVisualName)
 	}
 
 	pCurrentVisual->dcast_PKinematics()->CalculateBones_Invalidate();
-	pCurrentVisual->dcast_PKinematics()->CalculateBones(TRUE);
+	pCurrentVisual->dcast_PKinematics()->CalculateBones(true);
 }
 
 void CUI3dStatic::SetVisual(IRenderVisual* pVisual)

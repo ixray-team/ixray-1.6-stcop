@@ -464,14 +464,14 @@ void R_dsgraph_structure::add_leafs_Dynamic(dxRender_Visual *pVisual, bool Ignor
 				val_pTransform->transform_tiny(Tpos, pV->vis.sphere.P);
 				float ssa =	CalcSSA(D,Tpos,pV->vis.sphere.R/2.f);// assume dynamics never consume full sphere
 				if (ssa<r_ssaLOD_A)
-					_use_lod= TRUE;
+					_use_lod= true;
 			}
 			if (_use_lod)				
 				add_leafs_Dynamic(pV->m_lod, IgnoreObject);
 			else
 			{
 #if RENDER==R_R1
-				pV->CalculateBones			(TRUE);
+				pV->CalculateBones			(true);
 				pV->CalculateWallmarks		();		//. bug?
 #endif
 				for (dxRender_Visual* V : pV->children)

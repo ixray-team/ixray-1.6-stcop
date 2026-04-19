@@ -47,7 +47,7 @@ bool CPseudogigantStepEffector::ProcessCam(SCamEffectorInfo& info)
 	info.d.set	(mR.k);
 	info.n.set	(mR.j);
 
-	return TRUE;
+	return true;
 }
 
 

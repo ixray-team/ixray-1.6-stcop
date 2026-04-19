@@ -212,8 +212,8 @@ void RenderScenesViewer() {
 				_game_config_,
 				"scripts\\scenes.ltx"
 			),
-			TRUE,
-			TRUE,
+			true,
+			true,
 			FALSE
 		);
 

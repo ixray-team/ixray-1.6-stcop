@@ -28,9 +28,9 @@ CUILines::CUILines()
 	uFlags.set(flNeedReparse,		FALSE);
 	uFlags.set(flComplexMode,		FALSE);
 	uFlags.set(flPasswordMode,		FALSE);
-	uFlags.set(flColoringMode,		TRUE);
+	uFlags.set(flColoringMode,		true);
 	uFlags.set(flCutWordsMode,		FALSE);
-	uFlags.set(flRecognizeNewLine,	TRUE);
+	uFlags.set(flRecognizeNewLine,	true);
 	m_eTextGradientMode				= CGameFont::gm_vert;
 
 	m_wndSize = {0, 0};
@@ -81,7 +81,7 @@ void CUILines::SetText(const char* text){
 		if(m_text==text) 
 			return;
         m_text = text;
-		uFlags.set(flNeedReparse, TRUE);
+		uFlags.set(flNeedReparse, true);
 	}
 	else
 	{
@@ -159,7 +159,7 @@ void CUILines::ParseText(bool force)
 				pszSearch = szTempLine;
 				while ((pszTemp = strstr(pszSearch, "\\n")) != nullptr)
 				{
-					bNewLines = TRUE;
+					bNewLines = true;
 					*pszTemp = '\0';
 					ptmp_line->AddSubLine(pszSearch, tcolor);
 					pszSearch = pszTemp + 2;
@@ -493,7 +493,7 @@ void CUILines::Draw(float x, float y)
 
 void CUILines::OnDeviceReset()
 {
-	uFlags.set(flNeedReparse, TRUE);
+	uFlags.set(flNeedReparse, true);
 }
 
 float CUILines::GetIndentByAlign()const

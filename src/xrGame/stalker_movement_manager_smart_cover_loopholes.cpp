@@ -152,7 +152,7 @@ bool stalker_movement_manager_smart_cover::test_pick	(Fvector source, Fvector de
 				return			(FALSE);
 			}
 
-			return				(TRUE);
+			return				(true);
 		}
 	};
 

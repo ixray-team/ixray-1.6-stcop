@@ -201,7 +201,7 @@ public:
 	void									SetNearer	(bool enabled)
 	{
 		if (enabled&&!m_bNearer){
-			m_bNearer						= TRUE;
+			m_bNearer						= true;
 			mProject._43					-= EPS_L;
 		}else if (!enabled&&m_bNearer){
 			m_bNearer						= FALSE;

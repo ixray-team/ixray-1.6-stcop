@@ -247,7 +247,7 @@ void dxEnvironmentRender::RenderSky(CEnvironment& env) {
 
 	RCache.set_Textures(&mixRen.sky_r_textures);
 	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, v_offset, 0, 12, i_offset, 20);
-	env.eff_LensFlare->Render(TRUE, FALSE, FALSE);
+	env.eff_LensFlare->Render(true, FALSE, FALSE);
 
 	// Sun
 	::Render->rmNormal();

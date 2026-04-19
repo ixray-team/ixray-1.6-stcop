@@ -132,7 +132,7 @@ void CZoneCampfire::StopIdleParticles(bool bIdleLight)
 bool CZoneCampfire::AlwaysTheCrow()
 {
 	if(m_turn_time)
-		return TRUE;
+		return true;
 	else
 		return inherited::AlwaysTheCrow();
 }

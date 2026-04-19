@@ -55,7 +55,7 @@ void CEngineAPI::InitializeNotDedicated()
 		if (0==hRender) {
 			// try to load R1
 			Msg			("! ...Failed - incompatible hardware/pre-Vista OS.");
-			psDeviceFlags.set	(rsR2,TRUE);
+			psDeviceFlags.set	(rsR2,true);
 		}
 	}
 

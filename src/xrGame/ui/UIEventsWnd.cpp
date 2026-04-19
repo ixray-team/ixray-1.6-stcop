@@ -168,7 +168,7 @@ void CUIEventsWnd::OnFilterChanged			(CUIWindow* w, void*)
 
 void CUIEventsWnd::Reload					()
 {
-		m_flags.set(flNeedReload,TRUE );
+		m_flags.set(flNeedReload,true );
 }
 
 void CUIEventsWnd::ReloadList(bool bClearOnly)

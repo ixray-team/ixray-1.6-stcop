@@ -939,7 +939,7 @@ public:
 
 		if(!bRemapped) {
 			remap_keys	();
-			bRemapped	= TRUE;
+			bRemapped	= true;
 		}
 
 		if (!action_name_to_ptr(action))
@@ -1033,7 +1033,7 @@ public:
 
 		if(!bRemapped) {
 			remap_keys	();
-			bRemapped	= TRUE;
+			bRemapped	= true;
 		}
 
 		if (!action_name_to_ptr(action))
@@ -1108,7 +1108,7 @@ class CCC_UnBind : public IConsole_Command
 	int m_work_idx;
 public:
 	CCC_UnBind(const char* N, int idx) : IConsole_Command(N),m_work_idx(idx) 
-	{ bEmptyArgsHandled=TRUE; };
+	{ bEmptyArgsHandled=true; };
 	virtual void Execute(const char* args)
 	{
 		int action_id						= action_name_to_id			(args);
@@ -1141,7 +1141,7 @@ class CCC_UnBindGamepad : public IConsole_Command
 	int m_work_idx;
 public:
 	CCC_UnBindGamepad(const char* N, int idx) : IConsole_Command(N), m_work_idx(idx)
-	{ bEmptyArgsHandled=TRUE; };
+	{ bEmptyArgsHandled=true; };
 	virtual void Execute(const char* args)
 	{
 		int action_id						= action_name_to_id			(args);
@@ -1173,7 +1173,7 @@ class CCC_ListActions : public IConsole_Command
 {
 public:
 	CCC_ListActions(const char* N) : IConsole_Command(N)
-	{ bEmptyArgsHandled=TRUE; };
+	{ bEmptyArgsHandled=true; };
 
 	virtual void Execute(const char* args) {
 		Log("- --- Action list start ---");
@@ -1190,7 +1190,7 @@ class CCC_UnBindAll : public IConsole_Command
 {
 public:
 	CCC_UnBindAll(const char* N) : IConsole_Command(N)
-	{ bEmptyArgsHandled=TRUE; };
+	{ bEmptyArgsHandled=true; };
 
 	virtual void Execute(const char* args) 
 	{
@@ -1240,7 +1240,7 @@ class CCC_BindList : public IConsole_Command
 {
 public:
 	CCC_BindList(const char* N) : IConsole_Command(N)
-	{ bEmptyArgsHandled=TRUE; };
+	{ bEmptyArgsHandled=true; };
 
 	virtual void Execute(const char* args) {
 		Log				("- --- Bind list start ---");

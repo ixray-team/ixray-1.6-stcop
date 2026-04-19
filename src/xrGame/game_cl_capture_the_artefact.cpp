@@ -135,7 +135,7 @@ void game_cl_CaptureTheArtefact::shedule_Update(u32 dt)
 						{
 							m_game_ui->ShowMapDesc	();
 							GetActiveVoting			();
-							m_bReadMapDesc			= TRUE;
+							m_bReadMapDesc			= true;
 						}
 
 						UpdateMoneyIndicator();
@@ -198,7 +198,7 @@ void game_cl_CaptureTheArtefact::shedule_Update(u32 dt)
 						PlaySndMessage(ID_TEAM2_WIN);
 						m_captions_manager.SetWinnerTeam(etBlueTeam);
 					}
-					m_winnerTeamShowed = TRUE;
+					m_winnerTeamShowed = true;
 				}
 			}break;
 		default:
@@ -542,7 +542,7 @@ bool game_cl_CaptureTheArtefact::CanCallBuyMenu()
 	{
 		return FALSE;
 	}
-	return TRUE;
+	return true;
 }
 
 bool game_cl_CaptureTheArtefact::CanCallInventoryMenu()
@@ -551,7 +551,7 @@ bool game_cl_CaptureTheArtefact::CanCallInventoryMenu()
 	{
 		return FALSE;
 	}
-	return TRUE;
+	return true;
 }
 
 void game_cl_CaptureTheArtefact::OnPlayerEnterBase()
@@ -660,7 +660,7 @@ void game_cl_CaptureTheArtefact::OnGameMenuRespond_ChangeSkin(NET_Packet& P)
 {
 	s8 NewSkin = P.r_s8();
 	local_player->skin				= NewSkin;
-	m_bSkinSelected					= TRUE;
+	m_bSkinSelected					= true;
 	m_bSpectatorSelected			= FALSE;
 	Msg("* player [%s][%d] changed skin to %d", local_player->getName(), local_player->GameID, local_player->skin);
 	//SpawnMe();
@@ -675,7 +675,7 @@ void game_cl_CaptureTheArtefact::SpawnMe()
 	NET_Packet		packet;
 	currActor->u_EventGen	(packet, GE_GAME_EVENT, currActor->ID());
 	packet.w_u16	(GAME_EVENT_PLAYER_READY);
-	currActor->u_EventSend	(packet, net_flags(TRUE, TRUE));
+	currActor->u_EventSend	(packet, net_flags(true, true));
 	//sendedSpawnMe = true;
 }
 
@@ -684,7 +684,7 @@ void game_cl_CaptureTheArtefact::OnGameMenuRespond_ChangeTeam(NET_Packet& P)
 {
 	u8 newTeam = P.r_u8();
 	local_player->team = newTeam;
-	m_bTeamSelected = TRUE;
+	m_bTeamSelected = true;
 	VERIFY(local_player);
 	Msg("* player [%s][%d] changed team to %d", local_player->getName(), local_player->GameID, local_player->team);
 	/*shared_str const & teamSection = GetLocalPlayerTeamSection();
@@ -998,7 +998,7 @@ bool game_cl_CaptureTheArtefact::CanCallTeamSelectMenu			()
 	};
 
 	m_game_ui->m_pUITeamSelectWnd->SetCurTeam(ModifyTeam(local_player->team));*/
-	return TRUE;	
+	return true;	
 };
 
 bool game_cl_CaptureTheArtefact::CanBeReady()
@@ -1398,7 +1398,7 @@ void game_cl_CaptureTheArtefact::OnTeamSelect(int Team)
 		m_bSkinSelected = FALSE;
 	};
 	//-----------------------------------------------------------------
-	m_bTeamSelected = TRUE;	
+	m_bTeamSelected = true;	
 }
 
 void game_cl_CaptureTheArtefact::OnSkinMenuBack()

@@ -74,7 +74,7 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, bool bSpaw
 		Phantom->owner			=	nullptr;
 		entities.insert			(std::make_pair(Phantom->ID,Phantom));
 
-		Phantom->s_flags.set	(M_SPAWN_OBJECT_PHANTOM,TRUE);
+		Phantom->s_flags.set	(M_SPAWN_OBJECT_PHANTOM,true);
 
 		// Spawn entity
 		E->ID					=	PerformIDgen(E->ID);
@@ -131,22 +131,22 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, bool bSpaw
 	if (CL) 
 	{
 		// For local ONLY
-		E->Spawn_Write		(Packet,TRUE	);
+		E->Spawn_Write		(Packet,true	);
 		if (E->s_flags.is(M_SPAWN_UPDATE))
 			E->UPDATE_Write	(Packet);
-		SendTo				(CL->ID,Packet,net_flags(TRUE,TRUE));
+		SendTo				(CL->ID,Packet,net_flags(true,true));
 
 		// For everybody, except client, which contains authorative copy
 		E->Spawn_Write		(Packet,FALSE	);
 		if (E->s_flags.is(M_SPAWN_UPDATE))
 			E->UPDATE_Write	(Packet);
-		SendBroadcast		(CL->ID,Packet,net_flags(TRUE,TRUE));
+		SendBroadcast		(CL->ID,Packet,net_flags(true,true));
 	} else {
 		E->Spawn_Write		(Packet,FALSE	);
 		if (E->s_flags.is(M_SPAWN_UPDATE))
 			E->UPDATE_Write	(Packet);
 		ClientID clientID;clientID.set(0);
-		SendBroadcast		(clientID, Packet, net_flags(TRUE,TRUE));
+		SendBroadcast		(clientID, Packet, net_flags(true,true));
 	}
 	if (!tpExistedEntity)
 	{

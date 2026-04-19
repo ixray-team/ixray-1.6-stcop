@@ -181,8 +181,8 @@ void CMainMenu::Activate	(bool bActivate)
 	if(bActivate)
 	{
 		b_shniaganeed_pp			= true;
-		Device.Pause				(TRUE, FALSE, TRUE, "mm_activate1");
-		m_Flags.set					(flActive|flNeedChangeCapture,TRUE);
+		Device.Pause				(true, FALSE, true, "mm_activate1");
+		m_Flags.set					(flActive|flNeedChangeCapture,true);
 
 		m_Flags.set					(flRestoreCursor,GetUICursor().IsVisible());
 
@@ -200,7 +200,7 @@ void CMainMenu::Activate	(bool bActivate)
 			m_Flags.set					(flRestorePauseStr, bShowPauseString);
 			bShowPauseString			= FALSE;
 			if(!m_Flags.test(flRestorePause))
-				Device.Pause			(TRUE, TRUE, FALSE, "mm_activate2");
+				Device.Pause			(true, true, FALSE, "mm_activate2");
 		}
 
 		if(g_pGameLevel)
@@ -219,7 +219,7 @@ void CMainMenu::Activate	(bool bActivate)
 	}else{
 		m_deactivated_frame					= Device.dwFrame;
 		m_Flags.set							(flActive,				FALSE);
-		m_Flags.set							(flNeedChangeCapture,	TRUE);
+		m_Flags.set							(flNeedChangeCapture,	true);
 
 		Device.seqRender.Remove				(this);
 
@@ -251,7 +251,7 @@ void CMainMenu::Activate	(bool bActivate)
 		if(b_is_single)
 		{
 			if(!m_Flags.test(flRestorePause))
-				Device.Pause			(FALSE, TRUE, FALSE, "mm_deactivate1");
+				Device.Pause			(FALSE, true, FALSE, "mm_deactivate1");
 
 			bShowPauseString			= m_Flags.test(flRestorePauseStr);
 		}	
@@ -259,7 +259,7 @@ void CMainMenu::Activate	(bool bActivate)
 		if(m_Flags.test(flRestoreCursor))
 			GetUICursor().Show			();
 
-		Device.Pause					(FALSE, TRUE, TRUE, "mm_deactivate2");
+		Device.Pause					(FALSE, true, true, "mm_deactivate2");
 
 		if(m_Flags.test(flNeedVidRestart))
 		{
@@ -530,7 +530,7 @@ void CMainMenu::Screenshot(IRender_interface::ScreenshotMode mode, const char* n
 	{
 		::Render->Screenshot		(mode,name);
 	}else{
-		m_Flags.set					(flGameSaveScreenshot, TRUE);
+		m_Flags.set					(flGameSaveScreenshot, true);
 		xr_strcpy(m_screenshot_name,name);
 		if(g_pGameLevel && m_Flags.test(flActive)){
 			Device.seqFrame.Add		(g_pGameLevel);
@@ -715,7 +715,7 @@ void CMainMenu::CancelDownload()
 
 void CMainMenu::SetNeedVidRestart()
 {
-	m_Flags.set(flNeedVidRestart,TRUE);
+	m_Flags.set(flNeedVidRestart,true);
 }
 
 void CMainMenu::OnDeviceReset()

@@ -249,7 +249,7 @@ void CPHElement::SetTransform(const Fmatrix &m0, motion_history_state history_st
 
 	VERIFY2(dBodyGetPosition(m_body),"not valide safe position");
 	VERIFY2(dBodyGetLinearVel(m_body),"not valide safe velocity");
-	m_flags.set(flUpdate,TRUE);
+	m_flags.set(flUpdate,true);
 	m_shell->spatial_move();
 	if( history_state != mh_not_clear )
 		CPHGeometryOwner::clear_motion_history( mh_unspecified == history_state );
@@ -269,7 +269,7 @@ void CPHElement::setQuaternion(const Fquaternion& quaternion)
 	dQuaternion q={-quaternion.w,quaternion.x,quaternion.y,quaternion.z};
 	dBodySetQuaternion(m_body,q);
 	CPHDisablingRotational::Reinit();
-	m_flags.set(flUpdate,TRUE);
+	m_flags.set(flUpdate,true);
 	m_shell->spatial_move();
 }
 void CPHElement::GetGlobalPositionDynamic(Fvector* v)
@@ -286,7 +286,7 @@ void CPHElement::SetGlobalPositionDynamic(const Fvector& position)
 	VERIFY_BOUNDARIES2(position,phBoundaries,PhysicsRefObject(),"SetGlobalPosition argument ");
 	dBodySetPosition(m_body,position.x,position.y,position.z);
 	CPHDisablingTranslational::Reinit();
-	m_flags.set(flUpdate,TRUE);
+	m_flags.set(flUpdate,true);
 	m_shell->spatial_move();
 }
 
@@ -307,7 +307,7 @@ void CPHElement::TransformPosition(const Fmatrix &form, motion_history_state his
 	CPHDisablingFull::Reinit();
 	m_body_interpolation.ResetPositions();
 	m_body_interpolation.ResetRotations();
-	m_flags.set(flUpdate,TRUE);
+	m_flags.set(flUpdate,true);
 	if( history_state != mh_not_clear )
 		clear_motion_history( mh_unspecified == history_state );
 	m_shell->spatial_move();
@@ -347,8 +347,8 @@ void CPHElement::Activate(const Fmatrix &transform,const Fvector& lin_vel,const 
 	m_body_interpolation.SetBody(m_body);
 
 	if(disable) dBodyDisable(m_body);
-	m_flags.set(flActive,TRUE);
-	m_flags.set(flActivating,TRUE);
+	m_flags.set(flActive,true);
+	m_flags.set(flActivating,true);
 	if(m_shell->PKinematics())
 		SetBoneCallback();
 }
@@ -731,8 +731,8 @@ void CPHElement::build(bool disable)
 	if (isActive())
 		return;
 
-	m_flags.set(flActive, TRUE);
-	m_flags.set(flActivating, TRUE);
+	m_flags.set(flActive, true);
+	m_flags.set(flActivating, true);
 	build();
 
 	SetTransform(mXFORM, mh_unspecified);
@@ -783,7 +783,7 @@ void CPHElement::StataticRootBonesCallBack(CBoneInstance* B)
 			m_shell->m_object_in_root.invert();
 			m_shell->SetNotActivating();
 		}
-		B->set_callback_overwrite(TRUE);
+		B->set_callback_overwrite(true);
 		//VERIFY2(fsimilar(DET(B->mTransform),1.f,DET_CHECK_EPS),"Bones callback returns 0 matrix");
 		VERIFY_RMATRIX(B->mTransform);
 		VERIFY(valid_pos(B->mTransform.c,phBoundaries));
@@ -928,7 +928,7 @@ void CPHElement::BonesCallBack( CBoneInstance* B )
 	if( m_flags.test( flActivating ) )
 	{
 		ActivatingPos(B->mTransform);
-		B->set_callback_overwrite( TRUE );
+		B->set_callback_overwrite( true );
 	}
 
 	VERIFY_RMATRIX( B->mTransform );
@@ -1406,7 +1406,7 @@ void CPHElement::ResetMass(float density)
 	
 
 	//bActivating = true;
-	m_flags.set(flActivating,TRUE);
+	m_flags.set(flActivating,true);
 
 	CPHGeometryOwner::setPosition(m_mass_center);
 }
@@ -1459,7 +1459,7 @@ void CPHElement::PresetActive()
 	m_body_interpolation.SetBody(m_body);
 	FillInterpolation();
 	//bActive=true;
-	m_flags.set(flActive,TRUE);
+	m_flags.set(flActive,true);
 	RunSimulation();
 	VERIFY(dBodyStateValide(m_body));
 }
@@ -1519,7 +1519,7 @@ void CPHElement::Fix()
 		return;
 
 	dBodySetNoUpdatePosMode(m_body, 1);
-	m_flags.set(flFixed, TRUE);
+	m_flags.set(flFixed, true);
 
 	FixBody(m_body);
 }

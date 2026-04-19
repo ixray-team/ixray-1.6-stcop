@@ -175,8 +175,8 @@ void CLevel::ClientSendProfileData	()
 	NET_Packet								NP;
 	NP.w_begin								(M_CREATE_PLAYER_STATE);
 	game_PlayerState	tmp_player_state	(nullptr);
-	tmp_player_state.net_Export				(NP, TRUE);
-	SecureSend								(NP,net_flags(TRUE, TRUE, TRUE, TRUE));
+	tmp_player_state.net_Export				(NP, true);
+	SecureSend								(NP,net_flags(true, true, true, true));
 }
 
 bool CLevel::net_start_client5()
@@ -192,7 +192,7 @@ bool CLevel::net_start_client5()
 			Device.m_pRender->ResourcesDeferredUpload();
 		}
 		sended_request_connection_data = FALSE;
-		deny_m_spawn = TRUE;
+		deny_m_spawn = true;
 	}
 
 	return true;

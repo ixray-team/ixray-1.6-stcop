@@ -80,7 +80,7 @@ void CBuild::BuildRapid		(bool bSaveForOtherCompilers)
 			if (!Test->flags.bProcessed)	continue;
 			if (FaceEqual(*F,*Test))
 			{
-				bAlready					= TRUE;
+				bAlready					= true;
 				break;
 			}
 		}

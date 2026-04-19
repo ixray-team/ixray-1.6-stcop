@@ -37,7 +37,7 @@ void CBlender_accum_spot::Compile(CBlender_Compile& C)
 		RImplementation.addShaderOption("USE_LMAPXFORM", "1");
 	}
 
-	C.r_Pass("accum_volume", "accum_base", false, FALSE, FALSE, TRUE, D3DBLEND_ONE, D3DBLEND_ONE);
+	C.r_Pass("accum_volume", "accum_base", false, FALSE, FALSE, true, D3DBLEND_ONE, D3DBLEND_ONE);
 
 	C.r_Sampler_rtf("s_position", r2_RT_P);
 	C.r_Sampler_rtf("s_normal", r2_RT_N);

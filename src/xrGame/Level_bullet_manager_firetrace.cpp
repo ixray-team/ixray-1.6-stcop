@@ -35,7 +35,7 @@ extern float gCheckHitK;
 
 //test callback функция 
 //  object - object for testing
-//return TRUE-тестировать объект / FALSE-пропустить объект
+//return true-тестировать объект / FALSE-пропустить объект
 bool CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object, LPVOID params)
 {
 	bullet_test_callback_data* pData = (bullet_test_callback_data*)params;
@@ -54,7 +54,7 @@ bool CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 		return FALSE;
 	}
 
-	bool bRes = TRUE;
+	bool bRes = true;
 	if (object != nullptr)
 	{
 		CEntity* entity = object->cast_entity();
@@ -142,7 +142,7 @@ bool CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 
 								if (cform->_RayQuery(rd, Level().BulletManager().m_rq_results))
 								{
-									bRes = TRUE;		// hit actor
+									bRes = true;		// hit actor
 									play_whine = false;	// don't play whine sound
 								}
 								else
@@ -180,7 +180,7 @@ bool CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 //	result.element;	// if (O) "num tri" else "num bone"
 //	params;			// user defined abstract data
 //	Device.Statistic.TEST0.End();
-//return TRUE-продолжить трассировку / FALSE-закончить трассировку
+//return true-продолжить трассировку / FALSE-закончить трассировку
 
 void CBulletManager::FireShotmark (SBullet* bullet, const Fvector& vDir, const Fvector &vEnd, collide::rq_result& R, u16 target_material, const Fvector& vNormal, bool ShowMark)
 {
@@ -253,7 +253,7 @@ void CBulletManager::FireShotmark (SBullet* bullet, const Fvector& vDir, const F
 		if(ps_name && ShowMark)
 		{
 			//отыграть партиклы попадания в материал
-			xr_shared_ptr<CParticlesObject> ps = Particles::Details::Create(ps_name,TRUE);
+			xr_shared_ptr<CParticlesObject> ps = Particles::Details::Create(ps_name,true);
 
 			ps->UpdateParent( pos, zero_vel );
 			GamePersistent().ps_needtoplay.push_back( ps );

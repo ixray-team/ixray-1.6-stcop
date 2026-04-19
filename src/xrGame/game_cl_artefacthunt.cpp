@@ -137,7 +137,7 @@ game_cl_ArtefactHunt::~game_cl_ArtefactHunt()
 }
 
 
-bool	bBearerCantSprint = TRUE;
+bool	bBearerCantSprint = true;
 void game_cl_ArtefactHunt::net_import_state	(NET_Packet& P)
 {
 	inherited::net_import_state	(P);
@@ -360,7 +360,7 @@ void game_cl_ArtefactHunt::shedule_Update			(u32 dt)
 				if (local_player->testFlag(GAME_PLAYER_FLAG_ONBASE) &&
 					!local_player->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
 				{
-					m_bBuyEnabled = TRUE;
+					m_bBuyEnabled = true;
 				}
 				else
 				{
@@ -525,13 +525,13 @@ bool game_cl_ArtefactHunt::CanCallBuyMenu			()
 	CActor* pCurActor = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr;
 	if (!pCurActor || !pCurActor->g_Alive()) return FALSE;
 
-	return TRUE;
+	return true;
 };
 
 bool game_cl_ArtefactHunt::CanBeReady				()
 {
 	if (!local_player) return false;
-	m_bMenuCalledFromReady = TRUE;
+	m_bMenuCalledFromReady = true;
 
 	SetCurrentSkinMenu();
 	SetCurrentBuyMenu();

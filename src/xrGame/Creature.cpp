@@ -307,11 +307,11 @@ void CCreature::net_Import(NET_Packet& P)
 
 	if (NET.empty() || (NET.back().dwTimeStamp<N.dwTimeStamp))	{
 		NET.push_back			(N);
-		NET_WasInterpolating	= TRUE;
+		NET_WasInterpolating	= true;
 	}
 
-	setVisible				(TRUE);
-	setEnabled				(TRUE);
+	setVisible				(true);
+	setEnabled				(true);
 }
 
 void CCreature::shedule_Update	( u32 DT )
@@ -474,7 +474,7 @@ void CCreature::UpdateCL	()
 			}
 
 			// Signal, that last time we used interpolation
-			NET_WasInterpolating	= TRUE;
+			NET_WasInterpolating	= true;
 			NET_Time				= dwTime;
 		}
 	}
@@ -540,7 +540,7 @@ bool CCreature::feel_visible_isRelevant (CObject* O)
 	CEntityAlive* E = O->cast_entity_alive();
 	if (!E)									return FALSE;
 	if (E->g_Team() == g_Team())			return FALSE;
-	return TRUE;
+	return true;
 }
 
 void CCreature::eye_pp_s0			( )
@@ -714,8 +714,8 @@ bool CCreature::net_Spawn	(CSE_Abstract* DC)
 		N.dwTimeStamp			+= NET_Latency;
 		NET.push_back			(N);
 
-		setVisible				(TRUE);
-		setEnabled				(TRUE);
+		setVisible				(true);
+		setEnabled				(true);
 	}
 
 	// Sheduler
@@ -730,7 +730,7 @@ bool CCreature::net_Spawn	(CSE_Abstract* DC)
 	else
 		SpatialComponent->spatial.type |= ESPATIAL_TYPE::AI_ALIVE;
 
-	return TRUE;
+	return true;
 }
 
 #ifdef DEBUG_DRAW
@@ -783,7 +783,7 @@ void CCreature::net_Destroy()
 
 bool CCreature::UsedAI_Locations()
 {
-	return					(TRUE);
+	return					(true);
 }
 
 void CCreature::PitchCorrection() 
@@ -822,13 +822,13 @@ bool CCreature::feel_touch_on_contact	(CObject *O)
 		return		(FALSE);
 	CAnomalyZone	*custom_zone = GO->cast_anomaly_zone();
 	if (!custom_zone)
-		return	(TRUE);
+		return	(true);
 
 	Fsphere		sphere;
 	sphere.P	= Position();
 	sphere.R	= EPS_L;
 	if (custom_zone->inside(sphere))
-		return	(TRUE);
+		return	(true);
 
 	return		(FALSE);
 }
@@ -842,13 +842,13 @@ bool CCreature::feel_touch_contact		(CObject *O)
 		return		(FALSE);
 	CAnomalyZone* custom_zone = GO->cast_anomaly_zone();
 	if (!custom_zone)
-		return	(TRUE);
+		return	(true);
 
 	Fsphere		sphere;
 	sphere.P	= Position();
 	sphere.R	= 0.f;
 	if (custom_zone->inside(sphere))
-		return	(TRUE);
+		return	(true);
 
 	return		(FALSE);
 }

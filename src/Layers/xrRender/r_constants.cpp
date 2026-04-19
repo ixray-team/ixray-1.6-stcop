@@ -170,10 +170,10 @@ bool	R_constant_table::parse(void* _desc, u32 destination)
 				break;
 			}
 		}
-		bSkip = TRUE;
+		bSkip = true;
 		break;
 		default:
-			bSkip = TRUE;
+			bSkip = true;
 			break;
 		}
 		if (bSkip)			continue;
@@ -199,7 +199,7 @@ bool	R_constant_table::parse(void* _desc, u32 destination)
 		}
 	}
 	std::sort(table.begin(), table.end(), p_sort_constants);
-	return		TRUE;
+	return		true;
 }
 #endif
 
@@ -284,5 +284,5 @@ bool R_constant_table::equal(R_constant_table& C)
 		if (!table[it]->equal(&*C.table[it]))	return FALSE;
 	}
 
-	return TRUE;
+	return true;
 }

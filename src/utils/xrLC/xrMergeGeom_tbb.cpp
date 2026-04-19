@@ -38,7 +38,7 @@ IC bool	ValidateMergeTBB(u32 f1, const Fbox& bb_base, const Fbox& bb_base_orig, 
 		return FALSE;	// Don't merge too distant groups (8 vol)
 
 	// OK
-	return TRUE;
+	return true;
 }
 
 // Grids TBB

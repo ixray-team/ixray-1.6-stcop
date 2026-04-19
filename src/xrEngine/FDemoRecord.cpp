@@ -63,7 +63,7 @@ Fbox get_level_screenshot_bound()
 CDemoRecord::CDemoRecord(const char *name,float life_time) : CEffectorCam(cefDemo,life_time/*,FALSE*/)
 {
 	stored_red_text = g_bDisableRedText;
-	g_bDisableRedText = TRUE;
+	g_bDisableRedText = true;
 	m_iLMScreenshotFragment = -1;
 	
 	m_b_redirect_input_to_level = false;
@@ -191,7 +191,7 @@ void CDemoRecord::MakeLevelMapProcess()
 
 			psDeviceFlags.zero();
 			psDeviceFlags.set(rsFullscreen, FALSE);
-			psDeviceFlags.set(rsClearBB | rsDrawStatic, TRUE);
+			psDeviceFlags.set(rsClearBB | rsDrawStatic, true);
 
 			psOldVidMode[0] = psCurrentVidMode[0];
 			psOldVidMode[1] = psCurrentVidMode[1];
@@ -281,7 +281,7 @@ void CDemoRecord::MakeCubeMapFace(Fvector &D, Fvector &N)
 bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 {
 	info.dont_apply					= false;
-	if (0==file)					return TRUE;
+	if (0==file)					return true;
 
 	if (m_bMakeScreenshot)
 	{
@@ -392,7 +392,7 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 		m_vT.set(0,0,0);
 		m_vR.set(0,0,0);
 	}
-	return TRUE;
+	return true;
 }
 
 void CDemoRecord::IR_OnKeyboardPress	(int dik)
@@ -422,7 +422,7 @@ void CDemoRecord::IR_OnKeyboardPress	(int dik)
 #endif
 
 	if	(dik == SDL_SCANCODE_PAUSE)
-		Device.Pause(!Device.Paused(), TRUE, TRUE, "demo_record");
+		Device.Pause(!Device.Paused(), true, true, "demo_record");
 }
 
 static void update_whith_timescale( Fvector &v, const Fvector &v_delta )
@@ -513,13 +513,13 @@ void CDemoRecord::RecordKey			()
 
 void CDemoRecord::MakeCubemap		()
 {
-	m_bMakeCubeMap	= TRUE;
+	m_bMakeCubeMap	= true;
 	m_Stage			= 0;
 }
 
 void CDemoRecord::MakeScreenshot	()
 {
-	m_bMakeScreenshot = TRUE;
+	m_bMakeScreenshot = true;
 	m_Stage = 0;
 }
 
@@ -535,7 +535,7 @@ void CDemoRecord::MakeLevelMapScreenshot(bool bHQ)
 	curr_lm_fbox		= get_level_screenshot_bound();
 	GetLM_BBox			(curr_lm_fbox, m_iLMScreenshotFragment);
 
-	m_bMakeLevelMap		= TRUE;
+	m_bMakeLevelMap		= true;
 	m_Stage				= 0;
 }
 

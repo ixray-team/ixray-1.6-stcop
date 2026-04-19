@@ -422,7 +422,7 @@ void stalker_movement_manager_base::parse_velocity_mask	(stalker_movement_params
 		{
 			m_last_turn_index			= detail().curr_travel_point_index();
 			guard.enable			(true);
-//			Msg						("%d TRUE",Device.dwTimeGlobal);
+//			Msg						("%d true",Device.dwTimeGlobal);
 			if (detail().curr_travel_point_index() + 1 < path().size()) {
 				point				= path()[detail().curr_travel_point_index() + 1];
 				current_velocity	= detail().velocity(point.velocity);

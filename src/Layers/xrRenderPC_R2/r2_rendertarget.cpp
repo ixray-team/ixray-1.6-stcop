@@ -599,7 +599,7 @@ void CRenderTarget::reset_light_marker( bool bResetStencil)
 		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 
 		//	Clear everything except last bit
-		RCache.set_Stencil	(TRUE,D3DCMP_ALWAYS,dwLightMarkerID,0x00,0xFE, D3DSTENCILOP_ZERO, D3DSTENCILOP_ZERO, D3DSTENCILOP_ZERO);
+		RCache.set_Stencil	(true,D3DCMP_ALWAYS,dwLightMarkerID,0x00,0xFE, D3DSTENCILOP_ZERO, D3DSTENCILOP_ZERO, D3DSTENCILOP_ZERO);
 		RCache.set_Element			(s_occq->E[1]	);
 		RCache.set_Geometry			(g_combine		);
 		RCache.Render				(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,Offset,0,4,0,2);

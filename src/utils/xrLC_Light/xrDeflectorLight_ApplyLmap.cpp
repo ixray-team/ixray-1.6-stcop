@@ -145,7 +145,7 @@ bool NEW_ApplyBorders(lm_layer& lm, u32 ref)
 						lm.surface[y * lm.width + x]._set(clr);
 						lm.marker[y * lm.width + x] = u8(ref);
  
-						bNeedContinue = TRUE;
+						bNeedContinue = true;
 					}
 
 				}
@@ -256,7 +256,7 @@ bool	__stdcall rms_test_compress(lm_layer& lm, u32 w, u32 h, u32 rms)
 			}
 		}
 	}
-	return	TRUE;
+	return	true;
 }
 
 // Это при проверке используется
@@ -287,7 +287,7 @@ bool	__stdcall rms_test(lm_layer& lm, u32 _r, u32 _g, u32 _b, u32 _s, u32 _h, u3
 			}
 		}
 	}
-	return TRUE;
+	return true;
 }
 
 u32	__stdcall rms_average(lm_layer& lm, base_color_c& C)
@@ -356,7 +356,7 @@ bool	compress_Zero(lm_layer& lm, u32 rms)
 		lm.marker.assign(c_x * c_y, 255);
 		lm.height = 0;
 		lm.width = 0;
-		return TRUE;
+		return true;
 	}
 	return FALSE;
 }
@@ -409,7 +409,7 @@ bool	compress_RMS(lm_layer& lm, u32 rms, u32& w, u32& h)
 		if (0 == h)
 			h = lm.height;
 		//		clMsg	("* RMS: [%d,%d] => [%d,%d]",lm.width,lm.height,w,h);
-		return TRUE;
+		return true;
 	}
 	return FALSE;
 }

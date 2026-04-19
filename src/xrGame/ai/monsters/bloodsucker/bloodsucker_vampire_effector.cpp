@@ -35,7 +35,7 @@ bool CVampirePPEffector::Process(SPPInfo& pp)
 	clamp(factor,0.01f,1.0f);
 	pp.lerp				(pp_identity, state, factor);
 
-	return TRUE;
+	return true;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -133,6 +133,6 @@ bool CVampireCameraEffector::ProcessCam(SCamEffectorInfo& info)
 	info.n.set		(mR.j);
 	info.p.set		(mR.c);
 
-	return TRUE;
+	return true;
 }
 

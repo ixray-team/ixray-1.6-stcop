@@ -46,7 +46,7 @@ void THudLightTorch::NewTorchlight(const char* section)
 	RenderLight = ::Render->light_create();
 	RenderLight->set_type((IRender_Light::LT)READ_IF_EXISTS(pSettings, r_u32, section, "torch_render_type", IRender_Light::SPOT));
 	RenderLight->set_range(READ_IF_EXISTS(pSettings, r_float, section, "torch_r2_range", 15.0f));
-	RenderLight->set_shadow(!!READ_IF_EXISTS(pSettings, r_bool, section, "torch_render_shadow", TRUE));
+	RenderLight->set_shadow(!!READ_IF_EXISTS(pSettings, r_bool, section, "torch_render_shadow", true));
 
 	OmniLight = ::Render->light_create();
 	OmniLight->set_type(IRender_Light::POINT); // (IRender_Light::LT)READ_IF_EXISTS(pSettings, r_u32, section, "torch_omni_type", IRender_Light::POINT));
@@ -354,7 +354,7 @@ void THudLightLaser::NewTorchlight(const char* section)
 	RenderLight->set_range(LaserLightDist);
 	RenderLight->set_type(IRender_Light::SPOT);
 
-	RenderLight->set_shadow(!!READ_IF_EXISTS(pSettings, r_bool, section, "laser_render_shadow", TRUE));
+	RenderLight->set_shadow(!!READ_IF_EXISTS(pSettings, r_bool, section, "laser_render_shadow", true));
 
 	LightSpotAngle = READ_IF_EXISTS(pSettings, r_fvector2, section, "laser_spot_angle", LightSpotAngle.set(2, 5));
 	LightSpotAngle.mul(M_PI / 180);

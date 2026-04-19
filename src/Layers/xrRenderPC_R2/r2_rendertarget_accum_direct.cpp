@@ -75,7 +75,7 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 
 		// if (stencil>=1 && aref_pass)	stencil = light_id
 		RCache.set_ColorWriteEnable	(FALSE		);
-		RCache.set_Stencil			(TRUE,D3DCMP_LESSEQUAL,dwLightMarkerID,0x01,0xff,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE,D3DSTENCILOP_KEEP);
+		RCache.set_Stencil			(true,D3DCMP_LESSEQUAL,dwLightMarkerID,0x01,0xff,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE,D3DSTENCILOP_KEEP);
 		RCache.Render				(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,Offset,0,4,0,2);
 	}
 
@@ -246,9 +246,9 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 
 		// setup stencil
 		if( SE_SUN_NEAR==sub_phase || sub_phase==SE_SUN_MIDDLE /*|| SE_SUN_FAR==sub_phase*/ ) 
-			RCache.set_Stencil			(TRUE,D3DCMP_LESSEQUAL,dwLightMarkerID,0xff,0xFE, D3DSTENCILOP_KEEP, D3DSTENCILOP_ZERO, D3DSTENCILOP_KEEP);
+			RCache.set_Stencil			(true,D3DCMP_LESSEQUAL,dwLightMarkerID,0xff,0xFE, D3DSTENCILOP_KEEP, D3DSTENCILOP_ZERO, D3DSTENCILOP_KEEP);
 		else
-			RCache.set_Stencil			(TRUE,D3DCMP_LESSEQUAL,dwLightMarkerID,0xff,0x00);
+			RCache.set_Stencil			(true,D3DCMP_LESSEQUAL,dwLightMarkerID,0xff,0x00);
 
 		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 8, i_offset, 16);
 

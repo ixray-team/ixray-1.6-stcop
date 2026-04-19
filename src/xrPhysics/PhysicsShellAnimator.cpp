@@ -84,7 +84,7 @@ void CPhysicsShellAnimator::OnFrame(bool calculate_bones)
 		if (calculate_bones)
 		{
 			m_pPhysicsShell->PKinematics()->CalculateBones_Invalidate();
-			m_pPhysicsShell->PKinematics()->CalculateBones(TRUE);
+			m_pPhysicsShell->PKinematics()->CalculateBones(true);
 		}
 
 		target_obj_posFmatrixS.mul_43(m_StartXFORM, B.mTransform);

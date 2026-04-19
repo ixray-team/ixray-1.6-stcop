@@ -112,7 +112,7 @@ bool SurfacePlacePerpixel::rect_place_full(L_rect& r, lm_layer* D)
 			if (Place_Perpixel_tbb(R, D) && _rect_register_tbb(R, D))
 			{
   				r.set(R);
-				return TRUE;
+				return true;
 			}
 		}
 	}

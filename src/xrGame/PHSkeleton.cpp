@@ -51,7 +51,7 @@ void CPHSkeleton::RespawnInit()
 		K->LL_SetBoneRoot(0);
 		K->LL_SetBonesVisibleAll();
 		K->CalculateBones_Invalidate();
-		K->CalculateBones(TRUE);
+		K->CalculateBones(true);
 	}
 	Init();
 	ClearUnsplited();
@@ -325,8 +325,8 @@ void CPHSkeleton::SpawnCopy()
 		InitServerObject			(D);
 		// Send
 		NET_Packet			P;
-		D->Spawn_Write		(P,TRUE);
-		Level().Send		(P,net_flags(TRUE));
+		D->Spawn_Write		(P,true);
+		Level().Send		(P,net_flags(true));
 		// Destroy
 		F_entity_Destroy	(D);
 	}
@@ -366,10 +366,10 @@ void CPHSkeleton::UnsplitSingle(CPHSkeleton* SO)
 
 	u16 split_bone=m_unsplited_shels.front().second;
 	mask1 = pKinematics->LL_GetBonesVisible();//source bones mask
-	pKinematics->LL_SetBoneVisible(split_bone,FALSE,TRUE);
+	pKinematics->LL_SetBoneVisible(split_bone,FALSE,true);
 
 	pKinematics->CalculateBones_Invalidate	();
-	pKinematics->CalculateBones				(TRUE);
+	pKinematics->CalculateBones				(true);
 
 	mask0 = pKinematics->LL_GetBonesVisible();//first part mask
 	VERIFY2(mask0._visimask.flags,"mask0 -Zero");
@@ -382,7 +382,7 @@ void CPHSkeleton::UnsplitSingle(CPHSkeleton* SO)
 	newKinematics->LL_SetBonesVisible	(mask1);
 
 	newKinematics->CalculateBones_Invalidate	();
-	newKinematics->CalculateBones				(TRUE);
+	newKinematics->CalculateBones				(true);
 
 	newPhysicsShell->set_Kinematics(newKinematics);
 	VERIFY(_valid(newPhysicsShell->mXFORM));
@@ -395,8 +395,8 @@ void CPHSkeleton::UnsplitSingle(CPHSkeleton* SO)
 	newPhysicsShell->set_PhysicsRefObject(O);
 	
 	m_unsplited_shels.erase(m_unsplited_shels.begin());
-	O->setVisible(TRUE);
-	O->setEnabled(TRUE);
+	O->setVisible(true);
+	O->setEnabled(true);
 
 
 	SO->CopySpawnInit		();
@@ -485,5 +485,5 @@ void CPHSkeleton::InitServerObject(CSE_Abstract * D)
 
 void	CPHSkeleton::SetNotNeedSave		()
 {
-	m_flags.set(CSE_PHSkeleton::flNotSave,TRUE);
+	m_flags.set(CSE_PHSkeleton::flNotSave,true);
 }

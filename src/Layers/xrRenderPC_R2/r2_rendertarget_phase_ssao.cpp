@@ -23,7 +23,7 @@ void CRenderTarget::phase_ssao	()
 	GRHI->ClearTarget(RCache.get_RT());
 	CHK_DX		(RDevice->SetRenderState	( D3DRS_ZENABLE,		FALSE				));
 
-	RCache.set_Stencil					(TRUE,D3DCMP_LESSEQUAL,0x01,0xff,0x00);	// stencil should be >= 1
+	RCache.set_Stencil					(true,D3DCMP_LESSEQUAL,0x01,0xff,0x00);	// stencil should be >= 1
 	if (RImplementation.o.nvstencil)	
 	{
 		u_stencil_optimize				(FALSE);
@@ -73,7 +73,7 @@ void CRenderTarget::phase_ssao	()
 	}
 
 	// re-enable z-buffer
-	CHK_DX		(RDevice->SetRenderState	( D3DRS_ZENABLE,	TRUE				));
+	CHK_DX		(RDevice->SetRenderState	( D3DRS_ZENABLE,	true				));
 	RCache.set_Stencil(FALSE);
 }
 
@@ -116,6 +116,6 @@ void CRenderTarget::phase_downsamp	()
 	}
 
 	// re-enable z-buffer
-	CHK_DX		(RDevice->SetRenderState	( D3DRS_ZENABLE,	TRUE				));
+	CHK_DX		(RDevice->SetRenderState	( D3DRS_ZENABLE,	true				));
 	RCache.set_Stencil(FALSE);
 }

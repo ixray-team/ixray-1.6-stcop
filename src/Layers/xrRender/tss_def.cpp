@@ -86,7 +86,7 @@ bool	SimulatorStates::equal	(SimulatorStates& S)
 {
 	if (States.size()!=S.States.size())												return FALSE;
 	if (0!=memcmp(&*States.begin(),&*S.States.begin(),States.size()*sizeof(State))) return FALSE;
-	return TRUE;
+	return true;
 }
 
 void	SimulatorStates::clear	()
@@ -149,7 +149,7 @@ void SimulatorStates::UpdateDesc( D3D_RASTERIZER_DESC &desc ) const
 				VERIFY(0);
 				break;
 				
-			//	desc.DepthClipEnable = TRUE;
+			//	desc.DepthClipEnable = true;
 			
 			case D3DRS_SCISSORTESTENABLE:
 				desc.ScissorEnable = S.v2;
@@ -243,7 +243,7 @@ void SimulatorStates::UpdateDesc( D3D_BLEND_DESC &desc ) const
 				start_idx = S.v3;
 				end_idx = start_idx + 1;
 
-				desc.IndependentBlendEnable = TRUE;
+				desc.IndependentBlendEnable = true;
 			}
 
 			switch (S.v1)

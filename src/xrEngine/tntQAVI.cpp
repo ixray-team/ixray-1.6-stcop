@@ -257,7 +257,7 @@ bool CAviPlayerCustom::Load (char* fname)
 	}
 #endif
 //-----------------------------------------------------------------
-	return TRUE;
+	return true;
 }
 
 bool CAviPlayerCustom::DecompressFrame( DWORD dwFrameNum )
@@ -294,13 +294,13 @@ bool CAviPlayerCustom::DecompressFrame( DWORD dwFrameNum )
 		}
 	}
 #endif
-	return	TRUE;
+	return	true;
 }
 
 /*
 GetFrame
 
-возвращает TRUE если кадр изменился, иначе FALSE
+возвращает true если кадр изменился, иначе FALSE
 */
 bool CAviPlayerCustom::GetFrame( BYTE **pDest )
 {
@@ -327,7 +327,7 @@ bool CAviPlayerCustom::GetFrame( BYTE **pDest )
 		*pDest	= m_pDecompressedBuf;
 
 		DecompressFrame( m_dwFrameCurrent );
-		return	TRUE;
+		return	true;
 	} else {
 		
 		// Это произвольный кадр
@@ -345,7 +345,7 @@ bool CAviPlayerCustom::GetFrame( BYTE **pDest )
 
 		// Декомпрессим заданный кадр
 		DecompressFrame( m_dwFrameCurrent );
-		return	TRUE;
+		return	true;
 	}
 #endif
 }

@@ -288,7 +288,7 @@ public:
 
 	virtual void					renderable_Render				()			{ inherited::renderable_Render();};
 	virtual bool					renderable_ShadowGenerate		()			{ return FALSE;	}
-	virtual bool					renderable_ShadowReceive		()			{ return TRUE;	}
+	virtual bool					renderable_ShadowReceive		()			{ return true;	}
 
 	virtual void					OnEvent				(NET_Packet& P, u16 type);
 	virtual void					UpdateCL			();

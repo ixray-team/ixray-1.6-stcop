@@ -40,7 +40,7 @@ bool	CRenderTarget::u_DBT_enable	(float zMin, float zMax)
 	//RDevice->SetRenderState(D3DRS_ADAPTIVETESS_Z,*(DWORD*)&zMin);
 	//RDevice->SetRenderState(D3DRS_ADAPTIVETESS_W,*(DWORD*)&zMax); 
 
-	//return TRUE;
+	//return true;
 }
 
 void	CRenderTarget::u_DBT_disable	()

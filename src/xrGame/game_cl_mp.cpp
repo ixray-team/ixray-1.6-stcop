@@ -1185,7 +1185,7 @@ void	game_cl_mp::OnSpectatorSelect		()
 	P.w_u8(PLAYER_SELECT_SPECTATOR);
 	l_pPlayer->u_EventSend		(P);
 
-	m_bSpectatorSelected = TRUE;	
+	m_bSpectatorSelected = true;	
 };
 
 void	game_cl_mp::OnGameMenuRespond		(NET_Packet& P)

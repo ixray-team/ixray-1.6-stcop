@@ -89,7 +89,7 @@ void CCarWeapon::UpdateCL()
 	UpdateBarrelDir				();
 	IKinematics* K				= PKinematics(m_object->Visual());
 	K->CalculateBones_Invalidate();
-	K->CalculateBones			(TRUE);
+	K->CalculateBones			(true);
 	UpdateFire					();
 }
 
@@ -141,7 +141,7 @@ void CCarWeapon::ResetBoneCallbacks()
 	CBoneInstance& biY		= PKinematics(m_object->Visual())->LL_GetBoneInstance(m_rotate_y_bone);
 	biY.reset_callback		();
 
-//	m_object->PPhysicsShell()->EnabledCallbacks(TRUE);
+//	m_object->PPhysicsShell()->EnabledCallbacks(true);
 }
 
 void CCarWeapon::UpdateBarrelDir()

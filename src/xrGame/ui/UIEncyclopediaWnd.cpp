@@ -197,7 +197,7 @@ void CUIEncyclopediaWnd::Draw()
 
 void CUIEncyclopediaWnd::ReloadArticles()
 {
-	m_flags.set(eNeedReload, TRUE);
+	m_flags.set(eNeedReload, true);
 }
 
 

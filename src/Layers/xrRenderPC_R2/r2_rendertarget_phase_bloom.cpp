@@ -320,5 +320,5 @@ void CRenderTarget::phase_bloom	()
 	}
 
 	// re-enable z-buffer
-	CHK_DX		(RDevice->SetRenderState	( D3DRS_ZENABLE,	TRUE				));
+	CHK_DX		(RDevice->SetRenderState	( D3DRS_ZENABLE,	true				));
 }

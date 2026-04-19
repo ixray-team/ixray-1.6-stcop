@@ -192,7 +192,7 @@ void CApplication::LoadEnd()
 		//Msg("* phase time: %d ms", phase_timer.GetElapsed_ms());
 		//Msg("* phase cmem: %d K", Memory.mem_usage() / 1024);
 		//Console->Execute("stat_memory");
-		g_appLoaded = TRUE;
+		g_appLoaded = true;
 		//		DUMP_PHASE;
 	}
 }

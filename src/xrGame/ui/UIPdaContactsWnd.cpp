@@ -118,7 +118,7 @@ void CUIPdaContactsWnd::DrawHint()
 
 void CUIPdaContactsWnd::Update()
 {
-	if (TRUE == m_flags.test(flNeedUpdate))
+	if (true == m_flags.test(flNeedUpdate))
 	{
 		UpdateInfo();
 	}
@@ -181,7 +181,7 @@ void CUIPdaContactsWnd::RemoveAll()
 
 void CUIPdaContactsWnd::Reload()
 {
-	m_flags.set(flNeedUpdate, TRUE);
+	m_flags.set(flNeedUpdate, true);
 }
 
 void CUIPdaContactsWnd::Reset()

@@ -97,7 +97,7 @@ bool GetTranslucency(const Vertex* V,float &v_trans )
 		Face*	F								=	V->m_adjacents[f];
 		v_trans									+=	F->Shader().vert_translucency;
 		if	(F->Shader().flags.bLIGHT_Vertex)	
-			bVertexLight		= TRUE;
+			bVertexLight		= true;
 	}
 	v_trans				/=	float(V->m_adjacents.size());
 	return bVertexLight;

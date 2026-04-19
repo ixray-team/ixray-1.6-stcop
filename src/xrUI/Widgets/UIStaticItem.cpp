@@ -32,9 +32,9 @@ void CUIStaticItem::SetHeadingPivot(const Fvector2& p, const Fvector2& offset, b
 {
 	vHeadingPivot=p; 
 	vHeadingOffset=offset; 
-	uFlags.set(flValidHeadingPivot, TRUE); 
+	uFlags.set(flValidHeadingPivot, true); 
 	if(fixedLT)
-		uFlags.set(flFixedLTWhileHeading,TRUE);
+		uFlags.set(flFixedLTWhileHeading,true);
 	else
 		uFlags.set(flFixedLTWhileHeading,FALSE);
 }

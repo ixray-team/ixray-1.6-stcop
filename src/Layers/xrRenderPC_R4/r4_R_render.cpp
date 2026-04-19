@@ -194,7 +194,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 									CKinematics* pKin = (CKinematics*)renderable->renderable.visual;
 									if (pKin)
 									{
-										pKin->CalculateBones(TRUE);
+										pKin->CalculateBones(true);
 										pKin->CalculateWallmarks();
 										//dbg_text_renderer(spatial->spatial.sphere.P);
 									}
@@ -252,7 +252,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 										CKinematics* pKin = (CKinematics*)renderable->renderable.visual;
 										if(pKin)
 										{
-											pKin->CalculateBones(TRUE);
+											pKin->CalculateBones(true);
 											pKin->CalculateWallmarks();
 											//dbg_text_renderer(spatial->spatial.sphere.P);
 										}
@@ -617,7 +617,7 @@ void CRender::Render()
 	Device.Statistic->RenderCALC.End			();
 
 	bool	split_the_scene_to_minimize_wait		= FALSE;
-	if (ps_r2_ls_flags.test(R2FLAG_EXP_SPLIT_SCENE))	split_the_scene_to_minimize_wait=TRUE;
+	if (ps_r2_ls_flags.test(R2FLAG_EXP_SPLIT_SCENE))	split_the_scene_to_minimize_wait=true;
 
 	if (mapHUDScopeMask.size() > 0) {
 		split_the_scene_to_minimize_wait = FALSE;
@@ -803,7 +803,7 @@ void CRender::Render()
 		RCache.set_xform_project			(Device.mProject); 
 		RCache.set_xform_view				(Device.mView);
 		// Stencil - write 0x1 at pixel pos - 
-		RCache.set_Stencil(TRUE, D3DCMP_ALWAYS, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
+		RCache.set_Stencil(true, D3DCMP_ALWAYS, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 		RCache.set_ColorWriteEnable			();
 		RImplementation.r_dsgraph_render_emissive();

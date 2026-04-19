@@ -124,7 +124,7 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 			R_ASSERT			(Front);
 			if (Front->P.similar(V.P,eps))
 			{
-				found				= TRUE;
+				found				= true;
 				VL.push_back		(&V);
 			}
 		}

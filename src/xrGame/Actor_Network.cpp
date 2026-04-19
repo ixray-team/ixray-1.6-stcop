@@ -376,7 +376,7 @@ void CActor::net_Import_Base_proceed()
 	if (g_Alive())
 	{
 		setVisible((bool)!HUDview());
-		setEnabled(TRUE);
+		setEnabled(true);
 	};
 	//---------------------------------------------
 
@@ -494,7 +494,7 @@ bool CActor::net_Spawn(CSE_Abstract* DC)
 		{
 			if (!smart_cast<CActorMP*>(this))
 			{
-				E->s_flags.set(M_SPAWN_OBJECT_LOCAL, TRUE);
+				E->s_flags.set(M_SPAWN_OBJECT_LOCAL, true);
 				E->s_flags.set(M_SPAWN_OBJECT_ASPLAYER, FALSE);
 				
 				Msg("[Actor.cpp] single_actor_spawn");
@@ -508,9 +508,9 @@ bool CActor::net_Spawn(CSE_Abstract* DC)
 		{
 			if (smart_cast<CActorMP*>(this)) 
 			{
-				if (TRUE == E->s_flags.test(M_SPAWN_OBJECT_LOCAL))
+				if (true == E->s_flags.test(M_SPAWN_OBJECT_LOCAL))
 				{
-					if (TRUE == E->s_flags.test(M_SPAWN_OBJECT_ASPLAYER))
+					if (true == E->s_flags.test(M_SPAWN_OBJECT_ASPLAYER))
 					{
 						Msg("[Actor.cpp] mp_actor_spawn");
 						g_actor = this;
@@ -536,10 +536,10 @@ bool CActor::net_Spawn(CSE_Abstract* DC)
 	{
 		if (OnServer())
 		{
-			E->s_flags.set(M_SPAWN_OBJECT_LOCAL, TRUE);
+			E->s_flags.set(M_SPAWN_OBJECT_LOCAL, true);
 		}
 
-		if (TRUE == E->s_flags.test(M_SPAWN_OBJECT_LOCAL) && TRUE == E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER))
+		if (true == E->s_flags.test(M_SPAWN_OBJECT_LOCAL) && true == E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER))
 		{
 			g_pIGameActor = this;
 			g_actor = this;
@@ -574,7 +574,7 @@ bool CActor::net_Spawn(CSE_Abstract* DC)
 	set_money				(pTA->m_dwMoney, false);
 
 	m_ArtefactsOnBelt.clear();
-//.	if(	TRUE == E->s_flags.test(M_SPAWN_OBJECT_LOCAL) && TRUE == E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER))
+//.	if(	true == E->s_flags.test(M_SPAWN_OBJECT_LOCAL) && true == E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER))
 //.		CurrentGameUI()->UIMainIngameWnd->m_artefactPanel->InitIcons(m_ArtefactsOnBelt);
 
 	if (ROS())
@@ -620,15 +620,15 @@ bool CActor::net_Spawn(CSE_Abstract* DC)
 //	m_bJumpKeyPressed = ((mstate_wishful&mcJump)!=0);
 //		
 	NET_SavedAccel.set		(0,0,0);
-	NET_WasInterpolating	= TRUE;
+	NET_WasInterpolating	= true;
 
 	setEnabled				(E->s_flags.is(M_SPAWN_OBJECT_LOCAL));
 
-	Engine.Sheduler.Register	(this,TRUE);
+	Engine.Sheduler.Register	(this,true);
 
 	if (!IsGameTypeSingle())
 	{
-		setEnabled(TRUE);
+		setEnabled(true);
 	}
 
 	m_hit_slowmo = 0.f;
@@ -727,14 +727,14 @@ bool CActor::net_Spawn(CSE_Abstract* DC)
 
 	SpatialComponent->spatial.type |= ESPATIAL_TYPE::REACTTOSOUND;
 
-	psHUD_Flags.set(HUD_WEAPON_RT,TRUE);
-	psHUD_Flags.set(HUD_WEAPON_RT2,TRUE);
+	psHUD_Flags.set(HUD_WEAPON_RT,true);
+	psHUD_Flags.set(HUD_WEAPON_RT2,true);
 	
 	if (Level().IsDemoPlay() && OnClient())
 	{
 		setLocal(FALSE);
 	};
-	return					TRUE;
+	return					true;
 }
 
 void CActor::net_Destroy	()
@@ -988,7 +988,7 @@ void	CActor::ChangeVisual			( shared_str NewVisual )
 
 	g_SetAnimation(mstate_real);
 	Visual()->dcast_PKinematics()->CalculateBones_Invalidate();
-	Visual()->dcast_PKinematics()->CalculateBones(TRUE);
+	Visual()->dcast_PKinematics()->CalculateBones(true);
 };
 
 void ACTOR_DEFS::net_update::lerp(ACTOR_DEFS::net_update& A, ACTOR_DEFS::net_update& B, float f)
@@ -1903,7 +1903,7 @@ void CActor::net_Save(NET_Packet& P)
 
 bool CActor::net_SaveRelevant()
 {
-	return TRUE;
+	return true;
 }
 
 
@@ -2042,7 +2042,7 @@ void				CActor::OnPlayHeadShotParticle (NET_Packet P)
 	PPlayer->MakeXFORM(this,element,HitDir,HitPos,pos);
 
 	//  particles
-	xr_shared_ptr<CParticlesObject> ps = Particles::Details::Create(m_sHeadShotParticle.c_str(),TRUE);
+	xr_shared_ptr<CParticlesObject> ps = Particles::Details::Create(m_sHeadShotParticle.c_str(),true);
 
 	ps->UpdateParent(pos,Fvector().set(0.f,0.f,0.f));
 	GamePersistent().ps_needtoplay.push_back(ps);

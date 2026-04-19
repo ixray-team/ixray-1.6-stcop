@@ -284,7 +284,7 @@ void game_cl_TeamDeathmatch::OnTeamSelect(int Team)
 		m_bSkinSelected = FALSE;
 	};
 	//-----------------------------------------------------------------
-	m_bTeamSelected = TRUE;	
+	m_bTeamSelected = true;	
 	//---------------------------
 //	if (m_bMenuCalledFromReady)
 //	{
@@ -350,7 +350,7 @@ bool game_cl_TeamDeathmatch::CanBeReady				()
 {
 	if (!local_player) return false;
 	
-	m_bMenuCalledFromReady = TRUE;
+	m_bMenuCalledFromReady = true;
 
 	if (!m_bTeamSelected)
 	{
@@ -626,7 +626,7 @@ bool game_cl_TeamDeathmatch::CanCallTeamSelectMenu			()
 	};
 
 	m_game_ui->m_pUITeamSelectWnd->SetCurTeam(ModifyTeam(local_player->team));
-	return TRUE;	
+	return true;	
 };
 
 #define FRIEND_LOCATION	"mp_friend_location"

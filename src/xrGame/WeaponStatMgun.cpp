@@ -63,7 +63,7 @@ void CWeaponStatMgun::ResetBoneCallbacks()
 	CBoneInstance& biY = pK->LL_GetBoneInstance(m_rotate_y_bone);
 	biY.reset_callback();
 
-	m_pPhysicsShell->EnabledCallbacks(TRUE);
+	m_pPhysicsShell->EnabledCallbacks(true);
 }
 
 void CWeaponStatMgun::Load(const char* section)
@@ -133,9 +133,9 @@ bool CWeaponStatMgun::net_Spawn(CSE_Abstract* DC)
 	XFORM().transform_dir(m_destEnemyDir);
 
 	processing_activate();
-	setVisible(TRUE);
-	setEnabled(TRUE);
-	return TRUE;
+	setVisible(true);
+	setEnabled(true);
+	return true;
 }
 
 void CWeaponStatMgun::net_Destroy()
@@ -164,7 +164,7 @@ void CWeaponStatMgun::net_Import(NET_Packet& P)	// import from server
 	u8 state = P.r_u8();
 	load_data						(m_destEnemyDir, P);
 
-	if(TRUE==IsWorking()&&!state)			FireEnd		();
+	if(true==IsWorking()&&!state)			FireEnd		();
 	if(FALSE==IsWorking()&&state)			FireStart	();
 
 }
@@ -239,7 +239,7 @@ void CWeaponStatMgun::cam_Update			(float dt, float fov)
 
 	IKinematics* K					= Visual()->dcast_PKinematics();
 	K->CalculateBones_Invalidate	();
-	K->CalculateBones				(TRUE);
+	K->CalculateBones				(true);
 	const Fmatrix& C				= K->LL_GetTransform(m_camera_bone);
 	XFORM().transform_tiny			(P,C.c);
 

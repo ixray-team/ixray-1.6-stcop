@@ -25,7 +25,7 @@ bool CPda::net_Spawn(CSE_Abstract* DC)
 	m_idOriginalOwner = pda->m_original_owner;
 	m_SpecificChracterOwner = pda->m_specific_character;
 
-	return TRUE;
+	return true;
 }
 
 void CPda::net_Destroy()
@@ -160,7 +160,7 @@ bool CPda::feel_touch_contact(CObject* O)
 
 	if (entity_alive != nullptr && (entity_alive->cast_base_monster() || entity_alive->cast_car()))
 	{
-		return TRUE;
+		return true;
 	}
 	else if (CInventoryOwner* pInvOwner = O->cast_inventory_owner())
 	{
@@ -168,7 +168,7 @@ bool CPda::feel_touch_contact(CObject* O)
 		{
 			if (CEntityAlive* pEntityAlive = O->cast_entity_alive())
 			{
-				return TRUE;
+				return true;
 			}
 		}
 	}

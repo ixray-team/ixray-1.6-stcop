@@ -95,7 +95,7 @@ bool CRenderTarget::Create()
 
 		ZB = GRHI->CreateDepthStencilView(TempSurf, DepthDesc);
 
-		//R_CHK(RDevice->CreateDepthStencilSurface	(rtWidth,rtHeight,D3DFMT_D24S8,D3DMULTISAMPLE_NONE,0,TRUE,&ZB,nullptr));
+		//R_CHK(RDevice->CreateDepthStencilSurface	(rtWidth,rtHeight,D3DFMT_D24S8,D3DMULTISAMPLE_NONE,0,true,&ZB,nullptr));
 	}
 	else
 	{

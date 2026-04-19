@@ -62,7 +62,7 @@ protected:
 
 	ConnectionState			net_Connected;
 	bool                net_Syncronised = FALSE;
-	bool                net_Disconnected = TRUE;
+	bool                net_Disconnected = true;
 
 	INetQueue           net_Queue;
 	IClientStatistic    net_Statistic;

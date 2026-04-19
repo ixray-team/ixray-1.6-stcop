@@ -14,7 +14,7 @@ protected:
 	virtual	bool	Process				(SPPInfo& pp);
 
 	// update factor; if return FALSE - destroy
-	virtual bool	update				(){return TRUE;}
+	virtual bool	update				(){return true;}
 
 private:
 	SPPInfo			m_state;

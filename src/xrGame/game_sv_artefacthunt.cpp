@@ -29,8 +29,8 @@ int		g_sv_ah_dwArtefactsNum			= 10;
 u32		g_sv_ah_dwArtefactStayTime		= 3;
 int		g_sv_ah_iReinforcementTime		= 15;		//0 - Immediate, -1 - after artefact spawn , other - reinforcement
 bool	g_sv_ah_bBearerCantSprint		= FALSE;
-bool	g_sv_ah_bShildedBases			= TRUE;
-bool	g_sv_ah_bAfReturnPlayersToBases = TRUE;
+bool	g_sv_ah_bShildedBases			= true;
+bool	g_sv_ah_bAfReturnPlayersToBases = true;
 //-------------------------------------------------------
 int		game_sv_ArtefactHunt::Get_ArtefactsCount		() {return g_sv_ah_dwArtefactsNum; };
 u32		game_sv_ArtefactHunt::Get_ArtefactsRespawnDelta	() {return g_sv_ah_dwArtefactRespawnDelta; };
@@ -549,7 +549,7 @@ bool	game_sv_ArtefactHunt::OnTouch				(u16 eid_who, u16 eid_what, bool bForced)
 					}
 				}
 			};
-			return TRUE;
+			return true;
 		};
 
 		// Actor touches something
@@ -557,7 +557,7 @@ bool	game_sv_ArtefactHunt::OnTouch				(u16 eid_who, u16 eid_what, bool bForced)
 		if (W) 
 		{
 			//---------------------------------------------------------------
-			if (IsBuyableItem(*e_what->s_name)) return TRUE;
+			if (IsBuyableItem(*e_what->s_name)) return true;
 			//---------------------------------------------------------------
 		}
 	}
@@ -720,7 +720,7 @@ void game_sv_ArtefactHunt::OnArtefactOnBase(ClientID id_who)
 	P.w_u16				(GE_DESTROY);
 	P.w_u16				(m_dwArtefactID);
 
-	Level().Send(P,net_flags(TRUE,TRUE));
+	Level().Send(P,net_flags(true,true));
 	//-----------------------------------------------
 	bNoLostMessage = false;
 	//-----------------------------------------------
@@ -738,7 +738,7 @@ void game_sv_ArtefactHunt::OnArtefactOnBase(ClientID id_who)
 		pActor->SetfHealth(pActor->GetMaxHealth());
 		//-------------------------------------------
 		u_EventGen(P, GE_ACTOR_MAX_POWER, ps->GameID);
-		m_server->SendTo(id_who,P,net_flags(TRUE,TRUE));	
+		m_server->SendTo(id_who,P,net_flags(true,true));	
 	};
 	//-----------------------------------------------
 	signal_Syncronize();
@@ -795,7 +795,7 @@ void game_sv_ArtefactHunt::RemoveArtefact()
 		u_EventSend(P);
 		//-----------------------------------------------
 		u_EventGen(P, GE_DESTROY, m_dwArtefactID);
-		Level().Send(P,net_flags(TRUE,TRUE));
+		Level().Send(P,net_flags(true,true));
 		//-----------------------------------------------
 	};
 	Artefact_PrepareForSpawn();
@@ -897,7 +897,7 @@ bool game_sv_ArtefactHunt::ArtefactSpawn_Allowed()
 	m_server->ForEachClientDo(tmp_functor);
 	if (tmp_functor.TeamAlived[0] == 0 || tmp_functor.TeamAlived[1] == 0) return FALSE;
 	
-	return TRUE;
+	return true;
 };
 
 void game_sv_ArtefactHunt::OnCreate(u16 id_who)
@@ -1181,7 +1181,7 @@ void	game_sv_ArtefactHunt::MoveAllAlivePlayers			()
 			//------------------------------------------------		
 			NET_Packet	P;
 			m_owner->u_EventGen(P, GE_ACTOR_MAX_POWER, ps->GameID);
-			m_server->SendTo(l_pC->ID,P,net_flags(TRUE,TRUE));		
+			m_server->SendTo(l_pC->ID,P,net_flags(true,true));		
 			//------------------------------------------------
 			P.B.count = 0;
 			tmpP.w_u16(pA->ID);
@@ -1205,7 +1205,7 @@ void	game_sv_ArtefactHunt::MoveAllAlivePlayers			()
 	MovePacket.w_u8(tmp_functor.AliveCount);
 	MovePacket.w(&tmp_functor.tmpP.B.data, tmp_functor.tmpP.B.count);
 
-	m_server->SendBroadcast		(BroadcastCID,MovePacket, net_flags(TRUE, TRUE));	
+	m_server->SendBroadcast		(BroadcastCID,MovePacket, net_flags(true, true));	
 };
 
 void	game_sv_ArtefactHunt::UpdatePlayersNotSendedMoveRespond()
@@ -1274,7 +1274,7 @@ void	game_sv_ArtefactHunt::ReplicatePlayersStateToPlayer(ClientID CID)
 	MovePacket.w_u8(tmp_functor.AliveCount);
 	MovePacket.w(&tmp_functor.tmpP.B.data, tmp_functor.tmpP.B.count);
 	
-	m_server->SendTo	(CID,MovePacket, net_flags(TRUE, TRUE));	
+	m_server->SendTo	(CID,MovePacket, net_flags(true, true));	
 };
 
 void	game_sv_ArtefactHunt::CheckForTeamElimination()
@@ -1485,7 +1485,7 @@ void	game_sv_ArtefactHunt::SwapTeams					()
 	rpoints[2] = tmpRPoints;
 	//swap bases
 	m_bSwapBases = !m_bSwapBases;*/
-	g_sv_tdm_bAutoTeamSwap = TRUE;
+	g_sv_tdm_bAutoTeamSwap = true;
 	AutoSwapTeams();
 	g_sv_tdm_bAutoTeamSwap = old_team_swap;
 };

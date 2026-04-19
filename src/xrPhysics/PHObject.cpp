@@ -30,7 +30,7 @@ void CPHObject::activate()
 	if(m_flags.test(st_recently_deactivated))remove_from_recently_deactivated();
 	ph_world->AddObject(this);
 	vis_update_activate();
-	m_flags.set(st_activated,TRUE);
+	m_flags.set(st_activated,true);
 }
 
 void CPHObject::EnableObject(CPHObject* obj)
@@ -52,7 +52,7 @@ void CPHObject::put_in_recently_deactivated()
 	VERIFY(!m_flags.test(st_activated)&&!m_flags.test(st_freezed));
 	if(m_flags.test(st_recently_deactivated))return;
 	m_check_count=u8(ph_console::ph_tri_clear_disable_count);
-	m_flags.set(st_recently_deactivated,TRUE);
+	m_flags.set(st_recently_deactivated,true);
 	ph_world->AddRecentlyDisabled(this);
 }
 void CPHObject::remove_from_recently_deactivated()
@@ -74,7 +74,7 @@ void CPHObject::spatial_move()
 {
 	get_spatial_params();
 	ISpatialOwner::spatial_move();
-	m_flags.set(st_dirty,TRUE);
+	m_flags.set(st_dirty,true);
 }
 
 void CPHObject::Collide()
@@ -197,7 +197,7 @@ bool		CPHObject::	DoCollideObj	()
 void CPHObject::FreezeContent()
 {
 	R_ASSERT(!m_flags.test(st_freezed));
-	m_flags.set(st_freezed,TRUE);
+	m_flags.set(st_freezed,true);
 	m_flags.set(st_activated,FALSE);
 	vis_update_deactivate();
 }
@@ -205,7 +205,7 @@ void CPHObject::UnFreezeContent()
 {
 	R_ASSERT(m_flags.test(st_freezed));
 	m_flags.set(st_freezed,FALSE);
-	m_flags.set(st_activated,TRUE);
+	m_flags.set(st_activated,true);
 	vis_update_activate();
 }
 
@@ -213,13 +213,13 @@ void CPHObject::spatial_register()
 {
 	get_spatial_params();
 	ISpatialOwner::spatial_register();
-	m_flags.set(st_dirty,TRUE);
+	m_flags.set(st_dirty,true);
 }
 
 void CPHObject::collision_disable()
 {
 	spatial_unregister();
-	m_flags.set(fl_collision_disable,TRUE);
+	m_flags.set(fl_collision_disable,true);
 }
 void CPHObject::collision_enable()
 {
@@ -235,7 +235,7 @@ void CPHObject::collision_dynamic_enable()
 void CPHObject::collision_dynamic_disable()
 {
 	spatial_unregister();
-	m_flags.set(fl_collision_disable_dynamic, TRUE);
+	m_flags.set(fl_collision_disable_dynamic, true);
 }
 
 void CPHObject::Freeze()

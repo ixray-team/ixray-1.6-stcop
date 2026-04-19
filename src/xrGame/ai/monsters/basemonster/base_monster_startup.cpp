@@ -366,7 +366,7 @@ bool CBaseMonster::net_Spawn (CSE_Abstract* DC)
 	else
 		SpatialComponent->spatial.type |= ESPATIAL_TYPE::MONSTER_DEAD;
 
-	return(TRUE);
+	return(true);
 }
 
 void CBaseMonster::net_Destroy()
@@ -488,7 +488,7 @@ void CBaseMonster::on_before_sell	(CInventoryItem *item)
 	VERIFY							(object);
 	CSE_ALifeObject* alife_object = object->cast_alife_object();
 	if (alife_object)
-		alife_object->m_flags.set	(CSE_ALifeObject::flCanSave,TRUE);
+		alife_object->m_flags.set	(CSE_ALifeObject::flCanSave,true);
 }
 
 void CBaseMonster::load_critical_wound_bones()

@@ -199,7 +199,7 @@ bool CreateNode(Fvector& vAt, vertex& N)
 	// *** Mask check
 	// ???
 
-	return TRUE;
+	return true;
 }
 
 const int		HDIM_X = 128;
@@ -285,12 +285,12 @@ bool	CanTravel(Fvector& _from, Fvector& _at)
 	// 1
 	msimulator_Simulate(Result,_from,_at,radius,0.7f);
 	bool b1 = fsimilar(Result.x,_at.x,eps)&&fsimilar(Result.z,_at.z,eps)&&fsimilar(Result.y,_at.y,eps_y);
-	if (b1) return TRUE;
+	if (b1) return true;
 
 	// 2
 	msimulator_Simulate(Result,_from,_at,radius,2.f);
 	bool b2 = fsimilar(Result.x,_at.x,eps)&&fsimilar(Result.z,_at.z,eps)&&fsimilar(Result.y,_at.y,eps_y);
-	if (b2) return TRUE;
+	if (b2) return true;
 
 	return FALSE;
 }

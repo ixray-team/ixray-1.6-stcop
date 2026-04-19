@@ -35,7 +35,7 @@ IC bool	ValidateMerge(Fbox& bb_base, Fbox& bb, float& volume, float SLimit)
 	volume = merge.getvolume();
 
 	// OK
-	return TRUE;
+	return true;
 }
 
 void CSector::BuildHierrarhy()
@@ -119,7 +119,7 @@ void CSector::BuildHierrarhy()
 			if (pNode->chields.size() > 1) {
 				pNode->CalcBounds();
 				new_nodes.push_back(pNode);
-				bAnyNode = TRUE;
+				bAnyNode = true;
 			}
 			else {
 				g_tree[id]->bConnected = false;

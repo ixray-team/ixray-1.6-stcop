@@ -127,7 +127,7 @@ bool CZombie::net_Spawn (CSE_Abstract* DC)
 
 	vfAssignBones	();
 
-	return(TRUE);
+	return(true);
 }
 
 #define TIME_FAKE_DEATH			5000

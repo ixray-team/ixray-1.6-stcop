@@ -165,7 +165,7 @@ void CLightShadows::calculate	()
 
 			// setup rt+state(s) for first use
 			if (!bRTS)	{
-				bRTS						= TRUE;
+				bRTS						= true;
 				RCache.set_RT				(RT_temp->pRT);
 				GRHI->SetDepthStencilView	(RImplementation.Target->pTempZB);
 				RDevice->Clear(0, 0, D3DCLEAR_TARGET, color_xrgb(255, 255, 255), 1, 0);

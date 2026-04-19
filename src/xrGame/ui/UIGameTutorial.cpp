@@ -182,17 +182,17 @@ void CUISequencer::Start(const char* tutor_name)
 	IR_Capture					();
 
 
-	m_flags.set					(etsActive, TRUE);
+	m_flags.set					(etsActive, true);
 	m_flags.set					(etsStoredPauseState, Device.Paused());
 	
 	if(m_flags.test(etsNeedPauseOn) && !m_flags.test(etsStoredPauseState))
 	{
-		Device.Pause			(TRUE, TRUE, TRUE, "tutorial_start");
+		Device.Pause			(true, true, true, "tutorial_start");
 		bShowPauseString		= FALSE;
 	}
 
 	if(m_flags.test(etsNeedPauseOff) && m_flags.test(etsStoredPauseState))
-		Device.Pause			(FALSE, TRUE, FALSE, "tutorial_start");
+		Device.Pause			(FALSE, true, FALSE, "tutorial_start");
 
 	if (m_global_sound.handle())
 		m_global_sound.play(nullptr, sm_2D);
@@ -279,10 +279,10 @@ void CUISequencer::Stop()
 	}
 	{
 	if(m_flags.test(etsNeedPauseOn) && !m_flags.test(etsStoredPauseState))
-		Device.Pause			(FALSE, TRUE, TRUE, "tutorial_stop");
+		Device.Pause			(FALSE, true, true, "tutorial_stop");
 
 	if(m_flags.test(etsNeedPauseOff) && m_flags.test(etsStoredPauseState))
-		Device.Pause			(TRUE, TRUE, FALSE, "tutorial_stop");
+		Device.Pause			(true, true, FALSE, "tutorial_stop");
 	}
 	Destroy			();
 }

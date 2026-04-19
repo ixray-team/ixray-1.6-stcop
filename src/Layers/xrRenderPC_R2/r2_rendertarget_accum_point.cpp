@@ -46,12 +46,12 @@ void CRenderTarget::accum_point		(light* L)
 
 	// backfaces: if (stencil>=1 && zfail)	stencil = light_id
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::FRONT);
-	RCache.set_Stencil				(TRUE,D3DCMP_LESSEQUAL,dwLightMarkerID,0x01,0xff,D3DSTENCILOP_KEEP,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE);
+	RCache.set_Stencil				(true,D3DCMP_LESSEQUAL,dwLightMarkerID,0x01,0xff,D3DSTENCILOP_KEEP,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE);
 	draw_volume						(L);
 
 	// frontfaces: if (stencil>=light_id && zfail)	stencil = 0x1
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
-	RCache.set_Stencil				(TRUE,D3DCMP_LESSEQUAL,0x01,0xff,0xff,D3DSTENCILOP_KEEP,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE);
+	RCache.set_Stencil				(true,D3DCMP_LESSEQUAL,0x01,0xff,0xff,D3DSTENCILOP_KEEP,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE);
 	draw_volume						(L);
 
 	// nv-stencil recompression
@@ -87,7 +87,7 @@ void CRenderTarget::accum_point		(light* L)
 		RCache.set_c					("m_texgen",		m_Texgen);
 
 		// Render if (stencil >= light_id && z-pass)
-		RCache.set_Stencil				(TRUE,D3DCMP_LESSEQUAL,dwLightMarkerID,0xff,0x00,D3DSTENCILOP_KEEP,D3DSTENCILOP_KEEP,D3DSTENCILOP_KEEP);
+		RCache.set_Stencil				(true,D3DCMP_LESSEQUAL,dwLightMarkerID,0xff,0x00,D3DSTENCILOP_KEEP,D3DSTENCILOP_KEEP,D3DSTENCILOP_KEEP);
 		draw_volume						(L);
 	}
 

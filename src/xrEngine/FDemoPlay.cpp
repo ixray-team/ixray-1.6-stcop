@@ -72,7 +72,7 @@ void CDemoPlay::stat_Start	()
 {
 	//if (stat_started)		return;
 	VERIFY(!stat_started);
-	stat_started			= TRUE				;
+	stat_started			= true				;
 	Sleep					(1)					;
 	stat_StartFrame			=	Device.dwFrame	;
 	stat_Timer_frame.Start	()					;
@@ -171,7 +171,7 @@ void spline1( float t, Fvector *p, Fvector *ret )
 bool CDemoPlay::ProcessCam(SCamEffectorInfo& info)
 {
 	// skeep a few frames before counting
-	if (Device.dwPrecacheFrame)	return	TRUE;
+	if (Device.dwPrecacheFrame)	return	true;
 
 	if (!stat_started) {
 		stat_Start();
@@ -200,7 +200,7 @@ bool CDemoPlay::ProcessCam(SCamEffectorInfo& info)
 	{
 		if (seq.empty()) {
 			g_pGameLevel->Cameras().RemoveCamEffector(cefDemo);
-			return		TRUE;
+			return		true;
 		}
 
 		fStartTime		+=	Device.fTimeDelta;
@@ -249,5 +249,5 @@ bool CDemoPlay::ProcessCam(SCamEffectorInfo& info)
 		
 		fLifeTime-=Device.fTimeDelta;
 	}
-	return TRUE;
+	return true;
 }

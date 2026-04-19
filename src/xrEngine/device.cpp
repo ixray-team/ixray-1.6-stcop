@@ -28,7 +28,7 @@ bool CRenderDevice::Begin()
 
 	if (g_dedicated_server)
 	{
-		return TRUE;
+		return true;
 	}
 
 	switch (m_pRender->GetDeviceState())
@@ -55,7 +55,7 @@ bool CRenderDevice::Begin()
 
 	g_bRendering = true;
 
-	return TRUE;
+	return true;
 }
 
 void CRenderDevice::Clear()
@@ -499,7 +499,7 @@ void CRenderDevice::FrameMove()
 	
 	Statistic->EngineTOTAL.Begin();
 	Device.seqFrame.Process(rp_Frame);
-	g_bLoaded = TRUE;
+	g_bLoaded = true;
 	Statistic->EngineTOTAL.End();
 }
 
@@ -511,7 +511,7 @@ CRenderDevice::CRenderDevice() : dwPrecacheTotal(0), m_pRender(nullptr), Statist
 	m_bNearer = FALSE;
 }
 
-ENGINE_API bool bShowPauseString = TRUE;
+ENGINE_API bool bShowPauseString = true;
 void CRenderDevice::Pause(bool bOn, bool bTimer, bool bSound, const char* reason)
 {
 	static int snd_emitters_ = -1;
@@ -522,11 +522,11 @@ void CRenderDevice::Pause(bool bOn, bool bTimer, bool bSound, const char* reason
 	if (bOn)
 	{
 		if (!Paused())
-			bShowPauseString = TRUE;
+			bShowPauseString = true;
 
 		if (bTimer && (!g_pGamePersistent || g_pGamePersistent->CanBePaused()))
 		{
-			g_pauseMngr.Pause(TRUE);
+			g_pauseMngr.Pause(true);
 	}
 
 		if (bSound && ::Sound)
@@ -559,7 +559,7 @@ bool CRenderDevice::Paused()
 
 void CRenderDevice::OnWM_Activate(bool active, bool minimized)
 {
-	bool NewState = (active && (!minimized)) ? TRUE : FALSE;
+	bool NewState = (active && (!minimized)) ? true : FALSE;
 	bool OldState = Device.b_is_Active;
 
 	Device.b_is_Active = psDeviceFlags.test(rsDeviceActive) || NewState;

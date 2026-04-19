@@ -84,7 +84,7 @@ void CRenderTarget::phase_combine()
 	// draw skybox
 	g_pGamePersistent->Environment().RenderClouds();
 
-	RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);	// stencil should be >= 1
+	RCache.set_Stencil(true, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);	// stencil should be >= 1
 
 	if (RImplementation.o.nvstencil) {
 		u_stencil_optimize(CRenderTarget::SO_Combine);
@@ -448,7 +448,7 @@ void CRenderTarget::phase_wallmarks()
 	// Targets
 	u_setrt(rt_Color, nullptr, nullptr, RDepth);
 	// Stencil	- draw only where stencil >= 0x1
-	RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
+	RCache.set_Stencil(true, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 	RCache.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE);
 }

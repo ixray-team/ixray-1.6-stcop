@@ -167,7 +167,7 @@ public:
 			}
 
 			// here we end up with complete polygon in 'dest' which is inside plane #i
-			if (dest->size() < 3) return 0;
+			if (dest->size() < 3) return nullptr;
 		}
 		return dest;
 	}
@@ -206,7 +206,7 @@ public:
 		case 0:	break;
 		default:	NODEFAULT;
 		}
-		return TRUE;
+		return true;
 	}
 	ICF EFC_Visible	testAABB(const float* mM, u32& test_mask) const
 	{
@@ -251,7 +251,7 @@ public:
 			if (planes[i].classify(pt) > 0.0f)
 				return FALSE;
 		}
-		return TRUE;
+		return true;
 	}
 
 	ICF bool testPolyInside_dirty(Fvector* p, int count) const

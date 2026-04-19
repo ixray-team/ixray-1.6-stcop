@@ -39,7 +39,7 @@ bool CPPEffectorPsyDogAura::update()
 			return FALSE;
 		}
 	}
-	return TRUE;
+	return true;
 }
 
 //////////////////////////////////////////////////////////////////////////

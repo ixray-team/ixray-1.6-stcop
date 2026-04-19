@@ -150,7 +150,7 @@ void ResetDescription( D3D_RASTERIZER_DESC &desc )
 	desc.DepthBias = 0;
 	desc.DepthBiasClamp = 0.0f;
 	desc.SlopeScaledDepthBias = 0.0f;
-	desc.DepthClipEnable = TRUE;
+	desc.DepthClipEnable = true;
 	desc.ScissorEnable = FALSE;
 	desc.MultisampleEnable = FALSE;
 	desc.AntialiasedLineEnable = FALSE;
@@ -159,10 +159,10 @@ void ResetDescription( D3D_RASTERIZER_DESC &desc )
 void ResetDescription( D3D_DEPTH_STENCIL_DESC &desc )
 {
 	ZeroMemory(&desc, sizeof(desc));
-	desc.DepthEnable = TRUE;
+	desc.DepthEnable = true;
 	desc.DepthWriteMask = D3D_DEPTH_WRITE_MASK_ALL;
 	desc.DepthFunc = D3D_COMPARISON_LESS;
-	desc.StencilEnable = TRUE;
+	desc.StencilEnable = true;
 	desc.StencilReadMask = 0xFF;
 	desc.StencilWriteMask = 0xFF;
 

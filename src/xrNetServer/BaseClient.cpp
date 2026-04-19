@@ -93,7 +93,7 @@ void BaseClient::ParseConnectionOptions(const char* options, ClientConnectionOpt
 		if (strchr(portstr, '/'))	*strchr(portstr, '/') = 0;
 		out.cl_port = atol(portstr);
 		clamp(out.cl_port, int(START_PORT), int(END_PORT));
-		out.bClPortWasSet = TRUE;
+		out.bClPortWasSet = true;
 	};
 }
 
@@ -123,7 +123,7 @@ bool BaseClient::Connect(const char* options)
 
 	// Sync	
 	net_TimeDelta = 0;
-	return TRUE;
+	return true;
 }
 
 void BaseClient::Disconnect()
@@ -261,7 +261,7 @@ bool BaseClient::Sync_Thread()
 			while ((net_DeltaArray.size() == old_size) && (TimerAsync(device_timer) - timeBegin < 5000))		Sleep(1);
 
 			if (net_DeltaArray.size() >= syncSamples) {
-				net_Syncronised = TRUE;
+				net_Syncronised = true;
 				net_TimeDelta = net_TimeDelta_Calculated;
 				return true;
 			}
@@ -345,7 +345,7 @@ bool BaseClient::net_HasBandwidth()
 		if (0 != psNET_ClientUpdate && (dwTime - net_Time_LastUpdate) > dwInterval)
 		{
 			net_Time_LastUpdate = dwTime;
-			return TRUE;
+			return true;
 		}
 	}
 	else if (0 != psNET_ClientUpdate && (dwTime - net_Time_LastUpdate) > dwInterval)
@@ -369,7 +369,7 @@ bool BaseClient::net_HasBandwidth()
 
 		// ok
 		net_Time_LastUpdate = dwTime;
-		return TRUE;
+		return true;
 	}
 
 	return FALSE;

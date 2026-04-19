@@ -265,7 +265,7 @@ void	generate_jitter	(DWORD*	dest, u32 elem_count)
 	{
 		Ivector2	test;
 		test.set	(::Random.randI(0,256),::Random.randI(0,256));
-		bool		valid = TRUE;
+		bool		valid = true;
 		for (u32 t=0; t<samples.size(); t++)
 		{
 			int		dist	= std::abs(test.x-samples[t].x)+ std::abs(test.y-samples[t].y);

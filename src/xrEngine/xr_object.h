@@ -186,8 +186,8 @@ public:
 	
 	IC IRender_Sector*					Sector				()					{ return H_Root()->SpatialComponent->spatial.sector;	}
 	IC IRender_ObjectSpecific*			ROS					()					{ return renderable_ROS();			}
-	virtual bool						renderable_ShadowGenerate	()			{ return TRUE;						}
-	virtual bool						renderable_ShadowReceive	()			{ return TRUE;						}
+	virtual bool						renderable_ShadowGenerate	()			{ return true;						}
+	virtual bool						renderable_ShadowReceive	()			{ return true;						}
 
 	// Accessors and converters
 	ICF IRenderVisual*					Visual				() const			{ return renderable.visual;			}
@@ -313,7 +313,7 @@ virtual	const IObjectPhysicsCollision	*physics_collision	()					{ return  0; }
 	virtual	void						net_ImportInput		(NET_Packet& P)	{};
 	virtual bool						net_Relevant		()				{ return FALSE; };	// relevant for export to server
 	virtual void						net_MigrateInactive	(NET_Packet& P)	{ Props.net_Local = FALSE;		};
-	virtual void						net_MigrateActive	(NET_Packet& P)	{ Props.net_Local = TRUE;		};
+	virtual void						net_MigrateActive	(NET_Packet& P)	{ Props.net_Local = true;		};
 	virtual void						net_Relcase			(CObject*	 O) { };				// destroy all links to another objects
 
 	// Position stack

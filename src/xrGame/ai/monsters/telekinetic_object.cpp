@@ -181,7 +181,7 @@ void CTelekineticObject::release()
 	dir_inv.set(0.f,-1.0f,0.f);
 
 		// включить гравитацию
-		object->m_pPhysicsShell->set_ApplyByGravity(TRUE);
+		object->m_pPhysicsShell->set_ApplyByGravity(true);
 		if (OnServer()) 
 		{
 		// приложить небольшую силу для того, чтобы объект начал падать
@@ -199,7 +199,7 @@ void CTelekineticObject::fire_t(const Fvector &target, float time)
 	if (!object || !object->m_pPhysicsShell || !object->m_pPhysicsShell->isActive()) return;
 
 	// включить гравитацию
-	object->m_pPhysicsShell->set_ApplyByGravity(TRUE);
+	object->m_pPhysicsShell->set_ApplyByGravity(true);
 
 	Fvector transference;
 	transference.sub(target,object->Position());
@@ -227,7 +227,7 @@ void CTelekineticObject::fire(const Fvector &target, float power)
 	dir.normalize();
 
 		// включить гравитацию
-		object->m_pPhysicsShell->set_ApplyByGravity(TRUE);
+		object->m_pPhysicsShell->set_ApplyByGravity(true);
 
 		if (OnServer()) 
 		{

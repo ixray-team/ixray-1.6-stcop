@@ -39,7 +39,7 @@ bool CMonsterEffector::Process(SPPInfo& pp)
 	clamp(factor,0.01f,1.0f);
 
 	pp.lerp				(pp_identity, state, factor * m_spec_factor);
-	return TRUE;
+	return true;
 }
 
 
@@ -93,6 +93,6 @@ bool CMonsterEffectorHit::ProcessCam(SCamEffectorInfo& info)
 	info.d.set		(mR.k);
 	info.n.set		(mR.j);
 
-	return TRUE;
+	return true;
 }
 

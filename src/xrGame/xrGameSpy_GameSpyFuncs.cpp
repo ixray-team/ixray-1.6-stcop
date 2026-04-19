@@ -6,7 +6,7 @@
 void			xrGameSpyServer::QR2_Init			(int PortID)
 {	
 	if (!m_QR2.Init(PortID, m_iReportToMasterServer, this)) return;
-	m_bQR2_Initialized = TRUE;
+	m_bQR2_Initialized = true;
 };
 
 void			xrGameSpyServer::QR2_ShutDown()
@@ -20,7 +20,7 @@ void			xrGameSpyServer::QR2_ShutDown()
 void			xrGameSpyServer::CDKey_Init			()
 {
 	if (!m_GCDServer.Init()) return;
-	m_bCDKey_Initialized = TRUE;
+	m_bCDKey_Initialized = true;
 };
 
 void			xrGameSpyServer::CDKey_ShutDown()

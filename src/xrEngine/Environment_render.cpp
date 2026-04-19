@@ -44,7 +44,7 @@ void CEnvironment::RenderFlares()
 		return;
 
 	// 1
-	eff_LensFlare->Render(FALSE, TRUE, TRUE);
+	eff_LensFlare->Render(FALSE, true, true);
 }
 
 void CEnvironment::RenderLast()

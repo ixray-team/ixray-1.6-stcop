@@ -119,7 +119,7 @@ void CScriptParticles::Stop		()
 void CScriptParticles::StopDeffered()
 {
 	VERIFY						(m_particles);
-	m_particles->Stop			(TRUE);
+	m_particles->Stop			(true);
 }
 
 void CScriptParticles::MoveTo	(const Fvector &pos, const Fvector& vel)

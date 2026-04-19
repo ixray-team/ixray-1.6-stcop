@@ -14,12 +14,12 @@ void	CBlender_accum_direct_mask::Compile(CBlender_Compile& C) {
 
 	switch(C.iElement) {
 		case SE_MASK_SPOT:		// spot or omni-part
-		C.r_Pass("accum_mask", "dumb", false, TRUE, FALSE);
+		C.r_Pass("accum_mask", "dumb", false, true, FALSE);
 		C.r_ColorWriteEnable(false, false, false, false);
 		C.r_End();
 		break;
 		case SE_MASK_POINT:		// point
-		C.r_Pass("accum_mask", "dumb", false, TRUE, FALSE);
+		C.r_Pass("accum_mask", "dumb", false, true, FALSE);
 		C.r_ColorWriteEnable(false, false, false, false);
 		C.r_End();
 		break;

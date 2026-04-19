@@ -59,7 +59,7 @@ public:
 			occD* it = base + x0;
 			occD* end = base + x1;
 			for (; it <= end; it++)
-				if (z < *it)	return TRUE;
+				if (z < *it)	return true;
 		}
 		return FALSE;
 	}

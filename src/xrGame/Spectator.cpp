@@ -349,7 +349,7 @@ void CSpectator::FirstEye_ToPlayer(CObject* pObject)
 		if (pCurViewEntity->cast_spectator() != nullptr)
 		{
 			Engine.Sheduler.Unregister	(pCurViewEntity);
-			Engine.Sheduler.Register	(pCurViewEntity, TRUE);
+			Engine.Sheduler.Register	(pCurViewEntity, true);
 		};
 	};
 	if (pObject)
@@ -357,7 +357,7 @@ void CSpectator::FirstEye_ToPlayer(CObject* pObject)
 		Level().SetEntity(pObject);
 
 		Engine.Sheduler.Unregister	(pObject);
-		Engine.Sheduler.Register	(pObject, TRUE);
+		Engine.Sheduler.Register	(pObject, true);
 
 		CActor* pActor = pObject->cast_actor();
 		if (pActor)
@@ -518,9 +518,9 @@ bool			CSpectator::net_Spawn				( CSE_Abstract*	DC )
 
 	if (OnServer())
 	{
-		E->s_flags.set(M_SPAWN_OBJECT_LOCAL, TRUE);
+		E->s_flags.set(M_SPAWN_OBJECT_LOCAL, true);
 	};
-	return TRUE;
+	return true;
 };
 
 #include "../xrEngine/IGame_Persistent.h"

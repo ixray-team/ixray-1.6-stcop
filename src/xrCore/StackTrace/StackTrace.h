@@ -94,7 +94,7 @@ namespace StackTrace
 			u32 dwOptions = SymGetOptions();
 			SymSetOptions(dwOptions | SYMOPT_DEFERRED_LOADS | SYMOPT_LOAD_LINES | SYMOPT_UNDNAME);
 
-			if (SymInitialize(GetCurrentProcess(), nullptr, TRUE))
+			if (SymInitialize(GetCurrentProcess(), nullptr, true))
 			{
 				symEngineInitialized = true;
 			}

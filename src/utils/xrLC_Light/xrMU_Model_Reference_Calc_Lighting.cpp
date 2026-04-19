@@ -268,7 +268,7 @@ void xrMU_Reference::calc_lighting_cuda_2()
 			R_ASSERT(Front);
 			if (Front->P.similar(V.P, eps))
 			{
-				found = TRUE;
+				found = true;
 				VL.push_back(&V);
 			}
 		}

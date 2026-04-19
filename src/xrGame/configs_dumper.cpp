@@ -231,13 +231,13 @@ void configs_dumper::dump_config(complete_callback_t complete_cb)
 	if (m_make_start_event)
 	{
 		SetEvent(m_make_start_event);
-		Engine.Sheduler.Register	(this, TRUE);
+		Engine.Sheduler.Register	(this, true);
 		return;
 	}
-	m_make_start_event			= CreateEvent(nullptr, FALSE, TRUE, nullptr);
+	m_make_start_event			= CreateEvent(nullptr, FALSE, true, nullptr);
 	m_make_done_event			= CreateEvent(nullptr, FALSE, FALSE, nullptr);
 	thread_spawn				(&configs_dumper::dumper_thread, "configs_dumper", 0, this);
-	Engine.Sheduler.Register	(this, TRUE);
+	Engine.Sheduler.Register	(this, true);
 }
 
 void configs_dumper::compress_configs	()

@@ -90,7 +90,7 @@ bool CBastArtefact::net_Spawn(CSE_Abstract* DC)
 	m_pHitedEntity = nullptr;
 	m_AliveList.clear();
 
-	return TRUE;
+	return true;
 }
 
 void CBastArtefact::net_Destroy		()
@@ -185,7 +185,7 @@ void CBastArtefact::UpdateCLChild()
 
 		if(m_fEnergy>0 && ::Random.randF(0.f, 1.0f)<(m_fEnergy/(m_fStrikeImpulse*100.f)))
 		{
-			CParticlesObject* pStaticPG = Particles::Details::Create(*m_sParticleName,TRUE).get();
+			CParticlesObject* pStaticPG = Particles::Details::Create(*m_sParticleName,true).get();
 			Fmatrix pos; 
 			pos.set(XFORM()); 
 			Fvector vel; 
@@ -264,7 +264,7 @@ bool CBastArtefact::feel_touch_contact(CObject* O)
 	CEntityAlive* pEntityAlive = smart_cast<CEntityAlive*>(O);
 
 	if(pEntityAlive && pEntityAlive->g_Alive()) 
-		return TRUE;
+		return true;
 	else
 		return FALSE;
 }

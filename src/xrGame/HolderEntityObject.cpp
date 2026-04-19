@@ -39,7 +39,7 @@ void CHolderEntityObject::SetBoneCallbacks()
 
 void CHolderEntityObject::ResetBoneCallbacks()
 {
-	m_pPhysicsShell->EnabledCallbacks(TRUE);
+	m_pPhysicsShell->EnabledCallbacks(true);
 }
 
 void CHolderEntityObject::Load(const char* section)
@@ -65,9 +65,9 @@ bool CHolderEntityObject::net_Spawn(CSE_Abstract* DC)
 	PPhysicsShell()	= P_build_Shell(this,false,fixed_bones);
 
 	processing_activate();
-	setVisible(TRUE);
-	setEnabled(TRUE);
-	return TRUE;
+	setVisible(true);
+	setEnabled(true);
+	return true;
 }
 
 void CHolderEntityObject::net_Destroy()

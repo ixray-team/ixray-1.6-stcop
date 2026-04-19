@@ -55,8 +55,8 @@ void CEatableItem::Load(const char* section)
 
 	UseText = READ_IF_EXISTS(pSettings, r_string, section, "use_text", "st_use");
 
-	m_bRemoveAfterUse = READ_IF_EXISTS(pSettings, r_bool, section, "remove_after_use", TRUE);
-	m_bConsumeChargeOnUse = READ_IF_EXISTS(pSettings, r_bool, section, "consume_charge_on_use", TRUE);
+	m_bRemoveAfterUse = READ_IF_EXISTS(pSettings, r_bool, section, "remove_after_use", true);
+	m_bConsumeChargeOnUse = READ_IF_EXISTS(pSettings, r_bool, section, "consume_charge_on_use", true);
 	m_fWeightFull = m_weight;
 	m_fWeightEmpty = READ_IF_EXISTS(pSettings, r_float, section, "empty_weight", 0.0f);
 
@@ -104,7 +104,7 @@ bool CEatableItem::net_Spawn(CSE_Abstract* DC)
 		}
 	}
 
-	return TRUE;
+	return true;
 };
 
 bool CEatableItem::Useful() const

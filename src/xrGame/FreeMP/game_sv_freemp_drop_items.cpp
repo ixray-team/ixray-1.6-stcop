@@ -46,7 +46,7 @@ bool game_sv_freemp::OnTouchPlayersBag(CSE_ActorMP* actor, CSE_Abstract* item)
 
 	if (item->ID_Parent != 0xffff)
 	{
-		return TRUE;
+		return true;
 	}
 
 	//move all items from rukzak to player

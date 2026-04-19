@@ -263,7 +263,7 @@ struct OGF_Node :
 		OGF_Base*			P = g_tree[ID];
 		R_ASSERT			(P->Sector == Sector);
 		bbox.merge			(P->bbox);
-		P->bConnected		= TRUE;
+		P->bConnected		= true;
 	}
 	virtual void		Save		(IWriter &fs);
 	virtual void		GetGeometry	(xr_vector<Fvector> &R)

@@ -510,7 +510,7 @@ LevelInspector::LevelInspector(bool hm) : hud_mode(hm)
 
 	if (!hud_mode)
 	{
-		hud_prims = new LevelInspector(TRUE);
+		hud_prims = new LevelInspector(true);
 
 		CImGuiManager::Instance().Subscribe("LevelInspector", CImGuiManager::ERenderPriority::eMedium, [this]()
 		{
@@ -3093,7 +3093,7 @@ void LevelInspector::DrawObjectsInfo()
 			CDB::TRI& T = Level().ObjectSpace.GetStaticTris()[result.element];
 			SGameMtl* pMtl = GMLib.GetMaterialByIdx(T.material);
 			if (pMtl != nullptr && (pMtl->Flags.is(SGameMtl::flPassable) || pMtl->Flags.is(SGameMtl::flActorObstacle)))
-				return TRUE;
+				return true;
 		}
 
 		*RQ = result;
@@ -3129,7 +3129,7 @@ void LevelInspector::DrawObjectsInfo()
 				return FALSE;
 		}
 
-		return TRUE;
+		return true;
 	},
 	m_selection_text_flags.test(EOBJECT_INFO::EOI_ACTOR) ? nullptr : Level().CurrentViewEntity());
 

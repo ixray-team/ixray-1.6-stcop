@@ -84,7 +84,7 @@ bool CInifileEx::Sect::line_exist( LPCSTR L, LPCSTR* val )
 	SectCIt A = std::lower_bound(Data.begin(),Data.end(),L,item_pred);
     if (A!=Data.end() && xr_strcmp(*A->first,L)==0){
     	if (val) *val = *A->second;
-    	return TRUE;
+    	return true;
     }
 	return FALSE;
 }
@@ -95,7 +95,7 @@ CInifileEx::CInifileEx(IReader* F ,LPCSTR path)
 	m_file_name[0]	= 0;
 	m_flags.zero	();
 	m_flags.set		(eSaveAtEnd,		FALSE);
-	m_flags.set		(eReadOnly,			TRUE);
+	m_flags.set		(eReadOnly,			true);
 	m_flags.set		(eOverrideNames,	FALSE);
 	Load			(F,path);
 }

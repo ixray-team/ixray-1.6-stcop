@@ -228,7 +228,7 @@ IC bool material_callback(collide::rq_result& result, LPVOID params)
 		{
 			xr_vector<Fvector>& V = g_pGameLevel->ObjectSpace.GetStaticVerts();
 			auto& Tidxs = T.verts;
-			fp->pray_cache->set(fp->P,fp->D,fp->f,TRUE);
+			fp->pray_cache->set(fp->P,fp->D,fp->f,true);
 			fp->pray_cache->verts[0] = V[Tidxs[0]];
 			fp->pray_cache->verts[1] = V[Tidxs[1]];
 			fp->pray_cache->verts[2] = V[Tidxs[2]];

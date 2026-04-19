@@ -101,10 +101,10 @@ bool CPhantom::net_Spawn(CSE_Abstract* DC)
 	// set state
 	SwitchToState_internal(m_TgtState);
 
-	setVisible		(m_CurState>stIdle?TRUE:FALSE);
-	setEnabled		(TRUE);
+	setVisible		(m_CurState>stIdle?true:FALSE);
+	setEnabled		(true);
 
-	return			TRUE;
+	return			true;
 }
 void CPhantom::net_Destroy	()
 {
@@ -162,9 +162,9 @@ void CPhantom::SwitchToState_internal(EState new_state)
 		switch (new_state){
 		case stBirth:{
 			SStateData& sdata	= m_state_data[new_state];
-			PlayParticles		(sdata.particles.c_str(),TRUE,xform);
+			PlayParticles		(sdata.particles.c_str(),true,xform);
 			sdata.sound.play_at_pos(0,xform.c);
-			K->PlayCycle		(sdata.motion, TRUE, animation_end_callback, this);
+			K->PlayCycle		(sdata.motion, true, animation_end_callback, this);
 		}break;
 		case stFly:{
 			UpdateEvent.bind	(this,&CPhantom::OnFlyState);
@@ -177,14 +177,14 @@ void CPhantom::SwitchToState_internal(EState new_state)
 			UpdateEvent.bind	(this,&CPhantom::OnDeadState);	
 			SStateData& sdata	= m_state_data[new_state];
 			sdata.sound.play_at_pos(0,xform.c);
-			K->PlayCycle		(sdata.motion, TRUE, animation_end_callback, this);
+			K->PlayCycle		(sdata.motion, true, animation_end_callback, this);
 		}break;
 		case stShoot:{
 			UpdateEvent.bind	(this,&CPhantom::OnDeadState);	
 			SStateData& sdata	= m_state_data[new_state];
-			PlayParticles		(sdata.particles.c_str(),TRUE,xform);
+			PlayParticles		(sdata.particles.c_str(),true,xform);
 			sdata.sound.play_at_pos(0,xform.c);
-			K->PlayCycle		(sdata.motion, TRUE, animation_end_callback, this);
+			K->PlayCycle		(sdata.motion, true, animation_end_callback, this);
 		}break;
 		case stIdle:{
 			UpdateEvent.bind	(this,&CPhantom::OnIdleState);	

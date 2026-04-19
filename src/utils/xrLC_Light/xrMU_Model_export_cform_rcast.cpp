@@ -39,7 +39,7 @@ void xrMU_Model::export_cform_rcast	(CDB::CollectorPacked& CL, Fmatrix& xform)
 			if (!Test->flags.bProcessed)continue;
 			if (F->isEqual(*Test))
 			{
-				bAlready			= TRUE;
+				bAlready			= true;
 				break;
 			}
 		}

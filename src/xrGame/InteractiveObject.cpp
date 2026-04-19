@@ -50,8 +50,8 @@ void CInteractiveObject::net_Destroy()
 bool CInteractiveObject::net_Spawn(CSE_Abstract* DC)
 {
 	inherited::net_Spawn(DC);
-	setVisible(TRUE);
-	setEnabled(TRUE);
+	setVisible(true);
+	setEnabled(true);
 
 	if (CSE_ALifeInteractiveObject* pSE_box = smart_cast<CSE_ALifeInteractiveObject*>(DC))
 	{
@@ -59,7 +59,7 @@ bool CInteractiveObject::net_Spawn(CSE_Abstract* DC)
 		SetText();
 	}
 
-	return TRUE;
+	return true;
 }
 
 void CInteractiveObject::Load(const char* section)
@@ -231,9 +231,9 @@ void CInteractiveObject::SetVisible(shared_str bone_name, bool bVisibility)
 		return;
 	}
 
-	KI->CalculateBones(TRUE);
-	KI->LL_SetBoneVisible(boneId, bVisibility, TRUE);
-	KI->CalculateBones(TRUE);
+	KI->CalculateBones(true);
+	KI->LL_SetBoneVisible(boneId, bVisibility, true);
+	KI->CalculateBones(true);
 	SetText();
 }
 

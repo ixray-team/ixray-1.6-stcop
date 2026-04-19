@@ -27,7 +27,7 @@ bool CAI_Stalker::feel_vision_isRelevant(CObject* O)
 
 	if (!O->cast_entity_alive() && !O->cast_inventory_item()) return (FALSE);
 //	if (E && (E->g_Team() == g_Team()))			return FALSE;
-	return(TRUE);
+	return(true);
 }
 
 void CAI_Stalker::renderable_Render	()

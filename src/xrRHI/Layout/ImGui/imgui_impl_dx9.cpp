@@ -106,19 +106,19 @@ static void ImGui_ImplDX9_SetupRenderState(ImDrawData* draw_data)
     bd->pd3dDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
     bd->pd3dDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
     bd->pd3dDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
-    bd->pd3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+    bd->pd3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
     bd->pd3dDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
     bd->pd3dDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
     bd->pd3dDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-    bd->pd3dDevice->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, TRUE);
+    bd->pd3dDevice->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, true);
     bd->pd3dDevice->SetRenderState(D3DRS_SRCBLENDALPHA, D3DBLEND_ONE);
     bd->pd3dDevice->SetRenderState(D3DRS_DESTBLENDALPHA, D3DBLEND_INVSRCALPHA);
-    bd->pd3dDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, TRUE);
+    bd->pd3dDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, true);
     bd->pd3dDevice->SetRenderState(D3DRS_FOGENABLE, FALSE);
     bd->pd3dDevice->SetRenderState(D3DRS_RANGEFOGENABLE, FALSE);
     bd->pd3dDevice->SetRenderState(D3DRS_SPECULARENABLE, FALSE);
     bd->pd3dDevice->SetRenderState(D3DRS_STENCILENABLE, FALSE);
-    bd->pd3dDevice->SetRenderState(D3DRS_CLIPPING, TRUE);
+    bd->pd3dDevice->SetRenderState(D3DRS_CLIPPING, true);
     bd->pd3dDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
     bd->pd3dDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
     bd->pd3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
@@ -431,7 +431,7 @@ static void ImGui_ImplDX9_CreateWindow(ImGuiViewport* viewport)
     IM_ASSERT(hwnd != 0);
 
     ZeroMemory(&vd->d3dpp, sizeof(D3DPRESENT_PARAMETERS));
-    vd->d3dpp.Windowed = TRUE;
+    vd->d3dpp.Windowed = true;
     vd->d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
     vd->d3dpp.BackBufferWidth = (UINT)viewport->Size.x;
     vd->d3dpp.BackBufferHeight = (UINT)viewport->Size.y;

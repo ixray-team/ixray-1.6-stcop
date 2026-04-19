@@ -212,7 +212,7 @@ bool CDeflector::OA_Place	(Face *owner)
 	T.owner				= owner;
 	owner->pDeflector	= this;
 	UVpolys.push_back	(T);
-	return TRUE;
+	return true;
 }
 
 void CDeflector::OA_Place	(vecFace& lst)

@@ -218,7 +218,7 @@ void CRender::create()
 	o.nvdbt = false;
 
 	// options
-	o.sunstatic = !ps_r2_ls_flags.test(R2FLAG_SUN) ? TRUE : FALSE;
+	o.sunstatic = !ps_r2_ls_flags.test(R2FLAG_SUN) ? true : FALSE;
 	o.volumetricfog = ps_r2_ls_flags.test(R3FLAG_VOLUMETRIC_SMOKE);
 	o.noshadows = Core.ParamsData.test(ECoreParams::noshadows);
 	o.Tshadows = Core.ParamsData.test(ECoreParams::tsh);

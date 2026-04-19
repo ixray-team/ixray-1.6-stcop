@@ -60,7 +60,7 @@ bool CObjectHandler::net_Spawn		(CSE_Abstract* DC)
 	VERIFY						(trader);
 
 	m_infinite_ammo				= !!trader->m_trader_flags.test(CSE_ALifeTraderAbstract::eTraderFlagInfiniteAmmo);
-	return						(TRUE);
+	return						(true);
 }
 
 void CObjectHandler::OnItemTake		(CInventoryItem *inventory_item)

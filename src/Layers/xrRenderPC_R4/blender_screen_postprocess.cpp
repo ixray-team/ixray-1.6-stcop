@@ -22,7 +22,7 @@ void CBlender_SPP::Compile(CBlender_Compile& C)
         uber_deffer(C, true, "stub_fullscreen_triangle", "snowing_main", false, nullptr, true);
 
         C.PassSET_ZB(false, false);
-        C.PassSET_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, 0);
+        C.PassSET_Blend(true, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, 0);
 
         C.r_dx10Texture("s_position", r2_RT_P);
         C.r_dx10Texture("s_normal", r2_RT_N"_temp");

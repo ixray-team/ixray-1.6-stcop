@@ -156,7 +156,7 @@ void CDS0_ModelPool::Destroy()
 #ifdef _DEBUG
 		Msg("ModelPool: Destroy object: '%s'", *V->getDebugName().c_str());
 #endif
-		DeleteInternal(V, TRUE);
+		DeleteInternal(V, true);
 	}
 
 	// Base/Reference
@@ -177,7 +177,7 @@ void CDS0_ModelPool::Destroy()
 CDS0_ModelPool::CDS0_ModelPool()
 {
 	bForceDiscard = FALSE;
-	bAllowChildrenDuplicate = TRUE;
+	bAllowChildrenDuplicate = true;
 	g_pMotionsContainer = new motions_container;
 }
 
@@ -228,9 +228,9 @@ CDS0_RenderVisual* CDS0_ModelPool::Create(const char* name, IReader* data)
 		if (0 == Base) {
 			// 2. If not found
 			bAllowChildrenDuplicate = FALSE;
-			if (data)		Base = Instance_Load(low_name, data, TRUE);
-			else			Base = Instance_Load(low_name, TRUE);
-			bAllowChildrenDuplicate = TRUE;
+			if (data)		Base = Instance_Load(low_name, data, true);
+			else			Base = Instance_Load(low_name, true);
+			bAllowChildrenDuplicate = true;
 #ifdef _EDITOR
 			if (!Base)		return 0;
 #endif
@@ -271,7 +271,7 @@ void CDS0_ModelPool::DeleteInternal(CDS0_RenderVisual*& V, bool bDiscard)
 	V->Depart();
 	if (bDiscard || bForceDiscard)
 	{
-		Discard(V, TRUE);
+		Discard(V, true);
 	}
 	else 
 	{
@@ -335,7 +335,7 @@ void CDS0_ModelPool::Discard(CDS0_RenderVisual*& V, bool b_complete)
 					I->refs--;
 					if (0 == I->refs)
 					{
-						bForceDiscard = TRUE;
+						bForceDiscard = true;
 						I->model->Release();
 						xr_delete(I->model);
 						Models.erase(I);

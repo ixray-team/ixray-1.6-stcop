@@ -50,7 +50,7 @@ game_cl_Deathmatch::game_cl_Deathmatch()
 
 	pCurSkinMenu	= nullptr;
 
-	m_bBuyEnabled	= TRUE;
+	m_bBuyEnabled	= true;
 
 	m_bSkinSelected	= FALSE;	
 
@@ -62,7 +62,7 @@ game_cl_Deathmatch::game_cl_Deathmatch()
 	LoadSndMessages();
 	m_cl_dwWarmUp_Time = 0;
 	m_bMenuCalledFromReady = FALSE;
-	m_bFirstRun = TRUE;
+	m_bFirstRun = true;
 }
 
 void game_cl_Deathmatch::Init ()
@@ -213,7 +213,7 @@ void game_cl_Deathmatch::OnSkinMenu_Ok			()
     P.w_s8	((u8)pCurSkinMenu->GetActiveIndex());
 	l_pPlayer->u_EventSend		(P);
 	//-----------------------------------------------------------------
-	m_bSkinSelected = TRUE;
+	m_bSkinSelected = true;
 
 };
 
@@ -280,7 +280,7 @@ bool game_cl_Deathmatch::CanCallSkinMenu			()
 	if(!pCurSkinMenu)	return FALSE;
 	if (!pCurSkinMenu->IsShown())
 		pCurSkinMenu->SetCurSkin(local_player->skin);
-	return TRUE;
+	return true;
 };
 
 bool game_cl_Deathmatch::CanCallInventoryMenu			()
@@ -298,7 +298,7 @@ bool game_cl_Deathmatch::CanCallInventoryMenu			()
 	{
 		return FALSE;
 	}
-	return TRUE;
+	return true;
 };
 
 
@@ -330,7 +330,7 @@ bool game_cl_Deathmatch::CanBeReady()
 {
 	if (!local_player) return false;
 
-	m_bMenuCalledFromReady = TRUE;
+	m_bMenuCalledFromReady = true;
 
 	SetCurrentSkinMenu();
 
@@ -1014,7 +1014,7 @@ void game_cl_Deathmatch::PlayParticleEffect(const char* EffName, Fvector& pos)
 //	CParticlesPlayer::MakeXFORM(pObj,0,Fvector().set(0.f,1.f,0.f),Fvector().set(0.f,0.f,0.f),pos);
 
 	// установить particles
-	xr_shared_ptr<CParticlesObject> ps = Particles::Details::Create(EffName,TRUE);
+	xr_shared_ptr<CParticlesObject> ps = Particles::Details::Create(EffName,true);
 
 	ps->UpdateParent(M,Fvector().set(0.f,0.f,0.f));
 	GamePersistent().ps_needtoplay.push_back(ps);

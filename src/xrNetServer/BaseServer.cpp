@@ -128,7 +128,7 @@ BaseServer::EConnect BaseServer::Connect(const char* options, GameDescriptionDat
 	psNET_direct_connect = FALSE;
 
 	if (strstr(options, "/single"))
-		psNET_direct_connect = TRUE;
+		psNET_direct_connect = true;
 
 
 	// Parse options
@@ -258,7 +258,7 @@ void BaseServer::BannedList_Save()
 	string_path					temp;
 	FS.update_path(temp, "$app_data_root$", GetBannedListName());
 
-	CInifile					ini(temp, FALSE, FALSE, TRUE);
+	CInifile					ini(temp, FALSE, FALSE, true);
 
 	for (u32 it = 0; it < BannedAddresses.size(); it++)
 	{
@@ -517,7 +517,7 @@ void BaseServer::_Recieve(const void* data, u32 data_size, u32 param)
 			pSvNetLog = new INetLog("logs\\net_sv_log.log", TimeGlobal(device_timer));
 
 		if (pSvNetLog)
-			pSvNetLog->LogPacket(TimeGlobal(device_timer), &packet, TRUE);
+			pSvNetLog->LogPacket(TimeGlobal(device_timer), &packet, true);
 	}*/
 }
 

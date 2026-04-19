@@ -58,7 +58,7 @@ void xrMemory::_initialize()
 		mem_fill32 = xrMemFill32_x86;
 	}
 
-	mem_initialized = TRUE;
+	mem_initialized = true;
 
 	g_pStringContainer = new str_container();
 	shared_str_initialized = true;

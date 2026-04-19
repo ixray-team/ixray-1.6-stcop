@@ -195,7 +195,7 @@ void CBulletManager::PlayExplodePS( const Fmatrix& xf )
 		return;
 
 	shared_str const& ps_name	= m_ExplodeParticles[Random.randI(0, (u32)m_ExplodeParticles.size())];
-	xr_shared_ptr<CParticlesObject> const	ps	= Particles::Details::Create(*ps_name,TRUE);
+	xr_shared_ptr<CParticlesObject> const	ps	= Particles::Details::Create(*ps_name,true);
 	ps->UpdateParent			(xf,zero_vel);
 	GamePersistent().ps_needtoplay.push_back(ps);
 }
@@ -747,7 +747,7 @@ bool CBulletManager::firetrace_callback	(collide::rq_result& result, LPVOID para
 				data.collide_time = 1.f;
 				bullet.speed = 0.f;
 
-				return (TRUE);
+				return (true);
 			}
 
 			if (flag == u8(2))
@@ -801,7 +801,7 @@ bool CBulletManager::firetrace_callback	(collide::rq_result& result, LPVOID para
 		return						(FALSE);
 
 	if ( fis_zero(data.collide_time) )
-		return						(TRUE);
+		return						(true);
 
 	//статический объект
 	if (!result.O) {
@@ -817,7 +817,7 @@ bool CBulletManager::firetrace_callback	(collide::rq_result& result, LPVOID para
 		return						(FALSE);
 
 	CBoneData const& bone_data		= kinematics->LL_GetData( (u16)result.element );
-	bullet_manager.RegisterEvent	( EVENT_HIT, TRUE, &bullet, collide_position, result, bone_data.game_mtl_idx );
+	bullet_manager.RegisterEvent	( EVENT_HIT, true, &bullet, collide_position, result, bone_data.game_mtl_idx );
 	return							(FALSE);
 }
 

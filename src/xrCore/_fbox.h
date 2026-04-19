@@ -146,7 +146,7 @@ public:
 		if( min.x > box.max.x )	return FALSE;
 		if( min.y > box.max.y )	return FALSE;
 		if( min.z > box.max.z )	return FALSE;
-		return TRUE;
+		return true;
 	};
 
 	ICF bool intersectTri(const Tvector(&p)[3], const Tvector& center, const Tvector& extents, bool bClass3 = true)
@@ -369,7 +369,7 @@ public:
 	};
 	ICF ERP_Result Pick2(const Tvector& origin, const Tvector& dir, Tvector& coord)
 	{
-		bool Inside = TRUE;
+		bool Inside = true;
 		Tvector		MaxT;
 		MaxT.x=MaxT.y=MaxT.z=-1.0f;
 		

@@ -19,7 +19,7 @@ CTheoraSurface::CTheoraSurface()
 	// controls
 	playing				= FALSE;
 	looped				= FALSE;
-	bShaderYUV2RGB		= TRUE;
+	bShaderYUV2RGB		= true;
 	prefetch			= -2;
 }
 
@@ -46,7 +46,7 @@ bool CTheoraSurface::Valid()
 
 void CTheoraSurface::Play(bool _looped, u32 _time)		
 {	
-	playing				= TRUE;
+	playing				= true;
 	looped				= _looped;
 	tm_start			= _time;
 	prefetch			= -2;
@@ -127,7 +127,7 @@ bool CTheoraSurface::Load(const char* fname)
 #ifdef SDL_OUTPUT
 		open_sdl_video	();
 #endif
-		ready			= TRUE;
+		ready			= true;
 	}else{
 		xr_delete		(m_rgb);
 		xr_delete		(m_alpha);

@@ -62,7 +62,7 @@ void CLevel::remove_objects	()
 			// ugly hack for checks that update is twice on frame
 			// we need it since we do updates for checking network messages
 			++(Device.dwFrame);
-			psDeviceFlags.set		(rsDisableObjectsAsCrows,TRUE);
+			psDeviceFlags.set		(rsDisableObjectsAsCrows,true);
 			ClientReceive			();
 			ProcessGameEvents		();
 			Objects.Update			(false);
@@ -151,7 +151,7 @@ void CLevel::net_Stop()
 
 	if (IsDemoPlay() && m_current_spectator)	//destroying demo spectator ...
 	{
-		m_current_spectator->setDestroy	(TRUE);
+		m_current_spectator->setDestroy	(true);
 		SetControlEntity(nullptr); //m_current_spectator == CurrentControlEntity()
 		m_current_spectator = nullptr;
 		
@@ -438,7 +438,7 @@ bool CLevel::Connect2Server(const char* options)
 
 	
 	if(psNET_direct_connect)
-		net_Syncronised = TRUE;
+		net_Syncronised = true;
 	else
 		net_Syncronize	();
 
@@ -454,9 +454,9 @@ bool CLevel::Connect2Server(const char* options)
 
 	//---------------------------------------------------------------------------
 	//P.w_begin	(M_CLIENT_REQUEST_CONNECTION_DATA);
-	//Send		(P, net_flags(TRUE, TRUE, TRUE, TRUE));
+	//Send		(P, net_flags(true, true, true, true));
 	//---------------------------------------------------------------------------
-	return TRUE;
+	return true;
 };
 
 void CLevel::OnBuildVersionChallenge()
@@ -470,7 +470,7 @@ void CLevel::OnBuildVersionChallenge()
 	u64 auth = FS.auth_get();
 #endif //#ifdef DEBUG
 	P.w_u64					(auth);
-	SecureSend				(P, net_flags(TRUE, TRUE, TRUE, TRUE));
+	SecureSend				(P, net_flags(true, true, true, true));
 };
 
 void CLevel::OnConnectResult(NET_Packet*	P)

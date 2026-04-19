@@ -48,7 +48,7 @@ public:
 		float z = _x * X._13 + _y * X._23 + _z * X._33 + X._43;
 		if (z < EPS)
 		{
-			return TRUE;
+			return true;
 		}
 
 		float iw = 1.f / (_x * X._14 + _y * X._24 + _z * X._34 + X._44);
@@ -64,7 +64,7 @@ public:
 		float z = _x * X._13 + _y * X._23 + _z * X._33 + X._43;
 		if (z < EPS)
 		{
-			return TRUE;
+			return true;
 		}
 
 		float iw = 1.f / (_x * X._14 + _y * X._24 + _z * X._34 + X._44);

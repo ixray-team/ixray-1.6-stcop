@@ -63,7 +63,7 @@ bool CLevel::Load_GameSpecific_Before()
 		m_electronics_problems_manager = new CElectronicsProblemsManager();
 	}
 
-	return (TRUE);
+	return (true);
 }
 
 bool CLevel::Load_GameSpecific_After()
@@ -187,7 +187,7 @@ bool CLevel::Load_GameSpecific_After()
 
 	g_pGamePersistent->Environment().SetGameTime	(GetEnvironmentGameDayTimeSec(),game->GetEnvironmentGameTimeFactor());
 
-	return TRUE;
+	return true;
 }
 
 void CLevel::BlockCheatLoad()

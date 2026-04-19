@@ -73,7 +73,7 @@ bool smart_cover::object::net_Spawn		(CSE_Abstract *server_entity)
 	setEnabled						(FALSE);
 	setVisible						(FALSE);
 
-	return (TRUE);
+	return (true);
 }
 
 void smart_cover::object::Center			(Fvector &result) const

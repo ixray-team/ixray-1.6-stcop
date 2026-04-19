@@ -220,7 +220,7 @@ void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
 		L_parents.push_back			(buf);
 
 		data->r						(&pBone->obb,sizeof(Fobb));
-		visimask.set(ID, TRUE);
+		visimask.set(ID, true);
 	}
 	std::sort	(bone_map_N->begin(),bone_map_N->end(),pred_sort_N);
 	std::sort	(bone_map_P->begin(),bone_map_P->end(),pred_sort_P);
@@ -317,13 +317,13 @@ void CKinematics::LL_Validate()
     bool bCheckBreakable			= FALSE;
     for (u16 k=0; k<LL_BoneCount(); k++){
         if (LL_GetData(k).IK_data.ik_flags.is(SJointIKData::flBreakable)&&(LL_GetData(k).IK_data.type!=jtNone)) {
-        	bCheckBreakable			= TRUE;
+        	bCheckBreakable			= true;
             break;
         }
     }
 
     if (bCheckBreakable){
-        bool bValidBreakable		= TRUE;
+        bool bValidBreakable		= true;
 
 		GroupIDs.clear();
         LL_GetBoneGroups			(GroupIDs);
@@ -518,7 +518,7 @@ void CKinematics::Visibility_Update()
 			children_invisible.push_back(children[c_it]);	
 			swap(children[c_it],children.back());
 			children.pop_back();
-			Update_Visibility = TRUE;
+			Update_Visibility = true;
 		}
 	}
 
@@ -532,7 +532,7 @@ void CKinematics::Visibility_Update()
 			children.push_back(children_invisible[_it]);	
 			swap(children_invisible[_it],children_invisible.back());
 			children_invisible.pop_back();
-			Update_Visibility = TRUE;
+			Update_Visibility = true;
 		}
 	}
 }
@@ -706,7 +706,7 @@ void CKinematics::AddWallmark(const Fmatrix* parent_xform, const Fvector3& start
 				{
 					if (static_cast<CSkeletonX*>(V)->PickBone(r, dist, S, D, k))
 					{
-						picked = TRUE;
+						picked = true;
 						dist = r.dist;
 						normal = r.normal;
 						//dynamics set wallmarks bug fix

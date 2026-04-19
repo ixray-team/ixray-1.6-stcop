@@ -142,7 +142,7 @@ void CHOM::Load()
 		m_pModel->build(CL.getV(), CL.getVS(), CL.getT(), CL.getTS(), nullptr, nullptr, pWriterCache, false);
 	}
 
-	bEnabled = TRUE;
+	bEnabled = true;
 
 	S->close();
 	FS.r_close(fs);

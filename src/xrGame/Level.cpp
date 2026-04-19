@@ -525,7 +525,7 @@ void CLevel::ProcessGameEvents		()
 
 					NET_Packet PRespond;
 					PRespond.w_begin(M_MOVE_PLAYERS_RESPOND);
-					Send(PRespond, net_flags(TRUE, TRUE));
+					Send(PRespond, net_flags(true, true));
 				}break;
 			case M_STATISTIC_UPDATE:
 				{

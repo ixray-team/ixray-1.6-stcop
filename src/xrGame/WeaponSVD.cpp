@@ -6,7 +6,7 @@ void CWeaponSVD::switch2_Fire	()
 {
 	m_bFireSingleShot			= true;
 	bWorking					= false;
-	SetPending					(TRUE);
+	SetPending					(true);
 	m_iShotNum					= 0;
 	m_bStopedAfterQueueFired	= false;
 

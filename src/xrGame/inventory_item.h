@@ -102,7 +102,7 @@ protected:
 	};
 
 	Flags16	m_flags;
-	bool m_can_trade = TRUE;
+	bool m_can_trade = true;
 public:
 	CInventoryItem();
 	virtual	~CInventoryItem();
@@ -153,9 +153,9 @@ public:
 
 	virtual void save(NET_Packet& output_packet);
 	virtual void load(IReader& input_packet);
-	virtual bool net_SaveRelevant() { return TRUE; }
+	virtual bool net_SaveRelevant() { return true; }
 	void SetDrawCost(bool state) { m_draw_cost = state; }
-	virtual void render_item_ui() {}; //when in slot & query return TRUE
+	virtual void render_item_ui() {}; //when in slot & query return true
 	virtual bool render_item_ui_query() { return false; }; //when in slot
 
 	virtual void UpdateCL();

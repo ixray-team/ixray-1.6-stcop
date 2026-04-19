@@ -144,7 +144,7 @@ shared_str CEffect_Thunderbolt::AppendDef(CEnvironment& environment, CInifile* p
 
 bool CEffect_Thunderbolt::RayPick(const Fvector& s, const Fvector& d, float& dist)
 {
-	bool bRes 	= TRUE;
+	bool bRes 	= true;
 
 	collide::rq_result	RQ;
 	CObject* E 			= g_pGameLevel ? g_pGameLevel->CurrentViewEntity() : nullptr;

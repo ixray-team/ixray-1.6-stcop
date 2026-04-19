@@ -137,7 +137,7 @@ bool CLevelEditor::net_Start(const char* op_server, const char* op_client)
 		}
 	}
 
-	deny_m_spawn = TRUE;
+	deny_m_spawn = true;
 	sended_request_connection_data = FALSE;
 
 	{
@@ -169,7 +169,7 @@ bool CLevelEditor::net_Start(const char* op_server, const char* op_client)
 
 		g_pGamePersistent->LoadTitle();
 		Device.PreCache(60, true, true);
-		net_start_result_total = TRUE;
+		net_start_result_total = true;
 
 	}
 	else
@@ -181,8 +181,8 @@ bool CLevelEditor::net_Start(const char* op_server, const char* op_client)
 	{
 		NET_Packet		NP;
 		NP.w_begin(M_CLIENTREADY);
-		Game().local_player->net_Export(NP, TRUE);
-		Send(NP, net_flags(TRUE, TRUE));
+		Game().local_player->net_Export(NP, true);
+		Send(NP, net_flags(true, true));
 
 		if (OnClient() && Server)
 		{
@@ -213,7 +213,7 @@ bool CLevelEditor::net_Start(const char* op_server, const char* op_client)
 	if (CurrentGameUI())
 		CurrentGameUI()->OnConnected();
 
-	return TRUE;
+	return true;
 }
 
 void CLevelEditor::LoadEditor(shared_str LevelName)

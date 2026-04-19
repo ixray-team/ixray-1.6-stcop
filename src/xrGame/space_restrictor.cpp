@@ -115,12 +115,12 @@ bool CSpaceRestrictor::net_Spawn(CSE_Abstract* data)
 
 	if (!ai().get_level_graph() || (RestrictionSpace::ERestrictorTypes(se_shape->m_space_restrictor_type) == RestrictionSpace::eRestrictorTypeNone))
 	{
-		return TRUE;
+		return true;
 	}
 
 	Level().space_restriction_manager().register_restrictor(this, RestrictionSpace::ERestrictorTypes(se_shape->m_space_restrictor_type));
 
-	return TRUE;
+	return true;
 }
 
 void CSpaceRestrictor::net_Destroy	()

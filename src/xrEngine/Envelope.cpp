@@ -114,7 +114,7 @@ bool CEnvelope::ScaleKeys(float from_time, float to_time, float scale_factor, fl
             offset		+= ((new_time-(*(it-1))->time)-((*it)->time-t0));
         	(*it)->time = new_time;
         }
-	    return TRUE;
+	    return true;
     }
     return FALSE;
 }

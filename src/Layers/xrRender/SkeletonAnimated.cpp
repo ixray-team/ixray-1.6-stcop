@@ -284,8 +284,8 @@ void CKinematicsAnimated::IBlendSetup(CBlend& B,u16 part,u8 channel, MotionID mo
 	B.timeTotal		= m_Motions[B.motionID.slot].bone_motions[LL_GetBoneRoot()]->at(motion_ID.idx).GetLength();
 	B.bone_or_part	= part;
 	B.stop_at_end	= noloop;
-	B.playing		= TRUE;
-	B.stop_at_end_callback = TRUE;
+	B.playing		= true;
+	B.stop_at_end_callback = true;
 	B.update_callback = FALSE;
 	B.Callback		= Callback;
 	B.CallbackParam = CallbackParam;
@@ -307,8 +307,8 @@ void CKinematicsAnimated::IFXBlendSetup(CBlend &B, MotionID motion_ID, float ble
 	B.timeTotal		= m_Motions[B.motionID.slot].bone_motions[bone]->at(motion_ID.idx).GetLength();
 	B.bone_or_part	= bone;
 
-	B.playing		= TRUE;
-	B.stop_at_end_callback = TRUE;
+	B.playing		= true;
+	B.stop_at_end_callback = true;
 	B.stop_at_end	= FALSE;
 	B.update_callback = FALSE;
 	//

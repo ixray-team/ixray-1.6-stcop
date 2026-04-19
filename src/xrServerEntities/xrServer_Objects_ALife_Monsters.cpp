@@ -756,7 +756,7 @@ CSE_ALifeAnomalousZone::CSE_ALifeAnomalousZone(const char* caSection) : CSE_ALif
 {
 	m_offline_interactive_radius	= 30.f;
 	m_artefact_spawn_count			= 32;
-	m_spawn_flags.set				(flSpawnDestroyOnSpawn,TRUE);
+	m_spawn_flags.set				(flSpawnDestroyOnSpawn,true);
 }
 
 CSE_Abstract *CSE_ALifeAnomalousZone::init			()
@@ -2255,7 +2255,7 @@ void CSE_ALifeHumanAbstract::FillProps		(const char* pref, PropItemVec& items)
 //////////////////////////////////////////////////////////////////////////
 CSE_ALifeHumanStalker::CSE_ALifeHumanStalker(const char* caSection) : CSE_ALifeHumanAbstract(caSection),CSE_PHSkeleton(caSection)
 {
-	m_trader_flags.set			(eTraderFlagInfiniteAmmo,TRUE);
+	m_trader_flags.set			(eTraderFlagInfiniteAmmo,true);
 	m_start_dialog				= "";
 }
 

@@ -19,7 +19,7 @@ using namespace ppmd;
 enum { UP_FREQ=5, INT_BITS=7, PERIOD_BITS=7, TOT_BITS=INT_BITS+PERIOD_BITS,
     INTERVAL=1 << INT_BITS, BIN_SCALE=1 << TOT_BITS, MAX_FREQ=124, O_BOUND=9 };
 
-compression::ppmd::stream	*trained_model = 0;
+compression::ppmd::stream	*trained_model = nullptr;
 
 
 template <class TMP_TYPE>
@@ -335,7 +335,7 @@ static void RestoreModelRare(PPM_CONTEXT* pc1,PPM_CONTEXT* MinContext,
             if ( !pc->NumStats )
                     pc->oneState().Freq -= pc->oneState().Freq >> 1;
             else if ((pc->SummFreq += 4) > 128+4*pc->NumStats)
-                    pc->refresh((pc->NumStats+2) >> 1,TRUE);
+                    pc->refresh((pc->NumStats+2) >> 1,true);
     if (MRMethod > MRM_FREEZE) {
         MaxContext=FSuccessor;              GlueCount += !(BList[1].Stamp & 1);
     } else if (MRMethod == MRM_FREEZE) {
@@ -524,7 +524,7 @@ static inline void UpdateModel( PPM_CONTEXT* MinContext)
     PPM_CONTEXT* Successor = nullptr;
     if( !OrderFall && FSuccessor) 
     {
-        FoundState->Successor=CreateSuccessors(TRUE,p,MinContext);
+        FoundState->Successor=CreateSuccessors(true,p,MinContext);
         if (!FoundState->Successor) {
             Successor = (PPM_CONTEXT*)pText;
             goto RESTART_MODEL;
@@ -915,7 +915,7 @@ STOP_DECODING:
 static void _STDCALL StartModelRare(int MaxOrder,MR_METHOD MRMethod)
 {
     static bool         first_time  = true;
-    static PPM_CONTEXT* context     = 0;
+    static PPM_CONTEXT* context     = nullptr;
 
     if( first_time )
     {
@@ -989,7 +989,7 @@ static void _STDCALL StartModelRare(int MaxOrder,MR_METHOD MRMethod)
         
         RunLength = InitRL = -((MaxOrder < 12) ? MaxOrder : 12) - 1;
         MaxContext  = context;
-        FoundState  = 0;
+        FoundState  = nullptr;
     }
 }
 

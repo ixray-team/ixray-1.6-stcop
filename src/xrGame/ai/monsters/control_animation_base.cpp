@@ -663,7 +663,7 @@ ICF static bool check_hit_trace_callback(collide::rq_result& result, LPVOID para
 		const CEntityAlive* entity_alive = result.O->cast_entity_alive();
 		if (monster == param->m_holder)
 		{
-			return TRUE;
+			return true;
 		}
 		else if (entity_alive == param->m_enemy)
 		{
@@ -675,7 +675,7 @@ ICF static bool check_hit_trace_callback(collide::rq_result& result, LPVOID para
 		CDB::TRI& T = Level().ObjectSpace.GetStaticTris()[result.element];
 		if (GMLib.GetMaterialByIdx(T.material)->Flags.is(SGameMtl::flPassable))
 		{
-			return TRUE;
+			return true;
 		}
 	}
 

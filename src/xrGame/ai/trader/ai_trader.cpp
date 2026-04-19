@@ -133,8 +133,8 @@ bool CAI_Trader::net_Spawn(CSE_Abstract* DC)
 		return FALSE;
 	}
 
-	setVisible(TRUE);
-	setEnabled(TRUE);
+	setVisible(true);
+	setEnabled(true);
 
 	set_money(l_tpTrader->m_dwMoney, false);
 
@@ -149,7 +149,7 @@ bool CAI_Trader::net_Spawn(CSE_Abstract* DC)
 	SpatialComponent->spatial.type |= ESPATIAL_TYPE::AI;
 	SpatialComponent->spatial.type |= ESPATIAL_TYPE::AI_ALIVE;
 
-	return TRUE;
+	return true;
 }
 
 void CAI_Trader::net_Export		(NET_Packet& P)
@@ -168,8 +168,8 @@ void CAI_Trader::net_Import		(NET_Packet& P)
 	P.r_float						(fDummy);
 	set_money						( P.r_u32(), false );
 
-	setVisible						(TRUE);
-	setEnabled						(TRUE);
+	setVisible						(true);
+	setEnabled						(true);
 }
 
 void CAI_Trader::OnEvent(NET_Packet& P, u16 type)
@@ -312,7 +312,7 @@ void CAI_Trader::UpdateCL()
 
 bool CAI_Trader::UsedAI_Locations()
 {
-	return					(TRUE);
+	return					(true);
 }
 
 void CAI_Trader::OnStartTrade()

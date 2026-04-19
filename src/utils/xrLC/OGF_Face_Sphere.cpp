@@ -24,7 +24,7 @@ bool				SphereValid	(xr_vector<Fvector>& geom, Fsphere& test)
 	for (xr_vector<Fvector>::iterator I = geom.begin(); I != geom.end(); I++)
 	if (!S.contains(*I))	
 		return FALSE;
-	return TRUE;
+	return true;
 }
 
 Fsphere CalculateSphere(xr_vector<Fvector>& V, Fbox &bbox)

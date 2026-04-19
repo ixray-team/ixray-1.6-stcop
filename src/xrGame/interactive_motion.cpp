@@ -75,7 +75,7 @@ void interactive_motion::setup( const MotionID &m, CPhysicsShell *s, float _angl
 	interactive_motion_diagnostic( "started", m, s );
 
 	shell = s;
-	flags.set( fl_use_death_motion, TRUE );
+	flags.set( fl_use_death_motion, true );
 
 }
 
@@ -92,14 +92,14 @@ void	interactive_motion::shell_setup				( )
 void interactive_motion::anim_callback( CBlend *B )
 {
 	VERIFY( B->CallbackParam );
-	( (interactive_motion*) ( B->CallbackParam ) )->flags.set( fl_switch_dm_toragdoll, TRUE );
+	( (interactive_motion*) ( B->CallbackParam ) )->flags.set( fl_switch_dm_toragdoll, true );
 }
 
 void interactive_motion::play( )
 {
 	VERIFY( shell );
 	VERIFY( motion.valid() );
-	smart_cast<IKinematicsAnimated*>( shell->PKinematics( ) )->PlayCycle( motion, TRUE, anim_callback, this );
+	smart_cast<IKinematicsAnimated*>( shell->PKinematics( ) )->PlayCycle( motion, true, anim_callback, this );
 	state_start( );
 }
 
@@ -109,7 +109,7 @@ void interactive_motion::state_start( )
 {
 	VERIFY( shell );
 	shell_setup( );
-	flags.set( fl_started, TRUE );
+	flags.set( fl_started, true );
 }
 
 void	interactive_motion::state_end( )
@@ -150,7 +150,7 @@ void	interactive_motion::switch_to_free( )
 	IKinematics *K  = shell->PKinematics( );
 	VERIFY( K );
 	K->CalculateBones_Invalidate( );
-	K->CalculateBones( TRUE );
+	K->CalculateBones( true );
 
 }
 

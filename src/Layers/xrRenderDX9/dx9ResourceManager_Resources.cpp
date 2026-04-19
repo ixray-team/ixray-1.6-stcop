@@ -41,7 +41,7 @@ bool	reclaim		(xr_vector<T*>& vec, const T* ptr)
 	typename xr_vector<T*>::iterator it	= vec.begin	();
 	typename xr_vector<T*>::iterator end	= vec.end	();
 	for (; it!=end; it++)
-		if (*it == ptr)	{ vec.erase	(it); return TRUE; }
+		if (*it == ptr)	{ vec.erase	(it); return true; }
 		return FALSE;
 }
 
@@ -609,7 +609,7 @@ void			CResourceManager::_DeleteTextureList(const STextureList* L)
 //--------------------------------------------------------------------------------------------------------------
 SMatrixList*	CResourceManager::_CreateMatrixList(SMatrixList& L)
 {
-	bool bEmpty = TRUE;
+	bool bEmpty = true;
 	for (u32 i=0; i<L.size(); i++)	if (L[i]) { bEmpty=FALSE; break; }
 	if (bEmpty)	return nullptr;
 	xrCriticalSectionGuard guard(creationGuard);
@@ -635,7 +635,7 @@ void			CResourceManager::_DeleteMatrixList ( const SMatrixList* L )
 //--------------------------------------------------------------------------------------------------------------
 SConstantList*	CResourceManager::_CreateConstantList(SConstantList& L)
 {
-	bool bEmpty = TRUE;
+	bool bEmpty = true;
 	for (u32 i=0; i<L.size(); i++)	if (L[i]) { bEmpty=FALSE; break; }
 	if (bEmpty)	return nullptr;
 	xrCriticalSectionGuard guard(creationGuard);

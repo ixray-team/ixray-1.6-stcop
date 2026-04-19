@@ -130,5 +130,5 @@ void CRenderTarget::phase_luminance()
 	}
 
 	// Cleanup states
-	RCache.set_Z(TRUE);
+	RCache.set_Z(true);
 }

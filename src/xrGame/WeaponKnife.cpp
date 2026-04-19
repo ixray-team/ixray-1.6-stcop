@@ -75,7 +75,7 @@ void CWeaponKnife::LoadSounds(const char* section)
 
 	if (SoundExist(section, "snd_kick_1") && SoundExist(section, "snd_kick_2"))
 	{
-		m_eSoundsFlags.set(ESoundsFlags::sf_kick, TRUE);
+		m_eSoundsFlags.set(ESoundsFlags::sf_kick, true);
 		m_sounds.LoadSound(section, "snd_kick_1", "sndKick1", false, SOUND_TYPE_WEAPON_SHOOTING);
 		m_sounds.LoadSound(section, "snd_kick_2", "sndKick2", false, SOUND_TYPE_WEAPON_SHOOTING);
 	}
@@ -86,13 +86,13 @@ void CWeaponKnife::LoadSounds(const char* section)
 
 	if (SoundExist(section, "snd_draw"))
 	{
-		m_eSoundsFlags.set(ESoundsFlags::sf_draw, TRUE);
+		m_eSoundsFlags.set(ESoundsFlags::sf_draw, true);
 		m_sounds.LoadSound(section, "snd_draw", "SndShow", false, ESoundTypes(SOUND_TYPE_ITEM_TAKING));
 	}
 
 	if (SoundExist(section, "snd_holster"))
 	{
-		m_eSoundsFlags.set(ESoundsFlags::sf_holster, TRUE);
+		m_eSoundsFlags.set(ESoundsFlags::sf_holster, true);
 		m_sounds.LoadSound(section, "snd_holster", "SndHide", false, ESoundTypes(SOUND_TYPE_ITEM_HIDING));
 	}
 }
@@ -353,7 +353,7 @@ void CWeaponKnife::switch2_Attacking(u32 state)
 		}
 	}
 
-	SetPending(TRUE);
+	SetPending(true);
 }
 
 void CWeaponKnife::switch2_Idle	()
@@ -948,7 +948,7 @@ bool CWeaponKnife::RayQueryCallback(collide::rq_result& result, LPVOID this_ptr)
 		me->m_last_picked_obj = result.O;
 		return FALSE;	//first hit
 	}
-	return TRUE;
+	return true;
 }
 
 CObject* CWeaponKnife::TryPick(Fvector const & start_pos, Fvector const & dir, float const dist)

@@ -11,7 +11,7 @@
 #include "PickupManager.h"
 #include "ai/monsters/ai_monster_utils.h"
 
-bool g_b_COD_PickUpMode = TRUE;
+bool g_b_COD_PickUpMode = true;
 
 void CActor::feel_touch_new(CObject* O)
 {
@@ -41,12 +41,12 @@ bool CActor::feel_touch_contact(CObject* O)
 
 	if (item != nullptr && item->Useful() && item->object().H_Parent() == nullptr)
 	{
-		return TRUE;
+		return true;
 	}
 
 	if (inventory_owner != nullptr && inventory_owner != cast_inventory_owner())
 	{
-		return TRUE;
+		return true;
 	}
 
 	return FALSE;
@@ -68,7 +68,7 @@ bool CActor::feel_touch_on_contact(CObject* O)
 	CAnomalyZone* custom_zone = GO->cast_anomaly_zone();
 	if (custom_zone == nullptr)
 	{
-		return TRUE;
+		return true;
 	}
 
 	Fsphere sphere;
@@ -77,7 +77,7 @@ bool CActor::feel_touch_on_contact(CObject* O)
 
 	if (custom_zone->inside(sphere))
 	{
-		return TRUE;
+		return true;
 	}
 
 	return FALSE;

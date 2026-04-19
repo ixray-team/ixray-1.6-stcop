@@ -122,7 +122,7 @@ public:
 	virtual		void				MoveAllAlivePlayers			();
 	virtual		void				CheckForTeamElimination		();
 	virtual		void				CheckForTeamWin				();
-	virtual		bool				CanHaveFriendlyFire		()	{return TRUE;}
+	virtual		bool				CanHaveFriendlyFire		()	{return true;}
 
 	//-----------------------------------------------------------------------------
 	virtual		int					Get_ArtefactsCount			();

@@ -76,7 +76,7 @@ void CActor::g_cl_ValidateMState(float dt, u32 mstate_wf)
 		PlayRainStep(!!HUDview());
 		PlayExoStep(!!HUDview());
 
-		m_bJumpKeyPressed	=	TRUE;
+		m_bJumpKeyPressed	=	true;
 		m_fJumpTime			=	s_fJumpTime;
 		mstate_real			&=~	(mcFall|mcJump);
 
@@ -217,7 +217,7 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 		if (CanJump() && (mstate_wf & mcJump))
 		{
 			mstate_real			|=	mcJump;
-			m_bJumpKeyPressed	=	TRUE;
+			m_bJumpKeyPressed	=	true;
 			Jump				= m_fJumpSpeed;
 			m_fJumpTime			= s_fJumpTime;
 

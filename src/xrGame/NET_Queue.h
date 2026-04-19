@@ -107,19 +107,19 @@ public:
 	IC bool				available	(u32 T)
 	{
 //		if (queue.empty()/* || (T<queue.begin()->timestamp)*/)	return FALSE;
-//		else												return TRUE;
+//		else												return true;
 		if (queue.empty()) return FALSE;
 		/**
 		else 
 		{
-			if (!g_bCheckTime) return TRUE;
+			if (!g_bCheckTime) return true;
 #ifdef _DEBUG
 			if (T<queue.begin()->timestamp) return FALSE;
 #endif
-			return TRUE;
+			return true;
 		}
 		/**/
-		return			TRUE;
+		return			true;
 	}
 	IC void				get			(u16& ID, u16& dest, u16& type, NET_Packet& P)
 	{

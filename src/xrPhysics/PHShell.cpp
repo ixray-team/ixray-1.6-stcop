@@ -892,7 +892,7 @@ void CPHShell::ResetCallbacksRecursive(u16 id, u16 element, VisMask& mask)
 			element++;
 			R_ASSERT2(element < elements.size(), "Out of elements!!");
 			B.set_callback(bctPhysics, BonesCallback, cast_PhysicsElement(elements[element]));
-			B.set_callback_overwrite(TRUE);
+			B.set_callback_overwrite(true);
 		}
 	}
 
@@ -912,7 +912,7 @@ void CPHShell::EnabledCallbacks(bool val)
 		for (; i != e; ++i)
 		{
 			CBoneInstance& B = m_pKinematics->LL_GetBoneInstance((*i)->m_SelfID);
-			B.set_callback_overwrite(TRUE);
+			B.set_callback_overwrite(true);
 		}
 
 		return;

@@ -179,8 +179,8 @@ void CLightR_Manager::render_spot	(u32 _priority)
 			L->SpatialComponent->spatial.sector,
 			L_combine,
 			L_pos,
-			TRUE,
-			TRUE			// precise portals
+			true,
+			true			// precise portals
 		);
 
 		if (_priority == 1)

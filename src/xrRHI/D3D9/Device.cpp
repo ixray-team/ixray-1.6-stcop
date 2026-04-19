@@ -142,7 +142,7 @@ D3DPRESENT_PARAMETERS InternalDevice9::GetPresentParameter(int Width = psCurrent
 	P.Windowed = !psDeviceFlags.is(rsFullscreen);
 
 	// Depth/stencil
-	P.EnableAutoDepthStencil = TRUE;
+	P.EnableAutoDepthStencil = true;
 	P.AutoDepthStencilFormat = D3DFMT_D24S8;
 	P.Flags = 0;
 
@@ -192,7 +192,7 @@ void InternalDevice9::ResizeBuffers(u32 Width, u32 Height)
 	auto P = GetPresentParameter(Width, Height);
 	if (DX9Device != nullptr)
 	{
-		while (TRUE)
+		while (true)
 		{
 			HRESULT _hr = DX9Device->Reset(&P);
 			if (SUCCEEDED(_hr))

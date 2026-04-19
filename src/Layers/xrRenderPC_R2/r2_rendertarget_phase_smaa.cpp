@@ -40,7 +40,7 @@ void CRenderTarget::phase_smaa()
     // Phase 1: blend weights calculation ////////////////////////////////////
     u_setrt(rt_smaa_blendtex, nullptr, nullptr, nullptr);
     GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-    RCache.set_Stencil(TRUE, D3DCMP_EQUAL, 0x1, 0, 0, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
+    RCache.set_Stencil(true, D3DCMP_EQUAL, 0x1, 0, 0, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
     GRHI->ClearTarget(RCache.get_RT());
 
     // Fill vertex buffer

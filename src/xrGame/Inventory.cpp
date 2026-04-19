@@ -757,7 +757,7 @@ void CInventory::SendActionEvent(u16 cmd, u32 flags)
 	P.w_u32(flags);
 	P.w_s32(pActor->GetZoomRndSeed());
 	P.w_s32(pActor->GetShotRndSeed());
-	pActor->u_EventSend(P, net_flags(TRUE, TRUE, FALSE, TRUE));
+	pActor->u_EventSend(P, net_flags(true, true, FALSE, true));
 };
 
 bool CInventory::Action(u16 cmd, u32 flags)
@@ -1335,7 +1335,7 @@ bool CInventory::Eat(PIItem pIItem)
 			return false;
 		}
 
-		pIItem->SetDropManual(TRUE);
+		pIItem->SetDropManual(true);
 	}
 
 	return true;

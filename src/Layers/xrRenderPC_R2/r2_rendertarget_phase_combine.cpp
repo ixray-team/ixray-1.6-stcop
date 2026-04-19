@@ -53,7 +53,7 @@ void	CRenderTarget::phase_combine	()
 		//	Igor: Render clouds before compine without Z-test
 		//	to avoid siluets. HOwever, it's a bit slower process.
 		g_pGamePersistent->Environment().RenderClouds	();
-		CHK_DX(RDevice->SetRenderState			( D3DRS_ZENABLE,	TRUE				));
+		CHK_DX(RDevice->SetRenderState			( D3DRS_ZENABLE,	true				));
 	}
 
 	RCache.set_Stencil(true, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);	// stencil should be >= 1

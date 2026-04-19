@@ -399,7 +399,7 @@ bool IAntigas::InstallFilter(CInventoryItem* inventory_item)
 	SetFilterInstalledState(true);
 	UpdateState();
 
-	//inventory_item->SetDropManual(TRUE);
+	//inventory_item->SetDropManual(true);
 	//inventory_item->m_pInventory->DropItem(inventory_item->cast_game_object(), true, true);
 	
 	inventory_item->object().DestroyObject();

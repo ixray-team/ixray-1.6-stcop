@@ -93,7 +93,7 @@ CEnvironment::CEnvironment	() :
     if (environmentFolderExist)
     {
         config = new CInifile(FS.update_path(filePath, _game_config_, "environment\\environment.ltx"),
-            TRUE, TRUE, FALSE);
+            true, true, FALSE);
         section = "environment";
     }
     else
@@ -145,17 +145,17 @@ CEnvironment::CEnvironment	() :
         return;
 
     m_ambients_config =
-        new CInifile(FS.update_path(filePath, _game_config_, "environment\\ambients.ltx"), TRUE, TRUE, FALSE);
+        new CInifile(FS.update_path(filePath, _game_config_, "environment\\ambients.ltx"), true, true, FALSE);
     m_sound_channels_config =
-        new CInifile(FS.update_path(filePath, _game_config_, "environment\\sound_channels.ltx"), TRUE, TRUE, FALSE);
+        new CInifile(FS.update_path(filePath, _game_config_, "environment\\sound_channels.ltx"), true, true, FALSE);
     m_effects_config =
-        new CInifile(FS.update_path(filePath, _game_config_, "environment\\effects.ltx"), TRUE, TRUE, FALSE);
+        new CInifile(FS.update_path(filePath, _game_config_, "environment\\effects.ltx"), true, true, FALSE);
     m_suns_config =
-        new CInifile(FS.update_path(filePath, _game_config_, "environment\\suns.ltx"), TRUE, TRUE, FALSE);
+        new CInifile(FS.update_path(filePath, _game_config_, "environment\\suns.ltx"), true, true, FALSE);
     m_thunderbolt_collections_config = new CInifile(
-        FS.update_path(filePath, _game_config_, "environment\\thunderbolt_collections.ltx"), TRUE, TRUE, FALSE);
+        FS.update_path(filePath, _game_config_, "environment\\thunderbolt_collections.ltx"), true, true, FALSE);
     m_thunderbolts_config =
-        new CInifile(FS.update_path(filePath, _game_config_, "environment\\thunderbolts.ltx"), TRUE, TRUE, FALSE);
+        new CInifile(FS.update_path(filePath, _game_config_, "environment\\thunderbolts.ltx"), true, true, FALSE);
 }
 
 CEnvironment::~CEnvironment	()

@@ -433,7 +433,7 @@ bool CSE_ALifeObject::move_offline			() const
 
 void CSE_ALifeObject::move_offline			(bool value)
 {
-	m_flags.set					(flOfflineNoMove,!value ? TRUE : FALSE);
+	m_flags.set					(flOfflineNoMove,!value ? true : FALSE);
 }
 
 bool CSE_ALifeObject::visible_for_map		() const
@@ -443,7 +443,7 @@ bool CSE_ALifeObject::visible_for_map		() const
 
 void CSE_ALifeObject::visible_for_map		(bool value)
 {
-	m_flags.set					(flVisibleForMap,value ? TRUE : FALSE);
+	m_flags.set					(flVisibleForMap,value ? true : FALSE);
 }
 
 void CSE_ALifeObject::STATE_Write			(NET_Packet &tNetPacket)
@@ -855,7 +855,7 @@ CSE_ALifeSpaceRestrictor::CSE_ALifeSpaceRestrictor	(const char* caSection) : CSE
 	m_space_restrictor_type		= RestrictionSpace::eDefaultRestrictorTypeNone;
 	m_flags.set					(flUsedAI_Locations,FALSE);
 	m_spawn_flags.set			(flSpawnDestroyOnSpawn,FALSE);
-	m_flags.set					(flCheckForSeparator,TRUE);
+	m_flags.set					(flCheckForSeparator,true);
 }
 
 CSE_ALifeSpaceRestrictor::~CSE_ALifeSpaceRestrictor	()
@@ -1161,7 +1161,7 @@ const	u32		CSE_ALifeObjectPhysic::random_limit				= 40;
 const	u32		CSE_ALifeObjectPhysic::m_update_delta_time		= 0;
 #endif // #ifdef DEBUG
 
-//if TRUE, then object sends update packet
+//if true, then object sends update packet
 bool CSE_ALifeObjectPhysic::Net_Relevant()
 {
 	if (!freezed)
@@ -1172,7 +1172,7 @@ bool CSE_ALifeObjectPhysic::Net_Relevant()
 			return FALSE;
 #endif
 #endif
-		return		TRUE;
+		return		true;
 	}
 
 #ifdef XRGAME_EXPORTS
@@ -1182,13 +1182,13 @@ bool CSE_ALifeObjectPhysic::Net_Relevant()
 	if (!prev_freezed)
 	{
 		prev_freezed = true;	//i.e. freezed
-		return		TRUE;
+		return		true;
 	}
 
 	if (m_relevent_random.randI(random_limit))
 		return		FALSE;
 
-	return			TRUE;
+	return			true;
 }
 
 void CSE_ALifeObjectPhysic::UPDATE_Read		(NET_Packet	&tNetPacket)

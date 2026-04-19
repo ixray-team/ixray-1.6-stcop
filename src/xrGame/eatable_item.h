@@ -15,7 +15,7 @@ protected:
 
 	u8 m_iMaxUses = 1;
 	u8 m_iRemainingUses = 1;
-	bool m_bRemoveAfterUse = TRUE;
+	bool m_bRemoveAfterUse = true;
 	bool m_bConsumeChargeOnUse = FALSE;
 	float m_fWeightFull = 0.0f;
 	float m_fWeightEmpty = 0.0f;

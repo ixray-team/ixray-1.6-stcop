@@ -30,7 +30,7 @@ void xrServer::Perform_connect_spawn(CSE_Abstract* E, xrClientData* CL, NET_Pack
 	// Process
 	Flags16			save = E->s_flags;
 	//-------------------------------------------------
-	E->s_flags.set	(M_SPAWN_UPDATE,TRUE);
+	E->s_flags.set	(M_SPAWN_UPDATE,true);
 	if (0==E->owner)	
 	{
 		// PROCESS NAME; Name this entity
@@ -43,7 +43,7 @@ void xrServer::Perform_connect_spawn(CSE_Abstract* E, xrClientData* CL, NET_Pack
 
 		// Associate
 		E->owner		= CL;
-		E->Spawn_Write	(P,TRUE	);
+		E->Spawn_Write	(P,true	);
 		E->UPDATE_Write	(P);
 
 		if (g_pGamePersistent->GameType() == eGameIDFreeMP)
@@ -68,15 +68,15 @@ void xrServer::Perform_connect_spawn(CSE_Abstract* E, xrClientData* CL, NET_Pack
 	}
 	//-----------------------------------------------------
 	E->s_flags			= save;
-	SendTo				(CL->ID,P,net_flags(TRUE,TRUE));
-	E->net_Processed	= TRUE;
+	SendTo				(CL->ID,P,net_flags(true,true));
+	E->net_Processed	= true;
 }
 
 void xrServer::SendConfigFinished(ClientID const & clientId)
 {
 	NET_Packet	P;
 	P.w_begin	(M_SV_CONFIG_FINISHED);
-	SendTo		(clientId, P, net_flags(TRUE,TRUE));
+	SendTo		(clientId, P, net_flags(true,true));
 }
 
 void xrServer::SendConnectionData(IClient* _CL)
@@ -106,7 +106,7 @@ void xrServer::SendConnectionData(IClient* _CL)
 void xrServer::OnCL_Connected		(IClient* _CL)
 {
 	xrClientData*	CL				= (xrClientData*)_CL;
-	CL->net_Accepted = TRUE;
+	CL->net_Accepted = true;
 	/*if (Level().IsDemoPlay())
 	{
 		Level().StartPlayDemo();
@@ -260,6 +260,6 @@ void xrServer::OnBuildVersionRespond				( IClient* CL, NET_Packet& P )
 
 void xrServer::Check_BuildVersion_Success			( IClient* CL )
 {
-	CL->flags.bVerified = TRUE;
+	CL->flags.bVerified = true;
 	SendConnectResult(CL, 1, 0, (char*)"All Ok");
 };

@@ -206,7 +206,7 @@ bool DataFace::RenderEqualTo(Face *F)
 {
 	if (F->dwMaterial	!= dwMaterial		)	
 		return FALSE;
- 	return TRUE;
+ 	return true;
 }
 
 void DataFace::AddChannel(Fvector2 &p1, Fvector2 &p2, Fvector2 &p3) 

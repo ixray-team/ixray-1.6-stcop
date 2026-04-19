@@ -65,7 +65,7 @@ void SBinocVisibleObj::Draw()
 
 void SBinocVisibleObj::Update()
 {
-	m_flags.set		(	flVisObjNotValid,TRUE);
+	m_flags.set		(	flVisObjNotValid,true);
 
 	if(!m_object->Visual())			return;
 
@@ -115,7 +115,7 @@ void SBinocVisibleObj::Update()
 		cur_rect.rb.y	+= (mx.y-cur_rect.rb.y)*m_upd_speed*Device.fTimeDelta;
 		if (mn.similar(cur_rect.lt,2.f)&&mx.similar(cur_rect.rb,2.f)){ 
 			// target locked
-			m_flags.set(flTargetLocked,TRUE);
+			m_flags.set(flTargetLocked,true);
 			u32 clr	= subst_alpha(m_lt.GetTextureColor(),255);
 
 			//-----------------------------------------------------
@@ -203,7 +203,7 @@ void TBinocularsVision::Update()
 
 	VIS_OBJECTS_IT	it = m_active_objects.begin();
 	for(;it!=m_active_objects.end();++it)
-		(*it)->m_flags.set					(flVisObjNotValid, TRUE) ;
+		(*it)->m_flags.set					(flVisObjNotValid, true) ;
 
 
 	CVisualMemoryManager::VISIBLES::const_iterator v_it = vVisibles.begin();

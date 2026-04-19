@@ -25,7 +25,7 @@ bool CTorridZone::net_Spawn(CSE_Abstract* DC)
 	m_animator->Load	(zone->get_motion());
 	m_animator->Play	(true);
 
-	return				(TRUE);
+	return				(true);
 }
 
 void CTorridZone::UpdateWorkload(u32 dt)
@@ -74,5 +74,5 @@ bool CTorridZone::light_in_slow_mode ()
 
 bool CTorridZone::AlwaysTheCrow ()
 {
-	return TRUE;
+	return true;
 }

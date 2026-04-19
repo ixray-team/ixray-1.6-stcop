@@ -7,7 +7,7 @@ public:
 	xrP_BOOL	oBlend;
 public:
 	virtual		const char*		getComment()	{ return "LEVEL: deffer-model-flat";	}
-	virtual		bool		canBeDetailed()	{ return TRUE;	}
+	virtual		bool		canBeDetailed()	{ return true;	}
 	virtual		bool		canBeLMAPped()	{ return FALSE;	}
 
 	virtual		void		Save			(IWriter&	fs);

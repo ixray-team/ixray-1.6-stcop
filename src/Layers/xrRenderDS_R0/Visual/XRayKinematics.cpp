@@ -22,14 +22,14 @@ void CDS0_Kinematics::LL_Validate()
 	bool bCheckBreakable = FALSE;
 	for (u16 k = 0; k < LL_BoneCount(); k++) {
 		if (LL_GetData(k).IK_data.ik_flags.is(SJointIKData::flBreakable) && (LL_GetData(k).IK_data.type != jtNone)) {
-			bCheckBreakable = TRUE;
+			bCheckBreakable = true;
 			break;
 		}
 	}
 
 	if (bCheckBreakable)
 	{
-		bool bValidBreakable = TRUE;
+		bool bValidBreakable = true;
 
 #pragma todo("container is created in stack!")
 		xr_vector<xr_vector<u16> > 	groups;
@@ -374,7 +374,7 @@ void CDS0_Kinematics::Visibility_Update()
 			children_invisible.push_back(children[c_it]);
 			swap(children[c_it], children.back());
 			children.pop_back();
-			Update_Visibility = TRUE;
+			Update_Visibility = true;
 		}
 	}
 
@@ -388,7 +388,7 @@ void CDS0_Kinematics::Visibility_Update()
 			children.push_back(children_invisible[_it]);
 			swap(children_invisible[_it], children_invisible.back());
 			children_invisible.pop_back();
-			Update_Visibility = TRUE;
+			Update_Visibility = true;
 		}
 	}
 }

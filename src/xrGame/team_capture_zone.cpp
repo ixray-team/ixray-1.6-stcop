@@ -168,7 +168,7 @@ void CTeamCaptureZone::update_Capture(u8 team)
 	u_EventGen(P, GE_GAME_EVENT, ID());
 	P.w_u16(GAME_EVENT_TEAM_POINT_CAPTURED);
 	P.w_u8(m_Team);
-	u_EventSend(P, net_flags(TRUE, TRUE));
+	u_EventSend(P, net_flags(true, true));
 	*/
 }
 

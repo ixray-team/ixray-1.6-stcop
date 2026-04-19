@@ -34,7 +34,7 @@ void CBlender_accum_point::Compile(CBlender_Compile& C)
 		RImplementation.addShaderOption("USE_LMAP", "1");
 	}
 
-	C.r_Pass("accum_volume", "accum_base", false, FALSE, FALSE, TRUE, D3DBLEND_ONE, D3DBLEND_ONE);
+	C.r_Pass("accum_volume", "accum_base", false, FALSE, FALSE, true, D3DBLEND_ONE, D3DBLEND_ONE);
 
 	C.r_dx10Texture("s_diffuse", r2_RT_albedo);
 	C.r_dx10Texture("s_surface", r2_RT_S);

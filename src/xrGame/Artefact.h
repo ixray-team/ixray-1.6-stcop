@@ -34,7 +34,7 @@ public:
 	virtual bool					CanTake							() const;
 
 	virtual bool					renderable_ShadowGenerate		()		{ return FALSE;	}
-	virtual bool					renderable_ShadowReceive		()		{ return TRUE;	}
+	virtual bool					renderable_ShadowReceive		()		{ return true;	}
 	virtual void					create_physic_shell				();
 
 	virtual CArtefact*				cast_artefact					()		{return this;}
@@ -130,7 +130,7 @@ public:
 	bool					o_fastmode					;
 	IC void					o_switch_2_fast				()	{
 		if (o_fastmode)		return	;
-		o_fastmode			= TRUE	;
+		o_fastmode			= true	;
 		//processing_activate		();
 	}
 	IC void					o_switch_2_slow				()	{

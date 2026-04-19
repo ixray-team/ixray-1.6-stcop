@@ -181,7 +181,7 @@ void CParticlesObject::SetXFORM(const Fmatrix& m)
 	if(g_dedicated_server || renderable.visual == nullptr) return;
 
 	IParticleCustom* V = renderable.visual->dcast_ParticleCustom(); VERIFY(V);
-	V->UpdateParent(m,zero_vel,TRUE);
+	V->UpdateParent(m,zero_vel,true);
 	renderable.xform.set(m);
 }
 

@@ -867,7 +867,7 @@ void CGamePersistent::OnEvent(EVENT E, u64 P1, u64 P2)
 		Msg("* Game Loading Timer: Started from Save Reloading");
 
 		if (Device.Paused())
-			Device.Pause(FALSE, TRUE, TRUE, "eQuickLoad");
+			Device.Pause(FALSE, true, true, "eQuickLoad");
 
 		if (CurrentGameUI())
 		{
@@ -911,7 +911,7 @@ float CGamePersistent::MtlTransparent(u32 mtl_idx)
 	return GMLib.GetMaterialByIdx((u16)mtl_idx)->fVisTransparencyFactor;
 }
 static bool bRestorePause	= FALSE;
-static bool bEntryFlag		= TRUE;
+static bool bEntryFlag		= true;
 
 void CGamePersistent::OnAppActivate		()
 {
@@ -920,13 +920,13 @@ void CGamePersistent::OnAppActivate		()
 
 	if( !bIsMP )
 	{
-		Device.Pause			(FALSE, !bRestorePause, TRUE, "CGP::OnAppActivate");
+		Device.Pause			(FALSE, !bRestorePause, true, "CGP::OnAppActivate");
 	}else
 	{
-		Device.Pause			(FALSE, TRUE, TRUE, "CGP::OnAppActivate MP");
+		Device.Pause			(FALSE, true, true, "CGP::OnAppActivate MP");
 	}
 
-	bEntryFlag = TRUE;
+	bEntryFlag = true;
 }
 
 void CGamePersistent::OnAppDeactivate	()
@@ -940,10 +940,10 @@ void CGamePersistent::OnAppDeactivate	()
 	if ( !bIsMP )
 	{
 		bRestorePause			= Device.Paused();
-		Device.Pause			(TRUE, TRUE, TRUE, "CGP::OnAppDeactivate");
+		Device.Pause			(true, true, true, "CGP::OnAppDeactivate");
 	}else
 	{
-		Device.Pause			(TRUE, FALSE, TRUE, "CGP::OnAppDeactivate MP");
+		Device.Pause			(true, FALSE, true, "CGP::OnAppDeactivate MP");
 	}
 	bEntryFlag = FALSE;
 }

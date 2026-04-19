@@ -44,7 +44,7 @@ public:
 	virtual void net_Export(NET_Packet& P) override;					// export to server
 	virtual void save(NET_Packet& output_packet) override;
 	virtual void load(IReader& input_packet) override;
-	virtual bool net_SaveRelevant() override { return TRUE; }
+	virtual bool net_SaveRelevant() override { return true; }
 	virtual void renderable_Render() override;
 	virtual void reload(const char* section) override;
 	virtual void reinit() override;

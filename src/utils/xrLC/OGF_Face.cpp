@@ -34,7 +34,7 @@ bool OGF_Vertex::similar(OGF* ogf, OGF_Vertex& V)
 		float		ev = 1.f/float(B->dwHeight);
 		if (!UV[i].similar(V.UV[i],eu,ev)) return FALSE;
 	}
-	return TRUE;
+	return true;
 }
 void OGF_Vertex::dump	(u32 id)
 {
@@ -98,7 +98,7 @@ bool OGF::dbg_SphereContainsVertex(Fvector& c, float R)
 {
 	Fsphere	S;	S.set(c,R);
 	for (u32 it=0; it<data.vertices.size(); it++)
-		if (S.contains(data.vertices[it].P))	return	TRUE;
+		if (S.contains(data.vertices[it].P))	return	true;
 	return FALSE	;
 }
 
@@ -123,7 +123,7 @@ void OGF::adjacent_select	(xr_vector<u32>& dest, xr_vector<bool>& vmark, xr_vect
 				for (u32 sid=0; sid<dest.size(); sid++)
 				{
 					if (id==dest[sid])	{
-						bConnected	= TRUE;	// this face shares at least one vertex with already selected faces
+						bConnected	= true;	// this face shares at least one vertex with already selected faces
 						break;
 					}
 				}

@@ -20,7 +20,7 @@ public:
 		thread_spawn		(startup,"FS-notify",0,this);
 	}
 	virtual	void			Execute			() = 0;
-    void					Terminate		() {Terminated=TRUE;}
+    void					Terminate		() {Terminated=true;}
 };
 
 class CFS_PathNotificator : public CThread

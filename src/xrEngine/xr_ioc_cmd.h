@@ -45,8 +45,8 @@ protected	:
 public		:
 	IConsole_Command		(const char* N) : 
 	  cName				(N),
-	  bEnabled			(TRUE),
-	  bLowerCaseArgs	(TRUE),
+	  bEnabled			(true),
+	  bLowerCaseArgs	(true),
 	  bEmptyArgsHandled	(FALSE) {
 		  m_LRU.reserve(LRU_MAX_COUNT + 1);
 		  m_LRU.clear();
@@ -123,7 +123,7 @@ public :
 	void Execute(const char* args) override
 	{
 		if (EQ(args, "on") || EQ(args, "1"))
-			value->set(mask,TRUE);
+			value->set(mask,true);
 		else if (EQ(args, "off") || EQ(args, "0"))
 			value->set(mask,FALSE);
 		else InvalidSyntax();
@@ -198,7 +198,7 @@ public :
 	virtual void Execute(const char* args)
 	{
 		if (EQ(args, "on") || EQ(args, "1"))
-			value->set(mask,TRUE);
+			value->set(mask,true);
 		else if (EQ(args, "off") || EQ(args, "0"))
 			value->set(mask,FALSE);
 		else InvalidSyntax();
@@ -269,7 +269,7 @@ public		:
 	virtual void Execute	(const char* args)
 	{
 		if (EQ(args, "on") || EQ(args, "1"))
-			value->set(mask,TRUE);
+			value->set(mask,true);
 		else if (EQ(args, "off") || EQ(args, "0"))
 			value->set(mask,FALSE);
 		else InvalidSyntax();
@@ -316,7 +316,7 @@ public		:
 	  IConsole_Command(N),
 	  value(V),
 	  mask(M)
-	{bEmptyArgsHandled=TRUE;};
+	{bEmptyArgsHandled=true;};
 	  const bool GetValue()const{ return value->test(mask); }
 	virtual void	Execute	(const char* args)
 	{
@@ -815,14 +815,14 @@ public:
 class ENGINE_API CCC_SaveCFG : public IConsole_Command
 {
 public:
-	CCC_SaveCFG(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+	CCC_SaveCFG(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
 	virtual void Execute(const char* args);
 };
 
 class ENGINE_API CCC_LoadCFG : public IConsole_Command
 {
 public:
-	CCC_LoadCFG(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+	CCC_LoadCFG(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
 	virtual bool	allow(const char* cmd) { return true; };
 	virtual void	Execute			(const char* args);
 };

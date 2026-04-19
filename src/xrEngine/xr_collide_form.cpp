@@ -248,7 +248,7 @@ bool CCF_Skeleton::_RayQuery( const collide::ray_defs& Q, collide::rq_results& R
 		break;
 		}
 		if (res_){
-			bHIT		= TRUE;
+			bHIT		= true;
 			R.append_result				(owner,range,I->elem_id,Q.flags&CDB::OPT_ONLYNEAREST);
 			if (Q.flags&CDB::OPT_ONLYFIRST) break;
 		}
@@ -300,7 +300,7 @@ bool CCF_EventBox::Contact(CObject* O)
 	for (int i=0; i<6; i++) {
 		if (Planes[i].classify(PT)>R) return FALSE;
 	}
-	return TRUE;
+	return true;
 }
 bool CCF_EventBox::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
 {	return FALSE; }
@@ -340,10 +340,10 @@ bool CCF_Shape::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
 				Fsphere::ERP_Result	rp_res = shape.data.sphere.intersect(dS, dD, current_range);
 				if ((rp_res==Fsphere::rpOriginOutside)||(!(Q.flags&CDB::OPT_CULL)&&(rp_res==Fsphere::rpOriginInside)))
 				{
-					bHIT = TRUE;
+					bHIT = true;
 					range = current_range;
 					R.append_result(owner, range, el, Q.flags&CDB::OPT_ONLYNEAREST);
-					if (Q.flags&CDB::OPT_ONLYFIRST) return TRUE;
+					if (Q.flags&CDB::OPT_ONLYFIRST) return true;
 				}
 			}
 			break;
@@ -371,9 +371,9 @@ bool CCF_Shape::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
 					if (dot>0.f&&dot<range)
 					{
 						range = dot;
-						bHIT = TRUE;
+						bHIT = true;
 						R.append_result(owner, range, el, Q.flags&CDB::OPT_ONLYNEAREST);
-						if (Q.flags&CDB::OPT_ONLYFIRST) return TRUE;
+						if (Q.flags&CDB::OPT_ONLYFIRST) return true;
 					}
 				}
 				break;
@@ -442,7 +442,7 @@ void CCF_Shape::ComputeBounds()
 				A.set( +.5f, -.5f, +.5f); T.transform_tiny	(B,A); bv_box.modify(B);
 				A.set( +.5f, -.5f, -.5f); T.transform_tiny	(B,A); bv_box.modify(B);
 
-				bCalcSphere	= TRUE;
+				bCalcSphere	= true;
 			}
 			break;
 		}
@@ -476,7 +476,7 @@ bool CCF_Shape::Contact		( CObject* O )
 				Fsphere&	T		= shapes[el].data.sphere;
 				XF.transform_tiny	(Q.P,T.P);
 				Q.R					= T.R;
-				if (S.intersect(Q))	return TRUE;
+				if (S.intersect(Q))	return true;
 			}
 			break;
 		case 1:	// box
@@ -503,7 +503,7 @@ bool CCF_Shape::Contact		( CObject* O )
 				P.build(B[4],B[2],B[1]);	if (P.classify(S.P)>S.R) break;
 				P.build(B[3],B[2],B[4]);	if (P.classify(S.P)>S.R) break;
 				P.build(B[1],B[0],B[6]);	if (P.classify(S.P)>S.R) break;
-				return TRUE;
+				return true;
 			}
 			break;
 		}

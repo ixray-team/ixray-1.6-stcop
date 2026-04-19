@@ -57,7 +57,7 @@ bool CPsyDog::net_Spawn(CSE_Abstract *dc)
 {
 	if (!inherited::net_Spawn(dc)) return FALSE;
 
-	return TRUE;
+	return true;
 }
 void CPsyDog::reinit()
 {
@@ -115,8 +115,8 @@ bool CPsyDog::spawn_phantom()
 	
 	// spawn here
 	NET_Packet					P;
-	phantom->Spawn_Write		(P,TRUE);
-	Level().Send				(P,net_flags(TRUE));
+	phantom->Spawn_Write		(P,true);
+	Level().Send				(P,net_flags(true));
 	F_entity_Destroy			(phantom);
 
 	return true;
@@ -221,7 +221,7 @@ bool CPsyDogPhantom::net_Spawn(CSE_Abstract *dc)
 
 	m_time_spawned			= time();
 
-	return (TRUE);
+	return (true);
 }
 
 const u32 pmt_time_wait_parent = 10000;
@@ -274,8 +274,8 @@ void CPsyDogPhantom::Think()
 
 	m_state			= eAttack;
 	
-	setVisible		(TRUE);
-	setEnabled		(TRUE);
+	setVisible		(true);
+	setEnabled		(true);
 
 	TParticlesPlayer* PPlayer = GetOrCreateComponent<TParticlesPlayer>();
 	PPlayer->StartParticles(m_particles_appear,Fvector().set(0.0f,0.1f,0.0f),ID());

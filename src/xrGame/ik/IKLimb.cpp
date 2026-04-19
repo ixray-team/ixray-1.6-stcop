@@ -1038,9 +1038,9 @@ void CIKLimb::CalculateBones( SCalculateData &cd )
 	ssaved_callback sv1( K->LL_GetBoneInstance( m_bones[1] ) );
 	ssaved_callback sv2( K->LL_GetBoneInstance( m_bones[2] ) );
 
-	K->LL_GetBoneInstance( m_bones[0] ).set_callback( bctCustom, BonesCallback0, &cd, TRUE );
-	K->LL_GetBoneInstance( m_bones[1] ).set_callback( bctCustom, BonesCallback1, &cd, TRUE );
-	K->LL_GetBoneInstance( m_bones[2] ).set_callback( bctCustom, BonesCallback2, &cd, TRUE );
+	K->LL_GetBoneInstance( m_bones[0] ).set_callback( bctCustom, BonesCallback0, &cd, true );
+	K->LL_GetBoneInstance( m_bones[1] ).set_callback( bctCustom, BonesCallback1, &cd, true );
+	K->LL_GetBoneInstance( m_bones[2] ).set_callback( bctCustom, BonesCallback2, &cd, true );
 
 	CBoneData &BD=K->LL_GetData( m_bones[0] );
 	K->Bone_Calculate( &BD, &K->LL_GetTransform( BD.GetParentID() ) );

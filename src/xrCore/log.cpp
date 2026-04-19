@@ -152,19 +152,19 @@ void xrLogger::RemoveLogCallback(LogCallback logCb)
 
 void xrLogger::InternalCloseLog()
 {
-	while(!logData->empty() && hLogThread != 0) {
+	while(!logData->empty() && hLogThread != nullptr) {
 		Sleep(1u);
 	}
 
 	FlushLog();
 
-	if (hLogThread != 0)
+	if (hLogThread != nullptr)
 	{
 		bIsAlive = false;
 #ifdef IXR_WINDOWS
 		WaitForSingleObject(hLogThread, INFINITE);
 #endif
-		hLogThread = 0;
+		hLogThread = nullptr;
 	}
 
 	IWriter* tempCopy = (IWriter*)logFile;
@@ -176,7 +176,7 @@ void xrLogger::InternalCloseLog()
 
 xrLogger::xrLogger()
 	: logFile(nullptr), bFastDebugLog(false), 
-	bIsAlive(true), hLogThread(0),
+	bIsAlive(true), hLogThread(nullptr),
 	bFlushRequested(false)
 {}
 

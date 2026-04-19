@@ -40,7 +40,7 @@ bool CScriptZone::net_Spawn	(CSE_Abstract* DC)
 	if (!inherited::net_Spawn(DC))
 		return					(FALSE);
 
-	return						(TRUE);
+	return						(true);
 }
 
 void CScriptZone::net_Destroy	()

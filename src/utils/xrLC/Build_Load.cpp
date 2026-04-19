@@ -326,7 +326,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 				// HACK for merged lod textures
 				BT.dwWidth		= 1024;
 				BT.dwHeight		= 1024;
-				BT.bHasAlpha	= TRUE;
+				BT.bHasAlpha	= true;
 				BT.SetHasSurface(FALSE);
 
 			} 
@@ -362,7 +362,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 					BT.THM.width = THM->r_u32();
 					BT.THM.height = THM->r_u32();
 					bool			bLOD = FALSE;
-					if (N[0] == 'l' && N[1] == 'o' && N[2] == 'd' && N[3] == '\\') bLOD = TRUE;
+					if (N[0] == 'l' && N[1] == 'o' && N[2] == 'd' && N[3] == '\\') bLOD = true;
 
 					// load surface if it has an alpha channel or has "implicit lighting" flag
 					BT.dwWidth = BT.THM.width;
@@ -373,7 +373,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 						if (BT.bHasAlpha || BT.THM.flags.test(STextureParams::flImplicitLighted) || g_build_options.b_radiosity)
 						{
 							clMsg("- loading: %s W[%u] H[%u]", N, BT.dwWidth, BT.dwHeight);
-							BT.SetHasSurface(TRUE);
+							BT.SetHasSurface(true);
 
 							string_path OutName;
 							if (!Surface_Detect(OutName, N) || !BT.pSurface.LoadFromFile(OutName))

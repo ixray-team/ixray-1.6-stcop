@@ -8,7 +8,7 @@ IClient::IClient(CTimer* timer): stats(timer), server(nullptr)
 	flags.bLocal = FALSE;
 	flags.bConnected = FALSE;
 	flags.bReconnect = FALSE;
-	flags.bVerified = TRUE;
+	flags.bVerified = true;
 }
 
 IClient::~IClient()

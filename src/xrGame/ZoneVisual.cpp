@@ -46,9 +46,9 @@ bool CVisualZone::	net_Spawn						(CSE_Abstract* DC)
 
 	SA->PlayCycle				(m_idle_animation);
 
-	setVisible					(TRUE);
+	setVisible					(true);
 
-	return						(TRUE);
+	return						(true);
 }
 
 void CVisualZone::SwitchZoneState(EZoneState new_state)

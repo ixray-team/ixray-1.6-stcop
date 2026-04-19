@@ -59,7 +59,7 @@ void light::vis_prepare()
 	if ( (flags.type==IRender_Light::SPOT) && flags.bShadow && flags.bVolumetric )
 		RCache.set_Stencil			(FALSE);
 	else
-		RCache.set_Stencil			(TRUE,D3DCMP_LESSEQUAL,0x01,0xff,0x00);
+		RCache.set_Stencil			(true,D3DCMP_LESSEQUAL,0x01,0xff,0x00);
 	RImplementation.Target->draw_volume				(this);
 	RImplementation.occq_end						(vis.query_id);
 }

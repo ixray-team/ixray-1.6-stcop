@@ -352,7 +352,7 @@ void	CActor::cam_Lookout	( const Fmatrix &xform, float camera_height )
 						Fvector				pt_;
 						calc_gl_point( pt_, xform, radius, angle );
 						if (test_point( pt_, mat,ext, this )) 
-							{ bIntersect=TRUE; break; } 
+							{ bIntersect=true; break; } 
 					}
 					valid_angle	= bIntersect?angle:alpha;
 				} 

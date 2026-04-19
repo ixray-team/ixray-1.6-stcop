@@ -57,8 +57,8 @@ void	CBlender_deffer_model::Compile(CBlender_Compile& C) {
 			case SE_R2_NORMAL_LQ:
 			uber_deffer(C, SE_R2_NORMAL_HQ == C.iElement, "deffer_model", "forward_base", false, 0, true);
 
-			C.PassSET_ZB(TRUE, FALSE);
-			C.PassSET_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, oAREF.value);
+			C.PassSET_ZB(true, FALSE);
+			C.PassSET_Blend(true, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, oAREF.value);
 
 			C.r_Sampler("s_material", r2_material);
 			C.r_Sampler("env_s0", r2_T_envs0);

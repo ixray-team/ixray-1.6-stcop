@@ -167,16 +167,16 @@ float		ps_r2_df_parallax_h			= 0.02f;
 float		ps_r2_df_parallax_range		= 60.f;
 float		ps_r2_tonemap_middlegray	= 0.8f;				// r2-only 
 // papa_doenitz: these are now used by the new tonemapping/adaptation/bloom code.
-bool		ps_r2_new_autoexposure		= false;			// use new autoexposure code (for auto exposure only, make it TRUE to use the new autoexposure code, or FALSE to use the old autoexposure code)
+bool		ps_r2_new_autoexposure		= false;			// use new autoexposure code (for auto exposure only, make it true to use the new autoexposure code, or FALSE to use the old autoexposure code)
 float		ps_r2_autoexposure_key		= 0.18f;			// papa_doenitz - middlegray/key, default 0.18f, 0.148f for "unreal like"
 float		ps_r2_autoexposure_min		= -0.5f;			// exposure minimum, f-stop (for auto exposure only, make it higher if brightness is too low in bright areas)
 float		ps_r2_autoexposure_max		= 1.0f;				// exposure maximum, f-stop (for auto exposure only, make it lower if brightness is too high in lowlight areas)
 float       ps_r2_autoexposure_bias		= 0.0f;             // exposure bias, s-stop (for auto exposure only, make it higher if brightness is too low in general, or lower if brightness is too high in general)
 float		ps_r2_autoexposure_speed	= 1.f;				// autoexposure adaptation speed (for auto exposure only, make it higher if brightness changes too slowly, or lower if brightness changes too quickly)
-bool 		ps_r2_autoexposure_center_weight = false;		// autoexposure center weighted (for auto exposure only, make it TRUE if you want to give more weight to the center of the screen for auto exposure, or FALSE to give equal weight to the whole screen)
+bool 		ps_r2_autoexposure_center_weight = false;		// autoexposure center weighted (for auto exposure only, make it true if you want to give more weight to the center of the screen for auto exposure, or FALSE to give equal weight to the whole screen)
 float		ps_r2_autoexposure_min_weight = 0.1f;			// autoexposure minimum weight (for center weighted auto exposure)
 float		ps_r2_autoexposure_gaussian = 3.0f;				// autoexposure gaussian factor (for center weighted auto exposure)
-bool		ps_r2_autoexposure_soft_log = false;			// autoexposure soft log (for auto exposure only, make it TRUE to use soft log for auto exposure, or FALSE to use simple log2 auto exposure)
+bool		ps_r2_autoexposure_soft_log = false;			// autoexposure soft log (for auto exposure only, make it true to use soft log for auto exposure, or FALSE to use simple log2 auto exposure)
 float		ps_r2_autoexposure_soft_log_k = 3.0f;			// autoexposure soft log acceptance in EV (for soft log)
 float		ps_r2_autoexposure_soft_limiter = 3.5f;			// autoexposure soft limiter in EV (for soft log)
 float		ps_r2_autoexposure_sensitivity = 0.15f;			// autoexposure sensitivity (for soft log)
@@ -324,7 +324,7 @@ public:
 	virtual void	Execute	(const char* args)
 	{
 		if (0==xr_strcmp(args,"on"))	{
-			ps_r2_ls_flags.set	(R2FLAG_GLOBALMATERIAL,TRUE);
+			ps_r2_ls_flags.set	(R2FLAG_GLOBALMATERIAL,true);
 		} else if (0==xr_strcmp(args,"off"))	{
 			ps_r2_ls_flags.set	(R2FLAG_GLOBALMATERIAL,FALSE);
 		} else {
@@ -549,7 +549,7 @@ public:
 class CCC_DumpResources : public IConsole_Command
 {
 public:
-	CCC_DumpResources(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+	CCC_DumpResources(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
 	virtual void Execute(const char* args) 
 	{
 		dxRenderDeviceRender::Instance().Resources->Dump(false);
@@ -563,7 +563,7 @@ public:
 class CCC_Fog_Reload : public IConsole_Command
 {
 public:
-	CCC_Fog_Reload(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+	CCC_Fog_Reload(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
 	virtual void Execute(const char* args) 
 	{
 		FluidManager.UpdateProfiles();

@@ -198,8 +198,8 @@ void CSoundRender_Core::_initialize(int stage)
 	}
 
 	env_load();
-	bPresent = TRUE;
-	bReady = TRUE;
+	bPresent = true;
+	bReady = true;
 
 #ifdef XR_MP_BUILD
 	pSoundVoiceChat = new SoundVoiceChat();
@@ -639,7 +639,7 @@ void CSoundRender_Core::SwitchAuidoDevice(const xr_string& Name)
 
 void CSoundRender_Core::env_apply()
 {
-	bListenerMoved = TRUE;
+	bListenerMoved = true;
 }
 
 ISoundVoiceChat* CSoundRender_Core::GetSoundVoiceChat()
@@ -691,7 +691,7 @@ void CSoundRender_Core::set_user_env(CSound_environment* E)
 		params.size.div(2);
 
 		Mixer::AddEditorZone(params);
-		bUserEnvironment = TRUE;
+		bUserEnvironment = true;
 	} else {
 		bUserEnvironment = FALSE;
 	}

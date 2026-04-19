@@ -132,7 +132,7 @@ bool	CDetailManager::cache_Validate	()
 			if (D->sz	!= w_z)	return FALSE;
 		}
 	}
-	return TRUE;
+	return true;
 }
 
 void	CDetailManager::cache_Update(Fvector& view)
@@ -208,7 +208,7 @@ void	CDetailManager::cache_Update(Fvector& view)
 		{
 			bool	bFullUnpack = FALSE;
 			int limit = dm_max_decompress;
-			if (cache_task.size() == dm_cache_size) { limit = dm_cache_size; bFullUnpack = TRUE; }
+			if (cache_task.size() == dm_cache_size) { limit = dm_cache_size; bFullUnpack = true; }
 
 			for (int iteration = 0; cache_task.size() && (iteration < limit); iteration++) {
 				u32		best_id = 0;
@@ -260,7 +260,7 @@ void	CDetailManager::cache_Update(Fvector& view)
 			u32 _mz = index / dm_cache1_line;
 			u32 _mx = index % dm_cache1_line;
             CacheSlot1& MS 	= cache_level1[_mz][_mx];
-			MS.empty		= TRUE;
+			MS.empty		= true;
             MS.vis.clear	();
             for (int _i=0; _i<dm_cache_count; _i++)
 			{

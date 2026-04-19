@@ -12,7 +12,7 @@ void CExplosiveItem::Load(const char* section)
 	inherited::Load(section);
 	CExplosive::Load(section);
 
-	m_flags.set(FUsingCondition, TRUE);
+	m_flags.set(FUsingCondition, true);
 	CDelayedActionFuse::Initialize(pSettings->r_float(section, "time_to_explode"), pSettings->r_float(section, "condition_to_explode"));
 	VERIFY(pSettings->line_exist(section, "set_timer_particles"));
 

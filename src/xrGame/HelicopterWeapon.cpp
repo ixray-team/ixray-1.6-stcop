@@ -252,7 +252,7 @@ void CHelicopter::UpdateMGunDir()
 	m_right_rocket_bone_xform.c.y += 1.0f;
 	//.fake
 
-	m_allow_fire		= TRUE;
+	m_allow_fire		= true;
 	Fmatrix XFi;
 	XFi.invert			(XFORM());
 	Fvector dep;

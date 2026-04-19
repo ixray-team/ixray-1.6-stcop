@@ -66,7 +66,7 @@ CPHMovementControl::CPHMovementControl(CObject* parent)
 	fLastMotionMag = 1.f;
 	SetPathDir(Fvector().set(0, 0, 1));
 
-	bIsAffectedByGravity = TRUE;
+	bIsAffectedByGravity = true;
 	fActualVelocity = 0;
 	m_fGroundDelayFactor = 1.f;
 	gcontact_HealthLost = 0;
@@ -1347,7 +1347,7 @@ void CPHMovementControl::VirtualMoveTo( const Fvector	&in_pos, Fvector &out_pos 
 		{
 			character_->SetObjectContactCallback(saved_callback_);
 			character_->SwitchInInitContact();
-			character_->SetApplyGravity( TRUE );
+			character_->SetApplyGravity( true );
 			character_->SetObjectContactCallbackData( 0 );
 			character_->set_State( sv_state );
 		}

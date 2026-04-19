@@ -77,7 +77,7 @@ public:
 		if( max.y < box.min.y )	return FALSE;
 		if( min.x > box.max.x )	return FALSE;
 		if( min.y > box.max.y )	return FALSE;
-		return TRUE;
+		return true;
 	};
 
 	// Make's this box valid AABB
@@ -148,7 +148,7 @@ public:
 
 	ICF u32& IR(T &x) { return (u32&)x; }
 	ICF bool Pick2(const Tvector& origin, const Tvector& dir, Tvector& coord){
-		bool Inside = TRUE;
+		bool Inside = true;
 		Tvector	MaxT;
 		MaxT.x=MaxT.y=-1.0f;
 		

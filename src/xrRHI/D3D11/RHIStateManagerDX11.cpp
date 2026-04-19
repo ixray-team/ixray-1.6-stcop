@@ -71,10 +71,10 @@ void RHIStateManagerDX11::ResetDDesc()
 {
 	ZeroMemory(&DSDesc, sizeof(DSDesc));
 
-	DSDesc.DepthEnable = TRUE;
+	DSDesc.DepthEnable = true;
 	DSDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 	DSDesc.DepthFunc = D3D11_COMPARISON_LESS;
-	DSDesc.StencilEnable = TRUE;
+	DSDesc.StencilEnable = true;
 	DSDesc.StencilReadMask = 0xFF;
 	DSDesc.StencilWriteMask = 0xFF;
 
@@ -98,7 +98,7 @@ void RHIStateManagerDX11::ResetRDesc()
 	RDesc.DepthBias = 0;
 	RDesc.DepthBiasClamp = 0.0f;
 	RDesc.SlopeScaledDepthBias = 0.0f;
-	RDesc.DepthClipEnable = TRUE;
+	RDesc.DepthClipEnable = true;
 	RDesc.ScissorEnable = FALSE;
 	RDesc.MultisampleEnable = FALSE;
 	RDesc.AntialiasedLineEnable = FALSE;

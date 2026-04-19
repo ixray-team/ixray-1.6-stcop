@@ -36,7 +36,7 @@ void CPHFracturesHolder::ApplyImpactsToElement(CPHElement* E)
 	PH_IMPACT_I i = m_impacts.begin(), e = m_impacts.end();
 	bool ac_state = E->isActive();
 
-	E->m_flags.set(CPHElement::flActive, TRUE);
+	E->m_flags.set(CPHElement::flActive, true);
 	for (; e != i; ++i)
 	{
 		E->applyImpact(*i);

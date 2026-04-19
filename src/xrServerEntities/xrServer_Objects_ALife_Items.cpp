@@ -73,7 +73,7 @@ CSE_Abstract *CSE_ALifeInventoryItem::init	()
 {
 	m_self						= smart_cast<CSE_ALifeObject*>(this);
 	R_ASSERT					(m_self);
-//	m_self->m_flags.set			(CSE_ALifeObject::flSwitchOffline,TRUE);
+//	m_self->m_flags.set			(CSE_ALifeObject::flSwitchOffline,true);
 	return						(base());
 }
 
@@ -110,14 +110,14 @@ static inline bool check1 (const u8 &mask, const u8 &test)
 const	u32		CSE_ALifeInventoryItem::m_freeze_delta_time		= 1000;
 const	u32		CSE_ALifeInventoryItem::random_limit			= 120;		
 
-//if TRUE, then object sends update packet
+//if true, then object sends update packet
 bool CSE_ALifeInventoryItem::Net_Relevant()
 {
 	if (base()->ID_Parent != u16(-1))
 		return		FALSE;
 
 	if (!freezed)
-		return		TRUE;
+		return		true;
 
 #ifdef XRGAME_EXPORTS
 	if (Device.dwTimeGlobal >= (m_freeze_time + m_freeze_delta_time))
@@ -127,13 +127,13 @@ bool CSE_ALifeInventoryItem::Net_Relevant()
 	if (!prev_freezed)
 	{
 		prev_freezed = true;	//i.e. freezed
-		return		TRUE;
+		return		true;
 	}
 
 	if (m_relevent_random.randI(random_limit))
 		return		FALSE;
 
-	return			TRUE;
+	return			true;
 }
 
 void CSE_ALifeInventoryItem::UPDATE_Write	(NET_Packet &tNetPacket)
@@ -425,16 +425,16 @@ void CSE_ALifeItem::FillProps				(const char* pref, PropItemVec& values)
 bool CSE_ALifeItem::Net_Relevant			()
 {
 	if (inherited1::Net_Relevant())
-		return					(TRUE);
+		return					(true);
 
 	if (inherited2::Net_Relevant())
-		return					(TRUE);
+		return					(true);
 
 	if (attached())
 		return					(FALSE);
 
 	if (!m_physics_disabled && !fis_zero(State.linear_vel.square_magnitude(),EPS_L))
-		return					(TRUE);
+		return					(true);
 
 #ifdef XRGAME_EXPORTS
 //	if (Device.dwTimeGlobal < (m_last_update_time + update_rate()))
@@ -705,7 +705,7 @@ u16	 CSE_ALifeItemWeapon::get_ammo_magsize	()
 bool CSE_ALifeItemWeapon::Net_Relevant()
 {
 	if (wpn_flags==1)
-		return TRUE;
+		return true;
 
 	return inherited::Net_Relevant();
 }
@@ -1035,7 +1035,7 @@ void CSE_ALifeItemArtefact::FillProps		(const char* pref, PropItemVec& items)
 bool CSE_ALifeItemArtefact::Net_Relevant	()
 {
 	if (base()->ID_Parent == u16(-1))
-		return TRUE;
+		return true;
 
 	return FALSE;
 }

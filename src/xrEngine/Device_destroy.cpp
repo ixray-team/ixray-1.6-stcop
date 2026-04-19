@@ -100,7 +100,7 @@ void CRenderDevice::Reset(bool precache)
 
 	if (g_pGamePersistent)
 	{
-		g_pGamePersistent->Environment().bNeed_re_create_env = TRUE;
+		g_pGamePersistent->Environment().bNeed_re_create_env = true;
 	}
 	_SetupStates();
 	

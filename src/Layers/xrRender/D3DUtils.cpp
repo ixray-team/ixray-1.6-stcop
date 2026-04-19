@@ -794,7 +794,7 @@ void CDrawUtilities::DD_DrawFace_push(const Fvector& p0, const Fvector& p1, cons
     m_DD_pv->set		(p1,clr); m_DD_pv++;
     m_DD_pv->set		(p2,clr); m_DD_pv++;
     if (m_DD_pv-m_DD_pv_start==MAX_VERT_COUNT)
-        DD_DrawFace_flush	(TRUE); 
+        DD_DrawFace_flush	(true); 
 }
 void CDrawUtilities::DD_DrawFace_end()
 {

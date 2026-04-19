@@ -329,7 +329,7 @@ void CALifeSimulator__release(CALifeSimulator* self_, CSE_Abstract* object, bool
 	packet.w_u32(Level().timeServer());
 	packet.w_u16(GE_DESTROY);
 	packet.w_u16(object->ID);
-	Level().Send(packet, net_flags(TRUE, TRUE));
+	Level().Send(packet, net_flags(true, true));
 }
 
 void CALifeSimulator__release2(CALifeSimulator *self, CSE_Abstract *object)

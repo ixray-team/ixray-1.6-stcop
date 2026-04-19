@@ -69,7 +69,7 @@ public:
 	{
 		if (size()!=base.size())	return FALSE;
 		for (u32 cmp=0; cmp<size(); cmp++)	if ((*this)[cmp]!=base[cmp])	return FALSE;
-		return TRUE;
+		return true;
 	}
 };
 

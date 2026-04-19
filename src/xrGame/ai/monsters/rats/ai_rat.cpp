@@ -145,7 +145,7 @@ void CAI_Rat::Die(CObject* who)
 
 	m_eCurrentState = aiRatDeath;
 
-	m_flags.set		(FCanTake, TRUE);
+	m_flags.set		(FCanTake, true);
 
 	SelectAnimation(XFORM().k,movement().detail().direction(),movement().speed());
 
@@ -317,7 +317,7 @@ bool CAI_Rat::net_Spawn	(CSE_Abstract* DC)
 		m_path = ai().patrol_paths().path(m_spawn_ini->r_string("patrol","way"));
 	}
 
-	return							(TRUE);
+	return							(true);
 }
 
 void CAI_Rat::net_Destroy()
@@ -395,11 +395,11 @@ void CAI_Rat::net_Import(NET_Packet& P)
 
 	if (NET.empty() || (NET.back().dwTimeStamp<N.dwTimeStamp))	{
 		NET.push_back			(N);
-		NET_WasInterpolating	= TRUE;
+		NET_WasInterpolating	= true;
 	}
 
-	setVisible				(TRUE);
-	setEnabled				(TRUE);
+	setVisible				(true);
+	setEnabled				(true);
 
 	CEatableItem::net_Import(P);
 }
@@ -548,14 +548,14 @@ void CAI_Rat::OnH_B_Chield		()
 
 void CAI_Rat::OnH_B_Independent	()
 {
-	CEatableItem::OnH_B_Independent	(TRUE);
-	inherited::OnH_B_Independent	(TRUE);
+	CEatableItem::OnH_B_Independent	(true);
+	inherited::OnH_B_Independent	(true);
 	
 	if (!Useful())
 		return;
 
-	setVisible					(TRUE);
-	setEnabled					(TRUE);
+	setVisible					(true);
+	setEnabled					(true);
 
 	if (m_pPhysicsShell)
 		activate_physic_shell	();
@@ -587,7 +587,7 @@ void CAI_Rat::OnRender()
 
 bool CAI_Rat::UsedAI_Locations()
 {
-	return					(TRUE);
+	return					(true);
 }
 
 void CAI_Rat::make_Interpolation ()
@@ -666,7 +666,7 @@ float CAI_Rat::get_custom_pitch_speed	(float def_speed)
 
 bool CAI_Rat::renderable_ShadowReceive	()
 {
-	return TRUE;
+	return true;
 }
 
 bool CAI_Rat::renderable_ShadowGenerate	()

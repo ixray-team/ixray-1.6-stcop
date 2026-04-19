@@ -292,11 +292,11 @@ void CHelicopter::DieHelicopter()
 		for (u32 i=0, n=_GetItemCount(*m_death_bones_to_hide); i<n; ++i){
 			bone = _GetItem(*m_death_bones_to_hide,i,I);
 			bone_id		= K->LL_BoneID	(bone);
-			K->LL_SetBoneVisible(bone_id,FALSE,TRUE);
+			K->LL_SetBoneVisible(bone_id,FALSE,true);
 		}
 
 		///PPhysicsShell()=P_build_Shell	(this,false);
-		PPhysicsShell()->EnabledCallbacks(TRUE);
+		PPhysicsShell()->EnabledCallbacks(true);
 		PPhysicsShell()->set_ObjectContactCallback(CollisionCallbackDead);
 		PPhysicsShell()->set_ContactCallback(ContactShotMark);
 	}
@@ -313,7 +313,7 @@ void CHelicopter::DieHelicopter()
 	PPhysicsShell()->set_AngularVel	(m_death_ang_vel);
 	PPhysicsShell()->Enable			();
 	K->CalculateBones_Invalidate	();
-	K->CalculateBones				(TRUE);
+	K->CalculateBones				(true);
 	setState						(CHelicopter::eDead);
 	m_engineSound.stop				();
 	processing_deactivate			();

@@ -55,7 +55,7 @@ void	CSheduler::internal_Registration()
 			{
 				ItemReg&	R_pair	= Registration	[pair];
 				if	((!R_pair.OP)&&(R_pair.Object == R.Object))	{
-					bFoundAndErased		= TRUE;
+					bFoundAndErased		= true;
 					Registration.erase	(Registration.begin()+pair	);
 					break				;
 				}
@@ -86,7 +86,7 @@ void CSheduler::internal_Register	(ISheduled* O, bool RT)
 		TNext.dwTimeOfLastExecute	= Device.dwTimeGlobal;
 		TNext.Object				= O;
 		TNext.scheduled_name		= O->shedule_Name();
-		O->shedule.b_RT				= TRUE;
+		O->shedule.b_RT				= true;
 
 		ItemsRT.push_back			(TNext);
 	} else {
@@ -214,7 +214,7 @@ void	CSheduler::Register		(ISheduled* A, bool RT				)
 	VERIFY		(!Registered(A));
 
 	ItemReg		R;
-	R.OP		= TRUE				;
+	R.OP		= true				;
 	R.RT		= RT				;
 	R.Object	= A					;
 	R.Object->shedule.b_RT	= RT	;
@@ -359,7 +359,7 @@ void CSheduler::Update()
 	cycles_start					= CPU::QPC			();
 	cycles_limit					= CPU::qpc_freq * u64 (iCeil(psShedulerCurrent)) / 1000i64 + cycles_start;
 	internal_Registration			();
-	g_bSheduleInProgress			= TRUE;
+	g_bSheduleInProgress			= true;
 
 	// Realtime priority
 	m_processing_now				= true;
