@@ -751,7 +751,7 @@ protected:
 	int						iMagazineSize = 0;		// size (in bullets) of magazine
 
 	int						iAmmoChamberElapsed = 0;
-	int						iChamberSize = 0;
+	int						iChamberSize = 1;
 
 	bool					m_bAmmoInChamber;
 
