@@ -13,9 +13,9 @@
 class COperatorAbstract
 {
 protected:
-	typedef CConditionState<CWorldProperty>	inherited;
-	typedef inherited							CSConditionState;
-	typedef CWorldProperty						COperatorCondition;
+	typedef CWorldState	inherited;
+	typedef CWorldState CSConditionState;
+	typedef CWorldProperty COperatorCondition;
 
 protected:
 	CSConditionState				m_conditions;
